@@ -1,0 +1,162 @@
+{
+ "label": "debug",
+ "file": "index.html",
+ "build": "b593143+f6.3ecc966",
+ "modules": {
+  "league": {
+   "lives": 4,
+   "medianDeathAge_humanOrc": 66,
+   "p10DeathAge": 19,
+   "p90DeathAge": 68,
+   "arcTypes": 3,
+   "topArcShare": 50,
+   "arcs": {
+    "outlaw": 2,
+    "cut short": 1,
+    "officer of state": 1
+   },
+   "memoryShareOfFiredEvents": 0.8,
+   "eventsPerYear": 5.2,
+   "promptsPerYear": 5.4,
+   "medianDaysBetweenPrompts": 38,
+   "p90DaysBetweenPrompts": 161,
+   "p90SecondsBetweenPromptsAtDefaultSpeed": 40.3,
+   "checkWinRate": 42.2,
+   "initiativeActionsPerYear_engaged": 0.2,
+   "byPersonality": {
+    "careful": {
+     "lives": 4,
+     "medianDeathAge": 66,
+     "checkWinRate": 42.2
+    },
+    "reckless": {
+     "lives": 0,
+     "medianDeathAge": null,
+     "checkWinRate": 0
+    },
+    "greedy": {
+     "lives": 0,
+     "medianDeathAge": null,
+     "checkWinRate": 0
+    },
+    "random": {
+     "lives": 0,
+     "medianDeathAge": null,
+     "checkWinRate": 0
+    }
+   }
+  },
+  "events": {
+   "events": 3199,
+   "choices": 9635,
+   "memoryEvents": 95,
+   "memorySharePct": 3,
+   "flagsSet": 458,
+   "orphanFlags": 369,
+   "strictRecipePct": 25.7,
+   "choicesWithoutCheckPct": 53,
+   "oldAgeEvents": 41,
+   "childTeenEvents": 217,
+   "staticTextOver80": 0,
+   "staticChoiceOver12": 0
+  },
+  "duels": {
+   "table": [
+    {
+     "gap": 0,
+     "seat": "strong-in-player-seat",
+     "duels": 72,
+     "strongWinsPct": 57,
+     "shownPct": 49
+    },
+    {
+     "gap": 0,
+     "seat": "strong-as-npc",
+     "duels": 72,
+     "strongWinsPct": 68,
+     "shownPct": 50
+    },
+    {
+     "gap": 1,
+     "seat": "strong-in-player-seat",
+     "duels": 60,
+     "strongWinsPct": 65,
+     "shownPct": 71
+    },
+    {
+     "gap": 1,
+     "seat": "strong-as-npc",
+     "duels": 60,
+     "strongWinsPct": 78,
+     "shownPct": 70
+    },
+    {
+     "gap": 2,
+     "seat": "strong-in-player-seat",
+     "duels": 48,
+     "strongWinsPct": 98,
+     "shownPct": 87
+    },
+    {
+     "gap": 2,
+     "seat": "strong-as-npc",
+     "duels": 48,
+     "strongWinsPct": 96,
+     "shownPct": 86
+    }
+   ],
+   "playerSeatEdgeSameTierPct": -5,
+   "maxShownVsActualErrorPct": 11
+  },
+  "ai": {
+   "years": 60,
+   "warsDeclared": 33,
+   "warsPer100RulerYears_aggressiveTraits": 0.88,
+   "warsPer100RulerYears_peacefulTraits": 0.9,
+   "aggressiveToPeacefulRatio": 0.98
+  },
+  "economy": {
+   "markets": 35,
+   "goods": 21,
+   "medianPriceRatioMaxMin": 2.2,
+   "bestBuySellBackLoop10x": 293
+  },
+  "perf": {
+   "msPerDay": 1.19,
+   "msPerYear": 436,
+   "divisions": 204,
+   "boot": {
+    "ardan-core decoded": 466,
+    "ardan-core unpacked": 521,
+    "core ran": 592,
+    "title shown": 600,
+    "ardan-content decoded": 634,
+    "ardan-content unpacked": 684,
+    "content ran": 990,
+    "ardan-lore decoded": 1003,
+    "ardan-lore unpacked": 1048
+   }
+  },
+  "saves": {
+   "cycles": 100,
+   "corrupted": 0,
+   "kbGzipped": 123
+  },
+  "a11y": {
+   "screens": 24,
+   "wcagViolations": 20,
+   "bestPracticeViolations": 30,
+   "seriousOrCritical": 20,
+   "byRule": {
+    "landmark-one-main": 4,
+    "page-has-heading-one": 22,
+    "region": 34,
+    "target-size": 120
+   },
+   "needsReview": {
+    "color-contrast": 2354
+   }
+  }
+ },
+ "pageErrors": []
+}

@@ -5,6 +5,7 @@
 //   node tools/build.mjs --only=ai-personality   the fix layer (00-09) plus the named features
 //   node tools/build.mjs --without=chronicle     everything except the named features
 //   node tools/build.mjs --unpack                also write the built blobs to .build/ for reading
+//   node tools/build.mjs --unpack=/tmp/me/blobs  ...or to a private folder (parallel work must use this)
 //
 // A feature is a folder features/NN-name/ that may hold:
 //   patches.mjs   export default [{ id, blob, why, edits: [[find, replace, count = 1], ...] }]
@@ -82,11 +83,11 @@ async function build() {
   fs.writeFileSync(OUT, html);
   console.log(`${path.relative(root, OUT) || OUT}: ${feats.length} features, ${ids.size} patches, ${stats.reduce((a, s) => a + s.core, 0)} code files, ` +
     `${stats.reduce((a, s) => a + s.packs, 0)} event packs, ${(Buffer.byteLength(html) / 1024).toFixed(0)} KB`);
-  if (process.argv.includes('--unpack')) {
-    const dir = path.join(root, '.build');
+  if (process.argv.some(a => a === '--unpack' || a.startsWith('--unpack='))) {
+    const dir = path.resolve(root, arg('unpack') || '.build');
     fs.mkdirSync(dir, { recursive: true });
     for (const id of BLOBS) fs.writeFileSync(path.join(dir, id + '.js'), parts[id]);
-    console.log('wrote .build/' + BLOBS.join('.js, ') + '.js');
+    console.log(`wrote ${path.relative(root, dir) || dir}/` + BLOBS.join('.js, ') + '.js');
   }
 }
 if (import.meta.url === pathToFileURL(process.argv[1]).href) build().catch(e => { console.error(e.message); process.exit(1); });

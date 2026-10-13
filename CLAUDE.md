@@ -21,7 +21,9 @@ Ardan is a single-page life sim and grand strategy game. This repo holds the **s
 ```sh
 node tools/build.mjs                                      # everything -> index.html
 node tools/build.mjs --out=/tmp/me.html --only=my-feature # fix layer + one feature, somewhere private
-node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth UI.refresh
+node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth UI.refresh       # the shared .build/ (fix layer)
+node tools/build.mjs --out=/tmp/ardan/me/x.html --only=me --unpack=/tmp/ardan/me/blobs
+node tools/show.mjs --dir=/tmp/ardan/me/blobs A.fightWorth                         # your own build, privately
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs                                        # everything against index.html
@@ -29,7 +31,11 @@ node tests/run.mjs                                        # everything against i
 
 ## Rules that keep the build working
 
-**Parallel safety.** When several agents work at once, each owns **only its own `features/NN-name/` folder**. Build to `--out=` a private scratch path, never to `index.html`. Don't edit another feature, `tools/`, `tests/` or `vendor/` unless that is your task.
+**Parallel safety.** When several agents work at once, each owns **only its own `features/NN-name/` folder**.
+
+- Build to `--out=` a private scratch path such as `/tmp/ardan/<name>/`, never to `index.html`.
+- Unpack only to a private `--unpack=` folder. The shared `.build/` is the fix layer, for reading.
+- Don't edit another feature, `tools/`, `tests/`, `bench/` or `vendor/` unless that is your task.
 
 **Patches edit minified code.** A `find` must be an exact substring of the current blob, and it must match exactly the count given (default 1).
 
@@ -107,3 +113,12 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 **Voice.** Dry, concrete, period. Second person, present tense. Short sentences. No modern idiom. Avoid the existing tics ("looks at you a long time", "for the rest of your life", a five-word punchline after every outcome).
 
 **Before you finish:** `tools/lint-events.mjs` must pass, and `tests/run.mjs` must pass for your feature.
+
+## Measurement conventions (`bench/`)
+
+`node bench/run.mjs <built.html> --label=x` writes `reports/x.json`. `node bench/compare.mjs release fixes x` writes `reports/scorecard.md` using `bench/rubric.mjs`. Features make themselves measurable by following these conventions:
+
+- **NPC-started events** carry `npc: true` on the event, or `ctx.npcMove = true` on the queued item. The bot counts them as `npcMovesPerDecade`.
+- **After-action reports.** A battle object that got one carries it in `b.aar` (`{ causes: [{ label, pct }], text }`). The bot counts `afterActionShare`.
+- **Signature systems** register themselves: `A.SIGNATURE = Object.assign(A.SIGNATURE || {}, { chronicle: true })`. The other keys are `beliefTruth` and `bothScales`.
+- **Memory.** Events that read another event's flag, or `p.flags.ev`, count as memory events. Prefer `C.flag(p, "x")` in `cond`, so the static analyzer sees the link.
