@@ -6,6 +6,9 @@
 //   node tools/build.mjs --without=chronicle     everything except the named features
 //   node tools/build.mjs --unpack                also write the built blobs to .build/ for reading
 //   node tools/build.mjs --unpack=/tmp/me/blobs  ...or to a private folder (parallel work must use this)
+//   node tools/build.mjs --include-wip           also build folders marked work-in-progress
+// A folder holding a file named .wip is work in progress: left out of the default build (and of tests/check)
+// until the marker is removed, but built whenever --only names it.
 //
 // A feature is a folder features/NN-name/ that may hold:
 //   patches.mjs   export default [{ id, blob, why, edits: [[find, replace, count = 1], ...] }]
@@ -29,13 +32,14 @@ const OUT = path.resolve(root, arg('out') || 'index.html');
 const SEP = '\u0001ARDAN-PACK\u0001';
 
 export const featureName = dir => dir.replace(/^\d+-/, '');
-export function listFeatures({ only, without } = {}) {
+export const isWip = d => fs.existsSync(path.join(root, 'features', d, '.wip'));
+export function listFeatures({ only, without, includeWip } = {}) {
   const dirs = fs.readdirSync(path.join(root, 'features')).filter(d => /^\d+-/.test(d) && fs.statSync(path.join(root, 'features', d)).isDirectory()).sort();
   return dirs.filter(d => {
     const n = featureName(d), fix = /^0\d-/.test(d);
     if (without && without.includes(n)) return false;
     if (only) return fix || only.includes(n);
-    return true;
+    return includeWip || !isWip(d);
   });
 }
 
@@ -43,7 +47,9 @@ const count = (s, f) => { let n = 0, i = -1; while ((i = s.indexOf(f, i + 1)) >=
 
 async function build() {
   const only = arg('only') ? arg('only').split(',') : null, without = arg('without') ? arg('without').split(',') : null;
-  const feats = listFeatures({ only, without });
+  const feats = listFeatures({ only, without, includeWip: process.argv.includes('--include-wip') });
+  const skipped = fs.readdirSync(path.join(root, 'features')).filter(d => /^\d+-/.test(d) && !feats.includes(d) && isWip(d));
+  if (skipped.length && !only) console.log(`left out (work in progress): ${skipped.join(', ')}`);
   let html = fs.readFileSync(SRC, 'utf8');
   const parts = unpack(html);
   const ids = new Set(), stats = [];

@@ -9,6 +9,7 @@ Ardan is a single-page life sim and grand strategy game. This repo holds the **s
 | `vendor/ardan-b593143.html` | The untouched release. **Never edit.** |
 | `features/NN-name/` | One unit of change: `patches.mjs`, `*.core.js`, `*.events.js`, `test.mjs`, `README.md` (see `tools/build.mjs`) |
 | `features/00-..09-` | The fix layer, always built |
+| `features/*/.wip` | Marks a feature as work in progress: left out of the default build, tests and check, still built by `--only=name` |
 | `tools/build.mjs` | Builds the game (`--out=`, `--only=`, `--without=`, `--unpack`) |
 | `tools/show.mjs` | Prints minified source of named functions from `.build/` (run `node tools/build.mjs --unpack` first) |
 | `tools/lint-events.mjs` | Lints and play-tests a feature's events: `--feature=name --html=built.html` |

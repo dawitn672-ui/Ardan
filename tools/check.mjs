@@ -17,7 +17,7 @@ if (before && !before.equals(after)) { console.error('index.html was out of date
 let lintFailed = 0;
 for (const d of fs.readdirSync(path.join(root, 'features')).sort()) {
   const dir = path.join(root, 'features', d);
-  if (!fs.statSync(dir).isDirectory() || !fs.readdirSync(dir).some(f => f.endsWith('.events.js'))) continue;
+  if (!fs.statSync(dir).isDirectory() || fs.existsSync(path.join(dir, '.wip')) || !fs.readdirSync(dir).some(f => f.endsWith('.events.js'))) continue;
   try { execFileSync(process.execPath, ['tools/lint-events.mjs', `--feature=${d.replace(/^\d+-/, '')}`], { cwd: root, stdio: 'pipe' }); console.log(`lint ok   ${d}`); }
   catch (e) { lintFailed++; console.error(`lint FAIL ${d}\n${String(e.stdout || '').slice(0, 4000)}`); }
 }

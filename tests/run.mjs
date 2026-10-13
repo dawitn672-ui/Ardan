@@ -37,6 +37,7 @@ for (const d of fs.readdirSync(path.join(root, 'features')).sort()) {
   const t = path.join(root, 'features', d, 'test.mjs');
   if (!fs.existsSync(t)) continue;
   if (featFilter && !featFilter.includes(d.replace(/^\d+-/, ''))) continue;
+  if (!featFilter && fs.existsSync(path.join(root, 'features', d, '.wip'))) continue; // work in progress: only when named
   tests.push(...await load(t, 'features/' + d));
 }
 const seen = new Set();
