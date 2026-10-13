@@ -1,0 +1,16 @@
+{
+  "name": "ardan",
+  "private": true,
+  "type": "module",
+  "description": "Ardan — Bloodlines & Banners. The shipped build, the patches applied to it, and browser tests.",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "unpack": "node tools/build.mjs --unpack",
+    "test": "node tests/run.mjs",
+    "test:original": "node tests/run.mjs vendor/ardan-b593143.html"
+  },
+  "devDependencies": {
+    "acorn": "8.18.0",
+    "playwright": "1.56.1"
+  }
+}
