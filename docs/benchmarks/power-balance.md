@@ -93,9 +93,9 @@ Sources: [Steam](https://steamcommunity.com/app/268500/discussions/0/14742218651
 
 **Lesson for Ardan.** Bending the shown odds can be good design, but only on purpose, in the player's favor, and switched off at the top difficulty. Ardan bends them by accident, and the wrong way.
 
-- When you are the underdog, the screen overstates your chance by up to 8 points.
-- When you are the favorite, the screen understates your edge by up to 9 points.
+- In the lab, with both fighters at full health and armed, the screen overstates the underdog by up to 8 points and understates the favorite by up to 9.
 - Read from the NPC's side, the error reaches 12 points.
+- In real lives it is far worse. Fights the profile calls even (mean 49%) were won 9% of the time, because the number ignores the weapon the foe is handed at the duel's start and your own health (section 3).
 
 Ardan's 2d6-against-2d6 exchanges over many rounds are Fire Emblem's averaging trick without the intent: small per-round edges compound into a much steeper curve than the logistic on screen. The save point already matches Civilization Revolution: the seeded random stream and the journal make a reload give the same result.
 
@@ -134,6 +134,20 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack` (fi
 - **Size of the error.** The mean absolute error is 5.7 points with the same AI on both seats. For a fighter in the NPC seat it reaches 6.2 points, with a worst bin of 12.1 points: at a gap of −20 to −12 the screen gives the weaker side 21%, and the real figure is 9%.
 - **Two tiers up is a wall.** It wins 98.5%, while the plan's target is 92%.
 - **The release build** had a mean error of 5.9 to 7.2 points and a worst bin of 15.1.
+
+**In real lives the shown odds are much worse.** In the 24 bot lives below, the player met 71 duels and brawls with a person. The profile's odds against what happened:
+
+| Profile said (player's chance) | Fights | Mean shown | Player won |
+| --- | --- | --- | --- |
+| Under 35% | 22 | 20% | **0%** |
+| 35 to 65% | 23 | 49% | **9%** |
+| 65% and up | 26 | 83% | 65% |
+| All | 71 | 52% | 27% |
+
+The samples are small, but the causes are confirmed in code and measured directly:
+
+- **The foe is handed a weapon after you look.** 92% of the adult NPCs in a cast are stored with no weapon. `A.startDuel` arms them at the start of a fight with `A.armFor` (a sword for a noble, a cudgel for a farmer). That raises their worth by a median 24 points (75th percentile 30) and lifts 83% of them at least one tier. The tier chip and the profile read the unarmed worth. In a 25-duel probe, 11 foes were armed this way.
+- **Your health is ignored.** `A.fightWorth` always assumes full HP. In the duel, `A.fighterFrom` scales your HP by health, down to a floor of 30%: at health 60 you start with 59% HP. In the probe, 6 of 25 duels began with the player below 90% HP.
 
 **Mirror duels: the edge that belongs to the seat**
 
@@ -204,15 +218,38 @@ These are the checks as written. Event conditions filter what a life actually me
 
 Odds shown, recovery speed, check difficulty, AI aggression and income are all identical across modes.
 
-**Life baseline (24 random-bot lives, human, 4 per start)**
+**Life baseline (24 random-bot lives, human, 4 per start, real consequences, Hard)**
 
-LIFE_TABLE
+| Start | Death ages | Median | Reached 40 | Net worth at 40 (median of those who did) | Best tier reached | Fights met / won |
+| --- | --- | --- | --- | --- | --- | --- |
+| Serf | 10, 45, 50, 75 | 47.5 | 3 of 4 | 8 | Veteran, Trained, Untrained ×2 | 11 / 4 |
+| Peasant | 1, 21, 22, 50 | 21.5 | 1 of 4 | 19,323 | Brawler ×3, Untrained | 9 / 0 |
+| Artisan | 30, 65, 68, 72 | 66.5 | 3 of 4 | 6 | Trained ×2, Brawler ×2 | 15 / 3 |
+| Merchant | 19, 50, 71, 77 | 60.5 | 3 of 4 | 5 | Veteran, Trained, Brawler, Untrained | 21 / 4 |
+| Gentry | 5, 29, 32, 66 | 30.5 | 1 of 4 | 1 | Trained ×2, Brawler, Untrained | 6 / 0 |
+| Noble | 29, 71, 72, 77 | 71.5 | 3 of 4 | 1,841 | Veteran ×3, Trained | 31 / 8 |
+
+- **Deaths.** The median death age is 50. None of the 24 died in a fight. They died of fevers, coughs, hearts, strokes and falls, plus one hanging.
+- **Fights.** The lives met 93 fights, about 4 each, and won 19 of 71 against people. They won **0 of 22 against beasts** (12 great, 9 animal, 1 titan). The random bot walks into fights it cannot win, and the game lets it.
+- **Noise.** Four lives per start give median death ages from 21.5 to 71.5. That is noise, not signal. An earlier run of 24 lives, with duel consequences accidentally switched off, gave medians of 53.5 to 71.5 for the same starts. Nobody can set or check a path target on samples this small. That is the case for item 6 in section 5.
+
+**Checks the lives actually met**
+
+| Age | Checks met | Median of each life's median odds (range) | Share at the 4% floor |
+| --- | --- | --- | --- |
+| 0 to 12 | 612 | 36% (31 to 42) | 1% |
+| 13 to 17 | 653 | 30% (21 to 43) | 14% |
+| 18 to 29 | 1,515 | **19%** (12 to 36) | **19%** |
+| 30 to 49 | 1,884 | 27.5% (18 to 51) | 12% |
+| 50 and up | 1,335 | 31% (19 to 72) | 12% |
+
+Event conditions filter the cruelest checks away from the young. Even so, the young adult (18 to 29) loses four checks in five, and one check in five is at the floor. These are a random bot's lives. A careful player picks easier checks, which only a league with personalities can measure.
 
 ### The backtest table
 
 | Metric | Reference game value or practice | Ardan today | Target for a 10 | How to measure in Ardan |
 | --- | --- | --- | --- | --- |
-| **P1. Shown vs real duel odds** | Battle Brothers: shown = rolled. XCOM 2: bent only on purpose, toward the player, off on Legend | Mean error 5.7 pts, worst bin 12.1. Screen scale 12, real 8.7. Underdog overstated, favorite understated | Every bin of ≥50 pairs within 3 pts, both seats; mean error ≤2 | Bot: calibration study in CI, 2,500 pairs × both seats |
+| **P1. Shown vs real duel odds** | Battle Brothers: shown = rolled. XCOM 2: bent only on purpose, toward the player, off on Legend | Lab: mean error 5.7 pts, worst bin 12.1; screen scale 12, real 8.7. Real lives: fights shown as even won 9%, all fights shown at 52% won 27%. 92% of NPCs are stored unarmed and gain a median 24 worth when armed; health ignored | Lab: every bin of ≥50 pairs within 3 pts, both seats. Real lives: every shown-odds band within 5 pts of results over 100+ lives | Bot: calibration study in CI (2,500 pairs × both seats) plus a 100-life league logging every fight's shown odds |
 | **P2. One- and two-tier win rates** | Battle Brothers writes tiers relative to each other; Bannerlord's tiers are too close (1.7× from T1 to T5) and elites die to looters | +1 tier 79.6%, +2 tiers 98.5% (same AI) | Declared in data (e.g. 78% / 93%) and met within ±3; the plan and `GD.TIERS` agree | Bot: same study, grouped by tier gap |
 | **P3. Seat edge in a mirror duel** | Battle Brothers: only Beginner gets a flat +5, and it's documented | Player seat wins 48 to 55% of mirror event duels (release 57 to 62%), 47% of plain lethal duels, 43.5% of brawls; refuse-to-fall in 6 to 9% of lethal duels; none of it shown | 50 ± 3 in every rule set, or the edge shown in the odds | Bot: mirror test, 1,500 fights per rule set |
 | **P4. One explanation per fight** | Battle Brothers' tooltip lists the factors that make the number | Pre-fight line and tier chip disagree in 7.6% of fights with gap ≥ 6 | 0% | Bot: compare `weighText` band with `vsYou` band on 2,000 pairs |
@@ -267,7 +304,7 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 
 | # | Feature | Aspect | Effort | Built here? | Gain | Acceptance test (must be able to fail) |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | **Calibrate the shown duel odds.** Replace `UI.vsYou`'s `/12` with a table fitted from simulation per worth gap and seat (scale 8.7 fits within 2.5 pts RMSE). Show the same % on the duel modal. | Power | S | Yes: patch + `*.core.js` | +1.0 | Calibration test: 2,500 pairs, both seats; every bin with n ≥ 50 within 3 pts of shown; fails the build otherwise |
+| 1 | **Make the shown duel odds true.** (a) Give every NPC their everyday weapon when they are created or reach adulthood, so `A.armFor` stops changing fighters after you look. It must be seeded from the person's id, as `ENG-STYLE-RNG` did, because rendering must not draw random numbers. (b) Make worth and odds read current health. (c) Replace `UI.vsYou`'s `/12` with a curve fitted from simulation per worth gap and seat; scale 8.7 fits within 2.5 pts RMSE. (d) Show the same % on the duel screen. | Power | M | Yes: patch + `*.core.js` | +1.5 | Lab test: 2,500 pairs, both seats; every bin with n ≥ 50 within 3 pts of shown. Life test: 100 bot lives; each shown-odds band (under 35, 35 to 65, 65 up) within 5 pts of results. Both fail the build otherwise. Today the life test fails by 40 pts in the middle band |
 | 2 | **One pre-fight explanation.** `A.weighText` reads the same worth gap (with gear) and the same % as the chip. | Power | S | Yes: patch | +0.3 | 2,000 random pairs: 0 disagreements between the weighText band and the vsYou band |
 | 3 | **Tier-claims test.** Encode every sentence in `GD.TIERS` and `GD.TIER_INFO` as an assertion against the duel, group and beast resolvers. Fix the 6 clashes: retag The Roc and Forest Men as great; either give animal hunts a party by default or change "one trained fighter can kill it" to the measured 1 in 4; fix the plan's 3-vs-Elite, 73/92, Legend and Master counts to match the game. | Power | M | Yes: patch + test | +1.0 | Test fails if any claim is off by >10 pts; today 6 of 13 fail and a 7th half-fails |
 | 4 | **Fight-resolver lint, then routing.** Add a linter rule that flags any choice in a fight event whose lose branch wounds or costs ≥20 health without `duel`, `beast` or `group`. Convert the 76 combat-injury checks to `group:` or `duel:`, starting with the most-fired. | Power | M | Yes: `*.events.js` overrides + linter rule (needs a `tools/` owner's sign-off) | +1.0 | Linter count of flagged choices goes from 76 to 0; a bot life shows group or duel odds on every fight it meets |
