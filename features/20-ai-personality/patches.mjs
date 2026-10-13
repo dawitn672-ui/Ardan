@@ -10,7 +10,7 @@ export default [
       ['if(rel>-25||A.hostile(r.id,o.id))continue;const P=A.warPreview(r.id,o.id);let p=.11/12*(A.AGGRO[r.id]||1)*A.clamp(P.ratio-.7,0,2.5)*(1+(-rel-25)/60);if(p*=cb?cb==="justified"||cb==="reconquest"?2.2:1.5:.6,',
         'if(rel>A.aiWarBar(r.id)||A.hostile(r.id,o.id))continue;const P=A.warPreview(r.id,o.id);let p=.11/12*A.aiWarHaz(r.id)*A.clamp(P.ratio-A.aiNerve(r.id),0,2.5)*(1+(-rel-25)/60);if(p*=cb?cb==="justified"||cb==="reconquest"?2.2:1.5:A.aiNoCause(r.id),'],
       ['A.chance(p)){A.declareWar(r.id,o.id);return}', 'A.chance(p)){A.aiNoteWar(r.id,o.id,P,rel,cb,A.declareWar(r.id,o.id));return}'],
-      ['if(!(r.playerRun||A.atWar(r.id).length>=1||r.exhaustion>30||r.stability<30))', 'if(!(r.playerRun||A.atWar(r.id).length>=1||r.exhaustion>A.aiWeary(r.id)||r.stability<30))'],
+      ['if(!(r.playerRun||A.atWar(r.id).length>=1||r.exhaustion>30||r.stability<30))', 'if(!(r.playerRun||A.atWar(r.id).length>=1||r.exhaustion>A.aiWeary(r.id)||r.stability<30||A.aiResting(r)))'],
     ],
   },
   {

@@ -31,7 +31,9 @@
     if (ctx.pid && A.P(ctx.pid)) { pron(ctx, A.P(ctx.pid)); return A.P(ctx.pid); }
     const y = p.flags[f];
     const hit = y == null ? null : A.relsOf(p, types).find(x => x.p.alive && x.r && x.r.since === y);
-    if (hit) { ctx.pid = hit.p.id; pron(ctx, hit.p); return hit.p; }
+    // ctx.known says which telling to use: the same person, or a stranger who brings word of them
+    if (hit) { ctx.pid = hit.p.id; ctx.known = "yes"; pron(ctx, hit.p); return hit.p; }
+    ctx.known = "";
     return meet(p, ctx, occ);
   };
   const BULLS = ["Megh", "Airavat", "Kalinga", "Dhoomra"];
@@ -66,7 +68,7 @@
       cond: (p, C) => C.realm(p, "POL-22") && C.adult(p) && !C.old(p) && ok(p) && C.flag(p, "mrx_ab_pledged") && A.S.year - p.flags.mrx_ab_pledged >= 3,
       w: 3, once: true,
       setup: (p, ctx) => { find(p, ctx, ["friend", "bestfriend", "acquaint"], "mrx_ab_pledged", "a rider of the Monundi"); },
-      text: p => `{them} is back, muddy to the thigh, with the small book of names in {ohis} fist. ${Ago(p, "mrx_ab_pledged")} you wrote yours in it. Word has come from the Neck: Tekle Asfari is coming home, and the Horsemen of the Monundi are saddling at Mandi. {Ohe} does not ask whether you will ride. {Ohe} asks how soon.`,
+      text: (p, ctx) => `${ctx.known ? `{them} is back, muddy to the thigh, with the small book of names in {ohis} fist. ${Ago(p, "mrx_ab_pledged")} you wrote yours in it.` : `A stranger, {them}, brings the small book of names. The rider who took yours ${ago(p, "mrx_ab_pledged")} is dead, {ohe} says.`} Word has come from the Neck: Tekle Asfari is coming home, and the Horsemen of the Monundi are saddling at Mandi. {Ohe} does not ask whether you will ride. {Ohe} asks how soon.`,
       choices: [
         { t: "Saddle up and ride for Mandi", check: { s: "riding", s2: "ins", d: 46 },
           win: { r: "Nine days in the saddle, nine nights in wet blankets. The prince sends letters instead of himself, and the riders go home. Your name is in two books now: Tekle's, and the king's.",
@@ -113,33 +115,37 @@
       cond: (p, C) => C.realm(p, "POL-22") && C.adult(p) && ok(p) && C.flag(p, "ss_ab_clause") && A.S.year - p.flags.ss_ab_clause >= 2,
       w: 2, once: true,
       setup: (p, ctx) => { find(p, ctx, ["friend", "bestfriend", "acquaint"], "ss_ab_clause", "once a servant of the Blue House"); },
-      text: `{them}, the servant you got over the Blue House wall on a rope at midnight, comes to your door in better clothes than the court ever gave {ohim}. A Zanari merchant will pay forty suns if {ohe} swears before the Rememberers what {ohe} read in King Yonas's papers: the secret clause about Tamowa. {Ohe} wants you to swear too, that {ohe} told you that same night.`,
+      text: (p, ctx) => ctx.known
+        ? `{them}, the servant you got over the Blue House wall on a rope at midnight, comes to your door in better clothes than the court ever gave {ohim}. A Zanari merchant will pay forty suns if {ohe} swears before the Rememberers what {ohe} read in King Yonas's papers: the secret clause about Tamowa. {Ohe} wants you to swear too, that {ohe} told you that same night.`
+        : `{them}, a Zanari merchant, comes to your door. The servant you got over the Blue House wall on a rope at midnight swore before the Rememberers, {ohe} says, to a secret clause about Tamowa in King Yonas's papers, and then died of a fever. {Ohe} needs one more witness who heard it that night, and will pay forty suns.`,
       choices: [
         { t: "Swear before the Rememberers",
           r: "Selam the Knot-Keeper ties your oath into the cord. The Zanari merchant thanks you warmly. Two days later a sergeant of the Green Twin Guard asks your name in the market, and writes it down.",
           fx: { deed: "Swore to the Tamowa clause before the Rememberers", honor: 2, fame: 2, favor: -5, them: { op: 15 } } },
-        { t: "Tell {ohim} to take the gold and leave Abara",
-          r: "{Ohe} goes south with a Zanari caravan, forty suns sewn into {ohis} hem, and does not write. The clause stays a rumour with no name on it.",
-          fx: { wil: 0.5, them: { op: -5 } } },
+        { t: "Refuse, and send {ohim} away",
+          r: "{Ohe} goes south with a Zanari caravan and does not write. The clause stays a rumor with no second name on it.",
+          fx: { wil: 0.5, flag: "mrx_ab_clause_gone", them: { op: -5 } } },
         { t: "Sell the story to the king's men first",
           r: "The king's men pay well and ask where {ohe} lodges. You tell them. You do not walk past that lodging again.",
-          fx: { coin: 40, favor: 5, honor: -7, them: { type: "enemy", op: -60 } } },
+          fx: { coin: 40, favor: 5, honor: -7, flag: "mrx_ab_clause_gone", them: { type: "enemy", op: -60 } } },
       ],
     },
     {
       id: "mrx_ab_clause_paper",
       title: "A folded paper",
-      cond: (p, C) => C.realm(p, "POL-22") && C.adult(p) && C.flag(p, "ss_ab_clause") && A.S.year - p.flags.ss_ab_clause >= 7,
+      cond: (p, C) => C.realm(p, "POL-22") && C.adult(p) && C.flag(p, "ss_ab_clause") && A.S.year - p.flags.ss_ab_clause >= 7 && !C.flag(p, "mrx_ab_clause_gone"),
       w: 2, once: true,
-      setup: (p, ctx) => { find(p, ctx, ["friend", "bestfriend", "acquaint"], "ss_ab_clause", "once a servant of the Blue House"); },
-      text: p => `{them} is coughing out the winter in a back room of the Round Town. ${Ago(p, "ss_ab_clause")} you hauled {ohim} over the Blue House wall. Now {ohe} presses a folded paper into your hand: the Tamowa clause, written out from memory the week after, in a servant's careful letters. "Someone should have it who will not sell it," {ohe} says.`,
+      setup: (p, ctx) => { find(p, ctx, ["friend", "bestfriend", "acquaint"], "ss_ab_clause", "a neighbor in the Round Town"); },
+      text: (p, ctx) => ctx.known
+        ? `{them} is coughing out the winter in a back room of the Round Town. ${Ago(p, "ss_ab_clause")} you hauled {ohim} over the Blue House wall. Now {ohe} presses a folded paper into your hand: the Tamowa clause, written out from memory the week after, in a servant's careful letters. "Someone should have it who will not sell it," {ohe} says.`
+        : `A neighbor from the Round Town, {them}, brings you a folded paper. The servant you hauled over the Blue House wall ${ago(p, "ss_ab_clause")} died this winter and left it for you: the Tamowa clause, written out from memory the week after, in careful letters. "For someone who will not sell it," says a line at the bottom.`,
       choices: [
         { t: "Sew it into your saddle-cloth",
           r: "It weighs nothing. You think of it every time a king's man looks at your horse.",
           fx: { flag: "mrx_ab_clause_kept", secret: 1, them: { op: 10 } } },
-        { t: "Burn it while {ohe} watches",
-          r: "{Ohe} watches the paper curl and does not stop you. \"Then it is only in my head,\" {ohe} says, and turns to the wall.",
-          fx: { wil: 1, them: { op: -10 } } },
+        { t: "Burn it in the hearth",
+          r: "The paper curls and goes black. The clause is back where it was before anyone wrote it down: in one servant's memory, and in yours.",
+          fx: { wil: 1 } },
         { t: "Take it up the Rememberers' hill", check: { s: "etiquette", s2: "learning", d: 45 },
           win: { r: "Selam the Knot-Keeper reads it twice and ties one black knot. \"Now it is history,\" she says, \"and history is not treason.\" You are not sure she is right.",
             fx: { piety: 3, honor: 2, fame: 1, favor: -2 } },
@@ -311,13 +317,13 @@
             fx: { prison: 1, why: "carrying Hazimi letters to Qadir", favor: -4 } } },
         { t: "Go to Tahir Sabrani and tell all",
           r: "The Emir's son asks the color of the tent and the steward's name, and pays you in silence. House Hazimi has a bad year, and you are the cause.",
-          fx: { favor: 6, coin: 20, honor: -5, them: { type: "enemy", op: -60 } } },
+          fx: { favor: 6, coin: 20, honor: -5, flag: "mrx_sb_hazimi_sold", them: { type: "enemy", op: -60 } } },
       ],
     },
     {
       id: "mrx_sb_hazimi_feast",
       title: "A seat by the elder",
-      cond: (p, C) => C.realm(p, "POL-24") && C.adult(p) && ok(p) && C.flag(p, "ss_sb_hazimi") && A.S.year - p.flags.ss_sb_hazimi >= 7,
+      cond: (p, C) => C.realm(p, "POL-24") && C.adult(p) && ok(p) && C.flag(p, "ss_sb_hazimi") && A.S.year - p.flags.ss_sb_hazimi >= 7 && !C.flag(p, "mrx_sb_hazimi_sold"),
       w: 2, once: true,
       setup: (p, ctx) => { meet(p, ctx, "an elder of House Hazimi"); },
       text: p => `At a Hazimi wedding in the uplands an old steward pours your coffee himself and tells the table who you are: the rider who took the house's letter over the Sabun road ${ago(p, "ss_sb_hazimi")} and never broke the seal. {them}, an elder of the house, has you sit at {ohis} side. House Hazimi needs a friend in Sabra the Emir does not watch.`,
@@ -378,7 +384,7 @@
     {
       id: "mrx_sb_crew_night",
       title: "Fire on the water",
-      cond: (p, C) => C.realm(p, "POL-24") && C.adult(p) && !C.old(p) && ok(p) && C.flag(p, "ss_sb_crew") && A.S.year - p.flags.ss_sb_crew >= 5,
+      cond: (p, C) => C.realm(p, "POL-24") && C.adult(p) && !C.old(p) && ok(p) && C.flag(p, "ss_sb_crew") && A.S.year - p.flags.ss_sb_crew >= 5 && !C.flag(p, "mrx_sb_oilyard"),
       w: 2, once: true,
       text: p => `A dozen galleys flying no colors anchor off the Sabran shore at dusk, lanterns out. The Captain of the Fire-Boats sends for every crewman who has ever sealed a pot. You learned the work under Saad the Burnt ${ago(p, "ss_sb_crew")}, and your hands still know it: seal, wrap, fuse, throw, never splash. The boats go out on the midnight ebb.`,
       choices: [
@@ -436,8 +442,8 @@
             fx: { piety: -4, honor: -1, trait: "wrathful", skill: { melee: 1 } } },
           lose: { r: "{Ohe} ducks the blow and is over the wall with your butter. Later you are glad of it.",
             fx: { coin: -5 } } },
-        { t: "Shout for the neighbours",
-          r: "Lamps, dogs, a crowd in nightshirts. The thief is over the wall and gone with half your butter. The neighbours talk about it all winter.",
+        { t: "Shout for the neighbors",
+          r: "Lamps, dogs, a crowd in nightshirts. The thief is over the wall and gone with half your butter. The neighbors talk about it all winter.",
           fx: { coin: -5, happy: -1 } },
       ],
     },
@@ -447,7 +453,9 @@
       cond: (p, C) => C.realm(p, "POL-27") && C.adult(p) && ok(p) && C.flag(p, "mrx_sk_spared") && A.S.year - p.flags.mrx_sk_spared >= 4,
       w: 3, once: true,
       setup: (p, ctx) => { find(p, ctx, ["acquaint", "friend", "bestfriend"], "mrx_sk_spared", "a Stair Guard"); },
-      text: p => `{them}, the thief you put in the snow and let up again ${ago(p, "mrx_sk_spared")}, stands at your gate in the felt coat of the Stair Guard. {Ohis} younger brother rides with the Red Stair robbers on the Bluespire circuit, and the Guard will be waiting at the pass at the new moon. {Ohe} wants you to go up first and turn the boy back.`,
+      text: (p, ctx) => `${ctx.known
+        ? `{them}, the thief you put in the snow and let up again ${ago(p, "mrx_sk_spared")}, stands at your gate in the felt coat of the Stair Guard. {Ohis} younger brother`
+        : `{them} of the Stair Guard stands at your gate. The thief you put in the snow and let up ${ago(p, "mrx_sk_spared")} joined the Guard, {ohe} says, and died on the circuit last winter. The dead thief's younger brother`} rides with the Red Stair robbers on the Bluespire circuit, and the Guard will be waiting at the pass at the new moon. {Ohe} wants you to turn the boy back first.`,
       choices: [
         { t: "Climb to the pass and turn the boy back", check: { s: "survival", s2: "persuasion", d: 48 },
           win: { r: "You find the boy at the robbers' fire and talk until dawn. He walks home beside you. {them} says nothing when you bring him in. {Ohe} does not need to.",
@@ -455,7 +463,7 @@
           lose: { r: "The boy will not listen, and the robbers take you for a Guard spy. You get away with a sling-stone bruise and no boy.",
             fx: { health: -8, cause: "a Red Stair sling-stone", them: { op: -10 }, newRel: { type: "enemy", op: -20 } } } },
         { t: "Warn the Red Stair the Guard is coming",
-          r: "A herder takes word up the valley. At the new moon the pass is empty. {them} knows it was you. {Ohe} has {ohis} brother and has lost a fight, and does not thank you.",
+          r: "A herder takes word up the valley. At the new moon the pass is empty, and the boy rides on with the robbers. {them} knows it was you, and does not thank you.",
           fx: { piety: -1, honor: -1, them: { op: -15 } } },
         { t: "Tell {ohim} the boy must choose for himself",
           r: "{Ohe} nods the way Nima nods. At the new moon the Guard takes eleven robbers at the pass without a death. The boy is one of them. He gets up again, in time.",
@@ -494,7 +502,7 @@
       cond: (p, C) => C.realm(p, "POL-27") && C.adult(p) && ok(p) && C.flag(p, "mrx_sk_doubter") && A.S.year - p.flags.mrx_sk_doubter >= 3,
       w: 3, once: true,
       setup: (p, ctx) => { find(p, ctx, ["friend", "bestfriend", "acquaint"], "mrx_sk_doubter", "a Quiet Doubter"); },
-      text: p => `The Quiet Doubters' list has grown long, and the Steward's men are asking about butter stores. {them}, who brought you to the meeting ${ago(p, "mrx_sk_doubter")}, wants the list out of Skyhold: east over the passes to Norbu of the Red Stair, who says the search found the wrong child. Someone must walk it there. Your name is on it.`,
+      text: (p, ctx) => `The Quiet Doubters' list has grown long, and the Steward's men are asking about butter stores. ${ctx.known ? `{them}, who brought you to the meeting ${ago(p, "mrx_sk_doubter")},` : `{them}, one of the Doubters,`} wants the list out of Skyhold: east over the passes to Norbu of the Red Stair, who says the search found the wrong child. Someone must walk it there. Your name is on it.`,
       choices: [
         { t: "Walk the list east yourself", check: { s: "survival", s2: "stealth", d: 50 },
           win: { r: "Twelve days east on the circuit paths, past Guard posts and robber fires. Norbu's own steward takes the list from your hands. You have chosen a side in a quarrel over a god.",
@@ -558,7 +566,9 @@
       cond: (p, C) => C.realm(p, "POL-27") && C.adult(p) && ok(p) && C.flag(p, "mrx_sk_rescued") && A.S.year - p.flags.mrx_sk_rescued >= 3,
       w: 3, once: true,
       setup: (p, ctx) => { find(p, ctx, ["friend", "bestfriend", "acquaint"], "mrx_sk_rescued", "a salt trader"); },
-      text: p => `{them}, whose salt party you roped down from the cairn above Bellcrest ${ago(p, "mrx_sk_rescued")}, trades for the dwarves of Emberdeep now. {Ohe} brings their offer. The Dragon Watch wants a guide over the Redridge goat paths to the warm ground above Kardeep, where the sky-kings nest, and pays in dwarf silver. {Ohe} owes you a life, {ohe} says, so you hear it first.`,
+      text: (p, ctx) => `${ctx.known
+        ? `{them}, whose salt party you roped down from the cairn above Bellcrest ${ago(p, "mrx_sk_rescued")}, trades for the dwarves of Emberdeep now, and brings their offer.`
+        : `{them}, who trades for the dwarves of Emberdeep, has heard who brought a salt party down from the cairn above Bellcrest ${ago(p, "mrx_sk_rescued")}.`} The Dragon Watch wants a guide over the Redridge goat paths to the warm ground above Kardeep, where the sky-kings nest, and pays in dwarf silver. ${ctx.known ? "{Ohe} owes you a life, {ohe} says, so you hear it first." : "A guide who walks into cloud, {ohe} says, will not mind a dragon."}`,
       choices: [
         { t: "Guide the crossbowmen to the warm ground", check: { s: "survival", s2: "stealth", d: 50 },
           win: { r: "Four nights over the goat paths. The dwarves set their great crossbows on the ridge, and you go home before the shooting. The silver is heavy. So is the Redridge herders' silence.",
@@ -672,7 +682,7 @@
       cond: (p, C) => C.realm(p, "POL-30") && C.adult(p) && !C.old(p) && ok(p) && C.flag(p, "ss_rp_mahout") && A.S.year - p.flags.ss_rp_mahout >= 2,
       w: 2, once: true,
       setup: (p, ctx) => { ctx.bull = bull(p); },
-      text: p => `${Ago(p, "ss_rp_mahout")} you rode a tame cow's neck in the drive at Nagita and helped steer a young bull into the stockade. Bala Mallik offered you a place at the Elephant School. The bull, {bull}, is grown now and ready for the howdah, and he will not take a rider he does not know. Bala sends word: the place is open for one more month.`,
+      text: p => `${Ago(p, "ss_rp_mahout")} you rode high on a tame cow's neck in the drive at Nagita and helped steer a young bull into the stockade. Bala Mallik offered you a place at the Elephant School. The bull, {bull}, is grown now and ready for the howdah, and he will not take a rider he does not know. Bala sends word: the place is open for one more month.`,
       choices: [
         { t: "Go to Nagita and take the place",
           r: "Bala puts you on {bull}'s neck with a hook and a song. The work is hard, the pay is silver lotus, and the bull belongs to the Raja. You learn the words elephants listen to.",
@@ -797,7 +807,7 @@
       cond: (p, C) => C.realm(p, "POL-30") && C.adult(p) && ok(p) && C.flag(p, "ss_rp_taster") && A.S.year - p.flags.ss_rp_taster >= 2,
       w: 2, once: true,
       setup: (p, ctx) => { meet(p, ctx, "a household servant in livery"); },
-      text: p => `${Ago(p, "ss_rp_taster")} a well-dressed stranger at the Sugar House offered you twenty lotus to drop white powder in a lord's dish. You took the powder to the palace tasters, and the chief taster tried it on a cat. Tonight, at a palace feast, the same stranger stands behind a lord's chair in household livery. {Ohe} answers to {them} now. {Ohe} has seen you too.`,
+      text: p => `${Ago(p, "ss_rp_taster")} a well-dressed stranger at the Sugar House offered you twenty lotus to drop white powder in a lord's dish. You took the powder to the palace tasters, and the chief taster tried it on a cat. Tonight, at a palace feast, the same stranger stands behind a lord's chair in household livery, and the steward calls {ohim} {them}. {Ohe} has seen you too.`,
       choices: [
         { t: "Tell the chief taster at once",
           r: "The chief taster tastes every dish twice and watches {them} the whole night. Nothing happens. By morning {them} is gone from the city, and you are watched by people you cannot see.",
@@ -883,7 +893,7 @@
           r: "You go downriver to cousins and wait. When you come back, three scribes have been dismissed and one sits in the fort's cells for your work.",
           fx: { coin: -20, happy: -4, honor: -3 } },
         { t: "Go to the Warden and confess", check: { s: "persuasion", s2: "etiquette", d: 50 },
-          win: { r: "The Warden listens, then laughs without humour. \"An honest thief,\" he says. He keeps you on as a clerk at half pay, where he can see you.",
+          win: { r: "The Warden listens, then laughs without humor. \"An honest thief,\" he says. He keeps you on as a clerk at half pay, where he can see you.",
             fx: { honor: 3, favor: 2, coinPct: -0.3, trait: "honest" } },
           lose: { r: "The Warden hears you out and gives you two years in the fort cells. At the end he says you were lucky. You were.",
             fx: { prison: 2, why: "copying the Warden's toll books for Stonehold" } } },
@@ -931,8 +941,8 @@
       text: p => `${Ago(p, "ss_br_tessar")} you sailed to Tessar and shot your way into Brann Hollow's company of Reef Crossbows, and half your pay is still owed. Now a Tessaran paymaster, {them}, has landed on the Reef with an iron chest. Queen Livia pays her debts, {ohe} says, but only to crossbowmen who sign on for two more years.`,
       choices: [
         { t: "Sign for two more years",
-          r: "{them} counts out your back pay in Tessaran silver and writes your name in the queen's roll. Two more years of other people's wars. The pay is real this time, mostly.",
-          fx: { coin: 45, honor: 1, skill: { xbow: 2 }, deed: "Signed on again with the Reef Crossbows for Queen Livia" } },
+          r: "{them} counts out your back pay in Tessaran silver and writes your name in the queen's roll. Two more years of other people's wars, and a bolt-graze to show for them. The pay is real this time, mostly.",
+          fx: { coin: 45, honor: 1, health: -8, cause: "two more years with the Crossbows at Tessar", skill: { xbow: 2 }, deed: "Signed on again with the Reef Crossbows for Queen Livia" } },
         { t: "Demand the pay owed, with no new oath", check: { s: "intimidation", s2: "persuasion", d: 50 },
           win: { r: "You stand at the chest with forty other Crossbows and say the Articles aloud. {them} pays, white-faced, and sails on the next tide with a lighter chest.",
             fx: { coin: 30, fame: 1, them: { type: "enemy", op: -30 } } },
@@ -955,7 +965,7 @@
           fx: { fame: 1, honor: 1, favor: -5, newRel: { type: "enemy", op: -30 } } },
         { t: "Raise your hand for Nell Brine",
           r: "You vote with the tolls. On the way home a Redsail rower asks for the ring back, politely, with a knife. You give it.",
-          fx: { favor: 4, honor: -2, newRel: { type: "enemy", op: -30 } } },
+          fx: { favor: 4, honor: -2, flag: "mrx_br_ring_gone", newRel: { type: "enemy", op: -30 } } },
         { t: "Keep your hands in your sleeves",
           r: "You watch from the back with your hands hidden. Both sides mark the ones who do not vote, and neither side trusts you after.",
           fx: { happy: -2, trait: "cautious" } },
@@ -964,7 +974,7 @@
     {
       id: "mrx_br_redsail_ring",
       title: "Whose ring",
-      cond: (p, C) => C.realm(p, "POL-33") && C.adult(p) && ok(p) && C.flag(p, "ss_br_redsail") && A.S.year - p.flags.ss_br_redsail >= 6,
+      cond: (p, C) => C.realm(p, "POL-33") && C.adult(p) && ok(p) && C.flag(p, "ss_br_redsail") && A.S.year - p.flags.ss_br_redsail >= 6 && !C.flag(p, "mrx_br_ring_gone"),
       w: 2, once: true,
       setup: (p, ctx) => { meet(p, ctx, "a Varennan captive"); },
       text: p => `In the slave market on the Reef, a Varennan prisoner in irons, {them}, sees Ima Redsail's gold ring on your hand and goes pale. It was {ohis} mother's, {ohe} says, taken with their ship off the Strait. You have worn it for ${nyrs(p, "ss_br_redsail")}, since the night at Ratrock. {Ohe} is to be sold to the galleys tomorrow.`,
@@ -983,7 +993,7 @@
     {
       id: "mrx_br_pilot_post",
       title: "Low tide at the Drowning Post",
-      cond: (p, C) => C.realm(p, "POL-33") && C.adult(p) && ok(p) && C.flag(p, "ss_br_pilot") && A.S.year - p.flags.ss_br_pilot >= 2,
+      cond: (p, C) => C.realm(p, "POL-33") && C.adult(p) && ok(p) && C.flag(p, "ss_br_pilot") && A.S.year - p.flags.ss_br_pilot >= 2 && !(p.flags.ev || {}).mrx_br_pilot_jar,
       w: 2, once: true,
       setup: (p, ctx) => { meet(p, ctx, "a Shoal Pilot"); },
       text: p => `${Ago(p, "ss_br_pilot")} Lark Shoalwise took you out on a moonless night, and you brought the skiff home by the sound of the surf. Tonight Lark is at your door, soaked. A pilot, {them}, is tied to the Drowning Post for a short count in the toll boat, and the tide turns at midnight. Lark's father died at that post for the same kind of count.`,
@@ -1048,8 +1058,8 @@
       title: "The stone",
       cond: (p, C) => C.realm(p, "POL-33") && C.adult(p) && ok(p) && C.flag(p, "mrx_br_sworn40") && A.S.year - p.flags.mrx_br_sworn40 >= 3,
       w: 3, once: true,
-      setup: (p, ctx) => { meet(p, ctx, "a raft-man of the Forty"); },
-      text: p => `{them}, a raft-man of the Forty with burns like yours, talked in drink at the Upturned Queen about rafts and oil. The Forty voted with pebbles in a jar, and the pebbles were black. Sten the Quiet hands you a coil of rope and a stone with a hole through it. You took the oath in the oil caves ${ago(p, "mrx_br_sworn40")}. The boat goes out at dawn.`,
+      setup: (p, ctx) => { meet(p, ctx, "a raft hand of the Forty"); },
+      text: p => `{them}, who works the rafts for the Forty and has burns like yours, talked in drink at the Upturned Queen about rafts and oil. The Forty voted with pebbles in a jar, and the pebbles were black. Sten the Quiet hands you a coil of rope and a stone with a hole through it. You took the oath in the oil caves ${ago(p, "mrx_br_sworn40")}. The boat goes out at dawn.`,
       choices: [
         { t: "Tie the stone",
           r: "You tie it the way the knot-men do, tight and quick. {them} does not fight. At the Drowning Post you do not look at the water. Sten pays your share early that year.",
@@ -1122,7 +1132,7 @@
           r: "The captain pays in Amber gold and thanks you in an accent like broken glass. Kito is not caught. Kito is never caught. But Kito hears.",
           fx: { coin: 100, honor: -6, newRel: { type: "enemy", op: -50 } } },
         { t: "Keep your head down and say nothing",
-          r: "The marines knock, ask about climbers, and look at your hands. You have a labourer's calluses now, on purpose. They move on.",
+          r: "The marines knock, ask about climbers, and look at your hands. You have a laborer's calluses now, on purpose. They move on.",
           fx: { wil: 0.5 } },
       ],
     },
@@ -1135,7 +1145,7 @@
       choices: [
         { t: "Take the pier's mooring fees",
           r: "Every month a boy brings a small bag of copper from Pier Seven. It is never much and never late. You do not ask whose name is on the pier.",
-          fx: { coin: 40, secret: 1, happy: 2 } },
+          fx: { coin: 40, secret: 1, honor: -1 } },
         { t: "Climb with him once more", check: { s: "athletics", s2: "stealth", d: 54 },
           win: { r: "The Prince's archive this time, for a paper with Kito's mother's name on it. You do not read it. Kito does, on the roof, for a long while. He gives you nothing but his hand.",
             fx: { fame: 1, skill: { athletics: 3, stealth: 2 }, deed: "Climbed into the Prince's archive at Kesh with Kito the Gecko" } },

@@ -455,7 +455,8 @@ A.defEvents([
   {
     id: 'ni_secret', npc: true, trigger: true, title: 'What {them} told',
     cond: (p, C) => C.adult(p), setup: S('secret'), more: why,
-    text: 'People know {secret}. There is only one way they could. {them} was the one you trusted with it, and {khe} has been at your neighbours\' table more than usual. Nobody says it to your face.{past}',
+    text: (p, ctx) => ctx.trusted ? 'People know {secret}. There is only one way they could. {them} was the one you trusted with it, and {khe} has been at your neighbours\' table more than usual. Nobody says it to your face.{past}'
+      : 'People know {secret}. {them} has spent a year asking about you in places you used to live, and now {khe} has an answer, and is sharing it. Nobody says it to your face.{past}',
     choices: [
       { t: 'Deny everything', check: { s: 'deception', s2: 'wil', d: 50 },
         win: { r: 'You laugh at it in the right places. In a month it sounds like {them} made it up.',

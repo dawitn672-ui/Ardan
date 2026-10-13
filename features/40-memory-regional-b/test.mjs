@@ -74,7 +74,7 @@ export default {
     const problems = staticChecks(events);
     const ids = events.map(e => e.id);
     const r = await pg.evaluate(({ ids, flags, linked }) => {
-      const out = { problems: [], played: 0, branches: 0, arcs: [], continuity: 0, reach: {} };
+      const out = { problems: [], played: 0, branches: 0, variants: 0, arcs: [], continuity: 0, reach: {} };
       const bad = s => out.problems.push(s);
       const RAW = /\{[A-Za-z0-9_.]+\}/, w = s => (String(s || '').match(/\S+/g) || []).length;
       const mine = ids.map(id => A.EV[id]).filter(Boolean);
@@ -91,16 +91,18 @@ export default {
         else if (!rd.some(e => ids.includes(e.id))) bad(`${f}: not read by any mrx_ event`);
       }
       const setsOf = e => (e.choices || []).flatMap((c, i) => [[c, null], [c.win, true], [c.lose, false]].filter(([b]) => b && b.fx && b.fx.flag).map(([b, win]) => ({ flag: b.fx.flag, i, win, them: !!b.fx.them })));
+      const posFlags = e => [...e.cond.toString().matchAll(/(^|[^!])C\.flag\(p, "([a-z0-9_]+)"\)/g)].map(m => m[2]);
       for (const e of mine) for (const s of setsOf(e)) {
         const rd = readers(s.flag).filter(x => x.id !== e.id && ids.includes(x.id));
-        if (!rd.length) bad(`${e.id}: sets ${s.flag}, which nothing in this feature reads`);
-        else if (!out.arcs.some(a => a.flag === s.flag)) out.arcs.push({ flag: s.flag, from: e.id, to: rd.map(x => x.id) });
+        if (!rd.length) { bad(`${e.id}: sets ${s.flag}, which nothing in this feature reads`); continue; }
+        // an arc is a flag a later callback needs (a positive read); a negated read only closes a door
+        const next = rd.filter(x => posFlags(x).includes(s.flag));
+        if (next.length && !out.arcs.some(a => a.flag === s.flag)) out.arcs.push({ flag: s.flag, from: e.id, to: next.map(x => x.id) });
       }
 
       // ---- play
       const errs = []; const ce = console.error; console.error = (...a) => errs.push(a.map(x => String(x && x.message || x)).join(' ').slice(0, 160));
       const realmOf = e => (e.cond.toString().match(/C\.realm\(p, "(POL-\d+)"/) || [])[1] || 'POL-33';
-      const posFlags = e => [...e.cond.toString().matchAll(/(^|[^!])C\.flag\(p, "([a-z0-9_]+)"\)/g)].map(m => m[2]);
       const bases = {};
       const basesFor = realm => bases[realm] || (bases[realm] = [['peasant', 30], ['merchant', 45], ['noble', 34], ['peasant', 70]].map(([status, age], k) => {
         A.newGame({ seed: 7300 + k, race: 'human', realm, status, startAge: 26, sex: k % 2 ? 'F' : 'M' });
@@ -138,6 +140,22 @@ export default {
           if (v.choices.length !== e.choices.length) bad(`${e.id}: only ${v.choices.length} of ${e.choices.length} choices shown with 500 coin`);
           if (e.setup && q0.ctx.pid && !(A.P(q0.ctx.pid) && A.P(q0.ctx.pid).alive)) bad(`${e.id}: ctx.pid is not a living person`);
           out.played++;
+          // every telling of a text that varies: the linked person found or a stranger, and with or without the
+          // history the text looks at (which setter event you saw, the deed you earned)
+          if (typeof e.text === 'function') for (const known of ['yes', '']) for (const hist of [false, true]) {
+            const pc = prep(hit.base, fl, hit.off);
+            if (hist) {
+              pc.flags.ev = Object.assign({}, pc.flags.ev);
+              for (const id of Object.keys(A.EV)) if (id.startsWith('ss_')) pc.flags.ev[id] = A.S.year - hit.off;
+              pc.deeds.push({ y: A.S.year - hit.off, t: 'Saw a Great Ash Dragon on the warm ground above Kardeep' });
+            }
+            const t = A.makeAcquaintance(pc, 'acquaint');
+            const q = { type: 'event', ev: e.id, ctx: { pid: t.id, known } }; A.S.queue = [q];
+            const vv = A.eventView(q), all = [vv.title, vv.text, ...vv.choices.map(c => c.t)].join(' | ');
+            if (vv.skip || RAW.test(all)) bad(`${e.id} (known=${known || 'no'}, history=${hist}): skipped or raw token`);
+            if (w(vv.text) > 80) bad(`${e.id} (known=${known || 'no'}, history=${hist}): ${w(vv.text)} words`);
+            out.variants++;
+          }
           e.choices.forEach((c, i) => {
             for (const win of c.check ? [true, false] : [null]) {
               const pc = prep(hit.base, fl, hit.off);
@@ -185,7 +203,9 @@ export default {
             if (!rd.cond(pc, A.C)) { bad(`continuity ${ch.ev} -> ${rd.id}: reader not eligible after ${n} years`); continue; }
             const q2 = { type: 'event', ev: rd.id }; A.S.queue = [q2];
             const v2 = A.eventView(q2);
-            if (v2.skip || String(q2.ctx.pid) !== String(who)) bad(`continuity ${ch.ev} -> ${rd.id}: brought back ${q2.ctx.pid}, expected ${who}`);
+            const shown = [v2.title, v2.text, ...v2.choices.map(c => c.t)].join(' | ');
+            if (v2.skip || String(q2.ctx.pid) !== String(who) || q2.ctx.known !== 'yes') bad(`continuity ${ch.ev} -> ${rd.id}: brought back ${q2.ctx.pid}, expected ${who}`);
+            else if (RAW.test(shown) || w(v2.text) > 80) bad(`continuity ${ch.ev} -> ${rd.id}: known-person text has a raw token or ${w(v2.text)} words`);
             else out.continuity++;
             A.S.queue = [];
           }
@@ -197,7 +217,7 @@ export default {
     problems.push(...r.problems);
     if (r.arcs.length < 5) problems.push(`only ${r.arcs.length} two-step arcs (want 5 or more)`);
     const detail = `${ids.length} events, ${CHUNK_FLAGS.length} chunk flags read, ${r.arcs.length} arcs, ${r.played} played, ` +
-      `${r.branches} branches taken, ${r.continuity} people carried across years` + (problems.length ? `; ${problems.length} problems: ${problems.slice(0, 6).join('; ')}` : '');
+      `${r.branches} branches taken, ${r.variants} text variants rendered, ${r.continuity} people carried across years` + (problems.length ? `; ${problems.length} problems: ${problems.slice(0, 6).join('; ')}` : '');
     return { ok: problems.length === 0, detail, data: { problems, arcs: r.arcs, reach: r.reach } };
   },
 };

@@ -57,7 +57,7 @@
       setup: (p, ctx) => { const k = mk(p, { sex: "F", ageAdj: 9 + since(p, "mch_cart_girl") * 16 / GD.RACES[p.race].adult, occ: "a ferry-keeper's wife" }); ctx.pid = k.id; },
       text: "A woman catches your bridle on the road out of {home} and pushes back her sleeve. There is an old rope scar on her wrist. She is the girl you cut loose at the marsh, the night you left the cart in the reeds. Her name is {them} now. She keeps a ferry with her husband, and the mine's factor has found her. He says she is still property.",
       choices: [
-        { t: "Swear before the magistrate that she was born free", check: { s: "deception", s2: "persuasion", d: 50 },
+        { t: "Swear before the magistrate that she was born free", check: { s: "deception", s2: "wil", d: 40 },
           win: { r: "You lie well, under oath, with a hand on the book. The factor has a bill of sale but no witness. {them} walks out of the hall on her husband's arm.",
             fx: { them: { type: "friend", op: 40, back: "friend" }, owed: 1, piety: -3 } },
           lose: { r: "The factor's clerk turns over an old notice with your description on it. You are out the back of the hall before he finishes reading. {them} is taken the same day.",
@@ -76,7 +76,7 @@
         { t: "Pay sixty suns for the smallest", req: p => p.coin >= 60,
           r: "You count it out on the tailboard. The child is a boy of six who will not let go of your belt. You have a freedman's paper to keep safe now, and a mouth to feed.",
           fx: p => { p.coin -= 60; const k = mk(p, { sex: "M", ageAdj: 6, occ: "a freed child in your keeping" }); A.link(p, k, "student", 40, "mentor"); p.honor = A.clamp(p.honor + 4, 0, 100); return `(${k.given} is in your keeping now.)`; } },
-        { t: "Cut their ropes after dark", check: { s: "stealth", s2: "spd", d: 50 },
+        { t: "Cut their ropes after dark", check: { s: "stealth", s2: "spd", d: 45 },
           win: { r: "At the second watch you slit three ropes and point at the woods. By dawn the slaver is shouting at the constable, and the constable is shrugging.",
             fx: { honor: 5, happy: 6, wil: 1, deed: "Cut the ropes on a slaver's cart" } },
           lose: { r: "The slaver sleeps lighter than you hoped. His cudgel breaks your nose, and the constable fines you for meddling with lawful goods.",
@@ -93,7 +93,7 @@
       setup: (p, ctx) => { const k = mk(p, { sex: "F", ageAdj: 42, status: "merchant", occ: "the wife of the house" }); ctx.pid = k.id; },
       text: "You learned your letters through a door left ajar, scratching them in the dirt and rubbing them out at dawn. Now the master of the house lies sick upstairs, and his will lies open on the study table while you sweep. Your name is in it. You go to his nephew, with the mule and the two copper pots.",
       choices: [
-        { t: "Scratch out a line and write your own", check: { s: "deception", s2: "learning", d: 55 },
+        { t: "Scratch out a line and write your own", check: { s: "learning", s2: "int", d: 48 },
           win: { r: `Your hand shakes, then steadies. "And {name} I set free on my death." The ink matches. When the priest reads it out, the nephew can only stare.`,
             fx: (p, ctx) => { freeNow(p); return "(You are free.) " + fx(p, ctx, { secret: 1 }); } },
           lose: { r: "The nephew walks in as you blot the ink. The will goes in the fire, and your hand goes on the block. They take two fingers, so that you will not write again.",
@@ -111,7 +111,7 @@
       choices: [
         { t: "Leave the shutter open, and write slowly", r: "Every evening you write the alphabet large, as if for yourself. By winter the boy is scratching words on the yard wall with a nail.",
           fx: { honor: 3, flag: "mch_taught_slave" } },
-        { t: "Teach him properly, at night", check: { s: "stealth", s2: "learning", d: 45 },
+        { t: "Teach him properly, at night", check: { s: "stealth", s2: "int", d: 40 },
           win: { r: "Two winters of candle-ends and a slate hidden in the woodpile. By spring he reads better than you did at his age.",
             fx: { honor: 5, trait: "kind", flag: "mch_taught_slave" } },
           lose: { r: "His owner finds the slate. You pay thirty suns at the magistrate's table, and the boy is sold to the coast before the month is out.",
@@ -127,7 +127,7 @@
       choices: [
         { t: "Write back: keep the post, and keep quiet", r: "You write that a freedman with a clerk's post has more to lose than most. He does as you say. His letters come every midwinter after that, shorter each year.",
           fx: { them: { type: "friend", op: 10, back: "friend" }, wil: 0.5 } },
-        { t: "Write back: copy the ledgers and bring them to you", check: { s: "persuasion", s2: "intrigue", d: 50 },
+        { t: "Write back: copy the ledgers and bring them to you", check: { s: "persuasion", s2: "int", d: 42 },
           win: { r: "You carry the copies to the tax-farmer yourself. The merchant pays a fine that would buy a ship, and {them} is taken on as a clerk of the revenue.",
             fx: { them: { type: "bestfriend", op: 40, back: "bestfriend" }, honor: 3, coin: 20 } },
           lose: { r: "The merchant has friends in the revenue. The copies vanish, {them} is turned out without a reference, and your name goes on a list somewhere.",
@@ -157,8 +157,8 @@
     {
       id: "mch_tally_reckoning", title: "Rents without tallies", w: 3, once: true,
       cond: (p, C) => C.flag(p, "mch_tallies_drowned") && A.S.year - p.flags.mch_tallies_drowned >= 3 && C.adult(p),
-      setup: (p, ctx) => { const k = mk(p, { sex: "M", ageAdj: A.C.ageAdj(p) + 8, status: p.status === "serf" ? "serf" : "peasant", occ: "a neighbor with six children and a dead cow" }); ctx.pid = k.id; },
-      text: "A new steward has come to reckon the rents without tallies. He goes door to door with a clerk and pays a sun for every name. Three winters ago you pushed the old tallies under the ford ice, and the manor has kept your secret. Now {them}, who has six children and a dead cow, is watching the steward's purse.",
+      setup: (p, ctx) => { const k = mk(p, { sex: "M", ageAdj: A.C.ageAdj(p) + 8, status: p.status === "serf" ? "serf" : "peasant", occ: "a neighbor with six children and a dead cow" }); ctx.pid = k.id; ctx.yrsW = num(since(p, "mch_tallies_drowned")); },
+      text: "A new steward has come to reckon the rents without tallies. He goes door to door with a clerk and pays a sun for every name. {yrsW} winters ago you pushed the old tallies under the ford ice, and the manor has kept your secret. Now {them}, who has six children and a dead cow, is watching the steward's purse.",
       choices: [
         { t: "Pay {them} more than the steward does", r: "Two suns and a ham. {them} takes them without meeting your eye. The steward leaves with a list that is mostly guesses.",
           fx: { coin: -12, them: { type: "acquaint", op: 10, back: "acquaint" }, wil: 0.5 } },
@@ -206,7 +206,7 @@
       },
       text: "{them} served at table beside you in the household where you were sent as a page. You carved capons together, carried messages, bowed to bishops and fought with sticks in the stable yard. Now {theyHe} is accused of stealing a silver ewer from that same household, and the steward has written to ask what you know of {theirHis} character.",
       choices: [
-        { t: "Swear to {theirHis} good name", check: { s: "persuasion", s2: "etiquette", d: 45 },
+        { t: "Swear to {theirHis} good name", check: { s: "etiquette", s2: "wil", d: 40 },
           win: { r: "Your oath and your manners carry the hall. {them} is cleared. {theyHe} never tells you whether {theyHe} took it, and you never ask.",
             fx: { them: { type: "bestfriend", op: 30, back: "bestfriend" }, owed: 1 } },
           lose: { r: "Your word is not enough. {them} loses the post and is branded. Your name is joined to a thief's in every hall you knew as a child.",
@@ -306,7 +306,7 @@
       id: "mch_pledge_home", title: "Home from the foreign court", w: 3, once: true,
       cond: (p, C) => C.flag(p, "mch_sent_pledge") && A.S.year - p.flags.mch_sent_pledge >= 3,
       setup: (p, ctx) => { const k = alive(p.flags.mch_pledge_who); if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; ctx.yrsW = num(since(p, "mch_sent_pledge")); },
-      text: "{them} comes home after {yrsW} years as a pledge. {theyHe} bows like a courtier, eats with {theirHis} eyes on the door, and calls you by your title. You came home like that once. {theyHe} has also come home knowing which of their lords hate their ruler, and which of their walls are cracked.",
+      text: "{them} comes home after {yrsW} years as a pledge. {theyHe} bows like a courtier, eats with {theirHis} eyes on the door, and calls you by your title. You came home like that once. {theyHe} has also come home knowing which lords of that court hate their ruler, and which of its walls are cracked.",
       choices: [
         { t: "Give {themHim} time, and a horse of {theirHis} own", r: "You ask nothing. In the second month {them} rides out alone and comes back laughing. In the third, {theyHe} calls you by name.",
           fx: { them: { op: 20 }, happy: 4 } },
@@ -324,7 +324,7 @@
       setup: (p, ctx) => { const k = kin(p, ["uncle", "cousin", "inlaw", "councillor"]) || mk(p, { status: "noble", ageAdj: A.C.ageAdj(p) + 20, occ: "a lord of the council" }); ctx.pid = k.id; },
       text: "An old kitchen woman is dying, and she asks for you by name. When you were a child your taster fell retching at table, and every trail you followed went cold. She says she carried that dish up herself. She says she knows who paid for it: {themFull}, who still kisses your cheek at feasts.",
       choices: [
-        { t: "Accuse {themHim} before the court", check: { s: "intrigue", s2: "persuasion", d: 55 },
+        { t: "Accuse {themHim} before the court", check: { s: "intrigue", s2: "int", d: 45 },
           win: { r: "The cook's word, a steward's ledger and a goldsmith who talks. {them} leaves court in a closed carriage. Your old taster's family is sent a purse.",
             fx: { them: { type: "enemy", op: -60, back: "enemy" }, fame: 3, deed: "Unmasked the poisoner of their childhood" } },
           lose: { r: "A dying cook against a lord of the blood. {them} laughs it off in public, and now {theyHe} knows that you know.",
@@ -345,7 +345,7 @@
           fx: { owed: 2, them: { type: "enemy", op: -30, back: "enemy" }, honor: -4, skill: { intrigue: 2 } } },
         { t: "Forgive {themHim}, out loud, here", r: "{theyHe} goes very still at your first words. By the last {theyHe} is weeping. Shame or relief, you cannot tell. You walk out lighter.",
           fx: { trait: "forgiving", piety: 5, them: { op: 30 }, happy: 4 } },
-        { t: "Take the cook's account to the throne", req: p => !p.ruler, check: { s: "persuasion", s2: "intrigue", d: 55 },
+        { t: "Take the cook's account to the throne", req: p => !p.ruler, check: { s: "persuasion", s2: "int", d: 45 },
           win: { r: "The account is old, but the goldsmith is still alive. {them} loses the council seat and goes home to {theirHis} estates under guard.",
             fx: { them: { type: "enemy", op: -60, back: "enemy" }, rulerOp: 10, fame: 2 } },
           lose: { r: "{them} has the ruler's ear and you have a dead cook. You are thanked for your concern and not invited to council again.",
@@ -378,7 +378,7 @@
       cond: (p, C) => C.flag(p, "mch_old_flame") && A.S.year - p.flags.mch_old_flame >= 2 && C.adult(p),
       setup: (p, ctx) => { const k = alive(p.flags.mch_flame_who); if (!k || k.id === p.spouse) { ctx.skip = 1; return; } ctx.pid = k.id; },
       text: (p) => A.C.married(p)
-        ? "Two years of market days, and the long way home after, past the door where you once left a small gift. Today {them} asks you to choose. {spouse} has started asking where the afternoons go."
+        ? "Two years of market days, and the long way home after, past the door where you once left a small gift. Today {them} asks you to choose. At home, {spouse} has started asking where the afternoons go."
         : "Two years of market days, and the long way home after, past the door where you once left a small gift. Today {them} asks you to choose: marry, or end it. {theirHis} family has found someone steadier.",
       choices: [
         { t: "Choose {themHim}, whatever it costs",
@@ -471,12 +471,12 @@
       cond: (p, C) => C.flag(p, "ch_own_tree") && A.S.year - p.flags.ch_own_tree >= 8 && C.race(p, "halfelf") && (C.adult(p) || C.teen(p)),
       text: "The oak you planted where no one owned the ground is taller than you now. Your crooked name is still in its bark, stretched wide by the growing. This spring a reeve has staked the land for a new mill-pond. The tree stands where the water will be.",
       choices: [
-        { t: "Dig it up and move it", check: { s: "husbandry", s2: "sta", d: 45 },
+        { t: "Dig it up and move it", check: { s: "husbandry", s2: "sta", d: 38 },
           win: { r: "Three days, a borrowed cart, a ball of roots wrapped in sacking. You plant it again on the slope above the new pond. It sulks for a year, then leafs.",
             fx: { flag: "mch_tree_kept", wil: 1, happy: 5 } },
           lose: { r: "The taproot snaps a yard down. You plant it anyway on the slope above the pond. By midsummer the leaves are brown.",
             fx: { happy: -8, wil: 2 } } },
-        { t: "Ask the elves to name it a birth tree", check: { s: "diplomacy", s2: "faith", d: 55 },
+        { t: "Ask the elves to name it a birth tree", check: { s: "diplomacy", s2: "wil", d: 48 },
           win: { r: "An elder walks out from the Oak Line at dusk and sings over it. No mill-pond will drown a named tree. It is the first one named for a half-elf in living memory.",
             fx: { flag: "mch_tree_kept", happy: 10, fame: 2, deed: "Had a birth tree named for a half-elf" } },
           lose: { r: `"A tree is named at birth," the elders say, "and you were born." The water comes up in autumn.`,
@@ -512,7 +512,7 @@
             fx: { honor: -4, wil: 2, happy: -8, deed: "Had a second flaw noted at the name-stone" } } },
         { t: "Leave it. It is true", r: "You stop to read it yourself sometimes, the way you would touch an old scar. Younger dwarves notice that you do not mind.",
           fx: { wil: 2, trait: "humble", honor: 1 } },
-        { t: "Pay a carver to smooth it at night", check: { s: "intrigue", s2: "deception", d: 50 },
+        { t: "Pay a carver to smooth it at night", check: { s: "deception", s2: "ins", d: 42 },
           win: { r: "In the morning the stone is clean and the carver is richer. You find you look at the clean place more often than you ever looked at the flaw.",
             fx: { coin: -60, trait: "deceitful", happy: 3 } },
           lose: { r: "The carver is caught with the chisel in his hand, and names you. The Law-Carvers strike your whole name from the stone.",
@@ -553,7 +553,7 @@
       id: "mch_seaboy_son", title: "Ten years old", w: 3, once: true,
       cond: (p, C) => C.flag(p, "ch_seaboy") && A.S.year - p.flags.ch_seaboy >= 12 && C.adult(p) && C.hasKids(p) && C.realm(p, "POL-14"),
       setup: (p, ctx) => { const k = kidsAged(p, 9.5, 12.5, "M")[0]; if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; },
-      text: "{them} is ten. Greyhaven boys go to sea at ten, and a berth has been found on a herring boat. You went at ten yourself: the bread, the knife and the wool cap your mother packed, two days sick, then the rigging in a gale. {them} was sick on the ferry twice this summer.",
+      text: "{them} is ten. Greyhaven boys go to sea at ten, and a berth has been found on a herring boat. You went at ten yourself: the bread, the knife and the wool cap your mother packed, the sickness, then the rigging in a gale. {them} was sick on the ferry twice this summer.",
       choices: [
         { t: "Pack the bread, the knife and the cap", r: "He goes up the plank without looking back, as you did. The boat clears the harbor mouth on the ebb.",
           fx: (p, ctx) => { p.flags.mch_son_at_sea = A.S.year; p.flags.mch_son_sea_who = ctx.pid; return fx(p, ctx, { them: { op: 5 }, happy: -2 }); } },
@@ -597,16 +597,16 @@
       id: "mch_ring_jetty", title: "The jetty again", w: 3, once: true,
       cond: (p, C) => C.flag(p, "ch_ring_failed") && A.S.year - p.flags.ch_ring_failed >= 12 && C.adult(p) && C.hasKids(p) && (C.realm(p, "POL-14") || C.blood(p, "deeplung")),
       setup: (p, ctx) => { const k = kidsAged(p, 6.3, 8.8)[0]; if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; },
-      text: "{them} is seven. Tomorrow {theyHe} dives for the Tidewell ring off the jetty where you came up empty, while the whole court watched and went silent. {them} has been practicing in the harbor with a stone tied to {theirHis} belt. {theirHis} lips are blue, and {theyHe} will not stop.",
+      text: "{them} is seven. Tomorrow {theyHe} dives for the Tidewell ring off the jetty where, at seven, you did not bring it up, while the whole court watched. {them} has been practicing in the harbor with a stone tied to {theirHis} belt. {theirHis} lips are blue, and {theyHe} will not stop.",
       choices: [
-        { t: "Teach {themHim} the trick of the breath", check: { s: "sea", s2: "sta", d: 45 },
+        { t: "Teach {themHim} the trick of the breath", check: { s: "sea", s2: "sta", d: 40 },
           win: { r: "Slow breaths, then one deep, then down. Next morning {them} comes up with silver in {theirHis} fist, into a roar you never heard for yourself.",
             fx: { them: { op: 25 }, happy: 10, fame: 2, deed: "Taught a child to bring up the Tidewell ring" } },
-          lose: { r: "{them} comes up empty and choking, as you did. You are first down the jetty steps with a blanket. {theyHe} remembers that, later.",
+          lose: { r: "{them} comes up empty and choking. You are first down the jetty steps with a blanket. {theyHe} remembers that, later.",
             fx: { them: { op: 20 }, happy: -6, wil: 1 } } },
         { t: "Tell {themHim} what failing costs, and what it does not", r: "You tell {themHim}: no crown, ever. And no crown is not nothing. {them} dives anyway, as you knew {theyHe} would.",
           fx: { them: { op: 15 }, wil: 1, trait: "honest" } },
-        { t: "Keep {themHim} off the jetty", r: "You will not let {themHim} dive. It is the bravest thing anyone has seen, or the most cowardly. The court argues about it, as it argued about you.",
+        { t: "Keep {themHim} off the jetty", r: "You will not let {themHim} dive. It is the bravest thing anyone has seen, or the most cowardly. The court argues about it for a season.",
           fx: { them: { op: -10 }, trait: "stubborn", fame: 1 } },
       ],
     },
@@ -614,16 +614,16 @@
       id: "mch_ring_unringed", title: "The naming", w: 3, once: true,
       cond: (p, C) => C.flag(p, "ch_ring_failed") && A.S.year - p.flags.ch_ring_failed >= 10 && C.adult(p) && C.noble(p) && !C.ruler(p) && C.realm(p, "POL-14"),
       setup: (p, ctx) => { const k = mk(p, { status: "noble", ageAdj: Math.max(16, A.C.ageAdj(p) - 6), occ: "a cousin who wears the Tidewell ring" }); ctx.pid = k.id; },
-      text: "Because you came up empty at seven, you can never be crowned. The jetty went silent before you were dry, and the court has been a little quiet around you since. Now your cousin {them}, who wears the ring, is to be named heir and wants you standing close at the naming. Some of your friends think you should stand in the way.",
+      text: "Because you did not bring up the ring at seven, you can never be crowned. The jetty went silent that day, and the court has been a little quiet around you since. Now your cousin {them}, who wears the ring, is to be named heir and wants you standing close at the naming. Some of your friends think you should stand in the way.",
       choices: [
         { t: "Stand at {theirHis} side", r: "You stand at the right hand in the chapel while the court watches your face for any flicker. There is none. Afterwards {them} grips your arm.",
           fx: { them: { type: "friend", op: 30, back: "friend" }, honor: 5, rulerOp: 5 } },
-        { t: "Stand in the way", check: { s: "intrigue", s2: "persuasion", d: 60 },
+        { t: "Stand in the way", check: { s: "intrigue", s2: "int", d: 52 },
           win: { r: "A missing witness, a delayed letter, a bishop with a cough. The naming is put off a year. {them} knows exactly whom to thank.",
             fx: { them: { type: "rival", op: -40, back: "rival" }, secret: 1, skill: { intrigue: 3 } } },
           lose: { r: "Your friends lose their nerve at the last moment. {them} is named heir, and your part in it is common talk by supper.",
             fx: { them: { type: "enemy", op: -50, back: "enemy" }, honor: -8, rulerOp: -10 } } },
-        { t: "Leave court for the sea", r: "You take a berth on a cog under another name. Sailors do not ask about jetties. They find a name for you anyway.",
+        { t: "Leave court for the sea", r: "You take a berth on a cog under another name. Sailors do not ask about jetties, but they have ears.",
           fx: { skill: { sea: 3 }, happy: 4, epithet: "the Unringed" } },
       ],
     },
@@ -633,11 +633,11 @@
       id: "mch_arsenic_cup", title: "Metal and garlic", w: 3, once: true,
       cond: (p, C) => C.flag(p, "ch_arsenic") && A.S.year - p.flags.ch_arsenic >= 10 && C.adult(p) && (C.realm(p, "POL-30") || C.blood(p, "unpoisoned")),
       setup: (p, ctx) => { const k = kin(p, ["cousin", "uncle", "sibling", "inlaw"]) || mk(p, { status: p.status === "royal" ? "noble" : p.status, occ: "a cousin with ambitions" }); ctx.pid = k.id; },
-      text: "At a feast in {capital} your wine has a faint taste of metal and garlic. You know it. You have known it since the physician's spoon at five: a few grains of white in milk, a little more every month, your grandmother nodding. Across the table {them} is watching you over the rim of {theirHis} own cup.",
+      text: "At a feast in {capital} your wine has a faint taste of metal and garlic. You know it. You have known it since the physician's spoon at five: a few grains of white in milk, and a little more every month after. Across the table {them} is watching you over the rim of {theirHis} own cup.",
       choices: [
         { t: "Drink it down and smile at {themHim}", r: "Your stomach knots. You do not let it show. You raise the empty cup to {them}, who leaves before the sweets.",
           fx: (p, ctx) => fx(p, ctx, { health: A.hasBlood(p, "unpoisoned") ? -2 : -12, cause: "arsenic", fame: 3, them: { type: "rival", op: -20, back: "rival" } }) },
-        { t: "Pass the cup to {them}, with a toast", check: { s: "intrigue", s2: "wil", d: 50 },
+        { t: "Pass the cup to {them}, with a toast", check: { s: "intrigue", s2: "wil", d: 42 },
           win: { r: "{them} goes grey and will not drink, in front of everyone. By morning half of {capital} knows why.",
             fx: { them: { type: "enemy", op: -50, back: "enemy" }, fame: 2, deed: "Turned a poisoned cup back on its sender" } },
           lose: { r: "{them} drinks it, smiling. Either it was never poisoned, or {theyHe} had a physician's spoon at five as well.",
@@ -650,7 +650,7 @@
       id: "mch_arsenic_spoon", title: "The spoon of milk", w: 3, once: true,
       cond: (p, C) => C.flag(p, "ch_arsenic") && A.S.year - p.flags.ch_arsenic >= 15 && C.adult(p) && C.hasKids(p) && (C.realm(p, "POL-30") || C.blood(p, "unpoisoned")),
       setup: (p, ctx) => { const k = kidsAged(p, 4.5, 7)[0]; if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; },
-      text: "{them} is five. The physician has come with the spoon of milk and a few grains of white, as he came for you. You remember the cramps, and your grandmother's nod when you did not make a face. {them} is hiding behind your legs. Raja Vikram survived seven poisonings, your mother reminds you, and his line means to survive more.",
+      text: "{them} is five. The physician has come with the spoon of milk and a few grains of white, as he came for you. You remember the cramps, and the spoon coming back every month, a little fuller. {them} is hiding behind your legs. Raja Vikram survived seven poisonings, your mother reminds you, and his line means to survive more.",
       choices: [
         { t: "Hold {themHim} while {theyHe} swallows", r: "{them} swallows, is sick, and swallows again the next day. Every month, a little more. By the first winter {theyHe} has stopped hiding behind you.",
           fx: { them: { op: -10 }, honor: 2, rel: { who: "mother", op: 5 } } },
@@ -668,7 +668,7 @@
       choices: [
         { t: "Bring back the spoon, starting tomorrow", r: "Late is better than never, the physician says, not believing it. {them} takes the milk without hiding. {theyHe} has learned what it is for.",
           fx: { them: { op: -5 }, honor: 2, rel: { who: "mother", op: 10 } } },
-        { t: "Find who sent the almonds", check: { s: "intrigue", s2: "ins", d: 50 },
+        { t: "Find who sent the almonds", check: { s: "intrigue", s2: "ins", d: 42 },
           win: { r: "A confectioner, a debt, a steward in a cousin's household. The steward is gone by the next new moon, and the cousin sends condolences.",
             fx: { skill: { intrigue: 3 }, fame: 2, trait: "vengeful" } },
           lose: { r: "The confectioner has left {capital}, and the trail ends at the river. You double the guard on the nursery and sleep there yourself.",
@@ -689,7 +689,7 @@
       },
       text: "Since the feast where the torches guttered and you woke on the floor with your tongue bitten, you have kept away from flickering light. You said you tripped. Now {them} has challenged you to fight at dusk, by torchlight, in front of half of {home}. Refusing will cost you your name. Fighting may cost you the secret.",
       choices: [
-        { t: "Fight, and keep your eyes off the torches", check: { s: "wil", s2: "ins", d: 55 },
+        { t: "Fight, and keep your eyes off the torches", check: { s: "wil", s2: "ins", d: 45 },
           win: { r: "You fight with your eyes on {theirHis} feet and never look up. It is ugly and slow, and you win it. {them} limps off without knowing what you risked.",
             fx: { fame: 3, them: { type: "rival", op: -20, back: "rival" }, wil: 1 } },
           lose: { r: "A torch flares and the world jerks white. You wake on the cobbles with a ring of faces above you, as before. This time half of {home} saw it.",
@@ -749,7 +749,7 @@
     {
       id: "mch_vitia_fester", title: "A splinter you never felt", w: 3, once: true,
       cond: (p, C) => C.flag(p, "ch_vitia") && A.S.year - p.flags.ch_vitia >= 8 && C.adult(p) && C.blood(p, "laughing"),
-      text: "You laughed at the nettles at five and were raised at Vitia under the Montaro name. Feeling nothing has its uses. This morning you find a splinter you never felt, deep in your calf, and the skin around it is black and hot. The Montaros have a rule for this: check your body every night. You have not.",
+      text: "At five the nettles came down on your arm and showed the Montaro blood, and you were raised at Vitia under the Montaro name. Feeling nothing has its uses. This morning you find a splinter you never felt, deep in your calf, and the skin around it is black and hot. The Montaros have a rule for this: check your body every night. You have not.",
       choices: [
         { t: "Cut it out yourself", check: { s: "medicine", s2: "wil", d: 45 },
           win: { r: "You cut, drain and pack it with honey. It does not hurt, which is the whole trouble. From then on you check every night.",
@@ -765,13 +765,13 @@
     {
       id: "mch_vitia_summons", title: "The Montaros send for their laughers", w: 2, once: true,
       cond: (p, C) => C.flag(p, "ch_vitia") && A.S.year - p.flags.ch_vitia >= 10 && C.adult(p) && !C.old(p),
-      text: "A rider in Montaro colors brings a summons. The Montaros of Vitia are going to war, and they want their laughers in the front rank, where a spear in the belly will not stop the line. They remember the child who laughed when the nettles came down at five. So do you. The grown-ups looked proud, and afraid.",
+      text: "A rider in Montaro colors brings a summons. The Montaros of Vitia are going to war, and they want their laughers in the front rank, where a spear in the belly will not stop the line. They remember the child the nettles found out at five. So do you: the grown-ups looked proud, and afraid.",
       choices: [
         { t: "Ride to Vitia", r: "A summer of skirmishes in the front rank. You take two wounds you do not feel until evening. The Montaros start calling you cousin.",
           fx: { fame: 3, skill: { spear: 3, melee: 2 }, wound: "scar_chest", health: -10, cause: "a spear in the front rank", honor: 3 } },
         { t: "Send coin instead of blood", r: "Forty suns and a letter. The Montaros take the coin and keep the letter, which is worse than sending it back.",
           fx: { coin: -40, honor: -2 } },
-        { t: "Refuse. You are not their spear", r: `The rider looks you up and down. "You laughed at the nettles," he says, as if that settled who owned you. It did not.`,
+        { t: "Refuse. You are not their spear", r: `The rider looks you up and down. "The nettles found you out at five," he says, as if that settled who owned you. It did not.`,
           fx: { honor: -4, wil: 1.5, trait: "stubborn" } },
       ],
     },
@@ -785,7 +785,7 @@
         { t: "Take it off and bear the light", check: { s: "wil", s2: "sta", d: 50 },
           win: { r: "You stand with streaming eyes and answer every question. {ruler} notes the tears, and the steadiness.", fx: { rulerOp: 10, wil: 1.5 } },
           lose: { r: "The light is a white blade. You weep, then stumble, and the hall laughs before {ruler} raises a hand.", fx: { rulerOp: -5, happy: -8, fame: -1 } } },
-        { t: "Keep it on, and explain your blood", check: { s: "diplomacy", s2: "etiquette", d: 45 },
+        { t: "Keep it on, and explain your blood", check: { s: "diplomacy", s2: "wil", d: 40 },
           win: { r: "You explain the owl-eyes plainly. {ruler} is curious, then amused, and asks whether you see well at night. You do. That is remembered.", fx: { rulerOp: 8, fame: 1 } },
           lose: { r: "The herald has you shown out. You wait in the yard until dusk, when you could have read the petitions in the dark.", fx: { rulerOp: -8, honor: -2 } } },
         { t: "Leave rather than unveil", r: "You bow, keep the veil, and walk out. The story goes round the court in a week, in several versions.",
@@ -798,7 +798,7 @@
       text: "A child has gone missing in the wood above {home} at dusk. The searchers are lighting lanterns, which will show each of them about six paces. You have worn a veil by day since you were small, because the sun hurts you. At night you can see the mice moving in the grass. Someone in the crowd says so, loudly.",
       choices: [
         { t: "Lead the search, no lantern", check: { s: "tracking", s2: "ins", d: 40 },
-          win: { r: "You find the child by midnight in a fox's earth, cold and furious. By morning they are calling you Owl in {home}, and not unkindly.",
+          win: { r: "You find the child by midnight in a fox's earth, cold and furious. By morning {home} has a new name for you, and means it kindly.",
             fx: { fame: 3, honor: 3, epithet: "Owl", skill: { tracking: 2 } } },
           lose: { r: "You find the trail and lose it again at the stream. The lanterns find the child at dawn, alive. People are kind about it, too kind.",
             fx: { happy: -4, skill: { tracking: 1 } } } },
@@ -834,7 +834,7 @@
       setup: (p, ctx) => { const k = alive(p.flags.mch_knock_who); if (!k || k.id === p.spouse) { ctx.skip = 1; return; } ctx.pid = k.id; },
       text: "{them} has lived under your roof since the night of the old knock, as a cousin from the country. Today a steward rides up with three men and a paper. The marriage {them} left is a lawful one. The paper says {them} goes back, or you answer for it before the magistrate.",
       choices: [
-        { t: "Answer for it before the magistrate", check: { s: "persuasion", s2: "etiquette", d: 55 },
+        { t: "Answer for it before the magistrate", check: { s: "persuasion", s2: "int", d: 45 },
           win: { r: "The magistrate is old and has seen worse. He rules the marriage void for want of banns. {them} is free, and the district has its scandal for the winter.",
             fx: { them: { type: "betrothed", op: 30, back: "betrothed" }, honor: -4, happy: 10 } },
           lose: { r: "The marriage stands. {them} is taken back by the steward's men, and you are fined for harboring another's spouse.",
@@ -849,15 +849,15 @@
     // ---------------------------------------------------------------- lf_knows_ashen (lf_friend_ashen)
     {
       id: "mch_ashen_questions", title: "Questioners at your table", w: 3, once: true,
-      cond: (p, C) => C.flag(p, "lf_knows_ashen") && A.S.year - p.flags.lf_knows_ashen >= 3 && C.adult(p),
+      cond: (p, C) => C.flag(p, "lf_knows_ashen") && A.S.year - p.flags.lf_knows_ashen >= 3 && C.adult(p) && C.faith(p, "REL-01", "REL-02"),
       setup: (p, ctx) => {
         const y = p.flags.lf_knows_ashen, hit = A.relsOf(p, ["bestfriend"]).find(x => x.p.alive && (x.r.since === y || x.r.seen === y));
         if (!hit) { ctx.skip = 1; return; }
         ctx.pid = hit.p.id; ctx.yrsW = num(since(p, "lf_knows_ashen"));
       },
-      text: "Two Temple questioners sit at your table with a ledger. Someone has reported grey ash on a cellar step. They ask about {them}. You know what is in that cellar: a black stone, a litany scratched on a board, an altar to the darkness the Temple calls the Devourer. You kept that secret {yrsW} years ago. Now they ask you to swear on the Light.",
+      text: "Two Temple questioners sit at your table with a ledger. Someone has reported grey ash on a cellar step. They ask about {them}. You know what is in that cellar: a black stone, a litany scratched on a board, an altar to the darkness the Temple calls the Devourer. {yrsW} years ago you chose to keep that secret. Now they ask you to swear on the Light.",
       choices: [
-        { t: "Swear that you know nothing", check: { s: "deception", s2: "wil", d: 50 },
+        { t: "Swear that you know nothing", check: { s: "deception", s2: "wil", d: 42 },
           win: { r: "You swear it with a steady voice and a sick stomach. The questioners write a short line and leave. {them} hears of it that night.",
             fx: (p, ctx) => { p.flags.mch_ashen_perjury = A.S.year; p.flags.mch_ashen_who = ctx.pid; return fx(p, ctx, { them: { op: 25 }, piety: -6 }); } },
           lose: { r: "Your voice catches on the word Light. The questioners exchange a look. {them} is taken that week, and you are fined for a false oath.",
@@ -890,8 +890,8 @@
       text: "You pass the pawn-lender's in {home} and stop. The family piece you pawned when you were short is in the window now, on a square of faded velvet, with a price card in the lender's neat hand. It is three times what he gave you. A woman in a good cloak is looking at it too.",
       choices: [
         { t: "Buy it back now, at his price", r: "The lender wraps it in brown paper without comment. At home you put it back where it lived, and the shelf looks right again.",
-          fx: { coin: -30, happy: 6, honor: 2 } },
-        { t: "Haggle him down", check: { s: "trade", s2: "persuasion", d: 50 },
+          fx: { coin: -30, happy: 6, honor: 2, trait: "loyal" } },
+        { t: "Haggle him down", check: { s: "trade", s2: "int", d: 40 },
           win: { r: "He sighs, names a smaller sum, then a smaller one. You walk out with it under your arm.", fx: { coin: -15, happy: 6, skill: { trade: 1 } } },
           lose: { r: "While you argue, the woman in the good cloak pays his price. She does not look at you on her way out.", fx: { happy: -8, wil: 1 } } },
         { t: "Walk on. It is only a thing", r: "You walk on. It was only a thing, you tell yourself, all the way home and some way past it.",
@@ -901,8 +901,8 @@
     {
       id: "mch_pawn_asked", title: "The empty place on the shelf", w: 2, once: true,
       cond: (p, C) => C.flag(p, "lf_pawned") && A.S.year - p.flags.lf_pawned >= 5 && C.adult(p) && C.parentsAlive(p),
-      setup: (p, ctx) => { const k = A.relsOf(p, ["mother", "father"]).map(x => x.p).find(x => x.alive); if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; ctx.yrsW = num(since(p, "lf_pawned")); },
-      text: "{them} comes to visit and asks to see it: the family piece. You pawned it in {home} {yrsW} years ago, when you were short, badly. The lender held it a year and then put it in the window. {them} is already looking at the empty place on the shelf.",
+      setup: (p, ctx) => { const k = A.relsOf(p, ["mother", "father"]).map(x => x.p).find(x => x.alive); if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; ctx.pw = k.sex === "M" ? "father" : "mother"; ctx.yrsW = num(since(p, "lf_pawned")); },
+      text: "Your {pw}, {them}, comes to visit and asks to see it: the family piece. You pawned it in {home} {yrsW} years ago, when you were short, badly. The lender held it a year and then put it in the window. {them} is already looking at the empty place on the shelf.",
       choices: [
         { t: "Tell {themHim} the truth", r: "{them} sits down heavily. Then {theyHe} asks how short you were, and for how long, and why you did not say. That is worse than anger.",
           fx: { them: { op: -5 }, honor: 3, wil: 1 } },
@@ -936,10 +936,10 @@
     {
       id: "mch_crate_reckoning", title: "A name in the ledger", w: 3, once: true,
       cond: (p, C) => C.flag(p, "mch_gang_crate") && A.S.year - p.flags.mch_gang_crate >= 3 && C.adult(p),
-      setup: (p, ctx) => { const k = alive(p.flags.mch_gang_who); if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; },
-      text: "A captain of the watch comes to your door with a ledger open at a page. {them} has been taken for receiving church plate, and {theirHis} books are very complete. Your name is on the page, three years back, beside the word cloves and a sum of twenty suns.",
+      setup: (p, ctx) => { const k = alive(p.flags.mch_gang_who); if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; ctx.yrsW = num(since(p, "mch_gang_crate")); },
+      text: "A captain of the watch comes to your door with a ledger open at a page. {them} has been taken for receiving church plate, and {theirHis} books are very complete. Your name is on the page, {yrsW} years back, beside the word cloves and a sum of twenty suns.",
       choices: [
-        { t: "Say you never knew what was in it", check: { s: "deception", s2: "persuasion", d: 45 },
+        { t: "Say you never knew what was in it", check: { s: "deception", s2: "wil", d: 40 },
           win: { r: "It is even true, more or less. The captain writes innocent carrier beside your name and moves on to the next.", fx: { wil: 0.5 } },
           lose: { r: "The captain does not believe you. You pay a fine of sixty suns, and your name is read out in the market.", fx: { coin: -60, honor: -6, fame: -1 } } },
         { t: "Speak for {themHim} at the trial", r: "You tell the court about a youth on the rooftops who never once left a friend behind. It does not save {themHim} from the brand. {theyHe} remembers who spoke.",
@@ -970,11 +970,11 @@
       setup: (p, ctx) => {
         const m = (p.school && alive(p.school.mpid)) || (A.relsOf(p, ["mentor"]).map(x => x.p).find(x => x.alive) || null);
         if (m) ctx.pid = m.id;
-        ctx.mname = m ? m.given : (p.school && p.school.master) || "your old master";
+        ctx.mname = m ? m.given : (p.school && p.school.master) || "the master";
         ctx.fight = !!(p.styles && Object.keys(p.styles).length);
       },
       text: (p, ctx) => ctx && ctx.fight
-        ? "Years ago {mname} watched you drill without a word, then summoned you to the master's yard at dawn, alone. You worked as you never had. Now {mname} is old, the yard is half empty, and a letter asks you to come back for a season and take the dawn classes. It pays nothing."
+        ? "Years ago {mname} watched you drill without a word, then sent word: come to the master's own yard at dawn, alone. You worked as you never had. Now {mname} is old, the yard is half empty, and a letter asks you to come back for a season and take the dawn classes. It pays nothing."
         : "Years ago {mname} wrote \"See me\" under your work, and you sat in the master's room with two cups of wine and a book you had never heard of. Now {mname} is old, the school is failing, and a letter asks you to come back for a season to teach. It pays nothing.",
       choices: [
         { t: "Go back and teach for a season", r: "Dawn after dawn, as before, only now you walk the lines. By the end of the season the school is fuller, and your own work is sharper for it.",
@@ -990,7 +990,7 @@
       cond: (p, C) => C.flag(p, "mch_master_yard") && A.S.year - p.flags.mch_master_yard >= 3 && C.adult(p),
       setup: (p, ctx) => {
         const m = (p.school && alive(p.school.mpid)) || A.relsOf(p, ["mentor"]).map(x => x.p).find(x => x.alive);
-        ctx.mname = m ? m.given : (p.school && p.school.master) || "your old master";
+        ctx.mname = m ? m.given : (p.school && p.school.master) || "the master";
         const k = mk(p, { status: p.status === "slave" ? "peasant" : p.status, occ: "a senior pupil of your old school" }); ctx.pid = k.id;
       },
       text: "Since your season of teaching, {mname} has named you heir to the school, over the heads of the senior pupils. One of them, {them}, disputes it in front of the whole school. {theyHe} says you came back for one season and left again, and {theyHe} offers to settle it the old way.",
@@ -1013,7 +1013,7 @@
       choices: [
         { t: "Take {themHim} into your household", r: "He serves well and watches you closely. You are never quite sure what he is waiting to see.",
           fx: (p, ctx) => { p.flags.mch_took_squire = A.S.year; p.flags.mch_squire_who = ctx.pid; return fx(p, ctx, { them: { type: "servant", op: 20, back: "lord" } }); } },
-        { t: "Give {themHim} the pass with blunted lances", check: { s: "lance", s2: "riding", d: 50 },
+        { t: "Give {themHim} the pass with blunted lances", check: { s: "lance", s2: "riding", d: 45, bonus: p => (p.gear && p.gear.mount ? 6 : -6) },
           win: { r: "He rides well and loses well. Afterwards he says the shame is gone, and seems to mean it.", fx: { them: { type: "friend", op: 25, back: "friend" }, fame: 2 } },
           lose: { r: "His point catches you high and the world turns over. The crowd roars his name this time. He offers you his hand.", fx: { health: -12, cause: "a fall in the lists", fame: -2, them: { type: "friend", op: 30, back: "friend" } } } },
         { t: "Send {themHim} away with a purse", r: "He takes the purse and leaves it on the gatepost. The story goes round the district faster than he does.",
@@ -1038,7 +1038,7 @@
       id: "mch_tourney_old", title: "Your old lance", w: 3, once: true,
       cond: (p, C) => C.flag(p, "tourneyWin") && A.S.year - p.flags.tourneyWin >= 15 && C.old(p) && C.hasKids(p),
       setup: (p, ctx) => { const k = kidsAged(p, 16, 40)[0]; if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; },
-      text: "{them} means to ride in the joust at the coming tourney, as you once rode at yours below {home}: three passes, and on the third your lance took him square. Your hands shake on the reins now. {them} wants your old lance and your blessing, in that order.",
+      text: "{them} means to ride in the joust at the coming tourney, as you once rode at yours below {home}, when your lance took a knight square on the third pass. Your hands shake on the reins now. {them} wants your old lance and your blessing, in that order.",
       choices: [
         { t: "Give {themHim} the lance and the blessing", r: "You watch from the stand with your fists clenched. {them} rides three passes and stays in the saddle for all of them. That is enough.",
           fx: { them: { op: 20 }, happy: 5 } },

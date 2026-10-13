@@ -100,7 +100,7 @@ The Sim's emotion is the emotion with the highest total moodlet weight ([Sims Wi
 
 **Lesson for Ardan.** **In 30 of 48 bot lives, happiness stayed under 30 for 12 months or more in a row, and nothing happened. The longest stretch was 250 months, nearly 21 years.** RimWorld would have turned the first month of that into a story (a break), then a recovery (catharsis). Ardan's skill rust already matches RimWorld's decay; keep it. If use becomes Ardan's main source of growth, it also needs RimWorld's daily cap, or grinding becomes the best play.
 
-### BitLife: four bars, one tap a year, and stages that gate what you can do
+### BitLife: four bars, and stages that gate what you can do
 
 **Mechanism.** The sheet is four bars from 0 to 100: Happiness, Health, Smarts and Looks. Fame and Approval bars arrived in later updates ([BitLife wiki, Stats](https://bitlife-life-simulator.fandom.com/wiki/Stats), *community*). Activities stay greyed out until the minimum age, and many open at 18 ([BitLife wiki, Activities](https://bitlife-life-simulator.fandom.com/wiki/Activities), *community*). Hidden stats change outcomes without being shown:
 
@@ -173,7 +173,7 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scr
 
 ### Key results
 
-**Where skill points come from (48 lives, 21,537 skill points)**
+**Where skill points come from (48 lives, 23,544 skill points)**
 
 | Source | All lives | Engaged | Passive |
 | --- | --- | --- | --- |
@@ -187,7 +187,7 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scr
 
 - **Learning by doing is about a third.** Use (the four "doing" rows) supplies 32% of skill points. Training supplies 56%, and 50 of those points come from a plan that runs by itself every day. In stats, the automatic plan supplies 53.5%.
 - **Per life**, training's median share is 60% (p10 41%, p90 78%).
-- **What you grow is not what you are tested on.** I compared each life's 3 most-gained skills with the 3 skills its events asked about most. The median overlap is **1 of 3**, and **14 of 30 lives share none**.
+- **What you grow is not what you are tested on.** I compared each life's 3 most-gained skills with the 3 skills its events asked about most. The median overlap is **1 of 3**, and **14 of 30 lives share none**. Persuasion is among the 3 most-tested skills in all 30 long lives, yet it is among the 3 most-gained in none. Learning is most-gained in 27 and most-tested in 2.
 - **Growth stops at 50.** For humans and orcs, the total of all skill levels runs 254 at 16, 387 at 25, 537 at 45, 561 at 55, and is flat after that, because rust balances new gains.
 
 **Check odds by age (all check choices offered, 48 lives)**
@@ -202,8 +202,9 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scr
 | 30 to 44 | 30% | 13% | 45 |
 | 45 to 59 | 36% | 12% | 45 |
 
-- **A cliff on the 16th birthday.** Child events use child difficulties (median `d` 30), but at 16 the adult events arrive at 45 and the odds halve overnight. That year the player has the least skill and gets the most tests.
+- **A cliff on the 16th birthday.** Child events use child difficulties (median `d` 30), but at 16 the adult events arrive at 45 and the odds halve overnight. The player meets adult difficulty with a teenager's skills, and it takes until the mid-40s to climb back to the odds of age 15.
 - **Comparison with the reviews.** The Deep Analysis reported a 4 to 8% median for 16-year-olds on the release build, counting a different set of checks. Both are far below the Road to 100 gate of 35 to 65%.
+- **Checks the bots chose.** They won 34.2% of them. The bench league measures 40.3% on the same build (`reports/scorecard.md`). The rubric wants 45 to 65%.
 
 **Mood, will and personality (48 lives, 24,647 monthly samples)**
 
@@ -272,14 +273,37 @@ The Life tab holds 6 condition bars, 6 stats and the 5 best skills. Below them s
 
 ### Prototype: can the targets be reached without breaking the curve?
 
-PROTOTYPE_RESULTS
+Same 48 seeds and starts, the same bots, with two changes made by wrapping functions in the page:
+
+- **Growth reweighted.** The automatic plan ×0.35, check practice ×2.5, work ×2, fighting and other use ×1.5. Event grants unchanged.
+- **A youth offset.** Check difficulty lowered by 3 × (adult + 6 − age) from 16 to 21 for humans.
+
+| Measure | Today | Prototype | Target (section 5) |
+| --- | --- | --- | --- |
+| Skill points from use | 32.4% | **58.4%** | ≥ 60% |
+| From the automatic plan | 50.3% | **24.9%** | ≤ 20% |
+| Total skills at 40, same life in both runs (13 pairs) | 1.00 | **0.96** | 0.85 to 1.15 |
+| Same, at 20 (34 pairs) / at 55 (9 pairs) | 1.00 | 0.87 / 1.12 | 0.85 to 1.15 |
+| Top-3 gained vs top-3 tested, median | 1 of 3 | **1 of 3** (3 lives reach 2) | ≥ 2 of 3 |
+| Median check odds at 15 / 16 / 17 / 18 | 35 / 17 / 16 / 17 | 36 / **44** / 39 / 35 | 35 to 65 |
+| Median odds at 20 / 21 / 22 / 25 | 22 / 21 / 17 / 28 | 32 / 29 / **23** / 25 | 35 to 65 |
+| At the 4% floor, ages 16 to 19 | 22.7% | **2%** | under 12% |
+| Win rate of checks the bots chose | 34.2% | 44.0% | 45 to 65% (rubric) |
+
+Three things this shows:
+
+1. **The reweighting is safe.** Use nearly doubles its share, while total growth at 40 stays within 4% for the same life. A slightly deeper cut to the plan (×0.25) should cross 60%. Growth now continues past 50 (+12% at 55), so the monthly cap in section 5 is needed.
+2. **The overlap problem is in the event deck, not the weights.** Persuasion is among the 3 most-tested skills in **30 of 30** long lives, and diplomacy in 24. Neither reaches any life's top 3 gained, before or after. Learning is the most-gained skill (top 3 in 27 of 30 lives, from childhood study and the plan) and is tested in the top 3 of only 2. Events test social skills that daily life never trains. The fix is to point the automatic plan at what you actually used last year, and to let more events test the skills of your trade.
+3. **The youth offset only moves the cliff.** It lifts 16 to 19 into range (39% median, 2% at the floor), but the odds fall again from 32% at 20 to 23% at 22, where the offset ends. Adult difficulty is simply above what a 20-to-30-year-old has. The ramp must run to about 30, or the adult default `d` must drop to about 40.
+
+Early deaths did not change: 9 of 42 human and orc lives died before 20 in both runs.
 
 ### The backtest table
 
 | Metric | Reference game value or practice | Ardan today | Target for a 10 | How to measure in Ardan |
 | --- | --- | --- | --- | --- |
 | Share of skill growth from use | KCD: all stats and skills grow by use; trainers and books are paid, capped boosters. Skyrim: use, plus 5 trainings per level | **32%** use, 12% event grants, **56%** training (50% from the automatic daily plan) | ≥ 60% from use; automatic training ≤ 20% | Bot: wrap `A.trainSkill`, sort by source (this doc's method) |
-| What you grow matches what you do | KCD: you level the weapon you swing. RimWorld: passion speeds the work you do | Top-3 gained vs top-3 tested skills: median **1 of 3**, 14 of 30 lives **0** | median ≥ 2 of 3 | Bot |
+| What you grow matches what you do | KCD: you level the weapon you swing. RimWorld: passion speeds the work you do | Top-3 gained vs top-3 tested skills: median **1 of 3**, 14 of 30 lives **0**. Persuasion is top-3 tested in 30 of 30 lives and top-3 gained in 0 | median ≥ 2 of 3 | Bot |
 | Where a gain came from is shown | Wildermyth writes each change as a history line. Ardan's own training sessions already list their modifiers ("taught by X +30%") | Yearly recap shows the top 3 skill changes, but no sources | Every gain ≥ 2 points in a year shows its source | Browser test on the recap, plus a bot coverage check |
 | Anti-grind caps | RimWorld: ×0.2 past 4,000 XP/day/skill. Skyrim: 5 trainings per level. KCD: book XP has a daily limit | None needed today (the plan is automatic). None in place for use | A per-skill monthly cap once use leads | Bot: a "grinder" personality must not beat the careful bot's skills at 40 by more than 15% |
 | Check odds across life stages | Sims 4 gives children their own skills. CK3 sets education at 16 after a childhood of trait-building | **35% at 15 → 17% at 16**; 22% at the floor at 16; 25% median in the 20s | Median 35 to 65% at every age band; no drop over 10 points between ages | Bot (check log by age) |
@@ -350,11 +374,11 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 | # | Feature | Effort | Built here? | Gain | Acceptance test (must be able to fail) |
 | --- | --- | --- | --- | --- | --- |
 | 1 | **Gain ledger and "why" in the recap.** A `*.core.js` wraps the callers of `A.trainSkill`/`A.train` (`planDay`, `eventChoose`, `applyFx`, `careerYear`, `duelConsequences`, `doActivity` and the others) with a source tag on a stack. It records `pc.gains[year][skill][source]`, which tolerates old saves. `A.recapMake` prints one source line per skill that rose ≥ 2. No RNG; render stays pure. | S | Yes: `*.core.js` + 1 patch in `recapMake` | +0.5 | 48-life bot run: ≥ 98% of skill points carry a named source (not "other"). Browser test: the recap for a year with a ≥ 2 gain shows a "from …" line. Both determinism tests still pass |
-| 2 | **Invert growth: use leads, training boosts.** Cut the plan's daily rate (`.105` in `A.planDay`) to about a third. Raise check practice from 1.5, work gains (`careerYear`) and fight gains, and scale fight gains by the foe's worth gap (Kenshi). Add a monthly cap per skill. The prototype above tests these weights | M | Yes: patches + `*.core.js` | +1.0 | Same 48 seeds: use ≥ 60% of skill points; automatic plan ≤ 20%; median total skills at 40 within ±15% of today; top-3 overlap median ≥ 2 of 3. A "grinder" bot (same activity every month) ends ≤ 15% above the careful bot at 40 |
-| 3 | **No cliff at 16.** A youth offset in `A.checkOdds`: difficulty lowered by 3 × (years left to adult+6), fading to 0 at 22. Show it in the odds tooltip ("young: −9"). Same work as power-balance item 8; build once | S | Yes: patch | +0.5 | Bot: median offered odds at each age from 12 to 30 between 35 and 65%; no year-to-year drop > 10 points; under 12% at the floor at 16 to 19. Today: 35% → 17% at 16, 22% at the floor |
+| 2 | **Invert growth: use leads, training boosts.** Cut the plan's daily rate (`.105` in `A.planDay`) to about a quarter. Point the automatic plan (`A.defaultPlan`) at the skill you used most last year, from the row 1 ledger, so it reinforces use instead of competing with it. Raise check practice (×2.5), work (×2) and fight gains (×1.5), and scale fight gains by the foe's worth gap (Kenshi). Add a monthly cap per skill. The prototype above tested the weights | M | Yes: patches + `*.core.js` | +1.0 | Same 48 seeds: use ≥ 60% of skill points (prototype 58%); automatic plan ≤ 20% (prototype 25%); total skills at 40 within ±15% of today for the same life (prototype −4%); top-3 overlap median ≥ 2 of 3 (prototype 1). A "grinder" bot (same activity every month) ends ≤ 15% above the careful bot at 40 |
+| 3 | **No cliff at 16.** A youth ramp in `A.checkOdds`: difficulty lowered for young adults, fading to 0 by about 30, not 22. The prototype's 6-year ramp only moved the cliff from 16 to 22. Show it in the odds tooltip ("young: −9"). Same work as power-balance item 8; build once | S | Yes: patch | +0.5 | Bot: median offered odds at each age from 12 to 30 between 35 and 65%; no year-to-year drop > 10 points; under 12% at the floor at 16 to 19. Today: 35% → 17% at 16, 22% at the floor. Prototype: 44% at 16 and 2% at the floor, but 32% → 23% from 20 to 22 (fails) |
 | 4 | **Thoughts and breaks.** Happiness becomes the sum of named thoughts (`pc.thoughts: [{k, v, until, why}]`), plus a baseline. Event `fx.happy` makes a thought titled after the event. Below 30 for 6+ months: a break event (drink, rage, withdraw, lose faith), which may add a coping trait. Then catharsis +15 for 6 months. Above 75: an inspiration event (a training season ×1.5, a masterwork, a bold offer). 12 break + 8 inspiration events | M | Yes: `*.core.js` + `*.events.js` + 1 patch | +1.0 | Bot: ≥ 90% of 12-month stretches under 30 end in a break; median 1 to 3 breaks or inspirations per life, none above 6. Static: ≥ 20 events read mood. Browser: the happiness tooltip lists thoughts with causes |
 | 5 | **Personality with receipts.** Every `fx.trait`/`untrait` writes a history line with the event title and year. Traits capped at 5: an earned trait replaces the weakest-held innate one, with a line saying so. Virtue counters (`pc.virtue.kind += 1` from choices already tagged by trait fx) flip a trait at a threshold of 3 acts in 10 years | M | Yes: `*.core.js` + patch in `applyFx` | +0.7 | Bot: 100% of trait changes have a history line; max traits ≤ 5 in all 48 lives (today 13); median 1 to 4 changes per life. Browser: the trait chip tooltip shows its reasons |
-| 6 | **Give the 15 dead traits a job, or cut them.** Each gets ≥ 3 reads: an event weight (vengeful raises revenge events, which can read the 287 orphan flags), a check bonus (+5 when the trait fits the choice), or stress when a choice goes against it | M | Yes: `*.core.js` (weights and bonuses) + `*.events.js` | +0.4 | Static: 0 traits with fewer than 3 reads. Bot: each trait changes at least 1 outcome in ≥ 20% of lives that hold it |
+| 6 | **Give the 15 dead traits a job, or cut them.** Each gets ≥ 3 reads: an event weight (vengeful raises revenge events, which can read the unread flags the reviews list), a check bonus (+5 when the trait fits the choice), or stress when a choice goes against it | M | Yes: `*.core.js` (weights and bonuses) + `*.events.js` | +0.4 | Static: 0 traits with fewer than 3 reads. Bot: each trait changes at least 1 outcome in ≥ 20% of lives that hold it |
 | 7 | **Will that can break.** Lower will on grief, maiming, long misery (12+ months under 30) and age past `old`. Cap at the potential + 10 instead of + 25, and the ceiling at 120 instead of 160 | S | Yes: patch on `A.willGrow` + `*.core.js` hook | +0.3 | Bot: will falls ≥ 5 below its peak in ≥ 30% of 40-year lives; median will at 70 ≤ 1.1 × median at 40 (today 79 vs 59, 1.34×) |
 | 8 | **Four needs that drive events.** Food (from lifestyle tier, famine, campaign), rest (intensity, initiative spent, war), company (friends, spouse, tavern, festival) and faith (prayer, piety). Each is a 0 to 100 monthly meter on the sheet that makes thoughts. 4 × 4 events read them | L | Yes: `*.core.js` + `*.events.js` | +0.6 | Static: each need read by ≥ 3 event conditions. Bot: each need fires an event in ≥ 50% of 40-year lives; a careful bot keeps every need off the floor for 80% of months |
 | 9 | **Old age and youth get their own play.** Teach an apprentice (a named NPC who gains your skill and can pass you), write memoirs (feeds the chronicle), settle the inheritance, last pilgrimage. Youth gets apprenticeship with a named master. 3 stage-exclusive activities each, plus 110 old-age events (to 150) | L | Yes: `*.core.js` (activities) + `*.events.js` | +0.6 | Static: `GD.ACTIVITIES` has ≥ 2 actions per stage gated by `A.stage`; ≥ 150 old-age events (bench counter). Bot: engaged lives use ≥ 1 stage action in every stage they reach |
@@ -367,7 +391,6 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 
 **Kingdom Come: Deliverance (1 and 2)**
 - KCD wiki, Skills: https://kingdomcomedeliverance.wiki.gg/wiki/Skills
-- KCD wiki (Fandom), Skills: https://kingdom-come-deliverance.fandom.com/wiki/Skills_(KCD)
 - Fextralife, Skills: https://kingdomcomedeliverance.wiki.fextralife.com/Skills
 - KCD wiki, Reading: https://kingdomcomedeliverance.wiki.gg/wiki/Reading
 - Fextralife, Nourishment: https://kingdomcomedeliverance.wiki.fextralife.com/Nourishment

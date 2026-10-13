@@ -23,6 +23,8 @@ const NI = A.NPCI = Object.assign(A.NPCI || {}, {
   PAIR_COOL: 8,     // years before the same person makes the same kind of move
   HIST: 12,         // bond history entries kept per person
   MIN_W: 0.15,      // desire below this is not a move
+  STAKE: 1.25,      // opinion changes from an NPC's move weigh this much more than the written numbers: a loan or a
+                    // betrayal should move a bond further than an evening's talk does
 });
 
 const KIN = new Set(['mother', 'father', 'sibling', 'child', 'grandparent', 'grandchild', 'uncle', 'nephew', 'cousin', 'inlaw']);
@@ -110,18 +112,32 @@ NI.foeOf = (pc, t) => {
 // in trouble with someone this year: reads their traits and the cast's fears, stable within a year
 NI.trouble = t => {
   const m = NI.motives(t) || {};
-  const ch = .04 + (A.has(t, 'deceitful') ? .08 : 0) + (A.has(t, 'wrathful') ? .06 : 0) + (A.has(t, 'impetuous') ? .05 : 0) +
-    (A.has(t, 'greedy') ? .04 : 0) + (m.hide ? .25 : 0) + (['serf', 'slave'].includes(t.status) ? .05 : 0);
+  const ch = .1 + (A.has(t, 'deceitful') ? .12 : 0) + (A.has(t, 'wrathful') ? .08 : 0) + (A.has(t, 'impetuous') ? .06 : 0) +
+    (A.has(t, 'greedy') ? .05 : 0) + (m.hide ? .25 : 0) + (['serf', 'slave'].includes(t.status) ? .06 : 0);
   return NI.h(t.id, A.S.year, 'trouble') < ch;
 };
 NI.trader = t => ['merchant', 'artisan'].includes(t.status) || !!(t.job && GD.CAREERS[t.job.c] && ['trade', 'craft'].includes(GD.CAREERS[t.job.c].skill)) ||
   A.skill(t, 'trade') >= 25 || !!(NI.motives(t) || {}).trade;
+// the trade a grown person plainly has, read from job, soldiering, occupation, cast role or station
+const OCC_SK = [[/smith|cooper|carpenter|mason|weaver|potter|tanner|joiner|wright|cobbler|thatcher|craft/i, 'craft'], [/hunt|trapper|forester|warden/i, 'survival'],
+  [/fish|sail|boat|ferry/i, 'sea'], [/priest|monk|nun|cleric|acolyte/i, 'faith'], [/scribe|clerk|scholar|tutor/i, 'learning'], [/healer|herb|midwife|leech/i, 'medicine'],
+  [/merchant|trader|peddler|chandler|factor/i, 'trade'], [/soldier|guard|sergeant|veteran|man-at-arms/i, 'melee'], [/minstrel|singer|piper|bard/i, 'music'],
+  [/groom|stable|horse/i, 'riding'], [/shepherd|herd|farmer|ploughman|tenant/i, 'husbandry']];
+const ROLE_SK = { fighter: 'sword', scholar: 'learning', priest: 'faith', merchant: 'trade', spy: 'intrigue', hunter: 'survival', general: 'tactics', criminal: 'stealth', noble: 'etiquette', royal: 'diplomacy', ruler: 'diplomacy' };
+const STATUS_SK = { artisan: 'craft', merchant: 'trade', gentry: 'etiquette', noble: 'etiquette', royal: 'etiquette', peasant: 'husbandry', serf: 'husbandry' };
+NI.tradeOf = t => {
+  if (t.job && GD.CAREERS[t.job.c] && GD.CAREERS[t.job.c].skill) return GD.CAREERS[t.job.c].skill;
+  if (t.mil) return 'melee';
+  const c = NI.castOf(t); if (c && ROLE_SK[c.role]) return ROLE_SK[c.role];
+  for (const [rx, k] of OCC_SK) if (rx.test(t.occ || '')) return k;
+  return STATUS_SK[t.status] || null;
+};
 // the skill they could teach you, if they are older and clearly better at it
 NI.teachSkill = (pc, t) => {
   if (ageAdj(t) < ageAdj(pc) + 4) return null;
   let best = null, bv = 0;
   for (const k of GD.SKILL_LIST) { const v = A.skill(t, k); if (v >= 40 && v > bv && A.skill(pc, k) <= v - 15) { bv = v; best = k; } }
-  if (!best && t.job && GD.CAREERS[t.job.c] && t.job.r >= 1) { const k = GD.CAREERS[t.job.c].skill; if (k && GD.SKILLS[k] && A.skill(pc, k) < 45) best = k; }
+  if (!best) { const k = NI.tradeOf(t); if (k && GD.SKILLS[k] && A.skill(pc, k) < 35) best = k; }
   return best;
 };
 // your unmarried child of an age to be promised
@@ -140,6 +156,8 @@ NI.canMatch = (pc, t, r) => !KIN.has(r.type) && !['spouse', 'lover', 'betrothed'
 // g: group; base: how common; op: least opinion (most, for hostile); adult: the player must be grown (else teens too);
 // near: weight when they live in another realm; tr: trait weights; mot: cast motive weights; sit: situation weight.
 
+// bonds where a secret would have been told in trust, not dug up
+NI.trusted = r => !!r.niTold || ['kin', 'close', 'ex', 'teach'].includes(NI.cat(r.type));
 const KINDS = NI.KINDS = {
   borrow: { ev: 'ni_borrow', g: 'req', base: 1, op: 10, adult: 1, near: .7,
     tr: { greedy: 1.5, generous: .7, proud: .5, humble: 1.3, impetuous: 1.3, patient: .8, content: .7, ambitious: 1.2 },
@@ -149,18 +167,18 @@ const KINDS = NI.KINDS = {
     tr: { wrathful: 1.8, calm: .5, proud: 1.4, humble: .7, impetuous: 1.3, brave: 1.2, craven: .6, stubborn: 1.3 },
     mot: { feud: 1.5, war: .5 },
     sit: (pc, t) => NI.foeOf(pc, t) ? 1 : 0 },
-  vouch: { ev: 'ni_vouch', g: 'req', base: .7, op: 15, adult: 1, near: .6,
+  vouch: { ev: 'ni_vouch', g: 'req', base: .5, op: 15, adult: 1, near: .6,
     tr: { ambitious: 1.8, content: .5, humble: 1.2, proud: .8 },
     mot: { status: 1.2, kin: .4, trade: .3 },
     sit: pc => pc.fame >= 8 || pc.honor >= 55 || A.classOf(pc) >= 4 || (pc.job && pc.job.r >= 1) || (pc.mil && pc.mil.rank >= 2) ? 1 : 0 },
-  hide: { ev: 'ni_hide', g: 'req', base: .7, op: 30, adult: 1, near: .2,
+  hide: { ev: 'ni_hide', g: 'req', base: .9, op: 25, adult: 1, near: .2,
     tr: {}, mot: { hide: .5 },
     sit: (pc, t) => NI.trouble(t) ? 1 : 0 },
   deal: { ev: 'ni_deal', g: 'offer', base: .8, op: 0, adult: 1, near: .7,
     tr: { greedy: 1.4, ambitious: 1.4, content: .7, impetuous: 1.2, patient: 1.1 },
     mot: { trade: 1.5, coin: .6 },
     sit: (pc, t) => pc.coin >= 30 ? (NI.trader(t) ? 1.2 : .35) : 0 },
-  apprentice: { ev: 'ni_apprentice', g: 'offer', base: .8, op: 15, adult: 0, near: .5,
+  apprentice: { ev: 'ni_apprentice', g: 'offer', base: .9, op: 15, adult: 0, near: .5,
     tr: { kind: 1.4, generous: 1.3, patient: 1.4, impetuous: .7, proud: .8, gregarious: 1.2 },
     mot: { teach: 2 },
     sit: (pc, t) => { const a = ageAdj(pc); return a >= 13 && a <= 40 && NI.teachSkill(pc, t) ? 1 : 0; } },
@@ -168,31 +186,31 @@ const KINDS = NI.KINDS = {
     tr: { ambitious: 1.5, gregarious: 1.2, proud: 1.1 },
     mot: { kin: 1.5, status: .5 },
     sit: (pc, t, r) => NI.canMatch(pc, t, r) ? (NI.mateOf(t, NI.kidToMatch(pc)) ? 1.5 : 1) : 0 },
-  slander: { ev: 'ni_slander', g: 'hostile', base: .9, op: -15, adult: 0, near: .5,
-    tr: { deceitful: 2, honest: .3, cruel: 1.5, kind: .5, fickle: 1.3, ambitious: 1.3, proud: 1.2, gregarious: 1.3, shy: .6 },
+  slander: { ev: 'ni_slander', g: 'hostile', base: 1.2, op: -10, adult: 0, near: .5,
+    tr: { deceitful: 2, honest: .3, cruel: 1.5, kind: .3, fickle: 1.3, ambitious: 1.3, proud: 1.2, gregarious: 1.3, shy: .6 },
     mot: { status: 1, feud: .6 },
     sit: pc => pc.fame >= 3 || pc.job || A.classOf(pc) >= 3 ? 1 : .5 },
-  challenge: { ev: 'ni_challenge', g: 'hostile', base: .6, op: -25, adult: 1, near: .15,
+  challenge: { ev: 'ni_challenge', g: 'hostile', base: .9, op: -20, adult: 1, near: .15,
     tr: { wrathful: 2, calm: .4, brave: 1.6, craven: .2, proud: 1.6, humble: .5, impetuous: 1.4, patient: .7 },
     mot: { feud: 1, war: .8 },
     sit: (pc, t) => A.stage(t) === 'adult' && A.stage(pc) !== 'old' && (t.health || 0) > 50 && Math.abs(A.classOf(t) - A.classOf(pc)) <= 3 ? 1 : 0 },
-  theft: { ev: 'ni_theft', g: 'hostile', base: .6, op: -10, adult: 1, near: .1,
-    tr: { greedy: 2, generous: .3, deceitful: 1.6, honest: .2, cruel: 1.2 },
+  theft: { ev: 'ni_theft', g: 'hostile', base: .9, op: -5, adult: 1, near: .1,
+    tr: { greedy: 2, generous: .3, deceitful: 1.6, honest: .2, cruel: 1.2, kind: .4 },
     mot: { coin: 1.2 },
     sit: (pc, t) => pc.coin >= 20 && (t.coin || 0) < pc.coin && A.classOf(t) <= A.classOf(pc) + 1 ? 1 : 0 },
-  secret: { ev: 'ni_secret', g: 'hostile', base: .7, op: 5, adult: 1, near: .6,
-    tr: { deceitful: 1.8, honest: .4, fickle: 2, loyal: .3, cruel: 1.3, gregarious: 1.2 },
+  secret: { ev: 'ni_secret', g: 'hostile', base: 1, op: 5, adult: 1, near: .6,
+    tr: { deceitful: 1.8, honest: .4, fickle: 2, loyal: .3, cruel: 1.3, gregarious: 1.2, kind: .5 },
     mot: { status: .5, hide: .5 },
-    sit: (pc, t, r) => r.niTold ? 2 : A.S.year - (r.since || A.S.year) >= 5 && ['kin', 'close', 'ex'].includes(NI.cat(r.type)) ? .8 : 0 },
-  invite: { ev: 'ni_invite', g: 'warm', base: 1, op: 25, adult: 0, near: .2,
-    tr: { gregarious: 2, shy: .4, generous: 1.3, greedy: .8, proud: .9 },
+    sit: (pc, t, r) => { const yrs = A.S.year - (r.since || A.S.year); return r.niTold ? 2 : yrs >= 4 && NI.trusted(r) ? 1 : yrs >= 6 ? .5 : 0; } },
+  invite: { ev: 'ni_invite', g: 'warm', base: .6, op: 25, adult: 0, near: .2,
+    tr: { gregarious: 2, shy: .4, generous: 1.3, greedy: .8, proud: .9, cruel: .6 },
     mot: { faith: .8, kin: .6, status: .3 },
     sit: () => 1 },
-  confide: { ev: 'ni_confide', g: 'warm', base: .8, op: 40, adult: 0, near: .5,
+  confide: { ev: 'ni_confide', g: 'warm', base: .6, op: 40, adult: 0, near: .5,
     tr: { honest: 1.4, deceitful: .6, shy: 1.3, loyal: 1.4, proud: .7, craven: 1.2 },
     mot: { fear: 1.5, hide: .5 },
     sit: () => 1 },
-  gift: { ev: 'ni_gift', g: 'warm', base: .8, op: 35, adult: 0, near: .6,
+  gift: { ev: 'ni_gift', g: 'warm', base: .65, op: 35, adult: 0, near: .6,
     tr: { generous: 2.2, greedy: .25, kind: 1.4, cruel: .5, gregarious: 1.1 },
     mot: { kin: .4, faith: .3 },
     sit: (pc, t) => (t.coin || 0) >= 10 || A.classOf(t) >= 3 ? 1 : .5 },
@@ -318,6 +336,7 @@ NI.follow = function (pc, ctx, ev, lo, hi, extra) {
   for (let g = 0; g < 5 && (st.hy[ty] || 0) >= NI.CAP; g++) { days += 365; ty++; }
   if ((st.hy[ty] || 0) >= NI.CAP) return false;
   st.hy[ty] = (st.hy[ty] || 0) + 1;
+  st.b = Math.max(-2, st.b - 1);   // one budget for every NPC-started event, follow-ups included
   const nc = {};
   for (const k in ctx) if (!['khe', 'khim', 'khis', 'past', 'niWhy', 'skip'].includes(k)) nc[k] = ctx[k];
   Object.assign(nc, extra || {}, { npcMove: true, follow: ev });
@@ -468,6 +487,7 @@ const FILL = {
   theft(pc, t, ctx) { if (!ctx.amtN) ctx.amtN = NI.sum(pc, t, .08, 2); ctx.amt = A.coin(ctx.amtN); },
   secret(pc, t, ctx) {
     const r = pc.rel[t.id] || {};
+    ctx.trusted = NI.trusted(r) ? 1 : 0;
     ctx.secret = ctx.secret || (r.niTold ? `the thing you told ${A.him(t)} in ${r.niTold}` : NI.hp(['who your father really was', 'the debt you ran from', 'the night of the fire', 'the name you were born with'], pc.id, t.id));
   },
   invite(pc, t, ctx) {
@@ -478,7 +498,7 @@ const FILL = {
   confide(pc, t, ctx) {
     ctx.fear = ctx.fear || NI.castLine(t, 'fears') || NI.hp([`${cap(A.he(t))} owes more than ${A.he(t)} can pay, to people who do not forgive.`,
       `${cap(A.he(t))} thinks ${A.his(t)} brother means to cheat ${A.him(t)} of the family land.`, `${cap(A.he(t))} has not slept a full night since the war.`,
-      `${cap(A.he(t))} loved someone ${A.he(t)} should not have, and still does.`, `${cap(A.he(t))} is losing the sight in one eye and has told no one.`], t.id, 'fear');
+      `${cap(A.he(t))} loved someone ${A.he(t)} should not have, and still does.`, `${cap(A.he(t))} is losing the sight in one eye.`], t.id, 'fear');
   },
   confide_test(pc, t, ctx) { FILL.confide(pc, t, ctx); ctx.amtN = ctx.bribeN || (ctx.bribeN = NI.sum(pc, t, .1, 15)); ctx.amt = A.coin(ctx.amtN); },
   gift_favor(pc, t, ctx) {
@@ -521,6 +541,7 @@ NI.act = function (pc, ctx, fx, o) {
   let out = '';
   if (fx) {
     for (const k in fx) if (!FX_OK.has(k)) console.error('npc-initiative: unknown fx key ' + k);
+    if (fx.them && typeof fx.them.op === 'number') fx = Object.assign({}, fx, { them: Object.assign({}, fx.them, { op: Math.round(fx.them.op * NI.STAKE) }) });
     const r = A.applyFx(pc, fx, ctx); if (typeof r === 'string' && r) out += r;
   }
   if (t && pc.rel[t.id]) {
@@ -534,7 +555,7 @@ NI.act = function (pc, ctx, fx, o) {
 // which follow-up comes back: decided when you choose, from who they are (engine path, so it may roll)
 const tr = (t, k) => A.has(t, k) ? 1 : 0;
 NI.outcome = {
-  repays: (pc, ctx, t) => A.chance(A.clamp(.55 + .25 * tr(t, 'honest') + .1 * tr(t, 'loyal') - .3 * tr(t, 'deceitful') - .15 * tr(t, 'greedy') + NI.opOf(pc, t) / 200, .1, .95)) ? 'ni_borrow_repaid' : 'ni_borrow_default',
+  repays: (pc, ctx, t) => A.chance(A.clamp(.45 + .25 * tr(t, 'honest') + .1 * tr(t, 'loyal') - .3 * tr(t, 'deceitful') - .15 * tr(t, 'greedy') + NI.opOf(pc, t) / 200, .1, .95)) ? 'ni_borrow_repaid' : 'ni_borrow_default',
   vouch: (pc, ctx, t) => A.chance(A.clamp(.6 + .2 * tr(t, 'honest') + .1 * tr(t, 'loyal') + .05 * tr(t, 'patient') - .3 * tr(t, 'deceitful') - .2 * tr(t, 'fickle') - .1 * tr(t, 'impetuous'), .1, .95)) ? 'ni_vouch_good' : 'ni_vouch_bad',
   hide: (pc, ctx, t, risk) => A.chance(risk) ? 'ni_hide_caught' : 'ni_hide_thanks',
   deal: (pc, ctx, t) => {

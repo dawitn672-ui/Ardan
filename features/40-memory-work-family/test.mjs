@@ -8,7 +8,10 @@
 //      evFit does not hide it, the engine renders it without skipping, and every choice runs (checks both won
 //      and lost) with no engine error, no raw {token}, and within the word diet (text 80, label 12, outcome 45);
 //   4. arcs: taking the choice that sets an mwf_ flag, then letting the years pass, makes the second event
-//      eligible and renderable.
+//      eligible and renderable;
+//   5. craft: every random event reads a memory flag with C.flag and times it (A.S.year - p.flags.x), weighs 2-3,
+//      fires once, offers 2-4 choices, and at least one choice leaves a lasting mark (trait, flag, relation, wound,
+//      deed, title, debt, asset, job, marriage, freedom, death).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -47,6 +50,22 @@ export default {
       const conds = Object.values(A.EV).map(e => (e.cond ? e.cond.toString() : ''));
       out.unread = FLAGS.filter(f => !conds.some(s => s.includes(`"${f}"`) || s.includes(`'${f}'`)));
 
+      // ---------- craft rules from the brief
+      const LASTING = /\b(trait|flag|unflag|them|newRel|rel|wound|deed|deeds|epithet|owed|oweThem|asset|job|prison|sworn|letter|setFree|runaway|wed|leaveFor|divorce|addChild|marryOff|kill|comradeDies|moveHome|schedule|mkFoe)\b/;
+      const src = x => (typeof x === 'function' ? x.toString() : JSON.stringify(x || {}));
+      for (const id of IDS) {
+        const e = A.EV[id]; if (!e || e.trigger) continue;
+        const cs = e.cond ? e.cond.toString() : '';
+        const reads = [...cs.matchAll(/C\.flag\(p, "([A-Za-z0-9_]+)"\)/g)].map(m => m[1]);
+        if (!reads.some(f => FLAGS.includes(f) || /^mwf_/.test(f))) out.problems.push(`${id}: craft: cond reads no memory flag`);
+        if (!/A\.S\.year - /.test(cs)) out.problems.push(`${id}: craft: cond is not timed`);
+        if (!(e.w >= 2 && e.w <= 3)) out.problems.push(`${id}: craft: weight ${e.w}`);
+        if (e.once !== true) out.problems.push(`${id}: craft: not once`);
+        const ch = e.choices || [];
+        if (ch.length < 2 || ch.length > 4) out.problems.push(`${id}: craft: ${ch.length} choices`);
+        if (!ch.some(c => [c.fx, c.win && c.win.fx, c.lose && c.lose.fx].some(f => f && LASTING.test(src(f))))) out.problems.push(`${id}: craft: no choice leaves a lasting mark`);
+      }
+
       // ---------- fixtures: a character with the history each event needs
       const Y = () => A.S.year;
       const ago = (pc, f, n) => { pc.flags[f] = Y() - n; };
@@ -82,6 +101,7 @@ export default {
         mwf_needle_guild: [{}, pc => { ago(pc, 'mwf_needle_shown', 3); job(pc, 'sailor'); pc.coin = 100; }],
         mwf_needle_heir: [{}, pc => { aged(pc, 52); ago(pc, 'wk_lodestone', 12); job(pc, 'sailor'); child(pc, 15); rel(pc, npc(pc, { set: { occ: 'an old pilot' } }), 'mentor', 35, 12); }],
         mwf_redsail_names: [{}, pc => { ago(pc, 'wk_redsail', 2); job(pc, 'pirate'); }],
+        mwf_redsail_page: [{}, pc => { ago(pc, 'wk_redsail', 5); job(pc, 'sailor'); pc.coin = 60; }],
         mwf_linen_lawyer: [{}, pc => { ago(pc, 'wk_knows_secret', 3); job(pc, 'servant'); }],
         mwf_wash_college: [{}, pc => { ago(pc, 'wk_washes', 2); job(pc, 'healer'); pc.coin = 30; }],
         mwf_wash_order: [{}, pc => { ago(pc, 'mwf_wash_taught', 4); job(pc, 'healer'); }],
@@ -102,6 +122,7 @@ export default {
         mwf_promise_eldest: [{}, pc => { aged(pc, 38); ago(pc, 'fm_promise', 2); const f = rel(pc, npc(pc), 'friend', 60, 10); A.kill(f, 'a lung fever'); f.died = Y() - 2; pc.coin = 40; }],
         mwf_promise_grown: [{}, pc => { aged(pc, 44); ago(pc, 'mwf_promise_ward', 5); rel(pc, npc(pc, { role: 'ward' }), 'student', 40, 5); pc.coin = 60; }],
         mwf_capt_ladder: [{ startAge: 24 }, pc => { A.enlist(pc, false); war(pc); ago(pc, 'wr_capt_enemy', 2); pc.coin = 30; }],
+        mwf_capt_drummer: [{}, pc => { aged(pc, 34); ago(pc, 'wr_capt_enemy', 7); }],
         mwf_plough_sergeant: [{ startAge: 24 }, pc => { A.enlist(pc, false); ago(pc, 'wr_merc_thoughts', 2); }],
         mwf_plough_inspection: [{ startAge: 26, sex: 'F' }, pc => { A.enlist(pc, true); ago(pc, 'wr_merc_thoughts', 3); }],
         mwf_camp_boy_purse: [{ startAge: 28 }, pc => { A.enlist(pc, false); ago(pc, 'wr_boy', 5); pc.coin = 30; }],
@@ -120,7 +141,7 @@ export default {
         mwf_faction_suit: [NOBLE, pc => { ago(pc, 'ct_faction', 3); rel(pc, npc(pc), 'rival', -25, 3); pc.coin = 5000; }],
         mwf_party_cell: [{ status: 'royal', realm: 'POL-01', startAge: 40 }, pc => { ago(pc, 'ct_party', 3); pc.flags.ev = Object.assign(pc.flags.ev || {}, { ct_claim_throne: Y() - 3 }); pc.coin = 50000; }],
         mwf_disinherit_stairs: [{ status: 'noble', startAge: 22 }, pc => ago(pc, 'disinherited', 3)],
-        mwf_disinherit_heir: [{ status: 'gentry' }, pc => { aged(pc, 40); ago(pc, 'disinherited', 9); pc.coin = 2000; }],
+        mwf_disinherit_heir: [{ status: 'gentry' }, pc => { aged(pc, 40); ago(pc, 'disinherited', 9); pc.coin = 2000; if (!A.relsOf(pc, ['sibling']).some(x => x.p.alive)) rel(pc, npc(pc), 'sibling', 20, 40); }],
         mwf_charter_price: [NOBLE, pc => { ago(pc, 'ct_charter', 3); pc.literate = true; }],
       };
 
@@ -167,6 +188,8 @@ export default {
               cur = `${id} choice ${i + 1}${forced === null ? '' : forced ? ' won' : ' lost'}`;
               const c = e.choices[i], br = forced === null ? c : forced ? c.win : c.lose;
               if (forced !== null) A.chance = () => forced;
+              const KIN = ['mother', 'father', 'sibling', 'child'];
+              const kin = Object.entries(A.pc().rel).filter(([, x]) => KIN.includes(x.type)).map(([k, x]) => [k, x.type]);
               try {
                 const ctxT = A.ctxTokens(A.pc(), q.ctx || {});
                 const rr = typeof br.r === 'string' ? A.T(br.r, ctxT) : '';
@@ -176,6 +199,7 @@ export default {
                 if (out.samples[id]) out.samples[id].results.push(`${i + 1}${forced === null ? '' : forced ? 'w' : 'l'}: ${res ? res.text : ''}`);
                 if (words(rr) > 45) out.problems.push(`${cur}: outcome ${words(rr)} words`);
                 if (res && RAW.test(res.text || '')) out.problems.push(`${cur}: raw token in result: ${res.text.slice(0, 120)}`);
+                for (const [k, type] of kin) if (!A.pc().rel[k] || A.pc().rel[k].type !== type) out.problems.push(`${cur}: overwrote a ${type} relation`);
                 A.eventClose();
               } catch (err) { out.problems.push(`${cur}: throws: ${err.message}`); }
               finally { A.chance = chance; }

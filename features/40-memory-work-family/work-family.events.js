@@ -26,7 +26,15 @@
   const realmShort = p => { const r = A.realm(p.noble && p.noble.realm ? p.noble.realm : p.realm); return r ? r.short : "the realm"; };
   const loveSex = p => p.flags.likes || (p.sex === "M" ? "F" : "M");
   const byRole = (p, role) => { const x = A.relsOf(p).find(r => r.p.flags && r.p.flags.mwf_role === role); return x ? x.p : null; };
-  const link = (p, t, type, op) => { if (!t) return; if (p.rel[t.id]) { A.addOp(p, t, op); p.rel[t.id].type = type; } else A.link(p, t, type, op, type); };
+  const KIN = ["mother", "father", "sibling", "child", "spouse", "grandparent", "grandchild", "cousin", "uncle", "nephew", "inlaw"];
+  // set how the player stands with t; kin keep their kinship and only the opinion moves
+  const link = (p, t, type, op) => {
+    if (!t) return;
+    const r = p.rel[t.id];
+    if (!r) { A.link(p, t, type, op, type); return; }
+    A.addOp(p, t, op);
+    if (!KIN.includes(r.type)) { r.type = type; if (t.rel[p.id] && !KIN.includes(t.rel[p.id].type)) t.rel[p.id].type = type; }
+  };
 
   // a person of a chosen race, sex, age and station, living where the player lives
   const mk = (p, o = {}) => {
@@ -105,6 +113,13 @@
     return `You settle in ${to.name}.`;
   };
   const kill = (ctx, cause) => { const t = T(ctx); if (t && t.alive) A.kill(t, cause); };
+  // a rival or enemy who is a particular someone in the story (the colonel, the heir), not a random stranger
+  const mkFoe = (p, type, op, occ, o = {}) => {
+    const t = o.who || mk(p, { occ, sex: o.sex, status: o.status, ageAdj: C.ageAdj(p) + A.ri(-6, 10) });
+    link(p, t, type, op);
+    return `(${t.given}, ${occ}, is your ${type} now)`;
+  };
+  const heirOf = p => { const l = live(p, ["sibling"]).map(x => x.p).filter(x => A.isAdult(x)); return l.length ? l[0] : null; };
 
   // the people the original events linked
   const pilotOf = p => { const x = A.relsOf(p).find(r => r.p.occ === "an old pilot"); return x ? x.p : null; };
@@ -170,7 +185,7 @@
     {
       id: "mwf_favored_will",
       title: "One line in a will",
-      cond: (p, C) => C.adult(p) && C.unfree(p) && C.flag(p, "mwf_fav_will") && A.S.year - p.flags.mwf_fav_will >= 4,
+      cond: (p, C) => C.adult(p) && C.unfree(p) && C.flag(p, "mwf_fav_will") && A.S.year - p.flags.mwf_fav_will >= 4 && !!byRole(p, "mistress"),
       w: 3, once: true,
       setup: (p, ctx) => { const t = byRole(p, "mistress"); if (!t) { ctx.skip = 1; return; } ctx.pid = t.id; },
       text: "Word comes from her father's house: {them} is dead of a winter fever. Her will is read in the hall, and your name is in it, one line in the clerk's hand. The steward reads it twice. \"A woman's whim,\" he says. \"A slave belongs to the estate, not to her.\"",
@@ -334,7 +349,7 @@
           fx: { coin: 30, honor: -2, flag: "mwf_wheel_taught" } },
         { t: "Shut the door. Let them tell the guild",
           r: "They tell. The weavers' guild fines you for a foreign engine, then quietly orders three. One of the six spits when you pass.",
-          fx: { coin: -10, perf: 6, newRel: { type: "rival", op: -30 } } },
+          fx: p => join(apply(p, null, { coin: -10, perf: 6 }), mkFoe(p, "rival", -30, "a spinner of " + A.provName(p.home), { sex: "F" })) },
       ],
     },
     {
@@ -391,7 +406,7 @@
           lose: { r: "They hear you out and vote you off the water. No master in port will sign you on.", fx: (p, ctx) => { p.job = null; return join(apply(p, ctx, { fame: 2, trait: "stubborn", happy: -8 }), "(You lose your place at sea.)"); } } },
         { t: "Teach the needle openly, to anyone who asks",
           r: "You set a bowl and a straw on a barrel on the quay. Ship's boys come every evening. The pilots never forgive it.",
-          fx: { fame: 4, honor: 2, perf: -20, newRel: { type: "enemy", op: -40 } } },
+          fx: p => join(apply(p, null, { fame: 4, honor: 2, perf: -20 }), mkFoe(p, "enemy", -40, "reeve of the pilots", { sex: "M" })) },
       ],
     },
     {
@@ -431,13 +446,32 @@
       choices: [
         { t: "Give Brine's men three names",
           r: "Three captains are marooned on a bare rock with a jug of water each. Brine sends you a cask of Varennan wine. Redsail sends nothing, yet.",
-          fx: { coin: 20, honor: -8, perf: 8, newRel: { type: "enemy", op: -50 } } },
+          fx: p => join(apply(p, null, { coin: 20, honor: -8, perf: 8 }), mkFoe(p, "enemy", -50, "a Redsail captain")) },
         { t: "Refuse, and sign on with Redsail's own ship",
           r: "You carry your sea-chest up a red-sailed gangplank in daylight, so everyone sees. Raiding pays better than tolls. It also hangs more men.",
           fx: { fame: 2, coin: 15, skill: { sea: 2 }, trait: "reckless", perf: 5 } },
         { t: "Leave Blackreef on the next honest hull",
           r: "The master of a Morhaven cog takes you on without asking where you learned to reef in a blow. Honest pay, and less blood.",
           fx: { job: "sailor", honor: 3 } },
+      ],
+    },
+
+    {
+      id: "mwf_redsail_page",
+      title: "A page of the share-book",
+      cond: (p, C) => C.adult(p) && !C.job(p, "pirate") && C.flag(p, "wk_redsail") && A.S.year - p.flags.wk_redsail >= 4,
+      w: 2, once: true,
+      text: "You shouted for Ima Redsail at Share Day, and you have since left Blackreef behind. Blackreef has not left you. A page of its share-book, every Share Day vote in a purser's hand, sits in a strongbox in Greyhaven, and the Varennan admiralty is bidding for it. A clerk who has read the page offers to cut your line out of it.",
+      choices: [
+        { t: "Pay the clerk to cut your line (40 suns)", req: p => p.coin >= 40,
+          r: "He brings you the strip of paper with your name on it, and you burn it in front of him. He has a good memory, he says, but a poor one for sale.",
+          fx: { coin: -40, trait: "paranoid" } },
+        { t: "Go to the admiralty first and turn evidence", check: { s: "persuasion", s2: "intrigue", d: 55 },
+          win: { r: "A Varennan lawyer writes down every captain you can name. You walk out with a pardon and twenty suns. Blackreef will hear of it.", fx: p => join(apply(p, null, { coin: 20, honor: -8, deed: "Turned evidence against Blackreef" }), mkFoe(p, "enemy", -50, "a captain of the Brotherhood")) },
+          lose: { r: "The admiralty is pleased to meet a pirate who walks in on his own feet. It keeps you.", fx: { prison: 2, why: "piracy", honor: -4 } } },
+        { t: "Do nothing. Pages burn, and admirals die",
+          r: "You go back to your work and sleep with your boots by the bed.",
+          fx: { wil: 1, happy: -3 } },
       ],
     },
 
@@ -451,7 +485,7 @@
       choices: [
         { t: "Sell the lawyer what you kept",
           r: "He writes it down in a fast, ugly hand and pays thirty suns in a twist of cloth. In court, the other heir learns where it came from.",
-          fx: { coin: 30, honor: -6, newRel: { type: "enemy", op: -40 } } },
+          fx: p => join(apply(p, null, { coin: 30, honor: -6 }), mkFoe(p, "enemy", -40, "an heir of the house you served", { status: "merchant" })) },
         { t: "Keep it. Linen is for keeping",
           r: "You tell the lawyer you only swept floors. He believes you, which stings a little. The linen stays folded.",
           fx: { trait: "loyal", honor: 3, wil: 0.6 } },
@@ -474,7 +508,7 @@
           lose: { r: "They read it aloud at their dinner in a midwife's voice. The magistrate fines you for practicing above your station.", fx: { coin: -10, perf: -10, happy: -5 } } },
         { t: "Teach it to the midwives instead",
           r: "Every midwife in the lanes boils her water now. The college cannot fine them all, and hates you for it.",
-          fx: { honor: 4, fame: 2, newRel: { type: "enemy", op: -35 }, flag: "mwf_wash_taught" } },
+          fx: p => join(apply(p, null, { honor: 4, fame: 2, flag: "mwf_wash_taught" }), mkFoe(p, "enemy", -35, "a physician of the college", { status: "merchant" })) },
         { t: "Pay the fine, and wash behind shut doors",
           r: "Five suns to the magistrate. You still boil the water, with the shutters closed and the honey in an unmarked jar.",
           fx: { coin: -5, perf: 4, happy: -3, wil: 0.6 } },
@@ -506,7 +540,7 @@
       cond: (p, C) => C.adult(p) && !C.married(p) && C.flag(p, "fm_asked_wait") && A.S.year - p.flags.fm_asked_wait >= 2 && C.hasRel(p, "lover") && !!waitedLover(p),
       w: 3, once: true,
       setup: (p, ctx) => { const t = waitedLover(p); if (!t) { ctx.skip = 1; return; } ctx.pid = t.id; yrs(p, ctx, "fm_asked_wait"); },
-      text: "{yrs} years since the bridge at dusk, when {them} asked you to marry and you asked for one more year. {them} has not asked again. Tonight {theyHe} brings you a ribbon from the spring fair and says nothing about it, which says a good deal.",
+      text: "{yrs} years since the bridge at dusk, when {them} asked you to marry {themHim} and you asked for one more year. {them} has not asked again. Tonight {theyHe} brings you a ribbon from the spring fair and says nothing about it, which says a good deal.",
       choices: [
         { t: "Take {themHim} to the bridge and ask, yourself",
           r: "Same stones, same hour. You ask. {them} laughs, then cries, then says yes.",
@@ -587,7 +621,7 @@
           r: "You walk back to your mother's fire with your spear. Your wife does not follow. The marriage holds, in name.",
           fx: { rel: { who: "mother", op: 20 }, them: { op: -30 }, happy: -4 } },
         { t: "Carry the cord to both fires, and talk", check: { s: "diplomacy", s2: "wil", d: 55 },
-          win: { r: "Two days of talk at the spring. The clans share the water by the moon: waxing to one, waning to the other. The Mothers know your name now.", fx: { fame: 3, honor: 4, skill: { diplomacy: 3 }, epithet: "Spring-Talker" } },
+          win: { r: "Two days of talk at the spring. The clans share the water by the moon: waxing to one, waning to the other. The Mothers learn your name.", fx: { fame: 3, honor: 4, skill: { diplomacy: 3 }, epithet: "Spring-Talker" } },
           lose: { r: "Both fires decide you are the other's man. Your mother and your wife agree on that, and on little else.", fx: { rel: { who: "mother", op: -10 }, them: { op: -10 }, happy: -6 } } },
       ],
     },
@@ -621,9 +655,9 @@
       w: 3, once: true,
       setup: (p, ctx) => {
         const t = mk(p, { sex: loveSex(p), race: "giant", ageAdj: C.ageAdj(p) + A.ri(-2, 3) }); ctx.pid = t.id;
-        ctx.hall = A.pick(["Helstad", "Torfell", "Valdhall", "Haugberg", "Ulfdal"]);
+        ctx.hall = /^of /.test(t.sur || "") ? t.sur.slice(3) : A.pick(["Helstad", "Torfell", "Valdhall", "Haugberg", "Ulfdal"]);
       },
-      text: "At the last Thing you asked the Mothers for a different hall, and they promised to look again. They have looked. From the turf benches they name {themFull} of {hall}, {themOcc}. There are fewer giants at this Thing than at the last. The Mothers will not look a third time.",
+      text: "At the last Thing you asked the Mothers for a different hall, and they promised to look again. They have looked. From the turf benches they name {them} of {hall}, {themOcc}. There are fewer giants at this Thing than at the last. The Mothers will not look a third time.",
       choices: [
         { t: "Accept {them} of {hall}",
           r: "The Lore-Chanters sing the two halls together.",
@@ -662,7 +696,7 @@
       title: "At the bread stall",
       cond: (p, C) => C.adult(p) && C.married(p) && C.flag(p, "mwf_affair_promise") && A.S.year - p.flags.mwf_affair_promise >= 2 && C.hasRel(p, "lover") && !!affairLover(p),
       w: 3, once: true,
-      setup: (p, ctx) => { const t = affairLover(p), s = spouseOf(p); if (!t || !s) { ctx.skip = 1; return; } ctx.pid = t.id; ctx.sp = s.given; },
+      setup: (p, ctx) => { const t = affairLover(p), s = spouseOf(p); if (!t || !s) { ctx.skip = 1; return; } ctx.pid = t.id; ctx.sp = s.given; ctx.spHis = A.his(s); },
       text: "Spring came and went, twice. On market day {them} walks up to {sp} at the bread stall and says it all: the barns, the borrowed hours, your promise about next spring. Half the town hears. {sp} turns to look for you in the crowd, and finds you.",
       choices: [
         { t: "Go to {sp}, in front of everyone, and beg",
@@ -673,7 +707,7 @@
           fx: (p, ctx) => join(leaveFor(p, T(ctx)), apply(p, ctx, { honor: -10, fame: 1 })) },
         { t: "Call {them} a liar, loudly", check: { s: "deception", s2: "wil", d: 55 },
           win: { r: "You are louder and better liked. The town decides {them} is mad with jealousy. {sp} decides nothing, out loud.", fx: { them: { type: "enemy", op: -60 }, honor: -8, trait: "deceitful", rel: { who: "spouse", op: -10 } } },
-          lose: { r: "{them} has your letters, and reads one aloud at the bread stall. {sp} goes home to {sp}'s own people and does not come back.", fx: (p, ctx) => { divorce(p); return apply(p, ctx, { them: { type: "enemy", op: -50 }, honor: -10, happy: -10 }); } } },
+          lose: { r: "{them} has your letters, and reads one aloud at the bread stall. {sp} goes home to {spHis} own people and does not come back.", fx: (p, ctx) => { divorce(p); return apply(p, ctx, { them: { type: "enemy", op: -50 }, honor: -10, happy: -10 }); } } },
       ],
     },
 
@@ -783,10 +817,29 @@
           lose: { r: "A stone takes you on the fourth rung. You wake in the surgeons' tent with the captain's compliments.", fx: { health: -20, cause: "a stone from the wall", wound: "concussion", merit: 5 } } },
         { t: "Go to the senior captain who heard you that day", check: { s: "diplomacy", s2: "command", d: 55 },
           win: { r: "He remembers. The ladder list is read again with your name in the middle. The captain stops smiling, which is better and worse.", fx: { merit: 3, honor: 2 } },
-          lose: { r: "He does not remember, or will not. You go up the ladder anyway, now known as a man who complains.", fx: { merit: -5, health: -10, cause: "a fall from a ladder" } } },
+          lose: { r: "He does not remember, or will not. You go up the ladder anyway, now known as someone who complains.", fx: { merit: -5, health: -10, cause: "a fall from a ladder" } } },
         { t: "Pay a grey veteran to take your rung (15 suns)", req: p => p.coin >= 15,
           r: "The veteran takes your fifteen suns and your rung. He comes back with a cut cheek and a story, and the company hears both.",
           fx: { coin: -15, honor: -6, rel: { who: "comrade", op: -6, all: true } } },
+      ],
+    },
+
+    {
+      id: "mwf_capt_drummer",
+      title: "The drummer boy",
+      cond: (p, C) => C.adult(p) && !C.soldier(p) && C.flag(p, "wr_capt_enemy") && A.S.year - p.flags.wr_capt_enemy >= 6,
+      w: 2, once: true,
+      text: "A drum-major in a good coat stops you outside the church. It takes you a moment: the drummer boy from the wagon wheel, who got twelve strokes and not twenty because you said the rule out loud. The captain who called for twenty is a colonel now, on trial for flogging a recruit to death. The court wants witnesses to his habits.",
+      choices: [
+        { t: "Ride to the court and testify", check: { s: "persuasion", s2: "wil", d: 50 },
+          win: { r: "You tell the court about the wagon wheel. Two others tell worse. The colonel is broken to the ranks, and the drum-major buys the wine.", fx: { fame: 2, honor: 5, deed: "Testified against a cruel colonel" } },
+          lose: { r: "The court is three colonels. They thank you, and find for him. He watches you leave, and smiles the old smile.", fx: p => join(apply(p, null, { honor: 3, happy: -4 }), mkFoe(p, "enemy", -50, "the colonel who once called for twenty", { sex: "M", status: "gentry" })) } },
+        { t: "Send a sworn letter instead",
+          r: "The drum-major takes the letter and thanks you. A letter weighs less than a face in a courtroom, and you both know it.",
+          fx: { honor: 1, happy: -1 } },
+        { t: "Stay out of it. You have a life now",
+          r: "The drum-major nods, as if he expected it, and goes off to find someone braver.",
+          fx: { honor: -3, happy: -2 } },
       ],
     },
 
@@ -825,7 +878,7 @@
           r: "You say nothing. The knight rides on, pleased. Your men watched you say nothing; with hired men it is hard to tell what they made of it.",
           fx: { wil: 1.5, happy: -3 } },
         { t: "Answer him in front of his own lances", check: { s: "intimidation", s2: "wil", d: 52 },
-          win: { r: "\"Still alive,\" you say, \"which is more than your last three captains.\" His own lances laugh. He will not forget it.", fx: { fame: 2, merit: 6, newRel: { type: "enemy", op: -40 } } },
+          win: { r: "\"Still alive,\" you say, \"which is more than your last three captains.\" His own lances laugh. He will not forget it.", fx: p => join(apply(p, null, { fame: 2, merit: 6 }), mkFoe(p, "enemy", -40, "a knight from the old officers' mess", { sex: "M", status: "gentry" })) },
           lose: { r: "He has you flogged for insolence under the contract's discipline clause. Your captain allows it. Hired men are cheaper than lawsuits.", fx: { health: -12, cause: "a flogging", wound: "back", wil: 1.5 } } },
         { t: "Raise the Company's price for this employer", check: { s: "trade", s2: "command", d: 50 },
           win: { r: "The renewed contract costs the employer a fifth more, with a line about the Company's honor. Your share is twenty suns.", fx: { coin: 20, merit: 4, skill: { trade: 2 } } },
@@ -962,7 +1015,7 @@
       text: "Thirty suns bought two years. The peddler is back in {home}, boots resoled, and this time he has a friend with a cudgel and no conversation. The price of forgetting is fifty now. \"Times are hard,\" he says. \"For all of us.\"",
       choices: [
         { t: "Pay the fifty", req: p => p.coin >= 50,
-          r: "He counts it slowly in front of his friend. He will be back. You both know it.",
+          r: "He counts it slowly in front of his friend. He will be back next year, with a bigger friend.",
           fx: { coin: -50, trait: "paranoid", happy: -4 } },
         { t: "Denounce him to the garrison as a spy", check: { s: "intrigue", s2: "persuasion", d: 55 },
           win: { r: "He hangs from the new bridge, the one that replaced the one he burned. His friend does not stay for it.", fx: { coin: 10, wil: 1, fame: 1, honor: -2 } },
@@ -985,7 +1038,7 @@
           r: "You find him at a dice table. He takes the forty, bites one, and says the matter is closed. His eyes say it is only shut.",
           fx: { coin: -40, trait: "paranoid" } },
         { t: "Tell the watch where he sleeps", check: { s: "intrigue", s2: "ins", d: 50 },
-          win: { r: "The watch takes him at dawn and hangs him at the crossroads. The cellars know who told. They go quiet when you come in.", fx: { coin: 10, honor: -4, newRel: { type: "enemy", op: -40 } } },
+          win: { r: "The watch takes him at dawn and hangs him at the crossroads. The cellars know who told. They go quiet when you come in.", fx: p => join(apply(p, null, { coin: 10, honor: -4 }), mkFoe(p, "enemy", -40, "one of the crew boss's men", { sex: "M" })) },
           lose: { r: "He hears the watch is coming and leaves you something first. Two men are waiting in your stairwell.", fx: { health: -12, wound: "scar_face", cause: "a beating in a stairwell" } } },
         { t: "Leave the city on the morning cart",
           r: "You go with what fits in a sack and do not look back at the gate.",
@@ -1016,7 +1069,7 @@
     // ===================== wr_marches: an outlaw walked to the Free Marches to start again
     {
       id: "mwf_marches_reeve",
-      title: "The reeve's staff",
+      title: "A staff for the moot",
       cond: (p, C) => C.adult(p) && C.flag(p, "wr_marches") && A.S.year - p.flags.wr_marches >= 3,
       w: 3, once: true,
       setup: (p, ctx) => yrs(p, ctx, "wr_marches"),
@@ -1050,7 +1103,7 @@
           r: "No war, no shield-money, and your seal under it. The clerk carries it home as if it might bite.",
           fx: { favor: -20, honor: 3, flag: "mwf_refused_twice" } },
         { t: "Ride to court and plead the old custom", check: { s: "etiquette", s2: "diplomacy", d: 55 },
-          win: { r: "The keeper of the rolls finds a precedent from your grandfather's time. The writ is withdrawn for this year. Only this year.", fx: { favor: -2, fame: 2, skill: { etiquette: 2 } } },
+          win: { r: "The keeper of the rolls finds a precedent from your grandfather's time. The writ is withdrawn, for this year.", fx: { favor: -2, fame: 2, skill: { etiquette: 2 } } },
           lose: { r: "The court hears you out and adds a fine for wasting its time.", fx: (p, ctx) => { p.coin = Math.max(0, p.coin - Math.round((ctx.fee || 18) / 2)); return apply(p, ctx, { favor: -8 }); } } },
       ],
     },
@@ -1063,7 +1116,7 @@
       text: "The third writ does not come by a clerk. It comes with a royal serjeant and six riders who wait in your yard without dismounting. The sum is {fee} suns. Refuse a third time, the serjeant says, and he takes the keys of your best manor for the crown. Now. Today.",
       choices: [
         { t: "Pay, all of it, today", req: (p, C, ctx) => p.coin >= (ctx.fee || 30),
-          r: "The serjeant counts it on your own table and writes a receipt. You keep the receipt. It cost enough.",
+          r: "The serjeant counts it on your own table and writes a receipt, which goes into the strongbox where the money was.",
           fx: (p, ctx) => { p.coin = Math.max(0, p.coin - (ctx.fee || 30)); return apply(p, ctx, { favor: 5, happy: -4 }); } },
         { t: "Hand him the keys",
           r: "You give up the keys in front of your household. Lords who hate the writs hear of it. Some of them write to you.",
@@ -1136,7 +1189,7 @@
       text: "You kept the names of {how}. One of them, {themFull}, is in the crown's prison for debt, and talking to his confessor. The confessor comes to you. Pay his debts, he says, or {them} will buy his own way out with the only coin he has left: your name.",
       choices: [
         { t: "Pay his debts in secret ({fee} suns)", req: (p, C, ctx) => p.coin >= (ctx.fee || 25),
-          r: "The debts are paid by a merchant who has never heard of you. {them} walks out into the rain and sends no thanks. He does not need to.",
+          r: "The debts are paid by a merchant who has never heard of you. {them} walks out into the rain and sends no thanks.",
           fx: (p, ctx) => { p.coin = Math.max(0, p.coin - (ctx.fee || 25)); return apply(p, ctx, { them: { type: "acquaint", op: 30 }, owed: 2 }); } },
         { t: "Go to the sovereign first and confess the meeting",
           r: "You kneel and tell it all. The sovereign thanks you coolly. {them} is moved to a deeper cell. The rest of your list burn their letters, and their friendship with you.",
@@ -1160,13 +1213,13 @@
       text: "{yrs} years since the solar, the shut door and the lawyer waiting in the next room. Now {themFull} has had a seizure and cannot climb stairs, and sends for you, not for the heir. The same lawyer is waiting in the next room. \"He can write it either way,\" {theyHe} says. \"Tell me why he should.\"",
       choices: [
         { t: "Ask, plainly, to be written back in", check: { s: "persuasion", s2: "wil", d: 50 },
-          win: { r: "The lawyer writes. Your name goes back on the page, above the heir's. The heir hears of it by supper.", fx: { unflag: "disinherited", them: { op: 20 }, newRel: { type: "rival", op: -30 } } },
+          win: { r: "The lawyer writes. Your name goes back on the page, above the heir's. The heir hears of it by supper.", fx: (p, ctx) => join(apply(p, ctx, { unflag: "disinherited", them: { op: 20 } }), mkFoe(p, "rival", -30, "the heir", { who: heirOf(p) })) },
           lose: { r: "{them} hears you out and sends the lawyer home. Nothing changes but the stairs.", fx: { them: { op: -10 }, happy: -4 } } },
         { t: "Refuse the land. Ask only for peace",
           r: "You sit by the bed and talk about horses. The lawyer goes home with nothing written, and something else is mended.",
           fx: { them: { op: 30 }, honor: 4, wil: 1, happy: 4 } },
         { t: "Tell {themHim} the heir is robbing the estate", check: { s: "intrigue", s2: "int", d: 55 },
-          win: { r: "You have the steward's figures, more or less. The lawyer writes you back in and the heir out. It may even be true.", fx: { unflag: "disinherited", honor: -6, newRel: { type: "enemy", op: -50 } } },
+          win: { r: "You have the steward's figures, more or less. The lawyer writes you back in and the heir out. It may even be true.", fx: (p, ctx) => join(apply(p, ctx, { unflag: "disinherited", honor: -6 }), mkFoe(p, "enemy", -50, "the heir", { who: heirOf(p) })) },
           lose: { r: "{them} knows the steward's figures better than you do. \"Still a liar,\" {theyHe} says. \"Good. I was afraid you had changed.\"", fx: { them: { op: -30 }, honor: -4 } } },
       ],
     },
@@ -1188,10 +1241,10 @@
           fx: (p, ctx) => { p.coin = Math.max(0, p.coin - (ctx.fee || 30)); return apply(p, ctx, { them: { op: 10 }, owed: 2 }); } },
         { t: "Buy the land outright, at a hard price ({fee2} suns)", req: (p, C, ctx) => p.coin >= (ctx.fee2 || 60),
           r: "You buy back what was taken, at a price that makes {them} weep. The tenants doff their caps to you now.",
-          fx: (p, ctx) => { p.coin = Math.max(0, p.coin - (ctx.fee2 || 60)); return apply(p, ctx, { asset: ctx.land === "manor" ? "manor" : "farm", them: { type: "rival", op: -30 }, trait: "vengeful" }); } },
+          fx: (p, ctx) => { p.coin = Math.max(0, p.coin - (ctx.fee2 || 60)); link(p, T(ctx), "rival", -30); return apply(p, ctx, { asset: ctx.land === "manor" ? "manor" : "farm", trait: "vengeful" }); } },
         { t: "Send {themHim} away empty-handed",
           r: "{them} rides off on the borrowed horse. By spring you hear the moneylenders have taken the roof.",
-          fx: { them: { type: "enemy", op: -40 }, wil: 1, honor: -2 } },
+          fx: (p, ctx) => { link(p, T(ctx), "enemy", -40); return apply(p, ctx, { wil: 1, honor: -2 }); } },
       ],
     },
 
