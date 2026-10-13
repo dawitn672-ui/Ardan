@@ -18,6 +18,46 @@ Prettified, the code is about 206,000 lines. It was read by hand and by four par
 
 Line numbers like `core:13529` refer to the prettified core (`prettier --parser babel` on the unpacked `ardan-core`). They are there so a finding can be found again; they do not exist in the repo.
 
+## Status (updated Oct 13, 2026)
+
+Most of these are now fixed in `index.html` by the patches in `tools/patches.mjs` and covered by `tests/run.mjs`. "Ardan Road to 100.md" has the full review that followed.
+
+| Bug | Status | Patch |
+| --- | --- | --- |
+| Security: crafted save runs script | Fixed | `SEC-CSP`, `SEC-SAVE-CLEAN`, `SEC-LOG-CLASS` |
+| 1 Rendering changes the world | Fixed. Two more causes were found: the People tab hired colleagues, and a no-op dice roll in the shop | `ENG-STYLE-RNG`, `ENG-ROSTER-PURE`, `ENG-GEAR-ROLL` |
+| 2 Opposite traits inherited | Fixed | `ENG-TRAIT-OPP` |
+| 3 NPC burns techniques | Fixed | `ENG-DUEL-TECH` |
+| 4 Underdog catch-up | Left: a tuning call for playtests | |
+| 5 Training plan never moves on | Fixed | `ENG-PLAN-FOLLOWS-LIFE` |
+| 6 Duel ties go to the player | Fixed | `ENG-DUEL-DOUBLE-KO` |
+| 7 Mentor promises legacy | Fixed | `TXT-MENTOR-LEGACY` |
+| 8 Yearly event roll is dead | Left: delete in the source | |
+| 9 Digit tokens print raw | Fixed | `EVT-TOKEN-DIGITS` |
+| 10, 11 Two events never or rarely fire | Fixed | `EVT-DELEG-COUSIN`, `EVT-SERV-SECRET` |
+| 12 Text diet misses | Fixed | `EVT-TEXT-DIET` |
+| 13 Free money | Idle merc pay fixed. Wages from nowhere left: part of the economy rebuild | `WLD-MERC-NO-CONTRACT` |
+| 14 Reparations stack | Fixed | `WLD-REPARATIONS-EXCLUSIVE` |
+| 15 AI debt never repaid | Fixed | `WLD-AI-DEBT` |
+| 16 Stability below 0 | Fixed | `WLD-STABILITY-FLOOR` |
+| 17 Diplomacy "why" list | Left: needs a design decision | |
+| 18 Faction war skips checks | Fixed | `WLD-FACTION-WAR-CHECKS` |
+| 19 Siege resets | Fixed | `WLD-SIEGE-OWNER` |
+| 20 Commoner promotion penalty | Left: balance. Not a bug for nobles; commoners get about ×0.2 | |
+| 21 Dead war code | Left: delete in the source | |
+| 22 Silent autosave failures | Fixed | `SAVE-WARN` |
+| 23 Two tabs | Fixed | `SAVE-ONE-TAB` |
+| 24 New life pushes the old one out | Fixed: asks first | `SAVE-NEW-LIFE-CONFIRM` |
+| 25 Closing the tab loses a year | Fixed: saves on hide; manual save asks for persistent storage | `UI-KEYBOARD`, `SAVE-WARN` |
+| 26 Load failures do nothing | Fixed | `SEC-SAVE-CLEAN` (safe load path) |
+| 27 Redraw loop | Focus and lost-Enter fixed. The full redraw itself is left for the source | `UI-KEYBOARD` |
+| 28 Keyboard reach | Fixed | `UI-KEYBOARD` |
+| 29 Some reports can't replay | Fixed | `SAVE-JOURNAL-BASE` |
+| 30 Wrong backup message | Fixed | `SAVE-BACKUP-MESSAGE` |
+| 31 Smaller ones | Left | |
+| New: a newborn can work the court | Fixed | `ENG-NOBLE-AGE` |
+| New: buy/sell-back loop prints money | Fixed | `ECO-THIN-MARKET-SPREAD` |
+
 ## The short verdict
 
 Ardan is in better shape than most one-person projects of this size. It boots clean, runs 16 random lives with zero errors, replays a seed byte for byte, saves with checksums and backups, and its lore is large and internally consistent. The Phase 1 claims in the plan are mostly true.

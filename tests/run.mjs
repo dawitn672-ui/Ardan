@@ -142,9 +142,15 @@ const TESTS = {
       const want = T.hash(JSON.parse(A.serialize())), J = JSON.parse(JSON.stringify(A.J));
       const res = A.replay(J);
       T.renderAll(); // the original run ended with a draw too
-      return { ok: res.ok, why: res.why, at: res.at, steps: J.e.length, same: T.hash(JSON.parse(A.serialize())) === want };
+      const same = T.hash(JSON.parse(A.serialize())) === want;
+      // a journal without a game start, saved and loaded: its base must be the state it can replay from
+      A.journalResume(null); T.play(1);
+      const d = { S: JSON.parse(A.serialize()), J: JSON.parse(JSON.stringify(A.J)) };
+      T.play(1); A.deserialize(d.S); A.journalResume(d.J);
+      const baseOk = !!(A.J.o || A.J.base === A.fingerprint(A.jBase));
+      return { ok: res.ok, why: res.why, at: res.at, steps: J.e.length, same, baseOk };
     });
-    return { ok: r.ok && r.same, detail: r.ok ? `${r.steps} journal entries replayed, world ${r.same ? 'identical' : 'DIFFERENT'}` : `replay stopped at entry ${r.at}: ${r.why}` };
+    return { ok: r.ok && r.same && r.baseOk, detail: (r.ok ? `${r.steps} journal entries replayed, world ${r.same ? 'identical' : 'DIFFERENT'}` : `replay stopped at entry ${r.at}: ${r.why}`) + `; reloaded journal's base matches: ${r.baseOk}` };
   },
 
   async engineRules(pg) {

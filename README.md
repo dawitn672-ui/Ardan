@@ -30,7 +30,7 @@ npm install                      # acorn and playwright
 npx playwright install chromium  # once
 npm run build                    # vendor/ + tools/patches.mjs -> index.html
 npm test                         # test index.html
-npm run test:original            # the same tests against the untouched release (12 of 16 fail)
+npm run test:original            # the same tests against the untouched release (13 of 16 fail)
 npm run unpack                   # also writes the readable blobs to .build/
 node tools/show.mjs A.fightWorth # print a function from .build/
 ```

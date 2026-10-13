@@ -388,4 +388,16 @@ export default [
       'A.nobleAction=function(key){const pc=A.pc();if(!pc.noble&&!["royal","noble","gentry"].includes(pc.status))return{ok:!1};if(!A.isAdult(pc))return{ok:!1,msg:"You are too young for that. For now the court is something grown-ups talk about over your head."};',
     ]],
   },
+  {
+    id: 'SAVE-JOURNAL-BASE',
+    blob: 'ardan-core',
+    why: 'A journal with no recorded game start (restarted, imported or legacy) kept its old base fingerprint across a save and ' +
+      'reload, while the report sent the just-loaded state as the base, so such reports could never replay ("the save to start ' +
+      'from is not the one this journal began at"). Such a journal now restarts from the loaded state; its old entries could not ' +
+      'be replayed anyway.',
+    edits: [[
+      'A.J=J&&J.v===1&&Array.isArray(J.e)?J:{v:1,o:null,base:A.fingerprint(A.jBase),e:[]}',
+      'A.J=J&&J.v===1&&Array.isArray(J.e)&&(J.o||J.base===A.fingerprint(A.jBase))?J:{v:1,o:null,base:A.fingerprint(A.jBase),e:[]}',
+    ]],
+  },
 ];
