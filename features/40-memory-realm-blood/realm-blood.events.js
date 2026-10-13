@@ -217,7 +217,7 @@
     {
       id: "mrb_ald_lic_heir",
       title: "Whose field",
-      cond: (p, C) => C.realm(p, "POL-01") && C.adult(p) && C.flag(p, "mrb_ald_strawdeed") && A.S.year - p.flags.mrb_ald_strawdeed >= 4,
+      cond: (p, C) => C.realm(p, "POL-01") && C.race(p, "halforc", "orc") && C.adult(p) && C.flag(p, "mrb_ald_strawdeed") && A.S.year - p.flags.mrb_ald_strawdeed >= 4,
       w: 3, once: true,
       setup: (p, ctx) => {
         if (!fresh(p, "mrb_ald_lic_heir")) { ctx.skip = 1; return; }
@@ -378,7 +378,7 @@
       cond: (p, C) => C.realm(p, "POL-14") && C.adult(p) && C.flag(p, "mrb_gh_tide") && A.S.year - p.flags.mrb_gh_tide >= 4,
       w: 3, once: true,
       setup: (p, ctx) => { if (!fresh(p, "mrb_gh_wreck")) { ctx.skip = 1; return; } make(p, ctx, { sex: "M", age: 45, occ: "a salvage captain" }); },
-      text: "Your name is in the Tide Divers' book for the cog you cut from the harbor chain, and {themFull}, a salvage captain, has read it. A Varennan wine ship went down off Cold Bay with a strongbox in her stern cabin. By the king's wreck-right it belongs to the crown. He offers you a third of whatever is inside, and a quiet boat on a moonless night.",
+      text: "Your name is in the Tide Divers' book for the cog you cut from the harbor chain, and {captainName}, a salvage captain, has read it. A Varennan wine ship went down off Cold Bay with a strongbox in her stern cabin. By the king's wreck-right it belongs to the crown. He offers you a third of whatever is inside, and a quiet boat on a moonless night.",
       choices: [
         { t: "Dive for the strongbox at night", check: { s: "sea", s2: "stealth", d: 55 },
           win: { r: "Black water, a drowned cabin, a box that will not come. Then it comes. The captain pays your third in Varennan silver, and neither of you mentions the crown.",
@@ -1278,7 +1278,7 @@
     {
       id: "mrb_bd_harrow_heir",
       title: "A bull in the cradle",
-      cond: (p, C) => C.adult(p) && C.hasKids(p) && C.flag(p, "mrb_bd_harrow_wed") && A.S.year - p.flags.mrb_bd_harrow_wed >= 5 && !!kidAged(p, 3, 12),
+      cond: (p, C) => C.adult(p) && C.carrier(p) && line(p, "bull") && C.hasKids(p) && C.flag(p, "mrb_bd_harrow_wed") && A.S.year - p.flags.mrb_bd_harrow_wed >= 5 && !!kidAged(p, 3, 12),
       w: 3, once: true,
       setup: (p, ctx) => { if (!fresh(p, "mrb_bd_harrow_heir")) { ctx.skip = 1; return; } const k = kidAged(p, 3, 12); if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; ctx.full = shows(k, "bull") ? 1 : 0; },
       text: (p, ctx) => ctx.full

@@ -63,7 +63,7 @@
     priceNamed: /Ears, later\. Not throats/,                  // pf_dagger_still_hall: you asked what they wanted, and were told
     skimmed: /keep a tenth of the difference/,                // pf_stew_steward_post: you skimmed a tenth
     coTaught: /scripture with them first/,                    // pf_learn_teach: the priest taught beside you
-    crooked: /Loaded dice for the strangers/,                 // pf_gamb_house: you opened a crooked house
+    crooked: /Loadedx dice for the strangers/,                 // pf_gamb_house: you opened a crooked house
   };
   const sexOfName = (p, n) => { const c = LORE.cultures[p.cult] || LORE.cultures["CUL-02"] || {}; return (c.f || []).includes(n) && !(c.m || []).includes(n) ? "F" : "M"; };
 
@@ -1034,7 +1034,7 @@
     {
       id: "mpf_mill_weir",
       title: "The sluice",
-      cond: (p, C) => C.adult(p) && C.flag(p, "pf_millx") && A.S.year - p.flags.pf_millx >= 2,
+      cond: (p, C) => C.adult(p) && C.flag(p, "pf_mill") && A.S.year - p.flags.pf_mill >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { yrs(p, ctx, "pf_mill"); ctx.pid = mk(p, { occ: "a farmer below the weir", role: "downstream" }).id; },
       text: "The mill you built on the stream {yrs} years ago grinds for every farm within a league, and the toll is yours. In a dry summer it also holds back the water. {them}, who farms below the weir, has watched {theirHis} barley wilt for a month. Today {theyHe} comes up the bank with three sons and a pick, and asks you, civilly, to open the sluice.",

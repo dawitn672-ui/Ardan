@@ -33,7 +33,6 @@
     return k;
   };
   const fx = (p, ctx, o) => A.applyFx(p, o, ctx) || "";
-  const keep = (key, o) => (p, ctx) => { p.flags[key] = ctx.pid; return fx(p, ctx, o); };
   const TEMPLE = { "REL-01": "temple", "REL-02": "church", "REL-03": "hall", "REL-04": "grove-house", "REL-05": "Carving Hall", "REL-06": "monastery",
     "REL-07": "house of prayer", "REL-08": "flood temple", "REL-09": "ancestor house", "REL-10": "temple", "REL-11": "shrine", "REL-12": "hall", "REL-14": "shrine" };
   const temple = p => TEMPLE[p.faith] || "temple";
@@ -51,7 +50,7 @@
       choices: [
         { t: "Send {themHim} one page of it, unsigned", check: { s: "intrigue", s2: "int", d: 48 },
           win: { r: "A purse comes back by the same carrier, with no letter in it. It will come every year now, and so will the steward's wish to know your name.",
-            fx: keep("mat_reeve_who", { coin: 60, secret: 1, flag: "mat_reeve_bled" }) },
+            fx: (p, ctx) => { p.flags.mat_reeve_who = ctx.pid; return fx(p, ctx, { coin: 60, secret: 1, flag: "mat_reeve_bled" }); } },
           lose: { r: "The carrier is followed home. Two men call at dusk, take the copy from your pack and leave you a cracked rib to remember them by.",
             fx: { health: -12, cause: "a beating", wound: "broken_ribs", them: { type: "enemy", op: -40, back: "enemy" } } } },
         { t: "Carry the copy to the crown's justices", check: { s: "persuasion", s2: "wil", d: 50 },
@@ -96,7 +95,7 @@
             fx: { coin: 30, skill: { intrigue: 2 }, flag: "mat_neck_runner", them: { type: "friend", op: 20, back: "friend" } } },
           lose: { r: "The station has a new sergeant, a dry one. He takes four bales as a fine and writes your name in his book.",
             fx: { honor: -2, happy: -4, them: { type: "acquaint", op: -20, back: "acquaint" } } } },
-        { t: "Sell {themHim} the secret, and stay home", r: "Twenty suns for one sentence. {them} writes it on the back of a bill. Now it is {theirHis} secret too, and {theyHe} is a man who talks over dinner.",
+        { t: "Sell {themHim} the secret, and stay home", r: "Twenty suns for one sentence. {them} writes it on the back of a bill. Now it is {theirHis} secret too, and {theyHe} likes to talk over dinner.",
           fx: { coin: 20, unflag: "av_neckbribe", them: { type: "acquaint", op: 10, back: "acquaint" } } },
         { t: "Tell the Velgrad toll-master which station leaks", check: { s: "persuasion", s2: "etiquette", d: 50 },
           win: { r: "The toll-master thanks you in writing and turns the sergeant out of his post. Every carter on the Neck road knows who talked.",
@@ -141,12 +140,12 @@
       choices: [
         { t: "Make the paper, and take nothing for it", check: { s: "deception", s2: "craft", d: 50 },
           win: { r: "Three evenings practising on scraps, then the real thing. The seal is a clever lie in good wax. Her son walks the road in daylight with it in his shirt.",
-            fx: keep("mat_forged_who", { honor: 2, skill: { deception: 2 }, flag: "mat_forged_freedom", them: { type: "friend", op: 35, back: "friend" } }) },
+            fx: (p, ctx) => { p.flags.mat_forged_who = ctx.pid; return fx(p, ctx, { honor: 2, skill: { deception: 2 }, flag: "mat_forged_freedom", them: { type: "friend", op: 35, back: "friend" } }); } },
           lose: { r: "The wax cracks under the seal. You burn it, and the next, and tell her your hand is not good enough. The buyer's men take her son at dawn.",
             fx: { happy: -8, wil: 1, them: { type: "acquaint", op: -10, back: "acquaint" } } } },
         { t: "Make it, for thirty suns", check: { s: "deception", s2: "craft", d: 50 },
           win: { r: "She pays with her mother's ring, eyes on the floor. The paper is good. You both know what it cost.",
-            fx: keep("mat_forged_who", { coin: 30, honor: -3, flag: "mat_forged_freedom", them: { type: "acquaint", op: -5, back: "acquaint" } }) },
+            fx: (p, ctx) => { p.flags.mat_forged_who = ctx.pid; return fx(p, ctx, { coin: 30, honor: -3, flag: "mat_forged_freedom", them: { type: "acquaint", op: -5, back: "acquaint" } }); } },
           lose: { r: "The seal smears. You keep the ring anyway, for your trouble. The buyer's men take her son at dawn.",
             fx: { coin: 30, honor: -6, trait: "greedy", them: { type: "enemy", op: -40, back: "enemy" } } } },
         { t: "Refuse. Forgery is a hanging matter", r: "She goes without a word. Her son is taken back at dawn, and she does not greet you at the well again.",
@@ -180,7 +179,7 @@
       choices: [
         { t: "Carry it, and sleep with it under your head", check: { s: "riding", s2: "sta", d: 48 },
           win: { r: "You hand it to the sale clerk with the seal whole. {them} wins the clip by a sun a bale, and starts calling you {theirHis} rider.",
-            fx: keep("mat_courier_who", { coin: 20, skill: { riding: 2 }, flag: "mat_courier_trusted", them: { type: "friend", op: 30, back: "friend" } }) },
+            fx: (p, ctx) => { p.flags.mat_courier_who = ctx.pid; return fx(p, ctx, { coin: 20, skill: { riding: 2 }, flag: "mat_courier_trusted", them: { type: "friend", op: 30, back: "friend" } }); } },
           lose: { r: "A lamed horse and a day lost. The bids are opened before you arrive. {them} pays you anyway, which is somehow worse.",
             fx: { coin: 10, happy: -4, them: { type: "acquaint", op: -10, back: "acquaint" } } } },
         { t: "Show the figure to a rival house first", r: "A rival factor pays a hundred suns for a look and a fresh seal. {them} loses the clip by a sun a bale and never learns why.",
@@ -196,7 +195,7 @@
       text: "{them} has grown fat on the wool trade and wants a chain of riders: fresh horses every twenty miles from {home} to {capital}, letters in two days, and a share for whoever runs it. {theyHe} puts up the horses. You would put up a hundred suns and your name. Other houses will try to buy your riders, as they once tried to buy you.",
       choices: [
         { t: "Put in a hundred suns, and run it", req: p => p.coin >= 100, check: { s: "logistics", s2: "riding", d: 50 },
-          win: { r: "Six stages, twelve horses and riders who know your temper. By the second winter the relay has paid your hundred back and more. Merchants start calling you the Post-Master.",
+          win: { r: "Six stages, twelve horses and riders who know your temper. By the second winter the relay has paid your hundred back and more, and the merchants of {capital} have a name for you.",
             fx: { coin: 60, epithet: "the Post-Master", them: { type: "bestfriend", op: 25, back: "bestfriend" } } },
           lose: { r: "A rider sells a letter at the third stage, and two houses sue {them} for it. The relay is wound up, and your hundred goes with it.",
             fx: { coin: -100, them: { type: "rival", op: -20, back: "rival" } } } },
@@ -222,13 +221,13 @@
       text: "{them}, {whose}, has the look you had at that age, the year {went}. Now {theyHe} sits on your step and asks about the road. A wool train leaves {home} in three days for the coast, and the carters want someone young to mind the mules.",
       choices: [
         { t: "Give {themHim} your old knife and a list of barns", r: "{theyHe} leaves at dawn with your knife in {theirHis} belt and does not look back, which is right. You find you have been holding your breath.",
-          fx: keep("mat_road_who", { flag: "mat_sent_road", happy: -2, them: { op: 25 } }) },
+          fx: (p, ctx) => { p.flags.mat_road_who = ctx.pid; return fx(p, ctx, { flag: "mat_sent_road", happy: -2, them: { op: 25 } }); } },
         { t: "Tell {themHim} about the hunger and the cold", r: "You tell it all: barns with rats, masters who did not pay, a night on a hillside in sleet. {them} stays, and never asks again. You are not sure you did right.",
           fx: { wil: 0.5, them: { op: -10 } } },
         { t: "Find {themHim} a place in a workshop here", check: { s: "persuasion", s2: "trade", d: 45 },
           win: { r: "A cooper takes {themHim} on, for a fee you pay. {them} is safe, and bored, and blames you for both.", fx: { coin: -15, them: { op: 5 } } },
           lose: { r: "The cooper says no. Two nights later {them} goes with the wool train anyway, without your knife.",
-            fx: keep("mat_road_who", { flag: "mat_sent_road", happy: -4, them: { op: -15 } }) } },
+            fx: (p, ctx) => { p.flags.mat_road_who = ctx.pid; return fx(p, ctx, { flag: "mat_sent_road", happy: -4, them: { op: -15 } }); } } },
       ],
     },
     {
@@ -392,7 +391,7 @@
           lose: { r: "The clearing is empty, the mounds cold. Someone warned them. The bailiff's men want paying for their day.",
             fx: { coin: -5, happy: -3, them: { type: "enemy", op: -50, back: "enemy" } } } },
         { t: "Ride out and warn him", r: "He hears you out with a charcoal rake in his hands. Then he puts it down. 'I won't forget,' he says. By night the clearing is empty.",
-          fx: keep("mat_outlaw_who", { flag: "mat_outlaw_warned", owed: 1, them: { type: "friend", op: 30, back: "friend" } }) },
+          fx: (p, ctx) => { p.flags.mat_outlaw_who = ctx.pid; return fx(p, ctx, { flag: "mat_outlaw_warned", owed: 1, them: { type: "friend", op: 30, back: "friend" } }); } },
         { t: "Leave the notice where it hangs", r: "It hangs there until the rain takes the ink. The forty suns go unclaimed. You think of it whenever you smell charcoal.", fx: { wil: 0.5 } },
       ],
     },
@@ -449,10 +448,10 @@
       id: "mat_castaway_boots", title: "A double welt", w: 3, once: true,
       cond: (p, C) => C.flag(p, "av_castaway") && A.S.year - p.flags.av_castaway >= 2 && C.adult(p) && !p.prison && (C.coast(p) || C.town(p)),
       setup: (p, ctx) => { ctx.pid = mk(p, { sex: "F", ageAdj: 40, occ: "a sailor's wife" }).id; },
-      text: "A woman at the fish stalls stops dead and stares at your feet. You still wear the boots from the island, where you had a knife, your shirt and a dead man's boots, and nothing else. She is {them}. She says she sewed those boots herself, with a double welt, for her husband the year his ship sailed. She is still waiting for it.",
+      text: "A woman at the fish stalls stops dead and stares at your feet. You still wear the dead man's boots from the island, where you had nothing else but a knife and your shirt. She is {them}. She says she sewed those boots herself, with a double welt, for her husband the year his ship sailed. She is still waiting for it.",
       choices: [
         { t: "Tell her where you found them", r: "You tell her about the beach and the hill and the man who had no more use for his boots. She listens without a sound and thanks you. Within the month she is in black.",
-          fx: keep("mat_widow_who", { honor: 2, happy: -3, flag: "mat_widow_told", them: { type: "friend", op: 20, back: "friend" } }) },
+          fx: (p, ctx) => { p.flags.mat_widow_who = ctx.pid; return fx(p, ctx, { honor: 2, happy: -3, flag: "mat_widow_told", them: { type: "friend", op: 20, back: "friend" } }); } },
         { t: "Give her the boots, and say no more", r: "You walk home barefoot. She will wait a while longer, with the boots by her door. That is a kind of mercy, or the other thing.",
           fx: { honor: 1, happy: -1, them: { type: "acquaint", op: 25, back: "acquaint" } } },
         { t: "Say you bought them from a slop-seller", check: { s: "deception", s2: "ins", d: 40 },
@@ -601,10 +600,10 @@
       choices: [
         { t: "Pay the factor", r: "{them} weighs the coin, draws a line through your name with a silver pen and blots it. You will have to trust a Lucernan's list.",
           fx: { coinPct: -0.2, unflag: "mat_redsail_sailed", them: { type: "acquaint", op: 10, back: "acquaint" } } },
-        { t: "Refuse, and keep out of Lucernan ports", r: "There are other ports. Fewer every year, but enough. In Blackreef the drink is cheaper for a man with a price on his head.",
+        { t: "Refuse, and keep out of Lucernan ports", r: "There are other ports. Fewer every year, but enough. In Blackreef the drink is cheaper with a price on your head.",
           fx: { fame: 2, wil: 1, deed: "Carried a Lucernan price on your head", them: { type: "enemy", op: -20, back: "enemy" } } },
         { t: "Take the factor and ransom {themHim}", check: { s: "intimidation", s2: "str", d: 55 },
-          win: { r: "The families pay a hundred and fifty suns for their factor, and add his price to yours.",
+          win: { r: "The families pay a hundred and fifty suns for their factor, and add the ransom to the price on your head.",
             fx: { coin: 150, honor: -4, fame: 2, them: { type: "enemy", op: -60, back: "enemy" } } },
           lose: { r: "The factor's soft hands keep hard guards. You get away over a wall, cut.",
             fx: { health: -12, cause: "a factor's guards", wound: "scar_arm", them: { type: "enemy", op: -40, back: "enemy" } } } },
@@ -639,7 +638,7 @@
         { t: "Leave a purse where {theyHe} will find it", r: "Fifty suns, wrapped in a cloth on the tray while {theyHe} serves a carter. {theyHe} never learns who left it.",
           fx: { coin: -50, honor: 2, happy: -2, them: { op: 20 } } },
         { t: "Tell {themHim} the truth", check: { s: "wil", s2: "persuasion", d: 55 },
-          win: { r: "{theyHe} listens to the end. Then {theyHe} takes half of everything you have and tells you to live with the rest. {theyHe} keeps your secret, and you keep the rest.",
+          win: { r: "{theyHe} listens to the end. Then {theyHe} takes half of everything you have and tells you to live with what is left. {theyHe} never speaks of it again.",
             fx: { coinPct: -0.5, honor: 4, wil: 2, deed: "Confessed the postern gate to one who burned for it", them: { type: "rival", op: -10, back: "rival" } } },
           lose: { r: "{theyHe} screams it across the street before you finish. You leave {home} that night, and you do not come back.",
             fx: { fame: 2, honor: -6, happy: -10, trait: "paranoid", them: { type: "enemy", op: -80, back: "enemy" } } } },
@@ -655,7 +654,7 @@
       text: "The dwarf factor who bought your wool at a fair price, after three days of waiting at the gate, wrote your name in a book. Now the gate-warden sends for you. {them}, a human trader, wants goods on credit from the hold and has named you as surety. A name in that book is worth a hundred and fifty suns of credit, if you lend it.",
       choices: [
         { t: "Stand surety for {them}", r: "The factor dips a steel pen and writes your name under {them}'s, with a small mark beside it. Dwarves do not shake hands on a debt. They write it down.",
-          fx: keep("mat_surety_who", { flag: "mat_surety", owed: 1, them: { type: "friend", op: 25, back: "friend" } }) },
+          fx: (p, ctx) => { p.flags.mat_surety_who = ctx.pid; return fx(p, ctx, { flag: "mat_surety", owed: 1, them: { type: "friend", op: 25, back: "friend" } }); } },
         { t: "Decline, as politely as Holdspeech allows", r: "The factor nods once. The warden nods once. {them} does not nod at all, and tells the guest hall you are a coward.",
           fx: { skill: { etiquette: 1 }, them: { type: "rival", op: -20, back: "rival" } } },
         { t: "Ask for the credit yourself instead", check: { s: "trade", s2: "etiquette", d: 50 },
@@ -690,9 +689,9 @@
       text: "A journeyman knocks at your workshop at dusk with a bundle of tools, dust to the knees and a letter from a master in a town you have never heard of. You stood at a stranger's door like that once, weeks from home, looking for the hardest master who would have you. {them} wants a bed in the loft and a year of work.",
       choices: [
         { t: "Take {themHim} in, and never once say good", r: "{them} works like a mule and sulks like a cat. By the year's end {theyHe} does work you would have been proud of at that age. You do not say so.",
-          fx: keep("mat_journeyman_who", { rep: 3, flag: "mat_took_journeyman", them: { type: "student", op: 25, back: "mentor" } }) },
+          fx: (p, ctx) => { p.flags.mat_journeyman_who = ctx.pid; return fx(p, ctx, { rep: 3, flag: "mat_took_journeyman", them: { type: "student", op: 25, back: "mentor" } }); } },
         { t: "Take {themHim} in, and lock up your patterns", r: "Your patterns go in the iron chest at night. {them} notices, as you once noticed. It is the right lesson, and a cold one.",
-          fx: keep("mat_journeyman_who", { coin: 10, flag: "mat_took_journeyman", them: { type: "student", op: 5, back: "mentor" } }) },
+          fx: (p, ctx) => { p.flags.mat_journeyman_who = ctx.pid; return fx(p, ctx, { coin: 10, flag: "mat_took_journeyman", them: { type: "student", op: 5, back: "mentor" } }); } },
         { t: "Send {themHim} on to the next town", r: "{theyHe} goes on with the bundle and the letter. Your loft stays quiet, and your own journeymen grumble less.",
           fx: { coin: 5, them: { type: "acquaint", op: -15, back: "acquaint" } } },
       ],
@@ -977,8 +976,8 @@
     {
       id: "mat_gruit_court", title: "Back fees on every barrel", w: 3, once: true,
       cond: (p, C) => C.flag(p, "tr_brew_hopped") && A.S.year - p.flags.tr_brew_hopped >= 3 && C.adult(p) && C.job(p, "brewer") && !p.prison,
-      setup: (p, ctx) => { ctx.holder = "the " + temple(p); },
-      text: "Your hopped ale keeps all summer and pays no gruit. {holder}, which holds the gruit right in {home} and takes a fee on every brew, has noticed what it is losing. A priest and a gruit-keeper come to your brewhouse with a writ for the lord's court: back fees on every hopped barrel since the day you first brewed one.",
+      setup: (p, ctx) => { ctx.temple = temple(p); },
+      text: "Your hopped ale keeps all summer and pays no gruit. The priests of the {temple}, who hold the gruit right in {home} and take a fee on every brew, have noticed what they are losing. A priest and a gruit-keeper come to your brewhouse with a writ for the lord's court: back fees on every hopped barrel since the day you first brewed one.",
       choices: [
         { t: "Fight it in the lord's court", check: { s: "persuasion", s2: "learning", d: 52 },
           win: { r: "Your lawyer finds that the gruit right covers gruit and nothing else. Hopped ale is free in {home} by judgment. Every brewer in town owes you a drink.",
@@ -1002,7 +1001,7 @@
           win: { r: "The guild buys a whole cart at a time, and the carters grumble at the price. The brewers make you keeper of the hop-store.",
             fx: { coin: 15, rep: 6, deed: "Kept the hop-store of the brewers' guild" } },
           lose: { r: "Brewers will not trust each other with a key. The carters keep their price.", fx: { rep: -1, happy: -2 } } },
-        { t: "Buy the carters' whole load and resell it", r: "You buy every bale off the eastern carts and sell it on at a third more. The brewers pay, and call you the Hop-King behind your back.",
+        { t: "Buy the carters' whole load and resell it", r: "You buy every bale off the eastern carts and sell it on at a third more. The brewers pay, and grumble, and find a name for you behind your back.",
           fx: { coin: 80, rep: -4, epithet: "the Hop-King" } },
       ],
     },
@@ -1042,7 +1041,7 @@
         ctx.how = w && /peacock/.test(w.t) ? "the peacock sewn back into its feathers, breathing smoke"
           : w ? "forty dishes over three days, and not one of them late" : "what went wrong, and what you did about it";
       },
-      text: "A letter comes from {other}, sealed in green wax. An envoy who sat at {ruler}'s great feast has told his master about it, and about {how}. {otherRuler} marries a daughter in the spring and wants you to cook the wedding: two months away from your own kitchen, for a fee your own court has never paid.",
+      text: "A letter comes from {other}, sealed in green wax. An envoy who sat at the great feast in {capital} has told his master about it, and about {how}. {otherRuler} marries a daughter in the spring and wants you to cook the wedding: two months away from your own kitchen, for a fee your own court has never paid.",
       choices: [
         { t: "Go, and cook the wedding", check: { s: "craft", s2: "logistics", d: 55 },
           win: { r: "Two months, a strange kitchen and cooks who pretend not to understand you. The wedding is talked of in two realms. Your own court notices you were gone.",
@@ -1130,7 +1129,7 @@
           win: { r: "He believes you, or decides to. {them} passes you in the hall that evening and touches your sleeve, once.",
             fx: { owed: 1, them: { type: "friend", op: 35, back: "friend" } } },
           lose: { r: "He has already asked the steward, who remembers you on the road that day. You are turned out without a character.",
-            fx: (p, ctx) => { const lost = p.job && p.job.c === "servant" && !p.flags.unfree; if (lost) p.job = null; return fx(p, ctx, { happy: -8, them: { type: "friend", op: 20, back: "friend" } }) + (lost ? " (You lose your place.)" : ""); } } },
+            fx: (p, ctx) => { const lost = p.job && p.job.c === "servant" && !p.flags.unfree; if (lost) p.job = null; return [fx(p, ctx, { happy: -8, them: { type: "friend", op: 20, back: "friend" } }), lost ? "(You lose your place.)" : ""].filter(Boolean).join(" "); } } },
         { t: "Go to her first, and let her choose", r: "She hears you out in the window-seat, very still. Then she tells her husband herself, all of it, before supper. The house is cold for a year. She never forgets who came to her first.",
           fx: { perf: -4, them: { type: "bestfriend", op: 40, back: "bestfriend" } } },
       ],

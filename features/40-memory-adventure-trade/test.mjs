@@ -16,8 +16,132 @@
 //      - no text or result uses the house tics ("looks at you a long time", "for the rest of your life", "Nobody");
 //   3. each 2-step arc: take the first event's arc choice, check the second step is still closed, let the years pass,
 //      then the second event opens and renders for the same character, with the same person where one carries over.
+// Fixtures live in one function so live-probe.mjs can reuse them: it runs in the page and sets window.__matFix.
+export function installFixtures() {
+  // ---- fixture helpers
+  const H = {
+    person(p, o) {
+      o = o || {};
+      const race = o.race || p.race, sex = o.sex || 'F';
+      const k = A.newPerson({ given: A.givenName(p.cult, sex), sex, race, realm: p.realm, cult: p.cult, faith: p.faith, born: A.S.year - Math.round((o.age != null ? o.age : A.age(p))), status: o.status || 'peasant', home: p.home });
+      k.occ = o.occ || 'a neighbor';
+      return k;
+    },
+    kid(p, age, sex) {
+      const k = H.person(p, { age, sex: sex || 'F', status: p.status });
+      k.parents = [p.id]; p.children.push(k.id); A.link(p, k, 'child', 50, p.sex === 'M' ? 'father' : 'mother');
+      return k;
+    },
+    link(p, k, type, year) { A.link(p, k, type, 30, type); p.rel[k.id].since = year; if (k.rel[p.id]) k.rel[p.id].since = year; return k; },
+    prov(p, test) { const t = A.S.prov.find(x => x.owner === p.realm && test(x)); if (t) p.home = t.id; return !!t; },
+    town(p) { return H.prov(p, x => x.town >= 8000); },
+    coast(p) { return H.prov(p, x => x.coast); },
+    terr(p, ...ts) { return H.prov(p, x => ts.includes(x.terr)); },
+    move(p, realm) { p.realm = realm; H.prov(p, () => true); },
+    job(p, c, rk) { p.job = { c, r: rk == null ? 1 : rk, y: 3, perf: 55, rep: 55 }; },
+    mother(p) { if (!(p.parents[1] && A.P(p.parents[1]) && A.P(p.parents[1]).alive)) { const m = H.person(p, { sex: 'F', age: A.age(p) + 25 }); p.parents[1] = m.id; A.link(p, m, 'mother', 40, 'child'); } },
+    work(p, Y, t) { p.works = p.works || []; p.works.push({ y: Y, t }); },
+    who(p, key, o) { p.flags[key] = H.person(p, o).id; },
+  };
+  const SMITH = p => H.job(p, 'smith', 3);
+  // [event id, fixture]: o = newGame options, f = { flag: years ago } (the first is the memory under test),
+  // ev = { setter event id: years ago } (the seen-year that tells which setter made the memory),
+  // gate = how to make the memory "this year" when the flag is not a year, prep = extra state, recall = words the view must show
+  const FIX = [
+    ['mat_reeve_list', { f: { av_secret: 6 }, recall: ['packet', 'reeve'] }],
+    ['mat_reeve_men', { f: { mat_reeve_bled: 3 }, prep: p => H.who(p, 'mat_reeve_who', { status: 'gentry', age: 50 }), recall: ['purse', 'steward'] }],
+    ['mat_neck_bales', { o: { realm: 'POL-14' }, f: { av_neckbribe: 3 }, recall: ['grey channel', 'toll-clerk'] }],
+    ['mat_neck_box', { o: { realm: 'POL-14' }, f: { mat_neck_runner: 2 }, recall: ['station'] }],
+    ['mat_forger_paper', { f: { av_forger: 5 }, ev: { av_lost_pass: 5 }, prep: p => { p.literate = true; }, recall: ['pewter', 'bridge-gate'] }],
+    ['mat_forger_paper', { o: { realm: 'POL-16' }, f: { av_forger: 5 }, ev: { av_crime_exchange: 5 }, prep: p => { p.literate = true; }, recall: ['counting-house', 'sixty suns'] }],
+    ['mat_forged_court', { f: { mat_forged_freedom: 3 }, prep: p => { H.who(p, 'mat_forged_who', { sex: 'F', age: 45 }); p.coin = 100; }, recall: ["freedman's paper"] }],
+    ['mat_courier_bid', { f: { av_courier: 4 }, recall: ['four days', 'forty suns'] }],
+    ['mat_courier_relay', { f: { mat_courier_trusted: 4 }, prep: p => { H.who(p, 'mat_courier_who', { sex: 'M', age: 55, status: 'merchant' }); p.coin = 150; }, recall: ['riders'] }],
+    ['mat_road_child', { o: { startAge: 40 }, f: { av_traveled: 22 }, ev: { av_wanderjahr: 22 }, prep: p => H.kid(p, 15, 'M'), recall: ['tinker', 'your own son'] }],
+    ['mat_road_child', { o: { startAge: 30 }, f: { av_traveled: 15 }, ev: { av_teen_runaway_sea: 15 }, recall: ["ship's boy", "neighbour's child"] }],
+    ['mat_road_return', { f: { mat_sent_road: 3 }, prep: p => { H.who(p, 'mat_road_who', { sex: 'M', age: 19 }); p.coin = 50; }, recall: ['knife'] }],
+    ['mat_note_home', { o: { startAge: 25 }, f: { av_traveled: 10 }, ev: { av_teen_runaway_sea: 10 }, prep: p => H.mother(p), recall: ['note', "ship's boy"] }],
+    ['mat_delve_steel', { f: { av_opened_delve: 4 }, prep: p => { p.coin = 100; }, recall: ['ivy', 'ingots'] }],
+    ['mat_bounty_goats', { f: { av_bounty_beast: 35 }, ev: { av_wild_village_bounty: 4 }, gate: (p, Y) => { p.flags.ev.av_wild_village_bounty = Y; }, recall: ['sheepfold', '35 suns'] }],
+    ['mat_poacher_court', { f: { av_poacher: 4 }, prep: (p, Y) => { H.link(p, H.person(p, { sex: 'M', age: 35 }), 'friend', Y - 4); p.coin = 50; }, recall: ['stag', 'haunch'] }],
+    ['mat_poacher_court', { f: { av_poacher: 4 }, prep: p => { p.coin = 50; }, recall: ['stag', "lord's chase"] }],
+    ['mat_verderer_coat', { f: { av_poacher: 6 }, recall: ['haunch', 'first light'] }],
+    ['mat_verderer_boy', { f: { mat_verderer: 2 }, recall: ['green coat', 'haunch'] }],
+    ['mat_verderer_boy', { f: { mat_verderer_soft: 3 }, recall: ['looked away', 'haunch'] }],
+    ['mat_aurochs_pit', { f: { av_aurochs_trail: 3 }, prep: p => H.terr(p, 'forest', 'plains'), recall: ['oak glade', 'black bulls'] }],
+    ['mat_outlaw_notice', { f: { av_outlaw_known: 4 }, recall: ['charcoal', 'calluses'] }],
+    ['mat_outlaw_repays', { f: { mat_outlaw_warned: 3 }, prep: p => H.who(p, 'mat_outlaw_who', { sex: 'M', age: 40 }), recall: ['notice on the church door'] }],
+    ['mat_watch_staff', { f: { av_wetwatch: 5 }, prep: (p, Y) => { H.town(p); H.link(p, H.person(p, { sex: 'M', age: 30 }), 'friend', Y - 5); p.coin = 30; }, recall: ['five suns a month'] }],
+    ['mat_watch_staff', { f: { av_wetwatch: 5 }, prep: p => { H.town(p); p.coin = 30; }, recall: ['crooked lamp', 'dice-master'] }],
+    ['mat_castaway_boots', { f: { av_castaway: 3 }, prep: p => H.town(p), recall: ["dead man's boots", 'island'] }],
+    ['mat_widow_son', { f: { mat_widow_told: 4 }, prep: p => H.who(p, 'mat_widow_who', { sex: 'F', age: 45 }), recall: ['boots', 'island'] }],
+    ['mat_castaway_smoke', { f: { av_castaway: 6 }, prep: p => H.job(p, 'sailor', 1), recall: ["dead man's boots", 'hill'] }],
+    ['mat_mutiny_captain', { f: { av_mutineer: 5 }, prep: (p, Y) => { H.job(p, 'sailor', 1); H.link(p, H.person(p, { sex: 'M', age: 30 }), 'friend', Y - 5); p.coin = 100; }, recall: ['cask of water', 'showed you the knife'] }],
+    ['mat_mutiny_captain', { f: { av_mutineer: 5 }, prep: p => { H.coast(p); p.coin = 100; }, recall: ['cask of water', 'biscuit'] }],
+    ['mat_old_name', { f: { mat_false_name: 3 }, recall: ['admiralty clerk'] }],
+    ['mat_cripple_share', { o: { realm: 'POL-33' }, f: { av_corsair: 4 }, prep: p => H.job(p, 'pirate', 1), recall: ['six hundred', 'articles'] }],
+    ['mat_corsair_dice', { o: { realm: 'POL-33' }, f: { av_corsair: 6 }, prep: p => H.job(p, 'pirate', 1), recall: ['drowned queen', 'articles'] }],
+    ['mat_redsail_cove', { o: { realm: 'POL-33' }, f: { av_redsail: 3 }, prep: p => H.job(p, 'pirate', 1), recall: ['ratrock', 'ima redsail'] }],
+    ['mat_redsail_price', { o: { realm: 'POL-33' }, f: { mat_redsail_sailed: 2 }, prep: p => { p.coin = 200; }, recall: ['ima redsail'] }],
+    ['mat_turncoat_captain', { f: { av_turncoat: 5 }, ev: { av_merc_switch: 5 }, prep: (p, Y) => { H.link(p, H.person(p, { sex: 'M', age: 50 }), 'enemy', Y - 5); p.coin = 100; }, recall: ['double pay', 'across the lines'] }],
+    ['mat_postern_pies', { f: { av_turncoat: 6 }, ev: { av_merc_postern: 6 }, prep: p => { p.coin = 100; }, recall: ['third stone', 'postern'] }],
+    ['mat_hold_surety', { o: { realm: 'POL-10' }, f: { av_hold_book: 4 }, prep: p => { if (p.realm !== 'POL-10') H.move(p, 'POL-10'); }, recall: ['factor', 'three days'] }],
+    ['mat_surety_due', { f: { mat_surety: 2 }, prep: p => { H.who(p, 'mat_surety_who', { sex: 'M', age: 35, status: 'merchant' }); p.coin = 200; }, recall: ['small mark'] }],
+    ['mat_journeyman_door', { o: { status: 'artisan', startAge: 30 }, f: { tr_wandered: 6 }, prep: p => H.job(p, 'smith', 2), recall: ['hardest master'] }],
+    ['mat_journeyman_master', { o: { status: 'artisan', startAge: 40 }, f: { mat_took_journeyman: 5 }, prep: p => { H.job(p, 'smith', 3); H.who(p, 'mat_journeyman_who', { age: 25, status: 'artisan' }); }, recall: ['loft'] }],
+    ['mat_council_bread', { o: { status: 'artisan', startAge: 45 }, f: { tr_council: 3 }, prep: p => { SMITH(p); p.coin = 150; }, recall: ['council', 'craftsmen'] }],
+    ['mat_bread_merchants', { o: { status: 'artisan', startAge: 45 }, f: { mat_bread_fixed: 2 }, prep: p => SMITH(p), recall: ['assize'] }],
+    ['mat_council_rival', { o: { status: 'artisan', startAge: 45 }, f: { tr_council: 5 }, prep: (p, Y) => { SMITH(p); H.link(p, H.person(p, { sex: 'M', age: 55, status: 'merchant' }), 'rival', Y - 5); }, recall: ['guild seat'] }],
+    ['mat_council_rival', { o: { status: 'artisan', startAge: 45 }, f: { tr_council: 5 }, prep: p => SMITH(p), recall: ['guild seat'] }],
+    ['mat_heirsword_war', { o: { status: 'artisan', startAge: 45 }, f: { tr_smith_heirsword: 6 }, prep: (p, Y) => { SMITH(p); H.work(p, Y - 6, "the heir's sword of Aldmark"); }, recall: ["heir's girding", 'alone, over a winter'] }],
+    ['mat_heirsword_war', { o: { status: 'artisan', startAge: 45 }, f: { tr_smith_heirsword: 6 }, prep: (p, Y) => { SMITH(p); H.work(p, Y - 6, "the heir's sword of Aldmark, made with a brother smith"); }, recall: ['brother smith'] }],
+    ['mat_heirsword_war', { o: { status: 'artisan', startAge: 45 }, f: { tr_smith_heirsword: 6 }, prep: p => SMITH(p), recall: ["heir's girding"] }],
+    ['mat_heirsword_mark', { o: { status: 'artisan', startAge: 45 }, f: { tr_smith_heirsword: 4 }, prep: p => SMITH(p), recall: ["heir's sword"] }],
+    ['mat_mark_broke', { o: { status: 'artisan', startAge: 45 }, f: { mat_mark_sold: 2 }, prep: p => { SMITH(p); p.coin = 150; }, recall: ['great workshop'] }],
+    ['mat_mark_culvert', { o: { status: 'artisan', startAge: 35 }, f: { tr_mason_marked: 7 }, prep: p => { H.job(p, 'mason', 2); p.coin = 60; }, recall: ['keystone', 'lodge'] }],
+    ['mat_mark_passed', { o: { status: 'artisan', startAge: 50 }, f: { tr_mason_marked: 20 }, prep: p => H.job(p, 'mason', 3), recall: ['twenty years', 'mark'] }],
+    ['mat_drawing_buyer', { o: { status: 'artisan', startAge: 35 }, f: { tr_mason_drawing: 4 }, prep: p => H.job(p, 'mason', 2), recall: ['loose stone', 'behind the wine'] }],
+    ['mat_strongroom_empty', { o: { status: 'artisan', startAge: 35 }, f: { mat_drawing_sold: 2 }, prep: p => { H.job(p, 'mason', 2); p.coin = 200; }, recall: ['soft hands'] }],
+    ['mat_drawing_attainder', { o: { status: 'artisan', startAge: 40 }, f: { tr_mason_drawing: 7 }, prep: p => H.job(p, 'mason', 2), recall: ['strongroom', 'behind the wine'] }],
+    ['mat_banner_torn', { o: { status: 'artisan', startAge: 45 }, f: { tr_weaver_banner: 5 }, prep: p => H.job(p, 'weaver', 3), recall: ['great banner', 'rags'] }],
+    ['mat_xbow_order', { o: { status: 'artisan', startAge: 30 }, f: { tr_bow_xbow: 4 }, prep: p => H.job(p, 'bowyer', 2), recall: ['trigger', 'journeyman'] }],
+    ['mat_royal_bow_order', { o: { status: 'artisan', startAge: 45 }, f: { tr_bow_royal: 5 }, prep: p => H.job(p, 'bowyer', 3), recall: ['gift bow'] }],
+    ['mat_royal_bow_order', { o: { status: 'artisan', startAge: 45 }, f: { tr_bow_royal: 5 }, prep: (p, Y) => { H.job(p, 'bowyer', 3); H.work(p, Y - 5, 'the twin bows of the two kings'); }, recall: ['twin bows'] }],
+    ['mat_gruit_court', { o: { status: 'artisan', startAge: 30 }, f: { tr_brew_hopped: 4 }, prep: p => { H.job(p, 'brewer', 1); p.coin = 60; }, recall: ['gruit', 'hopped ale'] }],
+    ['mat_hop_garden', { o: { status: 'artisan', startAge: 35 }, f: { mat_hops_free: 3 }, prep: p => { H.job(p, 'brewer', 2); p.coin = 100; }, recall: ['judgment'] }],
+    ['mat_altar_donor', { o: { status: 'artisan', startAge: 40 }, f: { tr_art_altar: 6 }, prep: p => H.job(p, 'artist', 2), recall: ['donors', 'altarpiece'] }],
+    ['mat_feast_letter', { o: { status: 'artisan', startAge: 45 }, f: { tr_cook_greatfeast: 4 }, prep: (p, Y) => { H.job(p, 'cook', 3); H.work(p, Y - 4, 'the smoking peacock of the feast of 1101'); }, recall: ['great feast', 'peacock'] }],
+    ['mat_feast_letter', { o: { status: 'artisan', startAge: 45 }, f: { tr_cook_greatfeast: 4 }, prep: p => H.job(p, 'cook', 3), recall: ['great feast', 'what went wrong'] }],
+    ['mat_fireoil_sweats', { o: { status: 'artisan', startAge: 40 }, f: { tr_eng_fireoil: 4 }, prep: p => H.job(p, 'engineer', 2), recall: ['fire-oil', 'engine store'] }],
+    ['mat_greatwork_test', { o: { status: 'artisan', startAge: 50 }, f: { tr_eng_greatwork: 6 }, prep: (p, Y) => { H.job(p, 'engineer', 3); H.work(p, Y - 6, 'the harbor chain of Kingsmere'); }, recall: ['chain', 'merchantmen'] }],
+    ['mat_greatwork_test', { o: { status: 'artisan', startAge: 50 }, f: { tr_eng_greatwork: 6 }, prep: (p, Y) => { H.job(p, 'engineer', 3); H.work(p, Y - 6, 'the great sluice of Kingsmere'); }, recall: ['sluices', 'dam'] }],
+    ['mat_greatwork_audit', { o: { status: 'artisan', startAge: 50 }, f: { tr_eng_greatwork: 5 }, prep: p => { H.job(p, 'engineer', 3); p.coin = 300; }, recall: ['great work'] }],
+    ['mat_serv_letter', { f: { tr_serv_knows: 4 }, ev: { tr_serv_letter: 4 }, prep: p => H.job(p, 'servant', 1), recall: ['plain wax', 'warm knife'] }],
+    ['mat_serv_guest', { f: { tr_serv_knows: 3 }, ev: { tr_serv_great_guest: 3 }, prep: p => H.job(p, 'servant', 1), recall: ['high table', 'sweet course'] }],
+    ['mat_loyal_debts', { f: { tr_serv_loyal: 4 }, prep: p => { H.job(p, 'servant', 1); p.coin = 50; }, recall: ['great house', 'will'] }],
+    ['mat_cup_again', { f: { tr_serv_saved: 4 }, prep: p => H.job(p, 'servant', 1), recall: ['cup', 'stumbled'] }],
+  ];
+  // 2-step arcs: [first event, choice index, force win (true/false/null), second event, years later, person carries over]
+  const ARCS = [
+    ['mat_reeve_list', 0, true, 'mat_reeve_men', 3, true], ['mat_neck_bales', 0, true, 'mat_neck_box', 2, false],
+    ['mat_forger_paper', 0, true, 'mat_forged_court', 3, true], ['mat_forger_paper', 1, true, 'mat_forged_court', 3, true],
+    ['mat_courier_bid', 0, true, 'mat_courier_relay', 4, true], ['mat_road_child', 0, null, 'mat_road_return', 3, true],
+    ['mat_road_child', 2, false, 'mat_road_return', 3, true], ['mat_verderer_coat', 0, null, 'mat_verderer_boy', 2, false],
+    ['mat_verderer_coat', 1, null, 'mat_verderer_boy', 2, false], ['mat_outlaw_notice', 1, null, 'mat_outlaw_repays', 3, true],
+    ['mat_castaway_boots', 0, null, 'mat_widow_son', 4, false], ['mat_mutiny_captain', 2, null, 'mat_old_name', 3, false],
+    ['mat_redsail_cove', 0, true, 'mat_redsail_price', 2, false], ['mat_redsail_cove', 0, false, 'mat_redsail_price', 2, false],
+    ['mat_hold_surety', 0, null, 'mat_surety_due', 2, true], ['mat_journeyman_door', 0, null, 'mat_journeyman_master', 5, true],
+    ['mat_journeyman_door', 1, null, 'mat_journeyman_master', 5, true], ['mat_council_bread', 0, true, 'mat_bread_merchants', 2, false],
+    ['mat_heirsword_mark', 1, null, 'mat_mark_broke', 2, false], ['mat_drawing_buyer', 0, null, 'mat_strongroom_empty', 2, false],
+    ['mat_gruit_court', 0, true, 'mat_hop_garden', 3, false],
+  ];
+
+  window.__matFix = { H, FIX, ARCS, SMITH };
+}
+
 export default {
   async matMemory(pg) {
+    await pg.evaluate(installFixtures);
     const r = await pg.evaluate(() => {
       const CHUNK = ['av_secret', 'av_neckbribe', 'av_forger', 'av_courier', 'av_traveled', 'av_opened_delve', 'av_bounty_beast', 'av_poacher',
         'av_aurochs_trail', 'av_outlaw_known', 'av_wetwatch', 'av_castaway', 'av_mutineer', 'av_corsair', 'av_redsail', 'av_turncoat',
@@ -29,7 +153,7 @@ export default {
       const prose = s => String(s || '').replace(/\([^)]*\)/g, ' ').replace(/They call you [^.]*now\./g, ' ');
       const RAW = /\{[A-Za-z0-9_.]+\}/;
       const TICS = /looks at you a long time|for the rest of your life|(^|[.!?]\s+)Nobody\b/i;
-      const out = { problems: [], events: 0, fixtures: 0, gated: 0, needMemory: 0, recalled: 0, deterministic: 0, branches: 0, arcs: 0, unread: [] };
+      const out = { dump: {}, problems: [], events: 0, fixtures: 0, gated: 0, needMemory: 0, recalled: 0, deterministic: 0, branches: 0, arcs: 0, unread: [] };
       const bad = m => out.problems.push(m);
       const src = f => (typeof f === 'function' ? f.toString() : JSON.stringify(f || ''));
 
@@ -41,11 +165,11 @@ export default {
       const setByMe = new Set();
       for (const id of mine) for (const c of A.EV[id].choices || []) for (const b of [c, c.win, c.lose]) {
         if (!b || !b.fx) continue;
-        for (const m of src(b.fx).matchAll(/"?flag"?\s*:\s*"(mat_[A-Za-z0-9_]+)"|flags\.(mat_[A-Za-z0-9_]+)\s*=(?!=)|keep\("(mat_[A-Za-z0-9_]+)"/g)) setByMe.add(m[1] || m[2] || m[3]);
+        for (const m of src(b.fx).matchAll(/"?flag"?\s*:\s*"(mat_[A-Za-z0-9_]+)"|flags\.(mat_[A-Za-z0-9_]+)\s*=(?!=)/g)) setByMe.add(m[1] || m[2]);
       }
       const readSrc = Object.values(A.EV).map(e => (e.cond ? e.cond.toString() : '') + (e.setup ? e.setup.toString() : '')).join('\n');
       for (const f of setByMe) if (!readSrc.includes(f)) bad(`arc flag ${f} is set but never read`);
-      const MARK = /"?(trait|untrait|flag|them|newRel|wound|deed|epithet|owed|oweThem|claim|asset|secret|masterwork|bossOp|duel|beast)"?\s*:|flags\.[a-z_]+\s*=(?!=)|keep\(|A\.(link|addTrait|kill)\(/;
+      const MARK = /"?(trait|untrait|flag|them|newRel|wound|deed|epithet|owed|oweThem|claim|asset|secret|masterwork|bossOp|duel|beast)"?\s*:|flags\.[a-z_]+\s*=(?!=)|A\.(link|addTrait|kill)\(/;
       for (const id of mine) {
         const e = A.EV[id], cs = e.cond ? e.cond.toString() : '';
         if (!/C\.flag\(p, "(av_|tr_|mat_)/.test(cs)) bad(`${id}: cond does not read its memory through C.flag`);
@@ -57,123 +181,7 @@ export default {
         if (!srcs.some(x => MARK.test(x))) bad(`${id}: no branch leaves a lasting mark`);
       }
 
-      // ---- fixture helpers
-      const H = {
-        person(p, o) {
-          o = o || {};
-          const race = o.race || p.race, sex = o.sex || 'F';
-          const k = A.newPerson({ given: A.givenName(p.cult, sex), sex, race, realm: p.realm, cult: p.cult, faith: p.faith, born: A.S.year - Math.round((o.age != null ? o.age : A.age(p))), status: o.status || 'peasant', home: p.home });
-          k.occ = o.occ || 'a neighbor';
-          return k;
-        },
-        kid(p, age, sex) {
-          const k = H.person(p, { age, sex: sex || 'F', status: p.status });
-          k.parents = [p.id]; p.children.push(k.id); A.link(p, k, 'child', 50, p.sex === 'M' ? 'father' : 'mother');
-          return k;
-        },
-        link(p, k, type, year) { A.link(p, k, type, 30, type); p.rel[k.id].since = year; if (k.rel[p.id]) k.rel[p.id].since = year; return k; },
-        prov(p, test) { const t = A.S.prov.find(x => x.owner === p.realm && test(x)); if (t) p.home = t.id; return !!t; },
-        town(p) { return H.prov(p, x => x.town >= 8000); },
-        coast(p) { return H.prov(p, x => x.coast); },
-        terr(p, ...ts) { return H.prov(p, x => ts.includes(x.terr)); },
-        move(p, realm) { p.realm = realm; H.prov(p, () => true); },
-        job(p, c, rk) { p.job = { c, r: rk == null ? 1 : rk, y: 3, perf: 55, rep: 55 }; },
-        mother(p) { if (!(p.parents[1] && A.P(p.parents[1]) && A.P(p.parents[1]).alive)) { const m = H.person(p, { sex: 'F', age: A.age(p) + 25 }); p.parents[1] = m.id; A.link(p, m, 'mother', 40, 'child'); } },
-        work(p, Y, t) { p.works = p.works || []; p.works.push({ y: Y, t }); },
-        who(p, key, o) { p.flags[key] = H.person(p, o).id; },
-      };
-      const SMITH = p => H.job(p, 'smith', 3);
-      // [event id, fixture]: o = newGame options, f = { flag: years ago } (the first is the memory under test),
-      // ev = { setter event id: years ago } (the seen-year that tells which setter made the memory),
-      // gate = how to make the memory "this year" when the flag is not a year, prep = extra state, recall = words the view must show
-      const FIX = [
-        ['mat_reeve_list', { f: { av_secret: 6 }, recall: ['packet', 'reeve'] }],
-        ['mat_reeve_men', { f: { mat_reeve_bled: 3 }, prep: p => H.who(p, 'mat_reeve_who', { status: 'gentry', age: 50 }), recall: ['purse', 'steward'] }],
-        ['mat_neck_bales', { o: { realm: 'POL-14' }, f: { av_neckbribe: 3 }, recall: ['grey channel', 'toll-clerk'] }],
-        ['mat_neck_box', { o: { realm: 'POL-14' }, f: { mat_neck_runner: 2 }, recall: ['station'] }],
-        ['mat_forger_paper', { f: { av_forger: 5 }, ev: { av_lost_pass: 5 }, prep: p => { p.literate = true; }, recall: ['pewter', 'bridge-gate'] }],
-        ['mat_forger_paper', { o: { realm: 'POL-16' }, f: { av_forger: 5 }, ev: { av_crime_exchange: 5 }, prep: p => { p.literate = true; }, recall: ['counting-house', 'sixty suns'] }],
-        ['mat_forged_court', { f: { mat_forged_freedom: 3 }, prep: p => { H.who(p, 'mat_forged_who', { sex: 'F', age: 45 }); p.coin = 100; }, recall: ["freedman's paper"] }],
-        ['mat_courier_bid', { f: { av_courier: 4 }, recall: ['four days', 'forty suns'] }],
-        ['mat_courier_relay', { f: { mat_courier_trusted: 4 }, prep: p => { H.who(p, 'mat_courier_who', { sex: 'M', age: 55, status: 'merchant' }); p.coin = 150; }, recall: ['riders'] }],
-        ['mat_road_child', { o: { startAge: 40 }, f: { av_traveled: 22 }, ev: { av_wanderjahr: 22 }, prep: p => H.kid(p, 15, 'M'), recall: ['tinker', 'your own son'] }],
-        ['mat_road_child', { o: { startAge: 30 }, f: { av_traveled: 15 }, ev: { av_teen_runaway_sea: 15 }, recall: ["ship's boy", "neighbour's child"] }],
-        ['mat_road_return', { f: { mat_sent_road: 3 }, prep: p => { H.who(p, 'mat_road_who', { sex: 'M', age: 19 }); p.coin = 50; }, recall: ['knife'] }],
-        ['mat_note_home', { o: { startAge: 25 }, f: { av_traveled: 10 }, ev: { av_teen_runaway_sea: 10 }, prep: p => H.mother(p), recall: ['note', "ship's boy"] }],
-        ['mat_delve_steel', { f: { av_opened_delve: 4 }, prep: p => { p.coin = 100; }, recall: ['ivy', 'ingots'] }],
-        ['mat_bounty_goats', { f: { av_bounty_beast: 35 }, ev: { av_wild_village_bounty: 4 }, gate: (p, Y) => { p.flags.ev.av_wild_village_bounty = Y; }, recall: ['sheepfold', '35 suns'] }],
-        ['mat_poacher_court', { f: { av_poacher: 4 }, prep: (p, Y) => { H.link(p, H.person(p, { sex: 'M', age: 35 }), 'friend', Y - 4); p.coin = 50; }, recall: ['stag', 'haunch'] }],
-        ['mat_poacher_court', { f: { av_poacher: 4 }, recall: ['stag', "lord's chase"] }],
-        ['mat_verderer_coat', { f: { av_poacher: 6 }, recall: ['haunch', 'first light'] }],
-        ['mat_verderer_boy', { f: { mat_verderer: 2 }, recall: ['green coat', 'haunch'] }],
-        ['mat_verderer_boy', { f: { mat_verderer_soft: 3 }, recall: ['looked away', 'haunch'] }],
-        ['mat_aurochs_pit', { f: { av_aurochs_trail: 3 }, prep: p => H.terr(p, 'forest', 'plains'), recall: ['oak glade', 'black bulls'] }],
-        ['mat_outlaw_notice', { f: { av_outlaw_known: 4 }, recall: ['charcoal', 'calluses'] }],
-        ['mat_outlaw_repays', { f: { mat_outlaw_warned: 3 }, prep: p => H.who(p, 'mat_outlaw_who', { sex: 'M', age: 40 }), recall: ['notice on the church door'] }],
-        ['mat_watch_staff', { f: { av_wetwatch: 5 }, prep: (p, Y) => { H.town(p); H.link(p, H.person(p, { sex: 'M', age: 30 }), 'friend', Y - 5); p.coin = 30; }, recall: ['five suns a month'] }],
-        ['mat_watch_staff', { f: { av_wetwatch: 5 }, prep: p => { H.town(p); }, recall: ['crooked lamp', 'dice-master'] }],
-        ['mat_castaway_boots', { f: { av_castaway: 3 }, prep: p => H.town(p), recall: ["dead man's boots", 'island'] }],
-        ['mat_widow_son', { f: { mat_widow_told: 4 }, prep: p => H.who(p, 'mat_widow_who', { sex: 'F', age: 45 }), recall: ['boots', 'island'] }],
-        ['mat_castaway_smoke', { f: { av_castaway: 6 }, prep: p => H.job(p, 'sailor', 1), recall: ["dead man's boots", 'hill'] }],
-        ['mat_mutiny_captain', { f: { av_mutineer: 5 }, prep: (p, Y) => { H.job(p, 'sailor', 1); H.link(p, H.person(p, { sex: 'M', age: 30 }), 'friend', Y - 5); p.coin = 100; }, recall: ['cask of water', 'showed you the knife'] }],
-        ['mat_mutiny_captain', { f: { av_mutineer: 5 }, prep: p => H.coast(p), recall: ['cask of water', 'biscuit'] }],
-        ['mat_old_name', { f: { mat_false_name: 3 }, recall: ['admiralty clerk'] }],
-        ['mat_cripple_share', { o: { realm: 'POL-33' }, f: { av_corsair: 4 }, prep: p => H.job(p, 'pirate', 1), recall: ['six hundred', 'articles'] }],
-        ['mat_corsair_dice', { o: { realm: 'POL-33' }, f: { av_corsair: 6 }, prep: p => H.job(p, 'pirate', 1), recall: ['drowned queen', 'articles'] }],
-        ['mat_redsail_cove', { o: { realm: 'POL-33' }, f: { av_redsail: 3 }, prep: p => H.job(p, 'pirate', 1), recall: ['ratrock', 'ima redsail'] }],
-        ['mat_redsail_price', { o: { realm: 'POL-33' }, f: { mat_redsail_sailed: 2 }, prep: p => { p.coin = 200; }, recall: ['ima redsail'] }],
-        ['mat_turncoat_captain', { f: { av_turncoat: 5 }, ev: { av_merc_switch: 5 }, prep: (p, Y) => { H.link(p, H.person(p, { sex: 'M', age: 50 }), 'enemy', Y - 5); p.coin = 100; }, recall: ['double pay', 'across the lines'] }],
-        ['mat_postern_pies', { f: { av_turncoat: 6 }, ev: { av_merc_postern: 6 }, prep: p => { p.coin = 100; }, recall: ['third stone', 'postern'] }],
-        ['mat_hold_surety', { o: { realm: 'POL-10' }, f: { av_hold_book: 4 }, prep: p => { if (p.realm !== 'POL-10') H.move(p, 'POL-10'); }, recall: ['factor', 'three days'] }],
-        ['mat_surety_due', { f: { mat_surety: 2 }, prep: p => { H.who(p, 'mat_surety_who', { sex: 'M', age: 35, status: 'merchant' }); p.coin = 200; }, recall: ['small mark'] }],
-        ['mat_journeyman_door', { o: { status: 'artisan', startAge: 30 }, f: { tr_wandered: 6 }, prep: p => H.job(p, 'smith', 2), recall: ['hardest master'] }],
-        ['mat_journeyman_master', { o: { status: 'artisan', startAge: 40 }, f: { mat_took_journeyman: 5 }, prep: p => { H.job(p, 'smith', 3); H.who(p, 'mat_journeyman_who', { age: 25, status: 'artisan' }); }, recall: ['loft'] }],
-        ['mat_council_bread', { o: { status: 'artisan', startAge: 45 }, f: { tr_council: 3 }, prep: p => { SMITH(p); p.coin = 150; }, recall: ['council', 'craftsmen'] }],
-        ['mat_bread_merchants', { o: { status: 'artisan', startAge: 45 }, f: { mat_bread_fixed: 2 }, prep: p => SMITH(p), recall: ['assize'] }],
-        ['mat_council_rival', { o: { status: 'artisan', startAge: 45 }, f: { tr_council: 5 }, prep: (p, Y) => { SMITH(p); H.link(p, H.person(p, { sex: 'M', age: 55, status: 'merchant' }), 'rival', Y - 5); }, recall: ['guild seat'] }],
-        ['mat_council_rival', { o: { status: 'artisan', startAge: 45 }, f: { tr_council: 5 }, prep: p => SMITH(p), recall: ['guild seat'] }],
-        ['mat_heirsword_war', { o: { status: 'artisan', startAge: 45 }, f: { tr_smith_heirsword: 6 }, prep: (p, Y) => { SMITH(p); H.work(p, Y - 6, "the heir's sword of Aldmark"); }, recall: ["heir's girding", 'alone, over a winter'] }],
-        ['mat_heirsword_war', { o: { status: 'artisan', startAge: 45 }, f: { tr_smith_heirsword: 6 }, prep: (p, Y) => { SMITH(p); H.work(p, Y - 6, "the heir's sword of Aldmark, made with a brother smith"); }, recall: ['brother smith'] }],
-        ['mat_heirsword_war', { o: { status: 'artisan', startAge: 45 }, f: { tr_smith_heirsword: 6 }, prep: p => SMITH(p), recall: ["heir's girding"] }],
-        ['mat_heirsword_mark', { o: { status: 'artisan', startAge: 45 }, f: { tr_smith_heirsword: 4 }, prep: p => SMITH(p), recall: ["heir's sword"] }],
-        ['mat_mark_broke', { o: { status: 'artisan', startAge: 45 }, f: { mat_mark_sold: 2 }, prep: p => { SMITH(p); p.coin = 150; }, recall: ['great workshop'] }],
-        ['mat_mark_culvert', { o: { status: 'artisan', startAge: 35 }, f: { tr_mason_marked: 7 }, prep: p => { H.job(p, 'mason', 2); p.coin = 60; }, recall: ['keystone', 'lodge'] }],
-        ['mat_mark_passed', { o: { status: 'artisan', startAge: 50 }, f: { tr_mason_marked: 20 }, prep: p => H.job(p, 'mason', 3), recall: ['twenty years', 'mark'] }],
-        ['mat_drawing_buyer', { o: { status: 'artisan', startAge: 35 }, f: { tr_mason_drawing: 4 }, prep: p => H.job(p, 'mason', 2), recall: ['loose stone', 'behind the wine'] }],
-        ['mat_strongroom_empty', { o: { status: 'artisan', startAge: 35 }, f: { mat_drawing_sold: 2 }, prep: p => { H.job(p, 'mason', 2); p.coin = 200; }, recall: ['soft hands'] }],
-        ['mat_drawing_attainder', { o: { status: 'artisan', startAge: 40 }, f: { tr_mason_drawing: 7 }, prep: p => H.job(p, 'mason', 2), recall: ['strongroom', 'behind the wine'] }],
-        ['mat_banner_torn', { o: { status: 'artisan', startAge: 45 }, f: { tr_weaver_banner: 5 }, prep: p => H.job(p, 'weaver', 3), recall: ['great banner', 'rags'] }],
-        ['mat_xbow_order', { o: { status: 'artisan', startAge: 30 }, f: { tr_bow_xbow: 4 }, prep: p => H.job(p, 'bowyer', 2), recall: ['trigger', 'journeyman'] }],
-        ['mat_royal_bow_order', { o: { status: 'artisan', startAge: 45 }, f: { tr_bow_royal: 5 }, prep: p => H.job(p, 'bowyer', 3), recall: ['gift bow'] }],
-        ['mat_royal_bow_order', { o: { status: 'artisan', startAge: 45 }, f: { tr_bow_royal: 5 }, prep: (p, Y) => { H.job(p, 'bowyer', 3); H.work(p, Y - 5, 'the twin bows of the two kings'); }, recall: ['twin bows'] }],
-        ['mat_gruit_court', { o: { status: 'artisan', startAge: 30 }, f: { tr_brew_hopped: 4 }, prep: p => { H.job(p, 'brewer', 1); p.coin = 60; }, recall: ['gruit', 'hopped ale'] }],
-        ['mat_hop_garden', { o: { status: 'artisan', startAge: 35 }, f: { mat_hops_free: 3 }, prep: p => { H.job(p, 'brewer', 2); p.coin = 100; }, recall: ['judgment'] }],
-        ['mat_altar_donor', { o: { status: 'artisan', startAge: 40 }, f: { tr_art_altar: 6 }, prep: p => H.job(p, 'artist', 2), recall: ['donors', 'altarpiece'] }],
-        ['mat_feast_letter', { o: { status: 'artisan', startAge: 45 }, f: { tr_cook_greatfeast: 4 }, prep: (p, Y) => { H.job(p, 'cook', 3); H.work(p, Y - 4, 'the smoking peacock of the feast of 1101'); }, recall: ['great feast', 'peacock'] }],
-        ['mat_feast_letter', { o: { status: 'artisan', startAge: 45 }, f: { tr_cook_greatfeast: 4 }, prep: p => H.job(p, 'cook', 3), recall: ['great feast', 'what went wrong'] }],
-        ['mat_fireoil_sweats', { o: { status: 'artisan', startAge: 40 }, f: { tr_eng_fireoil: 4 }, prep: p => H.job(p, 'engineer', 2), recall: ['fire-oil', 'engine store'] }],
-        ['mat_greatwork_test', { o: { status: 'artisan', startAge: 50 }, f: { tr_eng_greatwork: 6 }, prep: (p, Y) => { H.job(p, 'engineer', 3); H.work(p, Y - 6, 'the harbor chain of Kingsmere'); }, recall: ['chain', 'merchantmen'] }],
-        ['mat_greatwork_test', { o: { status: 'artisan', startAge: 50 }, f: { tr_eng_greatwork: 6 }, prep: (p, Y) => { H.job(p, 'engineer', 3); H.work(p, Y - 6, 'the great sluice of Kingsmere'); }, recall: ['sluices', 'dam'] }],
-        ['mat_greatwork_audit', { o: { status: 'artisan', startAge: 50 }, f: { tr_eng_greatwork: 5 }, prep: p => { H.job(p, 'engineer', 3); p.coin = 300; }, recall: ['great work'] }],
-        ['mat_serv_letter', { f: { tr_serv_knows: 4 }, ev: { tr_serv_letter: 4 }, prep: p => H.job(p, 'servant', 1), recall: ['plain wax', 'warm knife'] }],
-        ['mat_serv_guest', { f: { tr_serv_knows: 3 }, ev: { tr_serv_great_guest: 3 }, prep: p => H.job(p, 'servant', 1), recall: ['high table', 'sweet course'] }],
-        ['mat_loyal_debts', { f: { tr_serv_loyal: 4 }, prep: p => { H.job(p, 'servant', 1); p.coin = 50; }, recall: ['great house', 'will'] }],
-        ['mat_cup_again', { f: { tr_serv_saved: 4 }, prep: p => H.job(p, 'servant', 1), recall: ['cup', 'stumbled'] }],
-      ];
-      // 2-step arcs: [first event, choice index, force win (true/false/null), second event, years later, person carries over]
-      const ARCS = [
-        ['mat_reeve_list', 0, true, 'mat_reeve_men', 3, true], ['mat_neck_bales', 0, true, 'mat_neck_box', 2, false],
-        ['mat_forger_paper', 0, true, 'mat_forged_court', 3, true], ['mat_forger_paper', 1, true, 'mat_forged_court', 3, true],
-        ['mat_courier_bid', 0, true, 'mat_courier_relay', 4, true], ['mat_road_child', 0, null, 'mat_road_return', 3, true],
-        ['mat_road_child', 2, false, 'mat_road_return', 3, true], ['mat_verderer_coat', 0, null, 'mat_verderer_boy', 2, false],
-        ['mat_verderer_coat', 1, null, 'mat_verderer_boy', 2, false], ['mat_outlaw_notice', 1, null, 'mat_outlaw_repays', 3, true],
-        ['mat_castaway_boots', 0, null, 'mat_widow_son', 4, false], ['mat_mutiny_captain', 2, null, 'mat_old_name', 3, false],
-        ['mat_redsail_cove', 0, true, 'mat_redsail_price', 2, false], ['mat_redsail_cove', 0, false, 'mat_redsail_price', 2, false],
-        ['mat_hold_surety', 0, null, 'mat_surety_due', 2, true], ['mat_journeyman_door', 0, null, 'mat_journeyman_master', 5, true],
-        ['mat_journeyman_door', 1, null, 'mat_journeyman_master', 5, true], ['mat_council_bread', 0, true, 'mat_bread_merchants', 2, false],
-        ['mat_heirsword_mark', 1, null, 'mat_mark_broke', 2, false], ['mat_drawing_buyer', 0, null, 'mat_strongroom_empty', 2, false],
-        ['mat_gruit_court', 0, true, 'mat_hop_garden', 3, false],
-      ];
+      const { H, FIX, ARCS } = window.__matFix;
 
       let cur = '';
       const ce = console.error;
@@ -199,6 +207,7 @@ export default {
         if (TICS.test(all)) bad(`${id}${tag}: house tic in text: ${all.match(TICS)[0]}`);
         if (words(v.text) > 80) bad(`${id}${tag}: text ${words(v.text)} words`);
         for (const c of v.choices) if (words(c.t) > 12) bad(`${id}${tag}: label of ${words(c.t)} words`);
+        out.dump[id + tag] = out.dump[id + tag] || { text: v.text, words: words(v.text), choices: v.choices.map(c => c.t), results: [] };
         if (recall) {
           const low = v.text.toLowerCase(), miss = recall.filter(w => !low.includes(w.toLowerCase()));
           if (miss.length) bad(`${id}${tag}: does not recall ${miss.join(', ')}`); else out.recalled++;
@@ -218,6 +227,8 @@ export default {
         if (words(prose(t)) > 45) bad(`${cur}: result ${words(prose(t))} words of prose`);
         const p = A.pc();
         for (const k of ['coin', 'health', 'happy', 'honor', 'piety', 'fame']) if (!Number.isFinite(p[k])) bad(`${cur}: ${k} is ${p[k]}`);
+        const d = out.dump[id] || out.dump[id + ' (arc end)'];
+        if (d) d.results.push(`${cur.replace(id + ' ', '')} [${words(prose(t))}w]: ${t}`);
         if (A.S.queue[0] === q) A.eventClose();
         out.branches++;
         return t;

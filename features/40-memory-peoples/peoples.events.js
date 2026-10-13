@@ -59,6 +59,7 @@
     if (o.sur != null) q.sur = o.sur;
     else { try { const fn = A.familyName({ cult, realm, status: st, home, sex }); if (fn) { q.sur = fn.sur; q.surMode = fn.mode; } } catch (e) { /* no family name */ } }
     q.occ = o.occ || (A.isAdult(q) ? A.pick(A.OCC[st] || A.OCC.peasant) : "");
+    q.npcTemp = true; // dropped by A.gcPeople unless a choice links them to the player
     if (ctx) ctx.pid = q.id;
     return q;
   };
@@ -187,7 +188,7 @@
       cond: (p, C) => C.realm(p, "POL-06") && C.race(p, "elf") && C.adult(p) && (C.hasKids(p) || C.married(p)) && C.flag(p, "pp_elf_exiled") && A.S.year - p.flags.pp_elf_exiled >= 4,
       w: 3, once: true,
       setup: (p, ctx) => { ctx.isKid = kin(p, ctx, ["child"]) ? 1 : 0; if (!ctx.isKid && !kin(p, ctx, ["spouse"])) ctx.skip = 1; },
-      text: (p, ctx) => `${Ago(p, "pp_elf_exiled")} into your hundred years of exile, {them} comes to the Keepers' line to see you. You cut a young ash at night for a fourth room, and the Keeper of {home} read the stump like a letter. ${ctx.isKid ? "The room is {theirHis} now, and already too small." : "The grove-house has its fourth room, and you are not in it."} {them} stands one step inside the forest. You stand one step out.`,
+      text: (p, ctx) => `${Ago(p, "pp_elf_exiled")} into your hundred years of exile, {them} comes to the Keepers' line to see you. You cut a young ash at night for a fourth room, and the Keeper of {home} read the stump like a letter. ${ctx.isKid ? "{theyHe} sleeps in that room now, and it is already too small." : "The grove-house has its fourth room, and you are not in it."} {them} stands one step inside the forest. You stand one step out.`,
       choices: [
         { t: "Step across the line and hold {themHim}", check: { s: "stealth", s2: "ins", d: 50 },
           win: { r: "No Keeper is near. For the length of a breath the hundred years do not count. Then you step back out.",
@@ -302,7 +303,7 @@
       cond: (p, C) => C.realm(p, "POL-07") && C.race(p, "elf", "halfelf") && C.adult(p) && C.flag(p, "pp_elf_taeron") && A.S.year - p.flags.pp_elf_taeron >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { make(p, ctx, { race: "elf", sex: "F", given: "Lisael", sur: "Mistsail", age: 34, occ: "a rider of the Mistwood road" }); },
-      text: "A rider of the Mistwood road finds you on the quay: {themFull}, of the house that keeps the rangers' day watch. Taeron Windward let slip that you asked about 1067, and it reached her. \"I rode beside him on the ninth of April,\" she says. \"I saw the Temple agent's hands. They were empty.\" She has written it down, and signed it.",
+      text: p => `${Ago(p, "pp_elf_taeron")} ago, on the practice-deck at Nimthil, Taeron Windward told you he once shot a man on the Mistwood road who had not drawn. Now a rider of that road finds you on the quay: {themFull}, of the house that keeps the rangers' day watch. "I rode beside him on the ninth of April 1067," she says. "I saw the Temple agent's hands. They were empty." She has written it down, and signed it.`,
       choices: [
         { t: "Carry her paper to Taeron himself",
           r: "Taeron reads it twice on the practice-deck and folds it into his sealskin cloak. \"Now I am sure,\" he says. He shoots badly for the rest of the day.",
@@ -418,7 +419,7 @@
       cond: (p, C) => C.realm(p, "POL-06", "POL-07") && C.race(p, "elf") && C.adult(p) && C.flag(p, "pp_elf_wandered") && A.S.year - p.flags.pp_elf_wandered >= 12,
       w: 3, once: true,
       setup: (p, ctx) => { make(p, ctx, { race: "human", realm: "POL-01", age: 66, occ: "a carter of Kingsmere" }); },
-      text: p => `You walked south ${ago(p, "pp_elf_wandered")} ago with a bow, a cloak and no Northfolk at all. {themFull} taught you the Northfolk, and how to haggle, and how to drink ale. Now {theyHe} comes to the forest edge on a hired mule, grey and bent, {themAge} years old. A whole human life has gone by while you went out and came back. {theyHe} has brought a grandchild.`,
+      text: p => `You walked south ${ago(p, "pp_elf_wandered")} ago with a bow, a cloak and no Northfolk at all. {themFull} taught you the Northfolk, and how to haggle, and how to drink ale. Now {theyHe} comes to the forest edge on a hired mule, grey and bent, old in the human way. A whole human life has gone by while you went out and came back. {theyHe} has brought a grandchild.`,
       choices: [
         { t: "Take the grandchild into your grove-house",
           r: "The child is nine, loud and quick, and the Keepers frown at the noise. {them} rides home lighter. You will outlive the child as well, and you take the child anyway.",
@@ -536,7 +537,7 @@
       cond: (p, C) => C.realm(p, "POL-28") && C.race(p, "dwarf") && C.adult(p) && !C.old(p) && C.flag(p, "pp_dw_warden") && A.S.year - p.flags.pp_dw_warden >= 2 && fine("CHR-0418"),
       w: 3, once: true,
       setup: (p, ctx) => { fig(p, ctx, "CHR-0418"); },
-      text: p => `${Ago(p, "pp_dw_warden")} on the Gate Wardens' rolls, and you have held the passage at Kelfast every season. Now Kettil Ironbrow's Old Toll is marching on the Nagora Gate, with Torvald Rockcleaver's axemen, and they want Warden shields in the front rank. {them} has told them to their faces that the Wardens will not march. Kettil's men are at the barracks door, asking warden by warden.`,
+      text: p => `${Ago(p, "pp_dw_warden")} ago you held the Living Wall for a quarter of an hour, and {them} made you a Gate Warden of Kelfast. Now Kettil Ironbrow's Old Toll is marching on the Nagora Gate with Torvald Rockcleaver's axemen, and they want Warden shields in the front rank. {them} has told them to their faces that the Wardens will not march. Kettil's men are at the barracks door, asking warden by warden.`,
       choices: [
         { t: "March with the Old Toll", check: { s: "shield", s2: "sta", d: 54 },
           win: { r: "Your shield is in the front rank at the Nagora Gate, and the Ranpuri bolts break on it. Kettil names you at his fire. {them} strikes your name from the Wardens' rolls.",
@@ -897,13 +898,13 @@
       ],
     },
 
-    // pp_dw_escape: you know the Forge-Queen is digging a road east to Balmund, and lying to keep the hold calm
+    // pp_dw_escape: sworn to silence, you dug in the Forge-Queen's long gallery east toward Balmund
     {
       id: "mpe_dw_escape_steam",
       title: "Steam in the lower galleries",
       cond: (p, C) => C.realm(p, "POL-29") && C.race(p, "dwarf") && C.adult(p) && C.flag(p, "pp_dw_escape") && A.S.year - p.flags.pp_dw_escape >= 2,
       w: 3, once: true,
-      text: p => `A steam burst in the lower galleries kills nine and scalds forty. The Smith-Father's breath is hotter every year. A crowd of smiths stands at the mouth of the long gallery east, where the Hammer Guard waits with its red badges. They want to know where it goes. ${Ago(p, "pp_dw_escape")} ago you learned that the Forge-Queen is digging a road out, and lying to keep them calm.`,
+      text: p => `A steam burst in the lower galleries kills nine and scalds forty. The Smith-Father's breath is hotter every year. A crowd of smiths stands at the mouth of the long gallery east, where the Hammer Guard waits with its red badges. They want to know where it goes. ${Ago(p, "pp_dw_escape")} ago you dug in that gallery yourself, sworn to silence, and you know it runs east, far past any seam, toward Balmund.`,
       choices: [
         { t: "Tell the crowd where the gallery goes",
           r: "Four words: a road to Balmund. The crowd breaks for the clan halls to pack. By morning the Queen's calm is gone, and the Hammer Guard has your name.",
@@ -946,8 +947,8 @@
       title: "Forty thousand lotus",
       cond: (p, C) => C.realm(p, "POL-29") && C.race(p, "dwarf") && C.adult(p) && C.flag(p, "pp_dw_escape") && A.S.year - p.flags.pp_dw_escape >= 5,
       w: 2, once: true,
-      setup: (p, ctx) => { make(p, ctx, { race: "human", sex: "M", age: 45, occ: "a factor of the Ranpuri temple-bank" }); },
-      text: "{themFull}, a factor of the Ranpuri temple-bank, has come up the Hazdeep road with two clerks and a knotted measuring cord. The Forge-Queen borrowed forty thousand lotus for her long gallery east. The interest is due, and the factor means to walk the gallery and value it as a pledge. He wants a guide who knows it. He has heard that you do.",
+      setup: (p, ctx) => { make(p, ctx, { race: "human", realm: "POL-30", sex: "M", age: 45, occ: "a factor of the Ranpuri temple-bank" }); },
+      text: p => `{themFull}, a factor of the Ranpuri temple-bank, has come up the Hazdeep road with two clerks and a knotted measuring cord. The Forge-Queen borrowed forty thousand lotus to dig her long gallery east, he says, and the interest is due. He means to walk the gallery and value it as a pledge. ${Ago(p, "pp_dw_escape")} ago you dug in it, sworn to silence. He has heard that too.`,
       choices: [
         { t: "Guide him through the gallery for his silver",
           r: "He walks it with his knotted cord, counting paces. Ranpur now knows the length of Emberdeep's back door, which Stonehold would pay a great deal to know.",
@@ -976,7 +977,7 @@
       },
       text: (p, ctx) => ctx.k
         ? `Korrin Deepeye holds the Deep Halls now, and he has not forgotten who signed. His first order: the Aldmark garrison leaves the lower fort of the Iron Road, and the grain bargain with it. He calls the signers of his petition to hold the gate while four hundred humans march out. ${Ago(p, "pp_dw_korrin")} ago your mark went in the wax.`
-        : `The Law-Carvers would not set the queen aside. In Irondeep wax becomes stone, and every name on Thane Korrin's petition is now cut into a slab in the throne's antechamber. {themFull} is calling the signers in, one at a time. ${Ago(p, "pp_dw_korrin")} after your mark went in the wax, it is your turn.`,
+        : `The Law-Carvers would not set the queen aside. In Irondeep wax becomes stone, and every name on Thane Korrin's petition is now cut into a slab in the throne's antechamber. {ruler} is calling the signers in, one at a time. ${Ago(p, "pp_dw_korrin")} after your mark went in the wax, it is your turn.`,
       choices: [
         { t: "Kneel, and ask to have your name struck", req: (p, C, ctx) => !ctx.k,
           r: "A Carver chisels a line through your name while you kneel. It is still legible. Korrin's people read it the same week.",
@@ -1127,7 +1128,7 @@
       cond: (p, C) => C.race(p, "orc", "halforc") && C.adult(p) && C.flag(p, "mpe_orc_wave_leader") && A.S.year - p.flags.mpe_orc_wave_leader >= 3,
       w: 3, once: true,
       setup: (p, ctx) => { make(p, ctx, { race: "orc", age: 16, occ: "a rider of the rest line" }); },
-      text: "You lead a wave of your own now. {themFull} rides in it, {themAge} and fearless, and begs a place in the first wave before the summer fighting. {theyHe} rides as you did at the relay drill: every wave at full fury, nothing kept back. {theirHis} mother finds you at the horse lines and asks you, quietly, to say no.",
+      text: "You lead a wave of your own now. {themFull} rides in it, barely grown and fearless, and begs a place in the first wave before the summer fighting. {theyHe} rides as you did at the relay drill: every wave at full fury, nothing kept back. {theirHis} mother finds you at the horse lines and asks you, quietly, to say no.",
       choices: [
         { t: "Give {themHim} the first wave", check: { s: "command", s2: "ins", d: 50 },
           win: { r: "{them} rides every wave and comes back whole, with a name. {theirHis} mother does not thank you, and does not need to.",
@@ -1407,7 +1408,7 @@
       title: "The Northreach scale",
       cond: (p, C) => C.realm(p, "POL-09") && C.race(p, "giant") && C.adult(p) && C.flag(p, "mpe_gi_tin_bought") && A.S.year - p.flags.mpe_gi_tin_bought >= 2,
       w: 3, once: true,
-      setup: (p, ctx) => { make(p, ctx, { race: "human", sex: "M", age: 50, occ: "the Northreach tin factor" }); },
+      setup: (p, ctx) => { make(p, ctx, { race: "human", realm: "POL-08", sex: "M", age: 50, occ: "the Northreach tin factor" }); },
       text: "{themFull}, the Northreach factor with the new scale and the old smile, comes up from the tin fair to your hall in person. Northreach has learned which halls took Kingsmere silver for tin. He will buy no more from yours, at any price, unless you give him something better than tin: names.",
       choices: [
         { t: "Give him the names",
@@ -1705,7 +1706,7 @@
       text: p => `{themFull}, a half-orc herder, has ridden two days to your fire with a feverish child in a sling. She has heard of the red cord the Seekers left on your saddle ${ago(p, "pp_ho_seen")} ago. The Seekers say the rider of two peoples will heal the grass. She does not ask whether you are the rider. She asks you to put your hand on the child.`,
       choices: [
         { t: "Put your hand on the child, and nurse it", check: { s: "medicine", s2: "ins", d: 50 },
-          win: { r: "Willow bark, cold water and a night awake. The fever breaks at dawn. By the next new moon a dozen sick children are at your fire, and you know about fevers only a little.",
+          win: { r: "Willow bark, cold water and a night awake. The fever breaks at dawn. By the next new moon a dozen sick children are at your fire, and you know only a little about fevers.",
             fx: { piety: 3, fame: 3, skill: { medicine: 2 }, them: { type: "friend", op: 40 }, deed: "Broke a child's fever by the red cord's fire" } },
           lose: { r: "The child dies before dawn, under your hand. The mother thanks you for trying. The Seekers say it was a sign, and cannot agree of what.",
             fx: { happy: -10, wil: 2, them: { op: 10 } } } },
