@@ -545,12 +545,13 @@ NI.outcome = {
   theft: (pc, ctx, t) => A.chance(tr(t, 'honest') || tr(t, 'kind') ? .6 : .25) ? 'ni_theft_return' : 'ni_theft_again',
 };
 // a NPC-side change between two other people (a feud cooling, a betrothal)
-NI.bond = (a, b, d, type) => {
-  if (!a || !b) return;
+NI.bond = (a, b, d, type, back) => {
+  if (!a || !b || !a.rel || !b.rel) return;
+  back = back || type;
   if (!a.rel[b.id]) a.rel[b.id] = { type: type || 'acquaint', op: 0, since: A.S.year };
-  if (!b.rel[a.id]) b.rel[a.id] = { type: type || 'acquaint', op: 0, since: A.S.year };
+  if (!b.rel[a.id]) b.rel[a.id] = { type: back || 'acquaint', op: 0, since: A.S.year };
   a.rel[b.id].op = A.clamp(a.rel[b.id].op + d, -100, 100); b.rel[a.id].op = A.clamp(b.rel[a.id].op + d, -100, 100);
-  if (type) { a.rel[b.id].type = type; b.rel[a.id].type = type; }
+  if (type) { a.rel[b.id].type = type; b.rel[a.id].type = back; }
 };
 // promise your child to theirs; a match with a relative they spoke for creates that relative
 NI.betroth = function (pc, ctx) {
@@ -562,12 +563,17 @@ NI.betroth = function (pc, ctx) {
     m = A.newPerson({ given: A.givenName(t.cult, sex), sur: t.sur, surMode: t.surMode, sex, race: kid.race, realm: t.realm, cult: t.cult, faith: t.faith,
       born: kid.born + A.ri(-3, 3), status: t.status, home: t.home });
     m.occ = A.pick(A.OCC && A.OCC[m.status] || ['a farmer']);
-    NI.bond(t, m, 40, 'nephew');
+    NI.bond(t, m, 40, 'nephew', 'uncle');
     ctx.matePid = m.id;
   }
   ctx.mate = m.given;
   NI.bond(kid, m, 30, 'betrothed');
   if (!pc.rel[m.id]) A.link(pc, m, 'acquaint', 15, 'acquaint');
+  return '';
+};
+NI.unbetroth = function (ctx) {
+  const kid = alive(ctx.kidPid), m = alive(ctx.matePid);
+  if (kid && m && kid.rel[m.id] && kid.rel[m.id].type === 'betrothed') NI.bond(kid, m, -30, 'acquaint');
   return '';
 };
 NI.wed = function (pc, ctx) {
