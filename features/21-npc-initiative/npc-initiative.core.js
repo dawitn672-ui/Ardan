@@ -216,9 +216,15 @@ const KINDS = NI.KINDS = {
     sit: (pc, t) => (t.coin || 0) >= 10 || A.classOf(t) >= 3 ? 1 : .5 },
 };
 
-// opinion: the warmer (or, for hostile moves, the colder) the stronger the pull, from 0.35 at the threshold up to 1
-const opPull = (K, o, c) => {
-  if (K.g === 'hostile') return o > K.op ? (c === 'foe' && o < 25 ? .35 : 0) : .35 + .65 * Math.min(1, (K.op - o) / 50);
+// opinion: the warmer (or, for hostile moves, the colder) the stronger the pull, from 0.35 at the threshold up to 1.
+// Envy and appetite need less dislike: each trait that strongly drives a hostile move (weight 1.5 or more) lifts its
+// opinion ceiling by 15, at most 30. A deceitful, cruel acquaintance can slander you while still nodding to you.
+const opPull = (K, o, c, t) => {
+  if (K.g === 'hostile') {
+    let lim = K.op;
+    if (t) lim += Math.min(30, 15 * (t.traits || []).filter(x => (K.tr[x] || 0) >= 1.5).length);
+    return o > lim ? (c === 'foe' && o < 25 ? .35 : 0) : .35 + .65 * Math.min(1, (lim - o) / 50);
+  }
   return o < K.op ? 0 : .35 + .65 * Math.min(1, (o - K.op) / 50);
 };
 
@@ -227,7 +233,7 @@ NI.desire = function (pc, t, k, r) {
   const K = KINDS[k], c = NI.cat(r.type), o = NI.opOf(pc, t), why = [];
   let w = K.base * (BOND[K.g][c] || 1);
   if (!w) return { w: 0, why };
-  const op = opPull(K, o, c); if (!op) return { w: 0, why };
+  const op = opPull(K, o, c, t); if (!op) return { w: 0, why };
   w *= op;
   let tr = 1;
   for (const x of t.traits || []) if (K.tr[x]) { tr *= K.tr[x]; if (K.tr[x] > 1) why.push(GD.TRAITS[x] ? GD.TRAITS[x].name.toLowerCase() : x); }
@@ -299,8 +305,18 @@ NI.month = function (pc) {
   const sum = list.reduce((a, x) => a + x.w, 0);
   // a fuller budget and stronger desires make a move this month likelier
   if (!A.chance(Math.min(.9, (.3 + .3 * (st.b - 1)) * Math.min(1, sum / .8)))) return;
-  const x = A.wpick(list, z => z.w);
+  const x = NI.choose(list);
   if (x) NI.launch(pc, x);
+};
+// Two stages: first the kind of move, weighted by the strongest desire for it (plus a little for how many share it),
+// then who makes it. Picking straight from every (person, kind) pair lets the kinds that many friends qualify for
+// (an invitation, a gift) crowd out the one enemy with a real grudge.
+NI.choose = function (list) {
+  const by = {};
+  for (const x of list) (by[x.k] = by[x.k] || []).push(x);
+  const kinds = Object.keys(by).map(k => { const ws = by[k].map(x => x.w), mx = Math.max(...ws); return { k, w: mx + .25 * (ws.reduce((a, b) => a + b, 0) - mx) }; });
+  const kd = A.wpick(kinds, z => z.w);
+  return kd ? A.wpick(by[kd.k], z => z.w) : null;
 };
 
 NI.whyLine = function (pc, x) {

@@ -16,14 +16,16 @@ export default [
   {
     id: 'AIP-DIPLO-AI',
     blob: 'ardan-core',
-    why: 'A.diploAI: keeping or breaking alliances (honor), betraying an ally (war and honor), seeking alliances (sociability), subsidies (greed), embargoes and rivalries (spite), trade and non-aggression pacts, submitting as a tributary (pride and caution) and forging claims (war and patience) use the ruler persona; each act is logged with reasons.',
+    why: 'A.diploAI: keeping or breaking alliances (honor), betraying an ally (war and honor), seeking alliances (sociability), defensive pacts (caution), guarantees (honor, kindness), subsidies (greed), embargoes and rivalries (spite), trade and non-aggression pacts, burying rivalries (peaceable rulers), submitting as a tributary (pride and caution) and forging claims (war and patience) use the ruler persona; each act is logged with reasons.',
     edits: [
       ['(A.interest(r.id,al)<8&&A.chance(.35)||A.threatsTo(r.id).includes(al)&&A.chance(.5))&&(A.cancelTr("ally",r.id,al)', 'A.aiBreakAlly(r.id,al)&&(A.cancelTr("ally",r.id,al)'],
       ['if((A.AGGRO[r.id]||1)>=1.15&&!A.atWar(r.id).length&&r.stability>35){', 'if(A.aiWarW(r.id)>=1.15&&!A.atWar(r.id).length&&r.stability>35){'],
       ['if(t&&A.chance(.06)){A.declareWar(r.id,t.id,{cb:A.cbOn(r.id,t.id)||"betrayal"});continue}', 'if(t&&A.chance(A.aiBetrayP(r.id))){A.aiNoteBetray(r.id,t.id,A.declareWar(r.id,t.id,{cb:A.cbOn(r.id,t.id)||"betrayal"}));continue}'],
       ['best&&bv>=48&&A.chance(.35)', 'best&&bv>=A.aiAllyBar(r.id)&&A.chance(.35)'],
       ['{aim:"ally"}):A.sign("ally",r.id,best.id))', '{aim:"ally"}):A.aiSign("ally",r.id,best.id))'],
+      ['if(thr.length&&nDef<2&&A.chance(.12)){', 'if(thr.length&&nDef<2&&A.chance(.12*A.aiDefW(r.id))){'],
       ['t&&(t.playerRun?ask(r,"defpact",{foe:thr[0]}):A.sign("def",r.id,t.id))', 't&&(t.playerRun?ask(r,"defpact",{foe:thr[0]}):A.aiSign("def",r.id,t.id))'],
+      ['if(myPow>0&&A.chance(.15)){', 'if(myPow>0&&A.chance(.15*A.aiGuarW(r.id))){'],
       ['t&&A.sign("guar",r.id,t.id)}', 't&&A.aiSign("guar",r.id,t.id)}'],
       ['if(r.treasury>r.income*.4&&A.chance(.25)){', 'if(r.treasury>r.income*.4&&A.chance(A.aiGiveP(r.id))){'],
       ['t&&A.sign("sub",r.id,t.id,{amt:', 't&&A.aiSign("sub",r.id,t.id,{amt:'],

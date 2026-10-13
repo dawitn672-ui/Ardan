@@ -120,10 +120,8 @@ export default {
   },
 
   async npcInitiativeDeterminism(pg) {
-    // the same seed gives the same NPC moves, whether or not anyone looks at the people involved.
-    // "Looking" opens every known person's view (with its bond history) and the People and Life tabs each year.
-    // (Not every tab: the Holdings tab's staff card creates candidates with A.rand while drawing, a fix-layer gap
-    // reported in README.md, which would make this test about something else.)
+    // the same seed gives the same NPC moves, whether or not anyone looks: "looking" opens every known person's view
+    // (with its bond history) and draws every tab, each year. (Drawing every tab only holds since staff-pure.core.js.)
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const run = look => {
@@ -133,9 +131,10 @@ export default {
           const pc = A.pc();
           for (const id of Object.keys(pc.rel)) { UI.ov = { type: 'person', id }; UI.renderModal(); }
           UI.ov = null; UI.renderModal();
-          for (const tab of ['people', 'life']) { UI.tab = tab; UI.render(); }
+          T.renderAll();
         });
-        return { seq: res.seq, end: A.rngState + ':' + T.hash(A.S) };
+        T.renderAll(); // both runs draw once at the end, so first-draw setup (an empty cargo hold) matches
+        return { seq: res.seq, end: A.rngState + ':' + T.hash(A.S.people) + ':' + T.hash(A.S.realms) };
       };
       const a = run(false), b = run(false), c = run(true);
       return { n: a.seq.length, same: a.seq.join('|') === b.seq.join('|') && a.end === b.end, sameLooking: a.seq.join('|') === c.seq.join('|') && a.end === c.end, first: a.seq.slice(0, 4) };

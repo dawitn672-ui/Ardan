@@ -9,7 +9,8 @@
 //      and lost) with no engine error, no raw {token}, and within the word diet (text 80, label 12, outcome 45);
 //   4. arcs: taking the choice that sets an mwf_ flag, then letting the years pass, makes the second event
 //      eligible and renderable;
-//   5. craft: every random event reads a memory flag with C.flag and times it (A.S.year - p.flags.x), weighs 2-3,
+//   5. world: the same history in the wrong realm, race or station, or too soon, does not qualify;
+//   6. craft: every random event reads a memory flag with C.flag and times it (A.S.year - p.flags.x), weighs 2-3,
 //      fires once, offers 2-4 choices, and at least one choice leaves a lasting mark (trait, flag, relation, wound,
 //      deed, title, debt, asset, job, marriage, freedom, death).
 import fs from 'node:fs';
@@ -207,6 +208,25 @@ export default {
           }
         }
 
+        // ---------- the setter's world: the same history in the wrong place, race or station must not qualify
+        const NEG = {
+          'mwf_clan_spring (birth clan, not a wife\'s)': ['mwf_clan_spring', { race: 'orc', realm: 'POL-11', startAge: 24 }, pc => { pc.flags.clan = 'Ughrak'; pc.flags.ev = Object.assign(pc.flags.ev || {}, { fm_orc_clan: Y() - 5 }); wife(pc); }],
+          'mwf_wheel_spinners (in Varenna, where the wheel is no secret)': ['mwf_wheel_spinners', { realm: 'POL-03', sex: 'F' }, pc => { ago(pc, 'wk_wheel', 3); job(pc, 'weaver'); }],
+          'mwf_commons_again (outside Sabena)': ['mwf_commons_again', { realm: 'POL-01' }, pc => ago(pc, 'wk_commons', 3)],
+          'mwf_price_word (a free peasant)': ['mwf_price_word', { realm: 'POL-01' }, pc => { ago(pc, 'wk_price75', 3); pc.coin = 150; }],
+          'mwf_capt_ladder (at peace)': ['mwf_capt_ladder', { startAge: 24 }, pc => { A.enlist(pc, false); for (const w of A.S.wars.slice()) A.S.wars.splice(A.S.wars.indexOf(w), 1); ago(pc, 'wr_capt_enemy', 3); }],
+          'mwf_dun_offer (too soon)': ['mwf_dun_offer', {}, pc => ago(pc, 'wk_good_horse', 1)],
+        };
+        for (const [label, [id, o, prep]] of Object.entries(NEG)) {
+          cur = `negative ${label}`;
+          try {
+            A.newGame(Object.assign({ seed: 4242, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 }, o));
+            prep(A.pc());
+            if (A.EV[id].cond(A.pc(), A.C)) out.problems.push(`${cur}: eligible`);
+            else out.negatives = (out.negatives || 0) + 1;
+          } catch (err) { out.problems.push(`${cur}: throws: ${err.message}`); }
+        }
+
         // ---------- arcs: the first event's choice sets the flag the second event reads, years later
         for (const [from, ci, forced, flag, to, years] of ARCS) {
           cur = `arc ${from} -> ${to}`;
@@ -238,7 +258,7 @@ export default {
     const ok = IDS.length > 0 && !r.missing.length && !r.unread.length && !r.problems.length && r.arcs === ARCS.length;
     return {
       ok,
-      detail: `${IDS.length} events, ${FLAGS.length - r.unread.length}/${FLAGS.length} flags read, ${r.played} played, ${r.branches} branches, ${r.arcs}/${ARCS.length} arcs` +
+      detail: `${IDS.length} events, ${FLAGS.length - r.unread.length}/${FLAGS.length} flags read, ${r.played} played, ${r.branches} branches, ${r.arcs}/${ARCS.length} arcs, ${r.negatives || 0} wrong-world fixtures refused` +
         (r.missing.length ? `; not registered: ${r.missing.join(', ')}` : '') +
         (r.unread.length ? `; unread: ${r.unread.join(', ')}` : '') +
         (r.problems.length ? `; ${r.problems.length} problems: ${r.problems.slice(0, 8).join(' | ')}` : ''),

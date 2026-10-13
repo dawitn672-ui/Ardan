@@ -159,6 +159,6 @@ weights):
 - Callbacks reached all three classes.
 - Arc second steps fired in normal play (`mrx_sb_oilyard_count`, `mrx_sk_rescued_dwarves`,
   `mrx_rp_unbound_gate`, `mrx_br_forty_stone`).
-- First firings landed 1 to 15 years after the flag (median about 8).
+- Callbacks fired 2 to 16 years after the flag was set (median 9).
 - The other suites still pass with the feature in: `lives`, `saveRoundTrip`, `renderRng`,
   `replayWithRender` and `journalReplay`.

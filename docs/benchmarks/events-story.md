@@ -96,12 +96,13 @@ A 10 in this genre means **your past keeps coming back, at the right moment, thr
 
 ### What I measured, and how
 
-The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scratch>` (fix layer only, 29 patches). The scripts lived in a private scratch folder; nothing in the repo changed except this file. Four studies:
+The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scratch>` (fix layer only, 29 patches). The scripts lived in a private scratch folder; nothing in the repo changed except this file. Five studies:
 
 1. **Static audit of all 3,199 events and 9,635 choices**, read in the page. It reuses `bench/bot.mjs`'s `memoryIndex()` for flag setters and readers, then adds: the event link graph (flag setter to flag reader, plus `fx.event` follow-ups) and its depth, cooldowns, what each choice leaves behind, casting, tics and a strict dominant-choice test.
 2. **Engine read.** `A.monthEvents`, `A.rollEventsN`, `A.evFit`, `A.headReady`, `A.eventChoose`, `A.log` and `UI.deathModal`, through `tools/show.mjs`.
-3. **48 bot lives with story logging.** 8 starts × 4 personalities (careful, reckless, greedy, random), up to 90 years each, seeds `4242 + i × 7919`. For every event the player saw, the bot logged: who it cast, whether that person was already known, which flags it read, whether **this life** had set those flags (a real callback), the flags it set, and what the chosen branch left behind. Driving the queue is the same as `bench/bot.mjs`'s passive bot.
+3. **48 bot lives with story logging.** 8 starts × 4 choice styles, up to 90 years each. Careful bots take the best odds and reckless bots the worst; the other two slots chose at random (my script had no greedy rule, so read them as two random players). Seeds are `4242 + i × 7919`. For every event the player saw, the bot logged: who it cast, whether that person was already known, which flags it read, whether **this life** had set those flags (a real callback), the flags it set, and what the chosen branch left behind. Driving the queue is the same as `bench/bot.mjs`'s passive bot.
 4. **A salience experiment.** The same 48 seeds, with one change: an eligible event whose conditions read a flag the player holds gets 5 times its weight (a wrapper on `A.evFit`). No new content.
+5. **A flag census.** The first 24 seeds again, logging every flag each life set, to rank which unread flags players actually reach.
 
 "Reads a memory" in the static audit means the bench's rule: the event's condition or setup reads a flag that another event sets. "Real callback" in the bot lives is stricter: the flag was set earlier in the same life by a different event the player saw.
 
@@ -213,6 +214,23 @@ The "recurring characters" figure looks better than it is. The top-events list s
 
 The lives diverge once the weights change, so this compares the same seeds, not identical lives. A one-function change triples the callbacks and doubles how many memories return, at no cost in event volume. But 1.2% is still a 33rd of the plan's 40%. With only 95 events able to read a memory, no selection rule can get there. The callbacks have to be written.
 
+**The arithmetic of 40%: one-to-one callbacks can't reach it.** A rerun of the first 24 seeds logged every flag each life set. It repeated the baseline (0.3% callbacks; 15 of 24 lives had none). Between them, those 24 lives set only **78 different flags out of 458** (a median life sets 7), and 38 of the 78 are never read. The orphans that lives actually set are mostly not the dramatic ones:
+
+| Unread flag | Lives (of 24) that set it |
+| --- | --- |
+| `fl_warden` | 9 |
+| `bd_grand_story` | 7 |
+| `pf_school` | 4 |
+| `av_bounty_beast`, `fl_forgery`, `av_traveled` | 3 each |
+| `hs_knows_secret`, `ct_faction`, `av_forger`, `pp_dw_partner`, `lf_knows_ashen`, `ch_short_friend`, `wr_mutineer`, `lf_pawned`, `av_opened_delve`, `ch_first_love`, `pl_knows_plot`, `fl_ledger` | 2 each |
+
+The 40% target means about 90 callbacks in a 222-event life. With 7 memories a life, every one would need 13 callbacks. Two things have to change together:
+
+- **Far more memories.** About 99 events a life cast a person. Each could leave a typed memory ("helped", "crossed", "owes", "shamed") instead of nothing.
+- **Callbacks keyed by kind, not by flag.** One event such as "{memWho} has not forgotten {memWhat}" should serve every "crossed" memory, the way Valve's rules fall back from specific to general.
+
+Bespoke callbacks for the 287 to 369 orphan flags are still worth writing, but they are the specific layer on top, not the route to 40%.
+
 ### The backtest table
 
 "New" in the last column means `bench/` doesn't measure it yet; section 5, item 12 adds it.
@@ -289,8 +307,8 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 | --- | --- | --- | --- | --- | --- |
 | 1 | **Memory salience in the draw.** A `*.core.js` wraps `A.evFit`; `A.rollEventsN` already calls it at draw time, so no patch is needed. An eligible event whose condition reads a flag the player holds gets its weight × K. Ties go to the event whose condition names more of the player's past. Weights only; no new random draws. | S | Yes: code | +0.3 | Same 48 seeds as section 3: callbacks ≥ 1.0% of shown events (0.4% today; × 5 measured 1.2%); events a year within ±10%; replay and `renderRng` tests pass. Fails if K is set too low or the wrapper is skipped |
 | 2 | **Repeat and variety guard.** Default cooldown 10 years for self-firing events. Same pack as the last shown event: weight × 0.2. Study and duty loops that create a stranger (`fl_st_master`, `du_gd_commission`) reuse the person from last time, so the old scholar becomes a character. Cap any non-arc event at 3 a life. | S | Yes: code (`*.core.js` and one patch in the flow and duty setup) | +0.4 | 48 bot lives on the same seeds: repeats within 10 years ≤ 5 per 100 (24.6 today); no event more than 3 times a life outside listed duties (402 in 48 lives today); same pack back to back ≤ 8% (20% today); events a year within ±15% |
-| 3 | **Memory records with names.** `A.remember(p, key, { who, where, year, weight })`, written whenever an event sets a flag and has a `ctx.pid`. Adds `C.mem(p, key)` and a `{memWho}` token so a callback can name the person. Fades by weight; oaths and blood never fade. Old saves without `p.mem` load fine. | M | Yes: code (`*.core.js` plus a small patch on the flag path in `A.applyFx`) | +0.5 (enables 4, 5, 7) | Test: an event with `ctx.pid` that sets a flag writes `p.mem[flag].who`. A save and load round trip is exact. A pre-feature save loads. A callback forced 10 years later prints that person's name. Replay and `renderRng` tests pass |
-| 4 | **Callbacks for the orphan flags.** 1 to 3 events per unread flag, 2 to 20 years after it was set, each casting the same person through item 3 and each leaving a mark. Order by how often bot lives set the flag; start with the life-debt, the promise to a dying friend, the affair, the betrayal, the first love and the kept secret. | L (about 500 events) | Yes: content (`*.events.js`) | +1.5 | `events.orphanFlags` falls from 369 to ≤ 250 after the first tranche and to 0 at the end. In 48 bot lives, callbacks reach ≥ 10% of shown events after tranche 1 and ≥ 25% at the end (0.4% today). `tools/lint-events.mjs` passes |
+| 3 | **Memory records with names and kinds.** `A.remember(p, key, { kind, who, where, year, weight })`. Written in two ways: (a) whenever an event sets a flag and has a `ctx.pid`; (b) automatically for every event that casts a person, with a kind read from the chosen branch (opinion up: "helped"; down: "crossed"; coin or favour owed: "owes"; fame or honour lost: "shamed"). Adds `C.mem(p, key)`, `C.memKind(p, kind)` and `{memWho}` / `{memWhat}` tokens. Fades by weight; oaths and blood never fade. Old saves without `p.mem` load fine. | M | Yes: code (`*.core.js` plus a small patch on the flag path in `A.applyFx`) | +0.5 (enables 4, 5, 7) | Bot: median memories per life ≥ 50 (7 flags today). Test: an event with `ctx.pid` that sets a flag writes `p.mem[flag].who`; a save and load round trip is exact; a pre-feature save loads; a callback forced 10 years later prints that person's name. Replay and `renderRng` tests pass |
+| 4 | **Callbacks, in two layers.** (a) About 40 callbacks keyed by memory kind, each serving every memory of that kind and casting the same person ("{memWho} has not forgotten {memWhat}"). (b) Bespoke callbacks for unread flags, 2 to 20 years after the flag was set, each leaving a mark. Order (b) by how often lives set the flag: `fl_warden`, `bd_grand_story`, `pf_school` and `fl_forgery` first, then the chosen-on-purpose ones (the life-debt, the promise to a dying friend, the affair, the betrayal, the first love). | L (about 40 + 500 events) | Yes: content (`*.events.js`, needs 3) | +1.5 | In 48 bot lives: callbacks ≥ 10% of shown events after layer (a) and the first 60 of (b), and ≥ 25% at the end (0.4% today). Flags set in a life that come back ≥ 60% (8.1% today). `events.orphanFlags` falls from 369 to 0. `tools/lint-events.mjs` passes |
 | 5 | **Story cycles.** `A.defArc({ id, stages, gap, onDeath, end })` keeps state in `pc.arcs`, times stages with `A.schedule`, and hands an arc to the heir on "Go on as your child". The first 10 arcs: blood feud, secret child, apprentice who surpasses you, the life-debt, the mutiny you joined, the lord's grudge, the promise to a dying friend, first love returns, the sword's line, the plague year. Each ends in a lasting change. | M code + L content (about 60 events for 10 arcs) | Yes: both | +1.5 | A forced start of each arc reaches its last stage in ≥ 80% of seeds where the character lives long enough. Every last stage writes a deed, epithet, trait or title. 48 bot lives: ≥ 50% of lives that reach 40 finish an arc (0 of 48 see even a 3-event chain today) |
 | 6 | **The Saga, version 1.** `saga.core.js` sifts the log, memories and deeds into decade chapters in a period voice, with names and years. It shows on the death screen and as a Chronicle sub-tab, and registers `A.SIGNATURE.chronicle = true`. | M | Yes: code | +0.8 (and Uniqueness) | Browser test at a bot death: ≥ 8 sentences, ≥ 3 naming a person and a year, ≥ 2 about events ≥ 10 years apart. `renderRng` passes (the saga is built without drawing random numbers). `bench` signature `chronicle` reads true |
 | 7 | **"Because..." line on callbacks.** When an event reads a memory, its card shows the source: "Because you swore a life-debt at the ford, in 1104." | S | Yes: code (needs 3) | +0.3 | Browser test: a forced callback shows the line with the name and year; an ordinary event shows none |
@@ -379,3 +397,18 @@ All read through search-engine results that quote or summarise the page (see the
 - `docs/plan/Ardan The Road to Ten.md` (Events and story section, plan targets)
 - `docs/reviews/Ardan Road to 100.md` and `docs/reviews/Ardan Deep Analysis.md` (95 memory events, 287 of 450 orphan flags by their count, tics, old age)
 - `reports/release.json`, `reports/fixes.json` (bench league: memory share of fired events 1.8% release and 1.3% fixes; p90 days between prompts 181 and 153)
+
+## Appendix: how to reproduce
+
+The scripts stayed in a scratch folder, so `bench/` can port them (section 5, item 12). Each piece is plain page code run through Playwright on a built file, after `window.ARDAN_CONTENT_READY` and `bench/bot.mjs`'s `BOT` are loaded.
+
+1. **Reads of an event:** the flag names matched by `C\.flag\(p,\s*["']([A-Za-z0-9_]+)["']|flags(?:\.|\[["'])([A-Za-z0-9_]+)` in `cond` and `setup`, minus `ev`, `unfree`, `patron` and `chain` (the bench's own rule).
+2. **The life loop:** `A.newGame(o)`, then `A.advance(400)` and drain `A.headReady()`. For an event: `A.eventView(h)`, copy `pc.flags`, pick a choice by personality, `A.eventChoose(i)`, diff `pc.flags` for new keys, then `A.eventClose()`. Other prompts go to the game's auto functions, as in `bench/bot.mjs`.
+3. **A real callback:** a shown event whose reads include a flag first set earlier in the same life by a different shown event.
+4. **Realised chain depth:** depth(event) = 1 + the largest depth of the events that set the flags it read.
+5. **Repeat:** the same event id shown twice in one life. **Same pack:** the same id prefix before the first `_` as the previous shown event.
+6. **Known person:** `ctx.pid` is set and `pc.rel[ctx.pid]` existed before the event.
+7. **Lasting mark:** the chosen branch's `fx` uses any of `flag trait untrait wound newRel lover die prison free secret epithet deed ach job promote lang literate gear asset duel beast event claim pact ally warOn letter sworn owed oweThem mission cause favor`. **Opinion only:** `rel them patronOp rulerOp bossOp houseOp`.
+8. **Dominant choice:** only events where every choice has plain numeric effects and no `req`. A choice is dominant if it has no check, no negative number, a positive total gain, and no other choice sets a flag or can gain more in its best branch. Coin counts as `sign × min(5, |coin| / 20)`.
+9. **Seeds:** `4242 + i × 7919`, `sex = i odd ? F : M`; the 8 starts are `bench/run.mjs`'s; the choice style changes every 8 lives (careful, reckless, random, random).
+

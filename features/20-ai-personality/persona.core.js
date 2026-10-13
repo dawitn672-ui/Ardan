@@ -10,8 +10,10 @@
 //   roll, but with persona-weighted odds, and write A.S.aiLog: newest first, capped at 300, each entry with its
 //   top 3 reasons as [label, weight] (weight > 0 pushed toward what was done, < 0 against it).
 //
-// Determinism: only A.chance / A.pick consume randomness, and only where the engine already rolled. Everything
-// else here is a pure function of state (the persona cache is keyed by ruler and traits, and never touches A.S).
+// Determinism: only A.chance / A.pick consume randomness: where the engine already rolled, plus three new choices
+// (a claimant pressing a claim, a refused faction's leader rising, a ruler burying a rivalry). Everything else is a
+// pure function of state (the persona cache is keyed by ruler and traits, and never touches A.S). State written:
+// A.S.aiLog and realm.aiLastWar, both optional for old saves.
 
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 const r2 = x => Math.round(x * 100) / 100;
@@ -71,12 +73,13 @@ A.AI_AXES = AXES;
 A.AI_TUNE = Object.assign({
   cultExp: .5,   // realm tradition A.AGGRO enters as AGGRO^cultExp
   hazK: 1.6,     // war odds per check scale as e^(hazK * warLog) for warlike rulers...
-  hazNeg: 3,     // ...and as e^(hazNeg * warLog) for peaceable ones (a gentle ruler rarely starts a war at all)
-  restK: 4,      // years a ruler rests after starting a war: restK * e^(-restExp * warLog), 1..25
-  restExp: 1.2,
+  hazNeg: 5,     // ...and as e^(hazNeg * warLog) for peaceable ones (a gentle ruler rarely starts a war at all)
+  barK: 25,      // opinion needed before war is thinkable: -25 + barK * warLog, at most barMax
+  barMax: 0,
+  wearyK: 20,    // war-weariness tolerated before declaring: 30 + wearyK * warLog
+  restK: 2.5,    // years a ruler rests after starting a war: restK * e^(-restExp * warLog), 1..25
+  restExp: 2,
   claimK: 2,     // a claimant or rebel lord rises with odds scaled by e^(claimK * warLog)
-  barK: 20,      // opinion needed before war is thinkable: -25 + barK * warLog
-  wearyK: 15,    // war-weariness tolerated before declaring: 30 + wearyK * warLog
 }, A.AI_TUNE || {});
 
 const build = (traits, base, extra) => {
@@ -117,8 +120,9 @@ const lead = (P, axis, sign) => {
   for (const [t, w] of P.parts[axis] || []) if ((sign == null || Math.sign(w) === sign) && (!best || Math.abs(w) > Math.abs(best[1]))) best = [t, w];
   return best ? best[0] : null;
 };
-// "Wrathful ruler" style reasons for one axis: each trait's own push, times k (k carries the sign of the decision)
-const traitWhy = (P, axis, k, tail) => (P.parts[axis] || []).map(([t, w]) => [`${cap(t)} ruler${tail ? ': ' + tail : ''}`, w * k]);
+// "Wrathful ruler" style reasons for one axis: each trait's own push, times k (k carries the sign of the decision).
+// The third element marks a reason as the ruler's own temper, so the log can say how in character a decision was.
+const traitWhy = (P, axis, k, tail) => (P.parts[axis] || []).map(([t, w]) => [`${cap(t)} ruler${tail ? ': ' + tail : ''}`, w * k, 1]);
 
 // ---------- numbers the engine reads ----------
 A.aiWarW = rid => A.rulerPersona(rid).war;                                       // war-declaration weight (was A.AGGRO)
@@ -126,40 +130,54 @@ A.aiWarHaz = rid => { const P = A.rulerPersona(rid), T = A.AI_TUNE; return P.cul
 A.aiWarRest = rid => clamp(A.AI_TUNE.restK * Math.exp(-A.AI_TUNE.restExp * A.rulerPersona(rid).warLog), 1, 25);   // years between wars it starts
 A.aiResting = r => !!(r && r.aiLastWar != null && A.S.year - r.aiLastWar < A.aiWarRest(r.id));       // (realm field; old saves lack it)
 const started = rid => { const r = A.realm(rid); if (r) r.aiLastWar = A.S.year; };
-A.aiWarBar = rid => clamp(-25 + A.AI_TUNE.barK * A.rulerPersona(rid).warLog, -60, -8);  // opinion at which war is thinkable (was -25)
+A.aiWarBar = rid => clamp(-25 + A.AI_TUNE.barK * A.rulerPersona(rid).warLog, -60, A.AI_TUNE.barMax);  // opinion at which war is thinkable (was -25)
 A.aiWeary = rid => clamp(30 + A.AI_TUNE.wearyK * A.rulerPersona(rid).warLog, 8, 55);    // war-weariness tolerated before a new war (was 30)
 A.aiNerve = rid => .7 + .3 * A.rulerPersona(rid).caution;                          // strength edge wanted before attacking (was .7)
 A.aiNoCause = rid => .6 * Math.exp(-.6 * A.rulerPersona(rid).patience);            // odds factor for war with no accepted cause (was .6)
 A.aiFearAt = rid => 1.25 * (1 - .2 * A.rulerPersona(rid).caution);                 // power ratio at which a neighbor is a threat (was 1.25)
-A.aiAllyBar = rid => 48 - 10 * A.rulerPersona(rid).social;                          // interest needed to seek an alliance (was 48)
-A.aiCallAdj = rid => { const P = A.rulerPersona(rid); return .25 * P.honor - .1 * P.caution; };  // added to the call-to-arms odds
-A.aiYield = rid => { const P = A.rulerPersona(rid); return clamp(Math.exp(.6 * P.caution - .7 * P.pride - .3 * P.wrath + .2 * P.warmth), .3, 2.5); };
+A.aiAllyBar = rid => 48 - 15 * A.rulerPersona(rid).social;                          // interest needed to seek an alliance (was 48)
+A.aiCallAdj = rid => { const P = A.rulerPersona(rid); return .6 * P.honor - .2 * P.caution; };  // added to the call-to-arms odds
+A.aiYield = rid => clamp(A.aiW('trib', rid), .3, 2.5);
 const will = P => clamp(Math.exp(.4 * P.caution - .5 * P.pride - .5 * P.wrath + .3 * P.warmth - .3 * P.warLog), .3, 2.5);
 A.aiWhite = w => Math.sqrt(will(A.rulerPersona(w.leadA)) * will(A.rulerPersona(w.leadD)));
 A.aiPeaceWill = rid => { const P = A.rulerPersona(rid); return Math.round(clamp(12 * (P.caution - P.pride - .6 * P.wrath + .4 * P.warmth) - 4 * P.warLog, -20, 20)); };
 A.aiSubmitAdj = rid => { const P = A.rulerPersona(rid); return clamp(.1 * (P.caution - P.pride), -.2, .2); };
 A.aiGreedW = rid => { const P = A.rulerPersona(rid); return P.war * Math.exp(.7 * P.greed); };
-A.aiGiveP = rid => { const P = A.rulerPersona(rid); return clamp(.25 * Math.exp(-1.2 * P.greed + .3 * P.warmth), .03, .7); };
-A.aiSpite = rid => { const P = A.rulerPersona(rid); return clamp(Math.exp(.5 * P.greed + .6 * P.wrath + .3 * P.pride - .4 * P.warmth), .3, 2.5); };
-A.aiRivalW = rid => { const P = A.rulerPersona(rid); return clamp(Math.exp(.6 * P.wrath + .4 * P.pride + .6 * P.warLog - .4 * P.warmth), .2, 3); };
-A.aiTradeW = rid => { const P = A.rulerPersona(rid); return clamp(Math.exp(.5 * P.social + .4 * P.greed), .4, 2.2); };
-A.aiNapW = rid => { const P = A.rulerPersona(rid); return clamp(Math.exp(.6 * P.caution + .3 * P.honor - .3 * P.warLog), .4, 2.2); };
+A.aiGiveP = rid => clamp(.25 * A.aiW('sub', rid), .03, .7);
+A.aiSpite = rid => A.aiW('emb', rid);
+A.aiRivalW = rid => A.aiW('rival', rid);
+A.aiTradeW = rid => A.aiW('trade', rid);
+A.aiNapW = rid => A.aiW('nap', rid);
+A.aiDefW = rid => A.aiW('def', rid);
+A.aiGuarW = rid => A.aiW('guar', rid);
 A.aiPlan = rid => clamp(Math.exp(.4 * A.rulerPersona(rid).patience), .6, 1.6);    // patient rulers build a cause first
 A.aiBetrayP = rid => clamp(.06 * Math.exp(-1.5 * A.rulerPersona(rid).honor), .01, .25);
-A.aiJoinP = rid => { const P = A.rulerPersona(rid); return clamp(.35 * Math.exp(.4 * P.honor + .5 * P.warLog), .05, .8); };
+A.aiJoinP = rid => { const P = A.rulerPersona(rid); return clamp(.35 * Math.exp(.4 * P.honor + .9 * P.warLog), .05, .8); };
+// decisions whose odds are e^(sum of k * axis): one table drives both the dice and the reasons shown for them
+const W = {
+  ally: [['social', 1.5]], def: [['caution', 1.8], ['honor', .9]], trade: [['social', 1.5], ['greed', 1.2]], nap: [['caution', 1.8], ['honor', .9], ['war', -.9]],
+  guar: [['honor', 1.8], ['warmth', 1.2], ['pride', .9]], sub: [['greed', -2.4], ['warmth', .9]], emb: [['greed', 1.5], ['wrath', 1.8], ['pride', .9], ['warmth', -1.2]],
+  rival: [['wrath', 1.8], ['pride', 1.2], ['war', 1.8], ['warmth', -1.2]], trib: [['caution', 1.8], ['pride', -2.1], ['wrath', -.9], ['warmth', .6]],
+};
+const axisOf = (P, ax) => ax === 'war' ? P.warLog : P[ax];
+A.aiW = (k, rid) => { const P = A.rulerPersona(rid); return clamp(Math.exp((W[k] || []).reduce((a, [ax, c]) => a + c * axisOf(P, ax), 0)), .1, 5); };
+const wWhy = (k, P) => (W[k] || []).flatMap(([ax, c]) => traitWhy(P, ax, c));
 
 // ---------- the log ----------
 A.aiTop = function (why, n) {
-  return (why || []).filter(x => x && isFinite(x[1]) && Math.abs(x[1]) >= .005)
-    .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, n || 3)
-    .map(([l, w]) => [String(l).replace(/[<>"]/g, ''), r2(w)]);
+  // one trait can push through several axes ("Kind ruler" is both slow to war and warm): show it once, summed
+  const by = new Map();
+  for (const x of why || []) if (x && isFinite(x[1])) { const l = String(x[0]).replace(/[<>"]/g, ''); by.set(l, (by.get(l) || 0) + x[1]); }
+  return [...by].filter(x => Math.abs(x[1]) >= .005).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, n || 3).map(([l, w]) => [l, r2(w)]);
 };
 A.aiLogAdd = function (k, rid, oid, text, why, who) {
   const S = A.S;
   if (!S) return null;
   if (!Array.isArray(S.aiLog)) S.aiLog = [];
   const r = A.realm(rid), ru = r && r.ruler != null ? A.P(r.ruler) : null;
-  const e = { y: S.year, d: A.today ? A.today() : 0, k, r: rid, o: oid || null, who: who != null ? String(who) : ru && A.rulerStyle ? A.rulerStyle(ru, r) : '', t: String(text || ''), why: A.aiTop(why, 3) };
+  // lean: how hard the decider's own traits pushed toward this decision (> 0 in character, < 0 against it, 0 no say)
+  const lean = (why || []).reduce((a, x) => a + (x && x[2] && isFinite(x[1]) ? x[1] : 0), 0);
+  const e = { y: S.year, d: A.today ? A.today() : 0, k, r: rid, o: oid || null, who: who != null ? String(who) : ru && A.rulerStyle ? A.rulerStyle(ru, r) : '', t: String(text || ''), why: A.aiTop(why, 3), lean: r2(lean) };
   S.aiLog.unshift(e);
   if (S.aiLog.length > LOG_CAP) S.aiLog.length = LOG_CAP;
   return e;
@@ -189,28 +207,33 @@ A.aiNoteWar = function (a, b, P, rel, cb, res) {
   return res;
 };
 
-// interest: what a ruler's character adds to how much realm a wants realm b (feeds A.interest, shown by A.interestParts)
-A.aiInterestParts = function (a, b, out) {
-  out = out || [];
+// interest: what a ruler's character adds to how much realm a wants realm b (feeds A.interest, shown by A.interestParts).
+// A.interest runs thousands of times a year, so labels are built only when someone will read them.
+const interestPersona = (a, b, out) => {
   const ra = A.realm(a), rb = A.realm(b);
-  if (!ra || !rb) return out;
-  const P = A.rulerPersona(a), Pb = A.rulerPersona(b), add = (l, v) => { v = Math.round(v); v && out.push([l, v]); };
-  if (P.social) add(`Their ruler is ${lead(P, 'social', Math.sign(P.social))}`, 8 * P.social);
+  if (!ra || !rb) return 0;
+  const P = A.rulerPersona(a), Pb = A.rulerPersona(b);
+  let sum = 0;
+  const add = (v, l) => { v = Math.round(v); if (!v) return; sum += v; out && out.push([l(), v]); };
+  if (P.social) add(8 * P.social, () => `Their ruler is ${lead(P, 'social', Math.sign(P.social))}`);
   if (ra.faith && rb.faith) {
-    if (ra.faith === rb.faith && P.zeal) add(`Their ruler is ${lead(P, 'zeal', Math.sign(P.zeal))}: ${P.zeal > 0 ? 'one faith' : 'faith matters little'}`, (P.zeal > 0 ? 10 : 6) * P.zeal);
-    if (ra.faith !== rb.faith && P.zeal > 0) add(`Their ruler is ${lead(P, 'zeal', 1)}: another faith`, -10 * P.zeal);
+    if (ra.faith === rb.faith && P.zeal) add((P.zeal > 0 ? 10 : 6) * P.zeal, () => `Their ruler is ${lead(P, 'zeal', Math.sign(P.zeal))}: ${P.zeal > 0 ? 'one faith' : 'faith matters little'}`);
+    if (ra.faith !== rb.faith && P.zeal > 0) add(-10 * P.zeal, () => `Their ruler is ${lead(P, 'zeal', 1)}: another faith`);
   }
-  const ratio = A.realmPower(rb) / Math.max(1, A.realmPower(ra));
-  if (P.greed > 0 && (A.hasTrade(a, b) || (rb.income || 0) > (ra.income || 0))) add(`Their ruler is ${lead(P, 'greed', 1)}: your gold`, 6 * P.greed);
-  if (P.caution > 0 && ratio > 1.5) add(`Their ruler is ${lead(P, 'caution', 1)}: you are strong`, 8 * P.caution);
-  if (P.pride > 0 && ratio > 2) add(`Their ruler is ${lead(P, 'pride', 1)}: nobody's junior`, -8 * P.pride);
-  if (P.wrath > 0 && (ra.rivals || []).includes(b)) add(`Their ruler is ${lead(P, 'wrath', 1)}: an old rival`, -10 * P.wrath);
-  if (P.warmth > 0) add(`Their ruler is ${lead(P, 'warmth', 1)}`, 4 * P.warmth);
-  if (Pb.honor >= .3) add('Your ruler keeps faith', 6 * Pb.honor);
-  else if (Pb.honor <= -.3) add('Your ruler breaks faith', 8 * Pb.honor);
-  return out;
+  if (P.greed > 0 && (A.hasTrade(a, b) || (rb.income || 0) > (ra.income || 0))) add(6 * P.greed, () => `Their ruler is ${lead(P, 'greed', 1)}: your gold`);
+  if ((P.caution > 0 || P.pride > 0)) {
+    const ratio = A.realmPower(rb) / Math.max(1, A.realmPower(ra));
+    if (P.caution > 0 && ratio > 1.5) add(8 * P.caution, () => `Their ruler is ${lead(P, 'caution', 1)}: you are strong`);
+    if (P.pride > 0 && ratio > 2) add(-8 * P.pride, () => `Their ruler is ${lead(P, 'pride', 1)}: nobody's junior`);
+  }
+  if (P.wrath > 0 && (ra.rivals || []).includes(b)) add(-10 * P.wrath, () => `Their ruler is ${lead(P, 'wrath', 1)}: an old rival`);
+  if (P.warmth > 0) add(4 * P.warmth, () => `Their ruler is ${lead(P, 'warmth', 1)}`);
+  if (Pb.honor >= .3) add(6 * Pb.honor, () => 'Your ruler keeps faith');
+  else if (Pb.honor <= -.3) add(8 * Pb.honor, () => 'Your ruler breaks faith');
+  return sum;
 };
-A.aiInterestSum = (a, b) => A.aiInterestParts(a, b, []).reduce((s, x) => s + x[1], 0);
+A.aiInterestParts = (a, b, out) => { out = out || []; interestPersona(a, b, out); return out; };
+A.aiInterestSum = (a, b) => interestPersona(a, b, null);
 
 // relation drift: everything that moves a's opinion of b each year (A.politicsYear adds A.aiPullSum; the UI shows the parts)
 A.aiPullParts = function (a, b, ui) {
@@ -275,22 +298,24 @@ A.aiNoteBetray = function (rid, tid, res) {
 
 const SIGN_TXT = { ally: 'swears an alliance with', def: 'signs a defensive pact with', trade: 'opens its markets to', nap: 'signs a pact of non-aggression with',
   guar: 'guarantees the independence of', sub: 'pays a subsidy to', emb: 'embargoes', rival: 'names as its rival', trib: 'bends the knee to' };
-const SIGN_AXIS = { ally: ['social', 1], def: ['caution', 1], trade: ['greed', 1], nap: ['caution', 1], guar: ['honor', 1], sub: ['greed', -1], emb: ['wrath', 1], rival: ['wrath', 1], trib: ['pride', -1] };
+// A.interestParts speaks to the player ("They fear you"); in a log of two AI realms, name the other realm instead
+const asThird = (l, B) => String(l)
+  .replace(/^They fear you$/, `They fear ${B}`).replace(/^You fight their friends$/, `${B} fights their friends`)
+  .replace(/^You are /, `${B} is `).replace(/^Your ruler /, `${B}'s ruler `)
+  .replace(/: your gold$/, `: ${B}'s gold`).replace(/: you are strong$/, `: ${B} is strong`).replace(/^Their ruler is /, 'Ruler is ');
 A.aiSignWhy = function (k, a, b) {
-  const P = A.rulerPersona(a), [ax, s] = SIGN_AXIS[k] || ['social', 1], why = traitWhy(P, ax, s);
+  const P = A.rulerPersona(a), why = wWhy(k, P);
   if (k === 'trib') {
-    why.push(...traitWhy(P, 'caution', .8));
     const ra = A.realm(a), rb = A.realm(b);
     if (ra && rb) why.push([`They are ${(A.realmPower(rb) / Math.max(1, A.realmPower(ra))).toFixed(1)}x stronger`, .8]);
     if (rb && A.rulerPersona(b).war > 1.1) why.push(['Their ruler is hungry for land', .5]);
   } else if (k === 'emb' || k === 'rival') {
-    why.push(...traitWhy(P, 'greed', .5));
     why.push([`Bad blood (opinion ${A.relBetween(a, b)})`, .3 - A.relBetween(a, b) / 100]);
   } else if (k === 'sub') {
     why.push(['Their war is against our enemies', .6]);
   } else {
     // the same factors A.interest uses, persona included
-    for (const [l, v] of A.interestParts(a, b)) why.push([l, v / 20]);
+    for (const [l, v] of A.interestParts(a, b)) why.push([asThird(l, short(b)), v / 20]);
   }
   return why;
 };
@@ -312,7 +337,7 @@ A.aiJustify = function (a, b) {
 // a call to arms: answer it or break the alliance (callToArmsNow). p already includes A.aiCallAdj.
 A.aiAnswerCall = function (al, def, att, p) {
   const yes = A.chance(p), P = A.rulerPersona(al), a = A.realm(al) || {}, s = yes ? 1 : -1;
-  const why = traitWhy(P, 'honor', .25 * 4 * s).concat(traitWhy(P, 'caution', -.1 * 4 * s));
+  const why = traitWhy(P, 'honor', .6 * 4 * s).concat(traitWhy(P, 'caution', -.2 * 4 * s));
   const rel = A.relBetween(al, def);
   why.push([`Opinion of ${short(def)} ${rel > 0 ? '+' : ''}${rel}`, s * rel / 100]);
   if (a.exhaustion > 20) why.push([`War-weary (${Math.round(a.exhaustion)})`, -s * a.exhaustion / 100]);
@@ -324,7 +349,7 @@ A.aiAnswerCall = function (al, def, att, p) {
 A.aiJoinAttack = function (al, att, def) {
   const yes = A.chance(A.aiJoinP(al));
   if (yes) {
-    const P = A.rulerPersona(al), why = traitWhy(P, 'war', 1).concat(traitWhy(P, 'honor', .4));
+    const P = A.rulerPersona(al), why = traitWhy(P, 'war', .9).concat(traitWhy(P, 'honor', .4));
     why.push([`Opinion of ${short(att)} +${A.relBetween(al, att)}`, .5], [`Opinion of ${short(def)} ${A.relBetween(al, def)}`, .3]);
     A.aiLogAdd('join', al, att, `marches with ${short(att)} against ${short(def)}.`, why);
   }
@@ -337,10 +362,11 @@ A.aiNotePeace = function (w, res) {
   if (!la || !ld) return;
   const why = [], sc = w.score || 0;
   if (loser) {
-    const P = A.rulerPersona(loser), L = A.realm(loser), lsc = loser === w.leadD ? sc : -sc;
-    why.push([`War score ${lsc > 0 ? '+' : ''}${Math.round(-lsc)} against them`, Math.abs(sc) >= 80 ? 2 : Math.abs(sc) / 60]);
+    const P = A.rulerPersona(loser), L = A.realm(loser);
+    why.push([`Losing the war (score ${Math.round(Math.abs(sc))})`, Math.abs(sc) >= 80 ? 2 : Math.abs(sc) / 60]);
     if (L && L.exhaustion > 60) why.push([`Exhausted (${Math.round(L.exhaustion)})`, L.exhaustion / 80]);
-    why.push(...traitWhy(P, 'caution', .6), ...traitWhy(P, 'pride', -.7), ...traitWhy(P, 'wrath', -.3));
+    const forced = Math.abs(sc) >= 80;
+    why.push(...wWhy('trib', P).map(x => forced ? [x[0], x[1]] : x));
     A.aiLogAdd('yield', loser, loser === w.leadD ? w.leadA : w.leadD, `yields to ${short(loser === w.leadD ? w.leadA : w.leadD)}: ${w.name || 'the war'} is lost.`, why);
   } else {
     const yrs = A.S.year - (w.start || A.S.year);
@@ -390,12 +416,14 @@ A.aiExact = function (win, lose) {
 A.aiMendRival = function (rid) {
   const r = A.realm(rid), P = A.rulerPersona(rid);
   if (!r || !(r.rivals || []).length || (P.warLog > -.2 && P.wrath > -.3) || A.atWar(rid).length) return false;
-  const rv = r.rivals.find(x => A.realm(x) && A.realm(x).alive && !A.hostile(rid, x) && A.relBetween(rid, x) > -75);
-  if (!rv || !A.chance(clamp(.04 * Math.exp(-1.2 * P.warLog - .8 * P.wrath + .4 * P.warmth), .01, .25))) return false;
+  // only a rivalry some years old, and not one still burning with fresh hatred
+  const since = x => { const m = ((r.mem || {})[x] || []).find(q => q.k === 'rival'); return m ? A.S.year - m.y : 99; };
+  const rv = r.rivals.find(x => A.realm(x) && A.realm(x).alive && !A.hostile(rid, x) && A.relBetween(rid, x) > -60 && since(x) >= 5);
+  if (!rv || !A.chance(clamp(.015 * Math.exp(-1.2 * P.warLog - .8 * P.wrath + .4 * P.warmth), .005, .12))) return false;
   A.cancelTr('rival', rid, rv);
   A.remember(rv, rid, 'peace', 8);
   const why = traitWhy(P, 'war', -1).concat(traitWhy(P, 'wrath', -.8), traitWhy(P, 'warmth', .4));
-  why.push([`Opinion of them ${A.relBetween(rid, rv)}`, .2]);
+  why.push([`Opinion of them ${A.relBetween(rid, rv)}`, .2], [`${since(rv) >= 99 ? 'An old' : since(rv) + ' years of'} rivalry`, .3]);
   A.aiLogAdd('mend', rid, rv, `buries its rivalry with ${short(rv)}.`, why);
   return true;
 };
@@ -404,11 +432,11 @@ A.aiPressClaim = function (r, cl) {
   if (!r || !cl) return false;
   const pc = A.pc();
   if (pc && cl.id === pc.id) return true;
-  const P = A.personPersona(cl), p = clamp(.8 * Math.exp(A.AI_TUNE.claimK * P.warLog + .4 * P.pride - .4 * P.caution), .1, 1), yes = A.chance(p), s = yes ? 1 : -1;
+  const P = A.personPersona(cl), p = clamp(1 * Math.exp(A.AI_TUNE.claimK * P.warLog + .4 * P.pride - .4 * P.caution), .1, 1), yes = A.chance(p), s = yes ? 1 : -1;
   const why = traitWhy(P, 'war', A.AI_TUNE.claimK * s).concat(traitWhy(P, 'pride', .4 * s), traitWhy(P, 'caution', -.4 * s));
   why.push([`${cap(r.short)} is ${r.stability < 30 ? 'tottering' : 'divided'} (stability ${Math.round(r.stability)})`, s * (.3 + Math.max(0, 40 - r.stability) / 60)]);
   const name = A.fullName(cl, false);
-  A.aiLogAdd(yes ? 'claim' : 'kneel', r.id, null, yes ? `faces ${name}, who refuses to kneel and claims the throne.` : `is spared a civil war: ${name} has a claim but kneels.`, why, `claimant ${name}`);
+  A.aiLogAdd(yes ? 'claim' : 'kneel', r.id, null, yes ? `refuses to kneel and claims the throne of ${short(r.id)}.` : `has a claim to the throne of ${short(r.id)}, but kneels.`, why, `claimant ${name}`);
   return yes;
 };
 // a faction's demand: the ruler yields or refuses (pride, caution), then the faction's leader rises or backs down (his own temper)
@@ -423,11 +451,11 @@ A.aiFactionAnswer = function (r, f) {
 A.aiRevolt = function (r, f) {
   const lead = A.S.houses[f.leader], head = lead ? A.houseHead(lead.id) : null;
   if (!head || (A.pc() && head.id === A.pc().id)) return true;
-  const P = A.personPersona(head), p = clamp(.7 * Math.exp(A.AI_TUNE.claimK * P.warLog + .4 * P.pride - .4 * P.caution), .1, 1), yes = A.chance(p), s = yes ? 1 : -1, F = (A.FACTIONS || {})[f.kind] || {};
+  const P = A.personPersona(head), p = clamp(.95 * Math.exp(A.AI_TUNE.claimK * P.warLog + .4 * P.pride - .4 * P.caution), .1, 1), yes = A.chance(p), s = yes ? 1 : -1, F = (A.FACTIONS || {})[f.kind] || {};
   const why = traitWhy(P, 'war', A.AI_TUNE.claimK * s).concat(traitWhy(P, 'pride', .4 * s), traitWhy(P, 'caution', -.4 * s));
   why.push([`The crown refused: ${F.demand || 'their demand'}`, s * .4]);
   const name = A.fullName(head, false);
-  A.aiLogAdd(yes ? 'revolt' : 'backdown', r.id, null, yes ? `faces ${name} and the ${F.name || 'faction'} in arms.` : `is spared a revolt: ${name} and the ${F.name || 'faction'} back down.`, why, `${F.name || 'faction'} leader ${name}`);
+  A.aiLogAdd(yes ? 'revolt' : 'backdown', r.id, null, yes ? `raises the banners of revolt against the crown of ${short(r.id)}.` : `backs down rather than rise against the crown of ${short(r.id)}; the faction breaks up.`, why, `${F.name || 'faction'} leader ${name}`);
   if (!yes) A.S.factions = (A.S.factions || []).filter(x => x !== f);
   return yes;
 };
@@ -451,8 +479,8 @@ const answerOf = (k, r, t) => {
   const o = A.diplOptions(r, t).find(x => x.k === k);
   return o && o.reasons ? o.reasons.map(([l, v]) => [l, v / 10]) : [];
 };
-const ASKED = { ally: 'an alliance', def: 'a defensive pact', nap: 'a pact of non-aggression', trade: 'a trade pact', access: 'military access', guar: 'your guarantee',
-  summit: 'a summit', marry: 'a royal match', vassalize: 'your demand for tribute' };
+const ASKED = { ally: 'an alliance', def: 'a defensive pact', nap: 'a pact of non-aggression', trade: 'a trade pact', access: 'military access', guar: 'a guarantee of its freedom',
+  summit: 'a summit', marry: 'a royal match', vassalize: 'a demand for tribute' };
 const _diplDo = A.diplDo;
 A.diplDo = function (k, tid) {
   const r = A.myRealm(), t = A.realm(tid);
@@ -505,16 +533,16 @@ A.aiOfferWhy = function (o, pr) {
   }
   return A.interestParts(t.id, pr.id).map(([l, v]) => [l, v / 10]);
 };
-const KIND_TXT = { ally: 'offers an alliance to', defpact: 'proposes a defensive pact to', access: 'asks military access of', nap: 'proposes a pact of non-aggression to',
-  trade: 'offers a trade pact to', marry: 'proposes a royal match to', tribute: 'demands tribute from', aid: 'asks for gold from', buy: 'offers to buy land from',
-  sue: 'sues for peace with', demand: 'demands the surrender of', whitepeace: 'offers a white peace to', jointwar: 'proposes a joint war to', coalition: 'invites into a league',
-  claimdemand: 'demands land back from' };
+const KIND_TXT = { ally: 'offers an alliance to {r}.', defpact: 'proposes a defensive pact to {r}.', access: 'asks {r} for military access.', nap: 'proposes a pact of non-aggression to {r}.',
+  trade: 'offers a trade pact to {r}.', marry: 'proposes a royal match to {r}.', tribute: 'demands tribute from {r}.', aid: 'asks {r} for gold.', buy: 'offers to buy land from {r}.',
+  sue: 'sues {r} for peace.', demand: 'demands the surrender of {r}.', whitepeace: 'offers {r} a white peace.', jointwar: 'proposes a joint war to {r}.', coalition: 'invites {r} into a league.',
+  claimdemand: 'demands land back from {r}.' };
 const _queueAiOffer = A.queueAiOffer;
 A.queueAiOffer = function (pc, r, o) {
   const n = A.S.queue.length, res = _queueAiOffer.apply(this, arguments);
   if (o && r && A.S.queue.length > n) {
     const why = A.aiTop(A.aiOfferWhy(o, r), 3), it = A.S.queue[A.S.queue.length - 1];
-    A.aiLogAdd('offer', o.rid, r.id, `${KIND_TXT[o.kind] || 'makes an offer to'} ${short(r.id)}.`, why);
+    A.aiLogAdd('offer', o.rid, r.id, (KIND_TXT[o.kind] || 'makes an offer to {r}.').replace('{r}', short(r.id)), why);
     const shown = why.filter(x => x[1] > 0).map(x => x[0]);
     if (it && typeof it.text === 'string' && shown.length) it.text += ` Their reasons: ${shown.join('; ')}.`;
   }

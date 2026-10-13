@@ -60,6 +60,11 @@
     return null;
   };
   const more = (p, ctx, fx) => A.applyFx(p, fx, ctx);
+  // Story-cycle insurance for the arcs: the choice that opens an arc also books its reckoning a few years out,
+  // in case the dice do not bring it sooner. When it falls due, A.stillValid re-checks the event's cond, and the
+  // event's setup drops it if the player has already seen it (fresh), so it never fires twice or out of place.
+  const later = (ev, years) => A.schedule({ type: "event", ev }, Math.round((years + A.rf(0, 2)) * 365));
+  const fresh = (p, id) => !(p.flags.ev && p.flags.ev[id] != null);
   const say = (...parts) => parts.filter(Boolean).join(" ");
   // Tie the player to a lore figure (cast id) or to someone made for the story, and report it the engine's way.
   const bond = (p, who, type, op) => {
@@ -90,12 +95,12 @@
             fx: { wound: "bad_knee", health: -6, honor: 1, cause: "a fall on the night stage" } } },
         { t: "Take the silver and hold the pouch a day",
           r: "The silver is good. The pouch goes on a day late, with a story about a dead horse that happens to be true.",
-          fx: { coin: 45, honor: -5, flag: "mra_nw_yamsold" } },
+          fx: (p, ctx) => { later("mra_nw_yam_tally", 6); return more(p, ctx, { coin: 45, honor: -5, flag: "mra_nw_yamsold" }); } },
         { t: "Untie the cords and read them first", check: { s: "intrigue", s2: "int", d: 50 },
           win: { r: "Red Wind cords, knotted in the old count. You learn which tribes Yesun has bought for the Horse Feast, then tie every knot back as it was.",
             fx: { skill: { intrigue: 3 }, secret: 1, int: 0.3 } },
           lose: { r: "A knot slips and the pattern is gone. You tie it back as best you can and send it on. Someone at Kharsa counts knots for a living.",
-            fx: { flag: "mra_nw_yamknot", wil: 1 } } },
+            fx: (p, ctx) => { later("mra_nw_yam_tally", 6); return more(p, ctx, { flag: "mra_nw_yamknot", wil: 1 }); } } },
       ],
     },
     // arc: mra_nw_yamsold / mra_nw_yamknot -> the Yam Keepers find the red knot
@@ -104,7 +109,7 @@
       title: "The red knot",
       cond: (p, C) => C.realm(p, "POL-12") && C.adult(p) && (C.flag(p, "mra_nw_yamsold") || C.flag(p, "mra_nw_yamknot")) && A.S.year - (p.flags.mra_nw_yamsold || p.flags.mra_nw_yamknot) >= 2,
       w: 3, once: true,
-      setup: (p, ctx) => { make(p, ctx, { sex: "M", age: 58, occ: "Head of the Yam Keepers" }); },
+      setup: (p, ctx) => { if (!fresh(p, "mra_nw_yam_tally")) { ctx.skip = 1; return; } make(p, ctx, { sex: "M", age: 58, occ: "Head of the Yam Keepers" }); },
       text: p => `{themFull}, Head of the Yam Keepers, rides in from Kharsa with his silver tablet on its blue cord. He lays a tally cord on your table. One knot is dyed red: the Red Wind pouch that left your station ${p.flags.mra_nw_yamsold ? "a day late" : "with its knots tied by a second hand"}. "The Word Arrives," he says. "That is our whole law. Tell me what happened to this word."`,
       choices: [
         { t: "Tell him the truth and give back the token",
@@ -156,7 +161,7 @@
       choices: [
         { t: "Shoot your best and beat him", check: { s: "mounted", s2: "bow", d: 54 },
           win: { r: "Three arrows into the straw rider at the gallop, the last one backward. The crowd shouts your name. {them} congratulates you before the khan, then leaves the feast before the meat.",
-            fx: { fame: 4, skill: { mounted: 2, bow: 2 }, flag: "mra_nw_beatdorin", them: { op: -15 } } },
+            fx: (p, ctx) => { later("mra_nw_dorin_staff", 8); return more(p, ctx, { fame: 4, skill: { mounted: 2, bow: 2 }, flag: "mra_nw_beatdorin", them: { op: -15 } }); } },
           lose: { r: "Two clean passes, then your third arrow goes into the grass. {them} wins again. He does not mention it, which is worse.",
             fx: { fame: 1, happy: -3, them: { op: 5 } } } },
         { t: "Pull the last arrow wide and let him win",
@@ -170,7 +175,7 @@
       title: "Master of the Arrow Field",
       cond: (p, C) => C.realm(p, "POL-12") && C.adult(p) && C.flag(p, "mra_nw_beatdorin") && A.S.year - p.flags.mra_nw_beatdorin >= 4,
       w: 3, once: true,
-      setup: (p, ctx) => { const q = cast(p, ctx, "CHR-0316", false); if (!q) ctx.skip = 1; else ctx.dead = q.alive ? "" : "1"; },
+      setup: (p, ctx) => { const q = fresh(p, "mra_nw_dorin_staff") && cast(p, ctx, "CHR-0316", false); if (!q) ctx.skip = 1; else ctx.dead = q.alive ? "" : "1"; },
       text: (p, ctx) => (ctx.dead
         ? "{themFull} is dead, and the Kharsa Arrow Field has no master."
         : "{themFull} has given up the Arrow Field. His eyes are going, he says, though he still shoots better than most.")
@@ -244,12 +249,12 @@
       choices: [
         { t: "Hold up the knife and claim the whole camp as kin", check: { s: "intimidation", s2: "persuasion", d: 50 },
           win: { r: "The raiders' leader turns the knife in the firelight and laughs. He takes six horses and rides off. The camp calls it a wonder, then asks how you came by such a knife.",
-            fx: { deed: "Turned a Horde raid from the camp with a bone knife", fame: 3, honor: 2, flag: "mra_nw_knifeshown" } },
+            fx: (p, ctx) => { later("mra_nw_knife_accused", 6); return more(p, ctx, { deed: "Turned a Horde raid from the camp with a bone knife", fame: 3, honor: 2, flag: "mra_nw_knifeshown" }); } },
           lose: { r: "He takes the knife, snaps it across his knee, and fires your tent first.",
             fx: { health: -10, wound: "burn", coin: -30, unflag: "ss_nw_hordeknife", cause: "a Horde raid" } } },
         { t: "Show it at your own tent, and stay inside",
           r: "The raiders ride past your tent. By morning three of your neighbors' tents are ash, and the whole camp saw which one was spared.",
-          fx: { honor: -6, happy: -3, flag: "mra_nw_knifeshown" } },
+          fx: (p, ctx) => { later("mra_nw_knife_accused", 6); return more(p, ctx, { honor: -6, happy: -3, flag: "mra_nw_knifeshown" }); } },
         { t: "Throw the knife in the fire and take up a bow", check: { s: "bow", s2: "wil", d: 50 },
           win: { r: "You shoot two raiders from behind a cart, and the rest find easier tents. The bone knife is ash by morning. You find you do not miss it.",
             fx: { skill: { bow: 2 }, honor: 4, fame: 1, unflag: "ss_nw_hordeknife" } },
@@ -263,6 +268,7 @@
       title: "The spared tent",
       cond: (p, C) => C.realm(p, "POL-12") && C.adult(p) && C.flag(p, "mra_nw_knifeshown") && A.S.year - p.flags.mra_nw_knifeshown >= 2,
       w: 3, once: true,
+      setup: (p, ctx) => { if (!fresh(p, "mra_nw_knife_accused")) ctx.skip = 1; },
       text: "The hundred-leader comes with ten riders and a clerk. Since the night of the Horde raid, the camp says you deal with Vrag's men: your tent was spared for a bone knife carved with a running horse. A khan's man who treats with the Horde can lose his herd. The clerk wants to know where the knife came from, and who gave it.",
       choices: [
         { t: "Tell the truth: you bound a wounded man at your fire", check: { s: "persuasion", s2: "wil", d: 46 },
@@ -285,14 +291,14 @@
     {
       id: "mra_qd_pilot_lamps",
       title: "Thirteen lights",
-      cond: (p, C) => C.realm(p, "POL-17") && C.adult(p) && !C.old(p) && C.flag(p, "ss_qd_pilot") && A.S.year - p.flags.ss_qd_pilot >= 2 && A.S.year - p.flags.ss_qd_pilot <= 12,
+      cond: (p, C) => C.realm(p, "POL-17") && C.adult(p) && !C.old(p) && C.flag(p, "ss_qd_pilot") && A.S.year - p.flags.ss_qd_pilot >= 2 && A.S.year - p.flags.ss_qd_pilot <= 16,
       w: 3, once: true,
       setup: (p, ctx) => { if (!cast(p, ctx, "CHR-0473")) ctx.skip = 1; },
       text: "Fourteen lights on the Miruma coast. {themFull} made you name them the night he took you on. Tonight, on watch, you count thirteen. The lamp on the Mirahi tower is dark, and a boat with no lantern is creeping in over the shoal. The Mirahi are pilots too, and {them}'s rivals in the Brotherhood. A dark lamp breaks the pilot's oath.",
       choices: [
         { t: "Wake {them} and tell him which lamp is dark",
           r: "{them} goes white, then very calm. By noon the Brotherhood has the Mirahi before it, swearing it was a wick. {them} is grateful. The Mirahi know whose watch it was.",
-          fx: { them: { op: 20 }, flag: "mra_qd_toldsalim" } },
+          fx: (p, ctx) => { later("mra_qd_pilot_mirahi", 6); return more(p, ctx, { them: { op: 20 }, flag: "mra_qd_toldsalim" }); } },
         { t: "Row out and see what the boat carries", check: { s: "sea", s2: "stealth", d: 48 },
           win: { r: "Sabran oars and Yasiri boatmen, and no cargo but two men with wax tablets, counting the Sultan's galleys. You row back with a name and no proof.",
             fx: { skill: { sea: 2, stealth: 2 }, secret: 1, int: 0.3 } },
@@ -309,7 +315,7 @@
       title: "Over the shoal by dark",
       cond: (p, C) => C.realm(p, "POL-17") && C.adult(p) && C.flag(p, "mra_qd_toldsalim") && A.S.year - p.flags.mra_qd_toldsalim >= 2,
       w: 3, once: true,
-      setup: (p, ctx) => { if (!cast(p, ctx, "CHR-0473")) ctx.skip = 1; },
+      setup: (p, ctx) => { if (!fresh(p, "mra_qd_pilot_mirahi") || !cast(p, ctx, "CHR-0473")) ctx.skip = 1; },
       text: "The Brotherhood of Pilots meets at Miruma to choose a master, and {them} stands for it. The Mirahi have not forgotten whose watch it was when their lamp went dark. Their eldest says your eyes are bad, and that {them} chose badly in you. He proposes a test: bring a laden galley in over the shoal tonight, no lamps lit. The vote waits on it.",
       choices: [
         { t: "Bring the galley in blind", check: { s: "sea", s2: "ins", d: 52 },
@@ -357,15 +363,15 @@
       choices: [
         { t: "Give it to the man in the grey robe",
           r: "He reads it twice, folds it into his sleeve and thanks you by name. You had not told him your name.",
-          fx: { favor: 4, flag: "mra_qd_gavereport" } },
+          fx: (p, ctx) => { later("mra_qd_copper_after", 6); return more(p, ctx, { favor: 4, flag: "mra_qd_gavereport" }); } },
         { t: "Sell it to the Qasimi factor",
           r: "A hundred and twenty silver qadr, counted onto a cloth. The factor burns the sheet in front of you, smiling like a man who has bought more than paper.",
-          fx: { coin: 120, honor: -6, flag: "mra_qd_soldreport" } },
+          fx: (p, ctx) => { later("mra_qd_copper_after", 6); return more(p, ctx, { coin: 120, honor: -6, flag: "mra_qd_soldreport" }); } },
         { t: "Copy it, then sell the original", req: (p, C) => C.literate(p), check: { s: "intrigue", s2: "craft", d: 48 },
           win: { r: "The Qasimi burn one sheet. Its twin goes under a floor tile, where it is worth more than either.",
-            fx: { coin: 120, honor: -4, secret: 2, flag: "mra_qd_soldreport" } },
+            fx: (p, ctx) => { later("mra_qd_copper_after", 6); return more(p, ctx, { coin: 120, honor: -4, secret: 2, flag: "mra_qd_soldreport" }); } },
           lose: { r: "The factor holds your sheet to the light and sees the fresh ink. He pays nothing, and takes your name to his master.",
-            fx: { honor: -2, newRel: { type: "enemy", op: -30 }, flag: "mra_qd_soldreport" } } },
+            fx: (p, ctx) => { later("mra_qd_copper_after", 6); return more(p, ctx, { honor: -2, newRel: { type: "enemy", op: -30 }, flag: "mra_qd_soldreport" }); } } },
       ],
     },
     // arc: mra_qd_gavereport / mra_qd_soldreport -> the Emir answers to the Divan
@@ -374,6 +380,7 @@
       title: "Before the Divan",
       cond: (p, C) => C.realm(p, "POL-17") && C.adult(p) && (C.flag(p, "mra_qd_gavereport") || C.flag(p, "mra_qd_soldreport")) && A.S.year - (p.flags.mra_qd_gavereport || p.flags.mra_qd_soldreport) >= 2,
       w: 3, once: true,
+      setup: (p, ctx) => { if (!fresh(p, "mra_qd_copper_after")) ctx.skip = 1; },
       text: p => p.flags.mra_qd_gavereport
         ? "Idris Qasimi, Emir of Basim, has been called before the Divan to answer for his copper. Your sheet from the Sabun Pass sits in the Master of Doors' file. The Divan wants a living witness who saw the mules. The Qasimi want that witness to have bad eyes, and they have found out where you live."
         : "The Qasimi factor is back. The Emir of Basim paid well for your sheet from the Sabun Pass. Now he is called before the Divan, and he needs a little more: an honest man's oath that the mules you saw that night carried olives.",
@@ -429,7 +436,7 @@
       choices: [
         { t: "Show the tasters the proof yourself", check: { s: "learning", s2: "etiquette", d: 50 },
           win: { r: "You set a sliver of whale ivory beside the cup and pour arsenic on both. Neither sweats. The tasters go pale. The Sultan sends you a robe and orders you to stay within call.",
-            fx: { fame: 3, favor: 5, skill: { learning: 2 }, flag: "mra_qd_hornspoke" } },
+            fx: (p, ctx) => { later("mra_qd_horn_cup", 6); return more(p, ctx, { fame: 3, favor: 5, skill: { learning: 2 }, flag: "mra_qd_hornspoke" }); } },
           lose: { r: "You stumble over the words. The Sultan hears only that you call the Emperor's gift a fraud, and you go to a palace cell for it.",
             fx: { favor: -6, prison: 1, why: "insulting the Emperor's gift" } } },
         { t: "Write it out for the physician to deliver", req: (p, C) => C.literate(p),
@@ -446,6 +453,7 @@
       title: "Three cups",
       cond: (p, C) => C.realm(p, "POL-17") && C.adult(p) && C.flag(p, "mra_qd_hornspoke") && A.S.year - p.flags.mra_qd_hornspoke >= 2,
       w: 3, once: true,
+      setup: (p, ctx) => { if (!fresh(p, "mra_qd_horn_cup")) ctx.skip = 1; },
       text: "Since you poured arsenic on whale ivory before the tasters, the palace calls on you when something must be tested. Now the Sultan wants a new cup. Three merchants offer one: rhinoceros horn from Kesh, a bezoar stone set in gold, and a plain silver bowl. Your word will choose. The Kesh merchant has already sent a gift to your door.",
       choices: [
         { t: "Choose the plain silver bowl",
@@ -516,7 +524,7 @@
       choices: [
         { t: "Pay him the forty suns", req: p => p.coin >= 40,
           r: "{them} bites the silver, smiles and cuts a notch from his stick. You notice that he carries more than one stick.",
-          fx: { coin: -40, flag: "mra_tm_paidcatcher", them: { type: "acquaint", op: -10 } } },
+          fx: (p, ctx) => { later("mra_tm_runaway_again", 6); return more(p, ctx, { coin: -40, flag: "mra_tm_paidcatcher", them: { type: "acquaint", op: -10 } }); } },
         { t: "Go before the flood-priests and have your name struck", check: { s: "persuasion", s2: "wil", d: 50 },
           win: { r: "You stand before a flood-priest and argue the floods: seven counted, the oxen invented. He strikes the line himself. Your name is off the roll.",
             fx: { unflag: "runaway", honor: 3, happy: 6, wil: 1.5 } },
@@ -535,7 +543,7 @@
       title: "The second notch",
       cond: (p, C) => C.realm(p, "POL-18") && C.adult(p) && C.flag(p, "mra_tm_paidcatcher") && A.S.year - p.flags.mra_tm_paidcatcher >= 2,
       w: 3, once: true,
-      setup: (p, ctx) => { if (!linked(p, ctx, null, q => q.occ === "a temple tally-man")) make(p, ctx, { sex: "M", age: 47, occ: "a temple tally-man" }); },
+      setup: (p, ctx) => { if (!fresh(p, "mra_tm_runaway_again")) { ctx.skip = 1; return; } if (!linked(p, ctx, null, q => q.occ === "a temple tally-man")) make(p, ctx, { sex: "M", age: 47, occ: "a temple tally-man" }); },
       text: "The tally-man {them} is back, on your own doorstep this time. Forty suns bought one notch, he says, and shows you the stick. It has two. He is cheerful about it. He knows where you live now, and who lives with you.",
       choices: [
         { t: "Pay again, and keep paying", req: p => p.coin >= 40,
@@ -565,7 +573,7 @@
       choices: [
         { t: "Have it written and sealed with his mark",
           r: "It takes all afternoon. He signs with his mason's mark, the same one cut on the Stairs. You walk home with a folded sheet that could hang you.",
-          fx: { flag: "mra_tm_confession", secret: 1, honor: 2, them: { op: 20 } } },
+          fx: (p, ctx) => { later("mra_tm_confession_use", 6); return more(p, ctx, { flag: "mra_tm_confession", secret: 1, honor: 2, them: { op: 20 } }); } },
         { t: "Bring a priest to hear his confession",
           r: "The priest hears him in private and absolves him. The confession goes into the temple vault and stays there. A priest's clerk writes down your name.",
           fx: { piety: 4, favor: 2, them: { op: 10 } } },
@@ -580,6 +588,7 @@
       title: "The sheet under the floor",
       cond: (p, C) => C.realm(p, "POL-18") && C.adult(p) && C.flag(p, "mra_tm_confession") && A.S.year - p.flags.mra_tm_confession >= 2,
       w: 3, once: true,
+      setup: (p, ctx) => { if (!fresh(p, "mra_tm_confession_use")) ctx.skip = 1; },
       text: "Another low flood, and the flood-priests read a fair mark on the Stairs and set the grain tax at a tenth. Under your floor is the old mason's confession: the mark cut higher by night in 1089, sealed with his mason's mark. The villages are already thin. One sheet could lower the tax. It could also start a riot, or put you in the river.",
       choices: [
         { t: "Paste it on the Flood Stairs at night", check: { s: "stealth", s2: "wil", d: 50 },
@@ -654,7 +663,7 @@
       choices: [
         { t: "Write the petition for the village",
           r: "You write it in the temple hand, every rent and every date. The headman takes it to the nome court. The steward stops greeting you.",
-          fx: { honor: 4, flag: "mra_tm_petition", newRel: { type: "enemy", op: -25 } } },
+          fx: (p, ctx) => { later("mra_tm_petition_answer", 6); return more(p, ctx, { honor: 4, flag: "mra_tm_petition", newRel: { type: "enemy", op: -25 } }); } },
         { t: "Take the clerk's place in the temple",
           r: "A reed pen, a clean kilt, a ration of bread and beer. You keep the steward's rolls now. The village finds another hand, and a worse one.",
           fx: { job: "scribe", coin: 15, honor: -3 } },
@@ -671,6 +680,7 @@
       title: "The nome court",
       cond: (p, C) => C.realm(p, "POL-18") && C.adult(p) && C.flag(p, "mra_tm_petition") && A.S.year - p.flags.mra_tm_petition >= 2,
       w: 3, once: true,
+      setup: (p, ctx) => { if (!fresh(p, "mra_tm_petition_answer")) ctx.skip = 1; },
       text: "The nome court has read your petition about the canal rents. It finds for the village, in part: the steward must return one rent. But the judge notes that the petition is written in a temple hand, and asks who taught a farmer's child to write like that. The steward's men are asking the same question in the village.",
       choices: [
         { t: "Stand up and say you wrote it",
@@ -736,7 +746,7 @@
       choices: [
         { t: "Captain his guard",
           r: "Six men with sticks, a lamp and a crowd. The temple watches you from the top of the Stairs. {them} pays in silver, and the crowd pays in the way it says your name.",
-          fx: { coin: 15, favor: -5, fame: 2, them: { type: "friend", op: 30 }, flag: "mra_tm_lampguard" } },
+          fx: (p, ctx) => { later("mra_tm_lamp_night", 6); return more(p, ctx, { coin: 15, favor: -5, fame: 2, them: { type: "friend", op: 30 }, flag: "mra_tm_lampguard" }); } },
         { t: "Sell him for the twenty kites",
           r: "You tell a temple clerk where {them} sleeps. He is gone by morning. You are paid. The crowd at the Stairs never learns your name, and you are glad of it.",
           fx: { coin: 120, honor: -10, them: { type: "enemy", op: -60 }, trait: "deceitful" } },
@@ -753,7 +763,7 @@
       title: "Torches at the door",
       cond: (p, C) => C.realm(p, "POL-18") && C.adult(p) && C.flag(p, "mra_tm_lampguard") && A.S.year - p.flags.mra_tm_lampguard >= 2,
       w: 3, once: true,
-      setup: (p, ctx) => { if (!cast(p, ctx, "CHR-0502")) ctx.skip = 1; },
+      setup: (p, ctx) => { if (!fresh(p, "mra_tm_lamp_night") || !cast(p, ctx, "CHR-0502")) ctx.skip = 1; },
       text: p => `For ${count(yrs(p, "mra_tm_lampguard"), "year")} you have led {them}'s guard. Tonight the temple comes in force: twenty men with torches at the door of the house where he sleeps, and a priest with a written order. {them} lights his little lamp and sits down to wait. Your five men turn to you.`,
       choices: [
         { t: "Hold the door", check: { s: "melee", s2: "command", d: 54 },
@@ -785,12 +795,12 @@
       choices: [
         { t: "Ride to Qasan and warn Zayd", check: { s: "riding", s2: "survival", d: 46 },
           win: { r: "You find his camp on the second night. Zayd hears you out in silence and moves his sixty riders before dawn. A month later a curved knife arrives, wrapped in black cloth.",
-            fx: { honor: 2, flag: "mra_sc_warnedzayd", them: { type: "friend", op: 30 } } },
+            fx: (p, ctx) => { later("mra_sc_zayd_reckoning", 6); return more(p, ctx, { honor: 2, flag: "mra_sc_warnedzayd", them: { type: "friend", op: 30 } }); } },
           lose: { r: "You lose the trail in a dust storm, and come home to find Zanari riders camped by your tent.",
             fx: { health: -6, happy: -3, favor: -2, cause: "a dust storm in the Qasan hills" } } },
         { t: "Sell them the valley",
           r: "A Zanari captain weighs the gold on a flat stone. Three nights later the Qasan hills are full of smoke. Zayd was not in them.",
-          fx: { coin: 80, honor: -10, flag: "mra_sc_soldzayd" } },
+          fx: (p, ctx) => { later("mra_sc_zayd_reckoning", 6); return more(p, ctx, { coin: 80, honor: -10, flag: "mra_sc_soldzayd" }); } },
         { t: "Say nothing, and keep your veil close", check: { s: "deception", s2: "wil", d: 44 },
           win: { r: "The Zanari ride on to the next camp. For a season you sleep with your knife under the saddle.",
             fx: { wil: 1, secret: 1 } },
@@ -804,28 +814,37 @@
       title: "A veiled rider at the fire",
       cond: (p, C) => C.realm(p, "POL-19") && C.adult(p) && (C.flag(p, "mra_sc_warnedzayd") || C.flag(p, "mra_sc_soldzayd")) && A.S.year - (p.flags.mra_sc_warnedzayd || p.flags.mra_sc_soldzayd) >= 2,
       w: 3, once: true,
-      setup: (p, ctx) => { if (!cast(p, ctx, "CHR-0518")) ctx.skip = 1; },
+      // Zayd himself if he lives; if the world has killed him, the band he led comes in his name
+      setup: (p, ctx) => {
+        if (!fresh(p, "mra_sc_zayd_reckoning")) { ctx.skip = 1; return; }
+        // (A.T substitutes once, so ctx strings carry names, not tokens)
+        const z = cast(p, ctx, "CHR-0518");
+        if (z) { ctx.who = `It is ${A.fullName(z)} himself.`; return; }
+        const dz = A.S.castMap && A.P(A.S.castMap["CHR-0518"]);
+        const q = make(p, ctx, { sex: "M", age: 36, occ: "a rider of Zayd Blackveil's band" });
+        ctx.who = `It is ${A.fullName(q)}, who rode at Zayd Blackveil's side. Zayd is dead of ${(dz && dz.cause) || "a fever"}, and the band follows ${q.given} now.`;
+      },
       text: p => p.flags.mra_sc_warnedzayd
-        ? "A veiled rider finds you at the fire, as one did years ago. It is {themFull} himself. He remembers who rode to Qasan to warn him. Now Harith Sayf wants a Zanari gold caravan stopped before it reaches the Salt Road, and Zayd wants you beside him. This time there will be guards, and killing."
-        : "A veiled rider finds you at the fire, as one did years ago. It is {themFull} himself. He knows who sold the Qasan valley to the Zanari. He has not come to kill you, he says. He has come to collect. You will ride with him once more, against the gold caravans, or every camp will hear your name.",
+        ? "A veiled rider finds you at the fire, as one did years ago. {who} The band remembers who rode to Qasan to warn it. Now Harith Sayf wants a Zanari gold caravan stopped before the Salt Road, and {them} wants you along. This time there will be guards, and killing."
+        : "A veiled rider finds you at the fire, as one did years ago. {who} The band knows who sold the Qasan valley to the Zanari. {them} has not come to kill you. {them} has come to collect: you ride once more, against the gold caravans, or every camp hears your name.",
       choices: [
-        { t: "Ride with Zayd against the caravan", req: p => !!p.flags.mra_sc_warnedzayd, check: { s: "melee", s2: "riding", d: 52 },
+        { t: "Ride with {them} against the caravan", req: p => !!p.flags.mra_sc_warnedzayd, check: { s: "melee", s2: "riding", d: 52 },
           win: { r: "A night fight among kneeling camels. The gold goes into the hills. Harith Sayf pays you himself, and you see in his face that he means to use you again.",
-            fx: { coin: 70, honor: -4, fame: 2, them: { op: 15 }, deed: "Rode with Zayd Blackveil against a Zanari gold caravan" } },
+            fx: { coin: 70, honor: -4, fame: 2, them: { op: 15 }, deed: "Rode with Zayd Blackveil's band against a Zanari gold caravan" } },
           lose: { r: "The caravan guards are Zanari runners with bows. You come home with an arrow in you and no gold.",
             fx: { wound: "arrow_wound", health: -16, them: { op: 5 }, cause: "a caravan guard's arrow" } } },
-        { t: "Refuse him to his face", req: p => !!p.flags.mra_sc_warnedzayd,
-          r: "Zayd is silent behind his veil. Then he rides off. Whatever was owed between you is paid now.",
+        { t: "Refuse {themHim} to {theirHis} face", req: p => !!p.flags.mra_sc_warnedzayd,
+          r: "{them} is silent behind the veil, then rides off. Whatever was owed between you and the band is paid now.",
           fx: { them: { op: -15 }, honor: 2 } },
-        { t: "Ride in front, as he asks", req: p => !p.flags.mra_sc_warnedzayd, check: { s: "melee", s2: "riding", d: 52 },
-          win: { r: "You ride in front, where the arrows are. At dawn Zayd gives you a share of the gold and says the debt is paid.",
+        { t: "Ride in front, as {them} asks", req: p => !p.flags.mra_sc_warnedzayd, check: { s: "melee", s2: "riding", d: 52 },
+          win: { r: "You ride in front, where the arrows are. At dawn {them} gives you a share of the gold and says the debt is paid.",
             fx: { coin: 40, honor: -2, them: { op: 20 }, unflag: "mra_sc_soldzayd" } },
-          lose: { r: "You ride in front, and an arrow finds you. Zayd leaves you at a well with water and a camel. The debt, he says, is paid in blood.",
+          lose: { r: "You ride in front, and an arrow finds you. {them} leaves you at a well with water and a camel. The debt, the band says, is paid in blood.",
             fx: { wound: "arrow_wound", health: -18, unflag: "mra_sc_soldzayd", cause: "a caravan guard's arrow" } } },
-        { t: "Tell the Speaker's men where Zayd will strike", req: p => !p.flags.mra_sc_warnedzayd, check: { s: "intrigue", s2: "riding", d: 50 },
-          win: { r: "The Noon Lances are waiting at the caravan. Zayd escapes. Half his riders do not. He will come for you, but not soon.",
+        { t: "Tell the Speaker's men where the band will strike", req: p => !p.flags.mra_sc_warnedzayd, check: { s: "intrigue", s2: "riding", d: 50 },
+          win: { r: "The Noon Lances are waiting at the caravan. {them} escapes. Half the band does not. {them} will come for you, but not soon.",
             fx: { favor: 5, honor: -4, them: { type: "enemy", op: -70 } } },
-          lose: { r: "The Speaker's men are slow, and Zayd is not. He learns who talked.",
+          lose: { r: "The Speaker's men are slow, and the band is not. {them} learns who talked.",
             fx: { them: { type: "enemy", op: -80 }, trait: "paranoid", happy: -6 } } },
       ],
     },
@@ -962,7 +981,7 @@
       choices: [
         { t: "Run it straight through, alone", check: { s: "sta", s2: "athletics", d: 54 },
           win: { r: "Two days and a night, the river road and the hill road. You hand it over at Atani on your knees. {them} hears of it before you are home.",
-            fx: { fame: 3, them: { op: 20 }, flag: "mra_zn_ranatani", deed: "Ran the road to Atani in two days" } },
+            fx: (p, ctx) => { later("mra_zn_runner_guard", 6); return more(p, ctx, { fame: 3, them: { op: 20 }, flag: "mra_zn_ranatani", deed: "Ran the road to Atani in two days" }); } },
           lose: { r: "Your knee goes on the second morning. You finish at a hobble, a day late, the seal unbroken. {them} says only that the seal was unbroken.",
             fx: { wound: "bad_knee", health: -8, them: { op: -5 }, cause: "the run to Atani" } } },
         { t: "Send it by the relay posts, fast and watched",
@@ -970,7 +989,7 @@
           fx: { them: { op: -15 }, skill: { command: 1 } } },
         { t: "Read it first, then decide", req: (p, C) => C.literate(p), check: { s: "intrigue", s2: "ins", d: 46 },
           win: { r: "It is a list of runners the Old Voices have bought. Your name is not on it. You run it to Atani with a lighter heart and a heavier secret.",
-            fx: { secret: 1, skill: { intrigue: 2 }, fame: 1, flag: "mra_zn_ranatani" } },
+            fx: (p, ctx) => { later("mra_zn_runner_guard", 6); return more(p, ctx, { secret: 1, skill: { intrigue: 2 }, fame: 1, flag: "mra_zn_ranatani" }); } },
           lose: { r: "The seal cracks. You run it anyway. {them} sees the seal at once and cuts the runner's cord from your wrist.",
             fx: { unflag: "ss_zn_runner", honor: -5, them: { op: -30 } } } },
       ],
@@ -981,6 +1000,7 @@
       title: "The white cloth",
       cond: (p, C) => C.realm(p, "POL-20") && C.adult(p) && !C.old(p) && C.flag(p, "mra_zn_ranatani") && A.S.year - p.flags.mra_zn_ranatani >= 2,
       w: 3, once: true,
+      setup: (p, ctx) => { if (!fresh(p, "mra_zn_runner_guard")) ctx.skip = 1; },
       text: "Since your run to Atani, the Runner Guard has wanted you. A Guard captain comes to the House of Runners with a spear and a white cloth. The Runner Guard stands between the emperor and everything, and runs before his litter in war. It is the highest place a runner can hold. A runner who takes the white cloth does not give it back.",
       choices: [
         { t: "Take the spear and the white cloth",
@@ -1030,7 +1050,7 @@
       choices: [
         { t: "Go yourself, knife in your teeth", check: { s: "sea", s2: "stealth", d: 54 },
           win: { r: "The cable is as thick as your thigh. It takes an hour. At dawn the Amber flagship sits on the bar, and her admiral sails home without a word. The Swimmers drink to you.",
-            fx: { fame: 3, skill: { stealth: 2 }, flag: "mra_ks_cutcable", deed: "Cut an Amber flagship's cable by night" } },
+            fx: (p, ctx) => { later("mra_ks_swim_price", 6); return more(p, ctx, { fame: 3, skill: { stealth: 2 }, flag: "mra_ks_cutcable", deed: "Cut an Amber flagship's cable by night" }); } },
           lose: { r: "A marine's boathook finds you in the black water. You get back with a gash across your back and nothing cut.",
             fx: { wound: "deep_cut", health: -14, cause: "an Amber boathook" } } },
         { t: "Say the League has not ordered it",
@@ -1049,7 +1069,7 @@
       title: "Forty kesh for a name",
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && C.flag(p, "mra_ks_cutcable") && A.S.year - p.flags.mra_ks_cutcable >= 2,
       w: 3, once: true,
-      setup: (p, ctx) => { make(p, ctx, { occ: "a Night Swimmer" }); },
+      setup: (p, ctx) => { if (!fresh(p, "mra_ks_swim_price")) { ctx.skip = 1; return; } make(p, ctx, { occ: "a Night Swimmer" }); },
       text: "The Amber Isles have not forgotten their flagship on the bar. An Amber factor in Kesh is offering forty silver kesh for the name of the swimmer who cut her cable. Your name is no secret among the Night Swimmers. One of them, {them}, owes money on the Pepper Hall dice, and has started counting you like coin.",
       choices: [
         { t: "Pay {them}'s dice debt first", req: p => p.coin >= 40,
@@ -1100,10 +1120,10 @@
       choices: [
         { t: "Take what you saw to House Keshari",
           r: "Faraji Keshari's man pays in silver and asks you to say it again before witnesses. You do. The Monuri lose votes, and gain an enemy.",
-          fx: { coin: 40, favor: 3, flag: "mra_ks_augertold", newRel: { type: "enemy", op: -30 } } },
+          fx: (p, ctx) => { later("mra_ks_auger_after", 6); return more(p, ctx, { coin: 40, favor: 3, flag: "mra_ks_augertold", newRel: { type: "enemy", op: -30 } }); } },
         { t: "Tell Rehema, whose hulls they were", req: (p, C, ctx) => !!(ctx && ctx.pid),
           r: "{them} hears you out and says nothing for a while. Then she offers you work in her yards whenever you want it, and tells no one where she got the name.",
-          fx: { them: { type: "friend", op: 35 }, job: "carpenter", flag: "mra_ks_augertold" } },
+          fx: (p, ctx) => { later("mra_ks_auger_after", 6); return more(p, ctx, { them: { type: "friend", op: 35 }, job: "carpenter", flag: "mra_ks_augertold" }); } },
         { t: "Sell your silence to the house on Amber Row", check: { s: "intrigue", s2: "deception", d: 52 },
           win: { r: "A purse of silver kesh, handed over by a servant who gives no name. You have been bought, and the house knows your face.",
             fx: { coin: 100, honor: -8, secret: 1 } },
@@ -1117,6 +1137,7 @@
       title: "The Monuri offer",
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && C.flag(p, "mra_ks_augertold") && A.S.year - p.flags.mra_ks_augertold >= 2,
       w: 3, once: true,
+      setup: (p, ctx) => { if (!fresh(p, "mra_ks_auger_after")) ctx.skip = 1; },
       text: "House Monuri has worked out who followed the auger-man to Amber Row. They do not send a knife. They send a steward with an offer: a share in a pepper ship and a house on the harbor. The price is that you tell the League you were wrong about the sash.",
       choices: [
         { t: "Take the share and say you were wrong",
@@ -1217,7 +1238,7 @@
       choices: [
         { t: "Take his silver and listen",
           r: "A salt bar a month, for names. Your neighbors begin to sound different to you, and you to them, though they cannot say why.",
-          fx: { coin: 20, honor: -4, skill: { intrigue: 2 }, them: { op: 20 }, flag: "mra_ab_destaman" } },
+          fx: (p, ctx) => { later("mra_ab_desta_hive", 6); return more(p, ctx, { coin: 20, honor: -4, skill: { intrigue: 2 }, them: { op: 20 }, flag: "mra_ab_destaman" }); } },
         { t: "Warn the southern lords' riders about him", check: { s: "intrigue", s2: "riding", d: 48 },
           win: { r: "The Mandari riders thank you, and take {them} on the Mandi road. He does not come back to the valley that year, or the next.",
             fx: { favor: -3, honor: 2, fame: 1, them: { type: "enemy", op: -60 } } },
@@ -1234,7 +1255,7 @@
       title: "The hive in the Yandi orchards",
       cond: (p, C) => C.realm(p, "POL-22") && C.adult(p) && C.flag(p, "mra_ab_destaman") && A.S.year - p.flags.mra_ab_destaman >= 2,
       w: 3, once: true,
-      setup: (p, ctx) => { if (!cast(p, ctx, "CHR-0588")) ctx.skip = 1; },
+      setup: (p, ctx) => { if (!fresh(p, "mra_ab_desta_hive") || !cast(p, ctx, "CHR-0588")) ctx.skip = 1; },
       text: p => `For ${count(yrs(p, "mra_ab_destaman"), "year")} you have listened for {them}: a name here, a rider there. Now he wants something bigger. Copies of the Mandari letters to Prince Tekle are hidden in a hive in the Yandi orchards, he says. They name every lord who has promised to ride. The Marshal of the North will make a rich man of whoever brings them.`,
       choices: [
         { t: "Rob the hive", check: { s: "stealth", s2: "husbandry", d: 52 },
@@ -1263,7 +1284,7 @@
       choices: [
         { t: "Ride to Mandi on the Mandari horse",
           r: "Six thousand horsemen in the dark, and old songs about Kiros. It feels like the start of something. In the morning the lords send everyone home to wait.",
-          fx: { flag: "mra_ab_rodemonundi", favor: -4, honor: 2, skill: { riding: 1 } } },
+          fx: (p, ctx) => { later("mra_ab_monundi_list", 6); return more(p, ctx, { flag: "mra_ab_rodemonundi", favor: -4, honor: 2, skill: { riding: 1 } }); } },
         { t: "Send the horse back with the rider",
           r: "You lead the horse out yourself and hand him the reins. Your place among the Horsemen goes back to Mandi with it.",
           fx: (p, ctx) => { if (p.gear && p.gear.mount === "horse") p.gear.mount = null; return more(p, ctx, { unflag: "ss_ab_monundi", honor: -2, trait: "cautious" }); } },
@@ -1280,6 +1301,7 @@
       title: "The king's list",
       cond: (p, C) => C.realm(p, "POL-22") && C.adult(p) && C.flag(p, "mra_ab_rodemonundi") && A.S.year - p.flags.mra_ab_rodemonundi >= 2,
       w: 3, once: true,
+      setup: (p, ctx) => { if (!fresh(p, "mra_ab_monundi_list")) ctx.skip = 1; },
       text: "The muster at Mandi came to nothing, that time. But the king's clerks have been to Mandi since, and they have a list of the Horsemen of the Monundi who rode that night. Your name is on it. A royal clerk is offering a sealed pardon to any rider who names three others.",
       choices: [
         { t: "Name three riders and take the pardon",

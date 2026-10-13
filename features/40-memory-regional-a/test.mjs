@@ -7,7 +7,9 @@
 //   3. every mra_ flag these events set is read again by another mra_ event (the two-step arcs; at least 5);
 //   4. shape: weight 2 or 3, choice labels <= 12 words, outcome text <= 45 words, and at least one branch per
 //      event that leaves a lasting mark (trait, flag, relation, wound, deed, job, debt, prison...);
-//   5. a play-test of every event under forced history: for each event it builds characters that satisfy the
+//   5. the 16 arc reckonings are booked (A.schedule) by the choice that opens the arc, and drop a booked copy
+//      once the player has already seen them;
+//   6. a play-test of every event under forced history: for each event it builds characters that satisfy the
 //      cond (the right realm, sex, stage and race, the flags set N years ago, rich and poor, literate and not,
 //      each side of an "or" flag), checks the cond is false when the flag was set this year, renders the event
 //      (no skip, no raw {token}, text <= 80 words) and takes every choice from the same saved state, forcing
@@ -115,6 +117,7 @@ export default {
         mra_tm_runaway_again: [null, p => { const q = A.newPerson({ given: 'Nakht', sex: 'M', race: 'human', realm: p.realm, born: A.S.year - 47, occ: 'a temple tally-man' }); A.link(p, q, 'acquaint', -10, 'acquaint'); }],
         mra_zn_mask_night: [null, p => { const q = A.newPerson({ given: 'Kato', sex: 'M', race: 'human', realm: p.realm, born: A.S.year - 35 }); A.link(p, q, 'rival', -30, 'rival'); }],
         mra_zn_hand_heir: [null, p => { const r = A.realm('POL-20'), ru = r && A.P(r.ruler); if (ru) ru.given = 'Juma'; }],
+        mra_sc_zayd_reckoning: [null, p => { const q = A.personFromCast('CHR-0518'); q.alive = false; q.died = A.S.year - 1; }],
       };
       for (const e of evs) {
         const cs = e.cond.toString();
@@ -150,6 +153,13 @@ export default {
           fl.forEach((f, i) => { p.flags[f] = keep[i]; });
           const base = A.serialize();
           stats.variants++;
+          if (e.setup && /fresh\(p,/.test(e.setup.toString())) {
+            p.flags.ev = p.flags.ev || {}; p.flags.ev[e.id] = A.S.year - 1;
+            const q0 = { type: 'event', ev: e.id };
+            let sk = false; try { sk = A.eventView(q0).skip; } catch (err) { problems.push(`${vtag}: guard view throws ${err.message}`); }
+            if (!sk) problems.push(`${vtag}: a booked copy would fire after the scene was seen`);
+            A.deserialize(JSON.parse(base));
+          }
           const plan = [];
           (e.choices || []).forEach((c, i) => { if (c.check) plan.push([i, 100], [i, 0]); else plan.push([i, null]); });
           let viewed = false;
@@ -172,9 +182,18 @@ export default {
             if (idx < 0) continue; // a req hid this choice for this character
             cur = `${vtag} choice ${i + 1}${force === null ? '' : force ? ' win' : ' lose'}`;
             if (force !== null) A.checkOdds = () => force;
+            const taken = e.choices[i].check ? (force ? e.choices[i].win : e.choices[i].lose) : e.choices[i];
+            const books = [...src(taken && taken.fx).matchAll(/later\("(mra_\w+)"/g)].map(m => m[1]);
+            const sched0 = (A.S.sched || []).length;
             try {
               A.eventChoose(idx);
               const res = A.S.queue[0] && A.S.queue[0].result;
+              // a choice that opens an arc books its reckoning, and only that
+              const booked = (A.S.sched || []).slice().filter(x => x.item && /^mra_/.test(x.item.ev || '')).map(x => x.item.ev);
+              for (const b of books) if (!booked.includes(b)) problems.push(`${cur}: did not book ${b}`);
+              if (!books.length && booked.length) problems.push(`${cur}: booked ${booked[0]} without opening an arc`);
+              if (books.length && (A.S.sched || []).length <= sched0) problems.push(`${cur}: schedule did not grow`);
+              stats.booked = (stats.booked || 0) + books.length;
               const rt = res ? String(res.text || '') : '';
               if (RAW.test(rt)) problems.push(`${cur}: raw token in result ${rt.match(RAW)[0]}`);
               if (BAD.test(rt)) problems.push(`${cur}: bad result text ${rt.match(BAD)[0]}`);
@@ -199,7 +218,7 @@ export default {
     return {
       ok: r.problems.length === 0 && IDS.length > 0,
       detail: `${IDS.length} events, ${read}/${CHUNK.length} flags read (${(reads / CHUNK.length).toFixed(2)} per flag), ${arcs} arcs, ` +
-        `${r.stats.variants} histories, ${r.stats.choicesTaken} outcomes taken` + (r.problems.length ? `; ${r.problems.length} problems: ${r.problems.slice(0, 6).join('; ')}` : ''),
+        `${r.stats.variants} histories, ${r.stats.choicesTaken} outcomes taken, ${r.stats.booked || 0} reckonings booked` + (r.problems.length ? `; ${r.problems.length} problems: ${r.problems.slice(0, 6).join('; ')}` : ''),
       data: Object.assign(r.stats, { problems: r.problems }),
     };
   },

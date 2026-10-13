@@ -142,20 +142,22 @@ export default {
       const pc = A.pc(), rid = pc.realm;
       A.makeRuler(pc, rid); A.realm(rid).playerRun = true;
       const others = A.dLive().filter(x => x.id !== rid);
-      const drawAll = () => {
+      const drawMine = () => {
         UI.tab = 'realm'; UI.realmView = 'dipl';
         for (const o of others) { UI.diplSel = o.id; UI.render(); }
         UI.aiLogMode = 'us'; UI.render(); UI.aiLogMode = 'all'; UI.aiLogN = 60; UI.render();
-        const n = document.querySelectorAll('.ai-dec').length;
-        T.renderAll();
-        return n;
+        return document.querySelectorAll('.ai-dec').length;
       };
-      // the first draw as a new ruler lets the base game set up its court (council, budget); measure the draws after it
+      // the very first draw of this feature's views as a brand-new ruler must already leave the random stream alone
       const s1a = A.rngState;
-      drawAll();
+      drawMine();
       out.firstRng = A.rngState === s1a;
+      // the base game's own court view consumes randomness the first time a new ruler opens it (it creates house heads),
+      // so draw everything once, then require every later draw to change nothing at all
+      T.renderAll();
       const h1 = T.hash(A.S), s1 = A.rngState;
-      out.entries = drawAll();
+      out.entries = drawMine();
+      T.renderAll();
       out.rulerPure = A.rngState === s1 && T.hash(A.S) === h1;
       // escaping: markup inside a logged entry is shown as text
       A.aiLogAdd('war', rid, null, '<img src=x id=pwn>', [['<b>bold</b>', 1]]);
@@ -164,7 +166,7 @@ export default {
       return out;
     });
     const ok = r.court && r.courtPure && r.firstRng && r.rulerPure && r.entries > 0 && r.escaped;
-    return { ok, detail: `court fold-out shown ${r.court}, pure ${r.courtPure}; ruler views: first draw leaves the random stream alone ${r.firstRng}, later draws pure ${r.rulerPure} (${r.entries} decisions drawn); markup escaped ${r.escaped}` };
+    return { ok, detail: `court fold-out shown ${r.court}, pure ${r.courtPure}; ruler views: first draw of the diplomacy cards and log leaves the random stream alone ${r.firstRng}, every later draw changes nothing ${r.rulerPure} (${r.entries} decisions drawn); markup escaped ${r.escaped}` };
   },
 
   async aiPersonalityLongSim(pg, errs) {

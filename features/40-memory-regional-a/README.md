@@ -103,6 +103,8 @@ Each arc flag is set by a choice in the first callback. A second event reads it 
 
 Every `mra_` flag that is set is read again. The test fails if any arc flag is left orphaned.
 
+**A booked reckoning.** A CK3 story cycle comes back whether or not the dice favor it. Here, the choice that opens an arc also calls `A.schedule({ type: "event", ev }, 6 to 10 years)`, through the helper `later()`. If the weighted roll brings the reckoning sooner (it is eligible after 2 to 4 years), the booked copy drops itself. The arc event's setup checks `fresh()` against `p.flags.ev`. When the booked copy falls due, the engine's `A.stillValid` re-checks the cond, so it never reaches an heir, a player who has moved realm, or the wrong life stage. The flag itself stays a plain `flag: "mra_x"` inside each fx, so `bench/`'s memory index still sees the link.
+
 ## How to build, lint and test (privately)
 
 ```sh
@@ -121,6 +123,17 @@ While the folder holds a `.wip` marker, `tests/run.mjs` skips its tests unless t
 - special histories: Nuru at 9 and at 22, Dorin dead, an orc friend, a known tally-man, a rival, a non-Mosi emperor.
 
 For each character it confirms that the cond is false in the year the flag was set. It then renders the event and takes **every** choice from the same saved state, forcing each check to both win and lose: 252 histories and 974 outcomes. It fails on engine errors, raw tokens, `NaN` or `undefined`, words over the limit, unknown wounds, traits, careers or skills, and missing lasting marks.
+
+## Backtest (simulated play, not just forced views)
+
+These scripts lived in a scratch folder, not in this feature. Each one runs the real game loop (`A.advance`, `A.headReady`, `A.eventAuto`) on the private build.
+
+| Run | Setup | Result |
+| --- | --- | --- |
+| Natural lives | 21 autopilot lives, 3 per realm, about 62 years each | The setter flags are rare: 3 lives earned one, and 1 callback fired. These are regional one-off scenes. Zero engine or page errors. |
+| First-callback surfacing | 16 lives, 2 per realm plus debt and runaway lives, with the realm's memories already earned at 22, then 25 autopilot years | 36 of about 63 eligible first callbacks surfaced (57%), median about 9 years after the memory (range 3 to 24), each once. Zero errors. |
+| Arc reckonings | For each of the 16 arcs: open it by taking the booking choice, then 12 autopilot years | 15 of 16 reckonings arrived exactly once, 2 to 8 years later. In the 16th the player died first. Before the Zayd fallback, the world had killed Zayd (he had become the player's friend, so friend-death events could pick him), and that arc was lost. It now arrives through his band. |
+| Core suites on the build | `boot`, `lives` (6 lives), `saveRoundTrip`, `uiSmoke`, `renderRng`, `replayWithRender`, `journalReplay`, `tokens` | All pass. A booked reckoning is plain data in `A.S.sched`, so it survives save, load and replay. |
 
 ## Measurement
 

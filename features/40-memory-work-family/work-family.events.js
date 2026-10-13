@@ -156,6 +156,9 @@
     const l = live(p, ["rival", "enemy"]).filter(x => x.r.since === p.flags.ct_faction);
     return l.length ? l[0].p : null;
   };
+  // fm_orc_clan stores the wife's clan name in flags.clan; birth clans from character creation use the same flag
+  const WIFE_CLANS = ["the Red Wolf", "the Broken Tusk", "the Long Drum", "the Ash Hollow", "the Bone Hill"];
+  const wifeClan = p => p.sex === "M" && WIFE_CLANS.includes(p.flags.clan) && !!(p.flags.ev || {}).fm_orc_clan;
   const rivalHouse = p => {
     const l = Object.values(A.S.houses || {}).filter(h => h.realm === p.realm && h.kind !== "royal" && !h.extinct && h.id !== p.house);
     return l.length ? A.pick(l) : null;
@@ -413,7 +416,7 @@
       id: "mwf_needle_heir",
       title: "No son either",
       cond: (p, C) => C.adult(p) && C.ageAdj(p) >= 45 && C.flag(p, "wk_lodestone") && A.S.year - p.flags.wk_lodestone >= 10,
-      w: 2, once: true,
+      w: 3, once: true,
       setup: (p, ctx) => {
         const t = pilotOf(p); ctx.pilot = t ? t.given : "the old pilot";
         const kids = (p.children || []).map(A.P).filter(c => c && c.alive && C.ageAdj(c) >= 12);
@@ -460,7 +463,7 @@
       id: "mwf_redsail_page",
       title: "A page of the share-book",
       cond: (p, C) => C.adult(p) && !C.job(p, "pirate") && C.flag(p, "wk_redsail") && A.S.year - p.flags.wk_redsail >= 4,
-      w: 2, once: true,
+      w: 3, once: true,
       text: "You shouted for Ima Redsail at Share Day, and you have since left Blackreef behind. Blackreef has not left you. A page of its share-book, every Share Day vote in a purser's hand, sits in a strongbox in Greyhaven, and the Varennan admiralty is bidding for it. A clerk who has read the page offers to cut your line out of it.",
       choices: [
         { t: "Pay the clerk to cut your line (40 suns)", req: p => p.coin >= 40,
@@ -557,7 +560,7 @@
       id: "mwf_wait_banns",
       title: "Banns for someone else",
       cond: (p, C) => C.adult(p) && !C.married(p) && C.flag(p, "fm_asked_wait") && A.S.year - p.flags.fm_asked_wait >= 4 && C.hasRel(p, "lover", "ex") && !!lostLover(p),
-      w: 2, once: true,
+      w: 3, once: true,
       setup: (p, ctx) => {
         const t = lostLover(p); if (!t) { ctx.skip = 1; return; }
         ctx.pid = t.id; yrs(p, ctx, "fm_asked_wait");
@@ -605,10 +608,10 @@
     {
       id: "mwf_clan_spring",
       title: "Two fires, one spring",
-      cond: (p, C) => C.adult(p) && C.race(p, "orc", "halforc") && C.flag(p, "clan") && C.married(p) && A.S.year - ((p.flags.ev || {}).fm_orc_clan || A.S.year) >= 3,
+      cond: (p, C) => C.adult(p) && C.race(p, "orc", "halforc") && C.flag(p, "clan") && wifeClan(p) && C.married(p) && A.S.year - ((p.flags.ev || {}).fm_orc_clan || A.S.year) >= 3,
       w: 3, once: true,
       setup: (p, ctx) => {
-        ctx.clan = typeof p.flags.clan === "string" ? p.flags.clan : "your wife's";
+        ctx.clan = p.flags.clan;
         ctx.yrs = word(A.S.year - ((p.flags.ev || {}).fm_orc_clan || A.S.year));
         const s = spouseOf(p); if (s) ctx.pid = s.id;
       },
@@ -739,7 +742,7 @@
       id: "mwf_shrine_empty",
       title: "Still empty",
       cond: (p, C) => C.adult(p) && C.married(p) && !C.hasKids(p) && C.flag(p, "tryChild") && A.S.year - p.flags.tryChild >= 3,
-      w: 2, once: true,
+      w: 3, once: true,
       setup: (p, ctx) => { const s = spouseOf(p); if (!s) { ctx.skip = 1; return; } ctx.pid = s.id; yrs(p, ctx, "tryChild"); },
       text: "{yrs} years since the pilgrimage, the old shrine and the night of prayer side by side. The cradle is still in the loft. {them} has started walking to the village shrine alone at dawn, and comes back with wet hems and nothing to say.",
       choices: [
@@ -828,7 +831,7 @@
       id: "mwf_capt_drummer",
       title: "The drummer boy",
       cond: (p, C) => C.adult(p) && !C.soldier(p) && C.flag(p, "wr_capt_enemy") && A.S.year - p.flags.wr_capt_enemy >= 6,
-      w: 2, once: true,
+      w: 3, once: true,
       text: "A drum-major in a good coat stops you outside the church. It takes you a moment: the drummer boy from the wagon wheel, who got twelve strokes and not twenty because you said the rule out loud. The captain who called for twenty is a colonel now, on trial for flogging a recruit to death. The court wants witnesses to his habits.",
       choices: [
         { t: "Ride to the court and testify", check: { s: "persuasion", s2: "wil", d: 50 },
@@ -909,7 +912,7 @@
       id: "mwf_camp_boy_naming",
       title: "A sergeant at the door",
       cond: (p, C) => C.adult(p) && !C.soldier(p) && C.flag(p, "wr_boy") && A.S.year - p.flags.wr_boy >= 8,
-      w: 2, once: true,
+      w: 3, once: true,
       text: "A man-at-arms with a sergeant's knot on his shoulder asks for you at the door. It takes you a moment: the camp boy, who slept under the baggage wagon until you shared your blanket. He has a wife and a week-old son. In his company's custom, whoever stands at a naming takes the child if the father falls. He asks you to stand.",
       choices: [
         { t: "Stand for the child, and take the oath",
@@ -971,7 +974,7 @@
       id: "mwf_lifedebt_river",
       title: "Another ford",
       cond: (p, C) => C.soldier(p) && C.flag(p, "wr_lifedebt") && A.S.year - p.flags.wr_lifedebt >= 3 && !!lifeMate(p, true),
-      w: 2, once: true,
+      w: 3, once: true,
       setup: (p, ctx) => { const t = lifeMate(p, true); if (!t) { ctx.skip = 1; return; } ctx.pid = t.id; },
       text: "Another river, another ford, brown with snowmelt. Halfway across, {them} goes under, kit and all, the way you did the day {theyHe} hauled you out by the collar. You still owe {themHim} a life. The current is faster than it was that day.",
       choices: [
@@ -1154,7 +1157,7 @@
       id: "mwf_faction_suit",
       title: "An old vote",
       cond: (p, C) => C.adult(p) && !C.ruler(p) && C.flag(p, "ct_faction") && A.S.year - p.flags.ct_faction >= 3 && C.hasRel(p, "rival", "enemy") && !!factionFoe(p),
-      w: 2, once: true,
+      w: 3, once: true,
       setup: (p, ctx) => {
         const t = factionFoe(p); if (!t) { ctx.skip = 1; return; }
         ctx.pid = t.id; ctx.fee = cost(p, 15); ctx.rt = p.rel[t.id] && p.rel[t.id].type === "enemy" ? "enemy" : "rival";
@@ -1227,7 +1230,7 @@
       id: "mwf_disinherit_heir",
       title: "A borrowed horse",
       cond: (p, C) => C.adult(p) && C.flag(p, "disinherited") && A.S.year - p.flags.disinherited >= 8 && p.coin >= 60,
-      w: 2, once: true,
+      w: 3, once: true,
       setup: (p, ctx) => {
         const sib = live(p, ["sibling"]).map(x => x.p).filter(x => A.isAdult(x));
         const t = sib.length ? sib[0] : mk(p, { ageAdj: C.ageAdj(p) + A.ri(-6, 6), occ: "the heir of your old house" });

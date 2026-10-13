@@ -20,7 +20,7 @@ moments back years later, by its place, its people and the thing that was done, 
 | Reads the memory | `cond` reads the flag with `C.flag(p, "x")`, so `B.memoryIndex()` sees the link |
 | Timed | `A.S.year - p.flags.x >= N`, N between 2 and 10 (the `clan` flag holds a clan name, so it times from `p.flags.ev.fm_orc_clan`) |
 | Keeps the setter's world | same realm (Sabena `POL-16` for the Commons, never Varenna `POL-03` for the stolen wheel), same race (orc, elf, giant), same stage and trade (slave, sailor, pirate, healer, soldier, noble) |
-| Surfaces | `w: 3` (first callbacks and arc steps) or `w: 2` (second callbacks on the same flag); `once: true` |
+| Surfaces | `w: 3` and `once: true`: a memory competes with a large pool of ordinary events every year, so it gets the top weight the brief allows |
 | Real stakes | 2 to 4 choices, at least one leaves a lasting mark: a trait, an `mwf_` flag, a relation with `ctx.pid`, a wound, a deed or epithet, a debt (`owed`), an asset, a job, a marriage or divorce, freedom, or a death |
 | People | linked people are found again (the old pilot by `occ`, the lover by `rel.since`, the dead friend by `died`, the faction rival by `rel.since`, kin by `parents`/`sibling`); new people are made with a role (`flags.mwf_role`) so the arc's second step finds them; kinship relations are never overwritten |
 | Voice | text 40-67 words (limit 80), labels at most 12, outcomes at most 45; no "Nobody...", no "for the rest of your life" |
@@ -104,5 +104,28 @@ fire, a sailor with a pilot mentor, a noble with a refused writ). The test then 
 `A.evFit` does not hide the event from that character, and that the engine renders it without skipping. It takes
 every choice, and plays checks both won and lost by pinning `A.chance`, and fails on engine errors, raw `{tokens}`,
 word-diet breaches, or a kinship relation (parent, sibling, child) overwritten by an outcome. Last, it plays each
-arc's first step and moves the clock forward to confirm that the second step becomes eligible and renders. Its
-`data.samples` holds every rendered text and outcome for review.
+arc's first step and moves the clock forward to confirm that the second step becomes eligible and renders. It
+also builds the same history in the wrong world (a birth-clan orc, the wheel inside Varenna, the Commons outside
+Sabena, a free peasant holding a slave's bargain, the ladder at peace, a callback a year too soon) and requires each
+to stay ineligible. Its `data.samples` holds every rendered text and outcome for review.
+
+While the folder carries the orchestrator's `.wip` marker, `tests/run.mjs` loads this test only when the feature is
+named with `--features` (as in the commands above).
+
+## Backtest
+
+Measured with the bench's own bot (`bench/bot.mjs`, `B.memoryIndex()`), comparing the fix layer alone to the fix
+layer plus this feature:
+
+| | Fix layer | + memory-work-family |
+| --- | --- | --- |
+| Events | 3199 | 3252 |
+| Memory events (read another event's flag) | 95 | 148 |
+| Orphan flags (set, never read) | 369 | 338 |
+| This chunk's flags still orphaned | 31 | 0 |
+| New orphan flags introduced | | 0 |
+
+In 24 passive 70-year bot lives across 12 starts (including a Spice Coast slave, a Sabena commoner, a Blackreef
+coast-dweller and a giant), 10 lives set one of these flags and 6 of them met a callback (7 fired), with no page
+errors. The full regression suite (core suites, the fix layer's tests and `mwfMemory`, 17 tests) passes on the
+feature build.

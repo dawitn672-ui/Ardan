@@ -96,6 +96,8 @@ The linter can only play events that its 8 stock characters can see. These callb
 
 I verified the test by mutation. In a copy of the repo I planted five defects: an unfilled token, a removed flag read, a broken arc link, a removed timing gate and an unread chunk flag. `mchMemory` failed on all five.
 
+A live-play probe (not in `test.mjs`, because it is slow) ran each fixture character through 20 years of the real game loop, with the bot choosing. Across 62 lives, 29 different callbacks fired on their own (37 firings), with 0 raw tokens, 0 crashes and 0 page errors. Chains completed inside a single life: `mch_pledge_own` led to `mch_pledge_home`, and `mch_vitia_fester` came with `mch_vitia_summons`. The misses are expected. At `w: 3` an event competes with hundreds of others each year, and the probe sets each memory 6 years early, so some age windows (a son of exactly ten) close before the gate opens.
+
 For the bench (`bench/run.mjs`), every event here is a memory event under `B.memoryIndex`: its `cond` reads a flag that another event sets.
 
 ## Limits, and what a fuller version would do
