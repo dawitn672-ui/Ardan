@@ -4,35 +4,44 @@
 
 **Play:** open `index.html` in a recent Chrome, Edge, Firefox or Safari.
 
-## What is in this repo
+## How this repo works
 
-| Path | What it is |
-| --- | --- |
-| `index.html` | The game to play and ship: the release build plus every patch in `tools/patches.mjs` |
-| `vendor/ardan-b593143.html` | The release build `b593143@2026-10-12`, untouched |
-| `tools/patches.mjs` | Every fix made to that build, as exact find/replace edits with a reason each |
-| `tools/build.mjs` | Builds `index.html` from the vendored build and the patches |
-| `tools/pack.mjs` | Reads and writes the packed code blobs inside the page (base-122 text over zstd) |
-| `tools/show.mjs` | Prints the source of named functions from the unpacked build |
-| `tests/run.mjs` | Browser tests (Playwright + Chromium) |
-| `Ardan The Road to Ten.md` | The plan |
-| `Ardan Road to 100.md` | A hard review of the plan and the game, aspect by aspect, with what a 10 really takes |
-| `Ardan Deep Analysis.md` | The first full review of the build |
+The game's original source is not here. What is here is the shipped release (`vendor/`), and on top of it a set of **features**: each one a folder that patches the release, adds readable code or events, and brings its own tests. `tools/build.mjs` applies them in order and writes `index.html`.
 
-The game's real source, build step and test suite are not in this repo. Until they are, fixes live as patches on the built file. **Every patch has to be ported to the source**, or the next release from the source will bring the bugs back. Each patch's `id` and `why` say what to port.
-
-## Working on it
-
-Needs Node 22.15 or newer (for built-in zstd).
-
-```sh
-npm install                      # acorn and playwright
-npx playwright install chromium  # once
-npm run build                    # vendor/ + tools/patches.mjs -> index.html
-npm test                         # test index.html
-npm run test:original            # the same tests against the untouched release (13 of 16 fail)
-npm run unpack                   # also writes the readable blobs to .build/
-node tools/show.mjs A.fightWorth # print a function from .build/
+```
+index.html                  the game: release + every feature
+vendor/                     the untouched release build b593143
+features/NN-name/           one unit of change each
+  patches.mjs               exact edits to the minified code, each with a "why"
+  *.core.js                 new engine/UI code, appended to the core
+  *.events.js               new events, appended as content packs
+  test.mjs                  browser tests for this feature
+  README.md                 what it does, which aspect it serves, how it is measured
+tools/                      build, pack/unpack, function viewer, event linter
+tests/                      test runner, shared helpers, whole-game suites
+bench/                      measurement harnesses (bot league, duels, pacing...) -> reports/
+reports/                    generated scorecards
+docs/plan/                  the Road to Ten
+docs/reviews/               the deep analysis and the Road to 100 review
+docs/benchmarks/            how Ardan compares with the best-designed games, aspect by aspect
+docs/north-star/            what Ardan looks like with unlimited time and resources
+CLAUDE.md                   working rules for anyone (human or agent) changing the game
 ```
 
-A patch must match its target exactly as many times as it says, so a patch that no longer fits fails the build instead of silently doing nothing. Patches edit minified code. Do not reformat the blobs: the game reads some of its own functions as text (`e.cond.toString()`), so reformatting changes behaviour.
+`features/00-` to `09-` are fixes and are always built. Higher numbers are new systems and content.
+
+## Commands
+
+Needs Node 22.15+ (built-in zstd).
+
+```sh
+npm install && npx playwright install chromium   # once
+npm run build                                    # -> index.html
+npm test                                         # every test against index.html
+npm run test:original                            # the same tests against the untouched release
+node tools/build.mjs --out=/tmp/x.html --only=chronicle   # fixes + one feature, elsewhere
+node tools/lint-events.mjs --feature=chronicle --html=/tmp/x.html
+node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth
+```
+
+**Port to the real source.** Every patch's `why` is written so it can be ported. A release from the original source without them brings the bugs back.
