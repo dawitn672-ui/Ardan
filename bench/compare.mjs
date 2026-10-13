@@ -31,11 +31,11 @@ for (const a of RUBRIC) {
     });
     md += `| ${m.name} | ${m.target} | ${cells.join(' | ')} |\n`;
   }
-  const measured = aspectScores.map(x => x.w ? Math.round(10 * a.cap * x.s / x.w) / 10 : null);
+  const measured = aspectScores.map(x => x.w ? Math.round(100 * a.cap * x.s / x.w) / 10 : null);   // out of 10
   measured.forEach((v, i) => { if (v != null) { totals[i].s += v; totals[i].n++; } });
   md += `| **Measured score** (cap ${a.cap * 10} without people) | | ${measured.map(v => v == null ? '–' : `**${v}**`).join(' | ')} |\n\n`;
   if (a.note) md += `${a.note}\n\n`;
 }
-md += `## Total\n\n| | ${labels.join(' | ')} |\n| --- | ${labels.map(() => '---').join(' | ')} |\n| Mean measured score ×10 | ${totals.map(t => t.n ? (Math.round(100 * t.s / t.n) / 10) : '–').join(' | ')} |\n`;
+md += `## Total\n\n| | ${labels.join(' | ')} |\n| --- | ${labels.map(() => '---').join(' | ')} |\n| Mean measured score (out of 100) | ${totals.map(t => t.n ? (Math.round(100 * t.s / t.n) / 10) * 10 / 10 : '–').join(' | ')} |\n`;
 fs.writeFileSync(path.join(root, 'reports', 'scorecard.md'), md);
 console.log(md);

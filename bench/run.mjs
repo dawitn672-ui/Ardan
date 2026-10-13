@@ -143,28 +143,29 @@ const MODULES = {
   },
 
   async ai(page) {
-    return page.evaluate(() => {
-      // 60 years of world. Log every war declaration with the attacking ruler's traits.
-      A.newGame({ seed: 606, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, diff: 'story' });
-      const decl = [];
-      const known = new Set(A.S.wars.map(w => w.id));
-      const end = A.S.year + 60;
+    // 3 worlds x 60 years. Log every war declaration with the attacking ruler's traits, and count ruler-years per trait.
+    const runs = [];
+    for (const seed of [606, 1212, 2424]) runs.push(await page.evaluate((seed) => {
+      A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, diff: 'story' });
+      const decl = [], known = new Set(A.S.wars.map(w => w.id)), end = A.S.year + 60, rulerYears = {};
       const traitsOf = rid => { const r = A.realm(rid), ru = r && A.P(r.ruler); return ru ? ru.traits.slice() : []; };
-      const rulerYears = {};
       for (let k = 0; k < 40000 && A.S.year < end; k++) {
         A.advance(30);
         let h, g = 0; while ((h = A.headReady()) && g++ < 300) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); }
         if (!A.pc().alive) { const kid = Object.values(A.S.people).find(p => p.alive && p.id !== A.S.pc && A.isAdult(p)); if (!kid) break; A.S.pc = kid.id; }
-        for (const w of A.S.wars) if (!known.has(w.id)) { known.add(w.id); decl.push({ att: w.leadA, traits: traitsOf(w.leadA), y: A.S.year }); }
-        if (A.today && A.S.year % 1 === 0) for (const r of Object.values(A.S.realms)) if (r.alive && !r.isRebel) { const t = traitsOf(r.id); for (const x of t) rulerYears[x] = (rulerYears[x] || 0) + 1 / 12; }
+        for (const w of A.S.wars) if (!known.has(w.id)) { known.add(w.id); decl.push({ traits: traitsOf(w.leadA) }); }
+        for (const r of Object.values(A.S.realms)) if (r.alive && !r.isRebel) for (const x of traitsOf(r.id)) rulerYears[x] = (rulerYears[x] || 0) + 1 / 12;
       }
-      const AGG = ['wrathful', 'ambitious', 'cruel', 'brave', 'greedy', 'proud', 'impetuous'], PEACE = ['content', 'kind', 'craven', 'patient', 'humble', 'calm', 'generous'];
-      const rate = set => { const yrs = set.reduce((a, t) => a + (rulerYears[t] || 0), 0); const n = decl.filter(d => d.traits.some(t => set.includes(t))).length; return yrs ? n / yrs * 100 : null; };
-      const aggr = rate(AGG), peace = rate(PEACE);
-      return { years: 60, warsDeclared: decl.length, warsPer100RulerYears_aggressiveTraits: aggr && Math.round(aggr * 100) / 100,
-        warsPer100RulerYears_peacefulTraits: peace && Math.round(peace * 100) / 100,
-        aggressiveToPeacefulRatio: aggr && peace ? Math.round(100 * aggr / peace) / 100 : null };
-    });
+      return { decl, rulerYears };
+    }, seed));
+    const AGG = ['wrathful', 'ambitious', 'cruel', 'brave', 'greedy', 'proud', 'impetuous'], PEACE = ['content', 'kind', 'craven', 'patient', 'humble', 'calm', 'generous'];
+    const decl = runs.flatMap(r => r.decl), ry = {};
+    for (const r of runs) for (const [k, v] of Object.entries(r.rulerYears)) ry[k] = (ry[k] || 0) + v;
+    const rate = set => { const yrs = set.reduce((a, t) => a + (ry[t] || 0), 0); const n = decl.filter(d => d.traits.some(t => set.includes(t))).length; return yrs ? n / yrs * 100 : null; };
+    const aggr = rate(AGG), peace = rate(PEACE);
+    return { worlds: 3, years: 60, warsDeclared: decl.length, warsPer100RulerYears_aggressiveTraits: aggr && Math.round(aggr * 100) / 100,
+      warsPer100RulerYears_peacefulTraits: peace && Math.round(peace * 100) / 100,
+      aggressiveToPeacefulRatio: aggr && peace ? Math.round(100 * aggr / peace) / 100 : null };
   },
 
   async economy(page) {
