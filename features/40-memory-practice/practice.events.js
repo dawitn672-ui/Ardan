@@ -63,7 +63,7 @@
     priceNamed: /Ears, later\. Not throats/,                  // pf_dagger_still_hall: you asked what they wanted, and were told
     skimmed: /keep a tenth of the difference/,                // pf_stew_steward_post: you skimmed a tenth
     coTaught: /scripture with them first/,                    // pf_learn_teach: the priest taught beside you
-    crooked: /Loadedx dice for the strangers/,                 // pf_gamb_house: you opened a crooked house
+    crooked: /Loaded dice for the strangers/,                 // pf_gamb_house: you opened a crooked house
   };
   const sexOfName = (p, n) => { const c = LORE.cultures[p.cult] || LORE.cultures["CUL-02"] || {}; return (c.f || []).includes(n) && !(c.m || []).includes(n) ? "F" : "M"; };
 

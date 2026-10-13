@@ -378,7 +378,7 @@
       cond: (p, C) => C.realm(p, "POL-14") && C.adult(p) && C.flag(p, "mrb_gh_tide") && A.S.year - p.flags.mrb_gh_tide >= 4,
       w: 3, once: true,
       setup: (p, ctx) => { if (!fresh(p, "mrb_gh_wreck")) { ctx.skip = 1; return; } make(p, ctx, { sex: "M", age: 45, occ: "a salvage captain" }); },
-      text: "Your name is in the Tide Divers' book for the cog you cut from the harbor chain, and {captainName}, a salvage captain, has read it. A Varennan wine ship went down off Cold Bay with a strongbox in her stern cabin. By the king's wreck-right it belongs to the crown. He offers you a third of whatever is inside, and a quiet boat on a moonless night.",
+      text: "Your name is in the Tide Divers' book for the cog you cut from the harbor chain, and {themFull}, a salvage captain, has read it. A Varennan wine ship went down off Cold Bay with a strongbox in her stern cabin. By the king's wreck-right it belongs to the crown. He offers you a third of whatever is inside, and a quiet boat on a moonless night.",
       choices: [
         { t: "Dive for the strongbox at night", check: { s: "sea", s2: "stealth", d: 55 },
           win: { r: "Black water, a drowned cabin, a box that will not come. Then it comes. The captain pays your third in Varennan silver, and neither of you mentions the crown.",
@@ -689,7 +689,7 @@
       choices: [
         { t: "Talk, for 300 suns",
           r: "You talk until the lamp gutters. He writes nothing down, which frightens you more than if he had. He pays in Varennan gold and sails on the morning tide.",
-          fx: (p, ctx) => { later("mrb_sb_ship", 4); return more(p, ctx, { coin: 300, honor: -8, secret: 1, flag: "mrb_sb_sold" }); } },
+          fx: (p, ctx) => { return more(p, ctx, { coin: 300, honor: -8, secret: 1, flag: "mrb_sb_sold" }); } },
         { t: "Report him to the Oil Shore Watch",
           r: "The Watch takes him off his own deck at dawn, and he is not seen again. A Watch captain writes your name in a book of the loyal. His mate learns who you are.",
           fx: (p, ctx) => { kill(ctx, "taken by the Oil Shore Watch"); return say(more(p, ctx, { favor: 4, honor: -2 }), bond(p, { realm: "POL-03", race: "human", sex: "M", occ: "a Varennan mate" }, "enemy", -40)); } },
