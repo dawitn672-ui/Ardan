@@ -4,6 +4,13 @@ Oct 13, 2026 · build `b593143` plus the 29 fix patches (`features/00-05`), meas
 
 Every number about Ardan below was measured for this doc unless it names a review. Every claim about another game carries a link. Many links are fan wikis or modders reading game files, because studios rarely publish formulas. Those are marked *(community)*. Anything I could not source is marked *unverified* or left out.
 
+**What this found, in four lines.**
+
+- **The fight odds lie in real play.** Fights the profile calls even were won 9% of the time in 24 bot lives. Most NPCs are stored unarmed and get a weapon only after you look (+24 worth), and worth ignores your health.
+- **The ladder in the lore mostly holds; the plan and the bestiary don't.** 6 of 13 tier claims hold and 6 clash. A Trained fighter alone beats an "animal" 1 time in 4, not "can kill it". The plan's "3 Trained beat an Elite 2 in 3" is 27%.
+- **Many fights skip the ladder.** Only 6 choices in 3,199 events use the group resolver. In events that describe a fight, 76 injuries are decided by plain skill checks (often intrigue or command), as many as use a fight resolver. Fighting worth never counts in those checks.
+- **Balance has no targets and difficulty has one lever.** No path targets exist. Four lives per start swing median death age from 21 to 71. Story, Hard and Realism change only death rates and score.
+
 ## 1. The bar
 
 A 10 in this genre means three things hold at once. First, **one ladder rules every fight.** A duel, a tavern brawl, a hunt and an ambush all resolve from the same strength numbers, so the lore's "an elite takes seven regulars" is something the engine actually does. Second, **the player can read the odds and the odds are true.** That means they are either exact, as in Battle Brothers, or bent on purpose in a documented direction, as in XCOM 2 and Fire Emblem. They are never off by accident. Third, **balance is a measured target, not a feeling.** Slay the Spire's team logged every choice from the prototype on. FTL and Battle Brothers made difficulty change the economy and the enemy's choices, not only the death rate.
@@ -103,7 +110,7 @@ Ardan's 2d6-against-2d6 exchanges over many rounds are Fire Emblem's averaging t
 
 ### What I measured, and how
 
-The test build was made with `node tools/build.mjs --out=<scratch> --unpack` (fix layer only, 29 patches). The scripts lived in a private scratch folder; nothing in the repo was changed except this file. The appendix has the procedure so it can be ported into `bench/`. Six studies:
+The test build was made with `node tools/build.mjs --out=<scratch> --unpack` (fix layer only, 29 patches). The scripts lived in a private scratch folder. Nothing in the repo changed except this file and the gitignored `.build/`. The appendix has the procedure so it can be ported into `bench/`. Six studies, plus three probes:
 
 1. **Duel calibration.** 400 fighters came from `A.makeFoe` (tiers 1 to 5). 2,496 random pairs each fought 5 duels under the rules events use (`fx.duel`: lethal, foe may yield). Side effects were stubbed with `A.duelConsequences = () => []`. The five duels:
    - the fighter in the player seat, driven by the game's own auto-play (`A.duelAuto`);
@@ -116,7 +123,13 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack` (fi
 3. **Beasts.** Generated fighters of each tier fought every beast of each tier alone, 400 fights per cell.
 4. **Group resolver.** `A.groupOddsSides` was run on the matchups the tier texts describe.
 5. **Event audit.** All 3,199 events and 9,635 choices were read in the page: which outcomes kill or maim, and what decides them.
-6. **Bot lives.** 24 lives, 4 for each of 6 starts, played by random choice. I logged the odds of every check the life was actually offered, plus the death age and state at 40.
+6. **Bot lives.** 24 human lives from birth on Hard, 4 for each of 6 starts, played by random choice with real consequences. I logged the odds of every check the life was offered, every fight with the profile's odds and the result, the death age and the state at 40. A first run of 24 lives was thrown out: the duel study had stubbed `A.duelConsequences` in the same page, so no one could die in a fight.
+
+The probes:
+
+- 25 duels from 6 lives, recording health and the foe's weapon before and during each fight;
+- the worth of every adult NPC in a cast, unarmed against armed with `A.armFor`;
+- the worth cost of each permanent wound, per weapon kind.
 
 ### Key results
 
@@ -148,6 +161,10 @@ The samples are small, but the causes are confirmed in code and measured directl
 
 - **The foe is handed a weapon after you look.** 92% of the adult NPCs in a cast are stored with no weapon. `A.startDuel` arms them at the start of a fight with `A.armFor` (a sword for a noble, a cudgel for a farmer). That raises their worth by a median 24 points (75th percentile 30) and lifts 83% of them at least one tier. The tier chip and the profile read the unarmed worth. In a 25-duel probe, 11 foes were armed this way.
 - **Your health is ignored.** `A.fightWorth` always assumes full HP. In the duel, `A.fighterFrom` scales your HP by health, down to a floor of 30%: at health 60 you start with 59% HP. In the probe, 6 of 25 duels began with the player below 90% HP.
+
+**Cross-check with `bench/run.mjs`.** The repo's new bench, built in parallel to this doc, agrees with the lab numbers. On the release (`reports/release.json`), one tier up wins 80 to 85% against 71 to 72% shown, two tiers win 98% against 87%, and the worst error is 13 points. But its `duels` module fights `makeFoe` soldiers, who are always armed, at full health, with `toYield` off. A curve fix alone would pass it while real fights stayed 40 points wrong. Section 5, item 14, says what to add.
+
+The same bench's league (64 lives, 4 personalities, release) shows a check win rate of 38.4%: careful 45%, reckless 36%. Median death ages are careful 53, reckless 31, greedy 40, random 59. Reckless lives die 22 years sooner, and no measure yet says what they gain for it. "Risk pays but costs" cannot be checked until reward is measured too.
 
 **Mirror duels: the edge that belongs to the seat**
 
@@ -264,7 +281,7 @@ Event conditions filter the cruelest checks away from the young. Even so, the yo
 | **B3. Difficulty axes beyond death** | FTL: scrap, AI targeting, scaling speed, boss design. Battle Brothers: separate combat and economic settings. XCOM 2: assist by difficulty. Slay the Spire: 20 named stacked rules | 0 (mortality and score only) | ≥3 named axes (information, recovery, AI pressure), each moving a measured outcome ≥15% | Bot A/B per mode; browser test for the information axis |
 | **B4. Check odds a life meets** | Fire Emblem and XCOM 2 bend high odds up because people misjudge them | Met checks: median 30% at 13 to 17, 19% at 18 to 29 (19% at the floor), 27.5% at 30 to 49. As written, 60% of checks sit at the floor for a 16-year-old | Median 35 to 65% at every life stage; under 10% at the floor | Bot lives (100+), per personality |
 | **B5. Hidden balance multipliers** | Battle Brothers players had to mod in a tooltip for every hit factor; that is the cost of hiding | At least 4: commoner promotion ×0.2 (shown as a hard requirement), duel seat rules, underdog catch-up (closes half the gap, not 95%), refuse-to-fall | 0 not shown in a tooltip | Static analysis: grep for multipliers on outcome paths, each mapped to a tooltip |
-| **B6. Dominant strategies** | Slay the Spire watches pick rates; a card nobody picks gets fixed | Unmeasured (the plan's "careful soldier reached Marshal in 9 of 20" was found late) | No action in >50% of the top decile of runs | Bot league with 4 personalities |
+| **B6. Dominant strategies and risk-reward** | Slay the Spire watches pick rates; a card nobody picks gets fixed | Unmeasured (the plan's "careful soldier reached Marshal in 9 of 20" was found late). `bench` league on the release: reckless lives die at a median 31, careful at 53, and no reward measure exists | No action in >50% of the top decile of runs; every riskier personality earns a measurable reward for its shorter life | Bot league with 4 personalities (`bench/run.mjs --only=league`) |
 | **B7. Opt-in challenge ladder** | Ascension: 20 levels, A0 won 9%, A20 3% | None | 10 named levels with published bot win rates | Bot |
 | **B8. Human balance** | Mega Crit used community feedback across a year of Early Access | 0 recorded runs | 20 recorded runs per phase; no quits in the first 30 min; no dominant strategy | Human playtest |
 
@@ -318,6 +335,7 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 | 11 | **Trials ladder.** 10 named, stacked rules unlocked by finishing a life, each with a score multiplier and a published bot win rate. | Balance | M | Yes: `*.core.js` | +0.5 | Each Trial moves its bot measure in the stated direction by ≥5% over 200 lives |
 | 12 | **20 recorded human runs and the 12-player readability test.** | Both | L | Needs people | +1.0 | 9 of 10 picks right from the screen; 0 quits in the first 30 min |
 | 13 | **Opt-in run summaries.** A local "share my run" export first (here); a server to collect them later. | Balance | L | Export: yes (code). Server: needs people | +0.5 | An export replays to the same death age and wealth at 40 |
+| 14 | **Make the bench measure what players meet.** In `bench/run.mjs`, the `duels` module adds event-duel rules (`toYield: true`), cast NPCs stored unarmed, players below full health, the mirror test and the tier-claims test. `league` logs every fight's shown odds and result, and a reward measure per personality (wealth, rank, fame at 40). `bench/rubric.mjs` scores those under Power and Balance. | Both | S | Yes: code (bench/ owner) | +0.5 (keeps the others honest) | On today's build the new rubric lines fail: the league's middle odds band is about 40 pts off, 6 tier claims fail, and 76 combat injuries sit behind plain checks. After items 1 to 4 they pass |
 
 With 1 to 11 built and their tests green, I expect Power to reach about 8 and Balance about 7. The rest needs the people in rows 12 and 13: no game earns a 10 for readable power or for balance until real players have shown it.
 
@@ -392,7 +410,8 @@ With 1 to 11 built and their tests green, I expect Power to reach about 8 and Ba
 - `docs/plan/Ardan The Road to Ten.md`
 - `docs/reviews/Ardan Road to 100.md`
 - `docs/reviews/Ardan Deep Analysis.md`
-- Engine functions: `A.fightWorth`, `A.CR`, `UI.vsYou`, `A.weighText`, `A.duelAct`, `A.duelCheckEnd`, `A.duelAuto`, `A.groupOddsSides`, `A.strengthOf`, `A.checkOdds`, `A.eventChoose`, `A.mortalCheck`, `GD.TIERS`, `GD.TIER_INFO`, `GD.BEAST_TIER`, `GD.WOUNDS` (read with `node tools/show.mjs`)
+- Engine functions: `A.fightWorth`, `A.CR`, `UI.vsYou`, `UI.personModal`, `A.weighText`, `A.startDuel`, `A.armFor`, `A.fighterFrom`, `A.duelAct`, `A.duelCheckEnd`, `A.duelAuto`, `A.duelClose`, `A.groupOddsSides`, `A.strengthOf`, `A.checkOdds`, `A.eventChoose`, `A.mortalCheck`, `GD.TIERS`, `GD.TIER_INFO`, `GD.BEAST_TIER`, `GD.WOUNDS`, `GD.CROWD`, `GD.LEGEND_CAP` (read with `node tools/show.mjs`)
+- The bench built in parallel: `bench/run.mjs`, `bench/rubric.mjs`, `reports/release.json`
 
 Note on sourcing: this session's network blocked direct page fetches, so the pages above were read through a search index's summaries of them. Before quoting any of them in public, open the page itself.
 
