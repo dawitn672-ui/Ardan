@@ -28,7 +28,7 @@ A 10 in this genre means three things hold at once. First, **one ladder rules ev
 - In 1.3.x a hit does roughly `(0.5 + 0.5·rand) × 40 × (attacker power / defender power)^0.7 × advantage`, before perks and morale ([Fixed Simulations](https://www.nexusmods.com/mountandblade2bannerlord/mods/12593), [round structure gist](https://gist.github.com/jzebedee/be076d28f162c8d05fd7d2d72109a46f)).
 - The spread between tiers is small. One mod puts tier 1 at 74% and tier 5 at 126% of base power, about 1.7× end to end, and blames that for high-tier troops dying to low-tier ones ([Better Auto Calc](https://www.nexusmods.com/mountandblade2bannerlord/mods/673)).
 
-**What goes wrong.** The `^0.7` squashes power gaps, so a 2× stronger troop deals only about 1.6× the damage. Autoresolve and the hand-fought battle then disagree. Players learn to fight lopsided battles by hand because "send troops" kills elites ([Steam discussion](https://steamcommunity.com/app/261550/discussions/0/3596716230234308872/), *community*).
+**What goes wrong.** The `^0.7` squashes power gaps, so a 2× stronger troop deals only about 1.6× the damage. Autoresolve and the hand-fought battle then disagree. Modders call the vanilla tier gap small enough that high-tier troops often die to low-tier ones ([Better Auto Calc](https://www.nexusmods.com/mountandblade2bannerlord/mods/673)). At least four popular mods exist only to rework autoresolve ([1151](https://www.nexusmods.com/mountandblade2bannerlord/mods/1151), [12593](https://www.nexusmods.com/mountandblade2bannerlord/mods/12593), [673](https://www.nexusmods.com/mountandblade2bannerlord/mods/673), [Auto Resolve Rebalanced](https://www.nexusmods.com/mountandblade2bannerlord/mods/3453)). Players also argue about when to fight by hand instead ([Steam discussion](https://steamcommunity.com/app/261550/discussions/0/3596716230234308872/), *community*).
 
 **Lesson for Ardan.** Two maths for one fight teach players to distrust both. Ardan has four: the duel, the group resolver, the plain skill check, and the war sim. Its tier curve sits at the opposite extreme from Bannerlord's. `GD.STR_CURVE` makes an Elite worth 8.2 Trained men and a Master 23. That fits the lore, but it means the duel at two tiers up is a wall, at 98.5% (section 3).
 
@@ -93,8 +93,9 @@ Sources: [Steam](https://steamcommunity.com/app/268500/discussions/0/14742218651
 
 **Lesson for Ardan.** Bending the shown odds can be good design, but only on purpose, in the player's favor, and switched off at the top difficulty. Ardan bends them by accident, and the wrong way.
 
-- When you are the underdog, the screen overstates your chance by up to 12 points.
-- When you are the favorite, the screen understates your edge by up to 10 points.
+- When you are the underdog, the screen overstates your chance by up to 8 points.
+- When you are the favorite, the screen understates your edge by up to 9 points.
+- Read from the NPC's side, the error reaches 12 points.
 
 Ardan's 2d6-against-2d6 exchanges over many rounds are Fire Emblem's averaging trick without the intent: small per-round edges compound into a much steeper curve than the logistic on screen. The save point already matches Civilization Revolution: the seeded random stream and the journal make a reload give the same result.
 
@@ -104,11 +105,11 @@ Ardan's 2d6-against-2d6 exchanges over many rounds are Fire Emblem's averaging t
 
 The test build was made with `node tools/build.mjs --out=<scratch> --unpack` (fix layer only, 29 patches). The scripts lived in a private scratch folder; nothing in the repo was changed except this file. The appendix has the procedure so it can be ported into `bench/`. Six studies:
 
-1. **Duel calibration.** 400 fighters came from `A.makeFoe` (tiers 1 to 5). 2,496 random pairs each fought 5 duels under the rules events use (`fx.duel`: lethal, foe may yield). Side effects were stubbed with `A.duelConsequences = () => []`. The five variants:
-   - the player seat driven by the game's own auto-play (`A.duelAuto`);
-   - the same pilot but never yielding;
-   - the fighter placed in the foe's seat;
-   - the same AI on both seats, in both orders.
+1. **Duel calibration.** 400 fighters came from `A.makeFoe` (tiers 1 to 5). 2,496 random pairs each fought 5 duels under the rules events use (`fx.duel`: lethal, foe may yield). Side effects were stubbed with `A.duelConsequences = () => []`. The five duels:
+   - the fighter in the player seat, driven by the game's own auto-play (`A.duelAuto`);
+   - the same, with a pilot that never yields;
+   - the fighter in the NPC seat, against the auto-play;
+   - the same AI on both seats, once in each order (two duels).
 
    The shown odds are `UI.vsYou`, `1/(1+e^(−gap/12))` on the fighting-worth gap. The same study ran on the untouched release.
 2. **Mirror duels.** A fighter fought an exact clone of itself, 1,500 times per rule set and pilot, so any edge belongs to the seat.
@@ -121,7 +122,7 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack` (fi
 
 **Duel odds by tier gap (patched build, event-duel rules)**
 
-| Tier gap (you − foe) | Pairs | Shown on screen | Real, same AI both seats | Real, you in player seat (auto-play) | Real, you never yield | Real, you in foe's seat |
+| Tier gap (fighter − other) | Pairs | Shown on screen | Real, same AI both seats | Real, fighter in player seat (game auto-play) | Real, player seat that never yields | Real, same fighter in the NPC seat |
 | --- | --- | --- | --- | --- | --- | --- |
 | −2 | 299 | 10.5% | 3.2% | 4.3% | 5.0% | 2.7% |
 | −1 | 440 | 26.0% | 20.7% | 21.6% | 22.0% | 15.0% |
@@ -130,7 +131,7 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack` (fi
 | +2 | 329 | 89.8% | 98.5% | 98.5% | 99.1% | 97.3% |
 
 - **The real curve is steeper than the screen.** Over 11 worth-gap bins it fits a logistic with scale **8.7** (RMSE 2.5 points). The screen uses **12** (RMSE 5.7).
-- **Size of the error.** The mean absolute error is 5.7 points with the same AI on both seats. It reaches 6.2 points when you are in the foe's seat, with a worst bin of 12.1 points (at a gap of −20 to −12 the screen says 21% and the real figure is 9%).
+- **Size of the error.** The mean absolute error is 5.7 points with the same AI on both seats. For a fighter in the NPC seat it reaches 6.2 points, with a worst bin of 12.1 points: at a gap of −20 to −12 the screen gives the weaker side 21%, and the real figure is 9%.
 - **Two tiers up is a wall.** It wins 98.5%, while the plan's target is 92%.
 - **The release build** had a mean error of 5.9 to 7.2 points and a worst bin of 15.1.
 
@@ -144,14 +145,15 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack` (fi
 | Plain lethal duel | same AI as foe | 50.5% | 47.1% | 50.3% |
 | Non-lethal brawl | same AI as foe | 50.0% | 43.5% | 53.3% |
 
-- The review's "player seat wins about 72% of even fights" does not reproduce here. In the release, event duels gave the seat a 7 to 12 point edge. `ENG-DUEL-DOUBLE-KO` cut it to about 5. The seat still "refuses to fall" in 6 to 9% of lethal duels.
-- In non-lethal brawls the player seat is now **10 points behind** an identical foe (1,500 fights, so roughly ±2.5 at 95%). The seat edge changes sign depending on the rule set, and nothing on screen says so.
+- The review's "player seat wins about 72% of even fights" does not reproduce in this harness. In the release, the player seat won 57 to 62% of mirror event duels. After `ENG-DUEL-DOUBLE-KO` it wins 48 to 55%. The seat still "refuses to fall" in 6 to 9% of lethal duels.
+- In non-lethal brawls the player seat now wins only 43.5% and loses 53.3% against an identical foe. With 1,500 fights, that gap is well outside noise (about ±2.5 at 95%). The seat edge changes sign with the rule set, and nothing on screen says so.
+- The game's own auto-play gives up 18.7% of event duels (it yields under 20% HP), which costs it about 7 points against a pilot that never yields.
 
 **Do the tier texts hold?**
 
 | Claim in the game or plan | Engine result | Verdict |
 | --- | --- | --- |
-| `GD.TIERS` Trained "beats a brawler three times in four" | One tier up wins 79.6% | Holds |
+| `GD.TIERS` Trained "beats a brawler three times in four" | One tier up wins 79.6% (all adjacent tier pairs) | Holds |
 | `GD.TIERS` Brawler: "two or three make one soldier" | 1 Trained vs 2 Brawlers 50.1%, vs 3: 40.1% | Holds |
 | `GD.TIERS` Veteran: "worth two or three regulars" | 1 Veteran vs 2 Trained 54.6%, vs 3: 44.5% | Holds |
 | `GD.TIERS` Elite: "7–10 regulars or about 4 veterans" | vs 7 Trained 54.0%, vs 10: 45.2%, vs 4 Veterans 46.1% | Holds |
@@ -178,11 +180,11 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack` (fi
 
 Plain checks in fight events often use skills that have nothing to do with fighting. Two examples: `wr_hired_knife` rolls intrigue/insight and `wr_hf_raiders` rolls command/insight. Fighting worth never enters them. A Master and a farmer face the same knife at the same odds if their insight matches.
 
-**Pre-fight line vs tier chip.** The duel opens with `A.weighText`, which reads the CR gap without gear. The tier chip and `UI.vsYou` read fighting worth with gear. In 7.6% of fights where the worth gap is 6 or more, the two disagree on who is ahead.
+**Pre-fight line vs tier chip.** The only fight percentage in the game sits on the person profile (`UI.personModal` calls `UI.vsYou`). The duel screen shows no number. It opens with `A.weighText`, a word band read from the CR gap without gear, while the chip and the profile read fighting worth with gear. In 7.6% of fights where the worth gap is 6 or more, the two disagree on who is ahead.
 
 **Event check odds by life stage**
 
-| Age | Median odds of all 4,521 checks for a fresh character | Share at the 4% floor |
+| Age | Median odds of all 4,521 checks, freshly generated character of that age | Share at the 4% floor |
 | --- | --- | --- |
 | 10 | 4% | 77% |
 | 16 | 4% | 60% |
@@ -212,10 +214,10 @@ LIFE_TABLE
 | --- | --- | --- | --- | --- |
 | **P1. Shown vs real duel odds** | Battle Brothers: shown = rolled. XCOM 2: bent only on purpose, toward the player, off on Legend | Mean error 5.7 pts, worst bin 12.1. Screen scale 12, real 8.7. Underdog overstated, favorite understated | Every bin of ≥50 pairs within 3 pts, both seats; mean error ≤2 | Bot: calibration study in CI, 2,500 pairs × both seats |
 | **P2. One- and two-tier win rates** | Battle Brothers writes tiers relative to each other; Bannerlord's tiers are too close (1.7× from T1 to T5) and elites die to looters | +1 tier 79.6%, +2 tiers 98.5% (same AI) | Declared in data (e.g. 78% / 93%) and met within ±3; the plan and `GD.TIERS` agree | Bot: same study, grouped by tier gap |
-| **P3. Seat edge in a mirror duel** | Battle Brothers: only Beginner gets a flat +5, and it's documented | Event duel +5 to +10 for the player seat; brawl −10; refuse-to-fall in 6 to 9% of lethal duels; none of it shown | 50 ± 3 in every rule set, or the edge shown in the odds | Bot: mirror test, 1,500 fights per rule set |
+| **P3. Seat edge in a mirror duel** | Battle Brothers: only Beginner gets a flat +5, and it's documented | Player seat wins 48 to 55% of mirror event duels (release 57 to 62%), 47% of plain lethal duels, 43.5% of brawls; refuse-to-fall in 6 to 9% of lethal duels; none of it shown | 50 ± 3 in every rule set, or the edge shown in the odds | Bot: mirror test, 1,500 fights per rule set |
 | **P4. One explanation per fight** | Battle Brothers' tooltip lists the factors that make the number | Pre-fight line and tier chip disagree in 7.6% of fights with gap ≥ 6 | 0% | Bot: compare `weighText` band with `vsYou` band on 2,000 pairs |
 | **P5. Fights that go through a resolver** | Bannerlord: autoresolve vs hand battle disagree, and players notice | 6 group choices; 466 injury outcomes behind plain checks; 76 vs 76 in fight events | 100% of combat injuries and deaths through duel or group; 0 combat injuries behind non-combat skills | Static analysis: event linter rule, fails the build |
-| **P6. Tier claims that hold** | Battle Brothers dev blogs place each new enemy against an old one | 8 of 13 claims hold; 5 clash (2 in the game's own data, 3 between plan and game) | 13 of 13, each one a test | Bot: claims test (duel + group + beast) |
+| **P6. Tier claims that hold** | Battle Brothers dev blogs place each new enemy against an old one | 6 of 13 claims hold and 1 half-holds. 6 clash: 2 inside the game's own data, 4 between plan and game | 13 of 13, each one a test | Bot: claims test (duel + group + beast) |
 | **P7. Tier width spread** | No fixed reference; Battle Brothers' defense above 50 counts half, a documented cliff | Widths 10, 13, 14, 14, then 27 (Master to Legend) | Equal widths, or the cliff named in the tier text | Static analysis on `GD.TIERS` |
 | **P8. Wounds move worth** | KCD: injuries cut stats and the combat you can do (wiki) | Lost hand: swordsman −14 worth, spearman −3; limp −2 | Every permanent wound moves worth by its stated amount for every weapon kind | Bot: wound test per weapon kind |
 | **P9. Who can read the stronger fighter** | Battle Brothers and KCD let you read armor and stats at a glance | Unmeasured | 9 of 10 picks right from the screen alone, 12 players | Human playtest |
@@ -267,7 +269,7 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | **Calibrate the shown duel odds.** Replace `UI.vsYou`'s `/12` with a table fitted from simulation per worth gap and seat (scale 8.7 fits within 2.5 pts RMSE). Show the same % on the duel modal. | Power | S | Yes: patch + `*.core.js` | +1.0 | Calibration test: 2,500 pairs, both seats; every bin with n ≥ 50 within 3 pts of shown; fails the build otherwise |
 | 2 | **One pre-fight explanation.** `A.weighText` reads the same worth gap (with gear) and the same % as the chip. | Power | S | Yes: patch | +0.3 | 2,000 random pairs: 0 disagreements between the weighText band and the vsYou band |
-| 3 | **Tier-claims test.** Encode every sentence in `GD.TIERS` and `GD.TIER_INFO` as an assertion against the duel, group and beast resolvers. Fix the 5 clashes: retag The Roc and Forest Men as great; either give animal hunts a party by default or change "one trained fighter can kill it" to the measured 1 in 4; fix the plan's 3-vs-Elite, 73/92, Legend and Master counts to match the game. | Power | M | Yes: patch + test | +1.0 | Test fails if any claim is off by >10 pts; today 5 of 13 fail |
+| 3 | **Tier-claims test.** Encode every sentence in `GD.TIERS` and `GD.TIER_INFO` as an assertion against the duel, group and beast resolvers. Fix the 6 clashes: retag The Roc and Forest Men as great; either give animal hunts a party by default or change "one trained fighter can kill it" to the measured 1 in 4; fix the plan's 3-vs-Elite, 73/92, Legend and Master counts to match the game. | Power | M | Yes: patch + test | +1.0 | Test fails if any claim is off by >10 pts; today 6 of 13 fail and a 7th half-fails |
 | 4 | **Fight-resolver lint, then routing.** Add a linter rule that flags any choice in a fight event whose lose branch wounds or costs ≥20 health without `duel`, `beast` or `group`. Convert the 76 combat-injury checks to `group:` or `duel:`, starting with the most-fired. | Power | M | Yes: `*.events.js` overrides + linter rule (needs a `tools/` owner's sign-off) | +1.0 | Linter count of flagged choices goes from 76 to 0; a bot life shows group or duel odds on every fight it meets |
 | 5 | **Seat rules made explicit.** Pick the player-seat rules (refuse-to-fall yes or no, NPC yield threshold, brawl asymmetry) and either remove the edge or fold it into the shown odds. Tooltip on the duel screen. | Power, Balance | S | Yes: patch + test | +0.5 | Mirror test: seat A wins 50 ± 3 in every rule set, or within 3 pts of the odds shown for that rule set |
 | 6 | **Path targets and the bot league.** `bench/balance-league.mjs`: 6 starts × 4 personalities (careful, greedy, reckless, random) × N lives, writing `reports/balance.json` against `balance/targets.json`. Start with the measures in this doc's life baseline. | Balance | M | Yes: code (bench/ owner) | +1.0 | Two runs on the same build give identical numbers; changing one constant (e.g. the promotion gate) moves a target by >10% and the gate fails |
@@ -301,6 +303,7 @@ With 1 to 11 built and their tests green, I expect Power to reach about 8 and Ba
 - Simulations Fix: https://www.nexusmods.com/mountandblade2bannerlord/mods/1151
 - Fixed Simulations: https://www.nexusmods.com/mountandblade2bannerlord/mods/12593
 - Better Auto Calc: https://www.nexusmods.com/mountandblade2bannerlord/mods/673
+- Auto Resolve Rebalanced: https://www.nexusmods.com/mountandblade2bannerlord/mods/3453
 - Autoresolve discussion: https://steamcommunity.com/app/261550/discussions/0/3596716230234308872/
 
 **Battle Brothers**
