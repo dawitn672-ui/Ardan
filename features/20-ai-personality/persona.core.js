@@ -67,18 +67,16 @@ const AXES = ['honor', 'greed', 'caution', 'pride', 'social', 'zeal', 'patience'
 A.AI_TRAIT_WEIGHTS = TW;
 A.AI_AXES = AXES;
 
-const cache = new Map();
-A.rulerPersona = function (rid) {
-  const r = A.realm(rid);
-  const ru = r && r.ruler != null ? A.P(r.ruler) : null;
-  const traits = ru && Array.isArray(ru.traits) ? ru.traits : [];
-  const base = A.AGGRO && A.AGGRO[rid] != null ? (+A.AGGRO[rid] || 1) : 1;
-  const key = (ru ? ru.id : '') + '|' + base + '|' + traits.join(',');
-  const hit = cache.get(rid);
-  if (hit && hit.key === key) return hit.P;
-  // the realm's tradition (A.AGGRO) stays the baseline, compressed so a ruler's character can outweigh it:
-  // orcs at 1.7 become 1.3, the gentlest realm at 0.2 becomes 0.45
-  const P = { rid, ruler: ru ? ru.id : null, traits: [], base, cult: r2(Math.sqrt(Math.max(.05, base))), warLog: 0, parts: {} };
+// tuning constants (one place, so the bench can be re-run against other values)
+A.AI_TUNE = Object.assign({
+  cultExp: .5,   // realm tradition A.AGGRO enters as AGGRO^cultExp
+  hazK: 1.6,     // war odds per check scale as e^(hazK * warLog)
+  barK: 20,      // opinion needed before war is thinkable: -25 + barK * warLog
+  wearyK: 15,    // war-weariness tolerated before declaring: 30 + wearyK * warLog
+}, A.AI_TUNE || {});
+
+const build = (traits, base, extra) => {
+  const T = A.AI_TUNE, P = Object.assign({ traits: [], base, cult: r2(Math.pow(Math.max(.05, base), T.cultExp)), warLog: 0, parts: {} }, extra);
   for (const k of AXES) P[k] = 0;
   for (const t of traits) {
     const w = TW[t];
@@ -89,10 +87,25 @@ A.rulerPersona = function (rid) {
   P.warLog = r2(clamp(P.warLog, -1.6, 1.6));
   for (const k of AXES) P[k] = r2(clamp(P[k], -1, 1));
   P.war = Math.round(1000 * P.cult * Math.exp(P.warLog)) / 1000;
-  Object.freeze(P);
+  return Object.freeze(P);
+};
+const cache = new Map();
+A.rulerPersona = function (rid) {
+  const r = A.realm(rid);
+  const ru = r && r.ruler != null ? A.P(r.ruler) : null;
+  const traits = ru && Array.isArray(ru.traits) ? ru.traits : [];
+  const base = A.AGGRO && A.AGGRO[rid] != null ? (+A.AGGRO[rid] || 1) : 1;
+  const T = A.AI_TUNE, key = (ru ? ru.id : '') + '|' + base + '|' + traits.join(',') + '|' + T.cultExp;
+  const hit = cache.get(rid);
+  if (hit && hit.key === key) return hit.P;
+  // the realm's tradition (A.AGGRO) stays the baseline, compressed so a ruler's character can outweigh it:
+  // orcs at 1.7 become 1.3, the gentlest realm at 0.2 becomes 0.45
+  const P = build(traits, base, { rid, ruler: ru ? ru.id : null });
   cache.set(rid, { key, P });
   return P;
 };
+// any person's temper (a claimant, a rebel lord): same weights, no realm tradition
+A.personPersona = p => build(p && Array.isArray(p.traits) ? p.traits : [], 1, { rid: null, ruler: p ? p.id : null });
 
 // the trait that drives an axis most in the given direction (for labels): "wrathful"
 const lead = (P, axis, sign) => {
