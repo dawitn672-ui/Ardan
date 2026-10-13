@@ -39,11 +39,11 @@ These come from KCD2 guides ([PowerPyx](https://www.powerpyx.com/kingdom-come-de
 
 Sources: [Fextralife, Nourishment](https://kingdomcomedeliverance.wiki.fextralife.com/Nourishment), [KCD wiki, Overeating](https://kingdomcomedeliverance.wiki.gg/wiki/Overeating), *community*.
 
-**Lesson for Ardan.** In KCD, use is the engine. Teachers, books and money are boosters, and each one has a cost or a cap. Ardan does it the other way round. **Half of all skill points (50%) come from a daily training plan the player sets once and never sees again** (section 3). Ardan already has KCD's boosters: a teacher can add up to +50% to a training session, a habit up to +20%, and skills over 30 rust when unused (`A.sessionQ`, `A.growthYear`). What is wrong is the weights, not the parts.
+**Lesson for Ardan.** In KCD, use is the engine. Teachers, books and money are boosters, and each one has a cost or a cap. Ardan does it the other way round. **Half of all skill points (50%) come from a daily training plan that runs by itself** (section 3). If the player never sets it, the game picks the target from their job. Ardan already has KCD's boosters: a teacher can add up to +50% to a training session, a habit up to +20%, and skills over 30 rust when unused (`A.sessionQ`, `A.growthYear`). What is wrong is the weights, not the parts.
 
 ### Crusader Kings III: lifestyles, and stress from acting against your nature
 
-**Lifestyles.** There are five lifestyles with three perk trees each. You pick a focus, experience builds, and you unlock "a new perk every few years" ([Dev Diary #09](https://forum.paradoxplaza.com/forum/developer-diary/ck3-dev-diary-09-lifestyles.1308005/)). The Learning diary says one tree takes about 25 years to finish without bonuses ([Dev Diary #13](https://forum.paradoxplaza.com/forum/developer-diary/ck3-dev-diary-13-the-learning-lifestyle.1326963/), *one source*). Finishing a tree grants a trait ([PCGamesN](https://www.pcgamesn.com/crusader-kings-3/lifestyle-system)). The 2024 Wandering lifestyle has 27 perks across 3 trees. The team wanted it to "require engagement": fewer passive bonuses, with most gains coming from travel and activities ([Dev Diary #158](https://admin-forum.paradoxplaza.com/forum/developer-diary/dev-diary-158-wandering-nobles.1710648), [#159](https://steamcommunity.com/games/1158310/announcements/detail/4517765223386176015)).
+**Lifestyles.** There are five lifestyles with three perk trees each. You pick a focus, experience builds, and you unlock "a new perk every few years" ([Dev Diary #09](https://forum.paradoxplaza.com/forum/developer-diary/ck3-dev-diary-09-lifestyles.1308005/)). The Learning diary says one tree takes about 25 years to finish without bonuses ([Dev Diary #13](https://forum.paradoxplaza.com/forum/developer-diary/ck3-dev-diary-13-the-learning-lifestyle.1326963/), *one source*). Finishing a tree grants a trait ([PCGamesN](https://www.pcgamesn.com/crusader-kings-3/lifestyle-system), [GameWatcher](https://www.gamewatcher.com/news/crusader-kings-3-lifestyle-and-perks), *community*). The Wandering lifestyle (Wandering Nobles) has 27 perks across 3 trees. The team wanted it to "require engagement": fewer passive bonuses, with most gains coming from travel and activities ([Dev Diary #158](https://admin-forum.paradoxplaza.com/forum/developer-diary/dev-diary-158-wandering-nobles.1710648), [#159](https://steamcommunity.com/games/1158310/announcements/detail/4517765223386176015)).
 
 **Stress.** Acting against your personality is the main way to gain stress. A Compassionate ruler gains stress for executing prisoners, even traitors ([Dev Diary #31](https://forum.paradoxplaza.com/forum/developer-diary/ck3-dev-diary-31-a-stressful-situation.1399764/?prdxDevPosts=1)).
 
@@ -81,7 +81,7 @@ The Sim's emotion is the emotion with the highest total moodlet weight ([Sims Wi
 
 ### RimWorld: needs, thoughts, thresholds, breaks, inspirations
 
-**Mood and breaks.** Mood is the sum of "thoughts", each with a cause and a duration. The base break threshold is 35% mood, with major breaks at 20% and extreme ones at 5%. The mean time to a break is about 10 days, 3 days and 0.7 days below each threshold. Traits move the threshold: Iron-willed −18%, Steadfast −9%, Nervous +8% ([RimWorld wiki, Mental break](https://rimworldwiki.com/wiki/Mental_break), [Mental Break Threshold](https://rimworldwiki.com/wiki/Mental_Break_Threshold), *community*).
+**Mood and breaks.** Mood is the sum of "thoughts", each with a cause and a duration ([Thoughts](https://rimworldwiki.com/wiki/Thoughts), *community*). The base break threshold is 35% mood, with major breaks at 20% and extreme ones at 5%. The mean time to a break is about 10 days, 3 days and 0.7 days below each threshold. Traits move the threshold: Iron-willed −18%, Steadfast −9%, Nervous +8% ([RimWorld wiki, Mental break](https://rimworldwiki.com/wiki/Mental_break), [Mental Break Threshold](https://rimworldwiki.com/wiki/Mental_Break_Threshold), *community*).
 
 **Recovery and highs.**
 
@@ -154,7 +154,7 @@ Ardan's daily plan can't be ground today because it runs on its own. Once use dr
 ### Two shorter references
 
 - **Darkest Dungeon.** At 100 stress a hero gets an affliction, or a virtue with a 25% base chance. At 200 the hero has a heart attack ([Darkest Dungeon wiki, Virtue](https://darkestdungeon.wiki.gg/wiki/Virtue), *community*). **Lesson:** resolve can go either way. Ardan's will can only go up: in 39 lives of 20+ years, it fell more than 3 points below its peak once.
-- **Kenshi.** Toughness trains by getting hurt and losing fights. Dexterity XP is scaled by how much stronger the opponent is ([Kenshi wiki, Toughness](https://kenshi.fandom.com/wiki/Toughness), [Dexterity](https://kenshi.fandom.com/wiki/Dexterity), *community*). **Lesson:** Ardan's duel pays a flat +5 to your weapon skill whoever you fight. It does already have Kenshi's spirit in two places. Losing grows will, and beating a much stronger foe (worth gap over 8) gives a stat "breakthrough".
+- **Kenshi.** Toughness trains by getting hurt and losing fights. Dexterity XP is scaled by how much stronger the opponent is ([Kenshi wiki, Toughness](https://kenshi.fandom.com/wiki/Toughness), [Dexterity](https://kenshi.fandom.com/wiki/Dexterity), *community*). **Lesson:** Ardan's duel pays a flat +5 to your weapon skill whoever you fight. It does already have Kenshi's spirit in two places. Losing grows will, and beating a foe with a big edge over you (a gap over 8) gives a stat "breakthrough".
 
 ## 3. Backtest
 
@@ -188,7 +188,7 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scr
 - **Learning by doing is about a third.** Use (the four "doing" rows) supplies 32% of skill points. Training supplies 56%, and 50 of those points come from a plan that runs by itself every day. In stats, the automatic plan supplies 53.5%.
 - **Per life**, training's median share is 60% (p10 41%, p90 78%).
 - **What you grow is not what you are tested on.** I compared each life's 3 most-gained skills with the 3 skills its events asked about most. The median overlap is **1 of 3**, and **14 of 30 lives share none**.
-- **Growth stops at 50.** The total of all skill levels runs 254 at 16, 387 at 25, 537 at 45, 561 at 55, and is flat after that, because rust balances new gains.
+- **Growth stops at 50.** For humans and orcs, the total of all skill levels runs 254 at 16, 387 at 25, 537 at 45, 561 at 55, and is flat after that, because rust balances new gains.
 
 **Check odds by age (all check choices offered, 48 lives)**
 
@@ -217,7 +217,7 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scr
 | Will, median at 10 / 16 / 25 / 40 / 55 / 70 | 19 / 31 / 40 / 59 / 66 / **79** |
 | Lives (20+ years) where will ever fell >3 below its peak | **1 of 39** |
 | Where will came from | events 58%, defeats 19%, grief 5%, near-death 4%, prison 3% |
-| Will's weight in checks | 910 check choices use it (2nd after intelligence's 845+). A life is offered a median 89 will checks |
+| Will's weight in checks | 910 check choices use it, more than any other stat or skill (intelligence 845, persuasion 755). A life is offered a median 89 will checks |
 | Trait gains per life | mean 4.7, median 4, max 11; **0 shown with a reason** |
 | Traits held at death | median 6, max 13; 32 of 48 lives end with 6 or more |
 | Personality traits never read by name in engine or events | **15 of 40** (content, zealous, cynical, generous, loyal, fickle, humble, trusting, vengeful, forgiving, arbitrary, cautious, romantic, witty, honorable) |
@@ -230,7 +230,7 @@ That last-but-one row comes from searching by name, so a trait read through a co
 | Measure | Result |
 | --- | --- |
 | Health, % of maximum, monthly | median 97%; under 50% in 11.7% of months |
-| Max health with age (humans and orcs) | 100 to 55, then 94 at 55, 82 at 65, 70 at 75 |
+| Max health with age (humans and orcs) | 100 through 45, then 94 at 55, 82 at 65, 70 at 75 |
 | Stats with age (median, 25 → 65) | strength 32 → 18, speed 27 → 14, stamina 29 → 15, instinct flat at 35 to 38; intelligence peaks at 41 (45 to 55) and is 29 at 75 |
 | Wounds per life | median 5, max 17 |
 | Events that write a wound / read one | **380 / 1** |
@@ -280,7 +280,7 @@ PROTOTYPE_RESULTS
 | --- | --- | --- | --- | --- |
 | Share of skill growth from use | KCD: all stats and skills grow by use; trainers and books are paid, capped boosters. Skyrim: use, plus 5 trainings per level | **32%** use, 12% event grants, **56%** training (50% from the automatic daily plan) | ≥ 60% from use; automatic training ≤ 20% | Bot: wrap `A.trainSkill`, sort by source (this doc's method) |
 | What you grow matches what you do | KCD: you level the weapon you swing. RimWorld: passion speeds the work you do | Top-3 gained vs top-3 tested skills: median **1 of 3**, 14 of 30 lives **0** | median ≥ 2 of 3 | Bot |
-| Where a gain came from is shown | Sims 4 skill tooltips; KCD level-up pop-ups name the skill used | Yearly recap shows the top 3 skill changes, but no sources | Every gain ≥ 2 points in a year shows its source | Browser test on the recap, plus a bot coverage check |
+| Where a gain came from is shown | Wildermyth writes each change as a history line. Ardan's own training sessions already list their modifiers ("taught by X +30%") | Yearly recap shows the top 3 skill changes, but no sources | Every gain ≥ 2 points in a year shows its source | Browser test on the recap, plus a bot coverage check |
 | Anti-grind caps | RimWorld: ×0.2 past 4,000 XP/day/skill. Skyrim: 5 trainings per level. KCD: book XP has a daily limit | None needed today (the plan is automatic). None in place for use | A per-skill monthly cap once use leads | Bot: a "grinder" personality must not beat the careful bot's skills at 40 by more than 15% |
 | Check odds across life stages | Sims 4 gives children their own skills. CK3 sets education at 16 after a childhood of trait-building | **35% at 15 → 17% at 16**; 22% at the floor at 16; 25% median in the 20s | Median 35 to 65% at every age band; no drop over 10 points between ages | Bot (check log by age) |
 | Mood has thresholds that cause events | RimWorld: breaks at 35/20/5% mood, mean time 10/3/0.7 days. CK3: a mental break at each stress level | **0** events read happiness. 30 of 48 lives spent 12+ months under 30 with no effect | Every 12-month stretch under 30 triggers ≥ 1 break event; ≥ 20 events read mood | Bot and static analysis |
@@ -355,7 +355,7 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 | 4 | **Thoughts and breaks.** Happiness becomes the sum of named thoughts (`pc.thoughts: [{k, v, until, why}]`), plus a baseline. Event `fx.happy` makes a thought titled after the event. Below 30 for 6+ months: a break event (drink, rage, withdraw, lose faith), which may add a coping trait. Then catharsis +15 for 6 months. Above 75: an inspiration event (a training season ×1.5, a masterwork, a bold offer). 12 break + 8 inspiration events | M | Yes: `*.core.js` + `*.events.js` + 1 patch | +1.0 | Bot: ≥ 90% of 12-month stretches under 30 end in a break; median 1 to 3 breaks or inspirations per life, none above 6. Static: ≥ 20 events read mood. Browser: the happiness tooltip lists thoughts with causes |
 | 5 | **Personality with receipts.** Every `fx.trait`/`untrait` writes a history line with the event title and year. Traits capped at 5: an earned trait replaces the weakest-held innate one, with a line saying so. Virtue counters (`pc.virtue.kind += 1` from choices already tagged by trait fx) flip a trait at a threshold of 3 acts in 10 years | M | Yes: `*.core.js` + patch in `applyFx` | +0.7 | Bot: 100% of trait changes have a history line; max traits ≤ 5 in all 48 lives (today 13); median 1 to 4 changes per life. Browser: the trait chip tooltip shows its reasons |
 | 6 | **Give the 15 dead traits a job, or cut them.** Each gets ≥ 3 reads: an event weight (vengeful raises revenge events, which can read the 287 orphan flags), a check bonus (+5 when the trait fits the choice), or stress when a choice goes against it | M | Yes: `*.core.js` (weights and bonuses) + `*.events.js` | +0.4 | Static: 0 traits with fewer than 3 reads. Bot: each trait changes at least 1 outcome in ≥ 20% of lives that hold it |
-| 7 | **Will that can break.** Lower will on grief, maiming, long misery (12+ months under 30) and age past `old`. Cap at the potential + 10 instead of + 25, and the ceiling at 120 instead of 160 | S | Yes: patch on `A.willGrow` + `*.core.js` hook | +0.3 | Bot: will falls ≥ 5 below its peak in ≥ 30% of 40-year lives; median will at 70 ≤ 1.1 × at 45 (today 79 vs about 64) |
+| 7 | **Will that can break.** Lower will on grief, maiming, long misery (12+ months under 30) and age past `old`. Cap at the potential + 10 instead of + 25, and the ceiling at 120 instead of 160 | S | Yes: patch on `A.willGrow` + `*.core.js` hook | +0.3 | Bot: will falls ≥ 5 below its peak in ≥ 30% of 40-year lives; median will at 70 ≤ 1.1 × median at 40 (today 79 vs 59, 1.34×) |
 | 8 | **Four needs that drive events.** Food (from lifestyle tier, famine, campaign), rest (intensity, initiative spent, war), company (friends, spouse, tavern, festival) and faith (prayer, piety). Each is a 0 to 100 monthly meter on the sheet that makes thoughts. 4 × 4 events read them | L | Yes: `*.core.js` + `*.events.js` | +0.6 | Static: each need read by ≥ 3 event conditions. Bot: each need fires an event in ≥ 50% of 40-year lives; a careful bot keeps every need off the floor for 80% of months |
 | 9 | **Old age and youth get their own play.** Teach an apprentice (a named NPC who gains your skill and can pass you), write memoirs (feeds the chronicle), settle the inheritance, last pilgrimage. Youth gets apprenticeship with a named master. 3 stage-exclusive activities each, plus 110 old-age events (to 150) | L | Yes: `*.core.js` (activities) + `*.events.js` | +0.6 | Static: `GD.ACTIVITIES` has ≥ 2 actions per stage gated by `A.stage`; ≥ 150 old-age events (bench counter). Bot: engaged lives use ≥ 1 stage action in every stage they reach |
 | 10 | **Illness and wounds you can treat.** Disease onset queues an event with physician, herbs, prayer and rest choices, with different odds by disease. 30 events read specific wounds (a lost hand at the forge, a limp on the march, bad lungs in winter) | M | Yes: patch in `A.bodyYear` + `*.events.js` | +0.4 | Bot: ≥ 80% of disease onsets offer a treatment choice. Static: ≥ 30 events read a wound. Bot: treatment choice moves recovery time by ≥ 20% |
@@ -384,6 +384,7 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 - Dev Diary #158, Wandering Nobles: https://admin-forum.paradoxplaza.com/forum/developer-diary/dev-diary-158-wandering-nobles.1710648
 - Dev Diary #159 (Steam): https://steamcommunity.com/games/1158310/announcements/detail/4517765223386176015
 - PCGamesN, lifestyle system: https://www.pcgamesn.com/crusader-kings-3/lifestyle-system
+- GameWatcher, lifestyle and perks: https://www.gamewatcher.com/news/crusader-kings-3-lifestyle-and-perks
 - Game Rant, stress levels: https://gamerant.com/ck3-crusader-kings-3-how-check-reduce-stress-levels/
 - FandomSpot, reduce stress: https://www.fandomspot.com/ck3-reduce-stress/
 - GameWatcher, traits: https://www.gamewatcher.com/crusader-kings-3-traits
@@ -402,6 +403,7 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 - Emotional Inertia mod: https://roburky.itch.io/sims4-emotional-inertia
 
 **RimWorld**
+- Thoughts: https://rimworldwiki.com/wiki/Thoughts
 - Mental break: https://rimworldwiki.com/wiki/Mental_break
 - Mental Break Threshold: https://rimworldwiki.com/wiki/Mental_Break_Threshold
 - Mental inspiration: https://rimworldwiki.com/wiki/Mental_inspiration

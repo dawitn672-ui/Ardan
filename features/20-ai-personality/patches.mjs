@@ -5,11 +5,12 @@ export default [
   {
     id: 'AIP-WAR-CHECK',
     blob: 'ardan-core',
-    why: 'A.aiWarCheck: the opinion bar (-25), the strength edge wanted (.7), the no-cause penalty (.6) and A.AGGRO now come from the ruler persona; a declared war is logged with its top 3 reasons.',
+    why: 'A.aiWarCheck: the opinion bar (-25), the war-weariness limit (30), the strength edge wanted (.7), the no-cause penalty (.6) and A.AGGRO now come from the ruler persona; a declared war is logged with its top 3 reasons.',
     edits: [
       ['if(rel>-25||A.hostile(r.id,o.id))continue;const P=A.warPreview(r.id,o.id);let p=.11/12*(A.AGGRO[r.id]||1)*A.clamp(P.ratio-.7,0,2.5)*(1+(-rel-25)/60);if(p*=cb?cb==="justified"||cb==="reconquest"?2.2:1.5:.6,',
-        'if(rel>A.aiWarBar(r.id)||A.hostile(r.id,o.id))continue;const P=A.warPreview(r.id,o.id);let p=.11/12*A.aiWarW(r.id)*A.clamp(P.ratio-A.aiNerve(r.id),0,2.5)*(1+(-rel-25)/60);if(p*=cb?cb==="justified"||cb==="reconquest"?2.2:1.5:A.aiNoCause(r.id),'],
+        'if(rel>A.aiWarBar(r.id)||A.hostile(r.id,o.id))continue;const P=A.warPreview(r.id,o.id);let p=.11/12*A.aiWarHaz(r.id)*A.clamp(P.ratio-A.aiNerve(r.id),0,2.5)*(1+(-rel-25)/60);if(p*=cb?cb==="justified"||cb==="reconquest"?2.2:1.5:A.aiNoCause(r.id),'],
       ['A.chance(p)){A.declareWar(r.id,o.id);return}', 'A.chance(p)){A.aiNoteWar(r.id,o.id,P,rel,cb,A.declareWar(r.id,o.id));return}'],
+      ['if(!(r.playerRun||A.atWar(r.id).length>=1||r.exhaustion>30||r.stability<30))', 'if(!(r.playerRun||A.atWar(r.id).length>=1||r.exhaustion>A.aiWeary(r.id)||r.stability<30))'],
     ],
   },
   {
@@ -29,13 +30,25 @@ export default [
       ['A.chance(.035)){A.sign("emb",r.id,rv)', 'A.chance(.035*A.aiSpite(r.id))){A.aiSign("emb",r.id,rv)'],
       ['A.chance(.06)&&(o.playerRun?ask(r,"trade"):A.sign("trade",r.id,oid))', 'A.chance(.06*A.aiTradeW(r.id))&&(o.playerRun?ask(r,"trade"):A.aiSign("trade",r.id,oid))'],
       ['A.chance(.05)&&(o.playerRun?ask(r,"nap"):A.sign("nap",r.id,oid))', 'A.chance(.05*A.aiNapW(r.id))&&(o.playerRun?ask(r,"nap"):A.aiSign("nap",r.id,oid))'],
-      ['.length<2&&A.chance(.08)){', '.length<2&&A.chance(.08*A.aiSpite(r.id))){'],
+      ['if(r.rivals.filter(x=>A.realm(x)&&A.realm(x).alive).length<2&&A.chance(.08)){', 'if(A.aiMendRival(r.id),r.rivals.filter(x=>A.realm(x)&&A.realm(x).alive).length<2&&A.chance(.08*A.aiRivalW(r.id))){'],
       ['t&&(A.sign("rival",r.id,t.id),', 't&&(A.aiSign("rival",r.id,t.id),'],
       ['if(!r.overlord&&!A.atWar(r.id).length&&A.chance(.04)){', 'if(!r.overlord&&!A.atWar(r.id).length&&A.chance(.04*A.aiYield(r.id))){'],
       ['((A.AGGRO[o.id]||1)>1.1||o.infamy>20)', '(A.aiWarW(o.id)>1.1||o.infamy>20)'],
       ['strong.length&&A.sign("trib",r.id,A.pick(strong).id)', 'strong.length&&A.aiSign("trib",r.id,A.pick(strong).id)'],
       ['if((A.AGGRO[r.id]||1)>=.9&&!r.justify&&!A.atWar(r.id).length&&A.chance(.3*(A.AGGRO[r.id]||1))){', 'if(A.aiWarW(r.id)>=.9&&!r.justify&&!A.atWar(r.id).length&&A.chance(.3*A.aiWarW(r.id)*A.aiPlan(r.id))){'],
       ['t&&A.justifyStart(r.id,t.id,!0)}', 't&&A.aiJustify(r.id,t.id)}'],
+    ],
+  },
+  {
+    id: 'AIP-CLAIMANTS',
+    blob: 'ardan-core',
+    why: 'Would-be rulers have tempers too: in AI-started succession wars (a contested succession, a tottering crown) the claimant presses or kneels by his traits (A.aiPressClaim); a refused faction rises or backs down by its leader\'s traits (A.aiRevolt), and the ruler yields or refuses by pride and caution (A.aiFactionAnswer). Event-driven civil wars are untouched. A coalition is led by its strongest hawk.',
+    edits: [
+      ['contested&&rival&&A.successionWar(r,rival)', 'contested&&rival&&A.aiPressClaim(r,rival)&&A.successionWar(r,rival)'],
+      ['cl&&cl.id!==ru.id&&cl.id!==S.pc&&A.successionWar(r,cl)', 'cl&&cl.id!==ru.id&&cl.id!==S.pc&&A.aiPressClaim(r,cl)&&A.successionWar(r,cl)'],
+      ['A.chance(A.clamp(f.power*1.4-r.stability/200,.1,.85))?A.factionConcede(r,f):A.factionRevolt(r,f)}', 'A.aiFactionAnswer(r,f)?A.factionConcede(r,f):A.aiRevolt(r,f)&&A.factionRevolt(r,f)}'],
+      ['const lead=mem.map(A.realm).sort((a,b)=>A.realmPower(b)-A.realmPower(a))[0]', 'const lead=mem.map(A.realm).sort((a,b)=>A.realmPower(b)*A.aiWarW(b.id)-A.realmPower(a)*A.aiWarW(a.id))[0]'],
+      ['if(w){for(const m of mem)', 'if(w){A.aiNoteCoalition(lead.id,t.id,mem);for(const m of mem)'],
     ],
   },
   {

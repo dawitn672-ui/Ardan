@@ -118,7 +118,9 @@ const traitWhy = (P, axis, k, tail) => (P.parts[axis] || []).map(([t, w]) => [`$
 
 // ---------- numbers the engine reads ----------
 A.aiWarW = rid => A.rulerPersona(rid).war;                                       // war-declaration weight (was A.AGGRO)
-A.aiWarBar = rid => clamp(-25 + 10 * A.rulerPersona(rid).warLog, -40, -10);         // opinion at which war is thinkable (was -25)
+A.aiWarHaz = rid => { const P = A.rulerPersona(rid); return P.cult * Math.exp(A.AI_TUNE.hazK * P.warLog); };  // odds of declaring, per check (was A.AGGRO)
+A.aiWarBar = rid => clamp(-25 + A.AI_TUNE.barK * A.rulerPersona(rid).warLog, -60, -8);  // opinion at which war is thinkable (was -25)
+A.aiWeary = rid => clamp(30 + A.AI_TUNE.wearyK * A.rulerPersona(rid).warLog, 8, 55);    // war-weariness tolerated before a new war (was 30)
 A.aiNerve = rid => .7 + .3 * A.rulerPersona(rid).caution;                          // strength edge wanted before attacking (was .7)
 A.aiNoCause = rid => .6 * Math.exp(-.6 * A.rulerPersona(rid).patience);            // odds factor for war with no accepted cause (was .6)
 A.aiFearAt = rid => 1.25 * (1 - .2 * A.rulerPersona(rid).caution);                 // power ratio at which a neighbor is a threat (was 1.25)
@@ -132,6 +134,7 @@ A.aiSubmitAdj = rid => { const P = A.rulerPersona(rid); return clamp(.1 * (P.cau
 A.aiGreedW = rid => { const P = A.rulerPersona(rid); return P.war * Math.exp(.7 * P.greed); };
 A.aiGiveP = rid => { const P = A.rulerPersona(rid); return clamp(.25 * Math.exp(-1.2 * P.greed + .3 * P.warmth), .03, .7); };
 A.aiSpite = rid => { const P = A.rulerPersona(rid); return clamp(Math.exp(.5 * P.greed + .6 * P.wrath + .3 * P.pride - .4 * P.warmth), .3, 2.5); };
+A.aiRivalW = rid => { const P = A.rulerPersona(rid); return clamp(Math.exp(.6 * P.wrath + .4 * P.pride + .6 * P.warLog - .4 * P.warmth), .2, 3); };
 A.aiTradeW = rid => { const P = A.rulerPersona(rid); return clamp(Math.exp(.5 * P.social + .4 * P.greed), .4, 2.2); };
 A.aiNapW = rid => { const P = A.rulerPersona(rid); return clamp(Math.exp(.6 * P.caution + .3 * P.honor - .3 * P.warLog), .4, 2.2); };
 A.aiPlan = rid => clamp(Math.exp(.4 * A.rulerPersona(rid).patience), .6, 1.6);    // patient rulers build a cause first
@@ -144,12 +147,12 @@ A.aiTop = function (why, n) {
     .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, n || 3)
     .map(([l, w]) => [String(l).replace(/[<>"]/g, ''), r2(w)]);
 };
-A.aiLogAdd = function (k, rid, oid, text, why) {
+A.aiLogAdd = function (k, rid, oid, text, why, who) {
   const S = A.S;
   if (!S) return null;
   if (!Array.isArray(S.aiLog)) S.aiLog = [];
   const r = A.realm(rid), ru = r && r.ruler != null ? A.P(r.ruler) : null;
-  const e = { y: S.year, d: A.today ? A.today() : 0, k, r: rid, o: oid || null, who: ru && A.rulerStyle ? A.rulerStyle(ru, r) : '', t: String(text || ''), why: A.aiTop(why, 3) };
+  const e = { y: S.year, d: A.today ? A.today() : 0, k, r: rid, o: oid || null, who: who != null ? String(who) : ru && A.rulerStyle ? A.rulerStyle(ru, r) : '', t: String(text || ''), why: A.aiTop(why, 3) };
   S.aiLog.unshift(e);
   if (S.aiLog.length > LOG_CAP) S.aiLog.length = LOG_CAP;
   return e;
@@ -161,6 +164,7 @@ const CBN = { justified: 'a forged claim', reconquest: 'lost land to reclaim', r
   insult: 'an insult to avenge', tribute: 'refused tribute', betrayal: 'no cause but appetite', conquest: 'conquest', coalition: 'a coalition' };
 A.aiWhyWar = function (a, b, P, rel, cb) {
   const Pa = A.rulerPersona(a), ra = A.realm(a) || {}, out = traitWhy(Pa, 'war', 1);
+  for (const x of out) x[1] *= A.AI_TUNE.hazK;
   if (Math.abs(ln(Pa.cult)) > .05) out.push([Pa.cult > 1 ? 'A warlike realm' : 'A peaceable realm', ln(Pa.cult)]);
   if (P) out.push([`${P.ratio.toFixed(1)}x their strength`, ln(Math.max(.05, clamp(P.ratio - A.aiNerve(a), 0, 2.5)))]);
   if (rel != null) out.push([`Bad blood (opinion ${Math.round(rel)})`, .4 + ln(Math.max(.05, 1 + (-rel - 25) / 60))]);
@@ -370,6 +374,58 @@ A.aiExact = function (win, lose) {
     A.aiLogAdd('exact', win, lose, `makes the beaten ${short(lose)} its tributary.`, why);
   }
   return yes;
+};
+
+// a rival made peace with: peaceable, forgiving rulers bury rivalries (a new choice; the engine never ended one on its own)
+A.aiMendRival = function (rid) {
+  const r = A.realm(rid), P = A.rulerPersona(rid);
+  if (!r || !(r.rivals || []).length || (P.warLog > -.2 && P.wrath > -.3) || A.atWar(rid).length) return false;
+  const rv = r.rivals.find(x => A.realm(x) && A.realm(x).alive && !A.hostile(rid, x) && A.relBetween(rid, x) > -75);
+  if (!rv || !A.chance(clamp(.04 * Math.exp(-1.2 * P.warLog - .8 * P.wrath + .4 * P.warmth), .01, .25))) return false;
+  A.cancelTr('rival', rid, rv);
+  A.remember(rv, rid, 'peace', 8);
+  const why = traitWhy(P, 'war', -1).concat(traitWhy(P, 'wrath', -.8), traitWhy(P, 'warmth', .4));
+  why.push([`Opinion of them ${A.relBetween(rid, rv)}`, .2]);
+  A.aiLogAdd('mend', rid, rv, `buries its rivalry with ${short(rv)}.`, why);
+  return true;
+};
+// a claimant decides whether to raise banners (AI-started succession wars only: a contested succession, a tottering crown)
+A.aiPressClaim = function (r, cl) {
+  if (!r || !cl) return false;
+  const pc = A.pc();
+  if (pc && cl.id === pc.id) return true;
+  const P = A.personPersona(cl), p = clamp(.6 * Math.exp(1.2 * P.warLog + .4 * P.pride - .4 * P.caution), .08, 1), yes = A.chance(p), s = yes ? 1 : -1;
+  const why = traitWhy(P, 'war', 1.2 * s).concat(traitWhy(P, 'pride', .4 * s), traitWhy(P, 'caution', -.4 * s));
+  why.push([`${cap(r.short)} is ${r.stability < 30 ? 'tottering' : 'divided'} (stability ${Math.round(r.stability)})`, s * (.3 + Math.max(0, 40 - r.stability) / 60)]);
+  const name = A.fullName(cl, false);
+  A.aiLogAdd(yes ? 'claim' : 'kneel', r.id, null, yes ? `faces ${name}, who refuses to kneel and claims the throne.` : `is spared a civil war: ${name} has a claim but kneels.`, why, `claimant ${name}`);
+  return yes;
+};
+// a faction's demand: the ruler yields or refuses (pride, caution), then the faction's leader rises or backs down (his own temper)
+A.aiFactionAnswer = function (r, f) {
+  const P = A.rulerPersona(r.id), adj = clamp(.12 * (P.caution - P.pride) - .05 * P.wrath, -.25, .25);
+  const yes = A.chance(clamp(f.power * 1.4 - r.stability / 200 + adj, .1, .85)), s = yes ? 1 : -1, F = (A.FACTIONS || {})[f.kind] || {};
+  const why = traitWhy(P, 'caution', .12 * 8 * s).concat(traitWhy(P, 'pride', -.12 * 8 * s), traitWhy(P, 'wrath', -.05 * 8 * s));
+  why.push([`The faction holds ${Math.round(f.power * 100)}% of the swords`, s * (f.power * 1.4 - .3)], [`Stability ${Math.round(r.stability)}`, -s * r.stability / 200]);
+  A.aiLogAdd(yes ? 'yieldfac' : 'defyfac', r.id, null, yes ? `yields to the ${F.name || 'faction'}: ${F.demand || 'its demand'}.` : `refuses the ${F.name || 'faction'}.`, why);
+  return yes;
+};
+A.aiRevolt = function (r, f) {
+  const lead = A.S.houses[f.leader], head = lead ? A.houseHead(lead.id) : null;
+  if (!head || (A.pc() && head.id === A.pc().id)) return true;
+  const P = A.personPersona(head), p = clamp(.7 * Math.exp(1.2 * P.warLog + .4 * P.pride - .4 * P.caution), .1, 1), yes = A.chance(p), s = yes ? 1 : -1, F = (A.FACTIONS || {})[f.kind] || {};
+  const why = traitWhy(P, 'war', 1.2 * s).concat(traitWhy(P, 'pride', .4 * s), traitWhy(P, 'caution', -.4 * s));
+  why.push([`The crown refused: ${F.demand || 'their demand'}`, s * .4]);
+  const name = A.fullName(head, false);
+  A.aiLogAdd(yes ? 'revolt' : 'backdown', r.id, null, yes ? `faces ${name} and the ${F.name || 'faction'} in arms.` : `is spared a revolt: ${name} and the ${F.name || 'faction'} back down.`, why, `${F.name || 'faction'} leader ${name}`);
+  if (!yes) A.S.factions = (A.S.factions || []).filter(x => x !== f);
+  return yes;
+};
+// a coalition marches: the strongest hawk among the members leads it
+A.aiNoteCoalition = function (lead, t, mem) {
+  const P = A.rulerPersona(lead), rt = A.realm(t);
+  const why = traitWhy(P, 'war', 1).concat([[`${short(t)}'s infamy (${Math.round(rt ? rt.infamy : 0)})`, 1], [`${mem.length} realms stand together`, mem.length / 4]]);
+  A.aiLogAdd('coalition', lead, t, `leads a coalition of ${mem.length} realms against ${short(t)}.`, why);
 };
 
 // ---------- the AI answering the player ----------
