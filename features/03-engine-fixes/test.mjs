@@ -26,4 +26,16 @@ export default {
     const planOk = r.plan[0] === 'athletics' && r.plan[1] !== 'athletics' && r.plan[2] === 'learning';
     return { ok: r.oppositeTraits === 0 && planOk && !r.babyCourt, detail: `children with opposite traits: ${r.oppositeTraits}/4000; plan kid→soldier→player pick: ${r.plan.join(' → ')}; newborn can attend court: ${r.babyCourt}` };
   },
+  async parentTitles(pg) {
+    // a father is never "a lady of the house", a mother never "a lord"
+    const r = await pg.evaluate(() => {
+      let bad = 0, n = 0;
+      for (let s = 1; s <= 60; s++) {
+        A.newGame({ seed: 300 + s, race: 'human', realm: 'POL-01', status: 'noble', sex: s % 2 ? 'M' : 'F' });
+        for (const id of A.pc().parents) { const q = A.P(id); if (!q) continue; n++; if ((q.sex === 'M' && q.occ === 'a lady of the house') || (q.sex === 'F' && q.occ === 'a lord')) bad++; }
+      }
+      return { bad, n };
+    });
+    return { ok: r.bad === 0 && r.n > 0, detail: `${r.bad} of ${r.n} noble parents with a title of the wrong sex` };
+  },
 };

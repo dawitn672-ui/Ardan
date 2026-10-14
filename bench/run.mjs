@@ -105,40 +105,32 @@ const MODULES = {
 
   async duels(page) {
     return page.evaluate(() => {
-      // pools of fighters at each tier, then real duels in both seats; compare with what UI.vsYou would show
+      // a fresh pair of fighters for every lethal duel (reusing fighters lets wounds pile up), 150 duels per cell;
+      // compare with what the screen would show (A.shownDuelOdds if a feature provides it, else the release formula)
       A.newGame({ seed: 77, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
-      const pc0 = A.S.pc, pools = {};
-      for (let t = 1; t <= 6; t++) { pools[t] = []; for (let k = 0; k < 24; k++) { const f = A.makeFoe({ tier: t, realm: 'POL-01' }); f.styles = f.styles || {}; pools[t].push(f); } }
-      const fight = (a, b) => {
-        // a sits in the player's seat
-        A.S.pc = a.id; a.alive = true; b.alive = true;
-        a.health = A.maxHealth ? A.maxHealth(a) : 100; b.health = A.maxHealth ? A.maxHealth(b) : 100;
-        A.S.queue = [];
-        A.startDuel(a, b, { kind: 'duel', lethal: true });
-        const q = A.S.queue.find(x => x.type === 'duel'); if (!q) return null;
-        A.S.queue = [q]; A.duelAuto(q.d);
-        const res = q.d.result || q.d.res || q.d.outcome; A.S.queue = [];
-        return res === 'win' ? 1 : res === 'lose' || res === 'yield' ? 0 : (q.d.b.hp <= 0 ? 1 : q.d.a.hp <= 0 ? 0 : null);
-      };
+      const pc0 = A.S.pc, shownFor = (a, b) => A.shownDuelOdds ? A.shownDuelOdds(a, b) : 100 / (1 + Math.exp(-(A.fightWorth(a) - A.fightWorth(b)) / 12));
       const out = [];
       for (const gap of [0, 1, 2]) for (const seat of ['strong-in-player-seat', 'strong-as-npc']) {
         let w = 0, n = 0, shown = 0;
-        for (let t = 1; t + gap <= 6; t++) for (let k = 0; k < 12; k++) {
-          const lo = pools[t][k], hi = pools[t + gap][(k + 7) % 24];
+        for (let i = 0; i < 150; i++) {
+          const t = 1 + (i % (6 - gap)), lo = A.makeFoe({ tier: t, realm: 'POL-01' }), hi = A.makeFoe({ tier: t + gap, realm: 'POL-01' });
           const [a, b] = seat === 'strong-in-player-seat' ? [hi, lo] : [lo, hi];
-          const r = fight(a, b); if (r == null) continue;
-          const strongWon = seat === 'strong-in-player-seat' ? r : 1 - r; w += strongWon; n++;
-          // what the screen would show the player in seat a about beating b (A.shownDuelOdds if a feature provides it)
-          const pA = A.shownDuelOdds ? A.shownDuelOdds(a, b) : 100 / (1 + Math.exp(-(A.fightWorth(a) - A.fightWorth(b)) / 12));
+          const pA = shownFor(a, b);
+          A.S.pc = a.id; A.S.queue = [];
+          A.startDuel(a, b, { kind: 'duel', lethal: true });
+          const q = A.S.queue.find(x => x.type === 'duel'); if (!q) continue;
+          A.S.queue = [q]; A.duelAuto(q.d); A.S.queue = [];
+          const r = q.d.result; if (!r || r === 'fled') continue;
+          const aWon = r === 'win' ? 1 : 0;
+          w += seat === 'strong-in-player-seat' ? aWon : 1 - aWon; n++;
           shown += seat === 'strong-in-player-seat' ? pA : 100 - pA;
         }
         out.push({ gap, seat, duels: n, strongWinsPct: n ? Math.round(100 * w / n) : null, shownPct: n ? Math.round(shown / n) : null });
       }
       A.S.pc = pc0;
       const sameTier = out.filter(x => x.gap === 0);
-      // same tier: how often the player's seat wins, averaged over both orderings, minus 50
       return { table: out, playerSeatEdgeSameTierPct: sameTier.length === 2 ? Math.round((sameTier[0].strongWinsPct + (100 - sameTier[1].strongWinsPct)) / 2 - 50) : null,
-        maxShownVsActualErrorPct: Math.max(...out.filter(x => x.gap > 0).map(x => Math.abs(x.strongWinsPct - x.shownPct))) };
+        maxShownVsActualErrorPct: Math.max(...out.map(x => Math.abs(x.strongWinsPct - x.shownPct))) };
     });
   },
 

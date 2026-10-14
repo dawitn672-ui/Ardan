@@ -62,4 +62,18 @@ export default [
       'A.nobleAction=function(key){const pc=A.pc();if(!pc.noble&&!["royal","noble","gentry"].includes(pc.status))return{ok:!1};if(!A.isAdult(pc))return{ok:!1,msg:"You are too young for that. For now the court is something grown-ups talk about over your head."};',
     ]],
   },
+  {
+    id: 'ENG-OCC-SEX',
+    blob: 'ardan-core',
+    why: 'Occupations were picked without regard to sex, so a noble father could be "a lady of the house" and a mother "a lord" ' +
+      '(seen in the birth line of a noble life). A.occPick filters the gendered titles by sex; it still draws exactly one random number.',
+    edits: [[
+      'royal:["of the blood royal"]},A.parentAgeRange=',
+      'royal:["of the blood royal"]},A.occPick=function(st,sex){const L=A.OCC[st]||A.OCC.peasant,l=L.filter(o=>sex==="F"?o!=="a lord":o!=="a lady of the house");return A.pick(l.length?l:L)},A.parentAgeRange=',
+    ], [
+      'A.pick(A.OCC[status]||A.OCC.peasant)', 'A.occPick(status,p.sex)', 2,
+    ], [
+      'A.pick(A.OCC[p.status]||A.OCC.peasant)', 'A.occPick(p.status,p.sex)',
+    ]],
+  },
 ];

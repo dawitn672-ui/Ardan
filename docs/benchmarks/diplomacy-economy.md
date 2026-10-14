@@ -298,7 +298,7 @@ What this looks like with unlimited time, money and people. Everything here shou
 ### The Chancery and the Court
 
 - **Every crown is a person.**
-  - Each ruler, councillor and great house head carries 9 axes on CK3's −200..+200 scale, built from traits, the realm bible's want and fear, and the memory ledger.
+  - Each ruler, councillor and great house head carries 9 axes on a −200..+200 scale (CK3-style; CK3's exact range unverified in this session), built from traits, the realm bible's want and fear, and the memory ledger.
   - Every AI decision is a sum of at most 12 labelled terms: war, alliance, breaking a pact, tribute, marriage, subsidy, embargo, peace, answering a call, faction demands.
   - It acts when the sum is above 0. A band of −10 to +10 opens a negotiation, where you can add gold, a hostage, a marriage, or a favour owed (Victoria 3's `owe_favor`).
 - **The Chancery screen.**

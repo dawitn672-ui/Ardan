@@ -52,7 +52,11 @@
      "medianDeathAge": 59,
      "checkWinRate": 40.6
     }
-   }
+   },
+   "carefulMinusRecklessDeathAge": 22,
+   "npcMovesPerDecade": 0,
+   "battlesFought": 30,
+   "afterActionShare": 0
   },
   "events": {
    "events": 3199,
@@ -117,11 +121,12 @@
    "maxShownVsActualErrorPct": 13
   },
   "ai": {
+   "worlds": 3,
    "years": 60,
-   "warsDeclared": 33,
-   "warsPer100RulerYears_aggressiveTraits": 1.02,
-   "warsPer100RulerYears_peacefulTraits": 0.67,
-   "aggressiveToPeacefulRatio": 1.53
+   "warsDeclared": 97,
+   "warsPer100RulerYears_aggressiveTraits": 1.03,
+   "warsPer100RulerYears_peacefulTraits": 0.82,
+   "aggressiveToPeacefulRatio": 1.26
   },
   "economy": {
    "markets": 35,
@@ -130,25 +135,31 @@
    "bestBuySellBackLoop10x": 293
   },
   "perf": {
-   "msPerDay": 1.27,
-   "msPerYear": 462,
+   "msPerDay": 1.08,
+   "msPerYear": 395,
    "divisions": 204,
    "boot": {
-    "ardan-core decoded": 453,
-    "ardan-core unpacked": 506,
-    "core ran": 576,
-    "title shown": 588,
-    "ardan-content decoded": 619,
-    "ardan-content unpacked": 661,
-    "content ran": 965,
-    "ardan-lore decoded": 978,
-    "ardan-lore unpacked": 1017
+    "ardan-core decoded": 277,
+    "ardan-core unpacked": 325,
+    "core ran": 393,
+    "title shown": 401,
+    "ardan-content decoded": 435,
+    "ardan-content unpacked": 477,
+    "content ran": 785,
+    "ardan-lore decoded": 803,
+    "ardan-lore unpacked": 862
    }
   },
   "saves": {
    "cycles": 100,
    "corrupted": 0,
    "kbGzipped": 123
+  },
+  "signature": {
+   "chronicle": false,
+   "beliefTruth": false,
+   "bothScales": false,
+   "present": 0
   },
   "a11y": {
    "screens": 24,
@@ -162,9 +173,10 @@
     "target-size": 120
    },
    "needsReview": {
-    "color-contrast": 2345
+    "color-contrast": 2368
    }
-  }
+  },
+  "pageErrorCount": 0
  },
  "pageErrors": []
 }
