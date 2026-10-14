@@ -77,48 +77,48 @@
     {
      "gap": 0,
      "seat": "strong-in-player-seat",
-     "duels": 72,
-     "strongWinsPct": 42,
-     "shownPct": 48
+     "duels": 150,
+     "strongWinsPct": 50,
+     "shownPct": 50
     },
     {
      "gap": 0,
      "seat": "strong-as-npc",
-     "duels": 72,
-     "strongWinsPct": 49,
-     "shownPct": 49
+     "duels": 150,
+     "strongWinsPct": 51,
+     "shownPct": 50
     },
     {
      "gap": 1,
      "seat": "strong-in-player-seat",
-     "duels": 60,
+     "duels": 150,
      "strongWinsPct": 85,
-     "shownPct": 72
+     "shownPct": 73
     },
     {
      "gap": 1,
      "seat": "strong-as-npc",
-     "duels": 59,
-     "strongWinsPct": 80,
+     "duels": 150,
+     "strongWinsPct": 85,
      "shownPct": 71
     },
     {
      "gap": 2,
      "seat": "strong-in-player-seat",
-     "duels": 48,
-     "strongWinsPct": 98,
-     "shownPct": 87
+     "duels": 150,
+     "strongWinsPct": 97,
+     "shownPct": 88
     },
     {
      "gap": 2,
      "seat": "strong-as-npc",
-     "duels": 48,
-     "strongWinsPct": 98,
+     "duels": 150,
+     "strongWinsPct": 97,
      "shownPct": 87
     }
    ],
-   "playerSeatEdgeSameTierPct": -3,
-   "maxShownVsActualErrorPct": 13
+   "playerSeatEdgeSameTierPct": 0,
+   "maxShownVsActualErrorPct": 14
   },
   "ai": {
    "worlds": 3,

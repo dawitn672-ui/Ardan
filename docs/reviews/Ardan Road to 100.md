@@ -10,6 +10,60 @@ The gap is not that the plan lies. It grades its own homework, it counts things 
 
 100/100 is reachable only in the sense the plan defines it: "no game does this one thing clearly better", for each of 14 aspects. For one person, that is not "well over a year". Honestly it is three to five years with a hired artist, a writer's year of events, and real playtests every phase, **or** a much smaller game that cuts half the aspects down to "good enough and invisible". The plan says "cut before you add" and then adds in every section. That is the first thing to fix.
 
+## Round 2 (Oct 14): what changed, and the new grade
+
+Round 2 tried to get as close to 100 as code and content can get without people or art. It built a measurement system first, then the features with the most measured leverage, each in its own folder with its own tests. A usage limit stopped the multi-agent work part-way, so this section says plainly what landed and what did not.
+
+**What landed** (all in `index.html`; 41 browser tests pass; the numbers are in `reports/scorecard.md`):
+
+| Change | Measured effect |
+| --- | --- |
+| `20-ai-personality`: ruler traits drive war, alliances, peace and tribute; every AI decision is logged with its reasons; the "why" list is real | Wars per ruler-year, aggressive traits vs peaceful: **1.3× → 5.3×** (3 worlds × 60 years) |
+| `21-npc-initiative`: people act first, with a history per bond; the 573 cast members' written wants and fears drive them | NPC-started moves per decade: **0 → 9.8** (target ≥ 3) |
+| `40-memory-*` (8 of 12 chunks): 471 callback events for memories the release recorded and never read | Events that read a memory: **3% → 15.8%**; fired in bot lives: **1.8% → 8.4%**; flags never read: **369 → 139** |
+| `22-chronicle`: "The Book", your life as chapters in a chronicler's voice, exportable | Signature systems present: **0 → 1 of 3** |
+| `24-honest-odds`: shown duel odds fitted on 2,100 real duels | Largest gap between shown and real odds: **14 → 4 points** |
+| `27-accessibility`: landmarks, headings, 24px targets | axe WCAG 2.2 AA + best practice, 26 screens: **50 → 0 violations** |
+| `ENG-OCC-SEX`: titles by sex | Noble parents with a wrong-sex title: **21 of 120 → 0** |
+| Measurement and tooling | A bench with 8 modules and a rubric scorecard; an event linter that plays every choice with the memories each event needs; CI on every push; feature folders with their own tests |
+
+**What did not land** (specs exist; each is a next step):
+
+- After-action reports, age-aware childhood (teen check odds are still 36% overall, 32% for reckless bots), tooltips for every number, an economy where gold is spent rather than deleted, and storyteller pacing.
+- Four memory chunks: customs, houses and politics, careers and learning, school and duty, covering 129 flags.
+- Old-age content (still 49 events) and starts and endings.
+- The fact-check pass on the eight benchmark documents, and two research tracks (UI and art, test methods).
+
+**The new strict grade** (same rules as below: no aspect rises without evidence; human-only aspects stay capped):
+
+| Aspect | Strict, release | After round 1 | After round 2 | Why it moved, or didn't |
+| --- | --- | --- | --- | --- |
+| World and lore | 6 | 6 | 6 | No world work this round |
+| Power scaling | 4.5 | 4.5 | **5.5** | The screen tells the truth now; event fights still skip the ladder |
+| Character and life sim | 5 | 5 | 5 | Bugs fixed, but no system merge, and teen checks are unchanged |
+| Events and story | 5 | 5 | **6** | Memory is real (15.8%), but the recipe share is still 22.6% and old age is thin |
+| Relationships | 4 | 4 | **5.5** | NPCs act first; no schemes, web or secrets yet |
+| War | 5.5 | 5.5 | 5.5 | The after-action feature didn't land |
+| Diplomacy and politics | 4 | 4 | **6** | Rulers act in character (5.3×) and explain themselves |
+| Economy | 3 | 3.5 | 3.5 | Leaks plugged in round 1; gold is still deleted rather than spent |
+| Balance | 4.5 | 4.5 | 4.5 | Measured now, not yet tuned |
+| UI and UX | 5.5 | 6 | **6.5** | WCAG 2.2 clean; still zero playtests and five tooltip kinds |
+| Visual art | 5 | 5 | 5 | Needs an artist |
+| Technical | 5 | 6.5 | **7** | 41 tests, a bench and CI; the source still isn't in the repo |
+| Replayability | 5.5 | 5.5 | 5.5 | 10 arc types, top 22%; same climb shape |
+| Uniqueness | 7 | 7 | **7.5** | The Chronicle exists; belief-vs-truth and both-scales don't |
+| **Overall** | **50** | **51** | **56** | |
+
+The plan said 59 before any of this. On evidence, the game is at 56 now. That is +6 over the release, earned where it can be measured.
+
+The next big jumps don't need more code first:
+
+- **Playtests** unlock UI, Character and Uniqueness, which are capped at about 6–7 without people.
+- **The four unfinished memory chunks and old age** are writing.
+- **Art** is hiring.
+
+The ordered path is in [docs/north-star](../north-star/README.md).
+
 ## How the plan grades itself, and what is wrong with it
 
 **1. The scores are self-assigned and unanchored.** Nothing outside the plan sets what a 5 or a 7 means. Each aspect is compared to the best game in its genre (CK3, HOI4, Mount & Blade, Pentiment), made by studios of 50 to 300 people. That is a fine north star, but it makes the numbers feelings, not measurements. Fix: give each aspect a five-step rubric with an observable test at each step, not only at 10.

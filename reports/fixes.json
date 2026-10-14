@@ -1,7 +1,7 @@
 {
  "label": "fixes",
- "file": "index.html",
- "build": "b593143+f6.3ecc966",
+ "file": "../../../tmp/ardan/v/fixes.html",
+ "build": "b593143+f6.00e35fd",
  "modules": {
   "league": {
    "lives": 64,
@@ -75,55 +75,56 @@
     {
      "gap": 0,
      "seat": "strong-in-player-seat",
-     "duels": 72,
-     "strongWinsPct": 57,
-     "shownPct": 49
+     "duels": 150,
+     "strongWinsPct": 50,
+     "shownPct": 50
     },
     {
      "gap": 0,
      "seat": "strong-as-npc",
-     "duels": 72,
-     "strongWinsPct": 68,
+     "duels": 150,
+     "strongWinsPct": 55,
      "shownPct": 50
     },
     {
      "gap": 1,
      "seat": "strong-in-player-seat",
-     "duels": 60,
-     "strongWinsPct": 65,
-     "shownPct": 71
+     "duels": 150,
+     "strongWinsPct": 80,
+     "shownPct": 72
     },
     {
      "gap": 1,
      "seat": "strong-as-npc",
-     "duels": 60,
-     "strongWinsPct": 78,
-     "shownPct": 70
+     "duels": 150,
+     "strongWinsPct": 88,
+     "shownPct": 71
     },
     {
      "gap": 2,
      "seat": "strong-in-player-seat",
-     "duels": 48,
-     "strongWinsPct": 98,
+     "duels": 150,
+     "strongWinsPct": 97,
      "shownPct": 87
     },
     {
      "gap": 2,
      "seat": "strong-as-npc",
-     "duels": 48,
-     "strongWinsPct": 96,
-     "shownPct": 86
+     "duels": 150,
+     "strongWinsPct": 99,
+     "shownPct": 87
     }
    ],
-   "playerSeatEdgeSameTierPct": -5,
-   "maxShownVsActualErrorPct": 11
+   "playerSeatEdgeSameTierPct": -2,
+   "maxShownVsActualErrorPct": 17
   },
   "ai": {
+   "worlds": 3,
    "years": 60,
-   "warsDeclared": 34,
-   "warsPer100RulerYears_aggressiveTraits": 0.91,
-   "warsPer100RulerYears_peacefulTraits": 0.98,
-   "aggressiveToPeacefulRatio": 0.92
+   "warsDeclared": 105,
+   "warsPer100RulerYears_aggressiveTraits": 1.05,
+   "warsPer100RulerYears_peacefulTraits": 1.38,
+   "aggressiveToPeacefulRatio": 0.76
   },
   "economy": {
    "markets": 35,
@@ -132,19 +133,19 @@
    "bestBuySellBackLoop10x": 0
   },
   "perf": {
-   "msPerDay": 1.28,
-   "msPerYear": 466,
+   "msPerDay": 0.81,
+   "msPerYear": 295,
    "divisions": 207,
    "boot": {
-    "ardan-core decoded": 487,
-    "ardan-core unpacked": 577,
-    "core ran": 660,
-    "title shown": 667,
-    "ardan-content decoded": 716,
-    "ardan-content unpacked": 797,
-    "content ran": 1236,
-    "ardan-lore decoded": 1254,
-    "ardan-lore unpacked": 1313
+    "ardan-core decoded": 158,
+    "ardan-core unpacked": 204,
+    "core ran": 277,
+    "title shown": 283,
+    "ardan-content decoded": 317,
+    "ardan-content unpacked": 361,
+    "content ran": 670,
+    "ardan-lore decoded": 682,
+    "ardan-lore unpacked": 718
    }
   },
   "saves": {
@@ -170,7 +171,7 @@
     "target-size": 120
    },
    "needsReview": {
-    "color-contrast": 2357
+    "color-contrast": 2377
    }
   },
   "pageErrorCount": 0
