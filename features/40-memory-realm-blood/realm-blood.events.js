@@ -689,7 +689,7 @@
       choices: [
         { t: "Talk, for 300 suns",
           r: "You talk until the lamp gutters. He writes nothing down, which frightens you more than if he had. He pays in Varennan gold and sails on the morning tide.",
-          fx: (p, ctx) => { return more(p, ctx, { coin: 300, honor: -8, secret: 1, flag: "mrb_sb_sold" }); } },
+          fx: (p, ctx) => { later("mrb_sb_ship", 4); return more(p, ctx, { coin: 300, honor: -8, secret: 1, flag: "mrb_sb_sold" }); } },
         { t: "Report him to the Oil Shore Watch",
           r: "The Watch takes him off his own deck at dawn, and he is not seen again. A Watch captain writes your name in a book of the loyal. His mate learns who you are.",
           fx: (p, ctx) => { kill(ctx, "taken by the Oil Shore Watch"); return say(more(p, ctx, { favor: 4, honor: -2 }), bond(p, { realm: "POL-03", race: "human", sex: "M", occ: "a Varennan mate" }, "enemy", -40)); } },
