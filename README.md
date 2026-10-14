@@ -30,6 +30,25 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 
 `features/00-` to `09-` are fixes and are always built. Higher numbers are new systems and content.
 
+## What is in the build
+
+| Feature | Aspect | What it does |
+| --- | --- | --- |
+| `00-security` | Technical | A Content-Security-Policy and a sanitizer for loaded saves; a crafted save can no longer run script |
+| `01-replay` | Technical | Looking at the screen never changes the world; journals replay exactly |
+| `02-content-fixes` | Events | Digit tokens filled (39 events), dropped events restored, text-diet misses |
+| `03-engine-fixes` | Character | Opposite traits, duel bugs, a training plan that follows the life, newborns at court, gendered titles |
+| `04-world-fixes` | Economy, Diplomacy, War | Idle mercenary pay, stacking reparations, AI debt repaid, stability floor, siege resets, a money loop |
+| `05-saves-ui` | UI, Technical | Failed saves warn, one tab saves at a time, a new life asks first, keyboard reach and focus |
+| `20-ai-personality` | Diplomacy | Ruler traits drive war, alliances, peace and tribute; every decision logged with its reasons |
+| `21-npc-initiative` | Relationships | People you know act first: requests, offers, hostile moves, gifts; a history per bond |
+| `22-chronicle` | Uniqueness | "The Book": your life written as chapters in a chronicler's voice, exportable |
+| `24-honest-odds` | Power scaling | Duel odds on screen fitted to 2,100 real duels |
+| `27-accessibility` | UI | WCAG 2.2 AA clean across 24 screens (axe) |
+| `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
+
+How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.
+
 ## Commands
 
 Needs Node 22.15+ (built-in zstd).
