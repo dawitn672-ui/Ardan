@@ -84,15 +84,25 @@ if (!errors.length && events.length) {
       const base = A.serialize();
       for (const id of ids) {
         const e = A.EV[id]; if (!e) continue;
+        // give the character the memories this event asks for (set 25 years ago), so callbacks can be play-tested
+        A.deserialize(JSON.parse(base));
+        const src = (e.cond ? e.cond.toString() : '') + (e.setup ? e.setup.toString() : '');
+        for (const m of src.matchAll(/C\.flag\(p,\s*["']([A-Za-z0-9_]+)["']\)|p\.flags\.([A-Za-z0-9_]+)/g)) { const f = m[1] || m[2]; if (f !== 'ev' && f !== 'unfree') A.pc().flags[f] = A.S.year - 25; }
+        const withMem = A.serialize();
         let ok = true; try { ok = !e.cond || !!e.cond(A.pc(), A.C); } catch (err) { out.problems.push(`${id}: cond throws: ${err.message}`); continue; }
         if (!ok) continue;
         out.eligibleSomewhere[id] = (out.eligibleSomewhere[id] || 0) + 1;
         const nCh = (e.choices || []).length || 1;
         for (let i = 0; i < nCh; i++) {
-          A.deserialize(JSON.parse(base)); A.S.queue = [];
+          A.deserialize(JSON.parse(withMem)); A.S.queue = [];
           const q = { type: 'event', ev: id }; A.S.queue.unshift(q);
           let v; try { v = A.eventView(q); } catch (err) { out.problems.push(`${id}: view throws: ${err.message}`); break; }
-          if (v.skip) { if (i === 0) out.problems.push(`${id}: eligible but skipped by the engine (unfilled token or setup failure) for ${o.race} ${o.status} ${o.startAge}`); break; }
+          if (v.skip) {
+            // setup backing out on purpose (ctx.skip: the person or thing it needs isn't there) is fine; an unfilled token is a bug
+            if (i === 0 && !(q.ctx && q.ctx.skip)) { const all = [v.title, v.text, ...(v.choices || []).map(c => c.t)].join(' | '); out.problems.push(`${id}: dropped by the engine for ${o.race} ${o.status} ${o.startAge}: ${(all.match(RAW) || ['setup error'])[0]}`); }
+            if (i === 0 && q.ctx && q.ctx.skip) out.declined = (out.declined || 0) + 1;
+            break;
+          }
           if (i === 0) {
             out.checked++;
             const all = [v.title, v.text, ...v.choices.map(c => c.t)].join(' | ');
@@ -120,6 +130,6 @@ if (!errors.length && events.length) {
   const never = [...ids].filter(i => !dyn.eligibleSomewhere[i] && !events.find(e => e.id === i).trigger);
   if (never.length) warns.push(`${never.length} events were not eligible for any of the 8 test characters (fine if their cond needs history): ${never.slice(0, 12).join(', ')}`);
 }
-const summary = { feature, events: events.length, checkedInBrowser: dyn ? dyn.checked : 0, errors, warnings: warns };
+const summary = { feature, events: events.length, checkedInBrowser: dyn ? dyn.checked : 0, declinedBySetup: dyn ? dyn.declined || 0 : 0, errors, warnings: warns };
 console.log(JSON.stringify(summary, null, 1));
 process.exit(errors.length ? 1 : 0);
