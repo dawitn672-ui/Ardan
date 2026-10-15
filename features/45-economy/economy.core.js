@@ -213,7 +213,7 @@
   // price), the distance, and whether it goes by sea
   E.roads = function (rs) {
     const S = A.S, key = S.year + ':' + rs.map(r => r.id).join(',');
-    if (E._roads && E._roads.key === key) return E._roads;
+    if (E._roads && E._roads.key === key && E._roads.S === S) return E._roads;
     const n = rs.length, f = new Float64Array(n * n), dist = new Float64Array(n * n), sea = new Uint8Array(n * n), idx = {};
     const coast = rs.map(r => S.prov.some(P => P.owner === r.id && P.coast));
     rs.forEach((r, i) => { idx[r.id] = i; });
@@ -226,7 +226,7 @@
       f[i * n + j] = s2 ? E.SEA + E.HOP * steps * 0.5 : E.ROAD + E.HOP * steps;
       dist[i * n + j] = d; sea[i * n + j] = s2 ? 1 : 0;
     }
-    return (E._roads = { key, n, f, dist, sea, idx });
+    return (E._roads = { S, key, n, f, dist, sea, idx });
   };
   E.road = function (a, b) {
     const rs = live(), T = E.roads(rs), i = T.idx[a], j = T.idx[b];
@@ -278,7 +278,8 @@
   // this feature's both ask for it)
   const target = A.priceTarget;
   A.priceTarget = function (r, k) {
-    const mo = A.S.time, c = E._tc && E._tc.mo === mo ? E._tc : (E._tc = { mo, v: {} }), key = r && r.id + k;
+    // keyed by the game itself and the month, so a new game or a loaded save never reads another world's targets
+    const S = A.S, mo = Math.floor(A.absDay() / 30), c = E._tc && E._tc.S === S && E._tc.mo === mo ? E._tc : (E._tc = { S, mo, v: {} }), key = r && r.id + k;
     if (key && c.v[key] != null) return c.v[key];
     let v = target.apply(this, arguments);
     try { const m = r && r.mkt; if (m && m.s) v *= E.scarcity(m, k); } catch (e) {}

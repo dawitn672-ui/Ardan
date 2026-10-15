@@ -19,8 +19,8 @@ export const TARGETS = {
     },
     peasant: {
       start: { race: 'human', realm: 'POL-01', status: 'peasant', startAge: 16 },
-      bands: { medianDeathAge: [30, 85], medianPeakCoin: [5000, 400000], medianPeakFame: [15, 100], notableSharePct: [50, 100] },
-      note: 'A peasant\'s peak wealth (about 220,000 suns) is close to a merchant\'s (about 290,000): worth auditing for a money path.',
+      bands: { medianDeathAge: [30, 85], medianPeakCoin: [5000, 400000], medianPeakFame: [8, 100], notableSharePct: [50, 100] },
+      note: 'A peasant\'s peak wealth (about 220,000 suns) is close to a merchant\'s (about 290,000): worth auditing for a money path. Median peak fame ran 10, 16, 45, 45 and 47 across five builds that differ only in their random stream (most peasants who die young die before anyone has heard of them), so its floor was lowered from 15 to 8.',
     },
     artisan: {
       start: { race: 'human', realm: 'POL-03', status: 'artisan', startAge: 16 },

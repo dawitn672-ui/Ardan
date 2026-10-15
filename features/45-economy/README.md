@@ -40,6 +40,11 @@ The plan says the economy "hits 10 when goods come from somewhere, go somewhere,
 
 The plan's bar is that the best trade loop must not out-earn a well-run estate. The test holds it to 1.5×.
 
+**Lives are not shorter.** One league run read peasants' median age at death as 73 → 22 after the economy. Two causes turned up. Neither was the economy making life deadlier:
+
+- **A determinism leak.** The cache of price targets was keyed by the player's initiative points, not by the game, so a new game or a loaded save could read another world's prices. It is now keyed by the game and the month, and a life gives the same result alone or after others.
+- **Luck.** On the same 24 lives (peasant, artisan, royal), the mean age at death is 41 without the economy and 40 with it. The young deaths are the world's usual ones: fevers, horses, wolves and the gallows.
+
 **Cost.** About 7 ms a month (caravans 2 ms): a yearly table of roads, targets worked out once a month, and destinations that cannot pay skipped early.
 
 **Rules kept.**

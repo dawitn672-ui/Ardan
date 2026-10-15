@@ -80,8 +80,12 @@ export default {
       }
       // a rumor's counts run high, never low
       const high = A.S.news.filter(e => e.truth).every(e => { const a = +(e.t.match(/some ([\d,]+)/) || [0, '0'])[1].replace(/,/g, ''), b = +(e.truth.match(/([\d,]+) fall/) || [0, '0'])[1].replace(/,/g, ''); return a > b; });
-      T.play(1);
-      const fixed = A.S.news.filter(e => e.truth && e.fixed).length + (A.S.rumors || []).length * 0, corrections = A.S.news.filter(e => /^A truer account reaches you/.test(e.t) && /Testmere/.test(e.t)).length, pending = (A.S.rumors || []).filter(x => /Testmere/.test(x.truth)).length;
+      // count the corrections as they are sent: the news list keeps 220 lines, and in a year of busy wars the early ones
+      // scroll off it
+      let corrections = 0; const nw = A.news;
+      A.news = function (t) { if (/^A truer account reaches you/.test(t) && /Testmere/.test(t)) corrections++; return nw.apply(this, arguments); };
+      try { T.play(1); } finally { A.news = nw; }
+      const fixed = A.S.news.filter(e => e.truth && e.fixed).length, pending = (A.S.rumors || []).filter(x => /Testmere/.test(x.truth)).length;
       const note = A.BT.newsNote(A.S.news.find(e => e.truth && e.fixed) || {});
       return { n, distorted, nearBad, high, fixed, corrections, note, pending };
     });

@@ -6,11 +6,12 @@ const RUN = () => {
     let views = 0, rep = 0, pairs = 0, same = 0, triples = 0, shaped = 0, npc = 0, npcRep = 0;
     for (const seed of seeds) {
       A.newGame({ seed, race: 'human', realm: ['POL-01', 'POL-03', 'POL-13'][seed % 3], status: ['peasant', 'artisan', 'noble'][seed % 3], sex: seed % 2 ? 'M' : 'F', startAge: 16 });
-      const last = {}, shapes = [], done = new WeakSet();
+      const last = {}, shapes = [], all = [], done = new WeakSet();
       T.play(years, { onEvent: v => {
         const q = A.S.queue[0], id = q && q.ev, e = A.EV[id];
         if (!e || done.has(q)) return;   // an event with a result screen is viewed twice
         done.add(q);
+        all.push(A.evShape(e));   // everything the player sees, duties and NPC moves too: what a triple is measured on
         if (e.trigger) { if (e.npc) { npc++; if (last[id] != null && A.S.year - last[id] < 10) npcRep++; last[id] = A.S.year; } return; }
         views++;
         const cool = e.cool || 10;
@@ -18,7 +19,9 @@ const RUN = () => {
         last[id] = A.S.year;
         const s = A.evShape(e); shapes.push(s); if (s) shaped++;
       } });
-      for (let i = 1; i < shapes.length; i++) if (shapes[i]) { pairs++; if (shapes[i] === shapes[i - 1]) same++; if (i > 1 && shapes[i] === shapes[i - 1] && shapes[i] === shapes[i - 2]) triples++; }
+      for (let i = 1; i < shapes.length; i++) if (shapes[i]) { pairs++; if (shapes[i] === shapes[i - 1]) same++; }
+      // a triple is three of a shape in a row as the player saw them; a duty scene between two road scenes breaks the run
+      for (let i = 2; i < all.length; i++) if (all[i] && all[i] === all[i - 1] && all[i] === all[i - 2]) triples++;
     }
     A.EV_COOL = keep.cool; A.evVariety = keep.v; A.evRecency = keep.r;
     return { views, npc, npcRepeatPct: Math.round(1000 * npcRep / Math.max(1, npc)) / 10, repeatPct: Math.round(1000 * rep / Math.max(1, views)) / 10, samePct: Math.round(1000 * same / Math.max(1, pairs)) / 10, triples, shapedPct: Math.round(100 * shaped / Math.max(1, views)) };

@@ -30,11 +30,11 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | UI and UX | 8 | 5 | 2 | 0 | 1 |
 | Visual art | 7 | 0 | 0 | 0 | 7 |
 | Technical | 7 | 6 | 1 | 0 | 0 |
-| Replayability | 6 | 2 | 3 | 1 | 0 |
+| Replayability | 6 | 3 | 3 | 0 | 0 |
 | Uniqueness | 5 | 2 | 2 | 1 | 0 |
-| **All** | **94** | **44** | **30** | **10** | **10** |
+| **All** | **94** | **45** | **30** | **9** | **10** |
 
-That is 47% done and 32% partial. 11% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 48% done and 32% partial. 10% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
 
 ## World and lore
 
@@ -186,7 +186,7 @@ That is 47% done and 32% partial. 11% is not started but buildable here, and 11%
 | 1 | 20 hand-made starting stories | ✅ | 29-starts: 20 stories over 17 realms and all seven peoples, each with an opening scene and a callback 5–15 years on (40 events) |
 | 2 | Different endings with epilogues | ✅ | 28-endings: 20 endings × 9 manners, an epilogue of what became of them, and a collection in the Legacy tab |
 | 3 | Vary the world each run | ◐ | Base: 13 scripted branches of history rolled at the start and played out in the first year. 43-varied-worlds: a menu game also varies fortunes, moves 2–4 borders by an older war (the loser still claims them), starts up to two feuds and breaks up to three alliances; ten seeds give ten different maps. No new realms are generated |
-| 4 | A mid-game and late game per path | ✗ | |
+| 4 | A mid-game and late game per path | ✅ | 46-life-arcs: each of the seven paths, plus common folk, has a middle-years undertaking in three scenes and a legacy in two, years apart; every choice leaves a mark the later scenes read. Bot lives: every life of 15+ years began one, and 11 finished in 10 lives |
 | 5 | Export a readable history of the family and world | ◐ | The Chronicle (22) exports every life of the save, with each ending and the tale as told (26, 28); no world legends |
 | 6 | Load events and realms from data files | ◐ | Developers can add features and events here; players can't |
 
@@ -244,6 +244,7 @@ Findings from building these:
 
 | Feature | Rows | What changed |
 | --- | --- | --- |
+| 46-life-arcs | Replayability 4 ✅ | Eight paths, sixteen undertakings, 40 scenes. A command and its ford, a house abroad, a parish and a heresy, a great book, the big job, an estate, a monument; then a protégé and a last campaign, handing on the house, a shrine, a school, going straight, the inheritance, whether to lay down the crown; for common folk, a holding and the village elder. At most two middle-years undertakings and one legacy per life; a stage that no longer fits the life gives the work up. |
 | 45-economy | Economy 1, 2, 3, 5, 7 ✅, Economy 4 ◐ | Production from the land, demand from people and armies, stocks that set prices, caravans between all realms at peace, local prices, three production chains with workshops the player can own, and an exploit test. 97% of realm-goods hold a normal stock over ten years; a famine behind closed roads makes grain ×2.8. |
 | 44-rank-battles | War 1 ✅ | The soldier's line battle and the officer's tactical battle now move the war-map fight they belong to. Measured by replaying 60 real fights frozen at their start: best against worst, 12 points of win rate for the soldier and 19 for the officer. The release's fixed nudges moved it 5 at most. |
 
@@ -251,4 +252,6 @@ Findings:
 
 - **The release's economy had a money loop.** A greedy trading bot turned 1,000 suns into 14,543 in ten years, twelve times a farm estate. Building the new economy first made it worse (two to three hundred times) until trade runs paid haulage and each load's price slid by the market for that good.
 - **A purse could become NaN.** The coin effect accepted NaN, and a scene whose setup had failed paid NaN. `ENG-COIN-FINITE` (fix layer) guards it; the release fails the new test.
+- **A queued event is shown whatever its `cond` says.** Only the random roll reads `cond`. A chain of scenes queued years apart must check the next scene's `cond` itself, or a soldier who left the army is still sent to hold the ford (46-life-arcs does).
+- **Two tests measured something other than what they claimed.** `varietyGuard` counted three-in-a-row with duty scenes and NPC moves left out, so travel, work, money, travel, travel read as a triple; it now counts what the player saw. `btRumors` counted corrections still on the 220-line news list; in a year of busy wars the early ones scroll off; it now counts them as they are sent. Both turned up when the economy changed the random stream, and neither was a fault in the game.
 - **The random stream lives outside the state.** `A.rngState` is not in `A.S`, so restoring a saved state does not replay the same future. The replay lab (`bench/rankfx-lab.mjs`) restores both.
