@@ -4,7 +4,7 @@
 // what the lives reach: median peak wealth, median peak fame, median age at death. A strategy is DOMINANT when it beats
 // the median strategy on all three at once by a clear margin (wealth ×3, fame +10, and no shorter life): a loop that
 // pays more, makes you known, and costs nothing is the thing to find.
-//   node bench/dominance.mjs [built.html] [--lives=6] [--years=30] [--workers=4] [--json=reports/dominance.json]
+//   node bench/dominance.mjs [built.html] [--lives=6] [--years=30] [--workers=4] [--only=a,b] [--json=reports/dominance.json]
 // Exit code 1 if any strategy is dominant.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -33,7 +33,8 @@ const acts = await pages[0].evaluate(() => {
   A.newGame({ seed: 1, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 20 });
   return Object.keys(GD.ACTIVITIES).filter(k => { try { return A.canAct(k)[0]; } catch (e) { return false; } });
 });
-const strategies = ['none'].concat(acts);
+const ONLY = opt('only') ? opt('only').split(',') : null;
+const strategies = ['none'].concat(acts).filter(k => !ONLY || ONLY.includes(k));
 const jobs = [];
 for (const k of strategies) for (let i = 0; i < LIVES; i++) jobs.push({ k, i });
 const played = new Array(jobs.length);
