@@ -3,7 +3,7 @@
 // in arcs.events.js.
 //
 // What this file adds to the story track:
-//   the people in a story   A.ARV.cast(p, ctx, role, opts) gives a scene its person ({them}, {khe}, {khim}, {khis}):
+//   the people in a story   A.ARV.cast(p, ctx, role, opts) gives a scene its person ({them}, {khe}, {khim}, {khis}, {khers}):
 //                           the one this arc already has, else an existing relation of the kinds asked for (your real
 //                           rival, your real friend, your nephew), else a new one made for the part. The arc keeps the
 //                           id, so the rival of the first scene is the rival of the last. If that person has died or
@@ -25,7 +25,7 @@
   // the arc state of the scene being shown (null when a scene is shown on its own, as the linter shows it)
   R.arc = (p, ctx) => (AR && ctx && ctx.arc && p ? AR.state(p)[ctx.arc] || null : null);
   R.mem = (p, ctx) => { const a = R.arc(p, ctx); return a ? (a.ar = a.ar && typeof a.ar === 'object' ? a.ar : {}) : null; };
-  R.bind = (ctx, t) => { ctx.pid = t.id; ctx.khe = A.he(t); ctx.khim = A.him(t); ctx.khis = A.his(t); return t; };
+  R.bind = (ctx, t) => { ctx.pid = t.id; ctx.khe = A.he(t); ctx.khim = A.him(t); ctx.khis = A.his(t); ctx.khers = t.sex === 'F' ? 'hers' : 'his'; return t; };
   const usable = (p, t) => !!t && t.alive && t.id !== p.id && !t.ruler && A.age(t) >= 12;
   // ages are given in human years and scaled to the person's race
   R.older = (p, lo, hi) => { const a = Math.round(A.C.ageAdj(p)); return [a + lo, a + hi]; };
@@ -87,25 +87,25 @@
   R.HOLD = ['manor', 'farm', 'inn', 'workshop', 'townhouse', 'cottage', 'hovel', 'castle', 'barge'];
   R.holding = (p, kinds = R.HOLD) => { for (const k of kinds) { const a = (p.assets || []).find(x => x.k === k); if (a) return a; } return null; };
   R.short = a => String(a.name || a.k).replace(/\s*\(.*\)\s*/, '').replace(/ with .*$/, '').replace(/ and .*$/, '').toLowerCase();
-  // a craft secret worth stealing, by career: what it is, and what they would call you for it
+  // a craft secret worth stealing, by career: what it is, what they would call you for it, and its short name
   R.SECRET = {
-    smith: ['a temper for steel that keeps its edge through a winter', 'True-Edge'],
-    brewer: ['a brown ale with bog-myrtle in it that keeps a month without souring', 'Myrtle-Ale'],
-    weaver: ['a blue dye that does not run in the wash', 'Fast-Blue'],
-    cook: ['a raised pie that keeps a week on the road', 'Pie-Crust'],
-    healer: ['a salve that closes a burn without fever', 'Burn-Salve'],
-    bowyer: ['a glue of horn and sinew that holds in the wet', 'Wet-Bow'],
-    carpenter: ['a joint that holds a roof without a nail', 'No-Nail'],
-    mason: ['a mortar that sets under water', 'Water-Stone'],
-    artist: ['a red that does not darken with the years', 'True-Red'],
-    engineer: ['a hoist that lifts with half the men', 'Half-Hands'],
-    herd: ['a hard cheese that travels a month', 'Cheese-Wright'],
-    fish: ['a brine that keeps herring through a summer', 'Brine-Wise'],
-    merchant: ['a dyer in the hills who sells to no one else', 'Hill-Road'],
-    scribe: ['an ink that does not fade in the sun', 'Black-Ink'],
-    horsemaster: ['a drench that cures a horse of colic', 'Colic-Cure'],
-    miner: ['a way of reading the rock for silver', 'Silver-Eye'],
-    farm: ['a way of drying grain that keeps out the rot', 'Dry-Barn'],
+    smith: ['a temper for steel that keeps its edge through a winter', 'True-Edge', 'the temper'],
+    brewer: ['a brown ale with bog-myrtle in it that keeps a month without souring', 'Myrtle-Ale', 'the myrtle ale'],
+    weaver: ['a blue dye that does not run in the wash', 'Fast-Blue', 'the fast blue'],
+    cook: ['a raised pie that keeps a week on the road', 'Pie-Crust', 'the road pie'],
+    healer: ['a salve that closes a burn without fever', 'Burn-Salve', 'the burn salve'],
+    bowyer: ['a glue of horn and sinew that holds in the wet', 'Wet-Bow', 'the wet glue'],
+    carpenter: ['a joint that holds a roof without a nail', 'No-Nail', 'the nailless joint'],
+    mason: ['a mortar that sets under water', 'Water-Stone', 'the water mortar'],
+    artist: ['a red that does not darken with the years', 'True-Red', 'the red'],
+    engineer: ['a hoist that lifts with half the men', 'Half-Hands', 'the hoist'],
+    herd: ['a hard cheese that travels a month', 'Cheese-Wright', 'the travelling cheese'],
+    fish: ['a brine that keeps herring through a summer', 'Brine-Wise', 'the brine'],
+    merchant: ['a dyer in the hills who sells to no one else', 'Hill-Road', 'the dyer in the hills'],
+    scribe: ['an ink that does not fade in the sun', 'Black-Ink', 'the black ink'],
+    horsemaster: ['a drench that cures a horse of colic', 'Colic-Cure', 'the colic drench'],
+    miner: ['a way of reading the rock for silver', 'Silver-Eye', 'the way of reading rock'],
+    farm: ['a way of drying grain that keeps out the rot', 'Dry-Barn', 'the dry barn'],
   };
 
   // the arc's people stay in mind while it runs
@@ -157,9 +157,9 @@
   story('ar_pupil', { title: 'The apprentice', stages: N('ar_pupil', 5), gap: [2, 4], lasting: 'bond',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 28 && C.ageAdj(p) <= 62 && C.job(p) && C.jobRank(p, 1) });
   story('ar_patron', { title: 'The patron', stages: N('ar_patron', 4), gap: [2, 4], lasting: 'law',
-    start: (p, C) => free(p, C) && !C.unfree(p) && C.ageAdj(p) >= 18 && C.ageAdj(p) <= 45 });
+    start: (p, C) => free(p, C) && !C.unfree(p) && C.ageAdj(p) >= 19 && C.ageAdj(p) <= 45 });
   story('ar_false', { title: 'The false friend', stages: N('ar_false', 4), gap: [1, 3], lasting: 'bond',
-    start: (p, C) => free(p, C) && C.ageAdj(p) >= 18 && C.ageAdj(p) <= 65 });
+    start: (p, C) => free(p, C) && C.ageAdj(p) >= 22 && C.ageAdj(p) <= 65 });
   story('ar_elec', { title: 'The election', stages: N('ar_elec', 4), gap: [1, 2], lasting: 'title',
     start: (p, C) => free(p, C) && !C.unfree(p) && !C.noble(p) && !C.soldier(p) && C.ageAdj(p) >= 30 && C.ageAdj(p) <= 70 });
   story('ar_hon', { title: 'An affair of honour', stages: N('ar_hon', 4), gap: [1, 2], lasting: 'name',

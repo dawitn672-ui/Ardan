@@ -70,7 +70,9 @@ const SETUP = () => {
   };
 };
 
-const LASTING_KEYS = ['trait', 'untrait', 'epithet', 'arEpithet', 'wound', 'newRel', 'rel', 'asset', 'arLose', 'claim', 'sworn', 'deed', 'arDeed', 'flag', 'prison'];
+// what an ending can leave. A trait alone does not count: with 49-body-mind a trait comes from deeds over years, so an
+// event's trait is a push toward it, not a sure change; every ending carries one of these as well
+const LASTING_KEYS = ['epithet', 'arEpithet', 'wound', 'newRel', 'rel', 'asset', 'arLose', 'claim', 'sworn', 'deed', 'arDeed', 'flag', 'prison'];
 
 export default {
   // 13 arcs of 3 to 8 scenes; every scene trigger-only; every choice (both sides of a check) moves the arc; every ending
@@ -273,28 +275,31 @@ export default {
     return { ok: !r.err && r.shown, detail: r.err || `an arc saved without its people picks one up and shows its third scene: "${(r.text || '').slice(0, 70)}…"` };
   },
 
-  // whole bot lives: these arcs come up in real play, and run to their end
+  // whole bot lives: these arcs come up in real play, and run to their end. Lives are dealt round the six starts until
+  // ten have lasted forty years (at most 30 lives); half engaged, half passive
   async rivalsBotLives(pg) {
     await pg.evaluate(BOT);
     const paths = Object.entries(TARGETS.paths);
     const lives = [];
-    for (const [name, P] of paths) for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 5 && lives.filter(l => l.years >= 40).length < 10; i++) for (const [name, P] of paths) {
       const o = Object.assign({ seed: 7301 + i * 7919 + name.length * 17, sex: i % 2 ? 'F' : 'M' }, P.start);
       lives.push(await pg.evaluate(([o, i]) => {
-        const L = B.life(o, ['careful', 'greedy'][i], i === 0, 64);
+        const L = B.life(o, ['careful', 'greedy'][i % 2], i % 2 === 0, 64);
         const pc = A.P(A.S.pc) || {};
         const mine = new Set(A.ARV.KEYS);
         const arcs = Object.entries(pc.arcs || {}).filter(([k]) => mine.has(k)).map(([k, a]) => ({ k, stage: a.stage, done: !!a.done, gave: !!a.gave }));
-        return { status: o.status, years: L.years, age: A.age(pc), arcs };
+        const others = Object.entries(pc.arcs || {}).filter(([k, a]) => !mine.has(k) && a.story).length;
+        return { status: o.status, years: L.years, arcs, others };
       }, [o, i]));
     }
     const long = lives.filter(l => l.years >= 40);
-    const started = lives.filter(l => l.arcs.length).length;
+    const started = long.filter(l => l.arcs.length).length;
     const all = lives.flatMap(l => l.arcs);
     const finished = all.filter(a => a.done && !a.gave).length, gave = all.filter(a => a.gave).length;
     const scenes = all.reduce((s, a) => s + a.stage, 0);
-    const ok = long.length >= 10 && started >= Math.ceil(lives.filter(l => l.years >= 25).length * 0.6) && finished >= 4;
-    return { ok, detail: `${lives.length} bot lives (${long.length} of 40+ years): ${started} began one of these arcs; ${all.length} begun, ${scenes} scenes played, ${finished} finished, ${gave} given up. ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k.slice(3)} ${a.stage}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}`).join('; ')}`,
-      data: { lives, started, begun: all.length, finished, gave, scenes } };
+    const kinds = new Set(all.map(a => a.k)).size;
+    const ok = long.length >= 10 && started >= Math.ceil(long.length * 0.8) && finished >= 10 && gave <= all.length * 0.2;
+    return { ok, detail: `${lives.length} bot lives, ${long.length} of 40+ years (${[...new Set(long.map(l => l.status))].join(', ')}): ${started} of those began one of these arcs; ${all.length} begun in all (${kinds} of the 13 kinds), ${scenes} scenes played, ${finished} finished, ${gave} given up; other features' story arcs begun: ${lives.reduce((s, l) => s + l.others, 0)}. ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k.slice(3)} ${a.stage}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}`).join('; ')}`,
+      data: { lives, started, begun: all.length, finished, gave, scenes, kinds } };
   },
 };

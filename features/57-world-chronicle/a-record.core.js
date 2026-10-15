@@ -22,8 +22,9 @@
     plague: ['epidemic', 2], wedding: ['royal marriage', 1], alliance: ['alliance', 1], trib: ['tribute', 1],
     order: ['elite order destroyed', 1], legend: ['death of a Legend', 2],
   };
-  // a field battle is set down when it is as large as the ones a war keeps in its own list (9,000 men or 3 days)
-  WC.BATTLE_MEN = 9000; WC.BATTLE_DAYS = 3;
+  // a field battle is set down when 24,000 men meet, or 9,000 fight on for five days or more: about the largest
+  // fifth of the front's fights, some 13 a year across Ardan (the front fights about 90 a year)
+  WC.BATTLE_MEN = 24000; WC.BATTLE_LONG = [5, 9000];
 
   const S_ = () => A.S;
   const today = () => { try { return A.today ? A.today() : 0; } catch (e) { return 0; } };
@@ -117,7 +118,7 @@
     try {
       if (F && live()) {
         const men = (F.menA || 0) + (F.menD || 0);
-        if (men >= WC.BATTLE_MEN || (F.days || 0) >= WC.BATTLE_DAYS && men >= 3000) {
+        if (men >= WC.BATTLE_MEN || (F.days || 0) >= WC.BATTLE_LONG[0] && men >= WC.BATTLE_LONG[1]) {
           const atkW = winner === 'att', W = atkW ? F.a : F.b, L = atkW ? F.b : F.a;
           const cmd = ids => { let best = null; for (const id of ids || []) { const d = A.divById(id); if (d && d.cmd && (!best || d.men > best.men)) best = d; } return best ? best.cmd : null; };
           const cw = cmd(atkW ? F.aIds : F.dIds) || ruler(W), cl = cmd(atkW ? F.dIds : F.aIds) || ruler(L);
@@ -371,7 +372,11 @@
   // ---- reading the record (pure)
   // the realms a person lives among: their own, their home's master, the realm they serve, and the neighbours of these
   WC.nearRealms = function (p) {
-    const set = new Set(); if (!p) return set;
+    if (!p) return new Set();
+    const key = `${p.id}|${p.realm}|${p.home}|${p.mil && p.mil.realm}|${A.absDay()}`;
+    if (WC._nr && WC._nr.key === key && WC._nr.S === A.S) return WC._nr.set;
+    const set = new Set();
+    WC._nr = { key, set, S: A.S };
     const P = A.prov(p.home), own = [p.realm, P && P.owner, P && P.occ, p.mil && p.mil.realm].filter(x => x && x !== 'unclaimed');
     for (const id of own) set.add(id);
     for (const id of own.slice(0, 2)) for (const n of (A.neighbors ? A.neighbors(id) : [])) set.add(n);
@@ -415,7 +420,7 @@
     if (!e) return '';
     const y = (opts && opts.noYear) ? '' : ` in ${e.y}`, P = pn(e.p);
     switch (e.k) {
-      case 'war': return `${the(WC.warName(e))}, begun${y}`;
+      case 'war': return `${the(WC.warName(e))}${y ? ' of ' + e.y : ''}`;
       case 'peace': return `the end of ${the(WC.warName(e))}${y}`;
       case 'battle': return `the battle at ${P}${y}`;
       case 'siege': return `the siege of ${P}${y}`;
@@ -458,7 +463,7 @@
       case 'founded': return `${when}, ${A1} was founded${e.x === 'granted' ? ` out of ${B1}'s lands, by grant` : e.x === 'won' ? `, its freedom won in war against ${B1}` : e.x === 'carved' ? ' out of the free lands' : B1 ? ` out of ${B1}` : ''}${P ? `, with its seat at ${P}` : ''}${nm(e.w[0]) ? `, under ${nm(e.w[0])}` : ''}.`;
       case 'revolt': return `${when}, ${nm(e.w[0]) || 'a great lord'} rose against the crown of ${A1}${e.x === 'claim' ? ', claiming the throne' : ' with the lords of a league'}${P ? `, holding ${P}` : ''}.`;
       case 'famine': return `${when}, the harvest failed in ${A1}, and bread was dear until the next.`;
-      case 'plague': { const sp = Array.isArray(e.x) ? e.x.map(pn).filter(Boolean) : []; const s = WC.name('sick:' + e.p + ':' + e.y) || 'a sickness'; return `${when}, ${s} broke out in ${P}, in ${A1}${sp.length ? `, and spread to ${sp.join(' and ')}` : ''}.`; }
+      case 'plague': { const sp = Array.isArray(e.x) ? e.x.map(pn).filter(Boolean) : []; const s = WC.name('sick:' + e.p + ':' + e.y) || 'a sickness'; return `${when}, ${s} broke out at ${P}, in the lands of ${A1}${sp.length ? `, and spread to ${sp.join(' and ')}` : ''}.`; }
       case 'wedding': return `${when}, a royal marriage bound ${A1} and ${B1}.`;
       case 'alliance': return `${when}, ${A1} and ${B1} swore an alliance.`;
       case 'trib': return e.x === 'free' ? `${when}, ${A1} threw off the tribute it paid ${B1}.` : `${when}, ${A1} became a tributary of ${B1}.`;

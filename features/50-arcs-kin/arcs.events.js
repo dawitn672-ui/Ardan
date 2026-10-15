@@ -20,6 +20,7 @@
     ctx.town = town; ctx.cuz = H.name(p, FEUD, 'cuz', () => A.givenName(p.cult, 'M'));
     ctx.foeRole = hi ? 'lord of ' + town : 'the miller'; ctx.foeSeat = hi ? 'hall' : 'mill';
     H.tok(ctx, 'foe', foe); H.tok(ctx, 'son', son); ctx.yrs = yrsSince(p, FEUD);
+    ctx.mill = 'The mill-right on the lower stream at ' + town;
     ctx.pid = foe.id;
     return { foe, son };
   };
@@ -58,7 +59,7 @@
     ctx.side = H.name(p, INH, 'side', () => (A.chance(0.5) ? "father's" : "mother's"));
     ctx.hk = H.name(p, INH, 'hk', () => A.givenName(p.cult, 'F'));
     ctx.court = H.hi(p) ? "the lord's court" : 'the manor court';
-    ctx.mill = 'The mill below ' + town;
+    ctx.mill = 'The mill below ' + town + ' (two stones)';
     ctx.pid = cz.id;
     if (!cz.alive) ctx.skip = 1;
     return { cz };
@@ -95,7 +96,7 @@
     const mate = H.get(p, MATCH, 'mate', () => H.mk(p, { age: H.adj(kin) + A.ri(0, 5), sex: opp(kin.sex), parents: fh.sex === 'F' ? [null, fh.id] : [fh.id], sur: fh.sur, surMode: fh.surMode, status: fh.status }));
     ctx.town = town; H.tok(ctx, 'kin', kin); H.tok(ctx, 'fh', fh); H.tok(ctx, 'mate', mate);
     ctx.kinRel = (p.children || []).includes(kin.id) ? ctx.kinSD : ctx.kinBS;
-    ctx.fhWho = hi ? 'who holds three manors between {home} and {town}' : 'the richest wool-merchant between {home} and {town}';
+    ctx.fhWho = (hi ? 'who holds three manors between ' : 'the richest wool-merchant between ') + A.provName(p.home) + ' and ' + town;
     ctx.mateHW = mate.sex === 'F' ? 'wife' : 'husband';
     ctx.pid = kin.id;
     if (!kin.alive) ctx.skip = 1;
@@ -207,8 +208,8 @@
     const gc = H.get(p, DOW, 'mate', () => H.mk(p, { age: kin ? H.adj(kin) + A.ri(-2, 3) : 19, sex: kin === p ? likes(p) : opp(ksex), parents: [cr.id], sur: cr.sur, surMode: cr.surMode, status: cr.status }));
     H.tok(ctx, 'gc', gc);
     if (kin === p) { ctx.who = 'you marry'; }
-    else if (kin) { H.tok(ctx, 'kin', kin); ctx.who = 'your ' + ctx.kinSD + ' {kin} marries'; }
-    else { ctx.kin = H.name(p, DOW, 'niece', () => A.givenName(p.cult, ksex)); ctx.who = "your cousin's " + (ksex === 'F' ? 'girl' : 'boy') + ' {kin} marries'; }
+    else if (kin) { H.tok(ctx, 'kin', kin); ctx.who = 'your ' + ctx.kinSD + ' ' + kin.given + ' marries'; }
+    else { ctx.kin = H.name(p, DOW, 'niece', () => A.givenName(p.cult, ksex)); ctx.who = "your cousin's " + (ksex === 'F' ? 'girl' : 'boy') + ' ' + ctx.kin + ' marries'; }
     return gc;
   };
 
@@ -635,7 +636,7 @@
       ] },
     { id: 'ak_blood_4', title: 'Hold your hand still', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
-      setup: (p, ctx) => { blood(p, ctx); ctx.doc2 = H.name(p, BLOOD, 'doc2', () => A.givenName(p.cult, 'M')); ctx.tester = M(p, 'akl_book') ? 'Master {doc2}' : 'old {oc}'; },
+      setup: (p, ctx) => { blood(p, ctx); ctx.doc2 = H.name(p, BLOOD, 'doc2', () => A.givenName(p.cult, 'M')); ctx.tester = M(p, 'akl_book') ? 'Master ' + ctx.doc2 : 'old ' + ctx.oc; },
       text: (p, ctx) => `You are {age}, near the age {au}'s hands began. ${M(p, 'akl_book') ? 'Master {doc2} has come for his yearly look.' : 'Old {oc} has come to visit, and asks to see your hands.'} "Hold it out flat," says {tester}, "and count to a hundred." The kitchen is very quiet. ${ctx.sp ? '{sp} has stopped pretending to sew.' : ''}`,
       choices: [
         { t: 'Hold your hand out, and count', req: p => fate(p) === '0', r: 'Your hand is still at a hundred, and still at two hundred. It is wine and worry, nothing more.', fx: { happy: 8, arc: { mark: 'akl_clear' } } },
@@ -754,9 +755,9 @@
       text: (p, ctx) => `A year on. ${ctx.wed ? 'You and {lv} have a rented room, a borrowed table and a debt to the cooper.' : "{lv} is still in {lp}'s house, and {wid} is dead of his cough."} Word comes from {home}: your people will have you both back, and {lp} will sit at the same table, if asked. ${M(p, 'ake_fought') ? "{lv}'s eldest brother still walks crooked." : ''}`,
       choices: [
         { t: 'Go home to {home}, together', r: '{lp} sits at the far end of the table and passes the salt when asked. It is a start.',
-          fx: { akin: 'wed', honor: 2, them: { op: 20 }, flag: 'ak_el_home', arc: { go: 'end', mark: 'ake_home' } } },
+          fx: { akin: 'wed', honor: 2, them: { op: 20 }, rel: { who: 'father', op: 15 }, flag: 'ak_el_home', arc: { go: 'end', mark: 'ake_home' } } },
         { t: 'Stay at {town} and make your own life', r: 'You take a cottage at {town} with a pear tree and a chimney that smokes. It is yours, which is the point.',
-          fx: { akin: ['wed', 'cottage'], coinPct: -0.03, them: { op: 15 }, flag: 'ak_el_away', arc: { go: 'end', mark: 'ake_away' } } },
+          fx: { akin: 'wed', asset: 'cottage', coinPct: -0.03, them: { op: 15 }, flag: 'ak_el_away', arc: { go: 'end', mark: 'ake_away' } } },
         { t: (p, ctx) => (ctx.wed ? 'Let {lv} go home without you' : 'Let {lvHim} go, this time for good'),
           r: (p, ctx) => (ctx.wed ? 'You part at the crossroads without a scene. {lv} goes home to {lp}. The priest calls it a separation; the parish calls it something else.' : 'You let {lv} go for good. {lvHe} marries a carter from {town} in the autumn, and is happy, you hear.'),
           fx: { akin: 'unwed', happy: -6, them: { op: -30 }, flag: 'ak_el_parted', arc: { go: 'end', mark: 'ake_parted' } } },
@@ -926,7 +927,7 @@
       text: (p, ctx) => `{ow} keeps a chandler's shop at {town}, and ${ctx.faAlive ? 'has kept your father three days in seven' : 'kept your father three days in seven, until the end,'} for {yrs} years. {hs} is hers and his. ${M(p, 'aksf_faced') ? 'Your father has begged you not to tell your mother.' : M(p, 'aksf_followed') ? '{ow} saw you in the lane, and asks you in.' : 'It is {ow} who comes to you, with a basket of candles and a speech she has practised.'} ${ctx.moAlive ? 'Your mother says nothing, which may mean anything.' : 'Your mother is in her grave, and was no fool, you think now.'}`,
       choices: [
         { t: (p, ctx) => (ctx.moAlive ? 'Tell your mother' : ctx.faAlive ? 'Tell your father you know' : 'Tell the priest, at least'),
-          r: (p, ctx) => (ctx.moAlive ? 'You tell your mother in the dairy. She hears you out, wipes her hands, and says she has known for nine years.' : ctx.faAlive ? 'You tell your father you know. He sits down slowly, like an old man, and asks how {hs} looked.' : 'You tell the priest. He has heard worse, and says so.'),
+          r: (p, ctx) => (ctx.moAlive ? 'You tell your mother in the dairy. She hears you out, wipes her hands, and says she has known for years.' : ctx.faAlive ? 'You tell your father you know. He sits down slowly, like an old man, and asks how {hs} looked.' : 'You tell the priest. He has heard worse, and says so.'),
           fx: { honor: 3, happy: -4, them: { op: -10 }, arc: { mark: 'aksf_told' } } },
         { t: 'Sit down with {ow} and listen', r: '{ow} talks for an hour. Your father, it turns out, is a different man in Tallow Lane. He sings.', fx: { happy: -1, them: { op: 15 }, arc: { mark: 'aksf_listened' } } },
         { t: 'Tell {ow} to give him up, or the parish will hear', check: { s: 'intimidation', s2: 'wil', d: 50 },

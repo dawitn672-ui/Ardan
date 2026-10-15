@@ -201,6 +201,19 @@
     return 1;
   };
   FE.top = (a, b, sign) => FE.list(a, b).filter(e => Math.abs(e.w) >= 2 && (!sign || Math.sign(e.w) === sign)).sort((x, y) => Math.abs(y.w) - Math.abs(x.w))[0] || null;
+  // vengeance clouds judgement: inside A.aiWarCheck, a ruler weighing war on a realm it holds a grudge against wants
+  // less of an edge in strength first (20-ai-personality's A.aiNerve, .7 for a steady ruler, falls by up to .25). The
+  // target is noted when A.aiWarCheck asks for its war preview; nothing is drawn or stored.
+  if (typeof A.aiWarCheck === 'function' && typeof A.warPreview === 'function') {
+    const wc = A.aiWarCheck, wp = A.warPreview;
+    A.aiWarCheck = function () { FE._in = true; try { return wc.apply(this, arguments); } finally { FE._in = false; FE._tgt = null; } };
+    A.warPreview = function (a, b) { if (FE._in) FE._tgt = [a, b]; return wp.apply(this, arguments); };
+    if (typeof A.aiNerve === 'function') {
+      const nv = A.aiNerve;
+      A.feudNerve = (a, b) => { if (!FE.ON) return 0; const G = FE.sum(a, b); return G <= -5 ? 0.25 * Math.min(1, -G / 35) : 0; };
+      A.aiNerve = function (rid) { const v = nv.apply(this, arguments), t = FE._tgt; return t && t[0] === rid ? v - A.feudNerve(rid, t[1]) : v; };
+    }
+  }
 
   // the events that write the ledger
   A.on('provTransfer', (prov, from, to) => {

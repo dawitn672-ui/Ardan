@@ -12,8 +12,9 @@
 //                     met and the shrine walked to are the same in every later scene
 //   three effect keys awWho  { type, op, back, sex, age, from: 'other'|'far', status, occ, line } a new person tied to
 //                            you and kept on the arc (a refugee of the warring realm's people, a shipwrecked mate)
-//                     awMove 'capital' | 'high' | { to, free } moves your home within the realm (to the capital, or
-//                            up to the highest neighbouring province); free: a serf in the city a year is free
+//                     awMove 'capital' | 'away' | 'high' | { to, free } moves your home within the realm: to the
+//                            capital; away, the capital or (from it) the biggest town next door; high, the
+//                            highest neighbouring province. free: a serf a year in the city is free
 //                     awProv { pop, dev, fort } changes your home province: the plague takes people, the dyke raises
 //                            development, the new walls add a level of fortification
 // Engine side: the start rolls are the story track's; these keys run inside the effect. Rendering only reads.
@@ -59,6 +60,13 @@
     const P = pc && A.prov(pc.home), r = pc && A.realm(pc.realm);
     if (!P || !r) return null;
     if (kind === 'capital') { const c = A.prov(r.capitalProv); return c && c.id !== P.id && c.owner === pc.realm ? c : null; }
+    // away: the capital, or from the capital the biggest town next door
+    if (kind === 'away') {
+      const c = W.moveTo(pc, 'capital'); if (c) return c;
+      let best = null;
+      for (const j of P.adj || []) { const Q = A.S.prov[j]; if (Q && Q.owner === pc.realm && (!best || (Q.town || 0) > (best.town || 0))) best = Q; }
+      return best;
+    }
     if (kind === 'high') {
       let best = null;
       for (const j of P.adj || []) { const Q = A.S.prov[j]; if (Q && Q.owner === pc.realm && (Q.elev || 0) > (P.elev || 0) + 40 && (!best || Q.elev > best.elev)) best = Q; }

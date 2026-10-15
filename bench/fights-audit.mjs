@@ -3,7 +3,8 @@
 //            army; an animal, a great beast, a titan), what decides it, what it can cost, and every clash with the
 //            ladder (features/48-fight-ladder/audit.core.js; loaded into builds that lack it, so any build can be read);
 //   duels    the duel screen's chance against what duels do (pairs of fighters of tiers 1-6, some foes unarmed until the
-//            duel arms them, the player's seat at health 40-100), and the profile's odds on the same pairs;
+//            duel arms them, the player's seat at health 40-100, event duels and plain lethal ones by turns), and the
+//            profile's odds (A.shownDuelOdds) against the plain lethal ones it was fitted on;
 //   beasts   the duel screen's chance against beasts, alone and with a hunting party, at health 60-100;
 //   honest   converted event choices: the odds shown against how often the roll comes up;
 //   group    the group resolver against the tier texts of GD.TIERS and the plan's "3 Trained beat 1 Elite";
@@ -56,12 +57,13 @@ export const FIGHTS_LAB = () => {
         const keep = b.gear.weapon; if (r() < 1 / 3) b.gear.weapon = null;
         const shownProfile = profile(a, b);
         A.S.pc = a.id; A.S.queue = [];
-        const D = A.startDuel(a, b, { kind: 'duel', lethal: true, toYield: true });
+        // an event's duel (the foe may yield) and a plain lethal duel by turns; the profile is fitted on the plain one
+        const yieldRule = k % 2 === 0, D = A.startDuel(a, b, { kind: 'duel', lethal: true, toYield: yieldRule });
         const shown = D && D.measure ? D.measure.pct : null;
         A.duelAuto(D); A.S.queue = [];
         const win = D.result === 'win' ? 1 : 0;
         if (shown != null) rows.push([shown, win]);
-        prof.push([shownProfile, win]);
+        if (!yieldRule) prof.push([shownProfile, win]);
         b.gear.weapon = keep;
       }
     });
@@ -166,10 +168,10 @@ export const FIGHTS_LAB = () => {
     };
     return [
       { k: 'animal: Veteran alone', claim: 50, real: run('t3', 'animal', false) },
-      { k: 'animal: Trained alone', claim: 12.5, real: run('t2', 'animal', false) },
+      { k: 'animal: Trained alone', claim: 25, real: run('t2', 'animal', false) },
       { k: 'animal: Trained with a party', claim: 90, real: run('t2', 'animal', true) },
       { k: 'great: Master with a party', claim: 50, real: run('t5', 'great', true) },
-      { k: 'great: Elite with a party', claim: 7, real: run('t4', 'great', true) },
+      { k: 'great: Elite with a party', claim: 10, real: run('t4', 'great', true) },
       { k: 'great: Master alone ("usually dies")', claim: 25, max: 50, real: run('t5', 'great', false) },
     ];
   };

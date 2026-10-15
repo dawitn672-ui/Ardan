@@ -185,15 +185,20 @@
   };
   // the first clause of a label: "Laugh, and teach him" -> "Laugh"; "Decline: you cannot" -> "Decline"
   const firstClause = s => clean(s).replace(/[“”‘’]/g, '').split(/\s*[,:;(—–]\s*|\s+-\s+/)[0].replace(/[.!?]+$/, '').trim();
+  // words a label can start with that are not a verb: such a label is not turned into a deed
+  const NOT_VERB = new Set(('a an the your his her their my our its this that these those yes no not never nothing none all both neither either one two ' +
+    'three some any every each it they them we i you he she just only very quietly simply finally half more less much still also too so then now again ' +
+    'over out up down in on off with without for from to by of at as because if but and or nor what who why how where when well fine good perhaps maybe ' +
+    'certainly gladly sir madam lord lady').split(' '));
   BD.deedOf = function (label, failed) {
     const c = firstClause(label);
     const m = c.match(/^([A-Za-z]+)\b(.*)$/);
     if (!m) return null;
-    const w = m[1].toLowerCase();
-    if (!VERBS.has(w)) return null;
-    const rest = m[2].replace(/\byourself\b/g, 'yourself');
+    const w = m[1].toLowerCase(), rest = m[2];
+    if (NOT_VERB.has(w)) return null;
     if (failed) return `you tried to ${w}${rest}, and failed`;
-    return `you ${pastOf(w)}${rest}`;
+    // a verb this list knows goes into the past tense; any other first word is taken as a verb all the same
+    return VERBS.has(w) ? `you ${pastOf(w)}${rest}` : `you chose to ${w}${rest}`;
   };
   BD.pastOf = pastOf;
 
@@ -210,7 +215,8 @@
     if (w.kind === 'event') {
       const title = clean(w.title || ''), deed = BD.deedOf(w.label || '', w.success === false);
       if (deed) return { t: title ? `${title}: ${deed}` : cap(deed), d: deed, k: 'ev:' + (w.ev || '') + ':' + t.id };
-      if (title) return { t: `${title}: you chose ${low(firstClause(w.label || '')) || 'your way'}`, d: `of ${low(title)}`, k: 'ev:' + (w.ev || '') + ':' + t.id };
+      const cl = low(firstClause(w.label || ''));
+      if (title) { const d = cl.split(' ').length >= 2 ? `you chose ${cl}` : `you had your say over ${low(title)}`; return { t: `${title}: ${d}`, d, k: 'ev:' + (w.ev || '') + ':' + t.id }; }
       return null;
     }
     if (w.kind === 'int') { const s = INT_TEXT[w.key]; return s ? { t: fillT(t, s), d: low(fillT(t, s)), k: 'int:' + w.key } : null; }
@@ -262,8 +268,9 @@
     const info = { ev: q.ev, title: v && v.title, label: vc && vc.t, pid, npc: !!(q.ctx && q.ctx.npcMove) || !!(A.EV[q.ev] && A.EV[q.ev].npc) };
     BD.open('event', info);
     const was = BD.blameCtx;
-    // a death of the person this scene is about, during the choice, is your doing (a scheme's poison, a hanging)
-    BD.blameCtx = pid ? { pid: String(pid), how: q.ctx && q.ctx.sc ? 'scheme' : 'event' } : null;
+    // a death of the person a scheme's scene is about is your doing (39-schemes' poison or knife); a death in any other
+    // scene is not (a deathbed, a fever, a stranger dying on the road): their kin take up the memories instead
+    BD.blameCtx = pid && q.ctx && q.ctx.sc ? { pid: String(pid), how: 'scheme' } : null;
     try {
       const r = evChoose.apply(this, arguments);
       if (BD.win) BD.win.success = q.result ? q.result.success : null;

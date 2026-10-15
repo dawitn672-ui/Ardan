@@ -38,6 +38,7 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const bad = [], lens = [], spans = [];
+      let checked = 0;
       const keys = AWT.keys();
       for (const k of keys) {
         const D = A.ARCS.ARC[k], n = D.stages.length;
@@ -56,16 +57,19 @@ export default {
           if (!e.trigger) bad.push(`${id} not trigger-only`);
           const last = si === n - 1;
           if (e.choices.length < 2 || e.choices.length > 4) bad.push(`${id}: ${e.choices.length} choices`);
-          // whatever the scene before left, at least two choices are on offer (to someone with savings and letters)
-          if (si > 0) {
-            const prev = A.EV[D.stages[si - 1]], marks = new Set();
-            for (const c of prev.choices) for (const f of c.check ? [c.win && c.win.fx, c.lose && c.lose.fx] : [c.fx]) if (f && f.arc && f.arc.mark) marks.add(f.arc.mark);
-            for (const m of marks) {
-              const pc = AWT.life(5150 + si); pc.flags['la_' + m] = A.S.year;
-              const n = e.choices.filter(c => { try { return !c.req || !!c.req(pc, A.C, { arc: k }); } catch (err) { return false; } }).length;
-              if (n < 2) bad.push(`${id}: after ${m}, ${n} choice(s) on offer`);
-            }
+          // whatever the scenes before left (every path of marks through them), at least two choices are on offer to
+          // someone with savings and letters
+          const marksOf = sid => { const out = new Set(); for (const c of A.EV[sid].choices) for (const f of c.check ? [c.win && c.win.fx, c.lose && c.lose.fx] : [c.fx]) if (f && f.arc && f.arc.mark) out.add(f.arc.mark); return [...out]; };
+          let paths = [[]];
+          for (let j = 0; j < si; j++) paths = paths.flatMap(pa => marksOf(D.stages[j]).map(m => pa.concat([m])));
+          const pc = AWT.life(5150 + si);
+          for (const pa of paths) {
+            for (const f of Object.keys(pc.flags)) if (f.startsWith('la_aw_')) delete pc.flags[f];
+            for (const m of pa) pc.flags['la_' + m] = A.S.year;
+            const n = e.choices.filter(c => { try { return !c.req || !!c.req(pc, A.C, { arc: k }); } catch (err) { return false; } }).length;
+            if (n < 2) { bad.push(`${id}: after ${pa.join(' → ')}, ${n} choice(s) on offer`); break; }
           }
+          checked += paths.length;
           e.choices.forEach((c, i) => {
             const fxs = c.check ? [c.win && c.win.fx, c.lose && c.lose.fx] : [c.fx];
             for (const f of fxs) {
@@ -80,11 +84,11 @@ export default {
           });
         });
       }
-      return { n: keys.length, lens, stages: lens.reduce((a, b) => a + b, 0), five: lens.filter(x => x >= 5).length, bad, spans };
+      return { n: keys.length, lens, stages: lens.reduce((a, b) => a + b, 0), five: lens.filter(x => x >= 5).length, bad, spans, checked };
     });
     const avg = r.stages / Math.max(1, r.n);
     const ok = r.n === 13 && !r.bad.length && avg >= 4 && r.five >= 3;
-    return { ok, detail: `${r.n} arcs, ${r.stages} stages (average ${avg.toFixed(2)}, ${r.five} of 5 or more); years between first and last scene: ${r.spans.join(', ')}. ${r.bad.length ? 'BAD: ' + r.bad.slice(0, 6).join('; ') : 'Every stage is trigger-only, every choice on both sides of a check carries fx.arc with a mark, and every ending choice ends the arc with a lasting effect and an aw_ flag'}` };
+    return { ok, detail: `${r.n} arcs, ${r.stages} stages (average ${avg.toFixed(2)}, ${r.five} of 5 or more); years between first and last scene: ${r.spans.join(', ')}. ${r.bad.length ? 'BAD: ' + r.bad.slice(0, 6).join('; ') : `Every stage is trigger-only; every choice on both sides of a check carries fx.arc with a mark; every ending choice ends the arc with a lasting effect and an aw_ flag; on all ${r.checked} paths of marks into a scene, it offers at least two choices`}` };
   },
 
   // each arc played through on two paths (first offered choice, last offered choice): it completes, later scenes read the

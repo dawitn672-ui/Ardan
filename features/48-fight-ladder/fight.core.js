@@ -11,25 +11,35 @@ const FL = A.FL;
 const DO = A.DUEL_ODDS = A.DUEL_ODDS || { scale: 6.1, seat: -0.14 };
 // A duel's odds by its rules, as [scale, seat, health]: p = 1 / (1 + e^-(d / scale + seat + health * (hA - hB))), d the
 // gap in fighting worth of the two fighters as they start (armed), h each one's share of blood at the start (the duel
-// starts you at your health, never below 30%). Fitted by maximum likelihood on 2,200 duels per rule set (fighters of
-// tiers 1-6, the player's seat at health 40-100 and played by A.duelAuto, which yields under 20% blood; a yield is a
-// loss). The foe who may yield (an event's duel) gives the player's seat its edge. Re-fit: bench/fights-audit.mjs.
-FL.RULES = { yield: [6.5, 0.35, 3.5], lethal: [6.25, -0.05, 3.5], brawl: [5.75, 0.35, 3.5], spar: [9, 0.15, 1.5], tourney: [10, 0.15, 0.5] };
+// starts you at your health, never below 30%). Fitted by maximum likelihood on 9,000 duels (yield, lethal: fighters of
+// tiers 1-6 from three worlds, the player's seat at health 40-100 and played by A.duelAuto, which yields under 20% blood;
+// a yield is a loss) and 2,200 per rule set for the rest. The foe who may yield (an event's duel) gives the player's seat
+// its edge. FL.DREW: a foe who carried no weapon and draws one as the fight starts (A.armFor) fights 0.78 logits below
+// their worth (most people carry none). Re-fit with bench/fights-audit.mjs (duels).
+FL.RULES = { yield: [6.5, 0.2, 3.1], lethal: [6.5, 0, 3.1], brawl: [5.75, 0.35, 3.5], spar: [9, 0.15, 1.5], tourney: [10, 0.15, 0.5] };
+FL.DREW = 0.78;
 FL.ruleOf = D => (D.kind === 'spar' ? 'spar' : D.kind === 'tourney' ? 'tourney' : D.kind === 'brawl' || !D.lethal ? 'brawl' : D.toYield ? 'yield' : 'lethal');
-FL.duelP = (d, hA, hB, rule) => { const R = FL.RULES[rule] || FL.RULES.yield; return 1 / (1 + Math.exp(-(d / R[0] + R[1] + R[2] * (hA - hB)))); };
+FL.duelP = (d, hA, hB, rule, drew) => { const R = FL.RULES[rule] || FL.RULES.yield; return 1 / (1 + Math.exp(-(d / R[0] + R[1] + R[2] * (hA - hB) + FL.DREW * (drew || 0)))); };
 FL.HEALTH = FL.RULES.yield[2];
+// whether a person goes into a fight empty-handed and draws their everyday weapon (the duel arms them; brawls do not)
+FL.draws = (p, rule) => !!(p && p.st && p.id !== A.S.pc && !['brawl', 'spar', 'tourney'].includes(rule) && (!(p.gear || {}).weapon || p.gear.weapon === 'fists' || !GD.GEAR[p.gear.weapon]));
 FL.CLAMP = [0.02, 0.98];   // as A.groupOdds
 
 // ---- the bestiary: duel curves and the scale ----------------------------------------------------------------------
 // [w50, s, w50 with a hunting party, s with a party]: the fighting worth that wins half the time against the beast, and
-// the logistic width, fitted by maximum likelihood on 460 duels per beast and mode (fighters of worth 30 to 133, the duel
-// engine's own auto-play, a party of 8 for "with"). null: no fighter in the sample ever won. Re-fit: test flBeastCurves.
+// the logistic width, fitted by maximum likelihood on 600 duels per beast and mode (fighters of worth 30 to 133 at health
+// 45-100, the duel engine's own auto-play, a party of 8 for "with", the retags below in force), with the health term
+// FL.HEALTH. null: no fighter in the sample ever won. Checked by bench/fights-audit.mjs (beasts) and test flScreenOdds.
 GD.BEAST_DUEL = {
-  'CRE-01': [136, 8, 108, 7], 'CRE-03': [82, 5.5, 55, 6.5], 'CRE-05': [null, null, 137, 6.5], 'CRE-06': [63, 6, 0, 6], 'CRE-19': [135, 8, 101, 7],
-  'CRE-20': [124, 6, 97, 7], 'CRE-21': [67, 5, 38, 4.5], 'CRE-23': [124, 6, 95, 6], 'CRE-25': [127, 7, 100, 6.5], 'CRE-26': [63, 6, 20, 6],
-  'CRE-31': [130, 8, 97, 6.5], 'CRE-33': [143, 4, 132, 5], 'CRE-34': [null, null, 125, 4], 'CRE-35': [75, 6, 48, 4.5], 'CRE-38': [68, 5.5, 41, 3],
-  'CRE-43': [40, 2.5, 0, 6], 'CRE-44': [143, 4, 129, 7], 'CRE-45': [159, 8, 121, 7], 'CRE-47': [77, 6, 41, 6], 'CRE-49': [138, 8.5, 113, 7.5],
-  'CRE-51': [74, 5.5, 44, 6], 'CRE-53': [101, 6.5, 71, 6], 'CRE-55': [96, 6, 64, 6.5], 'CRE-56': [53, 5.5, 0, 6], 'CRE-24': [140, 4, 119, 6.5],
+  'CRE-01': [131, 6.5, 109, 6.5], 'CRE-03': [82, 5, 57, 6.5], 'CRE-05': [null, null, 135, 3.5],
+  'CRE-06': [63, 6.5, 14, 10], 'CRE-19': [129, 7.5, 102, 6.5], 'CRE-20': [118, 6, 96, 7],
+  'CRE-21': [67, 6.5, 37, 6.5], 'CRE-23': [116, 5.5, 96, 6], 'CRE-25': [121, 6.5, 102, 6.5],
+  'CRE-26': [61, 7, 34, 6.5], 'CRE-31': [123, 7, 100, 7], 'CRE-33': [null, null, 142, 10],
+  'CRE-34': [130, 2, 128, 7.5], 'CRE-35': [75, 6.5, 50, 5.5], 'CRE-38': [65, 6.5, 38, 6],
+  'CRE-43': [34, 6, 0, 6], 'CRE-44': [null, null, 135, 8], 'CRE-45': [null, null, 120, 5],
+  'CRE-47': [75, 6, 43, 7], 'CRE-49': [null, null, 115, 7.5], 'CRE-51': [78, 6, 47, 6],
+  'CRE-53': [119, 7.5, 100, 6.5], 'CRE-55': [121, 4, 99, 7.5], 'CRE-56': [55, 6, 35, 3],
+  'CRE-24': [129, 2, 126, 7.5]
 };
 FL.STANDIN = { animal: 'CRE-21', great: 'CRE-25', titan: 'CRE-44', legend: 'CRE-05' };
 FL.duelRow = id => GD.BEAST_DUEL[id] || GD.BEAST_DUEL[FL.STANDIN[A.beastTier ? A.beastTier(id) : 'animal'] || 'CRE-21'];
@@ -39,10 +49,10 @@ FL.duelRow = id => GD.BEAST_DUEL[id] || GD.BEAST_DUEL[FL.STANDIN[A.beastTier ? A
 Object.assign(GD.BEAST_TIER, { 'CRE-53': 'great', 'CRE-55': 'great', 'CRE-13': 'titan', 'CRE-14': 'titan', 'CRE-18': 'titan', 'CRE-50': 'titan' });
 // The tier texts, said as the duel engine does it (test flTierClaims holds each number within 10 points).
 // The release said an animal is something "one trained fighter can kill"; alone, a trained fighter wins about one fight
-// in eight against the median animal, a veteran about half.
+// in four against the animals, a veteran about half (bench/fights-audit.mjs, tiers: 22.6% and 52.6% of 500 duels).
 FL.TIER_TEXT = {
-  animal: 'A veteran alone wins about half the time; a trained soldier alone, about one time in eight. With a hunting party at your back, a trained soldier wins nine times in ten. An untrained one can still die to it.',
-  great: 'A hunting party\'s work, and even then it wants a great fighter at the front: with the hunters behind them a master wins about half the time, an elite about one time in fifteen. Alone, even a master usually dies.',
+  animal: 'A veteran alone wins about half the time; a trained soldier alone, about one time in four. With a hunting party at your back, a trained soldier wins nine times in ten. An untrained one can still die to it.',
+  great: 'A hunting party\'s work, and even then it wants a great fighter at the front: with the hunters behind them a master wins about half the time, an elite about one time in ten. Alone, even a master usually dies.',
 };
 if (GD.TIER_INFO) for (const k in FL.TIER_TEXT) if (GD.TIER_INFO[k]) GD.TIER_INFO[k].who = FL.TIER_TEXT[k];
 
@@ -115,9 +125,11 @@ FL.resolve = function (pc, spec, ctx, check) {
     }
   } else if (spec.scale === 'one') {
     const foe = spec.pid && ctx.pid ? A.P(ctx.pid) : null;
-    if (foe && foe.st && foe.id !== pc.id) { R.foe = foe.id; R.wThem = FL.worthWith(foe, FL.armsFor(foe, spec)); }
+    const rule = spec.rule || 'yield';
+    let drew = 0;
+    if (foe && foe.st && foe.id !== pc.id) { R.foe = foe.id; R.wThem = FL.worthWith(foe, FL.armsFor(foe, spec)); drew = !spec.weapon && FL.draws(foe, rule) ? 1 : 0; }
     else R.wThem = (GD.CROWD[spec.tier] || GD.CROWD[2]).w;
-    p = FL.duelP(w - R.wThem, hf, foe ? healthF(foe) : 1, spec.rule || 'yield');
+    p = FL.duelP(w - R.wThem, hf, foe ? healthF(foe) : 1, rule, drew);
   } else {
     // a party or a crowd: you (and any allies) against n of a crowd tier, by the group resolver's tier math
     const T = GD.CROWD[spec.tier] || GD.CROWD[2], n = FL.nOf(spec, ctx), AT = GD.CROWD[spec.allyTier || 2] || GD.CROWD[2];
@@ -253,7 +265,8 @@ if (typeof armFor === 'function') A.armFor = function (p) {
 if (typeof A.shownDuelOdds === 'function') A.shownDuelOdds = function (a, b) {
   if (!a || !b) return 50;
   const d = FL.worthWith(a, FL.armsFor(a, {})) - FL.worthWith(b, FL.armsFor(b, {}));
-  return 100 / (1 + Math.exp(-(d / DO.scale + DO.seat + FL.HEALTH * (healthF(a) - healthF(b)))));
+  const drew = (FL.draws(b, 'lethal') ? 1 : 0) - (FL.draws(a, 'lethal') ? 1 : 0);
+  return 100 / (1 + Math.exp(-(d / DO.scale + DO.seat + FL.HEALTH * (healthF(a) - healthF(b)) + FL.DREW * drew)));
 };
 
 // ---- the duel screen: both tiers and the chance, before the first blow -------------------------------------------------
@@ -271,8 +284,8 @@ FL.duelMeasure = function (D) {
   } else {
     const hfB = b.maxHp ? A.clamp(b.hp / b.maxHp, 0.3, 1) : 1;
     m.wB = Math.round(FL.fWorth(b)); m.tB = A.tierOf(m.wB).n; m.weaponB = b.weapon;
-    m.rule = FL.ruleOf(D);
-    p = FL.duelP(m.wA - m.wB, hfA, hfB, m.rule);
+    m.rule = FL.ruleOf(D); m.drew = !!D._flDrew;
+    p = FL.duelP(m.wA - m.wB, hfA, hfB, m.rule, m.drew ? 1 : 0);
   }
   m.p = A.clamp(p, FL.CLAMP[0], FL.CLAMP[1]); m.pct = Math.round(m.p * 100);
   return m;
@@ -287,9 +300,11 @@ FL.weighLine = function (D) {
 };
 const startDuel = A.startDuel;
 A.startDuel = function (pc, foe, opts) {
+  const k = (opts && opts.kind) || 'duel', drew = !!(foe && !foe.beastId && foe.gear && !['brawl', 'spar', 'tourney'].includes(k) && (!foe.gear.weapon || foe.gear.weapon === 'fists' || !GD.GEAR[foe.gear.weapon]));
   const D = startDuel.apply(this, arguments);
   try {
     if (D && D.a && D.b && Array.isArray(D.log)) {
+      if (drew) Object.defineProperty(D, '_flDrew', { value: true, enumerable: true, writable: true, configurable: true });
       const old = A.weighText(D), at = D.log.indexOf(old);
       D.measure = FL.duelMeasure(D);
       if (at >= 0) D.log[at] = FL.weighLine(D);

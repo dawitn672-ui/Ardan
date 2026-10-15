@@ -29,6 +29,7 @@ const realmOf = (pick, fallback) => (p, ctx) => {
 const refRealm = realmOf(p => A.AW.warNeighbours(p)[0], 'the border country');
 const foeRealm = realmOf(p => A.AW.enemyOf(p), 'the enemy');
 const shrine = (p, ctx) => { const a = arcOf(p, ctx); ctx.shrine = (a && a.shrine) || A.AW.shrine(p) || 'the holy city'; };
+const away = (p, ctx) => { const Q = A.AW.moveTo(p, 'away'); if (Q) ctx.away = Q.name; };
 const both = (...fs) => (p, ctx) => { for (const f of fs) f(p, ctx); };
 const END = mark => ({ go: 'end', mark });
 
@@ -74,6 +75,7 @@ A.defEvents([
     choices: [
       { t: 'Buy an empty house for the arrears', req: p => p.coin >= 40, r: 'The roof is sound. You burn the bedding in the yard and move nothing else.', fx: { coin: -40, asset: 'cottage', awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_bought' } } },
       { t: 'Speak at the council against those who ran', req: p => !M(p, 'plague_fled'), r: 'You name names. The council fines three households, and one of them will not forget it.', fx: { honor: 2, fame: 2, newRel: { type: 'enemy', op: -30 }, awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_spoke' } } },
+      { t: 'Pay the council\'s fine for those who ran', req: p => M(p, 'plague_fled'), r: 'Two suns a head for every soul who left. You pay it at the church door, and your name comes off the list nailed there.', fx: { coin: -10, honor: 1, awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_fined' } } },
       { t: 'Go back to work, and name your price', r: 'Hands are scarce now. For a year, anyone who can lift a sack names their wage, and you do.', fx: { coin: 20, wil: 1, awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_wages' } } },
     ] },
   { id: 'aw_plague_5', title: 'The pit outside the wall', trigger: true, cool: 1,
@@ -207,6 +209,7 @@ A.defEvents([
     ] },
   { id: 'aw_fire_4', title: 'The new street', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
+    setup: away,
     text: p => (M(p, 'fire_stone') ? 'The new street is stone and tile from end to end, and yours was among the first houses up. Children who never saw the fire play on the flags. The council wants a fire watch: a bell, buckets, hooks, and men who answer to someone.'
       : M(p, 'fire_timber') ? 'The new street is stone and tile, or looks it. The council\'s surveyor has been going house to house with an awl, and yesterday he put it through your plaster into oak.'
       : 'The alderman\'s new row stands where your house was. You rent a room in it and pay him for the privilege. The council wants a fire watch: a bell, buckets, hooks, and men who answer to someone.'),
@@ -217,8 +220,8 @@ A.defEvents([
         fx: { epithet: 'the Firewarden', fame: 3, flag: 'aw_fire_watch', arc: END('aw_fire_watch') } },
       { t: 'Bribe the surveyor to look elsewhere', req: p => M(p, 'fire_timber'), r: 'He takes the purse and writes "sound" in his book. Every winter after, you wake at the smell of smoke.',
         fx: { coin: -15, trait: 'deceitful', flag: 'aw_fire_bribed', arc: END('aw_fire_bribed') } },
-      { t: 'Leave {home} and start again in {capital}', req: (p, C) => any(p, 'fire_sold', 'fire_timber') && !!A.AW.moveTo(p, 'capital') && !C.unfree(p) && !C.noble(p), r: 'You sell what is left and take the road. {capital} has fires of its own, and none of them are yours.',
-        fx: { awMove: 'capital', happy: 2, flag: 'aw_fire_moved', arc: END('aw_fire_moved') } },
+      { t: 'Leave {home} and start again in {away}', req: p => any(p, 'fire_sold', 'fire_timber') && !!A.AW.moveTo(p, 'away'), r: 'You sell what is left and take the road. {away} has fires of its own, and none of them are yours.',
+        fx: { awMove: 'away', happy: 2, flag: 'aw_fire_moved', arc: END('aw_fire_moved') } },
     ] },
 
   // ================================================================ the road from the war
@@ -255,9 +258,9 @@ A.defEvents([
   { id: 'aw_ref_4', title: 'The new lane', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: both(refRealm, near(null, 'the woman from the road', 'the woman')),
-    text: (p, ctx) => `Years on, the people from {other} have a lane of their own at the edge of {home}. They bake a flat bread nobody else bakes and sing at funerals, which the old women think indecent.${M(p, 'ref_surety') && held(p, ctx) ? ' {them} has a holding now and pays her rent on the day.' : M(p, 'ref_drove') ? ' One of the men you drove over the river is a carter here now, and remembers the ford.' : M(p, 'ref_home') ? ' A pedlar brings word from {other}: the family you fed is home, and the farm grows again.' : ''} The manor court must decide whether they may hold land.`,
+    text: (p, ctx) => `Years on, the people from {other} have a lane of their own at the edge of {home}. They bake a flat bread nobody else bakes and sing at funerals, which the old women think indecent.${M(p, 'ref_surety') && held(p, ctx) ? ' {them} has a holding now, a new husband from the lane, and a child on the way.' : M(p, 'ref_drove') ? ' One of the men you drove over the river is a carter here now, and remembers the ford.' : M(p, 'ref_home') ? ' A pedlar brings word from {other}: the family you fed is home, and the farm grows again.' : ''} The manor court must decide whether they may hold land.`,
     choices: [
-      { t: 'Stand godparent to {them}\'s grandchild', req: (p, C, ctx) => !!held(p, ctx), r: 'You stand at the font and promise for a child whose language you half speak. {them} kisses your hand, to your great embarrassment.',
+      { t: 'Stand godparent to {them}\'s child', req: (p, C, ctx) => !!held(p, ctx), r: 'You stand at the font and promise for a child whose language you half speak. {them} kisses your hand, to your great embarrassment.',
         fx: { sworn: true, them: { op: 20 }, flag: 'aw_ref_godparent', arc: END('aw_ref_godparent') } },
       { t: 'Speak at the court: let them hold land like anyone', check: { s: 'persuasion', s2: 'int', d: 50 },
         win: { r: 'The court agrees, grumbling. The lane\'s people buy strips that spring and plough them better than their neighbours do.', fx: { honor: 3, fame: 2, flag: 'aw_ref_rights', arc: END('aw_ref_rights') } },
@@ -377,22 +380,22 @@ A.defEvents([
         win: { r: 'They weigh what you show them. What is under the hearth stays there.', fx: { coinPct: -0.1, arc: { mark: 'aw_siege_hid' } } },
         lose: { r: 'Their sergeant has done this before. He goes straight to the hearth, and takes half, and your front teeth.', fx: { coinPct: -0.5, health: -8, arc: { mark: 'aw_siege_found' } } } },
       { t: 'Stand in the breach with a bill', req: p => !M(p, 'siege_terms'), check: { s: 'melee', s2: 'wil', d: 55 },
-        win: { r: 'The breach holds till noon, and at noon the relief comes over the hill. You remember very little of the morning.', fx: { fame: 6, honor: 3, awProv: { pop: -0.06 }, arc: { mark: 'aw_siege_breach' } } },
-        lose: { r: 'The breach holds till noon, and you hold it with the rest, until a blade takes two fingers off your left hand. The relief comes at noon.', fx: { health: -22, wound: 'lost_fingers', fame: 3, awProv: { pop: -0.06 }, arc: { mark: 'aw_siege_maimed' } } } },
+        win: { r: 'The breach holds till noon, and at noon the relief comes over the hill. You remember very little of the morning.', fx: { fame: 6, honor: 3, awProv: { pop: -0.03 }, arc: { mark: 'aw_siege_breach' } } },
+        lose: { r: 'The breach holds till noon, and you hold it with the rest, until a blade takes two fingers off your left hand. The relief comes at noon.', fx: { health: -22, wound: 'lost_fingers', fame: 3, awProv: { pop: -0.03 }, arc: { mark: 'aw_siege_maimed' } } } },
       { t: 'Hide with your family in the church crypt', req: p => !M(p, 'siege_terms'), r: 'You sit in the dark with the bones and the children for a day and a night. When you come up the relief has come, and your house has been looted by both sides.',
-        fx: { coinPct: -0.4, health: 2, awProv: { pop: -0.06 }, arc: { mark: 'aw_siege_crypt' } } },
+        fx: { coinPct: -0.4, health: 2, awProv: { pop: -0.03 }, arc: { mark: 'aw_siege_crypt' } } },
     ] },
   { id: 'aw_siege_5', title: 'After the siege', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    setup: foeRealm,
+    setup: both(foeRealm, away),
     text: p => { const P = A.prov(p.home), lost = P && P.owner !== p.realm; return `${lost ? `By the peace, {home} belongs to ${A.realmShort(P.owner)}, and the new tax-collectors have a new accent.` : 'The peace comes, and {home} goes back to market days and quarrels.'} The breach is still a heap of rubble with a fence across it. The council wants the walls raised, and asks who will pay.${M(p, 'siege_maimed') ? ' Your left hand aches before rain.' : ''}${M(p, 'siege_shared') ? ' The street still calls your cellar the town granary.' : ''}`; },
     choices: [
       { t: 'Pay for the walls to be raised', req: p => p.coin >= 30, r: 'Your money buys forty feet of new wall and a stone with your mark on it. The next army will have to think about it.',
         fx: { coin: -30, awProv: { fort: 1 }, deed: 'Paid for the new walls', flag: 'aw_siege_walls', arc: END('aw_siege_walls') } },
       { t: 'Wear your scars on market day', req: p => any(p, 'siege_hit', 'siege_cut', 'siege_maimed', 'siege_breach', 'siege_sortie'), r: 'You do not talk about the breach; you do not need to. Strangers are told who you are before they reach your stall.',
         fx: { epithet: 'the Wall', fame: 3, flag: 'aw_siege_name', arc: END('aw_siege_name') } },
-      { t: 'Leave {home}: you will not be shut in again', req: (p, C) => !!A.AW.moveTo(p, 'capital') && !C.unfree(p) && !C.noble(p), r: 'You sell up and go to {capital}, where the walls are someone else\'s business. Some nights you still count the bread.',
-        fx: { awMove: 'capital', trait: 'paranoid', flag: 'aw_siege_left', arc: END('aw_siege_left') } },
+      { t: 'Leave {home}: you will not be shut in again', req: p => !!A.AW.moveTo(p, 'away'), r: 'You sell up and go to {away}, where the walls are someone else\'s business. Some nights you still count the bread.',
+        fx: { awMove: 'away', trait: 'paranoid', flag: 'aw_siege_left', arc: END('aw_siege_left') } },
       { t: p => (M(p, 'siege_terms') ? 'Make a friend of the sergeant billeted on you' : 'Make a friend of one of their prisoners'), r: 'He is a cooper from a village much like yours, and he weeps when he talks about it. After the peace, he writes.',
         fx: { awWho: { type: 'friend', op: 35, sex: 'M', from: 'other', age: [24, 40], occ: 'a soldier of the other side', line: 'writes to you after the peace' }, flag: 'aw_siege_enemyfriend', arc: END('aw_siege_friend') } },
     ] },
@@ -579,7 +582,7 @@ A.defEvents([
         fx: { sworn: true, them: { op: 25 }, flag: 'aw_wreck_brother', arc: END('aw_wreck_brother') } },
       { t: 'Buy a boat with what the sea gave you', req: p => p.coin >= 100, r: 'A clinker boat with a brown sail and your mark burned into the stern. The sea gives, and you go out to take more.',
         fx: { coin: -100, asset: 'fishboat', flag: 'aw_wreck_boat', arc: END('aw_wreck_boat') } },
-      { t: 'Hang a lantern on the wrong rock', req: p => any(p, 'wreck_barrel', 'wreck_lied', 'wreck_lord'), r: 'On a black night a coaster sees your light and turns for it. In the morning the shingle is covered in casks, and you do not go and look at the men.',
+      { t: 'Hang a lantern on the wrong rock', r: 'On a black night a coaster sees your light and turns for it. In the morning the shingle is covered in casks, and you do not go and look at the men.',
         fx: { coin: 60, honor: -8, trait: 'cruel', flag: 'aw_wreck_wrecker', arc: END('aw_wreck_wrecker') } },
     ] },
 
@@ -635,7 +638,7 @@ A.defEvents([
   // ================================================================ the heresy
   { id: 'aw_her_1', title: 'The preacher at the cross', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `A preacher has come to {home}: a lean man in undyed wool who stands on the steps of the old cross on feast days. He says the priests of {faith} sell what was meant to be free, that a farmer may pray without a priest, that the tithe is theft. People come to hear him, and then come again.${A.C.flag(p, 'aw_pil_doubter') ? ' You have seen what lies behind a grille.' : ''}`,
+    text: p => `A preacher has come to {home}: a lean man in undyed wool who stands on the steps of the old cross on feast days. He says the priests sell what was meant to be free, that a farmer may pray without a priest, that the tithe is theft. People come to hear him, and then come again.${A.C.flag(p, 'aw_pil_doubter') ? ' You have seen what lies behind a grille.' : ''}`,
     choices: [
       { t: 'Go and hear him out', r: 'You stand at the back. He speaks plainly, in your own speech, and quotes the holy book from memory. It is not what the priest says it says.', fx: { skill: { faith: 1 }, int: 1, arc: { mark: 'aw_her_heard' } } },
       { t: 'Tell the priest what he is saying', r: 'The priest thanks you, writes it down, and sends it to the bishop. The preacher keeps preaching.', fx: { piety: 2, honor: -1, arc: { mark: 'aw_her_told' } } },

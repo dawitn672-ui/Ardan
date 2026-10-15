@@ -42,6 +42,8 @@ const SONGS = [
   ['a goose that once chased you the length of {home} market', 'Goose-Runner'],
 ];
 const SONG = (p, ctx) => {
+  const R = A.realm(p.realm), cap = R && R.capital ? R.capital : 'the capital';
+  ctx.far = A.provName(p.home) === cap ? 'every market town in ' + A.realmShort(p.realm) : cap;
   const i = WORD(p, ctx, 'si', () => (A.C.flag(p, 'ao_kestrel') ? 0 : A.C.flag(p, 'ao_mill_justice') ? 1 : A.C.flag(p, 'ao_bridge_name') ? 2
     : A.C.flag(p, 'ao_relic_false') ? 3 : A.C.flag(p, 'ao_horse_groom') ? 4 : A.C.flag(p, 'ao_ship_home') ? 5 : A.C.flag(p, 'ao_bell_name') ? 6
     : A.C.flag(p, 'ao_ruin_stone') ? 7 : A.C.soldier(p) ? 8 : 9));
@@ -119,7 +121,7 @@ A.defEvents([
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { WHO(p, ctx); },
     text: p => (swHas(p)
-      ? `Kestrel has been yours for years now.${M(p, 'sw_blooded') ? ' Men still point at the hawk.' : ''}${M(p, 'sw_truth') ? " The monk's page is in your chest." : ''} {them}'s eldest has come of age and walked over to {home} to see it. A sword with a song goes somewhere in the end, and people remember where.`
+      ? `${M(p, 'sw_mud') ? 'Kestrel hangs on your wall, out of the ford, and nobody has asked how.' : 'Kestrel has been yours for years now.'}${M(p, 'sw_blooded') ? ' Men still point at the hawk.' : ''}${M(p, 'sw_truth') ? " The monk's page is in your chest." : ''} {them}'s eldest has come of age and walked over to {home} to see it. A sword with a song goes somewhere in the end, and people remember where.`
       : `${swAt(p) === 'lost' ? 'Kestrel is gone, taken out of the ford by someone who has never said.' : "Kestrel is a knight's now, on a wall you will never see."} What you have left is the story, ${M(p, 'sw_truth') ? "and the monk's page that says the song is a lie" : 'which the drovers still sing wrong'}. A minstrel at the fair wants your part in it.`),
     choices: [
       { t: 'Wear it, and let them call you by it', req: p => swHas(p), r: 'You wear it on market days, and to church, and the priest does not object. Within the year {home} has a name for you.', fx: { gear: { weapon: 'goodsword' }, aoQual: { weapon: 'master' }, epithet: 'Kestrel', fame: 3, flag: 'ao_kestrel', deed: 'Carried the sword Kestrel', arc: { go: 'end', mark: 'ao_sw_wore' } } },
@@ -168,7 +170,7 @@ A.defEvents([
       { t: 'Press your claim in the manor court', check: { s: 'persuasion', s2: 'int', d: 55 },
         win: { r: 'The court reads the seal and cannot argue with it. The field is yours, and the stream with it, and {them} will not look at you in church.', fx: { aoAsset: { k: 'farm', name: 'The field by the split oak' }, them: { type: 'rival', op: -25 }, flag: 'ao_map_field', deed: 'Won back a field by an old charter', arc: { go: 'end', mark: 'ao_map_won' } } },
         lose: { r: "The lord's lawyer finds a later grant, or writes one. You pay the costs of the court, and {them} does not forgive the trying.", fx: { coin: -30, them: { type: 'enemy', op: -40 }, flag: 'ao_map_lost', deed: 'Lost a claim to a field in the manor court', arc: { go: 'end', mark: 'ao_map_lost' } } } },
-      { t: 'Give the charter to {them}', r: "You put it in {theirHis} hands. The field is {theirHis} by law now, not by the lord's leave, and {theyHe} knows whom to thank.", fx: { honor: 6, them: { type: 'friend', op: 40 }, flag: 'ao_map_gave', deed: 'Gave away the charter to a field', arc: { go: 'end', mark: 'ao_map_gave' } } },
+      { t: 'Give the charter to {them}', r: "You put it in {theirHis} hands. The field is {theirHis} own by law now, not by the lord's leave, and {theyHe} knows whom to thank.", fx: { honor: 6, them: { type: 'friend', op: 40 }, flag: 'ao_map_gave', deed: 'Gave away the charter to a field', arc: { go: 'end', mark: 'ao_map_gave' } } },
       { t: 'Sell the charter to the lord', r: 'The lord pays well to see it burn. You stay to watch it burn too, since that seems only polite.', fx: { coin: 150, flag: 'ao_map_sold', deed: 'Sold the charter of a field to the lord', arc: { go: 'end', mark: 'ao_map_burned' } } },
     ] },
 
@@ -179,7 +181,7 @@ A.defEvents([
     choices: [
       { t: 'Let them take the stone for the church', r: 'The carts go up empty and come down heavy. The stair is filled with rubble, and the priest blesses the rubble.', fx: { piety: 3, arc: { mark: 'ao_ru_church' } } },
       { t: 'Go down the stair first, with a lamp', r: 'At the bottom is a vault, and in the vault are bones: a dozen people, large and small, lying where they fell. The door was barred from outside.', fx: { wil: 1, happy: -2, arc: { mark: 'ao_ru_down' } } },
-      { t: 'Lease the hill from the lord', req: p => p.coin >= 20, r: 'The lord is glad to be paid for a hill of nettles. It is yours for nine years and nine.', fx: { coin: -20, int: 1, arc: { mark: 'ao_ru_lease' } } },
+      { t: p => (NOBLE(p) ? 'Keep the hill as it is, and pay for the stone' : 'Lease the hill from the lord'), req: p => p.coin >= 20, r: p => (NOBLE(p) ? 'You pay the church for stone from elsewhere. The hill is yours, and stays as it is, nettles and all.' : 'The lord is glad to be paid for a hill of nettles. It is yours for nine years and nine.'), fx: { coin: -20, int: 1, arc: { mark: 'ao_ru_lease' } } },
     ] },
   { id: 'ao_ruin_2', title: 'The bones under the tower', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
@@ -202,7 +204,7 @@ A.defEvents([
   { id: 'ao_ruin_4', title: 'What the hill becomes', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { WHO(p, ctx, { key: 'heir' }); },
-    text: p => `${M(p, 'ru_truth') ? '{them} has stayed on in {home}, and the village cannot meet {theirHis} eye.' : M(p, 'ru_lie') ? '{them} went home believing in raiders.' : '{them} took your money and went.'} The tower's stone is good stone, and the hill is ${M(p, 'ru_lease') ? 'yours by lease' : "nobody's, since nobody will touch it"}. ${M(p, 'ru_buried') ? 'The dead are in the churchyard now.' : 'The dead are still under it.'} Something must be done with the place.`,
+    text: p => `${M(p, 'ru_truth') ? '{them} has stayed on in {home}, and the village cannot meet {theirHis} eye.' : M(p, 'ru_lie') ? '{them} went home believing in raiders.' : '{them} took your money and went.'} The tower's stone is good stone, and the hill is ${M(p, 'ru_lease') ? (NOBLE(p) ? 'yours' : 'yours by lease') : "nobody's, since nobody will touch it"}. ${M(p, 'ru_buried') ? 'The dead are in the churchyard now.' : 'The dead are still under it.'} Something must be done with the place.`,
     choices: [
       { t: "Build a house from the tower's stone", r: 'You build on the old footings. The walls are a yard thick and warm in winter, and the children stop daring each other.', fx: { aoAsset: { k: 'cottage', name: 'The house on the tower hill' }, happy: 3, flag: 'ao_ruin_house', deed: 'Built a house from the stone of the burnt tower', arc: { go: 'end', mark: 'ao_ru_house' } } },
       { t: 'Raise a stone for the dead', r: p => (M(p, 'ru_asked') || M(p, 'ru_truth') ? 'You cut their names on it, and under them the names of the ones who carried torches. People leave flowers. Some of them leave early.' : 'You do not know their names, so you cut the year. People leave flowers, and stop talking when you pass.'), fx: { honor: 4, piety: 2, flag: 'ao_ruin_stone', deed: 'Raised a stone for the dead of the burnt tower', arc: { go: 'end', mark: 'ao_ru_stone' } } },
@@ -251,7 +253,7 @@ A.defEvents([
     cond: (p, C) => C.adult(p),
     text: p => `The box is ${M(p, 're_church') ? 'in its niche in the church' : 'on the shelf over your hearth'}${M(p, 're_pilgrims') ? ', and {home} lives on the pilgrims it brings' : ''}. ${M(p, 're_fake') ? "You know it holds a dog's bone." : 'You know where it was made.'}${M(p, 're_denounced') ? ' Forty churches know where theirs came from.' : ''} The priest asks you, before the whole parish, what is to be done with it.`,
     choices: [
-      { t: 'Say before the parish that it is false', r: 'The church is silent, then loud. The pilgrims stop coming. People begin to tell you things they would tell nobody else.', fx: { honor: 6, piety: -2, trait: 'honest', flag: 'ao_relic_false', deed: 'Named a false relic before the parish', arc: { go: 'end', mark: 'ao_re_spoke' } } },
+      { t: 'Say before the parish that it is false', r: p => `The church is silent, then loud.${M(p, 're_pilgrims') ? ' The pilgrims stop coming, and {home} is poorer for it.' : ''} People begin to tell you things they would tell nobody else.`, fx: { honor: 6, piety: -2, trait: 'honest', flag: 'ao_relic_false', deed: 'Named a false relic before the parish', arc: { go: 'end', mark: 'ao_re_spoke' } } },
       { t: 'Let the shrine stand. Faith is in the touching', r: 'The candle stays lit in front of the box. Children still get better there, sometimes.', fx: { coin: 30, piety: 2, trait: 'cynical', flag: 'ao_relic_shrine', deed: 'Kept a shrine you knew was false', arc: { go: 'end', mark: 'ao_re_shrine' } } },
       { t: 'Bury it in the grave of the pilgrim', r: 'You bury it with the pilgrim who carried it. Whatever it was, it goes into the ground with someone who believed in it.', fx: { piety: 3, happy: 2, flag: 'ao_relic_buried', deed: 'Buried a relic with the pilgrim who carried it', arc: { go: 'end', mark: 'ao_re_buried' } } },
     ] },
@@ -345,13 +347,13 @@ A.defEvents([
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { WHO(p, ctx); WORD(p, ctx, 'horse', () => 'your grey mare'); },
     text: p => (M(p, 'ho_law')
-      ? 'The assize sentences {them} to hang at the crossroads, and gives you back {horse} in the same breath. The rope is ready for the morning, and {theirHis} children are in the crowd. The sheriff says the owner may still ask for mercy, though few do.'
+      ? `The assize sentences {them} to hang at the crossroads${M(p, 'ho_rebought') ? ', and does not give you back what you paid for your own horse' : ', and gives you back {horse} in the same breath'}. The rope is ready for the morning, and {theirHis} children are in the crowd. The sheriff says the owner may still ask for mercy, though few do.`
       : `${M(p, 'ho_work') ? '{them} has worked off the horse and stayed on.' : '{them} has come back with work in hand, and something to say.'} {theyHe} knows horses better than anyone in {home}, and gentles {horse} with a word. {theyHe} asks whether there is a place for {themHim} with you.`),
     choices: [
       { t: 'Let the rope do its work', req: p => M(p, 'ho_law'), r: 'You watch, because the owner must. {horse} comes home with you, and you never ride it past that crossroads again.', fx: { aoKill: 'hanged for horse theft', aoMount: 1, trait: 'stubborn', flag: 'ao_horse_hanged', deed: 'Saw a horse thief hanged', arc: { go: 'end', mark: 'ao_ho_hanged' } } },
       { t: 'Ask for mercy, in front of everyone', req: p => M(p, 'ho_law'), r: 'The sheriff grumbles and calls for the iron instead. {them} is branded on the hand and goes home to {theirHis} children, and does not look at you.', fx: { aoMount: 1, honor: 3, them: { op: 30 }, flag: 'ao_horse_mercy', deed: 'Begged a horse thief off the rope', arc: { go: 'end', mark: 'ao_ho_mercy' } } },
       { t: 'Take {themHim} on as your groom', req: p => !M(p, 'ho_law'), r: '{theyHe} sleeps over the stable and keeps it better than you ever did. Nobody steals from you again, which may not be a coincidence.', fx: { aoMount: 1, them: { type: 'friend', op: 40 }, flag: 'ao_horse_groom', deed: 'Took a horse thief on as your groom', arc: { go: 'end', mark: 'ao_ho_groom' } } },
-      { t: 'Give {themHim} the horse, and part friends', req: p => !M(p, 'ho_law'), r: '{them} rides off on your horse with your blessing, which is a thing you will explain to people for years.', fx: { honor: 4, them: { type: 'friend', op: 50 }, flag: 'ao_horse_given', deed: 'Gave your stolen horse to the thief', arc: { go: 'end', mark: 'ao_ho_given' } } },
+      { t: 'Give {themHim} the horse, and part friends', req: p => !M(p, 'ho_law'), r: '{them} rides off on your horse with your blessing, which is a thing you will explain to people for years.', fx: { aoMount: -1, honor: 4, them: { type: 'friend', op: 50 }, flag: 'ao_horse_given', deed: 'Gave your stolen horse to the thief', arc: { go: 'end', mark: 'ao_ho_given' } } },
     ] },
 
   // ================================================================ the face in the gallery (4 stages, 6-15 years)
@@ -472,7 +474,7 @@ A.defEvents([
   { id: 'ao_song_2', title: 'The song travels', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { WHO(p, ctx); SONG(p, ctx); },
-    text: p => `The song has gone to {capital}, ${M(p, 'so_paid') ? 'though only its old verses; nobody sings the ones you paid for' : 'with two new verses you have not heard'}. A carter three days from {home} hums the chorus at you without knowing whose it is.${M(p, 'so_banned') ? ' One verse is now about how you tried to stop it.' : ''} {them} is back, and wants the real story for a last verse.`,
+    text: p => `The song has gone to {far}, ${M(p, 'so_paid') ? 'though only its old verses; nobody sings the ones you paid for' : 'with two new verses you have not heard'}. A carter three days from {home} hums the chorus at you without knowing whose it is.${M(p, 'so_banned') ? ' One verse is now about how you tried to stop it.' : ''} {them} is back, and wants the real story for a last verse.`,
     choices: [
       { t: 'Tell {themHim} the real story', r: 'You tell it plain, including the parts you come out of badly. {them} is delighted with those parts.', fx: { happy: 2, honor: 1, arc: { mark: 'ao_so_true' } } },
       { t: 'Tell {themHim} a better one', r: '{theyHe} writes it down and asks no questions, which is how you know {theyHe} knows.', fx: { fame: 2, honor: -2, arc: { mark: 'ao_so_lie' } } },
@@ -484,7 +486,7 @@ A.defEvents([
     text: p => `On the feast day {them} sings the whole song in {home}, ${M(p, 'so_true') ? 'with the true story in the last verse' : M(p, 'so_lie') ? 'with your better story in the last verse' : 'with an ending of {theirHis} own'}. All {home} is there, and joins the chorus. When it ends, someone at the back shouts a name for you, {ep}, and it catches.`,
     choices: [
       { t: 'Answer to the name', r: 'You raise your cup to it. By the next market, nobody in {home} calls you anything else.', fx: { aoEpithet: 1, fame: 4, flag: 'ao_song_name', deed: 'Was given a name by a song', arc: { go: 'end', mark: 'ao_so_name' } } },
-      { t: 'Pay {themHim} to sing it in {capital}', req: p => p.coin >= 30, r: '{them} sings it in {capital} all winter, in better company than yours. Strangers there know your name before your face.', fx: { coin: -30, fame: 6, flag: 'ao_song_capital', deed: 'Paid for your song to be sung in the capital', arc: { go: 'end', mark: 'ao_so_capital' } } },
+      { t: 'Pay {themHim} to sing it in {far}', req: p => p.coin >= 30, r: '{them} sings it in {far} all winter, in better company than yours. Strangers there know your name before your face.', fx: { coin: -30, fame: 6, flag: 'ao_song_capital', deed: 'Paid for your song to be sung in the capital', arc: { go: 'end', mark: 'ao_so_capital' } } },
       { t: 'Buy the song outright, so it dies with you', req: p => p.coin >= 40, r: '{them} sells it, and swears on the lute never to sing it again. In a year only the children remember the chorus.', fx: { coin: -40, trait: 'proud', flag: 'ao_song_bought', deed: 'Bought a song about yourself, to silence it', arc: { go: 'end', mark: 'ao_so_bought' } } },
       { t: 'Give {them} a place at your fire', r: '{them} comes for a night and stays for the winter, and every winter after. The song gets longer.', fx: { happy: 3, them: { type: 'friend', op: 40 }, flag: 'ao_song_friend', deed: 'Kept a minstrel as a friend', arc: { go: 'end', mark: 'ao_so_friend' } } },
     ] },
@@ -522,13 +524,13 @@ A.defEvents([
       { t: 'Call {theirHis} bluff', check: { s: 'intimidation', s2: 'wil', d: 50 },
         win: { r: '{theyHe} backs down, red to the ears, and does not speak to you again for a year.', fx: { wil: 1, them: { op: -30 }, arc: { mark: 'ao_hd_bluff' } } },
         lose: { r: '{theyHe} goes to the reeve that same afternoon, and the reeve comes with men and spades.', fx: { coin: -20, them: { op: -30 }, arc: { mark: 'ao_hd_exposed' } } } },
-      { t: 'Go to the reeve before {theyHe} can', r: 'You go and tell it, all of it. The fine is heavy and the silver is gone, but you sleep that night.', fx: { honor: 3, coin: -10, arc: { mark: 'ao_hd_confessed' } } },
+      { t: p => (M(p, 'hd_told') ? 'Take {themHim} before the reeve yourself' : 'Go to the reeve before {theyHe} can'), r: p => (M(p, 'hd_told') ? 'You turn out your purse in front of the reeve. {them} is fined for a false tongue, and you for the trouble of the court.' : 'You go and tell it, all of it. The fine is heavy and the silver is gone, but you sleep that night.'), fx: { honor: 3, coin: -10, arc: { mark: 'ao_hd_confessed' } } },
     ] },
   { id: 'ao_hoard_4', title: 'What the silver bought', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { WHO(p, ctx); },
-    text: p => (M(p, 'hd_exposed') || M(p, 'hd_confessed') ? "The crown has the silver, and a fine, and the priest has praised your honesty from the pulpit, which is worse. All that is left is one coin you kept back, with a dead king's face."
-      : M(p, 'hd_told') ? "The crown has its silver and you have had your reward. You kept one coin back for luck, with a dead king's face, and nobody has missed it."
+    text: p => (M(p, 'hd_told') ? "The crown has its silver and you have had your reward. You kept one coin back, with a dead king's face, and nobody has missed it."
+      : M(p, 'hd_exposed') || M(p, 'hd_confessed') ? "The crown has the silver, and a fine, and the priest has praised your honesty from the pulpit, which is worse. All that is left is one coin you kept back, with a dead king's face."
       : `What is left of the old silver is ${M(p, 'hd_melted') ? 'plain bars under the floor' : 'still in the bean bed'}. It is enough to change a life, if you are careful how.${M(p, 'hd_paid') ? ' {them} is still watching.' : ''}`),
     choices: [
       { t: 'Buy land with it, openly', req: p => !(M(p, 'hd_told') || M(p, 'hd_exposed') || M(p, 'hd_confessed')), r: 'You buy a farm from a widow who asks no questions about where a person like you found the money. The answer is: in the ground.', fx: { aoAsset: { k: 'farm', name: 'The farm the silver bought' }, flag: 'ao_hoard_land', deed: 'Bought land with buried silver', arc: { go: 'end', mark: 'ao_hd_land' } } },
@@ -559,7 +561,7 @@ A.defEvents([
     ] },
   { id: 'ao_book_3', title: "The bishop's searchers", trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The bishop's searchers come to {home} with a list and a cart. They turn out chests, lift floorboards, and go through the thatch with hooks.${M(p, 'bk_readers') ? ' The people who sat on your floor are watching you, and each other.' : ''}${M(p, 'bk_copied') ? ' There are two books now, and one hiding place.' : ''}`,
+    text: p => `The bishop's searchers come to {home} with a list and a cart. They turn out chests, lift floorboards, and go through the thatch with hooks.${M(p, 'bk_readers') ? (M(p, 'bk_priest') ? ' The people from the vestry are watching you, and each other.' : ' The people who sat on your floor are watching you, and each other.') : ''}${M(p, 'bk_copied') ? ' There are two books now, and one hiding place.' : ''}`,
     choices: [
       { t: 'Hide it in the church, of all places', check: { s: 'stealth', s2: 'ins', d: 50 },
         win: { r: "It spends a week behind the altar under the priest's own linen. The searchers go away with somebody else's book.", fx: { happy: 2, arc: { mark: 'ao_bk_safe' } } },
@@ -625,7 +627,7 @@ A.defEvents([
     text: p => `The ford at {home} drowns someone most springs. This year it took a carter, his horse and a load of slates, and his widow stood on the bank all day. ${NOBLE(p) ? 'Your tenants want' : 'The village wants'} a stone bridge. Nobody wants to pay for one. A stone bridge costs more than a church, and lasts longer.`,
     choices: [
       { t: 'Pledge money toward a bridge', req: p => p.coin >= 40, r: 'You pledge forty in front of the priest. Others pledge after you, smaller sums, and some of them mean it.', fx: { coin: -40, honor: 2, arc: { mark: 'ao_br_pledged' } } },
-      { t: 'Petition the lord to build it', check: { s: 'persuasion', s2: 'int', d: 50 },
+      { t: p => (NOBLE(p) ? 'Petition your liege to build it' : 'Petition the lord to build it'), check: { s: 'persuasion', s2: 'int', d: 50 },
         win: { r: 'The lord will pay for half, if the toll is his. It is more than anyone expected.', fx: { honor: 1, arc: { mark: 'ao_br_lord' } } },
         lose: { r: 'The lord says fords were good enough for his father, and drowned nobody worth mentioning.', fx: { happy: -2, arc: { mark: 'ao_br_refused' } } } },
       { t: 'Keep a ferry, and charge a fair fare', r: 'You buy a flat boat and a rope. People pay you to cross, and resent it a little each time.', fx: { coin: 30, honor: -2, arc: { mark: 'ao_br_ferry' } } },

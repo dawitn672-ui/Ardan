@@ -211,10 +211,12 @@ export default {
   // (3) whole bot lives across the six starts: these arcs come up in real play, and some run to their end
   async aoBotLives(pg) {
     await pg.evaluate(BOT);
+    // the six starts in turn, two personalities, until ten lives have lasted forty years (at most 24 lives)
     const paths = Object.entries(TARGETS.paths);
     const lives = [];
-    for (const [name, P] of paths) for (let i = 0; i < 2; i++) {
-      const o = Object.assign({ seed: 5601 + i * 7919 + name.length * 31, sex: i % 2 ? 'F' : 'M' }, P.start);
+    for (let n = 0; n < 24 && lives.filter(l => l.years >= 40).length < 10; n++) {
+      const [name, P] = paths[n % paths.length], i = Math.floor(n / paths.length) % 2;
+      const o = Object.assign({ seed: 5601 + n * 7919 + name.length * 31, sex: n % 2 ? 'F' : 'M' }, P.start);
       lives.push(await pg.evaluate(([o, i, name]) => {
         const L = B.life(o, ['careful', 'greedy'][i], i === 0, 60);
         const pc = A.P(A.S.pc) || {};
@@ -230,7 +232,7 @@ export default {
     const gave = lives.reduce((s, l) => s + l.arcs.filter(a => a.gave).length, 0);
     const scenes = lives.reduce((s, l) => s + l.arcs.reduce((t, a) => t + a.stage, 0), 0);
     const kinds = new Set(lives.flatMap(l => l.arcs.map(a => a.k)));
-    const ok = lived.length >= 6 && withOne >= Math.ceil(lived.length * 0.5) && finished >= 2;
+    const ok = lived.length >= 10 && lived.filter(l => l.arcs.length).length >= Math.ceil(lived.length * 0.5) && finished >= 2;
     return { ok, detail: `${lives.length} bot lives (${lived.length} of 40+ years): ${withOne} began one of these arcs; ${started} begun, ${scenes} scenes played, ${finished} finished, ${gave} given up; ${kinds.size} different arcs. ${lives.map(l => `${l.name} ${l.years}y: ${l.arcs.map(a => `${a.k.slice(3)} ${a.stage}/${a.n}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}${l.other ? ` (+${l.other} other)` : ''}`).join('; ')}` };
   },
 };

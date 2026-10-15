@@ -182,6 +182,32 @@
     return extra ? ((typeof r === 'string' ? r + ' ' : '') + extra).trim() : r;
   };
 
+  // ---- a hurt body is sent home from the yard
+  // The release let you spar at 3 health: each bout cost up to 18, the floor was 3, and a life that sparred every month
+  // lived at single-digit health until the next cold killed it (bench/dominance.mjs: 6 of 6 dead by a median 24).
+  // Now the activities that risk a hurt are refused below a health line, with the reason shown, and a practice bout
+  // never takes you below a floor.
+  BM.HURT_LINE = 35;
+  BM.RISKY = new Set(['spar', 'train_yard', 'tournament', 'hunt', 'beast_hunt', 'explore', 'duel', 'school', 'bm_bloods']);
+  BM.SPAR_FLOOR = 35;
+  const can = A.canAct;
+  A.canAct = function (key) {
+    const pc = A.pc();
+    if (pc && pc.alive && BM.RISKY.has(key) && GD.ACTIVITIES[key] && pc.health < BM.HURT_LINE) {
+      const r = can.apply(this, arguments);
+      if (!r[0] && /Too young|Too old/.test(r[1] || '')) return r;   // what the age rules say comes first
+      return [false, key === 'spar' || key === 'train_yard' || key === 'school' ? `The yard master sends you home: health ${Math.round(pc.health)}, come back at ${BM.HURT_LINE}` : `Too hurt for that: health ${Math.round(pc.health)}, rest to ${BM.HURT_LINE} first`];
+    }
+    return can.apply(this, arguments);
+  };
+  const dc = A.duelConsequences;
+  A.duelConsequences = function (D) {
+    const pc = A.pc(), h0 = pc ? pc.health : 0;
+    const r = dc.apply(this, arguments);
+    try { if (pc && D && (D.kind === 'spar' || D.kind === 'tourney') && pc.health < h0) pc.health = Math.max(pc.health, Math.min(h0, BM.SPAR_FLOOR)); } catch (e) {}
+    return r;
+  };
+
   // ---- each stat fades on its own clock
   // a person's own offset for each stat, from their id: the same every time, and no draw
   const hash = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619); return ((h >>> 0) % 10007) / 10006; };

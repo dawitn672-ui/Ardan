@@ -107,7 +107,12 @@
     (a.exSpouses = a.exSpouses || []).push(b.id); (b.exSpouses = b.exSpouses || []).push(a.id);
     return true;
   };
-  const grant = (pc, k, arc) => { if (!GD.PROPERTY[k]) return ''; pc.assets.push({ k, name: GD.PROPERTY[k].name, y: A.S.year, ak: arc || 1 }); return `(${GD.PROPERTY[k].name})`; };
+  const grant = (pc, k, arc, name) => {
+    if (!GD.PROPERTY[k] || (arc && pc.assets.some(x => x && x.ak === arc))) return '';
+    const n = String(name || GD.PROPERTY[k].name).replace(/[<>"]/g, '');
+    pc.assets.push({ k, name: n, y: A.S.year, ak: arc || 1 });
+    return `(${n})`;
+  };
   const ungrant = (pc, arc) => { const i = pc.assets.findIndex(x => x && x.ak === arc); if (i < 0) return ''; const [x] = pc.assets.splice(i, 1); return `(${x.name} is no longer yours.)`; };
   AK.OPS = {
     acknowledge: (pc, ctx) => childOf(pc, A.P(ctx.pid), true),
@@ -130,10 +135,22 @@
     unwedKin: (pc, ctx) => { const a = AK.st(pc, ctx.arc), x = A.P(a.who.kin), y = A.P(a.who.mate); return part(x, y) ? `(${x.given} is free of ${y.given}.)` : ''; },
     // the house in a will: a town house for people of standing, a cottage for the rest
     house: (pc, ctx) => grant(pc, C.rich(pc) || AK.hi(pc) ? 'townhouse' : 'cottage', ctx.arc),
-    farm: (pc, ctx) => grant(pc, 'farm', ctx.arc),
-    mill: (pc, ctx) => grant(pc, 'workshop', ctx.arc),
+    farm: (pc, ctx) => grant(pc, 'farm', ctx.arc, ctx.ground ? ctx.ground.replace(/^the /, 'The ') + ', the old family ground' : null),
+    mill: (pc, ctx) => grant(pc, 'workshop', ctx.arc, ctx.mill),
     cottage: (pc, ctx) => grant(pc, 'cottage', ctx.arc),
     sell: (pc, ctx) => ungrant(pc, ctx.arc),
+    // the dowry's match: you (who.kin is the player) or your son or daughter, with the creditor's grandchild
+    wedMatch: (pc, ctx) => {
+      const a = AK.st(pc, ctx.arc), x = A.P(a.who.kin), y = A.P(a.who.mate);
+      if (x && x.id === pc.id) return AK.OPS.wed(pc, { pid: y && y.id });
+      return AK.OPS.wedKin(pc, ctx);
+    },
+    // the family sickness: settled, unseen, at the arc's first scene; it shows by the last whether you looked or not
+    fate: (pc, ctx) => {
+      if (AK.st(pc, ctx.arc).nm.fate !== '1' || pc.wounds.some(w => w.k === 'ak_shaking')) return '';
+      const n = A.addWound(pc, 'ak_shaking');
+      return n ? `(${n})` : '';
+    },
   };
   (A.FX_EXTRA = A.FX_EXTRA || []).push('akin');
   const apply = A.applyFx;
@@ -155,7 +172,7 @@
   const AR = A.ARCS;
   if (!AR || !AR.story) return;   // the story track lives in 46-life-arcs
   const adj = AK.adj;
-  const father = AK.father, mother = AK.mother;
+  const father = AK.father;
   const parentDiedLately = p => (p.parents || []).some(id => { const q = A.P(id); return q && !q.alive && q.died != null && A.S.year - q.died <= 3; });
   const toWed = p => AK.kidsOf(p).some(k => adj(k) >= 15 && adj(k) <= 30 && !AK.spouse(k))
     || (!(father(p) && father(p).alive) && A.relsOf(p, ['sibling']).some(x => x.p.alive && adj(x.p) >= 15 && adj(x.p) <= 30 && !AK.spouse(x.p) && x.p.born > p.born));
@@ -201,5 +218,4 @@
     stages: ['ak_second_1', 'ak_second_2', 'ak_second_3', 'ak_second_4'],
     start: (p, C) => C.adult(p) && adj(p) >= 17 && adj(p) <= 52 && !!(father(p) && father(p).alive && adj(father(p)) >= 38) });
   AK.ARCS = AR.stories().filter(k => AR.ARC[k].feature === 'arcs-kin');
-  void mother;
 })();
