@@ -47,6 +47,7 @@
       ['Here a killing makes a {w2}, and a {w2} is paid in camels or in blood.', 'law death war'],
       ['The camels are yours to ride; the {w3} owns them in the end.', 'land money kin'],
       ['Any clan may walk away from a word it did not swear to, and the {ruler} knows it.', 'oath power'],
+      ['A {lord} drinks first at the clan well, and answers first when it runs dry.', 'power land'],
     ],
     swap: [['blood-debt', 'w2'], ['blood debt', 'w2'], ['blood-price', 'w2']],
   };
@@ -119,6 +120,8 @@
       ['Any nugget found in this earth is a {w2}, and every {w2} is the {ruler}\'s.', 'money law power'],
       ['A child here is often a {w3}: a grandparent come back, and named for them.', 'kin death'],
       ['Nobody speaks to the {ruler} without dust on his head first.', 'power'],
+      ['A lie about one\'s line is a crime here, and the {w1} is the record.', 'law kin oath'],
+      ['A {lord} judges under the court tree, and the {council} sits with him.', 'law power'],
     ],
     swap: [],
   };
@@ -143,6 +146,8 @@
       ['A {w2} is held by one house, terrace above terrace, and fought over stone by stone.', 'land kin law'],
       ['Every line is kept in an {w3}, and its dead are counted there.', 'kin death faith'],
       ['A promise made to one king here is worth half a year.', 'oath power'],
+      ['The {council} moves house with the crown every New Year, records and all.', 'power law'],
+      ['A {lord} of the valleys keeps horses for both kings, to be safe.', 'power war land'],
     ],
     swap: [],
   };
@@ -167,6 +172,7 @@
       ['Everything sold in Kesh is weighed on the {w2}, and the {w2} is never wrong in public.', 'money law'],
       ['A Keshi wedding is a {w3}: two houses, a clerk, and a long list.', 'kin money oath'],
       ['The houses choose the {ruler}, and expect to be paid back.', 'power money'],
+      ['A {lord} sits in the Pepper Hall and votes with his shares.', 'power money'],
     ],
     swap: [['merchant house', 'w1']],
   };
@@ -215,6 +221,8 @@
       ['When an estate passes, the temple takes its {w2} first and the heirs argue over the rest.', 'death kin faith money'],
       ['Every sale in a Ranpuri town is cut on a stick at the {w3}.', 'money law'],
       ['The temples hold the courts here, so a quarrel goes to the temple steps.', 'law faith'],
+      ['The {lord} rides an elephant to the harvest, so nobody forgets who he is.', 'power land war'],
+      ['The {council} on the temple steps hears debts, thefts and marriages, in that order.', 'law money kin faith'],
     ],
     swap: [],
   };

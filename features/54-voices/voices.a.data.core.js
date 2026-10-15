@@ -36,6 +36,7 @@
       ['The Temple calls it {w2}: what is owed to the Light, and never quite paid.', 'faith money'],
       ['A {lord} here holds his land by a written charter, and can quote it.', 'power law land'],
       ['In the Sunlands a promise is a debt, and the clerks write both in one hand.', 'oath money'],
+      ['A {lord} here keeps a clerk before he keeps a sword.', 'power law war'],
     ],
     swap: [['tithe', 'w2']],
   };
@@ -111,6 +112,9 @@
       ['In the {w2} no one marries and no one feasts, and everyone remembers who did.', 'faith feast kin'],
       ['An Eastfolk bride brings nothing; the groom pays the {w3}, in sable or in silver.', 'kin money'],
       ['No king here is king until the Patriarch crowns him, and the Patriarch knows it.', 'power faith'],
+      ['The {lord} of a village owns the mill, and the mill owns everyone.', 'power money land work'],
+      ['Quarrels between lords go to the {council}, where the loudest bench wins.', 'law power'],
+      ['A debt here outlives the debtor; the {lord} collects it from the {w1}.', 'money death kin law'],
     ],
     swap: [['household', 'w1'], ['bride price', 'w3'], ['bride-price', 'w3']],
   };
@@ -182,6 +186,9 @@
       ['Every Sylvari child has an {w2}, a sapling planted at its naming, and is asked after it.', 'kin'],
       ['Before an axe touches wood here, someone speaks the {w3}, and means it.', 'land faith work'],
       ['Elves here will wait a hundred years for an answer, and remind you of the question.', 'law power oath'],
+      ['A {lord} here may forbid a felling for a hundred years, and often does.', 'power land law work'],
+      ['Nothing here is settled until the {council} meets under the First Oak.', 'power law'],
+      ['When an elf dies here, the {w2} is left standing, and nobody cuts it.', 'death kin land'],
     ],
     swap: [],
   };
@@ -206,6 +213,9 @@
       ['One voyage in ten is the {w2}, made in the Queen\'s name and at the Queen\'s price.', 'sea power money'],
       ['A Grover who has sold {w3} will not say what he knows, or that he knows it.', 'oath money'],
       ['The {council} decides in months, which elves call haste.', 'power law'],
+      ['The fir for a longship is marked by a Keeper; a {lord} only pays for it.', 'work sea money land'],
+      ['A {lord} answers to the {council} for every hull lost.', 'sea power law'],
+      ['The Grover dead go out on the tide, with the mark of their {w1}.', 'death sea kin'],
     ],
     swap: [],
   };
@@ -230,6 +240,10 @@
       ['Nobody is a {w2} until the {council} has watched the work and sworn the hands.', 'work law'],
       ['A dwarf has no full name till thirty, when the {w3} is carved.', 'kin'],
       ['The Hold Bank lends to kings, and cuts the terms in stone.', 'money power'],
+      ['A debt at the Hold Bank is a {w1} of its own, and no less binding.', 'money law'],
+      ['A {w2} who breaks the oath sworn before the {council} loses the craft.', 'oath work law'],
+      ['The dead go into the deep halls, and their {w3} goes over the door.', 'death kin'],
+      ['A {lord} holds a hall and its mines, and answers to the {ruler} for both.', 'power work money'],
     ],
     swap: [],
   };
@@ -303,6 +317,9 @@
       ['The first of every catch is the {w2}, given back to the Mother before anyone eats.', 'faith feast sea'],
       ['On long nights a hall sings the {w3}, every name of its line, low, till dawn.', 'kin death feast'],
       ['The tribute-folk say giants decide slowly, and never twice.', 'power law'],
+      ['The {w1} of a hall decides who hunts, who marries and who leaves.', 'power kin war sea'],
+      ['A death in a hall is sung into the {w3} the same night.', 'death kin'],
+      ['Tin is weighed before the {w1}, and humans are watched while it is.', 'money work'],
     ],
     swap: [],
   };

@@ -236,6 +236,7 @@
       const t = A.P(pid), v = Math.round(w.acc[pid] || 0), e = w.noted[pid];
       if (!t || !pc.rel[pid]) continue;
       if (e) {
+        if (!e.k && w.kind === 'int' && w.key) e.k = 'int:' + w.key;   // an interaction's line fades at its own pace
         if (Math.abs(v) >= 2) { setW(e, v, e.k); BD.stats.led += Math.abs(v); BD.stats.ledN++; }
         if (!e.d && w.kind === 'event') { const deed = BD.deedOf(w.label || '', w.success === false); if (deed && pid === String(w.pid)) e.d = deed; }
         continue;

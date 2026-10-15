@@ -27,6 +27,7 @@
     },
     HOLD: { criminal: 10, shunned: 5 },     // years a hold keeps their hostile moves off you
     AGAIN: 3,                               // years between uses of the same secret
+    SEEN: 0.25,                             // chance someone you know saw a murder that the law did not
   };
   const H = BD.h, HP = BD.hp;
   const towns = t => { const p = A.prov(t.home); return p ? p.name : (A.realm(t.realm) || {}).capital || 'the town'; };
@@ -205,7 +206,7 @@
   BD.FX.mine = function (pc, how, ctx) {
     const t = A.P(ctx.pid), s = SEC.mine(pc).find(x => x.t === ctx.mt) || (t && SEC.theyKnow(pc, t));
     if (!t || !s) return '';
-    if (how === 'pay') { const n = Math.min(pc.coin || 0, +ctx.amt || 0); pc.coin = (pc.coin || 0) - n; t.coin = (t.coin || 0) + n; if (A.chance(has(t, 'greedy') ? .6 : .35)) BD.again(pc, ctx); return `(−${BD.coin(n)})`; }
+    if (how === 'pay') { const n = Math.min(pc.coin || 0, +ctx.amtN || 0); pc.coin = (pc.coin || 0) - n; t.coin = (t.coin || 0) + n; if (A.chance(has(t, 'greedy') ? .6 : .35)) BD.again(pc, ctx); return `(−${BD.coin(n)})`; }
     if (how === 'out') return SEC.outMine(pc, s, t);
     if (how === 'blunt') { s.out = A.S.year; return ''; }   // it came out, and you laughed it off
     if (how === 'turn') { const st = BD.state(pc); st.hook[t.id] = { until: A.S.year + SEC.HOLD.criminal, k: 'standoff', y: A.S.year }; return `(${t.given} will keep quiet while you do)`; }
@@ -226,8 +227,8 @@
     if (how !== 'murder' && how !== 'scheme') return;
     const witness = [];
     if (how === 'scheme' && A.SCHEMES && A.SCHEMES.agents) for (const a of A.SCHEMES.agents(pc, t)) witness.push(a.id);
-    // someone may have seen: one in four, someone from your own circle
-    if (A.chance(0.25)) { const pool = Object.keys(pc.rel || {}).map(A.P).filter(p => p && p.alive && p.id !== t.id && A.isAdult(p) && !A.FAMILY_RELS.includes(pc.rel[p.id].type)); const w = pool.length ? A.pick(pool) : null; if (w) witness.push(w.id); }
+    // someone may have seen: one in four (SEC.SEEN), someone from your own circle
+    if (SEC.SEEN >= 1 || A.chance(SEC.SEEN)) { const pool = Object.keys(pc.rel || {}).map(A.P).filter(p => p && p.alive && p.id !== t.id && A.isAdult(p) && !A.FAMILY_RELS.includes(pc.rel[p.id].type)); const w = pool.length ? A.pick(pool) : null; if (w) witness.push(w.id); }
     SEC.addMine(pc, 'crime', `The death of ${t.given} ${t.sur || ''} in ${A.S.year} was your doing.`, witness, 'criminal');
   });
   BD.onFx.push(function (pc, fx, ctx) {

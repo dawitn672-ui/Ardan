@@ -20,7 +20,7 @@ A.defEvents([
   { id: 'bd_old_kindness', title: 'An old kindness', trigger: true, npc: true, cool: 1,
     cond: (p, C) => C.adult(p), more: why,
     setup: (p, ctx) => BD().pastSetup(1, { min: 10, age: 2, kin: false, then: (p2, c, t) => { c.gift = BD().hp(GIFT, t.id, A.S.year); } })(p, ctx),
-    text: '{them} is at your door with {gift}, and no reason ready for it. {hline} {theyHe} says it was nothing, then stays for supper.',
+    text: '{them} is at your door with {gift}, and no reason ready for it. {hline} {them} says it was nothing, then stays for supper.',
     choices: [
       { t: 'Ask {themHim} in for supper', r: 'You eat, and talk until the candle is down to nothing. {theyHe} walks home lighter.',
         fx: { happy: 3, them: { op: 6 }, need: { company: 12 }, bonds: { refresh: true, note: { t: '{them} came to thank you for {hy}' } } } },
@@ -33,7 +33,7 @@ A.defEvents([
   { id: 'bd_old_wrong', title: 'What {them} has not forgotten', trigger: true, npc: true, cool: 1,
     cond: (p, C) => C.adult(p), more: why,
     setup: (p, ctx) => { BD().pastSetup(-1, { min: 10, age: 1, kin: false })(p, ctx); if (!ctx.skip) price(p, ctx, 0.15, 5); },
-    text: '{them} stops you in the street, loud enough for the stalls to hear. {hline} {theyHe} wants it answered, here, in front of people who know you both.',
+    text: '{them} stops you in the street, loud enough for the stalls to hear. {hline} {them} wants it answered, here, in front of people who know you both.',
     choices: [
       { t: 'Say you were wrong, there and then', r: 'You say it plainly. Somebody laughs. {them} does not, and nods once.',
         fx: { honor: 2, fame: -1, them: { op: 10 }, bonds: { settle: 0.3, note: { t: 'You owned in public what you did in {hy}' } } } },
@@ -47,7 +47,7 @@ A.defEvents([
   { id: 'bd_kin_grudge', title: '{them} remembers', trigger: true, npc: true, cool: 1,
     cond: (p, C) => C.adult(p), more: why,
     setup: (p, ctx) => { BD().pastSetup(-1, { min: 12, kin: true })(p, ctx); if (!ctx.skip) price(p, ctx, 0.3, 10); },
-    text: '{them} is waiting where the road narrows, alone. {hline} {theyHe} has come a long way to say it to your face.',
+    text: '{them} is waiting where the road narrows, alone. {hline} {them} has come a long way to say it to your face.',
     choices: [
       { t: 'Offer blood money ({amt})', req: can('amtN'), r: '{them} takes it, because {theirHis} family needs it, and hates you a little more for that.',
         fx: (p, ctx) => { pay(p, ctx, 'amtN'); return A.applyFx(p, { them: { op: 12 }, honor: 1, bonds: { settle: 0.5, note: { t: 'You paid blood money for {hy}' } } }, ctx); } },
@@ -62,7 +62,7 @@ A.defEvents([
   { id: 'bd_kin_debt', title: 'A debt that passed down', trigger: true, npc: true, cool: 1,
     cond: (p, C) => C.adult(p), more: why,
     setup: (p, ctx) => BD().pastSetup(1, { min: 8, kin: true, then: (p2, c, t) => { c.ask = BD().hp(ASK, t.id, A.S.year).replace('{theirHis}', A.his(t)); } })(p, ctx),
-    text: '{them} asks for you by name at the gate. {hline} {theyHe} has brought a small gift, and a larger favour: {ask}.',
+    text: '{them} asks for you by name at the gate. {hline} {them} has brought a small gift, and a larger favour: {ask}.',
     choices: [
       { t: 'Grant {themHim} what {theyHe} asks', r: 'You do it. It costs you a morning and a little standing, and {them} will not forget it.',
         fx: { them: { op: 14 }, owed: 1, fame: -1, bonds: { refresh: true, note: { t: 'You did right by {themHim}, as you did by {hof} {hy}' } } } },
@@ -170,7 +170,7 @@ A.defEvents([
       const s = SEC().known(p, t); if (!s) { ctx.skip = true; return; }
       ctx.sec = s.t; ctx.amtN = SEC().price(t, s.sev === 'criminal'); ctx.amt = BD().coin(ctx.amtN);
     },
-    text: 'You find {them} alone and tell {themHim} what you know. {sec} {theyHe} does not ask how you found out, only what you want for keeping it.',
+    text: 'You find {them} alone and tell {themHim} what you know. {sec} {them} does not ask how you found out, only what you want for keeping it.',
     choices: [
       { t: 'A favour, when you ask for one', check: { s: 'intimidation', s2: 'wil', d: 40, bonus: pc => A.BONDS.SEC.bonus(pc) },
         win: { r: '{them} nods. {theyHe} will do it, and hate you while {theyHe} does.', fx: { bonds: { lever: 'favor' } } },
@@ -197,7 +197,7 @@ A.defEvents([
       const s = SEC().theyKnow(p, t); if (!s) { ctx.skip = true; return; }
       ctx.mt = s.t; ctx.mine = s.t; price(p, ctx, 0.25, 10);
     },
-    text: '{them} sits down across from you without being asked. {theyHe} knows. {mine} {theyHe} names a price, {amt}, or the whole town hears it by the next market day.',
+    text: '{them} sits down across from you without being asked, and lowers {theirHis} voice. {mine} {them} names a price for keeping it: {amt}, or the whole town hears it by the next market day.',
     choices: [
       { t: 'Pay {themHim}', req: can('amtN'), r: 'You pay. {them} counts it twice and promises that is the end of it.', fx: { them: { op: 4 }, bonds: { mine: 'pay' } } },
       { t: 'Tell {themHim} to do {theirHis} worst', check: { s: 'deception', s2: 'wil', d: 50 },

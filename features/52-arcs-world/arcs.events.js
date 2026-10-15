@@ -376,8 +376,8 @@ A.defEvents([
       : `In the spring their miners bring down a length of the wall${M(p, 'siege_built') ? ', not the stretch you built' : ''}. The assault comes at dawn, through the breach, with drums. Word on the wall is that a relief army is a day off.`),
     choices: [
       { t: 'Pay the ransom honestly', req: p => M(p, 'siege_terms'), r: 'The clerk weighs your plate and your purse and takes a third, exactly. He is almost polite.', fx: { coinPct: -0.33, honor: 2, arc: { mark: 'aw_siege_ransom' } } },
-      { t: 'Hide your silver under the hearth', req: p => M(p, 'siege_terms'), check: { s: 'stealth', s2: 'int', d: 50 },
-        win: { r: 'They weigh what you show them. What is under the hearth stays there.', fx: { coinPct: -0.1, arc: { mark: 'aw_siege_hid' } } },
+      { t: 'Hide your silver under the hearth', req: p => M(p, 'siege_terms'), check: { s: 'stealth', s2: 'int', d: 45 },
+        win: { r: 'They weigh what you show them. What is under the hearth stays there.', fx: { coinPct: -0.05, arc: { mark: 'aw_siege_hid' } } },
         lose: { r: 'Their sergeant has done this before. He goes straight to the hearth, and takes half, and your front teeth.', fx: { coinPct: -0.5, health: -8, arc: { mark: 'aw_siege_found' } } } },
       { t: 'Stand in the breach with a bill', req: p => !M(p, 'siege_terms'), check: { s: 'melee', s2: 'wil', d: 55 },
         win: { r: 'The breach holds till noon, and at noon the relief comes over the hill. You remember very little of the morning.', fx: { fame: 6, honor: 3, awProv: { pop: -0.03 }, arc: { mark: 'aw_siege_breach' } } },
@@ -592,7 +592,7 @@ A.defEvents([
     setup: both(shrine, near(['spouse', 'child', 'mother', 'father'], 'the dead', 'the dead')),
     text: p => `Every spring pilgrims come through {home} with staffs, and badges on their hats, going to {shrine}. It is months on foot there and back, and the whole summer's work lost. This year you could go with them.${had(p, 'aw_plague') ? ' Since the plague year, more of them go.' : ' Your grandmother went once, and never stopped talking about it.'}`,
     choices: [
-      { t: (p, ctx) => (ctx.pid ? 'Go to pray for {them}' : 'Go to pray for the dead'), r: 'You sew a shell to your hat and cut a staff from the hedge. The road starts at your own door.', fx: { piety: 3, coinPct: -0.1, them: { op: 10 }, arc: { mark: 'aw_pil_love' } } },
+      { t: (p, ctx) => (ctx.pid ? 'Go to pray for {who}' : 'Go to pray for the dead'), r: 'You sew a shell to your hat and cut a staff from the hedge. The road starts at your own door.', fx: { piety: 3, coinPct: -0.1, them: { op: 10 }, arc: { mark: 'aw_pil_love' } } },
       { t: 'Go to do penance for what you did', r: 'You do not tell the priest what for. He gives you his blessing anyway, and a list of shrines on the way.', fx: { piety: 2, honor: 2, coinPct: -0.1, arc: { mark: 'aw_pil_penance' } } },
       { t: 'Go because you have never seen the world', r: 'You tell people it is for your soul. It is for the road, and the people on it, and what is over the next hill.', fx: { happy: 4, coinPct: -0.1, arc: { mark: 'aw_pil_wander' } } },
     ] },

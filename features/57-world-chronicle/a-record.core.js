@@ -37,7 +37,8 @@
     return R;
   };
   // the record exists once the world is made; nothing is set down while the release builds its starting realms
-  const live = () => !!(S_() && S_().wrec);
+  // WC.OFF stops all recording (the tests use it to show the record changes nothing in the world)
+  const live = () => !WC.OFF && !!(S_() && S_().wrec);
 
   // ---- names, kept as they were when the entry was made
   const nameP = p => { try { return p.ruler && A.realm(p.ruler) ? A.rulerStyle(p, A.realm(p.ruler)) : A.fullName(p, false); } catch (e) { return p.given || '?'; } };
@@ -361,10 +362,10 @@
       for (const id in S.realms) { WC.rec().ru[id] = S.realms[id].ruler || null; WC.rec().ov[id] = S.realms[id].overlord || null; }
     } catch (e) { console.error('world record init', e); }
   });
-  A.on('worldYear', () => { try { const R = WC.rec(); if (!R) return; newRealms(); thrones(); ties(); R.al = {}; } catch (e) { console.error('world record year', e); } });
+  A.on('worldYear', () => { try { if (WC.OFF) return; const R = WC.rec(); if (!R) return; newRealms(); thrones(); ties(); R.al = {}; } catch (e) { console.error('world record year', e); } });
   A.onMonth.push(() => {
     try {
-      const S = S_(); if (!S || !S.prov || !S.prov.length || !WC.rec()) return;
+      const S = S_(); if (WC.OFF || !S || !S.prov || !S.prov.length || !WC.rec()) return;
       newRealms(); sieges(); harvests(); ties(); epidemics();
     } catch (e) { console.error('world record month', e); }
   });
@@ -475,6 +476,4 @@
   // the people of an entry, by name
   WC.people = e => (e && e.w ? e.w.map(nm).filter(Boolean) : []);
   WC.place = e => (e && e.p != null ? pn(e.p) : (e && e.a ? rs(e.a) : ''));
-
-  A.SIGNATURE = Object.assign(A.SIGNATURE || {}, { chronicle: true });
 })();

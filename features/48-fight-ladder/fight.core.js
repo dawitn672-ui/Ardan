@@ -27,20 +27,21 @@ FL.CLAMP = [0.02, 0.98];   // as A.groupOdds
 
 // ---- the bestiary: duel curves and the scale ----------------------------------------------------------------------
 // [w50, s, w50 with a hunting party, s with a party]: the fighting worth that wins half the time against the beast, and
-// the logistic width, fitted by maximum likelihood on 600 duels per beast and mode (fighters of worth 30 to 133 at health
-// 45-100, the duel engine's own auto-play, a party of 8 for "with", the retags below in force), with the health term
-// FL.HEALTH. null: no fighter in the sample ever won. Checked by bench/fights-audit.mjs (beasts) and test flScreenOdds.
+// the logistic width, fitted by maximum likelihood on 1,100 duels per beast and mode (fighters of worth 30 to 133 at
+// health 45-100, three in four of them drawn from near the beast's middle; the duel engine's own auto-play; a party of 8
+// for "with"; the retags below in force), with the health term FL.BEAST_HEALTH. null: no fighter in the sample ever won.
+// Checked by bench/fights-audit.mjs (beasts) and test flScreenOdds.
 GD.BEAST_DUEL = {
-  'CRE-01': [131, 6.5, 109, 6.5], 'CRE-03': [82, 5, 57, 6.5], 'CRE-05': [null, null, 135, 3.5],
-  'CRE-06': [63, 6.5, 14, 10], 'CRE-19': [129, 7.5, 102, 6.5], 'CRE-20': [118, 6, 96, 7],
-  'CRE-21': [67, 6.5, 37, 6.5], 'CRE-23': [116, 5.5, 96, 6], 'CRE-25': [121, 6.5, 102, 6.5],
-  'CRE-26': [61, 7, 34, 6.5], 'CRE-31': [123, 7, 100, 7], 'CRE-33': [null, null, 142, 10],
-  'CRE-34': [130, 2, 128, 7.5], 'CRE-35': [75, 6.5, 50, 5.5], 'CRE-38': [65, 6.5, 38, 6],
-  'CRE-43': [34, 6, 0, 6], 'CRE-44': [null, null, 135, 8], 'CRE-45': [null, null, 120, 5],
-  'CRE-47': [75, 6, 43, 7], 'CRE-49': [null, null, 115, 7.5], 'CRE-51': [78, 6, 47, 6],
-  'CRE-53': [119, 7.5, 100, 6.5], 'CRE-55': [121, 4, 99, 7.5], 'CRE-56': [55, 6, 35, 3],
-  'CRE-24': [129, 2, 126, 7.5]
+  'CRE-01': [140, 9, 110, 9], 'CRE-03': [83, 6, 58, 7], 'CRE-05': [134, 2, 133, 2], 'CRE-06': [63, 5.5, 28, 7],
+  'CRE-19': [133, 9, 104, 7.5], 'CRE-20': [121, 7, 98, 6.5], 'CRE-21': [67, 6, 40, 6], 'CRE-23': [119, 7.5, 97, 7],
+  'CRE-25': [126, 7, 102, 7.5], 'CRE-26': [63, 6, 26, 9], 'CRE-31': [126, 8, 102, 7],
+  'CRE-33': [null, null, 135, 6.5], 'CRE-34': [136, 2, 133, 9.5], 'CRE-35': [74, 6, 47, 7],
+  'CRE-38': [66, 6, 36, 7], 'CRE-43': [35, 5.5, 28, 3.5], 'CRE-44': [null, null, 134, 8],
+  'CRE-45': [142, 4, 125, 7.5], 'CRE-47': [76, 6, 45, 6], 'CRE-49': [128, 4.5, 111, 7.5],
+  'CRE-51': [78, 5.5, 48, 5.5], 'CRE-53': [124, 7, 99, 6.5], 'CRE-55': [125, 7.5, 100, 7],
+  'CRE-56': [53, 7, 10, 10], 'CRE-24': [139, 4.5, 122, 8]
 };
+FL.BEAST_HEALTH = 3.5;
 FL.STANDIN = { animal: 'CRE-21', great: 'CRE-25', titan: 'CRE-44', legend: 'CRE-05' };
 FL.duelRow = id => GD.BEAST_DUEL[id] || GD.BEAST_DUEL[FL.STANDIN[A.beastTier ? A.beastTier(id) : 'animal'] || 'CRE-21'];
 // The Roc (HP 200) and Forest Men (HP 170) sat among "animals" though the engine's own rule (HP 170 and up) makes them
@@ -119,7 +120,7 @@ FL.resolve = function (pc, spec, ctx, check) {
       R.unitW = unit;
     } else {
       const w50 = party ? row[2] : row[0], s = party ? row[3] : row[1];
-      p = w50 == null ? 0 : logistic((w - w50) / s + FL.HEALTH * (hf - 1));
+      p = w50 == null ? 0 : logistic((w - w50) / s + FL.BEAST_HEALTH * (hf - 1));
       if (GD.BEAST_FLYER && GD.BEAST_FLYER[id] && !party && !A.canReachFlyer(pc)) p = 0;
       R.w50 = w50;
     }
@@ -179,11 +180,18 @@ FL.convertChoice = function (e, i) {
   FL.CONVERTED.push({ id: e.id, i, scale: c.check.fight.scale, deadly: t.deadly, made: !!t.made });
   return true;
 };
+// FL.BEFORE: the clashes each event had as written, counted as it is converted (the audit after conversion finds 0)
+FL.BEFORE = { plainDeadly: 0, soloGreat: 0, freeKill: 0, scaleMismatch: 0 };
 FL.convertEvent = function (e) {
   if (!e || typeof e !== 'object' || !Array.isArray(e.choices) || FL.done.has(e)) return 0;
   FL.done.add(e);
   let n = 0;
-  for (let i = 0; i < e.choices.length; i++) { try { if (FL.convertChoice(e, i)) n++; } catch (err) { console.error('fight-ladder convert', e.id, err); } }
+  for (let i = 0; i < e.choices.length; i++) {
+    try {
+      for (const k of FL.clashes(e, i)) FL.BEFORE[k] = (FL.BEFORE[k] || 0) + 1;
+      if (FL.convertChoice(e, i)) n++;
+    } catch (err) { console.error('fight-ladder convert', e.id, err); }
+  }
   return n;
 };
 FL.convertAll = function () { let n = 0; for (const id in A.EV) n += FL.convertEvent(A.EV[id]); return n; };
@@ -208,7 +216,7 @@ FL.dropTiers = function (w, k) {
   let i = 0; for (let j = 0; j < m.length; j++) if (w >= m[j]) i = j;
   if (i - k < 0) return Math.max(0, w - 11.5 * k);
   const lo = j => (j === 0 ? 30 : m[j]), hi = j => (j + 1 < m.length ? m[j + 1] : m[j] + (m[j] - m[j - 1]));
-  const frac = A.clamp((w - lo(i)) / (hi(i) - lo(i)), 0, 0.999), j = i - k;
+  const frac = A.clamp((w - lo(i)) / (hi(i) - lo(i)), 0.05, 0.95), j = i - k;   // inside the tier, so rounding keeps it there
   return lo(j) + frac * (hi(j) - lo(j));
 };
 let inWound = false;
@@ -233,13 +241,14 @@ A.fighterFrom = function (p, opts) {
   return f;
 };
 // what each lasting wound costs in a fight, for the profile: worth with and without it (pure)
+FL.STAT_WORD = { str: 'strength', spd: 'speed', ins: 'instincts', sta: 'stamina', int: 'wits', wil: 'will' };
 FL.woundCosts = function (p) {
   if (!p || !Array.isArray(p.wounds)) return [];
   const now = A.fightWorth(p), out = [];
   for (const k of [...new Set(p.wounds.map(x => x && x.k).filter(Boolean))]) {
     const W = GD.WOUNDS[k]; if (!W) continue;
     const without = A.fightWorth(Object.assign({}, p, { wounds: p.wounds.filter(x => x && x.k !== k) }));
-    const st = Object.entries(W.fx || {}).filter(([, v]) => v).map(([s, v]) => `${(GD.STAT_SHORT && GD.STAT_SHORT[s]) || s} ${v > 0 ? '+' : ''}${v}`);
+    const st = Object.entries(W.fx || {}).filter(([, v]) => v).map(([s, v]) => `${FL.STAT_WORD[s] || s} ${v > 0 ? '+' : ''}${v}`);
     if (without === now && !st.length) continue;
     out.push({ k, name: W.name, perm: !!W.perm, before: without, after: now, tb: A.tierOf(without).n, ta: A.tierOf(now).n, stats: st });
   }
@@ -279,7 +288,7 @@ FL.duelMeasure = function (D) {
   let p;
   if (b.beast) {
     const row = FL.duelRow(b.beast), party = !!D.party, w50 = party ? row[2] : row[0], s = party ? row[3] : row[1];
-    p = w50 == null ? 0 : logistic((m.wA - w50) / s + FL.HEALTH * (hfA - 1));
+    p = w50 == null ? 0 : logistic((m.wA - w50) / s + FL.BEAST_HEALTH * (hfA - 1));
     m.beast = b.beast; m.party = party; m.btier = A.beastTier(b.beast); m.w50 = w50;
   } else {
     const hfB = b.maxHp ? A.clamp(b.hp / b.maxHp, 0.3, 1) : 1;

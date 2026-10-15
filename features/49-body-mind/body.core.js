@@ -266,8 +266,9 @@
     for (const w of p.wounds || []) {
       const W = GD.WOUNDS[w.k]; if (!W) continue;
       const fx = Object.entries(W.fx || {}).map(([s, v]) => `${v > 0 ? '+' : '−'}${Math.abs(v)} ${(GD.STAT_NAMES[s] || s).toLowerCase()}`);
-      const pen = Object.entries(Object.assign({}, W.skillPen || {})).map(([s, v]) => `${GD.SKILLS[s] || s} ${v}`);
-      if (BM.fresh(w, day)) for (const [s, v] of Object.entries(BM.PART_SK[BM.partOf(w)] || {})) pen.push(`${GD.SKILLS[s] || s} ${v}`);
+      const sg = v => (v < 0 ? '−' : '+') + Math.abs(v);
+      const pen = Object.entries(Object.assign({}, W.skillPen || {})).map(([s, v]) => `${GD.SKILLS[s] || s} ${sg(v)}`);
+      if (BM.fresh(w, day)) for (const [s, v] of Object.entries(BM.PART_SK[BM.partOf(w)] || {})) pen.push(`${GD.SKILLS[s] || s} ${sg(v)}`);
       out[BM.partOf(w)].push({ k: w.k, name: W.name, fresh: BM.fresh(w, day), until: w.until || 0, lasting: !w.until, fx: fx.concat(pen.slice(0, 4)) });
     }
     return out;

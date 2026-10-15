@@ -22,11 +22,12 @@
 (function () {
   const V = A.VOICE = {
     MAX_WORDS: 80,
-    LINE_RATE: 100,   // percent of eligible local events that end with a voice line (by hash)
+    LINE_RATE: 75,    // percent of eligible local events that end with a voice line (by hash)
+    REPEAT_YEARS: 5,  // a voice line is not shown again to the same life within this many years (pc.vo)
     VERBS: 'says|asks|adds|replies|answers|whispers|mutters|tells you',
     // what an event is about, read from its own words
     TOPICS: {
-      money: /\b(coins?|suns?|silver|gold|tax(es)?|tolls?|tithes?|debts?|owe[sd]?|pay(s|ing)?|paid|prices?|rent|dues|market|merchants?|trade(rs?)?|sells?|selling|sold|buy(s|ing)?|bought|bargain|purse|wages?|fees?)\b/g,
+      money: /\b(coins?|silver|gold|tax(es)?|tolls?|tithes?|debts?|owe[sd]?|pay(s|ing)?|paid|prices?|rent|dues|market|merchants?|trade(rs?)?|sells?|selling|sold|buy(s|ing)?|bought|bargain|purse|wages?|fees?)\b|\d[\d,]* suns?\b/g,
       law: /\b(laws?|judge[sd]?|court|trial|crimes?|thief|thieves|theft|steal|stole|stolen|punish\w*|flog\w*|hang(ed|s)?|guilty|witness\w*|accus\w*|reeve|magistrate|sentence|quarrel\w*|dispute|claims?)\b/g,
       oath: /\b(oaths?|swears?|sworn|swore|vows?|promis\w*|pledge\w*)\b/g,
       death: /\b(dead|death|dies|died|dying|graves?|funeral|buried|burial|bury|mourn\w*|corpse|tomb|widow\w*|killed|kills?)\b/g,
@@ -148,13 +149,16 @@
     (D.lines || []).forEach((ln, i) => { const text = V.fill(cid, ln[0], extra); if (text) out.push({ key: cid + ':l' + i, text: cap(text), topics: String(ln[1] || '').split(' '), kind: 'line' }); });
     return out;
   };
-  // the line for this event: on its strongest subject the culture has a line for; none if it has nothing to say
+  // the line for this event: on its strongest subject that the culture has a line for and this life has not heard in
+  // the last few years; none if it has nothing fresh to say. A line in the culture's words comes up three times as often
+  // as a plain saying.
+  V.fresh = (pc, key) => { const y = pc && pc.vo && pc.vo[key]; return y == null || A.S.year - y >= V.REPEAT_YEARS; };
   V.lineFor = function (pc, e, text, cid) {
     const T = V.topicsOf(text), ranked = Object.keys(T).sort((a, b) => T[b] - T[a]);
-    const all = V.lines(cid, { realm: (A.realm(pc.realm) || {}).short || '' });
+    const all = V.lines(cid, { realm: (A.realm(pc.realm) || {}).short || '' }).filter(l => V.fresh(pc, l.key));
     for (const top of ranked) {
       const c = all.filter(l => l.topics.includes(top));
-      if (c.length) return Object.assign({ topic: top }, pick(c, pc.id, e.id, top));
+      if (c.length) return Object.assign({ topic: top }, pick(c.flatMap(l => (l.kind === 'line' ? [l, l, l] : [l])), pc.id, e.id, top));
     }
     return null;
   };
@@ -258,7 +262,7 @@
 
   // ---- the whole decoration of a freshly drawn view (pure: reads the state, changes nothing)
   V.decorate = function (pc, e, q, view) {
-    let title = String(view.title || ''), text = String(view.text || '');
+    let title = String(view.title || ''), text = String(view.text || ''), line = null;
     const added = [], over = s => words(s) > V.MAX_WORDS;
     if (!pc || !e) return { title, text, added };
     const cid = V.eventCult(pc, e);
@@ -277,10 +281,10 @@
       if (s !== text && !over(s)) { text = s; added.push('swap'); }
       if (!V.has(cid, title + ' ' + text) && V.hash(pc.id, e.id, 'rate') % 100 < V.LINE_RATE) {
         const L = V.lineFor(pc, e, title + ' ' + text, cid);
-        if (L && !over(text + ' ' + L.text)) { text = text + '\n\n' + L.text; added.push('line:' + L.key); }
+        if (L && !over(text + ' ' + L.text)) { text = text + '\n\n' + L.text; added.push('line:' + L.key); line = L.key; }
       }
     }
-    return { title, text, added, cult: cid };
+    return { title, text, added, cult: cid, line };
   };
   const view = V.raw = A.eventView;   // V.raw draws a view as it was before voices (for measuring)
   A.eventView = function (q) {
@@ -289,7 +293,12 @@
     try {
       if (fresh && v && !v.skip && q.view === v) {
         const pc = A.pc(), e = A.EV[q.ev];
-        if (pc && e) { const d = V.decorate(pc, e, q, v); v.title = d.title; v.text = d.text; }
+        if (pc && e) {
+          const d = V.decorate(pc, e, q, v);
+          v.title = d.title; v.text = d.text;
+          // the life remembers the line, so it is not heard again for a while (a new field: old saves have none)
+          if (d.line) { pc.vo = pc.vo && typeof pc.vo === 'object' ? pc.vo : {}; pc.vo[d.line] = A.S.year; }
+        }
       }
     } catch (err) { if (A.S && A.S.debug) console.error('voices', err); }
     return v;

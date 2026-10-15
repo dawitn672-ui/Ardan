@@ -106,7 +106,8 @@
     return res;
   };
   // playing on as your heir: what people felt for you, they now feel (in part) for your child
-  const swapYou = (s, name, role) => String(s).replace(/^you\b/i, `${name}, your ${role},`).replace(/\byour\b/g, `${name}'s`).replace(/\byou\b/g, name);
+  // "you insulted her at your wedding" -> "Aldo, your father, insulted her at Aldo's wedding"
+  const swapYou = (s, name, role) => String(s).replace(/\byour\b/g, `${name}'s`).replace(/^you\b/i, '\u0001').replace(/\byou\b/g, name).replace('\u0001', `${name}, your ${role},`);
   FAM.inherit = function (old, heir) {
     if (!old || !heir || !old.rel) return 0;
     const role = FAM.roleOf(old, heir) || (old.sex === 'F' ? 'mother' : 'father');

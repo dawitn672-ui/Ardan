@@ -1,5 +1,7 @@
 // 49-body-mind: health as a body, personality from deeds, each stage its own play, children shown only what they can
-// do, and merged skills. Every test reports the numbers it measured.
+// do, and merged skills. Every test reports the numbers it measured. (A new game starts at 25 at most; older people are
+// made by moving the birth year back.)
+import { BOT } from '../../bench/bot.mjs';
 const NAV = new Set(['tab', 'group', 'ov', 'sub', 'clkSpeed', 'clkPlay', 'clkSkip', 'clkQuiet', 'save', 'wn', 'menu', 'closeOv', 'hintDone', 'theme', 'zoom',
   'wview', 'mapMode', 'codex', 'aiLogOpen', 'chronicleExport', 'warRoomView', 'openSchools', 'book', 'ovClose', 'close']);
 export default {
@@ -35,7 +37,7 @@ export default {
       // the same onset (marsh fever, 30 damage, a 30-year-old with medicine 0) under each treatment, 300 times each
       const run = (how, k) => {
         let months = 0, lost = 0, n = 0;
-        A.newGame({ seed: 4902, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 30 });
+        A.newGame({ seed: 4902, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 25 });
         const pc = A.pc(); pc.skills.medicine = 0;
         for (let i = 0; i < 300; i++) {
           pc.health = 100; pc.ill = null; A.S.queue = [];
@@ -67,6 +69,7 @@ export default {
   },
 
   async illnessInLives(pg) {
+    await pg.evaluate(BOT);
     const r = await pg.evaluate(() => {
       let onsets = 0, treated = 0, deaths = 0, months = 0, lives = 0;
       const tally = {};
@@ -85,7 +88,7 @@ export default {
 
   async agingStatByStat(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 4904, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      A.newGame({ seed: 4904, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
       const people = Object.values(A.S.people).filter(p => p.race === 'human' && p.st).slice(0, 300);
       const first = {}, spread = [];
       let sumNew = 0, sumOld = 0, n = 0;
@@ -96,8 +99,8 @@ export default {
         for (const s of ['str', 'spd', 'sta', 'ins', 'int']) for (const age of [50, 60, 70]) { sumNew += A.BM.factorAt(p, s, age); sumOld += old(p, s, age); n++; }
       }
       // one life: each stat turns in its own year, and the log says so
-      A.newGame({ seed: 4905, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'F', startAge: 36 });
-      const pc = A.pc(); pc.health = 100;
+      A.newGame({ seed: 4905, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'F', startAge: 25 });
+      const pc = A.pc(); pc.born = A.S.year - 36; pc.health = 100;
       const turns = {};
       for (let y = 0; y < 30 && pc.alive; y++) { A.S.year++; for (let m = 0; m < 12; m++) A.onMonth.forEach(f => { try { f(pc); } catch (e) {} }); pc.health = 100; }
       const log = JSON.stringify(A.S.log.slice(-40));
@@ -113,7 +116,7 @@ export default {
 
   async deedsMakeTraits(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 4906, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      A.newGame({ seed: 4906, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
       const pc = A.pc(); pc.traits = ['shy']; pc.deedLog = {}; pc.traitWhy = {};
       const BM = A.BM, steps = [];
       // an event's own trait mark is a strong deed (2), but alone it does not make the trait
@@ -131,7 +134,7 @@ export default {
       for (const t of ['brave', 'honest', 'zealous', 'greedy', 'patient', 'curious', 'proud']) for (let i = 0; i < 3; i++) BM.deed(pc, t, 1, `${t} deed`);
       const capped = pc.traits.filter(t => GD.TRAITS[t]).length;
       // the words of a choice count, through a real event
-      A.newGame({ seed: 4907, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 30 });
+      A.newGame({ seed: 4907, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 25 });
       const p2 = A.pc(); p2.deedLog = {};
       A.defEvents([{ id: 'bm_test_words', trigger: true, title: 'A test', text: 'A test.', choices: [{ t: 'Spare the boy', r: 'You do.', fx: { happy: 1 } }, { t: 'Walk on', r: 'You do.', fx: { happy: 1 } }] }]);
       A.S.queue = [{ type: 'event', ev: 'bm_test_words', ctx: {} }]; A.eventView(A.S.queue[0]); A.eventChoose(0); A.eventClose();
@@ -143,6 +146,7 @@ export default {
   },
 
   async traitsInLives(pg) {
+    await pg.evaluate(BOT);
     const r = await pg.evaluate(() => {
       const lives = [];
       for (const seed of [4921, 4922, 4923, 4924, 4925, 4926, 4927, 4928]) {
@@ -167,8 +171,8 @@ export default {
     const r = await pg.evaluate(() => {
       const seen = {};
       for (const [age, st] of [[8, 'child'], [15, 'youth'], [19, 'youth'], [35, 'prime'], [62, 'old']]) {
-        T.enter({ seed: 4930 + age, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: age });
-        A.S.time = 6; UI.tab = 'life'; UI.render();
+        T.enter({ seed: 4930 + age, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: Math.min(age, 25) });
+        A.pc().born = A.S.year - age; A.S.time = 6; UI.tab = 'life'; UI.render();
         const btns = [...document.querySelectorAll('#app [data-a="act"]')].map(b => b.getAttribute('data-v')).filter(k => GD.ACTIVITIES[k] && GD.ACTIVITIES[k].stage);
         seen[age] = { stage: A.BM.stageOf(A.pc()), acts: btns, header: /Only now/.test(document.getElementById('app').textContent) };
       }
@@ -179,13 +183,13 @@ export default {
       for (let i = 0; i < 6; i++) { A.S.time = 5; A.S.yearActs = {}; A.doActivity('bm_apprentice'); }
       const m = A.P(pc.bmMaster.id);
       out.apprentice = { skill: Math.round(((pc.skills[pc.bmMaster.k] || 0) - (pc.bmMaster.k === 'craft' ? k0 : 0)) * 10) / 10, k: pc.bmMaster.k, apt: pc.apt[pc.bmMaster.k], master: m && A.fullName(m), journeyman: !!pc.flags.bm_journeyman };
-      A.newGame({ seed: 4941, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'F', startAge: 40 });
-      pc = A.pc(); pc.coin = 1000; A.S.time = 5; A.doActivity('bm_putby'); const stored = pc.bmStore, coinAfter = pc.coin;
+      A.newGame({ seed: 4941, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'F', startAge: 25 });
+      pc = A.pc(); pc.born = A.S.year - 40; pc.coin = 1000; A.S.time = 5; A.doActivity('bm_putby'); const stored = pc.bmStore, coinAfter = pc.coin;
       while (A.BM.stageOf(pc) !== 'old') A.S.year++;
       A.onMonth.forEach(f => { try { f(pc); } catch (e) {} });
       out.putby = { stored, back: pc.coin - coinAfter };
-      A.newGame({ seed: 4942, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 64 });
-      pc = A.pc(); pc.skills.craft = 30; pc.literate = true;
+      A.newGame({ seed: 4942, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 25 });
+      pc = A.pc(); pc.born = A.S.year - 64; pc.skills.craft = 30; pc.literate = true;
       let passed = null;
       for (let i = 0; i < 12 && !passed; i++) { A.S.time = 5; A.S.yearActs = {}; const res = A.doActivity('bm_teach'); if (/better at/.test(res.msg || '')) passed = i + 1; }
       const P = A.P(pc.bmPupil.id);
@@ -269,8 +273,8 @@ export default {
 
   async bodyMindRenderPure(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 4970, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 40 });
-      const pc = A.pc();
+      T.enter({ seed: 4970, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const pc = A.pc(); pc.born = A.S.year - 40;
       A.addWound(pc, 'broken_leg'); A.addWound(pc, 'lost_eye'); A.S.queue = [];
       A.bmFallIll(pc, 'camp', GD.DISEASES.camp, 25, 100); A.S.queue = [];
       pc.traits = ['cruel', 'shy']; pc.deedLog = { cruel: [[A.S.year, 2, '“Hang him” (The poacher, 1105)']], brave: [[A.S.year, 1, '“Fight back” (A brawl, 1105)']] }; pc.traitWhy = { cruel: { y: A.S.year, by: 'deeds', r: ['“Hang him” (The poacher, 1105)'] } };
@@ -293,7 +297,7 @@ export default {
 
   async bodyMindOldSave(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 4980, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 30 });
+      A.newGame({ seed: 4980, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 25 });
       const S = JSON.parse(A.serialize()), p = S.people[S.pc];
       for (const k of ['ill', 'bmPeak', 'bmFade', 'deedLog', 'traitWhy', 'traitLog', 'bmMaster', 'bmStore', 'bmMemoir', 'bmCare', 'bmPupil', 'bmTrade']) delete p[k];
       p.wounds = [{ k: 'deep_cut', until: S.year + 1 }, { k: 'limp', until: 0 }];

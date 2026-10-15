@@ -91,6 +91,7 @@ export const FIGHTS_LAB = () => {
     const C = (A.FL && A.FL.CONVERTED) || [];
     if (!C.length) return null;
     const r = L.rng(seed), rows = [], byScale = {};
+    let mism = 0;
     const af = A.applyFx; A.applyFx = () => '';
     try {
       for (let k = 0; k < n; k++) {
@@ -109,7 +110,11 @@ export const FIGHTS_LAB = () => {
         const vi = v.choices.findIndex(c => c.i === x.i);
         if (vi < 0 || v.choices[vi].odds == null) continue;
         const shown = v.choices[vi].odds;
-        try { A.eventChoose(vi); } catch (err) { continue; }
+        // the number the roll used, read as eventChoose asks for it
+        const co = A.checkOdds; let rolled = null;
+        A.checkOdds = function () { const o = co.apply(this, arguments); rolled = o; return o; };
+        try { A.eventChoose(vi); } catch (err) { continue; } finally { A.checkOdds = co; }
+        if (rolled !== shown) mism++;
         if (!q.result || q.result.success == null) continue;
         rows.push([shown, q.result.success ? 1 : 0]);
         (byScale[x.scale] = byScale[x.scale] || []).push([shown, q.result.success ? 1 : 0]);
@@ -117,6 +122,7 @@ export const FIGHTS_LAB = () => {
       }
     } finally { A.applyFx = af; A.S.queue = []; }
     const out = L.bins(rows, [0, 10, 25, 40, 60, 75, 90, 101], 60);
+    out.mismatch = mism;
     out.byScale = Object.fromEntries(Object.entries(byScale).map(([k, v]) => [k, { n: v.length, shown: Math.round(v.reduce((a, y) => a + y[0], 0) / v.length * 10) / 10, real: Math.round(1000 * v.reduce((a, y) => a + y[1], 0) / v.length) / 10 }]));
     return out;
   };
@@ -199,7 +205,7 @@ async function main() {
     await page.evaluate(FIGHTS_LAB);
     const R = { file: path.relative(root, file), build: await page.evaluate(() => window.ARDAN_BUILD), featureBuilt: has };
     R.audit = await page.evaluate(() => {
-      const a = A.FL.audit(); a.converted = a.converted || 0;
+      const a = A.FL.audit(); a.converted = a.converted || 0; a.before = A.FL.BEFORE || null;   // clashes as written, counted when the feature converts them
       // what is left behind plain checks in scenes where blows fall, and why it is not a fight on the ladder
       const left = {};
       for (const id in A.EV) { const e = A.EV[id]; (e.choices || []).forEach((c, i) => {

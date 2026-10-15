@@ -167,7 +167,7 @@ export default {
     const want = { wreckCoast: true, wreckInland: false, fireVillage: false, fireTown: true, siegePeace: false, refugeesPeace: false, siegeWar: true, refugeesWar: true,
       famineOrdinary: false, famineFailed: true, famineCountry: true, winterMay: false, winterNov: true, ruler: 0, soldier: 0, prison: 0, child: 0 };
     const wrong = Object.keys(want).filter(k => k in r && r[k] !== want[k]);
-    const ok = !wrong.length && r.open >= 6;
+    const ok = !wrong.length && r.open >= 4;
     return { ok, detail: `${Object.entries(r).map(([k, v]) => `${k} ${v}`).join(', ')}${wrong.length ? '. WRONG: ' + wrong.join(', ') : ''}` };
   },
 

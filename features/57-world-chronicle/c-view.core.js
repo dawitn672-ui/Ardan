@@ -122,7 +122,19 @@
     for (const [d, L] of [...decades.entries()].sort((a, b) => a[0] - b[0])) {
       const y0 = 1105 + d * 10, y1 = Math.min(A.S.year, y0 + 9);
       const seen = new Set(), lines = [];
-      for (const x of L.sort((a, b) => a.e.y - b.e.y || a.e.d - b.e.d)) if (!seen.has(x.s)) { seen.add(x.s); lines.push(x.s); }
+      let lastY = null;
+      for (const x of L.sort((a, b) => a.e.y - b.e.y || a.e.d - b.e.d)) {
+        if (seen.has(x.s)) continue;
+        seen.add(x.s);
+        // a second line of the same year does not repeat the year
+        let s = x.s;
+        if (x.e.y === lastY) {
+          const mo = WC.month(x.e), alt = [`That ${mo}, `, `In ${mo} of the same year, `, `The same year, in ${mo}, `];
+          s = s.replace(`In ${mo} ${x.e.y}, `, alt[(x.e.i + x.e.y) % alt.length]);
+        }
+        lastY = x.e.y;
+        lines.push(s);
+      }
       // the sum of the hunger and sickness of the decade, across Ardan
       const fam = all.filter(e => e.k === 'famine' && e.y >= y0 && e.y <= y1), pl = all.filter(e => e.k === 'plague' && e.y >= y0 && e.y <= y1);
       const sum = [];
