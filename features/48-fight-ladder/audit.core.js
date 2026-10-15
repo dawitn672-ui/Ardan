@@ -27,13 +27,15 @@ const RX = FL.RX = {
   // a label that fights
   act: /\b(fight|fights|fighting|draw (?:steel|your|a |the |his |her |my |both)|steel out|strike|attack|charge (?:into|at|in|down|home|them|him|her|it|the (?:line|wall|gate|enemy|beast|boar|bear|scrum)|first|straight|without)|kill|slay|wrestle|grapple|punch|brawl|duel|stand (?:and fight|your ground|firm|fast|over|in the (?:gap|line|front|ditch|door))|hold (?:the|your|this) (?:line|ground|bridge|gate|door|wall|pass|ford|stair|breach|road|heap|gap|rank)|hold (?:it|them) (?:off|back|with)|defend|cut (?:him|her|them|it|down|your way|through)|stab|spear (?:it|him|the)|face (?:it|him|her|them|the)|take (?:them|him|her|it) (?:on|all|down)|go for (?:him|her|it|the|his|its|their)|rush (?:him|her|them|it|the)|tackle|swing|fists|hit (?:him|her|it|them|back|first)|beat (?:him|her|them|it|\{\w+\})|lunge|meet (?:the|them|him|it|her)|fend (?:off|it|them|him)|jump (?:him|them)|throw (?:a punch|him|her|the boy|yourself (?:at|in))|break (?:his|her|their) (?:jaw|nose|arm|head)|bludgeon|smash (?:him|it)|hunt (?:it|the|them|down)|protect (?:him|her|them|the)|shield (?:him|her|them|the)|seize (?:him|her|\{\w+\})|overpower|disarm|knock (?:him|her) down|bring (?:him|her|\{\w+\}) down|challenge|wade in|join the fight|into the fray|fall on|set on|pull (?:him|her) off|grab (?:his|her|the) (?:arm|wrist)|throttle|strangle|board (?:her|them|the)|ride (?:them|him) down|ride (?:in|at|beside|with) .{0,30}(?:wave|charge|against)|go out with|go down among|sail with him and fight|sign on|serve the crown|march with|the first wave)\b/,
   // a label that does something else: runs, hides, talks, pays, sues, teaches, or watches others fight
-  other: /\b(run|flee|hide|escape|slip|sneak|bribe|pay|talk|reason|plead|beg|pray|yield|surrender|give (?:up|in|them|him|her|your oath)|call (?:for|the|out)|shout for|climb|swim|wait|leave|walk (?:away|on)|refuse|lie |bluff|negotiate|persuade|warn|report|back (?:away|off|down)|retreat|scare|threaten|offer|apologi|bargain|buy|play dead|keep still|stay still|let (?:him|her|them|it|\{\w+\}) (?:go|win|fight|have|make|lead)|court|courts|council|in writing|petition|vote|oath not to fight|teach|lesson|learn|study|watch|bet on|wager|ask (?:him|her|them|\{\w+\}|for|how)|send|order|hire|fight (?:it|the \w+) (?:in|at|openly)|fight (?:the|his|her) (?:in-laws|heirs|toll)|for the money|strike (?:it|me|his|her|my|your|their|\{\w+\})(?: name)? ?(?:off|out)|charge (?:a|the|full|double|him|her|them|by|for|what|every|\d)|slaughter|salt them|make it a custom|set traps|dig the pit|nets|burn the letter|draw the designs|cut (?:it|every|the timber) (?:true|virtue)|speak against|rally|tell|engine|build)\b/,
+  other: /\b(run|flee|hide|escape|slip|sneak|bribe|pay|talk|reason|plead|beg|pray|yield|surrender|give (?:up|in|them|him|her|your oath)|call (?:for|the|out)|shout for|climb|swim|wait|leave|walk (?:away|on)|refuse|lie |bluff|negotiate|persuade|warn|report|back (?:away|off|down)|retreat|scare|threaten|offer|apologi|bargain|buy|play dead|keep still|stay still|let (?:him|her|them|it|\{\w+\}) (?:go|win|fight|have|make|lead)|court|courts|council|in writing|petition|vote|oath not to fight|teach|lesson|learn|study|train|practi[cs]e|watch|bet on|wager|ask (?:him|her|them|\{\w+\}|for|how)|send|order|hire|fight (?:it|the \w+) (?:in|at|openly)|fight (?:the|his|her) (?:in-laws|heirs|toll)|for the money|strike (?:it|me|his|her|my|your|their|\{\w+\})(?: name)? ?(?:off|out)|charge (?:a|the|full|double|him|her|them|by|for|what|every|\d)|slaughter|salt them|make it a custom|set traps|dig the pit|nets|burn the letter|draw the designs|cut (?:it|every|the timber) (?:true|virtue)|speak against|rally|tell|engine|build|throw (?:him|her|them) the|someone else|name a champion|expose|like the others|bind them)\b/,
   // a scene where blows can fall
   scene: /\b(ambush\w*|bandits?|robbers?|brigands?|raiders?|outlaws?|cutthroats?|assassins?|hired knife|thugs?|toughs?|footpads?|highwaym[ae]n|deserters?|pirates?|reavers?|mob|brawl|fight|fighting|duel|attacks?|attacked|blades?|swords?|knife|knives|daggers?|axes?|spears?|cudgels?|clubs?|steel|lunges?|charges|melee|skirmish|battle|raid|assault|killers?|punch|fists|wrestl\w*|bout|pit|ring)\b/,
   // a result where blows fell
   blow: /\b(cut (?:him|her|them|it|you|down|your|his)|kill|kills|killed|slay|slain|dead|blood|bloody|blade|sword|knife|stab\w*|wound\w*|blow|blows|punch\w*|fist|fists|wrestl\w*|throat|bleed\w*|beaten|beat (?:him|them|you|her)|knock\w*|struck|strike|hack\w*|gut|spear|arrow|bolt|cudgel|club|bite|bit|claws?|maul\w*|gore\w*|tusks?|fangs?|jaws|teeth|horn|broken (?:nose|arm|ribs|jaw|leg)|cracked|smash\w*|throws? (?:you|him|her)|thrown|floored|the ground|lance|pike)\b/,
-  army: /\b(army|armies|host|battle|battlefield|regiments?|column|shield ?wall|the line|front rank|ranks|cavalry|the charge|siege|breach|ramparts?|sortie|ladders|vanguard|rearguard|flank|warband|war band|the enemy|enemy (?:line|lines|horse|foot|spearmen|camp|riders)|first wave|next wave|wave|pikes|pike block|the press|melee of|sign on|for a season|a season of|campaign|the wars?|muster|serve the crown|levy|levies|march with|volunteer for|marines|boarding)\b/,
-  allies: /\b(your men|your squad|your file|your company|your lance|your riders|your crew|the crew|your friends?|your companions?|your brothers?|your sons?|the hunters|hunters with you|with the hunters|the villagers|the village|the guards with you|beside (?:you|\{\w+\})|at your side|together|your band|your party|your mates|your shield-?mates|your comrades|your fellows|the others|your cousins|your kin|with two others|three friends|with (?:them|\{\w+\}|tarn|him)|join|the beaters|the barge master|the court|the party|in the party|herders?|shepherds)\b/,
+  army: /\b(army|armies|battle|battlefield|regiments?|shield ?wall|the line|front rank|cavalry|the charge|siege|breach|ramparts?|sortie|ladders|vanguard|rearguard|warband|war band|enemy (?:line|lines|horse|foot|spearmen|camp|riders)|first wave|next wave|pike block|the press)\b/,
+  // service in a war, read from the label only: a season under arms is fought in a crowd
+  service: /\b(sign on|for a season|a season of|campaign|muster|serve the crown|levy|march|volunteer for|marines|wave|pikes)\b/,
+  allies: /\b((?:at|to) (?:his|her|their|\{\w+\}) (?:shoulder|side)|your men|your squad|your file|your company|your lance|your riders|your crew|the crew|your friends?|your companions?|your brothers?|your sons?|the hunters|hunters with you|with the hunters|the villagers|the village|the guards with you|beside (?:you|\{\w+\})|at your side|together|your band|your party|your mates|your shield-?mates|your comrades|your fellows|the others|your cousins|your kin|with two others|three friends|with (?:them|\{\w+\}|tarn|him)|join|the beaters|the barge master|the court|the party|in the party|herders?|shepherds)\b/,
   party: /\b(hunting party|hunt is called|the hunt|ivory party|a party of|beaters|hounds? (?:have|bay)|the court|the whole village|expedition)\b/,
   alone: /\b(alone|by yourself|on your own|single-handed|single combat|one spear|no one else)\b/,
   sport: /\b(joust|tourney|tournament|the lists|ring|wrestling|wrestle for|bout|bouts|spar|sparring|practi[cs]e|lessons?|drill|training|for a purse|for the purse|the prize|exhibition|mock fight|blunted|wooden swords?|first blood|the pit|pit fight|chalk circle|the circle|feast|gathering|the title|games?)\b/,
@@ -64,14 +66,14 @@ FL.massKg = function (c) {
   if (m) return +(m[2] || m[1]);
   return null;
 };
-FL.massTier = kg => kg == null ? null : kg >= 1000 ? 'titan' : kg >= 200 ? 'great' : 'animal';
+FL.massTier = kg => kg == null ? null : kg > 1000 ? 'titan' : kg >= 200 ? 'great' : 'animal';
 // common words for beasts, matched in lower case only (so "the Bear Guard" is a regiment, not a bear), and the creature
 // whose duel numbers stand in for them
 FL.GENERIC = [
   [/\b(?:pack of wolves|wolves|wolf|she-wolf)\b/, 'CRE-21', /wolves|pack/], [/\b(?:war ?dogs?|hounds?|dogs|mad dog|curs?|mastiffs?)\b/, 'CRE-56', /hounds|dogs|curs/],
   [/\b(?:boars?|wild pigs?|tusker)\b/, 'CRE-35', /boars/], [/\bhyenas?\b/, 'CRE-35', /hyenas/],
   [/\b(?:(?:a|the|an old|old|she-|great|brown|black|white|young|wounded|hungry|dancing|baited|chained|mad) bears?|bears? (?:cub|cubs|growls|rears|charges|attacks|comes|stands|is)|the bear\b(?! guard| hall))/, 'CRE-25'],
-  [/\b(?:lions?|lioness|tigers?|leopards?|panthers?|big cats?)\b/, 'CRE-49'], [/\b(?:(?:a|the|mad|black|yak|wild|old) bulls?|bull (?:elephant|rhino)|aurochs|bison|bull)\b/, 'CRE-20'],
+  [/\b(?:lions?|lioness|tigers?|leopards?|panthers?|big cats?)\b/, 'CRE-49'], [/\b(?:(?:a|the|mad|black|yak|wild|old) bulls?|bull (?:elephant|rhino)|aurochs|bison)\b/, 'CRE-20'],
   [/\b(?:rhinos?|rhinoceros)\b/, 'CRE-34'], [/\b(?:elephants?)\b/, 'CRE-50'],
   [/\b(?:crocodiles?|crocs?)\b/, 'CRE-44'], [/\b(?:snakes?|vipers?|adders?)\b/, 'CRE-38'], [/\b(?:pythons?|anacondas?|coils)\b/, 'CRE-47'],
   [/\b(?:apes?)\b/, 'CRE-31'], [/\b(?:wyverns?|drakes?)\b/, 'CRE-03'], [/\b(?:dragons?)\b/, 'CRE-01'], [/\b(?:wyrms?)\b/, 'CRE-26'],
@@ -87,6 +89,7 @@ FL.creatures = function () {
 FL.tierOfBeast = id => (A.beastTier ? A.beastTier(id) : (GD.BEAST_TIER || {})[id]) || 'animal';
 // which beast a text means: a named creature, then a common word (lower case, so proper names do not count)
 FL.beastIn = function (text) {
+  text = text.replace(/\blike (?:a|an|the) [\w-]+/gi, ' ');   // "you fight like a bull" is not a bull
   const t = text.toLowerCase();
   for (const c of FL.creatures()) if (t.includes(c.key)) return { id: c.id, named: true, plural: false };
   for (const [rx, id, pl] of FL.GENERIC) { const m = text.match(rx); if (m) return { id, named: false, plural: !!(pl && pl.test(m[0])) }; }
@@ -141,17 +144,21 @@ FL.tag = function (e, i) {
   else if (other && !(acts && combatSkill)) { why = 'not a fight'; }
   else if (combatSkill && (acts || inScene || blows)) { fight = true; why = 'combat skill'; }
   else if (acts && (inScene || blows)) { fight = true; why = 'fight action'; }
-  // a beast encounter is any choice in a scene with a beast, fought or not
-  const beastWhere = FL.beastIn(labelRaw + ' ' + FL.words(c.lose && c.lose.r) + ' ' + FL.words(c.lose && c.lose.fx)) || FL.beastIn(sceneRaw);
-  const beastCtx = /\{(?:beast|abeast|game|prey)\}|\$\{[^}]*beast[^}]*\}/i.test(String(e.text) + ' ' + labelRaw) || /ctx\.beast/.test(String(e.text));
-  const beast = beastFx && typeof beastFx === 'object' && beastFx.id ? { id: beastFx.id, named: true } : beastWhere;
+  // what is fought: a beast (named by the fx, the label, the event's own beast token, or the scene) or people
+  const labelBeast = FL.beastIn(labelRaw);
+  const beastCtx = /\{(?:beast|abeast|game|prey)\}/i.test(FL.words(e.text) + ' ' + labelRaw) || /ctx\.beast\b/.test(String(e.text || ''));
+  const personHit = /\b(?:fight|strike|hit|punch|wrestle|kill|stab|attack|beat|knock|grab|seize|pull|throw|face|meet|bring|show|disarm|follow|turn on|go for|take on|challenge) (?:him|her|them|\{(?!beast|abeast|game|prey)\w+\}|the (?:man|men|thief|stranger|teacher|master|boy|knight|rider|drunk|guard|champion|bosun))(?!\w)/i.test(labelRaw) ||
+    /\b(?:his|her) (?:arm|wrist|throat|horse)\b/.test(label) || (/\{(?:them|themhim|theyhe|themfull)\}/.test(label) && !/\b(?:beside|with|behind|for|shoulder|side|stand second)\b/.test(label));
+  const sceneBeast = FL.beastIn(sceneRaw + ' ' + FL.words(c.lose && c.lose.r) + ' ' + FL.words(c.lose && c.lose.fx));
+  let beast = beastFx && typeof beastFx === 'object' && beastFx.id ? { id: beastFx.id, named: true } : labelBeast || null;
+  if (!beast && !personHit && beastCtx) beast = { id: sceneBeast && sceneBeast.named ? sceneBeast.id : null, ctx: true, guess: sceneBeast ? sceneBeast.id : null, plural: false };
+  else if (!beast && !personHit && sceneBeast) beast = sceneBeast;
   const sport = RX.sport.test(scene + ' ' + label) && !/\b(to the death|real steel|sharp steel|strike to kill)\b/.test(label + ' ' + scene);
   // the scale
-  const pl = (label + ' ' + scene).match(FOE_PL), armyCue = RX.army.test(label) || (RX.army.test(scene) && !RX.sport.test(label));
+  const pl = (label + ' ' + scene).match(FOE_PL), armyCue = RX.army.test(label) || RX.service.test(label) || (RX.army.test(scene) && !RX.sport.test(label));
   const allyCue = RX.allies.test(label) || (RX.allies.test(scene) && !RX.alone.test(label)), partyCue = RX.party.test(scene + ' ' + label);
-  const personFoe = /\{(?:them|themhim|theyhe|themfull)\}/.test(label) || /\b(him|her|man|woman|thief|stranger|knight|rider|robber|drunk)\b/.test(label);
   let scale = 'one', n = 1, tier = null, allies = 0;
-  const isBeast = !!beast && (beastFx || !personFoe || FL.beastIn(labelRaw)) && !(armyCue && !FL.beastIn(labelRaw));
+  const isBeast = !!beast && !(armyCue && !labelBeast && !beastFx);
   if (isBeast) {
     scale = 'beast';
     if (beast.plural || (pl && new RegExp(BEASTS_PL).test(pl[3] || ''))) n = pl && (pl[1] || NUMW[pl[2]]) ? Math.max(2, +(pl[1] || NUMW[pl[2]])) : 3;
@@ -164,14 +171,14 @@ FL.tag = function (e, i) {
     if (n >= 6 && !RX.alone.test(label)) { scale = 'army'; n = 3; allies = 2; }   // a crowd fight: you hold your own corner of it
   }
   for (const [t, rx] of FL.TIERW) if (rx.test(label) || rx.test(scene)) { tier = t; break; }
-  const pid = /\{(?:them|themhim|theyhe|themfull)\}/.test(label) && !/\b(beside|with|behind|for|teach|ask|defend|stand second)\b/.test(label);
-  const btier = scale === 'beast' && beast.id ? FL.tierOfBeast(beast.id) : null;
+  const pid = scale === 'one' && /\{(?:them|themhim|theyhe|themfull)\}/.test(label) && personHit;
+  const btier = scale === 'beast' ? (beast.id ? FL.tierOfBeast(beast.id) : '?') : null;
   const decided = why === 'worth' ? 'worth' : (c.group || groupFn) ? 'group' : duel ? 'duel' : beastFx ? 'beast-duel' : ck ? (ranged ? 'ranged check' : 'plain check') : 'no roll';
   const deadly = FL.deadly(cLose) || FL.deadly(cAny) || (!!ck && FL.deadly(cWin));
   const trap = RX.trap.test(label);
   // a free kill: no roll, and the result kills or drives off the beast or the men
   const freeKill = fight && decided === 'no roll' && !trap && /\b(you (?:kill|slay|cut down|drive (?:it|them) off|beat (?:it|them) off|fight (?:it|them) off|see (?:it|them) off)|no more bull|it dies|they die|falls dead|lies dead|dead by noon)\b/.test(res);
-  return { fight, why, encounter: !!(beast || inScene), scale, n, tier, allies, beast: beast ? beast.id : null, beastCtx, btier, pid, decided, deadly, sport, ranged, child, trap,
+  return { fight, why, encounter: !!(beast || inScene), scale, n, tier, allies, beast: beast ? beast.id || beast.guess || null : null, beastCtx: !!(beast && beast.ctx), btier, pid, decided, deadly, sport, ranged, child, trap,
     freeKill, skill: s1 || null, s2: s2 || null, d: ck ? ck.d : null, label: labelRaw.slice(0, 80), combatSkill };
 };
 
@@ -210,6 +217,8 @@ FL.spec = function (e, i, t) {
     s.tier = t.tier || (ck.d == null ? 2 : ck.d <= 40 ? 1 : ck.d <= 52 ? 2 : ck.d <= 60 ? 3 : 4);
     if (t.allies) { s.allies = t.allies; s.allyTier = 2; }
     if (t.pid && t.scale === 'one') s.pid = true;
+    // which duel rules stand in for it: a bout (sport) is fought as a spar, a fist fight as a brawl, the rest as an event's duel
+    if (t.scale === 'one') s.rule = t.sport ? 'spar' : weapon === 'fists' ? 'brawl' : 'yield';
   }
   if (/\$\{ctx\.n\}|\{n\}/.test(FL.words(e.text) + ' ' + t.label) && t.scale === 'party') s.nCtx = true;
   if (weapon) s.weapon = weapon;

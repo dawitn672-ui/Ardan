@@ -14,6 +14,7 @@
 //   fx.aoAsset {k, name}    property with its own name ("The mill below Amberwick"), priced and paid as GD.PROPERTY[k]
 //   fx.aoKill 'cause'       the arc's person dies (a horse thief hanged)
 //   fx.aoEpithet 1          the epithet the arc chose for you (the song's), if you have none
+//   fx.aoMount 1            the beast the arc took from you comes back (the stolen horse)
 // Everything random is drawn in a stage's setup or its effects (engine side). Rendering only reads.
 (function () {
   const AR = A.ARCS;
@@ -77,7 +78,7 @@
   };
 
   // ---- effects
-  (A.FX_EXTRA = A.FX_EXTRA || []).push('aoQual', 'aoAsset', 'aoKill', 'aoEpithet');
+  (A.FX_EXTRA = A.FX_EXTRA || []).push('aoQual', 'aoAsset', 'aoKill', 'aoEpithet', 'aoMount');
   const apply = A.applyFx;
   A.applyFx = function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
@@ -94,6 +95,11 @@
         out.push(`(${name} is yours.)`);
       }
       if (fx.aoKill && ctx && ctx.pid) { const t = A.P(ctx.pid); if (t && t.alive && t.id !== pc.id) A.kill(t, String(fx.aoKill)); }
+      if (fx.aoMount && pc.gear) {
+        const a = AO.arc(pc, ctx), k = a && a.w && GD.GEAR[a.w.mk] ? a.w.mk : 'horse';
+        pc.gear.mount = k;
+        if (pc.gearQ) delete pc.gearQ.mount;
+      }
       if (fx.aoEpithet && !pc.epithet) {
         const a = AO.arc(pc, ctx), ep = a && a.w && a.w.ep;
         if (ep) { pc.epithet = String(ep); out.push(`They call you ${pc.epithet} now.`); A.ach && A.ach('epithet'); }

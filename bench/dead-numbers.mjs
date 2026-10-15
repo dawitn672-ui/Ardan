@@ -34,7 +34,8 @@ const median = a => { if (!a.length) return 0; const s = [...a].sort((x, y) => x
 const COUNTER = () => {
   const DN = window.DN = { on: false, depth: 0, mute: 0, reads: null, perMonth: null, life: null };
   const pcOf = p => p && A.S && p.id === A.S.pc;
-  const note = k => { if (DN.on && DN.depth > 0 && !DN.mute && DN.reads) DN.reads.add(k); };
+  const canon = k => (A.BM && A.BM.MERGE && A.BM.MERGE[k]) || k;   // a merged skill is its family's number
+  const note = k => { if (DN.on && DN.depth > 0 && !DN.mute && DN.reads) DN.reads.add(canon(k)); };
   const skill = A.skill; A.skill = function (p, k) { if (pcOf(p)) note(k); return skill.apply(this, arguments); };
   const stat = A.stat; A.stat = function (p, s) { if (pcOf(p)) note(s); return stat.apply(this, arguments); };
   // a deciding function: reads inside it (and inside anything it calls) count once for this call
@@ -60,7 +61,7 @@ const COUNTER = () => {
   };
   // left out: scans over every skill, display helpers, learning speed
   const mute = name => { const f = A[name]; if (typeof f !== 'function') return; const w = function () { DN.mute++; try { return f.apply(this, arguments); } finally { DN.mute--; } }; for (const p of Object.keys(f)) w[p] = f[p]; A[name] = w; };
-  for (const n of ['perkSum', 'perkOf', 'perksOf', 'whatNow', 'defaultPlan', 'defaultPlanIfAuto', 'trainTargets', 'recapSnap', 'recapMake', 'trainSkill', 'train', 'eventView', 'checkOdds', 'checkVal', 'stats', 'classOf', 'role', 'tierOf', 'specOf', 'specMul', 'canAct']) mute(n);
+  for (const n of ['perkSum', 'perkOf', 'perksOf', 'whatNow', 'defaultPlan', 'defaultPlanIfAuto', 'trainTargets', 'recapSnap', 'recapMake', 'trainSkill', 'train', 'eventView', 'checkOdds', 'checkVal', 'classOf', 'role', 'tierOf', 'specOf', 'specMul', 'canAct']) mute(n);
   for (const n of ['duelAuto', 'duelAct', 'duelStart', 'battleAuto', 'battleAct', 'missionAuto', 'missionChoose', 'groupFightPC', 'careerYear', 'pathMonth', 'moneyYear', 'bodyYear',
     'mortalCheck', 'milYear', 'nobleYear', 'rulerYear', 'doActivity', 'prisonYear', 'familyYear', 'wsDay', 'promoCheck', 'interact', 'nobleAction',
     'applyJob', 'dutyEvent', 'flowEvent', 'planMonth', 'applyFx', 'choiceChoose', 'workHard', 'travelTo', 'councilMonth', 'yearGrowth', 'willGrow', 'naturalCause', 'deathChance']) scope(n, 'call');
@@ -69,10 +70,11 @@ const COUNTER = () => {
   const src = (pc, k) => {
     if (GD.STATS.includes(k)) return [k];
     if (!GD.SKILLS[k]) return [];
+    k = canon(k);
     DN.mute++;
     try {
       let best = k, v = A.skill(pc, k);
-      for (const [j, m] of GD.SKILL_SYN[k] || []) { const x = A.skill(pc, j) * m; if (x > v) { v = x; best = j; } }
+      for (const [j, m] of GD.SKILL_SYN[k] || []) { const x = A.skill(pc, j) * m; if (x > v) { v = x; best = canon(j); } }
       return best === k ? [k] : [k, best];
     } finally { DN.mute--; }
   };
