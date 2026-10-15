@@ -1,10 +1,15 @@
-// Target numbers per path (Road to Ten, Balance 1). bench/balance.mjs plays each path with fixed seeds (4 lives each by
+// Target numbers per path (Road to Ten, Balance 1). bench/balance.mjs plays each path with fixed seeds (8 lives each by
 // default, engaged and passive, four personalities) and fails the build when a number leaves its band (Balance 3).
 //
-// Bands are design intent, wide enough for a 4-life sample. Builds that only change which random numbers are drawn
-// moved the serf path's median age at death between 26 and 54 (three of four serfs once died at 22-26, of a roc, a fever
-// and a wound gone bad), so age bands only catch a collapse, not a shift of a few years. A note marks where the game sits somewhere the designers may not want; those bands
-// hold the current behaviour so that it cannot get worse unnoticed, not to bless it.
+// Bands are design intent, wide enough for the sample. With 4 lives a path, builds that only changed which random
+// numbers were drawn moved the serf's median peak wealth between 11,000 and 153,000 and the merchant's median age at
+// death between 29 and 67, so a feature that drew one more number could fail the check without anything being wrong.
+// The league now plays 8 lives a path. Four builds that differ only in their random stream (the full build, and the
+// build without 37-squad, without 38-orders, and with 39-schemes) all sit inside every band, but the spread is still
+// wide: serf median peak wealth 4,500-107,000 (freed serfs get rich, bound ones don't, and the middle of 8 falls on
+// either side), royal median age at death 37-73, noble median peak wealth 57,000-461,000. So the bands catch a
+// collapse, not a shift. A note marks where the game sits somewhere the designers may not want; those bands hold the
+// current behaviour so that it cannot get worse unnoticed, not to bless it.
 export const TARGETS = {
   paths: {
     serf: {

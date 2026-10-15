@@ -67,6 +67,7 @@ for (const [name, P] of Object.entries(TARGETS.paths)) {
     notableSharePct: r1(100 * lives.filter(l => !quiet.has(l.arc)).length / lives.length),
     freedSharePct: r1(100 * lives.filter(l => l.freed).length / lives.length),
     arcs: lives.map(l => l.arc),
+    each: lives.map(l => ({ deathAge: l.deathAge, years: l.years, peakCoin: l.peakCoin, peakFame: l.peakFame })),   // for studies of the spread
   };
 }
 process.stdout.write('\n');

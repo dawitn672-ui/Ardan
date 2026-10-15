@@ -22,7 +22,7 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Power scaling | 7 | 2 | 4 | 1 | 0 |
 | Character and life sim | 7 | 2 | 3 | 2 | 0 |
 | Events and story | 7 | 2 | 3 | 2 | 0 |
-| Relationships | 7 | 4 | 2 | 1 | 0 |
+| Relationships | 7 | 5 | 2 | 0 | 0 |
 | War | 7 | 5 | 1 | 1 | 0 |
 | Diplomacy and politics | 6 | 2 | 4 | 0 | 0 |
 | Economy | 7 | 0 | 2 | 5 | 0 |
@@ -32,9 +32,9 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Technical | 7 | 6 | 1 | 0 | 0 |
 | Replayability | 6 | 2 | 2 | 2 | 0 |
 | Uniqueness | 5 | 2 | 2 | 1 | 0 |
-| **All** | **94** | **36** | **29** | **19** | **10** |
+| **All** | **94** | **37** | **29** | **18** | **10** |
 
-That is 38% done and 31% partial. 20% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 39% done and 31% partial. 19% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
 
 ## World and lore
 
@@ -93,7 +93,7 @@ That is 38% done and 31% partial. 20% is not started but buildable here, and 11%
 | 3 | Schemes both ways (sway, befriend, seduce, slander, murder) | ✅ | 39-schemes: five plots that grow each month by your skills, theirs and the friends who hate them, with an opening halfway, a last move, and a 2–6% chance a month of being found out. The people who hate you plot slanders and murders against you; you may notice, unmask them and answer. Four bot lives met 11 such scenes in 49 years |
 | 4 | Shared history per bond | ◐ | `rel.hist` from NPC moves and interactions; doesn't yet move opinion by itself or appear in events |
 | 5 | Secrets and leverage | ◐ | The 71 lore secrets can now be found (26-belief-truth: 7 reveal scenes, rationed one in eight years) and are shown truth against story; no personal secrets, no leverage |
-| 6 | Groups and cliques | ✗ | Not started |
+| 6 | Groups and cliques | ✅ | 41-circles: a new acquaintance is often already close to someone you know, so the share of your contacts inside one of your circles goes from 0% to 21%; a friend of your foe starts 12 cooler (a friend of your friend 8 warmer), and the person view says why; a great harm reaches the victim's friends at a third of its weight; cliques of three in the unit or the street that you can join or lead |
 | 7 | "Get to know" as a 2–3 choice scene | ✅ | 30-get-to-know: a scene with four approaches; the person's traits move each one's odds by 12 points a trait (asking a gregarious person 36%, a shy one 4%); insight reads them first |
 
 ## War
@@ -136,7 +136,7 @@ That is 38% done and 31% partial. 20% is not started but buildable here, and 11%
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
 | 1 | Target numbers per path | ✅ | `bench/targets.mjs`: six starting paths, each with bands for age at death, peak wealth, peak fame and notable lives (plus freedom for serfs), and notes where the game sits somewhere the designers may not want |
-| 2 | Nightly bot league (1,000 lives × 4 personalities) | ◐ | `bench/` league: 64 lives × 4 personalities, engaged and passive; not per path, not nightly |
+| 2 | Nightly bot league (1,000 lives × 4 personalities) | ◐ | `bench/` league: 64 lives × 4 personalities, engaged and passive. `bench/balance.mjs`: 48 lives per path (8 per path, on two pages), run by CI on every push. Not 1,000, not nightly |
 | 3 | Fail the build on drift | ✅ | `bench/balance.mjs`: a fixed-seed league of 24 lives in CI (`tools/check.mjs`); the build fails when a path leaves its band |
 | 4 | Difficulty changes information and recovery | ✗ | |
 | 5 | 20 human playthroughs per phase | 👥 | |
@@ -202,7 +202,7 @@ That is 38% done and 31% partial. 20% is not started but buildable here, and 11%
 
 ## Round 3 changes
 
-Fifteen features and two tools, each with its own tests and README, moved twenty-four rows.
+Sixteen features and two tools, each with its own tests and README, moved twenty-five rows.
 
 | Feature | Rows | What changed |
 | --- | --- | --- |
@@ -223,6 +223,7 @@ Fifteen features and two tools, each with its own tests and README, moved twenty
 | 37-squad | War 6 ✅ | Comrades who come back from a mission learn its skills and earn a standing; veterans add up to 8 points to a mission's odds. The person card shows the record, and a death says what was lost. |
 | 38-orders | War 3 ✅ | Generals have a temper from their traits, and it moves how their army fights: how good the odds must be, how many divisions go at once, how rested they must be, and whether it hunts the undefended. The war room shows each army's temper and plan. A soldier gets the plan as a letter, and the map settles it sixty days later: credit, blame, a reckoning, or being proved right. |
 | 39-schemes | Relationships 3 ✅ | Sway, befriend, seduce, slander and murder as plots that run for months, with an estimate up front, an opening halfway, a last move, and a chance each month of being found out. The people who hate you plot back, and you can notice, unmask and answer them. |
+| 41-circles | Relationships 6 ✅ | Circles form around you as you meet people; a friend of your foe starts cooler and a friend of your friend warmer, and the person view says why. A great harm reaches the victim's friends. Cliques of three in the unit or the street. |
 
 Findings from building these:
 
@@ -230,7 +231,7 @@ Findings from building these:
 - **Fixed: "Keeper of Secrets" ended most lives.** An early draft of the secret scenes made "Keeper of Secrets" the ending of 4 of 6 bot lives. The finds are now rationed to one in eight years.
 - **The AI ratio was noisier than reported.** The warlike-to-peaceful war ratio in one world swings from 1.5 to 6 with the random stream: a feature that draws one more number a month moved it from 5.3 to 1.45 on the same seeds. Pooled over four worlds it reads 2 to 5, and two builds on a fresh seed set agree (1.98 and 2.06). The test now pools four worlds.
 - **Fixed: one bad event text could freeze the game.** A risk-cost run crashed on `pl_royal_wedding_guest`, a release event whose text reads `A.realm(p.realm).capital` with no guard; about twenty other release texts do the same. The engine dropped an event whose setup threw but not one whose text threw, so the player was stuck on the event screen. `ENG-EVENT-TEXT-GUARD` (fix layer) now drops it too, and `eventTextGuard` fails on the release and passes on the fix.
-- **Seed-sensitive tests and bands.** Each new feature changes the random stream, and three checks flipped on it without anything being wrong: an NPC test whose one life ended at 25, a growth test that pooled three lives a side, and two wealth medians of four lives. The two tests now pool more lives (eight a side) or move to the next fixed seed when a life is too short to test. The wealth bands are covered below.
+- **Seed-sensitive tests and bands.** Each new feature changes the random stream, and three checks flipped on it without anything being wrong: an NPC test whose one life ended at 25, a growth test that pooled three lives a side, and two wealth medians of four lives. The two tests now pool more lives (eight a side) or move to the next fixed seed when a life is too short to test. The balance league now plays 8 lives a path instead of 4, on two pages at once. A life gives the same numbers on either page. Four builds that differ only in their random stream all sit inside every band, and the spread that remains is written into `bench/targets.mjs`: for example, a serf's median peak wealth runs from 4,500 to 107,000.
 - **Squads turn over almost completely.** In twelve missions, 7 of 9 men died, so few men reach veteran. That is the plan's "who die", but standings are rarer than the ranks suggest.
 - **The balance league found three things for the designers** (notes in `bench/targets.mjs`):
   - Every serf was free by 33, most by buying freedom at 21–22 for 40 suns. The event that sells it had no way to say no; it has one now (33-choices).
