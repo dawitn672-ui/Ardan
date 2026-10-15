@@ -26,6 +26,19 @@ export default {
     const planOk = r.plan[0] === 'athletics' && r.plan[1] !== 'athletics' && r.plan[2] === 'learning';
     return { ok: r.oppositeTraits === 0 && planOk && !r.babyCourt, detail: `children with opposite traits: ${r.oppositeTraits}/4000; plan kid→soldier→player pick: ${r.plan.join(' → ')}; newborn can attend court: ${r.babyCourt}` };
   },
+  async eventTextGuard(pg) {
+    // an event whose text throws is dropped, not a frozen screen
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 14, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 25 });
+      const pc = A.pc(), keep = pc.realm;
+      pc.realm = 'POL-NONE';   // a realm that is not there
+      let threw = null, skip = null;
+      try { skip = A.eventView({ type: 'event', ev: 'pl_royal_wedding_guest' }).skip; } catch (e) { threw = String(e); }
+      pc.realm = keep;
+      return { threw, skip };
+    });
+    return { ok: !r.threw && r.skip === true, detail: r.threw ? `eventView threw: ${r.threw}` : `a text that throws drops the event (skip ${r.skip})` };
+  },
   async parentTitles(pg) {
     // a father is never "a lady of the house", a mother never "a lord"
     const r = await pg.evaluate(() => {

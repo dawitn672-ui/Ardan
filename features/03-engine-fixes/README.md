@@ -13,6 +13,7 @@ Rule bugs in traits, duels, the training plan and noble actions.
 | `ENG-DUEL-DOUBLE-KO` | When both fighters dropped to 0 HP in the same exchange the player always won, because the foe was checked first. Now the one further below zero (as a share of max HP) loses; an exact tie is a coin flip. |
 | `ENG-PLAN-FOLLOWS-LIFE` | The automatic training plan was filled once and never revisited, so the "athletics" a child gets at 6 stayed for life (every bot life maxed athletics and learning by 30). The plan now remembers what it chose automatically and moves on (to the troop weapon, the trade skill, or melee) until the player picks something; a player choice is never overridden. Old saves: only a stale childhood "athletics" is treated as automatic. |
 | `ENG-NOBLE-AGE` | A newborn noble could attend court ("You shine at court"), petition the crown, seek a council seat and ride the estate ("You ride your lands, hear the reeves, fix the mill") — nobleAction had no age check. These need an adult now; the court tab still shows them, and says why. |
+| `ENG-EVENT-TEXT-GUARD` | eventView caught a throwing setup (the event is dropped) but not a throwing text, so one bad text function froze the game on the event screen. Seen in a bot life: `pl_royal_wedding_guest` reads `A.realm(p.realm).capital`, and about twenty other release texts read `A.realm(p.realm)` unguarded. A text that throws now drops the event the same way a setup does. |
 
 ## Tests
 

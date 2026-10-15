@@ -43,13 +43,15 @@ export default {
       const run = (u, p, f) => {
         Object.assign(A.GROW, { USE: u, PRACTICE: p, FAIL: f });
         let share = 0, pts = 0;
-        for (const seed of [5, 6, 7]) {
+        // eight lives a side: the two sides' lives part ways at the first check that goes differently, so few lives are noisy
+        const SEEDS = [5, 6, 7, 8, 9, 10, 11, 12];
+        for (const seed of SEEDS) {
           A.newGame({ seed, race: 'human', realm: ['POL-01', 'POL-03'][seed % 2], status: ['peasant', 'artisan'][seed % 2], sex: 'M', startAge: 16 });
           const pc = A.pc(), s0 = Object.values(pc.skills).reduce((a, x) => a + x, 0);
           T.play(15);
           share += A.GROW.useShare(pc) || 0; pts += Object.values(pc.skills).reduce((a, x) => a + x, 0) - s0;
         }
-        return { share: Math.round(100 * share / 3), perYear: Math.round(pts / 3 / 15 * 10) / 10 };
+        return { share: Math.round(100 * share / SEEDS.length), perYear: Math.round(pts / SEEDS.length / 15 * 10) / 10 };
       };
       const out = { release: run(1, 1, 1), now: run(D.USE, D.PRACTICE, D.FAIL) };
       Object.assign(A.GROW, D);

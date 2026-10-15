@@ -127,8 +127,8 @@ export default {
     // (with its bond history) and draws every tab, each year. (Drawing every tab only holds since staff-pure.core.js.)
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      const run = look => {
-        T.enter({ seed: 4711, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 24 });
+      const run = (look, seed) => {
+        T.enter({ seed, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 24 });
         const res = NIT.play(15, () => {
           if (!look || A.S.queue.length) return;
           const pc = A.pc();
@@ -137,12 +137,15 @@ export default {
           T.renderAll();
         });
         T.renderAll(); // both runs draw once at the end, so first-draw setup (an empty cargo hold) matches
-        return { seq: res.seq, end: A.rngState + ':' + T.hash(A.S.people) + ':' + T.hash(A.S.realms) };
+        return { seq: res.seq, end: A.rngState + ':' + T.hash(A.S.people) + ':' + T.hash(A.S.realms), died: !A.pc().alive };
       };
-      const a = run(false), b = run(false), c = run(true);
-      return { n: a.seq.length, same: a.seq.join('|') === b.seq.join('|') && a.end === b.end, sameLooking: a.seq.join('|') === c.seq.join('|') && a.end === c.end, first: a.seq.slice(0, 4) };
+      // a life cut short has little to compare: take the first of these seeds whose life has three NPC moves
+      let seed, a;
+      for (seed of [4711, 4712, 4713, 4714]) { a = run(false, seed); if (a.seq.length >= 3) break; }
+      const b = run(false, seed), c = run(true, seed);
+      return { seed, n: a.seq.length, same: a.seq.join('|') === b.seq.join('|') && a.end === b.end, sameLooking: a.seq.join('|') === c.seq.join('|') && a.end === c.end, first: a.seq.slice(0, 4) };
     });
-    return { ok: r.n >= 3 && r.same && r.sameLooking, detail: `${r.n} NPC events in 15 years (${r.first.join(', ')}...); same seed same moves: ${r.same}; same while looking at people: ${r.sameLooking}` };
+    return { ok: r.n >= 3 && r.same && r.sameLooking, detail: `seed ${r.seed}: ${r.n} NPC events in 15 years (${r.first.join(', ')}...); same seed same moves: ${r.same}; same while looking at people: ${r.sameLooking}` };
   },
 
   async npcInitiativeEvents(pg, errs) {

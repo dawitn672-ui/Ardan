@@ -1,6 +1,6 @@
 # Road to Ten: status of every step
 
-Oct 15, 2026 · checked against `index.html` (19 features) and the measured `reports/scorecard.md`
+Oct 15, 2026 · checked against `index.html` (32 features, counting the fix layer) and the measured `reports/scorecard.md`
 
 Each of the plan's 94 steps is marked:
 
@@ -20,10 +20,10 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | --- | --- | --- | --- | --- | --- |
 | World and lore | 7 | 2 | 1 | 3 | 1 |
 | Power scaling | 7 | 2 | 4 | 1 | 0 |
-| Character and life sim | 7 | 1 | 3 | 3 | 0 |
+| Character and life sim | 7 | 2 | 3 | 2 | 0 |
 | Events and story | 7 | 2 | 3 | 2 | 0 |
 | Relationships | 7 | 3 | 2 | 2 | 0 |
-| War | 7 | 2 | 1 | 4 | 0 |
+| War | 7 | 5 | 1 | 1 | 0 |
 | Diplomacy and politics | 6 | 2 | 4 | 0 | 0 |
 | Economy | 7 | 0 | 2 | 5 | 0 |
 | Balance | 6 | 2 | 2 | 1 | 1 |
@@ -32,9 +32,9 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Technical | 7 | 6 | 1 | 0 | 0 |
 | Replayability | 6 | 2 | 2 | 2 | 0 |
 | Uniqueness | 5 | 2 | 2 | 1 | 0 |
-| **All** | **94** | **31** | **29** | **24** | **10** |
+| **All** | **94** | **35** | **29** | **20** | **10** |
 
-That is 33% done and 31% partial. 26% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 37% done and 31% partial. 21% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
 
 ## World and lore
 
@@ -66,7 +66,7 @@ That is 33% done and 31% partial. 26% is not started but buildable here, and 11%
 | --- | --- | --- | --- |
 | 1 | Merge about 9–12 systems into 4 | ✗ | Not started (a large refactor of minified code; needs the source) |
 | 2 | Learn by doing; monthly summary of gains | ✅ | 31-learn-by-doing: every gain tagged practice or use; use ×1.2, practice ×0.4, a failed check teaches 1.5× a passed one; a monthly summary. Growth from doing 44–49% → 67–73% with the same total for a passive life (an engaged one grows 25% faster) |
-| 3 | Needs and moods that start events | ✗ | Only `happy` |
+| 3 | Needs and moods that start events | ✅ | 35-moods: four needs (rest, company, purpose, comfort) that drift toward what your life gives you; the lowest sets a mood with its cause, the mood moves happiness, and 14 scenes start from moods. Bot lives spend about 9% of months in a low mood |
 | 4 | Health as a body (parts, long illness, treatment choices) | ◐ | Wounds and 7 diseases; no body parts or treatment tradeoffs |
 | 5 | Personality changes from what you do, and shows why | ◐ | 372 events add traits; no reason shown; trait count uncapped |
 | 6 | Each life stage has its own play (2–3 actions only it has) | ◐ | Child and teen events exist; old age has 49 events and no actions of its own; infants were offered court actions (fixed) |
@@ -102,10 +102,10 @@ That is 33% done and 31% partial. 26% is not started but buildable here, and 11%
 | --- | --- | --- | --- |
 | 1 | Every rank has battle choices that move the result 10–20% | ✗ | Ranks 4–6 get a fixed nudge |
 | 2 | After-action report with the 3 biggest causes | ✅ | 23-after-action: line battles and war-map fights; causes in kill-equivalents, calibrated against counterfactuals (forest cost said 68 kills, measured 67); on the battle screen, the story log and the war views |
-| 3 | AI general personalities and order letters | ✗ | |
+| 3 | AI general personalities and order letters | ✅ | 38-orders: a temper from the general's traits (bold, cautious, cunning, steady) moves four dials of the AI army; over the same eight wars a bold side makes 28% more assaults and spills 29% more blood, a cautious one 25% fewer. The war room shows each army's temper and plan. A soldier gets the plan as a letter, and sixty days on the map decides whether obeying or ignoring it was right |
 | 4 | Drill linked to battle tactics | ◐ | The report now names what drill and tactics did (a pike hedge against lances +27%, "Drill and kit"); tactic choice is still not gated by drill |
-| 5 | Playable sieges | ✗ | Sieges are a day counter |
-| 6 | Small-unit missions with named men | ✗ | Base missions exist without persistent named men |
+| 5 | Playable sieges | ✅ | 36-sieges: a choice each month from either side of the wall (mine, storm, hold the ring, latrines; ration, sortie, smuggled food, terms), camp sickness that thins the besiegers, and the sack or the terms at the end. The choices move a 40-day siege by 3 to 12 days |
+| 6 | Small-unit missions with named men | ✅ | Base: the missions and a named squad who can die (the first audit missed this). 37-squad: survivors learn, earn a standing (seasoned, veteran, old hand) and carry the odds (+8 points with old hands) |
 | 7 | A 200-division tick under 50 ms | ✅ | Bench `perf.warTick`: 212 divisions in six wars, 9.4 ms at the 95th percentile, 18 ms at worst |
 
 ## Diplomacy and politics
@@ -202,7 +202,7 @@ That is 33% done and 31% partial. 26% is not started but buildable here, and 11%
 
 ## Round 3 changes
 
-Ten features and two tools, each with its own tests and README, moved nineteen rows.
+Fourteen features and two tools, each with its own tests and README, moved twenty-three rows.
 
 | Feature | Rows | What changed |
 | --- | --- | --- |
@@ -218,12 +218,19 @@ Ten features and two tools, each with its own tests and README, moved nineteen r
 | `bench/balance.mjs` and `bench/targets.mjs` | Balance 1 ✅, Balance 3 ✅ | Target bands per starting path, held by a fixed-seed league in CI. |
 | Bench `perf.warTick` | War 7 ✅ | The war-map tick with 212 divisions: 9.4 ms at the 95th percentile. |
 | 29-starts | Replayability 1 ✅ | 20 hand-made starting stories (17 realms, all seven peoples), each with an opening scene and a callback years later. |
+| 35-moods | Character 3 ✅ | Four needs that drift toward what your life gives you, a mood with its cause, happiness that follows the needs, and 14 scenes that start from a mood. `fx.need` lets any event meet a need. |
+| 36-sieges | War 5 ✅ | A choice each month from either side of the wall. Each one moves the real siege counter, by 3 to 12 days of a 40-day siege. Camp sickness thins the besiegers. The fall ends in the sack, the mercy or the terms. |
+| 37-squad | War 6 ✅ | Comrades who come back from a mission learn its skills and earn a standing; veterans add up to 8 points to a mission's odds. The person card shows the record, and a death says what was lost. |
+| 38-orders | War 3 ✅ | Generals have a temper from their traits, and it moves how their army fights: how good the odds must be, how many divisions go at once, how rested they must be, and whether it hunts the undefended. The war room shows each army's temper and plan. A soldier gets the plan as a letter, and the map settles it sixty days later: credit, blame, a reckoning, or being proved right. |
 
-Two findings came out of building these:
+Findings from building these:
 
 - **Repeats were coming from outside the roll.** Most of the repeats a player sees came from job duties, path flows and NPC moves, which skip the event roll and its cooldown. The guard now covers them with a preference rather than a ban, so the pools don't run dry.
 - **Fixed: "Keeper of Secrets" ended most lives.** An early draft of the secret scenes made "Keeper of Secrets" the ending of 4 of 6 bot lives. The finds are now rationed to one in eight years.
 - **The AI ratio was noisier than reported.** The warlike-to-peaceful war ratio in one world swings from 1.5 to 6 with the random stream: a feature that draws one more number a month moved it from 5.3 to 1.45 on the same seeds. Pooled over four worlds it reads 2 to 5, and two builds on a fresh seed set agree (1.98 and 2.06). The test now pools four worlds.
+- **Fixed: one bad event text could freeze the game.** A risk-cost run crashed on `pl_royal_wedding_guest`, a release event whose text reads `A.realm(p.realm).capital` with no guard; about twenty other release texts do the same. The engine dropped an event whose setup threw but not one whose text threw, so the player was stuck on the event screen. `ENG-EVENT-TEXT-GUARD` (fix layer) now drops it too, and `eventTextGuard` fails on the release and passes on the fix.
+- **Seed-sensitive tests and bands.** Each new feature changes the random stream, and three checks flipped on it without anything being wrong: an NPC test whose one life ended at 25, a growth test that pooled three lives a side, and two wealth medians of four lives. The two tests now pool more lives (eight a side) or move to the next fixed seed when a life is too short to test. The wealth bands are covered below.
+- **Squads turn over almost completely.** In twelve missions, 7 of 9 men died, so few men reach veteran. That is the plan's "who die", but standings are rarer than the ranks suggest.
 - **The balance league found three things for the designers** (notes in `bench/targets.mjs`):
   - Every serf was free by 33, most by buying freedom at 21–22 for 40 suns. The event that sells it had no way to say no; it has one now (33-choices).
   - A peasant's peak wealth is close to a merchant's.

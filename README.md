@@ -55,6 +55,10 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 | `32-ladder` | Power scaling | A census of the living Legends and Masters, a Master cap per realm, the living ladder in the Codex |
 | `33-choices` | Events | 19 events where one choice beat the rest on every count, fixed; `tools/lint-choices.mjs` keeps it so |
 | `34-both-scales` | Uniqueness | Signature 3: after a war-map fight, what you saw, the front, and what the chronicle will say, side by side |
+| `35-moods` | Character | Four needs (rest, company, purpose, comfort) that drift toward what your life gives you, a mood that reads them, and 14 scenes |
+| `36-sieges` | War | Sieges you play: a choice a month from either side of the wall, camp sickness, and the sack or the terms at the end |
+| `37-squad` | War | Your named men learn on missions, earn a standing (seasoned, veteran, old hand) and carry the odds; you see their record |
+| `38-orders` | War | Generals with a temper (bold, cautious, cunning) that changes how their army fights, a plan the war room shows, and orders by letter that the map judges sixty days later |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
 How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.

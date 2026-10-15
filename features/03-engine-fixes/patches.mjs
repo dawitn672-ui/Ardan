@@ -76,4 +76,15 @@ export default [
       'A.pick(A.OCC[p.status]||A.OCC.peasant)', 'A.occPick(p.status,p.sex)',
     ]],
   },
+  {
+    id: 'ENG-EVENT-TEXT-GUARD',
+    blob: 'ardan-core',
+    why: 'eventView caught a throwing setup (the event is dropped) but not a throwing text, so one bad text function froze the game ' +
+      'on the event screen. Seen in a bot life: pl_royal_wedding_guest reads A.realm(p.realm).capital, and about twenty other ' +
+      'release texts read A.realm(p.realm) unguarded. A text that throws now drops the event the same way a setup does.',
+    edits: [[
+      'const ctx=A.ctxTokens(pc,q.ctx);let text=typeof e.text=="function"?e.text(pc,q.ctx):e.text;text=A.T(text,ctx);',
+      'const ctx=A.ctxTokens(pc,q.ctx);let text;try{text=typeof e.text=="function"?e.text(pc,q.ctx):e.text}catch(err){q.ctx.skip=1,text="",A.S.debug&&console.error("text",e.id,err)}text=A.T(text,ctx);',
+    ]],
+  },
 ];
