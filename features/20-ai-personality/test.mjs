@@ -174,9 +174,11 @@ export default {
     const r = await pg.evaluate(() => {
       const AGG = ['wrathful', 'ambitious', 'cruel', 'brave', 'greedy', 'proud', 'impetuous'], PEACE = ['content', 'kind', 'craven', 'patient', 'humble', 'calm', 'generous'];
       let aN = 0, pN = 0, aY = 0, pY = 0, err = null, wars = 0, maxLog = 0, years = 0;
-      for (const seed of [606, 4]) {
+      // four worlds pooled: one world's ratio swings from 1.5 to 6 with the random stream (any feature that draws one more
+      // number moves it), four together hold steady
+      for (const seed of [606, 4, 77, 1234]) {
         A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, diff: 'story' });
-        const known = new Set(A.S.wars.map(w => w.id)), end = A.S.year + 70;
+        const known = new Set(A.S.wars.map(w => w.id)), end = A.S.year + 50;
         const tr = rid => { const x = A.realm(rid), ru = x && A.P(x.ruler); return ru ? ru.traits : []; };
         try {
           for (let k = 0; k < 40000 && A.S.year < end; k++) {
@@ -188,7 +190,7 @@ export default {
             maxLog = Math.max(maxLog, (A.S.aiLog || []).length);
           }
         } catch (e) { err = String(e.stack || e).slice(0, 300); }
-        years += 70;
+        years += 50;
       }
       return { err, wars, aN, pN, aY: Math.round(aY), pY: Math.round(pY), ratio: aY && pY && pN ? (aN / aY) / (pN / pY) : null, maxLog, years };
     });

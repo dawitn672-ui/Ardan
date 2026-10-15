@@ -161,8 +161,12 @@ node tests/run.mjs /tmp/ardan/ai-personality/x.html --features=security,replay,c
   - The court fold-out and the diplomacy cards for every realm, drawn as a new ruler, leave the random stream alone.
   - Every later draw, `T.renderAll` included, changes neither the stream nor the state.
   - Markup in a log entry is escaped.
-- `aiPersonalityLongSim`: two worlds × 70 years with no errors. The log stays bounded. Warlike traits start more wars
+- `aiPersonalityLongSim`: four worlds × 50 years with no errors. The log stays bounded. Warlike traits start more wars
   per trait-year than peaceful ones (ratio > 1.5).
+  - It was two worlds × 70 years until a later feature that drew one more random number a month moved that ratio from
+    5.3 to 1.45 on the same seeds.
+  - Four worlds read 2.0 to 5.3 across builds and seed sets, and two builds on the same new seed set read 1.98 and 2.06.
+  - The effect is real and about 2 to 3 times; the single-world figures are noise.
 
 The fix layer's `renderRng`, `replayWithRender` and `journalReplay` pass with this feature, so replays stay
 deterministic.

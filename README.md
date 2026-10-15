@@ -43,8 +43,14 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 | `20-ai-personality` | Diplomacy | Ruler traits drive war, alliances, peace and tribute; every decision logged with its reasons |
 | `21-npc-initiative` | Relationships | People you know act first: requests, offers, hostile moves, gifts; a history per bond |
 | `22-chronicle` | Uniqueness | "The Book": your life written as chapters in a chronicler's voice, exportable |
+| `23-after-action` | War | Every battle ends with its three biggest causes ("numbers +40%, the fog −4%"), calibrated against counterfactuals |
 | `24-honest-odds` | Power scaling | Duel odds on screen fitted to 2,100 real duels |
+| `25-variety-guard` | Events | No event again within 10 years; no two of the same shape back to back; pools and NPC moves prefer what you haven't seen |
+| `26-belief-truth` | Uniqueness, World | Signature 2: you know beasts and secrets only as far as you learned them; far news is hearsay, corrected later; your legend grows in the telling |
 | `27-accessibility` | UI | WCAG 2.2 AA clean across 24 screens (axe) |
+| `28-endings` | Replayability | 20 named endings and 9 manners of death, an epilogue of what became of them, a collection |
+| `29-starts` | Replayability | 20 hand-made starting stories, each with an opening scene and a callback years later |
+| `30-get-to-know` | Relationships | A first meeting is a scene: four approaches, odds set by the person's traits, read in advance by a sharp eye |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
 How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.

@@ -97,6 +97,9 @@ export default {
       // get to know a stranger
       const stranger = Object.values(A.S.people).find(p => p.alive && p.id !== pc.id && !pc.rel[p.id] && A.isAdult(p));
       A.S.time = 10; A.getToKnow(stranger.id);
+      // with 30-get-to-know the meeting is a scene: play it (keep it short and proper)
+      const gk = A.S.queue.find(q => q.ev === 'gk_meet');
+      if (gk) { A.S.queue = [gk].concat(A.S.queue.filter(q => q !== gk)); A.eventView(gk); A.eventChoose(3); A.eventClose(); }
       const knowLine = (pc.rel[stranger.id] && pc.rel[stranger.id].hist || []).map(e => e.t);
       // the cap
       for (let i = 0; i < 20; i++) A.bondNote(pc, t, 'Test line ' + i);
