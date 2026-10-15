@@ -11,7 +11,7 @@ const RUN = () => {
         const q = A.S.queue[0], id = q && q.ev, e = A.EV[id];
         if (!e || done.has(q)) return;   // an event with a result screen is viewed twice
         done.add(q);
-        all.push(A.evShape(e));   // everything the player sees, duties and NPC moves too: what a triple is measured on
+        all.push({ s: A.evShape(e), trig: !!e.trigger });   // everything the player sees, duties and NPC moves too
         if (e.trigger) { if (e.npc) { npc++; if (last[id] != null && A.S.year - last[id] < 10) npcRep++; last[id] = A.S.year; } return; }
         views++;
         const cool = e.cool || 10;
@@ -19,9 +19,13 @@ const RUN = () => {
         last[id] = A.S.year;
         const s = A.evShape(e); shapes.push(s); if (s) shaped++;
       } });
-      for (let i = 1; i < shapes.length; i++) if (shapes[i]) { pairs++; if (shapes[i] === shapes[i - 1]) same++; }
-      // a triple is three of a shape in a row as the player saw them; a duty scene between two road scenes breaks the run
-      for (let i = 2; i < all.length; i++) if (all[i] && all[i] === all[i - 1] && all[i] === all[i - 2]) triples++;
+      // what the guard governs: an event the roll chose (not a trigger-only scene another system queued), against the
+      // scenes the player saw just before it, whatever they were. That is what the guard itself looks at (S.evShapes);
+      // a duty scene between two road scenes breaks the run, and two queued scenes after a rolled one are not its doing
+      for (let i = 1; i < all.length; i++) {
+        const x = all[i]; if (x.trig || !x.s) continue;
+        pairs++; if (x.s === all[i - 1].s) { same++; if (i > 1 && x.s === all[i - 2].s) triples++; }
+      }
     }
     A.EV_COOL = keep.cool; A.evVariety = keep.v; A.evRecency = keep.r;
     return { views, npc, npcRepeatPct: Math.round(1000 * npcRep / Math.max(1, npc)) / 10, repeatPct: Math.round(1000 * rep / Math.max(1, views)) / 10, samePct: Math.round(1000 * same / Math.max(1, pairs)) / 10, triples, shapedPct: Math.round(100 * shaped / Math.max(1, views)) };

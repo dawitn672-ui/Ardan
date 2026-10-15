@@ -26,18 +26,16 @@ The plan asks for "no repeat within 10 years, no same shape back to back". In th
   - an NPC move of a kind anyone made in the last 10 years weighs a tenth (wrapping `A.NPCI.choose`);
   - both times the shape guard.
 
-**Measured by** (`test.mjs`). The A/B test runs in one build: it switches the guard off (cooldown 6, no shape weights, no recency) and on, over the same four 30-year lives, in the full build.
+**Measured by** (`test.mjs`). The A/B test runs in one build: it switches the guard off (cooldown 6, no shape weights, no recency) and on, over the same eight 30-year lives, in the full build. Each event the roll chose is judged against the scenes the player saw just before it, whatever they were, since that is what the guard looks at. Trigger-only scenes that other systems queue (duties, NPC moves, arcs) are not the roll's doing. Round 5 found the earlier count left those queued scenes out of the sequence: travel, work, money, travel, travel read as a triple, and the same-shape share was diluted by chained scenes the guard never chooses.
 
 | | Guard off | Guard on |
 | --- | --- | --- |
-| Events seen (not NPC) | 395 | 405 |
-| Seen again within 10 years | 0.3% | **0%** |
-| Same shape as the one before | 4.6% | **3.0%** |
-| Three of a shape in a row | 2 | **0** |
-| NPC moves | 141 | 147 |
-| NPC move seen again within 10 years | 37.6% | **15.6%** |
-
-On the fix layer alone (no NPC moves or memory events) the same-shape figure goes from 5.4% to 1.9%.
+| Events seen (not NPC) | 953 | 967 |
+| Seen again within 10 years | 0.7% | **0%** |
+| A rolled scene with the same shape as the one just seen | 5.6% | **1.0%** |
+| Three of a shape in a row, the third rolled | 4 | **0** |
+| NPC moves | 314 | 306 |
+| NPC move seen again within 10 years | 36.9% | **15.4%** |
 
 `varietyShapes` checks the following:
 
