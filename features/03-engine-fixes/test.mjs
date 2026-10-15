@@ -39,6 +39,17 @@ export default {
     });
     return { ok: !r.threw && r.skip === true, detail: r.threw ? `eventView threw: ${r.threw}` : `a text that throws drops the event (skip ${r.skip})` };
   },
+  async coinStaysANumber(pg) {
+    // an effect that computes NaN does not take the purse with it
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 15, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), c0 = pc.coin;
+      A.applyFx(pc, { coin: Math.round(undefined * 0.9) }, {});
+      A.applyFx(pc, { coin: 5 }, {});
+      return { c0, c1: pc.coin };
+    });
+    return { ok: Number.isFinite(r.c1) && r.c1 === r.c0 + 5, detail: `purse ${r.c0} → ${r.c1} after a NaN effect and a 5-sun one` };
+  },
   async parentTitles(pg) {
     // a father is never "a lady of the house", a mother never "a lord"
     const r = await pg.evaluate(() => {

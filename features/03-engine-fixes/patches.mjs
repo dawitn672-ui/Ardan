@@ -87,4 +87,15 @@ export default [
       'const ctx=A.ctxTokens(pc,q.ctx);let text;try{text=typeof e.text=="function"?e.text(pc,q.ctx):e.text}catch(err){q.ctx.skip=1,text="",A.S.debug&&console.error("text",e.id,err)}text=A.T(text,ctx);',
     ]],
   },
+  {
+    id: 'ENG-COIN-FINITE',
+    blob: 'ardan-core',
+    why: 'The coin effect took any number, and NaN is a number: a scene whose payout was never worked out (its setup failed, ' +
+      'and something resolved it anyway) set the player\'s purse to NaN for the rest of the life. Found by the exploit test: ' +
+      'ni_deal_profit after a failed setup. A coin effect that is not a finite number now counts as nothing.',
+    edits: [[
+      'case"coin":{const amt=typeof v=="number"?v:0;',
+      'case"coin":{const amt=typeof v=="number"&&Number.isFinite(v)?v:0;',
+    ]],
+  },
 ];

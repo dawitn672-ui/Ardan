@@ -25,16 +25,16 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Relationships | 7 | 5 | 2 | 0 | 0 |
 | War | 7 | 6 | 1 | 0 | 0 |
 | Diplomacy and politics | 6 | 2 | 4 | 0 | 0 |
-| Economy | 7 | 0 | 2 | 5 | 0 |
+| Economy | 7 | 5 | 2 | 0 | 0 |
 | Balance | 6 | 3 | 2 | 0 | 1 |
 | UI and UX | 8 | 5 | 2 | 0 | 1 |
 | Visual art | 7 | 0 | 0 | 0 | 7 |
 | Technical | 7 | 6 | 1 | 0 | 0 |
 | Replayability | 6 | 2 | 3 | 1 | 0 |
 | Uniqueness | 5 | 2 | 2 | 1 | 0 |
-| **All** | **94** | **39** | **30** | **15** | **10** |
+| **All** | **94** | **44** | **30** | **10** | **10** |
 
-That is 41% done and 32% partial. 16% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 47% done and 32% partial. 11% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
 
 ## World and lore
 
@@ -123,13 +123,13 @@ That is 41% done and 32% partial. 16% is not started but buildable here, and 11%
 
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
-| 1 | Production per province | ✗ | |
-| 2 | Demand from people and armies | ✗ | |
-| 3 | NPC merchants and caravans | ✗ | |
-| 4 | More markets with distance pricing | ✗ | One market per realm |
-| 5 | Production chains | ✗ | |
+| 1 | Production per province | ✅ | 45-economy: every province makes goods from its terrain, biome, coast and people, more of what the realm exports; grain comes in at harvest, and each realm rolls a good, ordinary, poor or failed harvest each June |
+| 2 | Demand from people and armies | ✅ | 45-economy: people per head, the rich by income, armies at war per thousand men; each market keeps a stock and its price follows it. A failed harvest behind closed roads makes grain ×2.8; a realm's first months of war raise arms 27% and horses 35% |
+| 3 | NPC merchants and caravans | ✅ | 45-economy: about 330 caravans a month carry goods wherever the gap pays the road (cheaper by sea); war closes roads and bandits take a share in unrest. They cut the spread of prices between realms from 0.94 to 0.39 and famines from 325 to 10. They are traffic, not people |
+| 4 | More markets with distance pricing | ◐ | 45-economy: local prices by province (what it makes 15% cheaper, other goods 2.5% dearer a step from the capital); still one stocked market per realm |
+| 5 | Production chains | ✅ | 45-economy: wool to fine cloth, iron and charcoal to steel, steel to arms, run by towns where they pay and placed by their inputs; the player can own a forge, an armory or a weaving shed whose income is the spread |
 | 6 | Money sinks | ◐ | Debt repayment; idle merc pay removed; still no upkeep or ransoms for the player |
-| 7 | Exploit test | ◐ | The buy/sell-back loop is closed and tested; trade-run loops are untested |
+| 7 | Exploit test | ✅ | `bench/exploit.mjs`: a greedy trader against farms, ten years, four seeds. The release's economy let it reach 11.9× the estate; this one at most 1.19×, after charging haulage and pricing each load by its good's own market. `noTradeLoop` holds it in CI |
 
 ## Balance and difficulty
 
@@ -244,8 +244,11 @@ Findings from building these:
 
 | Feature | Rows | What changed |
 | --- | --- | --- |
+| 45-economy | Economy 1, 2, 3, 5, 7 ✅, Economy 4 ◐ | Production from the land, demand from people and armies, stocks that set prices, caravans between all realms at peace, local prices, three production chains with workshops the player can own, and an exploit test. 97% of realm-goods hold a normal stock over ten years; a famine behind closed roads makes grain ×2.8. |
 | 44-rank-battles | War 1 ✅ | The soldier's line battle and the officer's tactical battle now move the war-map fight they belong to. Measured by replaying 60 real fights frozen at their start: best against worst, 12 points of win rate for the soldier and 19 for the officer. The release's fixed nudges moved it 5 at most. |
 
 Findings:
 
+- **The release's economy had a money loop.** A greedy trading bot turned 1,000 suns into 14,543 in ten years, twelve times a farm estate. Building the new economy first made it worse (two to three hundred times) until trade runs paid haulage and each load's price slid by the market for that good.
+- **A purse could become NaN.** The coin effect accepted NaN, and a scene whose setup had failed paid NaN. `ENG-COIN-FINITE` (fix layer) guards it; the release fails the new test.
 - **The random stream lives outside the state.** `A.rngState` is not in `A.S`, so restoring a saved state does not replay the same future. The replay lab (`bench/rankfx-lab.mjs`) restores both.
