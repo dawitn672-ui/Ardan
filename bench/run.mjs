@@ -60,7 +60,8 @@ const MODULES = {
     const gaps = lives.flatMap(l => l.gaps);
     const evPerYear = lives.map(l => l.events / Math.max(1, l.years));
     const decisions = lives.map(l => Object.entries(l.items).reduce((a, [k, n]) => a + n, 0) / Math.max(1, l.years));
-    const byPers = {}; for (const p of PERS) { const g = lives.filter(l => l.personality === p); byPers[p] = { lives: g.length, medianDeathAge: median(g.filter(l => l.deathAge != null).map(l => l.deathAge)), checkWinRate: r1(100 * g.reduce((a, l) => a + l.wins, 0) / Math.max(1, g.reduce((a, l) => a + l.checks, 0))) }; }
+    // death ages by personality count humans and orcs only: an elf or a dwarf who lives three centuries swamps a 16-life median
+    const byPers = {}; for (const p of PERS) { const g = lives.filter(l => l.personality === p); byPers[p] = { lives: g.length, medianDeathAge: median(g.filter(l => l.deathAge != null && ['human', 'orc'].includes(l.o.race)).map(l => l.deathAge)), checkWinRate: r1(100 * g.reduce((a, l) => a + l.wins, 0) / Math.max(1, g.reduce((a, l) => a + l.checks, 0))) }; }
     return {
       lives: lives.length,
       medianDeathAge_humanOrc: median(deaths), p10DeathAge: pct(deaths, .1), p90DeathAge: pct(deaths, .9),
