@@ -2,7 +2,8 @@
 // cunning) and visible plans. Your superior's orders arrive as letters you can follow or ignore, with consequences").
 //
 // In the release every AI army thinks alike (A.armyThink): it attacks a province when its odds pass a fixed bar, and
-// sends a third of its divisions at once. Now the general's traits set a temper, and the temper moves four dials:
+// sends a third of its divisions at once, on the same clock. Now the general's traits set a temper, and the temper
+// moves five dials:
 //   bold (brave, impetuous, wrathful, reckless, ambitious, proud): attacks at worse odds, sooner, with half its divisions;
 //   cautious (craven, patient, calm, cautious, content): wants better odds and rested men, and sends fewer;
 //   cunning (deceitful, witty, curious, paranoid): goes for the undefended and keeps away from forts;
@@ -23,11 +24,14 @@
     // need: multiplies the odds an attack must reach; spear: the share of divisions sent at once (the release: 1/3);
     // prep: multiplies the rest (organisation) and planning a division must have before it attacks;
     // weak: multiplies the pull of an undefended province and the push of a fort
+    // every: the army thinks once in so many ticks of the war clock (the release: 3). Measured over 96 wars a temper,
+    // the four dials alone moved nothing: a division is rarely ready, next to the enemy and near the odds bar all at
+    // once, so the tempo is what a temper mostly is
     DIALS: {
-      bold: { need: 0.88, spear: 1 / 2, prep: 0.7, weak: 1 },
-      cautious: { need: 1.3, spear: 2 / 9, prep: 1.25, weak: 1 },
-      cunning: { need: 1.1, spear: 2 / 9, prep: 1, weak: 2.2 },
-      steady: { need: 1, spear: 1 / 3, prep: 1, weak: 1 },
+      bold: { need: 0.88, spear: 1 / 2, prep: 0.7, weak: 1, every: 2 },
+      cautious: { need: 1.3, spear: 2 / 9, prep: 1.25, weak: 1, every: 4 },
+      cunning: { need: 1.1, spear: 2 / 9, prep: 1, weak: 2.2, every: 3 },
+      steady: { need: 1, spear: 1 / 3, prep: 1, weak: 1, every: 3 },
     },
     NAMES: { bold: 'Bold', cautious: 'Cautious', cunning: 'Cunning', steady: 'Steady' },
     WAIT: 60,      // days before an order's outcome is known
@@ -54,6 +58,7 @@
   G.spear = a => G.DIALS[G.of(a)].spear;
   G.weak = a => G.DIALS[G.of(a)].weak;
   G.prep = a => G.DIALS[G.of(a)].prep;
+  G.every = a => G.DIALS[G.of(a)].every || 3;
 
   // the plan: where the army is sending divisions, and where it holds
   const think = A.armyThink;

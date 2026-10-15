@@ -17,4 +17,15 @@ export default [
       ['(def<1||(d.plan||0)>=.09)', '(def<1||(d.plan||0)>=.09*prep)'],
     ],
   },
+  {
+    id: 'GO-ARMY-TEMPO',
+    blob: 'ardan-core',
+    why: 'Every AI army thought once in three ticks of the war clock. The four dials above barely moved a war: over 96 wars a ' +
+      'temper, bold and cautious armies made the same number of assaults (331 and 353), because a division is rarely rested, ' +
+      'next to the enemy and near the odds bar at once. Now the general sets the tempo too (A.GENERALS.every): a bold one ' +
+      'thinks every second tick and catches his men the moment they are ready, a cautious one every fourth.',
+    edits: [
+      ['S.armies.forEach((a,i)=>{(S.warClock+i)%3===0&&A.armyThink(a)})', 'S.armies.forEach((a,i)=>{(S.warClock+i)%(A.GENERALS?A.GENERALS.every(a):3)===0&&A.armyThink(a)})'],
+    ],
+  },
 ];

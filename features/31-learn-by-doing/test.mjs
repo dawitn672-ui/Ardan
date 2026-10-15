@@ -40,18 +40,24 @@ export default {
   async growShareAB(pg) {
     const r = await pg.evaluate(() => {
       const D = Object.assign({}, A.GROW);
+      // eight lives a side on each of three shifted random streams: the two sides' lives part ways at the first check
+      // that goes differently, and on one stream of eight lives the points-a-year ratio ranged 0.93 to 1.28 by stream alone
+      const STREAMS = [0, 1, 3], SEEDS = [5, 6, 7, 8, 9, 10, 11, 12];
       const run = (u, p, f) => {
         Object.assign(A.GROW, { USE: u, PRACTICE: p, FAIL: f });
         let share = 0, pts = 0;
-        // eight lives a side: the two sides' lives part ways at the first check that goes differently, so few lives are noisy
-        const SEEDS = [5, 6, 7, 8, 9, 10, 11, 12];
-        for (const seed of SEEDS) {
+        for (const burn of STREAMS) for (const seed of SEEDS) {
+          const hook = () => { for (let i = 0; i < burn; i++) A.rand(); };
+          A.onMonth.push(hook);
+          try {
           A.newGame({ seed, race: 'human', realm: ['POL-01', 'POL-03'][seed % 2], status: ['peasant', 'artisan'][seed % 2], sex: 'M', startAge: 16 });
           const pc = A.pc(), s0 = Object.values(pc.skills).reduce((a, x) => a + x, 0);
           T.play(15);
           share += A.GROW.useShare(pc) || 0; pts += Object.values(pc.skills).reduce((a, x) => a + x, 0) - s0;
+          } finally { A.onMonth.splice(A.onMonth.indexOf(hook), 1); }
         }
-        return { share: Math.round(100 * share / SEEDS.length), perYear: Math.round(pts / SEEDS.length / 15 * 10) / 10 };
+        const n = STREAMS.length * SEEDS.length;
+        return { share: Math.round(100 * share / n), perYear: Math.round(pts / n / 15 * 10) / 10 };
       };
       const out = { release: run(1, 1, 1), now: run(D.USE, D.PRACTICE, D.FAIL) };
       Object.assign(A.GROW, D);

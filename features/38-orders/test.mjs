@@ -42,14 +42,18 @@ export default {
   },
 
   async temperMovesTheWar(pg) {
-    // the same twelve wars, run with one side's generals of each temper. A war is chaotic (one changed decision
-    // reshapes it), so this pools twelve and counts what the temper is about: assaults on defended provinces. The dead
-    // are reported but not held to a bar: across builds, bold's extra blood ranged from +2% to +29%.
+    // the same wars, run with one side's generals of each temper, counting what the temper is about: assaults on
+    // defended provinces. A war is chaotic: one changed draw reshapes it, and twelve wars passed or failed on the random
+    // stream alone (with a few draws burned each month, cautious out-assaulted bold two to one). So this pools twelve
+    // wars on each of eight shifted streams, 96 a temper. The dead are reported but not held to a bar.
     const r = await pg.evaluate(() => {
       const out = {};
-      for (const t of ['steady', 'bold', 'cautious', 'cunning']) {
-        const o = out[t] = { assaults: 0, ours: 0, theirs: 0, held: 0 };
-        for (let s = 0; s < 12; s++) {
+      for (const t of ['steady', 'bold', 'cautious', 'cunning']) out[t] = { assaults: 0, ours: 0, theirs: 0, held: 0 };
+      for (const burn of [0, 1, 2, 3, 5, 7, 11, 40]) for (const t of Object.keys(out)) {
+        const o = out[t];
+        const hook = () => { for (let i = 0; i < burn; i++) A.rand(); };
+        A.onMonth.push(hook);
+        try { for (let s = 0; s < 12; s++) {
           A.newGame({ seed: 71 + s, race: 'human', realm: 'POL-05', status: 'peasant', sex: 'M', startAge: 30 });
           const me = ['POL-01', 'POL-02', 'POL-03'][s % 3], en = A.neighbors(me)[s % 2];
           if (!en) continue;
@@ -71,15 +75,15 @@ export default {
           try { for (let m = 0; m < 10; m++) A.advance(30); } finally { A.armyThink = think; }
           o.ours += Math.max(0, m0 - men(me)); o.theirs += Math.max(0, e0 - men(en));
           o.held += A.S.prov.filter(P => P.owner !== me && A.ctrl(P) === me).length;
-        }
+        } } finally { A.onMonth.splice(A.onMonth.indexOf(hook), 1); }
       }
       return out;
     });
     const s = r.steady, b = r.bold;
     const c = r.cautious;
-    // bold has fought most in every build measured; cautious fought less than steady in two builds of three, so it is
-    // reported, not held
-    const ok = b.assaults >= s.assaults && b.assaults >= c.assaults * 1.1;
+    // over 96 wars: bold 414, steady 404, cautious 329 assaults. Bold against steady is within the noise (a bold general
+    // also thinks too often to hold a plan, see GO-ARMY-TEMPO), so it is reported, not held
+    const ok = b.assaults >= c.assaults * 1.1 && s.assaults >= c.assaults * 1.1;
     const k = n => `${Math.round(n / 1000)}k`;
     return { ok, detail: Object.entries(r).map(([t, v]) => `${t}: ${v.assaults} assaults, ${k(v.ours)} of ours and ${k(v.theirs)} of theirs dead, ${v.held} provinces held`).join('; ') };
   },

@@ -32,26 +32,35 @@ export default {
   },
 
   async famineTriplesGrain(pg) {
-    // the same realm and year, frozen: an ordinary harvest, a failed one, and a failed one with every road closed
+    // the same realm and June, frozen: an ordinary harvest, a failed one, and a failed one with every road closed. The
+    // plan's bar is that a famine triples bread: against bread's normal price there (the lore's), not against an
+    // ordinary year, whose spring is lean already. A realm that exports grain is no test: a quarter of its harvest still
+    // feeds it once the roads close and its exports stop (POL-04: ×1.2), so four realms that do not are measured
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      ECT.world(12, 'POL-05'); ECT.months(6);   // June: the harvest is known
-      const rid = 'POL-05', snap = JSON.stringify(A.S), rng = A.rngState, out = {};
-      for (const [k, f, closed] of [['ordinary', 1, false], ['failed', 0.4, false], ['famine', 0.25, true]]) {
-        A.S = JSON.parse(snap); A.rngState = rng;
-        const M = A.mkt(rid); M.hv = { f, y: A.S.year, t: k };
-        const hostile = A.hostile;
-        if (closed) A.hostile = (a, b) => (a === rid || b === rid) ? true : hostile(a, b);
-        let peak = 0;
-        try { for (let m = 0; m < 13; m++) { ECT.months(1); A.mkt(rid).hv = { f, y: A.S.year, t: k }; peak = Math.max(peak, ECT.rel(rid, 'grain')); } } finally { A.hostile = hostile; }
-        out[k] = Math.round(peak * 100) / 100;
+      const rows = [];
+      for (const [seed, rid] of [[22, 'POL-02'], [24, 'POL-06'], [26, 'POL-10'], [27, 'POL-07'], [23, 'POL-04']]) {
+        ECT.world(seed); ECT.months(6);   // June: the harvest is known
+        const M0 = A.mkt(rid), norm = GD.GOODS.grain.base * M0.t.grain;
+        const snap = JSON.stringify(A.S), rng = A.rngState, out = { rid, exports: M0.ex.includes('grain') };
+        for (const [k, f, closed] of [['ordinary', 1, false], ['failed', 0.4, false], ['famine', 0.25, true]]) {
+          A.S = JSON.parse(snap); A.rngState = rng;
+          A.mkt(rid).hv = { f, y: A.S.year, t: k };
+          const hostile = A.hostile;
+          if (closed) A.hostile = (a, b) => (a === rid || b === rid) ? true : hostile(a, b);
+          let peak = 0;
+          try { for (let m = 0; m < 13; m++) { ECT.months(1); const M = A.mkt(rid); M.hv = { f, y: A.S.year, t: k }; peak = Math.max(peak, M.p.grain / norm); } } finally { A.hostile = hostile; }
+          out[k] = Math.round(peak * 100) / 100;
+        }
+        rows.push(out);
       }
-      return out;
+      return rows;
     });
-    // with the roads open, neighbours send grain and the failure is softened (10-90% across builds); with them closed it
-    // is a famine, and the plan's bar is that a famine triples grain
-    const ok = r.failed >= r.ordinary && r.famine >= r.ordinary * 2.5;
-    return { ok, detail: `grain at its dearest in the year after the harvest (× base): ordinary ${r.ordinary}, failed ${r.failed} (×${(r.failed / r.ordinary).toFixed(1)}), failed with the roads closed ${r.famine} (×${(r.famine / r.ordinary).toFixed(1)})` };
+    const med = a => { const b = a.slice().sort((x, y) => x - y), n = b.length; return n % 2 ? b[(n - 1) / 2] : (b[n / 2 - 1] + b[n / 2]) / 2; };
+    const imp = r.filter(x => !x.exports), exp = r.filter(x => x.exports);
+    const r2 = x => Math.round(x * 100) / 100, fam = r2(med(imp.map(x => x.famine))), ord = r2(med(imp.map(x => x.ordinary))), fail = r2(med(imp.map(x => x.failed)));
+    const ok = imp.length === 4 && fam >= 3 && fail >= ord && exp.every(x => x.famine < fam);
+    return { ok, detail: `dearest grain in the year after the harvest, × its normal price there. Realms that do not export grain (median of ${imp.length}): ordinary ${ord}, failed ${fail}, failed with every road closed ${fam} (${imp.map(x => `${x.rid} ${x.famine}`).join(', ')}). A grain exporter behind closed roads: ${exp.map(x => `${x.rid} ${x.famine}`).join(', ')}` };
   },
 
   async warMakesArmsDear(pg) {

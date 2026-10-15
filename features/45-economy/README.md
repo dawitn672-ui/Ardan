@@ -22,7 +22,7 @@ The plan says the economy "hits 10 when goods come from somewhere, go somewhere,
 | Test | Result |
 | --- | --- |
 | `econHolds` | After ten years, **97%** of 499 realm-goods hold between a third of normal and five times it. Chains make what is used: cloth 418/335, steel 600/213, arms 314/127 loads a month. |
-| `famineTriplesGrain` | The same realm and June, frozen. Grain at its dearest over the next year: an ordinary harvest 1.27× base; a failed one with the roads open 1.36× (neighbours send grain); a failed one with every road closed **3.5×, which is ×2.8**. |
+| `famineTriplesGrain` | The same realm and June, frozen; the dearest grain over the next year against bread's normal price there. In four realms that do not export grain: an ordinary harvest **×1.2** (the lean spring), a failed one with the roads open ×1.24 (neighbours send grain), a failed one with every road closed **×3.5** (median; 3.0 to 3.7). A grain exporter behind closed roads hardly notices (×1.19): a quarter of its harvest still feeds it once its exports stop. |
 | `warMakesArmsDear` | A realm that buys its arms, in its first four months of war: arms used go from 6 to 26 loads a month; arms rise 27%, iron 32%, horses 35%. |
 | `caravansPullPricesTogether` | After three years, the spread of prices between realms falls from 0.94 to 0.39 (log sd), and realm-goods in famine fall from 325 to 10. |
 | `localPrices` | Four steps from the capital, fish (made there) costs ×0.85 of the capital's price and grain ×1.10. |
