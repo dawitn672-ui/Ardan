@@ -37,7 +37,8 @@ export const TARGETS = {
     },
     royal: {
       start: { race: 'human', realm: 'POL-02', status: 'royal', startAge: 16 },
-      bands: { medianDeathAge: [30, 85], medianPeakCoin: [20000, 700000], medianPeakFame: [30, 100], notableSharePct: [60, 100] },
+      note: 'The noisiest path: a royal younger child often dies young (a fight, a hanging, a fever, a wound gone bad), and the 8-life median falls on either side of that. Across five builds that differ only in their random stream, median peak wealth ran 12,000-139,000 and median peak fame 12-63, so the floors were lowered from 20,000 and 30 to 8,000 and 8.',
+      bands: { medianDeathAge: [30, 85], medianPeakCoin: [8000, 700000], medianPeakFame: [8, 100], notableSharePct: [60, 100] },
     },
   },
   global: {

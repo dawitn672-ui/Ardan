@@ -1,20 +1,20 @@
 {
  "file": "index.html",
- "build": "b593143+f35.0cef58e",
+ "build": "b593143+f37.a1c744f",
  "lives": 8,
  "paths": {
   "serf": {
    "lives": 8,
-   "medianDeathAge": 57,
-   "medianPeakCoin": 104730,
-   "medianPeakFame": 20,
-   "notableSharePct": 100,
-   "freedSharePct": 87.5,
+   "medianDeathAge": 51,
+   "medianPeakCoin": 19822,
+   "medianPeakFame": 24,
+   "notableSharePct": 87.5,
+   "freedSharePct": 75,
    "arcs": [
     "freed",
-    "freed",
-    "general",
-    "freed",
+    "outlaw",
+    "captain",
+    "bound for life",
     "freed",
     "outlaw",
     "outlaw",
@@ -22,46 +22,46 @@
    ],
    "each": [
     {
+     "deathAge": 51,
+     "years": 35,
+     "peakCoin": 241100,
+     "peakFame": 33
+    },
+    {
+     "deathAge": 53,
+     "years": 37,
+     "peakCoin": 246,
+     "peakFame": 14
+    },
+    {
      "deathAge": 34,
      "years": 18,
-     "peakCoin": 6486,
-     "peakFame": 20
+     "peakCoin": 19822,
+     "peakFame": 35
     },
     {
-     "deathAge": 38,
-     "years": 22,
-     "peakCoin": 2258,
-     "peakFame": 11
+     "deathAge": 27,
+     "years": 11,
+     "peakCoin": 121,
+     "peakFame": 2
     },
     {
-     "deathAge": 57,
-     "years": 41,
-     "peakCoin": 224131,
-     "peakFame": 78
+     "deathAge": 61,
+     "years": 45,
+     "peakCoin": 408847,
+     "peakFame": 34
     },
     {
-     "deathAge": 67,
-     "years": 51,
-     "peakCoin": 813209,
-     "peakFame": 37
+     "deathAge": 72,
+     "years": 56,
+     "peakCoin": 24255,
+     "peakFame": 24
     },
     {
-     "deathAge": 75,
-     "years": 59,
-     "peakCoin": 107879,
-     "peakFame": 15
-    },
-    {
-     "deathAge": 55,
-     "years": 39,
-     "peakCoin": 52422,
-     "peakFame": 49
-    },
-    {
-     "deathAge": 65,
-     "years": 49,
-     "peakCoin": 104730,
-     "peakFame": 17
+     "deathAge": 35,
+     "years": 19,
+     "peakCoin": 15748,
+     "peakFame": 14
     },
     {
      "deathAge": 25,
@@ -73,33 +73,33 @@
   },
   "peasant": {
    "lives": 8,
-   "medianDeathAge": 50,
-   "medianPeakCoin": 229833,
-   "medianPeakFame": 51,
-   "notableSharePct": 75,
+   "medianDeathAge": 32,
+   "medianPeakCoin": 37688,
+   "medianPeakFame": 26,
+   "notableSharePct": 87.5,
    "freedSharePct": 0,
    "arcs": [
     "captain",
-    "fortune made",
-    "master of a trade",
-    "general",
-    "general",
-    "cut short",
     "officer of state",
+    "master of a trade",
+    "outlaw",
+    "general",
+    "officer of state",
+    "fortune made",
     "cut short"
    ],
    "each": [
     {
-     "deathAge": 75,
-     "years": 59,
-     "peakCoin": 277961,
-     "peakFame": 77
+     "deathAge": 40,
+     "years": 24,
+     "peakCoin": 100403,
+     "peakFame": 42
     },
     {
-     "deathAge": 38,
-     "years": 22,
-     "peakCoin": 42990,
-     "peakFame": 19
+     "deathAge": 32,
+     "years": 16,
+     "peakCoin": 37688,
+     "peakFame": 26
     },
     {
      "deathAge": 23,
@@ -108,28 +108,28 @@
      "peakFame": 9
     },
     {
-     "deathAge": 59,
-     "years": 43,
-     "peakCoin": 229833,
-     "peakFame": 84
+     "deathAge": 22,
+     "years": 6,
+     "peakCoin": 695,
+     "peakFame": 1
     },
     {
-     "deathAge": 50,
-     "years": 34,
-     "peakCoin": 232086,
+     "deathAge": 71,
+     "years": 55,
+     "peakCoin": 387723,
      "peakFame": 100
     },
     {
-     "deathAge": 19,
-     "years": 3,
-     "peakCoin": 68,
-     "peakFame": 0
+     "deathAge": 73,
+     "years": 57,
+     "peakCoin": 462365,
+     "peakFame": 58
     },
     {
-     "deathAge": 72,
-     "years": 56,
-     "peakCoin": 258001,
-     "peakFame": 51
+     "deathAge": 30,
+     "years": 14,
+     "peakCoin": 26823,
+     "peakFame": 5
     },
     {
      "deathAge": 18,
@@ -141,27 +141,27 @@
   },
   "artisan": {
    "lives": 8,
-   "medianDeathAge": 33,
-   "medianPeakCoin": 30972,
-   "medianPeakFame": 7,
+   "medianDeathAge": 38,
+   "medianPeakCoin": 31537,
+   "medianPeakFame": 8,
    "notableSharePct": 75,
    "freedSharePct": 0,
    "arcs": [
-    "master of a trade",
+    "working life",
     "outlaw",
     "cut short",
-    "officer of state",
+    "fortune made",
     "fortune made",
     "soldier",
-    "working life",
-    "fortune made"
+    "fortune made",
+    "outlaw"
    ],
    "each": [
     {
-     "deathAge": 23,
-     "years": 7,
-     "peakCoin": 3093,
-     "peakFame": 3
+     "deathAge": 22,
+     "years": 6,
+     "peakCoin": 1297,
+     "peakFame": 2
     },
     {
      "deathAge": 30,
@@ -176,16 +176,16 @@
      "peakFame": 0
     },
     {
-     "deathAge": 70,
-     "years": 54,
-     "peakCoin": 215503,
-     "peakFame": 30
+     "deathAge": 38,
+     "years": 22,
+     "peakCoin": 21969,
+     "peakFame": 4
     },
     {
-     "deathAge": 42,
-     "years": 26,
-     "peakCoin": 176665,
-     "peakFame": 21
+     "deathAge": 75,
+     "years": 59,
+     "peakCoin": 505737,
+     "peakFame": 50
     },
     {
      "deathAge": 33,
@@ -194,228 +194,231 @@
      "peakFame": 35
     },
     {
-     "deathAge": 32,
-     "years": 16,
-     "peakCoin": 8341,
-     "peakFame": 7
+     "deathAge": 51,
+     "years": 35,
+     "peakCoin": 85966,
+     "peakFame": 8
     },
     {
-     "deathAge": 61,
-     "years": 45,
-     "peakCoin": 30972,
-     "peakFame": 6
+     "deathAge": 67,
+     "years": 51,
+     "peakCoin": 31537,
+     "peakFame": 24
     }
    ]
   },
   "merchant": {
    "lives": 8,
-   "medianDeathAge": 70,
-   "medianPeakCoin": 511026,
-   "medianPeakFame": 55,
-   "notableSharePct": 100,
+   "medianDeathAge": 38,
+   "medianPeakCoin": 222437,
+   "medianPeakFame": 28,
+   "notableSharePct": 87.5,
    "freedSharePct": 0,
    "arcs": [
     "fortune made",
-    "outlaw",
     "officer of state",
-    "ruler",
-    "ruler",
-    "ruler",
     "fortune made",
-    "ruler"
+    "ruler",
+    "outlaw",
+    "working life",
+    "fortune made",
+    "fortune made"
    ],
    "each": [
     {
-     "deathAge": 48,
-     "years": 30,
-     "peakCoin": 215046,
-     "peakFame": 33
+     "deathAge": 38,
+     "years": 20,
+     "peakCoin": 247863,
+     "peakFame": 28
     },
     {
-     "deathAge": 61,
-     "years": 43,
-     "peakCoin": 499223,
-     "peakFame": 64
-    },
-    {
-     "deathAge": 69,
-     "years": 51,
-     "peakCoin": 155488,
-     "peakFame": 34
-    },
-    {
-     "deathAge": 67,
-     "years": 49,
-     "peakCoin": 511026,
-     "peakFame": 55
-    },
-    {
-     "deathAge": 71,
-     "years": 53,
-     "peakCoin": 617394,
-     "peakFame": 70
-    },
-    {
-     "deathAge": 72,
-     "years": 54,
-     "peakCoin": 522531,
-     "peakFame": 81
+     "deathAge": 57,
+     "years": 39,
+     "peakCoin": 50834,
+     "peakFame": 57
     },
     {
      "deathAge": 70,
      "years": 52,
-     "peakCoin": 167259,
-     "peakFame": 35
+     "peakCoin": 393755,
+     "peakFame": 56
     },
     {
-     "deathAge": 76,
-     "years": 58,
-     "peakCoin": 836007,
-     "peakFame": 55
+     "deathAge": 69,
+     "years": 51,
+     "peakCoin": 733222,
+     "peakFame": 60
+    },
+    {
+     "deathAge": 36,
+     "years": 18,
+     "peakCoin": 178122,
+     "peakFame": 27
+    },
+    {
+     "deathAge": 22,
+     "years": 4,
+     "peakCoin": 1140,
+     "peakFame": 2
+    },
+    {
+     "deathAge": 36,
+     "years": 18,
+     "peakCoin": 222437,
+     "peakFame": 20
+    },
+    {
+     "deathAge": 30,
+     "years": 12,
+     "peakCoin": 97130,
+     "peakFame": 10
     }
    ]
   },
   "noble": {
    "lives": 8,
-   "medianDeathAge": 68,
-   "medianPeakCoin": 233311,
-   "medianPeakFame": 77,
+   "medianDeathAge": 66,
+   "medianPeakCoin": 296098,
+   "medianPeakFame": 95,
    "notableSharePct": 100,
    "freedSharePct": 0,
    "arcs": [
+    "master of a trade",
     "officer of state",
     "officer of state",
     "officer of state",
-    "outlaw",
-    "outlaw",
-    "outlaw",
     "officer of state",
-    "officer of state"
+    "officer of state",
+    "general",
+    "general"
    ],
    "each": [
     {
-     "deathAge": 68,
-     "years": 52,
-     "peakCoin": 973837,
-     "peakFame": 77
+     "deathAge": 24,
+     "years": 8,
+     "peakCoin": 4447,
+     "peakFame": 37
     },
     {
-     "deathAge": 54,
-     "years": 38,
-     "peakCoin": 286830,
-     "peakFame": 94
+     "deathAge": 44,
+     "years": 28,
+     "peakCoin": 80114,
+     "peakFame": 78
     },
     {
-     "deathAge": 62,
-     "years": 46,
-     "peakCoin": 152742,
+     "deathAge": 61,
+     "years": 45,
+     "peakCoin": 460337,
+     "peakFame": 95
+    },
+    {
+     "deathAge": 73,
+     "years": 57,
+     "peakCoin": 177757,
+     "peakFame": 75
+    },
+    {
+     "deathAge": 77,
+     "years": 61,
+     "peakCoin": 577096,
      "peakFame": 82
     },
     {
-     "deathAge": 22,
-     "years": 6,
-     "peakCoin": 1005,
-     "peakFame": 8
+     "deathAge": 66,
+     "years": 50,
+     "peakCoin": 815281,
+     "peakFame": 100
     },
     {
-     "deathAge": 78,
-     "years": 62,
-     "peakCoin": 233311,
-     "peakFame": 61
+     "deathAge": 41,
+     "years": 25,
+     "peakCoin": 71219,
+     "peakFame": 100
     },
     {
-     "deathAge": 71,
-     "years": 55,
-     "peakCoin": 11571,
-     "peakFame": 63
-    },
-    {
-     "deathAge": 25,
-     "years": 9,
-     "peakCoin": 30858,
-     "peakFame": 41
-    },
-    {
-     "deathAge": 70,
-     "years": 54,
-     "peakCoin": 481116,
-     "peakFame": 77
+     "deathAge": 75,
+     "years": 59,
+     "peakCoin": 296098,
+     "peakFame": 97
     }
    ]
   },
   "royal": {
    "lives": 8,
-   "medianDeathAge": 54,
-   "medianPeakCoin": 68887,
-   "medianPeakFame": 38,
-   "notableSharePct": 87.5,
+   "medianDeathAge": 41,
+   "medianPeakCoin": 12098,
+   "medianPeakFame": 12,
+   "notableSharePct": 100,
    "freedSharePct": 0,
    "arcs": [
     "outlaw",
-    "outlaw",
-    "captain",
+    "master of a trade",
+    "soldier",
     "fortune made",
     "general",
-    "officer of state",
-    "master of a trade",
-    "cut short"
+    "outlaw",
+    "fortune made",
+    "master of a trade"
    ],
    "each": [
     {
+     "deathAge": 37,
+     "years": 21,
+     "peakCoin": 3906,
+     "peakFame": 11
+    },
+    {
+     "deathAge": 47,
+     "years": 31,
+     "peakCoin": 12098,
+     "peakFame": 28
+    },
+    {
+     "deathAge": 20,
+     "years": 4,
+     "peakCoin": 1127,
+     "peakFame": 7
+    },
+    {
+     "deathAge": 75,
+     "years": 59,
+     "peakCoin": 87679,
+     "peakFame": 46
+    },
+    {
+     "deathAge": 42,
+     "years": 26,
+     "peakCoin": 140825,
+     "peakFame": 73
+    },
+    {
+     "deathAge": 23,
+     "years": 7,
+     "peakCoin": 119,
+     "peakFame": 4
+    },
+    {
      "deathAge": 41,
      "years": 25,
-     "peakCoin": 7116,
-     "peakFame": 10
+     "peakCoin": 21641,
+     "peakFame": 12
     },
     {
-     "deathAge": 54,
-     "years": 38,
-     "peakCoin": 68887,
-     "peakFame": 37
-    },
-    {
-     "deathAge": 31,
-     "years": 15,
-     "peakCoin": 48446,
-     "peakFame": 38
-    },
-    {
-     "deathAge": 76,
-     "years": 60,
-     "peakCoin": 110923,
-     "peakFame": 57
-    },
-    {
-     "deathAge": 74,
-     "years": 58,
-     "peakCoin": 508051,
-     "peakFame": 100
-    },
-    {
-     "deathAge": 64,
-     "years": 48,
-     "peakCoin": 177227,
-     "peakFame": 63
-    },
-    {
-     "deathAge": 32,
-     "years": 16,
-     "peakCoin": 9949,
-     "peakFame": 21
-    },
-    {
-     "deathAge": 19,
-     "years": 3,
-     "peakCoin": 182,
-     "peakFame": 8
+     "deathAge": 22,
+     "years": 6,
+     "peakCoin": 1595,
+     "peakFame": 11
     }
    ]
   }
  },
  "global": {
-  "checkWinRate": 39.7,
-  "arcTypes": 11,
+  "checkWinRate": 40.1,
+  "arcTypes": 12,
   "pageErrors": 0
  },
- "failures": []
+ "failures": [
+  "royal.medianPeakCoin = 12098, outside 20000–700000",
+  "royal.medianPeakFame = 12, outside 30–100"
+ ]
 }

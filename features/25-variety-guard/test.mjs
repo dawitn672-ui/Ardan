@@ -28,7 +28,9 @@ const RUN = () => {
 export default {
   async varietyGuard(pg) {
     await pg.evaluate(RUN);
-    const r = await pg.evaluate(() => ({ off: VAR_RUN(false, [3, 4, 5, 6], 30), on: VAR_RUN(true, [3, 4, 5, 6], 30) }));
+    // eight lives a side: with four, the back-to-back share (about 20 pairs in 500 views) flipped on the random stream
+    const S8 = [3, 4, 5, 6, 7, 8, 9, 10];
+    const r = await pg.evaluate(S8 => ({ off: VAR_RUN(false, S8, 30), on: VAR_RUN(true, S8, 30) }), S8);
     // the release ships no NPC moves, so their repeat share only counts when there are some
     const npcOk = r.off.npc < 20 || r.on.npcRepeatPct <= r.off.npcRepeatPct * 0.7;
     const ok = r.on.repeatPct <= Math.max(0.3, r.off.repeatPct * 0.5) && r.on.triples === 0 && r.on.samePct <= r.off.samePct * 0.75 && r.on.shapedPct >= 50 && npcOk;
