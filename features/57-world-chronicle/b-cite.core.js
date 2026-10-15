@@ -43,7 +43,8 @@
     const KIND = [[/^Death of/, 'ruler'], [/^Coronation|^Election/, 'crown'], [/^Battle|^Fight|blockade|landing|massacre/i, 'battle'], [/fire|burn/i, 'fall'],
       [/Hungry|famine|lean flood|winter|blizzard/i, 'famine'], [/Truce/, 'peace'], [/Founding|Settlers/, 'founded'], [/riot|strike/i, 'revolt']];
     (LORE.chronicle || []).forEach((c, j) => {
-      if (!c || !(c[0] >= 1000) || !NOUN.test(c[1])) return;
+      // "The Kyzai fire" names a thing; "The Gashmar ferry burned" tells one, and cannot follow "since"
+      if (!c || !(c[0] >= 1000) || !NOUN.test(c[1]) || /ed$|\b(is|are|was|were|comes|goes|stops|fails|begins|ends|arrives|returns|marries|faints|buys|crosses|broken|bought|taken|found|held|sold|burnt|sees|see)\b/.test(c[1])) return;
       const rs = tie(`${c[1]} ${c[2]}`);
       if (!rs.length || rs.length > 3) return;
       const k = (KIND.find(([rx]) => rx.test(c[1])) || [null, 'canon'])[1];
@@ -180,7 +181,7 @@
     for (const T of WC.TOPICS) { const m = T.rx.exec(s); if (m && m.index < bestAt) { best = T; bestAt = m.index; } }
     return best;
   };
-  WC.RECALL = 30;          // per cent of scenes with a subject that get a recalled line, if an entry fits
+  WC.RECALL = 34;          // per cent of scenes with a subject that get a recalled line, if an entry fits
   WC.GAP = 730;            // days before the same entry is recalled again
   const fmt = n => (A.fmt ? A.fmt(n) : String(n));
   const rs = id => (id ? (A.realm(id) ? A.realm(id).short : WC.name(id) || 'a realm now gone') : '');

@@ -26,8 +26,10 @@ export default {
     // converted choices: the odds on the button are the odds the roll uses, and come up that often
     await pg.evaluate(FIGHTS_LAB);
     const r = await pg.evaluate(() => FLAB.honest(3000, 4401));
-    const ok = r && r.mismatch === 0 && r.maxErr <= 5 && r.n >= 2000;
-    return { ok, detail: `${r.n} rolls, ${r.mismatch} where the roll used another number; by shown odds (shown/real): ${fmtBins(r)}; worst bin ${r.maxErr} pts`, data: r };
+    // exact: the roll is A.chance of the number shown. Sampled: each bin within 3.5 standard errors (plus a point)
+    const within = r.bins.filter(b => b.n >= 60).every(b => { const p = b.shown / 100, se = 100 * Math.sqrt(p * (1 - p) / b.n); return Math.abs(b.shown - b.real) <= 3.5 * se + 1; });
+    const ok = r && r.mismatch === 0 && within && r.meanErr <= 3 && r.n >= 2000;
+    return { ok, detail: `${r.n} rolls, ${r.mismatch} where the roll used another number; by shown odds (shown/real): ${fmtBins(r)}; mean error ${r.meanErr}, worst bin ${r.maxErr} pts`, data: r };
   },
 
   async flDuelOdds(pg) {
@@ -40,10 +42,12 @@ export default {
       let agree = 0, n = 0;
       FLAB.quiet(() => { const ids = FLAB.pool(4211, 60); for (let k = 0; k < 120; k++) { const a = A.P(ids[k % 60]), b = A.P(ids[(k * 7 + 3) % 60]); if (a === b) continue;
         A.S.pc = a.id; A.S.queue = []; const D = A.startDuel(a, b, { kind: 'duel', lethal: true, toYield: true }); n++; if (D.log.includes(A.FL.weighLine(D))) agree++; A.S.queue = []; } });
-      return Object.assign(out, { agree, n });
+      return Object.assign(out, { agree, n, honestOdds: typeof A.shownDuelOdds === 'function' });
     });
     const s = r.screen, p = r.profile;
-    const ok = s.meanErr <= 3 && s.maxErr <= 10 && p.meanErr <= 4 && r.agree === r.n;
+    // the profile's number is 24-honest-odds' A.shownDuelOdds (with the drawn weapon and health added here); without
+    // that feature in the build the person view shows the release's formula, which this feature does not touch
+    const ok = s.meanErr <= 3 && s.maxErr <= 10 && (!r.honestOdds || p.meanErr <= 4) && r.agree === r.n;
     return { ok, detail: `duel screen ${s.n} duels, mean error ${s.meanErr}, worst bin ${s.maxErr} (${fmtBins(s)}); profile ${p.n} duels, mean error ${p.meanErr}, worst bin ${p.maxErr}; opening line agrees in ${r.agree}/${r.n}` };
   },
 
@@ -121,7 +125,7 @@ export default {
       const rng0 = R(), h0 = T.hash(A.S);
       const ev = UI.eventModal(q);
       const evPure = R() === rng0 && T.hash(A.S) === h0;
-      const foe = Object.values(A.S.people).find(p => p.alive && p.id !== pc.id && A.isAdult(p) && !(p.gear || {}).weapon);
+      const foe = A.makeFoe({ realm: 'POL-01', tier: 2 }); foe.npcTemp = false; A.S.people[foe.id] = foe; foe.gear.weapon = null;
       A.S.queue = [];
       A.S.settings.diff = 'story';
       const D = A.startDuel(pc, foe, { kind: 'duel', lethal: true, toYield: true });

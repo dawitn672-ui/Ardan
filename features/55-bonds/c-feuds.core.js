@@ -91,7 +91,7 @@
   BD.killHooks = BD.killHooks || [];
   const kill = A.kill;
   A.kill = function (p, cause) {
-    const was = !!(p && p.alive), pc = A.pc();
+    const was = !!(p && p.alive), pc = A.pc(), crown = p && p.ruler && A.realm(p.ruler) && A.realm(p.ruler).ruler === p.id ? p.ruler : null;
     const res = kill.apply(this, arguments);
     try {
       if (was && p && !p.alive && pc && pc.alive && p.id !== pc.id && pc.rel) {
@@ -99,7 +99,7 @@
         if (b && b.pid === String(p.id)) {
           FAM.killed(pc, p, b.how);
           for (const f of BD.killHooks) f(pc, p, b.how);
-          if (b.how === 'duel' && p.ruler && pc.realm && p.ruler !== pc.realm) FE.add(p.ruler, pc.realm, 'crown', { name: p.given, title: (A.realm(p.ruler) || {}).title });
+          if (b.how === 'duel' && crown && pc.realm && crown !== pc.realm) FE.add(crown, pc.realm, 'crown', { name: p.given, title: (A.realm(crown) || {}).title });
         } else FAM.carry(pc, p);
       }
     } catch (e) { console.error('bonds kill', e); }

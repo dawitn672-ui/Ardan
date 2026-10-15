@@ -103,6 +103,10 @@ export default {
           });
         });
       }
+      // the closing scene for a person who died first ends the arc, and leaves a deed
+      const g = A.EV.ar_gone;
+      if (!g || !g.trigger) bad.push('ar_gone missing or not trigger-only');
+      else g.choices.forEach((c, i) => { if (!c.fx || !c.fx.arc || c.fx.arc.go !== 'end' || !lastingFx(c.fx)) bad.push(`ar_gone choice ${i} does not end the arc with something lasting`); });
       return { arcs: keys.length, n, bad, spans: keys.map(k => { const D = A.ARCS.ARC[k], g = D.gap || A.ARCS.GAP; return `${k} ${D.stages.length}×[${g}]`; }) };
     }, LASTING_KEYS);
     const total = r.n.reduce((a, b) => a + b, 0), five = r.n.filter(x => x >= 5).length;
@@ -183,10 +187,22 @@ export default {
           }
         }
       });
-      return { runs, done, seen, maxW, maxAt, cast, problems: [...new Set(problems)] };
+      // the closing scene for a person who died first, for every arc
+      let gone = 0;
+      for (const k of A.ARV.KEYS) {
+        const pc = A.pc(), t = A.makeAcquaintance(pc, 'friend'); A.link(pc, t, 'friend', 30, 'friend'); t.alive = false;
+        const ctx = { arc: k }; A.ARV.bind(ctx, t); const q = { type: 'event', ev: 'ar_gone', forced: true, ctx };
+        A.S.queue = [q];
+        const v = A.eventView(q), all = [v.title, v.text, ...v.choices.map(c => c.t)].join(' | ');
+        if (v.skip) problems.push(`ar_gone for ${k} skipped`); else gone++;
+        if (ART.RAW.test(all)) problems.push(`ar_gone for ${k}: ${all.match(ART.RAW)[0]}`);
+        if (ART.words(v.text) > 80) problems.push(`ar_gone for ${k}: ${ART.words(v.text)} words`);
+        A.S.queue = [];
+      }
+      return { runs, done, seen, maxW, maxAt, cast, gone, problems: [...new Set(problems)] };
     });
-    const ok = !r.problems.length && r.done === r.runs;
-    return { ok, detail: `${r.runs} random runs (${r.seen} scenes): ${r.done} finished; longest scene ${r.maxW} words (${r.maxAt}); the second and later runs in a life cast the person already known ${r.cast.old} times${r.problems.length ? '. PROBLEMS: ' + r.problems.slice(0, 8).join('; ') : ''}` };
+    const ok = !r.problems.length && r.done === r.runs && r.gone === 13;
+    return { ok, detail: `${r.runs} random runs (${r.seen} scenes): ${r.done} finished; longest scene ${r.maxW} words (${r.maxAt}); the second and later runs in a life cast the person already known ${r.cast.old} times; the closing scene for a person who died first reads for ${r.gone} of 13 arcs${r.problems.length ? '. PROBLEMS: ' + r.problems.slice(0, 8).join('; ') : ''}` };
   },
 
   // who can meet which arc: most arcs are open to most grown lives; a ruler has none of these (the crown has its own)
@@ -235,7 +251,7 @@ export default {
         return { kept: !!pc.rel[id], type: pc.rel[id] && pc.rel[id].type };
       };
       const held = run(true), dropped = run(false);
-      // a person who died between scenes: the next scene is dropped, and the engine gives the arc up two months on
+      // a person who died between scenes: the scene that was due gives way to a closing one, which ends the arc
       const pc = ART.life(ART.FOR.ar_rise, 6702);
       pc.arcs = { ar_rise: { stage: 0, y: A.S.year, m: [], story: 1, q: A.absDay() } };
       A.queue({ type: 'event', ev: 'ar_rise_1', forced: true, ctx: { arc: 'ar_rise' } });
@@ -291,7 +307,7 @@ export default {
   },
 
   // whole bot lives: these arcs come up in real play, and run to their end. Lives are dealt round the six starts until
-  // ten have lasted forty years (at most 30 lives); half engaged, half passive
+  // ten have lasted forty years (at most 30 lives); the first round engaged, the rest passive (faster)
   async rivalsBotLives(pg) {
     await pg.evaluate(BOT);
     const paths = Object.entries(TARGETS.paths);
@@ -299,7 +315,7 @@ export default {
     for (let i = 0; i < 5 && lives.filter(l => l.years >= 40).length < 10; i++) for (const [name, P] of paths) {
       const o = Object.assign({ seed: 7301 + i * 7919 + name.length * 17, sex: i % 2 ? 'F' : 'M' }, P.start);
       lives.push(await pg.evaluate(([o, i]) => {
-        const L = B.life(o, ['careful', 'greedy'][i % 2], i % 2 === 0, 64);
+        const L = B.life(o, ['careful', 'greedy'][i % 2], i === 0, 64);
         const pc = A.P(A.S.pc) || {};
         const mine = new Set(A.ARV.KEYS);
         const arcs = Object.entries(pc.arcs || {}).filter(([k]) => mine.has(k)).map(([k, a]) => ({ k, stage: a.stage, done: !!a.done, gave: !!a.gave }));

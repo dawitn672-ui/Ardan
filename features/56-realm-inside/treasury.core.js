@@ -125,7 +125,7 @@ RI.build = function (r, p, b, cost) {
   if (Bd.dev) p.dev = Math.min(10, (p.dev || 0) + Bd.dev);
   if (Bd.income) { r.baseIncome = Math.round(r.baseIncome * (1 + Bd.income * share(r, p) * 3)); p.pop = Math.round(p.pop * 1.03); }
   if (Bd.fort) p.fort = Math.min(5, (p.fort || 0) + 1);
-  if (Bd.stab) r.stability = Math.min(100, r.stability + Bd.stab);
+  if (Bd.stab && r.stability < 60) r.stability = Math.min(60, r.stability + Bd.stab);   // the first temples calm a realm; the twentieth does not
   if (Bd.armyQ) r.armyQ = (r.armyQ || 1) + Bd.armyQ;
   r.riWorks = (r.riWorks || 0) + cost;
   r.riBuilt = (r.riBuilt || []).concat([[A.S.year, p.id, b]]).slice(-8);
@@ -133,7 +133,11 @@ RI.build = function (r, p, b, cost) {
 
 // a great work: a cathedral, a palace, a harbour mole. A rich crown's pride, with no ceiling: each costs more than the
 // last, and its keep falls to the temple or the town, not the crown
-RI.greatCost = r => Math.round(1.2 * RI.rev(r) * (1 + .5 * (r.riGreatN || (r.riGreat || []).length)));
+RI.greatCost = r => {
+  const n = Math.round(1.2 * RI.rev(r) * (1 + .5 * (r.riGreatN || (r.riGreat || []).length))), inc = Math.max(1, r.income || 0);
+  // a windfall (an indemnity, a realm shrunk to a shadow of itself) goes into stone within a few years
+  return r.treasury > inc * 4 ? Math.max(n, Math.round((r.treasury - inc * 3) * .5)) : n;
+};
 const GREAT = [['a cathedral', 'faith'], ['a new palace', 'pride'], ['a great hall', 'pride'], ['a harbour mole', 'coast'], ['a stone bridge', ''], ['a library and a school', ''], ['a royal road', '']];
 RI.greatWork = function (r, cost) {
   const cp = A.prov(r.capitalProv), P = RI.rax(r);

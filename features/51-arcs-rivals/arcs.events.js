@@ -504,7 +504,7 @@ A.defEvents([
       : any(p, 'hon_lost', 'hon_twice_lost') ? 'People look at your scar first and your face second.'
       : M(p, 'hon_champion') ? 'The story they tell is about your champion, not about you.' : 'The story they tell is about your apology.'} ${M(p, 'hon_peace') ? '{them} nods to you at church now.' : M(p, 'hon_law') ? 'The justices fined you both, and {them} paid {khis} fine in coppers, to make a point.' : '{them} has not forgotten either.'} It is time to decide what it was.`,
     choices: [
-      { t: 'Wear the name the songs give you', req: p => any(p, 'hon_won', 'hon_twice'), r: 'You let them call you what they like. What they like is Firstfrost.',
+      { t: 'Wear the name the songs give you', req: p => any(p, 'hon_won', 'hon_twice'), r: 'You let them call you what they like, and what they like sticks.',
         fx: { fame: 3, epithet: 'Firstfrost', arDeed: 'Fought {themFull} at first light, and won', arc: fin('hon_named') } },
       { t: 'Make a friend of {khim} at last', r: 'You ride to {khis} house unannounced and stay three days. After that you are at each other\'s weddings, and each other\'s funerals.',
         fx: { honor: 1, them: { op: 40, type: 'friend', back: 'friend' }, arc: fin('hon_friends') } },
@@ -590,7 +590,7 @@ A.defEvents([
     text: p => `${M(p, 'ch_clerk') ? 'The clerk says the seal is real and the charter is not: the wax was lifted from some other deed with a hot knife.'
       : M(p, 'ch_papers') ? 'Your grandfather\'s deed is good, but its dates are odd: it is younger than the hedges. Someone held this ground before your family.'
       : M(p, 'ch_bought') ? '{them} is back within the month with a second charter, for more.'
-      : 'You have no papers. Your family has held it so long that nobody thought to write it down.'} {khe} has gone to law.`,
+      : 'You have no papers. Your family has held it so long that nobody thought to write it down.'} {them} has gone to law.`,
     choices: [
       { t: 'Answer {khim} in the hundred court', r: 'You will answer at the next session. You spend the winter getting ready.', fx: { coin: -30, arc: mk('ch_court') } },
       { t: 'Have a better charter made, older than {khers}', check: { s: 'deception', s2: 'learning', d: 55 },
@@ -674,7 +674,7 @@ A.defEvents([
     setup: secret,
     text: p => `It is years since {short} first came right under your hands. ${M(p, 'rec_back') ? '{them} works beside you again, and is better at it than you are.' : M(p, 'rec_sworn') ? '{buyer} makes something else now.' : '{buyer} still sells it, a little worse than yours.'} Now a merchant from {capital} wants to buy the right to it outright, and make it by the cartload.`,
     choices: [
-      { t: 'Keep it, and put your name on it', r: 'You sell nothing. You put your mark on every piece and let them call it after you.',
+      { t: 'Keep it, and put your name on it', r: 'You sell nothing. You put your mark on everything you make, and let them call it after you.',
         fx: { fame: 4, arEpithet: '{epi}', arDeed: 'Made {thing}', arc: fin('rec_named') } },
       { t: 'Sell it, and buy a town house', r: 'You sell it for more than you have seen in one place, and buy a town house. It will be made in {capital} now, under another name.',
         fx: { happy: -3, asset: 'townhouse', arDeed: 'Sold the secret of {thing}', arc: fin('rec_sold') } },

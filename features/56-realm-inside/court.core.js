@@ -203,8 +203,10 @@ RI.stance = function (v, k, r) {
   let s = ((W_ST[a.want] || {})[k] || 0) + .7 * ((F_ST[a.fear] || {})[k] || 0);
   if (v.seat && SEAT_ST[v.seat]) s += SEAT_ST[v.seat](k, r, years(r));
   const Y = years(r);
-  if (k === 'taxUp') s *= Y < .5 || r.debt > r.income ? 1.5 : Y > 2 ? .3 : 1;
-  if (k === 'taxDown') s *= Y > 2.5 ? 1.4 : Y < 1 ? .2 : 1;
+  // lords who already pay little care less for lighter taxes; a crown already taking much asks less for more
+  const tx = (r.laws && r.laws.tax) || 1;
+  if (k === 'taxUp') s *= (Y < .5 || r.debt > r.income ? 1.5 : Y > 2 ? .3 : 1) * (tx > 1 ? .6 : 1);
+  if (k === 'taxDown') s *= (Y > 2.5 ? 1.4 : Y < 1 ? .2 : 1) * (tx < 1 ? .5 : 1);
   if ((k === 'levyUp' || k === 'army') && A.atWar(r.id).length) s *= s > 0 ? 1.5 : .6;
   if (k === 'grant' && v.h) s *= (v.h.op != null ? v.h.op : 50) < 40 ? 1.4 : .6;
   if (s > 0) s *= RI.awayMul(r, k);
@@ -252,7 +254,7 @@ RI.need = function (r, k) {
   const Y = years(r), out = [], m = Math.round(Y * 12);
   const tre = m < 24 ? `The treasury holds ${m} month${m === 1 ? '' : 's'}` : `The treasury holds ${Math.round(Y * 10) / 10} years`;
   if (k === 'taxUp') { if (Y < .5 || r.debt > r.income) out.push([r.debt > r.income ? 'The crown is deep in debt' : tre, .3]); else if (Y > 2) out.push([tre, -.3]); }
-  if (k === 'taxDown') { if (Y > 2.5) out.push([tre, .25]); else if (Y < 1) out.push([tre, -.4]); }
+  if (k === 'taxDown') { if (Y > 2.5) out.push([tre, .25]); else if (Y < 1) out.push([tre, -.4]); else if (RI.nextWork && RI.nextWork(r, RI.rax(r), null)) out.push(['The crown has works to pay for', -.15]); }
   if (k === 'levyUp' && (A.atWar(r.id).length || (A.threatsTo && A.threatsTo(r.id).length))) out.push([A.atWar(r.id).length ? 'The realm is at war' : 'Strong, hungry neighbours', .15]);
   if (k === 'authUp' && r.stability < 50) out.push([`Stability ${Math.round(r.stability)}`, -.1]);
   return out;

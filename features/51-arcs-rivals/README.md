@@ -1,6 +1,6 @@
 # Rivals and ambition
 
-**Aspect:** Events and story (Road to Ten, Events 3 and 4) · **Kind:** 13 story arcs, 56 scenes, a little system code, no patches
+**Aspect:** Events and story (Road to Ten, Events 3 and 4) · **Kind:** 13 story arcs, 56 scenes and a closing scene, a little system code, no patches
 
 The plan asks for "60 long arcs of 3 to 8 stages over 2 to 20 years: a blood feud, a secret child, a rival's rise, a famous sword's history, a plague year, an apprentice who passes you", and for every arc to end "with a lasting change: a title, a bond, a wound, a law, or a province on the map". Four writers share the sixty. This folder holds the thirteen about rivals and ambition, on the story track that `46-life-arcs` provides.
 
@@ -24,7 +24,7 @@ The plan asks for "60 long arcs of 3 to 8 stages over 2 to 20 years: a blood feu
 
 **How a story is told.**
 
-- **One person, start to end.** The first scene casts the person: your real rival, friend, patron or nephew if you have one, else someone made for the part (an apprentice of fifteen, a moneylender, a cousin of a real house). The arc keeps the id, so the rival of the first scene is the rival of the last, and later scenes say {them}, {khe}, {khis}, {khers}. While an arc runs its people are "seen" each month, so the release's forgetting does not drop them halfway. If the person dies, the next scene is dropped and the arc is given up.
+- **One person, start to end.** The first scene casts the person: your real rival, friend, patron or nephew if you have one, else someone made for the part (an apprentice of fifteen, a moneylender, a cousin of a real house). The arc keeps the id, so the rival of the first scene is the rival of the last, and later scenes say {them}, {khe}, {khis}, {khers}. While an arc runs its people are "seen" each month, so the release's forgetting does not drop them halfway. If the person dies first, the scene that was due gives way to a closing one (`ar_gone`): word comes that they are dead, a line on what the story was, and whether you go to the grave. It ends the arc and leaves a deed. Only someone gone from the world altogether (pruned from the save) gives the arc up.
 - **Every choice leaves a mark.** Later scenes read it, and change both what they say and what they offer. In *The election*, bought votes make the count a 35 check instead of a 50 speech, and the third scene is the dues and the roof if you won, or the winner's accounts if you lost. In *The libel*, finding the hand opens "Lay {khis} own letter before the justices" at 40 instead of 55. In *A forged charter*, the clerk's hot knife, your own forgery and your neighbours' oath are three different hearings.
 - **Arcs read each other.** Owing no one (*The patron*) is noticed when the election and the bribe come. A seat you hold (*The election*) is in the libel's verses. A name cleared by the justices helps you stand. Bounds you walked (*A forged charter*) are known to the steward in *The usurper*.
 - **Every ending lasts.** Each choice of each last scene, on both sides of a check, carries at least one of: a sworn tie, a bond (a friend or enemy made, or an opinion moved 20 or more), an epithet, a wound, a property gained or lost, a standing flag other scenes read (`ar_seat`, `ar_cleared`, `ar_own_man`, `ar_bounds`, `ar_clean_hands`, `ar_house_peace`, `ar_house_feud`, …), a deed in your life story, or a prison term. A trait alone never counts as the lasting change: with `49-body-mind` a trait comes from deeds over years, so an event's trait is a push, not a sure change.
@@ -58,6 +58,6 @@ BALANCE
 
 - **13 of the plan's 60.** The other writers' folders (50, 52, 53) hold the rest. All share the one-at-a-time story track, so in the full world each life meets fewer of these.
 - **One story at a time.** The track runs one story arc at a time, alongside the work of your life, so a long life sees four to seven stories. The rival's rise and the vendetta can take fifteen years between them.
-- **A person who dies ends the story.** Funerals and heirs (the rival's son carries on the feud) are not written. Measured give-ups are low (see `rivalsBotLives`), but a long arc with an old rival can end that way.
+- **A person who dies ends the story.** The closing scene is one scene for all thirteen arcs, with a line for each; heirs who carry it on (the rival's son, the lender's widow with the book) are not written.
 - **Some outcomes are words, not systems.** Keeping the guild seat is a flag and a deed; there is no guild office in the engine. The keeper of the seal is not an office of state. The forged charter can take a property off your list, but no court records the boundary.
 - **The writing wants a human read.** The arcs were play-tested by bots and by reading the rendered scenes on both paths, not by players.
