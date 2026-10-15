@@ -11,13 +11,14 @@ const FL = A.FL;
 const DO = A.DUEL_ODDS = A.DUEL_ODDS || { scale: 6.1, seat: -0.14 };
 // A duel's odds by its rules, as [scale, seat, health]: p = 1 / (1 + e^-(d / scale + seat + health * (hA - hB))), d the
 // gap in fighting worth of the two fighters as they start (armed), h each one's share of blood at the start (the duel
-// starts you at your health, never below 30%). Fitted by maximum likelihood on 9,000 duels (yield, lethal: fighters of
-// tiers 1-6 from three worlds, the player's seat at health 40-100 and played by A.duelAuto, which yields under 20% blood;
-// a yield is a loss) and 2,200 per rule set for the rest. The foe who may yield (an event's duel) gives the player's seat
-// its edge. FL.DREW: a foe who carried no weapon and draws one as the fight starts (A.armFor) fights 0.78 logits below
-// their worth (most people carry none). Re-fit with bench/fights-audit.mjs (duels).
-FL.RULES = { yield: [6.5, 0.2, 3.1], lethal: [6.5, 0, 3.1], brawl: [5.75, 0.35, 3.5], spar: [9, 0.15, 1.5], tourney: [10, 0.15, 0.5] };
-FL.DREW = 0.78;
+// starts you at your health, never below 30%). Fitted by maximum likelihood on two runs of 9,000 duels (yield, lethal:
+// fighters of tiers 1-6 from three worlds, the player's seat at health 40-100 and played by A.duelAuto, which yields under
+// 20% blood; a yield is a loss; the runs gave seats 0.2 and 0.28, health 3.1 and 3.25, drawn 0.78 and 0.65) and 2,200 per
+// rule set for the rest. The foe who may yield (an event's duel) gives the player's seat its edge. FL.DREW: a foe who
+// carried no weapon and draws one as the fight starts (A.armFor) fights about 0.7 logits below their worth (most people
+// carry none). Re-fit with bench/fights-audit.mjs (duels).
+FL.RULES = { yield: [6.5, 0.24, 3.2], lethal: [6.5, 0, 3.2], brawl: [5.75, 0.35, 3.5], spar: [9, 0.15, 1.5], tourney: [10, 0.15, 0.5] };
+FL.DREW = 0.7;
 FL.ruleOf = D => (D.kind === 'spar' ? 'spar' : D.kind === 'tourney' ? 'tourney' : D.kind === 'brawl' || !D.lethal ? 'brawl' : D.toYield ? 'yield' : 'lethal');
 FL.duelP = (d, hA, hB, rule, drew) => { const R = FL.RULES[rule] || FL.RULES.yield; return 1 / (1 + Math.exp(-(d / R[0] + R[1] + R[2] * (hA - hB) + FL.DREW * (drew || 0)))); };
 FL.HEALTH = FL.RULES.yield[2];
@@ -400,11 +401,11 @@ const profileModal = UI.profileModal;
 if (typeof profileModal === 'function') UI.profileModal = function (pc) {
   let h = profileModal.apply(this, arguments);
   try {
+    // its own block just above the wounds (49-body-mind redraws the wounds block itself, and keeps what comes before it)
     const P = pc && pc.st ? pc : A.pc(), rows = FL.woundCosts(P), at = h.indexOf('<div class="group-h">Wounds & scars</div>');
     if (rows.length && at >= 0) {
-      const next = h.indexOf('<div class="group-h">', at + 10), cut = next > 0 ? next : h.lastIndexOf('</div>');
       const line = rows.map(r => `${r.name}: ${r.before === r.after ? 'no cost to your fighting worth' : r.tb === r.ta ? `worth ${r.before} to ${r.after}` : `${r.tb} ${r.before} to ${r.ta} ${r.after}`}${r.stats.length ? ' (' + r.stats.join(', ') + ')' : ''}`).join('. ');
-      h = h.slice(0, cut) + `<div class="small ink2 fl-wounds">In a fight: ${UI.esc(line)}.</div>` + h.slice(cut);
+      h = h.slice(0, at) + `<div class="group-h">Wounds in a fight</div><div class="small ink2 fl-wounds">In a fight: ${UI.esc(line)}.</div>` + h.slice(at);
     }
   } catch (e) { console.error('fight-ladder profile', e); }
   return h;

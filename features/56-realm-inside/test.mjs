@@ -72,11 +72,11 @@ export default {
       const rt = ru.traits.slice();
       ru.traits = ['greedy', 'ambitious']; const greedy = pOf('taxUp');
       ru.traits = ['generous', 'kind']; const generous = pOf('taxUp');
-      ru.traits = rt; tr.traits = keep;
+      ru.traits = rt;
       // a session with the dice held: the law changes, and the record names who pushed it and why
       x.treasury = x.income * .2;
       const ch = A.chance; A.chance = () => true; const t0 = x.laws.tax;
-      let e; try { e = RI.session(x); } finally { A.chance = ch; }
+      let e; try { e = RI.session(x); } finally { A.chance = ch; tr.traits = keep; }
       return { broke, rich, greedy, generous, t0, t1: x.laws.tax, e: e ? { k: e.k, who: A.P(e.who) ? A.fullName(A.P(e.who), false) : null, why: e.why.map(w => w[0]) } : null };
     });
     const ok = r.broke.top === 'taxUp' && r.rich.top !== 'taxUp' && r.rich.taxUp < r.broke.taxUp && r.greedy > r.generous && r.e && r.e.who && r.e.why.length >= 2 && r.t1 !== r.t0;
@@ -205,11 +205,11 @@ export default {
         return { lines: Object.fromEntries(Object.entries(L).map(([k, v]) => [k, v[1]])), toCrown: Math.round(x.treasury - t0), paid, bible: !!RI.bibleTaxes(pc) };
       };
       const noCustom = run('POL-14'), custom = run('POL-01');
-      return { noCustom, custom };
+      return { noCustom, custom, bibleBuilt: !!A.BIBLE };
     });
     const a = r.noCustom.lines, b = r.custom.lines;
-    const ok = a.horse === -60 && a.retain === -1080 && a.staff < 0 && a.tax < 0 && a.landtax < 0 && a.hold > 0 && a.life < 0 && r.noCustom.toCrown === r.noCustom.paid && r.custom.bible && !b.tax && b.landtax < 0;
-    return { ok, detail: `a viscount in Greyhaven (heavy taxes, no tax custom): ${Object.entries(a).map(([k, v]) => k + ' ' + v).join(', ')}; the crown received ${r.noCustom.toCrown} (= the ${r.noCustom.paid} paid). In Aldmark the hearth mark already taxes free folk: no hearth tax line, the tenth on rents ${b.landtax}` };
+    const ok = a.horse === -60 && a.retain === -1080 && a.staff < 0 && a.tax < 0 && a.landtax < 0 && a.hold > 0 && a.life < 0 && r.noCustom.toCrown === r.noCustom.paid && b.landtax < 0 && (r.bibleBuilt ? r.custom.bible && !b.tax : b.tax < 0);
+    return { ok, detail: `a viscount in Greyhaven (heavy taxes, no tax custom): ${Object.entries(a).map(([k, v]) => k + ' ' + v).join(', ')}; the crown received ${r.noCustom.toCrown} (= the ${r.noCustom.paid} paid). ${r.bibleBuilt ? `In Aldmark the hearth mark (47-realm-bible) already taxes free folk: no hearth tax line (${b.tax || 0}), the tenth on rents ${b.landtax}` : `Built without 47-realm-bible: Aldmark charges the hearth tax too (${b.tax}), and the tenth on rents ${b.landtax}`}` };
   },
 
   // Economy 6: taken in battle and ransomed; a holding burned in a raid, idle until rebuilt

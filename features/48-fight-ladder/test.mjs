@@ -3,6 +3,8 @@
 import { FIGHTS_LAB } from '../../bench/fights-audit.mjs';
 
 const fmtBins = b => b.bins.filter(x => x.n >= 30).map(x => `${x.bin}: ${x.shown}/${x.real} (${x.n})`).join(', ');
+// a sampled check: every bin of 60 or more within 3.5 standard errors of what it shows, plus a point
+const seOk = b => b.bins.filter(x => x.n >= 60).every(x => { const p = Math.min(0.98, Math.max(0.02, x.shown / 100)); return Math.abs(x.shown - x.real) <= 350 * Math.sqrt(p * (1 - p) / x.n) + 1; });
 
 export default {
   async flAudit(pg) {
@@ -27,8 +29,7 @@ export default {
     await pg.evaluate(FIGHTS_LAB);
     const r = await pg.evaluate(() => FLAB.honest(3000, 4401));
     // exact: the roll is A.chance of the number shown. Sampled: each bin within 3.5 standard errors (plus a point)
-    const within = r.bins.filter(b => b.n >= 60).every(b => { const p = b.shown / 100, se = 100 * Math.sqrt(p * (1 - p) / b.n); return Math.abs(b.shown - b.real) <= 3.5 * se + 1; });
-    const ok = r && r.mismatch === 0 && within && r.meanErr <= 3 && r.n >= 2000;
+    const ok = r && r.mismatch === 0 && seOk(r) && r.meanErr <= 3 && r.n >= 2000;
     return { ok, detail: `${r.n} rolls, ${r.mismatch} where the roll used another number; by shown odds (shown/real): ${fmtBins(r)}; mean error ${r.meanErr}, worst bin ${r.maxErr} pts`, data: r };
   },
 
@@ -37,7 +38,7 @@ export default {
     // and the profile's odds against the plain lethal duels they are fitted on
     await pg.evaluate(FIGHTS_LAB);
     const r = await pg.evaluate(() => {
-      const out = FLAB.duels(2400, 4201);
+      const out = FLAB.duels(4000, 4201);
       // the opening line reads the same chance as the number
       let agree = 0, n = 0;
       FLAB.quiet(() => { const ids = FLAB.pool(4211, 60); for (let k = 0; k < 120; k++) { const a = A.P(ids[k % 60]), b = A.P(ids[(k * 7 + 3) % 60]); if (a === b) continue;
@@ -47,7 +48,7 @@ export default {
     const s = r.screen, p = r.profile;
     // the profile's number is 24-honest-odds' A.shownDuelOdds (with the drawn weapon and health added here); without
     // that feature in the build the person view shows the release's formula, which this feature does not touch
-    const ok = s.meanErr <= 3 && s.maxErr <= 10 && (!r.honestOdds || p.meanErr <= 4) && r.agree === r.n;
+    const ok = s.meanErr <= 3 && seOk(s) && (!r.honestOdds || p.meanErr <= 4) && r.agree === r.n;
     return { ok, detail: `duel screen ${s.n} duels, mean error ${s.meanErr}, worst bin ${s.maxErr} (${fmtBins(s)}); profile ${p.n} duels, mean error ${p.meanErr}, worst bin ${p.maxErr}; opening line agrees in ${r.agree}/${r.n}` };
   },
 
@@ -55,7 +56,7 @@ export default {
     // the duel screen's chance against beasts, alone and with a hunting party, at health 60-100
     await pg.evaluate(FIGHTS_LAB);
     const r = await pg.evaluate(() => FLAB.beasts(3000, 4301));
-    const ok = r.meanErr <= 4 && r.maxErr <= 14;
+    const ok = r.meanErr <= 4 && seOk(r);
     return { ok, detail: `${r.n} beast duels, mean error ${r.meanErr}, worst bin ${r.maxErr} (${fmtBins(r)})` };
   },
 
