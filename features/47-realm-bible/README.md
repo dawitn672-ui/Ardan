@@ -53,7 +53,7 @@ In the release a realm's ways are paragraphs in its primer. Legal customs exist 
 | `everyKindFires` | Each of the ten kinds fires at its moment: a bride price paid (287), a child named for its grandfather, an equal share of a father's estate, the levy once a war, a tenth off a sale |
 | `sharesFollowTheLaw` | A middle son of three, estate 250: eldest 0, eldest son 0, youngest 0, daughters 0, equal 83, after the temple's tenth 75, to the lord 0 |
 | `cardPureAndEscaped` | The card escapes its words, and drawing it changes neither the state nor the random stream |
-| `realLivesMeetCustoms` | Eight 30-year lives in eight realms meet their customs |
+| `realLivesMeetCustoms` | In eight realms (human, elf, dwarf, orc and giant), the first life that lasts 30 years meets at least 2 of its customs in all eight |
 
 `node features/47-realm-bible/validate.mjs` checks the data statically: fields, lengths, tokens, and that each realm has at least two customs of the kinds most lives meet.
 

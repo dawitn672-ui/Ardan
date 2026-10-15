@@ -163,19 +163,25 @@ export default {
     return { ok: r.same && !r.img && r.card && r.met, detail: JSON.stringify(r) };
   },
 
-  // the real bibles: a commoner of each of eight realms meets its customs in the first years of a life
+  // the real bibles: a commoner of each of eight realms meets its customs. As in bench/customs.mjs, only a life that
+  // lasts counts (a bot can die at 16 of a horse's kick), so up to six seeds are tried for each realm
   async realLivesMeetCustoms(pg) {
     await pg.evaluate(BOT);
     const r = await pg.evaluate(() => {
       const out = [];
       for (const [rid, race] of [['POL-01', 'human'], ['POL-03', 'human'], ['POL-06', 'elf'], ['POL-10', 'dwarf'], ['POL-11', 'orc'], ['POL-18', 'human'], ['POL-20', 'human'], ['POL-23', 'giant']]) {
-        const L = B.life({ seed: 7100 + +rid.slice(4), race, realm: rid, status: 'peasant', sex: 'M', startAge: 16 }, 'careful', true, 30);
-        const pc = A.P(A.S.pc) || {}, mine = A.BIBLE.of(rid).customs.map(c => c.id), rb = pc.rb || {};
-        out.push({ rid, years: L.years, met: mine.filter(id => rb[id]).length, scenes: Object.values(rb).length });
+        let best = null;
+        for (let s = 0; s < 6 && !best; s++) {
+          const L = B.life({ seed: 7100 + +rid.slice(4) + s * 977, race, realm: rid, status: 'peasant', sex: s % 2 ? 'F' : 'M', startAge: 16 }, ['careful', 'greedy'][s % 2], s % 4 < 2, 45);
+          if (L.years < 30) continue;
+          const pc = A.P(A.S.pc) || {}, rb = pc.rb || {};
+          best = { rid, years: L.years, met: A.BIBLE.of(rid).customs.filter(c => c.kind !== 'grave' && rb[c.id]).length };
+        }
+        out.push(best || { rid, years: 0, met: 0 });
       }
       return out;
     });
     const two = r.filter(x => x.met >= 2).length;
-    return { ok: two >= 6, detail: `${two} of ${r.length} thirty-year lives met at least 2 of their realm's customs: ${r.map(x => `${x.rid} ${x.met} (${x.years}y)`).join(', ')}. bench/customs.mjs measures all 34 realms` };
+    return { ok: two >= 7, detail: `${two} of ${r.length} lives of 30+ years met at least 2 of their realm's customs: ${r.map(x => `${x.rid} ${x.met} (${x.years}y)`).join(', ')}. bench/customs.mjs measures all 34 realms` };
   },
 };
