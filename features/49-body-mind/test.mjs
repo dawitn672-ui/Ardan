@@ -42,7 +42,7 @@ export default {
         for (let i = 0; i < 300; i++) {
           pc.health = 100; pc.ill = null; A.S.queue = [];
           A.bmFallIll(pc, k, GD.DISEASES[k], 30, 100);
-          if (how) A.BM.treat(pc, how);
+          A.BM.treat(pc, how || 'none');
           let m = 0; while (pc.ill && m < 20) { A.bmIllMonth(pc); m++; }
           months += m; lost += 100 - pc.health; n++;
         }

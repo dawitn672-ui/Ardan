@@ -115,19 +115,21 @@
     none: { m: 1, dmg: 1, now: 0, mark: 1 },
   };
   BM.TREAT_NAME = { physician: 'a physician', physician_fever: 'a physician', herbs: 'herbs', herbs_bad: 'the wrong herbs', prayer: 'prayer', rest: 'bed rest', none: 'nothing' };
+  // "the marsh fever", "a winter cough", "the Harbor Pox"
+  BM.the = n => /^(a|an|the) /i.test(n) ? n : 'the ' + n;
   // the onset: called from A.bodyYear in place of the release's one blow. Returns true when it has dealt with it.
   A.bmFallIll = function (pc, k, D, dmg, mh) {
     if (!isPC(pc) || !D) return false;
     if (pc.ill && pc.ill.m > 0) {   // a second sickness on a sick body: the first one drags on, and worse
       pc.ill.m += 1; pc.ill.dmg += Math.round(dmg * 0.5);
-      A.log(`On top of the ${pc.ill.name}, ${D.name}. It sets you back.`, 'bad');
+      A.log(`On top of ${BM.the(pc.ill.name)}, ${D.name}. It sets you back.`, 'bad');
       return true;
     }
     const len = BM.LEN[k] || [2, 3], m = A.ri(len[0], len[1]), first = Math.round(dmg * 0.35);
     pc.health = clamp(pc.health - first, 0, mh); pc.lastHurt = D.name; pc._lhDay = A.absDay();
     pc.ill = { k, name: D.name, m, tot: m, dmg: Math.max(0, Math.round(dmg - first)), t: '', y: A.S.year };
     A.log(`You fall ill with ${D.name}. It will not be quick: ${m} month${m > 1 ? 's' : ''}, perhaps more.` + (pc.health < 30 ? ' For a while the priests are sent for.' : ''), 'bad');
-    if (A.age(pc) >= 4 && A.EV.bm_ill) A.queue({ type: 'event', ev: 'bm_ill', forced: true, ctx: { ill: D.name } });
+    if (A.age(pc) >= 4 && A.EV.bm_ill) { pc.ill.ask = 1; const t = BM.the(D.name); A.queue({ type: 'event', ev: 'bm_ill', forced: true, ctx: { ill: D.name, illThe: t[0].toUpperCase() + t.slice(1) } }); }
     else pc.ill.t = 'rest';   // a small child is put to bed
     return true;
   };
@@ -145,6 +147,8 @@
   A.bmIllMonth = function (pc) {
     const I = pc.ill; if (!I) return;
     if (!(I.m > 0)) { delete pc.ill; return; }
+    // the course waits on the choice of treatment (the scene can come a few weeks after the onset), up to three months
+    if (I.ask && !I.t && (I.wait || 0) < 3) { I.wait = (I.wait || 0) + 1; return; }
     const D = GD.DISEASES[I.k] || { name: I.name }, med = A.skill(pc, 'medicine');
     const hit = I.dmg / I.m * (1 - Math.min(0.3, med / 300));
     I.dmg = Math.max(0, I.dmg - I.dmg / I.m); I.m -= 1;
@@ -155,7 +159,8 @@
       const T = BM.TREAT[I.t || 'none'] || BM.TREAT.none;
       delete pc.ill;
       if (pc.health > 0) {
-        A.log(`The ${D.name} lets go of you at last${I.t ? `, after ${BM.TREAT_NAME[I.t]}` : ''}.`, 'good');
+        const t = BM.the(D.name);
+        A.log(`${t[0].toUpperCase() + t.slice(1)} lets go of you at last${I.t ? `, after ${BM.TREAT_NAME[I.t]}` : ''}.`, 'good');
         if (D.wound && A.chance(0.25 * T.mark)) { const w = A.addWound(pc, D.wound); w && A.log(`It leaves its mark: ${w}.`, 'bad'); }
       }
     }

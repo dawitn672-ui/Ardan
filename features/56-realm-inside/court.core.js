@@ -161,13 +161,13 @@ const PUSH = {
 RI.PUSH = PUSH;
 // how each want and fear leans on each push (-1..1)
 const W_ST = {
-  glory: { levyUp: 1, army: .9, taxUp: .3, levyDown: -.8, taxDown: -.2 },
+  glory: { levyUp: 1, army: .9, taxUp: .4, levyDown: -.8, taxDown: -.3 },
   peace: { levyDown: .8, taxDown: .4, levyUp: -.8, army: -.5 },
-  wealth: { taxDown: .9, grant: 1, taxUp: -.6, works: -.3 },
-  order: { authUp: 1, taxUp: .6, authDown: -1, grant: -.4, taxDown: -.3 },
-  liberty: { authDown: 1, taxDown: .6, levyDown: .4, authUp: -1, taxUp: -.5, levyUp: -.4 },
+  wealth: { taxDown: .7, grant: 1, taxUp: -.6, works: -.3 },
+  order: { authUp: 1, taxUp: .7, authDown: -1, grant: -.4, taxDown: -.5 },
+  liberty: { authDown: 1, taxDown: .45, levyDown: .4, authUp: -1, taxUp: -.5, levyUp: -.4 },
   faith: { temple: 1, taxUp: .2 },
-  works: { works: 1, taxUp: .4, taxDown: -.3 },
+  works: { works: 1, taxUp: .5, taxDown: -.4 },
   crown: { authDown: .7, grant: .4, authUp: -.6 },
 };
 const F_ST = {
@@ -253,7 +253,11 @@ RI.lean = function (r, k) {
 RI.need = function (r, k) {
   const Y = years(r), out = [], m = Math.round(Y * 12);
   const tre = m < 24 ? `The treasury holds ${m} month${m === 1 ? '' : 's'}` : `The treasury holds ${Math.round(Y * 10) / 10} years`;
-  if (k === 'taxUp') { if (Y < .5 || r.debt > r.income) out.push([r.debt > r.income ? 'The crown is deep in debt' : tre, .3]); else if (Y > 2) out.push([tre, -.3]); }
+  if (k === 'taxUp') {
+    if (Y < .5 || r.debt > r.income) out.push([r.debt > r.income ? 'The crown is deep in debt' : tre, .3]);
+    else if (Y > 2) out.push([tre, -.3]);
+    else if (RI.nextWork && Y < (RI.reserveYears ? RI.reserveYears(r) : 1.5) + .3 && RI.nextWork(r, RI.rax(r), null)) out.push(['The crown has works it cannot pay for', .1]);
+  }
   if (k === 'taxDown') { if (Y > 2.5) out.push([tre, .25]); else if (Y < 1) out.push([tre, -.4]); else if (RI.nextWork && RI.nextWork(r, RI.rax(r), null)) out.push(['The crown has works to pay for', -.15]); }
   if (k === 'levyUp' && (A.atWar(r.id).length || (A.threatsTo && A.threatsTo(r.id).length))) out.push([A.atWar(r.id).length ? 'The realm is at war' : 'Strong, hungry neighbours', .15]);
   if (k === 'authUp' && r.stability < 50) out.push([`Stability ${Math.round(r.stability)}`, -.1]);
@@ -276,9 +280,11 @@ RI.tally = function (r, extra) {
   if (extra && extra.k && T[extra.k]) { if (extra.side === 'for') T[extra.k].sup = r2(T[extra.k].sup + extra.w); else T[extra.k].opp = r2(T[extra.k].opp + extra.w); }
   return T;
 };
-// the loudest law and the loudest spending push
-RI.agendaOf = function (T, laws) {
-  return Object.values(T).filter(t => !!PUSH[t.k].law === laws && t.pro.length && t.sup > .4).sort((a, b) => (b.sup - b.opp * .5) - (a.sup - a.opp * .5))[0] || null;
+// the loudest law and the loudest spending push; what the realm plainly needs (an empty treasury, a war) is heard first
+RI.agendaOf = function (T, laws, r) {
+  const need = t => r && PUSH[t.k].law ? 3 * RI.need(r, t.k).reduce((a, x) => a + Math.max(0, x[1]), 0) : 0;
+  const score = t => t.sup - t.opp * .5 + need(t);
+  return Object.values(T).filter(t => !!PUSH[t.k].law === laws && t.pro.length && t.sup > .4).sort((a, b) => score(b) - score(a))[0] || null;
 };
 // the odds that the crown grants a law push, with its reasons
 RI.odds = function (r, t) {
@@ -454,7 +460,7 @@ RI.session = function (r) {
   let res = null;
   if (playerRules) {
     // the player hears the loudest push as a petition (event ri_court_push); the crown's choice is theirs
-    const t = RI.agendaOf(T, true);
+    const t = RI.agendaOf(T, true, r);
     if (t && t.pro[0] && A.chance(.6) && !A.S.queue.some(q => q.ev === 'ri_court_push')) {
       const top = t.pro[0][0], foe = t.con[0] ? t.con[0][0] : null;
       A.queue({ type: 'event', ev: 'ri_court_push', ctx: { pid: top.p.id, push: PUSH[t.k].t, riK: t.k, seatT: top.seat ? 'your ' + A.COUNCIL[top.seat].name : RI.voiceLabel(top, r), wantT: RI.wantText(RI.aims(top.p).want),
@@ -462,7 +468,7 @@ RI.session = function (r) {
     }
   } else {
     RI.deal(r);
-    let t = ag && T[ag.k] && PUSH[ag.k].ok(r) && T[ag.k].pro.length ? T[ag.k] : RI.agendaOf(T, true);
+    let t = ag && T[ag.k] && PUSH[ag.k].ok(r) && T[ag.k].pro.length ? T[ag.k] : RI.agendaOf(T, true, r);
     if (t) {
       const o = RI.odds(r, t), yes = A.chance(o.p), top = t.pro[0] ? t.pro[0][0] : null;
       if (yes) {
@@ -470,7 +476,7 @@ RI.session = function (r) {
         for (const [v, s] of t.pro) if (v.h) v.h.op = clamp((v.h.op != null ? v.h.op : 50) + Math.round(4 * s), 0, 100);
         for (const [v, s] of t.con) if (v.h) v.h.op = clamp((v.h.op != null ? v.h.op : 50) - Math.round(4 * s), 0, 100);
       } else if (top && top.h) top.h.op = clamp((top.h.op != null ? top.h.op : 50) - 3, 0, 100);
-      res = logCourt(r, { k: t.k, who: top ? top.p.id : null, seat: top && top.seat || null, house: top && top.h ? top.h.id : null, sup: ids(t.pro), opp: ids(t.con), yes, p: Math.round(o.p * 100), why: o.why.slice(0, 5), pcSide: pv ? pv.side : null });
+      res = logCourt(r, { k: t.k, who: top ? top.p.id : null, seat: top && top.seat || null, house: top && top.h ? top.h.id : null, sup: ids(t.pro), opp: ids(t.con), yes, p: Math.round(o.p * 100), Y: r2(years(r)), why: o.why.slice(0, 5), pcSide: pv ? pv.side : null });
       if (top) aiLog('court', r, `${yes ? lawText[t.k] : 'refuses ' + PUSH[t.k].t} at the urging of ${A.fullName(top.p, false)}.`, o.why.map(x => [x[0], yes ? x[1] : -x[1], x[2]]));
     }
     // the loudest spending push steers next year's treasury (RI.spend)
@@ -478,7 +484,7 @@ RI.session = function (r) {
     r.riPri = s ? { k: s.k, y: A.S.year, who: s.pro[0][0].p.id, house: s.pro[0][0].h ? s.pro[0][0].h.id : null } : null;
   }
   // what the court will hear next year, for the player to see and sway
-  const T2 = RI.tally(r), nx = RI.agendaOf(T2, true);
+  const T2 = RI.tally(r), nx = RI.agendaOf(T2, true, r);
   r.riAgenda = nx ? { y: A.S.year + 1, k: nx.k, who: nx.pro[0][0].p.id } : null;
   return res;
 };

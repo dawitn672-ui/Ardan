@@ -5,8 +5,8 @@ A.defEvents([
   {
     id: 'bm_ill', trigger: true, title: 'Sick abed',
     text: (p, ctx) => A.age(p) < GD.RACES[p.race].adult
-      ? 'The {ill} has you. You burn, then shiver, and the blanket is wet with it. Your mother counts the coins in the pot: the physician in {home} charges what he thinks a house can bear, the wise woman by the ford wants a hen and knows her roots, and the priest prays for nothing. Or they can keep you in bed and wait.'
-      : 'The {ill} has you. You burn, then shiver, and the blanket is wet with it. The physician in {home} charges what he thinks a house can bear. The wise woman by the ford wants a hen and knows her roots, or says she does. The priest prays for nothing. Or you can lie still and let it run.',
+      ? '{illThe} has you. You burn, then shiver, and the blanket is wet with it. Your mother counts the coins in the pot: the physician in {home} charges what he thinks a house can bear, the wise woman by the ford wants a hen and knows her roots, and the priest prays for nothing. Or they can keep you in bed and wait.'
+      : '{illThe} has you. You burn, then shiver, and the blanket is wet with it. The physician in {home} charges what he thinks a house can bear. The wise woman by the ford wants a hen and knows her roots, or says she does. The priest prays for nothing. Or you can lie still and let it run.',
     choices: [
       { t: 'Send for the physician, whatever he charges', r: 'He comes with a bag of knives and a boy to carry it, names the sickness in the old tongue, and takes his fee.',
         fx: { coin: -4, coinPct: -0.03, treat: 'physician' } },

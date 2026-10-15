@@ -333,7 +333,10 @@ FL.duelBox = function (D) {
   if (m.beast) {
     const I = GD.TIER_INFO[m.btier] || {};
     them = `${A.cap(A.beastShort ? A.beastShort(m.beast) : 'the beast')}: ${I.name || m.btier}${m.party ? ', and the hunters are with you' : ', and you are alone'}`;
-  } else them = `${D.b.short || D.b.name}: ${m.tB}${num(m.wB)}, with ${String(m.weaponB || 'bare hands').toLowerCase()}`;
+  } else {
+    const wn = String(m.weaponB || '').toLowerCase(), arms = !wn || wn === 'fists' ? 'bare-handed' : `with ${/^[aeiou]/.test(wn) ? 'an' : 'a'} ${wn}`;
+    them = `${D.b.short || D.b.name}: ${m.tB}${num(m.wB)}, ${arms}${m.drew ? ' drawn as the fight starts' : ''}`;
+  }
   const odds = dg ? `Fighters like you win this about ${m.pct} times in 100.` : m.pct >= 75 ? 'You should win this.' : m.pct >= 50 ? 'You have the better of it.' : m.pct >= 30 ? 'The odds are against you.' : 'You will probably lose.';
   return `<div class="fl-duel small"><b>The measure.</b> You: ${UI.esc(m.tA + num(m.wA))}. ${UI.esc(them)}. ${UI.esc(odds)}</div>`;
 };

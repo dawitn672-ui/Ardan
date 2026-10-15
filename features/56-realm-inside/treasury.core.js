@@ -135,8 +135,8 @@ RI.build = function (r, p, b, cost) {
 // last, and its keep falls to the temple or the town, not the crown
 RI.greatCost = r => {
   const n = Math.round(1.2 * RI.rev(r) * (1 + .5 * (r.riGreatN || (r.riGreat || []).length))), inc = Math.max(1, r.income || 0);
-  // a windfall (an indemnity, a realm shrunk to a shadow of itself) goes into stone within a few years
-  return r.treasury > inc * 4 ? Math.max(n, Math.round((r.treasury - inc * 3) * .5)) : n;
+  // a windfall (an indemnity, a realm shrunk to a shadow of itself) goes into stone: everything above three years
+  return r.treasury > inc * 4 ? Math.round(r.treasury - inc * 3) : n;
 };
 const GREAT = [['a cathedral', 'faith'], ['a new palace', 'pride'], ['a great hall', 'pride'], ['a harbour mole', 'coast'], ['a stone bridge', ''], ['a library and a school', ''], ['a royal road', '']];
 RI.greatWork = function (r, cost) {
@@ -240,7 +240,7 @@ RI.spend = function (r) {
     { k: 'drill', w: 1 + .5 * P.warLog + (pri === 'army' ? 1 : 0) + (war ? .8 : 0) + (A.threatsTo && A.threatsTo(r.id).length ? .4 : 0), ok: needDrill, cost: () => drill },
     { k: 'works', w: 1.1 + (pri === 'works' ? 1 : 0) + (pri === 'temple' ? .5 : 0) + .3 * Math.max(0, P.greed), ok: true, cost: () => { const x = RI.nextWork(r, P, pri, avail); return x ? x[2] : Infinity; } },
     { k: 'great', w: .5 + .4 * Math.max(0, P.pride) + .3 * Math.max(0, P.zeal) + (pri === 'works' ? .3 : 0) + (r.treasury > inc * 4 ? 2 : 0),
-      ok: !(r.riGreatY > A.S.year - (r.treasury > inc * 4 ? 1 : RI.TUNE.greatGap)), cost: () => RI.greatCost(r) },
+      ok: r.treasury > inc * 4 || !(r.riGreatY > A.S.year - (r.treasury > inc * 3 && !RI.nextWork(r, P, pri, avail) ? 3 : RI.TUNE.greatGap)), cost: () => RI.greatCost(r) },
     { k: 'feast', w: .4 + (meanOp < 40 ? 1 : 0) + (hot >= 40 ? .8 : 0) + .4 * Math.max(0, P.warmth) + (pri === 'grant' ? .6 : 0), ok: (meanOp < 45 || hot >= 40) && !(r.riFeast > A.S.year - RI.TUNE.feastGap), cost: () => Math.round(inc * .03 + 300) },
     { k: 'subsidy', w: .5 + .5 * P.honor + .5 * P.warmth, ok: allies.length > 0, cost: () => Math.round(Math.min(avail * .3, (allies[0] || {}).income * .15 || 0)) },
   ].filter(x => x.ok).sort((a, b) => b.w - a.w);
@@ -279,8 +279,8 @@ RI.spend = function (r) {
       A.aiLogAdd && A.aiLogAdd('aid', r.id, o.id, `sends ${A.fmt(c)} in gold to ${A.realmShort(o.id)} for its war.`, [[`An ally at war, its treasury nearly empty`, 1]].concat(P.honor > .1 ? [['An honourable ruler', r2(.3 * P.honor), 1]] : [], P.warmth > .1 ? [['A warm-hearted ruler', r2(.3 * P.warmth), 1]] : []));
     }
   }
-  // 4. still more than three years in the coffers and nothing left worth buying: the court lightens the taxes
-  if (r.treasury > inc * 3 && !RI.nextWork(r, P, pri, r.treasury - RI.reserveYears(r) * inc) && RI.taxIdx && RI.taxIdx(r) > 0 && !(r.riCourt && r.riCourt[0] && r.riCourt[0].y === A.S.year && r.riCourt[0].k === 'taxDown')) {
+  // 4. still more than three and a half years in the coffers and nothing left worth buying: the court lightens the taxes
+  if (r.treasury > inc * 3.5 && !RI.nextWork(r, P, pri, r.treasury - RI.reserveYears(r) * inc) && RI.taxIdx && RI.taxIdx(r) > 0 && !(r.riCourt && r.riCourt[0] && r.riCourt[0].y === A.S.year && r.riCourt[0].k === 'taxDown')) {
     const tr = A.P((r.council || {}).treasurer);
     RI.applyLaw(r, 'taxDown');
     RI.logCourt(r, { k: 'taxDown', who: tr && tr.alive ? tr.id : null, seat: 'treasurer', yes: true, p: 100, why: [[`The treasury holds ${Math.round(10 * r.treasury / inc) / 10} years`, .6], ['Nothing left worth buying', .3]] });

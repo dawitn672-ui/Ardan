@@ -139,11 +139,12 @@ export default {
       const pure = R() === rng1;
       // the event modal is pure as well (measured before the duel changed state)
       return { ev: (ev.match(/Measured:[^<]*/) || [''])[0], duel: (duelStory.match(/The measure\.[^<]*<\/b>[^<]*/) || [''])[0],
-        duelOdds: /times in 100/.test(duelStory), realDigits: /times in 100|\d+% · /.test(duelReal) || /Measured:[^<]*\d/.test(evReal), prof: (prof.match(/In a fight:[^<]*/) || [''])[0], pure, evPure,
+        duelOdds: /times in 100/.test(duelStory), diff: !!A.DIFF, realDigits: /times in 100|\d+% · /.test(duelReal) || /Measured:[^<]*\d/.test(evReal), prof: (prof.match(/In a fight:[^<]*/) || [''])[0], pure, evPure,
         tiers: (duelStory.match(/class="chip tier/g) || []).length };
     });
-    const ok = /^Measured: you, \w+/.test(r.ev) && /You: \w+ \d+/.test(r.duel) && r.duelOdds && !r.realDigits && /Lost a hand: \w+ \d+ to \w+ \d+/.test(r.prof) && /speed -7/.test(r.prof) && r.pure && r.evPure && r.tiers >= 2;
-    return { ok, detail: `event: "${r.ev}"; duel: "${r.duel}" (${r.tiers} tier chips; realism hides digits: ${!r.realDigits}); profile: "${r.prof.slice(0, 160)}"; render pure: event ${r.evPure}, duel and profile ${r.pure}` };
+    // Realism hides the digits where 42-difficulty is built (A.DIFF.showOdds); without it every setting shows them
+    const ok = /^Measured: you, \w+/.test(r.ev) && /You: \w+ \d+/.test(r.duel) && r.duelOdds && (!r.diff || !r.realDigits) && /Lost a hand: \w+ \d+ to \w+ \d+/.test(r.prof) && /speed -7/.test(r.prof) && r.pure && r.evPure && r.tiers >= 2;
+    return { ok, detail: `event: "${r.ev}"; duel: "${r.duel}" (${r.tiers} tier chips; realism hides digits: ${r.diff ? !r.realDigits : 'no 42-difficulty in this build'}); profile: "${r.prof.slice(0, 160)}"; render pure: event ${r.evPure}, duel and profile ${r.pure}` };
   },
 
   async flLives(pg) {
