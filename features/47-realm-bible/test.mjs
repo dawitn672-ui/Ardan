@@ -36,6 +36,33 @@ export default {
     return { ok: !r.bad.length && r.customs === 102 && r.words >= 24, detail: `${r.realms} realms, ${r.customs} customs, ${r.words} cultures with words; kinds ${JSON.stringify(r.kinds)}${r.bad.length ? '; BAD ' + r.bad.join(',') : ''}` };
   },
 
+  // all 102 scenes render from a life in their own realm: no raw token, at most 80 words, labels at most 12 words
+  async everySceneRenders(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const bad = [], words = s => (String(s).match(/\S+/g) || []).length;
+      let n = 0;
+      for (const R of Object.values(LORE.realms)) {
+        RBT.life(4000 + +R.id.slice(4), { race: R.race, realm: R.id });
+        const pc = A.pc();
+        for (const c of A.BIBLE.of(R.id).customs) {
+          if (c.kind === 'grave') { if (/\{\w+\}/.test(A.BIBLE.fill(pc, c.log))) bad.push(c.id + ' log'); continue; }
+          const q = { type: 'event', ev: 'rb_custom', forced: true, ctx: { cid: c.id, got: '12 suns', estate: '60 suns', parent: 'Old Tam', child: 'Ada', dowry: '20 suns', paid: '20 suns', cut: '2 suns' } };
+          A.S.queue = [q]; const v = A.eventView(q); n++;
+          const all = [v.title, v.text].concat(v.choices.map(x => x.t));
+          if (v.skip) bad.push(c.id + ' skipped');
+          if (all.some(x => /\{\w+\}/.test(x))) bad.push(c.id + ' token');
+          if (words(v.text) > 80) bad.push(c.id + ' long');
+          if (v.choices.length !== 2 || v.choices.some(x => words(x.t) > 12)) bad.push(c.id + ' choices');
+          A.eventChoose(1); const res = A.S.queue[0].result.text; if (/\{\w+\}/.test(res) || !res) bad.push(c.id + ' result');
+          A.S.queue = [];
+        }
+      }
+      return { n, bad };
+    });
+    return { ok: r.n >= 90 && !r.bad.length, detail: `${r.n} scenes rendered and defied; ${r.bad.length ? 'BAD ' + r.bad.slice(0, 8).join(', ') : 'no raw token, none over 80 words, every label 12 words or fewer'}` };
+  },
+
   // the first time is a scene; keeping applies the custom, defying costs what the custom says; later it is applied quietly
   async firstMeetingIsAScene(pg) {
     await pg.evaluate(SETUP);

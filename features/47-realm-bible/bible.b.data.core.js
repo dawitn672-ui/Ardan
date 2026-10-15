@@ -126,12 +126,12 @@
         fx: { happy: -2, piety: 1 }, keepT: 'Sing the {w3} through to the end', keep: 'Your voice is gone before dawn, but you finish it. The eldest thanks you by name, which is not often done.',
         defy: { t: 'Leave before the chant is finished', r: 'You walk out while the names are still being sung. Nobody stops you, and nobody keeps you a place at the next chant.', fx: { piety: -3, honor: -2 } },
         log: '{parent} goes to the sea, and the eldest takes all: you get {got}.' },
-      { id: 'frh_tin_share', name: 'The halls\' share', kind: 'market', cut: 0.12,
-        rule: 'All tin belongs to the halls, and the halls take a share of whatever else their people sell.',
-        text: 'You carry your goods down to the trading beach where the Northreach cogs put in. Before the first buyer opens his purse, a giant from your hall steps between you and holds out a palm. All tin belongs to the halls, and a share of everything else: today, {cut}.',
-        fx: { happy: -1 }, keepT: 'Put the hall\'s share in the open palm', keep: 'The giant closes his hand and walks back up the beach. The Northreach men start their bidding as if he had never come.',
-        defy: { t: 'Sell in the cove past the headland instead', r: 'A Northreach skipper buys you out cheap in the cove. The hall hears of it before you are home.', fx: { coin: -6, honor: -2 } },
-        log: 'The hall takes its share at the trading beach: {cut}.' },
+      { id: 'frh_tin_share', name: 'The halls\' share', kind: 'ward', when: 'any', every: 2,
+        rule: 'All tin belongs to the halls, and every second summer the {w1} takes a share of whatever else each giant has gathered.',
+        text: 'The {w1} of your hall walks the shore with a sack and a tally-stone. All tin is the halls\', and every second summer each giant gives a share of whatever else the seasons brought: seal oil, ivory, coin from the Northreach cogs. The stone is held out to you.',
+        fx: { coin: -8 }, keepT: 'Put the hall\'s share in the sack', keep: 'The {w1} marks the stone and walks on down the shore.',
+        defy: { t: 'Hide the ivory under the boat', r: 'The {w1} turns the boat over without a word. The share is doubled, and the hall hears why.', fx: { coin: -14, honor: -2 } },
+        log: 'The {w1} of your hall takes the halls\' share.' },
     ],
   };
 
