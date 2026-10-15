@@ -34,25 +34,29 @@
     "careful": {
      "lives": 16,
      "medianDeathAge": 48,
+     "meanDeathAge": 47.3,
      "checkWinRate": 46
     },
     "reckless": {
      "lives": 16,
      "medianDeathAge": 47,
+     "meanDeathAge": 42.1,
      "checkWinRate": 37.5
     },
     "greedy": {
      "lives": 16,
      "medianDeathAge": 67,
+     "meanDeathAge": 55.8,
      "checkWinRate": 35.2
     },
     "random": {
      "lives": 16,
      "medianDeathAge": 49,
+     "meanDeathAge": 44.8,
      "checkWinRate": 47
     }
    },
-   "carefulMinusRecklessDeathAge": 1,
+   "carefulMinusRecklessDeathAge": 5.2,
    "npcMovesPerDecade": 10.1,
    "battlesFought": 26,
    "afterActionShare": 100

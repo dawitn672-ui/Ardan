@@ -10,6 +10,73 @@ The gap is not that the plan lies. It grades its own homework, it counts things 
 
 100/100 is reachable only in the sense the plan defines it: "no game does this one thing clearly better", for each of 14 aspects. For one person, that is not "well over a year". Honestly it is three to five years with a hired artist, a writer's year of events, and real playtests every phase, **or** a much smaller game that cuts half the aspects down to "good enough and invisible". The plan says "cut before you add" and then adds in every section. That is the first thing to fix.
 
+## Round 3 (Oct 15): what changed, and the new grade
+
+Round 3 worked through the Road to Ten's buildable steps, one feature folder at a time, each with its own tests and a README that says what it measured. The status of all 94 steps is in `docs/plan/Road to Ten — status.md`: **31 done, 29 partial, 24 not started**, and 10 that need people or art. The first audit that morning counted 19 done and 39 not started.
+
+**What landed** (83 browser tests, every event lint, the choice check and the balance league pass; CI is green):
+
+| Change | Measured effect |
+| --- | --- |
+| `23-after-action` | Every line battle and war-map fight names its three biggest causes. The forest's cost to the riders was reported as 68 kills against 67 measured, and a pike hedge as 67 against 52. Reports on player battles: **0% → 100%**. |
+| `25-variety-guard` | 10-year cooldown, 24 event shapes, and recency weights for duty pools and NPC moves. Same shape back to back **4.6% → 3.0%**, three in a row **2 → 0**, NPC moves repeated within 10 years **38% → 16%**. |
+| `26-belief-truth` (signature 2) | Beasts are known by tale, by sight or truly. Secrets are told against their truth, with 11 scenes. Far news is inflated, then corrected. Your legend grows in the telling. |
+| `34-both-scales` (signature 3) | After each war-map fight you were in: what you saw, the front, and the chronicle's version, side by side and disagreeing. Signature systems present: **1 → 3 of 3**. |
+| `28-endings`, `29-starts` | 20 endings and 9 manners of death, with epilogues and a collection. 20 hand-made starts, each with an opening scene and a callback years later (40 events). |
+| `30-get-to-know` | A first meeting is a scene: four approaches, whose odds the person's traits move by 12 points a trait. |
+| `31-learn-by-doing` | Growth from doing **44–49% → 67–73%** at the same total for a passive life. A failed check teaches 1.5 times a passed one. A monthly summary. |
+| `35-moods` | Four needs settle toward where a life puts them, and moods come with causes and 14 scenes. A neglected year ends at happiness 37, a tended one at 64. |
+| `32-ladder` | A census of Legends and Masters and a Master cap per realm. The ladder is sparse (2 Legends alive), not crowded. |
+| `33-choices` and `tools/lint-choices.mjs` | Events with an obviously best choice: **19 → 0**, and CI blocks new ones. |
+| `bench/balance.mjs` and `bench/targets.mjs` | Target bands per starting path, held in CI. On its first real run the balance check caught a drift (see below). |
+| Bench `perf.warTick` | The war-map tick with 212 divisions: **9.4 ms at the 95th percentile** (target 50). |
+
+**Corrections to Round 2.**
+
+- **The war ratio.** Round 2 reported warlike rulers starting **5.3×** as many wars as peaceful ones, from 3 worlds × 60 years. One world's ratio swings from 1.5× to 6× with the random stream: a later feature that draws one more number a month moved it from 5.3 to 1.45 on the same seeds. Pooled over 12 worlds it is **2.4×**, and two builds on a fresh seed set agree (1.98 and 2.06). The effect is real and about two to three times.
+- **Risk costs.** The bench's "careful bots outlive reckless ones" read 2 years after this round, from a 16-life median that mixed in elves and dwarves. Deaths are bimodal, and a small median jumps between the two humps. The metric now uses the mean death age of humans and orcs: **5.2 years**. Forty human lives each read 52 against 24 (medians) and 49 against 30 (means), with or without learn-by-doing.
+
+**What the balance check found** (the notes are in `bench/targets.mjs`):
+
+- **Freedom was close to automatic.** Every serf was free by 33, most by buying freedom at 21–22 for 40 suns, because the event that sold it had no way to say no. With "Not this year" (33-choices), half stay bound.
+- **Peasants get nearly as rich as merchants.**
+- **Four lives a path is too few for an age band.** The dice alone move a serf's median age at death between 26 and 54.
+
+**The new strict grade** (the same rules: no aspect rises without evidence, and human-only aspects stay capped):
+
+| Aspect | Round 2 | Round 3 | Why it moved, or didn't |
+| --- | --- | --- | --- |
+| World and lore | 6 | **6.5** | The Codex fills with what you have learned. There are no realm bibles or enforced customs. |
+| Power scaling | 5.5 | **6** | The ladder is counted and capped. Event fights still skip the duel resolver. |
+| Character and life sim | 5 | **6** | Growth from doing, plus needs and moods. The systems aren't merged, and check success is 40% against a 45–65% target. |
+| Events and story | 6 | **6.5** | Variety guard, no obvious choices, 40 story events. Memory is still 15.9%, the recipe share 22.6%, and there are 50 old-age events. |
+| Relationships | 5.5 | **6** | First meetings are scenes and secrets can be found. There are no schemes or cliques. |
+| War | 5.5 | **6.5** | Every battle explains itself, and the soldier sees both scales. There are no rank choices, sieges or named squads. |
+| Diplomacy and politics | 6 | 6 | The ratio is corrected to 2.4×, still past its target. Nothing new was built here. |
+| Economy | 3.5 | 3.5 | Not touched: the economy rebuild is the plan's largest job. |
+| Balance | 4.5 | **5.5** | Targets per path, a drift check in CI, and a freedom fix. Death ages and check odds are still short of target. |
+| UI and UX | 6.5 | 6.5 | New cards and panels, but still no playtests. |
+| Visual art | 5 | 5 | Needs an artist. |
+| Technical | 7 | **7.5** | 83 tests, a choice lint and a balance league in CI, and the war tick measured. The source still isn't here. |
+| Replayability | 5.5 | **6.5** | 20 starts and 20 endings. The top life arc is still 26.6% of lives. |
+| Uniqueness | 7.5 | **8.5** | All three signature systems exist, though belief-vs-truth doesn't reach NPCs and both-scales is after the fight, not in it. |
+| **Overall** | **56** | **65** | |
+
+The measured scorecard (bots and tests only) reads **34.5** for the release, **35.8** for the fix layer, and **66.5** now.
+
+**What is left is mostly not code.**
+
+- **People.** UI, Character and Uniqueness are capped without playtests.
+- **Writing.** Old age (50 events against 150), long arcs, and realm bibles.
+- **The economy rebuild.** It is the largest code job.
+
+**Buildable next:**
+
+- War step 1 (choices at every rank) and step 5 (sieges).
+- Schemes.
+- AI generals with order letters.
+- Varied worlds per run.
+
 ## Round 2 (Oct 14): what changed, and the new grade
 
 Round 2 tried to get as close to 100 as code and content can get without people or art. It built a measurement system first, then the features with the most measured leverage, each in its own folder with its own tests. A usage limit stopped the multi-agent work part-way, so this section says plainly what landed and what did not.
@@ -18,7 +85,7 @@ Round 2 tried to get as close to 100 as code and content can get without people 
 
 | Change | Measured effect |
 | --- | --- |
-| `20-ai-personality`: ruler traits drive war, alliances, peace and tribute; every AI decision is logged with its reasons; the "why" list is real | Wars per ruler-year, aggressive traits vs peaceful: **1.3× → 5.3×** (3 worlds × 60 years) |
+| `20-ai-personality`: ruler traits drive war, alliances, peace and tribute; every AI decision is logged with its reasons; the "why" list is real | Wars per ruler-year, aggressive traits vs peaceful: **1.3× → 5.3×** (3 worlds × 60 years; corrected in Round 3 to 2.4× over 12 worlds) |
 | `21-npc-initiative`: people act first, with a history per bond; the 573 cast members' written wants and fears drive them | NPC-started moves per decade: **0 → 9.8** (target ≥ 3) |
 | `40-memory-*` (8 of 12 chunks): 471 callback events for memories the release recorded and never read | Events that read a memory: **3% → 15.8%**; fired in bot lives: **1.8% → 8.4%**; flags never read: **369 → 139** |
 | `22-chronicle`: "The Book", your life as chapters in a chronicler's voice, exportable | Signature systems present: **0 → 1 of 3** |
@@ -44,7 +111,7 @@ Round 2 tried to get as close to 100 as code and content can get without people 
 | Events and story | 5 | 5 | **6** | Memory is real (15.8%), but the recipe share is still 22.6% and old age is thin |
 | Relationships | 4 | 4 | **5.5** | NPCs act first; no schemes, web or secrets yet |
 | War | 5.5 | 5.5 | 5.5 | The after-action feature didn't land |
-| Diplomacy and politics | 4 | 4 | **6** | Rulers act in character (5.3×) and explain themselves |
+| Diplomacy and politics | 4 | 4 | **6** | Rulers act in character (5.3× as first measured; 2.4× pooled over 12 worlds, see Round 3) and explain themselves |
 | Economy | 3 | 3.5 | 3.5 | Leaks plugged in round 1; gold is still deleted rather than spent |
 | Balance | 4.5 | 4.5 | 4.5 | Measured now, not yet tuned |
 | UI and UX | 5.5 | 6 | **6.5** | WCAG 2.2 clean; still zero playtests and five tooltip kinds |
