@@ -1,98 +1,96 @@
 {
  "file": "index.html",
- "build": "b593143+f28.f5301d8",
+ "build": "b593143+f30.3ab25a9",
  "paths": {
   "serf": {
    "lives": 4,
-   "medianDeathAge": 50,
-   "medianPeakCoin": 1627,
-   "medianPeakFame": 11,
+   "medianDeathAge": 26,
+   "medianPeakCoin": 300,
+   "medianPeakFame": 2,
    "notableSharePct": 50,
    "freedSharePct": 50,
    "arcs": [
     "bound for life",
-    "outlaw",
     "bound for life",
-    "general"
+    "freed",
+    "captain"
    ]
   },
   "peasant": {
    "lives": 4,
-   "medianDeathAge": 66,
-   "medianPeakCoin": 71033,
-   "medianPeakFame": 53,
-   "notableSharePct": 75,
+   "medianDeathAge": 74,
+   "medianPeakCoin": 178638,
+   "medianPeakFame": 59,
+   "notableSharePct": 100,
    "freedSharePct": 0,
    "arcs": [
-    "captain",
-    "cut short",
+    "soldier",
     "officer of state",
-    "outlaw"
+    "officer of state",
+    "captain"
    ]
   },
   "artisan": {
    "lives": 4,
-   "medianDeathAge": 57,
-   "medianPeakCoin": 42064,
-   "medianPeakFame": 23,
-   "notableSharePct": 75,
+   "medianDeathAge": 56,
+   "medianPeakCoin": 157249,
+   "medianPeakFame": 14,
+   "notableSharePct": 100,
    "freedSharePct": 0,
    "arcs": [
-    "fortune made",
     "outlaw",
-    "working life",
+    "general",
+    "fortune made",
     "fortune made"
    ]
   },
   "merchant": {
    "lives": 4,
-   "medianDeathAge": 68,
-   "medianPeakCoin": 528856,
-   "medianPeakFame": 58,
+   "medianDeathAge": 70,
+   "medianPeakCoin": 556422,
+   "medianPeakFame": 66,
    "notableSharePct": 100,
    "freedSharePct": 0,
    "arcs": [
     "ruler",
+    "officer of state",
     "fortune made",
-    "master of a trade",
-    "ruler"
+    "master of a trade"
    ]
   },
   "noble": {
    "lives": 4,
-   "medianDeathAge": 73,
-   "medianPeakCoin": 357743,
-   "medianPeakFame": 93,
+   "medianDeathAge": 66,
+   "medianPeakCoin": 365462,
+   "medianPeakFame": 73,
    "notableSharePct": 100,
    "freedSharePct": 0,
    "arcs": [
     "outlaw",
-    "officer of state",
-    "officer of state",
+    "fortune made",
+    "outlaw",
     "officer of state"
    ]
   },
   "royal": {
    "lives": 4,
-   "medianDeathAge": 46,
-   "medianPeakCoin": 95013,
-   "medianPeakFame": 66,
+   "medianDeathAge": 68,
+   "medianPeakCoin": 36238,
+   "medianPeakFame": 47,
    "notableSharePct": 75,
    "freedSharePct": 0,
    "arcs": [
+    "ruler",
+    "outlaw",
     "cut short",
-    "soldier",
-    "captain",
-    "general"
+    "captain"
    ]
   }
  },
  "global": {
-  "checkWinRate": 39.8,
+  "checkWinRate": 37.3,
   "arcTypes": 11,
   "pageErrors": 0
  },
- "failures": [
-  "serf.medianPeakCoin = 1627, outside 2000–150000"
- ]
+ "failures": []
 }
