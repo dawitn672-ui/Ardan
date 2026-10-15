@@ -4,17 +4,18 @@ Measured by `bench/run.mjs`, compared by `bench/compare.mjs release fixes curren
 
 | Build | release | fixes | current |
 | --- | --- | --- | --- |
-| Build id | `b593143@2026-10-12` | `b593143+f6.00e35fd` | `b593143+f19.c2c0f96` |
+| Build id | `b593143@2026-10-12` | `b593143+f6.00e35fd` | `b593143+f30.3ab25a9` |
 
 ## Events and story
 
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
-| Events that read an earlier memory (all events) | ≥ 40% | 3 ✗ | 3 ✗ | 15.8 ✗ |
-| Fired events that read a memory (bot lives) | ≥ 40% | 1.8 ✗ | 1.3 ✗ | 8.4 ✗ |
-| Flags set but never read | 0 | 369 ✗ | 369 ✗ | 139 ◐ |
-| Strict recipe events (2–3 choices, a roll, stat nudges only) | ≤ 10% | 25.7 ✗ | 25.7 ✗ | 22.6 ✗ |
-| Old-age events | ≥ 150 | 41 ✗ | 41 ✗ | 49 ✗ |
+| Events that read an earlier memory (all events) | ≥ 40% | 3 ✗ | 3 ✗ | 15.7 ✗ |
+| Fired events that read a memory (bot lives) | ≥ 40% | 1.8 ✗ | 1.3 ✗ | 8.7 ✗ |
+| Flags set but never read | 0 | 369 ✗ | 369 ✗ | 253 ✗ |
+| Strict recipe events (2–3 choices, a roll, stat nudges only) | ≤ 10% | 25.7 ✗ | 25.7 ✗ | 22.2 ✗ |
+| Events with an obviously best choice (of those comparable by numbers) | 0% | – | – | 0 ✅ |
+| Old-age events | ≥ 150 | 41 ✗ | 41 ✗ | 50 ✗ |
 | **Measured score** (cap 8 without people) | | **0.7** | **0.6** | **3** |
 
 ## Power scaling
@@ -29,29 +30,30 @@ Measured by `bench/run.mjs`, compared by `bench/compare.mjs release fixes curren
 
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
-| Check success rate in bot lives | 45–65% | 38.4 ✗ | 40.3 ✗ | 36.5 ✗ |
-| Initiative actions per year (engaged bot) | ≥ 6 | 4.4 ◐ | 4.1 ◐ | 4.2 ◐ |
-| **Measured score** (cap 7 without people) | | **3.3** | **3.5** | **2.8** |
+| Check success rate in bot lives | 45–65% | 38.4 ✗ | 40.3 ✗ | 40.2 ✗ |
+| Initiative actions per year (engaged bot) | ≥ 6 | 4.4 ◐ | 4.1 ◐ | 4.8 ◐ |
+| **Measured score** (cap 7 without people) | | **3.3** | **3.5** | **3.8** |
 
 ## Relationships and people
 
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
-| NPC-started moves toward the player per decade | ≥ 3 | 0 ✗ | 0 ✗ | 9.8 ✅ |
+| NPC-started moves toward the player per decade | ≥ 3 | 0 ✗ | 0 ✗ | 10.1 ✅ |
 | **Measured score** (cap 7 without people) | | **0** | **0** | **7** |
 
 ## War
 
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
-| Battles the player fought that end with an after-action report | 100% | 0 ✗ | 0 ✗ | 0 ✗ |
-| **Measured score** (cap 7 without people) | | **0** | **0** | **0** |
+| Battles the player fought that end with an after-action report | 100% | 0 ✗ | 0 ✗ | 100 ✅ |
+| War-map tick, 95th percentile, in a year of six wars | ≤ 50 ms | – | – | 4.9 ✅ |
+| **Measured score** (cap 7 without people) | | **0** | **0** | **7** |
 
 ## Diplomacy and politics
 
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
-| War declarations: aggressive vs peaceful rulers (per ruler-year) | ≥ 2× | 1.3 ✗ | 0.8 ✗ | 5.3 ✅ |
+| War declarations: aggressive vs peaceful rulers (per ruler-year) | ≥ 2× | 1.3 ✗ | 0.8 ✗ | 3.8 ✅ |
 | **Measured score** (cap 8 without people) | | **2.1** | **0** | **8** |
 
 ## Economy
@@ -66,9 +68,9 @@ Measured by `bench/run.mjs`, compared by `bench/compare.mjs release fixes curren
 
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
-| Median death age, humans and orcs (bot lives) | 55–70 | 47 ◐ | 45 ◐ | 48 ◐ |
-| Risk costs: careful bots outlive reckless ones by (years) | ≥ 5 | 22 ✅ | 17 ✅ | 12 ✅ |
-| **Measured score** (cap 7 without people) | | **5.8** | **5.8** | **5.8** |
+| Median death age, humans and orcs (bot lives) | 55–70 | 47 ◐ | 45 ◐ | 49 ◐ |
+| Risk costs: careful bots outlive reckless ones by (years) | ≥ 5 | 22 ✅ | 17 ✅ | 2 ✗ |
+| **Measured score** (cap 7 without people) | | **5.8** | **5.8** | **3** |
 
 ## UI and UX
 
@@ -83,7 +85,7 @@ Measured by `bench/run.mjs`, compared by `bench/compare.mjs release fixes curren
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
 | Corrupted saves in save/load cycles | 0 | 0 ✅ | 0 ✅ | 0 ✅ |
-| Milliseconds per game day | ≤ 5 ms | 1.1 ✅ | 0.8 ✅ | 0.6 ✅ |
+| Milliseconds per game day | ≤ 5 ms | 1.1 ✅ | 0.8 ✅ | 0.9 ✅ |
 | Page errors during the bench | 0 | 0 ✅ | 0 ✅ | 0 ✅ |
 | **Measured score** (cap 9.5 without people) | | **9.5** | **9.5** | **9.5** |
 
@@ -92,26 +94,26 @@ Measured by `bench/run.mjs`, compared by `bench/compare.mjs release fixes curren
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
 | Distinct life arcs in bot lives | ≥ 8 | 11 ✅ | 9 ✅ | 10 ✅ |
-| Share of the most common arc | ≤ 25% | 25 ✅ | 20.3 ✅ | 21.9 ✅ |
-| **Measured score** (cap 8 without people) | | **8** | **8** | **8** |
+| Share of the most common arc | ≤ 25% | 25 ✅ | 20.3 ✅ | 26.6 ◐ |
+| **Measured score** (cap 8 without people) | | **8** | **8** | **7.8** |
 
 ## Pacing and core loop
 
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
-| Longest usual wait between prompts (p90, seconds at default speed) | ≤ 45 s | 45.3 ◐ | 38.3 ✅ | 32 ✅ |
-| Prompts per in-game year | ≥ 6 | 4.5 ◐ | 4.9 ◐ | 5.5 ◐ |
-| **Measured score** (cap 6 without people) | | **5.5** | **5.6** | **5.8** |
+| Longest usual wait between prompts (p90, seconds at default speed) | ≤ 45 s | 45.3 ◐ | 38.3 ✅ | 30.8 ✅ |
+| Prompts per in-game year | ≥ 6 | 4.5 ◐ | 4.9 ◐ | 5.9 ◐ |
+| **Measured score** (cap 6 without people) | | **5.5** | **5.6** | **6** |
 
 ## Uniqueness
 
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
-| Signature systems present (chronicle, belief vs truth, both scales) | 3 of 3 | 0 ✗ | 0 ✗ | 1 ✗ |
-| **Measured score** (cap 6 without people) | | **0** | **0** | **2** |
+| Signature systems present (chronicle, belief vs truth, both scales) | 3 of 3 | 0 ✗ | 0 ✗ | 3 ✅ |
+| **Measured score** (cap 6 without people) | | **0** | **0** | **6** |
 
 ## Total
 
 | | release | fixes | current |
 | --- | --- | --- | --- |
-| Mean measured score (out of 100) | 34.5 | 35.8 | 56.8 |
+| Mean measured score (out of 100) | 34.5 | 35.8 | 63.9 |

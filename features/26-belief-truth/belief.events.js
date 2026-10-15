@@ -21,9 +21,9 @@ A.defEvents([
     choices: [
       { t: 'Copy the lines out before he comes back', check: { s: 'spd', s2: 'int', d: 40 },
         win: { r: 'You fold the copy into your shirt. At home you read it twice, then once more by the candle.', fx: learn({ flag: 'bt_copied' }) },
-        lose: { r: 'He comes back with bread in his beard and sees the ink on your fingers. He takes the page, and your name.', fx: { happy: -3, flag: 'bt_caught_copying' } } },
+        lose: { r: 'He comes back with bread in his beard and sees the ink on your fingers. He takes the page, and your name.', fx: { happy: -3 } } },
       { t: 'Read it until you have it by heart', r: 'You close the book on it. The words stay.', fx: learn() },
-      { t: 'Show the clerk what you found', r: 'He reads it, goes grey, and tears out the page. "Some idle monk," he says, and puts it in the stove.', fx: { flag: 'bt_told_clerk' } },
+      { t: 'Show the clerk what you found', r: 'He reads it, goes grey, and tears out the page. "Some idle monk," he says, and puts it in the stove.', fx: {} },
     ],
   },
   {
@@ -33,7 +33,7 @@ A.defEvents([
     choices: [
       { t: 'Sit by him and listen', r: 'He talks until the candle is a stub. Then he sleeps, and does not wake.', fx: learn({ piety: 1 }) },
       { t: 'Ask him why he chose you', r: '"Because you will never matter enough to be believed," he says. He means it kindly, and tells you all of it.', fx: learn({ wil: 1 }) },
-      { t: 'Fetch his superior instead', r: 'The superior thanks you at the door and closes it. You hear his voice through the wood, low and steady, for a long time.', fx: { piety: 2, flag: 'bt_fetched_superior' } },
+      { t: 'Fetch his superior instead', r: 'The superior thanks you at the door and closes it. You hear his voice through the wood, low and steady, for a long time.', fx: { piety: 2 } },
     ],
   },
   {
@@ -53,7 +53,7 @@ A.defEvents([
     choices: [
       { t: 'Read it', r: 'You read it at the table with the shutters closed.', fx: learn() },
       { t: 'Sell it back to the stall-keeper', r: 'He gives you more for it than you paid for the whole book, and does not ask what it says.', fx: { coin: 30 } },
-      { t: 'Burn it unread', r: 'It goes up quickly. Some things should stay buried, and you do not want to know which.', fx: { wil: 1, flag: 'bt_burned_letter' } },
+      { t: 'Burn it unread', r: 'It goes up quickly. Some things should stay buried, and you do not want to know which.', fx: { wil: 1 } },
     ],
   },
   {
@@ -62,7 +62,7 @@ A.defEvents([
     text: 'At the feast the oldest woman of your house, who has outlived three husbands and a war, beckons you close. "They teach you that {secTitle} went one way," she says. "My grandmother was in the room."',
     choices: [
       { t: 'Hear her out', r: 'She tells it flatly, the way old women tell things they have stopped being angry about.', fx: learn({ family: 1 }) },
-      { t: 'Laugh it off as an old tale', r: 'She shrugs and asks for more wine. Nobody will ask her again.', fx: { flag: 'bt_laughed_elder' } },
+      { t: 'Laugh it off as an old tale', r: 'She shrugs and asks for more wine. Nobody will ask her again.', fx: {} },
     ],
   },
   {
@@ -72,7 +72,7 @@ A.defEvents([
     choices: [
       { t: 'Find him afterwards and ask where the verse came from', check: { s: 'persuasion', s2: 'ins', d: 45 },
         win: { r: 'He makes you buy his supper first. Then he tells you who taught it to him, and what it means.', fx: learn() },
-        lose: { r: 'He says he made it up, and will not look at you while he says it.', fx: { flag: 'bt_verse_denied' } } },
+        lose: { r: 'He says he made it up, and will not look at you while he says it.', fx: {} } },
       { t: 'Find the man in the good coat instead', check: { s: 'ins', s2: 'wil', d: 50 },
         win: { r: 'You follow him to a house with a temple seal on the door. That tells you nearly as much as the verse did.', fx: learn({ flag: 'bt_followed_coat' }) },
         lose: { r: 'He turns in the crowd and looks straight at you. You buy apples, and go home.', fx: { happy: -2 } } },
@@ -86,7 +86,7 @@ A.defEvents([
     choices: [
       { t: 'Read it, then file it where it belongs', r: 'You put it back where it was buried. You know where it is now.', fx: learn({ skill: { intrigue: 1 } }) },
       { t: 'Take a copy home', r: 'It sits under a loose board in your floor. You find yourself checking it.', fx: learn({ flag: 'bt_kept_copy' }) },
-      { t: 'Hand it to your superior unread', r: 'Your superior reads the first line and puts it in the fire. You are thanked for your discretion.', fx: { merit: 5, flag: 'bt_handed_up' } },
+      { t: 'Hand it to your superior unread', r: 'Your superior reads the first line and puts it in the fire. You are thanked for your discretion.', fx: { merit: 5 } },
     ],
   },
   {
@@ -95,7 +95,7 @@ A.defEvents([
     text: 'Your eldest asks why you go quiet whenever the priests tell the story of {secTitle}. The others at the table stop eating to hear what you say.',
     choices: [
       { t: 'Tell them the truth, all of it', r: 'Nobody speaks for a while. Then your eldest asks the right question, and you answer that too.', fx: { family: 2, flag: 'bt_told_heir' } },
-      { t: 'Tell them the story everyone tells', r: 'They go back to eating. You carry it alone a while longer.', fx: { wil: 1, flag: 'bt_kept_from_heir' } },
+      { t: 'Tell them the story everyone tells', r: 'They go back to eating. You carry it alone a while longer.', fx: { wil: 1 } },
     ],
   },
   {
@@ -115,10 +115,10 @@ A.defEvents([
     text: 'At the fire a carter tells how he once saw a {beast}, and how it did a thing you know it does not do. The others lean in. You have seen one. That is not how it goes.',
     choices: [
       { t: 'Tell them what you saw', check: { s: 'persuasion', s2: 'wil', d: 45 },
-        win: { r: 'By the end they are asking you, not him. He takes it well enough, for a carter.', fx: { fame: 1, flag: 'bt_corrected_tale' } },
+        win: { r: 'By the end they are asking you, not him. He takes it well enough, for a carter.', fx: { fame: 1 } },
         lose: { r: 'They laugh. A man who saw one would be dead, the carter says, and the fire agrees with him.', fx: { happy: -2 } } },
       { t: 'Let the carter have his tale', r: 'It is a good tale. It is only not true.', fx: { happy: 1 } },
-      { t: 'Add something worse to it', r: 'They believe that part at once. By spring it will be in the song.', fx: { fame: 1, honor: -1, flag: 'bt_grew_tale' } },
+      { t: 'Add something worse to it', r: 'They believe that part at once. By spring it will be in the song.', fx: { fame: 1, honor: -1 } },
     ],
   },
   {
@@ -126,9 +126,9 @@ A.defEvents([
     cond: (p, C) => C.adult(p), w: 0.8, cool: 10, setup: beast(1),
     text: 'A pedlar has a {beast} tooth on a cord. Proof against fever, he says, and against the evil eye, and he has only the one.',
     choices: [
-      { t: 'Buy it', r: 'You wear it a while. You do not catch a fever that winter, which proves nothing.', fx: { coin: -20, happy: 2, flag: 'bt_bought_tooth' } },
+      { t: 'Buy it', r: 'You wear it a while. You do not catch a fever that winter, which proves nothing.', fx: { coin: -20, happy: 2 } },
       { t: 'Look at it closely before you pay', check: { s: 'ins', s2: 'int', d: 45 },
-        win: { r: 'It is a cow tooth, filed to a point and stained with tea. He sees you see it, and packs up.', fx: { ins: 1, flag: 'bt_saw_fake' } },
+        win: { r: 'It is a cow tooth, filed to a point and stained with tea. He sees you see it, and packs up.', fx: { ins: 1 } },
         lose: { r: 'It looks like a tooth. You pay him and wonder about it for weeks.', fx: { coin: -20 } } },
       { t: 'Walk on', r: 'He is already calling to the next passer-by.' },
     ],

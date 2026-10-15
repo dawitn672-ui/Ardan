@@ -50,7 +50,7 @@ A.defEvents([
     cond: (p, C) => C.mood(p, 'company') && !C.child(p), w: 1.5, cool: 12, once: true,
     text: 'A thin dog with one torn ear has been sleeping at your door for three nights. It watches you come and go with a patience that is almost rude.',
     choices: [
-      { t: 'Take it in', r: 'It eats more than it should and sleeps on your feet. The house is less quiet.', fx: { need: { company: 20, comfort: 4 }, coin: -5, flag: 'md_has_dog' } },
+      { t: 'Take it in', r: 'It eats more than it should and sleeps on your feet. The house is less quiet.', fx: { need: { company: 20, comfort: 4 }, coin: -5 } },
       { t: 'Feed it, and leave the door shut', r: 'It stays by the door, fed and patient, until one day it is gone.', fx: { need: { company: 6 }, coin: -2 } },
       { t: 'Chase it off', r: 'It goes. It looks back once.', fx: { wil: .5, happy: -2 } },
     ] },

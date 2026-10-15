@@ -1,75 +1,78 @@
 {
  "label": "current",
  "file": "index.html",
- "build": "b593143+f25.df3ff59",
+ "build": "b593143+f30.3ab25a9",
  "modules": {
   "league": {
    "lives": 64,
-   "medianDeathAge_humanOrc": 48,
+   "medianDeathAge_humanOrc": 49,
    "p10DeathAge": 17,
-   "p90DeathAge": 72,
+   "p90DeathAge": 74,
    "arcTypes": 10,
-   "topArcShare": 21.9,
+   "topArcShare": 26.6,
    "arcs": {
-    "working life": 8,
-    "officer of state": 4,
-    "outlaw": 12,
+    "outlaw": 17,
+    "cut short": 9,
+    "officer of state": 6,
+    "fortune made": 16,
+    "quiet life": 4,
+    "working life": 5,
     "master of a trade": 2,
-    "quiet life": 10,
-    "cut short": 6,
-    "fortune made": 14,
-    "general": 2,
-    "captain": 5,
-    "soldier": 1
+    "captain": 3,
+    "general": 1,
+    "ruler": 1
    },
-   "memoryShareOfFiredEvents": 8.4,
-   "eventsPerYear": 5.1,
-   "promptsPerYear": 5.5,
+   "memoryShareOfFiredEvents": 8.7,
+   "eventsPerYear": 5.4,
+   "promptsPerYear": 5.9,
    "medianDaysBetweenPrompts": 31,
-   "p90DaysBetweenPrompts": 128,
-   "p90SecondsBetweenPromptsAtDefaultSpeed": 32,
-   "checkWinRate": 36.5,
-   "initiativeActionsPerYear_engaged": 4.2,
+   "p90DaysBetweenPrompts": 123,
+   "p90SecondsBetweenPromptsAtDefaultSpeed": 30.8,
+   "checkWinRate": 40.2,
+   "initiativeActionsPerYear_engaged": 4.8,
    "byPersonality": {
     "careful": {
      "lives": 16,
-     "medianDeathAge": 45,
-     "checkWinRate": 45.7
+     "medianDeathAge": 49,
+     "checkWinRate": 46
     },
     "reckless": {
      "lives": 16,
-     "medianDeathAge": 33,
-     "checkWinRate": 32.1
+     "medianDeathAge": 47,
+     "checkWinRate": 37.5
     },
     "greedy": {
      "lives": 16,
-     "medianDeathAge": 38,
-     "checkWinRate": 37
+     "medianDeathAge": 66,
+     "checkWinRate": 35.2
     },
     "random": {
      "lives": 16,
-     "medianDeathAge": 49,
-     "checkWinRate": 41.3
+     "medianDeathAge": 37,
+     "checkWinRate": 47
     }
    },
-   "carefulMinusRecklessDeathAge": 12,
-   "npcMovesPerDecade": 9.8,
-   "battlesFought": 14,
-   "afterActionShare": 0
+   "carefulMinusRecklessDeathAge": 2,
+   "npcMovesPerDecade": 10.1,
+   "battlesFought": 26,
+   "afterActionShare": 100
   },
   "events": {
-   "events": 3705,
-   "choices": 11179,
-   "memoryEvents": 587,
-   "memorySharePct": 15.8,
-   "flagsSet": 649,
-   "orphanFlags": 139,
-   "strictRecipePct": 22.6,
-   "choicesWithoutCheckPct": 55.3,
-   "oldAgeEvents": 49,
-   "childTeenEvents": 235,
+   "events": 3772,
+   "choices": 11362,
+   "memoryEvents": 591,
+   "memorySharePct": 15.7,
+   "flagsSet": 768,
+   "orphanFlags": 253,
+   "strictRecipePct": 22.2,
+   "choicesWithoutCheckPct": 55.8,
+   "oldAgeEvents": 50,
+   "childTeenEvents": 239,
    "staticTextOver80": 0,
-   "staticChoiceOver12": 0
+   "staticChoiceOver12": 0,
+   "obviouslyBest": 0,
+   "obviouslyBestPct": 0,
+   "choiceComparable": 218
   },
   "duels": {
    "table": [
@@ -122,10 +125,10 @@
   "ai": {
    "worlds": 3,
    "years": 60,
-   "warsDeclared": 84,
-   "warsPer100RulerYears_aggressiveTraits": 0.93,
-   "warsPer100RulerYears_peacefulTraits": 0.17,
-   "aggressiveToPeacefulRatio": 5.34
+   "warsDeclared": 87,
+   "warsPer100RulerYears_aggressiveTraits": 1.11,
+   "warsPer100RulerYears_peacefulTraits": 0.29,
+   "aggressiveToPeacefulRatio": 3.83
   },
   "economy": {
    "markets": 35,
@@ -134,27 +137,27 @@
    "bestBuySellBackLoop10x": 0
   },
   "perf": {
-   "msPerDay": 1.57,
-   "msPerYear": 573,
-   "divisions": 201,
+   "msPerDay": 0.89,
+   "msPerYear": 324,
+   "divisions": 210,
    "boot": {
-    "ardan-core decoded": 379,
-    "ardan-core unpacked": 443,
-    "core ran": 530,
-    "title shown": 538,
-    "ardan-content decoded": 569,
-    "ardan-content unpacked": 626,
-    "content ran": 1069,
-    "ardan-lore decoded": 1081,
-    "ardan-lore unpacked": 1122
+    "ardan-core decoded": 349,
+    "ardan-core unpacked": 416,
+    "core ran": 507,
+    "title shown": 515,
+    "ardan-content decoded": 554,
+    "ardan-content unpacked": 615,
+    "content ran": 1056,
+    "ardan-lore decoded": 1070,
+    "ardan-lore unpacked": 1110
    },
    "warTick": {
-    "ticks": 254,
-    "divisions": 212,
+    "ticks": 364,
+    "divisions": 217,
     "warsAtStart": 6,
-    "p50": 5.3,
-    "p95": 9.4,
-    "max": 18
+    "p50": 3.3,
+    "p95": 4.9,
+    "max": 18.1
    }
   },
   "saves": {
@@ -164,9 +167,9 @@
   },
   "signature": {
    "chronicle": true,
-   "beliefTruth": false,
-   "bothScales": false,
-   "present": 1
+   "beliefTruth": true,
+   "bothScales": true,
+   "present": 3
   },
   "a11y": {
    "screens": 26,
@@ -175,7 +178,7 @@
    "seriousOrCritical": 0,
    "byRule": {},
    "needsReview": {
-    "color-contrast": 2552
+    "color-contrast": 2576
    }
   },
   "pageErrorCount": 0

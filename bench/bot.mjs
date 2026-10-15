@@ -20,7 +20,8 @@ export const BOT = () => {
     }
     const reads = {}, memory = new Set();
     for (const e of Object.values(A.EV)) {
-      const src = (e.cond ? e.cond.toString() : '') + ' ' + (e.setup ? e.setup.toString() : '');
+      // a memory is read where it decides whether the event comes (cond), how it is set up, or what it says
+      const src = (e.cond ? e.cond.toString() : '') + ' ' + (e.setup ? e.setup.toString() : '') + ' ' + (typeof e.text === 'function' ? e.text.toString() : '');
       const fl = [...src.matchAll(/C\.flag\(p,\s*["']([A-Za-z0-9_]+)["']|flags(?:\.|\[["'])([A-Za-z0-9_]+)/g)].map(m => m[1] || m[2]).filter(f => f !== 'ev' && f !== 'unfree' && f !== 'patron' && f !== 'chain');
       reads[e.id] = fl;
       if (/flags\.ev\b|flags\[["']ev["']\]/.test(src) || fl.some(f => setters[f] && [...setters[f]].some(s => s !== e.id))) memory.add(e.id);

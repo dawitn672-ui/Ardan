@@ -25,7 +25,7 @@ A.defEvents([
       { t: 'Give it outright, with no debt between you', r: '{them} starts to argue, then folds the purse into {khis} shirt and goes before you can change your mind.',
         fx: (p, ctx) => act(p, ctx, { coin: -ctx.amtN, them: { op: 20 }, honor: 1, owed: 1 }, { note: 'You gave {khim} {amt} and asked nothing back' }) },
       { t: 'Refuse', r: '{them} nods as if {khe} expected it. {khe} does not come by again for some time.',
-        fx: (p, ctx) => act(p, ctx, { them: { op: -8 }, flag: 'ni_refused_loan' }, { note: 'You refused {khim} a loan' }) },
+        fx: (p, ctx) => act(p, ctx, { them: { op: -8 } }, { note: 'You refused {khim} a loan' }) },
     ],
   },
   {
@@ -79,7 +79,7 @@ A.defEvents([
     text: 'The feud between {them} and {foe} has gone quiet, but not cold. Last night someone let your animals out and broke the gate. {them} says {khe} knows who, and offers to settle it {khis} own way.{past}',
     choices: [
       { t: 'Let {them} settle it', r: 'You do not ask what {khe} did. {foe} walks with a limp after that, and your gate stays shut.',
-        fx: (p, ctx) => act(p, ctx, { them: { op: 6 }, fame: -1, flag: 'ni_feud_blood' }, { note: 'You let {khim} settle your score with {foe}' }) },
+        fx: (p, ctx) => act(p, ctx, { them: { op: 6 }, fame: -1 }, { note: 'You let {khim} settle your score with {foe}' }) },
       { t: 'Go to {foe} yourself', check: { s: 'persuasion', s2: 'wil', d: 45 },
         win: { r: '{foe} meets you at the door with a stick, and puts it down halfway through. It ends there.',
           fx: (p, ctx) => { A.NPCI.cool(ctx, 20); return act(p, ctx, { fame: 1, honor: 1, them: { op: -2 } }, { note: 'You went to {foe} and ended the feud' }); } },
