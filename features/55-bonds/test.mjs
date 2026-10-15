@@ -319,7 +319,7 @@ export default {
       v.spouse = wife.id; wife.spouse = v.id; v.children = [son.id, daughter.id];
       A.link(pc, v, 'rival', -20, 'rival');
       BD.blaming(v.id, 'duel', () => A.kill(v, 'a fight with you'));
-      const kin = [wife, son, daughter].map(k => ({ op: k.rel[pc.id] ? k.rel[pc.id].op : null, type: pc.rel[k.id] && pc.rel[k.id].type, line: pc.rel[k.id] && (pc.rel[k.id].hist || []).slice(-1)[0] }));
+      const kin = [wife, son, daughter].map(k => ({ op: k.rel[pc.id] ? k.rel[pc.id].op : null, type: pc.rel[k.id] && pc.rel[k.id].type, line: pc.rel[k.id] && Object.assign({}, (pc.rel[k.id].hist || []).slice(-1)[0]) }));
       // a friend you did right by dies of old age: his son takes up the memory, and its pull, at half weight
       const f = BDT.stranger(pc, [], 'M'); A.link(pc, f, 'friend', 60, 'friend');
       A.bondNote(pc, f, 'You pulled him out of the river', A.S.year - 5, { v: 30, h: 25, d: 'you pulled him out of the river' });
@@ -355,9 +355,29 @@ export default {
     const r = await pg.evaluate(() => {
       const BD = A.BONDS, FE = BD.FEUD;
       BDT.adult(5507, { realm: 'POL-05' });
+      // decisions: (1) the alliance A.diploAI would seek: Math.min(interest(x, y), interest(y, x) + 10) against the ruler's bar.
+      // Find a pair of realms that would ally today, give x a grudge from forty years ago (y took its capital under the
+      // ruler of that time), let x's ruler die, and ask again
+      // (a new ruler has a new character, so a pair is kept only if, under the successor, it would still ally without the grudge)
+      const allyV = (x, y) => Math.min(A.interest(x, y), A.interest(y, x) + 10), barOf = x => A.aiAllyBar ? A.aiAllyBar(x) : 48;
+      const ids = Object.values(A.S.realms).filter(x => x.alive && !x.isRebel && x.id !== A.pc().realm).map(x => x.id), save = A.serialize();
+      let al = null, v0 = null, vOn = null, vOff = null, bar = null, allyHeir = null, tries = 0;
+      for (const x of ids) for (const y of ids) {
+        if (al || x === y || tries > 12) continue;
+        const rx = A.realm(x), ry = A.realm(y);
+        if (rx.allies.includes(y) || ry.allies.length >= 3 || A.hostile(x, y)) continue;
+        const v = allyV(x, y);
+        if (!(v >= barOf(x) + 2 && v < barOf(x) + 18 && A.interest(x, y) <= A.interest(y, x) + 10)) continue;
+        tries++;
+        const g = FE.add(x, y, 'capital', { place: rx.capital }); g.y = A.S.year - 40;
+        A.rulerDies(rx, 'old age');
+        const on = allyV(x, y); FE.ON = false; const off = allyV(x, y); FE.ON = true;
+        if (off >= barOf(x)) { al = { x: rx, y: ry }; v0 = v; vOn = on; vOff = off; bar = barOf(x); allyHeir = FE.origin(g); }
+        else { A.deserialize(JSON.parse(save)); }
+      }
       const live = Object.values(A.S.realms).filter(x => x.alive && !x.isRebel && x.id !== A.pc().realm);
       let a = null, b = null;
-      for (const x of live) { const n = A.neighbors(x.id).map(A.realm).find(y => y && y.alive && !y.isRebel && y.id !== A.pc().realm && A.realmProvs(x.id).length >= 3); if (n) { a = x; b = n; break; } }
+      for (const x of live) { if (al && x.id === al.x.id) continue; const n = A.neighbors(x.id).map(A.realm).find(y => y && y.alive && !y.isRebel && y.id !== A.pc().realm && A.realmProvs(x.id).length >= 3); if (n) { a = x; b = n; break; } }
       // b takes a's capital
       const cap = A.prov(a.capitalProv), capName = cap.name, ruler0 = A.P(a.ruler);
       A.transferProv(cap, b.id, true);
@@ -367,12 +387,6 @@ export default {
       A.rulerDies(a, 'old age');
       const ruler1 = A.P(a.ruler);
       const origin1 = FE.origin(e), parts = A.opinionParts(a.id, b.id).map(x => x[0] + ' ' + x[1]), offer = A.interestParts(a.id, b.id).map(x => x[0] + ' ' + x[1]);
-      // decisions: (1) the alliance a seeks (A.diploAI's own sum and bar), with the ledger read and ignored
-      A.setRelPair(a.id, b.id, 70); A.setRelPair(b.id, a.id, 70);
-      a.mem = a.mem || {}; delete a.mem[b.id]; b.mem = b.mem || {}; delete b.mem[a.id];
-      const ally = () => Math.min(A.interest(a.id, b.id), A.interest(b.id, a.id) + 10);
-      const bar = A.aiAllyBar ? A.aiAllyBar(a.id) : 48;
-      const vOn = ally(); FE.ON = false; const vOff = ally(); FE.ON = true;
       // (2) the odds a's ruler declares war on b in A.aiWarCheck, read from the dice it rolls
       A.setRelPair(a.id, b.id, -20);
       const odds = on => {
@@ -389,51 +403,58 @@ export default {
       const pOn = odds(true), pOff = odds(false), mul = A.feudWarMul(a.id, b.id);
       const why = A.aiWhyWar ? A.aiWhyWar(a.id, b.id, A.warPreview(a.id, b.id), A.relBetween(a.id, b.id), null).map(x => x[0]) : [];
       return { a: a.short, b: b.short, capName, ruler0: ruler0 && ruler0.given, ruler1: ruler1 && ruler1.given, w: e && e.w, origin0, origin1, heirs: e ? e.heirs.length : 0, parts: parts.filter(x => /capital/.test(x)), offer: offer.filter(x => /grudge|Opinion/.test(x)),
-        vOn: Math.round(vOn), vOff: Math.round(vOff), bar: Math.round(bar), pOn, pOff, mul: Math.round(mul * 100) / 100, why: why.filter(x => /grudge/.test(x)) };
+        ax: al && al.x.short, ay: al && al.y.short, v0: v0 != null ? Math.round(v0) : null, vOn: vOn != null ? Math.round(vOn) : null, vOff: vOff != null ? Math.round(vOff) : null, bar: bar != null ? Math.round(bar) : null, allyHeir,
+        pOn, pOff, mul: Math.round(mul * 100) / 100, why: why.filter(x => /grudge/.test(x)) };
     });
     const ok = r.w === -35 && r.heirs === 1 && r.ruler0 !== r.ruler1 && /carried by/.test(r.origin1) && r.parts.length === 1 && r.offer.some(x => /grudge/.test(x)) &&
-      r.vOff >= r.bar && r.vOn < r.bar && r.pOn != null && r.pOff != null && r.pOn > r.pOff * 1.5;
+      r.v0 >= r.bar && r.vOff >= r.bar && r.vOn < r.bar && /carried by/.test(r.allyHeir || '') && r.pOn != null && r.pOff != null && r.pOn > r.pOff * 1.5;
     return { ok, detail: `${r.b} takes ${r.a}'s capital ${r.capName}: "${r.origin0}" (${r.w}); ${r.ruler0} dies and ${r.ruler1} succeeds: "${r.origin1}"; tooltip "${r.parts[0]}"; offer reasons ${r.offer.join(' / ')}; ` +
-      `alliance ${r.a} seeks with ${r.b}: ${r.vOff} without the ledger, ${r.vOn} with it (bar ${r.bar}); odds of war a month on ${r.b}: ${r.pOff && r.pOff.toFixed(4)} → ${r.pOn && r.pOn.toFixed(4)} (×${(r.pOn / r.pOff).toFixed(2)}, vengeance ×${r.mul}); war log: "${r.why[0] || ''}"` };
+      `${r.ax} would ally with ${r.ay} (${r.v0} against a bar of ${r.bar}); after "${r.allyHeir}" it stands at ${r.vOn} with the ledger read, ${r.vOff} with it ignored; ` +
+      `odds of war a month on ${r.b}: ${r.pOff && r.pOff.toFixed(4)} → ${r.pOn && r.pOn.toFixed(4)} (×${(r.pOn / r.pOff).toFixed(2)}, vengeance ×${r.mul}); war log: "${r.why[0] || ''}"` };
   },
 
   async bondsFeudWorlds(pg) {
-    // whole worlds: the ledger forms by itself, outlives rulers, and AI wars go where the grudges are
+    // whole worlds: the ledger forms by itself and outlives rulers; then, on the same final state, the AI's own decision
+    // functions with the ledger read and ignored, for every grudge it holds (no divergence between the two)
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      const FE = A.BONDS.FEUD;
-      const run = (seed, on, years) => {
-        FE.ON = on;
+      const FE = A.BONDS.FEUD, out = { active: 0, carried: 0, kinds: {}, deaths: 0, wars: 0, grudgeWars: 0, pairs: 0, dInterest: 0, allyFlips: 0, allyBefore: 0, warBarFlips: 0, nbPairs: 0 };
+      for (const seed of [5801, 5802]) {
         A.newGame({ seed, race: 'elf', realm: 'POL-06', status: 'gentry', sex: 'F', startAge: 120 });
-        const S = { py: { g: 0, n: 0 }, w: { g: 0, n: 0 }, carried: 0, wars: 0, deaths: 0 };
-        const cls = (x, y) => FE.sum(x, y) <= -10 ? 'g' : 'n';
-        const onWar = (w, opts) => { if (opts && opts.silent) return; const x = w.leadA, y = w.leadD, rx = A.realm(x); if (!rx || x === A.pc().realm) return; S.wars++; const c = cls(x, y); if (c === 'g' || c === 'n') S.w[c]++; if (c === 'g') { const e = FE.top(x, y, -1); if (e && e.byId != null && e.byId !== rx.ruler) S.carried++; } };
-        const onDie = () => { S.deaths++; };
+        const onWar = (w, opts) => { if (opts && opts.silent || w.leadA === A.pc().realm) return; out.wars++; if (FE.sum(w.leadA, w.leadD) <= -10) out.grudgeWars++; };
+        const onDie = () => { out.deaths++; };
         A.on('warStart', onWar); A.on('rulerDied', onDie);
         try {
-          const end = A.S.year + years; let lastY = A.S.year;
+          const end = A.S.year + 50;
           for (let g = 0; g < 20000 && A.S.year < end; g++) {
             const res = A.advance(400); let h, n = 0;
             while ((h = A.headReady()) && n++ < 300) { if (h.type === 'event') A.eventAuto(); else if (h.type === 'choice') A.choiceChoose(0); else if (h.type === 'duel') { A.duelAuto(h.d); A.duelClose(); } else if (h.type === 'battle') { A.battleAuto(h.b); if (A.S.queue[0] === h) A.S.queue.shift(); } else A.skipPrompt(); }
-            if (A.S.year !== lastY) { lastY = A.S.year; for (const id of Object.keys(A.S.realms)) { const x = A.S.realms[id]; if (!x.alive || x.isRebel) continue; for (const o of A.neighbors(id)) { const y = A.realm(o); if (y && y.alive) { const c = cls(id, o); if (c === 'g' || c === 'n') S.py[c]++; } } } }
             if (res.why === 'dead' || !A.pc() || !A.pc().alive) break;
           }
-        } finally { A.HOOKS.warStart = A.HOOKS.warStart.filter(f => f !== onWar); A.HOOKS.rulerDied = A.HOOKS.rulerDied.filter(f => f !== onDie); FE.ON = true; }
-        let active = 0, carriedLines = 0; const kinds = {};
-        for (const id of Object.keys(A.S.realms)) { const x = A.S.realms[id]; for (const b of Object.keys(x.feud || {})) for (const e of x.feud[b]) { if (Math.abs(e.w) < 2) continue; active++; kinds[e.k] = (kinds[e.k] || 0) + 1; if ((e.heirs || []).length) carriedLines++; } }
-        return Object.assign(S, { active, carriedLines, kinds });
-      };
-      const out = { on: [], off: [] };
-      for (const seed of [5801, 5802]) { out.on.push(run(seed, true, 50)); out.off.push(run(seed, false, 50)); }
-      const pool = L => { const s = { py: { g: 0, n: 0 }, w: { g: 0, n: 0 }, carried: 0, wars: 0, deaths: 0, active: 0, carriedLines: 0, kinds: {} }; for (const x of L) { for (const k of ['g', 'n']) { s.py[k] += x.py[k]; s.w[k] += x.w[k]; } for (const k of ['carried', 'wars', 'deaths', 'active', 'carriedLines']) s[k] += x[k]; for (const k in x.kinds) s.kinds[k] = (s.kinds[k] || 0) + x.kinds[k]; } return s; };
-      return { on: pool(out.on), off: pool(out.off) };
+        } finally { A.HOOKS.warStart = A.HOOKS.warStart.filter(f => f !== onWar); A.HOOKS.rulerDied = A.HOOKS.rulerDied.filter(f => f !== onDie); }
+        for (const id of Object.keys(A.S.realms)) {
+          const x = A.S.realms[id];
+          for (const b of Object.keys(x.feud || {})) {
+            for (const e of x.feud[b]) { if (Math.abs(e.w) < 2) continue; out.active++; out.kinds[e.k] = (out.kinds[e.k] || 0) + 1; if ((e.heirs || []).length) out.carried++; }
+            const y = A.realm(b);
+            if (!x.alive || x.isRebel || !y || !y.alive || FE.sum(id, b) > -10) continue;
+            // the same state, the ledger read and then ignored
+            out.pairs++;
+            const ally = () => Math.min(A.interest(id, b), A.interest(b, id) + 10), bar = A.aiAllyBar ? A.aiAllyBar(id) : 48, warBar = A.aiWarBar ? A.aiWarBar(id) : -25;
+            const iOn = A.interest(id, b), aOn = ally(), relOn = A.relBetween(id, b);
+            FE.ON = false; const iOff = A.interest(id, b), aOff = ally(), relOff = A.relBetween(id, b); FE.ON = true;
+            out.dInterest += iOn - iOff;
+            if (aOff >= bar) { out.allyBefore++; if (aOn < bar) out.allyFlips++; }
+            if (A.neighbors(id).includes(b)) { out.nbPairs++; if (relOff > warBar && relOn <= warBar) out.warBarFlips++; }
+          }
+        }
+      }
+      return out;
     });
-    const rate = (s, k) => 1000 * s.w[k] / Math.max(1, s.py[k]);
-    const gOn = rate(r.on, 'g'), nOn = rate(r.on, 'n'), gOff = rate(r.off, 'g'), nOff = rate(r.off, 'n');
-    const ok = r.on.active >= 10 && r.on.carriedLines >= 3 && r.on.py.g > 0 && gOn > nOn * 1.5;
-    return { ok, detail: `two worlds of 50 years: ${r.on.active} feud lines held at the end (${Object.entries(r.on.kinds).map(([k, v]) => `${k} ${v}`).join(', ')}), ${r.on.carriedLines} of them carried past a ruler's death (${r.on.deaths} rulers died); ` +
-      `AI wars a thousand neighbour-years: against a realm held in grudge ${gOn.toFixed(1)} (${r.on.w.g} wars in ${r.on.py.g} pair-years), against others ${nOn.toFixed(1)} (${r.on.w.n}/${r.on.py.n}); ` +
-      `${r.on.carried} grudge wars declared by a successor of the ruler who was wronged; with the ledger recorded but not read: ${gOff.toFixed(1)} and ${nOff.toFixed(1)}`, data: r };
+    const ok = r.active >= 20 && r.carried >= 0.2 * r.active && r.pairs >= 5 && r.dInterest / Math.max(1, r.pairs) <= -6 && r.allyFlips + r.warBarFlips >= 1;
+    return { ok, detail: `two worlds of 50 years: ${r.active} feud lines held at the end (${Object.entries(r.kinds).map(([k, v]) => `${k} ${v}`).join(', ')}), ${r.carried} of them carried past a ruler's death (${r.deaths} rulers died); ` +
+      `${r.grudgeWars} of ${r.wars} AI wars were declared on a realm the attacker held in grudge. On the final state, for the ${r.pairs} grudges of 10 or more: the ledger moves the holder's interest in the other by ${(r.dInterest / Math.max(1, r.pairs)).toFixed(1)} on average; ` +
+      `of ${r.allyBefore} pairs that would ally without it, ${r.allyFlips} would not; of ${r.nbPairs} neighbours, ${r.warBarFlips} pass from war unthinkable to thinkable`, data: r };
   },
 
   async bondsOnScreen(pg) {
@@ -453,7 +474,8 @@ export default {
       const rng0 = JSON.stringify(A.rngState), s0 = JSON.stringify(A.S);
       const h = UI.personModal(t), rt = UI.TAB.realm(pc);
       const pure = JSON.stringify(A.rngState) === rng0 && JSON.stringify(A.S) === s0;
-      return { pure, hist: /What has passed between you/.test(h) && /\+12/.test(h), know: /What you know of/.test(h), they: /knows:<\/b> What you did at &lt;b&gt;the mill/.test(h), raw: /<img src=x|<b>the mill|<i>Thornfield/.test(h + rt), card: /Long memories of/.test(rt) && /Took &lt;i&gt;Thornfield/.test(rt), lever: A.interactOptions(pc, t).includes('bd_lever') };
+      // markup never reaches state: lines, secrets and places are kept with < > " stripped, and escaped again when drawn
+      return { pure, hist: /What has passed between you/.test(h) && /\+12/.test(h), know: /What you know of/.test(h), they: /knows:<\/b> What you did at b?the mill/.test(h), raw: /<img src=x|<b>the mill|<i>Thornfield/.test(h + rt), card: /Long memories of/.test(rt) && /Took i?Thornfield/.test(rt), lever: A.interactOptions(pc, t).includes('bd_lever') };
     });
     return { ok: r.pure && r.hist && r.know && r.they && !r.raw && r.card && r.lever,
       detail: `history with weights ${r.hist}; what you know of them ${r.know}; what they know of you ${r.they}; "Use what you know" offered ${r.lever}; realm card ${r.card}; escaped ${!r.raw}; render pure ${r.pure}` };

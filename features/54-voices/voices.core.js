@@ -217,43 +217,55 @@
     const s = g.trim().replace(/\.$/, '');
     return { trait: L.trait, text: `"${s}${/[?!]$/.test(s) ? '' : ','}" ${A.he(t)} says${L.text}.` };
   };
-  const VISIT = /\b(comes|turns up|is at your door|at your door|finds you|arrives|calls on you|stops you|walks in|knocks|sits down)\b/;
-  // give the person's line their manner; returns { text, trait, kind } or null
+  const OBJ = /^(is|was|of|to|for|about|with|from|at|by|named|called|sends|send|tells|asks|find|finds|meet|meets|see|sees|than|on|in|into|over|under|behind|like|against)$/i;
+  const VISIT = /\b(comes (by|round|to)|turns up|is at your door|at your door|finds you|arrives|calls on you|stops you|walks in|knocks|sits down|draws you aside)\b/;
+  // give the person's line their manner; returns { text, trait, kind } or null. A line is taken to be theirs only when
+  // they are named (or are the "he"/"she" of a sentence) in the sentence of the line or the one before it.
   V.speak = function (text, t, key, opt) {
     if (!t || !t.given || !text) return null;
     const name = rx(t.given), he = A.he(t), He = cap(he), who = `(?:${name}|${he}|${He})`;
+    // named as the one acting, not as the one spoken of ("It is Ivo, your friend", "a letter from Ivo")
+    const acts = x => [...x.matchAll(new RegExp(`\\b${name}\\b`, 'g'))].some(m => !OBJ.test((x.slice(0, m.index).match(/(\w+)\W*$/) || [])[1] || ''));
+    const near = i => {
+      const s = text.slice(0, i).split(/(?<=[.!?]"?)\s+/).filter(x => x.trim()).slice(-2);
+      return s.some(x => acts(x) || new RegExp(`^${He}\\b`).test(x));
+    };
     const quotes = [...text.matchAll(/"([^"]{2,}?)"/g)];
+    let other = false;   // the last line was somebody else's, so an untagged line after it is theirs too
     for (const q of quotes) {
       const end = q.index + q[0].length, after = text.slice(end, end + 60), before = text.slice(Math.max(0, q.index - 70), q.index);
+      const here = near(q.index);
       // their line with its speaker named after it: "Count it," she says.  ->  "Count it," she says, not looking up.
       const m = after.match(new RegExp(`^\\s+${who}\\s+(?:${V.VERBS})(?=[.,;:!?])`));
-      if (m) {
+      if (m && (here || new RegExp(`^\\s+${name}\\b`).test(after))) {
         const L = V.npcLine(t, key, 'tag');
         if (!L) return null;
         const at = end + m[0].length;
         return { text: text.slice(0, at) + L.text + text.slice(at), trait: L.trait, kind: 'tag' };
       }
+      if (m) { other = true; continue; }
       // their line, already given a manner by its writer ("she says quietly"): leave it
-      if (new RegExp(`^\\s+${who}\\s+(?:${V.VERBS})\\b`).test(after)) return null;
+      if (new RegExp(`^\\s+${who}\\s+(?:${V.VERBS})\\b`).test(after) && here) return null;
       // somebody else's line
-      if (/^\s+(the |a |an |his |her |your |someone|somebody|everyone|nobody|one |[A-Z][a-z]+ )[^.!?"]{0,25}?\b(says|asks|adds|replies|answers|whispers|mutters|tells|calls|shouts|cries)\b/.test(after)) continue;
+      if (/^\s+(the |a |an |his |her |your |someone|somebody|everyone|nobody|one |[A-Z][a-z]+ )[^.!?"]{0,25}?\b(says|asks|adds|replies|answers|whispers|mutters|tells|calls|shouts|cries)\b/.test(after)) { other = true; continue; }
+      if (other) { other = false; continue; }
       const said = new RegExp(`\\b${who}\\b[^.!?"]{0,40}\\b(?:says|asks|whispers|mutters|calls|tells you|adds)\\b[^.!?"]{0,12}[:,]?\\s*$`).test(before);
-      const named = new RegExp(`\\b${name}\\b`).test(text.slice(0, q.index));
       // their line with nobody named after it, ending a sentence:  "Come with me."  ->  "Come with me." She says it to the floor.
-      if ((said || named) && /[.!?]$/.test(q[1]) && /^(\s|$)/.test(after)) {
+      if ((said || here) && /[.!?]$/.test(q[1]) && /^(\s|$)/.test(after)) {
         const L = V.npcLine(t, key, 'beat');
         if (!L) return null;
         return { text: text.slice(0, end) + ' ' + L.text + text.slice(end), trait: L.trait, kind: 'beat' };
       }
-      if (said || named) return null;
+      if (said || here) return null;
     }
-    // a move they make toward you, with no line quoted: after the first sentence that names them, a greeting if they
-    // have come to you, otherwise their bearing
+    // a move they make toward you, with no line quoted: if the first sentence that names them has them come to you,
+    // they greet you in their culture's words and their manner (or, with no greeting, show their bearing)
     if (!quotes.length && opt && opt.npc) {
       const i = text.search(new RegExp(`\\b${name}\\b`)), stop = i < 0 ? null : text.slice(i).match(/[.!?](?=\s|$)/);
       if (!stop) return null;
       const at = i + stop.index + 1, from = Math.max(0, text.slice(0, i).search(/[^.!?]*$/));
-      const L = VISIT.test(text.slice(from, at)) ? V.greeting(t, key) : null, B = L || V.npcLine(t, key, 'bear');
+      if (!VISIT.test(text.slice(from, at))) return null;
+      const L = V.greeting(t, key), B = L || V.npcLine(t, key, 'bear');
       if (!B) return null;
       return { text: text.slice(0, at) + ' ' + B.text + text.slice(at), trait: B.trait, kind: L ? 'greet' : 'bear' };
     }

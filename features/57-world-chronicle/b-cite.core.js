@@ -79,12 +79,12 @@
     opts = opts || {};
     if (!p || !A.S) return null;
     const cd = opts.cd || {}, now = A.absDay(), fresh = c => !(cd[c.id] && now - cd[c.id] < (opts.gap || 730));
-    let pool = WC.near(p, kinds, { max: 30, minDays: opts.minDays, home: opts.home, since: opts.since }).map(fromEntry).filter(fresh);
+    let pool = WC.near(p, kinds, { max: 30, minDays: opts.minDays != null ? opts.minDays : 60, home: opts.home, since: opts.since }).map(fromEntry).filter(fresh);
     if (opts.canon !== false && pool.length < 2 && !opts.home) {
       const since = opts.living ? Math.max(1000, (p.born || A.S.year) - 40) : 1000;
       pool = pool.concat(WC.canonNear(p, kinds, { since }).map(c => WC.cite(c.id)).filter(fresh));
     }
-    if (opts.filter) pool = pool.filter(opts.filter);
+    if (opts.filter) pool = pool.filter(c => opts.filter(c, p));
     if (!pool.length) return null;
     pool.sort((a, b) => score(p, b) - score(p, a) || b.y - a.y);
     const top = pool.slice(0, 4);
@@ -132,14 +132,22 @@
     } catch (e) { console.error('world record tokens', e); }
     return o;
   };
-  // a condition helper: is there an entry of these kinds this person could know of? (home: in or next to their home)
-  A.C.chron = (p, kinds, home) => !!WC.choose(p, typeof kinds === 'string' ? kinds.split(',') : kinds, 'cond', { canon: !home, home: !!home });
+  // a condition helper, C.chron(p, kinds, mode): is there an entry of these kinds this person could know of? Its
+  // modes, shared by a scene's cond and its setup so the two agree: run (this run only), home (this run, in or next to
+  // the home province), sack (a town sacked or burned, or a realm fallen), mine (an entry of the character's own realm)
+  WC.MODES = {
+    run: { canon: false }, home: { canon: false, home: true },
+    sack: { canon: false, filter: c => !!c.e && (c.e.k === 'fallen' || (c.e.x || 0) >= 2) },
+    mine: { filter: (c, p) => !c.e || c.e.a === p.realm || c.e.b === p.realm },
+    pair: { canon: false, filter: c => !!c.e && !!c.e.b },
+  };
+  A.C.chron = (p, kinds, mode) => !!WC.choose(p, typeof kinds === 'string' ? kinds.split(',') : kinds, 'cond', Object.assign({ canon: true }, WC.MODES[mode] || {}));
   // for an event's setup: pick the entry, mark the scene as citing it, and fill its words as tokens ({wcRef} {wcYear}
   // {wcPlace} {wcRealm} {wcOther} {wcWho} {wcWar} {wcDead} {wcDays} {wcSick} {wcAgo}); none fits: the scene backs out
-  const AGO = ['this year', 'a year', 'two years', 'three years', 'four years', 'five years', 'six years', 'seven years', 'eight years', 'nine years', 'ten years', 'eleven years', 'twelve years'];
+  const AGO = ['not a year', 'a year', 'two years', 'three years', 'four years', 'five years', 'six years', 'seven years', 'eight years', 'nine years', 'ten years', 'eleven years', 'twelve years'];
   WC.pickFor = function (p, ctx, kinds, opts) {
     opts = opts || {};
-    const c = WC.choose(p, typeof kinds === 'string' ? kinds.split(',') : kinds, `${opts.id || 'ev'}|${p.id}|${A.absDay()}`, Object.assign({ canon: true, minDays: 60 }, opts));
+    const c = WC.choose(p, typeof kinds === 'string' ? kinds.split(',') : kinds, `${opts.id || 'ev'}|${p.id}|${A.absDay()}`, Object.assign({ canon: true }, WC.MODES[opts.mode] || {}, opts));
     if (!c) { ctx.skip = true; return null; }
     (ctx._wc = ctx._wc || []).push(c.id);
     const x = WC.words(c), n = A.S.year - c.y;

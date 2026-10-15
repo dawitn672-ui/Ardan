@@ -176,7 +176,7 @@
     const ex = L.find(e => e.k === k && (e.place || '') === place && A.S.year - e.y <= 10);
     if (ex) { ex.w = Math.sign(K.v) * Math.max(Math.abs(ex.w || 0), Math.abs(K.v)); return ex; }
     const ru = ra.ruler != null ? A.P(ra.ruler) : null;
-    const e = { k, v: K.v, w: K.v, y: A.S.year, h: K.h, place, by: ru && A.rulerStyle ? BD.clean(A.rulerStyle(ru, ra) + ' ' + (ru.given || '')) : '', byId: ru ? ru.id : null, heirs: [] };
+    const e = { k, v: K.v, w: K.v, y: A.S.year, h: K.h, place, by: ru ? BD.clean(A.rulerStyle ? A.rulerStyle(ru, ra) : ru.given) : '', byId: ru ? ru.id : null, heirs: [] };
     if (info.foe) e.foe = BD.clean(info.foe);
     if (info.name) e.name = BD.clean(info.name);
     if (info.title) e.title = BD.clean(info.title);
@@ -258,7 +258,7 @@
   A.on('rulerDied', (r, next) => {
     try {
       if (!r || !r.feud || !next) return;
-      const n = A.rulerStyle ? BD.clean(A.rulerStyle(next, r) + ' ' + (next.given || '')) : next.given;
+      const n = BD.clean(A.rulerStyle ? A.rulerStyle(next, r) : next.given);
       for (const b of Object.keys(r.feud)) for (const e of r.feud[b] || []) {
         if (Math.abs(e.w) < 2) continue;
         e.heirs = Array.isArray(e.heirs) ? e.heirs : [];

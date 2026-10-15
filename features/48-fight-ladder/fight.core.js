@@ -30,7 +30,7 @@ FL.CLAMP = [0.02, 0.98];   // as A.groupOdds
 // the logistic width, fitted by maximum likelihood on 1,100 duels per beast and mode (fighters of worth 30 to 133 at
 // health 45-100, three in four of them drawn from near the beast's middle; the duel engine's own auto-play; a party of 8
 // for "with"; the retags below in force), with the health term FL.BEAST_HEALTH. null: no fighter in the sample ever won.
-// Checked by bench/fights-audit.mjs (beasts) and test flScreenOdds.
+// Checked by bench/fights-audit.mjs (beasts) and test flBeastOdds.
 GD.BEAST_DUEL = {
   'CRE-01': [140, 9, 110, 9], 'CRE-03': [83, 6, 58, 7], 'CRE-05': [134, 2, 133, 2], 'CRE-06': [63, 5.5, 28, 7],
   'CRE-19': [133, 9, 104, 7.5], 'CRE-20': [121, 7, 98, 6.5], 'CRE-21': [67, 6, 40, 6], 'CRE-23': [119, 7.5, 97, 7],
@@ -45,10 +45,11 @@ FL.BEAST_HEALTH = 3.5;
 FL.STANDIN = { animal: 'CRE-21', great: 'CRE-25', titan: 'CRE-44', legend: 'CRE-05' };
 FL.duelRow = id => GD.BEAST_DUEL[id] || GD.BEAST_DUEL[FL.STANDIN[A.beastTier ? A.beastTier(id) : 'animal'] || 'CRE-21'];
 // The Roc (HP 200) and Forest Men (HP 170) sat among "animals" though the engine's own rule (HP 170 and up) makes them
-// great beasts, and their duels agree (a master wins about half the time alone). Four untagged sea and tropical beasts of
-// one to fifty tonnes fell back to "animal"; titans are "over a tonne".
+// great beasts, and even as animals their duels said so (a master alone won about half the time; against the other
+// animals a veteran does). Four untagged sea and tropical beasts of one to fifty tonnes fell back to "animal"; titans
+// are "over a tonne". A great beast's duel stats are the great tier's (A.fighterBeast), so the retag makes them harder.
 Object.assign(GD.BEAST_TIER, { 'CRE-53': 'great', 'CRE-55': 'great', 'CRE-13': 'titan', 'CRE-14': 'titan', 'CRE-18': 'titan', 'CRE-50': 'titan' });
-// The tier texts, said as the duel engine does it (test flTierClaims holds each number within 10 points).
+// The tier texts, said as the duel engine does it (test flTierTexts holds each number within 10 points).
 // The release said an animal is something "one trained fighter can kill"; alone, a trained fighter wins about one fight
 // in four against the animals, a veteran about half (bench/fights-audit.mjs, tiers: 22.6% and 52.6% of 500 duels).
 FL.TIER_TEXT = {

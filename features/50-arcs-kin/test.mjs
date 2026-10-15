@@ -259,7 +259,7 @@ export default {
     for (const [name, P] of paths) for (let i = 0; i < 3; i++) {
       const o = Object.assign({ seed: 8101 + i * 7919 + name.length * 131, sex: i % 2 ? 'F' : 'M' }, P.start);
       lives.push(await pg.evaluate(([o, i]) => {
-        const L = B.life(o, ['careful', 'greedy', 'random'][i], i !== 1, 64);
+        const L = B.life(o, ['careful', 'greedy', 'random'][i], i === 0, 64);
         const pc = A.P(A.S.pc) || {};
         const arcs = Object.entries(pc.arcs || {}).filter(([k]) => k.startsWith('ak_'))
           .map(([k, a]) => ({ k, stage: a.stage, n: A.ARCS.ARC[k].stages.length, done: !!a.done, gave: !!a.gave, span: (a.done || A.S.year) - (a.y || A.S.year) }));

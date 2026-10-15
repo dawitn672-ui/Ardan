@@ -73,9 +73,12 @@
   };
 
   // a town of the realm that is not home, chosen once per arc
+  // (a real town if the realm has one: "the market at Frosthollow Castle" reads worse than "at Yewmarch")
+  AK.townish = x => !/^The /.test(x.name) && !/ (Castle|Tower|Monastery|Oasis|Waste|Woods|Yam|Caravanserai)$/.test(x.name);
   AK.town = (p, k) => AK.name(p, k, 'town', () => {
-    const o = A.S.prov.filter(x => x.owner === p.realm && x.id !== p.home);
-    const n = o.length ? A.pick(o) : A.S.prov[(p.home + 1) % A.S.prov.length];
+    const o = A.S.prov.filter(x => x.owner === p.realm && x.id !== p.home && AK.townish(x));
+    const best = o.filter(x => (x.town || 0) >= 2000);
+    const n = best.length ? A.pick(best) : o.length ? A.pick(o) : null;
     return n ? n.name : 'the next valley';
   });
   // a share of what you own, in words a reader can weigh
@@ -189,8 +192,10 @@
     start: (p, C) => C.adult(p) && adj(p) >= 20 && adj(p) <= 64 && !C.ruler(p) });
   S('ak_sibling', { title: 'The one who came back', lasting: 'bond', gap: [1, 3],
     stages: ['ak_sibling_1', 'ak_sibling_2', 'ak_sibling_3', 'ak_sibling_4', 'ak_sibling_5'],
-    start: (p, C) => C.adult(p) && adj(p) >= 20 && adj(p) <= 58 });
-  S('ak_match', { title: 'The match', lasting: 'bond', gap: [1, 2],
+    start: (p, C) => C.adult(p) && adj(p) >= 20 && adj(p) <= 52 });
+  // the match and the will can only begin in a window (a son or daughter of an age to marry; a parent lately dead), so
+  // they weigh more than the arcs open to any grown life
+  S('ak_match', { title: 'The match', lasting: 'bond', gap: [1, 2], w: 2,
     stages: ['ak_match_1', 'ak_match_2', 'ak_match_3', 'ak_match_4'],
     start: (p, C) => C.adult(p) && adj(p) >= 30 && toWed(p) });
   S('ak_bastard', { title: 'The bastard of the house', lasting: 'law', gap: [1, 3],
@@ -205,7 +210,7 @@
   S('ak_elope', { title: 'The night road', lasting: 'bond', gap: [1, 2],
     stages: ['ak_elope_1', 'ak_elope_2', 'ak_elope_3', 'ak_elope_4'],
     start: (p, C) => C.adult(p) && !C.married(p) && adj(p) >= 17 && adj(p) <= 34 && !C.ruler(p) });
-  S('ak_will', { title: 'The will', lasting: 'law', gap: [1, 3],
+  S('ak_will', { title: 'The will', lasting: 'law', gap: [1, 3], w: 4,
     stages: ['ak_will_1', 'ak_will_2', 'ak_will_3', 'ak_will_4'],
     start: (p, C) => C.adult(p) && !C.ruler(p) && parentDiedLately(p) });
   S('ak_dowry', { title: 'The red cow', lasting: 'wealth', gap: [2, 4],

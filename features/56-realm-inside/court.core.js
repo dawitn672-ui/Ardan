@@ -445,7 +445,7 @@ RI.session = function (r) {
     const t = RI.agendaOf(T, true);
     if (t && t.pro[0] && A.chance(.6) && !A.S.queue.some(q => q.ev === 'ri_court_push')) {
       const top = t.pro[0][0], foe = t.con[0] ? t.con[0][0] : null;
-      A.queue({ type: 'event', ev: 'ri_court_push', ctx: { pid: top.p.id, push: PUSH[t.k].t, riK: t.k, seatT: RI.voiceLabel(top, r), wantT: RI.wantText(RI.aims(top.p).want),
+      A.queue({ type: 'event', ev: 'ri_court_push', ctx: { pid: top.p.id, push: PUSH[t.k].t, riK: t.k, seatT: top.seat ? 'your ' + A.COUNCIL[top.seat].name : RI.voiceLabel(top, r), wantT: RI.wantText(RI.aims(top.p).want),
         foeName: foe ? A.fullName(foe.p, false) : 'nobody', foeT: foe ? RI.fearText(RI.aims(foe.p).fear) : 'nothing', foeId: foe ? foe.p.id : null, npcMove: true } });
     }
   } else {
@@ -666,3 +666,32 @@ Object.assign(UI.A, {
     UI.refreshTab ? UI.refreshTab() : UI.refresh();
   },
 });
+
+// the player's voice on next year's agenda, from a choice (fx riVoice) or the court card (UI.A.riVoice)
+RI.voiceFx = function (pc, side) {
+  const r = A.realm(pc.noble ? pc.noble.realm : pc.realm), ag = r && r.riAgenda;
+  if (!ag || ag.y !== A.S.year + 1) return false;
+  ag.pc = { y: ag.y, side: side === 'against' ? 'against' : 'for', w: RI.pcWeight(pc) };
+  return true;
+};
+// an NPC move: whoever will press next year's law asks the player for their voice (shares 21-npc-initiative's budget)
+RI.askMonth = function (pc) {
+  if (!pc || !pc.alive || pc.id !== A.S.pc || pc.ruler || pc.prison) return;
+  const r = A.realm(pc.noble ? pc.noble.realm : pc.realm), ag = r && r.riAgenda;
+  if (!ag || ag.y !== A.S.year + 1 || ag.pc || !RI.canSpeak(pc, r)[0]) return;
+  if (pc.flags.ri_ask && A.S.year - pc.flags.ri_ask < 3) return;
+  const who = A.P(ag.who);
+  if (!live(who) || who.id === pc.id || A.S.queue.some(q => q.ev === 'ri_court_ask')) return;
+  const NI = A.NPCI, st = NI && NI.state ? NI.state(pc) : null;
+  if (st && (st.b < 1 || !NI.room(pc, A.S.year))) return;
+  if (!A.chance(.1)) return;
+  const V = RI.voices(r), v = V.find(x => x.p === who), T = RI.tally(r)[ag.k], foe = T && T.con[0] ? T.con[0][0].p : null;
+  if (!v) return;
+  if (st) { st.hy[A.S.year] = (st.hy[A.S.year] || 0) + 1; st.b -= 1; }
+  pc.flags.ri_ask = A.S.year;
+  A.queue({ type: 'event', ev: 'ri_court_ask', ctx: { pid: who.id, npcMove: true, push: PUSH[ag.k].t, seatT: v.seat ? 'the ' + A.COUNCIL[v.seat].name : 'head of ' + v.h.name,
+    wantLine: `${cap(A.he(who))} wants ${RI.wantText(RI.aims(who).want)}, and this is the road to it.`, foeName: foe ? A.fullName(foe, false) : 'Nobody' } });
+};
+A.onMonth.push(pc => { try { RI.askMonth(pc); } catch (e) { console.error('[ri] ask', e); } });
+// councils are named from the first day of a new world
+A.on && A.on('worldInit', function () { try { for (const id in A.S.realms) { const r = A.S.realms[id]; if (r.alive && !r.isRebel) { RI.ensureHeads(r); RI.fillCouncil(r); } } } catch (e) { console.error('[ri] init', e); } });

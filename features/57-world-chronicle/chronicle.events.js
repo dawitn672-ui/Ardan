@@ -74,9 +74,9 @@ A.defEvents([
     ] },
 
   { id: 'wc_refugees', title: 'From {wcPlace}',
-    cond: (p, C) => C.adult(p) && C.chron(p, 'fall,fallen'),
+    cond: (p, C) => C.adult(p) && C.chron(p, 'fall,fallen', 'sack'),
     w: 1, cool: 10,
-    setup: pick('fall,fallen', { id: 'wc_refugees', filter: c => !c.e || c.e.k === 'fallen' || (c.e.x || 0) >= 2 }),
+    setup: pick('fall,fallen', { id: 'wc_refugees', mode: 'sack' }),
     text: 'A family sits by the road with a handcart and a goat. They left home after {wcRef}, and have been walking since. The man asks you for work, any work. His wife does not look up.',
     choices: [
       { t: 'Give them a meal', r: 'They eat like people who have learned not to leave crumbs.', fx: { coin: -2, piety: 1, happy: 1 } },
@@ -87,9 +87,9 @@ A.defEvents([
     ] },
 
   { id: 'wc_battle_song', title: 'A new verse',
-    cond: (p, C) => C.adult(p) && C.chron(p, 'battle,fall,siege'),
+    cond: (p, C) => C.adult(p) && C.chron(p, 'battle,fall,siege', 'pair'),
     w: 1, cool: 10,
-    setup: pick('battle,fall,siege', { id: 'wc_battle_song', filter: c => !!c.e && !!c.e.b }),
+    setup: pick('battle,fall,siege', { id: 'wc_battle_song', mode: 'pair' }),
     text: (p, ctx) => `A singer in the alehouse has a new verse about ${told(ctx)}. In it, every man of {wcRealm} is a hero and every man of {wcOther} a coward. A big man at the back, with a {wcOther} voice, is getting to his feet.`,
     choices: [
       { t: 'Bang the table and sing along', r: 'The chorus is easy. The big man sits down again, outnumbered, and drinks.', fx: { happy: 2, need: { company: 6 } } },
@@ -111,9 +111,9 @@ A.defEvents([
     ] },
 
   { id: 'wc_legend_grave', title: 'The grave of {wcWho}',
-    cond: (p, C) => C.adult(p) && C.chron(p, 'legend'),
+    cond: (p, C) => C.adult(p) && C.chron(p, 'legend', 'run'),
     w: 2, cool: 12,
-    setup: pick('legend', { id: 'wc_legend_grave', canon: false }),
+    setup: pick('legend', { id: 'wc_legend_grave', mode: 'run' }),
     text: 'Pilgrims crowd the grave of {wcWho}, dead since {wcYear} and already half a saint. A man sells splinters from a spear shaft he swears was the Legend\'s own. Young men with new swords kneel and touch the stone.',
     choices: [
       { t: 'Kneel and touch the stone', r: 'It is only stone, cold and worn smooth. You feel braver anyway, for a day or two.', fx: { wil: 1, piety: 1 } },
@@ -124,9 +124,9 @@ A.defEvents([
     ] },
 
   { id: 'wc_old_coin', title: 'An old coin',
-    cond: (p, C) => !C.child(p) && C.chron(p, 'fallen,founded,crown'),
+    cond: (p, C) => !C.child(p) && C.chron(p, 'fallen,founded,crown', 'run'),
     w: 1, cool: 12,
-    setup: pick('fallen,founded,crown', { id: 'wc_old_coin', canon: false }),
+    setup: pick('fallen,founded,crown', { id: 'wc_old_coin', mode: 'run' }),
     text: 'In your change is a coin struck before {wcRef}: an old face, an old name, worn thin at the edges. The money-changer will take it at half its weight. An old man at the stall says he would give more for it, to keep.',
     choices: [
       { t: 'Keep it in your purse', r: 'It rides there for years, and you turn it over when you are bored.', fx: { happy: 1 } },
@@ -137,9 +137,9 @@ A.defEvents([
     ] },
 
   { id: 'wc_lords_table', title: 'Talk at table',
-    cond: (p, C) => C.adult(p) && C.noble(p) && C.chron(p, 'battle,siege,war,peace'),
+    cond: (p, C) => C.adult(p) && C.noble(p) && C.chron(p, 'battle,siege,war,peace', 'mine'),
     w: 1, cool: 10,
-    setup: pick('battle,siege,war,peace', { id: 'wc_lords_table', filter: c => !c.e || c.e.a === A.pc().realm || c.e.b === A.pc().realm }),
+    setup: pick('battle,siege,war,peace', { id: 'wc_lords_table', mode: 'mine' }),
     text: 'At a lord\'s table the talk turns to {wcRef}. An old knight, red in the face, says your family\'s men came to it late and left it early. The table goes quiet to hear what you will say.',
     choices: [
       { t: 'Laugh it off and fill his cup', r: 'He drinks it. The talk moves on, and so, by the end of the night, does the story.', fx: { honor: -1, happy: 1 } },
@@ -163,9 +163,9 @@ A.defEvents([
     ] },
 
   { id: 'wc_burnt_end', title: 'The burnt end of {wcPlace}',
-    cond: (p, C) => C.adult(p) && C.chron(p, 'fall'),
+    cond: (p, C) => C.adult(p) && C.chron(p, 'fall', 'sack'),
     w: 1, cool: 10,
-    setup: pick('fall', { id: 'wc_burnt_end', canon: false, filter: c => !!c.e && (c.e.x || 0) >= 2 }),
+    setup: pick('fall', { id: 'wc_burnt_end', mode: 'sack' }),
     text: 'You pass the end of {wcPlace} that burned when the town was sacked in {wcYear}, {wcAgo} ago. Nettles grow in the cellars. Nobody has rebuilt; the families who owned it are dead or gone. Something glints at the bottom of one cellar.',
     choices: [
       { t: 'Climb down and look', check: { s: 'athletics', s2: 'ins', d: 45 },

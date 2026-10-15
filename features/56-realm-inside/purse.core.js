@@ -15,7 +15,7 @@
 
 const RI = A.RI = A.RI || {};
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
-(A.FX_EXTRA = A.FX_EXTRA || []).push('riRansom', 'riRebuild', 'riCourt');
+(A.FX_EXTRA = A.FX_EXTRA || []).push('riRansom', 'riRebuild', 'riCourt', 'riVoice');
 
 // ---------------------------------------------------------------- the year's book
 
@@ -291,6 +291,7 @@ A.applyFx = function (pc, fx, ctx) {
       }
     }
     if (fx.riCourt && ctx && ctx.riK) RI.courtAnswer(pc, ctx, fx.riCourt);
+    if (fx.riVoice && RI.voiceFx) RI.voiceFx(pc, fx.riVoice);
   } catch (e) { console.error('[ri] fx', e); }
   return out;
 };

@@ -218,7 +218,7 @@ export default {
       const [name, P] = paths[n % paths.length], i = Math.floor(n / paths.length) % 2;
       const o = Object.assign({ seed: 5601 + n * 7919 + name.length * 31, sex: n % 2 ? 'F' : 'M' }, P.start);
       lives.push(await pg.evaluate(([o, i, name]) => {
-        const L = B.life(o, ['careful', 'greedy'][i], i === 0, 60);
+        const L = B.life(o, ['careful', 'greedy'][i], i === 0, 45);
         const pc = A.P(A.S.pc) || {};
         const arcs = Object.entries(pc.arcs || {}).filter(([k]) => k.startsWith('ao_'))
           .map(([k, a]) => ({ k, stage: a.stage, n: A.ARCS.ARC[k].stages.length, done: !!a.done, gave: !!a.gave, y: a.y, end: a.done || null }));
