@@ -33,7 +33,7 @@
    "byPersonality": {
     "careful": {
      "lives": 16,
-     "medianDeathAge": 49,
+     "medianDeathAge": 48,
      "checkWinRate": 46
     },
     "reckless": {
@@ -43,16 +43,16 @@
     },
     "greedy": {
      "lives": 16,
-     "medianDeathAge": 66,
+     "medianDeathAge": 67,
      "checkWinRate": 35.2
     },
     "random": {
      "lives": 16,
-     "medianDeathAge": 37,
+     "medianDeathAge": 49,
      "checkWinRate": 47
     }
    },
-   "carefulMinusRecklessDeathAge": 2,
+   "carefulMinusRecklessDeathAge": 1,
    "npcMovesPerDecade": 10.1,
    "battlesFought": 26,
    "afterActionShare": 100
@@ -60,11 +60,11 @@
   "events": {
    "events": 3772,
    "choices": 11362,
-   "memoryEvents": 591,
-   "memorySharePct": 15.7,
-   "flagsSet": 768,
-   "orphanFlags": 253,
-   "strictRecipePct": 22.2,
+   "memoryEvents": 600,
+   "memorySharePct": 15.9,
+   "flagsSet": 662,
+   "orphanFlags": 138,
+   "strictRecipePct": 22.6,
    "choicesWithoutCheckPct": 55.8,
    "oldAgeEvents": 50,
    "childTeenEvents": 239,

@@ -61,7 +61,9 @@ const MODULES = {
     const evPerYear = lives.map(l => l.events / Math.max(1, l.years));
     const decisions = lives.map(l => Object.entries(l.items).reduce((a, [k, n]) => a + n, 0) / Math.max(1, l.years));
     // death ages by personality count humans and orcs only: an elf or a dwarf who lives three centuries swamps a 16-life median
-    const byPers = {}; for (const p of PERS) { const g = lives.filter(l => l.personality === p); byPers[p] = { lives: g.length, medianDeathAge: median(g.filter(l => l.deathAge != null && ['human', 'orc'].includes(l.o.race)).map(l => l.deathAge)), checkWinRate: r1(100 * g.reduce((a, l) => a + l.wins, 0) / Math.max(1, g.reduce((a, l) => a + l.checks, 0))) }; }
+    const byPers = {}; for (const p of PERS) { const g = lives.filter(l => l.personality === p);
+      const da = g.filter(l => l.deathAge != null && ['human', 'orc'].includes(l.o.race)).map(l => l.deathAge);
+      byPers[p] = { lives: g.length, medianDeathAge: median(da), meanDeathAge: da.length ? r1(da.reduce((a, x) => a + x, 0) / da.length) : null, checkWinRate: r1(100 * g.reduce((a, l) => a + l.wins, 0) / Math.max(1, g.reduce((a, l) => a + l.checks, 0))) }; }
     return {
       lives: lives.length,
       medianDeathAge_humanOrc: median(deaths), p10DeathAge: pct(deaths, .1), p90DeathAge: pct(deaths, .9),
@@ -73,7 +75,8 @@ const MODULES = {
       checkWinRate: r1(100 * lives.reduce((a, l) => a + l.wins, 0) / Math.max(1, lives.reduce((a, l) => a + l.checks, 0))),
       initiativeActionsPerYear_engaged: r1(median(lives.filter(l => l.engaged).map(l => l.actions / Math.max(1, l.years)))),
       byPersonality: byPers,
-      carefulMinusRecklessDeathAge: byPers.careful.medianDeathAge != null && byPers.reckless.medianDeathAge != null ? byPers.careful.medianDeathAge - byPers.reckless.medianDeathAge : null,
+      // a mean, not a median: deaths are bimodal (young, or old), and a 12-life median jumps between the two humps
+      carefulMinusRecklessDeathAge: byPers.careful.meanDeathAge != null && byPers.reckless.meanDeathAge != null ? r1(byPers.careful.meanDeathAge - byPers.reckless.meanDeathAge) : null,
       npcMovesPerDecade: r1(10 * lives.reduce((a, l) => a + l.npcMoves, 0) / Math.max(1, lives.reduce((a, l) => a + l.years, 0))),
       battlesFought: lives.reduce((a, l) => a + l.battles, 0),
       afterActionShare: lives.reduce((a, l) => a + l.battles, 0) ? r1(100 * lives.reduce((a, l) => a + l.battlesWithReport, 0) / lives.reduce((a, l) => a + l.battles, 0)) : null,

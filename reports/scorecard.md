@@ -10,13 +10,13 @@ Measured by `bench/run.mjs`, compared by `bench/compare.mjs release fixes curren
 
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
-| Events that read an earlier memory (all events) | ≥ 40% | 3 ✗ | 3 ✗ | 15.7 ✗ |
+| Events that read an earlier memory (all events) | ≥ 40% | 3 ✗ | 3 ✗ | 15.9 ✗ |
 | Fired events that read a memory (bot lives) | ≥ 40% | 1.8 ✗ | 1.3 ✗ | 8.7 ✗ |
-| Flags set but never read | 0 | 369 ✗ | 369 ✗ | 253 ✗ |
-| Strict recipe events (2–3 choices, a roll, stat nudges only) | ≤ 10% | 25.7 ✗ | 25.7 ✗ | 22.2 ✗ |
+| Flags set but never read | 0 | 369 ✗ | 369 ✗ | 138 ◐ |
+| Strict recipe events (2–3 choices, a roll, stat nudges only) | ≤ 10% | 25.7 ✗ | 25.7 ✗ | 22.6 ✗ |
 | Events with an obviously best choice (of those comparable by numbers) | 0% | – | – | 0 ✅ |
 | Old-age events | ≥ 150 | 41 ✗ | 41 ✗ | 50 ✗ |
-| **Measured score** (cap 8 without people) | | **0.7** | **0.6** | **3** |
+| **Measured score** (cap 8 without people) | | **0.7** | **0.6** | **3.5** |
 
 ## Power scaling
 
@@ -69,8 +69,8 @@ Measured by `bench/run.mjs`, compared by `bench/compare.mjs release fixes curren
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
 | Median death age, humans and orcs (bot lives) | 55–70 | 47 ◐ | 45 ◐ | 49 ◐ |
-| Risk costs: careful bots outlive reckless ones by (years) | ≥ 5 | 22 ✅ | 17 ✅ | 2 ✗ |
-| **Measured score** (cap 7 without people) | | **5.8** | **5.8** | **3** |
+| Risk costs: careful bots outlive reckless ones by (years) | ≥ 5 | 22 ✅ | 17 ✅ | 1 ✗ |
+| **Measured score** (cap 7 without people) | | **5.8** | **5.8** | **2.1** |
 
 ## UI and UX
 
@@ -116,4 +116,4 @@ Measured by `bench/run.mjs`, compared by `bench/compare.mjs release fixes curren
 
 | | release | fixes | current |
 | --- | --- | --- | --- |
-| Mean measured score (out of 100) | 34.5 | 35.8 | 63.9 |
+| Mean measured score (out of 100) | 34.5 | 35.8 | 63.6 |
