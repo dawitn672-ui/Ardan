@@ -10,6 +10,58 @@ The gap is not that the plan lies. It grades its own homework, it counts things 
 
 100/100 is reachable only in the sense the plan defines it: "no game does this one thing clearly better", for each of 14 aspects. For one person, that is not "well over a year". Honestly it is three to five years with a hired artist, a writer's year of events, and real playtests every phase, **or** a much smaller game that cuts half the aspects down to "good enough and invisible". The plan says "cut before you add" and then adds in every section. That is the first thing to fix.
 
+## Round 4 (Oct 15, later): what changed, and the new grade
+
+Round 4 took on the buildable steps Round 3 named: sieges, squads, generals with order letters, schemes, circles, difficulty and varied worlds. Each is a feature folder with its own tests and a README that says what it measured. The status of all 94 steps (`docs/plan/Road to Ten — status.md`) is now **38 done, 30 partial, 16 not started**, and 10 that need people or art.
+
+**What landed:**
+
+| Change | Measured effect |
+| --- | --- |
+| `36-sieges` (War 5) | A choice each month from either side of the wall moves the real siege counter by 3 to 12 days of a 40-day siege. Camp sickness thins the besiegers (608 of 7,470 men in six months). The fall ends in the sack, the mercy or the terms. |
+| `37-squad` (War 6) | Comrades who come back from missions learn the skills used and earn a standing. Veterans add up to 8 points to a mission's odds (49% → 57%). |
+| `38-orders` (War 3) | A general's traits set a temper that moves four dials of the AI army. Over pooled wars a bold side made 6–28% more assaults than a steady one in each of three builds; cautious and cunning sit within the noise. The war room shows each army's temper and plan. A soldier gets the plan as a letter, and 60 days later the map decides whether obeying was right. |
+| `39-schemes` (Relationships 3) | Sway, befriend, seduce, slander and murder run for months. Each comes with an estimate ("about 9 months, and 17 in 100 that she finds you out first"), an opening halfway and a last move. Enemies plot back; you can notice, unmask and answer them. |
+| `41-circles` (Relationships 6) | People you know who are close to someone else you know: **0% → 35%**. A friend of your foe starts 12 cooler, a friend of your friend 8 warmer. A great harm reaches the victim's friends at a third of its weight. |
+| `42-difficulty` (Balance 4) | Story, Hard and Realism now change the odds you see (numbers, your setting, words) and recovery. A year's healing from 20 health is 52, 35 or 24; a four-year sentence runs 2, 4 or 5 years. |
+| `43-varied-worlds` (Replay 3, partial) | A menu game starts in a varied world. Ten seeds give **10 different maps** (it was 1), 10 sets of treasuries and 7 sets of wars, and you are told what is different at birth. |
+
+**Bugs and measurement faults found on the way:**
+
+- **One bad event text could freeze the game.** A risk run crashed on `pl_royal_wedding_guest`, whose text reads `A.realm(p.realm).capital` for a noble whose realm had become "unclaimed". About twenty release texts read the realm the same unguarded way. The engine dropped an event whose setup threw, but not one whose text threw. `ENG-EVENT-TEXT-GUARD` drops it now; its test fails on the release.
+- **The siege's monthly choice came once per siege.** `headReady` drops any event seen in the last 240 days, so a choice queued every month was thrown away after the first. The siege scenes are now forced, with a test that runs three months of one siege.
+- **New NPC scenes skipped the NPC budget.** Plots against you and circle scenes are NPC moves, but they were queued outside 21-npc-initiative's budget, so a year could hold 4 NPC events against a cap of 3, and NPC repeats rose to 31%. They now book through the budget (`A.NPCI`); order letters are duty, not NPC moves.
+- **Three checks were measuring luck.** An NPC test whose single life ended at 25, a growth test that pooled three lives a side, and wealth medians of four lives each flipped when a feature drew one more random number. The tests now pool more lives or move to the next fixed seed, and the balance league plays 8 lives a path on two pages (a life gives the same numbers on either page). Four builds that differ only in their stream all sit in every band, but the spread is still wide: a serf's median peak wealth runs from 4,500 to 107,000.
+- **Risk costs, settled.** Forty lives each: the fix layer's careful bots died at a mean of 44.8 and reckless ones at 38.8, a gap of 6.0 years; in the full build the means are 44.5 and 34.0, a gap of 10.5. The standard errors are 3–4 years, so the features do not make risk cheaper.
+- **The release already branched history.** It rolls 13 scripted forks at the start and plays them out in the first year; the first audit missed this. Every run still started from the same map, which is what 43-varied-worlds changes.
+
+**The new strict grade** (the same rules: no aspect rises without evidence, and human-only aspects stay capped):
+
+| Aspect | Round 3 | Round 4 | Why it moved, or didn't |
+| --- | --- | --- | --- |
+| World and lore | 6.5 | 6.5 | No realm bibles or enforced customs yet. |
+| Power scaling | 6 | 6 | Event fights still skip the duel resolver. |
+| Character and life sim | 6 | 6 | Nothing new here. |
+| Events and story | 6.5 | 6.5 | Memory is still 15.9%, and old age has 50 events against 150. |
+| Relationships | 6 | **7** | Schemes both ways and circles that change first impressions. There are no playtests, and NPCs do not plot against each other. |
+| War | 6.5 | **7.5** | Sieges, squads that grow, and generals whose orders reach you. There are still no choices inside a battle at every rank (War 1). |
+| Diplomacy and politics | 6 | 6 | Nothing new here. |
+| Economy | 3.5 | 3.5 | Not touched. |
+| Balance | 5.5 | **6** | Difficulty now changes information and recovery, and the league is sturdier. Death ages and check odds are still short of target, and the bands catch collapses, not shifts. |
+| UI and UX | 6.5 | 6.5 | New buttons and cards, but no playtests. |
+| Visual art | 5 | 5 | Needs an artist. |
+| Technical | 7.5 | **8** | A freeze fixed at the engine, a siege bug and a budget leak caught, and the tests and league no longer flip on the random stream. The source still isn't here. |
+| Replayability | 6.5 | **7** | Every menu run starts in a different world. No new realms are generated, and the top life arc is still above target. |
+| Uniqueness | 8.5 | 8.5 | Nothing new here. |
+| **Overall** | **65** | **67** | |
+
+**Buildable next:**
+
+- Choices inside a battle at every rank (War 1).
+- Mid and late game per path (Replay 4).
+- The economy (production, demand, caravans, markets).
+- Memory and old-age events, which are writing more than code.
+
 ## Round 3 (Oct 15): what changed, and the new grade
 
 Round 3 worked through the Road to Ten's buildable steps, one feature folder at a time, each with its own tests and a README that says what it measured. The status of all 94 steps is in `docs/plan/Road to Ten — status.md`: **31 done, 29 partial, 24 not started**, and 10 that need people or art. The first audit that morning counted 19 done and 39 not started.

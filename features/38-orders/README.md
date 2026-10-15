@@ -51,16 +51,15 @@ The plan asks to "give AI generals personalities (cautious, bold, cunning) and v
 **Measured by** (`test.mjs`).
 
 - `tempersFromTraits`: trait sets map to their temper, and the world's generals cover all four.
-- `temperMovesTheWar`: the same eight wars, with one side's generals forced to each temper. A war is chaotic, so the test pools eight and counts assaults on defended provinces and the dead on both sides.
+- `temperMovesTheWar`: the same twelve wars, with one side's generals forced to each temper. A war is chaotic (one changed decision reshapes it), so the test pools them and counts assaults on defended provinces. Three builds this round gave:
 
-  | Temper | Assaults | Our dead | Their dead | Provinces held |
+  | Build | Steady | Bold | Cautious | Cunning |
   | --- | --- | --- | --- | --- |
-  | steady | 36 | 159k | 73k | 2 |
-  | bold | 46 (+28%) | 179k | 120k | 4 |
-  | cautious | 27 (−25%) | 145k | 41k | 3 |
-  | cunning | 28 | 190k | 58k | 1 |
+  | 38-orders alone, 8 wars | 36 | 46 (+28%) | 27 (−25%) | 28 |
+  | All features, 8 wars | 31 | 33 (+6%) | 24 (−23%) | 34 |
+  | All features, 12 wars | 42 | 52 (+24%) | 45 (+7%) | 46 |
 
-  A bold general fights 28% more and spills 29% more blood, on both sides. A cautious one fights a quarter less and kills the fewest. The plan's bar for a layer is 10–20% of the result; bold and cautious move it 25–29%.
+  Bold fought most every time. Cautious fought less than steady twice in three, so its effect is within the noise of a chaotic war, and the test holds only bold to a bar. The dead moved with bold in the first build (+29% on both sides) but not in the others.
 - `planIsVisible`: the war room shows the temper and the plan.
 - `letterInARealWar`: an enlisted soldier gets his general's orders within 11 months, with every token filled.
 - `ordersSettle`: each of the six outcomes queues the right scene or pays the right merit.
@@ -73,6 +72,6 @@ The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs`.
 - `a.gtPlan`, `S.goPend` and `S.goNext` are optional, so old saves load.
 
 **Limits.**
-- **Cunning is the weakest temper.** In the pooled wars it fought less than steady but did not trade better. Its pull toward the undefended matters only when an army has more targets than divisions to send.
+- **Only bold is clearly measurable.** Cautious and cunning change the dials as much, but in a chaotic war their effect on how much an army fights is within the noise. Cunning's pull toward the undefended matters only when an army has more targets than divisions to send. The letters, the plan in the war room and the settling are the same for every temper.
 - **The letters are not the battle.** Going in with the first wave is a check in the letter, not a place in the line battle (War 1).
 - **Only the soldier's chain.** A noble's levy or a mercenary company gets no letters.

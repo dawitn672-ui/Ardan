@@ -104,12 +104,14 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const pc = SCT.adult(96), e = SCT.person(pc, 'enemy', -80);
+      if (A.NPCI) A.NPCI.state(pc).b = 2;   // room in the shared NPC budget (21-npc-initiative)
       e.rel[pc.id].op = -85; e.traits = (e.traits || []).filter(x => x !== 'kind').concat(['cruel', 'vengeful']);
       const ch = A.chance; let months = 0;
       A.chance = () => true;
       try { for (; months < 12 && !pc.scAgainst; months++) SCT.month(pc); } finally { A.chance = ch; }
       const plot = pc.scAgainst && Object.assign({}, pc.scAgainst);
       A.S.queue = [];
+      if (A.NPCI) A.NPCI.state(pc).b = 2;   // room in the shared NPC budget (21-npc-initiative)
       A.chance = () => true; try { SCT.month(pc); } finally { A.chance = ch; }
       const noticed = A.S.queue.some(q => q.ev === 'sch_noticed');
       SCT.choose('sch_noticed', 0, true);
@@ -120,6 +122,7 @@ export default {
       // left alone, a plot lands
       const pc2 = SCT.adult(97), e2 = SCT.person(pc2, 'enemy', -80); e2.rel[pc2.id].op = -85;
       pc2.scAgainst = { by: e2.id, k: 'slander', prog: 95, m: 0, noticed: 1 };
+      if (A.NPCI) A.NPCI.state(pc2).b = 2;
       A.chance = () => false; try { SCT.month(pc2); } finally { A.chance = ch; }
       const landed = A.S.queue.map(q => q.ev).filter(x => /^sch_/.test(x));
       return { plot, months, noticed, named, exposed: f0 - (e.fame || 0), dropped: !pc.scAgainst, landed };

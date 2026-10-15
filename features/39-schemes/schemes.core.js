@@ -18,6 +18,7 @@
       murder: { name: 'Have them killed', verb: 'plotting the death of', skills: ['intrigue', 'stealth'], base: 7, risk: 0.06 },
     },
     MAX: 2,          // schemes of your own at once
+    AGAIN: 10,       // years between plots against you
     BLOOD: ['mother', 'father', 'sibling', 'child', 'grandparent', 'grandchild', 'uncle', 'nephew'],
   };
   const sk = (p, k) => (A.skill ? A.skill(p, k) : (p.skills && p.skills[k]) || 0);
@@ -150,6 +151,16 @@
     }
     return out.sort((a, b) => a.op - b.op || String(a.p.id).localeCompare(String(b.p.id)));
   };
+  // NPC-started scenes share 21-npc-initiative's budget (about 1.5 a year, never more than 3 in a year), so a life is not
+  // crowded with them; without that feature, they always have room
+  const book = pc => {
+    const NI = A.NPCI;
+    if (!NI || typeof NI.state !== 'function') return true;
+    const st = NI.state(pc), y = A.S.year;
+    if ((st.hy[y] || 0) >= NI.CAP || st.b < 1) return false;
+    st.b -= 1; st.hy[y] = (st.hy[y] || 0) + 1; st.tot = (st.tot || 0) + 1;
+    return true;
+  };
   SC.noticeChance = pc => clamp(0.05 + (sk(pc, 'intrigue') + (pc.ins || 0) / 2) / 400 + SC.list(pc).length * 0.02, 0.05, 0.4);
 
   A.onMonth.push(pc => {
@@ -173,13 +184,14 @@
       const by = A.P(a.by);
       if (!by || !by.alive || opOf(by, pc) > -20) { pc.scAgainst = null; return; }   // dead, or no longer hates you
       a.m++; a.prog += A.ri(6, 12);
-      if (!a.noticed && A.chance(SC.noticeChance(pc))) { a.noticed = 1; A.queue({ type: 'event', ev: 'sch_noticed', forced: true, ctx: { k: a.k, sc: 1 } }); return; }
-      if (a.prog >= 100) {
+      if (!a.noticed && A.chance(SC.noticeChance(pc)) && book(pc)) { a.noticed = 1; A.queue({ type: 'event', ev: 'sch_noticed', forced: true, ctx: { k: a.k, sc: 1 } }); return; }
+      if (a.prog >= 100 && book(pc)) {   // with no room this year, the plot waits
         pc.scAgainst = null;
         A.queue({ type: 'event', ev: a.k === 'murder' ? 'sch_attempt' : 'sch_slandered', forced: true, ctx: { pid: by.id, k: a.k, sc: 1 } });
       }
       return;
     }
+    if (pc.scLast != null && S.year - pc.scLast < SC.AGAIN) return;   // one plot against you a decade at most
     const foes = SC.enemies(pc);
     if (!foes.length) return;
     const { p, op } = foes[0];
@@ -187,6 +199,7 @@
     if (!A.chance(0.03 * spite)) return;
     const killer = op <= -75 && (has(p, 'cruel') || has(p, 'vengeful') || has(p, 'wrathful'));
     pc.scAgainst = { by: p.id, k: killer ? 'murder' : 'slander', prog: 0, m: 0, y: S.year, noticed: 0 };
+    pc.scLast = S.year;
   });
 
   // the Life tab: your schemes, and a sense that something is wrong (pure)

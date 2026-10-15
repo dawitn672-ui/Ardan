@@ -137,7 +137,7 @@ A.defEvents([
       { t: 'Double the locks and the guard', req: p => p.coin >= 15, r: 'New bars, a second man at the door, a different road each day. Whatever was coming will take longer.', fx: { coin: -15, scheme: { guard: 40 } } },
       { t: 'Put it out of your mind', r: 'You decide it is nothing. You sleep well, mostly.', fx: { happy: 2 } },
     ] },
-  { id: 'sch_unmasked', title: 'It is {them}', trigger: true, cool: 1, npc: true,
+  { id: 'sch_unmasked', title: 'It is {them}', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p), setup: who,
     text: (p, ctx) => `It is {them}. ${ctx.k === 'murder' ? '{theyHe} has paid a man to kill you, and the man is still waiting for his moment.' : '{theyHe} has been telling stories about you, and some people have started to believe them.'}`,
     choices: [

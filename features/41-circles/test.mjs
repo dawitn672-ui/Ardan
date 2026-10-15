@@ -27,6 +27,7 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const pc = CIT.adult(201);
+      if (A.NPCI) A.NPCI.state(pc).b = 2;   // room in the shared NPC budget (21-npc-initiative)
       const F = CIT.stranger(pc), E = CIT.stranger(pc);
       A.link(pc, F, 'friend', 60, 'friend'); A.link(pc, E, 'enemy', -60, 'enemy');
       const meet = tie => {
@@ -50,6 +51,7 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const pc = CIT.adult(202), t = CIT.stranger(pc);
+      if (A.NPCI) A.NPCI.state(pc).b = 2;   // room in the shared NPC budget (21-npc-initiative)
       A.link(pc, t, 'acquaint', 10, 'acquaint');
       const friends = [0, 1, 2].map(() => { const x = CIT.stranger(pc); A.link(t, x, 'friend', 60, 'friend'); A.link(pc, x, 'acquaint', 10, 'acquaint'); return x; });
       const before = friends.map(x => x.rel[pc.id].op);
@@ -105,7 +107,8 @@ export default {
             const pc = A.pc();
             for (const id of Object.keys(pc.rel)) {
               const t = A.P(id); if (!t || !t.alive || A.CIRCLES.BLOOD.includes(pc.rel[id].type)) continue;
-              known++; const c = A.CIRCLES.circleOf(pc, t); if (c.friends.length || c.foes.length) inCircle++;
+              // close to someone else you know, whatever you feel about them
+              known++; if (A.CIRCLES.close(t).some(x => x.id !== pc.id && pc.rel[x.id])) inCircle++;
               if (pc.rel[id].circ) { met++; if (pc.rel[id].circ.e.length) foes++; }
             }
           }

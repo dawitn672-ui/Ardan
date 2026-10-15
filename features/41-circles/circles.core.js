@@ -4,8 +4,8 @@
 // In the release the people you know barely know each other: a grown life's twenty contacts hold three to five close
 // ties among themselves, and two of those run to someone else you know. So nobody arrives as anyone's friend, and
 // what you do to one person stays with that person. Now:
-//   - circles form: a new acquaintance is often already close to someone you know (two in five), more often to your
-//     friends if you meet them as a friend, to your foes if you meet them as a foe;
+//   - circles form: a new acquaintance is often already close to one of your friends or foes (two in five), more often
+//     a friend if you meet them as a friend, a foe if you meet them as a foe;
 //   - first impressions follow the circle: each friend of yours they are close to warms them by 8 (up to 16), each foe
 //     of yours cools them by 12 (up to 24), and the person view says why;
 //   - word gets around: when you do someone a great good or harm (10 opinion or more), their close friends hear of it
@@ -25,10 +25,21 @@
   };
   const op = (a, b) => (a && b && a.rel && a.rel[b.id] ? a.rel[b.id].op || 0 : 0);
   // a scene at most every few years per kind, so circles colour life without crowding it
-  CI.EVERY = { foe: 4, word: 3 };
-  CI.may = function (k) {
+  CI.EVERY = { foe: 10, word: 10 };
+  // NPC-started scenes share 21-npc-initiative's budget (about 1.5 a year, never more than 3 in a year), so a life is not
+  // crowded with them; without that feature, they always have room
+  CI.book = pc => {
+    const NI = A.NPCI;
+    if (!NI || typeof NI.state !== 'function') return true;
+    const st = NI.state(pc), y = A.S.year;
+    if ((st.hy[y] || 0) >= NI.CAP || st.b < 1) return false;
+    st.b -= 1; st.hy[y] = (st.hy[y] || 0) + 1; st.tot = (st.tot || 0) + 1;
+    return true;
+  };
+  CI.may = function (k, pc) {
     const S = A.S; S.cirNext = S.cirNext || {};
     if (S.cirNext[k] != null && S.year < S.cirNext[k]) return false;
+    if (pc && !CI.book(pc)) return false;
     S.cirNext[k] = S.year + CI.EVERY[k];
     return true;
   };
@@ -58,7 +69,9 @@
     const p = make.apply(this, arguments);
     try {
       if (p && pc && pc.id === A.S.pc && !child && A.isAdult(p) && A.isAdult(pc) && A.chance(CI.TIE)) {
-        const pool = CI.pool(pc);
+        // through the people you feel strongly about: their circles matter to you, and the game does not forget them
+        // the way it forgets a passing acquaintance
+        const pool = CI.pool(pc).filter(y => Math.abs(op(pc, y)) >= 30);
         if (pool.length) {
           const foe = kind === 'enemy' || kind === 'rival';
           // like finds like: a foe of yours is more often met through your foes, a friend through your friends
@@ -83,7 +96,7 @@
           a.rel[b.id].op = clamp((a.rel[b.id].op || 0) + d * 0.5, -100, 100);
           if (b.rel && b.rel[a.id]) b.rel[a.id].op = clamp((b.rel[a.id].op || 0) + d, -100, 100);
           a.rel[b.id].circ = { f: c.friends.slice(0, 3).map(x => x.id), e: c.foes.slice(0, 3).map(x => x.id), d };
-          if (c.foes.length && a.alive && CI.may('foe')) A.queue({ type: 'event', ev: 'cir_foes_friend', ctx: { pid: b.id, foe: c.foes[0].id, npcMove: true } });
+          if (c.foes.length && a.alive && CI.may('foe', a)) A.queue({ type: 'event', ev: 'cir_foes_friend', ctx: { pid: b.id, foe: c.foes[0].id, npcMove: true } });
         }
       }
     } catch (e) { console.error('circles', e); }
@@ -110,7 +123,7 @@
           const ns = heard.slice(0, 3).map(x => x.given), names = ns.length > 1 ? ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1] : ns[0];
           A.log(`Word gets around. ${names} ${heard.length > 1 ? 'hear' : 'hears'} what passed between you and ${other.given}, and ${d < 0 ? 'think less of you' : 'think better of you'}.`, 'muted');
         }
-        if (d <= -20 && heard.length >= 2 && pc.alive && A.isAdult(pc) && CI.may('word')) A.queue({ type: 'event', ev: 'cir_word', ctx: { pid: other.id, ids: heard.slice(0, 3).map(x => x.id), npcMove: true } });
+        if (d <= -20 && heard.length >= 2 && pc.alive && A.isAdult(pc) && CI.may('word', pc)) A.queue({ type: 'event', ev: 'cir_word', ctx: { pid: other.id, ids: heard.slice(0, 3).map(x => x.id), npcMove: true } });
       }
     } catch (e) { console.error('circles', e); } finally { busy = false; }
     return r;

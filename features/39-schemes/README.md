@@ -27,7 +27,7 @@ The plan asks for "schemes both ways: sway, befriend, seduce, slander, murder". 
 - **Found out.** Each month a plot runs, there is a chance the target finds out. It is 2% a month for sway and befriend, 4% for seduce and 6% for slander and murder, raised by their guard and by each helper, and lowered by your intrigue.
   - A found plot: deny it, own it, or shrug. They become your enemy or your rival if it goes badly.
   - A murder found out: run, deny it, or confess to the law (`punish: 'attempted murder'`).
-- **They plot too** (`pc.scAgainst`). Someone who hates you (opinion −40 or worse) may start a slander. If they hate you at −75 or worse and are cruel, vengeful or wrathful, it is a murder.
+- **They plot too** (`pc.scAgainst`), at most one plot a decade. Someone who hates you (opinion −40 or worse) may start a slander. If they hate you at −75 or worse and are cruel, vengeful or wrathful, it is a murder.
   - Each month you may notice something wrong. The chance is 5% plus your intrigue and insight.
   - Then you can find out who, double the locks (the plot slows by 40), or put it out of your mind.
   - Once you know who: confront them, expose them, answer in kind (your own slander), or let it go and watch.
@@ -42,11 +42,12 @@ The plan asks for "schemes both ways: sway, befriend, seduce, slander, murder". 
 - `murderPlot`: a poisoning that works kills the target ("poison in the wine"); one that fails queues the found-out scene.
 - `plottedAgainst`: a cruel man at −85 plots your death. You notice it, unmask the right man and expose him, and the plot ends. A slander left alone lands.
 - `schemesOnScreen`: both buttons show, and neither shows on someone you already plot against. The card is escaped, and drawing it draws no random number and changes no state.
-- `plotsInRealLives`: four bot lives of 25 years met 11 scheme scenes, all of them plots against the player (6 slanders landed, 5 noticed). The bot never starts plots of its own.
+- `plotsInRealLives`: four bot lives of 25 years in the full build met 5 scheme scenes, all from plots against the player (4 slanders landed, 1 noticed). The bot never starts plots of its own.
 
 The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs`.
 
 **Rules kept.**
+- Being noticed and a plot landing are NPC moves, so they book through 21-npc-initiative's budget (`A.NPCI`); with no room that year, a plot waits.
 - The month hook and the event effects change state; the card and the estimates only read it.
 - `pc.schemes`, `pc.scAgainst` and `S.scNext` are optional, so old saves load.
 - Every name on the card goes through `UI.esc`.
