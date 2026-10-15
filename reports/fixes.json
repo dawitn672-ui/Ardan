@@ -1,6 +1,6 @@
 {
  "label": "fixes",
- "file": "../../../tmp/ardan/v/fixes.html",
+ "file": "../../../tmp/ardan/bis/fixes.html",
  "build": "b593143+f6.00e35fd",
  "modules": {
   "league": {
@@ -32,26 +32,30 @@
    "byPersonality": {
     "careful": {
      "lives": 16,
-     "medianDeathAge": 51,
+     "medianDeathAge": 54,
+     "meanDeathAge": 50.8,
      "checkWinRate": 48.8
     },
     "reckless": {
      "lives": 16,
-     "medianDeathAge": 34,
+     "medianDeathAge": 33,
+     "meanDeathAge": 34.8,
      "checkWinRate": 33.3
     },
     "greedy": {
      "lives": 16,
      "medianDeathAge": 41,
+     "meanDeathAge": 40.6,
      "checkWinRate": 41.1
     },
     "random": {
      "lives": 16,
      "medianDeathAge": 64,
+     "meanDeathAge": 53.8,
      "checkWinRate": 45.8
     }
    },
-   "carefulMinusRecklessDeathAge": 17,
+   "carefulMinusRecklessDeathAge": 16,
    "npcMovesPerDecade": 0,
    "battlesFought": 46,
    "afterActionShare": 0

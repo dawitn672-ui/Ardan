@@ -69,7 +69,7 @@ Measured by `bench/run.mjs`, compared by `bench/compare.mjs release fixes curren
 | Metric | Target | release | fixes | current |
 | --- | --- | --- | --- | --- |
 | Median death age, humans and orcs (bot lives) | 55–70 | 47 ◐ | 45 ◐ | 49 ◐ |
-| Risk costs: careful bots outlive reckless ones by (years) | ≥ 5 | 22 ✅ | 17 ✅ | 5.2 ✅ |
+| Risk costs: careful bots outlive reckless ones by (years) | ≥ 5 | 11.3 ✅ | 16 ✅ | 5.2 ✅ |
 | **Measured score** (cap 7 without people) | | **5.8** | **5.8** | **5.8** |
 
 ## UI and UX
