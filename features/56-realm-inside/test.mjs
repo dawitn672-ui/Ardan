@@ -265,6 +265,42 @@ export default {
     return { ok, detail: `before the court: ${r.agenda}; the card names ${r.names} of 5 councillors with wants and fears, draws purely (${r.pure}) and escapes names; speaking for it (1 initiative) adds weight ${r.w}: support ${r.sup0} → ${r.sup1}` };
   },
 
+  // every scene renders from the moment that queues it: no raw token, text within 80 words, labels within 12, every
+  // choice (both ways for a check) resolves
+  async riScenesRender(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const RI = A.RI, words = s => (String(s || '').match(/\S+/g) || []).length, held = (fn) => { const ch = A.chance; A.chance = () => true; try { return fn(); } finally { A.chance = ch; } };
+      const SC = {
+        ri_taken: () => { const pc = RIT.life(5611, { status: 'gentry' }); pc.mil = { rank: 4, realm: pc.realm, merit: 0, battles: 0, years: 2, kills: 0, squad: [], warsCommanded: {} }; A.S.queue = [];
+          held(() => RI.maybeTaken(pc, A.neighbors(pc.realm)[0], 'line')); },
+        ri_burned: () => { const pc = RIT.life(5612, { status: 'merchant' }); pc.coin = 2000; pc.assets = [{ k: 'inn', name: 'Roadside inn', y: A.S.year, where: A.provName(pc.home) }];
+          const P = A.prov(pc.home), en = A.neighbors(P.owner)[0]; A.startWar(en, P.owner, null, 'conquest'); P.occ = en; A.S.queue = []; held(() => RI.raidMonth(pc)); },
+        ri_court_push: () => { const pc = RIT.life(5613, { status: 'royal', realm: 'POL-02' }), x = A.realm('POL-02'); A.makeRuler(pc, x.id); x.playerRun = true;
+          x.treasury = x.income * .1; x.debt = x.income * 2; A.S.queue = []; held(() => RI.session(x)); },
+        ri_court_ask: () => { const pc = RIT.life(5614, { status: 'noble' }); pc.noble = pc.noble || { rung: 5, realm: pc.realm, holding: A.realmProvs(pc.realm)[0].id }; pc.noble.rung = 5;
+          const x = A.realm(pc.realm); RI.session(x); if (A.NPCI) A.NPCI.state(pc).b = 2; A.S.queue = []; held(() => RI.askMonth(pc)); },
+      };
+      const out = [];
+      for (const ev in SC) {
+        const n = (A.EV[ev].choices || []).length;
+        for (let i = 0; i < n; i++) for (const win of A.EV[ev].choices[i].check ? [true, false] : [null]) {
+          SC[ev]();
+          const q = A.S.queue.find(x => x.ev === ev);
+          if (!q) { out.push({ ev, i, err: 'not queued' }); continue; }
+          const v = A.eventView(q), c = v.choices.find(x => x.i === i);
+          if (!c) continue;      // a choice its own req hides here
+          const res = RIT.choose(ev, i, win);
+          out.push({ ev, i, win, text: words(v.text), label: words(c.t), raw: T.raw.test(v.text) || T.raw.test(c.t) || T.raw.test(res && res.text || ''), skip: !!q.ctx.skip, res: !!(res && res.text) });
+        }
+      }
+      return out;
+    });
+    const bad = r.filter(x => x.err || x.raw || x.skip || x.text > 80 || x.label > 12 || !x.res);
+    const evs = [...new Set(r.map(x => x.ev))];
+    return { ok: !bad.length && evs.length === 4, detail: `${r.length} choice outcomes across ${evs.join(', ')}; longest text ${Math.max(...r.map(x => x.text || 0))} words, longest label ${Math.max(...r.map(x => x.label || 0))}; problems: ${bad.length ? JSON.stringify(bad.slice(0, 4)) : 'none'}` };
+  },
+
   // a ruling player hears the same pushes as a petition, and their answer is the law
   async riRulerHearsCouncil(pg) {
     await pg.evaluate(SETUP);
