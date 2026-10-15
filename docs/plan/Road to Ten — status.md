@@ -26,15 +26,15 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | War | 7 | 5 | 1 | 1 | 0 |
 | Diplomacy and politics | 6 | 2 | 4 | 0 | 0 |
 | Economy | 7 | 0 | 2 | 5 | 0 |
-| Balance | 6 | 2 | 2 | 1 | 1 |
+| Balance | 6 | 3 | 2 | 0 | 1 |
 | UI and UX | 8 | 5 | 2 | 0 | 1 |
 | Visual art | 7 | 0 | 0 | 0 | 7 |
 | Technical | 7 | 6 | 1 | 0 | 0 |
-| Replayability | 6 | 2 | 2 | 2 | 0 |
+| Replayability | 6 | 2 | 3 | 1 | 0 |
 | Uniqueness | 5 | 2 | 2 | 1 | 0 |
-| **All** | **94** | **37** | **29** | **18** | **10** |
+| **All** | **94** | **38** | **30** | **16** | **10** |
 
-That is 39% done and 31% partial. 19% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 40% done and 32% partial. 17% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
 
 ## World and lore
 
@@ -138,7 +138,7 @@ That is 39% done and 31% partial. 19% is not started but buildable here, and 11%
 | 1 | Target numbers per path | ✅ | `bench/targets.mjs`: six starting paths, each with bands for age at death, peak wealth, peak fame and notable lives (plus freedom for serfs), and notes where the game sits somewhere the designers may not want |
 | 2 | Nightly bot league (1,000 lives × 4 personalities) | ◐ | `bench/` league: 64 lives × 4 personalities, engaged and passive. `bench/balance.mjs`: 48 lives per path (8 per path, on two pages), run by CI on every push. Not 1,000, not nightly |
 | 3 | Fail the build on drift | ✅ | `bench/balance.mjs`: a fixed-seed league of 24 lives in CI (`tools/check.mjs`); the build fails when a path leaves its band |
-| 4 | Difficulty changes information and recovery | ✗ | |
+| 4 | Difficulty changes information and recovery | ✅ | 42-difficulty: Story always shows each choice's odds as a number, Realism only in words, Hard as the player sets it; the year's healing (Story 52, Hard 35, Realism 24 from 20 health), a timed wound (2, 4, 6 years) and a prison sentence (2, 4, 5 years of four) scale with the setting. Hard is the release's, so the league is unchanged |
 | 5 | 20 human playthroughs per phase | 👥 | |
 | 6 | Hunt dominant strategies | ◐ | The buy/sell loop was found and fixed; no systematic search |
 
@@ -185,7 +185,7 @@ That is 39% done and 31% partial. 19% is not started but buildable here, and 11%
 | --- | --- | --- | --- |
 | 1 | 20 hand-made starting stories | ✅ | 29-starts: 20 stories over 17 realms and all seven peoples, each with an opening scene and a callback 5–15 years on (40 events) |
 | 2 | Different endings with epilogues | ✅ | 28-endings: 20 endings × 9 manners, an epilogue of what became of them, and a collection in the Legacy tab |
-| 3 | Vary the world each run | ✗ | |
+| 3 | Vary the world each run | ◐ | Base: 13 scripted branches of history rolled at the start and played out in the first year. 43-varied-worlds: a menu game also varies fortunes, moves 2–4 borders by an older war (the loser still claims them), starts up to two feuds and breaks up to three alliances; ten seeds give ten different maps. No new realms are generated |
 | 4 | A mid-game and late game per path | ✗ | |
 | 5 | Export a readable history of the family and world | ◐ | The Chronicle (22) exports every life of the save, with each ending and the tale as told (26, 28); no world legends |
 | 6 | Load events and realms from data files | ◐ | Developers can add features and events here; players can't |
@@ -202,7 +202,7 @@ That is 39% done and 31% partial. 19% is not started but buildable here, and 11%
 
 ## Round 3 changes
 
-Sixteen features and two tools, each with its own tests and README, moved twenty-five rows.
+Eighteen features and two tools, each with its own tests and README, moved twenty-seven rows.
 
 | Feature | Rows | What changed |
 | --- | --- | --- |
@@ -224,6 +224,8 @@ Sixteen features and two tools, each with its own tests and README, moved twenty
 | 38-orders | War 3 ✅ | Generals have a temper from their traits, and it moves how their army fights: how good the odds must be, how many divisions go at once, how rested they must be, and whether it hunts the undefended. The war room shows each army's temper and plan. A soldier gets the plan as a letter, and the map settles it sixty days later: credit, blame, a reckoning, or being proved right. |
 | 39-schemes | Relationships 3 ✅ | Sway, befriend, seduce, slander and murder as plots that run for months, with an estimate up front, an opening halfway, a last move, and a chance each month of being found out. The people who hate you plot back, and you can notice, unmask and answer them. |
 | 41-circles | Relationships 6 ✅ | Circles form around you as you meet people; a friend of your foe starts cooler and a friend of your friend warmer, and the person view says why. A great harm reaches the victim's friends. Cliques of three in the unit or the street. |
+| 42-difficulty | Balance 4 ✅ | The three settings now change what you are told (odds as numbers, as words, or as you set them) and how fast you recover (healing, timed wounds, prison terms), not only how often you die. |
+| 43-varied-worlds | Replayability 3 ◐ | A game from the menu starts in a varied world: different fortunes, borders an older war moved, feuds already burning and broken alliances, told at birth. The release's 13 scripted branches of history still run on top. No new realms. |
 
 Findings from building these:
 

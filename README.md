@@ -61,6 +61,8 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 | `38-orders` | War | Generals with a temper (bold, cautious, cunning) that changes how their army fights, a plan the war room shows, and orders by letter that the map judges sixty days later |
 | `39-schemes` | Relationships | Plots that run for months (sway, befriend, seduce, slander, murder) with a risk of being found out, and enemies who plot against you |
 | `41-circles` | Relationships | Friend circles that form as you meet people, first impressions that follow them, word that gets around, and cliques you can join |
+| `42-difficulty` | Balance | Story, Hard and Realism change the odds you see and how fast wounds, illness and prison pass, not only how often you die |
+| `43-varied-worlds` | Replayability | A menu game starts in a varied world: fortunes, borders moved by older wars, feuds and broken alliances differ each run |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
 How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.
