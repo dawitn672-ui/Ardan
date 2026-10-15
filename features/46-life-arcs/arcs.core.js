@@ -99,10 +99,12 @@
       a.next = null; a.q = A.absDay();
       return;
     }
+    // a story arc (Road to Ten, Events 3): one at a time, alongside the work of your life
+    if (AR.storyMonth(pc, st, age)) return;
     // a new one: the middle years first, the last years later. One undertaking at a time, at most two in the middle
     // years (a life that changes trade may start over once), and one legacy
     const path = AR.path(pc); if (!path) return;
-    const P = AR.PATHS[path], keys = Object.keys(st);
+    const P = AR.PATHS[path], keys = Object.keys(st).filter(k => !(AR.ARC[k] && AR.ARC[k].story));
     if (keys.some(k => !st[k].done)) return;
     const lates = keys.filter(k => AR.LATE.has(k)).length, mids = keys.length - lates;
     for (const [k, from] of [[P.late, AR.LATE_AGE], [P.mid, AR.MID_AGE]]) {
@@ -118,6 +120,58 @@
   };
   A.onMonth.push(pc => AR.month(pc));
 
+  // ---- story arcs (Road to Ten, Events 3 and 4): "60 long arcs of 3 to 8 stages over 2 to 20 years: a blood feud, a
+  // secret child, a rival's rise, a famous sword's history, a plague year, an apprentice who passes you", each ending
+  // with "a lasting change: a title, a bond, a wound, a law, or a province on the map".
+  // A feature registers one with A.ARCS.story(key, def):
+  //   title          shown on the Life tab card
+  //   stages         event ids in order, 3 to 8 (each trigger: true, every choice carrying fx.arc like the life arcs)
+  //   start(pc)      whether the arc can begin in this life now (read only; C helpers welcome)
+  //   w              weight against the other arcs that can begin (default 1)
+  //   gap            [min, max] years between stages (default [1, 3]); stages may span 2 to 20 years
+  //   lasting        what its ending leaves: 'title' 'bond' 'wound' 'law' 'province' 'trait' 'wealth' 'home' or 'name'
+  // One story arc runs at a time. When none is running, a new one begins with a chance of 1 in STORY_EVERY a month
+  // (about every four years of a life without one), chosen by weight from those whose start(pc) holds and that this
+  // life has not had.
+  AR.STORY_EVERY = 48;
+  AR.LASTING = ['title', 'bond', 'wound', 'law', 'province', 'trait', 'wealth', 'home', 'name'];
+  AR.story = function (k, def) {
+    AR.ARC[k] = Object.assign({ story: true, w: 1 }, def);
+    return AR.ARC[k];
+  };
+  AR.stories = () => Object.keys(AR.ARC).filter(k => AR.ARC[k].story);
+  AR.storyMonth = function (pc, st, age) {
+    const ks = AR.stories(); if (!ks.length) return false;
+    if (ks.some(k => st[k] && !st[k].done)) return false;   // one running: its stages come through the due loop above
+    if (!A.chance(1 / AR.STORY_EVERY)) return false;
+    const can = ks.filter(k => { const D = AR.ARC[k]; if (st[k]) return false; try { return !D.start || !!D.start(pc, A.C); } catch (e) { return false; } })
+      .filter(k => AR.fits(pc, AR.ARC[k].stages[0]));
+    if (!can.length) return false;
+    const k = A.wpick(can, x => AR.ARC[x].w || 1);
+    st[k] = { stage: 0, y: A.S.year, m: [], story: 1, q: A.absDay() };
+    A.queue({ type: 'event', ev: AR.ARC[k].stages[0], forced: true, ctx: { arc: k } });
+    return true;
+  };
+  // for tests: play an arc through with the given choice index at each stage (or a function (stage, view) => index),
+  // forcing its start and each stage due; returns what each stage showed and the arc's state at the end
+  AR.playThrough = function (pc, k, pick) {
+    const D = AR.ARC[k], st = pc.arcs = AR.state(pc), seen = [];
+    st[k] = { stage: 0, y: A.S.year, m: [], story: D.story ? 1 : undefined };
+    for (let i = 0; i < D.stages.length + 1 && !st[k].done; i++) {
+      const ev = D.stages[st[k].stage]; if (!ev) break;
+      const q = { type: 'event', ev, forced: true, ctx: { arc: k } };
+      A.S.queue = [q];
+      const v = A.eventView(q);
+      if (v.skip) { seen.push({ ev, skip: true }); break; }
+      const want = typeof pick === 'function' ? pick(st[k].stage, v) : (pick || 0);
+      const vi = Math.max(0, v.choices.findIndex(c => c.i === want));
+      A.eventChoose(vi); const res = q.result && q.result.text; A.eventClose();
+      seen.push({ ev, title: v.title, text: v.text, choices: v.choices.map(c => c.t), result: res });
+      if (!st[k].done && st[k].next != null) A.S.year = Math.max(A.S.year, st[k].next);
+    }
+    return { seen, state: st[k] };
+  };
+
   // fx.arc: 'next' moves to the next stage in one to three years; 'end' closes it; { next|end, mark } leaves a mark
   // that later stages read (C.flag works too: each mark is also a flag)
   (A.FX_EXTRA = A.FX_EXTRA || []).push('arc');
@@ -131,8 +185,9 @@
         const go = typeof v === 'string' ? v : v.go || 'next', mark = typeof v === 'object' ? v.mark : null;
         if (mark) { a.m = (a.m || []).concat([mark]); pc.flags['la_' + mark] = A.S.year; }
         a.stage++; a.q = null;
+        const gap = AR.ARC[ctx.arc].gap || AR.GAP;
         if (go === 'end' || a.stage >= AR.ARC[ctx.arc].stages.length) a.done = A.S.year;
-        else a.next = A.S.year + A.ri(AR.GAP[0], AR.GAP[1]);
+        else a.next = A.S.year + A.ri(gap[0], gap[1]);
       }
     } catch (e) { console.error('arcs fx', e); }
     return r;
