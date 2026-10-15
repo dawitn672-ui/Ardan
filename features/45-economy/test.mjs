@@ -76,10 +76,11 @@ export default {
         A.S = JSON.parse(snap); A.rngState = rng;
         if (war) A.startWar(rid, A.neighbors(rid)[0], null, 'conquest');
         // the first months: armies draw down the stores before the merchants answer the price
-        const peak = [0, 0, 0, 0];
-        for (let m = 0; m < 4; m++) { ECT.months(1); ['arms', 'iron', 'horses', 'grain'].forEach((k, i) => { peak[i] = Math.max(peak[i], ECT.rel(rid, k)); }); }
+        // the peak over the months: a short war can be over, or its army spent, by the fourth
+        const peak = [0, 0, 0, 0]; let use = 0;
+        for (let m = 0; m < 4; m++) { ECT.months(1); ['arms', 'iron', 'horses', 'grain'].forEach((k, i) => { peak[i] = Math.max(peak[i], ECT.rel(rid, k)); }); use = Math.max(use, A.mkt(rid).d.arms); }
         out[war ? 'war' : 'peace'] = peak.map(v => Math.round(v * 100) / 100);
-        out[war ? 'useWar' : 'usePeace'] = Math.round(A.mkt(rid).d.arms);
+        out[war ? 'useWar' : 'usePeace'] = Math.round(use);
       }
       return out;
     });

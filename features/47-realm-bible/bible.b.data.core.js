@@ -100,12 +100,12 @@
         fx: { happy: 2 }, keepT: 'Lock the dowry in the sea-chest', keep: 'The chest goes under the bed and the key on a cord round the wife\'s neck. Nobody in the house spends from it.',
         defy: { t: 'Spend the dowry on a share in a cog', r: 'You buy a quarter-share in a cog. The other family calls it theft at the wedding feast, and the hall-priest takes their side.', fx: { coin: 15, honor: -3, happy: -2 } },
         log: 'At your wedding the dowry of {dowry} is locked in the wife\'s sea-chest.' },
-      { id: 'gry_hand_sign', name: 'A hand-sign for the child', kind: 'name', by: 'keep',
-        rule: 'Every child is given a hand-sign as well as a name, so it can be called across a deck in a gale.',
-        text: '{child} is born to the sound of the harbour bells. Since the king went deaf from diving, families in Greyhaven give a child a hand-sign as well as a name, so it can be called across a deck in a gale. The midwife waits to see what sign you choose.',
-        fx: { happy: 2 }, keepT: 'Choose a sign and teach it to the house', keep: 'You choose two fingers drawn down the cheek. By the end of the week the whole street uses it for {child}.',
-        defy: { t: 'Say a spoken name is enough for anyone', r: 'The midwife shrugs. The children of the street make up a sign for {child} themselves, and it is not a kind one.', fx: { happy: -3, honor: -1 } },
-        log: '{child} is born and given a hand-sign along with the name.' },
+      { id: 'gry_tide_dive', name: 'The stone from the channel', kind: 'rite', age: 17, who: 'all',
+        rule: 'At seventeen every child of the channel dives at slack tide for a stone off the bottom, as the Tide Divers do.',
+        text: 'You are seventeen, and it is slack water off the harbour wall. In Greyhaven the young go down once for a stone from the channel floor, as the Tide Divers do for the king, and bring it up for the hall-priest to bless. The water is green, then black, then very cold.',
+        fx: { sta: 1, skill: { sea: 1 } }, keepT: 'Go down for the stone', keep: 'Your ears ring for a week, but you come up with a grey pebble in your fist. The priest blesses it, and you wear it on a cord.',
+        defy: { t: 'Stay on the wall with the old men', r: 'Nobody makes you go. Those who came up wet do not ask you to the alehouse, and the harbour-master remembers your face when he hires.', fx: { honor: -2, happy: -2 } },
+        log: 'You dive at slack tide for a stone off the channel floor.' },
     ],
   };
 

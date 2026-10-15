@@ -1,7 +1,7 @@
 // The balance check (Road to Ten, Balance 1 and 3): target numbers per path, and a build that fails when they drift.
 // Plays a small league with fixed seeds (the game is deterministic, so the same build always gives the same numbers),
 // groups the lives by the path they started on, and checks each group against the bands in bench/targets.mjs.
-//   node bench/balance.mjs [built.html] [--lives-per=8] [--workers=2] [--json=reports/balance.json]
+//   node bench/balance.mjs [built.html] [--lives-per=12] [--workers=3] [--json=reports/balance.json]
 // Lives run on --workers pages at once. Each life starts a new game from its own seed, and the lives are dealt to the
 // pages in a fixed order, so the numbers do not depend on timing.
 // Exit code 1 if any number is outside its band. tools/check.mjs runs it, so CI does too.
@@ -17,7 +17,7 @@ let pw; try { pw = require('playwright'); } catch { pw = require('/opt/node-tool
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const opt = k => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : null; };
 const file = path.resolve(process.argv.slice(2).find(a => !a.startsWith('--')) || path.join(root, 'index.html'));
-const PER = +(opt('lives-per') || 8), WORKERS = Math.max(1, +(opt('workers') || 2));
+const PER = +(opt('lives-per') || 12), WORKERS = Math.max(1, +(opt('workers') || 3));
 const median = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
 const r1 = x => x == null ? null : Math.round(x * 10) / 10;
 

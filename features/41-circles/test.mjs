@@ -93,7 +93,8 @@ export default {
         const keep = A.CIRCLES.TIE; A.CIRCLES.TIE = tie;
         let known = 0, inCircle = 0, met = 0, foes = 0;
         try {
-          for (const seed of [211, 212, 213]) {
+          // nine lives: on three, two died within twelve years and their circles had no time to form
+          for (const seed of [211, 212, 213, 214, 215, 216, 217, 218, 219]) {
             A.newGame({ seed, race: 'human', realm: ['POL-01', 'POL-03', 'POL-05'][seed % 3], status: ['artisan', 'merchant', 'peasant'][seed % 3], sex: seed % 2 ? 'M' : 'F', startAge: 18 });
             const end = A.S.year + 20;
             for (let g = 0; g < 3000 && A.S.year < end && A.pc().alive; g++) {

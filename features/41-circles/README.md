@@ -27,7 +27,7 @@ The plan asks to "add groups: friend circles, cliques in your unit or guild. A f
 - `firstImpressions`: against a plain stranger, a friend of your friend starts +8 toward you and a friend of your foe −12. The scene is queued, and the person view names the foe.
 - `wordGetsAround`: an opinion change of −5 reaches nobody. A change of −30 moves each of the victim's three friends by −10, and the scene is queued. Telling your side first brings them back to −4.
 - `cliqueForms`: joining makes the three friends with each other and +15 warmer to you.
-- `circlesInRealLives`: the same three 20-year bot lives in the full build, with circles off and on. The share of the people you know who are close to someone else you know goes from 0% (0 of 20) to 35% (8 of 23), and 5 first meetings were coloured by a circle.
+- `circlesInRealLives`: the same nine 20-year bot lives in the full build, with circles off and on. The share of the people you know who are close to someone else you know goes from 3% (2 of 64) to 16% (13 of 81), and first meetings coloured by a circle go from 1 to 14. (Round 5: the test used three lives, and once two of them died within twelve years the circles had no time to form; an earlier run read 35% on three lives.)
 - `circlesOnScreen`: the circle line is escaped, and drawing it draws no random number and changes no state.
 
 The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs`.
