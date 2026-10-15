@@ -12,6 +12,7 @@ export const RUBRIC = [
     { name: 'Fired events that read a memory (bot lives)', path: 'league.memoryShareOfFiredEvents', target: '≥ 40%', weight: 3, score: atLeast(40) },
     { name: 'Flags set but never read', path: 'events.orphanFlags', target: '0', weight: 2, score: atMost(0, 369) },
     { name: 'Strict recipe events (2–3 choices, a roll, stat nudges only)', path: 'events.strictRecipePct', target: '≤ 10%', weight: 1, score: atMost(10, 30) },
+    { name: 'Events with an obviously best choice (of those comparable by numbers)', path: 'events.obviouslyBestPct', target: '0%', weight: 1, score: atMost(0, 15) },
     { name: 'Old-age events', path: 'events.oldAgeEvents', target: '≥ 150', weight: 1, score: atLeast(150) },
   ] },
   { aspect: 'Power scaling', cap: .9, metrics: [
@@ -27,6 +28,7 @@ export const RUBRIC = [
   ] },
   { aspect: 'War', cap: .7, metrics: [
     { name: 'Battles the player fought that end with an after-action report', path: 'league.afterActionShare', target: '100%', weight: 2, score: atLeast(100) },
+    { name: 'War-map tick, 95th percentile, in a year of six wars', path: 'perf.warTick.p95', target: '≤ 50 ms', weight: 1, score: atMost(50, 200) },
   ] },
   { aspect: 'Diplomacy and politics', cap: .8, metrics: [
     { name: 'War declarations: aggressive vs peaceful rulers (per ruler-year)', path: 'ai.aggressiveToPeacefulRatio', target: '≥ 2×', weight: 3, score: v => clamp((v - 1) / 1) },

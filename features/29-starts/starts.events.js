@@ -105,8 +105,8 @@ A.defEvents([
       ? 'A letter in your mother\'s spare hand: something has come up in the place you tended. It is crooked and pale and it is alive. She does not say she was wrong. She says come and see.'
       : 'The beech came down in a spring storm. Your mother writes that the singers sang for a whole night, and that a sapling no one planted has come up in the hollow of the stump.',
     choices: [
-      { t: 'Go home and see it', r: 'You kneel by it a long while. It is the size of your hand. It is enough.', fx: { happy: 6, family: 2, flag: 'st_last_tree_saw' } },
-      { t: 'Write that you will come next year', r: 'You mean it when you write it.', fx: { happy: 1 } },
+      { t: 'Go home and see it', r: 'You kneel by it a long while. It is the size of your hand. It is enough.', fx: { happy: 6, family: 2, coin: -20, flag: 'st_last_tree_saw' } },
+      { t: 'Write that you will come next year', r: 'You mean it when you write it. The season\'s work goes well without the journey.', fx: { happy: 1, coin: 20 } },
     ] },
 
   // ---- 6. Born Under the Articles (Blackreef)
@@ -134,7 +134,7 @@ A.defEvents([
     cond: (p, C) => C.flag(p, 'st_foundling'),
     text: 'You were found on the temple steps in a good wool blanket, with a gold ring on a cord. The priests raised you, taught you letters and kept the ring in a box. Today the old sacristan gives you the box, and says you are old enough.',
     choices: [
-      { t: 'Ask the sacristan what he knows', r: 'Only that the blanket was dyed in a colour the poor do not buy, and that a carriage was heard in the night.', fx: { flag: 'st_foundling_asked' } },
+      { t: 'Ask the sacristan what he knows', r: 'Only that the blanket was dyed in a colour the poor do not buy, and that a carriage was heard in the night. You learn to ask the second question.', fx: { flag: 'st_foundling_asked', ins: 1 } },
       { t: 'Take the ring to a goldsmith', r: 'The goldsmith turns it, finds a mark inside the band, and says he would rather not say whose. You pay him twice to say it.', fx: { flag: 'st_foundling_mark', coin: -10 } },
       { t: 'Put it back in the box', r: 'The temple is the only family you know. You leave the box on the sacristan\'s table.', fx: { flag: 'st_foundling_kept', piety: 3 } },
     ] },
@@ -342,7 +342,7 @@ A.defEvents([
       : 'A monk of Skyhold finds you in the town. He knows what you read, he says. He has read it too. He wants to know what you mean to do about it.',
     choices: [
       { t: 'Say you mean to do nothing', r: 'He nods slowly. It may be the answer he wanted. It may not.', fx: { wil: 1 } },
-      { t: 'Say the truth should be written down', r: 'He is quiet. Then he says he has been writing it down for nine years, and does not know who to give it to.', fx: { flag: 'st_novice_ally' } },
+      { t: 'Say the truth should be written down', r: 'He is quiet. Then he says he has been writing it down for nine years, and does not know who to give it to. It is a relief to say it aloud, and it does not feel like prayer.', fx: { flag: 'st_novice_ally', happy: 2, piety: -1 } },
     ] },
 
   // ---- 18. What Took Your Father (Northreach)

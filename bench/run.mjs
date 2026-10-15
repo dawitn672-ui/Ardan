@@ -18,6 +18,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { BOT } from './bot.mjs';
+import { analyzeChoices } from '../tools/choice-analyzer.mjs';
 
 const require = createRequire(import.meta.url);
 let pw; try { pw = require('playwright'); } catch { pw = require('/opt/node-tools/node_modules/playwright'); }
@@ -79,7 +80,9 @@ const MODULES = {
   },
 
   async events(page) {
-    return page.evaluate(() => {
+    // events with an obviously best choice (tools/lint-choices.mjs), over every event
+    const ch = await page.evaluate(analyzeChoices, null);
+    const base = await page.evaluate(() => {
       const M = B.memoryIndex(), E = Object.values(A.EV), words = s => (String(s || '').match(/\S+/g) || []).length;
       const stat = e => typeof e.text === 'string' ? words(e.text) : null;
       const recipe = E.filter(e => { const ch = e.choices || []; if (ch.length < 2 || ch.length > 3 || !ch.some(c => c.check)) return false;
@@ -101,6 +104,7 @@ const MODULES = {
         staticChoiceOver12: choices.filter(c => typeof c.t === 'string' && words(c.t) > 12).length,
       };
     });
+    return Object.assign(base, { obviouslyBest: ch.flagged.length, obviouslyBestPct: ch.compared ? Math.round(1000 * ch.flagged.length / ch.compared) / 10 : 0, choiceComparable: ch.compared });
   },
 
   async duels(page) {
@@ -182,7 +186,20 @@ const MODULES = {
       for (; days < 365 * 3; days++) { const r = A.dayTick(); if (r === 'queue') { let h, g = 0; while ((h = A.headReady()) && g++ < 200) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); } } if (r === 'dead') break; }
       const msPerDay = (performance.now() - t0) / Math.max(1, days);
       const divs = Object.values(A.S.realms).reduce((a, r) => a + (r.forces && r.forces.divs ? r.forces.divs.length : 0), 0);
-      return { msPerDay: Math.round(msPerDay * 100) / 100, msPerYear: Math.round(msPerDay * 365), divisions: divs, boot: window.ARDAN_BOOT };
+      // the war tick (Road to Ten, War 7: a 200-division tick under 50 ms): time every A.wsDay through a year of wars
+      const ws = A.wsDay, ticks = [];
+      A.wsDay = function () { const t = performance.now(); try { return ws.apply(this, arguments); } finally { ticks.push(performance.now() - t); } };
+      try {
+        // six wars between neighbours, so armies meet
+        for (const r of Object.values(A.S.realms)) { if (A.S.wars.length >= 6) break; if (!r.alive || r.isRebel || A.atWar(r.id).length) continue;
+          const nb = A.neighbors(r.id).find(x => !A.atWar(x).length); if (nb) A.startWar(r.id, nb, null, 'conquest'); }
+        var warsAtStart = A.S.wars.length, peakDivs = 0;
+        for (let d = 0; d < 365; d++) { if (d % 30 === 0 && A.allDivs) peakDivs = Math.max(peakDivs, A.allDivs().length); const r = A.dayTick(); if (r === 'queue') { let h, g = 0; while ((h = A.headReady()) && g++ < 200) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); } } if (r === 'dead') break; }
+      } finally { A.wsDay = ws; }
+      const allDivs = A.allDivs ? A.allDivs().length : null, srt = ticks.slice().sort((a, b) => a - b);
+      const q = f => srt.length ? Math.round(srt[Math.min(srt.length - 1, Math.floor(f * srt.length))] * 10) / 10 : null;
+      return { msPerDay: Math.round(msPerDay * 100) / 100, msPerYear: Math.round(msPerDay * 365), divisions: divs, boot: window.ARDAN_BOOT,
+        warTick: { ticks: ticks.length, divisions: peakDivs || allDivs, warsAtStart, p50: q(0.5), p95: q(0.95), max: q(1) } };
     });
   },
 

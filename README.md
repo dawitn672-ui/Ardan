@@ -51,6 +51,10 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 | `28-endings` | Replayability | 20 named endings and 9 manners of death, an epilogue of what became of them, a collection |
 | `29-starts` | Replayability | 20 hand-made starting stories, each with an opening scene and a callback years later |
 | `30-get-to-know` | Relationships | A first meeting is a scene: four approaches, odds set by the person's traits, read in advance by a sharp eye |
+| `31-learn-by-doing` | Character | Using a skill teaches more than drilling it, a failure more than a success; a monthly summary of what you gained |
+| `32-ladder` | Power scaling | A census of the living Legends and Masters, a Master cap per realm, the living ladder in the Codex |
+| `33-choices` | Events | 19 events where one choice beat the rest on every count, fixed; `tools/lint-choices.mjs` keeps it so |
+| `34-both-scales` | Uniqueness | Signature 3: after a war-map fight, what you saw, the front, and what the chronicle will say, side by side |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
 How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.
@@ -66,6 +70,8 @@ npm test                                         # every test against index.html
 npm run test:original                            # the same tests against the untouched release
 node tools/build.mjs --out=/tmp/x.html --only=chronicle   # fixes + one feature, elsewhere
 node tools/lint-events.mjs --feature=chronicle --html=/tmp/x.html
+node tools/lint-choices.mjs --all-features                 # no event a feature adds may have an obviously best choice
+node bench/balance.mjs                                    # each starting path's numbers held to bench/targets.mjs
 node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth
 ```
 

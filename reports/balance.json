@@ -1,0 +1,98 @@
+{
+ "file": "index.html",
+ "build": "b593143+f28.f5301d8",
+ "paths": {
+  "serf": {
+   "lives": 4,
+   "medianDeathAge": 50,
+   "medianPeakCoin": 1627,
+   "medianPeakFame": 11,
+   "notableSharePct": 50,
+   "freedSharePct": 50,
+   "arcs": [
+    "bound for life",
+    "outlaw",
+    "bound for life",
+    "general"
+   ]
+  },
+  "peasant": {
+   "lives": 4,
+   "medianDeathAge": 66,
+   "medianPeakCoin": 71033,
+   "medianPeakFame": 53,
+   "notableSharePct": 75,
+   "freedSharePct": 0,
+   "arcs": [
+    "captain",
+    "cut short",
+    "officer of state",
+    "outlaw"
+   ]
+  },
+  "artisan": {
+   "lives": 4,
+   "medianDeathAge": 57,
+   "medianPeakCoin": 42064,
+   "medianPeakFame": 23,
+   "notableSharePct": 75,
+   "freedSharePct": 0,
+   "arcs": [
+    "fortune made",
+    "outlaw",
+    "working life",
+    "fortune made"
+   ]
+  },
+  "merchant": {
+   "lives": 4,
+   "medianDeathAge": 68,
+   "medianPeakCoin": 528856,
+   "medianPeakFame": 58,
+   "notableSharePct": 100,
+   "freedSharePct": 0,
+   "arcs": [
+    "ruler",
+    "fortune made",
+    "master of a trade",
+    "ruler"
+   ]
+  },
+  "noble": {
+   "lives": 4,
+   "medianDeathAge": 73,
+   "medianPeakCoin": 357743,
+   "medianPeakFame": 93,
+   "notableSharePct": 100,
+   "freedSharePct": 0,
+   "arcs": [
+    "outlaw",
+    "officer of state",
+    "officer of state",
+    "officer of state"
+   ]
+  },
+  "royal": {
+   "lives": 4,
+   "medianDeathAge": 46,
+   "medianPeakCoin": 95013,
+   "medianPeakFame": 66,
+   "notableSharePct": 75,
+   "freedSharePct": 0,
+   "arcs": [
+    "cut short",
+    "soldier",
+    "captain",
+    "general"
+   ]
+  }
+ },
+ "global": {
+  "checkWinRate": 39.8,
+  "arcTypes": 11,
+  "pageErrors": 0
+ },
+ "failures": [
+  "serf.medianPeakCoin = 1627, outside 2000–150000"
+ ]
+}

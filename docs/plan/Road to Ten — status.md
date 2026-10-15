@@ -19,22 +19,22 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Aspect | Steps | ✅ | ◐ | ✗ | 👥/🎨 |
 | --- | --- | --- | --- | --- | --- |
 | World and lore | 7 | 2 | 1 | 3 | 1 |
-| Power scaling | 7 | 1 | 4 | 2 | 0 |
-| Character and life sim | 7 | 0 | 3 | 4 | 0 |
-| Events and story | 7 | 1 | 3 | 3 | 0 |
+| Power scaling | 7 | 2 | 4 | 1 | 0 |
+| Character and life sim | 7 | 1 | 3 | 3 | 0 |
+| Events and story | 7 | 2 | 3 | 2 | 0 |
 | Relationships | 7 | 3 | 2 | 2 | 0 |
-| War | 7 | 1 | 1 | 5 | 0 |
+| War | 7 | 2 | 1 | 4 | 0 |
 | Diplomacy and politics | 6 | 2 | 4 | 0 | 0 |
 | Economy | 7 | 0 | 2 | 5 | 0 |
-| Balance | 6 | 0 | 2 | 3 | 1 |
+| Balance | 6 | 2 | 2 | 1 | 1 |
 | UI and UX | 8 | 5 | 2 | 0 | 1 |
 | Visual art | 7 | 0 | 0 | 0 | 7 |
 | Technical | 7 | 6 | 1 | 0 | 0 |
 | Replayability | 6 | 2 | 2 | 2 | 0 |
-| Uniqueness | 5 | 2 | 1 | 2 | 0 |
-| **All** | **94** | **25** | **28** | **31** | **10** |
+| Uniqueness | 5 | 2 | 2 | 1 | 0 |
+| **All** | **94** | **31** | **29** | **24** | **10** |
 
-That is 27% done and 30% partial. 33% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 33% done and 31% partial. 26% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
 
 ## World and lore
 
@@ -58,14 +58,14 @@ That is 27% done and 30% partial. 33% is not started but buildable here, and 11%
 | 4 | Wounds tied to scale (a lost hand drops tier) | ◐ | Wounds change stats, so worth falls; no explicit tier drop; scars show on the profile |
 | 5 | Show the math (tiers, win chance, worth parts) | ◐ | Base worth tooltip; odds made honest (24-honest-odds); no "Measure" panel on fight screens |
 | 6 | Lock the tier odds with a test | ✅ | `honestOdds` test plus the bench `duels` module (gap 4 points) |
-| 7 | Cap the ladder (about 12 Legends, 5 Masters per realm) | ✗ | Base caps Legends at 5 (`GD.LEGEND_CAP`), which disagrees with the plan's 12; no census test |
+| 7 | Cap the ladder (about 12 Legends, 5 Masters per realm) | ✅ | 32-ladder: a census, a Master cap per realm (order leaders in a full realm come out Elite), the living ladder in the Codex; the lore's 5 Legends are kept inside the plan's bound. Two 40-year worlds peak at 2 Legends and 1 Master in a realm: the ladder is sparse, not crowded |
 
 ## Character and life sim
 
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
 | 1 | Merge about 9–12 systems into 4 | ✗ | Not started (a large refactor of minified code; needs the source) |
-| 2 | Learn by doing; monthly summary of gains | ✗ | Training gives about 31 points a year, doing about 1.5 per check; no summary |
+| 2 | Learn by doing; monthly summary of gains | ✅ | 31-learn-by-doing: every gain tagged practice or use; use ×1.2, practice ×0.4, a failed check teaches 1.5× a passed one; a monthly summary. Growth from doing 44–49% → 67–73% with the same total for a passive life (an engaged one grows 25% faster) |
 | 3 | Needs and moods that start events | ✗ | Only `happy` |
 | 4 | Health as a body (parts, long illness, treatment choices) | ◐ | Wounds and 7 diseases; no body parts or treatment tradeoffs |
 | 5 | Personality changes from what you do, and shows why | ◐ | 372 events add traits; no reason shown; trait count uncapped |
@@ -82,7 +82,7 @@ That is 27% done and 30% partial. 33% is not started but buildable here, and 11%
 | 4 | Every arc ends with a lasting change | ◐ | Memory callbacks leave marks; no arc system |
 | 5 | Variety guard: no repeat within 10 years, no same shape back to back | ✅ | 25-variety-guard: 10-year default cooldown, 24 shapes, recency for pools and NPC moves. A/B in the full build: rolled repeats 0.3% → 0%, same shape back to back 4.6% → 3.0%, three in a row 2 → 0, NPC move repeats 38% → 16% |
 | 6 | Culture event voice; NPC lines match personality | ✗ | Not started |
-| 7 | Event checklist; a bot flags events with an obviously best choice | ✗ | Lint covers shape, length and tokens, not "obviously best" |
+| 7 | Event checklist; a bot flags events with an obviously best choice | ✅ | `tools/lint-choices.mjs` (33-choices): 19 events had one (16 release, 3 of our own), all fixed; CI fails any new one |
 
 ## Relationships and people
 
@@ -106,7 +106,7 @@ That is 27% done and 30% partial. 33% is not started but buildable here, and 11%
 | 4 | Drill linked to battle tactics | ◐ | The report now names what drill and tactics did (a pike hedge against lances +27%, "Drill and kit"); tactic choice is still not gated by drill |
 | 5 | Playable sieges | ✗ | Sieges are a day counter |
 | 6 | Small-unit missions with named men | ✗ | Base missions exist without persistent named men |
-| 7 | A 200-division tick under 50 ms | ✗ | Not measured per tick (a year with about 210 divisions takes 229 ms of sim) |
+| 7 | A 200-division tick under 50 ms | ✅ | Bench `perf.warTick`: 212 divisions in six wars, 9.4 ms at the 95th percentile, 18 ms at worst |
 
 ## Diplomacy and politics
 
@@ -135,9 +135,9 @@ That is 27% done and 30% partial. 33% is not started but buildable here, and 11%
 
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
-| 1 | Target numbers per path | ✗ | No targets file |
+| 1 | Target numbers per path | ✅ | `bench/targets.mjs`: six starting paths, each with bands for age at death, peak wealth, peak fame and notable lives (plus freedom for serfs), and notes where the game sits somewhere the designers may not want |
 | 2 | Nightly bot league (1,000 lives × 4 personalities) | ◐ | `bench/` league: 64 lives × 4 personalities, engaged and passive; not per path, not nightly |
-| 3 | Fail the build on drift | ✗ | CI runs tests, not balance targets |
+| 3 | Fail the build on drift | ✅ | `bench/balance.mjs`: a fixed-seed league of 24 lives in CI (`tools/check.mjs`); the build fails when a path leaves its band |
 | 4 | Difficulty changes information and recovery | ✗ | |
 | 5 | 20 human playthroughs per phase | 👥 | |
 | 6 | Hunt dominant strategies | ◐ | The buy/sell loop was found and fixed; no systematic search |
@@ -197,12 +197,12 @@ That is 27% done and 30% partial. 33% is not started but buildable here, and 11%
 | 1 | Name the core in one line | ✅ | `docs/north-star` |
 | 2 | Signature 1: the Chronicle | ✅ | 22-chronicle: chapters in a chronicler's voice, exportable (more to do: corrections, a period voice for every line) |
 | 3 | Signature 2: belief versus truth everywhere | ◐ | 26-belief-truth: beasts, secrets, far news and your own legend; NPCs don't yet hold beliefs of their own, so not "everywhere" |
-| 4 | Signature 3: both scales at once | ✗ | |
+| 4 | Signature 3: both scales at once | ◐ | 34-both-scales: after every war-map fight you were in, three panels (what you saw, the front, what the chronicle will say) that disagree; registered. In-fight choices at every rank (War 1) are still the release's |
 | 5 | Cut what dilutes the core | ✗ | |
 
 ## Round 3 changes
 
-Six features, each with its own tests and README, moved twelve rows.
+Ten features and two tools, each with its own tests and README, moved nineteen rows.
 
 | Feature | Rows | What changed |
 | --- | --- | --- |
@@ -211,6 +211,12 @@ Six features, each with its own tests and README, moved twelve rows.
 | 26-belief-truth | World 4 ✅, Uniqueness 3 ◐, Relationships 5 ◐, World 5 note | Four knowledge states for beasts. Secrets told against their truth, with 11 scenes. Far news inflated, then corrected. "As the tale is told" in the Chronicle. Registered as signature 2. |
 | 28-endings | Replayability 2 ✅, Replayability 5 note | 20 endings and 9 manners, decided at death. An epilogue on the death screen. A collection in the Legacy tab. |
 | 30-get-to-know | Relationships 7 ✅ | A first meeting is a scene with four approaches whose odds the person's traits set, read in advance by a sharp eye. |
+| 31-learn-by-doing | Character 2 ✅ | Every gain tagged practice or use; use counts for more, a failed check teaches more, and a monthly summary. Two-thirds of growth now comes from doing, at the same total for a passive life. |
+| 32-ladder | Power 7 ✅ | A census of the living ladder, a cap on Masters per realm, and the living ladder in the Codex. |
+| 33-choices and `tools/lint-choices.mjs` | Events 7 ✅ | A checker for obviously best choices: 19 found and fixed, and CI blocks new ones. |
+| 34-both-scales | Uniqueness 4 ◐ | After each war-map fight, what you saw, the front and the chronicle's account, side by side and disagreeing. Signature 3 is registered. |
+| `bench/balance.mjs` and `bench/targets.mjs` | Balance 1 ✅, Balance 3 ✅ | Target bands per starting path, held by a fixed-seed league in CI. |
+| Bench `perf.warTick` | War 7 ✅ | The war-map tick with 212 divisions: 9.4 ms at the 95th percentile. |
 | 29-starts | Replayability 1 ✅ | 20 hand-made starting stories (17 realms, all seven peoples), each with an opening scene and a callback years later. |
 
 Two findings came out of building these:
@@ -218,3 +224,7 @@ Two findings came out of building these:
 - **Repeats were coming from outside the roll.** Most of the repeats a player sees came from job duties, path flows and NPC moves, which skip the event roll and its cooldown. The guard now covers them with a preference rather than a ban, so the pools don't run dry.
 - **Fixed: "Keeper of Secrets" ended most lives.** An early draft of the secret scenes made "Keeper of Secrets" the ending of 4 of 6 bot lives. The finds are now rationed to one in eight years.
 - **The AI ratio was noisier than reported.** The warlike-to-peaceful war ratio in one world swings from 1.5 to 6 with the random stream: a feature that draws one more number a month moved it from 5.3 to 1.45 on the same seeds. Pooled over four worlds it reads 2 to 5, and two builds on a fresh seed set agree (1.98 and 2.06). The test now pools four worlds.
+- **The balance league found three things for the designers** (notes in `bench/targets.mjs`):
+  - Every serf was free by 33, most by buying freedom at 21–22 for 40 suns. The event that sells it had no way to say no; it has one now (33-choices).
+  - A peasant's peak wealth is close to a merchant's.
+  - Artisans are the noisiest path.

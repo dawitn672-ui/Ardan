@@ -1,7 +1,7 @@
 {
  "label": "current",
  "file": "index.html",
- "build": "b593143+f19.c2c0f96",
+ "build": "b593143+f25.df3ff59",
  "modules": {
   "league": {
    "lives": 64,
@@ -134,19 +134,27 @@
    "bestBuySellBackLoop10x": 0
   },
   "perf": {
-   "msPerDay": 0.63,
-   "msPerYear": 229,
-   "divisions": 215,
+   "msPerDay": 1.57,
+   "msPerYear": 573,
+   "divisions": 201,
    "boot": {
-    "ardan-core decoded": 472,
-    "ardan-core unpacked": 523,
-    "core ran": 607,
-    "title shown": 619,
-    "ardan-content decoded": 658,
-    "ardan-content unpacked": 724,
-    "content ran": 1141,
-    "ardan-lore decoded": 1154,
-    "ardan-lore unpacked": 1193
+    "ardan-core decoded": 379,
+    "ardan-core unpacked": 443,
+    "core ran": 530,
+    "title shown": 538,
+    "ardan-content decoded": 569,
+    "ardan-content unpacked": 626,
+    "content ran": 1069,
+    "ardan-lore decoded": 1081,
+    "ardan-lore unpacked": 1122
+   },
+   "warTick": {
+    "ticks": 254,
+    "divisions": 212,
+    "warsAtStart": 6,
+    "p50": 5.3,
+    "p95": 9.4,
+    "max": 18
    }
   },
   "saves": {

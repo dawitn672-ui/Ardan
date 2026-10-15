@@ -20,6 +20,14 @@ const dir = fs.readdirSync(path.join(root, 'features')).find(d => d.replace(/^\d
 if (!dir) { console.error('no feature ' + feature); process.exit(2); }
 const html = path.resolve(root, arg('html') || 'index.html');
 const FX = 'str spd ins sta int wil health happy looks fame honor piety coin coinPct family skill rep masterwork promote style styleXp apt trait untrait wound flag unflag rel them newRel lover die prison punish free merit patronOp rulerOp realmStab realmGold armyXp secret epithet deed ach job perf lang literate gear asset duel beast event stability treasury legit realmRel favor mission cause why infamy authority houseOp factionDisc owed oweThem letter bossOp sworn claim pact ally warOn'.split(' ');
+// effect keys a feature adds to A.applyFx, declared in its core code as (A.FX_EXTRA = A.FX_EXTRA || []).push('key')
+for (const d of fs.readdirSync(path.join(root, 'features'))) {
+  const dir = path.join(root, 'features', d);
+  if (!fs.statSync(dir).isDirectory()) continue;
+  for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.core.js')))
+    for (const m of fs.readFileSync(path.join(dir, f), 'utf8').matchAll(/FX_EXTRA\s*\|\|\s*\[\]\)\.push\(([^)]*)\)/g))
+      for (const k of m[1].matchAll(/['"]([A-Za-z]+)['"]/g)) FX.push(k[1]);
+}
 const words = s => (String(s).match(/\S+/g) || []).length;
 const errors = [], warns = [];
 

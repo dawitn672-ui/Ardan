@@ -26,6 +26,8 @@ node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth UI.refresh    
 node tools/build.mjs --out=/tmp/ardan/me/x.html --only=me --unpack=/tmp/ardan/me/blobs
 node tools/show.mjs --dir=/tmp/ardan/me/blobs A.fightWorth                         # your own build, privately
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
+node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
+node bench/balance.mjs /tmp/me.html                       # each path's numbers within bench/targets.mjs
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs                                        # everything against index.html
 ```
@@ -100,6 +102,8 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 - `flag: "x"` sets `p.flags.x = year`.
 - `them: { op: 10 }` changes opinion with `ctx.pid`.
 - `event: "id"` queues another event right after this one.
+- `need: { rest, company, purpose, comfort }` meets the four needs of 35-moods.
+- A feature that adds an effect key declares it in its core code: `(A.FX_EXTRA = A.FX_EXTRA || []).push('key')`. The linter reads that declaration.
 
 **Checks.** `check: { s, s2, d }` takes a skill or stat (`GD.SKILLS` keys, or str spd ins sta int wil). `d` is the difficulty: 45 is typical, and each point is worth 1.6% of odds.
 
@@ -113,7 +117,12 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 
 **Voice.** Dry, concrete, period. Second person, present tense. Short sentences. No modern idiom. Avoid the existing tics ("looks at you a long time", "for the rest of your life", a five-word punchline after every outcome).
 
-**Before you finish:** `tools/lint-events.mjs` must pass, and `tests/run.mjs` must pass for your feature.
+**Before you finish:**
+
+- `tools/lint-events.mjs` must pass.
+- `tools/lint-choices.mjs --feature=<name>` must find no obviously best choice. It flags a choice that beats the others on every count and is no riskier, so give the other side a reason or the favourite a cost.
+- `tests/run.mjs` must pass for your feature.
+- CI also runs `bench/balance.mjs`, which holds each starting path to the bands in `bench/targets.mjs`. Widen a band only with a reason in the file.
 
 ## Measurement conventions (`bench/`)
 
