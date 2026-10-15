@@ -261,7 +261,7 @@
       ['Ten minutes of riding, or none at all', 'war'],
       ['Nobody owns a horse; the clan lends it', 'land kin money'],
       ['Earn the name, then wear it', 'kin war'],
-      ['A guest at the fire is a guest for three days, then grass', 'guest law'],
+      ['A guest is a guest for three days, then grass', 'guest law'],
       ['The chief takes first and answers first', 'power war money'],
     ],
     lines: [

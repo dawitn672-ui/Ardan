@@ -639,6 +639,21 @@ A.on && A.on('warEnd', function (w, result, text, live0) {
   } catch (e) { console.error('[ri] warEnd', e); }
 });
 
+// a faction that rises names its leader, what they want, and what the crown refused
+const baseFactionRevolt = A.factionRevolt;
+A.factionRevolt = function (r, f, peaceful) {
+  const lead = f && A.S.houses[f.leader], head = lead && lead.headPid ? A.P(lead.headPid) : null, n0 = Object.keys(A.S.realms).length;
+  const res = baseFactionRevolt.apply(this, arguments);
+  try {
+    if (r && f && live(head) && f.kind !== 'claimant' && Object.keys(A.S.realms).length > n0) {   // a claimant's rising is logged as a claim
+      const a = RI.aims(head), F = (A.FACTIONS || {})[f.kind] || {};
+      logCourt(r, { k: peaceful ? 'secede' : 'revolt', who: head.id, house: lead.id, fac: f.kind, yes: true, back: f.members.slice(0, 6),
+        why: [[`${A.fullName(head, false)} wants ${RI.wantText(a.want)}`, 1], [`The crown would not ${F.demand || 'yield'}`, .6], [`${f.members.length} house${f.members.length === 1 ? '' : 's'} behind them`, .4]] });
+    }
+  } catch (e) { console.error('[ri] revolt', e); }
+  return res;
+};
+
 // ---------------------------------------------------------------- the player at court
 
 // may the player speak at this court? [ok, why]

@@ -243,7 +243,7 @@
       ['Cloves keep; promises rot', 'oath money'],
     ],
     lines: [
-      ['Every child of a sailing house keeps the {w1} once: a night alone at sea in a small boat.', 'sea kin'],
+      ['Every child of a sailing house keeps the {w1} once: a night alone at sea.', 'sea kin'],
       ['A fifth of every spice sack is the {w2}, and the {ruler}\'s weighers take it at the quay.', 'money power'],
       ['A child here carries its father\'s name after its own, the {w3}, so you know whose it is.', 'kin'],
       ['When the {ruler}\'s bones ache, the harbor makes its boats fast.', 'sea power'],

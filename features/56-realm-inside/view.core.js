@@ -27,6 +27,8 @@ RI.courtLine = function (r, e) {
   if (e.k === 'claimwon') return `${who(e.who)} won the throne; the houses that backed the claim are honoured.`;
   if (e.k === 'claimlost') return `The claim of ${who(e.who)} failed${e.hunted && e.hunted.length ? `; the heads of ${esc(list(e.hunted))} were taken` : ''}.`;
   if (e.k === 'claimwhite') return `The war for ${who(e.who)}'s claim ended in a bargain.`;
+  if (e.k === 'revolt') return `${who(e.who)} of ${house(e.house)} raised the ${esc(facName(e.fac))} in revolt${e.back && e.back.length > 1 ? `, with ${list(e.back.slice(1, 4).map(house))}` : ''}.`;
+  if (e.k === 'secede') return `${who(e.who)} of ${house(e.house)} led the ${esc(facName(e.fac))} out of the realm, with the crown's leave.`;
   return esc(e.k);
 };
 const whyLine = e => (e.why || []).length ? `<div class="tiny muted">Because: ${(e.why || []).slice(0, 4).map(x => esc(x[0])).join('; ')}</div>` : '';
