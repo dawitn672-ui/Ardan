@@ -63,6 +63,7 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 | `41-circles` | Relationships | Friend circles that form as you meet people, first impressions that follow them, word that gets around, and cliques you can join |
 | `42-difficulty` | Balance | Story, Hard and Realism change the odds you see and how fast wounds, illness and prison pass, not only how often you die |
 | `43-varied-worlds` | Replayability | A menu game starts in a varied world: fortunes, borders moved by older wars, feuds and broken alliances differ each run |
+| `44-rank-battles` | War | A soldier's line battle and an officer's tactical battle now move the war-map fight they belong to: 12 and 19 points of win rate, best against worst |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
 How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.

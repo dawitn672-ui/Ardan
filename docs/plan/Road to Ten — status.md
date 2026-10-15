@@ -23,7 +23,7 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Character and life sim | 7 | 2 | 3 | 2 | 0 |
 | Events and story | 7 | 2 | 3 | 2 | 0 |
 | Relationships | 7 | 5 | 2 | 0 | 0 |
-| War | 7 | 5 | 1 | 1 | 0 |
+| War | 7 | 6 | 1 | 0 | 0 |
 | Diplomacy and politics | 6 | 2 | 4 | 0 | 0 |
 | Economy | 7 | 0 | 2 | 5 | 0 |
 | Balance | 6 | 3 | 2 | 0 | 1 |
@@ -32,9 +32,9 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Technical | 7 | 6 | 1 | 0 | 0 |
 | Replayability | 6 | 2 | 3 | 1 | 0 |
 | Uniqueness | 5 | 2 | 2 | 1 | 0 |
-| **All** | **94** | **38** | **30** | **16** | **10** |
+| **All** | **94** | **39** | **30** | **15** | **10** |
 
-That is 40% done and 32% partial. 17% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 41% done and 32% partial. 16% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
 
 ## World and lore
 
@@ -100,7 +100,7 @@ That is 40% done and 32% partial. 17% is not started but buildable here, and 11%
 
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
-| 1 | Every rank has battle choices that move the result 10–20% | ✗ | Ranks 4–6 get a fixed nudge |
+| 1 | Every rank has battle choices that move the result 10–20% | ✅ | Base: a soldier's line battle of four choices, an officer's tactical battle, a general's map command, but their fixed nudges never changed a map fight (73% won either way, 30 fights). 44-rank-battles: the result becomes a performance that moves order on both sides; on 60 real fights frozen and replayed, a soldier's best against worst moves the win rate 12 points, an officer's 19 (`bench/rankfx.mjs`) |
 | 2 | After-action report with the 3 biggest causes | ✅ | 23-after-action: line battles and war-map fights; causes in kill-equivalents, calibrated against counterfactuals (forest cost said 68 kills, measured 67); on the battle screen, the story log and the war views |
 | 3 | AI general personalities and order letters | ✅ | 38-orders: a temper from the general's traits (bold, cautious, cunning, steady) moves four dials of the AI army; over the same pooled wars a bold side made 6–28% more assaults than a steady one in each of three builds; cautious and cunning sit within the noise of a chaotic war. The war room shows each army's temper and plan. A soldier gets the plan as a letter, and sixty days on the map decides whether obeying or ignoring it was right |
 | 4 | Drill linked to battle tactics | ◐ | The report now names what drill and tactics did (a pike hedge against lances +27%, "Drill and kit"); tactic choice is still not gated by drill |
@@ -239,3 +239,13 @@ Findings from building these:
   - Every serf was free by 33, most by buying freedom at 21–22 for 40 suns. The event that sells it had no way to say no; it has one now (33-choices).
   - A peasant's peak wealth is close to a merchant's.
   - Artisans are the noisiest path.
+
+## Round 5 changes
+
+| Feature | Rows | What changed |
+| --- | --- | --- |
+| 44-rank-battles | War 1 ✅ | The soldier's line battle and the officer's tactical battle now move the war-map fight they belong to. Measured by replaying 60 real fights frozen at their start: best against worst, 12 points of win rate for the soldier and 19 for the officer. The release's fixed nudges moved it 5 at most. |
+
+Findings:
+
+- **The random stream lives outside the state.** `A.rngState` is not in `A.S`, so restoring a saved state does not replay the same future. The replay lab (`bench/rankfx-lab.mjs`) restores both.
