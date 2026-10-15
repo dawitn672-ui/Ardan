@@ -18,7 +18,7 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 
 | Aspect | Steps | ✅ | ◐ | ✗ | 👥/🎨 |
 | --- | --- | --- | --- | --- | --- |
-| World and lore | 7 | 2 | 1 | 3 | 1 |
+| World and lore | 7 | 4 | 2 | 0 | 1 |
 | Power scaling | 7 | 2 | 4 | 1 | 0 |
 | Character and life sim | 7 | 2 | 3 | 2 | 0 |
 | Events and story | 7 | 2 | 3 | 2 | 0 |
@@ -32,21 +32,21 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Technical | 7 | 6 | 1 | 0 | 0 |
 | Replayability | 6 | 3 | 3 | 0 | 0 |
 | Uniqueness | 5 | 2 | 2 | 1 | 0 |
-| **All** | **94** | **45** | **30** | **9** | **10** |
+| **All** | **94** | **47** | **31** | **6** | **10** |
 
-That is 48% done and 32% partial. 10% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 50% done and 33% partial. 6% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
 
 ## World and lore
 
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
-| 1 | Realm bible per realm (want, fear, 3 customs, place) as data | ✗ | No realm has the fields |
-| 2 | Every custom becomes an engine rule (~100) | ✗ | Only the base legal traditions exist (8 cover 25 realms) |
+| 1 | Realm bible per realm (want, fear, 3 customs, place) as data | ✅ | 47-realm-bible: all 34 realms have a want, a fear, a place and three customs, written from each realm's lore, and the Realm tab shows them with how often you have met each custom |
+| 2 | Every custom becomes an engine rule (~100) | ✅ | 47-realm-bible: 102 customs, each one of ten rule kinds tied to a moment of life (a yearly due, a rite of age, a parent's estate, a wedding, a child's naming, a war levy, a punishment, a standing rule, a market cut, a burial). The first meeting is a scene where you keep it or defy it. The plan's gate holds: in 34 of 34 realms a median life of 30+ years meets at least 2 (`bench/customs.mjs`) |
 | 3 | Break the Europe mirror for 6 realms | 🎨 | Needs a writer, and ideally a conlanger |
 | 4 | Codex fills only with what you have learned (rumor or truth) | ✅ | 26-belief-truth: each beast is unknown, heard, seen or known, and the bestiary shows only that; secrets show the accepted story until you find the truth (a new peasant knows 22 of 64 beasts by tale, 0 truths) |
 | 5 | A living world chronicle that NPCs and events cite | ◐ | `S.history` keeps only war ends and falls; the Chronicle (22) writes your life; far news is hearsay, corrected later (26); events still don't cite the world record |
 | 6 | 3–5 local events per realm | ✅ | Base: 623 realm-gated events, 13–36 per realm |
-| 7 | Culture naming rules and words in titles and events | ✗ | 17 of 468 culture words appear in any event |
+| 7 | Culture naming rules and words in titles and events | ◐ | 47-realm-bible: 2–3 invented words for each of the 24 cultures, in every custom's scene, log line and card, and as `{cw1}`–`{cw3}` for any event; 7 realms name children by custom (for a grandparent or a parent). The release's own events and titles do not use the words yet |
 
 ## Power scaling
 
@@ -244,6 +244,7 @@ Findings from building these:
 
 | Feature | Rows | What changed |
 | --- | --- | --- |
+| 47-realm-bible | World 1, 2 ✅, World 7 ◐ | A bible for each of the 34 realms (a want, a fear, a place, three customs) and 102 customs the engine keeps, from Aldmark's hearth mark to Skyhold's sky burial. Each is one of ten rule kinds tied to a moment most lives meet; the first meeting is a scene to keep or defy, and later ones are applied and logged. Every culture has its own words. 34 of 34 realms pass the plan's gate. Written by four writers in parallel against one model realm and a validator. |
 | 46-life-arcs | Replayability 4 ✅ | Eight paths, sixteen undertakings, 40 scenes. A command and its ford, a house abroad, a parish and a heresy, a great book, the big job, an estate, a monument; then a protégé and a last campaign, handing on the house, a shrine, a school, going straight, the inheritance, whether to lay down the crown; for common folk, a holding and the village elder. At most two middle-years undertakings and one legacy per life; a stage that no longer fits the life gives the work up. |
 | 45-economy | Economy 1, 2, 3, 5, 7 ✅, Economy 4 ◐ | Production from the land, demand from people and armies, stocks that set prices, caravans between all realms at peace, local prices, three production chains with workshops the player can own, and an exploit test. 97% of realm-goods hold a normal stock over ten years; a famine behind closed roads makes grain ×3.5 its normal price where it is not exported. |
 | 44-rank-battles | War 1 ✅ | The soldier's line battle and the officer's tactical battle now move the war-map fight they belong to. Measured by replaying 60 real fights frozen at their start: best against worst, 12 points of win rate for the soldier and 19 for the officer. The release's fixed nudges moved it 5 at most. |
@@ -254,6 +255,14 @@ Findings:
 - **A purse could become NaN.** The coin effect accepted NaN, and a scene whose setup had failed paid NaN. `ENG-COIN-FINITE` (fix layer) guards it; the release fails the new test.
 - **A queued event is shown whatever its `cond` says.** Only the random roll reads `cond`. A chain of scenes queued years apart must check the next scene's `cond` itself, or a soldier who left the army is still sent to hold the ford (46-life-arcs does).
 - **General temperament did nothing.** Over 96 wars a temper, bold and cautious armies assaulted alike (331 and 353): the odds, share and rest dials seldom bind. The test had passed on twelve wars and luck, and failed once the economy shifted the random stream. A tempo dial (`GO-ARMY-TEMPO`: bold armies think every second tick of the war clock, cautious every fourth) now separates them, and the test pools 96 wars.
-- **Small samples read as findings.** Three more tests failed on the stream alone: learn-by-doing's points-a-year ratio (0.93–1.28 by stream on eight lives; now pooled over three streams), the soldier's and officer's swings on 16 fights (which is larger is the 60-fight bench's to say), and the famine (one realm, against an ordinary year's lean spring instead of bread's normal price; now four grain-importing realms, ×3.5).
-- **Two tests measured something other than what they claimed.** `varietyGuard` counted three-in-a-row with duty scenes and NPC moves left out, so travel, work, money, travel, travel read as a triple; it now counts what the player saw. `btRumors` counted corrections still on the 220-line news list; in a year of busy wars the early ones scroll off; it now counts them as they are sent. Both turned up when the economy changed the random stream, and neither was a fault in the game.
+- **The first draft of the customs met the gate on paper, not in lives.** Lives that ended at 16 met nothing, and a grave custom, a cut of home sales, a rule for the mounted, or the estate of a giant's parent are moments a typical life never reaches. Counting only lives of 30 years and moving ten customs to moments lives do reach took it from 65% of realms to 100%.
+- **Small samples read as findings.** More tests failed on the random stream alone:
+  - learn-by-doing's points-a-year ratio: 0.93–1.28 by stream on eight lives; now pooled over three streams;
+  - the soldier's and officer's swings on 16 fights: which is larger is the 60-fight bench's to say;
+  - the famine: one realm, measured against an ordinary year's lean spring instead of bread's normal price; now four grain-importing realms, ×3.5;
+  - the soldier's battle reckonings: one seed, 0 to 47 by seed; now four soldiers;
+  - circles in real lives: three lives, two of them dead within twelve years; now nine;
+  - arms used in a war: read at the end of four months, after Solenne's war was over; now the peak;
+  - the balance league itself: 8 peasant lives gave a median death age of 26, against about 66 over 24 lives (five of eight died young of falls, kicks and fever). The league now plays 12 lives a path.
+- **Two tests measured something other than what they claimed.** `varietyGuard` counted three-in-a-row with duty scenes and NPC moves left out, so travel, work, money, travel, travel read as a triple, and it diluted the back-to-back share with queued scenes the guard never chooses. It now judges each rolled scene against what the player saw just before it: back to back 5.6% → 1.0%, triples 4 → 0. `btRumors` counted corrections still on the 220-line news list; in a year of busy wars the early ones scroll off; it now counts them as they are sent. Both turned up when the economy changed the random stream, and neither was a fault in the game.
 - **The random stream lives outside the state.** `A.rngState` is not in `A.S`, so restoring a saved state does not replay the same future. The replay lab (`bench/rankfx-lab.mjs`) restores both.

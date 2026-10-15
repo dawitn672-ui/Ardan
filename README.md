@@ -66,6 +66,7 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 | `44-rank-battles` | War | A soldier's line battle and an officer's tactical battle now move the war-map fight they belong to: 12 and 19 points of win rate, best against worst |
 | `45-economy` | Economy | Goods made by the land, eaten by people and armies, carried by caravans; prices follow stocks, a famine triples bread, and the best trade loop no longer beats a farm |
 | `46-life-arcs` | Replayability | A middle-years undertaking and a last-years legacy for each path, scenes years apart whose choices carry forward; shown on the Life tab |
+| `47-realm-bible` | World | Each realm's want, fear, place and three customs; 102 customs the engine keeps (dues, rites, estates, weddings, naming, levies, wards), met first as a scene to keep or defy; words for every culture |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
 How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.

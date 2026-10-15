@@ -59,7 +59,13 @@ In the release a realm's ways are paragraphs in its primer. Legal customs exist 
 
 `bench/customs.mjs` checks the plan's gate. It plays a commoner of each realm's own people from 16, for up to 60 years, and keeps the first three lives that last 30 years. A grave custom is reported but not counted.
 
-GATE_RESULT
+| Run | Realms where a median life meets 2 or more customs |
+| --- | --- |
+| The writers' first draft | 22 of 34 (65%), counting every life; many bot lives ended at 16 (a horse's kick, an ambush) and met nothing |
+| Lives of 30 years or more only | 25 of 34 (74%). The misses leaned on customs a typical life never reaches: a grave custom (only at your own death), a cut of home sales (bots rarely sell at home), a rule for the mounted or the rich, and an estate custom among giants and dwarves, whose parents rarely die within sixty years |
+| After moving ten customs to moments lives reach | **34 of 34 (100%)**; the plan's bar is 90% |
+
+The customs met, over the 102 counted lives (`reports/customs.json`): year 65, mourn 47, ward 37, rite 35, law 16, levy 12, wed 11, grave 6, name 5. A bot seldom marries or has children, so the wed and name customs are the ones a player meets more often than the bench shows.
 
 **Rules kept.**
 - Everything is drawn in the month hook or at the moment itself. The card only reads.
