@@ -8,7 +8,7 @@ const files = process.argv.slice(2).length ? process.argv.slice(2) : fs.readdirS
 const A = {};
 for (const f of files) new Function('A', fs.readFileSync(f, 'utf8'))(A);   // the data files only fill A.BIBLE_DATA and A.BIBLE_WORDS
 const D = A.BIBLE_DATA || {}, W = A.BIBLE_WORDS || {};
-const KINDS = { year: ['m', 'who'], rite: ['age', 'who'], wed: ['dowry'], mourn: ['share'], name: ['rule'], levy: ['who'], law: [], ward: ['when', 'every'], market: ['cut'], grave: [] };
+const KINDS = { year: ['m', 'who'], rite: ['age', 'who'], wed: ['dowry'], mourn: ['share'], name: ['by'], levy: ['who'], law: [], ward: ['when', 'every'], market: ['cut'], grave: [] };
 const WHO = ['all', 'adult', 'free', 'commoner', 'unfree', 'noble', 'rich', 'poor', 'male', 'female', 'married', 'parent'];
 const WHEN = ['armed', 'mounted', 'rich', 'poor', 'unwed', 'childless', 'old', 'sick', 'foreignFaith', 'soldier', 'landed', 'any'];
 const SHARE = ['eldest', 'eldestSon', 'youngest', 'daughters', 'equal', 'temple', 'lord', 'clan', 'none'];
@@ -38,7 +38,8 @@ for (const [rid, R] of Object.entries(D)) {
     if (c.who != null && !WHO.includes(c.who)) cat(`who must be one of ${WHO.join(' ')}`);
     if (c.kind === 'ward' && !WHEN.includes(c.when)) cat(`when must be one of ${WHEN.join(' ')}`);
     if (c.kind === 'mourn' && !SHARE.includes(c.share)) cat(`share must be one of ${SHARE.join(' ')}`);
-    if (c.kind === 'name' && !NAMES.includes(c.rule)) cat(`rule must be one of ${NAMES.join(' ')}`);
+    if (c.kind === 'name' && !NAMES.includes(c.by)) cat(`by (the naming rule) must be one of ${NAMES.join(' ')}`);
+    if (NAMES.includes(c.rule)) cat('rule is the card\'s sentence; the naming rule goes in by');
     if (c.kind === 'year' && !(Number.isInteger(c.m) && c.m >= 0 && c.m <= 11)) cat('m is the month, 0-11');
     if (c.kind === 'rite' && !(c.age >= 17 && c.age <= 40)) cat('age 17-40 (bot lives start at 16)');
     if (c.kind === 'wed' && typeof c.dowry !== 'number') cat('dowry is a number (0 none, 2 double, -1 a bride price)');

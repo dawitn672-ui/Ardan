@@ -11,7 +11,7 @@
 //   rite   on reaching an age                                                        age, who
 //   wed    when you marry: the dowry is multiplied (0 none, -1 a bride price paid)   dowry
 //   mourn  when a parent dies: who takes the estate                                  share
-//   name   when a child of yours is born: how it is named                            rule
+//   name   when a child of yours is born: how it is named                            by
 //   levy   when your realm goes to war                                               who
 //   law    after you are punished for a crime
 //   ward   a standing rule, met when your life fits it (armed, mounted, rich ...)    when, every
@@ -92,7 +92,7 @@
     }
     if (c.fx && c.kind !== 'grave') { try { A.applyFx(pc, c.fx, {}); } catch (e) { console.error('custom fx', c.id, e); } }
     const R = A.realm(pc.realm);
-    A.log(`${R ? R.short + ': ' : ''}${c.name}. ${B.fill(pc, c.log, extra)}`, 'muted');
+    A.log(`${R ? R.short + ': ' : ''}${B.fill(pc, c.name)}. ${B.fill(pc, c.log, extra)}`, 'muted');
     return 'log';
   };
   (A.FX_EXTRA = A.FX_EXTRA || []).push('custom');
@@ -194,13 +194,16 @@
     keep: () => null,
   };
   // (A.birth returns the first child; the release then asks the player to name it, with this name as the default)
+  // the naming rule is c.by; early data kept it in c.rule, which is otherwise the card's sentence
+  B.nameBy = c => c.by || (B.NAME[c.rule] ? c.rule : 'keep');
+  B.ruleLine = c => (c.rule && !B.NAME[c.rule] ? c.rule : c.text || '');
   const birth = A.birth;
   A.birth = function (mother, father) {
     const k = birth.apply(this, arguments);
     try {
       const pc = A.pc();
       if (pc && k && k.id && (mother === pc || father === pc)) for (const c of kindOf(pc, 'name')) {
-        const nm = (B.NAME[c.rule] || B.NAME.keep)(pc, k);
+        const nm = (B.NAME[B.nameBy(c)] || B.NAME.keep)(pc, k);
         // a name already worn by a living brother or sister is not given twice
         const taken = (pc.children || []).map(A.P).some(x => x && x !== k && x.alive && x.given === nm);
         if (nm && !taken) k.given = nm;
@@ -245,7 +248,7 @@
       `<div class="tiny"><b>It wants</b> ${esc(D.want)}</div><div class="tiny"><b>It fears</b> ${esc(D.fear)}</div>` +
       (D.place ? `<div class="tiny"><b>${esc(D.place.name)}</b>: ${esc(D.place.text)}</div>` : '') +
       `<div class="tiny" style="margin-top:4px"><b>Customs</b></div>` +
-      (D.customs || []).map(c => `<div class="tiny">${esc(c.name)}: ${esc(B.fill(pc, c.rule || c.text))} <span class="muted">(${esc(met(c))})</span></div>`).join('') +
+      (D.customs || []).map(c => `<div class="tiny">${esc(B.fill(pc, c.name))}: ${esc(B.fill(pc, B.ruleLine(c)))} <span class="muted">(${esc(met(c))})</span></div>`).join('') +
       (W.length ? `<div class="tiny muted" style="margin-top:4px">${W.map(w => `<i>${esc(w[0])}</i>, ${esc(w[1])}`).join('; ')}</div>` : '') +
       `</div>`;
   };

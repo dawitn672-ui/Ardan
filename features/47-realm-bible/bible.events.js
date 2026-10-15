@@ -7,7 +7,7 @@ const RB = (p, ctx) => {
 
 A.defEvents([
   { id: 'rb_custom', trigger: true, cool: 1,
-    title: (p, ctx) => { const c = RB(p, ctx); return c ? c.name : 'A custom'; },
+    title: (p, ctx) => { const c = RB(p, ctx); return c ? A.BIBLE.fill(p, c.name, ctx) : 'A custom'; },
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => {
       // queued with the custom's id; the linter and old saves come without one, so take the first of the realm's
@@ -16,10 +16,10 @@ A.defEvents([
     },
     text: (p, ctx) => { const c = RB(p, ctx); return c ? A.BIBLE.fill(p, c.text, ctx) : ''; },
     choices: [
-      { t: (p, ctx) => { const c = RB(p, ctx); return (c && c.keepT) || 'Do as is done here'; },
+      { t: (p, ctx) => { const c = RB(p, ctx); return A.BIBLE.fill(p, (c && c.keepT) || 'Do as is done here', ctx); },
         r: (p, ctx) => { const c = RB(p, ctx); return c ? A.BIBLE.fill(p, c.keep, ctx) : ''; },
         fx: { custom: 'keep' } },
-      { t: (p, ctx) => { const c = RB(p, ctx); return (c && c.defy && c.defy.t) || 'Refuse'; },
+      { t: (p, ctx) => { const c = RB(p, ctx); return A.BIBLE.fill(p, (c && c.defy && c.defy.t) || 'Refuse', ctx); },
         r: (p, ctx) => { const c = RB(p, ctx); return c && c.defy ? A.BIBLE.fill(p, c.defy.r, ctx) : ''; },
         fx: (p, ctx) => { const c = RB(p, ctx); if (c && c.defy && c.defy.fx) A.applyFx(p, c.defy.fx, ctx); p.rb = p.rb || {}; if (c && p.rb[c.id]) p.rb[c.id].defied = A.S.year; return ''; } },
     ] },

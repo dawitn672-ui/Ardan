@@ -69,7 +69,7 @@ export default {
       const pc = RBT.life(401, { status: 'artisan' });
       const undo = RBT.bible(pc.realm, [
         { kind: 'year', m: 3, who: 'adult' }, { kind: 'rite', age: 21, who: 'all' }, { kind: 'wed', dowry: -1 }, { kind: 'mourn', share: 'equal' },
-        { kind: 'name', rule: 'grandparent' }, { kind: 'levy', who: 'adult' }, { kind: 'law' }, { kind: 'ward', when: 'armed' },
+        { kind: 'name', by: 'grandparent' }, { kind: 'levy', who: 'adult' }, { kind: 'law' }, { kind: 'ward', when: 'armed' },
         { kind: 'market', cut: 0.1 }, { kind: 'grave' }]);
       const met = id => !!(pc.rb && pc.rb[id]);
       try {

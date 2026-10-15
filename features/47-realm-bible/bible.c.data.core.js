@@ -1,0 +1,235 @@
+// Realm bibles, part C: the Sunlands, the elves and Blackreef (47-realm-bible). See bible.core.js for the kinds of custom and their fields.
+(function () {
+  const D = A.BIBLE_DATA = A.BIBLE_DATA || {}, W = A.BIBLE_WORDS = A.BIBLE_WORDS || {};
+
+  W['CUL-01'] = [['orivena', 'the noon bell, and the hour when no one may lie'], ['dimmaro', 'what is owed to the Light: a tithe, a vow, a debt'], ['quessa', 'a household\'s sealed book of dues and debts']];
+  W['CUL-19'] = [['thaelmar', 'a Keeper\'s mark cut in bark: leave to fell'], ['ivenneth', 'a birth tree, the sapling a child is named under'], ['sorrathel', 'the pardon asked of a tree before it is felled']];
+  W['CUL-20'] = [['orvasse', 'a ship-house: the kin who crew one longship'], ['nimhael', 'the queen\'s voyage, one in every ten'], ['veylith', 'silence kept, for pay or for oath']];
+  W['CUL-15'] = [['skarrow', 'a share of a prize, as the share-book writes it'], ['tollyband', 'a safe-passage token bought at the Reef'], ['nebbet', 'the dice thrown before a raid, or at the Table']];
+  W['CUL-18'] = [['brannick', 'a claim staked by ploughing one furrow round it'], ['loskeld', 'a runaway taken in with no questions asked'], ['hasp-oath', 'a promise sworn on a door latch, good only under that roof']];
+
+  D['POL-02'] = {
+    want: 'To keep crowning the kings of the Sunlands, and to see Queen Livia hold Tessaria, so that the Temple\'s word is law from the Neck to the lagoon.',
+    fear: 'That Eldergrove opens Serra\'s proof, or the Needle\'s count is shown false, and every crown the Temple ever gave comes loose at once.',
+    place: { name: 'The Shadow Needle at Solenne', text: 'A bronze needle in a stone court. Its noon shadow fixes the count of the year, and only the Needle-Keepers may stand inside the ring of marks.' },
+    customs: [
+      { id: 'sol_needle_count', name: 'The count of Needle Day', kind: 'year', m: 0, who: 'adult',
+        rule: 'On Needle Day each household buys the year\'s count from the Needle-Keepers: the fasts, the feasts and the hour of the {w1}.',
+        text: 'Needle Day, the first of the year. Only the Needle-Keepers know the true count of the days, and they sell it: a slip with the fasts, the feasts and the hour of the {w1}, sealed in yellow wax. Every household buys one. A dawnkeeper brings yours to the door.',
+        fx: { coin: -2, piety: 1 }, keepT: 'Buy the count and pin it by the hearth', keep: 'You pay two suns. The slip goes on the nail by the hearth, beside last year\'s, which nobody has taken down.',
+        defy: { t: 'Keep your own count by the old almanac', r: 'Your almanac is four days out. You eat meat on a fast day, and the dawnkeeper names you at the Sunday rite.', fx: { piety: -3, honor: -1, wil: 1 } },
+        log: 'You buy the year\'s count from the Needle-Keepers and pin it by the hearth.' },
+      { id: 'sol_tenth_dead', name: 'The tenth of the dead', kind: 'mourn', share: 'temple',
+        rule: 'Before heirs divide an estate, a dawnkeeper counts it and takes the Temple\'s tenth, the {w2} of the dead; the rest is shared equally.',
+        text: '{parent} is buried at dawn, facing east, never burned. Before the heirs touch anything, a dawnkeeper walks the house with a tally-stick and counts it all: {estate}. The Temple takes its tenth, the {w2} of the dead. The rest is shared evenly; you get {got}.',
+        fx: { happy: -2, piety: 1 }, keepT: 'Let the dawnkeeper count', keep: 'He counts the spoons twice and the bed once. You sign the tally with the others.',
+        defy: { t: 'Carry the silver to a neighbour before the count', r: 'The dawnkeeper notes the empty shelf. The silver stays yours, and at the Sunday rite you stand at the back, unblessed.', fx: { coin: 6, piety: -4, honor: -2 } },
+        log: '{parent} is buried facing east; the Temple takes its tenth, and you get {got}.' },
+      { id: 'sol_noon_rising', name: 'Buried at dawn, risen at noon', kind: 'grave',
+        rule: 'The dead are buried at dawn facing east, never burned, and the {w1} rings once at noon for the risen.',
+        log: 'You are buried at dawn, facing east. At noon the {w1} rings once for you, and the Temple writes you among the risen.' },
+    ],
+  };
+
+  D['POL-03'] = {
+    want: 'To keep the largest army in the Known World fed from its own wheat and paid from its own wool, and to pay the Temple less without losing its crown.',
+    fear: 'That the King\'s heart fails at forty-two like his fathers\', and a general with promised gates reaches the palace before an heir does.',
+    place: { name: 'The weaving towns of Palella', text: 'Where the spinning wheel nobody else has turns in every back room, and Palella blue is dyed by the bolt. Strangers are not let into the spinning sheds.' },
+    customs: [
+      { id: 'var_lion_penny', name: 'The lion penny', kind: 'market', cut: 0.05,
+        rule: 'The crown takes a penny in twenty on every market sale, struck off at the scales before the seller is paid.',
+        text: 'You sell at the market cross. A crown clerk sits by the scales with a lion stamped on his box, and before your buyer has finished counting he takes a penny in twenty: {cut} this time. The salt tax and the Crown Road tolls are other men\'s business.',
+        fx: {}, keepT: 'Let the clerk take his penny', keep: 'He drops it in the lion box and nods you on.',
+        defy: { t: 'Sell from the cart outside the gate instead', r: 'You keep the penny and lose the crowd. Half your buyers will not walk out past the gate.', fx: { coin: -4, wil: 1 } },
+        log: 'The crown clerk takes the lion penny, {cut}, off your sale.' },
+      { id: 'var_wheel_oath', name: 'The wheel oath', kind: 'rite', age: 17, who: 'free',
+        rule: 'At seventeen every free Varennan swears, at the {w1}, never to teach the spinning wheel or build one beyond the border.',
+        text: 'You are seventeen. At the {w1}, the noon bell, when no one may lie, the parish priest calls up you and the others of your year. The spinning wheel of Palella is a crown secret. You are to swear on the Light never to teach it or build it beyond the border.',
+        fx: { honor: 1 }, keepT: 'Swear the wheel oath', keep: 'You swear. The priest writes your name in the oath roll, under last year\'s names.',
+        defy: { t: 'Refuse: you have never even seen the wheel', r: 'The priest writes you down as unsworn. No weaving town will hire you now, and the crown\'s men will want to know why.', fx: { honor: -2, happy: -2, wil: 1 } },
+        log: 'You swear the wheel oath at seventeen, as every free Varennan does.' },
+      { id: 'var_blue_dowry', name: 'The second dowry in blue', kind: 'wed', dowry: 2,
+        rule: 'A Varennan bride\'s family pays the dowry twice: once in coin, and again in Palella blue cloth.',
+        text: 'The marriage is sealed at the church door. By Varennan custom the bride\'s family pays the dowry twice: {dowry} in coin, then {paid} again in bolts of Palella blue, carried in through the door on two men\'s shoulders.',
+        fx: { happy: 2 }, keepT: 'Take the cloth with thanks', keep: 'The bolts go into the chest. You will wear this blue at every feast for twenty years.',
+        defy: { t: 'Send the cloth back as too much', r: 'The cloth goes back. Her family takes it as a slight on their wealth, and repeats it at every feast.', fx: { coin: -20, happy: -3, honor: 1 } },
+        log: 'You marry, and the dowry comes twice over: {dowry} in coin and {paid} in Palella blue.' },
+    ],
+  };
+
+  D['POL-04'] = {
+    want: 'To feed the Middle Sea through the Grain Staple and keep the Lucernan crown the coin every port trusts, whoever wins the wars around it.',
+    fear: 'That someone reads the ledger and learns where a fifth of the dragon toll goes, and Varenna stops being a friend.',
+    place: { name: 'The Staple granaries', text: 'Stone granaries on the lagoon where every grain ship bound for the Middle Sea leaves one bushel in twenty. The price of bread in half the Sunlands is set here.' },
+    customs: [
+      { id: 'luc_gold_roll', name: 'The citizens\' gold', kind: 'year', m: 2, who: 'free',
+        rule: 'In March, when the Doge was chosen, every household on the citizens\' roll pays its tax in gold crowns, weighed on the Staple scale.',
+        text: 'March, the month the Great Council chose the Doge. Every household on the citizens\' roll pays its tax in gold crowns, never silver, weighed on the Staple scale. A clipped crown is cut in half on the spot and handed back to you in two pieces.',
+        fx: { coin: -4 }, keepT: 'Pay in good gold', keep: 'Your crown weighs true. The clerk writes it in the {w3}, and you are a citizen for another year.',
+        defy: { t: 'Pay in silver at the changer\'s rate', r: 'The clerk takes silver at a fifth over the gold, and writes beside your name that you had none.', fx: { coin: -5, fame: -1 } },
+        log: 'You pay the citizens\' tax in gold, weighed on the Staple scale.' },
+      { id: 'luc_taster', name: 'A sworn taster at table', kind: 'ward', when: 'rich', every: 3,
+        rule: 'A Lucernan worth a thousand crowns keeps a sworn taster, trained in the lagoon, at every meal where guests are served.',
+        text: 'You are rich enough now to be worth poisoning, and Lucerna expects you to know it. The tasters\' school sends a girl of fifteen with a silver spoon and a sworn contract. She eats from every dish before you do, and the contract costs thirty crowns.',
+        fx: { coin: -30, health: 1 }, keepT: 'Sign the taster\'s contract', keep: 'She tastes, waits, nods. Your guests eat with more appetite than before.',
+        defy: { t: 'Eat from your own plate, untasted', r: 'Nothing happens. But two of your guests stop coming to dine, and the Great Council marks you down as careless.', fx: { fame: -2, happy: -1, wil: 1 } },
+        log: 'You renew the taster\'s contract; she eats from every dish before you.' },
+      { id: 'luc_ledger_name', name: 'Named for the ledger', kind: 'name', by: 'parent',
+        rule: 'A Lucernan child takes its father\'s or mother\'s own given name, so the ledgers never lose a debt between generations.',
+        text: 'Within the week the parish clerk enters your child in the {w3}. In Lucerna a child takes the given name of its father or mother, so no debt is lost when the generations turn. The clerk writes {child}, the date, and your debts beside them.',
+        fx: { happy: 2 }, keepT: 'Let the ledger name stand', keep: 'You call the child {child}. So does the clerk, and so, one day, will your creditors.',
+        defy: { t: 'Pay the clerk to enter a name of your own', r: 'He enters it beside the ledger name, for a fee. The child will answer to one and sign with the other.', fx: { coin: -6, wil: 1 } },
+        log: 'Your child is entered in the {w3} as {child}, after a parent, as Lucerna asks.' },
+    ],
+  };
+
+  D['POL-15'] = {
+    want: 'To sell to every side, the steppe, the Horde and both Tessarian claimants, and stay on terms with all of them while the Horse Road pays.',
+    fear: 'That one of its buyers wins outright, or that someone proves which road the oil jars came by.',
+    place: { name: 'The towers of the Horse Road', text: 'A line of stone towers along the road from the steppe, each in sight of the next. A lamp lit at the border reaches the capital before the riders do.' },
+    customs: [
+      { id: 'mor_horse_toll', name: 'The toll of the Horse Road', kind: 'ward', when: 'mounted', every: 2,
+        rule: 'Every horse and camel on the Horse Road pays at the towers, coming or going, even when it is going home.',
+        text: 'You ride up to the first tower on the Horse Road. The toll-keeper does not ask your business, only your horse\'s, and writes its colour and brand in a book. Every horse and camel pays here, coming or going. Up the line the next tower is already watching you.',
+        fx: { coin: -3 }, keepT: 'Pay and ride on', keep: 'He gives you a lead tally for the next tower, which takes it without a word.',
+        defy: { t: 'Go round the tower by the hill path at night', r: 'The tower sees you on the skyline and lamps the next one. They wait for you at the ford with a fine.', fx: { coin: -8, honor: -1 } },
+        log: 'You pay the horse toll at the towers on the Horse Road.' },
+      { id: 'mor_tower_month', name: 'The tower month', kind: 'rite', age: 18, who: 'free',
+        rule: 'At eighteen every free Morhavener stands a month of nights on a watch tower and learns the lamp signals.',
+        text: 'You are eighteen, and your name comes up on the tower roll. For a month you sleep by day and stand by night above the Horse Road, learning the lamps: one for riders, two for a host, three for fire. Morhaven sees everything because everyone takes a turn.',
+        fx: { ins: 1, happy: -1 }, keepT: 'Climb the tower and take the lamp', keep: 'Thirty nights of cold and owl-call. On the twenty-second you lamp a real rider, and the next tower answers.',
+        defy: { t: 'Pay a cousin to stand your month', r: 'He stands it, and charges you for the cold. Your name goes on the roll as bought out.', fx: { coin: -15, honor: -2 } },
+        log: 'You stand your month of nights on a watch tower, as every free Morhavener does.' },
+      { id: 'mor_tower_roll', name: 'Read from the towers', kind: 'law',
+        rule: 'A sentence in Morhaven is called from the towers for a month, unless the convicted buys the name off the roll.',
+        text: 'Your sentence is served, but Morhaven is not finished with you. Your name and your crime go on the tower roll, to be called from tower to tower for a month. The King is called the Bargainer for a reason: the roll-keeper will strike a name off for a fee.',
+        fx: { coin: -10 }, keepT: 'Pay to have your name struck off', keep: 'He scrapes your name off the board with a knife and pockets the coin.',
+        defy: { t: 'Let them call it', r: 'Your name and crime go down the valley lamp by lamp, then mouth to mouth. By market day everyone has heard it.', fx: { honor: -3, fame: -1, wil: 1 } },
+        log: 'You buy your name off the tower roll after your sentence.' },
+    ],
+  };
+
+  D['POL-16'] = {
+    want: 'To hold the debts of every crown worth lending to, and to see the Tessarian war end at Ostra\'s table, on Ostra\'s terms.',
+    fear: 'That both claimants default at once, or that Stonehold\'s dwarf crowns become the coin men trust instead of an Ostran bill.',
+    place: { name: 'The dye-pits of the murex shore', text: 'Vats of rotting shellfish south of the harbour, where Ostra makes the purple that kings pay for. When the wind turns, the smell reaches the Council chamber.' },
+    customs: [
+      { id: 'ost_fiftieth', name: 'The fiftieth penny', kind: 'market', cut: 0.02,
+        rule: 'Every exchange of coin in Ostra pays a penny in fifty to the Council of Twelve, a sale as much as a loan.',
+        text: 'You sell in Ostra, so the Council of Twelve is in the sale with you. A bench-clerk at the end of the row takes a penny in fifty of every exchange of coin, loan or sale: {cut}. He gives you a scrap of paper for it, because in Ostra everything is a bill.',
+        fx: {}, keepT: 'Pay the fiftieth and keep the scrap', keep: 'The scrap goes into your {w3}, with the others. There is a drawer of them by now.',
+        defy: { t: 'Settle in goods so no coin changes hands', r: 'Barter dodges the penny but not the clerk, who fines you for trying. Your buyer pays you in fish.', fx: { coin: -3, happy: -1 } },
+        log: 'The bench-clerk takes the Council\'s fiftieth, {cut}, and gives you a paper for it.' },
+      { id: 'ost_lodged_dowry', name: 'The dowry lodged at the bank', kind: 'wed', dowry: 0,
+        rule: 'An Ostran dowry is not handed over: it is lodged with a house of the Twelve as a bill payable to the first child.',
+        text: 'A notary of the Twelve witnesses the marriage beside the priest. The dowry, {paid}, never reaches your hands: it is lodged with a banking house as a bill payable to your first child at sixteen. In Ostra love is private and money is not.',
+        fx: { honor: 1 }, keepT: 'Sign the bill and let the house keep it', keep: 'The notary sands the ink. Somewhere on the Exchange your dowry is already out on loan at eight in a hundred.',
+        defy: { t: 'Hide half the purse before the notary counts', r: 'He counts twice and finds it. The fine is written into the same bill, so your child will inherit your shame in figures.', fx: { coin: -10, honor: -3 } },
+        log: 'You marry in Ostra, and the dowry, {paid}, is lodged with a bank in your first child\'s name.' },
+      { id: 'ost_purple_tax', name: 'The purple tax', kind: 'ward', when: 'rich', every: 3,
+        rule: 'Every Ostran worth a thousand suns pays the purple tax, worn or not, and the dyers keep the rolls of the rich.',
+        text: 'The dyers of Ostra know every rich door in the city: they keep the rolls the purple tax is drawn on. Anyone worth a thousand suns pays it, whether or not they wear the murex purple. One morning your door is chalked with the sum.',
+        fx: { coin: -25, fame: 1 }, keepT: 'Pay, and have a purple cloak made', keep: 'The cloak takes a month and smells faintly of the dye-pits, which is how Ostrans know it is real.',
+        defy: { t: 'Swear before a notary your purse is lighter', r: 'The dyers know better. Your door is chalked again, larger, and the whole street reads it on the way to market.', fx: { honor: -3, happy: -2 } },
+        log: 'The dyers chalk your door, and you pay the purple tax.' },
+    ],
+  };
+
+  D['POL-31'] = {
+    want: 'Two wants that cannot both be met: the queen would have the Neck whole under the Temple, the prince would have it whole under the Dawn Church.',
+    fear: 'That the war ends with Ostra\'s bankers, Velgrad or Tamar holding the Neck road, while both claimants still deny the other exists.',
+    place: { name: 'The Neck road', text: 'The only land road between the Southland and the Eastland. Both claimants keep toll posts on it, sometimes a mile apart, and each calls the other\'s post a robbers\' camp.' },
+    customs: [
+      { id: 'tes_two_receipts', name: 'Two crowns, two receipts', kind: 'year', m: 8, who: 'adult',
+        rule: 'After harvest the queen\'s men and the prince\'s men both take grain from every house, and neither honours the other\'s receipt.',
+        text: 'September, and the harvest is in. The queen\'s men come first this year, with a cart and a clerk, and take a sack in ten for her army. A month later the prince\'s men come with their own cart. They read the queen\'s receipt and laugh.',
+        fx: { coin: -5, happy: -1 }, keepT: 'Pay both and keep both receipts', keep: 'You hand over the second sack. The two receipts go in a box under the bed, in case either crown wins.',
+        defy: { t: 'Wave the queen\'s receipt at the prince\'s men', r: 'The sergeant tears it in half and takes the sack anyway, with a boot for the insult.', fx: { health: -4, wil: 1 } },
+        log: 'Both crowns take their grain after harvest; you keep both receipts.' },
+      { id: 'tes_forced_loan', name: 'The forced loan', kind: 'levy', who: 'adult',
+        rule: 'In war, whichever claimant holds your town takes a forced loan from every house, to be repaid after victory.',
+        text: 'War again, which in the Neck means more of the same. A captain arrives with a list of houses and an iron-bound chest. Every house lends the crown a sum, to be repaid after victory. He does not say whose crown, and nobody asks whose victory.',
+        fx: { coin: -8 }, keepT: 'Lend the sum and take the paper', keep: 'He writes you a bond under a seal you do not know. It goes in the box with the receipts.',
+        defy: { t: 'Bury the coin and show empty hands', r: 'He believes you, or pretends to. His men take your door off its hinges for firewood instead.', fx: { happy: -3, health: -1, wil: 1 } },
+        log: 'A claimant\'s captain takes a forced loan from your house for the war.' },
+      { id: 'tes_split_bell', name: 'Buried by whoever holds the town', kind: 'grave',
+        rule: 'The dead of the Neck are buried facing east by whichever church holds the town that week, and dated by that claimant\'s reign.',
+        log: 'A priest of whichever church holds the town that week buries you facing east, and dates your death by his claimant\'s reign.' },
+    ],
+  };
+
+  D['POL-06'] = {
+    want: 'To find an heir the law allows before the last Oakborn dies, and to keep every axe out of the Evenwood that lacks a Keeper\'s mark.',
+    fear: 'The old saying that when the last Oakborn dies the forest will burn. Queen Ithrien is the last, and she is 586.',
+    place: { name: 'The First Oak at Evenglade', text: 'The oldest tree in the world, tended by the Eldest Keeper. Nothing is built within its shade, and on the Silent Night no lamp is lit anywhere near it.' },
+    customs: [
+      { id: 'syl_no_iron', name: 'No iron under the old trees', kind: 'ward', when: 'armed', every: 3,
+        rule: 'No iron blade is carried past the Edge into the deep groves; it is left on a Keeper\'s stone and taken up on leaving.',
+        text: 'At the Edge of the Evenwood a flat stone sits under a beech, with blades already lying on it. The Covenant lets no iron weapon under the old trees. A Keeper sits on a root nearby, doing nothing in particular, and watching your belt.',
+        fx: { piety: 1 }, keepT: 'Lay your blade on the Keeper\'s stone', keep: 'You walk in with empty hands. When you come back the blade is where you left it, and someone has oiled it.',
+        defy: { t: 'Keep the blade under your cloak', r: 'A ranger in a tree you never saw marks the shape of it. You are walked back to the Edge, and your kin hear of it.', fx: { honor: -3, happy: -2 } },
+        log: 'You leave your blade on the Keeper\'s stone before you enter the deep groves.' },
+      { id: 'syl_birth_tree', name: 'Named under the birth tree', kind: 'name', by: 'grandparent',
+        rule: 'A child is named under its {w2}, the sapling over a grandparent\'s grave, and takes that grandparent\'s name.',
+        text: 'Your child is carried to its {w2}, the sapling planted over a grandparent, and named under its leaves. The Covenant holds that a life passes into the tree at death, and that a child born near it may carry some of it back. The Keeper speaks the name: {child}.',
+        fx: { happy: 2, piety: 1 }, keepT: 'Answer the Keeper with the same name', keep: 'You say {child} back to the tree. The Keeper cuts a small mark in the bark, at the height of the child.',
+        defy: { t: 'Name the child indoors, by a name you chose', r: 'The Keeper writes your name down, but not the tree. Your kin call the child by the grandparent\'s name regardless.', fx: { piety: -2, happy: -1, wil: 1 } },
+        log: 'Your child is named {child} under its {w2}, after a grandparent.' },
+      { id: 'syl_twenty_days', name: 'Twenty days for the grove', kind: 'year', m: 2, who: 'adult',
+        rule: 'Sylvaran takes no coin tax: from the Greening each adult gives twenty days of labour and a tithe of honey, wax or arrows.',
+        text: 'The Greening, and the sap is up. Sylvaran takes no coin from anyone. Instead every grown elf gives twenty days of work to the Keepers, and a tithe of honey, wax or arrows. This year your twenty are on the Edge, felling the trees that bear the {w1}.',
+        fx: { happy: -1, piety: 1 }, keepT: 'Give the twenty days', keep: 'You haul deadfall and tar hives under a Keeper\'s eye. On the twentieth day she says your name, which is her thanks.',
+        defy: { t: 'Offer the Keeper coin instead', r: 'She will not touch it. Your twenty days become thirty, and the whole grove hears why.', fx: { happy: -4, honor: -2, wil: 1 } },
+        log: 'From the Greening you give your twenty days to the Keepers, and a tithe of honey.' },
+    ],
+  };
+
+  D['POL-07'] = {
+    want: 'To sell masts, yew and silence at a good price, and to keep the Temple\'s worst secret locked in its archive while Solenne keeps paying.',
+    fear: 'That the Temple takes Serra\'s proof by force, or that the Keepers stop marking firs for the shipyards and the longships rot unbuilt.',
+    place: { name: 'The Archive at Silverbough', text: 'A hall of fir and slate above the harbour, where the Grey Veil keeps its records. Serra\'s proof is somewhere inside, and the Archivist knows exactly where.' },
+    customs: [
+      { id: 'eld_queens_voyage', name: 'The queen\'s voyage', kind: 'rite', age: 20, who: 'free',
+        rule: 'Every free Grover sails one voyage in ten for the queen, unpaid, and the first of them is sailed at twenty.',
+        text: 'You are twenty, and your {w1} sends you down to Nimthil with a sea-bag. One voyage in ten belongs to the queen, unpaid, and the first is always sailed at twenty: the {w2}. The longship is loading fir masts for Aldmark. You will be gone till Leaf Fall.',
+        fx: { sta: 1, happy: -1 }, keepT: 'Take your oar on the queen\'s longship', keep: 'Four months at the oar, two storms, one good sale. The steersman writes your name in the ship\'s book.',
+        defy: { t: 'Buy a place ashore with a season\'s wage', r: 'Another young elf takes your oar. Your {w1} pays the price and does not let you forget it.', fx: { coin: -20, honor: -2 } },
+        log: 'You sail the {w2}, your first voyage for the queen, at twenty.' },
+      { id: 'eld_sealed_record', name: 'Sealed under the Veil', kind: 'law',
+        rule: 'A sentence in Eldergrove is never cried aloud; it is written in the Archive, and may be sealed for ten years at a price.',
+        text: 'In Eldergrove no crier calls your crime. It goes into the Archive at Silverbough under the Grey Veil, in a clerk\'s small hand. The record is open to anyone who asks, unless you buy its {w3}: ten years sealed, at a price set by the decade.',
+        fx: { coin: -12 }, keepT: 'Buy ten years of {w3}', keep: 'The clerk ties the page with grey thread and seals it. The queen sells the same to Solenne, at a larger price.',
+        defy: { t: 'Let the record stand open', r: 'Anyone with a reason may read it now. Three people ask in the first month, one of them a neighbour.', fx: { honor: -2, fame: -1 } },
+        log: 'Your sentence is written in the Archive, and you buy ten years of {w3} for it.' },
+      { id: 'eld_mast_tree', name: 'Under the mast fir', kind: 'grave',
+        rule: 'The dead are buried under a fir sapling above the harbour, never in stone; a century later it is marked and cut for a mast.',
+        log: 'You are buried under a fir sapling above the harbour. In a hundred years a Keeper will mark it for a mast.' },
+    ],
+  };
+
+  D['POL-33'] = {
+    want: 'To run piracy as a toll company, one hull in forty through the Strait of Hael, with fewer fights and steadier money than the old raiding.',
+    fear: 'That a ship comes close enough to see the dragon is Sabran oil, or that the Table votes Nell Brine out for the old ways.',
+    place: { name: 'The dragon\'s shoal', text: 'Shallows at the mouth of the Strait of Hael where the dragon is seen at night. Fire-rafts wait there, and a ship without a safe-passage token finds the rocks.' },
+    customs: [
+      { id: 'blk_table_tenth', name: 'The Table\'s tenth', kind: 'market', cut: 0.1,
+        rule: 'By the Articles a tenth of every prize goes to the Captains\' Table, and on the Reef every sale counts as prize.',
+        text: 'You sell on the Reef quay. The quartermaster\'s boy is at your elbow before your buyer has finished counting: a tenth to the Table, by the Articles, the same as any prize taken at sea. Nobody here asks where goods came from. They ask for the tenth: {cut}.',
+        fx: {}, keepT: 'Pay the tenth', keep: 'The boy bites the coin, writes in a greasy book and goes looking for the next seller.',
+        defy: { t: 'Swear the goods are honest cargo, not prize', r: 'The boy writes the oath down. At the next Table it is read aloud, to laughter, and the captains remember your face.', fx: { honor: -3, happy: -1 } },
+        log: 'The quartermaster\'s boy takes the Table\'s tenth, {cut}, off your sale.' },
+      { id: 'blk_articles', name: 'Signing the Articles', kind: 'rite', age: 18, who: 'all',
+        rule: 'At eighteen a Reef hand signs the Articles: an equal {w1} each, a tenth to the Table, no blade drawn on a crew-mate at sea.',
+        text: 'You are eighteen. At the long table a quartermaster opens the Articles and reads them out: one {w1} for each hand, a tenth to the Table, no blade drawn on a crew-mate at sea, no share-out broken. Sign, and you have a share-book and a vote. Do not, and you have neither.',
+        fx: { honor: 1 }, keepT: 'Make your mark under the Articles', keep: 'You sign. The book is yours, and so is a vote nobody will listen to for some years.',
+        defy: { t: 'Walk away unsigned', r: 'You keep your own counsel and lose your welcome. No crew carries an unsigned hand past the shoals.', fx: { happy: -3, fame: -1, wil: 1 } },
+        log: 'You sign the Articles at eighteen and take your share-book.' },
+      { id: 'blk_equal_shares', name: 'Equal shares in the dead', kind: 'mourn', share: 'equal',
+        rule: 'A dead hand\'s goods are split in equal shares among every child, born in wedlock or not, once the Table\'s debts are paid.',
+        text: '{parent} is given to the shoals and toasted into the Drowned Queen\'s hall. Then the quartermaster opens the share-book. By the Articles every child of the dead takes an equal {w1}, born in wedlock or not. The goods come to {estate}; your {w1} is {got}.',
+        fx: { happy: -2 }, keepT: 'Take your share and drink to the dead', keep: 'You drink. A stranger drinks beside you, holding the same share, and turns out to be your sister.',
+        defy: { t: 'Claim the whole share-book as eldest', r: 'The Table hears you out and throws the {w3}. The dice go against you, and your half-brothers do not forget it.', fx: { honor: -2, happy: -3, wil: 1 } },
+        log: '{parent} goes to the shoals, and the Articles split the goods: your {w1} is {got}.' },
+    ],
+  };
+})();
