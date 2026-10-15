@@ -11,11 +11,11 @@
   const SC = A.SCHEMES = {
     // base: progress a month before skills; risk: chance a month they find out, before guards and skill
     KINDS: {
-      sway: { name: 'Win them over', verb: 'winning over', skills: ['persuasion', 'etiquette'], base: 9, risk: 0.02 },
-      befriend: { name: 'Make a friend of them', verb: 'befriending', skills: ['persuasion', 'etiquette'], base: 8, risk: 0.02 },
-      seduce: { name: 'Seduce them', verb: 'seducing', skills: ['persuasion', 'deception'], base: 7, risk: 0.04 },
-      slander: { name: 'Spread lies about them', verb: 'slandering', skills: ['deception', 'intrigue'], base: 8, risk: 0.06 },
-      murder: { name: 'Have them killed', verb: 'plotting the death of', skills: ['intrigue', 'stealth'], base: 5, risk: 0.06 },
+      sway: { name: 'Win them over', verb: 'winning over', skills: ['persuasion', 'etiquette'], base: 12, risk: 0.02 },
+      befriend: { name: 'Make a friend of them', verb: 'befriending', skills: ['persuasion', 'etiquette'], base: 11, risk: 0.02 },
+      seduce: { name: 'Seduce them', verb: 'seducing', skills: ['persuasion', 'deception'], base: 10, risk: 0.04 },
+      slander: { name: 'Spread lies about them', verb: 'slandering', skills: ['deception', 'intrigue'], base: 10, risk: 0.06 },
+      murder: { name: 'Have them killed', verb: 'plotting the death of', skills: ['intrigue', 'stealth'], base: 7, risk: 0.06 },
     },
     MAX: 2,          // schemes of your own at once
     BLOOD: ['mother', 'father', 'sibling', 'child', 'grandparent', 'grandchild', 'uncle', 'nephew'],
@@ -83,25 +83,33 @@
   };
   SC.end = (pc, id) => { pc.schemes = SC.list(pc).filter(s => s.id !== id); };
 
-  // the person view: one "Plot…" button opens the choice of scheme
-  A.INTERACT.sc_plot = { name: 'Plot…', cost: 0 };
+  // the person view: two buttons open the choice of scheme, one for winning them, one against them
+  SC.MENUS = { sc_win: ['sway', 'befriend', 'seduce'], sc_harm: ['slander', 'murder'] };
+  A.INTERACT.sc_win = { name: 'Plot: win them', cost: 0 };
+  A.INTERACT.sc_harm = { name: 'Plot against them', cost: 0 };
   const opts = A.interactOptions;
   A.interactOptions = function (pc, t) {
     const o = opts.apply(this, arguments);
-    try { if (Object.keys(SC.KINDS).some(k => SC.can(pc, t, k))) o.push('sc_plot'); } catch (e) {}
+    try { for (const m of Object.keys(SC.MENUS)) if (SC.MENUS[m].some(k => SC.can(pc, t, k))) o.push(m); } catch (e) {}
     return o;
   };
   const interact = A.interact;
   A.interact = function (tid, key) {
-    if (key !== 'sc_plot') return interact.apply(this, arguments);
+    if (!SC.MENUS[key]) return interact.apply(this, arguments);
     const pc = A.pc(), t = A.P(tid);
     if (!pc || !t) return { ok: false };
-    A.queue({ type: 'event', ev: 'sc_choose', forced: true, ctx: { pid: t.id, sc: 1 } });
+    A.queue({ type: 'event', ev: 'sch_' + key.slice(3) + '_choose', forced: true, ctx: { pid: t.id, sc: 1 } });
     return { ok: true, msg: '' };
+  };
+  // what each scheme would take, for the choosing scene: months, and the chance of being found out first (pure)
+  SC.estimate = function (pc, t, k) {
+    const s = { k, t: t.id, prog: 0 }, m = SC.monthsLeft(pc, s), r = SC.risk(pc, s);
+    return { months: m, found: Math.round(100 * (1 - Math.pow(1 - r, m))) };
   };
 
   // fx.scheme: { start: kind } begins one on ctx.pid; { prog } moves the scheme ctx.sid; { found } means they found
-  // you out; { end } closes it; { guard } slows the plot against you; { unmask } names who is behind it
+  // you out; { end } closes it; { smear } and { kill } finish it; { guard } slows the plot against you; { unmask } names
+  // who is behind it; { expose } costs ctx.pid fame; { drop } ends the plot against you
   (A.FX_EXTRA = A.FX_EXTRA || []).push('scheme');
   const apply = A.applyFx;
   A.applyFx = function (pc, fx, ctx) {
@@ -114,15 +122,16 @@
         if (s) {
           s.wait = 0;
           if (v.prog) s.prog = clamp(s.prog + v.prog, 0, 100);
-          if (v.found) { SC.end(pc, s.id); A.queue({ type: 'event', ev: 'sc_found', forced: true, ctx: { pid: s.t, k: s.k, sc: 1 } }); }
+          if (v.found) { SC.end(pc, s.id); A.queue({ type: 'event', ev: s.k === 'murder' ? 'sch_found_murder' : 'sch_found', forced: true, ctx: { pid: s.t, k: s.k, sc: 1 } }); }
           else if (v.end) SC.end(pc, s.id);
           if (v.smear) { const t = A.P(s.t); if (t) { t.fame = clamp((t.fame || 0) - v.smear, 0, 100); for (const id of Object.keys(t.rel || {})) { const o = A.P(id); if (o && o.rel && o.rel[t.id] && id !== String(pc.id)) o.rel[t.id].op = clamp((o.rel[t.id].op || 0) - v.smear / 2, -100, 100); } } }
           if (v.kill) { const t = A.P(s.t); if (t && t.alive) A.kill(t, v.kill); }
         }
+        if (v.expose) { const t = A.P(ctx && ctx.pid); if (t) t.fame = clamp((t.fame || 0) - v.expose, 0, 100); }
         const a = pc.scAgainst;
         if (a) {
           if (v.guard) a.prog = Math.max(0, a.prog - v.guard);
-          if (v.unmask) { const by = A.P(a.by); if (by) A.queue({ type: 'event', ev: 'sc_unmasked', forced: true, ctx: { pid: by.id, k: a.k, sc: 1 } }); }
+          if (v.unmask) { const by = A.P(a.by); if (by) A.queue({ type: 'event', ev: 'sch_unmasked', forced: true, ctx: { pid: by.id, k: a.k, sc: 1 } }); }
           if (v.drop) pc.scAgainst = null;
         }
       }
@@ -153,9 +162,9 @@
       if (s.wait || pc.prison) continue;
       s.m++;
       s.prog = clamp(s.prog + SC.power(pc, s), 0, 100);
-      if (!s.mid && s.prog >= 50) { s.mid = 1; s.wait = 1; A.queue({ type: 'event', ev: 'sc_opening', forced: true, ctx: { pid: t.id, sid: s.id, k: s.k, sc: 1 } }); continue; }
-      if (s.prog >= 100) { s.wait = 1; A.queue({ type: 'event', ev: 'sc_done_' + s.k, forced: true, ctx: { pid: t.id, sid: s.id, k: s.k, sc: 1 } }); continue; }
-      if (A.chance(SC.risk(pc, s))) { SC.end(pc, s.id); A.queue({ type: 'event', ev: 'sc_found', forced: true, ctx: { pid: t.id, k: s.k, sc: 1 } }); }
+      if (!s.mid && s.prog >= 50) { s.mid = 1; s.wait = 1; A.queue({ type: 'event', ev: 'sch_opening', forced: true, ctx: { pid: t.id, sid: s.id, k: s.k, sc: 1 } }); continue; }
+      if (s.prog >= 100) { s.wait = 1; A.queue({ type: 'event', ev: 'sch_done_' + s.k, forced: true, ctx: { pid: t.id, sid: s.id, k: s.k, sc: 1 } }); continue; }
+      if (A.chance(SC.risk(pc, s))) { SC.end(pc, s.id); A.queue({ type: 'event', ev: s.k === 'murder' ? 'sch_found_murder' : 'sch_found', forced: true, ctx: { pid: t.id, k: s.k, sc: 1 } }); }
     }
     // theirs
     if (!A.isAdult(pc)) return;
@@ -164,10 +173,10 @@
       const by = A.P(a.by);
       if (!by || !by.alive || opOf(by, pc) > -20) { pc.scAgainst = null; return; }   // dead, or no longer hates you
       a.m++; a.prog += A.ri(6, 12);
-      if (!a.noticed && A.chance(SC.noticeChance(pc))) { a.noticed = 1; A.queue({ type: 'event', ev: 'sc_noticed', forced: true, ctx: { k: a.k, sc: 1 } }); return; }
+      if (!a.noticed && A.chance(SC.noticeChance(pc))) { a.noticed = 1; A.queue({ type: 'event', ev: 'sch_noticed', forced: true, ctx: { k: a.k, sc: 1 } }); return; }
       if (a.prog >= 100) {
         pc.scAgainst = null;
-        A.queue({ type: 'event', ev: a.k === 'murder' ? 'sc_attempt' : 'sc_slandered', forced: true, ctx: { pid: by.id, k: a.k, sc: 1 } });
+        A.queue({ type: 'event', ev: a.k === 'murder' ? 'sch_attempt' : 'sch_slandered', forced: true, ctx: { pid: by.id, k: a.k, sc: 1 } });
       }
       return;
     }

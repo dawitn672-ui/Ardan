@@ -27,7 +27,7 @@ const via = ctx => (ctx.from === 'muster' ? 'The general\'s orders are read out 
 const comrades = op => ({ who: 'comrade', op, all: true });
 
 A.defEvents([
-  { id: 'go_order_bold', title: 'Orders: the first wave', npc: true, cool: 1,
+  { id: 'go_order_bold', title: 'Orders: the first wave', npc: true, trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p) && C.atWar(p), setup: fill,
     text: (p, ctx) => `${via(ctx)} General {general} means to take {target} before the month is out, and your company goes in with the first wave. "We do not wait for the engines," it says. "The general has never waited for anything."`,
     choices: [
@@ -41,7 +41,7 @@ A.defEvents([
       { t: 'Keep your company back', r: 'You find reasons: a broken ladder, a late signal. The first wave goes in a company short, and your men live to grumble about it. {them} knows what you did.', fx: { merit: -6, them: { op: -12 }, honor: -3, rel: comrades(8), order: 'ignore' } },
     ] },
 
-  { id: 'go_order_cautious', title: 'Orders: hold and wait', npc: true, cool: 1,
+  { id: 'go_order_cautious', title: 'Orders: hold and wait', npc: true, trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p) && C.atWar(p), setup: fill,
     text: (p, ctx) => `${via(ctx)} General {general} will not move until the enemy does. Your company is to hold {post}, keep its fires small, and answer nothing the enemy shows it. Across the valley their foragers work the fields in plain sight. Your men watch them eat.`,
     choices: [
@@ -53,7 +53,7 @@ A.defEvents([
       { t: 'Take the company across the valley', r: 'You go after their camp with a hundred men and no orders. You burn a barn, and their horse chases you home. The general hears of it, and so does the whole army.', fx: { merit: -4, them: { op: -10 }, fame: 1, skill: { melee: 1 }, order: 'ignore' } },
     ] },
 
-  { id: 'go_order_cunning', title: 'Orders: make a noise', npc: true, cool: 1,
+  { id: 'go_order_cunning', title: 'Orders: make a noise', npc: true, trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p) && C.atWar(p), setup: fill,
     text: (p, ctx) => `${via(ctx)} General {general} wants noise at {target}: drums, fires, a show of ladders, every night for a week. The real blow falls somewhere the letter does not name. Your company is the noise, and noise draws arrows.`,
     choices: [
@@ -67,7 +67,7 @@ A.defEvents([
       { t: 'Keep the company quiet', r: 'Your company sits in its trenches and makes no noise at all. The enemy watches the right place. Your men sleep well; {them} sends for you.', fx: { merit: -6, them: { op: -10 }, rel: comrades(5), order: 'ignore' } },
     ] },
 
-  { id: 'go_order_steady', title: 'Orders: hold the line', npc: true, cool: 1,
+  { id: 'go_order_steady', title: 'Orders: hold the line', npc: true, trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p) && C.atWar(p), setup: fill,
     text: (p, ctx) => `${via(ctx)} General {general} keeps the line where it is. Your company holds {post} and sends a patrol toward {target} every second night. It is the plainest order you have ever had.`,
     choices: [
@@ -82,7 +82,7 @@ A.defEvents([
     ] },
 
   // you held back, and the plan worked without you
-  { id: 'go_reckoning', title: 'Called to account', cool: 1,
+  { id: 'go_reckoning', title: 'Called to account', trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p), setup: after,
     text: '{target} is ours. General {general}\'s plan worked without your company, and {themFull} wants to know why it had to. You stand in {theirHis} tent with your cap in your hands.',
     choices: [
@@ -94,7 +94,7 @@ A.defEvents([
     ] },
 
   // you went your own way or held back, and the plan failed
-  { id: 'go_vindicated', title: 'The plan that failed', cool: 1,
+  { id: 'go_vindicated', title: 'The plan that failed', trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p), setup: after,
     text: 'General {general}\'s plan has come to nothing. {target} is not ours, and the dead are being counted. Men in your company say, loudly, that you were right. {them} can hear them.',
     choices: [
@@ -106,7 +106,7 @@ A.defEvents([
     ] },
 
   // you obeyed, and the plan failed
-  { id: 'go_blame', title: 'Blame comes down', cool: 1,
+  { id: 'go_blame', title: 'Blame comes down', trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p), setup: after,
     text: 'General {general}\'s plan for {target} has failed, and blame is coming down the line the way water comes down a hill. {themFull} needs a name for the report. {theyHe} is looking at yours.',
     choices: [

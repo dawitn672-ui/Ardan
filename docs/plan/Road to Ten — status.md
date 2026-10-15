@@ -22,7 +22,7 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Power scaling | 7 | 2 | 4 | 1 | 0 |
 | Character and life sim | 7 | 2 | 3 | 2 | 0 |
 | Events and story | 7 | 2 | 3 | 2 | 0 |
-| Relationships | 7 | 3 | 2 | 2 | 0 |
+| Relationships | 7 | 4 | 2 | 1 | 0 |
 | War | 7 | 5 | 1 | 1 | 0 |
 | Diplomacy and politics | 6 | 2 | 4 | 0 | 0 |
 | Economy | 7 | 0 | 2 | 5 | 0 |
@@ -32,9 +32,9 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 | Technical | 7 | 6 | 1 | 0 | 0 |
 | Replayability | 6 | 2 | 2 | 2 | 0 |
 | Uniqueness | 5 | 2 | 2 | 1 | 0 |
-| **All** | **94** | **35** | **29** | **20** | **10** |
+| **All** | **94** | **36** | **29** | **19** | **10** |
 
-That is 37% done and 31% partial. 21% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 38% done and 31% partial. 20% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
 
 ## World and lore
 
@@ -90,7 +90,7 @@ That is 37% done and 31% partial. 21% is not started but buildable here, and 11%
 | --- | --- | --- | --- |
 | 1 | Every named NPC has a goal and a fear | ✅ | Base cast data, now driving behavior (21-npc-initiative reads wants and fears) |
 | 2 | NPCs act every month (1–3 moves a year) | ✅ | 21-npc-initiative: 9.8 moves per decade, capped at 3 a year |
-| 3 | Schemes both ways (sway, befriend, seduce, slander, murder) | ✗ | Not started |
+| 3 | Schemes both ways (sway, befriend, seduce, slander, murder) | ✅ | 39-schemes: five plots that grow each month by your skills, theirs and the friends who hate them, with an opening halfway, a last move, and a 2–6% chance a month of being found out. The people who hate you plot slanders and murders against you; you may notice, unmask them and answer. Four bot lives met 11 such scenes in 49 years |
 | 4 | Shared history per bond | ◐ | `rel.hist` from NPC moves and interactions; doesn't yet move opinion by itself or appear in events |
 | 5 | Secrets and leverage | ◐ | The 71 lore secrets can now be found (26-belief-truth: 7 reveal scenes, rationed one in eight years) and are shown truth against story; no personal secrets, no leverage |
 | 6 | Groups and cliques | ✗ | Not started |
@@ -202,7 +202,7 @@ That is 37% done and 31% partial. 21% is not started but buildable here, and 11%
 
 ## Round 3 changes
 
-Fourteen features and two tools, each with its own tests and README, moved twenty-three rows.
+Fifteen features and two tools, each with its own tests and README, moved twenty-four rows.
 
 | Feature | Rows | What changed |
 | --- | --- | --- |
@@ -222,6 +222,7 @@ Fourteen features and two tools, each with its own tests and README, moved twent
 | 36-sieges | War 5 ✅ | A choice each month from either side of the wall. Each one moves the real siege counter, by 3 to 12 days of a 40-day siege. Camp sickness thins the besiegers. The fall ends in the sack, the mercy or the terms. |
 | 37-squad | War 6 ✅ | Comrades who come back from a mission learn its skills and earn a standing; veterans add up to 8 points to a mission's odds. The person card shows the record, and a death says what was lost. |
 | 38-orders | War 3 ✅ | Generals have a temper from their traits, and it moves how their army fights: how good the odds must be, how many divisions go at once, how rested they must be, and whether it hunts the undefended. The war room shows each army's temper and plan. A soldier gets the plan as a letter, and the map settles it sixty days later: credit, blame, a reckoning, or being proved right. |
+| 39-schemes | Relationships 3 ✅ | Sway, befriend, seduce, slander and murder as plots that run for months, with an estimate up front, an opening halfway, a last move, and a chance each month of being found out. The people who hate you plot back, and you can notice, unmask and answer them. |
 
 Findings from building these:
 
