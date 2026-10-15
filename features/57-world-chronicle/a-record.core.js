@@ -133,11 +133,11 @@
 
   // ---- sieges and the fall of walled towns
   const fallKind = (P, rid, prev) => {
-    // stormed (the release's AI sieges always end by storm), sacked if a great town, burned if the takers hate the
-    // town's people: another race, or another faith in a holy war
+    // stormed (the release's AI sieges always end by storm), sacked if a capital or a great town (150,000 people),
+    // burned as well if the takers hate the town's people: another race, or another faith in a holy war
     const ra = A.realm(rid), rb = A.realm(prev);
     if (P.sgTerms) return 0;
-    const big = (P.pop || 0) > 60000 || isCap(P);
+    const big = (P.pop || 0) > 150000 || isCap(P);
     const holy = (S_().wars || []).some(w => w.cb === 'holy' && (w.att.includes(rid) && w.def.includes(prev) || w.def.includes(rid) && w.att.includes(prev)));
     if (big && ra && rb && (ra.race !== rb.race || holy && ra.faith !== rb.faith)) return 3;
     return big ? 2 : 1;

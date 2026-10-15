@@ -30,7 +30,7 @@
     CITE: 6,        // a line must still weigh this much to be quoted under an event
   });
   // runtime counters for tests and the bench (not saved)
-  BD.stats = BD.stats || { pull: 0, pullN: 0, led: 0, ledN: 0, lines: 0, textCites: 0, asides: 0, pidEvents: 0, events: 0 };
+  BD.stats = BD.stats || { pull: 0, pullN: 0, led: 0, ledN: 0, lines: 0, textCites: 0, cite_bd: 0, cite_past: 0, cite_token: 0, asides: 0, pidEvents: 0, events: 0 };
   BD.resetStats = () => { for (const k in BD.stats) BD.stats[k] = 0; };
   BD.h = (...a) => { let h = 2166136261; const s = a.join('|'); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 100003) / 100003; };
   BD.hp = (list, ...a) => list[Math.min(list.length - 1, Math.floor(BD.h(...a) * list.length))];
@@ -262,7 +262,8 @@
       const t = pid && A.P(pid);
       if (t && pc && pc.rel[pid] && t.id !== pc.id) {
         BD.stats.pidEvents++;
-        if (BD.citesInText(q, v)) BD.stats.textCites++;
+        const by = BD.citesInText(q, v);
+        if (by) { BD.stats.textCites++; BD.stats['cite_' + by] = (BD.stats['cite_' + by] || 0) + 1; }
         else if (BD.aside(pc, t, v)) BD.stats.asides++;
       }
     } catch (e) { console.error('bonds cite', e); }
@@ -402,11 +403,12 @@
     return o;
   };
   // does this event's text already quote the past? (this feature's events, 21-npc-initiative's {past}, or {history})
+  // which: 'bd' (a scene of this feature), 'past' (21-npc-initiative's {past}), 'token' ({history} in any other event)
   BD.citesInText = function (q, v) {
     const ctx = q.ctx || {}, text = (v && v.text) || '';
-    if (ctx.bdCite) return true;
-    if (ctx.past && String(ctx.past).trim() && text.includes(String(ctx.past).trim().slice(0, 30))) return true;
-    return /(has not forgotten|still speaks of|You both remember|knows what you did for)[^.]*\b1\d{3}\b/.test(text);
+    if (ctx.bdCite) return 'bd';
+    if (ctx.past && String(ctx.past).trim() && text.includes(String(ctx.past).trim().slice(0, 30))) return 'past';
+    return /(has not forgotten|still speaks of|You both remember|knows what you did for)[^.]*\b1\d{3}\b/.test(text) ? 'token' : '';
   };
   // the line under an event about someone you share history with, unless the text already cites it (pure)
   BD.aside = function (pc, t, v) {

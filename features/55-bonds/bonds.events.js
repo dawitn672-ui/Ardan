@@ -187,7 +187,7 @@ A.defEvents([
     text: '{them} told you to do your worst, and meant it. What you know could still ruin {themHim}, if you said it in the right places.',
     choices: [
       { t: 'Say it in the right places', r: 'You tell it at the market and at the temple door. By the week\'s end {them} cannot buy bread without being stared at.', fx: { bonds: { expose: true } } },
-      { t: 'Let it go, this time', r: 'You let it go. {them} knows now that you tried, and that you would not.', fx: { them: { op: -12 }, wil: -1 } },
+      { t: 'Let it go, this time', r: 'You let it go. {them} knows now that you tried, and that you would not.', fx: { them: { op: -12 }, honor: 1 } },
     ] },
 
   { id: 'bd_blackmail', title: '{them} knows', trigger: true, npc: true, cool: 1,

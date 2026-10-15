@@ -63,7 +63,7 @@ A.defEvents([
 
   { id: 'wc_sickness_comes', title: 'Chalk on the doors', trigger: true,
     cond: (p, C) => !C.child(p),
-    setup: (p, ctx) => { const e = W().ent(ctx.wci); if (!e || e.k !== 'plague') { ctx.skip = true; return; } (ctx._wc = ctx._wc || []).push('r' + e.i); Object.assign(ctx, { wcSick: W().name('sick:' + e.p + ':' + e.y) || 'the sickness', wcPlace: A.provName(e.p) }); },
+    setup: (p, ctx) => { const e = W().ent(ctx.wci); if (!e || e.k !== 'plague') { ctx.skip = true; return; } W().mark('r' + e.i); Object.assign(ctx, { wcSick: W().name('sick:' + e.p + ':' + e.y) || 'the sickness', wcPlace: A.provName(e.p) }); },
     text: '{wcSick} is in {wcPlace}. Doors are marked with chalk. Your neighbour\'s boy has the sweats, and the healer will not come into the street. The carts for the dead come at night.',
     choices: [
       { t: 'Shut your door and wait it out', r: 'Weeks of bread and boiled water and other people\'s coughing through the wall. It passes your door.', fx: { happy: -3, need: { company: -6 } } },

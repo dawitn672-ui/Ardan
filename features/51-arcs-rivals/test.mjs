@@ -245,13 +245,28 @@ export default {
       const ch = A.chance; A.chance = () => true;
       try { A.ARCS.month(pc); } finally { A.chance = ch; }
       const q = A.S.queue.find(x => x.ev === 'ar_rise_2');
-      const shown = !!A.headReady() && A.S.queue[0] === q;
+      const h = A.headReady(), shown = h === q, closing = h && h.ev;
+      const v = h && h.ev === 'ar_gone' ? A.eventView(h) : null;
+      if (v) { A.eventChoose(0); A.eventClose(); }
+      const ended = { done: !!a.done, gave: !!a.gave, deed: (pc.deeds[pc.deeds.length - 1] || {}).t };
+      // and someone gone from the world altogether: the scene is dropped, and the engine gives the arc up two months on
+      const pc2 = ART.life(ART.FOR.ar_false, 6703);
+      pc2.arcs = { ar_false: { stage: 0, y: A.S.year, m: [], story: 1, q: A.absDay() } };
+      A.queue({ type: 'event', ev: 'ar_false_1', forced: true, ctx: { arc: 'ar_false' } });
+      A.headReady(); A.eventChoose(0); A.eventClose();
+      const a2 = pc2.arcs.ar_false, id2 = a2.ar.who.friend; delete A.S.people[id2]; delete pc2.rel[id2];
+      A.S.year = a2.next; A.S.queue = [];
+      A.chance = () => true;
+      try { A.ARCS.month(pc2); } finally { A.chance = ch; }
+      const q2 = A.S.queue.find(x => x.ev === 'ar_false_2'), h2 = A.headReady();
       const ad = A.absDay; A.absDay = () => ad() + 61;
-      try { A.ARCS.month(pc); } finally { A.absDay = ad; }
-      return { held, dropped, queued: !!q, skipped: !!(q && q.ctx && q.ctx.skip), shown, gave: !!a.gave };
+      try { A.ARCS.month(pc2); } finally { A.absDay = ad; }
+      return { held, dropped, queued: !!q, skipped: !!(q && q.ctx && q.ctx.skip), shown, closing, text: v && v.text, ended,
+        gone: { queued: !!q2, shown: h2 === q2, gave: !!a2.gave } };
     });
-    const ok = r.held.kept && !r.dropped.kept && r.queued && r.skipped && !r.shown && r.gave;
-    return { ok, detail: `five idle years: the moneylender of a running arc is still known (${r.held.kept}, ${r.held.type}); once the arc is over the release forgets him (${!r.dropped.kept}). A rival who dies before the second scene: scene queued ${r.queued}, dropped ${r.skipped}, arc given up ${r.gave}` };
+    const ok = r.held.kept && !r.dropped.kept && r.queued && r.skipped && !r.shown && r.closing === 'ar_gone' && !/\{/.test(r.text || '{')
+      && r.ended.done && !r.ended.gave && /grave|Outlived/.test(r.ended.deed || '') && r.gone.queued && !r.gone.shown && r.gone.gave;
+    return { ok, detail: `five idle years: the moneylender of a running arc is still known (${r.held.kept}, ${r.held.type}); once the arc is over the release forgets him (${!r.dropped.kept}). A rival who dies before the second scene: that scene is dropped (${r.skipped}) for a closing one, "${(r.text || '').slice(0, 80)}…", and the arc ends (${r.ended.done}, not given up) with the deed "${r.ended.deed}". Someone gone from the world: scene dropped, arc given up (${r.gone.gave})` };
   },
 
   // a save from before this feature (an arc state with no people kept) loads and plays on

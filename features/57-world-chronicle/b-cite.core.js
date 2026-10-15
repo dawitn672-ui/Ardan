@@ -86,7 +86,9 @@
     }
     if (opts.filter) pool = pool.filter(c => opts.filter(c, p));
     if (!pool.length) return null;
-    pool.sort((a, b) => score(p, b) - score(p, a) || b.y - a.y);
+    // a recalled line leans away from the kinds recalled lately, so one sacked town does not fill a decade
+    const recent = opts.recent || [], sc = c => score(p, c) * Math.pow(0.45, recent.filter(k => k === c.k).length);
+    pool.sort((a, b) => sc(b) - sc(a) || b.y - a.y);
     const top = pool.slice(0, 4);
     return top[hash(key) % top.length];
   };
@@ -113,10 +115,10 @@
     const T = WC.TOKENS[key]; if (!T || !pc) return null;
     ctx = ctx || {};
     const kept = ctx._wcp && ctx._wcp[key];
-    if (kept) return WC.cite(kept);
-    const c = WC.choose(pc, T.kinds, `${key}|${pc.id}|${A.absDay()}`, { canon: true });
+    const c = kept ? WC.cite(kept) : WC.choose(pc, T.kinds, `${key}|${pc.id}|${A.absDay()}`, { canon: true });
     if (!c) return null;
-    try { (ctx._wcp = ctx._wcp || {})[key] = c.id; if (!(ctx._wc = ctx._wc || []).includes(c.id)) ctx._wc.push(c.id); } catch (e) {}
+    try { (ctx._wcp = ctx._wcp || {})[key] = c.id; } catch (e) {}
+    WC.mark(c.id);
     return c;
   };
   const tokens = A.ctxTokens;
@@ -149,7 +151,7 @@
     opts = opts || {};
     const c = WC.choose(p, typeof kinds === 'string' ? kinds.split(',') : kinds, `${opts.id || 'ev'}|${p.id}|${A.absDay()}`, Object.assign({ canon: true }, WC.MODES[opts.mode] || {}, opts));
     if (!c) { ctx.skip = true; return null; }
-    (ctx._wc = ctx._wc || []).push(c.id);
+    WC.mark(c.id);
     const x = WC.words(c), n = A.S.year - c.y;
     Object.assign(ctx, {
       wcRef: c.ref, wcYear: String(c.y), wcPlace: x.P || x.A || (A.realm(p.realm) || {}).capital || 'the capital', wcRealm: x.A || A.realmShort(p.realm), wcOther: x.B || 'the enemy',
@@ -178,7 +180,7 @@
     for (const T of WC.TOPICS) { const m = T.rx.exec(s); if (m && m.index < bestAt) { best = T; bestAt = m.index; } }
     return best;
   };
-  WC.RECALL = 42;          // per cent of scenes with a subject that get a recalled line, if an entry fits
+  WC.RECALL = 30;          // per cent of scenes with a subject that get a recalled line, if an entry fits
   WC.GAP = 730;            // days before the same entry is recalled again
   const fmt = n => (A.fmt ? A.fmt(n) : String(n));
   const rs = id => (id ? (A.realm(id) ? A.realm(id).short : WC.name(id) || 'a realm now gone') : '');
@@ -212,7 +214,7 @@
       [0, x => `Mothers here still frighten children with the men of ${x.A}, who took ${x.P} in ${x.y}.`],
     ],
     war: [
-      [0, x => `Everyone over thirty has a story from ${x.war}, and no two of them agree.`],
+      [0, x => `Everyone over thirty has a story from ${x.war}, begun in ${x.y}, and no two of them agree.`],
       [0, x => `The roads and the prices have not been the same since ${x.war} began in ${x.y}.`],
     ],
     peace: [
@@ -240,7 +242,7 @@
     const e = c.e, y = c.y;
     if (!e) {
       const who = c.c && c.c.who;
-      return { y, ref: c.c ? c.c.ref : c.ref, who: who || 'the old ruler', war: c.c ? c.c.ref : c.ref };
+      return { y, ref: c.ref, who: who || 'the old ruler', war: c.c ? c.c.ref : c.ref };
     }
     const sick = WC.name('sick:' + e.p + ':' + e.y) || 'the sickness';
     return {
@@ -254,40 +256,56 @@
     const home = c.e && c.e.p != null && WC.nearProvs(p).has(c.e.p);
     const ok = set.filter(l => !l[0] || home);
     if (!ok.length) return null;
-    const line = ok[hash(key) % ok.length][1](WC.words(c));
+    // the lines of a kind come round in turn
+    const R = WC.rec(), kc = R.kc = R.kc || {}, n = kc[c.k] = (kc[c.k] || 0) + 1;
+    const line = ok[(n + hash(key) % 2) % ok.length][1](WC.words(c));
     return line && !/\{|undefined|NaN/.test(line) ? line : null;
   };
   WC.recall = function (q, v) {
     if (!q || !v || v.skip || q.type !== 'event') return;
     const pc = A.pc(), e = A.EV[q.ev];
     if (!pc || !pc.alive || !e || /^wc_/.test(e.id) || (A.age(pc) < 6)) return;
-    if (q.ctx && ((q.ctx._wc && q.ctx._wc.length) || q.ctx.siege || q.ctx.front)) return;
+    if ((v.cites && v.cites.length) || (q.ctx && (q.ctx.siege || q.ctx.front))) return;
     const T = WC.topic(e, v);
     if (!T) return;
     const key = `${q.ev}|${pc.id}|${A.absDay()}`;
     if (hash(key + '|gate') % 100 >= WC.RECALL) return;
     const R = WC.rec();
     R.cd = R.cd || {};
-    const c = WC.choose(pc, T.kinds, key, { cd: R.cd, gap: WC.GAP, canon: true, living: true, minDays: 60 });
+    R.lk = Array.isArray(R.lk) ? R.lk : [];
+    const c = WC.choose(pc, T.kinds, key, { cd: R.cd, gap: WC.GAP, canon: true, living: true, minDays: 60, recent: R.lk });
     if (!c) return;
     const line = WC.recallLine(c, pc, key);
     if (!line) return;
     v.recall = line;
+    R.lk.push(c.k); if (R.lk.length > 8) R.lk.splice(0, R.lk.length - 8);
     q.ctx = q.ctx || {};
-    (q.ctx._wc = q.ctx._wc || []).push(c.id);
+    WC.mark(c.id);
     const now = A.absDay();
     R.cd[c.id] = now;
     for (const k in R.cd) if (now - R.cd[k] > WC.GAP) delete R.cd[k];
   };
+  // the entries a scene cites are gathered while its view is first drawn up (tokens, the pack's setups, the recalled
+  // line) and kept on the view, so a follow-up scene that inherits the context does not count as citing
+  WC._cur = null;
+  WC.mark = id => { if (WC._cur && id && !WC._cur.includes(id)) WC._cur.push(id); };
   const view = A.eventView;
   A.eventView = function (q) {
-    const fresh = q && !q.view;
-    const v = view.apply(this, arguments);
-    if (fresh) try { WC.recall(q, v); } catch (e) { console.error('world record recall', e); }
+    if (!q || q.view) return view.apply(this, arguments);
+    const outer = WC._cur, cur = WC._cur = [];
+    let v;
+    try { v = view.apply(this, arguments); } finally { WC._cur = outer; }
+    try {
+      if (v && !v.skip) {
+        WC._cur = cur;
+        v.cites = cur.slice(); WC.recall(q, v); v.cites = cur.slice();
+        if (!v.cites.length) delete v.cites;
+      }
+    } catch (e) { console.error('world record recall', e); } finally { WC._cur = outer; }
     return v;
   };
   // does this scene cite the record? (a token, a recalled line, or an event of the pack)
-  WC.cites = q => !!(q && q.ctx && q.ctx._wc && q.ctx._wc.length);
+  WC.cites = q => !!(q && q.view && q.view.cites && q.view.cites.length);
   // the line, under the scene's text (pure)
   const modal = UI.eventModal;
   if (typeof modal === 'function') UI.eventModal = function (q) {

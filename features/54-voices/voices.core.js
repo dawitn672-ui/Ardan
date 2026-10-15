@@ -21,6 +21,7 @@
 // ctx.pid {themSaying} {themOath} {themGreet} {themCurse} {theySay} (also {they_say}), are there for writers.
 (function () {
   const V = A.VOICE = {
+    OFF: false,       // true draws every view and token as the release did (used to show the world is unchanged)
     MAX_WORDS: 80,
     LINE_RATE: 75,    // percent of eligible local events that end with a voice line (by hash)
     REPEAT_YEARS: 5,  // a voice line is not shown again to the same life within this many years (pc.vo)
@@ -303,7 +304,7 @@
     const fresh = !!q && !q.view;
     const v = view.apply(this, arguments);
     try {
-      if (fresh && v && !v.skip && q.view === v) {
+      if (fresh && v && !v.skip && q.view === v && !V.OFF) {
         const pc = A.pc(), e = A.EV[q.ev];
         if (pc && e) {
           const d = V.decorate(pc, e, q, v);
@@ -374,7 +375,7 @@
   const tokens = A.ctxTokens;
   if (typeof tokens === 'function') A.ctxTokens = function (pc, ctx) {
     const o = tokens.apply(this, arguments);
-    try { if (o && pc) { const v = V.tokens(pc, ctx || {}); for (const k in v) if (o[k] == null) o[k] = v[k]; } } catch (e) {}
+    try { if (o && pc && !V.OFF) { const v = V.tokens(pc, ctx || {}); for (const k in v) if (o[k] == null) o[k] = v[k]; } } catch (e) {}
     return o;
   };
 

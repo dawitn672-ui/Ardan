@@ -187,6 +187,14 @@ const SEAT_ST = {
 };
 const years = r => (r.treasury || 0) / Math.max(1, r.income || 1);
 RI.years = years;
+// the realm's own custom in each law (what it had when the court first met): pushes away from it lose force
+RI.lawPos = (r, law) => law === 'tax' ? taxIdx(r) : law === 'authority' ? (r.laws.authority != null ? r.laws.authority : 1) : (r.laws.levy != null ? r.laws.levy : 1);
+RI.trad = (r, law) => { const t = r.riLaw0 || {}; return law === 'tax' ? 2 : law === 'authority' ? (t.authority != null ? t.authority : 1) : 1; };
+RI.awayMul = function (r, k) {
+  const P = PUSH[k]; if (!P || !P.law) return 1;
+  const cur = RI.lawPos(r, P.law), nv = cur + (/Up$/.test(k) ? 1 : -1), t = RI.trad(r, P.law);
+  return Math.abs(nv - t) > Math.abs(cur - t) ? Math.pow(.55, Math.abs(nv - t) - 1) * (Math.abs(nv - t) >= 2 ? .8 : 1) : 1.15;
+};
 // a voice's stance on push k: positive pushes for it, negative against; pure
 RI.stance = function (v, k, r) {
   const a = RI.aims(v.p);
@@ -199,6 +207,7 @@ RI.stance = function (v, k, r) {
   if (k === 'taxDown') s *= Y > 2.5 ? 1.4 : Y < 1 ? .2 : 1;
   if ((k === 'levyUp' || k === 'army') && A.atWar(r.id).length) s *= s > 0 ? 1.5 : .6;
   if (k === 'grant' && v.h) s *= (v.h.op != null ? v.h.op : 50) < 40 ? 1.4 : .6;
+  if (s > 0) s *= RI.awayMul(r, k);
   return clamp(s, -1.5, 1.5);
 };
 
@@ -433,6 +442,7 @@ RI.deal = function (r) {
 RI.session = function (r) {
   if (!r || !r.alive || r.isRebel || !A.COUNCIL) return null;
   A.polInit && A.polInit(r);
+  if (!r.riLaw0) r.riLaw0 = { authority: r.laws.authority != null ? r.laws.authority : 1 };
   RI.ensureHeads(r);
   RI.fillCouncil(r);
   const pc = A.pc(), playerRules = !!(pc && pc.ruler === r.id);

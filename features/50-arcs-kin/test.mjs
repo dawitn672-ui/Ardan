@@ -60,6 +60,7 @@ const SETUP = () => {
     // on the first path and lose on the second, so both sides of every check are played
     play(k, seed, rule, sex) {
       const pc = AKT.life(k, seed, sex);
+      pc.coin = rule === 'first' ? Math.max(pc.coin, 2000) : Math.min(pc.coin, 20);   // one path with money to spend, one without
       const start = !!A.ARCS.ARC[k].start(pc, A.C);
       let before = null, condFail = [];
       const ch = A.chance; A.chance = rule === 'first' ? () => true : () => false;
@@ -140,6 +141,7 @@ export default {
             if (RAW.test(all)) bad.push(`${s.ev}/${nm}: raw ${all.match(RAW)[0]}`);
             if (w(s.text) > 80) bad.push(`${s.ev}/${nm}: ${w(s.text)} words`);
             for (const c of s.choices || []) if (w(c) > 12) bad.push(`${s.ev}/${nm}: label of ${w(c)} words`);
+            if ((s.choices || []).length < 2) bad.push(`${s.ev}/${nm}: only ${(s.choices || []).length} choice shown`);
           }
           if (!x.left.flags.length || !x.left.keys.length) bad.push(`${k}/${nm}: last choice left ${x.left.keys.join(',') || 'nothing'} (flags ${x.left.flags.join(',') || 'none'})`);
         }
@@ -150,7 +152,7 @@ export default {
       return { out, bad };
     });
     const differs = r.out.reduce((s, x) => s + x.differ, 0), later = r.out.reduce((s, x) => s + x.n - 1, 0);
-    return { ok: !r.bad.length, detail: `${r.out.length} arcs × 2 paths; ${differs} of ${later} later scenes read differently by path. ${r.bad.length ? 'BAD: ' + r.bad.slice(0, 6).join('; ') + '. ' : ''}${r.out.map(x => `${x.k}: [${x.a}] / [${x.b}]`).join('; ')}`,
+    return { ok: !r.bad.length, detail: `${r.out.length} arcs × 2 paths (one with 2,000 suns and checks won, one with 20 and checks lost), every scene with 2-4 choices shown; ${differs} of ${later} later scenes read differently by path. ${r.bad.length ? 'BAD: ' + r.bad.slice(0, 6).join('; ') + '. ' : ''}${r.out.map(x => `${x.k}: [${x.a}] / [${x.b}]`).join('; ')}`,
       data: r.out };
   },
 

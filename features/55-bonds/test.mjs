@@ -152,6 +152,55 @@ export default {
       (bad.length ? `; BROKEN ${JSON.stringify(bad[0])}` : '') };
   },
 
+  async bondsEveryScene(pg) {
+    // every scene of the pack, staged with what it needs (a dead friend, a hidden secret, a blackmailer, a crown with a
+    // grudge), renders within the word diet with no raw token, and every choice plays
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const BD = A.BONDS, SEC = BD.SEC, FE = BD.FEUD, out = [];
+      const withSecret = pc => { const t = Object.values(A.S.people).find(p => p.alive && A.isAdult(p) && p.id !== pc.id && SEC.of(p) && !pc.rel[p.id]); A.link(pc, t, 'acquaint', 5, 'acquaint'); return t; };
+      const other = pc => Object.keys(A.S.realms).find(id => id !== pc.realm && A.S.realms[id].alive && !A.S.realms[id].isRebel);
+      const STAGE = {
+        bd_grave: pc => { const t = BDT.stranger(pc, [], 'M'); A.link(pc, t, 'friend', 50, 'friend'); A.bondNote(pc, t, 'You nursed him through the fever', A.S.year - 6, { v: 20, h: 25 });
+          const k = A.newPerson({ given: 'Wat', sex: 'M', race: t.race, realm: t.realm, cult: t.cult, faith: t.faith, born: A.S.year - 20, status: t.status, home: t.home, parents: [t.id] }); t.children = [k.id];
+          A.kill(t, 'old age'); return {}; },
+        bd_sec_glimpse: pc => { withSecret(pc); return {}; },
+        bd_sec_told: pc => { const o = withSecret(pc), t = BDT.stranger(pc, ['gregarious'], 'F'); A.link(pc, t, 'friend', 50, 'friend'); A.link(t, o, 'friend', 60, 'friend'); return { pid: t.id, npcMove: true }; },
+        bd_dig_try: pc => ({ pid: withSecret(pc).id }),
+        bd_dig_done: pc => ({ pid: withSecret(pc).id, k: 'dig', sc: 1 }),
+        bd_dig_found: pc => ({ pid: withSecret(pc).id, k: 'dig', sc: 1 }),
+        bd_lever: pc => { const t = withSecret(pc); SEC.learn(pc, t, 'test'); return { pid: t.id }; },
+        bd_lever_refused: pc => { const t = withSecret(pc); SEC.learn(pc, t, 'test'); return { pid: t.id }; },
+        bd_blackmail: pc => { const t = withSecret(pc); SEC.learn(pc, t, 'test'); SEC.addMine(pc, 'deed', 'What you did in the matter of the miller\'s well, in 1100.', [t.id]); return { pid: t.id, npcMove: true }; },
+        bd_blackmail_again: pc => { const t = withSecret(pc); const s = SEC.addMine(pc, 'deed', 'What you did in the matter of the miller\'s well, in 1100.', [t.id]); return { pid: t.id, mt: s.t, npcMove: true }; },
+        bd_feud_envoy: pc => { const o = other(pc); FE.add(o, pc.realm, 'capital', { place: A.realm(o).capital }); FE.add(pc.realm, o, 'heart', { place: 'Thornfield' }); return {}; },
+        bd_feud_vow: pc => { const o = other(pc); FE.add(pc.realm, o, 'capital', { place: A.realm(pc.realm).capital }); return {}; },
+        bd_feud_tale: pc => { const o = other(pc); FE.add(pc.realm, o, 'sack', { place: A.realm(pc.realm).capital }); return {}; },
+      };
+      const RULER = new Set(['bd_feud_envoy', 'bd_feud_vow']);
+      for (const ev of Object.keys(STAGE)) {
+        const n = (A.EV[ev].choices || []).length;
+        for (let i = 0; i < n; i++) {
+          const pc = BDT.adult(5900 + i, RULER.has(ev) ? { status: 'royal', startAge: 40 } : {});
+          if (RULER.has(ev)) { A.makeRuler(pc, pc.realm); const rr = A.realm(pc.realm); rr.treasury = Math.max(rr.treasury || 0, 50000); }
+          const ctx = STAGE[ev](pc);
+          if (!A.EV[ev].trigger && A.EV[ev].cond && !A.EV[ev].cond(pc, A.C)) { out.push({ ev, i, cond: false }); continue; }
+          const res = BDT.choose(ev, ctx, i, i % 2 === 0);
+          if (res.skip) { out.push({ ev, i, skip: true, text: res.view && res.view.text }); continue; }
+          if (res.missing) { out.push({ ev, i, missing: true }); continue; }   // a choice this staging does not offer (its req)
+          const v = res.view;
+          out.push({ ev, i, words: BDT.words(v.text), labels: Math.max(...v.choices.map(c => BDT.words(c.t))), raw: /\{[A-Za-z0-9_.]+\}/.test([v.title, v.text, ...v.choices.map(c => c.t), res.text || ''].join(' ')), text: v.text, result: res.text });
+        }
+      }
+      return out;
+    });
+    const played = r.filter(x => x.words != null), bad = r.filter(x => x.skip || x.cond === false || x.raw || x.words > 80 || x.labels > 12);
+    const evs = new Set(played.map(x => x.ev));
+    const longest = played.reduce((a, x) => x.words > a.words ? x : a, { words: 0 });
+    return { ok: !bad.length && evs.size === 13, detail: `${played.length} choices played in ${evs.size} of 13 scenes (${r.filter(x => x.missing).length} not offered in their staging); ${bad.length} broken; longest text ${longest.words} words (${longest.ev}): "${longest.text}"` +
+      (bad.length ? `; BROKEN ${JSON.stringify(bad.slice(0, 3))}` : '') };
+  },
+
   async bondsInRealLives(pg) {
     // bot lives: how much of all opinion change on the player's bonds the memories make by themselves, and how often an
     // event cites what passed between you
@@ -178,14 +227,14 @@ export default {
         });
       } finally { for (const n of names) A[n] = keep[n]; }
       const years = lives.reduce((a, b) => a + b, 0);
-      return { years, lives, total: Math.round(total), pull: Math.round(BD.stats.pull), inCite: Math.round(inCite), led: BD.stats.led, textCites: BD.stats.textCites, asides: BD.stats.asides, pidEvents: BD.stats.pidEvents, events: BD.stats.events };
+      return { years, lives, total: Math.round(total), pull: Math.round(BD.stats.pull), inCite: Math.round(inCite), led: BD.stats.led, textCites: BD.stats.textCites, bd: BD.stats.cite_bd, past: BD.stats.cite_past, token: BD.stats.cite_token, asides: BD.stats.asides, pidEvents: BD.stats.pidEvents, events: BD.stats.events };
     });
     const pull = 100 * r.pull / Math.max(1, r.total), hist = 100 * (r.pull + r.inCite) / Math.max(1, r.total), led = 100 * r.led / Math.max(1, r.total);
     const perLife = r.textCites / r.lives.length, perDecade = 10 * r.textCites / Math.max(1, r.years);
-    const ok = pull >= 10 && perDecade >= 2 && r.asides > 0;
+    const ok = pull >= 10 && perDecade >= 2 && r.bd >= r.lives.length && r.asides > 0;
     return { ok, detail: `${r.lives.length} lives, ${r.years} years: of ${r.total} points of opinion change on the player's bonds (both sides), the yearly pull of memories made ${pull.toFixed(1)}%, ` +
       `${hist.toFixed(1)}% with the choices in scenes that cite a past line; ${led.toFixed(1)}% was written to a dated line; events citing a bond's history in their text: ${r.textCites} ` +
-      `(${perLife.toFixed(1)} a life, ${perDecade.toFixed(1)} a decade), plus ${r.asides} with the "Between you" line, of ${r.pidEvents} events about someone known (${r.events} events in all)`,
+      `(${perLife.toFixed(1)} a life, ${perDecade.toFixed(1)} a decade: ${r.bd} this feature's scenes, ${r.past} 21-npc-initiative's {past}, ${r.token} other), plus ${r.asides} with the "Between you" line, of ${r.pidEvents} events about someone known (${r.events} events in all)`,
       data: r };
   },
 

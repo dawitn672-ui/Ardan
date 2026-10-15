@@ -51,7 +51,7 @@ if (what.includes('lives')) out.lives = await pg.evaluate(n => {
   const years = lives.reduce((a, l) => a + l.years, 0), S = BD.stats;
   return { lives: lives.length, years, total: Math.round(total), pull: Math.round(S.pull), inCite: Math.round(inCite), led: Math.round(S.led),
     pullPct: +(100 * S.pull / total).toFixed(1), historyPct: +(100 * (S.pull + inCite) / total).toFixed(1), ledPct: +(100 * S.led / total).toFixed(1),
-    textCites: S.textCites, asides: S.asides, pidEvents: S.pidEvents, events: S.events, textCitesPerLife: +(S.textCites / lives.length).toFixed(1), textCitesPerDecade: +(10 * S.textCites / years).toFixed(1) };
+    textCites: S.textCites, citesByThisFeature: S.cite_bd, citesByPast: S.cite_past, citesByToken: S.cite_token, asides: S.asides, pidEvents: S.pidEvents, events: S.events, textCitesPerLife: +(S.textCites / lives.length).toFixed(1), textCitesPerDecade: +(10 * S.textCites / years).toFixed(1) };
 }, LIVES);
 
 if (what.includes('worlds')) out.worlds = await pg.evaluate(([SEEDS, YEARS]) => {

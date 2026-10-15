@@ -90,7 +90,7 @@ export default {
           L.cite++;
           if (v.recall) L.line++; else if (/^wc_/.test(q.ev)) L.pack++; else L.token++;
           const pc = A.pc(), realms = A.WC.nearRealms(pc), provs = A.WC.nearProvs(pc), own = new Set([pc.realm, (A.prov(pc.home) || {}).owner]);
-          for (const id of q.ctx._wc) {
+          for (const id of v.cites) {
             const c = A.WC.cite(id);
             if (!c) { wrong.push(id + ' missing'); continue; }
             if (c.c) { L.canon++; if (!c.c.realms.some(x => own.has(x)) || c.y >= A.S.year) wrong.push(`${q.ev}: canon ${c.ref} for ${pc.realm}`); continue; }
@@ -132,7 +132,7 @@ export default {
       const { q, v } = view();
       A.eventChoose(0);
       const res = q.result && q.result.text, pc = A.pc();
-      const ids = q.ctx._wc || [], cs = ids.map(id => A.WC.cite(id)).filter(Boolean);
+      const ids = v.cites || [], cs = ids.map(id => A.WC.cite(id)).filter(Boolean);
       const near = cs.every(c => c.c ? c.c.realms.includes(pc.realm) || c.c.realms.includes((A.prov(pc.home) || {}).owner) : (A.WC.nearRealms(pc).has(c.e.a) || A.WC.nearRealms(pc).has(c.e.b) || A.WC.nearProvs(pc).has(c.e.p)));
       const war = cs.find(c => c.k === 'war' || c.k === 'peace');
       A.WC.canon = canon;

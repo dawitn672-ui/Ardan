@@ -28,10 +28,29 @@
   AK.who = (p, k, role) => A.P(AK.st(p, k).who[role]);
   AK.keep = (p, k, role, q) => { if (q) AK.st(p, k).who[role] = q.id; return q; };
   // the person in a role, or someone made to fit and kept
-  AK.get = (p, k, role, make) => AK.who(p, k, role) || (make ? AK.keep(p, k, role, make()) : null);
+  AK.get = (p, k, role, make) => {
+    const had = AK.who(p, k, role); if (had || !make) return had;
+    const u = AK.used(p, k), q = make();
+    // someone made just now gets a name of their own (an existing relative keeps theirs)
+    if (q && q.npc !== false && q.born >= A.S.year - 200 && !q.rel[p.id])
+      for (let i = 0; i < 8 && u.has(q.given); i++) q.given = A.givenName(q.cult, q.sex);
+    return AK.keep(p, k, role, q);
+  };
   // a made-up name or word, chosen once
   AK.name = (p, k, role, make) => { const nm = AK.st(p, k).nm; if (nm[role] == null) nm[role] = String(make()); return nm[role]; };
 
+  // a given name not already used by someone in this arc (or by the player and their nearest), chosen once
+  AK.used = (p, k) => {
+    const st = AK.st(p, k), u = new Set(Object.values(st.nm).map(String));
+    for (const id of Object.values(st.who)) { const q = A.P(id); if (q) u.add(q.given); }
+    for (const q of [p, AK.spouse(p), AK.father(p), AK.mother(p)]) if (q) u.add(q.given);
+    return u;
+  };
+  AK.given = (p, k, role, sex, cult) => AK.name(p, k, role, () => {
+    const u = AK.used(p, k); let n = '';
+    for (let i = 0; i < 8; i++) { n = A.givenName(cult || p.cult, sex); if (!u.has(n)) break; }
+    return n;
+  });
   AK.adj = p => C.ageAdj(p);
   AK.hi = p => C.noble(p) || ['gentry', 'royal', 'noble'].includes(p.status);
   AK.kidsOf = p => (p.children || []).map(A.P).filter(k => k && k.alive);
@@ -82,7 +101,9 @@
     return n ? n.name : 'the next valley';
   });
   // a share of what you own, in words a reader can weigh
-  AK.part = (p, f) => { const n = Math.round((p.coin || 0) * f); return n >= 10 ? A.coin(n) : 'the little you have'; };
+  // a price with a floor: fx { coin: -floor, coinPct: -f } takes the floor and then that share of what is left, so it
+  // means something to a pauper and to a magnate alike; this is what it comes to, in words
+  AK.price = (p, floor, f) => A.coin(Math.round(floor + f * Math.max(0, (p.coin || 0) - floor)));
 
   // ---- fx.akin: effects the release has no key for. ctx.pid is the person; ctx.arc the arc (for the people it keeps)
   const label = (q, sd) => (q.sex === 'F' ? (sd ? 'daughter' : 'sister') : (sd ? 'son' : 'brother'));

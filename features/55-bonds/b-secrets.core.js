@@ -65,7 +65,7 @@
     if (k === 'debt') { const n = Math.round((STATUS_DEBT[t.status] || 60) * (1.5 + 2.5 * H(id, 'amt')) / 5) * 5; return `${He} owes ${BD.coin(n)} to a moneylender in ${town}, and has paid none of it back.`; }
     if (k === 'affair') { const sp = married(t); return `${He} has been meeting ${HP(['a miller\'s wife', 'a widowed weaver', 'a brewer\'s husband', 'a young clerk', 'a soldier\'s wife', 'a dyer\'s widow'], id, 'who')} in ${town}, behind ${sp ? sp.given + '\'s' : 'a spouse\'s'} back.`; }
     if (k === 'bastard') return `${He} has a child of ${4 + Math.floor(H(id, 'kid') * 12)} in ${town}, raised by a farmer's family, and sends money twice a year.`;
-    if (k === 'heresy') { const f = (A.faith(t.faith) || {}).name || 'the faith'; return HP([`${He} keeps the old rites at night, and does not believe a word ${f} teaches.`, `${He} has said, in writing, that ${f} is a tale for children.`], id, 'her'); }
+    if (k === 'heresy') { let f = (A.faith(t.faith) || {}).name || 'the faith'; if (!/^the\b/i.test(f)) f = 'the ' + f; return HP([`${He} keeps the old rites at night, and does not believe a word of what ${f} teaches.`, `${He} has said, in writing, that ${f} is a tale for children.`], id, 'her'); }
     if (k === 'crime') return HP([`${He} killed a man in a tavern brawl in ${town}, years ago, and let another hang for it.`, `${He} sold stolen horses through ${town} for three summers.`, `${He} set the fire that took a granary in ${town}, and was paid to.`], id, 'cr');
     if (k === 'embezzle') return `${He} has been skimming the accounts ${he} keeps, a little every quarter, for years.`;
     if (k === 'desert') return `${He} ran from a fight ${he} swears ${he} stood in, and others died for ${his} lie.`;

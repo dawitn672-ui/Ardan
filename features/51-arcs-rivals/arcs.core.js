@@ -6,8 +6,9 @@
 //   the people in a story   A.ARV.cast(p, ctx, role, opts) gives a scene its person ({them}, {khe}, {khim}, {khis}, {khers}):
 //                           the one this arc already has, else an existing relation of the kinds asked for (your real
 //                           rival, your real friend, your nephew), else a new one made for the part. The arc keeps the
-//                           id, so the rival of the first scene is the rival of the last. If that person has died or
-//                           gone, the scene is dropped (ctx.skip) and the engine gives the arc up.
+//                           id, so the rival of the first scene is the rival of the last. If that person has died, the
+//                           scene that was due gives way to a closing one (ar_gone); if they are gone from the world
+//                           altogether, the scene is dropped (ctx.skip) and the engine gives the arc up.
 //   what a story remembers  A.ARV.memo(p, ctx, key, fn) keeps a word the scenes share (the seat, the secret, the house)
 //                           on the arc, so a scene ten years on names the same thing.
 //   keeping them in mind    while an arc runs, its people are "seen" each month, so the release's forgetting
@@ -52,7 +53,16 @@
     if (had) {
       const t = A.P(had);
       if (usable(p, t)) { if (m.old && m.old[role]) ctx.old = 1; return R.bind(ctx, t); }
-      ctx.skip = 1; return null;
+      ctx.skip = 1;
+      // the person died before the story could finish: the scene that was due gives way to a closing one
+      const q = A.S.queue[0];
+      if (t && !t.alive && q && q.ctx === ctx && A.EV.ar_gone) {
+        const c = { arc: ctx.arc };
+        for (const k in ctx) if (k !== 'skip' && (typeof ctx[k] === 'string' || typeof ctx[k] === 'number')) c[k] = ctx[k];
+        R.bind(c, t);
+        A.S.queue.splice(1, 0, { type: 'event', ev: 'ar_gone', forced: true, ctx: c });
+      }
+      return null;
     }
     let t = null, old = false;
     if (o.pick) { const x = o.pick(p); if (usable(p, x)) { t = x; old = true; } }

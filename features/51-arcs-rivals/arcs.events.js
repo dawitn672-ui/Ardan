@@ -131,7 +131,34 @@ const lender = (p, ctx) => {
   X().cast(p, ctx, 'lender', { make: q => ({ type: 'acquaint', op: 0, status: 'merchant', age: X().older(q, 8, 18), occ: 'a moneylender', coin: 3000 }) });
 };
 
+// what a story was, when its person dies before the end
+const GONE = {
+  ar_rise: 'The race between you is over. You won it, if outliving is winning.',
+  ar_pupil: 'The apprentice is buried before the master.',
+  ar_patron: 'Whatever {khe} meant to ask of you in the end, {khe} has taken it with {khim}.',
+  ar_false: 'You never learned for certain what {khe} was to you.',
+  ar_elec: 'There will be an election without {khim}, and it will be duller.',
+  ar_hon: 'The quarrel is over, and nobody had the last word.',
+  ar_libel: 'The verses will outlive the hand that wrote them.',
+  ar_charter: '{khis} heirs do not press the claim, yet.',
+  ar_recipe: 'What {khe} knew of your secret goes into the ground with {khim}.',
+  ar_bribe: '{khis} ledger is with {khis} heirs now. They may read it, or burn it.',
+  ar_ven: 'The house will send someone else, in time.',
+  ar_usurp: 'Whoever runs the place now, it is not {khe}.',
+  ar_debt: '{khis} book passes to {khis} heirs, and your name is in it.',
+};
+
 A.defEvents([
+  // ================================================================ WHEN THE PERSON DIES FIRST
+  { id: 'ar_gone', title: 'Word comes', trigger: true, cool: 1,
+    cond: (p, C) => C.adult(p),
+    setup: (p, ctx) => { const t = A.P(ctx.pid); if (!t || t.alive || !GONE[ctx.arc]) ctx.skip = 1; },
+    text: (p, ctx) => `Word comes that {them} is dead, and buried before you heard. ${GONE[ctx.arc] || ''} It ends here, unfinished, the way most things do.`,
+    choices: [
+      { t: 'Go and stand at the grave', r: 'You go and stand at the grave a while. A few people see you there, and remember it.', fx: { honor: 2, happy: -2, arDeed: 'Stood at the grave of {themFull}', arc: fin('gone_went') } },
+      { t: 'Let it lie', r: 'You do not go. You hear about the burying afterwards, from people who did.', fx: { wil: 1, arDeed: 'Outlived {themFull}', arc: fin('gone_away') } },
+    ] },
+
   // ================================================================ THE OTHER ONE
   { id: 'ar_rise_1', title: 'The other one', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
