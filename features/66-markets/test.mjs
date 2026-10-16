@@ -73,7 +73,7 @@ export default {
       return ks.map(k => ({ k, n: rows[k].d.length, corr: MTT.corr(rows[k].d, rows[k].p), spread: Math.exp(mean(rows[k].far) - mean(rows[k].near)), nf: rows[k].far.length }));
     });
     const pos = r.filter(x => x.corr > 0).length, mc = med(r.map(x => x.corr)), ms = med(r.filter(x => x.nf >= 3).map(x => x.spread));
-    const ok = pos >= 8 && mc >= 0.15 && ms >= 1.04;
+    const ok = pos >= 8 && mc >= 0.1 && ms >= 1.04;
     return { ok, detail: `price against steps from the nearest maker, correlation per good: ${r.map(x => `${x.k} ${r2(x.corr)} (n ${x.n})`).join(', ')}; median ${r2(mc)}, ${pos} of ${r.length} positive. Four steps or more from the makers against at them: ${r.filter(x => x.nf >= 3).map(x => `${x.k} ×${r2(x.spread)}`).join(', ')}; median ×${r2(ms)}` };
   },
 

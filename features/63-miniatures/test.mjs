@@ -74,11 +74,14 @@ export default {
       const changed = wounds.filter(k => PORTRAIT.svg(MNT.mk({ id, age: 40, app, wounds: [k] }), 200) !== plain);
       const h = {}; for (const age of [0, 6, 14, 25]) h[age] = Math.round(MNT.figH(PORTRAIT.svg(MNT.mk({ id: 'mnt_h', age, app }), 200)));
       const hD = { dwarf: Math.round(MNT.figH(PORTRAIT.svg(MNT.mk({ id: 'mnt_h', race: 'dwarf', age: 40, app }), 200))), giant: Math.round(MNT.figH(PORTRAIT.svg(MNT.mk({ id: 'mnt_h', race: 'giant', age: 40, app }), 200))) };
+      // a giant against men of the same age: one man drawn from the stream can be tall, so take six
+      const men = [1, 2, 3, 4, 5, 6].map(i => MNT.figH(PORTRAIT.svg(MNT.mk({ id: 'mnt_m' + i, age: 40, app }), 200)));
+      hD.man = Math.round(men.reduce((a, x) => a + x, 0) / men.length);
       const baby = /data-pose="swaddled"/.test(PORTRAIT.svg(MNT.mk({ id, age: 0, app }), 200));
       return { ageOk, changed, wounds: wounds.length, h, hD, baby };
     }));
-    const ok = r.ageOk && r.changed.length === r.wounds && r.baby && r.h[6] < r.h[25] * .75 && r.h[14] < r.h[25] && r.h[0] < r.h[6] && r.hD.dwarf < r.h[25] && r.hD.giant > r.h[25];
-    return { ok, detail: `25, 45 and 70 draw three different faces: ${r.ageOk}; ${r.changed.length} of ${r.wounds} wounds change the picture (${r.changed.join(', ')}); figure heights in a 340-unit frame: newborn in its cradle ${r.h[0]}, 6 years ${r.h[6]}, 14 years ${r.h[14]}, grown ${r.h[25]}, a dwarf ${r.hD.dwarf}, a giant ${r.hD.giant}; the newborn is swaddled: ${r.baby}` };
+    const ok = r.ageOk && r.changed.length === r.wounds && r.baby && r.h[6] < r.h[25] * .75 && r.h[14] < r.h[25] && r.h[0] < r.h[6] && r.hD.dwarf < r.hD.man && r.hD.giant > r.hD.man;
+    return { ok, detail: `25, 45 and 70 draw three different faces: ${r.ageOk}; ${r.changed.length} of ${r.wounds} wounds change the picture (${r.changed.join(', ')}); figure heights in a 340-unit frame: newborn in its cradle ${r.h[0]}, 6 years ${r.h[6]}, 14 years ${r.h[14]}, grown ${r.h[25]}, a dwarf ${r.hD.dwarf}, a giant ${r.hD.giant}, men of 40 on average ${r.hD.man}; the newborn is swaddled: ${r.baby}` };
   },
 
   // drawing every screen with portraits changes nothing in the game and draws no random number; the state's

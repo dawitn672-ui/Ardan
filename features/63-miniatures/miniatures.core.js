@@ -669,10 +669,11 @@
     const ground = 316, cx = 100, ap = L.ap, race = L.race, p = L.p;
     let back = '', body = '', fore = '', scen = '';
     if (L.pose === 'swaddled') return cradle(G, L, ground);
-    const raceH = { elf: 1.04, halfelf: 1.02, dwarf: .76, orc: 1.03, halforc: 1.02, giant: 1.1 }[race] || 1;
+    const raceH = { elf: 1.04, halfelf: 1.02, dwarf: .76, orc: 1.03, halforc: 1.02, giant: 1.16 }[race] || 1;
     const hAdj = clamp(((ap.height || L.meanH) - L.meanH) / L.meanH, -.08, .08);
     const stoop = L.veryOld ? 7 : L.wr > .9 ? 3 : 0;
-    const H = 258 * raceH * L.grow * (1 + hAdj * .7) - stoop;
+    // a giant stands taller than the tallest man (the frame's arch leaves room up to about 296)
+    const H = Math.min(296, 258 * raceH * L.grow * (1 + hAdj * .7)) - stoop;
     const ratioA = { elf: 6.0, halfelf: 5.8, dwarf: 4.2, orc: 5.4, halforc: 5.5, giant: 5.9 }[race] || 5.6;
     const ratio = 3.7 + (ratioA - 3.7) * Math.pow(L.x, .8), u = H / ratio;
     const buildK = { slight: .88, lean: .94, average: 1, sturdy: 1.08, heavy: 1.16, muscular: 1.14, gaunt: .84, stout: 1.12 }[ap.build] || 1;
