@@ -10,7 +10,7 @@
 //      order the ruler's temper and last year's loudest court push (r.riPri) put them: drill and arms for the host,
 //      walls, roads and granaries (A.BUILDINGS, priced by the province's share of the realm), temples, feasts and
 //      gifts for discontented lords, and gold for allies at war;
-//   4. if the coffers still hold more than three years, the court lightens the taxes.
+//   4. if the coffers still hold more than three and a half years, the court lightens the taxes (to one step under custom).
 // Every sun is booked by category (r.riBook, the last year; RI.book) so the realm's ledger and the world audit can
 // show where the money went.
 
@@ -294,8 +294,10 @@ RI.spend = function (r) {
       A.aiLogAdd && A.aiLogAdd('aid', r.id, o.id, `sends ${A.fmt(c)} in gold to ${A.realmShort(o.id)} for its war.`, [[`An ally at war, its treasury nearly empty`, 1]].concat(P.honor > .1 ? [['An honourable ruler', r2(.3 * P.honor), 1]] : [], P.warmth > .1 ? [['A warm-hearted ruler', r2(.3 * P.warmth), 1]] : []));
     }
   }
-  // 4. still more than three and a half years in the coffers and nothing left worth buying: the court lightens the taxes
-  if (r.treasury > inc * 3.5 && !RI.nextWork(r, P, pri, r.treasury - RI.reserveYears(r) * inc) && RI.taxIdx && RI.taxIdx(r) > 0 && !(r.riCourt && r.riCourt[0] && r.riCourt[0].y === A.S.year && r.riCourt[0].k === 'taxDown')) {
+  // 4. still more than three and a half years in the coffers and nothing left worth buying: the court lightens the taxes,
+  // but by the treasurer's own account no further than one step under the realm's custom (RI.custom); below that the
+  // surplus waits for a windfall's great work. Unbounded, this remit alone took most realms to Light within 60 years.
+  if (r.treasury > inc * 3.5 && !RI.nextWork(r, P, pri, r.treasury - RI.reserveYears(r) * inc) && RI.taxIdx && RI.taxIdx(r) > Math.max(0, (RI.trad ? RI.trad(r, 'tax') : 2) - 1) && !(r.riCourt && r.riCourt[0] && r.riCourt[0].y === A.S.year && r.riCourt[0].k === 'taxDown')) {
     const tr = A.P((r.council || {}).treasurer);
     RI.applyLaw(r, 'taxDown');
     RI.logCourt(r, { k: 'taxDown', who: tr && tr.alive ? tr.id : null, seat: 'treasurer', yes: true, p: 100, why: [[`The treasury holds ${Math.round(10 * r.treasury / inc) / 10} years`, .6], ['Nothing left worth buying', .3]] });

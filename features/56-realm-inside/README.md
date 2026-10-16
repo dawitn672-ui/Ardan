@@ -33,7 +33,8 @@ In the release only the player's own realm had a council. AI decisions read a co
   - Each person's lean comes from their want, their fear, their seat (a treasurer worries about the treasury, a marshal about the host) and the realm's state.
   - A push away from the realm's own custom loses force.
 - **The loudest law push goes before the crown.** What the realm plainly needs is heard first: an empty treasury, a war.
-- **The odds come from four things:** the weight of the pushers against the opposers, the ruler's temper (greedy, generous, proud, cautious, warlike), the treasury, and the realm's stability.
+- **The odds come from five things:** the weight of the pushers against the opposers, the ruler's temper (greedy, generous, proud, cautious, warlike), the treasury, the realm's stability, and, for taxes, the realm's custom.
+  - **Custom pulls taxes home** (`RI.custom`). Each realm's customary tax is its tax law when the court first sat (`r.riLaw0.tax`; Customary in every starting realm). A tax push one step further from it is weighed down by 0.15 for each step it would then stand away; a push back toward it is weighed up by 0.12 for each step it now stands away. The record names it: "Taxes have always been customary here".
 - **At most one law changes a year.** Every house feels it (heavier taxes cost −4 loyalty, more crown authority −8). The pushers' houses gain loyalty and the opposers' houses lose it.
 - **Taxes now weigh on the lords of AI realms too.** Before, only the player's own realm felt them.
 - **The loudest spending push steers next year's treasury.**
@@ -88,7 +89,7 @@ The player can act on it:
    - gold for allies at war;
    - great works (a cathedral, a palace, a harbour mole) every 8 years. These have no ceiling: each costs more than the last.
 4. **A windfall goes into stone the same year.** A windfall is a treasury above 4 years of income, for example from an indemnity, tribute, or a realm shrunk to nothing. Everything above 3 years becomes a great work.
-5. **Still over 3.5 years with nothing left to buy:** the taxes are lightened.
+5. **Still over 3.5 years with nothing left to buy:** the taxes are lightened, but no further than one step under the realm's custom (Fair, for a Customary realm). Below that the surplus waits for a windfall's great work.
 
 Every sun is booked by category (`r.riBook`). The court card shows "The crown's purse", last year's ledger.
 
@@ -104,15 +105,15 @@ Every sun is booked by category (`r.riBook`). The court card shows "The crown's 
 
 ## Measured by
 
-`test.mjs` (all 14 pass on the private build and on the full world build). Numbers are from the full build:
+`test.mjs` (all 14 pass on the full world build, with the core suites). Numbers are from the full build:
 
 | Test | Result |
 | --- | --- |
 | `riCourtOfPeople` | 34 realms: **170/170 seats** held by named people (160 cast, 51 house heads, 20 whose own title is the seat's). Every one has a want and a fear. All 8 wants and all 6 fears occur. |
-| `riPushesFollowNeed` | Broke (2 months in the treasury, debt 1.5 years): the loudest push is heavier taxes, 58% to pass. Rich (4 years): the loudest is lighter taxes (81%), and heavier taxes only 3%. Broke under a greedy ruler 83%, under a generous one 46%. A held session raises taxes 1 → 1.2 and names the Treasurer who pushed. |
-| `riCourtInTheWorld` | 3 worlds × 30 years, 3,003 AI realm-years: **3,002 law pushes decided** (817 passed, 2,185 refused), **100%** naming the person who pushed it and why (97.9% with 2+ reasons). 105 vassal deals, 191 seats changing hands, every claimant with named backers. Faction-years led by a named head with aims: **100%**; backed by a councillor: 43%. Taxes at the end: Light 54, Fair 12, Customary 13, Heavy 16, Crushing 4. Authority: Low 36, Limited 25, High 15, Absolute 23. |
+| `riPushesFollowNeed` | Broke (2 months in the treasury, debt 1.5 years): the loudest push is heavier taxes, 43% to pass (custom weighs against it). Rich (4 years): the loudest is lighter taxes (66%), and heavier taxes only 3%. Broke under a greedy ruler 68%, under a generous one 31%. A held session raises taxes 1 → 1.2 and names the Treasurer who pushed; its reasons end with "Taxes have always been customary here". |
+| `riCourtInTheWorld` | 3 worlds × 30 years, 2,990 AI realm-years: **2,948 law pushes decided** (693 passed, 2,255 refused), **100%** naming the person who pushed it and why (98.6% with 2+ reasons). 105 vassal deals, 201 seats changing hands, every claimant with named backers. Faction-years led by a named head with aims: **100%**; backed by a councillor: 41.6%. Taxes at the end: Light 29, Fair 35, Customary 22, Heavy 13, Crushing 1, so **30% at an extreme** (the bar is 60%; before the custom pull, 62 of 99). Authority: Low 34, Limited 31, High 14, Absolute 21. |
 | `riClaimantBackers` | A claimant's share of the army: **32%** when every house is loyal, **65%** when the stronger half hate the crown. The war gave them 65%. The news names three houses declaring for her. After the claim failed, the backers lost 15+ loyalty each and 4 heads were taken. |
-| `riGoldGetsUsed` | 3 worlds × 30 years, 2,998 AI realm-years: **hoarding flags 0; burned 0%** of income (the fix layer burned 65–67%). Spent as a share of income: host upkeep 13.1%, works 60.3%, works upkeep 12.6%, council's pay 1.6%, drill 1.5%, pensions and feasts 1.1%, recruits 0.5%, sellswords 0.2%. Treasury median 1.85 years of income, p90 3.0, max 4.6. Armies ÷ normal p10/50/90 0.80/1.01/1.28 (fix layer 0.70–0.80 / 1.00–1.03 / 1.24–1.34). Stability 35/56/72 (fix layer 31–33 / 51–52 / 73–75). **0.018 wars a realm-year** (fix layer 0.020–0.022 on the same seeds). |
+| `riGoldGetsUsed` | 3 worlds × 30 years, 3,036 AI realm-years: **hoarding flags 0; burned 0%** of income (the fix layer burned 65–67%). Spent as a share of income: host upkeep 12.9%, works 58.5%, works upkeep 12.1%, council's pay 1.6%, drill 1.7%, pensions and feasts 0.9%, recruits 0.6%, sellswords 0.3%. Treasury median 1.89 years of income, p90 3.1, max 4.0. (Earlier, before 38-orders and the custom pull: host 13.1%, works 60.3%, median 1.85, max 4.6.) Armies ÷ normal p10/50/90 0.80/1.01/1.28 (fix layer 0.70–0.80 / 1.00–1.03 / 1.24–1.34). Stability 35/56/72 (fix layer 31–33 / 51–52 / 73–75). **0.018 wars a realm-year** (fix layer 0.020–0.022 on the same seeds). |
 | `riPlayerMoney` | A viscount in Greyhaven at heavy taxes: holdings +502, allowance +250, holdings upkeep −128, living −320, destrier −60, men-at-arms −1,080, steward −50, hearth tax −12, tenth on rents −48. The crown's treasury got exactly the 60 paid. In Aldmark the hearth mark (47) already taxes free folk: no hearth line, tenth on rents −68. |
 | `riRansomAndRaid` | A gentry captain (20% odds of being taken): ransom 390, paid 390, captor's treasury +390. A farm burned by an occupying enemy pays 0 that year, is rebuilt for 120 (40% of its price), then pays 43. The Holdings tab lists both lines and draws purely. |
 | `riCourtCardAndVoice` | The card names 5/5 councillors with wants and fears, escapes names (`<b>` in a name stays text), and draws without changing state or the random stream. Speaking for the item costs 1 initiative and adds 0.78: support 4.25 → 5.03. |
@@ -135,14 +136,24 @@ Every sun is booked by category (`r.riBook`). The court card shows "The crown's 
 | Vassal deals (pensions, seats, refusals) | 0 | 1,798 |
 | Claimants with named backers | none named | 66 of 66 |
 | Faction-years led by a named head | 5,561 of 28,948 (19%) | 41,399 of 41,404 (100%) |
-| Taxes after 100 years | all 31–33 realms Customary | Light 20–27 realms a world, Crushing 1–5, the rest between |
+| Taxes after 100 years | all 31–33 realms Customary | Light 20–27 realms a world, Crushing 1–5, the rest between (before the custom pull; see the next table) |
+
+**Taxes over time** (scratch harness: 8 worlds, seeds 5603–5605, 606, 1212, 2424, 4848, 7, a peasant player, the full build; AI realms only):
+
+| After | Without the custom pull | With it |
+| --- | --- | --- |
+| 30 years | Light 140, Fair 44, Customary 31, Heavy 34, Crushing 19 of 268: **59% extreme** (49–69% by world) | Light 70, Fair 116, Customary 41, Heavy 32, Crushing 8 of 267: **29% extreme** (15–35%) |
+| 60 years | 226 Light of 262: **89% extreme** (80–94%) | Light 126, Fair 108, Customary 14, Heavy 8, Crushing 4 of 260: **50%** (39–59%) |
+| 100 years | Light 214, Fair 15, Customary 8, Heavy 4, Crushing 15 of 256: **89% extreme** (79–94%) | Light 134, Fair 80, Customary 24, Heavy 9, Crushing 7 of 254: **56%** (45–66%) |
+
+So the test's 60% bar after 30 years was not noise around a stable world: pooled, the world sat on the bar at 30 years (59%) and went on to 89% by 60. Most of the slide was the treasurer's remit, which lowered taxes with no court weighing: over 2 worlds × 100 years it made 202 of the 337 cuts, 113 of them to Light. Bounded at one step under custom, it made 397 cuts in 8 worlds × 100 years, 5 of them to Light. The court's weight alone could not hold the world (0.1 to 0.2 a step with the remit unbounded: 76–81% extreme after 100 years, 4 worlds). Hoarding stays at 0: `audit.mjs`, 3 worlds × 100 years (9,773 realm-years), 0 flags and 0% burned.
 
 `tools/lint-events.mjs` passes with 0 errors and 0 warnings. Its browser pass declines all four events, which are trigger-only, so `riScenesRender` renders them instead. `tools/lint-choices.mjs` finds 0 obviously best choices.
 
 ## Rules kept
 
 - Engine paths draw dice with `A.chance`, `A.rf`, `A.ri`, `A.pick` and `A.wpick`. The court card, the ledger and the money breakdown only read; `riCourtCardAndVoice` and `riRansomAndRaid` check that state and the random stream are unchanged.
-- New fields tolerate old saves: `r.council` for AI realms, `r.riCourt`, `r.riAgenda`, `r.riPri`, `r.riBook`, `r.riWorks`, `r.riGreat`, `r.riLaw0`, `d.riMerc`, `w.riBack`, `pc.riPurse`, `a.burnt`. A save without them fills its councils at the next court and starts an empty book.
+- New fields tolerate old saves: `r.council` for AI realms, `r.riCourt`, `r.riAgenda`, `r.riPri`, `r.riBook`, `r.riWorks`, `r.riGreat`, `r.riLaw0` (and its `tax`, read as Customary when an older save lacks it), `d.riMerc`, `w.riBack`, `pc.riPurse`, `a.burnt`. A save without them fills its councils at the next court and starts an empty book.
 - Wants and fears are worked out from the person and cached outside the save.
 - Every interpolated value goes through `UI.esc`. Actions use `data-a`: `riVoice`, `riGift`, `riRebuild`.
 - New effect keys are declared in `FX_EXTRA`: `riRansom`, `riRebuild`, `riCourt`, `riVoice`.
@@ -151,7 +162,7 @@ Every sun is booked by category (`r.riBook`). The court card shows "The crown's 
 
 ## Limits
 
-- **Taxes drift light.** Lords want lighter taxes more often than councillors want heavier ones, and most realms make far more than their armies cost. After 30 years about half the realms sit at Light taxes, and after 100 years two thirds do. A few sit at Crushing: poor realms whose armies outrun their income. The court's "away from custom" damping slows this but does not stop it. A designer may want a stronger pull back to custom. Once the works are built (upkeep at its cap of a quarter of revenue), treasuries settle near 3 years of income and the money goes to upkeep, great works and lower taxes.
+- **Taxes still drift light, more slowly.** With the custom pull, 26% of realms sit at Light after 30 years and 53% after 100 (without it, 52% and 84%). Lords want lighter taxes more often than councillors want heavier ones, and most realms make far more than their armies cost. The drift feeds itself: the court reads the treasury in years of *income*, and a lighter tax lowers the income, so the same coffers read as more years and argue for lighter taxes again. Light is then hard to leave (a rich crown's push for heavier taxes passes about 3% of the time). Whether a world where half the realms tax lightly after a century is wanted, and whether the court should read the treasury against its spending instead, is a design call. A few realms sit at Crushing: poor realms whose armies outrun their income. Once the works are built (upkeep at its cap of a quarter of revenue), treasuries settle near 3 years of income and the money goes to upkeep, great works and lower taxes.
 - **The hoarding flag reads 2, not 0, in 33,225 realm-years.** Both were windfalls (an indemnity) landing between two monthly spends, at 6.9 and 8.2 years.
 - **Authority swings too.** After 30 years a quarter of realms are Absolute and a third are Low.
 - **Works carry most of the money: about 60% of AI income.** Their effect on realms is bounded: income buildings once per province, upkeep capped at a quarter of revenue, temples calm a realm only up to stability 60, great works add legitimacy only up to 90. Median realm income still grew about 15–30% over 30 years, against about 11–17% on the fix layer.

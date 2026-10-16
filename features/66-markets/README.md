@@ -56,7 +56,7 @@ The plan's step is "more markets: every town with a market building, with prices
 - The market card, the reasons, the nearest towns and the trip plans only read. The road table and paths are caches of the map, and a memo of a road is checked against the two towns' owners.
 - Every value in the card goes through `UI.esc`, and the actions use `data-a`/`data-c`.
 - Old saves: `S.mt` is new. Without it, prices are 45's until the next month builds the towns from the realm's store. The towns are rebuilt whenever a province changes hands or a capital moves, and a town that stays keeps its store.
-- Stores are kept short in the state: arrays in the order of `S.mt.K`, rounded to two significant places below 100 loads.
+- Stores are kept short in the state: arrays in the order of `S.mt.K`, in whole loads above 100, tenths above 10 and hundredths below.
 
 **Expected to move in the balance league** (not run here). Merchant `medianPeakCoin` will probably fall: a luxury load now fetches what the town can absorb, and towns sell no more than they hold. Artisan coin may move a little, since workshop income now comes from the town's prices. Peasant and soldier lives do not trade.
 

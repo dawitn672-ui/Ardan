@@ -1,6 +1,6 @@
 // Every rank's battle moves the war: the soldier's line battle and the officer's tactical battle turn their result into
-// order on both sides of the war-map fight, and that changes who wins it. The full calibration (60 fights) is
-// bench/rankfx.mjs; this test replays a smaller set of real fights frozen at their start.
+// order on both sides of the war-map fight, and that changes who wins it. The calibration is bench/rankfx.mjs; this
+// test replays the same 60 real fights frozen at their start, for four results and none.
 import { RANKFX_LAB } from '../../bench/rankfx-lab.mjs';
 
 export default {
@@ -41,11 +41,14 @@ export default {
   },
 
   async rankMovesTheFight(pg) {
-    // real fights, frozen at their start and replayed with each result: a good result never loses a fight that no
-    // result would have won, a bad one never wins one it would have lost, and both layers change some results
+    // the bench's own 60 real fights (bench/rankfx.mjs), frozen at their start and replayed with each result, paired
+    // fight by fight: a good result never loses a fight that no result would have won, a bad one never wins one it
+    // would have lost, the soldier's best against his worst changes at least 10 points of them (the plan's band is
+    // 10-20), and the officer's company moves at least as many as the soldier's section. Sixteen fights were too few:
+    // a swing of 2 or 3 fights read as a tie when the world changed under it.
     await pg.evaluate(RANKFX_LAB);
     const r = await pg.evaluate(() => {
-      const fights = RANKFX_FIGHTS(16, 5000);
+      const fights = RANKFX_FIGHTS(60, 5000);
       const arms = {
         none: () => {}, lineBest: k => A.RANKFX.apply(k, 'line', 1), lineWorst: k => A.RANKFX.apply(k, 'line', -0.8),
         partBest: k => A.RANKFX.apply(k, 'part', 1), partWorst: k => A.RANKFX.apply(k, 'part', -1),
@@ -55,13 +58,12 @@ export default {
       return { n: fights.length, res };
     });
     const R = r.res, won = k => R[k].filter(x => x === true).length;
-    // monotone: compared fight by fight with no result applied
-    const worse = (k, base) => R[k].filter((x, i) => base[i] === true && x === false).length;
-    const better = (k, base) => R[k].filter((x, i) => base[i] === false && x === true).length;
-    // that the officer's layer moves more than the soldier's is the bench's to show (60 fights): on 16 the two swings
-    // are 2 or 3 fights each, and which is larger turned on one fight when the economy changed the random stream
-    const wrong = worse('lineBest', R.none) + worse('partBest', R.none) + better('lineWorst', R.none) + better('partWorst', R.none);
-    const ok = r.n >= 12 && wrong === 0 && won('lineBest') > won('lineWorst') && won('partBest') > won('partWorst');
-    return { ok, detail: `${r.n} fights won: no result ${won('none')}; soldier best ${won('lineBest')}, worst ${won('lineWorst')}; officer best ${won('partBest')}, worst ${won('partWorst')}; fights that went the wrong way ${wrong} (bench/rankfx.mjs measures 60: soldier 12 points, officer 19)` };
+    // fights that changed hands between two arms, counted fight by fight (a paired count: the arms share every fight)
+    const flip = (hi, lo) => R[hi].filter((x, i) => x === true && R[lo][i] === false).length;
+    const wrong = flip('none', 'lineBest') + flip('none', 'partBest') + flip('lineWorst', 'none') + flip('partWorst', 'none') + flip('lineWorst', 'lineBest') + flip('partWorst', 'partBest');
+    const pts = k => Math.round(100 * k / Math.max(1, r.n));
+    const line = flip('lineBest', 'lineWorst'), part = flip('partBest', 'partWorst');
+    const ok = r.n >= 55 && wrong === 0 && pts(line) >= 10 && part >= line;
+    return { ok, detail: `${r.n} fights won: no result ${won('none')}; soldier best ${won('lineBest')}, worst ${won('lineWorst')} (${line} fights change hands, ${pts(line)} points); officer best ${won('partBest')}, worst ${won('partWorst')} (${part}, ${pts(part)} points); fights that went the wrong way ${wrong}` };
   },
 };

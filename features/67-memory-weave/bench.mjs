@@ -44,7 +44,7 @@ const out = await pg.evaluate(([LIVES, YEARS, SEED]) => {
   const memFlag = k => k === 'ev' || /^la_/.test(k) || (M.setters[k] && !KEEP.has(k));
   const words = s => (String(s || '').match(/\S+/g) || []).length;
   const sig = v => !v ? 'none' : v.skip ? 'skip' : JSON.stringify([v.text, (v.choices || []).map(c => [c.t, c.odds])]);
-  const S = { events: 0, bot: 0, changed: 0, mine: 0, other: 0, gated: 0, tied: 0, over80: 0, raw: 0, byRule: {}, offRule: {}, hist: {}, samples: [] };
+  const S = { life: { n: 0, tied: 0 }, events: 0, bot: 0, changed: 0, mine: 0, other: 0, gated: 0, tied: 0, over80: 0, raw: 0, byRule: {}, offRule: {}, hist: {}, samples: [] };
   const ev0 = A.eventView;
   let busy = false;
   // the scene without the player's memories: same ctx, same random state, nothing kept
@@ -79,10 +79,11 @@ const out = await pg.evaluate(([LIVES, YEARS, SEED]) => {
       const e = A.EV[q.ev];
       let condYes = null; try { condYes = e.cond ? !!e.cond(pc, A.C) : true; } catch (err) {}
       const { v2, condNo } = amnesia(q, pc, e, voPre);
-      const changed = sig(v) !== sig(v2), w = q.ctx && q.ctx.mw, mine = !!(w && !w.off);
+      const changed = sig(v) !== sig(v2), w0 = q.ctx && q.ctx.mw, w = w0 && w0.ev === q.ev ? w0 : null, mine = !!(w && !w.off);
       const gated = !e.trigger && !(q.forced) && condYes === true && condNo === false;
-      S.events++;
+      S.events++; S.life.n++;
       if (M.memory.has(q.ev)) S.bot++;
+      if (changed || gated) S.life.tied++;
       if (changed) { S.changed++; if (mine) S.mine++; else S.other++; }
       if (gated) S.gated++;
       if (changed || gated) S.tied++;
@@ -99,8 +100,9 @@ const out = await pg.evaluate(([LIVES, YEARS, SEED]) => {
   try {
     for (let i = 0; i < LIVES; i++) {
       const engaged = i % 2 === 0, [race, realm, status] = STARTS[Math.floor(i / 2) % STARTS.length], p = PERS[Math.floor(i / (2 * STARTS.length)) % PERS.length];
+      S.life = { n: 0, tied: 0 };
       const L = B.life({ seed: SEED + i * 7919, race, realm, status, sex: i % 2 ? 'F' : 'M' }, p, engaged, YEARS);
-      lives.push({ years: L.years, events: L.events, mem: L.memEvents, arc: L.arc });
+      lives.push({ years: L.years, events: L.events, mem: L.memEvents, arc: L.arc, tied: S.life.tied, n: S.life.n });
     }
   } finally { A.eventView = ev0; }
   const pct = (a, b) => b ? Math.round(1000 * a / b) / 10 : null;
@@ -110,7 +112,9 @@ const out = await pg.evaluate(([LIVES, YEARS, SEED]) => {
     botMemoryShare: pct(botMem, botEvents),
     changedShare: pct(S.changed, S.events), changedByThisFeature: pct(S.mine, S.events), changedByOthers: pct(S.other, S.events),
     gatedShare: pct(S.gated, S.events), tiedShare: pct(S.tied, S.events),
-    perLife: lives.map(l => pct(l.mem, l.events)),
+    // per life: [years, events, the bot's share, the tied share]; and lives of 40+ years with a tied share of 40% or more
+    perLife: lives.map(l => [l.years, l.n, pct(l.mem, l.events), pct(l.tied, l.n)]),
+    longLivesAt40: (() => { const g = lives.filter(l => l.years >= 40); return `${g.filter(l => l.n && l.tied / l.n >= 0.4).length} of ${g.length}`; })(),
     byRule: S.byRule, dropped: S.offRule, over80: S.over80, rawTokens: S.raw,
     hist: S.hist, samples: S.samples, stats: A.MW ? A.MW.stats : null,
   };

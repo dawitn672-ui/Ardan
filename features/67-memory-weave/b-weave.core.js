@@ -25,7 +25,7 @@
   Object.assign(MW, {
     ON: true,
     MAX_WORDS: 80,
-    CITE_MAX: 4,        // a memory line is leaned on at most this many times
+    CITE_MAX: 3,        // a memory line is leaned on at most this many times
     SHIFT: { person: 6, againWon: 6, againLost: 3, skill: 5 },
   });
   MW.stats = Object.assign(MW.stats || {}, { woven: 0, dropped: 0, byRule: {} });
@@ -47,14 +47,17 @@
     str: 'strength', spd: 'quickness', ins: 'a quick eye', sta: 'staying power', int: 'your wits', wil: 'nerve',
   };
   MW.DOM = DOM;
+  // only kinds of place a scene names plainly; a road or a field turns up in too many texts to be a place
   const PLACE = {
-    tavern: 'in a tavern', market: 'at market', law: 'on the wrong side of the watch', road: 'on the road', temple: 'at a temple',
-    court: 'at court', war: 'among soldiers', work: 'at work', sea: 'on the water', wild: 'out in the wild', field: 'in the fields',
-    sick: 'at a sickbed', kin: 'among your kin',
+    tavern: 'in a tavern', market: 'at market', law: 'on the wrong side of the watch', temple: 'at a temple',
+    court: 'at court', war: 'among soldiers', sea: 'on the water',
   };
+  const STRONG = ['law', 'kill', 'hurt', 'loss', 'gain', 'shame', 'name'];
+  const BAD = new Set(['law', 'kill', 'hurt', 'loss', 'shame']);
   // what a remembered choice led to, as a tail on the deed
-  MW.tail = function (m) {
-    const k = m && Array.isArray(m.k) ? m.k : [];
+  MW.tail = function (m, bad) {
+    let k = m && Array.isArray(m.k) ? m.k : [];
+    if (bad === true) k = k.filter(x => BAD.has(x)); else if (bad === false) k = k.filter(x => !BAD.has(x));
     if (k.includes('law')) return ', and the watch took you';
     if (k.includes('kill')) return ', and someone died of it';
     if (k.includes('hurt')) return ', and came away hurt';
@@ -64,8 +67,6 @@
     if (k.includes('name')) return ', and people talked of it';
     return '';
   };
-  const STRONG = ['law', 'kill', 'hurt', 'loss', 'gain', 'shame', 'name'];
-  const BAD = new Set(['law', 'kill', 'hurt', 'loss', 'shame']);
 
   // ---------------------------------------------------------------- the four rules
 
@@ -114,7 +115,8 @@
 
   const usable = (m, now) => m && m.y < now && (m.u || 0) < MW.CITE_MAX;
   // a short deed ("you accepted") carries the scene's title, so the memory says what it was about
-  const deedOf = m => !m.d ? '' : (words(m.d) >= 4 || !m.t) ? m.d : `${m.d} (${low(m.t)})`;
+  // (only a title that reads as a thing: "A broken jug", "The toll at the bridge"; otherwise the deed must say enough)
+  const deedOf = m => !m.d ? '' : words(m.d) >= 4 ? m.d : m.t && /^(A|An|The) [a-z]/.test(m.t) && !/[{}]/.test(m.t) ? `${m.d} (${low(m.t)})` : '';
   const recent = (a, b) => b.y - a.y;
 
   MW.rules = {
@@ -122,7 +124,7 @@
     person(p, ctx, e, now) {
       const pid = ctx.pid, t = pid ? A.P(pid) : null;
       if (!t || t.id === p.id) return null;
-      const own = MW.lines(p).filter(m => m.p === String(pid) && m.d && usable(m, now) && (Math.abs(m.o || 0) >= 4 || (m.k || []).some(k => STRONG.includes(k) || k === 'kind' || k === 'wrong')));
+      const own = MW.lines(p).filter(m => m.p === String(pid) && deedOf(m) && usable(m, now) && (Math.abs(m.o || 0) >= 4 || (m.k || []).some(k => STRONG.includes(k) || k === 'kind' || k === 'wrong')));
       let mem = null, sg = 0, ref = null;
       if (own.length) {
         own.sort((a, b) => Math.abs(b.o || 0) - Math.abs(a.o || 0) || recent(a, b));
@@ -130,16 +132,18 @@
       } else {
         // 55-bonds' history on the bond: weighed lines of 6 or more
         const H = p.rel && p.rel[t.id] && Array.isArray(p.rel[t.id].hist) ? p.rel[t.id].hist : [];
-        const hl = H.filter(x => x && typeof x.y === 'number' && x.y < now && typeof x.w === 'number' && Math.abs(x.w) >= 6 && (x.d || x.t))
+        // (your own deeds only: not a line inherited from a parent, "He knows what you did for his father ...")
+        const hl = H.filter(x => x && typeof x.y === 'number' && x.y < now && typeof x.w === 'number' && Math.abs(x.w) >= 6 && !x.of && typeof x.d === 'string' && /^you /.test(x.d) && !/[:;]/.test(x.d) && !MW.VAGUE.test(x.d))
           .sort((a, b) => Math.abs(b.w) - Math.abs(a.w) || b.y - a.y);
         if (!hl.length) return null;
         const x = hl[0]; sg = x.w > 0 ? 1 : -1;
-        mem = { y: x.y, d: clean(x.d || low(x.t)).slice(0, 110) };
+        mem = { y: x.y, d: clean(x.d).slice(0, 110) };
       }
       const od = {};
       (e.choices || []).forEach((c, i) => { if (c && c.check) od[i] = sg * MW.SHIFT.person; });
       const fr = pickBy(sg > 0 ? FR.personGood : FR.personBad, e.id, now, 'p');
       const o = { y: mem.y, d: mem.t ? deedOf(mem) : mem.d };
+      if (!o.d) return null;
       return { r: 'person', y: mem.y, ref, sg, od, long: fixCase(fill(say(fr[0], o), t)), short: fixCase(fill(say(fr[1], o), t)) };
     },
     // the same scene came before: what you chose then
@@ -160,7 +164,7 @@
       const checks = [];
       (e.choices || []).forEach((c, i) => { const s = c && c.check && (typeof c.check.s === 'string' ? c.check.s : c.check.fight ? 'melee' : null); if (s && DOM[s]) checks.push([i, s]); });
       if (!checks.length) return null;
-      const sh = MW.shapeOf(e), L = MW.lines(p).filter(m => m.s && m.d && (m.ok === 0 || m.ok === 1) && m.e !== e.id && usable(m, now));
+      const sh = MW.shapeOf(e), L = MW.lines(p).filter(m => m.s && deedOf(m) && (m.ok === 0 || m.ok === 1) && m.e !== e.id && usable(m, now));
       let best = null;
       for (const [i, s] of checks) {
         const hits = L.filter(m => m.s === s);
@@ -173,18 +177,20 @@
       const { i, s, m } = best, won = m.ok === 1;
       const fr = pickBy(won ? FR.skillWon : FR.skillLost, e.id, now, 's');
       const o = { y: m.y, d: deedOf(m), dom: DOM[s] };
+      if (!o.d) return null;
       return { r: 'skill', y: m.y, ref: [m.y, m.e, m.c], ci: i, od: { [i]: (won ? 1 : -1) * MW.SHIFT.skill }, long: fixCase(say(fr[0], o)), short: fixCase(say(fr[1], o)) };
     },
     // something happened to you in this kind of place
     place(p, ctx, e, now) {
       const sh = MW.shapeOf(e);
       if (!sh || !PLACE[sh]) return null;
-      const L = MW.lines(p).filter(m => m.sh === sh && m.d && m.e !== e.id && usable(m, now) && (m.k || []).some(k => STRONG.includes(k)) && now - m.y <= 30);
+      const L = MW.lines(p).filter(m => m.sh === sh && deedOf(m) && m.e !== e.id && usable(m, now) && (m.k || []).some(k => STRONG.includes(k)) && now - m.y <= 30);
       if (!L.length) return null;
       L.sort((a, b) => (a.u || 0) - (b.u || 0) || recent(a, b));
       const m = L[0], bad = (m.k || []).some(k => BAD.has(k));
       const fr = pickBy(bad ? FR.placeBad : FR.placeGood, e.id, now, 'w');
-      const o = { y: m.y, d: deedOf(m), tail: MW.tail(m), place: PLACE[sh] };
+      const o = { y: m.y, d: deedOf(m), tail: MW.tail(m, bad), place: PLACE[sh] };
+      if (!o.d) return null;
       return { r: 'place', y: m.y, ref: [m.y, m.e, m.c], od: {}, long: fixCase(say(fr[0], o)), short: fixCase(say(fr[1], o)) };
     },
   };
@@ -192,7 +198,10 @@
 
   // engine side: called from the event's setup, once, when the scene first comes up
   MW.weave = function (p, ctx, e) {
-    if (!MW.ON || !ctx || ctx.mw !== undefined || ctx.skip || !MW.isPc(p) || !p.mw) return null;
+    if (!MW.ON || !ctx || ctx.skip || !MW.isPc(p) || !p.mw) return null;
+    // a scene queued after another shares its ctx: what was woven for that one is not this one's
+    if (ctx.mw && ctx.mw.ev === e.id) return ctx.mw;
+    if (ctx.mw !== undefined) delete ctx.mw;
     const now = A.S.year;
     for (const k of MW.ORDER) {
       let w = null;
@@ -200,6 +209,7 @@
       if (!w) continue;
       w.long = clean(w.long); w.short = clean(w.short);
       for (const i in w.od) if (!w.od[i]) delete w.od[i];
+      w.ev = e.id;
       ctx.mw = w;
       return w;
     }
@@ -222,6 +232,8 @@
     Object.defineProperty(setup, 'toString', { value: () => src, enumerable: false, configurable: true });
     e.setup = setup;
     Object.defineProperty(e, '_mwWrapped', { value: true, enumerable: false, configurable: true });
+    // the event's own setup, for tools that ask which events read a memory by their own words (bench/bot.mjs)
+    Object.defineProperty(e, '_mwOwnSetup', { value: own, enumerable: false, configurable: true });
   };
   const defEvents = A.defEvents;
   A.defEvents = function (list) {
@@ -238,7 +250,7 @@
     const r = odds.apply(this, arguments);
     try {
       const q = MW.curQ || (A.S && A.S.queue[0]), w = q && q.type === 'event' && q.ctx && q.ctx.mw;
-      if (w && w.od && !w.off && MW.isPc(pc) && typeof r === 'number') {
+      if (w && w.od && !w.off && w.ev === q.ev && MW.isPc(pc) && typeof r === 'number') {
         const e = A.EV[q.ev], i = e && e.choices ? e.choices.findIndex(c => c && c.check === check) : -1;
         const d = i >= 0 ? +w.od[i] || 0 : 0;
         if (d) return A.clamp(r + d, 4, 96);
@@ -258,11 +270,11 @@
   };
   MW.apply = function (q, v) {
     const w = q.ctx && q.ctx.mw, pc = A.pc();
-    if (!w || w.off || !pc) return;
+    if (!w || w.off || !pc || w.ev !== q.ev) return;
     const e = A.EV[q.ev];
     const text = String(v.text || '');
     let line = null;
-    if (text.includes(String(w.y)) && /\b1\d{3}\b/.test(text)) line = null;   // the scene already quotes that year
+    if (/\b1\d{3}\b/.test(text)) line = null;   // the scene already quotes a year: another memory, or the world's record, speaks
     else if (words(text) + words(w.long) <= MW.MAX_WORDS) line = w.long;
     else if (words(text) + words(w.short) <= MW.MAX_WORDS) line = w.short;
     if (!line) {

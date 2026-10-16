@@ -82,13 +82,21 @@
     };
   };
   // the deed, in the past tense, from the label taken. 55-bonds keeps the verb table; without it, a plain form
+  // deeds too thin to say what happened ("you did it", "you gave it everything") are not kept as deeds
+  MW.VAGUE = /^you (?:tried to |chose to )?(did it|do it|throw everything|give it everything|did so|did that|went|go|stayed|waited|agreed|accepted|refused|declined|nodded|gave it everything|threw everything|did your best|did as you were told|kept quiet|said nothing|let it go|left it|chose to (do|go|stay|wait) it)\b/i;
   MW.deedOf = function (label, failed) {
     const l = clean(label).replace(/[“”‘’]/g, '');
     if (!l) return null;
-    if (A.BONDS && A.BONDS.deedOf) { const d = A.BONDS.deedOf(l, failed); if (d) return d.slice(0, 110); return null; }
-    const first = l.split(/\s*[,:;(—–]\s*/)[0].replace(/[.!?]+$/, '');
+    const first = l.split(/\s*[,:;(—–]\s*|\s+-\s+/)[0].replace(/[.!?]+$/, '').trim();
     if (!/^[A-Za-z]/.test(first) || first.split(' ').length > 10) return null;
-    return (failed ? `you tried to ${low(first)}, and failed` : `you chose to ${low(first)}`).slice(0, 110);
+    let d = null;
+    // two verbs ("Take his purse and tell him things"): only the first would go into the past tense, so the whole
+    // clause stays as it was written, after "you chose to"
+    if (/\s(and|then)\s/i.test(first) && !/^(i|we|no|yes|not|never|the|a|an|your|his|her|my)\b/i.test(first)) d = failed ? `you tried to ${low(first)}, and failed` : `you chose to ${low(first)}`;
+    else if (A.BONDS && A.BONDS.deedOf) d = A.BONDS.deedOf(l, failed);
+    else if (!/^(i|we|no|yes|not|never|the|a|an|your|his|her|my)\b/i.test(first)) d = failed ? `you tried to ${low(first)}, and failed` : `you chose to ${low(first)}`;
+    if (!d || MW.VAGUE.test(d)) return null;
+    return d.slice(0, 110);
   };
   MW.kindsOf = function (a, b, pc, res) {
     const k = [];
@@ -158,7 +166,7 @@
         MW.note(pc, pre, q);
         // a memory a scene cited counts its citing, so the same line is not leaned on again and again
         const w = q.ctx && q.ctx.mw;
-        if (w && w.ref) { const m = MW.lines(pc).find(x => x.y === w.ref[0] && x.e === w.ref[1] && x.c === w.ref[2]); if (m) m.u = (m.u || 0) + 1; }
+        if (w && w.ref && w.ev === q.ev) { const m = MW.lines(pc).find(x => x.y === w.ref[0] && x.e === w.ref[1] && x.c === w.ref[2]); if (m) m.u = (m.u || 0) + 1; }
       }
     } catch (err) { console.error('memory weave note', err); }
     return r;

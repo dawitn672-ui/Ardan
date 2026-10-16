@@ -11,8 +11,10 @@ export const BOT = () => {
     const setters = {};
     // a flag set directly, or an arc's mark (fx.arc { mark: 'x' } sets the flag la_x; 46-life-arcs and the story arcs)
     const flagsIn = src => [...src.matchAll(/["']?flag["']?\s*:\s*["']([A-Za-z0-9_]+)["']|flags(?:\.|\[["'])([A-Za-z0-9_]+)["']?\]?\s*=(?!=)|["']?mark["']?\s*:\s*["']([A-Za-z0-9_]+)["']/g)].map(m => m[1] || m[2] || 'la_' + m[3]);
+    // the event's own setup: 67-memory-weave wraps every setup to weave in a memory, which says nothing about the event
+    const ownSetup = e => (e._mwWrapped ? e._mwOwnSetup : e.setup);
     for (const e of Object.values(A.EV)) {
-      for (const fx of [e.setup]) if (fx) for (const f of flagsIn(fx.toString())) (setters[f] = setters[f] || new Set()).add(e.id);
+      for (const fx of [ownSetup(e)]) if (fx) for (const f of flagsIn(fx.toString())) (setters[f] = setters[f] || new Set()).add(e.id);
       for (const c of e.choices || []) for (const fx of [c.fx, c.win && c.win.fx, c.lose && c.lose.fx]) {
         if (!fx) continue;
         const src = typeof fx === 'function' ? fx.toString() : JSON.stringify(fx);
@@ -22,7 +24,7 @@ export const BOT = () => {
     const reads = {}, memory = new Set();
     for (const e of Object.values(A.EV)) {
       // a memory is read where it decides whether the event comes (cond), how it is set up, or what it says
-      const src = (e.cond ? e.cond.toString() : '') + ' ' + (e.setup ? e.setup.toString() : '') + ' ' + (typeof e.text === 'function' ? e.text.toString() : '');
+      const src = (e.cond ? e.cond.toString() : '') + ' ' + (ownSetup(e) ? ownSetup(e).toString() : '') + ' ' + (typeof e.text === 'function' ? e.text.toString() : '');
       // ... or an arc's mark read back: M(p, 'x') or C.arcMark(p, 'x') read the flag la_x
       const fl = [...src.matchAll(/C\.flag\(p,\s*["']([A-Za-z0-9_]+)["']|flags(?:\.|\[["'])([A-Za-z0-9_]+)|\b(?:M|arcMark)\(p,\s*["']([A-Za-z0-9_]+)["']/g)].map(m => m[1] || m[2] || 'la_' + m[3]).filter(f => f !== 'ev' && f !== 'unfree' && f !== 'patron' && f !== 'chain');
       reads[e.id] = fl;

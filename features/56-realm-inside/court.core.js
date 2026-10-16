@@ -189,7 +189,7 @@ const years = r => (r.treasury || 0) / Math.max(1, r.income || 1);
 RI.years = years;
 // the realm's own custom in each law (what it had when the court first met): pushes away from it lose force
 RI.lawPos = (r, law) => law === 'tax' ? taxIdx(r) : law === 'authority' ? (r.laws.authority != null ? r.laws.authority : 1) : (r.laws.levy != null ? r.laws.levy : 1);
-RI.trad = (r, law) => { const t = r.riLaw0 || {}; return law === 'tax' ? 2 : law === 'authority' ? (t.authority != null ? t.authority : 1) : 1; };
+RI.trad = (r, law) => { const t = r.riLaw0 || {}; return law === 'tax' ? (t.tax != null ? taxIdx({ laws: { tax: t.tax } }) : 2) : law === 'authority' ? (t.authority != null ? t.authority : 1) : 1; };
 RI.awayMul = function (r, k) {
   const P = PUSH[k]; if (!P || !P.law) return 1;
   const cur = RI.lawPos(r, P.law), nv = cur + (/Up$/.test(k) ? 1 : -1), t = RI.trad(r, P.law);
@@ -286,9 +286,20 @@ RI.agendaOf = function (T, laws, r) {
   const score = t => t.sup - t.opp * .5 + need(t);
   return Object.values(T).filter(t => !!PUSH[t.k].law === laws && t.pro.length && t.sup > .4).sort((a, b) => score(b) - score(a))[0] || null;
 };
+// the pull of the realm's customary tax (its law when the court first sat): a step further from it is weighed
+// against, a step back toward it is weighed for, by each step of distance. Pooled over 8 worlds, the share of realms at
+// Light or Crushing was 59% after 30 years and 89% after 100; with this and the treasurer's remit stopping one step
+// under custom (treasury.core.js), 29% and 56%. Pure.
+RI.CUSTOM = { away: .15, back: .12 };
+RI.custom = function (r, k) {
+  const P = PUSH[k]; if (!P || P.law !== 'tax' || !P.ok(r)) return [];
+  const cur = taxIdx(r), nv = cur + (k === 'taxUp' ? 1 : -1), t = RI.trad(r, 'tax'), d0 = Math.abs(cur - t), d1 = Math.abs(nv - t);
+  const T = A.TAX && A.TAX[TAXES[t]], lab = `Taxes have always been ${T ? T[0].toLowerCase() : 'customary'} here`;
+  return d1 > d0 ? [[lab, -r2(RI.CUSTOM.away * d1)]] : d0 > 0 ? [[lab, r2(RI.CUSTOM.back * d0)]] : [];
+};
 // the odds that the crown grants a law push, with its reasons
 RI.odds = function (r, t) {
-  const why = [], ln = RI.lean(r, t.k), nd = RI.need(r, t.k);
+  const why = [], ln = RI.lean(r, t.k), nd = RI.need(r, t.k).concat(RI.custom(r, t.k));
   const bal = .55 * (t.sup - t.opp) / (t.sup + t.opp + .5);
   const top = t.pro[0], foe = t.con[0];
   if (top) why.push([`${A.fullName(top[0].p, false)} (${RI.voiceLabel(top[0], r)}) wants ${RI.wantText(RI.aims(top[0].p).want)}`, r2(bal > 0 ? bal : .05)]);
@@ -450,7 +461,7 @@ RI.deal = function (r) {
 RI.session = function (r) {
   if (!r || !r.alive || r.isRebel || !A.COUNCIL) return null;
   A.polInit && A.polInit(r);
-  if (!r.riLaw0) r.riLaw0 = { authority: r.laws.authority != null ? r.laws.authority : 1 };
+  if (!r.riLaw0) r.riLaw0 = { authority: r.laws.authority != null ? r.laws.authority : 1, tax: (r.laws && r.laws.tax) || 1 };
   RI.ensureHeads(r);
   RI.fillCouncil(r);
   const pc = A.pc(), playerRules = !!(pc && pc.ruler === r.id);

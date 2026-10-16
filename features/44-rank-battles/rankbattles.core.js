@@ -18,7 +18,7 @@
   const RB = A.RANKFX = {
     // share of each division's full order moved per unit of performance: up (+) to theirs and ours, down (-) to ours
     LAYERS: {
-      line: { name: 'your section', theirs: 0.2, ours: 0.07, fall: 0.22 },
+      line: { name: 'your section', theirs: 0.26, ours: 0.09, fall: 0.29 },
       part: { name: 'your company', theirs: 0.36, ours: 0.13, fall: 0.33 },
     },
     GRADE: { triumph: 1, success: 0.5, mixed: 0, failure: -0.8 },

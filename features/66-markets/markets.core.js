@@ -7,8 +7,8 @@
 //   2. carters move goods between a realm's towns wherever the price gap pays the road (by land per step and by terrain,
 //      cheaper by sea between coastal towns), and bandits take a share where the realm is in unrest. Prices settle into
 //      gradients: dear far from where a good is made, cheap near it, the difference no more than the carting;
-//   3. 45's caravans between realms leave from the town with goods to spare and arrive at the town nearest them, so
-//      imports land at the border and the port and are dearer inland;
+//   3. 45's caravans between realms leave from the town with goods to spare and arrive at the town where the good
+//      fetches most after the road, so a dear capital draws them and a town far down the road waits for the carters;
 //   4. a besieged or occupied town is cut off: its fields bring little to market, nothing is carted in, and it eats
 //      its store;
 //   5. the player trades at their nearest market town, and can carry a cargo to any of the five nearest (in the realm
@@ -31,9 +31,12 @@
     // ROAD in place of HAUL0. A step is 250 map units, longer over hills (1.3), forest, marsh and mountains (1.8). By
     // sea between coastal towns: SEA0 (45's SEA abroad) + half a step's HOP per 250 units
     HAUL0: 0.03, HOP: 0.02, SEA0: 0.03,
+    ABS0: 0.2, ABS: 0.2,   // and never less than 0.2 suns a load plus 0.2 a step (a load of grain is worth 4)
     TERR: { plains: 1, steppe: 1, hills: 1.3, forest: 1.2, marsh: 1.5, mountains: 1.8, desert: 1.4, tundra: 1.4 },
     RLO: 0.55, RHI: 2.6,   // a town's price against its realm's
-    DAMP: 0.5,             // carters move half the load that would close the gap down to the carting, each month
+    DAMP: 0.9,             // carters move nine tenths of the load that would close the gap down to the carting each
+                           // month, or all a town can spare when that would not close it (at a half, a town that makes
+                           // a good kept twice its month's output, and the gradients ran well past the carting)
     KEEP: 0.4,             // and leave a town at least this share of its normal store
     CUT: 0.3,              // what a besieged or occupied province still brings to market
     NEAR: 5,               // towns shown and reachable for the player
@@ -108,6 +111,10 @@
     if (!isFinite(f)) return null;
     return { f, sea, steps: Math.round(st * 10) / 10, km: Math.round(km), days: Math.max(2, Math.round(km / (sea ? 100 : 30))) };
   };
+
+  // what carting one load costs on a road: a share of the good's worth, but never less than the mules, fodder and
+  // inns a load needs whatever it is (so grain and timber are dear to cart and pearls are not)
+  MT.cartCost = (k, R) => Math.max(G()[k].base * R.f, MT.ABS0 + MT.ABS * R.steps);
 
   // ---- which provinces are market towns, and whose hinterland is whose (kept in the state; rebuilt when owners change)
   const score = P => (MT.TYPE[P.type] || 0) + Math.log10(1 + (P.town || 0)) * 0.4 + (P.dev || 0) * 0.25 + (P.coast ? 0.75 : 0);
@@ -263,7 +270,7 @@
       }
     }
     // 45's caravans this month leave from the town with most to spare (by last month's need) and arrive at the open
-    // town nearest it
+    // town where the good is dearest after the road
     const cars = carLog && carLog.S === S ? carLog.list : [];
     carLog = null;
     const moved = {}, openOf = {};
@@ -274,7 +281,8 @@
       let src = fs[0], bs = -Infinity, dst = tt[0], bd = Infinity;
       const i = ix[c.k];
       if (fs.length > 1) for (const t of fs) { const x = T(t); const v = x.s && x.n ? (x.s[i] || 0) / Math.max(0.001, x.n[i] != null ? x.n[i] : x.w || 0) : 0; if (v > bs) { bs = v; src = t; } }
-      if (tt.length > 1) { const p = MT.path(src); for (const t of tt) { const dd = isFinite(p.d[t]) ? p.d[t] : A.wsDist(src, t) / 250; if (dd < bd) { bd = dd; dst = t; } } }
+      // the merchants go where the good fetches most after the road from where they set out
+      if (tt.length > 1) { const pk = (A.realm(c.t).mkt || {}).p, base = G()[c.k].base; for (const t of tt) { const R = MT.road(src, t), v = (pk ? pk[c.k] : base) * MT.rel(t, c.k) - base * (R ? R.f : 1); if (-v < bd) { bd = -v; dst = t; } } }
       c.fT = src; c.tT = dst;
       (moved[src] = moved[src] || new Float64Array(nk))[i] -= c.n + (c.lost || 0);
       (moved[dst] = moved[dst] || new Float64Array(nk))[i] += c.n;
@@ -339,7 +347,7 @@
       const pr = (N, s) => pk * relOf(N, s, scR);
       const need = t => Math.max(nm * (t.n[i] != null ? t.n[i] : t.w || 0), nm * 0.01);
       for (const [a, b, R, loss] of roads) {
-        const cost = base * R.f; if (cost >= span) continue;
+        const cost = MT.cartCost(k, R); if (cost >= span) continue;
         const Na = need(a), Nb = need(b), Sa = a.s[i] || 0, Sb = b.s[i] || 0;
         const pa = pr(Na, Sa), pb = pr(Nb, Sb);
         // a gap within a fiftieth of the price beyond the carting is not worth a cart
@@ -350,10 +358,9 @@
         if (!(qmax > 0.05)) continue;
         const gap = q => pr(N2, S2 + q * (1 - loss)) - pr(N1, S1 - q) - cost;
         // the load that would close the gap down to the carting, found by halving
-        let lo = 0, hi = qmax;
-        if (gap(qmax) > 0) lo = qmax;
-        else for (let it = 0; it < 5; it++) { const mid = (lo + hi) / 2; if (gap(mid) > 0) lo = mid; else hi = mid; }
-        const q = MT.DAMP * lo;
+        // (when even all a town can spare would not close it, all of it goes)
+        let lo = 0, hi = qmax, q = qmax;
+        if (!(gap(qmax) > 0)) { for (let it = 0; it < 5; it++) { const mid = (lo + hi) / 2; if (gap(mid) > 0) lo = mid; else hi = mid; } q = MT.DAMP * lo; }
         if (!(q > 0.05)) continue;
         src.s[i] = S1 - q; dst.s[i] = S2 + q * (1 - loss);
         if (loss > 0) m.s[k] = Math.max(0, (m.s[k] || 0) - q * loss);
@@ -401,12 +408,13 @@
       } catch (e) { return v; }
     };
   }
-  // a town's market is shallower than its realm's: each load moves the price by the town's own need
+  // a town's market is shallower than its realm's: each load the player buys or sells moves the price by the town's
+  // share of the realm's need (its square root, and no less than seven tenths of the realm's depth)
   const depth = A.mktDepth;
   A.mktDepth = function (rid, k) {
     const d = depth.apply(this, arguments);
     if (!k || !MT.on()) return d;
-    try { const pid = MT.townFor(rid); if (pid != null) return Math.max(0.6, d * Math.sqrt(Math.max(0.1, nOf(pid, k)))); } catch (e) {}
+    try { const pid = MT.townFor(rid); if (pid != null) return Math.max(0.6, d * Math.sqrt(Math.max(0.5, nOf(pid, k)))); } catch (e) {}
     return d;
   };
   // a load the player sells moves the town's own store, and so its price: n loads sold into a town fetch the price
@@ -418,7 +426,7 @@
     const m = A.mkt(t.r); if (!m || !m.s) return n;
     const N = MT.need(pid, k), S = MT.s(pid, k), sc = x => { const v = N / Math.max(x, N * 0.05); return clamp(E.ELASTIC === 0.5 ? Math.sqrt(v) : Math.pow(v, E.ELASTIC), E.LO, E.HI); }, s0 = sc(S);
     let sum = 0;
-    for (let j = 0; j < n; j++) sum += sc(Math.max(0, S + dir * (j + 0.5))) / s0;
+    for (let j = 0; j < n; j++) sum += dir > 0 ? Math.max(0.3, sc(S + j + 0.5) / s0) : sc(Math.max(0, S - j - 0.5)) / s0;   // a load sold fetches at least the release's floor, three tenths
     return sum;
   };
   // and a town sells no more than it has in store
@@ -515,7 +523,7 @@
         const n = cargo[k]; let s = 0;
         for (let i = 0; i < n; i++) s += A.sellPrice(rid, k) * Math.max(0.3, 1 - i * 0.6 / A.mktDepth(rid, k));
         s = Math.min(s, A.sellPrice(rid, k) * MT.curve(pid, k, n, 1));
-        sale += s; carts += n * G()[k].base * R.f;
+        sale += s; carts += n * MT.cartCost(k, R);
         lines.push({ k, n, there: A.sellPrice(rid, k) });
       }
     });
@@ -540,7 +548,7 @@
       log.push(`On the road: ${what}. You lose ${Math.round(lost * 100)}% of the load.`);
     }
     // carts, fodder and inns for what went out
-    const carts = Math.round(Object.entries(before).reduce((a, [k, n]) => a + n * G()[k].base * P.R.f, 0));
+    const carts = Math.round(Object.entries(before).reduce((a, [k, n]) => a + n * MT.cartCost(k, P.R), 0));
     pc.coin -= carts;
     let got = 0;
     MT.at(pid, () => { for (const k of Object.keys(A.cargo(pc))) { const r = A.sellGood(k, A.cargo(pc)[k], P.rid); if (r.ok) got += r.got; } });
@@ -549,7 +557,7 @@
     // a load for the road home, bought at that town's price and carted back
     const g = opts.buyBack;
     if (g && GD.GOODS[g]) {
-      const room = A.carryCap(pc) - A.cargoLoad(pc), cart = G()[g].base * P.R.f;
+      const room = A.carryCap(pc) - A.cargoLoad(pc), cart = MT.cartCost(g, P.R);
       let n = 0, spent = 0;
       MT.at(pid, () => {
         const q = A.buyPrice(P.rid, g), cost = j => { let c = 0; for (let i = 0; i < j; i++) c += q * (1 + i * 0.6 / A.mktDepth(P.rid, g)); return c + j * cart; };
@@ -621,7 +629,7 @@
       const P = MT.tripPlan(x.pid), [b, s] = MT.at(x.pid, () => [A.buyPrice(x.rid, k), A.sellPrice(x.rid, k)]);
       const go = load > 0 || !!UI.mtBack, ok = P && !P.hostile && !P.shut && go && A.S.time >= P.ini;
       const why = !P ? '' : P.hostile ? 'At war with you' : P.shut ? 'Cut off by war' : !go ? 'You carry nothing' : A.S.time < P.ini ? `Needs ${P.ini} initiative` : load ? `Sell all you carry there: about ${A.coin(P.net)} after ${P.foreign ? 'tolls' : 'dues'} and carting` : 'Go and buy there';
-      h += `<tr><td>${esc(MT.name(x.pid))}${x.rid !== A.homeMkt(pc) ? ` <span class="chip">${esc(A.realmShort(x.rid))}</span>` : ''}${P && P.shut ? ' <span class="chip red">cut off</span>' : ''}</td><td>${esc(`${x.R.steps} steps, ${x.R.days} days${x.R.sea ? ' by sea' : ''}`)}</td><td>${A.coin(Math.round(G()[k].base * x.R.f))}</td><td>${A.coin(Math.round(b))}</td><td>${A.coin(Math.round(s))}</td><td><button class="small" data-a="mtTrip" data-v="${esc(String(x.pid))}" ${ok ? '' : 'disabled'} title="${esc(why)}">Go</button></td></tr>`;
+      h += `<tr><td>${esc(MT.name(x.pid))}${x.rid !== A.homeMkt(pc) ? ` <span class="chip">${esc(A.realmShort(x.rid))}</span>` : ''}${P && P.shut ? ' <span class="chip red">cut off</span>' : ''}</td><td>${esc(`${x.R.steps} steps, ${x.R.days} days${x.R.sea ? ' by sea' : ''}`)}</td><td>${A.coin(Math.round(MT.cartCost(k, x.R)))}</td><td>${A.coin(Math.round(b))}</td><td>${A.coin(Math.round(s))}</td><td><button class="small" data-a="mtTrip" data-v="${esc(String(x.pid))}" ${ok ? '' : 'disabled'} title="${esc(why)}">Go</button></td></tr>`;
     }
     h += `</table></div><div class="row wrap"><label class="tiny muted">Bring back <select data-c="mtBack" aria-label="Goods to bring back">${opt(UI.mtBack, ks, 'nothing')}</select></label></div>`;
     h += `<div class="tiny muted">Each town keeps its own store. A good is cheapest near the fields, mines and flocks that make it and dearer down the road, by about what the carting costs; imports are cheapest where the caravans come in. A town under siege eats its store.</div></div>`;
