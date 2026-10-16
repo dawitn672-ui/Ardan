@@ -2,7 +2,7 @@
 
 **Aspect:** Power scaling (Road to Ten, Power 1, 2, 3, 4 and 5) · **Kind:** system (two core files, no patches, no events), plus a bench (`bench/fights-audit.mjs`)
 
-The plan says power "hits 10 when every fight in every event follows the same rules the duel system uses, and the player can always see why one fighter is stronger." In the release, 3,199 events (3,854 in today's full build) were written before the tier ladder. A knife in an alley rolled intrigue or insight, and a herder speared a mad bull with no roll at all. The bestiary also called a 400 kg Roc an "animal".
+The plan says power "hits 10 when every fight in every event follows the same rules the duel system uses, and the player can always see why one fighter is stronger." In the release, 3,199 events (4,115 in today's full build) were written before the tier ladder. A knife in an alley rolled intrigue or insight, and a herder speared a mad bull with no roll at all. The bestiary also called a 400 kg Roc an "animal".
 
 ## What it does
 
@@ -62,11 +62,11 @@ The plan says power "hits 10 when every fight in every event follows the same ru
 
 | | Fix layer only (release + 00-05) | With this feature (full build) |
 | --- | --- | --- |
-| Events, choices | 3,199, 9,635 | 3,854, 11,598 |
-| Fight choices tagged | 486 | 538: 335 one-on-one, 53 party, 63 army, 87 beast (21 animal alone, 9 with a party, 16 great alone, 6 with a party, 11 titan alone, 3 with a party, 21 the event's own beast) |
-| Decided by | plain check 162, duel 229, beast duel 71, group 6, no roll 17 | **fighting worth 179**, duel 235, beast duel 72, group 6, plain check 25 (non-deadly, a non-combat skill), ranged shot 3, no roll 18 (none a clash) |
-| Clashes with the ladder | **56**: plainDeadly 47, soloGreat 2, freeKill 1, bestiary 6 | **0** |
-| Choices converted (that can kill or maim) | | 179 (75) |
+| Events, choices | 3,199, 9,635 | 4,115, 12,445 |
+| Fight choices tagged | 486 | 546: 339 one-on-one, 55 party, 65 army, 87 beast (21 animal alone, 9 with a party, 16 great alone, 6 with a party, 11 titan alone, 3 with a party, 21 the event's own beast) |
+| Decided by | plain check 162, duel 229, beast duel 71, group 6, no roll 17 | **fighting worth 185**, duel 236, beast duel 72, group 6, plain check 26 (none can kill or maim; a non-combat skill decides), ranged shot 3, no roll 18 (none a clash) |
+| Clashes with the ladder | **56**: plainDeadly 47, soloGreat 2, freeKill 1, bestiary 6 | **0** (83 as written in the full build's events: plainDeadly 78, soloGreat 4, freeKill 1; counted as they were converted) |
+| Choices converted (that can kill or maim) | | 185 (81) |
 
 The deadly outcomes that stay behind plain checks in fight scenes are not fights: 56 accidents, climbs and storms, and 32 runs, hides, talks or bribes.
 
@@ -74,10 +74,10 @@ The deadly outcomes that stay behind plain checks in fight scenes are not fights
 
 | What | Sample | Mean error | Note |
 | --- | --- | --- | --- |
-| Converted event choices | 2,793 rolls | 1.2–2.3 pts | 0 rolls used another number than the one shown. Every bin is within sampling error. |
-| Duel screen, people | 4,000 duels | 1.9 pts | Foes who draw a weapon at the start, the player at health 40–100, event and lethal rules |
-| Duel screen, beasts | 3,000 duels | 2.3–2.8 pts | Alone and with a party, health 60–100. The worst bin is 8–11 pts, in the middle with a party. |
-| Profile odds (A.shownDuelOdds) | 1,200 lethal duels | 2.3–3.7 pts | The release's formula in the same lab: mean 8.6, worst bin 16.9 |
+| Converted event choices | 2,695–3,596 rolls | 0.8–1.1 pts (worst bin 1.9–2.3) | 0 rolls used another number than the one shown |
+| Duel screen, people | 2,400–4,000 duels | 2.6–3.4 pts (worst bin 10–11) | Foes who draw a weapon at the start, the player at health 40–100, event and lethal rules; every bin within 3.5 standard errors |
+| Duel screen, beasts | 1,600–3,000 duels | 1.9–2.7 pts (worst bin 8.6–19) | Alone and with a party, health 60–100; the worst bins are small middle bins (n 40–110) |
+| Profile odds (A.shownDuelOdds) | 1,200–2,000 lethal duels | 2.8–3.5 pts (worst bin 12–18) | The fix layer's formula in the same lab: mean 8.3, worst bin 23.9 |
 
 **The group resolver against the tier texts** (`flGroupTiers`, 3,000 rolled fights each; the rolled result is within 3.5 pts of the closed form):
 
@@ -100,11 +100,11 @@ The deadly outcomes that stay behind plain checks in fight scenes are not fights
 | Great: an elite with a party about one in ten | 10.8% |
 | Great: alone, even a master usually dies | 3.6% |
 
-**Wounds** (`flWounds`): 27 fighters (3 tiers × 9 weapons) each drop exactly two tiers with a lost hand. Examples: sword 63→40, spear 72→46, spear 77→51, sword 84→56. Lost fingers cost each of them worth. A bad knee costs speed 7. The worth parts still sum to the total.
+**Wounds** (`flWounds`): 27 fighters (3 tiers × 9 weapons) each drop exactly two tiers with a lost hand. Examples: sword 64→41, spear 63→41, sword 76→49, spear 84→57. Lost fingers cost each of them worth. A bad knee costs speed 7. The worth parts still sum to the total.
 
 **Screens** (`flScreens`): the measure line, the duel box with two tier chips, and the profile's wound costs all render. Realism hides the digits. Rendering changes neither the state nor the random stream.
 
-**Lives** (`flLives`): 4 bot lives of up to 30 years met 15 events that offered a fight rolled on worth, with no page errors.
+**Lives** (`flLives`): 4 bot lives of up to 30 years met 38 events that offered a fight rolled on worth, with no page errors.
 
 ## Rules kept
 
