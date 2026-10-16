@@ -104,7 +104,7 @@ The deadly outcomes that stay behind plain checks in fight scenes are not fights
 
 **Screens** (`flScreens`): the measure line, the duel box with two tier chips, and the profile's wound costs all render. Realism hides the digits. Rendering changes neither the state nor the random stream.
 
-**Lives** (`flLives`): 4 bot lives of up to 30 years met 38 events that offered a fight rolled on worth, with no page errors.
+**Lives** (`flLives`): 4 bot lives of up to 30 years met 22–38 events (two runs) that offered a fight rolled on worth, with no page errors.
 
 ## Rules kept
 
