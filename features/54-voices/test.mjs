@@ -243,9 +243,10 @@ export default {
           for (let g = 0; g < 5000 && A.S.year < end && A.pc().alive; g++) {
             A.advance(400);
             let h, k = 0;
-            while ((h = A.headReady()) && k++ < 200) {
+            // the view is drawn (and voiced) inside headReady, so what it was given is read after it
+            while ((A.VOICE.last = [], h = A.headReady()) && k++ < 200) {
               if (h.type !== 'event') { A.S.queue.shift(); continue; }
-              A.VOICE.last = []; A.eventView(h); if (A.VOICE.last.length) voiced++;
+              if (A.VOICE.last.length) voiced++;
               A.eventAuto();
             }
           }
@@ -275,9 +276,8 @@ export default {
         for (let g = 0; g < 3000 && A.S.year < y0 + 30; g++) {
           const res = A.advance(400);
           let h, k = 0;
-          while ((h = A.headReady()) && k++ < 200) {
+          while ((V.last = [], h = A.headReady()) && k++ < 200) {
             if (h.type !== 'event') { A.S.queue.shift(); continue; }
-            V.last = [];
             const e = A.EV[h.ev], v = A.eventView(h), pc = A.pc(), c = V.eventCult(pc, e);
             T.ev++;
             if (VT.words(v.text) > 80) T.over++;

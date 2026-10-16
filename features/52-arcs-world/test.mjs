@@ -238,7 +238,8 @@ export default {
           const L = B.life(o, ['careful', 'greedy', 'random', 'reckless'][i % 4], i % 2 === 0, 60);
           const pc = A.P(A.S.pc) || {};
           const arcs = Object.entries(pc.arcs || {}).filter(([k]) => AWT.keys().includes(k)).map(([k, a]) => ({ k, stage: a.stage, n: A.ARCS.ARC[k].stages.length, done: !!a.done, gave: !!a.gave, y: a.y }));
-          return { status: o.status, years: L.years, death: L.deathAge, arcs };
+          const story = Object.keys(pc.arcs || {}).filter(k => A.ARCS.ARC[k] && A.ARCS.ARC[k].story).length;
+          return { status: o.status, years: L.years, death: L.deathAge, arcs, story };
         }, [o, round]));
       }
     }
@@ -247,8 +248,12 @@ export default {
     const started = all.length, finished = all.filter(a => a.done && !a.gave).length, gave = all.filter(a => a.gave).length;
     const scenes = all.reduce((s, a) => s + a.stage, 0), kinds = new Set(all.map(a => a.k)).size;
     const longWith = long.filter(l => l.arcs.length).length;
-    const ok = long.length >= 10 && longWith >= Math.ceil(long.length * 0.6) && finished >= 5 && kinds >= 5;
-    return { ok, detail: `${lives.length} bot lives (${long.length} of 40+ years; ${longWith} of those met one of these arcs): ${started} started, ${scenes} scenes played, ${finished} finished, ${gave} given up, ${kinds} different arcs. ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k.slice(3)} ${a.stage}/${a.n}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}`).join('; ')}`,
-      data: { lives: lives.length, long: long.length, longWith, started, finished, gave, scenes, kinds } };
+    // the story track is shared: where other features add story arcs (50, 51, 53 in the full build), these get a share
+    // of the starts by weight, so the bar is the share's
+    const share = await pg.evaluate(() => { const w = k => A.ARCS.ARC[k].w || 1, all = A.ARCS.stories(); return AWT.keys().reduce((a, k) => a + w(k), 0) / Math.max(1, all.reduce((a, k) => a + w(k), 0)); });
+    const anyStory = lives.reduce((a, l) => a + l.story, 0);
+    const ok = long.length >= 10 && (share > 0.9 ? longWith >= Math.ceil(long.length * 0.6) && finished >= 5 && kinds >= 5 : started >= 6 && finished >= 3 && kinds >= 4);
+    return { ok, detail: `these arcs hold ${Math.round(share * 100)}% of the story track's weight; ${anyStory} story arcs of any feature started. ${lives.length} bot lives (${long.length} of 40+ years; ${longWith} of those met one of these arcs): ${started} started, ${scenes} scenes played, ${finished} finished, ${gave} given up, ${kinds} different arcs. ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k.slice(3)} ${a.stage}/${a.n}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}`).join('; ')}`,
+      data: { lives: lives.length, long: long.length, longWith, started, finished, gave, scenes, kinds, share, anyStory } };
   },
 };
