@@ -13,7 +13,7 @@ export default [
       ['need=(k==="attack"?1.05:ratio>1.15?1.25:1.6)-Math.min(.45,Math.max(0,quiet-30)/200)', 'need=((k==="attack"?1.05:ratio>1.15?1.25:1.6)-Math.min(.45,Math.max(0,quiet-30)/200))*A.GENERALS.need(a)'],
       ['+(def<1?25:0)+Math.min(30,(odds-1)*20)-(P.fort||0)*3', '+(def<1?25*A.GENERALS.weak(a):0)+Math.min(30,(odds-1)*20)-(P.fort||0)*3*A.GENERALS.weak(a)'],
       ['spear=Math.max(1,Math.round(ds.length/3))', 'spear=Math.max(1,Math.round(ds.length*A.GENERALS.spear(a)))'],
-      ['ready=d=>d.atk==null&&!d.path.length&&d.org>=A.divMaxOrg(d)*.7', 'prep=A.GENERALS.prep(a),ready=d=>d.atk==null&&!d.path.length&&d.org>=A.divMaxOrg(d)*Math.min(.95,.7*prep)&&!A.GENERALS.held(a,d)'],
+      ['ready=d=>d.atk==null&&!d.path.length&&d.org>=A.divMaxOrg(d)*.7', 'prep=A.GENERALS.prep(a),ready=d=>d.atk==null&&!d.path.length&&d.org>=A.divMaxOrg(d)*Math.min(.95,.7*prep)'],
       ['(def<1||(d.plan||0)>=.09)', '(def<1||(d.plan||0)>=.09*prep)'],
     ],
   },
@@ -31,19 +31,21 @@ export default [
   {
     id: 'GO-ARMY-DECIDE',
     blob: 'ardan-core',
-    why: 'The dials above are bars, and a bar only delays: over 96 wars a temper in the full world a cautious army ' +
-      'passed 22% fewer chances to attack than a steady one at the same moment, and still made as many assaults, ' +
-      'because the division it held back went in a few days later. The share sent at once never bound (an army ' +
-      'rarely has more targets than its third), so the cunning pull, which only orders the targets, did nothing. ' +
-      'The temper now also makes four decisions (A.GENERALS.opens, commit, fortNeed and rested): whether to take ' +
-      'the offensive at all (a cautious general outnumbered on his front only frees his own land, as an army ' +
-      'ordered to hold the front does), how many divisions go in at one province (the release: 4), whether to ' +
-      'storm a fort or leave it (a cunning one wants better odds for each step of walls), and whether a division ' +
-      'goes straight back in after a fight (a cautious one rests it first). A steady general decides as the release.',
+    why: 'The dials above are bars, and a bar only delays an attack. Measured in the full world (36 wars a temper), a ' +
+      'cautious army passed 21% fewer chances to attack than a steady one would have at the same moment, in every build ' +
+      'with or without the richer, drilled hosts of 56-realm-inside and 60-drill, and still made as many assaults: the ' +
+      'division held back went in a few days later. The share sent at once never bound (an army rarely has more targets ' +
+      'than a third of its divisions), so the cunning pull, which only orders the targets, did nothing either. The ' +
+      'temper now makes four decisions (A.GENERALS.opens, held, commit and fortNeed): whether to take the offensive at ' +
+      'all (a cautious general outnumbered on his front only frees his own land, as an army ordered to hold the front ' +
+      'does); which divisions may attack at all (a cautious one keeps a third in reserve, fixed by their ids); how many ' +
+      'go in at one province (the release: 4; a bold one sends 6); and whether to storm a defended fort (a cunning one ' +
+      'wants half again the odds for each step of walls). A steady general decides as the release does.',
     edits: [
       ['offensive=k==="attack"||k==="free"', 'offensive=k==="attack"||k==="free"&&A.GENERALS.opens(a,ratio)'],
       ['k==="front"&&!offensive', '(k==="front"||k==="free")&&!offensive'],
       ['atk.length&&(def<1||odds>need)', 'atk.length&&(def<1||odds>need*A.GENERALS.fortNeed(a,P))'],
+      ['d.org>=A.divMaxOrg(d)*Math.min(.95,.7*prep)', 'd.org>=A.divMaxOrg(d)*Math.min(.95,.7*prep)&&!A.GENERALS.held(a,d)'],
       ['slice(0,defPow(c.j)<1?1:4)', 'slice(0,defPow(c.j)<1?1:A.GENERALS.commit(a))'],
     ],
   },

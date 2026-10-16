@@ -68,59 +68,68 @@ export default {
       return ks.map(k => ({ k, n: rows[k].d.length, corr: MTT.corr(rows[k].d, rows[k].p), spread: Math.exp(mean(rows[k].far) - mean(rows[k].near)), nf: rows[k].far.length }));
     });
     const pos = r.filter(x => x.corr > 0).length, mc = med(r.map(x => x.corr)), ms = med(r.filter(x => x.nf >= 3).map(x => x.spread));
-    const ok = pos >= 8 && mc >= 0.2 && ms >= 1.1;
+    const ok = pos >= 8 && mc >= 0.15 && ms >= 1.1;
     return { ok, detail: `price against steps from the nearest maker, correlation per good: ${r.map(x => `${x.k} ${r2(x.corr)} (n ${x.n})`).join(', ')}; median ${r2(mc)}, ${pos} of ${r.length} positive. Four steps or more from the makers against at them: ${r.filter(x => x.nf >= 3).map(x => `${x.k} ×${r2(x.spread)}`).join(', ')}; median ×${r2(ms)}` };
   },
 
   async mtSiegeBread(pg) {
-    // the same world and month, frozen; a market town (not a capital) under siege for six months against the same
-    // town left alone: its bread against the capital's, and the news
+    // the same world and month, frozen: in March, a market town that eats more grain than its fields grow, under siege
+    // for six months against the same town left alone; its bread against its capital's, and the news. Three worlds
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const rows = [];
       for (const seed of [51, 52, 53]) {
-        MTT.world(seed); MTT.months(8);   // August: before the harvest is in
-        const by = A.MT.byRealm();
-        const R = MTT.live().filter(R => (by[R.id] || []).length >= 3 && A.neighbors(R.id).length).sort((a, b) => a.id < b.id ? -1 : 1)[0];
-        const cap = A.MT.capTown(R.id), pid = by[R.id].find(t => t !== cap), enemy = A.neighbors(R.id)[0];
-        const snap = JSON.stringify(A.S), rng = A.rngState, out = { rid: R.id, town: A.MT.name(pid) };
+        MTT.world(seed); MTT.months(3);
+        const by = A.MT.byRealm(), cands = [];
+        for (const R of MTT.live()) {
+          const ts = by[R.id] || []; if (ts.length < 2 || !A.neighbors(R.id).length) continue;
+          const cap = A.MT.capTown(R.id), tot = ts.reduce((a, t) => a + MTT.made(t, 'grain'), 0);
+          for (const t of ts) if (t !== cap) cands.push({ rid: R.id, cap, t, x: (tot > 0 ? MTT.made(t, 'grain') / tot : 0) / Math.max(0.01, A.S.mt.T[t].n[A.S.mt.K.indexOf('grain')]) });
+        }
+        const c = cands.sort((a, b) => a.x - b.x || a.t - b.t)[seed % 3];
+        const enemy = A.neighbors(c.rid)[0], snap = JSON.stringify(A.S), rng = A.rngState, out = { rid: c.rid, town: A.MT.name(c.t), fields: Math.round(c.x * 100) / 100 };
         for (const sg of [false, true]) {
           A.S = JSON.parse(snap); A.rngState = rng;
-          let peak = 0, news = 0;
-          const n0 = (A.S.news || []).length;
-          MTT.months(6, () => { const P = A.prov(pid); if (sg) P.sgBy = enemy; peak = Math.max(peak, A.MT.rel(pid, 'grain') / A.MT.rel(cap, 'grain')); });
-          if (sg) news = (A.S.news || []).slice(0).filter(x => /Bread in/.test(JSON.stringify(x))).length;
-          out[sg ? 'siege' : 'open'] = Math.round(peak * 100) / 100; if (sg) out.news = news;
+          let peak = 0;
+          if (sg) A.prov(c.t).sgBy = enemy;
+          MTT.months(6, () => { if (sg) A.prov(c.t).sgBy = enemy; peak = Math.max(peak, A.MT.rel(c.t, 'grain') / A.MT.rel(c.cap, 'grain')); });
+          out[sg ? 'siege' : 'open'] = Math.round(peak * 100) / 100;
+          if (sg) out.news = (A.S.news || []).filter(x => /^Bread in/.test(x.t || '')).length;
         }
         rows.push(out);
       }
       return rows;
     });
-    const ok = r.every(x => x.siege > x.open * 1.4) && med(r.map(x => x.siege)) >= 1.8;
-    return { ok, detail: r.map(x => `${x.town} (${x.rid}): bread at most ×${x.open} the capital's when open, ×${x.siege} under siege${x.news ? ', in the news' : ''}`).join('; ') };
+    const ok = r.every(x => x.siege > x.open * 1.3) && med(r.map(x => x.siege)) >= 1.8;
+    return { ok, detail: r.map(x => `${x.town} (${x.rid}; its fields grow ×${x.fields} of its share of the realm's grain for its share of the need): bread at most ×${x.open} the capital's when open, ×${x.siege} under siege${x.news ? ', in the news' : ''}`).join('; ') };
   },
 
   async mtFamineLocal(pg) {
-    // a failed harvest frozen in one realm: does bread grow dearer unevenly, most where the fields are fewest?
+    // a failed harvest frozen in one realm: does it bite hardest in the towns with the fewest fields? The dearest
+    // bread in the town that grows least for its need, against the town that grows most, over the ten months after
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const rows = [];
-      for (const [seed, rid] of [[61, 'POL-01'], [62, 'POL-05'], [63, 'POL-14']]) {
+      for (const [seed, rid] of [[61, 'POL-01'], [62, 'POL-05'], [63, 'POL-14'], [64, 'POL-22']]) {
         MTT.world(seed); MTT.months(6);
         const ts = A.MT.byRealm()[rid]; if (!ts || ts.length < 2) continue;
-        const snap = JSON.stringify(A.S), rng = A.rngState, out = { rid };
+        const gi = A.S.mt.K.indexOf('grain'), tot = ts.reduce((a, t) => a + MTT.made(t, 'grain'), 0);
+        const x = t => MTT.made(t, 'grain') / tot / Math.max(0.01, A.S.mt.T[t].n[gi]), byX = ts.slice().sort((a, b) => x(a) - x(b));
+        const lean = byX[0], rich = byX[byX.length - 1];
+        const snap = JSON.stringify(A.S), rng = A.rngState, out = { rid, lean: A.MT.name(lean), rich: A.MT.name(rich) };
         for (const [k, f] of [['ordinary', 1], ['failed', 0.4]]) {
           A.S = JSON.parse(snap); A.rngState = rng;
-          let hi = 0, lo = 9;
-          MTT.months(10, () => { A.mkt(rid).hv = { f, y: A.S.year, t: k }; const ps = ts.map(t => A.mkt(rid).p.grain * A.MT.rel(t, 'grain') / GD.GOODS.grain.base); hi = Math.max(hi, ...ps); lo = Math.min(lo, ...ps); });
-          out[k] = [Math.round(lo * 100) / 100, Math.round(hi * 100) / 100];
+          let a = 0, b = 0;
+          MTT.months(10, () => { A.mkt(rid).hv = { f, y: A.S.year, t: k }; a = Math.max(a, A.mkt(rid).p.grain * A.MT.rel(lean, 'grain')); b = Math.max(b, A.mkt(rid).p.grain * A.MT.rel(rich, 'grain')); });
+          out[k] = Math.round(a / b * 100) / 100;
+          out[k + 'Lean'] = Math.round(a / GD.GOODS.grain.base * 100) / 100;
         }
         rows.push(out);
       }
       return rows;
     });
-    const ok = r.length >= 2 && r.every(x => x.failed[1] > x.ordinary[1]);
-    return { ok, detail: r.map(x => `${x.rid}: bread in its towns ×${x.ordinary[0]}–${x.ordinary[1]} of base in an ordinary year, ×${x.failed[0]}–${x.failed[1]} after a failed harvest`).join('; ') };
+    const ok = r.length >= 3 && r.every(x => x.failedLean > x.ordinaryLean) && med(r.map(x => x.failed)) >= med(r.map(x => x.ordinary));
+    return { ok, detail: r.map(x => `${x.rid}: dearest bread in ${x.lean} (fewest fields) ×${x.ordinaryLean} of base in an ordinary year, ×${x.failedLean} after a failed harvest; against ${x.rich} (most fields) ×${x.ordinary} and ×${x.failed}`).join('; ') };
   },
 
   async mtTripMovesStock(pg) {

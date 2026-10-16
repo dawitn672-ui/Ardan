@@ -192,7 +192,7 @@
   MT.at = function (pid, fn) { const keep = at; at = pid; try { return fn(); } finally { at = keep; } };
 
   // ---- the month: share out what 45 made, used, built and carried; then the carters
-  let carLog = null;
+  let carLog = null, base = null;
   const caravans = E.caravans;
   E.caravans = function () {
     const car = caravans.apply(this, arguments);
@@ -207,14 +207,31 @@
     if (!S.mt || S.mt.v !== 1 || !S.mt.L || !S.mt.K || S.mt.K.join() !== ks.join() || S.mt.sig !== sigOf(S)) MT.build();
     const by = MT.byRealm(), mo = A.monthOf(A.today()).m, of = S.mt.of, ix = kix(), nk = ks.length;
     // hinterland production, people and armies, by town
-    const made = {}, pop = {}, men = {}, cut = {};
-    for (const pid of S.mt.L) { made[pid] = new Float64Array(nk); pop[pid] = 0; men[pid] = 0; cut[pid] = MT.shut(pid); }
+    // what each town's hinterland makes in a full month, worked out when 45 plans the year's production or the towns
+    // change (both in the state, so a loaded save works it out the same); then this month's harvest, and what siege
+    // and occupation keep from market
+    const key = S.ecoPlan + ':' + S.mt.ver;
+    if (!base || base.S !== S || base.key !== key || base.mt !== S.mt) {
+      const rows = {};
+      for (const pid of S.mt.L) rows[pid] = new Float64Array(nk);
+      for (const P of S.prov) {
+        const t = of[P.id]; if (t == null || t < 0 || !rows[t] || T(t).r !== P.owner || !P.ecoPr) continue;
+        for (const k in P.ecoPr) { const i = ix[k]; if (i != null) rows[t][i] += P.ecoPr[k]; }
+      }
+      base = { S, key, mt: S.mt, rows };
+    }
+    const made = {}, pop = {}, men = {}, cut = {}, gi = ix.grain;
+    for (const pid of S.mt.L) {
+      const row = made[pid] = Float64Array.from(base.rows[pid]), m = A.mkt(T(pid).r), hv = m && m.hv && m.hv.y === S.year ? m.hv.f : 1;
+      if (gi != null) row[gi] *= E.HARVEST[mo] * hv;
+      pop[pid] = 0; men[pid] = 0; cut[pid] = MT.shut(pid);
+    }
     for (const P of S.prov) {
       const t = of[P.id]; if (t == null || t < 0 || !made[t] || T(t).r !== P.owner) continue;
       pop[t] += P.pop || 0;
-      if (!P.ecoPr) continue;
-      const m = A.mkt(P.owner), hv = m.hv && m.hv.y === S.year ? m.hv.f : 1, cut = shut(P) ? MT.CUT : 1, row = made[t];
-      for (const k in P.ecoPr) { const i = ix[k]; if (i != null) row[i] += P.ecoPr[k] * cut * (k === 'grain' ? E.HARVEST[mo] * hv : 1); }
+      if (!shut(P) || !P.ecoPr) continue;
+      const m = A.mkt(P.owner), hv = m.hv && m.hv.y === S.year ? m.hv.f : 1;
+      for (const k in P.ecoPr) { const i = ix[k]; if (i != null) made[t][i] = Math.max(0, made[t][i] - P.ecoPr[k] * (1 - MT.CUT) * (i === gi ? E.HARVEST[mo] * hv : 1)); }
     }
     for (const r of rs) {
       const ts = by[r.id]; if (!ts || !r.forces || !r.forces.divs) continue;

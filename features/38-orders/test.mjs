@@ -82,9 +82,11 @@ export default {
     });
     const s = r.steady, b = r.bold;
     const c = r.cautious;
-    // over 96 wars: bold 414, steady 404, cautious 329 assaults. Bold against steady is within the noise (a bold general
-    // also thinks too often to hold a plan, see GO-ARMY-TEMPO), so it is reported, not held
-    // and the wars must have been fought: with the clock held, every temper read 0 and the test passed on nothing
+    // A cautious general keeps a third of his divisions in reserve and stays on the defensive when outnumbered on his
+    // front (GO-ARMY-DECIDE). The bars alone (odds, rest, tempo) only delayed his attacks, and in the full world he
+    // out-assaulted the steady army. Bold against steady is within the noise (a bold army already uses every division
+    // it has free), so it is reported, not held.
+    // And the wars must have been fought: with the clock held, every temper read 0 and the test passed on nothing
     const ok = c.assaults >= 50 && b.assaults >= c.assaults * 1.1 && s.assaults >= c.assaults * 1.1;
     const k = n => `${Math.round(n / 1000)}k`;
     return { ok, detail: Object.entries(r).map(([t, v]) => `${t}: ${v.assaults} assaults, ${k(v.ours)} of ours and ${k(v.theirs)} of theirs dead, ${v.held} provinces held`).join('; ') };
