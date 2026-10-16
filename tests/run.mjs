@@ -50,7 +50,9 @@ let failed = 0;
 // tests are independent (each gets its own browser context), so several can run at once: --workers=N (CI uses 4)
 const WORKERS = Math.max(1, +(opt('workers') || 1));
 console.log('testing', path.relative(root, file) || file, WORKERS > 1 ? `(${WORKERS} at a time)` : '');
-const queue = tests.filter(t => !only || only.includes(t.name));
+// --shard=k/n runs every n-th test from the k-th (CI splits the suite over parallel jobs)
+const [SK, SN] = (opt('shard') || '0/1').split('/').map(Number);
+const queue = tests.filter(t => !only || only.includes(t.name)).filter((t, i) => i % SN === SK);
 async function runOne({ name, fn, owner }) {
   const ctx = await browser.newContext({ acceptDownloads: true });
   const pg = await ctx.newPage();

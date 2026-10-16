@@ -4,7 +4,7 @@
 //   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs)
 //   4. run every browser test
 //   5. play the balance league and hold each path's numbers to their bands (bench/balance.mjs, bench/targets.mjs)
-//   node tools/check.mjs [--skip-tests] [--skip-balance]
+//   node tools/check.mjs [--skip-tests] [--skip-balance] [--shard=k/n]
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -27,6 +27,6 @@ for (const d of fs.readdirSync(path.join(root, 'features')).sort()) {
 try { execFileSync(process.execPath, ['tools/lint-choices.mjs', '--all-features'], { cwd: root, stdio: 'pipe' }); console.log('choices ok (no obviously best choice in any feature event)'); }
 catch (e) { lintFailed++; console.error(`choices FAIL\n${String(e.stdout || '').slice(0, 4000)}`); }
 if (lintFailed) process.exitCode = 1;
-if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs', `--workers=${process.env.CI ? 4 : 1}`]); } catch { process.exitCode = 1; } }
+if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs', `--workers=${process.env.CI ? 4 : 1}`].concat(process.argv.filter(a => a.startsWith('--shard=')))); } catch { process.exitCode = 1; } }
 // balance: target numbers per path, held by a fixed-seed league (bench/targets.mjs)
 if (!process.argv.includes('--skip-balance')) { try { run(['bench/balance.mjs', 'index.html']); } catch { process.exitCode = 1; } }

@@ -2,12 +2,16 @@ name: check
 on:
   push:
   pull_request:
-# Two jobs side by side: the build, linters and browser tests (tools/check.mjs --skip-balance) in one, the balance
-# league in the other. Run as one job the whole check took about 80 minutes, too close to the limit.
+# Three jobs side by side: the build, linters and half the browser tests in each of two (tools/check.mjs --skip-balance
+# --shard=k/2), the balance league in the third. As one job the whole check took 80 minutes, and the tests alone up to 104.
 jobs:
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -16,7 +20,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node tools/check.mjs --skip-balance
+      - run: node tools/check.mjs --skip-balance --shard=${{ matrix.shard }}/2
   balance:
     runs-on: ubuntu-latest
     timeout-minutes: 120
