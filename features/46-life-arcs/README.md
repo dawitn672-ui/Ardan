@@ -32,12 +32,12 @@ The plan names seven paths. Common folk are an eighth. They are farmers, herders
 | Test | Result |
 | --- | --- |
 | `everyChoiceMovesTheArc` | 40 stages; each is trigger-only, and every choice (both sides of a check) carries `fx.arc` |
-| `arcsStartPerPath` | Each of the eight paths starts its own middle-years arc at 35 and its legacy at 58. Nothing starts for a soldier in the ranks, a novice, a serf, or anyone at 22. The start roll fires 4.0% of months. None start while one runs, none after two in the middle years, and after a legacy only a middle-years one can start. |
+| `arcsStartPerPath` | Each of the eight paths starts its own middle-years arc at 35 and its legacy at 58. Nothing starts for a soldier in the ranks, a novice, a serf, or anyone at 22. The start roll fires 3.8% of months (full world). None start while one runs, none after two in the middle years, and after a legacy only a middle-years one can start. The story track (50-53) runs beside it: with a story arc running the estate still starts, and with the estate running a story arc still starts. The test holds the story roll off when it forces the start roll, since the story roll comes first and would win every forced roll. |
 | `choicesCarryForward` | Drilling the company hard and holding the ford leaves marks *cmd_hard → cmd_held → cmd_stayed*, and the last scene opens "They call it your ford now…". Learning their names and losing it leaves *cmd_names → cmd_broke → cmd_stayed*: "The army remembers the ford that broke…". Stage 2 comes 1 to 3 years after stage 1. |
 | `givenUpNotStuck` | A soldier who leaves the army before the ford: the arc reads *given up*, and the next undertaking can start. A stage dropped unseen is given up after two months. |
 | `lifeCardPure` | The card draws from state, escapes everything, skips an unknown key from a save, and drawing it changes neither `A.S` nor the random stream. |
 | `oldSaveTolerated` | A life with no `arcs` field starts one and draws the tab. |
-| `botLivesReachArcs` | 10 bot lives over the league's starts: every life of 15 years or more began an arc; 31 scenes played and 11 undertakings finished. A royal life ran *parish, house abroad, handing on the house*; a peasant ran *holding, village elder*. |
+| `botLivesReachArcs` | 10 bot lives over the league's starts, each played 20 years from 16 (a middle-years arc starts 10 to 15 years in and ends by year 19). On the full world, every life of 15 years or more (9) began the work of its life and finished it: 27 of its scenes played. Story arcs are counted beside the work of a life, not toward it (18 more). Played to 70 instead, the same lives took 291 s, not 156 s, and two of them also reached the old campaigner's legacy. |
 
 **Rules kept.**
 

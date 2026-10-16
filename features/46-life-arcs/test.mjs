@@ -187,7 +187,10 @@ export default {
     return { ok: !r.err && r.started.join() === 'estate', detail: r.err || `a life with no arcs field started ${r.started.join(',')}` };
   },
 
-  // whole bot lives: the arcs come up in real play, and run to their end
+  // whole bot lives: the arcs come up in real play, and run to their end. A middle-years arc starts 10 to 15 years
+  // into a life begun at 16 and ends by year 19 (measured on the full world), so each life is played 20 years, not 70:
+  // the same ten lives in less than half the time. The bar counts the work of a life only (story arcs, 50-53, are
+  // counted beside it, not toward it, and have their own bot tests)
   async botLivesReachArcs(pg) {
     await pg.evaluate(BOT);
     const paths = Object.entries(TARGETS.paths).filter(([k]) => k !== 'serf');
@@ -195,17 +198,19 @@ export default {
     for (const [name, P] of paths) for (let i = 0; i < 2; i++) {
       const o = Object.assign({ seed: 5101 + i * 7919 + name.length * 13, sex: i % 2 ? 'F' : 'M' }, P.start);
       lives.push(await pg.evaluate(([o, i]) => {
-        const L = B.life(o, ['careful', 'greedy'][i], i === 0, 70);
+        const L = B.life(o, ['careful', 'greedy'][i], i === 0, 20);
         const pc = A.P(A.S.pc) || {};
-        const arcs = Object.entries(pc.arcs || {}).map(([k, a]) => ({ k, stage: a.stage, done: !!a.done, gave: !!a.gave }));
+        const arcs = Object.entries(pc.arcs || {}).map(([k, a]) => ({ k, stage: a.stage, done: !!a.done, gave: !!a.gave, story: !!(A.ARCS.ARC[k] && A.ARCS.ARC[k].story) }));
         return { status: o.status, years: L.years, death: L.deathAge, arcs };
       }, [o, i]));
     }
-    const started = lives.filter(l => l.arcs.length).length;
-    const stages = lives.reduce((s, l) => s + l.arcs.reduce((t, a) => t + a.stage, 0), 0);
-    const finished = lives.reduce((s, l) => s + l.arcs.filter(a => a.done && !a.gave).length, 0);
+    const own = l => l.arcs.filter(a => !a.story);
+    const started = lives.filter(l => own(l).length).length;
+    const stages = lives.reduce((s, l) => s + own(l).reduce((t, a) => t + a.stage, 0), 0);
+    const finished = lives.reduce((s, l) => s + own(l).filter(a => a.done && !a.gave).length, 0);
+    const stories = lives.reduce((s, l) => s + l.arcs.filter(a => a.story).length, 0);
     const lived = lives.filter(l => l.years >= 15).length;
     const ok = started >= Math.ceil(lived * 0.6) && finished >= 2;
-    return { ok, detail: `${lives.length} bot lives (${lived} of 15+ years): ${started} began an arc, ${stages} scenes played, ${finished} arcs finished. ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k} ${a.stage}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}`).join('; ')}` };
+    return { ok, detail: `${lives.length} bot lives of up to 20 years (${lived} of 15+ years): ${started} began the work of their life, ${stages} of its scenes played, ${finished} finished (and ${stories} story arcs beside them, marked *). ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k}${a.story ? '*' : ''} ${a.stage}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}`).join('; ')}` };
   },
 };

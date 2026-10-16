@@ -19,7 +19,7 @@ const SETUP = () => {
 const med = a => { const b = a.slice().sort((x, y) => x - y), n = b.length; return n ? (n % 2 ? b[(n - 1) / 2] : (b[n / 2 - 1] + b[n / 2]) / 2) : 0; };
 const r2 = x => Math.round(x * 100) / 100;
 
-export default {
+const TESTS = {
   async mtTownsAddUp(pg) {
     // about 80 to 110 market towns, one to four a realm; after two years each realm's stock is the sum of its towns'
     await pg.evaluate(SETUP);
@@ -257,3 +257,9 @@ export default {
     return { ok, detail: r.map(x => `${x.rid}: trader ${x.trader.worth} after ${x.trader.trips} trips, estate ${x.estate.worth} (×${r2(x.trader.worth / x.estate.worth)})`).join('; ') + `; mean ×${r2(mean)}` };
   },
 };
+
+// market towns stand on 45-economy: a build without it (--only=markets) has nothing to test
+export default Object.fromEntries(Object.entries(TESTS).map(([name, fn]) => [name, async (pg, ...rest) => {
+  if (!(await pg.evaluate(() => !!(window.A && A.MT && A.ECON)))) return { ok: true, detail: 'not built: market towns need 45-economy' };
+  return fn(pg, ...rest);
+}]));
