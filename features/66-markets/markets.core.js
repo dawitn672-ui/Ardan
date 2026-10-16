@@ -372,31 +372,30 @@
     try { const pid = MT.townFor(rid); if (pid != null) return Math.max(0.6, d * Math.sqrt(Math.max(0.1, nOf(pid, k)))); } catch (e) {}
     return d;
   };
-  // a load the player sells or buys moves the town's own store, and so its price: n loads sold into a town fetch the
-  // price along the way from its store now to its store plus n, as a share of the price quoted now (and bought, from
-  // its store down to its store less n). Where a town uses a hundred loads a month this is the release's slide or
-  // less; where it uses a twentieth of a load, one load of pearls is years of its need and fetches what that is worth
+  // a load the player sells moves the town's own store, and so its price: n loads sold into a town fetch the price
+  // along the way from its store now to its store plus n, as a share of the price quoted now (MT.curve with dir -1
+  // reckons the same downwards). Where a town uses a hundred loads a month this is the release's slide or less; where
+  // it uses a twentieth of a load, one load of pearls is years of its need and fetches what that is worth
   MT.curve = function (pid, k, n, dir) {
     const t = pid != null && T(pid); if (!t || !t.s || !(n > 0)) return n || 0;
     const m = A.mkt(t.r); if (!m || !m.s) return n;
-    const N = MT.need(pid, k), S = MT.s(pid, k), scR = E.scarcity(m, k), r0 = relOf(N, S, scR);
+    const N = MT.need(pid, k), S = MT.s(pid, k), sc = x => { const v = N / Math.max(x, N * 0.05); return clamp(E.ELASTIC === 0.5 ? Math.sqrt(v) : Math.pow(v, E.ELASTIC), E.LO, E.HI); }, s0 = sc(S);
     let sum = 0;
-    for (let j = 0; j < n; j++) sum += relOf(N, Math.max(0, S + dir * (j + 0.5)), scR) / r0;
+    for (let j = 0; j < n; j++) sum += sc(Math.max(0, S + dir * (j + 0.5))) / s0;
     return sum;
   };
+  // and a town sells no more than it has in store
+  MT.avail = (pid, k) => Math.floor(MT.s(pid, k));
   const buy = A.buyGood;
-  A.buyGood = function (k) {
-    const pc = A.pc(), before = (A.cargo(pc)[k] || 0), on = MT.on(), rid = A.homeMkt(pc), pid = on ? MT.townFor(rid, pc) : null;
-    const quote = on && GD.GOODS[k] ? A.buyPrice(rid, k) : 0, coin = pc.coin, r = buy.apply(this, arguments);
-    try {
-      const got = (A.cargo(pc)[k] || 0) - before;
-      if (got > 0 && pid != null) {
-        // what the town's store asks beyond the release's slide
-        const extra = Math.min(Math.max(0, pc.coin), Math.max(0, Math.round(quote * MT.curve(pid, k, got, -1) - (coin - pc.coin))));
-        if (extra > 0) { pc.coin -= extra; r.msg = `You buy ${got} load${got > 1 ? 's' : ''} of ${G()[k].name.toLowerCase()} for ${A.coin(coin - pc.coin)}; the town has little to spare.`; }
-        setS(pid, k, Math.max(0, MT.s(pid, k) - got));
-      }
-    } catch (e) {}
+  A.buyGood = function (k, n) {
+    const pc = A.pc(), on = MT.on(), pid = on ? MT.townFor(A.homeMkt(pc), pc) : null;
+    if (pid != null && GD.GOODS[k] && n > 0) {
+      const have = MT.avail(pid, k);
+      if (have < 1) return { ok: false, msg: `${MT.name(pid)} has no ${G()[k].name.toLowerCase()} to sell.` };
+      if (n > have) n = have;
+    }
+    const before = (A.cargo(pc)[k] || 0), r = buy.call(this, k, n);
+    try { const got = (A.cargo(pc)[k] || 0) - before; if (got > 0 && pid != null) setS(pid, k, Math.max(0, MT.s(pid, k) - got)); } catch (e) {}
     return r;
   };
   const sell = A.sellGood;
@@ -516,8 +515,9 @@
       const room = A.carryCap(pc) - A.cargoLoad(pc), cart = G()[g].base * P.R.f;
       let n = 0, spent = 0;
       MT.at(pid, () => {
-        const q = A.buyPrice(P.rid, g), cost = j => { let c = 0; for (let i = 0; i < j; i++) c += q * (1 + i * 0.6 / A.mktDepth(P.rid, g)); return Math.max(c, q * MT.curve(pid, g, j, -1)) + j * cart; };
-        while (n < room && cost(n + 1) <= Math.max(0, pc.coin) * 0.8) n++;
+        const q = A.buyPrice(P.rid, g), cost = j => { let c = 0; for (let i = 0; i < j; i++) c += q * (1 + i * 0.6 / A.mktDepth(P.rid, g)); return c + j * cart; };
+        const most = Math.min(room, MT.avail(pid, g));
+        while (n < most && cost(n + 1) <= Math.max(0, pc.coin) * 0.8) n++;
         spent = n ? cost(n) : 0;
         if (n) {
           const m = A.mkt(P.rid);
