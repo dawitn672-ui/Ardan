@@ -306,14 +306,15 @@ export default {
     return { ok: !r.err && r.shown, detail: r.err || `an arc saved without its people picks one up and shows its third scene: "${(r.text || '').slice(0, 70)}…"` };
   },
 
-  // whole bot lives: these arcs come up in real play, and run to their end. Lives are dealt round the six starts until
-  // ten have lasted forty years (at most 30 lives); the first round engaged, the rest passive (faster)
+  // whole bot lives: these arcs come up in real play, and run to their end. Lives are dealt round the six starts, from
+  // twenty (past the youth in which many royal and merchant lives end), until ten have lasted forty years (at most six
+  // rounds); the first round engaged, the rest passive (faster)
   async rivalsBotLives(pg) {
     await pg.evaluate(BOT);
     const paths = Object.entries(TARGETS.paths);
     const lives = [];
-    for (let i = 0; i < 5 && lives.filter(l => l.years >= 40).length < 10; i++) for (const [name, P] of paths) {
-      const o = Object.assign({ seed: 7301 + i * 7919 + name.length * 17, sex: i % 2 ? 'F' : 'M' }, P.start);
+    for (let i = 0; i < 6 && lives.filter(l => l.years >= 40).length < 10; i++) for (const [name, P] of paths) {
+      const o = Object.assign({ seed: 7301 + i * 7919 + name.length * 17, sex: i % 2 ? 'F' : 'M' }, P.start, { startAge: 20 });
       lives.push(await pg.evaluate(([o, i]) => {
         const L = B.life(o, ['careful', 'greedy'][i % 2], i === 0, 64);
         const pc = A.P(A.S.pc) || {};

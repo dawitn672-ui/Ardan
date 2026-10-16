@@ -281,9 +281,9 @@ export default {
             const e = A.EV[h.ev], v = A.eventView(h), pc = A.pc(), c = V.eventCult(pc, e);
             T.ev++;
             if (VT.words(v.text) > 80) T.over++;
-            const line = (v.text.match(/\n\n([^\n]+)$/) || [])[1];
+            const line = ((V.last || []).find(a => /^line:/.test(a)) || '').slice(5);   // the key of the line voices added
             if (c && V.localTo(e).includes(c)) { T.local++; if (V.has(c, v.title + ' ' + v.text)) T.localWords++; if (line || V.has(c, v.title + ' ' + v.text)) T.localVoice++; }
-            if (line && c) { T.lines++; if (seen[line] != null && A.S.year - seen[line] < V.REPEAT_YEARS) T.repeats++; seen[line] = A.S.year; }
+            if (line) { const k = A.S.pc + line; T.lines++; if (seen[k] != null && A.S.year - seen[k] < V.REPEAT_YEARS) T.repeats++; seen[k] = A.S.year; }
             if (e && typeof e.title === 'string' && !/\{/.test(e.title) && v.title !== e.title) T.titles++;
             if ((V.last || []).some(a => /^(tag|beat|greet|bear):/.test(a))) T.npc++;
             A.eventAuto();

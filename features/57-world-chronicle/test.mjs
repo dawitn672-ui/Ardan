@@ -41,14 +41,17 @@ export default {
       const dated = R.e.filter(e => !(e[1] >= 1000) || !(e[2] >= 0 && e[2] <= 364)).length;
       return { year: A.S.year, n: R.e.length, by, kinds: Object.keys(by).length, firstKept: JSON.stringify(R.e[0]) === first, first: lines[0],
         tenKept: snap10 === JSON.stringify(R.e.slice(0, 200)), shrank, bad, nobody, dated, broken: broken.slice(0, 3), nBroken: broken.length,
-        kb: Math.round(JSON.stringify(R).length / 1024), stateKb: Math.round(JSON.stringify(A.S).length / 1024), names: Object.keys(R.nm).length,
+        kb: Math.round(JSON.stringify(R).length / 1024), stateKb: Math.round(JSON.stringify(A.S).length / 1024), names: Object.keys(R.nm).length, json: JSON.stringify(R),
         news: A.S.news.length, oldestNews: A.S.news.length ? A.S.news[A.S.news.length - 1].y : null, history: A.S.history.length };
     });
+    // gzipped, as a save is
+    r.gzKb = await pg.evaluate(async j => { const s = new Blob([j]).stream().pipeThrough(new CompressionStream('gzip')); return Math.round((await new Response(s).arrayBuffer()).byteLength / 1024); }, r.json);
+    delete r.json;
     const ok = r.kinds >= 10 && r.firstKept && r.tenKept && !r.shrank && !r.bad && !r.nobody && !r.dated && !r.nBroken;
     return { ok, data: r, detail: `${r.year}: ${r.n} entries of ${r.kinds} kinds (${Object.entries(r.by).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(', ')}); ` +
       `the first entry (${r.first}) and the first 200 as they stood in 1115 are still there: ${r.firstKept && r.tenKept}; never shrank: ${!r.shrank}; ` +
       `without a place ${r.bad}, without a named person ${r.nobody}, undated ${r.dated}, lines that do not read ${r.nBroken}${r.broken.length ? ' e.g. ' + r.broken[0] : ''}; ` +
-      `${r.kb} KB of JSON (${r.names} names) in a ${r.stateKb} KB state. Beside it the news keeps ${r.news} lines back to ${r.oldestNews}, the release's history ${r.history}` };
+      `${r.kb} KB of JSON, ${r.gzKb} KB gzipped (${r.names} names), in a ${r.stateKb} KB state. Beside it the news keeps ${r.news} lines back to ${r.oldestNews}, the release's history ${r.history}` };
   },
 
   async wcObservesOnly(pg) {
@@ -250,7 +253,8 @@ export default {
       for (const [race, realm, status, age] of people) {
         A.newGame({ seed: 515, race, realm, status, sex: 'M', startAge: Math.max(1, age - 30) });
         WCT.years(30);
-        const pc = A.pc(); pc.alive = true; pc.literate = true;
+        // thirty years of world, and a character of the age wanted (a child for the children's scenes)
+        const pc = A.pc(); pc.alive = true; pc.literate = true; if (age < 14) pc.born = A.S.year - age;
         const base = A.serialize();
         for (const id of ids) {
           const e = A.EV[id];

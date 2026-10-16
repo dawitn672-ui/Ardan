@@ -98,7 +98,9 @@
     const isMine = e => mine.has(e.a) || mine.has(e.b);
     const wars = {}; for (const e of all) if (e.k === 'peace' && Array.isArray(e.x)) wars[e.x[0]] = e;
     const decades = new Map();
-    const add = (e, s, w) => { const d = Math.floor((e.y - 1105) / 10); if (!decades.has(d)) decades.set(d, []); decades.get(d).push({ e, s, w }); };
+    // decades from 1105; what began before the record opened (a war already being fought) goes first, on its own
+    const dec = y => (y < 1105 ? -1 : Math.floor((y - 1105) / 10));
+    const add = (e, s, w) => { const d = dec(e.y); if (!decades.has(d)) decades.set(d, []); decades.get(d).push({ e, s, w }); };
     const byKind = k => all.filter(e => e.k === k);
     for (const e of byKind('war')) {
       const id = Array.isArray(e.x) ? e.x[0] : null, end = id && wars[id];
@@ -115,12 +117,12 @@
     for (const k of ['wedding', 'alliance', 'trib']) for (const e of byKind(k)) if (isMine(e)) add(e, WC.line(e), 2);
     for (const e of byKind('famine').concat(byKind('plague'))) if (isMine(e)) add(e, WC.line(e), 3);
     // the field: the greatest battles and the sacked towns of each decade, and any the lives were part of
-    const top = (k, n, f) => { const by = new Map(); for (const e of byKind(k)) { if (f && !f(e)) continue; const d = Math.floor((e.y - 1105) / 10); if (!by.has(d)) by.set(d, []); by.get(d).push(e); } for (const L of by.values()) for (const e of L.sort((a, b) => (b.n || 0) - (a.n || 0)).slice(0, n)) add(e, WC.line(e), 3); };
+    const top = (k, n, f) => { const by = new Map(); for (const e of byKind(k)) { if (f && !f(e)) continue; const d = dec(e.y); if (!by.has(d)) by.set(d, []); by.get(d).push(e); } for (const L of by.values()) for (const e of L.sort((a, b) => (b.n || 0) - (a.n || 0)).slice(0, n)) add(e, WC.line(e), 3); };
     top('battle', 2, e => !isMine(e)); top('battle', 3, isMine);
     top('fall', 2, e => (e.x || 0) >= 2);
     const out = [];
     for (const [d, L] of [...decades.entries()].sort((a, b) => a[0] - b[0])) {
-      const y0 = 1105 + d * 10, y1 = Math.min(A.S.year, y0 + 9);
+      const y0 = d < 0 ? 0 : 1105 + d * 10, y1 = d < 0 ? 1104 : Math.min(A.S.year, y0 + 9);
       const seen = new Set(), lines = [];
       let lastY = null;
       for (const x of L.sort((a, b) => a.e.y - b.e.y || a.e.d - b.e.d)) {
@@ -144,7 +146,7 @@
       if (bt) sum.push(`${say(bt)} great battle${bt > 1 ? 's were' : ' was'} fought`);
       if (fl) sum.push(`${say(fl)} walled town${fl > 1 ? 's' : ''} fell`);
       if (sum.length) lines.push(`In these years ${sum.slice(0, -1).join(', ')}${sum.length > 1 ? ', and ' : ''}${sum[sum.length - 1]}.`);
-      out.push({ title: y0 === y1 ? `The year ${y0}` : `The years ${y0} to ${y1}`, lines });
+      out.push({ title: d < 0 ? 'Before 1105' : y0 === y1 ? `The year ${y0}` : `The years ${y0} to ${y1}`, lines });
     }
     return out;
   };

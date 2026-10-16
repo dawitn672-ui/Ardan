@@ -325,7 +325,7 @@
   WC.SICK = ['the sweating sickness', 'the spotted fever', 'the red flux', 'the grey cough', 'the burning ague', 'the camp fever', 'the swelling sickness'];
   WC.sickName = (pid, y) => { let h = 2166136261; for (const ch of pid + '|' + y) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return WC.SICK[(h >>> 0) % WC.SICK.length]; };
   WC.plagueChance = function (r) {
-    const S = S_(); let c = 0.025;
+    const S = S_(); let c = 0.035;
     try { const m = A.mkt && A.mkt(r.id); if (m && m.hv && m.hv.f <= 0.4 && m.hv.y >= S.year - 1) c += 0.05; } catch (e) {}
     if (S.prov.some(P => P.owner === r.id && P.sgBy)) c += 0.02;
     if ((r.provPop || r.pop || 0) > 3e6) c += 0.01;

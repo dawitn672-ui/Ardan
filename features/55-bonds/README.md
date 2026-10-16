@@ -126,7 +126,24 @@ Before this feature, `21-npc-initiative` kept a text log on each bond, `pc.rel[p
 
 `node features/55-bonds/bench.mjs <built.html>` (8 lives; 3 worlds of 60 years, each played twice, with the ledger read by the AI and recorded but ignored):
 
-BENCH_TABLE
+- **Lives** (8 bot lives, 201 years):
+  - 29,414 points of opinion change on the player's bonds, counting both sides;
+  - the yearly pull of memories made **13.8%** of it; adding the choices in scenes that cite a past line, **27.1%**;
+  - **35.1%** was written to a dated line;
+  - 207 events cited a bond's history in their text (10.3 a decade): 34 of them this feature's scenes, 173 `21-npc-initiative`'s `{past}`;
+  - 169 more showed the "Between you" line, out of 485 events about someone known.
+- **Worlds** (3 worlds of 60 years, each played twice). The two runs drift apart after the first decision, so the counts differ. Two runs of the bench gave the same numbers.
+
+  | | Ledger read by the AI | Ledger recorded but ignored |
+  | --- | --- | --- |
+  | AI wars per 1,000 neighbour-years, on a realm the attacker holds a grudge (10+) against | **4.2** (5 in 1,188) | **0** (0 in 1,474) |
+  | AI wars per 1,000 neighbour-years, all other pairs | 5.6 (80 in 14,276) | 5.7 (84 in 14,874) |
+  | Treaties signed per 1,000 pair-years, grudge pairs | **4.5** (8 in 1,792) | **7.9** (16 in 2,026) |
+  | Treaties signed per 1,000 pair-years, all other pairs | 2.8 | 2.9 |
+  | Feud lines held at the end, and carried past a ruler's death | 146, 78 carried (53%) | 206, 101 carried |
+  | Rulers who died | 211 | 210 |
+
+  Two of the five grudge wars were declared by a successor of the ruler who suffered the wrong.
 
 The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs`.
 
@@ -145,9 +162,9 @@ The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs`.
 ## Limits
 
 - **History lines from events are mechanical.** A label in the past tense ("you pulled him out") reads well for most of the release's choices, which are imperatives. A label that is not a verb falls back to "you chose …". A writer pass on the 30 most common event lines would help.
-- **The pull is one-sided by design.** Memories hold an opinion up or pull it down, but never push it past their own weight. Most of the 17.7% is wrongs pulling down and neglected friendships being held up.
+- **The pull is one-sided by design.** Memories hold an opinion up or pull it down, but never push it past their own weight. The pull's share is 13.8% to 17.7% of all opinion change, depending on the lives played.
 - **"Between you" is frequent.** About 45% of events about someone you know show it. It is a muted line, not prose, but a playtest should say whether it reads as noise.
 - **Secrets are seven kinds with one or three wordings each.** Affairs, skimmed accounts and desertion need a spouse, a post or a soldier, so a fresh town has mostly debts, crimes, heresies and hidden children. The north star's 60 kinds tied to the written cast are not here. A secret the player keeps is sentence-level ("What you did in the matter of …"), not a named act.
 - **NPCs do not blackmail each other,** and an exposed NPC is disgraced but not tried.
-- **Grudges between realms move decisions, but seldom start wars.** The realm that lost its capital is usually the weaker one, and `A.aiWarCheck` still wants an edge in strength. The ledger is read everywhere `A.relBetween` is read, but over 50 to 60 years a revenge war is rare (see the bench). The plan's D9 target, 30% of AI wars citing a memory or a want, is not met by this alone.
+- **Grudges between realms move decisions, but seldom start wars.** The realm that lost its capital is usually the weaker one, and `A.aiWarCheck` still wants an edge in strength. The ledger is read everywhere `A.relBetween` is read, but over 60 years a revenge war is rare: 5 of 85 AI wars in the bench. Without the ledger there were none, but that is still 6% of wars, not the 30% of AI wars citing a memory or a want that the benchmark's D9 asks for.
 - **Families, not houses.** Kin grudges run through the people around a death and through your own heir. The 800 noble houses do not keep a house-level ledger.
