@@ -72,7 +72,8 @@ export default {
             return res;
           };
           const men = r => A.divsOf(r).reduce((x, d) => x + d.men, 0), m0 = men(me), e0 = men(en);
-          try { for (let m = 0; m < 10; m++) A.advance(30); } finally { A.armyThink = think; }
+          // 300 days of war; scenes queued for the player (a custom, a plague nearby) would hold the clock, so clear them
+          try { const d0 = A.today(); for (let g = 0; g < 300 && A.today() - d0 < 300; g++) { A.S.queue = []; A.advance(Math.min(30, 300 - (A.today() - d0))); } } finally { A.armyThink = think; }
           o.ours += Math.max(0, m0 - men(me)); o.theirs += Math.max(0, e0 - men(en));
           o.held += A.S.prov.filter(P => P.owner !== me && A.ctrl(P) === me).length;
         } } finally { A.onMonth.splice(A.onMonth.indexOf(hook), 1); }
@@ -83,7 +84,8 @@ export default {
     const c = r.cautious;
     // over 96 wars: bold 414, steady 404, cautious 329 assaults. Bold against steady is within the noise (a bold general
     // also thinks too often to hold a plan, see GO-ARMY-TEMPO), so it is reported, not held
-    const ok = b.assaults >= c.assaults * 1.1 && s.assaults >= c.assaults * 1.1;
+    // and the wars must have been fought: with the clock held, every temper read 0 and the test passed on nothing
+    const ok = c.assaults >= 50 && b.assaults >= c.assaults * 1.1 && s.assaults >= c.assaults * 1.1;
     const k = n => `${Math.round(n / 1000)}k`;
     return { ok, detail: Object.entries(r).map(([t, v]) => `${t}: ${v.assaults} assaults, ${k(v.ours)} of ours and ${k(v.theirs)} of theirs dead, ${v.held} provinces held`).join('; ') };
   },
@@ -93,7 +95,8 @@ export default {
     const r = await pg.evaluate(() => {
       const { F } = GOT.soldier(81, 'bold');
       if (!F) return { none: true };
-      for (let m = 0; m < 2; m++) A.advance(30);
+      // sixty days of war; scenes other features queue (a custom, a plague nearby) would hold the clock, so clear them
+      const d0 = A.today(); for (let g = 0; g < 60 && A.today() - d0 < 60; g++) { A.S.queue = []; A.advance(60 - (A.today() - d0)); }
       const a = F.a, h = UI.wrArmyRow(a, A.cmdRole(A.pc()));
       return { plan: a.gtPlan, line: (h.match(/<b>(Bold|Cautious|Cunning|Steady)<\/b> · [^<]*/) || [''])[0], text: A.GENERALS.planText(a) };
     });

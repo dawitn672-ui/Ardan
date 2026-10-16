@@ -49,13 +49,13 @@ They sit under "Only now: your childhood" (or youth, prime, old age) on the Life
 
 The bench plays bot lives of the six balance paths and counts, for each stat and skill: the checks the player took that test it (the named skill, and a skill whose synergy beat it), the checks offered, the events whose condition read it, and the engine decisions that read it (each call of a duel, battle, mission, month of work, the body's year, an activity, an event's effects; scans over every skill such as perks, What now and the training picker are left out). Outcomes are decided + gated + engine.
 
-The first measure (the full world before this feature, BEFORE_LIVES) found these under 5 outcomes in the median life: BEFORE_DEAD.
+The first measure (the full world before this feature, 11 bot lives of the six balance paths that lasted 25 years or more, median 51 years) found these under 5 outcomes in the median life: 23 of 44: sword 2, axe 0, dagger 0, dual wield 0, unarmed 2, lance 0, mounted 0, bow 0, crossbow 1, throwing 0, riding 2, athletics 4, survival 4, tracking 4, sea 1, music 0, tactics 1, logistics 0, siegecraft 0, medicine 4, craft 4, husbandry 3, gambling 1. (The benchmark doc, counting offered checks only, found 20 of 44).
 
 What was done with them:
 
 - **Merged, for the player (9 skills):** dagger and dual wield into Blades (sword); crossbow and throwing into Bows & throwing (bow); lance and mounted combat into Riding & the lance; siegecraft into Tactics & siegecraft; logistics into Stewardship & supply; deception into Intrigue & deceit. Reading a merged skill reads the family's number, training it trains the family, the sheet and the training picker show one row, and an old save's points fold in (the higher of the two, and the higher talent). NPCs keep their own numbers, so duels between other people and the war layer are unchanged. 44 numbers become 35 on the player's sheet.
 - **Wired into outcomes:** medicine now shortens every month of every illness and decides the herb and dressing checks; craft, husbandry and trade are read by the childhood and youth actions; the wounds' part penalties read athletics, stealth, riding, craft and the weapons on every check.
-- **Still under the line after this** (AFTER_DEAD): these are the numbers a typical bot life (mostly peasants, serfs and artisans) does not fight, sail or command with. They are not cut: soldiers, sailors and generals use them, and cutting them needs the source (the plan's step 1). They are listed here so the next pass can merge or wire them.
+- **Still under the line after this** (6 of 35, on 12 lives: axe 0, unarmed 2, bow and throwing 2, sea 1, music 1, gambling 1): these are the numbers a typical bot life (mostly peasants, serfs and artisans) does not fight, sail or command with. They are not cut: soldiers, sailors and generals use them, and cutting them needs the source (the plan's step 1). They are listed here so the next pass can merge or wire them.
 
 ## Measured by
 
@@ -63,10 +63,10 @@ What was done with them:
 | --- | --- |
 | `bodyWoundsOnParts` | odds at difficulty 45 with skill 40: craft 50% → 32% and sword 42% → 29% with a broken arm, athletics unchanged; the surgeon mends in 45 days; festering 27% bound against 4% with the surgeon (400 wounds each); a deep cut landed on torso 15, arms 11, legs 7, hands 7 of 40 |
 | `illnessLastsMonths` | marsh fever, 300 onsets each (months / health lost): untreated 4.05 / 30, physician 3.05 / 37 (he bleeds it), herbs 3.05 / 24, wrong herbs 5.44 / 37, prayer 4.05 / 26, bed 3.39 / 25; the flux: physician 21 lost against 30 untreated; every onset asked for a treatment |
-| `illnessInLives` | 6 bot lives: 16 illnesses, 3.3 months on average, 15 treated (physician 7, wrong herbs 5, prayer 2, bed 1); the one left was struck as its life ended. On the feature alone (other features off) 21 of 21 |
+| `illnessInLives` | 6 bot lives: 12 illnesses, 3.1 months on average, 12 of 12 treated (physician 6, wrong herbs 3, bed 2, prayer 1); on the feature alone (other features off) 21 of 21 |
 | `agingStatByStat` | first body stat to fade across 300 people: strength 85, instinct 77, speed 71, stamina 66; median 7.7 years between a person's first and last; mean age factor at 50/60/70 0.804 against the release's 0.803; one woman's stats turned at stamina 40, strength 42, speed 43, instinct 48, intelligence 61; four years of care leave speed at 70 seven points higher |
 | `deedsMakeTraits` | one marked choice: not cruel; two: cruel, shown with both choices; three kind deeds against four cruel: still cruel, seven: kind; deeds for 9 traits leave 5; "Spare the boy" counts as a kind deed |
-| `traitsInLives` | 8 bot lives of 45 years: trait changes per life 0, 1, 1, 1, 1, 2, 3, 4 (median 1; the benchmark measured 4.7 in the release); most traits held 5 (the release 13); 13 of 13 changes logged with their deeds; 0 traits without a reason |
+| `traitsInLives` | 8 bot lives of 45 years: trait changes per life 0, 0, 0, 0, 1, 1, 4, 5 (median 1; the benchmark measured 4.7 in the release); most traits held 5 (the release 13); 11 of 11 changes logged with their deeds; 0 traits without a reason |
 | `stagesHaveTheirOwnPlay` | at 8, 15, 19, 35 and 62 each stage shows its own three and no others; six seasons under a master: +9.6 craft and talent ×1.2; 100 suns put by at 40 came back as 150; a pupil passed a craftsman of 39 after 12 lessons; 3 chapters made a book; six seasons of care: speed at 75 52% → 56% of its best |
 | `childrenSeeOnlyWhatTheyCan` | 7 children (noble 8, royal 10, gentry 6, peasant 9, merchant 12, serf 11, artisan 14): 167 enabled buttons pressed, 0 refused for age (the fix layer: 5 for the noble alone); brutal training offered 0; "Too young" pursuits listed 0 |
 | `mergedSkills` | training crossbow raises bow; an old save's lance 44 over riding 12 folds to riding 44; an NPC's dagger stays 33 beside sword 5; the sheet shows Blades and no dagger row |
@@ -75,7 +75,7 @@ What was done with them:
 | `bodyMindRenderPure` | drawing the Life tab, the profile and the stat tooltip changes neither `A.S` nor the random stream |
 | `bodyMindOldSave` | a save without the new fields and with unplaced wounds loads, draws and plays two years |
 
-All 17 tests (the four core suites and these 13) pass on the full world (`--features=body-mind`, 52 features); the numbers above are from that build.
+All 17 tests (the four core suites and these 13) pass on the full world (`--features=body-mind`, 56 features); the numbers above are from that build. On one run `bodyMindRenderPure` failed its trait-chip check while 59-tooltips was being written; it passes on the current tree.
 
 **The spar fix** (`node bench/dominance.mjs <build> --lives=12 --only=none,spar,practice,run --workers=1`, the same tree with and without this feature):
 
@@ -88,7 +88,31 @@ All 17 tests (the four core suites and these 13) pass on the full world (`--feat
 
 (The "line 35" column was run on an earlier tree with two fewer features from others.) Twelve lives are noisy for the strategies the fix does not touch, so the death ages were checked on 24 more lives each (seeds 9100+, the same bot): doing nothing, 18 of 24 died at a mean 33.0 with this feature against 20 of 24 at 33.8 without; practising, 15 of 24 at a mean 33.4 against 15 of 24 at 35.6. A sparring life lives about ten years longer and no longer dies of the yard; most still die young, of the fevers, falls and fights every life meets, which the bench's 30-year window counts.
 
-**Dead numbers** (`node bench/dead-numbers.mjs <build> --lives-per=2 --workers=1`): DEADTABLE
+**Dead numbers** (`node bench/dead-numbers.mjs <build> --lives-per=2 --workers=1`): before (the same tree without this feature) and after, median outcomes in a life:
+
+| Number | Before | After | | Number | Before | After |
+| --- | --- | --- | --- | --- | --- | --- |
+| persuasion | 591 | 672 | | stealth | 28 | 19 |
+| etiquette | 515 | 637 | | survival | **4** | 16 |
+| int | 201 | 67 | | stewardship (+ logistics **0**) | 16 | 16 |
+| melee | 184 | 79 | | learning | 10 | 12 |
+| wil | 142 | 121 | | tracking | **4** | 10 |
+| sta | 70 | 77 | | sword (+ dagger **0**, dual wield **0**) | **2** | 9 |
+| intrigue (+ deception 16) | 58 | 94 | | spear | 7 | 9 |
+| diplomacy | 53 | 55 | | shield | 13 | 9 |
+| trade | 37 | 99 | | medicine | **4** | 9 |
+| faith | 163 | 35 | | husbandry | **3** | 7 |
+| ins | 30 | 31 | | riding (+ lance **0**, mounted **0**) | **2** | 6 |
+| str | 26 | 28 | | intimidation | 7 | 6 |
+| command | 26 | 28 | | craft | **4** | 6 |
+| spd | 21 | 22 | | athletics | **4** | 5 |
+| | | | | tactics (+ siegecraft **0**) | **1** | 5 |
+| | | | | bow (+ crossbow **1**, throwing **0**) | **0** | **2** |
+| | | | | unarmed | **2** | **2** |
+| | | | | sea, music, gambling | **1**, **0**, **1** | **1**, **1**, **1** |
+| | | | | axe | **0** | **0** |
+
+Eleven and twelve lives are a small sample: the large engine counts (int, faith, melee) move with which careers the bots happened to take, and a number near 5 can fall either side of it on another seed. The direction for the merged and wired numbers is the finding: 23 under the line before, 6 after.
 
 The events pass `tools/lint-events.mjs` (12 events, 0 errors; the ten wound scenes need a wound, so the linter's characters never meet them, and `woundScenesPlay` plays them instead) and `tools/lint-choices.mjs` (0 obviously best).
 
