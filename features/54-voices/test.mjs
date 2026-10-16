@@ -238,21 +238,26 @@ export default {
         A.VOICE.OFF = off;
         try {
           A.newGame({ seed: 9090, race: 'human', realm: 'POL-18', status: 'peasant', sex: 'F', startAge: 18 });
-          const end = A.S.year + 8;
-          for (let g = 0; g < 3000 && A.S.year < end && A.pc().alive; g++) {
+          const end = A.S.year + 15;
+          let voiced = 0;
+          for (let g = 0; g < 5000 && A.S.year < end && A.pc().alive; g++) {
             A.advance(400);
             let h, k = 0;
-            while ((h = A.headReady()) && k++ < 200) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
+            while ((h = A.headReady()) && k++ < 200) {
+              if (h.type !== 'event') { A.S.queue.shift(); continue; }
+              A.VOICE.last = []; A.eventView(h); if (A.VOICE.last.length) voiced++;
+              A.eventAuto();
+            }
           }
           const people = JSON.parse(JSON.stringify(A.S.people));
           for (const p of Object.values(people)) delete p.vo;
-          return { rng: JSON.stringify(A.rngState), people: JSON.stringify(people).length + ':' + T.hash(people), year: A.S.year, vo: Object.keys(A.pc().vo || {}).length };
+          return { rng: JSON.stringify(A.rngState), people: JSON.stringify(people).length + ':' + T.hash(people), year: A.S.year, voiced };
         } finally { A.VOICE.OFF = false; }
       };
       return { off: run(true), on: run(false) };
     });
-    const ok = r.off.rng === r.on.rng && r.off.people === r.on.people && r.on.vo > 0;
-    return { ok, detail: ok ? `8 years in Tamar with and without voices: the same random stream and the same people (${r.on.vo} voice lines remembered)` : `worlds differ: ${JSON.stringify(r)}` };
+    const ok = r.off.rng === r.on.rng && r.off.people === r.on.people && r.on.voiced > 0 && r.off.voiced === 0;
+    return { ok, detail: ok ? `15 years in Tamar with and without voices (${r.on.voiced} events voiced): the same random stream and the same people` : `worlds differ or nothing voiced: ${JSON.stringify(r)}` };
   },
 
   // in lives played by the bot: the share of local events that come with the culture's words or voice, how often a

@@ -95,7 +95,8 @@ export default {
             if (!c) { wrong.push(id + ' missing'); continue; }
             if (c.c) { L.canon++; if (!c.c.realms.some(x => own.has(x)) || c.y >= A.S.year) wrong.push(`${q.ev}: canon ${c.ref} for ${pc.realm}`); continue; }
             const e = c.e, here = (e.p != null && provs.has(e.p)) || realms.has(e.a) || realms.has(e.b);
-            const when = e.y >= (pc.born || 0) && e.y * 365 + e.d < A.absDay();
+            // told after it happened (or, for a sickness at the door, as it happens), and not before the teller was born
+            const when = e.y >= (pc.born || 0) && e.y * 365 + e.d <= A.absDay();
             if (!here || !when) wrong.push(`${q.ev}: ${A.WC.line(e)} (born ${pc.born}, ${A.S.year}, ${pc.realm})`);
           }
           if (sample.length < 12 && v.recall) sample.push(v.recall);
@@ -110,7 +111,7 @@ export default {
     const pcts = r.lives.map(l => l.pct).sort((a, b) => a - b), med = (pcts[3] + pcts[4]) / 2;
     return { ok: pct >= 15 && med >= 12 && !r.nWrong && !raw, data: r, detail: `${r.lives.length} lives (${r.lives.map(l => `${l.race} ${l.status} ${l.years}y ${l.pct}%`).join(', ')}): ` +
       `${cite} of ${seen} scenes cite a dated entry, ${pct}% (median life ${med}%); by a recalled line ${sum('line')}, a scene of the pack ${sum('pack')}, a token ${sum('token')}; ` +
-      `${sum('canon')} of the citations are canon. Citations outside the character's place or time: ${r.nWrong}${r.wrong.length ? ' e.g. ' + r.wrong[0] : ''}; raw tokens ${raw}. ` +
+      `${sum('canon')} of the citations are canon. Citations outside the character's place or time: ${r.nWrong}${r.wrong.length ? ' e.g. ' + r.wrong.slice(0, 3).join(' | ') : ''}; raw tokens ${raw}. ` +
       `e.g. "${r.sample[0] || ''}"` };
   },
 

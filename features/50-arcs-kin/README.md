@@ -44,13 +44,19 @@ Lasting change, by the plan's words: a **bond** (sworn ties, kin written into th
 | `kinOldSave` | An arc state saved without its people brings on its next scene with stand-ins; a life with no `arcs` field plays on |
 | `kinBotLives` | see below |
 
-`kinBotLives`: 18 bot lives, 3 per start (serf, peasant, artisan, merchant, noble, royal), up to 64 years, one engaged bot per start.
+`kinBotLives`: bot lives over the league's six starts (serf, peasant, artisan, merchant, noble, royal), up to 64 years. Each start is played until two of its lives last 40 years (at most six tries), because many bot lives end at 16 or 20. The first try is an engaged bot. The pass bar holds whether or not the other story arcs share the track: 10 or more lives of 40+ years, at least half of them meeting a kin arc, 6 or more finished, 6 or more kinds, and at most a quarter given up.
 
-BOTRESULTS
+| Run | Lives (of 40+ years) | Kin arcs begun | Finished | Given up | Scenes | Kinds | Span of a finished arc |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| First draft (claimant and creditor a generation older) | 18 (12) | 61 | 47 | 8, 6 of them the bastard's claim: the claimant died of age between scenes | 237 | 11 of 13 | 3-14 years |
+| **Private build, final** (`--only=life-arcs,arcs-kin`: 13 story arcs on the track, all kin) | 27 (11, all 11 met a kin arc) | **82** | **68** | 3 | 326 | **13 of 13** | 3-12 years |
+FULLWORLD
+
+A stage is given up when it is dropped unseen, which is what a setup does when the person it needs has died. A long life meets four to six kin arcs on its own. A 56-year artisan life ran the night road, the feud, the carter's child, the match, the red cow and the bastard of the house, in that order. A 53-year merchant ran the mill, the bastard, the old ground, the feud, the match and the secret child.
 
 Lint: `tools/lint-events.mjs` passes (58 events, 406 renders, 0 errors, 0 warnings). `tools/lint-choices.mjs` finds 0 obviously best choices (21 events compared by numbers; the rest differ in what they change). Both pass on the private build and on the full world.
 
-BALANCE
+`bench/balance.mjs` on the full world (52 features, 12 lives a start, every kin arc in play): **all 28 numbers inside their bands**, 0 page errors. For example: merchant median peak coin 286,029 (band 50,000-900,000); peasant median death age 48 (30-85); noble median peak fame 68 (40-100); check win rate 38.8% (30-70). The arcs move money both ways: prices with a floor and a share, a mill, a farm, a cottage, a house, a dowry. Fame moves by 1 to 3.
 
 **Rules kept.**
 
