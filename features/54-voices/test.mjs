@@ -251,7 +251,8 @@ export default {
             }
           }
           const people = JSON.parse(JSON.stringify(A.S.people));
-          for (const p of Object.values(people)) delete p.vo;
+          // the voice's own cache, and 67-memory-weave's record, which keeps a scene's title as it was shown (in the place's words)
+          for (const p of Object.values(people)) { delete p.vo; delete p.mw; }
           return { rng: JSON.stringify(A.rngState), people: JSON.stringify(people).length + ':' + T.hash(people), year: A.S.year, voiced };
         } finally { A.VOICE.OFF = false; }
       };

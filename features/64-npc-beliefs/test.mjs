@@ -361,12 +361,15 @@ export default {
       // a save round trip
       const save = A.serialize(); A.deserialize(JSON.parse(save));
       const c = T.hash(NBT.state());
-      // an old save: none of it
-      const o = JSON.parse(save);
+      // an old save: none of it (from a young life, so the 14 years above can't have ended it)
+      for (let sd = 6407; sd < 6427; sd++) { A.newGame({ seed: sd, race: 'human', realm: 'POL-03', status: 'merchant', sex: 'M', startAge: 22 }); T.play(2); if (A.pc() && A.pc().alive) break; }
+      const o = JSON.parse(A.serialize());
       const strip = x => { if (!x || typeof x !== 'object') return; delete x.npcb; for (const id in x.people || {}) { delete x.people[id].nb; delete x.people[id].nbk; } };
       strip(o.S || o); strip(o);
       A.deserialize(o);
       const missing = !A.S.npcb && !Object.values(A.S.people).some(p => p.nb);
+      // the loaded life must live long enough to play (a shifted random stream can bring its death within the 3 years)
+      const pc0 = A.pc(); if (pc0) { pc0.health = 100; pc0.wounds = []; }
       const res = T.play(3);
       return { a, b, c, held, claims, missing, res, after: !!A.S.npcb, alive: !!A.pc() };
     });
