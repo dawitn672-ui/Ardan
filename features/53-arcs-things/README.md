@@ -50,9 +50,11 @@ Wounds come along the way, and the permanent ones last: a scar on the sword arm 
 | `aoArcsEveryBranch` | 520 random play-throughs (40 an arc, across artisan, noble, serf and merchant lives, rich and poor, lettered or not). All 520 complete. The longest scene is 70 words, with no raw tokens and no stage with fewer than 2 choices. Endings reached per arc: 3 to 4 (bell and relic have 3). |
 | `aoEffects` | A named property ("The mill below Brookcliff", a workshop), a masterwork sword, a hanged thief, a palfrey brought back, the song's epithet. |
 | `aoArcsOpen` | Peasant, serf, artisan, dwarf and orc lives: 12 of 13 open (all but the ship). Merchant, noble and elf gentry: 13 of 13. |
-| `aoBotLives` | BOTLINE |
+| `aoBotLives` | Bot lives over the six starts (the balance league's), two personalities, until ten have lasted 40 years: 21 lives. 16 of them began at least one of these arcs, and so did all 10 of the 40-year lives. 54 arcs begun, 215 scenes played, 42 arcs finished, 1 given up: the portrait, at its last stage. In these arcs a stage drops only when the person it needs has died. 11 of the 13 arcs came up; the ship and the bell did not. A 46-year serf ran *map, Kestrel, hoard* and was partway through *bridge* when the run stopped. A 44-year artisan ran *relic, mill, Kestrel, horse*. |
 
-FULLLINE
+**In the full build** (all 52 features, with the other story arcs of 50–52 on the same track), the same test on its first run gave 24 lives, only 8 of them of 40 years: lives end younger in the full world, so the test now plays up to 36. Of those 24, 16 began one of these arcs and so did all 8 of the 40-year lives. 29 arcs begun, 22 finished, and 12 of the 13 came up, between the others' arcs (*+N other* in the detail). FULL3LINE
+
+`bench/balance.mjs` on the full build with this feature (12 lives a path): every band holds. Median peak wealth is serf 5,496, peasant 14,796, artisan 170,877, merchant 290,052, noble 211,798 and royal 70,540. Check win rate 42.5%, 12 arc types, 0 page errors.
 
 `tools/lint-events.mjs`: 57 events, 399 renders across the linter's 8 characters, 0 errors, 0 warnings. `tools/lint-choices.mjs`: 0 obviously best of the 23 events compared by numbers. The other 34 differ in what they leave (deeds, traits, gear, a property), so the checker does not compare them.
 
