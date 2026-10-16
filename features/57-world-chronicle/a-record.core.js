@@ -23,7 +23,7 @@
     order: ['elite order destroyed', 1], legend: ['death of a Legend', 2],
   };
   // a field battle is set down when 24,000 men meet, or 9,000 fight on for five days or more: about the largest
-  // fifth of the front's fights, some 13 a year across Ardan (the front fights about 90 a year)
+  // seventh of the front's fights, some 13 a year across Ardan (the front fights about 90 a year)
   WC.BATTLE_MEN = 24000; WC.BATTLE_LONG = [5, 9000];
 
   const S_ = () => A.S;
