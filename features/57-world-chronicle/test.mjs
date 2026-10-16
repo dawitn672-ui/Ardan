@@ -59,14 +59,16 @@ export default {
     // on or off (the pack's scenes are held back in both, since they only exist where there is a record)
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      const chron = A.C.chron, ep = A.WC.EPIDEMIC;
+      // features that read the record (64-npc-beliefs seeds beliefs from its battles) are held back too: they act on
+      // what the record says, which is their business; this test is about whether recording itself changes anything
+      const chron = A.C.chron, ep = A.WC.EPIDEMIC, NB = A.NPCB, seed = NB && NB.seedBattles;
       const run = off => {
-        A.WC.OFF = off; A.WC.EPIDEMIC = false; A.C.chron = () => false;
+        A.WC.OFF = off; A.WC.EPIDEMIC = false; A.C.chron = () => false; if (NB) NB.seedBattles = () => {};
         try {
           A.newGame({ seed: 9090, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'F', startAge: 20 });
           WCT.years(12);
           return { h: T.hash(A.S.realms) + ':' + T.hash(A.S.people) + ':' + T.hash(A.S.prov.map(P => [P.owner, P.occ, P.unrest])) + ':' + A.rngState, n: A.S.wrec ? A.S.wrec.e.length : 0 };
-        } finally { A.WC.OFF = false; A.WC.EPIDEMIC = ep; A.C.chron = chron; }
+        } finally { A.WC.OFF = false; A.WC.EPIDEMIC = ep; A.C.chron = chron; if (NB) NB.seedBattles = seed; }
       };
       const on = run(false), off = run(true);
       return { same: on.h === off.h, on: on.n, off: off.n };
