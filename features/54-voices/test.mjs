@@ -272,6 +272,7 @@ export default {
           let h, k = 0;
           while ((h = A.headReady()) && k++ < 200) {
             if (h.type !== 'event') { A.S.queue.shift(); continue; }
+            V.last = [];
             const e = A.EV[h.ev], v = A.eventView(h), pc = A.pc(), c = V.eventCult(pc, e);
             T.ev++;
             if (VT.words(v.text) > 80) T.over++;
@@ -279,7 +280,7 @@ export default {
             if (c && V.localTo(e).includes(c)) { T.local++; if (V.has(c, v.title + ' ' + v.text)) T.localWords++; if (line || V.has(c, v.title + ' ' + v.text)) T.localVoice++; }
             if (line && c) { T.lines++; if (seen[line] != null && A.S.year - seen[line] < V.REPEAT_YEARS) T.repeats++; seen[line] = A.S.year; }
             if (e && typeof e.title === 'string' && !/\{/.test(e.title) && v.title !== e.title) T.titles++;
-            if (h.ctx && h.ctx.pid && /"[^"]{2,}"/.test(v.text) && Object.values(A.VOICE_TRAITS).some(b => b.tag.concat(b.beat).some(p => v.text.includes(A.VOICE.pron(A.P(h.ctx.pid) || {}, p))))) T.npc++;
+            if ((V.last || []).some(a => /^(tag|beat|greet|bear):/.test(a))) T.npc++;
             A.eventAuto();
           }
           if ((res && res.why === 'dead') || !A.pc() || !A.pc().alive) break;
@@ -290,6 +291,6 @@ export default {
     }, n);
     const pct = (a, b) => (b ? Math.round(100 * a / b) : 0);
     const ok = r.over === 0 && r.repeats === 0 && r.local > 0 && pct(r.localWords, r.local) >= 30;
-    return { ok, detail: `${r.lives} lives, ${r.years} years, ${r.ev} events: ${r.local} local, of which ${pct(r.localWords, r.local)}% show the culture's words and ${pct(r.localVoice, r.local)}% its words or a voice line; ${r.lines} voice lines (${(10 * r.lines / Math.max(1, r.years)).toFixed(1)} a decade), ${r.repeats} heard twice within ${5} years; ${r.titles} titles in the place's words; ${r.npc} lines in the speaker's manner; over 80 words ${r.over}` };
+    return { ok, detail: `${r.lives} lives, ${r.years} years, ${r.ev} events: ${r.local} local, of which ${pct(r.localWords, r.local)}% show the culture's words and ${pct(r.localVoice, r.local)}% its words or a voice line; ${r.lines} voice lines (${(10 * r.lines / Math.max(1, r.years)).toFixed(1)} a decade), ${r.repeats} heard twice within ${5} years; ${r.titles} titles in the place's words; ${r.npc} people's lines in the speaker's manner; over 80 words ${r.over}` };
   },
 };

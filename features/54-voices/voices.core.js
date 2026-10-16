@@ -309,6 +309,7 @@
         if (pc && e) {
           const d = V.decorate(pc, e, q, v);
           v.title = d.title; v.text = d.text;
+          V.last = d.added;   // what the last drawn view was given (not saved; read by the tests)
           // the life remembers the line, so it is not heard again for a while (a new field: old saves have none)
           if (d.line) { pc.vo = pc.vo && typeof pc.vo === 'object' ? pc.vo : {}; pc.vo[d.line] = A.S.year; }
         }
