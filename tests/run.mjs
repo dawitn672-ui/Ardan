@@ -47,9 +47,11 @@ if (args.includes('--list')) { for (const t of tests) console.log(t.name.padEnd(
 const browser = await pw.chromium.launch();
 const results = [];
 let failed = 0;
-console.log('testing', path.relative(root, file) || file);
-for (const { name, fn, owner } of tests) {
-  if (only && !only.includes(name)) continue;
+// tests are independent (each gets its own browser context), so several can run at once: --workers=N (CI uses 4)
+const WORKERS = Math.max(1, +(opt('workers') || 1));
+console.log('testing', path.relative(root, file) || file, WORKERS > 1 ? `(${WORKERS} at a time)` : '');
+const queue = tests.filter(t => !only || only.includes(t.name));
+async function runOne({ name, fn, owner }) {
   const ctx = await browser.newContext({ acceptDownloads: true });
   const pg = await ctx.newPage();
   const errs = [];
@@ -71,6 +73,7 @@ for (const { name, fn, owner } of tests) {
   console.log(`${res.ok ? 'PASS' : 'FAIL'}  ${name.padEnd(20)} ${secs.toFixed(1).padStart(5)}s  ${res.detail}`);
   await ctx.close();
 }
+await Promise.all(Array.from({ length: Math.min(WORKERS, queue.length) }, async () => { while (queue.length) await runOne(queue.shift()); }));
 await browser.close();
 console.log(failed ? `${failed} of ${results.length} failed` : `all ${results.length} passed`);
 if (opt('json')) {

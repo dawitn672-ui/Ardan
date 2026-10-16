@@ -27,6 +27,6 @@ for (const d of fs.readdirSync(path.join(root, 'features')).sort()) {
 try { execFileSync(process.execPath, ['tools/lint-choices.mjs', '--all-features'], { cwd: root, stdio: 'pipe' }); console.log('choices ok (no obviously best choice in any feature event)'); }
 catch (e) { lintFailed++; console.error(`choices FAIL\n${String(e.stdout || '').slice(0, 4000)}`); }
 if (lintFailed) process.exitCode = 1;
-if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs']); } catch { process.exitCode = 1; } }
+if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs', `--workers=${process.env.CI ? 4 : 1}`]); } catch { process.exitCode = 1; } }
 // balance: target numbers per path, held by a fixed-seed league (bench/targets.mjs)
 if (!process.argv.includes('--skip-balance')) { try { run(['bench/balance.mjs', 'index.html']); } catch { process.exitCode = 1; } }
