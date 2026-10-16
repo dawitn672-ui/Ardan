@@ -120,6 +120,7 @@ async function playLives(n, classic) {
 
 // ---- the static descriptor of every event, read in the page
 const desc = await page.evaluate(() => {
+  if (A.EC) A.EC.sync(true);   // describe every event as written, before the cut marks any
   const src = v => { const seen = new Set();
     const go = x => typeof x === 'function' ? 'FN:' + x.toString() : x && typeof x === 'object' ? (seen.has(x) ? null : (seen.add(x), Array.isArray(x) ? x.map(go) : Object.fromEntries(Object.entries(x).map(([k, y]) => [k, go(y)])))) : x;
     return go(v); };
@@ -255,14 +256,17 @@ if (MODE === 'measure') {
   const retired = new Set(await page.evaluate(() => A.EC ? A.EC.ids() : []));
   // a "small nudge one-off": an event whose choices only nudge numbers, that nothing reads, in no chain
   const nudge = id => { const r = info[id]; return !!r && r.kind === 'nudge' && !r.protect; };
+  // a "weak one-off": any of the kinds the cut retires (a nudge, numbers only, opinion only), with nothing reading it
+  const weak = id => { const r = info[id]; return !!r && ['nudge', 'numbers', 'opinion'].includes(r.kind) && !r.protect; };
   const summarize = (ls, label) => {
-    let ev = 0, yrs = 0, mem = 0, small = 0, rep = 0, forced = 0, retiredFired = 0;
+    let ev = 0, yrs = 0, mem = 0, small = 0, weakN = 0, rep = 0, forced = 0, retiredFired = 0;
     const cls = {};
     for (const L of ls) {
       yrs += L.years; ev += L.fired.length; mem += L.memEvents;
       const last = {};
       for (const [id, y, age, c, f] of L.fired) {
         if (nudge(id)) small++;
+        if (weak(id)) weakN++;
         if (f) forced++;
         if (retired.has(id) && !f) retiredFired++;
         if (last[id] != null && y - last[id] < 10) rep++;
@@ -276,7 +280,7 @@ if (MODE === 'measure') {
     }
     for (const k in cls) { const c = cls[k]; c.eventsPerYear = r1(c.events / Math.max(1, c.years)); c.emptyYearPct = r1(100 * c.empty / Math.max(1, c.years)); }
     return { label, lives: ls.length, years: yrs, eventsPerDecade: r1(10 * ev / Math.max(1, yrs)), memorySharePct: r1(100 * mem / Math.max(1, ev)),
-      smallNudgeSharePct: r1(100 * small / Math.max(1, ev)), repeatsWithin10y: rep, repeatsPer100Events: r1(100 * rep / Math.max(1, ev)),
+      smallNudgeSharePct: r1(100 * small / Math.max(1, ev)), weakOneOffSharePct: r1(100 * weakN / Math.max(1, ev)), repeatsWithin10y: rep, repeatsPer100Events: r1(100 * rep / Math.max(1, ev)),
       forcedSharePct: r1(100 * forced / Math.max(1, ev)), retiredRolled: retiredFired, byClass: cls };
   };
   // the eligible pool a character can draw from, per class, job, age band and realm, with and without the cut
@@ -290,7 +294,7 @@ if (MODE === 'measure') {
   const json = path.resolve(root, opt('json') || 'reports/event-cut.json');
   fs.mkdirSync(path.dirname(json), { recursive: true });
   fs.writeFileSync(json, JSON.stringify(out, null, 1));
-  const keys = ['eventsPerDecade', 'memorySharePct', 'smallNudgeSharePct', 'repeatsPer100Events', 'repeatsWithin10y', 'forcedSharePct', 'retiredRolled'];
+  const keys = ['eventsPerDecade', 'memorySharePct', 'smallNudgeSharePct', 'weakOneOffSharePct', 'repeatsPer100Events', 'repeatsWithin10y', 'forcedSharePct', 'retiredRolled'];
   for (const k of keys) console.log(k.padEnd(22), String(before[k]).padStart(7), '->', String(cut[k]).padStart(7));
   for (const c of Object.keys(Object.assign({}, before.byClass, cut.byClass)).sort()) {
     const b = before.byClass[c] || {}, a = cut.byClass[c] || {};

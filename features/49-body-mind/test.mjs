@@ -346,7 +346,7 @@ export default {
       pc.health = 60;
       return { refused, shown, low, okAt60: A.canAct('spar')[0] };
     });
-    const ok = Object.values(r.refused).every(x => !x[0]) && r.shown && r.low >= 35 && r.okAt60;
+    const ok = Object.values(r.refused).every(x => !x[0]) && r.shown && r.low >= 45 && r.okAt60;
     return { ok, detail: `at health 20: ${Object.entries(r.refused).map(([k, x]) => `${k} ${x[0] ? 'allowed' : 'refused'}`).join(', ')} ("${r.refused.spar[1]}"), shown on the Life tab ${r.shown}; ` +
       `40 bouts from 50 against a master left health at least ${r.low}; at 60 the yard is open again ${r.okAt60}` };
   },

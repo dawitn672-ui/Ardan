@@ -192,9 +192,9 @@
   // lived at single-digit health until the next cold killed it (bench/dominance.mjs: 6 of 6 dead by a median 24).
   // Now the activities that risk a hurt are refused below a health line, with the reason shown, and a practice bout
   // never takes you below a floor.
-  BM.HURT_LINE = 35;
+  BM.HURT_LINE = 50;   // at 35 a sparring life hovered at the line all year, and a fever or a fall finished it
   BM.RISKY = new Set(['spar', 'train_yard', 'tournament', 'hunt', 'beast_hunt', 'explore', 'duel', 'school', 'bm_bloods']);
-  BM.SPAR_FLOOR = 35;
+  BM.SPAR_FLOOR = 45;
   const can = A.canAct;
   A.canAct = function (key) {
     const pc = A.pc();

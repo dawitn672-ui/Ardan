@@ -5,7 +5,8 @@
 //   - town icons (houses, towers, a church, a tent) once zoomed in, and every capital as a keep with a gold flag;
 //   - armies and divisions as standards in their realm's colour with the ruling house's charge, once zoomed in.
 //     The release's boxes stay when zoomed out, and always if the player turns banners off.
-// The ground is cut into 256-pixel tiles per zoom level and cached; the tiles are thrown away when a border moves.
+// The ground is cut into 256-pixel tiles per zoom level and cached; the tiles are thrown away when a border moves,
+// and each canvas keeps its finished view with a margin, so a still or panning map costs one copy per frame.
 // Everything here is the UI's: every glyph is placed by a hash of its lattice cell and level (never A.rand), and
 // nothing writes to A.S. Settings live in UI.set (inkMap, banners), saved with the player's other settings.
 (function () {
@@ -17,6 +18,8 @@
   const TILE = 256, BASE = 1100 / 7000, MAXL = 5, KW = 7000, KH = 4500;
   IM.TOWN_ZOOM = 1.8;                          // town icons appear from this zoom (7000 / view width)
   IM.BANNER_ZOOM = 2.2;                        // standards replace the boxes from this zoom
+  IM.bitmaps = true;                           // tiles as ImageBitmaps (see mkCanvas)
+  IM.keepViews = true;                         // keep each canvas's view, with a margin, as one picture (see drawTiles)
   IM.budgetMs = 28;                            // tile drawing per frame before the rest is left to the next frame
   IM.on = () => !!UI.set.inkMap && typeof document !== 'undefined';
   MAP.inkOn = IM.on;
@@ -298,10 +301,14 @@
   // ---- one tile at level L: the ground (sea, coast, land, glyphs, paper) and, apart, its lines (borders), which
   // are laid over the realms' wash so the wash never greys them
   const opaque = (a) => mix(SEA, INK, a);
+  // Tiles are drawn on an OffscreenCanvas and frozen into an ImageBitmap where the browser has them: a bitmap stays
+  // on the graphics card, so copying it each frame is cheap.
+  const mkCanvas = n => { if (typeof OffscreenCanvas === 'function' && IM.bitmaps) return new OffscreenCanvas(n, n); const c = document.createElement('canvas'); c.width = c.height = n; return c; };
+  const frozen = c => (c.transferToImageBitmap ? c.transferToImageBitmap() : c);
   function renderTile(L, tx, ty) {
     const t0 = now(), g = buildGeo(), S = A.S;
     const lp = BASE * Math.pow(2, L), tw = TILE / lp, x0 = tx * tw, y0 = ty * tw, x1 = x0 + tw, y1 = y0 + tw;
-    const cv = document.createElement('canvas'); cv.width = cv.height = TILE;
+    const cv = mkCanvas(TILE);
     const c = cv.getContext('2d');
     const up = Math.pow(1.13, L);         // lines thicken a little as the map grows
     c.fillStyle = SEA; c.fillRect(0, 0, TILE, TILE);
@@ -341,7 +348,7 @@
     let lv = null;
     const prov = LP ? g.provPieces.filter(hit) : [];
     if (prov.length) {
-      lv = document.createElement('canvas'); lv.width = lv.height = TILE;
+      lv = mkCanvas(TILE);
       const b = lv.getContext('2d'); b.setTransform(lp, 0, 0, lp, -x0 * lp, -y0 * lp); b.lineJoin = 'round'; b.lineCap = 'round';
       b.clip(LP, 'evenodd');
       const inner = [], outer = [];
@@ -354,13 +361,13 @@
       }
     }
     IM.stats.tiles++; IM.stats.tileMs += now() - t0;
-    return { g: cv, b: lv };
+    return { g: frozen(cv), b: lv && frozen(lv) };
   }
 
   // ---- the tile cache: keyed by level and position, flushed when the borders or the land change
-  const cache = new Map(); let cacheKey = '';
+  const cache = new Map(); let cacheKey = '', gen = 0;
   const LIMIT = 150;
-  IM.reset = function () { cache.clear(); cacheKey = ''; MAP.overlayCache = null; if (UI.wrOvCache) UI.wrOvCache = null; };
+  IM.reset = function () { cache.clear(); cacheKey = ''; gen++; views = new WeakMap(); MAP.overlayCache = null; if (UI.wrOvCache) UI.wrOvCache = null; };
   const getTile = (L, tx, ty, make) => {
     const k = L + ':' + tx + ':' + ty; let t = cache.get(k);
     if (t) { cache.delete(k); cache.set(k, t); return t; }
@@ -381,15 +388,53 @@
   };
   IM.pending = () => pending.size;
 
-  // draw one layer of the tiles that cover view v; tiles not yet drawn wait for the next frame (within a budget),
-  // and meanwhile the coarsest level stands in for them
-  function drawTiles(ctx, W, H, v, layer) {
-    const wk = IM.worldKey(); if (wk !== cacheKey) { cache.clear(); cacheKey = wk; }
-    const vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KW, vh = v ? v.h : KH;
+  // Draw one layer of the tiles that cover view v. Tiles not yet drawn wait for the next frame (past a time budget),
+  // and meanwhile the coarsest level stands in for them. Each canvas keeps its view, with a margin, as one picture
+  // per layer: a map that stands still or pans a little costs one copy per frame, and the tiles are laid again only
+  // when the scale changes or the view leaves the margin.
+  let views = new WeakMap(); const PAD = 256;
+  function drawTiles(ctx, W, H, v, layer, extra, extraKey) {
+    const wk = IM.worldKey(); if (wk !== cacheKey) { cache.clear(); cacheKey = wk; gen++; }
+    const vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KW, vh = v ? v.h : KH, sx = W / vw, sy = H / vh;
+    const cvs = ctx.canvas, out = { vx, vy, sx, sy, zoom: KW / vw };
+    if (typeof document === 'undefined' || !IM.keepViews || !cvs) {
+      const res = drawTilesTo(ctx, W, H, vx, vy, vw, vh, layer);
+      res.zoom = out.zoom; if (extra) extra(ctx, res);
+      if (res.late && cvs) later(cvs);
+      return out;
+    }
+    const key = [sx, sy, W, H, gen, extraKey || ''].join(',');
+    let vc = views.get(cvs); if (!vc) views.set(cvs, vc = {});
+    let kept = vc[layer];
+    const fits = k => { if (!k || k.key !== key) return null; const ox = Math.round((vx - k.kx) * sx), oy = Math.round((vy - k.ky) * sy); return ox >= 0 && oy >= 0 && ox + W <= k.cv.width && oy + H <= k.cv.height ? [ox, oy] : null; };
+    let at = fits(kept);
+    // while the scale changes (a wheel turning), lay just the view; the margin is laid once the scale holds
+    if (!at && kept && kept.sx !== sx) {
+      const res = drawTilesTo(ctx, W, H, vx, vy, vw, vh, layer);
+      res.zoom = out.zoom; if (extra) extra(ctx, res);
+      kept.sx = sx; kept.key = '';
+      if (res.late) later(cvs);
+      return out;
+    }
+    if (!at) {
+      const KWd = W + 2 * PAD, KHd = H + 2 * PAD, kx = vx - PAD / sx, ky = vy - PAD / sy;
+      const k = kept && kept.cv.width === KWd && kept.cv.height === KHd ? kept.cv : document.createElement('canvas');
+      if (k.width !== KWd) k.width = KWd; if (k.height !== KHd) k.height = KHd;
+      const kc = k.getContext('2d'); kc.clearRect(0, 0, KWd, KHd);
+      const res = drawTilesTo(kc, KWd, KHd, kx, ky, KWd / sx, KHd / sy, layer);
+      res.zoom = out.zoom; if (extra) extra(kc, res);
+      vc[layer] = kept = { key: res.late ? '' : key, kx, ky, sx, cv: k };
+      if (res.late) later(cvs);
+      at = [Math.round((vx - kx) * sx), Math.round((vy - ky) * sy)];
+    }
+    ctx.drawImage(kept.cv, at[0], at[1], W, H, 0, 0, W, H);
+    return out;
+  }
+  function drawTilesTo(ctx, W, H, vx, vy, vw, vh, layer) {
     const sx = W / vw, sy = H / vh, ppu = Math.max(sx, sy);
     const L = clamp(Math.ceil(Math.log2(ppu / BASE) - 0.25), 0, MAXL), lp = BASE * Math.pow(2, L), tw = TILE / lp;
     ctx.save();
-    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low';
     const t0 = now(); let late = false;
     const tx0 = Math.max(0, Math.floor(vx / tw)), tx1 = Math.min(Math.ceil(KW / tw) - 1, Math.floor((vx + vw) / tw));
     const ty0 = Math.max(0, Math.floor(vy / tw)), ty1 = Math.min(Math.ceil(KH / tw) - 1, Math.floor((vy + vh) / tw));
@@ -404,8 +449,7 @@
       if (pt[layer]) ctx.drawImage(pt[layer], (tx - px * f) * s, (ty - py * f) * s, s, s, dx, dy, dw, dh);
     }
     ctx.restore();
-    if (late) later(ctx.canvas);
-    return { vx, vy, sx, sy, zoom: KW / vw };
+    return { vx, vy, sx, sy, W, H, zoom: KW / vw, late };
   }
 
   // ---- the ground hook (patches IM-GROUND-*): the inked map under view v (null: the whole world)
@@ -422,14 +466,15 @@
   MAP.inkLines = function (ctx, W, H, v) {
     if (!IM.on() || !A.S || !A.S.prov || !A.S.prov.length) return false;
     try {
-      const d = drawTiles(ctx, W, H, v, 'b');
-      IM.towns(ctx, W, H, d.vx, d.vy, d.sx, d.sy, d.zoom);
+      // the towns are kept with the view; they change only when a capital moves or the display is resized
+      const K = iconK(ctx, W, !v), tk = K.toFixed(2) + ':' + Object.values(A.S.realms).map(r => r.alive ? r.capitalProv : '').join(',');
+      drawTiles(ctx, W, H, v, 'b', (c, d) => IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K), tk);
       return true;
     } catch (e) { if (typeof console !== 'undefined') console.error(e); return false; }
   };
 
-  // ---- towns and capitals, drawn every frame (few, and they change with the world)
-  const iconK = (ctx, W) => { let d = 0; try { d = ctx.canvas.getBoundingClientRect ? ctx.canvas.getBoundingClientRect().width : 0; } catch (e) { d = 0; } return clamp(W / Math.max(1, d || W), 0.9, 2.4); };
+  // ---- towns and capitals: drawn with the lines layer, kept with the view until a capital moves
+  const iconK = (ctx, W, whole) => { let d = 0; try { d = ctx.canvas.getBoundingClientRect ? ctx.canvas.getBoundingClientRect().width : 0; } catch (e) { d = 0; } const k = clamp(W / Math.max(1, d || W), 0.9, 2.4); return whole ? Math.sqrt(k) : k; };
   const keep = (c, x, y, s) => {      // a keep: two towers, a crenellated wall, a dark gate, a gold flag
     c.lineWidth = Math.max(1, s * 0.09); c.strokeStyle = INK; c.fillStyle = VEL; c.lineJoin = 'miter';
     const w = s * 1.25, h = s * 0.7, tw2 = s * 0.36, th = s * 1.05, b = y + s * 0.42;
@@ -449,10 +494,11 @@
   const church = (c, x, b, s) => { house(c, x - s * 0.12, b, s * 0.85); c.beginPath(); c.rect(x + s * 0.16, b - s * 0.75, s * 0.2, s * 0.75); c.fill(); c.stroke(); c.beginPath(); c.moveTo(x + s * 0.26, b - s * 0.75); c.lineTo(x + s * 0.26, b - s * 1.05); c.moveTo(x + s * 0.17, b - s * 0.95); c.lineTo(x + s * 0.35, b - s * 0.95); c.stroke(); };
   const tent = (c, x, b, s) => { c.beginPath(); c.moveTo(x - s * 0.4, b); c.lineTo(x, b - s * 0.6); c.lineTo(x + s * 0.4, b); c.closePath(); c.fill(); c.stroke(); c.beginPath(); c.moveTo(x, b - s * 0.6); c.lineTo(x, b - s * 0.78); c.moveTo(x, b); c.lineTo(x - s * 0.06, b - s * 0.3); c.stroke(); };
   const walls = (c, x, b, s) => { c.beginPath(); c.moveTo(x - s * 0.6, b + s * 0.06); for (let i = 0; i < 6; i++) { const q = x - s * 0.6 + i * s * 0.2; c.lineTo(q, b - s * 0.08); c.lineTo(q + s * 0.1, b - s * 0.08); c.lineTo(q + s * 0.1, b + s * 0.06); c.lineTo(q + s * 0.2, b + s * 0.06); } c.stroke(); };
-  IM.towns = function (ctx, W, H, vx, vy, sx, sy, zoom) {
-    const S = A.S, K = iconK(ctx, W), caps = new Set();
+  IM.towns = function (ctx, W, H, vx, vy, sx, sy, zoom, K) {
+    const S = A.S, caps = new Set();
+    if (K == null) K = iconK(ctx, W, zoom === 1 && !vx && !vy);
     for (const id in S.realms) { const r = S.realms[id]; if (r.alive && r.capitalProv != null) caps.add(r.capitalProv); }
-    const s0 = clamp(6.5 + zoom * 1.1, 7, 15) * K;
+    const s0 = clamp(6.5 + zoom * 1.1, 7, 19) * K;
     ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     for (const p of S.prov) {
       const x = (p.sx - vx) * sx, y = (p.sy - vy) * sy;
@@ -469,7 +515,7 @@
       else if (p.town > 0) { ctx.beginPath(); ctx.arc(x, b - s0 * 0.15, s0 * 0.12, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
       if ((p.fort || 0) >= 2) walls(ctx, x, b + s0 * 0.12, s0);
     }
-    const sk = clamp(8 + zoom * 1.2, 9, 17) * K;
+    const sk = clamp(8 + zoom * 1.2, 9, 21) * K;
     for (const pid of caps) {
       const p = S.prov[pid]; if (!p) continue;
       const x = (p.sx - vx) * sx, y = (p.sy - vy) * sy;
@@ -486,11 +532,11 @@
     if (!IM.on() || !A.S) return false;
     try {
       const S = A.S, vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KW, vh = v ? v.h : KH, sx = W / vw, sy = H / vh, zoom = KW / vw;
-      const opts = typeof o === 'object' && o ? o : {}, K = iconK(ctx, W);
+      const opts = typeof o === 'object' && o ? o : {}, K = iconK(ctx, W, !v);
       ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
       if (v && zoom >= 1.8) {
         const f = `italic ${Math.round((9 + Math.min(5, zoom)) * Math.min(K, 1.4))}px Georgia, serif`;
-        const s0 = clamp(6.5 + zoom * 1.1, 7, 15) * K;
+        const s0 = clamp(6.5 + zoom * 1.1, 7, 19) * K;
         for (const p of S.prov) {
           const x = (p.sx - vx) * sx, y = (p.sy - vy) * sy;
           if (x < -40 || y < -20 || x > W + 40 || y > H + 20) continue;
@@ -498,8 +544,8 @@
         }
       }
       if (opts.labels !== false) {
-        const fs = v ? Math.round(Math.max(11, 15 - zoom) * Math.min(K, 1.4)) : Math.max(10, Math.round(W / 92));
-        const sk = clamp(8 + zoom * 1.2, 9, 17) * K;
+        const fs = v ? Math.round(Math.max(11, 15 - zoom) * Math.min(K, 1.4)) : Math.max(10, Math.round(W / 92 * Math.pow(K, 0.7)));
+        const sk = clamp(8 + zoom * 1.2, 9, 21) * K;
         for (const id in S.realms) {
           const r = S.realms[id]; if (!r.alive || r.capitalProv == null) continue;
           const p = A.prov(r.capitalProv); if (!p) continue;

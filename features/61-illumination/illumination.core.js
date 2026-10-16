@@ -30,8 +30,9 @@
   [data-vellum="1"] .il-vellum p:first-of-type::first-letter{float:left;font-family:'Cinzel Decorative',serif;font-size:3.2em;line-height:.9;margin:.06em .12em 0 0;color:#8e2414;text-shadow:1px 1px 0 #b98a2a}
   [data-vellum="1"] .il-vellum button{color:#2b1d10;border-color:#8a6a3a;background:#e9dcbc}
   [data-vellum="1"] .mapwrap,[data-vellum="1"] .mapstrip{position:relative}
-  [data-vellum="1"] canvas.worldmap,[data-vellum="1"] canvas.mapstrip{filter:sepia(.28) saturate(.85) contrast(1.04)}
+  [data-vellum="1"]:not([data-inkmap="1"]) canvas.worldmap,[data-vellum="1"]:not([data-inkmap="1"]) canvas.mapstrip{filter:sepia(.28) saturate(.85) contrast(1.04)}
   [data-vellum="1"] .mapwrap::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 62%,rgba(70,45,15,.38) 100%);mix-blend-mode:multiply}
+  [data-vellum="1"][data-inkmap="1"] .mapwrap::after{background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 66%,rgba(70,45,15,.2) 100%)}
   .il-compass{position:absolute;right:10px;bottom:10px;width:84px;height:84px;pointer-events:none;opacity:.92;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
   [data-vellum="0"] .il-compass{display:none}
   @media (max-width:700px){.il-compass{width:54px;height:54px}}
@@ -47,7 +48,10 @@
     if (typeof document === 'undefined' || document.getElementById('il-css')) return;
     const st = document.createElement('style'); st.id = 'il-css'; st.textContent = IL.CSS; document.head.appendChild(st);
   };
-  IL.applyVellum = function () { try { document.documentElement.dataset.vellum = UI.set.vellum ? '1' : '0'; } catch (e) {} };
+  // the map's sepia tint is for the release's painted relief; an inked map (62-inked-map) is already on vellum
+  IL.applyVellum = function () {
+    try { const d = document.documentElement.dataset; d.vellum = UI.set.vellum ? '1' : '0'; d.inkmap = UI.INKMAP && UI.set.inkMap !== false ? '1' : '0'; } catch (e) {}
+  };
 
   // ---- the woodcut at the head of each event; it inks in the first time that scene is drawn
   const inked = new WeakSet();
@@ -174,6 +178,7 @@
   const render = UI.render;
   UI.render = function () {
     const r = render.apply(this, arguments);
+    try { IL.applyVellum(); } catch (e) {}
     try {
       if (A.S && UI.screen === 'game') {
         if (lastYear != null && A.S.year > lastYear) IL.play('bell');

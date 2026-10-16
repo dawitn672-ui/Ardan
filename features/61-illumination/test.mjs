@@ -41,10 +41,11 @@ export default {
       // the modal carries the picture at its head, and a scene without one when woodcuts are off
       const q = { type: 'event', ev: ids[0], ctx: {} };
       const on = UI.eventModal(q); UI.set.woodcuts = false; const off = UI.eventModal(q); UI.set.woodcuts = true;
-      return { n, own, guessed, none, top: Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 6).map(x => x.join(' ')).join(', '), on: /class="woodcut"/.test(on), off: !/class="woodcut"/.test(off) };
+      return { n, own, guessed, none, shapes: !!A.evShape, top: Object.entries(by).sort((a, b) => b[1] - a[1]).slice(0, 6).map(x => x.join(' ')).join(', '), on: /class="woodcut"/.test(on), off: !/class="woodcut"/.test(off) };
     });
-    const ok = r.on && r.off && r.none / r.n <= 0.12;
-    return { ok, detail: `${r.n} events sampled: ${r.own} by their own shape, ${r.guessed} guessed from their words, ${r.none} (${Math.round(100 * r.none / r.n)}%) fall back to the ornament; most common ${r.top}; the toggle works: ${r.on && r.off}` };
+    // without 25-variety-guard's shapes every picture is guessed from the words, and more fall back to the ornament
+    const ok = r.on && r.off && r.none / r.n <= (r.shapes ? 0.12 : 0.2);
+    return { ok, detail: `${r.shapes ? '' : '(no event shapes in this build) '}${r.n} events sampled: ${r.own} by their own shape, ${r.guessed} guessed from their words, ${r.none} (${Math.round(100 * r.none / r.n)}%) fall back to the ornament; most common ${r.top}; the toggle works: ${r.on && r.off}` };
   },
 
   // drawing the event, the Chronicle and the map changes nothing in the game and draws no random number
