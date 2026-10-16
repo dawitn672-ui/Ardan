@@ -2,18 +2,24 @@
 export default {
   async chronicleBook(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 5150, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 0 });
-      T.play(32);
+      // a book needs a life with years in it: a noble baby can die of a fever in her first winter, and which seed does
+      // turns on the whole world's random stream, so take the first of a few seeds whose life lasts 20 years
+      let seed = 5150;
+      for (; seed < 5160; seed++) {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 0 });
+        T.play(32);
+        const pc = A.P(A.S.pc); if (pc && A.age(pc) >= 20) break;
+      }
       const before = A.rngState, h0 = T.hash(A.S);
       UI.tab = 'book'; UI.render();
       const html = document.querySelector('#tabbody').innerHTML, text = A.chronicleText();
       const book = A.chronicleBook(), life = book[0] || { chapters: [] };
       return { pure: A.rngState === before && T.hash(A.S) === h0, chapters: life.chapters.length, lines: life.chapters.reduce((a, c) => a + c.lines.length, 0),
         named: html.includes(UI.esc(life.name || '???')), raw: /\{[A-Za-z0-9_.]+\}/.test(text), sample: (life.chapters[1] || life.chapters[0] || { lines: [''] }).lines.slice(0, 2).join(' / ').slice(0, 220),
-        sig: !!(A.SIGNATURE && A.SIGNATURE.chronicle), tab: UI.GROUPS.find(g => g.k === 'chronicle').subs[0][0] };
+        seed, sig: !!(A.SIGNATURE && A.SIGNATURE.chronicle), tab: UI.GROUPS.find(g => g.k === 'chronicle').subs[0][0] };
     });
     return { ok: r.pure && r.chapters >= 2 && r.named && !r.raw && r.sig && r.tab === 'book',
-      detail: `${r.chapters} chapters, ${r.lines} entries; names the life ${r.named}; pure ${r.pure}; raw tokens ${r.raw}; e.g. "${r.sample}"` };
+      detail: `seed ${r.seed}: ${r.chapters} chapters, ${r.lines} entries; names the life ${r.named}; pure ${r.pure}; raw tokens ${r.raw}; e.g. "${r.sample}"` };
   },
   async chronicleEscapes(pg) {
     const r = await pg.evaluate(() => {
