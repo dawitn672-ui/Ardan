@@ -44,7 +44,7 @@ const WANT_ERRORS = [
   'events[2] (mod_bad_three).choices[1].fx.trait: "magical" is not a known trait',
 ];
 const PWN = '<img src=x data-pwn onerror="window.__pwned=1">';
-const XSS = JSON.stringify({ format: 'ardan-mod', formatVersion: 1, id: 'xss', name: '<i data-pwn>X</i>', version: '1.0', author: 'A' + PWN, about: 'About ' + PWN + ' "quoted" & ampersand',
+const XSS = JSON.stringify({ format: 'ardan-mod', formatVersion: 1, id: 'xss', name: '<i data-pwn>X</i>', version: '1.0', author: '<b data-pwn>A</b>', about: 'About ' + PWN + ' "quoted" & ampersand',
   words: { default: { thing: 'thing<b data-pwn>' } },
   events: [{ id: 'mod_xss_one', title: 'Title ' + PWN, text: 'Text ' + PWN + ' {thing} "q" \' onmouseover=\'alert(1)\' &lt;b data-pwn&gt;', cond: { adult: true },
     choices: [{ t: 'Label ' + PWN, r: 'Result ' + PWN + ' "quoted"', fx: { happy: 1 } },
@@ -313,6 +313,7 @@ export default {
       A.MODS.setOn('example', true);
       T.enter({ seed: 8181, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
       T.play(3);
+      T.renderAll();   // as in 01-replay: the first draw may do harmless setup (an empty cargo hold), so measure from after it
       const rng = A.rngState, h = T.hash(A.S), lib = localStorage.getItem(A.MODS.KEY);
       T.renderAll();
       UI.ov = { type: 'menu' }; UI.renderModal(); UI.A.mods(); UI.MODS.html(); UI.A.modBack(); UI.ov = null; UI.renderModal();

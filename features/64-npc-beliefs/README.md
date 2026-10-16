@@ -108,4 +108,10 @@ MEASURED
 
 ## Limits
 
-LIMITS
+- **Only around you.** The people whose beliefs move are the ones you know and those close to them (at most 140), and the courts. The rest of the world holds nothing, except the kin at a death among the people you know. NPCs do not act on what they believe of each other beyond their opinion: no NPC accuses another, and no feud between two NPCs starts from a story.
+- **Courts weigh little.** A court's beliefs move a realm's opinion of another by at most 6 points. In the test case that raised the odds of war a month from 0.0004 to 0.0005. It is a nudge on the AI, not a cause of wars, and no war has yet been traced to a court's false belief.
+- **Few kinds, templated words.** There are eight kinds of claim. A twist has three wordings, a secret five, and a tale is 26's tale. A deed taken from a scene uses 55-bonds' mechanical past tense of the choice ("pulled Odo out, in the matter of the flooded mill"), which reads well for most labels and is skipped when it would not. A writer's pass on the commonest lines would help.
+- **Battles are winners and counts.** The accounts disagree on who won and how many fell. No account invents a battle, moves it or changes who led it.
+- **Your knowledge is wrong only about people.** You can believe a false story of someone, and find out. You cannot yet be wrong about a battle you heard of from afar, beyond 26's hearsay, or about a beast beyond 26's tales.
+- **The bot does not talk.** The bench's lives answer the scenes the game puts to them, but they never use the person view's "Talk of what is said" or the release's interactions. So the measured rates leave out the player's own telling, and what a long talk carries.
+- **What a court believes is not on its own card.** It shows only in the opinion tooltip and in `nb_court_word`.

@@ -111,7 +111,8 @@ async function playLives(n, classic) {
       A.onMonth.push(hook);
       let L;
       try { L = B.life(Object.assign({ classicEvents: classic }, o), p, e, 70); } finally { A.onMonth.splice(A.onMonth.indexOf(hook), 1); }
-      return { years: L.years, deathAge: L.deathAge, events: L.events, memEvents: L.memEvents, fired: window.__fired, classYears: years, arc: L.arc,
+      const at = age => { const x = (L.samples || []).find(s => s.age >= age); return x ? { wil: x.wil, str: x.str, health: x.health, coin: x.coin } : null; };
+      return { years: L.years, deathAge: L.deathAge, cause: L.cause, at30: at(30), at45: at(45), events: L.events, memEvents: L.memEvents, fired: window.__fired, classYears: years, arc: L.arc,
         classic: A.S.settings ? !!A.S.settings.classicEvents : null };
     }, [o, p, e, classic]);
     out.push(L);
@@ -287,7 +288,10 @@ if (MODE === 'measure') {
       smallNudgeSharePct: r1(100 * small / Math.max(1, ev)), weakOneOffSharePct: r1(100 * weakN / Math.max(1, ev)), repeatsWithin10y: rep, repeatsPer100Events: r1(100 * rep / Math.max(1, ev)),
       forcedSharePct: r1(100 * forced / Math.max(1, ev)), riskyPerDecade: r1(10 * danger / Math.max(1, yrs)),
       medianDeathAge: (a => a.length ? a.sort((x, y) => x - y)[Math.floor(a.length / 2)] : null)(ls.filter(L => L.deathAge != null).map(L => L.deathAge)),
-      meanYears: r1(yrs / Math.max(1, ls.length)), retiredRolled: retiredFired, byClass: cls };
+      meanYears: r1(yrs / Math.max(1, ls.length)),
+      wilAt30: r1((a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null)(ls.filter(L => L.at30).map(L => L.at30.wil))),
+      strAt30: r1((a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null)(ls.filter(L => L.at30).map(L => L.at30.str))),
+      causes: ls.filter(L => L.deathAge != null).map(L => `${L.deathAge}: ${String(L.cause).slice(0, 40)}`), retiredRolled: retiredFired, byClass: cls };
   };
   // the eligible pool a character can draw from, per class, job, age band and realm, with and without the cut
   const pb = await page.evaluate(probePools, true), pa = await page.evaluate(probePools, false);
@@ -308,7 +312,7 @@ if (MODE === 'measure') {
   const json = path.resolve(root, opt('json') || 'reports/event-cut.json');
   fs.mkdirSync(path.dirname(json), { recursive: true });
   fs.writeFileSync(json, JSON.stringify(out, null, 1));
-  const keys = ['eventsPerDecade', 'memorySharePct', 'smallNudgeSharePct', 'weakOneOffSharePct', 'repeatsPer100Events', 'repeatsWithin10y', 'forcedSharePct', 'riskyPerDecade', 'medianDeathAge', 'meanYears', 'retiredRolled'];
+  const keys = ['eventsPerDecade', 'memorySharePct', 'smallNudgeSharePct', 'weakOneOffSharePct', 'repeatsPer100Events', 'repeatsWithin10y', 'forcedSharePct', 'riskyPerDecade', 'medianDeathAge', 'meanYears', 'wilAt30', 'strAt30', 'retiredRolled'];
   for (const k of keys) console.log(k.padEnd(22), String(before[k]).padStart(7), '->', String(cut[k]).padStart(7));
   for (const c of Object.keys(Object.assign({}, before.byClass, cut.byClass)).sort()) {
     const b = before.byClass[c] || {}, a = cut.byClass[c] || {};
