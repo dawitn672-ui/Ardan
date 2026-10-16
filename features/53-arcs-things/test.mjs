@@ -211,10 +211,10 @@ export default {
   // (3) whole bot lives across the six starts: these arcs come up in real play, and some run to their end
   async aoBotLives(pg) {
     await pg.evaluate(BOT);
-    // the six starts in turn, two personalities, until ten lives have lasted forty years (at most 24 lives)
+    // the six starts in turn, two personalities, until ten lives have lasted forty years (at most 36: in the full world more lives end young)
     const paths = Object.entries(TARGETS.paths);
     const lives = [];
-    for (let n = 0; n < 24 && lives.filter(l => l.years >= 40).length < 10; n++) {
+    for (let n = 0; n < 36 && lives.filter(l => l.years >= 40).length < 10; n++) {
       const [name, P] = paths[n % paths.length], i = Math.floor(n / paths.length) % 2;
       const o = Object.assign({ seed: 5601 + n * 7919 + name.length * 31, sex: n % 2 ? 'F' : 'M' }, P.start);
       lives.push(await pg.evaluate(([o, i, name]) => {

@@ -258,17 +258,21 @@ export default {
   async kinBotLives(pg) {
     await pg.evaluate(BOT);
     const track = await pg.evaluate(() => A.ARCS.stories().length);
+    // each start is played until two of its lives last 40 years (at most six tries): many bot lives end at 16 or 20
+    // (a fall, a fever, a fight), and a story arc needs grown years to be met
     const paths = Object.entries(TARGETS.paths);
     const lives = [];
-    for (const [name, P] of paths) for (let i = 0; i < 3; i++) {
+    for (const [name, P] of paths) for (let i = 0, got = 0; i < 6 && got < 2; i++) {
       const o = Object.assign({ seed: 8101 + i * 7919 + name.length * 131, sex: i % 2 ? 'F' : 'M' }, P.start);
-      lives.push(await pg.evaluate(([o, i]) => {
-        const L = B.life(o, ['careful', 'greedy', 'random'][i], i === 0, 64);
+      const l = await pg.evaluate(([o, i]) => {
+        const L = B.life(o, ['careful', 'greedy', 'random'][i % 3], i === 0, 64);
         const pc = A.P(A.S.pc) || {};
         const arcs = Object.entries(pc.arcs || {}).filter(([k]) => k.startsWith('ak_'))
           .map(([k, a]) => ({ k, stage: a.stage, n: A.ARCS.ARC[k].stages.length, done: !!a.done, gave: !!a.gave, span: (a.done || A.S.year) - (a.y || A.S.year) }));
         return { status: o.status, years: L.years, death: L.deathAge, arcs };
-      }, [o, i]));
+      }, [o, i]);
+      lives.push(l);
+      if (l.years >= 40) got++;
     }
     const long = lives.filter(l => l.years >= 40);
     const started = lives.reduce((s, l) => s + l.arcs.length, 0);
