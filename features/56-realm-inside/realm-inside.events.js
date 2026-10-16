@@ -40,7 +40,7 @@ A.defEvents([
   { id: 'ri_court_push', title: 'The council presses', trigger: true, cool: 1, npc: true,
     cond: (p, C) => C.ruler(p),
     setup: (p, ctx) => { if (!alive(ctx.pid) || !ctx.push || !ctx.riK) ctx.skip = true; },
-    text: '{them}, your {seatT}, has the floor and will not give it up: the realm needs {push}. {theyHe} wants {wantT}, and says so twice. {foeName} sits opposite and fears {foeT}. The rest of the council watches to see which of them you favour.',
+    text: '{them}, {seatT}, has the floor and will not give it up: the realm needs {push}. {theyHe} wants {wantT}, and says so twice. {foeName} sits opposite and fears {foeT}. The rest of the council watches to see which of them you favour.',
     choices: [
       { t: 'Grant it', r: 'You nod, and the clerks write it down. {them} sits back, satisfied. Across the table, a pen is put down hard.', fx: { riCourt: 'yes', them: { op: 10 } } },
       { t: 'Refuse it', r: 'You say no, plainly. {them} bows to the crown and does not look at you again that day.', fx: { riCourt: 'no', them: { op: -8 }, wil: 1 } },

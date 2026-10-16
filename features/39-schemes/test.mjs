@@ -10,7 +10,7 @@ const SETUP = () => {
     person(pc, type, op) {
       const t = A.makeAcquaintance(pc, type || 'acquaint');
       A.link(pc, t, type || 'acquaint', op || 0, type || 'acquaint');
-      t.born = A.S.year - 30;
+      t.born = A.S.year - Math.max(30, (GD.RACES[t.race] && GD.RACES[t.race].adult || 16) + 10);   // grown, whatever their people (an elf is grown at 50)
       return t;
     },
     month(pc) { A.onMonth.forEach(f => { try { f(pc); } catch (e) { console.error(e); } }); },
