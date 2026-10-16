@@ -62,7 +62,7 @@ The game checks everything when you load the file. Any error means nothing from 
 | `text` | Up to 80 words. A token counts at its usual length: `{realm}` as four words, `{name}` as one. |
 | `cond` | When the event can come up (see Conditions). Required, unless the event is `"trigger": true`. |
 | `with` | Optional. A relation, or a list: the event is about that person. They must be alive. You may then use `{them}` and the other person tokens, and the `them` effect. |
-| `w` | Weight, 0.05 to 5. Default 1. |
+| `w` | Weight, 0.05 to 5. Default 1. The game has about 4,000 events, so weight matters: in 24 bot lives of the full game, the example's friend's purse came up in 3 lives at weight 1 and in 13 at weight 3. |
 | `cool` | Years before it can come again, 1 to 100. Default 6. |
 | `once` | `true`: it comes at most once in a life. |
 | `trigger` | `true`: it never comes up by chance. Only another event of yours leads to it, with the `event` effect. |
