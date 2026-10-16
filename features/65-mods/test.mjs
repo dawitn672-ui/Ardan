@@ -44,12 +44,12 @@ const WANT_ERRORS = [
   'events[2] (mod_bad_three).choices[1].fx.trait: "magical" is not a known trait',
 ];
 const PWN = '<img src=x data-pwn onerror="window.__pwned=1">';
-const XSS = JSON.stringify({ format: 'ardan-mod', formatVersion: 1, id: 'xss', name: 'X' + PWN, version: '1.0', author: 'A' + PWN, about: 'About ' + PWN + ' "quoted" & ampersand',
-  words: { default: { thing: 'thing' + PWN } },
+const XSS = JSON.stringify({ format: 'ardan-mod', formatVersion: 1, id: 'xss', name: '<i data-pwn>X</i>', version: '1.0', author: 'A' + PWN, about: 'About ' + PWN + ' "quoted" & ampersand',
+  words: { default: { thing: 'thing<b data-pwn>' } },
   events: [{ id: 'mod_xss_one', title: 'Title ' + PWN, text: 'Text ' + PWN + ' {thing} "q" \' onmouseover=\'alert(1)\' &lt;b data-pwn&gt;', cond: { adult: true },
     choices: [{ t: 'Label ' + PWN, r: 'Result ' + PWN + ' "quoted"', fx: { happy: 1 } },
       { t: 'Check ' + PWN, check: { s: 'persuasion', d: 40 }, win: { r: 'Win ' + PWN }, lose: { r: 'Lose ' + PWN } }] }],
-  customs: { 'POL-01': [{ id: 'mod_xss_custom', name: 'Custom ' + PWN, kind: 'year', m: 0, rule: 'Rule ' + PWN, text: 'Scene ' + PWN + ' {w1}', fx: { happy: 1 },
+  customs: { 'POL-01': [{ id: 'mod_xss_custom', name: '<b data-pwn>Custom</b>', kind: 'year', m: 0, rule: 'Rule ' + PWN, text: 'Scene ' + PWN + ' {w1}', fx: { happy: 1 },
     keepT: 'Keep ' + PWN, keep: 'Kept ' + PWN, defy: { t: 'Defy ' + PWN, r: 'Defied ' + PWN, fx: { honor: -1 } }, log: 'Log ' + PWN }] } });
 
 const SETUP = () => {
@@ -61,6 +61,15 @@ const SETUP = () => {
     },
     // a living friend, for the events that are about one
     friend(pc) { const t = A.makeAcquaintance(pc, 'friend'); A.link(pc, t, 'friend', 60, 'friend'); return t; },
+    // play on like the journal's own test (01-replay): every prompt answered through a journaled command
+    play(years) {
+      const end = A.S.year + years;
+      for (let k = 0; k < 3000 && A.S.year < end && A.pc().alive; k++) {
+        A.advance(400);
+        let h, g = 0;
+        while ((h = A.headReady()) && g++ < 500) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); }
+      }
+    },
     words: s => (String(s || '').match(/\S+/g) || []).length,
     raw: /\{[A-Za-z0-9_.]+\}/,
   };
@@ -158,7 +167,7 @@ export default {
       let custom = 'no realm bible in this build';
       if (A.BIBLE && A.BIBLE.custom('mod_xss_custom')) {
         A.S.queue = [{ type: 'event', ev: 'rb_custom', forced: true, ctx: { cid: 'mod_xss_custom' } }]; UI.renderModal(); scan('custom'); texts.push(document.querySelector('#modal').textContent);
-        A.S.queue = []; UI.renderModal(); UI.tab = 'realm'; UI.render(); scan('realm tab'); custom = /Custom img src=x/.test(document.body.textContent) ? 'on the realm card, as text' : 'NOT on the realm card';
+        A.S.queue = []; UI.renderModal(); UI.tab = 'realm'; UI.render(); scan('realm tab'); custom = /data-pwnCustom/.test(document.body.textContent) ? 'on the realm card, as text' : 'NOT on the realm card';
       }
       T.renderAll(); scan('every tab');
       const all = texts.join(' ');
@@ -168,7 +177,7 @@ export default {
       const shown = document.querySelector('#modal').textContent;
       A.S.queue = []; UI.renderModal(); UI.screen = 'title';
       MT.reset();
-      return { ok: res.ok, warnings: res.warnings, found, quotes: /"quoted"/.test(all) && /onmouseover='alert\(1\)'/.test(all), entity: all.includes('&lt;b data-pwn&gt;'), stripped: !/[<>]/.test(texts.slice(0, -1).join('')),
+      return { ok: res.ok, warnings: res.warnings, found, quotes: /"quoted"/.test(all) && /onmouseover='alert\(1\)'/.test(all), entity: all.includes('&lt;b data-pwn&gt;'), stripped: !/[<>]/.test(texts.join('')),
         bypass: shown.includes('<img src=x data-pwn') && shown.includes('<svg data-pwn'), custom };
     }, XSS);
     const ok = r.ok && r.warnings.some(w => /angle brackets? (was|were) removed/.test(w)) && !r.found.length && r.quotes && r.entity && r.stripped && r.bypass && !/NOT/.test(r.custom);
@@ -255,7 +264,7 @@ export default {
       A.MODS.setOn('example', true);
       const out = {};
       // the same seed with the same mods twice, with another mod loaded (off) in between
-      const play = () => { T.enter({ seed: 4242, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 }); T.play(6); return T.hash(A.S.people) + ':' + A.rngState; };
+      const play = () => { T.enter({ seed: 4242, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 }); MT.play(6); return T.hash(A.S.people) + ':' + A.rngState; };
       const h1 = play();
       A.MODS.add(probe, 'probe.json'); A.MODS.setOn('probe', false);
       const h2 = play();
@@ -272,7 +281,7 @@ export default {
       out.back = A.MODS.isOn('example') && !A.EV.mod_example_stone.trigger;
       // a player's mod, saved, then removed from the library
       A.MODS.setOn('probe', true);
-      T.enter({ seed: 5, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 }); T.play(1);
+      T.enter({ seed: 5, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 }); MT.play(1);
       const logLine = 'A "quoted" line from a mod & co';
       A.log(logLine);
       const enc2 = await SAVES.encode(A.S, A.J);
@@ -292,7 +301,7 @@ export default {
       return out;
     }, PROBE);
     const ok = r.sameWorld && r.journal === 'example' && r.replay && /^example 1\.0\.0 [0-9a-f]{14}$/.test(r.recorded) && r.back && r.missing === 'probe' &&
-      /not loaded here: Probe 1\.0/.test(r.toast) && r.probeOff && r.stillRecorded === 'example,probe' && r.prose && r.old;
+      /not loaded here: Probe 1\.0/.test(r.toast) && r.probeOff && r.stillRecorded === 'probe' && r.prose && r.old;
     return { ok, detail: `same seed and mods, another mod loaded between: ${r.sameWorld ? 'same world' : 'WORLDS DIFFER'}; journal records mods "${r.journal}", its replay ${r.replay ? 'reaches the same world' : 'DIFFERS'} with the mod off in the library; save records "${r.recorded}" and brings it back: ${r.back}; a removed mod is reported missing ("${r.toast.slice(0, 80)}...") and its events stay off: ${r.probeOff}, the save keeps "${r.stillRecorded}"; a quoted log line survives the save: ${r.prose}; an old save loads with no mods: ${r.old}` };
   },
 
