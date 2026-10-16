@@ -295,6 +295,32 @@ export default {
     return { ok, detail: `render pure ${r.pure}; side profile shows the body ${r.side.body} and a trait's reason ${r.side.chip}; full profile: body with costs ${r.prof.body}, who you are ${r.prof.who}, aging ${r.prof.aging}; stat tooltip has the curve ${r.tip}` };
   },
 
+  async hurtBodyStaysHome(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 4990, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 22 });
+      const pc = A.pc(); A.S.time = 6;
+      pc.health = 20;
+      const refused = {}; for (const k of ['spar', 'train_yard', 'hunt', 'explore', 'tournament', 'beast_hunt', 'duel']) refused[k] = A.canAct(k);
+      UI.tab = 'life'; UI.render();
+      const shown = /yard master sends you home/.test(document.getElementById('app').textContent);
+      // a practice bout from 50 health, against a far better fighter, 40 times: never under the floor
+      let low = 100;
+      for (let i = 0; i < 40; i++) {
+        pc.health = 50; A.S.queue = [];
+        const foe = A.makeOpponent(pc, 'spar'); foe.skills.sword = 90; foe.skills.melee = 90; for (const s of GD.STATS) foe.st[s] = 90;
+        A.startDuel(pc, foe, { kind: 'spar', place: 'the yard', lethal: false });
+        const q = A.S.queue.find(x => x.type === 'duel'); if (!q) continue;
+        A.duelAuto(q.d); A.duelClose();
+        low = Math.min(low, pc.health);
+      }
+      pc.health = 60;
+      return { refused, shown, low, okAt60: A.canAct('spar')[0] };
+    });
+    const ok = Object.values(r.refused).every(x => !x[0]) && r.shown && r.low >= 35 && r.okAt60;
+    return { ok, detail: `at health 20: ${Object.entries(r.refused).map(([k, x]) => `${k} ${x[0] ? 'allowed' : 'refused'}`).join(', ')} ("${r.refused.spar[1]}"), shown on the Life tab ${r.shown}; ` +
+      `40 bouts from 50 against a master left health at least ${r.low}; at 60 the yard is open again ${r.okAt60}` };
+  },
+
   async bodyMindOldSave(pg) {
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 4980, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 25 });

@@ -5,10 +5,10 @@ const SETUP = () => {
   window.RIT = {
     life(seed, o) { A.newGame(Object.assign({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30, diff: 'story' }, o || {})); return A.pc(); },
     // live the world for `years`, the player swapped for any adult when they die; each(y) after every new year
-    world(years, each) {
+    world(years, each, tick) {
       const end = A.S.year + years; let lastY = A.S.year;
       for (let k = 0; k < 40000 && A.S.year < end; k++) {
-        A.advance(30);
+        A.advance(30); tick && tick();
         let h, g = 0; while ((h = A.headReady()) && g++ < 300) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); }
         if (!A.pc().alive) { const kid = Object.values(A.S.people).find(p => p.alive && p.id !== A.S.pc && A.isAdult(p)); if (!kid) break; A.S.pc = kid.id; }
         if (A.S.year !== lastY) { lastY = A.S.year; each && each(A.S.year); }
@@ -96,7 +96,7 @@ export default {
             out.ry++;
             for (const e of (x.riCourt || []).filter(e => e.y === y)) {
               out.kinds[e.k] = (out.kinds[e.k] || 0) + 1;
-              if (RI.PUSH[e.k] && RI.PUSH[e.k].law && e.p !== 100) { out.laws++; if (!e.yes) out.refused++; if (e.who && e.why && e.why.length >= 2) out.lawsNamed++; }
+              if (RI.PUSH[e.k] && RI.PUSH[e.k].law && e.p !== 100 && !e.ruler) { out.laws++; if (!e.yes) out.refused++; if (e.who && e.why && e.why.length >= 2) out.lawsNamed++; }
               if (['pension', 'seatdeal', 'refuse'].includes(e.k)) out.deals++;
               if (e.k === 'seat') out.seats++;
               if (e.k === 'claim') { out.claims++; if (e.who && e.back && e.back.length) out.claimsNamed++; }
@@ -166,7 +166,6 @@ export default {
         const ids = new Set(A.S.wars.map(w => w.id));
         try {
           RIT.world(30, y => {
-            for (const w of A.S.wars) if (!ids.has(w.id)) { ids.add(w.id); o.wars++; }
             for (const x of RIT.ai()) {
               const B = x.riBook; if (!B || B.y !== y) continue;
               o.ry++; tot.inc += B.inc; tot.up += B.up; tot.int += B.int; tot.debt += Math.max(0, B.d0 - B.d1);
@@ -175,7 +174,7 @@ export default {
               const L = LORE.realms[x.id], base = (L ? L.army : x.army0 || x.army) * (x.provPop || 1) / (x.basePop || 1);
               o.army.push(x.army / Math.max(1, base)); o.stab.push(x.stability);
             }
-          });
+          }, () => { for (const w of A.S.wars) if (!ids.has(w.id)) { ids.add(w.id); o.wars++; } });
         } finally { A.forcesAI = fa; }
       }
       const q = (a, f) => { const s = a.slice().sort((x, y) => x - y); return Math.round(100 * s[Math.floor(f * (s.length - 1))]) / 100; };

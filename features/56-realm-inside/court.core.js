@@ -547,7 +547,13 @@ A.factionsYear = function (r) {
   }
   try { if (r && r.alive) RI.session(r); } catch (e) { console.error('[ri] court session', e); }
   const out = baseFactionsYear.apply(this, arguments);
-  try { if (r && r.alive && !r.isRebel) RI.joinFactions(r); } catch (e) { console.error('[ri] factions', e); }
+  try {
+    if (r && r.alive && !r.isRebel) {
+      RI.joinFactions(r);
+      // a faction is led by a person: make sure its leading house has a head
+      for (const f of A.factionsOf(r.id)) if (A.S.houses[f.leader]) A.houseHead(f.leader);
+    }
+  } catch (e) { console.error('[ri] factions', e); }
   return out;
 };
 

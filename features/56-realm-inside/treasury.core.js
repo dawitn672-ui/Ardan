@@ -64,6 +64,12 @@ A.worldYear = function () {
       if (!B.pr) r.riRev = Math.round(r.riRev ? .7 * r.riRev + .3 * (B.inc / .92 + Math.max(0, B.other)) : Math.max(r.income || 0, B.inc / .92 + Math.max(0, B.other)));
       r.riBook = B; delete r.riBookNext;
     }
+    // tribute and indemnities that arrived after the ladder ran: a windfall goes into stone the same year
+    const pc = A.pc();
+    for (const id in S.realms) {
+      const r = S.realms[id];
+      if (r.alive && !r.playerRun && !(pc && pc.ruler === r.id) && r.treasury > Math.max(1, r.income) * 4) { const c = RI.greatCost(r); if (c > 0) { RI.greatWork(r, c); if (r.riBook) r.riBook.cats.works = (r.riBook.cats.works || 0) + c; delete r.riBookNext; } }
+    }
   } catch (e) { console.error('[ri] book close', e); }
   return out;
 };

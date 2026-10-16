@@ -73,7 +73,7 @@
         if (BM.ANYWHERE[k]) w.part = A.pick(BM.ANYWHERE[k]);
         if (isPC(p) && BM.SERIOUS.has(k) && A.age(p) >= 6 && (p.flags.bm_wcare || 0) < A.S.year && A.EV.bm_wound_care) {
           p.flags.bm_wcare = A.S.year;
-          A.queue({ type: 'event', ev: 'bm_wound_care', forced: true, ctx: { wound: (GD.WOUNDS[k].name || k).toLowerCase(), part: BM.PART_NAME[BM.partOf(w)].toLowerCase(), wk: k, wi: p.wounds.length - 1 } });
+          A.queue({ type: 'event', ev: 'bm_wound_care', forced: true, now: true, ctx: { wound: (GD.WOUNDS[k].name || k).toLowerCase(), part: BM.PART_NAME[BM.partOf(w)].toLowerCase(), wk: k, wi: p.wounds.length - 1 } });
         }
       }
     } catch (e) { console.error('body wound', e); }
@@ -129,7 +129,7 @@
     pc.health = clamp(pc.health - first, 0, mh); pc.lastHurt = D.name; pc._lhDay = A.absDay();
     pc.ill = { k, name: D.name, m, tot: m, dmg: Math.max(0, Math.round(dmg - first)), t: '', y: A.S.year };
     A.log(`You fall ill with ${D.name}. It will not be quick: ${m} month${m > 1 ? 's' : ''}, perhaps more.` + (pc.health < 30 ? ' For a while the priests are sent for.' : ''), 'bad');
-    if (A.age(pc) >= 4 && A.EV.bm_ill) { pc.ill.ask = 1; const t = BM.the(D.name); A.queue({ type: 'event', ev: 'bm_ill', forced: true, ctx: { ill: D.name, illThe: t[0].toUpperCase() + t.slice(1) } }); }
+    if (A.age(pc) >= 4 && A.EV.bm_ill) { pc.ill.ask = 1; const t = BM.the(D.name); A.queue({ type: 'event', ev: 'bm_ill', forced: true, now: true, ctx: { ill: D.name, illThe: t[0].toUpperCase() + t.slice(1) } }); }
     else pc.ill.t = 'rest';   // a small child is put to bed
     return true;
   };
@@ -147,7 +147,7 @@
   A.bmIllMonth = function (pc) {
     const I = pc.ill; if (!I) return;
     if (!(I.m > 0)) { delete pc.ill; return; }
-    // the course waits on the choice of treatment (the scene can come a few weeks after the onset), up to three months
+    // the course waits on the choice of treatment, up to three months (the scene comes at once: `now` keeps A.yearTurn from spreading it over the year)
     if (I.ask && !I.t && (I.wait || 0) < 3) { I.wait = (I.wait || 0) + 1; return; }
     const D = GD.DISEASES[I.k] || { name: I.name }, med = A.skill(pc, 'medicine');
     const hit = I.dmg / I.m * (1 - Math.min(0.3, med / 300));
