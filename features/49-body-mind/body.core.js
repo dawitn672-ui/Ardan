@@ -127,7 +127,7 @@
     }
     const len = BM.LEN[k] || [2, 3], m = A.ri(len[0], len[1]), first = Math.round(dmg * 0.35);
     pc.health = clamp(pc.health - first, 0, mh); pc.lastHurt = D.name; pc._lhDay = A.absDay();
-    pc.ill = { k, name: D.name, m, tot: m, dmg: Math.max(0, Math.round(dmg - first)), t: '', y: A.S.year };
+    pc.ill = { k, name: D.name, m, tot: m, dmg: Math.max(0, Math.round(dmg - first)), t: '', y: A.S.year, crisis: pc.health <= 0 ? 1 : 0 };
     A.log(`You fall ill with ${D.name}. It will not be quick: ${m} month${m > 1 ? 's' : ''}, perhaps more.` + (pc.health < 30 ? ' For a while the priests are sent for.' : ''), 'bad');
     if (A.age(pc) >= 4 && A.EV.bm_ill) { pc.ill.ask = 1; const t = BM.the(D.name); A.queue({ type: 'event', ev: 'bm_ill', forced: true, now: true, ctx: { ill: D.name, illThe: t[0].toUpperCase() + t.slice(1) } }); }
     else pc.ill.t = 'rest';   // a small child is put to bed
@@ -139,7 +139,7 @@
     if (how === 'physician' && BM.FEVER.has(I.k)) how = 'physician_fever';
     const T = BM.TREAT[how]; if (!T) return '';
     I.t = how; I.m = Math.max(1, Math.round(I.m * T.m)); I.dmg = Math.round(I.dmg * T.dmg * (how === 'prayer' && A.has(pc, 'zealous') ? 0.85 : 1));
-    if (T.now) { pc.health = clamp(pc.health - T.now, 0, A.maxHealth(pc)); pc.lastHurt = I.name; pc._lhDay = A.absDay(); }
+    if (T.now) { pc.health = clamp(pc.health - T.now, I.crisis ? 1 : 0, A.maxHealth(pc)); if (pc.health <= 0) I.crisis = 1; pc.lastHurt = I.name; pc._lhDay = A.absDay(); }
     if (how === 'rest') { A.S.time = Math.max(0, (A.S.time || 0) - 1.5); if (pc.job) pc.job.perf = Math.max(0, (pc.job.perf || 50) - 6); }   // bed costs the days and the work
     return how === 'physician_fever' ? 'He opens a vein for the fever. You are weaker for it, and it is shorter.' : '';
   };
@@ -150,7 +150,10 @@
     // the course waits on the choice of treatment, up to three months (the scene comes at once: `now` keeps A.yearTurn from spreading it over the year)
     if (I.ask && !I.t && (I.wait || 0) < 3) { I.wait = (I.wait || 0) + 1; return; }
     const D = GD.DISEASES[I.k] || { name: I.name }, med = A.skill(pc, 'medicine');
-    const hit = I.dmg / I.m * (1 - Math.min(0.3, med / 300));
+    let hit = I.dmg / I.m * (1 - Math.min(0.3, med / 300));
+    // one crisis per illness, as the release's one blow had: once it has brought you to the edge (and you lived), the
+    // rest of it can weaken you but not take you there again
+    if (pc.health - hit <= 0) { if (I.crisis) hit = Math.max(0, pc.health - 1); else I.crisis = 1; }
     I.dmg = Math.max(0, I.dmg - I.dmg / I.m); I.m -= 1;
     pc.health = clamp(pc.health - hit, 0, A.maxHealth(pc)); pc.lastHurt = D.name; pc._lhDay = A.absDay();
     A.S.time = Math.max(0, (A.S.time || 0) - 0.35);

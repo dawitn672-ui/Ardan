@@ -31,7 +31,7 @@
     if (diff) P.push(['Rounding', diff, 'tt-sub']);
     return P.map(([l, v, c]) => R(l, sg(v), c && c !== 'keep' ? c : '')).join('') + R(totalLabel, r0(total), 'tt-sum');
   };
-  TT.sumOf = (parts, total) => { const P = parts.filter(x => x && x[1] != null).map(x => r0(x[1])); const s = P.reduce((a, b) => a + b, 0); return s + (r0(total) - s); };
+  TT.sumOf = parts => parts.filter(x => x && x[1] != null).reduce((a, x) => a + r0(x[1]), 0);
 
   // ---- the six stats: what makes each one, and what it feeds ------------------------------------------------------
   TT.statParts = function (p, k) {
@@ -294,6 +294,7 @@
     const out = TT.sumOf(parts);
     return H('Coin', esc(A.coin(p.coin))) + (p.debt ? R('<span class="bad">Debt</span>', esc(A.coin(p.debt))) : '') +
       (p.job && p.job.lastPay ? R('Last wage', esc(A.coin(p.job.lastPay))) : '') +
+      (p.job ? R(L('rep', '', 'Reputation at work'), r0(p.job.rep != null ? p.job.rep : 20 + (p.house ? 6 : 0)), 'tt-sub') : '') +
       `<div class="tip-row tt-sum"><span>Each new year you spend</span><b></b></div>` + TT.sumRows(parts, out, 'Spent a year') +
       D('Parents may carry part of a young person\'s keep. Wages, an allowance from your house and a ruler\'s stipend come in at the same time.') +
       (p.debt ? F('Debt over 50 suns costs 5 happiness a year, and moneylenders talk.') : '');
@@ -327,6 +328,17 @@
   G.quirk = function (q) {
     const Q = GD.QUIRKS && GD.QUIRKS[q]; if (!Q) return '';
     return H(esc(Q.name), null, 'quirk') + D(esc(Q.desc || ''));
+  };
+  G.wound = function (k) {
+    const p = pc(), W = GD.WOUNDS[k]; if (!p || !W) return '';
+    const w = (p.wounds || []).find(x => x && x.k === k), fx = Object.entries(W.fx || {}).filter(([s, v]) => GD.STATS.includes(s) && v);
+    const pen = Object.entries(W.skillPen || {}).filter(([, v]) => v);
+    const cost = typeof A.fightWorth === 'function' && w ? A.fightWorth(p) - A.fightWorth(Object.assign({}, p, { wounds: p.wounds.filter(x => x && x.k !== k) })) : 0;
+    return H(esc(W.name), null, W.perm ? 'lasting' : 'mending') +
+      fx.map(([s, v]) => R(statL(s), sg(v))).join('') + (W.looks ? R(L('looks', '', 'Looks'), sg(W.looks)) : '') +
+      pen.map(([sk, v]) => R(GD.SKILLS[sk] ? L('skill', sk, esc(GD.SKILLS[sk])) : esc(sk), sg(v))).join('') +
+      (cost ? R(L('worth', p.id, 'Fighting worth'), sg(cost), 'tt-sum') : '') +
+      (w && w.until ? F(`Heals by about ${esc(w.until)}.`) : W.perm ? F('It will not heal.') : '');
   };
   G.blood = function () {
     const p = pc(); if (!p || !p.blood) return '';

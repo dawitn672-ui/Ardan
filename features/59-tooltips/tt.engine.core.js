@@ -67,21 +67,31 @@
     if (!body) return null;
     TT.close(lvl);
     const el = TT.pop(lvl);
-    el.innerHTML = `<button type="button" class="tt-x" data-tt-close="${lvl}" aria-label="Close">×</button>` + body;
+    // inside a modal dialog the popover joins it, so a screen reader (and the dialog's focus trap) still reach it
+    const host = a.closest('#modal') || document.body;
+    if (el.parentNode !== host) host.appendChild(el);
+    el.innerHTML = body + `<button type="button" class="tt-x" data-tt-close="${lvl}" aria-label="Close">×</button>`;
     const h = el.querySelector('.tip-h');
     if (h) { h.id = el.id + '-h'; el.setAttribute('aria-labelledby', h.id); el.removeAttribute('aria-label'); }
     else { el.removeAttribute('aria-labelledby'); el.setAttribute('aria-label', (a.textContent || key).trim().slice(0, 60)); }
     el.classList.toggle('tt-deep', lvl > 1);
     el.hidden = false;
-    a.setAttribute('aria-expanded', 'true');
-    a.setAttribute('aria-controls', el.id);
-    a.classList.add('tt-on');
+    TT.mark(a, el);
     TT.stack[lvl - 1] = { a, el, how, sel: TT.selOf(a) };
     TT.place(lvl);
     if (UI.hintUsed) UI.hintUsed.tip = 1;
     return el;
   };
 
+  // the open anchor: aria-expanded and aria-controls only where ARIA allows them (a button); a bare number keeps none
+  TT.mark = function (a, el) {
+    a.classList.add('tt-on');
+    // a trigger may keep a title for other readers; while its popover is open the browser's own tip would only repeat it
+    if (a.hasAttribute('title')) { a.dataset.ttTitle = a.getAttribute('title'); a.removeAttribute('title'); }
+    if (a.getAttribute('role') !== 'button') return;
+    a.setAttribute('aria-expanded', 'true');
+    a.setAttribute('aria-controls', el.id);
+  };
   // close level lvl and everything above it
   TT.close = function (lvl = 1) {
     while (TT.stack.length >= lvl) {
@@ -89,7 +99,7 @@
       if (!s) continue;
       s.el.hidden = true;
       s.el.innerHTML = '';
-      if (s.a) { s.a.setAttribute('aria-expanded', 'false'); s.a.removeAttribute('aria-controls'); s.a.classList.remove('tt-on'); }
+      if (s.a) { s.a.classList.remove('tt-on'); if (s.a.dataset.ttTitle != null) { s.a.setAttribute('title', s.a.dataset.ttTitle); delete s.a.dataset.ttTitle; } if (s.a.getAttribute('role') === 'button') { s.a.setAttribute('aria-expanded', 'false'); s.a.removeAttribute('aria-controls'); } }
     }
   };
   TT.closeAll = () => TT.close(1);
@@ -122,6 +132,8 @@
 
   // after the view is redrawn, point each open popover at the new copy of its anchor
   TT.relink = function () {
+    const lost = TT.stack.findIndex(s => s && !s.el.isConnected);   // a redrawn modal took its popovers with it
+    if (lost >= 0) TT.close(lost + 1);
     for (let i = 0; i < TT.stack.length; i++) {
       const s = TT.stack[i];
       if (!s || s.a.isConnected) continue;
@@ -130,9 +142,7 @@
       for (const c of scope.querySelectorAll(s.sel)) if (i || !popOf(c)) { n = c; break; }
       if (!n) continue;
       s.a = n;
-      n.setAttribute('aria-expanded', 'true');
-      n.setAttribute('aria-controls', s.el.id);
-      n.classList.add('tt-on');
+      TT.mark(n, s.el);
     }
   };
 
@@ -203,7 +213,7 @@
       // focus stays in the open popover (a dialog); Esc goes back down
       const L = [top, ...focusables(top)], i = L.indexOf(t);
       const n = L[(i + (e.shiftKey ? -1 : 1) + L.length) % L.length];
-      e.preventDefault();
+      e.preventDefault(); e.stopImmediatePropagation();
       n.focus();
     }
   };
@@ -237,6 +247,9 @@
       linear-gradient(180deg,rgba(255,236,196,.05),transparent 70px),var(--tt-bg);
     border:1px solid var(--tt-line);border-radius:6px;box-shadow:inset 0 0 0 2px var(--tt-bg),inset 0 0 0 3px var(--tt-rule),0 8px 22px rgba(0,0,0,.5),0 22px 50px rgba(0,0,0,.45)}
   .tt-pop.tt-deep{z-index:131;--tt-bg:#231a12}
+  .tt-pop:not([hidden]){animation:ttInk .14s ease-out}
+  @keyframes ttInk{from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){.tt-pop:not([hidden]){animation:none}}
   [data-theme=light] .tt-pop{--tt-bg:#f6ecd4;--tt-ink:#2b1d10;--tt-ink2:#4a3620;--tt-ink3:#5c4529;--tt-gold:#6b4410;--tt-line:#a98f63;--tt-rule:rgba(107,68,16,.25);--tt-fit:rgba(107,68,16,.65);box-shadow:inset 0 0 0 2px var(--tt-bg),inset 0 0 0 3px var(--tt-rule),0 6px 18px rgba(60,40,10,.3)}
   [data-theme=light] .tt-pop.tt-deep{--tt-bg:#efe2c3}
   .tt-pop:focus{outline:none}.tt-pop:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
@@ -256,10 +269,11 @@
   .tt-pop .tt-on-row{color:var(--tt-gold)}
   .tt-pop .tt,.tt-pop .tipt{color:var(--tt-ink);border-bottom:1px solid var(--tt-line);cursor:pointer}
   .tt-pop .tt:hover,.tt-pop .tipt:hover,.tt-pop .tt.tt-on,.tt-pop .tipt.tt-on{color:var(--tt-gold);border-bottom-color:var(--tt-gold)}
-  .tt-pop .tt-x{position:absolute;top:5px;right:6px;min-width:0;min-height:0;width:22px;height:22px;padding:0;border:0;background:none;box-shadow:none;color:var(--tt-ink3);font-size:16px;line-height:20px;cursor:pointer}
-  .tt-pop .tt-x:hover{color:var(--tt-gold);background:none}
-  @media (pointer:coarse){.tt-pop .tt-x{width:32px;height:32px;top:0;right:0;font-size:20px}.tt-pop .tt,.tt-pop .tipt{display:inline-block;padding:2px 0}}
-  .tt{cursor:help;border-bottom:1px dotted var(--accent-line)}
+  :root .tt-pop button.tt-x{position:absolute;top:4px;right:5px;min-width:0;min-height:0;width:24px;height:24px;padding:0;border:0;background:none;box-shadow:none;color:var(--tt-ink3);font-size:16px;line-height:20px;cursor:pointer}
+  :root .tt-pop button.tt-x:hover{color:var(--tt-gold);background:none}
+  @media (pointer:coarse){:root .tt-pop button.tt-x{width:32px;height:32px;top:0;right:0;font-size:20px}.tt-pop .tt,.tt-pop .tipt{display:inline-block;padding:2px 0}}
+  .tt{cursor:help;border-bottom:1px dotted var(--accent-line);display:inline-flex;align-items:center;min-height:24px}
+  .barrow .lbl .tt{border-bottom-style:solid;border-bottom-color:rgba(216,174,85,.3)}
   .tt:focus-visible,[data-tt][tabindex]:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:3px}
   .tt.tt-on,.tipt.tt-on,[data-tt].tt-on{color:var(--accent-2)}
   .barrow .val[data-tt],.prow[data-tt],.opbar[data-tt]{cursor:help}

@@ -4,7 +4,7 @@
 //
 // The profile (desktop side panel and the phone's You page): health, happiness, looks, renown, honor, piety and their
 // numbers; each stat's number (its name already opened the release's stat tip); the trait, quirk, faith, people and
-// blood chips (their title text moves into the popover, so nothing shown twice); the best proficiencies.
+// blood chips (they keep their titles, which the engine lifts while a popover is open); the best proficiencies.
 // The top bar: the date and age, initiative, coin. The Realm tab (as ruler): treasury, stability, legitimacy, war
 // weariness, infamy. People: each opinion bar. The Life tab: the needs card of 35-moods, when it is in the build.
 (function () {
@@ -34,15 +34,26 @@
       if (PROFILE_BARS[lbl]) return [PROFILE_BARS[lbl], ''];
       const m = /data-tip="stat:(\w+)"/.exec(lbl); return m ? ['stat', m[1]] : null;
     });
-    // chips: the popover carries what the title said, so the title goes
-    const chip = (re, key, arg) => { h = h.replace(re, (m, cls) => `<span class="chip${cls || ''}"${UI.ttAttrs(key, arg)}>`); };
-    for (const t of pc.traits || []) { const T = GD.TRAITS[t]; if (T) h = h.replace(new RegExp(`<span class="chip" title="[^"]*">(?=${reEsc(T.name)}</span>)`), `<span class="chip"${UI.ttAttrs('trait', t)}>`); }
-    for (const q of pc.quirks || []) { const Q = GD.QUIRKS && GD.QUIRKS[q]; if (Q) h = h.replace(new RegExp(`<span class="chip" title="[^"]*">(?=${reEsc(Q.name)}</span>)`), `<span class="chip"${UI.ttAttrs('quirk', q)}>`); }
+    // chips: each keeps its title (other features write their reasons there); the popover says it and more, and the
+    // engine lifts the title while the popover is open so the browser does not repeat it
+    const chip = (re, key, arg) => { h = h.replace(re, m => m.slice(0, -1) + UI.ttAttrs(key, arg) + '>'); };
+    for (const t of pc.traits || []) { const T = GD.TRAITS[t]; if (T) chip(new RegExp(`<span class="chip" title="[^"]*">(?=${reEsc(T.name)}</span>)`), 'trait', t); }
+    for (const q of pc.quirks || []) { const Q = GD.QUIRKS && GD.QUIRKS[q]; if (Q) chip(new RegExp(`<span class="chip" title="[^"]*">(?=${reEsc(Q.name)}</span>)`), 'quirk', q); }
     const fa = A.faith(pc.faith);
-    if (fa) h = h.replace(new RegExp(`<span class="chip" title="[^"]*">(?=${reEsc(UI.esc(fa.name))}</span>)`), `<span class="chip"${UI.ttAttrs('faith', pc.faith)}>`);
+    if (fa) chip(new RegExp(`<span class="chip" title="[^"]*">(?=${reEsc(UI.esc(fa.name))}</span>)`), 'faith', pc.faith);
     const R2 = GD.RACES[pc.race];
     if (R2) h = h.replace(`<span class="chip">${UI.esc(R2.name)}</span>`, `<span class="chip"${UI.ttAttrs('race', pc.race)}>${UI.esc(R2.name)}</span>`);
-    chip(/<span class="chip( blood)" title="[^"]*">/, 'blood', '');
+    chip(/<span class="chip blood" title="[^"]*">/, 'blood', '');
+    // 49-body-mind's body under the stats: each wound opens what it costs
+    const bi = h.indexOf('<div class="row bm-body"');
+    if (bi > 0) {
+      let body = h.slice(bi);
+      for (const k of [...new Set((pc.wounds || []).map(w => w && w.k).filter(k => GD.WOUNDS[k]))]) {
+        const nm = UI.esc(GD.WOUNDS[k].name);
+        body = body.replace(new RegExp(`<span class="(bad|ink2)">(?=${reEsc(nm)})`), (m, c) => `<span class="${c}"${UI.ttAttrs('wound', k)}>`);
+      }
+      h = h.slice(0, bi) + body;
+    }
     // the best proficiencies: each row opens its skill
     const byName = {}; for (const k in GD.SKILLS) byName[UI.esc(GD.SKILLS[k])] = k;
     h = h.replace(/<div class="prow" title="[^"]*"><span>([^<]*)/g, (m, nm) => byName[nm] ? `<div class="prow"${UI.ttAttrs('skill', byName[nm])} aria-label="${UI.esc(nm)}: ${A.skill(pc, byName[nm])}"><span>${nm}` : m);
@@ -67,6 +78,14 @@
     return h.replace(/<div class="card person click" data-a="ov" data-v="person:([^"]+)">([\s\S]*?)<div class="opbar" title="Opinion (-?\d+)">/g,
       (m, id, mid, op) => `<div class="card person click" data-a="ov" data-v="person:${id}">${mid}<div class="opbar"${UI.ttAttrs('opinion', id, false)} role="img" aria-label="Opinion ${op}">`);
   };
+  // the full profile: the stat bars (current / potential) and the renown line
+  TT.wire.profileModal = function (h, p) {
+    if (!p || p.id !== A.S.pc) return h;
+    const byStat = {}; for (const k of GD.STATS) byStat[GD.STAT_NAMES[k]] = k;
+    h = TT.wireBars(h, lbl => byStat[lbl] ? ['stat', byStat[lbl]] : null);
+    return h.replace(/<div>Renown<\/div><div>(\d+) · honor (\d+) · piety (\d+)<\/div>/, (m, f, ho, pi) =>
+      `<div>${UI.tt('fame', '', 'Renown')}</div><div><span${UI.ttAttrs('fame', '', false)}>${f}</span> · ${UI.tt('honor', '', 'honor ' + ho)} · ${UI.tt('piety', '', 'piety ' + pi)}</div>`);
+  };
   // 35-moods' card on the Life tab
   const NEED = { Rest: 'rest', Company: 'company', Purpose: 'purpose', Comfort: 'comfort' };
   TT.wire.lifeTab = function (h) {
@@ -80,6 +99,7 @@
   };
 
   UI.renderProfile = safe('renderProfile', UI.renderProfile);
+  if (UI.profileModal) UI.profileModal = safe('profileModal', UI.profileModal);
   UI.clkHtml = safe('clkHtml', UI.clkHtml);
   UI.renderTop = safe('renderTop', UI.renderTop);
   UI.peopleList = safe('peopleList', UI.peopleList);

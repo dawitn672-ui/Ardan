@@ -147,7 +147,7 @@ That is 50% done and 33% partial. 6% is not started but buildable here, and 11% 
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
 | 1 | Six tabs | ✅ | Base (Phase 1) |
-| 2 | Nested tooltips on every number | ◐ | Five kinds; the profile's other numbers have none |
+| 2 | Nested tooltips on every number | ◐ | 59-tooltips: one engine opens a popover by hover, tap or Enter, nests six deep, Esc closes the top one; about 40 glossary entries worked out from the live game (fighting worth = body + skill + gear, each opening again; the six stats with what feeds them and what they feed). Profile numbers with a tooltip 6 of 18 → 18 of 18; the top bar, the full profile, the ruler's Realm tab and People are covered. The war room, market prices, promotion bars and event odds keep their plain titles |
 | 3 | What now panel | ✅ | Base |
 | 4 | Teach by doing | ✅ | Base: 12 hints |
 | 5 | Text diet | ✅ | Base plus 02-content-fixes; the linter enforces it for new events |

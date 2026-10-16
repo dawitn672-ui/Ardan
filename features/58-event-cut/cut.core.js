@@ -2,9 +2,9 @@
 //
 // Events 1: about a third of the release's events are one-off scenes whose choices only nudge numbers and lead nowhere.
 // list.core.js names them (ids, each with a reason code), chosen by bench/event-audit.mjs and listed for review in
-// RETIRED.md. A retired event stays in A.EV but is marked trigger, which is what the yearly roll (A.rollEvents,
-// A.rollEventsN) already skips: it is never rolled, but anything that queues it by id (a chain, A.schedule, an old
-// save) still works. No event a feature wrote, no event in a special pool (job offers, duties, path flows, council,
+// RETIRED.md. A retired event stays in A.EV, marked trigger (the mark the release's rolls, A.rollEvents and
+// A.rollEventsN, already skip), and a roll that would have drawn it draws nothing instead (see below). Anything that
+// queues it by id (a chain, A.schedule, an old save) still works. No event a feature wrote, no event in a special pool (job offers, duties, path flows, council,
 // drill), no chain step, no memory event and no event whose flag is read anywhere is on the list.
 // The menu setting "Classic event pool (keep every event)" restores them. It is stored with the game
 // (A.S.settings.classicEvents), set through a journaled command, so replays see it; the menu remembers it for new lives.
@@ -44,11 +44,48 @@ Object.defineProperty(A, 'EV_RETIRED', { get: () => new Set(EC.ids()), configura
 // marked as soon as each event pack registers (content loads after the engine), and checked again at every roll
 const defEvents = A.defEvents;
 A.defEvents = function () { const r = defEvents.apply(this, arguments); try { EC.sync(); } catch (err) { console.error('event-cut', err); } return r; };
-// the roll is where the cut applies
+// The roll is where the cut applies. Fewer events, not the same number from a smaller pool: the roll draws as the
+// classic pool would, and a draw that lands on a retired event is let fall (nothing is queued, its cooldown is not
+// stamped). Every surviving event keeps the odds it had, so a life meets fewer events, the share that remember
+// rises, and the rate of risky scenes (wounds, duels, beasts) per year stays where it was. Simply marking the retired
+// events and letting the roll fill its slots from the rest was measured first: it kept 57 events a decade, gave the
+// freed slots to the broad events (memory share flat at 9.2%, repeats up) and raised the risky scenes from 6.7 to
+// 9.8 a decade, which shortened bot lives. One guard keeps the pace steady: if a fallen draw would leave the year
+// with no event at all so far, the roll draws once more from the cut pool.
+EC.seenThisYear = function (pc) {
+  const y = A.S.year, ev = pc.flags && pc.flags.ev;
+  if ((A.S.queue || []).some(q => q && q.type === 'event')) return true;
+  if (ev) for (const id in ev) if (ev[id] === y) return true;
+  return false;
+};
+EC.rollAsClassic = function (base, self, args, pc, refill) {
+  const S = A.S, R = EC.R, prev = {};
+  S.evRecent = S.evRecent || {};
+  for (const id in R) prev[id] = S.evRecent[id];
+  EC.sync(true);
+  const queue = A.queue;
+  let fell = 0, k;
+  A.queue = function (item) {
+    if (item && item.type === 'event' && !item.forced && R[item.ev]) {
+      fell++;
+      if (prev[item.ev] === undefined) delete S.evRecent[item.ev]; else S.evRecent[item.ev] = prev[item.ev];
+      return;
+    }
+    return queue.apply(this, arguments);
+  };
+  try { k = base.apply(self, args); } finally { A.queue = queue; EC.sync(false); }
+  if (typeof k === 'number') k -= fell;
+  if (fell && refill && pc && !EC.seenThisYear(pc)) { const k2 = base.call(self, pc, 1); if (typeof k === 'number' && typeof k2 === 'number') k += k2; }
+  return k;
+};
 for (const k of ['rollEvents', 'rollEventsN']) {
   const base = A[k];
   if (typeof base !== 'function') continue;
-  A[k] = function () { EC.sync(); return base.apply(this, arguments); };
+  A[k] = function (pc) {
+    EC.sync();
+    if (EC.classic() || !A.S || !pc) return base.apply(this, arguments);
+    return EC.rollAsClassic(base, this, arguments, pc, k === 'rollEventsN');
+  };
 }
 // a new game takes the setting from its options (absent: the cut pool); an old save without it loads with the cut pool
 const newGame = A.newGame;
@@ -97,7 +134,7 @@ if (typeof UI.startLife === 'function') {
 // (training new divisions) for everyone, greyed out with "Marshal or ruler" / "Ruler only". A farmhand, a squire or a
 // sergeant now sees Command, Forces and Wars: the fronts and the host, which are the living history around them.
 // The release's own unlock rules stand: Templates for the ruler, the Marshal and commanders of rank 6 and up (who
-// read their divisions' designs), Industry and Manpower for the ruler and High Generals (rank 7) and up.
+// read their divisions' designs), Industry and Manpower for the ruler, the Marshal (Manpower) and Generals (rank 7) and up.
 if (typeof UI.wrTabs === 'function') {
   const wrTabs = UI.wrTabs;
   UI.wrTabs = function () { return wrTabs.apply(this, arguments).filter(t => !t.lock); };
