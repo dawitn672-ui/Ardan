@@ -59,28 +59,28 @@ In the release the world remembers two kinds of thing (`S.history`: war ends and
      - the sacked towns;
      - each decade's sums ("the harvest failed eleven times across Ardan").
 
-**Measured by** (`test.mjs`, on the full build of 52 features).
+**Measured by** (`test.mjs`; the numbers are from the full build of 52 features unless marked "fix layer", which is `--only=world-chronicle`).
 
 | Test | Result |
 | --- | --- |
-| `wcRecordWhole` (W5) | 60 years (1105 to 1165): **1,580 entries of 16 kinds**. By kind: battle 763, siege 222, fall 102, famine 97, cede 80, wedding 65, ruler 63, plague 62, alliance 35, war 28, peace 28, trib 26, order 4, revolt 3, fallen 1, founded 1. The two kinds that did not occur in this run (a Legend's death, a throne taken without a death) are rare by nature. The first entry (1061) and the first 200 as they stood in 1115 are unchanged at the end, and the count never shrank. 0 entries without a place, 0 without a named person, 0 undated, 0 lines that do not read. The record is **113 KB of JSON** in a 2,776 KB state. Beside it, the news reaches back only to 1162 and the release's history has 30 lines |
-| `wcObservesOnly` | 12 years from the same seed with the record (495 entries) and without it (the epidemic and the pack held back in both): the same realms, people, provinces and random stream |
-| `wcCitesShare` (W6) | 8 lives from 16 (human, elf, dwarf, orc; peasant, merchant, noble, serf, artisan), up to 60 years each: **663 of 3,124 scenes (21.2%) cite a dated entry**. Lives range from 16.1% to 25.5%, median 20.0%. By source: a recalled line 602, a scene of the pack 61, canon 6. Every citation was checked against the character's realms, home and birth year at the moment it was shown; see Limits for the first run's 9 misses |
-| `wcTokens` | With nothing to cite (an empty world, no canon), a scene using `{since_event}` is dropped. After 25 years it reads "Nothing has been the same since the famine of 1129 in Greyhaven. The old men talk of the end of the Varenna–Horde War in 1129". Both entries are near the character, and the text and the result name the same war |
-| `wcAnnalsPage` | The World tab has an Annals button; 1,059 entries at 40 a page; page 2 differs from page 1; the hunger-and-sickness filter shows only those kinds; "near you" works; a hostile name is escaped; drawing changes neither the state nor the random stream |
-| `wcExportLegends` (Replayability 5) | A life of 50 years exports the book (1,251 words) plus **"The world in your time": 2,764 words over 5 decades**. No raw tokens, no broken words. The section is on the Book page, and drawing it is pure |
-| `wcExportDownload` | The real button downloads a file that contains the section |
-| `wcOldSave` | A save with the record removed loads and plays on, with 85 entries in the next 4 years. A save with the record round-trips exactly |
-| `wcEpidemic` | 40 years: 49 epidemics (0.72 per realm per 20 years) and 68 famines (1.0) across 34 realms. Struck at home, the scene comes |
-| `wcScenesRender` | Every scene of the pack, from lives 30 years into a run: no raw token, none over 80 words, labels of 12 words or fewer, and every choice resolves |
+| `wcRecordWhole` (W5) | A 60-year world (1105 to 1165): **2,825 entries of 15 kinds**. By kind: battle 1,379, siege 535, fall 238, cede 148, plague 104, famine 103, wedding 74, ruler 68, alliance 47, war 37, peace 37, trib 36, order 12, revolt 6, founded 1. The first entry (the Tessarian Civil War, 1061) and the first 200 entries as they stood in 1115 are unchanged at the end, and the count never shrank. 0 entries without a place, 0 without a named person, 0 undated, 0 lines that do not read. **199 KB of JSON, 38 KB gzipped**, in a 3,002 KB state. Beside it, the news reaches back only to 1162 and the release's history has 37 lines. The same seed varies with the world's churn: an earlier run of the same test (epidemic base 2.5%) had 1,580 entries of 16 kinds and 113 KB; the fix layer alone, 2,261 entries of 15 kinds and 161 KB (31 KB gzipped). A Legend's death and a throne taken without a death occurred in none of the three |
+| `wcObservesOnly` | 12 years from the same seed with the record (540 entries) and without it, with the epidemic and the pack held back in both: the same realms, people, provinces and random stream |
+| `wcCitesShare` (W6) | 8 lives from age 16 (human, elf, dwarf, orc; peasant, merchant, noble, serf, artisan), up to 60 years each: **495 of 2,368 scenes (20.9%) cite a dated entry**. Lives range from 16.7% to 23.5%, median 20.5%. By source: a recalled line 440, a scene of the pack 55, canon 6. **0** citations fall outside the character's realms, home or lifetime; each was checked at the moment it was shown. Fix layer alone: 556 of 2,229 (24.9%), median 23.8%, 0 outside |
+| `wcTokens` | With nothing to cite (an empty world, no canon), a scene using `{since_event}` is dropped. After 25 years: "Nothing has been the same since the storming of Vaelion in 1129. The old men talk of the end of the War of Eagleburg in 1126". Both entries are near the character, and the text and the result name the same war |
+| `wcAnnalsPage` | The World tab has an Annals button; 568 entries at 40 a page; page 2 differs from page 1; the hunger-and-sickness filter shows only those kinds; "near you" works; a hostile name is escaped; drawing changes neither the state nor the random stream |
+| `wcExportLegends` (Replayability 5) | A life of 50 years exports the book (1,450 words) plus **"The world in your time": 3,678 words**, under "Before 1105" and 5 decades. No raw tokens, no broken words. The section is on the Book page, and drawing it is pure |
+| `wcExportDownload` | The export action downloads a file that contains the section |
+| `wcOldSave` | A save with the record removed loads and plays on, with 16 entries in the next 4 years. A save with the record round-trips exactly |
+| `wcEpidemic` | 40 years: 56 epidemics (0.82 per realm per 20 years; World 7's bar is 1) and 66 famines (0.97) across 34 realms. Struck at home, the scene comes |
+| `wcScenesRender` | 11 of the 13 scenes, drawn from lives 30 years into a run: no raw token, none over 80 words, labels of 12 words or fewer, and every choice resolves. `wc_legend_grave` needs a Legend's death; `wc_sergeant_war` needs a soldier, and was drawn twice in an earlier run. Fix layer alone: 8 of 13 (no famine without 45-economy). On a build without 22-chronicle the two export tests skip |
 
 **Before and after.** Measured with the same bot loop: 3 lives of up to 40 years on the build without this feature, and 8 lives on the build with it.
 
 | | Release plus every other feature | With the world record |
 | --- | --- | --- |
-| Scenes that cite an entry of the world's record | **0** of 792 (there is no record; no scene quotes `S.history`) | **21.2%** |
+| Scenes that cite an entry of the world's record | **0** of 792 (there is no record; no scene quotes `S.history`) | **20.9%** |
 | Scenes whose text holds any past year | 13.8% (10.1 to 16.5%). Almost all are 21-npc-initiative's "You both remember 1105" between two people, plus a few canon secrets. None is a world event | (adds the recalled lines) |
-| How far back the world is kept at year 60 | news: 3 years; history: 30 lines of 2 kinds | 1,580 entries of 16 kinds, all of them |
+| How far back the world is kept at year 60 | news: 3 years; history: 30 to 49 lines of 2 kinds | 1,580 to 2,825 entries of 15 or 16 kinds, all of them |
 
 **Rules kept.**
 - The record observes. `wcObservesOnly` shows it does not change the world. The epidemic is the one new piece of simulation, and it draws from `A.rand` like any engine code.
@@ -90,10 +90,11 @@ In the release the world remembers two kinds of thing (`S.history`: war ends and
 - New fields on game objects: `P.burnt` (the year a town burned) and `P.plague` on provinces, and `w.wcCede` on a war while it lasts.
 
 **Limits.**
-- **Size.** Battles are about half the record: 763 of 1,580 entries in 60 years. The record grows by about 2 KB of JSON a year and is never trimmed. A 300-year dynasty would carry about 560 KB of JSON (gzipped, perhaps a fifth of that). If that is too much, raise `WC.BATTLE_MEN`.
+- **Size.** Battles are about half the record (1,379 of 2,825 entries in the busiest 60-year world). The record grows by 2 to 3.3 KB of JSON a year (under 1 KB gzipped) and is never trimmed. A 300-year dynasty would carry up to about 1 MB of JSON, about 190 KB gzipped. If that is too much, raise `WC.BATTLE_MEN`.
 - **One record, one truth.** The Annals show what happened. The far news is still hearsay (26-belief-truth), but the record does not keep conflicting accounts (W10). The monk's scene gestures at it, nothing more.
 - **Lines are templates.** 1 to 4 lines a kind (35 in all) and 13 scenes, so a long life hears the same frame with different places and years. More lines per kind, and per culture, is writing work.
 - **Subjects are guessed from words.** A recalled line is matched to a scene by regex on its id, title and text. A scene about a lady's wedding can get the old ruler's death, which fits but is not chosen with care.
-- **Kinds that seldom happen.** Realm foundings, falls and Legend deaths are rare in this simulation (1, 1 and 0 in the 60-year test world). The record keeps them when they happen. It does not make them happen.
+- **Kinds that seldom happen.** Realm foundings, falls and Legend deaths are rare in this simulation (1 to 3, 0 to 2 and 0 in the 60-year test worlds). The record keeps them when they happen. It does not make them happen.
 - **The epidemic is light.** It takes stability and adds unrest. It kills nobody in the world simulation and does not reduce population, so as not to move the economy.
-- **The first W6 run** flagged 9 citations as out of time. All were the sickness scene, citing an epidemic dated the same day as the scene (it is happening now). The check now accepts the same day. That scene now names the player's town rather than the province where the sickness began.
+- **The first W6 run** flagged 9 citations as out of time. The only citation that can carry the scene's own date is the sickness at the door, which cites an epidemic as it happens; every other one waits 60 days. The check now accepts the same day, and that scene now names the player's town rather than the province where the sickness began. Since then: 0.
+- **Not run here: the balance bench.** By the coordinator's instruction it runs once on the integrated build. This feature touches money and health only lightly: 13 scenes with coin from -8 to +8 and health from -1 to -12 on a failed check, plus the epidemic's scene.

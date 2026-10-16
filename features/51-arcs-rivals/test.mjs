@@ -330,8 +330,12 @@ export default {
     const finished = all.filter(a => a.done && !a.gave).length, gave = all.filter(a => a.gave).length;
     const scenes = all.reduce((s, a) => s + a.stage, 0);
     const kinds = new Set(all.map(a => a.k)).size;
-    const ok = long.length >= 10 && started >= Math.ceil(long.length * 0.8) && finished >= 10 && gave <= all.length * 0.2;
-    return { ok, detail: `${lives.length} bot lives, ${long.length} of 40+ years (${[...new Set(long.map(l => l.status))].join(', ')}): ${started} of those began one of these arcs; ${all.length} begun in all (${kinds} of the 13 kinds), ${scenes} scenes played, ${finished} finished, ${gave} given up; other features' story arcs begun: ${lives.reduce((s, l) => s + l.others, 0)}. ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k.slice(3)} ${a.stage}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}`).join('; ')}`,
+    // alone on the story track (a --only build) most long lives should meet these; in the full world they share it with the
+    // other writers' arcs, one at a time, so fewer do
+    const track = await pg.evaluate(() => ({ mine: A.ARV.KEYS.length, all: A.ARCS.stories().length }));
+    const alone = track.all === track.mine;
+    const ok = long.length >= 10 && started >= Math.ceil(long.length * (alone ? 0.8 : 0.4)) && finished >= (alone ? 10 : 5) && gave <= all.length * 0.2;
+    return { ok, detail: `${alone ? 'alone on the story track' : `${track.mine} of the ${track.all} story arcs on the track`}. ${lives.length} bot lives, ${long.length} of 40+ years (${[...new Set(long.map(l => l.status))].join(', ')}): ${started} of those began one of these arcs; ${all.length} begun in all (${kinds} of the 13 kinds), ${scenes} scenes played, ${finished} finished, ${gave} given up; other features' story arcs begun: ${lives.reduce((s, l) => s + l.others, 0)}. ${lives.map(l => `${l.status} ${l.years}y: ${l.arcs.map(a => `${a.k.slice(3)} ${a.stage}${a.done ? (a.gave ? '×' : '✓') : ''}`).join(' ') || '—'}`).join('; ')}`,
       data: { lives, started, begun: all.length, finished, gave, scenes, kinds } };
   },
 };
