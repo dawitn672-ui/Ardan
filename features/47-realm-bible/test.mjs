@@ -138,6 +138,9 @@ export default {
     const r = await pg.evaluate(() => {
       const pc = RBT.life(501, { status: 'merchant' }), fa = A.P(pc.parents[0]);
       const sib = (sex, dy) => { const s = A.newPerson({ given: 'Sib', sex, race: 'human', realm: pc.realm, cult: pc.cult, faith: pc.faith, born: pc.born + dy, status: pc.status, home: pc.home, parents: pc.parents.slice() }); fa.children.push(s.id); return s; };
+      // the family the start rolls differs from world to world (on the full world this father already has two living
+      // elder sons), so the fixture sets its own: the player, an elder brother, a younger sister
+      fa.children = [pc.id];
       sib('M', -3); sib('F', 2);   // an elder brother, a younger sister
       const est = A.BIBLE.estate(fa), out = { est };
       for (const s of ['eldest', 'eldestSon', 'youngest', 'daughters', 'equal', 'temple', 'lord']) out[s] = A.BIBLE.share(pc, fa, s);

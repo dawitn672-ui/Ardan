@@ -210,6 +210,10 @@
   MT.at = function (pid, fn) { const keep = at; at = pid; try { return fn(); } finally { at = keep; } };
 
   // ---- the month: share out what 45 made, used, built and carried; then the carters
+  // more markets, more merchants: 45's one market a realm sent at most 20 caravans a month, and left its most
+  // profitable gaps open (Varenna's cloth at 0.44 of its base price, Aldmark's and Solenne's at 1.5 to 1.6); with
+  // about 2.6 market towns a realm the cap is 40 (45 reads one cap for every realm)
+  if (E.PER_SRC === 20) E.PER_SRC = 40;
   let carLog = null, base = null;
   const caravans = E.caravans;
   E.caravans = function () {
@@ -324,8 +328,8 @@
         for (let j = 0; j < nt; j++) To[j].s[i] = sp[j];
       }
       if (nt > 1) MT.cart(r, ts.filter(t => !cut[t]), ks);
-      for (const t of ts) { const s = T(t).s; for (let i = 0; i < nk; i++) s[i] = rnd(s[i] || 0); }
     }
+    for (const pid of S.mt.L) { const s = T(pid).s; if (s) for (let i = 0; i < nk; i++) s[i] = rnd(s[i] || 0); }
     MT.siegeNews();
   };
   // carters between a realm's open towns, where the price gap pays the road. Bandits take their expected share, more
@@ -510,7 +514,10 @@
   MT.tripPlan = function (pid) {
     const pc = A.pc(), here = MT.here(pc), t = T(pid);
     if (here == null || !t || pid === here) return null;
-    const rid = t.r, home = A.homeMkt(pc), R = MT.road(here, pid); if (!R || !liveR(rid)) return null;
+    const rid = t.r, home = A.homeMkt(pc), R0 = MT.road(here, pid); if (!R0 || !liveR(rid)) return null;
+    // abroad the carting is never less than 45's road between the two realms: the same rate the realm runs pay, so a
+    // border town is no back door to a gap the caravans have not closed
+    const R = rid !== home ? Object.assign({}, R0, { f: Math.max(R0.f, E.road(home, rid).f) }) : R0;
     const foreign = rid !== home, near = !foreign || A.neighbors(home).includes(rid);
     // tolls abroad as the release's trade runs; market dues at home
     const toll = foreign ? (near ? 0.04 : 0.09) * (A.hasTrade(home, rid) ? 0.5 : 1) : 0.02;
@@ -629,7 +636,7 @@
       const P = MT.tripPlan(x.pid), [b, s] = MT.at(x.pid, () => [A.buyPrice(x.rid, k), A.sellPrice(x.rid, k)]);
       const go = load > 0 || !!UI.mtBack, ok = P && !P.hostile && !P.shut && go && A.S.time >= P.ini;
       const why = !P ? '' : P.hostile ? 'At war with you' : P.shut ? 'Cut off by war' : !go ? 'You carry nothing' : A.S.time < P.ini ? `Needs ${P.ini} initiative` : load ? `Sell all you carry there: about ${A.coin(P.net)} after ${P.foreign ? 'tolls' : 'dues'} and carting` : 'Go and buy there';
-      h += `<tr><td>${esc(MT.name(x.pid))}${x.rid !== A.homeMkt(pc) ? ` <span class="chip">${esc(A.realmShort(x.rid))}</span>` : ''}${P && P.shut ? ' <span class="chip red">cut off</span>' : ''}</td><td>${esc(`${x.R.steps} steps, ${x.R.days} days${x.R.sea ? ' by sea' : ''}`)}</td><td>${A.coin(Math.round(MT.cartCost(k, x.R)))}</td><td>${A.coin(Math.round(b))}</td><td>${A.coin(Math.round(s))}</td><td><button class="small" data-a="mtTrip" data-v="${esc(String(x.pid))}" ${ok ? '' : 'disabled'} title="${esc(why)}">Go</button></td></tr>`;
+      h += `<tr><td>${esc(MT.name(x.pid))}${x.rid !== A.homeMkt(pc) ? ` <span class="chip">${esc(A.realmShort(x.rid))}</span>` : ''}${P && P.shut ? ' <span class="chip red">cut off</span>' : ''}</td><td>${esc(`${x.R.steps} steps, ${x.R.days} days${x.R.sea ? ' by sea' : ''}`)}</td><td>${A.coin(Math.round(MT.cartCost(k, P ? P.R : x.R)))}</td><td>${A.coin(Math.round(b))}</td><td>${A.coin(Math.round(s))}</td><td><button class="small" data-a="mtTrip" data-v="${esc(String(x.pid))}" ${ok ? '' : 'disabled'} title="${esc(why)}">Go</button></td></tr>`;
     }
     h += `</table></div><div class="row wrap"><label class="tiny muted">Bring back <select data-c="mtBack" aria-label="Goods to bring back">${opt(UI.mtBack, ks, 'nothing')}</select></label></div>`;
     h += `<div class="tiny muted">Each town keeps its own store. A good is cheapest near the fields, mines and flocks that make it and dearer down the road, by about what the carting costs; imports are cheapest where the caravans come in. A town under siege eats its store.</div></div>`;

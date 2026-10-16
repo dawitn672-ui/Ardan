@@ -26,7 +26,7 @@ export default {
   async difficultyInformation(pg) {
     const r = await pg.evaluate(() => {
       const out = {};
-      const ev = Object.values(A.EV).find(e => !e.trigger && (e.choices || []).some(c => c.check) && typeof e.text === 'string' && !/\{/.test(e.text + e.title) && !e.setup);
+      const ev = Object.values(A.EV).find(e => !e.trigger && (e.choices || []).some(c => c.check) && typeof e.text === 'string' && !/\{/.test(e.text + e.title) && !('_mwOwnSetup' in e ? e._mwOwnSetup : e.setup));   // 67-memory-weave wraps every setup; ask for the event's own
       for (const diff of ['story', 'hard', 'realism']) for (const odds of [false, true]) {
         A.newGame({ seed: 302, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 30, diff });
         UI.set.odds = odds;

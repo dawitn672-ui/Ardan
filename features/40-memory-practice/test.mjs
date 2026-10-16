@@ -135,7 +135,8 @@ export default {
       const ago = (pc, f, n) => { pc.flags[f] = Y() - n; };
       const rel = (pc, t, type, op, n) => { A.link(pc, t, type, op, type); pc.rel[t.id].since = Y() - (n || 0); return t; };
       const npc = (pc, o = {}) => { const t = A.makeAcquaintance(pc, 'acquaint'); t.born = Math.min(t.born, Y() - 20); Object.assign(t, o); return t; };
-      const sk = (pc, o) => { for (const k in o) pc.skills[k] = o[k]; };
+      // 49-body-mind folds some skills into a family for the player (lance and mounted read riding): set both
+      const sk = (pc, o) => { for (const k in o) { pc.skills[k] = o[k]; const c = A.BM && A.BM.canon ? A.BM.canon(k) : k; if (c !== k) pc.skills[c] = Math.max(pc.skills[c] || 0, o[k]); } };
       const aged = (pc, n) => { pc.born = Y() - Math.round(n * GD.RACES[pc.race].adult / 16); };   // newGame caps startAge
       const place = (pc, test) => { const l = A.S.prov.filter(x => x.owner === pc.realm && test(x)); if (l.length) pc.home = l[0].id; return !!l.length; };
       const town = pc => place(pc, x => x.town >= 8000);
@@ -182,7 +183,7 @@ export default {
         mpf_rim_ashby: [V({}, pc => sk(pc, { lance: 70 }), pc => ago(pc, 'pf_rim_trick', 2))],
         mpf_shot_road: [V({}, pc => { pc.gear.mount = 'horse'; sk(pc, { bow: 50, mounted: 50 }); }, pc => ago(pc, 'pf_backward_shot', 2))],
         mpf_shot_kharsa: [V({ realm: 'POL-12' }, pc => sk(pc, { bow: 50, mounted: 50 }), pc => ago(pc, 'pf_backward_shot', 3))],
-        mpf_crates_bolt: [V({}, pc => { pc.coin = 30; }, pc => ago(pc, 'pf_smuggler_contact', 2))],
+        mpf_crates_bolt: [V({}, pc => { coastTown(pc) || town(pc); pc.coin = 30; }, pc => ago(pc, 'pf_smuggler_contact', 2))],   // the start's home is not always a town or on the coast
         mpf_smug_cargo: [V({}, null, pc => ago(pc, 'mpf_smug_owes', 3))],
         mpf_steel_reckoners: [V({}, pc => { pc.gear.ranged = 'xbow'; pc.coin = 200; }, pc => ago(pc, 'pf_hold_steel', 2))],
         mpf_steel_war: [V({ startAge: 24 }, pc => { SOLDIER(pc); pc.gear.ranged = 'xbow'; }, pc => ago(pc, 'pf_hold_steel', 2))],
@@ -317,7 +318,9 @@ export default {
                   if (RAW.test(all)) out.problems.push(`${cur}: raw token ${all.match(RAW)[0]}`);
                   if (words(v.text) > 80) out.problems.push(`${cur}: text ${words(v.text)} words`);
                   for (const c of v.choices) if (words(c.t) > 12) out.problems.push(`${cur}: label ${words(c.t)} words`);
-                  if (TICS.test(v.text)) out.problems.push(`${cur}: house tic in rendered text`);
+                  // a local saying 54-voices closes the scene with ("Nobody here boards a prize ...") is that feature's prose
+                  const voiced = A.VOICE && (A.VOICE.last || []).some(x => /^line:/.test(x));
+                  if (TICS.test(voiced ? v.text.replace(/\n\n[^\n]*$/, '') : v.text)) out.problems.push(`${cur}: house tic in rendered text`);
                 }
                 const idx = v.choices.findIndex(c => c.i === i);
                 if (idx < 0) continue;            // hidden by req for this fixture; another fixture must offer it

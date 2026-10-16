@@ -25,8 +25,9 @@ export default {
     return { ok: r.injected === 0 && r.shown, detail: `markup in a log line is shown as text: ${r.shown}; injected elements ${r.injected}` };
   },
   async chronicleExport(pg) {
-    const dl = pg.waitForEvent('download', { timeout: 8000 }).catch(() => null);
     await pg.evaluate(() => { T.enter({ seed: 9, race: 'dwarf', realm: 'POL-20', status: 'artisan', sex: 'F', startAge: 0 }); T.play(12); UI.tab = 'book'; UI.render(); });
+    // wait for the download from the click, not from before the twelve years of play (they take longer than 8s on the full world)
+    const dl = pg.waitForEvent('download', { timeout: 8000 }).catch(() => null);
     await pg.click('[data-a="chronicleExport"]');
     const d = await dl;
     let text = '';

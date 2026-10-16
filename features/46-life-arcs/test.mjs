@@ -22,8 +22,14 @@ const SETUP = () => {
       A.S.queue = [];
       return pc;
     },
-    // run the month hook with the start roll forced to succeed
-    month(pc) { const ch = A.chance; A.chance = () => true; try { A.ARCS.month(pc); } finally { A.chance = ch; } },
+    // run the month hook with the start roll forced to succeed. The story track (A.ARCS.story, 50-53) rolls first and
+    // would win every forced roll, so it is held off here: these tests are about the work of a life (story: true
+    // arcs test their own). withStories keeps it on.
+    month(pc, withStories) {
+      const ch = A.chance, sm = A.ARCS.storyMonth; A.chance = () => true; if (!withStories) A.ARCS.storyMonth = () => false;
+      try { A.ARCS.month(pc); } finally { A.chance = ch; A.ARCS.storyMonth = sm; }
+    },
+    noStories(f) { const sm = A.ARCS.storyMonth; A.ARCS.storyMonth = () => false; try { return f(); } finally { A.ARCS.storyMonth = sm; } },
     // bring the arc's next stage due and queue it
     due(pc, k) { const a = pc.arcs[k]; A.S.year = Math.max(A.S.year, a.next); LAT.month(pc); return A.S.queue.map(q => q.ev); },
     choose(ev, idx, win) {
@@ -81,17 +87,25 @@ export default {
       // too young
       pc = LAT.life('noble', 4692, 22); LAT.month(pc); const young = A.S.queue.length;
       // the roll: about one month in 24
-      pc = LAT.life('noble', 4693, 35); let n = 0; for (let m = 0; m < 2400; m++) { A.S.queue = []; pc.arcs = {}; A.ARCS.month(pc); if (A.S.queue.length) n++; }
+      pc = LAT.life('noble', 4693, 35); let n = 0; LAT.noStories(() => { for (let m = 0; m < 2400; m++) { A.S.queue = []; pc.arcs = {}; A.ARCS.month(pc); if (A.S.queue.length) n++; } });
+      // a story arc running alongside does not hold the work of a life back, and the work of a life does not hold a
+      // story back: with both rolls forced, a story arc in progress still lets the middle years' arc start
+      const sk = A.ARCS.stories()[0];
+      pc = LAT.life('noble', 4696, 35); pc.arcs = sk ? { [sk]: { stage: 1, m: [], next: A.S.year + 5, story: 1 } } : {}; LAT.month(pc, true);
+      const alongside = A.S.queue.map(q => q.ev).join();
+      pc = LAT.life('noble', 4697, 35); pc.arcs = { estate: { stage: 1, m: [], next: A.S.year + 5 } }; LAT.month(pc, true);
+      const storyBeside = A.S.queue.map(q => q.ctx && q.ctx.arc).filter(Boolean).filter(k => A.ARCS.ARC[k] && A.ARCS.ARC[k].story).length;
       // one at a time, two in the middle years, one legacy
       pc = LAT.life('noble', 4695, 60);
       pc.arcs = { estate: { stage: 1, m: [], next: A.S.year + 5 } }; LAT.month(pc); const busy = A.S.queue.length;
       pc.arcs = { estate: { stage: 3, m: [], done: 1100 }, house: { stage: 3, m: [], done: 1101 } }; pc.born = A.S.year - 40; LAT.month(pc); const twoMid = A.S.queue.length;
       pc.arcs = { elder: { stage: 2, m: [], done: 1100 } }; pc.born = A.S.year - 60; LAT.month(pc); const oneLate = A.S.queue.map(q => q.ev).join();
-      return { out, ranks, novice, young, serf, rate: n / 2400, busy, twoMid, oneLate };
+      return { out, ranks, novice, young, serf, rate: n / 2400, busy, twoMid, oneLate, sk, alongside, storyBeside };
     });
     const wrong = Object.entries(r.out).filter(([p, o]) => o.seen !== p || o.mid !== o.wantMid || o.late !== o.wantLate);
-    const ok = !wrong.length && r.ranks === 0 && r.novice === 0 && r.young === 0 && r.serf === 0 && r.busy === 0 && r.twoMid === 0 && r.oneLate === 'la_estate_1' && r.rate > 0.025 && r.rate < 0.06;
-    return { ok, detail: `${Object.entries(r.out).map(([p, o]) => `${p}: ${o.mid} at 35, ${o.late} at 58`).join('; ')}. Nothing for a soldier in the ranks (${r.ranks}), a novice (${r.novice}), a serf (${r.serf}) or at 22 (${r.young}); the start roll fires ${(r.rate * 100).toFixed(1)}% of months. Limits: none while one runs (${r.busy}), none after two in the middle years (${r.twoMid}), after a legacy only the middle years' (${r.oneLate})${wrong.length ? `. WRONG: ${wrong.map(w => w[0]).join(', ')}` : ''}` };
+    const ok = !wrong.length && r.ranks === 0 && r.novice === 0 && r.young === 0 && r.serf === 0 && r.busy === 0 && r.twoMid === 0 && r.oneLate === 'la_estate_1' && r.rate > 0.025 && r.rate < 0.06
+      && (!r.sk || r.alongside === 'la_estate_1' && r.storyBeside === 1);
+    return { ok, detail: `${Object.entries(r.out).map(([p, o]) => `${p}: ${o.mid} at 35, ${o.late} at 58`).join('; ')}. Nothing for a soldier in the ranks (${r.ranks}), a novice (${r.novice}), a serf (${r.serf}) or at 22 (${r.young}); the start roll fires ${(r.rate * 100).toFixed(1)}% of months. Limits: none while one runs (${r.busy}), none after two in the middle years (${r.twoMid}), after a legacy only the middle years' (${r.oneLate}). Beside the story track: with ${r.sk || 'no story arc'} running the estate still starts (${r.alongside || '-'}), and with the estate running a story arc still starts (${r.storyBeside})${wrong.length ? `. WRONG: ${wrong.map(w => w[0]).join(', ')}` : ''}` };
   },
 
   // a choice leaves a mark; the next stage comes one to three years later and its text and outcome follow the mark
