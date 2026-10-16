@@ -76,7 +76,7 @@ That is 50% done and 33% partial. 6% is not started but buildable here, and 11% 
 
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
-| 1 | Cut 30–40% of events | ✗ | Not done (the strict recipe share is 22.6%) |
+| 1 | Cut 30–40% of events | ◐ | 58-event-cut: 836 of the release's 3,199 events (26.1%) retired by a measured audit (`bench/event-audit.mjs`): one-off scenes whose choices only nudge numbers or an opinion and that nothing else reads; never a feature's own, a chain, a memory, a flag someone reads, or a realm's last 5 local events. Over 72 lives a side: events a decade 62 → 49, weak one-offs among fired events 17.4% → 1.5%, memory share 8.5% → 10.2%, empty years within 1.5 points in every class. A menu setting restores the classic pool. Past 26% the next cuts leave a wound or fame behind; the list (`RETIRED.md`) and 159 more proposed cuts wait on a designer's approval |
 | 2 | Memories; 40% of events refer to one | ◐ | 3% → **15.8%** of events, and 8.4% of fired events (40-memory-*, 471 events); 139 flags still unread |
 | 3 | 60 long arcs of 3–8 stages | ✅ | 46-life-arcs' story track carries 52 arcs of 3–6 stages over 2–20 years, in four packs of 13: kin (50: a secret child, a blood feud, a heir's fall), rivals and ambition (51: a rival's rise, an apprentice who passes you, a moneylender), the world (52: plague, flood, a siege, heresy) and things (53: a famous sword, a horse, a house); 226 scenes. With the eight three-scene middle-years undertakings of 46, that is 60. Each keeps its people from first scene to last, and later scenes read earlier choices |
 | 4 | Every arc ends with a lasting change | ✅ | Every ending choice of 50–53, on both sides of a check, leaves something lasting (a bond, an epithet, a wound, a house, a title, a law, or the map: a plague takes 15% of a province, a dyke adds development, new walls fortify); tested arc by arc |
@@ -198,7 +198,7 @@ That is 50% done and 33% partial. 6% is not started but buildable here, and 11% 
 | 2 | Signature 1: the Chronicle | ✅ | 22-chronicle: chapters in a chronicler's voice, exportable (more to do: corrections, a period voice for every line) |
 | 3 | Signature 2: belief versus truth everywhere | ◐ | 26-belief-truth: beasts, secrets, far news and your own legend. 64-npc-beliefs: the people around you and every court hold claims about you, others, battles and beasts, and some are false: 12% at home, 37% in the realm, 63% next door, 83% further off. Opinion follows the belief (a false tale +10 where the true deed gives +6), corrections spread when someone sets them right, and you can hold a false belief and find out. 2.7 belief scenes a decade, 2.2 driven by a falsehood. The wider world holds nothing, and NPCs don't act on beliefs about each other beyond opinion |
 | 4 | Signature 3: both scales at once | ◐ | 34-both-scales: after every war-map fight you were in, three panels (what you saw, the front, what the chronicle will say) that disagree; registered. In-fight choices at every rank (War 1) are still the release's |
-| 5 | Cut what dilutes the core | ✗ | |
+| 5 | Cut what dilutes the core | ✅ | 58-event-cut: the War Room's Templates, Industry and Manpower tabs, which the release showed greyed out to everyone, follow its own unlock rules (ruler, Marshal, Commander or General); the War tab no longer promises them to a commoner. No other screen of that kind was found |
 
 ## Round 3 changes
 

@@ -1,10 +1,10 @@
 # Retired events: for review
 
-848 of the release's 3199 events (26.5%) are retired from the yearly roll by `features/58-event-cut`. A human should approve or veto this list: to keep an event, delete its line from `list.core.js`. A retired event is not deleted: anything that queues it by id still shows it, and the menu setting "Classic event pool (keep every event)" brings them all back.
+836 of the release's 3199 events (26.1%) are retired from the yearly roll by `features/58-event-cut`. A human should approve or veto this list: to keep an event, delete its line from `list.core.js`. A retired event is not deleted: anything that queues it by id still shows it, and the menu setting "Classic event pool (keep every event)" brings them all back.
 
-How they were chosen (`bench/event-audit.mjs`, then `select.mjs`): only the release's own events were candidates, and never one that a feature wrote, that is only ever queued (a chain's later step), that belongs to a job, duty, path, council or drill pool, whose id appears anywhere else in the game (a chain's `event:`, `A.schedule`, `flags.ev`), that reads an earlier memory, or that sets a flag anything reads. The weakest went first, and every pool kept a floor (see the README). Columns: fired = times the bots met it in 24 lives (1048 years); words = its text; check = it has a skill check (tradeoff = a check whose failure costs, beside a safe choice); best = the choice linter finds an obviously best choice.
+How they were chosen (`bench/event-audit.mjs`, then `select.mjs`): only the release's own events were candidates, and never one that a feature wrote, that is only ever queued (a chain's later step), that belongs to a job, duty, path, council or drill pool, that another feature patched, whose id appears anywhere else in the game (a chain's `event:`, `A.schedule`, `flags.ev`), that reads an earlier memory, or that sets a flag anything reads. The weakest went first, and every pool kept a floor (see the README). Columns: fired = times the bots met it in 24 lives (1048 years); words = its text; check = it has a skill check (tradeoff = a check whose failure costs, beside a safe choice); best = the choice linter finds an obviously best choice.
 
-## Nudges (N): 229
+## Nudges (N): 227
 
 Every choice only moves stats or skills by 1 or 2, happiness or health by a few points, or coin. Nothing reads its flags, no event or code queues it, and it queues nothing.
 
@@ -123,7 +123,6 @@ Every choice only moves stats or skills by 1 or 2, happiness or health by a few 
 | `or_deeds` | The roll of deeds | 0 | varies | check |
 | `or_invite` | Someone was watching | 0 | 40 |  |
 | `or_tale` | Around the fire | 0 | varies |  |
-| `pa_retired_advice` | The old one is consulted | 0 | 29 |  |
 | `pf_ath_hue_cry` | Hue and cry | 2 | varies | tradeoff |
 | `pf_dual_either_hand` | The wrong hand | 6 | 31 | tradeoff, once |
 | `pf_learn_letter_writer` | Six pence a letter | 15 | 57 | tradeoff |
@@ -181,7 +180,6 @@ Every choice only moves stats or skills by 1 or 2, happiness or health by a few 
 | `ss_sc_unicorn` | The Sand Clans' unicorns | 0 | 52 | check, local |
 | `ss_sk_newyear` | The seventh step | 0 | 47 | check, local |
 | `ss_tm_natron` | Forty days of natron | 0 | varies | tradeoff, local |
-| `st_deleg_cousin` | A delegate's choice | 0 | 35 |  |
 | `tr_cook_d_rats` | Rats in the larder | 0 | 36 | tradeoff |
 | `wk_craft_candle` | Work by candlelight | 2 | varies | tradeoff |
 | `wk_farm_tithe` | The tenth sheaf | 2 | varies | tradeoff |
@@ -581,7 +579,7 @@ Every choice only moves numbers, some by more than a nudge (a skill by 3, health
 | `ww_vg_fourthday` | The fourth day | 0 | 42 | tradeoff, local, moves health |
 | `ww_vg_icon` | An icon facing east | 0 | 51 | check, local, moves skill |
 
-## Opinion only (O): 285
+## Opinion only (O): 275
 
 Every choice moves numbers and someone's opinion of you, and nothing else: no new bond, no memory anyone reads, no follow-up. Nothing queues it.
 
@@ -604,9 +602,7 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `bd_jealousy` | Jealousy | 1 | 22 | tradeoff, opinion |
 | `bd_listener_plot` | Through the door | 0 | 25 | tradeoff, opinion, moves favor skill health |
 | `bd_marriage_repair` | A cold house | 0 | 24 | tradeoff, opinion, moves happy |
-| `bd_old_enemy_peace` | An old enemy, older | 5 | varies | opinion |
 | `bd_patron_expect` | What patrons want | 0 | varies | tradeoff, opinion |
-| `bd_rival_reconcile` | Too old for this | 1 | 20 | opinion, moves happy |
 | `bd_rival_success` | Your rival's triumph | 6 | varies | tradeoff, opinion, moves skill |
 | `bd_spouse_ambition` | Two ambitions, one house | 2 | varies | tradeoff, opinion |
 | `bd_student_surpasses` | The student surpasses | 0 | 20 | tradeoff, opinion |
@@ -632,7 +628,6 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `ct_wardship` | A ward | 0 | varies | opinion, moves honor |
 | `fm_affair_found` | Found out | 0 | 26 | tradeoff, opinion, moves honor happy |
 | `fm_apprentice` | An apprenticeship | 0 | varies | opinion |
-| `fm_bestfriend` | A true friend | 6 | 31 | opinion, moves happy |
 | `fm_betrothed_meet` | Your betrothed visits | 1 | 28 | tradeoff, opinion, moves happy |
 | `fm_camp_love` | Love in the camp | 0 | varies | tradeoff, opinion, moves happy |
 | `fm_child_leaves` | Leaving home | 2 | varies | tradeoff, opinion, moves happy |
@@ -655,7 +650,6 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `fm_market_meet` | A hard bargain | 8 | 28 | tradeoff, opinion |
 | `fm_mixed_neighbors` | Talk in the lane | 0 | 29 | tradeoff, opinion |
 | `fm_new_friend` | A new friend? | 6 | 14 | opinion |
-| `fm_old_friends` | An old friend | 6 | 20 | opinion, moves happy |
 | `fm_old_together` | Growing old together | 0 | varies | opinion, moves happy |
 | `fm_quarrel` | A quarrel | 2 | 25 | tradeoff, opinion |
 | `fm_rebel_teen` | A rebel in the house | 1 | 22 | tradeoff, opinion, moves happy |
@@ -689,7 +683,6 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `hs_hu_forest_law` | The forest law | 0 | 32 | opinion, moves favor |
 | `hs_hu_poachers` | Poachers in the wood | 0 | 34 | opinion, moves favor |
 | `hs_inherit_dispute` | A disputed inheritance | 1 | 30 | check, opinion |
-| `hs_k_cousin_friend` | A cousin for a friend | 1 | 34 | once, opinion |
 | `hs_k_cousins` | The cousins come to stay | 0 | 39 | tradeoff, opinion |
 | `hs_k_old_retainer` | The old retainer | 2 | 30 | check, opinion |
 | `hs_k_rival_kids` | The other family's children | 0 | 29 | tradeoff, opinion |
@@ -786,7 +779,6 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `ln_d_tch_rod` | The birch rod | 1 | 34 | tradeoff, opinion |
 | `ln_d_tch_shepherd` | The shepherd boy | 4 | 47 | tradeoff, opinion, moves rep |
 | `pa_blade_master_lesson` | A master passing through | 0 | 31 | check, opinion, moves skill |
-| `pa_teacher_orphan` | A gifted orphan | 0 | 25 | opinion |
 | `pf_axe_harvest_chop` | The log-chop at Harvest Home | 0 | 34 | tradeoff, opinion, moves honor |
 | `pf_cmd_old_soldier` | My father served with you | 0 | 44 | tradeoff, opinion |
 | `pf_dagger_mercy` | The mercy stroke | 2 | 39 | tradeoff, opinion |
@@ -814,7 +806,6 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `rk_gar_farm` | Harvest or the wall | 0 | 37 | tradeoff, opinion, moves merit |
 | `rk_kit_inspection` | Kit inspection | 0 | varies | tradeoff, opinion, moves skill |
 | `rk_loaded_dice` | Loaded dice | 0 | 31 | check, opinion |
-| `rk_lucky_stone` | A lucky stone | 0 | varies | opinion |
 | `rk_pow_march` | The prisoners' road | 0 | 37 | check, opinion |
 | `rk_sgt_fever` | Hiding the sick | 0 | 40 | tradeoff, opinion, moves skill happy |
 | `rk_sgt_old_friend` | Old friends, new stripes | 0 | 43 | tradeoff, opinion, moves skill |
@@ -827,7 +818,6 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `sc_ptd_oldchamp` | The old champion | 0 | 39 | opinion |
 | `sc_ptd_shadow` | A shadow | 0 | 31 | opinion |
 | `sc_spd_friend` | Report on a friend | 0 | 26 | tradeoff, opinion, moves rep |
-| `sc_ss_brother` | Blood in the yard | 0 | 40 | opinion |
 | `sc_ss_heir` | Sparring royal blood | 0 | 35 | tradeoff, opinion, moves favor |
 | `sc_ss_love` | Bruises and something else | 0 | 27 | tradeoff, opinion, moves happy |
 | `sc_ss_pet` | The master's favorite | 0 | 33 | tradeoff, opinion |
@@ -836,7 +826,6 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `sc_ss_veteran` | An old student comes back | 0 | 51 | opinion |
 | `sc_thd_brand` | The brand | 0 | 29 | opinion |
 | `sc_thd_kitty` | The widows' kitty | 0 | 30 | tradeoff, opinion, moves rep |
-| `sc_tr_debt` | A family fails | 0 | 30 | opinion |
 | `sc_wc_ford` | The map exercise | 0 | 35 | check, opinion, moves skill |
 | `st_resented` | Your choice, their grumbling | 0 | 35 | check, opinion |
 | `tr_bow_d_snap` | The snapped bow | 0 | 47 | tradeoff, opinion, moves rep |
@@ -845,7 +834,6 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `tr_serv_d_spoon` | The missing spoon | 0 | 37 | tradeoff, opinion, moves perf |
 | `tr_weaver_d_bee` | The spinning bee | 0 | 41 | check, opinion, moves happy |
 | `v4_doc_council` | The war council | 0 | varies | tradeoff, opinion, moves merit skill |
-| `v4_mast_mentor` | The best pupil | 0 | 22 | opinion, moves merit |
 | `v4_path_rival` | Two masters | 1 | 27 | tradeoff, opinion, moves rep |
 | `v4_skirm_scout` | Eyes of the army | 0 | 19 | check, opinion, moves merit skill health |
 | `wk_craft_apprentice` | A new apprentice | 2 | 32 | opinion, moves perf |
@@ -875,7 +863,7 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 
 ## Proposed, not retired: thin mark (T): 159
 
-Its one lasting mark is fame of 3 or more, or a wound; nothing else lasts, nothing reads it, nothing queues it. The brief counts a wound and fame of 3 or more as lasting, so these stay in the roll. They are the next weakest; retiring them too (`select.mjs --with-thin`) would bring the cut to 1007 of 3199 (31.5%). A human decides.
+Its one lasting mark is fame of 3 or more, or a wound; nothing else lasts, nothing reads it, nothing queues it. The brief counts a wound and fame of 3 or more as lasting, so these stay in the roll. They are the next weakest; retiring them too (`select.mjs --with-thin`) would bring the cut to 995 of 3199 (31.1%). A human decides.
 
 | id | title | fired | words | notes |
 | --- | --- | --- | --- | --- |

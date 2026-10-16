@@ -87,7 +87,7 @@ const MODULES = {
     // events with an obviously best choice (tools/lint-choices.mjs), over every event
     const ch = await page.evaluate(analyzeChoices, null);
     const base = await page.evaluate(() => {
-      const M = B.memoryIndex(), E = Object.values(A.EV), words = s => (String(s || '').match(/\S+/g) || []).length;
+      const M = B.memoryIndex(), E = Object.values(A.EV).filter(e => !(A.EV_RETIRED && A.EV_RETIRED.has(e.id))),   // events 58-event-cut retired never roll words = s => (String(s || '').match(/\S+/g) || []).length;
       const stat = e => typeof e.text === 'string' ? words(e.text) : null;
       const recipe = E.filter(e => { const ch = e.choices || []; if (ch.length < 2 || ch.length > 3 || !ch.some(c => c.check)) return false;
         const s = JSON.stringify(ch.map(c => [c.fx, c.win && c.win.fx, c.lose && c.lose.fx].map(x => typeof x === 'function' ? 'FN' : x)));

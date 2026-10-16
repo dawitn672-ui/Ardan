@@ -5,7 +5,8 @@
 // RETIRED.md. A retired event stays in A.EV, marked trigger (the mark the release's rolls, A.rollEvents and
 // A.rollEventsN, already skip), and a roll that would have drawn it draws nothing instead (see below). Anything that
 // queues it by id (a chain, A.schedule, an old save) still works. No event a feature wrote, no event in a special pool (job offers, duties, path flows, council,
-// drill), no chain step, no memory event and no event whose flag is read anywhere is on the list.
+// drill), no chain step, no memory event, no event another feature patched and no event whose flag is read
+// anywhere is on the list.
 // The menu setting "Classic event pool (keep every event)" restores them. It is stored with the game
 // (A.S.settings.classicEvents), set through a journaled command, so replays see it; the menu remembers it for new lives.
 //

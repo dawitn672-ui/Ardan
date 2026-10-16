@@ -24,6 +24,15 @@ const THIN = args.includes('--with-thin');
 const KEEP_PCT = 0.6, KEEP_MIN = 30, LOCAL_MIN = 5;
 
 const rel = audit.rows.filter(r => r.release);
+// an event another feature has patched (02-content-fixes mended its tokens, 33-choices rebalanced its choices) is work
+// someone chose to keep: it stays in the roll
+const featRoot = path.join(here, '..');
+const patched = new Set();
+for (const d of fs.readdirSync(featRoot).filter(d => /^\d+-/.test(d) && !/event-cut$/.test(d))) {
+  const f = path.join(featRoot, d, 'patches.mjs');
+  if (fs.existsSync(f)) for (const m of fs.readFileSync(f, 'utf8').matchAll(/[a-z][a-z0-9]*_[a-z0-9_]+/g)) patched.add(m[0]);
+}
+for (const r of rel) if (!r.protect && patched.has(r.id)) r.protect = 'patched';
 const target = Math.round(SHARE * rel.length);
 const ORDER = { nudge: 0, numbers: 1, opinion: 2, thin: 3 };
 const CODE = { nudge: 'N', numbers: 'B', opinion: 'O', thin: 'T' };
@@ -72,7 +81,7 @@ let md = `# Retired events: for review\n\n` +
   `A human should approve or veto this list: to keep an event, delete its line from \`list.core.js\`. ` +
   `A retired event is not deleted: anything that queues it by id still shows it, and the menu setting "Classic event pool (keep every event)" brings them all back.\n\n` +
   `How they were chosen (\`bench/event-audit.mjs\`, then \`select.mjs\`): only the release's own events were candidates, and never one that a feature wrote, ` +
-  `that is only ever queued (a chain's later step), that belongs to a job, duty, path, council or drill pool, whose id appears anywhere else in the game ` +
+  `that is only ever queued (a chain's later step), that belongs to a job, duty, path, council or drill pool, that another feature patched, whose id appears anywhere else in the game ` +
   `(a chain's \`event:\`, \`A.schedule\`, \`flags.ev\`), that reads an earlier memory, or that sets a flag anything reads. The weakest went first, ` +
   `and every pool kept a floor (see the README). Columns: fired = times the bots met it in ${audit.lives} lives (${audit.years} years); words = its text; ` +
   `check = it has a skill check (tradeoff = a check whose failure costs, beside a safe choice); best = the choice linter finds an obviously best choice.\n\n`;

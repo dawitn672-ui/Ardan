@@ -1,6 +1,6 @@
 // The retired events (Road to Ten, Events 1): written by select.mjs from bench/event-audit.mjs. Do not edit by hand;
 // veto an event in RETIRED.md, then drop its line here (or re-run select.mjs). Reason codes: EC.REASONS in cut.core.js.
-// 848 of the release's 3199 events.
+// 836 of the release's 3199 events.
 A.EC.retire({
   // B: 334
   av_broken_axle: 'B',
@@ -337,7 +337,7 @@ A.EC.retire({
   ww_va_terrace: 'B',
   ww_vg_fourthday: 'B',
   ww_vg_icon: 'B',
-  // N: 229
+  // N: 227
   av_merc_forage: 'N',
   av_pedlar_wonders: 'N',
   av_sea_drakes: 'N',
@@ -451,7 +451,6 @@ A.EC.retire({
   or_deeds: 'N',
   or_invite: 'N',
   or_tale: 'N',
-  pa_retired_advice: 'N',
   pf_ath_hue_cry: 'N',
   pf_dual_either_hand: 'N',
   pf_learn_letter_writer: 'N',
@@ -509,7 +508,6 @@ A.EC.retire({
   ss_sc_unicorn: 'N',
   ss_sk_newyear: 'N',
   ss_tm_natron: 'N',
-  st_deleg_cousin: 'N',
   tr_cook_d_rats: 'N',
   wk_craft_candle: 'N',
   wk_farm_tithe: 'N',
@@ -567,7 +565,7 @@ A.EC.retire({
   ww_vg_honeyporridge: 'N',
   ww_vg_pelts: 'N',
   ww_vg_redcollar: 'N',
-  // O: 285
+  // O: 275
   av_crime_street_kid: 'O',
   av_inn_knock: 'O',
   av_wild_hermit: 'O',
@@ -585,9 +583,7 @@ A.EC.retire({
   bd_jealousy: 'O',
   bd_listener_plot: 'O',
   bd_marriage_repair: 'O',
-  bd_old_enemy_peace: 'O',
   bd_patron_expect: 'O',
-  bd_rival_reconcile: 'O',
   bd_rival_success: 'O',
   bd_spouse_ambition: 'O',
   bd_student_surpasses: 'O',
@@ -613,7 +609,6 @@ A.EC.retire({
   ct_wardship: 'O',
   fm_affair_found: 'O',
   fm_apprentice: 'O',
-  fm_bestfriend: 'O',
   fm_betrothed_meet: 'O',
   fm_camp_love: 'O',
   fm_child_leaves: 'O',
@@ -636,7 +631,6 @@ A.EC.retire({
   fm_market_meet: 'O',
   fm_mixed_neighbors: 'O',
   fm_new_friend: 'O',
-  fm_old_friends: 'O',
   fm_old_together: 'O',
   fm_quarrel: 'O',
   fm_rebel_teen: 'O',
@@ -670,7 +664,6 @@ A.EC.retire({
   hs_hu_forest_law: 'O',
   hs_hu_poachers: 'O',
   hs_inherit_dispute: 'O',
-  hs_k_cousin_friend: 'O',
   hs_k_cousins: 'O',
   hs_k_old_retainer: 'O',
   hs_k_rival_kids: 'O',
@@ -767,7 +760,6 @@ A.EC.retire({
   ln_d_tch_rod: 'O',
   ln_d_tch_shepherd: 'O',
   pa_blade_master_lesson: 'O',
-  pa_teacher_orphan: 'O',
   pf_axe_harvest_chop: 'O',
   pf_cmd_old_soldier: 'O',
   pf_dagger_mercy: 'O',
@@ -795,7 +787,6 @@ A.EC.retire({
   rk_gar_farm: 'O',
   rk_kit_inspection: 'O',
   rk_loaded_dice: 'O',
-  rk_lucky_stone: 'O',
   rk_pow_march: 'O',
   rk_sgt_fever: 'O',
   rk_sgt_old_friend: 'O',
@@ -808,7 +799,6 @@ A.EC.retire({
   sc_ptd_oldchamp: 'O',
   sc_ptd_shadow: 'O',
   sc_spd_friend: 'O',
-  sc_ss_brother: 'O',
   sc_ss_heir: 'O',
   sc_ss_love: 'O',
   sc_ss_pet: 'O',
@@ -817,7 +807,6 @@ A.EC.retire({
   sc_ss_veteran: 'O',
   sc_thd_brand: 'O',
   sc_thd_kitty: 'O',
-  sc_tr_debt: 'O',
   sc_wc_ford: 'O',
   st_resented: 'O',
   tr_bow_d_snap: 'O',
@@ -826,7 +815,6 @@ A.EC.retire({
   tr_serv_d_spoon: 'O',
   tr_weaver_d_bee: 'O',
   v4_doc_council: 'O',
-  v4_mast_mentor: 'O',
   v4_path_rival: 'O',
   v4_skirm_scout: 'O',
   wk_craft_apprentice: 'O',

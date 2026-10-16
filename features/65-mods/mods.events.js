@@ -497,6 +497,7 @@
         title: 'The boundary stone',
         cond: { all: [{ adult: true }, { any: [{ poor: true }, { job: 'farm' }, { job: 'herd' }] }] },
         once: true,
+        w: 3,
         text: 'The stones on your strip have stood since the last {bounds}. After the spring rain you walk the line and find the third one four paces into your barley. Your neighbour\'s plough was out early this week. The furrow behind the stone is fresh and very straight.',
         choices: [
           { t: 'Carry it back yourself after dark', check: { s: 'str', s2: 'stealth', d: 45 },
@@ -531,6 +532,7 @@
         title: 'A friend\'s purse',
         cond: { all: [{ adult: true }, { prison: false }] },
         with: ['friend', 'bestfriend'],
+        w: 3,
         cool: 12,
         text: '{them} comes by at dusk and stays past supper. A debt falls due at the quarter day, eleven coins, and {khe} is short every one of them. {khe} does not ask outright. {khe} talks about the harvest and the roads until it is clear that you will have to.',
         choices: [
