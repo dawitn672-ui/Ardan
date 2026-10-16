@@ -50,7 +50,7 @@ Lasting change, by the plan's words: a **bond** (sworn ties, kin written into th
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | First draft (claimant and creditor a generation older) | 18 (12) | 61 | 47 | 8, 6 of them the bastard's claim: the claimant died of age between scenes | 237 | 11 of 13 | 3-14 years |
 | **Private build, final** (`--only=life-arcs,arcs-kin`: 13 story arcs on the track, all kin) | 27 (11, all 11 met a kin arc) | **82** | **68** | 3 | 326 | **13 of 13** | 3-12 years |
-FULLWORLD
+| Full world (52 features: 52 story arcs on the track, 13 kin) | 27 (12, 8 met a kin arc) | 16 | 14 | 0 | 67 | 8 of 13 | 4-13 years |
 
 A stage is given up when it is dropped unseen, which is what a setup does when the person it needs has died. A long life meets four to six kin arcs on its own. A 56-year artisan life ran the night road, the feud, the carter's child, the match, the red cow and the bastard of the house, in that order. A 53-year merchant ran the mill, the bastard, the old ground, the feud, the match and the secret child.
 
@@ -68,7 +68,8 @@ Lint: `tools/lint-events.mjs` passes (58 events, 406 renders, 0 errors, 0 warnin
 **Limits.**
 
 - **Needs `46-life-arcs`.** Built with `--only=arcs-kin` alone, the scenes exist but nothing starts them. Build with `--only=life-arcs,arcs-kin`.
-- **It shares one track.** In the full world, the 51-53 arcs compete for the same one-at-a-time track, so a life meets fewer kin arcs than the numbers above. The test asks only for what holds in both builds.
+- **It shares one track.** In the full world the 51-53 arcs compete for the same one-at-a-time track. A long life meets about one kin arc there, against four to six on its own: 16 began in 27 lives, and 8 of 13 kinds were seen. The test's bar holds in both builds, but in the full world with less margin. If kin stories should come up more often, that is a weighting call across the four packages.
+- **The bot test is slow**: about 10 minutes on the private build and about 21 on the full world, because it plays lives until each start has two of 40 years.
 - **`46-life-arcs`'s own test counts every arc's stages.** `everyChoiceMovesTheArc` expects exactly 40 stages and will read 40 plus every story arc's. That test needs to count only the life arcs (`!a.story`). The fix is in a folder this package does not own.
 - **Families, not the map.** No arc moves a border. The plan's "province on the map" is for the world arcs (52).
 - **Some consequences are words.** The will's two conditions are kept by the story, not enforced by the engine. Selling the house breaks them only in honour. A NPC son or daughter married off does not set up a household the economy sees. The secret child's other parent, if made up, has no life before the letter. The sickness is a fixed wound, not a disease that progresses.

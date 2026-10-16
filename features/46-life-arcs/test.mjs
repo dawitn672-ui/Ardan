@@ -43,7 +43,7 @@ export default {
   async everyChoiceMovesTheArc(pg) {
     const r = await pg.evaluate(() => {
       const bad = [], ids = [];
-      for (const [k, a] of Object.entries(A.ARCS.ARC)) for (const id of a.stages) {
+      for (const [k, a] of Object.entries(A.ARCS.ARC).filter(([, x]) => !x.story)) for (const id of a.stages) {   // the work of a life; story arcs (50-53) test their own
         ids.push(id);
         const e = A.EV[id];
         if (!e) { bad.push(`${k}: ${id} missing`); continue; }
