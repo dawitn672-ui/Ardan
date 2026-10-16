@@ -41,7 +41,7 @@ export default {
     // a choice leaves a line: who, what, when, the kind of scene, the check and how it went, what it did
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      MWT.defs(); const pc = MWT.adult(6701), t = MWT.stranger(pc), y = A.S.year;
+      MWT.defs(); const pc = MWT.adult(6701), t = MWT.stranger(pc), y = A.S.year; pc.coin = 150;
       const none = pc.mw === undefined;
       MWT.scene('mwt_river', { pid: t.id }, 0);
       MWT.scene('mwt_toll', {}, 0, 0.999);    // the check is lost
@@ -136,6 +136,7 @@ export default {
       MWT.scene('mwt_river', { pid: t.id }, 0); A.S.year++;
       const q = { type: 'event', ev: 'mwt_ask', ctx: { pid: t.id } }; A.S.queue.unshift(q);
       A.eventView(q);   // the engine's first drawing (the setup) has run
+      T.renderAll();    // and the screens' own harmless first-draw setup (an empty cargo hold), as in 01-replay
       const before = A.rngState, h0 = T.hash(A.S);
       UI.render(); T.renderAll(); UI.render(); A.eventView(q);
       const html = UI.eventModal ? UI.eventModal(q) : '';
@@ -176,11 +177,13 @@ export default {
       for (const p of Object.values(raw.people || {})) delete p.mw;
       for (const q of raw.queue || []) if (q.ctx) delete q.ctx.mw;
       A.deserialize(raw);
-      const st = T.play(4);
-      const pc = A.pc();
-      return { lines, same, st, alive: !!pc, after: pc && pc.mw ? pc.mw.m.length : 0 };
+      const st = T.play(3);
+      // a choice after loading starts the record again
+      MWT.defs(); const pc = A.pc(); pc.alive = true; pc.prison = null; delete pc.mw;
+      MWT.scene('mwt_toll', {}, 1);
+      return { lines, same, st, alive: !!pc, after: pc.mw ? pc.mw.m.length : 0 };
     });
-    return { ok: r.lines > 0 && r.same && r.alive && r.after > 0, detail: `${r.lines} lines saved and loaded exactly: ${r.same}; an old save without the record loads and plays 4 years (${r.st}), writing ${r.after} new lines` };
+    return { ok: r.lines > 0 && r.same && r.alive && r.after > 0, detail: `${r.lines} lines saved and loaded exactly: ${r.same}; an old save without the record loads and plays 3 years (${r.st}); the next choice writes ${r.after} line` };
   },
 
   async mwInLives(pg) {

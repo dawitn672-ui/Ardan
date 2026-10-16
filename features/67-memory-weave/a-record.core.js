@@ -46,9 +46,9 @@
   // read once per event from its title and its text (or its text function's source), cached off the event
   MW.SHAPES = [
     ['tavern', /\b(tavern|alehouse|taproom|the inn\b|an inn\b|wine-?shop|drinking|ale\b|tankard|dice|dicing)/i],
+    ['road', /\b(road|travell|caravan|bridge|ford\b|the pass\b|wayfarer|pilgrim|toll)/i],
     ['market', /\b(market|fair\b|stall|haggl|merchant|pedlar|peddler|buyer|price)/i],
     ['law', /\b(the watch\b|watchm[ae]n|magistrate|thief|thieves|stolen|steal|gaol|jail|the cells|bailiff|constable|accus)/i],
-    ['road', /\b(road|travell|caravan|bridge|ford\b|the pass\b|wayfarer|pilgrim|toll)/i],
     ['temple', /\b(temple|shrine|priest|prayer|altar|chapel|monk|nun\b|sermon|holy)/i],
     ['court', /\b(court\b|throne|council|the hall\b|great hall|steward|herald|audience)/i],
     ['war', /\b(camp\b|march|battle|siege|sergeant|captain|soldier|army|muster|garrison|banner)/i],

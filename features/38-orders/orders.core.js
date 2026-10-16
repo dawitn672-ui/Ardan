@@ -5,7 +5,8 @@
 // sends a third of its divisions at once, on the same clock. Now the general's traits set a temper, and the temper
 // moves five dials:
 //   bold (brave, impetuous, wrathful, reckless, ambitious, proud): attacks at worse odds, sooner, with half its divisions;
-//   cautious (craven, patient, calm, cautious, content): wants better odds and rested men, and sends fewer;
+//   cautious (craven, patient, calm, cautious, content): wants better odds and rested men, keeps a third of his host in
+//     reserve, and stays on the defensive while outnumbered on his front;
 //   cunning (deceitful, witty, curious, paranoid): goes for the undefended and keeps away from forts;
 //   steady (none of these, or a tie between them): the release's army.
 // Each army keeps its plan (a.gtPlan), and the war room shows it with the temper. A soldier whose army has a plan gets

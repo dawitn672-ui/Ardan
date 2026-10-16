@@ -46,7 +46,8 @@
   MT.on = () => { const S = A.S; return !!(S && S.mt && S.mt.L && S.mt.L.length && S.prov); };
   const T = pid => A.S.mt.T[pid];
   MT.name = pid => (A.prov(pid) || {}).name || '';
-  const shut = P => !!(P && (P.occ || P.sgBy));   // a town cut off by siege or occupation
+  MT.cutOff = P => !!(P && (P.occ || P.sgBy));   // a province cut off by siege or occupation
+  const shut = P => MT.cutOff(P);
   MT.shut = pid => shut(A.prov(pid));
   // a town's store and need share of each good live in arrays, in the order of S.mt.K
   let KI = null;
@@ -86,7 +87,17 @@
     return p;
   };
   // the road between two market towns: its carting cost per load (a share of the base price), steps, km, days, by sea
+  let roadMemo = null;
   MT.road = function (a, b) {
+    const mt = A.S.mt, key = a * 4096 + b;
+    if (!roadMemo || roadMemo.mt !== mt || roadMemo.ver !== mt.ver || roadMemo.prov !== A.S.prov) roadMemo = { mt, ver: mt.ver, prov: A.S.prov, m: new Map() };
+    // remembered for the same towns and owners (a pure function of the map and who holds the two towns)
+    const Pa = A.prov(a), Pb = A.prov(b), own = Pa && Pb ? Pa.owner + '|' + Pb.owner : '', hit = roadMemo.m.get(key);
+    if (hit && hit.own === own) return hit.R;
+    const R = roadOf(a, b); roadMemo.m.set(key, { own, R });
+    return R;
+  };
+  const roadOf = function (a, b) {
     const Pa = A.prov(a), Pb = A.prov(b); if (!Pa || !Pb || a === b) return null;
     const p = MT.path(a), foreign = Pa.owner !== Pb.owner;
     let st = p.d[b], f = (foreign ? E.ROAD : MT.HAUL0) + MT.HOP * st, sea = false, km = p.len[b] * 0.9;
@@ -232,6 +243,15 @@
       if (!shut(P) || !P.ecoPr) continue;
       const m = A.mkt(P.owner), hv = m.hv && m.hv.y === S.year ? m.hv.f : 1;
       for (const k in P.ecoPr) { const i = ix[k]; if (i != null) made[t][i] = Math.max(0, made[t][i] - P.ecoPr[k] * (1 - MT.CUT) * (i === gi ? E.HARVEST[mo] * hv : 1)); }
+    }
+    // a town cut off gets only what its own fields bring in; the rest of its hinterland sells at the nearest open town
+    for (const pid of S.mt.L) {
+      if (!cut[pid]) continue;
+      const P = A.prov(pid), own = new Float64Array(nk);
+      if (P.ecoPr) { const m = A.mkt(P.owner), hv = m && m.hv && m.hv.y === S.year ? m.hv.f : 1; for (const k in P.ecoPr) { const i = ix[k]; if (i != null) own[i] = P.ecoPr[k] * MT.CUT * (i === gi ? E.HARVEST[mo] * hv : 1); } }
+      const p = MT.path(pid); let to = null, bd = Infinity;
+      for (const t of by[T(pid).r] || []) if (!cut[t] && p.d[t] < bd) { bd = p.d[t]; to = t; }
+      for (let i = 0; i < nk; i++) { const rest = Math.max(0, made[pid][i] - own[i]); if (to != null) made[to][i] += rest; made[pid][i] = Math.min(made[pid][i], own[i]); }
     }
     for (const r of rs) {
       const ts = by[r.id]; if (!ts || !r.forces || !r.forces.divs) continue;
