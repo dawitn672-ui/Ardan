@@ -13,7 +13,7 @@ export default [
       ['need=(k==="attack"?1.05:ratio>1.15?1.25:1.6)-Math.min(.45,Math.max(0,quiet-30)/200)', 'need=((k==="attack"?1.05:ratio>1.15?1.25:1.6)-Math.min(.45,Math.max(0,quiet-30)/200))*A.GENERALS.need(a)'],
       ['+(def<1?25:0)+Math.min(30,(odds-1)*20)-(P.fort||0)*3', '+(def<1?25*A.GENERALS.weak(a):0)+Math.min(30,(odds-1)*20)-(P.fort||0)*3*A.GENERALS.weak(a)'],
       ['spear=Math.max(1,Math.round(ds.length/3))', 'spear=Math.max(1,Math.round(ds.length*A.GENERALS.spear(a)))'],
-      ['ready=d=>d.atk==null&&!d.path.length&&d.org>=A.divMaxOrg(d)*.7', 'prep=A.GENERALS.prep(a),ready=d=>d.atk==null&&!d.path.length&&d.org>=A.divMaxOrg(d)*Math.min(.95,.7*prep)&&A.GENERALS.rested(a,d)'],
+      ['ready=d=>d.atk==null&&!d.path.length&&d.org>=A.divMaxOrg(d)*.7', 'prep=A.GENERALS.prep(a),ready=d=>d.atk==null&&!d.path.length&&d.org>=A.divMaxOrg(d)*Math.min(.95,.7*prep)&&!A.GENERALS.held(a,d)'],
       ['(def<1||(d.plan||0)>=.09)', '(def<1||(d.plan||0)>=.09*prep)'],
     ],
   },

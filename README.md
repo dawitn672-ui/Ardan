@@ -67,6 +67,24 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 | `45-economy` | Economy | Goods made by the land, eaten by people and armies, carried by caravans; prices follow stocks, a famine triples bread, and the best trade loop no longer beats a farm |
 | `46-life-arcs` | Replayability | A middle-years undertaking and a last-years legacy for each path, scenes years apart whose choices carry forward; shown on the Life tab |
 | `47-realm-bible` | World | Each realm's want, fear, place and three customs; 102 customs the engine keeps (dues, rites, estates, weddings, naming, levies, wards), met first as a scene to keep or defy; words for every culture |
+| `48-fight-ladder` | Power | Every event fight audited against the ladder; 185 fight choices roll on fighting worth with honest odds, group fights on tier math, wounds that drop tiers, the math shown |
+| `49-body-mind` | Character | Wounds by body part, illness over months with treatment choices, traits earned by deeds with reasons, actions of each life stage, dead numbers folded; risky activities refused when hurt |
+| `50-arcs-kin` | Events | 13 family story arcs of 3–6 stages over years (a secret child, a blood feud, an heir's fall) |
+| `51-arcs-rivals` | Events | 13 arcs of rivals and ambition (a rival's rise, an apprentice who passes you, a moneylender), with the same people from first scene to last |
+| `52-arcs-world` | Events | 13 arcs of the world's troubles (plague, flood, siege, heresy) tied to real harvests and wars, some changing the map |
+| `53-arcs-things` | Events | 13 arcs of things with a history (a famous sword, a horse, a house) |
+| `54-voices` | Events | Sayings, oaths, greetings and words of rank for 24 cultures; NPC lines that match their traits |
+| `55-bonds` | Relationships | Weighted, fading history per bond that moves opinion and is cited; secrets and leverage; feuds carried by families and realms across rulers |
+| `56-realm-inside` | Diplomacy, Economy | Councils of named people with wants and fears; laws and taxes pushed by people; vassal deals and backed claimants; AI gold spent; the player's money sinks |
+| `57-world-chronicle` | World | A dated record of the whole run that scenes cite; "The world in your time" in the book and an Annals view |
+| `58-event-cut` | Events, Uniqueness | 836 weak release events retired by audit (a setting restores them); war screens shown only to those who can use them |
+| `59-tooltips` | UI | Nested tooltips on every number of the profile and top bar, by hover, tap or Enter |
+| `60-drill` | War | Drill per division gates formations and counters (a drilled wall beats a charge), and the report says so |
+| `61-illumination` | Visual art | A woodcut for every event, the Chronicle on vellum, ink and paper motion, synthesized sounds; the style guide is `docs/art/style-guide.md` |
+| `62-inked-map` | Visual art | The world map in ink on parchment, with more detail as you zoom, and standards with the house's charge for armies |
+| `63-miniatures` | Visual art | Portraits as painted miniatures: ink faces that age and scar, culture dress, poses, children and swaddled newborns |
+| `64-npc-beliefs` | Uniqueness | People and courts hold beliefs about you, others, battles and beasts, some false, which move opinion and can be corrected |
+| `65-mods` | Replayability | Player mods as JSON data: events and realm flavour, checked, escaped and recorded in the save |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
 How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.

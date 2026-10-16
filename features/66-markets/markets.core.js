@@ -40,8 +40,8 @@
   };
   const live = () => Object.values(A.S.realms).filter(r => r && r.alive && !r.isRebel);
   const liveR = rid => { const r = A.realm(rid); return r && r.alive && !r.isRebel ? r : null; };
-  // stores in the state are kept short: whole loads above 100, tenths below
-  const rnd = v => (v >= 100 ? Math.round(v) : Math.round(v * 10) / 10);
+  // stores in the state are kept short: whole loads above 100, tenths above 10, hundredths below
+  const rnd = v => (v >= 100 ? Math.round(v) : v >= 10 ? Math.round(v * 10) / 10 : Math.round(v * 100) / 100);
 
   MT.on = () => { const S = A.S; return !!(S && S.mt && S.mt.L && S.mt.L.length && S.prov); };
   const T = pid => A.S.mt.T[pid];
@@ -168,7 +168,7 @@
   // ---- the price at a town: the realm's (45's), times how the town's store stands against the town's need, compared
   // with how the realm's stands against the realm's
   MT.need = (pid, k) => { const nm = E.normal(A.mkt(T(pid).r), k); return Math.max(nm * nOf(pid, k), nm * 0.01); };
-  const relOf = (N, s, scR) => clamp(clamp(Math.pow(N / Math.max(s, N * 0.05), E.ELASTIC), E.LO, E.HI) / scR, MT.RLO, MT.RHI);
+  const relOf = (N, s, scR) => { const x = N / Math.max(s, N * 0.05); return clamp(clamp(E.ELASTIC === 0.5 ? Math.sqrt(x) : Math.pow(x, E.ELASTIC), E.LO, E.HI) / scR, MT.RLO, MT.RHI); };
   MT.rel = function (pid, k) {
     const t = pid != null && T(pid); if (!t || !t.s) return 1;
     const m = A.mkt(t.r); if (!m || !m.s) return 1;
@@ -207,8 +207,8 @@
     if (!S.mt || S.mt.v !== 1 || !S.mt.L || !S.mt.K || S.mt.K.join() !== ks.join() || S.mt.sig !== sigOf(S)) MT.build();
     const by = MT.byRealm(), mo = A.monthOf(A.today()).m, of = S.mt.of, ix = kix(), nk = ks.length;
     // hinterland production, people and armies, by town
-    const made = {}, pop = {}, men = {};
-    for (const pid of S.mt.L) { made[pid] = new Float64Array(nk); pop[pid] = 0; men[pid] = 0; }
+    const made = {}, pop = {}, men = {}, cut = {};
+    for (const pid of S.mt.L) { made[pid] = new Float64Array(nk); pop[pid] = 0; men[pid] = 0; cut[pid] = MT.shut(pid); }
     for (const P of S.prov) {
       const t = of[P.id]; if (t == null || t < 0 || !made[t] || T(t).r !== P.owner) continue;
       pop[t] += P.pop || 0;
@@ -229,15 +229,16 @@
     // town nearest it
     const cars = carLog && carLog.S === S ? carLog.list : [];
     carLog = null;
-    const moved = {};
+    const moved = {}, openOf = {};
+    for (const rid in by) openOf[rid] = by[rid].filter(t => !cut[t]);
     for (const c of cars) {
-      const fs = (by[c.f] || []).filter(t => !MT.shut(t)), tt = (by[c.t] || []).filter(t => !MT.shut(t));
-      if (!fs.length || !tt.length) continue;
+      const fs = openOf[c.f], tt = openOf[c.t];
+      if (!fs || !tt || !fs.length || !tt.length) continue;
       let src = fs[0], bs = -Infinity, dst = tt[0], bd = Infinity;
-      if (fs.length > 1) for (const t of fs) { const x = T(t).s ? MT.s(t, c.k) / Math.max(0.01, nOf(t, c.k)) : 0; if (x > bs) { bs = x; src = t; } }
+      const i = ix[c.k];
+      if (fs.length > 1) for (const t of fs) { const x = T(t); const v = x.s && x.n ? (x.s[i] || 0) / Math.max(0.001, x.n[i] != null ? x.n[i] : x.w || 0) : 0; if (v > bs) { bs = v; src = t; } }
       if (tt.length > 1) { const p = MT.path(src); for (const t of tt) { const dd = isFinite(p.d[t]) ? p.d[t] : A.wsDist(src, t) / 250; if (dd < bd) { bd = dd; dst = t; } } }
       c.fT = src; c.tT = dst;
-      const i = ix[c.k];
       (moved[src] = moved[src] || new Float64Array(nk))[i] -= c.n + (c.lost || 0);
       (moved[dst] = moved[dst] || new Float64Array(nk))[i] += c.n;
     }
@@ -250,34 +251,34 @@
       // the share of a good each town makes; a realm's workshops stand where their main input is made (45's rule)
       const madeShare = i => { let s = 0; for (const t of ts) s += made[t][i]; return ts.map((t, j) => (s > 0 ? made[t][i] / s : w[j])); };
       const shop = {}; for (const out in E.CHAINS) shop[out] = madeShare(ix[E.MAIN[out] === 'steel' ? 'iron' : E.MAIN[out]]);
-      ts.forEach((t, j) => { const x = T(t); x.w = Math.round(w[j] * 1e3) / 1e3; if (!x.s) { x.s = new Array(nk).fill(0); x.fresh = 1; } if (!x.n || x.n.length !== nk) x.n = new Array(nk).fill(x.w); x.h = {}; });
+      const To = ts.map(T), fresh = new Set(), need = new Float64Array(nt), sp = new Float64Array(nt), shopK = new Float64Array(nt);
+      ts.forEach((t, j) => { const x = T(t); x.w = Math.round(w[j] * 1e3) / 1e3; if (!x.s) { x.s = new Array(nk).fill(0); fresh.add(x); } if (!x.n || x.n.length !== nk) x.n = new Array(nk).fill(x.w); x.h = {}; });
       for (let i = 0; i < nk; i++) {
         const k = ks[i], armyK = war ? (E.ARMY[k] || 0) * army : 0, folk = Math.max(0, (d[k] || 0) - armyK);
         // what each town's people, armies and workshops need of k: its share of the realm's need
-        const shopK = new Float64Array(nt);
+        shopK.fill(0);
         for (const out in E.CHAINS) { const per = E.CHAINS[out][k]; if (!per) continue; const q = (m.cap && m.cap[out] || 0) * per / 1.25; for (let j = 0; j < nt; j++) shopK[j] += q * shop[out][j]; }
-        const need = ts.map((t, j) => folk * w[j] + armyK * arm[j] + shopK[j]), needAll = need.reduce((a, x) => a + x, 0);
-        ts.forEach((t, j) => { T(t).n[i] = Math.round((needAll > 0 ? need[j] / needAll : w[j]) * 1e3) / 1e3; });
+        let needAll = 0; for (let j = 0; j < nt; j++) { need[j] = folk * w[j] + armyK * arm[j] + shopK[j]; needAll += need[j]; }
+        for (let j = 0; j < nt; j++) To[j].n[i] = Math.round((needAll > 0 ? need[j] / needAll : w[j]) * 1e3) / 1e3;
         const tot = m.s[k] || 0;
-        if (nt === 1) { T(ts[0]).s[i] = tot; continue; }
+        if (nt === 1) { To[0].s[i] = tot; continue; }
         // a new town starts at its share of the realm's store
-        for (const t of ts) if (T(t).fresh) T(t).s[i] = tot * T(t).n[i];
+        for (const x of fresh) x.s[i] = tot * x.n[i];
         // the month at each town: what its hinterland made, what its people and armies used, what caravans carried
-        const sp = new Float64Array(nt); let sum = 0;
-        ts.forEach((t, j) => { sp[j] = Math.max(0, (T(t).s[i] || 0) + made[t][i] - (folk * w[j] + armyK * arm[j]) + (moved[t] ? moved[t][i] : 0)); sum += sp[j]; });
+        let sum = 0;
+        for (let j = 0; j < nt; j++) { const t = ts[j]; sp[j] = Math.max(0, (To[j].s[i] || 0) + made[t][i] - (folk * w[j] + armyK * arm[j]) + (moved[t] ? moved[t][i] : 0)); sum += sp[j]; }
         // the rest of the realm's month (its workshops, spoilage, a full store's limit, what made its harvest differ)
         // squares the towns with the realm: too much is taken from every town alike; too little is added where it is
         // made (for the chains' goods, where the workshops are), never into a town cut off
         if (sum > tot && sum > 0) { const f = tot / sum; for (let j = 0; j < nt; j++) sp[j] *= f; }
         else if (tot > sum) {
           const wt = E.CHAINS[k] ? shop[k] : madeShare(i);
-          let ws = 0, no = 0; ts.forEach((t, j) => { if (!MT.shut(t)) { ws += wt[j]; no++; } });
-          ts.forEach((t, j) => { const open = !MT.shut(t) || !no; sp[j] += open ? (tot - sum) * (ws > 0 ? wt[j] / ws : 1 / (no || nt)) : 0; });
+          let ws = 0, no = 0; for (let j = 0; j < nt; j++) if (!cut[ts[j]]) { ws += wt[j]; no++; }
+          for (let j = 0; j < nt; j++) if (!cut[ts[j]] || !no) sp[j] += (tot - sum) * (ws > 0 ? wt[j] / ws : 1 / (no || nt));
         }
-        ts.forEach((t, j) => { T(t).s[i] = sp[j]; });
+        for (let j = 0; j < nt; j++) To[j].s[i] = sp[j];
       }
-      for (const t of ts) delete T(t).fresh;
-      if (nt > 1) MT.cart(r, ts, ks);
+      if (nt > 1) MT.cart(r, ts.filter(t => !cut[t]), ks);
       for (const t of ts) { const s = T(t).s; for (let i = 0; i < nk; i++) s[i] = rnd(s[i] || 0); }
     }
     MT.siegeNews();
@@ -285,39 +286,46 @@
   // carters between a realm's open towns, where the price gap pays the road. Bandits take their expected share, more
   // on long roads and where the realm is in unrest (as 45's caravans, but with no dice); what they take is gone from
   // the realm's store too
-  MT.cart = function (r, ts, ks) {
-    const m = r.mkt, open = ts.filter(t => !MT.shut(t)); if (open.length < 2) return;
-    const roads = [], stab = r.stability == null ? 50 : r.stability, ix = kix();
+  MT.cart = function (r, open, ks) {
+    const m = r.mkt, hauled = new Map(); if (open.length < 2) return;
+    const roads = [], stab = r.stability == null ? 50 : r.stability, ix = kix(), To = open.map(T);
     for (let i = 0; i < open.length; i++) for (let j = i + 1; j < open.length; j++) {
       const a = open[i], b = open[j], R = MT.road(a, b); if (!R) continue;
       const st = clamp(Math.min(stab, 100 - Math.max(A.prov(a).unrest || 0, A.prov(b).unrest || 0)), 0, 100);
       roads.push([T(a), T(b), R, Math.min(0.5, Math.pow(1 - st / 100, 2) * R.km / 6000 * (R.sea ? 0.5 : 1)) * 0.275]);
     }
     for (const k of ks) {
-      const i = ix[k], base = G()[k].base, pk = m.p[k], nm = E.normal(m, k), scR = E.scarcity(m, k);
+      const i = ix[k], base = G()[k].base, pk = m.p[k], nm = E.normal(m, k);
+      // a good the realm hardly uses is carted along with the rest: each town holds its share
+      if (nm < 2) { let tot = 0, ns = 0; for (const t of To) { tot += t.s[i] || 0; ns += t.n[i] || 0; } if (ns > 0) for (const t of To) t.s[i] = tot * (t.n[i] || 0) / ns; continue; }
+      const scR = E.scarcity(m, k), span = pk * (MT.RHI - MT.RLO);
       const pr = (N, s) => pk * relOf(N, s, scR);
       const need = t => Math.max(nm * (t.n[i] != null ? t.n[i] : t.w || 0), nm * 0.01);
       for (const [a, b, R, loss] of roads) {
-        const cost = base * R.f, Na = need(a), Nb = need(b), Sa = a.s[i] || 0, Sb = b.s[i] || 0;
+        const cost = base * R.f; if (cost >= span) continue;
+        const Na = need(a), Nb = need(b), Sa = a.s[i] || 0, Sb = b.s[i] || 0;
+        const pa = pr(Na, Sa), pb = pr(Nb, Sb);
+        // a gap within a fiftieth of the price beyond the carting is not worth a cart
+        if (Math.abs(pa - pb) - cost <= pk * 0.02) continue;
         let src = a, dst = b, N1 = Na, N2 = Nb, S1 = Sa, S2 = Sb;
-        if (pr(Na, Sa) > pr(Nb, Sb)) { src = b; dst = a; N1 = Nb; N2 = Na; S1 = Sb; S2 = Sa; }
+        if (pa > pb) { src = b; dst = a; N1 = Nb; N2 = Na; S1 = Sb; S2 = Sa; }
         const qmax = Math.min(S1 - MT.KEEP * N1, N2 * 2);
         if (!(qmax > 0.05)) continue;
         const gap = q => pr(N2, S2 + q * (1 - loss)) - pr(N1, S1 - q) - cost;
-        if (!(gap(0) > 0)) continue;
         // the load that would close the gap down to the carting, found by halving
         let lo = 0, hi = qmax;
         if (gap(qmax) > 0) lo = qmax;
-        else for (let it = 0; it < 12; it++) { const mid = (lo + hi) / 2; if (gap(mid) > 0) lo = mid; else hi = mid; }
+        else for (let it = 0; it < 5; it++) { const mid = (lo + hi) / 2; if (gap(mid) > 0) lo = mid; else hi = mid; }
         const q = MT.DAMP * lo;
         if (!(q > 0.05)) continue;
         src.s[i] = S1 - q; dst.s[i] = S2 + q * (1 - loss);
         if (loss > 0) m.s[k] = Math.max(0, (m.s[k] || 0) - q * loss);
-        dst.h[k] = Math.round((dst.h[k] || 0) + q * (1 - loss)); src.h[k] = Math.round((src.h[k] || 0) - q);
-        if (!dst.h[k]) delete dst.h[k];
-        if (!src.h[k]) delete src.h[k];
+        (hauled.get(dst) || hauled.set(dst, new Float64Array(ks.length)).get(dst))[i] += q * (1 - loss);
+        (hauled.get(src) || hauled.set(src, new Float64Array(ks.length)).get(src))[i] -= q;
       }
     }
+    // what was carted in and out, for the market card
+    for (const [t, row] of hauled) { const h = {}; for (let i = 0; i < row.length; i++) { const n = Math.round(row[i]); if (n) h[ks[i]] = n; } t.h = h; }
   };
   // a town under siege: its bread, once a year, in the news
   MT.siegeNews = function () {
@@ -364,18 +372,62 @@
     try { const pid = MT.townFor(rid); if (pid != null) return Math.max(0.6, d * Math.sqrt(Math.max(0.1, nOf(pid, k)))); } catch (e) {}
     return d;
   };
-  // the player's buying and selling move the town's stock (45 moves the realm's)
+  // a load the player sells or buys moves the town's own store, and so its price: n loads sold into a town fetch the
+  // price along the way from its store now to its store plus n, as a share of the price quoted now (and bought, from
+  // its store down to its store less n). Where a town uses a hundred loads a month this is the release's slide or
+  // less; where it uses a twentieth of a load, one load of pearls is years of its need and fetches what that is worth
+  MT.curve = function (pid, k, n, dir) {
+    const t = pid != null && T(pid); if (!t || !t.s || !(n > 0)) return n || 0;
+    const m = A.mkt(t.r); if (!m || !m.s) return n;
+    const N = MT.need(pid, k), S = MT.s(pid, k), scR = E.scarcity(m, k), r0 = relOf(N, S, scR);
+    let sum = 0;
+    for (let j = 0; j < n; j++) sum += relOf(N, Math.max(0, S + dir * (j + 0.5)), scR) / r0;
+    return sum;
+  };
   const buy = A.buyGood;
   A.buyGood = function (k) {
-    const pc = A.pc(), before = (A.cargo(pc)[k] || 0), r = buy.apply(this, arguments);
-    try { const got = (A.cargo(pc)[k] || 0) - before, pid = MT.townFor(A.homeMkt(pc), pc); if (got > 0 && pid != null) setS(pid, k, Math.max(0, MT.s(pid, k) - got)); } catch (e) {}
+    const pc = A.pc(), before = (A.cargo(pc)[k] || 0), on = MT.on(), rid = A.homeMkt(pc), pid = on ? MT.townFor(rid, pc) : null;
+    const quote = on && GD.GOODS[k] ? A.buyPrice(rid, k) : 0, coin = pc.coin, r = buy.apply(this, arguments);
+    try {
+      const got = (A.cargo(pc)[k] || 0) - before;
+      if (got > 0 && pid != null) {
+        // what the town's store asks beyond the release's slide
+        const extra = Math.min(Math.max(0, pc.coin), Math.max(0, Math.round(quote * MT.curve(pid, k, got, -1) - (coin - pc.coin))));
+        if (extra > 0) { pc.coin -= extra; r.msg = `You buy ${got} load${got > 1 ? 's' : ''} of ${G()[k].name.toLowerCase()} for ${A.coin(coin - pc.coin)}; the town has little to spare.`; }
+        setS(pid, k, Math.max(0, MT.s(pid, k) - got));
+      }
+    } catch (e) {}
     return r;
   };
   const sell = A.sellGood;
   A.sellGood = function (k, n, rid) {
-    const pc = A.pc(), before = (A.cargo(pc)[k] || 0), r = sell.apply(this, arguments);
-    try { const gone = before - (A.cargo(pc)[k] || 0), pid = MT.townFor(rid || A.homeMkt(pc), pc); if (gone > 0 && pid != null) setS(pid, k, MT.s(pid, k) + gone); } catch (e) {}
+    const pc = A.pc(), before = (A.cargo(pc)[k] || 0), on = MT.on(), at2 = rid || A.homeMkt(pc), pid = on ? MT.townFor(at2, pc) : null;
+    const quote = on && GD.GOODS[k] ? A.sellPrice(at2, k) : 0, r = sell.apply(this, arguments);
+    try {
+      const gone = before - (A.cargo(pc)[k] || 0);
+      if (gone > 0 && pid != null) {
+        const fair = Math.round(quote * MT.curve(pid, k, gone, 1)), cut = r && r.ok ? Math.max(0, r.got - fair) : 0;
+        if (cut > 0) {
+          pc.coin -= cut; r.got -= cut; pc.flags.traded = Math.max(0, (pc.flags.traded || 0) - cut);
+          r.msg = `You sell ${gone} load${gone > 1 ? 's' : ''} of ${G()[k].name.toLowerCase()} for ${A.coin(r.got)}; ${MT.name(pid)} has more than it needs.`;
+        }
+        setS(pid, k, MT.s(pid, k) + gone);
+      }
+    } catch (e) {}
     return r;
+  };
+  // the trip planner reckons the same way
+  const sale = (pid, rid, k, n, there) => { let rel = 0; for (let i = 0; i < n; i++) rel += Math.max(0.3, 1 - i * 0.6 / A.mktDepth(rid, k)); return Math.max(0, there * (rel - MT.curve(pid, k, n, 1))); };
+  const runPlan = A.runPlan;
+  A.runPlan = function (dest) {
+    const P = runPlan.apply(this, arguments);
+    if (!P || !MT.on()) return P;
+    try {
+      const pid = MT.townFor(dest);
+      let cut = 0; for (const l of P.lines || []) cut += sale(pid, dest, l.k, l.n, l.there);
+      if (cut > 0) { P.sale = Math.round(P.sale - cut); P.net = Math.round(P.net - cut * (1 - P.toll)); }
+    } catch (e) {}
+    return P;
   };
   // a trade run to a realm leaves from the player's town and goes to that realm's capital: the carting is that road's,
   // and never less than 45's capital-to-capital road
@@ -426,6 +478,7 @@
       for (const k in cargo) {
         const n = cargo[k]; let s = 0;
         for (let i = 0; i < n; i++) s += A.sellPrice(rid, k) * Math.max(0.3, 1 - i * 0.6 / A.mktDepth(rid, k));
+        s = Math.min(s, A.sellPrice(rid, k) * MT.curve(pid, k, n, 1));
         sale += s; carts += n * G()[k].base * R.f;
         lines.push({ k, n, there: A.sellPrice(rid, k) });
       }
@@ -463,7 +516,9 @@
       const room = A.carryCap(pc) - A.cargoLoad(pc), cart = G()[g].base * P.R.f;
       let n = 0, spent = 0;
       MT.at(pid, () => {
-        for (; n < room;) { const c = A.buyPrice(P.rid, g) * (1 + n * 0.6 / A.mktDepth(P.rid, g)) + cart; if (spent + c > Math.max(0, pc.coin) * 0.8) break; spent += c; n++; }
+        const q = A.buyPrice(P.rid, g), cost = j => { let c = 0; for (let i = 0; i < j; i++) c += q * (1 + i * 0.6 / A.mktDepth(P.rid, g)); return Math.max(c, q * MT.curve(pid, g, j, -1)) + j * cart; };
+        while (n < room && cost(n + 1) <= Math.max(0, pc.coin) * 0.8) n++;
+        spent = n ? cost(n) : 0;
         if (n) {
           const m = A.mkt(P.rid);
           m.p[g] *= 1 + n * 0.3 / A.mktDepth(P.rid, g);

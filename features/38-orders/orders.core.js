@@ -30,13 +30,13 @@
     // and four decisions (GO-ARMY-DECIDE), because a bar only delays an attack, it does not call it off:
     // open: take the offensive only when the front's odds pass the general's stance (1.15 x need), else only free
     // his own land; commit: the most divisions sent at one defended province (the release: 4); fort: each step of
-    // walls on a defended province multiplies the odds wanted by 1 + fort x this; rest: days a division stays out
-    // of the attack after a fight it was in
+    // walls on a defended province multiplies the odds wanted by 1 + fort x this; reserve: the share of his
+    // divisions he keeps out of every attack
     DIALS: {
-      bold: { need: 0.88, spear: 1 / 2, prep: 0.7, weak: 1, every: 2, open: false, commit: 6, fort: 0, rest: 0 },
-      cautious: { need: 1.3, spear: 2 / 9, prep: 1.25, weak: 1, every: 4, open: true, commit: 4, fort: 0, rest: 15 },
-      cunning: { need: 1.1, spear: 2 / 9, prep: 1, weak: 2.2, every: 3, open: false, commit: 4, fort: 0.5, rest: 0 },
-      steady: { need: 1, spear: 1 / 3, prep: 1, weak: 1, every: 3, open: false, commit: 4, fort: 0, rest: 0 },
+      bold: { need: 0.88, spear: 1 / 2, prep: 0.7, weak: 1, every: 2, open: false, commit: 6, fort: 0, reserve: 0 },
+      cautious: { need: 1.3, spear: 2 / 9, prep: 1.25, weak: 1, every: 4, open: true, commit: 4, fort: 0, reserve: 1 / 3 },
+      cunning: { need: 1.1, spear: 2 / 9, prep: 1, weak: 2.2, every: 3, open: false, commit: 4, fort: 0.5, reserve: 0 },
+      steady: { need: 1, spear: 1 / 3, prep: 1, weak: 1, every: 3, open: false, commit: 4, fort: 0, reserve: 0 },
     },
     NAMES: { bold: 'Bold', cautious: 'Cautious', cunning: 'Cunning', steady: 'Steady' },
     WAIT: 60,      // days before an order's outcome is known
@@ -67,15 +67,19 @@
   G.opens = (a, ratio) => !G.DIALS[G.of(a)].open || ratio > 1.15 * G.need(a);
   G.commit = a => G.DIALS[G.of(a)].commit || 4;
   G.fortNeed = (a, P) => 1 + (G.DIALS[G.of(a)].fort || 0) * ((P && P.fort) || 0);
-  G.rested = (a, d) => { const n = G.DIALS[G.of(a)].rest; return !n || d.gtFought == null || A.absDay() - d.gtFought >= n; };
-  // the day each division last fought (d.gtFought, optional), for the rest a cautious general gives it
-  const fightEnd = A.fightEnd;
-  A.fightEnd = function (pid) {
-    try {
-      const F = A.S.fights && A.S.fights[pid];
-      if (F) { const now = A.absDay(); for (const id of (F.aIds || []).concat(F.dIds || [])) { const d = A.divById(id); if (d) d.gtFought = now; } }
-    } catch (e) {}
-    return fightEnd.apply(this, arguments);
+  // the reserve: the share of his divisions a general never sends into an attack (they hold their posts and fight
+  // whoever comes to them). Which ones is fixed by their ids, so the reserve stays the same men (no random draw)
+  const hashId = x => { let h = 7; x = String(x); for (let i = 0; i < x.length; i++) h = (h * 31 + x.charCodeAt(i)) | 0; return h >>> 0; };
+  let RES = null;
+  G.held = function (a, d) {
+    const k = G.DIALS[G.of(a)].reserve;
+    if (!k || !a || !d) return false;
+    const key = a.id + '|' + A.S.warClock + '|' + a.divs.length;
+    if (!RES || RES.key !== key) {
+      const ids = a.divs.slice().sort((x, y) => hashId(x) - hashId(y) || (x < y ? -1 : 1));
+      RES = { key, set: new Set(ids.slice(ids.length - Math.floor(ids.length * k))) };
+    }
+    return RES.set.has(d.id);
   };
 
   // the plan: where the army is sending divisions, and where it holds
