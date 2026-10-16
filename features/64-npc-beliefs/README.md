@@ -97,7 +97,7 @@ The person view gains three short lists under "Between you". A line is marked tr
 | `nbCourtWeighs` | Aldmark's court believes two stories of Varenna's ruler: opinion −20 → **−26** (the cap), and the odds of war a month 0.0004 → 0.0005. The tooltip names it. Once the court sees through the stories, −20 again |
 | `nbBattlesAndBeasts` | Six battles your realm won. False accounts: the winners' people **100%** (they believe their chronicle's count), the losers' 93% (37 of 59 claim they held the field), the far 49% (24 with the count run high). You know the truth. Of 9 hill beasts, 40 hunters know the truth of 79 and have seen 171; 40 scribes, 18 and 44 |
 | `nbDeterminism` | 14 years twice, the second time drawing the life tab and four person views every step: the same beliefs (27 people, 104 claims). The same after a save round trip. A save stripped of all of it loads and plays 3 years |
-| `nbInRealLives` | 3 bot lives, 83 years: 127 people hold 776 beliefs at the end, 30% false; 20 belief scenes, 16 of them driven by a false belief; 31,676 bytes in all |
+| `nbInRealLives` | 3 bot lives, 83 years: 127 people hold 776 beliefs at the end, 30% false; 20 belief scenes, 16 of them driven by a false belief; 31,454 bytes in all |
 
 On the full build (59 features) the same tests pass. The numbers move a little: by distance, 13%, 46%, 57% and 87% false; one corrected in each circle clears 13 of 36; in 3 bot lives, 38% of 576 beliefs are false and 15 of 17 scenes are driven by a false one. The court test finds Aldmark and Sylvaran, where the odds of war a month go from 0.1474 to 0.1610.
 

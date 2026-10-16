@@ -196,7 +196,7 @@ That is 50% done and 33% partial. 6% is not started but buildable here, and 11% 
 | --- | --- | --- | --- |
 | 1 | Name the core in one line | ✅ | `docs/north-star` |
 | 2 | Signature 1: the Chronicle | ✅ | 22-chronicle: chapters in a chronicler's voice, exportable (more to do: corrections, a period voice for every line) |
-| 3 | Signature 2: belief versus truth everywhere | ◐ | 26-belief-truth: beasts, secrets, far news and your own legend; NPCs don't yet hold beliefs of their own, so not "everywhere" |
+| 3 | Signature 2: belief versus truth everywhere | ◐ | 26-belief-truth: beasts, secrets, far news and your own legend. 64-npc-beliefs: the people around you and every court hold claims about you, others, battles and beasts, and some are false: 12% at home, 37% in the realm, 63% next door, 83% further off. Opinion follows the belief (a false tale +10 where the true deed gives +6), corrections spread when someone sets them right, and you can hold a false belief and find out. 2.7 belief scenes a decade, 2.2 driven by a falsehood. The wider world holds nothing, and NPCs don't act on beliefs about each other beyond opinion |
 | 4 | Signature 3: both scales at once | ◐ | 34-both-scales: after every war-map fight you were in, three panels (what you saw, the front, what the chronicle will say) that disagree; registered. In-fight choices at every rank (War 1) are still the release's |
 | 5 | Cut what dilutes the core | ✗ | |
 

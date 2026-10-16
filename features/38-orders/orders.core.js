@@ -27,11 +27,16 @@
     // every: the army thinks once in so many ticks of the war clock (the release: 3). Measured over 96 wars a temper,
     // the four dials alone moved nothing: a division is rarely ready, next to the enemy and near the odds bar all at
     // once, so the tempo is what a temper mostly is
+    // and four decisions (GO-ARMY-DECIDE), because a bar only delays an attack, it does not call it off:
+    // open: take the offensive only when the front's odds pass the general's stance (1.15 x need), else only free
+    // his own land; commit: the most divisions sent at one defended province (the release: 4); fort: each step of
+    // walls on a defended province multiplies the odds wanted by 1 + fort x this; rest: days a division stays out
+    // of the attack after a fight it was in
     DIALS: {
-      bold: { need: 0.88, spear: 1 / 2, prep: 0.7, weak: 1, every: 2 },
-      cautious: { need: 1.3, spear: 2 / 9, prep: 1.25, weak: 1, every: 4 },
-      cunning: { need: 1.1, spear: 2 / 9, prep: 1, weak: 2.2, every: 3 },
-      steady: { need: 1, spear: 1 / 3, prep: 1, weak: 1, every: 3 },
+      bold: { need: 0.88, spear: 1 / 2, prep: 0.7, weak: 1, every: 2, open: false, commit: 6, fort: 0, rest: 0 },
+      cautious: { need: 1.3, spear: 2 / 9, prep: 1.25, weak: 1, every: 4, open: true, commit: 4, fort: 0, rest: 15 },
+      cunning: { need: 1.1, spear: 2 / 9, prep: 1, weak: 2.2, every: 3, open: false, commit: 4, fort: 0.5, rest: 0 },
+      steady: { need: 1, spear: 1 / 3, prep: 1, weak: 1, every: 3, open: false, commit: 4, fort: 0, rest: 0 },
     },
     NAMES: { bold: 'Bold', cautious: 'Cautious', cunning: 'Cunning', steady: 'Steady' },
     WAIT: 60,      // days before an order's outcome is known
@@ -59,6 +64,19 @@
   G.weak = a => G.DIALS[G.of(a)].weak;
   G.prep = a => G.DIALS[G.of(a)].prep;
   G.every = a => G.DIALS[G.of(a)].every || 3;
+  G.opens = (a, ratio) => !G.DIALS[G.of(a)].open || ratio > 1.15 * G.need(a);
+  G.commit = a => G.DIALS[G.of(a)].commit || 4;
+  G.fortNeed = (a, P) => 1 + (G.DIALS[G.of(a)].fort || 0) * ((P && P.fort) || 0);
+  G.rested = (a, d) => { const n = G.DIALS[G.of(a)].rest; return !n || d.gtFought == null || A.absDay() - d.gtFought >= n; };
+  // the day each division last fought (d.gtFought, optional), for the rest a cautious general gives it
+  const fightEnd = A.fightEnd;
+  A.fightEnd = function (pid) {
+    try {
+      const F = A.S.fights && A.S.fights[pid];
+      if (F) { const now = A.absDay(); for (const id of (F.aIds || []).concat(F.dIds || [])) { const d = A.divById(id); if (d) d.gtFought = now; } }
+    } catch (e) {}
+    return fightEnd.apply(this, arguments);
+  };
 
   // the plan: where the army is sending divisions, and where it holds
   const think = A.armyThink;
