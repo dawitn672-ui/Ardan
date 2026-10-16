@@ -99,7 +99,9 @@ The person view gains three short lists under "Between you". A line is marked tr
 | `nbDeterminism` | 14 years twice, the second time drawing the life tab and four person views every step: the same beliefs (27 people, 104 claims). The same after a save round trip. A save stripped of all of it loads and plays 3 years |
 | `nbInRealLives` | 3 bot lives, 83 years: 127 people hold 776 beliefs at the end, 30% false; 20 belief scenes, 16 of them driven by a false belief; 31,676 bytes in all |
 
-The core suites (`boot`, `lives`, `saveRoundTrip`, `uiSmoke`) pass alongside. The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs` (0 obviously best), on that build and on the full build.
+On the full build (59 features) the same tests pass. The numbers move a little: by distance, 13%, 46%, 57% and 87% false; one corrected in each circle clears 13 of 36; in 3 bot lives, 38% of 576 beliefs are false and 15 of 17 scenes are driven by a false one. The court test finds Aldmark and Sylvaran, where the odds of war a month go from 0.1474 to 0.1610.
+
+The core suites (`boot`, `lives`, `saveRoundTrip`, `uiSmoke`) pass alongside on both builds. The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs` (0 obviously best), on that build and on the full build.
 
 `node features/64-npc-beliefs/bench.mjs <built.html>`, the same build. 8 bot lives, 345 years, a census every 5 years (75 censuses):
 
@@ -146,7 +148,7 @@ The core suites (`boot`, `lives`, `saveRoundTrip`, `uiSmoke`) pass alongside. Th
 ## Limits
 
 - **Only around you.** The people whose beliefs move are the ones you know and those close to them (at most 140), and the courts. The rest of the world holds nothing, except the kin at a death among the people you know. NPCs do not act on what they believe of each other beyond their opinion: no NPC accuses another, and no feud between two NPCs starts from a story.
-- **Courts weigh little.** A court's beliefs move a realm's opinion of another by at most 6 points. In the test case that raised the odds of war a month from 0.0004 to 0.0005. It is a nudge on the AI, not a cause of wars, and no war has yet been traced to a court's false belief.
+- **Courts weigh little.** A court's beliefs move a realm's opinion of another by at most 6 points. In the tests that raised the odds of war a month from 0.0004 to 0.0005 (×1.25) on one build and from 0.1474 to 0.1610 (×1.09) on the full build. It is a nudge on the AI, not a cause of wars, and no war has yet been traced to a court's false belief.
 - **Few kinds, templated words.** There are eight kinds of claim. A twist has three wordings, a secret five, and a tale is 26's tale. A deed taken from a scene uses 55-bonds' mechanical past tense of the choice ("pulled Odo out, in the matter of the flooded mill"), which reads well for most labels and is skipped when it would not. A writer's pass on the commonest lines would help.
 - **Battles are winners and counts.** The accounts disagree on who won and how many fell. No account invents a battle, moves it or changes who led it.
 - **Your knowledge is wrong only about people.** You can believe a false story of someone, and find out. You cannot yet be wrong about a battle you heard of from afar, beyond 26's hearsay, or about a beast beyond 26's tales.

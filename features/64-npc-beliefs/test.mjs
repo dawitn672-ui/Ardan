@@ -198,7 +198,7 @@ export default {
       for (const ev of Object.keys(stage)) {
         const E = A.EV[ev]; if (!E) { out.raw.push(ev + ': missing'); continue; }
         let seen = false;
-        for (let i = 0; i < E.choices.length; i++) for (const win of E.choices[i].check ? [1, 0] : [null]) {
+        for (let i = 0; i < E.choices.length; i++) for (const win of E.choices[i].check ? [1, 0] : [1]) {   // every roll in the choice goes its way
           A.deserialize(JSON.parse(base));
           const ctx = stage[ev]();
           const p = A.pc(); if (!E.trigger && !E.cond(p, A.C)) { out.raw.push(ev + ': cond false'); continue; }
@@ -271,9 +271,9 @@ export default {
     const r = await pg.evaluate(() => {
       const NB = A.NPCB; NBT.adult(6405, { realm: 'POL-05' });
       const live = Object.values(A.S.realms).filter(x => x.alive && !x.isRebel && x.id !== A.pc().realm);
+      const pairs = [];
+      for (const x of live) for (const n of A.neighbors(x.id).map(A.realm)) if (n && n.alive && !n.isRebel && n.id !== A.pc().realm && A.realmProvs(x.id).length >= 3) pairs.push([x, n]);
       let a = null, b = null;
-      for (const x of live) { const n = A.neighbors(x.id).map(A.realm).find(y => y && y.alive && !y.isRebel && y.id !== A.pc().realm && A.realmProvs(x.id).length >= 3); if (n) { a = x; b = n; break; } }
-      const rel0 = A.relBetween(a.id, b.id);
       const odds = on => {
         NB.AI_ON = on;
         const S = A.S, keep = { wars: S.wars, chance: A.chance, preview: A.warPreview, shuffle: A.shuffle, rest: a.aiLastWar, ex: a.exhaustion, st: a.stability, tr: Object.assign({}, a.truce || {}) };
@@ -285,7 +285,8 @@ export default {
         try { A.aiWarCheck(); } finally { S.wars = keep.wars; A.chance = keep.chance; A.warPreview = keep.preview; A.shuffle = keep.shuffle; a.aiLastWar = keep.rest; a.exhaustion = keep.ex; a.stability = keep.st; a.truce = keep.tr; NB.AI_ON = true; }
         return p;
       };
-      A.setRelPair(a.id, b.id, -20);
+      // a pair whose ruler would weigh a war at all this month (some builds rule most pairs out first)
+      for (const [x, y] of pairs.slice(0, 40)) { a = x; b = y; A.setRelPair(a.id, b.id, -20); if (odds(true) > 0) break; }
       const pOff0 = odds(true);
       const s1 = NB.make('S', b.ruler, 'oath', 0, -10), s2 = NB.make('S', b.ruler, 'crime', 0, -12);
       NB.courtAdopt(a.id, s1, 1); NB.courtAdopt(a.id, s2, 1);
