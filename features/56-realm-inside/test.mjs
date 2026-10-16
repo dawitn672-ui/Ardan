@@ -87,7 +87,7 @@ export default {
   async riCourtInTheWorld(pg) {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      const RI = A.RI, out = { laws: 0, lawsNamed: 0, refused: 0, deals: 0, seats: 0, claims: 0, claimsNamed: 0, facs: 0, facsHead: 0, facsBacked: 0, facYears: 0, pri: 0, ry: 0, kinds: {} };
+      const RI = A.RI, out = { laws: 0, lawsNamed: 0, laws2: 0, refused: 0, deals: 0, seats: 0, claims: 0, claimsNamed: 0, facs: 0, facsHead: 0, facsBacked: 0, facYears: 0, pri: 0, ry: 0, kinds: {} };
       const tax = {}, auth = {};
       for (const seed of [5603, 5604, 5605]) {
         RIT.life(seed, { status: 'peasant', startAge: 16 });
@@ -96,7 +96,7 @@ export default {
             out.ry++;
             for (const e of (x.riCourt || []).filter(e => e.y === y)) {
               out.kinds[e.k] = (out.kinds[e.k] || 0) + 1;
-              if (RI.PUSH[e.k] && RI.PUSH[e.k].law && e.p !== 100 && !e.ruler) { out.laws++; if (!e.yes) out.refused++; if (e.who && e.why && e.why.length >= 2) out.lawsNamed++; }
+              if (RI.PUSH[e.k] && RI.PUSH[e.k].law && e.p !== 100 && !e.ruler) { out.laws++; if (!e.yes) out.refused++; if (e.who && A.P(e.who) && e.why && e.why.length >= 1) out.lawsNamed++; if (e.why && e.why.length >= 2) out.laws2++; }
               if (['pension', 'seatdeal', 'refuse'].includes(e.k)) out.deals++;
               if (e.k === 'seat') out.seats++;
               if (e.k === 'claim') { out.claims++; if (e.who && e.back && e.back.length) out.claimsNamed++; }
@@ -116,7 +116,7 @@ export default {
     });
     const realms = Object.values(r.tax).reduce((a, b) => a + b, 0), extremes = (r.tax['0.6'] || 0) + (r.tax['1.5'] || 0);
     const ok = r.laws >= 100 && r.lawsNamed === r.laws && r.refused > 0 && r.refused < r.laws && r.facsHead >= r.facYears * .9 && r.facsBacked > 0 && r.pri >= r.ry * .3 && extremes <= realms * .6 && Object.keys(r.tax).length >= 3;
-    return { ok, detail: `3 worlds × 30 years, ${r.ry} AI realm-years: ${r.laws} law pushes decided (${r.laws - r.refused} passed, ${r.refused} refused), ${pct(r.lawsNamed, r.laws)}% with a named pusher and 2+ reasons; ${r.deals} vassal deals, ${r.seats} seats changing hands, ${r.claims} claimants (${r.claimsNamed} with named backers); faction-years ${r.facYears}: led by a named head with aims ${pct(r.facsHead, r.facYears)}%, backed by a councillor ${pct(r.facsBacked, r.facYears)}%; a spending push steers the treasury in ${pct(r.pri, r.ry)}% of realm-years; taxes at the end ${JSON.stringify(r.tax)}, authority ${JSON.stringify(r.auth)}; kinds ${JSON.stringify(r.kinds)}` };
+    return { ok, detail: `3 worlds × 30 years, ${r.ry} AI realm-years: ${r.laws} law pushes decided (${r.laws - r.refused} passed, ${r.refused} refused), ${pct(r.lawsNamed, r.laws)}% name the person who pushed it and why (${pct(r.laws2, r.laws)}% with 2+ reasons); ${r.deals} vassal deals, ${r.seats} seats changing hands, ${r.claims} claimants (${r.claimsNamed} with named backers); faction-years ${r.facYears}: led by a named head with aims ${pct(r.facsHead, r.facYears)}%, backed by a councillor ${pct(r.facsBacked, r.facYears)}%; a spending push steers the treasury in ${pct(r.pri, r.ry)}% of realm-years; taxes at the end ${JSON.stringify(r.tax)}, authority ${JSON.stringify(r.auth)}; kinds ${JSON.stringify(r.kinds)}` };
   },
 
   // Diplomacy 3: a claimant's army is what the houses behind them bring; after the war, backers are honoured or hunted

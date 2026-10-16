@@ -20,7 +20,13 @@ The plan says the art "hits 10 when one hand-made style covers every screen, so 
   The same event in the same year always draws the same picture. Events with no shape (about a fifth) get a scene guessed from their own words ("a tutor ... letters" → the open book). Only 5% fall back to the ornament.
 - **The Chronicle on vellum:** parchment, vermilion headings, illuminated initials. The book tab is set as a page of a book.
 - **The map tinted to vellum,** with darkened edges and an inked compass rose. The canvas is still the release's.
-- **Motion:** a woodcut inks in once when its scene first opens; there is no motion when the system asks for reduced motion.
+- **Motion, in ink and paper:**
+  - a woodcut inks in once, when its scene first opens;
+  - the lines written into the story since you last looked ink in;
+  - a new year's block turns in like a page;
+  - a flash of steel crosses a duel or battle the first time it opens.
+
+  Nothing moves when the system asks for reduced motion.
 - **Sound, off by default:** a quill when you choose, paper when you close a scene, a wax seal on save, a bell at the new year, steel when a battle or duel opens. It is synthesized with Web Audio, with no files and nothing fetched.
 - **Three menu settings:** Woodcuts on events, The Chronicle on vellum, Sound (patch `IL-MENU`).
 - Found and fixed on the way (in 27-accessibility, patch `A11Y-LOG-FOCUS`): the story log could not be scrolled by keyboard once a story outgrew the screen.
@@ -32,6 +38,7 @@ The plan says the art "hits 10 when one hand-made style covers every screen, so 
 | `woodcutsEveryShape` | 25 scenes, each valid SVG in three seasons; the same key draws the same picture; 12 events give 300 distinct pictures (12 per scene); average 9 KB, largest 15 KB |
 | `eventsGetPictures` | Of 418 events sampled, 342 are pictured by their own shape, 55 by a guess from their words, 21 (5%) by the ornament; the toggle removes the picture |
 | `renderPure` | Drawing an event with its woodcut, the Chronicle and the map leaves the state and the random stream unchanged |
+| `motion` | The first drawing inks nothing in; two new lines ink in, and the next drawing is still; a new year turns in one block; a duel flashes steel on its first drawing and not its second; drawing it changes no state and draws no number |
 | `settingsAndSound` | The menu has the three toggles; no audio context is made until sound is turned on |
 | `illuminationAxe` | 0 axe violations (WCAG 2.1 AA) on the Chronicle on vellum, the inked map, and an event with its woodcut |
 

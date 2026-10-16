@@ -295,6 +295,36 @@ export default {
     return { ok, detail: `render pure ${r.pure}; side profile shows the body ${r.side.body} and a trait's reason ${r.side.chip}; full profile: body with costs ${r.prof.body}, who you are ${r.prof.who}, aging ${r.prof.aging}; stat tooltip has the curve ${r.tip}` };
   },
 
+  async woundScenesPlay(pg) {
+    // each scene a lasting wound brings: eligible once the body carries it, and every choice plays cleanly
+    const r = await pg.evaluate(() => {
+      const need = { bm_wb_bad_hand: ['lost_fingers'], bm_wb_march_leg: ['limp'], bm_wb_lungs: ['lungs'], bm_wb_one_eye: ['lost_eye'], bm_wb_back: ['back'], bm_wb_face: ['scar_face'],
+        bm_wb_weather: ['limp'], bm_wb_hook: ['lost_hand'], bm_wb_splint_arm: ['broken_arm'], bm_wb_splint_leg: ['broken_leg'] };
+      const out = {}; const errs = []; const ce = console.error; console.error = (...a) => errs.push(a.join(' ').slice(0, 120));
+      for (const id in need) {
+        A.newGame({ seed: 4995, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+        const pc = A.pc(); pc.born = A.S.year - 40; pc.skills.craft = 30; pc.job = { c: 'farm', r: 0, y: 0, perf: 50, rep: 20 };
+        if (id === 'bm_wb_march_leg') pc.mil = { realm: pc.realm, rank: 0, merit: 0, arm: 'inf', battles: 0 };
+        const before = A.EV[id].cond(pc, A.C);
+        for (const w of need[id]) A.addWound(pc, w);
+        A.S.queue = [];
+        const after = A.EV[id].cond(pc, A.C);
+        const base = A.serialize(); let played = 0, raw = 0;
+        for (let i = 0; i < A.EV[id].choices.length; i++) {
+          A.deserialize(base); A.S.queue = [{ type: 'event', ev: id, ctx: {} }];
+          const v = A.eventView(A.S.queue[0]); if (v.skip) break;
+          if (T.raw.test(v.text + v.choices.map(c => c.t).join(' '))) raw++;
+          A.eventChoose(v.choices.findIndex(c => c.i === i)); if (T.raw.test((A.S.queue[0].result || {}).text || '')) raw++; A.eventClose(); played++;
+        }
+        out[id] = { before, after, played, raw };
+      }
+      console.error = ce;
+      return { out, errs };
+    });
+    const ok = Object.values(r.out).every(x => !x.before && x.after && x.played >= 3 && !x.raw) && !r.errs.length;
+    return { ok, detail: `${Object.keys(r.out).length} wound scenes: eligible only with the wound ${Object.values(r.out).filter(x => !x.before && x.after).length}, choices played ${Object.values(r.out).reduce((a, x) => a + x.played, 0)}, raw tokens ${Object.values(r.out).reduce((a, x) => a + x.raw, 0)}${r.errs.length ? '; errors ' + r.errs[0] : ''}` };
+  },
+
   async hurtBodyStaysHome(pg) {
     const r = await pg.evaluate(() => {
       T.enter({ seed: 4990, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 22 });

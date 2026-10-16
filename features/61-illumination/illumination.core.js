@@ -1,7 +1,8 @@
 // The look and sound of the chronicle (Road to Ten, Visual art 1, 5, 6, 7; docs/art/style-guide.md).
 //   - a woodcut at the head of every event (woodcut.core.js), inked in once when the scene first opens;
 //   - the Chronicle tab set as a vellum page: ink on parchment, rubricated headings, an illuminated initial;
-//   - small motion: new lines of the story ink in; nothing moves for a player who asks the system for reduced motion;
+//   - small motion: new lines of the story ink in, a new year turns in like a page, steel flashes across a fight as it
+//     opens; nothing moves for a player who asks the system for reduced motion;
 //   - sound, off until the player turns it on: a quill when you choose, a wax seal when you save, a bell at the new
 //     year, steel when a battle opens. All synthesized with Web Audio: no files, nothing fetched.
 // Everything here is the UI's: no random draws, no change to the game state. Settings live in UI.set (saved with the
@@ -34,7 +35,13 @@
   .il-compass{position:absolute;right:10px;bottom:10px;width:84px;height:84px;pointer-events:none;opacity:.92;filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
   [data-vellum="0"] .il-compass{display:none}
   @media (max-width:700px){.il-compass{width:54px;height:54px}}
-  @media (prefers-reduced-motion: reduce){.ink-in,.il-new{animation:none}}
+  .il-turn{animation:ilTurn .8s ease-out both;transform-origin:0 50%}
+  @keyframes ilTurn{from{opacity:0;transform:perspective(900px) rotateY(-28deg);filter:brightness(1.15)}to{opacity:1;transform:none;filter:none}}
+  .il-steel{position:absolute;inset:0;pointer-events:none;border-radius:inherit;overflow:hidden;z-index:3}
+  .il-steel::before{content:"";position:absolute;top:-20%;bottom:-20%;width:38%;left:-45%;transform:skewX(-22deg);background:linear-gradient(90deg,rgba(255,250,235,0) 0%,rgba(255,248,225,.55) 45%,rgba(185,138,42,.35) 55%,rgba(255,250,235,0) 100%);animation:ilSteel .75s cubic-bezier(.2,.7,.2,1) .05s both}
+  @keyframes ilSteel{from{left:-45%}to{left:120%}}
+  .mbox.il-fight{position:relative}
+  @media (prefers-reduced-motion: reduce){.ink-in,.il-new,.il-turn,.il-steel::before{animation:none}.il-steel{display:none}}
   `;
   IL.install = function () {
     if (typeof document === 'undefined' || document.getElementById('il-css')) return;
@@ -84,6 +91,50 @@
     const h = world.apply(this, arguments);
     try { const at = h.indexOf('<div class="mapwrap"'); if (at < 0) return h; const end = h.indexOf('>', at) + 1; return h.slice(0, end) + IL.compass() + h.slice(end); } catch (e) { return h; }
   };
+
+  // ---- motion in the story log: the lines written since the last drawing ink in, and a new year's block turns in
+  //      like a page. Only counts are kept here (in this closure, not in the state).
+  const shown = l => (Array.isArray(l) ? l[1] !== 'yearstart' : true) && (Array.isArray(l) ? l[0] : l);
+  let seen = null;
+  const logWrap = UI.renderLogWrap;
+  if (typeof logWrap === 'function') UI.renderLogWrap = function () {
+    let h = logWrap.apply(this, arguments);
+    try {
+      const S = A.S, log = (S && S.log) || [], last = log[log.length - 1];
+      const now = { pc: S && S.pc, n: log.length, k: last ? last.lines.length : 0 };
+      const prev = seen; seen = now;
+      if (!prev || prev.pc !== now.pc || now.n < prev.n || reduced()) return h;
+      let fresh = 0;
+      for (let i = Math.max(0, prev.n - 1); i < log.length; i++) {
+        const L = log[i].lines || [], from = i === prev.n - 1 ? prev.k : 0;
+        for (let j = from; j < L.length; j++) if (shown(L[j])) fresh++;
+      }
+      if (now.n > prev.n) { const at = h.lastIndexOf('<div class="ly">'); if (at >= 0) h = h.slice(0, at) + '<div class="ly il-turn">' + h.slice(at + 16); }
+      fresh = Math.min(fresh, 12);
+      for (let at = h.length; fresh > 0; fresh--) {
+        at = h.lastIndexOf('<div class="ll ', at - 1); if (at < 0) break;
+        h = h.slice(0, at) + '<div class="ll il-new ' + h.slice(at + 15);
+      }
+    } catch (e) {}
+    return h;
+  };
+
+  // ---- steel: a flash of light across a duel or battle the first time it opens
+  const struck = new WeakSet();
+  const fight = (k, key) => {
+    const f = UI[k];
+    if (typeof f === 'function') UI[k] = function (o) {
+      const h = f.apply(this, arguments);
+      try {
+        const id = key(o, arguments); if (!id || typeof id !== 'object' || struck.has(id)) return h;
+        struck.add(id); if (reduced()) return h;
+        const m = /^(\s*<div class="panel mbox)([^"]*)(">)/.exec(h); if (!m) return h;
+        return m[1] + m[2] + ' il-fight' + m[3] + '<div class="il-steel" aria-hidden="true"></div>' + h.slice(m[0].length);
+      } catch (e) { return h; }
+    };
+  };
+  fight('duelModal', o => o);
+  fight('battleModal', o => o);
 
   // ---- sound: a tiny synthesizer, made on the first sound after the player turns it on
   let ctx = null;

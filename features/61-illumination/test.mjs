@@ -62,6 +62,29 @@ export default {
     return { ok: r.same && r.woodcut, detail: `state and random stream unchanged by drawing: ${r.same}; woodcut on screen: ${r.woodcut}` };
   },
 
+  // small motion: lines written since the last drawing ink in, a new year turns in like a page, steel flashes across a
+  // fight the first time it opens; none of it touches the game, and nothing moves for reduced motion (CSS)
+  async motion(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 615, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
+      UI.screen = 'game'; UI.tab = 'life'; UI.set.hints = false; A.S.queue = []; UI.render();
+      const first = document.querySelectorAll('#log .il-new').length;
+      A.log('A line written for the test.'); A.log('And a second.'); UI.render();
+      const two = document.querySelectorAll('#log .il-new').length;
+      UI.render(); const again = document.querySelectorAll('#log .il-new').length;
+      let g = 0; const y0 = A.S.year; while (A.S.year === y0 && g++ < 30) { A.advance(31); A.S.queue = []; }
+      UI.render(); const turn = document.querySelectorAll('#log .il-turn').length;
+      const pc = A.pc(), foe = Object.values(A.S.people).find(x => x.alive && x.id !== pc.id && A.age(x) > 18);
+      A.S.queue = []; const D = A.startDuel(pc, foe, { kind: 'spar' });
+      const s0 = JSON.stringify(A.S), r0 = JSON.stringify(A.rngState);
+      UI.render(); const steel = document.querySelectorAll('.il-steel').length;
+      UI.render(); const steel2 = document.querySelectorAll('.il-steel').length;
+      return { first, two, again, turn, steel, steel2, duel: !!D, pure: JSON.stringify(A.S) === s0 && JSON.stringify(A.rngState) === r0 };
+    });
+    const ok = r.first === 0 && r.two === 2 && r.again === 0 && r.turn === 1 && r.steel === 1 && r.steel2 === 0 && r.pure;
+    return { ok, detail: `first drawing inks nothing (${r.first}); two new lines ink in (${r.two}), then rest (${r.again}); the new year turns in (${r.turn}); steel on the duel's first drawing ${r.steel}, not the second ${r.steel2}; drawing pure ${r.pure}` };
+  },
+
   // the settings: woodcuts, vellum and sound; sound stays silent (no audio context) until turned on
   async settingsAndSound(pg) {
     const r = await pg.evaluate(() => {

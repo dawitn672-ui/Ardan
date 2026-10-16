@@ -4,6 +4,7 @@
 A.defEvents([
   {
     id: 'bm_ill', trigger: true, title: 'Sick abed',
+    setup: (p, ctx) => { if (!ctx.illThe) { const t = A.BM.the(p.ill ? p.ill.name : 'a fever'); ctx.illThe = t[0].toUpperCase() + t.slice(1); } },
     text: (p, ctx) => A.age(p) < GD.RACES[p.race].adult
       ? '{illThe} has you. You burn, then shiver, and the blanket is wet with it. Your mother counts the coins in the pot: the physician in {home} charges what he thinks a house can bear, the wise woman by the ford wants a hen and knows her roots, and the priest prays for nothing. Or they can keep you in bed and wait.'
       : '{illThe} has you. You burn, then shiver, and the blanket is wet with it. The physician in {home} charges what he thinks a house can bear. The wise woman by the ford wants a hen and knows her roots, or says she does. The priest prays for nothing. Or you can lie still and let it run.',
@@ -21,6 +22,12 @@ A.defEvents([
   },
   {
     id: 'bm_wound_care', trigger: true, title: 'Seeing to a wound',
+    setup: (p, ctx) => {
+      if (ctx.wound) return;
+      const w = (p.wounds || []).slice().reverse().find(x => A.BM.SERIOUS.has(x.k) && x.until);
+      ctx.wound = w ? GD.WOUNDS[w.k].name.toLowerCase() : 'deep cut'; ctx.part = (A.BM.PART_NAME[w ? A.BM.partOf(w) : 'arms'] || 'arm').toLowerCase();
+      if (w) { ctx.wk = w.k; ctx.wi = p.wounds.indexOf(w); }
+    },
     text: 'The {wound} needs seeing to; it is in your {part}, and you feel it there every hour. The barber-surgeon at the market sets bones and sews cuts for a fee. You know a little of poultices yourself, or think you do. The priest will bless it. Or you can bind it tight and carry on, as most people do.',
     choices: [
       { t: 'Pay the barber-surgeon to set it right', r: 'He sews and splints, and it hurts more than the wound did. He says a month or two.',

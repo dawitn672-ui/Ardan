@@ -159,13 +159,13 @@ That is 50% done and 33% partial. 6% is not started but buildable here, and 11% 
 
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
-| 1 | Style guide | 🎨 | |
-| 2 | Layered ink portraits | 🎨 | A newborn is still drawn as an adult |
-| 3 | Redrawn map | 🎨 | |
-| 4 | Banners for unit boxes | 🎨 | |
-| 5 | 60–100 woodcut scenes | 🎨 | |
-| 6 | Small motion | 🎨 | |
-| 7 | Sound | 🎨 | |
+| 1 | Style guide | ✅ | `docs/art/style-guide.md`: an illuminated-manuscript hand in three surfaces (the leather binding, the vellum page, the woodcut print), five inks and two grounds with a rule of one accent, line weights, hatching in place of gradients, type, motion and sound, the off-style screens in order, and the checks before anything ships |
+| 2 | Layered ink portraits | 🎨 | Still the release's paper dolls. The style guide says what a miniature should be; the parts library needs an artist |
+| 3 | Redrawn map | ◐ 🎨 | 61-illumination tints the map to vellum, darkens its edges and inks a compass rose; the canvas is still the release's relief. An inked procedural pass (62-inked-map) is in progress; a hand-drawn map needs an illustrator |
+| 4 | Banners for unit boxes | ◐ | 62-inked-map, in progress |
+| 5 | 60–100 woodcut scenes | ◐ 🎨 | 61-illumination: 25 woodcut compositions, one per event shape, each varied by a seed from the event and the year (sky, hills, facing, season, hour): 300 distinct pictures from 12 events, 9 KB each on average. 95% of sampled events get a picture that fits (82% by their own shape, 13% guessed from their words). Hand-cut blocks need an illustrator; the frame takes any SVG per shape |
+| 6 | Small motion | ✅ | 61-illumination: a woodcut inks in when its scene opens, new story lines ink in, a new year turns in like a page, steel flashes across a fight as it opens; all off for reduced motion, and none of it draws a number or touches the state (`motion`, `renderPure`). Banners moving on the map wait on Visual 4 |
+| 7 | Sound | ◐ 🎨 | 61-illumination: quill, paper, wax seal, bell and steel, synthesized in the page with no files, off until the player turns it on. A calm score per region needs a composer |
 
 ## Technical
 
