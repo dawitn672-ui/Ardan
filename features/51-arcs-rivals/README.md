@@ -39,13 +39,13 @@ The plan asks for "60 long arcs of 3 to 8 stages over 2 to 20 years: a blood feu
 | --- | --- |
 | `rivalsRegistered` | 13 arcs, 56 scenes, 4.3 on average, 4 of five or more (rise, apprentice, moneylender 5; vendetta 6). Each spans 3 to 16 years. Every scene is trigger-only, every choice (both sides of a check) carries `fx.arc`, and every ending carries a lasting effect other than a trait. |
 | `rivalsPlayThrough` | Each arc played two ways: the first choice with every check won, the last choice with every check lost. 13 of 13 complete both ways. In each, a later scene reads differently on the two paths, the person is the same from first scene to last, the same seed plays the same twice, and the ending changed the life (e.g. *The other one*: deed and bond, or trait and deed; *The patron*: deed, bond and sworn tie, or standing and bond). |
-| `rivalsEveryPath` | 156 random runs (12 per arc, on two lives with 0, 120 and 400 suns): all 672 scenes shown, no raw token, all 156 finished. The longest scene is 62 words. 23 later runs cast the person the life already knew. |
+| `rivalsEveryPath` | 156 random runs (12 per arc, on two lives with 0, 120 and 400 suns): all 672 scenes shown, no raw token, all 156 finished. The longest scene is 62 words. 23 later runs cast the person the life already knew. The closing scene reads, without a raw token, for all 13 arcs. |
 | `rivalsWhoMeetsThem` | A peasant of 30 can meet 5 of these, a farmer with a farm 11, a smith 9, a master brewer 8, a merchant 8, a noble 7, a courtier 9, a serf 3, a soldier 6, a ruler 0. Each arc is open to at least one of these lives. |
-| `rivalsPeopleKept` | After five idle years, a running arc's moneylender is still known; once the arc is over, the release forgets him. A rival who dies before the second scene: that scene is dropped and the arc is given up. |
+| `rivalsPeopleKept` | After five idle years, a running arc's moneylender is still known; once the arc is over, the release forgets him. A rival who dies before the second scene: that scene is dropped for the closing one ("Word comes that Nessa is dead, and buried before you heard. The race between you is over…"), and the arc ends, not given up, with the deed "Stood at the grave of Nessa of Brookcliff". Someone pruned from the world altogether: the scene is dropped and the arc is given up. |
 | `rivalsOldSave` | An arc saved without its people picks someone up and shows its next scene. |
-| `rivalsBotLives` | BOTLIVES |
+| `rivalsBotLives` | Bot lives over the six starts, from age 20, dealt until ten last forty years: 30 lives, 11 of 40+ years, and all 11 began one of these arcs. 67 begun in all, all 13 kinds: the apprentice 7, the charter 7, the bribe 8, the election 6, the moneylender 6, the rival 6, the duel 6, the false friend 5, the secret 4, the patron, the libel, the vendetta and the usurper 3 each. 248 scenes played, 53 arcs finished, 1 given up; the rest were still running when the life ended. A life of 40+ years ran 3 to 6 of them (median 5). Private build (`--only=life-arcs,arcs-rivals`), so these are the only stories on the track. |
 
-Lints: `lint-events` 56 events, 387 renders checked, no errors or warnings. `lint-choices` 0 obviously best. Both pass on the private build and the full build.
+Lints: `lint-events` 57 events, 387 renders checked, no errors or warnings (the closing scene declines in the linter, which has no dead person to give it; `rivalsEveryPath` renders it for every arc). `lint-choices` 0 obviously best. Both pass on the private build and the full build.
 
 BALANCE
 
@@ -59,7 +59,7 @@ BALANCE
 **Limits.**
 
 - **13 of the plan's 60.** The other writers' folders (50, 52, 53) hold the rest. All share the one-at-a-time story track, so in the full world each life meets fewer of these.
-- **One story at a time.** The track runs one story arc at a time, alongside the work of your life, so a long life sees four to seven stories. The rival's rise and the vendetta can take fifteen years between them.
+- **One story at a time.** The track runs one story arc at a time, alongside the work of your life. With only these arcs on it, a life of 40+ years met 3 to 6 (median 5); with the other writers' arcs on the same track, fewer of each life's stories are these. The rival's rise and the vendetta can take fifteen years between them.
 - **A person who dies ends the story.** The closing scene is one scene for all thirteen arcs, with a line for each; heirs who carry it on (the rival's son, the lender's widow with the book) are not written.
 - **Some outcomes are words, not systems.** Keeping the guild seat is a flag and a deed; there is no guild office in the engine. The keeper of the seal is not an office of state. The forged charter can take a property off your list, but no court records the boundary.
 - **The writing wants a human read.** The arcs were play-tested by bots and by reading the rendered scenes on both paths, not by players.
