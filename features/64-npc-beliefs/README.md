@@ -85,7 +85,44 @@ The person view gains three short lists under "Between you". A line is marked tr
 
 ## Measured by
 
-MEASURED
+`node tests/run.mjs <built.html> --features=npc-beliefs`, on `--only=belief-truth,npc-initiative,circles,bonds,world-chronicle,npc-beliefs`:
+
+| Test | Result |
+| --- | --- |
+| `nbDistance` | 70 people at each distance, 4 deeds. The share who believe a false version: same town **12%** (259 heard), same realm **37%** (167), a neighbour realm **63%** (91), further **83%** (42). The trusting at home 25%. The hostile at home 32%, and 59 of them believe the twist, against 3 of the others |
+| `nbOpinionFollowsBelief` | From an opinion of 0: the deed +6, its tale **+10**, the twist −8, a false killing of his brother **−16**. The person view shows the +10. Set right about the tale, he falls back to +6. Cleared of the killing, 0. A stranger who already believes the tale meets you at +10 |
+| `nbCorrectionsSpread` | Three circles of 12 friends who believe you killed a man, over 8 years. With nobody to set them right and chance switched off: 0 cleared. With one of each circle set right: **16** of 36 (3 at the start). After a public answer: 29. Chance alone (a false belief seen through, 3% a year): 14 |
+| `nbEveryScene` | All 14 scenes staged and every choice taken (57): no raw token, none over the word diet. Checked effects: swearing it is not so clears the accuser; believing gossip books the reveal; the reveal marks you as having been wrong; a story about a foe is now held by the listener; the truth about someone else clears a false belief; looking into a court story corrects the court; telling a tale bigger spreads it; a battle set right; a beast taught |
+| `nbPersonView` | The three lists, with "true" and "false" only where you know, "(you believe it)" for what you were told. A name with markup is escaped. Drawing it changes neither the state nor the random stream |
+| `nbCourtWeighs` | Aldmark's court believes two stories of Varenna's ruler: opinion −20 → **−26** (the cap), and the odds of war a month 0.0004 → 0.0005. The tooltip names it. Once the court sees through the stories, −20 again |
+| `nbBattlesAndBeasts` | Six battles your realm won. False accounts: the winners' people **100%** (they believe their chronicle's count), the losers' 93% (37 of 59 claim they held the field), the far 49% (24 with the count run high). You know the truth. Of 9 hill beasts, 40 hunters know the truth of 79 and have seen 171; 40 scribes, 18 and 44 |
+| `nbDeterminism` | 14 years twice, the second time drawing the life tab and four person views every step: the same beliefs (27 people, 104 claims). The same after a save round trip. A save stripped of all of it loads and plays 3 years |
+| `nbInRealLives` | 3 bot lives, 83 years: 127 people hold 776 beliefs at the end, 30% false; 20 belief scenes, 16 of them driven by a false belief; 31,676 bytes in all |
+
+The core suites (`boot`, `lives`, `saveRoundTrip`, `uiSmoke`) pass alongside. The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs` (0 obviously best), on that build and on the full build.
+
+`node features/64-npc-beliefs/bench.mjs <built.html>`, the same build. 8 bot lives, 345 years, a census every 5 years (75 censuses):
+
+- **False beliefs.** 31.8% of all beliefs held are false.
+  - About you 21.8% (9,426 held), about other people 45.1% (586), about battles 69.2% (2,302).
+  - Courts: about you 28.6%, about other rulers 45.6%, about battles 47%.
+- **By distance.** Most of the people a life knows live in its own town, so the far samples are small.
+
+  | | Beliefs | False | About you | False |
+  | --- | --- | --- | --- | --- |
+  | Same town | 11,083 | 30% | 8,558 | 20.1% |
+  | Same realm | 1,084 | 48.2% | 766 | 39% |
+  | A neighbour realm | 71 | 53.5% | 47 | 48.9% |
+  | Further | 80 | 42.5% | 55 | 36.4% |
+
+- **Scenes.** **2.67 belief scenes a decade, 2.2 of them driven by a false belief** (92 and 76).
+  - By scene: praised 36, accused 17, gossip 9, battle tale 8, beast (the truth) 7, slander 5, the tale comes due 5, beast (the old way) 4, it was not so 1.
+- **Opinion.** Of the people you know who hold a belief about you, 49.9% have an opinion moved 5 or more by a false one (9.7 points on average), and 93.9% by a true one (20.5).
+- **Corrections.** 391 corrections among people: 248 a false belief seen through, 83 passed on by someone already set right, 57 from scenes, 3 a truth told. Courts saw through 1,216.
+- **Where claims came from.** 171 deeds, 905 battles, 1,137 court stories, 38 slanders, 1 killing and 1 blamed death; 1,274 court beliefs reached people; 2,605 times someone was told something.
+- **Your own knowledge.** The bots heard 9 things on someone's word, and one life found out it had been wrong. The bot never uses the release's interactions or "Talk of what is said", where most of this would come from.
+- **Size.** One 60-year life (a dwarf artisan from 40, `--what=long`) ends with 167 claims, 32 courts, and 73 people holding 341 beliefs. That is **13.2 KB**: 9.8 KB shared, 3.4 KB on people, **47 bytes a holder** (181 with the shared table). It is 0.6% of a 2.1 MB save.
+- **Cost and replay.** The same 20-year life ran in 5.3 s with the yearly step on and 7.7 s with it off. The two worlds drift apart, so this says only that there is no blow-up. Run twice with it on, it gave the same beliefs.
 
 ## Rules kept
 

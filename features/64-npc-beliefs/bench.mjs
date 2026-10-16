@@ -7,7 +7,7 @@
 //        lives from you (same town, same realm, a neighbour realm, further); the courts as well. Belief scenes met a
 //        decade, and those driven by a false belief. How far false beliefs move opinion of you. Corrections, by how
 //        they travelled. The player's own false beliefs, and how many were found out.
-// long   one 60-year life (an elf of the gentry, who lives through it): the bytes the beliefs take in the save
+// long   one 60-year life (a dwarf artisan of 40, who lives through it; the first seed whose life lasts): the bytes the beliefs take in the save
 // cost   the same 20-year life with the feature's yearly step on and off (wall time), and the same seed twice (replay)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -98,13 +98,13 @@ if (what.includes('lives')) out.lives = await pg.evaluate(([n, years]) => {
 
 if (what.includes('long')) out.long = await pg.evaluate(() => {
   const NB = A.NPCB;
-  A.newGame({ seed: 6460, race: 'elf', realm: 'POL-06', status: 'gentry', sex: 'F', startAge: 120 });
-  const y0 = A.S.year, res = T.play(60);
+  let y0 = 0, res = 'dead', seed = 6460;
+  for (; seed < 6470 && res !== 'ok'; seed++) { A.newGame({ seed, race: 'dwarf', realm: 'POL-20', status: 'artisan', sex: 'F', startAge: 40 }); y0 = A.S.year; res = T.play(60); }
   const S = A.S, st = JSON.stringify(S.npcb || {}).length;
   let holders = 0, pBytes = 0, beliefs = 0, kBytes = 0;
   for (const p of Object.values(S.people)) { if (p.nb) { holders++; pBytes += JSON.stringify(p.nb).length + 8; beliefs += Object.keys(p.nb).length; } if (p.nbk) kBytes += JSON.stringify(p.nbk).length + 9; }
   const save = A.serialize().length;
-  return { years: S.year - y0, res, claims: Object.keys((S.npcb || {}).c || {}).length, courts: Object.keys((S.npcb || {}).ct || {}).length, holders, beliefs,
+  return { seed: seed - 1, years: S.year - y0, res, claims: Object.keys((S.npcb || {}).c || {}).length, courts: Object.keys((S.npcb || {}).ct || {}).length, holders, beliefs,
     bytesShared: st, bytesHolders: pBytes, bytesPlayer: kBytes, bytesTotal: st + pBytes + kBytes, perHolder: holders ? Math.round(pBytes / holders) : 0, perHolderAll: holders ? Math.round((st + pBytes) / holders) : 0,
     save, sharePct: +(100 * (st + pBytes + kBytes) / save).toFixed(2), people: Object.keys(S.people).length };
 });
