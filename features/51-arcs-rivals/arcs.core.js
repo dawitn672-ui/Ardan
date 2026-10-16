@@ -155,42 +155,44 @@
     return [r, ...out].filter(Boolean).join(' ');
   };
 
-  // ---- the thirteen arcs
+  // ---- the thirteen arcs. Weights favour the arcs only some lives can meet (the apprentice and the secret need a trade,
+  // the election a free commoner of thirty, the vendetta a court), so that a life that fits them meets them; the arcs
+  // open to nearly everyone (the false friend, the libel, the bribe) weigh less
   if (!AR || !AR.story) return;   // built without 46-life-arcs: the scenes exist but nothing starts them
   const story = (k, def) => { R.KEYS.push(k); return AR.story(k, def); };
   const N = (k, n) => Array.from({ length: n }, (_, i) => `${k}_${i + 1}`);
   const free = (p, C) => C.adult(p) && !C.ruler(p) && !C.prison(p);
   const SECRET = R.SECRET;
 
-  story('ar_rise', { title: 'The other one', stages: N('ar_rise', 5), gap: [2, 4], lasting: 'bond',
+  story('ar_rise', { w: 1, title: 'The other one', stages: N('ar_rise', 5), gap: [2, 4], lasting: 'bond',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 20 && C.ageAdj(p) <= 50 });
-  story('ar_pupil', { title: 'The apprentice', stages: N('ar_pupil', 5), gap: [2, 4], lasting: 'bond',
+  story('ar_pupil', { w: 3, title: 'The apprentice', stages: N('ar_pupil', 5), gap: [2, 4], lasting: 'bond',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 28 && C.ageAdj(p) <= 62 && C.job(p) && C.jobRank(p, 1) });
-  story('ar_patron', { title: 'The patron', stages: N('ar_patron', 4), gap: [2, 4], lasting: 'law',
+  story('ar_patron', { w: 1, title: 'The patron', stages: N('ar_patron', 4), gap: [2, 4], lasting: 'law',
     start: (p, C) => free(p, C) && !C.unfree(p) && C.ageAdj(p) >= 19 && C.ageAdj(p) <= 45 });
-  story('ar_false', { title: 'The false friend', stages: N('ar_false', 4), gap: [1, 3], lasting: 'bond',
+  story('ar_false', { w: 0.7, title: 'The false friend', stages: N('ar_false', 4), gap: [1, 3], lasting: 'bond',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 22 && C.ageAdj(p) <= 65 });
-  story('ar_elec', { title: 'The election', stages: N('ar_elec', 4), gap: [1, 2], lasting: 'title',
+  story('ar_elec', { w: 2.5, title: 'The election', stages: N('ar_elec', 4), gap: [1, 2], lasting: 'title',
     start: (p, C) => free(p, C) && !C.unfree(p) && !C.noble(p) && !C.soldier(p) && C.ageAdj(p) >= 30 && C.ageAdj(p) <= 70 });
-  story('ar_hon', { title: 'An affair of honour', stages: N('ar_hon', 4), gap: [1, 2], lasting: 'name',
+  story('ar_hon', { w: 1, title: 'An affair of honour', stages: N('ar_hon', 4), gap: [1, 2], lasting: 'name',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 18 && C.ageAdj(p) <= 50
       && (C.noble(p) || C.soldier(p) || p.status === 'gentry' || C.job(p, 'knight') || C.job(p, 'courtier') || C.job(p, 'mercenary') || C.fame(p) >= 30) });
-  story('ar_libel', { title: 'The libel', stages: N('ar_libel', 4), gap: [1, 2], lasting: 'name',
+  story('ar_libel', { w: 0.7, title: 'The libel', stages: N('ar_libel', 4), gap: [1, 2], lasting: 'name',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 22 && C.ageAdj(p) <= 70
       && (C.fame(p) >= 15 || C.rich(p) || C.jobRank(p, 1) || C.noble(p) || C.flag(p, 'ar_seat')) });
-  story('ar_charter', { title: 'A forged charter', stages: N('ar_charter', 4), gap: [1, 3], lasting: 'home',
+  story('ar_charter', { w: 1.5, title: 'A forged charter', stages: N('ar_charter', 4), gap: [1, 3], lasting: 'home',
     start: (p, C) => free(p, C) && !C.unfree(p) && C.ageAdj(p) >= 25 && C.ageAdj(p) <= 75
       && (!!R.holding(p) || C.famHead(p) || C.ownShop(p)) });
-  story('ar_recipe', { title: 'The stolen secret', stages: N('ar_recipe', 4), gap: [1, 3], lasting: 'name',
+  story('ar_recipe', { w: 3, title: 'The stolen secret', stages: N('ar_recipe', 4), gap: [1, 3], lasting: 'name',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 22 && C.ageAdj(p) <= 65 && C.job(p) && !!SECRET[p.job.c] });
-  story('ar_bribe', { title: 'The bribe', stages: N('ar_bribe', 3), gap: [3, 6], lasting: 'law',
+  story('ar_bribe', { w: 0.8, title: 'The bribe', stages: N('ar_bribe', 3), gap: [3, 6], lasting: 'law',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 22 && C.ageAdj(p) <= 58 && (C.jobRank(p, 1) || C.soldier(p) || C.office(p) || C.noble(p)) });
-  story('ar_ven', { title: 'The vendetta at court', stages: N('ar_ven', 6), gap: [1, 3], lasting: 'bond',
+  story('ar_ven', { w: 2, title: 'The vendetta at court', stages: N('ar_ven', 6), gap: [1, 3], lasting: 'bond',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 22 && C.ageAdj(p) <= 62
       && (C.noble(p) || p.status === 'gentry' || C.job(p, 'courtier') || C.job(p, 'envoy') || C.job(p, 'steward') || C.office(p)) });
-  story('ar_usurp', { title: 'The usurper in your house', stages: N('ar_usurp', 4), gap: [1, 3], lasting: 'home',
+  story('ar_usurp', { w: 1.5, title: 'The usurper in your house', stages: N('ar_usurp', 4), gap: [1, 3], lasting: 'home',
     start: (p, C) => free(p, C) && !C.unfree(p) && C.ageAdj(p) >= 38 && C.ageAdj(p) <= 75
       && (C.ownShop(p) || C.famHead(p) || C.jobRank(p, 2) || !!R.holding(p, ['manor', 'farm', 'inn', 'workshop', 'barge'])) });
-  story('ar_debt', { title: 'The moneylender', stages: N('ar_debt', 5), gap: [1, 2], lasting: 'wealth',
+  story('ar_debt', { w: 1.5, title: 'The moneylender', stages: N('ar_debt', 5), gap: [1, 2], lasting: 'wealth',
     start: (p, C) => free(p, C) && C.ageAdj(p) >= 20 && C.ageAdj(p) <= 60 && p.coin < 500 });
 })();
