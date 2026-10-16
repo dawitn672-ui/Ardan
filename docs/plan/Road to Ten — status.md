@@ -1,6 +1,6 @@
 # Road to Ten: status of every step
 
-Oct 15, 2026 · checked against `index.html` (32 features, counting the fix layer) and the measured `reports/scorecard.md`
+Oct 16, 2026 · checked against `index.html` (61 features, counting the fix layer) and the measured `reports/scorecard.md`
 
 Each of the plan's 94 steps is marked:
 
@@ -18,23 +18,23 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 
 | Aspect | Steps | ✅ | ◐ | ✗ | 👥/🎨 |
 | --- | --- | --- | --- | --- | --- |
-| World and lore | 7 | 4 | 2 | 0 | 1 |
-| Power scaling | 7 | 2 | 4 | 1 | 0 |
-| Character and life sim | 7 | 2 | 3 | 2 | 0 |
-| Events and story | 7 | 2 | 3 | 2 | 0 |
-| Relationships | 7 | 5 | 2 | 0 | 0 |
+| World and lore | 7 | 5 | 1 | 0 | 1 |
+| Power scaling | 7 | 7 | 0 | 0 | 0 |
+| Character and life sim | 7 | 5 | 1 | 1 | 0 |
+| Events and story | 7 | 5 | 2 | 0 | 0 |
+| Relationships | 7 | 7 | 0 | 0 | 0 |
 | War | 7 | 6 | 1 | 0 | 0 |
-| Diplomacy and politics | 6 | 2 | 4 | 0 | 0 |
-| Economy | 7 | 5 | 2 | 0 | 0 |
-| Balance | 6 | 3 | 2 | 0 | 1 |
+| Diplomacy and politics | 6 | 4 | 2 | 0 | 0 |
+| Economy | 7 | 7 | 0 | 0 | 0 |
+| Balance | 6 | 5 | 0 | 0 | 1 |
 | UI and UX | 8 | 5 | 2 | 0 | 1 |
-| Visual art | 7 | 0 | 0 | 0 | 7 |
+| Visual art | 7 | 4 | 3 | 0 | 0 |
 | Technical | 7 | 6 | 1 | 0 | 0 |
-| Replayability | 6 | 3 | 3 | 0 | 0 |
-| Uniqueness | 5 | 2 | 2 | 1 | 0 |
-| **All** | **94** | **47** | **31** | **6** | **10** |
+| Replayability | 6 | 5 | 1 | 0 | 0 |
+| Uniqueness | 5 | 3 | 2 | 0 | 0 |
+| **All** | **94** | **74** | **16** | **1** | **3** |
 
-That is 50% done and 33% partial. 6% is not started but buildable here, and 11% can only be done by people or art. The first audit, the same morning, counted 19 done and 39 not started (it also miscounted Events, which had 3 partial steps, not 4).
+That is 79% done and 17% partial. One step is not started (Character 1, merging the release's systems, needs the game's source), and three can only be done by people (World 3, Balance 5, UI 8). Rows marked ✅ 🎨 or ✅ 👥 are done in code, and a person (an illustrator, a writer, playtesters) would still raise them. Round 5 counted 47 done and 6 not started.
 
 ## World and lore
 
@@ -266,3 +266,38 @@ Findings:
   - the balance league itself: 8 peasant lives gave a median death age of 26, against about 66 over 24 lives (five of eight died young of falls, kicks and fever). The league now plays 12 lives a path.
 - **Two tests measured something other than what they claimed.** `varietyGuard` counted three-in-a-row with duty scenes and NPC moves left out, so travel, work, money, travel, travel read as a triple, and it diluted the back-to-back share with queued scenes the guard never chooses. It now judges each rolled scene against what the player saw just before it: back to back 5.6% → 1.0%, triples 4 → 0. `btRumors` counted corrections still on the 220-line news list; in a year of busy wars the early ones scroll off; it now counts them as they are sent. Both turned up when the economy changed the random stream, and neither was a fault in the game.
 - **The random stream lives outside the state.** `A.rngState` is not in `A.S`, so restoring a saved state does not replay the same future. The replay lab (`bench/rankfx-lab.mjs`) restores both.
+
+
+## Round 6 changes
+
+Twenty features, written in parallel by one agent each against a shared brief and then integrated, moved thirty-six rows.
+
+| Feature | Rows | What changed |
+| --- | --- | --- |
+| 48-fight-ladder | Power 1–5 ✅ | Every fight choice audited against the ladder; 185 roll on fighting worth with the odds shown being the odds rolled; group fights on tier math; wounds that drop tiers; the math on screen. |
+| 49-body-mind | Character 4, 5, 6 ✅, Character 7 ◐ | A body with parts, illness over months with treatment, traits earned by deeds with their reasons, actions of each life stage, dead numbers folded; risky activities refused when hurt. |
+| 50–53 arcs | Events 3, 4 ✅ | 52 story arcs of 3–6 stages (kin, rivals, the world, things) on 46's story track; every ending leaves something lasting. |
+| 54-voices | Events 6 ◐ | Culture voices and trait manners in events and NPC lines. |
+| 55-bonds | Relationships 4, 5 ✅, Diplomacy 6 ◐ | Weighted bond history, secrets and leverage, feuds that outlive rulers. |
+| 56-realm-inside | Diplomacy 2, 3 ✅, Diplomacy 5 ◐, Economy 6 ✅ | Courts of named people, laws pushed by people, AI gold spent, the player's money sinks. |
+| 57-world-chronicle | World 5, Replayability 5 ✅ | A dated record of the run that scenes cite. |
+| 58-event-cut | Events 1 ◐, Uniqueness 5 ✅ | 26% of the release's events retired by audit; war screens shown only to those who use them. |
+| 59-tooltips | UI 2 ◐ | Nested tooltips on every number of the profile. |
+| 60-drill | War 4 ✅ | Drill gates formations and counters. |
+| 61–63 | Visual 1, 3, 4, 6 ✅, Visual 2, 5, 7 ◐ | The style guide, woodcuts, vellum, ink motion and sound; the inked map and standards; painted miniatures. |
+| 64-npc-beliefs | Uniqueness 3 ◐ | People and courts believe things, some false. |
+| 65-mods | Replayability 6 ✅ | Player mods as data. |
+| 66-markets | Economy 4 ✅ | 86 market towns with distance pricing. |
+| 67-memory-weave | Events 2 ✅ | 54% of fired events changed by a memory, measured strictly. |
+| `nightly.yml`, `bench/dominance.mjs` | Balance 2, 6 ✅ | 1,002 lives a night; a hunt for dominant strategies. |
+
+Findings:
+
+- **Two tests had been passing on nothing.** `temperMovesTheWar` (38-orders) and `planIsVisible` ran wars that never moved: scenes newer features queue for the player (a custom, a plague nearby) held the clock, `A.advance` returned after 0 days, and 0 assaults passed "cautious makes 10% fewer than bold". With the clock running, the temper made no difference in the integrated world: its dials were bars that only delayed an attack a few days. The general's temper now decides whether to attack at all, what to hold back and how many to send.
+- **A lucky sample read as a finding.** The soldier's line battle was recorded as moving the war-map fight 12 points; on 150 fights it had always been 8–10. It is now 13 pooled over 300 fights, and the test uses 100 paired fights.
+- **A world drifted slowly past its bar.** Taxes slid to Light in 89% of realms by 60 years, mostly from a treasury rule that cut taxes with no court. The 30-year test sat on its 60% bar and read as noise. Taxes now pull toward each realm's custom (29% at an extreme at 30 years, 56% at 100).
+- **The exploit bench measured a wage.** A guild post an event handed the trading bot paid 20,000 a year; two runs read ×42 and ×27 while their trades lost money. The bench now drops any job each month.
+- **A memory metric saturated.** Once every event's setup reads the memory record, the bot's static memory index counts every event (100%). It now reads each event's own setup, and the honest figure is the runtime one: draw each fired scene again with the memories removed and count it only if it changes.
+- **Most integration failures were tests, not the game.** Ten tests broke when the features met. Each was a fixture the newer world no longer fits: an elf of 30 is still a child, a story arc took the roll a life-arc test forced, a father already had sons, a merged skill was never read, a newborn died of a fever on a shifted stream. One was real: giants were drawn shorter than an average man.
+- **The suite outgrew CI.** On one page the full suite took about two hours on the integrated build. Tests now run four at a time in CI (`--workers`).
+- **The machine is the limit when agents run in parallel.** Ten agents each running balance benches put a 4-core machine at a load of 35, and the container restarted twice. Agents now run one browser each and leave balance to the integration run.
