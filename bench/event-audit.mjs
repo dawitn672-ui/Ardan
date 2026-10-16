@@ -6,6 +6,7 @@
 //   node bench/event-audit.mjs <built.html> --mode=measure [--lives=48] [--json=reports/event-cut.json]
 //        the same bot lives twice, once with the classic pool (every event) and once with the cut pool, plus the
 //        eligible-pool floors per class, job, age band and realm. Needs a build with features/58-event-cut.
+//        --seed=N plays a different set of lives (the default is 5801).
 //
 // One browser, one page, lives run one after another (CPU is shared).
 import fs from 'node:fs';
@@ -48,7 +49,8 @@ const STARTS = [
   { race: 'human', realm: 'POL-01', status: 'slave', startAge: 0 }, { race: 'human', realm: 'POL-02', status: 'peasant', startAge: 0 },
 ];
 const PERS = ['careful', 'reckless', 'greedy', 'random'];
-const lifeSpec = i => ({ o: Object.assign({ seed: 5801 + i * 7919, sex: i % 2 ? 'F' : 'M' }, STARTS[i % STARTS.length]), p: PERS[Math.floor(i / STARTS.length) % 4], e: i % 2 === 0 });
+const SEED = +(opt('seed') || 5801);   // --seed=N plays another set of lives
+const lifeSpec = i => ({ o: Object.assign({ seed: SEED + i * 7919, sex: i % 2 ? 'F' : 'M' }, STARTS[i % STARTS.length]), p: PERS[Math.floor(i / STARTS.length) % 4], e: i % 2 === 0 });
 
 const browser = await pw.chromium.launch({ executablePath: fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined });
 const page = await browser.newPage();
