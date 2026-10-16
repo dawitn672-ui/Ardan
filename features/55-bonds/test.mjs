@@ -542,9 +542,11 @@ export default {
       for (const p of Object.values(raw.people || {})) { delete p.bonds; for (const id in p.rel || {}) if (p.rel[id].hist) p.rel[id].hist = p.rel[id].hist.map(e => ({ y: e.y, t: e.t })); }
       for (const x of Object.values(raw.realms || {})) delete x.feud;
       A.deserialize(raw);
+      // the old weightless line is shown as it was, and weighs nothing
+      const shown = /An old line/.test(UI.personModal(A.P(t.id))), M = A.BONDS.mem(A.pc(), A.P(t.id));
       const st = T.play(5);
-      return { st, alive: !!A.pc(), year: A.S.year, lines: (A.pc().rel[t.id] || { hist: [] }).hist.length };
+      return { st, alive: !!A.pc(), year: A.S.year, shown, M };
     });
-    return { ok: r.alive && r.lines >= 1, detail: `loaded and played on to ${r.year} (${r.st}); the old weightless line is still there (${r.lines} lines)` };
+    return { ok: r.alive && r.shown && r.M === 0, detail: `loaded: the old line is shown ${r.shown} and weighs ${r.M}; played on to ${r.year} (${r.st})` };
   },
 };
