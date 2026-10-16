@@ -39,13 +39,16 @@ Nobody gets one while ruling, soldiering, in prison or as a child. These are sto
 
 | Test | Result |
 | --- | --- |
-| `worldArcsShape` | TBD |
-| `worldArcsPlayThrough` | TBD |
-| `worldArcsStartFromWorld` | TBD |
-| `worldArcsChangeTheWorld` | TBD |
-| `worldArcsInBotLives` | TBD |
+| `worldArcsShape` | 13 arcs, 55 scenes (average 4.23; plague, Hawk and siege have 5, heresy 6). Years from first scene to last, by the gaps: 2-3 (pilgrimage) up to 4-11 (heresy). Every scene is trigger-only. Every choice, on both sides of a check, carries `fx.arc` with a mark. Every ending choice ends the arc with a lasting effect and an `aw_` flag. On all 2,793 paths of marks into a scene, the scene offers at least two choices. |
+| `worldArcsPlayThrough` | Each arc is played through `A.ARCS.playThrough` twice, once always taking the first choice offered and once the last. All 26 runs complete, and no scene is dropped, shows a raw `{token}`, runs over 80 words or has a label over 12 words. Later scenes differ between the two paths in every arc: 41 of the 42 later scenes (the wolf years 2 of 3, every other arc all of them). Each run ends with its own `aw_` flag, for example the plague's *ward* against *forgot*, or the wreck's *beacon* against *wrecker*. |
+| `worldArcsStartFromWorld` | The wreck comes on the coast and not inland. The fire comes in a town of 3,000 and not a village. At peace, neither the siege nor the refugees start; once the realm is at war with a neighbour, both do. With `45-economy`, the hungry year comes after a failed harvest (0.4) and not an ordinary one; without it, to country folk. The long winter starts in November, not May. A ruler, a soldier, a prisoner and a child of 9 can start none of the 13. |
+| `worldArcsChangeTheWorld` | The plague takes 15% of the home province's people; that run took 4 years and left a ward aged 8. The siege names the same real enemy in every scene, and its walls raise the province's fortification by 1. The flood moves you to the higher neighbouring province. The woman from the road is of the warring realm's culture: she is named in 3 later scenes and sworn as godparent at the end. A serf who walks to the capital in the hungry year and stays is free. |
+| `worldArcsInBotLives` (`--only=life-arcs,arcs-world`) | 24 bot lives over all six starts, 10 of them 40 years or longer, and all 10 met these arcs. 75 arcs started, 322 scenes were played, 72 arcs finished, none were given up, and all 13 arcs appeared. A royal life of 58 years ran *hungry year, Hawk, long winter, plague, heresy, pilgrimage, wreck* and part of *flood*. |
+| `worldArcsInBotLives` (full build) | The track is shared with 50, 51 and 53. These arcs hold 33% of its weight but got 12 of 69 story starts (17%), because they shut out rulers and soldiers and some wait for war, coast or harvest. 18 lives, 12 of 40+ years: 12 started, 46 scenes played, 9 finished, none given up, 10 different arcs. The test asks for the share's bar in the full build (6 started, 3 finished, 4 kinds), and for the higher bar when these are the only story arcs. |
 
-TBD lint lines.
+A fuzz outside the test played 520 random paths: 13 arcs by 40 lives, five statuses, four realms, savings from 0 to 900 and with or without letters. It found no dropped scene and no raw token. The longest scene ran 75 words. Only in a one-province realm did a scene offer just one choice (see Limits).
+
+`tools/lint-events.mjs --feature=arcs-world`: 55 events, 385 checked in the browser, 0 errors, 0 warnings. `tools/lint-choices.mjs --feature=arcs-world`: 0 obviously best of 55, with 11 compared by numbers. The rest differ in what they leave (a trait, a person, a check against a sure thing), which the checker does not compare. A rerun of the checker's arithmetic that ignores those differences flags only the siege's "Wear your scars", whose rival choices leave walls, a move or a friend instead. `tests/run.mjs --features=arcs-world` on the private build: all 9 pass (boot, lives, saveRoundTrip, uiSmoke and the five above).
 
 **Rules kept.**
 
