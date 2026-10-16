@@ -41,13 +41,13 @@
     COURT: 10,       // beliefs a court holds
     COURTB: 3,       // ...of which about battles
     WEB: 140,        // the people around the player whose beliefs the yearly step moves
-    LEAK: 0.05,      // a year's chance that a false belief held near its subject is seen through
+    LEAK: 0.03,      // a year's chance that a false belief held near its subject is seen through
     AI_ON: true,     // courts' beliefs weigh on realm opinion (A.memSum)
     AI_W: 0.5, AI_CAP: 12,
   });
   // runtime counters for tests and the bench (not saved)
   NB.stats = NB.stats || {};
-  NB.resetStats = () => { for (const k of ['adopt', 'flip', 'corr', 'told', 'leak', 'seedDeed', 'seedKill', 'seedBlame', 'seedBattle', 'seedSlander', 'seedCourt', 'news', 'pcHeard']) NB.stats[k] = 0; };
+  NB.resetStats = () => { for (const k of Object.keys(NB.stats)) if (/^corr_/.test(k)) delete NB.stats[k]; for (const k of ['adopt', 'flip', 'corr', 'told', 'leak', 'seedDeed', 'seedKill', 'seedBlame', 'seedBattle', 'seedSlander', 'seedCourt', 'news', 'pcHeard', 'courtCorr']) NB.stats[k] = 0; };
   NB.resetStats();
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
@@ -191,7 +191,7 @@
   NB.factor = function (h, c) {
     let f = 1;
     if (c.v < 0) { if (has(h, 'vengeful')) f *= 1.3; if (has(h, 'forgiving')) f *= 0.7; }
-    if (c.k === 'K') { const v = A.P(c.o), r = h.rel && h.rel[c.o]; if (r && (KIN.has(r.type) || CLOSE.has(r.type))) f *= 1.6; else if (!r) f *= 0.6; void v; }
+    if (c.k === 'K') { const r = h.rel && h.rel[c.o]; if (r && (KIN.has(r.type) || CLOSE.has(r.type))) f *= 1.6; else if (!r) f *= 0.6; }
     if (c.k === 'S' && c.o === 'heresy') { if (has(h, 'zealous')) f *= 1.5; if (has(h, 'cynical')) f *= 0.5; }
     return f;
   };
@@ -210,7 +210,9 @@
     const ids = Object.keys(m);
     const bat = ids.filter(id => { const c = NB.claim(id); return c && c.k === 'B'; });
     const drop = (list, n) => {
-      const L = list.filter(id => String(id) !== String(keep)).map(id => ({ id, c: NB.claim(id) })).sort((a, b) => ((a.c ? Math.abs(a.c.v) : 0) + (a.c ? a.c.y : 0) / 50) - ((b.c ? Math.abs(b.c.v) : 0) + (b.c ? b.c.y : 0) / 50) || String(a.id).localeCompare(String(b.id)));
+      const pcId = (A.pc() || {}).id;
+      const w = c => (c ? Math.abs(c.v) + c.y / 50 + (c.s === pcId ? 20 : 0) : 0);   // beliefs about the player are kept longest
+      const L = list.filter(id => String(id) !== String(keep)).map(id => ({ id, c: NB.claim(id) })).sort((a, b) => w(a.c) - w(b.c) || String(a.id).localeCompare(String(b.id)));
       for (let i = 0; i < n && i < L.length; i++) delete m[L[i].id];
     };
     if (bat.length > maxB) drop(bat, bat.length - maxB);
@@ -232,7 +234,7 @@
     if (m[cid] !== stance) return false;
     NB.moveOp(h, c, eff(c, stance) - eff(c, prev));
     NB.stats.adopt++;
-    if (prev) { NB.stats.flip++; if (NB.isFalse(c, prev) && !NB.isFalse(c, stance)) NB.stats.corr++; }
+    if (prev) { NB.stats.flip++; if (NB.isFalse(c, prev) && !NB.isFalse(c, stance)) { NB.stats.corr++; NB.stats['corr_' + (why || 'other')] = (NB.stats['corr_' + (why || 'other')] || 0) + 1; } }
     return true;
   };
   NB.held = (h, cid) => (h && h.nb && h.nb[cid]) || 0;   // pure
@@ -245,7 +247,7 @@
   };
   // a court: the realm's beliefs as one body (engine)
   NB.courtAdopt = function (rid, cid, stance) {
-    if (!rid || !A.realm(rid) || !stance) return false;
+    if (!rid || !A.realm(rid) || !stance || !NB.claim(cid)) return false;
     const st = NB.st(), m = st.ct[rid] && typeof st.ct[rid] === 'object' ? st.ct[rid] : (st.ct[rid] = {});
     if (m[cid] === stance) return false;
     m[cid] = stance;
@@ -332,11 +334,13 @@
     const x = A.wpick(L, z => z.w);
     return x ? x.id : ids.D;
   };
-  // a deed of the player's becomes three claims, and the word goes out (engine)
-  NB.rumourDeed = function (pc, text, y, web) {
+  // a deed of the player's becomes three claims, and the word goes out (engine). A shameful deed (sign -1) has no
+  // twist, and its tale is worse than the truth.
+  NB.rumourDeed = function (pc, text, y, web, sign) {
     text = clean(text, 100); if (!text) return null;
-    const D = NB.make('D', pc.id, null, 1, 6, text, y), T = NB.make('T', pc.id, null, 0, 10, D, y), W = NB.make('W', pc.id, null, 0, -8, D, y);
-    const ids = { D, T, W }, fame = Math.max(0, pc.fame || 0);
+    const bad = sign < 0;
+    const D = NB.make('D', pc.id, null, 1, bad ? -6 : 6, text, y), T = NB.make('T', pc.id, null, 0, bad ? -10 : 10, D, y), W = bad ? null : NB.make('W', pc.id, null, 0, -8, D, y);
+    const ids = { D, T, W: W || T }, fame = Math.max(0, pc.fame || 0);
     for (const h of web || NB.web(pc)) {
       const r = pc.rel[h.id], kin = r && KIN.has(r.type), d = NB.dist(h, pc);
       let p = [0.65, 0.4, 0.2, 0.1][d] * (1 + fame / 50) * (has(h, 'gregarious') ? 1.3 : 1) * (has(h, 'shy') ? 0.7 : 1);
@@ -350,12 +354,25 @@
       for (const rid of (A.neighbors ? A.neighbors(pc.realm) || [] : []).slice().sort()) {
         if (!A.realm(rid) || !A.realm(rid).alive || !A.chance(0.5)) continue;
         const rel = A.relBetween ? A.relBetween(rid, pc.realm) : 0;
-        const x = A.wpick([{ id: D, w: 1 }, { id: T, w: 1.4 }, { id: W, w: rel < -20 ? 1.5 : 0.2 }], z => z.w);
+        const x = A.wpick([{ id: D, w: 1 }, { id: T, w: 1.4 }, { id: ids.W, w: rel < -20 ? 1.5 : 0.2 }], z => z.w);
         NB.courtAdopt(rid, x.id, 1);
       }
     }
     NB.stats.seedDeed++;
     return ids;
+  };
+  // a public act in a scene (one that made the player better known) is a deed people talk of, whether or not the
+  // release writes it into pc.deeds: "pulled Odo out, in the matter of the flooded mill" (engine, from A.eventChoose)
+  NB.sceneDeed = function (pc, title, label, df, dh) {
+    if (!(df >= 1) || !pc || !A.isAdult(pc)) return null;
+    let d = A.BONDS && A.BONDS.deedOf ? A.BONDS.deedOf(label || '', false) : null;
+    d = d ? d.replace(/^you\s+/, '') : null;
+    // the title is cited only when it is plainly a thing ("The flooded mill", "A letter in an old hand")
+    const t0 = clean(title || '', 60), art = /^(the|a|an)\s+/i.test(t0), ttl = art ? 'the ' + low(t0.replace(/^(the|a|an)\s+/i, '')) : '';
+    if (!d && !ttl) return null;
+    const text = d ? (ttl ? `${d}, in the matter of ${ttl}` : d) : `did what you did in the matter of ${ttl}`;
+    if (/\byou\b|\byour\b/i.test(d || '')) return null;
+    return NB.rumourDeed(pc, cap(text), A.S.year, null, dh <= -3 ? -1 : 1);
   };
   NB.seedDeeds = function (pc, web) {
     const st = NB.st(), key = String(pc.id), list = Array.isArray(pc.deeds) ? pc.deeds : [];
@@ -435,10 +452,10 @@
   // hostile invent one for a foe (engine)
   NB.othersYear = function (pc, web) {
     for (const h of web) {
-      if (!A.chance(0.06)) continue;
-      // a foe of theirs, or a close one
-      const foes = Object.keys(h.rel || {}).filter(id => { const r = h.rel[id]; return r && (r.type === 'enemy' || r.type === 'rival' || (r.op || 0) <= -30); }).sort().map(A.P).filter(x => x && x.alive && x.id !== pc.id && A.isAdult(x));
-      const close = NB.contacts(h).filter(x => x.id !== pc.id);
+      if (!A.chance(0.1)) continue;
+      // a foe of theirs, or a close one; someone the player knows
+      const foes = Object.keys(h.rel || {}).filter(id => { const r = h.rel[id]; return r && pc.rel[id] && (r.type === 'enemy' || r.type === 'rival' || (r.op || 0) <= -30); }).sort().map(A.P).filter(x => x && x.alive && x.id !== pc.id && A.isAdult(x));
+      const close = NB.contacts(h).filter(x => x.id !== pc.id && pc.rel[x.id]);
       const liar = has(h, 'deceitful') || has(h, 'cruel') || has(h, 'paranoid');
       let t = null, kind = null;
       if (foes.length && (liar || A.chance(0.4))) { t = A.pick(foes); kind = A.chance(0.4) && NB.secOf(t) ? NB.secOf(t) : A.pick(NB.SEC_KINDS); }
@@ -524,7 +541,7 @@
         const c = NB.claim(id);
         if (!c || S.year - c.y > 25) { delete m[id]; continue; }
         if (c.k === 'S' || c.k === 'K') { const s = A.P(c.s); if (!s || !s.alive) { delete m[id]; continue; } }
-        if (NB.isFalse(c, m[id]) && A.chance(0.08)) { m[id] = -m[id]; NB.stats.corr++; NB.stats.flip++; }
+        if (NB.isFalse(c, m[id]) && A.chance(0.08)) { m[id] = -m[id]; NB.stats.courtCorr = (NB.stats.courtCorr || 0) + 1; }
       }
     }
   };
@@ -533,7 +550,7 @@
     const st = NB.st();
     for (const h of web) {
       const m = st.ct[h.realm]; if (!m) continue;
-      const p = ['noble', 'royal', 'gentry'].includes(h.status) || h.office ? 0.35 : 0.1;
+      const p = ['noble', 'royal', 'gentry'].includes(h.status) || h.office ? 0.3 : 0.06;
       if (!A.chance(p)) continue;
       const ids = Object.keys(m).filter(id => !NB.held(h, id)).sort((a, b) => +a - +b);
       if (!ids.length) continue;
@@ -578,13 +595,37 @@
     return res;
   };
 
+  // a first meeting: what someone already believes of the player colours the bond from its first day (engine)
+  NB.firstOp = function (t, pc) {
+    let d = 0;
+    for (const x of NB.beliefs(t)) if (x.c.s === pc.id && x.st > 0 && x.c.k !== 'B') d += x.c.v * NB.factor(t, x.c);
+    return clamp(d, -30, 30);
+  };
+  if (typeof A.link === 'function') {
+    const link = A.link;
+    A.link = function (a, b) {
+      const pc = A.S ? A.P(A.S.pc) : null;
+      const t = pc && a && b && a.id !== b.id ? (a.id === pc.id ? b : b.id === pc.id ? a : null) : null;
+      const isNew = !!(t && t.nb && !(pc.rel && pc.rel[t.id]) && !(t.rel && t.rel[pc.id]));
+      const r = link.apply(this, arguments);
+      try {
+        if (isNew) {
+          const d = NB.firstOp(t, pc);
+          if (d) for (const [x, y] of [[pc, t], [t, pc]]) if (x.rel && x.rel[y.id]) x.rel[y.id].op = clamp((x.rel[y.id].op || 0) + d, -100, 100);
+        }
+      } catch (e) { console.error('npc-beliefs link', e); }
+      return r;
+    };
+  }
+
   // ---------------------------------------------------------------- tidying: claims nobody holds go; names with them
 
   NB.gc = function () {
     const S = A.S, st = NB.st(), refs = new Set();
     for (const id in S.people) {
       const p = S.people[id];
-      if (p.nb && (!p.alive || typeof p.nb !== 'object')) { delete p.nb; continue; }
+      if (!p.alive && String(p.id) !== String(S.pc)) { if (p.nb) delete p.nb; if (p.nbk) delete p.nbk; continue; }
+      if (p.nb && typeof p.nb !== 'object') delete p.nb;
       if (p.nb) { for (const k of Object.keys(p.nb)) { if (!st.c[k] || !p.nb[k]) delete p.nb[k]; else refs.add(String(k)); } if (!Object.keys(p.nb).length) delete p.nb; }
       if (p.nbk && typeof p.nbk === 'object') for (const k of Object.keys(p.nbk)) { if (!st.c[k] || !Array.isArray(p.nbk[k])) delete p.nbk[k]; else refs.add(String(k)); }
     }
