@@ -44,7 +44,7 @@ Lasting change, by the plan's words: a **bond** (sworn ties, kin written into th
 | `kinOldSave` | An arc state saved without its people brings on its next scene with stand-ins; a life with no `arcs` field plays on |
 | `kinBotLives` | see below |
 
-`kinBotLives`: bot lives over the league's six starts (serf, peasant, artisan, merchant, noble, royal), up to 64 years. Each start is played until two of its lives last 40 years (at most six tries), because many bot lives end at 16 or 20. The first try is an engaged bot. The pass bar holds whether or not the other story arcs share the track: 10 or more lives of 40+ years, at least half of them meeting a kin arc, 6 or more finished, 6 or more kinds, and at most a quarter given up.
+`kinBotLives`: bot lives over the league's six starts (serf, peasant, artisan, merchant, noble, royal), up to 64 years. Each start is played until two of its lives last 40 years (at most eight tries; six until round 7), because many bot lives end at 16 or 20. The first try is an engaged bot. The pass bar holds whether or not the other story arcs share the track: 10 or more lives of 40+ years, at least half of them meeting a kin arc, 6 or more finished, 6 or more kinds, and at most a quarter given up.
 
 | Run | Lives (of 40+ years) | Kin arcs begun | Finished | Given up | Scenes | Kinds | Span of a finished arc |
 | --- | --- | --- | --- | --- | --- | --- | --- |

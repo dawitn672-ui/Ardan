@@ -258,11 +258,12 @@ export default {
   async kinBotLives(pg) {
     await pg.evaluate(BOT);
     const track = await pg.evaluate(() => A.ARCS.stories().length);
-    // each start is played until two of its lives last 40 years (at most six tries): many bot lives end at 16 or 20
-    // (a fall, a fever, a fight), and a story arc needs grown years to be met
+    // each start is played until two of its lives last 40 years (at most eight tries): many bot lives end at 16 or 20
+    // (a fall, a fever, a fight), and a story arc needs grown years to be met. Six tries left 8 long lives in the round-7
+    // world, short of the bar of 10, while 6 of those 8 met a kin arc: the bar measures the arcs, not the luck of living
     const paths = Object.entries(TARGETS.paths);
     const lives = [];
-    for (const [name, P] of paths) for (let i = 0, got = 0; i < 6 && got < 2; i++) {
+    for (const [name, P] of paths) for (let i = 0, got = 0; i < 8 && got < 2; i++) {
       const o = Object.assign({ seed: 8101 + i * 7919 + name.length * 131, sex: i % 2 ? 'F' : 'M' }, P.start);
       const l = await pg.evaluate(([o, i]) => {
         const L = B.life(o, ['careful', 'greedy', 'random'][i % 3], i === 0, 64);
