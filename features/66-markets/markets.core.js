@@ -30,7 +30,7 @@
     // carting, as a share of the good's base price per load: inside a realm HAUL0 + HOP a step; to another realm 45's
     // ROAD in place of HAUL0. A step is 250 map units, longer over hills (1.3), forest, marsh and mountains (1.8). By
     // sea between coastal towns: SEA0 (45's SEA abroad) + half a step's HOP per 250 units
-    HAUL0: 0.03, HOP: 0.03, SEA0: 0.03,   // HOP was 0.02: in the integrated world (round 7) the gradient four steps out fell to x1.03, too mild to see
+    HAUL0: 0.03, HOP: 0.03, SEA0: 0.03,   // HOP was 0.02: in the integrated world (round 7) the gradient four steps out fell to x1.03, too mild to see (2.5% read x1.00: the gradient is jumpy on 3 worlds)
     ABS0: 0.2, ABS: 0.2,   // and never less than 0.2 suns a load plus 0.2 a step (a load of grain is worth 4)
     TERR: { plains: 1, steppe: 1, hills: 1.3, forest: 1.2, marsh: 1.5, mountains: 1.8, desert: 1.4, tundra: 1.4 },
     RLO: 0.55, RHI: 2.6,   // a town's price against its realm's

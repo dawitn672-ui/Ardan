@@ -234,6 +234,21 @@ RI.spend = function (r) {
   // 1. sellswords: hired in war, let go in peace
   if (war) RI.hireMercs(r, P); else if (RI.mercs(r).length) done.push(['dismiss', RI.dismissMercs(r)]);
   // 2. what is owed every year
+  // a crown whose interest alone eats half its taxes (debt over six years of income, at the release's 8%) can never pay
+  // and repudiates: the debt is written off, and the realm pays in stability and standing. Paid once a decade at most
+  if ((r.debt || 0) > inc * 6.25 && !(r.riDefault > A.S.year - 10)) {
+    const owed = Math.round(r.debt);
+    r.debt = 0; r.treasury = Math.max(0, r.treasury); r.riDefault = A.S.year;
+    r.stability = Math.max(0, (r.stability || 0) - 12); r.legit = Math.max(0, (r.legit || 0) - 8);
+    A.news(`The crown of ${r.short} repudiates its debts of ${A.fmt(owed)} suns. The bankers will remember.`, 'crown');
+    done.push(['default', owed]);
+  }
+  // works a crown can no longer keep (a realm that lost most of its land) fall into disrepair: their upkeep never
+  // passes a quarter of its revenue, the bound RI.nextWork builds to. Without this a realm cut from seven provinces to
+  // one paid sixteen times its income in upkeep, and its debt ran from 0 to 11 million in 27 years. The bound reads the
+  // taxes, not RI.rev: a treasury in the red is turned into debt, and that loan books as income the year it is taken
+  const keep = inc * .25 / RI.TUNE.worksUp;
+  if ((r.riWorks || 0) > keep) r.riWorks = Math.round(keep);
   const up = Math.round((r.riWorks || 0) * RI.TUNE.worksUp);
   if (up > 0) { r.treasury -= up; RI.book(r, 'worksUp', up); }
   for (const seat in (r.council || {})) {
