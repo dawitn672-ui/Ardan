@@ -94,6 +94,7 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 | `72-two-scales` | Uniqueness | The squad and the front together: a common soldier's fight and the war it moves, on one page |
 | `73-score` | Visual art | A quiet score for each land, off by default: a drone, one voice and long silences, six synthesized instruments |
 | `74-old-age` | Character | 119 old-age events, the deathbed and a death screen that remembers the life |
+| `75-fair-checks` | Character | A scene's odds fit your stage of life, so the young are not set up to fail; untrained or hurt still means long odds |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
 How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.
