@@ -9,7 +9,8 @@
 //             down"). After the choice resolves, how good you are at it adds a line and a small effect (fx.knack).
 //   3. ENGINE the work and the year: fists in a brawl, a trade's second skill (the farmer's axe, the hunter's bow, the
 //             innkeeper's fists, the cantor's voice), the lament at a wake, dice in winter quarters, the butts on feast
-//             days, the herring boats on the coast, a lord's autumn hunt, a crossing by sea to a gathering abroad.
+//             days, the herring boats on the coast, a lord's autumn hunt, a crossing by sea to a gathering abroad and
+//             the host's hunt there.
 //
 // Every draw is engine code (A.chance, A.rf); rendering reads nothing here. New fields: none on people (the duty note is
 // on GD.CAREERS, data). New effect key: fx.knack, declared in A.FX_EXTRA.
@@ -22,7 +23,7 @@ const old = p => A.stage && A.stage(p) === 'old';
 const rank = p => (GD.STATUS && GD.STATUS[p.status] ? GD.STATUS[p.status].rank : 2);
 const coastal = p => { const pr = A.prov(p.home); return !!(pr && pr.coast); };
 // what each mechanism did, for the tests and the README (not game state)
-LN.stats = { retag: 0, ride: {}, knack: {}, brawl: 0, duty: {}, wake: 0, camp: 0, butts: 0, boats: 0, hunt: 0, crossing: 0, wood: 0 };
+LN.stats = { retag: 0, ride: {}, knack: {}, brawl: 0, duty: {}, wake: 0, camp: 0, butts: 0, boats: 0, hunt: 0, crossing: 0, wood: 0, gathHunt: 0 };
 const bump = (o, k) => { o[k] = (o[k] || 0) + 1; };
 
 // ---- fx.knack: how good you are at the thing you just did --------------------------------------------------------------
@@ -189,7 +190,25 @@ LN.crossing = function (pc, ctx) {
   return sick ? 'A grey crossing. You keep your breakfast, just.' : '';
 };
 
-// riders and the crossing run after the release's choice, inside the same call
+// ---- 3a'. the host's hunt at a gathering ------------------------------------------------------------------------------
+// Between the feasts of a wedding, a coronation, a summit or a tournament the host rides out with hounds and guests
+// (the guests' role, not the guard's or the servant's). A guest who brings down the stag is talked about at table: a
+// point of standing at the gathering (g.pc.inf, which its closing reads for treaties and favour) and a little fame. A
+// poor rider can come off in the chase.
+LN.HUNT_KINDS = ['wedding', 'coronation', 'summit', 'tournament'];
+LN.gathHunt = function (pc, ctx) {
+  const g = ctx && ctx.gid != null && A.gathById ? A.gathById(ctx.gid) : null;
+  if (!g || !g.pc || g.pc.lnHunt != null) return '';
+  g.pc.lnHunt = LN.HUNT_KINDS.includes(g.kind) && ['ruler', 'envoy', 'noble', 'knight'].includes(g.pc.role) && adult(pc) && !old(pc) ? 1 : 0;
+  if (!g.pc.lnHunt) return '';
+  LN.stats.gathHunt = (LN.stats.gathHunt || 0) + 1;
+  const bow = A.skill(pc, 'bow'), ride = A.skill(pc, 'riding');
+  if (ride < 10 && A.chance(0.06)) { pc.health = Math.max(5, pc.health - A.ri(3, 8)); return 'At the host\'s hunt your horse refuses a ditch and you go over its head. You walk back.'; }
+  if (A.chance(clamp(0.05 + (bow + ride * 0.5) / 150, 0.05, 0.6))) { g.pc.inf = (g.pc.inf || 0) + 1; A.fame(pc, 1); return 'At the host\'s hunt your arrow takes the stag before the hounds do, and it is talked about at supper.'; }
+  return '';
+};
+
+// riders, the crossing and the hunt run after the release's choice, inside the same call
 const choose = A.eventChoose;
 A.eventChoose = function (idx) {
   const q = A.S && A.S.queue[0];
@@ -206,7 +225,7 @@ A.eventChoose = function (idx) {
     if (q && q.result && pc && pc.alive && key) {
       let line = '';
       if (LN.rides[key]) { line = A.applyFx(pc, { knack: LN.KNACK[LN.rides[key]] }, q.ctx || {}); bump(LN.stats.ride, key); }
-      if (ga) line = [line, LN.crossing(pc, q.ctx || {})].filter(Boolean).join(' ');
+      if (ga) line = [line, LN.crossing(pc, q.ctx || {}), LN.gathHunt(pc, q.ctx || {})].filter(Boolean).join(' ');
       if (line) { q.result.text = (String(q.result.text || '') + ' ' + line).trim(); A.log(line, ''); }
     }
   } catch (err) { console.error('live-numbers ride', err); }

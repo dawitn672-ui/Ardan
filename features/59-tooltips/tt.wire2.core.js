@@ -60,7 +60,13 @@
     h = h.replace(/<tr><td>([^<]*)<\/td><td>([^<]*)<\/td><td>([^<]*)<\/td><td>([^<]*)<\/td><td><button class="small" data-a="buyProp" data-v="(\w+)"/g,
       (m, nm, inc, up, price, k) => `<tr><td>${UI.tt('prop', k, nm)}</td><td${A_('prop', k)}>${inc}</td><td${A_('prop', k)}>${up}</td><td${A_('prop', k)}>${price}</td><td><button class="small" data-a="buyProp" data-v="${k}"`);
     h = h.replace(/<button class="small" data-a="riRebuild" data-v="(\d+)"/g, (m, i) => { const a = pc.assets[+i]; return a ? m + A_('prop', a.k) : m; });
-    return h;
+    // the tables' last columns hold only buttons; a header word for each, so a screen reader can name the column
+    h = h.replace('<th>Price</th><th></th></tr>', '<th>Price</th><th class="tiny muted">Buy</th></tr>')
+      .replace('<th>Yours</th><th></th></tr>', '<th>Yours</th><th class="tiny muted">Trade</th></tr>')
+      .replace('<th>Buy</th><th>Sell</th><th></th></tr>', '<th>Buy</th><th>Sell</th><th class="tiny muted">Go</th></tr>')
+      .replace('<th>Danger</th><th></th></tr>', '<th>Danger</th><th class="tiny muted">Plan</th></tr>')
+      .replace(/<th>Upkeep<\/th><th>Price<\/th><th class="tiny muted">Buy<\/th><\/tr>|<th>Upkeep<\/th><th>Price<\/th><th><\/th><\/tr>/, '<th>Upkeep</th><th>Price</th><th class="tiny muted">Buy</th></tr>');
+    return TT.wireCosts(h);
   };
   TT.wireLater(() => UI.TAB, 'holdings', 'holdings');
   // ---- costs anywhere: initiative (⧗) on an action, and a price in a button's words; hover (the tap is the action's)
@@ -90,7 +96,7 @@
     let i = 0;
     return h.replace(/<div class="tiny row">([\s\S]*?)<span class="grow">([\s\S]*?)<\/span><b>([^<]*)<\/b><\/div>/g, (m, ic, lab, v) => {
       const x = b[i++]; if (!x) return m;
-      return `<div class="tiny row">${ic}<span class="grow">${lab}</span><b${UI.ttAttrs('board', kind + '|' + x.k)}>${v}</b></div>`;
+      return `<div class="tiny row">${ic}<span class="grow"${/\d/.test(lab) ? A_('board', kind + '|' + x.k) : ''}>${lab}</span><b${UI.ttAttrs('board', kind + '|' + x.k)}>${v}</b></div>`;
     });
   };
   W.boardHtml = function (h, b) { return boardRows(h, b, 'job'); };
@@ -192,7 +198,7 @@
     if (!(A.S.fights || {})[pid]) return h;
     h = h.replace(/<span class="right tiny muted">(day \d+)<\/span>/, (m, t) => `<span class="right tiny muted">${N('fight', pid, t, { focus: true })}</span>`)
       .replace(/<div class="tiny">([\d,]+ men · \d+ attacks\/day · [^<]*)<\/div>/g, (m, t) => `<div class="tiny"${A_('fight', pid)}>${t}</div>`)
-      .replace(/<div class="kv tiny">([\s\S]*?)<\/div><div class="tiny muted">Losses so far/, (m, kv) => `<div class="kv tiny"${A_('fight', pid)}>${kv}</div><div class="tiny muted">Losses so far`)
+      .replace('<div class="group-h">Modifiers</div><div class="kv tiny">', `<div class="group-h">Modifiers</div><div class="kv tiny"${A_('fight', pid)}>`)
       .replace(/<div class="tiny muted">(Losses so far: [^<]*)<\/div>/, (m, t) => `<div class="tiny muted"${A_('fight', pid)}>${t}</div>`);
     return h;
   };
@@ -221,7 +227,7 @@
   W.wrIndustry = function (h) {
     const r = A.realm(UI.wrMyR(A.pc())); if (!r || !r.ind) return h;
     let i = 0;
-    h = h.replace(/<div class="wr-kpis"><div>/, m => m).replace(/(<div class="wr-kpis">)([\s\S]*?)(<\/div><\/div>\s*(?:<div class="tiny warn-t">|<\/div>))/, (m, a, body, b) => {
+    h = h.replace(/(<div class="wr-kpis">)([\s\S]*?)(<\/div><\/div>\s*(?:<div class="tiny warn-t">|<\/div>))/, (m, a, body, b) => {
       const keys = ['civ', 'mil', 'sold'];
       body = body.replace(/<div>(<svg[\s\S]*?<\/svg>)<b>/g, (x, ic) => `<div${UI.ttAttrs('industry', keys[i++] || 'civ')}>${ic}<b>`).replace(/<small>ore /, `<small><span${A_('industry', 'ore')}>ore</span> `);
       return a + body + b;
@@ -320,6 +326,77 @@
     });
   };
   for (const k of ['wrBars', 'wrDivStatus', 'wrStatGrid', 'wrArmyRow', 'wrArmyPanel', 'wrDivPanel', 'wrCommandBasic', 'wrForces', 'wrWars', 'wrFightRow', 'wrFightPanelBasic', 'wrProvPanel', 'wrRoleCard', 'wrTemplates', 'wrIndustry', 'wrManpower', 'wrHint', 'warRoomModal', 'warTabClock', 'oobBreadcrumb', 'chainOfCommand', 'ordersCard', 'drillCard', 'staffCard']) TT.wireLater(() => UI, k, k);
+
+  // ---- the Realm tab, as one who does not rule -----------------------------------------------------------------------
+  W.factionCard = function (h, f) {
+    if (!f) return h;
+    h = TT.wireBars(h, lbl => lbl === 'Power' ? ['facPower', f.id] : lbl === 'Discontent' ? ['facDisc', f.id] : null);
+    return h.replace(/<span class="tag">(\d+ houses?(?: \+ you)?)<\/span>/, (m, t) => `<span class="tag"${A_('facPower', f.id)}>${t}</span>`);
+  };
+  W.realmTab2 = function (h, p) {
+    const pc = p || A.pc(); if (!pc) return h;
+    const r = A.realm(pc.noble ? pc.noble.realm : pc.realm), ru = r && A.P(r.ruler);
+    if (ru) h = h.replace(new RegExp(`(<div class="card person click" data-a="ov" data-v="person:${reEsc(ru.id)}">[\\s\\S]*?<div class="sub">)(\\d+)( · their opinion of you: )(-?\\d+)(<\\/div>)`), (m, a, age, b, op, c) => `${a}<span${A_('age', ru.id)}>${age}</span>${b}<span${A_('rulerOp', ru.id)}>${op}</span>${c}`);
+    // the great lords: loyalty
+    h = TT.within(h, '<div class="group-h">The great lords</div>', '</table>', seg => seg.replace(/(<td><span class="click u" data-a="ov" data-v="house:([^"]+)">[^<]*<\/span><\/td><td>[\s\S]*?<\/td>)<td>(\d+)<\/td>/g, (m, pre, hid, v) => `${pre}<td${UI.ttAttrs('loyalty', hid)}>${v}</td>`));
+    if (r) h = TT.within(h, '<div class="group-h">Lately at court</div>', '<div class="card ri-ledger', seg => seg
+      .replace(/\(mean loyalty (\d+)\)/g, (m, n) => `(${N('loyaltyAll', r.id, 'mean loyalty ' + n)})`)
+      .replace(/(: )([\d,]+ suns)(\.)/g, (m, a, v, b) => `${a}${N('crownBook', r.id, v)}${b}`));
+    h = h.replace(/If it came to the crown today: (\d+)% it passes\./, (m, n) => N('courtOdds', '', `If it came to the crown today: ${n}% it passes.`, { focus: true }));
+    // the crown's purse
+    if (r) h = h.replace(/<div class="card ri-ledger small"><div class="row"><b>([^<]*)<\/b><span class="right"><\/span><span class="tag">([^<]*)<\/span><\/div><table class="t small">([\s\S]*?)<\/table>/, (m, t, tag, rows) =>
+      `<div class="card ri-ledger small"><div class="row"><b>${UI.tt('crownBook', r.id, t)}</b><span class="right"></span><span class="tag"${A_('crownBook', r.id)}>${tag}</span></div><table class="t small">${rows.replace(/<td class="(good|bad)" style="text-align:right">/g, (x, c) => `<td class="${c}" style="text-align:right"${A_('crownBook', r.id)}>`)}</table>`);
+    // the ladder of rungs (drawn highest first)
+    h = h.replace('<div class="group-h">The ladder (Part 12)</div>', `<div class="group-h">${UI.tt('rungs', '', 'The ladder (Part 12)')}</div>`);
+    const NR = GD.NOBLE_RUNGS || []; let i = NR.length;
+    h = TT.within(h, 'The ladder (Part 12)</span></div>', '</table>', seg => seg.replace(/<tr><td>([^<]*)<\/td><td>([^<]*suns\/yr, levy [^<]*)<\/td><\/tr>/g, (m, t, v) => { i--; return `<tr><td>${t}</td><td${UI.ttAttrs('rung', i)}>${v}</td></tr>`; }));
+    // 47-realm-bible's customs
+    const B = A.BIBLE, D0 = B && r && B.of(r.id);
+    if (D0 && D0.customs) { let j = 0; h = TT.within(h, '<div class="card small rb"', '</div></div>', seg => seg.replace(/<span class="muted">\((met \d+×, first in \d+|not met yet)\)<\/span>/g, (m, t) => { const c = D0.customs[j++]; return c ? `<span class="muted">(${N('custom', c.id, t)})</span>` : m; })); }
+    // 55-bonds' long memories: rows in the order the card draws them
+    const FE = A.BONDS && A.BONDS.FEUD, rid = pc.ruler || pc.realm;
+    if (FE && h.indexOf('bd-feuds') > 0) {
+      const held = [], against = [];
+      for (const o of Object.keys(A.S.realms || {})) {
+        if (o === rid || !A.S.realms[o].alive) continue;
+        FE.list(rid, o).forEach((e, k) => { if (Math.abs(e.w) >= 2) held.push([rid, o, k, e]); });
+        FE.list(o, rid).forEach((e, k) => { if (Math.abs(e.w) >= 2) against.push([o, rid, k, e]); });
+      }
+      const by = (x, y) => Math.abs(y[3].w) - Math.abs(x[3].w), rows = held.sort(by).slice(0, 6).concat(against.sort(by).slice(0, 6));
+      let k = 0;
+      h = TT.within(h, '<div class="card small bd-feuds"', null, seg => seg.replace(/<span class="muted">\(([+−]\d+)\)<\/span>/g, (m, v) => { const x = rows[k++]; return x ? `<span class="muted">(${N('feud', x[0] + '|' + x[1] + '|' + x[2], v)})</span>` : m; }));
+    }
+    return TT.wireCosts(h);
+  };
+  TT.wireLater(() => UI, 'factionCard', 'factionCard');
+  TT.wireLater(() => UI.TAB, 'realm', 'realmTab2');
+
+  // ---- the Codex (Power & scale) and the Dynasty page -----------------------------------------------------------------
+  W.powerPage = function (h, p) {
+    const pc = p || A.pc(); if (!pc) return h;
+    h = TT.within(h, '<div class="group-h">The ladder of fighters</div>', '</table>', seg => seg
+      .replace(/<td><span class="chip tier (\w+)">([^<]*)<\/span><\/td><td>([^<]*)<\/td>/g, (m, k, n, rg) => `<td><span class="chip tier ${k}">${n}</span></td><td${UI.ttAttrs('tier', k)}>${rg}</td>`)
+      .replace(/— you are here \((\d+)\)/, (m, w) => `— you are here (${N('worth', pc.id, w)})`));
+    h = TT.within(h, '<div class="group-h">One against many</div>', '</table>', seg => seg.replace(/<tr><td><span class="chip tier (\w+)">([^<]*)<\/span><\/td>/g, (m, k, n) => `<tr${A_('crowd', n)}><td><span class="chip tier ${k}"${UI.ttAttrs('crowd', n)}>${n}</span></td>`));
+    h = h.replace(/(<div class="small" style="margin-top:4px"><b>You:<\/b> )([\s\S]*?)(<\/div>)/, (m, a, body, c) => `${a}<span${UI.ttAttrs('takeLine', '')}>${body}</span>${c}`);
+    h = h.replace(/(Legends alive in Ardan: )(\d+ of a possible \d+)(\. Masters in [^:]*: )(\d+ \(no realm raises more than \d+\))/, (m, a, l, b, ms) => `${a}${N('census', 'legends', l, { focus: true })}${b}${N('census', 'masters', ms, { focus: true })}`)
+      .replace(/<div class="tiny muted">(\d+ more, whose names have not reached you\.)<\/div>/, (m, t) => `<div class="tiny muted">${N('census', 'legends', t)}</div>`);
+    return h;
+  };
+  TT.wireLater(() => UI, 'powerPage', 'powerPage');
+  W.legacy = function (h, p) {
+    const pc = p || A.pc(); if (!pc) return h;
+    h = h.replace(/<div class="small muted">(Generation \d+ · [^<]*)<\/div>/, (m, t) => `<div class="small muted">${N('dynasty', '', t, { focus: true })}</div>`)
+      .replace(/<div class="tiny muted">living, (\d+)<\/div>/, (m, a) => `<div class="tiny muted">living, ${N('age', pc.id, a)}</div>`)
+      .replace(/<div class="group-h">Endings found \(([^)]*)\)<\/div>/, (m, t) => `<div class="group-h">Endings found (${N('endings', '', t, { focus: true })})</div>`)
+      .replace(/<div class="group-h">Achievements \(([^)]*)\)<\/div>/, (m, t) => `<div class="group-h">Achievements (${N('achs', '', t, { focus: true })})</div>`);
+    const keys = Object.keys(GD.ACH); let i = 0;
+    h = TT.within(h, '<div class="group-h">Achievements', null, seg => seg.replace(/<div class="card ach( lock)?"><b>/g, (m, l) => { const k = keys[i++]; return k ? `<div class="card ach${l || ''}"${UI.ttAttrs('ach', k)}><b>` : m; }));
+    // children: each one's age
+    h = h.replace(/<div class="card person( sel)?"><div class="pp click" data-a="ov" data-v="person:([^"]+)">([\s\S]*?)<div class="sub">(\d+) · /g, (m, s2, id, mid, a) => `<div class="card person${s2 || ''}"><div class="pp click" data-a="ov" data-v="person:${id}">${mid}<div class="sub">${N('age', id, a)} · `);
+    return TT.wireCosts(h);
+  };
+  TT.wireLater(() => UI.TAB, 'legacy', 'legacy');
 
   // ---- an event: each choice's odds (a tap target inside the choice), the measure of a fight, a cost in the words ----
   W.eventModal = function (h, q) {

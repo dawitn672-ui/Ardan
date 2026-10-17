@@ -139,7 +139,15 @@ A.defEvents([
       { t: 'Play, and lose a little to him on purpose', check: { s: 'gambling', s2: 'int', d: 40 },
         win: { r: 'You lose ten suns so neatly that he thinks he won them. He is your friend for the rest of the week.', fx: (p, ctx) => { p.coin = Math.max(0, p.coin - 10); const g = A.gathById(ctx.gid); if (g && g.pc) g.pc.inf = (g.pc.inf || 0) + 3; A.gNext(ctx); return ''; } },
         lose: { r: 'You mean to lose a little and lose a great deal. He is pleased; your purse is not.', fx: (p, ctx) => { p.coin = Math.max(0, p.coin - 35); const g = A.gathById(ctx.gid); if (g && g.pc) g.pc.inf = (g.pc.inf || 0) + 1; A.gNext(ctx); return ''; } } },
-      { t: 'Watch, and listen to what the losers say', r: 'Losing men talk. You learn which of the {other} party is short of money.', fx: (p, ctx) => { A.trainSkill(p, 'intrigue', 1); A.gNext(ctx); return ''; } },
+      { t: 'Watch, and listen to what the losers say', r: 'Losing men talk.',
+        // reading the players is the gambler's skill: one who can follow the play sees who is losing more than he has
+        fx: (p, ctx) => {
+          A.trainSkill(p, 'intrigue', 1);
+          const g = A.gathById(ctx.gid), sharp = A.skill(p, 'gambling') >= 25;
+          if (sharp && g && g.pc) g.pc.inf = (g.pc.inf || 0) + 1;
+          A.gNext(ctx);
+          return sharp ? 'You can follow the play well enough to see which of the {other} party is losing more than he has.' : 'You cannot follow the play, and learn only who drinks.';
+        } },
     ],
   },
 ]);

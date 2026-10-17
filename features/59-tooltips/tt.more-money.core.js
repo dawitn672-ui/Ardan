@@ -24,7 +24,7 @@
     const p = pc(); if (!p) return '';
     const S = TT.ownParts(p);
     return H('Everything you own', coin(S.total)) + D('Coin in hand, and what your holdings and gear cost new. A sale fetches less: gear goes back for about a third.') +
-      TT.sumRows(S.parts, S.total, 'All of it') +
+      TT.sumRows(S.parts, S.total, 'All of it', v => esc(A.fmt(v))) +
       (p.debt ? F(`Your ${L('debt', '', 'debt')} of ${coin(p.debt)} is not taken off.`) : '');
   };
   G.debt = function () {
@@ -183,7 +183,7 @@
   G.runPlan = function (dest) {
     const S = TT.runParts(dest); if (!S) return '';
     const P = S.P;
-    return H('A run to ' + esc(A.realmShort(dest)), coin(P.net), 'net, if all goes well') + TT.sumRows(S.parts, S.total, 'Net') +
+    return H('A run to ' + esc(A.realmShort(dest)), coin(P.net), 'net, if all goes well') + TT.sumRows(S.parts, S.total, 'Net', v => esc(A.fmt(v))) +
       R('Your cargo, worth here', coin(P.value), 'tt-sub') + R('Road', `${P.km} km · ${P.days} days${P.sea ? ' by sea' : ''}`, 'tt-sub') +
       R(L('runRisk', dest, 'Danger on the road'), pct(P.risk), 'tt-sub') + R(L('initiative', '', 'Initiative'), P.ini + '⧗', 'tt-sub') +
       F('Each load sold there fetches a little less than the one before.');
@@ -228,7 +228,7 @@
   G.purseTotal = function (which) {
     const S = TT.bookParts(which); if (!S) return '';
     return H('All told', (S.total < 0 ? '−' : '+') + coin(Math.abs(S.total)), which === 'last' ? 'the year ' + esc(S.y) : 'since New Year ' + esc(S.y)) +
-      TT.sumRows(S.parts, S.total, 'All told') + F('Trade, purchases and what scenes give or take are not in the book; your coin moves by those too.');
+      TT.sumRows(S.parts, S.total, 'All told', v => esc(A.fmt(v))) + F('Trade, purchases and what scenes give or take are not in the book; your coin moves by those too.');
   };
   G.purseLine = function (arg) {
     const [which, k] = String(arg).split('|'), B = bookOf(which), x = B && B.lines && B.lines[k], p = pc(); if (!x || !p) return '';

@@ -29,7 +29,7 @@
     for (const c of (t && t.bns) || []) if (GD.BN[c]) by[c] = (by[c] || 0) + 1;
     const parts = Object.entries(by).map(([c, n]) => [`${n} × ${bnName(c)} (${GD.BN[c].men})`, n * GD.BN[c].men]);
     for (const sp of (t && t.sup) || []) if (GD.SUP[sp] && GD.SUP[sp].men) parts.push([esc(GD.SUP[sp].name), GD.SUP[sp].men]);
-    return H('Men', `${fmt(d.men)} of ${fmt(s.men)}`, esc(d.name)) + `<div class="tip-row tt-sum"><span>The template wants</span><b></b></div>` + TT.sumRows(parts, s.men, 'Full strength') +
+    return H('Men', `${fmt(d.men)} of ${fmt(s.men)}`, esc(d.name)) + `<div class="tip-row tt-sum"><span>The template wants</span><b></b></div>` + TT.sumRows(parts, s.men, 'Full strength', v => esc(A.fmt(v))) +
       F('The dead and the sick are replaced from the realm\'s manpower pool as fast as it allows.');
   };
   TT.maxOrgParts = function (d) {
@@ -210,7 +210,7 @@
   G.trainCost = function (arg) {
     const [rid, tid] = String(arg).split('|'), s = A.tplS(rid, tid), r = A.realm(rid); if (!s || !r) return '';
     const cost = Math.round(s.men * 4 + s.cost * 6), days = Math.round(90 + s.n * 6 + (s.cats.horse + s.cats.beast) * 12);
-    return H('Training one', coin(cost)) + TT.sumRows([[`${fmt(s.men)} men × 4`, s.men * 4], [`Kit worth ${fmt(s.cost)} × 6`, s.cost * 6]], cost, 'Suns') +
+    return H('Training one', coin(cost)) + TT.sumRows([[`${fmt(s.men)} men × 4`, s.men * 4], [`Kit worth ${fmt(s.cost)} × 6`, s.cost * 6]], cost, 'Suns', v => esc(A.fmt(v))) +
       `<div class="tip-row tt-sum"><span>Time</span><b></b></div>` + TT.sumRows([['To raise any division', 90], [`${s.n} battalions × 6`, s.n * 6], [`${s.cats.horse + s.cats.beast} of horse or beasts × 12`, (s.cats.horse + s.cats.beast) * 12]], days, 'Days');
   };
 
@@ -299,7 +299,7 @@
 
   // ---- the elite orders ------------------------------------------------------------------------------------------------------
   G.orderPow = function (id) {
-    const S = A.orderSummary && A.orderSummary(id); if (!S || !S.d) return '';
+    const S = GD.ORDERS && GD.ORDERS[id] && A.orderSummary ? A.orderSummary(id) : null; if (!S || !S.d) return '';
     const c = A.divCombat(S.d), r = A.realm(S.o.realm);
     const parts = [['Killing power (soft + half the hard) × 2', (c.soft + c.hard * 0.5) * 2], ['Defense ÷ 2', c.def * 0.5], ['Breakthrough ÷ 2', c.brk * 0.5], ['Hit points × 0.6', c.hp * 0.6], [`Organization ${r0(S.d.org)} × 0.3`, S.d.org * 0.3]];
     return H(esc(A.cap(S.o.name)), `${fmt(S.men)} of ${fmt(S.full)}`, esc(S.exp)) + `<div class="tip-row tt-sum"><span>Its power</span><b></b></div>` + TT.sumRows(parts, A.divPower(S.d), 'Power') +

@@ -29,8 +29,14 @@ const SETUP = () => {
       A.aiLogAdd = function (k, rid) {
         const e = lg.apply(this, arguments), r = A.realm(rid);
         if (e && r && !r.playerRun && rid !== me() && !e.forced) { if (e.lean >= .05) o.inc++; else if (e.lean <= -.05) o.ag++; }
-        if (e && k === 'war') { o.aiChecked++; if (e.cb) o.shownLog++; }
         return e;
+      };
+      // every war the AI declares through A.aiWarCheck gets a log entry, and the casus belli is added to it
+      const nw = A.aiNoteWar;
+      A.aiNoteWar = function () {
+        const res = nw.apply(this, arguments), e = A.S.aiLog && A.S.aiLog[0];
+        if (res && res.ok && e && e.k === 'war') { o.aiChecked++; if (e.cb && /Casus belli: /.test(e.t)) o.shownLog++; }
+        return res;
       };
       A.on('warStart', onWar);
       const end = A.S.year + years;
@@ -48,7 +54,7 @@ const SETUP = () => {
             if (x.treasury > Math.max(1, x.income) * 6) o.hoard.push(`${x.short} ${A.S.year}: ${Math.round(x.treasury / x.income * 10) / 10} years`);
           }
         }
-      } finally { A.aiLogAdd = lg; A.HOOKS.warStart = A.HOOKS.warStart.filter(f => f !== onWar); CS.ON = true; CS.TEMPER.ON = true; }
+      } finally { A.aiLogAdd = lg; A.aiNoteWar = nw; A.HOOKS.warStart = A.HOOKS.warStart.filter(f => f !== onWar); CS.ON = true; CS.TEMPER.ON = true; }
       o.struck = CS.stats.struck;
       return o;
     },
@@ -88,7 +94,7 @@ export default {
     const hoard = on.flatMap(x => x.hoard).concat(off.flatMap(x => x.hoard));
     const news = sum(on, 'shownNews'), logs = sum(on, 'shownLog'), checked = sum(on, 'aiChecked');
     const struck = sum(on, 'struck');
-    const ok = ai >= 40 && recorded === ai && news >= ai * .9 && logs === checked && share >= 18 && struck >= 3 && rateOn <= rateOff * 1.3 &&
+    const ok = ai >= 40 && recorded === ai && news >= ai * .9 && checked >= 20 && logs === checked && share >= 18 && struck >= 3 && rateOn <= rateOff * 1.3 &&
       inChar >= 78 && inChar >= inCharOff + 8 && hoard.length === 0;
     return { ok, detail: `${ai} AI wars in 150 world-years, ${recorded} with a casus belli, ${news} of them in the news, ${logs} of ${checked} declared wars carry it in the war log; ` +
       `citing a memory or a want ${share.toFixed(1)}% (by world ${per.join(', ')}%; off ${offShare.toFixed(1)}%), ${struck} struck by a crown that had planned it; AI wars per realm-year ${rateOn.toFixed(4)} on, ${rateOff.toFixed(4)} off (${(100 * (rateOn / rateOff - 1)).toFixed(0)}%); ` +

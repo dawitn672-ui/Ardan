@@ -26,6 +26,13 @@
     return H(title, total + '%', sub) + K.pts(parts, total, 'The odds') + (foot ? F(foot) : '');
   };
 
+  // what 67-memory-weave adds to a choice's odds when the scene remembers an earlier one (its own number, read back)
+  TT.memOf = function (ctx, evId, ck) {
+    const w = ctx && ctx.mw, e = evId && A.EV[evId];
+    if (!w || w.off || !w.od || w.ev !== evId || !e || !e.choices) return 0;
+    const i = e.choices.findIndex(c => c && c.check === ck);
+    return i >= 0 ? +w.od[i] || 0 : 0;
+  };
   // ---- a check: 50 + (your skill − the difficulty) × 1.6, between 4 and 96 ------------------------------------------
   TT.checkValue = function (p, k) {
     if (GD.STATS.includes(k)) return { v: A.stat(p, k), how: '' };
@@ -37,7 +44,7 @@
     else if (eff !== raw) how = 'with perks';
     return { v: Math.max(eff, floor), how };
   };
-  TT.checkParts = function (p, ck, ctx, shown) {
+  TT.checkParts = function (p, ck, ctx, shown, evId) {
     const d0 = ck.d || 45, add = ck.dctx ? +((ctx || {})[ck.dctx]) || 0 : 0;
     const a = TT.checkValue(p, ck.s), b = ck.s2 ? TT.checkValue(p, ck.s2) : null, bonus = ck.bonus ? +ck.bonus(p) || 0 : 0;
     const w1 = b ? 0.6 : 1, parts = [['An even test', 50, 'base']];
@@ -47,23 +54,25 @@
     if (add) parts.push([add > 0 ? `The scene makes it harder (+${add})` : `The scene makes it easier (${add})`, -add * 1.6]);
     const raw = 50 + (a.v * w1 + (b ? b.v * 0.4 : 0) + bonus - d0 - add) * 1.6, base = A.clamp(Math.round(raw), 4, 96);
     if (base !== Math.round(raw)) parts.push(['Never below 4% or above 96%', base - raw]);
-    const mw = ctx && ctx.mw;
-    if (shown != null && shown !== base) parts.push([mw && !mw.off ? 'What you remember of it before (67-memory-weave)' : 'Other things in play', shown - base]);
+    const mem = TT.memOf(ctx, evId, ck);
+    if (mem && shown != null) { const v = A.clamp(base + mem, 4, 96); parts.push(['What you remember of it before (67-memory-weave)', v - base]); if (shown !== v) parts.push(['Other things in play', shown - v]); }
+    else if (shown != null && shown !== base) parts.push(['Other things in play', shown - base]);
     return { parts, total: shown != null ? shown : base, d: d0 + add };
   };
 
   // ---- a fight (48-fight-ladder): the chance in steps --------------------------------------------------------------------
   const hf = p => A.clamp((p && p.health != null ? p.health : 100) / 100, 0.3, 1);
-  const steps = (zs, lo, hi, shown) => {
+  const steps = (zs, lo, hi, shown, mem) => {
     // zs: [[label, dz]] added in order to a logit that starts at 0 (even odds); each row is the points it moved
     let z = 0, p0 = 50; const parts = [['Even odds', 50, 'base']];
     for (const [l, dz] of zs) { if (!dz) continue; z += dz; const p1 = logistic(z) * 100; parts.push([l, p1 - p0]); p0 = p1; }
     const cl = A.clamp(p0, lo * 100, hi * 100); if (Math.abs(cl - p0) > 1e-9) { parts.push([`Never below ${r0(lo * 100)}% or above ${r0(hi * 100)}%`, cl - p0]); p0 = cl; }
+    if (mem) { const v = A.clamp(Math.round(p0) + mem, 4, 96); parts.push(['What you remember of it before (67-memory-weave)', v - p0]); p0 = v; }
     if (shown != null && Math.round(p0) !== shown) parts.push(['Other things in play', shown - p0]);
     return parts;
   };
-  TT.fightParts = function (p, spec, ctx, check, shown) {
-    const FL = A.FL, R0 = FL.resolve(p, spec, ctx || {}, check);
+  TT.fightParts = function (p, spec, ctx, check, shown, evId) {
+    const FL = A.FL, R0 = FL.resolve(p, spec, ctx || {}, check), mem = TT.memOf(ctx, evId, check);
     const tier = w => esc(A.tierOf(w).n), me = L('worth', p.id, `you, ${tier(R0.wMe)} ${R0.wMe}`) + (R0.edge ? ` (${sg(R0.edge)} for ${esc((GD.SKILLS[spec.edge] || spec.edge).toLowerCase())})` : '');
     if (spec.scale === 'one') {
       const rule = spec.rule || 'yield', RL = FL.RULES[rule] || FL.RULES.yield, foe = R0.foe ? A.P(R0.foe) : null;
@@ -71,12 +80,12 @@
       const them = foe ? `${esc(foe.given)}, ${tier(R0.wThem)} ${R0.wThem}` : `one ${tier(R0.wThem)} ${R0.wThem}`;
       const zs = [[`${me} against ${them}`, (w - R0.wThem) / RL[0]], [`The rules: ${esc({ yield: 'until one yields', lethal: 'to the death', brawl: 'a brawl', spar: 'sparring', tourney: 'a tourney' }[rule] || rule)}`, RL[1]],
         [`${L('health', '', 'Your health')} ${r0(p.health)}${foe ? ' against theirs ' + r0(foe.health) : ''}`, RL[2] * (hf(p) - (foe ? hf(foe) : 1))], ['They draw a weapon as it starts', FL.DREW * drew]];
-      return { parts: steps(zs, FL.CLAMP[0], FL.CLAMP[1], shown), total: shown != null ? shown : R0.pct, R: R0 };
+      return { parts: steps(zs, FL.CLAMP[0], FL.CLAMP[1], shown, mem), total: shown != null ? shown : R0.pct, R: R0 };
     }
     if (spec.scale === 'beast' && !(R0.n > 1) && R0.w50 != null) {
       const row = FL.duelRow(R0.beast), s = R0.party ? row[3] : row[1], nm = esc(A.beastShort ? A.beastShort(R0.beast) : 'the beast');
       const zs = [[`${me} against ${nm}'s mark of ${R0.w50}${R0.party ? ', with the hunters' : ', alone'} (half of those who stand at the mark win)`, (R0.wMe + R0.edge - R0.w50) / s], [`${L('health', '', 'Your health')} ${r0(p.health)}`, FL.BEAST_HEALTH * (hf(p) - 1)]];
-      return { parts: steps(zs, FL.CLAMP[0], FL.CLAMP[1], shown), total: shown != null ? shown : R0.pct, R: R0 };
+      return { parts: steps(zs, FL.CLAMP[0], FL.CLAMP[1], shown, mem), total: shown != null ? shown : R0.pct, R: R0 };
     }
     return { parts: null, total: shown != null ? shown : R0.pct, R: R0 };
   };
@@ -92,7 +101,7 @@
     const p = pc(), X = TT.choiceOf(vi); if (!p || !X) return '';
     const { q, vc, c } = X, shown = vc.odds, ck = c.check;
     if (ck && ck.fight && A.FL) {
-      const S = TT.fightParts(p, ck.fight, q.ctx, ck, shown), R0 = S.R;
+      const S = TT.fightParts(p, ck.fight, q.ctx, ck, shown, q.ev), R0 = S.R;
       if (S.parts) return show('The odds of the fight', esc(vc.risk || ''), S.parts, S.total, `Measured on many fights between fighters like these; the dice decide this one. See ${L('tier', A.tierOf(R0.wMe).k, 'the tiers')}.`);
       const sides = R0.scale === 'beast' ? `${R0.n} of ${esc(A.beastShort ? A.beastShort(R0.beast) : 'them')}` : `${R0.n} ${esc((GD.CROWD[ck.fight.tier] || GD.CROWD[2]).n)}, ${R0.wThem} each`;
       return H('The odds of the fight', digits() ? S.total + '%' : null, esc(vc.risk || '')) + R(L('worth', p.id, 'You'), digits() ? `${esc(A.tierOf(R0.wMe).n)} ${R0.wMe}` : esc(A.tierOf(R0.wMe).n)) +
@@ -100,7 +109,7 @@
         F(`See ${L('worthBody', p.id, 'your wind and body')}.`);
     }
     if (ck) {
-      const S = TT.checkParts(p, ck, q.ctx, shown);
+      const S = TT.checkParts(p, ck, q.ctx, shown, q.ev);
       return show('The odds', esc(vc.risk || ''), S.parts, S.total, `Difficulty ${digits() ? S.d + ', ' : ''}${dWord(S.d)}. Each point of skill above it is worth 1.6%.`);
     }
     if (c.group && A.groupSpecSides) {

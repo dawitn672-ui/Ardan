@@ -25,11 +25,13 @@
   const TT = UI.TT = UI.TT || {};
 
   // rows that add up: parts are [labelHtml, value]; the values are rounded, and any point lost to rounding is a row
-  TT.sumRows = function (parts, total, totalLabel = 'Total') {
+  // fmt, when given, writes the numbers (money with its thousands, say): fmt(n) for a whole number n
+  TT.sumRows = function (parts, total, totalLabel = 'Total', fmt) {
     const P = parts.filter(x => x && x[1] != null).map(([l, v, c]) => [l, r0(v), c]).filter(x => x[1] !== 0 || x[2] === 'keep');
     const sum = P.reduce((a, x) => a + x[1], 0), diff = r0(total) - sum;
     if (diff) P.push(['Rounding', diff, 'tt-sub']);
-    return P.map(([l, v, c]) => R(l, sg(v), c && c !== 'keep' ? c : '')).join('') + R(totalLabel, r0(total), 'tt-sum');
+    const f = fmt || (v => v), sf = v => fmt ? (v > 0 ? '+' : v < 0 ? '−' : '±') + f(Math.abs(v)) : sg(v), t = r0(total);
+    return P.map(([l, v, c]) => R(l, sf(v), c && c !== 'keep' ? c : '')).join('') + R(totalLabel, fmt ? (t < 0 ? '−' + f(-t) : f(t)) : t, 'tt-sum');
   };
   TT.sumOf = parts => parts.filter(x => x && x[1] != null).reduce((a, x) => a + r0(x[1]), 0);
 

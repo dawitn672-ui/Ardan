@@ -5,6 +5,10 @@
 // Codex. Everything here only reads.
 (function () {
   const TT = UI.TT = UI.TT || {};
+  // the entries of part one, as they stand before tt.more-*.core.js adds part two's (the tests tell them apart)
+  const base = new Set(Object.keys(UI.TIPS || {}));
+  TT.part2Keys = () => Object.keys(UI.TIPS).filter(k => !base.has(k));
+  Object.defineProperty(TT, 'part2', { get: () => new Set(TT.part2Keys()), configurable: true });
   const esc = s => UI.esc(String(s == null ? '' : s));
   const r0 = v => Math.round(v || 0);
   const r1 = v => Math.round((v || 0) * 10) / 10;

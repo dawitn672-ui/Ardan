@@ -1,6 +1,6 @@
 # Nested tooltips
 
-**Aspect:** UI and UX (Road to Ten, UI and UX 2) · **Kind:** UI system, no patches, no events
+**Aspect:** UI and UX (Road to Ten, UI and UX 2; and the phone part of UI and UX 6) · **Kind:** UI system, no patches, no events
 
 The plan asks: "Add nested tooltips. Every number and keyword shows its breakdown on hover or tap (fighting worth = body 34 + skill 41 + gear 18), and words inside the tooltip open their own." The benchmark row adds: "Fighting worth opens into body + skill + gear, each part opens again; the six stats explain themselves. Opens by hover, tap or Enter; Esc closes."
 
@@ -74,10 +74,58 @@ On the full build (all 56 features at the time), the same tests pass. The number
 - No new state, so old saves load unchanged. The CSS is one `<style>` element, as 61-illumination's is.
 - Other features' tips are kept and wrapped, not replaced. 49-body-mind's stat note still shows under the new breakdown.
 
+## Part two: every other screen
+
+The first part left the War Room, Holdings, the Path tab, the event odds, the duel and battle screens, the Codex, the Realm tab of one who does not rule, and the phone to their plain `title`s. Part two explains their numbers the same way: about 100 new entries, each worked out from the live game, and wired into those screens.
+
+**What it explains** (`tt.more-*.core.js`; `tt.kit.core.js` holds the shared helpers):
+
+- **The odds of a choice** (`odds`). "38% · risky" opens what makes it, in points that add up to the number on the button:
+  - a check: an even test (50), then each skill or stat against the difficulty (60% and 40% when there are two; "untrained: your stats lend 4 + 30% of their average", or "from Diplomacy" when a related skill stands in), the scene's own weight (30-get-to-know's `dctx`), the bounds (4% to 96%), and what 67-memory-weave adds when the scene remembers an earlier one. Each stat and skill opens its own breakdown, so traits and wounds are one level down.
+  - a fight (48-fight-ladder): the chance in steps from even odds, each row what it moved: the worths ("you, Trained 53, against one Brawler 46: +27"), the rules (to yield, to the death, a brawl), both sides' health, a weapon the foe draws, the bounds. A beast: your worth against its mark.
+  - A fight against many has no parts (it is side against side), so the popover names the sides and says so.
+  - On Realism (42-difficulty) no digit appears: each row says "helps", "hurts a great deal" and so on.
+  - The odds are a tap target inside the choice: a tap on "38% · risky" opens them, and the choice waits for a tap on its words. By keyboard, Right arrow on a choice opens its odds, and Esc brings focus back to the choice.
+  - A cost in a choice's words ("(3 suns)") opens your coin and what is left after it.
+- **The duel** (`duelOdds`, `duelSide`, `duelBlood`, `duelWind`, `duelRead`, `duelAdapt`): the measure in steps (worths, rules, blood on both sides, a drawn weapon); each fighter; "Your instincts (26% sure)" as 30 + training + instincts against theirs + the same school + what you have learned in this fight.
+- **The battle** (`bSide`, `bMorale`, `bWing`, `bDead`, `aarCause`, `bPulse`, `bScale`, `drill`): each side's standing men wing by wing (they add up), morale unit by unit, the dead and where they fell, each after-action cause as 23-after-action counts it, and 60-drill's drill notes.
+- **Holdings** (`worthAll`, `debt`, `gearSlot`, `shopItem`, `mktPrice`, `cargo`, `transport`, `mtRoad`, `mtCart`, `tradeRun`, `runRisk`, `runPlan`, `prop`, `purseTotal`, `purseLine`):
+  - everything you own (coin, holdings and gear at cost: a sum);
+  - each piece you carry and each piece in the armorer's table: its stats at that quality, what it does to your fighting worth, and its price as list price × quality × iron and steel (or horses) in your market;
+  - each market price as the realm's price × the dealer's cut × the town's own store against its need (66-markets), with your trade skill and factor behind the cut, and the stock in months of need;
+  - the nearest towns' roads, carting (whichever is more: a share of the load's worth, or the mules and inns of the road) and prices there; the trade roads' margin, days and danger; a planned run's net (sale − tolls − guards − carting);
+  - each holding's income, upkeep and years to pay for itself;
+  - 56-realm-inside's "Where the money goes": each line, and "All told" as their sum.
+- **The Path tab** (`jobOdds`, `career`, `pay`, `perf`, `board`, `promoOdds`, `merit`, `milRank`, `school`): the odds of being taken on, step by step (55, stat against 40, skill ÷ 2, letters, the bounds); each career's ladder and pay; your pay as rank × performance × reputation × the rest; performance and where it settles; each row of a promotion board with its bar; the army's yearly promotion chance as 50% × each unmet row × the merit over the bar, plus your superior's word.
+- **The War tab and the War Room** (`divStr`, `divMen`, `divOrg`, `divEq`, `divExp`, `divSup`, `divStat`, `tplStat`, `army`, `armyOrg`, `armyPlan`, `armySup`, `temper`, `genSkills`, `host`, `manpower`, `training`, `trainCost`, `industry`, `line`, `build`, `buildKind`, `econLaw`, `doctrine`, `prov`, `fight`, `warScore`, `warFront`, `oob`, `orderPow`, `orderTraits`, `orderReq`, `divRecord`, `divIntel`, `staffFit`, `drillShare`, `drillCap`):
+  - each figure of a division's stat grid as the template's battalions × kit × experience × the realm's army × the general's tactics or command × doctrine × drill × an order's edge (a product), its organization ceiling, its men battalion by battalion (a sum), its kit, experience and supply;
+  - a template's figures battalion by battalion; an army's organization, planning and supply; its general's temper (38-orders) and the traits that made it; the host, the pool, the drill yards and the cost of training; the forges and the building queue; a province; a fight on the map; the war score; the order of battle; the elite orders' power (a sum of their division's figures) and what it takes to join; 60-drill's drill yard.
+- **The Realm tab when you do not rule** (`facPower`, `facDisc`, `loyalty`, `loyaltyAll`, `courtOdds`, `crownBook`, `rung`, `rungs`, `custom`, `feud`, `rulerOp`): a faction's power (its houses' swords against the realm's, plus 56's council backing) and discontent; each great lord's loyalty; 56's court odds reason by reason (they add up); the crown's purse line by line; the rungs; 47-realm-bible's customs as you have met them; 55-bonds' long memories, halving with the years.
+- **The Codex and the Dynasty page** (`crowd`, `takeLine`, `census`, `dynasty`, `endings`, `achs`, `ach`): the ladder's ranges, one against many by tier, your own "can take", 32-ladder's census of Legends and Masters; the dynasty's line, endings and achievements.
+
+**Wired in** (`tt.wire2.core.js`). As in part one, each wrapper adds triggers by string insertion and returns the HTML unchanged on any error. These wrappers are installed when the game starts (at `UI.init`), after every feature's code has run, so they wrap each screen as the last feature left it, and a feature missing from the build only leaves its markers out. Where an outer function reads an inner one's markup (`UI.wrDivPanel` reads `UI.wrDivPanelBasic`'s), the outer one is wrapped. A number inside an action (a card that opens, a row that selects) answers to hover only; the tap and the click stay the action's. Holdings' button-only columns get a header word (Buy, Trade, Go, Plan), which axe asked for.
+
+**Measured by** (`test.mjs`, part two; on the full build, all 65 features at the time, and on a build of the fix layer plus 27-accessibility, 61-illumination, 62-inked-map, 71-phone and this feature).
+
+A number is a numeric token in a screen's text. Not counted: prose (a block of 12 or more words that holds a sentence, or a running log: the battle's and the duel's, the chronicle, an event's text), years (a lone 700 to 1299), ordinals, codes such as POL-01, keyboard hints, and quantity buttons (+1, +5, a speed button). A number is covered when it sits in a trigger of the engine; a plain `title=` does not count. "Before" is the same screen with the wiring off.
+
+COVERAGE_TABLE
+
+| Test | Result |
+| --- | --- |
+SUMS_ROWS
+
+Lore pages of the Codex (faiths, bloodlines, songs, secrets, families) and the World tab are not in the table: their numbers are the lore's own facts and the world's records in sentences and lists, and they are left as they were.
+
 **Limits.**
 
-- **Not every screen.** The profile, the top bar, the full profile, the ruler's Realm tab, People and the moods card explain their numbers. The War room, Holdings prices, the Path tab's promotion bars and the event odds still use their own `title`s or tips. The glossary entries exist for some of them (reputation, treasury, opinion) and can be wired the same way.
+- **Lore and the World tab are not wired.** The Codex's lore pages and the World tab's views (the realm list, the news, the annals, the history) keep their plain text. The realm list's columns could be wired with the realm entries that exist.
+- **Some numbers are counted as prose and still wired.** The duel's measure ("…about 30 times in 100") and your instincts' read sit in sentences, so the count leaves them out, but they open their breakdowns.
+- **A number inside an action opens on hover only** (an army row, a division row, a person card, a cost in a button): a tap stays the action's. The choice's odds are the one exception, a tap target of their own.
+- **Some breakdowns are products or steps, not sums.** A price and a division's figure are products, each factor a row; a fight's chance is a curve, split into steps from even odds, each row what it moved the chance. The steps add up to the number shown; their order is fixed (worth first), and another order would split the same total differently.
+- **A fight against many, a group check and the war score have no parts.** The first two are side against side; the war score is a running tally the engine keeps without its history. Their popovers name what they rest on.
+- **A faction's power on its card is last new year's.** The popover reckons it today and says so when the two differ.
 - **Body is weighed, not simulated.** Each stat's share is what the release's rating gives for it at round 5 of a fight, fresh and unhurt. In a real fight, wind, wounds and situation move it.
-- **Some forecasts leave the dice out.** Happiness (±4), stability (±3) and illness are shown before their random part, and the popover says so.
+- **Some forecasts leave the dice out.** Happiness (±4), stability (±3), loyalty (±2) and illness are shown before their random part, and the popover says so.
 - **Opinion has no reasons.** The release stores one number per bond, not its causes. A list of reasons needs the engine to keep them (as `A.opinionParts` does for realms).
 - **No player has used it yet.** Whether five levels is too many, and whether the wording reads quickly, is for the usability tests of UI and UX 8.

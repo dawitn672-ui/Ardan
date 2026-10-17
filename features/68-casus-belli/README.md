@@ -89,7 +89,48 @@ With this feature off, the bench read one flag in 10 worlds × 100 years (seed 9
 
 ## Measured by
 
-TBD
+`node features/68-casus-belli/bench.mjs --html=<full build> --seeds=10 --years=100`, and again with `--off`. It plays the same 10 worlds (seeds 606 … 9191) twice on one build of the integrated world (65 features). Off is this feature switched off (`A.CASUS.ON`, `A.CASUS.TEMPER.ON`), so the comparison is like with like. With the feature off, the casus belli is still recorded, so the share can be counted.
+
+| 10 worlds × 100 years | Off | On |
+| --- | --- | --- |
+| AI realm-years | 33,529 | 33,213 |
+| AI wars (wars of succession and revolts) | 474 (80) | 506 (91) |
+| AI wars per realm-year | 0.0141 | **0.0152 (+7.8%)** |
+| Wars with a casus belli recorded | 474 of 474 | **506 of 506** |
+| **AI wars citing a memory or a want** (a feud line, a lasting wrong, a want) | 15.2% | **26.9%** |
+| Wars between realms citing one | 18.3% | **32.8%** |
+| By world, all AI wars | 2% to 27% | 21% to 36% |
+| Wars citing a feud line / a lasting wrong / a want | 44 / 40 / 27 | 65 / 69 / 76 |
+| Wars struck by a crown that had planned them | none | 86, by 286 plans (6,125 plan-years) |
+| Allies sworn by planners against their target | none | 133 |
+| Debts written: capitals saved / grain in famine | none | 190 / 306 |
+| Debts honoured: wars joined / gold sent / attacks refused (joining an ally's attack) | none | 8 / 44 / 2 |
+| **Decisions in character**, where the ruler's traits pushed at all (\|lean\| ≥ 0.05) | 63.9% of 19,906 | **83.1%** of 26,642 |
+| … where they pushed clearly (≥ 0.25 / ≥ 0.6) | 75.7% / 80.3% | 87.9% / 92.7% |
+| … without the court's decisions | 72.5% | 79.4% |
+| By kind (on): court 84.6% (34,000 decisions), embargoes 84.3%, non-aggression 84.6%, alliances 83.8%, guarantees 79.7%, calls to arms 78.6% (off 59.9%), war 76.8% (off 71.6%), submitting 76.8%, sellswords 62.9%, giving in a lost war 54.8% | | |
+| D2: (decision × trait) pairs that move the declared way by 1.5× | 34 of 53 | 37 of 53 |
+| Spending (spending kind × trait) pairs that move by 1.2× | 2 of 14 | 5 of 14 |
+| **Hoarding flags** (a treasury over 6 years of income) | 0 (and 1 on an earlier build of the same day: seed 99, Sylvaran, 1203) | **0** |
+| AI treasuries, years of income: median / p90 / max by world | 2.97 / 3.67 / 4.0–4.84 | 2.96 / 3.67 / 4.0 |
+| Taxes after 100 years: Light / Fair / Customary / Heavy / Crushing | 171 / 112 / 17 / 10 / 18 | 158 / 111 / 29 / 14 / 14 |
+
+Hoarding over every run with the feature on, across the four tunings it went through: 0 flags in 40 worlds × 100 years (four 10 × 100 runs, about 133,000 AI realm-years). The decision measure is 20-ai-personality's own: every entry of its log carries the lean, the sum of the reasons that came from the ruler's own traits. 56-realm-inside logs sellswords and aid with a trait reason only when it pushed toward them; the bench reads those two by the same weights both ways, so a peaceable ruler hiring sellswords counts against. A surrender forced at a war score of 80 would be left out; none was logged as forced.
+
+`node tests/run.mjs <full build> --features=casus-belli` (the core suites, then):
+
+| Test | Result |
+| --- | --- |
+| `csWorlds` | TBD |
+| `csShownEverywhere` | Highland takes Solenne's capital, then declares: "An old grudge: Took our capital, Old Seat, in 1105 (under First Speaker Helga Stonefoot). Also: the cause given, an old rivalry." (lead `feud`). It is in the news, the war room ("Why it began"), the diplomacy card ("Grudges, wants and debts") and the Realm tab ("Why wars begin"). A place written as `<b>Old Seat</b>` shows as text. Drawing all four changes neither the state nor the random stream |
+| `csRevengeIsPatient` | A vengeful, proud ruler with a capital taken plans (`feud`, weight 3.74). Its reserve goes 1.5 → 2.2 years. Its odds on the target at peace are ×0.5 and on another neighbour ×0.5. With the target at war elsewhere they are ×9, and the strength ratio goes 0.26 → 0.44. The war log reads "The moment has come: Solenne's host is away, at war with Highland" and "Vengeful ruler: carries the grudge". A forgiving, kind successor keeps no plan |
+| `csDebtAfterDeath` | Ostra owes Solenne "Stood by us against the Horde, in 1080 (… carried by First Banker Emilio Scudieri since 1105)", 16. The ruler who incurred it is dead. Under a loyal successor the odds of attacking Solenne are ×0. When Highland attacks Solenne, Ostra marches with no treaty: "Free City of Ostra has not forgotten: stood by us against the Horde, in 1080. It marches to the aid of Solenne against Highland." The log entry has lean +0.66. The line is half repaid (8, "honoured in 1105"), and Solenne now owes Ostra 16. With Solenne at war and broke, Ostra sends 551,232. Under a fickle, deceitful successor the debt is owed 0 and Ostra does not march |
+| `csNewDebts` | "Sent grain ships in our famine, in 1105 (…)"; "Saved our capital, Solenne, from Highland, in 1105 (…)" (+22) after a war in which Highland held it ended in a white peace |
+| `csSaveAndOld` | A save keeps the casus belli, the plan and the record. A save without them (and without `casus` on its wars) draws the war room, the Realm tab and the diplomacy card, and plays five years |
+
+Also on the full build: `tests/run.mjs --features=ai-personality,bonds,realm-inside,orders` TBD.
+
+This feature adds no events, so `tools/lint-events.mjs` and `tools/lint-choices.mjs` have nothing of its own to read.
 
 ## Rules kept
 
