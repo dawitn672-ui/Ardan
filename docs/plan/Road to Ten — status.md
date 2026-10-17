@@ -147,7 +147,7 @@ That is 79% done and 17% partial. One step is not started (Character 1, merging 
 | # | Step | Status | Evidence or gap |
 | --- | --- | --- | --- |
 | 1 | Six tabs | ✅ | Base (Phase 1) |
-| 2 | Nested tooltips on every number | ◐ | 59-tooltips: one engine opens a popover by hover, tap or Enter, nests six deep, Esc closes the top one; about 40 glossary entries worked out from the live game (fighting worth = body + skill + gear, each opening again; the six stats with what feeds them and what they feed). Profile numbers with a tooltip 6 of 18 → 18 of 18; the top bar, the full profile, the ruler's Realm tab and People are covered. The war room, market prices, promotion bars and event odds keep their plain titles |
+| 2 | Nested tooltips on every number | ✅ 👥 | 59-tooltips: one engine opens a popover by hover, tap or Enter, nests six deep, Esc closes the top one; about 140 entries worked out from the live game. Every number on the profile, top bar, People, the War Room and its panels, Holdings (prices, stocks, the money book), the Path tab, event odds (a tap opens the breakdown without taking the choice; words, not digits, on Realism), duels, battles, the Realm tab and the Codex's Power & scale page: 97–100% of numbers per screen (0% on most before). Breakdowns add up to what is shown (largest gap 1 point of rounding over 152 check odds). The Codex lore pages and the World tab's lists are not wired. Reading speed needs players |
 | 3 | What now panel | ✅ | Base |
 | 4 | Teach by doing | ✅ | Base: 12 hints |
 | 5 | Text diet | ✅ | Base plus 02-content-fixes; the linter enforces it for new events |

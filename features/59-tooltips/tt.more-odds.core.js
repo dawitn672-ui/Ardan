@@ -78,7 +78,7 @@
       const rule = spec.rule || 'yield', RL = FL.RULES[rule] || FL.RULES.yield, foe = R0.foe ? A.P(R0.foe) : null;
       const drew = foe && !spec.weapon && FL.draws(foe, rule) ? 1 : 0, w = R0.wMe + R0.edge;
       const them = foe ? `${esc(foe.given)}, ${tier(R0.wThem)} ${R0.wThem}` : `one ${tier(R0.wThem)} ${R0.wThem}`;
-      const zs = [[`${me} against ${them}`, (w - R0.wThem) / RL[0]], [`The rules: ${esc({ yield: 'until one yields', lethal: 'to the death', brawl: 'a brawl', spar: 'sparring', tourney: 'a tourney' }[rule] || rule)}`, RL[1]],
+      const zs = [[`${me} against ${them}`, (w - R0.wThem) / RL[0]], [`The rules: ${esc({ yield: 'to the death, unless one yields', lethal: 'to the death, no quarter', brawl: 'a brawl', spar: 'sparring', tourney: 'a tourney' }[rule] || rule)}`, RL[1]],
         [`${L('health', '', 'Your health')} ${r0(p.health)}${foe ? ' against theirs ' + r0(foe.health) : ''}`, RL[2] * (hf(p) - (foe ? hf(foe) : 1))], ['They draw a weapon as it starts', FL.DREW * drew]];
       return { parts: steps(zs, FL.CLAMP[0], FL.CLAMP[1], shown, mem), total: shown != null ? shown : R0.pct, R: R0 };
     }
@@ -136,7 +136,7 @@
       return steps([[`You, ${esc(m.tA)} ${m.wA}, against the beast's mark of ${m.w50}`, (m.wA - m.w50) / s], [`Your blood ${r0(a.hp)} of ${r0(a.maxHp)}`, FL.BEAST_HEALTH * (hA - 1)]], FL.CLAMP[0], FL.CLAMP[1], m.pct);
     }
     const hB = b.maxHp ? A.clamp(b.hp / b.maxHp, 0.3, 1) : 1, RL = FL.RULES[m.rule] || FL.RULES.yield;
-    return steps([[`You, ${esc(m.tA)} ${m.wA}, against ${esc(b.short || b.name)}, ${esc(m.tB)} ${m.wB}`, (m.wA - m.wB) / RL[0]], [`The rules: ${esc({ yield: 'until one yields', lethal: 'to the death', brawl: 'a brawl', spar: 'sparring', tourney: 'a tourney' }[m.rule] || m.rule)}`, RL[1]],
+    return steps([[`You, ${esc(m.tA)} ${m.wA}, against ${esc(b.short || b.name)}, ${esc(m.tB)} ${m.wB}`, (m.wA - m.wB) / RL[0]], [`The rules: ${esc({ yield: 'to the death, unless one yields', lethal: 'to the death, no quarter', brawl: 'a brawl', spar: 'sparring', tourney: 'a tourney' }[m.rule] || m.rule)}`, RL[1]],
       [`Blood: yours ${r0(a.hp)} of ${r0(a.maxHp)}, theirs ${r0(b.hp)} of ${r0(b.maxHp)}`, RL[2] * (hA - hB)], ['They draw a weapon as it starts', FL.DREW * (m.drew ? 1 : 0)]], FL.CLAMP[0], FL.CLAMP[1], m.pct);
   };
   G.duelOdds = function () {

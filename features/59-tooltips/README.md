@@ -116,7 +116,7 @@ A number is a numeric token in a screen's text. Not counted: prose (a block of 1
 | War Room, Command / Forces / Wars (soldier) | 5 / 15 / 1 | 0 | **100%** each |
 | War Room, Command / Forces / Templates / Industry / Manpower / Wars (ruler) | 6 / 8 / 41 / 42 / 13 / 5 | 0 | **100%** each |
 | War Room panels: your division, a division, an army, a province | 31, 32, 13, 16 | 0 | **100%** each |
-| War Room: a fight on the map (fix-layer build, where one was raging) | 35 | 0 | **32 (91%)** |
+| War Room: a fight on the map (fix-layer build, where one was raging) | 35 | 0 | **34 (97%)** |
 | Holdings: a peasant, a noble, a merchant, a trade run planned | 277, 278, 281, 290 | 0 | **100%** each |
 | Path: a peasant, a noble, a merchant, a soldier | 74, 87, 87, 77 | 0 | **100%** each |
 | 25 events with odds (checks and fights) | 50 | 0 | **50 (100%)** |
@@ -126,7 +126,7 @@ A number is a numeric token in a screen's text. Not counted: prose (a block of 1
 | Codex, Power & scale (two lives) | 84, 83 | 0 | **100%** each |
 | Dynasty (two lives) | 14, 14 | 0 | **100%** each |
 
-On the fix-layer build (fix layer, 27, 61, 62, 71 and this feature) every screen is 100% as well but the fight (91%: the day count of 62's header and a line of tactics), with fewer numbers where features are missing (Holdings 232 to 241, events 39 numbers in 24).
+On the fix-layer build (fix layer, 27, 61, 62, 71 and this feature) every screen is 100% as well but the fight (97%: one day count), with fewer numbers where features are missing (Holdings 232 to 241, events 39 numbers in 24).
 
 | Test | Result |
 | --- | --- |
