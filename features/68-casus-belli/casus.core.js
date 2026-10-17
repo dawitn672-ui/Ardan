@@ -278,7 +278,7 @@
       const ra = A.realm(w.leadA);
       // a realm's record of why it went to war (the Realm tab and the diplomacy card read it after the war is over)
       if (ra) { ra.csHist = (Array.isArray(ra.csHist) ? ra.csHist : []).concat([{ y: A.S.year, w: clean(w.name), o: w.leadD, t: c.t }]).slice(-6); }
-      if (!(opts && opts.silent)) A.news(`${cap(poss(short(w.leadA)))} casus belli: ${c.t}`, 'war');
+      if (!(opts && opts.silent)) A.news(`War declared by ${short(w.leadA)}. ${c.t}`, 'war');
       const pl = ra && ra.csPlan;
       if (pl && pl.t === w.leadD && CS.ON) {
         CS.stats.struck++;

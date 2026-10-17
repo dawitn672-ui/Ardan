@@ -23,7 +23,7 @@ const SETUP = () => {
         const c = w.casus;
         o.wars.push({ id: w.id, t: c ? c.t : null, cites: c ? c.cites.map(x => x.k) : [] });
         if (c && (CS.hasMemory(c) || CS.hasWant(c))) o.cited++;
-        if (c && A.S.news.slice(0, 6).some(n => (n.truth || n.t).includes('casus belli: ' + c.t.slice(0, 30)))) o.shownNews++;
+        if (c && A.S.news.slice(0, 6).some(n => (n.truth || n.t).includes('. ' + c.t.slice(0, 30)))) o.shownNews++;
       };
       const lg = A.aiLogAdd;
       A.aiLogAdd = function (k, rid) {
@@ -118,7 +118,7 @@ export default {
       const room = UI.wrWars(), card = UI.diplCard(A.realm(X), A.realm(D)), tab = UI.TAB.realm(pc), card2 = UI.diplCard(A.realm(D), A.realm(X));
       const pure = JSON.stringify(A.rngState) === rng0 && JSON.stringify(A.S) === s0;
       return { c: w.casus, room: /Why it began/.test(room) && room.includes('Took our capital'), card: /Grudges, wants and debts/.test(card2) && /cause/.test(card2), tab: /Why wars begin/.test(tab) && tab.includes(w.name),
-        raw: /<b>Old Seat/.test(room + card + tab + card2), pure, news: A.S.news.slice(0, 5).map(n => n.truth || n.t).find(t => /casus belli/.test(t)) };
+        raw: /<b>Old Seat/.test(room + card + tab + card2), pure, news: A.S.news.slice(0, 5).map(n => n.truth || n.t).find(t => /^War declared by /.test(t)) };
     });
     return { ok: !!r.c && r.c.lead === 'feud' && r.room && r.card && r.tab && !r.raw && r.pure && !!r.news,
       detail: `casus belli "${r.c && r.c.t}" (lead ${r.c && r.c.lead}); news "${r.news}"; war room ${r.room}; diplomacy card ${r.card}; Realm tab ${r.tab}; escaped ${!r.raw}; render pure ${r.pure}` };

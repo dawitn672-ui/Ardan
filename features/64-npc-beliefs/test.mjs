@@ -263,7 +263,8 @@ export default {
       UI.ov = null; UI.render();
       return { pure, about: text.includes('What she believes about you'), others: text.includes('What she says of others'), heard: text.includes('What you have heard of her'),
         deedTrue: /burning house\.\s*true/.test(text), taleFalse: /burning house[^.]*\.\s*false/.test(text.replace(/burning house\.\s*true/, '')),
-        odoFalse: /laughs at the faith\.\s*false/.test(text), debtUnmarked: /can ever pay\.(?!\s*(true|false))/.test(text), believeIt: text.includes('(you believe it)'),
+        // (a charge has three wordings, a hash of the claim: any of them)
+        odoFalse: /(laughs at the faith|behind a shut door|laugh at those who do)\.\s*false/.test(text), debtUnmarked: /(can ever pay|some things s?he does not|with a moneylender)\.(?!\s*(true|false))/.test(text), believeIt: text.includes('(you believe it)'),
         escaped: !html.includes('<img src=x>') && html.includes('Odo&lt;img') };
     });
     const ok = r.pure && r.about && r.others && r.heard && r.deedTrue && r.taleFalse && r.odoFalse && r.debtUnmarked && r.believeIt && r.escaped;

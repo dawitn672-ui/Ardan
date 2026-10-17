@@ -36,7 +36,7 @@ Before this feature:
   | `plan` | this feature's plan | "Prepared since 1121" |
 
 - **The player sees it** in four places:
-  - the news: "Velgrad's casus belli: …";
+  - the news: "War declared by Velgrad. The cause given: …";
   - the war's entry in 20-ai-personality's "Recent decisions of rulers": "declares war on Greyhaven. Casus belli: …";
   - the war room, under the sides of each war: "Why it began (Velgrad, 1131): …" (patch `CB-WAR-ROOM`);
   - the diplomacy card of a realm ("Grudges, wants and debts": its wars and why, what it is preparing, what it owes), and the Realm tab ("Why wars begin": your realm's wars, a neighbour's plan against you, the wars elsewhere).
@@ -145,8 +145,8 @@ This feature adds no events, so `tools/lint-events.mjs` and `tools/lint-choices.
 
 The causes read for a realm of either number ("Drevna were caught spying" is now "Drevna had spies taken in our halls";
 "Tusk Clans is worn out" is now "the war has worn Tusk Clans thin"; "the host of Nine Winds"), possessives of names in -s
-are right ("the Nine Winds' casus belli"), and a cite after "Also:" starts in lower case. The "casus belli: The cause
-given: ..." news line keeps its shape, because this feature's test looks for `'casus belli: ' + c.t` in the news.
+are right ("the Nine Winds' casus belli"), and a cite after "Also:" starts in lower case. The news line reads "War declared by
+Velgrad. The cause given: ...", with no verb to agree and no doubled colon; this feature's test looks for `c.t` in it.
 Measured on 12 bot lives of 50 years, the same seeds before and after (`/tmp/ardan/prose/harvest.mjs`, 8.4k generated lines a run): casus lines with an agreement error 5 → 0 (the checker's one remaining flag is a false positive).
 
 ## Limits

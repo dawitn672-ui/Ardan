@@ -174,7 +174,7 @@ of" wording is gone, and debts, a hidden child, skimmed accounts, desertion and 
 | Measured | Before | After |
 | --- | --- | --- |
 | live labels (10,404) whose deed is "you chose to ..." | 790 | 104 (1.0%) |
-| history lines with a grammar error, 12 bot lives of 50 years, the same seeds before and after (`/tmp/ardan/prose/harvest.mjs`, 8.4k generated lines a run) | 15 of 1,158 | 2 of 1,211 |
+| history lines with a grammar error, 12 bot lives of 50 years, the same seeds before and after (`/tmp/ardan/prose/harvest.mjs`, 8.4k generated lines a run) | 15 of 1,158 | 2 of 1,135 |
 | "in the matter of" in a secret | 8 of 15 | 0 |
 
 Test `bondsDeedsRead` holds the fallback under 3% of 10,404 labels, no regularised irregular past, and twelve label shapes.
