@@ -82,7 +82,11 @@
   .tt-n{cursor:help;border-bottom:1px dotted var(--accent-line)}
   .tt-n.tt-on{color:var(--accent-2)}
   [data-tt-tap]{border-bottom-style:solid}
-  @media (pointer:coarse){.tt-n{display:inline-block;min-height:24px;line-height:24px}}
+  @media (pointer:coarse){.tt-n{display:inline-block;min-height:24px;min-width:24px;text-align:center;line-height:24px}
+    [data-tt]:not(.tt):not(.tt-n):not(td):not(tr):not(.tt-pop *){min-height:24px;min-width:24px}
+    b[data-tt],span[data-tt]:not(.tt):not(.chip){display:inline-block;line-height:24px}
+    .tt{min-width:24px;justify-content:center}
+    td[data-tt],tr[data-tt]>td{height:24px}}
   `;
   const css = TT.css;
   TT.css = function () {

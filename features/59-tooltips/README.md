@@ -109,11 +109,33 @@ The first part left the War Room, Holdings, the Path tab, the event odds, the du
 
 A number is a numeric token in a screen's text. Not counted: prose (a block of 12 or more words that holds a sentence, or a running log: the battle's and the duel's, the chronicle, an event's text), years (a lone 700 to 1299), ordinals, codes such as POL-01, keyboard hints, and quantity buttons (+1, +5, a speed button). A number is covered when it sits in a trigger of the engine; a plain `title=` does not count. "Before" is the same screen with the wiring off.
 
-COVERAGE_TABLE
+| Screen (full build) | Numbers | With a trigger, before | After |
+| --- | --- | --- | --- |
+| War tab, an enlisted soldier at war | 47 | 0 | **47 (100%)** |
+| War tab, a ruler at war | 34 | 0 | **34 (100%)** |
+| War Room, Command / Forces / Wars (soldier) | 5 / 15 / 1 | 0 | **100%** each |
+| War Room, Command / Forces / Templates / Industry / Manpower / Wars (ruler) | 6 / 8 / 41 / 42 / 13 / 5 | 0 | **100%** each |
+| War Room panels: your division, a division, an army, a province | 31, 32, 13, 16 | 0 | **100%** each |
+| War Room: a fight on the map (fix-layer build, where one was raging) | 35 | 0 | **32 (91%)** |
+| Holdings: a peasant, a noble, a merchant, a trade run planned | 277, 278, 281, 290 | 0 | **100%** each |
+| Path: a peasant, a noble, a merchant, a soldier | 74, 87, 87, 77 | 0 | **100%** each |
+| 25 events with odds (checks and fights) | 50 | 0 | **50 (100%)** |
+| The duel | 7 | 1 (48-fight-ladder's worth chip) | **7 (100%)** |
+| A battle: deployment, midway, the end | 10, 15, 12 | 0 | **100%** each |
+| Realm tab, not ruling: a commoner, a noble | 53, 44 | 0 | **100%** each |
+| Codex, Power & scale (two lives) | 84, 83 | 0 | **100%** each |
+| Dynasty (two lives) | 14, 14 | 0 | **100%** each |
+
+On the fix-layer build (fix layer, 27, 61, 62, 71 and this feature) every screen is 100% as well but the fight (91%: the day count of 62's header and a line of tactics), with fewer numbers where features are missing (Holdings 232 to 241, events 39 numbers in 24).
 
 | Test | Result |
 | --- | --- |
-SUMS_ROWS
+| `ttCov2War`, `ttCov2Hold`, `ttCov2Scenes`, `ttCov2Realm` | The table above. Bar: each screen at least 90% and not empty, and 150, 1,000, 60 and 120 numbers in all |
+| `ttSums2` | Against the engine's own number, on the full build: 152 check odds (largest gap 1 point, from rounding the rows), 60 fight odds (1), 28 of them moved by a memory (67-memory-weave), 90 popovers whose rows add to their total (0), 30 duel measures (1), 30 instinct reads (0), 90 hiring odds (1), 6 money books whose lines add to "All told" (0), 102 courts' odds (0) and crown purses (0), 123 factions' power (0); products: 126 market prices and 1,164 armorer's prices rounded as shown (0), 100 division figures (0 to a millionth), 20 organization ceilings, 12 template figures. No case needs an "other things in play" row |
+| `ttNested2` | Holdings: a market price (1) opens the trade skill behind the dealer's cut (2), which opens the proficiency tiers (3); a click outside closes all. War Room: a division's organization (1) opens its general (2). An event: a tap on "N% · word" opens the odds (1) and the choice is not taken; the stat (2); its potential (3). Right arrow on the choice opens its odds with focus inside; Esc gives focus back to the choice; still not chosen |
+| `ttPure2` | 21 screens (Holdings, Path, Realm, Dynasty, Codex, 6 events, the duel, a battle, the War tab, every War Room tab, a division), 3,239 popovers opened one and two deep: state and random stream unchanged on every one |
+| `ttAxe2` | Two popovers open on the War Room, on Holdings and on an event, dark and light: 0 axe violations (WCAG 2.2 AA and best practice) |
+| `ttPhone2` | With 71-phone at 375 × 740 by touch: a price and its skill open by tap, both inside the screen; × closes one, a tap outside the rest; a tap on a choice's odds opens them and the choice waits; a number in the War tab opens; no sideways scroll. 71-phone's own `phoneTargets` (every glossary word at least 24 px), `phoneNoOverflow` and `phoneAxe` pass with part two on |
 
 Lore pages of the Codex (faiths, bloodlines, songs, secrets, families) and the World tab are not in the table: their numbers are the lore's own facts and the world's records in sentences and lists, and they are left as they were.
 
