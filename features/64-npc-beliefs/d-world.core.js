@@ -407,6 +407,15 @@
       const v = interest.apply(this, arguments);
       return NB.WARY_ON ? v - NB.wary(a, b) : v;
     };
+    // and the reasons shown add up to it (20-ai-personality's card and tooltips sum the parts)
+    if (typeof A.interestParts === 'function') {
+      const iparts = A.interestParts;
+      A.interestParts = function (a, b) {
+        const out = iparts.apply(this, arguments);
+        try { const w = NB.WARY_ON ? NB.wary(a, b) : 0; if (w) out.push([`Tales of cruelty in ${rs(b)}`, -w]); } catch (e) {}
+        return out;
+      };
+    }
   }
 
   // ---------------------------------------------------------------- vengeance: a killing believed (engine, pure parts)

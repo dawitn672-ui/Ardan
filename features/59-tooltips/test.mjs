@@ -255,6 +255,9 @@ export default {
         const pc = A.pc();
         if (o.status === 'noble' && A.realm(pc.realm)) { const r = A.realm(pc.realm); const old = A.P(r.ruler); r.ruler = pc.id; pc.ruler = r.id; r.playerRun = true; }
         UI.render();
+        // the release's Realm tab recounts a realm's workshops from its provinces as it draws (UI.forcesSummary calls
+        // A.indCount); the count is a cache, stale whenever a province changed hands since. Bring it up to date first
+        for (const id in A.S.realms) { const x = A.S.realms[id]; if (x.alive && x.ind) A.indCount(x); }
         const s0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
         const args = { stat: GD.STATS, potential: GD.STATS, worth: [pc.id], worthBody: [pc.id], worthSkill: [pc.id], worthGear: [pc.id], tier: GD.TIERS.map(t => t.k),
           skill: Object.keys(GD.SKILLS), profTier: GD.PROF_TIERS.map(x => x[1]), trait: Object.keys(GD.TRAITS), quirk: Object.keys(GD.QUIRKS || {}), race: Object.keys(GD.RACES), stage: Object.keys(GD.RACES),

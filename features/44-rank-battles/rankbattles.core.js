@@ -18,8 +18,9 @@
   const RB = A.RANKFX = {
     // share of each division's full order moved per unit of performance: up (+) to theirs and ours, down (-) to ours.
     // The section's were raised by 30% for the integrated world: pooled over 300 fights it moved 9 points, now 13.
+    // Round 7 raised them 20% more: 38-orders' bold generals stand longer in a fight, and the section read 8-9 on 100.
     LAYERS: {
-      line: { name: 'your section', theirs: 0.26, ours: 0.09, fall: 0.29 },
+      line: { name: 'your section', theirs: 0.31, ours: 0.11, fall: 0.35 },
       part: { name: 'your company', theirs: 0.36, ours: 0.13, fall: 0.33 },
     },
     GRADE: { triumph: 1, success: 0.5, mixed: 0, failure: -0.8 },
