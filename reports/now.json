@@ -1,140 +1,140 @@
 {
  "label": "now",
- "file": "../../../tmp/ardan/me/now.html",
- "build": "b593143+f65.2a749d9",
+ "file": "index.html",
+ "build": "b593143+f69.dd762bd",
  "modules": {
   "league": {
    "lives": 64,
-   "medianDeathAge_humanOrc": 57,
-   "p10DeathAge": 22,
-   "p90DeathAge": 76,
+   "medianDeathAge_humanOrc": 39,
+   "p10DeathAge": 18,
+   "p90DeathAge": 73,
    "arcTypes": 12,
-   "topArcShare": 21.9,
+   "topArcShare": 17.2,
    "arcs": {
-    "fortune made": 9,
-    "quiet life": 11,
+    "fortune made": 7,
+    "outlaw": 11,
+    "cut short": 7,
+    "quiet life": 10,
+    "working life": 8,
+    "soldier": 2,
+    "ruler": 3,
     "general": 3,
-    "cut short": 5,
-    "outlaw": 14,
-    "working life": 5,
-    "soldier": 1,
-    "officer of state": 8,
+    "officer of state": 4,
+    "captain": 6,
     "master of a trade": 2,
-    "captain": 3,
-    "ruler": 2,
     "sellsword": 1
    },
-   "memoryShareOfFiredEvents": 8.4,
-   "eventsPerYear": 4.9,
-   "promptsPerYear": 5.1,
+   "memoryShareOfFiredEvents": 56.6,
+   "eventsPerYear": 4.7,
+   "promptsPerYear": 5.2,
    "medianDaysBetweenPrompts": 31,
    "p90DaysBetweenPrompts": 151,
    "p90SecondsBetweenPromptsAtDefaultSpeed": 37.8,
-   "checkWinRate": 38.5,
-   "initiativeActionsPerYear_engaged": 5,
+   "checkWinRate": 51.6,
+   "initiativeActionsPerYear_engaged": 4.7,
    "byPersonality": {
     "careful": {
      "lives": 16,
-     "medianDeathAge": 61,
-     "meanDeathAge": 49.6,
-     "checkWinRate": 56.8
+     "medianDeathAge": 40,
+     "meanDeathAge": 43,
+     "checkWinRate": 55.2
     },
     "reckless": {
      "lives": 16,
-     "medianDeathAge": 30,
-     "meanDeathAge": 40.3,
-     "checkWinRate": 38.6
+     "medianDeathAge": 40,
+     "meanDeathAge": 37.5,
+     "checkWinRate": 50.7
     },
     "greedy": {
      "lives": 16,
-     "medianDeathAge": 41,
-     "meanDeathAge": 44.1,
-     "checkWinRate": 36.4
+     "medianDeathAge": 35,
+     "meanDeathAge": 41.5,
+     "checkWinRate": 44.2
     },
     "random": {
      "lives": 16,
-     "medianDeathAge": 65,
-     "meanDeathAge": 58.8,
-     "checkWinRate": 37.5
+     "medianDeathAge": 44,
+     "meanDeathAge": 45.8,
+     "checkWinRate": 56.6
     }
    },
-   "carefulMinusRecklessDeathAge": 9.3,
-   "npcMovesPerDecade": 10,
-   "battlesFought": 22,
+   "carefulMinusRecklessDeathAge": 5.5,
+   "npcMovesPerDecade": 9.7,
+   "battlesFought": 38,
    "afterActionShare": 100
   },
   "events": {
-   "events": 3306,
-   "choices": 10047,
-   "memoryEvents": 686,
-   "memorySharePct": 20.8,
-   "flagsSet": 1782,
-   "orphanFlags": 1133,
-   "strictRecipePct": 14,
-   "choicesWithoutCheckPct": 57.9,
-   "oldAgeEvents": 26,
+   "events": 3441,
+   "choices": 10456,
+   "memoryEvents": 738,
+   "memorySharePct": 21.4,
+   "flagsSet": 1809,
+   "orphanFlags": 1105,
+   "strictRecipePct": 15.5,
+   "choicesWithoutCheckPct": 58.6,
+   "oldAgeEvents": 155,
    "childTeenEvents": 184,
    "staticTextOver80": 0,
    "staticChoiceOver12": 0,
    "obviouslyBest": 0,
    "obviouslyBestPct": 0,
-   "choiceComparable": 334
+   "choiceComparable": 371
   },
   "duels": {
    "table": [
     {
      "gap": 0,
      "seat": "strong-in-player-seat",
-     "duels": 150,
-     "strongWinsPct": 57,
-     "shownPct": 48
+     "duels": 1000,
+     "strongWinsPct": 47,
+     "shownPct": 45
     },
     {
      "gap": 0,
      "seat": "strong-as-npc",
-     "duels": 150,
-     "strongWinsPct": 55,
-     "shownPct": 50
+     "duels": 1000,
+     "strongWinsPct": 56,
+     "shownPct": 55
     },
     {
      "gap": 1,
      "seat": "strong-in-player-seat",
-     "duels": 150,
-     "strongWinsPct": 81,
-     "shownPct": 83
+     "duels": 1000,
+     "strongWinsPct": 80,
+     "shownPct": 81
     },
     {
      "gap": 1,
      "seat": "strong-as-npc",
-     "duels": 150,
-     "strongWinsPct": 87,
-     "shownPct": 87
+     "duels": 1000,
+     "strongWinsPct": 88,
+     "shownPct": 86
     },
     {
      "gap": 2,
      "seat": "strong-in-player-seat",
-     "duels": 150,
-     "strongWinsPct": 96,
-     "shownPct": 96
+     "duels": 1000,
+     "strongWinsPct": 97,
+     "shownPct": 97
     },
     {
      "gap": 2,
      "seat": "strong-as-npc",
-     "duels": 150,
+     "duels": 1000,
      "strongWinsPct": 98,
      "shownPct": 98
     }
    ],
-   "playerSeatEdgeSameTierPct": 1,
-   "maxShownVsActualErrorPct": 9
+   "playerSeatEdgeSameTierPct": -4,
+   "maxShownVsActualErrorPct": 2
   },
   "ai": {
    "worlds": 3,
    "years": 60,
-   "warsDeclared": 85,
-   "warsPer100RulerYears_aggressiveTraits": 1.44,
-   "warsPer100RulerYears_peacefulTraits": 0.27,
-   "aggressiveToPeacefulRatio": 5.32
+   "warsDeclared": 102,
+   "warsPer100RulerYears_aggressiveTraits": 1.36,
+   "warsPer100RulerYears_peacefulTraits": 0.49,
+   "aggressiveToPeacefulRatio": 2.81
   },
   "economy": {
    "markets": 35,
@@ -143,33 +143,33 @@
    "bestBuySellBackLoop10x": 0
   },
   "perf": {
-   "msPerDay": 1.76,
-   "msPerYear": 642,
-   "divisions": 216,
+   "msPerDay": 1.95,
+   "msPerYear": 710,
+   "divisions": 204,
    "boot": {
-    "ardan-core decoded": 646,
-    "ardan-core unpacked": 748,
-    "core ran": 883,
-    "title shown": 961,
-    "ardan-content decoded": 1021,
-    "ardan-content unpacked": 1127,
-    "content ran": 3170,
-    "ardan-lore decoded": 3204,
-    "ardan-lore unpacked": 3382
+    "ardan-core decoded": 418,
+    "ardan-core unpacked": 485,
+    "core ran": 635,
+    "title shown": 644,
+    "ardan-content decoded": 686,
+    "ardan-content unpacked": 758,
+    "content ran": 2590,
+    "ardan-lore decoded": 2612,
+    "ardan-lore unpacked": 2671
    },
    "warTick": {
-    "ticks": 364,
-    "divisions": 236,
+    "ticks": 338,
+    "divisions": 220,
     "warsAtStart": 6,
-    "p50": 3.5,
-    "p95": 7.2,
-    "max": 14
+    "p50": 3.3,
+    "p95": 6,
+    "max": 8.9
    }
   },
   "saves": {
    "cycles": 100,
    "corrupted": 0,
-   "kbGzipped": 296
+   "kbGzipped": 297
   },
   "signature": {
    "chronicle": true,
@@ -184,7 +184,7 @@
    "seriousOrCritical": 0,
    "byRule": {},
    "needsReview": {
-    "color-contrast": 2870,
+    "color-contrast": 2903,
     "aria-prohibited-attr": 7
    }
   },

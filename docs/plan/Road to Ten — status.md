@@ -304,7 +304,7 @@ Findings:
 
 ## Round 7 changes
 
-Ten new features and second passes on five older ones, written in parallel against the same brief and then integrated, moved nine rows to done.
+Ten new features and second passes on five older ones, written in parallel against the same brief and then integrated, moved nine rows to done. The measured scorecard went from 65.3 to **69.4** (of about 75 that bots and tests can award): duel odds shown against real 9 → 2 points, check success 38.5% → 51.6%, old-age events 26 → 155, distinct life arcs 12 with the most common at 17%. Still short: median death age in bot lives (39, target 55–70), prompts per year (5.2 of 6), initiative actions (4.7 of 6), and flags never read (1,105).
 
 | Feature | Rows | What changed |
 | --- | --- | --- |

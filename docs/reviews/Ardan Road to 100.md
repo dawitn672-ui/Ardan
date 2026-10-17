@@ -114,7 +114,7 @@ Round 3 worked through the Road to Ten's buildable steps, one feature folder at 
 | Uniqueness | 7.5 | **8.5** | All three signature systems exist, though belief-vs-truth doesn't reach NPCs and both-scales is after the fight, not in it. |
 | **Overall** | **56** | **65** | |
 
-The measured scorecard (bots and tests only) reads **34.5** for the release, **35.8** for the fix layer, and **66.5** now.
+The measured scorecard (bots and tests only) reads **34.5** for the release, **35.8** for the fix layer, and **66.5** at this review. After round 7 it reads **69.4** (`reports/scorecard.md`), of about 75 that bots and tests can award.
 
 **What is left is mostly not code.**
 
