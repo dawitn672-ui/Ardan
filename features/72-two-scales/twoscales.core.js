@@ -667,7 +667,7 @@
     const shim = !pc.mil;
     F.bs = F.bs || { hp0: pc.health, merit0: pc.mil ? pc.mil.merit || 0 : 0, squad0: (m.ts.men || []).slice(), y0: S.year, div: m.ts.div };
     let ctx;
-    try { if (shim) pc.mil = { realm: m.ts.realm, merit: 0 }; ctx = A.BS.context(F, winner, pc); } finally { if (shim) delete pc.mil; }
+    try { if (shim) pc.mil = { realm: m.ts.realm, merit: 0, squad: [] }; ctx = A.BS.context(F, winner, pc); } finally { if (shim) delete pc.mil; }
     if (ctx) { S.bsLast = A.absDay(); A.queue({ type: 'event', ev: 'bs_reckoning', forced: true, ctx }); }
   };
 

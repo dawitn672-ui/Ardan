@@ -70,8 +70,11 @@ export default {
       // a realm at peace, with neighbours to fight
       // a realm at peace that buys its arms from others, with neighbours to fight (a realm that makes arms can find
       // them cheaper at war: its export roads close, and what it cannot sell abroad piles up at home)
-      const R0 = ECT.live().filter(R => !A.atWar(R.id).length && A.neighbors(R.id).length && (R.army || 0) > 20000).sort((a, b) => (A.mkt(a.id).cap.arms || 0) - (A.mkt(b.id).cap.arms || 0))[0];
-      const rid = R0.id, snap = JSON.stringify(A.S), rng = A.rngState, out = { rid };
+      const Rs = ECT.live().filter(R => !A.atWar(R.id).length && A.neighbors(R.id).length && (R.army || 0) > 20000).sort((a, b) => (A.mkt(a.id).cap.arms || 0) - (A.mkt(b.id).cap.arms || 0));
+      const snap = JSON.stringify(A.S), rng = A.rngState;
+      // the peaceful run must stay at peace: the first such realm that no one attacks in the four months
+      const calm = Rs.slice(0, 8).find(R => { A.S = JSON.parse(snap); A.rngState = rng; for (let m = 0; m < 4; m++) { ECT.months(1); if (A.atWar(R.id).length) return false; } return true; }) || Rs[0];
+      const rid = calm.id, out = { rid };
       for (const war of [false, true]) {
         A.S = JSON.parse(snap); A.rngState = rng;
         if (war) A.startWar(rid, A.neighbors(rid)[0], null, 'conquest');

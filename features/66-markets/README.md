@@ -84,5 +84,5 @@ The bar is ×1.3 and it holds. But no greedy trader in these runs makes money wi
   - A border town can still be dear while the next realm's border town is cheap. The player pays 45's road rate to reach it.
 - **The cost of a month** is ×1.6–1.8 of 45's alone, depending on how loaded the machine is. The plan asked for ×1.5. Most of it is the carters' search for the right load.
 - **Occupied and besieged provinces** are read from the war's own fields (`occ`, `sgBy`). The war lifts a siege that no army keeps up, so the test keeps one up by hand.
-- **The gradients are mild:** ×1.06 four steps from the makers, at most ×1.15. Carters close gaps to the carting cost, and that cost is small against the value of most goods. Grain barely varies inside a realm, because every province grows some.
+- **The gradients are mild:** ×1.06 four steps from the makers, at most ×1.15. (In the round-7 integrated world, with bolder generals and fresh realms, it fell to ×1.03; carting a step now costs 3% of a load's worth, not 2%, and it reads ×1.05, fish ×1.12, salt ×1.13.) Carters close gaps to the carting cost, and that cost is small against the value of most goods. Grain barely varies inside a realm, because every province grows some.
 - **The player cannot move to another market.** "Go" is a trip, and the player always comes home to sell.
