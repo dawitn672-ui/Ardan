@@ -49,6 +49,7 @@
   // C.nbBeast(p, mode): someone of your town you know, with whom you differ about a beast of these parts
   A.C.nbBeast = (p, mode) => {
     if (!A.BT || !p || !p.rel) return false;
+    if (bcache.S !== A.S) { bcache.clear(); bcache.S = A.S; }   // a new game, or a loaded one, starts a new cache
     const key = `${p.id}|${A.absDay ? A.absDay() : A.S.year}|${mode}|${Object.keys(p.rel).length}`;
     if (bcache.has(key)) return bcache.get(key);
     if (bcache.size > 200) bcache.clear();

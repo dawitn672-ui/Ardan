@@ -27,7 +27,7 @@ const old = p => A.stage && A.stage(p) === 'old';
 const rank = p => (GD.STATUS && GD.STATUS[p.status] ? GD.STATUS[p.status].rank : 2);
 const coastal = p => { const pr = A.prov(p.home); return !!(pr && pr.coast); };
 // what each mechanism did, for the tests and the README (not game state)
-LN.stats = { retag: 0, ride: {}, knack: {}, brawl: 0, duty: {}, wake: 0, camp: 0, butts: 0, boats: 0, hunt: 0, crossing: 0, wood: 0, gathHunt: 0, march: 0, yield: 0, mend: 0, horse: 0, flee: 0 };
+LN.stats = { retag: 0, ride: {}, knack: {}, brawl: 0, duty: {}, wake: 0, camp: 0, butts: 0, boats: 0, hunt: 0, crossing: 0, wood: 0, gathHunt: 0, march: 0, yield: 0, mend: 0, horse: 0, flee: 0, oversee: 0, flight: 0, rout: 0, road: 0 };
 const bump = (o, k) => { o[k] = (o[k] || 0) + 1; };
 
 // ---- fx.knack: how good you are at the thing you just did --------------------------------------------------------------
@@ -141,6 +141,12 @@ LN.KNACK = {
   keepSeed: { k: 'husbandry', hi: 30, lo: 8,
     good: { r: 'You sow it in good time on the best of the ground, and it comes up well.', fx: { coin: 4 } },
     poor: { r: 'You sow it too early, and the frost takes half.', fx: { coin: -2 } } },
+  stare: { k: 'intimidation', hi: 30, lo: 8,
+    good: { r: 'You hold {khis} eye until {khe} looks away first. The women at the trough see who looked away.', fx: { happy: 1, them: { op: -3 } } },
+    poor: { r: 'You glare. {khe} laughs, and so does someone behind {khim}.', fx: { happy: -2 } } },
+  leadVillage: { k: 'tactics', hi: 30, lo: 8,
+    good: { r: 'You put the flails behind the churchyard wall and the pitchforks at the lane\'s end, and the raiders walk into both.', fx: { fame: 1 } },
+    poor: { r: 'You lead them straight up the lane at the raiders, which is the one thing the raiders hoped for.', fx: { health: -3 } } },
   bet: { k: 'gambling', hi: 20, lo: 4,
     good: { r: 'You picked the side the old men picked, and they are never wrong.', fx: { coin: 3 } },
     poor: { r: 'You bet on the side with the loudest boys. That is not how to bet.', fx: { coin: -1 } } },
@@ -175,6 +181,8 @@ LN.RIDE = [
   ['wk_sea_payoff', 0, /dice/i, 'diceWinter'],
   ['lf_teen_ballgame', 2, /bet/i, 'bet'],
   ['av_road_dice', 2, /watch/i, 'watchDice'],
+  ['nb_accused', 2, /afraid/i, 'stare'],
+  ['gf_village', 0, /lead/i, 'leadVillage', true],
   ['lf_friend_drowning', 2, /run/i, 'runFor'],
   ['sg_sacked', 2, /run/i, 'runFor'],
   ['lf_rival_sabotage', 2, /repair/i, 'mendIt'],
@@ -191,9 +199,10 @@ LN.RIDE = [
 ];
 LN.rides = {};       // 'ev#i' -> knack name, filled when the events are in and the label still says it
 LN.applyRides = function () {
-  for (const [ev, i, rx, k] of LN.RIDE) {
+  // a fifth field, true, allows a group fight (the fight is the release's; the rider is how it was led)
+  for (const [ev, i, rx, k, group] of LN.RIDE) {
     const e = A.EV[ev], c = e && e.choices && e.choices[i];
-    if (!c || c.check || c.group || !rx.test(LN.labelOf(e, i)) || !LN.KNACK[k]) continue;
+    if (!c || c.check || (c.group && !group) || !rx.test(LN.labelOf(e, i)) || !LN.KNACK[k]) continue;
     LN.rides[ev + '#' + i] = k;
   }
 };
@@ -215,12 +224,24 @@ LN.crossing = function (pc, ctx) {
   if (!g || !g.pc || g.pc.lnSea != null) return '';
   const me = pc.ruler || pc.realm;
   g.pc.lnSea = LN.bySea(me, g.host) ? 1 : 0;
-  if (!g.pc.lnSea) return '';
+  if (!g.pc.lnSea) return g.host && g.host !== me ? LN.overland(pc, g) : '';
   LN.stats.crossing++;
   const v = A.skill(pc, 'sea'), sick = Math.round(A.rf(0, 7) * clamp(1 - v / 50, 0, 1));
   if (sick >= 4) { pc.health = Math.max(5, pc.health - sick); g.pc.inf = (g.pc.inf || 0) - 1; return 'The crossing is rough, and you come ashore green and shaking. It is a poor way to meet a court.'; }
   if (v >= 35) { g.pc.inf = (g.pc.inf || 0) + 1; return 'You spend the crossing on deck with the master and come ashore fresh, while the others are still being sick.'; }
   return sick ? 'A grey crossing. You keep your breakfast, just.' : '';
+};
+
+// the same journey by road, when it is not by sea: a guest of rank rides (riding), a guard or a servant without a horse
+// walks (athletics). A poor rider arrives saddle-sore and stiff at the opening; a good one rides in fresh at the head of
+// the party and is seen to.
+LN.overland = function (pc, g) {
+  const rides = !!(pc.gear && pc.gear.mount) || ['ruler', 'envoy', 'noble', 'knight'].includes(g.pc.role);
+  const k = rides ? 'riding' : 'athletics', v = A.skill(pc, k);
+  LN.stats.road = (LN.stats.road || 0) + 1;
+  if (v < 10 && A.chance(0.5)) { pc.health = Math.max(5, pc.health - A.ri(2, 5)); return rides ? 'Ten days in the saddle. You arrive stiff in every joint, and it shows when you bow.' : 'Ten days on foot behind the baggage. Your feet are raw by the second.'; }
+  if (v >= 35 && A.chance(0.5)) { if (rides) g.pc.inf = (g.pc.inf || 0) + 1; return rides ? 'You ride in at the head of your party, fresh, and the host\'s people see it.' : 'You keep up with the riders the whole road, and arrive with breath to spare.'; }
+  return '';
 };
 
 // ---- 3a'. the host's hunt at a gathering ------------------------------------------------------------------------------
@@ -315,6 +336,7 @@ LN.DUTY = {
   miner: { k: 'athletics', why: 'the ladders and the crawl to the face' },
   carpenter: { k: 'axe', why: 'the axe and the adze: a shipwright hews before he planes' },
   pirate: { k: 'axe', why: 'the boarding axe' },
+  fish: { k: 'athletics', why: 'swimming, the day the boat goes over' },
   herd: { k: 'bow', why: 'the sling against wolves and foxes' },
   hunter: { k: 'bow', why: 'what the snare misses' },
   bowyer: { k: 'bow', why: 'proving each stave by shooting it' },
@@ -428,6 +450,14 @@ LN.holdings = function (pc) {
   }
   if (d) { LN.stats.yield = (LN.stats.yield || 0) + 1; if (d >= 10) notes.push(`Your holdings do better than most for being in hands that know the work (${A.coin(d)}).`); }
   const mend = as.filter(a => LN.MEND.includes(a.k));
+  // a richer owner pays builders, but one who knows the work is not cheated by them: up to a fifth off the upkeep of
+  // any building, house, inn or manor (the lord who cannot tell good mortar from bad pays a tenth more)
+  const built = as.filter(a => GD.PROPERTY[a.k] && !GD.PROPERTY[a.k].ship && (GD.PROPERTY[a.k].upkeep || 0) > 0 && a.k !== 'fishboat' && a.k !== 'barge');
+  if (built.length && !(mend.length && rank(pc) <= 3 && pc.coin < 2000) && adult(pc)) {
+    LN.stats.oversee = (LN.stats.oversee || 0) + 1;
+    const up = built.reduce((x, a) => x + (GD.PROPERTY[a.k].upkeep || 0), 0), c = sk('craft');
+    d += Math.round(c >= 15 ? up * Math.min(0.2, c / 250) : -up * 0.1);
+  }
   if (mend.length && rank(pc) <= 3 && pc.coin < 2000 && adult(pc) && !old(pc) && !pc.prison) {
     LN.stats.mend = (LN.stats.mend || 0) + 1;
     const up = mend.reduce((x, a) => x + (GD.PROPERTY[a.k].upkeep || 0), 0), c = sk('craft');
@@ -451,6 +481,41 @@ A.moneyYear = function (pc) {
   try { if (isPC(pc) && pc.alive) LN.holdings(pc); } catch (err) { console.error('live-numbers holdings', err); }
   return r;
 };
+
+// a flight from a lost fight: the release's group fight takes 25 to 90 health from the side that breaks. Someone who
+// can run and climb gets clear sooner: up to a fifth of that back (athletics 50). And a battle lost: a foot soldier
+// (up to squad captain) in the rout is run down by the horse less often with good legs.
+const groupFightPC = A.groupFightPC;
+if (typeof groupFightPC === 'function') {
+  A.groupFightPC = function (pc, spec, ctx) {
+    const h0 = pc && pc.health, r = groupFightPC.apply(this, arguments);
+    try {
+      if (isPC(pc) && r && !r.win && pc.health < h0) {
+        LN.stats.flight = (LN.stats.flight || 0) + 1;
+        const back = Math.round((h0 - pc.health) * clamp(A.skill(pc, 'athletics') / 250, 0, 0.2));
+        if (back > 0) { pc.health = Math.min(h0, pc.health + back); r.text = (r.text + ' You get clear over a wall and a ditch before the worst of it.').trim(); }
+      }
+    } catch (err) {}
+    return r;
+  };
+  for (const k of Object.keys(groupFightPC)) A.groupFightPC[k] = groupFightPC[k];
+}
+const battleFinish = A.battleFinish;
+if (typeof battleFinish === 'function') {
+  A.battleFinish = function (B, win) {
+    const was = B && B.phase, r = battleFinish.apply(this, arguments);
+    try {
+      const pc = A.pc();
+      if (was !== 'end' && B && B.pcSide && (win === 'A' || win === 'B') && win !== B.pcSide && isPC(pc) && pc.alive && pc.mil && (pc.mil.rank || 0) <= 3 && !(pc.gear && pc.gear.mount)) {
+        LN.stats.rout = (LN.stats.rout || 0) + 1;
+        const v = A.skill(pc, 'athletics');
+        if (A.chance(clamp(0.3 - v / 200, 0.05, 0.3))) { pc.health = Math.max(5, pc.health - A.ri(4, 10)); A.log('In the rout the enemy horse rides down the slow. You are one of them, and get up bloody.', 'bad'); }
+      }
+    } catch (err) {}
+    return r;
+  };
+  for (const k of Object.keys(battleFinish)) A.battleFinish[k] = battleFinish[k];
+}
 
 // a flight from a duel: "Run. Speed decides." Legs that can climb a wall and clear a ditch count as well (athletics adds
 // up to 15 points to the chance of breaking away, read only when you run)

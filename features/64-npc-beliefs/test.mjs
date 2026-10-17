@@ -166,6 +166,8 @@ export default {
       // a battle of the player's own realm, in the world record, and the winners' inflated account of it
       let B = null;
       if (A.WC && A.WC.put) { const i = A.WC.put('battle', { p: pc.home, a: pc.realm, b: P.nb, w: [], n: 30000, x: [4000, 3, ''] }); B = NB.battleClaim(i, 'V'); }
+      // a far battle whose count ran high in the telling, for the scene in which you find out
+      const iFar = A.WC && A.WC.put ? A.WC.put('battle', { p: P.farProv, a: P.far, b: (A.neighbors(P.far) || [])[0] || P.far, w: [], n: 40000, x: [6000, 2, ''] }) : null;
       // a court story about a neighbour's ruler
       const nr = A.realm(P.nb), CS = NB.make('S', nr.ruler, 'oath', 0, -10); NB.courtAdopt(pc.realm, CS, 1);
       const base = A.serialize();
@@ -191,6 +193,8 @@ export default {
           if (c) NB.adopt(P.t, NB.make('Z', null, c.id, 1, 0), 1); return {};
         },
         nb_court_word: P => ({}),
+        nb_avenge: P => { NB.adopt(P.t, NB.make('K', P.o.id, P.u.id, 0, -10, P.u.given), 1); return { pid: P.t.id }; },
+        nb_record_wrong: P => { const c = NB.battleClaim(iFar, 'F'); NB.pcState(P.pc)[c] = [1, P.pc.realm, A.S.year - 2]; return { cid: c }; },
       };
       // after each reload the people are new objects: the stage works on them, found by id
       const stage = {};
@@ -225,12 +229,14 @@ export default {
           if (ev === 'nb_praised' && i === 2) out.checks.embellished = q.flags.nb_embellished === A.S.year && NB.beliefs(A.P(u.id)).some(x => x.c.k === 'T');
           if (ev === 'nb_battle_tale' && i === 0) out.checks.battleTruth = NB.beliefs(A.P(t.id)).some(x => x.c.k === 'B' && x.c.t);
           if (ev === 'nb_beast_wrong' && i === 0) out.checks.beastTaught = NB.beliefs(A.P(res.ctx.pid)).some(x => x.c.k === 'Z');
+          if (ev === 'nb_avenge' && i === 2) out.checks.warned = A.P(t.id).nbRv === A.S.year && A.P(o.id).alive;
+          if (ev === 'nb_record_wrong' && i === 0) out.checks.recordFixed = Object.keys(q.nbk || {}).some(id => q.nbk[id][0] === -2 && NB.claim(id) && NB.claim(id).k === 'B');
         }
       }
       out.events = Object.keys(stage).length;
       return out;
     });
-    const want = ['accusedCleared', 'believed', 'wasWrong', 'lie', 'toldTruth', 'probe', 'embellished', 'battleTruth', 'beastTaught'];
+    const want = ['accusedCleared', 'believed', 'wasWrong', 'lie', 'toldTruth', 'probe', 'embellished', 'battleTruth', 'beastTaught', 'warned', 'recordFixed'];
     const ok = r.scenes === r.events && !r.raw.length && !r.long.length && want.every(k => r.checks[k]);
     return { ok, detail: `${r.scenes} of ${r.events} scenes, ${r.choices} choices taken; raw ${r.raw.slice(0, 3).join('; ') || 'none'}; over the diet ${r.long.join(', ') || 'none'}; ${want.map(k => k + ' ' + !!r.checks[k]).join(', ')}` };
   },
@@ -378,24 +384,311 @@ export default {
   },
 
   async nbInRealLives(pg) {
-    // bot lives in the build: people hold beliefs, some false; scenes come; the state stays small
+    // bot lives in the build: people hold beliefs, some false; scenes come; every life of 15 years or more meets belief
+    // against truth in play (a belief scene, or finding out it was wrong); the state stays small. A life cut short on a
+    // shifted random stream is replaced by the next seed, up to three lives of 15 years or more.
     await pg.evaluate(BOT);
     const r = await pg.evaluate(() => {
       const NB = A.NPCB; NB.resetStats();
-      let scenes = 0, fScenes = 0, years = 0, held = 0, fals = 0, bytes = 0, people = 0;
-      const ch = A.eventChoose;
-      A.eventChoose = function () { const q = A.S.queue[0]; if (q && q.type === 'event' && !q.result && /^nb_/.test(q.ev)) { scenes++; if (q.ctx && q.ctx.nbFalse) fScenes++; } return ch.apply(this, arguments); };
+      let scenes = 0, fScenes = 0, years = 0, held = 0, fals = 0, ownBytes = 0, shared = 0, people = 0, save = 0, lives = 0, long = 0, met = 0;
+      const ch = A.eventChoose; let mine = 0;
+      A.eventChoose = function () { const q = A.S.queue[0]; if (q && q.type === 'event' && !q.result && /^nb_/.test(q.ev)) { scenes++; mine++; if (q.ctx && q.ctx.nbFalse) fScenes++; } return ch.apply(this, arguments); };
+      const starts = [{ race: 'human', realm: 'POL-01', status: 'artisan' }, { race: 'human', realm: 'POL-03', status: 'noble' }, { race: 'dwarf', realm: 'POL-20', status: 'peasant' }, { race: 'human', realm: 'POL-05', status: 'merchant' }, { race: 'orc', realm: 'POL-11', status: 'peasant' }, { race: 'human', realm: 'POL-02', status: 'gentry' }, { race: 'human', realm: 'POL-07', status: 'artisan' }, { race: 'human', realm: 'POL-06', status: 'peasant' }];
       try {
-        for (const [i, o] of [{ race: 'human', realm: 'POL-01', status: 'artisan' }, { race: 'human', realm: 'POL-03', status: 'noble' }, { race: 'dwarf', realm: 'POL-20', status: 'peasant' }].entries()) {
-          const L = B.life(Object.assign({ seed: 6420 + i, sex: i % 2 ? 'F' : 'M', startAge: 18 }, o), 'careful', true, 30);
-          years += L.years;
-          for (const p of Object.values(A.S.people)) if (p.nb) { people++; bytes += JSON.stringify(p.nb).length; for (const x of NB.beliefs(p)) { held++; if (NB.isFalse(x.c, x.st)) fals++; } }
-          bytes += JSON.stringify(A.S.npcb || {}).length;
+        for (let i = 0; i < starts.length && long < 3; i++) {
+          mine = 0; const f0 = NB.stats.pcWorldFix;
+          const L = B.life(Object.assign({ seed: 6420 + i, sex: i % 2 ? 'F' : 'M', startAge: 18 }, starts[i]), 'careful', true, 30);
+          const pc = A.P(A.S.pc), found = NB.stats.pcWorldFix - f0 + (pc && pc.flags && pc.flags.nb_was_wrong ? 1 : 0);
+          lives++; years += L.years;
+          if (L.years >= 15) { long++; if (mine + found > 0) met++; }
+          for (const p of Object.values(A.S.people)) if (p.nb) { people++; ownBytes += JSON.stringify(p.nb).length; for (const x of NB.beliefs(p)) { held++; if (NB.isFalse(x.c, x.st)) fals++; } }
+          shared += JSON.stringify(A.S.npcb || {}).length; save += A.serialize().length;
         }
       } finally { A.eventChoose = ch; }
-      return { years, scenes, fScenes, held, fals, pct: Math.round(100 * fals / Math.max(1, held)), people, bytes, perPerson: Math.round(bytes / Math.max(1, people)), stats: NB.stats };
+      return { lives, long, met, years, scenes, fScenes, held, fals, pct: Math.round(100 * fals / Math.max(1, held)), people, ownBytes, shared, perHolder: Math.round(ownBytes / Math.max(1, people)), sharePct: +(100 * (ownBytes + shared) / Math.max(1, save)).toFixed(2), stats: NB.stats };
     });
-    const ok = r.held > 50 && r.pct >= 20 && r.pct <= 80 && r.scenes >= 1 && r.perPerson < 400;
-    return { ok, detail: `3 bot lives, ${r.years} years: ${r.people} people hold ${r.held} beliefs at the end, ${r.pct}% false; ${r.scenes} belief scenes (${r.fScenes} driven by a false one); ${r.bytes} bytes of belief state in all (${r.perPerson} a holder, the shared table included)` };
+    const ok = r.long >= 3 && r.met === r.long && r.held > 50 && r.pct >= 20 && r.pct <= 80 && r.scenes >= 1 && r.perHolder < 150 && r.sharePct < 2;
+    return { ok, detail: `${r.lives} bot lives, ${r.years} years (${r.long} of 15 years or more, ${r.met} of them met belief against truth in play): ${r.people} people hold ${r.held} beliefs at the end, ${r.pct}% false; ${r.scenes} belief scenes (${r.fScenes} driven by a false one); ` +
+      `the player heard ${r.stats.pcWorldHeard} tales of the world and found ${r.stats.pcWorldFix} of them wrong; ${r.ownBytes} bytes on people (${r.perHolder} a holder) and ${r.shared} shared, ${r.sharePct}% of the saves` };
+  },
+
+  async nbWorldTellings(pg) {
+    // every realm tells the great events of the record its own way: the winners count high, the losers claim the
+    // field, the victims of a sack say the town was burned, the far hear it larger
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const NB = A.NPCB, pc = NBT.adult(6430); if (!A.WC || !A.WC.put) return { skip: true };
+      const S = A.S, live = Object.keys(S.realms).filter(id => S.realms[id].alive && !S.realms[id].isRebel).sort();
+      const pairs = [];
+      for (const a of live) for (const b of A.neighbors(a) || []) if (live.includes(b) && a < b && S.prov.some(P => P.owner === b)) pairs.push([a, b]);
+      const G = () => ({ n: 0, f: 0, flip: 0, hi: 0, burn: 0, soft: 0 }), T = { B: { own: G(), other: G(), near: G(), far: G() }, X: { own: G(), other: G(), near: G(), far: G() } };
+      for (const [a, b] of pairs.slice(0, 24)) {
+        const P = S.prov.find(q => q.owner === b);
+        const iB = A.WC.put('battle', { p: P.id, a, b, w: [], n: 30000, x: [5000, 2, ''] }), iX = A.WC.put('fall', { p: P.id, a, b, w: [], n: 20, x: 2 });
+        for (const rid of live) for (const i of [iB, iX]) {
+          const cid = NB.tellIn(rid, i), c = NB.claim(cid), e = A.WC.ent(i), g = T[c.k][NB.role(rid, e)];
+          g.n++; if (!c.t) g.f++;
+          if (c.k === 'B') { if (c.s !== a) g.flip++; if (c.x[0] > 5000 * 1.25) g.hi++; }
+          else { if (c.x[1] === 3) g.burn++; if (c.x[1] < 2) g.soft++; }
+        }
+      }
+      const pct = g => Math.round(100 * g.f / Math.max(1, g.n));
+      const out = {};
+      for (const k of ['B', 'X']) for (const role of ['own', 'other', 'near', 'far']) out[k + role] = Object.assign({ pct: pct(T[k][role]) }, T[k][role]);
+      // the yearly step keeps a few a realm, its own affairs first, and a place for news from afar
+      NB.st().ww = 0; S.npcb.pb = {}; NB.worldYear();
+      const sizes = Object.values(S.npcb.pb).map(m => Object.keys(m).length);
+      out.maxKept = Math.max(...sizes); out.realms = sizes.length; out.pairs = Math.min(24, pairs.length);
+      out.sample = NB.tellings(pc.realm).slice(0, 3).map(x => NB.say(x.c, pc));
+      return out;
+    });
+    if (r.skip) return { ok: true, detail: 'no world record in this build' };
+    const ok = r.Bown.hi > r.Bown.n * 0.5 && r.Bother.flip > r.Bother.n * 0.2 && r.Bfar.pct > r.Bnear.pct && r.Bown.flip === 0 &&
+      r.Xother.burn > r.Xother.n * 0.4 && r.Xown.soft > r.Xown.n * 0.3 && r.Xfar.pct > r.Xnear.pct && r.Xnear.pct > 0 && r.maxKept <= 6 && r.realms > 10;
+    return { ok, detail: `${r.pairs} battles and ${r.pairs} sacks, told in every realm. Battles: the winners count the dead high ${r.Bown.hi} of ${r.Bown.n}, the losers claim the field ${r.Bother.flip} of ${r.Bother.n}, false near ${r.Bnear.pct}% (${r.Bnear.n}), far ${r.Bfar.pct}% (${r.Bfar.n}). ` +
+      `Sacks: the victims say burned ${r.Xother.burn} of ${r.Xother.n}, the takers say it was less ${r.Xown.soft} of ${r.Xown.n}, false near ${r.Xnear.pct}%, far ${r.Xfar.pct}%. The yearly step keeps at most ${r.maxKept} in each of ${r.realms} realms. "${r.sample.join('"; "')}"` };
+  },
+
+  async nbWorldDrift(pg) {
+    // tellings drift with time towards what flatters the realm, faster under a ruler with legitimacy and fame; a false
+    // one is set right far more often after a peace with the realm it blames
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const NB = A.NPCB, pc = NBT.adult(6431); if (!A.WC || !A.WC.put) return { skip: true };
+      const P0 = NBT.places(pc), R = A.realm(pc.realm), ru = A.P(R.ruler), st = NB.st();
+      const bats = []; for (let k = 0; k < 6; k++) bats.push(A.WC.put('battle', { p: pc.home, a: R.id, b: P0.nb, w: [], n: 30000, x: [5000, 1, ''] }));
+      const run = (legit, fame) => {
+        R.legit = legit; ru.fame = fame;
+        let drifted = 0;
+        for (let t = 0; t < 30; t++) { st.pb[R.id] = {}; for (const i of bats) NB.tellIn(R.id, i, 'T'); for (let y = 0; y < 10; y++) NB.driftIn(R.id, []); drifted += NB.tellings(R.id).filter(x => NB.acctOf(x.c) !== 'T').length; }
+        return drifted;
+      };
+      const keep = [R.legit, ru.fame];
+      const low = run(0, 0), high = run(100, 100), props = [NB.prop(R.id)];
+      R.legit = 0; ru.fame = 0; props.unshift(NB.prop(R.id)); R.legit = keep[0]; ru.fame = keep[1];
+      // a sack of one of our towns, told as a burning: set right after a peace, or not
+      const nbP = A.S.prov.find(q => q.owner === R.id && q.id !== pc.home) || A.S.prov[pc.home];
+      const iX = A.WC.put('fall', { p: nbP.id, a: P0.nb, b: R.id, w: [], n: 10, x: 2 });
+      const fix = peace => { let n = 0; for (let t = 0; t < 40; t++) { st.pb[R.id] = {}; NB.tellIn(R.id, iX, 'L'); for (let y = 0; y < 3; y++) NB.driftIn(R.id, peace ? [[A.S.year, R.id, P0.nb]] : []); n += NB.tellings(R.id).filter(x => x.c.t).length; } return n; };
+      return { low, high, of: 30 * 6, props, fixNone: fix(false), fixPeace: fix(true), trials: 40 };
+    });
+    if (r.skip) return { ok: true, detail: 'no world record in this build' };
+    const ok = r.high > r.low * 1.3 && r.low > 0 && r.fixPeace > r.fixNone * 2;
+    return { ok, detail: `${r.of} true tellings of victories, after 10 years: ${r.low} drifted to the flattering count under a ruler of no standing (propaganda ${r.props[0].toFixed(2)}), ${r.high} under one of full legitimacy and fame (${r.props[1].toFixed(2)}). ` +
+      `A sack told as a burning, after 3 years: set right in ${r.fixNone} of ${r.trials} trials without a peace, ${r.fixPeace} after a peace with the realm it blames` };
+  },
+
+  async nbBelievedGrudge(pg) {
+    // 68-casus-belli's grudges read the believed history: a sack told as a burning, and a king's death laid on the
+    // neighbour, add to 55's ledger sum; a vengeful crown makes a plan of it; without the belief, none
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const NB = A.NPCB, pc = NBT.adult(6432); if (!A.WC || !A.WC.put || !A.BONDS || !A.BONDS.FEUD) return { skip: true };
+      const FE = A.BONDS.FEUD, CS = A.CASUS, S = A.S;
+      const live = Object.keys(S.realms).filter(id => S.realms[id].alive && !S.realms[id].isRebel && id !== pc.realm).sort();
+      let a = null, b = null;
+      for (const x of live) { if (CS && CS.vengeance(x) < CS.T.temper) continue; const y = (A.neighbors(x) || []).find(n => live.includes(n) && Math.abs(NB.feudSum0(x, n)) < 1 && !(CS && CS.wantOf(x, n))); if (y) { a = x; b = y; break; } }
+      if (!a) return { none: true };
+      const town = S.prov.find(q => q.owner === a);
+      const before = { sum: FE.sum(a, b), rel: A.relBetween(a, b), plan: CS ? CS.weigh(a, b) : null };
+      // the record: b took the town by storm and sacked it (true); the telling in a: burned, and its people put to the sword
+      const iX = A.WC.put('fall', { p: town.id, a: b, b: a, w: [], n: 12, x: 2 });
+      NB.st().pb[a] = {}; NB.tellIn(a, iX, 'L');
+      const one = { sum: FE.sum(a, b), rel: A.relBetween(a, b), plan: CS ? CS.weigh(a, b) : null, parts: A.opinionParts(a, b).filter(x => /What is said/.test(x[0])).map(x => x[0] + ' ' + x[1]) };
+      NB.WG_ON = false; const off = { sum: FE.sum(a, b), plan: CS ? CS.weigh(a, b) : null }; NB.WG_ON = true;
+      // the same sack told as it was: half weight, since a true wrong is mostly in the ledger already
+      NB.st().pb[a] = {}; NB.tellIn(a, iX, 'T'); const truthSum = FE.sum(a, b);
+      // and a king's death laid on b by a's own court, besides the burning: capped
+      const iR = A.WC.put('ruler', { p: town.id, a, w: [S.realms[a].ruler, null], n: 61, x: 'a fever' });
+      NB.st().pb[a] = {}; NB.tellIn(a, iX, 'L'); NB.st().pb[a][NB.worldClaim(iR, 'E', a, { foe: b })] = S.year;
+      const both = FE.sum(a, b);
+      return { a: S.realms[a].short, b: S.realms[b].short, before, one, off, truthSum, both, cap: NB.WG_CAP };
+    });
+    if (r.skip) return { ok: true, detail: 'no world record or ledger in this build' };
+    if (r.none) return { ok: false, detail: 'no vengeful crown with a clean ledger found' };
+    const plan = x => (x ? `${x.k} ${x.G != null ? x.G : ''}`.trim() : 'none');
+    const ok = r.one.sum === r.before.sum - 8 && r.one.rel < r.before.rel && r.off.sum === r.before.sum && r.truthSum > r.one.sum && r.both === r.before.sum - r.cap &&
+      (!r.before.plan || r.before.plan.k !== 'feud') && r.one.plan && r.one.plan.k === 'feud' && (!r.off.plan || r.off.plan.k !== 'feud') && r.one.parts.length === 1;
+    return { ok, detail: `${r.a} believes ${r.b} burned one of its towns and put the people to the sword (the record: sacked). The grudge (55's ledger sum, as 68 reads it) ${r.before.sum} → ${r.one.sum}; opinion ${r.before.rel} → ${r.one.rel}; ` +
+      `68's plan ${plan(r.before.plan)} → ${plan(r.one.plan)}; without the belief ${r.off.sum}, plan ${plan(r.off.plan)}. Told as it was: ${r.truthSum}. With a king's death laid on ${r.b} too: ${r.both} (capped at ${r.cap}). Tooltip "${r.one.parts[0]}"` };
+  },
+
+  async nbWary(pg) {
+    // a realm that believes tales of a neighbour crown's cruelty is warier of it in diplomacy (A.interest), a little
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const NB = A.NPCB, pc = NBT.adult(6433); if (!A.WC || !A.WC.put) return { skip: true };
+      const S = A.S, live = Object.keys(S.realms).filter(id => S.realms[id].alive && !S.realms[id].isRebel && id !== pc.realm).sort();
+      const a = live[0], b = (A.neighbors(a) || []).find(n => live.includes(n));
+      const towns = S.prov.filter(q => q.owner === a).slice(0, 3);
+      NB.st().pb[a] = {};
+      const I = () => { NB.WG_ON = false; try { return Math.round(A.interest(a, b) * 10) / 10; } finally { NB.WG_ON = true; } };
+      const out = [I()];
+      for (const t of towns) { const i = A.WC.put('fall', { p: t.id, a: b, b: a, w: [], n: 9, x: 1 }); NB.tellIn(a, i, 'L'); out.push(I()); }
+      NB.WARY_ON = false; const off = I(); NB.WARY_ON = true;
+      // a tale of a sack told as a mere storming (the takers' account) is no tale of cruelty
+      NB.st().pb[a] = {}; for (const t of towns) { const i = A.WC.put('fall', { p: t.id, a: b, b: a, w: [], n: 9, x: 1 }); NB.tellIn(a, i, 'T'); }
+      const mild = I();
+      return { a: S.realms[a].short, b: S.realms[b].short, steps: out, off, mild, false: NB.tellings(a).length };
+    });
+    if (r.skip) return { ok: true, detail: 'no world record in this build' };
+    const d = r.steps.map(x => Math.round((r.steps[0] - x) * 10) / 10);
+    const ok = d[1] === 3 && d[2] === 6 && d[3] === 6 && r.off === r.steps[0] && r.mild === r.steps[0];
+    return { ok, detail: `${r.a}'s interest in ${r.b} (what its alliances and pacts read), with no tale, then one, two, three tales of towns burned by ${r.b}: ${r.steps.join(' → ')} (warier by ${d.slice(1).join(', ')}; capped at 6). Switched off: ${r.off}. Told as stormings, not burnings: ${r.mild}` };
+  },
+
+  async nbRevenge(pg) {
+    // people act on what they believe: a killing believed turns the believer on the one blamed (an enemy now, found by
+    // 21's feud move), brings the nb_avenge move to the player, or a plot (39-schemes) when the one blamed is the player
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const NB = A.NPCB, pc = NBT.adult(6434), out = {};
+      const mk = (tr, known, op) => { const me = A.pc(), p = NBT.person(me, { traits: tr || [] }); if (known) NBT.know(me, p, op || 20); return p; };
+      // h believes X killed his brother v (it was a fever)
+      const h = mk(['vengeful', 'brave'], true, 25), v = mk(), X = mk(), y = mk();
+      A.link(h, v, 'sibling', 60, 'sibling'); A.link(X, y, 'sibling', 60, 'sibling');
+      A.kill(v, 'a fever');
+      const K = NB.make('K', X.id, v.id, 0, -10, v.given); NB.adopt(h, K, 1);
+      out.found = !!NB.avengeOf(pc, h) && NB.avengeOf(pc, h).X.id === X.id;
+      out.desire = A.NPCI && A.NPCI.desire ? Math.round(A.NPCI.desire(pc, h, 'nb_avenge', pc.rel[h.id]).w * 100) / 100 : null;
+      out.inKinds = !!(A.NPCI && A.NPCI.KINDS && A.NPCI.KINDS.nb_avenge);
+      const ch = A.chance;
+      A.chance = () => false; try { NB.revengeYear(pc, [h]); } finally { A.chance = ch; }
+      out.enemy = h.rel[X.id] && h.rel[X.id].type; out.foeOf = A.NPCI && A.NPCI.foeOf ? (A.NPCI.foeOf(pc, h) || {}).id === X.id : null;
+      // the move: talked out of it (a check won), or the player walks with him
+      const base = A.serialize();
+      const talk = NBT.choose('nb_avenge', { pid: h.id }, 1, 1);
+      out.talkText = talk.text; out.talked = NB.held(A.P(h.id), K) === -1 && A.P(h.id).nbRv === A.S.year && A.P(X.id).alive;
+      A.deserialize(JSON.parse(base));
+      const join = NBT.choose('nb_avenge', { pid: h.id }, 0, 0.01);
+      const X2 = A.P(X.id);
+      out.joinText = join.text; out.killed = !X2.alive && /killed by/.test(X2.cause || ''); out.wrongDoor = A.pc().flags.nb_wrong_door === A.S.year;
+      out.chain = NB.beliefs(A.P(y.id)).some(x => x.c.k === 'K' && x.c.s === h.id && x.c.o === X.id && x.c.t);
+      out.nbFalse = join.ctx && join.ctx.nbFalse;
+      A.deserialize(JSON.parse(base));
+      // the player blamed: a kinsman who believes it, and hates the player, starts a plot
+      const pc2 = A.pc(), h2 = mk(['vengeful'], true, -60), v2 = mk(); A.link(h2, v2, 'child', 70, 'parent'); A.kill(v2, 'a fall');
+      const K2 = NB.make('K', pc2.id, v2.id, 0, -10, v2.given); NB.adopt(h2, K2, 1); h2.rel[pc2.id].op = -60; pc2.rel[h2.id].op = -60;
+      pc2.scAgainst = null; pc2.scLast = null;
+      A.chance = () => true; try { NB.revengeYear(pc2, [h2]); } finally { A.chance = ch; }
+      out.hasSchemes = !!A.SCHEMES;
+      out.plot = pc2.scAgainst ? { by: pc2.scAgainst.by === h2.id, k: pc2.scAgainst.k, nb: pc2.scAgainst.nb === K2 } : null;
+      // off-screen: someone the player does not know goes to the door alone
+      const h3 = mk(['wrathful']), v3 = mk(), X3 = mk(); A.link(h3, v3, 'spouse', 70, 'spouse'); A.kill(v3, 'drowning');
+      NB.adopt(h3, NB.make('K', X3.id, v3.id, 0, -10, v3.given), 1);
+      NB.resetStats(); A.chance = () => true; try { NB.revengeYear(pc2, [h3]); } finally { A.chance = ch; }
+      out.offscreen = { act: NB.stats.revAct, kill: NB.stats.revKill, falseBelief: NB.stats.revFalse, dead: !A.P(X3.id).alive };
+      return out;
+    });
+    // without 21-npc-initiative the move runs on this feature's own budget; without 39-schemes there is no plot
+    const ok = r.found && (r.desire == null || (r.inKinds && r.desire > 0)) && r.enemy === 'enemy' && r.foeOf !== false && r.talked && r.killed && r.wrongDoor && r.chain && r.nbFalse === 1 &&
+      (r.hasSchemes ? r.plot && r.plot.by && r.plot.k === 'murder' && r.plot.nb : !r.plot) && r.offscreen.kill === 1 && r.offscreen.falseBelief === 1;
+    return { ok, detail: `a vengeful man who believes X killed his brother (a fever): X is now his enemy (${r.enemy}; 21's feud move finds X: ${r.foeOf}); 21's nb_avenge desire ${r.desire}. Talked out of it: ${r.talked} ("${r.talkText}"). ` +
+      `Walked with him: X dead ${r.killed}, the player marked as having gone to the wrong door ${r.wrongDoor}, X's brother now believes the true killing ${r.chain} ("${r.joinText}"). ` +
+      `Blamed yourself by a vengeful father at -60: 39's plot ${JSON.stringify(r.plot)}. Off-screen, alone: ${JSON.stringify(r.offscreen)}` };
+  },
+
+  async nbCourtSidelines(pg) {
+    // a court that believes a councillor is in the pay of its enemies puts him out of 56's council, names another, and
+    // does not seat him again while it believes it
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const NB = A.NPCB, pc = NBT.adult(6435); if (!A.RI || !A.RI.fillCouncil || !A.COUNCIL) return { skip: true };
+      const S = A.S, rid = Object.keys(S.realms).filter(id => S.realms[id].alive && !S.realms[id].isRebel && id !== pc.realm && S.realms[id].council).sort().find(id => Object.keys(S.realms[id].council).filter(k => A.P(S.realms[id].council[k])).length >= 3);
+      const rr = A.realm(rid), seat = Object.keys(rr.council).find(k => A.COUNCIL[k] && A.P(rr.council[k]) && A.P(rr.council[k]).alive), C = A.P(rr.council[seat]);
+      const cid = NB.make('S', C.id, 'treason', NB.treasonTrue(rr, { p: C, h: null }) ? 1 : 0, -12); NB.courtAdopt(rid, cid, 1);
+      const ch = A.chance; A.chance = q => q >= 0.39;   // no new whispers this year; the court acts on what it believes
+      try { NB.councilYear(pc); } finally { A.chance = ch; }
+      const now = rr.council[seat], L = (rr.riCourt || [])[0] || {};
+      const out = { realm: rr.short, seat: A.COUNCIL[seat].name, out: now !== C.id, filled: !!A.P(now), log: L.out === C.id, why: ((L.why || [])[0] || [])[0] || '', t: NB.claim(cid).t };
+      // while it believes it, he is not named again, whichever seat comes free
+      let reSeated = 0;
+      for (let k = 0; k < 8; k++) { const s2 = Object.keys(A.COUNCIL)[k % Object.keys(A.COUNCIL).length]; delete rr.council[s2]; A.RI.fillCouncil(rr); if (Object.values(rr.council).includes(C.id)) reSeated++; }
+      out.reSeated = reSeated; out.keys = Object.keys(rr.council).filter(k => /^_nb/.test(k)).length;
+      S.npcb.ct[rid][cid] = -1; out.cleared = NB.traitors(rid).length === 0;
+      // the Realm tab names it when it is the player's own realm's court
+      return out;
+    });
+    if (r.skip) return { ok: true, detail: 'no council in this build' };
+    const ok = r.out && r.filled && r.log && /pay of the crown/.test(r.why) && r.reSeated === 0 && r.keys === 0 && r.cleared;
+    return { ok, detail: `${r.realm}'s court believes its ${r.seat} is in the pay of the crown's enemies (${r.t ? 'true' : 'false'}): put out ${r.out}, the seat filled ${r.filled}, the court record says "${r.why}"; seats freed and filled 8 times since, re-seated ${r.reSeated}` };
+  },
+
+  async nbPlayerWorld(pg) {
+    // the player takes on trust what is said in their realm of a far battle; it is wrong; years later they find out,
+    // and the Chronicle sets what they were told beside the record. An old save without the world tellings plays on.
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const NB = A.NPCB, pc = NBT.adult(6436); if (!A.WC || !A.WC.put) return { skip: true };
+      const S = A.S, nbs = new Set([pc.realm].concat(A.neighbors(pc.realm) || []));
+      const far = Object.keys(S.realms).filter(id => S.realms[id].alive && !S.realms[id].isRebel && !nbs.has(id) && !(A.neighbors(id) || []).some(n => nbs.has(n))).sort();
+      const a = far[0], b = (A.neighbors(a) || []).find(n => far.includes(n)) || far[1];
+      const P = S.prov.find(q => q.owner === b);
+      const i1 = A.WC.put('battle', { p: P.id, a, b, w: [], n: 40000, x: [6000, 2, ''] });
+      const iR = A.WC.put('ruler', { p: P.id, a: b, w: [S.realms[b].ruler, null], n: 58, x: 'a fever' });
+      S.npcb.pb[pc.realm] = {}; const c1 = NB.tellIn(pc.realm, i1, 'F');
+      const knows = NB.pcKnows(pc, NB.claim(c1));
+      const log0 = S.log.length, ch = A.chance;
+      A.chance = () => true; try { NB.pcWorldYear(pc); } finally { A.chance = ch; }
+      const heard = NB.pcHeld(pc, c1) === 1 && NB.isFalse(NB.claim(c1), 1), heardLog = S.log.flatMap(e => (e && e.lines) || []).map(l => String(l[0] || '')).find(t => /^Word in/.test(t)) || '';
+      // a year on: it comes out (a scene)
+      S.year += 1; A.S.queue = [];
+      A.chance = () => true; try { NB.pcWorldYear(pc); } finally { A.chance = ch; }
+      const queued = A.S.queue.some(q => q.ev === 'nb_record_wrong');
+      const res = NBT.choose('nb_record_wrong', { cid: (A.S.queue.find(q => q.ev === 'nb_record_wrong') || { ctx: { cid: c1 } }).ctx.cid }, 0);
+      const fixed = NB.pcHeld(A.pc(), c1) === -2 && A.pc().flags.nb_was_wrong === S.year;
+      // and a king's death heard since, told as a death in the saddle (it was a fever), still believed
+      const c2 = NB.tellIn(pc.realm, iR, 'H'); NB.pcHear(A.pc(), c2, 1, pc.realm);
+      // the Chronicle: on the page and in the export, pure to draw
+      UI.screen = 'game';
+      const h0 = T.hash(A.S), rng0 = JSON.stringify(A.S.rng);
+      const book = UI.TAB.book ? UI.TAB.book(A.pc()) : '', text = A.chronicleText ? A.chronicleText() : '';
+      const pure = T.hash(A.S) === h0 && JSON.stringify(A.S.rng) === rng0;
+      const sec = book.slice(book.indexOf('What the world told'));
+      // an old save from before the world tellings
+      const o = JSON.parse(A.serialize()); const strip = x => { if (x && x.npcb) { delete x.npcb.pb; delete x.npcb.ww; } }; strip(o.S || o); strip(o);
+      A.deserialize(o); let err = null; try { NB.year(A.pc()); } catch (e) { err = String(e); }
+      return { knows, heard, heardLog, queued, view: res.view && res.view.text, result: res.text, fixed, inBook: book.includes('What the world told'), learned: /learned otherwise/.test(sec), record: /beat/.test(sec), stillBelieved: /As far as/.test(sec), inText: /WHAT THE WORLD TOLD/.test(text), pure, oldSave: !err && !!A.S.npcb.pb, err };
+    });
+    if (r.skip) return { ok: true, detail: 'no world record in this build' };
+    const ok = r.knows === null && r.heard && /^Word in/.test(r.heardLog) && r.queued && r.fixed && r.inBook && r.learned && r.record && r.stillBelieved && r.inText && r.pure && r.oldSave;
+    return { ok, detail: `a far battle, told at home with the count run high: you cannot know it (${r.knows}), and take it on trust ${r.heard} ("${r.heardLog.slice(0, 110)}"). A year on it comes out: the scene ${r.queued} ("${String(r.view).slice(0, 120)}…"), set right ${r.fixed}. ` +
+      `The Chronicle: section ${r.inBook}, "learned otherwise" with the record's line ${r.learned && r.record}, the king's death you still believe ${r.stillBelieved}; the export ${r.inText}; pure ${r.pure}. An old save without the tellings plays on ${r.oldSave}${r.err ? ' ' + r.err : ''}` };
+  },
+
+  async nbWorldViews(pg) {
+    // the diplomacy card, the Realm tab and the World tab's Tales show what each realm says; the record only where the
+    // player knows how it went; escaped; drawing changes nothing
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const NB = A.NPCB, pc = NBT.adult(6437); if (!A.WC || !A.WC.put) return { skip: true };
+      const S = A.S, P0 = NBT.places(pc), live = Object.keys(S.realms).filter(id => S.realms[id].alive && !S.realms[id].isRebel).sort();
+      const iN = A.WC.put('battle', { p: pc.home, a: pc.realm, b: P0.nb, w: [], n: 30000, x: [4000, 1, ''] });
+      const fb = (A.neighbors(P0.far) || []).find(n => live.includes(n) && n !== pc.realm && !(A.neighbors(pc.realm) || []).includes(n)) || P0.far;
+      const iF = A.WC.put('battle', { p: P0.farProv, a: P0.far, b: fb, w: [], n: 50000, x: [9000, 3, ''] });
+      for (const rid of live) { NB.tellIn(rid, iN); NB.tellIn(rid, iF); }
+      NB.pcHear(pc, NB.tellIn(pc.realm, iF, 'F'), 1, pc.realm);
+      const keep = S.realms[P0.far].short; S.realms[P0.far].short = 'Far<img src=x>';
+      UI.screen = 'game';
+      // once to warm the release's own views (its diplomacy reads set up fields the first time), then measured
+      UI.diplCard(A.realm(pc.realm), A.realm(P0.nb)); UI.TAB.realm(pc); UI.worldView = 'history'; UI.TAB.world(pc); UI.worldView = 'nbtales'; UI.TAB.world(pc);
+      const h0 = T.hash(A.S), rng0 = JSON.stringify(A.S.rng);
+      const card = UI.diplCard(A.realm(pc.realm), A.realm(P0.nb));
+      const realm = UI.TAB.realm(pc);
+      UI.worldView = 'history'; const hist = UI.TAB.world(pc);
+      UI.worldView = 'nbtales'; const tales = UI.TAB.world(pc);
+      UI.worldView = 'map';
+      const pure = T.hash(A.S) === h0 && JSON.stringify(A.S.rng) === rng0;
+      S.realms[P0.far].short = keep;
+      const t2 = tales.replace(/<[^>]+>/g, ' ');
+      S.realms[P0.far].short = 'Far<img src=x>';
+      const mine = NB.talesView(pc) + NB.realmBlock(pc, A.realm(P0.far)) + NB.realmBlock(pc, A.realm(P0.nb)) + NB.realmCard(pc);
+      S.realms[P0.far].short = keep;
+      return { card: card.includes('What is said in'), realm: realm.includes('What is said here'), button: hist.includes('data-v="nbtales"'), tales: tales.includes('Tales of the age'),
+        record: /The record:/.test(t2), cannot: /cannot say from here/.test(t2), heard: /you heard it so/.test(t2), escaped: !mine.includes('<img src=x>') && mine.includes('Far&lt;img'), pure, n: (tales.match(/nb-tale/g) || []).length };
+    });
+    if (r.skip) return { ok: true, detail: 'no world record in this build' };
+    const ok = r.card && r.realm && r.button && r.tales && r.record && r.cannot && r.heard && r.escaped && r.pure && r.n >= 2;
+    return { ok, detail: JSON.stringify(r) };
   },
 };

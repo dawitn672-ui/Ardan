@@ -194,14 +194,17 @@
     const great = fresh.map(i => W.ent(i)).filter(e => e.k === 'legend' || (e.k === 'peace' && Array.isArray(e.x) && e.x[1] !== 'white' && (e.x[2] || []).length) || (e.k === 'fall' && +e.x >= 2) || e.k === 'battle')
       .sort((a, b) => (b.k === 'legend') - (a.k === 'legend') || ((b.k === 'battle' ? (b.x || [0])[0] : 20000 * (+b.x || 1)) - (a.k === 'battle' ? (a.x || [0])[0] : 20000 * (+a.x || 1))) || a.i - b.i).slice(0, 2).map(e => e.i);
     for (const rid of realms) {
+      // the entries it would keep, chosen before any telling is made: its own and its neighbours', the year's greatest
       const near = new Set([rid].concat(nbrs(rid)));
+      const cand = [];
       for (const i of fresh) {
         const e = W.ent(i);
-        const rel = near.has(e.a) || (e.b && near.has(e.b)) || great.includes(i);
-        if (!rel) continue;
-        if (NB.tellScore(rid, e) < 1.5) continue;
-        if (NB.tellIn(rid, i)) NB.stats.seedWorld++;
+        if (!(near.has(e.a) || (e.b && near.has(e.b)) || great.includes(i))) continue;
+        const sc = NB.tellScore(rid, e);
+        if (sc >= 1.5) cand.push({ i, e, s: sc });
       }
+      if (!cand.length) continue;
+      for (const x of pickPb(rid, cand)) if (NB.tellIn(rid, x.i)) NB.stats.seedWorld++;
       trimPb(rid);
     }
     // the old tellings drift, and are now and then set right; a peace brings envoys and truer word
@@ -211,6 +214,22 @@
       if (!A.realm(rid) || !A.realm(rid).alive) { delete st.pb[rid]; continue; }
       NB.driftIn(rid, peaces);
     }
+  };
+  // which of the candidate entries would make the cut beside what the realm already tells (pure)
+  const pickPb = function (rid, cand) {
+    const st = NB.st(), m = st.pb[rid] || {}, W = WC();
+    const L = Object.keys(m).map(id => { const c = st.c[id], e = c && W.ent(c[2]); return e ? { e, s: NB.tellScore(rid, e), bat: c[0] === 'B' } : null; }).filter(Boolean)
+      .concat(cand.map(x => Object.assign({ cand: 1, bat: x.e.k === 'battle' }, x)));
+    L.sort((a, b) => b.s - a.s || a.e.i - b.e.i);
+    let nb = 0, n = 0, nf = 0;
+    const out = [];
+    for (const x of L) {
+      const far = NB.role(rid, x.e) === 'far';
+      if (far ? nf >= NB.PBF : n >= NB.PB - NB.PBF || (x.bat && nb >= NB.PBB)) continue;
+      if (far) nf++; else { n++; if (x.bat) nb++; }
+      if (x.cand) out.push(x);
+    }
+    return out;
   };
   const trimPb = function (rid) {
     const st = NB.st(), m = st.pb[rid]; if (!m) return;
@@ -423,7 +442,7 @@
       const K = NB.make('K', t.id, X.id, 1, -10, xn);
       for (const id of Object.keys(X.rel || {}).sort()) { const r = X.rel[id], f = A.P(id); if (f && f.alive && f.id !== t.id && (!pc || f.id !== pc.id) && r && (NB.KIN.has(r.type) || NB.CLOSE.has(r.type)) && A.chance(0.7)) NB.adopt(f, K, 1, 'kill'); }
       if (pc && (pc.rel[t.id] || pc.rel[X.id]) && help !== 'join') A.log(`${t.given} has killed ${xn}. ${cap(A.he(t))} believed ${A.he(X)} killed ${victim}${c.t ? '' : ', and it was never so'}.`, 'bad');
-      return help ? `(${X.given} is dead by morning.${c.t ? '' : ' Whatever ' + A.he(X) + ' was, ' + A.he(X) + ' was not that.'})` : '';
+      return help ? `(${X.given} is dead by morning${c.t ? '' : ', for a killing ' + A.he(X) + ' never did'}.)` : '';
     }
     X.health = Math.max(15, (X.health || 60) - A.ri(15, 35));
     if (t.rel) t.rel[X.id] = Object.assign(t.rel[X.id] || {}, { type: (t.rel[X.id] && NB.KIN.has(t.rel[X.id].type)) ? t.rel[X.id].type : 'enemy', op: Math.min(-50, (t.rel[X.id] || {}).op || 0), since: (t.rel[X.id] || {}).since || A.S.year });
@@ -601,9 +620,12 @@
 
   // ---------------------------------------------------------------- the yearly step
 
+  // the realms' tellings are seeded from the record with the battles (one switch for everything read from 57's record:
+  // 57's own test holds NB.seedBattles back to show that recording alone changes nothing)
+  const seedB = NB.seedBattles;
+  NB.seedBattles = function () { NB.worldYear(); return seedB.apply(this, arguments); };
   const year0 = NB.year;
   NB.year = function (pc) {
-    NB.worldYear();
     year0.apply(this, arguments);
     const web = NB.web(pc);
     NB.councilYear(pc);

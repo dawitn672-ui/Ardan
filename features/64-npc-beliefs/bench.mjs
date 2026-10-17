@@ -6,7 +6,9 @@
 //        beliefs that are false, by what they are about (you, other people, battles, beasts) and by how far the holder
 //        lives from you (same town, same realm, a neighbour realm, further); the courts as well. Belief scenes met a
 //        decade, and those driven by a false belief. How far false beliefs move opinion of you. Corrections, by how
-//        they travelled. The player's own false beliefs, and how many were found out.
+//        they travelled. The player's own false beliefs, and how many were found out. What each realm says of the great
+//        events (by its side in them), the grudges and wariness that feeds, vengeance, councillors put out, and the
+//        share of lives of 15 years or more that met belief against truth in play (a belief scene, or a codex correction).
 // long   one 60-year life (a dwarf artisan of 40, who lives through it; the first seed whose life lasts): the bytes the beliefs take in the save
 // cost   the same 20-year life with the feature's yearly step on and off (wall time), and the same seed twice (replay)
 import fs from 'node:fs';
@@ -22,7 +24,7 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const arg = k => { const a = process.argv.find(x => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : null; };
 const html = path.resolve(root, process.argv.slice(2).find(a => !a.startsWith('--')) || 'index.html');
 const what = (arg('what') || 'lives,long,cost').split(',');
-const LIVES = +(arg('lives') || 8), YEARS = +(arg('years') || 45);
+const LIVES = +(arg('lives') || 16), YEARS = +(arg('years') || 40);
 
 const browser = await pw.chromium.launch();
 const pg = await browser.newPage();
@@ -39,9 +41,22 @@ if (what.includes('lives')) out.lives = await pg.evaluate(([n, years]) => {
   const op = { holders: 0, movedFalse: 0, sumFalse: 0, movedTrue: 0, sumTrue: 0 };
   let censuses = 0, scenes = 0, fScenes = 0, totalYears = 0, pcFalse = 0, pcHeld = 0, wrongFound = 0;
   const byEv = {};
+  const W = { n: 0, f: 0, role: { own: G(), other: G(), near: G(), far: G() }, kind: {}, grudgePairs: 0, waryPairs: 0, feudPlans: 0, feudPlansByBelief: 0 };
   const census = () => {
     const pc = A.pc(); if (!pc) return;
     censuses++;
+    // what each realm says of the great events
+    const st = A.S.npcb;
+    if (st && st.pb && A.WC) for (const rid of Object.keys(st.pb)) for (const x of NB.tellings(rid)) {
+      const e = A.WC.ent(x.c.o); if (!e) continue;
+      const f = x.c.t ? 0 : 1, role = NB.role(rid, e);
+      W.n++; W.f += f; W.role[role].n++; W.role[role].f += f;
+      const g = W.kind[x.c.k] = W.kind[x.c.k] || G(); g.n++; g.f += f;
+    }
+    const live = Object.keys(A.S.realms).filter(id => A.S.realms[id].alive && !A.S.realms[id].isRebel);
+    for (const a of live) for (const b of A.neighbors(a) || []) { if (NB.wGrudge(a, b) <= -3) W.grudgePairs++; if (NB.wary(a, b) > 0) W.waryPairs++; }
+    const CS = A.CASUS;
+    if (CS && CS.weigh) for (const a of live) { const r = A.S.realms[a]; if (!r.csPlan || r.csPlan.k !== 'feud') continue; W.feudPlans++; NB.WG_ON = false; let w = null; try { w = CS.weigh(a, r.csPlan.t); } finally { NB.WG_ON = true; } if (!w || w.k !== 'feud') W.feudPlansByBelief++; }
     for (const p of Object.values(A.S.people)) {
       if (!p.nb || !p.alive) continue;
       const d = NB.dist(p, pc);
@@ -64,19 +79,21 @@ if (what.includes('lives')) out.lives = await pg.evaluate(([n, years]) => {
   const adv = A.advance, ch = A.eventChoose;
   let lastCensus = null;
   A.advance = function () { const r = adv.apply(this, arguments); try { if (A.S.year % 5 === 0 && lastCensus !== A.S.year) { lastCensus = A.S.year; census(); } } catch (e) {} return r; };
-  A.eventChoose = function () { const q = A.S.queue[0]; if (q && q.type === 'event' && !q.result && /^nb_/.test(q.ev)) { scenes++; byEv[q.ev] = (byEv[q.ev] || 0) + 1; if (q.ctx && q.ctx.nbFalse) fScenes++; } return ch.apply(this, arguments); };
+  let mine = 0;
+  A.eventChoose = function () { const q = A.S.queue[0]; if (q && q.type === 'event' && !q.result && /^nb_/.test(q.ev)) { scenes++; mine++; byEv[q.ev] = (byEv[q.ev] || 0) + 1; if (q.ctx && q.ctx.nbFalse) fScenes++; } return ch.apply(this, arguments); };
   const starts = [['human', 'POL-01', 'artisan'], ['human', 'POL-03', 'merchant'], ['human', 'POL-05', 'peasant'], ['dwarf', 'POL-20', 'artisan'], ['human', 'POL-02', 'noble'], ['orc', 'POL-11', 'peasant'], ['human', 'POL-07', 'serf'], ['elf', 'POL-06', 'gentry']];
   const lives = [];
   try {
     for (let i = 0; i < n; i++) {
       const [race, realm, status] = starts[i % starts.length];
-      lastCensus = null;
+      lastCensus = null; mine = 0; const f0 = NB.stats.pcWorldFix;
       const L = B.life({ seed: 6440 + i, race, realm, status, sex: i % 2 ? 'F' : 'M', startAge: race === 'elf' ? 60 : race === 'dwarf' ? 32 : 17 }, ['careful', 'greedy'][i % 2], i % 2 === 0, years);
       totalYears += L.years;
       const pc = A.P(A.S.pc);
       if (pc && pc.nbk) for (const id in pc.nbk) { const c = NB.claim(id), e = pc.nbk[id]; if (!c || !Array.isArray(e)) continue; pcHeld++; if (NB.isFalse(c, e[0])) pcFalse++; }
       if (pc && pc.flags && pc.flags.nb_was_wrong) wrongFound++;
-      lives.push({ years: L.years, events: L.events, npc: L.npcMoves });
+      const fixes = NB.stats.pcWorldFix - f0 + (pc && pc.flags && pc.flags.nb_was_wrong ? 1 : 0);
+      lives.push({ years: L.years, events: L.events, npc: L.npcMoves, scenes: mine, worldFixes: NB.stats.pcWorldFix - f0, met: mine + fixes > 0 });
     }
   } finally { A.advance = adv; A.eventChoose = ch; }
   const pct = g => (g.n ? +(100 * g.f / g.n).toFixed(1) : null);
@@ -91,7 +108,11 @@ if (what.includes('lives')) out.lives = await pg.evaluate(([n, years]) => {
     opinion: { holderCensuses: op.holders, movedByFalsePct: op.holders ? +(100 * op.movedFalse / op.holders).toFixed(1) : null, meanFalseMove: op.holders ? +(op.sumFalse / op.holders).toFixed(1) : null, movedByTruePct: op.holders ? +(100 * op.movedTrue / op.holders).toFixed(1) : null, meanTrueMove: op.holders ? +(op.sumTrue / op.holders).toFixed(1) : null },
     corrections: Object.fromEntries(Object.entries(S).filter(([k]) => /^corr/.test(k))), courtCorr: S.courtCorr,
     seeds: { deeds: S.seedDeed, kills: S.seedKill, blame: S.seedBlame, battles: S.seedBattle, slanders: S.seedSlander, court: S.seedCourt, news: S.news, told: S.told, adopt: S.adopt },
-    player: { heard: S.pcHeard, heldAtEnd: pcHeld, falseAtEnd: pcFalse, livesThatFoundOut: wrongFound },
+    player: { heard: S.pcHeard, heldAtEnd: pcHeld, falseAtEnd: pcFalse, livesThatFoundOut: wrongFound, worldHeard: S.pcWorldHeard, worldFixed: S.pcWorldFix },
+    world: { tellings: W.n, falsePct: pct(W), byRole: Object.fromEntries(Object.entries(W.role).map(([k, g]) => [k, [g.n, pct(g)]])), byKind: Object.fromEntries(Object.entries(W.kind).map(([k, g]) => [k, [g.n, pct(g)]])),
+      seeded: S.seedWorld, drifted: S.drift, setRight: S.worldFix, peopleTookUp: S.tale, grudgePairCensuses: W.grudgePairs, waryPairCensuses: W.waryPairs, feudPlanCensuses: W.feudPlans, feudPlansOnlyByBelief: W.feudPlansByBelief },
+    acts: { feudsTurned: S.revFeud, vengeance: S.revAct, killed: S.revKill, onFalseBelief: S.revFalse, plotsAgainstYou: S.revPlot, avengeScenes: byEv.nb_avenge || 0, treasonWhispers: S.seedTreason, sidelined: S.sideline, sidelinedInnocent: S.sidelineFalse },
+    met: (() => { const L = lives.filter(x => x.years >= 15); return { lives15: L.length, met: L.filter(x => x.met).length, pct: L.length ? +(100 * L.filter(x => x.met).length / L.length).toFixed(1) : null }; })(),
     perLife: lives,
   };
 }, [LIVES, YEARS]);

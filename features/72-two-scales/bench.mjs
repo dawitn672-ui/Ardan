@@ -1,7 +1,7 @@
 // Measurements behind features/72-two-scales/README.md, on a built page (they take minutes, so they are not in test.mjs):
 //
 //   node features/72-two-scales/bench.mjs <built.html> [--what=swing,lives] [--fights=150] [--seed=5000]
-//        [--policies=none,best,worst,bold,steady,care,flee] [--lives=6] [--years=70] [--paths=soldier,serf,...] [--json=out.json]
+//        [--policies=none,best,worst,bold,steady,care,flee,o:best,o:worst] [--lives=6] [--years=70] [--paths=soldier,serf,...] [--json=out.json]
 //
 // swing  real fights frozen the moment an enlisted soldier's division goes in (bench/rankfx-lab.mjs), each played out
 //        once per policy from the same state and random stream: fights won, paired fight by fight; the men beside you
@@ -48,7 +48,7 @@ if (what.includes('swing')) {
       sum.policies[p] = { won: L.filter(x => x.won === true).length, ended: L.filter(x => x.won != null).length, perf: +(L.reduce((a, x) => a + x.perf, 0) / L.length).toFixed(2),
         diedPerMan: +(L.reduce((a, x) => a + x.dead, 0) / Math.max(1, men)).toFixed(3), youDied: L.filter(x => !x.alive).length, choices: +(L.reduce((a, x) => a + x.choices, 0) / L.length).toFixed(2), dragged: L.reduce((a, x) => a + x.saved, 0) };
     }
-    for (const [a, b] of [['best', 'worst'], ['best', 'none'], ['none', 'worst'], ['bold', 'flee']]) if (res[a] && res[b]) sum.pairs[a + '>' + b] = { gained: flip(a, b), lost: flip(b, a), points: Math.round(100 * (flip(a, b) - flip(b, a)) / fights.length * 10) / 10 };
+    for (const [a, b] of [['best', 'worst'], ['best', 'none'], ['none', 'worst'], ['bold', 'flee'], ['o:best', 'o:worst'], ['o:none', 'o:worst']]) if (res[a] && res[b]) sum.pairs[a + '>' + b] = { gained: flip(a, b), lost: flip(b, a), points: Math.round(100 * (flip(a, b) - flip(b, a)) / fights.length * 10) / 10 };
     for (const [k, v] of Object.entries(window.TS_TAGS)) sum.choices[k] = { n: v.n, diedPerMan: +(v.died / Math.max(1, v.men)).toFixed(3) };
     return sum;
   }, [FIGHTS, SEED, POL]);
@@ -75,13 +75,13 @@ if (what.includes('lives')) {
         let L;
         try { L = B.life(o, pers, engaged, years); } finally { A.newGame = ng; A.wsPCFightStart = st; A.onMonth.length = om; }
         const pc = A.P(A.S.pc), S = L.samples || [];
-        return { ts: pc.tsN || 0, levy: pc.tsLevyN || 0, service: S.filter(s => s.mil >= 0).length, warMonths: W.warMonths, asked: W.asked, levyAsked: W.home, years: L.years, death: L.deathAge, arc: L.arc };
+        return { ts: pc.tsN || 0, levy: pc.tsLevyN || 0, short: pc.tsShortN || 0, service: S.filter(s => s.mil >= 0).length, warMonths: W.warMonths, asked: W.asked, levyAsked: W.home, years: L.years, death: L.deathAge, arc: L.arc };
       }, [o, pers, engaged, !!P.enlist, name === 'soldier' ? 40 : YEARS]));
       process.stderr.write(`${name} ${i}: ${JSON.stringify(rows[rows.length - 1])}\n`);
     }
     const served = rows.filter(r => r.service > 0), yrs = served.reduce((a, r) => a + r.service, 0), tsArmy = rows.reduce((a, r) => a + r.ts - r.levy, 0);
     out.lives[name] = { lives: rows.length, metAny: rows.filter(r => r.ts > 0).length, metLevy: rows.filter(r => r.levy > 0).length, served: served.length,
-      servedMet: served.filter(r => r.ts - r.levy > 0).length, servedAtWar: served.filter(r => r.warMonths > 0).length, askedAny: rows.filter(r => r.asked > 0).length, askedMet: rows.filter(r => r.asked > 0 && r.ts - r.levy > 0).length, levyAsked: rows.filter(r => r.levyAsked > 0).length, perDecadeOfService: yrs ? +(10 * tsArmy / yrs).toFixed(1) : null, serviceYears: yrs, rows };
+      servedMet: served.filter(r => r.ts - r.levy > 0).length, scenes: rows.reduce((a, r) => a + r.ts, 0), shortScenes: rows.reduce((a, r) => a + r.short, 0), metFull: rows.filter(r => r.ts - r.short > 0).length, servedAtWar: served.filter(r => r.warMonths > 0).length, askedAny: rows.filter(r => r.asked > 0).length, askedMet: rows.filter(r => r.asked > 0 && r.ts - r.levy > 0).length, levyAsked: rows.filter(r => r.levyAsked > 0).length, perDecadeOfService: yrs ? +(10 * tsArmy / yrs).toFixed(1) : null, serviceYears: yrs, rows };
     console.log(name, JSON.stringify(Object.assign({}, out.lives[name], { rows: undefined })));
   }
 }

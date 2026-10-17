@@ -41,15 +41,17 @@
   };
   TS.ORD = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth'];
   TS.dayWord = n => TS.ORD[n - 1] || A.ordinal(n);
+  TS.NUM = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
   // the levy is a smaller layer on the front than a soldier's section: the town's men beside a garrison
   if (A.RANKFX && A.RANKFX.LAYERS && A.RANKFX.LAYERS.line && !A.RANKFX.LAYERS.levy) {
     const L = A.RANKFX.LAYERS.line;
     A.RANKFX.LAYERS.levy = { name: 'the levy', theirs: r2(L.theirs * 0.6), ours: r2(L.ours * 0.6), fall: r2(L.fall * 0.6) };
   }
-  // an officer's days after his tactical battle (44's 'part' layer moved the fight already on the first day): half of it
+  // an officer's days after his tactical battle (44's 'part' layer moved the fight already on the first day): a quarter
+  // of it. At half, the officer's best against his worst read 22.7 points on 150 fights, over the plan's band of 10-20
   if (A.RANKFX && A.RANKFX.LAYERS && A.RANKFX.LAYERS.part && !A.RANKFX.LAYERS.company) {
     const L = A.RANKFX.LAYERS.part;
-    A.RANKFX.LAYERS.company = { name: 'your company', theirs: r2(L.theirs * 0.5), ours: r2(L.ours * 0.5), fall: r2(L.fall * 0.5) };
+    A.RANKFX.LAYERS.company = { name: 'your company', theirs: r2(L.theirs * 0.25), ours: r2(L.ours * 0.25), fall: r2(L.fall * 0.25) };
   }
 
   // ---- who and where ------------------------------------------------------------------------------------------------
@@ -73,9 +75,9 @@
     return { gen: g ? A.fullName(g, false) : '', temper: G.NAMES[t] || '', text: G.planText(a), at, hold };
   };
   // the front as plain data: every division that came into the fight, its order, its men, and who is still in it
-  TS.snap = function (m, F) {
+  TS.snap = function (m, F, ended) {
     const pc = A.pc(), out = [], ids = (F.aIds || []).concat(F.dIds || []);
-    const live = !!((A.S.fights || {})[F.loc] && A.S.fights[F.loc].key === F.key);   // after the end: who is still near the field
+    const live = !ended && !!((A.S.fights || {})[F.loc] && A.S.fights[F.loc].key === F.key);   // after the end: who is still near the field
     let oO = 0, oT = 0;
     for (const id of ids) {
       const att = F.aIds.includes(id), ours = att === !!m.ts.weAtt, d = A.divById(id);
@@ -99,6 +101,14 @@
       rout: F.rout ? ((F.rout === 'att') === !!m.ts.weAtt ? 'ours' : 'theirs') : '',
       terr: P.terr || 'plains', plan: pc ? TS.plan(m, pc, F) : null,
     };
+  };
+  // your division has gone back from the field (its order broke): the fight goes on without you, and your scene ends
+  TS.mineGone = m => { const fr = m.ts.front, me = fr && fr.divs.find(d => d.me); return !!(me && me.gone); };
+  TS.pullOut = function (m) {
+    m.ts.end = { won: 0, day: (m.ts.front && m.ts.front.day) || m.ts.day, out: 1 };
+    m.stages = m.stages.slice(0, m.stage).concat(['ts_break']);
+    m.stage = m.stages.length - 1;
+    m.log.push(`» The ${m.ts.divName} has had enough. The order comes down to go back.`);
   };
   TS.resnap = function (m, F) { F = F || TS.liveFight(m); if (!F) return; m.ts.prev = m.ts.front; m.ts.front = TS.snap(m, F); };
   // a division of ours beside mine that is giving way, or one of theirs that has broken
@@ -242,6 +252,7 @@
     push: ['Order the company forward', ['command', 'tactics'], 48], reinforce: [null, ['command', 'tactics'], 50],
     breach: ['Send the company into the breach', ['command', 'tactics'], 50], hold: ['Hold the company where it stands', ['command', 'wil'], 44],
     withdraw: ['Pull the company back in order', ['command', 'tactics'], 46], strip: ['Let the men strip the dead', ['command', 'int'], 30],
+    rest: ['Rest the company in turns behind the line', ['command', 'int'], 44],
   };
   const lineBase = TS.STAGE.ts_line;
   TS.STAGE.ts_line = function (m, pc) {
@@ -264,7 +275,7 @@
       { t: 'Chase them down while they run', tag: 'chase', check: ['spd', 'sta'], diff: 42 },
       { t: 'Stay with the wounded', tag: 'tend', check: ['medicine', 'wil'], diff: 35 },
       { t: 'Strip the dead for loot', tag: 'loot', check: ['int', 'str'], diff: 30 }] };
-    if (won === 0) return { text: 'The rear ranks edge back. Then the whole line goes, and you go with it.', choices: [
+    if (won === 0) return { text: e.out ? `The ${m.ts.divName} has had enough: its order is gone, and the drums beat the retreat while the rest of the fight goes on without it. The rear ranks are already moving.` : 'The rear ranks edge back. Then the whole line goes, and you go with it.', choices: [
       { t: 'Run for the trees', tag: 'run', check: ['spd', 'sta'], diff: 48 },
       { t: 'Stand with the rearguard and cover the retreat', tag: 'rearguard', check: ['wil', 'shield'], diff: 56 },
       { t: 'Throw down your weapon and surrender', tag: 'surrender', check: ['diplomacy', 'wil'], diff: 40 }] };
@@ -286,9 +297,11 @@
         c.odds = clamp(R.pct, 5, 95);
         try { c.measure = FL.measureText(pc, c.body, {}, null); } catch (e) {}
       } else {
+        if (c.body && c.diff == null) c.diff = 50;   // without the fight ladder (48), the mission's own check
         c.odds = A.missionOdds(pc, m, c);
         if (c.drill) { c.odds = clamp(c.odds + TS.drillBonus(m, pc, c.drill), 5, 95); c.drillV = r2(TS.drill(m, pc, c.drill)); c.drillW = A.DRILL ? A.DRILL.word(c.drillV) : ''; }
       }
+      if (!Number.isFinite(c.odds)) c.odds = 50;
       return c;
     });
     return { text: v.text, choices };
@@ -310,6 +323,7 @@
       layer: o.levy ? 'levy' : o.officer ? 'company' : 'line', levy: o.levy ? 1 : 0, officer: o.officer ? 1 : 0, men, state: {}, fell: [], perf: 0, lines: 0, rounds: [], front: null, prev: null, hurt: null, end: null, parked: 0 };
     for (const id of men) m.ts.state[id] = 'ok';
     m.ts.front = TS.snap(m, F);
+    if (TS.liveFight(m) && TS.mineGone(m)) TS.pullOut(m);
     TS.prepare(m);
     pc.tsN = (pc.tsN || 0) + 1;
     if (!TS.liveFight(m)) pc.tsShortN = (pc.tsShortN || 0) + 1;
@@ -453,14 +467,20 @@
     return true;
   };
   TS.draft = function (pc, ctx) {
-    const d = A.divById(ctx.div);
+    const d = ctx && A.divById(ctx.div);
     if (!d || !pc.mil) return '';
     const old = A.divById(pc.mil.div);
     pc.mil.div = d.id; if (d.army) pc.mil.army = d.army;
-    pc.mil.merit = (pc.mil.merit || 0) + 2;
-    pc.happy = A.clamp(pc.happy - 2, 0, 100);
     A.log(`You go with the draft from ${old ? 'the ' + old.name : 'your company'} to the ${d.name}.`, 'war');
     return '';
+  };
+  // the effect key: { tsDraft: 1 } moves you to the division the draft is for (ctx.div)
+  (A.FX_EXTRA = A.FX_EXTRA || []).push('tsDraft');
+  const applyFx = A.applyFx;
+  A.applyFx = function (pc, fx, ctx) {
+    const r = applyFx.apply(this, arguments);
+    try { if (fx && typeof fx === 'object' && fx.tsDraft && pc && pc.id === A.S.pc) TS.draft(pc, ctx); } catch (e) { console.error('two scales draft fx', e); }
+    return r;
   };
   TS.draftMonth = function (pc) {
     try {
@@ -509,7 +529,7 @@
     if (!ok && A.chance(ch.hurt || 0.5)) {
       const hurt = A.ri(6, 20);
       pc.health = A.clamp(pc.health - hurt, 0, 100); pc.lastHurt = 'wounds taken in the battle line';
-      if (A.chance(0.3)) { const w = A.addWound(pc, A.pick(['arrow_wound', 'scar_arm', 'broken_ribs', 'deep_cut', 'concussion'])); if (w) out.push(`(${w})`); }
+      if (A.chance(0.3)) { const w = A.addWound(pc, A.pick(['arrow_wound', 'scar_arm', 'broken_ribs', 'deep_cut', 'concussion'])); if (w) out.push(`Wound: ${w.toLowerCase()}.`); }
     }
     if (ch.honor) pc.honor = A.clamp(pc.honor + ch.honor[ok ? 1 : 0], 0, 100);
     if (ch.coin && ok) { const g = A.ri(ch.coin[0], ch.coin[1]); pc.coin += g; out.push(A.coin(g) + '.'); }
@@ -537,10 +557,11 @@
   // the line for the Chronicle: a comrade and the front together
   TS.chronicle = function (m, pc) {
     const e = m.ts.end || {}, fell = (m.ts.fell || [])[0], near = TS.near(m)[0] || (m.ts.men || []).map(A.P).find(p => p && p.alive);
-    const line = e.won === 1 ? (m.ts.weAtt ? 'and the line went forward over them' : 'and the line held') : e.won === 0 ? 'on the day the line gave way' : 'and nobody could say who had the field';
+    const line = e.won === 1 ? (m.ts.weAtt ? 'and the line went forward' : 'and the line held') : e.out ? 'on the day your line was pulled back' : e.won === 0 ? 'on the day the line gave way' : 'and nobody could say who had the field';
     const unit = m.ts.levy ? `the levy beside the ${m.ts.divName}` : `the ${m.ts.divName}`;
-    if (fell) return `At ${m.place}, on the ${TS.dayWord(fell.day)} day, ${fell.n} fell beside you in ${unit}, ${line}.` + ((m.ts.fell || []).length > 1 ? ` ${m.ts.fell.length - 1} more of your section did not come back.` : '');
-    if (near) return `At ${m.place} you stood ${m.ts.end && m.ts.end.day ? m.ts.end.day + ' days' : ''} in ${unit} with ${near.given} at your shoulder, ${line}.`.replace(/ {2,}/g, ' ');
+    if (fell) return `At ${m.place}, on the ${TS.dayWord(fell.day)} day, ${fell.n} fell beside you in ${unit}, ${line}.` + ((m.ts.fell || []).length > 1 ? ` ${A.cap(TS.NUM[m.ts.fell.length - 1] || String(m.ts.fell.length - 1))} more of ${m.ts.levy ? 'your neighbours' : 'your section'} did not come back.` : '');
+    const days = e.day > 1 ? ' ' + (TS.NUM[e.day] || e.day) + ' days' : '';
+    if (near) return `At ${m.place} you stood${days} in ${unit} with ${near.given} at your shoulder, ${line}.`;
     return `At ${m.place} you stood in ${unit}, ${line}.`;
   };
   TS.finish = function (m) {
@@ -553,7 +574,7 @@
     pc.kills += Math.min(m.kills, 6);
     A.willGrow(pc, won ? 0.6 : 1.5, 'battle');
     A.fame(pc, won ? 2 : 0);
-    const said = m.ts.end == null ? 'you are carried from the field while it goes on' : e.won === 1 ? (m.ts.weAtt ? 'your side breaks through' : 'your side holds') : e.won === 0 ? (m.ts.weAtt ? 'your side is thrown back' : 'your side gives way') : 'the fighting is broken off';
+    const said = m.ts.end == null ? 'you are carried from the field while it goes on' : e.out ? 'your division is pulled out of the line while the fight goes on' : e.won === 1 ? (m.ts.weAtt ? 'your side breaks through' : 'your side holds') : e.won === 0 ? (m.ts.weAtt ? 'your side is thrown back' : 'your side gives way') : 'the fighting is broken off';
     m.log.push(`— ${m.title}: ${said} after ${e.day || fr.day || 1} day${(e.day || fr.day || 1) > 1 ? 's' : ''}. ${A.fmt(fr.dead[0])} of yours dead, ${A.fmt(fr.dead[1])} of theirs.`);
     if (pc.health <= 0) m.log.push('You do not walk away from this field.');
     else A.log(TS.chronicle(m, pc), 'big');
@@ -585,6 +606,7 @@
     if (F.days <= m.ts.day) return;
     m.ts.day = F.days;
     TS.resnap(m, F);
+    if (TS.mineGone(m)) { TS.pullOut(m); TS.requeue(); return; }
     if (m.ts.lines < TS.LINES) { m.stages.splice(m.stage, 0, 'ts_line'); m.ts.lines++; TS.requeue(); }
   };
   A.onDay.push(pc => { try { TS.day(pc); } catch (e) { console.error('two scales day', e); } });
@@ -593,7 +615,7 @@
     const S = A.S, F = S.fights && S.fights[pid], q = S.tsq, m = q && q.m;
     const mine = !!(F && m && TS.on(m) && m.ts.pid === pid && m.ts.key === F.key && m.ts.start === F.start);
     let snap = null;
-    if (mine) { try { snap = TS.snap(m, F); } catch (e) { console.error('two scales snap', e); } }
+    if (mine) { try { snap = TS.snap(m, F, true); } catch (e) { console.error('two scales snap', e); } }
     const n0 = S.queue.length;
     const r = fightEnd.apply(this, arguments);
     if (!mine && F) { try { TS.noteEnded(F, winner); } catch (e) { console.error('two scales ended', e); } }

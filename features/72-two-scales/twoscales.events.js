@@ -8,7 +8,7 @@ A.defEvents([
     text: 'The sergeant reads out a list at muster. The {divName} has lost men at {front} and wants a draft of the fit ones, now. The rest of your company will sit out the war on the walls, as it has so far.',
     choices: [
       { t: 'Put your name down for the draft', r: 'You march at dawn with forty strangers and a sack of bread. The men who stay wave you off from the gate.',
-        fx: (p, ctx) => A.TS.draft(p, ctx) },
+        fx: { tsDraft: 1, merit: 2, happy: -2 } },
       { t: 'Stay with your own company on the walls', r: 'You keep your bunk and your friends. Somebody calls the draft fools, and nobody laughs.',
         fx: { happy: 2 } },
     ] },

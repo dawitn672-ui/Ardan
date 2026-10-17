@@ -16,7 +16,7 @@ export const TS_LAB = () => {
   const ev = c => { if (!c.pf) return 0; const o = c.odds, p3 = Math.max(0, o - 30) / 100, p2 = (o - Math.max(0, o - 30)) / 100, p1 = Math.min(20, 100 - o) / 100, p0 = 1 - p3 - p2 - p1; return p0 * c.pf[0] + p1 * c.pf[1] + p2 * c.pf[2] + p3 * c.pf[3]; };
   window.TS_PICK = (m, pol) => {
     const ch = m.cur.choices;
-    if (pol === 'best' || pol === 'worst') { const v = ch.map(ev); return v.indexOf(pol === 'best' ? Math.max(...v) : Math.min(...v)); }
+    if (pol === 'best' || pol === 'worst') { const v = ch.map(ev); return Math.max(0, v.indexOf(pol === 'best' ? Math.max(...v) : Math.min(...v))); }
     const tags = ch.map(c => c.tag);
     for (const t of PREF[pol] || []) { const k = tags.indexOf(t); if (k >= 0) return k; }
     return 0;
@@ -25,7 +25,15 @@ export const TS_LAB = () => {
   window.TS_PLAY = (f, pol) => {
     A.S = JSON.parse(f.snap); A.rngState = f.rng; A._idIdx = null; if (A.locDirty) A.locDirty();
     const pc = A.pc(), pid = +String(f.key).slice(1), F = A.S.fights[pid];
-    if (pol !== 'none') A.CHOICE_FN.wsLine({ key: f.key, war: F.war, enemy: A.hostile(F.a, pc.mil.realm) ? F.a : F.b, pid });
+    // an officer: 'o:best' stands for his tactical battle won outright (44's company layer at +1), then his company's
+    // later days played by 'best'; 'o:worst' for it lost outright (-1), then 'worst'; 'o:none' for the battle alone
+    const off = /^o:/.test(pol);
+    if (off) {
+      pc.mil.rank = 4; pol = pol.slice(2);
+      const won = pol !== 'worst';
+      A.RANKFX.apply(f.key, 'part', won ? 1 : -1);
+      if (pol !== 'none') A.TS.officerAfter({ pcSide: 'A', winner: won ? 'A' : 'B' }, f.key);
+    } else if (pol !== 'none') A.CHOICE_FN.wsLine({ key: f.key, war: F.war, enemy: A.hostile(F.a, pc.mil.realm) ? F.a : F.b, pid });
     let won = null, m0 = null, choices = 0;
     const fe = A.fightEnd;
     A.fightEnd = function (p, w) { if (p === pid && won == null) won = (w === 'att') === f.weAtt; return fe.apply(this, arguments); };

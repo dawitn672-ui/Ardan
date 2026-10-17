@@ -1,5 +1,8 @@
 // Two scales at once: the fight a soldier is in, day by day, with the squad and the front on one screen. Real fights are
 // frozen the moment an enlisted soldier's division goes in (bench/rankfx-lab.mjs) and played out through the scene.
+// The tests need the features the scene works through: 44-rank-battles (the front), 48-fight-ladder (the body),
+// 60-drill, 34-both-scales, 22-chronicle, 37-squad and 71-phone; on --only=two-scales the scene runs without them,
+// and the tests that check those links fail by design.
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { RANKFX_LAB } from '../../bench/rankfx-lab.mjs';
@@ -243,7 +246,7 @@ export default {
       const f = fights.find(x => !x.weAtt) || fights[0];
       TSX.load(f);
       let pc = A.pc(); const pid = +String(f.key).slice(1), F = A.S.fights[pid];
-      const def = A.divsAt(pid).filter(d => A.hostile(F.a, d.r)), att = A.allDivs().filter(d => d.atk === pid);
+      const def = A.divsAt(pid).filter(d => A.hostile(F.a, d.r)), att = F.aIds.map(A.divById).filter(Boolean);
       pc.mil = null; pc.home = pid; pc.realm = def[0].r; A.S.tsLevy = null;
       A.wsPCFightStart(F, att, def);
       const ask = A.S.queue.find(q => q.type === 'choice' && /levy/i.test(q.title || ''));
@@ -265,7 +268,7 @@ export default {
       if (dq) { A.S.queue = [dq]; const v = A.eventView(dq); A.eventChoose(0); out.draft = pc.mil.div === dq.ctx.div && pc.mil.div !== idle.id; out.draftText = (v.text || '').slice(0, 60); }
       // the captain: in the first fight that runs on past his battle, the next day's orders are his company's
       out.captainParked = 0;
-      for (const fc of fights.slice(1, 8)) {
+      for (const fc of TSX.get(24).slice(1)) {
         TSX.load(fc); pc = A.pc(); pc.mil.rank = 4;
         const pid2 = +String(fc.key).slice(1), F2 = A.S.fights[pid2];
         A.CHOICE_FN.wsPart({ key: fc.key, war: F2.war, enemy: A.hostile(F2.a, pc.mil.realm) ? F2.a : F2.b, pid: pid2 });

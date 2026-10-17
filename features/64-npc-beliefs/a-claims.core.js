@@ -23,12 +23,17 @@
 //
 // State (all optional, so old saves load):
 //   S.npcb = { v, n (next id), c: {id: claim}, ct: {realmId: {claimId: stance}}, nm: {personId: name}, dk: {pcId: deeds
-//            seen}, wi (world-record entries read), y (last yearly step) }
+//            seen}, wi (world-record entries read), y (last yearly step), pb: {realmId: {claimId: year}} (what is said
+//            in each realm of the great events, d-world.core.js), ww (record entries the realms have heard of) }
 //   claim  = [kind, subject, object, year, true (1/0), valence, extra]
 //            D deed (extra: the words)          T tale of a deed (extra: the deed's claim id)  W twist of a deed (same)
 //            L slander (extra: the words)       K killing (subject killed object; extra: the victim's name)
 //            S secret (object: heresy|crime|oath|debt|affair)   B battle (subject: the winner they name; object: the
 //            world-record entry; extra: [dead they name, account])   Z the truth of a beast (object: creature id)
+//            and, for the other great events of the record (object: the entry; extra: [account, ...]; d-world.core.js):
+//            Q a war won (subject: the winner named, or none)   R a ruler's death (subject: the one blamed, or the dead)
+//            X a town taken (subject: the realm named; extra: [account, how: terms, storm, sack, burned])
+//            Y a sickness (subject: the one blamed, or none)    G a Legend's death (subject: the Legend)
 //   p.nb   = {claimId: 1 | -1}  on a person (at most MAX, of them MAXB battles)
 //   pc.nbk = {claimId: [stance, fromId, year]}  what the player believes (stance 2 / -2: knows it true / false)
 // Engine paths only (the month hook, A.kill, event choices, interactions) draw dice or write; everything a view reads

@@ -180,8 +180,13 @@ export default {
     await pg.evaluate(SETUP);
     if (!(await pg.evaluate(() => typeof A.chronicleText === 'function'))) return { ok: true, detail: 'skipped: 22-chronicle is not in this build (the section wraps its export)' };
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 5150, race: 'human', realm: 'POL-02', status: 'artisan', sex: 'M', startAge: 16 });
-      WCT.years(50, { keep: false });
+      // a life long enough to see decades of the world (a shifted random stream can end one at 18): the first that lives 30 years
+      let seed = 5150;
+      for (; seed < 5160; seed++) {
+        T.enter({ seed, race: 'human', realm: 'POL-02', status: 'artisan', sex: 'M', startAge: 16 });
+        const y0 = A.S.year; WCT.years(50, { keep: false });
+        if (A.S.year - y0 >= 30) break;
+      }
       const text = A.chronicleText(), at = text.indexOf('THE WORLD IN YOUR TIME'), part = at >= 0 ? text.slice(at) : '';
       const words = WCT.words(part), decades = (part.match(/^The years? \d{4}/gm) || []).length;
       const rng = A.rngState, h0 = T.hash(A.S);
