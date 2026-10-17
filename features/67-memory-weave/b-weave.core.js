@@ -72,39 +72,62 @@
 
   const fill = (s, t) => s.replace(/\{Them\}/g, t.given).replace(/\{them\}/g, t.given)
     .replace(/\{Khe\}/g, cap(A.he(t))).replace(/\{khe\}/g, A.he(t)).replace(/\{khim\}/g, A.him(t)).replace(/\{khis\}/g, A.his(t));
+  // six wordings a rule (five for a place): which one is a hash of the scene and the year, so a long life does not hear
+  // the same frame twice running. The short form is for a scene that would run past 80 words with the long one.
   const FR = {
     personGood: [
       ['{Them} remembers {y}, when {d}. {Khe} gives you a fairer hearing for it.', '{Them} remembers {y}: {d}.'],
       ['{Them} has not let {y} go: {d}. It counts for you now.', '{Them} remembers {y}: {d}.'],
       ['In {y} {d}. {Them} has kept count of that, and it eases things.', '{Them} remembers {y}: {d}.'],
+      ['{Them} has not forgotten that {d}, in {y}. {Khe} meets you halfway.', '{Them} has not forgotten {y}: {d}.'],
+      ['It was {y} when {d}. {Them} has not forgotten, and leans your way.', '{Them} has not forgotten {y}: {d}.'],
+      ['{Them} owes you for {y}: {d}. {Khe} knows it, and so do you.', '{Them} owes you for {y}: {d}.'],
     ],
     personBad: [
       ['{Them} remembers {y}, when {d}. {Khe} gives you nothing for free.', '{Them} remembers {y}: {d}.'],
       ['{Them} has not let {y} go: {d}. It counts against you now.', '{Them} remembers {y}: {d}.'],
       ['In {y} {d}. {Them} has kept count of that, and watches your hands.', '{Them} remembers {y}: {d}.'],
+      ['{Them} has not forgotten that {d}, in {y}. {Khe} meets you coldly.', '{Them} has not forgotten {y}: {d}.'],
+      ['It was {y} when {d}. {Them} has not forgotten, and gives no ground.', '{Them} has not forgotten {y}: {d}.'],
+      ['{Them} holds {y} against you: {d}. {Khe} is slow to grant you anything.', '{Them} holds {y} against you: {d}.'],
     ],
     again: [
       ['This has come round before. In {y} {d}{tail}.', 'As in {y}: {d}.'],
       ['You know this from {y}, when {d}{tail}.', 'As in {y}: {d}.'],
       ['It is {y} over again. That time {d}{tail}.', 'As in {y}: {d}.'],
+      ['You have stood here before, in {y}. Then {d}{tail}.', 'Once before, in {y}: {d}.'],
+      ['The last time, in {y}, {d}{tail}.', 'Once before, in {y}: {d}.'],
+      ['Not for the first time. In {y} {d}{tail}.', 'Once before, in {y}: {d}.'],
     ],
     skillWon: [
       ['It comes down to {dom}, as it did in {y}, when {d}. You know you can.', 'In {y}, {d}. You know the way of it.'],
       ['You have done this before. In {y} {d}, and you have not forgotten how.', 'In {y}, {d}. You know the way of it.'],
       ['{Dom} served you in {y}: {d}. You go at it surer for that.', 'In {y}, {d}. You know the way of it.'],
+      ['The last time it came to {dom}, in {y}, {d}.', 'In {y}, {d}. It went your way.'],
+      ['In {y} {d}, and it went your way. It can again.', 'In {y}, {d}. It went your way.'],
+      ['You did as much in {y}: {d}. It steadies you.', 'In {y}, {d}. It went your way.'],
     ],
     skillLost: [
       ['It comes down to {dom}, as it did in {y}, when {d}. That still sits with you.', 'In {y}, {d}. It still sits with you.'],
       ['In {y} {d}. You have not forgotten it, and it makes you slow.', 'In {y}, {d}. It still sits with you.'],
       ['{Dom} let you down in {y}: {d}. The doubt is still there.', 'In {y}, {d}. It still sits with you.'],
+      ['The last time it came to {dom}, in {y}, {d}. You have not forgotten.', 'In {y}, {d}. You have not forgotten.'],
+      ['In {y} {d}. It went against you then, and it could again.', 'In {y}, {d}. You have not forgotten.'],
+      ['You remember {y} too well: {d}.', 'In {y}, {d}. You have not forgotten.'],
     ],
     placeBad: [
       ['You have not been easy {place} since {y}, when {d}{tail}.', 'You remember {y}: {d}{tail}.'],
       ['The last time you were {place}, in {y}, {d}{tail}.', 'You remember {y}: {d}{tail}.'],
+      ['Since {y} you go carefully {place}. That year {d}{tail}.', 'You remember {y}: {d}{tail}.'],
+      ['You have reason to be wary {place}: in {y} {d}{tail}.', 'You remember {y}: {d}{tail}.'],
+      ['You were last {place} in {y}, when {d}{tail}. You keep your back to the wall.', 'You remember {y}: {d}{tail}.'],
     ],
     placeGood: [
       ['The last time you were {place}, in {y}, {d}{tail}.', 'You remember {y}: {d}{tail}.'],
       ['{Y} comes back to you here: {d}{tail}.', 'You remember {y}: {d}{tail}.'],
+      ['You have done well {place} before. In {y} {d}{tail}.', 'You remember {y}: {d}{tail}.'],
+      ['Being {place} puts you in mind of {y}: {d}{tail}.', 'You remember {y}: {d}{tail}.'],
+      ['In {y}, {place}, {d}{tail}. You have not forgotten it.', 'You remember {y}: {d}{tail}.'],
     ],
   };
   MW.FRAMES = FR;

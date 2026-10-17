@@ -250,7 +250,8 @@
     TS.style();
     const pc = A.pc(), fr = m.ts.front || {};
     const cur = m.over ? null : m.cur || (m.ts.parked ? null : TS.view(m));
-    const day = m.over ? 'after the fight' : `the ${TS.dayWord((fr.day || 1) + (m.stages[m.stage] === 'ts_break' ? 0 : 1))} day`;
+    const e = m.ts.end || {};
+    const day = m.over && !e.out ? 'after the fight' : `the ${TS.dayWord((fr.day || 1) + (m.over || m.stages[m.stage] === 'ts_break' ? 0 : 1))} day`;
     let h = `<div class="panel mbox wide ts"><h2>${esc(m.title)} <span class="muted">· ${esc(day)}</span></h2>`;
     h += `<div class="stages">${m.stages.map((s, i) => `<i class="${i < m.stage ? 'done' : i === m.stage && !m.over ? 'now' : ''}"></i>`).join('')}</div>`;
     const last = m.log.slice(-2).filter(Boolean);
@@ -261,7 +262,7 @@
     if (m.over) h += `<div class="ts-yest">${m.log.map(l => `<p class="${l.startsWith('»') ? 'ch' : ''}">${esc(l)}</p>`).join('')}</div>`;
     h += `</section><section class="ts-leaf ts-front" aria-label="The front"><h3 class="ts-rub">The front</h3>${TS.strip(m, day)}<p class="ts-legend">${esc(TS.frontWords(m).join(' '))}</p></section></div>`;
     if (m.over || !cur) {
-      h += m.over ? `<p class="ts-end">The captains' account and the chronicler's follow.</p><button class="primary" data-a="mClose">Continue</button>`
+      h += m.over ? `<p class="ts-end">${e.out ? 'The captains\' account and the chronicler\'s will come when the fight is over.' : 'The captains\' account and the chronicler\'s follow.'}</p><button class="primary" data-a="mClose">Continue</button>`
         : `<button class="primary" data-a="mClose">Hold on through the day</button>`;
       return h + '</div>';
     }

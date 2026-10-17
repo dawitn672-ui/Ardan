@@ -161,8 +161,19 @@
     deal: 'dealt', mean: 'meant', kneel: 'knelt', bear: 'bore', flee: 'fled', forget: 'forgot', know: 'knew', shake: 'shook', rise: 'rose',
     light: 'lit', bind: 'bound', withdraw: 'withdrew', undercut: 'undercut', outdo: 'outdid', repay: 'repaid', hit: 'hit', bet: 'bet', wed: 'wed',
     weave: 'wove', swim: 'swam', slay: 'slew', overlook: 'overlooked', mislead: 'misled', understand: 'understood', stick: 'stuck', sink: 'sank',
-    show: 'showed', sew: 'sewed', lie: 'lied', die: 'died', tie: 'tied', panic: 'panicked', dive: 'dived', quit: 'quit', rid: 'rid' };
-  const DBL = new Set('beg slip step skip drop swap nod stop outwit nap spar chop drag tap rig acquit shrug plan slam trip tip rip admit ship rub rob pat grab hug jog plod sob stab trap wrap whip pin chip clap snap strip trim drum'.split(' '));
+    show: 'showed', sew: 'sewed', lie: 'lied', die: 'died', tie: 'tied', panic: 'panicked', dive: 'dived', quit: 'quit', rid: 'rid',
+    drive: 'drove', eat: 'ate', see: 'saw', bleed: 'bled', ring: 'rang', begin: 'began', creep: 'crept', spin: 'spun', bid: 'bid', bend: 'bent',
+    cling: 'clung', sling: 'slung', fly: 'flew', freeze: 'froze', leap: 'leapt', breed: 'bred', cast: 'cast', stride: 'strode', swing: 'swung',
+    sting: 'stung', slide: 'slid', shine: 'shone', undertake: 'undertook', mistake: 'mistook', foresee: 'foresaw', outrun: 'outran',
+    oversee: 'oversaw', rebuild: 'rebuilt', retell: 'retold', resell: 'resold', rewrite: 'rewrote', unsay: 'unsaid', outbid: 'outbid',
+    forecast: 'forecast', withhold: 'withheld', uphold: 'upheld', forswear: 'forswore', forsake: 'forsook', grow: 'grew', blow: 'blew',
+    burst: 'burst', string: 'strung', shrink: 'shrank', shed: 'shed', slit: 'slit', thrust: 'thrust', tread: 'trod', wring: 'wrung',
+    smite: 'smote', arise: 'arose', awake: 'awoke', speed: 'sped', feel: 'felt', spring: 'sprang', cost: 'cost', hurt: 'hurt', overhear: 'overheard',
+    outride: 'outrode', outfight: 'outfought', outsell: 'outsold', outthink: 'outthought', overthrow: 'overthrew', upset: 'upset', unbind: 'unbound',
+    traffic: 'trafficked', picnic: 'picnicked', mimic: 'mimicked' };
+  const DBL = new Set(('beg slip step skip drop swap nod stop outwit nap spar chop drag tap rig acquit shrug plan slam trip tip rip admit ship rub rob pat grab hug ' +
+    'jog plod sob stab trap wrap whip pin chip clap snap strip trim drum bar man club sip hum skim prop pan spur grit pen commit regret control patrol ' +
+    'rebel expel compel refer prefer occur submit permit transfer confer equip ram jab dab hop mop shun stun tug wag fan jam cram hem ').trim().split(' '));
   const VERBS = new Set(('ask refuse warn report talk stay answer offer turn argue walk learn laugh accept call burn confront help listen paint share promise agree nurse ' +
     'work play demand shout join trade hand propose challenge settle haggle prove look decline point back obey deny open return watch use bargain raise ' +
     'wait end plead search push follow confess thank negotiate guide bribe pull sign pour try move complain love weigh hire organize insist court forge ' +
@@ -175,7 +186,22 @@
     'collect draft sort threaten campaign summon requisition embrace oppose honor honour march vouch add shade miss nail double fetch knock fire sail ' +
     'water float pick save protect marry rescue visit kill spare guard bless pray curse gamble fix wash mark own side split greet thank refuse sell ' +
     'dress bandage treat heal tend hurry slow chase release arrest hire fire lift carry open sign seal flee wave pardon spurn reject scold comfort ' +
-    'console kneel salute toast question interrogate execute hang banish exile adopt foster').split(' ').concat(Object.keys(IRR), [...DBL]));
+    'console kneel salute toast question interrogate execute hang banish exile adopt foster ' +
+    // added in the writer's pass: every verb the release's and the features' labels start with that the list above missed
+    'climb name copy volunteer dance serve enter gather start lower recite seize swallow fill rest grant steer change endure shore race broker lean ' +
+    'stare mind starve declare order arrange recommend rule drain translate chant describe lock rope contest ration jump reach practise practice ' +
+    'apprentice force forage cry kick admire poison explain correct attack tighten bang rent believe pledge rebury untie anchor cite ford pole spear ' +
+    'farm flatten board reap bare scratch daydream decide act fish proclaim salvage spy host aim protest store partner drown audit pawn certify ' +
+    'investigate unpick stretch pack roll smother pilot resign apply pose shadow lash mine crawl breathe whisper smoke queue lease fake melt loot ' +
+    'winter loose explore snatch patch pool stake outwork squint organise shield sprint stalk picket hack burrow crouch shirk celebrate dare present ' +
+    'rock pinch toddle groom parley survey resow salt master bluff beach yield mortgage recognize recognise trace abstain smooth retaliate punch ease ' +
+    'mix approach attempt replace fortify elope rekindle unhorse excuse mouth perform mourn redeem canvass scatter publish clear mediate recuse twist ' +
+    'destroy govern soften sharpen convince unchain cure dedicate coach sentence switch shorten fail spill dry sound paste captain shave warm fell ' +
+    'found second fast bathe wipe scrub sweat haggle hammer mend polish pray recover repair rescue retreat return ride sketch sow tally taste thatch ' +
+    'tidy wander whittle yell bellow hail signal tally listen beckon nudge shove grip clutch hug stroke pet soothe rouse warn hush silence summon ' +
+    'gossip boast brag joke jest flirt woo serenade marvel ponder pace kneel linger loiter lurk dodge duck parry block feint lunge charge withdraw ' +
+    'surrender yield insist interrupt accompany escort lead obey defy rebuke chide forbid permit allow urge beg bargain barter haggle wager tip ' +
+    'reward fine tax levy muster recruit drill arm disband pay hide bury exhume unearth dig plant harvest thresh mill bake brew ferment').split(' ').concat(Object.keys(IRR), [...DBL]));
   const pastOf = w => {
     if (IRR[w]) return IRR[w];
     if (DBL.has(w)) return w + w.slice(-1) + 'ed';
@@ -189,18 +215,50 @@
   const NOT_VERB = new Set(('a an the your his her their my our its this that these those yes no not never nothing none all both neither either one two ' +
     'three some any every each it they them we i you he she just only very quietly simply finally half more less much still also too so then now again ' +
     'over out up down in on off with without for from to by of at as because if but and or nor what who why how where when well fine good perhaps maybe ' +
-    'certainly gladly sir madam lord lady').split(' '));
+    'certainly gladly sir madam lord lady ' +
+    'something someone anything everything once before after next first last money fists patience peace honest mostly actually mama dada cup poppy ' +
+    'willow goat aye nay alone together tonight today tomorrow later soon here there enough thanks please').split(' '));
+  // an adverb before the verb stays with it: "Quietly pay him" -> "you quietly paid him"; "Just listen" -> "you listened"
+  const ADV = { just: '', simply: '', only: 'only ', quietly: 'quietly ', gently: 'gently ', calmly: 'calmly ', politely: 'politely ', firmly: 'firmly ',
+    openly: 'openly ', slowly: 'slowly ', carefully: 'carefully ', quickly: 'quickly ', finally: 'finally ', still: 'still ', humbly: 'humbly ',
+    boldly: 'boldly ', coldly: 'coldly ', warmly: 'warmly ', meekly: 'meekly ', bluntly: 'bluntly ', loudly: 'loudly ', silently: 'silently ',
+    secretly: 'secretly ', honestly: 'honestly ', gladly: 'gladly ', kindly: 'kindly ', sternly: 'sternly ', briskly: 'briskly ' };
+  // a short answer is a thing said: "Yes" -> "you said yes"; "Neither" -> "you chose neither"
+  const SAID = { yes: 'you said yes', aye: 'you said yes', no: 'you said no', nay: 'you said no', never: 'you said never', nothing: 'you said nothing' };
+  const CHOSE = new Set(['neither', 'both', 'none', 'either']);
+  // words that are verbs but after "and" are more often a thing: "the bread and water", "your name and face"
+  const NOUNISH = new Set(('water back face shoulder box nail side mark wax fire sail shade row crowd load shoe measure brew cover cross match plant ' +
+    'train track saddle smile wave toast seal sign float double own open love trade hand chain court question salt mine pool stake shield picket ' +
+    'host store partner board spear pole ford rope lock order rule rest change race present master ration fast second found fell cup coach ' +
+    'sentence switch sound paste captain winter patch trace mouth fish smoke queue shadow lash roll pack pilot audit spy aim protest step drop ' +
+    'trip tip ship pin chip strip drum bar man club pen fan jam').split(' '));
+  // a second verb after "and", "or" or "then" goes into the past tense too: "Rock him and sing" -> "you rocked him and sang".
+  // A word after it that is a pronoun, a name or a thing stays as it was ("the bread and cheese")
+  const andVerbs = rest => rest.replace(/\b(and|or|then)\s+([a-z]+)\b/g, (m, c, x) => (VERBS.has(x) && !NOUNISH.has(x) && !NOT_VERB.has(x) ? `${c} ${pastOf(x)}` : m));
+  // how a failed attempt ends, picked by the label so the same choice always reads the same
+  const FAILED = [', and failed', ', and could not', ', and it went wrong', ', and it came to nothing'];
+  const failTail = (label, from) => FAILED[from + Math.floor(BD.h(label, 'fail') * (FAILED.length - from))];
   BD.deedOf = function (label, failed) {
     const c = firstClause(label);
     const m = c.match(/^([A-Za-z]+)\b(.*)$/);
     if (!m) return null;
-    const w = m[1].toLowerCase(), rest = m[2];
+    let w = m[1].toLowerCase(), rest = m[2], adv = '';
+    if (SAID[w] && !/\S/.test(rest)) return failed ? SAID[w] + failTail(label, 2) : SAID[w];
+    if (CHOSE.has(w) && !/\S/.test(rest)) return `you chose ${w}`;
+    if (ADV[w] != null) {
+      const m2 = rest.match(/^\s+([a-z]+)\b(.*)$/);
+      if (!m2 || !VERBS.has(m2[1])) return null;
+      adv = ADV[w]; w = m2[1]; rest = m2[2];
+    }
     if (NOT_VERB.has(w)) return null;
-    if (failed) return `you tried to ${w}${rest}, and failed`;
+    if (failed) return `you tried to ${adv}${w}${rest}${failTail(label, 0)}`;
     // a verb this list knows goes into the past tense; any other first word is taken as a verb all the same
-    return VERBS.has(w) ? `you ${pastOf(w)}${rest}` : `you chose to ${w}${rest}`;
+    return VERBS.has(w) ? `you ${adv}${pastOf(w)}${andVerbs(rest)}` : `you chose to ${adv}${w}${rest}`;
   };
   BD.pastOf = pastOf;
+  BD.VERBS = VERBS;
+  // past forms, for a deed told in other words ("that she won the tournament")
+  BD.PAST = new Set(Object.values(IRR));
 
   // what a window writes when nothing more particular was noted
   const INT_TEXT = {
@@ -214,9 +272,11 @@
   BD.genLine = function (w, t, v) {
     if (w.kind === 'event') {
       const title = clean(w.title || ''), deed = BD.deedOf(w.label || '', w.success === false);
-      if (deed) return { t: title ? `${title}: ${deed}` : cap(deed), d: deed, k: 'ev:' + (w.ev || '') + ':' + t.id };
+      // "The toll: you paid it"; a title that asks or cries out takes the deed as its own sentence ("Can you help? You helped")
+      const head = d => (/[?!]$/.test(title) ? `${title} ${cap(d)}` : `${title}: ${d}`);
+      if (deed) return { t: title ? head(deed) : cap(deed), d: deed, k: 'ev:' + (w.ev || '') + ':' + t.id };
       const cl = low(firstClause(w.label || ''));
-      if (title) { const d = cl.split(' ').length >= 2 ? `you chose ${cl}` : `you had your say over ${low(title)}`; return { t: `${title}: ${d}`, d, k: 'ev:' + (w.ev || '') + ':' + t.id }; }
+      if (title) { const d = cl.split(' ').length >= 2 ? `you chose ${cl}` : `you gave your answer`; return { t: head(d), d, k: 'ev:' + (w.ev || '') + ':' + t.id }; }
       return null;
     }
     if (w.kind === 'int') { const s = INT_TEXT[w.key]; return s ? { t: fillT(t, s), d: low(fillT(t, s)), k: 'int:' + w.key } : null; }
@@ -381,7 +441,12 @@
     }
     return best;
   };
-  BD.deedLine = e => e.d || low(e.t);
+  // a deed of a word or two ("you accepted") carries the scene's title when the title names a thing: "you accepted (the
+  // toll at the bridge)", as 67-memory-weave does
+  BD.deedLine = e => {
+    const d = e.d || low(e.t), m = e.d && (e.d.split(' ').length <= 3 || e.d === 'you gave your answer') && /^((?:A|An|The) [a-z][^:?!]{2,50}):/.exec(e.t || '');
+    return m && !/[{}]/.test(m[1]) ? `${d} (${low(m[1])})` : d;
+  };
   // "She has not forgotten 1112, when you insulted her at the fair."
   BD.citeLine = function (pc, t, e) {
     if (!e) return '';

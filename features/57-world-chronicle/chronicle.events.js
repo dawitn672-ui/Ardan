@@ -90,7 +90,7 @@ A.defEvents([
     cond: (p, C) => C.adult(p) && C.chron(p, 'battle,fall,siege', 'pair'),
     w: 1, cool: 10,
     setup: pick('battle,fall,siege', { id: 'wc_battle_song', mode: 'pair' }),
-    text: (p, ctx) => `A singer in the alehouse has a new verse about ${told(ctx)}. In it, every man of {wcRealm} is a hero and every man of {wcOther} a coward. A big man at the back, with a {wcOther} voice, is getting to his feet.`,
+    text: (p, ctx) => `A singer in the alehouse has a new verse about ${told(ctx)}. In it, every man of {wcRealm} is a hero and every man of {wcOther} a coward. A big man at the back, who talks like a man of {wcOther}, is getting to his feet.`,
     choices: [
       { t: 'Bang the table and sing along', r: 'The chorus is easy. The big man sits down again, outnumbered, and drinks.', fx: { happy: 2, need: { company: 6 } } },
       { t: 'Talk the big man down', check: { s: 'persuasion', s2: 'wil', d: 50 },

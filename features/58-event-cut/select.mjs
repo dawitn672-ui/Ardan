@@ -33,6 +33,10 @@ for (const d of fs.readdirSync(featRoot).filter(d => /^\d+-/.test(d) && !/event-
   if (fs.existsSync(f)) for (const m of fs.readFileSync(f, 'utf8').matchAll(/[a-z][a-z0-9]*_[a-z0-9_]+/g)) patched.add(m[0]);
 }
 for (const r of rel) if (!r.protect && patched.has(r.id)) r.protect = 'patched';
+// events a person or a feature put back on purpose (KEEP.json: { id: reason }), e.g. the old-age scenes 74-old-age
+// un-retired because they hold a real choice; a re-run must not retire them again
+const KEEP = fs.existsSync(path.join(here, 'KEEP.json')) ? JSON.parse(fs.readFileSync(path.join(here, 'KEEP.json'), 'utf8')) : {};
+for (const r of rel) if (!r.protect && KEEP[r.id]) r.protect = 'kept';
 const target = Math.round(SHARE * rel.length);
 const ORDER = { nudge: 0, numbers: 1, opinion: 2, thin: 3 };
 const CODE = { nudge: 'N', numbers: 'B', opinion: 'O', thin: 'T' };

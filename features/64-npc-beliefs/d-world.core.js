@@ -32,7 +32,8 @@
   NB.resetStats = () => { reset0(); for (const k of ['seedWorld', 'drift', 'worldFix', 'pcWorldHeard', 'pcWorldFix', 'revFeud', 'revAct', 'revKill', 'revFalse', 'revPlot', 'seedTreason', 'sideline', 'sidelineFalse', 'tale']) NB.stats[k] = 0; };
   const WC = () => (A.WC && A.WC.ent ? A.WC : null);
   const rs = id => (id && A.realm(id) ? A.realm(id).short : id && A.WC && A.WC.name ? A.WC.name(id) || 'a realm now gone' : 'a realm now gone');
-  const pn = i => (i != null && A.S.prov[i] ? A.S.prov[i].name : 'the town');
+  // a place inside a sentence: "the Free Marches", not "The Free Marches"
+  const pn = i => (i != null && A.S.prov[i] ? String(A.S.prov[i].name).replace(/^The /, 'the ') : 'the town');
   const live = () => Object.keys(A.S.realms || {}).filter(id => A.S.realms[id].alive && !A.S.realms[id].isRebel).sort();
   const nbrs = id => (A.neighbors ? A.neighbors(id) || [] : []);
 
@@ -290,7 +291,8 @@
     if (c.k === 'Q') {
       const war = String(W.warName(e) || 'the war').replace(/^The /, 'the ');
       if (c.s == null) return `that ${war} ended in ${e.y} with neither side the better of it`;
-      return `that ${rs(c.s)} won ${war} in ${e.y}${a[1] ? `, and took ${a[1] === 1 ? 'a province' : a[1] + ' provinces'} for it` : ''}`;
+      const N = ['', 'a province', 'two provinces', 'three provinces', 'four provinces', 'five provinces', 'six provinces', 'seven provinces', 'eight provinces'];
+      return `that ${rs(c.s)} won ${war} in ${e.y}${a[1] ? `, and took ${N[a[1]] || a[1] + ' provinces'} for it` : ''}`;
     }
     if (c.k === 'R') {
       const old = nm(e.w[0], pc), realm = rs(e.a);
@@ -542,7 +544,9 @@
   // ---------------------------------------------------------------- what the player is told of the world (engine)
 
   const holdsEntry = (pc, i) => Object.keys(pc.nbk || {}).some(id => { const c = NB.claim(id); return c && NB.isWorld(c) && c.o === i; });
-  const SOURCE = ['A clerk with the annals', 'A drover from those parts', 'An old soldier who was there', 'A letter from a cousin abroad', 'A friar on the road', 'A merchant who trades that way'];
+  // someone who can hear you say it and put you right ("{who} hears you say it again"): a person, never a letter
+  const SOURCE = ['A clerk with the annals', 'A drover from those parts', 'An old soldier who was there', 'A cousin back from abroad', 'A friar on the road',
+    'A merchant who trades that way', 'A carter who passed through that year', 'A woman whose brother was there'];
   NB.sourceOf = c => SOURCE[Math.floor(NB.H(c.id, 'src') * SOURCE.length)];
   NB.pcWorldYear = function (pc) {
     const st = NB.st();

@@ -128,12 +128,13 @@
       for (const x of L.sort((a, b) => a.e.y - b.e.y || a.e.d - b.e.d)) {
         if (seen.has(x.s)) continue;
         seen.add(x.s);
-        // a second line of the same year does not repeat the year
+        // a second line of the same year does not repeat the year, and one of the year after counts on from it
         let s = x.s;
-        if (x.e.y === lastY) {
-          const mo = WC.month(x.e), alt = [`That ${mo}, `, `In ${mo} of the same year, `, `The same year, in ${mo}, `];
-          s = s.replace(`In ${mo} ${x.e.y}, `, alt[(x.e.i + x.e.y) % alt.length]);
-        }
+        const mo = WC.month(x.e), gap = lastY == null ? -1 : x.e.y - lastY;
+        const alt = gap === 0 ? [`That ${mo}, `, `In ${mo} of the same year, `, `The same year, in ${mo}, `]
+          : gap === 1 ? [`The next year, in ${mo}, `, `A year later, in ${mo}, `, `In ${mo} of the year after, `]
+          : gap === 2 ? [`Two years on, in ${mo}, `, `In ${mo} ${x.e.y}, `] : null;
+        if (alt) s = s.replace(`In ${mo} ${x.e.y}, `, alt[(x.e.i + x.e.y) % alt.length]);
         lastY = x.e.y;
         lines.push(s);
       }

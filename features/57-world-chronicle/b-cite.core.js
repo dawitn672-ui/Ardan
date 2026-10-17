@@ -187,57 +187,116 @@
   const rs = id => (id ? (A.realm(id) ? A.realm(id).short : WC.name(id) || 'a realm now gone') : '');
   const pn = i => (i != null && A.S.prov[i] ? A.S.prov[i].name : '');
   const the = s => String(s || '').replace(/^The /, 'the ');
-  // lines by kind: [needsHome, (c, x) => string]; x has the entry's words. Second person, present tense.
+  // lines by kind: [needsHome, (c, x) => string]; x has the entry's words. Second person, present tense. The lines of a
+  // kind come round in turn, so the more a kind has, the longer before one is heard again.
   WC.LINES = {
     famine: [
       [0, x => `Bread has not been cheap in ${x.A} since the harvest failed there in ${x.y}.`],
       [0, x => `The old women still keep a second crock of beans under the bed, as they learned to in ${x.y}.`],
       [0, x => `Someone says the price aloud and adds, "Not as bad as ${x.y}," and nobody laughs.`],
       [1, x => `People here weigh every loaf twice. They began in ${x.y}, the year the harvest failed in ${x.A}.`],
+      [0, x => `A baker's boy sweeps the crumbs into his hand and eats them. He learned that in ${x.y}.`],
+      [0, x => `Nobody here throws out a turnip top. Those who went hungry in ${x.y} will not have it.`],
+      [0, x => `A farmer says this summer looks like ${x.y} to him, and goes home to count his sacks.`],
     ],
     plague: [
       [1, x => `The graves from ${x.sick} of ${x.y} still stand in a row at ${x.P}, their earth not yet settled.`],
       [0, x => `Someone coughs, and two people step back. ${x.Sick} came to ${x.P} in ${x.y}, and they remember.`],
       [1, x => `Since ${x.sick} of ${x.y}, people at ${x.P} wash their hands at the door and say a word over the water.`],
+      [0, x => `A woman wears a bag of rue at her throat. She has worn one since ${x.sick} of ${x.y}.`],
+      [0, x => `A man will not drink from a shared cup. ${x.Sick} took his brother at ${x.P} in ${x.y}.`],
+      [0, x => `The bell is still rung slow on the day ${x.sick} reached ${x.P}, in ${x.y}.`],
     ],
     battle: [
       [0, x => `A man with a stiff arm says he got it at ${x.P} in ${x.y}, when ${x.A} beat ${x.B}.`],
       [0, x => `${x.dead} men died at ${x.P} in ${x.y}. People here still argue over whose fault it was.`],
-      [0, x => `A drover's dog is called ${x.P}, after the battle of ${x.y}. Nobody finds that strange.`],
+      [0, x => `A drover's dog is called ${x.P}, after the battle there in ${x.y}. Nobody finds that strange.`],
       [0, x => `An old spearman counts the dead of ${x.P} (${x.y}) on his fingers and gives up past the third hand.`],
+      [0, x => `A woman sells a dented helmet she says came off the field at ${x.P}, in ${x.y}.`],
+      [0, x => `Two old men at the well fall out again over ${x.P} and ${x.y}: which flank broke first.`],
+      [0, x => `A boy asks his grandfather about ${x.P}. The old man says ${x.A} won it in ${x.y}, and no more.`],
     ],
     siege: [
       [0, x => x.fell ? `They still talk about the siege of ${x.P} in ${x.y}: ${x.days} days, and the dogs eaten by the end.` : `They still talk about the siege of ${x.P} in ${x.y}, and the walls that held.`],
       [0, x => `You pass a man who carried water at the siege of ${x.P} in ${x.y}. He limps from it yet.`],
+      [0, x => `A mason boasts that his father mended the walls of ${x.P} after the siege of ${x.y}.`],
+      [0, x => `A woman who was inside ${x.P} in ${x.y} will not eat horse, even now, and says why.`],
     ],
     fall: [
       [0, x => x.how === 3 ? `Since ${x.P} burned in ${x.y}, its people are scattered all over; you hear their voices in every market.` : x.how === 2 ? `A pedlar sells spoons he swears came out of the sack of ${x.P} in ${x.y}.` : `People still speak of the day ${x.A} took ${x.P}, in ${x.y}.`],
       [0, x => `Mothers here still frighten children with the men of ${x.A}, who took ${x.P} in ${x.y}.`],
+      [0, x => `A woman from ${x.P} sells thread at the corner. She left it in ${x.y}, the year ${x.A} came.`],
+      [0, x => `People here bar their doors at dusk. They have done it since ${x.A} took ${x.P}, in ${x.y}.`],
+      [0, x => `A carter says the road past ${x.P} has been quiet since ${x.A} took it in ${x.y}.`],
     ],
     war: [
       [0, x => `Everyone over thirty has a story from ${x.war}, begun in ${x.y}, and no two of them agree.`],
       [0, x => `The roads and the prices have not been the same since ${x.war} began in ${x.y}.`],
+      [0, x => `A widow still lays a place at table for a son who went to ${x.war} in ${x.y}.`],
+      [0, x => `Half the old swords in town were carried in ${x.war}, begun in ${x.y}. The other half were sold.`],
+      [0, x => `Prices here are reckoned two ways: before ${x.war}, and since. It began in ${x.y}.`],
     ],
     peace: [
       [0, x => `Since ${x.war} ended in ${x.y}, men here drink to ${x.A} or refuse to, and you can tell which.`],
       [0, x => `An old soldier says ${x.war} was won at the table in ${x.y}, not in the field.`],
+      [0, x => `Men who fought in ${x.war} still meet on the day it ended, in ${x.y}, and get drunk.`],
+      [0, x => `A tavern keeps a cup on the shelf from the day ${x.war} ended, in ${x.y}. Nobody drinks from it.`],
     ],
     ruler: [
       [0, x => `People here still date things from the death of ${x.who}, in ${x.y}.`],
       [0, x => `An old servant compares everything to the days of ${x.who}, dead since ${x.y}.`],
       [0, x => `There is a song about ${x.who}, who died in ${x.y}. You hear the chorus twice before noon.`],
+      [0, x => `A coin of ${x.who}, dead since ${x.y}, turns up in your change. The man who gave it looks at it twice.`],
+      [0, x => `The old men say ${x.who} would never have stood for it. ${x.who} has been dead since ${x.y}.`],
     ],
-    crown: [[0, x => `Since ${x.who} took the throne of ${x.A} in ${x.y}, the coins in your purse wear two different faces.`]],
-    fallen: [[0, x => `Some old people still say "${x.A}" for the land, though it fell in ${x.y}.`], [0, x => `Beggars from ${x.A}, which fell in ${x.y}, still sit at the gates with their old badges sewn on.`]],
-    founded: [[0, x => `Some here still will not say the name ${x.A}. It has only stood since ${x.y}.`]],
-    revolt: [[0, x => `Since ${x.who} rose against the crown of ${x.A} in ${x.y}, the lords here are watched, and know it.`]],
-    wedding: [[0, x => `Cups painted for the royal wedding of ${x.y} still sit on shelves here: ${x.A} and ${x.B}, hand in hand.`]],
-    alliance: [[0, x => `Since ${x.A} and ${x.B} swore their alliance in ${x.y}, their merchants drink at the same tables.`]],
-    trib: [[0, x => x.free ? `Since ${x.y}, when ${x.A} stopped paying ${x.B}, the tax men here have had less to say.` : `Since ${x.y}, part of every tax here goes to ${x.B}. Nobody forgets it.`]],
-    order: [[0, x => `Since ${x.order} were cut down at ${x.P} in ${x.y}, boys here play at being them.`]],
-    legend: [[0, x => `They say the sword over the inn door belonged to ${x.who}, who died in ${x.y}. It is not that sword.`], [0, x => `Old men here saw ${x.who} fight once, or say they did. ${x.who} has been dead since ${x.y}.`]],
-    cede: [[1, x => `Since ${x.y}, when ${x.P} passed to ${x.A}, the old men still pay their dues in the old coin when they can.`]],
-    canon: [[0, x => `Old people here still date things from ${x.ref}.`]],
+    crown: [
+      [0, x => `Since ${x.who} took the throne of ${x.A} in ${x.y}, the coins in your purse wear two different faces.`],
+      [0, x => `Since ${x.y}, when ${x.who} was crowned in ${x.A}, the tax rolls have been copied out afresh.`],
+    ],
+    fallen: [
+      [0, x => `Some old people still say "${x.A}" for the land, though it fell in ${x.y}.`],
+      [0, x => `Beggars from ${x.A}, which fell in ${x.y}, still sit at the gates with their old badges sewn on.`],
+      [0, x => `An old woman keeps the colours of ${x.A} folded in a chest. It fell in ${x.y}.`],
+    ],
+    founded: [
+      [0, x => `Some here still will not say the name ${x.A}. It has only stood since ${x.y}.`],
+      [0, x => `The old maps here show no ${x.A}. It has stood only since ${x.y}.`],
+    ],
+    revolt: [
+      [0, x => `Since ${x.who} rose against the crown of ${x.A} in ${x.y}, the lords here are watched, and know it.`],
+      [0, x => `A few here still drink to ${x.who}, who rose against the crown of ${x.A} in ${x.y}. They do it quietly.`],
+    ],
+    wedding: [
+      [0, x => `Cups painted for the royal wedding of ${x.y} still sit on shelves here: ${x.A} and ${x.B}, hand in hand.`],
+      [0, x => `A tavern sign shows two crowns, for the wedding of ${x.A} and ${x.B} in ${x.y}. The paint is going.`],
+      [0, x => `Old women still talk of the royal wedding of ${x.y}, and the bread that was given out.`],
+    ],
+    alliance: [
+      [0, x => `Since ${x.A} and ${x.B} swore their alliance in ${x.y}, their merchants drink at the same tables.`],
+      [0, x => `Since ${x.y}, the banners of ${x.A} and ${x.B} hang side by side over the gate. Nobody looks up any more.`],
+    ],
+    trib: [
+      [0, x => x.free ? `Since ${x.y}, when ${x.A} stopped paying ${x.B}, the tax men here have had less to say.` : `Since ${x.y}, part of every tax here goes to ${x.B}. Nobody forgets it.`],
+      [0, x => x.free ? `The old men say ${x.A} has owed ${x.B} nothing since ${x.y}, and say it often.` : `The tax men count out the share for ${x.B} twice. It has gone there since ${x.y}.`],
+    ],
+    order: [
+      [0, x => `Since ${x.order} were cut down at ${x.P} in ${x.y}, boys here play at being them.`],
+      [0, x => `A smith still makes toy swords in the fashion of ${x.order}, who fell at ${x.P} in ${x.y}.`],
+    ],
+    legend: [
+      [0, x => `They say the sword over the inn door belonged to ${x.who}, who died in ${x.y}. It is not that sword.`],
+      [0, x => `Old men here saw ${x.who} fight once, or say they did. ${x.who} has been dead since ${x.y}.`],
+      [0, x => `A ballad of ${x.who} is sung here, though ${x.who} died in ${x.y}. It gets longer every year.`],
+    ],
+    cede: [
+      [1, x => `Since ${x.y}, when ${x.P} passed to ${x.A}, the old men still pay their dues in the old coin when they can.`],
+      [1, x => `Since ${x.P} passed to ${x.A} in ${x.y}, the market here takes two kinds of coin and trusts neither.`],
+    ],
+    canon: [
+      [0, x => `Old people here still date things from ${x.ref}.`],
+      [0, x => `An old man talks of ${x.ref} as if it were last year.`],
+      [0, x => `Every family here has a story from ${x.ref}, and tells it at weddings.`],
+    ],
   };
   WC.words = function (c) {
     const e = c.e, y = c.y;
@@ -247,7 +306,7 @@
     }
     const sick = WC.name('sick:' + e.p + ':' + e.y) || 'the sickness';
     return {
-      y, P: pn(e.p), A: rs(e.a), B: rs(e.b), who: WC.name(e.w[0]) || 'the old ruler', war: the(WC.warName(e)),
+      y, P: the(pn(e.p)), A: rs(e.a), B: rs(e.b), who: WC.name(e.w[0]) || 'the old ruler', war: the(WC.warName(e)),
       dead: fmt(Array.isArray(e.x) ? e.x[0] || 0 : 0), days: e.n || 0, fell: e.x === 'fell', how: e.x || 0, free: e.x === 'free',
       sick, Sick: sick.charAt(0).toUpperCase() + sick.slice(1), order: the(WC.name(e.x) || 'the knights'), ref: c.ref,
     };

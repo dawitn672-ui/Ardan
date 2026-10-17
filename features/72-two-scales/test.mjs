@@ -278,6 +278,24 @@ export default {
         const h = TSX.until('best');
         if (h && h.m.stages[h.m.stage] === 'ts_line') { out.captainScene = h.m.cur.choices.map(c => c.t).join(' / '); break; }
       }
+      // your division pulled out of the line mid-fight: the scene ends with the retreat, and the panels come when the
+      // fight it left is over
+      for (const fp of TSX.get(24).slice(2)) {
+        const q = TSX.take(fp), m = q.m;
+        if (m.ts.front.divs.filter(x => x.ours && !x.gone).length < 2) continue;   // the fight must go on without you
+        A.missionChoose(0); A.missionChoose(0);   // the arrows and the clash; the scene waits for the day
+        const d = A.divById(m.ts.div); d.org = 0; d.atk = null; d.path = [];
+        const h = TSX.until('steady');
+        out.pulled = !!(h && h.m === m && m.ts.end && m.ts.end.out && m.stages[m.stage] === 'ts_break');
+        if (out.pulled) {
+          A.missionChoose(0); A.missionClose();
+          const F4 = A.S.fights[m.ts.pid], n = A.S.queue.length;
+          out.outKept = !!A.S.tsOut;
+          if (F4) { A.fightEnd(m.ts.pid, 'def'); out.outPanels = A.S.queue.slice(n).some(x => x.ev === 'bs_reckoning') || A.S.queue.some(x => x.ev === 'bs_reckoning'); }
+          else out.outPanels = 'fight already over';
+          break;
+        }
+      }
       // a fight over on its first day
       TSX.load(fights[2]); pc = A.pc();
       const pid3 = +String(fights[2].key).slice(1), F3 = A.S.fights[pid3];
@@ -288,7 +306,7 @@ export default {
       out.short = sq >= 0 && A.S.queue[sq].m.ts.short === 1 && A.S.queue[sq].m.stages.join() === 'ts_break' && (rk < 0 || sq < rk);
       return out;
     });
-    const ok = !!r.ask && r.levy && /^levy(,levy)*$/.test(r.levyLayer || '') && r.noMilAfter && r.draft && r.captainParked >= 1 && /company/i.test(r.captainScene || '') && r.short;
+    const ok = !!r.ask && r.levy && /^levy(,levy)*$/.test(r.levyLayer || '') && r.noMilAfter && r.draft && r.captainParked >= 1 && /company/i.test(r.captainScene || '') && r.short && r.pulled && r.outKept && r.outPanels === true;
     return { ok, detail: JSON.stringify(r).slice(0, 700) };
   },
 

@@ -62,13 +62,13 @@
   };
   SEC.text = function (t, k) {
     const He = cap(A.he(t)), he = A.he(t), his = A.his(t), town = towns(t), id = t.id;
-    if (k === 'debt') { const n = Math.round((STATUS_DEBT[t.status] || 60) * (1.5 + 2.5 * H(id, 'amt')) / 5) * 5; return `${He} owes ${BD.coin(n)} to a moneylender in ${town}, and has paid none of it back.`; }
-    if (k === 'affair') { const sp = married(t); return `${He} has been meeting ${HP(['a miller\'s wife', 'a widowed weaver', 'a brewer\'s husband', 'a young clerk', 'a soldier\'s wife', 'a dyer\'s widow'], id, 'who')} in ${town}, behind ${sp ? sp.given + '\'s' : 'a spouse\'s'} back.`; }
-    if (k === 'bastard') return `${He} has a child of ${4 + Math.floor(H(id, 'kid') * 12)} in ${town}, raised by a farmer's family, and sends money twice a year.`;
+    if (k === 'debt') { const n = Math.round((STATUS_DEBT[t.status] || 60) * (1.5 + 2.5 * H(id, 'amt')) / 5) * 5; return HP([`${He} owes ${BD.coin(n)} to a moneylender in ${town}, and has paid none of it back.`, `${He} borrowed ${BD.coin(n)} in ${town} against land ${he} does not own, and the note falls due soon.`, `${He} lost ${BD.coin(n)} at dice in ${town} and signed for it. The man who holds the paper is patient, for now.`], id, 'dt'); }
+    if (k === 'affair') { const sp = married(t); return `${He} has been meeting ${HP(['a miller\'s wife', 'a widowed weaver', 'a brewer\'s husband', 'a young clerk', 'a soldier\'s wife', 'a dyer\'s widow', 'a ferryman', 'a chandler\'s wife'], id, 'who')} in ${town}, behind ${sp ? sp.given + '\'s' : 'a spouse\'s'} back.`; }
+    if (k === 'bastard') return HP([`${He} has a child of ${4 + Math.floor(H(id, 'kid') * 12)} in ${town}, raised by a farmer's family, and sends money twice a year.`, `A child of ${4 + Math.floor(H(id, 'kid') * 12)} in ${town} has ${his} eyes. The mother was paid to name another man.`], id, 'bs');
     if (k === 'heresy') { let f = (A.faith(t.faith) || {}).name || 'the faith'; if (!/^the\b/i.test(f)) f = 'the ' + f; return HP([`${He} keeps the old rites at night, and does not believe a word of what ${f} teaches.`, `${He} has said, in writing, that ${f} is a tale for children.`], id, 'her'); }
-    if (k === 'crime') return HP([`${He} killed a man in a tavern brawl in ${town}, years ago, and let another hang for it.`, `${He} sold stolen horses through ${town} for three summers.`, `${He} set the fire that took a granary in ${town}, and was paid to.`], id, 'cr');
-    if (k === 'embezzle') return `${He} has been skimming the accounts ${he} keeps, a little every quarter, for years.`;
-    if (k === 'desert') return `${He} ran from a fight ${he} swears ${he} stood in, and others died for ${his} lie.`;
+    if (k === 'crime') return HP([`${He} killed a man in a tavern brawl in ${town}, years ago, and let another hang for it.`, `${He} sold stolen horses through ${town} for three summers.`, `${He} set the fire that took a granary in ${town}, and was paid to.`, `${He} robbed a carrier on the ${town} road one winter, and the carrier never walked right again.`], id, 'cr');
+    if (k === 'embezzle') return HP([`${He} has been skimming the accounts ${he} keeps, a little every quarter, for years.`, `${He} keeps two ledgers. The one ${he} shows is short by a tenth.`], id, 'em');
+    if (k === 'desert') return HP([`${He} ran from a fight ${he} swears ${he} stood in, and others died for ${his} lie.`, `${He} left ${his} post the night before a battle and walked home, and has told it otherwise since.`], id, 'ds');
     return `${He} has something to hide.`;
   };
   // a lore secret you know that shames the realm this person rules (26-belief-truth): a hold on a crown (pure)
@@ -229,16 +229,18 @@
     if (how === 'scheme' && A.SCHEMES && A.SCHEMES.agents) for (const a of A.SCHEMES.agents(pc, t)) witness.push(a.id);
     // someone may have seen: one in four (SEC.SEEN), someone from your own circle
     if (SEC.SEEN >= 1 || A.chance(SEC.SEEN)) { const pool = Object.keys(pc.rel || {}).map(A.P).filter(p => p && p.alive && p.id !== t.id && A.isAdult(p) && !A.FAMILY_RELS.includes(pc.rel[p.id].type)); const w = pool.length ? A.pick(pool) : null; if (w) witness.push(w.id); }
-    SEC.addMine(pc, 'crime', `The death of ${t.given} ${t.sur || ''} in ${A.S.year} was your doing.`, witness, 'criminal');
+    SEC.addMine(pc, 'crime', `The death of ${[t.given, t.sur].filter(Boolean).join(' ')} in ${A.S.year} was your doing.`, witness, 'criminal');
   });
   BD.onFx.push(function (pc, fx, ctx) {
     if (!(fx.secret > 0)) return;
     const q = A.S.queue[0], title = q && q.view ? BD.clean(q.view.title || '') : '';
     const t = ctx.pid ? A.P(ctx.pid) : null;
     // the release's +1 secret with someone in the scene: something you learned about them, or saw them do
-    if (t && t.alive && t.id !== pc.id && pc.rel[t.id]) SEC.learn(pc, t, 'seen', { k: 'deed', sev: 'shunned', t: `What ${A.he(t)} did, in the matter of ${low(title || 'that year')}, would cost ${A.him(t)} dear if it were known.` });
+    // (the scene's title is named only when it names a thing: "the flooded mill", not "In confidence")
+    const ttl = /^(A|An|The) [a-z]/.test(title) ? ` (${low(title)})` : '';
+    if (t && t.alive && t.id !== pc.id && pc.rel[t.id]) SEC.learn(pc, t, 'seen', { k: 'deed', sev: 'shunned', t: `What ${A.he(t)} did in ${A.S.year}${ttl} would cost ${A.him(t)} dear if it were known.` });
     // a shameful choice is your secret too, and whoever was there knows it
-    if ((fx.honor || 0) < 0) SEC.addMine(pc, 'deed', `What you did in the matter of ${low(title || 'that year')}, in ${A.S.year}.`, t ? [t.id] : [], (fx.honor || 0) <= -10 ? 'criminal' : 'shunned');
+    if ((fx.honor || 0) < 0) SEC.addMine(pc, 'deed', `What you did in ${A.S.year}${ttl} is not a thing you want told.`, t ? [t.id] : [], (fx.honor || 0) <= -10 ? 'criminal' : 'shunned');
   });
   // once a year: an affair while you are married is a secret your lover keeps; what one person knows, a friend of theirs
   // may come to know (one in ten a year)

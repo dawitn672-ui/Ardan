@@ -574,8 +574,9 @@
     pc.kills += Math.min(m.kills, 6);
     A.willGrow(pc, won ? 0.6 : 1.5, 'battle');
     A.fame(pc, won ? 2 : 0);
-    const said = m.ts.end == null ? 'you are carried from the field while it goes on' : e.out ? 'your division is pulled out of the line while the fight goes on' : e.won === 1 ? (m.ts.weAtt ? 'your side breaks through' : 'your side holds') : e.won === 0 ? (m.ts.weAtt ? 'your side is thrown back' : 'your side gives way') : 'the fighting is broken off';
-    m.log.push(`— ${m.title}: ${said} after ${e.day || fr.day || 1} day${(e.day || fr.day || 1) > 1 ? 's' : ''}. ${A.fmt(fr.dead[0])} of yours dead, ${A.fmt(fr.dead[1])} of theirs.`);
+    const said = m.ts.end == null ? 'you are carried from the field while it goes on' : e.out ? `on the ${TS.dayWord(e.day || 1)} day your division is pulled out of the line, and the fight goes on without it` : e.won === 1 ? (m.ts.weAtt ? 'your side breaks through' : 'your side holds') : e.won === 0 ? (m.ts.weAtt ? 'your side is thrown back' : 'your side gives way') : 'the fighting is broken off';
+    m.log.push(`— ${m.title}: ${said}${e.out ? '' : ` after ${e.day || fr.day || 1} day${(e.day || fr.day || 1) > 1 ? 's' : ''}`}. ${A.fmt(fr.dead[0])} of yours dead${e.out ? ' so far' : ''}, ${A.fmt(fr.dead[1])} of theirs.`);
+    if (e.out && TS.liveFight(m)) A.S.tsOut = { key: m.ts.key, start: m.ts.start, men: (m.ts.men || []).slice(), realm: m.ts.realm, div: m.ts.div };
     if (pc.health <= 0) m.log.push('You do not walk away from this field.');
     else A.log(TS.chronicle(m, pc), 'big');
   };
@@ -617,13 +618,16 @@
     let snap = null;
     if (mine) { try { snap = TS.snap(m, F, true); } catch (e) { console.error('two scales snap', e); } }
     const n0 = S.queue.length;
+    const out = !mine && F && S.tsOut && S.tsOut.key === F.key && S.tsOut.start === F.start ? S.tsOut : null;
     const r = fightEnd.apply(this, arguments);
-    if (!mine && F) { try { TS.noteEnded(F, winner); } catch (e) { console.error('two scales ended', e); } }
+    // your division was pulled out earlier: the three panels come now, when the fight it left is over
+    if (out) { delete S.tsOut; try { TS.reckoning(F, winner, n0, { ts: out }); } catch (e) { console.error('two scales out end', e); } }
+    else if (!mine && F) { try { TS.noteEnded(F, winner); } catch (e) { console.error('two scales ended', e); } }
     if (mine) {
       try {
         m.ts.end = { won: (winner === 'att') === !!m.ts.weAtt ? 1 : 0, day: F.days };
         if (snap) { m.ts.prev = m.ts.front; m.ts.front = snap; }
-        TS.reckoning(F, winner, n0);
+        TS.reckoning(F, winner, n0, m);
       } catch (e) { console.error('two scales end', e); }
     }
     return r;
@@ -656,11 +660,11 @@
     return m;
   };
   // 34-both-scales' three panels: they follow every two-scales fight, even when 34's own spacing would skip them
-  TS.reckoning = function (F, winner, n0) {
+  TS.reckoning = function (F, winner, n0, m) {
     const S = A.S, pc = A.pc();
     if (!A.BS || !A.BS.context || !A.EV.bs_reckoning || !pc || !pc.alive) return;
     if (S.queue.slice(n0).some(x => x && x.ev === 'bs_reckoning')) return;
-    const m = S.tsq.m, shim = !pc.mil;
+    const shim = !pc.mil;
     F.bs = F.bs || { hp0: pc.health, merit0: pc.mil ? pc.mil.merit || 0 : 0, squad0: (m.ts.men || []).slice(), y0: S.year, div: m.ts.div };
     let ctx;
     try { if (shim) pc.mil = { realm: m.ts.realm, merit: 0 }; ctx = A.BS.context(F, winner, pc); } finally { if (shim) delete pc.mil; }

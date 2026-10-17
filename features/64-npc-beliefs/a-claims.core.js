@@ -126,11 +126,29 @@
   NB.SEC_KINDS = Object.keys(SEC_TXT);
   // treason is only ever whispered at court, about a councillor (d-world.core.js), so it stays out of SEC_KINDS
   SEC_TXT.treason = ["is in the pay of the crown's enemies", "are in the pay of the crown's enemies"];
+  // other ways of saying the same charge; a claim keeps one wording (a hash of the claim)
+  const SEC_ALT = {
+    heresy: [['prays to the old gods behind a shut door', 'pray to the old gods behind a shut door'], ['has not taken the rites in years, and laughs at those who do', 'have not taken the rites in years, and laugh at those who do']],
+    crime: [['once killed a man and buried him where nobody looks', 'once killed a man and buried him where nobody looks'], ['robbed travellers on the high road when {he} was young', 'robbed travellers on the high road when you were young']],
+    oath: [['swore an oath before the gods and sold it for money', 'swore an oath before the gods and sold it for money'], ['gave {his} word to a dying man and broke it within the year', 'gave your word to a dying man and broke it within the year']],
+    debt: [['has borrowed against everything {he} owns, and some things {he} does not', 'have borrowed against everything you own, and some things you do not'], ['is three years behind with a moneylender', 'are three years behind with a moneylender']],
+    affair: [['keeps a lover in the next village', 'keep a lover in the next village'], ['goes out at night to a house that is not {his} own', 'go out at night to a house that is not your own']],
+    treason: [['writes to the crown\'s enemies, and is paid for it', 'write to the crown\'s enemies, and are paid for it'], ['has sold the council\'s secrets abroad', 'have sold the council\'s secrets abroad']],
+  };
+  const secWords = c => { const L = [SEC_TXT[c.o]].concat(SEC_ALT[c.o] || []).filter(Boolean); return L.length ? L[Math.floor(NB.H(c.id, 'sw') * L.length)] : null; };
+  // the twist of a deed, told by someone who hates you: (who did it, the deed in their words, the deed for "someone else")
   const TWIST = [
-    d => `that the story of how you ${d} is a lie you paid to have told`,
-    d => `that someone else ${d}, and you took the credit`,
-    d => `that you ${d}, but only for what it paid`,
+    (w, d, d3) => `that the story of how ${w} ${d} is a lie ${w} paid to have told`,
+    (w, d, d3) => `that someone else ${d3}, and ${w} took the credit`,
+    (w, d, d3) => `that ${w} ${d}, but only for what it paid`,
+    (w, d, d3) => `that ${w} ${d}, but only because someone was watching`,
+    (w, d, d3) => `that ${w} ${d}, and ${w === 'you' ? 'have' : 'has'} been selling the story ever since`,
+    (w, d, d3) => `that ${w} ${d} with other men's help, and named none of them after`,
   ];
+  // a deed set down as a title ("Champion of the Great Tournament", "Was made a master") is said with its verb:
+  // "that you were champion of ...", "that she was champion of ..."
+  const TITLE_DEED = /^(champion|grandmaster|master|first|victor|winner|hero|head|keeper|captain|knight|founder|patron|guardian|defender|chancellor|steward|marshal|treasurer|spymaster|chaplain|warden|reeve|mayor|alderman|sheriff|elder)\b/;
+  NB.deedVP = (d, you) => { d = low(String(d || '')); if (/^was\b/.test(d)) return you ? d.replace(/^was\b/, 'were') : d; return TITLE_DEED.test(d) ? (you ? 'were ' : 'was ') + d : d; };
   NB.taleText = function (c, base) {
     const t = base && base.x ? String(base.x) : '';
     let out = null;
@@ -138,7 +156,9 @@
     if (!out) {
       const h = Math.floor(NB.H(c.id, 'tale') * 1000);
       out = t.replace(/\b\d{1,3}(?:,\d{3})+\b|\b\d{2,}\b/g, m => A.fmt(round2(+m.replace(/,/g, '') * (2 + (h % 3)))));
-      out = out.replace(/[.]?$/, '') + [', and with half the men', ', single-handed, some swear', ', and laughed while doing it', ', before breakfast, the story goes'][h % 4] + '.';
+      const TAIL = [', and with half the men', ', single-handed, some swear', ', and laughed while doing it', ', before breakfast, the story goes',
+        ', with the whole town watching', ', twice over, to hear it told', ', and asked nothing for it', ', in a hard frost, the way they tell it'];
+      out = out.replace(/[.]?$/, '') + TAIL[h % TAIL.length] + '.';
     }
     return String(out).replace(/[.]\s*$/, '');
   };
@@ -148,16 +168,18 @@
     const you = !!(pc && c.s === pc.id), sub = NB.name(c.s) || 'someone', P = A.P(c.s);
     const he = P ? A.he(P) : 'they', his = P ? A.his(P) : 'their';
     const fill = s => s.replace(/\{his\}/g, his).replace(/\{he\}/g, he);
-    if (c.k === 'D') return `that ${you ? 'you' : sub} ${low(clean(c.x, 120).replace(/[.]$/, ''))}`;
-    if (c.k === 'T') { const b = NB.claim(c.x); return b ? `that ${you ? 'you' : sub} ${low(clean(NB.taleText(c, b), 140))}` : ''; }
-    if (c.k === 'W') { const b = NB.claim(c.x); if (!b) return ''; const d = low(clean(b.x, 110).replace(/[.]$/, '')); const s = TWIST[Math.floor(NB.H(c.id, 'tw') * TWIST.length)](d); return you ? s : s.replace(/\byou took\b/, `${sub} took`).replace(/\byou paid\b/, `${sub} paid`).replace(/^that you\b/, `that ${sub}`).replace(/how you\b/, `how ${sub}`); }
+    if (c.k === 'D') return `that ${you ? 'you' : sub} ${NB.deedVP(clean(c.x, 120).replace(/[.]$/, ''), you)}`;
+    if (c.k === 'T') { const b = NB.claim(c.x); return b ? `that ${you ? 'you' : sub} ${NB.deedVP(clean(NB.taleText(c, b), 140), you)}` : ''; }
+    if (c.k === 'W') { const b = NB.claim(c.x); if (!b) return ''; const d = clean(b.x, 110).replace(/[.]$/, ''); return TWIST[Math.floor(NB.H(c.id, 'tw') * TWIST.length)](you ? 'you' : sub, NB.deedVP(d, you), NB.deedVP(d, false)); }
     if (c.k === 'L') { const s = clean(c.x, 120); return you ? s : s.replace(/\byou are\b/g, `${sub} is`).replace(/\byour\b/g, his).replace(/\byou\b/g, sub); }
     if (c.k === 'K') return `that ${you ? 'you' : sub} killed ${clean(c.x || NB.name(c.o) || 'someone', 60)}${c.y ? ' in ' + c.y : ''}`;
-    if (c.k === 'S') { const T = SEC_TXT[c.o]; return T ? `that ${you ? 'you ' + T[1] : sub + ' ' + fill(T[0])}` : ''; }
+    if (c.k === 'S') { const T = secWords(c); return T ? `that ${you ? 'you ' + T[1] : sub + ' ' + fill(T[0])}` : ''; }
     if (c.k === 'B') {
-      const e = A.WC && A.WC.ent ? A.WC.ent(c.o) : null, place = e && e.p != null && A.S.prov[e.p] ? A.S.prov[e.p].name : 'the field';
-      const x = Array.isArray(c.x) ? c.x : [0];
-      return `that ${A.realmShort ? A.realmShort(c.s) : c.s} won at ${place}${e ? ' in ' + e.y : ''}, and some ${A.fmt(x[0] || 0)} fell`;
+      const e = A.WC && A.WC.ent ? A.WC.ent(c.o) : null, place = e && e.p != null && A.S.prov[e.p] ? String(A.S.prov[e.p].name).replace(/^The /, 'the ') : 'the field';
+      const x = Array.isArray(c.x) ? c.x : [0], who = A.realmShort ? A.realmShort(c.s) : c.s, y = e ? ' in ' + e.y : '', n = A.fmt(x[0] || 0);
+      // the same claim always in the same words; claims differ (a hash of the claim)
+      return [`that ${who} won at ${place}${y}, and some ${n} fell`, `that ${who} carried the field at ${place}${y}, with some ${n} dead`,
+        `that some ${n} died at ${place}${y}, and ${who} held the field`, `that ${who} won the day at ${place}${y}, and some ${n} never came home`][Math.floor(NB.H(c.id, 'bw') * 4)];
     }
     if (c.k === 'Z') { const z = (typeof LORE !== 'undefined' ? LORE.creatures : []).find(q => q.id === c.o); return z ? `the truth of the ${z.name.replace(/^The /, '')}` : ''; }
     if (NB.sayW && NB.WORLD_K.includes(c.k)) return NB.sayW(c, pc) || '';
@@ -378,7 +400,7 @@
     return ids;
   };
   // a public act in a scene (one that made the player better known) is a deed people talk of, whether or not the
-  // release writes it into pc.deeds: "pulled Odo out, in the matter of the flooded mill" (engine, from A.eventChoose)
+  // release writes it into pc.deeds: "pulled Odo out, the day of the flooded mill" (engine, from A.eventChoose)
   NB.sceneDeed = function (pc, title, label, df, dh) {
     if (!(df >= 1) || !pc || !A.isAdult(pc)) return null;
     let d = A.BONDS && A.BONDS.deedOf ? A.BONDS.deedOf(label || '', false) : null;
@@ -386,7 +408,8 @@
     // the title is cited only when it is plainly a thing ("The flooded mill", "A letter in an old hand")
     const t0 = clean(title || '', 60), art = /^(the|a|an)\s+/i.test(t0), ttl = art ? 'the ' + low(t0.replace(/^(the|a|an)\s+/i, '')) : '';
     if (!d && !ttl) return null;
-    const text = d ? (ttl ? `${d}, in the matter of ${ttl}` : d) : `did what you did in the matter of ${ttl}`;
+    // "pulled Odo out, the day of the flooded mill"; with no deed to name, "had a hand in the business of the flooded mill"
+    const text = d ? (ttl ? `${d}, the day of ${ttl}` : d) : `had a hand in the business of ${ttl}`;
     if (/\byou\b|\byour\b/i.test(d || '')) return null;
     return NB.rumourDeed(pc, cap(text), A.S.year, null, dh <= -3 ? -1 : 1);
   };

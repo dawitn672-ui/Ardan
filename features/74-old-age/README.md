@@ -56,10 +56,10 @@ Each year, if the engine's own death odds for the player (`A.deathChance`) pass 
 | Test | Result |
 | --- | --- |
 | `oaScorecardCount` | **155 old-age events** counted by the scorecard's own regex, with the cut on: the 26 from before, the 10 un-retired, and all 119 `oa_` scenes |
-| `oaPlayEverything` | 9 old lives: a family (spouse, three children, five grandchildren and a great-grandchild), a widowed serf, a noble at court, a ruler with a child heir, an elf, a dwarf, an orc, a merchant and a priest. Each is played from 26 for 12 years, then aged, with its memories aged with it. **114 of 114 rolled scenes drawn, in 595 drawings with every choice taken: 0 errors, 0 raw tokens, 0 texts over 80 words** (counted after 67's weave and 54's sayings) |
-| `oaChains` | The contract comes back 5 years later with the same child named in the text. The will (a third to the altar) comes back with the person who saw it, and the death screen names it. The corrody costs coin and has its sequel. The late love leads to the family's council about the same person. The blade leaves your hands, goes to the heir, and is on the death screen |
+| `oaPlayEverything` | 9 old lives: a family (spouse, three children, five grandchildren and a great-grandchild), a widowed serf, a noble at court, a ruler with a child heir, an elf, a dwarf, an orc, a merchant and a priest. Each is played from 26 for 12 years, then aged, with its memories aged with it. **114 of 114 rolled scenes drawn, in 598 drawings with every choice taken: 0 errors, 0 raw tokens, 0 texts over 80 words** (counted after 67's weave and 54's sayings) |
+| `oaChains` | The contract comes back 3 years later (the window is 2 to 5) with the same child named in the text. The will (a third to the altar) comes back with the person who saw it, and the death screen names it. The corrody costs coin and has its sequel. The late love leads to the family's council about the same person. The blade leaves your hands, goes to the heir, and is on the death screen |
 | `oaDeathbed` | Death odds at 66 are 5.8%: no deathbed. At 72 they are 17.4%: one deathbed scheduled after two year-turns, not two. Kind last words reach the death screen |
-| `oaFireRate` | 6 lives aged to 55 and played on, 64 years in all: **67 distinct old-age scenes met (10.5 a decade), 47 different ones**. This counts each scene once per life, from `p.flags.ev`, so it is a floor |
+| `oaFireRate` | 6 lives aged to 55 and played on, 84 years in all: **88 distinct old-age scenes met (10.5 a decade), 60 different ones**. This counts each scene once per life, from `p.flags.ev`, so it is a floor |
 | `oaRenderPure` | An old-age scene, every tab, and the epilogue drawn twice: the random stream and the state are untouched, and the epilogue is the same both times |
 | `oaOldSave` | A save with no `pc.oa` and no `oa_` flags loads, the death screen draws, it plays 2 years, and the first will creates the field |
 | `oaUnretired` | 10 of 10 back in the roll, 6 of 6 sampled weak ones still retired, 826 retired in all |
@@ -70,9 +70,25 @@ Each year, if the engine's own death odds for the player (`A.deathChance`) pass 
 
 `node features/74-old-age/bench.mjs <build> --lives=16`: bot lives (`bench/bot.mjs`, personalities × engaged/passive), human and orc starts from 26 until death or 90. It counts every event met from 55 on:
 
-BENCH_TABLE
+Two runs on the full build, each against the same build without this feature (`--without=old-age`, which keeps the ten un-retired events). Seed 7401 (16 lives) was measured before I halved the health costs; seed 9101 (24 lives) after.
 
-**Memory share.** The bot's static memory index (`B.memoryIndex`) counts MEM_OA of the 119 scenes as memory events (a `C.flag` set by another event, an arc mark, or `p.flags.ev`). The build's share is MEM_SHARE, against MEM_BEFORE without this feature. Most of the scenes read memory the index cannot see: 67's record, 55's lines, `pc.deeds`, the dead among your people, 57's record. 67-memory-weave's runtime measure is the one that counts those.
+| Bot lives, from 55 on | Without, seed 7401 | With, seed 7401 | Without, seed 9101 | With, seed 9101 |
+| --- | --- | --- | --- | --- |
+| Lives past 55 / years lived past 55 | 10 / 122 | 7 / 69 | 9 / 106 | 9 / 100 |
+| **Old-age scenes a decade** | **2.1** | **13.6** | **1.1** | **12.5** |
+| of them this feature's (`oa_`) | 0 | 12.6 | 0 | 11.2 |
+| Share of all events met | 2.3% | 17.8% | 0.9% | 13.2% |
+| Different old-age scenes met | 11 | 64 | 7 | 75 |
+| Lives past 55 that met none (3+ years) | 2 | 0 | 3 | 0 |
+| Most repeated (pooled over all lives) | `bd_old_dignity`, `lf_old_score`, `lf_old_failing` ×4 | 4 scenes ×3 | `lf_late_love` ×3 | `oa_kin_young_ask` ×5, three ×4 |
+| Raw tokens / texts over 80 words | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| Mean age at death, of deaths from 45 on | 64.3 (12) | 59.9 (12) | 65.1 (10) | 63.8 (11) |
+
+The release-era baseline, on the build before this feature and before the ten were un-retired (seed 7401, 11 lives, 184 years past 55), was **0.7 old-age scenes a decade**, and 3 lives met none.
+
+The rate holds under 25-variety-guard and the 58 cut. The old-age scenes met spread over 16 of the guard's shapes (14 of 94 have none), the largest being faith (20), death (12) and money (12), so the guard's "same shape twice" rule rarely bites. The cut's roll only drops retired draws. Each scene's cooldown is 5 to 30 years, with the default 10 for most.
+
+**Memory share.** The bot's static memory index (`B.memoryIndex`) counts 26 of the 119 scenes as memory events (a `C.flag` set by another event, an arc mark, or `p.flags.ev`). The build's share is 21.4% (738 of 3,441 events), against 21.4% (712 of 3,322) without this feature. So the feature does not lift the static share: its scenes are as memory-bound as the average event by that count. Most of them read memory the index cannot see: 67's record, 55's lines, `pc.deeds`, the dead among your people, 57's record. 67-memory-weave's runtime measure is the one that counts those.
 
 ## Rules kept
 
@@ -86,8 +102,8 @@ BENCH_TABLE
 
 ## Limits
 
-- **Balance.** Not run here, as the brief asked. Expect the death-age bands to move. Old age now brings about 13 scenes a decade instead of 1, and their health effects add up to −120 against +75 over all 445 outcomes. That is after I halved them, because a first bench (16 lives, seed 7401) put deaths of sickness at 54 to 57 in four lives, against one without the feature. The second, larger bench is in the table above. The coordinator's `bench/balance.mjs` run should check the death-age bands (`bench/targets.mjs`). Coin moves are mostly `coinPct` (−3% to −25% for a will, a corrody or a well; +5% to +20% for selling up).
-- **Check odds for the old are low.** The median shown odds on an `oa_` check in bot lives is ODDS_MED%, and ODDS_FLOOR% sit at the 4% floor: an old peasant's persuasion or trade is weak, and 49's fading stats pull wits and strength down. I kept the house difficulty (40 to 55) and put a stat (`wil`, `ins`, `sta`) beside each skill, but a playtest should say whether the old want easier checks.
+- **Balance.** Not run here, as the brief asked. Expect the death-age bands to move. Old age now brings about 13 scenes a decade instead of 1, and their health effects add up to −120 against +75 over all 445 outcomes. That is after I halved them, because a first bench (16 lives, seed 7401) put deaths of sickness at 54 to 57 in four lives, against one without the feature. On the second bench (seed 9101, 24 lives, after the halving), the mean age at death from 45 on is 63.8 with the feature against 65.1 without, and 9 lives pass 55 either way. The coordinator's `bench/balance.mjs` run should check the death-age bands (`bench/targets.mjs`). Coin moves are mostly `coinPct` (−3% to −25% for a will, a corrody or a well; +5% to +20% for selling up).
+- **Check odds for the old are low.** The median shown odds on an `oa_` check in bot lives is 34% to 45% (two runs, 66 and 81 checks), a quarter are 16 to 21% or lower, and 6 to 9% sit at the 4% floor: an old peasant's persuasion or trade is weak, and 49's fading stats pull wits and strength down. I kept the house difficulty (40 to 55) and put a stat (`wil`, `ins`, `sta`) beside each skill, but a playtest should say whether the old want easier checks.
 - **Family scenes need a family.** In these bot lives few characters married or had children. Grandchildren, the contract, the heir and the old couple therefore fire for real players far more than for bots, and a third of the scenes are written for lives without kin: the corrody, who will look after you, the young neighbours, the last sibling, the funerals.
 - **The deathbed is a scene, not a death.** It comes when the odds are high, and the player may live on. Death still comes from the engine's roll, and the scene may never have been shown.
 - **58's header and `RETIRED.md` are stale.** They still say 836 and list the ten events I put back. `select.mjs` would put them back on the list if re-run; it needs a veto list, or these ten taken out of its candidates.

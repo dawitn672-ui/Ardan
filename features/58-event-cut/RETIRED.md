@@ -1,6 +1,6 @@
 # Retired events: for review
 
-836 of the release's 3199 events (26.1%) are retired from the yearly roll by `features/58-event-cut`. A human should approve or veto this list: to keep an event, delete its line from `list.core.js`. A retired event is not deleted: anything that queues it by id still shows it, and the menu setting "Classic event pool (keep every event)" brings them all back.
+826 of the release's 3199 events (26.1%) are retired from the yearly roll by `features/58-event-cut`. A human should approve or veto this list: to keep an event, delete its line from `list.core.js`. A retired event is not deleted: anything that queues it by id still shows it, and the menu setting "Classic event pool (keep every event)" brings them all back.
 
 How they were chosen (`bench/event-audit.mjs`, then `select.mjs`): only the release's own events were candidates, and never one that a feature wrote, that is only ever queued (a chain's later step), that belongs to a job, duty, path, council or drill pool, that another feature patched, whose id appears anywhere else in the game (a chain's `event:`, `A.schedule`, `flags.ev`), that reads an earlier memory, or that sets a flag anything reads. The weakest went first, and every pool kept a floor (see the README). Columns: fired = times the bots met it in 24 lives (1048 years); words = its text; check = it has a skill check (tradeoff = a check whose failure costs, beside a safe choice); best = the choice linter finds an obviously best choice.
 
@@ -20,10 +20,8 @@ Every choice only moves stats or skills by 1 or 2, happiness or health by a few 
 | `bd_bear_doorpost` | The doorpost | 0 | 39 | once |
 | `bd_child_river` | Summer days | 8 | varies | check |
 | `bd_childhood_friend` | A face from childhood | 4 | varies | once |
-| `bd_failing_eyes` | The letters swim | 2 | varies | once |
 | `bd_falcon_watchroll` | The Tower Watch roll | 0 | 52 | tradeoff, once |
 | `bd_oak_thief` | Built to stand | 0 | 29 | tradeoff |
-| `bd_old_dignity` | The old one | 2 | varies | tradeoff |
 | `bd_wild_deathworm` | The Sand Death-worm | 0 | 54 | tradeoff |
 | `bd_wild_griffinbones` | Griffin bones | 0 | 47 | tradeoff |
 | `bd_wild_hydra` | The Hydra | 1 | varies | tradeoff |
@@ -52,7 +50,6 @@ Every choice only moves stats or skills by 1 or 2, happiness or health by a few 
 | `ct_moon_pearl` | Moon-Pearl | 0 | 43 | check, local |
 | `ct_noble_murder` | Blood on a lord's hands | 0 | varies | check |
 | `ct_oath_day` | Oath day | 0 | varies | check |
-| `ct_old_ruler` | The long reign | 0 | varies |  |
 | `ct_patriarch` | The Patriarch's letter | 0 | varies | check, local |
 | `ct_peace_offer` | An offer of peace | 0 | varies | check |
 | `ct_plague_quarter` | The sick quarter | 0 | varies | check |
@@ -99,14 +96,12 @@ Every choice only moves stats or skills by 1 or 2, happiness or health by a few 
 | `lf_grave_ale` | The grave-ale | 0 | 34 | tradeoff, local |
 | `lf_grief_belongings` | What they left | 2 | 11 | check |
 | `lf_health_bleeding` | The physician recommends bleeding | 2 | 30 | tradeoff |
-| `lf_health_chest` | A pain in the chest | 5 | 31 | tradeoff |
 | `lf_health_relic` | A saint's dust | 1 | 33 | check, local |
 | `lf_mid_debt_old_friend` | An old debt remembered | 2 | 29 |  |
 | `lf_moral_purse` | A purse in the road | 12 | 19 | check |
 | `lf_mourn_rite` | The rites for the dead | 6 | 25 | tradeoff |
 | `lf_names_spoken` | A name not spoken fades | 0 | 41 | check, local |
 | `lf_old_burial_wish` | How you will be sent off | 3 | 23 |  |
-| `lf_old_dwarf_vault` | The tools you will take | 0 | 41 |  |
 | `lf_rival_dies` | Your rival is dead | 7 | 35 | tradeoff |
 | `lf_teen_mirror` | A face in the water | 3 | 40 |  |
 | `lf_winter_dead` | The winter shed | 0 | 39 | check, local |
@@ -224,7 +219,6 @@ Every choice only moves stats or skills by 1 or 2, happiness or health by a few 
 | `ww_os_murex` | Purple hands | 0 | 50 | tradeoff, local |
 | `ww_os_northmen` | Questions in the Dyers' Quarter | 0 | 51 | tradeoff, local, once |
 | `ww_sol_badgemen` | The Brass Badge men | 4 | 53 | tradeoff, local |
-| `ww_sol_grave` | A grave by the Temple wall | 2 | 52 | local, once |
 | `ww_sol_mirona` | The Mirona November | 1 | 53 | tradeoff, local |
 | `ww_sol_noonlie` | Don't lie at noon | 1 | 43 | tradeoff, local |
 | `ww_sol_saltpan` | The salt tax | 4 | 43 | tradeoff, local |
@@ -303,7 +297,6 @@ Every choice only moves numbers, some by more than a nudge (a skill by 3, health
 | `cm_sailor_shore_leave` | Shore leave | 0 | varies | tradeoff, moves happy |
 | `ct_aid` | The customary aid | 1 | varies | tradeoff, moves favor |
 | `ct_heir_plot` | The impatient heir | 0 | varies | check, moves skill happy |
-| `ct_ruler_health` | The physicians | 0 | varies | tradeoff, moves health |
 | `ct_spymaster` | Too many keys | 0 | varies | check, moves skill |
 | `gf_bridge` | The footbridge | 0 | varies | check, moves merit |
 | `gf_cutoff` | Cut off | 0 | varies | check, moves merit |
@@ -332,7 +325,6 @@ Every choice only moves numbers, some by more than a nudge (a skill by 3, health
 | `lf_old_advice_ignored` | Nobody listens to the old | 3 | 22 | tradeoff, moves happy |
 | `lf_old_confession` | Before the priest | 0 | 30 | check, moves piety happy |
 | `lf_old_elf_fade` | The slow fade | 0 | 47 | moves happy |
-| `lf_old_last_wish` | One more time | 3 | 22 | tradeoff, moves happy health |
 | `lf_old_stories` | Tell us a story | 3 | 26 | check, moves happy |
 | `ln_d_cl_doubt` | The dark night | 0 | 32 | tradeoff, moves wil |
 | `ln_d_env_custom` | A custom broken | 2 | 29 | tradeoff, moves skill rep |
@@ -565,7 +557,6 @@ Every choice only moves numbers, some by more than a nudge (a skill by 3, health
 | `ww_os_holdbank` | Dwarf crowns | 0 | 58 | tradeoff, local, moves favor |
 | `ww_os_militia` | Militia day | 0 | 36 | tradeoff, local, moves skill |
 | `ww_os_purple` | A purple cloak | 0 | 53 | tradeoff, local, moves happy |
-| `ww_os_will` | For loans not forgiven | 0 | 53 | local, once, moves piety |
 | `ww_sol_burning` | Fire belongs to the sun | 2 | 59 | tradeoff, local, moves health piety |
 | `ww_sol_sunsister` | The sun-sisters | 4 | 49 | tradeoff, local, moves skill health |
 | `ww_sol_votes` | Four votes | 0 | 51 | tradeoff, local, once, moves favor skill |
@@ -744,7 +735,6 @@ Every choice moves numbers and someone's opinion of you, and nothing else: no ne
 | `lf_nb_raising` | Raising a roof | 3 | 26 | tradeoff, opinion |
 | `lf_nb_strangers` | New people in the lane | 11 | 26 | tradeoff, opinion |
 | `lf_nb_widow_harvest` | A widow's harvest | 9 | 26 | check, opinion |
-| `lf_old_grandchild_secret` | A grandchild's secret | 4 | 16 | check, opinion, moves happy |
 | `lf_old_letters` | Old letters in a chest | 1 | varies | tradeoff, opinion, moves happy |
 | `lf_rent_raised` | The rent goes up | 2 | 21 | tradeoff, opinion, moves fn |
 | `lf_rival_slander` | Slander | 15 | 20 | tradeoff, opinion |

@@ -411,6 +411,8 @@
   const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   WC.month = e => { try { return MON[A.monthOf(Math.min(364, e.d || 0)).m]; } catch (x) { return ''; } };
   const pn = i => (i != null && A.S.prov[i] ? A.S.prov[i].name : '');
+  // a place inside a sentence: "the sack of the Free Marches", not "the sack of The Free Marches"
+  const pin = i => pn(i).replace(/^The /, 'the ');
   const rs = id => (id ? (A.realm(id) ? A.realm(id).short : WC.name(id) || 'a realm now gone') : '');
   const nm = id => WC.name(id);
   WC.warName = e => { const id = Array.isArray(e.x) ? e.x[0] : e.x; return (id && WC.name(id)) || `the war of ${rs(e.a)} and ${rs(e.b)}`; };
@@ -419,7 +421,7 @@
   // a short reference: "the burning of Kessaria in 1108" (used inside a sentence)
   WC.ref = function (e, opts) {
     if (!e) return '';
-    const y = (opts && opts.noYear) ? '' : ` in ${e.y}`, P = pn(e.p);
+    const y = (opts && opts.noYear) ? '' : ` in ${e.y}`, P = pin(e.p);
     switch (e.k) {
       case 'war': return `${the(WC.warName(e))}${y ? ' of ' + e.y : ''}`;
       case 'peace': return `the end of ${the(WC.warName(e))}${y}`;
@@ -445,11 +447,11 @@
   // a whole sentence, dated: "In May 1110, at Crowbrook, Aldmark beat the Horde: 24,000 men in the field, 6,100 dead."
   WC.line = function (e) {
     if (!e) return '';
-    const when = `In ${WC.month(e)} ${e.y}`, P = pn(e.p), A1 = rs(e.a), B1 = rs(e.b), fmt = n => (A.fmt ? A.fmt(n) : String(n));
+    const when = `In ${WC.month(e)} ${e.y}`, P = pin(e.p), A1 = rs(e.a), B1 = rs(e.b), fmt = n => (A.fmt ? A.fmt(n) : String(n));
     switch (e.k) {
       case 'war': return `${when}, ${A1} went to war with ${B1}: ${the(WC.warName(e))}${e.n > 2 ? `, with ${e.n} realms in the field` : ''}.`;
       case 'peace': {
-        const res = Array.isArray(e.x) ? e.x[1] : 'white', got = Array.isArray(e.x) && Array.isArray(e.x[2]) ? e.x[2].map(pn).filter(Boolean) : [];
+        const res = Array.isArray(e.x) ? e.x[1] : 'white', got = Array.isArray(e.x) && Array.isArray(e.x[2]) ? e.x[2].map(pin).filter(Boolean) : [];
         const span = e.n > 0 ? ` after ${e.n} year${e.n > 1 ? 's' : ''}` : '';
         if (res === 'white') return `${when}, ${the(WC.warName(e))} ended${span} in a white peace.`;
         return `${when}, ${the(WC.warName(e))} ended${span}, and ${A1} had the better of it${got.length ? `: ${got.slice(0, 4).join(', ')} passed to ${A1}` : ''}.`;
@@ -464,7 +466,7 @@
       case 'founded': return `${when}, ${A1} was founded${e.x === 'granted' ? ` out of ${B1}'s lands, by grant` : e.x === 'won' ? `, its freedom won in war against ${B1}` : e.x === 'carved' ? ' out of the free lands' : B1 ? ` out of ${B1}` : ''}${P ? `, with its seat at ${P}` : ''}${nm(e.w[0]) ? `, under ${nm(e.w[0])}` : ''}.`;
       case 'revolt': return `${when}, ${nm(e.w[0]) || 'a great lord'} rose against the crown of ${A1}${e.x === 'claim' ? ', claiming the throne' : ' with the lords of a league'}${P ? `, holding ${P}` : ''}.`;
       case 'famine': return `${when}, the harvest failed in ${A1}, and bread was dear until the next.`;
-      case 'plague': { const sp = Array.isArray(e.x) ? e.x.map(pn).filter(Boolean) : []; const s = WC.name('sick:' + e.p + ':' + e.y) || 'a sickness'; return `${when}, ${s} broke out at ${P}, in the lands of ${A1}${sp.length ? `, and spread to ${sp.join(' and ')}` : ''}.`; }
+      case 'plague': { const sp = Array.isArray(e.x) ? e.x.map(pin).filter(Boolean) : []; const s = WC.name('sick:' + e.p + ':' + e.y) || 'a sickness'; return `${when}, ${s} broke out at ${P}, in the lands of ${A1}${sp.length ? `, and spread to ${sp.join(' and ')}` : ''}.`; }
       case 'wedding': return `${when}, a royal marriage bound ${A1} and ${B1}.`;
       case 'alliance': return `${when}, ${A1} and ${B1} swore an alliance.`;
       case 'trib': return e.x === 'free' ? `${when}, ${A1} threw off the tribute it paid ${B1}.` : `${when}, ${A1} became a tributary of ${B1}.`;

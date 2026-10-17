@@ -1,6 +1,6 @@
 // The retired events (Road to Ten, Events 1): written by select.mjs from bench/event-audit.mjs. Do not edit by hand;
 // veto an event in RETIRED.md, then drop its line here (or re-run select.mjs). Reason codes: EC.REASONS in cut.core.js.
-// 836 of the release's 3199 events.
+// 826 of the release's 3199 events (10 old-age scenes put back by 74-old-age are in KEEP.json).
 A.EC.retire({
   // B: 334
   av_broken_axle: 'B',
