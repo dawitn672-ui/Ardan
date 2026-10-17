@@ -46,6 +46,11 @@
     const L = A.RANKFX.LAYERS.line;
     A.RANKFX.LAYERS.levy = { name: 'the levy', theirs: r2(L.theirs * 0.6), ours: r2(L.ours * 0.6), fall: r2(L.fall * 0.6) };
   }
+  // an officer's days after his tactical battle (44's 'part' layer moved the fight already on the first day): half of it
+  if (A.RANKFX && A.RANKFX.LAYERS && A.RANKFX.LAYERS.part && !A.RANKFX.LAYERS.company) {
+    const L = A.RANKFX.LAYERS.part;
+    A.RANKFX.LAYERS.company = { name: 'your company', theirs: r2(L.theirs * 0.5), ours: r2(L.ours * 0.5), fall: r2(L.fall * 0.5) };
+  }
 
   // ---- who and where ------------------------------------------------------------------------------------------------
   TS.on = m => !!(m && m.ts && typeof m.ts === 'object');
@@ -230,6 +235,27 @@
     ];
     return { text, choices: ch };
   };
+  // an officer (captain to commander) gives his company the order instead of going in himself: the same choices, rolled
+  // on his command, not on his own fighting worth
+  const OFFICER = {
+    push: ['Order the company forward', ['command', 'tactics'], 48], reinforce: [null, ['command', 'tactics'], 50],
+    breach: ['Send the company into the breach', ['command', 'tactics'], 50], hold: ['Hold the company where it stands', ['command', 'wil'], 44],
+    withdraw: ['Pull the company back in order', ['command', 'tactics'], 46], strip: ['Let the men strip the dead', ['command', 'int'], 30],
+  };
+  const lineBase = TS.STAGE.ts_line;
+  TS.STAGE.ts_line = function (m, pc) {
+    const v = lineBase(m, pc);
+    if (!m.ts.officer) return v;
+    v.choices = v.choices.map(c => {
+      const o = OFFICER[c.tag]; if (!o) return c;
+      const out = Object.assign({}, c, { check: o[1], diff: o[2] });
+      if (o[0]) out.t = o[0]; else out.t = c.t.replace(/^Take the section across to/, 'Wheel the company onto');
+      delete out.body;
+      out.hint = String(c.hint || '').replace(' Rolled on your fighting worth and the men with you.', ' Rolled on your command.');
+      return out;
+    });
+    return v;
+  };
   // the break: the release's own six choices (chase, tend, loot; run, rearguard, surrender), read from the real end
   TS.STAGE.ts_break = function (m, pc) {
     const e = m.ts.end || {}, won = e.won;
@@ -280,7 +306,7 @@
     m.stages = ['ts_arrows', 'ts_clash', 'ts_break'];
     const men = o.men.slice(0, 3);
     m.ts = { v: 1, key: F.key, pid: F.loc, start: F.start, day: F.days, weAtt: weAtt ? 1 : 0, realm: o.realm, div: o.div, divName: d ? d.name : 'line',
-      layer: o.levy ? 'levy' : 'line', levy: o.levy ? 1 : 0, men, state: {}, fell: [], perf: 0, lines: 0, rounds: [], front: null, prev: null, hurt: null, end: null, parked: 0 };
+      layer: o.levy ? 'levy' : o.officer ? 'company' : 'line', levy: o.levy ? 1 : 0, officer: o.officer ? 1 : 0, men, state: {}, fell: [], perf: 0, lines: 0, rounds: [], front: null, prev: null, hurt: null, end: null, parked: 0 };
     for (const id of men) m.ts.state[id] = 'ok';
     m.ts.front = TS.snap(m, F);
     TS.prepare(m);
@@ -308,6 +334,29 @@
     } catch (e) { console.error('two scales start', e); }
     return lineFn.apply(this, arguments);
   };
+
+  // ---- a captain, senior captain or commander: after his tactical battle (44's officer layer), the days of the fight
+  // that follow and its end are two-scales scenes
+  TS.officerAfter = function (B, key) {
+    const pc = A.pc(), S = A.S;
+    if (!pc || !pc.alive || !pc.mil || pc.mil.merc || pc.mil.rank < 4 || pc.mil.rank > 6 || S.tsq || pc.health <= 0) return;
+    const pid = +String(key).replace(/^F/, ''), F = (S.fights || {})[pid];
+    if (!F || F.key !== key || F.menA + F.menD < TS.MEN || !(F.aIds.includes(pc.mil.div) || F.dIds.includes(pc.mil.div))) return;
+    const foe = A.hostile(F.a, pc.mil.realm) ? F.a : F.b;
+    const m = TS.begin(pc, F, { div: pc.mil.div, realm: pc.mil.realm || pc.realm, enemy: foe, men: A.squad(pc).map(p => p.id), officer: true });
+    m.stages = ['ts_break']; m.stage = 0;
+    const won = B && B.winner === B.pcSide;
+    m.log.push(`» ${won ? 'Your company carried its part of the first day.' : B && B.winner && B.winner !== 'draw' ? 'Your company lost its part of the first day.' : 'Your company\'s part of the first day was even.'}`);
+    TS.park({ type: 'mission', m });
+  };
+  if (A.BATTLE_END && typeof A.BATTLE_END.wsPart === 'function') {
+    const part = A.BATTLE_END.wsPart;
+    A.BATTLE_END.wsPart = function (B, key) {
+      const r = part.apply(this, arguments);
+      try { TS.officerAfter(B, key); } catch (e) { console.error('two scales officer', e); }
+      return r;
+    };
+  }
 
   // ---- the levy: a fight in your home province, for a life outside the army ---------------------------------------
   TS.levyOk = function (pc, F, att, def) {
@@ -360,6 +409,56 @@
     } catch (e) { console.error('two scales levy ask', e); }
     return r;
   };
+
+  // ---- drafts for the front: a soldier whose company sits in garrison through a war --------------------------------
+  // Measured over bot lives, a soldier's own division is often left out of the field armies (it is raised near his
+  // home), so a war can pass without one fight. Once a month at war, if his division has not been asked into a fight
+  // for DRAFT_IDLE days and another division of his realm is fighting, the sergeant asks for a draft for it.
+  TS.DRAFT_IDLE = 75; TS.DRAFT_GAP = 150; TS.DRAFT_P = 0.5;
+  TS.fieldDiv = function (pc) {
+    const S = A.S, rid = pc.mil.realm || pc.realm, mine = pc.mil.div;
+    let best = null;
+    for (const k in S.fights || {}) {
+      const F = S.fights[k];
+      for (const id of (F.aIds || []).concat(F.dIds || [])) {
+        const d = A.divById(id);
+        if (!d || d.r !== rid || d.id === mine || !d.army || !(d.men > 500)) continue;
+        if (!best || d.men > best.d.men || (d.men === best.d.men && d.id < best.d.id)) best = { d, F };
+      }
+    }
+    return best;
+  };
+  TS.draftOk = function (pc, ctx) {
+    if (!pc || !pc.alive || !pc.mil || pc.mil.merc || pc.prison || pc.mil.rank > 3 || A.S.tsq) return false;
+    const d = ctx && A.divById(ctx.div);
+    if (!d || d.r !== (pc.mil.realm || pc.realm) || d.id === pc.mil.div) return false;
+    ctx.divName = d.name; ctx.front = A.S.prov[ctx.at] ? A.S.prov[ctx.at].name : 'the front';
+    return true;
+  };
+  TS.draft = function (pc, ctx) {
+    const d = A.divById(ctx.div);
+    if (!d || !pc.mil) return '';
+    const old = A.divById(pc.mil.div);
+    pc.mil.div = d.id; if (d.army) pc.mil.army = d.army;
+    pc.mil.merit = (pc.mil.merit || 0) + 2;
+    pc.happy = A.clamp(pc.happy - 2, 0, 100);
+    A.log(`You go with the draft from ${old ? 'the ' + old.name : 'your company'} to the ${d.name}.`, 'war');
+    return '';
+  };
+  A.onMonth.push(pc => {
+    try {
+      const S = A.S, now = A.absDay();
+      if (!pc || !pc.alive || !pc.mil || pc.mil.merc || pc.prison || pc.mil.rank > 3 || pc.health < 40 || S.tsq) return;
+      if (!A.atWar(pc.mil.realm || pc.realm).length) return;
+      if (S.pcFightAsk != null && now - S.pcFightAsk < TS.DRAFT_IDLE) return;
+      if (S.tsDraft != null && now - S.tsDraft < TS.DRAFT_GAP) return;
+      if (S.queue.some(q => q && q.ev === 'ts_draft')) return;
+      const f = TS.fieldDiv(pc); if (!f) return;
+      if (!A.chance(TS.DRAFT_P)) return;
+      S.tsDraft = now;
+      A.queue({ type: 'event', ev: 'ts_draft', forced: true, ctx: { div: f.d.id, at: f.F.loc } });
+    } catch (e) { console.error('two scales draft', e); }
+  });
 
   // ---- the round: what a choice does on both scales ----------------------------------------------------------------
   // the front: the choice's performance goes to the fight through 44-rank-battles (its log line is ours to write)
@@ -444,7 +543,7 @@
   TS.park = function (q) {
     const S = A.S, m = q.m, i = S.queue.indexOf(q);
     if (i >= 0) S.queue.splice(i, 1);
-    if (m.stage < 2) m.stage = Math.max(2, m.stages.indexOf('ts_break'));
+    if (m.stage < 2 && !m.ts.officer) m.stage = Math.max(2, m.stages.indexOf('ts_break'));
     m.ts.parked = 1; m.cur = null;
     S.tsq = q;
   };
@@ -515,7 +614,7 @@
     const r = choose.apply(this, arguments);
     try {
       if (m && TS.on(m) && !m.over && A.S.queue[0] === q) {
-        if (m.stage >= 2) TS.park(q);                                   // the day must pass before the next scene
+        if (m.stage >= 2 || m.ts.officer) TS.park(q);                                   // the day must pass before the next scene
         else if (!m.cur) { m.mates = TS.near(m).map(p => p.id); m.cur = TS.view(m); }   // the clash follows the arrows at once
       }
     } catch (e) { console.error('two scales park', e); }

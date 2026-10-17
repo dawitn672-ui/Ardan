@@ -1,0 +1,194 @@
+{
+ "label": "now",
+ "file": "../../../tmp/ardan/me/now.html",
+ "build": "b593143+f65.2a749d9",
+ "modules": {
+  "league": {
+   "lives": 64,
+   "medianDeathAge_humanOrc": 57,
+   "p10DeathAge": 22,
+   "p90DeathAge": 76,
+   "arcTypes": 12,
+   "topArcShare": 21.9,
+   "arcs": {
+    "fortune made": 9,
+    "quiet life": 11,
+    "general": 3,
+    "cut short": 5,
+    "outlaw": 14,
+    "working life": 5,
+    "soldier": 1,
+    "officer of state": 8,
+    "master of a trade": 2,
+    "captain": 3,
+    "ruler": 2,
+    "sellsword": 1
+   },
+   "memoryShareOfFiredEvents": 8.4,
+   "eventsPerYear": 4.9,
+   "promptsPerYear": 5.1,
+   "medianDaysBetweenPrompts": 31,
+   "p90DaysBetweenPrompts": 151,
+   "p90SecondsBetweenPromptsAtDefaultSpeed": 37.8,
+   "checkWinRate": 38.5,
+   "initiativeActionsPerYear_engaged": 5,
+   "byPersonality": {
+    "careful": {
+     "lives": 16,
+     "medianDeathAge": 61,
+     "meanDeathAge": 49.6,
+     "checkWinRate": 56.8
+    },
+    "reckless": {
+     "lives": 16,
+     "medianDeathAge": 30,
+     "meanDeathAge": 40.3,
+     "checkWinRate": 38.6
+    },
+    "greedy": {
+     "lives": 16,
+     "medianDeathAge": 41,
+     "meanDeathAge": 44.1,
+     "checkWinRate": 36.4
+    },
+    "random": {
+     "lives": 16,
+     "medianDeathAge": 65,
+     "meanDeathAge": 58.8,
+     "checkWinRate": 37.5
+    }
+   },
+   "carefulMinusRecklessDeathAge": 9.3,
+   "npcMovesPerDecade": 10,
+   "battlesFought": 22,
+   "afterActionShare": 100
+  },
+  "events": {
+   "events": 3306,
+   "choices": 10047,
+   "memoryEvents": 686,
+   "memorySharePct": 20.8,
+   "flagsSet": 1782,
+   "orphanFlags": 1133,
+   "strictRecipePct": 14,
+   "choicesWithoutCheckPct": 57.9,
+   "oldAgeEvents": 26,
+   "childTeenEvents": 184,
+   "staticTextOver80": 0,
+   "staticChoiceOver12": 0,
+   "obviouslyBest": 0,
+   "obviouslyBestPct": 0,
+   "choiceComparable": 334
+  },
+  "duels": {
+   "table": [
+    {
+     "gap": 0,
+     "seat": "strong-in-player-seat",
+     "duels": 150,
+     "strongWinsPct": 57,
+     "shownPct": 48
+    },
+    {
+     "gap": 0,
+     "seat": "strong-as-npc",
+     "duels": 150,
+     "strongWinsPct": 55,
+     "shownPct": 50
+    },
+    {
+     "gap": 1,
+     "seat": "strong-in-player-seat",
+     "duels": 150,
+     "strongWinsPct": 81,
+     "shownPct": 83
+    },
+    {
+     "gap": 1,
+     "seat": "strong-as-npc",
+     "duels": 150,
+     "strongWinsPct": 87,
+     "shownPct": 87
+    },
+    {
+     "gap": 2,
+     "seat": "strong-in-player-seat",
+     "duels": 150,
+     "strongWinsPct": 96,
+     "shownPct": 96
+    },
+    {
+     "gap": 2,
+     "seat": "strong-as-npc",
+     "duels": 150,
+     "strongWinsPct": 98,
+     "shownPct": 98
+    }
+   ],
+   "playerSeatEdgeSameTierPct": 1,
+   "maxShownVsActualErrorPct": 9
+  },
+  "ai": {
+   "worlds": 3,
+   "years": 60,
+   "warsDeclared": 85,
+   "warsPer100RulerYears_aggressiveTraits": 1.44,
+   "warsPer100RulerYears_peacefulTraits": 0.27,
+   "aggressiveToPeacefulRatio": 5.32
+  },
+  "economy": {
+   "markets": 35,
+   "goods": 21,
+   "medianPriceRatioMaxMin": 2.17,
+   "bestBuySellBackLoop10x": 0
+  },
+  "perf": {
+   "msPerDay": 1.76,
+   "msPerYear": 642,
+   "divisions": 216,
+   "boot": {
+    "ardan-core decoded": 646,
+    "ardan-core unpacked": 748,
+    "core ran": 883,
+    "title shown": 961,
+    "ardan-content decoded": 1021,
+    "ardan-content unpacked": 1127,
+    "content ran": 3170,
+    "ardan-lore decoded": 3204,
+    "ardan-lore unpacked": 3382
+   },
+   "warTick": {
+    "ticks": 364,
+    "divisions": 236,
+    "warsAtStart": 6,
+    "p50": 3.5,
+    "p95": 7.2,
+    "max": 14
+   }
+  },
+  "saves": {
+   "cycles": 100,
+   "corrupted": 0,
+   "kbGzipped": 296
+  },
+  "signature": {
+   "chronicle": true,
+   "beliefTruth": true,
+   "bothScales": true,
+   "present": 3
+  },
+  "a11y": {
+   "screens": 26,
+   "wcagViolations": 0,
+   "bestPracticeViolations": 0,
+   "seriousOrCritical": 0,
+   "byRule": {},
+   "needsReview": {
+    "color-contrast": 2870,
+    "aria-prohibited-attr": 7
+   }
+  },
+  "pageErrorCount": 0
+ },
+ "pageErrors": []
+}

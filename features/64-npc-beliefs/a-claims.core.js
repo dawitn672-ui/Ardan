@@ -38,6 +38,7 @@
     V: 1,
     MAX: 8,          // beliefs one person holds
     MAXB: 2,         // ...of which about battles
+    MAXW: 2,         // ...and of which about the other great events of the world record (d-world.core.js)
     COURT: 10,       // beliefs a court holds
     COURTB: 3,       // ...of which about battles
     WEB: 140,        // the people around the player whose beliefs the yearly step moves
@@ -118,6 +119,8 @@
     affair: ['is false to {his} marriage bed', 'are false to your marriage bed'],
   };
   NB.SEC_KINDS = Object.keys(SEC_TXT);
+  // treason is only ever whispered at court, about a councillor (d-world.core.js), so it stays out of SEC_KINDS
+  SEC_TXT.treason = ["is in the pay of the crown's enemies", "are in the pay of the crown's enemies"];
   const TWIST = [
     d => `that the story of how you ${d} is a lie you paid to have told`,
     d => `that someone else ${d}, and you took the credit`,
@@ -152,6 +155,7 @@
       return `that ${A.realmShort ? A.realmShort(c.s) : c.s} won at ${place}${e ? ' in ' + e.y : ''}, and some ${A.fmt(x[0] || 0)} fell`;
     }
     if (c.k === 'Z') { const z = (typeof LORE !== 'undefined' ? LORE.creatures : []).find(q => q.id === c.o); return z ? `the truth of the ${z.name.replace(/^The /, '')}` : ''; }
+    if (NB.sayW && NB.WORLD_K.includes(c.k)) return NB.sayW(c, pc) || '';
     return '';
   };
   NB.secText = (k, P, you) => { const T = SEC_TXT[k]; if (!T) return ''; return you ? T[1] : T[0].replace(/\{his\}/g, A.his(P)).replace(/\{he\}/g, A.he(P)); };
@@ -172,7 +176,7 @@
     return mine.some(s => s && SEC_MAP[s.k] === kind);
   };
   NB.secTrue = (t, kind, pc) => (pc && t && t.id === pc.id ? NB.pcSecret(pc, kind) : NB.secOf(t) === kind);
-  const SEC_V = { heresy: -8, crime: -12, oath: -10, debt: -5, affair: -6 };
+  const SEC_V = { heresy: -8, crime: -12, oath: -10, debt: -5, affair: -6, treason: -12 };
   NB.SEC_V = SEC_V;
 
   // ---------------------------------------------------------------- holding a belief
@@ -206,9 +210,11 @@
     } else if (h.rel && c.s != null && h.rel[c.s]) h.rel[c.s].op = clamp((h.rel[c.s].op || 0) + d * f * 0.6, -100, 100);
   };
   // keep a person's beliefs within MAX (and MAXB of battles): the oldest and lightest go first
-  const trim = function (m, keep, max, maxB) {
+  NB.WORLD_K = 'QRXYG';   // the great events of the record other than battles: a peace, a ruler's death, a town taken, a sickness, a Legend's death
+  const trim = function (m, keep, max, maxB, maxW) {
     const ids = Object.keys(m);
     const bat = ids.filter(id => { const c = NB.claim(id); return c && c.k === 'B'; });
+    const wld = ids.filter(id => { const c = NB.claim(id); return c && NB.WORLD_K.includes(c.k); });
     const drop = (list, n) => {
       const pcId = (A.pc() || {}).id;
       const w = c => (c ? Math.abs(c.v) + c.y / 50 + (c.s === pcId ? 20 : 0) : 0);   // beliefs about the player are kept longest
@@ -216,6 +222,7 @@
       for (let i = 0; i < n && i < L.length; i++) delete m[L[i].id];
     };
     if (bat.length > maxB) drop(bat, bat.length - maxB);
+    if (wld.length > (maxW == null ? NB.MAXW : maxW)) drop(wld, wld.length - (maxW == null ? NB.MAXW : maxW));
     const n = Object.keys(m).length;
     if (n > max) drop(Object.keys(m), n - max);
   };
@@ -251,7 +258,7 @@
     const st = NB.st(), m = st.ct[rid] && typeof st.ct[rid] === 'object' ? st.ct[rid] : (st.ct[rid] = {});
     if (m[cid] === stance) return false;
     m[cid] = stance;
-    trim(m, cid, NB.COURT, NB.COURTB);
+    trim(m, cid, NB.COURT, NB.COURTB, NB.COURTB);
     NB.stats.adopt++;
     return m[cid] === stance;
   };
@@ -268,8 +275,10 @@
     const m = NB.pcState(pc), cur = m[cid] ? m[cid][0] : 0;
     if (Math.abs(cur) === 2 || cur === stance) return false;
     m[cid] = [stance, from || null, A.S.year];
-    const ks = Object.keys(m);
-    if (ks.length > 16) { const old = ks.filter(k => k !== String(cid)).sort((a, b) => (m[a][2] - m[b][2]) || (+a - +b))[0]; delete m[old]; }
+    // what the player was told of people (16 kept) and of the world's great events (10 kept) are kept apart
+    const wk = id => { const e = NB.peek() && NB.peek().c[id]; return !!e && (e[0] === 'B' || NB.WORLD_K.includes(e[0])); }, mine = wk(cid);
+    const ks = Object.keys(m).filter(k => wk(k) === mine);
+    if (ks.length > (mine ? 10 : 16)) { const old = ks.filter(k => k !== String(cid)).sort((a, b) => (m[a][2] - m[b][2]) || (+a - +b))[0]; delete m[old]; }
     NB.stats.pcHeard++;
     return true;
   };
@@ -298,6 +307,7 @@
       return near.some(r => nb.includes(r)) ? true : null;
     }
     if (c.k === 'Z' && A.BT) return A.BT.level(pc, c.o) >= 3 ? true : null;
+    if (NB.WORLD_K.includes(c.k)) return NB.knowsW ? NB.knowsW(pc, c) : null;
     return null;
   };
 
@@ -384,7 +394,9 @@
   // the dead: kin and friends look for someone to blame; a killing the player did is known by some (engine)
   const SUSPECT = /poison|whisper|knife|dark|strangl|drown|fall|wound/i, PLAIN_OLD = /old age|heart|stroke/i;
   NB.onDeath = function (pc, v, cause, how) {
-    if (!pc || !v || !pc.rel || !pc.rel[v.id] || !A.isAdult(v)) return;
+    if (!pc || !v || !pc.rel || !A.isAdult(v)) return;
+    // a death among the people the player knows, or of someone whose kin or close friend the player knows
+    if (!pc.rel[v.id] && !Object.keys(v.rel || {}).some(id => pc.rel[id] && v.rel[id] && (KIN.has(v.rel[id].type) || CLOSE.has(v.rel[id].type)))) return;
     const name = clean(A.fullName ? A.fullName(v, false) : v.given, 60);
     const near = Object.keys(v.rel || {}).filter(id => { const r = v.rel[id]; return r && (KIN.has(r.type) || CLOSE.has(r.type)); }).sort().map(A.P).filter(x => x && x.alive && x.id !== pc.id && A.isAdult(x));
     const knew = Object.keys(pc.rel).sort().map(A.P).filter(x => x && x.alive && x.id !== v.id && A.isAdult(x) && x.rel && x.rel[v.id] && !near.includes(x));
@@ -622,14 +634,26 @@
 
   NB.gc = function () {
     const S = A.S, st = NB.st(), refs = new Set();
+    // the lives already played keep what they were told of the world (for the Chronicle), at most 8 lines
+    const former = new Set(); for (const e of S.log || []) if (e && e.pc) former.add(String(e.pc));
     for (const id in S.people) {
       const p = S.people[id];
-      if (!p.alive && String(p.id) !== String(S.pc)) { if (p.nb) delete p.nb; if (p.nbk) delete p.nbk; continue; }
+      if (!p.alive && String(p.id) !== String(S.pc)) {
+        if (p.nb) delete p.nb;
+        if (p.nbk && former.has(String(p.id)) && typeof p.nbk === 'object') {
+          const keep = Object.keys(p.nbk).filter(k => st.c[k] && Array.isArray(p.nbk[k]) && (st.c[k][0] === 'B' || NB.WORLD_K.includes(st.c[k][0]))).sort((a, b) => p.nbk[b][2] - p.nbk[a][2]).slice(0, 8);
+          for (const k of Object.keys(p.nbk)) if (!keep.includes(k)) delete p.nbk[k];
+          if (keep.length) { for (const k of keep) refs.add(String(k)); continue; }
+        }
+        if (p.nbk) delete p.nbk;
+        continue;
+      }
       if (p.nb && typeof p.nb !== 'object') delete p.nb;
       if (p.nb) { for (const k of Object.keys(p.nb)) { if (!st.c[k] || !p.nb[k]) delete p.nb[k]; else refs.add(String(k)); } if (!Object.keys(p.nb).length) delete p.nb; }
       if (p.nbk && typeof p.nbk === 'object') for (const k of Object.keys(p.nbk)) { if (!st.c[k] || !Array.isArray(p.nbk[k])) delete p.nbk[k]; else refs.add(String(k)); }
     }
     for (const rid in st.ct) for (const k of Object.keys(st.ct[rid])) { if (!st.c[k]) delete st.ct[rid][k]; else refs.add(String(k)); }
+    if (st.pb) for (const rid in st.pb) for (const k of Object.keys(st.pb[rid])) { if (!st.c[k]) delete st.pb[rid][k]; else refs.add(String(k)); }
     // a tale or a twist keeps its deed; the queue keeps what a waiting scene is about
     for (const k of [...refs]) { const e = st.c[k]; if (e && (e[0] === 'T' || e[0] === 'W') && e[6] != null) refs.add(String(e[6])); }
     for (const q of (S.queue || []).concat((S.sched || []).map(x => x.item))) if (q && q.ctx && q.ctx.cid != null) refs.add(String(q.ctx.cid));

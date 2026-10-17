@@ -24,9 +24,12 @@ export const BOT = () => {
     const reads = {}, memory = new Set();
     for (const e of Object.values(A.EV)) {
       // a memory is read where it decides whether the event comes (cond), how it is set up, or what it says
-      const src = (e.cond ? e.cond.toString() : '') + ' ' + (ownSetup(e) ? ownSetup(e).toString() : '') + ' ' + (typeof e.text === 'function' ? e.text.toString() : '');
+      // (and the choices: a later stage of an arc reads its marks in its labels, checks and results)
+      const fnSrc = v => (typeof v === 'function' ? v.toString() : v && typeof v === 'object' ? Object.values(v).map(fnSrc).join(' ') : '');
+      const src = (e.cond ? e.cond.toString() : '') + ' ' + (ownSetup(e) ? ownSetup(e).toString() : '') + ' ' + (typeof e.text === 'function' ? e.text.toString() : '') +
+        ' ' + (e.choices || []).map(fnSrc).join(' ');
       // ... or an arc's mark read back: M(p, 'x') or C.arcMark(p, 'x') read the flag la_x
-      const fl = [...src.matchAll(/C\.flag\(p,\s*["']([A-Za-z0-9_]+)["']|flags(?:\.|\[["'])([A-Za-z0-9_]+)|\b(?:M|arcMark)\(p,\s*["']([A-Za-z0-9_]+)["']/g)].map(m => m[1] || m[2] || 'la_' + m[3]).filter(f => f !== 'ev' && f !== 'unfree' && f !== 'patron' && f !== 'chain');
+      const fl = [...src.matchAll(/C\.flag\(p,\s*["']([A-Za-z0-9_]+)["']|flags(?:\.|\[["'])([A-Za-z0-9_]+)|\b(?:M|had|arcMark)\(p,\s*["']([A-Za-z0-9_]+)["']/g)].map(m => m[1] || m[2] || 'la_' + m[3]).filter(f => f !== 'ev' && f !== 'unfree' && f !== 'patron' && f !== 'chain');
       reads[e.id] = fl;
       if (/flags\.ev\b|flags\[["']ev["']\]/.test(src) || fl.some(f => setters[f] && [...setters[f]].some(s => s !== e.id))) memory.add(e.id);
     }
@@ -112,7 +115,9 @@ export const BOT = () => {
           L.items[h.type] = (L.items[h.type] || 0) + 1;
           if (h.type === 'event') {
             const v = A.eventView(h), e = A.EV[h.ev];
-            L.events++; L.distinct.add(h.ev); if (M.memory.has(h.ev)) L.memEvents++;
+            // a memory event: one that reads a memory by its own words, or that 67-memory-weave changed with one (ctx.mw,
+            // not dropped for length: its text or odds differ because of a past choice)
+            L.events++; L.distinct.add(h.ev); if (M.memory.has(h.ev) || (h.ctx && h.ctx.mw && !h.ctx.mw.off)) L.memEvents++;
             if (e && (e.npc || (h.ctx && h.ctx.npcMove))) L.npcMoves++;   // convention: NPC-started events carry npc: true
             L.choicesSeen += v.choices.length; L.words += words(v.text);
             const i = pick(v, e, personality), c = v.choices[i];
