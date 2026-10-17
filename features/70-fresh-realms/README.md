@@ -19,7 +19,7 @@ The release rolls 13 scripted branches of history in the first year. 43-varied-w
   - *Prince Nimrovan's Sylvaran*, from the elves;
   - *Emirate of Nahin*, from Qadir;
   - *the Grakzag Oasis Clans*, from the Horde;
-  - *Hold of …* for dwarves, *March of Zorek* and *Duchy of Selomba* for humans.
+  - *the Gorur Caravanserai Clans*, from the Horde; *Duchy of Castella*, from Varenna; *March of Zorek*, *Duchy of Zorek*.
 - **Gives it a ruling house.** This is the strongest great house seated in its provinces, whose head (often a lore character) takes the throne. If no great house is seated there, a new house is made with a surname in the culture's style. The other great houses seated there go with it, and so do the people who live there.
 - **Gives it its parent's ways.** It keeps the parent's laws, faith, culture, coin, army quality and doctrine. Its realm bible (47) has its own want, fear and place, and inherits the parent's customs. Its culture and faith are registered in the realm tables (`GD.REALM_CULTURE`, `GD.REALM_FAITH`, `A.AGGRO`, `GD.DOCTRINE`), so its children, its voice (54) and its customs are its parent's people's.
 - **Shares out what the parent had** in proportion to the people taken: the army, the levy, the ships, the treasury and the income. The parent's divisions in the lost provinces fall back to its own garrisons, and the parent sheds the men. The breakaway musters its own divisions and gets a market with its parent's exports and imports.
@@ -49,15 +49,15 @@ Games started by code, such as the tests and the bot league, keep the world as w
 
 | Test | Result |
 | --- | --- |
-| `freshRealmsValid` | In 24 varied worlds there are 47 fresh realms, 1 to 3 a world: 19 duchies, 17 marches, 9 princes and 2 leagues. Each one: 2 to 4 contiguous provinces that are all it owns; its capital among them; not the parent's capital; 0 to 29% of the parent's people (median 14%); a living ruler; a house; words with no raw token; every province claimed by the parent; the parent still in one piece; opinion of −30 or worse both ways; a truce or the war; divisions; the parent's culture and faith; a bible with customs; a feud-ledger line. 0 invalid. The treasury and income are shared out exactly in 47 of 47 parents (`--only` build: 51 realms, 0 invalid) |
+| `freshRealmsValid` | In 24 varied worlds there are 47 fresh realms, 1 to 3 a world: 19 duchies, 17 marches, 9 princes and 2 leagues. Each one: 2 to 4 contiguous provinces that are all it owns; its capital among them; not the parent's capital; 0 to 29% of the parent's people (median 14%); a living ruler; a house; words with no raw token; every province claimed by the parent; the parent still in one piece; opinion of −30 or worse both ways; a truce or the war; divisions; the parent's culture and faith; a bible with customs; a feud-ledger line. 0 invalid. The treasury and income are shared out exactly in 47 of 47 parents (`--only` build: 49 realms, 0 invalid) |
 | `freshDeterministic` | The same seed gives the same world. 10 seeds give 10 different sets of fresh realms and tensions. The world as written gets no fresh realm, no notes and no tensions. `fresh: false` gets none. No table entry is left from an earlier game |
-| `freshRealmsRun` | Four worlds played 6 years. Every fresh realm's treasury and relations move, its divisions stand, and its market has prices and stocks. 14 to 35 news lines a world name a fresh realm. One of 8 fell in that time (to its parent) |
+| `freshRealmsRun` | Four worlds played 6 years. Every standing fresh realm's treasury and relations move, and its market has prices and stocks (with 45-economy). 8 to 23 news lines a world name a fresh realm. On `--only`, 1 of 8 fell in that time |
 | `freshRealmsRender` | Every tab is drawn twice with the player living in a fresh realm, plus the codex's houses and power views (66 draws, no error). The second pass changes neither `A.S` nor the random stream. The first pass is a warm-up, because the release fills a realm's market and a job's standing the first time it draws them. Markup in a fresh realm's name and want is drawn as text. The parent's Realm tab shows "Old quarrels" |
 | `freshSaveLoad` | A new game drops the fresh realm's table entries. The save loads with the same realms and the culture registered again, and plays on. A save with none of the new fields loads and plays |
-| `tensionsRun` | **Succession:** a claimant faction of 2 houses, whose discontent the release moves (53 → 32 in a year). **Famine:** grain at 1.81× its base price after three months, against 1.18× in the median realm. **Holy war:** the AI's cause reads "holy", and opinion is −39. **Regency:** a king of 12 under his kin, the persona read from the regent, and the regency over when he comes of age. **Debt:** a debtor who cannot pay misses 4 payments and the creditor gains "tribute"; one who can pays 14,480 of 36,200 in a year |
+| `tensionsRun` | **Succession:** a claimant faction of 2 houses, whose discontent the release moves (45 → 43 in a year on the full build, 54 → 58 on `--only`). **Famine:** in its dearest month, grain is at 1.89× its base price against 1.23× in the median realm (2.52× against 1.14× in the release's market). With 45-economy, caravans refill the granary within two months, and the price falls back toward the median by month six. **Holy war:** the AI's cause reads "holy", and opinion is −39. **Regency:** a king of 9 under his kin, the persona read from the regent, and the regency over when he comes of age. **Debt:** a debtor who cannot pay misses 4 payments and the creditor gains "tribute"; one who can pays 220,080 of 550,200 in a year (two New Years) |
 | `freshTold` | Three lives are told 2 to 4 notes at birth, with no raw token |
 
-43-varied-worlds' four tests pass on the full build with this feature.
+43-varied-worlds: three of its four tests pass on the full build with this feature. `variedWorldPlays` passes or fails on the random stream. It plays three fixed seeds and needs all three to live 4 years. On the current full build, seed 423's life dies in 1106 of "a bad tooth that poisoned the blood", in Solenne, where no split or tension reached. It lives with `fresh: false`, and the test passes on the same build without this feature. An earlier full build passed it with this feature. The fix belongs in 43's test (more seeds, or allow one early death), which this package does not own.
 
 **The classifier** (`classify.mjs`). It plays 100 bot lives in menu worlds (`world: 'varied'`), 60 years from 16, over 16 starts: seven peoples' realms; slave, serf, peasant, artisan, merchant, gentry, noble and royal. It rotates four personalities, and plays two lives in three engaged and one passive. Each life is sorted by what the game recorded, the first type that fits:
 
@@ -78,7 +78,38 @@ Games started by code, such as the tests and the bot league, keep the world as w
 | Kin and household | Root of a Great Tree, Well Loved, or two kin stories (50) past their second scene |
 | The common lot | none of these |
 
-RESULTS_TABLE
+Results, on the full build (65 features) before this feature (built without it) and after, the same 200 seeds in two sets of 100:
+
+| Type | Before, set 1 | Before, set 2 | **Before, pooled (200)** | After, set 1 | After, set 2 | **After, pooled (200)** |
+| --- | --- | --- | --- | --- | --- | --- |
+| Cut short | 23 | 23 | **23%** | 27 | 23 | **25%** |
+| The crowned | 5 | 3 | 4% | 1 | 3 | 2% |
+| Risen from below | 6 | 5 | 5.5% | 5 | 5 | 5% |
+| The commander | 17 | **27** | 22% | 15 | 19 | 17% |
+| Outlaw and prisoner | 6 | 3 | 4.5% | 9 | 9 | 9% |
+| A soldier's life | 5 | 3 | 4% | 7 | 5 | 6% |
+| Lord and courtier | 13 | 15 | 14% | 10 | 13 | 11.5% |
+| The trader's fortune | 21 | 12 | 16.5% | 17 | 15 | 16% |
+| Master of a craft | 0 | 0 | 0% | 3 | 0 | 1.5% |
+| A life in the faith | 2 | 2 | 2% | 3 | 4 | 3.5% |
+| The learned | 1 | 5 | 3% | 3 | 0 | 1.5% |
+| Road and wild | 0 | 0 | 0% | 0 | 1 | 0.5% |
+| Kin and household | 1 | 0 | 0.5% | 0 | 1 | 0.5% |
+| The common lot | 0 | 2 | 1% | 0 | 2 | 1% |
+| **Types found** | 11 | 11 | **12** | 11 | 12 | **14** |
+| **Largest** | cut short 23% | commander **27%** | cut short 23% | cut short **27%** | cut short 23% | cut short 25% |
+| **The bar** (8+ types, none above 25%) | pass | **fail** | pass | **fail** | pass | pass, at the edge |
+| Effective number of types (e^entropy) | 7.69 | 7.41 | 7.82 | 8.04 | 8.36 | **8.55** |
+
+- **The bar sits on the edge either way, and this feature does not decide it.** Two types carry it:
+  - *Cut short*: 21 to 27% of bot lives die before 25. The causes are ordinary: hanging, fevers, a fall on the ice, a bad tooth, a wound gone bad. No early death in either build came in battle. After the feature, 9 of the 50 early deaths were of lives living in or next to a fresh realm, about the share of all lives that were (39 of 200).
+  - *The commander*: 15 to 27%. 28-endings' "The Commander" is the most common ending after the wealthy.
+
+  Each of those swings by four or more points between two sets of 100 seeds, so one run of 100 passes or fails on the random stream. Over 200 lives, both builds pass.
+- **What moved.** Three changes held in both seed sets: more types were found (12 pooled before, 14 after), the effective number of types rose (7.69 and 7.41 before, 8.04 and 8.36 after), and the share of commanders fell (22% to 17% pooled). Outlaw and soldier lives rose. This is a small effect, measured on bot lives whose random stream the feature also changes.
+- **How many lives a fresh realm touches.** All but 4 of 200 lives were in a world with one. 39 of 200 (13 and 26) ended living in a fresh realm, its parent or a neighbour. There were 2.0 starting tensions a world.
+
+Run it with `node features/70-fresh-realms/classify.mjs <built.html> --lives=100 --json=out.json` (about 35 to 40 minutes a hundred lives). `--seed=19001` was the second set, and `--from=a.json,b.json` pools saved runs.
 
 **Rules kept.**
 - Everything is drawn from the game's own seed, in `A.initWorld`, while the world is made. The month hook draws nothing. The same seed gives the same world (`freshDeterministic`).

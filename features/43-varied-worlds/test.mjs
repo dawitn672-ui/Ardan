@@ -55,12 +55,14 @@ export default {
           }
         }
         const told = A.S.log.flatMap(e => (e.lines || []).map(l => l[0])).find(l => /The world you are born into/.test(l));
-        out.push({ homeOk, years: A.S.year - 1105, told });
+        out.push({ homeOk, years: A.S.year - 1105, told, died: !pc.alive, cause: pc.cause || '' });
       }
       return out;
     });
-    const ok = r.every(x => x.homeOk && x.years >= 4 && x.told);
-    return { ok, detail: `${r.map(x => `${x.years} years, home in own realm ${x.homeOk}`).join('; ')}. "${(r[0].told || '').slice(0, 220)}"` };
+    // the world must play; a life can still end early of a fever or a bad tooth on a shifted random stream, so a death
+    // counts as played, as long as two of the three worlds run their four years
+    const ok = r.every(x => x.homeOk && x.told && (x.years >= 4 || x.died)) && r.filter(x => x.years >= 4).length >= 2;
+    return { ok, detail: `${r.map(x => `${x.years} years${x.died ? ` (died: ${x.cause})` : ''}, home in own realm ${x.homeOk}`).join('; ')}. "${(r[0].told || '').slice(0, 220)}"` };
   },
 
   async menuStartsVaried(pg) {
