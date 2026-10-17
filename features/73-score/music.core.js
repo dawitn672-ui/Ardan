@@ -248,30 +248,31 @@
   });
   const noiseData = sr => memo(`noise|${sr}`, () => { const N = sr * 2, y = new Float32Array(N), r = prng(7); for (let i = 0; i < N; i++) y[i] = r() * 2 - 1; return [y]; });
   // the room: two seconds of decaying noise that darkens as it fades, a few early reflections
+  //   (one channel, so it is one convolution; the graph widens it with a short delay on the right)
   const roomData = sr => memo(`room|${sr}`, () => {
-    const N = Math.floor(sr * 2.2), out = [];
-    for (let ch = 0; ch < 2; ch++) {
-      const y = new Float32Array(N), r = prng(hash('room' + ch)); let lp = 0;
-      for (let i = Math.floor(sr * 0.012); i < N; i++) { const t = i / sr, a = 0.6 - 0.5 * (t / 2.2); lp += a * ((r() * 2 - 1) - lp); y[i] = lp * Math.exp(-6.9 * t / 2.1); }
-      for (const [ms, g] of [[17, 0.5], [29, 0.35], [41, 0.3], [59, 0.22]]) y[Math.floor(sr * (ms + ch * 3) / 1000)] += g;
-      out.push(y);
-    }
-    return out;
+    const N = Math.floor(sr * 2.2), y = new Float32Array(N), r = prng(hash('room')); let lp = 0;
+    for (let i = Math.floor(sr * 0.012); i < N; i++) { const t = i / sr, a = 0.6 - 0.5 * (t / 2.2); lp += a * ((r() * 2 - 1) - lp); y[i] = lp * Math.exp(-6.9 * t / 2.1); }
+    for (const [ms, g] of [[17, 0.5], [29, 0.35], [41, 0.3], [59, 0.22]]) y[Math.floor(sr * ms / 1000)] += g;
+    return [y];
   });
   SC.SYNTH = { string, bell: bellData, drum: drumData, room: roomData };   // the raw sample data, for tests and a composer
   const bufs = new WeakMap();   // context -> its AudioBuffers
   const buf = (c, k, make) => { let m = bufs.get(c); if (!m) bufs.set(c, m = new Map()); if (!m.has(k)) m.set(k, toBuf(c, make())); return m.get(k); };
 
   // ---------------------------------------------------------------- the graph: one per audio context
-  // voices -> piece -> tone (night) -> dry + room -> scene (fight fade) -> master (volume) -> limiter -> out
+  // voices -> panned parts -> piece -> tone (night) -> dry + room (mono, widened) -> scene (fight fade) -> master (volume)
+  //   -> limiter -> out
   const graph = c => {
-    const g = { master: c.createGain(), lim: c.createDynamicsCompressor(), scene: c.createGain(), tone: c.createBiquadFilter(), dry: c.createGain(), wet: c.createGain(), room: c.createConvolver() };
+    const g = { master: c.createGain(), lim: c.createDynamicsCompressor(), scene: c.createGain(), tone: c.createBiquadFilter(), dry: c.createGain(), wet: c.createGain(), room: c.createConvolver(),
+      mono: c.createGain(), late: c.createDelay(0.05), wide: c.createChannelMerger(2) };
+    g.mono.channelCount = 1; g.mono.channelCountMode = 'explicit'; g.late.delayTime.value = 0.013;
     g.master.gain.value = 0;
     g.lim.threshold.value = -8; g.lim.knee.value = 8; g.lim.ratio.value = 6; g.lim.attack.value = 0.01; g.lim.release.value = 0.3;
     g.tone.type = 'lowpass'; g.tone.frequency.value = 9000; g.tone.Q.value = 0.5;
     g.room.buffer = buf(c, 'room', () => roomData(c.sampleRate));
     g.wet.gain.value = 0.3;
-    g.tone.connect(g.dry); g.tone.connect(g.room); g.room.connect(g.wet); g.dry.connect(g.scene); g.wet.connect(g.scene);
+    g.tone.connect(g.dry); g.tone.connect(g.mono); g.mono.connect(g.room); g.room.connect(g.wet);
+    g.wet.connect(g.wide, 0, 0); g.wet.connect(g.late); g.late.connect(g.wide, 0, 1); g.dry.connect(g.scene); g.wide.connect(g.scene);
     g.scene.connect(g.master); g.master.connect(g.lim); g.lim.connect(c.destination);
     return g;
   };
@@ -345,27 +346,31 @@
       if (LEGATO.has(x.i)) {
         if (cur.phrased.has(x.p)) return; cur.phrased.add(x.p);
         const ns = cur.phrases[x.p].map(y => ({ t: y.t - x.t, d: y.d, v: y.v, midi: P(y.g) + (x.i === 'flute' ? 12 : 0) }));
-        vLine(rt, cur.gain, at, x.i, ns, F);
-        if (F.parallel) vLine(rt, cur.gain, at, x.i, ns.map(y => Object.assign({}, y, { v: y.v * 0.6, midi: y.midi + F.parallel })), F);
+        vLine(rt, cur.bus.lead, at, x.i, ns, F);
+        if (F.parallel) vLine(rt, cur.bus.par, at, x.i, ns.map(y => Object.assign({}, y, { v: y.v * 0.6, midi: y.midi + F.parallel })), F);
       } else {
-        vString(rt, cur.gain, at, x.i, P(x.g), x.v);
-        if (F.parallel) vString(rt, cur.gain, at + 0.012, x.i, P(x.g) + F.parallel, x.v * 0.6);
+        vString(rt, cur.bus.lead, at, x.i, P(x.g), x.v);
+        if (F.parallel) vString(rt, cur.bus.par, at + 0.012, x.i, P(x.g) + F.parallel, x.v * 0.6);
       }
-    } else if (x.k === 'fill') vString(rt, cur.gain, at, x.i, P(x.g), x.v);
+    } else if (x.k === 'fill') vString(rt, cur.bus.fill, at, x.i, P(x.g), x.v);
     else if (x.k === 'drone') {
       const root = P(x.g) + F.drone[2];
       if (x.i === 'tanpura') vString(rt, cur.gain, at, 'tanpura', root + F.drone[1][x.s], x.v);
       else vDrone(rt, cur.gain, at, x.d, F.drone[1].map(s => root + s));
-    } else if (x.k === 'bell') vBuf(rt, cur.gain, at, buf(rt.ctx, 'bell' + (F.tonic - 12), () => bellData(rt.ctx.sampleRate, F.tonic - 12)), 0.2 * x.v);
-    else if (x.k === 'drum') vBuf(rt, x.L === 'war' ? cur.war : cur.gain, at, buf(rt.ctx, x.i, () => drumData(rt.ctx.sampleRate, x.i)), (x.i === 'dum' ? 0.34 : 0.16) * x.v);
+    } else if (x.k === 'bell') vBuf(rt, cur.bus.bell, at, buf(rt.ctx, 'bell' + (F.tonic - 12), () => bellData(rt.ctx.sampleRate, F.tonic - 12)), 0.2 * x.v);
+    else if (x.k === 'drum') vBuf(rt, x.L === 'war' ? cur.war : cur.bus.drum, at, buf(rt.ctx, x.i, () => drumData(rt.ctx.sampleRate, x.i)), (x.i === 'dum' ? 0.34 : 0.16) * x.v);
   };
   // a piece starts: its own gain (so it can fade out under the next), and a war bus for the tabor
   const begin = (rt, piece, at, m) => {
     const c = rt.ctx, F = SC.family(m.cult), gain = G(c, 1), war = G(c, m.war ? 1 : 0);
-    war.connect(gain); gain.connect(rt.g.tone);
+    gain.connect(rt.g.tone);
+    // each part has its place: the lead a little left, the plucked fill and the doubling right, the drone in the middle
+    const pan = v => { const p = c.createStereoPanner ? c.createStereoPanner() : G(c, 1); if (p.pan) p.pan.value = v; p.connect(gain); return p; };
+    const bus = { lead: pan(-0.2), fill: pan(0.25), par: pan(0.3), bell: pan(0.12), drum: pan(-0.1), drone: gain };
+    war.connect(bus.drum);
     const phrases = {}; for (const x of piece.notes) if (x.k === 'lead') (phrases[x.p] = phrases[x.p] || []).push(x);
     rt.g.wet.gain.setTargetAtTime(F.wet * 1.4, c.currentTime, 1.5); rt.g.dry.gain.setTargetAtTime(1 - F.wet * 0.4, c.currentTime, 1.5);
-    return { piece, F, at, idx: 0, gain, war, phrases, phrased: new Set(), warOn: !!m.war, played: [] };
+    return { piece, F, at, idx: 0, gain, war, bus, phrases, phrased: new Set(), warOn: !!m.war, played: [] };
   };
   // schedule what falls before `until`; a note more than 0.3 s late (a stalled tab) is dropped, never bunched
   const ahead = (rt, cur, until, m, now) => {
@@ -467,7 +472,7 @@
     const c = new C(2, Math.ceil(sr * secs), sr), rt = mkRT(c);
     const m = Object.assign({ scene: 'calm', season: 1, war: false, night: false, temple: false }, o);
     rt.g.master.gain.value = Math.pow((o.vol == null ? 100 : o.vol) / 100, 2);
-    if (o.room === false) { rt.g.tone.disconnect(rt.g.room); rt.g.room.disconnect(); }   // to measure what the room costs
+    if (o.room === false) { rt.g.tone.disconnect(rt.g.mono); rt.g.room.disconnect(); }   // to measure what the room costs
     const piece = SC.compose({ cult: o.cult, key: o.key || 'preview', season: m.season, lament: !!o.lament });
     if (o.solo) piece.notes = piece.notes.filter(x => o.solo.includes(x.k));   // hear one part alone
     rt.cur = begin(rt, piece, 0.05, m); shade(rt, m, 0, true);
