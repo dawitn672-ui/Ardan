@@ -56,28 +56,32 @@ if (what.includes('swing')) {
 }
 
 if (what.includes('lives')) {
-  const paths = Object.assign({ soldier: { start: { race: 'human', realm: 'POL-01', status: 'peasant', startAge: 18 }, enlist: true } }, TARGETS.paths);
+  const paths = Object.assign({ soldier: { start: { race: 'human', realm: 'POL-01', status: 'peasant', startAge: 18 }, enlist: true, realms: ['POL-01', 'POL-02', 'POL-03', 'POL-04', 'POL-05', 'POL-06'] } }, TARGETS.paths);
   out.lives = {};
   const only = arg('paths') ? arg('paths').split(',') : null;
   for (const [name, P] of Object.entries(paths)) {
     if (only && !only.includes(name)) continue;
     const rows = [];
     for (let i = 0; i < LIVES; i++) {
-      const o = Object.assign({ seed: 7001 + i * 104729 + name.length * 31, sex: i % 2 ? 'F' : 'M' }, P.start);
+      const o = Object.assign({ seed: 7001 + i * 104729 + name.length * 31, sex: i % 2 ? 'F' : 'M' }, P.start, P.realms ? { realm: P.realms[i % P.realms.length] } : {});
       const pers = ['careful', 'reckless', 'greedy', 'random'][i % 4], engaged = i % 2 === 0;
       rows.push(await pg.evaluate(([o, pers, engaged, enlist, years]) => {
-        const ng = A.newGame;
+        const ng = A.newGame, st = A.wsPCFightStart, om = A.onMonth.length;
         if (enlist) A.newGame = function () { const r = ng.apply(this, arguments); try { A.enlist(A.pc()); } catch (e) {} return r; };
+        // what the world gave this life: months its realm was at war while it served, and fights its division was asked into
+        const W = { warMonths: 0, asked: 0, home: 0 };
+        A.wsPCFightStart = function (F, att, def) { const n = A.S.queue.length, r = st.apply(this, arguments), pc = A.pc(); if (pc && A.S.queue.length > n && A.S.queue[A.S.queue.length - 1].type === 'choice') { if (pc.mil) W.asked++; else W.home++; } return r; };
+        A.onMonth.push(pc => { if (pc && pc.mil && A.atWar(pc.mil.realm || pc.realm).length) W.warMonths++; });
         let L;
-        try { L = B.life(o, pers, engaged, years); } finally { A.newGame = ng; }
+        try { L = B.life(o, pers, engaged, years); } finally { A.newGame = ng; A.wsPCFightStart = st; A.onMonth.length = om; }
         const pc = A.P(A.S.pc), S = L.samples || [];
-        return { ts: pc.tsN || 0, levy: pc.tsLevyN || 0, service: S.filter(s => s.mil >= 0).length, years: L.years, death: L.deathAge, arc: L.arc };
+        return { ts: pc.tsN || 0, levy: pc.tsLevyN || 0, service: S.filter(s => s.mil >= 0).length, warMonths: W.warMonths, asked: W.asked, levyAsked: W.home, years: L.years, death: L.deathAge, arc: L.arc };
       }, [o, pers, engaged, !!P.enlist, name === 'soldier' ? 40 : YEARS]));
       process.stderr.write(`${name} ${i}: ${JSON.stringify(rows[rows.length - 1])}\n`);
     }
     const served = rows.filter(r => r.service > 0), yrs = served.reduce((a, r) => a + r.service, 0), tsArmy = rows.reduce((a, r) => a + r.ts - r.levy, 0);
     out.lives[name] = { lives: rows.length, metAny: rows.filter(r => r.ts > 0).length, metLevy: rows.filter(r => r.levy > 0).length, served: served.length,
-      servedMet: served.filter(r => r.ts - r.levy > 0).length, perDecadeOfService: yrs ? +(10 * tsArmy / yrs).toFixed(1) : null, serviceYears: yrs, rows };
+      servedMet: served.filter(r => r.ts - r.levy > 0).length, servedAtWar: served.filter(r => r.warMonths > 0).length, askedAny: rows.filter(r => r.asked > 0).length, askedMet: rows.filter(r => r.asked > 0 && r.ts - r.levy > 0).length, levyAsked: rows.filter(r => r.levyAsked > 0).length, perDecadeOfService: yrs ? +(10 * tsArmy / yrs).toFixed(1) : null, serviceYears: yrs, rows };
     console.log(name, JSON.stringify(Object.assign({}, out.lives[name], { rows: undefined })));
   }
 }

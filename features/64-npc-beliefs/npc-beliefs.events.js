@@ -283,5 +283,48 @@ A.defEvents([
       { t: 'Forbid the tale at your table', r: 'They stop telling it in front of you.', fx: { nb: { court: 'forbid' }, honor: 1, stability: -1 } },
     ],
   },
+  // ------------------------------------------------------------------ vengeance for a killing believed (d-world.core.js)
+  {
+    id: 'nb_avenge', npc: true, trigger: true, title: 'A billhook in the yard',
+    cond: (p, C) => C.adult(p), more: why,
+    setup: (p, ctx) => {
+      const t = person(p, ctx), a = t && NB().avengeOf(p, t);
+      if (!a) { ctx.skip = 1; return; }
+      he(ctx, t); mark(ctx, a.c, 1);
+      ctx.foePid = a.X.id; ctx.foe = A.fullName ? A.fullName(a.X, false) : a.X.given;
+      ctx.victim = words(a.c.x || NB().name(a.c.o) || 'the dead', 6);
+    },
+    text: '{them} is sure that {foe} killed {victim}. {khe} has said so to the priest, to the reeve and to the whole alehouse, and none of them did anything. Tonight {khe} means to go to {foe}\'s door with a billhook, and {khe} asks you to walk with {khim}.',
+    choices: [
+      { t: 'Walk with {khim} to the door', r: 'You go. What happens at the door happens fast, and in the dark.', fx: { nb: { avenge: 'join' }, them: { op: 10 }, honor: -3 } },
+      { t: 'Tell {khim} {foe} did not do it', check: { s: 'persuasion', s2: 'int', d: 50 },
+        win: { r: '{them} sits down on the step with the billhook across {khis} knees, and hears you out.', fx: { nb: { fix: 0.3, calm: 1 }, them: { op: -2 }, honor: 1 } },
+        lose: { r: '{them} hears you out, and goes anyway, alone.', fx: { nb: { avenge: 'alone' }, them: { op: -4 } } } },
+      { t: 'Send word to {foe} to bar the door', r: '{foe} bars the door and keeps a light burning. {them} finds it shut, and guesses why.', fx: { nb: { warnFoe: 1 }, them: { op: -12 }, honor: 1 } },
+      { t: 'Stay out of it', r: 'You shut your own door. In the morning there is talk at the well.', fx: { nb: { avenge: 'alone' }, them: { op: -3 } } },
+    ],
+  },
+  // ------------------------------------------------------------------ what you were told of the world was not so
+  {
+    id: 'nb_record_wrong', trigger: true, title: 'Not as you heard it',
+    cond: (p, C) => C.adult(p) && C.nbWorldHeard(p),
+    setup: (p, ctx) => {
+      const c = NB().claim(ctx.cid), e = c && p.nbk && p.nbk[c.id];
+      if (!c || !Array.isArray(e) || e[0] !== 1 || !NB().isFalse(c, 1)) { ctx.skip = 1; return; }
+      const line = NB().recordLine(c);
+      if (!line) { ctx.skip = 1; return; }
+      mark(ctx, c, 1);
+      ctx.said = words(NB().say(c, p), 26); ctx.truth = words(line, 30); ctx.who = NB().sourceOf(c); ctx.heardYear = String(e[2]);
+    },
+    text: 'Since {heardYear} you have had it {said}. You have said as much at table. {who} hears you say it again, and puts you right without unkindness: {truth}',
+    choices: [
+      { t: 'Take the plain account over the tale', r: 'You set the old story down. It was the better story, and it was not so.', fx: { nb: { world: 1 }, int: 1, happy: -1 } },
+      { t: 'Hold to what you were told', r: 'You have heard it the other way from better men than this. You say so, and the table goes quiet.', fx: { wil: 1, honor: -1 } },
+      { t: 'Carry the plain account to the alehouse', r: 'Some are glad of it. More would rather keep the old tale, and say so.', fx: { nb: { world: 1, truthAll: 0.5 }, fame: 1, happy: -2 } },
+      { t: 'Ask who first told it the other way', check: { s: 'intrigue', s2: 'int', d: 45 },
+        win: { r: 'It goes back, by three mouths, to men who had reason to tell it so. You will listen differently now.', fx: { nb: { world: 1 }, skill: { intrigue: 1 } } },
+        lose: { r: 'Nobody remembers where they heard it. Everybody remembers that you asked.', fx: { nb: { world: 1 }, fame: -1 } } },
+    ],
+  },
 ]);
 })();

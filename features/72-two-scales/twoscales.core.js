@@ -75,11 +75,12 @@
   // the front as plain data: every division that came into the fight, its order, its men, and who is still in it
   TS.snap = function (m, F) {
     const pc = A.pc(), out = [], ids = (F.aIds || []).concat(F.dIds || []);
+    const live = !!((A.S.fights || {})[F.loc] && A.S.fights[F.loc].key === F.key);   // after the end: who is still near the field
     let oO = 0, oT = 0;
     for (const id of ids) {
       const att = F.aIds.includes(id), ours = att === !!m.ts.weAtt, d = A.divById(id);
       if (!d) { out.push({ id, n: '', ours: ours ? 1 : 0, men: 0, o: 0, cat: 'foot', me: 0, gone: 1, r: '' }); continue; }
-      const here = att ? d.atk === F.loc : d.loc === F.loc, mo = Math.max(1, A.divMaxOrg(d) || 1), s = A.divS(d) || {};
+      const here = live ? (att ? d.atk === F.loc : d.loc === F.loc) : d.men > 0 && (d.loc === F.loc || A.adjacent(d.loc, F.loc)) && d.org > 0.02 * (A.divMaxOrg(d) || 1), mo = Math.max(1, A.divMaxOrg(d) || 1), s = A.divS(d) || {};
       if (here) { if (ours) oO += d.org; else oT += d.org; }
       out.push({ id, n: d.name || '', r: d.r, men: Math.round(d.men), o: r2(clamp(d.org / mo, 0, 1)), ours: ours ? 1 : 0, cat: s.main || 'foot', me: id === m.ts.div ? 1 : 0, gone: here ? 0 : 1 });
     }
@@ -311,6 +312,7 @@
     m.ts.front = TS.snap(m, F);
     TS.prepare(m);
     pc.tsN = (pc.tsN || 0) + 1;
+    if (!TS.liveFight(m)) pc.tsShortN = (pc.tsShortN || 0) + 1;
     if (o.levy) pc.tsLevyN = (pc.tsLevyN || 0) + 1;
     return m;
   };
@@ -331,6 +333,8 @@
         A.queue({ type: 'mission', m });
         return;
       }
+      const E = pc && pc.mil && !F && arg && !A.S.tsq ? TS.ended(arg.key) : null;
+      if (E) { TS.beginEnded(pc, E, { div: pc.mil.div, realm: pc.mil.realm || pc.realm, enemy: arg.enemy, men: A.squad(pc).map(p => p.id) }); return; }
     } catch (e) { console.error('two scales start', e); }
     return lineFn.apply(this, arguments);
   };
@@ -348,6 +352,15 @@
     const won = B && B.winner === B.pcSide;
     m.log.push(`» ${won ? 'Your company carried its part of the first day.' : B && B.winner && B.winner !== 'draw' ? 'Your company lost its part of the first day.' : 'Your company\'s part of the first day was even.'}`);
     TS.park({ type: 'mission', m });
+  };
+  const partFn = A.CHOICE_FN.wsPart;
+  if (typeof partFn === 'function') A.CHOICE_FN.wsPart = function (arg) {
+    try {
+      const pc = A.pc(), F = arg && (A.S.fights || {})[+String(arg.key).replace(/^F/, '')];
+      const E = pc && pc.mil && pc.mil.rank >= 4 && pc.mil.rank <= 6 && !F && !A.S.tsq ? TS.ended(arg.key) : null;
+      if (E) { TS.beginEnded(pc, E, { div: pc.mil.div, realm: pc.mil.realm || pc.realm, enemy: arg.enemy, men: A.squad(pc).map(p => p.id), officer: true }); return; }
+    } catch (e) { console.error('two scales officer start', e); }
+    return partFn.apply(this, arguments);
   };
   if (A.BATTLE_END && typeof A.BATTLE_END.wsPart === 'function') {
     const part = A.BATTLE_END.wsPart;
@@ -387,6 +400,10 @@
   A.CHOICE_FN.tsLevy = function (arg) {
     try {
       const pc = A.pc(), F = arg && (A.S.fights || {})[arg.pid];
+      if (pc && !F && !A.S.tsq && TS.ended(arg.key)) {
+        const E = TS.ended(arg.key), d = E.F.dIds.map(A.divById).filter(x => x && (A.friendly(x.r, pc.realm) || x.r === pc.realm)).sort((a, b) => b.men - a.men)[0];
+        if (d) { TS.beginEnded(pc, E, { div: d.id, realm: d.r, enemy: E.F.a, men: TS.levyMen(pc), levy: true }); return; }
+      }
       if (!pc || !F || F.key !== arg.key || A.S.tsq) { A.log('The fighting is over before you reach the walls.'); return; }
       const mine = F.dIds.map(A.divById).filter(d => d && d.loc === F.loc && (A.friendly(d.r, pc.realm) || d.r === pc.realm)).sort((a, b) => b.men - a.men)[0];
       if (!mine) { A.log('The garrison has gone before the levy can join it.'); return; }
@@ -445,7 +462,7 @@
     A.log(`You go with the draft from ${old ? 'the ' + old.name : 'your company'} to the ${d.name}.`, 'war');
     return '';
   };
-  A.onMonth.push(pc => {
+  TS.draftMonth = function (pc) {
     try {
       const S = A.S, now = A.absDay();
       if (!pc || !pc.alive || !pc.mil || pc.mil.merc || pc.prison || pc.mil.rank > 3 || pc.health < 40 || S.tsq) return;
@@ -458,7 +475,8 @@
       S.tsDraft = now;
       A.queue({ type: 'event', ev: 'ts_draft', forced: true, ctx: { div: f.d.id, at: f.F.loc } });
     } catch (e) { console.error('two scales draft', e); }
-  });
+  };
+  A.onMonth.push(pc => TS.draftMonth(pc));
 
   // ---- the round: what a choice does on both scales ----------------------------------------------------------------
   // the front: the choice's performance goes to the fight through 44-rank-battles (its log line is ours to write)
@@ -475,6 +493,7 @@
     return perf;
   };
   TS.fall = function (m, pc, c, how) {
+    m.ts.fell = m.ts.fell || [];
     m.ts.fell.push({ id: c.id, n: c.given, day: (m.ts.front && m.ts.front.day || m.ts.day) + (m.stage < 2 ? 1 : 0), how });
     m.ts.state[c.id] = 'dead';
     return A.comradeDies(pc, c, how) || `${c.given} dies: ${how}.`;
@@ -508,6 +527,7 @@
     for (const c of near) if (c.alive && c.id !== saved && m.ts.state[c.id] !== 'dead' && A.chance(risk)) out.push(TS.fall(m, pc, c, A.pick(HOW)));
     if (ok) { m.merit += 5; if (ch.kill) m.kills += A.ri(1, 3); }
     m.success += tier;
+    m.ts.rounds = m.ts.rounds || [];
     m.ts.rounds.push({ s: stage, t: ch.tag, ok: ok ? 1 : 0, pf, day: m.ts.front ? m.ts.front.day : m.ts.day });
     return out.join(' ');
   };
@@ -516,10 +536,10 @@
   TS.grade = p => (p >= 0.6 ? 'triumph' : p >= 0.2 ? 'success' : p > -0.2 ? 'mixed' : 'failure');
   // the line for the Chronicle: a comrade and the front together
   TS.chronicle = function (m, pc) {
-    const e = m.ts.end || {}, fell = m.ts.fell[0], near = TS.near(m)[0] || (m.ts.men || []).map(A.P).find(p => p && p.alive);
+    const e = m.ts.end || {}, fell = (m.ts.fell || [])[0], near = TS.near(m)[0] || (m.ts.men || []).map(A.P).find(p => p && p.alive);
     const line = e.won === 1 ? (m.ts.weAtt ? 'and the line went forward over them' : 'and the line held') : e.won === 0 ? 'on the day the line gave way' : 'and nobody could say who had the field';
     const unit = m.ts.levy ? `the levy beside the ${m.ts.divName}` : `the ${m.ts.divName}`;
-    if (fell) return `At ${m.place}, on the ${TS.dayWord(fell.day)} day, ${fell.n} fell beside you in ${unit}, ${line}.` + (m.ts.fell.length > 1 ? ` ${m.ts.fell.length - 1} more of your section did not come back.` : '');
+    if (fell) return `At ${m.place}, on the ${TS.dayWord(fell.day)} day, ${fell.n} fell beside you in ${unit}, ${line}.` + ((m.ts.fell || []).length > 1 ? ` ${m.ts.fell.length - 1} more of your section did not come back.` : '');
     if (near) return `At ${m.place} you stood ${m.ts.end && m.ts.end.day ? m.ts.end.day + ' days' : ''} in ${unit} with ${near.given} at your shoulder, ${line}.`.replace(/ {2,}/g, ' ');
     return `At ${m.place} you stood in ${unit}, ${line}.`;
   };
@@ -576,6 +596,7 @@
     if (mine) { try { snap = TS.snap(m, F); } catch (e) { console.error('two scales snap', e); } }
     const n0 = S.queue.length;
     const r = fightEnd.apply(this, arguments);
+    if (!mine && F) { try { TS.noteEnded(F, winner); } catch (e) { console.error('two scales ended', e); } }
     if (mine) {
       try {
         m.ts.end = { won: (winner === 'att') === !!m.ts.weAtt ? 1 : 0, day: F.days };
@@ -584,6 +605,33 @@
       } catch (e) { console.error('two scales end', e); }
     }
     return r;
+  };
+  // A fight is asked about on its first day, before that day's fighting; measured over bot lives, most of the fights a
+  // soldier is asked into are over by the evening (the defenders go back on the first day). For those the scene is
+  // short: the end of the fight as the engine left it, the men beside you, and the break. Nothing is left to move on
+  // the front, and the scene says so.
+  TS.noteEnded = function (F, winner) {
+    const S = A.S, pc = A.pc();
+    if (!pc || !pc.alive || S.tsq || F.menA + F.menD < TS.MEN) return;
+    const ids = (F.aIds || []).concat(F.dIds || []);
+    const mine = pc.mil ? ids.includes(pc.mil.div) : F.loc === pc.home;
+    if (!mine) return;
+    const keep = { loc: F.loc, key: F.key, start: F.start, days: F.days, war: F.war, a: F.a, b: F.b, menA: F.menA, menD: F.menD, deadA: F.deadA, deadD: F.deadD,
+      aIds: (F.aIds || []).slice(), dIds: (F.dIds || []).slice(), tacA: F.tacA, tacD: F.tacD, rout: F.rout || '' };
+    S.tsEnded = { F: keep, winner, at: A.absDay() };
+  };
+  TS.ended = function (key) { const E = A.S.tsEnded; return E && E.F.key === key && A.absDay() - E.at <= 3 ? E : null; };
+  TS.beginEnded = function (pc, E, o) {
+    const m = TS.begin(pc, E.F, o);
+    m.ts.end = { won: (E.winner === 'att') === !!m.ts.weAtt ? 1 : 0, day: E.F.days }; m.ts.short = 1;
+    m.stages = ['ts_break']; m.stage = 0;
+    m.log.push(`» It is over before you reach the front rank: the ${m.ts.end.won ? 'other side' : 'line'} gave way on the first day.`);
+    TS.prepare(m);
+    // before the captains' and the chronicler's account of the same day (34), which is already waiting
+    const S = A.S, at = S.queue.findIndex(q => q && q.ev === 'bs_reckoning');
+    if (at >= 0) S.queue.splice(at, 0, { type: 'mission', m }); else A.queue({ type: 'mission', m });
+    delete S.tsEnded;
+    return m;
   };
   // 34-both-scales' three panels: they follow every two-scales fight, even when 34's own spacing would skip them
   TS.reckoning = function (F, winner, n0) {
@@ -625,6 +673,7 @@
     if (!TS.on(m)) return outcome.apply(this, arguments);
     if (m.stages[m.stage] === 'ts_break') {
       const t = outcome.call(this, m, pc, ch, tier, (mates || []).filter(p => m.ts.state[p.id] !== 'back'));
+      m.ts.fell = m.ts.fell || []; m.ts.rounds = m.ts.rounds || [];
       for (const id of m.ts.men) { const p = A.P(id); if (p && !p.alive && m.ts.state[id] !== 'dead') { m.ts.state[id] = 'dead'; m.ts.fell.push({ id, n: p.given, day: (m.ts.end && m.ts.end.day) || m.ts.day, how: 'in the break' }); } }
       m.ts.rounds.push({ s: 'ts_break', t: ch.tag, ok: tier >= 2 ? 1 : 0, pf: 0, day: (m.ts.end && m.ts.end.day) || m.ts.day });
       return t;
@@ -643,11 +692,9 @@
     return close.apply(this, arguments);
   };
 
-  // the scene's "go on" runs the clock until it comes back (or anything else needs the player)
-  TS.run = function () {
-    if (!A.S.tsq) return null;
-    return A.advance(TS.MAXRUN, () => !A.S.tsq);
-  };
+  // the scene's "go on" runs the clock until it comes back (the clock stops for anything queued, the scene included).
+  // A plain A.advance(days), so the journal (01-replay) records and replays it like the player's own clock
+  TS.run = function () { return A.S.tsq ? A.advance(TS.MAXRUN) : null; };
 
   A.SIGNATURE = Object.assign(A.SIGNATURE || {}, { bothScales: true, twoScales: true });
 })();

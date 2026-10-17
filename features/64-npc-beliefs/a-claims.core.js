@@ -71,7 +71,7 @@
     const S = A.S; if (!S.npcb || typeof S.npcb !== 'object') S.npcb = {};
     const s = S.npcb;
     s.v = NB.V;
-    for (const k of ['c', 'ct', 'nm', 'dk']) if (!s[k] || typeof s[k] !== 'object' || Array.isArray(s[k])) s[k] = {};
+    for (const k of ['c', 'ct', 'nm', 'dk', 'pb']) if (!s[k] || typeof s[k] !== 'object' || Array.isArray(s[k])) s[k] = {};
     if (typeof s.n !== 'number' || !Number.isFinite(s.n)) s.n = 1;
     if (typeof s.wi !== 'number') s.wi = A.S.wrec && Array.isArray(A.S.wrec.e) ? A.S.wrec.e.length : 0;
     return s;
@@ -285,8 +285,9 @@
   // the player finds out the truth (engine); returns 'wrong' when they had believed the opposite
   NB.pcLearn = function (pc, cid, from) {
     const c = NB.claim(cid); if (!c || !pc) return '';
-    const m = NB.pcState(pc), cur = m[cid] ? m[cid][0] : 0;
-    m[cid] = [c.t ? 2 : -2, from || (m[cid] && m[cid][1]) || null, A.S.year];
+    const m = NB.pcState(pc), old = m[cid], cur = old ? old[0] : 0;
+    m[cid] = [c.t ? 2 : -2, from || (old && old[1]) || null, A.S.year];
+    if (old && Math.abs(cur) === 1) m[cid].push(old[3] != null ? old[3] : old[2]);   // the year it was first heard
     if (NB.isFalse(c, cur)) { pc.flags.nb_was_wrong = A.S.year; return 'wrong'; }
     return '';
   };
@@ -418,7 +419,14 @@
     const cand = [];
     if (pc.alive && (bad(pc.rel[v.id]) || bad(v.rel && v.rel[pc.id]))) cand.push({ id: pc.id, w: 2 });
     for (const id of Object.keys(v.rel || {}).sort()) { const r = v.rel[id], f = A.P(id); if (f && f.alive && id !== String(pc.id) && A.isAdult(f) && (r.type === 'enemy' || r.type === 'rival')) cand.push({ id: f.id, w: 1 }); }
-    if (!cand.length || !A.chance(sus ? 0.7 : 0.3)) return;
+    // with no foe to blame, grief may settle on someone the dead had dealings with: a neighbour, a creditor, a man he
+    // had words with. It is almost never so.
+    let guess = false;
+    if (!cand.length) {
+      for (const id of Object.keys(v.rel || {}).sort()) { const r = v.rel[id], f = A.P(id); if (f && f.alive && id !== String(pc.id) && A.isAdult(f) && !f.ruler && r && !KIN.has(r.type) && !CLOSE.has(r.type) && (r.op || 0) <= 10) cand.push({ id: f.id, w: 1 + Math.max(0, -(r.op || 0)) / 20 }); }
+      guess = true;
+    }
+    if (!cand.length || !A.chance(guess ? (sus ? 0.35 : 0.1) : sus ? 0.7 : 0.3)) return;
     const who = A.wpick(cand, z => z.w);
     const cid = NB.make('K', who.id, v.id, 0, -10, name);
     let top = null, topW = 0;

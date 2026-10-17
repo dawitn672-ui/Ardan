@@ -19,6 +19,7 @@
 // GD.CAREERS (data). New effect key: fx.knack, declared in A.FX_EXTRA.
 const LN = A.LN = A.LN || {};
 LN.SIX = ['axe', 'unarmed', 'bow', 'sea', 'music', 'gambling'];
+LN.THREE = ['athletics', 'craft', 'husbandry'];   // the second pass: the last three under the line
 const isPC = p => !!(p && A.S && p.id === A.S.pc);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const adult = p => A.isAdult(p);
@@ -26,7 +27,7 @@ const old = p => A.stage && A.stage(p) === 'old';
 const rank = p => (GD.STATUS && GD.STATUS[p.status] ? GD.STATUS[p.status].rank : 2);
 const coastal = p => { const pr = A.prov(p.home); return !!(pr && pr.coast); };
 // what each mechanism did, for the tests and the README (not game state)
-LN.stats = { retag: 0, ride: {}, knack: {}, brawl: 0, duty: {}, wake: 0, camp: 0, butts: 0, boats: 0, hunt: 0, crossing: 0, wood: 0, gathHunt: 0 };
+LN.stats = { retag: 0, ride: {}, knack: {}, brawl: 0, duty: {}, wake: 0, camp: 0, butts: 0, boats: 0, hunt: 0, crossing: 0, wood: 0, gathHunt: 0, march: 0, yield: 0, mend: 0, horse: 0, flee: 0 };
 const bump = (o, k) => { o[k] = (o[k] || 0) + 1; };
 
 // ---- fx.knack: how good you are at the thing you just did --------------------------------------------------------------
@@ -80,6 +81,9 @@ LN.RETAG = [
   ['gs_dance', 0, /dance/i, { s2: 'music' }, 'a pavane danced to the musicians\' measure (was etiquette/persuasion)'],
   ['festival_day', 0, /^dance$/i, { s2: 'music' }, 'dancing to the bonfire music (was spd/diplomacy)'],
   ['lf_harvest_dance', 2, /dance/i, { s: 'music' }, 'two dances to the pipes, one after the other: the measure and quick feet (was athletics/spd)'],
+  ['av_framed', 2, /run/i, { s2: 'athletics' }, 'out the back and over the wall before they hang it on you: quick feet and the climb (was spd/stealth)'],
+  ['bd_wild_crowneagle', 0, /run/i, { s2: 'athletics' }, 'a sprint across open ground to scoop the child up (was spd/ins)'],
+  ['lf_teen_ballgame', 1, /run/i, { s2: 'athletics' }, 'waiting for a clear run across two miles of fields (was spd/ins)'],
   ['rl_giant_chant', 0, /chant/i, { s2: 'music' }, 'chanting a line back in the deep voice: memory, and the voice (was int/wil)'],
 ];
 LN.RETAGGED = [];   // { ev, i, before, after, why }
@@ -125,6 +129,18 @@ LN.KNACK = {
   watchDice: { k: 'gambling', hi: 25, lo: 6,
     good: { r: 'You know the game well enough to see the weighted bone go in and out. The man who palmed it buys your silence.', fx: { coin: 2 } },
     poor: { r: 'You watch the dice go round and cannot see what anyone is doing.', fx: {} } },
+  runFor: { k: 'athletics', hi: 30, lo: 8,
+    good: { r: 'You go over the hedge rather than round it, and you are there before your breath is.', fx: { happy: 1 } },
+    poor: { r: 'You run as well as you can, which is not well. A stitch stops you twice.', fx: { health: -1 } } },
+  mendIt: { k: 'craft', hi: 30, lo: 8,
+    good: { r: 'You know how it goes together. The work is true, and cheaper than hired hands.', fx: { coin: 4 } },
+    poor: { r: 'You are no builder, and it shows. You buy the materials twice.', fx: { coin: -4 } } },
+  plough: { k: 'husbandry', hi: 30, lo: 8,
+    good: { r: 'The furrows run straight and the barley comes up thick. The best crop on the lane.', fx: { coin: 5 } },
+    poor: { r: 'The ox knows more about ploughing than you do. A thin crop.', fx: { coin: -3 } } },
+  keepSeed: { k: 'husbandry', hi: 30, lo: 8,
+    good: { r: 'You sow it in good time on the best of the ground, and it comes up well.', fx: { coin: 4 } },
+    poor: { r: 'You sow it too early, and the frost takes half.', fx: { coin: -2 } } },
   bet: { k: 'gambling', hi: 20, lo: 4,
     good: { r: 'You picked the side the old men picked, and they are never wrong.', fx: { coin: 3 } },
     poor: { r: 'You bet on the side with the loudest boys. That is not how to bet.', fx: { coin: -1 } } },
@@ -159,6 +175,15 @@ LN.RIDE = [
   ['wk_sea_payoff', 0, /dice/i, 'diceWinter'],
   ['lf_teen_ballgame', 2, /bet/i, 'bet'],
   ['av_road_dice', 2, /watch/i, 'watchDice'],
+  ['lf_friend_drowning', 2, /run/i, 'runFor'],
+  ['sg_sacked', 2, /run/i, 'runFor'],
+  ['lf_rival_sabotage', 2, /repair/i, 'mendIt'],
+  ['ak_feud_2', 0, /rebuild/i, 'mendIt'],
+  ['la_parish_1', 0, /mend/i, 'mendIt'],
+  ['wr_hf_burned', 0, /rebuild/i, 'mendIt'],
+  ['ao_ruin_4', 0, /build/i, 'mendIt'],
+  ['du_cm_sergeant', 2, /plough/i, 'plough'],
+  ['aw_famine_2', 1, /seed/i, 'keepSeed'],
   ['ln_threshing_dice', 2, /watch/i, 'watchDice'],
   ['gs_drunk', 2, /knock/i, 'knockDown'],
   ['tr_bow_d_last_bow', 1, /shoot/i, 'teachShoot'],
@@ -284,7 +309,10 @@ if (typeof situ === 'function') {
 // rating a little (skill 60: about +6 on the target; skill 0: about -3), so it moves the pay and the next promotion.
 LN.DUTY = {
   farm: { k: 'axe', why: 'fencing, clearing and the winter\'s wood' },
-  labor: { k: 'axe', why: 'the woodyard and the hewing gang' },
+  labor: { k: 'athletics', why: 'the porter\'s load up the quay steps' },
+  sailor: { k: 'athletics', why: 'going aloft in the rigging in any weather' },
+  mason: { k: 'athletics', why: 'the scaffold and the ladder' },
+  miner: { k: 'athletics', why: 'the ladders and the crawl to the face' },
   carpenter: { k: 'axe', why: 'the axe and the adze: a shipwright hews before he planes' },
   pirate: { k: 'axe', why: 'the boarding axe' },
   herd: { k: 'bow', why: 'the sling against wolves and foxes' },
@@ -375,6 +403,68 @@ LN.year = function (pc) {
   }
 };
 
+// ---- 3d'. holdings, repairs and a horse's keep (moneyYear) ------------------------------------------------------------
+// The release pays a holding's income at a fixed rate and its upkeep in full, whoever owns it. Now:
+//  - a holding the owner works yields more or less by the owner's skill: a cottage's garden plot and a freehold farm by
+//    farming, a workshop or 45-economy's forge, armory and weaving shed by craft, a fishing boat or a barge by the sea
+//    (from -15% to +25% of the year's income; skill 25 is the release's figure);
+//  - a household that mends its own (townsfolk and below, under 2,000 suns) saves up to two fifths of the upkeep of a
+//    hovel, cottage, farm, workshop or town house by craft, or pays a fifth more for a botched job, and a poor climber
+//    can come off the roof doing it;
+//  - a horse's keep: a farrier's bill of up to 6 suns a year, nothing for someone who knows horses (farming & herding).
+LN.YIELD = { cottage: 'husbandry', farm: 'husbandry', workshop: 'craft', forge: 'craft', armory: 'craft', weavery: 'craft', fishboat: 'sea', barge: 'sea' };
+LN.MEND = ['hovel', 'cottage', 'farm', 'workshop', 'townhouse'];
+LN.holdings = function (pc) {
+  const as = (pc.assets || []).filter(a => a && !a.burnt && GD.PROPERTY[a.k]);
+  let d = 0; const notes = [];
+  const kinds = {}; for (const a of as) kinds[a.k] = (kinds[a.k] || 0) + 1;
+  const val = {};
+  const sk = k => (val[k] != null ? val[k] : (val[k] = A.skill(pc, k)));
+  for (const k in kinds) {
+    const s = LN.YIELD[k]; if (!s) continue;
+    const inc = +GD.PROPERTY[k].income || 0; if (inc <= 0) continue;
+    const f = clamp((sk(s) - 25) / 150, -0.15, 0.25);
+    d += Math.round(inc * f * kinds[k]);
+  }
+  if (d) { LN.stats.yield = (LN.stats.yield || 0) + 1; if (d >= 10) notes.push(`Your holdings do better than most for being in hands that know the work (${A.coin(d)}).`); }
+  const mend = as.filter(a => LN.MEND.includes(a.k));
+  if (mend.length && rank(pc) <= 3 && pc.coin < 2000 && adult(pc) && !old(pc) && !pc.prison) {
+    LN.stats.mend = (LN.stats.mend || 0) + 1;
+    const up = mend.reduce((x, a) => x + (GD.PROPERTY[a.k].upkeep || 0), 0), c = sk('craft');
+    const save = c >= 8 ? up * Math.min(0.4, c / 120) : -up * 0.2;
+    d += Math.round(save);
+    if (save < 0 && up >= 2) notes.push('You mend your own roof and walls this year, badly, and pay the thatcher to mend your mending.');
+    if (A.chance(0.04 * clamp(1 - sk('athletics') / 50, 0, 1))) { pc.health = Math.max(5, pc.health - A.ri(4, 10)); notes.push('Patching the thatch, you come off the ladder and land hard in the yard.'); }
+  }
+  if (pc.gear && pc.gear.mount && adult(pc)) {
+    LN.stats.horse = (LN.stats.horse || 0) + 1;
+    const bill = Math.round(6 * clamp(1 - sk('husbandry') / 50, 0, 1));
+    d -= bill;
+  }
+  if (d) pc.coin = Math.max(0, pc.coin + d);
+  for (const n of notes) A.log(n, 'muted');
+  return d;
+};
+const moneyYear = A.moneyYear;
+A.moneyYear = function (pc) {
+  const r = moneyYear.apply(this, arguments);
+  try { if (isPC(pc) && pc.alive) LN.holdings(pc); } catch (err) { console.error('live-numbers holdings', err); }
+  return r;
+};
+
+// a flight from a duel: "Run. Speed decides." Legs that can climb a wall and clear a ditch count as well (athletics adds
+// up to 15 points to the chance of breaking away, read only when you run)
+const duelAct = A.duelAct;
+A.duelAct = function (act) {
+  const q = A.S && A.S.queue[0], D = q && q.type === 'duel' && q.d;
+  if (act !== 'flee' || !D || D.over || !D.a || !D.a.isPC) return duelAct.apply(this, arguments);
+  const pc = A.pc(), add = pc ? clamp(A.skill(pc, 'athletics') / 400, 0, 0.15) : 0, f0 = D.a.flee || 0;
+  LN.stats.flee = (LN.stats.flee || 0) + 1;
+  D.a.flee = f0 + add;
+  try { return duelAct.apply(this, arguments); } finally { if (D.a) D.a.flee = f0; }
+};
+for (const k of Object.keys(duelAct)) A.duelAct[k] = duelAct[k];
+
 // ---- 3e. dice in winter quarters ----------------------------------------------------------------------------------------
 LN.camp = function (pc) {
   if (!pc.mil || !adult(pc) || pc.coin < 2) return 0;
@@ -384,11 +474,22 @@ LN.camp = function (pc) {
   if (A.chance(clamp(0.42 + (v - 20) / 250, 0.25, 0.65))) { pc.coin += stake; A.log(`In winter quarters the dice come out every night. You end the winter ${A.coin(stake)} up.`, 'muted'); return stake; }
   pc.coin = Math.max(0, pc.coin - stake); A.log(`In winter quarters the dice come out every night. You end the winter ${A.coin(stake)} down.`, 'muted'); return -stake;
 };
+// the season's marches: a soldier of the foot ranks (up to squad captain) marches, climbs banks and fords rivers. A poor
+// athlete comes out of it footsore; a good one is first up the bank, and the sergeants note it (merit).
+LN.march = function (pc) {
+  if (!pc.mil || !adult(pc) || old(pc) || (pc.mil.rank || 0) > 3) return 0;
+  LN.stats.march = (LN.stats.march || 0) + 1;
+  const v = A.skill(pc, 'athletics');
+  A.trainSkill(pc, 'athletics', 0.5);
+  if (v < 10 && A.chance(0.15)) { pc.health = Math.max(5, pc.health - A.ri(3, 6)); A.log('The season\'s marches leave you with blistered feet and a turned ankle.', 'bad'); return -1; }
+  if (v >= 35 && A.chance(0.5)) { pc.mil.merit = (pc.mil.merit || 0) + 2; A.log('On the season\'s marches you are first up every bank and first across every ford. The sergeants notice.', 'good'); return 1; }
+  return 0;
+};
 const milYear = A.milYear;
 if (typeof milYear === 'function') {
   A.milYear = function (pc) {
     const r = milYear.apply(this, arguments);
-    try { if (isPC(pc) && pc.alive) LN.camp(pc); } catch (err) { console.error('live-numbers camp', err); }
+    try { if (isPC(pc) && pc.alive) { LN.camp(pc); LN.march(pc); } } catch (err) { console.error('live-numbers camp', err); }
     return r;
   };
 }

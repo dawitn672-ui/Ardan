@@ -252,15 +252,40 @@ export default {
     return { ok, detail: res.map(x => `${x.name}: peak ${x.peak.toFixed(2)}, RMS ${x.rms.toFixed(3)} (${(20 * Math.log10(x.rms)).toFixed(0)} dBFS), ${x.quiet}/${x.wins} quiet seconds, ${x.notes} notes`).join('; ') + ` (full volume; WAVs in ${WAV_DIR}/score-*.wav)` };
   },
 
+  // the instruments: the plucked strings are in tune (autocorrelation, within 3 cents from 50 to 1000 Hz), the bell's
+  // partials sit where a bell's do, the drum thumps low; every buffer is finite and normalized
+  async scoreInstruments(pg) {
+    const r = await pg.evaluate(() => {
+      const S = UI.SCORE.SYNTH, sr = 24000, out = [];
+      const pitch = (y, f) => {   // the autocorrelation peak near the expected period, refined by a parabola
+        const a = Math.floor(sr * 0.1), n = Math.floor(sr * 0.25), P = sr / f, ac = l => { let s = 0; for (let i = a; i < a + n; i++) s += y[i] * y[i + l]; return s; };
+        let best = 0, bl = 0; for (let l = Math.floor(P * 0.94); l <= Math.ceil(P * 1.06); l++) { const v = ac(l); if (v > best) { best = v; bl = l; } }
+        const y0 = ac(bl - 1), y1 = best, y2 = ac(bl + 1), d = (y0 - y2) / (2 * (y0 - 2 * y1 + y2));
+        return sr / (bl + d);
+      };
+      for (const m of [43, 50, 55, 62, 69, 74, 81, 84]) for (const [br, t] of [[0.32, 1.8], [0.55, 3.4]]) {
+        const [y] = S.string(sr, m, br, t, 1.2), f = 440 * Math.pow(2, (m - 69) / 12), g = pitch(y, f);
+        out.push(Math.abs(1200 * Math.log2(g / f)));
+      }
+      const [b] = S.bell(sr, 50), [d] = S.drum(sr, 'dum'), [k] = S.drum(sr, 'tek');
+      const peak = y => y.reduce((a, x) => Math.max(a, Math.abs(x)), 0), finite = y => y.every(Number.isFinite);
+      // the drum's energy is low: zero crossings in its first 0.1 s
+      let zc = 0; for (let i = 1; i < sr * 0.1; i++) if (d[i - 1] < 0 && d[i] >= 0) zc++;
+      return { cents: Math.max(...out), n: out.length, bellPeak: peak(b), drumPeak: peak(d), tekPeak: peak(k), finite: finite(b) && finite(d) && finite(k), drumHz: zc * 10 };
+    });
+    const ok = r.n === 16 && r.cents < 3 && Math.abs(r.bellPeak - 1) < 0.01 && Math.abs(r.drumPeak - 1) < 0.01 && r.finite && r.drumHz < 160;
+    return { ok, detail: `${r.n} plucked strings (lute and harp, G2 to C6) in tune within ${r.cents.toFixed(2)} cents; bell and drum normalized (${r.bellPeak.toFixed(2)}, ${r.drumPeak.toFixed(2)}, rim ${r.tekPeak.toFixed(2)}); the thump sits near ${r.drumHz} Hz` };
+  },
+
   // what it costs: the audio graph's render time against real time (offline, the busiest family at war in summer,
   // and the same without the room), the audio thread's render time in a 8 s Chrome trace of the live score, and the
   // main thread's scheduler time
   async scoreCpu(pg, errs, { browser }) {
     const off = await pg.evaluate(async () => {
-      const SC = UI.SCORE, o = { cult: 'CUL-22', key: 'cpu|1', season: 2, war: true, seconds: 60 };
+      const SC = UI.SCORE, o = { cult: 'CUL-22', key: 'cpu|1', season: 2, war: true, seconds: 60 }, long = await SC.renderOffline({ cult: 'CUL-08', key: 'mem|1', season: 2, seconds: 200 });
       await SC.renderOffline(Object.assign({}, o, { seconds: 5 }));   // warm the string and drum buffers
       const a = await SC.renderOffline(o), b = await SC.renderOffline(Object.assign({}, o, { room: false })), q = await SC.renderOffline(Object.assign({}, o, { cult: 'CUL-02', season: 1, war: false }));
-      return { busy: a.ms / 600, dry: b.ms / 600, calm: q.ms / 600, nodes: a.nodes / 60 };
+      return { busy: a.ms / 600, dry: b.ms / 600, calm: q.ms / 600, nodes: a.nodes / 60, memKb: long.kb, memN: long.buffers };
     });
     await pg.evaluate(() => { A.newGame({ seed: 7305, race: 'orc', realm: 'POL-11', status: 'peasant', sex: 'M', startAge: 24 }); UI.screen = 'game'; UI.set.hints = false; A.S.queue = []; UI.render(); UI.set.music = true; UI.SCORE.start(); });
     await sleep(6000);
@@ -273,9 +298,15 @@ export default {
       let us = 0; for (const e of ev) if (e.ph === 'X' && e.name === 'AudioOutputDevice::FireRenderCallback') us += e.dur || 0;
       audio = us / 1000 / 8000 * 100;
     } catch (e) { await sleep(8000); }
-    const s1 = await pg.evaluate(() => { const s = UI.SCORE.stats(); UI.SCORE.stop(); UI.set.music = false; return { ms: s.ms, ticks: s.ticks, made: s.made, t: performance.now() }; });
+    const s1 = await pg.evaluate(() => { const s = UI.SCORE.stats(); UI.SCORE.stop(); UI.set.music = false; return { ms: s.ms, ticks: s.ticks, made: s.made, t: performance.now(), kb: s.kb, buffers: s.buffers }; });
+    const cost = await pg.evaluate(() => {   // the main thread's one-off work: composing a piece, computing a string
+      const SC = UI.SCORE; let t = performance.now(); for (let i = 0; i < 20; i++) SC.compose({ cult: 'CUL-08', key: 'c|' + i, season: 2 }); const compose = (performance.now() - t) / 20;
+      t = performance.now(); for (let i = 0; i < 10; i++) SC.SYNTH.string(24000, 50 + i, 0.55, 3.4, 2.9); const str = (performance.now() - t) / 10;
+      t = performance.now(); SC.SYNTH.bell(24000, 50); const bell = performance.now() - t;
+      return { compose, str, bell };
+    });
     const secs = (s1.t - s0.t) / 1000, main = (s1.ms - s0.ms) / secs / 10, perSec = (s1.made - s0.made) / secs;
-    const ok = off.busy < 15 && off.calm < 15 && main < 1 && (audio == null || audio < 15);
-    return { ok, detail: `offline render (one thread, as a share of real time): the clans at war in summer ${off.busy.toFixed(1)}% of a core (${off.dry.toFixed(1)}% without the room), the north in spring ${off.calm.toFixed(1)}%; live: audio thread ${audio == null ? 'n/a (no trace)' : audio.toFixed(1) + '%'} of a core over an 8 s trace, main-thread scheduler ${main.toFixed(2)}% (${s1.ticks - s0.ticks} ticks), ${perSec.toFixed(1)} nodes started per second` };
+    const ok = off.busy < 15 && off.calm < 15 && main < 1 && (audio == null || audio < 15) && off.memKb < 16000 && cost.compose < 50 && cost.bell < 40;
+    return { ok, detail: `offline render (one thread, as a share of real time): the clans at war in summer ${off.busy.toFixed(1)}% of a core (${off.dry.toFixed(1)}% without the room), the north in spring ${off.calm.toFixed(1)}%; live: audio thread ${audio == null ? 'n/a (no trace)' : audio.toFixed(1) + '%'} of a core over an 8 s trace, main-thread scheduler ${main.toFixed(2)}% (${s1.ticks - s0.ticks} ticks), ${perSec.toFixed(1)} sources started per second; buffers kept after 200 s of the Golden Plains in summer: ${off.memN} (${(off.memKb / 1024).toFixed(1)} MB); one-off work: a piece composed in ${cost.compose.toFixed(1)} ms, a harp string computed in ${cost.str.toFixed(1)} ms, a bell in ${cost.bell.toFixed(1)} ms` };
   },
 };

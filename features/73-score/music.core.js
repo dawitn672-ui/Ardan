@@ -195,7 +195,8 @@
     const R = pv && S.realms ? (S.realms[pv.orig] || S.realms[pv.owner]) : null;
     const cult = (R && R.cult) || (pv && GD.REALM_CULTURE && GD.REALM_CULTURE[pv.orig]) || (pc && pc.cult) || SC.DEFAULT_CULT;
     let season = 1; try { season = SEASON[A.monthOf(A.today()).m]; } catch (e) {}
-    let war = false; try { war = !!(pc && pc.realm && A.atWar(pc.realm).length); } catch (e) {}
+    let war = !!q && q.type === 'campaign';   // on campaign the tabor plays whatever the realm's state
+    try { war = war || !!(pc && pc.realm && A.atWar(pc.realm).length); } catch (e) {}
     let shape = null;
     if (q && q.type === 'event' && A.evShape && A.EV && A.EV[q.ev]) try { shape = A.evShape(A.EV[q.ev]); } catch (e) {}
     const dead = !pc || !pc.alive || (q && q.type === 'death'), fight = !!q && (q.type === 'battle' || q.type === 'duel');
@@ -204,9 +205,10 @@
   };
 
   // ---------------------------------------------------------------- sound: buffers computed once
-  const cache = new Map();
-  const memo = (k, f) => { if (!cache.has(k)) cache.set(k, f()); return cache.get(k); };
-  const toBuf = (c, data) => { const b = c.createBuffer(data.length, data[0].length, c.sampleRate); data.forEach((d, i) => b.copyToChannel ? b.copyToChannel(d, i) : b.getChannelData(i).set(d)); return b; };
+  // Strings, bells, drums and breath are computed at 24 kHz (they hold nothing above 12 kHz; half the memory of 48 kHz)
+  // and kept per audio context, the 40 most recently used (about 12 MB at most).
+  const LO = 24000, KEEP = 40;
+  const toBuf = (c, data, rate) => { const b = c.createBuffer(data.length, data[0].length, rate); data.forEach((d, i) => b.copyToChannel ? b.copyToChannel(d, i) : b.getChannelData(i).set(d)); return b; };
   const finish = (y, sr, peak) => {   // remove DC, normalize, fade the tail
     let hp = 0, px = 0, mx = 0;
     for (let i = 0; i < y.length; i++) { const x = y[i]; hp = x - px + 0.995 * hp; px = x; y[i] = hp; if (Math.abs(hp) > mx) mx = Math.abs(hp); }
@@ -215,7 +217,7 @@
     return y;
   };
   // a plucked string (Karplus-Strong with a fractional delay, so it is in tune): bright 0..1, t60 seconds
-  const string = (sr, midi, bright, t60, len) => memo(`ks|${sr}|${midi.toFixed(2)}|${bright}|${t60}`, () => {
+  const string = (sr, midi, bright, t60, len) => {
     const f = mtof(midi), P = sr / f, N = Math.floor(sr * len), y = new Float32Array(N), r = prng(hash('ks' + midi.toFixed(2) + bright));
     const E = Math.ceil(P) + 2; let lp = 0;
     for (let i = 0; i < E; i++) { lp += bright * ((r() * 2 - 1) - lp); y[i] = lp; }
@@ -223,20 +225,20 @@
     const decay = Math.pow(0.001, 1 / (t60 * f));
     for (let i = E; i < N; i++) { const d = i - P + 0.5, j = Math.floor(d), fr = d - j; y[i] = decay * 0.5 * (y[j] * (1 - fr) + y[j + 1] * fr + y[j - 1] * (1 - fr) + y[j] * fr); }
     return [finish(y, sr, 1)];
-  });
+  };
   // a low bell: a hum, a prime, a minor third, a fifth, a nominal and higher partials, each with its own decay
-  const bellData = (sr, midi) => memo(`bell|${sr}|${midi}`, () => {
+  const bellData = (sr, midi) => {
     const f = mtof(midi), N = Math.floor(sr * 7), y = new Float32Array(N);
     const P = [[0.5, 1, 1], [0.501, 0.5, 1], [1, 0.8, 0.7], [1.002, 0.4, 0.7], [1.19, 0.5, 0.5], [1.5, 0.3, 0.38], [2, 0.45, 0.3], [2.51, 0.18, 0.22], [2.66, 0.2, 0.2], [3.01, 0.1, 0.14], [4.2, 0.06, 0.09]];
     for (const [ratio, amp, life] of P) {
       const w = 2 * Math.PI * f * ratio / sr; if (w >= Math.PI) continue;
-      const c2 = 2 * Math.cos(w), tau = 6.5 * life * sr / 6.9; let s1 = 0, s2 = -Math.sin(w);   // a sine by recurrence
-      for (let i = 0; i < N; i++) { const s = c2 * s1 - s2; s2 = s1; s1 = s; y[i] += amp * s * Math.exp(-i / tau) * Math.min(1, i / (sr * 0.004)); }
+      const c2 = 2 * Math.cos(w), k = Math.exp(-6.9 / (6.5 * life * sr)), A4 = Math.floor(sr * 0.004); let s1 = 0, s2 = -Math.sin(w), e = amp;   // a sine by recurrence, a decay by product
+      for (let i = 0; i < N; i++) { const s = c2 * s1 - s2; s2 = s1; s1 = s; y[i] += s * e * (i < A4 ? i / A4 : 1); e *= k; }
     }
     return [finish(y, sr, 1)];
-  });
+  };
   // the frame drum: a thump that falls in pitch, or a rim stroke
-  const drumData = (sr, kind) => memo(`drum|${sr}|${kind}`, () => {
+  const drumData = (sr, kind) => {
     const N = Math.floor(sr * (kind === 'dum' ? 0.6 : 0.25)), y = new Float32Array(N), r = prng(hash('drum' + kind));
     let ph = 0, lp = 0, lp2 = 0;
     for (let i = 0; i < N; i++) {
@@ -245,19 +247,26 @@
       else { const w = r() * 2 - 1; lp += 0.5 * (w - lp); lp2 += 0.08 * (lp - lp2); ph += 2 * Math.PI * 330 / sr; y[i] = (lp - lp2) * Math.exp(-t / 0.045) + 0.4 * Math.sin(ph) * Math.exp(-t / 0.03); }
     }
     return [finish(y, sr, kind === 'dum' ? 1 : 0.7)];
-  });
-  const noiseData = sr => memo(`noise|${sr}`, () => { const N = sr * 2, y = new Float32Array(N), r = prng(7); for (let i = 0; i < N; i++) y[i] = r() * 2 - 1; return [y]; });
+  };
+  const noiseData = sr => { const N = sr * 2, y = new Float32Array(N), r = prng(7); for (let i = 0; i < N; i++) y[i] = r() * 2 - 1; return [y]; };
   // the room: two seconds of decaying noise that darkens as it fades, a few early reflections
   //   (one channel, so it is one convolution; the graph widens it with a short delay on the right)
-  const roomData = sr => memo(`room|${sr}`, () => {
+  const roomData = sr => {
     const N = Math.floor(sr * 2.2), y = new Float32Array(N), r = prng(hash('room')); let lp = 0;
     for (let i = Math.floor(sr * 0.012); i < N; i++) { const t = i / sr, a = 0.6 - 0.5 * (t / 2.2); lp += a * ((r() * 2 - 1) - lp); y[i] = lp * Math.exp(-6.9 * t / 2.1); }
     for (const [ms, g] of [[17, 0.5], [29, 0.35], [41, 0.3], [59, 0.22]]) y[Math.floor(sr * ms / 1000)] += g;
     return [y];
-  });
+  };
   SC.SYNTH = { string, bell: bellData, drum: drumData, room: roomData };   // the raw sample data, for tests and a composer
   const bufs = new WeakMap();   // context -> its AudioBuffers
-  const buf = (c, k, make) => { let m = bufs.get(c); if (!m) bufs.set(c, m = new Map()); if (!m.has(k)) m.set(k, toBuf(c, make())); return m.get(k); };
+  const buf = (c, k, make, rate) => {
+    let m = bufs.get(c); if (!m) bufs.set(c, m = new Map());
+    let b = m.get(k);
+    if (b) { m.delete(k); m.set(k, b); return b; }   // most recent last
+    b = toBuf(c, make(), rate || LO); m.set(k, b);
+    for (const old of m.keys()) { if (m.size <= KEEP) break; if (old !== 'room' && old !== 'noise') m.delete(old); }
+    return b;
+  };
 
   // ---------------------------------------------------------------- the graph: one per audio context
   // voices -> panned parts -> piece -> tone (night) -> dry + room (mono, widened) -> scene (fight fade) -> master (volume)
@@ -269,7 +278,7 @@
     g.master.gain.value = 0;
     g.lim.threshold.value = -8; g.lim.knee.value = 8; g.lim.ratio.value = 6; g.lim.attack.value = 0.01; g.lim.release.value = 0.3;
     g.tone.type = 'lowpass'; g.tone.frequency.value = 9000; g.tone.Q.value = 0.5;
-    g.room.buffer = buf(c, 'room', () => roomData(c.sampleRate));
+    g.room.buffer = buf(c, 'room', () => roomData(c.sampleRate), c.sampleRate);   // a convolver's buffer must be at the context's rate
     g.wet.gain.value = 0.3;
     g.tone.connect(g.dry); g.tone.connect(g.mono); g.mono.connect(g.room); g.room.connect(g.wet);
     g.wet.connect(g.wide, 0, 0); g.wet.connect(g.late); g.late.connect(g.wide, 0, 1); g.dry.connect(g.scene); g.wide.connect(g.scene);
@@ -285,10 +294,10 @@
     const c = rt.ctx, s = c.createBufferSource(), g = G(c, v); s.buffer = b; if (rate) s.playbackRate.value = rate;
     s.connect(g); g.connect(dest); track(rt, s, at); return s;
   };
-  const STR = { lute: [0.32, 1.8, 2.2, 0.26], harp: [0.55, 3.4, 3.6, 0.2], tanpura: [0.5, 3.6, 3.8, 0.12] };
+  const STR = { lute: [0.32, 1.8, 1.7, 0.26], harp: [0.55, 3.4, 2.9, 0.2], tanpura: [0.5, 3.6, 3.2, 0.12] };   // brightness, T60, buffer length, level
   const vString = (rt, dest, at, inst, midi, v) => {
     const [br, t60, len, lvl] = STR[inst] || STR.lute;
-    vBuf(rt, dest, at, buf(rt.ctx, `${inst}|${midi.toFixed(2)}`, () => string(rt.ctx.sampleRate, midi, br, t60, len)), lvl * v);
+    vBuf(rt, dest, at, buf(rt.ctx, `${inst}|${midi.toFixed(2)}`, () => string(LO, midi, br, t60, len)), lvl * v);
   };
   // a legato phrase on one voice: the flute (a soft wave with breath) or the vielle (two saws, a bow swell)
   const waves = new WeakMap();
@@ -304,7 +313,7 @@
     oscs.forEach((o, j) => { o.frequency.value = mtof(ns[0].midi); if (!flute) { o.type = 'sawtooth'; o.detune.value = j ? 7 : -7; } vd.connect(o.frequency); o.connect(flute ? env : lp); });
     let bp = null, ng = null;
     if (flute) {
-      const nz = c.createBufferSource(); nz.buffer = buf(c, 'noise', () => noiseData(c.sampleRate)); nz.loop = true;
+      const nz = c.createBufferSource(); nz.buffer = buf(c, 'noise', () => noiseData(LO)); nz.loop = true;
       bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 0.9; ng = G(c, 0);
       bp.frequency.value = Math.min(8000, 2.2 * mtof(ns.reduce((a, x) => a + x.midi, 0) / ns.length));
       nz.connect(bp); bp.connect(ng); ng.connect(out); track(rt, nz, at - 0.05, end);
@@ -357,8 +366,8 @@
       const root = P(x.g) + F.drone[2];
       if (x.i === 'tanpura') vString(rt, cur.gain, at, 'tanpura', root + F.drone[1][x.s], x.v);
       else vDrone(rt, cur.gain, at, x.d, F.drone[1].map(s => root + s));
-    } else if (x.k === 'bell') vBuf(rt, cur.bus.bell, at, buf(rt.ctx, 'bell' + (F.tonic - 12), () => bellData(rt.ctx.sampleRate, F.tonic - 12)), 0.2 * x.v);
-    else if (x.k === 'drum') vBuf(rt, x.L === 'war' ? cur.war : cur.bus.drum, at, buf(rt.ctx, x.i, () => drumData(rt.ctx.sampleRate, x.i)), (x.i === 'dum' ? 0.34 : 0.16) * x.v);
+    } else if (x.k === 'bell') vBuf(rt, cur.bus.bell, at, buf(rt.ctx, 'bell' + (F.tonic - 12), () => bellData(LO, F.tonic - 12)), 0.2 * x.v);
+    else if (x.k === 'drum') vBuf(rt, x.L === 'war' ? cur.war : cur.bus.drum, at, buf(rt.ctx, x.i, () => drumData(LO, x.i)), (x.i === 'dum' ? 0.34 : 0.16) * x.v);
   };
   // a piece starts: its own gain (so it can fade out under the next), and a war bus for the tabor
   const begin = (rt, piece, at, m) => {
@@ -380,6 +389,17 @@
       if (at < now - 0.3 || !SC.plays(x, m, i)) continue;
       cur.played.push(i);
       playNote(rt, cur, x, m, Math.max(at, now));
+    }
+  };
+  // compute the strings the next eight seconds will need, two per tick, so no tick has to compute many at once
+  const warm = (rt, cur, from) => {
+    const N = cur.piece.notes, F = cur.F, war = !!(rt.m && rt.m.war); let done = 0;
+    for (let i = cur.idx; i < N.length && done < 2; i++) {
+      const x = N[i]; if (cur.at + x.t > from + 8) break;
+      if ((x.k !== 'lead' && x.k !== 'fill') || LEGATO.has(x.i)) continue;
+      const midi = SC.pitch(F, x.g, war), k = `${x.i}|${midi.toFixed(2)}`, m = bufs.get(rt.ctx);
+      if (m && m.has(k)) continue;
+      const [br, t60, len] = STR[x.i] || STR.lute; buf(rt.ctx, k, () => string(LO, midi, br, t60, len)); done++;
     }
   };
   const fadeOut = (rt, cur, now, secs) => {
@@ -421,6 +441,7 @@
     const cur = rt.cur;
     if (cur) {
       ahead(rt, cur, now + SC.LOOK, m, now);
+      warm(rt, cur, now + SC.LOOK);
       if (now > cur.at + cur.piece.dur) { rt.cur = null; rt.next = cur.piece.silence == null ? Infinity : now + cur.piece.silence; }
     }
     rt.ticks++; rt.ms += performance.now() - t0;
@@ -445,7 +466,11 @@
   };
   SC.volume = function () { if (RT) RT.g.master.gain.setTargetAtTime(RT.hidden ? 0 : vol(), RT.ctx.currentTime, 0.08); };
   SC.peek = () => RT;
-  SC.stats = () => { const rt = RT || SC.last; return rt ? { state: rt.ctx.state, live: rt.live.size, made: rt.made, notes: rt.notes, ticks: rt.ticks, ms: rt.ms, pieces: rt.pieces || 0, style: rt.style, gain: rt.g.master.gain.value } : null; };
+  SC.stats = () => {
+    const rt = RT || SC.last; if (!rt) return null;
+    let kb = 0, kept = 0; const m = bufs.get(rt.ctx); if (m) for (const b of m.values()) { kept++; kb += b.length * b.numberOfChannels * 4 / 1024; }
+    return { state: rt.ctx.state, live: rt.live.size, made: rt.made, notes: rt.notes, ticks: rt.ticks, ms: rt.ms, pieces: rt.pieces || 0, style: rt.style, gain: rt.g.master.gain.value, buffers: kept, kb: Math.round(kb) };
+  };
   // the tab hidden: fade, suspend the context, stop the timer; shown again: carry on where it was
   SC.visibility = function (hidden) {
     const rt = RT; if (!rt) { if (!hidden) kick(); return; }
@@ -478,7 +503,8 @@
     rt.cur = begin(rt, piece, 0.05, m); shade(rt, m, 0, true);
     ahead(rt, rt.cur, secs, m, 0);
     const t0 = performance.now(), b = await c.startRendering();
-    return { buffer: b, ms: performance.now() - t0, notes: rt.notes, nodes: rt.made, piece };
+    let kb = 0; const kept = bufs.get(c); if (kept) for (const x of kept.values()) kb += x.length * x.numberOfChannels * 4 / 1024;
+    return { buffer: b, ms: performance.now() - t0, notes: rt.notes, nodes: rt.made, piece, buffers: kept ? kept.size : 0, kb: Math.round(kb) };
   };
 
   // ---------------------------------------------------------------- the settings (patch SCORE-MENU)

@@ -1,8 +1,9 @@
-// Live numbers: eight short scenes for the six numbers a typical life did not use (axe, unarmed, bow, sea, music,
+// Live numbers: eleven short scenes for the six numbers a typical life did not use (axe, unarmed, bow, sea, music,
 // gambling). The two bouts in the ring carry their own 48-fight-ladder spec (the fair's champion is no knight; the farm
 // lads are not either). Each is a moment most lives pass through: a wedding feast, the fair, the butts after church, dice after the
 // harvest, the winter's wood, a crossing on the coast, a hand on your collar in the market, and the tables after supper at a gathering of crowns (a scene of the
-// release's gathering pool, gscene, so it continues the gathering with A.gNext).
+// release's gathering pool, gscene, so it continues the gathering with A.gNext). The second pass adds three for
+// athletics, craft and husbandry: a hard lambing next door, the gale that takes the thatch, the greasy pole at the fair.
 A.defEvents([
   {
     id: 'ln_wedding_song',
@@ -148,6 +149,54 @@ A.defEvents([
           A.gNext(ctx);
           return sharp ? 'You can follow the play well enough to see which of the {other} party is losing more than he has.' : 'You cannot follow the play, and learn only who drinks.';
         } },
+    ],
+  },
+  {
+    id: 'ln_lambing',
+    title: 'A hard lambing',
+    cond: (p, C) => C.adult(p) && !C.prison(p) && !C.town(p) && !C.noble(p),
+    w: 1.4, cool: 5,
+    text: 'A neighbour\'s boy hammers on your door before dawn. Their best ewe has been straining since midnight and the lamb is coming wrong, one leg back. The shepherd is two valleys away.',
+    choices: [
+      { t: 'Go and turn the lamb yourself', check: { s: 'husbandry', s2: 'ins', d: 45 },
+        win: { r: 'You find the leg, bring it forward and draw the lamb out alive. The ewe is on her feet by sunrise. They send round a cheese.', fx: { happy: 3, newRel: { type: 'friend', op: 20 } } },
+        lose: { r: 'You find the leg too late. The lamb is dead and the ewe is not much better. Nobody blames you aloud.', fx: { happy: -3 } } },
+      { t: 'Send the boy on to the shepherd and go back to bed', r: 'The shepherd comes by noon. The ewe lives; the lamb does not. The neighbours say nothing.', fx: { need: { rest: 4 } } },
+      { t: 'Go and hold the lantern while they try', check: { s: 'husbandry', s2: 'wil', d: 35 },
+        win: { r: 'You hold the light steady and say what to do when they falter. The lamb comes.', fx: { happy: 2 } },
+        lose: { r: 'You hold the light. It does not help.', fx: { happy: -1 } } },
+    ],
+  },
+  {
+    id: 'ln_thatch',
+    title: 'The gale takes the thatch',
+    cond: (p, C) => C.adult(p) && !C.old(p) && !C.prison(p) && !C.noble(p) && !C.rich(p),
+    w: 1.4, cool: 5,
+    text: 'A night gale strips half the thatch off the roof. Rain is coming in over the hearth. The thatcher is booked until the feast, and he knows it.',
+    choices: [
+      { t: 'Climb up and patch it yourself', check: { s: 'craft', s2: 'athletics', d: 42 },
+        win: { r: 'You tie in new straw along the ridge and peg it down. It will hold until the thatcher comes, and probably after.', fx: { coin: 2, need: { comfort: 8 } } },
+        lose: { r: 'The ladder slides on the wet wall. You come down faster than you went up, and the rain keeps coming in.', fx: { health: -5, need: { comfort: -4 } } } },
+      { t: 'Pay the thatcher double to come now (10 suns)', r: 'He comes the next morning, grumbling, and does it properly.', fx: { coin: -10, need: { comfort: 8 } } },
+      { t: 'Stretch a hide over the hole and wait', check: { s: 'craft', s2: 'int', d: 32 },
+        win: { r: 'Rope, a cowhide and two stones. Ugly, and dry.', fx: { need: { comfort: 4 } } },
+        lose: { r: 'The hide fills with water and comes down on the table at supper.', fx: { happy: -2, need: { comfort: -2 } } } },
+    ],
+  },
+  {
+    id: 'ln_greasy_pole',
+    title: 'The greasy pole',
+    cond: (p, C) => C.adult(p) && !C.old(p) && !C.prison(p) && !C.ruler(p),
+    w: 1.4, cool: 5,
+    text: 'At the fair they have greased a ship\'s mast and stood it up on the green with a ham and a purse tied to the top. Below it, a footrace round the church for a pair of boots.',
+    choices: [
+      { t: 'Climb the pole for the ham', check: { s: 'athletics', s2: 'str', d: 50 },
+        win: { r: 'Grease to the eyebrows, but the ham is yours, and the purse with it. The green cheers you down.', fx: { coin: 4, fame: 1, happy: 3 } },
+        lose: { r: 'You get halfway and slide down the rest, faster every foot. The green cheers that too.', fx: { happy: -1, health: -2 } } },
+      { t: 'Run the race round the church', check: { s: 'athletics', s2: 'spd', d: 40 },
+        win: { r: 'You take the corner by the lychgate tight and win by a stride. Good boots, too.', fx: { coin: 2, happy: 3 } },
+        lose: { r: 'You are third, and blown, and the boots go to a carter\'s girl of twelve.', fx: { happy: -1 } } },
+      { t: 'Buy a cup and watch other people fall off', r: 'A fine afternoon. Nobody you know breaks anything.', fx: { coin: -1, happy: 2 } },
     ],
   },
 ]);

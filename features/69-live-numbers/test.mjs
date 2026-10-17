@@ -5,14 +5,15 @@ import { BOT } from '../../bench/bot.mjs';
 import { TARGETS } from '../../bench/targets.mjs';
 import { COUNTER } from './counter.mjs';
 
-const SIX = ['axe', 'unarmed', 'bow', 'sea', 'music', 'gambling'];
+const SIX = ['axe', 'unarmed', 'bow', 'sea', 'music', 'gambling', 'athletics', 'craft', 'husbandry'];
 const median = a => { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : 0; };
 
 export default {
-  // the gate: in bot lives of the six balance paths, counted the way bench/dead-numbers.mjs counts, each of the six
+  // the gate: in bot lives of the six balance paths, counted the way bench/dead-numbers.mjs counts, each of the nine
+  // (49-body-mind's six left over, and the second pass's athletics, craft and husbandry)
   // reaches 5 outcomes in the median life (a smaller league than the bench's 24: 18 lives of up to 45 years, those that
   // last 25; a 10-life league of 40 years put the median gambling life at 3 and at 7 on two trees, so it is too small)
-  async lnSixLive(pg) {
+  async lnNineLive(pg) {
     await pg.evaluate(BOT);
     await pg.evaluate(COUNTER);
     const paths = Object.entries(TARGETS.paths).map(([name, P]) => [name, P.start]);
@@ -29,7 +30,7 @@ export default {
             if (L.years < 25) continue;
             const n = {};
             // a merged number is counted under its family, as the bench counts it (axe under Hafts, the spear's row)
-            for (const k0 of ['axe', 'unarmed', 'bow', 'sea', 'music', 'gambling']) { const k = A.BM && A.BM.canon ? A.BM.canon(k0) : k0; n[k0] = (DN.life.decided[k] || 0) + (DN.life.gated[k] || 0) + (DN.life.engine[k] || 0); }
+            for (const k0 of ['axe', 'unarmed', 'bow', 'sea', 'music', 'gambling', 'athletics', 'craft', 'husbandry']) { const k = A.BM && A.BM.canon ? A.BM.canon(k0) : k0; n[k0] = (DN.life.decided[k] || 0) + (DN.life.gated[k] || 0) + (DN.life.engine[k] || 0); }
             out.push({ name, pers, engaged, years: L.years, n });
             break;
           }
@@ -149,20 +150,32 @@ export default {
         return { host, sick, fresh: fresh2 };
       };
       const x0 = cross(0), x60 = cross(60);
-      return { f0, f60, w0: wake(0), w60: wake(60), b0, b60, s0, s60, h0, h60, c0, c60, x0, x60 };
+      // holdings: a cottage and a farm worked at farming 0 / 60, a workshop at craft 0 / 60, a townsfolk household
+      // mending its own roof at craft 0 / 60, and a horse kept at farming 0 / 60 (the money each year, net of the release)
+      const hold = (k, s, v, extra) => { A.newGame({ seed: 6908, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 25 }); const pc = A.pc(); A.S.queue = [];
+        pc.assets = k ? [{ k }] : []; pc.gear.mount = extra || null; for (const x of ['husbandry', 'craft', 'sea', 'athletics']) pc.skills[x] = 20; pc.skills[cn(s)] = v; pc.coin = 500; pc.health = 100;
+        let d = 0; for (let y = 0; y < 20; y++) d += L.holdings(pc); return d; };
+      const farm2 = [hold('farm', 'husbandry', 0), hold('farm', 'husbandry', 60)], shop = [hold('workshop', 'craft', 0), hold('workshop', 'craft', 60)];
+      const roof = [hold('cottage', 'craft', 0), hold('cottage', 'craft', 60)], horse = [hold(null, 'husbandry', 0, 'palfrey'), hold(null, 'husbandry', 60, 'palfrey')];
+      // the season's marches: 200 seasons of a soldier at athletics 0 / 60
+      const march = v => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'athletics', v); pc.mil = { rank: 0, merit: 0 }; let sore = 0, noted = 0; for (let y = 0; y < 200; y++) { pc.skills.athletics = v; pc.health = 100; const r = L.march(pc); if (r < 0) sore++; if (r > 0) noted++; } return { sore, noted }; };
+      const m0 = march(0), m60 = march(60);
+      return { f0, f60, w0: wake(0), w60: wake(60), b0, b60, s0, s60, h0, h60, c0, c60, x0, x60, farm2, shop, roof, horse, m0, m60 };
     });
     const ok = r.f60.perf > r.f0.perf && r.f60.pay > r.f0.pay && r.w60 > r.w0 && r.b60.coin > r.b0.coin && r.b60.fame > r.b0.fame &&
-      r.s60.coin > r.s0.coin && r.s60.ducked <= r.s0.ducked && r.h60 > r.h0 && r.c60 > r.c0 + 10 && r.x0 && r.x60 && r.x0.sick > r.x60.sick && r.x60.fresh > r.x0.fresh;
+      r.s60.coin > r.s0.coin && r.s60.ducked <= r.s0.ducked && r.h60 > r.h0 && r.c60 > r.c0 + 10 && r.x0 && r.x60 && r.x0.sick > r.x60.sick && r.x60.fresh > r.x0.fresh &&
+      r.farm2[1] > r.farm2[0] && r.shop[1] > r.shop[0] && r.roof[1] > r.roof[0] && r.horse[1] > r.horse[0] && r.m0.sore > r.m60.sore && r.m60.noted > r.m0.noted;
     return { ok, detail: `a farmer's 8 years at axe 0 / 60: work rating ${r.f0.perf} / ${r.f60.perf}, pay ${r.f0.pay} / ${r.f60.pay}; the lament at a mother's wake gives back ${r.w0} / ${r.w60} of the 25 happiness her death takes, at music 0 / 60; ` +
       `40 years at the Ashmere butts at bow 0 / 60: ${r.b0.coin} / ${r.b60.coin} suns and fame ${Math.round(r.b0.fame)} / ${Math.round(r.b60.fame)}; 40 herring seasons at sea 0 / 60: ${r.s0.coin} / ${r.s60.coin} suns, ducked ${r.s0.ducked} / ${r.s60.ducked}; ` +
       `40 autumn hunts at bow 0 / 60: fame ${Math.round(r.h0)} / ${Math.round(r.h60)}; 200 winters of camp dice at gambling 0 / 60: won ${r.c0} / ${r.c60}; ` +
+      `20 years of a farm at farming 0 / 60: ${r.farm2[0]} / ${r.farm2[1]} suns over the release; a workshop at craft 0 / 60: ${r.shop[0]} / ${r.shop[1]}; a cottage mended at craft 0 / 60: ${r.roof[0]} / ${r.roof[1]}; a horse kept at farming 0 / 60: ${r.horse[0]} / ${r.horse[1]}; 200 seasons of marches at athletics 0 / 60: footsore ${r.m0.sore} / ${r.m60.sore}, noted ${r.m0.noted} / ${r.m60.noted}; ` +
       (r.x0 ? `200 crossings to ${r.x0.host} at sea 0 / 60: sick ${r.x0.sick} / ${r.x60.sick}, came ashore fresh ${r.x0.fresh} / ${r.x60.fresh}` : 'no sea route found') };
   },
 
-  // the eight scenes: each choice plays, no raw tokens, the text in its word limit
+  // the eleven scenes: each choice plays, no raw tokens, the text in its word limit
   async lnScenesPlay(pg) {
     const r = await pg.evaluate(() => {
-      const ids = Object.keys(A.EV).filter(k => /^ln_(wedding_song|fair_ring|butts|threshing_dice|winter_wood|crossing|collared)$/.test(k));
+      const ids = Object.keys(A.EV).filter(k => /^ln_(wedding_song|fair_ring|butts|threshing_dice|winter_wood|crossing|collared|lambing|thatch|greasy_pole)$/.test(k));
       let played = 0, raw = 0, long = 0, elig = 0; const bad = [];
       for (const id of ids) {
         A.newGame({ seed: 6906, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 25 });
@@ -200,7 +213,7 @@ export default {
       }
       return { n: ids.length, elig, played, raw, long, bad, tables, onward };
     });
-    const ok = r.n === 7 && r.elig === 7 && r.played >= 21 && r.tables === 3 && r.onward === 3 && !r.raw && !r.long;
+    const ok = r.n === 10 && r.elig === 10 && r.played >= 30 && r.tables === 3 && r.onward === 3 && !r.raw && !r.long;
     return { ok, detail: `${r.n} scenes, ${r.elig} eligible for a 25-year-old peasant (on the coast for the crossing), ${r.played} choices played, ${r.raw} raw tokens${r.bad.length ? ' ' + r.bad.join(',') : ''}, ${r.long} texts over 80 words; the tables after supper played ${r.tables} of 3 inside a gathering, ${r.onward} moved it on to its next scene` };
   },
 
