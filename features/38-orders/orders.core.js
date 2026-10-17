@@ -110,6 +110,7 @@
   G.RELIEF = 1.5;     // the odds a cunning general wants to go in, all together, against men standing in his own land
   G.IDLE = [2.5, Infinity];  // cunning: the odds wanted against the weakest host standing ready (x need), and a stronger one (never)
   G.RAID = 1 / 3;      // the share of a cunning army out on a march round the walls at once
+  G.HEADON = 0.7;     // bold: the odds at which a division goes at their host instead of sitting before an empty wall
   G.PRESS = 8;          // ticks after a retreat while the beaten division counts as disordered
   G.stand = d => { const a = d && d.army ? A.army(d.army) : null; return (a && G.DIALS[G.of(a)].stand) || 1; };
   const foesAt = (j, rid) => A.divsAt(j).filter(x => A.hostile(rid, x.r));
@@ -186,6 +187,19 @@
       let n = 0;
       for (const d of can) { if (have >= commit) break; used.add(d.id); send(d, j); have++; n++; }
       if (n) { stat(a, 'join'); if (!a.gtMove || a.gtMove.t !== now) note(a, 'meet', { j }); }
+    }
+    // and a division sent this think to sit before an empty wall with their host in reach goes at the host, the
+    // strongest it can reach, if it and those already going in have a fighting chance
+    for (const d of ds) {
+      if (used.has(d.id) || !changed.has(d.id) || d.path.length !== 1 || d.atk != null) continue;
+      const w = d.path[0];
+      if (foesAt(w, me).length || !walled(S.prov[w], me)) continue;
+      const hosts = S.prov[d.loc].adj.filter(h => foesAt(h, me).length && A.hostile(me, A.ctrl(S.prov[h])) && !(S.fights || {})[h] || (S.fights || {})[h] && ds.some(x => x.atk === h));
+      hosts.sort((x, y) => A.provDefPow(y, me) - A.provDefPow(x, me));
+      const h = hosts.find(h => ds.filter(x => x.atk === h || (x.path.length === 1 && x.path[0] === h)).length < commit &&
+        oddsOf([d].concat(ds.filter(x => x.atk === h || (x.path.length === 1 && x.path[0] === h))), h, me) >= G.HEADON);
+      if (h == null) continue;
+      used.add(d.id); send(d, h); stat(a, 'headon'); note(a, 'meet', { j: h });
     }
   };
 

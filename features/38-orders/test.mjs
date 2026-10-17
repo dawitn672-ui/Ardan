@@ -98,10 +98,12 @@ export default {
             return fend.apply(this, arguments);
           };
           A.occupy = function (P, rid) { if (rid === me && P && P.owner !== me && A.ctrl(P) !== me) o.taken++; return occ.apply(this, arguments); };
+          // a division of ours on the march that went round the enemy instead of into him
+          const side = G.sidestep; G.sidestep = function (d) { const r = side.apply(this, arguments); if (r && d.r === me) o.mv.sidestep = (o.mv.sidestep || 0) + 1; return r; };
           const men = r => A.divsOf(r).reduce((x, d) => x + d.men, 0), m0 = men(me), e0 = men(en);
           // 300 days of war; scenes queued for the player (a custom, a plague nearby) would hold the clock, so clear them
           try { const d0 = A.today(); for (let g = 0; g < 300 && A.today() - d0 < 300; g++) { A.S.queue = []; A.advance(Math.min(30, 300 - (A.today() - d0))); } }
-          finally { A.armyThink = think; A.fightEnd = fend; A.occupy = occ; }
+          finally { A.armyThink = think; A.fightEnd = fend; A.occupy = occ; G.sidestep = side; }
           o.ours += Math.max(0, m0 - men(me)); o.theirs += Math.max(0, e0 - men(en));
           o.held += A.S.prov.filter(P => P.owner !== me && A.ctrl(P) === me).length;
         } } finally { A.onMonth.splice(A.onMonth.indexOf(hook), 1); }
@@ -127,7 +129,7 @@ export default {
     // alone. The highest share of orders at empty or engaged places, the fewest assaults on walls, the most
     // provinces taken for his dead; and the moves themselves happened
     const okCunning = n.orders >= 500 && T.every(o => o === n || soft(n) >= soft(o) + 0.03) && T.every(o => o === n || n.fortAssaults < o.fortAssaults) &&
-      T.every(o => o === n || perDead(n) > perDead(o)) && (n.mv.round || 0) >= 50 && (n.mv.feint || 0) >= 5 && (n.mv.flank || 0) >= 10;
+      T.every(o => o === n || perDead(n) > perDead(o)) && (n.mv.round || 0) >= 50 && (n.mv.feint || 0) >= 5 && (n.mv.flank || 0) >= 10 && (n.mv.sidestep || 0) >= 50;
     const k = x => `${Math.round(x / 1000)}k`, p = x => `${Math.round(x * 100)}%`;
     const line = (t, v) => `${t}: ${v.assaults} assaults (${v.pursuits} pursuits, ${v.fortAssaults} at walls, ${v.engaged} on men engaged), ${p(field(v))} field, ${p(soft(v))} at empty or engaged places of ${v.orders} orders, won ${p(win(v))} of ${v.fights} fights, ${k(v.dead)} dead of ours and ${k(v.killed)} of theirs, ${v.taken} taken (${perDead(v).toFixed(1)} per 100k men down), ${k(v.ours)} men down, ${v.held} held`;
     const fails = [!okCautious && 'cautious', !okBold && 'bold', !okCunning && 'cunning'].filter(Boolean);
@@ -189,7 +191,9 @@ export default {
       return { seen, eg, texts };
     });
     const ok = (r.seen.bold.press || 0) >= 3 && (r.seen.cunning.round || 0) >= 3 && /press on to /.test(r.eg.boldpress || '') && /round the walls of /.test(r.eg.cunninground || '') &&
-      /press on to it while they are broken/.test(r.texts.boldpress || '') && /round the walls of /.test(r.texts.cunninground || '') && Object.values(r.texts).every(x => x && !/\{/.test(x));
+      /press on to it while they are broken/.test(r.texts.boldpress || '') &&
+      (/round the walls of \w/.test(r.texts.cunninground || '') || /wants noise at \w[^:]*: drums, fires, men marching/.test(r.texts.cunningfeint || '')) &&
+      Object.values(r.texts).every(x => x && !/\{/.test(x));
     return { ok, detail: `moves seen: bold ${JSON.stringify(r.seen.bold)}, cunning ${JSON.stringify(r.seen.cunning)}; war room: ${Object.values(r.eg).map(x => `"${x}"`).join(', ')}; letters: ${Object.values(r.texts).map(x => `"${x}"`).join(' | ')}` };
   },
 
