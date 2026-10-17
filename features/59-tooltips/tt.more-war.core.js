@@ -270,6 +270,7 @@
       R(`Attackers (${esc(A.realmShort(F0.a))})`, `${fmt(st.menA)} men · ${F0.atkA || 0} attacks a day`) + R(`Defenders (${esc(A.realmShort(F0.b))})`, `${fmt(st.menD)} men · ${F0.atkD || 0} attacks a day`) +
       R('Width used', `${F0.usedA || 0} and ${F0.usedD || 0} of ${F0.width || 0}`, 'tt-sub') +
       (m.terr && m.terr < 1 ? R('Ground', 'attacker ×' + m.terr, 'tt-sub') : '') + (m.fort ? R(`Walls (${m.fort})`, `attacker −${m.fort * 8}%, defender +${m.fort * 6}%`, 'tt-sub') : '') +
+      (F0.recA != null || F0.recD != null ? R('Scouting: what each side reads of the other\'s plan', `${F0.recA || 0} and ${F0.recD || 0}`, 'tt-sub') : '') +
       R('Organization left: the attackers\' share', pct(st.share), 'tt-sum') + R('Dead so far', `${fmt(F0.deadA || 0)} and ${fmt(F0.deadD || 0)}`, 'tt-sub') +
       F('A fight ends when one side\'s organization is gone.');
   };

@@ -543,7 +543,7 @@ export default {
     };
     for (const theme of ['dark', 'light']) {
       await pg.evaluate(t => { document.documentElement.dataset.theme = t; UI.TT.closeAll(); TT2.soldier(5970); UI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); }, theme);
-      await pg.click('#modal .wr-div .barrow [data-tt="divOrg"]'); const g = await pg.$('#tt-pop-1 [data-tt]'); if (g) await g.click();
+      await pg.click('#modal .wr-stats [data-tt="divStat"]'); const g = await pg.$('#tt-pop-1 [data-tt]'); if (g) await g.click();
       await run(theme + ' war room');
       await pg.evaluate(() => { UI.TT.closeAll(); UI.ov = null; TT2.life(5971, { years: 2 }); UI.tab = 'holdings'; UI.render(); });
       await pg.click('#tabbody table.mkt-t td[data-tt="mktPrice"]'); await pg.click('#tt-pop-1 [data-tt="skill"]');

@@ -202,6 +202,11 @@
       .replace(/<div class="tiny muted">(Losses so far: [^<]*)<\/div>/, (m, t) => `<div class="tiny muted"${A_('fight', pid)}>${t}</div>`);
     return h;
   };
+  // the fight panel's day-by-day tactics and scouting (UI.wrFightPanel, around the basic panel)
+  W.wrFightPanel = function (h, pid) {
+    if (!(A.S.fights || {})[pid]) return h;
+    return h.replace(/<div class="tiny muted">(Scouting: attackers \d+, defenders \d+)/, (m, t) => `<div class="tiny muted"><span${A_('fight', pid)}>${t}</span>`);
+  };
   W.wrProvPanel = function (h, pid) { return h.replace(/<div class="kv tiny">/, `<div class="kv tiny"${A_('prov', pid)}>`); };
   // what to do next: a promotion board's line opens its odds
   W.wrCommandBasic = function (h) {
@@ -325,7 +330,7 @@
       return `<div class="st-slot"><div class="st-head"><b>${lab}</b>${mid}fit for the post: <b${UI.ttAttrs('staffFit', s.key + '|' + cur.id)}>${n}</b>`;
     });
   };
-  for (const k of ['wrBars', 'wrDivStatus', 'wrStatGrid', 'wrArmyRow', 'wrArmyPanel', 'wrDivPanel', 'wrCommandBasic', 'wrForces', 'wrWars', 'wrFightRow', 'wrFightPanelBasic', 'wrProvPanel', 'wrRoleCard', 'wrTemplates', 'wrIndustry', 'wrManpower', 'wrHint', 'warRoomModal', 'warTabClock', 'oobBreadcrumb', 'chainOfCommand', 'ordersCard', 'drillCard', 'staffCard']) TT.wireLater(() => UI, k, k);
+  for (const k of ['wrBars', 'wrDivStatus', 'wrStatGrid', 'wrArmyRow', 'wrArmyPanel', 'wrDivPanel', 'wrCommandBasic', 'wrForces', 'wrWars', 'wrFightRow', 'wrFightPanelBasic', 'wrFightPanel', 'wrProvPanel', 'wrRoleCard', 'wrTemplates', 'wrIndustry', 'wrManpower', 'wrHint', 'warRoomModal', 'warTabClock', 'oobBreadcrumb', 'chainOfCommand', 'ordersCard', 'drillCard', 'staffCard']) TT.wireLater(() => UI, k, k);
 
   // ---- the Realm tab, as one who does not rule -----------------------------------------------------------------------
   W.factionCard = function (h, f) {
@@ -427,10 +432,11 @@
       }
       h = parts.join('<div class="fighter">');
     }
-    h = h.replace(/(<div class="fl-duel small"><b>The measure\.<\/b> )([\s\S]*?)(<\/div>)/, (m, a, body, b) => {
-      const s2 = body.split('. ');
-      if (s2.length >= 3) { s2[0] = N('duelSide', 'a', s2[0], { focus: true }); s2[1] = N('duelSide', 'b', s2[1]); s2[s2.length - 1] = N('duelOdds', '', s2[s2.length - 1], { focus: true }); }
-      return a + s2.join('. ') + b;
+    // the measure: the whole line answers to hover, and its last sentence (the chance) is a trigger of its own; the
+    // fighters' words stay as 48-fight-ladder wrote them
+    h = h.replace(/<div class="fl-duel small"><b>The measure\.<\/b> ([\s\S]*?)<\/div>/, (m, body) => {
+      const i = body.lastIndexOf('. ', body.length - 2), last = i >= 0 ? body.slice(i + 2) : '';
+      return `<div class="fl-duel small"${A_('duelOdds', '')}><b>The measure.</b> ${last ? body.slice(0, i + 2) + N('duelOdds', '', last, { focus: true }) : body}</div>`;
     });
     h = h.replace(/<div class="read">Your instincts \((\d+)% sure\)/, (m, n) => `<div class="read">Your instincts (${N('duelRead', '', n + '% sure', { focus: true })})`);
     return h;

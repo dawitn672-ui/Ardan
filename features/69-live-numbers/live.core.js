@@ -8,12 +8,15 @@
 //   2. RIDE   choices with no roll whose words are the skill ("Sing along", "Play for fun, small stakes", "Knock him
 //             down"). After the choice resolves, how good you are at it adds a line and a small effect (fx.knack).
 //   3. ENGINE the work and the year: fists in a brawl, a trade's second skill (the farmer's axe, the hunter's bow, the
-//             innkeeper's fists, the cantor's voice), the lament at a wake, dice in winter quarters, the butts on feast
+//             innkeeper's fists, the keeper's chant), the lament at a wake, dice in winter quarters, the butts on feast
 //             days, the herring boats on the coast, a lord's autumn hunt, a crossing by sea to a gathering abroad and
 //             the host's hunt there.
 //
-// Every draw is engine code (A.chance, A.rf); rendering reads nothing here. New fields: none on people (the duty note is
-// on GD.CAREERS, data). New effect key: fx.knack, declared in A.FX_EXTRA.
+//   4. MERGE  axe, which even so has too few places in the lives bots lead, is read as the spear's family (Hafts).
+//
+// Every draw is engine code (A.chance, A.ri, A.rf); rendering reads nothing here. New fields: none on people; a
+// gathering's g.pc.lnSea and g.pc.lnHunt (missing on an old save is the same as not yet asked). The trade notes are on
+// GD.CAREERS (data). New effect key: fx.knack, declared in A.FX_EXTRA.
 const LN = A.LN = A.LN || {};
 LN.SIX = ['axe', 'unarmed', 'bow', 'sea', 'music', 'gambling'];
 const isPC = p => !!(p && A.S && p.id === A.S.pc);
