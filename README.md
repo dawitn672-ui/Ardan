@@ -85,6 +85,15 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 | `63-miniatures` | Visual art | Portraits as painted miniatures: ink faces that age and scar, culture dress, poses, children and swaddled newborns |
 | `64-npc-beliefs` | Uniqueness | People and courts hold beliefs about you, others, battles and beasts, some false, which move opinion and can be corrected |
 | `65-mods` | Replayability | Player mods as JSON data: events and realm flavour, checked, escaped and recorded in the save |
+| `66-markets` | Economy | A market in every town, with prices that grow with distance from where a good is made, and carts you can carry between them |
+| `67-memory-weave` | Events | Choices leave memories (who, what, when), and later scenes add a line that answers to them |
+| `68-casus-belli` | Diplomacy | Every war names its reason; grudges wait for the right moment, and debts are paid back in war |
+| `69-live-numbers` | Character | Every stat and skill touches at least 5 outcomes in a life; the dead ones were merged |
+| `70-fresh-realms` | Replayability | Fresh small realms and starting tensions each run, so lives sort into many arc types |
+| `71-phone` | UI and UX | The phone layout on its own: thumb-sized cards, a bottom bar, WCAG AA contrast and targets |
+| `72-two-scales` | Uniqueness | The squad and the front together: a common soldier's fight and the war it moves, on one page |
+| `73-score` | Visual art | A quiet score for each land, off by default: a drone, one voice and long silences, six synthesized instruments |
+| `74-old-age` | Character | 119 old-age events, the deathbed and a death screen that remembers the life |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
 How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.
