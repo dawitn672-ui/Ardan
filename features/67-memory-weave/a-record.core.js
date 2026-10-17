@@ -20,7 +20,7 @@
     LAST: 400,       // events whose last choice is remembered
     stats: { noted: 0 },
   });
-  const clean = s => String(s == null ? '' : s).replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim();
+  const clean = s => String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim();
   MW.clean = clean;
   const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
   const low = s => s ? s.charAt(0).toLowerCase() + s.slice(1) : s;

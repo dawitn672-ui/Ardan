@@ -258,8 +258,24 @@ const TESTS = {
   },
 };
 
+// drawing every tab of a fresh life changes nothing: the cargo, the training plan and the realms' markets exist before the
+// first drawing (the release made them on first read, so the first look at Holdings changed the state)
+TESTS.mtDrawingPure = async pg => {
+  const r = await pg.evaluate(() => {
+    const out = {};
+    for (const st of ['merchant', 'peasant', 'noble']) {
+      A.newGame({ seed: 7, race: 'human', realm: 'POL-01', status: st, sex: 'F', startAge: 25 }); A.S.queue = []; UI.screen = 'game';
+      const s0 = JSON.stringify(A.S), r0 = JSON.stringify(A.rngState);
+      for (const t of ['life', 'people', 'path', 'holdings', 'realm', 'book', 'world']) { UI.tab = t; UI.render(); }
+      out[st] = JSON.stringify(A.S) === s0 && JSON.stringify(A.rngState) === r0;
+    }
+    return out;
+  });
+  return { ok: Object.values(r).every(Boolean), detail: `state and random stream unchanged by drawing seven tabs of a fresh life: ${JSON.stringify(r)}` };
+};
+
 // market towns stand on 45-economy: a build without it (--only=markets) has nothing to test
 export default Object.fromEntries(Object.entries(TESTS).map(([name, fn]) => [name, async (pg, ...rest) => {
-  if (!(await pg.evaluate(() => !!(window.A && A.MT && A.ECON)))) return { ok: true, detail: 'not built: market towns need 45-economy' };
+  if (!(await pg.evaluate(() => typeof A !== 'undefined' && !!(A.MT && A.ECON)))) return { ok: true, detail: 'not built: market towns need 45-economy' };
   return fn(pg, ...rest);
 }]));

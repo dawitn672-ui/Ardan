@@ -365,7 +365,7 @@ NI.follow = function (pc, ctx, ev, lo, hi, extra) {
 A.bondNote = A.bondNote || function (pc, t, text, y) {
   if (!pc || !t || !pc.rel || !pc.rel[t.id] || !text) return;
   const r = pc.rel[t.id], h = Array.isArray(r.hist) ? r.hist : (r.hist = []);
-  const yr = y != null ? y : A.S.year, s = String(text).replace(/[<>"{}]/g, '').trim().slice(0, 140);
+  const yr = y != null ? y : A.S.year, s = String(text).replace(/<[^>]*>/g, '').replace(/[<>"{}]/g, '').trim().slice(0, 140);
   if (!s) return;
   const last = h[h.length - 1];
   if (last && last.y === yr && last.t === s) return;

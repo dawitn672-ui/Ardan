@@ -52,7 +52,7 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
   const low = s => s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
-  const clean = (s, n) => String(s == null ? '' : s).replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, n || 120);
+  const clean = (s, n) => String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, n || 120);
   NB.H = (...a) => { let h = 2166136261; const s = a.join('|'); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 100003) / 100003; };
   NB.cap = cap; NB.low = low; NB.clean = clean;
   const has = (p, t) => !!(p && Array.isArray(p.traits) && p.traits.includes(t));

@@ -35,7 +35,7 @@
   BD.h = (...a) => { let h = 2166136261; const s = a.join('|'); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 100003) / 100003; };
   BD.hp = (list, ...a) => list[Math.min(list.length - 1, Math.floor(BD.h(...a) * list.length))];
   BD.cap = cap; BD.low = low;
-  const clean = s => String(s == null ? '' : s).replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, 140);
+  const clean = s => String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, 140);
   BD.clean = clean;
   BD.isPc = p => !!(p && A.S && p.id === A.S.pc);
   // pc.bonds: y (last year step), sec, hook, mine, b (budget when 21-npc-initiative is absent), cool

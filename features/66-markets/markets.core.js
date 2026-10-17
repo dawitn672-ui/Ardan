@@ -523,7 +523,7 @@
     const toll = foreign ? (near ? 0.04 : 0.09) * (A.hasTrade(home, rid) ? 0.5 : 1) : 0.02;
     const r = A.realm(rid), st = clamp(Math.min(r.stability == null ? 50 : r.stability, 100 - ((A.prov(pid) || {}).unrest || 0)), 0, 100);
     const risk = clamp(0.03 + R.days / 400 + Math.pow(1 - st / 100, 2) * 0.2 + (A.atWar(rid).length || A.atWar(home).length ? 0.06 : 0), 0.02, 0.5);
-    const cargo = A.cargo(pc), lines = [];
+    const cargo = pc.cargo || {}, lines = [];
     let value = 0, sale = 0, carts = 0;
     MT.at(pid, () => {
       for (const k in cargo) {
@@ -626,7 +626,7 @@
     // the nearest market towns: the price of one good there, the road, and the carting
     const near = MT.near(pc);
     if (!near.length) return h;
-    const cargo = A.cargo(pc), ks = Object.keys(G()), load = A.cargoLoad(pc);
+    const cargo = pc.cargo || {}, ks = Object.keys(G()), load = Object.values(cargo).reduce((a, b) => a + b, 0);   // read only: A.cargo would create pc.cargo while drawing
     const k = UI.mtGood && G()[UI.mtGood] ? UI.mtGood : Object.keys(cargo).find(x => cargo[x] > 0) || 'grain';
     const opt = (sel, list, none) => (none ? `<option value="">${esc(none)}</option>` : '') + list.map(x => `<option value="${esc(x)}" ${x === sel ? 'selected' : ''}>${esc(G()[x].name)}</option>`).join('');
     h += `<div class="mt-near" style="margin-top:8px"><div class="row wrap"><span class="small grow">You trade at <b>${esc(MT.name(here))}</b>. The nearest other market towns:</span><label class="tiny muted">Prices of <select data-c="mtGood" aria-label="Good to compare">${opt(k, ks)}</select></label></div>`;
@@ -649,4 +649,22 @@
     mtGood(el) { UI.mtGood = el.value; UI.refreshTab(); },
     mtBack(el) { UI.mtBack = el.value; },
   });
+
+  // Three things in the release are made the first time anything reads them: the player's cargo (A.cargo), training plan
+  // (A.plan) and each realm's market (A.mkt). The Holdings and Life tabs read them, so drawing a tab before the first
+  // month changed the state, and a market set up on the day it was drawn instead of at the first month could start
+  // from other numbers (71-phone found the cargo). They are now made when a life starts or loads, and for an heir at the
+  // turn of the month, so drawing never has to.
+  const giveCargo = () => {
+    try {
+      const pc = A.pc(); if (pc && !pc.cargo) pc.cargo = {};
+      if (pc && !pc.plan && typeof A.plan === 'function') A.plan(pc);
+      if (typeof A.mkt === 'function' && A.S && A.S.realms) for (const rid of Object.keys(A.S.realms)) if (!A.S.realms[rid].mkt) A.mkt(rid);
+    } catch (e) {}
+  };
+  for (const k of ['newGame', 'deserialize']) {
+    const f = A[k];
+    if (typeof f === 'function') A[k] = function () { const r = f.apply(this, arguments); giveCargo(); return r; };
+  }
+  A.onMonth.push(giveCargo);
 })();
