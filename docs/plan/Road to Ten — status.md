@@ -1,6 +1,6 @@
 # Road to Ten: status of every step
 
-Oct 16, 2026 · checked against `index.html` (61 features, counting the fix layer) and the measured `reports/scorecard.md`
+Oct 17, 2026 · checked against `index.html` (70 features, counting the fix layer) and the measured `reports/scorecard.md`
 
 Each of the plan's 94 steps is marked:
 
@@ -18,23 +18,23 @@ Counted from the tables below, which are kept current. "Round 3 changes" at the 
 
 | Aspect | Steps | ✅ | ◐ | ✗ | 👥/🎨 |
 | --- | --- | --- | --- | --- | --- |
-| World and lore | 7 | 5 | 1 | 0 | 1 |
+| World and lore | 7 | 6 | 0 | 0 | 1 |
 | Power scaling | 7 | 7 | 0 | 0 | 0 |
 | Character and life sim | 7 | 5 | 1 | 1 | 0 |
 | Events and story | 7 | 5 | 2 | 0 | 0 |
 | Relationships | 7 | 7 | 0 | 0 | 0 |
 | War | 7 | 6 | 1 | 0 | 0 |
-| Diplomacy and politics | 6 | 4 | 2 | 0 | 0 |
+| Diplomacy and politics | 6 | 6 | 0 | 0 | 0 |
 | Economy | 7 | 7 | 0 | 0 | 0 |
 | Balance | 6 | 5 | 0 | 0 | 1 |
-| UI and UX | 8 | 5 | 2 | 0 | 1 |
-| Visual art | 7 | 4 | 3 | 0 | 0 |
+| UI and UX | 8 | 7 | 0 | 0 | 1 |
+| Visual art | 7 | 5 | 2 | 0 | 0 |
 | Technical | 7 | 6 | 1 | 0 | 0 |
-| Replayability | 6 | 5 | 1 | 0 | 0 |
-| Uniqueness | 5 | 3 | 2 | 0 | 0 |
-| **All** | **94** | **74** | **16** | **1** | **3** |
+| Replayability | 6 | 6 | 0 | 0 | 0 |
+| Uniqueness | 5 | 5 | 0 | 0 | 0 |
+| **All** | **94** | **83** | **7** | **1** | **3** |
 
-That is 79% done and 17% partial. One step is not started (Character 1, merging the release's systems, needs the game's source), and three can only be done by people (World 3, Balance 5, UI 8). Rows marked ✅ 🎨 or ✅ 👥 are done in code, and a person (an illustrator, a writer, playtesters) would still raise them. Round 5 counted 47 done and 6 not started.
+That is 88% done and 7% partial. One step is not started (Character 1, merging the release's systems, needs the game's source), and three can only be done by people (World 3, Balance 5, UI 8). Rows marked ✅ 🎨 or ✅ 👥 are done in code, and a person (an illustrator, a writer, playtesters) would still raise them. Round 6 counted 74 done and 16 partial; round 5, 47 done and 6 not started.
 
 ## World and lore
 
@@ -301,3 +301,31 @@ Findings:
 - **Most integration failures were tests, not the game.** Ten tests broke when the features met. Each was a fixture the newer world no longer fits: an elf of 30 is still a child, a story arc took the roll a life-arc test forced, a father already had sons, a merged skill was never read, a newborn died of a fever on a shifted stream. One was real: giants were drawn shorter than an average man.
 - **The suite outgrew CI.** On one page the full suite took about two hours on the integrated build. Tests now run four at a time in CI (`--workers`).
 - **The machine is the limit when agents run in parallel.** Ten agents each running balance benches put a 4-core machine at a load of 35, and the container restarted twice. Agents now run one browser each and leave balance to the integration run.
+
+## Round 7 changes
+
+Ten new features and second passes on five older ones, written in parallel against the same brief and then integrated, moved nine rows to done.
+
+| Feature | Rows | What changed |
+| --- | --- | --- |
+| 68-casus-belli | Diplomacy 5, 6 ✅ | Every AI war names its reason, drawn from what the realm remembers and wants; grudges wait for the moment the enemy is weak; debts are paid back by marching to a benefactor's aid. The news reads "War declared by Velgrad. The cause given: …". |
+| 59-tooltips (part 2) | UI 2 ✅ | Tooltips that sum to the number shown, now on the war screens, the realm and the market too. |
+| 71-phone | UI 6 ✅ | The phone layout on its own: thumb-sized cards and controls (none under 44 px, sliders included), a bottom bar, WCAG 2.1 AA contrast. |
+| 70-fresh-realms | Replayability 3 ✅, World 7 ✅ | Small realms made fresh each run and starting tensions; a classifier sorts 100 lives into 8 or more arc types, none above 25%. |
+| 73-score | Visual 7 ✅ | A quiet score for each land, off by default: a drone, one voice and long silences, six synthesized instruments. |
+| 64-npc-beliefs (part 2) | Uniqueness 3 ✅ | Beliefs about the world, not only about people, and a view of what the court believes. |
+| 72-two-scales | Uniqueness 4 ✅ | The squad and the front on one page: a common soldier's fight and the war it moves. |
+| 69-live-numbers | Character 7 ◐ | Checks retagged and riders added so most stats and skills touch 5 outcomes a life; the rest wait on the source merge. |
+| 74-old-age | Character 6 (deepened) | 119 old-age events, the deathbed and a death screen; the scorecard's old-age count 26 → 155. |
+| 75-fair-checks | Power, Balance | The odds of a check fit the band a person is in; see its README. |
+| Writer's pass | Events 6 | Generated lines in 55, 56, 57, 64, 67, 68 and 70 agree in number, read in period voice and stop doubling words. |
+
+Findings:
+
+- **A test suite passed on nothing again.** 66-markets gated its tests on `window.A`, but `A` is a script-scope constant, so all fourteen tests skipped and reported success. The gate now reads `typeof A`.
+- **Drawing made state.** The market panel created a player's cargo, a realm's market and a trade plan the first time it read them, so opening a tab changed the save. They are now made when a game starts or loads, and the render-purity tests cover the panel.
+- **Markup leaked through a cleaner.** Four features stripped `<`, `>` and `"` one character at a time, so `<b>fair</b>` became "bfair/b". They now drop whole tags first.
+- **A stale `index.html` turned CI red.** A push carried feature changes without the rebuilt page. Every push that CI checks now rebuilds it.
+- **CI outgrew one job.** The full check took 81 minutes and was cancelled at 90. It is now three jobs: two halves of the browser tests (`--shard=k/2`, four pages at a time) and the balance league.
+- **A cast scene ran over the word limit.** A noble's description, title and manner reached 82 words. The manner is now dropped when it would push the scene past 80, and the title follows the name.
+- **New worlds broke fixtures, not the game.** Seven tests leaned on what a seed used to produce: a life that lasted, a war that had already been raised, a giant only a little taller than one man. The giant was a real drawing bug (now 1.16 times a man's height); the rest now pick a seed that fits or take the engine step they were assuming.
