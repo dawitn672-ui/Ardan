@@ -114,14 +114,15 @@ const MODULES = {
 
   async duels(page) {
     return page.evaluate(() => {
-      // a fresh pair of fighters for every lethal duel (reusing fighters lets wounds pile up), 150 duels per cell;
+      // a fresh pair of fighters for every lethal duel (reusing fighters lets wounds pile up), 1,000 duels per cell (150
+      // left a standard error of about 4 points in an even cell, so one seed's luck read as a gap of 9 to 13; 75-fair-checks);
       // compare with what the screen would show (A.shownDuelOdds if a feature provides it, else the release formula)
       A.newGame({ seed: 77, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
       const pc0 = A.S.pc, shownFor = (a, b) => A.shownDuelOdds ? A.shownDuelOdds(a, b) : 100 / (1 + Math.exp(-(A.fightWorth(a) - A.fightWorth(b)) / 12));
       const out = [];
       for (const gap of [0, 1, 2]) for (const seat of ['strong-in-player-seat', 'strong-as-npc']) {
         let w = 0, n = 0, shown = 0;
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 1000; i++) {
           const t = 1 + (i % (6 - gap)), lo = A.makeFoe({ tier: t, realm: 'POL-01' }), hi = A.makeFoe({ tier: t + gap, realm: 'POL-01' });
           const [a, b] = seat === 'strong-in-player-seat' ? [hi, lo] : [lo, hi];
           const pA = shownFor(a, b);

@@ -56,6 +56,7 @@ d'  = max(min(d, tv), d − max(0, ref − tv))
 | | Without the rule | With the rule |
 | --- | --- | --- |
 | **Check success, 64 league lives** (seeds 9001+, the scorecard's set) | **38.1%** of 5,711 (90% bootstrap over lives: 35.2–40.6) | **50.8%** of 6,246 (47.2–54.7) |
+| **The scorecard's own league** (`bench/run.mjs --only=league`, full build) | 38.5% (the brief's scorecard) | **50.2%** (careful 53.5, reckless 51.6, greedy 45.3, random 50.2) |
 | Check success, 32 more lives (seeds 19001+, careful and reckless) | 35.0% of 2,408 (30.1–39.9) | 51.4% of 2,990 (44.4–57.2) |
 | Checks under 15% (64 lives) | 24.1% | **6.9%** (second set: 28.3% to 5.6%) |
 | Checks at the 4% floor | 11.6% | 2.4% (second set: 13.3% to 1.9%) |
@@ -72,7 +73,7 @@ Tests (`node tests/run.mjs <build> --features=fair-checks`):
 | `fcRule` | A typical person of every band, on three checks (persuasion and will d 45, strength and stamina d 50, trade and wits d 40), against the rule's own prediction from a real seasoned-adult person. 12 of 18 pairs are eased: a young adult's persuasion goes from 17% to 49% (the seasoned adult's 49%), a child's from 4% to 49%, and an old person's strength from 12% to 24%. Seasoned adults are unchanged, and nothing falls. |
 | `fcLeavesAlone` | The written difficulty comes back after the call, including when it was absent. The state and the random stream are unchanged. A fight's odds are unchanged (3%). Someone far below typical still gets 4%. |
 | `fcRolled` | `pf_sword_stumble` shows 49% (17% without the rule), and the roll's first draw is at 49%. |
-| `fcLives` | 8 young bot lives (reckless and random, from 16 for 15 years). Without the rule: 111 of 482 checks won (23%), 49.8% of them under 15%. With it: 203 of 477 (42.6%), 5.2% under 15%. |
+| `fcLives` | 8 young bot lives (reckless and random, from 16 for 15 years). Without the rule: 111 of 482 checks won (23%), 49.8% of them under 15%. With it: 203 of 477 (42.6%), 5.2% under 15%. On a later full build (other features' random stream): 24.6% to 47.8% (492 and 582 checks), 43.3% to 6.2% under 15%. |
 
 **Balance** (`node bench/balance.mjs <full build> --workers=2`, 72 lives): **every band held.** The league's check success there is 46.3% (band 30–70; the last integrated report, on an earlier build, read 38.8%). Median death ages: serf 58, peasant 70, artisan 51, merchant 65, noble 55, royal 65. Median peak coin: serf 21,169, peasant 302,844 (band to 400,000: the nearest to an edge), artisan 167,316, merchant 394,849, noble 230,624, royal 250,448. Median peak fame: 24, 75, 25, 62, 85, 68.
 
@@ -87,5 +88,5 @@ Tests (`node tests/run.mjs <build> --features=fair-checks`):
 - **The typical values come from bot lives**, the same lives the scorecard measures. They describe this game's typical life, not a designer's intent. They were measured without the rule: with it, young adults train a little more (median asked skill 20, not 15). Re-measure with `bench.mjs` (it prints `TYP`) if skills or the stage rules change.
 - **The reckless bot still decides the metric.** Half of all checks are the worst odds in a scene that offered a sure choice. The rule lifts every life stage to the seasoned adult's level, and that is what moves the rate. Scenes still offer long shots: 6.9% of checks stay under 15%.
 - **Seasoned adults now win less than young adults in bot lives** (45% against 55%). Young adults are lifted to the reference value, and they also train the skills they now win with. A designer may prefer the reference to be the grown adult. That gives 44.9% by the offline replay, at the bottom of the band.
-- **The risk metric was already inverted on this build before this feature.** In the 64 league lives without the rule, careful humans and orcs died at a mean of 45.4 and reckless ones at 48.1 (12 each). With the rule, in the 32-life second set, careful died at 36.3 and reckless at 37.4. Easier checks do not make reckless play safer in kind: the rule changes which scenes succeed, not what a failure costs.
+- **Risk still costs, but the sample is thin.** The scorecard's "careful bots outlive reckless ones by" reads **+5.3 years** with the rule (careful 42.9, reckless 37.6; target ≥ 5). In the 64 baseline lives without it, the same count read −2.7 (careful 45.4, reckless 48.1). Each side is 12 deaths, so this number moves several years with the random stream. The rule changes which scenes succeed, not what a failure costs.
 - **A life-stage rule, not a writing pass.** Scenes whose difficulty is too high for every stage (69's retagged skills, 21-npc-initiative's theft and slander, 36-sieges' walls) are eased only by the stage gap. They want a writer to set their `d`.
