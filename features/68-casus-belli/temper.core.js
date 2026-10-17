@@ -1,8 +1,8 @@
 // Rulers in line with their traits (Road to Ten, Diplomacy "done when": "sims show rulers act in line with their traits
 // 80% of the time or more"). 20-ai-personality turned traits into weights on every decision and logs each one with
 // how hard the ruler's own traits pushed toward it (the entry's lean). Over 10 worlds x 100 years (bench.mjs, this
-// feature off), 64.6% of the decisions where the traits had a say went their way: 60% of the court's answers to its
-// councillors' pushes (two thirds of all such decisions), 74% of the rest. The weights were right in direction and
+// feature off), 63.9% of the decisions where the traits had a say went their way: 60% of the court's answers to its
+// councillors' pushes (two thirds of all such decisions), 72.5% of the rest. The weights were right in direction and
 // too soft in size. Here they are tightened, each behind CS.TEMPER.ON, without changing what they read:
 //   - the court (56-realm-inside, RI.lean): the crown's own lean on a push, from greed, warmth, pride, caution and
 //     war, weighs six times what it did against the council's balance, the treasury and custom;

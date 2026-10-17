@@ -15,7 +15,7 @@ Before this feature:
 - `47-realm-bible` wrote a want for every realm. No AI decision read it.
 - A war recorded its cause as one word (`w.cb`: rivalry, reconquest, incident).
 - `56-realm-inside` spent AI gold. Its own audit read 2 hoarding flags in 33,225 realm-years.
-- `20-ai-personality` logged every AI decision with how hard the ruler's traits pushed toward it. This feature's bench found those decisions in character 64.6% of the time.
+- `20-ai-personality` logged every AI decision with how hard the ruler's traits pushed toward it. This feature's bench, with the feature off, found those decisions in character 63.9% of the time (10 worlds × 100 years).
 
 ## What it does
 
@@ -121,7 +121,7 @@ Hoarding over every run with the feature on, across the four tunings it went thr
 
 | Test | Result |
 | --- | --- |
-| `csWorlds` | TBD |
+| `csWorlds` | 3 worlds × 50 years, played on and again off. 86 AI wars, all 86 with a casus belli, all 86 in the news, 59 of 59 declared through `A.aiWarCheck` with it in the war log. Citing a memory or a want 32.6% (by world 33, 39, 28%; off 16.2%). 10 struck by a crown that had planned it. AI wars per realm-year 0.0172 on, 0.0147 off (+17% in this small sample; the bench's 10 × 100 reads +7.8%, and the test allows +30%). Decisions in character 84.6% (off 64.0%, 4,291 with a trait say). Hoarding flags 0. Example: "An old grudge: Held our capital, Greyhaven, in war, in 1129 (under King Tristan Tidewell). Also: Greyhaven's old want: to take the other half of the Grey Channel tolls from Velgrad; lately, Velgrad stirred a border incident, in 1138." |
 | `csShownEverywhere` | Highland takes Solenne's capital, then declares: "An old grudge: Took our capital, Old Seat, in 1105 (under First Speaker Helga Stonefoot). Also: the cause given, an old rivalry." (lead `feud`). It is in the news, the war room ("Why it began"), the diplomacy card ("Grudges, wants and debts") and the Realm tab ("Why wars begin"). A place written as `<b>Old Seat</b>` shows as text. Drawing all four changes neither the state nor the random stream |
 | `csRevengeIsPatient` | A vengeful, proud ruler with a capital taken plans (`feud`, weight 3.74). Its reserve goes 1.5 → 2.2 years. Its odds on the target at peace are ×0.5 and on another neighbour ×0.5. With the target at war elsewhere they are ×9, and the strength ratio goes 0.26 → 0.44. The war log reads "The moment has come: Solenne's host is away, at war with Highland" and "Vengeful ruler: carries the grudge". A forgiving, kind successor keeps no plan |
 | `csDebtAfterDeath` | Ostra owes Solenne "Stood by us against the Horde, in 1080 (… carried by First Banker Emilio Scudieri since 1105)", 16. The ruler who incurred it is dead. Under a loyal successor the odds of attacking Solenne are ×0. When Highland attacks Solenne, Ostra marches with no treaty: "Free City of Ostra has not forgotten: stood by us against the Horde, in 1080. It marches to the aid of Solenne against Highland." The log entry has lean +0.66. The line is half repaid (8, "honoured in 1105"), and Solenne now owes Ostra 16. With Solenne at war and broke, Ostra sends 551,232. Under a fickle, deceitful successor the debt is owed 0 and Ostra does not march |
