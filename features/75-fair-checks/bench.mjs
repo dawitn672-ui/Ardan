@@ -114,4 +114,4 @@ const out = {
 };
 console.log(JSON.stringify(Object.assign({}, out, { byEvent: undefined, bySource: undefined }), null, 1));
 console.log('sources', out.bySource.map(x => `${x.k} ${x.n} ${x.win}%`).join('; '));
-if (arg('json')) fs.writeFileSync(arg('json'), JSON.stringify(Object.assign(out, { rec }), null, 0));
+if (arg('json')) fs.writeFileSync(arg('json'), JSON.stringify(Object.assign(out, { lifeList: lives, rec }), null, 0));

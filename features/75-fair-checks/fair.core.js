@@ -3,7 +3,7 @@
 // The house scale says a check of difficulty 45 is "typical" (CLAUDE.md), and A.checkOdds gives 50% where your value
 // (0.6 x the first skill or stat + 0.4 x the second; an untrained skill counts 4 + 0.3 x your mean stat) meets d.
 // In bot lives that holds for a seasoned adult (a human of 38-50: 47% of checks won), but the same scenes are met at
-// 16, when a typical life has a skill of about 15 where it will later have 43: 26% won. Children and teens fare no
+// 16, when a typical life has a skill of about 15 where it will later have 37: 26% won. Children and teens fare no
 // better (31%, 33%). Over a whole life only 38% of checks succeed (the release: 38.4%), and a quarter sit under 15%.
 //
 // The rule (A.checkOdds, event checks that are not fights):
