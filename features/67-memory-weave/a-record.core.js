@@ -82,8 +82,9 @@
     };
   };
   // the deed, in the past tense, from the label taken. 55-bonds keeps the verb table; without it, a plain form
-  // deeds too thin to say what happened ("you did it", "you gave it everything") are not kept as deeds
-  MW.VAGUE = /^you (?:tried to |chose to )?(did it|do it|throw everything|give it everything|did so|did that|went|go|stayed|waited|agreed|accepted|refused|declined|nodded|gave it everything|threw everything|did your best|did as you were told|kept quiet|said nothing|said yes|said no|said never|chose neither|chose both|gave your answer|let it go|left it|chose to (do|go|stay|wait) it)\b/i;
+  // deeds too thin to say what happened ("you did it", "you gave it everything") are not kept as deeds: the whole deed,
+  // or the deed before ", and failed" ("you stayed" is thin; "you stayed on the quay and held the lamps" is not)
+  MW.VAGUE = /^you (?:tried to |chose to )?(did it|do it|throw everything|give it everything|did so|did that|went|go|stayed|waited|agreed|accepted|refused|declined|nodded|gave it everything|threw everything|did your best|did as you were told|kept quiet|said nothing|said yes|said no|said never|chose neither|chose both|gave your answer|let it go|left it|chose to (do|go|stay|wait) it)(?=$|,)/i;
   MW.deedOf = function (label, failed) {
     const l = clean(label).replace(/[“”‘’]/g, '');
     if (!l) return null;

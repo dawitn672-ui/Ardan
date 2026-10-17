@@ -138,6 +138,13 @@ RI.aims = function (p) {
   return v;
 };
 RI.wantText = k => (WANT[k] || {}).t || k;
+// why a court person asks for your voice, in one of a few wordings (a hash of who asks and the year)
+RI.wantLine = function (who) {
+  const He = cap(A.he(who)), he = A.he(who), w = RI.wantText(RI.aims(who).want);
+  const L = [`${He} wants ${w}, and this is the road to it.`, `${He} wants ${w}. This would bring it nearer.`,
+    `What ${he} wants is ${w}, and this is a step toward it.`, `${He} makes no secret of it: ${he} wants ${w}.`];
+  return L[Math.floor(hash(who.id, A.S.year, 'wl') * L.length)];
+};
 RI.fearText = k => (FEAR[k] || {}).t || k;
 
 // ---------------------------------------------------------------- pushes
@@ -150,7 +157,7 @@ const PUSH = {
   taxUp: { t: 'heavier taxes', law: 'tax', ok: r => taxIdx(r) < 4 },
   taxDown: { t: 'lighter taxes', law: 'tax', ok: r => taxIdx(r) > 0 },
   authUp: { t: 'more power for the crown', law: 'authority', ok: r => (r.laws.authority || 0) < 3 && r.stability >= 40 && (r.legit || 50) >= 50 },
-  authDown: { t: "the lords' liberties restored", law: 'authority', ok: r => (r.laws.authority || 0) > 0 },
+  authDown: { t: "the return of the lords' liberties", law: 'authority', ok: r => (r.laws.authority || 0) > 0 },
   levyUp: { t: 'heavier levies', law: 'levy', ok: r => (r.laws.levy != null ? r.laws.levy : 1) < 2 },
   levyDown: { t: 'lighter levies', law: 'levy', ok: r => (r.laws.levy != null ? r.laws.levy : 1) > 0 },
   army: { t: 'gold for the host', ok: () => true },
@@ -740,7 +747,7 @@ RI.askMonth = function (pc) {
   if (st) { st.hy[A.S.year] = (st.hy[A.S.year] || 0) + 1; st.b -= 1; }
   pc.flags.ri_ask = A.S.year;
   A.queue({ type: 'event', ev: 'ri_court_ask', ctx: { pid: who.id, npcMove: true, push: PUSH[ag.k].t, seatT: v.seat ? 'the ' + A.COUNCIL[v.seat].name : 'head of ' + v.h.name,
-    wantLine: `${cap(A.he(who))} wants ${RI.wantText(RI.aims(who).want)}, and this is the road to it.`, foeName: foe ? A.fullName(foe, false) : 'Nobody' } });
+    wantLine: RI.wantLine(who), foeName: foe ? A.fullName(foe, false) : 'Nobody' } });
 };
 A.onMonth.push(pc => { try { RI.askMonth(pc); } catch (e) { console.error('[ri] ask', e); } });
 // councils are named from the first day of a new world

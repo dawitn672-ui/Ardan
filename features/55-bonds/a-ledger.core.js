@@ -201,7 +201,8 @@
     'tidy wander whittle yell bellow hail signal tally listen beckon nudge shove grip clutch hug stroke pet soothe rouse warn hush silence summon ' +
     'gossip boast brag joke jest flirt woo serenade marvel ponder pace kneel linger loiter lurk dodge duck parry block feint lunge charge withdraw ' +
     'surrender yield insist interrupt accompany escort lead obey defy rebuke chide forbid permit allow urge beg bargain barter haggle wager tip ' +
-    'reward fine tax levy muster recruit drill arm disband pay hide bury exhume unearth dig plant harvest thresh mill bake brew ferment').split(' ').concat(Object.keys(IRR), [...DBL]));
+    'reward fine tax levy muster recruit drill arm disband pay hide bury exhume unearth dig plant harvest thresh mill bake brew ferment hope pretend ' +
+    'keep wish').split(' ').concat(Object.keys(IRR), [...DBL]));
   const pastOf = w => {
     if (IRR[w]) return IRR[w];
     if (DBL.has(w)) return w + w.slice(-1) + 'ed';
@@ -234,8 +235,12 @@
     'trip tip ship pin chip strip drum bar man club pen fan jam').split(' '));
   // a second verb after "and", "or" or "then" goes into the past tense too: "Rock him and sing" -> "you rocked him and sang".
   // A word after it that is a pronoun, a name or a thing stays as it was ("the bread and cheese")
+  // after "make him", "let her", "help them" the next verb is theirs, not yours: "Make him confess and pay" stays as it is
+  const CAUSE = new Set(['make', 'let', 'have', 'help', 'watch', 'see', 'hear', 'bid', 'leave']);
   const andVerbs = rest => rest.replace(/\b(and|or|then)\s+([a-z]+)\b/g, (m, c, x) => (VERBS.has(x) && !NOUNISH.has(x) && !NOT_VERB.has(x) ? `${c} ${pastOf(x)}` : m));
   // how a failed attempt ends, picked by the label so the same choice always reads the same
+  const PHR = { 'lie low': 'lay low', 'lie down': 'lay down', 'lie still': 'lay still', 'lie quiet': 'lay quiet', 'lie awake': 'lay awake', 'lie in': 'lay in',
+    'lie with': 'lay with', 'lie back': 'lay back', 'lie flat': 'lay flat', 'lie hidden': 'lay hidden' };
   const FAILED = [', and failed', ', and could not', ', and it went wrong', ', and it came to nothing'];
   const failTail = (label, from) => FAILED[from + Math.floor(BD.h(label, 'fail') * (FAILED.length - from))];
   BD.deedOf = function (label, failed) {
@@ -253,7 +258,10 @@
     if (NOT_VERB.has(w)) return null;
     if (failed) return `you tried to ${adv}${w}${rest}${failTail(label, 0)}`;
     // a verb this list knows goes into the past tense; any other first word is taken as a verb all the same
-    return VERBS.has(w) ? `you ${adv}${pastOf(w)}${andVerbs(rest)}` : `you chose to ${adv}${w}${rest}`;
+    // "Lie low" is not "lie to him": a verb with a word after it that changes its past
+    const two = (w + ' ' + (rest.match(/^\s+([a-z]+)/) || ['', ''])[1]).trim();
+    if (PHR[two]) return `you ${adv}${PHR[two]}${rest.replace(/^\s+[a-z]+/, '')}`.replace(/\s+$/, '');
+    return VERBS.has(w) ? `you ${adv}${pastOf(w)}${CAUSE.has(w) ? rest : andVerbs(rest)}` : `you chose to ${adv}${w}${rest}`;
   };
   BD.pastOf = pastOf;
   BD.VERBS = VERBS;

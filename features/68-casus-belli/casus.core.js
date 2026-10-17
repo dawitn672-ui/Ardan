@@ -30,6 +30,8 @@
   const clean = s => String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, 260);
   const cap = s => { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); };
   const short = id => (A.realm(id) ? A.realmShort(id) : String(id || ''));
+  // "Velgrad's", "the Nine Winds'"
+  const poss = s => (/s$/.test(s) ? s + "'" : s + "'s");
   const persona = rid => (A.rulerPersona ? A.rulerPersona(rid) : { warLog: 0, wrath: 0, pride: 0, warmth: 0, greed: 0, honor: 0, patience: 0, caution: 0, parts: {}, traits: [] });
   const feudOn = () => !!(FE && FE.ON !== false);
 
@@ -145,10 +147,11 @@
   CS.moment = function (a, b, P) {
     const rb = A.realm(b); if (!rb) return null;
     const other = A.atWar(b).find(w => !w.att.includes(a) && !w.def.includes(a));
-    if (other) return { k: 'away', t: `${short(b)}'s host is away, at war with ${short(other.leadA === b || other.att.includes(b) ? other.leadD : other.leadA)}` };
-    if ((rb.exhaustion || 0) >= 45) return { k: 'worn', t: `${short(b)} is worn out by war (weariness ${Math.round(rb.exhaustion)})` };
-    if ((rb.stability || 50) < 30) return { k: 'weak', t: `${short(b)} is in turmoil (stability ${Math.round(rb.stability)})` };
-    if (P && P.ratio >= 1.15) return { k: 'strong', t: `${P.ratio.toFixed(1)}x their strength, with friends counted` };
+    // (said so that a name like "the Nine Winds" needs no verb to agree with it)
+    if (other) return { k: 'away', t: `the host of ${short(b)} is away, at war with ${short(other.leadA === b || other.att.includes(b) ? other.leadD : other.leadA)}` };
+    if ((rb.exhaustion || 0) >= 45) return { k: 'worn', t: `the war has worn ${short(b)} thin (weariness ${Math.round(rb.exhaustion)})` };
+    if ((rb.stability || 50) < 30) return { k: 'weak', t: `there is turmoil in ${short(b)} (stability ${Math.round(rb.stability)})` };
+    if (P && P.ratio >= 1.15) return { k: 'strong', t: `${P.ratio.toFixed(1)} times their strength, with friends counted` };
     return null;
   };
 
@@ -212,11 +215,12 @@
   // ---------------------------------------------------------------- the casus belli of a war
   // the release's memories (A.DMEM): the lasting wrongs (half-lives of 14 to 30 years) count as memories; the
   // passing ones (an insult, an incident, a war fought) are cited as the war's recent cause, not as a memory
-  const MEMK = { took_land: 'took our land', betrayal: 'betrayed us', broke_pact: 'broke a sworn pact with us', abandoned: 'abandoned us in war' };
-  const RECK = { enemy_war: 'fought against us', insult: 'insulted our crown', hostage: 'held our hostage', embargo: 'embargoed our trade', justify: 'forged claims on us', spies: 'were caught spying on us', incident: 'stirred a border incident' };
-  const CBT = { justified: 'a claim its clerks forged', reconquest: 'land of its own to take back', rivalry: 'an old rivalry', holy: 'a holy war', incident: 'a border incident',
-    insult: 'an insult to avenge', tribute: 'tribute refused', betrayal: 'nothing but appetite, against its own ally', conquest: 'conquest', coalition: 'a league against an aggressor',
-    throne: 'a claim to the throne', liberty: 'the liberties of the lords', none: 'no cause the world accepts' };
+  // past tenses, so a name of either number reads: "the Nine Winds took our land", "Velgrad took our land"
+  const MEMK = { took_land: 'took our land', betrayal: 'betrayed us', broke_pact: 'broke a pact sworn with us', abandoned: 'left us alone in a war' };
+  const RECK = { enemy_war: 'fought against us', insult: 'insulted our crown', hostage: 'kept one of ours as a hostage', embargo: 'shut its markets to our goods', justify: 'had its clerks forge claims on us', spies: 'had spies taken in our halls', incident: 'stirred up trouble on our border' };
+  const CBT = { justified: 'a claim its clerks forged', reconquest: 'land of its own to take back', rivalry: 'an old rivalry', holy: 'a holy war', incident: 'a quarrel on the border',
+    insult: 'an insult to avenge', tribute: 'tribute refused', betrayal: 'appetite alone, against its own ally', conquest: 'conquest', coalition: 'a league against an aggressor',
+    throne: 'a claim to the throne', liberty: 'the old liberties of the lords', none: 'none the world accepts' };
   // the strongest wrong of the given kinds in the release's memories, at least 10: "took our land, in 1104"
   const memOf = (a, b, K) => {
     const r = A.realm(a), L = r && r.mem && r.mem[b];
@@ -237,7 +241,7 @@
       if (e && G >= 8) add('feud', `An old grudge: ${FE.origin(e)}`, 1 + G / 20);
     }
     const W = !civil && CS.wantOf(a, b);
-    if (W) add('want', `${cap(short(a))}'s old want: ${W.s}`, .9 + .3 * CS.appetite(a));
+    if (W) add('want', `${cap(poss(short(a)))} old want: ${W.s}`, .9 + .3 * CS.appetite(a));
     if (!civil) {
       const m = CS.relMem(a, b); if (m) add('relmem', `A memory: ${m.t}`, .6 - m.v / 40);
       const q = CS.recentMem(a, b); if (q) add('recent', `Lately: ${q.t}`, .3 - q.v / 60);
@@ -253,10 +257,11 @@
       const top = ((P.parts && P.parts.war) || []).filter(x => x[1] > 0).sort((x, y) => y[1] - x[1]).slice(0, 2).map(x => x[0]);
       if (top.length) add('trait', `${A.rulerStyle && A.P(ra.ruler) ? A.rulerStyle(A.P(ra.ruler), ra) : 'Its ruler'} is ${top.join(' and ')}`, .3 + P.warLog * .6);
     }
-    if (!civil) { const mo = CS.moment(a, b, null); if (mo) add('chance', mo.t, .4); }
+    if (!civil) { const mo = CS.moment(a, b, null); if (mo) add('chance', cap(mo.t), .4); }
     cites.sort((x, y) => y.v - x.v);
     const lead = cites[0] || { k: 'cause', t: 'No reason given' };
-    const rest = cites.slice(1, 3).map(c => c.t.replace(/^The cause given: /, 'the cause given, ').replace(/^An old grudge: /, 'an old grudge, ').replace(/^A memory: /, '').replace(/^Lately: /, 'lately, '));
+    const rest = cites.slice(1, 3).map(c => c.t.replace(/^The cause given: /, 'the cause given, ').replace(/^An old grudge: (\w)/, (m, x) => 'an old grudge, ' + x.toLowerCase()).replace(/^A memory: /, '').replace(/^Lately: /, 'lately, ')
+      .replace(/^(A claim on|The host of|The war has|There is turmoil) /, m => m.toLowerCase()));
     const t = clean(`${lead.t}${rest.length ? `. Also: ${rest.join('; ')}` : ''}.`);
     return { y: A.S.year, by: ra.ruler || null, lead: lead.k, t, cites: cites.map(c => ({ k: c.k, t: c.t })), ai: !(ra.playerRun || (A.pc() && A.pc().ruler === a)) };
   };
@@ -273,7 +278,7 @@
       const ra = A.realm(w.leadA);
       // a realm's record of why it went to war (the Realm tab and the diplomacy card read it after the war is over)
       if (ra) { ra.csHist = (Array.isArray(ra.csHist) ? ra.csHist : []).concat([{ y: A.S.year, w: clean(w.name), o: w.leadD, t: c.t }]).slice(-6); }
-      if (!(opts && opts.silent)) A.news(`${cap(short(w.leadA))}'s casus belli: ${c.t}`, 'war');
+      if (!(opts && opts.silent)) A.news(`${cap(poss(short(w.leadA)))} casus belli: ${c.t}`, 'war');
       const pl = ra && ra.csPlan;
       if (pl && pl.t === w.leadD && CS.ON) {
         CS.stats.struck++;

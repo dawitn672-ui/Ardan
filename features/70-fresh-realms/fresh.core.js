@@ -175,26 +175,39 @@
     return { name: `Duchy of ${capName}`, short: capName, title: 'Duke', type: 'duchy' };
   };
   // a realm bible for it: what it wants and fears, and the place that matters; customs are its parent's (47)
+  // (worded so that {parent} needs no verb to agree with it and no 's: "the Tusk Clans" reads as well as "Velgrad")
   FR.BIBLE = {
     duchy: {
-      want: ['To have its freedom from {parent} written down and sealed by a crown that is not {parent}\'s.', 'To hold {capital} for its own lords, and to owe {parent} nothing but a border.'],
-      fear: ['That {parent} comes back for {capital}, as its heralds still swear it will.', 'That its lords, who rose together, fall out over who sits highest.'],
-      place: ['The hall at {capital}|Where the lords of {short} swore in {year} to hold their land for themselves, and the oath is cut over the door.'],
+      want: ['To have its freedom from {parent} written down and sealed by a crown other than that of {parent}.', 'To hold {capital} for its own lords, and to owe {parent} nothing but a border.',
+        'To be left alone by {parent} long enough that nobody remembers it was ever otherwise.', 'To marry its heirs into a great house, so that the next war with {parent} is not fought alone.'],
+      fear: ['That {parent} will come back for {capital}, as its heralds still swear.', 'That its lords, who rose together, fall out over who sits highest.',
+        'That the lords of {capital} sell it back to {parent} for a title apiece.', 'That a bad harvest makes the commons wish they had stayed under {parent}.'],
+      place: ['The hall at {capital}|Where the lords of {short} swore in {year} to hold their land for themselves, and the oath is cut over the door.',
+        'The old gate at {capital}|Where the men of {parent} were turned back in {year}. The scorch marks are left on the timber on purpose.'],
     },
     march: {
-      want: ['To hold the border for itself, and be paid for it by no one.', 'To be the gate {parent} must knock at, and to set the toll.'],
-      fear: ['That {parent} and its neighbour make peace across its back and share it out.', 'That a hard winter on the border empties the forts before {parent} comes.'],
-      place: ['The gate-tower at {capital}|Where the {title} keeps the keys of the border forts on one ring, and counts them every night.'],
+      want: ['To hold the border for itself, and be paid for it by no one.', 'To be the gate {parent} must knock at, and to set the toll.',
+        'To have every fort on the border manned through the winter, and every garrison paid.', 'To be asked, not told, before the next host crosses its land.'],
+      fear: ['That {parent} and its neighbour make peace across its back and share it out.', 'That a hard winter on the border empties the forts before {parent} comes.',
+        'That the forts fall one by one while the {title} waits for help that is not sent.', 'That {parent} will buy the garrison captains, one purse at a time.'],
+      place: ['The gate-tower at {capital}|Where the {title} keeps the keys of the border forts on one ring, and counts them every night.',
+        'The beacon above {capital}|A stack of dry wood kept ready since {year}. Nobody who lights it without cause keeps his post.'],
     },
     league: {
-      want: ['To keep the roads, the tolls and the courts in the towns\' own hands.', 'To buy its peace with {parent} and never pay twice.'],
-      fear: ['That a crown buys one town and the league comes apart in a season.', 'That {parent} closes the road and lets the markets starve.'],
-      place: ['The toll-house at {capital}|Where the towns\' seals are kept in one chest with a lock for every town, and opened only all together.'],
+      want: ['To keep the roads, the tolls and the courts in the towns\' own hands.', 'To buy its peace with {parent} and never pay twice.',
+        'To have its weights and measures used in every market from here to the sea.', 'To see no lord sit in judgement in its towns again.'],
+      fear: ['That a crown buys one town and the league comes apart in a season.', 'That {parent} will close the road and let the markets starve.',
+        'That the guilds fall out over the tolls, and one of them sends for {parent}.', 'That a lean year empties the chest the towns keep together.'],
+      place: ['The toll-house at {capital}|Where the towns\' seals are kept in one chest with a lock for every town, and opened only all together.',
+        'The market cross at {capital}|Where the charter of {year} was read aloud, and is read again each year on the same day.'],
     },
     prince: {
-      want: ['To sit on the throne of {parent}, not beside it.', 'To be named heir of {parent} by the lords before {rival} dies.'],
-      fear: ['That {rival} outlives the claim, and the lords forget there was one.', 'That {parent}\'s lords make their peace, and the prince is left with a castle and a grievance.'],
-      place: ['The keep at {capital}|Where {prince} keeps court with the old king\'s sword on the wall, and a chair at the high table is left empty.'],
+      want: ['To sit on the throne of {parent}, not beside it.', 'To be named heir of {parent} by the lords before {rival} dies.',
+        'To ride into the capital of {parent} with the great houses behind, not against.', 'To have the claim sworn to by enough lords that the crown must hear it.'],
+      fear: ['That {rival} outlives the claim, and the lords forget there was one.', 'That the lords of {parent} make their peace, and the prince is left with a castle and a grievance.',
+        'That a cup of wine at the wrong table ends the claim before it is pressed.', 'That the houses who swore to the claim swear again to {rival}, for less.'],
+      place: ['The keep at {capital}|Where {prince} keeps court with the old ruler\'s sword on the wall, and a chair at the high table is left empty.',
+        'The chapel at {capital}|Where {prince} was anointed in {year} by a priest who has not been seen at court since.'],
     },
   };
   const fillT = (s, m) => String(s).replace(/\{(\w+)\}/g, (x, k) => (m[k] != null ? String(m[k]) : x));
