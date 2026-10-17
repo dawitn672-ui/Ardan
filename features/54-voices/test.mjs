@@ -269,7 +269,7 @@ export default {
     const n = Math.max(6, lives || 6);
     const r = await pg.evaluate((n) => {
       const V = A.VOICE, starts = [['POL-01', 'human'], ['POL-18', 'human'], ['POL-28', 'dwarf'], ['POL-11', 'orc'], ['POL-06', 'elf'], ['POL-20', 'human'], ['POL-33', 'human'], ['POL-12', 'human'], ['POL-09', 'giant'], ['POL-30', 'human'], ['POL-25', 'human'], ['POL-17', 'human']];
-      const T = { lives: 0, years: 0, ev: 0, local: 0, localWords: 0, localVoice: 0, lines: 0, repeats: 0, titles: 0, npc: 0, over: 0 };
+      const T = { lives: 0, years: 0, ev: 0, local: 0, localWords: 0, localVoice: 0, lines: 0, repeats: 0, titles: 0, npc: 0, over: 0, overIds: [] };
       for (let i = 0; i < n; i++) {
         const [rid, race] = starts[i % starts.length];
         VT.life(8800 + i * 31, { race, realm: rid, status: i % 2 ? 'peasant' : 'artisan', sex: i % 2 ? 'F' : 'M', startAge: 16 });
@@ -281,7 +281,7 @@ export default {
             if (h.type !== 'event') { A.S.queue.shift(); continue; }
             const e = A.EV[h.ev], v = A.eventView(h), pc = A.pc(), c = V.eventCult(pc, e);
             T.ev++;
-            if (VT.words(v.text) > 80) T.over++;
+            if (VT.words(v.text) > 80) { T.over++; T.overIds.push(`${h.ev} ${VT.words(v.text)}w${(V.last || []).length ? ' +' + V.last.join('/') : ''}`); }
             const line = ((V.last || []).find(a => /^line:/.test(a)) || '').slice(5);   // the key of the line voices added
             if (c && V.localTo(e).includes(c)) { T.local++; if (V.has(c, v.title + ' ' + v.text)) T.localWords++; if (line || V.has(c, v.title + ' ' + v.text)) T.localVoice++; }
             if (line) { const k = A.S.pc + line; T.lines++; if (seen[k] != null && A.S.year - seen[k] < V.REPEAT_YEARS) T.repeats++; seen[k] = A.S.year; }
@@ -297,6 +297,6 @@ export default {
     }, n);
     const pct = (a, b) => (b ? Math.round(100 * a / b) : 0);
     const ok = r.over === 0 && r.repeats === 0 && r.local > 0 && pct(r.localWords, r.local) >= 30;
-    return { ok, detail: `${r.lives} lives, ${r.years} years, ${r.ev} events: ${r.local} local, of which ${pct(r.localWords, r.local)}% show the culture's words and ${pct(r.localVoice, r.local)}% its words or a voice line; ${r.lines} voice lines (${(10 * r.lines / Math.max(1, r.years)).toFixed(1)} a decade), ${r.repeats} heard twice within ${5} years; ${r.titles} titles in the place's words; ${r.npc} people's lines in the speaker's manner; over 80 words ${r.over}` };
+    return { ok, detail: `${r.lives} lives, ${r.years} years, ${r.ev} events: ${r.local} local, of which ${pct(r.localWords, r.local)}% show the culture's words and ${pct(r.localVoice, r.local)}% its words or a voice line; ${r.lines} voice lines (${(10 * r.lines / Math.max(1, r.years)).toFixed(1)} a decade), ${r.repeats} heard twice within ${5} years; ${r.titles} titles in the place's words; ${r.npc} people's lines in the speaker's manner; over 80 words ${r.over}${r.overIds.length ? ' (' + r.overIds.join(', ') + ')' : ''}` };
   },
 };

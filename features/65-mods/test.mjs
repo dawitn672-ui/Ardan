@@ -214,8 +214,10 @@ export default {
     // a dwarf of 16 is a child for the whole run (grown at 40), so the probe's adult event cannot come in that life
     // the probe mod (weight 5, any adult) is the firm signal; how often the example's own events come up turns on the
     // random stream, so it is reported, not asserted (README: pooled over more lives)
-    const ok = onProbe >= 4 && offAny === 0 && r.off.every(x => x.mods === '') && r.on.every(x => x.mods === 'example,probe');
-    return { ok, detail: `6 bot lives each way (16 to 51, same seeds; years ${r.on.map(x => x.years).join('/')}): on, the probe mod's event came up in ${onProbe} of 6 lives, the example's in ${onEx} (${[...new Set(r.on.flatMap(x => x.example))].join(', ') || 'none'}), its Aldmark custom met in ${r.bible ? onCustom : 'none (no realm bible in this build)'}; off, mod events, customs or flags in ${offAny} lives` };
+    // judged on lives long enough to meet a scene: a shifted random stream can end a life at 2 or 4 years
+    const long = r.on.filter(x => x.years >= 10), onProbeLong = long.filter(x => x.probe).length;
+    const ok = long.length >= 3 && onProbeLong >= Math.ceil(long.length * 2 / 3) && offAny === 0 && r.off.every(x => x.mods === '') && r.on.every(x => x.mods === 'example,probe');
+    return { ok, detail: `6 bot lives each way (16 to 51, same seeds; years ${r.on.map(x => x.years).join('/')}): on, the probe mod's event came up in ${onProbe} of 6 lives (${onProbeLong} of the ${long.length} of 10+ years), the example's in ${onEx} (${[...new Set(r.on.flatMap(x => x.example))].join(', ') || 'none'}), its Aldmark custom met in ${r.bible ? onCustom : 'none (no realm bible in this build)'}; off, mod events, customs or flags in ${offAny} lives` };
   },
 
   // A.CX_RX reads the condition's text: a mod's condition reads as the hand-written one would, so A.evFit draws it alike

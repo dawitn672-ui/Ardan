@@ -49,4 +49,19 @@ export default [
       'love you for it; your trade remembers you.",',
     ]],
   },
+  {
+    id: 'TXT-CAST-DIET',
+    blob: 'ardan-content',
+    why: 'A scene that meets one of the cast (castText) ends with that person\'s looks and manner, and a long description took ' +
+      'the scene past the 80-word diet (rl_cast_noble read 82 words in a bot life). The manner sentence is now left out when ' +
+      'the scene would run past 80 words with the name filled in. The name also came after its titles ("Lord of the ' +
+      'Southern March, head of the March Hawks Garrick Harrow"); it now comes first ("Garrick Harrow, Lord of the Southern March, ...").',
+    edits: [[
+      'castText=lead=>(p,ctx)=>`${lead(p,ctx)} {cName}. ${ctx.cLooks} ${ctx.cManner}`',
+      'castText=lead=>(p,ctx)=>{const a=`${lead(p,ctx)} {cName}. ${ctx.cLooks}`,b=ctx.cManner;return b&&(a.replace("{cName}",ctx.cName||"")+" "+b).split(/\\s+/).length>80?a:`${a} ${b}`}',
+    ], [
+      'cName=(c.title?c.title+" ":"")+c.name',
+      'cName=c.name+(c.title?", "+c.title:"")',
+    ]],
+  },
 ];
