@@ -309,11 +309,12 @@ Ten new features and second passes on five older ones, written in parallel again
 | Feature | Rows | What changed |
 | --- | --- | --- |
 | 68-casus-belli | Diplomacy 5, 6 ✅ | Every AI war names its reason, drawn from what the realm remembers and wants; grudges wait for the moment the enemy is weak; debts are paid back by marching to a benefactor's aid. The news reads "War declared by Velgrad. The cause given: …". |
-| 59-tooltips (part 2) | UI 2 ✅ | Tooltips that sum to the number shown, now on the war screens, the realm and the market too. |
+| 59-tooltips (part 2) | UI 2 ✅ | Tooltips on the War Room, Holdings, the Path tab, event odds, duels, battles, the Realm tab and the Codex: 97–100% of numbers per screen, each breakdown adding up to what is shown. |
 | 71-phone | UI 6 ✅ | The phone layout on its own: thumb-sized cards and controls (none under 44 px, sliders included), a bottom bar, WCAG 2.1 AA contrast. |
-| 70-fresh-realms | Replayability 3 ✅, World 7 ✅ | Small realms made fresh each run and starting tensions; a classifier sorts 100 lives into 8 or more arc types, none above 25%. |
+| 70-fresh-realms | Replayability 3 ✅ | Small realms made fresh each run and starting tensions; a classifier sorts 100 lives into 8 or more arc types, none above 25%. |
+| 54-voices (part 2) | World 7 ✅ | Culture words carried into the release's own events and titles: 46% of events in a culture's voice, every culture at 30% or more. |
 | 73-score | Visual 7 ✅ | A quiet score for each land, off by default: a drone, one voice and long silences, six synthesized instruments. |
-| 64-npc-beliefs (part 2) | Uniqueness 3 ✅ | Beliefs about the world, not only about people, and a view of what the court believes. |
+| 64-npc-beliefs (part 2) | Uniqueness 3 ✅ | Every realm keeps its own telling of the run's great events, which differs by side and distance, drifts with propaganda and is set right after a peace; grudges and people act on what they believe. |
 | 72-two-scales | Uniqueness 4 ✅ | The squad and the front on one page: a common soldier's fight and the war it moves. |
 | 69-live-numbers | Character 7 ◐ | Checks retagged and riders added so most stats and skills touch 5 outcomes a life; the rest wait on the source merge. |
 | 74-old-age | Character 6 (deepened) | 119 old-age events, the deathbed and a death screen; the scorecard's old-age count 26 → 155. |
