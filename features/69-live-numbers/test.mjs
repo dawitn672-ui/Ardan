@@ -10,7 +10,8 @@ const median = a => { const s = [...a].sort((x, y) => x - y); return s.length ? 
 
 export default {
   // the gate: in bot lives of the six balance paths, counted the way bench/dead-numbers.mjs counts, each of the six
-  // reaches 5 outcomes in the median life (a shorter, smaller league than the bench: 12 lives of up to 40 years)
+  // reaches 5 outcomes in the median life (a smaller league than the bench's 24: 18 lives of up to 45 years, those that
+  // last 25; a 10-life league of 40 years put the median gambling life at 3 and at 7 on two trees, so it is too small)
   async lnSixLive(pg) {
     await pg.evaluate(BOT);
     await pg.evaluate(COUNTER);
@@ -18,14 +19,14 @@ export default {
     const lives = await pg.evaluate(([paths]) => {
       const out = [];
       paths.forEach(([name, start], pi) => {
-        // two lives a path, all four personalities across the league; a life shorter than 20 years is replaced
-        for (const base of [(pi % 2) * 2, (pi % 2) * 2 + 1]) {
+        // three lives a path, all four personalities across the league; a life shorter than 25 years is replaced
+        for (const base of [0, 1, 2].map(j => (pi + j) % 4)) {
           for (let t = 0; t < 3; t++) {
             const i = base + t * 4, pers = ['careful', 'reckless', 'greedy', 'random'][i % 4], engaged = i % 2 === 0;
             const o = Object.assign({ seed: 5101 + i * 7919 + name.length * 131, sex: i % 2 ? 'F' : 'M' }, start);
             DN.reset(); DN.on = true;
-            let L; try { L = B.life(o, pers, engaged, 40); } finally { DN.on = false; }
-            if (L.years < 20) continue;
+            let L; try { L = B.life(o, pers, engaged, 45); } finally { DN.on = false; }
+            if (L.years < 25) continue;
             const n = {};
             // a merged number is counted under its family, as the bench counts it (axe under Hafts, the spear's row)
             for (const k0 of ['axe', 'unarmed', 'bow', 'sea', 'music', 'gambling']) { const k = A.BM && A.BM.canon ? A.BM.canon(k0) : k0; n[k0] = (DN.life.decided[k] || 0) + (DN.life.gated[k] || 0) + (DN.life.engine[k] || 0); }
@@ -38,7 +39,7 @@ export default {
     }, [paths]);
     const fam = await pg.evaluate(() => (A.BM && A.BM.MERGE) || {});
     const rows = SIX.map(k => { const v = lives.map(l => l.n[k]); return { k: fam[k] ? `${k} (→ ${fam[k]})` : k, med: median(v), min: Math.min(...v), max: Math.max(...v), under: v.filter(x => x < 5).length }; });
-    const ok = lives.length >= 10 && rows.every(r => r.med >= 5);
+    const ok = lives.length >= 15 && rows.every(r => r.med >= 5);
     return { ok, detail: `${lives.length} lives (median ${median(lives.map(l => l.years))} years); median outcomes (range, lives under 5): ` +
       rows.map(r => `${r.k} ${r.med} (${r.min}-${r.max}, ${r.under})`).join(', '), data: { lives, rows } };
   },

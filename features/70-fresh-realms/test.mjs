@@ -195,10 +195,17 @@ export default {
         __frPlay(1.1); const f2 = A.S.factions.find(x => x.id === f.id);
         out.succession = { ok: !!f && (!f2 || f2.discontent !== d0), note: t.note, members: f.members.length, after: f2 ? `discontent ${d0} -> ${f2.discontent}` : 'the faction has made its demand or broken up' }; }
       // famine: the granary at a fifth, so grain is dear
-      { const t = fresh(842, 'famine'); __frPlay(0.25);
-        const mine = A.mkt(t.a), others = Object.values(A.S.realms).filter(x => x.alive && x.id !== t.a && !x.isRebel).map(x => A.mkt(x.id).p.grain / ((GD.GOODS.grain || {}).base || 1));
-        const ratio = mine.p.grain / ((GD.GOODS.grain || {}).base || 1), med = others.sort((a, b) => a - b)[Math.floor(others.length / 2)];
-        out.famine = { ok: ratio > med * 1.4, note: t.note, after: `grain at ${ratio.toFixed(2)}× its base price, the median realm ${med.toFixed(2)}×${A.ECON ? `, stock ${Math.round(mine.s.grain)} of a normal ${Math.round(A.ECON.normal(mine, 'grain'))}` : ''}` }; }
+      { const t = fresh(842, 'famine'), base = (GD.GOODS.grain || {}).base || 1;
+        // the granary starts at a fifth; caravans bring grain in within a season (45-economy), so the price is read
+        // each month for four months and the dearest month is compared with the median realm in that month
+        let best = null;
+        for (let m = 0; m < 4; m++) {
+          __frPlay(1 / 12);
+          const mine = A.mkt(t.a), others = Object.values(A.S.realms).filter(x => x.alive && x.id !== t.a && !x.isRebel).map(x => A.mkt(x.id).p.grain / base).sort((a, b) => a - b);
+          const row = { ratio: mine.p.grain / base, med: others[others.length >> 1], s: mine.s ? Math.round(mine.s.grain) : null, n: A.ECON ? Math.round(A.ECON.normal(mine, 'grain')) : null, m: m + 1 };
+          if (!best || row.ratio / row.med > best.ratio / best.med) best = row;
+        }
+        out.famine = { ok: best.ratio > best.med * 1.4, note: t.note, after: `dearest in month ${best.m}: grain at ${best.ratio.toFixed(2)}× its base price, the median realm ${best.med.toFixed(2)}×${best.s != null ? `, stock ${best.s} of a normal ${best.n}` : ''}` }; }
       // holy war: a cause the AI's war choice reads
       { const t = fresh(843, 'holywar'); out.holywar = { ok: A.cbOn(t.a, t.b) === 'holy' && A.relBetween(t.a, t.b) <= -15, note: t.note, after: `cause ${A.cbOn(t.a, t.b)}, opinion ${Math.round(A.relBetween(t.a, t.b))}` }; }
       // regency: a child ruler, a regent whose temper counts, and the regency ends when the child comes of age
