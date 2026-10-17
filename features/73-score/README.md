@@ -85,7 +85,7 @@ Every family also has a tabor pattern for war, a rhythm set its motifs are cut f
 | Measure | Result |
 | --- | --- |
 | Offline render, one thread, as a share of real time | the clans at war in summer (the busiest family): 3.3–4.4% of a core, 2.8–3.2% without the room; the north in spring: 2.5–2.9% |
-| Live audio thread, from a Chrome trace (`AudioOutputDevice::FireRenderCallback`) | 3.4–5.7% of a core over 8 s |
+| Live audio thread, from a Chrome trace (`AudioOutputDevice::FireRenderCallback`) | 3.4–5.7% of a core over 8 s (the thread's own time, `tdur`; wall time on a shared CI runner read 17%) |
 | Main-thread scheduler | 0.02–0.10% (33 ticks in 8 s) |
 | Audio sources started | 0.7 per second |
 | Buffers kept after 200 s of the Golden Plains in summer | 24 (4.7 MB) |

@@ -295,14 +295,16 @@ export default {
       await browser.startTracing(pg, { categories: ['audio', 'webaudio'] });
       await sleep(8000);
       const tr = JSON.parse((await browser.stopTracing()).toString()), ev = tr.traceEvents || tr;
-      let us = 0; for (const e of ev) if (e.ph === 'X' && e.name === 'AudioOutputDevice::FireRenderCallback') us += e.dur || 0;
+      // the thread's own time (tdur) where the trace has it: wall time (dur) counts the waits of a shared CI runner, where
+      // four test pages run at once (it read 17% there against 12% here)
+      let us = 0; for (const e of ev) if (e.ph === 'X' && e.name === 'AudioOutputDevice::FireRenderCallback') us += (e.tdur != null ? e.tdur : e.dur) || 0;
       audio = us / 1000 / 8000 * 100;
     } catch (e) { await sleep(8000); }
     const s1 = await pg.evaluate(() => { const s = UI.SCORE.stats(); UI.SCORE.stop(); UI.set.music = false; return { ms: s.ms, ticks: s.ticks, made: s.made, t: performance.now(), kb: s.kb, buffers: s.buffers }; });
     const cost = await pg.evaluate(() => {   // the main thread's one-off work: composing a piece, computing a string
       const SC = UI.SCORE; let t = performance.now(); for (let i = 0; i < 20; i++) SC.compose({ cult: 'CUL-08', key: 'c|' + i, season: 2 }); const compose = (performance.now() - t) / 20;
       t = performance.now(); for (let i = 0; i < 10; i++) SC.SYNTH.string(24000, 50 + i, 0.55, 3.4, 2.9); const str = (performance.now() - t) / 10;
-      t = performance.now(); SC.SYNTH.bell(24000, 50); const bell = performance.now() - t;
+      let bell = Infinity; for (let i = 0; i < 3; i++) { t = performance.now(); SC.SYNTH.bell(24000, 50 + i); bell = Math.min(bell, performance.now() - t); }   // the best of three: one try read another page's work
       return { compose, str, bell };
     });
     const secs = (s1.t - s0.t) / 1000, main = (s1.ms - s0.ms) / secs / 10, perSec = (s1.made - s0.made) / secs;
