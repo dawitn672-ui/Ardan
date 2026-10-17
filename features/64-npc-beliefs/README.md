@@ -181,6 +181,21 @@ The core suites (`boot`, `lives`, `saveRoundTrip`, `uiSmoke`) pass alongside. Th
 - **Signature.** `A.SIGNATURE.beliefPeople` and `A.SIGNATURE.beliefWorld` are added beside 26's `beliefTruth`, which is left alone.
 - **No patches.** Everything is wrappers that call the original: `A.kill`, `A.rulerDies`, `A.link`, `A.memSum`, `A.opinionParts`, `A.interest`, `A.eventChoose`, `A.interact`, `A.interactOptions`, `A.applyFx`, 55's `FEUD.sum`, 56's `RI.fillCouncil`, `UI.personModal`, `UI.diplCard`, `UI.TAB.realm`, `UI.TAB.world`, `UI.TAB.book` and `A.chronicleText`.
 
+## Writer's pass (round 7)
+
+A deed people talk of no longer echoes its scene ("that you went home, in the matter of the last night" is now "..., the
+day of the last night"); a deed set down as a title takes its verb ("that you were champion of ...", "that she was ...");
+twists have six wordings and name the right person; tales have eight tails; battles four wordings; each secret charge
+three; provinces counted in words; "the Bleakfold" inside a sentence; and the one who puts you right is a person ("A
+letter from a cousin abroad hears you say it" is gone).
+
+| Measured, 12 bot lives of 50 years, the same seeds before and after (`/tmp/ardan/prose/harvest.mjs`, 8.4k generated lines a run) | Before | After |
+| --- | --- | --- |
+| belief lines with a grammar error or "in the matter of" | 548 of 2,037 | 0 of 2,017 |
+| distinct frames; top-ten frame share | 118; 49.7% | 147; 41.2% |
+
+Test `nbClaimsRead` checks title deeds, twists, the scene deed and secret wordings.
+
 ## Limits
 
 - **Vengeance is rare in play.** The rules are there and tested (the enemy made, the move to the player, the plot against the player, the killing done and the feud it starts), but the bot lives met no killing believed among the people they knew: deaths of the people a life knows, of a kind that leads to blame, are rare in this simulation (4 killings and 2 blamed deaths in 429 years). Grief now blames an acquaintance when there is no foe, which helps a little. More deaths with a culprit (brawls, duels between NPCs, killings in raids) would feed it.

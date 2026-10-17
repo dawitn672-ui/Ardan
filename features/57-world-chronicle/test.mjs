@@ -293,4 +293,28 @@ export default {
     // some scenes need what only other features make (a famine needs 45-economy, a Legend 32-ladder) or a rare event
     return { ok: !r.nBad && n >= 8, detail: `${n} of ${r.ids} scenes drawn from lives 30 years in (${Object.entries(r.shown).map(([k, v]) => `${k.replace('wc_', '')} ${v}`).join(', ')}); problems ${r.nBad}${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
   },
+  async wcRecallLinesRead(pg) {
+    // the writer's pass: every recalled line of every kind, drawn with plain words, is a whole sentence (a capital first,
+    // a full stop last, no unfilled token, "a"/"an" right, no "The" inside a sentence) and short enough to sit under a
+    // scene; every kind the record keeps has at least two lines, so a kind does not repeat itself every time
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const x = { y: 1120, P: 'the Bleakfold', A: 'Aldmark', B: 'the Horde', who: 'King Roderic', war: 'the Red War', dead: '3,400', days: 40, fell: true, how: 2, free: false,
+        sick: 'the spotted fever', Sick: 'The spotted fever', order: 'the Stormriders', ref: 'the death of King Roderic in 1092' };
+      const bad = [], kinds = {};
+      let n = 0;
+      for (const k of Object.keys(A.WC.LINES)) {
+        kinds[k] = A.WC.LINES[k].length;
+        for (const how of [0, 2, 3]) for (const fell of [true, false]) for (const free of [true, false]) for (const [, f] of A.WC.LINES[k]) {
+          const s = f(Object.assign({}, x, { how, fell, free }));
+          n++;
+          const w = (s.match(/\S+/g) || []).length;
+          if (!/^[A-Z0-9"]/.test(s) || !/[.]$/.test(s) || /\{|undefined|NaN/.test(s) || /\ba [aeiou]/i.test(s) || /[a-z,] The [A-Z]/.test(s) || /(^|[.] )[a-z]/.test(s) || w > 32) bad.push(s);
+        }
+      }
+      const thin = Object.keys(kinds).filter(k => kinds[k] < 2);
+      return { n, bad: [...new Set(bad)], kinds, thin, total: Object.values(kinds).reduce((a, b) => a + b, 0) };
+    });
+    return { ok: r.n > 300 && !r.bad.length && !r.thin.length && r.total >= 60, detail: `${r.total} line templates in ${Object.keys(r.kinds).length} kinds, ${r.n} drawn; kinds with one line ${r.thin.join(', ') || 'none'}; bad ${r.bad.length} ${r.bad.slice(0, 3).join(' | ')}` };
+  },
 };

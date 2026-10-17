@@ -109,6 +109,23 @@ How the line is placed and shown:
 - **Old saves.** `pc.mw` is optional and rebuilt empty when it is missing or malformed.
 - **No new effect keys, no patches.**
 
+## Writer's pass (round 7)
+
+Six wordings a rule (five for a place) instead of three (two), none using 55-bonds' cite phrases ("has not forgotten",
+"still speaks of"), so that `BD.citesInText` reads the scene as before. The tails say their subject again ("..., and it
+went wrong, and you came away hurt"). Deeds come from 55-bonds for every label, the two-verb ones too, and "thin" deeds
+are thin only when nothing follows ("you stayed" is; "you stayed on the quay and held the lamps" is not).
+
+| Measured, 12 bot lives of 50 years, the same seeds before and after (`/tmp/ardan/prose/harvest.mjs`, 8.4k generated lines a run) | Before | After |
+| --- | --- | --- |
+| woven lines; distinct frames | 1,029; 374 | 1,068; 472 |
+| share of the ten commonest frames | 38.1% | 29.5% |
+| the same frame again within three years of a life | 268 | 156 |
+| live labels that leave no deed for the record | 1,402 | 669 |
+| deeds reading "you chose to ..." | 2,011 | 103 |
+
+The weave fires a little more often (more labels make a deed), so memory-tied odds shifts are a little more common.
+
 ## Limits
 
 - **Balance is untested.** The odds moves (±6 person, +6/+3 again, ±5 skill) change check outcomes for about a third of woven scenes. No `fx` magnitude changed, so `bench/balance.mjs` was not run, as the brief asked. It should be run before release.

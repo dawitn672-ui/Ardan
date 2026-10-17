@@ -123,3 +123,10 @@ Run it with `node features/70-fresh-realms/classify.mjs <built.html> --lives=100
 - **Leagues are rare.** A league needs two towns of 4,000 or more in the breakaway, and the outer provinces of large realms seldom have them: 2 of 47.
 - **The bible is short.** A fresh realm's want, fear and place come from 2 or 3 written lines per kind, filled with its own names. Its customs are its parent's.
 - **The classifier's bar is met by the world before this feature.** See the results above. The plan's second half, that playtesters start a third run on their own, needs people.
+
+## Writer's pass (round 7)
+
+Each kind of fresh realm has four wants, four fears and two places instead of two, two and one, worded so that the
+parent's name needs no verb to agree with it and no 's ("a crown other than that of {parent}", "the lords of {parent}").
+The pick is still one `A.pick` each, so the random stream is drawn as before. (No fresh realm formed in the 12 harvested
+lives, so the new lines were not seen in play.)

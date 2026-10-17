@@ -60,9 +60,10 @@
     if (bad === true) k = k.filter(x => BAD.has(x)); else if (bad === false) k = k.filter(x => !BAD.has(x));
     if (k.includes('law')) return ', and the watch took you';
     if (k.includes('kill')) return ', and someone died of it';
-    if (k.includes('hurt')) return ', and came away hurt';
+    // (the subject is said again: the deed may end "..., and it went wrong")
+    if (k.includes('hurt')) return ', and you came away hurt';
     if (k.includes('loss') && m.n) return `, and it cost you ${coin(m.n)}`;
-    if (k.includes('gain') && m.n) return `, and came away ${coin(m.n)} the richer`;
+    if (k.includes('gain') && m.n) return `, and you came away ${coin(m.n)} the richer`;
     if (k.includes('shame')) return ', and it shamed you';
     if (k.includes('name')) return ', and people talked of it';
     return '';
@@ -79,16 +80,16 @@
       ['{Them} remembers {y}, when {d}. {Khe} gives you a fairer hearing for it.', '{Them} remembers {y}: {d}.'],
       ['{Them} has not let {y} go: {d}. It counts for you now.', '{Them} remembers {y}: {d}.'],
       ['In {y} {d}. {Them} has kept count of that, and it eases things.', '{Them} remembers {y}: {d}.'],
-      ['{Them} has not forgotten that {d}, in {y}. {Khe} meets you halfway.', '{Them} has not forgotten {y}: {d}.'],
-      ['It was {y} when {d}. {Them} has not forgotten, and leans your way.', '{Them} has not forgotten {y}: {d}.'],
+      ['{Them} keeps in mind that {d}, in {y}. {Khe} meets you halfway.', '{Them} keeps {y} in mind: {d}.'],
+      ['It was {y} when {d}. {Them} bears it in mind, and leans your way.', '{Them} keeps {y} in mind: {d}.'],
       ['{Them} owes you for {y}: {d}. {Khe} knows it, and so do you.', '{Them} owes you for {y}: {d}.'],
     ],
     personBad: [
       ['{Them} remembers {y}, when {d}. {Khe} gives you nothing for free.', '{Them} remembers {y}: {d}.'],
       ['{Them} has not let {y} go: {d}. It counts against you now.', '{Them} remembers {y}: {d}.'],
       ['In {y} {d}. {Them} has kept count of that, and watches your hands.', '{Them} remembers {y}: {d}.'],
-      ['{Them} has not forgotten that {d}, in {y}. {Khe} meets you coldly.', '{Them} has not forgotten {y}: {d}.'],
-      ['It was {y} when {d}. {Them} has not forgotten, and gives no ground.', '{Them} has not forgotten {y}: {d}.'],
+      ['{Them} keeps in mind that {d}, in {y}. {Khe} meets you coldly.', '{Them} keeps {y} in mind: {d}.'],
+      ['It was {y} when {d}. {Them} bears it in mind, and gives no ground.', '{Them} keeps {y} in mind: {d}.'],
       ['{Them} holds {y} against you: {d}. {Khe} is slow to grant you anything.', '{Them} holds {y} against you: {d}.'],
     ],
     again: [

@@ -61,81 +61,87 @@ The two bouts in the ring carry their own fight spec for 48-fight-ladder: the fa
 
 ## Measured by
 
-**The dead-numbers bench**: `node bench/dead-numbers.mjs <build> --lives-per=4 --workers=1`, 24 lives of the six balance paths that lasted 25 years or more. Before is the same tree without this feature (`--without=live-numbers`). Outcomes are per life, median:
-
-**The dead-numbers bench**: `node bench/dead-numbers.mjs <build> --lives-per=4 --workers=1`, the bot lives of the six balance paths that lasted 25 years or more. Before is the same tree without this feature (`--without=live-numbers`, 23 lives, median 53 years). After is the full build (24 lives, median 51 years). Each cell is the median outcomes in a life, with how many lives fell under 5:
+**The dead-numbers bench**: `node bench/dead-numbers.mjs <build> --lives-per=4 --workers=1`, the bot lives of the six balance paths that lasted 25 years or more. Before is the same tree without this feature (`--without=live-numbers`, 23 lives, median 54 years). After is the full build with both passes (24 lives, median 53 years). The world under it has grown to 68 features while this was written, so these replace the first pass's figures. Each cell is the median outcomes in a life, with how many lives fell under 5:
 
 | Number | Before | After | | Number | Before | After |
 | --- | --- | --- | --- | --- | --- | --- |
-| persuasion | 715 (0) | 632 (0) | | **unarmed** | **2** (20) | 10 (2) |
-| etiquette | 681 (0) | 625 (0) | | stealth | 15 (8) | 10 (9) |
-| int | 345 (0) | 257 (0) | | riding | **1** (16) | 9 (8) |
-| wil | 84 (0) | 96 (0) | | survival | 10 (8) | 9 (6) |
-| sta | 77 (0) | 73 (0) | | **gambling** | **1** (20) | 9 (8) |
-| diplomacy | 63 (0) | 65 (1) | | learning | 9 (7) | 8 (8) |
-| command | 37 (1) | 40 (4) | | sword | 7 (11) | 7 (12) |
-| faith | 39 (5) | 39 (3) | | medicine | 5 (10) | 7 (11) |
-| trade | 178 (6) | 35 (6) | | tracking | 7 (10) | 6 (10) |
-| intrigue | 49 (1) | 34 (2) | | intimidation | 5 (11) | 6 (8) |
-| ins | 31 (0) | 30 (0) | | tactics | **2** (16) | 5 (12) |
-| melee | 23 (1) | 20 (1) | | craft | **3** (13) | **4** (17) |
-| str | 15 (0) | 19 (0) | | husbandry | **4** (13) | **4** (13) |
-| stewardship | 41 (4) | 17 (5) | | athletics | **2** (18) | **3** (17) |
-| spd | 15 (0) | 16 (0) | | **axe** | **0** (19) | merged into spear |
-| **bow** | **0** (22) | 16 (7) | | | | |
-| **sea** | **1** (20) | 15 (4) | | | | |
-| spear (Hafts, with axe) | **4** (12) | 13 (6) | | | | |
-| **music** | **1** (21) | 12 (4) | | | | |
-| shield | 11 (4) | 10 (7) | | | | |
+| persuasion | 725 (0) | 741 (0) | | **unarmed** | **2** (17) | 10 (0) |
+| etiquette | 680 (0) | 704 (0) | | survival | 12 (4) | 10 (8) |
+| int | 364 (0) | 239 (0) | | stealth | 13 (5) | 9 (10) |
+| wil | 112 (0) | 112 (0) | | **sea** | **1** (21) | 9 (9) |
+| trade | 47 (5) | 99 (6) | | **music** | **0** (20) | 9 (2) |
+| sta | 77 (0) | 85 (0) | | learning | 11 (7) | 9 (10) |
+| diplomacy | 86 (1) | 56 (2) | | intimidation | 5 (11) | 8 (5) |
+| **husbandry** | **3** (13) | 52 (3) | | riding | **2** (15) | 6 (12) |
+| **craft** | **2** (15) | 49 (2) | | **athletics** | **3** (18) | 6 (9) |
+| intrigue | 49 (2) | 43 (3) | | sword | 6 (11) | 5 (11) |
+| command | 38 (2) | 33 (3) | | **gambling** | **1** (16) | 5 (11) |
+| faith | 48 (4) | 32 (6) | | tracking | 8 (9) | **4** (14) |
+| ins | 31 (0) | 29 (0) | | tactics | **3** (13) | **3** (14) |
+| stewardship | 30 (4) | 29 (7) | | medicine | 8 (9) | **2** (14) |
+| melee | 18 (2) | 17 (2) | | **axe** | **0** (22) | merged into spear |
+| **bow** | **1** (22) | 16 (9) | | | | |
+| spear (Hafts, with axe) | **3** (13) | 15 (5) | | | | |
+| str | 15 (0) | 14 (0) | | | | |
+| spd | 16 (1) | 14 (0) | | | | |
+| shield | 9 (4) | 10 (4) | | | | |
 
-Under the line, before: 12 of 35 (axe, spear, unarmed, bow, riding, athletics, sea, music, tactics, craft, husbandry, gambling). After: 3 of 34 (athletics 3, craft 4, husbandry 4; none of them this feature's). The large numbers (int, trade, persuasion) move with the careers the bots happen to take on a shifted random stream, not with this feature.
+- **Before:** 12 of 35 numbers under the line (axe, spear, unarmed, bow, riding, athletics, sea, music, tactics, craft, husbandry, gambling).
+- **After, 24 lives:** 3 of 34 (tracking 4, tactics 3, medicine 2).
+- **After, 36 lives:** 1 of 34 (`--lives-per=6`, the same build). Only tactics is under, at 4; medicine is 5 and tracking 6.
 
-**Stability and spread** (the same build before the dice-watching riders, 36 lives, `--lives-per=6`): the bench's medians were bow 16, Hafts 12, music 12, unarmed 11, sea 11, gambling 7. The spread per life, as 10th / 25th / 50th / 75th / 90th percentile, and lives under 5:
+None of the 24-life three is a number this feature touches. Medicine went 7, 8, 6, 2 and 5 across five runs of this feature's builds as the tree and the stream moved, and tracking went 6, 8, 5, 4 and 6. They sit on the line, and 24 lives decide which side.
 
-| Number | p10 | p25 | p50 | p75 | p90 | Under 5 |
-| --- | --- | --- | --- | --- | --- | --- |
-| unarmed | 5 | 7 | 10 | 12 | 14 | 3 of 36 |
-| bow | 1 | 5 | 15 | 45 | 60 | 8 of 36 |
-| sea | 1 | 5 | 11 | 28 | 40 | 7 of 36 |
-| music | 4 | 7 | 10 | 25 | 32 | 4 of 36 |
-| gambling | 1 | 2 | 7 | 49 | 101 | 13 of 36 |
-| Hafts (spear and axe) | 1 | 3 | 8 | 17 | 46 | 11 of 36 |
+**Stability and spread** (36 lives, the final build). Percentiles per life, lives under 5, and the medians of two halves of 18 lives:
 
-Split into two halves of 18 lives, the medians were unarmed 8 and 11, bow 15 and 13, music 7 and 12, Hafts 6 and 12, gambling 6 and 7, and sea 15 and 5. Sea and gambling are the fragile two, and both are bimodal:
+| Number | p10 | p25 | p50 | p75 | p90 | Under 5 | Halves |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| unarmed | 6 | 7 | 10 | 14 | 18 | 0 of 36 | 10, 9 |
+| music | 5 | 6 | 9 | 14 | 43 | 3 of 36 | 9, 8 |
+| Hafts (spear and axe) | 1 | 4 | 15 | 21 | 50 | 9 of 36 | 12, 16 |
+| bow | 1 | 2 | 19 | 41 | 56 | 11 of 36 | 6, 21 |
+| sea | 0 | 2 | 14 | 27 | 54 | 13 of 36 | 7, 17 |
+| gambling | 1 | 2 | 8 | 75 | 97 | 14 of 36 | 3, 33 |
+| athletics | 2 | 3 | 7 | 10 | 15 | 11 of 36 | 5, 7 |
+| craft | 6 | 18 | 37 | 55 | 640 | 3 of 36 | 34, 43 |
+| husbandry | 2 | 31 | 52 | 78 | 176 | 5 of 36 | 45, 55 |
+| tactics (not touched) | 0 | 1 | 4 | 19 | 858 | 19 of 36 | 2, 13 |
 
-- **Sea** lives on the coast or travels to gatherings by sea, and an inland homebody meets no boat.
-- **Gambling** soldiers and dice players use heavily; others meet only the odd scene.
+- **Steady:** unarmed, music, craft and husbandry.
+- **Bimodal:** bow, sea and gambling. Gambling's halves read 3 and 33: soldiers and dice players use it heavily, careful homebodies hardly at all, so 18 lives can fall either way. Bow and sea split the same way between lives with an archery custom, a coast or gatherings abroad and lives with none.
+- **On the line:** athletics, which is steady near its 7.
 
 | Test (`test.mjs`) | Result |
 | --- | --- |
-| `lnSixLive` | 15 bot lives of up to 45 years (3 a path, all four personalities, counted with the bench's own counter, `counter.mjs`): median axe (→ Hafts) 6, unarmed 11, bow 9, sea 20, music 10, gambling 6. A 10-life league of 40 years put gambling at 3 on one tree and 7 on another, so the test uses 15 or more. |
-| `lnHonestOdds` | 16 of 16 retags applied, 26 of 26 riders. Odds for an untrained adult (skills 5, stats 40), before → after, and with the new skill at 50: dice in the back room 35 → 19% (trained 44%); camp dice 38 → 22% (47%); proving the bones honest 27 → 27% (52%); the hart 4 → 4% (28%); the butts 78 → 64% (86%); the pavane 12 → 12% (37%); the bonfire dance 53 → 53% (78%); firewood 19 → 19% (52%). No untrained loss is over 16 points, every trained gain is positive, and every rider is within its bounds. A trade's second skill moves the work target −3 at skill 0 and +6 at 60. |
+| `lnNineLive` | 16 bot lives of up to 45 years (3 a path, all four personalities, counted with the bench's own counter, `counter.mjs`). Median, with range and lives under 5: axe (→ Hafts) 14 (1-74, 5), unarmed 12 (5-28, 0), bow 11 (1-63, 7), sea 7 (0-1097, 4), music 8 (2-43, 3), gambling 5 (1-128, 7), athletics 11 (0-50, 4), craft 41 (1-1209, 2), husbandry 44 (2-382, 2). A 10-life league of 40 years put gambling at 3 on one tree and 7 on another, so the test uses 15 lives or more; it takes about 11 minutes. |
+| `lnHonestOdds` | 19 of 19 retags applied, 37 of 37 riders. Odds for an untrained adult (skills 5, stats 40), before → after, and with the new skill at 50: dice in the back room 35 → 19% (trained 44%); camp dice 38 → 22% (47%); proving the bones honest 27 → 27% (52%); the hart 4 → 4% (28%); the butts 78 → 64% (86%); the pavane 12 → 12% (37%); firewood 19 → 19% (52%); the three athletics retags lose an untrained adult at most 15 points. No untrained loss is over 16 points, every trained gain is positive, and every rider is within its bounds. A trade's second skill moves the work target −3 at skill 0 and +6 at 60. |
 | `lnBrawlFists` | A brawl: you fight on unarmed (worth skill 10, not your sword 60), the foe too; both weapons back afterwards. A brawl gone to steel: sword against axe. A duel: sword. |
-| `lnWorkAndYear` | Each pair is the same seed at skill 0 / 60. A farmer's 8 years: work rating 48 / 60, pay 695 / 722. The lament gives back 0 / 10 of the 25 a mother's death takes. 40 years at the Ashmere butts: −21 / +73 suns, fame 0 / 26. 40 herring seasons: 50 / 195 suns, ducked 1 / 0. 40 autumn hunts: fame 5 / 17. 200 winters of camp dice: won 78 / 130. 200 crossings to a gathering by sea: sick 112 / 0, ashore fresh 0 / 200. |
-| `lnScenesPlay` | The seven roll scenes are eligible for a 25-year-old peasant (on the coast for the crossing): 21 choices played, 0 raw tokens, 0 texts over 80 words. The tables after supper played 3 of 3 inside a gathering, and each moved it on to its next scene. |
+| `lnWorkAndYear` | Each pair is the same seed at skill 0 / 60. A farmer's 8 years: work rating 48 / 60, pay 695 / 722. The lament gives back 0 / 10 of the 25 a mother's death takes. 40 years at the Ashmere butts: −21 / +73 suns, fame 0 / 26. 40 herring seasons: 50 / 195 suns, ducked 1 / 0. 40 autumn hunts: fame 5 / 17. 200 winters of camp dice: won 78 / 130. 20 years of a farm: −120 / +240 suns against the release; of a workshop −160 / +260; a cottage mended 0 / +20; a horse kept −120 / 0. 200 seasons of marches: footsore 36 / 0, noted by the sergeants 0 / 114. 200 crossings to a gathering by sea: sick 112 / 0, ashore fresh 0 / 200. |
+| `lnScenesPlay` | The ten roll scenes are eligible for a 25-year-old peasant (on the coast for the crossing): 30 choices played, 0 raw tokens, 0 texts over 80 words. The tables after supper played 3 of 3 inside a gathering, and each moved it on to its next scene. |
 | `lnRenderPure` | Every tab drawn with a scene up and a job held: `A.S` and the stream unchanged; the farm's description names its second skill (Hafts). |
 
-All 10 tests (the four core suites and these six) pass on the full build. `lnSixLive` and `lnHonestOdds` were run on the final build; the rest were run on the build just before it, which differed only by the two dice-watching riders. The neighbours' tests pass on that build too: 49-body-mind 13 of 13 (including `mergedSkills`, which now counts 10 merged skills), 48-fight-ladder 9 of 9 (`flDuelOdds` mean error 1.7 with the grapple edge in), and 47-realm-bible 7 of 7. `tools/lint-events.mjs` passes (8 events, 0 errors, 0 warnings; the gathering scene declines outside a gathering, so `lnScenesPlay` plays it inside one). `tools/lint-choices.mjs` passes (0 obviously best; it compared none by numbers and could not read the gathering scene's function effects).
+All 58 tests pass on the final build (`--features=live-numbers,body-mind,fight-ladder,realm-bible,economy,markets`): the four core suites, these six, 49-body-mind 13 of 13 (`mergedSkills` now counts 10 merged skills), 48-fight-ladder 9 of 9 (`flDuelOdds` mean error 1.7 with the grapple edge in), 47-realm-bible 7 of 7, and 45-economy and 66-markets together 19 of 19. Those last two share `A.moneyYear` and the holdings with this feature. `tools/lint-events.mjs` passes (11 events, 0 errors, 0 warnings; the gathering scene declines outside a gathering, so `lnScenesPlay` plays it inside one). `tools/lint-choices.mjs` passes, with 0 obviously best, but it compared none of the 11 by numbers and could not read the gathering scene's function effects, so it checked little.
 
 ## Rules kept
 
 - Every draw is in engine code (A.chance, A.ri, A.rf, A.pick in the year, the wake, the camp, the crossing, the hunt and the scenes' setup). Rendering only reads: the trade descriptions are data set once at load, and `lnRenderPure` draws every tab with a scene up without changing `A.S` or the stream.
 - No inline handlers, no markup in state. The new state fields are `g.pc.lnSea` and `g.pc.lnHunt` on a gathering (optional, read as missing on an old save).
 - `fx.knack` is declared in `A.FX_EXTRA`.
-- No patches. Wrappers call the original: `A.applyFx`, `A.eventChoose`, `A.startDuel`, `A.situEdges`, `A.careerYear`, `A.milYear`, `A.familyYear`, and `A.BIBLE.hit` when 47-realm-bible is present.
+- No patches. Wrappers call the original: `A.applyFx`, `A.eventChoose`, `A.startDuel`, `A.situEdges`, `A.careerYear`, `A.milYear`, `A.familyYear`, `A.moneyYear`, `A.groupFightPC`, `A.battleFinish`, `A.duelAct`, and `A.BIBLE.hit` when 47-realm-bible is present.
 - Events use `(p, C) => C.*` conditions, 3 choices each, labels of 12 words or fewer, and text under 80 words. The festival names are the game's own (First Loaf, Lantern Night).
 
 ## Limits
 
-- **Character 7 is not done for the whole sheet.** Three numbers that are not this feature's are still under 5 on 24 lives: athletics 3, craft 4, husbandry 4. Tactics sits at 5, and at 3 on 36 lives. 49-body-mind's "6 of 35" was measured on 12 lives; on 23 lives of today's tree, 12 were under before this feature, sword and riding among them.
-- **Sea and gambling are fragile** (see the halves above). They are honest about the lives the bots lead: inland lives that never travel by sea, and careful players who never sit down to dice. A careful bot always takes a choice with no roll, so a scene that only offers checks reaches it through riders alone.
+- **Character 7 is close, not done.** On 36 lives only tactics is under, at 4. On 24 lives, tracking 4, tactics 3 and medicine 2 are under. Tactics is a general's number (the war room and missions read it), and a life that never commands meets it in a handful of scenes; this feature does not touch it beyond one rider. Medicine and tracking move either side of 5 between runs. Part of medicine is invisible to the bench: 49-body-mind reads it in every month of every illness, from a monthly hook the bench does not count.
+- **Bow, sea and gambling are bimodal** (see the halves above). They are honest about the lives the bots lead: inland lives that never travel by sea or hunt, and careful players who never sit down to dice. A careful bot always takes a choice with no roll, so a scene that only offers checks reaches it through riders alone.
 - **Axe is merged, not made live.** The war layer still has an axe skill for NPCs and troops (`GD.TROOP_GEAR` AX). Doing it properly, or cutting the skill, needs the source (the plan's step 1). The player's sheet shows "Hafts: axe, mace & spear".
 - **The retags and riders are judgement calls.** They are listed as data with a reason each, and `lnHonestOdds` prints every one with its odds. A designer should read the list. An untrained person now does worse at dice for money (35% → 19%), which is the point, but it is a change.
+- **The second pass touches money and hurt.** It changes holdings' yields and upkeep (−15% to +25% of income, up to two fifths of upkeep), adds a horse's keep (up to 6 suns a year) and adds small hurts: a fall from the ladder (1 in 25 a year at worst), the march, a rout, the ladder in the thatch scene.
 - **Balance not run** (the coordinator runs it). Expected moves, all small:
-  - Peak coin: herring boats (+1 to 6 suns a season on a coast), camp dice (±3% of a soldier's purse a winter), a trade's second skill (pay ±4%), the tables at a gathering (±10 to 35), pennies at the butts.
+  - Peak coin: herring boats (+1 to 6 suns a season on a coast), camp dice (±3% of a soldier's purse a winter), a trade's second skill (pay ±4%), the tables at a gathering (±10 to 35), pennies at the butts; and from the second pass, holdings' yields and upkeep by skill (a farm −6 to +12 a year, a workshop −8 to +13), a horse's keep (up to −6 a year).
   - Peak fame: the Ashmere butts for a champion archer (up to +26 over 40 years at bow 60; none below 45), a lord's hunts (about +5 to +17 over 40 years), the host's hunt, the wedding song and the ring.
-  - Age at death: the winter's wood (1 in 8 a year for a poor hand with an axe, 3 to 7 health), seasickness on a crossing, a fall at a hunt, the ring.
+  - Age at death: the winter's wood (1 in 8 a year for a poor hand with an axe, 3 to 7 health), seasickness on a crossing, a fall at a hunt, the ring; and from the second pass, the ladder, the march, the rout, a stiff ride to a gathering. A lost group fight now hurts a good runner less.
   - Global check win rate: the retags make some checks harder for the untrained and easier for the trained, so it may dip slightly; the band is 30 to 70.
   - Duels: the grapple edge (±2 on a 2d6 exchange) changes a few. 48's `flDuelOdds` stayed at a mean error of 1.7.
-- **Eight new scenes** at weight 1.1 to 1.8 add a few events to each life. The tables join the gathering pool of 6 to 9 scenes per role.
-- **The words need a human reader**: the eight scenes, the 26 rider lines and the eleven year lines. The duty notes are appended to the trade descriptions in English.
+- **Eleven new scenes** at weight 1.1 to 1.8 add a few events to each life. The tables join the gathering pool of 6 to 9 scenes per role.
+- **The words need a human reader**: the eleven scenes, the 37 rider lines and the year lines. The duty notes are appended to the trade descriptions in English.

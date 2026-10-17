@@ -549,4 +549,40 @@ export default {
     });
     return { ok: r.alive && r.shown && r.M === 0, detail: `loaded: the old line is shown ${r.shown} and weighs ${r.M}; played on to ${r.year} (${r.st})` };
   },
+  async bondsDeedsRead(pg) {
+    // the writer's pass: every choice label of every live event, through the deed maker. The past tense is right (no
+    // "knowed", no "chose to" for a verb the list could know), both verbs of "X and Y" go into it, and the label
+    // shapes that are not deeds (a name, a noun, "Fists") make none
+    const r = await pg.evaluate(() => {
+      const R = A.EV_RETIRED || {}, retired = id => (R instanceof Set ? R.has(id) : Array.isArray(R) ? R.includes(id) : !!R[id]);
+      const sub = s => String(s).replace(/\{[a-zA-Z0-9_]+\}/g, 'Mira');
+      const base = ('arise awake bear begin bend bid bind bite bleed blow break breed bring build buy catch choose cling come creep deal dig do draw drink drive eat fall feed feel fight find flee fly forbid forget forgive freeze get give go grind grow hang have hear hide hold keep kneel know lay lead leave lend lose make mean meet pay ride ring rise run say see seek sell send shake shine shoot shrink sing sink sit slay sleep slide sling speak spend spin spring stand steal stick sting stride strike swear sweep swim swing take teach tear tell think throw tread understand wake wear weave weep win withdraw write').split(' ');
+      // ("seed" is a word, not "see" in the past)
+      const bad = new RegExp('\\b(' + base.flatMap(b => /e$/.test(b) ? [b + 'd'] : [b + 'ed', b + b.slice(-1) + 'ed']).filter(w => w !== 'seed').join('|') + ')\\b');
+      let n = 0, deeds = 0, chose = 0, mangled = [], firstPerson = [];
+      for (const id of Object.keys(A.EV)) {
+        if (retired(id)) continue;
+        for (const c of A.EV[id].choices || []) {
+          if (!c || typeof c.t !== 'string') continue;
+          n++;
+          const d = A.BONDS.deedOf(sub(c.t), false);
+          if (!d) continue;
+          deeds++;
+          if (/^you chose to /.test(d)) chose++;
+          if (bad.test(d) && mangled.length < 5) mangled.push(d);
+        }
+      }
+      const D = l => A.BONDS.deedOf(l, false);
+      const cases = [['Rock him and sing', 'you rocked him and sang'], ['Lie low and wait', 'you lay low and waited'], ['Just listen', 'you listened'],
+        ['Quietly pay him', 'you quietly paid him'], ['Make him confess and pay', 'you made him confess and pay'], ['Yes', 'you said yes'],
+        ['Say nothing. It may skip you', 'you said nothing'], ['Take the bread and water', 'you took the bread and water'], ['Drive the cart home', 'you drove the cart home'],
+        ['Fists', null], ['Climb the nearest oak', 'you climbed the nearest oak'], ['Begin the song yourself', 'you began the song yourself']];
+      const wrong = cases.filter(([l, want]) => D(l) !== want).map(([l, want]) => `${l} -> ${D(l)} (want ${want})`);
+      const failed = A.BONDS.deedOf('Fight him', true);
+      return { n, deeds, chose, mangled, wrong, failed };
+    });
+    const share = r.chose / Math.max(1, r.deeds);
+    const ok = r.n >= 5000 && r.deeds >= 0.8 * r.n && share < 0.03 && !r.mangled.length && !r.wrong.length && /^you tried to fight him, and (failed|could not|it went wrong|it came to nothing)$/.test(r.failed);
+    return { ok, detail: `${r.n} labels, ${r.deeds} make a deed; "you chose to" for ${r.chose} (${(share * 100).toFixed(1)}%, under 3%); mangled past tenses ${r.mangled.length} ${r.mangled.join(' | ')}; cases wrong ${r.wrong.length} ${r.wrong.join(' | ')}; failed: "${r.failed}"` };
+  },
 };

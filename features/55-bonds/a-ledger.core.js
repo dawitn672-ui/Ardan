@@ -211,7 +211,8 @@
     return w + 'ed';
   };
   // the first clause of a label: "Laugh, and teach him" -> "Laugh"; "Decline: you cannot" -> "Decline"
-  const firstClause = s => clean(s).replace(/[“”‘’]/g, '').split(/\s*[,:;(—–]\s*|\s+-\s+/)[0].replace(/[.!?]+$/, '').trim();
+  // (and "Say nothing. It may skip you" -> "Say nothing")
+  const firstClause = s => clean(s).replace(/[“”‘’]/g, '').split(/\s*[,:;(—–]\s*|\s+-\s+|[.!?]\s+/)[0].replace(/[.!?]+$/, '').trim();
   // words a label can start with that are not a verb: such a label is not turned into a deed
   const NOT_VERB = new Set(('a an the your his her their my our its this that these those yes no not never nothing none all both neither either one two ' +
     'three some any every each it they them we i you he she just only very quietly simply finally half more less much still also too so then now again ' +
@@ -260,7 +261,7 @@
     // a verb this list knows goes into the past tense; any other first word is taken as a verb all the same
     // "Lie low" is not "lie to him": a verb with a word after it that changes its past
     const two = (w + ' ' + (rest.match(/^\s+([a-z]+)/) || ['', ''])[1]).trim();
-    if (PHR[two]) return `you ${adv}${PHR[two]}${rest.replace(/^\s+[a-z]+/, '')}`.replace(/\s+$/, '');
+    if (PHR[two]) return `you ${adv}${PHR[two]}${andVerbs(rest.replace(/^\s+[a-z]+/, ''))}`.replace(/\s+$/, '');
     return VERBS.has(w) ? `you ${adv}${pastOf(w)}${CAUSE.has(w) ? rest : andVerbs(rest)}` : `you chose to ${adv}${w}${rest}`;
   };
   BD.pastOf = pastOf;

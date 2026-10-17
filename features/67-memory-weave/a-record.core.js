@@ -88,7 +88,7 @@
   MW.deedOf = function (label, failed) {
     const l = clean(label).replace(/[“”‘’]/g, '');
     if (!l) return null;
-    const first = l.split(/\s*[,:;(—–]\s*|\s+-\s+/)[0].replace(/[.!?]+$/, '').trim();
+    const first = l.split(/\s*[,:;(—–]\s*|\s+-\s+|[.!?]\s+/)[0].replace(/[.!?]+$/, '').trim();
     if (!/^[A-Za-z]/.test(first) || first.split(' ').length > 10) return null;
     let d = null;
     // 55-bonds puts both verbs of "Take his purse and tell him things" into the past tense; without it, only the first

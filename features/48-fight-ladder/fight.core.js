@@ -8,7 +8,9 @@
 // Also: the bestiary's scale fixed where it clashed with its own sizes (audit.core.js), a lost hand costs two tiers for
 // every weapon, and the math is shown on event choices, on the duel screen and on the profile.
 const FL = A.FL;
-const DO = A.DUEL_ODDS = A.DUEL_ODDS || { scale: 6.1, seat: -0.14 };
+const DO = A.DUEL_ODDS = A.DUEL_ODDS || { scale: 5.85, slope: 3.5, mid: 70, seat: -0.22 };
+// the duel curve's width at the two fighters' worths (24-honest-odds: wider between masters than between brawlers)
+FL.scaleAt = (wa, wb) => (A.duelScale ? A.duelScale(wa, wb) : Math.max(3, DO.scale + (DO.slope || 0) * ((wa + wb) / 2 - (DO.mid || 70)) / 100));
 // A duel's odds by its rules, as [scale, seat, health]: p = 1 / (1 + e^-(d / scale + seat + health * (hA - hB))), d the
 // gap in fighting worth of the two fighters as they start (armed), h each one's share of blood at the start (the duel
 // starts you at your health, never below 30%). Fitted by maximum likelihood on two runs of 9,000 duels (yield, lethal:
@@ -275,9 +277,9 @@ if (typeof armFor === 'function') A.armFor = function (p) {
 // you may be hurt. The number on a profile now reads the worth they fight with and the health you both have.
 if (typeof A.shownDuelOdds === 'function') A.shownDuelOdds = function (a, b) {
   if (!a || !b) return 50;
-  const d = FL.worthWith(a, FL.armsFor(a, {})) - FL.worthWith(b, FL.armsFor(b, {}));
+  const wa = FL.worthWith(a, FL.armsFor(a, {})), wb = FL.worthWith(b, FL.armsFor(b, {}));
   const drew = (FL.draws(b, 'lethal') ? 1 : 0) - (FL.draws(a, 'lethal') ? 1 : 0);
-  return 100 / (1 + Math.exp(-(d / DO.scale + DO.seat + FL.HEALTH * (healthF(a) - healthF(b)) + FL.DREW * drew)));
+  return 100 / (1 + Math.exp(-((wa - wb) / FL.scaleAt(wa, wb) + DO.seat + FL.HEALTH * (healthF(a) - healthF(b)) + FL.DREW * drew)));
 };
 
 // ---- the duel screen: both tiers and the chance, before the first blow -------------------------------------------------

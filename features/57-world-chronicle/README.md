@@ -98,3 +98,19 @@ In the release the world remembers two kinds of thing (`S.history`: war ends and
 - **The epidemic is light.** It takes stability and adds unrest. It kills nobody in the world simulation and does not reduce population, so as not to move the economy.
 - **The first W6 run** flagged 9 citations as out of time. The only citation that can carry the scene's own date is the sickness at the door, which cites an epidemic as it happens; every other one waits 60 days. The check now accepts the same day, and that scene now names the player's town rather than the province where the sickness began. Since then: 0.
 - **Not run here: the balance bench.** By the coordinator's instruction it runs once on the integrated build. This feature touches money and health only lightly: 13 scenes with coin from -8 to +8 and health from -1 to -12 on a failed check, plus the epidemic's scene.
+
+## Writer's pass (round 7)
+
+The recalled lines go from 35 to 69 (every kind has two or more; famine 7, battle 7, plague 6, fall 5, war 5, ruler 5).
+Place names inside a sentence read "the Bleakfold", not "The Bleakfold" (`WC.ref`, `WC.line`, the recalled lines). The
+export counts on from the year before ("The next year, in April, ..."), as it already did within a year. One event line
+lost its "a Ashmere voice".
+
+| Measured, 12 bot lives of 50 years, the same seeds before and after (`/tmp/ardan/prose/harvest.mjs`, 8.4k generated lines a run) | Before | After |
+| --- | --- | --- |
+| recalled lines: distinct frames | 40 | 78 |
+| share of the ten commonest frames | 57.7% | 34.1% |
+| the same frame again within three years | 47 | 27 |
+| export sentences: distinct frames; top-ten share | 135; 41.5% | 195; 35.3% |
+
+Test `wcRecallLinesRead` draws every template in every branch and requires a whole sentence each time.

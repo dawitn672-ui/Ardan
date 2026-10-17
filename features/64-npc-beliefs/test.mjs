@@ -691,4 +691,35 @@ export default {
     const ok = r.card && r.realm && r.button && r.tales && r.record && r.cannot && r.heard && r.escaped && r.pure && r.n >= 2;
     return { ok, detail: JSON.stringify(r) };
   },
+  async nbClaimsRead(pg) {
+    // the writer's pass: what people say reads as a sentence. A deed set down as a title takes its verb ("that you were
+    // champion of ..."), a scene's title is not echoed as "in the matter of", twists name the right person, a place
+    // inside a sentence is "the Bleakfold", not "The Bleakfold", and every wording of a secret charge agrees with its subject
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 6451, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 30 });
+      const NB = A.NPCB, pc = A.pc(), y = A.S.year;
+      const other = Object.values(A.S.people).find(p => p.alive && p.id !== pc.id && A.isAdult(p) && p.sex === 'M');
+      const lines = [];
+      const D1 = NB.make('D', pc.id, null, 1, 6, 'Champion of the Great Tournament of Varenna', y), D2 = NB.make('D', pc.id, null, 1, 6, 'Was made a master before the Council', y);
+      const L = (n, t, rx) => lines.push([n, t, rx.test(t)]);
+      L('title deed', NB.say(NB.claim(D1), pc), /^that you were champion of the Great Tournament of Varenna$/);
+      L('was deed', NB.say(NB.claim(D2), pc), /^that you were made a master/);
+      const O1 = NB.make('D', other.id, null, 1, 6, 'Champion of the Great Tournament of Varenna', y);
+      L('title deed, someone else', NB.say(NB.claim(O1), pc), new RegExp('^that ' + NB.name(other.id) + ' was champion'));
+      const twists = [];
+      for (let i = 0; i < 40; i++) { const d = NB.make('D', pc.id, null, 1, 6, 'Pulled the miller out of the race ' + i, y); const w = NB.make('W', pc.id, null, 0, -8, d, y); twists.push(NB.say(NB.claim(w), pc)); }
+      const sd = NB.sceneDeed(pc, 'The flooded mill', 'Pull the miller out', 2, 0);
+      const said = sd ? NB.say(NB.claim(sd.D), pc) : '';
+      const secret = [];
+      const folk = Object.values(A.S.people).filter(p => p.alive && p.id !== pc.id && A.isAdult(p)).slice(0, 30);
+      for (const k of ['heresy', 'crime', 'oath', 'debt', 'affair', 'treason']) for (const f of folk) { const c = NB.make('S', f.id, k, 0, -5); secret.push(NB.say(NB.claim(c), pc)); }
+      return { lines, twists, said, secret, he: A.he(other) };
+    });
+    const bad = r.lines.filter(l => !l[2]);
+    const twistBad = r.twists.filter(s => /\{|undefined|you was|someone else were|\bthe matter of\b/.test(s));
+    const kinds = new Set(r.twists.map(s => s.replace(/race \d+/, 'race')));
+    const secBad = r.secret.filter(s => /\byou\b|\{|undefined/.test(s) || /\b(keep|have|owe|are|pray|go|write)\b/.test(s.split(' ').slice(2, 4).join(' ')));
+    const ok = !bad.length && !twistBad.length && kinds.size >= 4 && /^that you pulled the miller out, the day of the flooded mill$/.test(r.said) && !secBad.length && new Set(r.secret.map(s => s.split(' ').slice(-4).join(' '))).size >= 12 && r.secret.length >= 120;
+    return { ok, detail: `title deeds ${r.lines.map(l => '"' + l[1] + '"').join(', ')}; ${kinds.size} twist wordings, bad ${twistBad.length}; scene deed "${r.said}"; secret wordings ${new Set(r.secret).size}, bad ${secBad.length} ${secBad.slice(0, 2).join(' | ')}` };
+  },
 };

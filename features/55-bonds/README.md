@@ -159,6 +159,26 @@ The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs`.
 - **NPC moves** carry `npc: true` and share `21-npc-initiative`'s budget (about 1.5 a year, never more than 3). The blackmailer's return is booked through `A.NPCI.follow`. Without that feature, a small budget of the feature's own runs them (0.6 a year).
 - **One patch** (`BONDS-FEUD-WAR`, one factor in the war-odds product). Everything else is wrappers that call the original.
 
+## Writer's pass (round 7)
+
+Text only, plus the smallest changes the grammar needed. The deed maker (`BD.deedOf`) knows ~330 more verbs and ~90 more
+irregular pasts (drove, ate, saw, began, lay low...); puts a second verb into the past too ("you rocked him and sang"),
+except after make/let/help ("you made him confess and pay") or when the word after "and" is a thing ("the bread and
+water"); keeps an adverb ("you quietly paid him"); says short answers ("you said yes"); cuts a label at its first
+sentence; and words a failed try four ways (", and failed", ", and could not", ", and it went wrong", ", and it came to
+nothing", picked by a hash of the label). A history line no longer echoes a title ("you had your say over..." is gone),
+a title that asks takes the deed as its own sentence ("Can you help? You helped"), and a deed of a word or two carries
+its scene's title when that names a thing ("you accepted (the toll at the bridge)"). Secret texts: the "in the matter
+of" wording is gone, and debts, a hidden child, skimmed accounts, desertion and crimes have more wordings.
+
+| Measured | Before | After |
+| --- | --- | --- |
+| live labels (10,404) whose deed is "you chose to ..." | 790 | 104 (1.0%) |
+| history lines with a grammar error, 12 bot lives of 50 years, the same seeds before and after (`/tmp/ardan/prose/harvest.mjs`, 8.4k generated lines a run) | 15 of 1,158 | 2 of 1,211 |
+| "in the matter of" in a secret | 8 of 15 | 0 |
+
+Test `bondsDeedsRead` holds the fallback under 3% of 10,404 labels, no regularised irregular past, and twelve label shapes.
+
 ## Limits
 
 - **History lines from events are mechanical.** A label in the past tense ("you pulled him out") reads well for most of the release's choices, which are imperatives. A label that is not a verb falls back to "you chose …". A writer pass on the 30 most common event lines would help.

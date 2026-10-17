@@ -160,6 +160,11 @@ So the test's 60% bar after 30 years was not noise around a stable world: pooled
 - The ask event is an NPC move (`npc: true`, `ctx.npcMove`) inside the shared NPC budget.
 - The feature works with and without 20-ai-personality and 47-realm-bible. Without them it uses a small fallback trait table, and its tax applies everywhere.
 
+## Writer's pass (round 7)
+
+The ask at court has four wordings (`RI.wantLine`, a hash of who asks and the year) instead of one, and the lords' push
+reads "the return of the lords' liberties". The court card's lines had no grammar errors on 12 bot lives of 50 years, the same seeds before and after (`/tmp/ardan/prose/harvest.mjs`, 8.4k generated lines a run).
+
 ## Limits
 
 - **Taxes still drift light, more slowly.** With the custom pull, 26% of realms sit at Light after 30 years and 53% after 100 (without it, 52% and 84%). Lords want lighter taxes more often than councillors want heavier ones, and most realms make far more than their armies cost. The drift feeds itself: the court reads the treasury in years of *income*, and a lighter tax lowers the income, so the same coffers read as more years and argue for lighter taxes again. Light is then hard to leave (a rich crown's push for heavier taxes passes about 3% of the time). Whether a world where half the realms tax lightly after a century is wanted, and whether the court should read the treasury against its spending instead, is a design call. A few realms sit at Crushing: poor realms whose armies outrun their income. Once the works are built (upkeep at its cap of a quarter of revenue), treasuries settle near 3 years of income and the money goes to upkeep, great works and lower taxes.
