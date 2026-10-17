@@ -42,13 +42,17 @@ export default {
   },
 
   async temperMovesTheWar(pg) {
-    // the same wars, run with one side's generals of each temper, counting what the temper is about: assaults on
-    // defended provinces. A war is chaotic: one changed draw reshapes it, and twelve wars passed or failed on the random
-    // stream alone (with a few draws burned each month, cautious out-assaulted bold two to one). So this pools twelve
-    // wars on each of eight shifted streams, 96 a temper. The dead are reported but not held to a bar.
+    // the same wars, run with one side's generals of each temper, counting what the temper is about. A war is
+    // chaotic: one changed draw reshapes it, and twelve wars passed or failed on the random stream alone (with a few
+    // draws burned each month, cautious out-assaulted bold two to one). So this pools twelve wars on each of eight
+    // shifted streams, 96 a temper. Each order the army gives is classed by its target when given: an assault (men
+    // stand there; a pursuit if one of them fell back from a fight in the last 8 days and has not re-formed; engaged
+    // if they are fighting elsewhere or already being fought from another side; at a fort if walls stand), or a
+    // march on an empty province (a siege if walled). The same division sent at the same place again within 30 days
+    // is one order.
     const r = await pg.evaluate(() => {
-      const out = {};
-      for (const t of ['steady', 'bold', 'cautious', 'cunning']) out[t] = { assaults: 0, ours: 0, theirs: 0, held: 0 };
+      const G = A.GENERALS, out = {};
+      for (const t of ['steady', 'bold', 'cautious', 'cunning']) out[t] = { assaults: 0, pursuits: 0, fortAssaults: 0, engaged: 0, sieges: 0, open: 0, orders: 0, fights: 0, won: 0, dead: 0, killed: 0, taken: 0, ours: 0, theirs: 0, held: 0, mv: {} };
       for (const burn of [0, 1, 2, 3, 5, 7, 11, 40]) for (const t of Object.keys(out)) {
         const o = out[t];
         const hook = () => { for (let i = 0; i < burn; i++) A.rand(); };
@@ -58,38 +62,77 @@ export default {
           const me = ['POL-01', 'POL-02', 'POL-03'][s % 3], en = A.neighbors(me)[s % 2];
           if (!en) continue;
           A.startWar(me, en, null, 'conquest');
-          const think = A.armyThink;
+          const think = A.armyThink, fend = A.fightEnd, occ = A.occupy, seen = new Map();
           A.armyThink = function (a) {
             if (a.realm !== me) return think.apply(this, arguments);
             a.gtForce = t;
-            const before = new Map(A.armyDivs(a).map(d => [d.id, (d.path || []).join()]));
+            const S = A.S, before = new Map(A.armyDivs(a).map(d => [d.id, (d.path || []).join()]));
+            const fights0 = new Map(Object.keys(S.fights || {}).map(k => [+k, new Set(A.allDivs().filter(x => x.atk === +k && x.r === me).map(x => x.loc))]));
+            const st0 = Object.assign({}, G.stats[t] || {});
             const res = think.apply(this, arguments);
+            for (const [k, v] of Object.entries(G.stats[t] || {})) o.mv[k] = (o.mv[k] || 0) + v - (st0[k] || 0);
             for (const d of A.armyDivs(a)) {
-              if (!d.path || d.path.length !== 1 || before.get(d.id) === d.path.join()) continue;
-              const P = A.S.prov[d.path[0]];
-              if (P && A.hostile(me, A.ctrl(P)) && A.divsAt(P.id).some(x => A.hostile(me, x.r))) o.assaults++;
+              if (!d.path || !d.path.length || before.get(d.id) === d.path.join()) continue;
+              const j = d.path[d.path.length - 1], P = A.S.prov[j];
+              if (!P || !A.hostile(me, A.ctrl(P))) continue;
+              const H = A.divsAt(j).filter(x => A.hostile(me, x.r));
+              if (d.path.length > 1 && H.length) continue;     // a march that will meet them on the way is not an order to attack
+              const key = d.id + '>' + j; if (seen.has(key) && S.warClock - seen.get(key) < 30) continue; seen.set(key, S.warClock);
+              o.orders++;
+              const er = A.realm(P.owner), walls = (P.fort || 0) > 0 || (er && er.capitalProv === j);
+              if (H.length) {
+                o.assaults++;
+                if ((P.fort || 0) > 0) o.fortAssaults++;
+                if (H.some(x => G.disordered(x, S.warClock))) o.pursuits++;
+                const f0 = fights0.get(j);
+                if (H.some(x => x.atk != null && x.atk !== j) || (f0 && f0.size && !f0.has(d.loc))) o.engaged++;
+              } else if (walls) o.sieges++; else o.open++;
             }
             return res;
           };
+          // every fight our side starts, won or lost, and the dead on both sides of every fight we are in
+          A.fightEnd = function (pid, w) {
+            const F = A.S.fights && A.S.fights[pid];
+            if (F && F.a === me) { o.dead += F.deadA; o.killed += F.deadD; if (F.menA + F.menD >= 1000) { o.fights++; if (w === 'att') o.won++; } }
+            if (F && F.b === me) { o.dead += F.deadD; o.killed += F.deadA; }
+            return fend.apply(this, arguments);
+          };
+          A.occupy = function (P, rid) { if (rid === me && P && P.owner !== me && A.ctrl(P) !== me) o.taken++; return occ.apply(this, arguments); };
           const men = r => A.divsOf(r).reduce((x, d) => x + d.men, 0), m0 = men(me), e0 = men(en);
           // 300 days of war; scenes queued for the player (a custom, a plague nearby) would hold the clock, so clear them
-          try { const d0 = A.today(); for (let g = 0; g < 300 && A.today() - d0 < 300; g++) { A.S.queue = []; A.advance(Math.min(30, 300 - (A.today() - d0))); } } finally { A.armyThink = think; }
+          try { const d0 = A.today(); for (let g = 0; g < 300 && A.today() - d0 < 300; g++) { A.S.queue = []; A.advance(Math.min(30, 300 - (A.today() - d0))); } }
+          finally { A.armyThink = think; A.fightEnd = fend; A.occupy = occ; }
           o.ours += Math.max(0, m0 - men(me)); o.theirs += Math.max(0, e0 - men(en));
           o.held += A.S.prov.filter(P => P.owner !== me && A.ctrl(P) === me).length;
         } } finally { A.onMonth.splice(A.onMonth.indexOf(hook), 1); }
       }
       return out;
     });
-    const s = r.steady, b = r.bold;
-    const c = r.cautious;
-    // A cautious general keeps a third of his divisions in reserve and stays on the defensive when outnumbered on his
-    // front (GO-ARMY-DECIDE). The bars alone (odds, rest, tempo) only delayed his attacks, and in the full world he
-    // out-assaulted the steady army. Bold against steady is within the noise (a bold army already uses every division
-    // it has free), so it is reported, not held.
+    const s = r.steady, b = r.bold, c = r.cautious, n = r.cunning;
+    const pc = (x, y) => x / Math.max(1, y);
+    const field = o => pc(o.assaults, o.assaults + o.sieges), soft = o => pc(o.sieges + o.open + o.engaged, o.orders), win = o => pc(o.won, o.fights);
+    // provinces taken for every 100,000 men the army is down at the end (the dead, the destroyed and the deserted,
+    // less what came back in drafts). Counted by the dead in battle alone, cunning is level with steady (see README)
+    const perDead = o => pc(o.taken, o.ours / 1e5);
+    const T = [s, b, c, n];
+    // cautious (GO-ARMY-DECIDE): keeps a third in reserve and stays on the defensive when outnumbered on his front.
     // And the wars must have been fought: with the clock held, every temper read 0 and the test passed on nothing
-    const ok = c.assaults >= 50 && b.assaults >= c.assaults * 1.1 && s.assaults >= c.assaults * 1.1;
-    const k = n => `${Math.round(n / 1000)}k`;
-    return { ok, detail: Object.entries(r).map(([t, v]) => `${t}: ${v.assaults} assaults, ${k(v.ours)} of ours and ${k(v.theirs)} of theirs dead, ${v.held} provinces held`).join('; ') };
+    const okCautious = c.assaults >= 50 && b.assaults >= c.assaults * 1.1 && s.assaults >= c.assaults * 1.1;
+    // bold (GO-ARMY-MOVES): presses after a win, piles into the fight with their main host instead of sitting down
+    // before empty walls, goes in less rested. More assaults and pursuits, more of them field fights, and he wins as
+    // often as a steady general. Every bar needs a real sample under it
+    const okBold = s.pursuits >= 30 && s.fights >= 200 && b.assaults >= s.assaults * 1.25 && b.pursuits >= s.pursuits * 1.5 &&
+      field(b) >= field(s) + 0.02 && win(b) >= win(s) - 0.05 && (b.mv.pursue || 0) >= 30 && (b.mv.join || 0) >= 30;
+    // cunning: goes round walls and held places, falls on men already busy, feints, and leaves a host standing ready
+    // alone. The highest share of orders at empty or engaged places, the fewest assaults on walls, the most
+    // provinces taken for his dead; and the moves themselves happened
+    const okCunning = n.orders >= 500 && T.every(o => o === n || soft(n) >= soft(o) + 0.03) && T.every(o => o === n || n.fortAssaults < o.fortAssaults) &&
+      T.every(o => o === n || perDead(n) > perDead(o)) && (n.mv.round || 0) >= 50 && (n.mv.feint || 0) >= 5 && (n.mv.flank || 0) >= 10;
+    const k = x => `${Math.round(x / 1000)}k`, p = x => `${Math.round(x * 100)}%`;
+    const line = (t, v) => `${t}: ${v.assaults} assaults (${v.pursuits} pursuits, ${v.fortAssaults} at walls, ${v.engaged} on men engaged), ${p(field(v))} field, ${p(soft(v))} at empty or engaged places of ${v.orders} orders, won ${p(win(v))} of ${v.fights} fights, ${k(v.dead)} dead of ours and ${k(v.killed)} of theirs, ${v.taken} taken (${perDead(v).toFixed(1)} per 100k men down), ${k(v.ours)} men down, ${v.held} held`;
+    const fails = [!okCautious && 'cautious', !okBold && 'bold', !okCunning && 'cunning'].filter(Boolean);
+    return { ok: !fails.length, detail: (fails.length ? `FAILED ${fails.join(', ')}; ` : '') + Object.entries(r).map(([t, v]) => line(t, v)).join('; ') +
+      `; moves: bold ${JSON.stringify(b.mv)}, cunning ${JSON.stringify(n.mv)}` };
   },
 
   async planIsVisible(pg) {
@@ -104,6 +147,50 @@ export default {
     });
     if (r.none) return { ok: false, detail: 'no army for the soldier' };
     return { ok: !!r.plan && /Bold/.test(r.line), detail: `war room: "${r.line.replace(/<\/?b>/g, '')}"` };
+  },
+
+  async movesAreVisible(pg) {
+    // in real wars, a bold army's plan says where it presses and a cunning one's which walls it goes round, which
+    // place it makes a show at; and the letter that comes down the line says the same
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const G = A.GENERALS, seen = { bold: {}, cunning: {} }, eg = {}, letters = {};
+      for (let s = 0; s < 12; s++) for (const t of ['bold', 'cunning']) {
+        A.newGame({ seed: 71 + s, race: 'human', realm: 'POL-05', status: 'peasant', sex: 'M', startAge: 30 });
+        const me = ['POL-01', 'POL-02', 'POL-03'][s % 3], en = A.neighbors(me)[s % 2];
+        if (!en) continue;
+        A.startWar(me, en, null, 'conquest');
+        const think = A.armyThink;
+        A.armyThink = function (a) {
+          if (a.realm === me) a.gtForce = t;
+          const res = think.apply(this, arguments);
+          if (a.realm === me) {
+            const m = G.move(a), txt = G.planText(a);
+            if (m) { seen[t][m.k] = (seen[t][m.k] || 0) + 1; if (!eg[t + m.k]) eg[t + m.k] = txt; }
+            // the letter a soldier of this army would get now
+            if (m && !letters[t + m.k] && ((t === 'bold' && m.k === 'press') || (t === 'cunning' && (m.k === 'round' || m.k === 'feint')))) {
+              const o = G.orderFor(null, a, null);
+              if (o.press || o.wall != null || o.noise != null) letters[t + m.k] = { tp: o.tp, pp: o.pp, press: o.press, wp: o.wall, np: o.noise, gen: a.gen };
+            }
+          }
+          return res;
+        };
+        try { const d0 = A.today(); for (let g = 0; g < 300 && A.today() - d0 < 150; g++) { A.S.queue = []; A.advance(Math.min(30, 150 - (A.today() - d0))); } } finally { A.armyThink = think; }
+      }
+      // the letters, read by a soldier
+      const texts = {};
+      for (const [key, L] of Object.entries(letters)) {
+        const { pc } = GOT.soldier(85);
+        const t = key.startsWith('bold') ? 'bold' : 'cunning', ctx = { order: 1, genId: A.GENERALS.armyFor(pc).a.gen, temper: t, tp: L.tp, pp: L.pp != null ? L.pp : pc.home };
+        if (L.press) ctx.press = 1; if (L.wp != null) ctx.wp = L.wp; if (L.np != null) ctx.np = L.np;
+        A.S.queue = []; A.queue({ type: 'event', ev: 'go_order_' + t, forced: true, ctx });
+        const q = A.S.queue.find(x => x.ev === 'go_order_' + t); texts[key] = q ? A.eventView(q).text : null;
+      }
+      return { seen, eg, texts };
+    });
+    const ok = (r.seen.bold.press || 0) >= 3 && (r.seen.cunning.round || 0) >= 3 && /press on to /.test(r.eg.boldpress || '') && /round the walls of /.test(r.eg.cunninground || '') &&
+      /press on to it while they are broken/.test(r.texts.boldpress || '') && /round the walls of /.test(r.texts.cunninground || '') && Object.values(r.texts).every(x => x && !/\{/.test(x));
+    return { ok, detail: `moves seen: bold ${JSON.stringify(r.seen.bold)}, cunning ${JSON.stringify(r.seen.cunning)}; war room: ${Object.values(r.eg).map(x => `"${x}"`).join(', ')}; letters: ${Object.values(r.texts).map(x => `"${x}"`).join(' | ')}` };
   },
 
   async letterInARealWar(pg) {

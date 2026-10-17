@@ -15,6 +15,9 @@ const fill = (p, ctx) => {
   const g = A.P(ctx.genId);
   if (!g || !g.alive || !chain(p, ctx)) { ctx.skip = true; return; }
   ctx.target = provName(ctx.tp, 'the enemy line'); ctx.post = provName(ctx.pp, 'your post');
+  // the general's move: the walls he goes round, the place of the show (38-orders, A.GENERALS.orderFor)
+  if (ctx.wp != null) ctx.wall = provName(ctx.wp, 'their walls');
+  if (ctx.np != null) ctx.noise = provName(ctx.np, 'the near village');
 };
 // the settling scenes need only the chain and the place
 const after = (p, ctx) => {
@@ -29,7 +32,9 @@ const comrades = op => ({ who: 'comrade', op, all: true });
 A.defEvents([
   { id: 'go_order_bold', title: 'Orders: the first wave', trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p) && C.atWar(p), setup: fill,
-    text: (p, ctx) => `${via(ctx)} General {general} means to take {target} before the month is out, and your company goes in with the first wave. "We do not wait for the engines," it says. "The general has never waited for anything."`,
+    text: (p, ctx) => ctx.press
+      ? `${via(ctx)} They are beaten and falling back on {target}, and General {general} means to press on to it while they are broken. Your company goes in with the first wave, before they can form again. "We do not give them a day," it says. "A day is a wall."`
+      : `${via(ctx)} General {general} means to take {target} before the month is out, and your company goes in with the first wave. "We do not wait for the engines," it says. "The general has never waited for anything."`,
     choices: [
       { t: 'Go in with the first wave', check: { s: 'melee', s2: 'wil', d: 50 },
         win: { r: 'You are on the wall at {target} before the second wave has left the ditch. The general\'s aide writes your name down.', fx: { merit: 8, fame: 1, order: 'obey' } },
@@ -55,7 +60,11 @@ A.defEvents([
 
   { id: 'go_order_cunning', title: 'Orders: make a noise', trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p) && C.atWar(p), setup: fill,
-    text: (p, ctx) => `${via(ctx)} General {general} wants noise at {target}: drums, fires, a show of ladders, every night for a week. The real blow falls somewhere the letter does not name. Your company is the noise, and noise draws arrows.`,
+    text: (p, ctx) => ctx.wall
+      ? `${via(ctx)} General {general} means to go round the walls of {wall} and take {target} from behind. Until the column is past, he wants noise under {wall}: drums, fires, a show of ladders, every night. Your company is the noise, and noise draws arrows.`
+      : ctx.noise
+        ? `${via(ctx)} General {general} wants noise at {noise}: drums, fires, men marching in and out where they can be seen. When the garrison of {target} comes out to see to it, the real blow falls where they left. Your company is the noise, and noise draws arrows.`
+        : `${via(ctx)} General {general} wants noise at {target}: drums, fires, a show of ladders, every night for a week. The real blow falls somewhere the letter does not name. Your company is the noise, and noise draws arrows.`,
     choices: [
       { t: 'Make the noise, close under the walls', check: { s: 'stealth', s2: 'wil', d: 45 },
         win: { r: 'Six nights of drums and torches, and on the seventh they have moved half the garrison to face you. Somewhere else, the general\'s real attack goes in.', fx: { merit: 6, order: 'obey' } },

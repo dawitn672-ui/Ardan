@@ -49,4 +49,25 @@ export default [
       ['slice(0,defPow(c.j)<1?1:4)', 'slice(0,defPow(c.j)<1?1:A.GENERALS.commit(a))'],
     ],
   },
+  {
+    id: 'GO-ARMY-MOVES',
+    blob: 'ardan-core',
+    why: 'With the bars and decisions above, a bold army made about as many assaults as a steady one (a bold army already ' +
+      'sends every division it has free) and a cunning one only left defended forts alone. What sets them apart now is ' +
+      'where they go (A.GENERALS.pull, and A.GENERALS.moves after the think, orders.core.js): a bold general is drawn to ' +
+      'the enemy\'s main host rather than to empty walls, and a cunning one to the weakest division, to men already ' +
+      'fighting elsewhere and to depots. And a bold general\'s divisions break later in a fight: at 2% of their order ' +
+      'instead of 4% (A.GENERALS.stand), so they hold on at worse odds and lose more men. A cunning general\'s divisions ' +
+      'march round walled or held provinces of the enemy (A.GENERALS.road, in A.wsOrderDiv), and one that finds the enemy ' +
+      'across its road on the march goes round instead of attacking (A.GENERALS.sidestep, in A.divMove): in the release ' +
+      'most of the fights an army starts are not assaults its general chose but divisions walking into an enemy stack on ' +
+      'the way to their posts, and they lose nine in ten. A steady army\'s pull is 0, its stand 1, its road the ' +
+      'release\'s and it never sidesteps, which is the release.',
+    edits: [
+      ['-(P.fort||0)*3*A.GENERALS.weak(a);', '-(P.fort||0)*3*A.GENERALS.weak(a)+A.GENERALS.pull(a,j,def);'],
+      ['d.org<Math.max(1,A.divMaxOrg(d)*.04)', 'd.org<Math.max(1,A.divMaxOrg(d)*.04*(A.GENERALS?A.GENERALS.stand(d):1))', 2],
+      ['const path=A.wsPath(d.loc,dest,d.r);return path?', 'const path=A.GENERALS?A.GENERALS.road(d,dest):A.wsPath(d.loc,dest,d.r);return path?'],
+      ['if(A.divsAt(next).some(x=>A.hostile(d.r,x.r))){d.atk=next;return}', 'if(A.divsAt(next).some(x=>A.hostile(d.r,x.r))){if(A.GENERALS&&A.GENERALS.sidestep(d,next))return;d.atk=next;return}'],
+    ],
+  },
 ];
