@@ -319,7 +319,7 @@ Ten new features and second passes on five older ones, written in parallel again
 | 69-live-numbers | Character 7 ◐ | Checks retagged and riders added so most stats and skills touch 5 outcomes a life; the rest wait on the source merge. |
 | 74-old-age | Character 6 (deepened) | 119 old-age events, the deathbed and a death screen; the scorecard's old-age count 26 → 155. |
 | 38-orders (part 3) | War 3 ◐ | Bold generals press, pursue and turn on the enemy host; cunning ones go round walls, flank and feint. Each is as distinct from steady as cautious is; cunning's ground per man lost is best pooled, not in every seed set. |
-| 75-fair-checks | Power, Balance | The odds of a check fit the band a person is in; see its README. |
+| 75-fair-checks, 24-honest-odds (refit) | Character, Power | A scene's difficulty eases by the gap between a seasoned adult and a typical person of your life stage, never past what your stage brings, so a young adult no longer wins only 26% of checks: the scorecard's check success 38.5% → 50.2%, checks under 15% 24% → 7%, while untrained or wounded people still face long odds. The duel curve was refit on 14,400 duels (the player's seat −0.22, a width that grows with worth): the largest cell bias held out 2.8 → 1.5 points, and the bench now plays 1,000 duels a cell, since 150 left 4 points of noise. |
 | Writer's pass | Events 6 | Generated lines in 55, 56, 57, 64, 67, 68 and 70 agree in number, read in period voice and stop doubling words. |
 
 Findings:
