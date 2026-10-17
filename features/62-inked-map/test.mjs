@@ -58,6 +58,9 @@ export default {
   async inkPure(pg) {
     await pg.evaluate(WAR);
     const r = await pg.evaluate(async () => {
+      // opening the war room is an engine step (A.wrOpen raises any war started since the last day's tick); take it
+      // first, so what is measured is the drawing
+      A.wrOpen({});
       const T = window.__T, s0 = JSON.stringify(A.S), r0 = JSON.stringify(A.rngState);
       UI.INKMAP.budgetMs = 0;                 // force tiles to come late, so the next-frame redraw runs too
       for (const on of [true, false, true]) {

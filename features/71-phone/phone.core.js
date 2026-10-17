@@ -77,6 +77,8 @@ PH.CSS = `
   #game.phone summary, #modal summary{min-height:44px;display:flex;align-items:center}
   #game.phone label:has(> input[type=checkbox]), #modal label:has(> input[type=checkbox]), #game.phone label:has(> input[type=radio]), #modal label:has(> input[type=radio]){min-height:44px;display:flex;align-items:center;gap:10px}
   #game.phone input[type=checkbox], #modal input[type=checkbox]{width:22px;height:22px}
+  #game.phone label:has(> input[type=range]), #modal label:has(> input[type=range]){min-height:44px;display:flex;align-items:center;gap:10px}
+  #game.phone input[type=range], #modal input[type=range]{min-height:44px;flex:1 1 auto}
   #game.phone #tabs .subbar button{min-height:44px;min-width:44px}
   #game.phone button, #modal button, #app button{min-width:44px}
   #game.phone label[for], #modal label[for]{min-height:44px;display:flex;align-items:center}
