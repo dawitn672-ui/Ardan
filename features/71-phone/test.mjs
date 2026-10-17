@@ -134,16 +134,21 @@ export default {
     const SIG = () => { const out = []; for (const e of document.querySelectorAll('#app *, #modal *')) { const r = e.getBoundingClientRect(); out.push(`${e.tagName}.${typeof e.className === 'string' ? e.className : ''} ${[r.left, r.top, r.width, r.height].map(Math.round).join(',')}`); }
       out.push('html ' + (document.querySelector('#app').innerHTML + ((document.querySelector('#modal') || {}).innerHTML || '')).length); return out; };
     const first = (a, b) => { for (let i = 0; i < Math.max(a.length, b.length); i++) if (a[i] !== b[i]) return `${a[i]} / ${b[i]}`; return ''; };
+    // a screenshot of a still page: taken again until two in a row agree, so a late paint (a font swap, an image
+    // decoded after the settle) on a slow runner is not read as the phone layer's doing; a real difference is stable
+    const still = async () => { let h = crypto.createHash('sha1').update(await p.screenshot()).digest('hex');
+      for (let i = 0; i < 4; i++) { await p.evaluate(SETTLE); const h2 = crypto.createHash('sha1').update(await p.screenshot()).digest('hex'); if (h2 === h) break; h = h2; }
+      return h; };
     try {
       for (const name of names) {
         const s = SCREENS.find(x => x.name === name);
         await p.evaluate(() => { const st = document.getElementById('ph-css'); if (st) st.disabled = false; UI.PHONE.off = false; });
         // both sides measured after the same call (a redraw), so a transition started by the first draw is not a difference
         await p.evaluate(s.js); await p.evaluate(() => { UI.render(); window.scrollTo(0, 0); }); await p.evaluate(SETTLE);
-        const a = await p.evaluate(SIG); const ia = crypto.createHash('sha1').update(await p.screenshot()).digest('hex');
+        const a = await p.evaluate(SIG); const ia = await still();
         await p.evaluate(() => { document.getElementById('ph-css').disabled = true; UI.PHONE.off = true; UI.render(); window.scrollTo(0, 0); });
         await p.evaluate(SETTLE);
-        const b = await p.evaluate(SIG); const ib = crypto.createHash('sha1').update(await p.screenshot()).digest('hex');
+        const b = await p.evaluate(SIG); const ib = await still();
         n++; els += a.length;
         if (a.join() !== b.join() || ia !== ib) diff.push(`${name} (layout ${a.join() === b.join() ? 'same' : 'differs: ' + first(a, b)}, pixels ${ia === ib ? 'same' : 'differ'})`);
       }
