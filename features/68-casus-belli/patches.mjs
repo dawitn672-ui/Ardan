@@ -8,7 +8,8 @@ export default [
       'that target at 60% while its host is away at another war (A.cbPreview, in place of A.warPreview); a want ' +
       'presses on the opinion bar the way a claim does (A.cbPress, beside the claims term); and one more factor in the ' +
       'odds product (A.cbWarMul): up to x9 on the planned target when the moment is good, x0.5 while it is not, x0.5 ' +
-      'on any other neighbour while a plan stands, and 0 on a realm the crown owes an honoured debt. In the source: ' +
+      'on any other neighbour while a plan stands, x1 to x4 (by temper) on a neighbour remembered for an old wrong or wanted ' +
+      'by a crown with no plan, and 0 on a realm the crown owes an honoured debt. In the source: ' +
       'the same three terms in the war-chance calculation.',
     edits: [
       ['if(rel>A.aiWarBar(r.id)||A.hostile(r.id,o.id))continue;const P=A.warPreview(r.id,o.id);',

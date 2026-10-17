@@ -10,7 +10,7 @@
 // year (46-life-arcs, A.ARCS.path), the undertakings and story arcs it began and finished (46, 50-53), the ranks and
 // offices held, prison, freedom, wealth, fame, children. Then it sorts each life into one of the 14 arc types below
 // (the first that fits) and reports the distribution against the bar: 8 or more types, none above 25%.
-// --from=saved.json re-classifies lives saved by an earlier run without playing them again.
+// --from=a.json[,b.json] re-classifies (and pools) lives saved by earlier runs without playing them again.
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -122,7 +122,8 @@ async function play(html, n, years, world, seed0) {
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   let lives, meta = {};
-  if (arg('from')) ({ lives, meta } = JSON.parse(fs.readFileSync(arg('from'), 'utf8')));
+  // --from=a.json,b.json pools the lives of several saved runs
+  if (arg('from')) { lives = []; for (const f of arg('from').split(',')) { const d = JSON.parse(fs.readFileSync(f, 'utf8')); lives.push(...d.lives); meta = d.meta; } }
   else {
     const html = path.resolve(root, process.argv.slice(2).find(a => !a.startsWith('--')) || 'index.html');
     const world = arg('world') === 'canon' ? null : (arg('world') || 'varied');
@@ -134,6 +135,6 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   console.log(`${R.lives} lives, ${R.types} of ${TYPES.length} types, largest ${R.top} at ${R.topPct}% -> ${R.pass ? 'PASS' : 'FAIL'} (bar: 8 or more types, none above 25%)`);
   for (const r of R.rows) console.log(`  ${r.name.padEnd(24)} ${String(r.n).padStart(4)}  ${String(r.pct).padStart(5)}%`);
   console.log('  endings:', Object.entries(R.endings).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(', '));
-  if (R.fresh) console.log(`  lives in a world with fresh realms: ${R.fresh}; living in or next to one: ${R.freshNear}; starting tensions seen: ${R.tensions}`);
+  if (R.fresh) console.log(`  lives in a world with fresh realms: ${R.fresh}; living in or next to one at the end: ${R.freshNear}; starting tensions: ${(R.tensions / R.lives).toFixed(1)} a world`);
   if (arg('json')) fs.writeFileSync(arg('json'), JSON.stringify({ meta, report: R, lives }, null, 1));
 }

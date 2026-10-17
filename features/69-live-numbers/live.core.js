@@ -56,24 +56,27 @@ A.applyFx = function (pc, fx, ctx) {
 
 // ---- 1. checks whose words name the skill ------------------------------------------------------------------------------
 // [event, choice, word the label must hold, what to set, why]. Hand-checked against the label and the result text.
+// Where the words also support a stat (wits at dice, an eye at the butts), the stat stays first and the skill goes
+// second (40% of the check), so someone who never learned it loses at most about 15 points; where the old skill was the
+// wrong one (trade for a bet, persuasion for a pavane), the skill replaces it.
 // A choice that 48-fight-ladder routes through fighting worth is left alone (its odds come from the weapon in hand).
 LN.RETAG = [
-  ['tavern_dice', 0, /play/i, { s: 'gambling' }, 'dice for money in the back room: the dice skill, not general wits (was int/ins)'],
-  ['camp_dice', 0, /^in$/i, { s: 'gambling' }, 'soldiers throwing dice for their pay (was int/ins)'],
-  ['dice_cheat', 0, /prove/i, { s: 'gambling' }, 'you prove the bones honest by rolling them: knowing how dice fall (was int/diplomacy)'],
-  ['ch_fest_fair', 2, /cup-and-ball/i, { s: 'gambling' }, 'the cup-and-ball man is read by someone who knows the game (was ins/int)'],
-  ['rl_lu_seaopen', 2, /galley race/i, { s: 'gambling', s2: 'sea' }, 'a bet on a galley race: the odds and the boats (was trade/int)'],
+  ['tavern_dice', 0, /play/i, { s2: 'gambling' }, 'dice for money in the back room: wits, and the dice (was int/ins)'],
+  ['camp_dice', 0, /^in$/i, { s2: 'gambling' }, 'soldiers throwing dice for their pay: wits, and the dice (was int/ins)'],
+  ['dice_cheat', 0, /prove/i, { s2: 'gambling' }, 'you prove the bones honest by rolling them again and again: knowing how dice fall (was int/diplomacy)'],
+  ['ch_fest_fair', 2, /cup-and-ball/i, { s2: 'gambling' }, 'the cup-and-ball man: a sharp eye, and knowing the game (was ins/int)'],
+  ['rl_lu_seaopen', 2, /galley race/i, { s: 'gambling' }, 'a bet on a galley race: the odds, not the market (was trade/int)'],
   ['rl_ks_climb', 2, /bet/i, { s2: 'gambling' }, 'a bet on the climbers: reading the odds (was ins/trade)'],
   ['wk_hunt_poach', 0, /shot/i, { s: 'bow', s2: 'stealth' }, 'a shot at a hart at the forest edge (was stealth/survival)'],
-  ['pf_bow_butts', 0, /loose/i, { s: 'bow' }, 'drawing to the ear at the butts (was ins/str)'],
-  ['ch_peas_birds', 0, /sling/i, { s: 'bow' }, 'the sling folds into the bow (49-body-mind); was ins/spd'],
+  ['pf_bow_butts', 0, /loose/i, { s2: 'bow' }, 'drawing to the ear at the butts: an eye, and the bow (was ins/str)'],
+  ['ch_peas_birds', 0, /sling/i, { s2: 'bow' }, 'the sling, which folds into the bow (49-body-mind): an eye, and the sling (was ins/spd)'],
   ['lf_serf_woods', 1, /deer/i, { s2: 'bow' }, 'a deer in the lord\'s wood is found by tracking and taken with a bow (was tracking/stealth)'],
   ['lf_ship_share', 1, /captain/i, { s2: 'sea' }, 'looking into a captain and his cog: a seaman knows a sound hull (was trade/intrigue)'],
-  ['md_want_cold', 1, /gather/i, { s2: 'axe' }, 'a week of firewood cut in the woods (was survival/sta)'],
+  ['md_want_cold', 1, /gather/i, { s: 'axe' }, 'a week of firewood cut in the woods: the axe and the back (was survival/sta)'],
   ['gs_dance', 0, /dance/i, { s2: 'music' }, 'a pavane danced to the musicians\' measure (was etiquette/persuasion)'],
   ['festival_day', 0, /^dance$/i, { s2: 'music' }, 'dancing to the bonfire music (was spd/diplomacy)'],
-  ['lf_harvest_dance', 2, /dance/i, { s2: 'music' }, 'two dances to the pipes, one after the other (was athletics/spd)'],
-  ['rl_giant_chant', 0, /chant/i, { s: 'music' }, 'chanting a line back in the deep voice (was int/wil)'],
+  ['lf_harvest_dance', 2, /dance/i, { s: 'music' }, 'two dances to the pipes, one after the other: the measure and quick feet (was athletics/spd)'],
+  ['rl_giant_chant', 0, /chant/i, { s2: 'music' }, 'chanting a line back in the deep voice: memory, and the voice (was int/wil)'],
 ];
 LN.RETAGGED = [];   // { ev, i, before, after, why }
 LN.labelOf = (e, i) => { const c = e && e.choices && e.choices[i]; return c ? (typeof c.t === 'function' ? '' : String(c.t || '')) : ''; };
@@ -253,23 +256,26 @@ if (typeof situ === 'function') {
 // The release rates a year's work on one skill and one stat. Some trades lean on a second one; it moves the year's work
 // rating a little (skill 60: about +6 on the target; skill 0: about -3), so it moves the pay and the next promotion.
 LN.DUTY = {
-  farm: { k: 'axe', why: 'the axe for fencing, clearing and the winter\'s wood' },
-  labor: { k: 'axe', why: 'the axe in the woodyard and on the hewing gang' },
+  farm: { k: 'axe', why: 'fencing, clearing and the winter\'s wood' },
+  labor: { k: 'axe', why: 'the woodyard and the hewing gang' },
   carpenter: { k: 'axe', why: 'the axe and the adze: a shipwright hews before he planes' },
   pirate: { k: 'axe', why: 'the boarding axe' },
   herd: { k: 'bow', why: 'the sling against wolves and foxes' },
-  hunter: { k: 'bow', why: 'the bow brings down what the snare misses' },
-  bowyer: { k: 'bow', why: 'a bowyer proves each stave by shooting it' },
-  brewer: { k: 'unarmed', why: 'keeping the peace in your own house, and the door' },
+  hunter: { k: 'bow', why: 'what the snare misses' },
+  bowyer: { k: 'bow', why: 'proving each stave by shooting it' },
+  brewer: { k: 'unarmed', why: 'keeping the peace in your own house' },
   thief: { k: 'gambling', why: 'the dice and the cards in the back room' },
   clergy: { k: 'music', why: 'the chant: a keeper leads the hymns' },
   courtier: { k: 'music', why: 'a song at the right table' },
   merchant: { k: 'sea', coast: true, why: 'cargo shipped by sea, when you trade from a port' },
 };
-for (const c in LN.DUTY) {
-  const C = GD.CAREERS[c];
-  if (C && C.desc && !C._ln) { C.desc = `${C.desc} Also ${GD.SKILLS[LN.DUTY[c].k].toLowerCase()}: ${LN.DUTY[c].why}.`; C._ln = true; }
-}
+// the trade's description says so (data, set once when the numbers are merged; see 4.)
+LN.describe = function () {
+  for (const c in LN.DUTY) {
+    const C = GD.CAREERS[c], k = A.BM && A.BM.canon ? A.BM.canon(LN.DUTY[c].k) : LN.DUTY[c].k;
+    if (C && C.desc && !C._ln) { C.desc = `${C.desc} Second skill: ${GD.SKILLS[k]}, for ${LN.DUTY[c].why}.`; C._ln = true; }
+  }
+};
 LN.W = 0.15;          // work target per point of the second skill above 20
 LN.dutyOf = function (pc) {
   const j = pc && pc.job, D = j && LN.DUTY[j.c];
@@ -305,7 +311,7 @@ LN.year = function (pc) {
   if (LN.archer(pc) && !old(pc) && !pc.mil && rank(pc) <= 4) {
     LN.stats.butts++;
     const v = A.skill(pc, 'bow');
-    if (A.chance(clamp((v - 15) / 60, 0, 0.7))) { const g = A.ri(1, 4); pc.coin += g; A.fame(pc, 1); A.log(`At the butts on the feast days you shoot well enough to take ${A.coin(g)} off the others.`, 'good'); }
+    if (A.chance(clamp((v - 15) / 60, 0, 0.7))) { const g = A.ri(1, 4); pc.coin += g; if (v >= 45) A.fame(pc, 1); A.log(`At the butts on the feast days you shoot well enough to take ${A.coin(g)} off the others.`, 'good'); }
     else if (v < 6 && A.chance(0.5)) { pc.coin = Math.max(0, pc.coin - 1); A.log('The reeve fines you a penny: your bow hangs on its peg from one feast day to the next.', 'muted'); }
   }
   // the winter's wood: a household that does not pay a woodman fells and splits its own (the release's chores:
@@ -335,7 +341,7 @@ LN.year = function (pc) {
   if ((pc.noble || ['noble', 'royal', 'gentry'].includes(pc.status)) && !old(pc) && !pc.mil) {
     LN.stats.hunt++;
     const v = A.skill(pc, 'bow') + A.skill(pc, 'riding') * 0.5;
-    if (A.chance(clamp(0.1 + v / 150, 0.1, 0.8))) {
+    if (A.chance(clamp(0.05 + v / 200, 0.05, 0.5))) {
       A.fame(pc, 1); pc.happy = clamp(pc.happy + 3, 0, 100);
       A.log('At the autumn hunt your arrow takes the hart before the hounds reach it. It is talked about at supper.', 'good');
     }
@@ -409,7 +415,28 @@ const wrapBible = function () {
 };
 wrapBible();
 
+// ---- 4. axe and spear are one number for the player: Hafts ------------------------------------------------------------
+// Measured (README): with every hook above, axe still changes 2 outcomes in the median bot life. Its places are real but
+// narrow (the wood axe, the farmer's and carpenter's year, a commoner's cudgel), and the lives the bots lead, which rise
+// into office, trade and command, rarely fight. Spear sits at 4 for the same reason. A cudgel, a wood axe, a staff and a
+// spear are the common man's weapons, and the release already files the staff under spear and the club under axe; a
+// bill or a halberd is both at once. So, as 49-body-mind did for the blades and the bows, the player's axe is read and
+// trained as the spear's family, shown as one row, and an old save's higher number folds in. NPCs keep both numbers, so
+// troops, duels between other people and the war layer are as they were.
+LN.MERGE = { axe: 'spear' };
+LN.merge = function () {
+  const BM = A.BM;
+  if (!BM || !BM.MERGE) return false;
+  Object.assign(BM.MERGE, LN.MERGE);
+  if (BM.MERGED_NAME) BM.MERGED_NAME.spear = 'Hafts: axe, mace & spear';
+  if (BM.MERGED_DESC) BM.MERGED_DESC.spear = 'Axes, maces, cudgels, spears, staves and bills: anything swung or thrust on a haft.';
+  GD.SKILLS.spear = 'Hafts: axe, mace & spear';
+  if (GD.SKILL_DESC) GD.SKILL_DESC.spear = 'Axes, maces, cudgels, spears, staves and bills: anything swung or thrust on a haft.';
+  return true;
+};
+LN.merged = LN.merge();
+
 // ---- when the content is in --------------------------------------------------------------------------------------------
-LN.onContent = function () { LN.applyRetags(); LN.applyRides(); wrapBible(); };
+LN.onContent = function () { LN.describe(); LN.applyRetags(); LN.applyRides(); wrapBible(); };
 LN.onContent();
 if (typeof window !== 'undefined') window.addEventListener('ardan-content', () => LN.onContent());

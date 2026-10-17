@@ -57,6 +57,7 @@ Before this feature:
   - while the target's host is away at another war, the target counts at 60% of its strength (`A.cbPreview`);
   - when the target is at war elsewhere, worn out (weariness 45+), in turmoil (stability under 30) or outmatched (1.15× with friends counted), the odds rise by 1 + 5 × the plan's weight (up to ×9). Otherwise they fall to ×0.5;
   - a want presses on the opinion bar the way a claim does (15 points, `A.cbPress`).
+- **Without a plan, memory still points the way.** A crown that holds a grudge of 8 or more against a neighbour, or a lasting wrong in the release's memories, or wants something of it, turns on that neighbour first: ×(1 + 1.5 × its temper, at most 2), vengeance for a wrong, appetite for a want. The log names it ("An old wrong remembered", "Wrathful ruler: does not forget").
 - **The war chest opens.** The day a planned war is declared, the saved gold hires sellswords (56's `RI.hireMercs`).
 - **The war log names the moment and the temper:** "The moment has come: Greyhaven's host is away, at war with Lucerna", "Vengeful ruler: carries the grudge".
 
@@ -84,7 +85,7 @@ Before this feature:
 
 ### 5. Hoarding 0 (`gold.core.js`)
 
-The one flag in this feature's baseline run (seed 8080, 1185: Ashmere, three provinces, 3.4 million in the treasury against an income of 562,000) was not a treasury that had grown. Its income had shrunk under it. `A.updateRealmPops` recomputes income from land and the tax law, and a crown that lightens its taxes or loses provinces can find the same coffers worth six years of the new income before the month's windfall check comes round. 56's own windfall rule (a treasury over four years of income goes into a great work) now also runs the moment incomes are recomputed, and once more after the whole year's accounts.
+With this feature off, the bench read one flag in 10 worlds × 100 years (seed 99, Sylvaran, 1203, 7.5 years of income). Traced month by month, the treasury had not grown; the income had shrunk under it. A peace took one of Sylvaran's 15 provinces at the turn of the year, `A.updateRealmPops` recomputed its income from 897,581 to 379,924, and the same 2.85 million read as 7.5 years until the next month's windfall check made it a great work (3.0 years). 56's own windfall rule (a treasury over four years of income goes into a great work) now also runs the moment incomes are recomputed, and once more after the whole year's accounts, after every other feature's yearly code.
 
 ## Measured by
 
@@ -101,4 +102,12 @@ TBD
 
 ## Limits
 
-TBD
+- **Wars between realms reach the benchmark's 30%; all AI wars do not.** Wars of succession and liberty revolts are a sixth of AI wars. Their casus belli is the throne or the lords' liberties, never a realm's memory, so the share of all AI wars stays a few points under the share of wars between realms.
+- **Most wronged realms cannot strike at all.** In two worlds of 60 years (a scratch diagnostic), planning crowns spent most months under a truce with their target, at war, or too war-weary. Where the odds gate was the one that held, the median planner had 0.06 to 0.2 of its target's strength, counting friends, so even an absent host did not open the way. A planner that can never win waits for ever. It is patient, not suicidal, but it may also be hopeless.
+- **Seven wants out of 34 name a neighbour.** The others want to keep, sell or survive, and they start no wars. A writer could give more realms a want with a target, or fears that drive alliances.
+- **The court is half the trait measure.** Two thirds of the decisions with a trait say are the court's answers to its councillors' pushes. At 6× the crown's lean, a greedy ruler mostly grants heavier taxes and a generous one mostly refuses them. Taxes at the end of 100 years are still spread much as 56-realm-inside left them, but the court matters less against a ruler's temper than 56 designed. Whether that is the right balance is a design call.
+- **Spending follows traits only a little.** Of 14 (spending kind × trait) pairs, a few move the declared way by 1.2× or more. 56's ladder buys whatever is affordable above the reserve every year, so the order a temper sets changes little of the total. Works take most of the money whoever rules.
+- **Some decisions still go against nature often.** Giving in a lost war (about 57% in character) is decided by the war's state far more than by the ruler. Breaking an alliance, defying an overlord and yielding to a faction are small samples near 50%.
+- **"Paid our ransom" is not a debt.** AI rulers are not captured and ransomed in this world, so that kind has nothing to record.
+- **Playtesters guessing an AI's answer (the step's third bar) is not measured.** It needs people.
+- **Balance not run here.** The coordinator runs `bench/balance.mjs`. The war rate is about unchanged, but who fights whom and how long wars last move (a proud ruler holds out longer), so the war and noble bands could move. `bench/balance.mjs`'s `warsPerDecade` is the one to watch.

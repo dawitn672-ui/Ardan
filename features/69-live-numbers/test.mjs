@@ -27,7 +27,8 @@ export default {
             let L; try { L = B.life(o, pers, engaged, 40); } finally { DN.on = false; }
             if (L.years < 20) continue;
             const n = {};
-            for (const k of ['axe', 'unarmed', 'bow', 'sea', 'music', 'gambling']) n[k] = (DN.life.decided[k] || 0) + (DN.life.gated[k] || 0) + (DN.life.engine[k] || 0);
+            // a merged number is counted under its family, as the bench counts it (axe under Hafts, the spear's row)
+            for (const k0 of ['axe', 'unarmed', 'bow', 'sea', 'music', 'gambling']) { const k = A.BM && A.BM.canon ? A.BM.canon(k0) : k0; n[k0] = (DN.life.decided[k] || 0) + (DN.life.gated[k] || 0) + (DN.life.engine[k] || 0); }
             out.push({ name, pers, engaged, years: L.years, n });
             break;
           }
@@ -35,7 +36,8 @@ export default {
       });
       return out;
     }, [paths]);
-    const rows = SIX.map(k => { const v = lives.map(l => l.n[k]); return { k, med: median(v), min: Math.min(...v), max: Math.max(...v), under: v.filter(x => x < 5).length }; });
+    const fam = await pg.evaluate(() => (A.BM && A.BM.MERGE) || {});
+    const rows = SIX.map(k => { const v = lives.map(l => l.n[k]); return { k: fam[k] ? `${k} (→ ${fam[k]})` : k, med: median(v), min: Math.min(...v), max: Math.max(...v), under: v.filter(x => x < 5).length }; });
     const ok = lives.length >= 10 && rows.every(r => r.med >= 5);
     return { ok, detail: `${lives.length} lives (median ${median(lives.map(l => l.years))} years); median outcomes (range, lives under 5): ` +
       rows.map(r => `${r.k} ${r.med} (${r.min}-${r.max}, ${r.under})`).join(', '), data: { lives, rows } };
@@ -43,7 +45,7 @@ export default {
 
   // the spot-check: every retagged check and every rider, with what its words are and what it does to the odds and the
   // outcome. A retag may lower the odds of someone who never learned the skill a little (the words were always about
-  // it), never by more than 15 points, and must raise them for someone who has (skill 50).
+  // it), never by more than 16 points (a stat the words support is kept first, the skill second at 40%), and must raise them for someone who has (skill 50).
   async lnHonestOdds(pg) {
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 6901, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
@@ -56,7 +58,8 @@ export default {
         const was = { s: x.before.s, s2: x.before.s2, d }, now = { s: c.check.s, s2: c.check.s2, d };
         const odds = ck => A.checkOdds(pc, ck);
         const u0 = odds(was), u1 = odds(now);
-        for (const k of new Set([x.after.s, x.after.s2])) if (k && k !== x.before.s && k !== x.before.s2 && GD.SKILLS[k]) pc.skills[k] = 50;
+        const cn = k => (A.BM && A.BM.canon ? A.BM.canon(k) : k);
+        for (const k of new Set([x.after.s, x.after.s2])) if (k && k !== x.before.s && k !== x.before.s2 && GD.SKILLS[k]) pc.skills[cn(k)] = 50;
         const t0 = odds(was), t1 = odds(now);
         for (const k in GD.SKILLS) pc.skills[k] = 5;
         rows.push({ ev: x.ev, i: x.i, label: L.labelOf(A.EV[x.ev], x.i), was: `${x.before.s}/${x.before.s2 || '-'}`, now: `${c.check.s}/${c.check.s2 || '-'}`, u0, u1, t0, t1, why: x.why });
@@ -68,7 +71,7 @@ export default {
       const duty = { at0: Math.round((0 - 20) * L.W * 10) / 10, at60: Math.round((60 - 20) * L.W * 10) / 10 };
       return { rows, knacks, retags: L.RETAG.length, applied: L.RETAGGED.length, rides: L.RIDE.length, ridesOn: Object.keys(L.rides).length, duty };
     });
-    const bad = r.rows.filter(x => x.u0 - x.u1 > 15 || x.t1 <= x.t0);
+    const bad = r.rows.filter(x => x.u0 - x.u1 > 16 || x.t1 <= x.t0);
     const badK = r.knacks.filter(k => k.max > 1);
     const ok = r.applied === r.retags && r.ridesOn === r.rides && !bad.length && !badK.length && r.duty.at0 >= -3 && r.duty.at60 <= 6;
     return { ok, detail: `${r.applied} of ${r.retags} retags applied, ${r.ridesOn} of ${r.rides} riders; odds for an untrained adult (skills 5, stats 40) before → after, and with the new skill at 50: ` +
@@ -105,9 +108,10 @@ export default {
   async lnWorkAndYear(pg) {
     const r = await pg.evaluate(() => {
       const L = A.LN;
-      const fresh = (o, k, v) => { A.newGame(Object.assign({ seed: 6903, race: 'human', sex: 'M', startAge: 25 }, o)); const pc = A.pc(); A.S.queue = []; pc.skills[k] = v; return pc; };
+      const cn = k => (A.BM && A.BM.canon ? A.BM.canon(k) : k);
+      const fresh = (o, k, v) => { A.newGame(Object.assign({ seed: 6903, race: 'human', sex: 'M', startAge: 25 }, o)); const pc = A.pc(); A.S.queue = []; pc.skills[cn(k)] = v; return pc; };
       // a farmer's axe: 8 years of work
-      const farm = v => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'axe', v); pc.job = { c: 'farm', r: 1, y: 3, perf: 50, merit: 0 }; let pay = 0; for (let y = 0; y < 8; y++) { pc.skills.axe = v; pc.coin = 100; pc.job.r = 1; A.careerYear(pc); pay += pc.coin - 100; } return { perf: Math.round(pc.job.perf), pay }; };
+      const farm = v => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'axe', v); pc.job = { c: 'farm', r: 1, y: 3, perf: 50, merit: 0 }; let pay = 0; for (let y = 0; y < 8; y++) { pc.skills[cn('axe')] = v; pc.coin = 100; pc.job.r = 1; A.careerYear(pc); pay += pc.coin - 100; } return { perf: Math.round(pc.job.perf), pay }; };
       const f0 = farm(0), f60 = farm(60);
       // the wake: a mother's death with music 0 and 60
       const wake = v => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'music', v); const m = { given: 'Agna' }; pc.happy = 60; L.wake(pc, m, 'mother'); return pc.happy - 60; };
@@ -148,13 +152,13 @@ export default {
     });
     const ok = r.f60.perf > r.f0.perf && r.f60.pay > r.f0.pay && r.w60 > r.w0 && r.b60.coin > r.b0.coin && r.b60.fame > r.b0.fame &&
       r.s60.coin > r.s0.coin && r.s60.ducked <= r.s0.ducked && r.h60 > r.h0 && r.c60 > r.c0 + 10 && r.x0 && r.x60 && r.x0.sick > r.x60.sick && r.x60.fresh > r.x0.fresh;
-    return { ok, detail: `a farmer's 8 years at axe 0 / 60: work rating ${r.f0.perf} / ${r.f60.perf}, pay ${r.f0.pay} / ${r.f60.pay}; a mother's death costs ${-r.w0} / ${-r.w60} happiness at music 0 / 60; ` +
-      `40 years at the Ashmere butts at bow 0 / 60: ${r.b0.coin} / ${r.b60.coin} suns and fame ${r.b0.fame} / ${r.b60.fame}; 40 herring seasons at sea 0 / 60: ${r.s0.coin} / ${r.s60.coin} suns, ducked ${r.s0.ducked} / ${r.s60.ducked}; ` +
-      `40 autumn hunts at bow 0 / 60: fame ${r.h0} / ${r.h60}; 200 winters of camp dice at gambling 0 / 60: won ${r.c0} / ${r.c60}; ` +
+    return { ok, detail: `a farmer's 8 years at axe 0 / 60: work rating ${r.f0.perf} / ${r.f60.perf}, pay ${r.f0.pay} / ${r.f60.pay}; the lament at a mother's wake gives back ${r.w0} / ${r.w60} of the 25 happiness her death takes, at music 0 / 60; ` +
+      `40 years at the Ashmere butts at bow 0 / 60: ${r.b0.coin} / ${r.b60.coin} suns and fame ${Math.round(r.b0.fame)} / ${Math.round(r.b60.fame)}; 40 herring seasons at sea 0 / 60: ${r.s0.coin} / ${r.s60.coin} suns, ducked ${r.s0.ducked} / ${r.s60.ducked}; ` +
+      `40 autumn hunts at bow 0 / 60: fame ${Math.round(r.h0)} / ${Math.round(r.h60)}; 200 winters of camp dice at gambling 0 / 60: won ${r.c0} / ${r.c60}; ` +
       (r.x0 ? `200 crossings to ${r.x0.host} at sea 0 / 60: sick ${r.x0.sick} / ${r.x60.sick}, came ashore fresh ${r.x0.fresh} / ${r.x60.fresh}` : 'no sea route found') };
   },
 
-  // the seven scenes: each choice plays, no raw tokens, the text in its word limit
+  // the eight scenes: each choice plays, no raw tokens, the text in its word limit
   async lnScenesPlay(pg) {
     const r = await pg.evaluate(() => {
       const ids = Object.keys(A.EV).filter(k => /^ln_(wedding_song|fair_ring|butts|threshing_dice|winter_wood|crossing|collared)$/.test(k));
@@ -177,10 +181,26 @@ export default {
           A.S.queue = [];
         }
       }
-      return { n: ids.length, elig, played, raw, long, bad };
+      // the tables after supper: a scene of the gathering pool, played inside a gathering, and it moves the gathering on
+      let tables = 0, onward = 0;
+      for (let i = 0; i < 3; i++) {
+        A.newGame({ seed: 6906, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 25 });
+        const pc = A.pc(); A.S.queue = []; pc.coin = 500;
+        const host = Object.keys(A.S.realms).find(r => r !== pc.realm && A.realm(r) && A.realm(r).alive);
+        A.S.gath = (A.S.gath || []).concat([{ id: 'ln_t', host, kind: 'wedding', guests: [host], at: A.absDay(), pc: { role: 'noble', seen: [], sc: 0, inf: 0 } }]);
+        A.S.queue = [{ type: 'event', ev: 'ln_tables', forced: true, ctx: { gid: 'ln_t' } }];
+        const v = A.eventView(A.S.queue[0]);
+        if (v.skip || T.raw.test(v.text)) { raw++; bad.push('ln_tables view'); continue; }
+        const vi = v.choices.findIndex(c => c.i === i); if (vi < 0) continue;
+        A.eventChoose(vi);
+        const q = A.S.queue[0];
+        if (q && q.result) { tables++; if (q.after) onward++; if (T.raw.test(q.result.text)) { raw++; bad.push('ln_tables#' + i); } }
+        A.S.queue = [];
+      }
+      return { n: ids.length, elig, played, raw, long, bad, tables, onward };
     });
-    const ok = r.n === 7 && r.elig === 7 && r.played >= 21 && !r.raw && !r.long;
-    return { ok, detail: `${r.n} scenes, ${r.elig} eligible for a 25-year-old peasant (on the coast for the crossing), ${r.played} choices played, ${r.raw} raw tokens${r.bad.length ? ' ' + r.bad.join(',') : ''}, ${r.long} texts over 80 words` };
+    const ok = r.n === 7 && r.elig === 7 && r.played >= 21 && r.tables === 3 && r.onward === 3 && !r.raw && !r.long;
+    return { ok, detail: `${r.n} scenes, ${r.elig} eligible for a 25-year-old peasant (on the coast for the crossing), ${r.played} choices played, ${r.raw} raw tokens${r.bad.length ? ' ' + r.bad.join(',') : ''}, ${r.long} texts over 80 words; the tables after supper played ${r.tables} of 3 inside a gathering, ${r.onward} moved it on to its next scene` };
   },
 
   // drawing the game (every tab, a job card with the second skill, a scene) changes neither A.S nor the random stream
@@ -188,11 +208,12 @@ export default {
     const r = await pg.evaluate(() => {
       T.enter({ seed: 6907, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
       const pc = A.pc(); A.S.queue = [{ type: 'event', ev: 'ln_wedding_song', ctx: {} }];
-      pc.job = { c: 'farm', r: 1, y: 3, perf: 50, merit: 0 };
+      pc.job = { c: 'farm', r: 1, y: 3, perf: 50, merit: 0, since: A.absDay() - 400, rep: 30 };
+      A.eventView(A.S.queue[0]);   // the scene's first view is the engine's (its setup may draw); drawing it again is not
       const rng0 = JSON.stringify(A.S.rng), h0 = T.hash(A.S), r0 = A.rngState;
       T.renderAll();
       const html = document.body.innerHTML;
-      return { pure: JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0 && A.rngState === r0, desc: /Also axe &amp; mace|Also axe & mace/i.test(GD.CAREERS.farm.desc), scene: /song for the bride|A song for the bride/i.test(html) };
+      return { pure: JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0 && A.rngState === r0, desc: /Second skill: Hafts/.test(GD.CAREERS.farm.desc), scene: /song for the bride|A song for the bride/i.test(html) };
     });
     return { ok: r.pure && r.desc, detail: `render pure ${r.pure}; the farm's description names its second skill ${r.desc}; the scene drawn ${r.scene}` };
   },

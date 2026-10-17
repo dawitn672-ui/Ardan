@@ -180,7 +180,9 @@
     const x = t.closest && t.closest('[data-tt-close]');
     if (x) { const l = +x.dataset.ttClose, s = TT.stack[l - 1]; TT.close(l); s && s.a.isConnected && s.a.focus(); return; }
     const a = isAnchor(t), pop = popOf(t);
-    if (a && !(a.closest('[data-a]') && !pop)) {
+    // a number that is its own tap target inside an action (data-tt-tap): the tap explains it, and the action waits
+    if (a && !pop && a.dataset.ttTap && a.closest('[data-a]')) { e.preventDefault(); e.stopPropagation(); }
+    if (a && !(a.closest('[data-a]') && !pop && !a.dataset.ttTap)) {
       const lvl = TT.levelOf(a), cur = TT.stack[lvl - 1];
       if (cur && cur.a === a && cur.how !== 'hover') { TT.close(lvl); return; }
       if (cur && cur.a === a) { cur.how = 'click'; TT.close(lvl + 1); return; }  // hovered, now pinned
@@ -192,9 +194,9 @@
   };
   TT.onKey = function (e) {
     if (e.key === 'Escape' && TT.stack.length) {
-      const s = TT.stack[TT.stack.length - 1];
+      const s = TT.stack[TT.stack.length - 1], back = s.back && s.back.isConnected ? s.back : s.a;
       TT.close(TT.stack.length);
-      if (s.a && s.a.isConnected) s.a.focus();
+      if (back && back.isConnected) back.focus();
       e.preventDefault(); e.stopImmediatePropagation();
       return;
     }
@@ -206,6 +208,11 @@
       const el = TT.open(t, lvl, 'key');
       if (el) el.focus();
       return;
+    }
+    // an action holding a tap target (a choice and its odds): Right arrow opens the odds, Esc comes back to the action
+    if (e.key === 'ArrowRight' && t && t.matches && t.matches('[data-a]') && !popOf(t)) {
+      const a = t.querySelector('[data-tt-tap]');
+      if (a) { e.preventDefault(); e.stopImmediatePropagation(); const el = TT.open(a, TT.levelOf(a), 'key'); if (el) { TT.stack[TT.stack.length - 1].back = t; el.focus(); } return; }
     }
     if (e.key === 'Tab' && TT.stack.length) {
       const top = TT.stack[TT.stack.length - 1].el;
@@ -220,7 +227,7 @@
   TT.onFocus = function (e) {
     const t = e.target;
     if (!TT.stack.length || popOf(t)) return;
-    if (TT.stack.some(s => s.a === t)) return;
+    if (TT.stack.some(s => s.a === t || s.back === t)) return;
     TT.closeAll();
   };
   TT.onResize = () => { for (let l = 1; l <= TT.stack.length; l++) TT.place(l); };

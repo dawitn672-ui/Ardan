@@ -44,7 +44,7 @@
   const name = id => (A.realmShort ? A.realmShort(id) : id);
   const cap1 = s => (s ? s[0].toUpperCase() + s.slice(1) : s);
   const noThe = s => String(s || '').replace(/^the /i, '');
-  const clean = s => String(s == null ? '' : s).replace(/[<>"]/g, '');
+  const clean = s => String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/[<>"]/g, '');
   const live = () => Object.values(A.S.realms).filter(r => r && r.alive && !r.isRebel && r.capitalProv != null);
   const atWarWith = (a, b) => (A.S.wars || []).some(w => (w.att.includes(a) && w.def.includes(b)) || (w.att.includes(b) && w.def.includes(a)));
 

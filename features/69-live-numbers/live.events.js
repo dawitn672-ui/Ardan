@@ -1,7 +1,8 @@
-// Live numbers: seven short scenes for the six numbers a typical life did not use (axe, unarmed, bow, sea, music,
+// Live numbers: eight short scenes for the six numbers a typical life did not use (axe, unarmed, bow, sea, music,
 // gambling). The two bouts in the ring carry their own 48-fight-ladder spec (the fair's champion is no knight; the farm
 // lads are not either). Each is a moment most lives pass through: a wedding feast, the fair, the butts after church, dice after the
-// harvest, the winter's wood, a crossing on the coast, a hand on your collar in the market.
+// harvest, the winter's wood, a crossing on the coast, a hand on your collar in the market, and the tables after supper at a gathering of crowns (a scene of the
+// release's gathering pool, gscene, so it continues the gathering with A.gNext).
 A.defEvents([
   {
     id: 'ln_wedding_song',
@@ -39,7 +40,7 @@ A.defEvents([
     id: 'ln_butts',
     title: 'The butts after church',
     cond: (p, C) => C.adult(p) && !C.old(p) && !C.prison(p) && !C.ruler(p),
-    w: 1.2, cool: 5,
+    w: 1.8, cool: 4,
     text: 'After church the bows come down to the butts on the green. The young shoot for a capon; the old stand behind them and say how it was done in their day.',
     choices: [
       { t: 'Shoot for the capon', check: { s: 'bow', s2: 'ins', d: 45 },
@@ -115,6 +116,30 @@ A.defEvents([
         win: { r: 'The reeve takes one look at you and sends them out again. The ewe-thief, he says, has a beard.', fx: { honor: 1 } },
         lose: { r: 'The reeve is busy. You sit in the lock-up until evening and pay a penny for the room.', fx: { coin: -1, happy: -3 } } },
       { t: 'Shout for a neighbour to vouch for you', r: 'Old Wat comes over from the stalls and swears you were at his fire on First Loaf. They let go, slowly.', fx: { happy: -1 } },
+    ],
+  },
+  {
+    id: 'ln_tables',
+    title: 'Tables after supper',
+    trigger: true,
+    gscene: { roles: ['ruler', 'envoy', 'noble', 'knight', 'guard'] },
+    setup: (p, ctx) => {
+      const g = A.gathById && A.gathById(ctx.gid);
+      if (!g || !g.pc) { ctx.skip = 1; return; }
+      const me = p.ruler || p.realm, them = (g.guests || []).concat([g.host]).filter(r => r && r !== me && A.realm(r));
+      if (!them.length) { ctx.skip = 1; return; }
+      ctx.rid = A.pick(them); ctx.other = A.realmShort(ctx.rid);
+      ctx.room = g.pc.role === 'guard' ? 'In the guardroom the off watch' : 'After supper the boards are cleared, and the lords';
+    },
+    text: '{room} play at tables and dice for silver. A man of {other} pushes a stack of coin into the middle and looks round for someone to take him on.',
+    choices: [
+      { t: 'Sit down and play him for it', check: { s: 'gambling', s2: 'ins', d: 48 },
+        win: { r: 'He plays his luck and you play the odds. By the last candle his silver is on your side of the board, and the room knows your name.', fx: (p, ctx) => { p.coin += 30; const g = A.gathById(ctx.gid); if (g && g.pc) g.pc.inf = (g.pc.inf || 0) + 1; A.gNext(ctx); return ''; } },
+        lose: { r: 'He is better than he looks. You rise thirty suns lighter, with the room watching you count it out.', fx: (p, ctx) => { p.coin = Math.max(0, p.coin - 30); A.gNext(ctx); return ''; } } },
+      { t: 'Play, and lose a little to him on purpose', check: { s: 'gambling', s2: 'int', d: 40 },
+        win: { r: 'You lose ten suns so neatly that he thinks he won them. He is your friend for the rest of the week.', fx: (p, ctx) => { p.coin = Math.max(0, p.coin - 10); const g = A.gathById(ctx.gid); if (g && g.pc) g.pc.inf = (g.pc.inf || 0) + 3; A.gNext(ctx); return ''; } },
+        lose: { r: 'You mean to lose a little and lose a great deal. He is pleased; your purse is not.', fx: (p, ctx) => { p.coin = Math.max(0, p.coin - 35); const g = A.gathById(ctx.gid); if (g && g.pc) g.pc.inf = (g.pc.inf || 0) + 1; A.gNext(ctx); return ''; } } },
+      { t: 'Watch, and listen to what the losers say', r: 'Losing men talk. You learn which of the {other} party is short of money.', fx: (p, ctx) => { A.trainSkill(p, 'intrigue', 1); A.gNext(ctx); return ''; } },
     ],
   },
 ]);

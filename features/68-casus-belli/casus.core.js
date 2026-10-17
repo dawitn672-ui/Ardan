@@ -9,11 +9,13 @@
 //      appetite: war, greed, pride). The strongest above a bar becomes its plan. Nothing is drawn: the plan follows
 //      from the ledger, the want and the ruler, so a new ruler can take it up or let it drop.
 //   2. Building up. While it plans, the crown keeps more gold in reserve (56-realm-inside's RI.reserveYears, +0.7
-//      years), looks for allies among its target's enemies, and holds back from other wars (x0.7).
-//   3. Striking when the odds are good (patch CB-WAR-ODDS, three factors in A.aiWarCheck): the plan's target counts at
+//      years), looks for allies among its target's enemies, and holds back from other wars (x0.5).
+//   3. Striking when the odds are good (patch CB-WAR-ODDS, three hooks in A.aiWarCheck): the plan's target counts at
 //      60% of its strength while its host is away at another war (A.cbPreview), the odds rise with the plan's weight
-//      when the target is at war, exhausted, tottering or outmatched, and fall to half otherwise; a want presses on
-//      the opinion bar the way a claim does (A.cbPress). The day it declares, the saved gold hires sellswords.
+//      (up to x9) when the target is at war, exhausted, tottering or outmatched, and fall to half otherwise; a want
+//      presses on the opinion bar the way a claim does (A.cbPress). The day it declares, the saved gold hires
+//      sellswords. A crown with no plan still turns first on a neighbour it remembers a wrong from, or wants
+//      something of (x1 to x4 by its temper, CS.remembered).
 //   4. A casus belli for every war (w.casus): the reasons in words, each with its kind (feud, relmem, want, debt,
 //      claim, cause, trait, chance), led by the weightiest. It goes into the news, 20-ai-personality's log entry, the
 //      war room (patch CB-WAR-ROOM), the diplomacy card and the Realm tab.
@@ -25,7 +27,7 @@
   const BD = A.BONDS, FE = BD && BD.FEUD;
   const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
   const r2 = x => Math.round(x * 100) / 100;
-  const clean = s => String(s == null ? '' : s).replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, 260);
+  const clean = s => String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, 260);
   const cap = s => { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); };
   const short = id => (A.realm(id) ? A.realmShort(id) : String(id || ''));
   const persona = rid => (A.rulerPersona ? A.rulerPersona(rid) : { warLog: 0, wrath: 0, pride: 0, warmth: 0, greed: 0, honor: 0, patience: 0, caution: 0, parts: {}, traits: [] });
@@ -41,6 +43,7 @@
     strike: 5,         // odds factor per unit of plan weight when the moment is good
     wait: .5,          // odds factor against the plan's target when it is not
     elsewhere: .5,     // odds factor against any other neighbour while a plan stands
+    remember: 1.5,     // odds factor per unit of temper on a neighbour remembered or wanted, with no plan
     temper: .75,       // a plan needs a ruler who carries grudges (vengeance) or wants land (appetite) at least this much
     press: 15,         // a want presses on the opinion bar like a claim (12 a province in the release)
     allyP: .3,         // a planning crown looks for a friend against its target with these odds a year
@@ -168,9 +171,19 @@
     const debt = CS.owes ? CS.owes(a, b) : 0;
     if (debt) return 0;                                   // debts.core.js: an honourable crown will not attack its benefactor
     const r = A.realm(a), pl = r && r.csPlan;
-    if (!pl) return 1;
+    if (!pl) { const x = CS.remembered(a, b); return x ? x.m : 1; }
     if (pl.t !== b) return CS.T.elsewhere;
     return CS.moment(a, b, P) ? 1 + CS.T.strike * Math.min(1.6, pl.s) : CS.T.wait;
+  };
+  // with no plan, a crown that remembers an old wrong from this neighbour, or wants something of it, still turns to it
+  // first: x(1 + 0.8 x its temper, at most 2), vengeance for a wrong, appetite for a want
+  CS.remembered = function (a, b) {
+    const G = grudge(a, b), W = CS.wantOf(a, b);
+    let k = null;
+    if (G >= 8 || CS.relMem(a, b)) k = 'v'; else if (W) k = 'w';
+    if (!k) return null;
+    const t = k === 'v' ? CS.vengeance(a) : CS.appetite(a);
+    return { k, m: 1 + CS.T.remember * Math.min(2, t) };
   };
   A.cbWarMul = function (a, b, P) { try { return CS.mul(a, b, P); } catch (e) { return 1; } };
 
@@ -186,6 +199,10 @@
           out.push([mo ? `The moment has come: ${mo.t}` : 'The moment has come', r2(Math.log(m) * .6)]);
           out.push(...CS.temperWhy(a, pl.k === 'feud' ? 'v' : 'w', .5, pl.k === 'feud' ? 'carries the grudge' : 'hungry for it'));
           if (pl.k === 'want') { const W = CS.wantOf(a, b); W && out.push([`An old want: ${W.s}`, .5]); }
+        } else if (!pl && m > 1.01) {
+          const x = CS.remembered(a, b);
+          out.push([x.k === 'v' ? 'An old wrong remembered' : `An old want: ${(CS.wantOf(a, b) || {}).s || ''}`, r2(Math.log(m) * .6)]);
+          out.push(...CS.temperWhy(a, x.k, .3, x.k === 'v' ? 'does not forget' : 'hungry for it'));
         }
       } catch (e) {}
       return out;
