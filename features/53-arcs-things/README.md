@@ -61,16 +61,16 @@ Wounds come along the way, and the permanent ones last: a scar on the sword arm 
 
 **Read it or drop it: the orphan marks, measured.** `bench/bot.mjs`'s `memoryIndex` calls a flag an orphan when something sets it and no event's `cond`, `setup`, `text` or choices read it. Counting the flags whose setters are `ao_*` events, on a `--only=life-arcs,arcs-things` build:
 
-| | before | after |
-| --- | --- | --- |
-| orphan flags set by `ao_*` events | 256, across 57 events | 42, across 13 events |
-| of those, arc marks (`fx.arc {mark}`) | 206 | **0** |
-| of those, the last stages' ending flags | 50 | 42 |
-| memory events in the build / `memPct` | 143 / 4.3% | 188 / 5.7% |
+| | before | after the naming fix alone | after |
+| --- | --- | --- | --- |
+| orphan flags set by `ao_*` events | 256, across 57 events | 167, across 51 events | 42, across 13 events |
+| of those, arc marks (`fx.arc {mark}`) | 206 | 117 | **0** |
+| of those, the last stages' ending flags | 50 | 50 | 42 |
+| memory events in the build / `memPct` | 143 / 4.3% | 185 / 5.6% | 188 / 5.7% |
 
-The marks, 206 of them, split three ways.
+The middle column is worth its own measurement: 89 of the 206 marks were already answered and only the naming hid it, so 89 of these "orphans" needed no writing at all. The marks split three ways.
 
-- **89 were already answered and nobody could see it.** The helper in `arcs.events.js` took a short name and added the prefix itself: `M(p, 'sw_truth')` read the flag `la_ao_sw_truth`. A reader of the file could not match the string to the mark, and neither could the index. `M` now takes the whole mark name — `M(p, 'ao_sw_truth')` — and adds only `la_`, so the mark a scene answers is the mark it names. That alone is 151 call sites and no change to what the game does.
+- **89 were already answered and nobody could see it.** The helper in `arcs.events.js` took a short name and added the prefix itself: `M(p, 'sw_truth')` read the flag `la_ao_sw_truth`. A reader of the file could not match the string to the mark, and neither could the index. `M` now takes the whole mark name — `M(p, 'ao_sw_truth')` — and adds only `la_`, so the mark a scene answers is the mark it names. The flag written and read is the same string as before (`la_ao_sw_truth`), so old saves, and the one mark the core reads off the arc's own list (`arcs.core.js`, the horse you bought instead), go on working. 151 call sites, and nothing the game does changed.
 - **67 were answered for the first time**, one clause each, in a scene that already existed: how the sword came to you, which way the drove road pointed, whether the lock came off the sluice, who went down the stair with a lamp, whether you laughed at the verse. These are the choices a player would remember making, and the writers had marked them and then written no answer. Each callback is one branch of a chain, so only one of them renders; the longest scene in the branch test went from 70 words to 77, under the 80-word diet.
 - **50 were dropped**, which is every mark set by an arc's last stage. Nothing comes after a last stage to answer one, so those marks could never be anything but dead weight; the ending they recorded is already in the `flag:` and the lasting effect beside them. `test.mjs` now fails the feature if a last stage sets a mark, or if any other stage sets one that no later stage reads, so neither can come back.
 
