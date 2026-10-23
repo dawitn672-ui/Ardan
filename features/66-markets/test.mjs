@@ -182,7 +182,12 @@ const TESTS = {
       // an old save: no towns yet
       delete A.S.mt; for (const c of (A.S.eco || {}).car || []) { delete c.fT; delete c.tT; }
       const before = A.buyPrice(A.homeMkt(A.pc()), 'grain'), on0 = A.MT.on();
-      MTT.months(1);
+      // up to the next monthly tick, not a fixed 30 days: where 30 days land on the calendar depends on how the world
+      // has gone, and a window can miss the tick (76-beast-habitats moved this seed's day from 36 to 60, and days 60-90
+      // ran no month)
+      let ticks = 0; const tick = () => { ticks++; }; A.onMonth.push(tick);
+      for (let i = 0; i < 3 && !ticks; i++) MTT.months(1);
+      A.onMonth.splice(A.onMonth.indexOf(tick), 1);
       const after = A.buyPrice(A.homeMkt(A.pc()), 'grain');
       return { det: a === b, same, kb: Math.round((enc.bytes.length - enc2.bytes.length) / 102.4) / 10, gz: Math.round(enc.bytes.length / 1024), raw: Math.round(raw / 1024), mine: Math.round(mine / 1024), old: !on0 && isFinite(before) && A.MT.on() && isFinite(after) && A.S.mt.L.length > 50 };
     });

@@ -300,7 +300,10 @@
 
   // ---- the elite orders ------------------------------------------------------------------------------------------------------
   G.orderPow = function (id) {
-    const S = GD.ORDERS && GD.ORDERS[id] && A.orderSummary ? A.orderSummary(id) : null; if (!S || !S.d) return '';
+    const S = GD.ORDERS && GD.ORDERS[id] && A.orderSummary ? A.orderSummary(id) : null; if (!S) return '';
+    // an order whose division is gone (broken in battle, or never raised) still has a card and a power of 0
+    if (!S.d) return H(esc(A.cap(S.o.name)), `0 of ${fmt(S.full)}`, 'not in the field') + R('Its power', '0', 'tt-sum') +
+      D('It has no division in the field today, so it brings no power until one is raised again.') + F(`${L('orderTraits', id, 'What sets it apart')}.`);
     const c = A.divCombat(S.d), r = A.realm(S.o.realm);
     const parts = [['Killing power (soft + half the hard) × 2', (c.soft + c.hard * 0.5) * 2], ['Defense ÷ 2', c.def * 0.5], ['Breakthrough ÷ 2', c.brk * 0.5], ['Hit points × 0.6', c.hp * 0.6], [`Organization ${r0(S.d.org)} × 0.3`, S.d.org * 0.3]];
     return H(esc(A.cap(S.o.name)), `${fmt(S.men)} of ${fmt(S.full)}`, esc(S.exp)) + `<div class="tip-row tt-sum"><span>Its power</span><b></b></div>` + TT.sumRows(parts, A.divPower(S.d), 'Power') +
