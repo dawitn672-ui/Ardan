@@ -42,7 +42,10 @@
       cr: { race: 'human', realm: 'POL-08', status: 'peasant', startAge: 18 },
       setup: pc => {
         const home = A.prov(pc.home), terr = home ? home.terr : 'hills';
-        const pool = LORE.creatures.filter(c => A.BEASTS[c.id] && A.beastTier(c.id) !== 'legend' && (A.BEASTS[c.id].terr || []).includes(terr));
+        // what lives near home (76-beast-habitats keeps that to the world bible's ranges); the terrain alone only when
+        // nothing does, as the release's rule had it
+        const near = (A.beastsNear ? A.beastsNear(pc) : []).map(id => LORE.creatures.find(x => x.id === id)).filter(c => c && A.BEASTS[c.id] && A.beastTier(c.id) !== 'legend');
+        const pool = near.length ? near : LORE.creatures.filter(c => A.BEASTS[c.id] && A.beastTier(c.id) !== 'legend' && (A.BEASTS[c.id].terr || []).includes(terr));
         const c = pool.length ? A.pick(pool) : LORE.creatures.find(x => A.BEASTS[x.id]);
         if (c) { A.S.story.beast = c.id; pc.flags['bt_h_' + c.id] = A.S.year; }
       } },
