@@ -26,7 +26,9 @@
     const src = G.src || 'use';
     const g = train.call(this, p, k, amt * (src === 'practice' ? G.PRACTICE : G.USE));
     if (g > 0) {
-      const S = A.S, key = S.year * 12 + Math.floor((A.today ? A.today() : 0) / 30.42);
+      // one summary a season, not a month: twelve lines a year about training buried the year's real story in the log
+      // (seen on a playtest pass). An old save's month key simply differs, and its last month is summed up once.
+      const S = A.S, key = S.year * 4 + Math.floor((A.today ? A.today() : 0) / 91.25);
       const G2 = p.grow = p.grow && typeof p.grow === 'object' ? p.grow : { m: key, k: {}, tot: { practice: 0, use: 0 } };
       if (G2.m !== key) { G.summary(p, G2); G2.m = key; G2.k = {}; }
       const e = G2.k[k] || (G2.k[k] = { practice: 0, use: 0 });
@@ -58,13 +60,13 @@
   };
   for (const k of ['variety']) if (choose2[k]) A.eventChoose[k] = choose2[k];
 
-  // the month's summary: what you got better at, and how much came from doing it
+  // the season's summary: what you got better at, and how much came from doing it
   G.summary = function (p, G2) {
     const rows = Object.entries(G2.k).map(([k, v]) => [k, v.practice + v.use, v.use]).filter(x => x[1] >= 0.3).sort((a, b) => b[1] - a[1]);
     if (!rows.length || p.id !== A.S.pc) return;
     const tot = rows.reduce((a, x) => a + x[1], 0), use = rows.reduce((a, x) => a + x[2], 0);
     const fmt = x => `${GD.SKILLS[x[0]]} +${(Math.round(x[1] * 10) / 10).toFixed(1)}`;
-    A.log(`This month you got better at ${rows.slice(0, 3).map(fmt).join(', ')}${rows.length > 3 ? ` and ${rows.length - 3} more` : ''}. ` +
+    A.log(`This season you got better at ${rows.slice(0, 3).map(fmt).join(', ')}${rows.length > 3 ? ` and ${rows.length - 3} more` : ''}. ` +
       `${Math.round(100 * use / tot)}% of it from doing, the rest from practice.`, 'muted');
   };
   // the share of all growth that came from use, for the bench and the profile

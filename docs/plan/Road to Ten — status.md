@@ -359,3 +359,21 @@ The world bible (96 documents: the Parts, the data files, the canon ledger) is s
 - **Two tests leaned on how a world used to go.** With the beasts moved, seed 81's calendar shifted, and the 30 days 66-markets advanced to show "an old save builds the towns at the next month" (days 60–90) ran no monthly tick. The test now waits for the tick. On seed 5968 the elite-orders card's "…and 4 more" pointed at an order with no division in the field, and its power tooltip came up empty. That was a real bug: it now reads power 0, "not in the field".
 - **Playtest mode exists.** It ships in the release (the Menu's "Playtest mode": timed tasks, with results downloaded as a file). An earlier note doubted it, because a text search of the compressed vendor file found nothing.
 - **A design call for the owner.** Bible revision III bans ranks, tiers, numbered levels and "skills" for fighters ("a fighter's danger is told in words", HOUSE_RULES 3). The game runs on numbered skills and keeps a census of Legends and Masters. Bringing the game into line would be a redesign, not a fix.
+
+## Playtest readiness (Oct 23)
+
+The aim of this pass: a build that can go to five new players, with nothing that breaks for them. Each item was found by looking at the game the way a playtester meets it, or by a tool that does.
+
+- **A soak monkey** (`tools/soak.mjs`) plays the built game through its own screens. Half its runs start from the title screen, half from a chosen life (every people, rank, age and difficulty). It clicks visible controls at random, lets time pass, and every 40 steps draws every tab, a dozen people and the War Room. It records uncaught errors, `console.error` (where features report the faults they catch, which the browser tests never see), failed loads, and broken words on screen. Its clicks are seeded, so a finding replays exactly. On the release and on this build: 0 findings.
+- **Offline fonts (77).** The three typefaces came from Google Fonts. Offline, or behind a filter, the page fell back to a plain serif and logged failed loads. They now ship inside the page (SIL OFL, about 330 KB), and the security policy no longer names Google.
+- **The playtest's session log (78).** The results file held only the ten timed tasks. It now holds what the player did: the controls they used, each event answered and how long it was read, the tabs they opened, every pause of a minute or more, every error, and where they stopped. `docs/plan/Playtest kit.md` says how to run the five-player test and how to read the files.
+- **The early years (82).** A newborn's first event came 400 to 1,500 days in: two to six minutes of real time at the default speed, the first thing a new player meets. Under five, the clock now runs ten times faster, and the clock bar says so. The life is the same, day for day.
+- **The obituary's drop caps (83).** The release's illuminated initial floated the first letter of the death screen's centred lines away from its word: "M … aster of the hunt".
+- **Training lines once a season (31).** "This month you got better at Diplomacy…" filled half the log, twelve times a year. It is now one line a season.
+- **Beast scenes (79).** The lair, the hs_* helper and the spear hunt take beasts that live near home, and step aside where none does. The lair's text drew a different beast from the one fought in 21 of 40 tries; it now names the right one. 29-starts' father story picks from what lives near home.
+- **Death age after the beasts (76).** The scorecard's own league (64 lives): humans who reach 20 die at a median of 66, orcs at 55. Before 76 they read 40 and 58.
+
+**Design calls for the owner.**
+- A first life can end in infancy, before any choice. Canon wants high child mortality, but it is a hard first minute for a playtester.
+- New players start on Hard, the release's default.
+- The bible's ban on ranks and numbered skills (above).

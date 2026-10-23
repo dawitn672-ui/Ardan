@@ -11,8 +11,8 @@ The plan asks that about 70% of growth come from use, with a monthly summary of 
   - **use:** everything else, meaning event checks and their outcomes, work, duels, battles, hunts, taverns and friends.
 - **Weights.** Use is worth ×1.2 and practice ×0.4 (`A.GROW.USE`, `A.GROW.PRACTICE`).
 - **Failure teaches.** A failed skill check is topped up when the event closes, so it teaches 1.5 times what a passed one does (`A.GROW.FAIL`).
-- **The monthly summary.** "This month you got better at Craft & smithing +3.0. 69% of it from doing, the rest from practice." It is logged as `muted`, so the Chronicle skips it. Each month's line is written at the first gain of the next.
-- **The running share.** `A.GROW.useShare(pc)` gives the share of all growth that came from use. The person keeps `pc.grow`: this month's gains per skill, plus totals.
+- **The seasonal summary.** "This season you got better at Craft & smithing +9.0. 69% of it from doing, the rest from practice." It is logged as `muted`, so the Chronicle skips it. Each season's line is written at the first gain of the next. (It was monthly until a playtest pass of the screens found twelve lines a year about training burying the year's events in the log.)
+- **The running share.** `A.GROW.useShare(pc)` gives the share of all growth that came from use. The person keeps `pc.grow`: this season's gains per skill, plus totals.
 
 **How the weights were chosen.** A grid of five settings, each played as four 20-year lives by a passive bot and an engaged bot (with a training plan and an activity whenever possible):
 
@@ -33,7 +33,7 @@ The chosen setting turns growth around without inflating it for a passive life. 
 - `growShareAB`: the release weights against the chosen ones over three 15-year lives.
   - The share from doing goes from 44% to 67%.
   - Skill points a year go from 8.2 to 9.5, within the 20% the test allows.
-- `growSummary`: a year writes 4 to 13 monthly summaries, `muted`, each with its share from doing.
+- `growSummary`: a year writes 2 to 5 seasonal summaries, `muted`, each with its share from doing.
 
 **Rules kept.**
 - No draws from `A.rand`; it only scales amounts.

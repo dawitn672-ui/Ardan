@@ -72,9 +72,9 @@ export default {
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 313, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 20 });
       T.play(1);
-      const lines = A.S.log.flatMap(e => e.lines || []).filter(l => /^This month you got better at/.test(l[0]));
+      const lines = A.S.log.flatMap(e => e.lines || []).filter(l => /^This season you got better at/.test(l[0]));
       return { n: lines.length, sample: lines[0] && lines[0][0], cls: lines[0] && lines[0][1] };
     });
-    return { ok: r.n >= 4 && r.n <= 13 && /from doing/.test(r.sample || '') && r.cls === 'muted', detail: `${r.n} monthly summaries in a year; "${r.sample}"` };
+    return { ok: r.n >= 2 && r.n <= 5 && /from doing/.test(r.sample || '') && r.cls === 'muted', detail: `${r.n} seasonal summaries in a year; "${r.sample}"` };
   },
 };
