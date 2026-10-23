@@ -10,6 +10,8 @@
 - every error: uncaught ones, rejected promises, and the faults features catch and report with `console.error`;
 - where the player was when they stopped, and their last 30 actions.
 
+The bar's close button sits in its corner (it used to wrap onto a line of its own), and on a desktop the bar is 520 px wide so a task, Start and Skip share one line.
+
 "Download results" puts it in the file as `session`, beside the task results (`patches.mjs`, one edit to `ptSave`).
 
 **Rules kept.** The log lives on `UI`, never in `A.S`. It draws no random numbers and changes no game state, so a life plays the same with it as without it. It uses wall-clock time, as the playtest's own task timer does. Nothing leaves the machine unless the player downloads the file.

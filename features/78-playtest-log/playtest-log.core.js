@@ -73,6 +73,13 @@
   const start = UI.ptStart;
   UI.ptStart = function () { const r = start.apply(this, arguments); L.start(); return r; };
   if (UI.A && UI.A.ptQuit) { const quit = UI.A.ptQuit; UI.A.ptQuit = function () { L.stop(); return quit.apply(this, arguments); }; }
+  // the bar's close button sat alone on a line of its own under Start and Skip; it now sits in the bar's corner (full
+  // size on a phone, where 71-phone keeps every control 44 px; compact on a desktop, where the bar is also wider)
+  if (typeof document !== 'undefined' && !document.getElementById('ptlog-style')) {
+    const st = document.createElement('style'); st.id = 'ptlog-style';
+    st.textContent = '#ptbar [data-a="ptQuit"]{position:absolute;top:2px;right:2px}#ptbar{padding-right:52px}@media (min-width:761px){#ptbar{width:min(520px,calc(100vw - 24px));padding-right:40px}#ptbar [data-a="ptQuit"]{top:6px;right:6px;min-width:0;min-height:0;padding:2px 9px}}';
+    (document.head || document.documentElement).appendChild(st);
+  }
   // an event that appears is noticed when the modal draws it
   const rm = UI.renderModal;
   if (typeof rm === 'function') UI.renderModal = function () { const r = rm.apply(this, arguments); if (L.on) watchEvent(); return r; };
