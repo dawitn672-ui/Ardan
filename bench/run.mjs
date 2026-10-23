@@ -56,6 +56,7 @@ const MODULES = {
     process.stdout.write('\n');
     const human = lives.filter(l => ['human', 'orc'].includes(l.o.race));
     const deaths = human.filter(l => l.deathAge != null).map(l => l.deathAge);
+    const adultDeaths = race => lives.filter(l => l.o.race === race && l.deathAge != null && l.deathAge >= 20).map(l => l.deathAge);
     const arcs = {}; for (const l of lives) arcs[l.arc] = (arcs[l.arc] || 0) + 1;
     const gaps = lives.flatMap(l => l.gaps);
     const evPerYear = lives.map(l => l.events / Math.max(1, l.years));
@@ -67,6 +68,12 @@ const MODULES = {
     return {
       lives: lives.length,
       medianDeathAge_humanOrc: median(deaths), p10DeathAge: pct(deaths, .1), p90DeathAge: pct(deaths, .9),
+      // each people against its own lifespan in the world bible (canon/peoples/races.csv): "those who reach 20 usually
+      // live to 55-65" for humans, 45-60 for orcs. Counting from 20 keeps child deaths, which canon expects (life
+      // expectancy at birth about 36), out of a number about adult lives. Orcs are 8 lives of 64, so theirs is reported,
+      // not scored; elves and dwarves outlive the 90-year bot life and cannot be measured here.
+      humanAdultMedianDeathAge: median(adultDeaths('human')), humanAdultLives: adultDeaths('human').length,
+      orcAdultMedianDeathAge: median(adultDeaths('orc')), orcAdultLives: adultDeaths('orc').length,
       arcTypes: Object.keys(arcs).length, topArcShare: r1(100 * Math.max(...Object.values(arcs)) / lives.length), arcs,
       memoryShareOfFiredEvents: r1(100 * lives.reduce((a, l) => a + l.memEvents, 0) / Math.max(1, lives.reduce((a, l) => a + l.events, 0))),
       eventsPerYear: r1(median(evPerYear)), promptsPerYear: r1(median(decisions)),

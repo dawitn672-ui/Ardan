@@ -38,7 +38,10 @@ export const RUBRIC = [
     { name: 'Median price spread across markets (max/min)', path: 'economy.medianPriceRatioMaxMin', target: '1.5–3×', weight: 1, score: v => v >= 1.5 && v <= 3 ? 1 : .5 },
   ] },
   { aspect: 'Balance and difficulty', cap: .7, metrics: [
-    { name: 'Median death age, humans and orcs (bot lives)', path: 'league.medianDeathAge_humanOrc', target: '55–70', weight: 1, score: v => v >= 55 && v <= 70 ? 1 : .5 },
+    // canon (canon/peoples/races.csv): humans who reach 20 usually live to 55-65. Full marks inside the band, half marks
+    // 7 years outside it, none at 14. (This replaced 'humans and orcs from birth, 55-70', which pooled two peoples with
+    // different lifespans and counted the child deaths canon expects.)
+    { name: 'Median death age, humans who reach 20 (bot lives)', path: 'league.humanAdultMedianDeathAge', target: '55–65', weight: 1, score: v => clamp(1 - Math.max(0, 55 - v, v - 65) / 14) },
     { name: 'Risk costs: careful bots outlive reckless ones by (years)', path: 'league.carefulMinusRecklessDeathAge', target: '≥ 5', weight: 2, score: atLeast(5) },
   ] },
   { aspect: 'UI and UX', cap: .6, metrics: [
