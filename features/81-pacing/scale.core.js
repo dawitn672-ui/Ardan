@@ -1,43 +1,50 @@
-// One scale for every check: d 45 is even odds for a typical seasoned adult, whatever the scene names.
+// One scale for every stat: a check's difficulty means the same whichever stat the scene names.
 //
 // The house scale says d 45 is typical (CLAUDE.md), and A.checkOdds gives 50% where your value meets d. Your value is
-// 0.6 x the first side and 0.4 x the second, each a skill or a stat. But what a typical person brings depends on which
-// two things the writer named. The typical seasoned adult (75-fair-checks' reference, measured in bot lives) has will
-// 56, insight 38, strength 36, intellect 33, stamina 31 and speed 30, and 37 in the skill a scene asks. So the same
-// "d 45" is 26% for that person on speed and stamina, 35% on persuasion and intellect, and 49% on persuasion and will.
-// Writers pick a stat for its flavour (wits to think it through, nerve to hold), not for its odds, and nothing on the
-// scale tells them that intellect is a hard stat and will an easy one. In bot lives intrigue and intellect wins 24% of
-// the time, intellect and insight 14%, strength and will 8%; diplomacy and will 60%.
+// 0.6 x the first side and 0.4 x the second, each a skill or a stat. But the six stats do not sit on one scale. The
+// typical seasoned adult (75-fair-checks' reference, measured in bot lives) has will 56, insight 38, strength 36,
+// intellect 33, stamina 31 and speed 30. So the same "d 45" is 26% for that person on speed and stamina and 56% on will
+// and insight. Writers pick a stat for its flavour (wits to think it through, nerve to hold), not for its odds, and
+// nothing on the scale tells them that intellect is a hard stat and will an easy one. In bot lives intrigue and
+// intellect won 24% of the time, intellect and insight 14%, strength and will 8%; diplomacy and will 60%.
 //
-// The rule (A.checkOdds, event checks that are not fights):
-//   ref = what a typical seasoned adult brings to this check (the same 0.6 / 0.4 sum, from 75's reference person)
-//   d'  = d - max(0, 45 - ref)
-// A typical seasoned adult then meets any d 45 scene at even odds, and every scene keeps its written distance from 45:
-// a d 55 scene is still ten points harder than typical, and a d 35 one ten points easier. A check where the typical
-// adult already brings more than 45 (diplomacy and will) is not made harder than written.
-// It reads only the check, never the person, so your own place against the typical stays: a skill you trained past 37
-// still pays, and one you never trained (4 + 0.3 x your mean stat, about 15) still gives long odds.
-// It composes with 75-fair-checks, which brings each stage of life to the seasoned adult (75 sees the eased d): with
-// both, a typical person of any age meets d 45 at even odds. Fights (check.fight, 48-fight-ladder) are left alone.
+// The rule (A.checkOdds, event checks that are not fights): on each side of the check that names a stat, the difficulty
+// drops by that side's weight times the typical seasoned adult's shortfall in that stat from the scale's 45:
+//   d' = d - sum over the stat sides of  weight x max(0, 45 - REF[stat])
+// A d 45 test of speed then asks of a typical adult's speed what a d 45 test of will asks of their will.
+// A side that names a skill is left alone: a seasoned adult's typical asked skill (37) still falls short of 45, and that
+// gap is what training is for. (Lifting it too, so that a typical adult meets every d 45 at even odds, was tried: the
+// league's check success went from 51% to 61%, past the scorecard's 55, because it lifts every long shot.)
+// Will, where the typical adult stands above 45, is not made harder than written. The rule reads only the check, never
+// the person, so your own place against the typical stays: weak stats, a wound or an untrained skill still give long odds.
+// It composes with 75-fair-checks, which brings each stage of life to the seasoned adult (75 sees the eased d): this
+// brings the seasoned adult's stats to the house scale. Fights (check.fight, 48-fight-ladder) are left alone.
 const SC = A.SCALE = A.SCALE || {};
 SC.OFF = false;
 SC.TARGET = 45;
 SC.W = [0.6, 0.4];
+SC.NAME = { str: 'strength', spd: 'speed', ins: 'insight', sta: 'stamina', int: 'intellect', wil: 'will' };
 // the typical seasoned adult: 75-fair-checks' measured reference when it is in the build, else the same numbers
-SC.REF_FALLBACK = { str: 36, spd: 30, ins: 38, sta: 31, int: 33, wil: 56, skill: 37 };
+SC.REF_FALLBACK = { str: 36, spd: 30, ins: 38, sta: 31, int: 33, wil: 56 };
 SC.ref = function () { const F = A.FC; return (F && F.TYP && F.TYP[F.REF]) || SC.REF_FALLBACK; };
-// one side as A.checkVal counts it for that person: a stat, or the asked skill (never below the untrained floor)
-SC.side = function (R, k) {
-  if (GD.STATS.includes(k)) return R[k] != null ? R[k] : 0;
-  const mean = (R.str + R.spd + R.ins + R.sta + R.int + R.wil) / 6;
-  return Math.max(R.skill != null ? R.skill : 37, 4 + mean * 0.3);
-};
-// what a typical seasoned adult brings to this check (pure; reads only the check)
-SC.refVal = function (check) { const R = SC.ref(); return SC.W[0] * SC.side(R, check.s) + SC.W[1] * SC.side(R, check.s2 || check.s); };
 SC.applies = check => !SC.OFF && !!check && typeof check === 'object' && !check.fight && !!check.s;
-// how much the rule takes off this check's difficulty
-SC.shift = function (check) { if (!SC.applies(check)) return 0; const v = SC.refVal(check); return v < SC.TARGET ? SC.TARGET - v : 0; };
-SC.label = check => `One scale for every check: a typical seasoned adult brings ${Math.round(SC.refVal(check))} to this, not ${SC.TARGET}, so the scene asks ${Math.round(SC.shift(check))} less`;
+// what the rule takes off, side by side (pure; reads only the check): [{ k, typ, off }]
+SC.parts = function (check) {
+  if (!SC.applies(check)) return [];
+  const R = SC.ref(), out = [];
+  [check.s, check.s2 || check.s].forEach((k, i) => {
+    if (!GD.STATS.includes(k) || R[k] == null) return;
+    const off = SC.W[i] * Math.max(0, SC.TARGET - R[k]);
+    if (off > 0) out.push({ k, typ: R[k], off });
+  });
+  return out;
+};
+SC.shift = check => SC.parts(check).reduce((a, x) => a + x.off, 0);
+SC.label = check => {
+  const P = SC.parts(check), seen = new Set();
+  const said = P.filter(x => !seen.has(x.k) && seen.add(x.k)).map(x => `a typical grown ${SC.NAME[x.k]} is ${Math.round(x.typ)}`).join(', ');
+  return `One scale for every stat: ${said}, not ${SC.TARGET}, so the scene asks ${Math.round(SC.shift(check))} less`;
+};
 
 // Same pattern as 75-fair-checks: set the difficulty on the same check object for the length of the call (inner
 // wrappers find their choice by that object, and 75 reads the eased d), then put the written one back. The number shown

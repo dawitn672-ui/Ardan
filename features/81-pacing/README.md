@@ -41,22 +41,23 @@ This is `replayability-pacing.md`'s step 3 ("a director floor ... force a stage-
 
 Stardew Valley's winter is the same idea: no crops, so the season is for people, the mines and the things you never had time for. King of Dragon Pass plans its year by seasons for the same reason.
 
-### 3. One scale for every check (`scale.core.js`)
+### 3. One scale for every stat (`scale.core.js`)
 
-The house scale says d 45 is typical (CLAUDE.md). The rule makes that true for whatever the scene names:
+The house scale says d 45 is typical (CLAUDE.md). The six stats do not sit on one scale: a typical seasoned adult (75-fair-checks' reference person) has will 56, insight 38, strength 36, intellect 33, stamina 31 and speed 30. The rule puts them on one:
 
 ```
-ref = what a typical seasoned adult brings to this check   (0.6 x first side + 0.4 x second, 75-fair-checks' reference person)
-d'  = d - max(0, 45 - ref)
+d' = d - sum over the check's stat sides of  weight x max(0, 45 - REF[stat])      (weights 0.6 and 0.4, as A.checkVal)
 ```
 
-- **A typical seasoned adult meets any d 45 scene at even odds**, and every scene keeps its written distance from 45: a d 55 scene is still ten points harder than typical, a d 35 one ten easier.
-- **Never harder than written.** Where the typical adult already brings more than 45 (diplomacy and will, 48.8), nothing changes.
-- **It reads the check, never the person.** Your own place against the typical stays: a skill trained past 37 still pays, and one you never trained (4 + 0.3 × your mean stat, about 15) still gives long odds.
-- **It composes with 75-fair-checks, it does not repeat it.** 75 brings each stage of life to the seasoned adult; this brings the seasoned adult to the scale. 75's rule sees the eased `d`, and with both a typical person of any stage meets d 45 at even odds. 75's never-below-typical floor still holds for a child, so a child's odds are not pushed past even by the two rules together.
+- **A d 45 test of speed asks of a typical adult's speed what a d 45 test of will asks of their will.** Speed and stamina at d 45 goes from 21% to 44% for a seasoned adult of typical stats; strength and intellect from 35% to 51%; intrigue and intellect from 42% to 49%.
+- **A skill side is left alone.** A seasoned adult's typical asked skill (37) still falls short of 45, and that gap is what training is for.
+- **Never harder than written.** Will, where the typical adult stands above 45, is not raised.
+- **It reads the check, never the person.** Weak stats, a wound, an untrained skill still give long odds.
+- **It composes with 75-fair-checks, it does not repeat it.** 75 brings each stage of life to the seasoned adult; this brings the seasoned adult's stats to the scale. 75's rule sees the eased `d`, and its never-below-typical floor still holds for a child.
 - **Fights are left alone** (`check.fight`, 48-fight-ladder).
 - **The number shown is the number rolled.** The wrapper sets the difficulty on the same check object for the call and puts the written one back, as 75's does (67-memory-weave finds its choice by that object, 30-get-to-know adds its scene shift to it).
-- **The odds popover** (59-tooltips) names it in a row of its own: "One scale for every check: a typical seasoned adult brings 35 to this, not 45, so the scene asks 10 less". Its share is taken with 75's rule off and 75's with this one on, so the rows still add up to the number on the button.
+- **The odds popover** (59-tooltips) names it in a row of its own: "One scale for every stat: a typical grown stamina is 31, not 45, so the scene asks 8 less". Its share is taken with 75's rule off and 75's with this one on, so the rows still add up to the number on the button.
+- **A wider version was tried and set aside:** lifting the skill side too, so that a typical seasoned adult meets every d 45 at even odds. On the league it took check success from 51.1% to **61.3%**, past the scorecard's 55, because it lifts every long shot the reckless bot takes. The numbers for it are in the table below.
 
 ## Measured by
 
@@ -85,6 +86,6 @@ TESTS
 - **The hurt filter is read from source text** (`PACE.HURT_RX`). It errs toward leaving scenes out (any `cause` or `duel` key, any health cost, even a small one on a win). In the child pool it leaves enough for 4 to 5 prompts a year; a designer may want a tag on events instead.
 - **Winter is the same everywhere.** The war engine's winter is northern provinces, tundra and mountains only (`A.wsWinter`); the slack season here is December to February for every home, because every farming year has one and a southern start should not have less agency. A designer may prefer it by climate, or a different season in the south.
 - **Winter adds agency, it does not move it.** An adult's free days rise from 7 to about 9 a year. An even-total version (more in winter, less in summer) would keep the rhythm without the extra actions; the scorecard's ≥ 6 would then stay short.
-- **The scale is a broad easing.** It lifts every scene whose typical value is under 45, long shots included, because the reckless bot always takes the long shot: a stat-only version (lifting only the stat sides, and leaving a skill's 37 against 45 as "what training is for") gave half the change, +3.6 points by a paired estimate over the same 16 lives, against +8.5 for both sides. A designer who wants writers' `d` to mean the stat-only thing can set it back to that.
+- **The scale eases long shots too.** The reckless bot takes the worst odds on offer, so a rule that lifts only some checks moves its choice to another long shot: a paired estimate over 16 lives (every event priced both ways, each personality's pick taken under each) gave +3.6 points for this rule and +8.5 for the wider one, where a naive estimate gave +5 and +10.
 - **The reference is 75's** (`FC.TYP.adult3`, measured in bot lives without either rule). If stats or skills change, re-measure it there and both rules follow.
 - **Other features' tests.** Three of 75-fair-checks' tests (`fcRule`, `fcLeavesAlone`, `fcLives`) measure 75's rule alone and fail with this one on: they toggle `A.FC.OFF` and expect the release's odds underneath. Setting `A.SCALE.OFF = true` in that test file's `SETUP` (and back in a `finally`) measures what they mean to. Two of 59-tooltips' tests failed on this build from a changed random stream, not a fault here: in `ttCov2Hold` the noble life (seed 5954) dies at 28 of a horse's kick, so its Path tab is empty; in `ttPure2` the soldier's war-tab popovers create `people.pb4.staff = {}` through `A.staffHolder`, which 21-npc-initiative's `draw-pure.core.js` guards while drawing (`UI.render`) but not while a popover is open (`UI.TT.open`). Both pass on the build without this feature, and the second is a real purity gap any seed can walk into.

@@ -135,9 +135,10 @@ export default {
       const fightShift = SC.shift(fight), fOn = A.checkOdds(pc, fight), fOff = odds(fight, true);
       return { out, same, draws, fightShift, fOn, fOff };
     });
-    const o = r.out, R = { str: 36, spd: 30, ins: 38, sta: 31, int: 33, wil: 56, skill: 37 };
-    const side = k => (R[k] != null && k !== 'skill' ? R[k] : R.skill), sh = (a, b) => Math.max(0, 45 - (0.6 * side(a) + 0.4 * side(b)));
-    // speed and stamina 14.6, persuasion and will 0.4, intrigue and intellect 9.6, will and insight none (48.8 > 45), strength and intellect 10.2
+    const o = r.out, R = { str: 36, spd: 30, ins: 38, sta: 31, int: 33, wil: 56 };
+    // each stat side: its weight times the typical seasoned adult's shortfall from 45; a skill side, nothing
+    const gap = k => (R[k] != null ? Math.max(0, 45 - R[k]) : 0), sh = (a, b) => 0.6 * gap(a) + 0.4 * gap(b);
+    // speed and stamina 14.6, persuasion and will 0, intrigue and intellect 4.8, will and insight 2.8, strength and intellect 10.2
     const want = { spdSta: sh('spd', 'sta'), persWil: sh('persuasion', 'wil'), intrigueInt: sh('intrigue', 'int'), wilIns: sh('wil', 'ins'), noD: sh('str', 'int') };
     const bad = Object.keys(want).filter(k => Math.abs(o[k].shift - want[k]) > 0.01 || o[k].on < o[k].off || (want[k] === 0 && o[k].on !== o[k].off) || (want[k] > 2 && o[k].on <= o[k].off));
     const ok = !bad.length && o.spdSta.d === 45 && !o.noD.hasD && r.same && r.draws === 0 && r.fightShift === 0 && r.fOn === r.fOff;
@@ -162,7 +163,7 @@ export default {
         if (shown <= off || shown >= 96) continue;
         let tip = null;
         if (UI.TT && UI.TT.checkParts) { const S = UI.TT.checkParts(pc, e.choices[i].check, q.ctx, shown, q.ev);
-          tip = { sum: S.parts.reduce((a, x) => a + Math.round(x[1]), 0), row: (S.parts.find(x => /^One scale for every check/.test(x[0])) || [''])[0], other: S.parts.some(x => /Other things in play/.test(x[0])) }; }
+          tip = { sum: S.parts.reduce((a, x) => a + Math.round(x[1]), 0), row: (S.parts.find(x => /^One scale for every stat/.test(x[0])) || [''])[0], other: S.parts.some(x => /Other things in play/.test(x[0])) }; }
         const asked = []; const chance = A.chance; A.chance = function (p) { asked.push(p); return chance.apply(this, arguments); };
         try { A.eventChoose(vi); } finally { A.chance = chance; }
         A.S.queue = [];
