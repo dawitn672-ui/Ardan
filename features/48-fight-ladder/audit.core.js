@@ -123,11 +123,18 @@ FL.deadly = o => !!(o && (o.die || (o.wound && FL.MAIM.includes(o.wound)) || o.h
 
 // ---- the tag ---------------------------------------------------------------------------------------------------------
 // FL.tag(e, i) reads choice i of event e: is it a fight, at what scale, against what, decided how, at what cost
+FL._scene = new WeakMap();
 FL.tag = function (e, i) {
   const c = (e.choices || [])[i];
   if (!c) return null;
   const labelRaw = FL.words(c.t), label = labelRaw.toLowerCase();
-  const sceneRaw = (FL.words(e.title) + ' ' + FL.words(e.text) + ' ' + FL.words(e.more)).replace(/\s+/g, ' '), scene = sceneRaw.toLowerCase();
+  // an event's scene is the same for each of its choices: read it once (the text is not changed by conversion)
+  let sc = FL._scene.get(e);
+  if (!sc || sc.title !== e.title || sc.text !== e.text || sc.more !== e.more) {   // a feature that rewrites the text later gets a fresh read
+    const raw = (FL.words(e.title) + ' ' + FL.words(e.text) + ' ' + FL.words(e.more)).replace(/\s+/g, ' ');
+    sc = { title: e.title, text: e.text, more: e.more, raw, low: raw.toLowerCase() }; FL._scene.set(e, sc);
+  }
+  const sceneRaw = sc.raw, scene = sc.low;
   const resRaw = [c.win && c.win.r, c.lose && c.lose.r, c.r, c.win && c.win.fx, c.lose && c.lose.fx, c.fx].map(FL.words).join(' '), res = resRaw.toLowerCase();
   const ck = c.check || null, s1 = ck && ck.s, s2 = ck && ck.s2;
   const cWin = FL.cost(c.win && c.win.fx), cLose = FL.cost(c.lose && c.lose.fx), cAny = FL.cost(c.fx);
@@ -135,7 +142,9 @@ FL.tag = function (e, i) {
   const combatSkill = !!(ck && (FL.COMBAT.includes(s1) || FL.COMBAT.includes(s2)));
   const ranged = !!(ck && FL.RANGED.includes(s1));
   const acts = RX.act.test(label), other = RX.other.test(label);
-  const inScene = RX.scene.test(scene) || RX.scene.test(label), blows = RX.blow.test(res);
+  // the scene-only tests are the same for each choice of an event, so each is run once and kept with the scene
+  const once = (k, f) => (k in sc ? sc[k] : (sc[k] = f()));
+  const inScene = once('inScene', () => RX.scene.test(scene)) || RX.scene.test(label), blows = RX.blow.test(res);
   const child = RX.child.test(String(e.cond || ''));
   let fight = false, why = '';
   if (ck && ck.fight) { fight = true; why = 'worth'; }
@@ -155,8 +164,8 @@ FL.tag = function (e, i) {
   else if (!beast && !personHit && sceneBeast) beast = sceneBeast;
   const sport = RX.sport.test(scene + ' ' + label) && !/\b(to the death|real steel|sharp steel|strike to kill)\b/.test(label + ' ' + scene);
   // the scale
-  const pl = (label + ' ' + scene).match(FOE_PL), armyCue = RX.army.test(label) || RX.service.test(label) || (RX.army.test(scene) && !RX.sport.test(label));
-  const allyCue = RX.allies.test(label) || (RX.allies.test(scene) && !RX.alone.test(label)), partyCue = RX.party.test(scene + ' ' + label);
+  const pl = (label + ' ' + scene).match(FOE_PL), armyCue = RX.army.test(label) || RX.service.test(label) || (once('army', () => RX.army.test(scene)) && !RX.sport.test(label));
+  const allyCue = RX.allies.test(label) || (once('allies', () => RX.allies.test(scene)) && !RX.alone.test(label)), partyCue = RX.party.test(scene + ' ' + label);
   let scale = 'one', n = 1, tier = null, allies = 0;
   const isBeast = !!beast && !(armyCue && !labelBeast && !beastFx);
   if (isBeast) {
@@ -170,7 +179,8 @@ FL.tag = function (e, i) {
     if (allyCue && !RX.alone.test(label)) allies = 2;
     if (n >= 6 && !RX.alone.test(label)) { scale = 'army'; n = 3; allies = 2; }   // a crowd fight: you hold your own corner of it
   }
-  for (const [t, rx] of FL.TIERW) if (rx.test(label) || rx.test(scene)) { tier = t; break; }
+  const sceneTiers = once('tiers', () => FL.TIERW.map(([, rx]) => rx.test(scene)));
+  for (let k = 0; k < FL.TIERW.length; k++) if (FL.TIERW[k][1].test(label) || sceneTiers[k]) { tier = FL.TIERW[k][0]; break; }
   const pid = scale === 'one' && /\{(?:them|themhim|theyhe|themfull)\}/.test(label) && personHit;
   const btier = scale === 'beast' ? (beast.id ? FL.tierOfBeast(beast.id) : '?') : null;
   const decided = why === 'worth' ? 'worth' : (c.group || groupFn) ? 'group' : duel ? 'duel' : beastFx ? 'beast-duel' : ck ? (ranged ? 'ranged check' : 'plain check') : 'no roll';

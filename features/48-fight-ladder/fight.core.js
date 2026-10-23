@@ -164,10 +164,10 @@ FL.LOSE = {
   beast: { r: 'It turns on you before the blow is home. You get clear, but not whole.', fx: { health: -22, wound: 'scar_chest', cause: 'a beast that would not die' } },
   men: { r: 'There are more of them than you can handle. You get away bloodied, with nothing.', fx: { health: -20, wound: 'deep_cut', cause: 'a fight against too many' } },
 };
-FL.convertChoice = function (e, i) {
+FL.convertChoice = function (e, i, t0) {
   const c = e.choices[i];
   if (!c || c.group || (c.check && c.check.fight)) return false;
-  const t = FL.tag(e, i);
+  const t = t0 || FL.tag(e, i);
   if (!t || !t.fight || (t.child && t.scale === 'one')) return false;
   if (t.decided === 'plain check') {
     const body = t.combatSkill || FL.BODY.includes(t.skill);
@@ -192,8 +192,11 @@ FL.convertEvent = function (e) {
   let n = 0;
   for (let i = 0; i < e.choices.length; i++) {
     try {
-      for (const k of FL.clashes(e, i)) FL.BEFORE[k] = (FL.BEFORE[k] || 0) + 1;
-      if (FL.convertChoice(e, i)) n++;
+      // one tag per choice, shared by the count and the conversion (nothing changes the event between them); tagging
+      // each choice twice was a third of the game's start-up time
+      const t = FL.tag(e, i);
+      for (const k of FL.clashes(e, i, t)) FL.BEFORE[k] = (FL.BEFORE[k] || 0) + 1;
+      if (FL.convertChoice(e, i, t)) n++;
     } catch (err) { console.error('fight-ladder convert', e.id, err); }
   }
   return n;
