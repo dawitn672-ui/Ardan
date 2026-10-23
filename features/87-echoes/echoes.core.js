@@ -14,7 +14,7 @@
 //   A.EC.gone(p, id)            that person is dead (or the scene was about nobody): for echoes that bury them
 //   A.EC.mother(p)              the player's living mother, or null
 //   A.EC.kept(p, id, k, alt)    a word the scene's ctx held (only the keys an echo asks for with ecKeep), or alt
-//   A.EC.cast(p, ctx, q, alt)   put q in the scene: ctx.pid, {nm} {Nm} {he} {He} {him} {his} {His}
+//   A.EC.cast(p, ctx, q, alt)   put q in the scene: ctx.pid, {nm} {Nm} {he} {He} {him} {his} {His}, {spo} (their wife or husband)
 //   A.EC.since(p, f)            years since flag f was set
 //   A.EC.yrs(ctx, n)            ctx.yrs = n as a word ("eleven"), and ctx.Yrs capitalised
 //

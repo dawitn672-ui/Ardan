@@ -11,8 +11,8 @@
       ecKeep: ["ill"],
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "ch_art_townfever", 12, 70) && took(p, "ch_art_townfever", 2) && won(p, "ch_art_townfever"),
       w: 1, once: true,
-      setup: (p, ctx) => { ctx.ill = kept(p, "ch_art_townfever", "ill", "the fever"); },
-      text: "{ill} is in {home} again, and this time there is chalk on your own door. You are shut in with it. On the third morning there is a loaf on your step, and on the fourth, and on the fifth. You left bread on doorsteps once, as a child. Somebody on this street remembers.",
+      setup: (p, ctx) => { ctx.ill = kept(p, "ch_art_townfever", "ill", "the fever"); ctx.Ill = A.EC.cap(ctx.ill); },
+      text: "{Ill} is in {home} again, and this time there is chalk on your own door. You are shut in with it. On the third morning there is a loaf on your step, and on the fourth, and on the fifth. You left bread on doorsteps once, as a child. Somebody on this street remembers.",
       choices: [
         { t: "Find out who, when you are well",
           r: "It is a woman you do not know at all, a widow now. You left bread on her mother's step that month. She will not take anything for it.",
