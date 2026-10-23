@@ -161,7 +161,7 @@
     // ---- du_gd_loan: you lent the lord his two thousand, and he called you his banker
     {
       id: "ec_lord_son_loan", title: "The son wants a loan", ecSrc: "du_gd_loan",
-      cond: (p, C) => free(p, C) && saw(p.flags.ev, "du_gd_loan", 4) && took(p, "du_gd_loan", 0) && won(p, "du_gd_loan"),
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "du_gd_loan", 4) && took(p, "du_gd_loan", 0) && won(p, "du_gd_loan") && A.EC.gone(p, "du_gd_loan"),
       w: 1, once: true,
       text: "The great lord who borrowed two thousand for a wedding and a war-horse, and paid you back with interest, and called you his banker at court, is dead. His son has come. He has his father's manner and none of his wool. He wants three thousand, on his father's name.",
       choices: [

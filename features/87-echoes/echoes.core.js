@@ -11,6 +11,8 @@
 //   A.EC.took(p, id, ...i)      the choice taken then was one of i (indexes into the source's own choices)
 //   A.EC.won(p, id) / lost      the check in that choice was won / lost
 //   A.EC.who(p, id)             the living person the scene was about (its ctx.pid), or null
+//   A.EC.gone(p, id)            that person is dead (or the scene was about nobody): for echoes that bury them
+//   A.EC.mother(p)              the player's living mother, or null
 //   A.EC.kept(p, id, k, alt)    a word the scene's ctx held (only the keys an echo asks for with ecKeep), or alt
 //   A.EC.cast(p, ctx, q, alt)   put q in the scene: ctx.pid, {nm} {Nm} {he} {He} {him} {his} {His}
 //   A.EC.since(p, f)            years since flag f was set
@@ -40,6 +42,12 @@
     const r = EC.rec(p, id), q = r && r[3] != null ? A.P(r[3]) : null;
     return q && q.alive && p && q.id !== p.id ? q : null;
   };
+  EC.gone = (p, id) => {
+    const r = EC.rec(p, id); if (!r) return false;
+    const q = r[3] != null ? A.P(r[3]) : null;
+    return !q || !q.alive;
+  };
+  EC.mother = p => { const m = p && p.parents ? A.P(p.parents[1]) : null; return m && m.alive ? m : null; };
   EC.kept = (p, id, k, alt) => {
     const r = EC.rec(p, id), v = r && r[4] && typeof r[4] === 'object' ? r[4][k] : null;
     return typeof v === 'string' && v && !/[{}<>]/.test(v) ? v : alt;
@@ -49,8 +57,8 @@
   EC.cast = (p, ctx, q, alt) => {
     if (q && p && q.id !== p.id) {
       ctx.pid = q.id; ctx.nm = q.given;
-      ctx.he = A.he(q); ctx.him = A.him(q); ctx.his = A.his(q);
-    } else { ctx.nm = alt || 'they'; ctx.he = 'they'; ctx.him = 'them'; ctx.his = 'their'; }
+      ctx.he = A.he(q); ctx.him = A.him(q); ctx.his = A.his(q); ctx.spo = q.sex === 'F' ? 'husband' : 'wife';
+    } else { ctx.nm = alt || 'they'; ctx.he = 'they'; ctx.him = 'them'; ctx.his = 'their'; ctx.spo = 'household'; }
     ctx.Nm = cap(ctx.nm); ctx.He = cap(ctx.he); ctx.His = cap(ctx.his);
     return q;
   };

@@ -206,7 +206,7 @@
           r: "She is sitting by a black hearth in her shawl, waiting. She laughs when she sees the pot. You stay until dawn, and the sun comes back on time.",
           fx: { piety: 3, honor: 2, need: { company: 6 } } },
         { t: "Bring her to your own fire",
-          r: "You carry her down the street in your arms. She weighs nothing. She tells your children about the night your fire died.",
+          r: "You carry her down the street in your arms. She weighs nothing. She tells the children of the house about the night your fire died.",
           fx: { piety: 2, happy: 3 } },
         { t: "It is only a fire",
           r: "In the morning her chimney is smoking again. Somebody else went. In spring, you remember that night.",

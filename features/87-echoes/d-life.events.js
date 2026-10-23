@@ -143,7 +143,7 @@
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "lf_friend_feud_pick", 5) && took(p, "lf_friend_feud_pick", 2) && !!who(p, "lf_friend_feud_pick"),
       w: 1, once: true,
       setup: (p, ctx) => { cast(p, ctx, who(p, "lf_friend_feud_pick")); yrs(ctx, ago(p.flags.ev, "lf_friend_feud_pick")); },
-      text: "For {yrs} years {nm} has crossed the street when you pass, since you took the other side at the hearing. Now {his} wife is dead, and the burial is tomorrow. Everyone who knew her will be there. You knew her. Nobody will tell you whether you are wanted.",
+      text: "For {yrs} years {nm} has crossed the street when you pass, since you took the other side at the hearing. Now {his} {spo} is dead, and the burial is tomorrow. Everyone who knew her will be there. You knew her. Nobody will tell you whether you are wanted.",
       choices: [
         { t: "Go to the burial, and stand at the back",
           r: "{Nm} sees you at the back. After, at the gate, {he} stops in front of you and does not cross. It is a start.",
@@ -162,7 +162,7 @@
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "lf_sib_cover", 10, 60) && took(p, "lf_sib_cover", 0) && won(p, "lf_sib_cover") && !!who(p, "lf_sib_cover"),
       w: 1, once: true,
       setup: (p, ctx) => { cast(p, ctx, who(p, "lf_sib_cover")); },
-      text: "{Nm}, your own blood, comes to you as {he} did when you were children: will you say {he} was with you on a certain night. This time it is not your father asking. It is {his} wife, and a moneylender, and possibly the reeve. {He} still owes you for the first time.",
+      text: "{Nm}, your own blood, comes to you as {he} did when you were children: will you say {he} was with you on a certain night. This time it is not your father asking. It is {his} {spo}, and a moneylender, and possibly the reeve. {He} still owes you for the first time.",
       choices: [
         { t: "Lie for {him} again", check: { s: "deception", s2: "wil", d: 48 },
           win: { r: "\"Here, all night, over the dice.\" It holds. {Nm} kisses you on both cheeks and swears it is the last time.", fx: { honor: -2, them: { op: 20 }, owed: 1, skill: { deception: 1 } } },

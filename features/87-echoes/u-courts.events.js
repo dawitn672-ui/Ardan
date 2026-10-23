@@ -28,7 +28,7 @@
     // ---- bd_old_enemy_peace: you offered your old enemy your hand in the market
     {
       id: "ec_enemy_funeral", title: "At the graveside", ecSrc: "bd_old_enemy_peace",
-      cond: (p, C) => free(p, C) && saw(p.flags.ev, "bd_old_enemy_peace", 2) && took(p, "bd_old_enemy_peace", 0),
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "bd_old_enemy_peace", 2) && took(p, "bd_old_enemy_peace", 0) && A.EC.gone(p, "bd_old_enemy_peace"),
       w: 1, once: true,
       text: "The old enemy whose hand you took in the market, after twenty years, is dead. The family asks you to speak at the graveside. Nobody else alive knew the dead so long, or so well, or from so close. They do not know what you will say, and neither do you.",
       choices: [

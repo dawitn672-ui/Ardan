@@ -81,7 +81,7 @@
           r: "{Nm} nods. It is not much, but {he} stops avoiding your side of the street.",
           fx: { honor: 2, them: { op: 12 } } },
         { t: "Help {him} with coin, without a word about it",
-          r: "You leave the purse with {his} wife. {Nm} never mentions it, and never forgets it.",
+          r: "You leave the purse with {his} {spo}. {Nm} never mentions it, and never forgets it.",
           fx: { coin: -20, them: { op: 20 }, owed: 1 } },
         { t: "Tell {him} nobody could have known",
           r: "It is true, and it is the wrong thing to say. {Nm} looks at the water in the bucket.",
@@ -153,7 +153,7 @@
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "ni_apprentice_end", 6) && !!who(p, "ni_apprentice_end"),
       w: 1, once: true,
       setup: (p, ctx) => { cast(p, ctx, who(p, "ni_apprentice_end")); ctx.craft = kept(p, "ni_apprentice_end", "skillName", "the work"); },
-      text: "{Nm}, who taught you {craft} through the dark months, has hands that shake now. {He} took an order {he} cannot finish and will not admit it. {His} wife comes to you after dark. The order is due at Michaelmas, and the man who placed it is not patient.",
+      text: "{Nm}, who taught you {craft} through the dark months, has hands that shake now. {He} took an order {he} cannot finish and will not admit it. {His} {spo} comes to you after dark. The order is due at Michaelmas, and the man who placed it is not patient.",
       choices: [
         { t: "Do the work, and let it go out under {his} name",
           r: "You work three nights in {his} shed. The buyer praises {nm}'s hand. {Nm} says nothing to you, and grips your shoulder at church.",

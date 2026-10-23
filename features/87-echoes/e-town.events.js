@@ -160,7 +160,7 @@
     // ---- pf_craft_whittle: you carved your mother a spoon
     {
       id: "ec_mother_spoon", title: "The spoon", ecSrc: "pf_craft_whittle",
-      cond: (p, C) => free(p, C) && saw(p.flags.ev, "pf_craft_whittle", 20, 80) && took(p, "pf_craft_whittle", 1),
+      cond: (p, C) => free(p, C) && !!A.EC.mother(p) && saw(p.flags.ev, "pf_craft_whittle", 20, 80) && took(p, "pf_craft_whittle", 1),
       w: 1, once: true,
       text: "Your mother is old, and has begun giving her things away before anyone has to quarrel over them. She has kept the lime-wood spoon you carved one winter evening when you were small. It is black with use and worn thin at the bowl. She asks who should have it.",
       choices: [

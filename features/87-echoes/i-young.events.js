@@ -293,7 +293,7 @@
     // ---- pf_dec_jug: you said the cat broke the jug
     {
       id: "ec_cat_jug", title: "The cat did not do it", ecSrc: "pf_dec_jug",
-      cond: (p, C) => free(p, C) && saw(p.flags.ev, "pf_dec_jug", 15, 80) && took(p, "pf_dec_jug", 0) && won(p, "pf_dec_jug"),
+      cond: (p, C) => free(p, C) && C.hasKids(p) && !!A.EC.mother(p) && saw(p.flags.ev, "pf_dec_jug", 15, 80) && took(p, "pf_dec_jug", 0) && won(p, "pf_dec_jug"),
       w: 1, once: true,
       text: "Your mother, very old now, is telling your children about the day her good jug broke, the one from her own mother. The cat was thrown out, she says, and you were given a honey cake for being so upset. Then she looks at you over their heads. \"I always knew,\" she says.",
       choices: [

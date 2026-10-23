@@ -82,7 +82,7 @@
     // ---- lf_mid_crisis: you bought a horse you did not need
     {
       id: "ec_tall_bay", title: "The tall bay", ecSrc: "lf_mid_crisis",
-      cond: (p, C) => free(p, C) && saw(p.flags.ev, "lf_mid_crisis", 4) && took(p, "lf_mid_crisis", 0),
+      cond: (p, C) => free(p, C) && C.hasKids(p) && saw(p.flags.ev, "lf_mid_crisis", 4) && took(p, "lf_mid_crisis", 0),
       w: 1, once: true,
       text: "The tall bay with the wicked eye, the horse you did not need and rode out every evening like a young lord while the family rolled its eyes, is old and slow. So are you. The family wants to sell him for what he will fetch. A grandchild wants to ride him.",
       choices: [

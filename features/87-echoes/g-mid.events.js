@@ -256,7 +256,7 @@
     // ---- ch_coming_of_age: you made a solemn vow
     {
       id: "ec_vow_kept", title: "The vow you made", ecSrc: "ch_coming_of_age",
-      cond: (p, C) => C.old(p) && !C.prison(p) && saw(p.flags.ev, "ch_coming_of_age", 30, 400) && took(p, "ch_coming_of_age", 0),
+      cond: (p, C) => C.old(p) && !C.prison(p) && C.hasKids(p) && saw(p.flags.ev, "ch_coming_of_age", 30, 400) && took(p, "ch_coming_of_age", 0),
       w: 1, once: true,
       text: "A grandchild is coming of age, and the family gathers for the rite. You stand at the back and remember standing at the front, swearing a vow with your whole heart. You remember the words. You know how much of it you kept.",
       choices: [

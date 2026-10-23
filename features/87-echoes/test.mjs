@@ -167,7 +167,7 @@ export default {
     const got = { lives: 0, fired: 0, events: 0, kinds: new Set(), years: 0, noted: 0 };
     for (let i = 0; i < n; i++) {
       const r = await pg.evaluate(({ o, i }) => {
-        const L = B.life(o, ['careful', 'random', 'greedy', 'reckless'][i % 4], i % 2 === 0, 70);
+        const L = B.life(o, ['careful', 'random', 'greedy', 'reckless'][i % 4], i % 2 === 0, 60);
         const pc = A.pc();
         const seen = Object.keys((pc && pc.flags.ev) || {}).filter(k => k.startsWith('ec_'));
         return { years: L.years, events: L.events, seen, noted: Object.keys((pc && pc.ec) || {}).length };
