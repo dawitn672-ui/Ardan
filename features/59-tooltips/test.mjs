@@ -479,6 +479,10 @@ export default {
     out.wHasGen = !!(await pg.$('#tt-pop-1 [data-tt="genSkills"]'));
     if (out.wHasGen) { await pg.click('#tt-pop-1 [data-tt="genSkills"]'); out.w2 = await depth(); }
     await pg.keyboard.press('Escape'); await pg.keyboard.press('Escape');
+    // the mouse is still where the War Room click left it; over a lower choice's odds it opens that tip on hover, and
+    // the tip (placed above for want of room) covers the first odds, which Playwright then waits on forever. A player
+    // reaching for the first odds would move off it; the test parks the mouse in a corner first.
+    await pg.mouse.move(1, 1);
     await pg.evaluate(() => { UI.TT.closeAll(); UI.ov = null; const pc = A.pc(); const q = TT2.oddsEvents(40).find(x => A.EV[x.ev].choices.some(c => c.check && !c.check.fight && (GD.STATS.includes(c.check.s)))); window.__q = q; A.S.queue = [q]; UI.render(); });
     const before = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
     await pg.click('#modal [data-tt="odds"][data-tt-tap]'); out.e1 = await depth();
