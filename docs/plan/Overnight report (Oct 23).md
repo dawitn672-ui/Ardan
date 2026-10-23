@@ -27,7 +27,7 @@ Asked for: "a play-test ready game with absolutely 0 errors", plus improvements 
 | An event after buying a hovel | Raw `{n}`, `{said}`, `{them}` on screen | Never drawn | 88-queue-head |
 | A playtest | The file held 10 task timings | Plus the whole session: controls, events and read time, tabs, stalls, errors, where they stopped | 78-playtest-log |
 | Beasts | The Tiger of Ranpur hunted 244 of 306 provinces | Each beast in its canon range; humans who reach 20 die at 61–66 (canon 55–65) | 76-beast-habitats, 79-beast-scenes |
-| Memory | 213 flags that nothing read back | 177 callbacks; 2 orphan flags left | 80-callbacks |
+| Memory | 213 flags nothing read back; static memory 25.6% | 177 callbacks and 350 echoes (later scenes that follow the choice you made); 2 orphan flags; static memory 35.5% (target 40) | 80-callbacks, 87-echoes |
 
 Smaller fixes:
 - the endings heading's stray gaps;
