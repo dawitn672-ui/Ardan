@@ -373,6 +373,14 @@ The aim of this pass: a build that can go to five new players, with nothing that
 - **Beast scenes (79).** The lair, the hs_* helper and the spear hunt take beasts that live near home, and step aside where none does. The lair's text drew a different beast from the one fought in 21 of 40 tries; it now names the right one. 29-starts' father story picks from what lives near home.
 - **Death age after the beasts (76).** The scorecard's own league (64 lives): humans who reach 20 die at a median of 66, orcs at 55. Before 76 they read 40 and 58.
 
+- **The top bar at laptop widths (84).** The release's desktop rule never let the bar wrap. At 1024 px the place and purse shrank to 14 px and vanished, and at 1180–1280 the debt was cut mid-word. The place, purse, Save and Menu are now one group that wraps as a whole. The purse never shrinks, and the debt reads "owes 12,345".
+- **Battle labels (85).** Unit labels were drawn centred on their blocks with no regard for neighbours, so a crowded centre read "Heavy infSpeaCrossbowmen". Later blocks also covered earlier labels. Labels now move away from the line or shorten to their count, and draw after every block.
+- **"Begin a new life" in sight (86).** On 1280×800, 1366×768 and 1440×900 the title's start button was below the fold. The map strip now takes the height the window can spare.
+- **Start-up 4.5 s → 2.4 s (48).** The fight ladder tagged every choice of every event twice at load, and re-read each event's scene once per choice. The conversion output is identical, hashed over every choice.
+- **Polish.** The Dynasty tab's "Endings found ( … )" heading had gaps inside its brackets, and the Mods panel's heading crowded its buttons.
+- **A flaky test explained.** `ttNested2` failed in CI run 57 and 1 in 3 locally. The War Room click left the mouse over a lower choice's odds, and its hover tip covered the odds the test then clicked. The test now parks the mouse first.
+- **The soak, again.** 8 runs × 1,200 steps on seed 11: about 7,800 clicks, 141 game years, 200 sweeps, 5,216 screens drawn, 0 findings.
+
 **Design calls for the owner.**
 - A first life can end in infancy, before any choice. Canon wants high child mortality, but it is a hard first minute for a playtester.
 - New players start on Hard, the release's default.
