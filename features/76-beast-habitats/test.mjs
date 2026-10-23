@@ -1,24 +1,26 @@
-// Tests for features/76-beast-habitats: beasts are near only the provinces their lore names, every beast still lives
+// Tests for features/76-beast-habitats: beasts are near only the provinces of their canon range (world bible), every beast still lives
 // somewhere, Aldmark has no tropical beasts and Ranpur keeps its tiger, the callers survive an empty list, and the picker
 // draws no random numbers. Every test fails (never skips) when the feature is not in the build.
 
-const GATE = () => typeof A !== 'undefined' && !!A.beastsNear && !!A.BH && !!A.BH.TABLE;
+const GATE = () => typeof A !== 'undefined' && !!A.beastsNear && !!A.BH && !!A.BH.RANGE && !!A.BH.REGION;
 
-// An independent reading of the table, from the raw data and the map as written: is beast `id` allowed in province P?
+// An independent reading of the canon tables, from the raw data and the map as written: is beast `id` allowed in province P?
 const CHECKER = () => {
   window.BHT = {
     map: LORE.map.provinces,
+    regionOf(name) { for (const k in A.BH.REGION) if (A.BH.REGION[k].includes(name)) return k; return null; },
+    terr(B, t) { return B.terr.includes(t) || (t === 'steppe' && B.terr.includes('plains')) || (t === 'plains' && B.terr.includes('savanna')); },
     allowed(id, P) {
-      const t = A.BH.TABLE[id]; if (!t) return { ok: false, why: 'no table entry' };
-      const L = this.map.find(x => x.id === P.id);
-      if (!t.biomes.includes(P.biome)) return { ok: false, why: `biome ${P.biome} not in ${t.biomes.join('/')}` };
-      if (t.terrIn && !t.terrIn.includes(P.terr)) return { ok: false, why: `terrain ${P.terr} not in ${t.terrIn}` };
-      const placed = (t.realms || []).length || (t.wilds || []).length || (t.extra || []).length;
-      if (!placed) return { ok: true };
-      if ((t.realms || []).includes(L.realm)) return { ok: true };
-      if ((t.wilds || []).includes(L.name) || (t.extra || []).includes(L.name)) return { ok: true };
-      if (t.edge && (t.wilds || []).some(n => { const w = this.map.find(x => x.name === n); return w && w.adj.includes(L.id); })) return { ok: true };
-      return { ok: false, why: `${L.name} (${L.realm}) is outside ${[...(t.realms || []), ...(t.wilds || []), ...(t.extra || [])].join(', ')}` };
+      const nm = (LORE.creatures.find(c => c.id === id) || {}).name, rg = A.BH.RANGE[nm];
+      if (!rg) return { ok: false, why: 'no canon range' };
+      const code = this.regionOf(P.name);
+      if (!code) return { ok: false, why: 'no canon region' };
+      const nar = (A.BH.NARROW[nm] || {})[code];
+      if (!rg.regions.includes(code) || (nar && !nar.includes(P.name))) return { ok: false, why: `${P.name} is in ${code}, outside ${rg.range}` };
+      if (this.terr(A.BEASTS[id], P.terr)) return { ok: true };
+      // the terrain word may be waived only where no province of that region (as narrowed) fits it
+      const peers = this.map.filter(p => this.regionOf(p.name) === code && (!nar || nar.includes(p.name)));
+      return peers.some(p => this.terr(A.BEASTS[id], p.terr)) ? { ok: false, why: `terrain ${P.terr} where ${code} has fitting ground` } : { ok: true };
     },
     // the beast list for every province, with the test character moved there and back
     sweep(off) {
@@ -42,16 +44,16 @@ export default {
       for (let i = 0; i < after.length; i++) {
         const { P, ids } = after[i];
         for (const id of ids) { pairs++; const a = BHT.allowed(id, P); if (!a.ok) bad.push(`${id} at ${P.name}: ${a.why}`); }
-        // the wrapper only removes from the release's list, apart from the named `extra` provinces
-        for (const id of ids) if (!before[i].ids.includes(id) && !(A.BH.TABLE[id].extra || []).includes(P.name)) added.push(`${id} at ${P.name}`);
+        // the wrapper only removes from the release's list, apart from regions whose ground never fits the terrain words
+        for (const id of ids) if (!before[i].ids.includes(id) && !A.BH.resolve().E[id].loose.has(P.id)) added.push(`${id} at ${P.name}`);
         for (const id of before[i].ids) { beforePairs++; if (!BHT.allowed(id, P).ok) beforeBad++; }
       }
-      return { provinces: after.length, pairs, beforePairs, beforeBad, bad: bad.slice(0, 5), nBad: bad.length, added: added.slice(0, 5), missing: A.BH.resolve().missing };
+      return { provinces: after.length, pairs, beforePairs, beforeBad, bad: bad.slice(0, 5), nBad: bad.length, added: added.slice(0, 5), missing: A.BH.resolve().unmatchedBeasts.concat(A.BH.resolve().unmatchedPlaces) };
     });
     // the release itself breaks the table many times over, so the check can tell the two apart
-    const ok = r.provinces === 306 && r.pairs >= 150 && r.nBad === 0 && !r.added.length && !r.missing.length && r.beforeBad > 1000;
+    const ok = r.provinces === 306 && r.pairs >= 120 && r.nBad === 0 && !r.added.length && !r.missing.length && r.beforeBad > 1000;
     return { ok, detail: `${r.pairs} beast-province pairs in ${r.provinces} provinces, ${r.nBad} outside their habitat (release: ${r.beforeBad} of ${r.beforePairs})` +
-      (r.nBad ? ' BAD ' + r.bad.join('; ') : '') + (r.added.length ? ' ADDED ' + r.added.join('; ') : '') + (r.missing.length ? ' UNRESOLVED ' + r.missing.join('; ') : '') };
+      (r.nBad ? ' BAD ' + r.bad.join('; ') : '') + (r.added.length ? ' ADDED ' + r.added.join('; ') : '') + (r.missing.length ? ' UNMATCHED ' + r.missing.join('; ') : '') };
   },
 
   async bhAllReachable(pg) {
@@ -65,13 +67,14 @@ export default {
       // the beasts that a person born in a realm (not only a wanderer in an unclaimed wild) can meet at home
       const settled = {};
       for (const { P, ids: near } of BHT.sweep(false)) if (P.orig !== 'unclaimed') for (const id of near) settled[id] = 1;
-      return { total: ids.length, lore: lore.length, tabled: ids.filter(id => A.BH.TABLE[id]).length,
+      return { total: ids.length, lore: lore.length, tabled: ids.filter(id => A.BH.RANGE[(LORE.creatures.find(c => c.id === id) || {}).name]).length,
+        places: Object.values(A.BH.REGION).flat().filter(n => LORE.map.provinces.some(p => p.name === n)).length, unmatched: A.BH.resolve().unmatchedBeasts.concat(A.BH.resolve().unmatchedPlaces),
         nowhere: lore.filter(id => !n[id]).map(id => LORE.creatures.find(c => c.id === id).name),
         wildOnly: lore.filter(id => n[id] && !settled[id]).map(id => LORE.creatures.find(c => c.id === id).name),
         counts: lore.map(id => `${LORE.creatures.find(c => c.id === id).name} ${n[id] || 0}`) };
     });
-    const ok = r.total === 25 && r.lore === 25 && r.tabled === 25 && !r.nowhere.length;
-    return { ok, detail: `${r.lore} beasts, ${r.tabled} in the table; nowhere: ${r.nowhere.join(', ') || 'none'}; only in unclaimed wilds: ${r.wildOnly.join(', ') || 'none'}. ` + r.counts.join(', ') };
+    const ok = r.total === 25 && r.lore === 25 && r.tabled === 25 && r.places === 306 && !r.unmatched.length && !r.nowhere.length;
+    return { ok, detail: `${r.lore} beasts, ${r.tabled} matched to a canon range; ${r.places} of 306 provinces matched to a canon region; nowhere: ${r.nowhere.join(', ') || 'none'}; only in unclaimed wilds: ${r.wildOnly.join(', ') || 'none'}. ` + r.counts.join(', ') };
   },
 
   async bhAldmarkRanpur(pg) {
