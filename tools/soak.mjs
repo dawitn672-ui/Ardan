@@ -26,6 +26,7 @@ const opt = k => { const a = args.find(x => x.startsWith(`--${k}=`)); return a ?
 const file = path.resolve(root, args.find(a => !a.startsWith('--')) || 'index.html');
 const RUNS = +(opt('runs') || 8), STEPS = +(opt('steps') || 600), SEED = +(opt('seed') || 1), WORKERS = +(opt('workers') || 2);
 const jsonOut = opt('json');
+const ONLY_RUN = opt('run') != null ? +opt('run') : null;   // replay one run exactly (its clicks depend only on --seed and its number)
 
 const rng = s => () => { s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 
@@ -111,7 +112,13 @@ async function oneRun(browser, run) {
       else await pg.click(`[data-soak="${t.i}"]`, { timeout: 3000, force: true });
     } catch (e) { if (!/detached|not attached|Timeout|intercepts|not visible|outside of the viewport/.test(String(e))) add('harness', e); }
     if (step % 10 === 0) {
-      const bad = await pg.evaluate(rx => { const tx = document.body.innerText || ''; const m = tx.match(new RegExp(rx.src, rx.fl)); if (!m) return null; const i = m.index; return tx.slice(Math.max(0, i - 80), i + 60).replace(/\s+/g, ' '); }, { src: BAD_TEXT.source, fl: '' }).catch(() => null);
+      const bad = await pg.evaluate(rx => {
+        const R = new RegExp(rx.src, rx.fl), tx = document.body.innerText || ''; const m = tx.match(R); if (!m) return null; const i = m.index;
+        // the innermost element whose text holds it, named by id, class and data-a, so the finding says where it is
+        let el = [...document.querySelectorAll('body *')].filter(e => R.test(e.innerText || '')).pop();
+        const path = []; for (let e = el; e && e !== document.body && path.length < 6; e = e.parentElement) path.push(e.tagName.toLowerCase() + (e.id ? '#' + e.id : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).slice(0, 2).join('.') : ''));
+        return tx.slice(Math.max(0, i - 80), i + 60).replace(/\s+/g, ' ') + '  [in ' + path.reverse().join(' > ') + ']';
+      }, { src: BAD_TEXT.source, fl: '' }).catch(() => null);
       if (bad) add('text', bad);
     }
   }
@@ -120,7 +127,7 @@ async function oneRun(browser, run) {
 }
 
 const browser = await pw.chromium.launch();
-const queue = Array.from({ length: RUNS }, (_, i) => i), out = [];
+const queue = ONLY_RUN != null ? [ONLY_RUN] : Array.from({ length: RUNS }, (_, i) => i), out = [];
 await Promise.all(Array.from({ length: Math.min(WORKERS, RUNS) }, async () => {
   while (queue.length) { const r = queue.shift(); const res = await oneRun(browser, r).catch(e => ({ run: r, found: [{ kind: 'harness', msg: String(e).slice(0, 300), run: r }], lives: 0, years: 0 })); out.push(res); process.stdout.write(`run ${r}: ${res.found.length} found; ${res.clicks} clicks, ${res.years} game years, ${res.sweeps} sweeps (${res.screens} screens drawn)\n`); }
 }));
