@@ -393,7 +393,7 @@
     const pc = p || A.pc(); if (!pc) return h;
     h = h.replace(/<div class="small muted">(Generation \d+ · [^<]*)<\/div>/, (m, t) => `<div class="small muted">${N('dynasty', '', t, { focus: true })}</div>`)
       .replace(/<div class="tiny muted">living, (\d+)<\/div>/, (m, a) => `<div class="tiny muted">living, ${N('age', pc.id, a)}</div>`)
-      .replace(/<div class="group-h">Endings found \(([^)]*)\)<\/div>/, (m, t) => `<div class="group-h">Endings found (${N('endings', '', t, { focus: true })})</div>`)
+      .replace(/<div class="group-h">Endings found \(([^)]*)\)<\/div>/, (m, t) => `<div class="group-h"><span>Endings found (${N('endings', '', t, { focus: true })})</span></div>`)
       .replace(/<div class="group-h">Achievements \(([^)]*)\)<\/div>/, (m, t) => `<div class="group-h">Achievements (${N('achs', '', t, { focus: true })})</div>`);
     const keys = Object.keys(GD.ACH); let i = 0;
     h = TT.within(h, '<div class="group-h">Achievements', null, seg => seg.replace(/<div class="card ach( lock)?"><b>/g, (m, l) => { const k = keys[i++]; return k ? `<div class="card ach${l || ''}"${UI.ttAttrs('ach', k)}><b>` : m; }));

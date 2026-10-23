@@ -228,7 +228,7 @@ UI.MODS = {
         : `<p class="bad">${esc(L.file || 'The file')} was not loaded. ${esc(String(L.errors.length))} ${L.errors.length === 1 ? 'problem' : 'problems'}; nothing from it was added.</p>`) +
         UI.MODS.issues(L.errors, 'bad') + UI.MODS.issues(L.warnings, 'muted') + '</div>';
     }
-    h += '<h3>Your mods</h3>';
+    h += '<h3 style="margin-top:var(--s-4)">Your mods</h3>';
     if (!list.length) h += '<p class="small muted">None yet.</p>';
     for (const m of list) {
       const cid = 'mod-on-' + m.id;
