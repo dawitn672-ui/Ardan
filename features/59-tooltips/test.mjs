@@ -74,9 +74,12 @@ const KIT2 = () => {
     // advance stops at each scene that wants the player: settle it and go on, until the years have passed
     play(years) { const end = A.S.year + years; for (let g = 0; g < 3000 && A.S.year < end; g++) { const r = A.advance(400); TT2.settle(); if (!A.pc() || !A.pc().alive || (r && r.why === 'dead')) return false; } return true; },
     life(seed, o = {}) {
-      A.newGame(Object.assign({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }, o));
-      UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.set.hints = false;
-      TT2.play(o.years != null ? o.years : 4);
+      // a life that ends in the years played has no screens to cover: the next seed (CI run 62: the noble of 5954 died)
+      for (let k = 0; k < 6; k++) {
+        A.newGame(Object.assign({ seed: seed + k * 1000, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }, o));
+        UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.set.hints = false;
+        if (TT2.play(o.years != null ? o.years : 4)) break;
+      }
       A.S.queue = []; UI.ov = null; return A.pc();
     },
     soldier(seed) {
@@ -247,6 +250,24 @@ export default {
   },
 
   // every entry, for several lives, and the wired views: the state and the random stream are untouched
+  // a popover is drawn after the render, on a hover or a click: its content is built under 21's draw guard, so the
+  // readers that would create state (A.staffHolder's pc.staff, A.jobRep) only read
+  async ttOpenGuarded(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5990, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.set.hints = false; UI.render();
+      const TT = UI.TT, a = document.querySelector('[data-tt],[data-tip]');
+      const html = TT.html; let inside = null;
+      TT.html = function () { inside = A.isDrawing ? A.isDrawing() : null; return html.apply(this, arguments); };
+      let opened = false;
+      try { opened = !!(a && TT.open(a, 1, 'click')); } finally { TT.html = html; if (TT.closeAll) TT.closeAll(); else TT.close(1); }
+      const pc = A.pc(); delete pc.staff;
+      const held = A.asDrawing ? A.asDrawing(() => A.staffHolder(pc)) : 'no guard';
+      return { opened, inside, held, created: pc.staff !== undefined, outside: A.isDrawing ? A.isDrawing() : null };
+    });
+    return { ok: r.opened && r.inside === true && r.held === null && !r.created && r.outside === false,
+      detail: `a popover opened ${r.opened}, its content built while drawing ${r.inside}; a staff holder asked while drawing ${JSON.stringify(r.held)}, pc.staff created ${r.created}; drawing after ${r.outside}` };
+  },
   async ttPure(pg) {
     const r = await pg.evaluate(`(() => {
       const runs = [];

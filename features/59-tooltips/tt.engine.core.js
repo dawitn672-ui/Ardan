@@ -63,7 +63,7 @@
 
   TT.open = function (a, lvl, how) {
     lvl = Math.min(lvl || TT.levelOf(a), TT.MAX);
-    const [key, arg] = TT.spec(a), body = TT.html(key, arg);
+    const [key, arg] = TT.spec(a), body = A.asDrawing ? A.asDrawing(TT.html, TT, [key, arg]) : TT.html(key, arg);   // drawing: reads only (21's guard)
     if (!body) return null;
     TT.close(lvl);
     const el = TT.pop(lvl);

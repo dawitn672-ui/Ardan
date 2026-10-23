@@ -6,7 +6,8 @@
 //    Adults are mostly fine (median gap 31 days, p90 about 100), but one gap in ten still runs past three months.
 //    The floor counts whole months since the last prompt (anything the game puts in front of you). Once a stage's
 //    limit is reached and the month's own roll brought nothing, it draws one event from the same pool, by the same
-//    weights and cooldowns (A.rollEventsN). Nothing new is written for it: it only spreads what the game already has.
+//    weights and cooldowns (A.rollEventsN), leaving out any scene that can hurt or kill. Nothing new is written for it:
+//    it only spreads what the game already has.
 //    Not in prison (a cell is meant to be slow) and not before the first birthday, as the release.
 // 2. Winter's free days (A.initiativeMul, a hook the release reads but never set). Initiative refills at your free
 //    days a year spread evenly over the days (freeTime / 365 a day, 7 a year for an adult), so an engaged player spends
@@ -54,8 +55,8 @@ PACE.capFor = function (pc) { return PACE.CAP[A.stage(pc)] || 4; };
 // does the same. Returns true if a prompt was queued.
 // The floor draws only scenes that cannot hurt or kill you. The release's own monthly roll still brings the fevers,
 // the falls and the fights at its own rate: the floor is there to fill a quiet season with a decision, and doubling a
-// child's scenes must not double a child's ways to die (the first try, which drew from the whole pool, did: bot lives
-// that reached 60 died at 16 to 25 instead). An event is hurtful if any of its choices or its setup can take health,
+// child's scenes must not double a child's ways to die (the first try, which drew from the whole pool, did: in 12 bot
+// lives to 40, five died against three without it, two of them at 16 and 18). An event is hurtful if any of its choices or its setup can take health,
 // wound, kill, start a fight or a beast hunt, or name a cause of death (read from the source, once per event).
 PACE.HURT_RX = /["']?\b(?:die|wound|duel|beast|cause)["']?\s*:|["']?health["']?\s*:\s*-|\.health\s*-=|\.health\s*=(?!=)|pcDeath|mortalCheck|bmFallIll|addWound|groupFight/;
 PACE._hurt = {};

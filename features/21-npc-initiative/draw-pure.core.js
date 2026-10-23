@@ -22,6 +22,9 @@
   A._drawPure = true;
   let drawing = 0;
   A.isDrawing = () => drawing > 0;
+  // for other drawing that runs outside the three below: 59-tooltips builds a popover's content through it, since a
+  // popover opens on a hover or a click, after the render (81-pacing's random stream once had one create people.X.staff)
+  A.asDrawing = function (f, self, args) { drawing++; try { return f.apply(self, args || []); } finally { drawing--; } };
   for (const k of ['render', 'refresh', 'renderModal']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;

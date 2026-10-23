@@ -39,6 +39,38 @@ export default {
     });
     return { ok: !r.threw && r.skip === true, detail: r.threw ? `eventView threw: ${r.threw}` : `a text that throws drops the event (skip ${r.skip})` };
   },
+  async deathNamesTheHurt(pg) {
+    // a death right after a named hurt is put down to that hurt, not to a natural cause (ENG-DEATH-CAUSE)
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 21, race: 'human', realm: 'POL-03', status: 'peasant', sex: 'M', startAge: 17 });
+      const pc = A.pc(), today = A.absDay();
+      A.advance(3); while (A.headReady()) A.skipPrompt();
+      const ticked = pc._hTick === pc.health;
+      // the cause mortalCheck settles on, from its death or from its near-death line
+      const causeOf = set => {
+        Object.assign(pc, { alive: true, health: 0, _lhAnon: 0 }, set);
+        let got = null; const pd = A.pcDeath, lg = A.log;
+        A.pcDeath = c => { got = c; return true; };
+        A.log = (t, ...a) => { const m = /should have died of (.*?)\. You did not/.exec(t); if (m) got = m[1]; return lg.call(A, t, ...a); };
+        try { A.mortalCheck(pc, pc.lastHurt); } finally { A.pcDeath = pd; A.log = lg; }
+        pc.alive = true; pc.health = 60;
+        return got;
+      };
+      const old = today - 200;
+      return {
+        ticked,
+        fresh: causeOf({ lastHurt: 'the Hell Boar', _lh: 'lung fever', _lhDay: old, _hTick: 80 }),
+        again: causeOf({ lastHurt: 'the Hell Boar', _lh: 'the Hell Boar', _lhDay: old, _hTick: 80 }),
+        stale: causeOf({ lastHurt: 'a wound gone bad', _lh: 'a wound gone bad', _lhDay: old, _hTick: 0 }),
+        nameless: (() => { Object.assign(pc, { lastHurt: 'lung fever', _lh: 'lung fever', _lhDay: old, _hTick: 80, _lhAnon: 0, health: 60 });
+          A.applyFx(pc, { health: -200 }, {}); return causeOf({ _lhAnon: pc._lhAnon }); })(),
+      };
+    });
+    const ok = r.ticked && r.fresh === 'the Hell Boar' && r.again === 'the Hell Boar' && r.stale && r.stale !== 'a wound gone bad' &&
+      r.nameless && r.nameless !== 'lung fever';
+    return { ok, detail: `the daily tick notes health: ${r.ticked}; gored today after an old fever: "${r.fresh}"; gored again by the same beast: "${r.again}"; ` +
+      `health long gone from an old wound: "${r.stale}"; an event's nameless wound after an old fever: "${r.nameless}"` };
+  },
   async coinStaysANumber(pg) {
     // an effect that computes NaN does not take the purse with it
     const r = await pg.evaluate(() => {

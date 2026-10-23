@@ -98,4 +98,25 @@ export default [
       'case"coin":{const amt=typeof v=="number"&&Number.isFinite(v)?v:0;',
     ]],
   },
+  {
+    id: 'ENG-DEATH-CAUSE',
+    blob: 'ardan-core',
+    why: 'A death right after a hurt was put down to a natural cause. mortalCheck calls a death from health long gone "natural" ' +
+      'when the last hurt is over 40 days old, but the day of the last hurt is stamped only by the daily tick (onDay). A duel, ' +
+      'a beast, a battle or an event that drops health to 0 calls mortalCheck at once, before that tick, so it read the stamp ' +
+      'of some older hurt: gored by the Hell Boar at 16, the obituary said "marsh fever" (every one of 7 such deaths logged in 12 ' +
+      'Varenna bot lives). The tick now also notes the health it saw: a named hurt that took health from above 0 since then is today\'s. ' +
+      'An event\'s health loss with no cause of its own keeps the old name, so for it the release\'s rule stands, unless the name ' +
+      'itself is new since the tick (a beast fought the same day).',
+    edits: [[
+      'A.onDay.push(pc=>{pc.lastHurt!==pc._lh&&(pc._lh=pc.lastHurt,pc._lhDay=A.absDay?A.absDay():0)})',
+      'A.onDay.push(pc=>{pc.lastHurt!==pc._lh&&(pc._lh=pc.lastHurt,pc._lhDay=A.absDay?A.absDay():0),pc._hTick=pc.health,pc._lhAnon=0})',
+    ], [
+      'cause===pc.lastHurt&&A.absDay&&A.absDay()-(pc._lhDay||0)>40&&(cause=A.naturalCause(pc))',
+      'cause===pc.lastHurt&&!(pc._hTick>0&&(!pc._lhAnon||pc._lh!==pc.lastHurt))&&A.absDay&&A.absDay()-(pc._lhDay||0)>40&&(cause=A.naturalCause(pc))',
+    ], [
+      'v<0&&(pc.lastHurt=fx.cause||pc.lastHurt||"an injury")',
+      'v<0&&(fx.cause||(pc._lhAnon=1),pc.lastHurt=fx.cause||pc.lastHurt||"an injury")',
+    ]],
+  },
 ];

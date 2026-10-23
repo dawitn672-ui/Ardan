@@ -174,7 +174,9 @@ export default {
       const out = [];
       for (const [rid, race] of [['POL-01', 'human'], ['POL-03', 'human'], ['POL-06', 'elf'], ['POL-10', 'dwarf'], ['POL-11', 'orc'], ['POL-18', 'human'], ['POL-20', 'human'], ['POL-23', 'giant']]) {
         let best = null;
-        for (let s = 0; s < 6 && !best; s++) {
+        // up to 12 seeds a realm for a life of 30+ years, as bench/customs.mjs: a bot takes any fight a choice offers
+        // without odds, and in Varenna beasts it chose to fight killed 8 of 12 peasants from 16 (CI run 62)
+        for (let s = 0; s < 12 && !best; s++) {
           const L = B.life({ seed: 7100 + +rid.slice(4) + s * 977, race, realm: rid, status: 'peasant', sex: s % 2 ? 'F' : 'M', startAge: 16 }, ['careful', 'greedy'][s % 2], s % 4 < 2, 45);
           if (L.years < 30) continue;
           const pc = A.P(A.S.pc) || {}, rb = pc.rb || {};

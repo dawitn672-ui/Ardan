@@ -10,9 +10,9 @@ Measured on 16 engaged and 13 mixed bot lives of the full build, the same seeds,
 
 | Number | What the bot lives showed |
 | --- | --- |
-| **Prompts** | Adults are not the problem: 8 to 9 prompts a year for an engaged life, a median gap of 31 days. **Childhood is.** A child (humans 3 to 12) meets 2.3 prompts a year, with a median gap of 120 days and one gap in ten over **414 days**; an infant's p90 is 608 days. The release's director (`A.monthEvents`) rolls one fixed chance a month by stage (17% for a child) and nothing raises it after a quiet stretch. Elves and dwarves spend decades in those stages, so their lives sit at the bottom of the league's median (3.4 to 4.0 prompts a year). |
+| **Prompts** | Adults are not the problem: 8 to 9 prompts a year for an engaged life, a median gap of 31 days. **Childhood is.** A child (humans 3 to 12) meets 2.3 prompts a year, with a median gap of 120 days and one gap in ten over **414 days**; an infant's p90 is 608 days. The release's director (`A.monthEvents`) rolls one fixed chance a month by stage (17% for a child) and nothing raises it after a quiet stretch. Elves and dwarves spend decades in those stages, so a quarter of the league's lives sit at its bottom. |
 | **Initiative** | The engaged bot rarely lacked something to do: outside infancy, **70% of its monthly tries that came to nothing were for want of initiative**. Most of the rest were its own plan asking for what it could not pay (lending with no coin, a physician with no suns) or, for the random bot, an action of the wrong age. Initiative refills at your free days a year, spread evenly over the days (`freeTime / 365`, 7 a year for an adult, 4 for a child, none before 3), and the year turn keeps what is left rather than adding more (`A.yearTurn`). An engaged adult spends each point as it comes: 6.1 to 6.3 actions a year, a child 3.7, an infant none. The gates ("Too young", "Enough of that this year", prison, too hurt) turned away under 5% of tries. |
-| **Checks** | 88% of the checks bots took were taken with a sure choice on offer, and the reckless bot takes the worst odds in the scene, so the rate is the odds of the long shot. What makes long shots long is partly the writer's `d` and partly an accident: **the same written d means different odds depending on which stats the writer named.** A typical seasoned adult has will 56 but speed 30, stamina 31 and intellect 33, so "d 45" is 26% on speed and stamina and 49% on persuasion and will. Intrigue and intellect won 24%, intellect and insight 14%, strength and will 8%; diplomacy and will 60%. |
+| **Checks** | 88% of the checks bots took were taken with a sure choice on offer, and the reckless bot takes the worst odds in the scene, so the rate is the odds of the long shot. What makes long shots long is partly the writer's `d` and partly an accident: **the same written d means different odds depending on which stats the writer named.** A typical seasoned adult has will 56 but speed 30, stamina 31 and intellect 33, so "d 45" is 26% on speed and stamina and 56% on will and insight. Intrigue and intellect won 24%, intellect and insight 14%, strength and will 8%; diplomacy and will 60%. |
 
 Two other levers were measured and dropped:
 
@@ -29,6 +29,8 @@ Two other levers were measured and dropped:
 - **A draw that will show.** A draw can come back empty (58-event-cut turns a retired event's draw into nothing) or drop itself when looked at (an unfillable token, a setup that skips, shown under 240 days ago). The floor looks at it in the engine at the month's turn (`A.eventView` runs the setup once and keeps the view), and tries up to four times.
 - **The year turn.** `A.yearTurn` spreads the year's events over the coming months; those count when they come, not on New Year's day.
 - **State.** `A.S.pace = { last, floor }`: the day of the last prompt and the floor's draws. A save without it starts counting on its first month.
+
+It goes with 82-early-years, which runs the clock faster through childhood: that one shortens the real-time wait, this one puts a decision in it.
 
 This is `replayability-pacing.md`'s step 3 ("a director floor ... force a stage-appropriate event after 6 months (adult) or 9 (child), the way Randy caps quiet at 13 days"), with shorter limits because 58-event-cut has since made every month quieter. The reference games: RimWorld's storytellers cap the quiet between threats; FTL allows one or two empty beacons a sector; BitLife and Reigns put a decision in every year.
 
@@ -61,15 +63,44 @@ d' = d - sum over the check's stat sides of  weight x max(0, 45 - REF[stat])    
 
 ## Measured by
 
-`test.mjs` (`node tests/run.mjs <build> --features=pacing`) and the league (`bench/run.mjs --only=league`), on two full builds made from the same tree at the same moment, one with this feature and one without.
+`test.mjs` (`node tests/run.mjs <build> --features=pacing`) and the league (`bench/run.mjs --only=league`), on two full builds of the same tree, one with this feature and one without. (87-echoes joined the build between the two runs; the build with this feature leaves it out, so the pair differs only by this feature. Nothing else in the tree changed but tests and docs.)
 
-**The league** (64 lives, the scorecard's seeds):
+**The league** (64 lives, the scorecard's seeds; builds `b593143+f80` without and `b593143+f81` with):
 
-RESULTS
+| | Without | **With** | With the wider scale (set aside) | Target |
+| --- | --- | --- | --- | --- |
+| **Prompts per in-game year** | 5.6 | **7.0** | 7.0 | ≥ 6 |
+| **Initiative actions per year (engaged)** | 5.1 | **6.5** | 6.5 | ≥ 6 |
+| **Check success** | 51.1% | **57.8%** | 61.3% | 45–65%, best at 55 |
+| ...careful, reckless, greedy, random | 69.5, 48.3, 53.7, 50.3 | 66.5, 60.4, 51.0, 56.4 | 71.0, 62.0, 59.6, 58.9 | |
+| Longest usual wait (p90 days between prompts) | 142 | **120** | 120 | |
+| ...in seconds at the default speed | 35.5 | **30** | 30 | ≤ 45 |
+| Events per year | 5.2 | 6.5 | 6.5 | |
+| Median death age, humans who reach 20 | 70 | **62** | 67 | 55–65 |
+| Careful bots outlive reckless ones by (years) | −0.8 | **+14.0** | +16.6 | ≥ 5 |
+| Fired events that read a memory | 59.5% | 61.6% | 60.9% | ≥ 40% |
+| Distinct life arcs, most common arc | 12, 21.9% | 12, 20.3% | 11, 21.9% | ≥ 8, ≤ 25% |
+| NPC moves per decade | 10.8 | 10.6 | 10.8 | ≥ 3 |
+| Page errors | 0 | 0 | 0 | 0 |
 
-Tests:
+One seed set is noisy: prompts per year moves about ±0.5 between builds that differ only in their random stream, and death ages by several years (12 deaths a personality). The prompts (+1.4) and initiative (+1.4) changes are well outside that; so is the checks change (+6.7). The scale alone accounts for about +3.6 of it (a paired estimate over 16 lives: every event the bot met priced with the rule and without, and each personality's pick taken both ways); the rest comes from which scenes the changed lives meet, and is not separated here. The death-age rows moved the right way here, but they are within what the random stream alone can do and should not be credited to this feature without a second seed set.
 
-TESTS
+**Balance** (`node bench/balance.mjs <build with this feature> --workers=2`, 72 lives): **every band held.** Median death ages: serf 42, peasant 66, artisan 65, merchant 70, noble 67, royal 74. Median peak coin: serf 4,523, peasant 52,460, artisan 84,965, merchant 466,650, noble 284,987, royal 261,485. Check success there 51.2% (band 30–70; those lives start at 16 to 18, past the childhood the league's lives pass through).
+
+**Tests** (`node tests/run.mjs <full build> --features=pacing`: the 4 core suites and these 6, all pass):
+
+| Test | Result on the full build |
+| --- | --- |
+| `pcFloor` | The same childhoods (from 4) and adulthoods (from 25), 6 years each on three seeds, floor off and on. Child: 1.8 → **4.7** prompts a year, gaps past the limit 0.94 → 0.11 a year, longest gap 863 → 153 days; the floor drew 2.4 a year. Adult: gaps past the limit 0.49 → 0, longest 229 → 123 days; the floor drew **0.78 a year** (the plan's bar: no more than once a year for a median adult). An adult's prompt count is left to the random stream (one adulthood off the floor fell into a war's run of battles). |
+| `pcFloorLimits` | Nothing in prison (20 quiet months), nothing after two quiet months, nothing before the first birthday; a quiet adult with the month's roll failed draws one eligible event; a save without `A.S.pace` starts counting instead of drawing. |
+| `pcWinter` | An adult's free days come at 14/365 a day in January and December, 7/365 in July and November: 8.99 a year for 7 free days. 2/365 in prison in January. The popover says "Winter: the fields sleep" in January and nothing in July. An infant still has none. |
+| `pcScale` | Seasoned adult (44), d 45: speed and stamina shift 14.6, 21% → 44%; persuasion and will 0, 53% → 53%; intrigue and intellect 4.8, 42% → 49%; will and insight (d 50) 2.8, 57% → 59%; strength and intellect with no written d 10.2, 35% → 51%. The written d comes back (also when absent), the state and the random stream are unchanged, a fight's odds are untouched. |
+| `pcScaleRolled` | `ch_inf_flux` (one of 893 events with a stat side the rule eases) shows 83% (70% without) and rolls at 83%; the popover adds up to 83 with the rule's own row and no "Other things in play". |
+| `pcLives` | 8 bot lives (bench/bot.mjs), birth to 30, the feature off and on. Off: 5.3 prompts a year, 4.4 actions a year (engaged), 43.0% of 400 checks. On: **6.7**, **5.4**, **47.2%** of 341. |
+
+With `--features=replay,fair-checks,tooltips` on the same build, all 28 pass, among them `renderRng`, `replayWithRender` and `journalReplay` (the floor draws in the engine, so a replay draws the same), 59's `ttSums2` and `ttPure2` (popovers add up and change nothing), and 75's four.
+
+`tools/lint-events.mjs` and `tools/lint-choices.mjs` (`--feature=pacing`) pass with nothing to check: the feature adds no events.
 
 ## Rules kept
 
@@ -88,4 +119,4 @@ TESTS
 - **Winter adds agency, it does not move it.** An adult's free days rise from 7 to about 9 a year. An even-total version (more in winter, less in summer) would keep the rhythm without the extra actions; the scorecard's ≥ 6 would then stay short.
 - **The scale eases long shots too.** The reckless bot takes the worst odds on offer, so a rule that lifts only some checks moves its choice to another long shot: a paired estimate over 16 lives (every event priced both ways, each personality's pick taken under each) gave +3.6 points for this rule and +8.5 for the wider one, where a naive estimate gave +5 and +10.
 - **The reference is 75's** (`FC.TYP.adult3`, measured in bot lives without either rule). If stats or skills change, re-measure it there and both rules follow.
-- **Other features' tests.** Three of 75-fair-checks' tests (`fcRule`, `fcLeavesAlone`, `fcLives`) measure 75's rule alone and fail with this one on: they toggle `A.FC.OFF` and expect the release's odds underneath. Setting `A.SCALE.OFF = true` in that test file's `SETUP` (and back in a `finally`) measures what they mean to. Two of 59-tooltips' tests failed on this build from a changed random stream, not a fault here: in `ttCov2Hold` the noble life (seed 5954) dies at 28 of a horse's kick, so its Path tab is empty; in `ttPure2` the soldier's war-tab popovers create `people.pb4.staff = {}` through `A.staffHolder`, which 21-npc-initiative's `draw-pure.core.js` guards while drawing (`UI.render`) but not while a popover is open (`UI.TT.open`). Both pass on the build without this feature, and the second is a real purity gap any seed can walk into.
+- **Other features' tests.** On the full build with this feature, 01-replay (`renderRng`, `replayWithRender`, `journalReplay`), 59-tooltips (all 22) and 75-fair-checks (all 4) pass. With the wider scale set aside above, three of 75's tests (`fcRule`, `fcLeavesAlone`, `fcLives`) failed, because they toggle `A.FC.OFF` and expect the release's odds underneath; a future rule on checks should set `A.SCALE.OFF` in that file's `SETUP`. That build's random stream also walked 59's `ttPure2` into a real purity gap that is not this feature's: the soldier's war-tab popovers created `people.pb4.staff = {}` through `A.staffHolder`, which 21-npc-initiative's `draw-pure.core.js` guards while drawing (`UI.render`) but not while a popover is open (`UI.TT.open`). Any seed can walk into it.
