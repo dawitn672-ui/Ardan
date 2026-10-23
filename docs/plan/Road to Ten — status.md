@@ -381,6 +381,9 @@ The aim of this pass: a build that can go to five new players, with nothing that
 - **A flaky test explained.** `ttNested2` failed in CI run 57 and 1 in 3 locally. The War Room click left the mouse over a lower choice's odds, and its hover tip covered the odds the test then clicked. The test now parks the mouse first.
 - **The soak, again.** 8 runs × 1,200 steps on seed 11: about 7,800 clicks, 141 game years, 200 sweeps, 5,216 screens drawn, 0 findings.
 
+- **Two features shared a name.** 87-echoes defined `A.EC` for its helpers, and 58-event-cut already kept its pool there, so echoes replaced it (`A.EC.sync is not a function`). Neither feature's own tests touched the other's, and only the full suite caught it (CI run 61). Echoes now use `A.ECHO`. A new feature should check that any `A.*` name it defines is free.
+- **A voice is only words.** 54-voices' `sameWorld` compares a life with voices on and off. It differed where 49-body-mind's deed log quotes a scene title as shown ("The lord's wood" / "The sepmet's wood"). The deeds' years and weights, which traits are scored on, were the same. The test now compares those, and not the quoted words.
+
 **Design calls for the owner.**
 - A first life can end in infancy, before any choice. Canon wants high child mortality, but it is a hard first minute for a playtester.
 - New players start on Hard, the release's default.
