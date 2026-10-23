@@ -117,26 +117,6 @@
           fx: { wil: 1, happy: -2 } },
       ],
     },
-    // ---- ch_ill_playmate: you kept the dead child's toy
-    {
-      id: "ec_playmate_toy", title: "In the bottom of the chest", ecSrc: "ch_ill_playmate",
-      ecKeep: ["npc", "toy"],
-      cond: (p, C) => free(p, C) && C.hasKids(p) && C.flag(p, "ch_kept_toy") && saw(p.flags.ev, "ch_ill_playmate", 15, 70),
-      w: 1, once: true,
-      setup: (p, ctx) => { ctx.npc = kept(p, "ch_ill_playmate", "npc", "your old playmate"); ctx.toy = kept(p, "ch_ill_playmate", "toy", "a wooden horse"); },
-      text: "Your child has been into the chest and comes out with {toy}, worn smooth. It was {npc}'s, the friend who died when you were both small, and you have kept it all your life. Your child wants it. Your child is about the age {npc} was.",
-      choices: [
-        { t: "Let the child have it, and tell them whose it was",
-          r: "The child listens solemnly and carries it everywhere for a month, then loses it in the orchard. You do not look for it.",
-          fx: { happy: 2, wil: 1, need: { company: 4 } } },
-        { t: "Put it back in the chest",
-          r: "The child sulks until supper. You put it back under the linen where it has always been.",
-          fx: { happy: -1, wil: 1 } },
-        { t: "Take it to {npc}'s grave",
-          r: "You walk out to the churchyard with the child and leave it on the little stone. It feels like the right place, at last.",
-          fx: { piety: 2, happy: -2, honor: 1 } },
-      ],
-    },
     // ---- lf_friend_moves: you said goodbye at the crossroads
     {
       id: "ec_friend_back_far", title: "Back from {far}", ecSrc: "lf_friend_moves",

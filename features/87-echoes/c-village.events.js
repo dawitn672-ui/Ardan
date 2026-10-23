@@ -220,8 +220,8 @@
       text: "Your business takes you through {place}. {Yrs} years ago a man on the hangman's cart asked you to tell his mother there that he was not afraid. You did not go. The village is small. Somebody would know which house was hers, and whether she is still in it.",
       choices: [
         { t: "Ask at the church, and go to her",
-          r: "She is alive, and very old. You tell her. She says she knew he would not be, and asks you in, and asks how he looked.",
-          fx: { honor: 3, piety: 2, wil: 1, happy: 1 } },
+          r: "She is alive, and very old. You tell her. She says she knew he would not be, and asks you in, and asks how he looked. You leave her what you have on you.",
+          fx: { honor: 3, piety: 2, wil: 1, happy: 1, coin: -4 } },
         { t: "Ask after her, and leave a coin at the church",
           r: "She died the winter after, the priest says. You leave the coin for her grave. It is not what was asked.",
           fx: { coin: -3, piety: 2, happy: -2 } },

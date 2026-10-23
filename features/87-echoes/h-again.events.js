@@ -1,0 +1,235 @@
+// Echoes (87-echoes), part h: the most-met scenes, answered a second way. Sickness and wounds (bm_), the sibling
+// quarrel, the fever story, the fire at the hearth: each choice in them leaves its own later scene.
+(function () {
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const free = (p, C) => C.adult(p) && !C.prison(p);
+  const THINGS = /horse|blanket|knife/;
+
+  A.defEvents([
+    // ---- bm_ill: you sent for the physician, whatever he charged
+    {
+      id: "ec_physician_witness", title: "The physician's case", ecSrc: "bm_ill",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "bm_ill", 3) && took(p, "bm_ill", 0),
+      w: 1, once: true,
+      text: "The physician from {home} who came with his bag of knives and his boy, the year you were sick abed, is before the guild court. A patient of his died, and the barbers want his licence. He is asking every house he ever cured to come and say so. Yours is on his list.",
+      choices: [
+        { t: "Stand up for him at the court",
+          r: "You tell the court you lived. The barbers ask whether you would have lived anyway. You do not know. He keeps his licence, narrowly.",
+          fx: { honor: 1, fame: 1, need: { purpose: 3 } } },
+        { t: "Say you would rather not be dragged into it",
+          r: "He crosses your name off. He loses the licence, and leaves {home} for the city.",
+          fx: { need: { rest: 3 }, wil: 1 } },
+        { t: "Ask him to forgive what is left of your bill first",
+          r: "He forgives it with a face like vinegar. You stand up for him. He keeps the licence, and never treats you again.",
+          fx: { coin: 6, honor: -2 } },
+      ],
+    },
+    // ---- bm_ill: the wise woman's roots were the right roots
+    {
+      id: "ec_wise_woman_accused", title: "The wise woman by the ford", ecSrc: "bm_ill",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "bm_ill", 3) && took(p, "bm_ill", 1) && won(p, "bm_ill"),
+      w: 1, once: true,
+      text: "The wise woman by the ford, who boiled bark and something bitter and sat with you while you sweated, has been named from the pulpit. A child she treated died. The priest calls her a witch, and the bailiff's men are going to the ford this afternoon.",
+      choices: [
+        { t: "Go to the ford and stand at her door",
+          r: "You are standing there when the bailiff's men come. They take her anyway, and you with her, for the night. She is fined, not burned.",
+          fx: { honor: 4, piety: -2, fame: -1, happy: -2 } },
+        { t: "Speak to the priest for her, quietly", check: { s: "persuasion", s2: "faith", d: 50 },
+          win: { r: "You tell him what her roots did for you, and how many times. He calls off the bailiff, and preaches on mercy next Sunday.", fx: { honor: 2, piety: 1 } },
+          lose: { r: "He hears you, and asks whether you also took her roots. The parish hears that you did.", fx: { piety: -3, fame: -2 } } },
+        { t: "Keep away from the ford",
+          r: "You hear in the evening that she has gone, before they came. Nobody knows where. Nobody will know where to send for her now.",
+          fx: { wil: 1, happy: -2 } },
+      ],
+    },
+    // ---- bm_ill: you asked the priest to pray over you
+    {
+      id: "ec_priest_roof", title: "The priest who prayed", ecSrc: "bm_ill",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "bm_ill", 3) && took(p, "bm_ill", 2),
+      w: 1, once: true,
+      text: "The priest who knelt by your bed and said the old words over the fever, and asked nothing for it, is at your door. The chancel roof is letting in the rain over the altar. He is going round the parish. He mentions, mildly, that he prayed for nothing.",
+      choices: [
+        { t: "Give generously to the roof",
+          r: "He writes your name in the roof book in a good hand. On Sunday he reads it out, with the sum.",
+          fx: { coin: -20, piety: 4, fame: 1 } },
+        { t: "Give a day's work on the roof instead",
+          r: "A day on the ladder with the parish's other sinners. You come down wet and stiff, and the altar is dry.",
+          fx: { health: -2, piety: 3, sta: 1 } },
+        { t: "Give what you can spare, which is little",
+          r: "He takes it with the same mild face. Prayer, he says, is still free.",
+          fx: { coin: -3, piety: 1 } },
+      ],
+    },
+    // ---- bm_wound_care: you bound the wound tight and carried on
+    {
+      id: "ec_old_wound_reset", title: "The wound that healed wrong", ecSrc: "bm_wound_care",
+      ecKeep: ["wound", "part"],
+      cond: (p, C) => free(p, C) && !C.old(p) && saw(p.flags.ev, "bm_wound_care", 3) && took(p, "bm_wound_care", 3),
+      w: 1, once: true,
+      setup: (p, ctx) => { ctx.wound = kept(p, "bm_wound_care", "wound", "deep cut"); ctx.part = kept(p, "bm_wound_care", "part", "arm"); },
+      text: "The {wound} you bound tight and worked through has healed, after its fashion. Your {part} has never been right since, and it is worse in the wet. A bonesetter at the fair looks at it and says he could open it and set it straight. It would hurt, and it might not take.",
+      choices: [
+        { t: "Let him open it", check: { s: "wil", s2: "sta", d: 50 },
+          win: { r: "Worse than the first time, and a month abed. Then it is straight, or nearly, and the wet does not find it.", fx: { coin: -8, health: -6, cause: "a bonesetter's knife", wil: 2, sta: 1 } },
+          lose: { r: "It hurts worse and heals worse. The bonesetter has gone to the next fair by the time you can walk.", fx: { coin: -8, health: -10, cause: "a bonesetter's knife", wil: 1 } } },
+        { t: "Live with it",
+          r: "You live with it. You know when it will rain now, a day before anyone.",
+          fx: { wil: 1, need: { comfort: -3 } } },
+        { t: "Buy his salve instead",
+          r: "It smells of pine and goose and costs a sun. It helps, or the rubbing does.",
+          fx: { coin: -1, need: { comfort: 4 } } },
+      ],
+    },
+    // ---- wc_bread_since: you bought a sack of meal to keep, as people did then
+    {
+      id: "ec_meal_sack", title: "The sack in the corner", ecSrc: "wc_bread_since",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "wc_bread_since", 2, 20) && took(p, "wc_bread_since", 2),
+      w: 1, once: true,
+      text: "A wet harvest, and by Candlemas the baker is selling half-loaves. The sack of meal you bought and carried home on your shoulder is still in the corner, like a promise. The widow across the lane has four children and has started boiling nettles.",
+      choices: [
+        { t: "Share the sack with the widow",
+          r: "Half the sack goes across the lane in a bucket. Her children are at your door every morning after, to say thank you, and to see if there is more.",
+          fx: { honor: 3, piety: 2, need: { comfort: -4 } } },
+        { t: "Sell it at the hungry price",
+          r: "The miller's man pays three times what you gave for it. It is a good price. It is the price of a hungry winter.",
+          fx: { coin: 18, honor: -2 } },
+        { t: "Keep it for your own house",
+          r: "You eat well enough through the spring. The widow's children stop looking at your door.",
+          fx: { need: { comfort: 8 }, happy: -1 } },
+      ],
+    },
+    // ---- ch_fam_sib_fight: your brother or sister took your thing, and kept it
+    {
+      id: "ec_sib_thing_back", title: "{Thing}, given back", ecSrc: "ch_fam_sib_fight",
+      ecKeep: ["thing"],
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "ch_fam_sib_fight", 12, 70) && THINGS.test(kept(p, "ch_fam_sib_fight", "thing", "")) && !!who(p, "ch_fam_sib_fight"),
+      w: 1, once: true,
+      setup: (p, ctx) => { cast(p, ctx, who(p, "ch_fam_sib_fight")); const t = kept(p, "ch_fam_sib_fight", "thing", "your carved horse"); ctx.thing = t.replace(/^your /, "the "); ctx.Thing = A.EC.cap(ctx.thing); },
+      text: "{Nm}, your brother or sister, turns up at your door with something in a cloth. It is {thing}, the one {he} took when you were children and would not give back. {He} found it clearing the old house. {He} says {he} has felt bad about it for thirty years, which you doubt.",
+      choices: [
+        { t: "Take it back, and laugh about it",
+          r: "You both laugh until you have to sit down. It is smaller than you remember, and nothing like as good.",
+          fx: { happy: 4, them: { op: 12 } } },
+        { t: "Give it to {his} youngest",
+          r: "The child seizes it. {Nm} looks at you and something in {his} face goes soft. {He} knows what it means.",
+          fx: { honor: 2, them: { op: 18 } } },
+        { t: "Tell {him} to keep it. {He} won it fairly",
+          r: "{He} did not, and you both know it. {He} takes it home again, grinning.",
+          fx: { wil: 1, them: { op: 6 } } },
+      ],
+    },
+    // ---- bd_child_fever: your mother told the tale of the fox and the frozen river
+    {
+      id: "ec_fox_tale", title: "The fox and the frozen river", ecSrc: "bd_child_fever",
+      cond: (p, C) => free(p, C) && C.hasKids(p) && saw(p.flags.ev, "bd_child_fever", 15, 70) && took(p, "bd_child_fever", 1),
+      w: 1, once: true,
+      text: "Your child is hot and cold at once and the beams are swimming. You sit by the bed with a wet cloth, as your mother sat by yours, and the child asks for a story. You know which one. You never heard the end of it: you fell asleep before the fox reached the far bank.",
+      choices: [
+        { t: "Tell it as far as you know it",
+          r: "You tell it twice. The child falls asleep before the end, as you did, and wakes cooler.",
+          fx: { happy: 4, need: { company: 6 } } },
+        { t: "Make up an ending",
+          r: "The fox gets across. Of course the fox gets across. The child is outraged that you had to think about it.",
+          fx: { happy: 3, int: 1 } },
+        { t: "Send for your mother to tell it",
+          r: "She comes through the rain, and tells it, all of it, ending and all. You listen as hard as the child.",
+          fx: { happy: 3, rel: { who: "mother", op: 10 } } },
+      ],
+    },
+    // ---- ni_challenge: you refused, and they called you a coward in every house
+    {
+      id: "ec_coward_still", title: "Coward, still", ecSrc: "ni_challenge",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "ni_challenge", 4) && took(p, "ni_challenge", 3),
+      w: 1, once: true,
+      setup: (p, ctx) => { yrs(ctx, ago(p.flags.ev, "ni_challenge")); },
+      text: "A young man in the alehouse, who was a child when you walked away from a challenge on the road {yrs} years ago, calls you a coward to your face. He has it from his father. The room goes quiet. He is not drunk, and he is not big, and he wants something to tell his own children.",
+      choices: [
+        { t: "Tell him why you walked away",
+          r: "You tell it plainly: you were in the wrong, or near it, and blood would not have mended it. Some of the room nods. He does not.",
+          fx: { honor: 2, wil: 1, fame: -1 } },
+        { t: "Take him outside", check: { s: "unarmed", s2: "wil", d: 45 },
+          win: { r: "Two blows and he is sitting in the mud. You help him up. Nobody says the word again in your hearing.", fx: { fame: 2, honor: -1 } },
+          lose: { r: "He is quick, and you are older than you think. He has his story now.", fx: { health: -5, fame: -2 } } },
+        { t: "Laugh, and finish your cup",
+          r: "You laugh. After a while the room laughs with you. He goes home with half a story.",
+          fx: { happy: 1, wil: 1 } },
+      ],
+    },
+    // ---- ch_play_new_friend: you left the new child alone
+    {
+      id: "ec_edge_of_game", title: "At the edge of the game", ecSrc: "ch_play_new_friend",
+      cond: (p, C) => free(p, C) && C.hasKids(p) && saw(p.flags.ev, "ch_play_new_friend", 15, 60) && took(p, "ch_play_new_friend", 3),
+      w: 1, once: true,
+      text: "There is a new child in the lane, standing alone at the edge of every game, pretending not to care. Your own child points the newcomer out to you, and then runs off to play with the others. You once left a child like that alone. Somebody else befriended them. You wondered about it, sometimes.",
+      choices: [
+        { t: "Call your child back and send them over",
+          r: "Your child goes, sulking, and shares a crust. By evening the two of them are inseparable and you are blamed for nothing.",
+          fx: { honor: 1, happy: 3 } },
+        { t: "Go over yourself and speak to the newcomer",
+          r: "The child looks at you as at a large dog. Then answers. Then follows you to the game. It was not hard.",
+          fx: { happy: 2, skill: { diplomacy: 1 } } },
+        { t: "Let the children sort it out",
+          r: "Someone else's child does it, by the end of the week. You watch, and wonder about it.",
+          fx: { need: { rest: 2 } } },
+      ],
+    },
+    // ---- ch_inf_hearth: you reached for the fire, and it burned you
+    {
+      id: "ec_toddler_fire", title: "The pretty fire", ecSrc: "ch_inf_hearth",
+      cond: (p, C) => free(p, C) && C.hasKids(p) && saw(p.flags.ev, "ch_inf_hearth", 18, 80) && took(p, "ch_inf_hearth", 0) && lost(p, "ch_inf_hearth"),
+      w: 1, once: true,
+      text: "Your youngest can walk now, more or less, and has found the most beautiful thing in the house. You see it from across the room: the small hand going out to the flames. You have the mark of that same hearth on your own skin, somewhere you no longer look.",
+      choices: [
+        { t: "Snatch the child back",
+          r: "You have the child by the smock before the hand gets there. The howl brings the whole house. Nobody is burned.",
+          fx: { happy: 2, spd: 1 } },
+        { t: "Let the child feel the heat, from a safe hand away",
+          r: "The child pulls back, startled, and looks at you, and does not reach again. It is a lesson you learned harder.",
+          fx: { int: 1, wil: 1 } },
+        { t: "Put a fireguard round the hearth",
+          r: "A wicker fireguard by evening, and two burned fingers of your own making it. The child pulls it over within the week.",
+          fx: { coin: -2, health: -1, happy: 1 } },
+      ],
+    },
+    // ---- ch_play_betrayal: you told the truth, and your friend got the beating
+    {
+      id: "ec_betrayal_beating", title: "The beating {them} took", ecSrc: "ch_play_betrayal",
+      ecKeep: ["thing"],
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "ch_play_betrayal", 10, 60) && took(p, "ch_play_betrayal", 1) && won(p, "ch_play_betrayal") && !!who(p, "ch_play_betrayal"),
+      w: 1, once: true,
+      setup: (p, ctx) => { cast(p, ctx, who(p, "ch_play_betrayal")); ctx.thing = kept(p, "ch_play_betrayal", "thing", "the priest's window"); },
+      text: "{Nm} is grown and sharp with drink at a wedding, and brings up {thing}. You told the truth then, and {he} got the beating {he} had tried to give you. {He} has decided, over the years, that it was your fault. {He} says so at the table, in front of half the wedding.",
+      choices: [
+        { t: "Tell the table what really happened",
+          r: "You tell it plainly. The table laughs at {nm}, who goes red and leaves early. You have been right for thirty years, for what that is worth.",
+          fx: { honor: 1, happy: 1, them: { op: -15 } } },
+        { t: "Say you are sorry {he} was beaten",
+          r: "It is true, and it takes the wind out of {him}. {He} sits down. Later {he} buys you a cup, which is as near as {he} comes.",
+          fx: { honor: 2, them: { op: 10 } } },
+        { t: "Say nothing, and change the subject",
+          r: "The table follows you to the weather gladly. {Nm} stares into {his} cup.",
+          fx: { wil: 1 } },
+      ],
+    },
+    // ---- lf_hanging_crowd: you carried the hanged man's message to his mother
+    {
+      id: "ec_hanged_bequest", title: "From {place}", ecSrc: "lf_hanging_crowd",
+      ecKeep: ["place"],
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "lf_hanging_crowd", 4) && took(p, "lf_hanging_crowd", 0),
+      w: 1, once: true,
+      setup: (p, ctx) => { ctx.place = kept(p, "lf_hanging_crowd", "place", "the next valley"); },
+      text: "A carter brings a bundle from {place}: the old woman to whom you carried her son's last words, that he was not afraid, has died. She left you his belt and his knife, and a note in the priest's hand. It says he was not afraid, and neither was she, and thank you.",
+      choices: [
+        { t: "Keep the knife and wear the belt",
+          r: "It is a good knife. People ask about it sometimes. You tell them.",
+          fx: { happy: 1, wil: 1, honor: 1 } },
+        { t: "Pay for masses for both of them",
+          r: "The priest at {place} says them on the feast of the dead, two names together, every year.",
+          fx: { coin: -8, piety: 4 } },
+        { t: "Give the knife to a boy who has none",
+          r: "The boy cannot believe his luck. You do not tell him whose it was.",
+          fx: { honor: 2, happy: 1 } },
+      ],
+    },
+  ]);
+})();

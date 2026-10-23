@@ -1,0 +1,231 @@
+// Echoes (87-echoes), part l: the turn comes round (ch_art_, fm_, wk_, av_, pf_, lf_, bd_, dr_, camp_). What you
+// did for someone, or to them, is done back, or asked of you again.
+(function () {
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const free = (p, C) => C.adult(p) && !C.prison(p);
+
+  A.defEvents([
+    // ---- ch_art_townfever: you carried bread to the shut-in neighbours
+    {
+      id: "ec_doorstep_bread", title: "Bread on your step", ecSrc: "ch_art_townfever",
+      ecKeep: ["ill"],
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "ch_art_townfever", 12, 70) && took(p, "ch_art_townfever", 2) && won(p, "ch_art_townfever"),
+      w: 1, once: true,
+      setup: (p, ctx) => { ctx.ill = kept(p, "ch_art_townfever", "ill", "the fever"); },
+      text: "{ill} is in {home} again, and this time there is chalk on your own door. You are shut in with it. On the third morning there is a loaf on your step, and on the fourth, and on the fifth. You left bread on doorsteps once, as a child. Somebody on this street remembers.",
+      choices: [
+        { t: "Find out who, when you are well",
+          r: "It is a woman you do not know at all, a widow now. You left bread on her mother's step that month. She will not take anything for it.",
+          fx: { happy: 4, health: 2, newRel: { type: "friend", op: 25 } } },
+        { t: "Eat it, and leave a coin on the step each night",
+          r: "The coin is gone each morning and the bread comes anyway. You never learn who. It does not matter.",
+          fx: { coin: -3, health: 3, piety: 1 } },
+        { t: "Leave it for the poorer houses",
+          r: "You carry each loaf to the next chalked door. The street remembers who came, again.",
+          fx: { honor: 2, piety: 2, health: -2 } },
+      ],
+    },
+    // ---- fm_matchmaker: you told the matchmaker to mind her own business
+    {
+      id: "ec_matchmaker_wedding", title: "The matchmaker at your wedding", ecSrc: "fm_matchmaker",
+      cond: (p, C) => free(p, C) && C.married(p) && saw(p.flags.ev, "fm_matchmaker", 1, 25) && took(p, "fm_matchmaker", 2),
+      w: 1, once: true,
+      text: "The matchmaker you told to mind her own business, who said you would die alone and told everyone you were picky, is at your wedding feast, in the best seat, eating. She is telling the table she always knew it. She raises her cup to you across the room.",
+      choices: [
+        { t: "Raise yours back, and laugh",
+          r: "She laughs too, a cackle that turns heads. By the end of the night she is claiming the whole match.",
+          fx: { happy: 3, fame: 1 } },
+        { t: "Send her the best cut of the roast",
+          r: "She eats it with relish and tells everyone you have good manners after all. Your spouse is puzzled, then delighted.",
+          fx: { coin: -1, happy: 2, honor: 1 } },
+        { t: "Remind her of what she said",
+          r: "The table goes quiet. She smiles sweetly and says she was only trying to help. Your spouse does not ask.",
+          fx: { wil: 1, fame: -1 } },
+      ],
+    },
+    // ---- wk_trade_smuggle: you tipped off the customs men
+    {
+      id: "ec_smuggler_memory", title: "A smuggler with a good memory", ecSrc: "wk_trade_smuggle",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "wk_trade_smuggle", 3) && took(p, "wk_trade_smuggle", 2),
+      w: 1, once: true,
+      text: "The quayside smuggler you sold to the customs house for ten suns has done his time and is back on the quay with a new cart. Your own goods are on a ship due in tonight, and it is a narrow quay, and the customs men are short of hands. He is standing by your berth.",
+      choices: [
+        { t: "Offer him work unloading your ship",
+          r: "He looks at you, and laughs, and takes the work. Every bale comes off whole. He never says a word about it.",
+          fx: { coin: -5, honor: 1, newRel: { type: "friend", op: 15 } } },
+        { t: "Pay a watchman to stand by your goods",
+          r: "The watchman stands there all night. Nothing happens. The smuggler watches the watchman and grins.",
+          fx: { coin: -8, need: { rest: -3 } } },
+        { t: "Tell the customs men he is back", check: { s: "persuasion", s2: "intrigue", d: 45 },
+          win: { r: "They watch him all month and catch him at it again. You do not hear what happens to him this time.", fx: { coin: 5, honor: -2 } },
+          lose: { r: "They watch him and catch nothing. He knows who sent them. Two of your bales go into the harbour.", fx: { coin: -20, happy: -3 } } },
+      ],
+    },
+    // ---- av_pass_winter: you went over the late pass alone, and came down a different person
+    {
+      id: "ec_pass_guide", title: "Late on the pass again", ecSrc: "av_pass_winter",
+      cond: (p, C) => free(p, C) && !C.old(p) && saw(p.flags.ev, "av_pass_winter", 2) && took(p, "av_pass_winter", 1) && won(p, "av_pass_winter"),
+      w: 1, once: true,
+      text: "A family with a handcart is at the foot of the pass in the last week of the year, late and poor and running. The mule men will not go. Someone at the hostel says you crossed it alone once, reading the cairns and digging a snow-hole when the wind turned.",
+      choices: [
+        { t: "Take them over", check: { s: "survival", s2: "sta", d: 52 },
+          win: { r: "Four days of cutting wind and one bad night in a snow-hole with five of you in it. All five come down the other side.", fx: { honor: 4, fame: 2, health: -4, skill: { survival: 1 } } },
+          lose: { r: "The weather beats you on the second day. You bring them all back down, frostbitten and alive. They winter at the hostel.", fx: { honor: 2, health: -8, cause: "cold on the pass" } } },
+        { t: "Show them the cairns on a map in the ashes",
+          r: "They go at dawn with your map in their heads. You do not hear whether they reached the far side.",
+          fx: { honor: 1, happy: -2 } },
+        { t: "Pay for them to winter at the hostel",
+          r: "Four months of their keep. In April the pass opens and they go over it in sunshine.",
+          fx: { coin: -25, honor: 2 } },
+      ],
+    },
+    // ---- pf_melee_young_blood: you offered to teach the young blood instead of fighting
+    {
+      id: "ec_young_blood_grown", title: "{them} in your road", ecSrc: "pf_melee_young_blood",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "pf_melee_young_blood", 4) && took(p, "pf_melee_young_blood", 1) && won(p, "pf_melee_young_blood") && !!who(p, "pf_melee_young_blood"),
+      w: 1, once: true,
+      setup: (p, ctx) => { cast(p, ctx, who(p, "pf_melee_young_blood")); },
+      text: "{Nm}, who stood in your road once with a blade and a crowd and ended the evening sweeping your yard, is the best blade in {town} now. A young one has been telling the alehouses that you are past it, and {nm} has heard. {He} asks whether you would like {him} to answer for you.",
+      choices: [
+        { t: "Let {him} answer",
+          r: "{Nm} finds the young one and offers to teach {him} manners. The young one is sweeping {nm}'s yard by the end of the week.",
+          fx: { fame: 1, happy: 3, them: { op: 10 } } },
+        { t: "Answer for yourself", check: { s: "melee", s2: "wil", d: 52 },
+          win: { r: "You are not past it, quite. The young one goes home with a cut cheek and a story. {Nm} watches, grinning.", fx: { fame: 2, health: -3 } },
+          lose: { r: "You are past it, a little. {Nm} steps in before it gets worse. Nobody says anything about it in your hearing.", fx: { health: -8, cause: "a duel in the street", them: { op: 8 } } } },
+        { t: "Tell {him} to offer the young one lessons",
+          r: "{Nm} laughs at being caught in {his} own lesson, and does it. It works on the young one, as it worked on {him}.",
+          fx: { honor: 2, them: { op: 12 } } },
+      ],
+    },
+    // ---- wr_tempt_purse: you told the fat merchant his string was fraying
+    {
+      id: "ec_honest_purse", title: "The merchant with the string", ecSrc: "wr_tempt_purse",
+      cond: (p, C) => free(p, C) && !C.rich(p) && saw(p.flags.ev, "wr_tempt_purse", 2) && took(p, "wr_tempt_purse", 1),
+      w: 1, once: true,
+      text: "The fat merchant whose purse hung from a fraying string, and who gave you a sun when you told him, has never forgotten the face. He needs someone to carry his takings from the market to the counting-house twice a week. Thieves he can get anywhere, he says.",
+      choices: [
+        { t: "Take the work",
+          r: "Twice a week through the crowd with the bag inside your shirt. You are never robbed, and he pays you on the nail.",
+          fx: { coin: 15, honor: 1, newRel: { type: "friend", op: 20 } } },
+        { t: "Take it, and skim a little each week",
+          r: "A penny a week, never more. He never notices. You notice every time.",
+          fx: { coin: 20, honor: -4 } },
+        { t: "Say you are no strongbox",
+          r: "He laughs and gives you a sun anyway, for old times. Then he hires a man with a cudgel.",
+          fx: { coin: 1 } },
+      ],
+    },
+    // ---- lf_noble_eye: you asked the young lord for a favour for your family
+    {
+      id: "ec_lord_generous", title: "The heir is lord now", ecSrc: "lf_noble_eye",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "lf_noble_eye", 4) && took(p, "lf_noble_eye", 2) && won(p, "lf_noble_eye") && !!who(p, "lf_noble_eye"),
+      w: 1, once: true,
+      setup: (p, ctx) => { cast(p, ctx, who(p, "lf_noble_eye")); },
+      text: "{Nm}, the heir who rode past your door and eased your father's rent and put your brother in the stables because you asked, is lord of the manor now. {He} has sent for you. {He} enjoyed being generous, {he} says. {He} would now enjoy being thanked.",
+      choices: [
+        { t: "Thank {him} properly, and no more",
+          r: "A deep bow and a speech you rehearsed in the lane. {He} is a little disappointed, and lets you go.",
+          fx: { honor: 1, them: { op: -4 } } },
+        { t: "Thank {him}, and ask for another favour",
+          r: "{He} laughs, delighted, and grants it. You are in the manor's books now, on both sides of the page.",
+          fx: { coin: 15, favor: 1, honor: -2, them: { op: 8 } } },
+        { t: "Tell {him} plainly what {he} is asking",
+          r: "{He} goes red, then white. Your brother is out of the stables by Michaelmas. Your father's rent goes back up.",
+          fx: { honor: 3, coin: -10, family: -1, them: { op: -20 } } },
+      ],
+    },
+    // ---- bd_parent_failing: you left the failing parent to your brothers and sisters
+    {
+      id: "ec_parent_siblings", title: "Who did not come", ecSrc: "bd_parent_failing",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "bd_parent_failing", 1, 15) && took(p, "bd_parent_failing", 2) && !!who(p, "bd_parent_failing"),
+      w: 1, once: true,
+      setup: (p, ctx) => { cast(p, ctx, who(p, "bd_parent_failing")); },
+      text: "{Nm} is near the end, and the family has gathered. You left {him} to your brothers and sisters when {he} began to fail. They have done the lifting and the night-sitting for years. When you come in, they stop talking. {Nm} asks for you by name.",
+      choices: [
+        { t: "Sit with {him}, and let the others rest",
+          r: "You sit up three nights. They sleep, for the first time in years. Nobody says anything about it, then or after.",
+          fx: { honor: 2, happy: -1, them: { op: 15 } } },
+        { t: "Pay for the burial, all of it",
+          r: "A good coffin and a priest who sings. Your siblings take the money. It is not what they wanted from you.",
+          fx: { coin: -25, honor: 1, family: -1 } },
+        { t: "Say your piece to your siblings first",
+          r: "You tell them why you did not come. Some of it is true. They hear it out, and go back in without you.",
+          fx: { wil: 1, happy: -3 } },
+      ],
+    },
+    // ---- dr_song: you sang the marching song louder, and it became your song
+    {
+      id: "ec_your_song", title: "Your song, sung by strangers", ecSrc: "dr_song",
+      cond: (p, C) => C.adult(p) && !C.prison(p) && saw(p.flags.ev, "dr_song", 4) && took(p, "dr_song", 1) && won(p, "dr_song"),
+      w: 1, once: true,
+      text: "A column of soldiers goes past on the road, and they are singing the filthy marching song with the verse you added, the one they used to call your song. None of them knows whose it is. One of them has added another verse, worse than yours.",
+      choices: [
+        { t: "Fall in beside them and sing your verse",
+          r: "They roar it with you for a mile, then the sergeant looks round. You fall out at the crossroads, hoarse and young again.",
+          fx: { happy: 5, fame: 1 } },
+        { t: "Tell the sergeant whose verse it is",
+          r: "He does not believe you, and then he does, and buys you a drink at the next inn. The column is late.",
+          fx: { fame: 1, coin: -1, happy: 2 } },
+        { t: "Let it go by",
+          r: "You stand at the verge and hear it go over the hill. It is theirs now. Songs are like that.",
+          fx: { wil: 1 } },
+      ],
+    },
+    // ---- camp_letter: you read your comrade his letters from home
+    {
+      id: "ec_comrade_letters", title: "A letter for the one who read", ecSrc: "camp_letter",
+      cond: (p, C) => C.adult(p) && !C.prison(p) && C.literate(p) && saw(p.flags.ev, "camp_letter", 2) && took(p, "camp_letter", 0),
+      w: 1, once: true,
+      text: "A letter comes for you in a hand you do not know, from a village you have never been to. It is from the mother of the comrade whose letters you used to read aloud and answer, in camp. He is dead. She had the priest write it. She wants to know whether the letters she got were his words, or yours.",
+      choices: [
+        { t: "Write that every word was his",
+          r: "It was true, nearly. You write a long letter about him. She writes back once more, and sends a cheese.",
+          fx: { honor: 2, happy: -1 } },
+        { t: "Write that some of them were yours, and why",
+          r: "You tell her he could not find the words and you helped. She writes back that she knew, and that she does not mind.",
+          fx: { honor: 3, happy: -2 } },
+        { t: "Go and see her",
+          r: "A week out of your way. She asks you to read his letters aloud to her, all of them, in his voice.",
+          fx: { coin: -5, honor: 3, piety: 1, need: { purpose: 6 } } },
+      ],
+    },
+    // ---- bd_rival_saves: your rival pulled you clear, because they want to beat you themselves
+    {
+      id: "ec_rival_saved_back", title: "Your turn to pull {them} clear", ecSrc: "bd_rival_saves",
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "bd_rival_saves", 2) && took(p, "bd_rival_saves", 1) && !!who(p, "bd_rival_saves"),
+      w: 1, once: true,
+      setup: (p, ctx) => { cast(p, ctx, who(p, "bd_rival_saves")); },
+      text: "{Nm} pulled you clear once, because {he} wanted to beat you with {his} own hands, {he} said. Now it is {his} cart going over in the ditch, and {his} leg under it, and nobody on the road but you. {He} sees who it is and starts to laugh, and stops because it hurts.",
+      choices: [
+        { t: "Get {him} out, and say the same thing back",
+          r: "\"Because I want to beat you myself.\" {He} laughs until {he} faints. When {he} comes round in the cart, {he} is still grinning.",
+          fx: { honor: 2, health: -2, them: { op: 25 } } },
+        { t: "Get {him} out, and say nothing",
+          r: "You lift the cart and drag {him} clear and splint the leg with a stave. {He} does not know what to make of your silence.",
+          fx: { honor: 2, health: -2, them: { op: 15 } } },
+        { t: "Ride for help instead",
+          r: "You ride for the miller and his sons. They get {him} out an hour later. {He} keeps the leg, and asks why you did not.",
+          fx: { need: { rest: -2 }, them: { op: 2 } } },
+      ],
+    },
+    // ---- lf_peasant_ox: you shared a neighbour's ox, for your labour
+    {
+      id: "ec_neighbor_ox", title: "His ox is down", ecSrc: "lf_peasant_ox",
+      cond: (p, C) => free(p, C) && !C.town(p) && saw(p.flags.ev, "lf_peasant_ox", 2) && took(p, "lf_peasant_ox", 1) && won(p, "lf_peasant_ox"),
+      w: 1, once: true,
+      text: "The neighbour who shared his ox with you for your labour, the spring yours went down, has lost his own. It lay down in the byre and did not get up. He has said nothing to anybody. The ploughing is three times the work without one, and he is not as young as he was.",
+      choices: [
+        { t: "Lend him your ox, for nothing",
+          r: "Your ox ploughs his strip and yours. He tries to pay you in days of work and you will not have it. He sends a ham at Christmas.",
+          fx: { honor: 3, need: { rest: -4 }, newRel: { type: "friend", op: 25 } } },
+        { t: "Lend it on the same terms he gave you",
+          r: "Two of his days for one of your ox's. A fair trade. He is too proud to want any other kind.",
+          fx: { coin: 3, honor: 1 } },
+        { t: "Say you need your ox for your own ploughing",
+          r: "You do. He hires a team from the manor, dear, and pays for it into the summer.",
+          fx: { coin: 2, wil: 1, happy: -2 } },
+      ],
+    },
+  ]);
+})();

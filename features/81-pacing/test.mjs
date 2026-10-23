@@ -135,8 +135,10 @@ export default {
       const fightShift = SC.shift(fight), fOn = A.checkOdds(pc, fight), fOff = odds(fight, true);
       return { out, same, draws, fightShift, fOn, fOff };
     });
-    const o = r.out, R = { str: 36, spd: 30, ins: 38, sta: 31, int: 33, wil: 56 };
-    const want = { spdSta: 0.6 * (45 - R.spd) + 0.4 * (45 - R.sta), persWil: 0, intrigueInt: 0.4 * (45 - R.int), wilIns: 0.4 * (45 - R.ins), noD: 0.6 * (45 - R.str) + 0.4 * (45 - R.int) };
+    const o = r.out, R = { str: 36, spd: 30, ins: 38, sta: 31, int: 33, wil: 56, skill: 37 };
+    const side = k => (R[k] != null && k !== 'skill' ? R[k] : R.skill), sh = (a, b) => Math.max(0, 45 - (0.6 * side(a) + 0.4 * side(b)));
+    // speed and stamina 14.6, persuasion and will 0.4, intrigue and intellect 9.6, will and insight none (48.8 > 45), strength and intellect 10.2
+    const want = { spdSta: sh('spd', 'sta'), persWil: sh('persuasion', 'wil'), intrigueInt: sh('intrigue', 'int'), wilIns: sh('wil', 'ins'), noD: sh('str', 'int') };
     const bad = Object.keys(want).filter(k => Math.abs(o[k].shift - want[k]) > 0.01 || o[k].on < o[k].off || (want[k] === 0 && o[k].on !== o[k].off) || (want[k] > 2 && o[k].on <= o[k].off));
     const ok = !bad.length && o.spdSta.d === 45 && !o.noD.hasD && r.same && r.draws === 0 && r.fightShift === 0 && r.fOn === r.fOff;
     return { ok, detail: Object.entries(o).map(([k, v]) => `${k}: shift ${v.shift}, ${v.off}% -> ${v.on}%`).join('; ') + `; written d back ${o.spdSta.d === 45 && !o.noD.hasD}; state unchanged ${r.same}, draws ${r.draws}; fight ${r.fOff}->${r.fOn}` + (bad.length ? ' BAD ' + bad.join(',') : '') };
