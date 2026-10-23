@@ -33,7 +33,9 @@ export const BOT = () => {
       reads[e.id] = fl;
       if (/flags\.ev\b|flags\[["']ev["']\]/.test(src) || fl.some(f => setters[f] && [...setters[f]].some(s => s !== e.id))) memory.add(e.id);
     }
-    const orphan = Object.keys(setters).filter(f => !Object.values(reads).some(r => r.includes(f)));
+    // a flag only retired events set (58-event-cut) can never be set in play, so nothing is missing a reader of it
+    const retired = A.EV_RETIRED instanceof Set ? A.EV_RETIRED : new Set();
+    const orphan = Object.keys(setters).filter(f => [...setters[f]].some(id => !retired.has(id)) && !Object.values(reads).some(r => r.includes(f)));
     return (B._mem = { memory, setters, orphan });
   }
 
