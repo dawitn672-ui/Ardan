@@ -23,15 +23,16 @@ export default {
     const ok = out.every(o => o.same && o.fast.secs < 45);
     return { ok, detail: out.map(o => `seed ${o.seed}: first stop day ${o.fast.day - 0} at age ${o.fast.age} (${o.fast.ev}) after ${o.fast.secs.toFixed(1)}s at speed 2 (would be ${(o.fast.secs * 10).toFixed(0)}s); same life as without: ${o.same}`).join('; ') };
   },
-  async eyNormalAfterFive(pg) {
+  async eyBands(pg) {
     const r = await pg.evaluate(() => {
       T.enter({ seed: 7010, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 });
-      const rates = [];
-      UI.clk.speed = 2; rates.push(['age ' + A.age(A.pc()), UI.clkRate(), !!UI.earlyNote()]);
-      T.play(6); rates.push(['age ' + A.age(A.pc()), UI.clkRate(), !!UI.earlyNote()]);
-      return rates;
+      UI.clk.speed = 2; const rows = [];
+      const look = () => { const n = UI.earlyNote(); rows.push([A.age(A.pc()), UI.clkRate(), (n.match(/>([^<]+)</) || [])[1] || '']); };
+      look(); for (const to of [6, 11, 16]) { T.play(to - A.age(A.pc())); if (!A.pc().alive) break; look(); }
+      return rows;
     });
-    const ok = r[0][1] === 40 && r[0][2] && r[1][1] === 4 && !r[1][2];
-    return { ok, detail: r.map(([a, v, n]) => `${a}: ${v} days a second, note ${n ? 'shown' : 'hidden'}`).join('; ') };
+    const want = [[40, 'early years ×10'], [12, 'childhood ×3'], [6, 'youth ×1.5'], [4, '']];
+    const ok = r.length === 4 && r.every((x, i) => x[1] === want[i][0] && x[2] === want[i][1]);
+    return { ok, detail: r.map(([a, v, n]) => `age ${a}: ${v} days a second${n ? ', "' + n + '"' : ', no note'}`).join('; ') };
   },
 };
