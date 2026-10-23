@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part s: the trades and the halls (rk_, pf_, pl_, du_, wr_, av_, lf_, ct_). The surgeon you
 // learned from, the letter you warned the mark about, the clause you read while copying.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

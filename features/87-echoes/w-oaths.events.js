@@ -2,7 +2,7 @@
 // hs_k_, av_). The comrade whose pack you carried, the knight you gave everything back to, the mushrooms you said
 // nothing about.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part n: the common scenes again (ni_, lf_, fm_, bd_, ch_, pf_, sg_, rl_cast_, av_). The good
 // jug, the patron refused, the coins passed on, the friend you made excuses to.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([
@@ -218,7 +218,7 @@
     // ---- lf_nb_hearth_spirit: you told old neighbour the house-spirit was nonsense
     {
       id: "ec_hearth_saucer", title: "A saucer by the hearth", ecSrc: "lf_nb_hearth_spirit",
-      cond: (p, C) => free(p, C) && saw(p.flags.ev, "lf_nb_hearth_spirit", 3) && took(p, "lf_nb_hearth_spirit", 2) && A.EC.gone(p, "lf_nb_hearth_spirit"),
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "lf_nb_hearth_spirit", 3) && took(p, "lf_nb_hearth_spirit", 2) && A.ECHO.gone(p, "lf_nb_hearth_spirit"),
       w: 1, once: true,
       text: "The old neighbour who swore your house-spirit was angry and told the whole lane your house was cursed when you called it nonsense, is dead. At the burying, a granddaughter gives you a little clay saucer wrapped in a cloth. The old one wanted you to have it, she says. You were the one who most needed it.",
       choices: [

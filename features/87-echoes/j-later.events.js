@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part j: kin, masters, friends and lords of the middle years (fm_, ch_apprentice, bd_, lf_, av_,
 // oa_). The sibling you let the law take, the friend you stepped aside for, the master you were bound to.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([
@@ -121,7 +121,7 @@
       ecKeep: ["fr"],
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "lf_unrequited", 6) && took(p, "lf_unrequited", 0) && !!who(p, "lf_unrequited"),
       w: 1, once: true,
-      setup: (p, ctx) => { cast(p, ctx, who(p, "lf_unrequited")); ctx.fr = kept(p, "lf_unrequited", "fr", "your friend"); ctx.Fr = A.EC.cap(ctx.fr); },
+      setup: (p, ctx) => { cast(p, ctx, who(p, "lf_unrequited")); ctx.fr = kept(p, "lf_unrequited", "fr", "your friend"); ctx.Fr = A.ECHO.cap(ctx.fr); },
       text: "{Fr} is dead of a fever. You stood witness at {fr}'s wedding to {nm} and smiled until your face ached, and nobody ever knew why. Now {nm} stands at the graveside in black. After, at the gate, {he} asks you to walk {him} home, because you were {fr}'s oldest friend.",
       choices: [
         { t: "Walk {him} home, and say nothing yet",

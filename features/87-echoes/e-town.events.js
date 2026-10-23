@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part e: market, alehouse and lane (lf_, ln_, bd_, av_, du_gd_). The neighbour you turned down,
 // the old man who swore for you, the cutpurse you let run.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([
@@ -160,7 +160,7 @@
     // ---- pf_craft_whittle: you carved your mother a spoon
     {
       id: "ec_mother_spoon", title: "The spoon", ecSrc: "pf_craft_whittle",
-      cond: (p, C) => free(p, C) && !!A.EC.mother(p) && saw(p.flags.ev, "pf_craft_whittle", 20, 80) && took(p, "pf_craft_whittle", 1),
+      cond: (p, C) => free(p, C) && !!A.ECHO.mother(p) && saw(p.flags.ev, "pf_craft_whittle", 20, 80) && took(p, "pf_craft_whittle", 1),
       w: 1, once: true,
       text: "Your mother is old, and has begun giving her things away before anyone has to quarrel over them. She has kept the lime-wood spoon you carved one winter evening when you were small. It is black with use and worn thin at the bowl. She asks who should have it.",
       choices: [

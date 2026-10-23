@@ -1,7 +1,7 @@
 # 87-echoes: a later scene for the scenes players meet most
 
 **Aspect:** Events (Road to Ten: memory; the scorecard's static memory share) · **Kind:** an event pack (350 events,
-prefix `ec_`, in 24 files `a-people` to `x-last`) and a small helper with a choice record (`echoes.core.js`, `A.EC`).
+prefix `ec_`, in 24 files `a-people` to `x-last`) and a small helper with a choice record (`echoes.core.js`, `A.ECHO`).
 No patches.
 
 80-callbacks used up the orphan flags: every flag some live event set was read by something. What was left were the

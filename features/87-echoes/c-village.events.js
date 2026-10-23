@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part c: village and road. The scenes of ordinary life (ln_, lf_, av_, wk_, fm_), answered
 // years later by the same place, person or habit.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

@@ -5,18 +5,18 @@
 // year the player last saw the source (the engine writes it in A.eventChoose). Where the source sets no flag, the
 // echo can still depend on what was chosen: a small record, kept here, holds the last choice taken in each source.
 //
-//   A.EC.ago(ev, id)            years since the player last saw event id (ev is p.flags.ev), or -1
-//   A.EC.saw(ev, id, min, max)  seen, between min and max years ago (max defaults to 40)
-//   A.EC.rec(p, id)             the record of that last sighting: [year, choice, won (1, 0 or -1), person id, kept words]
-//   A.EC.took(p, id, ...i)      the choice taken then was one of i (indexes into the source's own choices)
-//   A.EC.won(p, id) / lost      the check in that choice was won / lost
-//   A.EC.who(p, id)             the living person the scene was about (its ctx.pid), or null
-//   A.EC.gone(p, id)            that person is dead (or the scene was about nobody): for echoes that bury them
-//   A.EC.mother(p)              the player's living mother, or null
-//   A.EC.kept(p, id, k, alt)    a word the scene's ctx held (only the keys an echo asks for with ecKeep), or alt
-//   A.EC.cast(p, ctx, q, alt)   put q in the scene: ctx.pid, {nm} {Nm} {he} {He} {him} {his} {His}, {spo} (their wife or husband)
-//   A.EC.since(p, f)            years since flag f was set
-//   A.EC.yrs(ctx, n)            ctx.yrs = n as a word ("eleven"), and ctx.Yrs capitalised
+//   A.ECHO.ago(ev, id)            years since the player last saw event id (ev is p.flags.ev), or -1
+//   A.ECHO.saw(ev, id, min, max)  seen, between min and max years ago (max defaults to 40)
+//   A.ECHO.rec(p, id)             the record of that last sighting: [year, choice, won (1, 0 or -1), person id, kept words]
+//   A.ECHO.took(p, id, ...i)      the choice taken then was one of i (indexes into the source's own choices)
+//   A.ECHO.won(p, id) / lost      the check in that choice was won / lost
+//   A.ECHO.who(p, id)             the living person the scene was about (its ctx.pid), or null
+//   A.ECHO.gone(p, id)            that person is dead (or the scene was about nobody): for echoes that bury them
+//   A.ECHO.mother(p)              the player's living mother, or null
+//   A.ECHO.kept(p, id, k, alt)    a word the scene's ctx held (only the keys an echo asks for with ecKeep), or alt
+//   A.ECHO.cast(p, ctx, q, alt)   put q in the scene: ctx.pid, {nm} {Nm} {he} {He} {him} {his} {His}, {spo} (their wife or husband)
+//   A.ECHO.since(p, f)            years since flag f was set
+//   A.ECHO.yrs(ctx, n)            ctx.yrs = n as a word ("eleven"), and ctx.Yrs capitalised
 //
 // The record is written inside A.eventChoose (engine side), only for events some echo names as its source; it lives
 // on pc.ec (a new field: old saves have none, and every reader tolerates that). Nothing here draws on A.rand.
@@ -25,7 +25,7 @@
     'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'];
   const word = n => (n >= 0 && n < NUM.length ? NUM[n] : String(n));
   const cap = s => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
-  const EC = A.EC = { word, cap, stats: { noted: 0 } };
+  const EC = A.ECHO = { word, cap, stats: { noted: 0 } };
 
   EC.ago = (ev, id) => { const y = ev && typeof ev === 'object' ? ev[id] : null; return y != null && isFinite(+y) ? A.S.year - +y : -1; };
   EC.saw = (ev, id, min = 3, max = 40) => { const g = EC.ago(ev, id); return g >= min && g <= max; };

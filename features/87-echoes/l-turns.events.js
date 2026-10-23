@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part l: the turn comes round (ch_art_, fm_, wk_, av_, pf_, lf_, bd_, dr_, camp_). What you
 // did for someone, or to them, is done back, or asked of you again.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([
@@ -11,7 +11,7 @@
       ecKeep: ["ill"],
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "ch_art_townfever", 12, 70) && took(p, "ch_art_townfever", 2) && won(p, "ch_art_townfever"),
       w: 1, once: true,
-      setup: (p, ctx) => { ctx.ill = kept(p, "ch_art_townfever", "ill", "the fever"); ctx.Ill = A.EC.cap(ctx.ill); },
+      setup: (p, ctx) => { ctx.ill = kept(p, "ch_art_townfever", "ill", "the fever"); ctx.Ill = A.ECHO.cap(ctx.ill); },
       text: "{Ill} is in {home} again, and this time there is chalk on your own door. You are shut in with it. On the third morning there is a loaf on your step, and on the fourth, and on the fifth. You left bread on doorsteps once, as a child. Somebody on this street remembers.",
       choices: [
         { t: "Find out who, when you are well",

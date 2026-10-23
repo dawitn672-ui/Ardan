@@ -4,7 +4,7 @@
 // saw(p.flags.ev, "id", n), the year the player last saw it. took / won / who read the small record echoes.core.js
 // keeps of that sighting: which choice, whether its check was won, and who the scene was about. Weight 1, once.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago, since } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago, since } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

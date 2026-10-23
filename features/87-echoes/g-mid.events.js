@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part g: fires, deeds, fairs and vows (lf_, pf_, wk_, ch_, av_, bd_). The same lane, the same
 // field, the same person, years on, and a choice that mirrors the first.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

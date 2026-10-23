@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part t: the peoples and the long lives (pp_orc_, pp_dw_, wk_dwarf_, ch_orc_, rl_zn_), and a
 // few households (lf_, wr_, du_ct_). The captive at your fire, the game of Gates kept going, the deed-name taken.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([
@@ -125,7 +125,7 @@
       ecKeep: ["who"],
       cond: (p, C) => free(p, C) && C.race(p, "dwarf") && saw(p.flags.ev, "pp_dw_gates", 8, 80) && took(p, "pp_dw_gates", 2),
       w: 1, once: true,
-      setup: (p, ctx) => { ctx.who = kept(p, "pp_dw_gates", "who", "your old opponent"); ctx.Who = A.EC.cap(ctx.who); },
+      setup: (p, ctx) => { ctx.who = kept(p, "pp_dw_gates", "who", "your old opponent"); ctx.Who = A.ECHO.cap(ctx.who); },
       text: "The game of Gates on the stone board in the clan gallery, one move a night, which you kept going when you could have ended it, is still going. {Who} is dying. The healers say days. {Who} has asked to be carried to the board, and is waiting for your move.",
       choices: [
         { t: "Take the gate, and end it",

@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part u: what was framed, refused, forged and passed over (av_, bd_, lf_, du_, rl_f_, ct_, hs_,
 // ch_nob_). The enemy who planted the chalice, the post someone else took, the valley that changed hands.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([
@@ -28,7 +28,7 @@
     // ---- bd_old_enemy_peace: you offered your old enemy your hand in the market
     {
       id: "ec_enemy_funeral", title: "At the graveside", ecSrc: "bd_old_enemy_peace",
-      cond: (p, C) => free(p, C) && saw(p.flags.ev, "bd_old_enemy_peace", 2) && took(p, "bd_old_enemy_peace", 0) && A.EC.gone(p, "bd_old_enemy_peace"),
+      cond: (p, C) => free(p, C) && saw(p.flags.ev, "bd_old_enemy_peace", 2) && took(p, "bd_old_enemy_peace", 0) && A.ECHO.gone(p, "bd_old_enemy_peace"),
       w: 1, once: true,
       text: "The old enemy whose hand you took in the market, after twenty years, is dead. The family asks you to speak at the graveside. Nobody else alive knew the dead so long, or so well, or from so close. They do not know what you will say, and neither do you.",
       choices: [

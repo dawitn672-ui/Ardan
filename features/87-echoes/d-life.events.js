@@ -1,6 +1,6 @@
 // Echoes (87-echoes), part d: friends, kin and strangers of the middle years (lf_, rl_cast_, wc_, av_, ni_deal_).
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part h: the most-met scenes, answered a second way. Sickness and wounds (bm_), the sibling
 // quarrel, the fever story, the fire at the hearth: each choice in them leaves its own later scene.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
   const THINGS = /horse|blanket|knife/;
 
@@ -104,7 +104,7 @@
       ecKeep: ["thing"],
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "ch_fam_sib_fight", 12, 70) && THINGS.test(kept(p, "ch_fam_sib_fight", "thing", "")) && !!who(p, "ch_fam_sib_fight"),
       w: 1, once: true,
-      setup: (p, ctx) => { cast(p, ctx, who(p, "ch_fam_sib_fight")); const t = kept(p, "ch_fam_sib_fight", "thing", "your carved horse"); ctx.thing = t.replace(/^your /, "the "); ctx.Thing = A.EC.cap(ctx.thing); },
+      setup: (p, ctx) => { cast(p, ctx, who(p, "ch_fam_sib_fight")); const t = kept(p, "ch_fam_sib_fight", "thing", "your carved horse"); ctx.thing = t.replace(/^your /, "the "); ctx.Thing = A.ECHO.cap(ctx.thing); },
       text: "{Nm}, your brother or sister, turns up at your door with something in a cloth. It is {thing}, the one {he} took when you were children and would not give back. {He} found it clearing the old house. {He} says {he} has felt bad about it for thirty years, which you doubt.",
       choices: [
         { t: "Take it back, and laugh about it",

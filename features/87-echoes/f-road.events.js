@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part f: debts, roads and courts (lf_, ln_, av_, bd_will_, bt_, bs_). What was settled, sworn,
 // carried or kept comes back with the person it was done to.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([
@@ -274,7 +274,7 @@
       id: "ec_nurse_returned", title: "Your turn with the fever", ecSrc: "lf_friend_nurse",
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "lf_friend_nurse", 3) && took(p, "lf_friend_nurse", 0, 2) && !!who(p, "lf_friend_nurse"),
       w: 1, once: true,
-      setup: (p, ctx) => { cast(p, ctx, who(p, "lf_friend_nurse")); ctx.pots = A.EC.took(p, "lf_friend_nurse", 2) ? 1 : 0; },
+      setup: (p, ctx) => { cast(p, ctx, who(p, "lf_friend_nurse")); ctx.pots = A.ECHO.took(p, "lf_friend_nurse", 2) ? 1 : 0; },
       text: (p, ctx) => ctx.pots
         ? "You have the fever now, the bad kind. {Nm}, whom you once fed by leaving a pot at the door every day and keeping your distance, is at the door with a pot. {He} sets it down on the step, and knocks, and stands back."
         : "You have the fever now, the bad kind. {Nm}, whom you once nursed day and night through the same, is at the door with a bag of willow bark and a blanket. {He} does not knock. {He} comes straight in.",

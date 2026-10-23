@@ -2,7 +2,7 @@
 // av_, rl_f_, wk_, du_ch_, wr_, bd_). The friend who was angry about something else, the boy from the baggage
 // wagon, the preacher you had taken up.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

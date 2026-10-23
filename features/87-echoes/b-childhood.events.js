@@ -2,7 +2,7 @@
 // nearly every life, answered once the child is grown: the same friend or bully as an adult, the same song or fever
 // or story with your own children, the thing you did then asked of you again.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

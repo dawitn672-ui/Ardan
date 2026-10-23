@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part q: blades for hire, bouts, bones and pay (pf_, wr_, av_, fm_, bd_, ch_nob_, pl_). The
 // mark you warned, the bout-master you crossed, the pay you sent home.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([
@@ -203,7 +203,7 @@
       ecKeep: ["pony"],
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "ch_nob_pony", 12, 30) && took(p, "ch_nob_pony", 1),
       w: 1, once: true,
-      setup: (p, ctx) => { const t = kept(p, "ch_nob_pony", "pony", "your first pony"); ctx.pony = t; ctx.Pony = A.EC.cap(t); },
+      setup: (p, ctx) => { const t = kept(p, "ch_nob_pony", "pony", "your first pony"); ctx.pony = t; ctx.Pony = A.ECHO.cap(t); },
       text: "{Pony}, your first, who followed you about the yard like a dog the day you spent with brush and apples, is old and lame in the paddock. The head groom says it is time. He asks whether you want it done while you are away, as is usual, or not.",
       choices: [
         { t: "Be there yourself, with an apple",

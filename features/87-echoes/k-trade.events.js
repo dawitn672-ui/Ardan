@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part k: purses, partners and the road again (bd_, ln_, lf_, pf_, av_, tavern_). The friend
 // who lost two fingers, the caravan bought too cheap, the recruiting sergeant's free ale.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

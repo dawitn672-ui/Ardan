@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part p: house, kin and holding (cm_, wr_, ch_, pf_, wk_, du_ct_, av_, fm_, pl_, lf_). The
 // horse thieves who came back, the well you dug, the secret under the board.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

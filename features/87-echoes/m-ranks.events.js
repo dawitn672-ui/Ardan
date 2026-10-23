@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part m: camp, watch and household (camp_, dr_, lf_, bm_, bd_, ch_teen_, pf_, av_, oa_). The
 // recruit who could not see, the boss you covered for, the face you never spoke to.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

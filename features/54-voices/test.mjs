@@ -252,7 +252,9 @@ export default {
           }
           const people = JSON.parse(JSON.stringify(A.S.people));
           // the voice's own cache, and 67-memory-weave's record, which keeps a scene's title as it was shown (in the place's words)
-          for (const p of Object.values(people)) { delete p.vo; delete p.mw; }
+          // and 49-body-mind's deed log, whose receipt quotes the scene's title as shown ("The lord's wood" / "The sepmet's
+          // wood"): the year and weight of each deed, which the traits are scored on, are compared, the quoted words are not
+          for (const p of Object.values(people)) { delete p.vo; delete p.mw; if (p.deedLog) for (const k in p.deedLog) if (Array.isArray(p.deedLog[k])) p.deedLog[k] = p.deedLog[k].map(d => Array.isArray(d) ? d.slice(0, 2) : d); }
           return { rng: JSON.stringify(A.rngState), people: JSON.stringify(people).length + ':' + T.hash(people), year: A.S.year, voiced };
         } finally { A.VOICE.OFF = false; }
       };

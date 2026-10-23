@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part v: the wild places and the hard years (av_, rl_ald_, cm_, wr_, hs_k_, pl_, wc_, wk_farm_,
 // bd_will_). The sealed delve, the man held for the Oath Moot, the widow carried out of the flood.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([

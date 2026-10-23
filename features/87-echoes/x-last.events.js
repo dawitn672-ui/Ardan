@@ -1,7 +1,7 @@
 // Echoes (87-echoes), part x: the old soldier, the chalk circle, the bay you did not need, the city you went to for
 // one season (wc_, bd_, pf_, bm_, lf_, dr_, av_, ch_). The last of the most-met scenes with a choice worth answering.
 (function () {
-  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.EC;
+  const { saw, took, won, lost, who, kept, cast, yrs, ago } = A.ECHO;
   const free = (p, C) => C.adult(p) && !C.prison(p);
 
   A.defEvents([
