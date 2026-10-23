@@ -6,12 +6,15 @@
 // recomputed its income from 897,581 to 379,924, and the same 2.85 million read as 7.5 years until the next month's
 // windfall check made it a great work (3.0 years). So 56's own windfall rule also runs the moment incomes are
 // recomputed, and once more after the whole year's accounts (after every other feature's yearly code). Nothing is
-// drawn; it is off with A.CASUS.ON.
+// drawn. It is NOT gated on A.CASUS.ON: a crown's gold piling up is an economy fault, not part of this feature's war
+// reasoning, so switching the casus belli off must not bring the hoarding back. (It used to be gated, and `csWorlds`
+// caught it: that test pools the hoarding flags of its feature-on and feature-off worlds, and a realm whose income had
+// just been recomputed downward read 6.6 years of income in the off world, where the sweep never ran.)
 (function () {
   const CS = A.CASUS, RI = A.RI;
   if (!CS || !RI || typeof RI.windfalls !== 'function') return;
   const sweep = () => {
-    if (!A.S || !A.S.realms || !CS.ON) return;
+    if (!A.S || !A.S.realms) return;
     let hot = false;
     for (const id in A.S.realms) { const r = A.S.realms[id]; if (r.alive && !r.playerRun && r.treasury > Math.max(1, r.income) * 4) { hot = true; break; } }
     if (!hot) return;

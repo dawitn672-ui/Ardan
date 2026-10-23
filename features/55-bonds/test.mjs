@@ -468,7 +468,12 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const FE = A.BONDS.FEUD, out = { active: 0, carried: 0, kinds: {}, deaths: 0, wars: 0, grudgeWars: 0, pairs: 0, dInterest: 0, allyFlips: 0, allyBefore: 0, warBarFlips: 0, nbPairs: 0 };
-      for (const seed of [5801, 5802]) {
+      // Six worlds, not two. The ledger's pull on AI interest varies by about two points between seed pairs, and the
+      // original pair of 5801/5802 sat at the low end: measured on one build it read -5.9 there against -7.4, -7.9 and
+      // -7.9 on three other pairs, pooling to -7.3 over 142 grudges. Two worlds could therefore fail the -6 bar while
+      // the ledger was working normally, which is what happened after round 8a shifted the random stream. The bar is
+      // unchanged; the sample is now wide enough to measure the game rather than the luck of one pair.
+      for (const seed of [5801, 5802, 5811, 5812, 5821, 5822]) {
         A.newGame({ seed, race: 'elf', realm: 'POL-06', status: 'gentry', sex: 'F', startAge: 120 });
         const onWar = (w, opts) => { if (opts && opts.silent || w.leadA === A.pc().realm) return; out.wars++; if (FE.sum(w.leadA, w.leadD) <= -10) out.grudgeWars++; };
         const onDie = () => { out.deaths++; };
@@ -478,7 +483,16 @@ export default {
           for (let g = 0; g < 20000 && A.S.year < end; g++) {
             const res = A.advance(400); let h, n = 0;
             while ((h = A.headReady()) && n++ < 300) { if (h.type === 'event') A.eventAuto(); else if (h.type === 'choice') A.choiceChoose(0); else if (h.type === 'duel') { A.duelAuto(h.d); A.duelClose(); } else if (h.type === 'battle') { A.battleAuto(h.b); if (A.S.queue[0] === h) A.S.queue.shift(); } else A.skipPrompt(); }
-            if (res.why === 'dead' || !A.pc() || !A.pc().alive) break;
+            // This measures feuds between AI realms over fifty world-years, so the player's own lifespan must not end
+            // the world: when the character dies, carry on as another grown person, the way 04-world-fixes' `world`
+            // test does. (Round 8a shifted the random stream; the character died young, the loop broke, and two worlds
+            // produced 29 feud lines and 23 ruler deaths against 150 and 112 on the previous build — the collapse was
+            // the test stopping early, not the ledger weakening.)
+            if (res.why === 'dead' || !A.pc() || !A.pc().alive) {
+              const heir = Object.values(A.S.people).find(p => p && p.alive && p.id !== A.S.pc && A.isAdult(p) && !p.ruler);
+              if (!heir) break;
+              A.S.pc = heir.id; A._idIdx = null;
+            }
           }
         } finally { A.HOOKS.warStart = A.HOOKS.warStart.filter(f => f !== onWar); A.HOOKS.rulerDied = A.HOOKS.rulerDied.filter(f => f !== onDie); }
         for (const id of Object.keys(A.S.realms)) {
