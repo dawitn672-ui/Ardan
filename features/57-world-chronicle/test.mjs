@@ -247,7 +247,11 @@ export default {
       const P = A.prov(pc.home); P.adj = P.adj || [];
       const wp = A.wpick; A.wpick = (arr, f) => (arr.some(x => x && x.id === pc.home) ? arr.find(x => x.id === pc.home) : wp(arr, f));
       let queued = false;
-      try { for (let i = 0; i < 2 && !queued; i++) { A.advance(31); queued = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); } } finally { A.WC.plagueChance = chance; A.wpick = wp; }
+      // whatever 40 years left waiting is answered first, and other scenes are stepped past while the month turns, or
+      // A.advance stops on them before the epidemic's month comes (80-callbacks' events were enough to do it)
+      const clearOthers = () => { A.S.queue = A.S.queue.filter(q => q.ev === 'wc_sickness_comes'); };
+      clearOthers();
+      try { for (let i = 0; i < 6 && !queued; i++) { A.advance(31); queued = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!queued) clearOthers(); } } finally { A.WC.plagueChance = chance; A.wpick = wp; }
       const q = A.S.queue.find(x => x.ev === 'wc_sickness_comes'), v = q && A.eventView(q);
       return { n: pl.length, fam: fam.length, realms, perRealm20: Math.round(100 * pl.length / realms / 2) / 100, famPer20: Math.round(100 * fam.length / realms / 2) / 100, queued, text: v ? v.text : '', skip: v ? v.skip : null };
     });
