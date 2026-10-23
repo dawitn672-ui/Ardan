@@ -50,6 +50,10 @@ export default {
   // it), never by more than 16 points (a stat the words support is kept first, the skill second at 40%), and must raise them for someone who has (skill 50).
   async lnHonestOdds(pg) {
     const r = await pg.evaluate(() => {
+      // the retags measured alone: 81-pacing's stat scale eases a stat side (ins/int 77% -> 91% for this adult) and not a
+      // skill side, so with it on the "before" a retag is held to is the scale's, not the writer's (CI run 64)
+      const scaleWas = A.SCALE && A.SCALE.OFF; if (A.SCALE) A.SCALE.OFF = true;
+      try {
       A.newGame({ seed: 6901, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
       const pc = A.pc(); A.S.queue = [];
       for (const k in GD.SKILLS) pc.skills[k] = 5;
@@ -72,6 +76,7 @@ export default {
       });
       const duty = { at0: Math.round((0 - 20) * L.W * 10) / 10, at60: Math.round((60 - 20) * L.W * 10) / 10 };
       return { rows, knacks, retags: L.RETAG.length, applied: L.RETAGGED.length, rides: L.RIDE.length, ridesOn: Object.keys(L.rides).length, duty };
+      } finally { if (A.SCALE) A.SCALE.OFF = scaleWas; }
     });
     const bad = r.rows.filter(x => x.u0 - x.u1 > 16 || x.t1 <= x.t0);
     const badK = r.knacks.filter(k => k.max > 1);
