@@ -1,5 +1,15 @@
-// The purse's debt in fewer words, so it fits beside the coin (the tooltip and the spoken label keep the full sentence).
+// The top bar's right-hand side (place, purse, Save, Menu) as one group, and the purse's debt in fewer words.
 export default [
+  {
+    id: 'TOP-GROUP',
+    blob: 'ardan-core',
+    why: 'UI: with the place, purse, Save and Menu as separate items of a bar that could not wrap, a narrow desktop crushed ' +
+      'the place and purse to nothing; allowed to wrap, Menu dropped to a line of its own. As one group they wrap together.',
+    edits: [
+      ['\n    <div class="info top-info"><span class="top-home" title="Home">', '\n    <div class="top-right"><div class="info top-info"><span class="top-home" title="Home">'],
+      ['<span class="bt">Menu</span></button>`:""}', '<span class="bt">Menu</span></button></div>`:""}'],
+    ],
+  },
   {
     id: 'TOP-DEBT',
     blob: 'ardan-core',
