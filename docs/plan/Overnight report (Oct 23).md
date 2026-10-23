@@ -9,7 +9,7 @@ Asked for: "a play-test ready game with absolutely 0 errors", plus improvements 
   - Over four long runs (32 lives in all, on seeds 11 to 41) it made 39,398 clicks, played 734 game years and drew 28,022 screens. A first, shorter run on seed 1 is not counted.
   - It found one bug, an event drawn with raw `{tokens}`. That bug is fixed (88-queue-head). The run after the fix found 0.
   - The accessibility audit finds 0 WCAG 2.2 AA violations on 26 screens.
-  - CI is green on run 58.
+  - CI is green on run 60 (80 features: every test shard and the balance league).
 - **Ready to send.** `index.html` is the whole game in one file. It runs offline, because the fonts are inside it. `docs/plan/Playtest kit.md` covers running the five-player test, the ten tasks, what to ask afterwards and how to read the results file.
 
 ## What changed tonight, by what a player meets
