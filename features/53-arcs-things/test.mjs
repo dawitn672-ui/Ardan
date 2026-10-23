@@ -31,7 +31,9 @@ const SETUP = () => {
 
 export default {
   // (1) every arc registered with 3 to 8 stages over 2 to 20 years; each stage a trigger-only event; every choice (both
-  // sides of a check) carries fx.arc; the last stage ends the arc and every one of its choices leaves something lasting
+  // sides of a check) carries fx.arc; the last stage ends the arc and every one of its choices leaves something lasting.
+  // Every mark a stage leaves is read by a later stage of the same arc, and the last stage leaves no mark, since nothing
+  // comes after it to answer one: a mark neither read nor dropped is dead weight, and an orphan flag in bench/bot.mjs.
   async aoArcsRegistered(pg) {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate((LASTING) => {
@@ -43,8 +45,15 @@ export default {
         if ((n - 1) * gap[0] < 2 || (n - 1) * gap[1] > 20) bad.push(`${k}: spans ${(n - 1) * gap[0]}-${(n - 1) * gap[1]} years`);
         if (!A.ARCS.LASTING.includes(D.lasting)) bad.push(`${k}: lasting '${D.lasting}'`);
         if (typeof D.start !== 'function') bad.push(`${k}: no start`);
+        // everything the stages after this one say, to look for M(p, 'mark') in it
+        const fn = v => (typeof v === 'function' ? v.toString() : v && typeof v === 'object' ? Object.values(v).map(fn).join(' ') : '');
+        const laterSrc = si => D.stages.slice(si + 1).map(id2 => {
+          const e2 = A.EV[id2];
+          if (!e2) return '';
+          return [e2.cond, e2._mwWrapped ? e2._mwOwnSetup : e2.setup, e2.text, e2.choices || []].map(fn).join(' ');
+        }).join(' ');
         D.stages.forEach((id, si) => {
-          const e = A.EV[id], last = si === n - 1;
+          const e = A.EV[id], last = si === n - 1, later = laterSrc(si);
           if (!e) { bad.push(`${k}: ${id} missing`); return; }
           if (!e.trigger) bad.push(`${id} not trigger-only`);
           if (!e.choices || e.choices.length < 2 || e.choices.length > 4) bad.push(`${id}: ${(e.choices || []).length} choices`);
@@ -55,7 +64,10 @@ export default {
               const go = typeof f.arc === 'string' ? f.arc : f.arc.go || 'next';
               if (last && go !== 'end') bad.push(`${id} choice ${i}: last stage does not end the arc`);
               if (!last && go === 'end') bad.push(`${id} choice ${i}: ends the arc early`);
-              if (typeof f.arc !== 'object' || !f.arc.mark || !f.arc.mark.startsWith('ao_')) bad.push(`${id} choice ${i}: no ao_ mark`);
+              const mk = typeof f.arc === 'object' ? f.arc.mark : null;
+              if (last && mk) bad.push(`${id} choice ${i}: mark '${mk}' on a last stage`);
+              if (!last && (!mk || !mk.startsWith('ao_'))) bad.push(`${id} choice ${i}: no ao_ mark`);
+              if (!last && mk && !later.includes(`'${mk}'`)) bad.push(`${id} choice ${i}: mark '${mk}' is read by no later stage`);
               if (last && !Object.keys(f).some(x => LASTING.includes(x) || (x === 'them' && f.them && f.them.type))) bad.push(`${id} choice ${i}: nothing lasting`);
             }
           });
@@ -65,7 +77,7 @@ export default {
     }, LASTING);
     const n = r.arcs.length, stages = r.arcs.reduce((s, a) => s + a.n, 0), long = r.arcs.filter(a => a.n >= 5).length;
     const ok = n === 13 && !r.bad.length && stages / n >= 4 && long >= 3;
-    return { ok, detail: `${n} arcs, ${stages} stages (${(stages / n).toFixed(1)} a arc, ${long} of 5 or more): ${r.arcs.map(a => `${a.k.slice(3)} ${a.n} (${a.span[0]}-${a.span[1]}y, ${a.lasting})`).join(', ')}${r.bad.length ? `. BAD: ${r.bad.slice(0, 8).join('; ')}` : '. Every choice carries fx.arc; every last choice leaves something lasting'}` };
+    return { ok, detail: `${n} arcs, ${stages} stages (${(stages / n).toFixed(1)} a arc, ${long} of 5 or more): ${r.arcs.map(a => `${a.k.slice(3)} ${a.n} (${a.span[0]}-${a.span[1]}y, ${a.lasting})`).join(', ')}${r.bad.length ? `. BAD: ${r.bad.slice(0, 8).join('; ')}` : '. Every choice carries fx.arc; every mark is read by a later stage; no mark on a last stage; every last choice leaves something lasting'}` };
   },
 
   // (2) each arc played through twice, taking the first choice with every check won, then the last choice with every
@@ -145,16 +157,17 @@ export default {
       const kinds = [{ status: 'artisan' }, { status: 'noble' }, { status: 'serf', realm: 'POL-05' }, { status: 'merchant', realm: 'POL-04' }];
       AOT.keys().forEach((k, ki) => {
         const ends = new Set(), marks = new Set();
-        let runs = 0, done = 0, longest = 0;
+        let runs = 0, done = 0, longest = 0, end = -1;
         for (let i = 0; i < 40; i++) {
           const pc = AOT.life(5700 + ki * 101 + i, kinds[i % 4]);
           if (i % 3 === 1) pc.coin = A.ri(0, 60);
           if (i % 2) pc.literate = false;
-          const res = A.ARCS.playThrough(pc, k, (stage, v) => A.pick(v.choices.filter(c => c.i >= 0)).i);
+          // which ending: the choice taken at the last stage (the last stage leaves no mark for it)
+          const res = A.ARCS.playThrough(pc, k, (stage, v) => (end = A.pick(v.choices.filter(c => c.i >= 0)).i));
           runs++;
           if (res.state.done && !res.state.gave && res.state.stage === A.ARCS.ARC[k].stages.length) done++;
           for (const m of res.state.m) marks.add(m);
-          ends.add(res.state.m[res.state.m.length - 1]);
+          ends.add(end);
           for (const s of res.seen) {
             if (s.skip) { bad.add(`${s.ev} skipped`); continue; }
             const all = [s.title, s.text, ...s.choices, s.result].join(' | ');

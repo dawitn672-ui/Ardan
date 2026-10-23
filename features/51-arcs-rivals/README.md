@@ -55,6 +55,9 @@ Balance: not run here. The coordinator runs `bench/balance.mjs` once on the inte
 - All text goes through the engine's templating. Names come from the world.
 - `pc.arcs[k].ar` is a new optional field. A save without it loads, and the arc casts someone.
 - Marks are plain words (`la_ar_*` flags, as in 46-life-arcs).
+- Marks are written whole at the call site (`mk('ar_rise_grace')`, `M(p, 'ar_rise_grace')`), not assembled
+  from a prefix. `bench/bot.mjs`'s `memoryIndex()` matches `M(p, 'x')` against the flag `la_x`, so a helper that
+  silently added `ar_` hid every read in this file from it.
 
 **Limits.**
 
@@ -63,3 +66,58 @@ Balance: not run here. The coordinator runs `bench/balance.mjs` once on the inte
 - **A person who dies ends the story.** The closing scene is one scene for all thirteen arcs, with a line for each; heirs who carry it on (the rival's son, the lender's widow with the book) are not written.
 - **Some outcomes are words, not systems.** Keeping the guild seat is a flag and a deed; there is no guild office in the engine. The keeper of the seal is not an office of state. The forged charter can take a property off your list, but no court records the boundary.
 - **The writing wants a human read.** The arcs were play-tested by bots and by reading the rendered scenes on both paths, not by players.
+
+## Read it or drop it (round 8)
+
+**Measured with the brief's script, prefix `ar_` (orphan flags whose setter is an `ar_` event):**
+
+| build | orphans before | after | memory events before | after |
+| --- | --- | --- | --- | --- |
+| `--only=arcs-rivals` | 215 | 4 | 123 | 166 |
+| `--only=life-arcs,arcs-rivals` | — | 4 | — | 190 (memPct 5.8) |
+
+(The arcs need 46-life-arcs to run at all, so the feature's own tests want the second build; the orphan
+count is static and reads the same on both.)
+
+Of the 215, **208 were arc marks** (105 distinct, set at 235 sites) and 7 were plain `flag:` keys.
+
+**103 of the marks were already read** by a later scene of the same arc, and the analyzer could not see it.
+`mk`/`fin` built the mark as `'ar_' + m` and `M` read `'la_ar_' + m`, so the source said `M(p, 'rise_grace')`
+while the flag was `la_ar_rise_grace`; `memoryIndex()` looked for `la_rise_grace` and found nothing. The `any(p, a, b)`
+helper was invisible for a second reason: the analyzer only matches `M`, `had` and `arcMark`. Both are now written out
+(`mk('ar_rise_grace')`, `M(p, 'ar_rise_grace')`, `any` expanded to `M(p, …) || M(p, …)` and deleted), which changes no
+flag name, no save and no behaviour — it only lets the counter see reads that were always there. That alone took
+215 → 112 and 123 → 166 memory events.
+
+**The remaining 105 marks were genuinely dead. 52 are now read, 53 dropped.**
+
+*Dropped (53).* 51 of them are the mark on an arc's **last** scene, plus the two on `ar_gone`, which is itself a
+closing scene: no later stage of that arc exists, so nothing could ever answer them. The lasting change those
+scenes make is already carried by what the choice does — `arDeed`, `epithet`, `trait`, `sworn`, an asset, a changed
+bond — so the mark was the only dead part, and `arc: fin('x')` became plain `arc: 'end'`. The other two are
+`ar_lib_asked` (the failed attempt to trace the verses, whose case the next scene already covers by the absence of
+`ar_lib_traced`) and `ar_rec_spoiled` (likewise against `ar_rec_better`).
+
+Two of those were the `lose` branch of a check, where the mark was the whole of `fx.arc`; they now carry
+`arc: 'next'`, so the arc still advances. `ar_gone` keeps `arc: { go: 'end' }` rather than the bare string,
+because `rivalsRegistered` asserts that form for the closing scene, which belongs to no arc's stage list.
+
+*Read (52).* Every one is a mid-arc choice a player would remember making, and in most cases a later scene was
+**already** describing its consequence in an `else` branch without naming it: `ar_pupil_hard` ("works {khim} hard")
+was the fall-through of scene 2's "{khe} does exactly what {khe} is told, and not one thing more", `ar_false_watch`
+was the fall-through of "Watching pays", `ar_pat_refused` of "You refused {them} once", and so on. Those became
+explicit `M(p, 'ar_…')` tests with a fallback for a save that jumped a stage, which costs no words and makes the
+link the analyzer's own convention asks for. The rest are one clause grafted onto a scene that already exists:
+the rival not mentioning the day you refused him, the men waiting in the yard because you let the ledgers alone,
+the bailiff coming because you refused the box. By arc: rise 4, pupil 3, patron 5, false friend 3, election 5,
+honour 3, libel 4, charter 3, secret 5, bribe 3, vendetta 6, usurper 3, moneylender 5.
+
+*The 7 plain flags.* These are not arc marks but the arcs' lasting marks on a life, set by a last scene and meant
+to be read by **another** arc, the way `ar_own_man`, `ar_cleared`, `ar_seat` and `ar_bounds` already are. Three
+had an obvious reader and got one: `ar_clean_hands` (why three men ask you to stand for the seat),
+`ar_bought_silence` (what the verses on the church door are about), `ar_patron_broken` (what a briber has heard
+about you before {khe} puts the purse down). **Four are left: `ar_house_peace`, `ar_house_feud`,
+`ar_lender_clerk`, `ar_debt_free`.** `ar_house_feud` is read by `features/74-old-age/e-peace.events.js`, so it is
+not an orphan on the full build; the other three are. Reading them would have meant forcing a clause into an
+unrelated arc's opening scene, which is the kind of writing this round was told not to do, so they are left for a
+human to place or cut.

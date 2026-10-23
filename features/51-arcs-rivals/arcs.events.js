@@ -5,7 +5,6 @@
 (function () {
 const M = (p, m) => !!(p && p.flags && p.flags['la_' + m]);
 const mk = m => ({ mark: m });
-const fin = m => ({ go: 'end', mark: m });
 const X = () => A.ARV;
 const lane = (p, ctx) => X().memo(p, ctx, 'lane', () => X().lane(p));
 
@@ -154,8 +153,8 @@ A.defEvents([
     setup: (p, ctx) => { const t = A.P(ctx.pid); if (!t || t.alive || !GONE[ctx.arc]) ctx.skip = 1; },
     text: (p, ctx) => `Word comes that {them} is dead, and buried before you heard. ${GONE[ctx.arc] || ''} It ends here, unfinished, the way most things do.`,
     choices: [
-      { t: 'Go and stand at the grave', r: 'You go and stand at the grave a while. A few people see you there, and remember it.', fx: { honor: 2, happy: -2, arDeed: 'Stood at the grave of {themFull}', arc: fin('ar_gone_went') } },
-      { t: 'Let it lie', r: 'You do not go. You hear about the burying afterwards, from people who did.', fx: { wil: 1, arDeed: 'Outlived {themFull}', arc: fin('ar_gone_away') } },
+      { t: 'Go and stand at the grave', r: 'You go and stand at the grave a while. A few people see you there, and remember it.', fx: { honor: 2, happy: -2, arDeed: 'Stood at the grave of {themFull}', arc: { go: 'end' } } },
+      { t: 'Let it lie', r: 'You do not go. You hear about the burying afterwards, from people who did.', fx: { wil: 1, arDeed: 'Outlived {themFull}', arc: { go: 'end' } } },
     ] },
 
   // ================================================================ THE OTHER ONE
@@ -176,7 +175,7 @@ A.defEvents([
     text: (p, ctx) => `{them} has risen again: ${rise(ctx, 1)}. ${M(p, 'ar_rise_grace') ? '{khe} remembers who took {khis} hand, and asks if you will work for {khim}. The pay is good.'
       : M(p, 'ar_rise_drive') ? 'You have done well on your own, though not so well. {khe} has noticed, and does not like being chased.'
       : M(p, 'ar_rise_dirt') ? 'The debt in {capital} is still unpaid. You may be the only one who knows.'
-      : '{khe} has not forgotten your questions, and has made sure others remember them.'} Now a man who wants {khis} place comes to ask what you know of {khim}.`,
+      : M(p, 'ar_rise_nosy') ? '{khe} has not forgotten your questions, and has made sure others remember them.' : '{khe} keeps away from you now, and is civil in company.'} Now a man who wants {khis} place comes to ask what you know of {khim}.`,
     choices: [
       { t: 'Take the work {khe} offers', req: p => M(p, 'ar_rise_grace'), r: 'You go to work for the one you meant to beat. The money comes on time. The evenings are long.', fx: { coin: 120, happy: -5, them: { op: 10 }, arc: mk('ar_rise_served') } },
       { t: 'Tell him about the debt in {capital}', req: p => M(p, 'ar_rise_dirt'), r: 'He pays for the wine and thanks you. Before the year is out, the man in {capital} calls the debt in.', fx: { coin: 30, honor: -4, them: { op: -15 }, arc: mk('ar_rise_told') } },
@@ -190,7 +189,7 @@ A.defEvents([
     setup: riseSetup,
     text: (p, ctx) => `{them} has ${rise(ctx, 2)} now, and it is too heavy for {khim}. ${M(p, 'ar_rise_told') ? 'The man in {capital} has called in the debt, and all of {home} knows it.'
       : M(p, 'ar_rise_served') ? 'You keep {khis} books. You can see how close to the edge it runs.'
-      : '{khis} creditors are at the door, and {khe} has taken to drinking in the afternoons.'} {khe} comes to you${M(p, 'ar_rise_served') ? '' : ', of all people,'} and asks for help.`,
+      : M(p, 'ar_rise_spoke') ? 'What you said of {khim} did part of this. {khis} creditors are at the door.' : '{khis} creditors are at the door, and {khe} has taken to drinking in the afternoons.'} {khe} comes to you${M(p, 'ar_rise_served') ? '' : ', of all people,'} and asks for help.`,
     choices: [
       { t: 'Lend {khim} what {khe} needs', req: p => p.coin >= 150, r: 'You put the money in {khis} hand. {khe} counts it twice and cannot find the words.', fx: { coin: -150, them: { op: 25 }, arc: mk('ar_rise_lent') } },
       { t: 'Refuse {khim}, to {khis} face', r: 'You tell {khim} no. {khe} nods, as if {khe} had expected nothing else.', fx: { happy: 2, honor: -1, them: { op: -10 }, arc: mk('ar_rise_refused') } },
@@ -203,7 +202,7 @@ A.defEvents([
     setup: riseSetup,
     text: (p, ctx) => (M(p, 'ar_rise_lent') ? `{them} came through, on your money. {khe} has kept what {khe} had, and pays you back in coin and in favours, which you had not expected. Now {khe} offers you a share in all of it.`
       : M(p, 'ar_rise_owned') ? '{them} pays you on every quarter day, in person, and hates every coin of it. Today {khe} asks you to forgive what is left.'
-      : `{them} lost ${rise(ctx, 2)}, and the house with it. People stop at your door again. {khe} lives in two rooms over a chandler's now, and asks you for work.`),
+      : `{them} lost ${rise(ctx, 2)}, and the house with it.${M(p, 'ar_rise_refused') ? ' {khe} does not mention the day you refused {khim}.' : ''} People stop at your door again. {khe} lives in two rooms over a chandler's now, and asks you for work.`),
     choices: [
       { t: 'Take the share {khe} offers', req: p => M(p, 'ar_rise_lent'), r: 'You take it. Your fortunes are tied to {khers} now, for good or ill.', fx: { coin: 100, them: { op: 5 }, arc: mk('ar_rise_partner') } },
       { t: 'Collect it, to the last coin', req: p => M(p, 'ar_rise_owned'), r: 'You collect it all, on time, every time. {khe} stops looking you in the eye.', fx: { coin: 120, honor: -2, them: { op: -20 }, arc: mk('ar_rise_collected') } },
@@ -216,14 +215,15 @@ A.defEvents([
     setup: (p, ctx) => { riseSetup(p, ctx); ctx.yrs = X().years(p, ctx); },
     text: (p, ctx) => `It is {yrs} years since {them} got ${rise(ctx, 0)}. You are both grey at the temples. ${(M(p, 'ar_rise_partner') || M(p, 'ar_rise_kind')) ? '{khe} sends a cask at midwinter now, and you send one back.'
       : M(p, 'ar_rise_collected') ? '{khe} crosses the road rather than pass you.'
-      : M(p, 'ar_rise_gloat') ? '{khe} still lives over the chandler\'s, and still does not look at your door.' : ''} At a wedding you find yourselves at the same table, with one empty chair between you.`,
+      : M(p, 'ar_rise_gloat') ? '{khe} still lives over the chandler\'s, and still does not look at your door.'
+      : M(p, 'ar_rise_silent') ? '{khe} never learned what you did not say of {khim}, and never asked.' : ''} At a wedding you find yourselves at the same table, with one empty chair between you.`,
     choices: [
       { t: 'Take the chair, and call it done', r: 'You sit. You talk about the old days, which were not good, and laugh anyway. Whatever it was, it is over.',
-        fx: { happy: 4, them: { op: 40, type: 'friend', back: 'friend' }, arDeed: 'Made peace with {themFull}, a rival of {yrs} years', arc: fin('ar_rise_peace') } },
+        fx: { happy: 4, them: { op: 40, type: 'friend', back: 'friend' }, arDeed: 'Made peace with {themFull}, a rival of {yrs} years', arc: 'end' } },
       { t: 'Keep the chair between you', r: '{khe} raises a cup to you across it. You raise yours. Neither of you means it kindly, and both of you go home sharper.',
-        fx: { wil: 1, them: { op: -30, type: 'enemy', back: 'enemy' }, trait: 'ambitious', arc: fin('ar_rise_feud') } },
+        fx: { wil: 1, them: { op: -30, type: 'enemy', back: 'enemy' }, trait: 'ambitious', arc: 'end' } },
       { t: 'Leave before the toasts', r: 'You walk home the long way. You find you no longer much care what {khe} has. It surprises you.',
-        fx: { happy: 2, trait: 'content', arDeed: 'Outgrew a rivalry with {themFull}', arc: fin('ar_rise_let') } },
+        fx: { happy: 2, trait: 'content', arDeed: 'Outgrew a rivalry with {themFull}', arc: 'end' } },
     ] },
 
   // ================================================================ THE APPRENTICE
@@ -241,7 +241,7 @@ A.defEvents([
     setup: (p, ctx) => X().cast(p, ctx, 'pupil', PUPIL),
     text: p => `{them} is quicker than you were at that age. People who come to your door have started asking for {khim} by name. ${M(p, 'ar_pupil_all') ? '{khe} does things your way, and then a little better.'
       : M(p, 'ar_pupil_half') ? '{khe} has worked out some of what you kept back, alone, at night, by candle-ends.'
-      : '{khe} does exactly what {khe} is told, and not one thing more.'} Now a big commission comes in: work that will be talked about.`,
+      : M(p, 'ar_pupil_hard') ? '{khe} does exactly what {khe} is told, and not one thing more.' : '{khe} keeps {khis} own counsel and {khis} hands busy.'} Now a big commission comes in: work that will be talked about.`,
     choices: [
       { t: 'Give {khim} the commission, and the credit', r: 'It goes out under {khis} name and yours. Folk talk about it, mostly about {khim}.', fx: { coin: 40, happy: -2, them: { op: 15 }, arc: mk('ar_pupil_credit') } },
       { t: 'Do it yourself; {khe} can watch', r: 'You do it yourself, and well. {khe} watches with {khis} arms folded.', fx: { coin: 60, them: { op: -10 }, arc: mk('ar_pupil_held') } },
@@ -255,7 +255,7 @@ A.defEvents([
     text: p => `A rival master across the river has offered {them} a journeyman's wage and a room of {khis} own. ${M(p, 'ar_pupil_credit') ? '{khe} would rather stay, {khe} says, if staying means something.'
       : M(p, 'ar_pupil_held') ? '{khe} does not ask your leave. {khe} tells you, and waits to see what you will do.'
       : M(p, 'ar_pupil_beaten') ? 'Since the day the buyer chose {khis} work, {khe} has known what {khe} is worth.'
-      : '{khe} has not forgotten that the buyer chose yours. {khe} asks what you think.'} {khis} indentures have two years to run.`,
+      : M(p, 'ar_pupil_won') ? '{khe} has not forgotten that the buyer chose yours. {khe} asks what you think.' : '{khe} asks what you think, and watches your face while you answer.'} {khis} indentures have two years to run.`,
     choices: [
       { t: 'Match the offer, from your own pocket', req: p => p.coin >= 100, r: 'You pay {khim} a journeyman\'s wage two years early. {khe} stays.', fx: { coin: -100, them: { op: 15 }, arc: mk('ar_pupil_kept') } },
       { t: 'Let {khim} go, with your blessing', r: '{khe} goes across the river with your good word and your second-best tools.', fx: { happy: -3, honor: 2, them: { op: 25 }, arc: mk('ar_pupil_freed') } },
@@ -285,14 +285,14 @@ A.defEvents([
     text: p => `${M(p, 'ar_pupil_partner') ? 'The two names have been over the door for years now.'
       : M(p, 'ar_pupil_fought') ? 'You and {them} have competed so long that the town takes sides at weddings.'
       : M(p, 'ar_pupil_learned') ? 'You work the new way now, mostly. {them} still drops by to see that you do.'
-      : '{them} would not share a door with you, and has not set foot in yours since.'} You are old for the work. What becomes of it cannot wait much longer.`,
+      : M(p, 'ar_pupil_spurned') ? '{them} said no to the partnership pleasantly, and has not set foot in your door since.' : '{them} would not share a door with you, and has not set foot in yours since.'} You are old for the work. What becomes of it cannot wait much longer.`,
     choices: [
       { t: 'Leave the work to {them}', r: 'You sign it over before witnesses. {khe} does not speak for a while, and then speaks too much.',
-        fx: { honor: 3, them: { op: 30 }, arDeed: 'Left the work to {themFull}, who came as an apprentice', arc: fin('ar_pupil_heir') } },
+        fx: { honor: 3, them: { op: 30 }, arDeed: 'Left the work to {themFull}, who came as an apprentice', arc: 'end' } },
       { t: 'Keep it in your own hands to the end', r: 'You keep the keys on your belt and work until your hands give out. It is yours, every inch.',
-        fx: { coin: 80, them: { op: -10 }, trait: 'stubborn', arDeed: 'Kept the work in your own hands to the end', arc: fin('ar_pupil_mine') } },
+        fx: { coin: 80, them: { op: -10 }, trait: 'stubborn', arDeed: 'Kept the work in your own hands to the end', arc: 'end' } },
       { t: 'Sell up, and buy a cottage with a garden', r: 'You sell all but your best tools, and grow beans. People still come for your advice. You give it slowly.',
-        fx: { happy: 6, asset: 'cottage', arDeed: 'Gave up the work and retired to a cottage', arc: fin('ar_pupil_retired') } },
+        fx: { happy: 6, asset: 'cottage', arDeed: 'Gave up the work and retired to a cottage', arc: 'end' } },
     ] },
 
   // ================================================================ THE PATRON
@@ -308,7 +308,7 @@ A.defEvents([
   { id: 'ar_patron_2', title: 'A small thing', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => patron(p, ctx),
-    text: p => `${M(p, 'ar_pat_took') ? 'It is a while since {them} paid for things.' : M(p, 'ar_pat_paid') ? 'You paid back the money, but {them} has not forgotten the rest.' : 'You refused {them} once. {khe} asks anyway, as if to see what you are made of.'} {khe} wants a small thing: that you tell the magistrate you saw {khis} men at the boundary stone on a day you did not. A neighbour's field hangs on it.`,
+    text: p => `${M(p, 'ar_pat_took') ? 'It is a while since {them} paid for things.' : M(p, 'ar_pat_paid') ? 'You paid back the money, but {them} has not forgotten the rest.' : M(p, 'ar_pat_refused') ? 'You refused {them} once. {khe} asks anyway, as if to see what you are made of.' : '{them} has been patient with you, which is its own kind of accounting.'} {khe} wants a small thing: that you tell the magistrate you saw {khis} men at the boundary stone on a day you did not. A neighbour's field hangs on it.`,
     choices: [
       { t: 'Say what {khe} wants said', r: 'You swear to it. The magistrate believes you. The neighbour loses his field and does not look at you again.', fx: { honor: -5, coin: 40, them: { op: 15 }, arc: mk('ar_pat_lied') } },
       { t: 'Say what you saw, and nothing more', r: 'You tell the truth, which helps nobody. {them} hears of it by supper.', fx: { honor: 3, them: { op: -15 }, arc: mk('ar_pat_truth') } },
@@ -317,7 +317,10 @@ A.defEvents([
   { id: 'ar_patron_3', title: 'The real price', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { patron(p, ctx); foe(p, ctx); },
-    text: p => `${M(p, 'ar_pat_lied') ? '{them} has been generous since the boundary case: a gift at midwinter, a word in the right ear.' : '{them} has been cool with you since the boundary case.'} Now {khe} wants something larger. {khe} has a rival, {foe}, a wool merchant, and wants {foe}'s letters. {foe} trusts you; you were children together. You are the one person who could walk into that house and out again.`,
+    text: p => `${M(p, 'ar_pat_lied') ? '{them} has been generous since the boundary case: a gift at midwinter, a word in the right ear.'
+      : M(p, 'ar_pat_truth') ? '{them} has been cold with you since you told the magistrate what you saw.'
+      : M(p, 'ar_pat_away') ? '{them} has been cold with you since the week you found business elsewhere.'
+      : '{them} has been cool with you since the boundary case.'} Now {khe} wants something larger. {khe} has a rival, {foe}, a wool merchant, and wants {foe}'s letters. {foe} trusts you; you were children together. You are the one person who could walk into that house and out again.`,
     choices: [
       { t: 'Fetch the letters', check: { s: 'stealth', s2: 'deception', d: 50 },
         win: { r: 'You take them from the chest while {foe} pours the wine. {them} reads them that night.', fx: { honor: -4, coin: 80, them: { op: 20 }, arc: mk('ar_pat_fetched') } },
@@ -331,15 +334,17 @@ A.defEvents([
     text: p => (M(p, 'ar_pat_fetched')
       ? '{them} owns a good part of you now, and knows it. {khe} asks for the last thing: that you kneel in {khis} hall before witnesses and swear to be {khers} in all things.'
       : M(p, 'ar_pat_caught') ? '{foe} has told half of {home} what you were doing at the chest, and {them} has said nothing in your defence. {khe} sends for you all the same: kneel and swear to {khim}, and it all goes away.'
-      : '{them} has let it be known that you are ungrateful. Doors are closing. {khe} sends word: kneel in {khis} hall and swear to be {khers}, and they will open again.'),
+      : `${M(p, 'ar_pat_warned') ? '{them} knows you went to {foe} first, and has let it be known that you are not to be trusted.'
+        : M(p, 'ar_pat_done') ? '{them} has told {home} you are ungrateful, which is {khis} word for a man who says no more.'
+        : '{them} has let it be known that you are ungrateful.'} Doors are closing. {khe} sends word: kneel in {khis} hall and swear to be {khers}, and they will open again.`),
     choices: [
       { t: 'Kneel, and swear', r: 'You kneel on cold stone and say the words. {khe} raises you up and embraces you. You are {khers} now.',
-        fx: { sworn: 1, coin: 100, honor: -3, them: { op: 30 }, arDeed: 'Swore to be the sworn follower of {themFull}', arc: fin('ar_pat_sworn') } },
+        fx: { sworn: 1, coin: 100, honor: -3, them: { op: 30 }, arDeed: 'Swore to be the sworn follower of {themFull}', arc: 'end' } },
       { t: 'Pay back every coin, and owe {khim} nothing', req: p => p.coin >= 150, r: 'You count it out on {khis} table. {khe} lets you. You walk out owing no one, and with fewer friends.',
-        fx: { coin: -150, honor: 4, oweThem: -3, them: { op: -15 }, flag: 'ar_own_man', arDeed: 'Paid off {themFull} and owed no one', arc: fin('ar_pat_free') } },
+        fx: { coin: -150, honor: 4, oweThem: -3, them: { op: -15 }, flag: 'ar_own_man', arDeed: 'Paid off {themFull} and owed no one', arc: 'end' } },
       { t: 'Tell the magistrate what {khe} had you do', check: { s: 'persuasion', s2: 'int', d: 55 },
-        win: { r: 'The magistrate listens, and then the {rulerTitle}\'s justices. {them} is fined and shamed, and does not forgive you.', fx: { honor: 5, fame: 3, oweThem: -3, them: { op: -40, type: 'enemy', back: 'enemy' }, flag: 'ar_patron_broken', arc: fin('ar_pat_exposed') } },
-        lose: { r: '{khe} has friends on the bench. You are fined for slander, and {khe} is your enemy besides.', fx: { coin: -60, honor: -2, oweThem: -3, them: { op: -40, type: 'enemy', back: 'enemy' }, flag: 'ar_patron_broken', arc: fin('ar_pat_exposed') } } },
+        win: { r: 'The magistrate listens, and then the {rulerTitle}\'s justices. {them} is fined and shamed, and does not forgive you.', fx: { honor: 5, fame: 3, oweThem: -3, them: { op: -40, type: 'enemy', back: 'enemy' }, flag: 'ar_patron_broken', arc: 'end' } },
+        lose: { r: '{khe} has friends on the bench. You are fined for slander, and {khe} is your enemy besides.', fx: { coin: -60, honor: -2, oweThem: -3, them: { op: -40, type: 'enemy', back: 'enemy' }, flag: 'ar_patron_broken', arc: 'end' } } },
     ] },
 
   // ================================================================ THE FALSE FRIEND
@@ -359,7 +364,8 @@ A.defEvents([
     setup: (p, ctx) => X().cast(p, ctx, 'friend', FRIEND),
     text: p => `${M(p, 'ar_false_wary') ? 'The man from {capital} who buys debts has bought yours, all of them, at a good price. He knew exactly which to buy.'
       : M(p, 'ar_false_closed') ? 'Someone has been telling {home} your business. It is half wrong, which means it came at second hand.'
-      : 'A buyer you have dealt with for ten years has gone elsewhere, at a price only someone who knew yours could have offered. Only {them} knew yours.'}`,
+      : M(p, 'ar_false_open') ? 'A buyer you have dealt with for ten years has gone elsewhere, at a price only someone who knew yours could have offered. You told {them} that price yourself.'
+      : 'A buyer you have dealt with for ten years has gone elsewhere, at a price only someone who knew yours could have offered.'}`,
     choices: [
       { t: 'Have it out with {them}', check: { s: 'ins', s2: 'wil', d: 50 },
         win: { r: '{khe} denies it, badly. You have known {khim} too long not to see it.', fx: { honor: 1, them: { op: -20 }, arc: mk('ar_false_known') } },
@@ -374,7 +380,8 @@ A.defEvents([
     setup: (p, ctx) => X().cast(p, ctx, 'friend', FRIEND),
     text: p => ((M(p, 'ar_false_known') || M(p, 'ar_false_proved')) ? '{them} comes to you at last, sober and frightened. {khe} owes money to a man in {capital}, and has been paying him in your affairs. {khe} asks you to forgive {khim}.'
       : M(p, 'ar_false_fooled') ? 'A stranger tells you, over a cup: {them} has been selling your affairs to a man in {capital} for years. {khe} does not know that you know.'
-      : 'Watching pays. You see {them} hand a folded letter to a rider bound for {capital}, and you see the rider pay {khim}.'),
+      : M(p, 'ar_false_watch') ? 'Watching pays. You see {them} hand a folded letter to a rider bound for {capital}, and you see the rider pay {khim}.'
+      : 'A rider bound for {capital} takes a folded letter from {them}, and pays {khim} for it in the street.'),
     choices: [
       { t: 'Forgive {khim}, this once', r: 'You forgive {khim}. {khe} weeps, which you had not expected, and swears it is over.', fx: { honor: 2, happy: -2, them: { op: 20 }, arc: mk('ar_false_forgave') } },
       { t: 'Feed {khis} paymaster lies, through {khim}', check: { s: 'deception', s2: 'int', d: 50 },
@@ -387,21 +394,21 @@ A.defEvents([
     setup: (p, ctx) => X().cast(p, ctx, 'friend', FRIEND),
     text: p => `${M(p, 'ar_false_forgave') ? '{them} has kept faith since, or seems to. You still notice when {khe} asks a question.'
       : M(p, 'ar_false_turned') ? 'The game with the man in {capital} is over. {them} played it with you to the end, which is a kind of loyalty.'
-      : '{them} keeps away, mostly. When you meet, it is {khe} who looks away first.'} This winter {khe} is ill, and sends a boy to ask if you will come.`,
+      : M(p, 'ar_false_broke') ? 'Since you broke with {khim}, {khe} keeps away. When you meet, it is {khe} who looks away first.' : '{them} keeps away, mostly. When you meet, it is {khe} who looks away first.'} This winter {khe} is ill, and sends a boy to ask if you will come.`,
     choices: [
       { t: 'Go, and take {khim} as {khe} is', r: 'You sit by {khis} bed and talk about nothing. Whatever {khe} was, {khe} is your friend.',
-        fx: { them: { op: 35, type: 'friend', back: 'friend' }, trait: 'forgiving', arc: fin('ar_false_kept') } },
+        fx: { them: { op: 35, type: 'friend', back: 'friend' }, trait: 'forgiving', arc: 'end' } },
       { t: 'Send the boy back with nothing', r: 'You send the boy back. {khe} mends, and does not send again.',
-        fx: { wil: 1, them: { op: -40, type: 'enemy', back: 'enemy' }, arc: fin('ar_false_enemy') } },
+        fx: { wil: 1, them: { op: -40, type: 'enemy', back: 'enemy' }, arc: 'end' } },
       { t: 'Go, but never trust so easily again', r: 'You go, and you are kind. You also move your box, and tell no one where, and that habit stays.',
-        fx: { them: { op: 10 }, trait: 'paranoid', arDeed: 'Found out {themFull}, and trusted less after', arc: fin('ar_false_wary_end') } },
+        fx: { them: { op: 10 }, trait: 'paranoid', arDeed: 'Found out {themFull}, and trusted less after', arc: 'end' } },
     ] },
 
   // ================================================================ THE ELECTION
   { id: 'ar_elec_1', title: 'The empty chair', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { seat(p, ctx); X().cast(p, ctx, 'opp', OPP); },
-    text: p => `The old {office} died at Candlemas, and the office of {seat} is empty. Three men come to ask you to stand${p.flags.ar_own_man ? ', because you owe nobody' : p.flags.ar_cleared ? ', because the justices cleared your name' : ''}. {them} is standing too, and has been buying drinks since the funeral.`,
+    text: p => `The old {office} died at Candlemas, and the office of {seat} is empty. Three men come to ask you to stand${p.flags.ar_own_man ? ', because you owe nobody' : p.flags.ar_cleared ? ', because the justices cleared your name' : p.flags.ar_clean_hands ? ', because you gave evidence against a man who tried to buy you' : ''}. {them} is standing too, and has been buying drinks since the funeral.`,
     choices: [
       { t: 'Stand, and promise to lower the dues', r: 'The promise goes down well. You will have to keep it, or be remembered for not keeping it.', fx: { fame: 2, honor: -1, arc: mk('ar_elec_promise') } },
       { t: 'Stand on your name, and promise nothing', r: 'You promise nothing. The old men like it. The young ones wonder what you are for.', fx: { honor: 2, arc: mk('ar_elec_name') } },
@@ -412,7 +419,7 @@ A.defEvents([
     setup: (p, ctx) => { seat(p, ctx); X().cast(p, ctx, 'opp', OPP); },
     text: p => `The vote is at Michaelmas, in the {hall}. ${M(p, 'ar_elec_promise') ? '{them} tells everyone you have promised what you cannot pay for.'
       : M(p, 'ar_elec_bought') ? 'You have bought enough votes to win, if they stay bought. {them} is buying too.'
-      : '{them} tells everyone you are too proud to ask for a vote.'} The night before, {khe} sends a friend to ask what it would take for you to stand down.`,
+      : M(p, 'ar_elec_name') ? '{them} tells everyone you are too proud to ask for a vote.' : '{them} tells everyone what you are, and gets most of it wrong.'} The night before, {khe} sends a friend to ask what it would take for you to stand down.`,
     choices: [
       { t: 'Speak before the vote', req: p => !M(p, 'ar_elec_bought'), check: { s: 'persuasion', s2: 'int', d: 50 },
         win: { r: 'You speak plainly, and not too long. The hands go up for you.', fx: { fame: 3, them: { op: -10 }, arc: mk('ar_elec_won') } },
@@ -429,7 +436,9 @@ A.defEvents([
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { seat(p, ctx); X().cast(p, ctx, 'opp', OPP); },
     text: p => (M(p, 'ar_elec_won') ? `You are {seat}. The first thing on the table is the dues, and {them} sits at the back of the {hall}, waiting for you to fail.${M(p, 'ar_elec_promise') ? ' You promised to lower them.' : ''} The roof leaks onto the table while you read.`
-      : `{them} is {seat}. ${M(p, 'ar_elec_sold') ? 'You have your seat on the council, and your purse, and {khis} accounts in front of you.' : '{khe} has asked you onto the council, to show there are no hard feelings.'} The accounts do not add up.`),
+      : `{them} is {seat}. ${M(p, 'ar_elec_sold') ? 'You have your seat on the council, and your purse, and {khis} accounts in front of you.'
+        : M(p, 'ar_elec_lost') ? 'You lost, and {khe} has asked you onto the council, to show there are no hard feelings.'
+        : '{khe} has asked you onto the council, to show there are no hard feelings.'} The accounts do not add up.`),
     choices: [
       { t: 'Lower the dues, and pay for the roof yourself', req: p => M(p, 'ar_elec_won'), r: 'You keep your word, with your own money. People notice, and say so.', fx: { coin: -80, fame: 3, honor: 2, arc: mk('ar_elec_kept') } },
       { t: 'Raise the dues; the roof comes first', req: p => M(p, 'ar_elec_won'), r: 'The roof is mended, by your cousin, at a good price for your cousin. Your name is cursed in every house that pays.', fx: { coin: 30, fame: -2, honor: -2, arc: mk('ar_elec_roof') } },
@@ -441,20 +450,20 @@ A.defEvents([
   { id: 'ar_elec_4', title: 'The next election', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { seat(p, ctx); X().cast(p, ctx, 'opp', OPP); },
-    text: p => (M(p, 'ar_elec_won') ? `Your term is up. ${M(p, 'ar_elec_kept') ? 'They have not forgotten the roof you paid for.' : 'They have not forgotten the dues.'} {them} is standing against you again, and this time {khe} has {khis} speech written out.`
+    text: p => (M(p, 'ar_elec_won') ? `Your term is up. ${M(p, 'ar_elec_kept') ? 'They have not forgotten the roof you paid for.' : M(p, 'ar_elec_roof') ? 'They have not forgotten the dues, nor whose cousin mended the roof.' : 'They have not forgotten the dues.'} {them} is standing against you again, and this time {khe} has {khis} speech written out.`
       : M(p, 'ar_elec_found') ? 'The election comes round again. Everyone knows what you found in the accounts. {them} is standing anyway, and so, they say, should you.'
-      : 'The election comes round again. {them} stops you after church and asks for your vote, and your hand on it.'),
+      : `The election comes round again. ${M(p, 'ar_elec_sore') ? 'You went through {khis} accounts and found nothing you could prove, and {khe} knows it. ' : M(p, 'ar_elec_helped') ? 'You sat up three nights setting {khis} accounts right. ' : ''}{them} stops you after church and asks for your vote, and your hand on it.`),
     choices: [
       { t: 'Stand on what you have done', req: p => (M(p, 'ar_elec_kept') || M(p, 'ar_elec_found')), check: { s: 'persuasion', s2: 'int', d: 40 },
-        win: { r: 'You win, and the second time means more than the first. They will call you {office} after you are dead.', fx: { fame: 4, rep: 3, flag: 'ar_seat', arDeed: 'Chosen {seat}', arc: fin('ar_elec_seat') } },
-        lose: { r: 'You lose by a handful. You go home and sleep better than you have in years.', fx: { happy: 2, trait: 'humble', arDeed: 'Stood for {seat}, and lost', arc: fin('ar_elec_out') } } },
+        win: { r: 'You win, and the second time means more than the first. They will call you {office} after you are dead.', fx: { fame: 4, rep: 3, flag: 'ar_seat', arDeed: 'Chosen {seat}', arc: 'end' } },
+        lose: { r: 'You lose by a handful. You go home and sleep better than you have in years.', fx: { happy: 2, trait: 'humble', arDeed: 'Stood for {seat}, and lost', arc: 'end' } } },
       { t: 'Stand against {khim}', req: p => !(M(p, 'ar_elec_kept') || M(p, 'ar_elec_found')), check: { s: 'persuasion', s2: 'int', d: 55 },
-        win: { r: 'You win. {them} shakes your hand on the steps, and means about half of it.', fx: { fame: 4, rep: 3, flag: 'ar_seat', arDeed: 'Chosen {seat}', arc: fin('ar_elec_seat') } },
-        lose: { r: 'You lose by a handful. You go home and sleep better than you have in years.', fx: { happy: 2, trait: 'humble', arDeed: 'Stood for {seat}, and lost', arc: fin('ar_elec_out') } } },
+        win: { r: 'You win. {them} shakes your hand on the steps, and means about half of it.', fx: { fame: 4, rep: 3, flag: 'ar_seat', arDeed: 'Chosen {seat}', arc: 'end' } },
+        lose: { r: 'You lose by a handful. You go home and sleep better than you have in years.', fx: { happy: 2, trait: 'humble', arDeed: 'Stood for {seat}, and lost', arc: 'end' } } },
       { t: 'Back {them}, and say so', r: 'You stand beside {khim} in the {hall} and raise your hand for {khim}. It costs you less than you feared.',
-        fx: { honor: 2, them: { op: 30, type: 'friend', back: 'friend' }, arDeed: 'Gave way to {themFull} for the good of {home}', arc: fin('ar_elec_backed') } },
+        fx: { honor: 2, them: { op: 30, type: 'friend', back: 'friend' }, arDeed: 'Gave way to {themFull} for the good of {home}', arc: 'end' } },
       { t: 'Never stand for anything again', r: 'You tell them you are done with it. It is the first promise you have kept without trying.',
-        fx: { happy: 4, trait: 'content', arDeed: 'Gave up standing for office', arc: fin('ar_elec_done') } },
+        fx: { happy: 4, trait: 'content', arDeed: 'Gave up standing for office', arc: 'end' } },
     ] },
 
   // ================================================================ AN AFFAIR OF HONOUR
@@ -474,7 +483,9 @@ A.defEvents([
     setup: honour,
     text: p => `${M(p, 'ar_hon_challenged') ? 'It takes a year of letters, duels being forbidden by the {rulerTitle}, but it is arranged: a field beyond {home}, swords, first blood to end it.'
       : M(p, 'ar_hon_wit') ? '{them} has not forgiven the laugh. A year to the day after the feast, {khis} cousin brings you a challenge in writing.'
-      : '{them} has told the story all year, and improved it. When {khe} tells it to your face, there is no letting it pass twice.'} The grass is grey with frost. {khe} is there already, rolling {khis} shoulders.`,
+      : M(p, 'ar_hon_flat') ? '{them} has told the story all year, your answer and all, and improved both. There is no answering it a second time.'
+      : M(p, 'ar_hon_passed') ? '{them} has told the story all year, and improved it. When {khe} tells it to your face, there is no letting it pass twice.'
+      : '{them} tells the story still, and waits to see what you will do about it.'} The grass is grey with frost. {khe} is there already, rolling {khis} shoulders.`,
     choices: [
       { t: 'Fight', check: { s: 'melee', s2: 'spd', d: 50 },
         win: { r: 'You open {khis} sword arm from wrist to elbow. First blood, and more. {khe} goes down on one knee in the frost.', fx: { honor: 4, fame: 3, them: { op: -10 }, arc: mk('ar_hon_won') } },
@@ -488,7 +499,7 @@ A.defEvents([
     text: p => `${M(p, 'ar_hon_won') ? '{them} carries {khis} arm in a sling still, and {khis} brother has begun to say the cut was foul.'
       : M(p, 'ar_hon_lost') ? 'You wear {khis} mark across your face. {khe} is generous about it in company, which is worse.'
       : M(p, 'ar_hon_champion') ? 'Everyone knows you paid a man to bleed for you. {them}\'s friends say so at table, where you can hear.'
-      : '{them} has taken your apology as a debt, and now {khe} calls on it, in front of people.'} It is not finished.`,
+      : M(p, 'ar_hon_sorry') ? '{them} has taken your apology as a debt, and now {khe} calls on it, in front of people.' : '{them} has not let the matter rest, and says so where it will be carried.'} It is not finished.`,
     choices: [
       { t: 'Offer {khis} family your hand', r: 'You send a gift and go yourself after it. They take the gift. The hand takes longer.', fx: { coin: -40, them: { op: 25 }, arc: mk('ar_hon_peace') } },
       { t: 'Meet {khis} brother too, if he wants it', check: { s: 'melee', s2: 'wil', d: 55 },
@@ -504,19 +515,19 @@ A.defEvents([
       : M(p, 'ar_hon_champion') ? 'The story they tell is about your champion, not about you.' : 'The story they tell is about your apology.'} ${M(p, 'ar_hon_peace') ? '{them} nods to you at church now.' : M(p, 'ar_hon_law') ? 'The justices fined you both, and {them} paid {khis} fine in coppers, to make a point.' : '{them} has not forgotten either.'} It is time to decide what it was.`,
     choices: [
       { t: 'Wear the name the songs give you', req: p => (M(p, 'ar_hon_won') || M(p, 'ar_hon_twice')), r: 'You let them call you what they like, and what they like sticks.',
-        fx: { fame: 3, epithet: 'Firstfrost', arDeed: 'Fought {themFull} at first light, and won', arc: fin('ar_hon_named') } },
+        fx: { fame: 3, epithet: 'Firstfrost', arDeed: 'Fought {themFull} at first light, and won', arc: 'end' } },
       { t: 'Make a friend of {khim} at last', r: 'You ride to {khis} house unannounced and stay three days. After that you are at each other\'s weddings, and each other\'s funerals.',
-        fx: { honor: 1, them: { op: 40, type: 'friend', back: 'friend' }, arc: fin('ar_hon_friends') } },
+        fx: { honor: 1, them: { op: 40, type: 'friend', back: 'friend' }, arc: 'end' } },
       { t: 'Keep the quarrel, and your sword oiled', r: 'You do not make it up. You practise every morning, in case.',
-        fx: { skill: { melee: 2 }, them: { op: -30, type: 'enemy', back: 'enemy' }, trait: 'wrathful', arc: fin('ar_hon_feud') } },
+        fx: { skill: { melee: 2 }, them: { op: -30, type: 'enemy', back: 'enemy' }, trait: 'wrathful', arc: 'end' } },
       { t: 'Hang the sword over the fire for good', r: 'You hang it over the hearth and leave it there. It gathers dust. You find you do not miss it.',
-        fx: { happy: 3, trait: 'calm', arDeed: 'Gave up the sword after an affair of honour', arc: fin('ar_hon_done') } },
+        fx: { happy: 3, trait: 'calm', arDeed: 'Gave up the sword after an affair of honour', arc: 'end' } },
     ] },
 
   // ================================================================ THE LIBEL
   { id: 'ar_libel_1', title: 'Verses on the church door', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `Someone has nailed verses to the church door in {home}. They are about you${p.flags.ar_seat ? ', and the office you hold' : ''}. They say you are seen leaving a widow's house by the back gate, and they call you Backgate. By noon the children are singing them. Nobody admits to reading them. Everybody knows the third verse.`,
+    text: p => `Someone has nailed verses to the church door in {home}. They are about you${p.flags.ar_seat ? ', and the office you hold' : p.flags.ar_bought_silence ? ', and about a purse you are said to have paid to keep something quiet' : ''}. They say you are seen leaving a widow's house by the back gate, and they call you Backgate. By noon the children are singing them. Nobody admits to reading them. Everybody knows the third verse.`,
     choices: [
       { t: 'Tear them down yourself, in daylight', r: 'You tear them down with half of {home} watching. It improves the story.', fx: { honor: 1, fame: -1, happy: -2, arc: mk('ar_lib_tore') } },
       { t: 'Answer in verse, on the same door', check: { s: 'music', s2: 'int', d: 55 },
@@ -524,12 +535,14 @@ A.defEvents([
         lose: { r: 'Your answer scans badly. The children sing both, and yours is the joke.', fx: { fame: -2, happy: -3, arc: mk('ar_lib_verse') } } },
       { t: 'Find out whose hand it is', check: { s: 'intrigue', s2: 'ins', d: 50 },
         win: { r: 'The hand is a clerk\'s, and you have seen it before, on a letter in your own chest.', fx: { int: 1, arc: mk('ar_lib_traced') } },
-        lose: { r: 'Asking about the verses spreads them. A dozen people recite them to you, to help.', fx: { fame: -2, happy: -2, arc: mk('ar_lib_asked') } } },
+        lose: { r: 'Asking about the verses spreads them. A dozen people recite them to you, to help.', fx: { fame: -2, happy: -2, arc: 'next' } } },
     ] },
   { id: 'ar_libel_2', title: 'The hand', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => X().cast(p, ctx, 'author', AUTHOR),
-    text: (p, ctx) => `${M(p, 'ar_lib_traced') ? 'You lay the old letter beside the verses. It is the same hand: {them}\'s.' : 'It comes out, as these things do. The verses are {them}\'s.'}${ctx.old ? ' Of course they are.' : ''} {khe} denies it to anyone who asks, smiling. The verses have reached {capital}.`,
+    text: (p, ctx) => `${M(p, 'ar_lib_traced') ? 'You lay the old letter beside the verses. It is the same hand: {them}\'s.' : M(p, 'ar_lib_verse') ? 'Your answer on the door drew the author out. The verses are {them}\'s.'
+      : M(p, 'ar_lib_tore') ? 'You tore them down; they went up again, in the same hand. The hand is {them}\'s.'
+      : 'It comes out, as these things do. The verses are {them}\'s.'}${ctx.old ? ' Of course they are.' : ''} {khe} denies it to anyone who asks, smiling. The verses have reached {capital}.`,
     choices: [
       { t: 'Bring a suit for slander', r: 'A lawyer draws it up for a fee. It will take a year to come on, and cost more than you think.', fx: { coin: -40, arc: mk('ar_lib_sued') } },
       { t: 'Pay {khim} to stop', r: '{khe} takes the money with a show of not understanding. The verses stop.', fx: { coin: -60, honor: -2, them: { op: 10 }, arc: mk('ar_lib_paid') } },
@@ -542,7 +555,7 @@ A.defEvents([
     setup: (p, ctx) => X().cast(p, ctx, 'author', AUTHOR),
     text: p => `${M(p, 'ar_lib_paid') ? 'The money bought a year\'s quiet. Now there are new verses on the door, and a note under yours asking for more.'
       : M(p, 'ar_lib_war') ? 'Your verses and {them}\'s have run all winter. The priest has preached on the two of you, by name.'
-      : 'The case comes on at the assize in {capital}. {them} has hired a lawyer who talks for an hour about your grandfather.'} It has to end somewhere.`,
+      : M(p, 'ar_lib_sued') ? 'The case you brought comes on at the assize in {capital}. {them} has hired a lawyer who talks for an hour about your grandfather.' : 'The matter comes on at the assize in {capital}, where neither of you wanted it.'} It has to end somewhere.`,
     choices: [
       { t: 'Lay {khis} own letter before the justices', req: p => M(p, 'ar_lib_traced'), check: { s: 'persuasion', s2: 'int', d: 40 },
         win: { r: 'The justices compare the hands and find for you. {them} pays damages and costs.', fx: { coin: 100, honor: 4, them: { op: -20 }, arc: mk('ar_lib_won') } },
@@ -559,16 +572,17 @@ A.defEvents([
     text: p => (M(p, 'ar_lib_won') ? 'The judgment is read out in {capital} and copied in {home}. Some people still sing the third verse, quietly.'
       : M(p, 'ar_lib_lost') ? 'You lost before the justices, and paid for it. The verses are sung now with a new last line, about the court.'
       : M(p, 'ar_lib_terms') ? 'You and {them} keep your bargain. The verses are still sung, though by neither of you.'
+      : M(p, 'ar_lib_ignored') ? 'You stopped answering, and the verses are sung less now. Children who never knew what they meant still call you Backgate.'
       : 'The verses are sung less now. Children who never knew what they meant still call you Backgate.'),
     choices: [
       { t: 'Have the judgment nailed where the verses were', req: p => M(p, 'ar_lib_won'), r: 'The judgment goes up on the church door, with its seal. It stays there until the rain takes it.',
-        fx: { honor: 3, fame: 2, flag: 'ar_cleared', arDeed: 'Cleared of a libel before the justices at {capital}', arc: fin('ar_lib_cleared') } },
+        fx: { honor: 3, fame: 2, flag: 'ar_cleared', arDeed: 'Cleared of a libel before the justices at {capital}', arc: 'end' } },
       { t: 'Take the name, and laugh first', r: 'You call yourself Backgate before anyone else can. It stops being an insult and becomes a name.',
-        fx: { fame: 3, honor: -1, epithet: 'Backgate', arDeed: 'Took the name Backgate from a libel and kept it', arc: fin('ar_lib_named') } },
+        fx: { fame: 3, honor: -1, epithet: 'Backgate', arDeed: 'Took the name Backgate from a libel and kept it', arc: 'end' } },
       { t: 'Make {khim} pay for as long as {khe} lives', r: 'You never speak to {khim} again, and see to it that nobody who wants your custom does either.',
-        fx: { them: { op: -40, type: 'enemy', back: 'enemy' }, trait: 'vengeful', arc: fin('ar_lib_feud') } },
+        fx: { them: { op: -40, type: 'enemy', back: 'enemy' }, trait: 'vengeful', arc: 'end' } },
       { t: 'Live it down, and say nothing', r: 'You say nothing for so long that silence becomes what you are known for.',
-        fx: { wil: 1, trait: 'stoic', arDeed: 'Lived down a libel in silence', arc: fin('ar_lib_stoic') } },
+        fx: { wil: 1, trait: 'stoic', arDeed: 'Lived down a libel in silence', arc: 'end' } },
     ] },
 
   // ================================================================ A FORGED CHARTER
@@ -589,7 +603,7 @@ A.defEvents([
     text: p => `${M(p, 'ar_ch_clerk') ? 'The clerk says the seal is real and the charter is not: the wax was lifted from some other deed with a hot knife.'
       : M(p, 'ar_ch_papers') ? 'Your grandfather\'s deed is good, but its dates are odd: it is younger than the hedges. Someone held this ground before your family.'
       : M(p, 'ar_ch_bought') ? '{them} is back within the month with a second charter, for more.'
-      : 'You have no papers. Your family has held it so long that nobody thought to write it down.'} {them} has gone to law.`,
+      : M(p, 'ar_ch_nopapers') ? 'You have no papers. Your family has held it so long that nobody thought to write it down.' : 'Nothing in your chest answers the charter.'} {them} has gone to law.`,
     choices: [
       { t: 'Answer {khim} in the hundred court', r: 'You will answer at the next session. You spend the winter getting ready.', fx: { coin: -30, arc: mk('ar_ch_court') } },
       { t: 'Have a better charter made, older than {khers}', check: { s: 'deception', s2: 'learning', d: 55 },
@@ -603,7 +617,7 @@ A.defEvents([
     text: p => `The hearing is in ${M(p, 'ar_ch_crown') ? 'the justices\' hall at {capital}' : 'the church porch, before the hundred court'}. {them} brings {khis} charter and two lawyers. ${M(p, 'ar_ch_clerk') ? 'You bring the clerk, who has brought a candle and a knife.'
       : M(p, 'ar_ch_forged') ? 'You bring a charter older than {khers}, and as false.'
       : M(p, 'ar_ch_exposed') ? 'Everyone has heard what you tried with the scribe.'
-      : 'You bring yourself, and your neighbours.'}`,
+      : M(p, 'ar_ch_court') ? 'You bring yourself, your neighbours, and a winter of getting ready.' : 'You bring yourself, and your neighbours.'}`,
     choices: [
       { t: 'Let the clerk show how the seal was lifted', req: p => M(p, 'ar_ch_clerk'), check: { s: 'persuasion', s2: 'int', d: 35 },
         win: { r: 'The clerk lifts a seal off a tax receipt in front of the court. It is over by noon.', fx: { honor: 2, them: { op: -20 }, arc: mk('ar_ch_won') } },
@@ -621,17 +635,17 @@ A.defEvents([
     setup: (p, ctx) => { land(p, ctx); X().cast(p, ctx, 'claimant', CLAIM); },
     text: p => (M(p, 'ar_ch_lost') ? '{them} has the judgment. {khis} men come up the lane with a cart on a Monday, and a list.'
       : M(p, 'ar_ch_split') ? 'The hedge runs between your house and {khis} field now. {them} waves across it, some mornings.'
-      : `The ground is yours${M(p, 'ar_ch_won_false') ? ', on a charter as false as {khers}' : ', and the court has written it so'}. {them} has left {home}, swearing.`),
+      : `The ground is yours${M(p, 'ar_ch_won_false') ? ', on a charter as false as {khers}' : M(p, 'ar_ch_won') ? ', and the court has written it so' : ', and nobody disputes it now'}. {them} has left {home}, swearing.`),
     choices: [
       { t: 'Walk the bounds and have them written', req: p => !M(p, 'ar_ch_lost'), r: 'You walk the bounds with the priest and twelve boys, and at each stone you bump a boy on it so he remembers.',
-        fx: { honor: 2, flag: 'ar_bounds', arDeed: 'Kept {landName} against a forged charter', arc: fin('ar_ch_kept') } },
+        fx: { honor: 2, flag: 'ar_bounds', arDeed: 'Kept {landName} against a forged charter', arc: 'end' } },
       { t: p => (M(p, 'ar_ch_split') ? 'Make a friend of {khim} over the hedge' : 'Forgive {khim} the forgery'), req: p => !M(p, 'ar_ch_lost'), r: 'You go over with a jug. It turns out {khe} was put up to it, and is sorry, and good company.',
-        fx: { coin: -10, them: { op: 30, type: 'friend', back: 'friend' }, arc: fin('ar_ch_friends') } },
+        fx: { coin: -10, them: { op: 30, type: 'friend', back: 'friend' }, arc: 'end' } },
       { t: 'Throw {khis} men off your ground', req: p => M(p, 'ar_ch_lost'), check: { s: 'intimidation', s2: 'str', d: 55 },
-        win: { r: 'You meet the cart with cudgels and your neighbours. The men go. The court fines you, and lets it lie.', fx: { coin: -50, them: { op: -30, type: 'enemy', back: 'enemy' }, flag: 'ar_bounds', arDeed: 'Held {landName} against the court and a forged charter', arc: fin('ar_ch_held') } },
-        lose: { r: 'They have more cudgels. You lose the ground and a tooth, and spend a season in the cells.', fx: { prison: 1, why: 'riot', arLose: 1, them: { op: -30, type: 'enemy', back: 'enemy' }, arc: fin('ar_ch_jailed') } } },
+        win: { r: 'You meet the cart with cudgels and your neighbours. The men go. The court fines you, and lets it lie.', fx: { coin: -50, them: { op: -30, type: 'enemy', back: 'enemy' }, flag: 'ar_bounds', arDeed: 'Held {landName} against the court and a forged charter', arc: 'end' } },
+        lose: { r: 'They have more cudgels. You lose the ground and a tooth, and spend a season in the cells.', fx: { prison: 1, why: 'riot', arLose: 1, them: { op: -30, type: 'enemy', back: 'enemy' }, arc: 'end' } } },
       { t: 'Give it up, and start again elsewhere', req: p => M(p, 'ar_ch_lost'), r: 'You load the cart yourself. The new place is smaller, and the roof is sound.',
-        fx: { happy: -6, arLose: 1, asset: 'cottage', arc: fin('ar_ch_moved') } },
+        fx: { happy: -6, arLose: 1, asset: 'cottage', arc: 'end' } },
     ] },
 
   // ================================================================ THE STOLEN SECRET
@@ -647,20 +661,22 @@ A.defEvents([
   { id: 'ar_recipe_2', title: 'Across the river', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: secret,
-    text: p => `{buyer}, across the river, is selling {short}. The same, or near enough, for a little less. {them} left your service at Michaelmas and has a new coat. ${M(p, 'ar_rec_locked') ? 'The chest has been opened and locked again, neatly.' : M(p, 'ar_rec_head') ? '{khe} must have watched you a hundred times, counting.' : 'So much for the oath.'}`,
+    text: p => `{buyer}, across the river, is selling {short}. The same, or near enough, for a little less. {them} left your service at Michaelmas and has a new coat. ${M(p, 'ar_rec_locked') ? 'The chest has been opened and locked again, neatly.' : M(p, 'ar_rec_head') ? '{khe} must have watched you a hundred times, counting.' : M(p, 'ar_rec_shared') ? 'So much for the oath on {khis} mother\'s grave.' : 'So much for trusting a journeyman.'}`,
     choices: [
       { t: 'Take it to the magistrate', check: { s: 'persuasion', s2: 'int', d: 50 },
         win: { r: 'The magistrate hears you and orders {buyer} to stop. {buyer} pays a fine, and stops, or says so.', fx: { coin: 40, them: { op: -20 }, arc: mk('ar_rec_law') } },
         lose: { r: 'The magistrate says a way of working cannot be owned. {buyer} buys him a dinner.', fx: { coin: -30, them: { op: -20 }, arc: mk('ar_rec_nolaw') } } },
       { t: 'Do it better, and leave them last year\'s', check: { s: 'craft', s2: 'int', d: 50 },
         win: { r: 'By spring yours is better than it was. Theirs is last year\'s.', fx: { coin: 60, health: -3, arc: mk('ar_rec_better') } },
-        lose: { r: 'You spoil three batches trying. Theirs sells. Yours sits.', fx: { coin: -60, happy: -3, arc: mk('ar_rec_spoiled') } } },
+        lose: { r: 'You spoil three batches trying. Theirs sells. Yours sits.', fx: { coin: -60, happy: -3, arc: 'next' } } },
       { t: 'Pay men to visit {buyer} by night', r: 'The men break what they find and are paid. {buyer} knows who sent them. So, soon, does everyone.', fx: { coin: -40, honor: -5, arc: mk('ar_rec_wrecked') } },
     ] },
   { id: 'ar_recipe_3', title: 'At the door', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: secret,
-    text: p => `{them} is at your door, thin and out of work. {buyer} had what {khe} knew, and no more use for {khim}. ${M(p, 'ar_rec_wrecked') ? 'The magistrate is asking about the night the men came, and {them} was there.' : M(p, 'ar_rec_better') ? 'Your new way is the talk of {home}, and {khe} knows nothing of it.' : '{khe} cannot meet your eye.'} {khe} asks you to take {khim} back.`,
+    text: p => `{them} is at your door, thin and out of work. {buyer} had what {khe} knew, and no more use for {khim}. ${M(p, 'ar_rec_wrecked') ? 'The magistrate is asking about the night the men came, and {them} was there.' : M(p, 'ar_rec_better') ? 'Your new way is the talk of {home}, and {khe} knows nothing of it.' : M(p, 'ar_rec_law') ? '{buyer} paid the fine, stopped, and had no more use for {khim}.'
+      : M(p, 'ar_rec_nolaw') ? 'The magistrate would not call it stealing, and {buyer} still has what {khe} sold.'
+      : '{khe} cannot meet your eye.'} {khe} asks you to take {khim} back.`,
     choices: [
       { t: 'Take {khim} back, at a boy\'s wage', r: '{khe} takes it. {khe} works like someone with a debt to pay, which {khe} is.', fx: { coin: 20, them: { op: 15 }, arc: mk('ar_rec_back') } },
       { t: 'Make {khim} swear to what {khe} did, before witnesses', check: { s: 'intimidation', s2: 'wil', d: 45 },
@@ -671,23 +687,25 @@ A.defEvents([
   { id: 'ar_recipe_4', title: 'Whose it is', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: secret,
-    text: p => `It is years since {short} first came right under your hands. ${M(p, 'ar_rec_back') ? '{them} works beside you again, and is better at it than you are.' : M(p, 'ar_rec_sworn') ? '{buyer} makes something else now.' : '{buyer} still sells it, a little worse than yours.'} Now a merchant from {capital} wants to buy the right to it outright, and make it by the cartload.`,
+    text: p => `It is years since {short} first came right under your hands. ${M(p, 'ar_rec_back') ? '{them} works beside you again, and is better at it than you are.' : M(p, 'ar_rec_sworn') ? '{buyer} makes something else now.' : M(p, 'ar_rec_shut') ? 'You shut the door on {them}, and {buyer} still sells it, a little worse than yours.'
+      : M(p, 'ar_rec_gone') ? '{them} is in {capital} somewhere, and {buyer} still sells it, a little worse than yours.'
+      : '{buyer} still sells it, a little worse than yours.'} Now a merchant from {capital} wants to buy the right to it outright, and make it by the cartload.`,
     choices: [
       { t: 'Keep it, and put your name on it', r: 'You sell nothing. You put your mark on everything you make, and let them call it after you.',
-        fx: { fame: 4, arEpithet: '{epi}', arDeed: 'Made {thing}', arc: fin('ar_rec_named') } },
+        fx: { fame: 4, arEpithet: '{epi}', arDeed: 'Made {thing}', arc: 'end' } },
       { t: 'Sell it, and buy a town house', r: 'You sell it for more than you have seen in one place, and buy a town house. It will be made in {capital} now, under another name.',
-        fx: { happy: -3, asset: 'townhouse', arDeed: 'Sold the secret of {thing}', arc: fin('ar_rec_sold') } },
+        fx: { happy: -3, asset: 'townhouse', arDeed: 'Sold the secret of {thing}', arc: 'end' } },
       { t: 'Give it away to anyone who asks', r: 'You teach it to anyone who comes. In ten years it is how everyone does it, and nobody remembers it was yours.',
-        fx: { honor: 4, happy: 3, trait: 'generous', arDeed: 'Gave away the secret of {thing}', arc: fin('ar_rec_given') } },
+        fx: { honor: 4, happy: 3, trait: 'generous', arDeed: 'Gave away the secret of {thing}', arc: 'end' } },
       { t: 'Leave it to {them}, who came back', req: p => M(p, 'ar_rec_back'), r: 'You write it out for {khim}, and sign it. {khe} reads it twice and puts it inside {khis} shirt.',
-        fx: { them: { op: 30, type: 'friend', back: 'friend' }, arDeed: 'Left the secret of {thing} to {themFull}', arc: fin('ar_rec_heir') } },
+        fx: { them: { op: 30, type: 'friend', back: 'friend' }, arDeed: 'Left the secret of {thing} to {themFull}', arc: 'end' } },
     ] },
 
   // ================================================================ THE BRIBE
   { id: 'ar_bribe_1', title: 'A purse on the table', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: briber,
-    text: (p, ctx) => `{themFull} puts a heavy purse on your table and asks only ${ASK[ctx.lane] || ASK.land}. "Nobody will know," {khe} says. "And one day I may ask a small thing more."${p.flags.ar_own_man ? ' You have owed no one for a while now. You had got used to it.' : ''}`,
+    text: (p, ctx) => `{themFull} puts a heavy purse on your table and asks only ${ASK[ctx.lane] || ASK.land}. "Nobody will know," {khe} says. "And one day I may ask a small thing more."${p.flags.ar_own_man ? ' You have owed no one for a while now. You had got used to it.' : p.flags.ar_patron_broken ? ' You broke a patron before the justices once. {khe} will have heard, and has come anyway.' : ''}`,
     choices: [
       { t: 'Take the purse, and do as {khe} asks', r: 'You do it. The purse is heavier than the thing you did, which seems a fair trade at the time.', fx: { coin: 120, honor: -4, them: { op: 15 }, arc: mk('ar_bribe_took') } },
       { t: 'Take the purse, and do nothing for it', r: 'You keep it and do nothing. {khe} finds out within the month, and says nothing, which should worry you.', fx: { coin: 120, honor: -2, them: { op: -20 }, arc: mk('ar_bribe_cheated') } },
@@ -699,7 +717,9 @@ A.defEvents([
     setup: briber,
     text: p => (M(p, 'ar_bribe_took') ? '{them} is back, greyer and richer. {khe} wants the small thing more: your seal on a cargo you will not be allowed to see. {khe} reminds you, kindly, of the first time.'
       : M(p, 'ar_bribe_cheated') ? '{them} has not forgotten the purse you kept for nothing. {khe} wants it back, doubled, or {khe} will tell everyone why you had it.'
-      : '{them} has done well since you turned {khim} away. Now {khe} sits on the bench that hears complaints against people like you, and someone has made one. A purse, {khe} hints, would lose it.'),
+      : `${M(p, 'ar_bribe_reported') ? '{them} paid the fine the magistrate laid on {khim}, and has done well since, and remembers who sent {khim} there.'
+        : M(p, 'ar_bribe_refused') ? '{them} has done well since you showed {khim} the door.'
+        : '{them} has done well since.'} Now {khe} sits on the bench that hears complaints against people like you, and someone has made one. A purse, {khe} hints, would lose it.`),
     choices: [
       { t: 'Set your seal on the cargo', req: p => M(p, 'ar_bribe_took'), r: 'You set your seal on it. You do not ask what was in it, and you are careful not to find out.', fx: { coin: 150, honor: -5, them: { op: 15 }, arc: mk('ar_bribe_deeper') } },
       { t: 'Pay what {khe} asks', req: p => !M(p, 'ar_bribe_took') && p.coin >= 150, r: 'You pay. {khe} counts it in front of you and writes something in a little book.', fx: { coin: -150, honor: -3, them: { op: 10 }, arc: mk('ar_bribe_paid') } },
@@ -712,15 +732,16 @@ A.defEvents([
     text: p => (M(p, 'ar_bribe_deeper') ? 'The cargo was the {rulerTitle}\'s own salt, stolen. The justices have {them}, and {them} has given them your name, and your seal.'
       : M(p, 'ar_bribe_paid') ? '{them} has lost {khis} place for taking purses, and the justices are going through {khis} little book, name by name. Yours is on page four.'
       : M(p, 'ar_bribe_confessed') ? 'Your confession has done its work. {them} is before the justices, and you are the witness they need.'
-      : '{them} did {khis} worst. It is before the justices now: your word against {khers}, and {khis} ledger, which has your name in it.'),
+      : M(p, 'ar_bribe_dared') ? 'You told {them} to do {khis} worst, and {khe} has. It is before the justices now: your word against {khers}, and {khis} ledger, which has your name in it.'
+      : 'It is before the justices now: your word against {khers}, and {khis} ledger, which has your name in it.'),
     choices: [
       { t: 'Tell the whole truth, whatever it costs', r: 'You tell it all: the purse, the table, the words. They fine you, and believe you, and hang no one.',
-        fx: { honor: 4, coin: -60, trait: 'honest', flag: 'ar_clean_hands', arDeed: 'Gave evidence against {themFull} before the justices', arc: fin('ar_bribe_truth') } },
+        fx: { honor: 4, coin: -60, trait: 'honest', flag: 'ar_clean_hands', arDeed: 'Gave evidence against {themFull} before the justices', arc: 'end' } },
       { t: 'Lie, and make it stick', check: { s: 'deception', s2: 'wil', d: 55 },
-        win: { r: 'Your story holds and {khers} does not. {khe} goes to prison. You go home.', fx: { honor: -3, trait: 'deceitful', them: { op: -40, type: 'enemy', back: 'enemy' }, arc: fin('ar_bribe_lied') } },
-        lose: { r: 'Your story comes apart at the second question. You go to prison for a year, and so does {khe}.', fx: { prison: 1, why: 'bribery', honor: -6, trait: 'deceitful', arc: fin('ar_bribe_jailed') } } },
+        win: { r: 'Your story holds and {khers} does not. {khe} goes to prison. You go home.', fx: { honor: -3, trait: 'deceitful', them: { op: -40, type: 'enemy', back: 'enemy' }, arc: 'end' } },
+        lose: { r: 'Your story comes apart at the second question. You go to prison for a year, and so does {khe}.', fx: { prison: 1, why: 'bribery', honor: -6, trait: 'deceitful', arc: 'end' } } },
       { t: 'Buy {khis} silence one last time', req: p => p.coin >= 200, r: 'You pay the last and largest purse. {khe} forgets your name in front of the justices. You will not forget {khers}.',
-        fx: { coin: -200, them: { op: 10 }, trait: 'paranoid', flag: 'ar_bought_silence', arc: fin('ar_bribe_bought') } },
+        fx: { coin: -200, them: { op: 10 }, trait: 'paranoid', flag: 'ar_bought_silence', arc: 'end' } },
     ] },
 
   // ================================================================ THE VENDETTA AT COURT
@@ -736,7 +757,7 @@ A.defEvents([
   { id: 'ar_ven_2', title: 'Whispers', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: house,
-    text: p => `Word goes round the court that your family owes money to lenders in {capital} and is selling its silver. It is half true. ${M(p, 'ar_ven_scene') ? 'It began the week after the feast.' : M(p, 'ar_ven_remember') ? 'You know where it began. You have been waiting for it.' : 'The steward, for a second purse, tells you where it began: with {them}.'}`,
+    text: p => `Word goes round the court that your family owes money to lenders in {capital} and is selling its silver. It is half true. ${M(p, 'ar_ven_scene') ? 'It began the week after the feast.' : M(p, 'ar_ven_remember') ? 'You know where it began. You have been waiting for it.' : M(p, 'ar_ven_steward') ? 'The steward, who has had a purse from you once, tells you where it began: with {them}.' : 'It began with {them}, and the court knows it.'}`,
     choices: [
       { t: 'Answer whispers with whispers', check: { s: 'intrigue', s2: 'int', d: 50 },
         win: { r: 'By midsummer the court is saying that {house} cheats its own tenants. It is not true, but it is interesting.', fx: { honor: -2, them: { op: -15 }, arc: mk('ar_ven_whisper') } },
@@ -749,7 +770,7 @@ A.defEvents([
   { id: 'ar_ven_3', title: 'A match', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: house,
-    text: p => `{house} proposes a match: {them}'s nephew to a girl of your blood. It would end the quarrel, or carry it inside your walls. ${M(p, 'ar_ven_favour') ? 'The {rulerTitle} smiles on it.' : M(p, 'ar_ven_ally') ? 'Your new friend says it is a trap.' : (M(p, 'ar_ven_traced') || M(p, 'ar_ven_snub')) ? 'After this year, you need friends more than pride.' : 'Your family waits for you to say.'}`,
+    text: p => `{house} proposes a match: {them}'s nephew to a girl of your blood. It would end the quarrel, or carry it inside your walls. ${M(p, 'ar_ven_favour') ? 'The {rulerTitle} smiles on it.' : M(p, 'ar_ven_ally') ? 'Your new friend says it is a trap.' : (M(p, 'ar_ven_traced') || M(p, 'ar_ven_snub')) ? 'After this year, you need friends more than pride.' : M(p, 'ar_ven_whisper') ? 'The court is still repeating what you started about {house}, which makes this harder.' : 'Your family waits for you to say.'}`,
     choices: [
       { t: 'Accept the match', r: 'The contracts are signed. Your families will share grandchildren, and grudges.', fx: { honor: 1, them: { op: 20 }, arc: mk('ar_ven_match') } },
       { t: 'Refuse it, politely', r: 'You refuse in the politest letter you have ever written. {them} reads the politeness as an insult, correctly.', fx: { honor: 2, them: { op: -15 }, arc: mk('ar_ven_refuse') } },
@@ -760,7 +781,7 @@ A.defEvents([
   { id: 'ar_ven_4', title: 'The boar hunt', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: house,
-    text: p => `The court hunts boar in the {rulerTitle}'s forest. In the thick of it {them}'s horse goes down in a gully, and {them} with it, pinned. ${M(p, 'ar_ven_match') ? 'The wedding is set for the spring. ' : ''}Nobody else has seen. {khe} sees you, and says nothing, and waits.`,
+    text: p => `The court hunts boar in the {rulerTitle}'s forest. In the thick of it {them}'s horse goes down in a gully, and {them} with it, pinned. ${M(p, 'ar_ven_match') ? 'The wedding is set for the spring. ' : M(p, 'ar_ven_refuse') ? 'Your letter refusing the match is a year old. ' : M(p, 'ar_ven_better') ? 'The girl of your blood is married into a greater house. ' : ''}Nobody else has seen. {khe} sees you, and says nothing, and waits.`,
     choices: [
       { t: 'Climb down and drag {khim} free', check: { s: 'athletics', s2: 'str', d: 45 },
         win: { r: 'You get {khim} out from under the horse. {khe} does not thank you. {khe} does not need to.', fx: { honor: 3, them: { op: 30 }, arc: mk('ar_ven_saved') } },
@@ -771,7 +792,7 @@ A.defEvents([
   { id: 'ar_ven_5', title: 'The seal', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: house,
-    text: p => `The keeper of the {rulerTitle}'s seal is dying, and the place will go to your house or to {house}. ${M(p, 'ar_ven_saved') ? '{them} has said, to some surprise, that you would serve well.' : M(p, 'ar_ven_rode') ? '{them} walks with a stick now, and tells everyone why.' : 'The court remembers who rode for help. {them} remembers who told the story.'} The {rulerTitle} will hear you both.`,
+    text: p => `The keeper of the {rulerTitle}'s seal is dying, and the place will go to your house or to {house}. ${M(p, 'ar_ven_saved') ? '{them} has said, to some surprise, that you would serve well.' : M(p, 'ar_ven_rode') ? '{them} walks with a stick now, and tells everyone why.' : M(p, 'ar_ven_herald') ? 'The court remembers who rode for help. {them} remembers who told the story.' : 'The court has forgotten the gully. {them} has not.'} The {rulerTitle} will hear you both.`,
     choices: [
       { t: 'Make your case on its merits', check: { s: 'persuasion', s2: 'int', d: 50 },
         win: { r: 'You speak for a quarter of an hour without notes. The seal is yours.', fx: { favor: 5, fame: 3, arc: mk('ar_ven_seal') } },
@@ -782,16 +803,16 @@ A.defEvents([
   { id: 'ar_ven_6', title: 'The end of it', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: house,
-    text: p => `${M(p, 'ar_ven_seal') ? 'You keep the {rulerTitle}\'s seal now. {house} has nothing left to take from you.' : M(p, 'ar_ven_aside') ? '{them} keeps the seal, and has not once used it against you.' : '{them} keeps the {rulerTitle}\'s seal, and uses it on you when {khe} can.'} You are both older. Either it ends with you, or it passes to your children.`,
+    text: p => `${M(p, 'ar_ven_seal') ? 'You keep the {rulerTitle}\'s seal now. {house} has nothing left to take from you.' : M(p, 'ar_ven_aside') ? '{them} keeps the seal, and has not once used it against you.' : M(p, 'ar_ven_noseal') ? '{them} spoke better, or earlier, and keeps the {rulerTitle}\'s seal, and uses it on you when {khe} can.' : '{them} keeps the {rulerTitle}\'s seal, and uses it on you when {khe} can.'} You are both older. Either it ends with you, or it passes to your children.`,
     choices: [
       { t: 'Swear peace between the houses, before the {rulerTitle}', r: 'You and {them} kneel together and swear it. Your grandchildren will not know what it was about.',
-        fx: { sworn: 1, them: { op: 40, type: 'friend', back: 'friend' }, flag: 'ar_house_peace', arDeed: 'Ended the feud with {house}', arc: fin('ar_ven_peace') } },
+        fx: { sworn: 1, them: { op: 40, type: 'friend', back: 'friend' }, flag: 'ar_house_peace', arDeed: 'Ended the feud with {house}', arc: 'end' } },
       { t: 'Pass the feud to your heirs', r: 'You tell your heir the whole of it, in order, on a winter night. It will outlive you both.',
-        fx: { them: { op: -40, type: 'enemy', back: 'enemy' }, trait: 'vengeful', flag: 'ar_house_feud', arc: fin('ar_ven_feud') } },
+        fx: { them: { op: -40, type: 'enemy', back: 'enemy' }, trait: 'vengeful', flag: 'ar_house_feud', arc: 'end' } },
       { t: 'Leave court for good', r: 'You go home to your own country and your own table, where you sit where you like.',
-        fx: { happy: 6, favor: -5, trait: 'content', arDeed: 'Left the court and the feud with {house}', arc: fin('ar_ven_left') } },
+        fx: { happy: 6, favor: -5, trait: 'content', arDeed: 'Left the court and the feud with {house}', arc: 'end' } },
       { t: 'Use the seal to break {khim}', req: p => M(p, 'ar_ven_seal'), r: 'A warrant goes astray; a lease is not renewed. In three years {house} has nothing but its name.',
-        fx: { honor: -4, them: { op: -50, type: 'enemy', back: 'enemy' }, arDeed: 'Broke {house} at court', arc: fin('ar_ven_ruin') } },
+        fx: { honor: -4, them: { op: -50, type: 'enemy', back: 'enemy' }, arDeed: 'Broke {house} at court', arc: 'end' } },
     ] },
 
   // ================================================================ THE USURPER IN YOUR HOUSE
@@ -809,6 +830,7 @@ A.defEvents([
     setup: usurper,
     text: p => (M(p, 'ar_usu_trust') ? 'In the strongroom you find a second ledger in {them}\'s hand. The figures are the same as yours, except the totals.'
       : M(p, 'ar_usu_child') ? '{them} and your child have quarrelled in front of the men. Your child says {them} is skimming. {them} says your child is a fool. One of them is right.'
+      : M(p, 'ar_usu_keys') ? 'You took the keys back, and {khe} has been talking to the men behind your back ever since, and to your best buyers, about what will happen when you are gone.'
       : '{them} has been talking to the men behind your back, and to your best buyers, about what will happen when you are gone.'),
     choices: [
       { t: 'Have it out with {khim} tonight', check: { s: 'ins', s2: 'wil', d: 50 },
@@ -821,7 +843,7 @@ A.defEvents([
     cond: (p, C) => C.adult(p),
     setup: usurper,
     text: p => (M(p, 'ar_usu_known') ? 'You tell {them} {khe} is finished here. {khe} goes out into the yard and talks to the men, and the men put down their tools.'
-      : '{them} comes to you with a paper: half of {place} made over to {khim}, "for the years". The men are standing behind {khim} in the yard, waiting.'),
+      : `{them} comes to you with a paper: half of {place} made over to {khim}, "for the years". ${M(p, 'ar_usu_doubt') ? 'You still have no proof of anything, and {khe} knows it. ' : M(p, 'ar_usu_let') ? 'You let the ledgers alone, and this is what came of it. ' : ''}The men are standing behind {khim} in the yard, waiting.`),
     choices: [
       { t: 'Face the men yourself', check: { s: 'command', s2: 'persuasion', d: 50 },
         win: { r: 'You walk out and talk to them one by one, by name. One by one they pick up their tools.', fx: { fame: 2, them: { op: -20 }, arc: mk('ar_usu_held') } },
@@ -838,13 +860,13 @@ A.defEvents([
       : 'The sheriff has put {them} out. Your men are slow and sullen, and the work suffers for it.'),
     choices: [
       { t: 'Keep it, and run it yourself until you drop', req: p => (M(p, 'ar_usu_held') || M(p, 'ar_usu_law')), r: 'You are first in the yard every morning and last out of it. It is yours.',
-        fx: { coin: 60, health: -4, trait: 'diligent', arDeed: 'Kept {place} against {themFull}', arc: fin('ar_usu_kept') } },
+        fx: { coin: 60, health: -4, trait: 'diligent', arDeed: 'Kept {place} against {themFull}', arc: 'end' } },
       { t: 'Make {khim} your partner, in writing', r: 'You put both names to it before a notary. {khe} earned half. You choose to give it.',
-        fx: { coin: 40, them: { op: 30, type: 'friend', back: 'friend' }, arDeed: 'Made {themFull} a partner in {place}', arc: fin('ar_usu_partner') } },
+        fx: { coin: 40, them: { op: 30, type: 'friend', back: 'friend' }, arDeed: 'Made {themFull} a partner in {place}', arc: 'end' } },
       { t: 'Give it all up to {khim}, and go', r: 'You hand {khim} the keys and walk out with a bag. {khe} watches you go from the door.',
-        fx: { coin: 150, happy: -4, arLose: 1, asset: 'cottage', arc: fin('ar_usu_gone') } },
+        fx: { coin: 150, happy: -4, arLose: 1, asset: 'cottage', arc: 'end' } },
       { t: 'Cast {khim} out, and curse {khis} name', r: 'You put {khim} out with what {khe} came with. {khe} will be your enemy until one of you is buried.',
-        fx: { coin: -60, honor: 1, them: { op: -50, type: 'enemy', back: 'enemy' }, arc: fin('ar_usu_cast') } },
+        fx: { coin: -60, honor: 1, them: { op: -50, type: 'enemy', back: 'enemy' }, arc: 'end' } },
     ] },
 
   // ================================================================ THE MONEYLENDER
@@ -860,7 +882,7 @@ A.defEvents([
   { id: 'ar_debt_2', title: 'Quarter day', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: lender,
-    text: p => `The first payment falls due on quarter day. ${M(p, 'ar_debt_rate') ? 'At {khis} rate, the hundred has grown like dough in a warm room.' : M(p, 'ar_debt_pledge') ? 'The rate is low and {them} is patient, and {pledge} is in the book.' : 'You owe fifty, and fifty is more than you have.'} {them} sends a boy to remind you, politely.`,
+    text: p => `The first payment falls due on quarter day. ${M(p, 'ar_debt_rate') ? 'At {khis} rate, the hundred has grown like dough in a warm room.' : M(p, 'ar_debt_pledge') ? 'The rate is low and {them} is patient, and {pledge} is in the book.' : M(p, 'ar_debt_half') ? 'You owe fifty, and fifty is more than you have.' : 'You owe more than you can lay your hand on.'} {them} sends a boy to remind you, politely.`,
     choices: [
       { t: 'Pay what is due, whatever it costs', r: 'You pay it to the coin. The house goes without meat till Easter.', fx: { coin: -60, happy: -3, honor: 2, arc: mk('ar_debt_paid') } },
       { t: 'Ask {khim} for more time', r: '{khe} gives it gladly. Time is what {khe} sells.', fx: { happy: -2, them: { op: 5 }, arc: mk('ar_debt_time') } },
@@ -869,7 +891,7 @@ A.defEvents([
   { id: 'ar_debt_3', title: 'A sealed box', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: lender,
-    text: p => `${M(p, 'ar_debt_time') ? 'With the time {khe} gave you, the debt has doubled.' : M(p, 'ar_debt_work') ? 'You know too much of {them}\'s business now, and {khe} knows it.' : 'You have paid two quarters in three, and the debt is barely smaller.'} {them} offers to strike your name from the book, all of it, for one thing: carry a sealed box to {capital}, and ask nothing.`,
+    text: p => `${M(p, 'ar_debt_time') ? 'With the time {khe} gave you, the debt has doubled.' : M(p, 'ar_debt_work') ? 'You know too much of {them}\'s business now, and {khe} knows it.' : M(p, 'ar_debt_paid') ? 'You have paid two quarters in three, and the debt is barely smaller.' : 'The debt is barely smaller than it was.'} {them} offers to strike your name from the book, all of it, for one thing: carry a sealed box to {capital}, and ask nothing.`,
     choices: [
       { t: 'Carry the box, and ask nothing', check: { s: 'stealth', s2: 'ins', d: 45 },
         win: { r: 'You hand it over at a back door in {capital}. {them} draws a line through your name.', fx: { honor: -3, them: { op: 10 }, arc: mk('ar_debt_carried') } },
@@ -884,7 +906,7 @@ A.defEvents([
     setup: lender,
     text: p => (M(p, 'ar_debt_carried') ? '{them} has struck your name from one book and written it in another: the one where {khe} keeps the names of people who carried boxes. {khe} needs another carried.'
       : M(p, 'ar_debt_moved') ? '{them} does not like to lose a customer. {khe} has bought up your cousin\'s debts instead, and your cousin is at your door, white in the face.'
-      : 'The debt has doubled. {them} sends the bailiff, with a list of what you own written out in {khis} own neat hand.'),
+      : `${M(p, 'ar_debt_caught') ? 'You talked your way out of the cell at the gate. The debt is still in the book, and has doubled.' : M(p, 'ar_debt_refused') ? 'You refused the box, and {khe} has added the interest ever since. The debt has doubled.' : 'The debt has doubled.'} {them} sends the bailiff, with a list of what you own written out in {khis} own neat hand.`),
     choices: [
       { t: 'Carry one more box', req: p => M(p, 'ar_debt_carried'), check: { s: 'stealth', s2: 'ins', d: 50 },
         win: { r: 'One more back door, one more line in the book. {khe} smiles at you now in the street.', fx: { honor: -3, coin: 40, them: { op: 10 }, arc: mk('ar_debt_courier') } },
@@ -900,16 +922,17 @@ A.defEvents([
     text: p => (M(p, 'ar_debt_courier') ? '{them} has a hold on you that no coin will clear. {khe} knows it. You know it. It is time to settle what you are to each other.'
       : M(p, 'ar_debt_jailed') ? 'A year in the cells struck your name from {them}\'s book. It did not strike it from anyone else\'s.'
       : M(p, 'ar_debt_law') ? 'The justices cut your debt by half. What is left is still yours to pay, and {them} still keeps the book.'
+      : M(p, 'ar_debt_stripped') ? 'The bailiff left you little, and you owe less than you did. {them} sends a new year\'s greeting, as to any customer.'
       : 'You have little left, and owe less. {them} sends a new year\'s greeting, as to any customer.'),
     choices: [
       { t: 'Pay the last of it, and never borrow again', r: 'You count out the last coins on {khis} table. {khe} draws a line through your name. You walk home lighter.',
-        fx: { coin: -60, trait: 'cautious', arDeed: 'Paid off {themFull}, the moneylender', arc: fin('ar_debt_clear') } },
+        fx: { coin: -60, trait: 'cautious', arDeed: 'Paid off {themFull}, the moneylender', arc: 'end' } },
       { t: 'Set up as a lender yourself', r: 'You learned the trade from the wrong side of the table. Now you sit on the other side.',
-        fx: { coin: 150, honor: -3, trait: 'greedy', arDeed: 'Set up as a moneylender in {home}', arc: fin('ar_debt_lender') } },
+        fx: { coin: 150, honor: -3, trait: 'greedy', arDeed: 'Set up as a moneylender in {home}', arc: 'end' } },
       { t: 'Go to work for {khim} until it is paid', r: '{khe} takes you on as {khis} clerk. Before long you know every name in the book, and they know yours.',
-        fx: { skill: { trade: 2 }, them: { op: 25, type: 'colleague', back: 'colleague' }, flag: 'ar_lender_clerk', arc: fin('ar_debt_clerk') } },
+        fx: { skill: { trade: 2 }, them: { op: 25, type: 'colleague', back: 'colleague' }, flag: 'ar_lender_clerk', arc: 'end' } },
       { t: 'Sell up, and owe nobody anything', r: 'You sell up and pay everything. You rent two rooms, and sleep well in them.',
-        fx: { coin: 40, happy: 2, arLose: 1, flag: 'ar_debt_free', arc: fin('ar_debt_sold') } },
+        fx: { coin: 40, happy: 2, arLose: 1, flag: 'ar_debt_free', arc: 'end' } },
     ] },
 ]);
 })();

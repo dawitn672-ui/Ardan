@@ -9,6 +9,20 @@ const SETUP = () => {
     // what an ending may leave that lasts
     LASTING: ['trait', 'untrait', 'epithet', 'wound', 'newRel', 'rel', 'them', 'sworn', 'asset', 'claim', 'deed', 'flag', 'awWho', 'awMove', 'awProv', 'job'],
     words: s => (String(s || '').match(/\S+/g) || []).length,
+    // every mark (la_aw_*) and flag these scenes read back, from their own source: M(p, 'x') and C.flag(p, 'x')
+    readFlags() {
+      if (this._rf) return this._rf;
+      const fn = v => (typeof v === 'function' ? v.toString() : v && typeof v === 'object' ? Object.values(v).map(fn).join(' ') : '');
+      let src = '';
+      for (const k of this.keys()) for (const id of A.ARCS.ARC[k].stages) {
+        const e = A.EV[id]; if (!e) continue;
+        src += ' ' + fn(e.cond) + ' ' + fn(e._mwWrapped ? e._mwOwnSetup : e.setup) + ' ' + fn(e.text) + ' ' + (e.choices || []).map(fn).join(' ');
+      }
+      const out = new Set();
+      for (const m of src.matchAll(/\bM\(\s*\w+\s*,\s*["']([A-Za-z0-9_]+)["']/g)) out.add('la_' + m[1]);
+      for (const m of src.matchAll(/C\.flag\(\s*\w+\s*,\s*["']([A-Za-z0-9_]+)["']/g)) out.add(m[1]);
+      return (this._rf = out);
+    },
     raw: /\{[A-Za-z0-9_.]+\}/,
     // a grown commoner with savings and letters, at home, nothing queued
     life(seed, o = {}) {
@@ -75,11 +89,13 @@ export default {
             for (const f of fxs) {
               if (!f || typeof f !== 'object' || !f.arc) { bad.push(`${id} choice ${i} has no arc`); continue; }
               const end = typeof f.arc === 'object' && f.arc.go === 'end';
-              if (!f.arc.mark) bad.push(`${id} choice ${i} leaves no mark`);
+              if (!last && !f.arc.mark) bad.push(`${id} choice ${i} leaves no mark`);
+              if (last && f.arc.mark) bad.push(`${id} choice ${i} leaves a mark no later scene can read`);
               if (last && !end) bad.push(`${id} choice ${i} does not end the arc`);
               if (!last && end) bad.push(`${id} choice ${i} ends the arc early`);
               if (last && !AWT.lastingIn(f)) bad.push(`${id} choice ${i} leaves nothing lasting`);
-              if (last && !(typeof f.flag === 'string' && f.flag.startsWith('aw_'))) bad.push(`${id} choice ${i} sets no aw_ flag for later events`);
+              if (f.flag && !AWT.readFlags().has(f.flag)) bad.push(`${id} choice ${i} sets ${f.flag}, which no scene reads`);
+              if (f.arc.mark && !AWT.readFlags().has('la_' + f.arc.mark)) bad.push(`${id} choice ${i} marks ${f.arc.mark}, which no scene reads`);
             }
           });
         });
@@ -88,7 +104,7 @@ export default {
     });
     const avg = r.stages / Math.max(1, r.n);
     const ok = r.n === 13 && !r.bad.length && avg >= 4 && r.five >= 3;
-    return { ok, detail: `${r.n} arcs, ${r.stages} stages (average ${avg.toFixed(2)}, ${r.five} of 5 or more); years between first and last scene: ${r.spans.join(', ')}. ${r.bad.length ? 'BAD: ' + r.bad.slice(0, 6).join('; ') : `Every stage is trigger-only; every choice on both sides of a check carries fx.arc with a mark; every ending choice ends the arc with a lasting effect and an aw_ flag; on all ${r.checked} paths of marks into a scene, it offers at least two choices`}` };
+    return { ok, detail: `${r.n} arcs, ${r.stages} stages (average ${avg.toFixed(2)}, ${r.five} of 5 or more); years between first and last scene: ${r.spans.join(', ')}. ${r.bad.length ? 'BAD: ' + r.bad.slice(0, 6).join('; ') : `Every stage is trigger-only; every choice on both sides of a check carries fx.arc with a mark; every ending choice ends the arc with a lasting effect; every mark and flag set is read by a later scene; on all ${r.checked} paths of marks into a scene, it offers at least two choices`}` };
   },
 
   // each arc played through on two paths (first offered choice, last offered choice): it completes, later scenes read the
@@ -114,7 +130,7 @@ export default {
           }
           const done = !!res.state.done && !res.state.gave && res.state.stage === D.stages.length;
           if (!done) bad.push(`${k} ${how}: did not complete (stage ${res.state.stage})`);
-          if (!fin.length) bad.push(`${k} ${how}: no lasting flag`);
+          if ((res.state.m || []).length !== D.stages.length - 1) bad.push(`${k} ${how}: ${(res.state.m || []).length} marks over ${D.stages.length} scenes`);
           runs.push({ texts: res.seen.map(s => s.text || ''), marks: (res.state.m || []).slice(), fin, years: A.S.year - res.state.y, last: (res.seen[res.seen.length - 1] || {}).result || '' });
         }
         const differ = runs[0].texts.slice(1).filter((t, i) => t !== runs[1].texts[i + 1]).length;
@@ -124,7 +140,7 @@ export default {
       return { out, bad };
     });
     const ok = r.out.length === 13 && !r.bad.length;
-    const line = o => `${o.k.slice(3)}: ${o.differ}/${o.of} later scenes differ; ${o.a.marks.slice(-1)[0]} → ${o.a.fin.join(',')} | ${o.b.marks.slice(-1)[0]} → ${o.b.fin.join(',')}`;
+    const line = o => `${o.k.slice(3)}: ${o.differ}/${o.of} later scenes differ; ${o.a.marks.slice(-1)[0]}${o.a.fin.length ? ' → ' + o.a.fin.join(',') : ''} | ${o.b.marks.slice(-1)[0]}${o.b.fin.length ? ' → ' + o.b.fin.join(',') : ''}`;
     return { ok, detail: `${r.out.map(line).join('; ')}${r.bad.length ? '. BAD: ' + r.bad.slice(0, 8).join('; ') : ''}`, data: r.out.map(o => ({ k: o.k, differ: o.differ, endA: o.a.last, endB: o.b.last })) };
   },
 

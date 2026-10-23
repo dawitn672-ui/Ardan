@@ -279,7 +279,7 @@
       text: p => `{lead}In the dry month your hay-rick burns in the night, and the barn with it. Nobody saw anything. Everyone knows. ${M(p, 'akf_caught') ? '{son} came back from the ford with a crooked arm, and nobody over there has forgotten.'
         : M(p, 'akf_ford') ? "You buried your uncle in the spring. {foe}'s men still laugh about the ford."
         : M(p, 'akf_price') ? 'Taking the blood-price did not end it. It made your family look cheap.'
-        : M(p, 'akf_law') ? "The court roll did not change anybody's mind." : "The magistrate's verdict was {foe}'s, and {foe} knows it."} Your cousins are sharpening things in the yard.`,
+        : M(p, 'akf_law') ? "The court roll did not change anybody's mind." : M(p, 'akf_scorned') ? "The magistrate wrote {cuz} down as a drowning, and dines with {foe} on Sundays." : "Nothing was ever settled for {cuz}."} Your cousins are sharpening things in the yard.`,
       choices: [
         { t: 'Rebuild, and say nothing', r: 'You rebuild with borrowed timber and keep your mouth shut. Silence costs more than hay.', fx: { coinPct: -0.05, wil: 1, arc: { mark: 'akf_quiet' } } },
         { t: "Burn {foe}'s {foeSeat} in return", check: { s: 'stealth', s2: 'spd', d: 50 },
@@ -292,7 +292,7 @@
     { id: 'ak_feud_3', title: 'The market road', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { feud(p, ctx); },
-      text: p => `{lead}Coming home from the market at {town} at dusk, you find three of {foe}'s kin across the road, with cudgels and one hatchet. ${M(p, 'akf_burned') || M(p, 'akf_seen') ? 'They have not forgotten the fire.' : M(p, 'akf_truce') ? "So much for the priest's peace." : 'The rick was not the end of it.'} Your cart is between you and them, and the ditch beside the road is deep.`,
+      text: p => `{lead}Coming home from the market at {town} at dusk, you find three of {foe}'s kin across the road, with cudgels and one hatchet. ${M(p, 'akf_burned') || M(p, 'akf_seen') ? 'They have not forgotten the fire.' : M(p, 'akf_truce') ? "So much for the priest's peace." : M(p, 'akf_quiet') ? 'You rebuilt the rick and said nothing. They took that for an answer.' : 'The rick was not the end of it.'} Your cart is between you and them, and the ditch beside the road is deep.`,
       choices: [
         { t: 'Stand and fight them in the road', check: { s: 'melee', s2: 'str', d: 50 },
           win: { r: "You break a cudgel and a collarbone, and they run. The collarbone is {son}'s.", fx: { fame: 2, health: -6, them: { op: -15 }, arc: { mark: 'akf_fought' } } },
@@ -306,7 +306,7 @@
     { id: 'ak_feud_4', title: 'The kiss of peace', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { feud(p, ctx); },
-      text: p => `{lead}The bishop's dean rides through {home} and hears of the feud. On the feast of the saints both families are to kneel in the church and give each other the kiss of peace, or both will be fined. ${M(p, 'akf_beaten') ? 'Your ribs still ache when it rains.' : M(p, 'akf_fought') ? '{son} will be there, with his arm in a sling.' : M(p, 'akf_paid') ? "Your ox is pulling {foe}'s plough." : 'The road has been quiet, which is not the same as peace.'} {foe} says he will come if you do.`,
+      text: p => `{lead}The bishop's dean rides through {home} and hears of the feud. On the feast of the saints both families are to kneel in the church and give each other the kiss of peace, or both will be fined. ${M(p, 'akf_beaten') ? 'Your ribs still ache when it rains.' : M(p, 'akf_fought') ? '{son} will be there, with his arm in a sling.' : M(p, 'akf_paid') ? "Your ox is pulling {foe}'s plough." : M(p, 'akf_ran') ? 'They still ask after your cabbages at the market.' : 'The road has been quiet, which is not the same as peace.'} {foe} says he will come if you do.`,
       choices: [
         { t: 'Kneel and kiss {foe}', r: 'You kneel and kiss him on both cheeks. He smells of sour wine. It is done in front of the whole parish.', fx: { honor: 3, piety: 3, happy: -2, them: { op: 15 }, arc: { mark: 'akf_kissed' } } },
         { t: 'Kneel, but turn your face from him', r: 'You kneel. You do not kiss him. The dean pretends not to see, and the whole parish sees.', fx: { honor: 1, wil: 1, them: { op: -10 }, arc: { mark: 'akf_refused' } } },
@@ -322,7 +322,7 @@
         else { ys = H.name(p, FEUD, 'yks', () => (A.chance(0.5) ? 'F' : 'M')); ctx.yk = H.given(p, FEUD, 'yk', ys, p.cult); ctx.ykRel = "Your cousin's " + (ys === 'F' ? 'girl' : 'boy'); }
         ctx.ym = H.name(p, FEUD, 'ym', () => A.givenName(foe.cult, opp(ys)));
       },
-      text: p => `{lead}{ykRel} {yk} and {foe}'s youngest grandchild, {ym}, are found together in the tithe barn after the harvest dance. Both families know it by noon. ${M(p, 'akf_kissed') ? '{foe} sends word that he would sooner have a wedding than another funeral.' : "{foe}'s sons are talking about what they will do to {yk}."} {yk} says they will marry, or go into the river together.`,
+      text: p => `{lead}{ykRel} {yk} and {foe}'s youngest grandchild, {ym}, are found together in the tithe barn after the harvest dance. Both families know it by noon. ${M(p, 'akf_kissed') ? '{foe} sends word that he would sooner have a wedding than another funeral.' : M(p, 'akf_refused') ? "{foe} has not forgotten the kiss you would not give, and his sons remember it too." : M(p, 'akf_away') ? "{foe} knelt that day and you were at market. His sons have not let it go." : "{foe}'s sons are talking about what they will do to {yk}."} {yk} says they will marry, or go into the river together.`,
       choices: [
         { t: 'Let them marry, and end it there', r: 'They marry at Martinmas. Both families stand on their own side of the church, and nobody brings a knife.', fx: { coinPct: -0.04, honor: 2, them: { op: 20 }, arc: { mark: 'akf_wed' } } },
         { t: 'Send {yk} away to kin at {town}', r: "{yk} goes, in tears, on the carrier's cart. {ym} stands at the crossroads to watch it out of sight.", fx: { happy: -4, wil: 1, them: { op: -5 }, arc: { mark: 'akf_sent' } } },
@@ -337,15 +337,15 @@
         const heir = son.alive ? son : H.get(p, FEUD, 'heir', () => H.mk(p, { age: Math.max(18, H.adj(p) - 12), sex: 'M', parents: [son.id], sur: foe.sur, surMode: foe.surMode }));
         H.tok(ctx, 'foe', foe); H.tok(ctx, 'heir', heir); ctx.pid = heir.id; ctx.foeDead = foe.alive ? '' : '1';
       },
-      text: (p, ctx) => `${ctx.foeDead ? '{foe} is dead of the dropsy, and {heir} has his place. {heir} sends for you, alone.' : '{foe} is dying of the dropsy in the room over his {foeSeat}. He sends for you, alone, and {heir} shows you up the stair.'} ${M(p, 'akf_wed') ? 'Your families share a cradle now.' : 'There has been blood between your families for {yrs} years.'} ${ctx.foeDead ? '{heir}' : 'The old man'} wants to know if it ends here.`,
+      text: (p, ctx) => `${ctx.foeDead ? '{foe} is dead of the dropsy, and {heir} has his place. {heir} sends for you, alone.' : '{foe} is dying of the dropsy in the room over his {foeSeat}. He sends for you, alone, and {heir} shows you up the stair.'} ${M(p, 'akf_wed') ? 'Your families share a cradle now.' : M(p, 'akf_sent') ? 'You sent one of your own away to stop a wedding. There has been blood between your families for {yrs} years.' : 'There has been blood between your families for {yrs} years.'} ${ctx.foeDead ? '{heir}' : 'The old man'} wants to know if it ends here.`,
       choices: [
         { t: 'Swear the peace with {heir}, hand on hand', r: 'You swear it with {heir}, hands together on the Book, before both families. The ford is only a ford again.',
-          fx: { honor: 4, them: { op: 50, type: 'friend' }, sworn: true, flag: 'ak_feud_peace', arc: { go: 'end', mark: 'akf_peace' } } },
+          fx: { honor: 4, them: { op: 50, type: 'friend' }, sworn: true, flag: 'ak_feud_peace', arc: { go: 'end' } } },
         { t: 'Tell them it ends when their line does', r: 'You say it plainly. {heir} hears it, and so do your children. It will outlive you both.',
-          fx: { wil: 2, honor: -2, them: { op: -60, type: 'enemy' }, epithet: 'the Unforgiving', flag: 'ak_feud_open', arc: { go: 'end', mark: 'akf_open' } } },
+          fx: { wil: 2, honor: -2, them: { op: -60, type: 'enemy' }, epithet: 'the Unforgiving', flag: 'ak_feud_open', arc: { go: 'end' } } },
         { t: 'Ask the mill-right as the price of peace', check: { s: 'intrigue', s2: 'int', d: 55 },
-          win: { r: 'You get it in writing: the mill-right on the lower stream, for ever. {heir} signs as if signing away a hand.', fx: { akin: 'mill', them: { op: -25, type: 'enemy' }, flag: 'ak_feud_mill', arc: { go: 'end', mark: 'akf_mill' } } },
-          lose: { r: '{heir} tears your terms in half in front of you. The feud goes on, and now it has a price on it.', fx: { happy: -3, them: { op: -40, type: 'enemy' }, flag: 'ak_feud_open', arc: { go: 'end', mark: 'akf_open' } } } },
+          win: { r: 'You get it in writing: the mill-right on the lower stream, for ever. {heir} signs as if signing away a hand.', fx: { akin: 'mill', them: { op: -25, type: 'enemy' }, flag: 'ak_feud_mill', arc: { go: 'end' } } },
+          lose: { r: '{heir} tears your terms in half in front of you. The feud goes on, and now it has a price on it.', fx: { happy: -3, them: { op: -40, type: 'enemy' }, flag: 'ak_feud_open', arc: { go: 'end' } } } },
       ] },
 
     // ================================================================== a child you did not know (five scenes)
@@ -380,7 +380,7 @@
         if (!s) { const m = H.mother(p), sib = A.relsOf(p, ['sibling']).map(x => x.p).find(q => q.alive && A.isAdult(q)); ctx.talker = m && m.alive ? 'Your mother' : sib ? 'Your ' + (sib.sex === 'F' ? 'sister ' : 'brother ') + sib.given : "The reeve's wife"; }
       },
       text: (p, ctx) => (H.spouse(p)
-        ? `{sp} has worked it out: ${M(p, 'aks_servant') ? 'the servant in the kitchen who has your laugh' : 'the money that goes to {town} every quarter-day'}. {sp} is waiting at the table when you come in, with the lamp lit and the door shut, and does not ask. {sp} waits for you to say it.`
+        ? `{sp} has worked it out: ${M(p, 'aks_servant') ? 'the servant in the kitchen who has your laugh' : M(p, 'aks_signed') ? 'your own name on an indenture at {town}' : M(p, 'aks_false') ? 'a dead uncle on an indenture, written in your hand' : 'the money that goes to {town} every quarter-day'}. {sp} is waiting at the table when you come in, with the lamp lit and the door shut, and does not ask. {sp} waits for you to say it.`
         : `{talker} has worked it out, from {kid}'s face or the money, and is telling it at the well. By Sunday the whole of {home} will have it, one way or another. The only question left is whose way.`),
       choices: [
         { t: 'Tell the whole truth', r: (p, ctx) => (ctx.sp ? 'You tell it all, from the summer on. {sp} hears you out, and then goes to sleep at a sister\'s for a week.' : 'You tell it all, at the well, before anyone else can. It is a short story, told plainly.'),
@@ -393,7 +393,7 @@
     { id: 'ak_secret_4', title: 'The lock-up at {town}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { secret(p, ctx); },
-      text: p => `{kid} is in the lock-up at {town}: a fight at the hiring fair, a man's jaw broken, and the man's father on the jury. A parent's word would go a long way with the bench. ${M(p, 'aks_truth') ? 'Everyone knows whose {kidSD} {kid} is now.' : 'Nobody at {town} knows whose {kidSD} {kidHe} is, unless you say it in open court.'}`,
+      text: p => `{kid} is in the lock-up at {town}: a fight at the hiring fair, a man's jaw broken, and the man's father on the jury. A parent's word would go a long way with the bench. ${M(p, 'aks_truth') ? 'Everyone knows whose {kidSD} {kid} is now.' : M(p, 'aks_caught') ? 'Your story came apart at home, and the bench will have heard some of it.' : M(p, 'aks_lied') ? "At home {kid} is a dead cousin's child. That will not hold in open court." : 'Nobody at {town} knows whose {kidSD} {kidHe} is, unless you say it in open court.'}`,
       choices: [
         { t: 'Stand up in court as {kidHis} parent', r: 'You stand up and say it, in front of the bench and half of {town}. The fine is light. Your name is not.', fx: { honor: 3, happy: -2, fame: 1, them: { op: 25 }, arc: { mark: 'aks_stood' } } },
         { t: "Pay the injured man's family, quietly", r: "The injured man's father finds he cannot remember the fight. {kid} is out by Friday, and does not know why.", fx: { coinPct: -0.06, them: { op: 8 }, arc: { mark: 'aks_paid' } } },
@@ -402,14 +402,14 @@
     { id: 'ak_secret_5', title: 'Your name', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { secret(p, ctx); },
-      text: p => `{kid} is grown now, {kidAge}, and asks you plainly: will you call {kidHim} your {kidSD} before the priest and the parish, and write it in the register, so {kidHe} can carry your name? ${M(p, 'aks_stood') ? 'You have said it once already, in a courtroom.' : M(p, 'aks_left') ? '{kidHe} has not forgotten the lock-up at {town}.' : M(p, 'aks_denied') ? 'You denied {kidHim} once, at your own door.' : 'It is the first thing {kidHe} has ever asked of you.'}`,
+      text: p => `{kid} is grown now, {kidAge}, and asks you plainly: will you call {kidHim} your {kidSD} before the priest and the parish, and write it in the register, so {kidHe} can carry your name? ${M(p, 'aks_stood') ? 'You have said it once already, in a courtroom.' : M(p, 'aks_left') ? '{kidHe} has not forgotten the lock-up at {town}.' : M(p, 'aks_denied') ? 'You denied {kidHim} once, at your own door.' : M(p, 'aks_paid') ? '{kidHe} never learned who paid the man with the broken jaw.' : M(p, 'aks_silent') ? '{kidHe} has had your silence for years, and asks anyway.' : 'It is the first thing {kidHe} has ever asked of you.'}`,
       choices: [
         { t: 'Before the priest: my {kidSD}', r: 'The priest writes it in the register, with the date. {kid} is your {kidSD} in ink now, with a share of what you leave.',
-          fx: { akin: 'acknowledge', honor: 2, happy: 3, them: { op: 30 }, flag: 'ak_sec_named', arc: { go: 'end', mark: 'aks_named' } } },
+          fx: { akin: 'acknowledge', honor: 2, happy: 3, them: { op: 30 }, flag: 'ak_sec_named', arc: { go: 'end' } } },
         { t: 'A purse and a start, but not your name', r: 'You give {kid} enough to set up alone. {kidHe} takes it and thanks you like a stranger.',
-          fx: { coinPct: -0.1, them: { op: 5 }, deed: 'Set up a child you never named', flag: 'ak_sec_settled', arc: { go: 'end', mark: 'aks_settled' } } },
+          fx: { coinPct: -0.1, them: { op: 5 }, deed: 'Set up a child you never named', flag: 'ak_sec_settled', arc: { go: 'end' } } },
         { t: 'Tell {kidHim} never to ask again', r: '{kid} does not ask again. {kidHe} goes back to {town} and takes another name for good.',
-          fx: { wil: 1, them: { op: -40 }, flag: 'ak_sec_denied', arc: { go: 'end', mark: 'aks_refused' } } },
+          fx: { wil: 1, them: { op: -40 }, flag: 'ak_sec_denied', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== your uncle's mill (four scenes)
@@ -425,7 +425,7 @@
     { id: 'ak_inherit_2', title: "{u}'s housekeeper", trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { inherit(p, ctx); },
-      text: p => `Old {hk}, who kept {u}'s house, swears that on his last night he said the mill was for {cz}, "who came when I was sick." {cz} has her mark on a sworn paper. ${M(p, 'aki_keys') ? 'You are sleeping in the mill-house; {cz} has taken a room at the inn across the lane, to watch.' : M(p, 'aki_halves') ? '{cz} has stopped answering your letters about halves.' : "Your man of law says a housekeeper's word is worth whatever a jury thinks of her."}`,
+      text: p => `Old {hk}, who kept {u}'s house, swears that on his last night he said the mill was for {cz}, "who came when I was sick." {cz} has her mark on a sworn paper. ${M(p, 'aki_keys') ? 'You are sleeping in the mill-house; {cz} has taken a room at the inn across the lane, to watch.' : M(p, 'aki_halves') ? '{cz} has stopped answering your letters about halves.' : M(p, 'aki_lawyer') ? "Your man of law has found no will, and says a housekeeper's word is worth whatever a jury thinks of her." : "There is still no will, and now there is a sworn paper."}`,
       choices: [
         { t: 'Find out what {hk} was promised for it', check: { s: 'intrigue', s2: 'ins', d: 50 },
           win: { r: 'A new cloak, a pig, and a cottage for life, from {cz}. A jury will like hearing that.', fx: { skill: { intrigue: 1 }, them: { op: -10 }, arc: { mark: 'aki_bought' } } },
@@ -436,7 +436,7 @@
     { id: 'ak_inherit_3', title: 'The court at {town}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { inherit(p, ctx); },
-      text: p => `The case comes before {court} at {town}: twelve jurors, a clerk with a cold, and the steward in the chair. ${M(p, 'aki_bribed') ? '{hk} will swear the opposite of what she swore last spring.' : M(p, 'aki_bought') ? 'You have the cloak, the pig and the cottage to tell them about.' : M(p, 'aki_believed') ? 'You have not much of a case, and everybody knows it.' : 'Nobody has a will. Everybody has a story.'} {cz} has hired a man of law with a voice like a church bell.`,
+      text: p => `The case comes before {court} at {town}: twelve jurors, a clerk with a cold, and the steward in the chair. ${M(p, 'aki_bribed') ? '{hk} will swear the opposite of what she swore last spring.' : M(p, 'aki_bought') ? 'You have the cloak, the pig and the cottage to tell them about.' : M(p, 'aki_believed') ? 'You have not much of a case, and everybody knows it.' : M(p, 'aki_shamed') ? '{hk} has told the parish you called her a liar, and will tell the jury the same.' : 'Nobody has a will. Everybody has a story.'} {cz} has hired a man of law with a voice like a church bell.`,
       choices: [
         { t: 'Plead it yourself', check: { s: 'persuasion', s2: 'int', d: 55 },
           win: { r: 'You tell it plainly, and the jury likes plain. They find for you after an hour and a barrel.', fx: { fame: 1, arc: { mark: 'aki_won' } } },
@@ -449,20 +449,20 @@
     { id: 'ak_inherit_4', title: 'The mill', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { inherit(p, ctx); },
-      text: p => `${M(p, 'aki_won') ? "The mill is yours by the court roll, with the abbey's debt on it. {cz} is selling {czHis} horse to pay {czHis} man of law." : M(p, 'aki_lost') ? "The mill is {cz}'s by the court roll. {czHe} has put in a new stone and painted the door." : 'You and {cz} meet at the mill to finish it between you, without a clerk.'} The wheel turns, whoever owns it. The miller's boy is waiting to be told who pays him.`,
+      text: p => `${M(p, 'aki_won') ? "The mill is yours by the court roll, with the abbey's debt on it. {cz} is selling {czHis} horse to pay {czHis} man of law." : M(p, 'aki_lost') ? "The mill is {cz}'s by the court roll. {czHe} has put in a new stone and painted the door." : M(p, 'aki_settled') ? 'You settled on the court steps, and meet at the mill now to finish it, without a clerk.' : 'You and {cz} meet at the mill to finish it between you, without a clerk.'} The wheel turns, whoever owns it. The miller's boy is waiting to be told who pays him.`,
       choices: [
         { t: p => (M(p, 'aki_won') ? 'Keep the mill, and its debt' : "Buy out {cz}'s half, and keep the mill"), req: p => !M(p, 'aki_lost'),
           r: 'The mill is yours: the stones, the wheel, the debt to the abbey and the boy. {cz} does not come to the feast.',
-          fx: { akin: 'mill', coin: -40, coinPct: -0.05, them: { op: -25 }, flag: 'ak_inh_mill', arc: { go: 'end', mark: 'aki_mill' } } },
+          fx: { akin: 'mill', coin: -40, coinPct: -0.05, them: { op: -25 }, flag: 'ak_inh_mill', arc: { go: 'end' } } },
         { t: 'Give the mill to {cz}, and keep the peace', req: p => !M(p, 'aki_lost'),
           r: '{cz} weeps, which you did not expect, and asks you to stand godparent to {czHis} next child.',
-          fx: { honor: 4, them: { op: 40 }, flag: 'ak_inh_gave', arc: { go: 'end', mark: 'aki_gave' } } },
+          fx: { honor: 4, them: { op: 40 }, flag: 'ak_inh_gave', arc: { go: 'end' } } },
         { t: "Shake {cz}'s hand at the mill door", req: p => M(p, 'aki_lost'),
           r: 'You shake {czHis} hand at the door, in front of the boy. It is the hardest thing you do that year.',
-          fx: { honor: 3, them: { op: 30 }, flag: 'ak_inh_lost', arc: { go: 'end', mark: 'aki_shook' } } },
+          fx: { honor: 3, them: { op: 30 }, flag: 'ak_inh_lost', arc: { go: 'end' } } },
         { t: 'Appeal to the court at {capital}', req: p => M(p, 'aki_lost'), check: { s: 'persuasion', s2: 'wil', d: 55 },
-          win: { r: 'The court at {capital} overturns {town}. The mill is yours, and {cz} will never speak to you again.', fx: { akin: 'mill', coin: -40, coinPct: -0.05, them: { op: -40 }, flag: 'ak_inh_mill', arc: { go: 'end', mark: 'aki_mill' } } },
-          lose: { r: '{capital} agrees with {town}, and charges more for it.', fx: { coin: -40, coinPct: -0.08, them: { op: -30 }, flag: 'ak_inh_lost', arc: { go: 'end', mark: 'aki_appealed' } } } },
+          win: { r: 'The court at {capital} overturns {town}. The mill is yours, and {cz} will never speak to you again.', fx: { akin: 'mill', coin: -40, coinPct: -0.05, them: { op: -40 }, flag: 'ak_inh_mill', arc: { go: 'end' } } },
+          lose: { r: '{capital} agrees with {town}, and charges more for it.', fx: { coin: -40, coinPct: -0.08, them: { op: -30 }, flag: 'ak_inh_lost', arc: { go: 'end' } } } },
       ] },
 
     // ================================================================== the one who came back (five scenes)
@@ -480,7 +480,7 @@
     { id: 'ak_sibling_2', title: 'The bailiff from {port}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { sibling(p, ctx); },
-      text: p => `{sib} has been in {home} a year. {sibHe} drinks with men you would not, and plays dice for more than {sibHe} has. Now a bailiff from {port} is asking for {sibHim}: a man knifed on the quay two winters ago, by a galley-hand with a burned hand. ${M(p, 'akb_doubt') ? 'You still do not know for certain that {sibHe} is your blood.' : "{sibHe} swears it was the other man's knife."}`,
+      text: p => `${M(p, 'akb_inn') ? '{sib} has been a year at the inn in {home}, on your money.' : '{sib} has been in {home} a year.'} {sibHe} drinks with men you would not, and plays dice for more than {sibHe} has. Now a bailiff from {port} is asking for {sibHim}: a man knifed on the quay two winters ago, by a galley-hand with a burned hand. ${M(p, 'akb_doubt') ? 'You still do not know for certain that {sibHe} is your blood.' : "{sibHe} swears it was the other man's knife."}`,
       choices: [
         { t: 'Hide {sibHim} in the hayloft', r: 'The bailiff searches the house and not the loft. {sib} comes down at dark with straw in {sibHis} hair, grinning.', fx: { honor: -3, them: { op: 15 }, arc: { mark: 'akb_hid' } } },
         { t: "Pay the dead man's family the blood-price", r: 'You pay the widow on the quay at {port}. She spits, and takes it, and swears off the charge.', fx: { coinPct: -0.06, honor: 1, them: { op: 10 }, arc: { mark: 'akb_paid' } } },
@@ -489,7 +489,7 @@
     { id: 'ak_sibling_3', title: "The eldest's share", trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { sibling(p, ctx); },
-      text: (p, ctx) => `${M(p, 'akb_handed') ? '{sib} is out of the gaol at {port} with a branded thumb, and nowhere to go but your door.' : '{sib} is clear of the law, for now.'} {sibHe} wants the eldest's share of what your parents left, which by the custom of {home} is most of it. ${ctx.faAlive ? 'Your father says the custom is the custom.' : 'The notary says {sibHe} has a case.'}`,
+      text: (p, ctx) => `${M(p, 'akb_handed') ? '{sib} is out of the gaol at {port} with a branded thumb, and nowhere to go but your door.' : M(p, 'akb_hid') ? '{sib} is clear of the law, and still goes up to the loft when a stranger comes up the lane.' : M(p, 'akb_paid') ? "You paid the dead man's widow on the quay, and the charge went with the money." : '{sib} is clear of the law, for now.'} {sibHe} wants the eldest's share of what your parents left, which by the custom of {home} is most of it. ${ctx.faAlive ? 'Your father says the custom is the custom.' : 'The notary says {sibHe} has a case.'}`,
       choices: [
         { t: "Give {sibHim} the eldest's share", r: 'You count it out. {sib} has never held so much at once, and does not know what to do with {sibHis} hands.', fx: { coinPct: -0.15, honor: 3, them: { op: 20 }, arc: { mark: 'akb_gave' } } },
         { t: 'Offer a third, and a place in your work', r: '{sib} takes the third and the work. {sibHe} is good at it, which surprises you both.', fx: { coinPct: -0.05, them: { op: 5 }, arc: { mark: 'akb_third' } } },
@@ -498,25 +498,25 @@
     { id: 'ak_sibling_4', title: 'The galley fever', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { sibling(p, ctx); },
-      text: p => `The galley fever comes back on {sib}: the marsh kind, that sleeps in a body for years and wakes. The physician says it will kill {sibHim} this time or the next. {sibHe} asks for a priest, and for you. ${M(p, 'akb_refused') ? 'You have not spoken since the matter of the share.' : M(p, 'akb_gave') ? '{sibHe} has spent most of the share already.' : ''}`,
+      text: p => `The galley fever comes back on {sib}: the marsh kind, that sleeps in a body for years and wakes. The physician says it will kill {sibHim} this time or the next. {sibHe} asks for a priest, and for you. ${M(p, 'akb_refused') ? 'You have not spoken since the matter of the share.' : M(p, 'akb_gave') ? '{sibHe} has spent most of the share already.' : M(p, 'akb_third') ? '{sibHe} has worked beside you since the share was settled.' : M(p, 'akb_welcome') ? '{sibHe} has slept under your roof since the day {sibHe} came to the gate.' : ''}`,
       choices: [
         { t: 'Nurse {sibHim} yourself', check: { s: 'medicine', s2: 'sta', d: 50 },
           win: { r: 'The fever breaks on the ninth night. {sib} wakes, and asks for beer.', fx: { health: -4, them: { op: 20 }, arc: { mark: 'akb_nursed' } } },
           lose: { r: '{sib} lives. You catch it in turn, and lie a month in the next bed.', fx: { health: -12, wound: 'lungs', them: { op: 15 }, arc: { mark: 'akb_nursed' } } } },
-        { t: 'Pay for the physician from {capital}', r: 'The physician bleeds {sib}, purges {sibHim}, and charges you for both. {sib} lives, mostly in spite of him.', fx: { coinPct: -0.05, them: { op: 10 }, arc: { mark: 'akb_physic' } } },
+        { t: 'Pay for the physician from {capital}', r: 'The physician bleeds {sib}, purges {sibHim}, and charges you for both. {sib} lives, mostly in spite of him.', fx: { coinPct: -0.05, them: { op: 10 }, arc: 'next' } },
         { t: 'Send the priest, and stay away', r: 'The priest sits with {sib}. You hear from the priest, after, that {sibHe} lived.', fx: { piety: 2, them: { op: -10 }, arc: { mark: 'akb_away' } } },
       ] },
     { id: 'ak_sibling_5', title: 'Kin again, or not', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { sibling(p, ctx); },
-      text: (p, ctx) => `${ctx.moAlive ? 'Your mother, old now, sits between you and {sib} at the hearth and will not let go of either hand.' : "You stand with {sib} at your mother's grave in the {home} churchyard."} {sib} has a berth on a ship out of {port} in the spring, or {sibHe} could stay. ${M(p, 'akb_doubt') ? 'You have still not decided what {sibHe} is to you.' : '{sibHe} asks what you want.'}`,
+      text: (p, ctx) => `${ctx.moAlive ? 'Your mother, old now, sits between you and {sib} at the hearth and will not let go of either hand.' : "You stand with {sib} at your mother's grave in the {home} churchyard."} {sib} has a berth on a ship out of {port} in the spring, or {sibHe} could stay. ${M(p, 'akb_doubt') ? 'You have still not decided what {sibHe} is to you.' : M(p, 'akb_nursed') ? 'You sat out the fever at {sibHis} bedside, and {sibHe} knows what it cost you.' : M(p, 'akb_away') ? 'You sent the priest and did not come yourself. {sibHe} has never said so.' : M(p, 'akb_tested') ? "{sibHe} still remembers the dog's name, and says so in drink." : '{sibHe} asks what you want.'}`,
       choices: [
         { t: 'Swear yourselves kin again, hand on hand', r: 'You swear it, hand on hand, the way your father swore things. {sib} stays, and takes the cottage at the end of the lane.',
-          fx: { happy: 3, them: { op: 30, type: 'sibling' }, sworn: true, flag: 'ak_sib_sworn', arc: { go: 'end', mark: 'akb_sworn' } } },
+          fx: { happy: 3, them: { op: 30, type: 'sibling' }, sworn: true, flag: 'ak_sib_sworn', arc: { go: 'end' } } },
         { t: 'Pay {sibHis} passage, and let {sibHim} go', r: 'You see {sib} off at {port} with a good coat and a purse. {sibHe} waves until the ship is round the point.',
-          fx: { coinPct: -0.03, them: { op: 15 }, deed: 'Saw a lost sibling off to sea in a good coat', flag: 'ak_sib_gone', arc: { go: 'end', mark: 'akb_gone' } } },
+          fx: { coinPct: -0.03, them: { op: 15 }, deed: 'Saw a lost sibling off to sea in a good coat', flag: 'ak_sib_gone', arc: { go: 'end' } } },
         { t: 'Tell {sibHim} {sibHe} is no blood of yours', r: '{sib} takes it the way {sibHe} took the galleys: without a word, and for good.',
-          fx: { wil: 1, them: { op: -50, type: 'enemy' }, flag: 'ak_sib_denied', arc: { go: 'end', mark: 'akb_denied' } } },
+          fx: { wil: 1, them: { op: -50, type: 'enemy' }, flag: 'ak_sib_denied', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== the match (four scenes)
@@ -525,7 +525,7 @@
       setup: (p, ctx) => { match(p, ctx); },
       text: p => `{fh}, {fhWho}, offers {fhHis} {mateSD} {mate} for your {kinRel} {kin}. The settlement would favour you, and {fh} would stand with your family in any quarrel. {kin} has met {mate} twice and says {mateHe} is "very polite." ${A.C.flag(p, 'ak_bl_told') ? '{fh} has heard about the shaking in your line, and asks anyway.' : ''} {fh} wants an answer by Lady Day.`,
       choices: [
-        { t: 'Accept, and settle the terms', r: "You shake on it in {fh}'s counting-room. The wedding is set for midsummer, and the settlement is generous.", fx: { coin: 80, akin: 'wedKin', them: { op: -5 }, arc: { mark: 'akm_yes' } } },
+        { t: 'Accept, and settle the terms', r: "You shake on it in {fh}'s counting-room. The wedding is set for midsummer, and the settlement is generous.", fx: { coin: 80, akin: 'wedKin', them: { op: -5 }, arc: 'next' } },
         { t: 'Let {kin} decide', r: '{kin} thinks about it for a week, and says yes, because you asked {kinHim} to think about it.', fx: { happy: 1, akin: 'wedKin', them: { op: 10 }, arc: { mark: 'akm_asked' } } },
         { t: 'Hold out for better terms', check: { s: 'trade', s2: 'persuasion', d: 50 },
           win: { r: '{fh} pays more than {fhHe} meant to, and remembers that you made {fhHim}.', fx: { coin: 160, akin: 'wedKin', arc: { mark: 'akm_haggled' } } },
@@ -534,7 +534,7 @@
     { id: 'ak_match_2', title: 'Letters from {town}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { match(p, ctx); },
-      text: p => `{kin} has been married a year and lives in {fh}'s house at {town}. The letters came every week, then every month; now they come in someone else's hand. A carter who delivers to {fh}'s kitchen says {kin} has not been seen at church since Candlemas. ${M(p, 'akm_haggled') ? '{fh} has not forgotten your haggling.' : ''}`,
+      text: p => `{kin} has been married a year and lives in {fh}'s house at {town}. The letters came every week, then every month; now they come in someone else's hand. A carter who delivers to {fh}'s kitchen says {kin} has not been seen at church since Candlemas. ${M(p, 'akm_haggled') ? '{fh} has not forgotten your haggling.' : M(p, 'akm_asked') ? '{kin} chose this, and you let {kinHim}.' : ''}`,
       choices: [
         { t: 'Ride to {town} unannounced', r: "You ride all night and arrive at breakfast, which nobody at {fh}'s table enjoys.", fx: { happy: -2, them: { op: 10 }, arc: { mark: 'akm_rode' } } },
         { t: 'Write to {fh}, politely', r: "{fh} writes back within the week: {kin} is well, and busy, and sends love. It is in {fh}'s hand.", fx: { honor: 1, wil: 1, arc: { mark: 'akm_wrote' } } },
@@ -545,7 +545,7 @@
     { id: 'ak_match_3', title: "In {fh}'s house", trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { match(p, ctx); },
-      text: p => `${M(p, 'akm_secret') ? 'The note said come, and you have come.' : "You are at {fh}'s table at {town}."} {kin} has a yellowing bruise along the jaw, and says {kinHe} fell on the stair. {mate} is pleasant at dinner and drinks steadily. Afterwards {fh} talks about money: the match has cost {fhHim} a lawsuit, and {fhHe} wants part of the settlement back.`,
+      text: p => `${M(p, 'akm_secret') ? 'The note said come, and you have come.' : M(p, 'akm_rode') ? "You are at {fh}'s table again, and again you sent no word ahead." : M(p, 'akm_wrote') ? "{fh} answered your letter in his own hand, and asked you to come and see." : "You are at {fh}'s table at {town}."} {kin} has a yellowing bruise along the jaw, and says {kinHe} fell on the stair. {mate} is pleasant at dinner and drinks steadily. Afterwards {fh} talks about money: the match has cost {fhHim} a lawsuit, and {fhHe} wants part of the settlement back.`,
       choices: [
         { t: 'Take {kin} home tonight', r: "You take {kin} home that night in your own cart, with {kinHis} clothes in a sheet. Nobody at {fh}'s house tries to stop you.", fx: { honor: 2, happy: -2, them: { op: 20 }, arc: { mark: 'akm_took' } } },
         { t: 'Take {mate} out to the yard', check: { s: 'melee', s2: 'str', d: 50 },
@@ -556,13 +556,13 @@
     { id: 'ak_match_4', title: 'Before the bishop', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { match(p, ctx); },
-      text: p => `${M(p, 'akm_took') ? "{kin} has been home a season. {fh} has gone to the bishop's court for the settlement, and to have {kin} sent back to {kinHis} {mateHW}." : 'Things are quieter at {town}, or {kin} says they are. {mate} drinks less, in company.'} The bishop's official hears marriage cases at {capital} after Easter. Whatever you do now, {fh} will remember it.`,
+      text: p => `${M(p, 'akm_took') ? "{kin} has been home a season. {fh} has gone to the bishop's court for the settlement, and to have {kin} sent back to {kinHis} {mateHW}." : M(p, 'akm_beat') ? '{mate} has drunk less since the yard, in company at least, and {kin} says things are quieter.' : M(p, 'akm_beaten') ? 'Your nose set crooked, and {mate} drinks as {mateHe} did. {kin} says things are quieter.' : M(p, 'akm_paid') ? '{fh} has your money, and {kin} says things are quieter at {town}.' : 'Things are quieter at {town}, or {kin} says they are. {mate} drinks less, in company.'} The bishop's official hears marriage cases at {capital} after Easter. Whatever you do now, {fh} will remember it.`,
       choices: [
         { t: 'Ask the bishop to undo the marriage', check: { s: 'persuasion', s2: 'faith', d: 50 },
-          win: { r: 'The official finds a flaw in the banns, as officials do when asked properly. {kin} is free, and {fh} is your enemy until one of you is buried.', fx: { akin: 'unwedKin', honor: 2, them: { op: 20 }, flag: 'ak_mt_annulled', arc: { go: 'end', mark: 'akm_annulled' } } },
-          lose: { r: "The official upholds the marriage and fines you for the bishop's time. {kin} thanks you for trying.", fx: { coinPct: -0.04, them: { op: 20 }, flag: 'ak_mt_upheld', arc: { go: 'end', mark: 'akm_upheld' } } } },
-        { t: 'Keep {kin} at home, married or not', r: '{kin} lives at home, married to a {mateHW} at {town}, and keeps your accounts better than you ever did.', fx: { honor: -2, happy: 2, them: { op: 30 }, flag: 'ak_mt_kept', arc: { go: 'end', mark: 'akm_kept' } } },
-        { t: 'Send {kin} back to {mate}, with a priest to watch', r: '{kin} goes back. {kinHe} writes every week now, short letters, and never asks you for anything again.', fx: { honor: 1, them: { op: -30 }, flag: 'ak_mt_sent', arc: { go: 'end', mark: 'akm_sent' } } },
+          win: { r: 'The official finds a flaw in the banns, as officials do when asked properly. {kin} is free, and {fh} is your enemy until one of you is buried.', fx: { akin: 'unwedKin', honor: 2, them: { op: 20 }, flag: 'ak_mt_annulled', arc: { go: 'end' } } },
+          lose: { r: "The official upholds the marriage and fines you for the bishop's time. {kin} thanks you for trying.", fx: { coinPct: -0.04, them: { op: 20 }, flag: 'ak_mt_upheld', arc: { go: 'end' } } } },
+        { t: 'Keep {kin} at home, married or not', r: '{kin} lives at home, married to a {mateHW} at {town}, and keeps your accounts better than you ever did.', fx: { honor: -2, happy: 2, them: { op: 30 }, flag: 'ak_mt_kept', arc: { go: 'end' } } },
+        { t: 'Send {kin} back to {mate}, with a priest to watch', r: '{kin} goes back. {kinHe} writes every week now, short letters, and never asks you for anything again.', fx: { honor: 1, them: { op: -30 }, flag: 'ak_mt_sent', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== the bastard of the house (four scenes)
@@ -580,7 +580,7 @@
     { id: 'ak_bastard_2', title: 'Father {pr}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { bastard(p, ctx); },
-      text: p => `The priest who witnessed the contract, Father {pr}, is ninety and nearly blind, and lives on the abbey's charity at {town}. The parish register for that year should hold his entry. ${M(p, 'akx_read') ? 'You saw the page cited in the contract.' : "You have only {bas}'s word for what it says."} {bas} has been to see the old man already.`,
+      text: p => `The priest who witnessed the contract, Father {pr}, is ninety and nearly blind, and lives on the abbey's charity at {town}. The parish register for that year should hold his entry. ${M(p, 'akx_read') ? 'You saw the page cited in the contract.' : M(p, 'akx_unread') ? "The Latin was past you, so you have only {bas}'s word for what it says." : "You have only {bas}'s word for what it says."} {bas} has been to see the old man already.`,
       choices: [
         { t: 'Cut the page out of the register', check: { s: 'stealth', s2: 'int', d: 55 },
           win: { r: 'You borrow the register for an hour and give it back a page lighter. Nobody will know but you.', fx: { honor: -6, arc: { mark: 'akx_cut' } } },
@@ -593,7 +593,7 @@
     { id: 'ak_bastard_3', title: 'The family council', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { bastard(p, ctx); },
-      text: p => `Your aunts, uncles and cousins gather in your hall to decide what the family will say, since what the family says is what the court will hear. ${M(p, 'akx_truth') ? 'You know what Father {pr} said about the bride.' : M(p, 'akx_cut') ? 'The register page is ash in your grate.' : M(p, 'akx_caught') ? 'Everyone has heard about you and the sacristan.' : 'Nobody knows the truth of it, which has never stopped anybody.'} {bas} has offered each of them something.`,
+      text: p => `Your aunts, uncles and cousins gather in your hall to decide what the family will say, since what the family says is what the court will hear. ${M(p, 'akx_truth') ? 'You know what Father {pr} said about the bride.' : M(p, 'akx_cut') ? 'The register page is ash in your grate.' : M(p, 'akx_caught') ? 'Everyone has heard about you and the sacristan.' : M(p, 'akx_muddle') ? 'Father {pr} remembered his breakfast and a dog he had as a boy.' : M(p, 'akx_court') ? "You have put it to the bishop's court, which sits after Michaelmas." : 'Nobody knows the truth of it, which has never stopped anybody.'} {bas} has offered each of them something. ${M(p, 'akx_table') ? 'They have not forgotten that you seated {basHim} high.' : M(p, 'akx_gate') ? 'They have not forgotten that you kept {basHim} at the gate.' : ''}`,
       choices: [
         { t: 'Speak for {bas}: blood is blood', r: 'You speak for {bas}. Half the hall stares at you, and the other half was going to say it anyway.', fx: { honor: 3, them: { op: 25 }, arc: { mark: 'akx_for' } } },
         { t: 'Speak against {basHim}', check: { s: 'persuasion', s2: 'wil', d: 50 },
@@ -606,14 +606,14 @@
     { id: 'ak_bastard_4', title: 'Whose name', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { bastard(p, ctx); },
-      text: p => `${M(p, 'akx_truth') ? "The bishop's court has Father {pr}'s word on the bride's first husband, and the contract is worth nothing. {bas} is a bastard twice over." : M(p, 'akx_cut') || M(p, 'akx_against') ? 'Without the register, or the family, the court has only a contract and a story.' : "The court has the contract, the register and the family's word."} {bas} comes to you one last time, older than when {basHe} came, with {basHis} spears paid off.`,
+      text: p => `${M(p, 'akx_truth') ? "The bishop's court has Father {pr}'s word on the bride's first husband, and the contract is worth nothing. {bas} is a bastard twice over." : M(p, 'akx_cut') || M(p, 'akx_against') ? 'Without the register, or the family, the court has only a contract and a story.' : M(p, 'akx_for') ? 'You spoke for {basHim} in your own hall, and the court has heard of it.' : M(p, 'akx_terms') ? '{bas} has had your terms: the name, and none of the land.' : M(p, 'akx_split') ? 'The family said two things at once, and the court heard both.' : "The court has the contract, the register and the family's word."} {bas} comes to you one last time, older than when {basHe} came, with {basHis} spears paid off.`,
       choices: [
         { t: 'Name {basHim} kin, and seat {basHim} high', r: '{bas} goes into the register, onto the family tomb and to the top of your table. {basHe} swears to the family in turn, and means it.',
-          fx: { honor: 2, them: { op: 40, type: 'cousin' }, sworn: true, flag: 'ak_bas_named', arc: { go: 'end', mark: 'akx_named' } } },
+          fx: { honor: 2, them: { op: 40, type: 'cousin' }, sworn: true, flag: 'ak_bas_named', arc: { go: 'end' } } },
         { t: "Let the court's word stand, whatever it is", r: "You let the court have the last word. It is written down, and the matter is closed, and so is {bas}'s face.",
-          fx: { honor: 3, them: { op: -15 }, deed: 'Let the court settle the family name', flag: 'ak_bas_judged', arc: { go: 'end', mark: 'akx_judged' } } },
+          fx: { honor: 3, them: { op: -15 }, deed: 'Let the court settle the family name', flag: 'ak_bas_judged', arc: { go: 'end' } } },
         { t: 'Pay {basHim} to ride away', r: '{bas} weighs your purse, laughs, and rides away with it. {basHe} will tell the story in every inn on the road.',
-          fx: { coinPct: -0.12, them: { op: -20 }, deed: 'Paid off a claimant to the family name', flag: 'ak_bas_bought', arc: { go: 'end', mark: 'akx_bought' } } },
+          fx: { coinPct: -0.12, them: { op: -20 }, deed: 'Paid off a claimant to the family name', flag: 'ak_bas_bought', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== what runs in the blood (five scenes)
@@ -629,7 +629,7 @@
     { id: 'ak_blood_2', title: 'Your own hands', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { blood(p, ctx); },
-      text: (p, ctx) => `You find yourself watching your own hands at table. ${ctx.sp ? '{sp} has noticed you watching.' : 'The matchmaker has noticed you are still unmarried, and says so.'} ${ctx.kids ? "Your children have your mother's long fingers." : "You have no children. Some of your mother's line chose to have none."} ${M(p, 'akl_doc') ? 'One child in two, Master {doc} said.' : M(p, 'akl_names') ? "{oc}'s nine names are written in the back of your psalter." : ''}`,
+      text: (p, ctx) => `You find yourself watching your own hands at table. ${ctx.sp ? '{sp} has noticed you watching.' : 'The matchmaker has noticed you are still unmarried, and says so.'} ${ctx.kids ? "Your children have your mother's long fingers." : "You have no children. Some of your mother's line chose to have none."} ${M(p, 'akl_doc') ? 'One child in two, Master {doc} said.' : M(p, 'akl_names') ? "{oc}'s nine names are written in the back of your psalter." : M(p, 'akl_quiet') ? 'You drank to {au} at the wake and have not said her name since.' : ''}`,
       choices: [
         { t: 'Tell your family what runs in it', r: 'You tell them at supper, plainly. Nobody eats much, and nobody leaves the table.', fx: { honor: 3, happy: -3, flag: 'ak_bl_told', arc: { mark: 'akl_told' } } },
         { t: 'Say nothing. It may skip you', r: 'You say nothing. Most days you even believe it.', fx: { happy: 2, honor: -2, arc: { mark: 'akl_hid' } } },
@@ -638,7 +638,7 @@
     { id: 'ak_blood_3', title: 'The physician from {capital}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { blood(p, ctx); ctx.doc2 = H.given(p, BLOOD, 'doc2', 'M', p.cult); },
-      text: p => `A physician from the college at {capital}, Master {doc2}, is writing a book on the shaking sickness, and riding the valleys for families that have it. He wants your family's names and dates, and to see your hands once a year until you die, and will pay for both. ${M(p, 'akl_told') ? 'Your family knows already; the shame is spent.' : 'Nobody outside the family need know, he says.'}`,
+      text: p => `A physician from the college at {capital}, Master {doc2}, is writing a book on the shaking sickness, and riding the valleys for families that have it. He wants your family's names and dates, and to see your hands once a year until you die, and will pay for both. ${M(p, 'akl_told') ? 'Your family knows already; the shame is spent.' : M(p, 'akl_sworn') ? 'You have sworn off children over it; he would write that down too.' : M(p, 'akl_hid') ? 'Nobody knows, and nobody outside the family need know, he says.' : 'Nobody outside the family need know, he says.'}`,
       choices: [
         { t: 'Give him everything, your hands too', r: "Master {doc2} writes for two days and takes your pulse, your hands and your grandmother's name. He pays in silver.", fx: { coin: 40, fame: 1, skill: { medicine: 1 }, happy: -2, arc: { mark: 'akl_book' } } },
         { t: 'Sell him the names, but not yourself', r: 'He pays for the names, less than he would have for your hands, and rides off disappointed in you.', fx: { coin: 20, arc: { mark: 'akl_sold' } } },
@@ -647,7 +647,7 @@
     { id: 'ak_blood_4', title: 'Hold your hand still', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { blood(p, ctx); ctx.doc2 = H.given(p, BLOOD, 'doc2', 'M', p.cult); ctx.testerHe = M(p, 'akl_book') ? 'he' : 'she'; ctx.ageW = H.num(A.age(p)); },
-      text: (p, ctx) => `You are {ageW}, near the age {au}'s hands began. ${M(p, 'akl_book') ? 'Master {doc2} has come for his yearly look.' : 'Old {oc} has come to visit, and asks to see your hands.'} "Hold it out flat," {testerHe} says, "and count to a hundred." The kitchen is very quiet. ${ctx.sp ? '{sp} has stopped pretending to sew.' : ''}`,
+      text: (p, ctx) => `You are {ageW}, near the age {au}'s hands began. ${M(p, 'akl_book') ? 'Master {doc2} has come for his yearly look.' : M(p, 'akl_sold') ? 'Master {doc2} has the names and never saw your hands. Old {oc} has come to visit, and asks to see them.' : M(p, 'akl_sent') ? 'You sent Master {doc2} away. Old {oc} has come to visit, and asks to see your hands.' : 'Old {oc} has come to visit, and asks to see your hands.'} "Hold it out flat," {testerHe} says, "and count to a hundred." The kitchen is very quiet. ${ctx.sp ? '{sp} has stopped pretending to sew.' : ''}`,
       choices: [
         { t: 'Hold your hand out, and count', req: p => fate(p) === '0', r: 'Your hand is still at a hundred, and still at two hundred. It is wine and worry, nothing more.', fx: { happy: 8, arc: { mark: 'akl_clear' } } },
         { t: 'Hold your hand out, and count', req: p => fate(p) === '1', r: 'At forty your little finger begins to move on its own. At sixty you put your hand in your lap.', fx: { happy: -8, wound: 'ak_shaking', arc: { mark: 'akl_shows' } } },
@@ -658,15 +658,15 @@
       setup: (p, ctx) => { blood(p, ctx); ctx.doc2 = H.given(p, BLOOD, 'doc2', 'M', p.cult); ctx.phys = M(p, 'akl_book') ? 'Master ' + ctx.doc2 : M(p, 'akl_doc') ? 'Master ' + ctx.doc : 'the physician at ' + ctx.town; },
       text: (p, ctx) => `${M(p, 'akl_shows') ? 'It comes slowly, {phys} says: ten years, perhaps fifteen, before the walk goes, and longer before the mind.'
         : M(p, 'akl_clear') ? `You are past the age it took {au}, and your hands are steady. It skipped you. ${ctx.kids ? 'It may not skip your children.' : 'It ends with you.'}`
-        : fate(p) === '1' ? 'You never let anyone count. Now your cup rattles on its saucer in front of guests, and everyone counts for you.'
+        : M(p, 'akl_unknown') && fate(p) === '1' ? 'You never let anyone count. Now your cup rattles on its saucer in front of guests, and everyone counts for you.'
         : 'You never let anyone count, and the years have counted instead: you are past the age it came to {au}.'} What will you do with the time?`,
       choices: [
         { t: 'Put every affair in order while you can', r: 'You settle your debts, make peace with two old enemies, and write down where everything is. It takes a year. You sleep better.',
-          fx: { akin: 'fate', honor: 2, trait: 'diligent', deed: 'Put every affair in order against the family sickness', flag: 'ak_bl_ordered', arc: { go: 'end', mark: 'akl_order' } } },
+          fx: { akin: 'fate', honor: 2, trait: 'diligent', deed: 'Put every affair in order against the family sickness', flag: 'ak_bl_ordered', arc: { go: 'end' } } },
         { t: 'Spend it hard and gladly', r: 'You buy the grey horse, drink the good wine, and dance at every wedding in {home}. People talk. You let them.',
-          fx: { akin: 'fate', coinPct: -0.08, happy: 8, trait: 'gregarious', deed: 'Spent the years the family sickness left, and gladly', flag: 'ak_bl_spent', arc: { go: 'end', mark: 'akl_spent' } } },
+          fx: { akin: 'fate', coinPct: -0.08, happy: 8, trait: 'gregarious', deed: 'Spent the years the family sickness left, and gladly', flag: 'ak_bl_spent', arc: { go: 'end' } } },
         { t: 'Leave your body to the physicians, to learn from', r: 'You write it in your will: the college at {capital} may have you when you die. The priest is appalled. The physicians are not.',
-          fx: { akin: 'fate', fame: 3, piety: -2, trait: 'stoic', deed: 'Left your body to the physicians, to learn the family sickness', flag: 'ak_bl_given', arc: { go: 'end', mark: 'akl_given' } } },
+          fx: { akin: 'fate', fame: 3, piety: -2, trait: 'stoic', deed: 'Left your body to the physicians, to learn the family sickness', flag: 'ak_bl_given', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== the carter's child (five scenes, ten years or more)
@@ -684,7 +684,7 @@
       setup: (p, ctx) => { adopt(p, ctx); },
       text: (p, ctx) => (M(p, 'akd_took') ? `{kid} is {kidAge} and has your house's ways, but at the well the other children call {kidHim} "the carter's leavings." {kidHe} came home today with a split lip and somebody else's tooth in {kidHis} fist. ${ctx.kids ? 'Your own children took {kidHis} side, mostly.' : ''}`
         : M(p, 'akd_paid') ? 'The widow {wd} is going blind and can keep {kid} no longer. {kidHe} is {kidAge}, sharp and silent, and sits on her step waiting to hear where {kidHe} goes next.'
-        : 'On business at {capital} you pass the poorhouse yard, and a {kidBG} of {kidAge} at the railings says your name. {kid} remembers your step.'),
+        : M(p, 'akd_parish') ? 'On business at {capital} you pass the poorhouse yard, and a {kidBG} of {kidAge} at the railings says your name. {kid} remembers your step.' : '{kid} is {kidAge} now, and belongs to nobody in {home}.'),
       choices: [
         { t: p => (M(p, 'akd_took') ? 'Keep {kidHim} under your roof, and say so' : 'Bring {kidHim} under your roof, for good'), r: '{kid} has a bed of {kidHis} own now, and a place at your table that nobody else sits in.', fx: { coinPct: -0.02, happy: 2, them: { op: 20, type: 'ward' }, arc: { mark: 'akd_home' } } },
         { t: 'Find {kidHim} a place in service', r: 'A farmer at {town} takes {kid} for {kidHis} keep, and works {kidHim} hard. {kidHe} does not complain, which is worse.', fx: { wil: 1, them: { op: -5 }, arc: { mark: 'akd_service' } } },
@@ -693,7 +693,7 @@
     { id: 'ak_adopt_3', title: "{kid}'s uncle", trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { adopt(p, ctx); ctx.un = H.given(p, AD, 'un', 'M', p.cult); },
-      text: p => `A hill-farmer called {un} comes down to {home} with a dog and a lawyer's letter. He is {cd}'s brother, and he wants {kid}: blood should be with blood, he says, and the carter's right on the {town} road goes with the child. ${M(p, 'akd_service') ? "{kid}'s master would let {kidHim} go, for a price." : '{kid}, {kidAge} now, is hiding in your hayloft.'}`,
+      text: p => `A hill-farmer called {un} comes down to {home} with a dog and a lawyer's letter. He is {cd}'s brother, and he wants {kid}: blood should be with blood, he says, and the carter's right on the {town} road goes with the child. ${M(p, 'akd_service') ? "{kid}'s master would let {kidHim} go, for a price." : M(p, 'akd_school') ? "{kid}, {kidAge} now, read the lawyer's letter aloud to you, twice, and then hid in the hayloft." : M(p, 'akd_home') ? '{kid}, {kidAge} now and yours by your own word, is hiding in your hayloft.' : '{kid}, {kidAge} now, is hiding in your hayloft.'}`,
       choices: [
         { t: 'Let {kid} choose, and abide by it', r: '{kid} comes down from the loft, looks at {un} and at you, and takes your hand. {un} curses your house at the church door and goes home.', fx: { honor: 2, happy: -2, them: { op: 15 }, arc: { mark: 'akd_chose' } } },
         { t: 'Fight {un} for {kidHim} in the manor court', check: { s: 'persuasion', s2: 'int', d: 50 },
@@ -704,7 +704,7 @@
     { id: 'ak_adopt_4', title: 'What {kid} will be', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { adopt(p, ctx); ctx.un = H.given(p, AD, 'un', 'M', p.cult); },
-      text: p => `${M(p, 'akd_lost') ? "{kid} walks down from {un}'s farm in the snow, three days on foot, and will not go back." : '{kid} is taller than you this spring.'} {kidHe} is {kidAge}, and has to be something. The {craft} at {town} would take {kidHim} as apprentice, for a fee. The recruiting sergeant would take {kidHim} for nothing, and pay the house a bounty. Or {kidHe} could stay and work beside you.`,
+      text: p => `${M(p, 'akd_lost') ? "{kid} walks down from {un}'s farm in the snow, three days on foot, and will not go back." : M(p, 'akd_chose') ? '{kid} took your hand in front of {un}, and is taller than you this spring.' : M(p, 'akd_won') ? 'The court left you the child and {un} the road. {kid} is taller than you this spring.' : M(p, 'akd_bought') ? '{un} took your money and stayed up his hill. {kid} is taller than you this spring.' : '{kid} is taller than you this spring.'} {kidHe} is {kidAge}, and has to be something. The {craft} at {town} would take {kidHim} as apprentice, for a fee. The recruiting sergeant would take {kidHim} for nothing, and pay the house a bounty. Or {kidHe} could stay and work beside you.`,
       choices: [
         { t: 'Pay the apprentice fee', r: 'The {craft} takes {kid} and your fee. {kidHe} comes home at Christmas smelling of the shop, and proud of it.', fx: { coinPct: -0.05, honor: 1, them: { op: 15 }, arc: { mark: 'akd_trade' } } },
         { t: "Let {kidHim} take the sergeant's coin", r: '{kid} marches off behind a drum with eleven other young fools. The bounty buys a pig.', fx: { coin: 30, happy: -3, them: { op: -5 }, arc: { mark: 'akd_soldier' } } },
@@ -713,14 +713,14 @@
     { id: 'ak_adopt_5', title: 'The register', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { adopt(p, ctx); },
-      text: p => `${M(p, 'akd_soldier') ? '{kid} comes home from the muster for one day, to ask you something.' : M(p, 'akd_trade') ? "{kid}'s master has given {kidHim} the day." : ''} {kid} is {kidAge}. {kidHe} asks to be written in the parish register as your {kidSD}: your name, and the right to stand at your grave as kin. Or {kidHe} could take back {cd}'s name, and the carter's road with it.`,
+      text: p => `${M(p, 'akd_soldier') ? '{kid} comes home from the muster for one day, to ask you something.' : M(p, 'akd_trade') ? "{kid}'s master has given {kidHim} the day." : M(p, 'akd_stay') ? '{kid} has worked beside you three years, and stops in the middle of it to ask you something.' : ''} {kid} is {kidAge}. {kidHe} asks to be written in the parish register as your {kidSD}: your name, and the right to stand at your grave as kin. Or {kidHe} could take back {cd}'s name, and the carter's road with it.`,
       choices: [
         { t: 'Write it: my {kidSD}', r: '{kid} signs under your name, carefully. The priest sands the page and shakes your hand.',
-          fx: { akin: 'adopt', happy: 4, them: { op: 30 }, flag: 'ak_ad_named', arc: { go: 'end', mark: 'akd_named' } } },
+          fx: { akin: 'adopt', happy: 4, them: { op: 30 }, flag: 'ak_ad_named', arc: { go: 'end' } } },
         { t: "Give {kidHim} {cd}'s name, and the carter's road", r: "{kid} takes the carter's name and the carter's road, and drives past your door every week with a wave.",
-          fx: { coinPct: -0.03, them: { op: 20 }, deed: "Raised a carter's orphan to drive the carter's road", flag: 'ak_ad_carter', arc: { go: 'end', mark: 'akd_carter' } } },
+          fx: { coinPct: -0.03, them: { op: 20 }, deed: "Raised a carter's orphan to drive the carter's road", flag: 'ak_ad_carter', arc: { go: 'end' } } },
         { t: 'Tell {kidHim} a name is not a thing you give', r: '{kid} hears you, goes back to work, and does not ask again. {kidHe} is gone by the next spring.',
-          fx: { wil: 1, them: { op: -30 }, flag: 'ak_ad_refused', arc: { go: 'end', mark: 'akd_refused' } } },
+          fx: { wil: 1, them: { op: -30 }, flag: 'ak_ad_refused', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== the night road (four scenes)
@@ -738,18 +738,18 @@
     { id: 'ak_elope_2', title: 'The night', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p) && !C.married(p),
       setup: (p, ctx) => { elope(p, ctx); },
-      text: p => `${M(p, 'ake_year') ? '{lp} has quietly put the banns forward. {lv} sends word by the goose-girl: tonight, or never.' : M(p, 'ake_gave') ? '{lv} is at your door at midnight with a bundle. The wedding to {wid} is in the morning.' : '{lv} has a bundle under the hedge, and two horses borrowed from a carter who owes you.'} The hedge-priest at {town}, over the hill, will marry anyone for a silver penny and no banns.`,
+      text: p => `${M(p, 'ake_year') ? '{lp} has quietly put the banns forward. {lv} sends word by the goose-girl: tonight, or never.' : M(p, 'ake_gave') ? '{lv} is at your door at midnight with a bundle. The wedding to {wid} is in the morning.' : M(p, 'ake_barred') ? "Your coat is still torn where {lp}'s dog had it. {lv} has a bundle under the hedge, and two borrowed horses." : M(p, 'ake_plan') ? 'It is as you planned it behind the tithe barn: the bundle, the horses, the hour.' : '{lv} has a bundle under the hedge, and two horses borrowed from a carter who owes you.'} The hedge-priest at {town}, over the hill, will marry anyone for a silver penny and no banns.`,
       choices: [
         { t: 'Go now, by the hill road', check: { s: 'riding', s2: 'spd', d: 45 },
           win: { r: 'You are over the hill before the cocks, and married by the hedge-priest before breakfast, with a carter for a witness.', fx: { akin: 'wed', happy: 6, arc: { mark: 'ake_hill' } } },
           lose: { r: "A horse goes lame on the hill, and {lp}'s riders come up behind you at dawn. You are married with them hammering on the chapel door.", fx: { akin: 'wed', health: -5, happy: 2, arc: { mark: 'ake_chased' } } } },
-        { t: 'Go by the river, slow and quiet', r: 'The ferryman wants double for the hour. You are married at noon, with river mud to the knee.', fx: { akin: 'wed', coin: -10, happy: 3, arc: { mark: 'ake_river' } } },
+        { t: 'Go by the river, slow and quiet', r: 'The ferryman wants double for the hour. You are married at noon, with river mud to the knee.', fx: { akin: 'wed', coin: -10, happy: 3, arc: 'next' } },
         { t: 'Stay, and face them all by daylight', r: "You send {lv} home with the bundle, and go to {lp}'s door at dawn, alone.", fx: { honor: 3, happy: -3, arc: { mark: 'ake_stayed' } } },
       ] },
     { id: 'ak_elope_3', title: "{lv}'s brothers", trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { elope(p, ctx); },
-      text: p => `${M(p, 'ake_stayed') ? "You stand in {lp}'s yard by daylight, and {lv}'s three brothers come out of the house with cudgels." : "You and {lv} have two rooms over a cooper's at {town}. {lv}'s three brothers have found them, and are in the yard below with cudgels."} {wid} has asked for {widHis} betrothal gifts back, and {lp} cannot pay.`,
+      text: p => `${M(p, 'ake_stayed') ? "You stand in {lp}'s yard by daylight, and {lv}'s three brothers come out of the house with cudgels." : M(p, 'ake_chased') ? "You were married with {lp}'s riders at the chapel door. {lv}'s three brothers have found your two rooms at {town}, and are in the yard with cudgels." : M(p, 'ake_hill') ? "You were over the hill before the cocks. {lv}'s three brothers have found your two rooms at {town}, and are in the yard with cudgels." : "You and {lv} have two rooms over a cooper's at {town}. {lv}'s three brothers have found them, and are in the yard below with cudgels."} {wid} has asked for {widHis} betrothal gifts back, and {lp} cannot pay.`,
       choices: [
         { t: 'Fight them in the yard', check: { s: 'melee', s2: 'str', d: 55 },
           win: { r: 'You put the eldest in the water-trough, and the other two think better of it.', fx: { fame: 2, health: -4, arc: { mark: 'ake_fought' } } },
@@ -762,15 +762,15 @@
     { id: 'ak_elope_4', title: 'Home again', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { elope(p, ctx); },
-      text: (p, ctx) => `A year on. ${ctx.wed ? 'You and {lv} have a rented room, a borrowed table and a debt to the cooper.' : "{lv} is still in {lp}'s house, and {wid} is dead of {widHis} cough."} Word comes from {home}: your people will have you both back, and {lp} will sit at the same table, if asked. ${M(p, 'ake_fought') ? "{lv}'s eldest brother still walks crooked." : ''}`,
+      text: (p, ctx) => `A year on. ${ctx.wed ? 'You and {lv} have a rented room, a borrowed table and a debt to the cooper.' : "{lv} is still in {lp}'s house, and {wid} is dead of {widHis} cough."} Word comes from {home}: your people will have you both back, and {lp} will sit at the same table, if asked. ${M(p, 'ake_fought') ? "{lv}'s eldest brother still walks crooked." : M(p, 'ake_beaten') ? 'Your ribs ache in wet weather, and nobody asks about the yard.' : M(p, 'ake_talked') ? '{br}, the eldest of them, drinks with you now, warily.' : M(p, 'ake_paid') ? '{wid} has {widHis} gifts back, and the brothers have no grievance left to ride with.' : ''}`,
       choices: [
         { t: 'Go home to {home}, together', r: '{lp} sits at the far end of the table and passes the salt when asked. It is a start.',
-          fx: { akin: 'wed', honor: 2, them: { op: 20 }, rel: { who: 'father', op: 15 }, flag: 'ak_el_home', arc: { go: 'end', mark: 'ake_home' } } },
+          fx: { akin: 'wed', honor: 2, them: { op: 20 }, rel: { who: 'father', op: 15 }, flag: 'ak_el_home', arc: { go: 'end' } } },
         { t: 'Stay at {town} and make your own life', r: 'You take a cottage at {town} with a pear tree and a chimney that smokes. It is yours, which is the point.',
-          fx: { akin: 'wed', asset: 'cottage', coinPct: -0.03, them: { op: 15 }, flag: 'ak_el_away', arc: { go: 'end', mark: 'ake_away' } } },
+          fx: { akin: 'wed', asset: 'cottage', coinPct: -0.03, them: { op: 15 }, flag: 'ak_el_away', arc: { go: 'end' } } },
         { t: (p, ctx) => (ctx.wed ? 'Let {lv} go home without you' : 'Let {lvHim} go, this time for good'),
           r: (p, ctx) => (ctx.wed ? 'You part at the crossroads without a scene. {lv} goes home to {lp}. The priest calls it a separation; the parish calls it something else.' : 'You let {lv} go for good. {lvHe} marries a carter from {town} in the autumn, and is happy, you hear.'),
-          fx: { akin: 'unwed', happy: -6, them: { op: -30 }, flag: 'ak_el_parted', arc: { go: 'end', mark: 'ake_parted' } } },
+          fx: { akin: 'unwed', happy: -6, them: { op: -30 }, flag: 'ak_el_parted', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== the will (four scenes)
@@ -788,7 +788,7 @@
     { id: 'ak_will_2', title: '{comp}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { will(p, ctx); },
-      text: p => `${M(p, 'akw_refused') ? "{comp} writes to you from {par}'s house, which is the church's now. The new priest wants {compHim} out by Lady Day, conditions or no." : M(p, 'akw_free') ? '{comp} has gone to a sister at {town}, and the parish talks of nothing else.' : "{comp} keeps the best chair, the cellar key and {par}'s ways, and corrects how you bank the fire."} {compHe} is {compAge}, and knew {par} at the end better than anyone.`,
+      text: p => `${M(p, 'akw_refused') ? "{comp} writes to you from {par}'s house, which is the church's now. The new priest wants {compHim} out by Lady Day, conditions or no." : M(p, 'akw_free') ? '{comp} has gone to a sister at {town}, and the parish talks of nothing else.' : M(p, 'akw_bound') ? "The court upheld every word, so {comp} keeps the best chair, the cellar key and {par}'s ways." : M(p, 'akw_took') ? "{comp} keeps the best chair, the cellar key and {par}'s ways, and corrects how you bank the fire." : "{comp} keeps the best chair and the cellar key, and corrects how you bank the fire."} {compHe} is {compAge}, and knew {par} at the end better than anyone.`,
       choices: [
         { t: p => (M(p, 'akw_refused') || M(p, 'akw_free') ? 'Take {comp} into your own house' : "Let {comp} keep {par}'s place by the fire"), r: '{comp} keeps {compHis} place by the fire, and tells you things about {par} you did not know and could have done without.', fx: { honor: 2, happy: -3, them: { op: 20 }, arc: { mark: 'akw_kept' } } },
         { t: 'Ask {comp} what {par} was like at the end', r: '{comp} talks for an evening. {par} was frightened, and funny, and asked for you twice.', fx: { happy: 2, them: { op: 10 }, arc: { mark: 'akw_asked' } } },
@@ -797,7 +797,7 @@
     { id: 'ak_will_3', title: 'A buyer from {capital}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { will(p, ctx); },
-      text: p => `{buyer}, a wool-merchant from {capital}, wants {par}'s house and garden, and offers more than they are worth: the new road will pass the door. ${M(p, 'akw_refused') ? 'The church will sell it to him unless you buy it first.' : M(p, 'akw_free') ? 'The court struck the conditions, so you may sell.' : 'The will says it is never to be sold out of the family.'} ${M(p, 'akw_moved') ? '' : '{comp} is listening at the door.'}`,
+      text: p => `{buyer}, a wool-merchant from {capital}, wants {par}'s house and garden, and offers more than they are worth: the new road will pass the door. ${M(p, 'akw_refused') ? 'The church will sell it to him unless you buy it first.' : M(p, 'akw_free') ? 'The court struck the conditions, so you may sell.' : 'The will says it is never to be sold out of the family.'} ${M(p, 'akw_moved') ? '' : M(p, 'akw_kept') ? '{comp} is listening at the door, out of {parHis} own chair.' : M(p, 'akw_asked') ? '{comp}, who told you how {par} died, is listening at the door.' : '{comp} is listening at the door.'}`,
       choices: [
         { t: 'Sell it to him', req: p => !M(p, 'akw_refused'), r: '{buyer} pays in good coin and has the garden dug up by Easter.', fx: { coin: 250, honor: -3, akin: 'sell', arc: { mark: 'akw_sold' } } },
         { t: 'Buy it back from the church first', req: p => M(p, 'akw_refused'), r: 'The church sells you {par}\'s house at the price {buyer} offered, and blesses you for it.', fx: { coin: -200, coinPct: -0.05, happy: 2, akin: 'house', arc: { mark: 'akw_bought' } } },
@@ -810,18 +810,19 @@
         will(p, ctx);
         const heir = H.get(p, WILL, 'heir', () => H.mk(p, { age: H.adj(p) + A.ri(-6, 6), status: 'peasant', occ: 'keeps pigs at ' + ctx.town }));
         H.tok(ctx, 'heir', heir); ctx.pid = heir.id;
-        ctx.house = ctx.owned ? 'The house is yours, for now.' : M(p, 'akw_sold') ? 'The house is sold, and the money mostly spent.' : 'The house is not yours to give.';
+        ctx.house = ctx.owned ? (M(p, 'akw_leased') ? "The house is yours, with twenty years of a wool-merchant's lease on it." : M(p, 'akw_bought') ? 'You bought the house back from the church. It is yours.' : M(p, 'akw_kept2') ? 'The house is yours, and the wool-merchant went home disappointed.' : 'The house is yours, for now.')
+          : M(p, 'akw_sold') ? 'The house is sold, and the money mostly spent.' : M(p, 'akw_kept2') ? 'The church sold the house to the wool-merchant.' : 'The house is not yours to give.';
       },
       text: 'The day comes, and you break {par}\'s seal. In {parHis} hand: "The house was never mine to leave. I won it from {owner} at dice in the hungry year, with a weighted bone. Do what I could not." {owner} is long dead. His grandchild, {heir}, keeps pigs at {town}. {house}',
       choices: [
         { t: 'Give the house to {heir}', req: (p, C, ctx) => !!(ctx && ctx.owned), r: '{heir} cannot believe it, and then can. {heirHe} moves in at Michaelmas with four children and a sow.',
-          fx: { akin: 'sell', honor: 6, them: { op: 40, type: 'friend' }, flag: 'ak_will_righted', arc: { go: 'end', mark: 'akw_righted' } } },
+          fx: { akin: 'sell', honor: 6, them: { op: 40, type: 'friend' }, flag: 'ak_will_righted', arc: { go: 'end' } } },
         { t: 'Pay {heir} what the house was worth', req: (p, C, ctx) => !(ctx && ctx.owned), r: "You pay {heir} the price of {par}'s house, in coin, at {heirHis} own table. {heirHe} counts it twice and weeps once.",
-          fx: { coin: -100, coinPct: -0.06, honor: 5, them: { op: 35, type: 'friend' }, flag: 'ak_will_righted', arc: { go: 'end', mark: 'akw_righted' } } },
+          fx: { coin: -100, coinPct: -0.06, honor: 5, them: { op: 35, type: 'friend' }, flag: 'ak_will_righted', arc: { go: 'end' } } },
         { t: 'Burn the letter. It was another age', r: 'The letter burns as quickly as any other. Nobody alive knows but you.',
-          fx: { wil: 1, honor: -2, deed: "Burned a dead parent's confession", flag: 'ak_will_burned', arc: { go: 'end', mark: 'akw_burned' } } },
+          fx: { wil: 1, honor: -2, deed: "Burned a dead parent's confession", flag: 'ak_will_burned', arc: { go: 'end' } } },
         { t: 'Tell {heir}, and offer a fair price for it', req: (p, C, ctx) => !!(ctx && ctx.owned), r: '{heir} hears it out, and takes your price, and shakes your hand on the step as if it were a market day.',
-          fx: { coinPct: -0.06, honor: 3, them: { op: 25, type: 'friend' }, flag: 'ak_will_paid', arc: { go: 'end', mark: 'akw_paid' } } },
+          fx: { coinPct: -0.06, honor: 3, them: { op: 25, type: 'friend' }, flag: 'ak_will_paid', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== the red cow (four scenes, a decade)
@@ -839,7 +840,7 @@
     { id: 'ak_dowry_2', title: 'The bailiff', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { dowry(p, ctx); },
-      text: p => `{lead}{cr} has gone to the court at {town}${M(p, 'akr_half') ? ' for the other half' : ''}, and won. A bailiff comes to your door for a pledge against the debt: your best {beast}, or its worth in silver. Your neighbours are watching from their doorways. ${M(p, 'akr_flaw') ? 'Your man of law says the flaw will hold on appeal, if you can keep paying him.' : ''}`,
+      text: p => `{lead}{cr} has gone to the court at {town}${M(p, 'akr_half') ? ' for the other half' : ''}, and won.${M(p, 'akr_refused') ? ' Your refusal was read out to the court, slowly.' : ''} A bailiff comes to your door for a pledge against the debt: your best {beast}, or its worth in silver. Your neighbours are watching from their doorways. ${M(p, 'akr_flaw') ? 'Your man of law says the flaw will hold on appeal, if you can keep paying him.' : ''}`,
       choices: [
         { t: 'Let the bailiff take the pledge', r: 'The bailiff leads the beast away down the lane. Your neighbours go back inside, one by one.', fx: { coinPct: -0.05, honor: 1, happy: -3, arc: { mark: 'akr_pledged' } } },
         { t: 'Bar the door against him', check: { s: 'intimidation', s2: 'str', d: 50 },
@@ -852,7 +853,7 @@
     { id: 'ak_dowry_3', title: 'A match to settle it', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { const { cr } = dowry(p, ctx); dowryMatch(p, ctx, cr); },
-      text: p => `{lead}{cr} makes an offer. The debt is forgiven if {who} {crHis} grandchild {gc}, and brings forty suns and a red cow to the wedding, exactly as written. ${M(p, 'akr_talks') ? 'It was your talk in his yard that gave him the idea.' : M(p, 'akr_barred') ? 'He has not forgotten your barred door, and says so.' : 'He has had sixty years to think of it.'}`,
+      text: p => `{lead}{cr} makes an offer. The debt is forgiven if {who} {crHis} grandchild {gc}, and brings forty suns and a red cow to the wedding, exactly as written. ${M(p, 'akr_talks') ? 'It was your talk in his yard that gave him the idea.' : M(p, 'akr_barred') ? 'He has not forgotten your barred door, and says so.' : M(p, 'akr_scorned') ? 'He kept you standing in his yard once, and has had sixty years to think of it.' : M(p, 'akr_pledged') ? 'He has your {beast} in his byre already, and sixty years of thinking behind him.' : 'He has had sixty years to think of it.'}`,
       choices: [
         { t: 'Agree to the match', r: '{cr} laughs until he coughs, and sends for his best cider.', fx: { honor: 1, happy: -2, them: { op: 20 }, arc: { mark: 'akr_match' } } },
         { t: 'Refuse the match, and pay what you can', r: 'You pay what you can, which is a great deal. {cr} takes it without thanks.', fx: { coin: -20, coinPct: -0.1, them: { op: -5 }, arc: { mark: 'akr_paid' } } },
@@ -861,17 +862,17 @@
     { id: 'ak_dowry_4', title: 'Forty suns and a red cow', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { const { cr } = dowry(p, ctx); dowryMatch(p, ctx, cr); },
-      text: p => `{lead}${M(p, 'akr_match') ? 'The wedding is set for Michaelmas, and {cr} has asked for the red cow to walk in front.' : M(p, 'akr_passed') ? '{cr} is failing. {crHis} heir has the paper, and the patience of a younger man.' : 'There is one payment left, and {cr} has sent for it.'} Whatever you do now, your children inherit it: the debt, or the end of it.`,
+      text: p => `{lead}${M(p, 'akr_match') ? 'The wedding is set for Michaelmas, and {cr} has asked for the red cow to walk in front.' : M(p, 'akr_passed') ? '{cr} is failing. {crHis} heir has the paper, and the patience of a younger man.' : M(p, 'akr_paid') ? 'You paid what you could, and the rest of it still stands. {cr} has sent for that.' : 'There is one payment left, and {cr} has sent for it.'} Whatever you do now, your children inherit it: the debt, or the end of it.`,
       choices: [
         { t: 'Hold the wedding, red cow and all', req: p => M(p, 'akr_match'), r: 'The red cow walks in front, garlanded and furious. The paper is burned at the feast, and both families cheer.',
-          fx: { coin: -40, happy: 2, akin: 'wedMatch', them: { op: 30 }, flag: 'ak_dw_wed', arc: { go: 'end', mark: 'akr_wed' } } },
+          fx: { coin: -40, happy: 2, akin: 'wedMatch', them: { op: 30 }, flag: 'ak_dw_wed', arc: { go: 'end' } } },
         { t: 'Pay it off, and burn the paper together', req: p => !M(p, 'akr_match') && p.coin >= 40, r: 'You and {cr} burn the contract in his kitchen fire and watch it go. It was only paper.',
-          fx: { coin: -40, coinPct: -0.15, honor: 3, them: { op: 25 }, deed: 'Settled a dowry sixty years unpaid', flag: 'ak_dw_paid', arc: { go: 'end', mark: 'akr_done' } } },
+          fx: { coin: -40, coinPct: -0.15, honor: 3, them: { op: 25 }, deed: 'Settled a dowry sixty years unpaid', flag: 'ak_dw_paid', arc: { go: 'end' } } },
         { t: 'Pay exactly as written: forty suns and a cow', check: { s: 'persuasion', s2: 'int', d: 60 },
-          win: { r: 'You stand up in the court at {town} with forty suns and a red cow on a rope. The judge laughs, and then finds for you.', fx: { coin: -40, fame: 3, epithet: 'of the Red Cow', deed: 'Paid a sixty-year dowry with forty suns and a red cow', flag: 'ak_dw_cow', arc: { go: 'end', mark: 'akr_cow' } } },
-          lose: { r: 'The judge does not laugh. You pay the interest, and the court keeps the cow.', fx: { coin: -60, coinPct: -0.15, happy: -3, deed: 'Paid a sixty-year dowry, with interest', flag: 'ak_dw_paid', arc: { go: 'end', mark: 'akr_done' } } } },
+          win: { r: 'You stand up in the court at {town} with forty suns and a red cow on a rope. The judge laughs, and then finds for you.', fx: { coin: -40, fame: 3, epithet: 'of the Red Cow', deed: 'Paid a sixty-year dowry with forty suns and a red cow', flag: 'ak_dw_cow', arc: { go: 'end' } } },
+          lose: { r: 'The judge does not laugh. You pay the interest, and the court keeps the cow.', fx: { coin: -60, coinPct: -0.15, happy: -3, deed: 'Paid a sixty-year dowry, with interest', flag: 'ak_dw_paid', arc: { go: 'end' } } } },
         { t: 'Leave it to your heirs, interest and all', r: "You put the contract in the family chest with a note: unpaid. Your children will curse you, a little, and {cr}'s will curse them.",
-          fx: { happy: 3, wil: 1, them: { op: -30 }, flag: 'ak_dw_passed', arc: { go: 'end', mark: 'akr_left' } } },
+          fx: { happy: 3, wil: 1, them: { op: -30 }, flag: 'ak_dw_passed', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== the old ground (four scenes)
@@ -887,7 +888,7 @@
     { id: 'ak_land_2', title: "{ow}'s price", trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { land(p, ctx); },
-      text: p => `{ow} will sell {ground}: the house, the spring, sixty acres of thin hill grass and the old orchard. He wants {price} and not a penny less, and he knows what the ground is worth to you. ${M(p, 'akg_worked') ? 'He likes you, after the season. The price is the same.' : M(p, 'akg_saving') ? 'Your box under the floor is heavier than it was.' : 'He has raised it since you asked.'}`,
+      text: p => `{ow} will sell {ground}: the house, the spring, sixty acres of thin hill grass and the old orchard. He wants {price} and not a penny less, and he knows what the ground is worth to you. ${M(p, 'akg_worked') ? 'He likes you, after the season. The price is the same.' : M(p, 'akg_saving') ? 'Your box under the floor is heavier than it was.' : M(p, 'akg_asked') ? 'He has raised it since you asked.' : 'He names it as if the figure were older than both of you.'}`,
       choices: [
         { t: 'Pay his price', req: p => p.coin >= 150, r: "You pay {price} at {ow}'s table, in front of a notary and a dog. {ground} is yours.", fx: { coin: -150, coinPct: -0.15, happy: 6, akin: 'farm', arc: { mark: 'akg_bought' } } },
         { t: 'Haggle him down', req: p => p.coin >= 100, check: { s: 'trade', s2: 'persuasion', d: 50 },
@@ -899,7 +900,7 @@
     { id: 'ak_land_3', title: 'Old {tn}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { const { tn } = land(p, ctx); ctx.pid = tn.id; },
-      text: p => `${M(p, 'akg_bought') ? '{ground} is yours, and worse than you thought: the spring silts, the roof lets in the stars, and old {tn} has grazed the low field rent-free for forty years.' : M(p, 'akg_abbey') ? "The abbey's cellarer will sell you {ground} at {ow}'s price, and a candle a year for the founder. Old {tn} grazes the low field." : M(p, 'akg_part') ? 'You own the orchard and six stones. Old {tn} keeps the graves weeded, for nothing.' : "You own nothing on {ground}. Old {tn} keeps your family's graves weeded, for nothing."} {tn} says his people have been there as long as yours were.`,
+      text: p => `${M(p, 'akg_bought') ? '{ground} is yours, and worse than you thought: the spring silts, the roof lets in the stars, and old {tn} has grazed the low field rent-free for forty years.' : M(p, 'akg_abbey') ? "The abbey's cellarer will sell you {ground} at {ow}'s price, and a candle a year for the founder. Old {tn} grazes the low field." : M(p, 'akg_part') ? 'You own the orchard and six stones. Old {tn} keeps the graves weeded, for nothing.' : M(p, 'akg_left') ? "You could not find {ow}'s price. You own nothing on {ground}, and old {tn} keeps your family's graves weeded, for nothing." : "You own nothing on {ground}. Old {tn} keeps your family's graves weeded, for nothing."} {tn} says his people have been there as long as yours were.`,
       choices: [
         { t: 'Buy the rest, whatever it costs', req: (p, C, ctx) => !(ctx && ctx.owned) && p.coin >= 150, r: 'You pay {price}. {ground} is yours, every stone and sheep-track of it.', fx: { coin: -150, coinPct: -0.15, happy: 5, akin: 'farm', arc: { mark: 'akg_bought2' } } },
         { t: (p, ctx) => (ctx.owned ? 'Mend the roof and winter there' : 'Work the ground beside {tn} for a season'),
@@ -911,17 +912,17 @@
     { id: 'ak_land_4', title: 'Midsummer on {ground}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { const { tn } = land(p, ctx); ctx.pid = tn.id; },
-      text: (p, ctx) => (ctx.owned ? `Midsummer on {ground}. ${M(p, 'akg_wintered') ? 'The roof holds now.' : ''} You walk the bounds from the spring to the stones. ${M(p, 'akg_evicted') ? 'The low field is empty, and the village still does not wave.' : 'Old {tn} walks them with you, and knows a boundary stone you did not.'} The question is what {ground} is to be, after you.`
+      text: (p, ctx) => (ctx.owned ? `Midsummer on {ground}. ${M(p, 'akg_wintered') ? 'The roof holds now.' : M(p, 'akg_bought2') ? 'You paid for the same hill twice, and hold all of it.' : ''} You walk the bounds from the spring to the stones. ${M(p, 'akg_evicted') ? 'The low field is empty, and the village still does not wave.' : M(p, 'akg_tn') ? 'Old {tn} grazes the low field as he always has, and walks the bounds with you.' : 'Old {tn} walks them with you, and knows a boundary stone you did not.'} The question is what {ground} is to be, after you.`
         : 'Midsummer at {town}. You weed your family\'s six stones yourself, with old {tn} beside you. {ground} is not yours. The stones are. The question is where your own will go.'),
       choices: [
         { t: 'Cut your own name on a new stone, beside theirs', r: 'The mason cuts your name and leaves room for the date. You will lie with your people.',
-          fx: { happy: 4, piety: 2, deed: 'Brought the family name home to the old ground', flag: 'ak_land_home', arc: { go: 'end', mark: 'akg_home' } } },
+          fx: { happy: 4, piety: 2, deed: 'Brought the family name home to the old ground', flag: 'ak_land_home', arc: { go: 'end' } } },
         { t: "Leave {ground} to {tn}'s family in your will", req: (p, C, ctx) => !!(ctx && ctx.owned), r: '{tn} cannot read the will, so you read it to him. He goes very quiet, and then asks if you want the dog.',
-          fx: { honor: 5, them: { op: 35 }, flag: 'ak_land_given', arc: { go: 'end', mark: 'akg_given' } } },
+          fx: { honor: 5, them: { op: 35 }, flag: 'ak_land_given', arc: { go: 'end' } } },
         { t: 'Sell {ground} again. The dead do not need it', req: (p, C, ctx) => !!(ctx && ctx.owned), r: 'You sell it to the abbey for less than you paid. The stones stay. You do not go back.',
-          fx: { akin: 'sell', coin: 200, happy: -4, deed: 'Sold the old family ground again', flag: 'ak_land_sold', arc: { go: 'end', mark: 'akg_sold' } } },
+          fx: { akin: 'sell', coin: 200, happy: -4, deed: 'Sold the old family ground again', flag: 'ak_land_sold', arc: { go: 'end' } } },
         { t: 'Bring the six stones down to {home}', req: (p, C, ctx) => !(ctx && ctx.owned), r: 'A cart, two masons and a priest bring your people down to {home}. The churchyard there is small, but it is yours.',
-          fx: { coinPct: -0.03, piety: 3, deed: 'Carried the family gravestones home', flag: 'ak_land_moved', arc: { go: 'end', mark: 'akg_moved' } } },
+          fx: { coinPct: -0.03, piety: 3, deed: 'Carried the family gravestones home', flag: 'ak_land_moved', arc: { go: 'end' } } },
       ] },
 
     // ================================================================== your father's other house (four scenes)
@@ -937,7 +938,7 @@
     { id: 'ak_second_2', title: '{ow}', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { const { ow } = second(p, ctx); ctx.pid = ow.id; },
-      text: (p, ctx) => `{ow} keeps {owHouse} at {town}, and ${ctx.faAlive ? 'has kept your father three days in seven' : 'kept your father three days in seven, until the end,'} for {yrs} years. {hs} is hers and his. ${M(p, 'aksf_faced') ? 'Your father has begged you not to tell your mother.' : M(p, 'aksf_followed') ? '{ow} saw you in the lane, and asks you in.' : 'It is {ow} who comes to you, with {gift} and a speech she has practised.'} ${ctx.moAlive ? 'Your mother says nothing, which may mean anything.' : 'Your mother is in her grave, and was no fool, you think now.'}`,
+      text: (p, ctx) => `{ow} keeps {owHouse} at {town}, and ${ctx.faAlive ? 'has kept your father three days in seven' : 'kept your father three days in seven, until the end,'} for {yrs} years. {hs} is hers and his. ${M(p, 'aksf_faced') ? 'Your father has begged you not to tell your mother.' : M(p, 'aksf_followed') ? '{ow} saw you in the lane, and asks you in.' : M(p, 'aksf_silent') ? 'You said nothing to anyone, so it is {ow} who comes to you, with {gift} and a speech she has practised.' : 'It is {ow} who comes to you, with {gift} and a speech she has practised.'} ${ctx.moAlive ? 'Your mother says nothing, which may mean anything.' : 'Your mother is in her grave, and was no fool, you think now.'}`,
       choices: [
         { t: (p, ctx) => (ctx.moAlive ? 'Tell your mother' : ctx.faAlive ? 'Tell your father you know' : 'Tell the priest, at least'),
           r: (p, ctx) => (ctx.moAlive ? 'You tell your mother in the dairy. She hears you out, wipes her hands, and says she has known for years.' : ctx.faAlive ? 'You tell your father you know. He sits down slowly, like an old man, and asks how {hs} looked.' : 'You tell the priest. He has heard worse, and says so.'),
@@ -950,7 +951,7 @@
     { id: 'ak_second_3', title: 'Both houses', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { const { hs } = second(p, ctx); ctx.pid = hs.id; },
-      text: (p, ctx) => (ctx.faAlive ? `Your father falls ill at {town}, in {ow}'s house, and the physician says he must not be moved. He asks for you. {ow} opens the door; {hs} is on the stair. ${M(p, 'aksf_told') && ctx.moAlive ? 'Your mother is coming up the lane behind you.' : ''}`
+      text: (p, ctx) => (ctx.faAlive ? `Your father falls ill at {town}, in {ow}'s house, and the physician says he must not be moved. He asks for you. {ow} opens the door; {hs} is on the stair. ${M(p, 'aksf_told') && ctx.moAlive ? 'Your mother is coming up the lane behind you.' : M(p, 'aksf_threat') ? 'The last thing you said to {ow} was a threat.' : M(p, 'aksf_refused') ? '{ow} refused you to your face once, and opens the door anyway.' : M(p, 'aksf_listened') ? 'You have sat in her kitchen and heard her out.' : ''}`
         : `Your father is buried at {home}. {ow} and {hs} stand at the back of the church, and everyone in it knows who they are. ${ctx.moAlive ? 'Your mother is in the front pew, and does not turn round.' : ''}`),
       choices: [
         { t: (p, ctx) => (ctx.faAlive ? 'Let them keep him, and sit with him there' : 'Bring {ow} and {hs} to the front'),
@@ -964,14 +965,14 @@
     { id: 'ak_second_4', title: 'Half your blood', trigger: true, cool: 1,
       cond: (p, C) => C.adult(p),
       setup: (p, ctx) => { const { hs } = second(p, ctx); ctx.pid = hs.id; if (!hs.alive) ctx.skip = 1; },
-      text: p => `{hs} is {hsAge} now, with your father's ears and his laugh. {hsHe} comes to you with {hsHis} hat in {hsHis} hands. {hsHe} wants nothing from the estate. {hsHe} wants to be called your {hsBS} in the street, and to have you at {hsHis} wedding in the spring. ${M(p, 'aksf_back') ? 'You left {hsHim} at the back once, and {hsHe} has not said so.' : ''}`,
+      text: p => `{hs} is {hsAge} now, with your father's ears and his laugh. {hsHe} comes to you with {hsHis} hat in {hsHis} hands. {hsHe} wants nothing from the estate. {hsHe} wants to be called your {hsBS} in the street, and to have you at {hsHis} wedding in the spring. ${M(p, 'aksf_back') ? 'You left {hsHim} at the back once, and {hsHe} has not said so.' : M(p, 'aksf_front') ? 'You brought {hsHim} to the front pew yourself, in front of the parish.' : M(p, 'aksf_walk') ? 'You walked as far as the bridge with {hsHim} once.' : ''}`,
       choices: [
         { t: 'Call {hsHim} {hsBS}, in the street and at the wedding', r: 'At the wedding you stand where family stands. Somebody asks who you are, and {hs} answers before you can.',
-          fx: { happy: 3, them: { op: 40, type: 'sibling' }, flag: 'ak_sf_kin', arc: { go: 'end', mark: 'aksf_kin' } } },
+          fx: { happy: 3, them: { op: 40, type: 'sibling' }, flag: 'ak_sf_kin', arc: { go: 'end' } } },
         { t: 'Send a wedding gift, and keep your distance', r: 'You send a good gift and a short letter. {hs} writes back a long one, which you keep.',
-          fx: { coinPct: -0.03, them: { op: 10 }, deed: 'Sent a half-sibling a wedding gift and a short letter', flag: 'ak_sf_gift', arc: { go: 'end', mark: 'aksf_gift' } } },
+          fx: { coinPct: -0.03, them: { op: 10 }, deed: 'Sent a half-sibling a wedding gift and a short letter', flag: 'ak_sf_gift', arc: { go: 'end' } } },
         { t: 'Tell {hsHim} {hsHe} has no family of yours', r: '{hs} puts {hsHis} hat back on and goes. You see {hsHim} at the market in {town} after, and {hsHe} looks through you.',
-          fx: { wil: 1, them: { op: -40 }, flag: 'ak_sf_denied', arc: { go: 'end', mark: 'aksf_denied' } } },
+          fx: { wil: 1, them: { op: -40 }, flag: 'ak_sf_denied', arc: { go: 'end' } } },
       ] },
   ];
   // a variant that is empty leaves two spaces; the classifiers (A.evAudience, the bot's memory index) read the text
