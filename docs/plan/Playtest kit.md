@@ -4,14 +4,14 @@ How to run Ardan's first playtests with five new players, and what to do with wh
 
 ## What to send
 
-Send one file: `index.html` from the repository (about 4 MB). It needs no install and no network, since the fonts are inside it (77-offline-fonts). It opens in any current Chrome, Edge, Firefox or Safari, on a computer or a phone. Ask the player to double-click it, or to open it in their browser with File → Open.
+Send one file: `index.html` from the repository (about 4 MB). It needs no install and no network, since the fonts are inside it (77-offline-fonts). **For the first round, ask players to use Chrome or Edge**, on a computer or an Android phone. Every machine check (the tests, the balance league, the soak monkey) runs in Chromium, the engine behind both. Firefox and Safari should work, since the page uses nothing they lack, but no machine has tried them yet. If a player can only use one of those, note the browser on their sheet, and treat any error in their `session.errors` as a browser bug first. Ask the player to double-click it, or to open it in their browser with File → Open.
 
 Saves live in the browser that opened the file. A player who switches browsers or devices starts over. If one player uses the same machine after another, clear the old save first: Menu → New life, or use a private window.
 
 ## The session (45 minutes)
 
 1. **Before (2 minutes).** Say only this: "It's a game about living a life in a medieval world. I'm testing the game, not you. Please think out loud. I can't help you, but you can stop whenever you like." Do not explain the game.
-2. **Start playtest mode.** Open the game, then Menu → **Playtest mode**. A bar at the bottom shows one task at a time, with Start and Skip. The player presses Start, does the task, then presses Done, or Give up if they are stuck. The game times each task.
+2. **Start playtest mode.** Open the game and press **Playtest mode** on the title screen (it is also in the in-game Menu). A bar at the bottom shows one task at a time, with Start and Skip. The player presses Start, does the task, then presses Done, or Give up if they are stuck. The game times each task.
 3. **The ten tasks** (the game shows them, in this order):
    1. Start a new life of your own choosing
    2. Find out how healthy you are

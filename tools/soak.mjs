@@ -45,16 +45,17 @@ const STARTS = [
 const SWEEP = rx => {
   const R = new RegExp(rx.src), bad = [];
   const look = where => { const tx = document.body.innerText || ''; const m = tx.match(R); if (m) bad.push(where + ': ' + tx.slice(Math.max(0, m.index - 80), m.index + 60).replace(/\s+/g, ' ')); };
-  if (UI.screen !== 'game' || !A.S || !A.pc()) return { bad };
+  let n = 0;
+  if (UI.screen !== 'game' || !A.S || !A.pc()) return { bad, n };
   const keep = { tab: UI.tab, ov: UI.ov };
   const tabs = (UI.GROUPS || []).flatMap(g => g.subs.map(x => x[0]));
-  for (const t of tabs) { UI.ov = null; UI.tab = t; UI.render(); look('tab ' + t); }
+  for (const t of tabs) { UI.ov = null; UI.tab = t; UI.render(); look('tab ' + t); n++; }
   const ppl = Object.values(A.S.people).filter(p => p && p.alive && p.id !== A.S.pc).slice(0, 12);
-  for (const p of ppl) { if (UI.A.ov) { UI.A.ov(p.id); look('person ' + p.id); } }
+  for (const p of ppl) { if (UI.A.ov) { UI.A.ov(p.id); look('person ' + p.id); n++; } }
   UI.ov = null;
-  if (UI.warRoomOpen && UI.wrTabs && A.cmdRole) { try { UI.warRoomOpen(); for (const t of UI.wrTabs(A.cmdRole(A.pc()))) { UI.wr.tab = t.k; UI.wr.sel = null; UI.render(); look('war room ' + t.k); } } finally { UI.ov = null; } }
+  if (UI.warRoomOpen && UI.wrTabs && A.cmdRole) { try { UI.warRoomOpen(); for (const t of UI.wrTabs(A.cmdRole(A.pc()))) { UI.wr.tab = t.k; UI.wr.sel = null; UI.render(); look('war room ' + t.k); n++; } } finally { UI.ov = null; } }
   UI.tab = keep.tab; UI.ov = null; UI.render();
-  return { bad: bad.slice(0, 5) };
+  return { bad: bad.slice(0, 5), n };
 };
 
 async function oneRun(browser, run) {
@@ -71,7 +72,7 @@ async function oneRun(browser, run) {
   pg.on('filechooser', fc => fc.setFiles([]).catch(() => {}));
   await pg.goto(pathToFileURL(file).href);
   await pg.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
-  let lives = 0, years0 = null, maxYear = 0;
+  let lives = 0, years0 = null, maxYear = 0, sweeps = 0, screens = 0, clicks = 0;
   // half the runs start from the title screen like a player; the other half begin a chosen life (every people and
   // rank, any age, any difficulty) so the monkey reaches what a random first life rarely does
   if (run % 2) {
@@ -82,7 +83,7 @@ async function oneRun(browser, run) {
   }
   for (step = 0; step < STEPS; step++) {
     // now and then, look at everything: every tab, a dozen people, the War Room, checking the words on each
-    if (step % 40 === 39) { last = 'sweep'; const r = await pg.evaluate(SWEEP, { src: BAD_TEXT.source }).catch(e => ({ err: String(e) })); if (r && r.err) add('harness', r.err); for (const b of (r && r.bad) || []) add('text', b); continue; }
+    if (step % 40 === 39) { last = 'sweep'; const r = await pg.evaluate(SWEEP, { src: BAD_TEXT.source }).catch(e => ({ err: String(e) })); if (r && r.err) add('harness', r.err); if (r && r.n) { sweeps++; screens += r.n; } for (const b of (r && r.bad) || []) add('text', b); continue; }
     const st = await pg.evaluate(() => ({ screen: UI.screen, q: A.S && A.S.queue ? A.S.queue.length : 0, ov: !!UI.ov, year: A.S && A.S.year,
       alive: !!(A.S && A.pc && A.pc() && A.pc().alive) })).catch(e => ({ err: String(e) }));
     if (st.err) { add('harness', st.err); break; }
@@ -103,7 +104,7 @@ async function oneRun(browser, run) {
     // an open event, battle or duel wants an answer: answer it more often than wandering off
     const answer = pool.filter(t => /^(evChoose|qChoice|mChoose|bAuto|duelAuto|cAuto|mAuto|evClose|bClose|duelClose|cClose|mClose|qClose|closeOv|continue|startLife|randomLife|contAs|newLife)$/.test(t.a));
     const t = answer.length && R() < .6 ? answer[Math.floor(R() * answer.length)] : pool[Math.floor(R() * pool.length)];
-    last = `${t.a}${t.v ? ' ' + t.v : ''}`;
+    last = `${t.a}${t.v ? ' ' + t.v : ''}`; clicks++;
     if (t.a === 'newLife' || t.a === 'randomLife' || t.a === 'startLife') lives++;
     try {
       if (t.a === 'select') await pg.selectOption(`[data-soak="${t.i}"]`, { index: Math.floor(R() * Math.max(1, t.sel)) }, { timeout: 3000 });
@@ -115,13 +116,13 @@ async function oneRun(browser, run) {
     }
   }
   await ctx.close();
-  return { run, found, lives, years: years0 == null ? 0 : maxYear - years0 };
+  return { run, found, lives, years: years0 == null ? 0 : maxYear - years0, sweeps, screens, clicks };
 }
 
 const browser = await pw.chromium.launch();
 const queue = Array.from({ length: RUNS }, (_, i) => i), out = [];
 await Promise.all(Array.from({ length: Math.min(WORKERS, RUNS) }, async () => {
-  while (queue.length) { const r = queue.shift(); const res = await oneRun(browser, r).catch(e => ({ run: r, found: [{ kind: 'harness', msg: String(e).slice(0, 300), run: r }], lives: 0, years: 0 })); out.push(res); process.stdout.write(`run ${r}: ${res.found.length} found, ${res.lives} lives started, ${res.years} years\n`); }
+  while (queue.length) { const r = queue.shift(); const res = await oneRun(browser, r).catch(e => ({ run: r, found: [{ kind: 'harness', msg: String(e).slice(0, 300), run: r }], lives: 0, years: 0 })); out.push(res); process.stdout.write(`run ${r}: ${res.found.length} found; ${res.clicks} clicks, ${res.years} game years, ${res.sweeps} sweeps (${res.screens} screens drawn)\n`); }
 }));
 await browser.close();
 const all = out.flatMap(r => r.found);
@@ -130,5 +131,5 @@ for (const f of all) { const k = f.kind + ' | ' + f.msg.split('\n')[0].replace(/
 const groups = Object.entries(byMsg).sort((a, b) => b[1].n - a[1].n);
 console.log(`\n${RUNS} runs x ${STEPS} steps: ${all.length} findings in ${groups.length} kinds`);
 for (const [k, g] of groups) console.log(`${String(g.n).padStart(4)}  ${k}\n      run ${g.first.run} step ${g.first.step} after "${g.first.after}": ${g.first.msg.replace(/\s+/g, ' ').slice(0, 300)}`);
-if (jsonOut) fs.writeFileSync(path.resolve(root, jsonOut), JSON.stringify({ file: path.relative(root, file), runs: RUNS, steps: STEPS, seed: SEED, total: all.length, groups: groups.map(([k, g]) => ({ k, n: g.n, first: g.first })), runsOut: out.map(r => ({ run: r.run, lives: r.lives, years: r.years, n: r.found.length })) }, null, 1));
+if (jsonOut) fs.writeFileSync(path.resolve(root, jsonOut), JSON.stringify({ file: path.relative(root, file), runs: RUNS, steps: STEPS, seed: SEED, total: all.length, groups: groups.map(([k, g]) => ({ k, n: g.n, first: g.first })), runsOut: out.map(r => ({ run: r.run, years: r.years, clicks: r.clicks, sweeps: r.sweeps, screens: r.screens, n: r.found.length })) }, null, 1));
 process.exitCode = all.length ? 1 : 0;

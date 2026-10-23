@@ -1,0 +1,37 @@
+// The real clock, in real time: a newborn reaches a first event within seconds at the default speed, the life is the
+// same day for day as one run without the hurry, and from age five the clock keeps its ordinary rate.
+const RUN = async (pg, seed, speed, x) => {
+  await pg.evaluate(([seed, speed, x]) => {
+    T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 0 });
+    UI.EARLY.X = x; UI.clk.speed = speed; window.__t0 = Date.now(); UI.clkStart();
+  }, [seed, speed, x]);
+  await pg.waitForFunction(() => !UI.clk.run, null, { timeout: 120000, polling: 200 });
+  return pg.evaluate(() => {
+    const q = A.S.queue[0];
+    return { secs: (Date.now() - window.__t0) / 1000, day: A.absDay(), age: A.age(A.pc()), ev: q && q.type === 'event' ? q.ev : q && q.type, hash: T.hash(A.S), rng: JSON.stringify(A.rngState), note: /early years ×10/.test(document.getElementById('clk') ? document.getElementById('clk').innerText : '') };
+  });
+};
+
+export default {
+  async eyFirstEventFast(pg) {
+    const out = [];
+    for (const seed of [7001, 7002, 7004]) {
+      const fast = await RUN(pg, seed, 2, 10);   // the default speed, early years on
+      const ctl = await RUN(pg, seed, 5, 1);     // the fastest ordinary speed, early years off: the same days, sooner
+      out.push({ seed, fast, ctl, same: fast.day === ctl.day && fast.ev === ctl.ev && fast.hash === ctl.hash && fast.rng === ctl.rng });
+    }
+    const ok = out.every(o => o.same && o.fast.secs < 45);
+    return { ok, detail: out.map(o => `seed ${o.seed}: first stop day ${o.fast.day - 0} at age ${o.fast.age} (${o.fast.ev}) after ${o.fast.secs.toFixed(1)}s at speed 2 (would be ${(o.fast.secs * 10).toFixed(0)}s); same life as without: ${o.same}`).join('; ') };
+  },
+  async eyNormalAfterFive(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 7010, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 });
+      const rates = [];
+      UI.clk.speed = 2; rates.push(['age ' + A.age(A.pc()), UI.clkRate(), !!UI.earlyNote()]);
+      T.play(6); rates.push(['age ' + A.age(A.pc()), UI.clkRate(), !!UI.earlyNote()]);
+      return rates;
+    });
+    const ok = r[0][1] === 40 && r[0][2] && r[1][1] === 4 && !r[1][2];
+    return { ok, detail: r.map(([a, v, n]) => `${a}: ${v} days a second, note ${n ? 'shown' : 'hidden'}`).join('; ') };
+  },
+};
