@@ -106,4 +106,5 @@
     } catch (err) { console.error('echoes note', err); }
     return r;
   };
+  for (const k of Object.keys(choose)) A.eventChoose[k] = choose[k];   // keep the markers earlier wrappers set (variety)
 })();
