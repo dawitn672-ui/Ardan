@@ -30,9 +30,12 @@ node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obvi
 node bench/balance.mjs /tmp/me.html                       # each path's numbers within bench/targets.mjs
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs                                        # everything against index.html
+git gc --prune=now                                        # after every integration round (see below)
 ```
 
 ## Rules that keep the build working
+
+**Repack after each round.** The last step of an integration round, after the push, is `git gc --prune=now`. Every round commits a rebuilt `index.html` of about 3.7 MB, and git keeps each one as a loose object: twenty of them had `.git` at 74 MB with no packfile at all, which repacked to 18 MB. Repacking is cheap, it is safe on a pushed branch (it touches only local object storage, never history), and skipping it makes every later clone slower.
 
 **Parallel safety.** When several agents work at once, each owns **only its own `features/NN-name/` folder**.
 
