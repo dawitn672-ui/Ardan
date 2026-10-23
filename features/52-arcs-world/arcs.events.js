@@ -2,8 +2,7 @@
 // the arc on (fx.arc) and leaves a mark (la_aw_*) that later scenes read; every last scene leaves something lasting.
 // Event packs share one script scope, so the helpers live in a block of their own.
 {
-const M = (p, m) => !!(p && p.flags && p.flags['la_aw_' + m]);
-const any = (p, ...ms) => ms.some(m => M(p, m));
+const M = (p, m) => !!(p && p.flags && p.flags['la_' + m]);
 const had = (p, k) => !!(p && p.arcs && p.arcs[k] && p.arcs[k].done);
 const arcOf = (p, ctx) => (ctx && ctx.arc && p && p.arcs && p.arcs[ctx.arc]) || null;
 // the person this arc is about: someone met in an earlier scene, or kin named then
@@ -31,7 +30,6 @@ const foeRealm = realmOf(p => A.AW.enemyOf(p), 'the enemy');
 const shrine = (p, ctx) => { const a = arcOf(p, ctx); ctx.shrine = (a && a.shrine) || A.AW.shrine(p) || 'the holy city'; };
 const away = (p, ctx) => { const Q = A.AW.moveTo(p, 'away'); if (Q) ctx.away = Q.name; };
 const both = (...fs) => (p, ctx) => { for (const f of fs) f(p, ctx); };
-const END = mark => ({ go: 'end', mark });
 
 A.defEvents([
   // ================================================================ the plague year
@@ -45,23 +43,23 @@ A.defEvents([
     ] },
   { id: 'aw_plague_2', title: 'The carts', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => (M(p, 'plague_fled') ? 'Two months in the country, and the country has had enough of you. Villages stone strangers from {home} now. The farmer whose barn you sleep in has a cough, and his wife has started looking at your cart.'
-      : M(p, 'plague_nursed') ? 'Two of the friars are dead and the third cannot stand. The physician charges a sun a visit and leaves before dark. The list of houses is yours now, and it is longer every morning.'
+    text: p => (M(p, 'aw_plague_fled') ? 'Two months in the country, and the country has had enough of you. Villages stone strangers from {home} now. The farmer whose barn you sleep in has a cough, and his wife has started looking at your cart.'
+      : M(p, 'aw_plague_nursed') ? 'Two of the friars are dead and the third cannot stand. The physician charges a sun a visit and leaves before dark. The list of houses is yours now, and it is longer every morning.'
       : 'A neighbour hammers on your shutters at night. Her husband is dead in the bed and the carts will not come till morning. She has two children with her, and she wants to come in.'),
     choices: [
       { t: 'Help them, and let the sickness take its chance', check: { s: 'sta', s2: 'wil', d: 45 },
-        win: { r: p => (M(p, 'plague_fled') ? 'You sit up with the farmer through his fever. He lives, and his wife stops looking at your cart.' : M(p, 'plague_nursed') ? 'You keep to the list. Some of the doors open on the living.' : 'You let them in. The children sleep by your fire, and none of you sickens.'),
+        win: { r: p => (M(p, 'aw_plague_fled') ? 'You sit up with the farmer through his fever. He lives, and his wife stops looking at your cart.' : M(p, 'aw_plague_nursed') ? 'You keep to the list. Some of the doors open on the living.' : 'You let them in. The children sleep by your fire, and none of you sickens.'),
           fx: { honor: 3, piety: 2, arc: { mark: 'aw_plague_helped' } } },
         lose: { r: 'You take the fever on the third day. It does not kill you. For years after, your chest whistles on a hill.', fx: { health: -15, wound: 'lungs', arc: { mark: 'aw_plague_sick' } } } },
-      { t: 'Look after your own, and no one else', r: p => (M(p, 'plague_fled') ? 'You move on before dawn, to a village that has not heard of you yet.' : M(p, 'plague_nursed') ? 'You leave the list at the friary door and go home. Nobody stops you.' : 'You keep the shutters closed. In the morning the carts take her husband, and she is gone with her children.'),
+      { t: 'Look after your own, and no one else', r: p => (M(p, 'aw_plague_fled') ? 'You move on before dawn, to a village that has not heard of you yet.' : M(p, 'aw_plague_nursed') ? 'You leave the list at the friary door and go home. Nobody stops you.' : 'You keep the shutters closed. In the morning the carts take her husband, and she is gone with her children.'),
         fx: { wil: 1, honor: -2, health: 2, arc: { mark: 'aw_plague_own' } } },
-      { t: 'Pay someone else to do what needs doing', req: p => p.coin >= 20, r: p => (M(p, 'plague_fled') ? 'You pay the farmer a month\'s rent for the barn, and his cough improves remarkably.' : 'You pay a gravedigger to see to it. He is drunk, and honest, and dead within the month.'),
+      { t: 'Pay someone else to do what needs doing', req: p => p.coin >= 20, r: p => (M(p, 'aw_plague_fled') ? 'You pay the farmer a month\'s rent for the barn, and his cough improves remarkably.' : 'You pay a gravedigger to see to it. He is drunk, and honest, and dead within the month.'),
         fx: { coin: -20, honor: 1, arc: { mark: 'aw_plague_paid' } } },
     ] },
   { id: 'aw_plague_3', title: 'The swelling', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: near(['spouse', 'child', 'mother', 'father', 'sibling'], 'the boy who carries your water', 'the boy'),
-    text: p => `{who} wakes with the swelling under the arm. You know what it is now; everyone does.${M(p, 'plague_sick') ? ' You had the fever and lived, and they say it does not take the same body twice.' : M(p, 'plague_fled') ? ' You ran from it, and it came after you.' : M(p, 'plague_own') ? ' You kept to your own, and here it is anyway.' : ''}`,
+    text: p => `{who} wakes with the swelling under the arm. You know what it is now; everyone does.${M(p, 'aw_plague_sick') ? ' You had the fever and lived, and they say it does not take the same body twice.' : M(p, 'aw_plague_fled') ? ' You ran from it, and it came after you.' : M(p, 'aw_plague_own') ? ' You kept to your own, and here it is anyway.' : ''}`,
     choices: [
       { t: 'Nurse {them} yourself, day and night', check: { s: 'medicine', s2: 'sta', d: 50 },
         win: { r: 'The fever breaks on the sixth night. {them} sleeps, and so, at last, do you.', fx: { happy: 4, them: { op: 15 }, skill: { medicine: 1 }, arc: { mark: 'aw_plague_saved' } } },
@@ -71,31 +69,31 @@ A.defEvents([
     ] },
   { id: 'aw_plague_4', title: 'The bell stops', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `By winter the bell is quiet. {home} has lost one in five. Whole rows stand empty, and the council is selling dead men's houses for the arrears on them.${any(p, 'plague_nursed', 'plague_helped') ? ' People you nursed nod to you in the street.' : M(p, 'plague_fled') ? ' Those who stayed look hard at those who ran.' : ''}${M(p, 'plague_shutin') ? ' The one you shut away still will not eat at your table.' : ''}`,
+    text: p => `By winter the bell is quiet. {home} has lost one in five. Whole rows stand empty, and the council is selling dead men's houses for the arrears on them.${(M(p, 'aw_plague_nursed') || M(p, 'aw_plague_helped')) ? ' People you nursed nod to you in the street.' : M(p, 'aw_plague_fled') ? ' Those who stayed look hard at those who ran.' : ''}${M(p, 'aw_plague_shutin') ? ' The one you shut away still will not eat at your table.' : ''}`,
     choices: [
       { t: 'Buy an empty house for the arrears', req: p => p.coin >= 40, r: 'The roof is sound. You burn the bedding in the yard and move nothing else.', fx: { coin: -40, asset: 'cottage', awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_bought' } } },
-      { t: 'Speak at the council against those who ran', req: p => !M(p, 'plague_fled'), r: 'You name names. The council fines three households, and one of them will not forget it.', fx: { honor: 2, fame: 2, newRel: { type: 'enemy', op: -30 }, awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_spoke' } } },
-      { t: 'Pay the council\'s fine for those who ran', req: p => M(p, 'plague_fled'), r: 'Two suns a head for every soul who left. You pay it at the church door, and your name comes off the list nailed there.', fx: { coin: -10, honor: 1, awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_fined' } } },
+      { t: 'Speak at the council against those who ran', req: p => !M(p, 'aw_plague_fled'), r: 'You name names. The council fines three households, and one of them will not forget it.', fx: { honor: 2, fame: 2, newRel: { type: 'enemy', op: -30 }, awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_spoke' } } },
+      { t: 'Pay the council\'s fine for those who ran', req: p => M(p, 'aw_plague_fled'), r: 'Two suns a head for every soul who left. You pay it at the church door, and your name comes off the list nailed there.', fx: { coin: -10, honor: 1, awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_fined' } } },
       { t: 'Go back to work, and name your price', r: 'Hands are scarce now. For a year, anyone who can lift a sack names their wage, and you do.', fx: { coin: 20, wil: 1, awProv: { pop: -0.15 }, arc: { mark: 'aw_plague_wages' } } },
     ] },
   { id: 'aw_plague_5', title: 'The pit outside the wall', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The plague pit outside {home} is a green mound now, and children play on it. The friary still feeds a dozen plague orphans, on charity that is running out. The priest wants a chapel over the pit and is asking at every door.${M(p, 'plague_bought') ? ' You live in a dead man\'s house; his neighbours still call it by his name.' : ''}${M(p, 'plague_saved') ? ' The one you nursed walks out to the mound with you on the feast of the dead.' : ''}`,
+    text: p => `The plague pit outside {home} is a green mound now, and children play on it. The friary still feeds a dozen plague orphans, on charity that is running out. The priest wants a chapel over the pit and is asking at every door.${M(p, 'aw_plague_bought') ? ' You live in a dead man\'s house; his neighbours still call it by his name.' : ''}${M(p, 'aw_plague_saved') ? ' The one you nursed walks out to the mound with you on the feast of the dead.' : ''}`,
     choices: [
       { t: 'Take one of the plague orphans into your house', r: 'The friars bring a child of eight with one shirt and no surname, who eats like a wolf and watches the door.',
-        fx: { awWho: { type: 'ward', back: 'patron', op: 40, age: [6, 10], occ: 'a plague orphan', line: 'is your ward now' }, coin: -10, happy: 3, flag: 'aw_plague_ward', arc: END('aw_plague_orphan') } },
+        fx: { awWho: { type: 'ward', back: 'patron', op: 40, age: [6, 10], occ: 'a plague orphan', line: 'is your ward now' }, coin: -10, happy: 3, flag: 'aw_plague_ward', arc: 'end' } },
       { t: 'Pay for the chapel over the pit', req: p => p.coin >= 50, r: 'It is a small chapel, and the mason cuts your name small on the lintel. Every year on the feast of the dead the town walks out to it.',
-        fx: { coin: -50, piety: 4, fame: 3, deed: 'Paid for the plague chapel', flag: 'aw_plague_chapel', arc: END('aw_plague_chapel') } },
-      { t: 'Learn physic from the friars: you know the sickness now', req: p => any(p, 'plague_nursed', 'plague_sick', 'plague_caught', 'plague_saved'), r: 'The old friar teaches you what he knows: herbs, lancets, when to let blood and when to leave it. Neighbours knock at night now.',
-        fx: { skill: { medicine: 3 }, deed: 'Learned physic in the plague year', flag: 'aw_plague_healer', arc: END('aw_plague_healer') } },
+        fx: { coin: -50, piety: 4, fame: 3, deed: 'Paid for the plague chapel', flag: 'aw_plague_chapel', arc: 'end' } },
+      { t: 'Learn physic from the friars: you know the sickness now', req: p => (M(p, 'aw_plague_nursed') || M(p, 'aw_plague_sick') || M(p, 'aw_plague_caught') || M(p, 'aw_plague_saved')), r: 'The old friar teaches you what he knows: herbs, lancets, when to let blood and when to leave it. Neighbours knock at night now.',
+        fx: { skill: { medicine: 3 }, deed: 'Learned physic in the plague year', flag: 'aw_plague_healer', arc: 'end' } },
       { t: 'Let the dead lie, and get on with living', r: 'You do not go to the mound, and you do not talk about that year. It goes into you somewhere and stays.',
-        fx: { trait: 'stoic', wil: 2, flag: 'aw_plague_forgot', arc: END('aw_plague_forgot') } },
+        fx: { trait: 'stoic', wil: 2, flag: 'aw_plague_forgot', arc: 'end' } },
     ] },
 
   // ================================================================ the hungry year
   { id: 'aw_famine_1', title: 'The thin harvest', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => { const h = A.AW.harvest(p); return `${h && h.f <= 0.4 ? 'The harvest has failed across {realmShort}.' : 'The harvest across {realmShort} is thin.'} By Michaelmas a loaf costs what a day's work pays, and the miller keeps his door barred. Carts of grain go by on the road to {capital}, under guard.${A.C.rich(p) ? ' Your tenants come to your door with their hats in their hands.' : ''}${M(p, 'plague_wages') ? ' The plague wages are long spent.' : ''}`; },
+    text: p => { const h = A.AW.harvest(p); return `${h && h.f <= 0.4 ? 'The harvest has failed across {realmShort}.' : 'The harvest across {realmShort} is thin.'} By Michaelmas a loaf costs what a day's work pays, and the miller keeps his door barred. Carts of grain go by on the road to {capital}, under guard.${A.C.rich(p) ? ' Your tenants come to your door with their hats in their hands.' : ''}${M(p, 'aw_plague_wages') ? ' The plague wages are long spent.' : ''}`; },
     choices: [
       { t: 'Buy grain now, all you can afford', r: 'You pay a robber\'s price for four sacks and sleep with them under the bed. By spring it will look cheap.', fx: { coinPct: -0.3, health: 3, arc: { mark: 'aw_famine_bought' } } },
       { t: 'Sell what you have stored, at famine prices', r: 'The dealers from {capital} pay in silver and do not haggle. Your neighbours watch the cart go.', fx: { coin: 30, honor: -3, health: -3, arc: { mark: 'aw_famine_sold' } } },
@@ -103,7 +101,7 @@ A.defEvents([
     ] },
   { id: 'aw_famine_2', title: 'The seed corn', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `${M(p, 'famine_bought') ? 'Your bought grain is gone, eaten or begged off you.' : M(p, 'famine_sold') ? 'The neighbours you sold to do not greet you at church.' : 'The shared stores lasted until Candlemas.'} Now it is the hungry gap. The last sack in the house is next year's seed. Without it there is no harvest; with it, there is still a month to eat. People are boiling nettles and bark.`,
+    text: p => `${M(p, 'aw_famine_bought') ? 'Your bought grain is gone, eaten or begged off you.' : M(p, 'aw_famine_sold') ? 'The neighbours you sold to do not greet you at church.' : 'The shared stores lasted until Candlemas.'} Now it is the hungry gap. The last sack in the house is next year's seed. Without it there is no harvest; with it, there is still a month to eat. People are boiling nettles and bark.`,
     choices: [
       { t: 'Eat the seed corn, and trust to spring', r: 'You grind it and bake it and eat it slowly. It is the best bread you have ever tasted.', fx: { health: 6, happy: 2, arc: { mark: 'aw_famine_ate' } } },
       { t: 'Keep the seed, and go hungry', r: 'You hang the sack from the roof-beam, out of reach of the rats and yourself. By March your belt is on its last hole.', fx: { health: -10, wil: 2, arc: { mark: 'aw_famine_kept' } } },
@@ -114,28 +112,28 @@ A.defEvents([
     ] },
   { id: 'aw_famine_3', title: 'Seed time', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => (M(p, 'famine_ate') ? 'Spring comes late and green, and you have nothing to put in the ground. The moneylender in {home} will lend seed against your next three harvests, at a third.'
-      : M(p, 'famine_kept') ? 'Your seed is in the ground: the only green strip on your side of the lane. Half the village has nothing to plant, and they lean on your gate in the evenings.'
-      : any(p, 'famine_granary', 'famine_beaten') ? 'Spring comes. The steward has a list of the faces he saw at the granary door, and he has started calling on them.'
+    text: p => (M(p, 'aw_famine_ate') ? 'Spring comes late and green, and you have nothing to put in the ground. The moneylender in {home} will lend seed against your next three harvests, at a third.'
+      : M(p, 'aw_famine_kept') ? 'Your seed is in the ground: the only green strip on your side of the lane. Half the village has nothing to plant, and they lean on your gate in the evenings.'
+      : (M(p, 'aw_famine_granary') || M(p, 'aw_famine_beaten')) ? 'Spring comes. The steward has a list of the faces he saw at the granary door, and he has started calling on them.'
       : 'Spring comes late. Your tenants have eaten their seed, and they ask you for more against the harvest.'),
     choices: [
       { t: 'Borrow against the next harvests', r: 'The paper has your mark on it. The interest is a third, and the clerk smiles while he writes.', fx: { coin: 15, happy: 1, arc: { mark: 'aw_famine_debt' } } },
       { t: 'Walk to {capital}, where there is bread and work', req: (p, C) => !C.noble(p), r: 'You find a corner in a cellar near the river and carry sacks on the wharves. The city eats; it always does.', fx: { coin: 10, happy: -3, skill: { trade: 1 }, arc: { mark: 'aw_famine_left' } } },
-      { t: 'Share your seed with the family next door', req: p => M(p, 'famine_kept'), r: 'You split the sack on their table. They plant a strip with it, and their children come through the summer.', fx: { honor: 3, newRel: { type: 'friend', op: 40 }, arc: { mark: 'aw_famine_seedshare' } } },
+      { t: 'Share your seed with the family next door', req: p => M(p, 'aw_famine_kept'), r: 'You split the sack on their table. They plant a strip with it, and their children come through the summer.', fx: { honor: 3, newRel: { type: 'friend', op: 40 }, arc: { mark: 'aw_famine_seedshare' } } },
       { t: 'Give your tenants seed, and forgive the rent', req: (p, C) => C.noble(p) || C.rich(p), r: 'Your steward says you are ruining yourself. Your tenants plant, and pay you back at Michaelmas in grain and goodwill.', fx: { coinPct: -0.1, honor: 3, arc: { mark: 'aw_famine_forgave' } } },
     ] },
   { id: 'aw_famine_4', title: 'After the hungry year', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The good harvests come back, as they do. People in {home} date things by it now: before the hungry year, after it.${M(p, 'famine_debt') ? ' The moneylender still has your name in his book, and the third harvest was thin.' : M(p, 'famine_left') ? ' You are still in {capital}, with a corner and work. Word comes that your old plot lies empty.' : M(p, 'famine_seedshare') ? ' The family you shared seed with brings you the first of their apples every year.' : M(p, 'famine_forgave') ? ' Your tenants doff their hats and mean it.' : ''} The steward is selling off the plots of families who died or left.`,
+    text: p => `The good harvests come back, as they do. People in {home} date things by it now: before the hungry year, after it.${M(p, 'aw_famine_debt') ? ' The moneylender still has your name in his book, and the third harvest was thin.' : M(p, 'aw_famine_left') ? ' You are still in {capital}, with a corner and work. Word comes that your old plot lies empty.' : M(p, 'aw_famine_seedshare') ? ' The family you shared seed with brings you the first of their apples every year.' : M(p, 'aw_famine_forgave') ? ' Your tenants doff their hats and mean it.' : ''} The steward is selling off the plots of families who died or left.`,
     choices: [
-      { t: 'Buy a dead family\'s plot from the steward', req: p => p.coin >= 60 && !M(p, 'famine_left'), r: 'It has a cottage with no door and an apple tree nobody pruned. It is yours, on paper and in the dirt.',
-        fx: { coin: -60, asset: 'cottage', flag: 'aw_famine_landed', arc: END('aw_famine_landed') } },
+      { t: 'Buy a dead family\'s plot from the steward', req: p => p.coin >= 60 && !M(p, 'aw_famine_left'), r: 'It has a cottage with no door and an apple tree nobody pruned. It is yours, on paper and in the dirt.',
+        fx: { coin: -60, asset: 'cottage', flag: 'aw_famine_landed', arc: 'end' } },
       { t: 'Help found a parish granary against the next bad year', r: 'A stone barn by the church, one key with the priest and one with the reeve, a tithe of every harvest in. It will be there when you are not.',
-        fx: { coin: -15, honor: 3, deed: 'Helped found the parish granary', flag: 'aw_famine_granary_law', arc: END('aw_famine_parish') } },
+        fx: { coin: -15, honor: 3, deed: 'Helped found the parish granary', flag: 'aw_famine_granary_law', arc: 'end' } },
       { t: 'Keep a year\'s grain under the floor, always', r: 'You dig a pit under the hearthstone and line it with clay. Your family thinks you mad. You never let it fall below full.',
-        fx: { trait: 'cautious', coin: -5, flag: 'aw_famine_hoard', arc: END('aw_famine_hoard') } },
-      { t: 'Stay in {capital} for good', req: p => M(p, 'famine_left'), r: 'You give up the plot and take a lease on a room above a chandler\'s. {home} becomes a place you are from.',
-        fx: { awMove: { to: 'capital', free: true }, flag: 'aw_famine_moved', arc: END('aw_famine_moved') } },
+        fx: { trait: 'cautious', coin: -5, flag: 'aw_famine_hoard', arc: 'end' } },
+      { t: 'Stay in {capital} for good', req: p => M(p, 'aw_famine_left'), r: 'You give up the plot and take a lease on a room above a chandler\'s. {home} becomes a place you are from.',
+        fx: { awMove: { to: 'capital', free: true }, flag: 'aw_famine_moved', arc: 'end' } },
     ] },
 
   // ================================================================ the river rises
@@ -153,7 +151,7 @@ A.defEvents([
     ] },
   { id: 'aw_flood_2', title: 'The silt', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The water goes down in a week and leaves a hand's depth of grey silt on everything. The river has cut itself a new bed across the low meadows, and the old one is a ribbon of mud. Who owns the dry ground between them, nobody knows.${M(p, 'flood_dyke') ? ' Your end of the village is dry, and people know why.' : M(p, 'flood_swept') ? ' Your ribs knit slowly.' : M(p, 'flood_lost') ? ' The widow does not come out of her house.' : M(p, 'flood_boat') ? ' The people you took off the roofs send eggs.' : ''}`,
+    text: p => `The water goes down in a week and leaves a hand's depth of grey silt on everything. The river has cut itself a new bed across the low meadows, and the old one is a ribbon of mud. Who owns the dry ground between them, nobody knows.${M(p, 'aw_flood_dyke') ? ' Your end of the village is dry, and people know why.' : M(p, 'aw_flood_swept') ? ' Your ribs knit slowly.' : M(p, 'aw_flood_lost') ? ' The widow does not come out of her house.' : M(p, 'aw_flood_boat') ? ' The people you took off the roofs send eggs.' : ''}`,
     choices: [
       { t: 'Stake a claim to the new ground before anyone else', check: { s: 'persuasion', s2: 'int', d: 50 },
         win: { r: 'You pace it out with stakes and witnesses and get the manor court to write it down: four acres of the best silt in the parish.', fx: { fame: 1, arc: { mark: 'aw_flood_claimed' } } },
@@ -164,16 +162,16 @@ A.defEvents([
   { id: 'aw_flood_3', title: 'Higher ground', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { const Q = A.AW.moveTo(p, 'high'); if (Q) ctx.higher = Q.name; },
-    text: p => `The river is back in its banks and looks innocent. The parish must choose: raise the dyke properly, in timber and stone, at a cost to every household, or move the low cottages uphill and give the meadows back to the water.${M(p, 'flood_spoke') ? ' It was your idea first; people say so, some of them sourly.' : ''}${M(p, 'flood_claimed') ? ' Your four acres of silt lie right behind the dyke.' : ''}${M(p, 'flood_lost') ? ' The widow\'s grandson has a stone in the churchyard.' : ''}`,
+    text: p => `The river is back in its banks and looks innocent. The parish must choose: raise the dyke properly, in timber and stone, at a cost to every household, or move the low cottages uphill and give the meadows back to the water.${M(p, 'aw_flood_spoke') ? ' It was your idea first; people say so, some of them sourly.' : ''}${M(p, 'aw_flood_claimed') ? ' Your four acres of silt lie right behind the dyke.' : ''}${M(p, 'aw_flood_lost') ? ' The widow\'s grandson has a stone in the churchyard.' : ''}`,
     choices: [
       { t: 'Raise the dyke, and put your back into it', r: 'It takes two summers and every cart in the parish. It holds the spring floods the next year, and the year after.',
-        fx: { coin: -15, sta: 1, fame: 2, awProv: { dev: 1 }, deed: 'Raised the great dyke', flag: 'aw_flood_dykebuilt', arc: END('aw_flood_dykebuilt') } },
+        fx: { coin: -15, sta: 1, fame: 2, awProv: { dev: 1 }, deed: 'Raised the great dyke', flag: 'aw_flood_dykebuilt', arc: 'end' } },
       { t: 'Move your household up to {higher}', req: (p, C) => !!A.AW.moveTo(p, 'high') && !C.unfree(p) && !C.noble(p), r: 'You load the cart and take the hill road. The ground up there is thin and stony, and dry.',
-        fx: { awMove: 'high', happy: 2, flag: 'aw_flood_moved', arc: END('aw_flood_moved') } },
-      { t: 'Farm the silt you claimed', req: p => M(p, 'flood_claimed'), r: 'The silt grows wheat like nothing you have seen. In a wet spring you lie awake listening to the rain.',
-        fx: { asset: 'farm', flag: 'aw_flood_silt', arc: END('aw_flood_silt') } },
+        fx: { awMove: 'high', happy: 2, flag: 'aw_flood_moved', arc: 'end' } },
+      { t: 'Farm the silt you claimed', req: p => M(p, 'aw_flood_claimed'), r: 'The silt grows wheat like nothing you have seen. In a wet spring you lie awake listening to the rain.',
+        fx: { asset: 'farm', flag: 'aw_flood_silt', arc: 'end' } },
       { t: 'Stay where you are, and trust to luck', r: 'You say the river has had its flood and will not want another in your lifetime. You cut a mark on the doorpost where the water came.',
-        fx: { trait: 'stubborn', coin: 10, flag: 'aw_flood_stayed', arc: END('aw_flood_stayed') } },
+        fx: { trait: 'stubborn', coin: 10, flag: 'aw_flood_stayed', arc: 'end' } },
     ] },
 
   // ================================================================ the fire
@@ -191,7 +189,7 @@ A.defEvents([
     ] },
   { id: 'aw_fire_2', title: 'The tinker in the stocks', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `Half of {home} is ash. The council needs someone to hang, and the crowd has found one: a tinker from over the border who was sleeping in the bakehouse loft. He is in the stocks, and there is a rope over the beam above him.${M(p, 'fire_break') ? ' Some in the crowd thank you for the gap. The men whose houses you pulled down do not.' : M(p, 'fire_burned') ? ' Your burns weep under the linen.' : M(p, 'fire_saved') ? ' Your goods are in a cousin\'s yard; your house is a chimney in the ash.' : ''}`,
+    text: p => `Half of {home} is ash. The council needs someone to hang, and the crowd has found one: a tinker from over the border who was sleeping in the bakehouse loft. He is in the stocks, and there is a rope over the beam above him.${M(p, 'aw_fire_break') ? ' Some in the crowd thank you for the gap. The men whose houses you pulled down do not.' : M(p, 'aw_fire_burned') ? ' Your burns weep under the linen.' : M(p, 'aw_fire_saved') ? ' Your goods are in a cousin\'s yard; your house is a chimney in the ash.' : ''}`,
     choices: [
       { t: 'Speak up for the tinker', check: { s: 'persuasion', s2: 'wil', d: 50 },
         win: { r: 'You ask who saw him light anything. Nobody did. The baker\'s boy, crying, says he banked the oven badly. The tinker walks.', fx: { honor: 4, fame: 2, arc: { mark: 'aw_fire_tinker' } } },
@@ -201,7 +199,7 @@ A.defEvents([
     ] },
   { id: 'aw_fire_3', title: 'Stone and tile', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The council orders that {home} be rebuilt in stone and tile, with no thatch inside the walls. Stone costs four times what timber does. Along the burned streets, men are selling their plots to the alderman's agent for whatever he offers.${M(p, 'fire_tinker') ? ' The tinker stops at your door on his way out of town and mends your pot for nothing.' : M(p, 'fire_baker') ? ' The baker is selling too, and spits when you pass.' : M(p, 'fire_mob') ? ' The beam in the square has been taken down. Nobody says why.' : ''}`,
+    text: p => `The council orders that {home} be rebuilt in stone and tile, with no thatch inside the walls. Stone costs four times what timber does. Along the burned streets, men are selling their plots to the alderman's agent for whatever he offers.${M(p, 'aw_fire_tinker') ? ' The tinker stops at your door on his way out of town and mends your pot for nothing.' : M(p, 'aw_fire_baker') ? ' The baker is selling too, and spits when you pass.' : M(p, 'aw_fire_mob') ? ' The beam in the square has been taken down. Nobody says why.' : ''}`,
     choices: [
       { t: 'Rebuild in stone, whatever it costs', req: p => p.coin >= 50, r: 'You borrow, sell and borrow again, and the masons build you a house that will outlast the alderman\'s grandchildren.', fx: { coin: -50, arc: { mark: 'aw_fire_stone' } } },
       { t: 'Sell your plot to the alderman\'s agent', r: 'He pays on the spot, about half what it was worth before the fire. You rent two rooms over a cooper\'s.', fx: { coin: 40, happy: -4, arc: { mark: 'aw_fire_sold' } } },
@@ -210,18 +208,18 @@ A.defEvents([
   { id: 'aw_fire_4', title: 'The new street', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: away,
-    text: p => (M(p, 'fire_stone') ? 'The new street is stone and tile from end to end, and yours was among the first houses up. Children who never saw the fire play on the flags. The council wants a fire watch: a bell, buckets, hooks, and men who answer to someone.'
-      : M(p, 'fire_timber') ? 'The new street is stone and tile, or looks it. The council\'s surveyor has been going house to house with an awl, and yesterday he put it through your plaster into oak.'
+    text: p => (M(p, 'aw_fire_stone') ? 'The new street is stone and tile from end to end, and yours was among the first houses up. Children who never saw the fire play on the flags. The council wants a fire watch: a bell, buckets, hooks, and men who answer to someone.'
+      : M(p, 'aw_fire_timber') ? 'The new street is stone and tile, or looks it. The council\'s surveyor has been going house to house with an awl, and yesterday he put it through your plaster into oak.'
       : 'The alderman\'s new row stands where your house was. You rent a room in it and pay him for the privilege. The council wants a fire watch: a bell, buckets, hooks, and men who answer to someone.'),
     choices: [
-      { t: 'Cut your mark above your own front door', req: p => M(p, 'fire_stone'), r: 'The mason cuts the year of the fire and your mark into the lintel. The house will carry both.',
-        fx: { asset: 'townhouse', deed: 'Rebuilt in stone after the great fire', flag: 'aw_fire_house', arc: END('aw_fire_house') } },
+      { t: 'Cut your mark above your own front door', req: p => M(p, 'aw_fire_stone'), r: 'The mason cuts the year of the fire and your mark into the lintel. The house will carry both.',
+        fx: { asset: 'townhouse', deed: 'Rebuilt in stone after the great fire', flag: 'aw_fire_house', arc: 'end' } },
       { t: 'Take charge of the new fire watch', r: 'You drill them on Sunday afternoons with hooks and leather buckets. When the next fire comes, it takes one house.',
-        fx: { epithet: 'the Firewarden', fame: 3, flag: 'aw_fire_watch', arc: END('aw_fire_watch') } },
-      { t: 'Bribe the surveyor to look elsewhere', req: p => M(p, 'fire_timber'), r: 'He takes the purse and writes "sound" in his book. Every winter after, you wake at the smell of smoke.',
-        fx: { coin: -15, trait: 'deceitful', flag: 'aw_fire_bribed', arc: END('aw_fire_bribed') } },
-      { t: 'Leave {home} and start again in {away}', req: p => any(p, 'fire_sold', 'fire_timber') && !!A.AW.moveTo(p, 'away'), r: 'You sell what is left and take the road. {away} has fires of its own, and none of them are yours.',
-        fx: { awMove: 'away', happy: 2, flag: 'aw_fire_moved', arc: END('aw_fire_moved') } },
+        fx: { epithet: 'the Firewarden', fame: 3, flag: 'aw_fire_watch', arc: 'end' } },
+      { t: 'Bribe the surveyor to look elsewhere', req: p => M(p, 'aw_fire_timber'), r: 'He takes the purse and writes "sound" in his book. Every winter after, you wake at the smell of smoke.',
+        fx: { coin: -15, trait: 'deceitful', flag: 'aw_fire_bribed', arc: 'end' } },
+      { t: 'Leave {home} and start again in {away}', req: p => (M(p, 'aw_fire_sold') || M(p, 'aw_fire_timber')) && !!A.AW.moveTo(p, 'away'), r: 'You sell what is left and take the road. {away} has fires of its own, and none of them are yours.',
+        fx: { awMove: 'away', happy: 2, flag: 'aw_fire_moved', arc: 'end' } },
     ] },
 
   // ================================================================ the road from the war
@@ -238,7 +236,7 @@ A.defEvents([
   { id: 'aw_ref_2', title: 'The camp by the mill', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: both(refRealm, near(null, 'the woman from the road', 'the woman')),
-    text: (p, ctx) => `The people from {other} did not move on. Two hundred of them live in a camp of hurdles by the mill at {home}, and winter is coming. Hens go missing. The reeve says they must be over the river by Martinmas, and men are cutting staves.${held(p, ctx) ? ' {them} is among them, and her children know your name.' : M(p, 'ref_barred') ? ' Some of them remember your door.' : ''}`,
+    text: (p, ctx) => `The people from {other} did not move on. Two hundred of them live in a camp of hurdles by the mill at {home}, and winter is coming. Hens go missing. The reeve says they must be over the river by Martinmas, and men are cutting staves.${held(p, ctx) ? ' {them} is among them, and her children know your name.' : M(p, 'aw_ref_barred') ? ' Some of them remember your door.' : ''}`,
     choices: [
       { t: 'Stand with the refugees against the staves', check: { s: 'intimidation', s2: 'wil', d: 50 },
         win: { r: 'You stand at the edge of the camp with the miller and the priest, and the men with staves go home to think. The camp stays the winter.', fx: { honor: 4, fame: 2, arc: { mark: 'aw_ref_stood' } } },
@@ -249,7 +247,7 @@ A.defEvents([
   { id: 'aw_ref_3', title: 'News from {other}', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: both(refRealm, near(null, 'the woman from the road', 'the woman')),
-    text: (p, ctx) => `${ctx.rid && A.atWar(ctx.rid).length ? 'The war in {other} drags on. Some families have given up waiting and gone further, to {capital}.' : 'The war in {other} is over, or quiet. Some families are going home to see what is left.'}${held(p, ctx) ? ' {them} comes to your door: her husband is dead at a ford she cannot name. She could go back to a burned farm, or stay, if someone will stand surety for her with the lord.' : M(p, 'ref_drove') ? ' The ones you drove over the river are in the next valley, and they have long memories.' : ' The reeve wants the last of them gone by spring.'}`,
+    text: (p, ctx) => `${ctx.rid && A.atWar(ctx.rid).length ? 'The war in {other} drags on. Some families have given up waiting and gone further, to {capital}.' : 'The war in {other} is over, or quiet. Some families are going home to see what is left.'}${held(p, ctx) ? ' {them} comes to your door: her husband is dead at a ford she cannot name. She could go back to a burned farm, or stay, if someone will stand surety for her with the lord.' : M(p, 'aw_ref_drove') ? ' The ones you drove over the river are in the next valley, and they have long memories.' : ' The reeve wants the last of them gone by spring.'}`,
     choices: [
       { t: 'Stand surety for {them} with the lord', req: (p, C, ctx) => !!held(p, ctx), r: 'You put your mark on the paper. If she runs or steals, it is your field the lord takes.', fx: { them: { op: 20 }, honor: 2, arc: { mark: 'aw_ref_surety' } } },
       { t: 'Give them food for the road home', r: 'A sack of oats, a cheese and a knife. They go at first light, looking back once.', fx: { coin: -10, honor: 2, piety: 1, arc: { mark: 'aw_ref_home' } } },
@@ -258,17 +256,17 @@ A.defEvents([
   { id: 'aw_ref_4', title: 'The new lane', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: both(refRealm, near(null, 'the woman from the road', 'the woman')),
-    text: (p, ctx) => `Years on, the people from {other} have a lane of their own at the edge of {home}. They bake a flat bread nobody else bakes and sing at funerals, which the old women think indecent.${M(p, 'ref_surety') && held(p, ctx) ? ' {them} has a holding now, a new husband from the lane, and a child on the way.' : M(p, 'ref_drove') ? ' One of the men you drove over the river is a carter here now, and remembers the ford.' : M(p, 'ref_home') ? ' A pedlar brings word from {other}: the family you fed is home, and the farm grows again.' : ''} The manor court must decide whether they may hold land.`,
+    text: (p, ctx) => `Years on, the people from {other} have a lane of their own at the edge of {home}. They bake a flat bread nobody else bakes and sing at funerals, which the old women think indecent.${M(p, 'aw_ref_surety') && held(p, ctx) ? ' {them} has a holding now, a new husband from the lane, and a child on the way.' : M(p, 'aw_ref_drove') ? ' One of the men you drove over the river is a carter here now, and remembers the ford.' : M(p, 'aw_ref_home') ? ' A pedlar brings word from {other}: the family you fed is home, and the farm grows again.' : ''} The manor court must decide whether they may hold land.`,
     choices: [
       { t: 'Stand godparent to {them}\'s child', req: (p, C, ctx) => !!held(p, ctx), r: 'You stand at the font and promise for a child whose language you half speak. {them} kisses your hand, to your great embarrassment.',
-        fx: { sworn: true, them: { op: 20 }, flag: 'aw_ref_godparent', arc: END('aw_ref_godparent') } },
+        fx: { sworn: true, them: { op: 20 }, flag: 'aw_ref_godparent', arc: 'end' } },
       { t: 'Speak at the court: let them hold land like anyone', check: { s: 'persuasion', s2: 'int', d: 50 },
-        win: { r: 'The court agrees, grumbling. The lane\'s people buy strips that spring and plough them better than their neighbours do.', fx: { honor: 3, fame: 2, flag: 'aw_ref_rights', arc: END('aw_ref_rights') } },
-        lose: { r: 'The court says no. The lane does not forget that you spoke, and neither does the court.', fx: { honor: 3, newRel: { type: 'friend', op: 40 }, flag: 'aw_ref_spoke', arc: END('aw_ref_spoke') } } },
+        win: { r: 'The court agrees, grumbling. The lane\'s people buy strips that spring and plough them better than their neighbours do.', fx: { honor: 3, fame: 2, flag: 'aw_ref_rights', arc: 'end' } },
+        lose: { r: 'The court says no. The lane does not forget that you spoke, and neither does the court.', fx: { honor: 3, newRel: { type: 'friend', op: 40 }, flag: 'aw_ref_spoke', arc: 'end' } } },
       { t: 'Learn their tongue and their trade', r: 'You learn to bake their bread, badly, and to swear in their language, well. Their market days become yours.',
-        fx: { skill: { trade: 2 }, trait: 'curious', flag: 'aw_ref_learned', arc: END('aw_ref_learned') } },
-      { t: 'Speak against them at the court', req: p => any(p, 'ref_drove', 'ref_barred', 'ref_steward'), r: 'You say the land is for those born on it. The court agrees with you, and the lane hears every word.',
-        fx: { trait: 'proud', newRel: { type: 'enemy', op: -40 }, flag: 'aw_ref_closed', arc: END('aw_ref_closed') } },
+        fx: { skill: { trade: 2 }, trait: 'curious', flag: 'aw_ref_learned', arc: 'end' } },
+      { t: 'Speak against them at the court', req: p => (M(p, 'aw_ref_drove') || M(p, 'aw_ref_barred') || M(p, 'aw_ref_steward')), r: 'You say the land is for those born on it. The court agrees with you, and the lane hears every word.',
+        fx: { trait: 'proud', newRel: { type: 'enemy', op: -40 }, flag: 'aw_ref_closed', arc: 'end' } },
     ] },
 
   // ================================================================ the Hawk
@@ -284,7 +282,7 @@ A.defEvents([
     ] },
   { id: 'aw_bandit_2', title: 'The Hawk\'s man', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `One of the Hawk's men comes to your door: civil, armed, with a purse. The Hawk needs someone in {home} who hears things. When the sheriff's men are on the road. Which merchant carries silver.${M(p, 'bandit_refused') ? ' He says the Hawk admired how you stood on the bridge.' : M(p, 'bandit_paid') ? ' He says the Hawk remembers who pays without trouble.' : M(p, 'bandit_robbed') ? ' He says the tooth was a mistake.' : ''}`,
+    text: p => `One of the Hawk's men comes to your door: civil, armed, with a purse. The Hawk needs someone in {home} who hears things. When the sheriff's men are on the road. Which merchant carries silver.${M(p, 'aw_bandit_refused') ? ' He says the Hawk admired how you stood on the bridge.' : M(p, 'aw_bandit_paid') ? ' He says the Hawk remembers who pays without trouble.' : M(p, 'aw_bandit_robbed') ? ' He says the tooth was a mistake.' : ''}`,
     choices: [
       { t: 'Take his purse and tell him things', r: 'You tell him small things, true ones. The purse is heavier the next month.', fx: { coin: 30, honor: -4, arc: { mark: 'aw_bandit_spy' } } },
       { t: 'Take his purse, and tell the sheriff', check: { s: 'deception', s2: 'int', d: 55 },
@@ -294,7 +292,7 @@ A.defEvents([
     ] },
   { id: 'aw_bandit_3', title: 'No help from {capital}', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The headmen send to {capital} for help against the Hawk. The answer comes back in spring: the crown's soldiers are needed elsewhere, and the villages must see to their own roads. Now they meet in the church to see to them.${M(p, 'bandit_spy') ? ' Nobody at the meeting knows you take the Hawk\'s silver.' : M(p, 'bandit_double') ? ' The sheriff\'s man nods to you across the nave.' : M(p, 'bandit_marked') ? ' You keep your hat on, over the ear.' : ''}`,
+    text: p => `The headmen send to {capital} for help against the Hawk. The answer comes back in spring: the crown's soldiers are needed elsewhere, and the villages must see to their own roads. Now they meet in the church to see to them.${M(p, 'aw_bandit_spy') ? ' Nobody at the meeting knows you take the Hawk\'s silver.' : M(p, 'aw_bandit_double') ? ' The sheriff\'s man nods to you across the nave.' : M(p, 'aw_bandit_marked') ? ' You keep your hat on, over the ear.' : ''}`,
     choices: [
       { t: 'Put in your share to hire sellswords', req: p => p.coin >= 20, r: 'Twenty suns from you, a hundred from the parish, and a captain of crossbowmen who looks at the tower and asks for more.', fx: { coin: -20, arc: { mark: 'aw_bandit_hired' } } },
       { t: 'Offer to lead the village levy yourself', check: { s: 'command', s2: 'wil', d: 50 },
@@ -304,7 +302,7 @@ A.defEvents([
     ] },
   { id: 'aw_bandit_4', title: 'The tower', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `${M(p, 'bandit_peace') ? 'The Hawk took the parish\'s money, and the next year asked for twice as much. Now {ruler} sends a captain after all, with sixty men and no guides. The captain wants someone who knows the hill.' : 'The night comes: forty men with ladders and a ram, under the Hawk\'s tower above the ford. The moon is down. Somebody\'s dog will not stop barking.'}${M(p, 'bandit_spy') ? ' The Hawk\'s man finds you first. The Hawk wants to know when.' : ''}`,
+    text: p => `${M(p, 'aw_bandit_peace') ? 'The Hawk took the parish\'s money, and the next year asked for twice as much. Now {ruler} sends a captain after all, with sixty men and no guides. The captain wants someone who knows the hill.' : 'The night comes: forty men with ladders and a ram, under the Hawk\'s tower above the ford. The moon is down. Somebody\'s dog will not stop barking.'}${M(p, 'aw_bandit_spy') ? ' The Hawk\'s man finds you first. The Hawk wants to know when.' : ''}`,
     choices: [
       { t: 'Go up the ladders with the first men', check: { s: 'melee', s2: 'str', d: 55 },
         win: { r: 'You are third over the wall and first to the gate-bar. By dawn the tower is burning and the Hawk is in chains.', fx: { fame: 5, honor: 2, arc: { mark: 'aw_bandit_stormed' } } },
@@ -312,25 +310,25 @@ A.defEvents([
       { t: 'Guide them up the sheep-path to the postern', check: { s: 'tracking', s2: 'ins', d: 50 },
         win: { r: 'You find the path in the dark by the smell of sheep. The postern is unbarred. The Hawk is taken in his shirt.', fx: { fame: 3, skill: { tracking: 1 }, arc: { mark: 'aw_bandit_postern' } } },
         lose: { r: 'You lose the path, and half the night, and come out under the main gate at dawn with everyone else.', fx: { happy: -3, fame: -1, arc: { mark: 'aw_bandit_late' } } } },
-      { t: 'Warn the Hawk, for silver', req: p => M(p, 'bandit_spy'), r: 'You send word by the miller\'s boy. When the ladders go up, the tower is empty but for a cat.', fx: { coin: 50, honor: -6, arc: { mark: 'aw_bandit_warned' } } },
+      { t: 'Warn the Hawk, for silver', req: p => M(p, 'aw_bandit_spy'), r: 'You send word by the miller\'s boy. When the ladders go up, the tower is empty but for a cat.', fx: { coin: 50, honor: -6, arc: { mark: 'aw_bandit_warned' } } },
       { t: 'Stay at home with the door barred', r: 'You hear the shouting from your bed, and see the glow over the hill.', fx: { happy: -2, health: 2, arc: { mark: 'aw_bandit_home' } } },
     ] },
   { id: 'aw_bandit_5', title: 'After the tower', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => (M(p, 'bandit_warned') ? 'The Hawk is gone over the hills with his men, and the tower is a shell. The headmen are asking who warned him. His man left you a last purse and a message: the Hawk does not forget a friend.'
-      : any(p, 'bandit_stormed', 'bandit_postern') ? 'The tower is burned, and the Hawk hangs at the bridge he taxed. His sword lies on the table at the church meeting, where they are dividing what was in his cellars.'
-      : M(p, 'bandit_fell') ? 'You lie a month with your face stitched, and hear it all from your bed: the tower burned, the Hawk hanged at his own bridge. His sword is kept for you.'
+    text: p => (M(p, 'aw_bandit_warned') ? 'The Hawk is gone over the hills with his men, and the tower is a shell. The headmen are asking who warned him. His man left you a last purse and a message: the Hawk does not forget a friend.'
+      : (M(p, 'aw_bandit_stormed') || M(p, 'aw_bandit_postern')) ? 'The tower is burned, and the Hawk hangs at the bridge he taxed. His sword lies on the table at the church meeting, where they are dividing what was in his cellars.'
+      : M(p, 'aw_bandit_fell') ? 'You lie a month with your face stitched, and hear it all from your bed: the tower burned, the Hawk hanged at his own bridge. His sword is kept for you.'
       : 'The tower is burned and the Hawk hanged at his own bridge. The road is free. The church meeting is dividing what was in his cellars.'),
     choices: [
-      { t: 'Take the Hawk\'s sword as your share', req: p => any(p, 'bandit_stormed', 'bandit_postern', 'bandit_fell'), r: 'It is a good sword, better than the man. You hang it over the hearth, and take it down more often than you would admit.',
-        fx: { epithet: 'Hawksbane', fame: 2, deed: 'Took the Hawk\'s tower', flag: 'aw_bandit_sword', arc: END('aw_bandit_sword') } },
-      { t: 'Ask the lord for the tower\'s fields, as a reward', req: p => !M(p, 'bandit_warned'), check: { s: 'persuasion', s2: 'wil', d: 55 },
-        win: { r: 'The lord gives you the tower\'s two fields and its ruin, which costs him nothing and pleases the villages.', fx: { asset: 'farm', flag: 'aw_bandit_land', arc: END('aw_bandit_land') } },
-        lose: { r: 'The steward says the lord is grateful, sends a cask of wine, and writes you down as a man who asks for things.', fx: { coin: 10, newRel: { type: 'rival', op: -20 }, flag: 'aw_bandit_asked', arc: END('aw_bandit_asked') } } },
-      { t: 'Keep the Hawk\'s silver, and your mouth shut', req: p => M(p, 'bandit_warned'), r: 'You keep both. Years later a man with a hawk on his ring passes through {home} and pays for your supper without a word.',
-        fx: { coin: 40, trait: 'deceitful', flag: 'aw_bandit_silver', arc: END('aw_bandit_silver') } },
+      { t: 'Take the Hawk\'s sword as your share', req: p => (M(p, 'aw_bandit_stormed') || M(p, 'aw_bandit_postern') || M(p, 'aw_bandit_fell')), r: 'It is a good sword, better than the man. You hang it over the hearth, and take it down more often than you would admit.',
+        fx: { epithet: 'Hawksbane', fame: 2, deed: 'Took the Hawk\'s tower', flag: 'aw_bandit_sword', arc: 'end' } },
+      { t: 'Ask the lord for the tower\'s fields, as a reward', req: p => !M(p, 'aw_bandit_warned'), check: { s: 'persuasion', s2: 'wil', d: 55 },
+        win: { r: 'The lord gives you the tower\'s two fields and its ruin, which costs him nothing and pleases the villages.', fx: { asset: 'farm', flag: 'aw_bandit_land', arc: 'end' } },
+        lose: { r: 'The steward says the lord is grateful, sends a cask of wine, and writes you down as a man who asks for things.', fx: { coin: 10, newRel: { type: 'rival', op: -20 }, flag: 'aw_bandit_asked', arc: 'end' } } },
+      { t: 'Keep the Hawk\'s silver, and your mouth shut', req: p => M(p, 'aw_bandit_warned'), r: 'You keep both. Years later a man with a hawk on his ring passes through {home} and pays for your supper without a word.',
+        fx: { coin: 40, trait: 'deceitful', flag: 'aw_bandit_silver', arc: 'end' } },
       { t: 'Rebuild the bridge, toll-free, with your share', r: 'New oak piles, a stone ramp, and a board nailed at each end: no toll here, by order of the parish. You carved the boards.',
-        fx: { coin: -20, honor: 3, deed: 'Rebuilt the ford bridge, toll-free', flag: 'aw_bandit_bridge', arc: END('aw_bandit_bridge') } },
+        fx: { coin: -20, honor: 3, deed: 'Rebuilt the ford bridge, toll-free', flag: 'aw_bandit_bridge', arc: 'end' } },
     ] },
 
   // ================================================================ the siege
@@ -347,7 +345,7 @@ A.defEvents([
   { id: 'aw_siege_2', title: 'Fires around the walls', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: foeRealm,
-    text: (p, ctx) => `${ctx.rid && A.hostile(p.realm, ctx.rid) ? 'The army of {other} comes over the hill in the morning: tents, banners, carts, a siege train.' : 'The war with {other} is over on paper, but their free companies were never paid, and they want {home} instead.'} By night the town is ringed with fires. The gates are shut and the well rota is nailed to the church door.${M(p, 'siege_built') ? ' The stretch you built is the newest part of the wall.' : M(p, 'siege_sent') ? ' Your house is empty, and you are glad of it.' : ''}`,
+    text: (p, ctx) => `${ctx.rid && A.hostile(p.realm, ctx.rid) ? 'The army of {other} comes over the hill in the morning: tents, banners, carts, a siege train.' : 'The war with {other} is over on paper, but their free companies were never paid, and they want {home} instead.'} By night the town is ringed with fires. The gates are shut and the well rota is nailed to the church door.${M(p, 'aw_siege_built') ? ' The stretch you built is the newest part of the wall.' : M(p, 'aw_siege_sent') ? ' Your house is empty, and you are glad of it.' : ''}`,
     choices: [
       { t: 'Take a crossbow and a place on the wall', check: { s: 'xbow', s2: 'ins', d: 50 },
         win: { r: 'You learn the crossbow on their sappers. By the end of the month you can tell a good bolt from a bad one by the sound.', fx: { fame: 3, skill: { xbow: 1 }, arc: { mark: 'aw_siege_wall' } } },
@@ -360,9 +358,9 @@ A.defEvents([
   { id: 'aw_siege_3', title: 'The second winter', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: foeRealm,
-    text: p => `The siege goes into its second winter. The horses are eaten, then the dogs. Rats sell for a penny. Half the council talks of terms; the other half says {other} will hang every man who carried a bow.${M(p, 'siege_stored') ? ' Your cellar is the envy of the street, and the street knows it.' : ''}${any(p, 'siege_wall', 'siege_sortie') ? ' Men on the wall know your name.' : ''}`,
+    text: p => `The siege goes into its second winter. The horses are eaten, then the dogs. Rats sell for a penny. Half the council talks of terms; the other half says {other} will hang every man who carried a bow.${M(p, 'aw_siege_stored') ? ' Your cellar is the envy of the street, and the street knows it.' : ''}${(M(p, 'aw_siege_wall') || M(p, 'aw_siege_sortie')) ? ' Men on the wall know your name.' : ''}`,
     choices: [
-      { t: 'Share your cellar with the street', req: p => M(p, 'siege_stored'), r: 'You give it out a measure at a time from your door. It lasts three weeks. The street does not forget it.', fx: { honor: 4, fame: 2, health: -4, arc: { mark: 'aw_siege_shared' } } },
+      { t: 'Share your cellar with the street', req: p => M(p, 'aw_siege_stored'), r: 'You give it out a measure at a time from your door. It lasts three weeks. The street does not forget it.', fx: { honor: 4, fame: 2, health: -4, arc: { mark: 'aw_siege_shared' } } },
       { t: 'Speak in the council for terms', check: { s: 'persuasion', s2: 'int', d: 50 },
         win: { r: 'You say what everyone thinks: better a ransom than a sack. The council sends out a herald under a white cloth.', fx: { fame: 2, arc: { mark: 'aw_siege_terms' } } },
         lose: { r: 'They shout you down as a coward and a friend of {other}. You go home with spit on your coat.', fx: { honor: -2, happy: -4, arc: { mark: 'aw_siege_shouted' } } } },
@@ -372,32 +370,32 @@ A.defEvents([
   { id: 'aw_siege_4', title: 'The gates', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: foeRealm,
-    text: p => (M(p, 'siege_terms') ? 'The gates open on terms in the morning. Lives are spared, and a third of every household\'s goods goes to {other}. Their clerks go door to door with scales and soldiers.'
-      : `In the spring their miners bring down a length of the wall${M(p, 'siege_built') ? ', not the stretch you built' : ''}. The assault comes at dawn, through the breach, with drums. Word on the wall is that a relief army is a day off.`),
+    text: p => (M(p, 'aw_siege_terms') ? 'The gates open on terms in the morning. Lives are spared, and a third of every household\'s goods goes to {other}. Their clerks go door to door with scales and soldiers.'
+      : `In the spring their miners bring down a length of the wall${M(p, 'aw_siege_built') ? ', not the stretch you built' : ''}. The assault comes at dawn, through the breach, with drums. Word on the wall is that a relief army is a day off.`),
     choices: [
-      { t: 'Pay the ransom honestly', req: p => M(p, 'siege_terms'), r: 'The clerk weighs your plate and your purse and takes a third, exactly. He is almost polite.', fx: { coinPct: -0.33, honor: 2, arc: { mark: 'aw_siege_ransom' } } },
-      { t: 'Hide your silver under the hearth', req: p => M(p, 'siege_terms'), check: { s: 'stealth', s2: 'int', d: 45 },
+      { t: 'Pay the ransom honestly', req: p => M(p, 'aw_siege_terms'), r: 'The clerk weighs your plate and your purse and takes a third, exactly. He is almost polite.', fx: { coinPct: -0.33, honor: 2, arc: { mark: 'aw_siege_ransom' } } },
+      { t: 'Hide your silver under the hearth', req: p => M(p, 'aw_siege_terms'), check: { s: 'stealth', s2: 'int', d: 45 },
         win: { r: 'They weigh what you show them. What is under the hearth stays there.', fx: { coinPct: -0.05, arc: { mark: 'aw_siege_hid' } } },
         lose: { r: 'Their sergeant has done this before. He goes straight to the hearth, and takes half, and your front teeth.', fx: { coinPct: -0.5, health: -8, arc: { mark: 'aw_siege_found' } } } },
-      { t: 'Stand in the breach with a bill', req: p => !M(p, 'siege_terms'), check: { s: 'melee', s2: 'wil', d: 55 },
+      { t: 'Stand in the breach with a bill', req: p => !M(p, 'aw_siege_terms'), check: { s: 'melee', s2: 'wil', d: 55 },
         win: { r: 'The breach holds till noon, and at noon the relief comes over the hill. You remember very little of the morning.', fx: { fame: 6, honor: 3, awProv: { pop: -0.03 }, arc: { mark: 'aw_siege_breach' } } },
         lose: { r: 'The breach holds till noon, and you hold it with the rest, until a blade takes two fingers off your left hand. The relief comes at noon.', fx: { health: -22, wound: 'lost_fingers', fame: 3, awProv: { pop: -0.03 }, arc: { mark: 'aw_siege_maimed' } } } },
-      { t: 'Hide with your family in the church crypt', req: p => !M(p, 'siege_terms'), r: 'You sit in the dark with the bones and the children for a day and a night. When you come up the relief has come, and your house has been looted by both sides.',
+      { t: 'Hide with your family in the church crypt', req: p => !M(p, 'aw_siege_terms'), r: 'You sit in the dark with the bones and the children for a day and a night. When you come up the relief has come, and your house has been looted by both sides.',
         fx: { coinPct: -0.4, health: 2, awProv: { pop: -0.03 }, arc: { mark: 'aw_siege_crypt' } } },
     ] },
   { id: 'aw_siege_5', title: 'After the siege', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: both(foeRealm, away),
-    text: p => { const P = A.prov(p.home), lost = P && P.owner !== p.realm; return `${lost ? `By the peace, {home} belongs to ${A.realmShort(P.owner)}, and the new tax-collectors have a new accent.` : 'The peace comes, and {home} goes back to market days and quarrels.'} The breach is still a heap of rubble with a fence across it. The council wants the walls raised, and asks who will pay.${M(p, 'siege_maimed') ? ' Your left hand aches before rain.' : ''}${M(p, 'siege_shared') ? ' The street still calls your cellar the town granary.' : ''}`; },
+    text: p => { const P = A.prov(p.home), lost = P && P.owner !== p.realm; return `${lost ? `By the peace, {home} belongs to ${A.realmShort(P.owner)}, and the new tax-collectors have a new accent.` : 'The peace comes, and {home} goes back to market days and quarrels.'} The breach is still a heap of rubble with a fence across it. The council wants the walls raised, and asks who will pay.${M(p, 'aw_siege_maimed') ? ' Your left hand aches before rain.' : ''}${M(p, 'aw_siege_shared') ? ' The street still calls your cellar the town granary.' : ''}`; },
     choices: [
       { t: 'Pay for the walls to be raised', req: p => p.coin >= 30, r: 'Your money buys forty feet of new wall and a stone with your mark on it. The next army will have to think about it.',
-        fx: { coin: -30, awProv: { fort: 1 }, deed: 'Paid for the new walls', flag: 'aw_siege_walls', arc: END('aw_siege_walls') } },
-      { t: 'Wear your scars on market day', req: p => any(p, 'siege_hit', 'siege_cut', 'siege_maimed', 'siege_breach', 'siege_sortie'), r: 'You do not talk about the breach; you do not need to. Strangers are told who you are before they reach your stall.',
-        fx: { epithet: 'the Wall', fame: 3, flag: 'aw_siege_name', arc: END('aw_siege_name') } },
+        fx: { coin: -30, awProv: { fort: 1 }, deed: 'Paid for the new walls', flag: 'aw_siege_walls', arc: 'end' } },
+      { t: 'Wear your scars on market day', req: p => (M(p, 'aw_siege_hit') || M(p, 'aw_siege_cut') || M(p, 'aw_siege_maimed') || M(p, 'aw_siege_breach') || M(p, 'aw_siege_sortie')), r: 'You do not talk about the breach; you do not need to. Strangers are told who you are before they reach your stall.',
+        fx: { epithet: 'the Wall', fame: 3, flag: 'aw_siege_name', arc: 'end' } },
       { t: 'Leave {home}: you will not be shut in again', req: p => !!A.AW.moveTo(p, 'away'), r: 'You sell up and go to {away}, where the walls are someone else\'s business. Some nights you still count the bread.',
-        fx: { awMove: 'away', trait: 'paranoid', flag: 'aw_siege_left', arc: END('aw_siege_left') } },
-      { t: p => (M(p, 'siege_terms') ? 'Make a friend of the sergeant billeted on you' : 'Make a friend of one of their prisoners'), r: 'He is a cooper from a village much like yours, and he weeps when he talks about it. After the peace, he writes.',
-        fx: { awWho: { type: 'friend', op: 35, sex: 'M', from: 'other', age: [24, 40], occ: 'a soldier of the other side', line: 'writes to you after the peace' }, flag: 'aw_siege_enemyfriend', arc: END('aw_siege_friend') } },
+        fx: { awMove: 'away', trait: 'paranoid', flag: 'aw_siege_left', arc: 'end' } },
+      { t: p => (M(p, 'aw_siege_terms') ? 'Make a friend of the sergeant billeted on you' : 'Make a friend of one of their prisoners'), r: 'He is a cooper from a village much like yours, and he weeps when he talks about it. After the peace, he writes.',
+        fx: { awWho: { type: 'friend', op: 35, sex: 'M', from: 'other', age: [24, 40], occ: 'a soldier of the other side', line: 'writes to you after the peace' }, flag: 'aw_siege_enemyfriend', arc: 'end' } },
     ] },
 
   // ================================================================ the long winter
@@ -413,7 +411,7 @@ A.defEvents([
     ] },
   { id: 'aw_winter_2', title: 'A knock after dark', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `In the worst week of the winter someone beats on your door after dark: a man half dead with cold, in a good cloak frozen stiff, holding a sealed satchel he will not let go of. He asks for a fire, in the accent of {capital}.${M(p, 'winter_shared') ? ' The old couple by your hearth say let him in; they would be dead themselves.' : M(p, 'winter_burned') ? ' There is not much left to burn.' : ''}`,
+    text: p => `In the worst week of the winter someone beats on your door after dark: a man half dead with cold, in a good cloak frozen stiff, holding a sealed satchel he will not let go of. He asks for a fire, in the accent of {capital}.${M(p, 'aw_winter_shared') ? ' The old couple by your hearth say let him in; they would be dead themselves.' : M(p, 'aw_winter_burned') ? ' There is not much left to burn.' : ''}`,
     choices: [
       { t: 'Bring him in to the fire', r: 'You thaw him by inches. He sleeps with the satchel under his head, and in the morning gives you his name and nothing else.',
         fx: { awWho: { type: 'friend', op: 25, sex: 'M', age: [24, 40], status: 'gentry', occ: 'a crown messenger', line: 'owes you his life' }, health: -2, arc: { mark: 'aw_winter_guest' } } },
@@ -423,29 +421,29 @@ A.defEvents([
     ] },
   { id: 'aw_winter_3', title: 'The thaw', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The thaw comes all at once. The lanes are rivers, the cows that lived are bones in hide, and the steward comes round with the rent book as if it had been a mild year.${M(p, 'winter_caught') ? ' He has the forester\'s book too, with your name in it.' : ''}${M(p, 'winter_read') ? ' You still know what was in the satchel. Someone in {capital} would pay for it.' : M(p, 'winter_turned') ? ' They found a man frozen in the church porch, in a good cloak.' : M(p, 'winter_guest') ? ' Your guest went on in February on a borrowed horse.' : ''}`,
+    text: p => `The thaw comes all at once. The lanes are rivers, the cows that lived are bones in hide, and the steward comes round with the rent book as if it had been a mild year.${M(p, 'aw_winter_caught') ? ' He has the forester\'s book too, with your name in it.' : ''}${M(p, 'aw_winter_read') ? ' You still know what was in the satchel. Someone in {capital} would pay for it.' : M(p, 'aw_winter_turned') ? ' They found a man frozen in the church porch, in a good cloak.' : M(p, 'aw_winter_guest') ? ' Your guest went on in February on a borrowed horse.' : ''}`,
     choices: [
       { t: 'Pay the rent in full, and go short', r: 'You pay it in coin you were keeping for seed. The steward ticks the book and moves on.', fx: { coin: -15, wil: 1, arc: { mark: 'aw_winter_paid' } } },
       { t: 'Ask the steward for time', check: { s: 'persuasion', s2: 'ins', d: 45 },
         win: { r: 'He gives you until Michaelmas, and a lecture. It is the better half of the bargain.', fx: { happy: 1, arc: { mark: 'aw_winter_time' } } },
         lose: { r: 'He takes your best pot and the pig instead, and writes it down as a kindness.', fx: { coin: -25, happy: -4, arc: { mark: 'aw_winter_distrained' } } } },
-      { t: 'Sell what you read in the satchel', req: p => M(p, 'winter_read'), r: 'A wool merchant from {capital} buys it without blinking and pays in gold. You do not ask who he sells it on to.', fx: { coin: 60, honor: -5, arc: { mark: 'aw_winter_sold' } } },
+      { t: 'Sell what you read in the satchel', req: p => M(p, 'aw_winter_read'), r: 'A wool merchant from {capital} buys it without blinking and pays in gold. You do not ask who he sells it on to.', fx: { coin: 60, honor: -5, arc: { mark: 'aw_winter_sold' } } },
     ] },
   { id: 'aw_winter_4', title: 'A rider from {capital}', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: near(null, 'the messenger', 'the messenger'),
-    text: p => (M(p, 'winter_turned') ? 'A rider from {capital} comes asking about a crown messenger who froze in your church porch, with letters that never arrived. He wants to know who saw him alive. Several people say you did.'
-      : M(p, 'winter_read') ? 'A rider from {capital} comes to {home} asking who sheltered a crown messenger in the long winter, and who might have read his letters. The border went badly that spring.'
+    text: p => (M(p, 'aw_winter_turned') ? 'A rider from {capital} comes asking about a crown messenger who froze in your church porch, with letters that never arrived. He wants to know who saw him alive. Several people say you did.'
+      : M(p, 'aw_winter_read') ? 'A rider from {capital} comes to {home} asking who sheltered a crown messenger in the long winter, and who might have read his letters. The border went badly that spring.'
       : 'A rider comes to {home} with your name on a paper. The man you thawed was a crown messenger, and the household of {ruler} pays its small debts. {them} asks, by letter, what you would have.'),
     choices: [
-      { t: 'Ask for a freehold, free of rent', req: p => M(p, 'winter_guest'), r: 'The paper comes at midsummer under a seal: a cottage and garden, rent-free, yours and your heirs\'. The steward reads it twice.',
-        fx: { asset: 'cottage', them: { op: 10 }, flag: 'aw_winter_freehold', arc: END('aw_winter_freehold') } },
-      { t: 'Ask only for his friendship', req: p => M(p, 'winter_guest'), r: 'He comes himself in the autumn, on a better horse, drinks your ale, and says you may call on him in {capital} whenever you like.',
-        fx: { sworn: true, them: { op: 30 }, flag: 'aw_winter_friend', arc: END('aw_winter_friend') } },
-      { t: 'Tell the rider the truth', req: p => any(p, 'winter_turned', 'winter_read'), r: p => (M(p, 'winter_turned') ? 'You say you pointed him to the church and barred your door. The rider writes it down, and the parish knows by evening. You pay for the dead man\'s grave.' : 'You say you read the letters. The rider takes you to the magistrate, and you buy your way out with most of what you have.'),
-        fx: { honor: 3, coinPct: -0.2, flag: 'aw_winter_confessed', arc: END('aw_winter_confessed') } },
+      { t: 'Ask for a freehold, free of rent', req: p => M(p, 'aw_winter_guest'), r: 'The paper comes at midsummer under a seal: a cottage and garden, rent-free, yours and your heirs\'. The steward reads it twice.',
+        fx: { asset: 'cottage', them: { op: 10 }, flag: 'aw_winter_freehold', arc: 'end' } },
+      { t: 'Ask only for his friendship', req: p => M(p, 'aw_winter_guest'), r: 'He comes himself in the autumn, on a better horse, drinks your ale, and says you may call on him in {capital} whenever you like.',
+        fx: { sworn: true, them: { op: 30 }, flag: 'aw_winter_friend', arc: 'end' } },
+      { t: 'Tell the rider the truth', req: p => (M(p, 'aw_winter_turned') || M(p, 'aw_winter_read')), r: p => (M(p, 'aw_winter_turned') ? 'You say you pointed him to the church and barred your door. The rider writes it down, and the parish knows by evening. You pay for the dead man\'s grave.' : 'You say you read the letters. The rider takes you to the magistrate, and you buy your way out with most of what you have.'),
+        fx: { honor: 3, coinPct: -0.2, flag: 'aw_winter_confessed', arc: 'end' } },
       { t: 'Never again: cut two winters\' wood every autumn', r: 'From then on your woodpile is the talk of the lane: two winters deep, stacked under thatch. Your children grow up thinking everyone does this.',
-        fx: { trait: 'diligent', flag: 'aw_winter_woodpile', arc: END('aw_winter_woodpile') } },
+        fx: { trait: 'diligent', flag: 'aw_winter_woodpile', arc: 'end' } },
     ] },
 
   // ================================================================ the wolf years
@@ -461,7 +459,7 @@ A.defEvents([
     ] },
   { id: 'aw_wolf_2', title: 'The bounty', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `${A.C.noble(p) ? 'Your steward sets a bounty in your name' : 'The lord sets a bounty'}: a sun for every wolf's head nailed to the manor gate. By midsummer the gate is a horror of heads, and half of them are dogs'. The wolves are as bold as ever.${M(p, 'wolf_pit') ? ' Your pit has taken two.' : M(p, 'wolf_wolfer') ? ' The wolfer has gone south with your money.' : M(p, 'wolf_bitten') ? ' Your bite has closed into a purple seam.' : ''}`,
+    text: p => `${A.C.noble(p) ? 'Your steward sets a bounty in your name' : 'The lord sets a bounty'}: a sun for every wolf's head nailed to the manor gate. By midsummer the gate is a horror of heads, and half of them are dogs'. The wolves are as bold as ever.${M(p, 'aw_wolf_pit') ? ' Your pit has taken two.' : M(p, 'aw_wolf_wolfer') ? ' The wolfer has gone south with your money.' : M(p, 'aw_wolf_bitten') ? ' Your bite has closed into a purple seam.' : ''}`,
     choices: [
       { t: 'Hunt for the bounty with the other men', r: 'You walk the woods with dogs and spears all summer and nail up three heads, all of them wolves.', fx: { coin: 3, skill: { tracking: 1 }, sta: 1, arc: { mark: 'aw_wolf_bounty' } } },
       { t: 'Tell the steward that half the heads are dogs\'', r: 'The steward sends a man to look, and stops the bounty. The men who were nailing up dogs know who spoke.', fx: { honor: 2, newRel: { type: 'enemy', op: -25 }, arc: { mark: 'aw_wolf_honest' } } },
@@ -469,7 +467,7 @@ A.defEvents([
     ] },
   { id: 'aw_wolf_3', title: 'The grey one', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `In the autumn the miller's youngest goes to the edge of the wood for kindling and does not come back. They find her basket. The tracks in the mud are one wolf, bigger than any you have seen, and lame in the right fore.${M(p, 'wolf_watch') ? ' Lame where a spear might have gone in.' : ''}${M(p, 'wolf_honest') ? ' The men you shamed over the bounty say this is what comes of it.' : ''}`,
+    text: p => `In the autumn the miller's youngest goes to the edge of the wood for kindling and does not come back. They find her basket. The tracks in the mud are one wolf, bigger than any you have seen, and lame in the right fore.${M(p, 'aw_wolf_watch') ? ' Lame where a spear might have gone in.' : ''}${M(p, 'aw_wolf_honest') ? ' The men you shamed over the bounty say this is what comes of it.' : ''}`,
     choices: [
       { t: 'Track it into the wood alone, tonight', check: { s: 'tracking', s2: 'wil', d: 55 },
         win: { r: 'You follow the lame track by lantern to a hollow under a fallen oak. It comes at you out of the dark, and you kill it there, and it takes a long time.', fx: { fame: 5, arc: { mark: 'aw_wolf_killed' } } },
@@ -481,20 +479,20 @@ A.defEvents([
     ] },
   { id: 'aw_wolf_4', title: 'The pelt', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => (M(p, 'wolf_killed') ? 'The grey wolf\'s pelt hangs in the church porch, longer than a man is tall. Children dare each other to touch it. The miller has not said a word to you since; he does not need to.'
-      : M(p, 'wolf_drive') ? 'The drive took the grey one in a ditch with eleven spears in it. Whose spear killed it is argued in every house in {home}, and you have the pelt.'
-      : M(p, 'wolf_mauled') ? 'The grey one is still in the wood. You have its marks on you, and the village leaves the wood alone after dark.'
+    text: p => (M(p, 'aw_wolf_killed') ? 'The grey wolf\'s pelt hangs in the church porch, longer than a man is tall. Children dare each other to touch it. The miller has not said a word to you since; he does not need to.'
+      : M(p, 'aw_wolf_drive') ? 'The drive took the grey one in a ditch with eleven spears in it. Whose spear killed it is argued in every house in {home}, and you have the pelt.'
+      : M(p, 'aw_wolf_mauled') ? 'The grey one is still in the wood. You have its marks on you, and the village leaves the wood alone after dark.'
       : 'The lord\'s huntsmen came with hounds and horns, killed a wolf, and went home. Nobody is sure it was the one. The children are kept in.'),
     choices: [
-      { t: 'Wear the pelt as a cloak to market', req: p => any(p, 'wolf_killed', 'wolf_drive'), r: 'It stinks for a month, then it doesn\'t. People stand aside for you in the market, and the name follows you home.',
-        fx: { epithet: 'Wolfsbane', fame: 3, flag: 'aw_wolf_pelt', arc: END('aw_wolf_pelt') } },
-      { t: 'Give the pelt to the miller\'s family', req: p => any(p, 'wolf_killed', 'wolf_drive'), r: 'The miller takes it without a word. The next week your flour comes back finer than you paid for, and keeps coming.',
-        fx: { honor: 3, newRel: { type: 'friend', op: 45 }, flag: 'aw_wolf_gift', arc: END('aw_wolf_gift') } },
-      { t: 'Go back into the wood after it', req: p => !any(p, 'wolf_killed', 'wolf_drive'), check: { s: 'tracking', s2: 'sta', d: 55 },
-        win: { r: 'You find it in the January snow, old and starving and lame. You kill it, and are surprised to be sorry.', fx: { epithet: 'Wolfsbane', fame: 4, flag: 'aw_wolf_late', arc: END('aw_wolf_late') } },
-        lose: { r: 'You find it, or it finds you. They carry you home on a hurdle with your knee in pieces.', fx: { health: -15, wound: 'bad_knee', flag: 'aw_wolf_knee', arc: END('aw_wolf_knee') } } },
-      { t: 'Leave the wood to the wolves', req: p => !any(p, 'wolf_killed', 'wolf_drive'), r: 'You do not go into the wood after dark again, nor let anyone of yours. The wood grows thicker every year.',
-        fx: { trait: 'cautious', happy: 2, flag: 'aw_wolf_feared', arc: END('aw_wolf_feared') } },
+      { t: 'Wear the pelt as a cloak to market', req: p => (M(p, 'aw_wolf_killed') || M(p, 'aw_wolf_drive')), r: 'It stinks for a month, then it doesn\'t. People stand aside for you in the market, and the name follows you home.',
+        fx: { epithet: 'Wolfsbane', fame: 3, flag: 'aw_wolf_pelt', arc: 'end' } },
+      { t: 'Give the pelt to the miller\'s family', req: p => (M(p, 'aw_wolf_killed') || M(p, 'aw_wolf_drive')), r: 'The miller takes it without a word. The next week your flour comes back finer than you paid for, and keeps coming.',
+        fx: { honor: 3, newRel: { type: 'friend', op: 45 }, flag: 'aw_wolf_gift', arc: 'end' } },
+      { t: 'Go back into the wood after it', req: p => !(M(p, 'aw_wolf_killed') || M(p, 'aw_wolf_drive')), check: { s: 'tracking', s2: 'sta', d: 55 },
+        win: { r: 'You find it in the January snow, old and starving and lame. You kill it, and are surprised to be sorry.', fx: { epithet: 'Wolfsbane', fame: 4, flag: 'aw_wolf_late', arc: 'end' } },
+        lose: { r: 'You find it, or it finds you. They carry you home on a hurdle with your knee in pieces.', fx: { health: -15, wound: 'bad_knee', flag: 'aw_wolf_knee', arc: 'end' } } },
+      { t: 'Leave the wood to the wolves', req: p => !(M(p, 'aw_wolf_killed') || M(p, 'aw_wolf_drive')), r: 'You do not go into the wood after dark again, nor let anyone of yours. The wood grows thicker every year.',
+        fx: { trait: 'cautious', happy: 2, flag: 'aw_wolf_feared', arc: 'end' } },
     ] },
 
   // ================================================================ the fall at the pit
@@ -511,7 +509,7 @@ A.defEvents([
     ] },
   { id: 'aw_mine_2', title: 'The fall', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `At the change of shift the east gallery comes down with a sound you feel in your teeth. Dust rolls out of the adit like smoke. Eleven men are below. Tapping comes up the pump pipe: someone is alive.${M(p, 'mine_shored') ? ' Your props are in the west drift; the fall is in the east.' : M(p, 'mine_heard') ? ' The seasoned oak came last week. It is still on the cart.' : M(p, 'mine_quiet') ? ' You said nothing. Nobody did.' : ''}`,
+    text: p => `At the change of shift the east gallery comes down with a sound you feel in your teeth. Dust rolls out of the adit like smoke. Eleven men are below. Tapping comes up the pump pipe: someone is alive.${M(p, 'aw_mine_shored') ? ' Your props are in the west drift; the fall is in the east.' : M(p, 'aw_mine_heard') ? ' The seasoned oak came last week. It is still on the cart.' : M(p, 'aw_mine_quiet') ? ' You said nothing. Nobody did.' : ''}`,
     choices: [
       { t: 'Go down with the rescue party', check: { s: 'sta', s2: 'str', d: 55 },
         win: { r: 'You crawl in on your belly with a lamp and a pick, and over a day and a night you bring out four men, one at a time.', fx: { fame: 5, honor: 3, arc: { mark: 'aw_mine_rescued' } } },
@@ -525,15 +523,15 @@ A.defEvents([
     ] },
   { id: 'aw_mine_3', title: 'The assize', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The assize judge sits in the church at {home} with the pit owner beside him. Four men never came up. The owner's clerk says the dead were careless with their lamps. The widows sit at the back in borrowed black.${any(p, 'mine_rescued', 'mine_shaft') ? ' Men you brought up are in the pews.' : M(p, 'mine_crushed') ? ' You come in on two sticks.' : ''}${any(p, 'mine_heard', 'mine_sacked') ? ' Everyone knows you warned him.' : ''}`,
+    text: p => `The assize judge sits in the church at {home} with the pit owner beside him. Four men never came up. The owner's clerk says the dead were careless with their lamps. The widows sit at the back in borrowed black.${(M(p, 'aw_mine_rescued') || M(p, 'aw_mine_shaft')) ? ' Men you brought up are in the pews.' : M(p, 'aw_mine_crushed') ? ' You come in on two sticks.' : ''}${(M(p, 'aw_mine_heard') || M(p, 'aw_mine_sacked')) ? ' Everyone knows you warned him.' : ''}`,
     choices: [
       { t: 'Swear to the green timber, to the owner\'s face', check: { s: 'persuasion', s2: 'wil', d: 50 },
-        win: { r: 'The judge finds the props at fault. The owner pays each widow ten years\' wages, and hates you for it.', fx: { honor: 4, fame: 3, deed: 'Made the pit owner pay the widows', flag: 'aw_mine_justice', arc: END('aw_mine_justice') } },
-        lose: { r: 'The judge finds for the owner. You will not work in any pit he owns, or any his friends own.', fx: { honor: 3, newRel: { type: 'enemy', op: -50 }, flag: 'aw_mine_blacklisted', arc: END('aw_mine_blacklisted') } } },
+        win: { r: 'The judge finds the props at fault. The owner pays each widow ten years\' wages, and hates you for it.', fx: { honor: 4, fame: 3, deed: 'Made the pit owner pay the widows', flag: 'aw_mine_justice', arc: 'end' } },
+        lose: { r: 'The judge finds for the owner. You will not work in any pit he owns, or any his friends own.', fx: { honor: 3, newRel: { type: 'enemy', op: -50 }, flag: 'aw_mine_blacklisted', arc: 'end' } } },
       { t: 'Take the owner\'s money to call it an accident', r: 'Thirty suns in a twist of cloth, and a seat by the fire in the owner\'s kitchen whenever you like. The widows do not look at you.',
-        fx: { coin: 30, honor: -5, trait: 'greedy', flag: 'aw_mine_bought', arc: END('aw_mine_bought') } },
+        fx: { coin: 30, honor: -5, trait: 'greedy', flag: 'aw_mine_bought', arc: 'end' } },
       { t: 'Start a burial club for the miners\' families', r: 'A penny a week from every man, in a box with three locks. When the next man dies underground, his widow eats.',
-        fx: { coin: -5, honor: 2, deed: 'Founded the miners\' burial club', flag: 'aw_mine_club', arc: END('aw_mine_club') } },
+        fx: { coin: -5, honor: 2, deed: 'Founded the miners\' burial club', flag: 'aw_mine_club', arc: 'end' } },
     ] },
 
   // ================================================================ the wreck
@@ -551,7 +549,7 @@ A.defEvents([
     ] },
   { id: 'aw_wreck_2', title: 'The survivor', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `${M(p, 'wreck_saved') ? 'One of the men you pulled from the surf lived.' : M(p, 'wreck_barrel') ? 'A man came ashore clinging to a spar beside your barrel, and you could not leave him.' : 'The one who coughed lived.'} He is in your house: a ship's mate from far off, with ten words of your tongue and a ring sewn into his collar. He says the captain's strongbox went down off the reef in four fathoms, and that he knows where.`,
+    text: p => `${M(p, 'aw_wreck_saved') ? 'One of the men you pulled from the surf lived.' : M(p, 'aw_wreck_barrel') ? 'A man came ashore clinging to a spar beside your barrel, and you could not leave him.' : 'The one who coughed lived.'} He is in your house: a ship's mate from far off, with ten words of your tongue and a ring sewn into his collar. He says the captain's strongbox went down off the reef in four fathoms, and that he knows where.`,
     choices: [
       { t: 'Nurse him, and keep him from the bailiff', r: 'You hide him in the loft through the bailiff\'s visit. By spring he is mending nets and swearing in your language.',
         fx: { coin: -5, awWho: { type: 'friend', op: 35, sex: 'M', from: 'far', age: [22, 35], occ: 'a shipwrecked mate', line: 'owes you his life' }, arc: { mark: 'aw_wreck_kept' } } },
@@ -563,7 +561,7 @@ A.defEvents([
   { id: 'aw_wreck_3', title: 'The owners', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: near(null, 'the mate', 'the mate'),
-    text: (p, ctx) => `A factor of the ship's owners comes from {capital} with a letter of claim and two hard men, asking after every barrel, bale and survivor. The lord's bailiff says wreck of the sea is the lord's, by old right. Both of them come to your door.${M(p, 'wreck_barrel') ? ' Your barrel is under the straw in the byre.' : ''}${M(p, 'wreck_box') ? ' The strongbox is under your floor.' : ''}${held(p, ctx) ? ' {them} is in your loft.' : ''}`,
+    text: (p, ctx) => `A factor of the ship's owners comes from {capital} with a letter of claim and two hard men, asking after every barrel, bale and survivor. The lord's bailiff says wreck of the sea is the lord's, by old right. Both of them come to your door.${M(p, 'aw_wreck_barrel') ? ' Your barrel is under the straw in the byre.' : ''}${M(p, 'aw_wreck_box') ? ' The strongbox is under your floor.' : ''}${held(p, ctx) ? ' {them} is in your loft.' : ''}`,
     choices: [
       { t: 'Give the factor everything, and tell him all', r: 'You hand over what you have and say what you know. He writes it down and pays a reward, smaller than you hoped.', fx: { honor: 3, coin: 10, arc: { mark: 'aw_wreck_returned' } } },
       { t: 'Swear you saw nothing and have nothing', check: { s: 'deception', s2: 'wil', d: 50 },
@@ -574,16 +572,16 @@ A.defEvents([
   { id: 'aw_wreck_4', title: 'A light on the headland', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: near(null, 'the mate', 'the mate'),
-    text: (p, ctx) => `Ships still break on the reef below {home} in the winter gales, and the village still goes down to the shingle to see what the sea sends.${held(p, ctx) ? ' {them} has stayed: he mends nets, speaks your tongue, and says that in his country they light fires on the headlands.' : ' In some countries, a pedlar tells you, they light fires on the headlands.'}${M(p, 'wreck_box') ? ' The strongbox money is still under your floor.' : ''}`,
+    text: (p, ctx) => `Ships still break on the reef below {home} in the winter gales, and the village still goes down to the shingle to see what the sea sends.${held(p, ctx) ? ' {them} has stayed: he mends nets, speaks your tongue, and says that in his country they light fires on the headlands.' : ' In some countries, a pedlar tells you, they light fires on the headlands.'}${M(p, 'aw_wreck_box') ? ' The strongbox money is still under your floor.' : ''}`,
     choices: [
       { t: 'Build a beacon on the headland, and tend it', r: 'A stone hearth on the point and a stack of furze. On the black nights you keep it burning, and the ships stand off.',
-        fx: { coin: -15, fame: 3, deed: 'Lit the first beacon on the headland', flag: 'aw_wreck_beacon', arc: END('aw_wreck_beacon') } },
+        fx: { coin: -15, fame: 3, deed: 'Lit the first beacon on the headland', flag: 'aw_wreck_beacon', arc: 'end' } },
       { t: 'Take {them} into your family as a brother', req: (p, C, ctx) => !!held(p, ctx), r: 'You swear it over salt and bread in the old way. He keeps your boat as if it were his own, which it now partly is.',
-        fx: { sworn: true, them: { op: 25 }, flag: 'aw_wreck_brother', arc: END('aw_wreck_brother') } },
+        fx: { sworn: true, them: { op: 25 }, flag: 'aw_wreck_brother', arc: 'end' } },
       { t: 'Buy a boat with what the sea gave you', req: p => p.coin >= 100, r: 'A clinker boat with a brown sail and your mark burned into the stern. The sea gives, and you go out to take more.',
-        fx: { coin: -100, asset: 'fishboat', flag: 'aw_wreck_boat', arc: END('aw_wreck_boat') } },
+        fx: { coin: -100, asset: 'fishboat', flag: 'aw_wreck_boat', arc: 'end' } },
       { t: 'Hang a lantern on the wrong rock', r: 'On a black night a coaster sees your light and turns for it. In the morning the shingle is covered in casks, and you do not go and look at the men.',
-        fx: { coin: 60, honor: -8, trait: 'cruel', flag: 'aw_wreck_wrecker', arc: END('aw_wreck_wrecker') } },
+        fx: { coin: 60, honor: -8, trait: 'cruel', flag: 'aw_wreck_wrecker', arc: 'end' } },
     ] },
 
   // ================================================================ the pilgrimage
@@ -599,7 +597,7 @@ A.defEvents([
   { id: 'aw_pil_2', title: 'The pass', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: both(shrine, near(null, 'the dead', 'the dead')),
-    text: (p, ctx) => `Six weeks out, the pilgrims you walk with have become a company: a tanner with bad feet, two sisters from the coast, a friar who drinks, a boy running from something. At the top of the pass, men with clubs stand across the road, asking a toll for the saint's road.${M(p, 'pil_love') && held(p, ctx) ? ' You carry a lock of {them}\'s hair in your purse.' : M(p, 'pil_penance') ? ' You carry what you did.' : ''}`,
+    text: (p, ctx) => `Six weeks out, the pilgrims you walk with have become a company: a tanner with bad feet, two sisters from the coast, a friar who drinks, a boy running from something. At the top of the pass, men with clubs stand across the road, asking a toll for the saint's road.${M(p, 'aw_pil_love') && held(p, ctx) ? ' You carry a lock of {them}\'s hair in your purse.' : M(p, 'aw_pil_penance') ? ' You carry what you did.' : ''}`,
     choices: [
       { t: 'Pay the toll for the whole company', req: p => p.coin >= 20, r: 'You pay for nine. The friar blesses you so loudly the toll-men look embarrassed.', fx: { coin: -20, honor: 2, happy: 2, arc: { mark: 'aw_pil_paid' } } },
       { t: 'Face them down with the friar and the tanner', check: { s: 'intimidation', s2: 'wil', d: 50 },
@@ -612,7 +610,7 @@ A.defEvents([
   { id: 'aw_pil_3', title: 'At the shrine', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: both(shrine, near(null, 'the dead', 'the dead')),
-    text: (p, ctx) => `You come into {shrine} with the company at dusk, footsore and singing. The shrine is smaller than you imagined and the crowd larger: sellers of badges, cripples, cutpurses, priests with boxes. The relic lies behind an iron grille, and you will have a moment at it.${M(p, 'pil_love') && held(p, ctx) ? ' You came for {them}.' : M(p, 'pil_penance') ? ' You came to put something down.' : ' You came to see, and you are seeing.'}${M(p, 'pil_frost') ? ' Your black toes ache.' : ''}`,
+    text: (p, ctx) => `You come into {shrine} with the company at dusk, footsore and singing. The shrine is smaller than you imagined and the crowd larger: sellers of badges, cripples, cutpurses, priests with boxes. The relic lies behind an iron grille, and you will have a moment at it.${M(p, 'aw_pil_love') && held(p, ctx) ? ' You came for {them}.' : M(p, 'aw_pil_penance') ? ' You came to put something down.' : ' You came to see, and you are seeing.'}${M(p, 'aw_pil_frost') ? ' Your black toes ache.' : ''}`,
     choices: [
       { t: 'Kneel and pray as you came to', r: 'You kneel on stone worn hollow by other knees and say what you came to say. Something in you sets down a load.', fx: { piety: 6, happy: 3, arc: { mark: 'aw_pil_prayed' } } },
       { t: 'Look closely at what lies behind the grille', check: { s: 'ins', s2: 'int', d: 45 },
@@ -623,16 +621,16 @@ A.defEvents([
   { id: 'aw_pil_4', title: 'Home from the road', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: both(shrine, near(null, 'the dead', 'the dead')),
-    text: (p, ctx) => `You come home to {home} from {shrine} thinner and browner, with your shoes in your hand. The year went on without you: the harvest is in, somebody married, somebody died.${M(p, 'pil_love') && held(p, ctx) ? ' {them} is well, or better, and asks what you saw.' : ''}${M(p, 'pil_doubt') ? ' You know what lies behind the grille.' : M(p, 'pil_badge') ? ' The badge is on your hat.' : M(p, 'pil_robbed') ? ' You come home with less than you left with, and a story.' : ''}`,
+    text: (p, ctx) => `You come home to {home} from {shrine} thinner and browner, with your shoes in your hand. The year went on without you: the harvest is in, somebody married, somebody died.${M(p, 'aw_pil_love') && held(p, ctx) ? ' {them} is well, or better, and asks what you saw.' : ''}${M(p, 'aw_pil_doubt') ? ' You know what lies behind the grille.' : M(p, 'aw_pil_badge') ? ' The badge is on your hat.' : M(p, 'aw_pil_robbed') ? ' You come home with less than you left with, and a story.' : ''}`,
     choices: [
       { t: 'Hang your staff over the door, and tell it all', r: 'You tell it at every fireside in the parish, with the toll-men taller each time. Young people come to ask you the way.',
-        fx: { fame: 3, epithet: 'the Palmer', flag: 'aw_pil_staff', arc: END('aw_pil_staff') } },
+        fx: { fame: 3, epithet: 'the Palmer', flag: 'aw_pil_staff', arc: 'end' } },
       { t: 'Give up your trade and take holy orders', req: (p, C) => !C.job(p, 'clergy') && !C.noble(p) && !C.married(p), r: 'The bishop\'s chaplain hears your story, tests your letters, and finds you a place as a clerk in orders.',
-        fx: { job: 'clergy', piety: 4, flag: 'aw_pil_orders', arc: END('aw_pil_orders') } },
+        fx: { job: 'clergy', piety: 4, flag: 'aw_pil_orders', arc: 'end' } },
       { t: 'Keep the company: the tanner, the sisters, the boy', r: 'You write, or get the priest to write, every Easter. The boy comes to stay one summer and does not leave.',
-        fx: { newRel: { type: 'friend', op: 45 }, happy: 3, flag: 'aw_pil_company', arc: END('aw_pil_company') } },
-      { t: 'Say nothing of what you saw behind the grille', req: p => M(p, 'pil_doubt'), r: 'You hang your badge on the nail like everyone else and keep your face straight in church. It is not hard, after a while.',
-        fx: { trait: 'cynical', flag: 'aw_pil_doubter', arc: END('aw_pil_doubter') } },
+        fx: { newRel: { type: 'friend', op: 45 }, happy: 3, flag: 'aw_pil_company', arc: 'end' } },
+      { t: 'Say nothing of what you saw behind the grille', req: p => M(p, 'aw_pil_doubt'), r: 'You hang your badge on the nail like everyone else and keep your face straight in church. It is not hard, after a while.',
+        fx: { trait: 'cynical', flag: 'aw_pil_doubter', arc: 'end' } },
     ] },
 
   // ================================================================ the heresy
@@ -647,7 +645,7 @@ A.defEvents([
   { id: 'aw_her_2', title: 'Two congregations', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: near(['spouse', 'sibling', 'mother', 'father', 'child', 'bestfriend', 'friend'], 'your oldest friend', 'your friend'),
-    text: p => `By the next year {home} has two congregations: the parish church, half empty, and a barn where the preacher's people meet before dawn and read aloud in plain speech. Families divide at the table. {who} has started going to the barn.${M(p, 'her_told') ? ' The barn people know who told the priest.' : M(p, 'her_heard') ? ' You have been twice yourself.' : ''}`,
+    text: p => `By the next year {home} has two congregations: the parish church, half empty, and a barn where the preacher's people meet before dawn and read aloud in plain speech. Families divide at the table. {who} has started going to the barn.${M(p, 'aw_her_told') ? ' The barn people know who told the priest.' : M(p, 'aw_her_heard') ? ' You have been twice yourself.' : ''}`,
     choices: [
       { t: 'Go to the barn with {them}', r: 'You sit on a hay bale in the dark and hear the book read in words you understand. {them} holds your hand.', fx: { piety: -3, happy: 3, them: { op: 15 }, arc: { mark: 'aw_her_barn' } } },
       { t: 'Forbid {them} to go', r: 'There is shouting, and then silence, which is worse. {them} stops going to the barn, and stops a good deal else.', fx: { piety: 3, them: { op: -20 }, arc: { mark: 'aw_her_forbade' } } },
@@ -658,17 +656,17 @@ A.defEvents([
   { id: 'aw_her_3', title: 'The bishop\'s men', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     setup: near(null, 'your oldest friend', 'your friend'),
-    text: p => `The bishop's men come to {home}: a canon lawyer, two clerks and a sergeant. They sit in the vestry, call the parish in one house at a time, and ask each the same question. Who goes to the barn?${M(p, 'her_barn') ? ' They know you have been.' : M(p, 'her_forbade') ? ' {who} has stopped going, and stopped speaking to you.' : M(p, 'her_both') ? ' Nobody is sure what you are, which is safe, for now.' : ''}`,
+    text: p => `The bishop's men come to {home}: a canon lawyer, two clerks and a sergeant. They sit in the vestry, call the parish in one house at a time, and ask each the same question. Who goes to the barn?${M(p, 'aw_her_barn') ? ' They know you have been.' : M(p, 'aw_her_forbade') ? ' {who} has stopped going, and stopped speaking to you.' : M(p, 'aw_her_both') ? ' Nobody is sure what you are, which is safe, for now.' : ''}`,
     choices: [
       { t: 'Give them names', r: 'You give six names. The clerk writes them in a fair hand. On the way out you pass the first of them coming in.', fx: { piety: 3, honor: -5, arc: { mark: 'aw_her_named' } } },
       { t: 'Say you know nothing', check: { s: 'deception', s2: 'wil', d: 50 },
         win: { r: 'You are a simple soul who minds the harvest. The canon lawyer believes you, or is bored.', fx: { wil: 1, arc: { mark: 'aw_her_lied' } } },
         lose: { r: 'The canon lawyer smiles and reads you back the dates you were seen at the barn. Your name goes on the list.', fx: { piety: -3, happy: -3, arc: { mark: 'aw_her_listed' } } } },
-      { t: 'Say plainly that you go, and why', req: p => any(p, 'her_barn', 'her_heard', 'her_both'), r: 'You say it as the preacher would: plainly. The clerk stops writing to look at you. Your name goes on the list in red.', fx: { honor: 4, piety: -4, fame: 2, arc: { mark: 'aw_her_confessed' } } },
+      { t: 'Say plainly that you go, and why', req: p => (M(p, 'aw_her_barn') || M(p, 'aw_her_heard') || M(p, 'aw_her_both')), r: 'You say it as the preacher would: plainly. The clerk stops writing to look at you. Your name goes on the list in red.', fx: { honor: 4, piety: -4, fame: 2, arc: { mark: 'aw_her_confessed' } } },
     ] },
   { id: 'aw_her_4', title: 'The cart', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `They take the preacher at Whitsun on the road out of {home} and bring him back in a cart with his hands tied. The bishop will try him in the church and, if he will not recant, burn him outside it. The faggots are already stacked.${M(p, 'her_named') ? ' Two of the names you gave are in the cell beside him.' : any(p, 'her_confessed', 'her_listed') ? ' Your name is on the same list as his.' : ''}`,
+    text: p => `They take the preacher at Whitsun on the road out of {home} and bring him back in a cart with his hands tied. The bishop will try him in the church and, if he will not recant, burn him outside it. The faggots are already stacked.${M(p, 'aw_her_named') ? ' Two of the names you gave are in the cell beside him.' : (M(p, 'aw_her_confessed') || M(p, 'aw_her_listed')) ? ' Your name is on the same list as his.' : ''}`,
     choices: [
       { t: 'Get him out the night before the trial', check: { s: 'stealth', s2: 'wil', d: 60 },
         win: { r: 'A file, a rope, a sergeant who drinks, and the preacher over the churchyard wall by the yew. By dawn he is in the next valley.', fx: { honor: 5, fame: 3, arc: { mark: 'aw_her_freed' } } },
@@ -681,7 +679,7 @@ A.defEvents([
     ] },
   { id: 'aw_her_5', title: 'The oath', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `Years on, the barn people are still in {home}, fewer and quieter. They marry among themselves, bury their own dead, and pay the tithe with set faces. The new bishop wants every grown soul in the parish to swear an oath of faith at the altar, by name, on the next feast day.${M(p, 'her_freed') ? ' Letters from the preacher come over the border, hand to hand.' : M(p, 'her_wood') ? ' People remember who carried the wood.' : M(p, 'her_mercy') ? ' The preacher writes from exile, and the letters are read aloud in the barn.' : ''}`,
+    text: p => `Years on, the barn people are still in {home}, fewer and quieter. They marry among themselves, bury their own dead, and pay the tithe with set faces. The new bishop wants every grown soul in the parish to swear an oath of faith at the altar, by name, on the next feast day.${M(p, 'aw_her_freed') ? ' Letters from the preacher come over the border, hand to hand.' : M(p, 'aw_her_wood') ? ' People remember who carried the wood.' : M(p, 'aw_her_mercy') ? ' The preacher writes from exile, and the letters are read aloud in the barn.' : ''}`,
     choices: [
       { t: 'Swear the oath, and mean it', r: 'You kneel and swear, and mean it. The old church is where your parents were married, and that is enough.', fx: { piety: 4, arc: { mark: 'aw_her_sworn' } } },
       { t: 'Swear it, and keep the barn\'s book under the floor', r: 'You swear with your mouth and keep your own counsel. The book stays under the boards, wrapped in oilcloth.', fx: { piety: 1, wil: 1, skill: { deception: 1 }, arc: { mark: 'aw_her_twofaced' } } },
@@ -689,16 +687,16 @@ A.defEvents([
     ] },
   { id: 'aw_her_6', title: 'What the parish became', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The old bishop dies, and the new one is a tired man who wants no more fires. The barn people may meet, so long as they pay the tithe and keep their doors shut. {home} settles into two churches that do not marry each other.${M(p, 'her_refused') ? ' Those who refused the oath pay a fine every year, and it is not small.' : ''}${M(p, 'her_named') ? ' The families you named have not forgotten.' : ''} The parish needs a churchwarden it can trust.`,
+    text: p => `The old bishop dies, and the new one is a tired man who wants no more fires. The barn people may meet, so long as they pay the tithe and keep their doors shut. {home} settles into two churches that do not marry each other.${M(p, 'aw_her_refused') ? ' Those who refused the oath pay a fine every year, and it is not small.' : ''}${M(p, 'aw_her_named') ? ' The families you named have not forgotten.' : ''} The parish needs a churchwarden it can trust.`,
     choices: [
       { t: 'Join the barn people openly', r: 'You walk to the barn on a Thursday morning in full daylight, and the whole street sees you go. You are one of them now.',
-        fx: { trait: 'zealous', newRel: { type: 'friend', op: 40 }, flag: 'aw_her_barnfolk', arc: END('aw_her_barnfolk') } },
+        fx: { trait: 'zealous', newRel: { type: 'friend', op: 40 }, flag: 'aw_her_barnfolk', arc: 'end' } },
       { t: 'Stand for churchwarden of the old church', r: 'You keep the keys, the accounts and the peace, mostly. Your name goes on the board in the porch, under a long line of others.',
-        fx: { piety: 3, fame: 2, deed: 'Churchwarden of the parish', flag: 'aw_her_warden', arc: END('aw_her_warden') } },
-      { t: 'Pay the fine every year, and stay as you are', req: p => M(p, 'her_refused'), r: 'Every Lady Day you count it onto the table in front of the clerk, slowly. It becomes a sort of sermon.',
-        fx: { coinPct: -0.1, trait: 'stubborn', flag: 'aw_her_recusant', arc: END('aw_her_recusant') } },
+        fx: { piety: 3, fame: 2, deed: 'Churchwarden of the parish', flag: 'aw_her_warden', arc: 'end' } },
+      { t: 'Pay the fine every year, and stay as you are', req: p => M(p, 'aw_her_refused'), r: 'Every Lady Day you count it onto the table in front of the clerk, slowly. It becomes a sort of sermon.',
+        fx: { coinPct: -0.1, trait: 'stubborn', flag: 'aw_her_recusant', arc: 'end' } },
       { t: 'Write down what happened, for after', req: (p, C) => C.literate(p), r: 'You write it plainly: the cross, the barn, the cart, the fire, the oath. You wall it up in the church. Someone will find it.',
-        fx: { skill: { learning: 2 }, deed: 'Wrote down the story of the heresy', flag: 'aw_her_chronicle', arc: END('aw_her_chronicle') } },
+        fx: { skill: { learning: 2 }, deed: 'Wrote down the story of the heresy', flag: 'aw_her_chronicle', arc: 'end' } },
     ] },
 ]);
 }
