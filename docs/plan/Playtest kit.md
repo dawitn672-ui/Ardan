@@ -32,6 +32,12 @@ Saves live in the browser that opened the file. A player who switches browsers o
    4. Was there a moment you wanted to stop?
    5. Would you play it again? Why, or why not?
 
+## Things that may surprise you while you watch
+
+- **Childhood moves fast on purpose.** The clock runs ten times faster under five, three times to ten, and half again to fifteen, so a decision comes every 8 to 10 seconds through childhood. The clock bar says "early years ×10", "childhood ×3" or "youth ×1.5". This is not a bug.
+- **A first life can end early.** On the default difficulty (Hard), about 1 newborn in 20 dies before age five, as the world's canon intends. If it happens, note the time and ask the player to start another life. Their second start is worth timing too: it shows what they learned.
+- **"Still unpacking the archives… one moment."** On a slow computer the game needs a few seconds after the title appears. A click on a start button in that time is kept, and goes through once the game is ready.
+
 ## What the results file holds
 
 - `results`: each task, with done or given up, the seconds it took, and how it ended.
