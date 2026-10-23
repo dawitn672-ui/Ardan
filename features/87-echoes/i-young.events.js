@@ -36,7 +36,7 @@
           r: "{He} laughs when {he} sees the jug, and coughs, and laughs. Neither of you remembers how it started. {He} dies that week.",
           fx: { honor: 3, happy: 2, piety: 1 } },
         { t: "Go, empty-handed, and listen",
-          r: "It is a curse, mostly, and then at the end it is not. {He} holds your wrist for a long time.",
+          r: "It is a curse, mostly, and then at the end it is not. {He} holds your wrist until {he} sleeps.",
           fx: { honor: 2, wil: 1 } },
         { t: "Send word you will not come",
           r: "The daughter takes the word back. You hear the bell three days later.",

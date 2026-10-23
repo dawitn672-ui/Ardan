@@ -308,7 +308,7 @@
       text: "{Nm}, who stopped you in the street over an old wrong, and heard you say you would do it again, has lost {his} house to {his} creditors. {He} sits on the bench outside the alehouse in the afternoons. You pass {him} on your way to market. {He} sees you every time.",
       choices: [
         { t: "Sit down beside {him} and stand {him} a cup",
-          r: "You drink without a word between you for a long time. Then {he} says your name, and that is all.",
+          r: "You drink without a word between you until the cups are empty. Then {he} says your name, and that is all.",
           fx: { coin: -1, happy: 1, them: { op: 20 } } },
         { t: "Buy up one of {his} debts, and tear it",
           r: "The creditor is glad of the money. {Nm} hears who paid it and does not know what to do with {his} face.",

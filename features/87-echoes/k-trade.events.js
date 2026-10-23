@@ -35,7 +35,7 @@
           r: "You read it. Halfway through she starts mouthing the words. At the end she ties the bundle up again and thanks you, and goes home to her husband.",
           fx: { happy: 2, honor: 1 } },
         { t: "Tell her he meant every word, he only could not write it",
-          r: "She looks at you a long while. \"I know,\" she says. \"I married the one who meant it.\" She leaves the bundle.",
+          r: "She folds her hands over the bundle. \"I know,\" she says. \"I married the one who meant it.\" She leaves the bundle.",
           fx: { honor: 2, happy: 1 } },
         { t: "Deny the hand is yours",
           r: "She knows a hand when she sees one. She puts the letters back in her shawl and does not come again.",

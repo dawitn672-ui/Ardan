@@ -188,7 +188,7 @@
           r: "\"I am,\" {he} says, and looks it. {He} lets the child show you a frog. You walk home lighter than you expected.",
           fx: { happy: 2, honor: 1, them: { op: 10 } } },
         { t: "Ask whether {he} ever thinks of it",
-          r: "{He} looks at you a long time. \"Every time I cross this bridge,\" {he} says, and crosses it.",
+          r: "{He} shifts the child to the other hip. \"Every time I cross this bridge,\" {he} says, and crosses it.",
           fx: { happy: -2, wil: 1 } },
         { t: "Nod, and walk on",
           r: "You nod. {He} nods. The child waves. You do not take that bridge again for a while.",

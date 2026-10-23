@@ -226,7 +226,7 @@
           r: "Blood and salt, at last. {Nm} laughs out loud, and binds your hand with a strip of {his} own shirt.",
           fx: { sworn: true, happy: 4, them: { op: 15 } } },
         { t: "Take the salt, but not the knife",
-          r: "You eat a pinch of {his} salt, which in some places is nearly the same. {He} looks at you a long while and puts the knife away.",
+          r: "You eat a pinch of {his} salt, which in some places is nearly the same. {He} turns the knife over once in the firelight and puts it away.",
           fx: { them: { op: 4 }, honor: 1 } },
         { t: "Tell {him} you will never swear",
           r: "{He} puts the knife and the salt away carefully. \"Then that is that,\" {he} says, and it is.",

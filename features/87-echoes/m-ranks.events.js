@@ -36,7 +36,7 @@
           r: "It is late, and it is something. The court thanks you coldly, and fines you for the night you kept badly.",
           fx: { coin: -6, honor: 3, fame: -1 } },
         { t: "Say you saw nothing, which is true",
-          r: "It is true, as far as it goes. The widow looks at you a long time from her bench.",
+          r: "It is true, as far as it goes. The widow does not take her eyes off you from her bench.",
           fx: { honor: -2, wil: 1 } },
         { t: "Pay the widow's costs, quietly, and stay out of it",
           r: "The money reaches her through the priest. She does not know whose it is. You do.",
