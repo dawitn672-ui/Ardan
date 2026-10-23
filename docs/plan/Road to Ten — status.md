@@ -338,3 +338,12 @@ Findings:
 - **Two economy bars pull on one knob.** Dearer carting inside a realm widens the price gap with distance, and lets a failed harvest with open roads sit a point under an ordinary year's lean spring. At 3% a step the gradient holds on every good (×1.05); the famine bar that matters, bread tripling behind closed roads, holds (×3.16). A failed harvest with the roads open barely moves bread, because the neighbours' caravans answer it: a design call.
 - **A test measured survival, not stories.** The kin-arc test needs ten bot lives of 40 years; in the round-7 world six tries a start gave eight, and six of those eight met a kin arc. With eight tries it reads 11 long lives, 8 with a kin arc, 18 arcs finished.
 - **A fixed seed set read luck as a regression.** The scorecard's median death age (humans and orcs, 64 league lives on fixed seeds) fell from 57 to 39 in round 7. A bisect over seven features pointed at 69-live-numbers (54 without it). On a second set of seeds, the same 48 human and orc lives read a median of 60 with it and 63 without (old-age deaths 21 against 20), inside the 55–70 target. Pooled over 96 lives, 69 may cost 3–5 years of mean life, within the noise. The median of 48 deaths moves by about 5 years from seed luck alone, so a single fixed seed set is a weak measure of it; read it with a second set before acting.
+
+## Consolidation (Oct 23)
+
+The repository is public, so GitHub Actions minutes are free and unlimited. Four things changed with it:
+
+- **CI no longer runs twice per push.** `check.yml` declared `on: push` and `on: pull_request` with no branch filter, so every push to a branch with an open pull request ran the whole check twice (runs 48 and 49 of Oct 17: the same commit, 85 minutes each, three jobs each). `push` is now limited to `main`; a branch with a pull request is covered by the `pull_request` run. About 185 billed minutes a push, halved.
+- **A superseded check cancels itself** (`concurrency` with `cancel-in-progress`), so pushing twice in a minute no longer leaves two full checks running.
+- **The browser tests run in three shards, not two.** Two shards took 81 minutes each against a 120-minute timeout; 383 tests split 128/128/127, leaving room for the suite to grow.
+- **The repository was repacked.** `.git` held 20 revisions of a 3.7 MB `index.html` as loose objects with no packfile: 74 MB, now 18 MB. Worth repeating after each round of integration pushes, since every one of them adds about 3.5 MB of permanent history.
