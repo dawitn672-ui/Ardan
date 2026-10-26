@@ -1,5 +1,18 @@
 // 98-feedback: an action that only wrote to the log now says so on screen
 export default {
+  async fbMenuToggles(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 77, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 }); UI.screen = 'game'; UI.set.hints = false; A.S.queue = []; UI.ov = null; UI.render();
+      UI.A.menu(); const opened = !!(UI.ov && UI.ov.type === 'menu');
+      UI.A.menu(); const closed = !UI.ov;
+      UI.ov = { type: 'bigmap' }; UI.renderModal();
+      const pressed = [...document.querySelectorAll('[data-a="gmMode"]')].map(b => b.dataset.v + ':' + b.getAttribute('aria-pressed'));
+      UI.ov = null; UI.renderModal();
+      return { opened, closed, pressed };
+    });
+    const ok = r.opened && r.closed && r.pressed.filter(x => x.endsWith(':true')).length === 1;
+    return { ok, detail: `menu opens ${r.opened}, a second click closes it ${r.closed}; map modes ${r.pressed.join(', ')}` };
+  },
   async fbEnlistSays(pg) {
     const r = await pg.evaluate(async () => {
       const run = async (k, on) => {

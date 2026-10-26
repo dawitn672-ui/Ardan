@@ -44,3 +44,18 @@ FB.wrap = function (name) {
   UI.A[name] = g;
 };
 for (const k of ['act', 'int', 'nobleAct', 'courtAct', 'duty', 'decide', 'cnAct', 'buyGear', 'buyGearQ', 'sellGear', 'buyProp', 'sellProp']) FB.wrap(k);
+
+// Menu toggles: a second click on Menu closes it (it reopened the same menu, so the click seemed to do nothing)
+if (typeof UI.A.menu === 'function') {
+  const menu = UI.A.menu;
+  UI.A.menu = function () { if (UI.ov && UI.ov.type === 'menu' && UI.A.closeOv) return UI.A.closeOv(); return menu.apply(this, arguments); };
+}
+// the map's mode buttons say which one is on (the release showed it by colour only)
+if (typeof UI.renderModal === 'function') {
+  const rm = UI.renderModal;
+  UI.renderModal = function () {
+    const r = rm.apply(this, arguments);
+    try { for (const b of document.querySelectorAll('[data-a="gmMode"]')) b.setAttribute('aria-pressed', String(b.dataset.v === UI.mapMode)); } catch (e) {}
+    return r;
+  };
+}
