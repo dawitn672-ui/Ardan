@@ -19,7 +19,7 @@
   // 4,500 km). Zoom is a scale: a view ZREF km wide is zoom 1, in any frame. Levels below 0 exist only in a frame larger
   // than the world as written, whose whole view is coarser than level 0.
   const TILE = 256, MAXL = 5, ZREF = MAP.ZREF || 7000, BASE = 1100 / ZREF;
-  const KWf = () => MAP.KW || 7000, KHf = () => MAP.KH || 4500;
+  const KWf = () => MAP.KW || 7000, KHf = () => MAP.KH || 4500, KX0f = () => MAP.KX0 || 0, KY0f = () => MAP.KY0 || 0;   // the frame's top left in km
   const LMIN = () => MAP.big ? Math.min(0, Math.floor(Math.log2(ZREF / KWf()))) : 0;
   const wholeView = (W, H, v) => v || (MAP.whole ? MAP.whole(W, H) : null);   // null: the world stretched to the canvas
   IM.TOWN_ZOOM = 1.8;                          // town icons appear from this zoom (7000 / view width)
@@ -110,8 +110,8 @@
         a = o;
       }
       if (closed) a.push(a[0], a[1]);
-      const sc = KWf() / gw;      // lattice units to the map's km coordinates
-      return Float32Array.from(a, x => x * sc);
+      const sc = KWf() / gw, X0 = KX0f(), Y0 = KY0f();      // lattice units to the map's km coordinates
+      return Float32Array.from(a, (x, k) => x * sc + (k & 1 ? Y0 : X0));
     };
     const bbox = a => { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (let i = 0; i < a.length; i += 2) { if (a[i] < x0) x0 = a[i]; if (a[i] > x1) x1 = a[i]; if (a[i + 1] < y0) y0 = a[i + 1]; if (a[i + 1] > y1) y1 = a[i + 1]; } return { x0, y0, x1, y1 }; };
     const pieces = (a, info, out) => {    // cut long lines into short pieces, so a tile strokes only what it shows
@@ -171,7 +171,7 @@
     const marg = 2 * z / lp, cr = 13 / lp;
     for (let j = Math.floor((y0 - marg) / s); j <= Math.ceil((y1 + marg) / s); j++) for (let i = Math.floor((x0 - marg) / s); i <= Math.ceil((x1 + marg) / s); i++) {
       const wx = (i + hash(i, j, L * 8 + 1)) * s, wy = (j + hash(i, j, L * 8 + 2)) * s;
-      const cx = Math.floor(wx / 10), cy = Math.floor(wy / 10);
+      const cx = Math.floor((wx - KX0f()) / 10), cy = Math.floor((wy - KY0f()) / 10);
       if (cx < 0 || cy < 0 || cx >= g.gw || cy >= g.gh) continue;
       const ci = cy * g.gw + cx, pv = g.grid[ci];
       if (pv < 0) { // the open sea now and then carries a wave mark
@@ -442,8 +442,8 @@
     ctx.save();
     ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low';
     const t0 = now(); let late = false;
-    const tx0 = Math.max(0, Math.floor(vx / tw)), tx1 = Math.min(Math.ceil(KWf() / tw) - 1, Math.floor((vx + vw) / tw));
-    const ty0 = Math.max(0, Math.floor(vy / tw)), ty1 = Math.min(Math.ceil(KHf() / tw) - 1, Math.floor((vy + vh) / tw));
+    const tx0 = Math.max(Math.floor(KX0f() / tw), Math.floor(vx / tw)), tx1 = Math.min(Math.ceil((KX0f() + KWf()) / tw) - 1, Math.floor((vx + vw) / tw));
+    const ty0 = Math.max(Math.floor(KY0f() / tw), Math.floor(vy / tw)), ty1 = Math.min(Math.ceil((KY0f() + KHf()) / tw) - 1, Math.floor((vy + vh) / tw));
     const X = wx => Math.round((wx - vx) * sx), Y = wy => Math.round((wy - vy) * sy);
     for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++) {
       const dx = X(tx * tw), dy = Y(ty * tw), dw = X((tx + 1) * tw) - dx, dh = Y((ty + 1) * tw) - dy;

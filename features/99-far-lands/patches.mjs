@@ -20,7 +20,7 @@ export default [
       'same letterboxed view, so a larger frame is clicked where it is drawn.',
     edits: [[
       'const r=canvas.getBoundingClientRect(),x=Math.floor((ev.clientX-r.left)/r.width*MAP.gw),y=Math.floor((ev.clientY-r.top)/r.height*MAP.gh);',
-      'const r=canvas.getBoundingClientRect(),V=MAP.whole(canvas.width,canvas.height),x=V?Math.floor((V.x0+(ev.clientX-r.left)/r.width*V.w)/MAP.cell):Math.floor((ev.clientX-r.left)/r.width*MAP.gw),y=V?Math.floor((V.y0+(ev.clientY-r.top)/r.height*V.h)/MAP.cell):Math.floor((ev.clientY-r.top)/r.height*MAP.gh);',
+      'const r=canvas.getBoundingClientRect(),V=MAP.whole(canvas.width,canvas.height),x=V?Math.floor((V.x0-MAP.KX0+(ev.clientX-r.left)/r.width*V.w)/MAP.cell):Math.floor((ev.clientX-r.left)/r.width*MAP.gw),y=V?Math.floor((V.y0-MAP.KY0+(ev.clientY-r.top)/r.height*V.h)/MAP.cell):Math.floor((ev.clientY-r.top)/r.height*MAP.gh);',
     ]],
   },
   {
@@ -38,12 +38,12 @@ export default [
   {
     id: 'FL-CLAMP',
     blob: 'ardan-core',
-    why: W + 'the full map (UI.wrClampView) and the war room (UI.wrClamp) hold the view inside MAP.KW x MAP.KH.',
+    why: W + 'the full map (UI.wrClampView) and the war room (UI.wrClamp) hold the view inside the frame (MAP.KX0, MAP.KY0, MAP.KW x MAP.KH).',
     edits: [
       ['return v.w=A.clamp(v.w,500,7e3),v.h=v.w/asp,v.h>4500&&(v.h=4500,v.w=v.h*asp),v.x0=A.clamp(v.x0,0,7e3-v.w),v.y0=A.clamp(v.y0,0,4500-v.h),v}',
-        'return v.w=A.clamp(v.w,500,MAP.KW),v.h=v.w/asp,v.h>MAP.KH&&(v.h=MAP.KH,v.w=v.h*asp),v.x0=A.clamp(v.x0,0,MAP.KW-v.w),v.y0=A.clamp(v.y0,0,MAP.KH-v.h),v}'],
+        'return v.w=A.clamp(v.w,500,MAP.KW),v.h=v.w/asp,v.h>MAP.KH&&(v.h=MAP.KH,v.w=v.h*asp),v.x0=A.clamp(v.x0,MAP.KX0,MAP.KX0+MAP.KW-v.w),v.y0=A.clamp(v.y0,MAP.KY0,MAP.KY0+MAP.KH-v.h),v}'],
       ['return v.w=A.clamp(v.w,500,7e3),v.h=v.w/asp,v.h>4500&&(v.h=4500,v.w=v.h*asp),v.x0=A.clamp(v.x0,0,Math.max(0,7e3-v.w)),v.y0=A.clamp(v.y0,0,Math.max(0,4500-v.h)),v}',
-        'return v.w=A.clamp(v.w,500,MAP.KW),v.h=v.w/asp,v.h>MAP.KH&&(v.h=MAP.KH,v.w=v.h*asp),v.x0=A.clamp(v.x0,0,Math.max(0,MAP.KW-v.w)),v.y0=A.clamp(v.y0,0,Math.max(0,MAP.KH-v.h)),v}'],
+        'return v.w=A.clamp(v.w,500,MAP.KW),v.h=v.w/asp,v.h>MAP.KH&&(v.h=MAP.KH,v.w=v.h*asp),v.x0=A.clamp(v.x0,MAP.KX0,MAP.KX0+Math.max(0,MAP.KW-v.w)),v.y0=A.clamp(v.y0,MAP.KY0,MAP.KY0+Math.max(0,MAP.KH-v.h)),v}'],
     ],
   },
   {
@@ -63,7 +63,7 @@ export default [
       ['ctx.drawImage(MAP.img,v.x0/7e3*iw,v.y0/4500*ih,v.w/7e3*iw,v.h/4500*ih,0,0,W,H)',
         'MAP.big?MAP.relief(ctx,W,H,v):ctx.drawImage(MAP.img,v.x0/MAP.IW*iw,v.y0/MAP.IH*ih,v.w/MAP.IW*iw,v.h/MAP.IH*ih,0,0,W,H)', 2],
       ['const sx=v.x0/7e3*MAP.gw,sy=v.y0/4500*MAP.gh,sw=v.w/7e3*MAP.gw,sh=v.h/4500*MAP.gh',
-        'const sx=v.x0/MAP.KW*MAP.gw,sy=v.y0/MAP.KH*MAP.gh,sw=v.w/MAP.KW*MAP.gw,sh=v.h/MAP.KH*MAP.gh', 2],
+        'const sx=(v.x0-MAP.KX0)/MAP.KW*MAP.gw,sy=(v.y0-MAP.KY0)/MAP.KH*MAP.gh,sw=v.w/MAP.KW*MAP.gw,sh=v.h/MAP.KH*MAP.gh', 2],
     ],
   },
   {
@@ -71,13 +71,13 @@ export default [
     blob: 'ardan-core',
     why: W + 'the full map\'s hover and click (UI.gmAttach) and the war room\'s (UI.wrProvAt) find the cell under the ' +
       'pointer through MAP.KW x MAP.KH.',
-    edits: [['gx=Math.floor(kx/7e3*MAP.gw),gy=Math.floor(ky/4500*MAP.gh)', 'gx=Math.floor(kx/MAP.KW*MAP.gw),gy=Math.floor(ky/MAP.KH*MAP.gh)', 2]],
+    edits: [['gx=Math.floor(kx/7e3*MAP.gw),gy=Math.floor(ky/4500*MAP.gh)', 'gx=Math.floor((kx-MAP.KX0)/MAP.KW*MAP.gw),gy=Math.floor((ky-MAP.KY0)/MAP.KH*MAP.gh)', 2]],
   },
   {
     id: 'FL-WARVIEW',
     blob: 'ardan-core',
     why: W + 'the war room with no front to frame (UI.wrView) shows the whole frame.',
-    edits: [['x0>x1&&(x0=0,y0=0,x1=7e3,y1=4500)', 'x0>x1&&(x0=0,y0=0,x1=MAP.KW,y1=MAP.KH)']],
+    edits: [['x0>x1&&(x0=0,y0=0,x1=7e3,y1=4500)', 'x0>x1&&(x0=MAP.KX0,y0=MAP.KY0,x1=MAP.KX0+MAP.KW,y1=MAP.KY0+MAP.KH)']],
   },
   {
     id: 'FL-CHOICE',

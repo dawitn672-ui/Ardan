@@ -234,10 +234,10 @@
     if (!FL.active || !MAP.grid || MAP.gridKey !== D.key || typeof document === 'undefined') return null;
     if (MAP.farReliefCv) return MAP.farReliefCv;
     const { gw, gh, grid } = MAP, cv = document.createElement('canvas'); cv.width = gw; cv.height = gh;
-    const ctx = cv.getContext('2d'), im = ctx.createImageData(gw, gh), d = im.data, Q = FL.provinces(), bw = BASE_MAP.gw, bh = BASE_MAP.gh;
+    const ctx = cv.getContext('2d'), im = ctx.createImageData(gw, gh), d = im.data, Q = FL.provinces(), bw = BASE_MAP.gw, bh = BASE_MAP.gh, ox = D.ox || 0, oy = D.oy || 0;
     for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
       const i = y * gw + x, o = i * 4, v = grid[i];
-      if ((x < bw && y < bh) || v < 0) { d[o + 3] = 0; continue; }          // the Known World's picture, and the sea
+      if ((x >= ox && y >= oy && x < ox + bw && y < oy + bh) || v < 0) { d[o + 3] = 0; continue; }          // the Known World's picture, and the sea
       const p = v < nb ? BASE_MAP.provinces[v] : Q[v - nb], c = TERR_RGB[p.terr] || [140, 140, 120], shade = 0.92 + 0.16 * (((x * 7 + y * 13) % 17) / 17);
       d[o] = c[0] * shade; d[o + 1] = c[1] * shade; d[o + 2] = c[2] * shade; d[o + 3] = 255;
     }

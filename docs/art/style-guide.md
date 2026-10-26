@@ -1,5 +1,8 @@
 # Ardan's hand: a one-page style guide
 
+> **Superseded on Oct 26 by `docs/design/brief.md` ("Woodblock & Light").** The owner asked for a full redesign: "graphic masterpieces, anime-like", for players 13 to 23. The game now uses the brief's Night and Washi tokens (91-look), Literata, Atkinson Hyperlegible Next, Cinzel and Dela Gothic One (77-offline-fonts), cel-shaded anime portraits (93-anime-portraits) and colour-woodblock skies on events (94-woodblock-skies). What survives from this guide: the Chronicle's vellum page, the seeded-art pipeline (61, 63) behind the new art, and the woodcut and miniatures as menu options.
+
+
 *Road to Ten, Visual art 1: "Pick one art direction and write a one-page style guide. An illuminated-manuscript ink look, close to Pentiment, fits a game framed as a chronicle."*
 
 ## The idea
