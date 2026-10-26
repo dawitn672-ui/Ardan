@@ -294,6 +294,18 @@
   // the release's two-level engine is replaced by this one; its names stay so old callers still work
   UI.tipsInit = TT.init;
   UI.tipShow = (a, lvl) => TT.open(a, lvl || TT.levelOf(a), 'click');
+  // a new sheet or dialog (UI.ov) closes the popovers left open under it: a tip opened on the screen behind stayed open,
+  // out of sight, and took the first Escape, so Escape seemed not to close the person view (CI run 66, uiSmoke)
+  if (typeof UI.renderModal === 'function') {
+    const renderModal = UI.renderModal;
+    let ovKey = '';
+    UI.renderModal = function () {
+      const now = UI.ov ? String(UI.ov.type) + ':' + String(UI.ov.id == null ? '' : UI.ov.id) : '';
+      if (now !== ovKey && TT.stack.length && TT.closeAll) TT.closeAll();
+      ovKey = now;
+      return renderModal.apply(this, arguments);
+    };
+  }
   UI.tipHide = lvl => TT.close(lvl || 1);
 
   // redraws keep the stack: each open popover is pointed at the redrawn anchor, and focus on a trigger comes back

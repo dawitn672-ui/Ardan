@@ -58,7 +58,8 @@ export default {
       for (const s of subs) { await pg.click(`#tabs [data-a="tab"][data-v="${s}"]`).catch(() => {}); await pg.waitForTimeout(120); seen.push(s); }
     }
     const person = await pg.$('[data-a="ov"]');
-    if (person) { await person.click().catch(() => {}); await pg.waitForTimeout(200); await pg.keyboard.press('Escape'); }
+    // the mouse is parked first: a hover tooltip under it would take the first Escape (WCAG 1.4.13), not the person view
+    if (person) { await person.click().catch(() => {}); await pg.waitForTimeout(200); await pg.mouse.move(1, 1); await pg.waitForTimeout(100); await pg.keyboard.press('Escape'); }
     await pg.click('button:has-text("Play")');
     await pg.waitForTimeout(3000);
     await pg.click('button:has-text("Pause")').catch(() => pg.click('button:has-text("Play")').catch(() => {}));

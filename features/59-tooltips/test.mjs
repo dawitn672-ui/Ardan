@@ -39,6 +39,8 @@ function countIn(sel) {
 // and quantity controls ("+1", "+5", a speed button "3"). A number is covered when it sits in a trigger of the engine
 // (data-tt or data-tip); a plain title= is reported apart and does not count.
 const KIT2 = () => {
+  // coverage counts every number, so every section is drawn open (90-fold would fold some)
+  if (typeof UI !== 'undefined' && UI.FOLD) UI.FOLD.allOpen = true;
   const TT2 = window.TT2 = {
     tokens(root) {
       const out = [];

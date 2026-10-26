@@ -13,7 +13,7 @@
 //   a tab changed which events could fire.
 // Any feature that changes a life's course can walk a seed into these, which is how this one found them.
 //
-// The fix: while drawing (UI.render, UI.refresh, UI.renderModal), the three readers return what they would have
+// The fix: while drawing (UI.render, UI.refresh, UI.refreshTab, UI.renderModal), the three readers return what they would have
 // returned and write nothing. The candidate pool is refilled by the monthly tick instead, the same engine path
 // A.staffResolveDelegates already uses for delegated posts. Pool members are npcTemp, so A.gcPeople still clears the
 // ones nobody hires.
@@ -25,7 +25,8 @@
   // for other drawing that runs outside the three below: 59-tooltips builds a popover's content through it, since a
   // popover opens on a hover or a click, after the render (81-pacing's random stream once had one create people.X.staff)
   A.asDrawing = function (f, self, args) { drawing++; try { return f.apply(self, args || []); } finally { drawing--; } };
-  for (const k of ['render', 'refresh', 'renderModal']) {
+  // refreshTab too: a tab click draws through it alone (the Path tab wrote job.rep through it, found by 90-fold's purity test)
+  for (const k of ['render', 'refresh', 'refreshTab', 'renderModal']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;
     UI[k] = function () { drawing++; try { return f.apply(this, arguments); } finally { drawing--; } };
