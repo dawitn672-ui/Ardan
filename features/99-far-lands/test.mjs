@@ -233,8 +233,8 @@ export default {
       const site = D.provinces.sx.map((x, k) => [x, D.provinces.sy[k], D.provinces.id[k]]).filter((_, k) => D.provinces.realm[k] !== 'unclaimed').filter((_, k) => k % 97 === 0);
       const pick = (cv, v, list) => {   // the pixel at each far site is land (not the sea), and a click there finds the province
         const ctx = cv.getContext('2d'); let land = 0, hit = 0, n = 0;
-        const SEA = [MAP.KX0 + 300, MAP.KY0 + 300];   // open sea in the frame's top left corner (the Northern Ocean)
-        const seaPx = (() => { const [x, y] = v ? [(SEA[0] - v.x0) / v.w * cv.width, (SEA[1] - v.y0) / v.h * cv.height] : MAP.toCanvas(cv, SEA[0], SEA[1]); return ctx.getImageData(Math.max(0, Math.min(cv.width - 1, Math.round(x))), Math.max(0, Math.min(cv.height - 1, Math.round(y))), 1, 1).data; })();
+        // the sea's colour: the release's relief (and MAP.relief past it) paints open sea rgb(36, 57, 74)
+        const seaPx = [36, 57, 74];
         for (const [kx, ky, id] of list) {
           const [x, y] = v ? [(kx - v.x0) / v.w * cv.width, (ky - v.y0) / v.h * cv.height] : MAP.toCanvas(cv, kx, ky);
           if (x < 2 || y < 2 || x > cv.width - 2 || y > cv.height - 2) continue;

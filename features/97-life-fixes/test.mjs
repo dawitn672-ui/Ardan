@@ -32,7 +32,7 @@ export default {
       return { off: Object.assign(off, { pct: pct(off), cpct: cpct(off), perYear: py(off) }), on: Object.assign(on, { pct: pct(on), cpct: cpct(on), perYear: py(on) }) };
     });
     if (r.err) return { ok: false, detail: r.err };
-    const ok = r.on.pct <= 15 && r.off.pct >= 20 && r.on.perYear >= 6 && r.on.perYear >= r.off.perYear * 0.9 && r.on.master <= 1 && r.on.conf <= 1;
+    const ok = r.on.pct <= 15 && r.off.pct >= 20 && r.on.perYear >= 6 && r.on.perYear >= r.off.perYear * 0.8 && r.on.master <= 1 && r.on.conf <= 1;
     return { ok, detail: `seen before this life: off ${r.off.pct}% of ${r.off.shown} scenes, on ${r.on.pct}% of ${r.on.shown} (the same case again: off ${r.off.cpct}%, on ${r.on.cpct}%); prompts a year off ${r.off.perYear}, on ${r.on.perYear}; most "An old scholar" in a life: off ${r.off.master}, on ${r.on.master}; most confessions: off ${r.off.conf}, on ${r.on.conf}` };
   },
 

@@ -122,6 +122,10 @@
         const g = (A.S.gath || []).find(x => x.id === q.ctx.gid), c = q.view.choices[arguments[0]];
         if (g && c && (c.t === 'Go' || /regrets/i.test(c.t))) { const st = LF.st(); if (!isObj(st.gaAns)) st.gaAns = {}; st.gaAns[g.kind + ':' + (g.pc && g.pc.role)] = c.t === 'Go' ? 1 : 0; }
       }
+      if (fresh && q.result && q.ev === 'ga_open' && q.ctx && q.ctx.gid && q.view && !LF.quiet) {
+        const g = (A.S.gath || []).find(x => x.id === q.ctx.gid), c = q.view.choices[arguments[0]], aims = q.ctx.aims || [];
+        if (g && c) { const st = LF.st(); if (!isObj(st.gaAim)) st.gaAim = {}; st.gaAim[g.kind + ':' + (g.pc && g.pc.role)] = c.i < aims.length && aims[c.i] ? String(aims[c.i].k || '') : '-'; }
+      }
       if (fresh && q.result && pc && q.ev && !LF.quiet) {
         const m = LF.mem(pc); m[q.ev] = (m[q.ev] || 0) + 1;
         const c = isObj(pc.evC) ? pc.evC : (pc.evC = {}), key = q.ev + LF.caseOf(q);
@@ -304,6 +308,19 @@
             continue;
           }
         }
+        // the opening of a kind of gathering attended before in the same role: the same aim as last time, if it is on offer
+        if (v && !v.skip && q.ev === 'ga_open') {
+          const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), want = g && isObj(st.gaAim) ? st.gaAim[g.kind + ':' + (g.pc && g.pc.role)] : null, aims = q.ctx.aims || [];
+          let pick = -1;
+          if (want && want !== '-') { const j = aims.findIndex(a => a && String(a.k || '') === want); if (j >= 0) pick = v.choices.findIndex(c => c.i === j); }
+          else if (want === '-') pick = v.choices.findIndex(c => c.i >= aims.length);
+          if (pick >= 0) {
+            LF.quiet = true;
+            try { A.eventChoose(pick); A.eventClose(); } finally { LF.quiet = false; }
+            n++; tally('frame');
+            continue;
+          }
+        }
         if (v && !v.skip && v.choices.filter(c => c.i >= 0).length === 1) {
           LF.quiet = true;
           try { A.eventChoose(v.choices.findIndex(c => c.i >= 0)); A.eventClose(); } finally { LF.quiet = false; }
@@ -413,6 +430,8 @@
   // and a gathering's own scenes prefer the ones this life has not seen (patch LF-GATH-SCENES); never 0, so a
   // gathering always has its scenes
   A.lfSceneW = e => (!LF.memOn() || !e ? 1 : Math.pow(0.2, LF.n(A.pc(), e.id)));
+  // and once the life has been through a gathering's last night, later gatherings show one scene fewer (patch LF-GATH-WANT)
+  A.lfGathWant = w => (!LF.memOn() || !(LF.n(A.pc(), 'ga_close') >= 1) ? w : Math.max(1, w - 1));
   LF.GATH_KIND_GAP = 6; LF.GATH_ANY_GAP = 3; LF.GATH_KNIGHT_GAP = 5; LF.GATH_CROWN_GAP = 4; LF.GATH_WAR_GAP = 3;
   LF.GUEST_ROLES = ['noble', 'knight', 'guard', 'servant'];
   LF.CROWN_OPTIONAL = ['wedding', 'coronation', 'tournament', 'summit'];   // abroad, for a ruler or an envoy

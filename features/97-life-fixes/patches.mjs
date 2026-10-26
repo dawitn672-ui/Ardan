@@ -71,4 +71,12 @@ export default [
       'seen. It now picks by the life memory (A.lfPickIds); a scene held back is dropped at the head of the queue and refilled.',
     edits: [['ev:A.pick(["ruler_petition","ruler_embassy"', 'ev:(A.lfPickIds||A.pick)(["ruler_petition","ruler_embassy"']],
   },
+  {
+    id: 'LF-GATH-WANT',
+    blob: 'ardan-content',
+    why: 'Every gathering showed two or three of its scenes, however many the life had been to. Once the player has been through ' +
+      'a gathering\'s last night before, a later one shows one scene fewer (A.lfGathWant, never fewer than one); a knight\'s ' +
+      'jousts are their own sequence and are not cut.',
+    edits: [['const want=role==="knight"?2:role==="ruler"||role==="envoy"?3:2;', 'const want=(A.lfGathWant||(x=>x))(role==="knight"?2:role==="ruler"||role==="envoy"?3:2);']],
+  },
 ];
