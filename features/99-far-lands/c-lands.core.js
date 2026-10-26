@@ -20,7 +20,7 @@
 (function () {
   const D = A.FL_DATA;
   if (!D) return;
-  const FL = A.FL = { D, KEY: D.key, active: false, OFF: false };
+  const FL = A.FAR = { D, KEY: D.key, active: false, OFF: false };
   FL.LANDS = D.lands;
   const BASE_MAP = LORE.map;
   const nb = D.base;

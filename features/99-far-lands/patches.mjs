@@ -88,7 +88,7 @@ export default [
       ['startAge:0,diff:"hard",seed:""', 'startAge:0,diff:"hard",seed:"",lands:"known"'],
       ['diff:c.diff,', 'diff:c.diff,lands:c.lands||"known",'],
       [',h+=`<div class="field"><label>World seed (optional)</label>',
-        ',h+=A.FL&&A.FL.creationField?A.FL.creationField(c):"",h+=`<div class="field"><label>World seed (optional)</label>'],
+        ',h+=A.FAR&&A.FAR.creationField?A.FAR.creationField(c):"",h+=`<div class="field"><label>World seed (optional)</label>'],
     ],
   },
 ];

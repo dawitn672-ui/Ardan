@@ -83,6 +83,8 @@ The grid runs 360 km north of the lore's box so the Bone Isles (N-04, north of 7
 
 **How the far lands are added.** They are data the release already reads, put where it reads them for as long as a Great Continent game is open (`FL.install`) and taken out for any other game (`FL.uninstall`): `LORE.map` (the map as written plus the far provinces, ids from 306; the seam provinces given their new neighbours and the land they gained), `LORE.realms`, `LORE.houses`, `LORE.relations`, `LORE.cultures`, `LORE.faiths`, `LORE.titlesByRealm`, `GD.REALM_CULTURE`, `GD.REALM_FAITH`, `GD.REALM_HUMAN_CULTURE`, `GD.NAMING`, `GD.LANG`, `GD.DOCTRINE` (each land's armies drilled like a Known World realm on the same ground), `GD.GIANT_HALLS`, `A.GOV`, `A.AGGRO`; and `GD.RACE_CULTURE` gives a far orc, dwarf or giant realm its own people. `A.initWorld` then builds the far realms as it builds the others: treasuries, armies, relations, a ruler of the realm's culture and a royal family. 43 and 70 vary and split them like the rest. The far realms are birthplaces on the creation screen.
 
+**Namespace.** The feature's object is `A.FAR` (`A.FL` belongs to 48-fight-ladder); its data is `A.FL_DATA`.
+
 **State.** A Great Continent game carries `S.world = { v: 1, parts: ['ardan', 'far@1'] }`, and each far province its `region`. New fields only; a Known World game's state is exactly as before.
 
 **Saves.** A save without `S.world` (every old save) loads as the world as written. A save of the Great Continent loads the far lands back, whatever was open before. A save that names lands this build does not have is refused: "That save could not be opened: it was made with lands this version of the game does not have (far@9)." Every new save's header says its world (`meta.world`: `ardan` or `ardan+far@1`). Far houses are stored whole (not diffed against `LORE.houses`), so a save unpacks the same whichever lands are installed. Data versions are frozen once shipped: a changed generator must write `far@2` beside `far@1`, not over it.
@@ -105,11 +107,24 @@ The grid runs 360 km north of the lore's box so the Bone Isles (N-04, north of 7
 | `flOldSave` | A save made by the build without this feature loads, after a Great Continent game, as the world as written, and plays on. A save naming `far@9` is refused with a plain message. |
 | `flMapDraws` | 18 views (world tab, title strip, full map fitted and at zoom 1, 3 and 8, war room at 1.5, 4 and 9, inked and release style, every map mode) draw the far lands at their sites, including those north of y 0, and a click on a site finds its province. Drawing changes neither the state nor the random stream. |
 
+## Cost (`bench.mjs`)
+
+`node features/99-far-lands/bench.mjs <built.html> --lands=known,great --months=25 --scale=on,off`: a peasant of Aldmark, 25 months of 30 days, events auto-chosen; a month holding the New Year counted apart. On the shared machine, 26 October:
+
+| | provinces | realms | new game | month median (p90) | year-turn month | state at start → 2 years |
+| --- | --- | --- | --- | --- | --- | --- |
+| Known World, 09-scale on | 306 | 35 | 0.6 s | 68 ms (271) | 368, 231 ms | 1.5 → 2.0 MB |
+| Great Continent, 09-scale on | 2,033 | 153 | 1.3 s | 560 ms (869) | 2,801, 1,186 ms | 3.5 → 5.3 MB |
+| Known World, 09-scale off | 306 | 35 | 0.5 s | 77 ms (249) | 510, 558 ms | 1.5 → 2.0 MB |
+| Great Continent, 09-scale off | 2,033 | 153 | 1.4 s | 722 ms (1,226) | 4,115, 4,512 ms | 3.5 → 5.3 MB |
+
+The page grows by 261 KB (4,573 KB → 4,834 KB built). Twenty-year soaks from a home in the Twin Rivers, the Long Grass and the Black Pines: no page error, 116 of 118 far realms standing, a year in about 5 s.
+
 ## Limits and what is left
 
 - **Land area.** 54 M km² against the lore's 42.7 M (see the table): the generator keeps the lore's boxes, centres, capitals, straits and rivers and lets the boxed-in north overfill rather than open seas the lore does not have. If the lore lane tightens the Black Pines' and Rime Coast's boxes, re-running the generator follows.
 - **Realm areas** are grown from each capital to the lore's stated area, then every region the lore calls wholly held is filled by its neighbours; the lore's per-region holdings (`holds_km2`) are not yet used as quotas, so a realm's share of a region can differ from the lore's.
-- **Speed.** See the report: a Great Continent month and year turn cost several times the Known World's. 09-scale is the fix in hand; a coarse tick for the lands the player is not on (the plan's LOD) is not built.
+- **Speed.** A Great Continent month costs about 8 times the Known World's, its year turn 5 to 8 times (see Cost). 09-scale cuts the year turn by about two thirds and the month by a fifth; a coarse tick for the lands the player is not on (the plan's LOD) is not built and is the next step.
 - **66-markets** keys its road memo `a * 4096 + b` by province id: fine for the 2,033 provinces here, a collision past 4,096 (not this feature's folder).
 - **Province names** outside the capitals come from per-land sound palettes, not yet from each culture's own `names.places` list.
 - **Stage 3 content**: the far lands have no events, styles, troops or doctrines, beasts, realm bibles (47) or voices (54) of their own; the lore has them (`military_templates`, army compositions in troop codes, `peoples-and-faiths.json`'s customs and food) for the lanes that build them. Doctrines are borrowed from a Known World realm that fights on the same ground.

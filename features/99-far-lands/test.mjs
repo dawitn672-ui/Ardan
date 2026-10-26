@@ -100,7 +100,7 @@ const GREAT = () => {
       return { n, asym: bad.length, bad: bad.slice(0, 4), reached: q.length };
     },
     realms() {
-      const S = A.S, far = Object.keys(A.FL.D.realms), bad = [];
+      const S = A.S, far = Object.keys(A.FAR.D.realms), bad = [];
       for (const id of far) {
         const r = S.realms[id]; if (!r) { bad.push(id + ' missing'); continue; }
         const mine = S.prov.filter(p => p.owner === id), set = new Set(mine.map(p => p.id));
@@ -141,12 +141,12 @@ export default {
       const t0 = performance.now();
       A.newGame({ seed: 9911, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
       const tNew = Math.round(performance.now() - t0), S = A.S;
-      const out = { tNew, prov: S.prov.length, far: S.prov.length - A.FL.D.base, realms: Object.keys(S.realms).length, people: Object.keys(S.people).length,
-        world: S.world, frame: [MAP.KW, MAP.KH], g: FLT.graph(), rl: FLT.realms(), lore: A.FL.D.lore,
-        regions: S.prov.filter(p => p.id >= A.FL.D.base && /^[A-Z]-\d\d$/.test(p.region || '')).length };
+      const out = { tNew, prov: S.prov.length, far: S.prov.length - A.FAR.D.base, realms: Object.keys(S.realms).length, people: Object.keys(S.people).length,
+        world: S.world, frame: [MAP.KW, MAP.KH], g: FLT.graph(), rl: FLT.realms(), lore: A.FAR.D.lore,
+        regions: S.prov.filter(p => p.id >= A.FAR.D.base && /^[A-Z]-\d\d$/.test(p.region || '')).length };
       const t1 = performance.now(); out.play = T.play(10); out.secs = Math.round((performance.now() - t1) / 100) / 10;
-      out.year = A.S.year; out.alive = Object.keys(A.FL.D.realms).filter(id => A.S.realms[id] && A.S.realms[id].alive).length;
-      out.farWars = A.S.wars.filter(w => w.att.concat(w.def).some(x => A.FL.D.realms[x])).length;
+      out.year = A.S.year; out.alive = Object.keys(A.FAR.D.realms).filter(id => A.S.realms[id] && A.S.realms[id].alive).length;
+      out.farWars = A.S.wars.filter(w => w.att.concat(w.def).some(x => A.FAR.D.realms[x])).length;
       out.g2 = FLT.graph();
       return out;
     });
@@ -167,8 +167,8 @@ export default {
       T.enter({ seed: 9921, race: 'human', realm: 'POL-30', status: 'artisan', sex: 'F', startAge: 18, lands: 'great' });
       T.play(1);
       const before = sig(), enc = await SAVES.encode(A.S, A.J), kb = Math.round(enc.bytes.length / 1024), meta = enc.meta.world;
-      const known = () => ({ active: A.FL.active, frame: [MAP.KW, MAP.KH], prov: A.S.prov.length, lore: Object.keys(LORE.realms).length, cult: Object.keys(LORE.cultures).length,
-        gd: Object.keys(GD.REALM_CULTURE).filter(k => A.FL.D.realms[k]).length, houses: Object.keys(LORE.houses).filter(k => A.FL.D.houses[k]).length });
+      const known = () => ({ active: A.FAR.active, frame: [MAP.KW, MAP.KH], prov: A.S.prov.length, lore: Object.keys(LORE.realms).length, cult: Object.keys(LORE.cultures).length,
+        gd: Object.keys(GD.REALM_CULTURE).filter(k => A.FAR.D.realms[k]).length, houses: Object.keys(LORE.houses).filter(k => A.FAR.D.houses[k]).length });
       T.enter({ seed: 9922, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
       const k1 = known(), metaKnown = SAVES.meta(A.S).world;
       const d = await SAVES.decode(enc.bytes);
@@ -200,10 +200,10 @@ export default {
     } finally { await B.ctx.close(); fs.rmSync(before, { force: true }); }
     const r = await pg.evaluate(async (old) => {
       A.newGame({ seed: 9932, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
-      const wasGreat = A.FL.active && MAP.KW > 7000;
+      const wasGreat = A.FAR.active && MAP.KW > 7000;
       const bin = atob(old.b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
       const d = await SAVES.decode(u), okLoad = UI.enterSave(d);
-      const out = { wasGreat, okLoad, active: A.FL.active, frame: [MAP.KW, MAP.KH], prov: A.S.prov.length, world: A.S.world || null,
+      const out = { wasGreat, okLoad, active: A.FAR.active, frame: [MAP.KW, MAP.KH], prov: A.S.prov.length, world: A.S.world || null,
         same: T.hash(A.S.prov) + '|' + T.hash(A.S.people) === old.hash };
       out.res = T.play(1);
       // a save from a later build, with lands this one does not have
@@ -226,7 +226,7 @@ export default {
       T.enter({ seed: 9941, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22, lands: 'great' });
       UI.set.hints = false; if (UI.INKMAP) UI.INKMAP.budgetMs = 1e9;
       // a war in the far east, and the player's realm in it, so the war room has a front out there
-      const D = A.FL.D, far = Object.keys(D.realms), a = far.find(id => D.realms[id].land === 'R'), b = A.neighbors(a).find(x => D.realms[x]);
+      const D = A.FAR.D, far = Object.keys(D.realms), a = far.find(id => D.realms[id].land === 'R'), b = A.neighbors(a).find(x => D.realms[x]);
       A.startWar(a, b, null, 'conquest'); A.advance(2); A.S.queue = [];
       A.wrOpen && A.wrOpen({});
       const s0 = JSON.stringify(A.S), r0 = A.rngState, out = { views: {}, miss: [] };
@@ -277,7 +277,7 @@ export default {
       for (const k in out.views) for (const v in out.views[k]) { const x = out.views[k][v]; if (!x.n || (k === 'release' && x.land < 0.8 * x.n) || x.hit < x.n) out.miss.push(`${k} ${v} ${x.land}/${x.hit}/${x.n}`); }
       if (UI.INKMAP) {
         UI.set.inkMap = true; UI.INKMAP.reset(); const g = UI.INKMAP.geo();
-        out.ink = { gw: g.gw, far: g.coastLoops.filter(o => o.x0 >= 7000).length, farLines: g.provPieces.filter(o => o.a >= A.FL.D.base || o.b >= A.FL.D.base).length };
+        out.ink = { gw: g.gw, far: g.coastLoops.filter(o => o.x0 >= 7000).length, farLines: g.provPieces.filter(o => o.a >= A.FAR.D.base || o.b >= A.FAR.D.base).length };
         if (g.gw !== MAP.gw || out.ink.far < 20 || out.ink.farLines < 1000) out.miss.push('ink geometry ' + JSON.stringify(out.ink));
       }
       return out;
