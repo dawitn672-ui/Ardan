@@ -10,12 +10,12 @@ export const BIOME_RGB = {
   'Dry woodland': [170, 170, 100], 'Savanna': [200, 190, 105], 'Tropical monsoon forest': [80, 150, 70], 'Tropical rainforest': [40, 115, 60],
   'Marsh': [100, 140, 120], 'Salt flat': [230, 225, 215], 'Lake': [70, 110, 150],
 };
-export function geoPicture(G, base, GW, GH, scale = 2) {
-  const W = Math.floor(GW / scale), H = Math.floor(GH / scale), rgb = new Uint8Array(W * H * 3);
+export function geoPicture(G, base, GW_, GH_, scale = 2, marks = []) {
+  const GW = G.GW, GH = G.GH, W = Math.floor(GW / scale), H = Math.floor(GH / scale), rgb = new Uint8Array(W * H * 3);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const i = (y * scale) * GW + x * scale, o = (y * W + x) * 3;
     let c;
-    if (G.inBase(i)) { const p = base.grid[(y * scale) * base.gw + x * scale]; c = p < 0 ? [38, 58, 82] : [150, 150, 140]; }
+    if (G.inBase(i)) { const p = G.baseCell(i); c = p < 0 ? [38, 58, 82] : [150, 150, 140]; }
     else if (!G.land[i]) c = G.lake[i] >= 0 ? [60, 100, 140] : [30, 50, 78];
     else {
       c = (BIOME_RGB[G.biome[i]] || [255, 0, 255]).slice();
@@ -24,6 +24,11 @@ export function geoPicture(G, base, GW, GH, scale = 2) {
       if (G.river && G.river[i]) c = G.river[i] === 2 ? [40, 80, 150] : [70, 110, 160];
     }
     rgb.set(c, o);
+  }
+  for (const m of marks) {   // points in km: a red cross where land was wanted and is missing, a black dot where it is there
+    const cx = Math.floor((m.x - G.F.x0) / 10 / scale), cy = Math.floor((m.y - G.F.y0) / 10 / scale); if (cx < 1 || cy < 1 || cx >= W - 1 || cy >= H - 1) continue;
+    const i = Math.floor((m.y - G.F.y0) / 10) * GW + Math.floor((m.x - G.F.x0) / 10), ok = m.water ? !G.land[i] : G.land[i];
+    for (const [dx, dy] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) rgb.set(ok ? [10, 10, 10] : [255, 30, 30], ((cy + dy) * W + cx + dx) * 3);
   }
   return png(W, H, rgb);
 }

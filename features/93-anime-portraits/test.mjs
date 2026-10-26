@@ -100,8 +100,9 @@ export default {
       const F = cast.map(p => UI.ANIME.svg(p, 200).length);
       sizes.full = { avg: Math.round(F.reduce((a, b) => a + b, 0) / F.length), max: Math.max(...F) };
       F.forEach((n, i) => { if (n > UI.ANIME.BUDGET.full) over.push(`${cast[i].id}@full:${n}`); });
-      // time: warm, then build everyone again without the cache (the average over a few hundred builds)
-      const time = (size, opts) => { for (const p of cast) UI.ANIME.svg(p, size, opts); const t0 = performance.now(); let n = 0; for (let k = 0; k < 4; k++) for (const p of cast) { UI.ANIME.svg(p, size, opts); n++; } return (performance.now() - t0) / n; };
+      // time: warm, then build everyone again without the cache; the best of three batches' averages (the machine may be
+      // busy with other work, which is not the portrait's cost)
+      const time = (size, opts) => { for (const p of cast) UI.ANIME.svg(p, size, opts); let best = Infinity; for (let b = 0; b < 3; b++) { const t0 = performance.now(); let n = 0; for (let k = 0; k < 2; k++) for (const p of cast) { UI.ANIME.svg(p, size, opts); n++; } best = Math.min(best, (performance.now() - t0) / n); } return best; };
       const t = { b32: time(32, { bust: true }), b88: time(88, { bust: true }), b120: time(120, { bust: true }), full: time(200, {}) };
       // and through the cache, as a page that draws the same people again
       for (const p of cast) PORTRAIT.svg(p, 88);

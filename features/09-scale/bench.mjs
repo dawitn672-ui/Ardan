@@ -56,7 +56,7 @@ for (const K of KS) {
     if (m > 0) (r.year ? year : plain).push(r.ms), (r.year ? yearC : plainC).push(c);   // the first month builds paths once
     if (r.dead) break;
   }
-  const end = await page.evaluate(() => ({ kb: Math.round(JSON.stringify(A.S).length / 1024), bad: (A.SCALE && A.SCALE.bad || []).length, missed: A.SCALE ? A.SCALE.stats.missed : 0 }));
+  const end = await page.evaluate(() => ({ kb: Math.round(JSON.stringify(A.S).length / 1024), bad: (A.WSCALE && A.WSCALE.bad || []).length, missed: A.WSCALE ? A.WSCALE.stats.missed : 0 }));
   const row = { K, ...setup, monthMs: med(plain), monthP90: p90(plain), monthCpu: med(plainC), yearMs: med(year), yearCpu: med(yearC), months: plain.length + year.length, kbEnd: end.kb, bad: end.bad, missed: end.missed, errors: errs.length };
   rows.push(row);
   console.log(`${K}x ${row.provs} provinces, ${row.realms} realms, ${row.people} people${OFF ? ' (SCALE_OFF)' : ''}: new game ${row.ng} ms; month ${row.monthMs} ms (cpu ${Math.round(row.monthCpu)}), p90 ${row.monthP90} ms;` +

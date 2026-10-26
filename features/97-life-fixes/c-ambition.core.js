@@ -34,16 +34,16 @@
     wealth: { name: 'Make a fortune', t: 'Make a fortune and never count coppers again',
       fit: p => (unfree(p) ? 0 : 3 + (p.status === 'merchant' ? 3 : 0) + (path(p) === 'guild' ? 2 : 0)), done: p => p.coin >= 5000,
       step: p => `Build a purse of ${coin(5000)}; you have ${coin(p.coin)}. Trade, a shop of your own, lending.`, prog: p => ratio(p.coin, 5000) },
-    trade: { name: 'A master of your trade', t: 'Become a master of your trade',
+    trade: { name: 'Master your trade', t: 'Become a master of your trade',
       fit: p => (p.job && ['guild', 'common', 'sea', 'learning'].includes(path(p)) ? 5 : p.status === 'artisan' ? 4 : 0),
       done: p => { const J = job(p); return !!(J && p.job.r >= Math.min(3, J.ranks.length - 1)); },
       step: p => { const J = job(p); return J ? `Rise in ${J.name.toLowerCase()}: rank ${p.job.r + 1} of ${Math.min(4, J.ranks.length)}. Good work, and the guild's eye.` : 'Take up a trade (Path tab).'; },
       prog: p => { const J = job(p); return J ? ratio(p.job.r, Math.min(3, J.ranks.length - 1)) : 0; } },
-    family: { name: 'A full house', t: 'A home, a spouse, and children at the table',
+    family: { name: 'Raise a full house', t: 'A home, a spouse, and children at the table',
       fit: p => 3 + (C().married(p) ? 0 : 1), done: p => C().married(p) && kids(p) >= 3,
       step: p => (C().married(p) ? `Children at your table: ${kids(p)} of 3.` : 'Find someone to marry: court, a match, a festival.'),
       prog: p => (C().married(p) ? 0.25 : 0) + 0.75 * ratio(kids(p), 3) },
-    renown: { name: 'A name people know', t: 'Be known by name in every market',
+    renown: { name: 'Make a name', t: 'Be known by name in every market',
       fit: p => 2 + (p.fame >= 10 ? 2 : 0), done: p => (p.fame || 0) >= 60,
       step: p => `Renown ${Math.round(p.fame || 0)} of 60: tourneys, deeds done in public, the Seek renown plan.`, prog: p => ratio(p.fame || 0, 60) },
     faith: { name: 'Serve the gods', t: 'Give your life to the gods',
@@ -53,6 +53,10 @@
     scholar: { name: 'Master learning', t: 'Master the learning of the old books',
       fit: p => (p.literate || p.flags.literate ? 4 : 0) + (sk(p, 'learning') >= 15 ? 2 : 0), done: p => sk(p, 'learning') >= 60,
       step: p => `Learning ${Math.round(sk(p, 'learning'))} of 60: study, a teacher, the College.`, prog: p => ratio(sk(p, 'learning'), 60) },
+    teacher: { name: 'Teach the young', t: 'Teach the young what you know',
+      fit: p => (p.job && p.job.c === 'teacher' ? 5 : sk(p, 'learning') >= 25 ? 3 : 0), done: p => !!(p.job && p.job.c === 'teacher' && p.job.r >= 1),
+      step: p => (p.job && p.job.c === 'teacher' ? 'Prove yourself as a teacher: a pupil who goes far, a school that keeps you.' : 'Take a teaching post (Path tab): letters first, then a school.'),
+      prog: p => (p.job && p.job.c === 'teacher' ? 0.5 + 0.5 * ratio(p.job.r, 1) : ratio(sk(p, 'learning'), 40) * 0.5) },
     blade: { name: 'Master the sword', t: 'Become a sword nobody wants to face',
       fit: p => (sk(p, 'melee') >= 20 || p.mil ? 4 : 0) + (p.styles && Object.keys(p.styles).length ? 2 : 0),
       done: p => sk(p, 'melee') >= 70 || (A.bestStyleRank ? A.bestStyleRank(p) >= 3 : false),
@@ -68,21 +72,21 @@
     explorer: { name: 'See the world', t: 'See the far realms before you die',
       fit: p => (unfree(p) ? 0 : 2 + (sk(p, 'survival') >= 20 ? 2 : 0)), done: p => (A.realmsSeen ? A.realmsSeen(p) : 0) >= 8,
       step: p => `Realms seen: ${A.realmsSeen ? A.realmsSeen(p) : 0} of 8. Travel, trade runs, an envoy's post.`, prog: p => ratio(A.realmsSeen ? A.realmsSeen(p) : 0, 8) },
-    court: { name: 'A place at court', t: 'Sit at the council table',
+    court: { name: 'Win a place at court', t: 'Sit at the council table',
       fit: p => (['noble', 'royal'].includes(p.status) || path(p) === 'court' ? 5 : A.classOf(p) >= 4 ? 2 : 0), done: p => !!p.office,
       step: () => 'A seat on the council: favour with the crown, a post at court, a vacancy.', prog: p => ratio(A.classOf(p), 6) },
-    throne: { name: 'The throne itself', t: 'Sit on the throne itself',
+    throne: { name: 'Take the throne', t: 'Sit on the throne itself',
       fit: p => (p.status === 'royal' && !p.ruler ? 6 : p.noble && p.noble.rung >= 4 && !p.ruler ? 2 : 0), done: p => !!p.ruler,
       step: () => 'Rule: by inheritance, a faction that wins, or a plot.', prog: p => ratio(A.classOf(p), 9) },
     expand: { name: 'Widen the realm', t: 'Leave the realm larger than you found it',
       fit: p => (p.ruler ? 5 : 0), done: p => !!(p.amb && p.amb.p0 != null && provs(p) >= p.amb.p0 + 3),
       step: p => `Provinces held: ${provs(p)}; ${p.amb && p.amb.p0 != null ? p.amb.p0 + 3 : provs(p) + 3} would do it.`,
       prog: p => (p.amb && p.amb.p0 != null ? ratio(provs(p) - p.amb.p0, 3) : 0) },
-    golden: { name: 'A golden age', t: 'Give the realm a golden age',
+    golden: { name: 'Bring a golden age', t: 'Give the realm a golden age',
       fit: p => (p.ruler ? 5 : 0), done: p => { const r = realm(p); return !!(r && r.stability >= 85 && r.treasury >= 20000); },
       step: p => { const r = realm(p); return r ? `Stability ${Math.round(r.stability)} of 85 and ${coin(r.treasury)} of ${coin(20000)} in the treasury.` : ''; },
       prog: p => { const r = realm(p); return r ? (ratio(r.stability, 85) + ratio(r.treasury, 20000)) / 2 : 0; } },
-    web: { name: 'A web of alliances', t: 'Bind the crowns around you with alliances',
+    web: { name: 'Weave a web of alliances', t: 'Bind the crowns around you with alliances',
       fit: p => (p.ruler ? 4 : 0), done: p => allies(p) >= 3,
       step: p => `Allies: ${allies(p)} of 3. Marriages, summits, gifts.`, prog: p => ratio(allies(p), 3) },
   };
@@ -131,7 +135,7 @@
     if (!ok) return;
     a.done = A.S.year;
     const name = LF.AMB[a.k].name;
-    A.log(`You have done what you set out to do at ${A.age(pc) - (A.S.year - a.y)}: ${name.toLowerCase()}. It does not feel the way you thought it would. It feels better.`, 'big');
+    A.log(`You set out at ${A.age(pc) - (A.S.year - a.y)} to ${name.charAt(0).toLowerCase() + name.slice(1)}. In ${A.S.year} it is done.`, 'big');
     (pc.deeds = pc.deeds || []).push({ y: A.S.year, t: `Set out to ${name.charAt(0).toLowerCase() + name.slice(1)}, and did` });
     pc.happy = Math.min(100, (pc.happy || 0) + 10);
     if (A.willGrow) A.willGrow(pc, 2, 'ambition');
@@ -144,7 +148,7 @@
     if (LF.OFF || !pc || !pc.alive || !A.isAdult(pc)) return '';
     const a = LF.ambOf(pc);
     if (!a) return pc.flags && pc.flags.lfx_amb_y != null
-      ? '<section class="card lf-amb small" aria-label="Ambition"><span class="tag">Ambition</span> <span class="muted">None: you take life as it comes. You will be asked again at 35.</span></section>' : '';
+      ? `<section class="card lf-amb small" aria-label="Ambition"><span class="tag">Ambition</span> <span class="muted">None: you take life as it comes.${pc.flags.lfx_amb_m == null ? ' You will be asked again at 35.' : ''}</span></section>` : '';
     const D = LF.AMB[a.k];
     let step = '', prog = 0;
     try { step = a.done ? `Done in ${a.done}.` : D.step(pc); prog = a.done ? 1 : D.prog(pc); } catch (e) {}

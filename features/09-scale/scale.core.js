@@ -6,18 +6,22 @@
 //
 //   A.SCALE_OFF = true     every rewritten function runs the release's original code (the reference path)
 //   A.SCALE_CHECK = true   every memoised or rewritten answer is also worked out the original way and compared; a
-//                          difference is recorded in A.SCALE.bad, logged, and thrown
+//                          difference is recorded in A.WSCALE.bad, logged, and thrown
+//   A.WSCALE.stats          index rebuilds (land, house), answers checked (checks, by kind), write sites missed
 //
 // How the memos stay right:
 //   - The province-by-owner index is keyed by the state object, the province array, its length and a land version.
 //     Every write of a province's owner during play bumps the land version (patches.mjs; test.mjs scaleSites checks
 //     the built game has no other write site). The only unpatched writers, 43's W.vary and 70's FR.make, run inside
-//     A.initWorld, and the indexes are not used at all between A.newState / A.deserialize and the first day of play.
-//   - The house-by-realm index likewise, with a house version bumped where play creates a house.
-//   - As a net under both, the first thing each day does is compare the indexes with the world. A difference means a
-//     write site was missed: it is counted in A.SCALE.stats.missed (and recorded as bad in check mode) and the index
-//     is rebuilt, so a missed site can never leak past the day it happened.
-const SC = A.SCALE = A.SCALE || {};
+//     A.initWorld, and no index is used between A.newState / A.deserialize and the first day of play.
+//   - The house-by-realm index likewise, with a house version bumped where play creates a house; the realm list with
+//     a realm version bumped by A.createRealm; the list of realms with embargoes grows in A.sign.
+//   - The other memos live for one stretch of code in which nothing they depend on can change: one A.wsSupplyDay,
+//     one round of the armies' thinking, one A.wsPath search, one realm's pass over the others in A.politicsYear.
+//   - As a net under the versions, each day starts by comparing the province index with the world, and each month
+//     the house index, the realm list and the embargo list. A difference means a write site was missed: it is counted
+//     in A.WSCALE.stats.missed (and thrown in check mode) and the index is rebuilt.
+const SC = A.WSCALE = A.WSCALE || {};
 SC.ep = { land: 0, house: 0, realm: 0 };
 SC.live = false;
 SC.bad = [];
@@ -140,22 +144,24 @@ A.claimsOn = function (a, b) {
 };
 
 // ---------------------------------------------------------------- houses by realm
-const BIG = ['noble', 'gentry_mil', 'clan'];
+const BIG = ['noble', 'gentry_mil', 'clan'], NONE = {};
 const counts = h => !h.extinct && h.kind !== 'royal' && (h.great !== false || BIG.includes(h.kind));
 let HI = null;
 const houses = SC.houses = function () {
   const S = A.S, H = S.houses;
   if (HI && HI.S === S && HI.H === H && HI.ep === SC.ep.house) return HI;
   const by = new Map(), all = [], key = [];
+  let ok = true;
   for (const id in H) {
-    const h = H[id], k = counts(h) ? h.realm : NONE;
+    const h = H[id];
+    if (!h || typeof h !== 'object') { ok = false; continue; }   // the release would fail on it: leave it to the release
+    const k = counts(h) ? h.realm : NONE;
     all.push(h); key.push(k);
     if (k !== NONE) { let L = by.get(k); if (!L) by.set(k, L = []); L.push(h); }
   }
   SC.stats.house++;
-  return (HI = { S, H, ep: SC.ep.house, by, all, key });
+  return (HI = { S, H, ep: SC.ep.house, by, all, key, ok });
 };
-const NONE = {};
 function verifyHouses() {
   const S = A.S, H = S && S.houses;
   if (!HI || HI.S !== S || HI.H !== H || HI.ep !== SC.ep.house) return;
@@ -163,6 +169,7 @@ function verifyHouses() {
   const { all, key } = HI;
   for (const id in H) {
     const h = H[id];
+    if (!h || typeof h !== 'object') { if (HI.ok) { i = -1; break; } continue; }
     if (i >= all.length || h !== all[i] || (counts(h) ? h.realm : NONE) !== key[i]) { i = -1; break; }
     i++;
   }
@@ -174,8 +181,9 @@ function verifyHouses() {
 
 const realmHouses = A.realmHouses;
 A.realmHouses = function (rid) {
-  if (!on() || !A.S.houses) return realmHouses.apply(this, arguments);
-  const L = houses().by.get(rid), v = L ? L.slice() : [];
+  const I = on() && A.S.houses && houses();
+  if (!I || !I.ok) return realmHouses.apply(this, arguments);
+  const L = I.by.get(rid), v = L ? L.slice() : [];
   if (A.SCALE_CHECK) check('A.realmHouses', rid, v, realmHouses.apply(this, arguments));
   return v;
 };
@@ -331,6 +339,25 @@ A.scaleFr = function (fr, N, codeOf, rid) {
   for (let i = 0; i < N; i++) fr[i] = codes[ix[i]];
   if (A.SCALE_CHECK) { SC.stats.checks++; SC.stats.by['supply control'] = (SC.stats.by['supply control'] || 0) + 1; for (let i = 0; i < N; i++) if (fr[i] !== codeOf(A.ctrl(P[i]))) { SC.fail('supply control', `province ${i}: code ${fr[i]}, the original gives ${codeOf(A.ctrl(P[i]))}`); break; } }
   return true;
+};
+// the day's local supply of every province (once per supply pass, and on every A.supplyMap outside it): the release's
+// A.provLocalSupply and A.wsWinter written out, with the season worked out once (the same arithmetic in the same order)
+const supplyBase = A.supplyBase, wsWinter = A.wsWinter, provLocalSupply = A.provLocalSupply;
+A.supplyBase = function () {
+  if (A.SCALE_OFF || A.wsWinter !== wsWinter || A.provLocalSupply !== provLocalSupply) return supplyBase.apply(this, arguments);
+  const S = A.S, N = S.prov.length, b = new Float64Array(N), road = new Uint8Array(N), d = S.warClock % 365, cold = d < 60 || d > 320;
+  for (let i = 0; i < N; i++) {
+    const P = S.prov[i], winter = (P.terr === 'tundra' || P.terr === 'mountains' || P.y < 1300) && cold;
+    b[i] = (.3 + Math.min(2.5, P.pop / 12e4) + (P.dev || 0) * .12 + (P.road ? .5 : 0)) * (winter ? .6 : 1) * (P.terr === 'desert' ? .7 : 1);
+    road[i] = P.road ? 1 : 0;
+  }
+  if (A.SCALE_CHECK) {
+    const o = supplyBase.apply(this, arguments);
+    let same = o.b.length === N && o.road.length === N;
+    for (let i = 0; same && i < N; i++) same = Object.is(o.b[i], b[i]) && o.road[i] === road[i];
+    check('A.supplyBase', N, same, true, (x, y) => x === y);
+  }
+  return { b, road };
 };
 // A.supplyMap compares five arrays of the map's size with yesterday's to see whether its flow can be reused; four of
 // them are byte arrays, compared here four bytes at a time (the same answer)

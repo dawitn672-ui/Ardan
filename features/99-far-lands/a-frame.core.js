@@ -52,6 +52,7 @@
   // relief of the far lands drawn from their terrain (MAP.farRelief, set by the part that brings them)
   MAP.relief = function (ctx, W, H, v) {
     const img = MAP.img;
+    ctx.save(); ctx.fillStyle = 'rgb(36,57,74)'; ctx.fillRect(0, 0, W, H); ctx.restore();   // the picture's own sea, beyond it too
     if (img && img.complete && img.naturalWidth) ctx.drawImage(img, -v.x0 / v.w * W, -v.y0 / v.h * H, MAP.IW / v.w * W, MAP.IH / v.h * H);
     const far = MAP.farRelief && MAP.farRelief();
     if (far) { const sm = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = true; MAP.blitWorld(ctx, far, W, H, v); ctx.imageSmoothingEnabled = sm; }

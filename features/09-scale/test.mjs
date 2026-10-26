@@ -9,7 +9,7 @@ const CLONE = fs.readFileSync(path.join(here, 'clone.js'), 'utf8');
 
 // play a game on each path, both ways, in the same page; the scale path with or without its check mode
 const playBoth = (pg, starts, years, checkOn, months) => pg.evaluate(([starts, years, checkOn, months]) => {
-  const SC = A.SCALE, out = [];
+  const SC = A.WSCALE, out = [];
   const playDays = n => {
     const d0 = A.S.year * 365 + (A.S.warClock || 0);
     for (let g = 0; g < 4000 && A.S.year * 365 + (A.S.warClock || 0) - d0 < n; g++) {
@@ -32,11 +32,11 @@ const playBoth = (pg, starts, years, checkOn, months) => pg.evaluate(([starts, y
     const c0 = SC.stats.checks, m0 = SC.stats.missed, b0 = SC.bad.length, by0 = Object.assign({}, SC.stats.by);
     const ref = run(o, true, false), fast = run(o, false, checkOn);
     const by = {}; for (const k in SC.stats.by) if (SC.stats.by[k] - (by0[k] || 0)) by[k] = SC.stats.by[k] - (by0[k] || 0);
-    out.push({ seed: o.seed, ref, fast, same: ref.h === fast.h && ref.rng === fast.rng, checks: SC.stats.checks - c0, by, missed: SC.stats.missed - m0, bad: SC.bad.slice(b0, b0 + 3) });
+    out.push({ seed: o.seed, ref, fast, same: ref.h === fast.h && ref.rng === fast.rng, span: months ? `${months} months` : `${years} years`, checks: SC.stats.checks - c0, by, missed: SC.stats.missed - m0, bad: SC.bad.slice(b0, b0 + 3) });
   }
   return out;
 }, [starts, years, checkOn, months || 0]);
-const report = res => res.map(r => `seed ${r.seed}: ${r.same ? 'identical' : `DIFFERENT (${r.ref.h}/${r.ref.rng} vs ${r.fast.h}/${r.fast.rng})`} after ${r.fast.year - 1105 + (r.fast.how === 'dead' ? ' (dead)' : '')}y` +
+const report = res => res.map(r => `seed ${r.seed}: ${r.same ? 'identical' : `DIFFERENT (${r.ref.h}/${r.ref.rng} vs ${r.fast.h}/${r.fast.rng})`} after ${r.span}${r.fast.how === 'dead' ? ' (the life ended)' : ''}` +
   ` (${(r.ref.ms / 1000).toFixed(1)}s off, ${(r.fast.ms / 1000).toFixed(1)}s on${r.checks ? `, ${r.checks} answers checked` : ''}${r.missed ? `, ${r.missed} MISSED` : ''})${r.bad.length ? ' ' + r.bad.join(' | ') : ''}`).join('; ');
 
 // the world K times over (docs/plan/world-expansion-architecture.md, appendix A), then months of play, timed by the
@@ -69,7 +69,7 @@ async function timeWorld(pg, K, months) {
     if (r.dead) break;
   }
   const med = a => { const s = a.slice().sort((x, y) => x - y); return s.length ? Math.round(s[Math.floor(s.length / 2)]) : null; };
-  const end = await pg.evaluate(() => ({ bad: A.SCALE.bad.slice(0, 3), missed: A.SCALE.stats.missed }));
+  const end = await pg.evaluate(() => ({ bad: A.WSCALE.bad.slice(0, 3), missed: A.WSCALE.stats.missed }));
   return { ...setup, month: med(plain), monthCpu: med(plainC), year: med(year), yearCpu: med(yearC), months: plain.length + year.length, ...end };
 }
 

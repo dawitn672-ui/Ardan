@@ -24,7 +24,8 @@
 // - The head of the queue. An NPC move or a scene of a ruler's ordinary year that the policy holds back is dropped when
 //   it reaches the head of the queue, as the release already drops one seen in the last 240 days (A.headReady), and its
 //   slot refilled. Never a choice's consequence, a scheduled return, a scene the player asked for, part of a gathering,
-//   or one its author forced.
+//   or one its author forced. A gathering's frame with one way on (a guest's opening, the last night) that the life has
+//   been through before passes without stopping the clock, its result in the story log.
 // - Refill. A held-back door does not leave the slot empty: LF.refill draws one scene this life has never seen from the
 //   monthly roll (A.rollEventsN), leaving out scenes that can hurt (81-pacing's PACE.hurtful), at most once a month. An
 //   NPC move held back spends its budget point on the refill, so the pace of the year holds.
@@ -33,9 +34,9 @@
 //   every scene of a family has been seen, the family shows at most once a year (LF.FAMILY_GAP); the activity still
 //   does its work (the person met is met, the evening is spent) with a line in the story log instead.
 // - Gatherings (patch LF-GATH-ROLE). A guest (noble, knight, guard, servant) is asked to the same kind of gathering at
-//   most every 6 years (a knight's tourney every 4), and to any at most every 2. A visiting ruler or envoy goes to
-//   weddings, coronations, tourneys and summits abroad at most every 3 years, the same kind every 6; an envoy sits at a
-//   peace congress or a war council at most every 2. Hosts, a ruler at congresses and war councils, and family
+//   most every 6 years (a knight's tourney every 5), and to any at most every 3. A visiting ruler or envoy goes to
+//   weddings, coronations, tourneys and summits abroad at most every 4 years, the same kind every 6; an envoy sits at a
+//   peace congress or a war council at most every 3. Hosts, a ruler at congresses and war councils, and family
 //   weddings always ask. A gathering's own scenes prefer the unseen (patch LF-GATH-SCENES).
 // - Measured. LF.share(pc) is the share of the scenes shown in this life that had been shown before (bench name:
 //   seenThisLifePct); LF.caseShare(pc) counts a scene with a different person as a new case. LF.OFF switches all of it
@@ -43,6 +44,9 @@
 (function () {
   const LF = A.LF = A.LF || {};
   LF.OFF = false;
+  // The life memory is the variety guard's whole-life layer: it is on while the guard is (25's A/B test switches the
+  // guard off by setting A.evVariety to null, and then the memory is off too), and LF.OFF switches it off on its own.
+  LF.memOn = () => !LF.OFF && typeof A.evVariety === 'function';
 
   // ---- memory -------------------------------------------------------------------------------------------------
   const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
@@ -102,6 +106,9 @@
   };
   for (const n of ['eventChoose', 'eventClose']) during(n, 'chain');
   for (const n of ['doActivity', 'decide', 'interact', 'getToKnow']) during(n, 'ask');
+  // which activity is being done (for the quiet line when its scene is one the life has just had)
+  const act0 = A.doActivity;
+  if (typeof act0 === 'function') A.doActivity = function (key) { const was = LF.askKey; LF.askKey = key; try { return act0.apply(this, arguments); } finally { LF.askKey = was; } };
   const schedule = A.schedule;
   A.schedule = function (item) { try { if (item && item.type === 'event' && !item.lfFrom) item.lfFrom = 'sched'; } catch (e) {} return schedule.apply(this, arguments); };
 
@@ -111,7 +118,7 @@
     const q = A.S && A.S.queue && A.S.queue[0], pc = A.pc(), fresh = !!(q && q.type === 'event' && !q.result);
     const r = choose0.apply(this, arguments);
     try {
-      if (fresh && q.result && pc && q.ev) {
+      if (fresh && q.result && pc && q.ev && !LF.quiet) {
         const m = LF.mem(pc); m[q.ev] = (m[q.ev] || 0) + 1;
         const c = isObj(pc.evC) ? pc.evC : (pc.evC = {}), key = q.ev + LF.caseOf(q);
         c[key] = (c[key] || 0) + 1;
@@ -161,7 +168,7 @@
   LF.lastFam = (pc, id) => { let y = null; for (const x of LF.members(id)) { const l = LF.last(pc, x); if (l != null && (y == null || l > y)) y = l; } return y; };
   // is this event held back for this person now? (cap or gap; no decay)
   LF.held = function (e, pc) {
-    if (LF.OFF || !e || !pc) return false;
+    if (!LF.memOn() || !e || !pc) return false;
     const P = LF.POLICY[LF.cls(e)];
     if (!P) return false;
     const n = P.fam ? LF.nFam(pc, e.id) : LF.n(pc, e.id);
@@ -171,7 +178,7 @@
     return !!(P.gap && last != null && A.S.year - last < P.gap * (P.grow ? n : 1));
   };
   LF.weight = function (e, pc) {
-    if (LF.OFF || !e) return 1;
+    if (!LF.memOn() || !e) return 1;
     pc = pc || A.pc();
     if (!pc) return 1;
     const n = LF.n(pc, e.id);
@@ -190,14 +197,14 @@
   // a list of event ids, picked by the same weights (the superior's scenes, patch LF-BOSS-PICK); null if all are held
   A.lfPick = function (ids, pc) {
     const es = (ids || []).map(id => A.EV[id]).filter(Boolean);
-    if (LF.OFF) return es.length ? A.pick(es).id : null;
+    if (!LF.memOn()) return es.length ? A.pick(es).id : null;
     const b0 = LF.blocked, e = A.wpick(es, x => LF.weight(x, pc));
     if (!e && LF.blocked > b0) LF.refill(pc, 'boss');
     return e ? e.id : null;
   };
   // a pool of council or drill business (patch LF-POOL-PICK): the same, with the pool's own weights
   A.lfPoolPick = function (pool, pc) {
-    if (LF.OFF) return A.wpick(pool, x => x.w || 1);
+    if (!LF.memOn()) return A.wpick(pool, x => x.w || 1);
     const b0 = LF.blocked, e = A.wpick(pool, x => (x.w || 1) * LF.weight(x, pc));
     if (!e && LF.blocked > b0) LF.refill(pc, 'pool');
     return e;
@@ -205,7 +212,7 @@
   // a ruler's year (patch LF-RULER-PICK): one of a list; when all are held back, the first, which the head drops
   A.lfPickIds = function (ids) {
     const pc = A.pc(), es = (ids || []).map(id => A.EV[id]).filter(Boolean);
-    if (LF.OFF || !pc || !es.length) return A.pick(ids);
+    if (!LF.memOn() || !pc || !es.length) return A.pick(ids);
     const e = A.wpick(es, x => LF.weight(x, pc));
     return e ? e.id : ids[0];
   };
@@ -214,7 +221,7 @@
   LF.REFILL_TRIES = 3;
   LF.refill = function (pc, why) {
     const S = A.S;
-    if (LF.OFF || LF.REFILL_OFF || !pc || !pc.alive || pc.id !== S.pc || pc.prison || !A.rollEventsN) return false;
+    if (!LF.memOn() || LF.REFILL_OFF || !pc || !pc.alive || pc.id !== S.pc || pc.prison || !A.rollEventsN) return false;
     const st = LF.st(), month = Math.floor(A.absDay() / 30);
     if (st.rm === month) return false;
     for (let t = 0; t < LF.REFILL_TRIES; t++) {
@@ -268,12 +275,27 @@
     'ruler_bank', 'ruler_marriage_offer', 'ruler_border', 'ruler_plague', 'ruler_champion']);
   LF.droppable = q => !!(q && q.type === 'event' && !q.result && !q.view && !q.seen && !q.forced && !q.lfFrom && !(q.ctx && (q.ctx.gid || q.ctx.lfFixed)) &&
     ((q.ctx && q.ctx.npcMove) || LF.SCREEN.has(q.ev)));
+  // A gathering's frame (its opening, its last night, a guard's or a servant's summons) that offers one way on and that
+  // this life has already been through is passed through without stopping the clock: the choice it would have shown
+  // is taken, and its result goes to the story log, as the release's quiet settle does for small scenes.
+  LF.frame = q => !!(q && q.type === 'event' && !q.result && q.ctx && q.ctx.gid && /^ga_/.test(q.ev || ''));
+  LF.quiet = false;
   LF.screen = function () {
     const S = A.S, pc = S && A.pc();
-    if (LF.OFF || !pc || !pc.alive) return 0;
+    if (!LF.memOn() || !pc || !pc.alive) return 0;
     let n = 0;
     for (let g = 0; g < 12 && S.queue.length; g++) {
       const q = S.queue[0];
+      if (LF.frame(q) && LF.n(pc, q.ev) >= 1) {
+        const v = A.eventView(q);
+        if (v && !v.skip && v.choices.filter(c => c.i >= 0).length === 1) {
+          LF.quiet = true;
+          try { A.eventChoose(v.choices.findIndex(c => c.i >= 0)); A.eventClose(); } finally { LF.quiet = false; }
+          n++; tally('frame');
+          continue;
+        }
+        break;
+      }
       if (!LF.droppable(q)) break;
       const e = A.EV[q.ev];
       if (!e || !e.trigger || !LF.held(e, pc)) break;
@@ -291,7 +313,18 @@
   // ---- families of scenes for activities that always queue the same one ---------------------------------------
   LF.FAMILY = LF.FAMILY || {};   // base id -> [variant ids], filled by scenes.events.js
   LF.FAMILY.tavern_brawl = LF.FAMILY.tavern_brawl || ['tavern_stranger', 'tavern_song', 'tavern_dice', 'tavern_rumor', 'tavern_recruit'];
-  LF.FAMILY_GAP = { meet_love: 1, festival_day: 1, tavern_brawl: 1 };   // years between scenes once the family is used up
+  LF.FAMILY.explore_ruin = LF.FAMILY.explore_ruin || ['explore_cave', 'explore_road', 'explore_lair', 'explore_battlefield'];
+  LF.FAMILY.child_fight = LF.FAMILY.child_fight || ['child_dare', 'child_lost'];
+  // years between scenes once a family is used up, times how often each has been seen
+  LF.FAMILY_GAP = { meet_love: 2, festival_day: 2, tavern_brawl: 2, explore_ruin: 2, child_fight: 1 };
+  // Any other scene an action of the player's queues (a pilgrimage's road, a game of dice): once it has been seen, it
+  // comes again only after ASK_GAP x n years; in between, the action does its work without the scene. Scenes about a
+  // person (getting to know someone), a beast or a gathering are new cases each time and always come.
+  LF.ASK_GAP = 3;
+  LF.ASK_LINE = { pilgrimage: 'The road is long and the shrine is as you remember it.', gamble: 'The dice go round. Nobody accuses anybody of anything tonight.',
+    explore: 'You walk the country for days and find nothing you have not seen before.', tavern: 'A quiet evening at the tavern: the same faces, the same songs.',
+    festival: 'You spend the feast day in the square with everyone else, and come home tired and pleased.' };
+  LF.askLine = () => LF.ASK_LINE[LF.askKey] || 'Nothing out of the ordinary comes of it this time.';
   // the base of the family an id belongs to
   LF.familyOf = function (id) {
     if (LF.FAMILY[id]) return id;
@@ -320,6 +353,8 @@
     },
     festival_day: () => A.log('You spend the feast day in the square with everyone else, and come home tired and pleased.', ''),
     tavern_brawl: () => A.log('A quiet evening at the tavern: the same faces, the same songs.', ''),
+    explore_ruin: () => A.log('You walk the country for days and find nothing you have not seen before.', ''),
+    child_fight: () => A.log('You play until you are called in, and nothing much happens. It is a good day.', ''),
   };
   // A forced scene the world queues that has a quiet way of its own: when the policy holds it back, the quiet way is
   // taken instead (64-npc-beliefs' "Not as you heard it" fixes the record with a line in the log when it does not queue
@@ -330,11 +365,11 @@
   const queue0 = A.queue;
   A.queue = function (item) {
     try {
-      if (!LF.OFF && item && item.type === 'event' && LF.QUIET_FORCED[item.ev] && !LF.origin) {
+      if (LF.memOn() && item && item.type === 'event' && LF.QUIET_FORCED[item.ev] && !LF.origin) {
         const pc = A.pc(), e = A.EV[item.ev];
         if (pc && e && LF.held(e, pc)) { tally('quiet'); LF.QUIET_FORCED[item.ev](pc, item); return; }
       }
-      if (!LF.OFF && item && item.type === 'event' && !(item.ctx && item.ctx.lfFixed)) {
+      if (LF.memOn() && item && item.type === 'event' && !(item.ctx && item.ctx.lfFixed)) {
         const base = LF.familyOf(item.ev), pc = base && A.pc();
         if (pc) {
           const v = LF.variant(pc, base), gap = LF.FAMILY_GAP[base];
@@ -344,6 +379,12 @@
             return;
           }
           if (v.id !== item.ev) { tally('family'); item.ev = v.id; }
+        } else if (LF.origin === 'ask' && !(item.ctx && (item.ctx.pid || item.ctx.gid || item.ctx.beast))) {
+          const p = A.pc(), e = A.EV[item.ev];
+          if (p && e && e.trigger) {
+            const n = LF.nFam(p, item.ev), last = LF.lastFam(p, item.ev);
+            if (n >= 1 && last != null && A.S.year - last < LF.ASK_GAP * n) { tally('quiet'); A.log(LF.askLine(), ''); return; }
+          }
         }
       }
     } catch (e) { console.error('life family', e); }
@@ -353,13 +394,13 @@
   // ---- gatherings: a guest is not asked to every feast (patch LF-GATH-ROLE) ------------------------------------
   // and a gathering's own scenes prefer the ones this life has not seen (patch LF-GATH-SCENES); never 0, so a
   // gathering always has its scenes
-  A.lfSceneW = e => (LF.OFF || !e ? 1 : Math.pow(0.2, LF.n(A.pc(), e.id)));
-  LF.GATH_KIND_GAP = 6; LF.GATH_ANY_GAP = 2; LF.GATH_KNIGHT_GAP = 4; LF.GATH_CROWN_GAP = 3; LF.GATH_WAR_GAP = 2;
+  A.lfSceneW = e => (!LF.memOn() || !e ? 1 : Math.pow(0.2, LF.n(A.pc(), e.id)));
+  LF.GATH_KIND_GAP = 6; LF.GATH_ANY_GAP = 3; LF.GATH_KNIGHT_GAP = 5; LF.GATH_CROWN_GAP = 4; LF.GATH_WAR_GAP = 3;
   LF.GUEST_ROLES = ['noble', 'knight', 'guard', 'servant'];
   LF.CROWN_OPTIONAL = ['wedding', 'coronation', 'tournament', 'summit'];   // abroad, for a ruler or an envoy
   A.lfGathRole = function (pc, g) {
     const role = A.gathRole(pc, g);
-    if (LF.OFF || !role || !g) return role;
+    if (!LF.memOn() || !role || !g) return role;
     // a wedding in the family is never skipped
     const kin = [pc.id, pc.spouse].concat(pc.children || [], pc.parents || []);
     if (Array.isArray(g.couple) && g.couple.some(id => kin.includes(id))) return role;
@@ -368,14 +409,14 @@
     const crown = role === 'ruler' || role === 'envoy';
     if (crown) {
       // a ruler always sits at a peace congress or a war council; an envoy (a chancellor sent by the crown) at most
-      // one every 2 years, the crown sends someone else to the rest
+      // one every 3 years, the crown sends someone else to the rest
       if (!LF.CROWN_OPTIONAL.includes(g.kind)) {
         if (role === 'ruler') return role;
         if (st.gaWar != null && y - st.gaWar < LF.GATH_WAR_GAP) return null;
         st.gaWar = y;
         return role;
       }
-      // the host always; the rest abroad at most every 3 years, a kind every 6
+      // the host always; the rest abroad at most every 4 years, a kind every 6
       if (g.host === pc.ruler || g.host === pc.realm) return role;
       const k = 'c:' + g.kind;
       if (st.gaCrown != null && y - st.gaCrown < LF.GATH_CROWN_GAP) return null;
@@ -385,7 +426,7 @@
     }
     if (!LF.GUEST_ROLES.includes(role)) return role;
     if (st.gaAny != null && y - st.gaAny < LF.GATH_ANY_GAP) return null;
-    // a knight's trade is the lists: tourneys every 4 years, not 6
+    // a knight's trade is the lists: tourneys every 5 years, not 6
     const gap = role === 'knight' && g.kind === 'tournament' ? LF.GATH_KNIGHT_GAP : LF.GATH_KIND_GAP;
     if (st.ga[g.kind] != null && y - st.ga[g.kind] < gap) return null;
     st.ga[g.kind] = y; st.gaAny = y;

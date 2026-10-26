@@ -14,11 +14,13 @@ const A_KEY = 'far@1';
 // construction at today's size and are covered by 62's own pixel tests.)
 async function beforeBuild(file) {
   const html = fs.readFileSync(file, 'utf8'), parts = unpack(html);
+  // this feature's code files are appended to the core blob as ";(function(){ // features/99-far-lands/<file>" chunks
+  // (tools/build.mjs); each runs to the next feature's chunk or to the end of the blob
   let core = parts['ardan-core'];
-  for (const f of fs.readdirSync(HERE).filter(f => f.endsWith('.core.js')).sort()) {
-    const chunk = `\n;(function(){ // features/99-far-lands/${f}\n${fs.readFileSync(path.join(HERE, f), 'utf8')}\n})();\n`;
-    if (!core.includes(chunk)) throw new Error(`${f} is not in this build as written`);
-    core = core.split(chunk).join('');
+  const MARK = '\n;(function(){ // features/', mine = MARK + '99-far-lands/';
+  for (let at = core.indexOf(mine); at >= 0; at = core.indexOf(mine)) {
+    const next = core.indexOf(MARK, at + 1);
+    core = core.slice(0, at) + (next >= 0 ? core.slice(next) : '');
   }
   const patches = (await import(pathToFileURL(path.join(HERE, 'patches.mjs')).href)).default;
   for (const p of patches.slice().reverse()) {

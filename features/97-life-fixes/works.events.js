@@ -19,7 +19,9 @@
       cond: (p, C) => C.adult(p) && C.flag(p, 'lfx_ship'), setup: need('ship'),
       text: 'Word comes up the river: the {ship} is in a foreign port with a sprung mast and a hold full of pepper, and her captain wants money for a refit. Or he can sell the pepper there, cheap, and come home lame.',
       choices: [
-        { t: 'Send money for the refit', r: 'Four thousand suns go south. The {ship} comes home sound in the autumn, and the pepper sells dear.', fx: { coin: 2500 } },
+        { t: 'Send money for the refit, and wait for the price', check: { s: 'trade', s2: 'int', d: 42 },
+          win: { r: 'Four thousand suns go south. The {ship} comes home sound in the autumn, and the pepper sells dear.', fx: { coin: 2500 } },
+          lose: { r: 'The refit takes the summer. By the time she is home, every ship from the south has brought pepper.', fx: { coin: -2000 } } },
         { t: 'Sell the pepper there and limp home', r: 'Half a cargo\'s worth, and a ship that will need the yard.', fx: { coin: 800 } },
         { t: 'Go south yourself and see to it', check: { s: 'trade', s2: 'sea', d: 48 },
           win: { r: 'You find a better mast and a better buyer. The voyage pays three times over.', fx: { coin: 6000, fame: 2, health: -3 } },

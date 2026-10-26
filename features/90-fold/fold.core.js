@@ -38,7 +38,9 @@ FOLD.isOpen = function (tab, key, fallback) {
   return fallback;
 };
 FOLD.defaultOpen = function (tab, key) {
-  if (tab === 'life' && FOLD.roomy() && key.startsWith('your days')) return true;
+  // Your days folds only where 91-look keeps its training select in the header (else the choice made most often would
+  // hide behind a click), and not in a tall window
+  if (tab === 'life' && key.startsWith('your days') && (FOLD.roomy() || !UI.LOOK)) return true;
   const list = (FOLD.DEFAULT_CLOSED[tab] || []).concat(UI.isPhone && UI.isPhone() ? FOLD.PHONE_CLOSED[tab] || [] : []);
   return !list.some(p => key.startsWith(p));
 };

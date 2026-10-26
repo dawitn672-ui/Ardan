@@ -90,18 +90,8 @@
         if (t && nm) { const full = t.textContent.trim() || nm[0]; t.textContent = nm[1]; t.setAttribute('aria-label', `${full} (${nm[1]})`); t.setAttribute('title', full); }
       });
       // the needs of 35-moods, after the stats
-      if (A.MOODS && A.MOODS.needs && A.age && A.age(pc) >= 6 && !pr.querySelector('.lk-needs')) {
-        const n = A.MOODS.needs(pc), m = A.MOODS.mood ? A.MOODS.mood(pc) : null, LOW = A.MOODS.LOW || 30;
-        const NAME = { rest: 'Rest', company: 'Company', purpose: 'Purpose', comfort: 'Comfort' };
-        const row = k => { const v = Math.round(n[k]); return `<div class="lk-need${v < LOW ? ' lk-low' : ''}"><span class="lbl">${UI.tt ? UI.tt('need', k, NAME[k]) : NAME[k]}</span><span class="val"${UI.ttAttrs ? UI.ttAttrs('need', k, false) : ''}>${esc(v)}</span><div class="bar" aria-hidden="true"><i style="width:${Math.max(0, Math.min(100, v))}%"></i></div></div>`; };
-        const box = document.createElement('div');
-        box.className = 'lk-needs';
-        box.setAttribute('role', 'group');
-        box.setAttribute('aria-label', 'How you are');
-        box.innerHTML = `<div class="lk-nh"><span class="tag">${UI.tt ? UI.tt('needs', '', 'How you are') : 'How you are'}</span><span class="lk-mood${m && m.k !== 'content' ? '' : ' ok'}">${esc(m ? m.name : 'Well enough')}</span></div>` +
-          (A.MOODS.NEEDS || Object.keys(NAME)).map(row).join('');
-        bars[1].after(box);
-      }
+      const nb = LOOK.needsBox(pc);
+      if (nb && !pr.querySelector('.lk-needs')) bars[1].after(nb);
     }
     // the profile's buttons in one row at the foot of the rail
     const btns = [...pr.querySelectorAll('.row > button[data-a="ov"]')];
@@ -118,6 +108,28 @@
     rb.textContent = LOOK.railOpen ? 'Close' : 'Stats';
     pr.appendChild(rb);
     LOOK.chipFit(pr);
+  };
+  // the four needs of 35-moods with the mood: 2 x 2 rows, each a tooltip (59-tooltips' need and needs entries)
+  LOOK.needsBox = function (pc) {
+    if (!pc || !A.MOODS || !A.MOODS.needs || !A.age || A.age(pc) < 6) return null;
+    const n = A.MOODS.needs(pc), m = A.MOODS.mood ? A.MOODS.mood(pc) : null, LOW = A.MOODS.LOW || 30;
+    const NAME = { rest: 'Rest', company: 'Company', purpose: 'Purpose', comfort: 'Comfort' };
+    const row = k => { const v = Math.round(n[k]); return `<div class="lk-need${v < LOW ? ' lk-low' : ''}"><span class="lbl">${UI.tt ? UI.tt('need', k, NAME[k]) : NAME[k]}</span><span class="val"${UI.ttAttrs ? UI.ttAttrs('need', k, false) : ''}>${esc(v)}</span><div class="bar" aria-hidden="true"><i style="width:${Math.max(0, Math.min(100, v))}%"></i></div></div>`; };
+    const box = document.createElement('div');
+    box.className = 'lk-needs';
+    box.setAttribute('role', 'group');
+    box.setAttribute('aria-label', 'How you are');
+    box.innerHTML = `<div class="lk-nh"><span class="tag">${UI.tt ? UI.tt('needs', '', 'How you are') : 'How you are'}</span><span class="lk-mood${m && m.k !== 'content' ? '' : ' ok'}">${esc(m ? m.name : 'Well enough')}</span></div>` +
+      (A.MOODS.NEEDS || Object.keys(NAME)).filter(k => k in NAME).map(row).join('');
+    return box;
+  };
+  // the phone: the Life page no longer carries the needs card, so the You page does, after the stats
+  LOOK.phoneYou = function (pc) {
+    const pp = document.querySelector('#tabbody .phone-profile');
+    if (!pp || pp.querySelector('.lk-needs')) return;
+    const rows = pp.querySelectorAll(':scope > .barrow'), last = rows[rows.length - 1];
+    const nb = LOOK.needsBox(pc);
+    if (nb && last) last.after(nb);
   };
   // the chips in one row: what does not fit is counted in a "+N" chip that shows the rest
   LOOK.chipFit = function (pr) {
@@ -241,6 +253,7 @@
       game.classList.toggle('lk-rail-open', !!LOOK.railOpen && !phone);
       if (!phone) LOOK.rail(document.getElementById('profile'), pc);
       LOOK.panel(document.getElementById('tabbody'), phone);
+      if (phone && UI.tab === 'you') LOOK.phoneYou(pc);
       if (!phone) LOOK.names(document.getElementById('tabbody'));
       LOOK.ground();
     } catch (e) { console.error('look', e); }

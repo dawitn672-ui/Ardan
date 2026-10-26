@@ -342,6 +342,8 @@
       if (c && hh < odds) hat = c;
       else if (F && L.oldF > .7 && hh < .7) hat = 'veil';
     }
+    // a wound that shows is drawn: a hood or veil never covers a torn ear
+    if (L.ear && ['hood', 'cowl', 'veil', 'kerchief'].includes(hat)) hat = null;
     L.hat = hat;
     L.covered = ['hood', 'cowl', 'veil', 'bonnet', 'helm:coif'].includes(hat);
     // hair: the game's style sets the back mass; the bangs and the extra are hashed, weighted by culture
@@ -399,7 +401,9 @@
     const adult = F ? [[1, 70], [4, 90], [20, 106], [42, 116.5]] : [[.5, 70], [2.5, 92], [13, 104.5], [41, 116]];
     const child = [[0, 70], [2, 88], [15, 100.5], [38, 107]];
     const jt = { elf: [1.5, 2, 4, 1], halfelf: [.8, 1, 2, .5], orc: [-3, -4, -7, -6], halforc: [-1, -2, -4, -3], dwarf: [-1, -2, -5, -5], giant: [-2, -3, -6, -5] }[race] || [0, 0, 0, 0];
-    const jaw = adult.map((a, i) => { const c = child[i]; return [lerp(c[0], a[0], mat) + jt[i] * mat, lerp(c[1], a[1], mat) * (chinY / lerp(108, 118, mat))]; });
+    // the game's face shape (0-3) widens, narrows or squares the jaw a little
+    const fw = [0, -1.5, 1.5, -2.5][L.ap.face | 0] || 0;
+    const jaw = adult.map((a, i) => { const c = child[i]; return [lerp(c[0], a[0], mat) + jt[i] * mat + (i ? fw * mat : 0), lerp(c[1], a[1], mat) * (chinY / lerp(108, 118, mat))]; });
     const sharp = !F && mat > .6 || race === 'orc' || race === 'dwarf' || race === 'giant';
     if (sharp) jaw[2][2] = 1;
     const jawR = mirror(jaw, 50);
@@ -412,7 +416,7 @@
     let eyeH = kf(h, 'eyeH') + (h >= 14 && h < 60 ? (F ? 2 : -1) * m2 : 0) * (L.oldF > .5 ? 1 - (L.oldF - .5) * 2 : 1);
     if (race === 'orc' || race === 'giant') eyeH *= .82;
     if (race === 'elf') eyeH *= .94;
-    const noseY = kf(h, 'nose') + (race === 'dwarf' ? 1 : 0), mouthY = kf(h, 'mouth') + (race === 'orc' ? 1.5 : 0), mouthW = kf(h, 'mouthW') * (race === 'orc' ? 1.25 : 1);
+    const noseY = kf(h, 'nose') + (race === 'dwarf' ? 1 : 0), mouthY = kf(h, 'mouth') + (race === 'orc' ? 1.5 : 0), mouthW = kf(h, 'mouthW') * (race === 'orc' ? 1.25 : 1) * ([1, 1.1, .9][L.ap.mouth | 0] || 1);
     const exL = 50 - gap / 2 - eyeW / 2, exR = 50 + gap / 2 + eyeW / 2;
 
     // ---------- the back mass of hair (behind the head and the body)
@@ -445,7 +449,7 @@
       return e;
     };
     // long hair hides human ears; elves' points always show
-    const hidden = !['elf', 'halfelf', 'orc', 'halforc'].includes(race) && (L.covered || F && ['long', 'shoulder', 'bob', 'braid', 'tied'].includes(L.back));
+    const hidden = !['elf', 'halfelf', 'orc', 'halforc'].includes(race) && !L.ear && (L.covered || F && ['long', 'shoulder', 'bob', 'braid', 'tied'].includes(L.back));
     const earsBack = hidden || race === 'elf' || race === 'halfelf' ? '' : ear(-1) + ear(1);
 
     // ---------- the face: skin, the shadow side, the blush
@@ -463,12 +467,13 @@
     if (['orc', 'giant', 'halforc'].includes(race) && lod >= 1) for (const sd of [-1, 1]) { const x = sd < 0 ? exL : exR; s += `<path d="${d`M${x - eyeW * .62} ${eyeY - eyeH * .5}Q${x - sd * eyeW * .1} ${eyeY - eyeH * 1.5} ${x + eyeW * .62} ${eyeY - eyeH * .5}Q${x} ${eyeY - eyeH * .9} ${x - eyeW * .62} ${eyeY - eyeH * .5}Z`}" fill="${sk.s}"/>`; }
     if (L.oldF > .3 && lod >= 2) {
       const op = R(clamp(L.oldF, .35, 1) * .8 * 100) / 100;
-      let a = '';
-      // nose to mouth, the bags under the eyes, crow's feet, then the forehead and the jowls
-      a += d`M${50 - 8} ${noseY - 1}Q${50 - 12} ${mouthY - 4} ${50 - mouthW * .75} ${mouthY + 2}M${50 + 8} ${noseY - 1}Q${50 + 12} ${mouthY - 4} ${50 + mouthW * .75} ${mouthY + 2}`;
-      if (L.oldF > .5) a += d`M${exL - 5} ${eyeY + eyeH * .75 + 2}Q${exL} ${eyeY + eyeH * .75 + 4.5} ${exL + 5} ${eyeY + eyeH * .75 + 2}M${exR - 5} ${eyeY + eyeH * .75 + 2}Q${exR} ${eyeY + eyeH * .75 + 4.5} ${exR + 5} ${eyeY + eyeH * .75 + 2}`;
-      if (L.oldF > .65) a += d`M${exL - eyeW * .62} ${eyeY - 1}l-4 -2M${exL - eyeW * .62} ${eyeY + 2}l-4 1M${exR + eyeW * .62} ${eyeY - 1}l4 -2M${exR + eyeW * .62} ${eyeY + 2}l4 1`;
-      if (L.oldF > .9) a += d`M${50 - mouthW} ${mouthY + 6}Q${50 - mouthW * 1.4} ${chinY - 6} ${jaw[2][0] + 6} ${jaw[2][1] - 1}M${50 + mouthW} ${mouthY + 6}Q${50 + mouthW * 1.4} ${chinY - 6} ${100 - jaw[2][0] - 6} ${jaw[2][1] - 1}`;
+      // nose to mouth, the bags under the eyes, crow's feet, then the jowls
+      const g = [['M', 42, noseY - 1], ['Q', 38, mouthY - 4, 50 - mouthW * .75, mouthY + 2], ['M', 58, noseY - 1], ['Q', 62, mouthY - 4, 50 + mouthW * .75, mouthY + 2]];
+      const ub = eyeY + eyeH * .75 + 2;
+      if (L.oldF > .5) g.push(['M', exL - 5, ub], ['Q', exL, ub + 2.5, exL + 5, ub], ['M', exR - 5, ub], ['Q', exR, ub + 2.5, exR + 5, ub]);
+      if (L.oldF > .65) for (const sd of [-1, 1]) { const x = sd < 0 ? exL - eyeW * .62 : exR + eyeW * .62; g.push(['M', x, eyeY - 1], ['L', x + sd * 4, eyeY - 3], ['M', x, eyeY + 2], ['L', x + sd * 4, eyeY + 3]); }
+      if (L.oldF > .9) g.push(['M', 50 - mouthW, mouthY + 6], ['Q', 50 - mouthW * 1.4, chinY - 6, jaw[2][0] + 6, jaw[2][1] - 1], ['M', 50 + mouthW, mouthY + 6], ['Q', 50 + mouthW * 1.4, chinY - 6, 100 - jaw[2][0] - 6, jaw[2][1] - 1]);
+      const a = emit(g);
       s += `<path d="${a}" fill="none" stroke="${sk.line}" stroke-width="${lw(.75)}" stroke-opacity="${op}"/>`;
     }
 
@@ -490,7 +495,7 @@
     // ---------- hair in front: side locks, the bangs, the extra, then what is worn on the head
     const fr = frontHair(G, L, k, { eyeY, chinY, lw });
     const elfEars = race === 'elf' || race === 'halfelf';
-    s = earsBack.replace(/^/, '') + s;   // ears first (behind the face line), then the face
+    s = earsBack + s;   // ears first (behind the face line), then the face
     if (elfEars) s += fr.locks + ear(-1) + ear(1) + fr.bangs; else s += fr.locks + fr.bangs;
     s += headwear(G, L, k, { eyeY, chinY, lw, exL, exR, eyeW, eyeH });
     // the lost eye: a patch on a cord, over the hair
@@ -526,7 +531,8 @@
       return s;
     }
     // the eye's shape in its own frame: inner corner at -x, outer at +x
-    let up1 = -.62, up2 = -.66, oy = -.1 + lift, lo = .6;
+    const es = L.ap.eyeShape | 0;
+    let up1 = -.62, up2 = es === 0 ? -.7 : es === 2 ? -.56 : -.66, oy = -.1 + lift + (es === 1 ? -.12 : es === 2 ? .08 : 0), lo = es === 0 ? .64 : .6;
     if (E.k === 'angry') { up1 = -.18; up2 = -.78; }
     if (E.k === 'sad') { up1 = -.74; up2 = -.42; oy = .14; }
     if (E.k === 'smile') lo = .28;
@@ -598,7 +604,7 @@
     if (tr.has('kind')) inner -= .8;
     const proud = tr.has('proud');
     const heavy = ['orc', 'dwarf', 'giant'].includes(L.race) ? 1.5 : L.F ? .85 : 1.15;
-    const bw = heavy * (lod <= 1 ? 1.5 : 1) * (L.baby ? .6 : 1);
+    const bw = heavy * (lod <= 1 ? 1.5 : 1) * (L.baby ? .6 : 1) * ([1, 1.25, .82][L.ap.brow | 0] || 1);
     const col = mix(L.hair.b, LINE, L.grey > .6 ? .35 : .55);
     for (const sd of [-1, 1]) {
       const x = sd < 0 ? exL : exR, ix = x - sd * eyeW * .42, ox = x + sd * eyeW * .62;
@@ -616,7 +622,7 @@
     if (lod === 0) return '';
     if (L.small) return `<path d="${d`M51 ${noseY - .8}q1.2 .9 .2 1.8`}" fill="none" stroke="${sk.line}" stroke-width="${lw(1)}"/>`;
     let s = '';
-    const len = L.oldF > .6 ? 7 : 4.5;
+    const len = (L.oldF > .6 ? 7 : 4.5) * ([1, 1.2, .82][L.ap.nose | 0] || 1);
     if (race === 'orc' || race === 'halforc') {
       s += `<path d="${d`M44.5 ${noseY - 1}Q50 ${noseY - 4} 55.5 ${noseY - 1}Q56 ${noseY + 2.5} 50 ${noseY + 2.2}Q44 ${noseY + 2.5} 44.5 ${noseY - 1}Z`}" fill="${sk.s}"/>`;
       s += `<path d="${d`M46.5 ${noseY + .6}h2M51.5 ${noseY + .6}h2`}" stroke="${sk.line}" stroke-width="${lw(1.2)}"/>`;
@@ -716,7 +722,7 @@
         const id = G.ref('apd', bdD);
         s += `<use href="#${id}" fill="${hr.b}" stroke="${LINE}" stroke-width="${lw(1)}"/>`;
         s += `<use href="#${id}" fill="${hr.s}" clip-path="url(#${useDef(G, 'apsF')})"/>`;
-        if (G.lod >= 2 && !G.lite) {
+        if (G.lod >= 2 && !G.lite && G.size >= 100) {
           let st = '';
           for (const x of [34, 44, 56, 66]) st += emit([['M', x, mouthY + 8], ['Q', x + (x < 50 ? -2 : 2), (mouthY + by) / 2, x + (x < 50 ? -1 : 1), by - 6]]);
           s += `<path d="${st}" fill="none" stroke="${hr.line}" stroke-width="${lw(.7)}" stroke-opacity=".7"/>`;
@@ -761,7 +767,7 @@
     s += `<use href="#${id}" fill="${hr.s}" stroke="${LINE}" stroke-width="${lw(1.1)}"/>`;
     // the outer locks catch the light; the hair behind the neck stays dark
     if (lod >= 1 && b !== 'short') s += `<use href="#${id}" fill="${hr.d}" transform="matrix(.62 0 0 1 19 4)"/>`;
-    if (lod >= 2 && !G.lite && (b === 'long' || b === 'shoulder')) {
+    if (lod >= 2 && !G.lite && G.size >= 100 && (b === 'long' || b === 'shoulder')) {
       let st = '';
       const low = b === 'long' ? (k.longTo || 260) - 30 : chinY + 18;
       for (const x of [-6, 4, 96, 106]) st += emit([['M', x, 90], ['Q', x + (x < 50 ? -3 : 3), (90 + low) / 2, x + (x < 50 ? -1 : 1), low]]);
@@ -800,7 +806,7 @@
     // ---- side locks: framing the face, in front of the ears; two on each side for long hair
     const long = ['long', 'shoulder', 'bob', 'tied', 'braid'].includes(L.back) && (L.F || L.back === 'long' || L.back === 'shoulder');
     const lockEnd = L.back === 'long' ? chinY + 30 : L.back === 'shoulder' ? chinY + 14 : L.back === 'bob' ? chinY - 6 : L.F ? chinY - 12 : 76;
-    if (!L.baby && !L.covered) for (const sd of [-1, 1]) {
+    if (!L.baby && !L.covered && !L.locks) for (const sd of [-1, 1]) {
       if (!long && L.back !== 'short' && !L.F) continue;
       const x0 = sd < 0 ? -v * .45 : 100 + v * .45, inw = -sd, end = (long ? lockEnd : 74) + hs(p, 'ly' + sd, 3);
       const tip = x0 + inw * (long ? 11 : 7) + hs(p, 'lx' + sd, 2);
@@ -815,10 +821,10 @@
     // rope locks hang over the shoulders, three to a side, banded
     if (L.locks && !L.covered && !L.baby) {
       let rp = '', bands = '';
-      for (const sd of [-1, 1]) for (let j = 0; j < 3; j++) {
+      for (const sd of [-1, 1]) for (let j = 0; j < (G.lite ? 2 : 3); j++) {
         const x0 = 50 + sd * (40 + j * 7), y1 = chinY + 34 - j * 12 + hs(p, 'rope' + sd + j, 6);
         rp += limb([[x0, 34 + j * 4], [x0 + sd * (3 + j), (34 + y1) / 2], [x0 + sd * (1 + j * 2), y1]], [4.2, 4.6, 3.6]);
-        if (lod >= 2) bands += emit([['M', x0 + sd * (3 + j) - 4, (34 + y1) / 2 + 6], ['L', x0 + sd * (3 + j) + 4, (34 + y1) / 2 + 8]]);
+        if (lod >= 2 && G.lite < 2 && G.size >= 100) bands += emit([['M', x0 + sd * (3 + j) - 4, (34 + y1) / 2 + 6], ['L', x0 + sd * (3 + j) + 4, (34 + y1) / 2 + 8]]);
       }
       locks += `<path d="${rp}" fill="${hr.b}" stroke="${LINE}" stroke-width="${lw(.9)}"/>` + (bands ? `<path d="${bands}" stroke="${L.rib}" stroke-width="${lw(2.6)}"/>` : '');
     }
@@ -961,7 +967,7 @@
         for (let i = 0; i <= 8; i++) { const x = lerp(8, 92, i / 8); pts.push([x, i % 2 ? y0 - 6 : y0 - 18, 1]); }
         pts.push([92, y0 + 8, 1]);
         s += part(curve(pts, true), gold, goldS);
-        for (let i = 0; i <= 8; i += 2) s += `<circle cx="${R(lerp(8, 92, i / 8))}" cy="${R(y0 - 19)}" r="2.8" fill="#fff3c4"/>`;
+        if (!G.lite) for (let i = 0; i <= 8; i += 2) s += `<circle cx="${R(lerp(8, 92, i / 8))}" cy="${R(y0 - 19)}" r="2.8" fill="#fff3c4"/>`;
         s += `<circle cx="50" cy="${R(y0 + 1)}" r="3.6" fill="#d8354a"/>` + (G.size >= 100 && !G.lite ? `<circle cx="28" cy="${R(y0 + 2)}" r="2.6" fill="#2f6ad0"/><circle cx="72" cy="${R(y0 + 2)}" r="2.6" fill="#2f6ad0"/>` : '');
         if (lod >= 2) s += `<path d="${d`M14 ${y0 + 4}L86 ${y0 + 4}`}" stroke="#fff3c4" stroke-width="${lw(1.2)}" stroke-opacity=".7"/>`;
       } else {
@@ -1119,12 +1125,13 @@
     const armFold = d`M${100 - sw * .74} ${nb + 38}Q${100 - sw * .7} ${nb + 60} ${100 - sw * .74} 206M${100 + sw * .74} ${nb + 38}Q${100 + sw * .7} ${nb + 60} ${100 + sw * .74} 206`;
     const sh = c => shadeOf(c, .35, 1.1);
     const part = (D, c, w = 1.1) => `<path d="${D}" fill="${c}" stroke="${LINE}" stroke-width="${lw(w)}"/>` + (lod >= 1 ? `<path d="${D}" fill="${sh(c)}" clip-path="url(#${useDef(G, 'apsB')})"/>` : '');
-    const body = (fill, pat) => `<use href="#${sid}" fill="${fill}"/>` + (pat && lod >= 2 ? `<use href="#${sid}" fill="url(#${useDef(G, pat)})"/>` : '') + (lod >= 1 ? `<path d="${armR}" fill="${pat ? SHADE : sh(fill)}"${pat ? ' fill-opacity=".4"' : ''}/>` : '') + (lod >= 2 && !G.lite ? `<path d="${armFold}" fill="none" stroke="${pat ? LINE : shadeOf(fill, .75)}" stroke-width="${lw(.9)}"/>` : '') + `<use href="#${sid}" fill="none" stroke="${LINE}" stroke-width="${lw(1.2)}"/>`;
+    const body = (fill, pat) => `<use href="#${sid}" fill="${fill}"/>` + (pat && lod >= 2 ? `<use href="#${sid}" fill="url(#${useDef(G, pat)})"/>` : '') + (lod >= 1 ? `<path d="${armR}" fill="${pat ? SHADE : sh(fill)}"${pat ? ' fill-opacity=".4"' : ''}/>` : '') + (lod >= 2 && !G.lite && G.size >= 100 ? `<path d="${armFold}" fill="none" stroke="${pat ? LINE : shadeOf(fill, .75)}" stroke-width="${lw(.9)}"/>` : '') + `<use href="#${sid}" fill="none" stroke="${LINE}" stroke-width="${lw(1.2)}"/>`;
     let cloth = L.cloth;
     if (L.armor === 'robes') cloth = tune(hexOk(L.out.main) || '#6b5a3e', 1.2, .05, .1, .6, .25, .7);
     const neckSkin = D => `<path d="${D}" fill="${L.skin.b}" stroke="${L.skin.line}" stroke-width="${lw(.9)}"/>`;
     const band = (D, c, w) => `<path d="${D}" fill="none" stroke="${LINE}" stroke-width="${lw(w + 1.8)}"/><path d="${D}" fill="none" stroke="${c}" stroke-width="${lw(w)}"/>`;
     const plain = L.armor === 'none' || L.armor === 'robes' || L.armor === 'padded';
+    const mantle = !L.small && (L.cloak && L.cloak.look !== 'tabard' || L.out.fur || kind === 'royal' || L.rank >= 6 || L.ruler) || L.cult.collar === 'fur' || L.cult.fur;
     if (plain) {
       s += body(cloth, L.armor === 'padded' ? 'apqt' : null);
       if (cut === 'robe' || cut === 'kaftan') {
@@ -1142,7 +1149,7 @@
         const deep = L.F ? 15 : 12;
         s += neckSkin(d`M${100 - nwF * .56} ${nb - 7}Q100 ${nb + deep} ${100 + nwF * .56} ${nb - 7}Z`);
         if (!L.noble && kind !== 'priest' && lod >= 2 && !L.small) s += `<path d="${d`M${100 - nwF * .3} ${nb + deep * .2}L${100 + nwF * .3} ${nb + deep * .5}M${100 + nwF * .3} ${nb + deep * .2}L${100 - nwF * .3} ${nb + deep * .5}`}" stroke="${shadeOf(cloth, .7)}" stroke-width="${lw(.9)}"/>`;
-        s += band(d`M${100 - nwF * .64} ${nb - 7.5}Q100 ${nb + deep + 1.5} ${100 + nwF * .64} ${nb - 7.5}`, L.trim, 3);
+        if (!mantle) s += band(d`M${100 - nwF * .64} ${nb - 7.5}Q100 ${nb + deep + 1.5} ${100 + nwF * .64} ${nb - 7.5}`, L.trim, 3);   // a mantle covers it
         // an embroidered yoke for the peoples who band their tunics
         if (L.cult.band && lod >= 2) s += `<path d="${d`M${100 - nwF * .66} ${nb - 7}Q100 ${nb + 14} ${100 + nwF * .66} ${nb - 7}L${100 + nwF * 1.1} ${nb - 2}Q100 ${nb + 26} ${100 - nwF * 1.1} ${nb - 2}Z`}" fill="${L.rib}" stroke="${LINE}" stroke-width="${lw(.9)}"/>`;
       }
@@ -1174,10 +1181,16 @@
       const mid = G.ref('apm', D);
       s += `<use href="#${mid}" fill="${erm ? (lod >= 2 ? 'url(#' + useDef(G, 'aper') + ')' : '#f4f0e8') : '#9a7650'}" stroke="${LINE}" stroke-width="${lw(1.1)}"/>` + (lod >= 1 ? `<use href="#${mid}" fill="${SHADE}" fill-opacity=".3" clip-path="url(#${useDef(G, 'apsB')})"/>` : '');
     }
-    if (L.noble || kind === 'gentry') s += band(d`M${100 - nwF * .9} ${nb - 2}Q100 ${nb + 26} ${100 + nwF * .9} ${nb - 2}`, '#e8b04a', 2.4) + `<circle cx="100" cy="${R(nb + 13)}" r="${lw(4)}" fill="#d8354a" stroke="${LINE}" stroke-width="${lw(.8)}"/>`;
+    if (L.noble || kind === 'gentry') s += band(d`M${100 - nwF * .9} ${nb - 2}Q100 ${nb + 26} ${100 + nwF * .9} ${nb - 2}`, '#e8b04a', 2.4) + `<circle cx="100" cy="${R(nb + 13)}" r="${lw(4)}" fill="#d8354a"/>`;
     if (kind === 'priest') s += part(d`M${100 - nwF * .7} ${nb - 4}L${100 - nwF * .35} ${nb - 4}L${100 - nwF * .2} 212L${100 - nwF * .7} 212Z`, L.trim, .9) + part(d`M${100 + nwF * .35} ${nb - 4}L${100 + nwF * .7} ${nb - 4}L${100 + nwF * .7} 212L${100 + nwF * .2} 212Z`, L.trim, .9);
     if (L.out.apron && L.armor === 'none') s += part(d`M${100 - sw * .45} ${nb + 30}L${100 + sw * .45} ${nb + 30}L${100 + sw * .5} 212L${100 - sw * .5} 212Z`, '#b8a07a', .9);
-    if (L.cult.collar === 'beads' && L.armor === 'none' && lod >= 1) for (let i = 0; i <= 8; i++) { const q = i / 8, x = lerp(100 - nwF * .9, 100 + nwF * .9, q), y = nb - 3 + Math.sin(q * Math.PI) * 14; s += `<circle cx="${R(x)}" cy="${R(y)}" r="${lw(2.2)}" fill="${i % 2 ? '#d8354a' : '#2f6ad0'}" stroke="${LINE}" stroke-width="${lw(.6)}"/>`; }
+    if (L.cult.collar === 'beads' && L.armor === 'none' && lod >= 1) {
+      // a string of beads: the cord, then the beads of each colour as one path
+      const r = +lw(2.2), bead = (x, y) => d`M${x - r} ${y}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0`;
+      let red = '', blue = '';
+      for (let i = 0; i <= 8; i++) { const q = i / 8, x = lerp(100 - nwF * .9, 100 + nwF * .9, q), y = nb - 3 + Math.sin(q * Math.PI) * 14; if (i % 2) red += bead(x, y); else blue += bead(x, y); }
+      s += `<path d="${d`M${100 - nwF * .9} ${nb - 3}Q100 ${nb + 25} ${100 + nwF * .9} ${nb - 3}`}" fill="none" stroke="${LINE}" stroke-width="${lw(1.4)}"/><path d="${red}" fill="#d8354a"/><path d="${blue}" fill="#2f6ad0"/>`;
+    }
     if (L.cult.collar === 'bones' && lod >= 1) for (let i = 1; i < 7; i++) { const q = i / 7, x = lerp(100 - nwF, 100 + nwF, q), y = nb - 2 + Math.sin(q * Math.PI) * 12; s += `<path d="${d`M${x - 2} ${y}l2 7l2 -7Z`}" fill="#f2ead6" stroke="${LINE}" stroke-width="${lw(.6)}"/>`; }
     if (L.cult.torc || L.ap.jewel === 'torc') s += band(d`M${100 - nwF * .6} ${nb - 5}Q100 ${nb + 6} ${100 + nwF * .6} ${nb - 5}`, '#e8b04a', 2.8);
     if (L.rank >= 6) s += band(d`M${100 - sw * .8} ${nb + 10}L${100 + sw * .5} 212`, '#c23c27', 5);
@@ -1201,10 +1214,12 @@
     const p = L.p, race = L.race, F = L.F, lod = G.lod, kind = L.kind;
     if (L.baby) return swaddled(G, L);
     const x = clamp(L.h / 20, 0, 1), grow = .34 + .66 * (1 - (1 - x) * (1 - x));
-    const raceH = { elf: 1.04, halfelf: 1.02, dwarf: .78, orc: 1.05, halforc: 1.02, giant: 1.09 }[race] || 1;
+    const raceH = { elf: 1.04, halfelf: 1.02, dwarf: .78, orc: 1.05, halforc: 1.02, giant: 1.1 }[race] || 1;
     const stoop = L.oldF > 1 ? 7 : L.oldF > .8 ? 3 : 0;
-    const hAdj = clamp(((L.ap.height || 0) - ((F ? L.R2.height[0] : L.R2.height[1]) || 170)) / 170, -.05, .05) || 0;
-    const Hf = Math.min(270, 244 * raceH * grow * (1 + hAdj)) - stoop;
+    // a person's own height moves the figure a little; a height far off the people's mean (a bad record) is ignored
+    const meanH = (F ? L.R2.height[0] : L.R2.height[1]) || 170, relH = ((L.ap.height || meanH) - meanH) / meanH;
+    const hAdj = Math.abs(relH) > .25 ? 0 : clamp(relH, -.05, .05);
+    const Hf = Math.min(272, 244 * raceH * grow * (1 + hAdj)) - stoop;
     const Nr = { giant: 8, dwarf: 4.7, elf: 7, orc: 6.8, halforc: 6.7, halfelf: 6.8 }[race] || kf(L.h, 'heads');
     const N = L.mat < 1 ? lerp(kf(L.h, 'heads'), Nr, L.mat) : Nr;
     const hh = Hf / N, sc = hh / 118, y0 = GROUND - Hf;
@@ -1286,7 +1301,7 @@
       legs += `<path d="${foot}" fill="${kind === 'rags' || L.small && kind === 'peasant' ? L.skin.b : L.plate ? steel : bootC}" stroke="${LINE}" stroke-width="${lw(1)}"/>`;
     }
     // ---- the garment (or armour) from the shoulders to the hem
-    const gL = [[100 - nwF * .5, nb - hh * .02], [100 - sw * .66, sh - hh * .03], [100 - sw * 1.06, sh + hh * .14], [100 - sw * .86, chest], [100 - ww, waist], [100 - hw, hip], [100 - hemW, hemY, 1]];
+    const gL = [[100 - nwF * .5, nb - hh * .02], [100 - sw * .66, sh - hh * .03], [100 - sw * 1.02, sh + hh * .13], [100 - sw * .88, chest], [100 - ww, waist], [100 - hw, hip], [100 - hemW, hemY, 1]];
     const hemPts = [];
     const sway = (hf(p, 'sway') - .5) * hh * .3;
     for (let i = 1; i < 6; i++) { const q = i / 6; hemPts.push([lerp(100 - hemW, 100 + hemW, q) + sway * Math.sin(q * Math.PI), hemY + hh * (longG ? .05 : .03) * Math.sin(q * Math.PI) + (i % 2 ? -hh * .03 : hh * .02)]); }
@@ -1331,8 +1346,8 @@
     if (L.rank >= 6) torso += band(d`M${100 - sw * .85} ${sh + hh * .06}L${100 + ww} ${waist}`, '#c23c27', 3.2);
     // ---- arms, hands and what they hold
     const sleeve = plain ? cloth : L.plate ? steel : L.mail ? '#9aa0b4' : armorC;
-    const S = sd => [100 + sd * sw * .8, sh + hh * .12];
-    const ua = B * .26, fa = B * .23, aw = [hh * .16 * raceW * bk, hh * .13 * raceW * bk, hh * .105 * raceW];
+    const S = sd => [100 + sd * sw * .9, sh + hh * .16];
+    const ua = B * .235, fa = B * .21, aw = [hh * .16 * raceW * bk, hh * .13 * raceW * bk, hh * .105 * raceW];
     const hand = hh * .13 * raceW;
     const lostSide = L.lostHand ? 1 : 0;           // the figure's left hand (on the right of the picture)
     const armOf = (sd, kindA) => {
@@ -1342,7 +1357,7 @@
       else if (kindA === 'crossed') { E = [100 + sd * sw * 1.02, waist - B * .04]; W = [100 - sd * sw * .5, chest + B * .03]; }
       else if (kindA === 'hilt') { E = [100 + sd * sw * 1.02, waist - B * .015]; W = [100 + sd * hh * .05, crotch - B * .11]; }
       else if (kindA === 'hold') { E = [100 + sd * sw * 1.16, chest + B * .1]; W = [100 + sd * sw * 1.34, chest - B * .005]; }
-      else { E = [s0[0] + sd * hh * .1, s0[1] + ua]; W = [E[0] + sd * hh * .02, E[1] + fa]; }
+      else { E = [s0[0] + sd * hh * .05, s0[1] + ua]; W = [E[0] + sd * hh * .01, E[1] + fa]; }
       return { s0, E, W };
     };
     // the upper arm goes behind the garment (its shoulder covers the arm's top); the forearm and hand in front
@@ -1352,8 +1367,10 @@
       const bell = plain && longG && !L.small;
       ups += celLimb(G, [a.s0, a.E], [aw[0], aw[1]], sleeve, lw);
       let s = celLimb(G, [a.E, a.W], [aw[1], bell ? aw[2] * 1.9 : aw[2]], short ? L.skin.b : sleeve, lw, short ? { sh: L.skin.s } : {});
+      // a short sleeve ends in a cuff over the top of the bare forearm
+      if (short) s += celLimb(G, [a.E, [lerp(a.E[0], a.W[0], .3), lerp(a.E[1], a.W[1], .3)]], [aw[1] * 1.14, aw[1] * 1.08], sleeve, lw);
       if (bell && lod >= 2) s += `<path d="${d`M${a.W[0] - aw[2] * 1.7} ${a.W[1] - hh * .05}L${a.W[0] + aw[2] * 1.7} ${a.W[1] - hh * .05}`}" stroke="${L.trim}" stroke-width="${lw(2.4)}"/>`;
-      if (L.plate && lod >= 2) s += `<circle cx="${R(a.E[0])}" cy="${R(a.E[1])}" r="${R(aw[1] * 1.1)}" fill="${steel}" stroke="${LINE}" stroke-width="${lw(.9)}"/>`;
+      if (L.plate && lod >= 2) s += `<circle cx="${R(a.E[0])}" cy="${R(a.E[1])}" r="${R(aw[1] * .8)}" fill="${steel}" stroke="${LINE}" stroke-width="${lw(.9)}"/>`;
       if (!o.noHand) s += handAt(G, L, a.W, a.E, hand, lw, { lost: lostSide && sd === 1, gaunt: L.plate, fist: o.fist });
       return s;
     };
@@ -1440,22 +1457,23 @@
   // ======================================================================================================================
   // ---- the frame and the ground (brief §7.1): a square frame with the cut corner on a bokashi ground
   // the budget (brief §7.1): a bust at most 8 KB, a full figure at most 18 KB. A picture over it is drawn again with the
-  // finest strokes left out (clump lines, thin strands, folds), then one level of detail lower.
+  // finest strokes left out (clump lines, thin strands, folds), then one level of detail lower, then the 32 px level.
   const BUDGET = { bust: 8192, full: 18432 };
   AP.BUDGET = BUDGET;
   AP.svg = function (p, size = 200, opts = {}) {
     size = Math.max(12, +size || 200);
     const full = !opts.bust && size >= 120, cap = full ? BUDGET.full : BUDGET.bust;
-    let s = build(p, size, opts, 0);
-    if (s.length > cap) s = build(p, size, opts, 1);
-    if (s.length > cap) s = build(p, size, opts, 2);
+    let lite = 0, s = build(p, size, opts, 0);
+    while (s.length > cap && lite < 3) s = build(p, size, opts, ++lite);
+    AP.lastLite = lite;                         // how far the last picture had to step down (for the sheet and tests)
     return s;
   };
+  AP.buildAt = (p, size, opts, lite) => build(p, size, opts || {}, lite | 0);   // one level, for the sheets
   function build(p, size, opts, lite) {
     const full = !opts.bust && size >= 120;
     const G = ctx(size, full);
     G.lite = lite;
-    if (lite > 1) G.lod = Math.min(G.lod, 2);
+    if (lite > 1) G.lod = Math.min(G.lod, lite > 2 ? 1 : 2);
     PREC = full ? 2 : size < 130 ? 1 : 2;
     const theme = UI.set.theme === 'light' ? 'light' : 'dark', TK = THEME[theme];
     let L, f, Hh;
@@ -1494,7 +1512,7 @@
         G.defs[rg] = `<radialGradient id="${rg}"><stop offset="0" stop-color="${rim}" stop-opacity=".34"/><stop offset="1" stop-color="${rim}" stop-opacity="0"/></radialGradient>`;
         s += `<ellipse cx="${R(hx)}" cy="${R(hy)}" rx="${R(hd.sc * 110)}" ry="${R(hd.sc * 104)}" fill="url(#${rg})"/>`;
       }
-      if (G.lod >= 2 && G.lite < 2 && L.arms.ch && L.arms.ch !== 'none') s += charge(L, hx, hy - 4 * hd.sc, hd.sc * 6.4, .12);
+      if (G.lod >= 2 && !G.lite && L.arms.ch && L.arms.ch !== 'none') { const c = charge(L, hx, hy - 4 * hd.sc, hd.sc * 6.4, .12); s += L.dead ? c.replace(/#[0-9a-f]{6}/g, x => desat(x)) : c; }
       // the figure: its silhouette line (the figure's own shape grown in ink) and the rim light on its right edge
       let fig = f.back + f.fig;
       if (L.dead) fig = fig.replace(/#[0-9a-f]{6}/g, c => desat(c));

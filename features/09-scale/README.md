@@ -1,0 +1,134 @@
+# The engine at scale
+
+**Aspect:** Technical (stage 0 of `docs/plan/world-expansion-architecture.md`) · **Kind:** fix layer (applied in every build): 7 patches, 1 code file, tests, a bench
+
+The world is to grow about tenfold. On a world ten times as large (the plan's clone harness: 3,060 provinces, 341
+realms) the full build played a month in 1.2-1.5 s of CPU and **the month holding the New Year in 15-20 s**: the year
+turn grew with realms² × provinces. This feature makes the engine's most-asked questions cheap, **without changing a
+single result**: the same seed reaches the same `A.S` and the same `A.rngState`, bit for bit, at any size, with it on
+or off.
+
+Nothing here is visible in play. It loads before every feature that builds on the engine (folders 00-09 are the fix
+layer), so their wrappers sit on top of these functions.
+
+## What changed
+
+| Function | Before | Now | Why it is the same answer |
+| --- | --- | --- | --- |
+| `A.claimsOn(a, b)` | filtered every province | walks `a`'s claims (a handful of keys) | integer keys iterate in ascending order and a province's id is its index, so the same provinces come out in the same order |
+| `A.realmProvs(rid)` | filtered every province | a copy of the owner's list from the province-by-owner index | the index keeps `S.prov` order; a fresh array each call, as before |
+| `A.neighbors(rid)` | scanned every province and its neighbours | the owner's provinces only, their neighbouring owners remembered with the index; the alive filter runs on every call | the same provinces in the same order, so the same first-seen order of neighbours |
+| `A.realmHouses(rid)` | filtered every house | a copy of the realm's list from the house-by-realm index | the index keeps `S.houses` order and the same filter |
+| `A.indCount(r)` | summed industry over every province (up to 12 times per realm at the year turn) | over the realm's own provinces | same provinces, same order, so the same floating-point sums |
+| `A.priceTarget`, `A.tradeMul` | counted embargoes and trade pacts by walking every realm and calling `A.hasTrade` for each | `A.scaleEmbPact` / `A.scaleEmb`: the realm's own pacts, and the realms that have ever laid an embargo | counting the same set; falls back to the loop if `A.hasTrade` is replaced |
+| `A.allDivs`, `A.divById`, `A.divsAtIdx` | for-in over `S.realms` on every call or rebuild | a cached list of realm objects (`A.WSCALE.realmList`) | the same realms in the same order |
+| `A.supplyMap` (per warring realm per day) | `A.ctrl` and a Map lookup for every province of the map | the controllers once per `A.wsSupplyDay`, then one code per controller (`A.scaleFr`) | nothing changes hands inside the supply pass; the codes are set from the day's friend, foe and access sets exactly as `codeOf` would |
+| `A.supplyBase` (once per supply pass) | `A.provLocalSupply` and `A.wsWinter` called for every province | the same two formulas written out, the season worked out once | the same arithmetic in the same order; runs the original if either is replaced |
+| `A.sameArr` | element by element | byte arrays four bytes at a time | the same answer for `Uint8Array`s; anything else runs the original |
+| `A.armyEnemy`, `A.frontProvs` | walked the whole map (once per enemy) | provinces by controller, built once per round of the armies' thinking (`A._think`) | same provinces in the same order; `frontProvs` sorts its candidates back into `S.prov` order |
+| `A.wsPath` | asked `A.friendly` and `A.hostile` (a walk over every war) for every road it weighed | remembered per holder for one search (`A.scaleRel`) | both are pure, and nothing changes during a search |
+| `A.politicsYear`'s pair loop | `A.rulerPersona` for both rulers of every pair: 2 × realms² key builds a year | each persona remembered for one realm's pass over the others (`A.scalePairs`) | only the pair weighing runs inside the pass, and it changes no ruler; closed in a `finally` |
+
+## How the memos stay right
+
+- **Versions bumped at every write.** `patches.mjs` adds `A.scaleLand()` after each of the release's eight writes of a
+  province's owner (transferProv, the claimant settlements, a claimant's land, a founded realm, a faction's
+  breakaway, Tessaria's split), and `A.scaleHouse()` where play creates a house. `A.createRealm` bumps the realm
+  version; `A.sign` (the only place an embargo is written) adds the realm to the embargo list.
+- **No index during world building.** 43's `W.vary` and 70's `FR.make` move land inside `A.initWorld` without telling
+  anyone. The indexes are not used between `A.newState` (or `A.deserialize`) and the first day of play: every
+  rewritten function runs the original then.
+- **Scoped memos** live for one stretch of code in which nothing they depend on changes: one `A.wsSupplyDay` (the
+  release's own batch, marked by `A._relAll`), one round of the armies' thinking (`A._think`), one `A.wsPath` search,
+  one realm's pass in `A.politicsYear`.
+- **A net under the versions.** Each day starts by comparing the province index with every province's owner; each
+  month the house index, the realm list and the embargo list are compared with the world. A difference means a write
+  site was missed: it is counted in `A.WSCALE.stats.missed`, logged, thrown in check mode, and the index is rebuilt.
+- **`scaleSites`** reads the built game and fails if any write of a province's owner, any `S.houses[...] =` or any
+  change to a province's `adj` / `sea` lists is neither told to the indexes nor one of the world-building writes
+  above. A new feature that moves land without `A.transferProv` fails this test until it calls `A.scaleLand()`.
+
+## Switches
+
+- `A.SCALE_OFF = true`: every rewritten function runs the release's code. The reference path for the tests.
+- `A.SCALE_CHECK = true`: every answer is also worked out the original way and compared (much slower). A difference
+  goes to `A.WSCALE.bad` and is thrown.
+- `A.WSCALE.stats`: index rebuilds, answers checked (by kind), write sites missed.
+
+The namespace is `A.WSCALE` because `A.SCALE` is 81-pacing's (the house scale of checks); the two switches are plain
+fields of `A`.
+
+## Patches
+
+| Patch | Why |
+| --- | --- |
+| `SCALE-LAND-WRITES` | Every direct write of a province's owner bumps the land version. |
+| `SCALE-HOUSE-WRITES` | A house created in play (the player's own) bumps the house version. |
+| `SCALE-EMBARGO-COUNT` | `A.priceTarget` and `A.tradeMul` ask 09-scale for the two counts, and keep their loop as the fallback. |
+| `SCALE-EMBARGO-ADD` | A new embargo adds its realm to the embargo list. |
+| `SCALE-SUPPLY-CTRL` | `A.supplyMap` takes its control codes from `A.scaleFr` inside the supply pass. |
+| `SCALE-PATH-RELATIONS` | `A.wsPath` remembers friend and foe per holder for one search. |
+| `SCALE-PAIR-PERSONA` | `A.politicsYear` opens and closes the persona memo around each realm's pass. |
+
+## Measured
+
+Oct 26, 2026, on this project's shared 4-core machine at load 8 to 13, one browser at a time. `bench.mjs` (the clone
+harness of the plan's appendix A; seed 1234, a peasant of POL-01, 14 months of play, the first left out). Times are
+the page's main-thread CPU time (Chrome's `ThreadTime`), with the wall clock in brackets; both move by ±25% from run
+to run on this machine.
+
+| World | Month, before | Month, 09-scale | Year-turn month, before | Year-turn month, 09-scale |
+| --- | ---: | ---: | ---: | ---: |
+| 1× (306 provinces, 35 realms) | 67 ms (96) | 47 ms (76) | 285 ms (458) | 139 ms (199) |
+| 5× (1,530, 171) | 486 ms (670) | 434 ms (599) | 3,340 ms (3,933) | 971 ms (1,354) |
+| 10× (3,060, 341) | 1,317 ms (1,892) | 640-1,030 ms (920-1,400) | 14,700 ms (18,900) | 1,530-2,230 ms (1,800-3,200) |
+
+Where a 10× profile spends its time (14 months with one New Year, sampled; inclusive shares of the whole run):
+
+| Path | Before | 09-scale |
+| --- | ---: | ---: |
+| `A.politicsYear` (`A.aiPullSum` for every pair) | 35% (28%) | 6% (3%) |
+| `A.claimsOn` / `A.neighbors` / `A.realmHouses` | 15% / 5% / 6% | 0.3% / 0.4% / 0% |
+| `A.priceTarget` + `A.mktMonth` + `A.updateRealmPops` | 10.5% + 5.3% + 2.1% | 3.5% + 1.5% + 0.4% |
+| `A.diploMonth` | 13% | 9% |
+| `A.wsDay` (wars: supply, armies, battles) | 18% | 31% |
+| 45-economy's `E.caravans` | 8% | 22% |
+| 66-markets' `MT.month` | 3% | 7% |
+| total sampled | 56 s | 31 s |
+
+The year turn is no longer quadratic in the size of the world: at 10× it costs about what a month costs. What is
+left grows linearly with the world, plus the wars.
+
+## Tests
+
+`node tests/run.mjs built.html --features=scale` (with the core suites), or `--only=scaleIdentical,scaleCheckMode,scaleSites,scaleTiming`:
+
+- **`scaleIdentical`**: 3 starts (peasant, noble, royal) × 10 years, with the feature off and on: the same state hash
+  and the same random state.
+- **`scaleCheckMode`**: 2 starts × 5 years and a 10× world for 4 months with `A.SCALE_CHECK` on, each compared with
+  the feature off: no answer differs, no write goes unnoticed, every kind of answer is checked.
+- **`scaleSites`**: the static check of write sites above.
+- **`scaleTiming`**: the 10× world for 14 months; reports the month and the year-turn month, wall clock and main-thread
+  CPU; fails if the month's CPU passes 2.4 s or the year-turn month's 5 s (three times this machine's numbers).
+
+`node features/09-scale/bench.mjs built.html --K=1,5,10 [--off]` prints the table above for any build.
+
+## What is left
+
+- **The month at 10× is not yet 250 ms.** It is linear work now, spread over many systems: the war day (`A.wsDay`,
+  about a third: supply maps over the whole map for every warring realm, the armies' thinking, battles), 45's
+  caravans (`E.caravans` looks at every pair of markets for every good: markets² × goods), 66's towns, the AI's
+  diplomacy, and some thirty other monthly hooks that each walk every realm. Reaching 250 ms needs the plan's level of
+  detail (stage 2: a far continent on a coarse tick), or changes that change results (supply maps by theatre, pairs
+  pruned by distance). Both are beyond an exact rewrite.
+- **45-economy, exact and measured, not applied** (another feature's code): `E.caravans` can walk each market's roads
+  cheapest first and stop where even the dearest price anywhere could not pay the road. The candidates come out the
+  same, in the same order (each keeps its old place as a tie-break in the sort); the state hash is unchanged at 1× and
+  10×. The candidate pass at 10× goes from about 70 ms to 27 ms a month; the whole month moves by less than the noise.
+- **`A.supplyMap`** still spends most of its time deciding, in O(provinces), that yesterday's flow can be reused
+  (94% of calls at 10×). Comparing only what changed (controllers, the divisions near the front) would make that
+  O(changes).
+- **Realm objects are in V8's dictionary mode** (40 of 41 after a few years, from `delete` of realm fields in several
+  features), and so is `A` itself, so every `A.x` and `r.x` is a hash lookup. Not something a feature can fix.
+- **Pairs in `A.politicsYear`** still cost about 0.4 s a year at 10× in 20-ai-personality's `A.aiPullParts` (label
+  strings are built for every term even when only the sum is asked for). A sum-only path there would halve it.

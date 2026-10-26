@@ -171,7 +171,8 @@
   };
   for (const k of ['newLife', 'randomLife']) {
     const f = UI.A[k];
-    if (typeof f === 'function') UI.A[k] = function () { if (FL.active) { FL.set(false); UI.worldReady = false; } return f.apply(this, arguments); };
+    // a new life starts from the Known World; a far world left open would sit under its creation screen, so it goes
+    if (typeof f === 'function') UI.A[k] = function () { if (FL.active) { FL.set(false); UI.worldReady = false; } if (FL.isGreat(A.S)) A.S = null; return f.apply(this, arguments); };
   }
 
   // ---- beasts: no beast of the Known World's bestiary is near a far province unless its canon range runs on into
@@ -190,6 +191,43 @@
     return out.filter(id => (FL.BEAST_LANDS[name(id)] || []).includes(L));
   };
 
+  // ---- the ten Far Lands named on the map when it is seen from far off, in the hand of an old map's regions (drawn
+  // under the realms' names, with the borders and towns). Rendering only.
+  let landPos = null;
+  FL.landNames = function () {
+    if (landPos) return landPos;
+    const acc = {}, Q = FL.provinces();
+    for (const q of Q) { const L = q.region && q.region[0]; if (!L) continue; const a = acc[L] || (acc[L] = { x: 0, y: 0, w: 0 }); a.x += q.x * q.cells; a.y += q.y * q.cells; a.w += q.cells; }
+    landPos = Object.keys(acc).sort().map(L => ({ L, name: (D.lands[L] && D.lands[L].name || L).toUpperCase(), x: acc[L].x / acc[L].w, y: acc[L].y / acc[L].w }));
+    return landPos;
+  };
+  const inkLines = MAP.inkLines;
+  if (typeof inkLines === 'function') MAP.inkLines = function (ctx, W, H, v) {
+    const r = inkLines.apply(this, arguments);
+    try {
+      if (r && FL.active && MAP.big) {
+        const V = v || MAP.whole(W, H), zoom = MAP.ZREF / V.w;
+        if (zoom < 1.3) {
+          const fs = Math.round(Math.max(11, Math.min(22, W / 62 * (0.6 + zoom * 0.5))));
+          ctx.save(); ctx.font = `italic 600 ${fs}px Cinzel, Georgia, serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          if ('letterSpacing' in ctx) ctx.letterSpacing = Math.round(fs * 0.35) + 'px';
+          ctx.fillStyle = 'rgba(70,46,24,.42)'; ctx.strokeStyle = 'rgba(236,224,196,.55)'; ctx.lineWidth = 3; ctx.lineJoin = 'round';
+          const boxes = [];
+          for (const p of FL.landNames()) {
+            const w = ctx.measureText(p.name).width, h = fs * 1.3;
+            let x = (p.x - V.x0) / V.w * W, y = (p.y - V.y0) / V.h * H;
+            if (x < -w || y < -40 || x > W + w || y > H + 40) continue;
+            x = Math.max(w / 2 + 6, Math.min(W - w / 2 - 6, x));
+            for (let k = 0; k < 6 && boxes.some(b => Math.abs(b[0] - x) < (b[2] + w) / 2 && Math.abs(b[1] - y) < h); k++) y += h;   // a name under its neighbour, not across it
+            boxes.push([x, y, w]); ctx.strokeText(p.name, x, y); ctx.fillText(p.name, x, y);
+          }
+          ctx.restore();
+        }
+      }
+    } catch (e) { console.error(e); }
+    return r;
+  };
+
   // ---- the far lands' relief, for the map with the inked style off (the release's picture covers the Known World)
   const TERR_RGB = { hills: [146, 132, 96], mountains: [128, 112, 98], forest: [74, 106, 64], steppe: [176, 160, 104], plains: [132, 150, 84], desert: [196, 176, 128], tundra: [176, 180, 170], marsh: [92, 116, 96] };
   MAP.farRelief = function () {
@@ -199,9 +237,8 @@
     const ctx = cv.getContext('2d'), im = ctx.createImageData(gw, gh), d = im.data, Q = FL.provinces(), bw = BASE_MAP.gw, bh = BASE_MAP.gh;
     for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
       const i = y * gw + x, o = i * 4, v = grid[i];
-      if (x < bw && y < bh) { d[o + 3] = 0; continue; }
-      if (v < nb) { d[o] = 29; d[o + 1] = 59; d[o + 2] = 87; d[o + 3] = 255; continue; }
-      const p = Q[v - nb], c = TERR_RGB[p.terr] || [140, 140, 120], shade = 0.92 + 0.16 * (((x * 7 + y * 13) % 17) / 17);
+      if ((x < bw && y < bh) || v < 0) { d[o + 3] = 0; continue; }          // the Known World's picture, and the sea
+      const p = v < nb ? BASE_MAP.provinces[v] : Q[v - nb], c = TERR_RGB[p.terr] || [140, 140, 120], shade = 0.92 + 0.16 * (((x * 7 + y * 13) % 17) / 17);
       d[o] = c[0] * shade; d[o + 1] = c[1] * shade; d[o + 2] = c[2] * shade; d[o + 3] = 255;
     }
     ctx.putImageData(im, 0, 0);

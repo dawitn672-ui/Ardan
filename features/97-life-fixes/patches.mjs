@@ -14,9 +14,11 @@ export default [
   {
     id: 'LF-GATH-ROLE',
     blob: 'ardan-core',
-    why: 'Every gathering the realm attended invited the player as a guest (noble, knight, guard, servant), so a courtier\'s life ' +
-      'showed the same invitation, opening and closing scenes up to 30 times. A guest is now asked to the same kind of gathering ' +
-      'at most every 6 years and to any at most every 2 (A.lfGathRole); rulers, envoys and family weddings always are.',
+    why: 'Every gathering the realm attended invited the player, so a courtier\'s or a chancellor\'s life showed the same invitation, ' +
+      'opening and closing scenes up to 30 times. A guest is now asked to the same kind of gathering at most every 6 years (a ' +
+      'knight\'s tourney every 5) and to any at most every 3; a visiting ruler or envoy goes to optional gatherings abroad at most ' +
+      'every 4 years, an envoy to war councils and congresses every 3 (A.lfGathRole). Hosts, a ruler at congresses and war ' +
+      'councils, and family weddings always ask.',
     edits: [[
       'role=pc&&pc.alive?A.gathRole(pc,g):null',
       'role=pc&&pc.alive?(A.lfGathRole?A.lfGathRole(pc,g):A.gathRole(pc,g)):null',

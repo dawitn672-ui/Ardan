@@ -13,7 +13,7 @@ The brief asks for the portraits to be the game's strongest "anime" signal: cel-
   2. an upright iris cropped by the lids, in two tones (a hard stop, not a blend);
   3. the pupil;
   4. two catchlights, r 2.6 at the upper left and r 1.2 at the lower right, kept in the head's frame so the light is always upper left;
-  5. a lash line 3 units thick at the outer third, tapering inward, with a flick that is longer on women and elves;
+  5. a lash line about 3 units thick at the outer third, tapering inward, with a flick that is longer on women and elves;
   6. one short stroke for the lower lid.
 
   Brows are tapered strokes whose angle follows the mood and the traits stern, stoic, kind and proud.
@@ -48,20 +48,22 @@ The brief asks for the portraits to be the game's strongest "anime" signal: cel-
   - holding a staff, spear, sceptre or walking stick.
 
   Weapons hang from the hand or sit at the hip. A shield is on the arm and a bow on the back. A newborn is swaddled on a cushion. A lost hand is a bound stump.
-- **Wounds** show: a stitched scar over the eye, an eye patch on a cord, a kinked nose with a plaster, a notched ear, a burn, a brand, a birthmark and freckles. In the full figure a lost hand shows and a limp splays one leg.
+- **Wounds** show: a stitched scar over the eye, an eye patch on a cord, a kinked nose with a plaster, a notched ear (never under a hood or hidden by long hair), a burn, a brand, a birthmark and freckles. In the full figure a lost hand shows and a limp splays one leg.
 - **The setting** is "Anime portraits (off: woodcut miniatures)" in the menu (`UI.set.anime`, saved with the other settings), next to 63's setting and the theme (patch `AP-MENU`).
 
-**Measured by.** `test.mjs`:
+**Measured by.** `test.mjs`, on the full build (`node tools/build.mjs --out=…`). Sheets of 40 people (every people, both sexes, child to old, rulers, nobles, soldiers, the dead) at 88 px, 32 px (in colour and as black silhouettes) and as full figures were rendered and critiqued over six rounds; see "Limits".
 
 | Test | Result |
 | --- | --- |
-| `apDeterministic` | (filled at the end) |
-| `apPure` | |
-| `apBudget` | |
-| `apEscaped` | |
-| `apEveryPeople` | |
-| `apToggle` | |
-| `apAxe` | |
+| `apDeterministic` | 1200 of 1200 drawings identical when drawn again (88 and 32 px busts and the 176 px full figure of 400 people in a world), 1200 identical through the cache. 400 distinct 88 px busts for 400 people, with names left out of the comparison. Poses: stand 144, hip 115, crossed 87, staff 51, hilt 2, swaddled 1 |
+| `apPure` | Drawing the life, people, realm and legacy tabs, the profile and a person's page (21 anime portraits) leaves `A.S` and `A.rngState` unchanged; 0 fallbacks |
+| `apBudget` | 107 people (every people × sex × age, 13 hair styles, rulers, armoured knights and dwarves, the scarred, the dead). Bust KB average / largest: 20 px 3.0/4.2, 32 px 5.5/7.7, 48 px 6.4/7.9, 72 px 6.5/8.0, 88 px 6.5/8.0, 120 px 6.9/8.0. Full figure 9.7/13.2. None over 8 KB or 18 KB. Uncached build 0.2 to 0.6 ms per portrait (best of three batches); through the cache 0.005 ms |
+| `apEscaped` | Markup in a name, an id, a skin, hair, realm and house colour, a charge, a culture, gear and a wound reaches no SVG. No raw tags, no `on*` attributes, no outside `href`, and every `fill`, `stroke`, `stop-color` and `flood-color` is a checked colour or a local reference |
+| `apEveryPeople` | 84 people (7 peoples × 2 sexes × 6 ages) at 200 (full), 88, 32 and 20 px, and the special cast: all valid SVG, 0 fallbacks |
+| `apToggle` | The setting is in the menu and on by default; off shows the woodcut miniatures; on again. A ruler gets the gold frame and crown badge, the dead the `--ink-3` frame |
+| `apAxe` | 0 axe violations (WCAG 2.1 AA) on the people tab, the profile and a person's page, with 11 anime portraits on them |
+
+63-miniatures' own tests also run against this renderer and pass: `miniEveryRace`, `miniDeterministic`, `miniAgeWoundsChildren` (7 of 7 wounds show; figure heights newborn 141, 6 years 178, 14 years 245, grown 261, dwarf 195, giant 272), `miniPure`, `miniToggle` and `miniAxe`. So do the replay suites (`renderRng`, `replayWithRender`, `journalReplay`), 27-accessibility and 71-phone, except `phoneTasks`, which fails the same way without this feature ("check the market" at ×1.65). `lint-events` and `lint-choices` report nothing; the feature has no events.
 
 **Rules kept.**
 - Pure: no `A.rand`, no `Math.random`, no state change. Every choice is an FNV hash of the id and a key. The expression reads the state (mood, opinion, the event in view) and never writes it. 35-moods' `mood()` only reads.
@@ -70,4 +72,12 @@ The brief asks for the portraits to be the game's strongest "anime" signal: cel-
 - The cache key holds the id, the age in years, the wounds, the gear, the look, the rank, the mood inputs, the event in view, the theme and the size. A redrawn list is a lookup.
 - No new state. The setting lives in `UI.set`.
 
-**Limits.** (filled at the end)
+**Limits.**
+- **Front view only.** Faces look straight out. A seeded tilt and the game's own eye shape, jaw, brow, nose and mouth vary them, but there is no three-quarter turn and the eyes never look aside. The face template (one eye, one nose tick, one mouth stroke) is shared by everyone, so faces are more alike than a hand-drawn cast.
+- **The full figure is the weak half.** It stands well and its rank, dress, arms and wounds read. But it is still built from tubes and ellipses: hands are mittens, there are no fingers, and the poses are a closed set of five (no seated ruler, no mount, no action pose). At 6.5 heads the face is about 34 px wide at 200 px, so it gets the 48 px level of detail. The figure fills less than half the frame's width.
+- **Procedural hair.** Twelve bang styles of fang-shaped clumps read well at 32 to 120 px. Close up (240 px and more), the cap of short hair still looks a little like a helmet, and curly hair is only a bumpier silhouette.
+- **Silhouettes at 32 px.** Peoples, long hair, twin tails, ears, mohawks, helms and a giant's shoulders read in black. Short-haired humans look alike, and a dwarf's beard merges into the body (it reads as breadth, not as a beard).
+- **The budget has a fallback.** A rich character (a ruler in ermine with braids, a dwarf in plate) can come out over 8 KB at full detail. It is then drawn again without clump lines, thin strands and folds, and if needed one level of detail lower, then at the 32 px level. It fits, at the cost of a little detail. In three real worlds (1,200 people) at 88 px, 92% draw at full detail, 7% need the first step, 4 people the second and 9 (0.75%, royals with every piece of regalia) the last. A world's busts average 7.0 KB. `UI.ANIME.lastLite` says how far the last picture stepped down, and `UI.ANIME.buildAt(p, size, opts, level)` draws one level (for sheets).
+- **63's tests now exercise this renderer.** It is on by default and keeps 63's conventions (`class="portrait mini"`, `data-pose`, a `.mn-fig` group), so `miniEveryRace`, `miniDeterministic`, `miniAgeWoundsChildren` and `miniPure` run against it. The woodcut path is checked here by `apToggle`.
+- **Expressions read the state.** The person an event is about shows its tone by matching the event's id and title against a few word lists. An event with an unusual name gets the opinion-and-mood face instead.
+- **Beasts** (`PORTRAIT.beast`) and **coats of arms** (`PORTRAIT.coat`) are still the release's.

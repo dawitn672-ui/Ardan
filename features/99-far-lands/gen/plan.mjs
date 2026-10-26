@@ -140,3 +140,9 @@ export const LANDS = {
 };
 // how crowded each land is against its ground (the lopsidedness of rule 1.4: two hearths and thin lands between)
 export const CROWD = { T: 0.55, N: 0.45, F: 0.8, B: 1, H: 0.8, R: 1.7, M: 1.25, A: 0.85, I: 1.3, D: 0.4 };
+
+// the hand plan in the shape the generator takes (loreplan.mjs makes the same shape from the lore)
+export function handPlan() {
+  return { lore: false, frame: { x0: 0, y0: 0, W: FRAME.W, H: FRAME.H }, coasts: Object.values(LANDS_POLY).map(pts => ({ pts })), chains: CHAINS, lakes: LAKES,
+    ranges: RANGES, plateaus: PLATEAUS, keep: [], water: [], rivers: [], regions: null, edgeSea: 90 };
+}

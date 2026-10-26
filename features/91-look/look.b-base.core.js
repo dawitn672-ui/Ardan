@@ -207,6 +207,9 @@ ${X('.fold-n')}{display:inline-grid;place-items:center;min-width:18px;height:18p
 ${X('.fold-n::before')}{font-family:var(--f-ui);font-size:var(--t-cap);font-weight:700}
 ${X('.fold-sum')}{flex:1 1 0;text-align:right;margin-left:auto;padding-left:8px;font-family:var(--f-ui);font-size:var(--t-small);font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;pointer-events:none}
 ${X('.fold > .fold-b')}{padding:2px 0 var(--sp-3)}
+/* a section the player opens fades in and settles 4 px (90-fold marks it; a redraw does not replay it) */
+${X('.fold.fold-anim > .fold-b, .fold-card.fold-anim > :not(.fold-x):not(:first-of-type)')}{animation:lkOpen var(--m-base) var(--ease-std)}
+@keyframes lkOpen{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 ${X('.fold-tools')}{margin:0 0 2px;justify-content:flex-end}
 ${X('.fold-tools .ghost')}{min-height:24px;padding:0 4px;font-size:var(--t-cap);color:var(--ink-3);text-decoration:underline dotted;text-underline-offset:3px;background:none;border:0;font-weight:600}
 ${X('.fold-tools .ghost:hover:not(:disabled)')}{color:var(--accent);background:none}
@@ -362,6 +365,7 @@ ${X('.prof-por svg')}{box-shadow:0 0 0 1px var(--line-strong)}
   ${X('.tt-pop:not([hidden])')}{animation:lkFade 120ms linear}
   ${X('button:active:not(:disabled), .act:active:not(:disabled)')}{transform:none}
   ${X('.fold-h::before, .fold-x::before')}{transition:none}
+  ${X('.fold.fold-anim > .fold-b, .fold-card.fold-anim > :not(.fold-x):not(:first-of-type)')}{animation:lkFade 120ms linear}
 }
 :root.lk-theming *, :root.lk-theming *::before, :root.lk-theming *::after, :root.lk-theming{transition:none!important}
 :root[data-motion=off] *, :root[data-motion=off] *::before, :root[data-motion=off] *::after{animation:none!important;transition:none!important}

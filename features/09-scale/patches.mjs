@@ -27,7 +27,8 @@ export default [
     blob: 'ardan-core',
     why: 'A.realmHouses filtered every house in the world on every call. 09-scale answers it from an index of houses by ' +
       'realm, dropped when a house is created during play: the player\'s own house (founding a realm, or rising into the ' +
-      'gentry). No house changes realm, kind or extinction during play in the release; test.mjs (scaleSites) checks that.',
+      'gentry). Nothing in the release changes a house\'s realm, kind or extinction during play (70-fresh-realms does, inside ' +
+      'A.initWorld); test.mjs (scaleSites) checks the creation sites, and each month 09-scale compares the index with the houses.',
     edits: [
       ['A.S.houses[hid].realm=r.id;', `A.S.houses[hid].realm=r.id,${house};`],
       ['founded:A.S.year,members:[pc.id]},pc.house=hid,', `founded:A.S.year,members:[pc.id]},${house},pc.house=hid,`],
@@ -38,9 +39,9 @@ export default [
     blob: 'ardan-core',
     why: 'A.priceTarget (for every imported good of every market, twice a month) and A.tradeMul (for every realm in every ' +
       'A.updateRealmPops) counted embargoes and trade pacts by walking every realm and calling A.hasTrade for each: ' +
-      'realms² work per market pass, 23 ms per updateRealmPops at 10x. 09-scale counts the same two numbers from a ' +
-      'cached list of realm objects and the realm\'s own trade pacts (A.scaleEmbPact, A.scaleEmb); the original loop ' +
-      'still runs when they answer null (A.SCALE_OFF, or A.hasTrade replaced).',
+      'realms² work per market pass, 23 ms per updateRealmPops at 10x. 09-scale counts the same two numbers over the ' +
+      'realms that have an embargo on their books and over the realm\'s own trade pacts (A.scaleEmbPact, A.scaleEmb); the ' +
+      'original loop still runs when they answer null (A.SCALE_OFF, or A.hasTrade replaced).',
     edits: [
       ['let emb=0,pact=0;for(const id in A.S.realms){const o=A.S.realms[id];o.alive&&(o.tr&&o.tr.emb&&o.tr.emb[r.id]>A.S.year&&emb++,A.hasTrade(r.id,id)&&pact++)}',
         'let emb=0,pact=0;const _ep=A.scaleEmbPact&&A.scaleEmbPact(r);if(_ep)emb=_ep[0],pact=_ep[1];else for(const id in A.S.realms){const o=A.S.realms[id];o.alive&&(o.tr&&o.tr.emb&&o.tr.emb[r.id]>A.S.year&&emb++,A.hasTrade(r.id,id)&&pact++)}'],

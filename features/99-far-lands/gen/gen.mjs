@@ -36,7 +36,8 @@ export function generate() {
   for (const p of P) {
     const b = p.biome, e = p.elev, rel = p.relief;
     let t;
-    if (e >= 2700 || (rel >= 650 && e >= 1300)) t = 'mountains';
+    if ((e >= 2700 && (rel >= 430 || e >= 5200)) || (rel >= 650 && e >= 1300)) t = 'mountains';
+    else if (e >= 2700) t = 'hills';                  // the flat top of a high plateau rolls; its biome (Alpine highland) keeps it high
     else if (b === 'Glacier' || b === 'Tundra') t = 'tundra';
     else if (b === 'Marsh') t = 'marsh';
     else if (rel >= 190 || (e >= 900 && rel >= 110)) t = 'hills';
@@ -99,7 +100,7 @@ export function generate() {
     const allies = r.allies.map(a => RL.realms[a].short), rivals = r.rivals.map(a => RL.realms[a].short);
     r.primer = {
       intro: `${r.name}: ${r.provs.length} provinces of ${PLAN.LANDS[r.land].name.replace(/^the /, '')}, ruled from ${cap.name}.`,
-      ruler: '',
+      ruler: H ? `The ${r.title} of House ${H.sur || H.name.replace(/^House /, '')}, who rules from ${cap.name}.` : '',
       'people and land': `${fmt(r.pop)} people on ${fmt(r.area)} km², ${cult ? 'most of them ' + cult.name : 'of many peoples'}. Faith: ${faithName(r.faith)}.`,
       strength: `${fmt(r.army)} standing, ${fmt(r.levy)} at full levy.`,
       'three people to know': '',
