@@ -88,6 +88,9 @@ FOLD.mergeActs = function (tb) {
   grid.className = 'acts lk-acts';
   groups[0][0].before(head);
   head.after(grid);
+  // the stage's own tiles lost their "Only now" header to the grid: the grid's header names them instead
+  const now = groups.find(([h]) => /^only now/i.test(h.textContent.trim()));
+  if (now) { const k = document.createElement('span'); k.className = 'lk-now-key'; k.textContent = now[0].textContent.trim().replace(/^Only now:?\s*(.*)$/i, 'Only now, in $1: the gold-edged tiles'); head.appendChild(k); }
   for (const [h, a] of groups) {
     const name = h.textContent.trim(), g = /^only now/i.test(name) ? 'only now' : slug(name);
     let first = true;
@@ -112,7 +115,7 @@ FOLD.sections = function (root, tab) {
     const body = [];
     for (let j = i + 1; j < kids.length && !(kids[j].classList && kids[j].classList.contains('group-h')); j++) body.push(kids[j]);
     if (!body.length) continue;
-    const label = h.textContent.trim(), key = slug(label);
+    const label = [...h.childNodes].filter(n => !(n.classList && n.classList.contains('lk-now-key'))).map(n => n.textContent).join('').trim(), key = slug(label);
     if (!key) continue;
     const acts = body.some(isActs);
     const n = body.reduce((a, b) => a + (isActs(b) ? b.querySelectorAll(':scope > *').length : b.classList && b.classList.contains('card') ? 1 : 0), 0);
@@ -302,6 +305,7 @@ for (const k of ['render', 'refresh', 'refreshTab', 'renderModal']) {
 }
 
 FOLD.CSS = `
+.lk-acts-h .lk-now-key{margin-left:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--accent,#9a6a10)}
 .fold{margin:0 0 var(--s-2,8px)}
 .fold > .fold-head{cursor:pointer;user-select:none;margin:var(--s-3,10px) 0 var(--s-1,4px)}
 .fold > .fold-head:hover{color:var(--accent-2)}
