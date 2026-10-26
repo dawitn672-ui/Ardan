@@ -134,6 +134,8 @@ Six bot lives from birth (seeds 101 to 606: peasant, noble and merchant, Hard, r
 | Job duties already seen | 137 of 165 | 6 of 39 |
 | NPC moves already seen | 168 of 297 | 18 of 188 |
 
+In the bench league (`bench/run.mjs --only=league --lives=4`, the full tree with and without this feature) prompts a year fall from 10.8 to 8.0 and scenes a year from 9.9 to 7.1, still above the target of 6; the median gap between prompts stays at 30 to 31 days (90th percentile 92 to 111). The memory share of fired events falls from 52.8% to 45.4%, because many of the repeats cut were scenes that read their own earlier flags.
+
 The lives differ (a different random stream gives different lives: three of the six without it died before 28), so the age bands are the fairer comparison. What still repeats: gatherings' frames (the invitation, the opening, the last night: 75 of the 1,901), illness and wound care (22), and a few childhood scenes.
 
 ## Limits
