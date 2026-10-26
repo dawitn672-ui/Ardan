@@ -74,7 +74,7 @@ for (const name of want) {
   const list = await pg.evaluate(sel => {
     const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 2 && r.height > 2 && s.visibility !== 'hidden' && s.display !== 'none' && !e.closest('[hidden]'); };
     return [...document.querySelectorAll(sel)].filter(vis).map((e, i) => ({ i, a: e.dataset.a || '', v: e.dataset.v || '', tag: e.tagName.toLowerCase(), text: (e.innerText || e.getAttribute('aria-label') || e.title || '').trim().replace(/\s+/g, ' ').slice(0, 48),
-      disabled: !!(e.disabled || e.getAttribute('aria-disabled') === 'true' || e.classList.contains('disabled') || e.classList.contains('off')),
+      disabled: !!(e.disabled || e.getAttribute('aria-disabled') === 'true' || e.classList.contains('disabled') || e.classList.contains('dis') || e.classList.contains('off')),
       current: e.getAttribute('aria-selected') === 'true' || e.getAttribute('aria-current') === 'page' || e.classList.contains('on') || e.classList.contains('sel') || e.classList.contains('selected') || e.classList.contains('active') || e.getAttribute('aria-pressed') === 'true' || e.getAttribute('aria-checked') === 'true' }));
   }, CLICKABLE);
   perScreen[name] = { controls: list.length, dead: 0 };
