@@ -1459,7 +1459,7 @@
       const hd = f.head;
       const hx = hd.tx + 50 * hd.sc, hy = hd.ty + 52 * hd.sc;
       // a soft light behind the head, the house's charge faint behind it
-      if ((G.full || size >= 100) && !L.dead) {
+      if ((G.full || size >= 100) && !L.dead && !G.lite) {
         const rg = 'apr' + rim.slice(1);
         G.defs[rg] = `<radialGradient id="${rg}"><stop offset="0" stop-color="${rim}" stop-opacity=".34"/><stop offset="1" stop-color="${rim}" stop-opacity="0"/></radialGradient>`;
         s += `<ellipse cx="${R(hx)}" cy="${R(hy)}" rx="${R(hd.sc * 110)}" ry="${R(hd.sc * 104)}" fill="url(#${rg})"/>`;
