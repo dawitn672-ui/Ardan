@@ -3,7 +3,7 @@
 // taiga); grown by a flood fill whose cost follows the slope, so bounds fall on ridges; merged when tiny; joined by
 // shared edges, by straits under 50 km, and by sea lanes until every province can be reached.
 import { rng, edt, Heap, clamp, smooth, blur } from './lib.mjs';
-import { GW, GH, CELL } from './geo.mjs';
+import { CELL } from './geo.mjs';
 import * as PLAN from './plan.mjs';
 
 export const DENS = {      // people a km2, by biome, before rivers, coasts and height
@@ -12,7 +12,7 @@ export const DENS = {      // people a km2, by biome, before rivers, coasts and 
 };
 
 export function provinces(G, base, seed, KA = 50000) {
-  const { N, land, inBase, elev, biome, river, toSeaD } = G;
+  const { N, GW, GH, land, inBase, elev, biome, river, toSeaD } = G;
   const far = i => land[i] && !inBase(i);
   const R = rng(seed + 101);
   // ---- people the ground holds
@@ -28,13 +28,20 @@ export function provinces(G, base, seed, KA = 50000) {
     if (b === 'Desert' && (river[i] || toMtn[i] < 5)) d = Math.max(d, 2.5);      // the oases at the mountains' feet
     dens[i] = d;
   }
+  // with the lore, each region holds the people the lore gives it, spread as the ground would have them
+  if (G.plan && G.plan.lore) {
+    const sum = new Float64Array(G.regions.length);
+    for (let i = 0; i < N; i++) if (far(i) && G.label[i] >= 0) sum[G.label[i]] += dens[i] * CELL * CELL;
+    const k = G.regions.map((r, j) => sum[j] > 0 ? r.people / sum[j] : 1);
+    for (let i = 0; i < N; i++) if (far(i) && G.label[i] >= 0) dens[i] *= k[G.label[i]];
+  }
   // ---- seeds, spaced by the ground (the people averaged over about 100 km, so a river through a desert gives a few
   // round provinces along it, not a comb of strips)
   const densS = blur(blur(dens, GW, GH, 0, 8), GW, GH, 1, 8);
   const rad = i => 0.93 * Math.sqrt(clamp(KA / Math.sqrt(Math.max(dens[i] * 0.35, densS[i]) + 0.05), 4500, 180000)) / CELL;   // in cells
   // no far seed within 220 km of the old map's edge: the Known World's own edge provinces grow across it first, so
   // its realms' borders run on into the new land instead of along a ruler line
-  const dbox = i => Math.hypot(Math.max(0, (i % GW) - base.gw + 0.5), Math.max(0, ((i / GW) | 0) - base.gh + 0.5)) * CELL;
+  const dbox = i => { const bx = (i % GW) - G.OX, by = ((i / GW) | 0) - G.OY; return Math.hypot(Math.max(0, bx - base.gw + 0.5, -bx - 0.5), Math.max(0, by - base.gh + 0.5, -by - 0.5)) * CELL; };
   const cand = []; for (let i = 0; i < N; i++) if (far(i) && dbox(i) >= 220) cand.push(i);
   R.shuffle(cand);
   const B = 6, BW = Math.ceil(GW / B), buckets = new Map(), seeds = [], seedR = [];
@@ -63,11 +70,11 @@ export function provinces(G, base, seed, KA = 50000) {
   // labels: 0.. a far seed; -1 nobody; -2 - q the Known World's province q, carried across the seam
   const own = new Int32Array(N).fill(-1), dist = new Float64Array(N).fill(Infinity), hp = new Heap();
   seeds.forEach((i, s) => { own[i] = s; dist[i] = 0; hp.push(0, i); });
-  const baseAt = i => inBase(i) ? base.grid[((i / GW) | 0) * base.gw + (i % GW)] : -1;
+  const baseAt = i => G.baseCell(i);
   for (let i = 0; i < N; i++) {
     if (!far(i) || own[i] >= 0) continue;
     const x = i % GW, y = (i / GW) | 0;
-    for (const j of [x > 0 ? i - 1 : -1, y > 0 ? i - GW : -1]) { const q = j >= 0 ? baseAt(j) : -1; if (q >= 0) { own[i] = -2 - q; dist[i] = 0; hp.push(0, i); break; } }
+    for (const j of [x > 0 ? i - 1 : -1, y > 0 ? i - GW : -1, x < GW - 1 ? i + 1 : -1, y < GH - 1 ? i + GW : -1]) { const q = j >= 0 ? baseAt(j) : -1; if (q >= 0) { own[i] = -2 - q; dist[i] = 0; hp.push(0, i); break; } }
   }
   const step = (i, j) => 1 + Math.abs(elev[j] - elev[i]) / 110 + (river[j] === 2 && river[i] !== 2 ? 1.5 : 0) + (biome[j] !== biome[i] ? 0.4 : 0);
   while (hp.size) {
@@ -140,8 +147,9 @@ export function provinces(G, base, seed, KA = 50000) {
     let best = p.list[0], bs = -1;
     for (const i of p.list) { const x = i % GW, y = (i / GW) | 0, dd = Math.hypot(x - p.cx, y - p.cy) / Math.sqrt(p.cells), s = (dens[i] + 0.2) * Math.exp(-2.2 * dd * dd) * (toSeaD[i] >= 1 ? 1 : 0.6); if (s > bs) { bs = s; best = i; } }
     p.site = best;
-    p.x = Math.round(p.cx * CELL + 5); p.y = Math.round(p.cy * CELL + 5);
-    p.sx = (best % GW) * CELL + 5; p.sy = ((best / GW) | 0) * CELL + 5;
+    p.x = Math.round(G.F.x0 + p.cx * CELL + 5); p.y = Math.round(G.F.y0 + p.cy * CELL + 5);
+    p.sx = G.F.x0 + (best % GW) * CELL + 5; p.sy = G.F.y0 + ((best / GW) | 0) * CELL + 5;
+    if (G.plan && G.plan.lore) { const t = new Map(); for (const i of p.list) { const l = G.label[i]; if (l >= 0) t.set(l, (t.get(l) || 0) + 1); } const top = [...t.entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0]; const r = G.regions[top ? top[0] : 0]; p.region = r.id; p.land = r.land; }
     p.pop = Math.round(p.pop);
     p.comp = comp[p.list[0]];
     p.compCells = comps[p.comp].length;
@@ -241,6 +249,8 @@ export function provinces(G, base, seed, KA = 50000) {
 
 // the land of each cell: its nearest anchor
 export function landOfCells(G) {
+  const { GW } = G;
+  if (G.plan && G.plan.lore) return Array.from(G.label, (l, i) => G.land[i] && !G.inBase(i) && l >= 0 ? G.regions[l].land : null);
   const anchors = []; for (const code in PLAN.LANDS) for (const [x, y] of PLAN.LANDS[code].anchors) anchors.push({ code, x: x / CELL, y: y / CELL });
   const out = new Array(G.N).fill(null);
   for (let i = 0; i < G.N; i++) {
@@ -252,7 +262,13 @@ export function landOfCells(G) {
   return out;
 }
 // ---- the ten Far Lands and their regions of about 400,000 km2 (rule G6)
-export function regions(P) {
+export function regions(P, G) {
+  if (G && G.plan && G.plan.lore) {      // the lore's lands and regions, read from the cells
+    const out = {};
+    for (const p of P) { const o = out[p.land] || (out[p.land] = { name: (G.plan.landNames || {})[p.land] || p.land, area: 0, regions: new Set() }); o.area += p.cells * 100; o.regions.add(p.region); }
+    for (const k in out) out[k].regions = [...out[k].regions].sort();
+    return Object.fromEntries(Object.keys(out).sort().map(k => [k, out[k]]));
+  }
   const anchors = [];
   for (const code in PLAN.LANDS) for (const [x, y] of PLAN.LANDS[code].anchors) anchors.push({ code, x, y });
   for (const p of P) {

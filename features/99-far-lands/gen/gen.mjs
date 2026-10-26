@@ -9,7 +9,8 @@ import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadBase } from './base.mjs';
-import { geography, GW, GH, CELL } from './geo.mjs';
+import { geography, CELL } from './geo.mjs';
+import { lorePlan } from './loreplan.mjs';
 import { provinces, regions } from './prov.mjs';
 import { makeRealms } from './realms.mjs';
 import { namer } from './names.mjs';
@@ -26,13 +27,19 @@ export function generate() {
   const base = loadBase();
   const lorePath = arg('lore') ? path.resolve(arg('lore')) : path.join(base.root, 'canon/lore/far-lands.json');
   const loreText = fs.existsSync(lorePath) ? fs.readFileSync(lorePath, 'utf8') : null, lore = loreText ? JSON.parse(loreText) : null;
-  const loreHash = loreText ? crypto.createHash('sha256').update(loreText).digest('hex').slice(0, 16) : null;
-  const G = geography(base, SEED);
+  // the peoples and faiths, when the lore lane has written them: cultures with their name lists, faiths in full
+  const pfPath = path.join(path.dirname(lorePath), 'peoples-and-faiths.json');
+  const pfText = lore && fs.existsSync(pfPath) ? fs.readFileSync(pfPath, 'utf8') : null;
+  if (pfText) { const PF = JSON.parse(pfText); lore.cultures = PF.cultures; lore.faiths = PF.faiths; lore.game_tables = PF.game_tables; }
+  const loreHash = loreText ? crypto.createHash('sha256').update(loreText + (pfText || '')).digest('hex').slice(0, 16) : null;
+  const plan = lore ? lorePlan(lore) : PLAN.handPlan();
+  const G = geography(base, SEED, plan), GW = G.GW, GH = G.GH;
   const V = provinces(G, base, SEED, KA);
-  const lands = regions(V.P);
+  const lands = regions(V.P, G);
   const nb = base.provinces.length, P = V.P;
   // ---- the ground word: the release's eight, from height, roughness and biome (the release's own mix is hills 41%,
   // forest 15%, steppe 13%, plains 11%, desert 8%, mountains 7%, tundra 3%, marsh 2%)
+  const WORDS = ['hills', 'forest', 'steppe', 'plains', 'desert', 'mountains', 'tundra', 'marsh'];
   for (const p of P) {
     const b = p.biome, e = p.elev, rel = p.relief;
     let t;
@@ -46,6 +53,9 @@ export function generate() {
     else if (b === 'Dry woodland') t = 'plains';
     else t = p.river === 2 && p.pop / p.cells > 1500 ? 'plains' : 'forest';
     if (t === 'forest' && p.pop / (p.cells * 100) > 45 && rel < 200) t = 'plains';   // the crowded basins are farmland
+    // the lore names each region's ground: a word it does not name gives way to the first it does that fits
+    const reg = plan.lore && plan.regions.find(r => r.id === p.region), cands = reg ? reg.terr.filter(w => WORDS.includes(w)) : [];
+    if (cands.length && !cands.includes(t)) t = cands.find(w => (w !== 'mountains' || rel >= 300 || e >= 2500) && (w !== 'hills' || rel >= 120 || e >= 900)) || cands[cands.length - 1];
     p.terr = t;
   }
   // ---- names (the lore's lists when present; the stand-in palettes otherwise)
@@ -61,7 +71,7 @@ export function generate() {
   // ---- realms
   const adjOf = p => V.adj[p.k], seaOf = p => V.sea[p.k];
   for (const p of P) p.town = Math.round(p.pop * 0.05);
-  const provAtKm = (x, y) => { const cx = Math.floor(x / CELL), cy = Math.floor(y / CELL); if (cx < 0 || cy < 0 || cx >= GW || cy >= GH) return null; const o = V.own[cy * GW + cx]; return o >= 0 ? P[o] : null; };
+  const provAtKm = (x, y) => { const cx = Math.floor((x - G.F.x0) / CELL), cy = Math.floor((y - G.F.y0) / CELL); if (cx < 0 || cy < 0 || cx >= GW || cy >= GH) return null; const o = V.own[cy * GW + cx]; return o >= 0 ? P[o] : null; };
   const RL = makeRealms(P, adjOf, seaOf, SEED, base, lore, provAtKm);
   if (lore) log.push(`lore: ${RL.loreReport.realms} realms read, ${RL.loreReport.placed} placed` + (RL.loreReport.skipped.length ? `; skipped ${RL.loreReport.skipped.slice(0, 8).join(', ')}` : ''));
   // ---- what each province is: its type, walls and largest town
@@ -97,16 +107,16 @@ export function generate() {
     r.capital = cap.name; delete r.capName;
     const H = Object.values(RL.houses).find(h => h.realm === id && h.kind === 'royal'); if (H) H.seat = cap.name;
     const cult = r.cult && RL.cultures[r.cult];
-    const allies = r.allies.map(a => RL.realms[a].short), rivals = r.rivals.map(a => RL.realms[a].short);
+    const shortOf = a => (RL.realms[a] || base.LORE.realms[a] || { short: a }).short, allies = r.allies.map(shortOf), rivals = r.rivals.map(shortOf);
     r.primer = {
-      intro: `${r.name}: ${r.provs.length} provinces of ${PLAN.LANDS[r.land].name.replace(/^the /, '')}, ruled from ${cap.name}.`,
-      ruler: H ? `The ${r.title} of House ${H.sur || H.name.replace(/^House /, '')}, who rules from ${cap.name}.` : '',
+      intro: r.loreNote && r.loreNote.intro ? r.loreNote.intro : `${r.name}: ${r.provs.length} provinces of ${(lands[r.land] || PLAN.LANDS[r.land] || { name: r.land }).name.replace(/^the /i, '')}, ruled from ${cap.name}.`,
+      ruler: r.loreNote && r.loreNote.ruler ? r.loreNote.ruler : H ? `The ${r.title} of House ${H.sur || H.name.replace(/^House /, '')}, who rules from ${cap.name}.` : '',
       'people and land': `${fmt(r.pop)} people on ${fmt(r.area)} km², ${cult ? 'most of them ' + cult.name : 'of many peoples'}. Faith: ${faithName(r.faith)}.`,
       strength: `${fmt(r.army)} standing, ${fmt(r.levy)} at full levy.`,
-      'three people to know': '',
+      'three people to know': '', ...(r.loreNote && r.loreNote.want ? { wants: r.loreNote.want } : {}), ...(r.loreNote && r.loreNote.fear ? { fears: r.loreNote.fear } : {}),
       ties: (rivals.length ? `Rival of ${rivals.join(' and ')}` : 'No great rival') + (allies.length ? `; allied to ${allies.join(' and ')}.` : '.'),
     };
-    delete r.provs;
+    delete r.provs; delete r.loreNote;
   }
   for (const H of Object.values(RL.houses)) { if (H.kind === 'noble') { const p = P.find(q => q.pid === H.seatId); if (p) H.seat = p.name; } }
 
@@ -136,7 +146,7 @@ export function generate() {
   for (const [q, l] of [...V.baseBase.entries()].sort((a, b) => a[0] - b[0])) seam[q] = sorted([...(seam[q] || []), ...l]);
   const baseExt = {}; for (const [q, e] of [...V.ext.entries()].sort((a, b) => a[0] - b[0])) baseExt[q] = [e.cells, e.coast ? 1 : 0];
   const D = {
-    v: 1, key: KEY, gw: GW, gh: GH, cell: CELL, base: nb, rle, provinces: cols, seam, seaBase, baseExt,
+    v: 1, key: KEY, gw: GW, gh: GH, cell: CELL, x0: G.F.x0, y0: G.F.y0, ox: G.OX, oy: G.OY, base: nb, rle, provinces: cols, seam, seaBase, baseExt,
     realms: RL.realms, houses: RL.houses, relations: RL.relations, cultures: RL.cultures, naming: RL.naming, lang: RL.lang, faiths: RL.faiths,
     lands, lore: lore ? 'canon/lore/far-lands.json' : null, loreHash,
   };
@@ -169,11 +179,12 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
   const pv = arg('preview');
   if (pv) {
     const { geoPicture, regionPicture, write } = await import('./preview.mjs');
+    const GW = r.G.GW, GH = r.G.GH;
     write(pv, 'geo.png', geoPicture(r.G, r.base, GW, GH, 2));
     const owner = new Int32Array(r.G.N).fill(-1), realmIx = {}, realmOfP = r.D.provinces.realm;
     Object.keys(r.D.realms).forEach((k, i) => { realmIx[k] = i; });
     for (let i = 0; i < r.G.N; i++) owner[i] = r.G.inBase(i) ? -2 : r.V.own[i] >= 0 ? r.V.own[i] : -1;
-    const colRealm = (v, i) => v === -2 ? (r.base.grid[((i / GW) | 0) * r.base.gw + i % GW] >= 0 ? [150, 150, 140] : [38, 58, 82]) : v < 0 ? [30, 50, 78] : realmOfP[v] === 'unclaimed' ? [120, 118, 110] : (() => { const c = r.D.realms[realmOfP[v]].color; return [1, 3, 5].map(k => parseInt(c.slice(k, k + 2), 16)); })();
+    const colRealm = (v, i) => v === -2 ? (r.G.baseCell(i) >= 0 ? [150, 150, 140] : [38, 58, 82]) : v < 0 ? [30, 50, 78] : realmOfP[v] === 'unclaimed' ? [120, 118, 110] : (() => { const c = r.D.realms[realmOfP[v]].color; return [1, 3, 5].map(k => parseInt(c.slice(k, k + 2), 16)); })();
     write(pv, 'realms.png', regionPicture(owner, colRealm, GW, GH, 2, true));
   }
 }

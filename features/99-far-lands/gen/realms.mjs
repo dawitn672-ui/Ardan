@@ -110,8 +110,10 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
   let cn = LR ? after(LR.cultures, /^CUL-(\d+)/, 25) : 25, fn = LR ? after(LR.faiths, /^REL-(\d+)/, 20) : 20, hn = 1, rn = LR ? after(LR.realms, /^POL-(\d+)/, 36) : 36;
   const cultures = {}, naming = {}, lang = {}, faiths = [], faithOf = {}, cultOf = {};
   const namers = {};
+  const loreHas = LR && LR.cultures.length > 0;
   for (const L of lands) {
     cultOf[L] = [];
+    if (loreHas) { namers[L] = [namer(R, L, 0, used), namer(R, L, 1, used)]; continue; }   // the lore's peoples stand instead
     CULTURES[L].forEach(([nm, note], v) => {
       if (v === 1 && CULTURES[L][1][0] === CULTURES[L][0][0]) { cultOf[L].push(cultOf[L][0]); return; }
       const id = `CUL-${String(cn++).padStart(2, '0')}`, nmr = namer(R, L, v, used);
@@ -125,6 +127,7 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
   }
   for (const L of lands) {
     faithOf[L] = [];
+    if (LR && LR.faiths.length) continue;
     for (const [nm, kind, belief] of FAITHS[L]) {
       let f = faiths.find(x => x.name === nm);
       if (!f) { f = { id: `REL-${fn++}`, name: nm, kind: kind || 'organized', followers: '', realms: [], belief: belief || '', afterlife: '', clergy: '', rituals: '', festivals: '', taboos: '', politics: '', land: L }; faiths.push(f); }
@@ -136,7 +139,9 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
     for (const c of LR.cultures) {
       const L = c.land && POLITY[c.land] ? c.land : 'R', nmr = namer(R, L, 0, used), fill = (a, k, o) => a.length >= 8 ? a : a.concat(Array.from({ length: k - a.length }, () => nmr.word(o)));
       cultures[c.id] = { id: c.id, name: c.name, race: c.race, home: '', pols: [], note: c.note, m: fill(c.m, 30, { min: 3, max: 8, end: false }), f: fill(c.f, 30, { min: 3, max: 8, end: true }), house: fill(c.house, 20, { min: 4, max: 9 }), epi: c.epi.length ? c.epi : EPI[L].slice(), land: L };
-      naming[c.id] = c.naming || NAMING[L]; lang[c.id] = c.lang || c.name + ' speech';
+      const GT = lore.game_tables || {};
+      naming[c.id] = (GT.NAMING && GT.NAMING[c.id]) || c.naming || NAMING[L]; lang[c.id] = (GT.LANG && GT.LANG[c.id]) || c.lang || c.name + ' speech';
+      if (c.places.length) cultures[c.id].places = c.places;
     }
     for (const f of LR.faiths) if (!faiths.some(x => x.id === f.id)) faiths.push(Object.assign({ followers: '', realms: [], land: null }, f));
   }
@@ -147,13 +152,18 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
     const takenCap = new Set();
     for (const lr of LR.realms) {
       if (lr.x == null || lr.y == null) { loreReport.skipped.push(lr.id + ' (no position)'); continue; }
-      if (lr.x < base.gw * 10 && lr.y < base.gh * 10) { loreReport.skipped.push(lr.id + ' (in the Known World)'); continue; }
+      if (lr.x >= 0 && lr.y >= 0 && lr.x < base.gw * 10 && lr.y < base.gh * 10) { loreReport.skipped.push(lr.id + ' (in the Known World)'); continue; }
       let cap = provAtKm(lr.x, lr.y);
       if (!cap || takenCap.has(cap.k)) { let bd = 400; cap = null; for (const p of P) { const d = Math.hypot(p.sx - lr.x, p.sy - lr.y); if (d < bd && !takenCap.has(p.k) && p.compCells >= 20) { bd = d; cap = p; } } }
       if (!cap) { loreReport.skipped.push(lr.id + ' (no land near its capital)'); continue; }
       takenCap.add(cap.k);
       const L = lr.land && POLITY[lr.land] ? lr.land : cap.land, K = POLITY[L];
-      const kind = [lr.type || K.kinds[0][0], lr.title || K.kinds[0][1], ['hereditary', 'elective', 'council', 'theocracy'].includes(lr.gov) ? lr.gov : K.kinds[0][2], ['male', 'female', 'equal'].includes(lr.law) ? lr.law : K.kinds[0][3], 1];
+      // how the lore's realm passes its crown, read from what it is
+      const tf = (lr.type || '') + ' ' + (lr.typeFull || '');
+      const gov = ['hereditary', 'elective', 'council', 'theocracy'].includes(lr.gov) ? lr.gov : /temple|abbot|theocra|monast|church|priest|college/i.test(tf) ? 'theocracy'
+        : /league|republic|commune|council|city|merchant|broker|town/i.test(tf) ? 'council' : /clan|confedera|khagan|horde|elect|age-set|tribe|band/i.test(tf) ? 'elective' : 'hereditary';
+      const law = ['male', 'female', 'equal'].includes(lr.law) ? lr.law : lr.rulerSex === 'F' ? 'equal' : K.kinds[0][3];
+      const kind = [lr.type || K.kinds[0][0], lr.title || K.kinds[0][1], gov, law, 1];
       realms.push({ L, cap, target: lr.area || cap.cells * 100 * 6, kind, area: 0, provs: [], lore: lr, race: ['orc', 'dwarf', 'giant', 'elf'].includes(lr.race) ? lr.race : undefined });
       loreReport.placed++;
     }
@@ -251,14 +261,14 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
     const cult = lr && lr.cult && cultures[lr.cult] ? lr.cult : r.race === 'orc' || r.race === 'dwarf' || r.race === 'giant' ? null : cultOf[r.L][r.cap.x > (byLand[r.L].reduce((s, p) => s + p.x, 0) / byLand[r.L].length) ? 1 : 0];
     r.cult = cult;
     const [type] = r.kind;
-    if (lr) { r.name = lr.name; r.short = lr.short || lr.name.replace(/^(the |Kingdom of |Empire of |Principality of |City of |Sultanate of )/i, ''); if (lr.capital) r.capName = lr.capital; used.add(r.short.toLowerCase()); return; }
+    if (lr) { r.name = lr.name; r.short = (lr.short || lr.name.replace(/^(the |Kingdom of |Empire of |Principality of |City of |Sultanate of )/i, '')).replace(/^the /, ''); if (lr.capital) r.capName = lr.capital; if (lr.place) r.cap.pid = lr.place; used.add(r.short.toLowerCase()); return; }
     const nmr = namers[r.L][r.cap.x % 2], word = nmr.word({ min: 4, max: 8 });
     const [name, short] = (NAME_OF[type] || (n => [`Kingdom of ${n}`, n]))(word);
     r.name = name; r.short = short;
   });
   // the kin peoples get cultures of their own
   for (const [race, nm, note, L] of [['orc', 'Old Grass orcs', 'Orc clans of the far steppe, who never rode west with the Horde.', 'F'], ['dwarf', 'Roofholders', 'The dwarves of a hold the western holds say was abandoned.', 'H'], ['giant', 'Pine-giants', 'The last hall of giants in the far north.', 'T']]) {
-    const r = realms.find(x => x.race === race); if (!r) continue;
+    const r = loreHas ? null : realms.find(x => x.race === race); if (!r) continue;
     const id = `CUL-${String(cn++).padStart(2, '0')}`, nmr = namer(R, L, 1, used), list = (k, o) => Array.from({ length: k }, () => nmr.word(o));
     cultures[id] = { id, name: nm, race, home: '', pols: [], note, m: list(30, { min: 3, max: 7, end: false }), f: list(30, { min: 3, max: 7, end: true }), house: list(20, { min: 4, max: 8 }), epi: EPI[L].slice(), land: L };
     naming[id] = race === 'giant' ? { common: 'single', noble: 'single', note: 'One name and the hall.' } : race === 'dwarf' ? { common: 'house', noble: 'house', note: 'A given name and a clan name.' } : { common: 'clan', noble: 'clan', note: 'A short given name and the clan.' };
@@ -277,7 +287,7 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
     const pop = r.provs.reduce((s, p) => s + p.pop, 0), L = r.L, [type, title, gov, law] = r.kind;
     const nomad = L === 'F' || type === 'sea-hunter clans' || type === 'chiefdom' || type === 'horse clans' || r.race === 'orc';
     const income = Math.round(pop * (nomad ? 0.06 : type === 'city-state' || type === 'port city' || type === 'caravan league' ? 0.32 : 0.17));
-    const army = Math.max(300, Math.round(pop * (nomad ? 0.016 : r.race === 'giant' ? 0.002 : 0.011) / 100) * 100);
+    const army = r.lore && r.lore.standing ? Math.round(r.lore.standing) : Math.max(300, Math.round(pop * (nomad ? 0.016 : r.race === 'giant' ? 0.002 : 0.011) / 100) * 100);
     const c = COMP[L], comp = { standing: army };
     ['heavyHorse', 'lightHorse', 'elephants', 'heavyFoot', 'spear', 'missile', 'other'].forEach((k, i) => { comp[k] = Math.round(army * c[i] / 100) * 100; });
     const coastal = r.provs.filter(p => p.coast).length;
@@ -291,8 +301,9 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
     const rivals = nbrs.sort((a, b) => shared(b) - shared(a) || a - b).slice(0, R.int(1, 2));
     r.rivals = rivals; r.pop = pop;
     const hid = `FAM-F${String(hn++).padStart(3, '0')}`, cult = r.cult ? cultures[r.cult] : null;
-    const sur = cult ? R.pick(cult.house) : namers[L][0].word({ min: 4, max: 8 });
-    houses[hid] = { id: hid, name: `House ${sur}`, realm: r.id, kind: 'royal', seat: capName, seatId: r.cap.pid, head: null, headName: '', rung: 'S01', title, local: `${title} of ${r.short}`, holding: `The crown of ${r.short} and the lands about ${capName}`, people: pop, levy: 0, since: String(R.int(700, 1080)), notes: '', sur };
+    const loreHouse = lr && lr.house && !/^\(/.test(lr.house) ? lr.house.replace(/\s*\(.*\)\s*$/, '') : null;
+    const sur = loreHouse ? loreHouse.replace(/^(House|Clan|The|the)\s+/, '').replace(/\s+(line|clan|chiefs|hearth)$/i, '').split(' ')[0] : cult ? R.pick(cult.house) : namers[L][0].word({ min: 4, max: 8 });
+    houses[hid] = { id: hid, name: loreHouse ? (/^(House|Clan|The) /.test(loreHouse) ? loreHouse : `House ${loreHouse}`) : `House ${sur}`, realm: r.id, kind: 'royal', seat: capName, seatId: r.cap.pid, head: null, headName: '', rung: 'S01', title, local: `${title} of ${r.short}`, holding: `The crown of ${r.short} and the lands about ${capName}`, people: pop, levy: 0, since: String(R.int(700, 1080)), notes: '', sur };
     // one or two noble houses seated elsewhere in the realm, for the court and its quarrels
     const others = r.provs.filter(p => p !== r.cap).sort((a, b) => b.pop - a.pop).slice(0, r.provs.length > 6 ? 2 : r.provs.length > 2 ? 1 : 0);
     for (const p of others) {
@@ -302,11 +313,12 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
     out[r.id] = {
       name: r.name, short: r.short, title, type, race: raceKey, cult: r.cult, capId: r.cap.pid, capital: capName, area: r.area, color: colorOf[ri], gov: type,
       ruler: null, pop, pops, urban: Math.round(clamp(r.provs.reduce((s, p) => s + p.town, 0) / Math.max(1, pop) * 100, 1, 30) * 10) / 10,
-      army, levy: army * 4, field: Math.round(army * 0.4), ships: Math.min(60, coastal * 3), income, coinName: '', taxes: '', debts: 'none',
+      army, levy: lr && lr.levyN ? Math.round(lr.levyN) : army * 4, field: Math.round(army * 0.4), ships: Math.min(60, coastal * 3), income, coinName: '', taxes: '', debts: 'none',
       exports: ECON[L].ex, imports: ECON[L].im, food: L === 'F' || L === 'N' || L === 'B' ? 'deficit' : 'surplus', faith, langs: r.cult ? lang[r.cult] : '',
       allies: [], rivals: [], atWar: [], stability: stab, comp, fleet: { ships: `${Math.min(60, coastal * 3)} ships`, field: '' }, coin: { coin: 'silver', worth: 1 },
       primer: null, land: L, region: r.cap.region, govLaw: { gov, law }, house: hid, provs: r.provs.map(p => p.id),
-      rulerName: lr && lr.ruler ? lr.ruler : null, capName: r.capName || null, lore: !!lr,
+      rulerName: lr && lr.ruler ? lr.ruler : null, rulerSex: lr ? lr.rulerSex || null : null, rulerBorn: lr ? lr.born || null : null, capName: r.capName || null, lore: !!lr,
+      loreNote: lr ? { intro: lr.intro || '', want: lr.want || '', fear: lr.fear || '', ruler: lr.rulerNote || '' } : null,
     };
     if (lr && lr.color) out[r.id].color = lr.color;
     for (const p of r.provs) p.realm = r.id;
@@ -326,6 +338,21 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
     out[r.id].allies.push(a); out[a].allies.push(r.id);
     relations.push({ a: r.id, b: a, rel: 'alliance', detail: 'alliance against a common enemy' });
   });
-  for (const r of realms) for (const o of out[r.id].rivals) if (r.id < o) relations.push({ a: r.id, b: o, rel: 'rivalry', detail: 'border rivalry' });
+  if (lore && Array.isArray(lore.relations) && LR && LR.realms.length) {
+    // the lore's own ties replace the made-up ones: tribute is a debt the payer owes; a tie to a realm of the Known World
+    // stands as written (the game sets it when both realms exist)
+    for (const r of realms) { out[r.id].rivals = []; out[r.id].allies = []; }
+    relations.length = 0;
+    const known = id => out[id] || base.LORE.realms[id];
+    for (const x of lore.relations) {
+      const a = String(x.a || ''), b = String(x.b || ''), kind = String(x.kind || x.rel || '');
+      if (!known(a) || !known(b) || (!out[a] && !out[b])) continue;
+      const rel = kind === 'tribute' ? 'debt' : ['alliance', 'friendship', 'trade', 'debt', 'secret deal', 'backs claimant', 'rivalry', 'hostile'].includes(kind) ? kind : null;
+      if (!rel) continue;
+      relations.push({ a, b, rel, detail: String((kind === 'tribute' ? 'tribute: ' : '') + (x.note || kind)).replace(/[<>"]/g, '').slice(0, 200) });
+      const both = (k, v) => { if (out[a] && !out[a][k].includes(b)) out[a][k].push(b); if (out[b] && !out[b][k].includes(a)) out[b][k].push(a); };
+      if (rel === 'alliance') both('allies'); else if (rel === 'rivalry' || rel === 'hostile') both('rivals');
+    }
+  } else for (const r of realms) for (const o of out[r.id].rivals) if (r.id < o) relations.push({ a: r.id, b: o, rel: 'rivalry', detail: 'border rivalry' });
   return { realms: out, houses, relations, cultures, naming, lang, faiths, owner: realms.map(r => r.id), loreReport };
 }

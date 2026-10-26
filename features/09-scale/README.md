@@ -72,16 +72,17 @@ fields of `A`.
 
 ## Measured
 
-Oct 26, 2026, on this project's shared 4-core machine at load 8 to 13, one browser at a time. `bench.mjs` (the clone
-harness of the plan's appendix A; seed 1234, a peasant of POL-01, 14 months of play, the first left out). Times are
-the page's main-thread CPU time (Chrome's `ThreadTime`), with the wall clock in brackets; both move by ±25% from run
-to run on this machine.
+Oct 26, 2026, on this project's shared 4-core machine, one browser at a time. `bench.mjs` (the clone harness of the
+plan's appendix A; seed 1234, a peasant of POL-01, 14 months of play, the first left out). Times are the page's
+main-thread CPU time (Chrome's `ThreadTime`), wall clock in brackets, from back-to-back runs at a quiet moment (load
+under 4). Under the usual load (8 to 13) both move by about ±25% from run to run: the 10× month read 640-1,030 ms of
+CPU and the 10× year-turn month 1,530-2,230 ms over seven runs.
 
 | World | Month, before | Month, 09-scale | Year-turn month, before | Year-turn month, 09-scale |
 | --- | ---: | ---: | ---: | ---: |
-| 1× (306 provinces, 35 realms) | 67 ms (96) | 47 ms (76) | 285 ms (458) | 139 ms (199) |
-| 5× (1,530, 171) | 486 ms (670) | 434 ms (599) | 3,340 ms (3,933) | 971 ms (1,354) |
-| 10× (3,060, 341) | 1,317 ms (1,892) | 640-1,030 ms (920-1,400) | 14,700 ms (18,900) | 1,530-2,230 ms (1,800-3,200) |
+| 1× (306 provinces, 35 realms) | 54 ms (78) | 45 ms (119) | 258 ms (376) | 118 ms (152) |
+| 5× (1,530, 171) | 515 ms (816) | 345 ms (501) | 3,871 ms (5,197) | 769 ms (998) |
+| 10× (3,060, 341) | 1,366 ms (1,440) | 746 ms (1,069) | 16,032 ms (17,096) | 1,675 ms (2,439) |
 
 Where a 10× profile spends its time (14 months with one New Year, sampled; inclusive shares of the whole run):
 

@@ -35,7 +35,7 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
   // ---- where land may never be: the Known World's box (its own), the straits, the frame's north and east edges
   const banned = new Uint8Array(N);
   for (let i = 0; i < N; i++) { const x = i % GW, y = (i / GW) | 0; if (isBase(i) || y < 4 || x >= GW - 4) banned[i] = 1; }
-  for (const s of plan.straits || []) { const cx = (s.x - F.x0) / C, cy = (s.y - F.y0) / C, rr = clamp(s.w / 2, 8, 150) / C;
+  for (const s of plan.straits || []) { const cx = (s.x - F.x0) / C, cy = (s.y - F.y0) / C, rr = clamp(s.w / 2, 12, 150) / C;
     for (let y = Math.floor(cy - rr); y <= Math.ceil(cy + rr); y++) for (let x = Math.floor(cx - rr); x <= Math.ceil(cx + rr); x++) if (x >= 0 && y >= 0 && x < GW && y < GH && (x + 0.5 - cx) ** 2 + (y + 0.5 - cy) ** 2 <= rr * rr) banned[y * GW + x] = 1; }
   // ---- a region's bid for a cell
   const segD = (px, py, a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy || 1, t = clamp(((px - a[0]) * dx + (py - a[1]) * dy) / L2, 0, 1); return Math.hypot(px - a[0] - t * dx, py - a[1] - t * dy); };

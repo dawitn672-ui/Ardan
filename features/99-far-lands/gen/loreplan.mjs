@@ -110,6 +110,7 @@ export function lorePlan(L) {
   for (const r of regions) r.density = r.people / r.area;
   // each capital keeps its shore; each strait is open water
   const keep = caps.map(c => ({ x: c.x, y: c.y, r: 30, id: c.id }));
-  const water = straits.map(s => ({ x: s.x, y: s.y, r: clamp(s.w / 2, 8, 150), id: s.id, strait: true }));
-  return { lore: true, frame, regions, caps, straits, keep, water, lakes, ranges, rivers, chains: [], plateaus: [], edgeSea: 0 };
+  const water = straits.map(s => ({ x: s.x, y: s.y, r: clamp(s.w / 2, 12, 150), id: s.id, strait: true }));
+  const landNames = Object.fromEntries((L.lands || []).map(l => [l.code, l.name]));
+  return { lore: true, landNames, frame, regions, caps, straits, keep, water, lakes, ranges, rivers, chains: [], plateaus: [], edgeSea: 0 };
 }

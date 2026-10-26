@@ -26,7 +26,7 @@ export function geography(base, seed, plan) {
   const disc = (x, y, r, put) => { const cx = (x - F.x0) / CELL, cy = (y - F.y0) / CELL, rr = r / CELL; for (let yy = Math.floor(cy - rr); yy <= Math.ceil(cy + rr); yy++) for (let xx = Math.floor(cx - rr); xx <= Math.ceil(cx + rr); xx++) if (xx >= 0 && yy >= 0 && xx < GW && yy < GH && (xx + 0.5 - cx) ** 2 + (yy + 0.5 - cy) ** 2 <= rr * rr) put(yy * GW + xx); };
 
   // ---- 1. the land as designed, and which region each piece is
-  const regions = plan.regions || [], label = new Int16Array(N).fill(-1), labD = new Float32Array(N).fill(1e9);
+  const regions = plan.regions || [], label = new Int16Array(N).fill(-1);
   const design = new Uint8Array(N);
   let shape = null;
   if (plan.lore) {
@@ -53,6 +53,7 @@ export function geography(base, seed, plan) {
   for (const k of plan.keep || []) disc(k.x, k.y, k.r, i => { if (!inBase(i)) keepM[i] = 1; });
   for (const w of plan.water || []) disc(w.x, w.y, w.r, i => { if (!inBase(i)) waterM[i] = 1; });
   for (let i = 0; i < N; i++) if (keepM[i]) design[i] = 1;
+  for (let i = 0; i < N; i++) if (keepM[i]) lake[i] = -1;          // a capital at a lakeside stands on the shore
 
   // ---- 2. signed distance (km, + on land) of the design, and of the Known World carried straight outward
   const sdOf = mask => { const toLand = edt(GW, GH, i => mask[i] === 1), toSea = edt(GW, GH, i => mask[i] === 0); const s = new Float32Array(N); for (let i = 0; i < N; i++) s[i] = (mask[i] ? toSea[i] - 0.5 : -(toLand[i] - 0.5)) * CELL; return s; };

@@ -52,6 +52,8 @@ The critique found the screen "dim and samey": one leather brown, one gold, one 
 | `lookTiles` | One grid of tiles, 3 columns, at most 40 px tall, each with its group's icon and a tooltip; hovering a tile opens its name and description |
 | `lookPure` | Every tab drawn twice with the rail, the chips' "+N" and the two-column sheet toggled: state and random stream unchanged, the same markup |
 
+**Results** (Oct 26; LIFE screen of 71-phone, a peasant of 20, hints on). Screens of scroll at 1366×768, panel / rail, session-start build → with this feature: Life 2.86 / 1.47 → **1.00 / 1.00** (all 31 tiles in sight; 27 of 31 with 97-life-fixes' ambition card, the rest one scroll inside Activities), Decisions 3.70 → 3.05, People 1.25 → 1.07, Path 3.26 → 3.02, War 2.99 → 2.53, Holdings 4.72 → 3.63, Realm 1.00 → 1.00, Dynasty 4.39 → 4.32. Phone 390×844, page: Life 2.69 → **1.20**, People 1.38 → 1.24, Holdings 6.93 → 7.00, Path 3.05 → 2.86, Story 1.22 → 1.29 (Literata sets a little wider than Alegreya), You 1.85 → 1.92 (it now carries the needs). Contrast: worst text token 5.13:1 by night, 4.84:1 by day. Fonts: 228 → 282 KB of woff2, 300 → 372 KB in the page.
+
 ## Rules kept
 
 - Rendering is pure: the hooks run after each draw and only rewrite markup already drawn (they read the game, never `A.rand`, never write `A.S`). The open states (the chips' "+N", the two-column sheet) live in `UI.LOOK`, not in the save.
