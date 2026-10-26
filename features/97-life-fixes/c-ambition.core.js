@@ -5,7 +5,7 @@
 // pa_freedom_kind_master, pa_expand_petition, pa_golden_harvest and pa_web_marriage) could never fire. Restoring it is
 // sound: the migration only runs on saves older than version 11, and the field is the one the scenes already read.
 // - When you come of age (A.isAdult), when you reach 35 (C.ageAdj, so an elf is asked at 35 in human years) and when
-//   you first rule, a scene (lfx_amb_choose, ambition.events.js) offers up to three ambitions that fit your life now,
+//   you first rule, a scene (lfx_amb_young, _mid, _reign: ambition.events.js) offers up to three ambitions that fit your life now,
 //   and "Take life as it comes". At 35 your old one is offered first: hold to it, change it, or let it go.
 // - The choice is kept as p.amb = { k, y } (the shape C.ambition reads), so the pa_* scenes come back to life.
 // - The Life tab shows it under What now (UI.whatNowCard): its name, the next step and how far along you are.
@@ -112,16 +112,16 @@
   // when to ask: coming of age, 35, and the first year of a reign
   LF.ambMonth = function (pc) {
     if (LF.OFF || LF.AMB_OFF || !pc || !pc.alive || pc.id !== A.S.pc || pc.prison || !A.isAdult(pc)) return;
-    if (!A.EV.lfx_amb_choose || A.S.queue.some(q => q && q.ev === 'lfx_amb_choose')) return;
+    if (A.S.queue.some(q => q && /^lfx_amb_/.test(q.ev || ''))) return;
     const f = pc.flags, age = C().ageAdj(pc);
     let when = null;
     if (pc.ruler && f.lfx_amb_r == null && !(LF.ambOf(pc) && ['expand', 'golden', 'web'].includes(pc.amb.k))) when = 'reign';
     else if (f.lfx_amb_y == null && age < 33) when = 'young';
     else if (f.lfx_amb_m == null && age >= 35 && age < 60) when = 'mid';
-    if (!when) return;
+    if (!when || !A.EV['lfx_amb_' + when]) return;
     f['lfx_amb_' + when[0]] = A.S.year;
     if (when === 'mid' || when === 'reign') f.lfx_amb_y = f.lfx_amb_y == null ? A.S.year : f.lfx_amb_y;
-    A.queue({ type: 'event', ev: 'lfx_amb_choose', forced: true, ctx: { when } });
+    A.queue({ type: 'event', ev: 'lfx_amb_' + when, forced: true, ctx: { when } });
   };
   // fulfilled: the engine notices, says so, and writes a deed
   LF.ambCheck = function (pc) {

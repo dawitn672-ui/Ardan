@@ -418,3 +418,25 @@ A.scaleRel = function (memo, c, rid) {
   else if (A.SCALE_CHECK) check('A.wsPath relations', c + ',' + rid, r, [rid && A.friendly(c, rid), rid && A.hostile(rid, c)]);
   return r;
 };
+
+// ---------------------------------------------------------------- the year's pairs
+// one realm's pass over every other realm in A.politicsYear: the rulers' personas, remembered for the pass (each is
+// asked for once per pair). Only the pair weighing runs inside the pass, and it changes no ruler.
+let PM = null;
+A.scalePairs = function (open) {
+  if (PM) { if (A.rulerPersona === PM.memo) A.rulerPersona = PM.fn; PM = null; }
+  if (!open || !on() || typeof A.rulerPersona !== 'function') return;
+  const fn = A.rulerPersona, m = new Map();
+  const memo = function (rid) {
+    if (arguments.length !== 1) return fn.apply(this, arguments);
+    let v = m.get(rid);
+    if (v === undefined) m.set(rid, v = fn.call(this, rid));
+    else if (A.SCALE_CHECK) check('A.rulerPersona in the year\'s pairs', rid, v, fn.call(this, rid), (x, y) => x === y);
+    return v;
+  };
+  PM = { fn, memo };
+  A.rulerPersona = memo;
+};
+// whatever happens inside, the pass is closed when the year's politics end
+const politicsYear = A.politicsYear;
+A.politicsYear = function () { try { return politicsYear.apply(this, arguments); } finally { A.scalePairs(0); } };

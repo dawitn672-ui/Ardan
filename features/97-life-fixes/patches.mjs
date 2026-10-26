@@ -50,4 +50,23 @@ export default [
       'by the life memory (A.lfSceneW: a fifth for each time this life has seen it).',
     edits: [['e=A.wpick(pool,x=>x.gscene.kinds?3:1);', 'e=A.wpick(pool,x=>(x.gscene.kinds?3:1)*(A.lfSceneW?A.lfSceneW(x):1));']],
   },
+  {
+    id: 'LF-POOL-PICK',
+    blob: 'ardan-core',
+    why: 'A.councilMonth and A.drillMonth pick a councillor\'s or a drilling soldier\'s business from a pool with only a 2- or 3-year ' +
+      'cooldown, so the same war vote and the same slow recruit came back every few years. Both now pick by the life memory ' +
+      '(A.lfPoolPick: twice a life, 12 years apart); when the pool is all held back the slot goes to a fresh scene.',
+    edits: [[
+      'e=A.wpick(pool,x=>x.w||1);e&&(A.S.evRecent=A.S.evRecent||{},A.S.evRecent[e.id]=A.S.year,A.queue({type:"event",ev:e.id,forced:!0}))',
+      'e=A.lfPoolPick?A.lfPoolPick(pool,pc):A.wpick(pool,x=>x.w||1);e&&(A.S.evRecent=A.S.evRecent||{},A.S.evRecent[e.id]=A.S.year,A.queue({type:"event",ev:e.id,forced:!0}))',
+      2,
+    ]],
+  },
+  {
+    id: 'LF-RULER-PICK',
+    blob: 'ardan-core',
+    why: 'A.rulerYear picked one of twelve scenes of a ruler\'s year (a petition, an embassy, a famine...) blind to what the reign had ' +
+      'seen. It now picks by the life memory (A.lfPickIds); a scene held back is dropped at the head of the queue and refilled.',
+    edits: [['ev:A.pick(["ruler_petition","ruler_embassy"', 'ev:(A.lfPickIds||A.pick)(["ruler_petition","ruler_embassy"']],
+  },
 ];

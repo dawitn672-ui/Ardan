@@ -126,6 +126,9 @@
         const L = D.realms[id], rr = S.realms[id]; if (!rr) continue;
         if (L.race === 'dwarf') rr.armyQ = 1.4; else if (L.race === 'giant') rr.armyQ = 3;
         rr.land = L.land;
+        // a ruler the lore names keeps the generated life, under the lore's name
+        const ru = L.rulerName && A.parseCastName ? A.P(rr.ruler) : null;
+        if (ru) { const n = A.parseCastName(L.rulerName); ru.given = n.given; if (n.sur) { ru.sur = n.sur; ru.surMode = n.mode; } ru.epithet = n.epithet || ru.epithet; }
       }
     }
     return r;

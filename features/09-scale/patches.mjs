@@ -79,4 +79,18 @@ export default [
         'const P=S.prov[u],step=(v,sea)=>{const Q=S.prov[v],c=A.ctrl(Q),_r=A.scaleRel?A.scaleRel(_rm,c,rid):[rid&&A.friendly(c,rid),rid&&A.hostile(rid,c)],own=_r[0],foe=_r[1],'],
     ],
   },
+  {
+    id: 'SCALE-PAIR-PERSONA',
+    blob: 'ardan-core',
+    why: 'A.politicsYear weighs every pair of live realms (A.aiPullSum), and each weighing asks A.rulerPersona for both ' +
+      'rulers: 2 × realms² persona lookups a year, each building a key from the ruler\'s traits. Nothing in one realm\'s ' +
+      'pass over the others changes a ruler, so 09-scale remembers each persona for the length of that pass ' +
+      '(A.scalePairs opens and closes it; A.SCALE_CHECK compares every remembered persona with a fresh one).',
+    edits: [
+      ['for(const k in r.claims)S.year-r.claims[k]>=60&&delete r.claims[k];for(const o of live){',
+        'for(const k in r.claims)S.year-r.claims[k]>=60&&delete r.claims[k];A.scalePairs&&A.scalePairs(1);for(const o of live){'],
+      ['r.rel[o.id]=A.clamp(Math.round((r.rel[o.id]||0)+d),-100,100)}if(r.overlord){',
+        'r.rel[o.id]=A.clamp(Math.round((r.rel[o.id]||0)+d),-100,100)}A.scalePairs&&A.scalePairs(0);if(r.overlord){'],
+    ],
+  },
 ];

@@ -15,10 +15,10 @@ export default {
       const run = (off, o, years) => {
         A.LF.OFF = off;
         try {
-          const L = B.life(o, 'random', true, years), pc = A.P(A.S.pc), sh = A.LF.share(pc);
+          const L = B.life(o, 'random', true, years), pc = A.P(A.S.pc), sh = A.LF.share(pc), cs = A.LF.caseShare(pc);
           const prompts = Object.values(L.items).reduce((a, n) => a + n, 0);
           const m = pc.evN || {};
-          return { shown: sh.shown, rep: sh.repeats, prompts, years: L.years, master: m.fl_st_master || 0, conf: m.du_ch_confession || 0 };
+          return { shown: sh.shown, rep: sh.repeats, crep: cs.repeats, prompts, years: L.years, master: m.fl_st_master || 0, conf: m.du_ch_confession || 0 };
         } finally { A.LF.OFF = false; }
       };
       const lives = [
@@ -26,15 +26,15 @@ export default {
         { seed: 9702, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 16 },
         { seed: 9703, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 16 },
       ];
-      const sum = side => lives.map(o => run(side === 'off', o, 40)).reduce((a, x) => ({ shown: a.shown + x.shown, rep: a.rep + x.rep, prompts: a.prompts + x.prompts, years: a.years + x.years,
-        master: Math.max(a.master, x.master), conf: Math.max(a.conf, x.conf) }), { shown: 0, rep: 0, prompts: 0, years: 0, master: 0, conf: 0 });
+      const sum = side => lives.map(o => run(side === 'off', o, 40)).reduce((a, x) => ({ shown: a.shown + x.shown, rep: a.rep + x.rep, crep: a.crep + x.crep, prompts: a.prompts + x.prompts, years: a.years + x.years,
+        master: Math.max(a.master, x.master), conf: Math.max(a.conf, x.conf) }), { shown: 0, rep: 0, crep: 0, prompts: 0, years: 0, master: 0, conf: 0 });
       const off = sum('off'), on = sum('on');
-      const pct = x => Math.round(1000 * x.rep / Math.max(1, x.shown)) / 10, py = x => Math.round(10 * x.prompts / Math.max(1, x.years)) / 10;
-      return { off: Object.assign(off, { pct: pct(off), perYear: py(off) }), on: Object.assign(on, { pct: pct(on), perYear: py(on) }) };
+      const pct = x => Math.round(1000 * x.rep / Math.max(1, x.shown)) / 10, cpct = x => Math.round(1000 * x.crep / Math.max(1, x.shown)) / 10, py = x => Math.round(10 * x.prompts / Math.max(1, x.years)) / 10;
+      return { off: Object.assign(off, { pct: pct(off), cpct: cpct(off), perYear: py(off) }), on: Object.assign(on, { pct: pct(on), cpct: cpct(on), perYear: py(on) }) };
     });
     if (r.err) return { ok: false, detail: r.err };
     const ok = r.on.pct <= 15 && r.off.pct >= 20 && r.on.perYear >= 6 && r.on.perYear >= r.off.perYear * 0.9 && r.on.master <= 1 && r.on.conf <= 1;
-    return { ok, detail: `seen before this life: off ${r.off.pct}% of ${r.off.shown} scenes, on ${r.on.pct}% of ${r.on.shown}; prompts a year off ${r.off.perYear}, on ${r.on.perYear}; most "An old scholar" in a life: off ${r.off.master}, on ${r.on.master}` };
+    return { ok, detail: `seen before this life: off ${r.off.pct}% of ${r.off.shown} scenes, on ${r.on.pct}% of ${r.on.shown} (the same case again: off ${r.off.cpct}%, on ${r.on.cpct}%); prompts a year off ${r.off.perYear}, on ${r.on.perYear}; most "An old scholar" in a life: off ${r.off.master}, on ${r.on.master}; most confessions: off ${r.off.conf}, on ${r.on.conf}` };
   },
 
   // 1b. The doors themselves: a story scene comes once, a duty twice and twelve years apart, and a held-back slot is
@@ -67,6 +67,7 @@ export default {
       }
       // a duty seen twice is held back for the rest of the life; the policy is read straight
       const duty = A.EV.du_ch_tithe, n0 = LF.n(pc, duty.id);
+      pc.evN = pc.evN || {}; pc.flags.ev = pc.flags.ev || {};
       pc.evN[duty.id] = 2; pc.flags.ev[duty.id] = A.S.year - 30;
       const held = LF.weight(duty, pc) === 0;
       pc.evN[duty.id] = 1; pc.flags.ev[duty.id] = A.S.year - 5;
@@ -78,6 +79,50 @@ export default {
     if (r.err) return { ok: false, detail: r.err };
     const ok = r.confession <= 1 && r.master <= 1 && r.refills > 0 && r.freshRefill && r.held && r.tooSoon && r.later;
     return { ok, detail: `80 months of clergy duties and study: confession ${r.confession}, "An old scholar" ${r.master}, fresh refills ${r.refills} (all unseen: ${r.freshRefill}); a duty seen twice held: ${r.held}, seen 5 years ago held: ${r.tooSoon}, 13 years ago allowed: ${r.later}; refills by door ${JSON.stringify(r.stats)}` };
+  },
+
+  // 1c. The second tellings of NPC moves render with a real person, keep to the diet, and every choice plays
+  async lfVariants(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF) return { err: 'A.LF is missing: the feature is not in this build' };
+      const ids = Object.keys(A.EV).filter(id => /^lfx_.*_2$/.test(id));
+      const RAW = /\{[A-Za-z0-9_.]+\}/, w = s => (String(s || '').match(/\S+/g) || []).length;
+      const rendered = new Set(), problems = [];
+      for (const o of [{ seed: 9761, status: 'noble', startAge: 30 }, { seed: 9762, status: 'merchant', startAge: 40 }, { seed: 9763, status: 'peasant', startAge: 25 }]) {
+        A.newGame(Object.assign({ race: 'human', realm: 'POL-01', sex: o.seed % 2 ? 'F' : 'M' }, o));
+        T.play(4); if (!A.pc().alive) continue;
+        const base = A.serialize();
+        for (const id of ids) {
+          for (let i = 0; i < 4; i++) {
+            A.deserialize(JSON.parse(base)); A.S.queue = [];
+            const q = { type: 'event', ev: id, ctx: { npcMove: true } }; A.S.queue.push(q);
+            let v; try { v = A.eventView(q); } catch (e) { problems.push(id + ': view throws ' + e.message); break; }
+            if (v.skip) break;
+            if (i === 0) {
+              rendered.add(id);
+              const all = [v.title, v.text, ...v.choices.map(c => c.t)].join(' | ');
+              if (RAW.test(all)) problems.push(id + ': raw token ' + all.match(RAW)[0]);
+              if (w(v.text) > 80) problems.push(id + ': ' + w(v.text) + ' words');
+              if (/(^|[.!?]\s+)(he|she|his|her|him)\b/.test(v.text)) problems.push(id + ': a sentence starts in lower case');
+            }
+            const idx = v.choices.findIndex(c => c.i === i); if (idx < 0) continue;
+            try { A.eventChoose(idx); A.eventClose(); } catch (e) { problems.push(id + ' choice ' + (i + 1) + ': ' + e.message); }
+          }
+        }
+      }
+      // the family: the second telling is what the queue gives once the first has been seen
+      A.newGame({ seed: 9764, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 30 });
+      const pc = A.pc(); pc.evN = { ni_gift: 1 }; pc.flags.ev = pc.flags.ev || {}; pc.flags.ev.ni_gift = A.S.year - 12; A.S.queue = [];
+      A.queue({ type: 'event', ev: 'ni_gift', ctx: { npcMove: true } });
+      const second = A.S.queue.length ? A.S.queue[A.S.queue.length - 1].ev : null;
+      // and the kind is then done for the life
+      pc.evN.lfx_ni_gift_2 = 1; pc.flags.ev.lfx_ni_gift_2 = A.S.year - 11;
+      const held = A.LF.held(A.EV.ni_gift, pc);
+      return { n: ids.length, rendered: rendered.size, missing: ids.filter(id => !rendered.has(id)), problems, second, held };
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.n >= 15 && r.rendered >= r.n - 2 && !r.problems.length && r.second === 'lfx_ni_gift_2' && r.held;
+    return { ok, detail: `${r.n} second tellings, ${r.rendered} rendered with a real person (not: ${r.missing.join(', ') || 'none'}); problems: ${r.problems.slice(0, 4).join('; ') || 'none'}; after one gift the queue gives ${r.second}; after both the kind is held: ${r.held}` };
   },
 
   // 2. Hints follow the life: a life begun at birth in 1105 sees the adult hints when it comes of age (1121)
@@ -106,7 +151,7 @@ export default {
       A.newGame({ seed: 9731, race: 'human', realm: 'POL-05', status: 'serf', sex: 'M', startAge: 16 });
       A.S.queue = [];
       A.LF.ambMonth(A.pc());
-      const q = A.S.queue.find(x => x.ev === 'lfx_amb_choose');
+      const q = A.S.queue.find(x => x.ev === 'lfx_amb_young');
       out.asked = !!q;
       if (q) {
         A.S.queue = [q];
@@ -128,7 +173,7 @@ export default {
       const k = A.pc(), r0 = Object.values(A.S.realms).find(x => x.alive && A.P(x.ruler) && A.P(x.ruler).alive && x.id === k.realm) || Object.values(A.S.realms).find(x => x.alive);
       k.ruler = r0.id; A.S.queue = [];
       A.LF.ambMonth(k);
-      const q2 = A.S.queue.find(x => x.ev === 'lfx_amb_choose');
+      const q2 = A.S.queue.find(x => /^lfx_amb_/.test(x.ev));
       out.reign = q2 ? (q2.ctx || {}).when : null;
       for (const key of ['expand', 'golden', 'web']) {
         A.LF.setAmb(k, key);
@@ -198,18 +243,31 @@ export default {
   async lfFirstLife(pg) {
     const r = await pg.evaluate(() => {
       if (!A.LF || !A.LF.shielded) return { err: 'no first-life shield in this build' };
-      const die5 = (first, diff, n, seed0) => {
-        let dead = 0, sibsDead = 0;
+      const die5 = (first, n, seed0) => {
+        let dead = 0;
         for (let i = 0; i < n; i++) {
-          A.newGame({ seed: seed0 + i, race: 'human', realm: 'POL-07', status: 'serf', sex: i % 2 ? 'F' : 'M', startAge: 0, diff, firstLife: first });
+          A.newGame({ seed: seed0 + i, race: 'human', realm: 'POL-07', status: 'serf', sex: i % 2 ? 'F' : 'M', startAge: 0, diff: 'hard', firstLife: first });
           const pc = A.pc();
           T.play(5);
           if (!pc.alive) dead++;
         }
         return dead;
       };
-      const N = 80;
-      const canon = die5(false, 'hard', N, 97600), first = die5(true, 'hard', N, 97600);
+      const N = 40;
+      const canon = die5(false, N, 97600), first = die5(true, N, 97600);
+      // the rules themselves: the year's death chance, and a fever that runs health to nothing
+      A.newGame({ seed: 97010, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 0, diff: 'hard', firstLife: true });
+      let pc = A.pc(); pc.born = A.S.year - 2;
+      const shieldedChance = A.deathChance(pc);
+      pc.health = 0; pc.lastHurt = 'a fever';
+      const survives = A.mortalCheck(pc, 'a fever') === false && pc.alive && pc.health > 0;
+      A.newGame({ seed: 97010, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 0, diff: 'hard' });
+      pc = A.pc(); pc.born = A.S.year - 2;
+      const canonChance = A.deathChance(pc);
+      // a sibling is not shielded
+      A.newGame({ seed: 97011, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0, diff: 'hard', firstLife: true });
+      const sib = Object.values(A.S.people).find(p => p.id !== A.S.pc && p.alive && A.age(p) < 5);
+      const sibShield = sib ? A.LF.shielded(sib) : false;
       A.newGame({ seed: 97001, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0, diff: 'realism', firstLife: true });
       const realismShield = !!(A.S.lf && A.S.lf.shield);
       // the creation screen says it once, and not after the first life has begun
@@ -218,11 +276,11 @@ export default {
       UI.set.lfLives = 1; UI.render();
       const saysLater = /spared the deaths of early childhood/.test(document.body.innerHTML);
       UI.screen = 'title'; UI.render();
-      return { N, canon, first, realismShield, says, saysLater };
+      return { N, canon, first, shieldedChance, canonChance, survives, sibShield, realismShield, says, saysLater };
     });
     if (r.err) return { ok: false, detail: r.err };
-    const ok = r.first === 0 && r.canon >= 1 && !r.realismShield && r.says && !r.saysLater;
-    return { ok, detail: `${r.N} serf newborns on Hard to age 5: ${r.canon} die as before, ${r.first} as a first life; Realism shields: ${r.realismShield}; the creation screen says so: ${r.says} (and not on a later life: ${!r.saysLater})` };
+    const ok = r.first === 0 && r.shieldedChance === 0 && r.canonChance > 0 && r.survives && !r.sibShield && !r.realismShield && r.says && !r.saysLater;
+    return { ok, detail: `${r.N} serf newborns on Hard to age 5: ${r.canon} die as before, ${r.first} as a first life; a toddler's yearly death chance ${r.canonChance.toFixed(4)} -> ${r.shieldedChance} shielded; a fever at 0 health: survives ${r.survives}; a sibling shielded: ${r.sibShield}; Realism shields: ${r.realismShield}; the creation screen says so: ${r.says} (and not on a later life: ${!r.saysLater})` };
   },
 
   // 7. A choice shows its cost and what failing brings; drawing it changes nothing

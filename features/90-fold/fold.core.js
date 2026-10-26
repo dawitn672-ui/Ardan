@@ -26,7 +26,9 @@ FOLD.DEFAULT_CLOSED = {
 };
 FOLD.ACCORDION = {};                        // tabs whose activity sections open one at a time (none since one grid)
 FOLD.TALL = 180;                            // a card taller than this gets a fold button
-FOLD.ALWAYS = ['whatnow', 'plan-card'];     // cards that fold whatever their height (What now, Your days)
+FOLD.ALWAYS = ['whatnow', 'plan-card', 'lf-amb'];   // cards that fold whatever their height (What now, Your days, Ambition)
+// on a phone the Life page is one column under the thumb: the ambition (97-life-fixes) starts folded to its title line
+FOLD.PHONE_CLOSED = { life: ['ambition'] };
 // a tall window (1600 x 1000 and up) has room for Your days open (brief §4.2); reading the window is not game state
 FOLD.roomy = () => typeof window !== 'undefined' && window.innerWidth >= 1600 && window.innerHeight >= 1000;
 FOLD.isOpen = function (tab, key, fallback) {
@@ -37,7 +39,7 @@ FOLD.isOpen = function (tab, key, fallback) {
 };
 FOLD.defaultOpen = function (tab, key) {
   if (tab === 'life' && FOLD.roomy() && key.startsWith('your days')) return true;
-  const list = FOLD.DEFAULT_CLOSED[tab] || [];
+  const list = (FOLD.DEFAULT_CLOSED[tab] || []).concat(UI.isPhone && UI.isPhone() ? FOLD.PHONE_CLOSED[tab] || [] : []);
   return !list.some(p => key.startsWith(p));
 };
 // ids for aria-controls, from the tab and the section's key, so the same screen always draws the same markup

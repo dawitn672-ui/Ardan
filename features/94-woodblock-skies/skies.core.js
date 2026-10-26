@@ -359,9 +359,11 @@
   L.frame = (p, c, r, o) => {
     const kind = o.framing, right = kind === 'reeds' && o.frameRight, X = x => right ? W - x : x, dark = mix(c.near, INK, 0.25);
     if (kind === 'branch') {
-      const y0 = 4 + r() * 12;
-      let s = `<path d="M-6 ${f(y0)}Q40 ${f(y0 + 2)} 70 ${f(y0 + 18)}T140 ${f(y0 + 30)}M58 ${f(y0 + 12)}Q74 ${f(y0 + 30)} 70 ${f(y0 + 50)}M104 ${f(y0 + 26)}Q122 ${f(y0 + 18)} 150 ${f(y0 + 18)}" fill="none" stroke="${dark}" stroke-width="3.2" stroke-linecap="round"/>`;
-      const pads = [[34, y0 + 12, 22], [72, y0 + 52, 18], [96, y0 + 30, 20], [138, y0 + 34, 17], [152, y0 + 18, 15]];
+      const y0 = 4 + r() * 12, k = 0.8 + r() * 0.45, sag = r() * 16, j = () => (r() - 0.5) * 10;
+      const X2 = x => f(x * k);
+      let s = `<path d="M-6 ${f(y0)}Q${X2(40)} ${f(y0 + 2)} ${X2(70)} ${f(y0 + 18 + sag / 2)}T${X2(140)} ${f(y0 + 30 + sag)}M${X2(58)} ${f(y0 + 12)}Q${X2(74)} ${f(y0 + 30)} ${X2(70)} ${f(y0 + 50)}M${X2(104)} ${f(y0 + 26 + sag / 2)}Q${X2(122)} ${f(y0 + 18)} ${X2(150)} ${f(y0 + 18)}" fill="none" stroke="${dark}" stroke-width="3.2" stroke-linecap="round"/>`;
+      const pads = [[34, y0 + 12, 22], [72, y0 + 52, 18], [96, y0 + 30 + sag / 2, 20], [138, y0 + 34 + sag, 17], [152, y0 + 18, 15]]
+        .filter((q, i) => i < 3 || r() < 0.7).map(([x, y, w]) => [x * k + j(), y + j() * 0.6, w * (0.85 + r() * 0.3)]);
       if (c.season === 1 || c.season === 3) {
         // blossom in spring, red leaves in autumn: clusters of small round flowers or leaves
         const col = c.season === 1 ? c.bloom : tone(c, '#c4462a', true), hi = c.season === 1 ? '#fff4f6' : tone(c, '#e8913a', true);
@@ -485,12 +487,13 @@
     `<path d="M-38-26Q-30-44-6-40Q14-48 30-28z" fill="${tone(c, M.cloth, true)}"${st(c)}/><path d="M-6-40Q14-48 30-28H4z" fill="${tone(c, M.cloth, false)}"/>` +
     `<circle cx="-18" cy="-6" r="12" fill="${tone(c, M.wood, false)}"${st(c, 2)}/><path d="M-30-6H-6M-18-18V6M-26-14-10 2M-26 2-10-14" stroke="${c.ink}" stroke-width="1.2"/></g>`;
   // a road on the ground plane: a curve from the foot of the picture to the mid ridge, narrowing with distance
-  P.road = (c, o, x0 = 300, top = 140) => {
+  P.road = (c, o, x0 = 300, top = 140, water) => {
     const bx = x0 + (o.side ? -40 : 40), cx = x0 + (o.side ? 80 : -80), Lp = [], Rp = [];
     for (let i = 0; i <= 10; i++) {
       const t = i / 10, u = 1 - t, x = u * u * bx + 2 * u * t * cx + t * t * x0, y = u * u * 192 + 2 * u * t * 166 + t * t * top, w = 40 * u ** 1.5 + 1.5;
       Lp.push(`${f(x - w)} ${f(y)}`); Rp.unshift(`${f(x + w)} ${f(y)}`);
     }
+    if (water) return `<path d="M${Lp.join('L')}L${Rp.join('L')}Z" fill="${mix(c.sb, c.st, 0.25)}"/><path d="M${Lp.join('L')}" fill="none" stroke="${c.light}" stroke-width="1.6" opacity=".7"/><path d="M${Rp.join('L')}" fill="none" stroke="${c.near}" stroke-width="2" opacity=".6"/>`;
     return `<path d="M${Lp.join('L')}L${Rp.join('L')}Z" fill="${tone(c, M.dirt, true)}"/><path d="M${Rp.join('L')}" fill="none" stroke="${tone(c, M.dirt, false)}" stroke-width="3"/>`;
   };
   P.ship = (c, x, y, k, col) => `<g ${at(x, y, k)}><path d="M-46-12H46L34 6H-36z" fill="${tone(c, M.wood, false)}"${st(c, 1.6)}/><path d="M-46-12H46l-2 4H-44z" fill="${tone(c, M.wood, true)}"/>` +
@@ -591,8 +594,8 @@
     `<path d="M220 164q-20 0-16-26q4-18 24-22l-8-12h32l-8 12q20 4 24 22q4 26-16 26z" fill="${tone(c, M.wood, true)}"${st(c, 1.6)}/><path d="M220 116h24" stroke="${tone(c, M.red, true)}" stroke-width="3"/>` +
     `<path d="M248 128l60-40" stroke="${c.light}" stroke-width="1.4" stroke-dasharray="3 3" opacity=".7"/>` + P.sword(c, 320, 112, 60, 50).replace(/rect x="-14"/, 'rect x="-8"').replace(/width="28"/, 'width="16"');
   SC.street = (c, r, o) => [80, 170, 260, 350, 440, 520].map((x, i) => P.house(c, x, 178, 80, 54 + (i * 13) % 30, { lit: i % 2 === 1, chimney: i % 3 === 0, thatch: i % 4 === 2, small: true })).join('');
-  // no shape: an open view, a lone pine on a rise
-  SC.none = (c, r, o) => P.pine(c, pos(o, 430), 176, 1.5) + P.tree(c, pos(o, 140), 178, 0.7) + `<path d="M${pos(o, 330)} 182q80-30 200 0z" fill="${c.near}"/>`;
+  // no shape: an open view, a stream winding down from the hills and a lone pine on a rise
+  SC.none = (c, r, o) => P.road(c, Object.assign({}, o, { side: !o.side }), pos(o, 250), 142, true) + P.pine(c, pos(o, 430), 176, 1.5) + P.tree(c, pos(o, 140), 178, 0.7) + `<path d="M${pos(o, 330)} 182q80-30 200 0z" fill="${c.near}"/>`;
 
   // which scenes are indoors (61's NO_LAND), which have their own hour (the brief's mood mapping, then 61's night set)
   const INDOOR = SK.INDOOR = new Set(['court', 'letter', 'learning', 'money', 'play', 'food', 'sickness', 'favor']);

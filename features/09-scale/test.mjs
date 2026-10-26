@@ -39,26 +39,39 @@ const playBoth = (pg, starts, years, checkOn, months) => pg.evaluate(([starts, y
 const report = res => res.map(r => `seed ${r.seed}: ${r.same ? 'identical' : `DIFFERENT (${r.ref.h}/${r.ref.rng} vs ${r.fast.h}/${r.fast.rng})`} after ${r.fast.year - 1105 + (r.fast.how === 'dead' ? ' (dead)' : '')}y` +
   ` (${(r.ref.ms / 1000).toFixed(1)}s off, ${(r.fast.ms / 1000).toFixed(1)}s on${r.checks ? `, ${r.checks} answers checked` : ''}${r.missed ? `, ${r.missed} MISSED` : ''})${r.bad.length ? ' ' + r.bad.join(' | ') : ''}`).join('; ');
 
-// the world K times over (docs/plan/world-expansion-architecture.md, appendix A), then months of play, timed
-const timeWorld = (pg, K, months) => pg.evaluate(([K, months]) => {
-  __CLONE(K);
-  const t0 = performance.now();
-  A.newGame({ seed: 1234, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 16 });
-  const ng = performance.now() - t0, plain = [], year = [];
+// the world K times over (docs/plan/world-expansion-architecture.md, appendix A), then months of play, timed by the
+// wall clock and by the page's main-thread CPU time (Chrome's ThreadTime: what a loaded machine inflates least)
+async function timeWorld(pg, K, months) {
+  let cdp = null;
+  try { cdp = await pg.context().newCDPSession(pg); await cdp.send('Performance.enable', { timeDomain: 'threadTicks' }); } catch (e) { cdp = null; }
+  // null where the browser does not report thread time (the bounds then fall back to the wall clock)
+  const cpu = async () => { if (!cdp) return null; const t = (await cdp.send('Performance.getMetrics')).metrics.find(m => m.name === 'ThreadTime'); return t ? t.value * 1000 : null; };
+  const setup = await pg.evaluate(K => {
+    __CLONE(K);
+    const t0 = performance.now();
+    A.newGame({ seed: 1234, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 16 });
+    window.__scaleMonth = () => {
+      const d0 = A.S.year * 365 + (A.S.warClock || 0), y0 = A.S.year, t = performance.now();
+      for (let g = 0; g < 400 && A.S.year * 365 + (A.S.warClock || 0) - d0 < 30; g++) {
+        const r = A.advance(30);
+        let h, k = 0;
+        while ((h = A.headReady()) && k++ < 500) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
+        if (r.why === 'dead' || !A.pc() || !A.pc().alive) return { ms: performance.now() - t, dead: true };
+      }
+      return { ms: performance.now() - t, year: A.S.year !== y0 };
+    };
+    return { provs: A.S.prov.length, realms: Object.keys(A.S.realms).length, ng: Math.round(performance.now() - t0) };
+  }, K);
+  const plain = [], plainC = [], year = [], yearC = [];
   for (let m = 0; m < months; m++) {
-    const d0 = A.S.year * 365 + (A.S.warClock || 0), y0 = A.S.year, t = performance.now();
-    for (let g = 0; g < 400 && A.S.year * 365 + (A.S.warClock || 0) - d0 < 30; g++) {
-      const r = A.advance(30);
-      let h, k = 0;
-      while ((h = A.headReady()) && k++ < 500) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
-      if (r.why === 'dead' || !A.pc() || !A.pc().alive) break;
-    }
-    (A.S.year !== y0 ? year : plain).push(performance.now() - t);
-    if (!A.pc() || !A.pc().alive) break;
+    const c0 = await cpu(), r = await pg.evaluate(() => __scaleMonth()), c1 = await cpu();
+    if (m > 0) { (r.year ? year : plain).push(r.ms); if (c0 != null && c1 != null) (r.year ? yearC : plainC).push(c1 - c0); }   // the first month builds roads once
+    if (r.dead) break;
   }
   const med = a => { const s = a.slice().sort((x, y) => x - y); return s.length ? Math.round(s[Math.floor(s.length / 2)]) : null; };
-  return { provs: A.S.prov.length, realms: Object.keys(A.S.realms).length, ng: Math.round(ng), month: med(plain.slice(1)), year: med(year), months: plain.length + year.length, bad: A.SCALE.bad.slice(0, 3), missed: A.SCALE.stats.missed };
-}, [K, months]);
+  const end = await pg.evaluate(() => ({ bad: A.SCALE.bad.slice(0, 3), missed: A.SCALE.stats.missed }));
+  return { ...setup, month: med(plain), monthCpu: med(plainC), year: med(year), yearCpu: med(yearC), months: plain.length + year.length, ...end };
+}
 
 export default {
   async scaleIdentical(pg) {
@@ -123,10 +136,16 @@ export default {
   },
 
   async scaleTiming(pg) {
-    // a world ten times as large: 3,060 provinces, about 340 realms. Reported; the bounds are loose (CI is slower)
+    // a world ten times as large: 3,060 provinces, about 340 realms. On this project's 4-core machine (Oct 2026, loaded)
+    // the month took about 800 ms of CPU (1.1-2.3 s wall) and the month holding the New Year about 1.6 s of CPU
+    // (2.3-5 s wall), against 1.2-1.5 s and 15-20 s of CPU without 09-scale. The bounds are three times that, so they
+    // hold on a slow CI runner and still catch the year turn going quadratic again.
     await pg.evaluate(CLONE);
     const r = await timeWorld(pg, 10, 14);
-    const ok = r.provs === 3060 && r.month != null && r.month <= 2500 && r.year != null && r.year <= 8000 && !r.bad.length && !r.missed;
-    return { ok, detail: `10x world (${r.provs} provinces, ${r.realms} realms): new game ${r.ng} ms, month median ${r.month} ms, year-turn month ${r.year} ms over ${r.months} months${r.bad.length ? '; ' + r.bad.join(' | ') : ''}`, data: r };
+    const cpuOk = r.monthCpu != null ? r.monthCpu <= 2400 && r.yearCpu <= 5000 : r.month <= 6000 && r.year <= 15000;
+    const ok = r.provs === 3060 && r.month != null && r.year != null && cpuOk && !r.bad.length && !r.missed;
+    const c = v => v == null ? 'n/a' : Math.round(v);
+    return { ok, detail: `10x world (${r.provs} provinces, ${r.realms} realms): new game ${r.ng} ms; month median ${r.month} ms wall, ${c(r.monthCpu)} ms CPU;` +
+      ` year-turn month ${r.year} ms wall, ${c(r.yearCpu)} ms CPU, over ${r.months} months${r.bad.length ? '; ' + r.bad.join(' | ') : ''}`, data: r };
   },
 };

@@ -160,7 +160,7 @@ ${X('.plan-card .lk-yd-head > .lk-yd-sel select')}{width:100%;min-height:28px;he
 ${X('.plan-card .lk-yd-head > b')}{flex:1 1 auto}
 ${X('.plan-grid > .lk-vh')}{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 #game.phone .plan-card .lk-yd-head > .lk-yd-sel select{height:44px;min-height:44px;font-size:${T(15)}}
-#game.phone .plan-card .lk-yd-head{flex-wrap:wrap;row-gap:4px;padding-top:4px;padding-bottom:4px}
+#game.phone .plan-card .lk-yd-head{flex-wrap:wrap;row-gap:4px;padding-top:0;padding-bottom:0}
 #game.phone .plan-card .lk-yd-head > b, #game.phone .plan-card .lk-yd-head > .tiny{display:none}
 #game.phone .plan-card .lk-yd-head > .lk-yd-sel{flex:1 1 160px}
 ${X('.plan-grid')}{grid-template-columns:84px 1fr;gap:4px 10px;margin-top:4px}
@@ -194,8 +194,11 @@ ${X('.acts:not(.lk-acts) > .act:hover:not(:disabled)')}{border-color:var(--accen
 /* ---- the phone's Life page (brief §4.4): What now as one row, Your days folded, the activities as tiles of 44.
    Three columns, not the brief's two: two columns of 31 tiles made the page 1.45 screens; three make it about 1.15. */
 @media (max-width:760px){
-  #game.phone .lk-acts{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
-  #game.phone .lk-acts > .act{display:block;min-height:44px;padding:5px 6px;line-height:1.15}
+  #game.phone .lk-acts{grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+  #game.phone .lk-acts > .act{display:block;min-height:44px;padding:4px 6px;line-height:1.15}
+  #game.phone #tabbody > .fold-acts > .fold-b{padding-bottom:4px}
+  #game.phone #tabbody > .fold-card.folded{padding-bottom:0}
+  #game.phone #tabbody > .whatnow{padding-bottom:0}
   #game.phone .lk-acts > .act > .lk-gi{display:none}
   #game.phone .lk-acts > .act > .an{display:inline;font-size:${T(14)};line-height:1.15;-webkit-line-clamp:unset}
   #game.phone .lk-acts > .act > .cost{float:right;margin:1px 0 0 4px;font-size:${T(14)};line-height:1.15}
@@ -214,10 +217,13 @@ ${X('.acts:not(.lk-acts) > .act:hover:not(:disabled)')}{border-color:var(--accen
   #game.phone .fold-sum{font-size:${T(14)}}
   #game.phone .fold-tools .ghost{min-height:44px}
   #game.phone .lk-needs .lk-need{min-height:44px}
-  #game.phone #tabbody > .fold-tools{display:none}
+  #game.phone #tabbody.lk-plife > .fold-tools{display:none}
   /* the first-run hint rides above the dock, over the page, until the player dismisses it */
   #game.phone #tabbody > .hint{position:fixed;left:8px;right:8px;bottom:calc(128px + env(safe-area-inset-bottom, 0px));z-index:46;margin:0;background:var(--overlay);border:1px solid var(--accent);box-shadow:var(--e-3)}
   #game.phone #tabbody > .whatnow + *{border-top:0}
+  /* 71-phone's floors on the screens outside the game (the new life) and for glossary chips (24 px) */
+  #app summary{min-height:44px;display:flex;align-items:center}
+  ${X('#game.phone .chip, #modal .chip')}{min-height:24px}
   /* the event sheet: prose at 16 / 25 (brief §4.4) */
   #modal.ph-sheet .mtext{font-size:var(--t-prose);line-height:var(--lh-prose)}
 }

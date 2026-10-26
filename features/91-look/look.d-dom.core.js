@@ -143,6 +143,7 @@
     if (!tb) return;
     const life = UI.tab === 'life';
     tb.classList.toggle('lk-life', life && !phone);
+    tb.classList.toggle('lk-plife', life && phone);
     if (!life) return;
     for (const t of tb.querySelectorAll('.lk-acts > .act:not([data-lk])')) {
       t.dataset.lk = '1';

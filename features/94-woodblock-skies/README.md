@@ -75,7 +75,7 @@ The prints were reviewed and redrawn over four rounds:
 1. The cartoon bump clouds became two-tone cumulus, the road no longer reads as a pyramid, the near land got depth, and the branch moved off the cartouche.
 2. Each terrain now dresses the mid ridge, and night interiors are lit by their candle.
 3. Nights are deeper, the cumulus stays inside the frame, the branch appears less often and never in a storm, the lantern's glow stays on the lantern, and the bytes were trimmed.
-4. Moonlit plaster was darkened and the last details polished.
+4. Moonlit plaster was darkened, the branch now varies its reach, sag and pads from print to print, and the open view (no shape) got a stream winding down from the hills.
 
 ## Limits
 

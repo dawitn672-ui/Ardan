@@ -62,7 +62,7 @@ export function geography(base, seed) {
     const dbox = Math.hypot(Math.max(0, km[0] - BW * CELL), Math.max(0, km[1] - BH * CELL));
     const wx = km[0] / 1500, wy = km[1] / 1500;
     const qx = wx + 1.6 * warpA(wx * 0.9, wy * 0.9), qy = wy + 1.6 * warpB(wx * 0.9 + 3.3, wy * 0.9 - 1.7);
-    const big = 210 * coastN(qx, qy), mid = 70 * fineN(km[0] / 260, km[1] / 260), fine = 22 * n3(km[0] / 55, km[1] / 55);
+    const big = 210 * coastN(qx, qy), mid = 95 * fineN(km[0] / 240, km[1] / 240), fine = 24 * n3(km[0] / 55, km[1] / 55);
     const nz = (big + mid + fine) * smooth(0, 320, dbox);
     const t = smooth(0, 300, dbox);
     // the frame's own edges are open sea, except where the Known World already runs off them
@@ -191,12 +191,12 @@ export function geography(base, seed) {
   for (let i = 0; i < N; i++) if (land[i] && !inBase(i) && flow[i] > 400) river[i] = flow[i] > 2500 ? 2 : 1;
   for (let i = 0; i < N; i++) {
     if (!land[i] || inBase(i)) continue;
-    const t = T[i], pet = 280 + 48 * Math.max(0, t), m = P[i] / pet, e = elev[i];
+    const t = T[i], pet = 280 + 48 * Math.max(0, t), m = P[i] / pet, e = elev[i], lat = latOf(((i / GW) | 0) * CELL + 5);
     let b;
     if (e > 6100 || (t < -15 && e > 3500)) b = 'Glacier';
     else if (e > 3200) b = m > 0.2 ? 'Alpine highland' : 'Desert';
-    else if (t < -4.5) b = e > 2400 ? (m > 0.25 ? 'Alpine highland' : 'Desert') : 'Tundra';
-    else if (t < 3.5) b = m > 0.5 ? 'Taiga' : m > 0.26 ? 'Steppe' : e > 1500 ? 'Desert' : 'Tundra';
+    else if (t < -4.5) b = e > 2400 ? (m > 0.25 ? 'Alpine highland' : 'Desert') : lat > 47 ? 'Tundra' : m > 0.3 ? 'Steppe' : 'Desert';
+    else if (t < 3.5) b = m > 0.5 ? 'Taiga' : m > 0.26 ? 'Steppe' : lat > 49 && e < 1200 ? 'Tundra' : 'Desert';
     else if (t < 11) b = m < 0.28 ? 'Desert' : m < 0.62 ? 'Steppe' : m > 2.2 && t > 6 ? 'Temperate rainforest' : 'Temperate forest';
     else if (t < 19.5) b = m < 0.24 ? 'Desert' : m < 0.5 ? 'Steppe' : m < 0.78 ? 'Dry woodland' : 'Temperate forest';
     else b = m < 0.22 ? 'Desert' : m < 0.55 ? 'Savanna' : m < 1.05 ? 'Tropical monsoon forest' : 'Tropical rainforest';

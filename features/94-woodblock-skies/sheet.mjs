@@ -1,7 +1,8 @@
 // Contact sheets of the colour prints, for art review (not a test):
 //   node features/94-woodblock-skies/sheet.mjs <built.html> <out-dir> [--tag=r1]
 // writes <tag>-shapes.png (the 25 compositions at their own hour), <tag>-hours.png (four scenes at every hour),
-// <tag>-terrain.png (two scenes on every terrain, a coast and in winter), and <tag>-contact.png (all 25 x 6 hours).
+// <tag>-terrain.png (two scenes on every terrain, a coast and in winter), and <tag>-contact.png (all 25 x 6 hours, also
+// in three pages, <tag>-contact-1..3.png).
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -52,5 +53,10 @@ for (const s of ['travel', 'subordinate']) {
   tcells.push([`${s} · winter`, s, 'ev_t|1107', 0, { hour: 'day', terr: 'hills', place: 'Wintermarch' }]);
 }
 await sheet('terrain', tcells, 5, 380);
-if (!args.includes('--quick')) await sheet('contact', shapes.flatMap(s => hours.map(h => [`${s} · ${h}`, s, 'ev_c|1110', 7, { hour: h, terr: 'hills', place }])), 6, 300);
+if (!args.includes('--quick')) {
+  // the whole contact sheet, and the same in three pages that can be read at full size
+  const cells = s => hours.map(h => [`${s} · ${h}`, s, 'ev_c|1110', 7, { hour: h, terr: 'hills', place }]);
+  await sheet('contact', shapes.flatMap(cells), 6, 300);
+  for (const [i, part] of [shapes.slice(0, 9), shapes.slice(9, 17), shapes.slice(17)].entries()) await sheet('contact-' + (i + 1), part.flatMap(cells), 6, 300);
+}
 await b.close();

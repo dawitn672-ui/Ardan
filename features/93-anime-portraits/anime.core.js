@@ -41,6 +41,9 @@
   const RW = n => { const r = Math.round(n * 10) / 10; return !r ? '.1' : String(r).replace(/^0\./, '.'); };
   // transforms keep their scale exact (a rounded scale would move every part it holds)
   const TF = (x, y, k) => `translate(${Math.round(x * 100) / 100} ${Math.round(y * 100) / 100}) scale(${Math.round(k * 10000) / 10000})`;
+  // a head's tilt: a few degrees about the neck, seeded by the person and leaning with the mood
+  const tiltOf = L => L.baby ? 0 : Math.round((hs(L.p, 'tilt', 4.5) + ({ sad: 3, grin: -2, angry: -1.5, surprised: 1.5 }[L.expr.k] || 0)) * 10) / 10;
+  const TT = (x, y, k, a) => TF(x, y, k) + (a ? ` rotate(${a} 50 112)` : '');
 
   // ---- colour: every colour from the state is checked as a hex colour first (never interpolated raw)
   const hexOk = c => {
@@ -147,7 +150,6 @@
     const G = { size, full, px: 200 / size, defs: {} };
     // 3: everything; 2: no fine age lines; 1: no pupil, no small catchlight, heavier brows; 0: silhouette, colour, eyes
     G.lod = full || size >= 60 ? 3 : size >= 44 ? 2 : size >= 28 ? 1 : 0;
-    G.def = (id, s) => (G.defs[id] = s, id);
     // a content-keyed id: the same content always gets the same id, so repeats on one page can never disagree
     G.ref = (k, path, attrs) => { const id = k + hash(path).toString(36); G.defs[id] = `<path id="${id}" d="${path}"${attrs || ''}/>`; return id; };
     return G;
@@ -224,6 +226,8 @@
     [/gift|feast|festival|joke|reunion|birth|praise|reward|toast/, 'grin'],
     [/secret|discover|strange|omen|vision|ghost|letter|news|stranger/, 'surprised'],
   ];
+  // an event's id and title, read (never set) from the queue item, its view or its definition
+  const evKey = q => { let t = ''; try { const e = A.EV && A.EV[q.ev]; t = (q.view && q.view.title) || (e && typeof e.title === 'string' ? e.title : '') || ''; } catch (x) {} return String(q.ev || q.id || '') + ' ' + String(t); };
   function expression(L) {
     const p = L.p, out = { k: 'neutral', blush: false };
     if (L.dead) return (out.k = 'closed', out);
@@ -232,7 +236,7 @@
     let q = AP.ev || null;
     try { if (!q && A.S && Array.isArray(A.S.queue)) q = A.S.queue[0] || null; } catch (e) {}
     if (q && q.ctx && q.ctx.pid === p.id) {
-      const key = String(q.ev || q.id || '') + ' ' + String(q.title || '');
+      const key = evKey(q);
       for (const [rx, k, blush] of EV_TONE) if (rx.test(key.toLowerCase())) { out.k = k; out.blush = !!blush; return out; }
     }
     const pc = A.S && A.S.pc && A.S.people ? A.S.people[A.S.pc] : null;
@@ -808,6 +812,16 @@
         locks = shaded(D2, 'apl', .9) + locks;
       }
     }
+    // rope locks hang over the shoulders, three to a side, banded
+    if (L.locks && !L.covered && !L.baby) {
+      let rp = '', bands = '';
+      for (const sd of [-1, 1]) for (let j = 0; j < 3; j++) {
+        const x0 = 50 + sd * (40 + j * 7), y1 = chinY + 34 - j * 12 + hs(p, 'rope' + sd + j, 6);
+        rp += limb([[x0, 34 + j * 4], [x0 + sd * (3 + j), (34 + y1) / 2], [x0 + sd * (1 + j * 2), y1]], [4.2, 4.6, 3.6]);
+        if (lod >= 2) bands += emit([['M', x0 + sd * (3 + j) - 4, (34 + y1) / 2 + 6], ['L', x0 + sd * (3 + j) + 4, (34 + y1) / 2 + 8]]);
+      }
+      locks += `<path d="${rp}" fill="${hr.b}" stroke="${LINE}" stroke-width="${lw(.9)}"/>` + (bands ? `<path d="${bands}" stroke="${L.rib}" stroke-width="${lw(2.6)}"/>` : '');
+    }
     // a braid over the shoulder, in front
     if ((L.back === 'braid' || L.extra === 'braid') && !L.covered) {
       const sd = hf(p, 'braid') < .5 ? -1 : 1, twin = L.back === 'braid' && (L.race === 'dwarf' || hf(p, 'braid2') < .3);
@@ -858,7 +872,12 @@
       if ((style === 'parted' || style === 'curtain') && (a.bow < 0) !== (b.bow < 0)) q = 0;
       val.push([x, y0 + (ty - y0) * q]);
     }
-    const top = [[-v - 1.5, 30], [3 - v * .8, 4 - v * .5], [27 + hs(p, 't1', 2), -v - 2.5], [50, -v - 3.5], [73 + hs(p, 't2', 2), -v - 2.5], [97 + v * .8, 4 - v * .5], [101.5 + v, 30]];
+    // the top of the mass: a dip at the parting, or tufts for spiky hair, else a smooth crown
+    const px = 50 + (part - .5) * 40;
+    const crown = ['parted', 'curtain', 'sideL', 'sideR', 'long'].includes(style) ? [[px - 14, -v - 4.2], [px, -v - 1, 1], [px + 14, -v - 4.2]]
+      : ['spiky', 'messy', 'crest'].includes(style) || L.wild ? [[32, -v - 3.5], [40 + hs(p, 'tf1', 3), -v - 9, 1], [49, -v - 4], [59 + hs(p, 'tf2', 3), -v - 10, 1], [67, -v - 3.5]]
+      : [[27 + hs(p, 't1', 2), -v - 2.5], [50, -v - 3.5], [73 + hs(p, 't2', 2), -v - 2.5]];
+    const top = [[-v - 1.5, 30], [3 - v * .8, 4 - v * .5], ...crown, [97 + v * .8, 4 - v * .5], [101.5 + v, 30]];
     const capTop = curve([[-v * .5 - .5, yS], ...top, [100.5 + v * .5, yS]], false);
     const eg = [['L', tR[0], tR[1]]];
     if (style === 'swept') eg.push(['Q', 86, 22, 62, 18], ['Q', 55, 23, 50, 26], ['Q', 45, 23, 38, 18], ['Q', 14, 22, tL[0], tL[1]]);
@@ -898,7 +917,7 @@
     }
     // the angel ring: 3 to 5 short jagged arcs of light at 30% of the head's height, broken by the strands
     if (lod >= 1 && !L.baby && !capped) {
-      const nR = lod >= 2 ? 3 + hash(p.id + 'ring') % 2 : 2, ry = x => 24 - v * .3 + 15 * Math.pow((x - 50) / 50, 2);
+      const nR = lod >= 2 ? 3 + hash(p.id + 'ring') % 3 : 2, ry = x => 24 - v * .3 + 15 * Math.pow((x - 50) / 50, 2);
       let ring = '';
       const span = 62 / nR;
       for (let i = 0; i < nR; i++) {
@@ -1043,7 +1062,7 @@
         if (nx * AWAY[0] + ny * AWAY[1] < 0) { nx = -nx; ny = -ny; }
         sp.push([pts[i][0] + nx * ws[i] * .58, pts[i][1] + ny * ws[i] * .58]); sw.push(ws[i] * .4);
       }
-      s += `<path d="${limb(sp, sw, o.tip)}" fill="${o.sh || shadeOf(fill, .42, 1.1)}"/>`;
+      s += `<path d="${limb(sp, sw, o.tip)}" fill="${o.sh || shadeOf(fill, .35, 1.1)}"/>`;
     }
     return s;
   }
@@ -1084,7 +1103,8 @@
       body += `<path d="${D}" fill="${b}" stroke="${LINE}" stroke-width="${lw(1.1)}"/><path d="${D}" fill="${sh}" clip-path="url(#${useDef(G, 'apsB')})"/>`;
       if (lod >= 2) body += `<path d="${d`M${100 - sw * .9} ${nb + 30}Q100 ${nb + 10} ${100 + sw * .9} ${nb + 30}`}" fill="none" stroke="${L.rib}" stroke-width="${lw(3)}"/>`;
     } else body += torsoBust(G, L, { sw, nb, nwF, lw });
-    return { back: `<g transform="${T}">${hd.back}</g>`, fig: `<g transform="${T}">${hd.neck}</g>` + body + `<g transform="${T}">${hd.front}</g>`, head: { tx, ty, sc } };
+    const Tt = TT(tx, ty, sc, tiltOf(L));
+    return { back: `<g transform="${Tt}">${hd.back}</g>`, fig: `<g transform="${T}">${hd.neck}</g>` + body + `<g transform="${Tt}">${hd.front}</g>`, head: { tx, ty, sc } };
   }
 
   // ---------- the bust's clothes: the cut of the people, rank and armour
@@ -1097,7 +1117,7 @@
     // the far arm is in shadow: from the shoulder's top down the inside of the arm
     const armR = d`M${100 + sw * .62} ${nb + 4}Q${100 + sw * 1.02} ${nb + 10} ${100 + sw * 1.02} ${nb + 36}L${100 + sw * 1.06} 210L${100 + sw * .74} 210Q${100 + sw * .7} ${nb + 60} ${100 + sw * .74} ${nb + 38}Q${100 + sw * .8} ${nb + 20} ${100 + sw * .62} ${nb + 4}Z`;
     const armFold = d`M${100 - sw * .74} ${nb + 38}Q${100 - sw * .7} ${nb + 60} ${100 - sw * .74} 206M${100 + sw * .74} ${nb + 38}Q${100 + sw * .7} ${nb + 60} ${100 + sw * .74} 206`;
-    const sh = c => shadeOf(c, .42, 1.1);
+    const sh = c => shadeOf(c, .35, 1.1);
     const part = (D, c, w = 1.1) => `<path d="${D}" fill="${c}" stroke="${LINE}" stroke-width="${lw(w)}"/>` + (lod >= 1 ? `<path d="${D}" fill="${sh(c)}" clip-path="url(#${useDef(G, 'apsB')})"/>` : '');
     const body = (fill, pat) => `<use href="#${sid}" fill="${fill}"/>` + (pat && lod >= 2 ? `<use href="#${sid}" fill="url(#${useDef(G, pat)})"/>` : '') + (lod >= 1 ? `<path d="${armR}" fill="${pat ? SHADE : sh(fill)}"${pat ? ' fill-opacity=".4"' : ''}/>` : '') + (lod >= 2 && !G.lite ? `<path d="${armFold}" fill="none" stroke="${pat ? LINE : shadeOf(fill, .75)}" stroke-width="${lw(.9)}"/>` : '') + `<use href="#${sid}" fill="none" stroke="${LINE}" stroke-width="${lw(1.2)}"/>`;
     let cloth = L.cloth;
@@ -1241,10 +1261,12 @@
     if (L.ranged && ['bow'].includes(L.ranged.kind)) back += `<path d="${d`M${100 + sw * .75} ${sh - B * .16}Q${100 - sw * .4} ${waist - B * .1} ${100 - sw * 1.0} ${hip + B * .1}`}" fill="none" stroke="${LINE}" stroke-width="${lw(3.6)}"/><path d="${d`M${100 + sw * .75} ${sh - B * .16}Q${100 - sw * .4} ${waist - B * .1} ${100 - sw * 1.0} ${hip + B * .1}`}" fill="none" stroke="#8a5a34" stroke-width="${lw(2)}"/>`;
     // ---- the legs, the trousers and the boots
     const stance = pose === 'hip' ? hh * .04 : hh * .08;
-    const legW = [hw * .5, hh * .14 * raceW, hh * .09 * raceW];
+    // thigh, knee, calf, ankle
+    const legW = [hw * .5, hh * .12 * raceW, hh * .13 * raceW, hh * .075 * raceW];
     const legPts = sd => {
       const bent = pose === 'hip' && sd === side ? hh * .1 : 0;
-      return [[100 + sd * hw * .46, hip], [100 + sd * (hw * .42 + stance * .4) - sd * bent, knee], [100 + sd * (hw * .44 + stance) + (L.limp && sd > 0 ? hh * .06 : 0), ankle]];
+      const kx = 100 + sd * (hw * .42 + stance * .4) - sd * bent, ax = 100 + sd * (hw * .44 + stance) + (L.limp && sd > 0 ? hh * .06 : 0);
+      return [[100 + sd * hw * .46, hip], [kx, knee], [lerp(kx, ax, .35) + sd * hh * .015, lerp(knee, ankle, .35)], [ax, ankle]];
     };
     for (const sd of [-1, 1]) {
       const pts = legPts(sd);
@@ -1252,18 +1274,19 @@
         const fill = L.plate ? steel : L.mail ? '#9aa0b4' : trou;
         legs += celLimb(G, pts, legW, fill, lw);
         if (L.plate && lod >= 2) legs += `<ellipse cx="${R(pts[1][0])}" cy="${R(pts[1][1])}" rx="${R(hh * .14)}" ry="${R(hh * .1)}" fill="${steel}" stroke="${LINE}" stroke-width="${lw(.9)}"/>`;
-        // boots to the calf (bare feet for the poor and the small)
+        // boots: to the knee for soldiers and lords, to the calf for the rest (bare feet for the poor and the small)
         if (!(kind === 'rags' || L.small && kind === 'peasant')) {
-          const a = pts[2], k2 = pts[1], q = .5, bx = lerp(k2[0], a[0], q), by = lerp(k2[1], a[1], q);
-          legs += celLimb(G, [[bx, by], [a[0], a[1]]], [hh * .115 * raceW, hh * .1 * raceW], L.plate ? steel : bootC, lw);
+          const tall = L.noble || ['soldier', 'officer'].includes(kind) || L.plate, a = pts[3], k2 = pts[1], q = tall ? .12 : .5, bx = lerp(k2[0], a[0], q), by = lerp(k2[1], a[1], q);
+          legs += celLimb(G, tall ? [[bx, by], pts[2], [a[0], a[1]]] : [[bx, by], [a[0], a[1]]], tall ? [hh * .135 * raceW, hh * .14 * raceW, hh * .1 * raceW] : [hh * .125 * raceW, hh * .1 * raceW], L.plate ? steel : bootC, lw);
+          if (tall && lod >= 2) legs += `<path d="${d`M${bx - hh * .13} ${by}Q${bx} ${by + hh * .06} ${bx + hh * .13} ${by}`}" fill="none" stroke="${L.plate ? '#fff' : L.trim}" stroke-width="${lw(1.6)}"/>`;
         }
       }
-      const a = pts[2], fx = a[0] + sd * hh * .08;
+      const a = pts[3], fx = a[0] + sd * hh * .08;
       const foot = d`M${a[0] - hh * .13} ${GROUND - hh * .14}Q${a[0] - hh * .16} ${GROUND + hh * .03} ${fx + sd * hh * .14} ${GROUND + hh * .02}Q${fx + sd * hh * .22} ${GROUND - hh * .05} ${a[0] + hh * .13} ${GROUND - hh * .16}Z`;
       legs += `<path d="${foot}" fill="${kind === 'rags' || L.small && kind === 'peasant' ? L.skin.b : L.plate ? steel : bootC}" stroke="${LINE}" stroke-width="${lw(1)}"/>`;
     }
     // ---- the garment (or armour) from the shoulders to the hem
-    const gL = [[100 - nwF * .5, nb - hh * .02], [100 - sw * .6, sh - hh * .02], [100 - sw, sh + hh * .1], [100 - sw * .84, chest], [100 - ww, waist], [100 - hw, hip], [100 - hemW, hemY, 1]];
+    const gL = [[100 - nwF * .5, nb - hh * .02], [100 - sw * .66, sh - hh * .03], [100 - sw * 1.06, sh + hh * .14], [100 - sw * .86, chest], [100 - ww, waist], [100 - hw, hip], [100 - hemW, hemY, 1]];
     const hemPts = [];
     const sway = (hf(p, 'sway') - .5) * hh * .3;
     for (let i = 1; i < 6; i++) { const q = i / 6; hemPts.push([lerp(100 - hemW, 100 + hemW, q) + sway * Math.sin(q * Math.PI), hemY + hh * (longG ? .05 : .03) * Math.sin(q * Math.PI) + (i % 2 ? -hh * .03 : hh * .02)]); }
@@ -1271,7 +1294,7 @@
     const gid = G.ref('apt', garment);
     const gFill = plain ? cloth : armorC;
     const gPat = !plain && G.lod >= 2 ? (L.mail && L.armor !== 'orcmail' ? 'apml' : ['scale', 'elfmail', 'lamellar'].includes(L.armor) ? 'apsc' : L.armor === 'padded' ? 'apqt' : null) : null;
-    torso += `<use href="#${gid}" fill="${gFill}" stroke="${LINE}" stroke-width="${lw(1.2)}"/>` + (gPat ? `<use href="#${gid}" fill="url(#${useDef(G, gPat)})"/>` : '') + (lod >= 1 ? `<use href="#${gid}" fill="${gPat ? SHADE : shadeOf(gFill, .42, 1.1)}"${gPat ? ' fill-opacity=".38"' : ''} clip-path="url(#${useDef(G, 'apsT')})"/>` : '');
+    torso += `<use href="#${gid}" fill="${gFill}" stroke="${LINE}" stroke-width="${lw(1.2)}"/>` + (gPat ? `<use href="#${gid}" fill="url(#${useDef(G, gPat)})"/>` : '') + (lod >= 1 ? `<use href="#${gid}" fill="${gPat ? SHADE : shadeOf(gFill, .35, 1.1)}"${gPat ? ' fill-opacity=".38"' : ''} clip-path="url(#${useDef(G, 'apsT')})"/>` : '');
     // folds of a long skirt
     if (lod >= 2 && (longG || coat)) { let f = ''; for (const k2 of [-.55, -.18, .2, .58]) f += d`M${100 + k2 * hw * .9} ${hip + B * .06}Q${100 + k2 * hemW * 1.02} ${(hip + hemY) / 2} ${100 + k2 * hemW * .95} ${hemY - hh * .05}`; torso += `<path d="${f}" fill="none" stroke="${shadeOf(gFill, .7)}" stroke-width="${lw(.9)}"/>`; }
     // the neckline, the coat's crossed front, the belt
@@ -1286,7 +1309,7 @@
     if ((L.cloak && L.cloak.look === 'tabard') || ((L.mail || ['scale', 'brigandine'].includes(L.armor)) && (L.arms.h || L.noble || L.rank >= 4))) {
       const tb = d`M${100 - sw * .5} ${sh + hh * .04}L${100 + sw * .5} ${sh + hh * .04}L${100 + hw * .62} ${hemY - hh * .02}L${100 - hw * .62} ${hemY - hh * .02}Z`;
       const tc = tune(L.arms.f, 1.2, .04, .1, .65, .2, .65);
-      torso += `<path d="${tb}" fill="${tc}" stroke="${LINE}" stroke-width="${lw(1.1)}"/>` + (lod >= 1 ? `<path d="${tb}" fill="${shadeOf(tc, .42, 1.1)}" clip-path="url(#${useDef(G, 'apsT')})"/>` : '');
+      torso += `<path d="${tb}" fill="${tc}" stroke="${LINE}" stroke-width="${lw(1.1)}"/>` + (lod >= 1 ? `<path d="${tb}" fill="${shadeOf(tc, .35, 1.1)}" clip-path="url(#${useDef(G, 'apsT')})"/>` : '');
       torso += charge(L, 100, chest + hh * .25, hh / 30);
     }
     if (!L.plate) {
@@ -1322,10 +1345,14 @@
       else { E = [s0[0] + sd * hh * .1, s0[1] + ua]; W = [E[0] + sd * hh * .02, E[1] + fa]; }
       return { s0, E, W };
     };
+    // the upper arm goes behind the garment (its shoulder covers the arm's top); the forearm and hand in front
+    let ups = '';
     const drawArm = (sd, a, o = {}) => {
       const short = plain && (kind === 'peasant' || kind === 'rags' || L.small) && !longG;
-      let s = celLimb(G, [a.s0, a.E], [aw[0], aw[1]], sleeve, lw);
-      s += celLimb(G, [a.E, a.W], [aw[1], aw[2]], short ? L.skin.b : sleeve, lw, short ? { sh: L.skin.s } : {});
+      const bell = plain && longG && !L.small;
+      ups += celLimb(G, [a.s0, a.E], [aw[0], aw[1]], sleeve, lw);
+      let s = celLimb(G, [a.E, a.W], [aw[1], bell ? aw[2] * 1.9 : aw[2]], short ? L.skin.b : sleeve, lw, short ? { sh: L.skin.s } : {});
+      if (bell && lod >= 2) s += `<path d="${d`M${a.W[0] - aw[2] * 1.7} ${a.W[1] - hh * .05}L${a.W[0] + aw[2] * 1.7} ${a.W[1] - hh * .05}`}" stroke="${L.trim}" stroke-width="${lw(2.4)}"/>`;
       if (L.plate && lod >= 2) s += `<circle cx="${R(a.E[0])}" cy="${R(a.E[1])}" r="${R(aw[1] * 1.1)}" fill="${steel}" stroke="${LINE}" stroke-width="${lw(.9)}"/>`;
       if (!o.noHand) s += handAt(G, L, a.W, a.E, hand, lw, { lost: lostSide && sd === 1, gaunt: L.plate, fist: o.fist });
       return s;
@@ -1374,7 +1401,7 @@
         const sx = 100 + sw * 1.1, sy = waist - hh * .1, ks = L.shield.look || 'shield';
         const shp = ks === 'kite' || ks === 'tower' ? d`M${sx - hh * .4} ${sy - hh * .55}Q${sx} ${sy - hh * .7} ${sx + hh * .4} ${sy - hh * .55}Q${sx + hh * .42} ${sy + hh * .3} ${sx} ${sy + hh * .95}Q${sx - hh * .42} ${sy + hh * .3} ${sx - hh * .4} ${sy - hh * .55}Z` : ks === 'buckler' || ks === 'targe' ? d`M${sx - hh * .34} ${sy}A${hh * .34} ${hh * .34} 0 1 0 ${sx + hh * .34} ${sy}A${hh * .34} ${hh * .34} 0 1 0 ${sx - hh * .34} ${sy}Z` : d`M${sx - hh * .42} ${sy - hh * .5}L${sx + hh * .42} ${sy - hh * .5}Q${sx + hh * .44} ${sy + hh * .3} ${sx} ${sy + hh * .7}Q${sx - hh * .44} ${sy + hh * .3} ${sx - hh * .42} ${sy - hh * .5}Z`;
         const sc2 = tune(L.arms.f, 1.2, .04, .1, .65, .2, .65);
-        fore += `<path d="${shp}" fill="${sc2}" stroke="${LINE}" stroke-width="${lw(1.3)}"/>` + (lod >= 1 ? `<path d="${shp}" fill="${shadeOf(sc2, .42, 1.1)}" clip-path="url(#${useDef(G, 'apsT')})"/>` : '') + charge(L, sx, sy, hh / 40);
+        fore += `<path d="${shp}" fill="${sc2}" stroke="${LINE}" stroke-width="${lw(1.3)}"/>` + (lod >= 1 ? `<path d="${shp}" fill="${shadeOf(sc2, .35, 1.1)}" clip-path="url(#${useDef(G, 'apsT')})"/>` : '') + charge(L, sx, sy, hh / 40);
       }
     }
     if (Wk === 'sword' && pose !== 'hilt') {
@@ -1387,10 +1414,11 @@
     // ---- the head
     const k = { lw: G.lwH, lod: faceLod, longTo: (waist - ty) / sc, neckTo: (sh + hh * .3 - ty) / sc };
     const Gf = Object.assign({}, G, { lod: Math.min(G.lod, faceLod) });
-    Gf.ref = G.ref; Gf.def = G.def;
+    Gf.ref = G.ref;
     const hd = head(Gf, L, k);
     const T = TF(tx, ty, sc);
-    const fig = `<g transform="${T}">${hd.back}</g>` + back + legs + `<g transform="${T}">${hd.neck}</g>` + torso + arms + fore + `<g transform="${T}">${hd.front}</g>`;
+    const Tt = TT(tx, ty, sc, tiltOf(L) * .6);
+    const fig = `<g transform="${Tt}">${hd.back}</g>` + back + legs + `<g transform="${T}">${hd.neck}</g>` + ups + torso + arms + fore + `<g transform="${Tt}">${hd.front}</g>`;
     return { back: '', fig, scen, pose, head: { tx, ty, sc } };
   }
 
@@ -1451,7 +1479,9 @@
       const frId = G.ref('apq', frameD), clipId = 'apk' + frId.slice(3);
       G.defs[clipId] = `<clipPath id="${clipId}"><use href="#${frId}"/></clipPath>`;
       // the ground: realm tint at the top to the surface at the bottom; an ink wash for the dead
-      const top = L.dead ? TK.wash[0] : mix(TK.surface, L.realmC, TK.tint + .1), bot = L.dead ? TK.wash[1] : TK.surface;
+      let tint = null;
+      try { tint = UI.realmInk ? hexOk(UI.realmInk(L.realmC, theme).tint) : null; } catch (e) {}
+      const top = L.dead ? TK.wash[0] : tint || mix(TK.surface, L.realmC, TK.tint), bot = L.dead ? TK.wash[1] : TK.surface;
       const gid = 'apg' + top.slice(1) + bot.slice(1);
       G.defs[gid] = `<linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${top}"/><stop offset="1" stop-color="${bot}"/></linearGradient>`;
       const rim = theme === 'dark' || L.sacred ? RIM_COOL : RIM_WARM;
@@ -1470,8 +1500,9 @@
       if (L.dead) fig = fig.replace(/#[0-9a-f]{6}/g, c => desat(c));
       if (G.lod >= 1) {
         const r = R(clamp(G.inner * .8, .5, 1.2) * px), rw = R(clamp(size / 70, 1.1, 2.2) * px);
-        const fid = 'apo' + String(r).replace('.', '_') + '_' + String(rw).replace('.', '_') + rim.slice(1);
-        G.defs[fid] = `<filter id="${fid}"><feMorphology operator="dilate" radius="${r}" result="a"/><feFlood flood-color="${LINE}"/><feComposite in2="a" operator="in" result="o"/><feOffset in="SourceGraphic" dx="${-rw}" result="b"/><feComposite in="SourceGraphic" in2="b" operator="out" result="c"/><feFlood flood-color="${rim}" flood-opacity=".9"/><feComposite in2="c" operator="in"/><feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/><feMergeNode/></feMerge></filter>`;
+        const fid = 'apo' + (G.full ? 'w' : '') + String(r).replace('.', '_') + '_' + String(rw).replace('.', '_') + rim.slice(1);
+        const wob = G.full ? '<feTurbulence type="fractalNoise" baseFrequency=".09" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.1" xChannelSelector="R" yChannelSelector="G" result="w"/>' : '';
+        G.defs[fid] = `<filter id="${fid}">${wob}<feMorphology ${G.full ? 'in="w" ' : ''}operator="dilate" radius="${r}" result="a"/><feFlood flood-color="${LINE}"/><feComposite in2="a" operator="in" result="o"/><feOffset in="${G.full ? 'w' : 'SourceGraphic'}" dx="${-rw}" result="b"/><feComposite in="${G.full ? 'w' : 'SourceGraphic'}" in2="b" operator="out" result="c"/><feFlood flood-color="${rim}" flood-opacity=".9"/><feComposite in2="c" operator="in"/><feMerge><feMergeNode in="o"/><feMergeNode in="${G.full ? 'w' : 'SourceGraphic'}"/><feMergeNode/></feMerge></filter>`;
         s += `<g clip-path="url(#${clipId})">${f.scen || ''}<g class="ap-fig mn-fig" filter="url(#${fid})" stroke-linecap="round" stroke-linejoin="round">${fig}</g></g>`;
       } else s += `<g clip-path="url(#${clipId})">${f.scen || ''}<g class="ap-fig mn-fig" stroke-linecap="round" stroke-linejoin="round">${fig}</g></g>`;
       // the frame: --line-strong; gold for rulers, the accent for nobles, --ink-3 for the dead
@@ -1495,7 +1526,7 @@
   AP.cacheKey = (p, size, opts) => {
     let ev = '';
     const q = AP.ev || (A.S && Array.isArray(A.S.queue) ? A.S.queue[0] : null);
-    if (q && q.ctx && q.ctx.pid === p.id) ev = String(q.ev || q.id || '') + String(q.title || '');
+    if (q && q.ctx && q.ctx.pid === p.id) ev = evKey(q);
     const pc = A.S && A.S.pc;
     const r = pc && p.rel && p.rel[pc] ? p.rel[pc] : null;
     let mood = '';
