@@ -1,0 +1,53 @@
+// 97-life-fixes: the smallest hooks into the release's flow; the systems are in the *.core.js files.
+export default [
+  {
+    id: 'LF-BOSS-PICK',
+    blob: 'ardan-core',
+    why: 'A.obligationsYear picked one of four superior scenes (bd_boss_test/favor/blame/rival) with A.pick, blind to what the ' +
+      'life had seen, so "A rival for favor" came eight times in a working life. It now picks by the life memory\'s weights ' +
+      '(A.lfPick: twice a life, ten years apart); when all four are held back the slot goes to a fresh scene.',
+    edits: [[
+      'evs.length&&A.queue({type:"event",ev:A.pick(evs),ctx:{pid:b.id}})',
+      '{const ev0=evs.length?(A.lfPick?A.lfPick(evs,pc):A.pick(evs)):null;ev0&&A.queue({type:"event",ev:ev0,ctx:{pid:b.id}})}',
+    ]],
+  },
+  {
+    id: 'LF-GATH-ROLE',
+    blob: 'ardan-core',
+    why: 'Every gathering the realm attended invited the player as a guest (noble, knight, guard, servant), so a courtier\'s life ' +
+      'showed the same invitation, opening and closing scenes up to 30 times. A guest is now asked to the same kind of gathering ' +
+      'at most every 6 years and to any at most every 2 (A.lfGathRole); rulers, envoys and family weddings always are.',
+    edits: [[
+      'role=pc&&pc.alive?A.gathRole(pc,g):null',
+      'role=pc&&pc.alive?(A.lfGathRole?A.lfGathRole(pc,g):A.gathRole(pc,g)):null',
+    ]],
+  },
+  {
+    id: 'LF-FIRST-LIFE',
+    blob: 'ardan-core',
+    why: 'On Hard, the default, one newborn in twenty died before five, before the player had made a choice. The creation screen ' +
+      'now tells the engine whether this is the first life begun in this browser (o.firstLife, so a replay of the journal ' +
+      'does the same), and the engine spares a first life the deaths of early childhood unless Realism was chosen.',
+    edits: [[
+      'story:A.storyFor?A.storyFor(c):null};A.newGame(o)',
+      'story:A.storyFor?A.storyFor(c):null};UI.lfStartOpts&&UI.lfStartOpts(o,c);A.newGame(o)',
+    ]],
+  },
+  {
+    id: 'LF-FIRST-LIFE-SAYS',
+    blob: 'ardan-core',
+    why: 'The creation screen says, under the difficulty, that a first life is spared the deaths of early childhood on Story and Hard.',
+    edits: [[
+      '.map(d=>UI.opt(c.diff===d[0],"crSet","diff:"+d[0],d[1],d[2])).join("")}</div></div>`',
+      '.map(d=>UI.opt(c.diff===d[0],"crSet","diff:"+d[0],d[1],d[2])).join("")}</div>${UI.lfFirstLine?UI.lfFirstLine(c):""}</div>`',
+    ]],
+  },
+  {
+    id: 'LF-GATH-SCENES',
+    blob: 'ardan-content',
+    why: 'A gathering picks its scenes (the toast, the seating, the knife in the dark) from a pool that only avoids repeats within ' +
+      'the one gathering, so a courtier saw the same seating quarrel at feast after feast. The pick now also weighs each scene ' +
+      'by the life memory (A.lfSceneW: a fifth for each time this life has seen it).',
+    edits: [['e=A.wpick(pool,x=>x.gscene.kinds?3:1);', 'e=A.wpick(pool,x=>(x.gscene.kinds?3:1)*(A.lfSceneW?A.lfSceneW(x):1));']],
+  },
+];

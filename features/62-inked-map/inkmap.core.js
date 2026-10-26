@@ -15,7 +15,13 @@
   if (UI.set.banners == null) UI.set.banners = true;
   const INK = '#2b1d10', VEL = '#ece0c4', SHADE = '#d6c39b', VERM = '#9e2b1b', GOLD = '#b98a2a', LAPIS = '#2f4a7a', VERD = '#4d7456';
   const SEA = '#dcd2b4';                       // the sea is the same vellum, a shade darker under its ruling
-  const TILE = 256, BASE = 1100 / 7000, MAXL = 5, KW = 7000, KH = 4500;
+  // The frame comes from MAP (99-far-lands sets MAP.KW, MAP.KH and MAP.ZREF; without it the world as written, 7,000 x
+  // 4,500 km). Zoom is a scale: a view ZREF km wide is zoom 1, in any frame. Levels below 0 exist only in a frame larger
+  // than the world as written, whose whole view is coarser than level 0.
+  const TILE = 256, MAXL = 5, ZREF = MAP.ZREF || 7000, BASE = 1100 / ZREF;
+  const KWf = () => MAP.KW || 7000, KHf = () => MAP.KH || 4500;
+  const LMIN = () => MAP.big ? Math.min(0, Math.floor(Math.log2(ZREF / KWf()))) : 0;
+  const wholeView = (W, H, v) => v || (MAP.whole ? MAP.whole(W, H) : null);   // null: the world stretched to the canvas
   IM.TOWN_ZOOM = 1.8;                          // town icons appear from this zoom (7000 / view width)
   IM.BANNER_ZOOM = 2.2;                        // standards replace the boxes from this zoom
   IM.bitmaps = true;                           // tiles as ImageBitmaps (see mkCanvas)
@@ -47,7 +53,7 @@
     const cell = (x, y) => (x < 0 || y < 0 || x >= gw || y >= gh) ? -1 : grid[y * gw + x];
     const groups = new Map();
     const add = (k, x1, y1, x2, y2) => { let g = groups.get(k); if (!g) groups.set(k, g = []); g.push(x1, y1, x2, y2); };
-    const keyOf = (a, b) => (a < 0 || b < 0) ? 'c' : a < b ? a * 4096 + b : b * 4096 + a;
+    const keyOf = (a, b) => (a < 0 || b < 0) ? 'c' : a < b ? a * 65536 + b : b * 65536 + a;   // any Int16 province id
     for (let y = 0; y < gh; y++) for (let x = 0; x <= gw; x++) { const a = cell(x - 1, y), b = cell(x, y); if (a !== b) add(keyOf(a, b), x, y, x, y + 1); }
     for (let y = 0; y <= gh; y++) for (let x = 0; x < gw; x++) { const a = cell(x, y - 1), b = cell(x, y); if (a !== b) add(keyOf(a, b), x, y, x + 1, y); }
     const VW = gw + 1;
@@ -104,7 +110,7 @@
         a = o;
       }
       if (closed) a.push(a[0], a[1]);
-      const sc = KW / gw;         // lattice units to the map's 7000 x 4500 coordinates
+      const sc = KWf() / gw;      // lattice units to the map's km coordinates
       return Float32Array.from(a, x => x * sc);
     };
     const bbox = a => { let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; for (let i = 0; i < a.length; i += 2) { if (a[i] < x0) x0 = a[i]; if (a[i] > x1) x1 = a[i]; if (a[i + 1] < y0) y0 = a[i + 1]; if (a[i + 1] > y1) y1 = a[i + 1]; } return { x0, y0, x1, y1 }; };
@@ -118,7 +124,7 @@
     const coastLoops = [], coastPieces = [], provPieces = [];
     for (const [k, E] of groups) {
       if (k === 'c') { for (const ch of chains(E, true)) { const closed = ch[0] === ch[ch.length - 2] && ch[1] === ch[ch.length - 1]; const a = smooth(ch, closed, 1); coastLoops.push(Object.assign({ pts: a }, bbox(a))); pieces(a, {}, coastPieces); } }
-      else { const pa = Math.floor(k / 4096), pb = k % 4096; for (const ch of chains(E, false)) { const closed = ch[0] === ch[ch.length - 2] && ch[1] === ch[ch.length - 1]; pieces(smooth(ch, closed, 1), { a: pa, b: pb }, provPieces); } }
+      else { const pa = Math.floor(k / 65536), pb = k % 65536; for (const ch of chains(E, false)) { const closed = ch[0] === ch[ch.length - 2] && ch[1] === ch[ch.length - 1]; pieces(smooth(ch, closed, 1), { a: pa, b: pb }, provPieces); } }
     }
     // distance (in cells, capped) from each land cell to the water and from each water cell to the land
     const dist = (isSrc, cap) => {
@@ -353,7 +359,7 @@
       b.clip(LP, 'evenodd');
       const inner = [], outer = [];
       for (const o of prov) { const pa = S.prov[o.a], pb = S.prov[o.b]; ((pa && pb && pa.owner === pb.owner) ? inner : outer).push(o); }
-      if (inner.length) { b.setLineDash([1.1 * up / lp, 2.9 * up / lp]); b.strokeStyle = 'rgba(43,29,16,.55)'; b.lineWidth = 0.85 * up / lp; b.stroke(pathOf(inner)); }
+      if (inner.length && L >= 0) { b.setLineDash([1.1 * up / lp, 2.9 * up / lp]); b.strokeStyle = 'rgba(43,29,16,.55)'; b.lineWidth = 0.85 * up / lp; b.stroke(pathOf(inner)); }
       if (outer.length) {
         const OP = pathOf(outer);
         b.setLineDash([]); b.strokeStyle = 'rgba(236,224,196,.75)'; b.lineWidth = 3.4 * up / lp; b.stroke(OP);
@@ -395,8 +401,8 @@
   let views = new WeakMap(); const PAD = 256;
   function drawTiles(ctx, W, H, v, layer, extra, extraKey) {
     const wk = IM.worldKey(); if (wk !== cacheKey) { cache.clear(); cacheKey = wk; gen++; }
-    const vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KW, vh = v ? v.h : KH, sx = W / vw, sy = H / vh;
-    const cvs = ctx.canvas, out = { vx, vy, sx, sy, zoom: KW / vw };
+    const vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KWf(), vh = v ? v.h : KHf(), sx = W / vw, sy = H / vh;
+    const cvs = ctx.canvas, out = { vx, vy, sx, sy, zoom: ZREF / vw };
     if (typeof document === 'undefined' || !IM.keepViews || !cvs) {
       const res = drawTilesTo(ctx, W, H, vx, vy, vw, vh, layer);
       res.zoom = out.zoom; if (extra) extra(ctx, res);
@@ -431,25 +437,25 @@
     return out;
   }
   function drawTilesTo(ctx, W, H, vx, vy, vw, vh, layer) {
-    const sx = W / vw, sy = H / vh, ppu = Math.max(sx, sy);
-    const L = clamp(Math.ceil(Math.log2(ppu / BASE) - 0.25), 0, MAXL), lp = BASE * Math.pow(2, L), tw = TILE / lp;
+    const sx = W / vw, sy = H / vh, ppu = Math.max(sx, sy), L0 = LMIN();
+    const L = clamp(Math.ceil(Math.log2(ppu / BASE) - 0.25), L0, MAXL), lp = BASE * Math.pow(2, L), tw = TILE / lp;
     ctx.save();
     ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low';
     const t0 = now(); let late = false;
-    const tx0 = Math.max(0, Math.floor(vx / tw)), tx1 = Math.min(Math.ceil(KW / tw) - 1, Math.floor((vx + vw) / tw));
-    const ty0 = Math.max(0, Math.floor(vy / tw)), ty1 = Math.min(Math.ceil(KH / tw) - 1, Math.floor((vy + vh) / tw));
+    const tx0 = Math.max(0, Math.floor(vx / tw)), tx1 = Math.min(Math.ceil(KWf() / tw) - 1, Math.floor((vx + vw) / tw));
+    const ty0 = Math.max(0, Math.floor(vy / tw)), ty1 = Math.min(Math.ceil(KHf() / tw) - 1, Math.floor((vy + vh) / tw));
     const X = wx => Math.round((wx - vx) * sx), Y = wy => Math.round((wy - vy) * sy);
     for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++) {
       const dx = X(tx * tw), dy = Y(ty * tw), dw = X((tx + 1) * tw) - dx, dh = Y((ty + 1) * tw) - dy;
       let t = getTile(L, tx, ty, false);
-      if (!t && (now() - t0 < IM.budgetMs || L === 0)) t = getTile(L, tx, ty, true);
+      if (!t && (now() - t0 < IM.budgetMs || L <= L0)) t = getTile(L, tx, ty, true);
       if (t) { if (t[layer]) ctx.drawImage(t[layer], dx, dy, dw, dh); continue; }
       late = true; IM.stats.deferred++;
-      const f = Math.pow(2, L), px = Math.floor(tx / f), py = Math.floor(ty / f), pt = getTile(0, px, py, true), s = TILE / f;
+      const f = Math.pow(2, L - L0), px = Math.floor(tx / f), py = Math.floor(ty / f), pt = getTile(L0, px, py, true), s = TILE / f;
       if (pt[layer]) ctx.drawImage(pt[layer], (tx - px * f) * s, (ty - py * f) * s, s, s, dx, dy, dw, dh);
     }
     ctx.restore();
-    return { vx, vy, sx, sy, W, H, zoom: KW / vw, late };
+    return { vx, vy, sx, sy, W, H, zoom: ZREF / vw, late };
   }
 
   // ---- the ground hook (patches IM-GROUND-*): the inked map under view v (null: the whole world)
@@ -458,7 +464,7 @@
     try {
       buildGeo();
       ctx.save(); ctx.fillStyle = SEA; ctx.fillRect(0, 0, W, H); ctx.restore();
-      drawTiles(ctx, W, H, v, 'g');
+      drawTiles(ctx, W, H, wholeView(W, H, v), 'g');
       return true;
     } catch (e) { if (typeof console !== 'undefined') console.error(e); return false; }
   };
@@ -467,13 +473,15 @@
     if (!IM.on() || !A.S || !A.S.prov || !A.S.prov.length) return false;
     try {
       // the towns are kept with the view; they change only when a capital moves or the display is resized
-      const K = iconK(ctx, W, !v), tk = K.toFixed(2) + ':' + Object.values(A.S.realms).map(r => r.alive ? r.capitalProv : '').join(',');
-      drawTiles(ctx, W, H, v, 'b', (c, d) => IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K), tk);
+      const K = iconK(ctx, W, !v || !!v.whole), tk = K.toFixed(2) + ':' + Object.values(A.S.realms).map(r => r.alive ? r.capitalProv : '').join(',');
+      drawTiles(ctx, W, H, wholeView(W, H, v), 'b', (c, d) => IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K), tk);
       return true;
     } catch (e) { if (typeof console !== 'undefined') console.error(e); return false; }
   };
 
   // ---- towns and capitals: drawn with the lines layer, kept with the view until a capital moves
+  // keeps shrink when a larger frame is seen whole (zoom under 1 exists only there)
+  const keepScale = zoom => MAP.big ? clamp(zoom * 1.5, 0.6, 1) : 1;
   const iconK = (ctx, W, whole) => { let d = 0; try { d = ctx.canvas.getBoundingClientRect ? ctx.canvas.getBoundingClientRect().width : 0; } catch (e) { d = 0; } const k = clamp(W / Math.max(1, d || W), 0.9, 2.4); return whole ? Math.sqrt(k) : k; };
   const keep = (c, x, y, s) => {      // a keep: two towers, a crenellated wall, a dark gate, a gold flag
     c.lineWidth = Math.max(1, s * 0.09); c.strokeStyle = INK; c.fillStyle = VEL; c.lineJoin = 'miter';
@@ -515,7 +523,7 @@
       else if (p.town > 0) { ctx.beginPath(); ctx.arc(x, b - s0 * 0.15, s0 * 0.12, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
       if ((p.fort || 0) >= 2) walls(ctx, x, b + s0 * 0.12, s0);
     }
-    const sk = clamp(8 + zoom * 1.2, 9, 21) * K;
+    const sk = clamp(8 + zoom * 1.2, 9, 21) * K * keepScale(zoom);
     for (const pid of caps) {
       const p = S.prov[pid]; if (!p) continue;
       const x = (p.sx - vx) * sx, y = (p.sy - vy) * sy;
@@ -531,10 +539,11 @@
   MAP.marks = function (ctx, W, H, v, o) {
     if (!IM.on() || !A.S) return false;
     try {
-      const S = A.S, vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KW, vh = v ? v.h : KH, sx = W / vw, sy = H / vh, zoom = KW / vw;
-      const opts = typeof o === 'object' && o ? o : {}, K = iconK(ctx, W, !v);
+      const whole = !v || !!v.whole; v = wholeView(W, H, v);
+      const S = A.S, vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KWf(), vh = v ? v.h : KHf(), sx = W / vw, sy = H / vh, zoom = ZREF / vw;
+      const opts = typeof o === 'object' && o ? o : {}, K = iconK(ctx, W, whole);
       ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-      if (v && zoom >= 1.8) {
+      if (!whole && zoom >= 1.8) {
         const f = `italic ${Math.round((9 + Math.min(5, zoom)) * Math.min(K, 1.4))}px Georgia, serif`;
         const s0 = clamp(6.5 + zoom * 1.1, 7, 19) * K;
         for (const p of S.prov) {
@@ -544,15 +553,25 @@
         }
       }
       if (opts.labels !== false) {
-        const fs = v ? Math.round(Math.max(11, 15 - zoom) * Math.min(K, 1.4)) : Math.max(10, Math.round(W / 92 * Math.pow(K, 0.7)));
-        const sk = clamp(8 + zoom * 1.2, 9, 21) * K;
-        for (const id in S.realms) {
+        const fs = !whole ? Math.round(Math.max(11, 15 - zoom) * Math.min(K, 1.4)) : Math.max(10, Math.round(W / 92 * Math.pow(K, 0.7)));
+        const sk = clamp(8 + zoom * 1.2, 9, 21) * K * keepScale(zoom);
+        // in a frame larger than the world as written, many realms share a view: the most peopled are named first and
+        // a name that would cross one already written is left for a closer zoom
+        const placed = MAP.big ? [] : null, ids = Object.keys(S.realms);
+        if (placed) ids.sort((a, b) => (S.realms[b].pop || 0) - (S.realms[a].pop || 0) || (a < b ? -1 : 1));
+        for (const id of ids) {
           const r = S.realms[id]; if (!r.alive || r.capitalProv == null) continue;
           const p = A.prov(r.capitalProv); if (!p) continue;
           if (!(r.provCount >= 2 || opts.allLabels || zoom >= 2)) continue;
           const x = (p.sx - vx) * sx, y = (p.sy - vy) * sy;
           if (x < -60 || y < -30 || x > W + 60 || y > H + 30) continue;
-          label(ctx, String(r.short).toUpperCase(), x, y - sk * 1.25, `600 ${fs}px Cinzel, Georgia, serif`, INK);
+          const t = String(r.short).toUpperCase(), font = `600 ${fs}px Cinzel, Georgia, serif`;
+          if (placed) {
+            ctx.font = font; const w = ctx.measureText(t).width + 8, h = fs + 3, bx = x - w / 2, by = y - sk * 1.25 - fs;
+            if (placed.some(b => bx < b[0] + b[2] && bx + w > b[0] && by < b[1] + b[3] && by + h > b[1])) continue;
+            placed.push([bx, by, w, h]);
+          }
+          label(ctx, t, x, y - sk * 1.25, font, INK);
         }
       }
       ctx.restore();
@@ -692,7 +711,7 @@
     const gm = UI.gmDraw;
     UI.gmDraw = function () {
       const cv = UI.$ && UI.$('#gmap'); if (cv) IM.redraws.set(cv, () => UI.gmDraw());
-      IM.zoomNow = UI.gm && UI.gm.view ? KW / UI.gm.view.w : 1;
+      IM.zoomNow = UI.gm && UI.gm.view ? ZREF / UI.gm.view.w : 1;
       try { return gm.apply(this, arguments); } finally { IM.zoomNow = 0; }
     };
   }
@@ -700,7 +719,7 @@
     const wb = UI.drawWarBasic;
     UI.drawWarBasic = function (cv) {
       if (cv) IM.redraws.set(cv, () => UI.drawWar ? UI.drawWar(cv) : UI.drawWarBasic(cv));
-      IM.zoomNow = UI.wr && UI.wr.view ? KW / UI.wr.view.w : 1;
+      IM.zoomNow = UI.wr && UI.wr.view ? ZREF / UI.wr.view.w : 1;
       try { return wb.apply(this, arguments); } finally { IM.zoomNow = 0; }
     };
   }

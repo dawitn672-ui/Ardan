@@ -1,4 +1,5 @@
 // 90-fold: sections fold, the folds are remembered, the screen is shorter, and nothing about the game changes.
+// (The Life tab's activities were an accordion of groups; since 91-look they are one section, one grid of tiles.)
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -27,26 +28,33 @@ export default {
         out[off ? 'off' : 'on'] = row;
       }
       UI.FOLD.OFF = false;
+      out.look = !!UI.LOOK;
       return out;
     }, START.toString());
     const shorter = Object.keys(r.on).filter(k => r.on[k] < r.off[k] - 0.2);
-    const ok = r.on.life <= 3.2 && r.on.holdings <= 4.5 && r.on.realm <= 1.6 && r.on.profile <= 1.7 && shorter.length >= 4;
-    return { ok, detail: `screens of scroll at 1366x768, folds off → on: ${Object.keys(r.on).map(k => `${k} ${r.off[k]} → ${r.on[k]}`).join(', ')}` };
+    // with 91-look's layout in the build the Life panel and the profile fit (only the story scrolls); without it, 3.2 and 1.7
+    const [life, prof, hold] = r.look ? [1.05, 1.05, 3.2] : [3.2, 1.7, 4.5];
+    const ok = r.on.life <= life && r.on.holdings <= hold && r.on.realm <= 1.6 && r.on.profile <= prof && shorter.length >= 4;
+    return { ok, detail: `screens of scroll at 1366x768${r.look ? ' (91-look in the build)' : ''}, folds off → on: ${Object.keys(r.on).map(k => `${k} ${r.off[k]} → ${r.on[k]}`).join(', ')}` };
   },
   async foldToggles(pg) {
     const r = await pg.evaluate(async start => {
       eval(start)();
-      const head = () => [...document.querySelectorAll('#tabbody .fold-acts > .fold-head > .fold-h')];
-      const hs = head();
-      const closed0 = hs.filter(h => h.getAttribute('aria-expanded') === 'false').length;
-      const a = hs.find(h => h.getAttribute('aria-expanded') === 'false'), key = a && a.dataset.v;
+      // the Life tab's activities are one section (one grid of tiles), open by default; Your days folds to its summary
+      const acts = [...document.querySelectorAll('#tabbody .fold-acts > .fold-head > .fold-h')];
+      const a = acts[0], key = a && a.dataset.v, sec = a && a.closest('.fold');
+      const open0 = a && a.getAttribute('aria-expanded') === 'true';
+      const ctl = a && document.getElementById(a.getAttribute('aria-controls')) === sec.querySelector(':scope > .fold-b');
+      const yd = document.querySelector('#tabbody .plan-card > .fold-x'), yd0 = yd && yd.getAttribute('aria-expanded');
+      const ydSum = yd && yd.nextElementSibling && /\S/.test(yd.nextElementSibling.textContent);
       a.click();
-      const sec = a.closest('.fold'), opened = !sec.querySelector(':scope > .fold-b').hidden && a.getAttribute('aria-expanded') === 'true';
-      const openActs = document.querySelectorAll('#tabbody .fold-acts.open').length;
-      const stored = JSON.parse(localStorage.getItem(UI.FOLD.KEY) || '{}')['life|' + key] === true;
+      const closed = sec.querySelector(':scope > .fold-b').hidden && a.getAttribute('aria-expanded') === 'false' && !!sec.querySelector(':scope > .fold-head > .fold-sum');
+      const stored = JSON.parse(localStorage.getItem(UI.FOLD.KEY) || '{}')['life|' + key] === false;
       // a fresh draw keeps the choice
       UI.render();
-      const kept = [...document.querySelectorAll('#tabbody .fold-h')].find(h => h.dataset.v === key).getAttribute('aria-expanded') === 'true';
+      const kept = [...document.querySelectorAll('#tabbody .fold-h')].find(h => h.dataset.v === key).getAttribute('aria-expanded') === 'false';
+      document.querySelector('#tabbody .fold-acts > .fold-head > .fold-h').click();
+      const back = document.querySelector('#tabbody .fold-acts > .fold-head > .fold-h').getAttribute('aria-expanded') === 'true';
       // a tall card's corner button
       document.querySelector('[data-a="group"][data-v="holdings"]').click(); await new Promise(res => setTimeout(res, 40));
       const x = document.querySelector('#tabbody .fold-card > .fold-x'), card = x && x.closest('.fold-card');
@@ -56,9 +64,9 @@ export default {
       document.querySelector('[data-a="foldAll"]').click();
       const allOpen = [...document.querySelectorAll('#tabbody .fold-h')].every(h => h.getAttribute('aria-expanded') === 'true');
       document.querySelector('[data-a="foldAll"]').click();
-      return { n: hs.length, closed0, opened, openActs, stored, kept, cardFlip, allOpen, back: !UI.FOLD.allOpen };
+      return { sections: acts.length, open0, ctl, yd0, ydSum, closed, stored, kept, back, cardFlip, allOpen, again: !UI.FOLD.allOpen };
     }, START.toString());
-    const ok = r.n >= 4 && r.closed0 >= 3 && r.opened && r.openActs === 1 && r.stored && r.kept && r.cardFlip && r.allOpen && r.back;
+    const ok = r.sections === 1 && r.open0 && r.ctl && r.yd0 === 'false' && r.ydSum && r.closed && r.stored && r.kept && r.back && r.cardFlip && r.allOpen && r.again;
     return { ok, detail: JSON.stringify(r) };
   },
   async foldPure(pg) {

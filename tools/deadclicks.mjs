@@ -45,11 +45,12 @@ const PHONE = process.argv.includes('--phone');
 const ctx = await browser.newContext({ viewport: PHONE ? { width: 390, height: 844 } : { width: 1366, height: 768 }, hasTouch: PHONE, acceptDownloads: true });
 const pg = await ctx.newPage();
 const errs = [];
-let dialogs = 0, downloads = 0;
+let dialogs = 0, downloads = 0, choosers = 0;
 pg.on('pageerror', e => errs.push(String(e.message || e)));
 pg.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
 pg.on('dialog', d => { dialogs++; d.accept().catch(() => {}); });
 pg.on('download', () => { downloads++; });
+pg.on('filechooser', () => { choosers++; });
 await pg.goto(pathToFileURL(file).href);
 await pg.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
 await pg.evaluate(() => { try { localStorage.clear(); } catch (e) {} window.open = () => null; });
@@ -80,7 +81,9 @@ for (const name of want) {
   for (const c of list.slice(0, MAX)) {
     if (c.disabled || c.current) continue;
     await pg.evaluate(setup).catch(() => {});
-    const e0 = errs.length, d0 = dialogs, dl0 = downloads;
+    // a fresh start for every click: no toast and no popover left from the one before
+    await pg.evaluate(() => { const t = document.getElementById('toast'); if (t) { t.textContent = ''; t.className = ''; } if (UI.TT && UI.TT.closeAll) UI.TT.closeAll(); if (UI.tipHide) { try { UI.tipHide(1); } catch (e) {} } }).catch(() => {});
+    const e0 = errs.length, d0 = dialogs, dl0 = downloads, fc0 = choosers;
     const r = await pg.evaluate(async ({ sel, i }) => {
       const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 2 && r.height > 2 && s.visibility !== 'hidden' && s.display !== 'none' && !e.closest('[hidden]'); };
       const el = [...document.querySelectorAll(sel)].filter(vis)[i];
@@ -88,7 +91,8 @@ for (const name of want) {
       const hash = s => { let h = 0; for (let k = 0; k < s.length; k++) h = (h * 31 + s.charCodeAt(k)) | 0; return h; };
       const ui = () => { try { return JSON.stringify({ wr: UI.wr, run: UI.run, map: UI.map, ov: UI.ov, sub: UI.sub, set: UI.set }, (k, v) => (v && typeof v === 'object' && v.nodeType) ? undefined : v); } catch (e) { return ''; } };
       const scrolls = () => [...document.querySelectorAll('#tabbody,#log,#profile,#modal .mbox,#modal .scroll')].map(e => e.scrollTop).join(',');
-      const look = () => hash(document.body.innerHTML) + ':' + (A.S ? hash(JSON.stringify(A.S)) : 0) + ':' + hash(ui()) + ':' + scrolls() + ':' + (document.activeElement ? document.activeElement.outerHTML.slice(0, 80) : '') + ':' + [UI.screen, UI.tab, document.querySelectorAll('.tt-pop:not([hidden])').length].join('|');
+      const canv = () => [...document.querySelectorAll('#modal canvas, #app canvas')].slice(0, 4).map(c => { try { const d = c.toDataURL(); let h = 0; for (let k = 0; k < d.length; k += 211) h = (h * 31 + d.charCodeAt(k)) | 0; return h; } catch (e) { return 0; } }).join(',');
+      const look = () => canv() + ':' + hash(document.body.innerHTML) + ':' + (A.S ? hash(JSON.stringify(A.S)) : 0) + ':' + hash(ui()) + ':' + scrolls() + ':' + (document.activeElement ? document.activeElement.outerHTML.slice(0, 80) : '') + ':' + [UI.screen, UI.tab, document.querySelectorAll('.tt-pop:not([hidden])').length].join('|');
       const before = look();
       const open0 = window.__opened || 0;
       el.click();
@@ -99,7 +103,7 @@ for (const name of want) {
     if (r.gone) continue;
     const raised = errs.slice(e0);
     if (raised.length) broke.push({ screen: name, ...c, err: raised.join(' | ').slice(0, 300) });
-    if (!r.changed && dialogs === d0 && downloads === dl0) { dead.push({ screen: name, ...c }); perScreen[name].dead++; }
+    if (!r.changed && dialogs === d0 && downloads === dl0 && choosers === fc0) { dead.push({ screen: name, ...c }); perScreen[name].dead++; }
   }
 }
 await browser.close();

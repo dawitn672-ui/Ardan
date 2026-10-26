@@ -3,7 +3,9 @@
 // layer reshapes the page (it reads layout and never touches the game or the random stream):
 // - a header (.group-h) and the blocks under it become a section that folds, with a count in its header;
 // - a tall card gets a fold button in its corner, and folds to its own first row;
-// - the Life tab's activity groups are an accordion: one open at a time;
+// - the Life tab's activity groups become one Activities section: a single grid of tiles in the groups' fixed order,
+//   each tile knowing its group (91-look draws the tiles and gives each its group's icon);
+// - a header carries a count and, when its section is closed, a one-line summary, so a closed section still informs;
 // - the profile gets a compact head (a small portrait beside the name) and its bars sit two to a row.
 // What the player opens or closes is remembered in the browser (UI.store), per tab and section, not in the save.
 const FOLD = UI.FOLD = UI.FOLD || {};
@@ -14,14 +16,19 @@ FOLD.save = () => { try { UI.store.set(FOLD.KEY, JSON.stringify(FOLD.state)); } 
 const slug = t => String(t || '').toLowerCase().replace(/\(\d+\)|\d+/g, '').replace(/[^a-z& ]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
 // default open or closed for a section, before the player chooses: sections the player needs every visit stay open
 FOLD.DEFAULT_CLOSED = {
-  life: ['how you are', 'body & mind', 'social', 'faith', 'health', 'wilds', 'glory', 'money', 'world', 'war', 'intrigue', 'crime', 'study', 'craft', 'family', 'love', 'court', 'work'],
+  // Your days folds to its own summary line ("Push for advancement · training is fair") except on a tall screen
+  life: ['how you are', 'your days'],
+  profile: ['body'],
   holdings: ['the armorer', 'property', 'the trade roads'],
   realm: ['the council', 'the ladder', 'the ways of', 'how the', 'why wars begin', 'factions of'],
   path: ['how you live', 'schools & academies'],
   people: [],
 };
-FOLD.ACCORDION = { life: true };            // activity groups: one open at a time
+FOLD.ACCORDION = {};                        // tabs whose activity sections open one at a time (none since one grid)
 FOLD.TALL = 180;                            // a card taller than this gets a fold button
+FOLD.ALWAYS = ['whatnow', 'plan-card'];     // cards that fold whatever their height (What now, Your days)
+// a tall window (1600 x 1000 and up) has room for Your days open (brief §4.2); reading the window is not game state
+FOLD.roomy = () => typeof window !== 'undefined' && window.innerWidth >= 1600 && window.innerHeight >= 1000;
 FOLD.isOpen = function (tab, key, fallback) {
   if (FOLD.allOpen) return true;
   const k = tab + '|' + key;
@@ -29,8 +36,65 @@ FOLD.isOpen = function (tab, key, fallback) {
   return fallback;
 };
 FOLD.defaultOpen = function (tab, key) {
+  if (tab === 'life' && FOLD.roomy() && key.startsWith('your days')) return true;
   const list = FOLD.DEFAULT_CLOSED[tab] || [];
   return !list.some(p => key.startsWith(p));
+};
+// ids for aria-controls, from the tab and the section's key, so the same screen always draws the same markup
+const idFrom = (pre, tab, key) => {
+  const base = pre + '-' + (tab + '-' + key).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48);
+  let id = base, n = 1;
+  while (document.getElementById(id)) id = base + '-' + (++n);
+  return id;
+};
+// the one-line summary a closed section shows in its header: the first words of what it holds
+FOLD.summaryOf = function (box) {
+  if (!box) return '';
+  const first = box.firstElementChild;
+  // a table says how many rows it holds; anything else gives its first words (text nodes joined with spaces)
+  const tb = first && (first.matches('table') ? first : first.matches('.tscroll') ? first.querySelector('table') : null);
+  if (tb) { const n = tb.querySelectorAll('tbody tr').length || Math.max(0, tb.querySelectorAll('tr').length - 1); return n ? n + (n === 1 ? ' row' : ' rows') : ''; }
+  const parts = [], w = document.createTreeWalker(box, NodeFilter.SHOW_TEXT);
+  let len = 0;
+  for (let n = w.nextNode(); n && len < 80; n = w.nextNode()) { const t = n.textContent.replace(/\s+/g, ' ').trim(); if (t) { parts.push(t); len += t.length + 1; } }
+  const t = parts.join(' ').replace(/\s+([,.;:])/g, '$1');
+  return t.length > 60 ? t.slice(0, 58).replace(/\s+\S*$/, '') + '…' : t;
+};
+const putSummary = (head, text) => {
+  let s = head.querySelector(':scope > .fold-sum');
+  if (!text) { if (s) s.remove(); return; }
+  if (!s) { s = document.createElement('span'); s.className = 'fold-sum'; s.setAttribute('aria-hidden', 'true'); head.appendChild(s); }
+  s.textContent = text;
+};
+FOLD.putSummary = putSummary;
+// the Life tab's activities: every group (Only now, Body & mind, Social ...) into one grid, in the groups' order. Each
+// tile keeps its group in data-g (a slug) and data-gn (the group's name, for its tooltip); the first of a group is marked.
+FOLD.mergeActs = function (tb) {
+  if (!tb || tb.querySelector(':scope > .lk-acts-h')) return;
+  const kids = [...tb.children], groups = [];
+  for (let i = 0; i < kids.length - 1; i++) {
+    const h = kids[i], a = kids[i + 1];
+    if (h.classList.contains('group-h') && a.classList.contains('acts') && a.querySelector(':scope > .act')) { groups.push([h, a]); i++; }
+  }
+  if (!groups.length) return;
+  const head = document.createElement('div');
+  head.className = 'group-h lk-acts-h';
+  head.textContent = 'Activities';
+  const grid = document.createElement('div');
+  grid.className = 'acts lk-acts';
+  groups[0][0].before(head);
+  head.after(grid);
+  for (const [h, a] of groups) {
+    const name = h.textContent.trim(), g = /^only now/i.test(name) ? 'only now' : slug(name);
+    let first = true;
+    for (const t of [...a.children]) {
+      t.dataset.g = g; t.dataset.gn = name;
+      if (g === 'only now') t.classList.add('lk-now');
+      if (first) { t.classList.add('lk-gstart'); first = false; }
+      grid.appendChild(t);
+    }
+    h.remove(); a.remove();
+  }
 };
 const isActs = el => el && el.classList && (el.classList.contains('acts'));
 
@@ -70,6 +134,9 @@ FOLD.sections = function (root, tab) {
     h.before(sec);
     sec.append(h, box);
     for (const b of body) box.appendChild(b);
+    box.id = idFrom('fold-b', tab, key);
+    btn.setAttribute('aria-controls', box.id);
+    if (!open) putSummary(h, FOLD.summaryOf(box));
     i += body.length;
   }
 };
@@ -78,7 +145,7 @@ FOLD.cards = function (root, tab) {
   if (!root) return;
   for (const c of root.querySelectorAll(':scope > .card, :scope > section.card, .fold-b > .card')) {
     if (c.dataset.fc || c.tagName === 'DETAILS' || c.classList.contains('person') || c.children.length < 2) continue;
-    if (c.offsetHeight < FOLD.TALL) continue;
+    if (c.offsetHeight < FOLD.TALL && !FOLD.ALWAYS.some(k => c.classList.contains(k))) continue;
     const first = c.firstElementChild, label = (first.textContent || '').trim().split('\n')[0];
     const key = 'card ' + slug((c.className.toString().split(/\s+/).filter(x => x !== 'card' && x !== 'small')[0] || '') + ' ' + label.slice(0, 24));
     const open = FOLD.isOpen(tab, key, FOLD.defaultOpen(tab, slug(label)));
@@ -93,7 +160,16 @@ FOLD.cards = function (root, tab) {
     btn.setAttribute('aria-expanded', String(open));
     btn.dataset.label = label.slice(0, 40) || 'this card';
     btn.setAttribute('aria-label', (open ? 'Fold ' : 'Open ') + btn.dataset.label);
+    if (!c.id) c.id = idFrom('fold-c', tab, key);
+    btn.setAttribute('aria-controls', c.id);
     c.insertBefore(btn, first);
+    // What now: its count in the header, and when folded, its first step
+    if (c.classList.contains('whatnow')) {
+      const items = c.querySelectorAll('.wn-item'), n = items.length;
+      if (n && !first.querySelector('.fold-n')) { const k = document.createElement('span'); k.className = 'fold-n'; k.dataset.n = String(n); k.setAttribute('aria-hidden', 'true'); first.appendChild(k); }
+      const b = items[0] && items[0].querySelector('.wn-t b');
+      if (!open && b) putSummary(first, 'first: ' + b.textContent.trim());
+    }
   }
 };
 // the profile: a compact head, and the bars two to a row
@@ -123,6 +199,7 @@ FOLD.apply = function () {
   try {
     const tb = document.getElementById('tabbody'), pr = document.getElementById('profile'), tab = UI.tab || '';
     const t = tab === 'goals' ? 'life' : tab === 'war' ? 'path' : tab;
+    if (tb && t === 'life' && tab === 'life') FOLD.mergeActs(tb);
     if (tb) { FOLD.sections(tb, t); FOLD.cards(tb, t); FOLD.tools(tb); }
     if (pr) { FOLD.profile(pr); FOLD.sections(pr, 'profile'); }
   } catch (e) { console.error('fold', e); }
@@ -139,12 +216,18 @@ const set = (el, open) => {
   const sec = el.closest('.fold'), card = el.closest('.fold-card');
   if (sec && el.classList.contains('fold-h')) {
     sec.classList.toggle('open', open);
+    sec.classList.toggle('fold-anim', open);   // the body fades in when the player opens it, not on every redraw
     const b = sec.querySelector(':scope > .fold-b'); if (b) b.hidden = !open;
     el.setAttribute('aria-expanded', String(open));
+    const head = el.parentElement;
+    if (head && !head.querySelector(':scope > .fold-sum.lk-keep')) putSummary(head, open ? '' : FOLD.summaryOf(b));
   } else if (card) {
     card.classList.toggle('folded', !open);
+    card.classList.toggle('fold-anim', open);
     el.setAttribute('aria-expanded', String(open));
     el.setAttribute('aria-label', (open ? 'Fold ' : 'Open ') + (el.dataset.label || 'this card'));
+    const first = el.nextElementSibling;
+    if (card.classList.contains('whatnow') && first) { const b = card.querySelector('.wn-item .wn-t b'); putSummary(first, !open && b ? 'first: ' + b.textContent.trim() : ''); }
   }
 };
 Object.assign(UI.A, {
@@ -225,7 +308,6 @@ FOLD.CSS = `
 .fold > .fold-head::before{display:none}
 .fold-n{flex:none;border:1px solid var(--border-2);border-radius:999px;padding:0 7px;line-height:1.5;letter-spacing:0;color:var(--text-3)}
 .fold-n::before{content:attr(data-n);font-size:var(--fs-1)}
-#game.phone .fold-h{width:44px;height:44px;margin:-11px -10px -11px -14px}
 @media (prefers-reduced-motion:reduce){.fold-h::before{transition:none}}
 .fold-card{position:relative}
 .fold-card.folded > :not(:first-child):not(.fold-x){display:none}
@@ -234,7 +316,6 @@ FOLD.CSS = `
 .fold-x::before{content:"";width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--accent);transition:transform .15s ease}
 .fold-x[aria-expanded="false"]::before{transform:rotate(-90deg)}
 .fold-x:hover{border-color:var(--accent-line)}
-#game.phone .fold-x{width:44px;height:44px}
 .fold-tools{display:flex;justify-content:flex-end;margin:-2px 0 4px;max-width:100%;overflow:hidden}
 .fold-tools .ghost{background:none;border:0;color:var(--text-3);cursor:pointer;font-size:var(--fs-1);padding:2px 4px;text-decoration:underline dotted}
 .fold-tools .ghost:hover{color:var(--accent-2)}
