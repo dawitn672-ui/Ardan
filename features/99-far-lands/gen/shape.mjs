@@ -146,7 +146,7 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
   };
   for (let i = 0; i < N; i++) if (own[i] >= 0 && worth[i] > -60) { owner[i] = own[i]; count[own[i]]++; }
   fillHoles();
-  for (let i = 0; i < N; i++) count[i < regs.length ? i : 0] = 0;
+  count.fill(0);
   for (let i = 0; i < N; i++) if (owner[i] >= 0) count[owner[i]]++;
   if (process.env.FL_DEBUG) { const c0 = new Int32Array(regs.length); for (let i = 0; i < N; i++) if (own[i] >= 0) c0[own[i]]++; console.log('own', main.map(k => regs[k].id + ':' + (c0[k] / target[k]).toFixed(2) + '/' + (count[k] / target[k]).toFixed(2)).join(' ')); }
   {
