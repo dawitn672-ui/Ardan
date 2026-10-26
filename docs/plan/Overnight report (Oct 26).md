@@ -43,8 +43,19 @@ The owner can read all five in the private **Ardan Codex**, with links between e
 The integrated build has all 94 features, 147 patches and 68 event packs, and weighs 4.7 MB.
 
 - **Balance:** every starting path is within its band in `bench/targets.mjs`. Check win rate 48.9%, 9 arc types, 0 page errors.
-- **Tests:** FILLED IN BELOW.
-- **Dead-click sweep:** FILLED IN BELOW.
+- **Tests:** the full suite (477 tests) passed 472 at first. The five failures were cross-lane, and each is fixed:
+  - `stagesHaveTheirOwnPlay`: the single activity grid had dropped the "Only now" header. The Activities header now names the stage's own tiles.
+  - `wcTokens`: an outlaw exiled to unclaimed land had no near realms, so the chronicle could cite no war. The realms bordering the home now count as near.
+  - `ttCov2Scenes`: the new check chip and stake line carried numbers with no tooltip. Both now explain themselves; coverage is 93 of 93.
+  - `twoScalesPhone`: 91-look's `h3` rule beat the battle book's rubric colours, which failed contrast on the vellum.
+  - `skyPhone`: 92's phone sheet lets the print grow into the spare height. The test now expects that.
+
+  A re-run of the affected tests, every test of 57, 59, 92, 96 and 97, and the replay and render-purity checks: 54 of 54 passed.
+- **Dead-click sweep** (`tools/deadclicks.mjs`, 19 screens, 2,293 controls): 0 actions with no handler and 0 click errors. 37 controls flagged.
+  - Holdings: 30, mostly tooltip cells in the armoury table, which explain on hover and do nothing on a click. Its Buy buttons were checked by hand and work.
+  - "Slave" on the creation screen is greyed out with its reason ("not in this realm"). The tool now reads that as disabled.
+  - The zoom and filter buttons flagged were already in the state they set.
+  - Still open: the training-intensity buttons in another person's profile.
 
 ## What did not ship, and why
 
