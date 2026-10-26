@@ -114,6 +114,11 @@ left grows linearly with the world, plus the wars.
 
 `node features/09-scale/bench.mjs built.html --K=1,5,10 [--off]` prints the table above for any build.
 
+Checked on Oct 26 against one snapshot of the features (with and without this folder): those four tests, the core
+suites and the tests of 01, 03-05, 20, 21, 23, 36, 38, 43, 44, 45, 55, 56, 64, 66, 68, 69, 70 and 99 (143 tests, all
+pass), and `bench/balance.mjs --workers=2`, whose 72 lives came out identical life by life (every path's deaths, wealth,
+fame and arcs; check win rate 49.4%; all within their bands).
+
 ## What is left
 
 - **The month at 10× is not yet 250 ms.** It is linear work now, spread over many systems: the war day (`A.wsDay`,

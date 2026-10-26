@@ -43,7 +43,7 @@ for (let run = 0; run < RUNS; run++) for (const scale of SCALES) for (const land
     months.sort((a, b) => a - b);
     const q = p => months.length ? months[Math.min(months.length - 1, Math.floor(p * months.length))] : 0;
     return { lands, prov: A.S.prov.length, realms: Object.keys(A.S.realms).length, people0: null, tNew: Math.round(tNew), median: Math.round(q(0.5)), p90: Math.round(q(0.9)),
-      year: years.map(Math.round), n: months.length, mb0: +(S0 / 1e6).toFixed(2), mb1: +(JSON.stringify(A.S).length / 1e6).toFixed(2), scale: !!A.SCALE && !A.SCALE_OFF, scaleIn: !!A.SCALE };
+      year: years.map(Math.round), n: months.length, mb0: +(S0 / 1e6).toFixed(2), mb1: +(JSON.stringify(A.S).length / 1e6).toFixed(2), scale: !!A.WSCALE && !A.SCALE_OFF, scaleIn: !!A.WSCALE };
   }, { lands, MONTHS, SEED, scale });
   r.errors = errs.length;
   rows.push(r);
