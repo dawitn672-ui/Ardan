@@ -154,7 +154,7 @@
   MO.html = function (m, mode) {
     const who = P(m.who);
     let bust = '';
-    try { if (who && typeof PORTRAIT !== 'undefined' && PORTRAIT.svg) bust = PORTRAIT.svg(who, 120); } catch (e) { bust = ''; }
+    try { if (who && typeof PORTRAIT !== 'undefined' && PORTRAIT.svg) bust = PORTRAIT.svg(who, 112); /* a bust: 93 draws the full figure from 120 px */ } catch (e) { bust = ''; }
     const seed = [m.k, m.word, A.S ? A.S.year : 0, A.S ? A.S.pc : ''].join('|');
     return `<div class="mo-dim" aria-hidden="true"></div>` + (mode === 'full' && m.k !== 'death' ? MO.lines(seed) : '') +
       `<div class="mo-band" aria-hidden="true"><div class="mo-band-acc"></div><div class="mo-band-ink"></div></div>` +
@@ -213,16 +213,16 @@
 .mo-cut .mo-lines path{fill:var(--mo-word);opacity:.25}
 .mo-cut .mo-band{position:absolute;left:-10vw;right:-10vw;top:50%;height:var(--mo-h);margin-top:calc(var(--mo-h) / -2);transform:rotate(-10deg)}
 .mo-cut .mo-band-acc{position:absolute;inset:0;transform:translate(0,10px);background:var(--mo-acc);box-shadow:0 0 0 0 transparent}
-.mo-cut .mo-band-ink{position:absolute;inset:0 0 6px;background:linear-gradient(180deg,#25203f,var(--mo-ink) 55%);border-top:2px solid var(--mo-acc2)}
+.mo-cut .mo-band-ink{position:absolute;inset:0 0 6px;background-color:var(--mo-ink);box-shadow:inset 0 22px 30px -18px rgba(120,100,200,.35);border-top:2px solid var(--mo-acc2)}
 .mo-cut .mo-content{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%) rotate(-10deg);display:flex;align-items:center;justify-content:center;gap:24px;padding:0 48px;pointer-events:none}
 .mo-cut .mo-bust{flex:none;width:120px;height:120px;filter:drop-shadow(3px 0 0 var(--mo-acc)) drop-shadow(-3px 0 0 var(--mo-acc)) drop-shadow(0 3px 0 var(--mo-acc)) drop-shadow(0 -3px 0 var(--mo-acc)) drop-shadow(0 10px 18px rgba(0,0,0,.5))}
 .mo-cut .mo-bust svg{width:100%;height:100%;display:block}
 .mo-cut .mo-words{min-width:0;display:flex;flex-direction:column;align-items:flex-start}
 .mo-cut .mo-word{font-family:var(--f-impact,"Dela Gothic One",Impact,sans-serif);font-size:var(--t-display,44px);line-height:1;color:var(--mo-word);letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;
   text-shadow:3px 3px 0 var(--mo-ink),-1px -1px 0 var(--mo-ink),0 0 24px rgba(240,192,98,.35)}
-.mo-cut .mo-sub{margin-top:6px;font-family:var(--f-ui,sans-serif);font-size:var(--t-h3,16px);font-weight:700;color:var(--mo-sub);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70vw}
+.mo-cut .mo-sub{margin-top:6px;margin-left:-4px;padding:0 4px;background-color:var(--mo-ink);font-family:var(--f-ui,sans-serif);font-size:var(--t-h3,16px);font-weight:700;color:var(--mo-sub);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70vw}
 .mo-cut.mo-k-death{--mo-acc:#8f9bbd;--mo-acc2:#c4cbe0}
-.mo-cut.mo-k-death .mo-band-ink{background:linear-gradient(180deg,#1f2236,#14162a 55%)}
+.mo-cut.mo-k-death{--mo-ink:#161a2c}
 .mo-cut.mo-k-death .mo-word{text-shadow:2px 2px 0 var(--mo-ink)}
 .mo-cut.mo-k-victory{--mo-acc:#ff8a5c;--mo-acc2:#ffd98a}
 .mo-cut.mo-k-crowned{--mo-acc:#ffb648;--mo-acc2:#fff0c4}
@@ -231,7 +231,7 @@
 .mo-cut.mo-k-year{--mo-acc:#e8b04a;--mo-acc2:#ffe7b0}
 .mo-cut.mo-k-year .mo-word{font-size:calc(var(--t-display,44px) * 1.25)}
 @media (min-width:1600px){.mo-cut{--mo-h:150px}}
-@media (max-width:760px){.mo-cut{--mo-h:104px}.mo-cut .mo-content{gap:14px;padding:0 20px}.mo-cut .mo-bust{width:84px;height:84px}.mo-cut .mo-word{font-size:${'calc(34px * var(--tx, 1))'}}.mo-cut .mo-sub{font-size:var(--t-small,14px);max-width:60vw}}
+@media (max-width:760px){.mo-cut{--mo-h:104px}.mo-cut .mo-content{gap:14px;padding:0 20px}.mo-cut .mo-bust{width:84px;height:84px}.mo-cut .mo-word{font-size:min(calc(34px * var(--tx, 1)), 8.2vw);white-space:normal;line-height:1.05}.mo-cut .mo-words{max-width:calc(100vw - 140px)}.mo-cut .mo-sub{font-size:var(--t-small,14px);max-width:60vw}}
 /* reduced motion and Motion off: a still banner, level, no focus lines */
 .mo-cut.mo-reduced .mo-band, .mo-cut.mo-off .mo-band{transform:none}
 .mo-cut.mo-reduced .mo-content, .mo-cut.mo-off .mo-content{transform:translateY(-50%)}

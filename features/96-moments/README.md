@@ -8,7 +8,7 @@ The owner asked for the Persona energy this audience knows. The brief keeps styl
 
 ## What it does
 
-**Cut-ins** (`moments.core.js`). A band across the screen at −10°, 120 px tall (150 at ≥1600, 104 on a phone), `--line-ink` with a 6 px band of the moment's colour offset behind it; the word in Dela Gothic One (`--t-display`, 44 px, 64 at ≥1600); one line under it; the subject's bust at 120 px with an outline in the moment's colour; and a seeded burst of 24 to 40 focus lines from the centre. The moments, most important first:
+**Cut-ins** (`moments.core.js`). A band across the screen at −10°, 120 px tall (150 at ≥1600, 104 on a phone), `--line-ink` with a 6 px band of the moment's colour offset behind it; the word in Dela Gothic One (`--t-display`, 44 px, 64 at ≥1600); one line under it; the subject's bust in a 120 px frame with an outline in the moment's colour (asked of 93 at 112 px, below the size where it draws the full figure); and a seeded burst of 24 to 40 focus lines from the centre. The moments, most important first:
 
 | Moment | Word | Line | Bust |
 | --- | --- | --- | --- |
@@ -28,7 +28,8 @@ Death is muted (a grey-blue band, no focus lines); a victory is vermilion and go
 - **Skippable.** A click anywhere or any key ends it; the key is spent on the skip, so a number key does not also choose in the scene under it.
 - **Timing:** 220 ms in, 700 held, 260 out (1.2 s): the band sweeps in from the left and out to the right, the word lands with a small overshoot, the lines burst and fade.
 - **Reduced motion:** a still, level banner that fades in, stays 1.5 s and fades out (no transform, no lines). **Motion off:** the same banner with no fades.
-- Read out once through `role="status"`; the drawing is `aria-hidden`.
+- Read out once through `role="status"`; the drawing is `aria-hidden`. The line under the word sits on a plate of the band's ink, so its contrast is measurable (axe).
+- On a phone the word scales with the screen (at most 34 px, 8.2vw) and may break onto two lines ("A / DAUGHTER").
 
 **How the moments are found.** Nothing in the engine changes. After every draw (`UI.render`, `UI.refresh`, `UI.renderModal`, the clock's light redraw `UI.clkLight`) the life is read: its year and month, career rank, army rank, noble rung, crown, spouse, children, living kin and epithet. The reading is compared with the last one. A new life, a loaded save (a different `A.S`), another heir, or a jump of more than a year gives no moments. The readings, the month of the last cut-in and a short log (read by the tests) are UI state here.
 

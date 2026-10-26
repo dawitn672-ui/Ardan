@@ -5,7 +5,7 @@ import { BOT } from '../../bench/bot.mjs';
 export default {
   // 1. Repeats: the share of the scenes a life shows that it had already shown, over everything the player sees
   //    (rolls, duties, flows, NPC moves, a superior's scenes, gatherings, activities), with the feature off and on in
-  //    one build, the same lives. And the pace must hold.
+  //    one build, the same lives (engaged, passive, engaged, as the bench league alternates). And the pace must hold.
   async lfRepeats(pg) {
     await pg.evaluate(BOT);
     const r = await pg.evaluate(() => {
@@ -13,7 +13,8 @@ export default {
       const run = (off, o, years) => {
         A.LF.OFF = off;
         try {
-          const L = B.life(o, 'random', true, years), pc = A.P(A.S.pc), sh = A.LF.share(pc), cs = A.LF.caseShare(pc);
+          // engaged and passive alternate, as in the bench league (an engaged bot spends its initiative every month)
+          const L = B.life(o, 'random', !o.passive, years), pc = A.P(A.S.pc), sh = A.LF.share(pc), cs = A.LF.caseShare(pc);
           const prompts = Object.values(L.items).reduce((a, n) => a + n, 0);
           const m = pc.evN || {};
           return { shown: sh.shown, rep: sh.repeats, crep: cs.repeats, prompts, years: L.years, master: m.fl_st_master || 0, conf: m.du_ch_confession || 0 };
@@ -21,7 +22,7 @@ export default {
       };
       const lives = [
         { seed: 9701, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 16 },
-        { seed: 9702, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 16 },
+        { seed: 9702, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 16, passive: true },
         { seed: 9703, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 16 },
       ];
       const sum = side => lives.map(o => run(side === 'off', o, 40)).reduce((a, x) => ({ shown: a.shown + x.shown, rep: a.rep + x.rep, crep: a.crep + x.crep, prompts: a.prompts + x.prompts, years: a.years + x.years,

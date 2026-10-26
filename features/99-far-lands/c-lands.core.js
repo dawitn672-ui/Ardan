@@ -157,7 +157,7 @@
   // ---- the creation screen: the Known World alone, or the Great Continent
   FL.creationField = c => `<div class="field"><label>Lands</label><div class="opt-grid">${[
     ['known', 'The Known World', 'The world as the old maps show it: the Westland, the Southland and the Eastland.'],
-    ['great', 'The Great Continent', `The Known World is the western end of a continent three times as wide: ${Object.keys(D.realms).length} more realms, as far as the Sunrise Isles.`],
+    ['great', 'The Great Continent', `The Known World is the western end of a continent two and a half times as wide, from the taiga to the equator: ${Object.keys(D.realms).length} more realms, as far as the Sunrise Isles.`],
   ].map(d => UI.opt((c.lands || 'known') === d[0], 'crSet', 'lands:' + d[0], d[1], d[2])).join('')}</div></div>`;
   const crSet = UI.A.crSet;
   UI.A.crSet = function (v) {

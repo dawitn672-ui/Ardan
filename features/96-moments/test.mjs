@@ -53,7 +53,9 @@ export default {
       document.getElementById('mo-cut').dispatchEvent(new MouseEvent('click', { bubbles: true }));
       out.clicked = MOT.shown();
       // the next month
-      A.advance(31); A.S.queue = [];
+      const k0 = A.S.year * 12 + A.monthOf(A.today()).m;
+      for (let g = 0; g < 60 && A.S.year * 12 + A.monthOf(A.today()).m === k0; g++) { A.advance(31); A.S.queue = []; }
+      UI.refresh(); UI.MOMENTS.skip();   // whatever the month brought by itself
       pc.epithet = 'the Grim';
       UI.refresh();
       out.next = MOT.shown();
@@ -106,6 +108,7 @@ export default {
       } finally { await ctx.close(); }
     }
     // the menu
+    await pg.evaluate(SETUP);
     const menu = await pg.evaluate(() => { MOT.start(undefined, 'system'); UI.ov = { type: 'menu' }; UI.render(); const s = document.querySelector('#modal select[data-c="setMotion"]'); return s ? [...s.options].map(o => o.value).join(',') : null; });
     await pg.selectOption('#modal select[data-c="setMotion"]', 'reduced');
     const saved = await pg.evaluate(() => ({ set: UI.set.motion, attr: document.documentElement.dataset.motion, stored: (() => { try { return JSON.parse(UI.store.get(UI.SET_KEY)).motion; } catch (e) { return null; } })(), cut: !!document.querySelector('#modal input[data-c="setCutins"]') }));

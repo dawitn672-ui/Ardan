@@ -176,6 +176,9 @@ ${R}.sc-sheet .sc-card .choices > button.sc-ch > .sc-tags{grid-column:2;grid-row
 ${R}.sc-sheet .sc-card .choices button .risk.sc-odds{display:inline-flex;margin:0;height:26px}
 ${R}.sc-sheet .sc-card .sc-chk, ${R}.sc-sheet .sc-card .sc-oncew{height:26px}
 ${R}.sc-sheet .sc-card .sc-chk-2{display:none}
+${R}.sc-sheet .sc-card .choices > button.sc-ch > .sc-tags{gap:4px}
+${R}.sc-sheet .sc-card .choices button .risk.sc-odds{gap:4px;padding:0 6px}
+${R}.sc-sheet .sc-card .sc-chk{padding:0 6px 0 4px;gap:3px}
 ${R}.sc-sheet .sc-card .risk.sc-odds .sc-w{letter-spacing:.03em}
 ${R}.sc-sheet .sc-card .risk.sc-odds .sc-pips{width:26px;-webkit-mask-size:6.67px 7px;mask-size:6.67px 7px}
 ${R}.sc-sheet .sc-card .sc-result{margin-top:auto;padding:8px 12px 14px}

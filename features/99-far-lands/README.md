@@ -34,39 +34,48 @@ The release wrote the 7,000 × 4,500 km box into nine functions as `7e3` and `45
 
 ## Stage 2: the Great Continent
 
+### The frame
+
+The lore (`canon/lore/far-lands.json`, `frame`) fixes the greater box at x 0 to 17,600 km and y -2,280 (75° N) to 6,610 (5° S), in the game's own km: x east from the Known World's west edge, y south from its north edge. That box reaches **north** of the Known World (the Black Pines and the Rime Coast lie at y < 0) and **south** of it (the Deep Southland, x 400 to 6,700, below the Known World's south edge). The brief's "y 0 to 8,900, extending downward" is the same box measured from its top (the lore's `ybox`); the game keeps the canon km so no stored coordinate moves, and the grid gets an origin instead:
+
+| Name | What | Known World | Great Continent |
+| --- | --- | --- | --- |
+| `MAP.KX0`, `MAP.KY0` | km at grid cell (0, 0) | 0, 0 | 0, -2,640 |
+| `MAP.KW`, `MAP.KH` | the frame's size in km | 7,000 × 4,500 | 17,600 × 9,250 |
+| grid | cells of 10 km | 700 × 450 | 1,760 × 925, the Known World's cells copied in at cell (0, 264) |
+
+The grid runs 360 km north of the lore's box so the Bone Isles (N-04, north of 75° N) fit. km → cell is `(km - KX0) / cell` everywhere (`a-frame.core.js`, the patches, 62-inked-map's tiles, glyph lattice and traced lines, the relief layer). At the Known World's size every origin term is `+ 0` or `- 0`, so stage 1's identity holds.
+
 ### The land
 
-`gen/` is a deterministic Node generator (plain JS, no network, no packages). `node features/99-far-lands/gen/gen.mjs` writes `b-data.core.js`; `--check` fails if the checked-in file is not what it makes; `--preview=<dir>` writes pictures; `--lore=<file>` and `--out=<file>` are for trying a lore file. It reads the Known World from the vendored release and never writes it.
+`gen/` is a deterministic Node generator (plain JS, no network, no packages). `node features/99-far-lands/gen/gen.mjs` writes `b-data.core.js`; `--check` fails if the checked-in file is not what it makes; `--preview=<dir>` writes pictures; `--lore=<file>` and `--out=<file>` are for trying a lore file. It reads the Known World from the vendored release and never writes it. With the lore present (it is), everything below comes from it; without it, the hand plan (`plan.mjs`) and placeholders stand in.
 
 | Step | File | What |
 | --- | --- | --- |
-| The bones | `plan.mjs` | Coasts as curves of control points in km, 26 mountain ranges (crest height, half-width), 11 plateaus and basins, 6 lakes, chains of small islands, and anchors for the ten Far Lands of the research brief. |
-| Land and sea | `geo.mjs` | The curves pushed about by domain-warped noise. At the two seams (x 7,000, y 300-2,900, where the Known World's Eastland runs off its map; y 4,500, x 490-5,530, where the Southland does) the coast is eased into the Known World's own, carried straight outward, so every coast that reached the old edge carries on across it. Islets under 5 cells sink; small enclosed water fills. The frame's edges are open sea. |
-| Relief | `geo.mjs` | A continental rise from the coast, the ranges as belts of ridged crests along warped lines (passes where the crest noise dips), plateaus and basins with soft edges, and noise. |
-| Climate | `geo.mjs` | Temperature from latitude (canon: 54.5° N at y 0 to 14° N at y 4,500, so the frame runs to about 25° S), height, distance from the open sea, and a cold northern sea. Rain carried by four winds, each a sweep with rain shadows: the westerlies (already dry at the seam), the eastern monsoon, the southern monsoon (stopped by the Great Wall), the arctic damp; plus the equatorial rains. |
-| Rivers | `geo.mjs` | Priority flood (every drop reaches the sea or a lake), rain-weighted flow. Rivers are drawn as terrain: they make the land around them crowded, so their basins become many small plains provinces, and their mouths marsh. |
-| Biomes | `geo.mjs` | The release's 14 biome words plus one new, *Tropical monsoon forest*. |
-| Provinces | `prov.mjs` | People per km² from biome, rivers, coast, height and each land's crowding (two hearths, the Twin Rivers and the monsoon south, and thin lands between). Seeds by Poisson disc spaced by those people (averaged over 100 km): small in the river basins, huge in steppe, desert and taiga. Grown by a flood fill whose step costs more uphill and downhill, so bounds fall on ridges. Merged under 25 cells. The Known World's provinces on the seams grow across it first (no far seed within 220 km), so its realms' borders run on into the new land instead of along a ruler line. |
-| Adjacency | `prov.mjs` | Shared cell edges; straits where land is within 50 km across water; sea lanes joining every piece the land and straits leave apart, nearest crossing first. |
-| Regions | `prov.mjs` | Each province's Far Land (nearest anchor, with the high plateau and the cold north coast by their ground) and region of about 400,000 km² (rule G6): `F-03`, `R-11`, ... |
-| Ground words and names | `gen.mjs`, `names.mjs` | The release's eight terrain words from height, roughness and biome. Names from a sound palette per Far Land (a stand-in until the lore's naming rules), never an English word, never repeated, never holding `<`, `>` or `"`. |
-| Realms | `realms.mjs`, `lore.mjs` | From `canon/lore/far-lands.json` when it exists (its realms, placed at their capitals' km and grown to their stated area; its cultures and faiths). Otherwise placeholders: per land a count and the polity kinds of section 4.3 (khaganates and horse clans on the Long Grass, oasis city-states in the Sand Basins, temple states and clan lordships on the High Steppes, an empire and its rivals in the Twin Rivers, mandala kingdoms in the south, ports and a thalassocracy in the Thousand Isles...), capitals spread by people and distance, shares by a power law, grown over the province graph cheapest first (mountains, desert and the sea cost most), good land left between them taken by its neighbours, hard country left as refuges. Kinds follow size. Kin of the five peoples where canon points: an orc clan land of the far steppe, a dwarf hold under the Roof, a giant hall in the north. |
-| Data | `gen.mjs` | The far grid as the release's own run-length pairs over the whole frame (the Known World's cells left as water and copied in at load), provinces in columns, realms, houses, relations, cultures, naming rules, languages, faiths, the seams. |
+| The plan | `loreplan.mjs` | The lore's 90 regions (box, middle, area, heights, warmest and coldest month, rain, ground words, people), each realm's capital in km, the five straits with the two shores each names ("Between the Long Tail and the Great Western Isle"), 13 lakes (rift lakes long along their rift), 22 ranges (crest at 0.72 of the highest peak, width by kind), 27 rivers. |
+| Land and sea | `shape.mjs` | The lore's region boxes overlap and their areas fill only 40 to 90% of them, so the land is cut, not drawn: every cell near the boxes is one region's (the box it lies deepest in); a cell's worth is its depth inside the lands (the boxes' union rounded and bent by a slow warp, so no coast follows a box side) plus shared noise near the coast; all of it starts as land, then the sea comes in from the open sea, least worth first, taking a region's cells only while it holds more than its area, never deeper than 320 km, never through one region into the next. So a region with land to spare loses it in bays and gulfs on its sea side, and a region boxed in on every side keeps its box rather than open a sea inside the continent. Capitals and strait shores are worth more, so the sea leaves them; straits are never land. Islands, archipelagos (noise-led, so they break into many isles) and chains (noise drawn out along the chain) are cut in their own boxes a channel off the mainland. |
+| Seams | `geo.mjs` | Within 300 km of the Known World's east and south edges the coast is eased into the old map's own, carried straight across the edge (fading round its corners), so every coast that reached the old edge carries on. |
+| Relief, climate | `geo.mjs` | Each region's heights and climate laid as fields, softened across region bounds; the ranges along the lore's lines; temperature moved by height against the region's own. |
+| Rivers, biomes | `geo.mjs` | The lore's river courses; the release's 14 biome words plus *Tropical monsoon forest*. |
+| Provinces | `prov.mjs` | People per km² by ground, then scaled so every region holds the people the lore gives it. Seeds by Poisson disc spaced by people: small in the Twin Rivers, huge in taiga and desert. Grown by a flood fill that follows the slope. The Known World's edge provinces grow across the seams first. |
+| Adjacency | `prov.mjs` | Shared edges, straits under 50 km, sea lanes until everything is reachable. |
+| Ground words, names | `gen.mjs` | The release's eight words from height, roughness and biome, overruled by the lore's ground words for the region. Province names from sound palettes per land; capitals keep the lore's names and place ids (`PLC-9001` on). |
+| Realms | `realms.mjs`, `lore.mjs` | The lore's 118 realms (`POL-36` to `POL-153`): name, short name, title, type, race, culture, faith, capital, area (grown from the capital over the province graph to it), standing army and levy, map colour, house, ruler's name, sex and birth year, intro, want and fear (into the primer), and the lore's 317 ties as relations (tribute as a debt). Succession and law are read from the realm's type and ruler. `peoples-and-faiths.json` gives the 110 cultures with their name lists and the 55 faiths in full, and its `game_tables` give `GD.NAMING` and `GD.LANG`. |
+| Data | `gen.mjs` | The far grid as the release's run-length pairs over the whole frame (the Known World's cells left as water and copied in at load), its origin (`x0`, `y0`, `ox`, `oy`), provinces in columns, realms, houses, relations, cultures, naming rules, languages, faiths, the seams. |
 
-**What it makes** (placeholders, no lore yet):
+**What it makes** (from the lore):
 
 | | |
 | --- | --- |
-| Frame | 17,000 × 8,900 km (grid 1,700 × 890), the Known World unmoved in its top-left 7,000 × 4,500 |
-| New land | 42.6 M km² (the Known World is 22.9 M): 65.5 M km² in all, more than Asia (44.6 M) and close to the research's 64 M |
-| Provinces | 1,735 new (2,041 in all). Median 17,400 km², tenth percentile 10,200, ninetieth 48,200, largest 156,500 (the Known World's median is about 75,000) |
-| Ground | forest 45%, hills 25%, steppe 9%, mountains 8%, plains 8%, desert 2%, tundra 1% (desert and steppe provinces are few because they are huge) |
-| People | 258 M (the research's target: about 250 M) |
-| Realms | 115 (POL-36 to POL-150): 1 to 81 provinces, median 10; 133 provinces unclaimed |
-| Peoples | 21 cultures (CUL-25 on), 12 faiths (REL-20 on), 303 houses (a royal house a realm, and its strongest lords) |
-| The ten lands | the Black Pines 4.5 M km², the Rime Coast 1.9 M, the Long Grass 4.6 M, the Sand Basins 2.6 M, the High Steppes 4.7 M, the Twin Rivers 7.3 M, the Southern Peninsulas 5.5 M, the Thousand Isles 4.4 M, the Sunrise Isles 0.9 M, the Deep Southland 6.1 M; 108 regions |
-| Graph | 36 straits, 17 sea lanes; every province reachable from every other |
-| Page | `b-data.core.js` is 744 KB of text, +190 KB to the built page (4,448 KB → 4,633 KB with the code) |
+| Frame | 17,600 × 9,250 km (grid 1,760 × 925), x 0 to 17,600, y -2,640 to 6,610 |
+| New land | 54.2 M km² (the lore says 42.7 M; the region boxes of the Black Pines, the Rime Coast and the Southern Peninsulas hold about twice their stated areas, and the regions boxed in on every side keep their boxes rather than open seas the lore does not name, so the Black Pines come out at 17.3 M against 9.4 M. Every other land is within 25% of the lore) |
+| Provinces | 1,727 new (2,033 in all). Median 17,800 km², tenth percentile 7,600, ninetieth 66,100 |
+| People | 293 M (the lore: 279 M; each region holds its lore people, the rest is the overfilled taiga's) |
+| Realms | 118 from the lore, all placed at their capitals: 1 to 107 provinces, median 8; 331 provinces unclaimed (stateless land, the lore's own and the overfilled north) |
+| Peoples | 110 cultures, 55 faiths, 266 houses, 317 relations |
+| The ten lands | the Black Pines 17.3 M km², the Long Grass 6.9 M, the Twin Rivers 6.3 M, the Deep Southland 5.6 M, the High Steppes 5.3 M, the Southern Peninsulas 5.2 M, the Sand Basins 2.6 M, the Thousand Isles 2.4 M, the Rime Coast 1.9 M, the Sunrise Isles 0.6 M |
+| Graph | 29 straits, 48 sea lanes; every province reachable |
+| Page | `b-data.core.js` is 949 KB of text |
 
 ### In the game (`c-lands.core.js`)
 
@@ -82,30 +91,26 @@ The release wrote the 7,000 × 4,500 km box into nine functions as `7e3` and `45
 
 **The relief.** With the inked map off, the far lands get a relief drawn from their terrain (the release's picture covers only the Known World).
 
-### The lore file
+### The lore files
 
-When `canon/lore/far-lands.json` exists, `gen/lore.mjs` reads it and the generator uses its realms, cultures and faiths instead of placeholders (re-run the generator; its report says `lore: N realms read, M placed` and names any it skipped). The layout was not fixed when this was written, so each field is looked for under the likely names. Arrays or id-keyed objects both work:
-
-- `realms`: `id` (`POL-36` on), `name`, `short`, `type`, `title`, `race`, `capital` (a name, or `{ name, x, y }`), or `x`, `y` (km, in the game's frame), `area` (km²; the realm is grown to it), `culture`, `faith`, `ruler` (a name, or `{ name }`: the generated ruler takes it), `color` (`#rrggbb`), `gov` (`hereditary`, `elective`, `council`, `theocracy`), `law` (`male`, `female`, `equal`), `land` (one of `T N F B H R M A I D`), `stability`. A realm with no position, or one inside the Known World's box, is skipped.
-- `cultures`: `id` (`CUL-25` on), `name`, `race`, `land`, `note`, name lists `m`, `f`, `house`, `epi` (or under `names`), `naming` (`{ common, noble, note }` as in `GD.NAMING`), `lang`. Lists shorter than 8 are filled in the land's sounds.
-- `faiths`: `id` (`REL-20` on), `name`, `kind`, `belief`, `afterlife`, `clergy`, `rituals`, `festivals`, `taboos`, `politics`.
-
-Placeholder cultures, faiths and realms are numbered after the lore's highest ids. The data records the lore file's hash (`loreHash`).
+`gen/lore.mjs` reads `canon/lore/far-lands.json` (`polities`, `regions`, `straits`, `lakes`, `ranges`, `rivers`, `relations`, `frame`, `lands`) and, beside it, `peoples-and-faiths.json` (`cultures`, `faiths`, `game_tables`). Both are hashed into the data (`loreHash`), so `--check` fails when either changes until the generator is run again. Re-run after any lore change; the report line `lore: N realms read, M placed` names any realm it skipped.
 
 ## Measured by (`test.mjs`)
 
 | Test | Result |
 | --- | --- |
-| `flFrameIdentical` | See stage 1: 3 lives × 5 years and 22 view hashes identical with and without the feature. |
-| `flContinentLoads` | A Great Continent game: 1,735 far provinces (2,041 in all) each with a region, 150 realms (115 far), 808 people at the start; adjacency symmetric (0 asymmetric pairs), all 2,041 provinces reachable; every far realm holds its capital, is in one piece and has a ruler; no duplicate or markup names; ten years played with no page error. |
-| `flSaveRoundTrip` | A Great Continent save (942 KB gzipped) loads back to the same state and stream after a Known World game in the same page; that Known World game had the far lands out (frame 7,000 × 4,500, 306 provinces, no far table entry) and its save says `ardan`; the loaded game plays on. |
-| `flOldSave` | A save made by the build without this feature loads, after a Great Continent game, as the world as written (frame 7,000 × 4,500, 306 provinces, the state as saved) and plays on. A save naming `far@9` is refused with the message above. |
-| `flMapDraws` | 18 views (the world tab, the title strip, the full map fitted and at zoom 1, 3 and 8, the war room at 1.5, 4 and 9, in the inked and the release style, plus every map mode) draw the far lands at their sites, and a click on a site finds its province. Drawing changes neither the state nor the random stream. |
+| `flFrameIdentical` | See stage 1: 3 lives × 5 years and 22 view hashes identical with and without the feature (with the frame origin in). |
+| `flContinentLoads` | A Great Continent game: 1,727 far provinces (2,033 in all) each with a lore region, 153 realms (118 from the lore), new game about 0.9 s; adjacency symmetric, all 2,033 provinces reachable; every far realm holds its capital, is in one piece and has a ruler; no duplicate or markup names; ten years played with no page error, 116 of 118 far realms standing. |
+| `flSaveRoundTrip` | A Great Continent save (about 900 KB gzipped) loads back to the same state and stream after a Known World game in the same page; that Known World game had the far lands out (frame 7,000 × 4,500, 306 provinces) and its save says `ardan`. |
+| `flOldSave` | A save made by the build without this feature loads, after a Great Continent game, as the world as written, and plays on. A save naming `far@9` is refused with a plain message. |
+| `flMapDraws` | 18 views (world tab, title strip, full map fitted and at zoom 1, 3 and 8, war room at 1.5, 4 and 9, inked and release style, every map mode) draw the far lands at their sites, including those north of y 0, and a click on a site finds its province. Drawing changes neither the state nor the random stream. |
 
 ## Limits and what is left
 
-- **Speed.** See the report: a Great Continent month and year turn cost several times the Known World's. 09-scale (stage 0) is the fix; a coarse tick for the lands the player is not on (the plan's LOD) is not built.
-- **66-markets** keys its road memo `a * 4096 + b` by province id: fine for the 2,041 provinces here, a collision past 4,096 (not this feature's folder).
-- **Names and realms are placeholders** until `canon/lore/far-lands.json` exists; the generator then uses it (re-run it and check the report line `lore: N realms read, M placed`).
-- **Stage 3 content** has no place yet: the far lands have no events of their own, no styles, no troops or doctrines of their own, no beasts of their own, no realm bibles (47) and no voices (54). They use everything that is not tied to a realm, culture or faith.
-- The full map's widest view shows the whole height and 80% of the width (its clamp keeps the release's rule of no empty margin); the world tab shows the whole frame.
+- **Land area.** 54 M km² against the lore's 42.7 M (see the table): the generator keeps the lore's boxes, centres, capitals, straits and rivers and lets the boxed-in north overfill rather than open seas the lore does not have. If the lore lane tightens the Black Pines' and Rime Coast's boxes, re-running the generator follows.
+- **Realm areas** are grown from each capital to the lore's stated area, then every region the lore calls wholly held is filled by its neighbours; the lore's per-region holdings (`holds_km2`) are not yet used as quotas, so a realm's share of a region can differ from the lore's.
+- **Speed.** See the report: a Great Continent month and year turn cost several times the Known World's. 09-scale is the fix in hand; a coarse tick for the lands the player is not on (the plan's LOD) is not built.
+- **66-markets** keys its road memo `a * 4096 + b` by province id: fine for the 2,033 provinces here, a collision past 4,096 (not this feature's folder).
+- **Province names** outside the capitals come from per-land sound palettes, not yet from each culture's own `names.places` list.
+- **Stage 3 content**: the far lands have no events, styles, troops or doctrines, beasts, realm bibles (47) or voices (54) of their own; the lore has them (`military_templates`, army compositions in troop codes, `peoples-and-faiths.json`'s customs and food) for the lanes that build them. Doctrines are borrowed from a Known World realm that fights on the same ground.
+- The release-style map (inked map off) draws the far lands as flat ground colours; the inked map draws them like the Known World. The full map's widest view shows the whole height and about 80% of the width; the world tab shows the whole frame.

@@ -118,6 +118,10 @@
     const q = A.S && A.S.queue && A.S.queue[0], pc = A.pc(), fresh = !!(q && q.type === 'event' && !q.result);
     const r = choose0.apply(this, arguments);
     try {
+      if (fresh && q.result && q.ev === 'ga_invite' && q.ctx && q.ctx.gid && q.view) {
+        const g = (A.S.gath || []).find(x => x.id === q.ctx.gid), c = q.view.choices[arguments[0]];
+        if (g && c && (c.t === 'Go' || /regrets/i.test(c.t))) { const st = LF.st(); if (!isObj(st.gaAns)) st.gaAns = {}; st.gaAns[g.kind + ':' + (g.pc && g.pc.role)] = c.t === 'Go' ? 1 : 0; }
+      }
       if (fresh && q.result && pc && q.ev && !LF.quiet) {
         const m = LF.mem(pc); m[q.ev] = (m[q.ev] || 0) + 1;
         const c = isObj(pc.evC) ? pc.evC : (pc.evC = {}), key = q.ev + LF.caseOf(q);
@@ -288,6 +292,18 @@
       const q = S.queue[0];
       if (LF.frame(q) && LF.n(pc, q.ev) >= 1) {
         const v = A.eventView(q);
+        // an invitation to a kind of gathering the player went to last time, in the same role: they go again
+        if (v && !v.skip && q.ev === 'ga_invite') {
+          const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), ans = g && isObj(st.gaAns) ? st.gaAns[g.kind + ':' + (g.pc && g.pc.role)] : null;
+          const go = v.choices.findIndex(c => c.t === 'Go'), no = v.choices.findIndex(c => /regrets/i.test(c.t)), pick = ans === 1 ? go : ans === 0 ? no : -1;
+          if (g && pick >= 0) {
+            LF.quiet = true;
+            try { A.eventChoose(pick); A.eventClose(); } finally { LF.quiet = false; }
+            A.log(ans === 1 ? `You will be at ${A.gathName ? A.gathName(g) : 'the gathering'}, as last time.` : `You send your regrets to ${A.gathName ? A.gathName(g) : 'the gathering'}, as last time.`, '');
+            n++; tally('frame');
+            continue;
+          }
+        }
         if (v && !v.skip && v.choices.filter(c => c.i >= 0).length === 1) {
           LF.quiet = true;
           try { A.eventChoose(v.choices.findIndex(c => c.i >= 0)); A.eventClose(); } finally { LF.quiet = false; }
@@ -316,11 +332,11 @@
   LF.FAMILY.explore_ruin = LF.FAMILY.explore_ruin || ['explore_cave', 'explore_road', 'explore_lair', 'explore_battlefield'];
   LF.FAMILY.child_fight = LF.FAMILY.child_fight || ['child_dare', 'child_lost'];
   // years between scenes once a family is used up, times how often each has been seen
-  LF.FAMILY_GAP = { meet_love: 2, festival_day: 2, tavern_brawl: 2, explore_ruin: 2, child_fight: 1 };
+  LF.FAMILY_GAP = { meet_love: 4, festival_day: 3, tavern_brawl: 3, explore_ruin: 3, child_fight: 1 };
   // Any other scene an action of the player's queues (a pilgrimage's road, a game of dice): once it has been seen, it
   // comes again only after ASK_GAP x n years; in between, the action does its work without the scene. Scenes about a
   // person (getting to know someone), a beast or a gathering are new cases each time and always come.
-  LF.ASK_GAP = 3;
+  LF.ASK_GAP = 4;
   LF.ASK_LINE = { pilgrimage: 'The road is long and the shrine is as you remember it.', gamble: 'The dice go round. Nobody accuses anybody of anything tonight.',
     explore: 'You walk the country for days and find nothing you have not seen before.', tavern: 'A quiet evening at the tavern: the same faces, the same songs.',
     festival: 'You spend the feast day in the square with everyone else, and come home tired and pleased.' };
@@ -361,6 +377,8 @@
   // the scene, so it does exactly that).
   LF.QUIET_FORCED = {
     nb_record_wrong: (pc, item) => { const NB = A.NPCB, c = NB && NB.claim && item.ctx && NB.claim(item.ctx.cid); if (c && NB.worldFix) NB.worldFix(pc, c, true); },
+    // a diplomatic incident the player is not asked about goes to the log as news (A.incidentMonth's own other path)
+    di_incident: (pc, item) => { if (item.ctx && item.ctx.desc) A.log(String(item.ctx.desc), 'warn'); },
   };
   const queue0 = A.queue;
   A.queue = function (item) {

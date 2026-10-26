@@ -225,6 +225,7 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
   }
   // unheld land that is good land (farmed or grazed, rule S1) goes to the neighbour it shares most border with; what
   // stays unheld is hard country (mountains, desert, tundra, the thin taiga and the empty forests), the refuges of G5
+  const fullyHeld = new Set((lore && lore.regions || []).filter(g => !(g.stateless || []).length && !(+g.open_km2 > 0)).map(g => g.id));
   const take = (p, ri) => { owner.set(p.k, ri); realms[ri].provs.push(p); realms[ri].area += p.cells * 100; };
   const good = p => p.pop / (p.cells * 100) >= 3.5 && p.terr !== 'mountains' && p.terr !== 'desert' && p.terr !== 'tundra';
   for (let round = 0; round < 40; round++) {
@@ -235,7 +236,10 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
       for (const j of adjOf(p)) { if (j < nb) continue; const o = owner.get(prov(j).k); if (o != null) tally.set(o, (tally.get(o) || 0) + 1); }
       if (!tally.size) continue;
       const free = [...adjOf(p)].filter(j => j >= nb && !owner.has(prov(j).k)).length;
-      if ((!good(p) || (LR && LR.realms.length)) && free > 0) continue;   // a hard province (or any, when the lore gave the areas) joins only as an enclave
+      // a hard province joins only as an enclave; with the lore, so does any province of a region the lore leaves partly
+      // stateless or open (a region it says is all held is all held, whatever the realms' stated areas)
+      const loreFree = LR && LR.realms.length && !fullyHeld.has(p.region);
+      if ((loreFree || (!(LR && LR.realms.length) && !good(p))) && free > 0) continue;
       const [ri] = [...tally.entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0];
       take(p, ri); moved++;
     }

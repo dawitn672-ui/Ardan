@@ -108,6 +108,11 @@ const SETUP = () => {
             { t: 'Force the third door', check: { s: 'str', d: 45 }, win: { r: 'It gives.', fx: { str: 1 } }, lose: { r: 'It holds, and your shoulder does not.', fx: { health: -5 } } }] },
         { id: 'sct_keys2', title: 'The stair', cond: () => false, w: 0, text: 'Past the door a stair goes down into the dark.',
           choices: [{ t: 'Go down', r: 'Cold, and wet, and empty.', fx: { happy: -1 } }, { t: 'Go back', r: 'You go back.' }, { t: 'Call out', r: 'Nobody answers.' }] },
+        { id: 'sct_long', title: 'The long night at the ford', cond: () => false, w: 0,
+          text: 'The river is up and the ford is gone under brown water. On the far bank a carter waits with his wagon and his two sons, and he shouts across that the bridge at Millrun is down as well. Behind you the road goes back to the inn, and the inn is full of soldiers who drink and do not pay. The light is going. A boatman with one eye offers to take you over for a price he will not name until you are in the boat.',
+          choices: [{ t: 'Take the boat', check: { s: 'wil', d: 45 }, win: { r: 'He names a fair price.' }, lose: { r: 'He names a robber\'s price.', fx: { coin: -3 } } },
+            { t: 'Wade it with a rope', check: { s: 'sta', s2: 'str', d: 50 }, win: { r: 'You cross, soaked.' }, lose: { r: 'The river takes your pack.', fx: { health: -5 } } },
+            { t: 'Go back to the inn', r: 'You sleep on a bench among the soldiers.', fx: { happy: -2 } }, { t: 'Wait for the water to fall', r: 'It falls by noon.' }] },
       ]);
     },
     hashS() { return T.hash(A.S); },
@@ -264,8 +269,8 @@ export default {
       r = await p.evaluate(() => {
         SCT.start({ seed: 7103, race: 'human', realm: 'POL-03', status: 'peasant', sex: 'F', startAge: 17 });
         UI.set.tx = 1.5; UI.applySettings();   // large text, so the sheet must scroll
-        const id = Object.keys(A.EV).find(k => { const e = A.EV[k]; return typeof e.text === 'string' && e.text.split(/\s+/).length > 70 && (e.choices || []).length >= 4 && !/\{/.test(e.text) && !(A.EV_RETIRED && (A.EV_RETIRED.has ? A.EV_RETIRED.has(k) : A.EV_RETIRED[k])); });
-        A.S.queue.unshift({ type: 'event', ev: id, ctx: {} }); UI.render();
+        SCT.defs(); const id = 'sct_long';
+        A.S.queue = [{ type: 'event', ev: id, ctx: {} }]; UI.render();
         const m = document.getElementById('modal'), card = m.querySelector('.sc-card'), inn = card.querySelector('.sc-in'), cr = card.getBoundingClientRect();
         const rows = [...card.querySelectorAll('.choices > button')].map(b => Math.round(b.getBoundingClientRect().height));
         return { id, sheet: m.classList.contains('sc-sheet'), fills: cr.left <= 1 && cr.right >= innerWidth - 1 && cr.bottom >= innerHeight - 1, scroller: getComputedStyle(inn).overflowY, scrolls: inn.scrollHeight > inn.clientHeight + 4, rows, y0: scrollY };
