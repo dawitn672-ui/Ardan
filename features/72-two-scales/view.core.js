@@ -209,8 +209,8 @@
 .ts .ts-leaf{flex:1 1 280px;min-width:0;padding:10px 14px}
 .ts .ts-leaf.ts-squad{flex:1 1 260px;border-right:3px double rgba(43,29,16,.55)}
 .ts .ts-leaf.ts-front{flex:1.6 1 340px}
-.ts .ts-rub{font-family:Cinzel,Georgia,serif;font-weight:700;color:${VERM};letter-spacing:.06em;font-size:.95rem;margin:0 0 6px}
-.ts .ts-sub{font-family:Cinzel,Georgia,serif;color:#6b4410;font-size:.85rem;letter-spacing:.04em;margin:10px 0 4px}
+.ts .ts-rub,.ts .ts-leaf h3.ts-rub{font-family:Cinzel,Georgia,serif;font-weight:700;color:${VERM};letter-spacing:.06em;font-size:.95rem;margin:0 0 6px}
+.ts .ts-sub,.ts .ts-leaf h3.ts-sub{font-family:Cinzel,Georgia,serif;color:#6b4410;font-size:.85rem;letter-spacing:.04em;margin:10px 0 4px}
 .ts .ts-see{font-family:Alegreya,Georgia,serif;font-size:1.02rem;line-height:1.45;margin:0;color:${INK}}
 .ts .ts-see::first-letter{float:left;font-family:'Cinzel Decorative',Cinzel,serif;font-size:2.7em;line-height:.9;margin:.05em .1em 0 0;color:#8e2414;text-shadow:1px 1px 0 ${GOLD}}
 .ts .ts-men{list-style:none;margin:0;padding:0;display:grid;gap:6px}
@@ -240,7 +240,7 @@
   .ts .ts-leaf{padding:8px 8px;flex:1 1 auto}
   .ts .ts-leaf.ts-front{order:-1}
   .ts .ts-leaf.ts-squad{border-right:0;border-top:3px double rgba(43,29,16,.55)}
-  .ts .ts-who i,.ts .ts-q,.ts .ts-st,.ts .ts-legend,.ts .ts-yest,.ts .choices .ts-hint,.ts .ts-rub,.ts .ts-sub{font-size:14px}
+  .ts .ts-who i,.ts .ts-q,.ts .ts-st,.ts .ts-legend,.ts .ts-yest,.ts .choices .ts-hint,.ts .ts-rub,.ts .ts-sub,.ts .ts-leaf h3.ts-rub,.ts .ts-leaf h3.ts-sub{font-size:14px}
 }`;
   TS.style = function () {
     if (typeof document === 'undefined' || document.getElementById('ts-css')) return;

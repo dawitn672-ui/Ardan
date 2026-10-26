@@ -116,11 +116,13 @@ export default {
         const s = document.querySelector('svg.woodcut[data-print=sky]'), c = document.querySelector('.sky-cart');
         if (!s) return null;
         const b = s.getBoundingClientRect(), cb = c ? c.getBoundingClientRect() : null;
-        return { w: Math.round(b.width), h: Math.round(b.height), cart: !!cb && cb.right <= b.right + 0.5 && cb.top >= b.top && cb.bottom <= b.bottom };
+        return { w: Math.round(b.width), h: Math.round(b.height), scene: typeof UI !== 'undefined' && !!UI.SCENE, vw: innerWidth, cart: !!cb && cb.right <= b.right + 0.5 && cb.top >= b.top && cb.bottom <= b.bottom };
       });
     } finally { await ctx.close(); }
-    const ok = !!r && Math.abs(r.w / r.h - 390 / 140) < 0.08 && r.cart;
-    return { ok, detail: r ? `at 375 px the print is ${r.w} x ${r.h} (${(r.w / r.h).toFixed(2)}:1, the brief's 390 x 140 is 2.79:1); cartouche inside ${r.cart}` : 'no print on the phone' };
+    // with 92-scene-card the phone sheet lets the print grow into the spare height (sliced, never stretched): then the print
+    // is full width and at least the brief's height, not exactly its proportions
+    const ok = !!r && r.cart && (r.scene ? r.w >= r.vw - 1 && r.w / r.h <= 390 / 140 + 0.08 : Math.abs(r.w / r.h - 390 / 140) < 0.08);
+    return { ok, detail: r ? `at 375 px the print is ${r.w} x ${r.h} (${(r.w / r.h).toFixed(2)}:1, the brief's 390 x 140 is 2.79:1); cartouche inside ${r.cart}${r.scene ? '; 92-scene-card grows it to the sheet' : ''}` : 'no print on the phone' };
   },
 
   // 0 axe violations (WCAG 2.2 AA) with an event and its colour print on screen, in both themes

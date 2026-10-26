@@ -73,11 +73,18 @@
   // ---- the pieces of a choice row --------------------------------------------------------------------------------
   // the check chip: the stat's icon and short name (a skill: its own short name, in the colour of the stat it rests on),
   // and your value; a second stat in the check is named after it
-  SC.chip = function (pc, ck) {
+  // With 59-tooltips the chip explains its value: a plain check opens the choice's odds (where the value is counted as
+  // the check counts it, against the difficulty); a fight, or a choice with no odds shown, opens the stat or skill.
+  SC.chipTip = function (ck, vi, vc) {
+    if (!UI.ttAttrs || !ck || !ck.s) return '';
+    if (vi != null && vc && vc.odds != null && !ck.fight) return UI.ttAttrs('odds', vi, false);
+    return isStat(ck.s) ? UI.ttAttrs('stat', ck.s, false) : GD.SKILLS && GD.SKILLS[ck.s] ? UI.ttAttrs('skill', ck.s, false) : '';
+  };
+  SC.chip = function (pc, ck, vi, vc) {
     if (!ck || !ck.s) return '';
     const s = SC.statOf(ck.s), v = SC.valueOf(pc, ck.s);
     const two = ck.s2 ? `<span class="sc-chk-2">+${esc(SC.short(ck.s2))}</span>` : '';
-    return `<span class="sc-chk" data-st="${esc(s)}"><span class="sc-vh">Check: </span>${SC.statIcon(s)}<span class="sc-chk-n">${esc(SC.short(ck.s))}</span>` +
+    return `<span class="sc-chk" data-st="${esc(s)}"${SC.chipTip(ck, vi, vc)}><span class="sc-vh">Check: </span>${SC.statIcon(s)}<span class="sc-chk-n">${esc(SC.short(ck.s))}</span>` +
       `<b class="sc-chk-v">${esc(v)}</b>${two}</span>`;
   };
   // the odds badge restyled in place: the release's "40% · risky" (or 89's "40% · a fight") is split into the number,
@@ -159,7 +166,7 @@
       const vi = +b.dataset.v, vc = v.choices && v.choices[vi], c = vc && vc.i >= 0 && e.choices ? e.choices[vc.i] : null;
       b.classList.add('sc-ch');
       const tags = el(doc, 'span', 'sc-tags');
-      if (c && c.check && pc) tags.insertAdjacentHTML('beforeend', SC.chip(pc, c.check));
+      if (c && c.check && pc) tags.insertAdjacentHTML('beforeend', SC.chip(pc, c.check, vi, vc));
       const odds = b.querySelector(':scope > .risk, :scope > .fo-fight');
       if (odds) {
         const pct = vc && vc.odds != null ? vc.odds : vc && vc.fight ? vc.fight.pct : null;

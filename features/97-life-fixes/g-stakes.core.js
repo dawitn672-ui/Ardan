@@ -51,21 +51,44 @@
     }
     return out.slice(0, 3);
   };
-  // the stake line for one written choice, or ''
+  // the stake line for one written choice, or ''; LF.stakeParts gives its pieces, each with what explains it
   const cache = new WeakMap();
-  LF.stake = function (c) {
-    if (!c || typeof c !== 'object') return '';
+  LF.stakeParts = function (c) {
+    if (!c || typeof c !== 'object') return [];
     if (cache.has(c)) return cache.get(c);
     const bits = [];
     const label = typeof c.t === 'string' ? c.t : '';
     const cost = LF.coinCost(c.fx);
-    if (cost && !/\bsuns?\b|\d/.test(label)) bits.push('Costs ' + sumCoin(cost));
-    if (c.fx && typeof c.fx === 'object' && num(c.fx, 'treasury') < 0 && !/\btreasury\b/i.test(label)) bits.push('Treasury ' + sumCoin(-c.fx.treasury));
-    if (c.check && c.lose) { const w = LF.failWords(c.lose.fx); if (w.length) bits.push('If it fails: ' + w.join(', ')); }
-    const s = bits.join(' · ');
-    cache.set(c, s);
-    return s;
+    if (cost && !/\bsuns?\b|\d/.test(label)) bits.push({ k: 'cost', n: cost, t: 'Costs ' + sumCoin(cost) });
+    if (c.fx && typeof c.fx === 'object' && num(c.fx, 'treasury') < 0 && !/\btreasury\b/i.test(label)) bits.push({ k: 'treasury', n: -c.fx.treasury, t: 'Treasury ' + sumCoin(-c.fx.treasury) });
+    if (c.check && c.lose) { const w = LF.failWords(c.lose.fx); if (w.length) bits.push({ k: 'fail', t: 'If it fails: ' + w.join(', ') }); }
+    cache.set(c, bits);
+    return bits;
   };
+  LF.stake = c => LF.stakeParts(c).map(b => b.t).join(' · ');
+  // with 59-tooltips each piece explains itself: a cost against your purse, what failing brings (lfFail below)
+  const tipOf = (b, vi) => !UI.ttAttrs ? '' : b.k === 'cost' ? UI.ttAttrs('cost', b.n, false) : b.k === 'fail' ? UI.ttAttrs('lfFail', vi, false) : b.k === 'treasury' && UI.TIPS && UI.TIPS.treasury ? UI.ttAttrs('treasury', '', false) : '';
+  LF.stakeHtml = (bits, vi) => bits.map(b => { const a = tipOf(b, vi); return a ? `<span class="lf-stake-b"${a}>${UI.esc(b.t)}</span>` : UI.esc(b.t); }).join(' · ');
+  // the popover for "If it fails: ...": the written lose effect, word by word, and the chance of it. Pure: it reads the
+  // event on screen and the written choice, never the random stream or the state.
+  if (UI.TT && UI.TT.K) {
+    const G = UI.TIPS = UI.TIPS || {}, K = UI.TT.K;
+    const FAILD = { death: 'This can end your life.', prison: 'You are taken and held.', 'a wound': 'A wound that lasts, until it heals.', hurt: 'Your health falls.',
+      'the treasury': 'The crown\'s purse pays for it.', punishment: 'Those over you punish you.', 'your name': 'Your renown or your name in the trade falls.',
+      honour: 'Your honour falls.', 'your standing': 'Your standing at work falls.', 'their regard': 'They think less of you.',
+      'the realm\'s peace': 'The realm grows less settled.', legitimacy: 'Your right to rule is doubted.', relations: 'Another realm thinks less of yours.', 'your spirits': 'Your spirits fall.' };
+    G.lfFail = function (vi) {
+      const q = (UI.TT.cur && UI.TT.cur.ev) || (A.S && A.S.queue && A.S.queue[0]), e = q && A.EV[q.ev], v = q && q.view;
+      const vc = v && v.choices && v.choices[+vi], c = vc && vc.i >= 0 && e ? e.choices[vc.i] : null;
+      if (!c || !c.check || !c.lose) return '';
+      const w = LF.failWords(c.lose.fx); if (!w.length) return '';
+      const show = A.DIFF && A.DIFF.showOdds ? A.DIFF.showOdds() : !!(UI.set && UI.set.odds !== false);
+      const odds = vc.odds != null ? vc.odds : vc.fight ? vc.fight.pct : null;
+      let h = K.H('If it fails', show && odds != null ? (100 - odds) + '%' : null, 'the chance it goes wrong');
+      for (const x of w) h += K.R(UI.esc(x), UI.esc(/^−/.test(x) ? 'coin lost' : FAILD[x] || ''));
+      return h + K.F(odds != null ? `As written for this choice. See ${K.L('odds', vi, 'the odds')}.` : 'As written for this choice.');
+    };
+  }
   const modal = UI.eventModal;
   UI.eventModal = function (q) {
     const h = modal.apply(this, arguments);
@@ -74,8 +97,8 @@
       const e = q && A.EV[q.ev], v = q && q.view;
       if (!e || !v || q.result || !Array.isArray(v.choices)) return h;
       return h.replace(/(<button data-a="evChoose" data-v="(\d+)"><span class="grow">)([\s\S]*?)(<\/span>)/g, (all, a, idx, label, b) => {
-        const vc = v.choices[+idx], c = vc && vc.i >= 0 ? e.choices[vc.i] : null, s = LF.stake(c);
-        return s ? a + label + `<small class="lf-stake">${UI.esc(s)}</small>` + b : all;
+        const vc = v.choices[+idx], c = vc && vc.i >= 0 ? e.choices[vc.i] : null, bits = LF.stakeParts(c);
+        return bits.length ? a + label + `<small class="lf-stake">${LF.stakeHtml(bits, +idx)}</small>` + b : all;
       });
     } catch (err) { console.error('stakes', err); return h; }
   };

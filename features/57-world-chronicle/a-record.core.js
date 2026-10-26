@@ -381,6 +381,8 @@
     const P = A.prov(p.home), own = [p.realm, P && P.owner, P && P.occ, p.mil && p.mil.realm].filter(x => x && x !== 'unclaimed');
     for (const id of own) set.add(id);
     for (const id of own.slice(0, 2)) for (const n of (A.neighbors ? A.neighbors(id) : [])) set.add(n);
+    // a home on unclaimed land (an outlaw gone to the Free Marches): the realms whose provinces border it
+    if (!own.length && P) for (const j of P.adj || []) { const o = A.S.prov[j] && A.S.prov[j].owner; if (o && o !== 'unclaimed') set.add(o); }
     return set;
   };
   // the provinces near home: home and those next to it
