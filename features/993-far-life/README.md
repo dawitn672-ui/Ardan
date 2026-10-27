@@ -1,6 +1,6 @@
 # 993-far-life: life in the Far Lands (events)
 
-**Aspect:** Events (round 10, lane L6: the Great Continent's lives meet their own world) · **Kind:** event packs (245 events, prefix `fv_`), one small core file (`far-life.core.js`), a test. No patches.
+**Aspect:** Events (round 10, lane L6: the Great Continent's lives meet their own world) · **Kind:** event packs (414 events, prefix `fv_`), one small core file (`far-life.core.js`), a test. No patches.
 
 A life in the Far Lands used to meet only the Known World's generic events. This folder gives each of the ten Far Lands its own scenes, built from what its lore makes distinctive, plus scenes that join the two halves and the far faiths' holy days. All text is fresh, written in CLAUDE.md's voice from the lore in `canon/lore/` (no lore prose is pasted).
 
@@ -39,6 +39,21 @@ They read only the map and `S.world`, draw nothing from `A.rand`, and are false 
 - **94 of 245 events (38.4%) read a flag another event sets** (the bench's `memoryIndex` rule: `C.flag` in the cond, or `p.flags.x` in setup, text or choices). Every flag set here is read again (no orphans). Callbacks are timed (`A.S.year - p.flags.x >= N`, N from 1 to 40), so a childhood choice comes back in adulthood or old age: the census bribe at fifteen keeps you on the dyke roll at sixty; a horse-name from the first ring-hunt is given again to a grandson; a jade stone kept by foot becomes your own burial cicada.
 - Faith scenes read land flags in their text (the lamp taken at Ralke, the burned census entry, the dragon seen from the ledge, the fire-name, the Old Mare's view of your chosen name).
 - Cross-world arcs join the halves: the factor sent west comes back with Kraoth silver and the Nine Wells' melon; a Skyhold player feeds the yak-man and later walks Skyhold's answer to the last cairn; a Drevnan hears of Peryvor's storehouse and later of the new prince; a Peryvor trapper shows a Drevnan the Lubany stamp.
+
+
+## Second pass: childhoods, real people, every realm, a month's texture
+
+| File | Events | What |
+| --- | --- | --- |
+| `g-young` | 34 | two scenes for small children and one for a youth in every land (milk names, lock cousins, the first pony, a name after one winter, the gate lamp, the prayer wheel, the Black Hat dance, Little Rat, the last sheaf, the tide-line bowl, the forbidden star chant, Honey-Paws, the bell rope, a snow house, a giant's ivory toy, the gate rope at New Year, the house crest, ash on the paths, feeding the drum, the forest's morning song, the lion at the thorn fence), and their later scenes |
+| `k-figures` | 10 | the real people of each far realm: the ruler passing on the road, the petition day, an audience, the heir's hunt and the heir as a child in the palace gardens, the chancellor's loan, the marshal's levy, the noble house that owns your land, a match with a house, the ruler's illness. `A.FV.ruler`, `heir`, `councillor` (the realm's `council` seats) and `house` (`A.realmHouses`) put the person in with `ctx.pid`, so `{them}`, `{themHim}`, `{theirHis}` work; a scene with nobody fit drops itself |
+| `e-realms` | 129 | one small, frequent scene for every one of the 118 far realms (two for the crowded great powers: Taulen, Hesh, the Khaganate, Tordzan, Vahra, Kethra, Pravith, Suraeng, Kemodari, Menaro, Ndorima): a market day, a ration or tax line, a festival eve, a duty owed, a rite kept, each written from that realm's own custom. `w: 2, cool: 2`, so a month in the far lands has texture. The four kinds share their choices, and each choice leaves a habit (`fv_hab_*`) that the next scene of its kind remembers in its first line |
+
+**Realm reach:** far realms with at least one scene of their own (named in a cond): **34 before, 118 after**. Kethra's free-born sons and their discovery also reach Navesht, whose Purchased keep the same law.
+
+**Memory:** 229 of 414 events (55%) read a flag another event sets. 100 of them are arcs (the land callbacks and cross-world threads); 129 are the realm scenes' habits.
+
+**Tests:** `fvFarLives` is now the quick version (two far births, six years). The long one is `fvFarLivesLong` (six births of ten years, two adult lives of six), which runs only when named with `--only=fvFarLivesLong` and requires the median far newborn to meet at least 3 of the land's scenes.
 
 ## Measured by (`test.mjs`)
 

@@ -178,6 +178,9 @@
     '@media (min-width:761px) and (max-width:1439px){#clk .clk-spd{display:none}#clk .clk-spd1{display:inline-flex}#clk .clk-lbl{display:none}}',
     '@media (max-width:1439px){#clk .clk-nx{display:none}#clk .clk-unit{text-transform:capitalize}#clk .clk-note{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}',
     '#game.phone #clk .clk-step button{min-height:44px;padding:0 8px}',
+    // a phone's dock holds the two steps, Play, the speed, Next and Quiet: Play and Quiet as icons, none under 44 px
+    '#game.phone #clk .clk-lbl{display:none}',
+    '#game.phone #clk .ph-dock>button,#game.phone #clk .ph-dock .clk-step>button{min-width:44px;flex-shrink:0}',
     '#game.phone #clk .clk-step button span:not(.clk-prog){font-size:var(--t-small,12px)}',
   ].join('');
   const put = () => { if (typeof document === 'undefined' || document.getElementById('step-style')) return; const s = document.createElement('style'); s.id = 'step-style'; s.textContent = css; document.head.appendChild(s); };

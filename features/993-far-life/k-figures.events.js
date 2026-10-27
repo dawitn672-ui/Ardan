@@ -60,7 +60,7 @@
       cond: (p, C) => C.farLand(p) && (C.teen(p) || C.adult(p)) && !C.old(p) && (C.noble(p) || C.rich(p) || C.soldier(p)),
       w: 3, cool: 10,
       setup: (p, ctx) => { F.heir(p, ctx); },
-      text: "{them}, heir to the throne of {realmShort}, is riding out to hunt and has asked for young people of good families to ride with {khim}. You are one of them. By noon it is clear the heir rides badly, is bored by the hunt, and wants to talk to someone who is not a courtier.",
+      text: "{them}, heir to the throne of {realmShort}, is riding out to hunt and has asked for young people of good families to ride with {themHim}. You are one of them. By noon it is clear the heir rides badly, is bored by the hunt, and wants to talk to someone who is not a courtier.",
       choices: [
         { t: "Talk to the heir as you would to anyone", r: "You talk about horses, weather and nothing. The heir laughs more than once. The courtiers notice.", fx: { them: { type: "friend", op: 25 }, favor: 2 } },
         { t: "Ride ahead and make the kill", check: { s: "riding", s2: "spd", d: 50 },

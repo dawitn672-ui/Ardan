@@ -24,7 +24,7 @@ const IDS = fs.readdirSync(here).filter(f => f.endsWith('.events.js'))
 // realms to build characters in, by land, and the Known World realms the cross-world events name
 const REALMS = {
   R: ['POL-36', 'POL-37', 'POL-39'], F: ['POL-58', 'POL-61', 'POL-63'], B: ['POL-70', 'POL-79', 'POL-88'],
-  H: ['POL-83', 'POL-90', 'POL-86'], M: ['POL-91', 'POL-92', 'POL-98'], A: ['POL-111', 'POL-113', 'POL-110'],
+  H: ['POL-83', 'POL-90', 'POL-86', 'POL-87'], M: ['POL-91', 'POL-92', 'POL-98'], A: ['POL-111', 'POL-113', 'POL-110'],
   T: ['POL-127', 'POL-126', 'POL-128'], N: ['POL-135', 'POL-134'], I: ['POL-136', 'POL-137'], D: ['POL-142', 'POL-143', 'POL-146'],
   K: ['POL-34', 'POL-27', 'POL-21'],
 };

@@ -14,13 +14,13 @@ Like the far lands themselves: everything is put in place when a game of the Gre
 | shares of men by troop code, from the lore composition | `A.compShares` (wrapped), so `A.tplDefaults` and `A.forcesInit` build each realm's divisions from its own army |
 | division names by template ("Thousand of Horse", "Registered Division", "Banner", "Elephant Line", "Age-Set Regiment") | `A.tplDefaults` (wrapped) |
 | two troop types the release lacks: **Scouts** (`SC`, from light horse) and **Engineers** (`EN`, from garrison troops) | `GD.TROOPS`, `GD.BN`, `GD.TROOP_SKILL`, `GD.TROOP_GEAR` |
-| 44 battle tactics from the 23 templates (gate, pass and ford holding, the ring hunt, backward shot, howdah archery, the crossbow line behind a stream, ski and sledge raids, fire ships, boarding, beach landings…), each for the realms of its template; and copies of the release's realm-locked tactics (the bull's horns, the drum storm) for the far realms whose template names them | `GD.BATTLE_TACTICS` (`T.realms`) |
+| 47 battle tactics from the 23 templates (gate, pass and ford holding, the ring hunt, backward shot, howdah archery, the crossbow line behind a stream, ski and sledge raids, fire ships, boarding, beach landings…), each for the realms of its template; and copies of the release's realm-locked tactics (the bull's horns, the drum storm) for the far realms whose template names them | `GD.BATTLE_TACTICS` (`T.realms`) |
 | 303 fighting styles (87 national, 188 chain, 28 household) with 1,250 techniques and 108 maneuvers | `LORE.styles`, and `GD.BATTLE_TACTICS['mv_' + id]` |
 | 103 field orders | `GD.ORDERS`, companies built by the release's own `A.orderBuildCompanies` |
 | 6 wants from the conflicts (one per pressing realm) | `A.CASUS.WANT` (68-casus-belli's table) |
 | `GD.LEGEND_CAP` + 40 (the far lands' Legends) | 32-ladder, `A.orderRaise` |
 
-**State** (far games only, optional): `S.fw = { v, p: { loreId: personId }, heads, cf }` and, on a Legend or a Master, `p.fw` (lore id, group, weakness, whereabouts). A save of the Great Continent loads them back (`fwSaveLoad`). No world data changes: the far map, realms and houses are `far@1` as 99 wrote them.
+**State** (far games only, optional): `S.fw = { v, p: { loreId: personId }, heads, cf }` and, on a Legend or a Master, `p.fw` (lore id, group, weakness, whereabouts). A save of the Great Continent loads them back (`fwSaveLoad`). No world data changes: the far map, realms and houses are what 99 writes (`far@2` today).
 
 ## 1. Armies
 
@@ -73,7 +73,7 @@ The 40 Legends and 160 Masters are people on 1 January 1105, seeded once in a ne
 
 ## Cost
 
-A new far game takes about 0.6 s more (1.3 s in all on the shared machine). Raising 103 orders read 32-ladder's census once per order (4.5 s); while the far orders are raised at once, the census is kept up to date by hand (`A.ladderCensus` returns that copy for the batch). The page grows by about 600 KB (`a-data.core.js`).
+A new far game takes about 0.6 s more (1.3 s in all on the shared machine). Raising 103 orders read 32-ladder's census once per order (4.5 s); while the far orders are raised at once, the census is kept up to date by hand (`A.ladderCensus` returns that copy for the batch). The page grows by about 110 KB packed (590 KB of text in `a-data.core.js`). Ten years of a far game (99's `flContinentLoads`, same build with and without this feature) took 121 s against 97 s: three more wars from 1 January 1105, 103 more divisions, and generals who think on their temper's clock. A Known World game costs nothing.
 
 ## The data
 
