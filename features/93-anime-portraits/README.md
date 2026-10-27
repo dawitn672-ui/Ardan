@@ -51,6 +51,33 @@ The brief asks for the portraits to be the game's strongest "anime" signal: cel-
 - **Wounds** show: a stitched scar over the eye, an eye patch on a cord, a kinked nose with a plaster, a notched ear (never under a hood or hidden by long hair), a burn, a brand, a birthmark and freckles. In the full figure a lost hand shows and a limp splays one leg.
 - **The setting** is "Anime portraits (off: woodcut miniatures)" in the menu (`UI.set.anime`, saved with the other settings), next to 63's setting and the theme (patch `AP-MENU`).
 
+**The Great Continent's peoples** (Oct 27). A far culture (99-far-lands) names its land in `LORE.cultures[id].land`. The land, in `AP.FAR_LAND`, gives its people:
+
+- a cut of dress, a headwear pair and a dye, in 63's vocabulary;
+- a pattern, the bangs and extras they favour, and a ribbon colour;
+- the range of skin, hair and eye tones they are drawn in.
+
+What each land wears:
+
+| Land | Dress |
+| --- | --- |
+| Twin Rivers | crossed robes, caps, buns and pins, indigo |
+| Long Grass | kaftans with fur collars, cone and fur hats, braids |
+| High Steppes | fur hats, maroon kaftans, red cords |
+| Sand Basins | turbans and veils, striped robes, turquoise |
+| Southern Peninsulas | drapes, beads, saffron |
+| Thousand Isles | wraps, zigzag drapes |
+| Sunrise Isles | crossed robes, topknots |
+| Black Pines | fur and hoods |
+| Rime Coast | fur hoods |
+| Deep Southland | wraps, beads, striped drapes, locks and curls |
+
+Seventeen cultures have a line of their own (`AP.FAR_CULT`), among them the camel clans, the yak folk, the sea-hunters, the Mountain-shrine folk in white, and the Deep Forest folk.
+
+The release's `A.genAppearance` knows only the Known World's peoples, so it gave a steppe rider the full range of skin and any hair, red included. The stored tone is kept in order and pressed into the land's range: skin index i of 8 becomes lo + i·(hi − lo)/7, and hair and eyes are treated alike. Kin still look alike, and drawing stays a pure function of the stored look.
+
+**Young and 'bald'.** The release gives `hstyle: 'bald'` to men of any age. A man of 21 (the love interest of "A love philtre") drew as an old, balding man. Before 30 'bald' is now drawn as a crop. From 30 to 40 it is a crop or a shave, by hash. From 40 on it stays bald.
+
 **Measured by.** `test.mjs`, on the full build (`node tools/build.mjs --out=…`). Sheets of 40 people (every people, both sexes, child to old, rulers, nobles, soldiers, the dead) at 88 px, 32 px (in colour and as black silhouettes) and as full figures were rendered and critiqued over six rounds; see "Limits".
 
 | Test | Result |
@@ -61,6 +88,7 @@ The brief asks for the portraits to be the game's strongest "anime" signal: cel-
 | `apEscaped` | Markup in a name, an id, a skin, hair, realm and house colour, a charge, a culture, gear and a wound reaches no SVG. No raw tags, no `on*` attributes, no outside `href`, and every `fill`, `stroke`, `stop-color` and `flood-color` is a checked colour or a local reference |
 | `apEveryPeople` | 84 people (7 peoples × 2 sexes × 6 ages) at 200 (full), 88, 32 and 20 px, and the special cast: all valid SVG, 0 fallbacks |
 | `apToggle` | The setting is in the menu and on by default; off shows the woodcut miniatures; on again. A ruler gets the gold frame and crown badge, the dead the `--ink-3` frame |
+| `apFarPeoples` | 106 far human cultures in 10 lands, M and F, the palest and darkest stored skin, bust and full figure: 0 invalid, 0 fallbacks, 0 skins out of their land's range; a Known World person untouched; 'bald' drawn as a crop at 18, 21 and 26, bald at 52 and 70 |
 | `apAxe` | 0 axe violations (WCAG 2.1 AA) on the people tab, the profile and a person's page, with 11 anime portraits on them |
 
 63-miniatures' own tests also run against this renderer and pass: `miniEveryRace`, `miniDeterministic`, `miniAgeWoundsChildren` (7 of 7 wounds show; figure heights newborn 141, 6 years 178, 14 years 245, grown 261, dwarf 195, giant 272), `miniPure`, `miniToggle` and `miniAxe`. So do the replay suites (`renderRng`, `replayWithRender`, `journalReplay`), 27-accessibility and 71-phone, except `phoneTasks`, which fails the same way without this feature ("check the market" at ×1.65). `lint-events` and `lint-choices` report nothing; the feature has no events.

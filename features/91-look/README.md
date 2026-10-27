@@ -41,6 +41,34 @@ The critique found the screen "dim and samey": one leather brown, one gold, one 
 
 **The ground:** by night a star field and a far ridge, seeded from the world's seed through a hash (static, no `A.rand`); by day a washi fibre (`feTurbulence`, a `data:` SVG).
 
+**Rows, rarity and realm colours** (`look.e-rows.core.js` and `UI.realmHex` in the tokens, Oct 27; brief §1.5, §1.6, §4.5, §5.5, §5.8):
+
+- **153 realms, distinct.**
+  - **The problem.** The Great Continent's 118 realms came from the lore in one pale family per land, so bordering realms read alike: 24 bordering pairs were under 0.04 apart in OKLab.
+  - **What `UI.realmHex(realm)` does.** It gives each far realm an accent within 42° of its lore hue, at one of four lightnesses and two chromas. The pick keeps it apart from the realms it borders at the start, and more weakly from their neighbours. The largest realms choose first, and a tie keeps the lore colour.
+  - **Where it comes from.** It reads only the generated data (`A.FL_DATA`), so it is the same in every game and after a save and load, and it never touches `A.S`.
+  - **What it leaves alone.** The Known World's realms keep their colours. `UI.realmInkOf(r, theme)` is `UI.realmInk` of that colour.
+  - **Who uses it.** The portrait ground (93) and the Realm band use it. The map (62) and the release's own chips still read `r.color`.
+- **People as rows:** each person card is one line of about 26 px: a 22 px bust, the name, the relation, age and post, the bond chip, and a 48 px opinion bar. Twenty fit in the panel. The court on the Realm tab and person lists in dialogs use the same rows. On touch, rows are 44 px.
+- **The Realm tab's header band** shows:
+  - the realm's tint and its accent edge;
+  - the coat of arms;
+  - the name in the realm's ink;
+  - the ruler's title, name and bust;
+  - treasury, army, stability and provinces.
+- **Holdings:** What you carry is one row per slot: the slot, the piece and its tier, what it does, and Sell. In the armourer, only the item's name is a tooltip target. The other cells only repeated it, and a click on them read as a dead control.
+- **A new life opens the armourer on its first page** (Weapons, Common). `UI.shopSlot` and `UI.shopQ` used to carry over from the life before.
+- **Rarity tiers:**
+  - Fine is uncommon (◆) and Masterwork is epic (◆◆◆), on `UI.qualChip`. The chip has a tier border, the gem and the tier text, and a gear row takes its piece's tier.
+  - `LOOK.gearTier` lifts a people's own make, a master's piece and a famed one.
+  - The 37 achievements of the Dynasty tab each have a tier (`LOOK.ACH_TIER`, First Blood common to Legend mythic), shown with gem, edge and tier word, and a glow by night.
+- **Realm chips:** where a page names a realm in a "Realm" row (a person's page), the name gets the realm's 8 px swatch dot and its ink.
+- **Pinned tooltips:** a tooltip pinned by a click gets a 2 px gold top edge and a pin glyph (`LOOK.syncPins`, from 59's stack).
+- **A dialog's close button:** its glyph fills the 32 px button.
+- **War rows:** each war of your realm on the War tab carries a strength bar of us against them: the standing armies of each side's realms, ours in green from the left and theirs in vermilion, with both numbers.
+- **The rail's delta flash** (§5.4): a vital or stat that changed since the last draw of the same life shows ▲ +2 or ▼ −3 for 1.6 s, and its bar pulses once (not under reduced motion). The last numbers are UI state (`LOOK.flash`), reset for a new life or a loaded game.
+- **Beasts in the Codex** wear their tier: an animal is common, a great beast rare, a titan legendary, a legend mythic.
+
 ## Measured by (`test.mjs`)
 
 | Test | What it holds |
@@ -50,6 +78,9 @@ The critique found the screen "dim and samey": one leather brown, one gold, one 
 | `phoneLife` | The phone's Life page at 390×844 is at most 1.3 screens, every tile at least 44 px |
 | `lookAxe` | axe-core (WCAG 2.0–2.2 A/AA and best practice) on Life, People, Holdings and Realm at 1366×768 in both themes: 0 violations |
 | `lookTiles` | One grid of tiles, 3 columns, at most 40 px tall, each with its group's icon and a tooltip; hovering a tile opens its name and description |
+| `realmColours` | 118 far realms, 116 distinct colours. Across 155 bordering pairs, the median OKLab distance goes from 0.089 to 0.178 and the least from 0.019 to 0.111. Pairs under 0.04: 24 before, 0 after. The Known World is unchanged. AA ink 236 of 236 (both themes). Pure and stable |
+| `lookRows` | People: rows of at most 26 px, 20 fit in the panel. The Realm band has 4 numbers and the name in its ink. Masterwork is epic, Fine uncommon, common plain. 37 of 37 achievements are tiered, in 6 tiers. Pure |
+| `lookMore` | A war's strength bar ("Strength: us 104k against them 257k"). The delta flash: none on a life's first draws, "▼ −10" after a wound, gone after 1.6 s. 18 beasts tiered in 4 tiers. A person's Realm row is a realm chip. A pinned tooltip is marked. The same markup twice, pure |
 | `lookPure` | Every tab drawn twice with the rail, the chips' "+N" and the two-column sheet toggled: state and random stream unchanged, the same markup |
 
 **Results** (Oct 26; LIFE screen of 71-phone, a peasant of 20, hints on). Screens of scroll at 1366×768, panel / rail, session-start build → with this feature: Life 2.86 / 1.47 → **1.00 / 1.00** (all 31 tiles in sight; 27 of 31 with 97-life-fixes' ambition card, the rest one scroll inside Activities), Decisions 3.70 → 3.05, People 1.25 → 1.07, Path 3.26 → 3.02, War 2.99 → 2.53, Holdings 4.72 → 3.63, Realm 1.00 → 1.00, Dynasty 4.39 → 4.32. Phone 390×844, page: Life 2.69 → **1.20**, People 1.38 → 1.24, Holdings 6.93 → 7.00, Path 3.05 → 2.86, Story 1.22 → 1.29 (Literata sets a little wider than Alegreya), You 1.85 → 1.92 (it now carries the needs). Contrast: worst text token 5.13:1 by night, 4.84:1 by day. Fonts: 228 → 282 KB of woff2, 300 → 372 KB in the page.

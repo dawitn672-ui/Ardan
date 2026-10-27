@@ -94,4 +94,41 @@ export default [
         'r.rel[o.id]=A.clamp(Math.round((r.rel[o.id]||0)+d),-100,100)}A.scalePairs&&A.scalePairs(0);if(r.overlord){'],
     ],
   },
+  // ---- one world (world.core.js): these ask questions that answer null or false on the Known World, so a Known World
+  // game plays exactly as before
+  {
+    id: 'WORLD-WAR-CAP',
+    blob: 'ardan-core',
+    why: 'A.aiWarCheck stopped every realm from starting a war while four wars were under way anywhere. Written for 35 ' +
+      'realms; on the Great Continent the four were shared by 153 realms and ten lands, and the cap was full on a fifth to ' +
+      'a third of days. A.warCapFull gives each land its share of the four (at least one), and is null on the Known World. ' +
+      'A realm whose land is full makes no new war (its neighbours are passed over; the shuffles draw as before).',
+    edits: [
+      ['if(S.wars.filter(w=>w.cb!=="throne").length>=4)return;const live=A.dLive();',
+        'const capFull=A.warCapFull&&A.warCapFull();if(!capFull&&S.wars.filter(w=>w.cb!=="throne").length>=4)return;const live=A.dLive();'],
+      ['for(const oid of A.shuffle(A.neighbors(r.id))){const o=A.realm(oid);if(!o||!o.alive||o.isRebel||',
+        'for(const oid of A.shuffle(A.neighbors(r.id))){const o=A.realm(oid);if(!o||!o.alive||o.isRebel||capFull&&capFull(r)||'],
+    ],
+  },
+  {
+    id: 'WORLD-REACH',
+    blob: 'ardan-core',
+    why: 'Neighbours (land or sea lane) could declare war, a coalition took in the neighbours of neighbours, and an ally ' +
+      'or tributary (or a partner in a defensive pact, a guarantee or a league) answered a call to arms from anywhere. On the Great Continent that made coalitions of 25 realms from ' +
+      'six lands and allies marching 3,000 km to a war with no front. A.outOfReach (false on the Known World) keeps all ' +
+      'three to realms whose land comes within 1,500 km of the other side.',
+    edits: [
+      ['const o=A.realm(oid);if(!o||!o.alive||o.isRebel||capFull&&capFull(r)||',
+        'const o=A.realm(oid);if(!o||!o.alive||o.isRebel||capFull&&capFull(r)||A.outOfReach&&A.outOfReach(r.id,oid)||'],
+      ['A.relBetween(m.id,t.id)<20&&(A.neighbors(t.id).includes(m.id)||A.neighbors(m.id).some(n=>A.neighbors(t.id).includes(n)))',
+        'A.relBetween(m.id,t.id)<20&&(A.neighbors(t.id).includes(m.id)||A.neighbors(m.id).some(n=>A.neighbors(t.id).includes(n)))&&!(A.outOfReach&&A.outOfReach(m.id,t.id))'],
+      ['const join=(side,rid,why)=>{const r=A.realm(rid);return!r||!r.alive||',
+        'const join=(side,rid,why)=>{const r=A.realm(rid);return!r||!r.alive||A.outOfReach&&A.outOfReach(rid,side==="att"?w.leadD:w.leadA)||'],
+      // the pacts' own call (defensive pacts, guarantees, leagues), on a war's start
+      ['const join=(side,rid,why)=>{const r=A.realm(rid);!r||!r.alive||',
+        'const join=(side,rid,why)=>{const r=A.realm(rid);!r||!r.alive||A.outOfReach&&A.outOfReach(rid,side==="att"?def:att)||'],
+      ['o&&o.alive&&!o.playerRun&&!w.att.includes(m)&&!w.def.includes(m)&&!A.atWar(m).length&&A.chance(.4)&&(w.def.push(m)',
+        'o&&o.alive&&!o.playerRun&&!w.att.includes(m)&&!w.def.includes(m)&&!A.atWar(m).length&&!(A.outOfReach&&A.outOfReach(m,att))&&A.chance(.4)&&(w.def.push(m)'],
+    ],
+  },
 ];

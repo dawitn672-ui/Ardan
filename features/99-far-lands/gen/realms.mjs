@@ -6,6 +6,7 @@
 import { rng, Heap, clamp } from './lib.mjs';
 import { namer } from './names.mjs';
 import { readLore } from './lore.mjs';
+import { nameProvinces } from './places.mjs';
 
 // ---- what each land's polities are like: [type, title, gov, law, weight]; how many; how much of the land is held
 export const POLITY = {
@@ -207,12 +208,31 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
   // ---- land: every realm floods out from its capital, cheapest first, until it holds its share
   const cost = p => ({ mountains: 4, desert: 2.6, tundra: 2.6, marsh: 1.6, forest: 1.3, hills: 1.4, steppe: 0.8, plains: 1 })[p.terr] || 1.2;
   const hp = new Heap();
-  realms.forEach((r, ri) => { hp.push(0, ri * 100000 + r.cap.k); });
+  // far@2: a lore realm holds in each region what the lore says it holds there (holds_km2), as a quota: it grows from
+  // its capital and from the province of each other region it holds nearest the capital, and takes a province of a
+  // region only while it holds less there than the lore's figure less half the province
+  const quota = (r, p) => { const H = r.lore && r.lore.holds; if (!H || p === r.cap) return true; const h = H[p.region] || 0; return (r.got[p.region] || 0) + p.cells * 50 <= h; };
+  realms.forEach((r, ri) => { r.got = {}; hp.push(0, ri * 100000 + r.cap.k); });
+  realms.forEach((r, ri) => {
+    const H = r.lore && r.lore.holds; if (!H) return;
+    for (const g of Object.keys(H).sort()) {
+      if (g === r.cap.region || !(H[g] > 0)) continue;
+      // on the region's border with another region the realm holds, nearest the capital (so its pieces meet)
+      let bk = null, bd = Infinity;
+      const mineR = new Set(Object.keys(H).concat([r.cap.region]));
+      const onEdge = p => [...adjOf(p)].some(j => j >= nb && prov(j) && prov(j).region !== g && mineR.has(prov(j).region));
+      for (const edge of [true, false]) {
+        for (const p of P) if (p.region === g && p.cells * 50 <= H[g] && (!edge || onEdge(p))) { const d = Math.hypot(p.sx - r.cap.sx, p.sy - r.cap.sy); if (d < bd) { bd = d; bk = p.k; } }
+        if (bk != null) break;
+      }
+      if (bk != null) hp.push(1 + bd / 1000, ri * 100000 + bk);
+    }
+  });
   const best = new Map();
   while (hp.size) {
     const v = hp.pop(), d = hp.lastKey, ri = Math.floor(v / 100000), k = v % 100000, r = realms[ri], p = P[k];
-    if (owner.has(k) || r.area >= r.target) continue;
-    owner.set(k, ri); r.area += p.cells * 100; r.provs.push(p);
+    if (owner.has(k) || r.area >= r.target || !quota(r, p)) continue;
+    owner.set(k, ri); r.area += p.cells * 100; r.provs.push(p); r.got[p.region] = (r.got[p.region] || 0) + p.cells * 100;
     const scale = Math.sqrt(r.target) / 300;
     const step = (j, extra) => {
       if (j < nb) return; const q = prov(j); if (!q || owner.has(q.k)) return;
@@ -226,7 +246,45 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
   // unheld land that is good land (farmed or grazed, rule S1) goes to the neighbour it shares most border with; what
   // stays unheld is hard country (mountains, desert, tundra, the thin taiga and the empty forests), the refuges of G5
   const fullyHeld = new Set((lore && lore.regions || []).filter(g => !(g.stateless || []).length && !(+g.open_km2 > 0)).map(g => g.id));
-  const take = (p, ri) => { owner.set(p.k, ri); realms[ri].provs.push(p); realms[ri].area += p.cells * 100; };
+  const take = (p, ri) => { owner.set(p.k, ri); const r = realms[ri]; r.provs.push(p); r.area += p.cells * 100; r.got[p.region] = (r.got[p.region] || 0) + p.cells * 100; };
+  // a realm in pieces keeps the piece that holds its capital; the rest is left to the neighbours below
+  const onePiece = () => realms.forEach((r, ri) => {
+    const mine = new Set(r.provs.map(p => p.k)), seen = new Set([r.cap.k]), q = [r.cap];
+    for (let h = 0; h < q.length; h++) for (const j of [...adjOf(q[h]), ...seaOf(q[h])]) { if (j < nb) continue; const o = prov(j); if (o && mine.has(o.k) && !seen.has(o.k)) { seen.add(o.k); q.push(o); } }
+    if (seen.size === mine.size) return;
+    // first bridge the pieces over unheld land, a few provinces at most
+    for (let tries = 0; tries < 8 && seen.size < mine.size; tries++) {
+      const from = new Map(), bq = [...seen].map(k => P[k]); for (const p of bq) from.set(p.k, -1);
+      let hit = null;
+      for (let h = 0; h < bq.length && !hit; h++) {
+        const u = bq[h], depth = (function d(k) { let n = 0; while (from.get(k) >= 0) { k = from.get(k); n++; } return n; })(u.k);
+        if (depth >= 6) continue;
+        for (const j of [...adjOf(u), ...seaOf(u)]) { if (j < nb) continue; const o = prov(j); if (!o || from.has(o.k)) continue;
+          if (mine.has(o.k) && !seen.has(o.k)) { from.set(o.k, u.k); hit = o; break; }
+          if (!owner.has(o.k)) { from.set(o.k, u.k); bq.push(o); } }
+      }
+      if (!hit) break;
+      for (let k = from.get(hit.k); k >= 0 && !mine.has(k); k = from.get(k)) { const o = P[k]; owner.set(k, ri); r.provs.push(o); mine.add(k); r.area += o.cells * 100; r.got[o.region] = (r.got[o.region] || 0) + o.cells * 100; }
+      seen.clear(); seen.add(r.cap.k); const q2 = [r.cap];
+      for (let h = 0; h < q2.length; h++) for (const j of [...adjOf(q2[h]), ...seaOf(q2[h])]) { if (j < nb) continue; const o = prov(j); if (o && mine.has(o.k) && !seen.has(o.k)) { seen.add(o.k); q2.push(o); } }
+    }
+    if (seen.size === mine.size) return;
+    for (const p of r.provs) if (!seen.has(p.k)) { owner.delete(p.k); r.area -= p.cells * 100; r.got[p.region] -= p.cells * 100; }
+    r.provs = r.provs.filter(p => seen.has(p.k));
+  });
+  onePiece();
+  // a realm still short in a region takes the unheld provinces of that region on its border, best fit first
+  for (let round = 0; round < 30; round++) {
+    let moved = 0;
+    realms.forEach((r, ri) => {
+      const H = r.lore && r.lore.holds; if (!H) return;
+      const cand = new Map();
+      for (const p of r.provs) for (const j of [...adjOf(p), ...seaOf(p)]) { if (j < nb) continue; const q = prov(j); if (q && !owner.has(q.k) && (H[q.region] || 0) - (r.got[q.region] || 0) >= q.cells * 50) cand.set(q.k, q); }
+      const list = [...cand.values()].sort((a, b) => a.k - b.k);
+      for (const q of list) if (!owner.has(q.k) && (H[q.region] || 0) - (r.got[q.region] || 0) >= q.cells * 50) { owner.set(q.k, ri); r.provs.push(q); r.area += q.cells * 100; r.got[q.region] = (r.got[q.region] || 0) + q.cells * 100; moved++; }
+    });
+    if (!moved) break;
+  }
   const good = p => p.pop / (p.cells * 100) >= 3.5 && p.terr !== 'mountains' && p.terr !== 'desert' && p.terr !== 'tundra';
   for (let round = 0; round < 40; round++) {
     let moved = 0;
@@ -240,10 +298,53 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
       // stateless or open (a region it says is all held is all held, whatever the realms' stated areas)
       const loreFree = LR && LR.realms.length && !fullyHeld.has(p.region);
       if ((loreFree || (!(LR && LR.realms.length) && !good(p))) && free > 0) continue;
-      const [ri] = [...tally.entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0];
+      // a neighbour still short of what the lore says it holds in this region comes first
+      const room = ri => { const H = realms[ri].lore && realms[ri].lore.holds; return H ? (H[p.region] || 0) - (realms[ri].got[p.region] || 0) : 0; };
+      const [ri] = [...tally.entries()].sort((a, b) => (room(b[0]) > 0) - (room(a[0]) > 0) || (room(b[0]) > 0 && room(a[0]) > 0 ? room(b[0]) - room(a[0]) : 0) || b[1] - a[1] || a[0] - b[0])[0];
       take(p, ri); moved++;
     }
     if (!moved) break;
+  }
+  // far@2: the holdings traded toward the lore's figures. A province of a realm that holds more than the lore gives
+  // it in that region passes to a neighbour that holds less there than the lore gives it (or, in a region the lore
+  // leaves partly stateless, is let go), so long as the realm stays in one piece; then the short realms take the
+  // unheld land on their borders again
+  if (LR && LR.realms.length) {
+    const holdsOf = ri => (realms[ri].lore && realms[ri].lore.holds) || null;
+    const room = (ri, g) => { const H = holdsOf(ri); return H ? (H[g] || 0) - (realms[ri].got[g] || 0) : 0; };
+    const whole = (ri, without) => {
+      const r = realms[ri], seen = new Set([r.cap.k]), q = [r.cap];
+      for (let h = 0; h < q.length; h++) for (const j of [...adjOf(q[h]), ...seaOf(q[h])]) { if (j < nb) continue; const o = prov(j); if (o && o.k !== without && owner.get(o.k) === ri && !seen.has(o.k)) { seen.add(o.k); q.push(o); } }
+      return seen.size === r.provs.length - 1;
+    };
+    const give = (p, from, to) => {
+      const a = realms[from]; a.provs = a.provs.filter(x => x !== p); a.area -= p.cells * 100; a.got[p.region] -= p.cells * 100;
+      if (to == null) { owner.delete(p.k); return; }
+      take(p, to);
+    };
+    for (let round = 0; round < 12; round++) {
+      let moved = 0;
+      for (const p of P) {
+        const ri = owner.get(p.k); if (ri == null || p === realms[ri].cap || !holdsOf(ri)) continue;
+        const ex = -room(ri, p.region); if (ex < p.cells * 50) continue;
+        const nbrs = new Set(); for (const j of adjOf(p)) { if (j < nb) continue; const o = owner.get(prov(j).k); if (o != null && o !== ri) nbrs.add(o); }
+        const to = [...nbrs].filter(o => room(o, p.region) >= p.cells * 50).sort((a, b) => room(b, p.region) - room(a, p.region) || a - b)[0];
+        if (to == null && fullyHeld.has(p.region)) continue;
+        if (!whole(ri, p.k)) continue;
+        give(p, ri, to == null ? null : to); moved++;
+      }
+      if (!moved) break;
+    }
+    for (let round = 0; round < 30; round++) {
+      let moved = 0;
+      realms.forEach((r, ri) => {
+        const H = holdsOf(ri); if (!H) return;
+        const cand = new Map();
+        for (const p of r.provs) for (const j of [...adjOf(p), ...seaOf(p)]) { if (j < nb) continue; const q = prov(j); if (q && !owner.has(q.k) && room(ri, q.region) >= q.cells * 50) cand.set(q.k, q); }
+        for (const q of [...cand.values()].sort((a, b) => a.k - b.k)) if (!owner.has(q.k) && room(ri, q.region) >= q.cells * 50) { take(q, ri); moved++; }
+      });
+      if (!moved) break;
+    }
   }
   // ---- what kind of polity each is follows its size in its land: the largest are kingdoms and empires, the smallest
   // city-states, ports, temples and chiefdoms (the lore's own, and the kin peoples', keep theirs)
@@ -258,6 +359,17 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
       r.kind = R.wpick(fit.length ? fit : pool, k => k[4]);
     });
   }
+  // how near each lore realm's holdings come to the lore's holds_km2, region by region
+  const quotaReport = () => {
+    let want = 0, off = 0, n = 0, worst = [];
+    for (const r of realms) {
+      const H = r.lore && r.lore.holds; if (!H) continue;
+      const got = {}; for (const p of r.provs) got[p.region] = (got[p.region] || 0) + p.cells * 100;
+      for (const g of new Set(Object.keys(H).concat(Object.keys(got)))) { const h = H[g] || 0, x = got[g] || 0; want += h; off += Math.abs(x - h); n++; worst.push([Math.abs(x - h), r.lore.id, g, h, x]); }
+    }
+    worst.sort((a, b) => b[0] - a[0]);
+    return { want, off, err: want ? off / want : 0, n, worst: worst.slice(0, 5) };
+  };
   // ---- records
   const out = {}, houses = {}, relations = [], seat = {};
   realms.forEach((r, ri) => {
@@ -278,6 +390,26 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
     naming[id] = race === 'giant' ? { common: 'single', noble: 'single', note: 'One name and the hall.' } : race === 'dwarf' ? { common: 'house', noble: 'house', note: 'A given name and a clan name.' } : { common: 'clan', noble: 'clan', note: 'A short given name and the clan.' };
     lang[id] = race === 'orc' ? 'Old Orcish' : race === 'dwarf' ? 'Roof Holdspeech' : 'Old Hall Tongue';
     r.cult = id;
+  }
+  // ---- far@2: every province named from its people's own place names (places.mjs); a capital keeps the lore's name
+  let placeReport = null;
+  if (loreHas) {
+    const capOf = new Map(); for (const r of realms) if (r.capName) { capOf.set(r.cap.k, r.capName); used.add(r.capName.toLowerCase()); }
+    for (const [k, nm] of capOf) { P[k].name = nm; P[k].base = nm; }
+    const ownerOf = new Map(); for (const [k, ri] of owner) ownerOf.set(k, ri);
+    // an unheld province is named by the people of the nearest held one
+    const near = new Map(), q = [];
+    for (const [k, ri] of ownerOf) { near.set(k, ri); q.push(P[k]); }
+    for (let h = 0; h < q.length; h++) for (const j of adjOf(q[h])) { if (j < nb) continue; const o = prov(j); if (o && !near.has(o.k)) { near.set(o.k, near.get(q[h].k)); q.push(o); } }
+    const withPlaces = id => id && cultures[id] && cultures[id].places && cultures[id].places.length;
+    const landCults = {}; for (const id of Object.keys(cultures).sort()) { const c = cultures[id]; if (withPlaces(id)) (landCults[c.land] = landCults[c.land] || []).push(id); }
+    const keysOfRealm = r => [r.cult, ...((r.lore && r.lore.cults) || [])].filter(withPlaces);
+    placeReport = nameProvinces(P.filter(p => !capOf.has(p.k)), {
+      list: id => cultures[id].places,
+      // the realm's own peoples, then the other peoples of its land
+      keys: p => { const ri = near.get(p.k), ks = ri != null ? keysOfRealm(realms[ri]) : []; return [...new Set(ks.concat(landCults[p.land] || []))]; },
+      all: Object.keys(cultures).sort().filter(withPlaces),
+    }, used);
   }
   const colorOf = {};
   const realmNbrs = ri => { const s = new Set(); for (const p of realms[ri].provs) for (const j of adjOf(p)) { if (j < nb) { const L = base.provinces[j]; if (L && L.realm && L.realm !== 'unclaimed') s.add('B:' + L.realm); continue; } const o = owner.get(prov(j).k); if (o != null && o !== ri) s.add(o); } return s; };
@@ -321,6 +453,7 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
       exports: ECON[L].ex, imports: ECON[L].im, food: L === 'F' || L === 'N' || L === 'B' ? 'deficit' : 'surplus', faith, langs: r.cult ? lang[r.cult] : '',
       allies: [], rivals: [], atWar: [], stability: stab, comp, fleet: { ships: `${Math.min(60, coastal * 3)} ships`, field: '' }, coin: { coin: 'silver', worth: 1 },
       primer: null, land: L, region: r.cap.region, govLaw: { gov, law }, house: hid, provs: r.provs.map(p => p.id),
+      holds: lr && lr.holds ? lr.holds : null,
       rulerName: lr && lr.ruler ? lr.ruler : null, rulerSex: lr ? lr.rulerSex || null : null, rulerBorn: lr ? lr.born || null : null, capName: r.capName || null, lore: !!lr,
       loreNote: lr ? { intro: lr.intro || '', want: lr.want || '', fear: lr.fear || '', ruler: lr.rulerNote || '' } : null,
     };
@@ -358,5 +491,5 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
       if (rel === 'alliance') both('allies'); else if (rel === 'rivalry' || rel === 'hostile') both('rivals');
     }
   } else for (const r of realms) for (const o of out[r.id].rivals) if (r.id < o) relations.push({ a: r.id, b: o, rel: 'rivalry', detail: 'border rivalry' });
-  return { realms: out, houses, relations, cultures, naming, lang, faiths, owner: realms.map(r => r.id), loreReport };
+  return { realms: out, houses, relations, cultures, naming, lang, faiths, owner: realms.map(r => r.id), loreReport, placeReport, quota: quotaReport() };
 }

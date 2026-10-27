@@ -63,7 +63,7 @@
   };
 
   // ---- the grid from parts. MAP.want() names the extra part for the current game (null: the map as written). A part
-  // is { key, gw, gh, rle, x0, y0, ox, oy }: Uint16 pairs (province id + 1, run length) over its whole frame, 0 for
+  // is { key, gw, gh, rle or grid, x0, y0, ox, oy }: Uint16 pairs (province id + 1, run length) over its whole frame, 0 for
   // water; its top left corner at km (x0, y0); the cells of the map as written left as water and copied in at cell
   // (ox, oy).
   const decode = (rle, into) => {
@@ -99,7 +99,7 @@
       MAP.gw = BASE.gw; MAP.gh = BASE.gh; MAP.grid = g; MAP.KX0 = 0; MAP.KY0 = 0;
     } else {
       const gw = want.gw, gh = want.gh, g = new Int16Array(gw * gh).fill(-1);
-      decode(want.rle, g);
+      if (want.grid) g.set(want.grid); else decode(want.rle, g);   // a part rebuilt in the page (a far@1 save) brings its grid
       const b = new Int16Array(BASE.gw * BASE.gh);
       decode(BASE.rle, b);
       const ox = want.ox || 0, oy = want.oy || 0;

@@ -155,4 +155,34 @@ export default {
     for (let i = errs.length - 1; i >= 0; i--) if (/Refused to connect to 'https:\/\/fonts\.googleapis\.com/.test(errs[i])) errs.splice(i, 1);
     return { ok: !found.length, detail: `${found.length} axe violations on a cut-in${found.length ? ': ' + found.join(', ') : ''} (dark and light, still and moving)` };
   },
+  // toasts (§5.10): three in a row stack, newest on top and in #toast (the live region), at most three; each wears its
+  // kind (a refusal danger, a gain ok); a fourth drops the oldest; hovering pauses; nothing touches the game
+  async toastStack(pg) {
+    const r = await pg.evaluate(async () => {
+      T.enter({ seed: 9601, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const h0 = T.hash(A.S), g0 = JSON.stringify(A.S.rng);
+      UI.toast('You buy a spear for 3 suns.');
+      UI.toast('Not enough coin for a horse.');
+      UI.toast('You gain 2 renown.');
+      const t = document.getElementById('toast'), st = document.getElementById('toast-stack');
+      const one = { text: t.textContent, kind: t.dataset.kind, live: t.getAttribute('aria-live'), old: [...st.children].map(e => e.dataset.kind + ':' + e.textContent), hidden: st.getAttribute('aria-hidden') };
+      const tb = t.getBoundingClientRect(), sb = st.getBoundingClientRect();
+      one.above = tb.bottom <= sb.top + 1;
+      UI.toast('The road is long.');
+      one.four = st.children.length + 1;
+      one.fourOld = [...st.children].map(e => e.textContent);
+      // a pause while the pointer is on it
+      t.dispatchEvent(new MouseEvent('mouseenter'));
+      await new Promise(res => setTimeout(res, 4300));
+      one.held = +getComputedStyle(t).opacity > 0.5;
+      t.dispatchEvent(new MouseEvent('mouseleave'));
+      await new Promise(res => setTimeout(res, 1800));
+      one.gone = +t.style.opacity === 0;
+      one.pure = T.hash(A.S) === h0 && JSON.stringify(A.S.rng) === g0;
+      return one;
+    });
+    const ok = r.text === 'You gain 2 renown.' && r.kind === 'ok' && r.live === 'polite' && r.old.length === 2 && /^danger:Not enough/.test(r.old[0]) && /^accent:You buy/.test(r.old[1]) && r.hidden === 'true' &&
+      r.above && r.four === 3 && !r.fourOld.some(x => /spear/.test(x)) && r.held && r.gone && r.pure;
+    return { ok, detail: `newest "${r.text}" (${r.kind}, aria-live ${r.live}) above ${r.old.length} older [${r.old.join(' | ')}] ${r.above}; a fourth keeps ${r.four} (oldest dropped ${!r.fourOld.some(x => /spear/.test(x))}); held on hover ${r.held}, gone after ${r.gone}; pure ${r.pure}` };
+  },
 };

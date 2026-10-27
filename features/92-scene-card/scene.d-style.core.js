@@ -185,6 +185,21 @@ ${R}.sc-sheet .sc-card .sc-result{margin-top:auto;padding:8px 12px 14px}
 ${R}.sc-sheet .sc-card .sc-foot .sc-cont{flex:1 1 auto;min-height:52px}
 ${R}.sc-sheet .sc-card .sc-d{min-height:30px}
 ${R}.sc-sheet .sc-card .sc-head > .mreport{position:static;flex:none;align-self:flex-start;margin:4px 0 0 auto;width:44px;height:44px;opacity:.6}
+/* the first-run hint ("Each choice shows your odds") floats over the print instead of pushing the sheet 90 px down,
+   which made a short event scroll on a 375 x 667 phone; the tags' row is a little tighter for the same reason */
+${R}.sc-sheet > .hint-float{position:absolute;z-index:6;top:calc(8px + env(safe-area-inset-top,0px));left:8px;right:8px;margin:0;order:0}
+${R}.sc-sheet .sc-card .choices > button.sc-ch{row-gap:4px;padding-top:9px;padding-bottom:9px}
+${R}.sc-sheet .sc-card .choices button .risk.sc-odds, ${R}.sc-sheet .sc-card .sc-chk, ${R}.sc-sheet .sc-card .sc-oncew{height:24px}
+/* a short phone (an iPhone SE, 667 px): a smaller bust and tighter gaps, so a three-choice scene fits one sheet */
+@media (max-height:700px){
+  ${R}.sc-sheet > .mbox.sc-card > .sc-in > .sc-vig, ${R}.sc-sheet .sc-card .sc-vig svg.woodcut{min-height:min(calc(100vw * 12 / 39), 30vh)}
+  ${R}.sc-sheet .sc-card .sc-bust{width:60px;height:60px}
+  ${R}.sc-sheet .sc-card.sc-has-vig.sc-has-bust .sc-head{margin-top:-20px}
+  ${R}.sc-sheet .sc-card .sc-head{padding-top:10px}
+  ${R}.sc-sheet .sc-card .sc-body{padding-top:6px}
+  ${R}.sc-sheet .sc-card .choices{padding:8px 12px 10px;gap:6px}
+  ${R}.sc-sheet .sc-card .choices > button.sc-ch{padding-top:8px;padding-bottom:8px}
+}
 
 /* ---- motion ---- */
 @keyframes scRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}

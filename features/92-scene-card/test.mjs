@@ -338,4 +338,30 @@ export default {
     return { ok, detail: `system reduced: ${red.open} moving on opening, ${red.result} after the choice; system full: ${full.open} and ${full.result}` +
       (out.setRed ? `; Motion Reduced on a full system: ${out.setRed.open}/${out.setRed.result}; Motion Full on a reduced system: ${out.setFull.open}/${out.setFull.result}` : '') };
   },
+  // a 375 x 667 phone (iPhone SE) on a first life, the first-run hint showing: "A love philtre" (two checks, stake lines)
+  // is read and answered without scrolling. The hint floats over the print instead of pushing the sheet down 90 px.
+  async scPhoneFit(pg, errs, { browser, file }) {
+    const ctx = await browser.newContext({ viewport: { width: 375, height: 667 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+    const p = await ctx.newPage();
+    let r;
+    try {
+      p.on('pageerror', e => errs.push(String(e.stack || e).slice(0, 300)));
+      await p.goto(pathToFileURL(file).href);
+      await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      const { HELPERS } = await import('../../tests/helpers.mjs');
+      await p.evaluate(HELPERS); await p.evaluate(SETUP);
+      r = await p.evaluate(() => {
+        T.enter({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+        if (UI.MOMENTS) { UI.set.cutins = false; UI.MOMENTS.skip(); }
+        UI.set.hints = true;
+        A.S.queue = [{ type: 'event', ev: 'lf_love_potion', forced: true, ctx: {} }]; UI.render();
+        const m = document.getElementById('modal'), inn = m.querySelector('.sc-in'), hint = m.querySelector(':scope > .hint-float');
+        const card = m.querySelector('.sc-card').getBoundingClientRect();
+        const rows = [...m.querySelectorAll('.choices > button')].map(b => Math.round(b.getBoundingClientRect().height));
+        return { sheet: m.classList.contains('sc-sheet'), hint: !!hint, top: Math.round(card.top), over: inn.scrollHeight - inn.clientHeight, rows, ev: (m.querySelector('h2') || {}).textContent };
+      });
+    } finally { await ctx.close(); }
+    const ok = r.sheet && r.top <= 1 && r.over <= 1 && r.rows.length >= 3 && r.rows.every(h => h >= 52);
+    return { ok, detail: `"${r.ev}" at 375 x 667, hint showing ${r.hint}: sheet top ${r.top} px, ${Math.max(0, r.over)} px to scroll; rows ${r.rows.join('/')} px` };
+  },
 };

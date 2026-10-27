@@ -211,6 +211,7 @@
         const L = lvl(c);
         let x = `<div class="card beast-c"><b>${UI.esc(c.name)}</b> <span class="tag">${UI.esc(c.cat)}</span> <span class="chip bt-${L}">${UI.esc(KNOW[L])}</span>` +
           (GD.BEAST_FLYER[c.id] && L >= 2 ? ' <span class="chip">flies — needs bows or spears</span>' : '') +
+          (BT.cardLine ? BT.cardLine(c, L) : '') +   // a creature line, filled by 992-far-beasts (id, land, rarity)
           `<div class="small muted">${UI.esc(c.habitat)}${L >= 2 ? ' · ' + UI.esc(c.size) : ''}</div>` +
           `<div class="small"><b>Folk say:</b> ${UI.esc(c.belief)}</div>`;
         if (L >= 2 && c.behavior) x += `<div class="small"><b>What you saw:</b> ${UI.esc(c.behavior)}</div>`;

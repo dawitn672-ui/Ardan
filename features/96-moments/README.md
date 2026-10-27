@@ -35,6 +35,13 @@ Death is muted (a grey-blue band, no focus lines); a victory is vermilion and go
 
 **The Motion setting** (Menu, after the theme, patch `MO-MENU`): Follow system (the default), Full, Reduced or Off, saved with the other settings (`UI.set.motion`). It sets `<html data-motion="full|reduced|off">`, which 91-look and 92-scene-card read. Full also moves under the system's reduced-motion setting: the release's 1 ms floor is beaten with `!important` for these effects. **"Moment cut-ins"** (`UI.set.cutins`, on by default) turns them off altogether.
 
+**Toasts** (`toasts.core.js`, brief §5.10, Oct 27). The release kept one toast: each message overwrote the last, so two in a row (a purchase and what it unlocked, a refusal and its reason) showed only the second.
+
+- `#toast` is still the newest message, the live region (`aria-live="polite"`), and the text the features and tests read.
+- The messages it replaces move into a stack under it, `#toast-stack` (`aria-hidden`, since they were read out when they came): at most three in all, newest on top.
+- Each has an icon and a 3 px edge in its kind, read from the words: a refusal or a loss is danger, a gain is ok, the rest accent.
+- A toast stays 4 s, and pauses while the pointer or focus is on it.
+
 ## Measured by (`test.mjs`)
 
 | Test | What it holds |
@@ -42,6 +49,7 @@ Death is muted (a grey-blue band, no focus lines); a victory is vermilion and go
 | `moOnePerMonth` | A marriage, a birth and an epithet in one month show one cut-in (WEDDED) and pass over the other two; a death the same month waits; a click skips; the next month shows NAMED; a key skips and the scene under it is not chosen; three years of a real life drawn month by month show no two cut-ins in one month, and the new year at least twice |
 | `moMotion` | System reduced: a still banner, no transform, there at 1.32 s and gone by 1.92 s. System full: the band moves, gone by 1.32 s. Motion Reduced on a full system, and Full on a reduced system, are obeyed. Off: no animation, gone by 1.92 s. The menu offers the four, Reduced is saved and set on `<html>` |
 | `moPure` | A life drawn at every step with cut-ins on reaches the same people, realms and random stream as the same life never drawn |
+| `toastStack` | Three toasts stack: the newest in `#toast` (ok, polite) above a danger and an accent toast. A fourth drops the oldest. A hover holds it past 4 s, and it fades after. Pure |
 | `moAxe` | axe-core on a cut-in, still and moving, dark and light: 0 violations |
 
 ## Rules kept
@@ -54,4 +62,4 @@ Death is muted (a grey-blue band, no focus lines); a victory is vermilion and go
 
 - **Moments come from readings, not from the engine's own events.** A rank won and lost between two draws is never seen. While the clock runs, the readings come from its light redraw, about every 1.5 s, which is always within a month.
 - **Victory needs the battle screen.** A battle resolved without the player on its screen gives no cut-in; neither does a duel.
-- **Toasts** keep 91-look's style and 98-feedback's behaviour; the brief's stacking of three toasts is not built here.
+- **Toasts on the phone** sit above the bottom bar, not at the top of the content as the brief says.

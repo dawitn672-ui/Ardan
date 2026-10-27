@@ -1,6 +1,6 @@
 # The engine at scale
 
-**Aspect:** Technical (stage 0 of `docs/plan/world-expansion-architecture.md`) · **Kind:** fix layer (applied in every build): 7 patches, 1 code file, tests, a bench
+**Aspect:** Technical (stage 0 of `docs/plan/world-expansion-architecture.md`) and World (one world on the Great Continent) · **Kind:** fix layer (applied in every build): 9 patches, 2 code files, tests, two benches
 
 The world is to grow about tenfold. On a world ten times as large (the plan's clone harness: 3,060 provinces, 341
 realms) the full build played a month in 1.2-1.5 s of CPU and **the month holding the New Year in 15-20 s**: the year
@@ -69,6 +69,8 @@ fields of `A`.
 | `SCALE-SUPPLY-CTRL` | `A.supplyMap` takes its control codes from `A.scaleFr` inside the supply pass. |
 | `SCALE-PATH-RELATIONS` | `A.wsPath` remembers friend and foe per holder for one search. |
 | `SCALE-PAIR-PERSONA` | `A.politicsYear` opens and closes the persona memo around each realm's pass. |
+| `WORLD-WAR-CAP` | `A.aiWarCheck`'s cap of four wars is asked of `A.warCapFull` (each land its share on the Great Continent; null, so the release's rule, on the Known World). |
+| `WORLD-REACH` | War declarations, coalitions, calls to arms and the pacts' own calls ask `A.outOfReach` (false on the Known World). |
 
 ## Measured
 
@@ -113,21 +115,63 @@ left grows linearly with the world, plus the wars.
   CPU; fails if the month's CPU passes 2.4 s or the year-turn month's 5 s (three times this machine's numbers).
 
 `node features/09-scale/bench.mjs built.html --K=1,5,10 [--off]` prints the table above for any build.
+`node features/09-scale/great-bench.mjs built.html [--realms=POL-01,POL-36] [--profile=out]` times the Great Continent.
+
+- **`scaleOneWorld`**: a Great Continent game for ten years: the lore's tributes made and held, no realm at war out of
+  reach, far news late and few, far realms standing, treasuries bounded, wars ending.
 
 Checked on Oct 26 against one snapshot of the features (with and without this folder): those four tests, the core
 suites and the tests of 01, 03-05, 20, 21, 23, 36, 38, 43, 44, 45, 55, 56, 64, 66, 68, 69, 70 and 99 (143 tests, all
 pass), and `bench/balance.mjs --workers=2`, whose 72 lives came out identical life by life (every path's deaths, wealth,
 fame and arcs; check win rate 49.4%; all within their bands).
 
+## One world (`world.core.js`, round 10)
+
+The Great Continent (99-far-lands) is to be the world a player gets, and every realm, army and market in it simulates
+in full every day (the owner's call of Oct 27: no lighter tick for far lands). The release's rules were written for 35
+realms in 7,000 km, where every realm can reach every other. On 153 realms in 17,600 km four things went wrong, measured
+on ten-year Great Continent games (seeds 555, 556, 9090; a peasant of Aldmark):
+
+| What | Before | Now |
+| --- | --- | --- |
+| **Who joins a war** | a coalition took in the neighbours of the target's neighbours, and allies, tributaries and pact partners answered a call from anywhere: coalitions of 15 to 25 realms from six lands, members up to 4,000 km from the other side | a realm joins (or declares, or leagues against) only a realm whose land comes within **1,500 km** of its own (`A.outOfReach`, nearest province to capital, both ways): 0 joiners out of reach in ten years (`scaleOneWorld`) |
+| **Wars at once** | the release's cap of four wars (`A.aiWarCheck`) was shared by the continent: full on 18% and 36% of days, so a war in the Black Pines kept the Known World at peace | each land has its share of the four (four for the Known World's 35 realms, three for the Twin Rivers' 22, at least one for every land; `A.warCapFull`) |
+| **The lore's ties** | the lore's 53 tributes were read by the release as trade pacts; no realm began as anyone's tributary | the 46 that fit (both realms standing, no loop) begin as tributaries (`S.loreTies`), and a tributary of the lore does not throw off its overlord for 12 years (20's `A.aiDefy`): 45 of 46 still paying at year 5 |
+| **News** | every realm's every line: 280 to 500 a year (Known World games: 70 to 150), so the 220 lines kept reached back half a year, most about lands the player will never see | a line naming only realms more than 2,000 km from home and not tied to the player's (realm, neighbours, allies, overlord, foes at war) is far. A far war declared or ended, a coalition, a fallen realm or a throne changing hands arrives after the days word takes (40 km a day: "Word from the east: ..."), at most 30 a year; far battles, harvests, councils and pacts are not heard of. Ten years: 189 near lines and 31 far ones kept |
+
+All of it is gated: `A.warCapFull` answers null and `A.outOfReach` false on the Known World, and the news and tribute
+code returns at once there, so a Known World game plays bit for bit as before (the same state hash as the build
+without this file).
+
+The far world stays plausible over ten years (`scaleOneWorld`): 116 of 118 far realms standing, treasuries at 1.7 years
+of income (median; highest 3.5), no war older than eight years.
+
+**Other features touched for it:** 68-casus-belli's old-debt march (`debts.core.js`) asks `A.outOfReach` too (one line).
+
+## Exact speed-ups in other features (round 10)
+
+Bit-identical (the same state hash and random stream as before, Known World and Great Continent, seeds 77, 78, 79):
+
+- **45-economy** `E.caravans`: each market walks its roads cheapest first and stops where even the dearest price
+  anywhere could not pay the road; candidates keep their old order as the sort's tie-break.
+- **20-ai-personality** `A.aiPullSum`: one body with `A.aiPullParts` that keeps only the sum and builds no label
+  (A.politicsYear asks for every pair each year). The terms are added in the same order.
+- **66-markets** `MT.road`'s memo key is `a * 65536 + b` (was `a * 4096 + b`, which collides past 4,096 provinces).
+
+**Measured** (`great-bench.mjs`, seed 1234, a peasant of Aldmark and of Taulen, 14 months; quiet machine, main-thread
+CPU): month median 314 and 337 ms, year-turn month 644 and 602 ms, new game 693 and 710 ms. The level-of-detail tick the
+plan proposed (stage 2) was dropped: the world runs in full, and the interface plays it a week or a month at a time
+without freezing (84-top-bar's step rhythm, `docs/design/pacing.md`).
+
 ## What is left
 
-- **The month at 10× is not yet 250 ms.** It is linear work now, spread over many systems: the war day (`A.wsDay`,
+- **The month at 10× is not yet 250 ms** (and the Great Continent's about 0.3 s; the owner has since set that target aside for full simulation everywhere). It is linear work now, spread over many systems: the war day (`A.wsDay`,
   about a third: supply maps over the whole map for every warring realm, the armies' thinking, battles), 45's
   caravans (`E.caravans` looks at every pair of markets for every good: markets² × goods), 66's towns, the AI's
   diplomacy, and some thirty other monthly hooks that each walk every realm. Reaching 250 ms needs the plan's level of
   detail (stage 2: a far continent on a coarse tick), or changes that change results (supply maps by theatre, pairs
   pruned by distance). Both are beyond an exact rewrite.
-- **45-economy, exact and measured, not applied** (another feature's code): `E.caravans` can walk each market's roads
+- **45-economy, exact and measured, applied in round 10** (see above): `E.caravans` can walk each market's roads
   cheapest first and stop where even the dearest price anywhere could not pay the road. The candidates come out the
   same, in the same order (each keeps its old place as a tie-break in the sort); the state hash is unchanged at 1× and
   10×. The candidate pass at 10× goes from about 70 ms to 27 ms a month; the whole month moves by less than the noise.
@@ -136,5 +180,6 @@ fame and arcs; check win rate 49.4%; all within their bands).
   O(changes).
 - **Realm objects are in V8's dictionary mode** (40 of 41 after a few years, from `delete` of realm fields in several
   features), and so is `A` itself, so every `A.x` and `r.x` is a hash lookup. Not something a feature can fix.
-- **Pairs in `A.politicsYear`** still cost about 0.4 s a year at 10× in 20-ai-personality's `A.aiPullParts` (label
-  strings are built for every term even when only the sum is asked for). A sum-only path there would halve it.
+- **Pairs in `A.politicsYear`**: 20-ai-personality's sum-only `A.aiPullSum` is applied (round 10).
+- **The month's turn is one long day** on the Great Continent (230 to 480 ms in one task: every monthly hook). The
+  step rhythm draws a note before it; splitting it across frames would need `A.monthTick` itself in parts.

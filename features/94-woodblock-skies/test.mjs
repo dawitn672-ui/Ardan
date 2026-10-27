@@ -10,6 +10,9 @@ const EVENT = `(() => { A.S.queue = []; UI.ov = null; const pc = A.pc(); let q =
   for (let g = 0; g < 60 && !q; g++) { A.advance(30); const h = A.S.queue[0]; if (h && h.type === 'event') { const v = A.eventView(h); if (v && v.choices && v.choices.length >= 2 && !v.skip) { q = h; A.S.queue = [h]; break; } } A.S.queue = []; if (!pc.alive) { pc.alive = true; pc.health = 80; } }
   UI.tab = 'life'; UI.render(); return q ? q.ev : null; })()`;
 
+// every one of the five far lands is some far province's
+const SKOK = c => ['jungle', 'savanna', 'taiga', 'alpine', 'scrub'].every(t => (c[t] || 0) > 0);
+
 export default {
   // 25 scenes x 6 hours x 8 lands x 4 seasons: valid SVG, the same input gives the same string, other events and years
   // give other pictures, and each print is at most 15 KB (6 to 12 on average)
@@ -138,5 +141,34 @@ export default {
     }
     dropFontCsp(errs);
     return { ok: !found.length, detail: `${found.length} axe violations with an event and its print on screen, dark and light${found.length ? ': ' + found.slice(0, 6).join(', ') : ''}` };
+  },
+  // the Great Continent's climates: a far province's biome picks its land (jungle, savanna, taiga, alpine pasture,
+  // scrub), each new land prints for every scene within budget, a life in the far lands gets its home's climate, and a
+  // Known World province keeps its word
+  async skyFarLands(pg) {
+    const r = await pg.evaluate(() => {
+      const SK = UI.SKIES, bad = [], sizes = [];
+      for (const t of SK.FAR_TERR) for (const sh of Object.keys(SK.SCENE)) for (const h of ['day', 'night', 'dusk']) {
+        const svg = SK.svg(sh, 'ev_far|1105', 5, { hour: h, terr: t, place: 'Venshai' });
+        const doc = new DOMParser().parseFromString(svg, 'image/svg+xml');
+        if (doc.querySelector('parsererror') || /NaN|undefined/.test(svg) || !svg.includes(`data-terr="${t}"`)) bad.push(t + '/' + sh + '/' + h);
+        sizes.push(svg.length);
+      }
+      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      const count = {};
+      for (const pv of LORE.map.provinces) { if (!pv || pv.id < 306) continue; const t = SK.terrOf(pv); count[t] = (count[t] || 0) + 1; }
+      const kwSame = LORE.map.provinces.filter(pv => pv && pv.id < 306).every(pv => SK.terrOf(pv) === (SK.TERRAIN[pv.terr] ? pv.terr : 'hills'));
+      // a home in the far south's monsoon forest: the event's print is a jungle
+      const home = LORE.map.provinces.find(pv => pv && pv.id >= 306 && SK.terrOf(pv) === 'jungle' && pv.realm && pv.realm !== 'unclaimed');
+      let drawn = null;
+      if (home) {
+        const pc = A.pc(); pc.home = home.id; pc.loc = home.id;
+        A.S.queue = [{ type: 'event', ev: 'lf_love_potion', forced: true, ctx: {} }]; UI.screen = 'game'; UI.render();
+        const svg = document.querySelector('#modal svg.woodcut'); drawn = svg && svg.dataset.terr;
+      }
+      return { n: sizes.length, bad, max: Math.max(...sizes), avg: Math.round(sizes.reduce((a, x) => a + x, 0) / sizes.length), count, kwSame, drawn };
+    });
+    const ok = !r.bad.length && r.max <= 15 * 1024 && SKOK(r.count) && r.kwSame && r.drawn === 'jungle';
+    return { ok, detail: `${r.n} prints of the five far lands: ${(r.avg / 1024).toFixed(1)} KB average, ${(r.max / 1024).toFixed(1)} KB at most${r.bad.length ? ', BAD ' + r.bad.slice(0, 4).join(', ') : ''}; far provinces by land ${JSON.stringify(r.count)}; Known World words kept ${r.kwSame}; a jungle home draws ${r.drawn}` };
   },
 };

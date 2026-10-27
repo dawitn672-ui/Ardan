@@ -82,13 +82,25 @@ export default [
   {
     id: 'FL-CHOICE',
     blob: 'ardan-core',
-    why: 'The creation screen offers the lands next to the world seed: the Known World alone (the default, the world as ' +
-      'written) or the Great Continent (c-lands.core.js); the creation state carries the choice into A.newGame as o.lands.',
+    why: 'The creation screen offers the lands next to the world seed: the Great Continent (the default for a game from ' +
+      'the menu, set by c-lands.core.js\'s UI.crDefaults wrapper) or the Known World only; the creation state carries the ' +
+      'choice into A.newGame as o.lands. A.newGame called by code with no lands keeps the world as written.',
     edits: [
       ['startAge:0,diff:"hard",seed:""', 'startAge:0,diff:"hard",seed:"",lands:"known"'],
       ['diff:c.diff,', 'diff:c.diff,lands:c.lands||"known",'],
       [',h+=`<div class="field"><label>World seed (optional)</label>',
         ',h+=A.FAR&&A.FAR.creationField?A.FAR.creationField(c):"",h+=`<div class="field"><label>World seed (optional)</label>'],
     ],
+  },
+  {
+    id: 'FL-REALMS',
+    blob: 'ardan-core',
+    why: 'The creation screen\'s realm of birth lists 153 realms on the Great Continent: grouped by land in <optgroup>s ' +
+      '(A.FAR.realmOptions), which the select\'s own type-ahead searches. With the Known World alone it returns null and ' +
+      'the release\'s list is drawn as before.',
+    edits: [[
+      '${realms.map(r=>{const L2=LORE.realms[r],n=L2.pops[GD.RACE_POPKEY[c.race]]||0;return`<option value="${r}" ${r===c.realm?"selected":""}>${UI.esc(L2.name)} — ${A.fmt(n)} ${UI.esc(GD.RACES[c.race].name.toLowerCase())}s</option>`}).join("")}',
+      '${A.FAR&&A.FAR.realmOptions&&A.FAR.realmOptions(realms,c)||realms.map(r=>{const L2=LORE.realms[r],n=L2.pops[GD.RACE_POPKEY[c.race]]||0;return`<option value="${r}" ${r===c.realm?"selected":""}>${UI.esc(L2.name)} — ${A.fmt(n)} ${UI.esc(GD.RACES[c.race].name.toLowerCase())}s</option>`}).join("")}',
+    ]],
   },
 ];

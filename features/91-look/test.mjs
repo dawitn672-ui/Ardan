@@ -199,4 +199,121 @@ export default {
     });
     return { ok: r.pure && r.same, detail: `${r.n} draws twice: state and random stream unchanged ${r.pure}, same markup ${r.same}` };
   },
+  // §1.6 for 153 realms: the Great Continent's 118 get accents that stand apart from the realms they border, the Known
+  // World's 35 keep their own colour, every one has an AA ink in both themes, and the palette is the same every time
+  async realmColours(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      UI.screen = 'game'; UI.render();
+      const D = A.FL_DATA, P = D.provinces, owner = new Map();
+      for (let i = 0; i < P.id.length; i++) owner.set(P.id[i], P.realm[i]);
+      const far = (Array.isArray(D.realms) ? D.realms : Object.entries(D.realms)).map(x => x[0]);
+      const lin = c => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+      const lab = h => { const [r, g, b] = [1, 3, 5].map(i => lin(parseInt(h.slice(i, i + 2), 16) / 255)); const l = Math.cbrt(0.4122 * r + 0.5363 * g + 0.0514 * b), m = Math.cbrt(0.2119 * r + 0.6807 * g + 0.1074 * b), s = Math.cbrt(0.0883 * r + 0.2817 * g + 0.6300 * b); return [0.2105 * l + 0.7936 * m - 0.0041 * s, 1.9780 * l - 2.4286 * m + 0.4506 * s, 0.0259 * l + 0.7828 * m - 0.8087 * s]; };
+      const dist = (a, b) => { const p = lab(a), q = lab(b); return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); };
+      const pairs = new Set();
+      for (let i = 0; i < P.id.length; i++) for (const j of P.adj[i] || []) { const a = P.realm[i], b = owner.get(j); if (a && b && a !== b && a !== 'unclaimed' && b !== 'unclaimed' && far.includes(a) && far.includes(b)) pairs.add(a < b ? a + '|' + b : b + '|' + a); }
+      const dNew = [], dOld = [];
+      for (const k of pairs) { const [a, b] = k.split('|'); dNew.push(dist(UI.realmHex(a), UI.realmHex(b))); dOld.push(dist(A.S.realms[a].color, A.S.realms[b].color)); }
+      dNew.sort((x, y) => x - y); dOld.sort((x, y) => x - y);
+      const med = a => a[Math.floor(a.length / 2)];
+      const known = Object.values(A.S.realms).filter(x => !far.includes(x.id) && /^POL-\d+$/.test(x.id) && +x.id.slice(4) <= 35);
+      const keep = known.every(x => UI.realmHex(x) === x.color.toLowerCase());
+      let inkOk = 0, n = 0;
+      for (const id of far) for (const th of ['dark', 'light']) { n++; const k = UI.realmInk(UI.realmHex(id), th), T = UI.LOOK.THEMES[th]; if (Math.min(UI.LOOK.contrast(k.ink, T['--surface']), UI.LOOK.contrast(k.ink, T['--raised'])) >= 4.5) inkOk++; }
+      const distinct = new Set(far.map(id => UI.realmHex(id))).size;
+      const h0 = T.hash(A.S);
+      const again = far.every(id => UI.realmHex(id) === UI.realmHex(A.S.realms[id]));
+      return { pairs: pairs.size, minNew: dNew[0], medNew: med(dNew), minOld: dOld[0], medOld: med(dOld), close: dNew.filter(d => d < 0.04).length, closeOld: dOld.filter(d => d < 0.04).length,
+        keep, known: known.length, inkOk, n, distinct, far: far.length, pure: T.hash(A.S) === h0, again };
+    });
+    const f = x => x.toFixed(3);
+    const ok = r.keep && r.inkOk === r.n && r.distinct >= r.far - 4 && r.medNew > r.medOld && r.close < r.closeOld && r.pure && r.again;
+    return { ok, detail: `${r.far} far realms, ${r.distinct} distinct colours; ${r.pairs} bordering pairs: OKLab distance median ${f(r.medOld)} -> ${f(r.medNew)}, least ${f(r.minOld)} -> ${f(r.minNew)}, pairs under 0.04 ${r.closeOld} -> ${r.close}; ` +
+      `the Known World's ${r.known} unchanged ${r.keep}; AA ink ${r.inkOk}/${r.n}; pure ${r.pure}, stable ${r.again}` };
+  },
+
+  // §4.5 and §1.5: People as rows (twenty fit), the Realm tab's header band, rarity on gear quality and achievements; pure
+  async lookRows(pg, errs, { browser, file }) {
+    const { ctx, pg: p } = await page(browser, file, { viewport: { width: 1366, height: 768 } }, errs);
+    try {
+      await p.evaluate(FRESH);
+      const r = await p.evaluate(() => {
+        T.enter({ seed: 77, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+        UI.set.hints = false; T.play(3); A.S.queue = []; UI.ov = null;
+        const h0 = T.hash(A.S), g0 = JSON.stringify(A.S.rng);
+        UI.tab = 'people'; UI.render();
+        const rows = [...document.querySelectorAll('#tabbody .card.person.lk-row')];
+        const hs = rows.map(x => Math.round(x.getBoundingClientRect().height));
+        const tb = document.getElementById('tabbody');
+        const fit = Math.floor((tb.clientHeight - 120) / Math.max(1, Math.max(...hs)));
+        UI.tab = 'realm'; UI.render();
+        const band = document.querySelector('#tabbody .lk-band');
+        const nums = band ? band.querySelectorAll('.lk-band-k dd').length : 0;
+        const name = band && band.querySelector('.lk-band-n');
+        const rr = A.realm(A.pc().realm), ink = UI.realmInkOf(rr);
+        const cs = name && { color: getComputedStyle(name).color };
+        // gear quality and the achievements
+        const chip = UI.qualChip('master'), fine = UI.qualChip('fine'), none = UI.qualChip('common');
+        UI.tab = 'legacy'; UI.render();
+        const ach = [...document.querySelectorAll('#tabbody .achgrid .card.ach.rar')];
+        const tiers = new Set(ach.map(a => a.dataset.tier));
+        const pure = T.hash(A.S) === h0 && JSON.stringify(A.S.rng) === g0;
+        return { rows: rows.length, maxH: Math.max(...hs), fit, band: !!band, nums, nameInk: cs && cs.color, ink: ink.ink, chip: /rar-epic/.test(chip) && /◆◆◆/.test(chip), fine: /rar-uncommon/.test(fine), none: none === '', ach: ach.length, achAll: Object.keys(GD.ACH).length, tiers: tiers.size, pure };
+      });
+      const hex = c => { const m = String(c).match(/\d+/g); return m ? '#' + m.slice(0, 3).map(v => (+v).toString(16).padStart(2, '0')).join('') : c; };
+      const ok = r.rows >= 5 && r.maxH <= 32 && r.fit >= 18 && r.band && r.nums === 4 && hex(r.nameInk) === r.ink && r.chip && r.fine && r.none && r.ach === r.achAll && r.tiers >= 5 && r.pure;
+      return { ok, detail: `People: ${r.rows} rows of at most ${r.maxH} px, ${r.fit} fit in the panel; Realm band ${r.band} with ${r.nums} numbers, name in its ink ${hex(r.nameInk) === r.ink}; ` +
+        `Masterwork epic ${r.chip}, Fine uncommon ${r.fine}, common plain ${r.none}; ${r.ach}/${r.achAll} achievements tiered in ${r.tiers} tiers; pure ${r.pure}` };
+    } finally { await ctx.close(); }
+  },
+  // the rest of this round's look: a war's strength bar, the rail's delta flash, beasts' tiers in the Codex, the realm
+  // chip on a person's page, a pinned tooltip's mark; and drawing twice draws the same
+  async lookMore(pg, errs, { browser, file }) {
+    const { ctx, pg: p } = await page(browser, file, { viewport: { width: 1366, height: 768 } }, errs);
+    try {
+      await p.evaluate(FRESH);
+      const r = await p.evaluate(async () => {
+        T.enter({ seed: 91, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+        UI.set.hints = false; A.S.queue = []; UI.ov = null;
+        const pc = A.pc(), out = {};
+        // a war
+        const en = A.neighbors(pc.realm)[0]; A.startWar(pc.realm, en, null, 'conquest'); A.S.queue = [];
+        UI.tab = 'war'; UI.render();
+        const st = [...document.querySelectorAll('#tabbody .lk-str')];
+        out.wars = st.length; out.warLabel = st[0] && st[0].getAttribute('aria-label');
+        // the delta flash: the first draw shows none; a change shows it on that row
+        UI.tab = 'life'; UI.render();
+        out.flash0 = document.querySelectorAll('#profile .lk-dlt').length;
+        UI.render(); out.flash1 = document.querySelectorAll('#profile .lk-dlt').length;
+        pc.health = Math.max(1, pc.health - 10); UI.render();
+        const d = document.querySelector('#profile .lk-v-health .lk-dlt');
+        out.flash = d ? d.textContent : null;
+        await new Promise(res => setTimeout(res, 1800));
+        out.gone = !document.querySelector('#profile .lk-dlt');
+        // beasts in the Codex
+        UI.tab = 'codex'; UI.codex = 'beasts'; UI.render();
+        const bs = [...document.querySelectorAll('#tabbody .card.rar-beast')];
+        out.beasts = bs.length; out.beastTiers = [...new Set(bs.map(b => b.dataset.tier))].sort().join(',');
+        UI.tab = 'life'; UI.render();
+        // a pinned tooltip: a click on a stat's label pins it, and the popover says so
+        const a = document.querySelector('#profile .barrow .lbl [data-tt="health"]') || document.querySelector('#profile .barrow .lbl [data-tt]');
+        if (a) { a.click(); await new Promise(res => setTimeout(res, 60)); }
+        out.pin = !!document.querySelector('.tt-pop.tt-pin');
+        if (UI.TT) UI.TT.closeAll();
+        // a person's page: the realm chip
+        UI.A.ov('person:' + (pc.father || (pc.parents || [])[0]));
+        const chip = document.querySelector('#modal .lk-realm');
+        out.chip = chip ? chip.textContent : null;
+        UI.ov = null; UI.render();
+        // pure: drawing every tab twice gives the same markup
+        const h0 = T.hash(A.S), g0 = JSON.stringify(A.S.rng), m = [];
+        for (const pass of [0, 1]) { const x = []; for (const t of T.tabs()) { UI.tab = t; UI.render(); x.push(document.getElementById('app').innerHTML.length); } m.push(x.join(',')); }
+        out.same = m[0] === m[1]; out.pure = T.hash(A.S) === h0 && JSON.stringify(A.S.rng) === g0;
+        return out;
+      });
+      const ok = r.wars >= 1 && /^Strength: us .+ against them .+/.test(r.warLabel || '') && r.flash0 === 0 && r.flash1 === 0 && r.flash === '▼ −10' && r.gone && r.beasts >= 10 && r.beastTiers.split(',').length >= 3 && !!r.chip && r.pin && r.same && r.pure;
+      return { ok, detail: `war strength bars ${r.wars} ("${r.warLabel}"); delta flash: none on the first draws (${r.flash0}, ${r.flash1}), "${r.flash}" after a wound, gone after 1.6 s ${r.gone}; ${r.beasts} beasts tiered (${r.beastTiers}); realm chip "${r.chip}"; pinned tooltip marked ${r.pin}; same markup ${r.same}, pure ${r.pure}` };
+    } finally { await ctx.close(); }
+  },
 };

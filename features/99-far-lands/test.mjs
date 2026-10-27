@@ -7,7 +7,11 @@ import { HELPERS } from '../../tests/helpers.mjs';
 import { unpack, repack } from '../../tools/pack.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const A_KEY = 'far@1';
+const A_KEY = 'far@2';
+import { execFileSync } from 'node:child_process';
+const ROOT = path.join(HERE, '../..');
+// the commit that shipped far@1 (Oct 26): its data makes a real far@1 save for flFar1Save
+const FAR1_COMMIT = '1c17403';
 
 // The same build without this feature: its code files cut from the core blob and its patches undone, so "before" is
 // exactly the page the other features make. (This feature's edits inside 62-inked-map stay; they are the identity by
@@ -35,6 +39,21 @@ async function beforeBuild(file) {
   }
   parts['ardan-core'] = core;
   const out = path.join(os.tmpdir(), `ardan-fl-before-${process.pid}.html`);
+  fs.writeFileSync(out, repack(html, parts, 3));
+  return out;
+}
+
+// the same build with far@1's data in place of this feature's own: it writes saves of far@1
+function far1Build(file) {
+  let old;
+  try { old = execFileSync('git', ['show', `${FAR1_COMMIT}:features/99-far-lands/b-data.core.js`], { cwd: ROOT, maxBuffer: 1 << 26 }).toString(); } catch (e) { return null; }
+  const html = fs.readFileSync(file, 'utf8'), parts = unpack(html);
+  let core = parts['ardan-core'];
+  const a = core.indexOf('A.FL_DATA = {'), b = core.indexOf('};\n', a);
+  const o1 = old.indexOf('A.FL_DATA = {'), o2 = old.indexOf('};\n', o1);
+  if (a < 0 || b < 0 || o1 < 0 || o2 < 0) return null;
+  parts['ardan-core'] = core.slice(0, a) + old.slice(o1, o2) + core.slice(b);
+  const out = path.join(os.tmpdir(), `ardan-fl-far1-${process.pid}.html`);
   fs.writeFileSync(out, repack(html, parts, 3));
   return out;
 }
@@ -286,5 +305,224 @@ export default {
     return { ok: r.pure && !r.miss.length && nViews >= 18, detail: `${nViews} views (world tab, title strip, full map fitted and at zoom 1, 3, 8, war room at 1.5, 4, 9; inked and release) draw the far lands at their sites` +
       (r.ink ? `; the inked ground traces ${r.ink.far} far coasts and ${r.ink.farLines} pieces of far province bounds` : '') +
       (r.miss.length ? `; MISSING ${r.miss.join(', ')}` : '') + `; drawing left the state and stream ${r.pure ? 'unchanged' : 'CHANGED'}` };
+  },
+
+  // menu games start on the Great Continent; the Known World only is the other choice; code keeps the Known World
+  async flMenuDefault(pg) {
+    const r = await pg.evaluate(() => {
+      UI.set.hints = false;
+      const out = {};
+      A.newGame({ seed: 9951, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
+      out.code = { active: A.FAR.active, prov: A.S.prov.length, world: A.S.world || null };
+      UI.A.newLife();
+      out.menu = { lands: UI.cr.lands, active: A.FAR.active, realms: Object.keys(LORE.realms).length };
+      // the field, and the realm list grouped by land
+      let html = '';
+      for (let s = 0; s < 8 && !html.includes('fl-lands'); s++) { UI.step = s; UI.render(); html = document.getElementById('app').innerHTML; }
+      const f = document.querySelector('.fl-lands');
+      out.field = f ? { cards: f.querySelectorAll('.opt').length, sel: (f.querySelector('.opt.sel .t') || {}).textContent || '' } : null;
+      const findRealm = () => { for (let s = 0; s < 8; s++) { UI.step = s; UI.render(); const el = document.querySelector('[data-c="crRealm"]'); if (el) return el; } return null; };
+      let sel = findRealm();
+      out.groups = sel ? [...sel.querySelectorAll('optgroup')].map(g => g.label + ' ' + g.children.length) : [];
+      out.options = sel ? sel.querySelectorAll('option').length : 0;
+      // Randomize keeps the lands; the Known World only is a click away and lists no groups
+      UI.crRandomize(); out.randomized = UI.cr.lands;
+      UI.A.crSet('lands:known'); out.known = { lands: UI.cr.lands, active: A.FAR.active, realms: Object.keys(LORE.realms).length };
+      sel = findRealm(); out.knownGroups = sel ? sel.querySelectorAll('optgroup').length : -1;
+      UI.crRandomize(); out.randomizedKnown = UI.cr.lands;
+      UI._newLifeOk = true; UI.startLife(); UI._newLifeOk = false;
+      out.knownStart = { world: A.S.world || null, prov: A.S.prov.length };
+      // Random life (the title's quick start) is on the Great Continent
+      UI.screen = 'title'; UI.render();
+      UI._newLifeOk = true; UI.A.randomLife(); UI._newLifeOk = false;
+      out.quick = { world: A.S.world && A.S.world.parts.join('+'), prov: A.S.prov.length };
+      return out;
+    });
+    const ok = !r.code.active && r.code.prov === 306 && !r.code.world && r.menu.lands === 'great' && r.menu.active && r.menu.realms > 140 &&
+      r.field && r.field.cards === 2 && /Great Continent/.test(r.field.sel) && r.groups.length >= 10 && r.randomized === 'great' &&
+      r.known.lands === 'known' && !r.known.active && r.knownGroups === 0 && r.randomizedKnown === 'known' && !r.knownStart.world && r.knownStart.prov === 306 &&
+      r.quick.world === 'ardan+' + A_KEY && r.quick.prov > 1800;
+    return { ok, detail: `A.newGame by code: ${r.code.active ? 'FAR LANDS' : 'the Known World'} (${r.code.prov} provinces); New life: lands ${r.menu.lands}, ${r.menu.realms} realms, the field's ${r.field ? r.field.cards : 0} cards with "${r.field && r.field.sel}" chosen; ` +
+      `birthplaces in ${r.groups.length} groups (${r.groups.slice(0, 4).join(', ')}...), ${r.options} realms; Randomize keeps ${r.randomized}; the Known World only: ${r.known.realms} realms, ${r.knownGroups} groups, Randomize keeps ${r.randomizedKnown}, a life there has ${r.knownStart.prov} provinces; Random life: ${r.quick.world}, ${r.quick.prov} provinces` };
+  },
+
+  // far@2's land: each land's area against the lore's, and each realm's holdings region by region against the
+  // lore's holds_km2, measured from a new game's provinces
+  async flAreasQuotas(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9961, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
+      const D = A.FAR.D, S = A.S, land = {}, held = {};
+      for (const p of S.prov) { if (p.id < D.base) continue; const L = p.region[0]; land[L] = (land[L] || 0) + p.cells * 100; (held[p.owner] = held[p.owner] || {})[p.region] = (held[p.owner][p.region] || 0) + p.cells * 100; }
+      const lands = Object.keys(D.lands).sort().map(L => ({ L, name: D.lands[L].name, got: land[L] || 0, lore: D.lands[L].lore || 0 }));
+      let want = 0, off = 0, n = 0, within = 0;
+      for (const id in D.realms) { const H = D.realms[id].holds; if (!H) continue; const G = held[id] || {}; for (const g of new Set(Object.keys(H).concat(Object.keys(G)))) { const h = H[g] || 0, x = G[g] || 0; want += h; off += Math.abs(x - h); n++; if (Math.abs(x - h) <= Math.max(0.25 * h, 20000)) within++; } }
+      return { lands, total: lands.reduce((s, x) => s + x.got, 0), lore: lands.reduce((s, x) => s + x.lore, 0), want, off, n, within, key: D.key };
+    });
+    const far = x => Math.abs(x.got / x.lore - 1);
+    const T = r.lands.find(x => x.L === 'T'), N = r.lands.find(x => x.L === 'N'), err = r.off / r.want;
+    // the Black Pines and the Rime Coast near the lore; the whole within 10%; quotas off by under 40% (far@1: 85% and 70%)
+    const ok = r.key === A_KEY && far(T) < 0.1 && far(N) < 0.25 && Math.abs(r.total / r.lore - 1) < 0.1 && err < 0.4 && r.lands.every(x => far(x) < 0.55);
+    return { ok, detail: `${(r.total / 1e6).toFixed(1)}M km² of far land against the lore's ${(r.lore / 1e6).toFixed(1)}M: ` + r.lands.map(x => `${x.name.replace(/^The /, '')} ${(x.got / 1e6).toFixed(2)}/${(x.lore / 1e6).toFixed(2)}`).join(', ') +
+      `; realms' holdings off the lore's holds_km2 by ${(100 * err).toFixed(1)}% (${(r.off / 1e6).toFixed(1)}M of ${(r.want / 1e6).toFixed(1)}M km²), ${r.within} of ${r.n} realm-regions within a quarter` };
+  },
+
+  // every far province is named from its people's own place list: no name twice in the world, no markup
+  async flNames(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9971, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
+      const D = A.FAR.D, S = A.S, seen = new Map(), dup = [], bad = [], off = [];
+      for (const p of S.prov) { const k = p.name.toLowerCase(); if (seen.has(k)) dup.push(p.name); seen.set(k, p.id); if (!p.name || /[<>"&]/.test(p.name)) bad.push(p.name); }
+      // the land's peoples' lists: a name is one of them, or made from one (a root of the list with an ending of it, or a side of the country)
+      const lists = {}; for (const id in D.cultures) { const c = D.cultures[id]; if (c.places) (lists[c.land] = lists[c.land] || []).push(...c.places); }
+      let exact = 0, made = 0, n = 0;
+      for (const p of S.prov) {
+        if (p.id < D.base) continue; n++;
+        // its people: those of its land, and of the land and culture of the realm that holds it (or of its neighbours, unheld)
+        const R = D.realms[p.owner], near = p.adj.map(j => S.prov[j]).filter(q => q && D.realms[q.owner]).map(q => D.realms[q.owner]);
+        const L = [].concat(lists[p.region[0]] || [], ...[R].concat(near).filter(Boolean).map(x => (lists[x.land] || []).concat((D.cultures[x.cult] || {}).places || [])));
+        const nm = p.name.replace(/^The (.+) (Hills|Heights|Woods|Waste|Grass|Barrens|Fens|Downs|Pines|Wilds)$/, '$1').replace(/^(Upper|Lower|East|West|North|South|Old|High) /, '');
+        if (L.some(x => x.toLowerCase() === nm.toLowerCase())) exact++;
+        else if (L.some(x => nm.toLowerCase().startsWith(x.slice(0, 3).toLowerCase()) || nm.toLowerCase().endsWith(x.slice(-3).toLowerCase()))) made++;
+        else off.push(p.name);
+      }
+      return { n, exact, made, off: off.length, offs: off.slice(0, 6), dup: dup.length, dups: dup.slice(0, 4), bad: bad.length, sample: S.prov.filter((p, i) => p.id >= D.base && i % 211 === 0).map(p => p.name) };
+    });
+    const ok = r.dup === 0 && r.bad === 0 && r.off <= r.n * 0.02;
+    return { ok, detail: `${r.n} far provinces: ${r.exact} named with a place of their land's peoples, ${r.made} made from those lists, ${r.off} otherwise${r.off ? ' (' + r.offs.join(', ') + ')' : ''}; ${r.dup} names twice in the world, ${r.bad} with markup; e.g. ${r.sample.join(', ')}` };
+  },
+
+  // the lore's great routes are roads and sea lanes the caravans and carters use, and the Silk Road runs on into the
+  // Known World at Kraoth (canon TR-09); the lore's ties to the Known World's realms exist
+  async flRoutes(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9981, race: 'human', realm: 'POL-34', status: 'peasant', sex: 'M', startAge: 16, race: 'orc', lands: 'great' });
+      const D = A.FAR.D, S = A.S, MT = A.MT, E = A.ECON, out = { routes: (D.routes || []).length, ids: new Set((D.routes || []).map(x => x.id)).size };
+      let gaps = 0, edges = 0;
+      for (const rt of D.routes || []) for (let i = 1; i < rt.p.length; i++) { const a = S.prov[rt.p[i - 1]], b = rt.p[i]; edges++; if (!a || !(a.adj.includes(b) || (a.sea || []).includes(b))) gaps++; }
+      out.gaps = gaps; out.edges = edges;
+      const silk = (D.routes || []).filter(x => x.id === 'TR-17' || x.id === 'TR-09'), kw = new Set(silk.flatMap(x => x.p.filter(id => id < D.base)));
+      out.silkKnown = [...kw].map(id => S.prov[id].name + ' (' + S.prov[id].owner + ')');
+      out.tr09 = (D.routes || []).some(x => x.id === 'TR-09');
+      const e0 = (D.routes || [])[0], a = e0.p[0], b = e0.p[1];
+      out.roadF = MT && MT.roadF ? [MT.roadF(a, b), MT.roadF(0, 1)] : null;
+      const rs = Object.values(S.realms).filter(x => x.alive && !x.isRebel), T = E.roads(rs);
+      out.routed = T.routed || 0;
+      const f62 = E.road('POL-34', 'POL-62'), f62d = E.ROAD + E.HOP * f62.dist / 250;
+      out.f62 = [Math.round(f62.f * 1000) / 1000, Math.round(f62d * 1000) / 1000];
+      for (let m = 0; m < 3; m++) A.advance(30);
+      const on = new Set(); for (const rr of A.FAR.routeRealms()) { const ids = [...rr.realms]; for (const x of ids) for (const y of ids) if (x !== y) on.add(x + '>' + y); }
+      const car = (S.eco && S.eco.car) || [];
+      out.car = car.length; out.carRoute = car.filter(c => on.has(c.f + '>' + c.t)).length;
+      out.carSeam = car.filter(c => on.has(c.f + '>' + c.t) && (!!D.realms[c.f]) !== (!!D.realms[c.t])).length;
+      // the lore's ties that touch the Known World
+      const canon = D.relations.filter(x => !D.realms[x.a] || !D.realms[x.b]);
+      out.canon = canon.length; out.canonSet = canon.filter(x => S.realms[x.a] && S.realms[x.b] && A.relOf && true).length;
+      out.tusk = ['POL-60', 'POL-61', 'POL-62'].map(id => (S.realms['POL-34'].rel || {})[id]);
+      out.trade = Object.keys(S.realms['POL-34'].pacts.trade || {}).filter(id => D.realms[id]);
+      // the Known World alone has no routes
+      A.newGame({ seed: 9982, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
+      out.knownF = MT && MT.roadF ? MT.roadF(a, b) : 1;
+      return out;
+    });
+    const ok = r.routes >= 50 && r.ids >= 25 && r.gaps === 0 && r.silkKnown.length >= 2 && r.tr09 && r.roadF && r.roadF[0] < 1 && r.roadF[1] === 1 && r.routed > 100 &&
+      r.f62[0] < r.f62[1] && r.carRoute > 0 && r.canon >= 9 && r.tusk.every(v => v > 0) && r.trade.length >= 2 && r.knownF === 1;
+    return { ok, detail: `${r.routes} strands of ${r.ids} routes, ${r.edges} steps, ${r.gaps} not a road or a lane; the Silk Road runs into the Known World at ${r.silkKnown.join(', ')}${r.tr09 ? ' and on as TR-09' : ''}; ` +
+      `a route's step costs x${r.roadF && r.roadF[0]} for the carters (66), ${r.routed} realm pairs share a route (45), Kraoth to the Tusk road's last crossing ${r.f62[0]} of the base price against ${r.f62[1]} off the road; ` +
+      `three months: ${r.carRoute} of ${r.car} caravans along a route, ${r.carSeam} of them across the old edge; ${r.canon} lore ties to Known World realms, the Tusk Clans' with the Old Mare and the escorts ${r.tusk.join('/')}, trade pacts with ${r.trade.join(', ')}; the Known World alone: x${r.knownF}` };
+  },
+
+  // the inked map writes the far lands' names at their zooms (lands far off, seas, regions, ranges, rivers, lakes,
+  // straits, passes, the routes dotted), fast enough with 2,033 provinces, and drawing stays pure
+  async flMapLabels(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9991, race: 'human', realm: 'POL-36', status: 'peasant', sex: 'M', startAge: 22, lands: 'great' });
+      UI.set.hints = false; A.S.queue = []; UI.set.inkMap = true; if (UI.INKMAP) { UI.INKMAP.reset(); UI.INKMAP.budgetMs = 1e9; }
+      UI.screen = 'game'; UI.tab = 'world'; UI.worldView = 'map'; UI.ov = null; UI.render();
+      const s0 = JSON.stringify(A.S), r0 = A.rngState;
+      const P = CanvasRenderingContext2D.prototype, ft = P.fillText, sd = P.setLineDash; let texts = [], dashes = 0;
+      P.fillText = function (t) { texts.push(String(t)); return ft.apply(this, arguments); };
+      P.setLineDash = function (a) { if (a && a.length) dashes++; return sd.apply(this, arguments); };
+      const out = { z: {}, t: {} };
+      try {
+        UI.A.ov('bigmap');
+        const at = (cx, cy, z) => { const w = 7000 / z; UI.gm.view = UI.wrClampView({ x0: cx - w / 2, y0: cy - w / 3.06, w, h: 0 }); };
+        const D = A.FAR.D, AT = D.atlas;
+        const has = (list, names) => names.filter(n => list.includes(n)).length;
+        for (const [tag, cx, cy, z] of [['far', 11000, 1500, 0.45], ['mid', 9500, 1700, 1.5], ['near', 9300, 1800, 3], ['close', 9300, 2900, 8]]) {
+          texts = []; dashes = 0; at(cx, cy, z); UI.gmDraw();
+          out.z[tag] = { n: A.FAR.atlasDrawn, dashes, lands: has(texts, Object.values(D.lands).map(l => l.name.toUpperCase())), seas: has(texts, AT.seas.map(x => x[0])),
+            regions: has(texts, Object.values(AT.regions).map(x => x.replace(/^The /, '').toUpperCase())), ranges: has(texts, AT.ranges.map(x => x[0])), rivers: has(texts, AT.rivers.map(x => x[0])),
+            passes: has(texts, AT.passes.map(x => x[0])), roads: has(texts, D.routes.map(x => x.n.replace(/:.*$/, ''))) };
+        }
+        // timings: a cold full draw (every tile made) and pans, at zoom 1, 3 and 8, at the seam and in the east
+        for (const [tag, cx, cy] of [['seam', 7600, 1500], ['east', 15200, 2300]]) for (const z of [1, 3, 8]) {
+          UI.INKMAP.reset(); at(cx, cy, z);
+          let t0 = performance.now(); UI.gmDraw(); const cold = performance.now() - t0, pans = [];
+          for (let k = 0; k < 6; k++) { const v = UI.gm.view; UI.gm.view = UI.wrClampView({ x0: v.x0 + v.w * 0.08, y0: v.y0 + v.h * 0.03, w: v.w, h: 0 }); t0 = performance.now(); UI.gmDraw(); pans.push(performance.now() - t0); }
+          pans.sort((a, b) => a - b);
+          out.t[tag + ' z' + z] = [Math.round(cold), Math.round(pans[3])];
+        }
+      } finally { P.fillText = ft; P.setLineDash = sd; UI.ov = null; UI.render(); }
+      out.pure = JSON.stringify(A.S) === s0 && A.rngState === r0;
+      return out;
+    });
+    const Z = r.z;
+    const ok = r.pure && Z.far.lands >= 6 && Z.far.seas >= 2 && Z.mid.regions >= 5 && Z.mid.ranges >= 1 && Z.near.rivers >= 1 && Z.near.roads >= 1 && Z.near.dashes > 0 && Z.close.passes >= 1 &&
+      Object.values(r.t).every(([c, p]) => p < 250);
+    return { ok, detail: Object.entries(Z).map(([k, v]) => `${k}: ${v.n} names (lands ${v.lands}, seas ${v.seas}, regions ${v.regions}, ranges ${v.ranges}, rivers ${v.rivers}, passes ${v.passes}, routes ${v.roads}), ${v.dashes} dotted roads`).join('; ') +
+      `; full map ms (cold, median pan): ${Object.entries(r.t).map(([k, v]) => `${k} ${v[0]}/${v[1]}`).join(', ')}; drawing left the state and stream ${r.pure ? 'unchanged' : 'CHANGED'}` };
+  },
+
+  // a save of far@1 (the first data, Oct 26) opens: on its own provinces, its state untouched, its map drawn and
+  // clicked where it is drawn, and it plays on. The far@1 build is made from the commit that shipped it; a save of
+  // far@2 relabelled far@1 checks the same path when that commit is not in the checkout.
+  async flFar1Save(pg, pageErrors, { browser, file }) {
+    let saves = [], how = 'far@1 data from ' + FAR1_COMMIT;
+    const old = far1Build(file);
+    if (old) {
+      const B = await openPage(browser, old);
+      try {
+        saves.push(await B.pg.evaluate(async () => {
+          A.newGame({ seed: 9935, race: 'human', realm: 'POL-30', status: 'peasant', sex: 'M', startAge: 20, lands: 'great' }); T.play(1);
+          const enc = await SAVES.encode(A.S, A.J); let s = ''; for (const b of enc.bytes) s += String.fromCharCode(b);
+          return { b64: btoa(s), hash: T.hash(A.S.prov) + '|' + T.hash(A.S.people) + '|' + T.hash(A.S.realms), world: A.S.world.parts.join('+'), far: A.S.prov.length - A.FAR.D.base };
+        }));
+        if (B.errs.length) saves[0].err = B.errs[0];
+      } finally { await B.ctx.close(); fs.rmSync(old, { force: true }); }
+    } else how = 'no far@1 data in this checkout: a far@2 save relabelled far@1';
+    const r = await pg.evaluate(async (saves) => {
+      if (!saves.length) {
+        A.newGame({ seed: 9936, race: 'human', realm: 'POL-30', status: 'peasant', sex: 'M', startAge: 20, lands: 'great' }); T.play(1);
+        A.S.world.parts = ['ardan', 'far@1'];
+        const enc = await SAVES.encode(A.S, A.J); let s = ''; for (const b of enc.bytes) s += String.fromCharCode(b);
+        saves.push({ b64: btoa(s), hash: T.hash(A.S.prov) + '|' + T.hash(A.S.people) + '|' + T.hash(A.S.realms), world: 'ardan+far@1', far: A.S.prov.length - A.FAR.D.base });
+      }
+      const o = saves[0];
+      A.newGame({ seed: 9937, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
+      const bin = atob(o.b64), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+      const d = await SAVES.decode(u), okLoad = UI.enterSave(d);
+      const out = { saved: o.world, far: o.far, okLoad, part: A.FAR.part && A.FAR.part.key, active: A.FAR.active, frame: [MAP.KW, MAP.KH], prov: A.S.prov.length,
+        same: T.hash(A.S.prov) + '|' + T.hash(A.S.people) + '|' + T.hash(A.S.realms) === o.hash };
+      // the map draws its provinces where they are, in both styles, and a click on a site finds the province
+      UI.set.hints = false; A.S.queue = []; UI.screen = 'game'; UI.tab = 'world'; UI.worldView = 'map'; UI.ov = null; UI.render();
+      let hit = 0, n = 0;
+      for (const ink of [true, false]) {
+        UI.set.inkMap = ink; if (UI.INKMAP) { UI.INKMAP.reset(); UI.INKMAP.budgetMs = 1e9; } UI.render();
+        const wm = UI.$('#worldmap'); MAP.draw(wm, { mode: 'political' });
+        for (const p of A.S.prov.filter((p, i) => i >= A.FAR.D.base && i % 41 === 0)) {
+          const [x, y] = MAP.toCanvas(wm, p.sx, p.sy), rc = wm.getBoundingClientRect(); n++;
+          const got = MAP.provAt(wm, { clientX: rc.left + x / wm.width * rc.width, clientY: rc.top + y / wm.height * rc.height });
+          if (got === p.id || (p.adj || []).includes(got)) hit++;
+        }
+        UI.A.ov('bigmap'); UI.gm.view = null; UI.gmDraw(); UI.ov = null; UI.render();
+      }
+      out.hit = hit; out.n = n;
+      out.res = T.play(1); out.year = A.S.year;
+      out.meta = SAVES.meta(A.S).world;
+      return out;
+    }, saves);
+    const ok = r.okLoad && r.part === 'far@1' && r.active && r.frame[0] > 7000 && r.same && r.hit >= r.n * 0.9 && r.meta === 'ardan+far@1' && r.res !== undefined && !(saves[0] && saves[0].err);
+    return { ok, detail: `${how}: a save of ${r.saved} (${r.far} far provinces) opened after a Known World game: ${r.okLoad ? 'loaded' : 'NOT loaded'} on part ${r.part}, frame ${r.frame.join('x')}, ${r.prov} provinces, state ${r.same ? 'as saved' : 'DIFFERENT'}; ` +
+      `${r.hit} of ${r.n} clicks on far sites find their province (inked and release maps); played on to ${r.year}; its saves still say ${r.meta}` + (saves[0] && saves[0].err ? '; page error in the far@1 build: ' + saves[0].err : '') };
   },
 };

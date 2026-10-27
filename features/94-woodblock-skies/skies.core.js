@@ -77,6 +77,28 @@
     mountains: { amp: [36, 20], rough: 0.6, peak: 46, jag: true, snow: true, dress: 'pines', mid: { hue: 235, hk: 0.35, cK: 0.7 }, near: { hue: 250, hk: 0.3, cK: 0.6 }, far: { hue: 255, hk: 0.4, cK: 0.7 } },
     tundra: { amp: [22, 10], rough: 0.55, peak: 18, jag: true, snow: true, winter: true, dress: 'pines', mid: { dL: 0.16, cK: 0.45 }, near: { hue: 245, hk: 0.3, cK: 0.6, dL: 0.08 }, far: { hue: 250, hk: 0.3, cK: 0.7 } },
   };
+  // the Great Continent's climates (99-far-lands): a far province's biome dresses its land beyond the eight words
+  Object.assign(TERRAIN, {
+    jungle: { amp: [24, 14], rough: 0.55, peak: 8, dress: 'palms', mid: { hue: 152, hk: 0.7, cMin: 0.09, dL: -0.02 }, near: { hue: 148, hk: 0.6, cMin: 0.06 }, far: { hue: 165, hk: 0.35 } },
+    savanna: { amp: [8, 4], rough: 0.4, peak: 0, dress: 'acacia', mid: { hue: 82, hk: 0.7, cMin: 0.1, dL: 0.12 }, near: { hue: 62, hk: 0.6, cMin: 0.08, dL: 0.06 }, far: { hue: 55, hk: 0.4, dL: 0.04 } },
+    taiga: { amp: [20, 10], rough: 0.55, peak: 8, dress: 'spruce', mid: { hue: 175, hk: 0.55, cMin: 0.05, dL: -0.05 }, near: { hue: 185, hk: 0.45, cMin: 0.04 }, far: { hue: 205, hk: 0.3 } },
+    alpine: { amp: [34, 18], rough: 0.6, peak: 40, jag: true, snow: true, dress: 'grass', mid: { hue: 95, hk: 0.45, cMin: 0.06, dL: 0.06 }, near: { hue: 72, hk: 0.4, cMin: 0.05 }, far: { hue: 240, hk: 0.4, cK: 0.7 } },
+    scrub: { amp: [14, 8], rough: 0.5, peak: 2, dress: 'scrub', mid: { hue: 76, hk: 0.6, cMin: 0.08, dL: 0.08 }, near: { hue: 56, hk: 0.55, cMin: 0.07, dL: 0.04 }, far: { hue: 50, hk: 0.35 } },
+  });
+  SK.FAR_TERR = ['jungle', 'savanna', 'taiga', 'alpine', 'scrub'];
+  // a province's land for the print: the release's word, or for a far province (it carries its region) its climate
+  SK.terrOf = function (pr) {
+    if (!pr) return 'hills';
+    const t = TERRAIN[pr.terr] ? pr.terr : 'hills';
+    if (!pr.region || typeof pr.biome !== 'string') return t;
+    const b = pr.biome;
+    if (/rainforest|monsoon/i.test(b) && ['forest', 'plains', 'hills', 'marsh'].includes(t)) return 'jungle';
+    if (/savanna/i.test(b) && t !== 'mountains') return 'savanna';
+    if (/taiga/i.test(b) && ['forest', 'plains', 'hills', 'marsh', 'steppe'].includes(t)) return 'taiga';
+    if (/alpine/i.test(b) && t !== 'desert') return 'alpine';
+    if (/dry woodland/i.test(b) && t !== 'mountains') return 'scrub';
+    return t;
+  };
   SK.TERRAIN_KEYS = Object.keys(TERRAIN);
   // local colours of things, before the hour's light and shadow
   const M = SK.MAT = {
@@ -280,6 +302,47 @@
         d += `M${f(x)} ${f(y - h)}l${f(h * 0.32)} ${f(h)}h${f(-h * 0.64)}z`;
       }
       return `<path d="${d}" fill="${dark}"/>`;
+    }
+    if (kind === 'palms') {
+      // palms over a dark wood: a curved trunk and five fronds, lit on the upper left
+      for (let i = 0; i < mid.length - 1; i++) {
+        const t = r(), x = mid[i][0] + step * t, y = yAt(i, t) + 4;
+        if (r() < 0.35) { d += `M${f(x - 7)} ${f(y + 2)}a7 6 0 0 1 14 0z`; continue; }
+        if (r() < 0.45) continue;
+        const h = 14 + r() * 12, lean = (r() - 0.5) * 8, tx = x + lean, ty = y - h;
+        e += `M${f(x)} ${f(y)}q${f(lean * 0.2)} ${f(-h * 0.6)} ${f(lean)} ${f(-h)}`;
+        for (const [dx, dy] of [[-9, 3], [-6, -3], [0, -5], [6, -3], [9, 3]]) s += `M${f(tx)} ${f(ty)}q${f(dx * 0.6)} ${f(dy - 3)} ${f(dx)} ${f(dy + 2)}`;
+      }
+      return `<path d="${d}" fill="${dark}"/><path d="${e}" fill="none" stroke="${dark}" stroke-width="1.6" stroke-linecap="round"/><path d="${s}" fill="none" stroke="${dark}" stroke-width="2.2" stroke-linecap="round"/>`;
+    }
+    if (kind === 'acacia') {
+      // flat-topped thorn trees standing apart on the grass, and the grass itself
+      for (let k = 0; k < 7; k++) {
+        if (r() < 0.3) continue;
+        const ii = Math.floor(r() * (mid.length - 1)), t = r(), x = mid[ii][0] + step * t, y = yAt(ii, t) + 3 + r() * 6, h = 9 + r() * 7, w = 10 + r() * 9;
+        e += `M${f(x)} ${f(y)}V${f(y - h)}M${f(x)} ${f(y - h * 0.6)}l${f(-w * 0.35)} ${f(-h * 0.35)}M${f(x)} ${f(y - h * 0.7)}l${f(w * 0.3)} ${f(-h * 0.3)}`;
+        d += `M${f(x - w)} ${f(y - h)}q${f(w)} ${f(-6 - r() * 3)} ${f(w * 2)} 0z`;
+      }
+      let g = ''; for (let i = 0; i < 40; i++) { const ii = Math.floor(r() * (mid.length - 1)), t = r(), x = mid[ii][0] + step * t, y = yAt(ii, t) + 2 + r() * 14; g += `M${f(x)} ${f(y)}l${f(2 + r() * 2)}-${f(3 + r() * 3)}`; }
+      return `<path d="${g}" stroke="${lit}" stroke-width="1" stroke-linecap="round" opacity=".6"/><path d="${e}" fill="none" stroke="${dark}" stroke-width="1.4" stroke-linecap="round"/><path d="${d}" fill="${dark}"/>`;
+    }
+    if (kind === 'spruce') {
+      // a close stand of tall, narrow spruce, two rows deep
+      for (const row of [0, 6]) for (let i = 0; i < mid.length - 1; i++) {
+        if (r() < (row ? 0.4 : 0.15)) continue;
+        const t = r(), x = mid[i][0] + step * t, y = yAt(i, t) + 4 + row, h = 12 + r() * 12, w = h * 0.2;
+        d += `M${f(x)} ${f(y - h)}l${f(w)} ${f(h * 0.45)}h${f(-w * 0.4)}l${f(w * 0.9)} ${f(h * 0.55)}h${f(-w * 3)}l${f(w * 0.9)} ${f(-h * 0.55)}h${f(-w * 0.4)}z`;
+      }
+      return `<path d="${d}" fill="${dark}"/>`;
+    }
+    if (kind === 'scrub') {
+      // low round bushes scattered on dry ground
+      for (let k = 0; k < 26; k++) {
+        const ii = Math.floor(r() * (mid.length - 1)), t = r(), x = mid[ii][0] + step * t, y = yAt(ii, t) + 4 + r() * 12, R = 2.5 + r() * 3.5;
+        d += `M${f(x - R)} ${f(y)}a${f(R)} ${f(R * 0.8)} 0 0 1 ${f(R * 2)} 0z`;
+        if (r() < 0.5) e += `M${f(x - R * 0.6)} ${f(y - R * 0.5)}a${f(R * 0.7)} ${f(R * 0.5)} 0 0 1 ${f(R * 0.7)} ${f(-R * 0.3)}`;
+      }
+      return `<path d="${d}" fill="${dark}"/><path d="${e}" fill="none" stroke="${lit}" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>`;
     }
     if (kind === 'fields') {
       // a patchwork of strips below the ridge line, in three greens and a ripe ochre
@@ -673,7 +736,7 @@
     const shape = UI.WOODCUT && UI.WOODCUT.shapeOf ? UI.WOODCUT.shapeOf(q, v) : (A.evShape && A.EV[q.ev] && A.evShape(A.EV[q.ev])) || 'none';
     const key = q.ev + '|' + (A.S ? A.S.year : 0);
     const words = (v.title || '') + ' ' + (typeof v.text === 'string' ? v.text : '');
-    const terr = pr && TERRAIN[pr.terr] ? pr.terr : 'hills';
+    const terr = SK.terrOf(pr);
     return { shape, key, month: A.monthOf(A.today()).m, hour: SK.hourFor(SC[shape] ? shape : 'none', key, words), terr, coast: !!(pr && pr.coast), place: pr ? pr.name : '' };
   };
   SK.cartouche = place => place ? `<span class="sky-cart" aria-hidden="true">${UI.esc(place)}</span>` : '';

@@ -50,3 +50,41 @@ export const TARGETS = {
     pageErrors: [0, 0],
   },
 };
+
+// The Great Continent league (bench/balance.mjs --lands=great): every path born twice in a Great Continent game
+// (A.newGame({ lands: 'great' })), once in the Known World as above and once in the Far Lands (name@far), so the far
+// realms are held to the same design as the old ones. A Great Continent year costs about four times a Known World one
+// (2,033 provinces, 153 realms, every one simulated in full), so this league plays 6 lives a group for at most 25 years
+// (to age 41 to 43): 66 lives (60 played; the far serfs are skipped, see below), about 25 minutes on CI's four workers.
+// The death-age median is therefore capped near 41, and the bands are those of the Known World's league, widened where
+// 6 lives and 25 years cannot reach them (each widening says why). The far starts spread over the lands: a peasant of Taulen (the Twin Rivers), an artisan of Ozand
+// (the Sand Basins), a merchant of the Tide Families (the Twin Rivers' coast), a noble of Vahra (the Southern
+// Peninsulas), a royal of the Birch March (the Long Grass).
+const far = (realm, base) => Object.assign({}, base, { realm });
+export const GREAT = {
+  lives: 6,
+  years: 25,
+  paths: {
+    serf: { start: KNOWN_START('serf'), bands: { medianDeathAge: [20, 60], medianPeakCoin: [100, 150000], medianPeakFame: [0, 80], notableSharePct: [15, 100], freedSharePct: [15, 100] },
+      note: 'Death age capped by the 25 years played. Notable and freed shares floored at 15% (25% for the Known World league): over 25 years a serf has had less time to be freed or to make a name.' },
+    'serf@far': { start: far('POL-36', KNOWN_START('serf')), bands: { medianDeathAge: [20, 60], medianPeakCoin: [100, 150000], medianPeakFame: [0, 80], notableSharePct: [15, 100], freedSharePct: [15, 100] },
+      note: 'No far realm keeps serfs (GD.UNFREE names only Known World realms, and the far-lands data adds none), so the league reports this group as skipped until one does. The lore has bonded labour and slave raids in the Thousand Isles and the Deep Southland.' },
+    peasant: { start: KNOWN_START('peasant'), bands: { medianDeathAge: [30, 60], medianPeakCoin: [2000, 400000], medianPeakFame: [5, 100], notableSharePct: [35, 100] },
+      note: 'Wealth and fame floors lowered (5,000 to 2,000, 8 to 5, notable 50% to 35%): the Known World league reaches its peaks over up to 70 years, this one over 25.' },
+    'peasant@far': { start: far('POL-36', KNOWN_START('peasant')), bands: { medianDeathAge: [30, 60], medianPeakCoin: [2000, 400000], medianPeakFame: [5, 100], notableSharePct: [35, 100] } },
+    artisan: { start: KNOWN_START('artisan'), bands: { medianDeathAge: [30, 60], medianPeakCoin: [2000, 300000], medianPeakFame: [3, 80], notableSharePct: [30, 100] },
+      note: 'Floors lowered for the 25 years, as the peasant\'s.' },
+    'artisan@far': { start: far('POL-70', KNOWN_START('artisan')), bands: { medianDeathAge: [30, 60], medianPeakCoin: [2000, 300000], medianPeakFame: [3, 80], notableSharePct: [30, 100] } },
+    merchant: { start: KNOWN_START('merchant'), bands: { medianDeathAge: [30, 60], medianPeakCoin: [20000, 900000], medianPeakFame: [10, 100], notableSharePct: [30, 100] },
+      note: 'Floors lowered for the 25 years, as the peasant\'s.' },
+    'merchant@far': { start: far('POL-43', KNOWN_START('merchant')), bands: { medianDeathAge: [30, 60], medianPeakCoin: [20000, 900000], medianPeakFame: [10, 100], notableSharePct: [30, 100] } },
+    noble: { start: KNOWN_START('noble'), bands: { medianDeathAge: [30, 60], medianPeakCoin: [15000, 700000], medianPeakFame: [25, 100], notableSharePct: [40, 100] },
+      note: 'Floors lowered for the 25 years, as the peasant\'s.' },
+    'noble@far': { start: far('POL-91', KNOWN_START('noble')), bands: { medianDeathAge: [30, 60], medianPeakCoin: [15000, 700000], medianPeakFame: [25, 100], notableSharePct: [40, 100] } },
+    royal: { start: KNOWN_START('royal'), bands: { medianDeathAge: [25, 60], medianPeakCoin: [5000, 700000], medianPeakFame: [5, 100], notableSharePct: [40, 100] },
+      note: 'The noisiest path of the Known World league, with 6 lives instead of 12: floors lowered again.' },
+    'royal@far': { start: far('POL-63', KNOWN_START('royal')), bands: { medianDeathAge: [25, 60], medianPeakCoin: [5000, 700000], medianPeakFame: [5, 100], notableSharePct: [40, 100] } },
+  },
+  global: { checkWinRate: [30, 70], arcTypes: [5, 99], pageErrors: [0, 0] },
+};
+function KNOWN_START(k) { return Object.assign({}, TARGETS.paths[k].start); }

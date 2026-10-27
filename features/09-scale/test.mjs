@@ -148,4 +148,42 @@ export default {
     return { ok, detail: `10x world (${r.provs} provinces, ${r.realms} realms): new game ${r.ng} ms; month median ${r.month} ms wall, ${c(r.monthCpu)} ms CPU;` +
       ` year-turn month ${r.year} ms wall, ${c(r.yearCpu)} ms CPU, over ${r.months} months${r.bad.length ? '; ' + r.bad.join(' | ') : ''}`, data: r };
   },
+
+  async scaleOneWorld(pg) {
+    // the Great Continent for ten years (world.core.js): wars are joined only within reach, each land keeps to its
+    // share of the war cap, the lore's tributes are made and hold, far news comes late and seldom; and the far world
+    // stays plausible: realms survive, treasuries do not run away, wars end
+    const r = await pg.evaluate(() => {
+      const W = A.WORLD1;
+      A.newGame({ seed: 9090, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
+      const S0 = A.S, far = Object.keys(A.FAR.D.realms), ties0 = Object.keys(S0.loreTies || {}).length;
+      const tie = id => S0.loreTies[id];
+      const outReach = [], overCap = [];
+      // after every war day: no side holds a realm out of reach of the other side's leader
+      const seen = new Set();
+      A.onDay.push(() => {
+        for (const w of A.S.wars) for (const [side, foe] of [['att', w.leadD], ['def', w.leadA]]) for (const x of w[side]) {
+          const k = w.id + side + x; if (seen.has(k)) continue; seen.add(k);
+          if (x !== foe && A.realm(x) && A.realm(foe) && W.reachKm(x, foe) > W.REACH && x !== w.leadA && x !== w.leadD) outReach.push(`${x} in ${w.name} (${Math.round(W.reachKm(x, foe))} km)`);
+        }
+      });
+      const startY = A.S.year; let farNews = 0, nearNews = 0, lateOk = true;
+      T.play(5);
+      const tiesHeld5 = Object.entries(S0.loreTies || {}).filter(([id, t]) => A.realm(id) && A.realm(id).alive && A.realm(t.o) && A.realm(t.o).alive && A.realm(id).overlord === t.o).length;
+      const tiesAlive5 = Object.entries(S0.loreTies || {}).filter(([id, t]) => A.realm(id) && A.realm(id).alive && A.realm(t.o) && A.realm(t.o).alive).length;
+      T.play(5);
+      for (const n of A.S.news) /^Word from the /.test(n.t) ? farNews++ : nearNews++;
+      const alive = far.filter(id => A.realm(id) && A.realm(id).alive).length;
+      const tr = far.map(id => A.realm(id)).filter(r => r && r.alive).map(r => r.treasury / Math.max(1, r.income || 1)).sort((a, b) => a - b);
+      const oldWars = A.S.wars.filter(w => A.S.year - w.start > 8 && w.cb !== 'throne').length;
+      return { ties0, tiesHeld5, tiesAlive5, outReach: outReach.slice(0, 5), nOut: outReach.length, farNews, nearNews, years: A.S.year - startY, alive, nFar: far.length,
+        trMed: tr[Math.floor(tr.length / 2)], trMax: tr[tr.length - 1], oldWars, stats: W.stats, ended: (A.S.history || []).length };
+    });
+    const ok = r.ties0 >= 40 && r.tiesHeld5 >= r.tiesAlive5 * 0.9 && r.nOut === 0 && r.farNews <= 30 * 3 && r.stats.dropped > r.stats.held &&
+      r.alive >= r.nFar * 0.85 && r.trMax < 200 && r.oldWars === 0;
+    return { ok, detail: `${r.years} years: ${r.ties0} lore tributes made, ${r.tiesHeld5} of ${r.tiesAlive5} standing pairs still paying at year 5; ` +
+      `${r.nOut} realms at war out of reach${r.nOut ? ' (' + r.outReach.join('; ') + ')' : ''}; news kept ${r.nearNews} near and ${r.farNews} far lines (far: ${r.stats.held} held, ${r.stats.told} told, ${r.stats.dropped} not heard of); ` +
+      `${r.alive} of ${r.nFar} far realms standing; treasury against a year's income: median ${r.trMed && r.trMed.toFixed(1)}, highest ${r.trMax && r.trMax.toFixed(1)}; wars older than 8 years: ${r.oldWars}` };
+  },
 };
+

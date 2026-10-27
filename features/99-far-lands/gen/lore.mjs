@@ -23,7 +23,8 @@ export function readLore(raw) {
       x, y, area: num(r.area ?? r.area_km2 ?? r.areaKm2 ?? r.km2), pop: num(r.pop ?? r.population), cult: str(r.culture, r.cult, r.cultureId, r.culture_id), faith: str(r.faith, r.religion, r.faithId, r.faith_id),
       ruler: clean(str(ruler.name, ruler.fullName)), color: /^#[0-9a-f]{6}$/i.test(r.color || (r.colours && r.colours.map_color) || '') ? (r.color || r.colours.map_color) : null, house: clean(r.house && typeof r.house === 'object' ? str(r.house.name) : str(r.house)), standing: num(r.army && typeof r.army === 'object' ? r.army.standing : null), levyN: num(r.army && typeof r.army === 'object' ? r.army.levy : null), gov: str(r.gov, r.succession), law: str(r.law),
       land: str(r.land, r.farLand, r.far_land), army: num(typeof r.army === 'object' ? null : r.army), income: num(r.income), stability: str(r.stability),
-      allies: strs(r.allies), rivals: strs(r.rivals), intro: clean(str(r.intro, r.summary, r.primer && r.primer.intro)), want: clean(str(r.want)), fear: clean(str(r.fear)), rulerNote: clean(str(ruler.note)),
+      allies: strs(r.allies), rivals: strs(r.rivals), cults: strs(r.cultures),
+      holds: r.holds_km2 && typeof r.holds_km2 === 'object' ? Object.fromEntries(Object.entries(r.holds_km2).map(([k, v]) => [k, num(v) || 0])) : null, intro: clean(str(r.intro, r.summary, r.primer && r.primer.intro)), want: clean(str(r.want)), fear: clean(str(r.fear)), rulerNote: clean(str(ruler.note)),
     };
   }).filter(r => r.id && /^POL-/.test(r.id) && r.name);
   const cultures = C.map(c => {

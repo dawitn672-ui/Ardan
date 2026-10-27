@@ -69,7 +69,7 @@
     const nb = [], w = [], len = [];
     for (const P of S.prov) {
       const land = P.adj || [], all = land.concat((P.sea || []).filter(x => !land.includes(x))), a = [], b = [], c = [];
-      for (const v of all) { const Q = S.prov[v]; if (!Q) continue; const d = A.wsDist(P.id, v); a.push(v); c.push(d); b.push(d / 250 * (land.includes(v) ? (MT.TERR[Q.terr] || 1.2) : 0.5)); }
+      for (const v of all) { const Q = S.prov[v]; if (!Q) continue; const d = A.wsDist(P.id, v); a.push(v); c.push(d); b.push(d / 250 * (land.includes(v) ? (MT.TERR[Q.terr] || 1.2) : 0.5) * (MT.roadF ? MT.roadF(P.id, v) : 1)); }   // MT.roadF: a great route's step costs less (99-far-lands; 1 elsewhere)
       nb.push(a); w.push(b); len.push(c);
     }
     paths = new Map();

@@ -80,6 +80,7 @@
       for (const id of Object.keys(A.S.realms)) {
         const y = A.S.realms[id];
         if (!y.alive || y.isRebel || y.playerRun || w.att.includes(id) || w.def.includes(id) || !near.has(id)) continue;
+        if (A.outOfReach && A.outOfReach(id, X)) continue;   // 09-scale's one world: no march from beyond reach (false on the Known World)
         const pc = A.pc(); if (pc && pc.ruler === id) continue;
         const v = CS.owes(id, D);
         if (!v) continue;

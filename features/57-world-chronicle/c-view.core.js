@@ -37,7 +37,7 @@
   };
   WC.annals = function (pc) {
     const R = A.S && A.S.wrec;
-    const group = UI.wcGroup || 'all', near = !!UI.wcNear, rows = WC.annalsRows(pc, group, near);
+    const group = UI.wcGroup || 'all', near = UI.wcNear != null ? !!UI.wcNear : !!(A.WORLD1 && A.WORLD1.great()), rows = WC.annalsRows(pc, group, near);
     const pages = Math.max(1, Math.ceil(rows.length / WC.PAGE)), page = Math.min(Math.max(0, UI.wcPage || 0), pages - 1);
     const kinds = R ? new Set(R.e.map(e => e[0])).size : 0;
     let h = `<div class="group-h">The annals of Ardan</div><p class="small muted">Everything the world has done since the record opened in 1105: ${A.fmt(R ? R.e.length : 0)} entries of ${kinds} kinds, none dropped. ` +

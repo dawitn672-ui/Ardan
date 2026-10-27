@@ -2,6 +2,9 @@
 // Plays a small league with fixed seeds (the game is deterministic, so the same build always gives the same numbers),
 // groups the lives by the path they started on, and checks each group against the bands in bench/targets.mjs.
 //   node bench/balance.mjs [built.html] [--lives-per=12] [--workers=3] [--json=reports/balance.json]
+//   node bench/balance.mjs [built.html] --lands=great [--lives-per=6] [--years=35]   the Great Continent league (GREAT in
+//        bench/targets.mjs): every path born in the Known World and in the Far Lands of one Great Continent game
+//        (A.newGame({ lands: 'great' })), each group with its own bands; writes reports/balance-great.json
 // Lives run on --workers pages at once. Each life starts a new game from its own seed, and the lives are dealt to the
 // pages in a fixed order, so the numbers do not depend on timing.
 // Exit code 1 if any number is outside its band. tools/check.mjs runs it, so CI does too.
@@ -10,14 +13,16 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { BOT } from './bot.mjs';
-import { TARGETS } from './targets.mjs';
+import { TARGETS as KNOWN, GREAT } from './targets.mjs';
 const require = createRequire(import.meta.url);
 let pw; try { pw = require('playwright'); } catch { pw = require('/opt/node-tools/node_modules/playwright'); }
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const opt = k => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : null; };
 const file = path.resolve(process.argv.slice(2).find(a => !a.startsWith('--')) || path.join(root, 'index.html'));
-const PER = +(opt('lives-per') || 12), WORKERS = Math.max(1, +(opt('workers') || 3));
+const LANDS = opt('lands') || 'known', TARGETS = LANDS === 'great' ? GREAT : KNOWN;
+if (!['known', 'great'].includes(LANDS)) { console.error(`--lands=${LANDS}: known or great`); process.exit(2); }
+const PER = +(opt('lives-per') || TARGETS.lives || 12), WORKERS = Math.max(1, +(opt('workers') || 3)), YEARS = +(opt('years') || TARGETS.years || 70);
 const median = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
 const r1 = x => x == null ? null : Math.round(x * 10) / 10;
 
@@ -33,7 +38,7 @@ for (let w = 0; w < WORKERS; w++) {
   pages.push(page);
 }
 
-const out = { file: path.relative(root, file), build: await pages[0].evaluate(() => window.ARDAN_BUILD), lives: PER, paths: {}, global: {}, failures: [] };
+const out = { file: path.relative(root, file), build: await pages[0].evaluate(() => window.ARDAN_BUILD), lands: LANDS, lives: PER, years: YEARS, paths: {}, global: {}, failures: [], skipped: {} };
 // every life of the league, in a fixed order; page w plays lives w, w + WORKERS, ...
 const jobs = [];
 for (const [name, P] of Object.entries(TARGETS.paths)) for (let i = 0; i < PER; i++) jobs.push({ name, P, i });
@@ -41,21 +46,28 @@ const played = new Array(jobs.length);
 const playLife = (page, { name, P, i }) => {
   // engaged and passive alternate; personalities rotate; seeds are fixed per path and slot
   const pers = ['careful', 'reckless', 'greedy', 'random'][i % 4], engaged = i % 2 === 0;
-  return page.evaluate(([o, p, e]) => {
-    const L = B.life(o, p, e, 70), S = L.samples || [];
+  return page.evaluate(([o, p, e, Y]) => {
+    // a start the world cannot give (no far realm keeps serfs, say) is reported, not played as something else
+    if (o.lands === 'great' && A.statusAllowed && !A.statusAllowed(o.status, o.race, o.realm)) {
+      const was = A.FAR && A.FAR.active; if (A.FAR && !was) A.FAR.set(true);
+      const ok = A.statusAllowed(o.status, o.race, o.realm);
+      if (!ok) return { skip: `no ${o.status} start in ${o.realm}` };
+    }
+    const L = B.life(o, p, e, Y), S = L.samples || [];
     const max = k => Math.max(0, ...S.map(s => typeof s[k] === 'number' ? s[k] : 0));
     const at = age => (S.find(s => s.age >= age) || S[S.length - 1] || {});
     const out = { deathAge: L.deathAge, years: L.years, arc: L.arc, wins: L.wins, checks: L.checks, peakCoin: max('coin'), peakFame: max('fame'),
       coinAt40: at(40).coin || 0, freed: !!(S[0] && S[0].unfree && !(S[S.length - 1] || {}).unfree), kids: max('kids') };
     return out;
-  }, [Object.assign({ seed: 7001 + i * 104729 + name.length * 31, sex: i % 2 ? 'F' : 'M' }, P.start), pers, engaged]);
+  }, [Object.assign({ seed: 7001 + i * 104729 + name.length * 31, sex: i % 2 ? 'F' : 'M' }, P.start, LANDS === 'great' ? { lands: 'great' } : {}), pers, engaged, YEARS]);
 };
 await Promise.all(pages.map(async (page, w) => {
   for (let k = w; k < jobs.length; k += WORKERS) { played[k] = await playLife(page, jobs[k]); process.stdout.write('.'); }
 }));
 const all = [];
 for (const [name, P] of Object.entries(TARGETS.paths)) {
-  const lives = jobs.map((j, k) => (j.name === name ? played[k] : null)).filter(Boolean);
+  const mine = jobs.map((j, k) => (j.name === name ? played[k] : null)).filter(Boolean), lives = mine.filter(l => !l.skip);
+  if (!lives.length) { out.skipped[name] = mine.length ? mine[0].skip : 'no lives'; continue; }
   all.push(...lives);
   const deaths = lives.filter(l => l.deathAge != null).map(l => l.deathAge);
   const quiet = new Set(['quiet life', 'working life', 'bound for life', 'cut short']);
@@ -86,10 +98,13 @@ const check = (where, key, v, band) => {
   return ok;
 };
 const rows = [];
-for (const [name, P] of Object.entries(TARGETS.paths)) for (const [k, band] of Object.entries(P.bands)) { const v = out.paths[name][k]; rows.push([name, k, v, band, check(name, k, v, band)]); }
+for (const [name, P] of Object.entries(TARGETS.paths)) {
+  if (out.skipped[name]) { console.log(`skip ${name.padEnd(14)} ${out.skipped[name]}${P.note ? ' (see its note in bench/targets.mjs)' : ''}`); continue; }
+  for (const [k, band] of Object.entries(P.bands)) { const v = out.paths[name][k]; rows.push([name, k, v, band, check(name, k, v, band)]); }
+}
 for (const [k, band] of Object.entries(TARGETS.global)) { const v = out.global[k]; rows.push(['all', k, v, band, check('all', k, v, band)]); }
-for (const [p, k, v, b, ok] of rows) console.log(`${ok ? 'ok  ' : 'FAIL'} ${p.padEnd(10)} ${k.padEnd(16)} ${String(v).padStart(7)}   target ${b[0]}–${b[1]}`);
-const json = opt('json') || path.join(root, 'reports', 'balance.json');
+for (const [p, k, v, b, ok] of rows) console.log(`${ok ? 'ok  ' : 'FAIL'} ${p.padEnd(14)} ${k.padEnd(16)} ${String(v).padStart(7)}   target ${b[0]}–${b[1]}`);
+const json = opt('json') || path.join(root, 'reports', LANDS === 'great' ? 'balance-great.json' : 'balance.json');
 fs.mkdirSync(path.dirname(json), { recursive: true });
 fs.writeFileSync(json, JSON.stringify(out, null, 1));
 console.log(out.failures.length ? `${out.failures.length} out of band` : 'all within their bands');

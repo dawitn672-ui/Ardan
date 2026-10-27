@@ -32,6 +32,18 @@ The brief moves Ardan from a European woodcut toward a colour woodblock print li
 
 Words in the event override its shape: an event that says "born", "wedding", "funeral" or "battle" takes that hour whatever its shape. The rest choose by seed from the hours that suit them (a road by day or at dawn; a sickbed by night or at dusk).
 
+**The far lands** (Oct 27). A far province (one that carries a `region`, from 99-far-lands) takes its land from its biome (`SK.terrOf`):
+
+| Land | Biome | What the print shows |
+| --- | --- | --- |
+| jungle | rainforest and monsoon forest | palms over a dark wood |
+| savanna | savanna | flat-topped thorn trees on gold grass |
+| taiga | taiga | close stands of spruce, two rows deep |
+| alpine | alpine highland | pasture under snow peaks |
+| scrub | dry woodland | low bushes on dry ground |
+
+A Known World province keeps its word, so its prints are unchanged.
+
 **Which land.** The player's home province gives the terrain (plains, hills, forest, steppe, desert, marsh, mountains, tundra) and whether it is on the coast. Winter (December to February, and always on the tundra) lifts every colour by 0.15 L, cuts chroma by 30%, and lays snow.
 
 **Rules kept.**
@@ -53,6 +65,7 @@ Words in the event override its shape: an event that says "born", "wedding", "fu
 | `skyPure` | Drawing the event three times, the Chronicle and the map leaves `A.S` and `A.rngState` unchanged, calls `Math.random` 0 times, and gives the same markup; another year gives another picture |
 | `skyToggle` | The menu toggle; off draws 61's woodcut, pictures off draws none, back on draws the print |
 | `skyPhone` | At 375 px the print is 2.78:1 (the brief's 390 × 140), full width, with the cartouche inside it |
+| `skyFarLands` | 375 prints of the five far lands, 10.2 KB on average and 14.1 KB at most. Every far land is some province's: jungle 608, alpine 101, scrub 97, taiga 150, savanna 17. Known World words are kept. A life at home in the monsoon forest gets a jungle print |
 | `skyAxe` | 0 axe violations (WCAG 2.2 AA) with an event and its print on screen, dark and light |
 
 ## Art review

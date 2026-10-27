@@ -199,6 +199,66 @@
     'CUL-24': ['messy short', 'braid band', '#5a7ab0'],               // Hall-giants
   };
   AP.CH = CH;
+  // ---- the Great Continent's peoples (99-far-lands). Each far culture names its land (LORE.cultures[id].land); a land
+  // gives its people a cut of dress and headwear (63's vocabulary), a dye, a pattern, the bangs and extras they favour,
+  // a ribbon colour, and the range of skin, hair and eye tones they are drawn in. The stored look is the release's
+  // (A.genAppearance knows only the Known World's peoples, so a steppe rider could be pale and red-haired); it is kept
+  // in order and pressed into the land's range (skin index i of 8 goes to lo + i * (hi - lo) / 7), so kin still look
+  // alike, and drawing stays a pure function of the stored look. sk/hr/ey are index ranges into GD.SKIN.human,
+  // GD.HAIR (0 black .. 8 red; silver and white are age and stay) and GD.EYES. A culture's own line overrides its land.
+  const FAR_LAND = {
+    R: { c: { hat: ['cap', 'kerchief'], cut: 'robe', sash: 1, dye: '#2f4f8a' }, ch: ['blunt parted curtain', 'bun pins', '#b8332a'], sk: [0, 3], hr: [0, 1], ey: [0, 1], st: { long: 'tied' } },       // Twin Rivers: river empires
+    F: { c: { hat: ['cone', 'furhat'], cut: 'kaftan', collar: 'fur', sash: 1, dye: '#7a3a24' }, ch: ['messy spiky sideL', 'braid band', '#c23c2a'], sk: [1, 4], hr: [0, 2], ey: [0, 2], st: { short: 'braided' } }, // Long Grass: the steppe
+    H: { c: { hat: ['furhat', 'furhat'], cut: 'kaftan', collar: 'fur', sash: 1, dye: '#7a2a3a' }, ch: ['messy wisps', 'braid band', '#c2302a'], sk: [2, 5], hr: [0, 1], ey: [0, 1] },                    // High Steppes: the plateau
+    B: { c: { hat: ['turban', 'veil'], cut: 'robe', sash: 1, pat: 'stripe', dye: '#2f6a7a' }, ch: ['parted curtain swept', 'band pins', '#2a8a8a'], sk: [2, 5], hr: [0, 2], ey: [0, 2] },             // Sand Basins: oases
+    M: { c: { hat: ['turban', 'veil'], cut: 'drape', collar: 'beads', sash: 1, dye: '#c8782a' }, ch: ['parted curtain', 'bun pins', '#c2302a'], sk: [3, 7], hr: [0, 1], ey: [0, 1], st: { short: 'cropped' } }, // Southern Peninsulas: monsoon
+    A: { c: { hat: ['wrap', 'fillet'], cut: 'drape', pat: 'zig', collar: 'beads', dye: '#8a3a24' }, ch: ['wisps messy parted', 'feather band', '#d08a2a'], sk: [3, 6], hr: [0, 1], ey: [0, 1] },     // Thousand Isles
+    I: { c: { hat: ['fillet', 'kerchief'], cut: 'robe', sash: 1, dye: '#2a3d6a' }, ch: ['blunt curtain sideR', 'topknot pins', '#b8332a'], sk: [0, 2], hr: [0, 0], ey: [0, 0], st: { long: 'tied' } },  // Sunrise Isles
+    T: { c: { hat: ['furhat', 'hood'], cut: 'kaftan', collar: 'fur', fur: 1, dye: '#5a3a2a' }, ch: ['messy sideL wisps', 'braid', '#c25a2a'], sk: [1, 4], hr: [0, 2], ey: [0, 2] },                     // Black Pines: taiga
+    N: { c: { hat: ['hood', 'hood'], cut: 'tunic', collar: 'fur', fur: 1, dye: '#5a4a3a' }, ch: ['messy blunt', 'braid', '#3a6aa8'], sk: [2, 4], hr: [0, 1], ey: [0, 1] },                               // Rime Coast: the ice edge
+    D: { c: { hat: ['wrap', 'wrap'], cut: 'drape', collar: 'beads', pat: 'stripe', dye: '#b0582a' }, ch: ['short crest', 'band', '#d0a02a'], sk: [5, 7], hr: [0, 0], ey: [0, 0], st: { long: 'locks', short: 'curly', tied: 'locks' } }, // Deep Southland
+  };
+  const FAR_CULT = {
+    'CUL-30': { c: { hat: ['cap', 'kerchief'], cut: 'tunic', sash: 1, dye: '#2a2a3a' } },                  // Sable Banners: soldiers' coats
+    'CUL-50': { c: { hat: ['wrap', 'veil'], cut: 'robe', collar: 'fur', dye: '#8a6a3a' } },                // Gravel Sea camel clans
+    'CUL-53': { c: { hat: ['cap', 'kerchief'], cut: 'kaftan', sash: 1, dye: '#6a4a2a' } },                 // Gap townsfolk
+    'CUL-61': { c: { hat: [null, 'kerchief'], cut: 'tunic', dye: '#7a6a52' } },                            // the Purchased
+    'CUL-66': { c: { hat: ['furhat', 'furhat'], cut: 'kaftan', collar: 'fur', fur: 1, dye: '#6a2a2a' } },  // Ice Shoulder yak folk
+    'CUL-69': { c: { hat: ['wrap', 'kerchief'], cut: 'kaftan', sash: 1, dye: '#8a2a2a' } },                // Cloudwall porters
+    'CUL-81': { c: { hat: ['hood', 'hood'], cut: 'tunic', collar: 'fur', fur: 1, dye: '#4a4a52' }, sk: [3, 5] }, // Rime sea-hunters
+    'CUL-85': { c: { hat: ['cap', 'veil'], cut: 'robe', dye: '#e4dcc4' } },                                // Mountain-shrine folk: white
+    'CUL-86': { c: { hat: ['feathers', 'fillet'], cut: 'tunic', collar: 'bones', fur: 1, dye: '#5a4a3a' } }, // Ouro hunters
+    'CUL-99': { c: { hat: ['wrap', 'kerchief'], cut: 'kaftan', pat: 'stripe', dye: '#2a4a7a' }, sk: [2, 5] }, // Cloud Ridge Yaru
+    'CUL-101': { c: { hat: ['turban', 'wrap'], cut: 'drape', sash: 1, dye: '#8a2a2a' } },                  // Elephant catchers
+    'CUL-104': { c: { hat: [null, 'wrap'], cut: 'drape', pat: 'zig', dye: '#2f5a7a' } },                   // Salt-eyed divers
+    'CUL-118': { c: { hat: ['wrap', 'fillet'], cut: 'drape', pat: 'zig', dye: '#2f6a8a' } },               // Drifting Houses
+    'CUL-127': { c: { hat: [null, 'wrap'], cut: 'drape', collar: 'beads', pat: 'stripe', dye: '#a82a24' } }, // Long Herd folk
+    'CUL-128': { c: { hat: ['feathers', 'leaves'], cut: 'drape', collar: 'beads', dye: '#4a6a2a' } },      // Deep Forest folk
+    'CUL-132': { c: { hat: [null, null], cut: 'drape', collar: 'beads', dye: '#a8702a' }, sk: [4, 7] },    // Dry Hunters
+    'CUL-134': { c: { hat: ['wrap', 'wrap'], cut: 'drape', collar: 'beads', pat: 'zig', dye: '#3a6a4a' } }, // Great Forest river traders
+  };
+  // the far people's table for a culture id, or null (every Known World culture, and anything unknown)
+  const farMemo = new Map();
+  function farOf(cid) {
+    if (typeof cid !== 'string' || CH[cid] || CULT()[cid]) return null;
+    if (farMemo.has(cid)) return farMemo.get(cid);
+    let out = null;
+    try {
+      const c = typeof LORE !== 'undefined' && LORE.cultures && LORE.cultures[cid];
+      const land = c && typeof c.land === 'string' ? FAR_LAND[c.land] : null;
+      if (land) {
+        const own = FAR_CULT[cid] || {};
+        // the ribbon varies a little by people inside a land, so neighbours differ
+        const rib = ['#b8332a', '#c8782a', '#2f6a8a', '#6a3a8a', '#3a7a4a', '#c0a02a'][hash(cid + 'rib') % 6];
+        out = { land: c.land, c: Object.assign({}, land.c, own.c), ch: own.ch || [land.ch[0], land.ch[1], hash(cid) % 3 ? land.ch[2] : rib], sk: own.sk || land.sk, hr: own.hr || land.hr, ey: own.ey || land.ey, st: land.st || {} };
+      }
+    } catch (e) { out = null; }
+    if (out) farMemo.set(cid, out);   // a miss is not kept: the far cultures are in LORE only while those lands are open
+    return out;
+  }
+  AP.FAR_LAND = FAR_LAND; AP.FAR_CULT = FAR_CULT; AP.farOf = farOf;
+  // an index pressed into [lo, hi] keeping its order among n
+  const squeeze = (i, n, r) => r[0] + Math.round(Math.max(0, Math.min(n - 1, i)) * (r[1] - r[0]) / Math.max(1, n - 1));
   const COMMON = ['#5b7fb0', '#a0524a', '#5f9070', '#c09a52', '#7d6aa8', '#4f7f8a', '#9a6a4a', '#6a8a4a', '#b0704a', '#5a6a9a'];
   const BANGS_F = { blunt: 3, parted: 3, sideL: 2, sideR: 2, curtain: 3, wisps: 3, long: 2, messy: 1, spiky: .3, short: .3, swept: .7, crest: 0 };
   const BANGS_M = { spiky: 3, messy: 3, sideL: 2, sideR: 2, parted: 2, short: 3, swept: 2, crest: 1.5, wisps: 1, curtain: 1, blunt: .5, long: 1 };
@@ -270,8 +330,10 @@
     L.baby = h < 2.5; L.kid = !L.baby && h < 11; L.small = h < 11; L.teen = h >= 11 && h < 17.5;
     L.mat = clamp((h - 12) / 9, 0, 1);                    // maturity: child face to grown face
     L.oldF = clamp((h - 42 + hs(p, 'agev', 4)) / 26, 0, 1.2);   // the lines of age, from the forties
-    L.cult = CULT()[p.cult] || {};
-    L.ch = CH[p.cult] || ['messy parted', 'band', '#8a5a9a'];
+    const far = farOf(p.cult);
+    L.far = far ? far.land : null;
+    L.cult = CULT()[p.cult] || (far && far.c) || {};
+    L.ch = CH[p.cult] || (far && far.ch) || ['messy parted', 'band', '#8a5a9a'];
     let out = null, arms = null;
     try { out = PORTRAIT.outfit(p); } catch (e) {}
     try { arms = PORTRAIT.arms(p); } catch (e) {}
@@ -282,7 +344,7 @@
     L.ruler = !!p.ruler; L.noble = L.ruler || ['noble', 'royal'].includes(out.kind);
     // realm colour for the ground
     let realm = null; try { realm = A.realm(p.ruler || (p.noble && p.noble.realm) || p.realm); } catch (e) {}
-    L.realmC = hexOk(realm && realm.color) || '#8a8f9e';
+    L.realmC = hexOk(realm && (UI.realmHex ? UI.realmHex(realm) : realm.color)) || '#8a8f9e';
     // clothes: the release's colour, cleaned to a cel palette; commoners take their people's dye
     let main = hexOk(out.main) || '#6b5a3e';
     const common = ['peasant', 'artisan', 'gentry', 'merchant', 'rags'].includes(out.kind);
@@ -295,17 +357,27 @@
     // trim: the release's for rank; for commoners a lighter tone of the cloth or the people's colour
     L.trim = common ? tune(hf(p, 'trim') < .5 ? mix(L.cloth, '#fff4dc', .45) : L.rib, 1.1, .05, .1, .7, .4, .82) : tune(hexOk(out.trim) || '#c0a060', 1.2, .04, .1, .75, .25, .8);
     // skin, hair, eyes
-    const skin = tune(hexOk(ap.skin) || '#d9a77f', 1.08, .03, 0, .7, .2, .92);
+    let skin0 = hexOk(ap.skin) || '#d9a77f';
+    const humanish = race === 'human' || race === 'halfelf';
+    if (far && humanish && GD.SKIN && GD.SKIN.human) {
+      const S = GD.SKIN.human, i = S.indexOf(String(ap.skin).toLowerCase());
+      if (i >= 0 && (i < far.sk[0] || i > far.sk[1])) skin0 = S[squeeze(i, S.length, far.sk)];
+    }
+    const skin = tune(skin0, 1.08, .03, 0, .7, .2, .92);
     L.skin = { b: skin, s: shadeOf(skin, hsl(skin)[2] < .4 ? .24 : .3, 1.35), line: tune(mix(skin, LINE, .55), 1.3, 0, 0, .7) };
     L.skin.d = shadeOf(skin, .5, 1.3);
-    let hair = hexOk(typeof ap.hair === 'string' ? ap.hair : GD.HAIR && GD.HAIR[ap.hair]) || '#3b2414';
+    let hairI = ap.hair;
+    if (far && humanish && typeof hairI === 'number' && hairI >= 0 && hairI <= 8 && hairI > far.hr[1]) hairI = squeeze(hairI, 9, far.hr);
+    let hair = hexOk(typeof hairI === 'string' ? hairI : GD.HAIR && GD.HAIR[hairI]) || '#3b2414';
     { const [hh, ss, ll] = hsl(hair); hair = ll < .16 ? mix(fromHsl(hh, ss, .17), '#2a2f5a', .45) : fromHsl(hh, clamp(ss * 1.12, 0, .8), clamp(ll, .17, .86)); }
     const grey = clamp(L.oldF * .95 + (h > 72 ? .3 : 0) - (hf(p, 'greyv') < .3 ? .25 : 0), 0, 1);
     if (grey > 0) hair = mix(hair, grey > .8 ? '#e8e8ee' : '#c9cad4', grey);
     L.grey = grey;
     L.hair = { b: hair, s: shadeOf(hair, .4, 1.1), hi: lighter(hair, .18), line: mix(hair, LINE, .62) };
     L.hair.d = shadeOf(hair, .62, 1.05);
-    const eye = hexOk(GD.EYES && GD.EYES[ap.eye]) || '#6b4a2b';
+    let eyeI = ap.eye;
+    if (far && humanish && typeof eyeI === 'number' && eyeI > far.ey[1]) eyeI = squeeze(eyeI, (GD.EYES || []).length || 8, far.ey);
+    const eye = hexOk(GD.EYES && GD.EYES[eyeI]) || '#6b4a2b';
     { const [eh, es, el] = hsl(eye); L.eye = fromHsl(eh, clamp(es * 1.5 + .12, 0, .78), clamp(el * 1.1 + .06, .3, .6)); }
     if (race === 'orc' || race === 'halforc') L.eye = hf(p, 'oeye') < .5 ? '#c99a2a' : L.eye;
     if (race === 'elf' && hf(p, 'eeye') < .4) L.eye = ['#3aa08a', '#6a8ad0', '#9a7ad0'][hash(p.id + 'ee') % 3];
@@ -348,6 +420,10 @@
     L.covered = ['hood', 'cowl', 'veil', 'bonnet', 'helm:coif'].includes(hat);
     // hair: the game's style sets the back mass; the bangs and the extra are hashed, weighted by culture
     let st = ap.hstyle || 'short';
+    if (far && far.st[st] && hf(p, 'farst') < .7) st = far.st[st];
+    // the release hands 'bald' to men of any age; on a young face it read as an old, balding man (the love interest of
+    // "A love philtre", 21). Bald is kept for the grown and the old; before 30 it is a crop, and to 40 a crop or a shave
+    if (st === 'bald' && h < 40) st = h < 30 || hf(p, 'ybald') < .5 ? 'cropped' : 'shaved';
     if (L.baby) st = 'baby';
     const old = L.oldF > .6;
     L.bald = !F && !L.small && (st === 'bald' || (L.oldF > .9 && hf(p, 'bald') < .3));

@@ -13,6 +13,7 @@ import { geography, CELL } from './geo.mjs';
 import { lorePlan } from './loreplan.mjs';
 import { provinces, regions } from './prov.mjs';
 import { makeRealms } from './realms.mjs';
+import { makeRoutes, makeAtlas } from './routes.mjs';
 import { namer } from './names.mjs';
 import { rng, hash3 } from './lib.mjs';
 import * as PLAN from './plan.mjs';
@@ -20,7 +21,8 @@ import * as PLAN from './plan.mjs';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const arg = k => { const a = process.argv.find(x => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : null; };
 const OUT = arg('out') ? path.resolve(arg('out')) : path.join(HERE, '..', 'b-data.core.js');
-export const SEED = 1105, KEY = 'far@1', KA = 46000;
+// far@1 (Oct 26) is frozen: saves of it open by c-lands.core.js's migration. This generator writes far@2.
+export const SEED = 1105, KEY = 'far@2', KA = 46000;
 
 export function generate() {
   const t0 = Date.now(), log = [];
@@ -36,6 +38,8 @@ export function generate() {
   const G = geography(base, SEED, plan), GW = G.GW, GH = G.GH;
   const V = provinces(G, base, SEED, KA);
   const lands = regions(V.P, G);
+  // far@2: what the lore says each land holds, beside what the generator made (the test reads both)
+  if (lore) for (const g of lore.regions || []) if (lands[g.land]) lands[g.land].lore = (lands[g.land].lore || 0) + (+g.area_km2 || 0);
   const nb = base.provinces.length, P = V.P;
   // ---- the ground word: the release's eight, from height, roughness and biome (the release's own mix is hills 41%,
   // forest 15%, steppe 13%, plains 11%, desert 8%, mountains 7%, tundra 3%, marsh 2%)
@@ -73,6 +77,12 @@ export function generate() {
   for (const p of P) p.town = Math.round(p.pop * 0.05);
   const provAtKm = (x, y) => { const cx = Math.floor((x - G.F.x0) / CELL), cy = Math.floor((y - G.F.y0) / CELL); if (cx < 0 || cy < 0 || cx >= GW || cy >= GH) return null; const o = V.own[cy * GW + cx]; return o >= 0 ? P[o] : null; };
   const RL = makeRealms(P, adjOf, seaOf, SEED, base, lore, provAtKm);
+  // the names in the world now (makeRealms names the far provinces from their peoples' lists)
+  used.clear(); for (const q of base.provinces) used.add(q.name.toLowerCase());
+  for (const id in base.LORE.realms) used.add(base.LORE.realms[id].short.toLowerCase());
+  for (const p of P) used.add(p.name.toLowerCase());
+  if (RL.placeReport) log.push(`names: ${RL.placeReport.fromList} provinces named from their peoples' place lists (${RL.placeReport.sided} of them a side of the country, "Upper ...", and ${RL.placeReport.fallback} from another land's people), ${RL.placeReport.unnamed} left with the land's sounds`);
+  if (RL.quota) log.push(`quotas: realms hold ${(RL.quota.want / 1e6).toFixed(2)}M km² by the lore's holds_km2; off by ${(RL.quota.off / 1e6).toFixed(2)}M (${(100 * RL.quota.err).toFixed(1)}%) over ${RL.quota.n} realm-regions; worst ` + RL.quota.worst.map(w => `${w[1]} ${w[2]} ${Math.round(w[3] / 1e3)}k/${Math.round(w[4] / 1e3)}k`).join(', '));
   if (lore) log.push(`lore: ${RL.loreReport.realms} realms read, ${RL.loreReport.placed} placed` + (RL.loreReport.skipped.length ? `; skipped ${RL.loreReport.skipped.slice(0, 8).join(', ')}` : ''));
   // ---- what each province is: its type, walls and largest town
   const caps = new Set(Object.values(RL.realms).map(r => r.capId));
@@ -120,6 +130,21 @@ export function generate() {
   }
   for (const H of Object.values(RL.houses)) { if (H.kind === 'noble') { const p = P.find(q => q.pid === H.seatId); if (p) H.seat = p.name; } }
 
+  // ---- far@2: the lore's great routes on the province graph (with the sea lanes its sea roads need), and the atlas
+  let routes = [], atlas = null;
+  if (lore) {
+    // the canon road the Silk Road runs on into, west of Kraoth (TR-09, the Silk Road of the east: the Tusk Clans,
+    // Drevna, Velgrad), from the Known World's own capitals, so the great road reads as one road
+    const capAt = short => { const id = Object.keys(base.LORE.realms).find(k => base.LORE.realms[k].short === short), L = id && base.LORE.realms[id]; const q = L && base.provinces.find(p => p.pid === L.capId); return q ? [q.sx, q.sy] : null; };
+    const west = [[6800, 1600], capAt('Drevna'), capAt('Velgrad')].filter(Boolean);
+    const withCanon = Object.assign({}, lore, { routes: (lore.routes || []).concat(west.length >= 2 ? [{ id: 'TR-09', name: 'The Silk Road of the east', kind: 'caravan', strands: [{ name: 'Kraoth to Velgrad', pts: west }] }] : []) });
+    const RT = makeRoutes(withCanon, P, V, base, provAtKm, G.F);
+    routes = RT.routes;
+    const landAt = (x, y) => { const cx = Math.floor((x - G.F.x0) / CELL), cy = Math.floor((y - G.F.y0) / CELL); return cx >= 0 && cy >= 0 && cx < GW && cy < GH && !!G.land[cy * GW + cx]; };
+    atlas = makeAtlas(lore, landAt, G.F, GW, GH);
+    log.push(`routes: ${routes.length} strands of ${new Set(routes.map(r => r.id)).size} routes over ${new Set(routes.flatMap(r => r.p)).size} provinces (${routes.filter(r => r.p.some(id => id < nb)).length} reach the Known World), ${RT.lanes} sea lanes added, ${RT.miss} legs not found; ` +
+      `atlas: ${Object.keys(atlas.regions).length} regions, ${atlas.ranges.length} ranges, ${atlas.rivers.length} rivers, ${atlas.lakes.length} lakes, ${atlas.seas.length} seas, ${atlas.straits.length} straits, ${atlas.passes.length} passes`);
+  }
   // ---- the grid: province id + 1 and run length, Uint16 little-endian pairs over the whole frame (0: water, and
   // the cells of the Known World, which the game copies in from its own map)
   const runs = [];
@@ -146,9 +171,9 @@ export function generate() {
   for (const [q, l] of [...V.baseBase.entries()].sort((a, b) => a[0] - b[0])) seam[q] = sorted([...(seam[q] || []), ...l]);
   const baseExt = {}; for (const [q, e] of [...V.ext.entries()].sort((a, b) => a[0] - b[0])) baseExt[q] = [e.cells, e.coast ? 1 : 0];
   const D = {
-    v: 1, key: KEY, gw: GW, gh: GH, cell: CELL, x0: G.F.x0, y0: G.F.y0, ox: G.OX, oy: G.OY, base: nb, rle, provinces: cols, seam, seaBase, baseExt,
+    v: 2, key: KEY, gw: GW, gh: GH, cell: CELL, x0: G.F.x0, y0: G.F.y0, ox: G.OX, oy: G.OY, base: nb, rle, provinces: cols, seam, seaBase, baseExt,
     realms: RL.realms, houses: RL.houses, relations: RL.relations, cultures: RL.cultures, naming: RL.naming, lang: RL.lang, faiths: RL.faiths,
-    lands, lore: lore ? 'canon/lore/far-lands.json' : null, loreHash,
+    lands, routes, atlas, lore: lore ? 'canon/lore/far-lands.json' : null, loreHash,
   };
   const json = JSON.stringify(D);
   const text = `// features/99-far-lands/b-data.core.js: the far lands as data, generated by gen/gen.mjs (seed ${SEED}). Do not edit by hand:\n` +

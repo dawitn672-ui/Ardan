@@ -37,6 +37,14 @@ A reading holds the six stats as shown (`A.stat`), the six vitals rounded, coin 
 - **Three columns (1100 px and up) and two (761–1099):** docked over the story in the centre column, as wide as the column (at most 720 px), at its top, as tall as its content up to the column's height, and scrolling inside past that. The rail and the panel stay in sight under a light scrim; the story behind the card is blurred, so the card owns its column.
 - **Phone:** a full-screen sheet with its own scroll (71-phone's sheet). The picture takes the height the words leave, from 390 × 140 up to 44% of the screen (the print is sliced, so it crops rather than stretches); choices sit at the foot, each at least 52 px, their tags under the label. 71's report flag moves from the picture's corner (where the place name is) to the end of the title row.
 
+**A short phone** (Oct 27). On a 375 × 667 phone, a first life's first-run hint ("Each choice shows your odds…") used to sit above the sheet and push it 90 px down, so "A love philtre" needed 72 px of scrolling. Now:
+
+- the hint floats over the print;
+- the tags' row is 4 px tighter;
+- under 700 px of height, the bust, the gaps and the print's floor are a little smaller.
+
+The scene fits one sheet (`scPhoneFit`).
+
 **Everything the modal did, the card still does,** because it is still the release's `#modal`: role dialog, `aria-modal`, the page behind `inert`, Tab kept inside (`UI.trapFocus`), focus back to the opener when it closes (`UI.modalClosed`), keys 1–6, Escape closes a popover first (59) and never dismisses an event. The card focuses the first choice when it opens and Continue when the result lands (Continue is described by the result text, so a screen reader reads it). Two keys are added: Enter on the result is Continue even when focus is elsewhere (and is spent, so the release's Enter-to-play does not also run), and a held-down Enter (key repeat) does not fall through Continue into the next card's first choice.
 
 **Motion** (`scene.d-style.core.js`, brief §6): the card rises 12 px and fades in (280 ms, emphasized decelerate), the print settles from 103.5%, the bust rises, the rows slide in from the left 40 ms apart; a result rises into place and its chips pop (240 ms, small overshoot) one after another. Each runs once per phase (a redraw does not replay it; 91's `.mbox` rise is switched off on the card). Under reduced motion (the system's, or 96's Motion setting) only the card and the result fade, 120 ms; with Motion off nothing moves.
@@ -50,6 +58,7 @@ A reading holds the six stats as shown (`A.stat`), the six vitals rounded, coin 
 | `scDeltas` | 40 results from real lives, chosen through the button's action: the chips equal the test's own before-and-after reading of the player, chip for chip (at least 15 with chips) |
 | `scPure` | 30 events drawn three times in each phase (with `UI.refresh`): `A.S` and the random stream unchanged, the second and third drawings the same markup |
 | `scPhone` | A long event at 150% text on a 390 × 844 phone: a sheet that fills the screen and scrolls itself; a wheel scrolls the sheet and not the page; rows of 52 px and up |
+| `scPhoneFit` | "A love philtre" on a 375 × 667 phone with the first-run hint showing: the sheet at the top, 0 px to scroll, rows of 52 px and up |
 | `scAxe` | axe-core (WCAG 2.0–2.2 A/AA and best practice) on the dialog with a bust and checks, choosing and after, dark and light: 0 violations |
 | `scMotion` | Under the system's reduced motion, nothing in the dialog runs a transform when it opens or after a choice; with full motion both do; 96's Reduced on a full system and Full on a reduced system are obeyed |
 

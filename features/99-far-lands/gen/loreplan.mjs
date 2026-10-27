@@ -112,5 +112,9 @@ export function lorePlan(L) {
   const keep = caps.map(c => ({ x: c.x, y: c.y, r: 30, id: c.id }));
   const water = straits.map(s => ({ x: s.x, y: s.y, r: clamp(s.w / 2, 12, 150), id: s.id, strait: true }));
   const landNames = Object.fromEntries((L.lands || []).map(l => [l.code, l.name]));
-  return { lore: true, landNames, frame, regions, caps, straits, keep, water, lakes, ranges, rivers, chains: [], plateaus: [], edgeSea: 0 };
+  // far@2: the Black Pines and the Southern Peninsulas cut down to their regions' areas (shape.mjs, tighten). Joining
+  // the Rime Coast to the pines (join: { N: 'T' }) let the sea through the Arctic shore and left it in islands; alone, the
+  // pines are reached from the Ice Bight, the Fog Sea and the gaps in the shore, and the Rime Coast keeps its land
+  const tight = { join: {}, lands: ['T', 'M'], slack: 1.04, capR: 90, mid: 300, noise: 420 };
+  return { lore: true, tight, landNames, frame, regions, caps, straits, keep, water, lakes, ranges, rivers, chains: [], plateaus: [], edgeSea: 0 };
 }

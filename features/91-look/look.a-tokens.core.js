@@ -155,4 +155,68 @@ LOOK.TIERS = { common: '◇', uncommon: '◆', rare: '◆◆', epic: '◆◆◆'
     memo.set(key, out);
     return out;
   };
+
+  // ---- UI.realmHex(realm or id): the colour a realm is shown in (brief §1.6, for 153 realms).
+  // The Known World's 35 keep the colour they carry. The Great Continent's 118 (99-far-lands) came from the lore in one
+  // pale family per land (pinks on the Twin Rivers, straws on the Long Grass, greens on the Peninsulas), so neighbours
+  // read alike on the map and in rows. Each far realm is given an accent near its lore hue (within 50 degrees), at one
+  // of four lightnesses and two chromas, chosen so it stands apart from the realms it borders at the start (and, more
+  // weakly, from their neighbours): the largest realms choose first, and a tie keeps the lore colour. Read from the
+  // generated data alone (A.FL_DATA: provinces, their first owners and adjacency), so it is the same in every game and
+  // after every save and load, and it never touches A.S. Anything else (a realm 70-fresh-realms carves out, markup in a
+  // colour) is its own validated colour, as before.
+  let farPal = null;
+  const okHex = h => typeof h === 'string' && /^#[0-9a-f]{6}$/i.test(h) ? h.toLowerCase() : null;
+  const dist = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+  function buildFar() {
+    const D = A.FL_DATA;
+    const RL = D && D.realms ? (Array.isArray(D.realms) ? D.realms : Object.entries(D.realms)) : null;
+    if (!RL || !D.provinces || !Array.isArray(D.provinces.realm)) return {};
+    const P = D.provinces, owner = new Map();
+    for (let i = 0; i < P.id.length; i++) owner.set(P.id[i], P.realm[i]);
+    // provinces of the map as written: their first owners, from the release's map (ids below D.base)
+    try { const base = (typeof LORE !== 'undefined' && LORE.map && LORE.map.provinces) || []; for (const pv of base) if (pv && pv.id < (D.base || 306) && !owner.has(pv.id)) owner.set(pv.id, pv.realm); } catch (e) {}
+    const nb = new Map(), add = (a, b) => { if (!a || !b || a === b || a === 'unclaimed' || b === 'unclaimed') return; if (!nb.has(a)) nb.set(a, new Set()); nb.get(a).add(b); };
+    for (let i = 0; i < P.id.length; i++) {
+      const r = P.realm[i];
+      for (const j of (P.adj[i] || [])) { const o = owner.get(j); add(r, o); add(o, r); }
+      for (const j of (P.sea && P.sea[i] || [])) { const o = owner.get(j); add(r, o); add(o, r); }
+    }
+    const lore = new Map(RL.map(([id, r]) => [id, r]));
+    const fixed = new Map();   // the Known World's colours, which do not move
+    try { for (const [id, r] of Object.entries((typeof LORE !== 'undefined' && LORE.realms) || {})) if (!lore.has(id) && okHex(r && r.color)) fixed.set(id, toOklab(hexRgb(okHex(r.color)))); } catch (e) {}
+    const order = RL.map(([id, r]) => [id, +r.area || 0]).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map(x => x[0]);
+    const lab = new Map(fixed), out = {};
+    for (const id of order) {
+      const src = okHex(lore.get(id).color) || '#8a8f9e';
+      const [L0, a0, b0] = toOklab(hexRgb(src)), h0 = Math.atan2(b0, a0);
+      const ring1 = [...(nb.get(id) || [])], ring2 = new Set();
+      for (const n of ring1) for (const m of (nb.get(n) || [])) if (m !== id && !ring1.includes(m)) ring2.add(m);
+      let best = null, bestS = -1;
+      for (const dh of [0, -14, 14, -28, 28, -42, 42]) for (const L of [0.80, 0.72, 0.64, 0.86]) for (const C of [0.12, 0.08]) {
+        const h = h0 + dh * Math.PI / 180;
+        let rgb = fromOklab([L, C * Math.cos(h), C * Math.sin(h)]);
+        if (!inGamut(rgb)) continue;
+        const hex = rgbHex(rgb), p = toOklab(hexRgb(hex));
+        let d1 = 1, d2 = 1;
+        for (const n of ring1) if (lab.has(n)) d1 = Math.min(d1, dist(p, lab.get(n)));
+        for (const n of ring2) if (lab.has(n)) d2 = Math.min(d2, dist(p, lab.get(n)));
+        // stand apart from the neighbours first, their neighbours second; then stay near the lore's colour
+        const s = Math.min(d1, 0.16) * 4 + Math.min(d2, 0.10) - Math.abs(dh) / 2000 - Math.abs(L - Math.min(0.86, Math.max(0.64, L0))) / 40;
+        if (s > bestS + 1e-9) { bestS = s; best = { hex, p }; }
+      }
+      if (!best) best = { hex: src, p: toOklab(hexRgb(src)) };
+      lab.set(id, best.p); out[id] = best.hex;
+    }
+    return out;
+  }
+  UI.realmHex = function (r) {
+    const id = typeof r === 'string' ? r : r && r.id;
+    if (farPal === null) { try { farPal = buildFar(); } catch (e) { farPal = {}; } }
+    if (id && farPal[id]) return farPal[id];
+    const real = typeof r === 'string' ? (A.S && A.S.realms && A.S.realms[r]) : r;
+    return okHex(real && real.color) || '#8a8f9e';
+  };
+  // a realm's ink set: UI.realmInk of the colour it is shown in
+  UI.realmInkOf = (r, theme) => UI.realmInk(UI.realmHex(r), theme);
 })();

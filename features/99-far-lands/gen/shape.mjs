@@ -165,8 +165,81 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
       for (const j of nbr4(i)) if (owner[j] === k && !queued[j]) { queued[j] = 1; hp.push(worth[j], j); }
     }
   }
+  // ---- far@2: a land the lore boxes in on most sides keeps far more than its area after the sea above (the Black
+  // Pines held 17.3 M km² against the lore's 9.4 M). Its regions' boxes are the boxes of ragged shapes, so the land
+  // is cut a second time by land, not by region: the sea comes in again from the open sea, least worth first, with
+  // no depth limit, and takes any cell of a land while the land holds more than its regions' areas together (the
+  // Rime Coast and the Black Pines count as one, so the sea reaches the pines across the Arctic shore). It never
+  // takes the ground round a capital, a strait's shores, or the coast within 250 km of the Known World. Then the
+  // land's cells are shared out again among its regions, each bidding for the cells nearest its box, so every region
+  // holds its area. A cell's worth here also rises toward its region's middle, so the land stays round the lore's
+  // centres and the sea comes in at the boxes' corners and margins.
+  function tighten() {
+    const T = plan.tight, grp = k => (T.join && T.join[regs[k].land]) || regs[k].land;
+    const want = {}, have = {};
+    for (const k of main) { const g = grp(k); want[g] = (want[g] || 0) + target[k]; }
+    for (let i = 0; i < N; i++) { const k = owner[i]; if (k >= 0 && regs[k].kind === 'main') { const g = grp(k); have[g] = (have[g] || 0) + 1; } }
+    const over = Object.keys(want).filter(g => (T.lands ? T.lands.includes(g) : true) && have[g] > want[g] * (T.slack || 1.04));
+    if (!over.length) return;
+    const isOver = new Set(over), toBox = edt(GW, GH, i => isBase(i)), hp = new Heap(), queued = new Uint8Array(N), safe = new Uint8Array(N);
+    for (let i = 0; i < N; i++) if (toBox[i] * C < 250) safe[i] = 1;
+    for (const r of regs) {
+      for (const cp of r.caps) disc(cp.x, cp.y, T.capR || 90, i => { safe[i] = 1; });
+      for (const l of r.lanes) { const n = Math.ceil(Math.hypot(l.b[0] - l.a[0], l.b[1] - l.a[1]) / 20); for (let s = 0; s <= n; s++) disc(l.a[0] + (l.b[0] - l.a[0]) * s / n, l.a[1] + (l.b[1] - l.a[1]) * s / n, 40, i => { safe[i] = 1; }); }
+    }
+    const w2 = new Float32Array(N);
+    for (let i = 0; i < N; i++) {
+      const k = owner[i]; if (k < 0) continue;
+      const bb = regs[k].bb, a = (bb.x1 - bb.x0) / 2, b = (bb.y1 - bb.y0) / 2, cx = regs[k].c[0], cy = regs[k].c[1];
+      const rho = Math.hypot((kmX(i) - cx) / a, (kmY(i) - cy) / b);
+      w2[i] = worth[i] + (T.mid || 300) * (1 - clamp(rho, 0, 1.5) / 1.5) + (T.noise || 0) * nz[i];
+    }
+    const cand = i => { const k = owner[i]; return k >= 0 && regs[k].kind === 'main' && isOver.has(grp(k)) && !safe[i]; };
+    const touch = i => nbr4(i).some(j => owner[j] < 0 && !isBase(j));
+    for (let i = 0; i < N; i++) if (cand(i) && touch(i)) queued[i] = 1;
+    count.fill(0); for (let i = 0; i < N; i++) if (owner[i] >= 0) count[owner[i]]++;
+    for (let i = 0; i < N; i++) if (queued[i]) hp.push(w2[i] + (count[owner[i]] > target[owner[i]] ? 0 : (T.pass || 500)), i);
+    // a region that already holds no more than its area is crossed only where the land behind it must give way
+    count.fill(0); for (let i = 0; i < N; i++) if (owner[i] >= 0) count[owner[i]]++;
+    const PASS = T.pass || 500, key = i => w2[i] + (count[owner[i]] > target[owner[i]] ? 0 : PASS);
+    while (hp.size) {
+      const i = hp.pop(), at = hp.lastKey, k = owner[i];
+      if (k < 0) continue;
+      const g = grp(k); if (have[g] <= want[g]) continue;
+      const now = key(i); if (now > at + 1e-3) { hp.push(now, i); continue; }
+      owner[i] = -1; have[g]--; count[k]--;
+      for (const j of nbr4(i)) if (!queued[j] && cand(j)) { queued[j] = 1; hp.push(key(j), j); }
+    }
+    // the land's cells shared out again among its regions: a region short of its area takes the cells it bids
+    // least for along its border with a neighbour of the same land that holds more than its own (so the Rime Coast
+    // follows the new Arctic shore south into the pines, and each region stays in one piece round its middle)
+    for (let round = 0; round < 3; round++) {
+      count.fill(0); for (let i = 0; i < N; i++) if (owner[i] >= 0) count[owner[i]]++;
+      const bids = new Map(), hq = new Heap(), seen = new Set();
+      const bid = (k, i) => { let f = bids.get(k); if (!f) bids.set(k, f = bidder(regs[k], k)); return f(i); };
+      const short = k => count[k] < target[k], long = k => count[k] > target[k];
+      const offer = (k, i) => { const key = i * 128 + k; if (seen.has(key)) return; seen.add(key); hq.push(bid(k, i), key); };
+      for (let i = 0; i < N; i++) {
+        const k = owner[i]; if (k < 0 || regs[k].kind !== 'main' || !isOver.has(grp(k)) || !short(k)) continue;
+        for (const j of nbr4(i)) { const o = owner[j]; if (o >= 0 && o !== k && grp(o) === grp(k) && long(o) && !safe2(j, o)) offer(k, j); }
+      }
+      let moved = 0;
+      while (hq.size) {
+        const key = hq.pop(), i = Math.floor(key / 128), k = key % 128, o = owner[i];
+        if (o < 0 || o === k || !short(k) || !long(o)) continue;
+        owner[i] = k; count[k]++; count[o]--; moved++;
+        for (const j of nbr4(i)) { const p = owner[j]; if (p >= 0 && p !== k && grp(p) === grp(k) && long(p) && !safe2(j, p)) offer(k, j); }
+      }
+      if (!moved) break;
+    }
+  }
+  // a capital's own ground stays its region's
+  function safe2(i, k) { for (const cp of regs[k].caps) if (Math.hypot(kmX(i) - cp.x, kmY(i) - cp.y) < 60) return true; return false; }
+  function disc(x, y, r, put) { const cx = (x - F.x0) / C, cy = (y - F.y0) / C, rr = r / C; for (let yy = Math.floor(cy - rr); yy <= Math.ceil(cy + rr); yy++) for (let xx = Math.floor(cx - rr); xx <= Math.ceil(cx + rr); xx++) if (xx >= 0 && yy >= 0 && xx < GW && yy < GH && (xx + 0.5 - cx) ** 2 + (yy + 0.5 - cy) ** 2 <= rr * rr) put(yy * GW + xx); }
   const dbg = tag => { if (!process.env.FL_DEBUG) return; const c0 = new Int32Array(regs.length); for (let i = 0; i < N; i++) if (owner[i] >= 0) c0[owner[i]]++; console.log(tag, ['B-08', 'N-02', 'F-01', 'T-08', 'M-10'].map(id => { const k = regs.findIndex(r => r.id === id); return id + ':' + (c0[k] / target[k]).toFixed(2); }).join(' ')); };
   dbg('eroded');
+  if (plan.tight) tighten();
+  dbg('tightened');
   tidy(['main']);
   dbg('tidied');
   fillHoles();

@@ -4,7 +4,8 @@
 //   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs)
 //   4. run every browser test
 //   5. play the balance league and hold each path's numbers to their bands (bench/balance.mjs, bench/targets.mjs)
-//   node tools/check.mjs [--skip-tests] [--skip-balance] [--shard=k/n]
+//   6. the same on the Great Continent: every path born in the Known World and in the Far Lands (--lands=great)
+//   node tools/check.mjs [--skip-tests] [--skip-balance] [--skip-great] [--shard=k/n]
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -30,3 +31,5 @@ if (lintFailed) process.exitCode = 1;
 if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs', `--workers=${process.env.CI ? 4 : 1}`].concat(process.argv.filter(a => a.startsWith('--shard=')))); } catch { process.exitCode = 1; } }
 // balance: target numbers per path, held by a fixed-seed league (bench/targets.mjs)
 if (!process.argv.includes('--skip-balance')) { try { run(['bench/balance.mjs', 'index.html']); } catch { process.exitCode = 1; } }
+// the Great Continent league (bench/targets.mjs GREAT): about four times the Known World's cost a life-year
+if (!process.argv.includes('--skip-balance') && !process.argv.includes('--skip-great')) { try { run(['bench/balance.mjs', 'index.html', '--lands=great']); } catch { process.exitCode = 1; } }

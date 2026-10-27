@@ -210,4 +210,37 @@ export default {
     for (let i = errs.length - 1; i >= 0; i--) if (/Refused to connect to 'https:\/\/fonts\.googleapis\.com/.test(errs[i])) errs.splice(i, 1);
     return { ok: !found.length && shown >= 3, detail: `${found.length} axe violations on the people tab, the profile and a person's page, with ${shown} anime portraits on those screens${found.length ? ': ' + found.slice(0, 5).join(', ') : ''}` };
   },
+  // the Great Continent's peoples: every far culture draws (bust and full figure) in its land's dress and in skin, hair
+  // and eye tones of its land's range, kin keep their order of tones, and a Known World person is drawn as before.
+  // And the young are not drawn bald: the love interest of "A love philtre" (a man of 21 the release gave 'bald') came
+  // out as an old, balding man.
+  async apFarPeoples(pg) {
+    const r = await pg.evaluate(MAKE).then(() => pg.evaluate(() => {
+      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      UI.screen = 'game'; UI.render();
+      const e0 = UI.ANIME.errors, bad = [], byLand = {}, outRange = [];
+      const S = GD.SKIN.human;
+      const far = Object.values(LORE.cultures).filter(c => c.land && UI.ANIME.FAR_LAND[c.land] && c.race === 'human');
+      for (const c of far) for (const sex of ['M', 'F']) for (const sk of [0, 7]) {
+        const p = APT.mk({ id: 'apf_' + c.id + sex + sk, sex, age: 28, cult: c.id, app: { skin: S[sk], hair: 8, eye: 5 } });
+        const L = UI.ANIME.look(p), F = UI.ANIME.farOf(c.id);
+        for (const [size, o] of [[88, { bust: true }], [176, {}]]) { const s = PORTRAIT.svg(p, size, o); if (!/class="portrait mini anime/.test(s) || !APT.parse(s)) bad.push(c.id + '@' + size); }
+        (byLand[c.land] = byLand[c.land] || new Set()).add(L.cult.cut);
+        // the drawn skin is the land's own tone, run through the cel tune: compare by the tone it came from
+        const want = S[sk === 0 ? F.sk[0] : F.sk[1]];
+        const p2 = APT.mk({ id: p.id + 'x', sex, age: 28, cult: 'CUL-01', app: { skin: want, hair: 0, eye: 0 } });
+        if (L.skin.b !== UI.ANIME.look(p2).skin.b) outRange.push(c.id + ':' + sk);
+      }
+      // a Known World person is untouched by the far table
+      const kw = APT.mk({ id: 'apf_kw', cult: 'CUL-02', age: 30, app: { skin: S[0], hair: 8 } });
+      const kwOk = !UI.ANIME.farOf('CUL-02') && UI.ANIME.look(kw).hair.b !== UI.ANIME.look(APT.mk({ id: 'apf_kw', cult: 'CUL-02', age: 30, app: { skin: S[0], hair: 0 } })).hair.b;
+      // the young and 'bald'
+      const ages = [18, 21, 26, 34, 52, 70].map(age => { const p = APT.mk({ id: 'apf_bald' + age, sex: 'M', age, app: { hstyle: 'bald' } }); const L = UI.ANIME.look(p); return [age, L.bald, L.st]; });
+      return { cultures: far.length, lands: Object.keys(byLand).length, cuts: Object.fromEntries(Object.entries(byLand).map(([k, v]) => [k, [...v].join('/')])), bad, outRange, errors: UI.ANIME.errors - e0, kwOk, ages };
+    }));
+    const young = r.ages.filter(([a]) => a < 30), old = r.ages.filter(([a]) => a >= 45);
+    const ok = r.cultures >= 90 && r.lands === 10 && !r.bad.length && !r.outRange.length && r.errors === 0 && r.kwOk && young.every(x => !x[1]) && old.every(x => x[1]);
+    return { ok, detail: `${r.cultures} far cultures in ${r.lands} lands, M and F, palest and darkest stored skin, bust and full figure: ${r.bad.length} invalid, ${r.errors} fallbacks, ${r.outRange.length} out of their land's range; ` +
+      `dress by land ${JSON.stringify(r.cuts)}; Known World untouched ${r.kwOk}; 'bald' drawn as ${r.ages.map(([a, b, st]) => a + ':' + (b ? 'bald' : st)).join(' ')}` };
+  },
 };
