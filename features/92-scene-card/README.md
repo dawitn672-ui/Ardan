@@ -75,3 +75,5 @@ The scene fits one sheet (`scPhoneFit`).
 - **Effect hints are read from object effects only.** A choice whose effect is a function shows none, and checks show their stake line (97) rather than a hint.
 - **The dock follows `#logwrap`.** If a layout hides the story column, the card falls back to a centred box.
 - **On a phone, short scenes crop the print** to fill the sheet: a subject placed far to one side can be cut.
+
+**Cycle 1 fixes (visual review).** B9: the phone print is a 16:6 band (at most 160 px), choices follow the text; the odds hint docks under the last choice on a phone and above the card on desktop.

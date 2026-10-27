@@ -7,3 +7,5 @@
 **Rules kept.** Drawing only: no game state is read or written beyond what the release drew, and no random numbers are drawn.
 
 **Test.** `blNoOverlap` draws the tooltip suite's 3,000-a-side battle in each of its views. No two labels may overlap, and the state and the random stream must be unchanged.
+
+**Cycle 1 (visual I3).** `m-field.core.js` and patch `BF-FIELD`: with the colour prints on, the field is a woodblock print (sky band in the battle's hour, ridges, lit ground), units are banner masses (pikes, horses, bows under a pole in the realm's colour), field labels are counts with the full name on hover, one caption per wing, and the end is a small cartouche with the VICTORY or DEFEAT cut-in (`bfPrint`). Not done: clash flashes and move arrows.

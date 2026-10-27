@@ -102,3 +102,10 @@ The critique found the screen "dim and samey": one leather brown, one gold, one 
 ## Left for the features after this one
 
 The event scene card and the result in place (92), the cel-shaded portraits (93), the woodblock skies (94), the icon set (95; the activity groups use the release's icons and three of this feature's own), toasts' stacking and cut-ins (96), the small-multiple rows of People, Holdings and Realm (97: Holdings is still 2.8 screens), and a Motion setting in the menu.
+
+**Cycle 1 fixes (visual review).**
+- B1: the vellum page re-points the Night tokens inside `.il-vellum` (ink `#2b1d10`, ochre `#6b4410`, Cinzel heads); the export button sits under the title on a phone (`vellumInk`).
+- B2: first-run hints are in flow (Life panel, phone) or above the docked card (odds hint), one at a time, never over a full-screen modal (`hintsClear`).
+- B6/I6: `look.f-duel.core.js`, the duel as a face-off: tall move cards with the key in flow and an icon, a mirrored foe, segmented Blood/Wind bars, an intent mark from the instinct's read, quiet Yield/Flee, the moves above the fold on a phone (`flDuelFace` in 48).
+- B11: the title's Playtest link and the floating ⚑ show only while a playtest runs (`<html data-pt>`); both stay in the Menu.
+- I7: a selected toggle (`.primary` on codex, map modes, battle views, creation chips) is a raised segment with an accent underline; the gold fill is left to the one action (`onePrimary`).

@@ -62,3 +62,5 @@ An earlier draft put "Keeper of Secrets" at 3 secrets and fifth in line, and 4 o
 - **Present tense only.** The epilogue tells what stands now, not the future: it doesn't simulate the heir's reign or the spouse's next marriage.
 - **Collection scope.** Endings are collected per save, like achievements, not across saves.
 - **Starting stories.** Replayability step 1, 20 hand-made starting stories, is the other half of this pair, and isn't built here.
+
+**Cycle 1 (visual I5, B10).** The death screen is a full-screen dusk page over the grave's print, the epitaph large, the score counting up (number only, not under reduced motion), heirs with their busts; no hint or "Your life is over" bar over it (`endingsMoment`).

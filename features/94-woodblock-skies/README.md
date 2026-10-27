@@ -106,3 +106,5 @@ The prints were reviewed and redrawn over four rounds:
 - **Procedural, not painted.** These are 25 compositions with seeded variety, not hand-cut blocks. A background artist would give the subjects real perspective and hand-placed light. The frame takes any SVG per shape.
 - **Not checked by a person.** The sky colours come from the brief's hour table, and the subjects' local colours were tuned by eye on the contact sheets.
 - **The fight, war and money scenes are emblems.** They keep 61's heraldic arrangements (crossed swords over a shield, scales and coin) rather than showing a scene.
+
+**Cycle 1 fixes (visual review).** B3: `SK.climOf` reads the province's biome; only temperate, boreal and alpine land gets winter snow; the wet tropics get the rainy season, the dry belts a dust haze (`skyClimate`). I2: every interior has a patterned wall (asanoha, kilim, chevron, diaper by building), a beam or curtain framing it, a figure in the event person's colours, and the window's shaft landing on the floor (`skyInterior`).

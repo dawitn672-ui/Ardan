@@ -63,3 +63,5 @@ Death is muted (a grey-blue band, no focus lines); a victory is vermilion and go
 
 - **Moments come from readings, not from the engine's own events.** A rank won and lost between two draws is never seen. While the clock runs, the readings come from its light redraw, about every 1.5 s, which is always within a month.
 - **Victory needs the battle screen.** A battle resolved without the player on its screen gives no cut-in; neither does a duel.
+
+**Cycle 1 fixes (visual review).** I6: a VS cut-in with both busts at a duel's opening; I5: a muted FAREWELL at your own death; I3: DEFEAT for a battle lost. Openings and your death are not held to one a month. I9: on Day the dim is the indigo shade and the focus lines ink; the sub-line is 20 px (`moOpenings`).

@@ -116,3 +116,5 @@ The release's `A.genAppearance` knows only the Known World's peoples, so it gave
 - **63's tests now exercise this renderer.** It is on by default and keeps 63's conventions (`class="portrait mini"`, `data-pose`, a `.mn-fig` group), so `miniEveryRace`, `miniDeterministic`, `miniAgeWoundsChildren` and `miniPure` run against it. The woodcut path is checked here by `apToggle`.
 - **Expressions read the state.** The person an event is about shows its tone by matching the event's id and title against a few word lists. An event with an unusual name gets the opinion-and-mood face instead.
 - **Beasts** (`PORTRAIT.beast`) and **coats of arms** (`PORTRAIT.coat`) are still the release's.
+
+**Cycle 1 fixes (visual review).** B4: creation offers a far people's skin range only, presses hair and eyes as the portrait does, and the preview carries the culture (patch `AP-SKINS`, `apCreateSkin`). I1: busts drop the helm (`look(p, bustOnly)`), features sit a quarter turned (`opts.front` turns it off), a grown figure is 6 heads with larger eyes, the rim light is up to 2.8 units (`apBustNoHelm`). Not done: new poses beyond the five, a true ¾ head outline.
