@@ -249,7 +249,7 @@ export default {
         const fit = Math.floor((tb.clientHeight - 120) / Math.max(1, Math.max(...hs)));
         UI.tab = 'realm'; UI.render();
         const band = document.querySelector('#tabbody .lk-band');
-        const nums = band ? band.querySelectorAll('.lk-band-k dd').length : 0;
+        const nums = band ? band.querySelectorAll('.lk-band-k dd:not(.lk-band-sp)').length : 0;
         const name = band && band.querySelector('.lk-band-n');
         const rr = A.realm(A.pc().realm), ink = UI.realmInkOf(rr);
         const cs = name && { color: getComputedStyle(name).color };
