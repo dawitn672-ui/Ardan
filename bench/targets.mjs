@@ -57,7 +57,14 @@ export const TARGETS = {
 // (2,033 provinces, 153 realms, every one simulated in full), so this league plays 6 lives a group for at most 25 years
 // (to age 41 to 43): 66 lives (60 played; the far serfs are skipped, see below), about 25 minutes on CI's four workers.
 // The death-age median is therefore capped near 41, and the bands are those of the Known World's league, widened where
-// 6 lives and 25 years cannot reach them (each widening says why). The far starts spread over the lands: a peasant of Taulen (the Twin Rivers), an artisan of Ozand
+// 6 lives and 25 years cannot reach them (each widening says why). With most lives still going at the end, the
+// league counts a living life at the age it reached (bench/balance.mjs), so the death-age median reads about 42 unless
+// half the group dies young: the band is a floor of 30, a collapse check.
+// Measured Oct 27 (the full build of round 10, 60 lives): every group inside its bands. Known World births on the Great
+// Continent against far births, median peak coin: peasant 9,372 / 18,940, artisan 18,037 / 27,627, merchant 187,113 /
+// 149,035, noble 74,529 / 123,088, royal 45,191 / 6,851; check win rate 46%. Two differences are worth a designer's
+// look: a royal of the Birch March (a small kingdom) peaks at a seventh of a Known World royal's wealth, and 31% of far
+// lives end as outlaws against 10% of Known World ones (outlawSharePct in the report). The far starts spread over the lands: a peasant of Taulen (the Twin Rivers), an artisan of Ozand
 // (the Sand Basins), a merchant of the Tide Families (the Twin Rivers' coast), a noble of Vahra (the Southern
 // Peninsulas), a royal of the Birch March (the Long Grass).
 const far = (realm, base) => Object.assign({}, base, { realm });

@@ -74,6 +74,10 @@ await pg.evaluate(() => {
   window.__uiSet0 = JSON.parse(JSON.stringify(UI.set || {}));
 });
 const RESET_UI = () => {
+  // a step or the clock started by the last click runs on in slices (84-top-bar): stop it, or it ticks the next setup's
+  // new world and every later step button reads as dead
+  try { if (UI.stepStop) UI.stepStop(); } catch (e) {}
+  try { if (UI.clkStop) UI.clkStop(); } catch (e) {}
   try { localStorage.clear(); } catch (e) {}
   const plain = v => v == null || ['string', 'number', 'boolean'].includes(typeof v);
   for (const k of Object.keys(UI)) if (!(k in window.__ui0) && plain(UI[k])) delete UI[k];
