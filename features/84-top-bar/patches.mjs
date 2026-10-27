@@ -17,6 +17,14 @@ export default [
       'mid-word. It now reads "owes 12,345"; 59-tooltips\' aria-label and tooltip still give the debt in full.',
     edits: [['${pc.debt?` <span class="bad">(debt ${A.coin(pc.debt)})</span>`:""}', '${pc.debt?` <span class="bad" title="Debt: ${A.coin(pc.debt)}">owes ${A.fmt(pc.debt)}</span>`:""}']],
   },
+  {
+    id: 'TOP-CLOCK-BUDGET',
+    blob: 'ardan-core',
+    why: 'UI: the running clock simulated days for up to 70 ms of every 100 ms tick. On the Great Continent a slow laptop ' +
+      'spent nearly all its time in those ticks, so a click on Menu or Pause could wait seconds (CI run on b0654e3: 30 s). ' +
+      'The budget is UI.CLK_BUDGET (35 ms): fewer days per tick, the same days in the same order, so the world is unchanged.',
+    edits: [['steps<60&&Date.now()-t0<70', 'steps<60&&Date.now()-t0<(UI.CLK_BUDGET||70)']],
+  },
   // three small guards found on the round-10 design pass (coordinator's leave; not the top bar's own)
   {
     id: 'TOP-PLAYTEST-GUARD',

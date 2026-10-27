@@ -62,8 +62,11 @@ export default {
     if (person) { await person.click().catch(() => {}); await pg.waitForTimeout(200); await pg.mouse.move(1, 1); await pg.waitForTimeout(100); await pg.keyboard.press('Escape'); }
     await pg.click('button:has-text("Play")');
     await pg.waitForTimeout(3000);
-    await pg.click('button:has-text("Pause")').catch(() => pg.click('button:has-text("Play")').catch(() => {}));
-    await pg.click('button:has-text("Menu")');
+    // pause by the control itself (its label is an icon at laptop widths), then wait for the clock to stop: on the Great
+    // Continent a month's turn is one long day, and a click sent mid-turn waits for it (seconds on a slow runner)
+    await pg.click('[data-a="clkPlay"]').catch(() => {});
+    await pg.waitForFunction(() => !UI.clk.run, null, { timeout: 60000 }).catch(() => {});
+    await pg.click('button:has-text("Menu")', { timeout: 60000 });
     await pg.waitForTimeout(200);
     const exp = await pg.$('button:has-text("Export"), button:has-text("Save to file"), button:has-text("Download")');
     let download = false;

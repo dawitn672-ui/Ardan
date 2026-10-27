@@ -13,6 +13,7 @@
   // UI.stepper, not UI.step: the release keeps the creation screen's page number in UI.step
   const ST = UI.stepper = { run: false, wait: false, kind: null, from: 0, to: 0, note: '', timer: null };
   UI.STEP_SLICE = 20;   // ms of work between two draws
+  UI.CLK_BUDGET = 35;   // ms of days per tick of the running clock (TOP-CLOCK-BUDGET), so input and paint keep up
   const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
   const NAME = { week: 'Next week', month: 'Next month', until: 'Until something happens' };
 
