@@ -183,3 +183,14 @@ without freezing (84-top-bar's step rhythm, `docs/design/pacing.md`).
 - **Pairs in `A.politicsYear`**: 20-ai-personality's sum-only `A.aiPullSum` is applied (round 10).
 - **The month's turn is one long day** on the Great Continent (230 to 480 ms in one task: every monthly hook). The
   step rhythm draws a note before it; splitting it across frames would need `A.monthTick` itself in parts.
+
+## Cycle 1 (world review B2, B3, B9, I5; lives review B8)
+
+Great Continent only (`world.core.js`); a Known World game calls none of it.
+
+- **Grace.** For its first 12 to 18 months (`W.GRACE`, from the land's code: the Long Grass and the Peninsulas 12, the Twin Rivers 16, the Rime 17) no AI realm of a far land starts a war of its own (`A.warCapFull` reads full). `S.w1t0` is the day the game began; a save without it has no grace.
+- **Peace by share.** A peace a far realm loses takes at most 15% of its people and of its land by cells, and at least one province (`W.capTreaty`, wrapping `A.wsTreatyProvinces`); a war with `w.fwLimit.max` takes no more than that. A far realm of more than four provinces is not annexed whole by a crushing peace (the score is held at 89 for the settlement).
+- **Wars that last.** A war with a far side is not settled with terms inside nine months (`W.MIN_WAR_DAYS`) unless a capital has fallen or a player's realm makes the peace; a border war (`w.fwLimit.until`) not before its day by any road (`A.settleWar` wrapped, since the AI's offers, factions and the war clock all settle through it). `w.d0` records the day a war began.
+- **News before the life.** A line told while the player has no home (the world being built) waits in `S.newsPre` for the first day, then goes through the distance rule; the 1105 wars no longer reach Aldmark on 1 January.
+- **Garbled word.** From beyond 5,000 km (`W.GARBLE_KM`) word takes up to two years (was capped at 240 days), a list of provinces becomes "border country", "a stretch of land" or "a great swathe of land", and one line in three (by the text's hash, no dice) has the cause of a death or the winner of a war wrong; the true line follows 4 to 10 months later as "Later word from the east mends the first".
+- Measured by `scaleFarPeace`.

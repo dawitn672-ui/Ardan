@@ -100,6 +100,21 @@
       ],
     },
 
+    // ---- a Legend: the challengers come ---------------------------------------------------------------------------
+    {
+      id: 'cr_legend', title: 'Every young blade knows your name', trigger: true,
+      cond: (p, C) => C.adult(p) && C.flag(p, 'cr_legend'),
+      text: 'A boy of nineteen with a borrowed sword waits at your gate from dawn. He has walked from the coast to fight you, he says, because they say you are one of the five. Two more like him are asking at the inn. There will be others.',
+      choices: [
+        { t: 'Fight him in the yard, to the first blood', r: 'You go out to the yard.',
+          fx: (p) => { const f = A.makeFoe({ tier: 4, realm: p.realm, title: 'a young challenger' }); A.startDuelFront(p, f, { kind: 'duel', lethal: false, toYield: true, place: 'your yard', title: 'A challenger' }); A.fame(p, 2); return ''; } },
+        { t: 'Take him as a pupil instead', r: 'He sweeps your yard for a year before you let him hold a blade. He is good. In ten years he will be better than good, and he will say who taught him.',
+          fx: (p) => { p.honor = A.clamp((p.honor || 0) + 2, 0, 100); p.happy = A.clamp((p.happy || 0) + 4, 0, 100); return ''; } },
+        { t: 'Send them all away: you fight for no one\'s fame', r: 'The boy goes home. Word goes round that you will not fight, and the word is not kind.',
+          fx: (p) => { A.fame(p, -5); p.flags.cr_legend_no = A.S.year; return ''; } },
+      ],
+    },
+
     // ---- above the top of the ladder ----------------------------------------------------------------------------
     {
       id: 'cr_honour', title: (p, ctx) => topOf(ctx).title, trigger: true,

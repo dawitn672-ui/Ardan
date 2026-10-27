@@ -377,4 +377,49 @@ export default {
     return { ok: r.privateOk === true && r.general.every(x => x === false) && r.ruler.every(x => x === false) && r.base[1] === true && r.oldSword.every(x => x === false) && r.top,
       detail: JSON.stringify(r) };
   },
+  // cycle 1 (lives I2): a ruler saw the same eight gathering scenes about 15 times each, the bargain 26 times
+  async lfGathCap(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9771, race: 'human', realm: 'POL-02', status: 'royal', sex: 'M', startAge: 30 });
+      const pc = A.pc(), pool = ['gs_gift', 'gs_toast', 'gs_seating'].map(id => A.EV[id]).filter(Boolean);
+      const before = A.lfGathPool(pool, null).length;
+      pc.evN = Object.assign(pc.evN || {}, { gs_gift: 3, gs_toast: 2 });
+      const some = A.lfGathPool(pool, null).map(e => e.id);
+      pc.evN.gs_toast = 3; pc.evN.gs_seating = 5;
+      const g = { pc: { seen: [], inf: 0 }, kind: 'feast', host: pc.realm };
+      const none = A.lfGathPool(pool, g).length;
+      const noBargain = A.lfGathBargain(g);
+      pc.evN.gs_bargain = 3;
+      const quiet = A.lfGathBargain(g), inf = g.pc.inf, seen = g.pc.seen.includes('gs_bargain');
+      return { n: pool.length, before, some, none, noBargain, quiet, inf, seen };
+    });
+    const ok = r.n === 3 && r.before === 3 && r.some.length === 2 && !r.some.includes('gs_gift') && r.none === 0 && !r.noBargain && r.quiet && r.inf > 0 && r.seen;
+    return { ok, detail: `three gathering scenes, one seen three times: ${r.some.join(', ')} left; all seen three times: ${r.none} left (the gathering closes); the bargain, seen three times, settled off stage: ${r.quiet} (+${r.inf} influence)` };
+  },
+  // cycle 1 (lives I1, I5): a met ambition was never followed by another, and What now never pointed at the
+  // Decisions tab, the orders or a scheme
+  async lfAfterTheTop(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9772, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'M', startAge: 30 });
+      const pc = A.pc();
+      pc.amb = { k: 'wealth', y: A.S.year - 6, done: A.S.year - 2 };
+      pc.flags.lfx_amb_y = A.S.year - 6; pc.flags.lfx_amb_m = A.S.year - 1;
+      pc.coin = 300000; pc.fame = 45;
+      A.LF.ambMonth(pc);
+      const q = A.S.queue.find(x => x.ev === 'lfx_amb_top');
+      let offers = [];
+      if (q) { A.S.queue.splice(A.S.queue.indexOf(q), 1); A.S.queue.unshift(q); const v = A.eventView(q); offers = q.ctx.amb || []; A.eventChoose(0); A.eventClose(); }
+      const took = pc.amb ? pc.amb.k : null;
+      const s0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
+      const wn = A.whatNow(pc).map(x => x.t);
+      const pure = JSON.stringify(A.S) === s0 && JSON.stringify(A.rngState) === g0;
+      // a great work priced to the fortune
+      const patron = A.LF.workCost(pc, 'patron'), seat = A.LF.workCost(pc, 'seat'), coin0 = pc.coin;
+      const res = A.decide('lfx_patron');
+      return { asked: !!q, offers, took, wn, pure, patron, seat, spent: coin0 - pc.coin, ok: res && res.ok !== false, sched: (A.S.sched || A.S.schedule || []).length };
+    });
+    const late = ['lord', 'legend', 'work', 'house', 'court', 'throne', 'renown', 'teacher'];
+    const ok = r.asked && r.offers.length > 0 && late.includes(r.offers[0]) && !!r.took && r.wn.some(t => /afford|house|order|within reach/i.test(t)) && r.pure && r.patron === 24000 && r.seat === 80000 && r.spent === r.patron;
+    return { ok, detail: `a met ambition two years on: asked again ${r.asked} (${r.offers.join(', ')}; took ${r.took}); What now: ${r.wn.join(' | ')} (pure ${r.pure}); patronage priced ${r.patron} for a fortune of 300,000, a seat ${r.seat}; spent ${r.spent}` };
+  },
 };

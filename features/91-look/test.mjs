@@ -406,4 +406,23 @@ export default {
     const ok = Object.values(out).every(o => o.ev.n === 1 && !o.ev.hits.length && o.life.n <= 1 && !o.life.hits.length);
     return { ok, detail: JSON.stringify(out) };
   },
+
+  // cycle 1 visual I7: one gold primary per view. The Codex's chosen section, the map's mode and creation's chosen
+  // chips are selected toggles, drawn raised with an accent underline, not gold; each view keeps at most one gold fill.
+  async onePrimary(pg) {
+    const r = await pg.evaluate(async () => {
+      const gold = () => [...document.querySelectorAll('button.primary')].filter(b => { const q = b.getBoundingClientRect(); return q.width > 0 && q.bottom > 0 && q.top < innerHeight && getComputedStyle(b, '::before').display !== 'none'; }).map(b => b.dataset.a || b.textContent.trim().slice(0, 12));
+      const tick = () => new Promise(res => setTimeout(res, 120));
+      const out = {};
+      T.enter({ seed: 91, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 }); UI.set.hints = false;
+      UI.A.group('chronicle'); UI.A.tab('codex'); UI.render(); await tick(); out.codex = gold();
+      UI.ov = { type: 'bigmap' }; UI.renderModal(); await tick(); out.map = gold().filter(a => a !== 'stepMonth' && a !== 'stepSeason' && a !== 'stepWeek');
+      UI.ov = null; UI.renderModal();
+      UI.A.newLife(); UI.step = 1; UI.render(); await tick(); out.create = gold();
+      UI.screen = 'game'; UI.render();
+      return out;
+    });
+    const ok = Object.values(r).every(g => g.length <= 1);
+    return { ok, detail: JSON.stringify(r) };
+  },
 };

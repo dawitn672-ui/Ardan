@@ -32,3 +32,12 @@ The release already capped Legends at 5 (`GD.LEGEND_CAP`), but nothing capped Ma
 **Limits.**
 - **Order leaders only.** The cap covers order leaders, the one place the release makes Masters on purpose. A person who grows into a Master by living (rare) isn't held back.
 - **No tier drop from wounds.** Wounds still lower worth only through stats (Power 4).
+
+## Entry by merit (cycle 1, `docs/reviews/cycle-1/lives.md`, I1)
+
+A commoner General with fighting worth 108 failed the Iron Wolf on birth alone, and no bot life joined an order. Each order's `lore.join` now says whether merit stands in for birth or an invitation (`A.orderMerit`, read from the lore, not kept as a list):
+
+- "a knighthood" (the Iron Wolf): the birth line says that the crown knights commoners of renown (994-careers, `cr_knighted`). A knighted commoner meets it.
+- "deeds ... worthy" with an invitation (the Gold Masks): renown 60 and three deeds in the life's record meet the invitation line.
+
+The other six orders ask no birth and no invitation. **Measured by** `ladderOrderMerit`.

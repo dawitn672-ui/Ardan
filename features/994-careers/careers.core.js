@@ -86,9 +86,9 @@
   };
   CAR.fiefable = function (p) {
     if (!p || !p.alive || p.ruler || !p.noble || p.noble.rung < 2 || p.noble.rung >= 4 || p.prison || p.flags.cr_traitor) return false;
-    if (A.age(p) < 30 || !ruOf(p)) return false;
+    if (A.age(p) < 33 || !ruOf(p)) return false;
     const fame = p.fame || 0;
-    return fame >= 50 && ((p.mil && !p.mil.merc && p.mil.rank >= 6) || fame >= 65 || (p.office && fame >= 50));
+    return fame >= 55 && ((p.mil && !p.mil.merc && p.mil.rank >= 6) || fame >= 65 || (p.office && fame >= 50));
   };
   // at the top of a ladder: a General or better, the last rank of a trade, a lord with a seat
   CAR.atTop = function (p) {
@@ -98,6 +98,7 @@
     return null;
   };
   CAR.honourable = p => !!(p && p.alive && !p.ruler && !p.prison && A.isAdult(p) && !p.flags.cr_traitor && CAR.atTop(p) && ruOf(p) && (p.fame || 0) >= 25);
+  CAR.LEGEND_W = 118;
   CAR.month = function (pc) {
     if (CAR.OFF || !pc || !pc.alive || pc.id !== A.S.pc) return;
     const st = isObj(pc.car) ? pc.car : (pc.car = {});
@@ -108,6 +109,13 @@
     }
     if (CAR.fiefable(pc) && ago(pc, 'cr_fief_ask') >= 8 && ago(pc, 'cr_knighted') >= 3 && !queued('cr_fief') && A.chance(0.3)) {
       pc.flags.cr_fief_ask = A.S.year; A.queue({ type: 'event', ev: 'cr_fief', ctx: { pid: ruOf(pc).id } }); return;
+    }
+    // a fighter past the Legend line (worth 118, 48-fight-ladder's t6) is named one, while the world has room (GD.LEGEND_CAP)
+    if (pc.flags.cr_legend == null && A.isAdult(pc) && !pc.prison && A.fightWorth && A.fightWorth(pc) >= CAR.LEGEND_W && !queued('cr_legend') &&
+      (!A.ladderCensus || A.ladderCensus().legends.length < (GD.LEGEND_CAP || 5))) {
+      pc.flags.cr_legend = A.S.year; A.fame(pc, 15); deed(pc, 'Named among the Legends of Ardan');
+      A.log('In the yards and the taverns they have started to say your name with the old ones. You are a Legend now, and every young blade knows it.', 'big');
+      A.queue({ type: 'event', ev: 'cr_legend', ctx: {} }); return;
     }
     if (CAR.honourable(pc) && ago(pc, 'cr_honour_ask') >= 7 && !queued('cr_honour') && A.chance(0.3)) {
       pc.flags.cr_honour_ask = A.S.year; A.queue({ type: 'event', ev: 'cr_honour', ctx: { pid: ruOf(pc).id, top: CAR.atTop(pc) } });

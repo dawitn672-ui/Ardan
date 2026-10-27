@@ -44,4 +44,19 @@ export default {
     });
     return { ok: r.shown && r.pure, detail: `living ladder shown ${r.shown}; render pure ${r.pure}` };
   },
+  // cycle 1 (lives I1): orders admit by merit where their lore allows: the Gold Masks' "deeds worthy of an ancestor's
+  // face" stands for the crown's invitation; the Iron Wolf's "a knighthood" is met by the crown's knighting
+  async ladderOrderMerit(pg) {
+    const r = await pg.evaluate(() => {
+      const m = { gm: A.orderMerit('gold_masks'), iw: A.orderMerit('iron_wolf'), sun: A.orderMerit('sun') };
+      A.newGame({ seed: 3291, race: 'human', realm: GD.ORDERS.gold_masks.realm, status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), inv = () => A.orderReqs(pc, 'gold_masks').find(x => /^Invited/.test(x.label));
+      const before = inv().ok;
+      pc.fame = 70; pc.deeds = [{ y: 1, t: 'a' }, { y: 2, t: 'b' }, { y: 3, t: 'c' }];
+      const after = inv().ok;
+      return { m, before, after };
+    });
+    const ok = r.m.gm.deeds && !r.m.gm.knight && r.m.iw.knight && !r.m.sun.deeds && !r.before && r.after;
+    return { ok, detail: `merit routes read from the lore: ${JSON.stringify(r.m)}; the Gold Masks' invitation for a commoner of renown 70 with three deeds: ${r.before} -> ${r.after}` };
+  },
 };

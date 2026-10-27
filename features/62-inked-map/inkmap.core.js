@@ -633,6 +633,9 @@
             if (placed.some(b => bx < b[0] + b[2] && bx + w > b[0] && by < b[1] + b[3] && by + h > b[1])) continue;
             placed.push([bx, by, w, h]);
           }
+          // on the Great Continent a realm's name sits on a paper plate, so a region's spaced capitals drawn under it
+          // (99's atlas) and the wash do not print through its letters (cycle 1 visual B7)
+          if (MAP.big) { ctx.font = font; const w = ctx.measureText(t).width + 10; ctx.save(); ctx.fillStyle = 'rgba(239,230,210,.82)'; ctx.fillRect(x - w / 2, y - sk * 1.25 - fs * 0.86, w, fs * 1.12); ctx.restore(); }
           label(ctx, t, x, y - sk * 1.25, font, INK);
         }
       }
@@ -664,11 +667,14 @@
       const s = (x > 0 && grid[i - 1] === pv) ? o - 4 : (y > 0 && grid[i - gw] === pv) ? o - gw * 4 : rep.has(pv) ? rep.get(pv) : -1;
       if (s >= 0) { d[o] = d[s]; d[o + 1] = d[s + 1]; d[o + 2] = d[s + 2]; d[o + 3] = d[s + 3]; }
     }
+    // on the Great Continent the wash is laid a little stronger and browned less: 153 realms in pale accents thinned
+    // to 42% on cream read as one family (four "pinks" on the Twin Rivers; cycle 1 world B8)
+    const big = !!MAP.big, keep = big ? 0.92 : 0.86, aw = big ? 0.56 : 0.42;
     for (let i = 0; i < gw * gh; i++) {                                 // then thin the colour, and lay the ribbon
       const o = i * 4, a = d[o + 3]; if (!a || grid[i] < 0) continue;
-      for (let k = 0; k < 3; k++) d[o + k] = Math.round(d[o + k] * 0.86 + BR[k] * 0.14);
+      for (let k = 0; k < 3; k++) d[o + k] = Math.round(d[o + k] * keep + BR[k] * (1 - keep));
       const rib = ds[i] < R ? (1 - ds[i] / R) : 0;
-      d[o + 3] = Math.min(175, Math.round(a * 0.42 + rib * 95 * Math.min(1.4, a / 120)));
+      d[o + 3] = Math.min(big ? 190 : 175, Math.round(a * aw + rib * 95 * Math.min(1.4, a / 120)));
     }
     hatch(d, own, ds);
     c.putImageData(im, 0, 0);
@@ -818,6 +824,67 @@
       IM.zoomNow = UI.wr && UI.wr.view ? ZREF / UI.wr.view.w : 1;
       try { return wb.apply(this, arguments); } finally { IM.zoomNow = 0; }
     };
+  }
+
+  // ---- the colours and the legend (cycle 1 visual B7, world B8)
+  // the wash is painted in the colour each realm is shown in everywhere else (UI.realmHex, 91-look: the far realms are
+  // spread apart from their neighbours), not the lore's pale family per land, so four neighbouring pinks on the Twin
+  // Rivers are four colours. The colour-blind palette keeps its own assignment. The Known World's colours are unchanged.
+  if (typeof MAP.realmColor === 'function') {
+    const rc = MAP.realmColor;
+    MAP.realmColor = r => (r && UI.realmHex && !(MAP.cb && MAP.cb()) ? UI.realmHex(r) : rc(r));
+  }
+  // the full map's legend names the realms in view, the most land first, in its own row under the map (a "Realms in
+  // view" expander, shut on a phone); it once listed the same 40 realms at every zoom and ran under the zoom buttons
+  IM.LEGEND_N = 24;
+  IM.inView = function (v, n) {
+    const S = A.S; if (!S || !v) return [];
+    const cnt = {};
+    for (const p of S.prov) {
+      if (p.sx < v.x0 || p.sy < v.y0 || p.sx > v.x0 + v.w || p.sy > v.y0 + v.h) continue;
+      const o = p.owner; if (!o || !S.realms[o] || !S.realms[o].alive) continue;
+      cnt[o] = (cnt[o] || 0) + (p.cells || 1);
+    }
+    return Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a] || (a < b ? -1 : 1)).slice(0, n || IM.LEGEND_N).map(id => S.realms[id]);
+  };
+  IM.legendHtml = v => IM.inView(v).map(r => `<span title="${UI.esc(r.name || r.short)}"><i style="background:${UI.esc(MAP.realmColor(r))}"></i>${UI.esc(r.short)}</span>`).join('') || '<span class="muted">No realm in view.</span>';
+  let legendKey = '';
+  IM.legendFill = function () {
+    if (typeof document === 'undefined') return;
+    const box = document.getElementById('imLegendList'), v = UI.gm && UI.gm.view;
+    if (!box || !v) return;
+    const key = [Math.round(v.x0), Math.round(v.y0), Math.round(v.w), MAP.ownerKey, UI.mapMode || ''].join('|');
+    if (key === legendKey && box.childElementCount) return;
+    legendKey = key; box.innerHTML = IM.legendHtml(v);
+  };
+  if (typeof UI.greatMapModal === 'function') {
+    const gmm = UI.greatMapModal;
+    UI.greatMapModal = function () {
+      let h = gmm.apply(this, arguments);
+      const pol = !UI.mapMode || UI.mapMode === 'political' || UI.mapMode === 'terrain';
+      const at = pol ? h.indexOf('<div class="legend">') : -1;
+      if (at >= 0) {
+        const end = h.indexOf('</div>', at);
+        let phone = false; try { phone = window.innerWidth <= 760; } catch (e) {}
+        legendKey = '';
+        h = h.slice(0, at) + `<details class="im-legend"${phone ? '' : ' open'}><summary>Realms in view</summary><div class="legend" id="imLegendList"></div></details>` + h.slice(end + 6);
+      }
+      return h;
+    };
+  }
+  if (typeof UI.gmDraw === 'function') {
+    const gd = UI.gmDraw;
+    UI.gmDraw = function () { const r = gd.apply(this, arguments); try { IM.legendFill(); } catch (e) {} return r; };
+  }
+  IM.CSS_LEGEND = `.greatmap .wr-body{overflow:hidden}.greatmap .wr-map{min-height:0;overflow:hidden}
+.greatmap .im-legend{margin:6px 0 2px;position:relative;z-index:1;clear:both}
+.greatmap .im-legend > summary{cursor:pointer;font-family:var(--f-ui,sans-serif);font-size:var(--t-cap,12px);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2,#bdb8cc);min-height:24px;display:flex;align-items:center}
+.greatmap .im-legend .legend{display:flex;flex-wrap:wrap;gap:4px 10px;max-height:72px;overflow:auto;margin-top:4px}
+.greatmap .im-legend .legend > span{display:inline-flex;align-items:center;gap:4px}
+@media (max-width:760px){.greatmap .im-legend .legend{max-height:96px}.greatmap .wr-body{grid-template-rows:auto auto;align-content:start;overflow:auto}.greatmap .wr-map{height:auto;align-self:start}.greatmap .wr-map canvas{display:block}}`;
+  if (typeof document !== 'undefined') {
+    const put = () => { if (document.getElementById('im-legend-style') || !document.head) return; const st = document.createElement('style'); st.id = 'im-legend-style'; st.textContent = IM.CSS_LEGEND; document.head.appendChild(st); };
+    if (document.head) put(); else document.addEventListener('DOMContentLoaded', put);
   }
 
   // ---- the settings (patch IM-MENU)

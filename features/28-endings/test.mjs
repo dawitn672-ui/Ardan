@@ -75,4 +75,21 @@ export default {
     return { ok: !badM.length && r.bishop === 'shepherd' && r.council === 'council' && r.rich === 'rich' && r.obit && r.bar !== 'block' && r.bar !== 'flex',
       detail: `manners ${r.manners.map(x => x.join(' > ')).join('; ')}; bishop ${r.bishop}, councillor ${r.council}, merchant ${r.rich}; obituary open ${r.obit}, the bar beneath ${r.bar}` };
   },
+
+  // cycle 1 visual I5 and B10: the death screen is a full-screen dusk page (the grave's print behind it), the heirs
+  // carry their busts, and neither the release's "Your life is over" bar nor a first-run hint shows over it.
+  async endingsMoment(pg) {
+    const r = await pg.evaluate(async () => {
+      T.enter({ seed: 2801, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 40 }); UI.set.cutins = false; UI.set.hints = true;
+      const pc = A.pc();
+      A.S.queue = []; A.pcDeath('a fever'); UI.A.showDeath();
+      await new Promise(res => setTimeout(res, 300));
+      const m = document.querySelector('#modal .obit');
+      const vis = sel => [...document.querySelectorAll(sel)].filter(e => e.getBoundingClientRect().height > 0 && getComputedStyle(e).display !== 'none').length;
+      const full = m ? m.getBoundingClientRect() : null;
+      return { obit: !!m, sky: !!(m && m.querySelector('.en-sky svg')), w: full && Math.round(full.width), vw: innerWidth, heirs: m ? m.querySelectorAll('[data-a="contAs"]').length : 0, busts: m ? m.querySelectorAll('.en-heir .en-heir-b svg').length : 0, agebar: vis('#agebar'), hints: vis('.hint') };
+    });
+    const ok = r.obit && r.sky && r.w >= r.vw - 20 && r.busts === r.heirs && r.agebar === 0 && r.hints === 0;
+    return { ok, detail: JSON.stringify(r) };
+  },
 };

@@ -132,6 +132,15 @@ Before, every far realm fell to "other", where debt and murder both mean the cel
 
 `gen/lore.mjs` reads `canon/lore/far-lands.json` (`polities`, `regions`, `straits`, `lakes`, `ranges`, `rivers`, `relations`, `frame`, `lands`) and, beside it, `peoples-and-faiths.json` (`cultures`, `faiths`, `game_tables`). Both are hashed into the data (`loreHash`), so `--check` fails when either changes until the generator is run again. Re-run after any lore change; the report line `lore: N realms read, M placed` names any realm it skipped.
 
+### Cycle 1 fixes (world review B1, B4, B5, B7; Oct 27)
+
+far@2 has not reached players, so it was refined in place (`gen.mjs --check` stays deterministic).
+
+- **The lore's rulers** (`c-lands.core.js`). While the world is built, the release's `A.genNoble(id, 'royal', house, A.ri(30, 60))` for a lore realm's ruler is given the lore's sex and age, so the royal family is built round the right person: 118 of 118 rulers have the lore's sex and birth year (before: about 70 and 4). Khagan Tegur is a man of 73. The royals of Fjorund (`FL.ROYAL_RACE`) are giants: Hvaldi is a giantess of 100. `S.world` is set before the release builds the world, so what it does at its end (the orders raised, the 1105 wars declared) already reads as the continent's.
+- **Fjorund and Hadun.** A realm of humans whose culture is another people's (Fjorund's hall) gives its humans that culture (`GD.REALM_HUMAN_CULTURE`), not the Known World's Northfolk; the generator keeps a lore faith that is a Known World one (Fjorund's Mothers REL-12, Hadun's Path of the Well REL-07), so `realm.faith` is filled.
+- **Unheld land** (`realms.mjs`). A region keeps unheld only its lore stateless and open km² (scaled to the region as drawn); the rest goes, most peopled first, to the neighbour with most room in that region. An unheld province then keeps the people of empty country (a stateless land's "about N" shared by area, else 0.4 a km², the high wastes 0.15 a km²), and the people it loses go to the held provinces of its region. Unheld: 246 provinces with 10.2 M people → 194 with 1.32 M. A lore realm walled in by the waste (Seuvan, whose capital lies in the Rim Wastes) holds the waste round it up to its lore area: 57,300 → 181,000 km² (lore 180,000). The realm quotas miss by 28.5% (was 23.3%): the regions as drawn are larger than the lore's, and their excess is now held rather than empty.
+- **Place names** (`places.mjs`). A name that stutters (a two-to-four letter run said twice within two letters: Moinwinwan, Kethpopora, Tukatuk) is not used; no root (first four letters) names more than three provinces of one realm; a name is three edits or more from every neighbour already named (Inulan beside Inu-lan). Before: 171 stuttering names, 62 realm roots on more than three provinces (up to 6), 193 neighbour pairs within two letters; after: 2 (lore capitals), 14 (a capital plus three), 0.
+
 ## Measured by (`test.mjs`)
 
 | Test | Result |
@@ -146,6 +155,7 @@ Before, every far realm fell to "other", where debt and murder both mean the cel
 | `flNames` | Every far province's name is a place of its peoples' lists or made from one (all but the lore's own capital names), none twice in the world, none with markup. |
 | `flRoutes` | Every step of every route is a land border or a sea lane; the Silk Road runs into the Known World and on as TR-09; a route's step costs 0.55 for the carters, 732 realm pairs share a route for the caravans, and in three months caravans run along routes; the nine lore ties to Known World realms exist (opinions and trade pacts); a Known World game has no routes. |
 | `flMapLabels` | The inked full map at zoom 0.45, 1.5, 3 and 8 writes the land, sea, region, range, river, pass and route names in their bands and draws the routes dotted; the cold draw and the median pan at zoom 1, 3 and 8 are reported (a pan under 250 ms); drawing is pure. |
+| `flLoreWorld` | Cycle 1: 118 of 118 rulers of the lore's sex and birth year, Tegur a man of 74 (by year), Hvaldi a giantess of 101, no Northfolk in Fjorund, Fjorund and Hadun with faiths, unheld land under 2 M people, no stuttering name, a root on at most 3 provinces of a realm, no two neighbours within two letters. |
 | `flFar1Save` | A real far@1 save (the far@1 build is made from commit 1c17403's data) opens after a Known World game on part far@1 with its state as saved; clicks on its far sites find their provinces on both maps; it plays on and still saves as `ardan+far@1`. Without that commit in the checkout it checks the same path with a relabelled far@2 save. |
 
 ## Cost (`bench.mjs`)

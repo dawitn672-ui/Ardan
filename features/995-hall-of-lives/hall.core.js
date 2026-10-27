@@ -114,7 +114,7 @@
   };
 
   // ---- unlocked start stories ----------------------------------------------------------------------------------------
-  // each story in A.STARTS with a `hall` gate: { need: totals => bool, says: what opens it }
+  // each of the Hall's stories (HALL.STARTS) with a gate: { need: totals => bool, says: what opens it }
   HALL.GATES = {
     hl_beggar: { need: t => t.lives >= 3, says: 'three lives lived' },
     hl_gravedigger: { need: t => t.endings >= 5, says: 'five different endings found' },
@@ -129,7 +129,10 @@
     { id: 'hl_fallen', title: 'What Is Left of the House', blurb: 'Gentry of Varenna, twenty. The house backed the wrong claimant. The land is gone, the silver is gone, and the name is all the bailiffs left.',
       cr: { race: 'human', realm: 'POL-03', status: 'gentry', startAge: 20 }, setup: pc => { pc.coin = Math.min(pc.coin || 0, 15); } },
   ];
-  if (Array.isArray(A.STARTS)) for (const s of NEW_STARTS) if (!A.STARTS.some(x => x.id === s.id)) A.STARTS.push(s);
+  // kept beside 29's twenty (A.STARTS), not in them: 29 counts its own list, and this feature applies its own stories
+  HALL.STARTS = NEW_STARTS;
+  const hallStory = id => NEW_STARTS.find(s => s.id === id) || null;
+  HALL.story = hallStory;
   HALL.open = (id, t) => { const g = HALL.GATES[id]; return !g || !!g.need(t || HALL.totals()); };
   HALL.locked = t => Object.keys(HALL.GATES).filter(id => !HALL.open(id, t));
 
@@ -149,7 +152,7 @@
     const h = HALL.read();
     if (!h.lives.length) return '';
     const t = HALL.totals(h), last = h.lives.slice(-HALL.SHELF).reverse();
-    const lock = HALL.locked(t).map(id => (A.STARTS || []).find(s => s.id === id)).filter(Boolean);
+    const lock = HALL.locked(t).map(hallStory).filter(Boolean);
     return `<section class="hl-shelf" aria-label="Your lives"><div class="hl-head"><h2 class="hl-h">Your lives</h2>` +
       `<span class="hl-count">${esc(t.lives)} lived · endings ${esc(t.endings)}/${esc(t.ofE)} · ways to go ${esc(t.manners)}/${esc(t.ofM)} · achievements ${esc(t.ach)}/${esc(t.ofA)}</span></div>` +
       `<ol class="hl-lives">${last.map(HALL.card).join('')}</ol>` +
@@ -182,7 +185,7 @@
     if (L.newM) bits.push(`${esc(HALL.mannerName(L.manner))} (${esc(t.manners)} of ${esc(t.ofM)} ways to go)`);
     for (const a of L.newA.slice(0, 4)) if (GD.ACH && GD.ACH[a]) bits.push(esc(GD.ACH[a][0]));
     const opened = Object.keys(HALL.GATES).filter(id => HALL.open(id, t) && !HALL.open(id, HALL.totalsBefore(h, L)))
-      .map(id => (A.STARTS || []).find(s => s.id === id)).filter(Boolean);
+      .map(hallStory).filter(Boolean);
     return `<div class="hl-new"><div class="tag">The Hall of Lives</div><p class="small">` +
       (bits.length ? `New: ${bits.join(' · ')}.` : `Life ${esc(t.lives)} in this browser. Nothing new for the Hall this time.`) + '</p>' +
       (opened.length ? `<p class="small">A new story opens on the creation screen: ${opened.map(s => `<b>${esc(s.title)}</b>`).join(', ')}.</p>` : '') + '</div>';
@@ -232,30 +235,69 @@
     } catch (e) { console.error('hall legacy', e); return out; }
   };
 
-  // ---- the creation screen: stories the Hall has opened, and the ones still shut ------------------------------------------------
-  const ST = A.STARTS;
-  const birth = UI.crStepBirth;
-  if (Array.isArray(ST) && typeof birth === 'function') UI.crStepBirth = function () {
-    const t = HALL.totals(), shut = ST.filter(s => !HALL.open(s.id, t)), keep = ST.slice();
-    // 29's step draws A.STARTS as it stands: the shut ones are taken out for the draw and put back after
-    for (const s of shut) ST.splice(ST.indexOf(s), 1);
-    let out;
-    try { out = birth.apply(this, arguments); } finally { ST.length = 0; ST.push(...keep); }
+  // ---- the stories: chosen like 29's, carried in the options, applied after the world is made ------------------------------------
+  // the story holds only if the birth still matches it (29's rule)
+  const storyFor = A.storyFor;
+  A.storyFor = function (c) {
+    const s = c && c.story && hallStory(c.story);
+    if (!s) return typeof storyFor === 'function' ? storyFor.apply(this, arguments) : null;
+    for (const k of ['race', 'realm', 'status']) if (s.cr[k] && c[k] !== s.cr[k]) return null;
+    return s.id;
+  };
+  // engine: o.story is in the journal's options, so a replay starts the same way whatever the Hall holds
+  const newGame = A.newGame;
+  A.newGame = function (o) {
+    const r = newGame.apply(this, arguments);
+    const s = o && o.story && hallStory(o.story), pc = A.pc();
+    if (s && pc) {
+      A.S.story = { id: s.id, y: A.S.year };
+      try { s.setup && s.setup(pc); } catch (e) { console.error('hall story', s.id, e); }
+      pc.flags['st_' + s.id] = A.S.year;
+      A.queue({ type: 'event', ev: 'st_' + s.id + '_open', forced: true });
+    }
+    return r;
+  };
+  // the creation screen: an open story is a card beside 29's, tagged New; a shut one is named with what opens it
+  const crStory = UI.A && UI.A.crStory;
+  if (typeof crStory === 'function') UI.A.crStory = function (v) {
+    const s = v && hallStory(v);
+    if (!s) return crStory.apply(this, arguments);
+    const c = UI.cr; if (!c || !HALL.open(s.id)) return;
+    Object.assign(c, s.cr); c.story = s.id;
+    if (!s.cr.sex && !c.sex) c.sex = 'M';
     try {
-      for (const id of Object.keys(HALL.GATES)) if (HALL.open(id, t))
-        out = out.replace(`data-v="${id}" aria-pressed="false"><b>`, `data-v="${id}" aria-pressed="false"><span class="tag hl-tag">New</span><b>`)
-          .replace(`data-v="${id}" aria-pressed="true"><b>`, `data-v="${id}" aria-pressed="true"><span class="tag hl-tag">New</span><b>`);
+      UI.crFix && UI.crFix();
+      const cult = UI.crCult && LORE.cultures[UI.crCult()], names = cult && (c.sex === 'F' ? cult.f : cult.m);
+      if (names && names.length) { let h = 2166136261; for (const ch of s.id + c.sex) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); c.given = names[(h >>> 0) % names.length]; }
+      UI.crFix && UI.crFix();
+    } catch (e) { console.error('hall story pick', e); }
+    UI.render();
+  };
+  const birth = UI.crStepBirth;
+  if (typeof birth === 'function') UI.crStepBirth = function () {
+    let out = birth.apply(this, arguments);
+    try {
+      const t = HALL.totals(), c = UI.cr || {}, cur = A.storyFor(c);
+      const open = NEW_STARTS.filter(s => HALL.open(s.id, t)), shut = NEW_STARTS.filter(s => !HALL.open(s.id, t));
+      const card = s => `<button class="opt ${cur === s.id ? 'on' : ''}" data-a="crStory" data-v="${esc(s.id)}" aria-pressed="${cur === s.id}"><b><span class="hl-tag">New</span> ${esc(s.title)}</b><span class="tiny muted">${esc(s.blurb)}</span></button>`;
+      const g = out.indexOf('<div class="opt-grid">'), end = g >= 0 ? out.indexOf('</div>', g) : -1;
+      if (open.length && end > 0) out = out.slice(0, end) + open.map(card).join('') + out.slice(end);
       if (shut.length) {
-        const note = `<p class="tiny muted hl-shut">${shut.map(s => `${UI.icon ? UI.icon('lock', 's') : ''}${esc(s.title)} opens after ${esc(HALL.GATES[s.id].says)}.`).join(' ')}</p>`;
+        const note = `<p class="tiny muted hl-shut">${shut.map(s => `<span>${UI.icon ? UI.icon('lock', 's') : ''}${esc(s.title)} opens after ${esc(HALL.GATES[s.id].says)}.</span>`).join(' ')}</p>`;
         const at = out.indexOf('</details>');
         if (at > 0) out = out.slice(0, at) + note + out.slice(at);
       }
     } catch (e) { console.error('hall stories', e); }
     return out;
   };
-  // a shut story cannot be picked (the button is not drawn; this stops a stale click)
-  const crStory = UI.A && UI.A.crStory;
-  if (typeof crStory === 'function') UI.A.crStory = function (v) { if (v && !HALL.open(v)) return; return crStory.apply(this, arguments); };
+  const summary = UI.crSummary;
+  if (typeof summary === 'function') UI.crSummary = function () {
+    const h = summary.apply(this, arguments);
+    try {
+      const s = hallStory(A.storyFor(UI.cr || {}));
+      return s ? `<div class="card small"><span class="tag">Story</span> <b>${esc(s.title)}</b><div class="tiny muted">${esc(s.blurb)}</div></div>` + h : h;
+    } catch (e) { return h; }
+  };
 
   // ---- the look (91-look's tokens) -------------------------------------------------------------------------------------
   const CSS = `.hl-shelf{max-width:900px;margin:var(--s-5,20px) auto 0;text-align:left}
@@ -273,7 +315,7 @@
 .hl-next,.hl-shut{font-size:var(--t-cap,12px);color:var(--ink-3);margin:8px 0 0;display:flex;flex-wrap:wrap;gap:4px 14px}
 .hl-next .ic,.hl-shut .ic{width:12px;height:12px;vertical-align:-2px;margin-right:3px}
 .hl-new{margin:10px auto;max-width:520px;padding:8px 12px;border:1px solid var(--accent-rule,var(--line));border-radius:var(--r-m,8px);background:var(--accent-tint,transparent)}
-.hl-tag{margin-right:6px}
+.hl-tag{display:inline-block;margin-right:4px;padding:0 5px;border-radius:var(--r-pill,99px);font-size:var(--t-cap,12px);font-family:var(--f-ui,sans-serif);letter-spacing:.04em;text-transform:uppercase;color:var(--on-accent,#000);background:var(--accent-fill);vertical-align:1px}
 .card.ach.hl-past{opacity:.85;border-style:dashed}
 @media (max-width:760px){.hl-shelf{margin:16px 0 0}.hl-lives{grid-template-columns:1fr}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('hl-style')) return; const s = document.createElement('style'); s.id = 'hl-style'; s.textContent = CSS; document.head.appendChild(s); };

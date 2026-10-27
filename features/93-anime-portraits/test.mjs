@@ -273,4 +273,28 @@ export default {
     const ok = !!r.rid && r.far.length >= 2 && r.far.length < 8 && r.far.includes(r.chosen) && r.chosen === r.drawn && !!r.previewCult && r.hairShown < 11 && r.kw === 8;
     return { ok, detail: `${r.rid}: ${r.far.length} skin swatches offered (${r.far.join(' ')}); palest picked -> stored ${r.chosen}, drawn ${r.drawn}, preview culture ${r.previewCult}; ${r.hairShown} hair swatches shown; Known World ${r.kw} swatches` };
   },
+
+  // cycle 1 visual I1: busts (the rail, rows, cut-ins) show no helmet, which covered the brow and the eyes at 88 px; the
+  // full figure keeps it. A grown figure is 6 heads tall, and the features sit a quarter turned.
+  async apBustNoHelm(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9301, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      // a grown person who wears a helm the full figure draws (it differs with the helm taken off)
+      let p = null, fullH = '', fullN = '', bustH = '', bustN = '';
+      for (const x of Object.values(A.S.people)) {
+        if (!x.alive || A.age(x) < 20 || x.race !== 'human' || !x.gear || !x.gear.helm || x.ruler) continue;
+        const save = JSON.stringify(x.gear);
+        const fh = UI.ANIME.buildAt(x, 200, {}, 0), bh = UI.ANIME.buildAt(x, 88, { bust: true }, 0);
+        x.gear.helm = null;
+        const fn = UI.ANIME.buildAt(x, 200, {}, 0), bn = UI.ANIME.buildAt(x, 88, { bust: true }, 0);
+        x.gear = JSON.parse(save);
+        if (fh !== fn) { p = x; fullH = fh; fullN = fn; bustH = bh; bustN = bn; break; }
+      }
+      if (!p) return { none: true };
+      const front = UI.ANIME.buildAt(p, 88, { bust: true, front: true }, 0), turned = UI.ANIME.buildAt(p, 88, { bust: true }, 0);
+      return { bustSame: bustH === bustN, fullDiffers: fullH !== fullN, turned: front !== turned && /translate\(-[\d.]+ 0\)/.test(turned) };
+    });
+    const ok = r.bustSame && r.fullDiffers && r.turned;
+    return { ok, detail: `a worn helm: in the bust ${r.bustSame ? 'not drawn' : 'DRAWN'}, in the full figure ${r.fullDiffers ? 'drawn' : 'missing'}; features a quarter turned ${r.turned}` };
+  },
 };

@@ -322,4 +322,23 @@ export default {
     const ok = !!r.k && moved && r.log && r.log.ruler && /has the floor/.test(r.text || '');
     return { ok, detail: `the council presses for ${r.k}; granted: tax ${r.t0} → ${r.t1}, authority ${r.a0} → ${r.a1}; "${(r.text || '').slice(0, 140)}…"` };
   },
+  // cycle 1 (lives I2): "The council presses" 21 to 24 times a reign. It is council business now: twice a life, ten
+  // years apart (97-life-fixes' policy for NPC moves), and a held year waits
+  async riCourtPushRare(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5691, race: 'human', realm: 'POL-02', status: 'royal', sex: 'M', startAge: 30 });
+      const pc = A.pc(); A.makeRuler(pc, pc.realm, true);
+      const r0 = A.realm(pc.ruler); let n = 0;
+      for (let y = 0; y < 30; y++) {
+        A.S.year++;
+        A.S.queue = A.S.queue.filter(q => q.ev !== 'ri_court_push' || (n++, false));
+        try { A.RI.session(r0); } catch (e) {}
+        const q = A.S.queue.find(q => q.ev === 'ri_court_push');
+        if (q) { pc.evN = pc.evN || {}; pc.evN.ri_court_push = (pc.evN.ri_court_push || 0) + 1; pc.flags.ev = pc.flags.ev || {}; pc.flags.ev.ri_court_push = A.S.year; }
+      }
+      n += A.S.queue.filter(q => q.ev === 'ri_court_push').length;
+      return { n };
+    });
+    return { ok: r.n >= 1 && r.n <= 2, detail: `30 years of a reign's council sessions: the court pressed ${r.n} times (about 18 before: 60% of sessions)` };
+  },
 };

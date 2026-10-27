@@ -163,4 +163,39 @@ export default {
     });
     return { ok: r.lives === 4, detail: `${r.lives} lives of up to 30 years: ${r.met} events offered a fight that rolls on worth; ${r.dead} died` };
   },
+
+  // cycle 1 visual B6 and I6: the duel's key badges sit above the move names (they overlapped "3Guard" at 1920), the
+  // foe's read is an intent mark over its head, Yield and Flee are quiet, and on a phone the five moves are on screen.
+  async flDuelFace(pg, errs, { browser, file }) {
+    const { pathToFileURL } = await import('node:url');
+    const out = {};
+    for (const [w, h] of [[1920, 1080], [1366, 768], [390, 844]]) {
+      const ctx = await browser.newContext({ viewport: { width: w, height: h }, isMobile: w < 600, hasTouch: w < 600, reducedMotion: 'reduce' });
+      const p = await ctx.newPage();
+      p.on('pageerror', e => errs.push(String(e.stack || e).slice(0, 300)));
+      try {
+        await p.goto(pathToFileURL(file).href);
+        await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+        out[w] = await p.evaluate(async () => {
+          A.newGame({ seed: 11, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); UI.screen = 'game'; UI.ov = null; A.S.queue = []; UI.set.cutins = false; UI.set.hints = false; UI.render();
+          const pc = A.pc(), foe = A.makeFoe({ realm: pc.realm, tier: 2 }); foe.npcTemp = false; A.S.people[foe.id] = foe; A.S.queue = [];
+          A.startDuel(pc, foe, { kind: 'duel', lethal: false, toYield: true }); UI.render();
+          await new Promise(res => setTimeout(res, 300));
+          const bs = [...document.querySelectorAll('#modal .actbtns > button')];
+          let overlap = 0;
+          for (const b of bs) {
+            const k = b.querySelector('.key'), t = [...b.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+            if (!k || !t || getComputedStyle(k).display === 'none') continue;
+            const rg = document.createRange(); rg.selectNodeContents(t); const tr = rg.getBoundingClientRect(), kr = k.getBoundingClientRect();
+            if (kr.right > tr.left + 1 && kr.left < tr.right - 1 && kr.bottom > tr.top + 1 && kr.top < tr.bottom - 1) overlap++;
+          }
+          const fold = bs.filter(b => b.getBoundingClientRect().bottom <= innerHeight + 1).length;
+          const quiet = [...document.querySelectorAll('#modal .dl-quiet')].length;
+          return { moves: bs.length, overlap, fold, intent: !!document.querySelector('#modal .dl-intent'), quiet };
+        });
+      } finally { await ctx.close(); }
+    }
+    const ok = Object.values(out).every(o => o.moves === 5 && o.overlap === 0 && o.intent && o.quiet === 2) && out[390].fold === 5;
+    return { ok, detail: JSON.stringify(out) };
+  },
 };

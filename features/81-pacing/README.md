@@ -120,3 +120,13 @@ With `--features=replay,fair-checks,tooltips` on the same build, all 28 pass, am
 - **The scale eases long shots too.** The reckless bot takes the worst odds on offer, so a rule that lifts only some checks moves its choice to another long shot: a paired estimate over 16 lives (every event priced both ways, each personality's pick taken under each) gave +3.6 points for this rule and +8.5 for the wider one, where a naive estimate gave +5 and +10.
 - **The reference is 75's** (`FC.TYP.adult3`, measured in bot lives without either rule). If stats or skills change, re-measure it there and both rules follow.
 - **Other features' tests.** On the full build with this feature, 01-replay (`renderRng`, `replayWithRender`, `journalReplay`), 59-tooltips (all 22) and 75-fair-checks (all 4) pass. With the wider scale set aside above, three of 75's tests (`fcRule`, `fcLeavesAlone`, `fcLives`) failed, because they toggle `A.FC.OFF` and expect the release's odds underneath; a future rule on checks should set `A.SCALE.OFF` in that file's `SETUP`. That build's random stream also walked 59's `ttPure2` into a real purity gap that is not this feature's: the soldier's war-tab popovers created `people.pb4.staff = {}` through `A.staffHolder`, which 21-npc-initiative's `draw-pure.core.js` guards while drawing (`UI.render`) but not while a popover is open (`UI.TT.open`). Any seed can walk into it.
+
+## Cycle 1: the ceiling of the first adult year (`docs/reviews/cycle-1/lives.md`, I9)
+
+A noble who came of age at 17 met 23 scenes in his first year: the recruiter, the draft, three taverns, a hunt, a custom. Every adult door opened at once. In the first 365 days of adulthood, the world's own scenes now stop at `PACE.FIRST_CAP` (8) and NPC moves at `PACE.FIRST_NPC` (4). The cut never touches:
+
+- a scene the player asked for, or a choice's consequence (97-life-fixes' `LF.origin` and `lfFrom` marks);
+- a forced or scheduled scene, or a gathering's;
+- the start's own scenes (`fp_*`), the ambition (`lfx_amb_*`) and the careers scenes (`cr_*`).
+
+It is a wrapper of `A.queue` (`PACE.firstDrop`) and draws nothing. **Measured by** `pcFirstYearCap`: of 30 world scenes queued in the first adult year, 8 are kept. A forced one is kept, and a year later the ceiling is gone.

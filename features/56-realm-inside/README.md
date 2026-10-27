@@ -180,3 +180,8 @@ reads "the return of the lords' liberties". The court card's lines had no gramma
 - **The court is the AI's, not a stage.** Pushes are decided once a year with no debate and no player schedule beyond speaking and gifts. A player-ruler hears one petition a year, at most.
 - **Holdings are assumed to be where they were bought.** Raids read that province. The player's own ruled realm keeps the release's budget: its works are the player's.
 - **Balance:** not run here; the coordinator runs `bench/balance.mjs` on the integrated build. Bands likely to move: noble and royal `medianPeakCoin` down (men-at-arms at 12% of rents, the tenth on rents, horse keep, ransoms of up to 60% of a year's rents), and perhaps the merchant's. Councillors' stipends fall where the court lightens taxes. Because AI seats are now filled, `A.seatOffers` finds fewer empty seats, so "officer of state" arcs may thin, which could touch `arcTypes`.
+
+## Cycle 1 (`docs/reviews/cycle-1/lives.md`)
+
+- **Never taken by your own cause.** `RI.maybeTaken` passes when the realm that beat you is yours, or is the faction of a war for the throne you claimed. Before, a claimant who still held a commission in the crown's army could be "taken by men of Merrick's cause", Merrick being the player (`carNotTakenByOwnCause`, 994-careers).
+- **The council presses less often.** A player-ruler heard the loudest push in 60% of the year's sessions, so a 37-year reign showed "The council presses" 21 to 24 times. The push is now held back by 97-life-fixes' rule for NPC moves (twice a life, ten years apart, `A.LF.held`), and a year it is held, the matter waits (`riCourtPushRare`: two in 30 years).

@@ -436,12 +436,15 @@ UI.startLife = function () {
   } catch (e) { console.error('phone story start', e); }
   return r;
 };
-const setTab = UI.setTab;
-UI.setTab = function () {
-  const was = UI.tab, r = setTab.apply(this, arguments);
-  try { if (was === 'story' || UI.tab === 'story') PH.markStory(); } catch (e) {}
-  return r;
-};
+// read when the player opens Story or leaves it (the actions, not UI.setTab, which drawing also calls)
+for (const k of ['tab', 'group']) {
+  const f = UI.A[k];
+  if (typeof f === 'function') UI.A[k] = function () {
+    const was = UI.tab, r = f.apply(this, arguments);
+    try { if (was === 'story' || UI.tab === 'story') PH.markStory(); } catch (e) {}
+    return r;
+  };
+}
 const tabBadge = UI.tabBadge;
 UI.tabBadge = function (k, pc) {
   const b = tabBadge.apply(this, arguments);

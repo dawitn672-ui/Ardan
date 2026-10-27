@@ -393,7 +393,7 @@ export default {
       out.near = 0; for (const p of far) for (const j of p.adj) { const q = S.prov[j]; if (q && q.id > p.id && q.id >= D.base && !caps.has(p.id) && !caps.has(q.id) && ed(p.name, q.name) < 3) out.near++; }
       return out;
     });
-    const ok = r.sex === r.n && r.born === r.n && r.tegur[1] === 'M' && r.tegur[2] >= 73 && r.hvaldi[1] === 'giant' && r.hvaldi[2] >= 100 && !r.fjNorth && r.faith.every(Boolean) &&
+    const ok = r.sex === r.n && r.born === r.n && r.tegur[1] === 'M' && r.tegur[2] >= 73 && r.hvaldi[1] === 'giant' && r.hvaldi[3] >= 100 && !r.fjNorth && r.faith.every(Boolean) &&
       r.un[1] < 2e6 && r.stut.length <= 3 && r.rootMax <= 3 && r.near === 0;
     return { ok, detail: `${r.n} lore rulers: ${r.sex} of the lore's sex, ${r.born} of its birth year; ${r.tegur.join(', ')}; Fjorund's ${r.hvaldi.join(', ')}, ${r.fjNorth} Northfolk there; faiths ${r.faith.join(', ')}; unheld ${r.un[0]} provinces with ${Math.round(r.un[1] / 1000)}k people; ${r.stut.length} stuttering names (${r.stut.slice(0, 3).join(', ')}), a root in at most ${r.rootMax} provinces of a realm, ${r.near} neighbours within two letters`, data: r };
   },

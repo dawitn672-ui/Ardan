@@ -203,4 +203,23 @@ export default {
     const ok = r.on.prompts > r.off.prompts && r.on.acts > r.off.acts && r.on.rate > r.off.rate && r.on.rate <= 70;
     return { ok, detail: `8 lives, birth to 30. Off: ${r.off.prompts} prompts a year, ${r.off.acts} actions a year (engaged), ${r.off.rate}% of ${r.off.checks} checks; on: ${r.on.prompts}, ${r.on.acts}, ${r.on.rate}% of ${r.on.checks}` };
   },
+  // cycle 1 (lives I9): 23 scenes in a noble's first adult year at 17. The world's own scenes stop at 8 in the first
+  // adult year, NPC moves at 4; consequences, asked-for and forced scenes are never cut
+  async pcFirstYearCap(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 8191, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 17 });
+      const ids = Object.keys(A.EV).filter(id => !/^(fp_|lfx_amb_|ga_|cr_)/.test(id)).slice(0, 30);
+      const n0 = A.S.queue.length;
+      for (const id of ids) A.queue({ type: 'event', ev: id, ctx: {} });
+      const world = A.S.queue.length - n0;
+      A.queue({ type: 'event', ev: ids[0], forced: true, ctx: {} });
+      const forced = A.S.queue.length - n0 - world;
+      // a year on, the ceiling is gone
+      A.S.pace.fy.d0 -= 400;
+      const m = A.S.queue.length; A.queue({ type: 'event', ev: ids[1], ctx: {} });
+      const later = A.S.queue.length - m;
+      return { world, forced, later, cut: A.S.pace.fy.cut };
+    });
+    return { ok: r.world === 8 && r.forced === 1 && r.later === 1, detail: `30 world scenes queued in the first adult year: ${r.world} kept (${r.cut} cut); a forced one kept: ${r.forced === 1}; after the year: ${r.later === 1 ? 'kept' : 'cut'}` };
+  },
 };

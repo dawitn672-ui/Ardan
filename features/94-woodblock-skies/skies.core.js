@@ -418,6 +418,18 @@
     o.defs += `<linearGradient id="${p}r" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${wallD}"/><stop offset=".75" stop-color="${wallC}"/></linearGradient>` +
       `<radialGradient id="${p}k"><stop offset="0" stop-color="${night ? c.glowC : c.light}" stop-opacity="${night ? 0.5 : 0.28}"/><stop offset="1" stop-color="${night ? c.glowC : c.light}" stop-opacity="0"/></radialGradient>`;
     let s = `<path d="M0 0H${W}V${H}H0Z${hole}" fill="url(#${p}r)" fill-rule="evenodd"/>`;
+    // the wall's pattern (I2): a woodblock motif by the people's building (asanoha lattice under eaves and on stilts,
+    // kilim lozenges in domes and tents, chevrons in log halls, a diaper of lozenges in the Known World's halls)
+    const mot = { eaves: 'asanoha', stilt: 'asanoha', dome: 'kilim', yurt: 'kilim', log: 'chevron', round: 'chevron' }[c.arch] || 'diaper';
+    const pc = mix(wallD, INK, 0.2);
+    const PAT = {
+      asanoha: `<path d="M0 0L12 7L24 0M12 7V21M0 28L12 21L24 28M0 0V28M24 0V28M12 7L0 14L12 21L24 14Z" fill="none" stroke="${pc}" stroke-width="1"/>`,
+      kilim: `<path d="M12 2L22 14L12 26L2 14Z" fill="none" stroke="${pc}" stroke-width="1.6"/><path d="M12 9L17 14L12 19L7 14Z" fill="${pc}"/>`,
+      chevron: `<path d="M0 8L12 2L24 8M0 22L12 16L24 22" fill="none" stroke="${pc}" stroke-width="1.6"/>`,
+      diaper: `<path d="M12 0L24 14L12 28L0 14Z" fill="none" stroke="${pc}" stroke-width="1"/><circle cx="12" cy="14" r="1.8" fill="${pc}"/>`,
+    };
+    o.defs += `<pattern id="${p}pt" width="24" height="28" patternUnits="userSpaceOnUse">${PAT[mot]}</pattern>`;
+    s += `<path d="M0 0H${W}V${f(o.floor - 30)}H0Z${hole}" fill="url(#${p}pt)" fill-rule="evenodd" opacity="${night ? 0.22 : 0.3}"/>`;
     // the light on the wall: round the window by day, round the candle by night (o.lampX is set by the scene)
     s += `<ellipse cx="${f(night ? (c.lampX == null ? 320 : c.lampX) : lx)}" cy="${night ? 130 : 90}" rx="${night ? 130 : 210}" ry="${night ? 90 : 120}" fill="url(#${p}k)"/>`;
     for (const [x, y, w, h] of wins) {
@@ -426,11 +438,36 @@
     }
     if (!night) {
       let d = ''; for (const [x, y, w, h] of wins) d += `M${f(x)} ${f(y + h * 0.3)}L${f(x + w)} ${f(y + h * 0.3)}L${f(x + w + 130)} ${H}L${f(x + 80)} ${H}Z`;
-      s += `<path d="${d}" fill="${c.light}" opacity="${c.hour === 'day' ? 0.14 : 0.11}"/>`;
+      s += `<path d="${d}" fill="${c.light}" opacity="${c.hour === 'day' ? 0.18 : 0.15}"/>`;
+      // where the shaft lands: a pool of the hour's light on the floor
+      s += `<ellipse cx="${f(wins[0][0] + wins[0][2] / 2 + 90)}" cy="${f(o.floor + 8)}" rx="80" ry="7" fill="${c.light}" opacity=".18"/>`;
     }
     s += `<path d="M0 ${o.floor - 30}H${W}V${o.floor}H0Z" fill="${wain}" opacity=".55"/><path d="M0 ${o.floor - 30}H${W}" stroke="${mix(wain, c.light, 0.3)}" stroke-width="2"/>`;
     s += `<path d="M0 ${o.floor}H${W}V${H}H0Z" fill="${mix(wain, INK, 0.2)}"/><path d="M0 ${o.floor}H${W}" stroke="${INK}" stroke-width="2"/>`;
+    s += L.figure(c, o);
     return s;
+  };
+  // a figure in the room (I2): the person the event is about (its ctx.pid), in their own skin and their realm's colour,
+  // standing at the room's far side in flat colour with the ink line and a rim of the room's light; anyone else when
+  // the event names no one. Drawn behind the subject, so the scene's props stay in front.
+  L.figure = (c, o) => {
+    const F = o.fig || {}, x = o.flip ? 116 : 512, top = o.floor - 92, lit = c.light;
+    const skin = tone(c, F.skin || '#d9a77f', true), cloth = tone(c, F.cloth || M.cloth, false), cl2 = tone(c, F.cloth || M.cloth, true), hair = tone(c, F.hair || '#3a2a1e', false);
+    const dir = o.flip ? 1 : -1;
+    let s = `<g class="sky-fig">`;
+    s += `<ellipse cx="${x}" cy="${o.floor + 2}" rx="26" ry="4" fill="${INK}" opacity=".28"/>`;
+    // the body: a robe or a coat to the floor, the arms in, one forward
+    s += `<path d="M${x - 13} ${top + 22}Q${x - 18} ${top + 52} ${x - 20} ${o.floor}H${x + 20}Q${x + 18} ${top + 52} ${x + 13} ${top + 22}Q${x} ${top + 16} ${x - 13} ${top + 22}Z" fill="${cloth}" stroke="${INK}" stroke-width="1.6"/>`;
+    s += `<path d="M${x + dir * -2} ${top + 24}Q${x + dir * -12} ${top + 50} ${x + dir * -12} ${o.floor - 2}" fill="none" stroke="${cl2}" stroke-width="5" opacity=".55"/>`;
+    s += `<path d="M${x + dir * 10} ${top + 28}Q${x + dir * 24} ${top + 44} ${x + dir * 30} ${top + 50}" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round"/><path d="M${x + dir * 10} ${top + 28}Q${x + dir * 24} ${top + 44} ${x + dir * 30} ${top + 50}" fill="none" stroke="${cloth}" stroke-width="4.4" stroke-linecap="round"/>`;
+    s += `<circle cx="${x + dir * 31}" cy="${top + 51}" r="3" fill="${skin}" stroke="${INK}" stroke-width="1"/>`;
+    // the head, turned toward the room's middle, the hair a cap over it
+    s += `<circle cx="${x}" cy="${top + 10}" r="10" fill="${skin}" stroke="${INK}" stroke-width="1.6"/>`;
+    s += `<path d="M${x - 10} ${top + 9}Q${x - 9} ${top - 3} ${x} ${top - 1}Q${x + 10} ${top - 2} ${x + 10} ${top + 8}Q${x + dir * -4} ${top + 3} ${x - 10} ${top + 9}Z" fill="${hair}" stroke="${INK}" stroke-width="1.2"/>`;
+    s += `<path d="M${x + dir * 6} ${top + 10}h${dir * 2}" stroke="${INK}" stroke-width="1.4"/>`;
+    // the rim of the room's light on the side toward the window
+    s += `<path d="M${x - dir * 12} ${top + 24}Q${x - dir * 18} ${top + 52} ${x - dir * 20} ${o.floor - 1}" fill="none" stroke="${lit}" stroke-width="1.6" opacity=".75"/>`;
+    return s + '</g>';
   };
   // framing: a branch from the top-left corner (the cartouche keeps the right), a banner's edge, or reeds at the foot
   L.frame = (p, c, r, o) => {
@@ -464,6 +501,20 @@
       let d = '', h = '';
       for (let i = 0; i < 11; i++) { const x = 6 + i * 9 + r() * 6, t = 112 + r() * 40, bend = 6 + r() * 10; d += `M${f(X(x))} ${H}Q${f(X(x + 2))} ${f(t + 30)} ${f(X(x + bend))} ${f(t)}`; if (i % 3 === 0) h += `M${f(X(x + bend))} ${f(t)}l${right ? -1.5 : 1.5}-9`; }
       return `<path d="${d}" fill="none" stroke="${dark}" stroke-width="2.2" stroke-linecap="round"/><path d="${h}" stroke="${tone(c, M.thatch, true)}" stroke-width="4" stroke-linecap="round"/>`;
+    }
+    if (kind === 'beam') {
+      const wd = tone(c, M.timber, false), wl = tone(c, M.timber, true), px = right ? W - 22 : 0;
+      return `<path d="M-2-2H${W + 2}V12H-2Z" fill="${wd}" stroke="${INK}" stroke-width="1.6"/><path d="M-2 3H${W + 2}" stroke="${wl}" stroke-width="2" opacity=".7"/>` +
+        `<path d="M${px} 10h22V${H + 2}H${px}Z" fill="${wd}" stroke="${INK}" stroke-width="1.6"/><path d="M${right ? px + 18 : px + 4} 12V${H}" stroke="${wl}" stroke-width="2" opacity=".6"/>` +
+        `<path d="M${right ? px - 26 : px + 22} 10L${right ? px : px + 48} 10L${right ? px : px + 22} 36Z" fill="${wd}" stroke="${INK}" stroke-width="1.2"/>`;
+    }
+    if (kind === 'curtain') {
+      const base = o.dye || M.red, col = tone(c, base, true), sh = tone(c, base, false), g = tone(c, M.gold, true);
+      let d = '', h = '';
+      for (let i = 0; i < 4; i++) { const x0 = i * 13; d += `M${f(X(x0))} -2Q${f(X(x0 + 9))} ${f(70 + i * 8)} ${f(X(x0 + 4))} ${H + 2}`; }
+      h = `M${f(X(-2))} -2H${f(X(58))}Q${f(X(50))} 60 ${f(X(30))} 104Q${f(X(26))} 150 ${f(X(40))} ${H + 2}H${f(X(-2))}Z`;
+      return `<path d="${h}" fill="${col}" stroke="${INK}" stroke-width="1.5"/><path d="${d}" fill="none" stroke="${sh}" stroke-width="5" opacity=".8"/>` +
+        `<path d="M${f(X(18))} 100Q${f(X(36))} 108 ${f(X(46))} 98" fill="none" stroke="${g}" stroke-width="3"/>`;
     }
     if (kind === 'banner') {
       const col = tone(c, o.bannerCol || M.red, true), sh = tone(c, o.bannerCol || M.red, false), g = tone(c, M.gold, true);
@@ -785,7 +836,7 @@
     const p = 'sk' + hash([sc, key, month, terr, hour, opt.coast ? 1 : 0].join('|')) + '_';
     const indoor = INDOOR.has(sc), c = SK.palette(hour, terr, season, indoor, opt.clim);
     c.arch = opt.arch && SK.ARCH.includes(opt.arch) ? opt.arch : null;
-    const o = { hz: indoor ? 112 : 146, groundY: 176, floor: 176, indoor, defs: '' };
+    const o = { hz: indoor ? 112 : 146, groundY: 176, floor: 176, indoor, defs: '', fig: opt.fig || null };
     o.sea = sc === 'travel' && r() < 0.3;
     o.flip = r() < 0.5 && !['letter', 'learning', 'money', 'favor', 'court', 'subordinate', 'beast', 'weather'].includes(sc);
     o.side = r() < 0.5; o.thatch = r() < 0.5;
@@ -796,7 +847,8 @@
     o.win = sc === 'court' ? 'court' : r() < 0.5 ? 'pair' : 'one'; o.wx = 40 + r() * 120;
     // framing: reeds by water and marsh, a banner at war and court, a branch elsewhere; none in a third of pictures
     const fr = r();
-    o.framing = indoor ? null : (['war', 'subordinate'].includes(sc) && fr < 0.5) ? 'banner' : (terr === 'marsh' || opt.coast || o.sea) && fr < 0.5 ? 'reeds' : fr < 0.38 && hour !== 'storm' ? 'branch' : null;
+    // indoors (cycle 1 visual I2): a ceiling beam and post, or a curtain, in the near corner, framing the room
+    o.framing = indoor ? (fr < 0.55 ? 'beam' : 'curtain') : (['war', 'subordinate'].includes(sc) && fr < 0.5) ? 'banner' : (terr === 'marsh' || opt.coast || o.sea) && fr < 0.5 ? 'reeds' : fr < 0.38 && hour !== 'storm' ? 'branch' : null;
     o.frameRight = !o.flip ? r() < 0.75 : r() < 0.25; o.bannerCol = r() < 0.5 ? M.red : M.blue;
     // the one glow of the picture
     let glowed = false;
@@ -830,6 +882,14 @@
     const o = { shape, key, month: A.monthOf(A.today()).m, hour: SK.hourFor(SC[shape] ? shape : 'none', key, words), terr, coast: !!(pr && pr.coast), place: pr ? pr.name : '' };
     const clim = SK.climOf(pr);
     if (clim) o.clim = clim;
+    // the event's own person, for a figure in an interior (their stored look, checked as hex colours)
+    try {
+      const who = q && q.ctx && q.ctx.pid != null && A.P ? A.P(q.ctx.pid) : null, hx = v => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v : null;
+      if (who) {
+        const ap = (UI.ANIME && UI.ANIME.drawnApp ? UI.ANIME.drawnApp(who, who.app) : who.app) || {};
+        o.fig = { skin: hx(ap.skin), cloth: hx(UI.realmHex ? UI.realmHex(who.realm) : null), hair: hx(GD.HAIR && GD.HAIR[ap.hair]) };
+      }
+    } catch (e) {}
     const arch = SK.archOf(pr);
     if (arch) o.arch = arch;
     return o;

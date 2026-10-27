@@ -205,4 +205,33 @@ export default {
     const ok = ['tropic', 'savanna', 'dry'].every(k => r[k] !== 'none' && !r[k].pal && !r[k].drawn) && ['temperate', 'taiga'].every(k => r[k] !== 'none' && r[k].pal && r[k].drawn === 4);
     return { ok, detail: JSON.stringify(r) };
   },
+
+  // cycle 1 visual I2: an interior is no longer props on a shelf before a flat wall. Every indoor print has a patterned
+  // wall (a motif by the people's building), a framing beam or curtain, and a figure; the event's own person (ctx.pid)
+  // is drawn in their colours; by day the window's shaft lands on the floor. Within the 15 KB budget, and pure.
+  async skyInterior(pg) {
+    const r = await pg.evaluate(() => {
+      const SK = UI.SKIES, bad = [], sizes = [], motifs = new Set();
+      A.newGame({ seed: 9401, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      const g0 = JSON.stringify(A.S.rng), h0 = JSON.stringify(A.S).length;
+      let i = 0;
+      for (const sh of SK.INDOOR) for (const h of ['day', 'night']) for (const arch of [null, 'eaves', 'dome']) {
+        i++;
+        const o = { hour: h, terr: 'hills', place: 'Kingsmere', arch };
+        const svg = SK.svg(sh, 'ev_in' + i + '|1105', 5, o), withFig = SK.svg(sh, 'ev_in' + i + '|1105', 5, Object.assign({}, o, { fig: { skin: '#5c3a23', cloth: '#2e86de', hair: '#1a1410' } }));
+        const doc = new DOMParser().parseFromString(withFig, 'image/svg+xml');
+        const pat = doc.querySelector('pattern'), fig = doc.querySelector('.sky-fig');
+        if (doc.querySelector('parsererror') || !pat || !fig || svg === withFig) bad.push(sh + '/' + h + '/' + arch);
+        if (pat) motifs.add(pat.innerHTML.length);
+        sizes.push(withFig.length);
+      }
+      // the event's own person reaches the print through SK.optsFor
+      const pc = A.pc(), kin = A.P(pc.father) || pc;
+      const q = { type: 'event', ev: 'lf_love_potion', ctx: { pid: kin.id } };
+      const o2 = SK.optsFor(q);
+      return { n: sizes.length, bad, max: Math.max(...sizes), motifs: motifs.size, fig: !!o2.fig, figSkin: o2.fig && o2.fig.skin, pure: JSON.stringify(A.S.rng) === g0 && JSON.stringify(A.S).length === h0 };
+    });
+    const ok = !r.bad.length && r.max <= 15 * 1024 && r.motifs >= 3 && r.fig && r.pure;
+    return { ok, detail: `${r.n} interiors: ${r.bad.length} without a pattern, a figure or the person's colours${r.bad.length ? ' (' + r.bad.slice(0, 4).join(', ') + ')' : ''}; ${r.motifs} wall motifs; at most ${(r.max / 1024).toFixed(1)} KB; the event's person reaches the print ${r.fig} (skin ${r.figSkin}); pure ${r.pure}` };
+  },
 };

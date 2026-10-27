@@ -155,3 +155,30 @@ The lives differ (a different random stream gives different lives: three of the 
 - "Herd-boy" and "Pot-boy", the first ranks of herding and brewing, are "Herd-hand" and "Pot-hand" for either sex.
 - Tier leaks (lives B4): a reigning ruler or a general (`A.lfTop`) draws no home-front, harvest-dance or learned-duty scene; the rank-and-file camp scenes stop at rank 3 (`A.lfRank`); the mercenary scenes stop at 55, the road offers at 60 (`A.lfOld`, human years). Tests `lfWordsCycle1`, `lfTierGates`.
 - `{them}` names a person in full when someone else the player knows shares the given name (`A.knownName`, 67-memory-weave).
+
+## Cycle 1: the second half of a life (`docs/reviews/cycle-1/lives.md`, I1, I2, I4, I5)
+
+- **Gatherings for rulers and hosts** (patches `LF-GATH-SCENES`, `LF-GATH-CAP`; `A.lfGathPool`, `A.lfGathBargain`). Hosts and rulers were always asked, and each gathering showed three of its scenes, so a 37-year reign saw the toast, the seating, the knife, the spy, the whisper and the gift about 15 times each. Now:
+  - A gathering scene this life has seen three times (`LF.GATH_SCENE_CAP`) gives way to an unseen one, or to none: the gathering goes on to its last night, with a line in the log.
+  - The closed-door bargain, once seen three times, is settled by your envoys. You get the influence a fair speech wins (4 plus diplomacy over 12), and the log says so.
+  - The council's push (`ri_court_push`, 56-realm-inside) now follows the NPC-move rule: twice a life, ten years apart.
+- **An ambition after the top** (`c-ambition.core.js`, `ambition.events.js`).
+  - A year after an ambition is met, *What now, at the top* (`lfx_amb_top`) offers a new one. It comes at most every eight years, to 70.
+  - Four new ambitions are offered first when they fit: hold land of your own (rung 4), be counted among the Legends (worth 118), leave something that lasts (a great work), found a house.
+- **What now points at the second half** (`LF.whatMore`, wrapped into `A.whatNow`, pure). It names:
+  - the decision you can afford (a great work at twice its price or more, or founding a house when the bars are met);
+  - an order that would have you, or would if you were knighted;
+  - an enemy in your realm within reach of a scheme.
+  "Train in an extra session" is no longer offered once the skill you are training is at 100.
+- **Great works that grow with the fortune** (`e-works.core.js`, `works.events.js`). Each costs a share of what you hold, between a floor and a ceiling, gives more the more it costs, and opens its own scene later:
+
+  | Decision | Price | Later |
+  | --- | --- | --- |
+  | Take an artist under your patronage | 8% of your fortune, 10,000 to 150,000, every 15 years | the unveiling (`lfx_wk_patron_work`) |
+  | Dower a child richly | 12%, 8,000 to 200,000, for an unmarried child of 14 to 30 | horses in the yard (`lfx_wk_dowry_suitors`) |
+  | Build your house a seat | 20%, 80,000 to 400,000, with a house of your own or a title | the first feast (`lfx_wk_seat_feast`) |
+  | Found a free school | 5%, 15,000 to 60,000 | a letter from a pupil (`lfx_wk_school_pupil`) |
+
+  A work's `run` now runs before the coin is taken and can refuse (a patent with nothing left to buy no longer charges).
+
+**Measured by** `lfGathCap` (three scenes, one seen three times: two left; all seen three times: none, and the bargain is settled off stage) and `lfAfterTheTop` (a met ambition is followed two years on by one of the late ones; What now names the house or a work, and drawing it changes nothing; patronage for a fortune of 300,000 costs 24,000).

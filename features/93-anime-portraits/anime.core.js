@@ -341,9 +341,11 @@
   // ---- proportions (brief §7.1) by human-equivalent age: infant, child, teen, adult, adult, old
   const KH = [1, 6, 14, 22, 45, 68];
   const KF = {
-    eyeY: [71, 70, 66, 64, 64, 61], eyeW: [24, 23, 21, 20, 20, 18], gap: [12, 13, 15, 16, 16, 17], eyeH: [18, 17, 15, 13, 13, 10],
+    // cycle 1 visual I1(c): larger eyes for the grown (21 wide, 15 open; they read as dots at the rail's 88 px)
+    eyeY: [71, 70, 66, 64, 64, 61], eyeW: [24, 23, 22, 21, 21, 19], gap: [12, 13, 14, 15, 15, 16], eyeH: [18, 17, 16, 15, 15, 12],
     chin: [102, 108, 114, 118, 118, 120], nose: [83, 84, 85, 86, 86, 88], mouth: [93, 96, 98, 100, 100, 102], mouthW: [9, 10, 12, 14, 14, 13],
-    heads: [3, 4.5, 6, 6.5, 6.5, 6.3],
+    // I1(c): a grown figure is 6 heads tall, not 6.5 (the head read at about 1:7.5 of the figure)
+    heads: [3, 4.3, 5.6, 6, 6, 5.9],
   };
   const kf = (h, k) => { const t = KF[k]; if (h <= KH[0]) return t[0]; for (let i = 1; i < KH.length; i++) if (h <= KH[i]) return lerp(t[i - 1], t[i], (h - KH[i - 1]) / (KH[i] - KH[i - 1])); return t[t.length - 1]; };
   // a race's age in human years: its milestones (grown, prime's end, old, the oldest) mapped onto a human life
@@ -398,7 +400,7 @@
   AP.expression = expression;
 
   // ---- what the picture needs to know about a person (read only)
-  function look(p) {
+  function look(p, bustOnly) {
     const ap = p.app || {}, race = GD.RACES[p.race] ? p.race : 'human', R2 = GD.RACES[race];
     const age = Math.max(0, Math.floor(+A.age(p) || 0)), F = p.sex === 'F', h = humanYears(age, R2);
     const L = { p, ap, race, R2, age, F, h, dead: !p.alive };
@@ -469,7 +471,7 @@
     const g = Object.assign({ weapon: 'fists', armor: 'none' }, p.gear || {}), GG = k => (typeof k === 'string' && GD.GEAR[k]) || null;
     L.W = (armed && GG(g.weapon)) || GD.GEAR.fists || { kind: 'fists' };
     const Ar = armed ? GG(g.armor) : null; L.armor = Ar ? (Ar.look || 'none') : 'none';
-    L.helm = armed ? GG(g.helm) : null; L.shield = armed ? GG(g.shield) : null; L.ranged = armed ? GG(g.ranged) : null; L.cloak = armed ? GG(g.cloak) : null;
+    L.helm = armed && !bustOnly ? GG(g.helm) : null;   // I1(d): a bust shows no helm L.shield = armed ? GG(g.shield) : null; L.ranged = armed ? GG(g.ranged) : null; L.cloak = armed ? GG(g.cloak) : null;
     if (L.shield && L.shield.kind) L.shield = null;
     L.rank = p.mil ? p.mil.rank || 0 : 0;
     L.mail = ['mail', 'dwarfmail', 'mailplate', 'elfmail', 'orcmail'].includes(L.armor);
@@ -628,11 +630,15 @@
       s += `<path d="${a}" fill="none" stroke="${sk.line}" stroke-width="${lw(.75)}" stroke-opacity="${op}"/>`;
     }
 
-    // ---------- the eyes, brows, nose, mouth
+    // ---------- the eyes, brows, nose, mouth: turned a quarter toward the picture's left (I1(a), a three-quarter
+    // view: the features sit off the face's middle, so a bust no longer reads as an ID photo; a foe is mirrored)
+    const turn = G.turn && mat > .3 && !L.baby ? -3.2 * mat : 0;
+    if (turn) s += `<g transform="translate(${R(turn)} 0)">`;
     s += eyes(G, L, k, { exL, exR, eyeY, eyeW, eyeH, lw });
     s += brows(G, L, k, { exL, exR, eyeY, eyeW, eyeH, lw });
     s += nose(G, L, k, { noseY, eyeY, lw });
     s += mouth(G, L, k, { mouthY, mouthW, chinY, lw });
+    if (turn) s += '</g>';
     // tusks
     if ((race === 'orc' || race === 'halforc') && lod >= 1) {
       const tl = race === 'orc' ? 7 : 4;
@@ -1371,7 +1377,7 @@
     const meanH = (F ? L.R2.height[0] : L.R2.height[1]) || 170, relH = ((L.ap.height || meanH) - meanH) / meanH;
     const hAdj = Math.abs(relH) > .25 ? 0 : clamp(relH, -.05, .05);
     const Hf = Math.min(272, 244 * raceH * grow * (1 + hAdj)) - stoop;
-    const Nr = { giant: 8, dwarf: 4.7, elf: 7, orc: 6.8, halforc: 6.7, halfelf: 6.8 }[race] || kf(L.h, 'heads');
+    const Nr = { giant: 7.6, dwarf: 4.5, elf: 6.5, orc: 6.4, halforc: 6.3, halfelf: 6.3 }[race] || kf(L.h, 'heads');
     const N = L.mat < 1 ? lerp(kf(L.h, 'heads'), Nr, L.mat) : Nr;
     const hh = Hf / N, sc = hh / 118, y0 = GROUND - Hf;
     const tx = 100 - 50 * sc, ty = y0;
@@ -1629,8 +1635,11 @@
     const theme = UI.set.theme === 'light' ? 'light' : 'dark', TK = THEME[theme];
     let L, f, Hh;
     try {
-      L = look(p);
+      // I1(d): no helmets in a bust (the rail, rows, cut-ins): a helm covered the brow and the eyes at 88 px. The full
+      // figure (the duel, the battle, the profile) keeps it.
+      L = look(p, !full);
       Hh = full ? 300 : 200;
+      G.turn = !opts.front;
       // line weights: in device pixels, heavier as the picture shrinks; then in the frame's units
       const hpx = (full ? 34 : 86) * size / 200;
       const inner = clamp(hpx / 52, .6, 1.25);
@@ -1668,7 +1677,8 @@
       let fig = f.back + f.fig;
       if (L.dead) fig = fig.replace(/#[0-9a-f]{6}/g, c => desat(c));
       if (G.lod >= 1) {
-        const r = R(clamp(G.inner * .8, .5, 1.2) * px), rw = R(clamp(size / 70, 1.1, 2.2) * px);
+        // I1(f): a rim light you notice (up to 2.8 units, was 2.2)
+        const r = R(clamp(G.inner * .8, .5, 1.2) * px), rw = R(clamp(size / 56, 1.4, 2.8) * px);
         const fid = 'apo' + (G.full ? 'w' : '') + String(r).replace('.', '_') + '_' + String(rw).replace('.', '_') + rim.slice(1);
         const wob = G.full ? '<feTurbulence type="fractalNoise" baseFrequency=".09" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.1" xChannelSelector="R" yChannelSelector="G" result="w"/>' : '';
         G.defs[fid] = `<filter id="${fid}">${wob}<feMorphology ${G.full ? 'in="w" ' : ''}operator="dilate" radius="${r}" result="a"/><feFlood flood-color="${LINE}"/><feComposite in2="a" operator="in" result="o"/><feOffset in="${G.full ? 'w' : 'SourceGraphic'}" dx="${-rw}" result="b"/><feComposite in="${G.full ? 'w' : 'SourceGraphic'}" in2="b" operator="out" result="c"/><feFlood flood-color="${rim}" flood-opacity=".9"/><feComposite in2="c" operator="in"/><feMerge><feMergeNode in="o"/><feMergeNode in="${G.full ? 'w' : 'SourceGraphic'}"/><feMergeNode/></feMerge></filter>`;

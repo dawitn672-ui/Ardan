@@ -93,6 +93,7 @@
 .chip.pw-cast{color:var(--lore-ink,var(--ink-2));border-color:var(--lore-ink,var(--line))}
 .chip.pw-move{color:var(--accent);border-color:var(--accent-rule,var(--line))}
 .chip.pw-unknown{color:var(--ink-3);border-style:dashed}
+.lk-row .chip.pw-want{max-width:88px;flex:0 1 auto}
 @media (max-width:760px){.chip.pw-want{max-width:150px}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('pw-style')) return; const s = document.createElement('style'); s.id = 'pw-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }

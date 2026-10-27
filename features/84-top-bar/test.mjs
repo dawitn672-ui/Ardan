@@ -183,6 +183,9 @@ Object.assign(tests, {
     await pg.evaluate(STEPS);
     const r = await pg.evaluate(async () => {
       const o = { seed: 8425, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 0 };
+      // the autosave at the turn of the year writes the stream's position into the state (S.rng); one long A.advance
+      // never saves, so it is off for the comparison
+      UI.set.autosave = false;
       T.enter(o);
       for (const k of ['stepSeason', 'stepMonth', 'stepSeason']) await __step(k);
       UI.stepper.empty = 2; UI.A.stepUntil(); while (UI.stepper.run) { if (UI.stepper.wait) { let g = 0; while (A.headReady() && g++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); } await new Promise(res => setTimeout(res, 4)); }

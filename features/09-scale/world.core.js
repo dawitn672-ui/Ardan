@@ -131,8 +131,10 @@
     const S = A.S, mine = S.prov.filter(p => p.owner === lose);
     const pop = mine.reduce((a, p) => a + p.pop, 0) || 1, cells = mine.reduce((a, p) => a + (p.cells || 1), 0) || 1;
     const out = []; let tp = 0, tc = 0;
+    const capP = (A.realm(lose) || {}).capitalProv;
     for (const p of taken) {
       if (max && out.length >= max) break;
+      if (max && p.id === capP && mine.length > 1) continue;   // a border war does not take the capital
       const own = p.owner === lose, np = tp + (own ? p.pop : 0), nc = tc + (own ? (p.cells || 1) : 0);
       if (out.length && farLoser(lose) && (np > pop * W.PEACE_SHARE || nc > cells * W.PEACE_SHARE)) continue;
       out.push(p); tp = np; tc = nc;

@@ -185,4 +185,31 @@ export default {
       r.above && r.four === 3 && !r.fourOld.some(x => /spear/.test(x)) && r.held && r.gone && r.pure;
     return { ok, detail: `newest "${r.text}" (${r.kind}, aria-live ${r.live}) above ${r.old.length} older [${r.old.join(' | ')}] ${r.above}; a fourth keeps ${r.four} (oldest dropped ${!r.fourOld.some(x => /spear/.test(x))}); held on hover ${r.held}, gone after ${r.gone}; pure ${r.pure}` };
   },
+
+  // cycle 1 visual I5, I6 and I3: a duel opens on a VS cut-in with both busts, your own death on a muted FAREWELL, and
+  // a battle lost on DEFEAT. The openings are not held to one a month.
+  async moOpenings(pg) {
+    const r = await pg.evaluate(async () => {
+      const MO = UI.MOMENTS;
+      T.enter({ seed: 9601, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); UI.set.cutins = true; UI.set.hints = false; MO.skip(); UI.render(); MO.skip();
+      const pc = A.pc(), foe = A.makeFoe({ realm: pc.realm, tier: 2 }); foe.npcTemp = false; A.S.people[foe.id] = foe; A.S.queue = [];
+      MO.lastKey = A.S.year * 12 + A.monthOf(A.today()).m;   // a cut-in already shown this month
+      A.startDuel(pc, foe, { kind: 'duel', lethal: false, toYield: true }); UI.render();
+      const duel = MO.el ? { k: MO.shown.k, busts: MO.el.querySelectorAll('.mo-bust').length, sub: MO.shown.sub } : null;
+      MO.skip(); UI.render(); const again = !!MO.el;      // once for each duel
+      A.S.queue = []; UI.render(); MO.skip();
+      const rs = Object.values(A.S.realms).filter(x => x.alive && x.id !== pc.realm);
+      const B = A.newBattle({ title: 'Battle of the Test Ford', terr: 'hills', weather: 'clear', sideA: { realm: pc.realm, men: 3000, q: 0.9 }, sideB: { realm: rs[0].id, men: 3000, q: 0.9 } });
+      A.S.queue = [{ type: 'battle', b: B }]; B.phase = 'end'; B.winner = B.pcSide === 'A' ? 'B' : 'A'; MO.lastKey = null; MO.check();
+      const lost = MO.el ? MO.shown.k : null;
+      MO.skip(); A.S.queue = []; MO.prev = null; UI.render(); MO.skip();
+      MO.lastKey = A.S.year * 12 + A.monthOf(A.today()).m;
+      A.pcDeath('a fever'); UI.render();
+      const gone = MO.el ? MO.shown.k : null;
+      MO.skip();
+      return { duel, again, lost, gone };
+    });
+    const ok = r.duel && r.duel.k === 'duel' && r.duel.busts === 2 && / · /.test(r.duel.sub) && !r.again && r.lost === 'defeat' && r.gone === 'farewell';
+    return { ok, detail: JSON.stringify(r) };
+  },
 };

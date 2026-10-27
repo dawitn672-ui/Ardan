@@ -314,7 +314,8 @@ export default {
       out.castMasters = Object.values(S.people).filter(p => p.fwc && A.fightWorth(p) >= 91).length;
       out.maxM = Math.max(...Object.values(A.ladderCensus().masters).map(l => l.length));
       // the 1105 wars: news, and the recruiter for a grown subject of Vahra
-      out.news = (S.news || []).filter(n => /In the far lands:/.test(n.t || n.text || n)).length;
+      // (told on the life's first day, or held for the distance: 09-scale's S.newsPre and S.newsFar)
+      out.news = (S.news || []).concat((S.newsPre || []).map(x => x[0]), S.newsFar || []).filter(n => /In the far lands:/.test(n.t || n.text || n)).length;
       S.queue = []; A.advance(31);
       const rq = queued('fw_war_recruit'); out.recruiter = !!rq; out.rqText = rq ? render('fw_war_recruit', rq.ctx) : '';
       S.queue = [];

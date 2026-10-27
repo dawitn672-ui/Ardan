@@ -7,9 +7,9 @@ export default {
       const pc = A.pc(), PW = UI.PEOPLE_WANT;
       // someone known, someone not, a cast member, a rival
       const ppl = Object.values(A.S.people).filter(p => p.alive && p.id !== pc.id && A.isAdult(p) && !p.mil);
-      const stranger = ppl.find(p => !pc.rel[p.id]);
       const cast = Object.values(A.S.people).find(p => p.alive && p.castId && LORE.cast[p.castId] && LORE.cast[p.castId].wants);
       if (cast && !pc.rel[cast.id]) A.link(pc, cast, 'acquaint', 10, 'acquaint');
+      const stranger = ppl.find(p => !pc.rel[p.id] && p !== cast);
       const rival = ppl.find(p => p !== stranger && p !== cast && !pc.rel[p.id]);
       A.link(pc, rival, 'rival', -40, 'rival');
       const h0 = T.hash(A.S), r0 = A.rngState;

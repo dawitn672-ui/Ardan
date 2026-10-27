@@ -204,4 +204,41 @@ export default {
     const ok = r.hatched > 0 && r.glow > 0 && r.glowOff === 0 && r.arrowsFar === 0 && (r.arrowsNear > 0 || r.paths === 0) && r.pure;
     return { ok, detail: `${r.hatched} realms hatched beside a neighbour of near the same colour; the selected realm's border glows in ${r.glow} pieces (${r.glowOff} with none selected); arrows for marching divisions: ${r.arrowsFar} at zoom 1, ${r.arrowsNear} at zoom 4 (${r.paths} divisions on the march); drawing ${r.pure ? 'pure' : 'CHANGED the state'}` };
   },
+
+  // cycle 1 visual B7 and world B8: the full map's legend names the realms in view (it listed the same 40 at every
+  // zoom, under the zoom buttons), sits in its own row under the map, and the wash paints each far realm in the
+  // colour it is shown in elsewhere, so neighbours that shared one pink on the Twin Rivers now differ.
+  async inkLegendView(pg) {
+    const r = await pg.evaluate(async () => {
+      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      UI.screen = 'game'; A.S.queue = []; UI.set.hints = false; if (UI.INKMAP) UI.INKMAP.budgetMs = 1e9; UI.render();
+      UI.ov = { type: 'bigmap' }; UI.renderModal(); UI.gmDraw && UI.gmDraw();
+      const L = document.getElementById('imLegendList');
+      const list = () => L ? [...L.children].map(e => e.textContent).join(',') : '';
+      const a = list();
+      const v = UI.gm.view; UI.gm.view = { x0: v.x0 + v.w * 0.6, y0: v.y0 + v.h * 0.3, w: v.w / 6, h: v.h / 6 }; UI.gmDraw();
+      const b = list();
+      const lg = document.querySelector('.greatmap .im-legend'), cv = document.querySelector('.greatmap .wr-map');
+      const below = !!(lg && cv && lg.getBoundingClientRect().top >= cv.getBoundingClientRect().bottom - 1);
+      // neighbouring far realms closer than 0.08 in OKLab, in the release's colours and in the map's
+      const ok = h => { const v3 = [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16) / 255).map(c => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+        const l = Math.cbrt(0.4122214708 * v3[0] + 0.5363325363 * v3[1] + 0.0514459929 * v3[2]), m = Math.cbrt(0.2119034982 * v3[0] + 0.6806995451 * v3[1] + 0.1073969566 * v3[2]), q = Math.cbrt(0.0883024619 * v3[0] + 0.2817188376 * v3[1] + 0.6299787005 * v3[2]);
+        return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q]; };
+      const pairs = new Set();
+      for (const p of A.S.prov) for (const j of p.adj || []) { const q = A.S.prov[j]; if (!q || !p.owner || !q.owner || p.owner === q.owner) continue; pairs.add(p.owner < q.owner ? p.owner + '|' + q.owner : q.owner + '|' + p.owner); }
+      let near0 = 0, near1 = 0;
+      for (const k of pairs) {
+        const [x, y] = k.split('|').map(id => A.S.realms[id]); if (!x || !y) continue;
+        const d = (h1, h2) => { if (!/^#[0-9a-f]{6}$/i.test(h1 || '') || !/^#[0-9a-f]{6}$/i.test(h2 || '')) return 1; const p1 = ok(h1), p2 = ok(h2); return Math.hypot(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]); };
+        const far = !(LORE.realms[x.id] && LORE.realms[y.id] && /^POL-(0\d|1\d|2\d|3[0-5])$/.test(x.id) && /^POL-(0\d|1\d|2\d|3[0-5])$/.test(y.id));
+        if (!far) continue;
+        if (d(x.color, y.color) < 0.08) near0++;
+        if (d(MAP.realmColor(x), MAP.realmColor(y)) < 0.08) near1++;
+      }
+      const kw = Object.values(A.S.realms).filter(x => /^POL-(0\d|1\d|2\d|3[0-4])$/.test(x.id)).every(x => MAP.realmColor(x) === x.color);
+      return { a: a.split(',').length, b: b.split(',').length, differ: a !== b, below, pairs: pairs.size, near0, near1, kw };
+    });
+    const ok = r.differ && r.a >= 10 && r.b >= 3 && r.below && r.near1 === 0 && r.kw;
+    return { ok, detail: `legend: ${r.a} realms at the whole view, ${r.b} zoomed in (differ ${r.differ}), under the map ${r.below}; far neighbours within 0.08 in OKLab: ${r.near0} in the stored colours, ${r.near1} on the map (of ${r.pairs} borders; the Known World's near pairs are hatched); Known World colours kept ${r.kw}` };
+  },
 };
