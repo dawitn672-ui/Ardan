@@ -182,4 +182,21 @@
     finally { W.telling = false; }
   };
   A.onDay.push(() => { try { if (great()) W.deliver(); } catch (e) { console.error('far news', e); } });
+  // ---- told at birth: 43's and 70's opening notes ("the world you are born into", "older quarrels") name realms
+  // anywhere on the continent. A child hears only of those within reach of home: a note is kept when a realm it names is
+  // the player's own or within reach of it (a note that names no realm is kept). Runs before 43's and 70's telling.
+  W.nearNote = function (pc, t) {
+    const S = A.S, mine = pc.realm; let named = false;
+    for (const id in S.realms) {
+      const r = S.realms[id]; if (!r) continue;
+      if ([r.short, r.name].some(n => n && t.includes(n))) { named = true; if (id === mine || !A.outOfReach(mine, id)) return true; }
+    }
+    return !named;
+  };
+  A.onMonth.push(pc => {
+    const S = A.S;
+    if (!great() || !pc || S.notesNear) return;
+    S.notesNear = 1;
+    for (const k of ['worldNotes', 'freshNotes']) if (Array.isArray(S[k]) && !S[k === 'worldNotes' ? 'worldTold' : 'freshTold']) S[k] = S[k].filter(t => W.nearNote(pc, t));
+  });
 })();

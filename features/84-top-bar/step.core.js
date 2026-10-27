@@ -10,7 +10,8 @@
 // A.dayTick as before; the step belongs to the interface alone.
 (function () {
   if (typeof UI === 'undefined' || !UI.A) return;
-  const ST = UI.step = { run: false, wait: false, kind: null, from: 0, to: 0, note: '', timer: null };
+  // UI.stepper, not UI.step: the release keeps the creation screen's page number in UI.step
+  const ST = UI.stepper = { run: false, wait: false, kind: null, from: 0, to: 0, note: '', timer: null };
   UI.STEP_SLICE = 20;   // ms of work between two draws
   const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
   const NAME = { week: 'Next week', month: 'Next month', until: 'Until something happens' };
@@ -21,8 +22,11 @@
     const S = A.S, c = S.warClock || 0;
     if (kind === 'week') return A.absDay() + 7;
     if (kind === 'until') return A.absDay() + 400;
-    for (const ms of A.MONTH_START) if (ms + 1 > c) return S.year * 365 + ms + 1;
-    return (S.year + 1) * 365 + A.MONTH_START[0] + 1;
+    // the turn of the next month at least a week away, so a life's first step (on 1 January, a day before the first
+    // month's turn) is a month, not a day
+    const turns = A.MONTH_START.map(ms => S.year * 365 + ms + 1).concat(A.MONTH_START.map(ms => (S.year + 1) * 365 + ms + 1));
+    const here = A.absDay(), at = c => turns.find(t => t - S.year * 365 > c && t - here >= 7);
+    return at(c) || (S.year + 2) * 365 + A.MONTH_START[0] + 1;
   };
   const busy = () => { const S = A.S, pc = A.pc(); return !S || !pc || !pc.alive || !!S.queue.length; };
 

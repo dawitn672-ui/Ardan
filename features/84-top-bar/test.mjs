@@ -35,8 +35,8 @@ const STEPS = () => {
     UI.A[kind]();
     const iv = setInterval(() => {
       slices++;
-      if (UI.step.wait) { events++; let g = 0; while (A.headReady() && g++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); }
-      else if (!UI.step.run) { clearInterval(iv); res({ kind, d0, w0, d1: A.absDay(), w1: A.S.warClock || 0, year: A.S.year, events, slices, alive: A.pc().alive }); }
+      if (UI.stepper.wait) { events++; let g = 0; while (A.headReady() && g++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); }
+      else if (!UI.stepper.run) { clearInterval(iv); res({ kind, d0, w0, d1: A.absDay(), w1: A.S.warClock || 0, year: A.S.year, events, slices, alive: A.pc().alive }); }
     }, 4);
   });
 };
@@ -90,6 +90,26 @@ Object.assign(tests, {
     });
     const ok = r.great && r.days >= 25 && r.long.length >= 0 && (r.long[0] || 0) < 1500 && r.slices >= 5;
     return { ok, detail: `a month of the Great Continent in ${r.ms} ms over ${r.slices} polls; long tasks ${r.long.slice(0, 6).join(', ') || 'none'} ms (the longest is the month's turn, a single day)` };
+  },
+  // a life begun through the creation screen (which keeps its page number in UI.step) steps a month at a time, and the
+  // stepper's state stays readable: a month passes per step and the step ends on its own
+  async tbStepAfterMenu(pg) {
+    const r = await pg.evaluate(async () => {
+      UI.A.newLife(); UI.step = 3; UI._newLifeOk = true; UI.startLife(); UI._newLifeOk = false; A.S.queue = []; UI.render();
+      const out = [];
+      for (let i = 0; i < 3; i++) {
+        const d0 = A.absDay(); UI.stepStart('month');
+        let g = 0;
+        while (UI.stepper.run && g++ < 600) {
+          if (UI.stepper.wait) { let k = 0; while (A.headReady() && k++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); }
+          await new Promise(res => setTimeout(res, 50));
+        }
+        out.push(A.absDay() - d0);
+      }
+      return { days: out, stepper: typeof UI.stepper === 'object', page: UI.step };
+    });
+    const ok = r.stepper && r.days.every(d => d >= 25 && d <= 38);
+    return { ok, detail: `three monthly steps after the creation screen: ${r.days.join(', ')} days; the stepper is its own object ${r.stepper}, the creation page ${r.page}` };
   },
 });
 export default tests;
