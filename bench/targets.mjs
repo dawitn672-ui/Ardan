@@ -55,7 +55,7 @@ export const TARGETS = {
 // (A.newGame({ lands: 'great' })), once in the Known World as above and once in the Far Lands (name@far), so the far
 // realms are held to the same design as the old ones. A Great Continent year costs about four times a Known World one
 // (2,033 provinces, 153 realms, every one simulated in full), so this league plays 6 lives a group for at most 25 years
-// (to age 41 to 43): 66 lives (60 played; the far serfs are skipped, see below), about 25 minutes on CI's four workers.
+// (to age 41 to 43): 66 lives, about 25 minutes on CI's four workers.
 // The death-age median is therefore capped near 41, and the bands are those of the Known World's league, widened where
 // 6 lives and 25 years cannot reach them (each widening says why). With most lives still going at the end, the
 // league counts a living life at the age it reached (bench/balance.mjs), so the death-age median reads about 42 unless
@@ -74,8 +74,8 @@ export const GREAT = {
   paths: {
     serf: { start: KNOWN_START('serf'), bands: { medianDeathAge: [20, 60], medianPeakCoin: [100, 150000], medianPeakFame: [0, 80], notableSharePct: [15, 100], freedSharePct: [15, 100] },
       note: 'Death age capped by the 25 years played. Notable and freed shares floored at 15% (25% for the Known World league): over 25 years a serf has had less time to be freed or to make a name.' },
-    'serf@far': { start: far('POL-36', KNOWN_START('serf')), bands: { medianDeathAge: [20, 60], medianPeakCoin: [100, 150000], medianPeakFame: [0, 80], notableSharePct: [15, 100], freedSharePct: [15, 100] },
-      note: 'No far realm keeps serfs (GD.UNFREE names only Known World realms, and the far-lands data adds none), so the league reports this group as skipped until one does. The lore has bonded labour and slave raids in the Thousand Isles and the Deep Southland.' },
+    'serf@far': { start: far('POL-91', KNOWN_START('serf')), bands: { medianDeathAge: [20, 60], medianPeakCoin: [100, 150000], medianPeakFame: [0, 80], notableSharePct: [15, 100], freedSharePct: [15, 100] },
+      note: 'Born in Vahra (POL-91), where debt bondage makes serfs: 99-far-lands adds 7 serf and 13 slave realms to GD.UNFREE from the lore. Taulen keeps corvée, not bondage.' },
     peasant: { start: KNOWN_START('peasant'), bands: { medianDeathAge: [30, 60], medianPeakCoin: [2000, 400000], medianPeakFame: [5, 100], notableSharePct: [35, 100] },
       note: 'Wealth and fame floors lowered (5,000 to 2,000, 8 to 5, notable 50% to 35%): the Known World league reaches its peaks over up to 70 years, this one over 25.' },
     'peasant@far': { start: far('POL-36', KNOWN_START('peasant')), bands: { medianDeathAge: [30, 60], medianPeakCoin: [2000, 400000], medianPeakFame: [5, 100], notableSharePct: [35, 100] } },
