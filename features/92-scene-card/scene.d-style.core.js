@@ -207,7 +207,7 @@ ${R}.sc-sheet .sc-card .choices > button.sc-ch{row-gap:4px;padding-top:9px;paddi
 ${R}.sc-sheet .sc-card .choices button .risk.sc-odds, ${R}.sc-sheet .sc-card .sc-chk, ${R}.sc-sheet .sc-card .sc-oncew{height:24px}
 /* a short phone (an iPhone SE, 667 px): a smaller bust and tighter gaps, so a three-choice scene fits one sheet */
 @media (max-height:700px){
-  ${R}.sc-sheet > .mbox.sc-card > .sc-in > .sc-vig{height:min(calc(100vw * 5 / 16), 140px)}
+  ${R}.sc-sheet > .mbox.sc-card > .sc-in > .sc-vig{height:min(calc(100vw * 6 / 16), 140px)}
   ${R}.sc-sheet:has(> .hint-float) > .mbox.sc-card > .sc-in > .sc-vig{height:88px}
   ${R}.sc-sheet .sc-card .sc-bust{width:60px;height:60px}
   ${R}.sc-sheet .sc-card.sc-has-vig.sc-has-bust .sc-head{margin-top:-20px}
