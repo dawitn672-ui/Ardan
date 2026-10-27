@@ -278,7 +278,10 @@ export default {
     const r = await pg.evaluate(() => {
       const bad = [], sample = [];
       A.newGame({ seed: 9931, lands: 'great', race: 'human', realm: 'POL-91', status: 'artisan', sex: 'F', startAge: 18 });
-      const queued = A.S.queue.some(q => q.ev === 'fp_start');
+      // nothing is queued at birth (Play stays enabled); the opening comes when the clock first runs
+      const empty = !A.S.queue.some(q => q.ev === 'fp_start');
+      A.advance(1);
+      const queued = empty && A.S.queue.some(q => q.ev === 'fp_start');
       const pc = A.pc(), lands = {};
       for (const [rid, L] of Object.entries(A.FAR.D.realms)) if (L.race === 'human') (lands[L.land] = lands[L.land] || []).push(rid);
       let n = 0;
@@ -298,9 +301,9 @@ export default {
       const q = { type: 'event', ev: 'fp_start_echo', forced: true, ctx: {} }; A.S.queue = [q]; const ev = A.eventView(q);
       const echoOk = !ev.skip && !FPT.raw(ev.text) && /young|youth|years ago/.test(ev.text);
       A.newGame({ seed: 9932, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
-      const known = A.S.queue.some(q => q.ev === 'fp_start');
+      A.advance(1); const known = A.S.queue.some(q => q.ev === 'fp_start');
       A.newGame({ seed: 9933, lands: 'great', race: 'human', realm: 'POL-05', status: 'serf', sex: 'M', startAge: 17, story: 'serf' });
-      const story = A.S.queue.some(q => q.ev === 'fp_start');
+      A.advance(1); const story = A.S.queue.some(q => q.ev === 'fp_start');
       return { queued, n, bad, sample, echoOk, known, story };
     });
     const ok = r.queued && r.n === 80 && !r.bad.length && r.echoOk && !r.known && !r.story;

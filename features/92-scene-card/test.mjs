@@ -364,4 +364,23 @@ export default {
     const ok = r.sheet && r.top <= 1 && r.over <= 1 && r.rows.length >= 3 && r.rows.every(h => h >= 52);
     return { ok, detail: `"${r.ev}" at 375 x 667, hint showing ${r.hint}: sheet top ${r.top} px, ${Math.max(0, r.over)} px to scroll; rows ${r.rows.join('/')} px` };
   },
+  // a scene about a beast of rank wears its tier (brief §1.5): a titan legendary, a great beast rare, an animal none
+  async scBeastTier(pg) {
+    const r = await pg.evaluate(SETUP).then(() => pg.evaluate(() => {
+      SCT.start({ seed: 7104, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const byTier = t => Object.keys(A.BEASTS || {}).find(id => A.beastTier(id) === t);
+      const out = {};
+      for (const t of ['titan', 'great', 'animal']) {
+        const id = byTier(t);
+        if (!id) { out[t] = 'none'; continue; }
+        A.S.queue = [{ type: 'event', ev: 'hunt_beast', forced: true, ctx: { beast: id } }];
+        const q = A.S.queue[0]; q.view = null; UI.render();
+        const tag = document.querySelector('#modal .sc-card .sc-tier[class*="sc-tier-"]');
+        out[t] = (A.S.queue[0] && A.S.queue[0].ctx.beast === id ? '' : '(ctx changed) ') + (tag ? tag.className.replace('sc-tier ', '') + ':' + tag.textContent.trim() : 'no tag');
+      }
+      return out;
+    }));
+    const ok = /sc-tier-legendary:★ legendary beast/.test(r.titan) && /sc-tier-rare:◆◆ great beast/.test(r.great) && /no tag/.test(r.animal);
+    return { ok, detail: `titan ${r.titan}; great ${r.great}; animal ${r.animal}` };
+  },
 };

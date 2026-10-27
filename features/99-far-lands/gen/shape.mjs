@@ -225,22 +225,29 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
     // the land's cells shared out again among its regions: a region short of its area takes the cells it bids
     // least for along its border with a neighbour of the same land that holds more than its own (so the Rime Coast
     // follows the new Arctic shore south into the pines, and each region stays in one piece round its middle)
-    for (let round = 0; round < 3; round++) {
+    balance(k => isOver.has(grp(k)), grp, 3);
+  }
+  // a region short of its area takes the cells it bids least for along its border with a neighbour of the same group
+  // that holds more than its own (mainland regions only; the waste is no region's to take)
+  function balance(inSet, grp, rounds) {
+    const isMain = k => k >= 0 && regs[k].kind === 'main';
+    for (let round = 0; round < rounds; round++) {
       count.fill(0); for (let i = 0; i < N; i++) if (owner[i] >= 0) count[owner[i]]++;
       const bids = new Map(), hq = new Heap(), seen = new Set();
       const bid = (k, i) => { let f = bids.get(k); if (!f) bids.set(k, f = bidder(regs[k], k)); return f(i); };
       const short = k => count[k] < target[k], long = k => count[k] > target[k];
       const offer = (k, i) => { const key = i * 128 + k; if (seen.has(key)) return; seen.add(key); hq.push(bid(k, i), key); };
+      const ok = (o, k) => isMain(o) && o !== k && grp(o) === grp(k) && long(o);
       for (let i = 0; i < N; i++) {
-        const k = owner[i]; if (k < 0 || regs[k].kind !== 'main' || !isOver.has(grp(k)) || !short(k)) continue;
-        for (const j of nbr4(i)) { const o = owner[j]; if (o >= 0 && o !== k && grp(o) === grp(k) && long(o) && !safe2(j, o)) offer(k, j); }
+        const k = owner[i]; if (!isMain(k) || !inSet(k) || !short(k)) continue;
+        for (const j of nbr4(i)) { const o = owner[j]; if (ok(o, k) && !safe2(j, o)) offer(k, j); }
       }
       let moved = 0;
       while (hq.size) {
         const key = hq.pop(), i = Math.floor(key / 128), k = key % 128, o = owner[i];
-        if (o < 0 || o === k || !short(k) || !long(o)) continue;
+        if (!isMain(o) || o === k || !short(k) || !long(o)) continue;
         owner[i] = k; count[k]++; count[o]--; moved++;
-        for (const j of nbr4(i)) { const p = owner[j]; if (p >= 0 && p !== k && grp(p) === grp(k) && long(p) && !safe2(j, p)) offer(k, j); }
+        for (const j of nbr4(i)) { const p = owner[j]; if (ok(p, k) && !safe2(j, p)) offer(k, j); }
       }
       if (!moved) break;
     }
@@ -268,10 +275,13 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
       const dR = edt(GW, GH, i => m[i] === 1), safe = new Uint8Array(N);
       for (let i = 0; i < N; i++) if (toBox[i] * C < 200) safe[i] = 1;
       for (const r of regs) { for (const cp of r.caps) disc(cp.x, cp.y, T.capR || 90, i => { safe[i] = 1; }); }
+      // only a region that holds more than its own area gives ground to the waste (the Cloudwall and the Jade Wall are
+      // regions of their own, and keep their land)
+      count.fill(0); for (let i = 0; i < N; i++) if (owner[i] >= 0) count[owner[i]]++;
       const cand = [];
-      for (let i = 0; i < N; i++) if (owner[i] >= 0 && mine.has(owner[i]) && !safe[i] && dR[i] * C < (T.wasteKm || 450)) cand.push([dR[i] * C - (T.wasteNoise || 160) * nz[i], i]);
+      for (let i = 0; i < N; i++) if (owner[i] >= 0 && mine.has(owner[i]) && count[owner[i]] > target[owner[i]] && !safe[i] && dR[i] * C < (T.wasteKm || 450)) cand.push([dR[i] * C - (T.wasteNoise || 160) * nz[i], i]);
       cand.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-      for (const [, i] of cand) { if (have <= want) break; count[owner[i]]--; owner[i] = wk; count[wk]++; have--; }
+      for (const [, i] of cand) { if (have <= want) break; const k = owner[i]; if (count[k] <= target[k]) continue; count[k]--; owner[i] = wk; count[wk]++; have--; }
     }
   }
   // ---- far@2: a land the lore's boxes give less ground than its area (the Deep Southland) grows into the sea round
@@ -317,6 +327,8 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
   if (plan.tight) tighten();
   if (plan.tight && plan.tight.waste) wastes();
   if (plan.tight && plan.tight.grow) grow();
+  // every land's regions brought nearer their areas along their shared borders
+  if (plan.tight && plan.tight.balanceAll) balance(() => true, k => regs[k].land, 6);
   dbg('tightened');
   tidy(['main']);
   dbg('tidied');

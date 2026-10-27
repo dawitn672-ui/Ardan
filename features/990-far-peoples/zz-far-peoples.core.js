@@ -258,10 +258,19 @@
       if (far() && pc && farRealm(pc.realm) && !(A.S.story && A.S.story.id) && !(o && o.noStart)) {
         pc.flags = pc.flags || {};
         pc.flags.fp_start = A.S.year;
-        A.queue({ type: 'event', ev: 'fp_start', forced: true });
+        // queued when the clock first runs, not at birth: the release keeps Play disabled while anything is queued
+        A.S.fpStartDue = 1;
       }
     } catch (e) { console.error('far start', e); }
     return r;
+  };
+  const advance = A.advance;
+  A.advance = function () {
+    try {
+      const S = A.S;
+      if (S && S.fpStartDue) { delete S.fpStartDue; const pc = A.pc(); if (pc && pc.alive) A.queue({ type: 'event', ev: 'fp_start', forced: true }); }
+    } catch (e) { console.error('far start', e); }
+    return advance.apply(this, arguments);
   };
   FP.land = pc => { const L = pc && FL.D.realms[pc.realm]; return L ? L.land : null; };
   FP.type = pc => { const L = pc && FL.D.realms[pc.realm]; return L ? L.type : null; };

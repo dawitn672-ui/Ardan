@@ -65,7 +65,7 @@ One colour and one icon per stat on the profile's tiles, the check chip, the del
 | Fighting tier | **Done** (91-look's rail chip; the People rows keep the release's tier chip). |
 | Once-in-a-life events | **Done** (92: ◆◆ ONCE IN A LIFE). |
 | Deeds and achievements | **Done.** The 37 achievements of the Dynasty tab each have a tier, from First Blood (common) to Legend (mythic), with gem, edge and tier word; locked ones keep the gem, muted. |
-| Legendary beasts | **Done** (this round) in the Codex's bestiary: an animal is common, a great beast rare, a titan legendary, a legend mythic (gem, edge, glow). 79's beast scenes do not mark them yet. |
+| Legendary beasts | **Done** (this round). In the Codex's bestiary an animal is common, a great beast rare, a titan legendary and a legend mythic (gem, edge, glow). A scene about a great beast or a titan carries its tier tag beside the title (92). |
 
 ### §1.6 Realm and house colours: partial (built this round)
 
@@ -268,7 +268,6 @@ Seen in the world tab and the full map of a Great Continent game. For lane L2:
 2. **Sparklines:** holdings' income, the 1920 stat tiles and the Realm band's four numbers. Each needs a short history, kept as UI state or recorded by the engine.
 3. **Path & War:** the ladder as a horizontal track.
 4. **Realm chips** wherever a realm is named: People rows, tooltips, the war rows.
-5. **79's beast scenes** wear the beast's tier.
 
 ## Screenshots
 

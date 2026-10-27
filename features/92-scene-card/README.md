@@ -12,7 +12,7 @@ Events are the game's main surface, and the release drew each one as a modal ove
 
 - **The picture** across the top, full bleed (94's colour print at 16:5, or 61's woodcut).
 - **The bust** of the person the scene is about (93's anime bust, or the beast), 84 px (96 at ≥1600, 68 on a phone), overlapping the picture's lower edge, with a "sticker" outline and a shadow.
-- **The title** in Cinzel 22, flush left beside the bust; a once-in-a-life event (`once: true`) carries a rare-tier tag (◆◆ ONCE IN A LIFE).
+- **The title** in Cinzel 22, flush left beside the bust; a once-in-a-life event (`once: true`) carries a rare-tier tag (◆◆ ONCE IN A LIFE), and a scene about a beast of rank (`ctx.beast`) its tier: a great beast rare (◆◆ GREAT BEAST), a titan legendary (★ LEGENDARY BEAST), a legend mythic (✦ A LEGEND).
 - **The text** in Literata 15/23, at most 68ch, with a gold initial; the asides of 55-bonds and 57-world-chronicle in Literata italic 13, `--ink-3`; "Read more", 34's two scales and anything else a feature adds go in the body.
 - **The choices** as rows on `--raised`, at least 44 px:
   - the number-key badge (the release's counter, so keys 1–6 still count the rows);
@@ -59,6 +59,7 @@ The scene fits one sheet (`scPhoneFit`).
 | `scPure` | 30 events drawn three times in each phase (with `UI.refresh`): `A.S` and the random stream unchanged, the second and third drawings the same markup |
 | `scPhone` | A long event at 150% text on a 390 × 844 phone: a sheet that fills the screen and scrolls itself; a wheel scrolls the sheet and not the page; rows of 52 px and up |
 | `scPhoneFit` | "A love philtre" on a 375 × 667 phone with the first-run hint showing: the sheet at the top, 0 px to scroll, rows of 52 px and up |
+| `scBeastTier` | A titan's scene is tagged ★ LEGENDARY BEAST, a great beast's ◆◆ GREAT BEAST, an animal's not at all |
 | `scAxe` | axe-core (WCAG 2.0–2.2 A/AA and best practice) on the dialog with a bust and checks, choosing and after, dark and light: 0 violations |
 | `scMotion` | Under the system's reduced motion, nothing in the dialog runs a transform when it opens or after a choice; with full motion both do; 96's Reduced on a full system and Full on a reduced system are obeyed |
 
