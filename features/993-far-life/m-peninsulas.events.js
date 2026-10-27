@@ -65,9 +65,11 @@
     {
       id: "fv_m_free_son",
       title: "Born free",
-      cond: (p, C) => C.realm(p, "POL-92") && C.teen(p) && C.male(p) && (C.noble(p) || C.rich(p)),
+      cond: (p, C) => C.realm(p, "POL-92", "POL-78") && C.teen(p) && C.male(p) && (C.noble(p) || C.rich(p)),
       w: 3, once: true,
-      text: "Your father was bought as a boy and rides in the Seventh Stall. You were born free, and the sons of the Stable-born may not join the stables. It is the caste's sorrow and its law. You ride better than half the bought boys in the yard. Your father has bought you a place in a temple school at Vahrapora.",
+      text: p => p.realm === "POL-78"
+        ? "Your father was bought as a boy and rides in the Fifth Purse of Navesht. You were born free, and the sons of the Purchased take oasis names and may not join the Purses. It is the caste's sorrow and its law. You ride better than half the bought boys in the yard. Your father has bought you a place with a counting house in Ozand."
+        : "Your father was bought as a boy and rides in the Seventh Stall. You were born free, and the sons of the Stable-born may not join the stables. It is the caste's sorrow and its law. You ride better than half the bought boys in the yard. Your father has bought you a place in a temple school at Vahrapora.",
       choices: [
         { t: "Go to the temple school", r: "You learn the Wheel's ledgers and how to keep accounts. Your father visits once a year and does not stay long.", fx: { literate: true, skill: { learning: 3 }, happy: -3 } },
         { t: "Ride for the stables under a bought name", check: { s: "riding", s2: "wil", d: 55 },

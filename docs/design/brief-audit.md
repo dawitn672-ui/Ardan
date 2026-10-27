@@ -170,7 +170,7 @@ Icon over cap label; the selected tab has a gold bar with a cut corner. The rele
   - ok: a gain;
   - accent: the rest.
 - 4 s on screen, paused while the pointer or focus is on one.
-- Bottom right on desktop. On the phone they sit above the bottom bar, not at the top of the content as the brief says.
+- Bottom right on desktop; on the phone, at the top of the content.
 - Measured by `toastStack`.
 
 **Cut-ins:** 96, one a month at most, skippable, with a reduced-motion banner and their own switch.
@@ -262,7 +262,6 @@ Seen in the world tab and the full map of a Great Continent game. For lane L2:
 3. **Path & War:** the ladder as a horizontal track.
 4. **Realm chips** wherever a realm is named: People rows, tooltips, the war rows.
 5. **79's beast scenes** wear the beast's tier.
-6. **Toasts at the top of the content on the phone,** as the brief says.
 
 ## Screenshots
 

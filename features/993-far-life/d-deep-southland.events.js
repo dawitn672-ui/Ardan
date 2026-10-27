@@ -120,7 +120,7 @@
       cond: (p, C) => C.land(p, "D") && (C.teen(p) || C.adult(p)) && C.faith(p, "REL-57"),
       w: 3, once: true,
       setup: (p, ctx) => { F.make(p, ctx, { sex: "M", age: 60, occ: "keeper of a royal drum" }); },
-      text: "The king of Busimo's ninety-two drums each have a keeper, and the drums are the kingdom. You carry milk and beer to feed them at the new moon for your uncle {them}, keeper of the eleventh. Tonight the Thunder Drum, the chief of them all, was beaten, and its voice was wrong: a hand higher than it was when you were small.",
+      text: p => (p.flags.fv_d_drum_child ? "You have carried milk to the drums since you were small enough to want to tap one. " : "") + "The king of Busimo's ninety-two drums each have a keeper, and the drums are the kingdom. You carry milk and beer to feed them at the new moon for your uncle {them}, keeper of the eleventh. Tonight the Thunder Drum, the chief of them all, was beaten, and its voice was wrong: a hand higher than it was when you were small.",
       choices: [
         { t: "Tell your uncle what you heard", r: "He goes grey. He tells you never to say it again, to anyone, and you see him look at the chief drum's keeper differently.", fx: { secret: 1, flag: "fv_d_drum_wrong", them: { op: 10 } } },
         { t: "Keep it to yourself", r: "You feed the eleventh drum and say nothing. Every new moon, the chief drum sounds a hand too high.", fx: { secret: 1, flag: "fv_d_drum_wrong" } },

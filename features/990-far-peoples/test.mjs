@@ -177,8 +177,8 @@ export default {
         for (const k of ['lord', 'ruler', 'council']) if (!V.term(cid, k)) bad.push(cid + ' ' + k);
         for (const k of ['greet', 'oath', 'curse', 'year']) if (!D[k] || V.fill(cid, D[k], { n: 'first', ru: 'X', y: 1 }) == null) bad.push(cid + ' ' + k);
         if (D.sayings.length < 3 || D.lines.length < 2) bad.push(cid + ' bank small');
-        const all = V.lines(cid);
-        if (all.length !== D.sayings.length + D.lines.length) bad.push(cid + ' unfilled');
+        const all = V.lines(cid), own = all.filter(l => !/:w\d+$/.test(l.key));
+        if (own.length !== D.sayings.length + D.lines.length) bad.push(cid + ' unfilled');
         for (const l of all) {
           if (FPT.raw(l.text) || FPT.markup(l.text)) bad.push(l.key + ' token');
           if (FPT.words(l.text) > (l.kind === 'saying' ? 16 : 18)) bad.push(l.key + ' long');
@@ -305,6 +305,128 @@ export default {
     });
     const ok = r.queued && r.n === 80 && !r.bad.length && r.echoOk && !r.known && !r.story;
     return { ok, detail: `a far birth opens with fp_start: ${r.queued}; ${r.n} openings (10 lands x 8 ranks) render and resolve; the callback reads the choice: ${r.echoOk}; none for a Known World birth (${!r.known}) or a chosen story (${!r.story}). "${r.sample[0]}"${r.bad.length ? '; BAD ' + r.bad.slice(0, 8).join(', ') : ''}` };
+  },
+
+  // the year as each far realm names it: its ruler's reign from the lore, its house's years, the Ledger's Long Count,
+  // the Lamp, the Cold Gate's wall; a successor's reign counts from the year he came to the throne in play
+  async fpYearNames(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const pc = FPT.great(), bad = [], out = {}, V = A.VOICE;
+      let named = 0, reign = 0;
+      const rids = Object.keys(A.FAR.D.realms);
+      for (const rid of rids) {
+        const cid = V.realmCult(rid), y = V.yearName(rid, cid);
+        if (FPT.raw(y) || FPT.markup(y)) bad.push(rid + ' ' + y);
+        if (!/^the year \d+$/.test(y)) named++;
+        if (V.reignStart(A.realm(rid)) != null) reign++;
+        if (['POL-36', 'POL-37', 'POL-70', 'POL-87', 'POL-91', 'POL-142'].includes(rid)) out[rid] = y;
+      }
+      // a new ruler: the lore's year no longer applies, the realm's history does
+      const R = A.realm('POL-37'), old = V.reignStart(R), ru = A.P(R.ruler);
+      const was = ru.given; ru.given = 'Zzother';
+      const after = V.reignStart(R); ru.given = was;
+      // the Known World
+      A.newGame({ seed: 9961, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const known = V.yearName('POL-01', 'CUL-02');
+      return { n: rids.length, named, reign, out, old, after, known, bad };
+    });
+    const ok = r.named >= 110 && r.reign >= 70 && !r.bad.length && r.old === 1096 && r.after == null && /winter of/.test(r.known);
+    return { ok, detail: `${r.named} of ${r.n} far realms name the year in their own way (${r.reign} by the lore's reign); ${Object.entries(r.out).map(([k, v]) => k + ': ' + v).join('; ')}; Hesh's reign from 1096 (${r.old}), and not for a successor (${r.after}); Aldmark: ${r.known}${r.bad.length ? '; BAD ' + r.bad.slice(0, 5).join(', ') : ''}` };
+  },
+
+  // the release's tables of children's games and of the lord a commoner answers to: every far culture has its own, and
+  // the scenes that read them show them; a Known World culture keeps the release's
+  async fpTables(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const pc = FPT.great({ startAge: 9 }), bad = [], cults = Object.keys(A.FAR.D.cultures);
+      for (const c of cults) { const g = A.FARP_GAME[c], l = A.FARP_LORD[c]; if (!g || !g[0] || !g[1] || !l || FPT.markup(g.join(' ') + l) || FPT.words(g[1]) > 20) bad.push(c); }
+      const show = (ev, cid) => { pc.cult = cid; const q = { type: 'event', ev, forced: true, ctx: {} }; A.S.queue = [q]; const v = A.eventView(q); A.S.queue = []; return v.skip ? null : v.text; };
+      let gameShown = 0, lordShown = 0, tried = 0;
+      for (const c of cults.slice(0, 40)) {
+        tried++;
+        const g = show('ch_play_game', c); if (g && g.includes(A.FARP_GAME[c][0])) gameShown++;
+        const l = show('ch_serf_bailiff', c); if (l && l.includes(A.FARP_LORD[c])) lordShown++;
+      }
+      A.newGame({ seed: 9962, race: 'human', realm: 'POL-01', status: 'serf', sex: 'M', startAge: 9 });
+      const k = A.pc(); A.S.queue = [];
+      const q = { type: 'event', ev: 'ch_play_game', forced: true, ctx: {} }; A.S.queue = [q]; const v = A.eventView(q); A.S.queue = [];
+      return { n: cults.length, bad, tried, gameShown, lordShown, known: v.skip ? 'skipped' : v.text };
+    });
+    const ok = r.n === 110 && !r.bad.length && r.gameShown >= 30 && r.lordShown >= 30 && /Ring Game/.test(r.known);
+    return { ok, detail: `${r.n - r.bad.length} of ${r.n} far cultures with a game and a lord; of ${r.tried} tried, the game scene shows its own game ${r.gameShown} times and the bailiff scene its own lord ${r.lordShown}; Aldmark: "${String(r.known).slice(0, 80)}"${r.bad.length ? '; BAD ' + r.bad.slice(0, 6).join(', ') : ''}` };
+  },
+
+  // far people (courtiers, spouses, anyone) show their people in the person view: greeting, oath, faith's practice,
+  // manners, food; escaped and pure; a Known World person shows none
+  async fpPeopleViews(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const pc = FPT.great({ realm: 'POL-37' }), bad = [];
+      const R = A.realm('POL-37'), court = Object.values(R.council || {}).map(x => A.P(x && x.id || x)).filter(Boolean);
+      const folk = Object.values(A.S.people).filter(p => p.alive && p.id !== pc.id && A.FAR.D.cultures[p.cult]).slice(0, 30);
+      let shown = 0;
+      const s0 = JSON.stringify(A.S), r0 = JSON.stringify(A.rngState);
+      for (const t of court.concat(folk)) {
+        const h = UI.personModal(t);
+        if (/Their people/.test(h)) shown++; else bad.push(t.id);
+        if (/<img|<script/.test(A.FARP.personHtml(t))) bad.push(t.id + ' markup');
+      }
+      const pure = JSON.stringify(A.S) === s0 && JSON.stringify(A.rngState) === r0;
+      const sample = A.FARP.personHtml(folk[0]).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      A.newGame({ seed: 9963, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const kw = Object.values(A.S.people).find(p => p.alive && p.id !== A.S.pc);
+      const known = /Their people/.test(UI.personModal(kw));
+      return { n: court.length + folk.length, court: court.length, shown, pure, sample, known, bad };
+    });
+    return { ok: r.shown === r.n && r.n >= 20 && r.pure && !r.known, detail: `${r.shown} of ${r.n} far people (${r.court} of them Hesh's court) show their people, purely: ${r.pure}; a Known World person: ${r.known ? 'SHOWN' : 'none'}. "${r.sample.slice(0, 260)}"` };
+  },
+
+  // the powers inside every far realm, named from the lore, with the factions 56 keeps; pure and escaped
+  async fpPowers(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const pc = FPT.great(), bad = [];
+      let n = 0;
+      for (const rid of Object.keys(A.FAR.D.realms)) {
+        const P = A.FARP.powers(rid);
+        if (!P || ['peace', 'liberty', 'war', 'claimant', 'independence'].some(k => !P[k] || !P[k][0] || !P[k][1])) { bad.push(rid); continue; }
+        pc.realm = rid;
+        const s0 = JSON.stringify(A.S), h = A.FARP.powersCard(pc);
+        if (!/The powers of/.test(h) || JSON.stringify(A.S) !== s0) bad.push(rid + ' card'); else n++;
+      }
+      pc.realm = 'POL-37';
+      const hesh = A.FARP.powersCard(pc).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+      pc.realm = 'POL-36';
+      const tab = UI.TAB.realm(pc);
+      return { n, bad, hesh, tab: /The powers of Taulen/.test(tab) };
+    });
+    return { ok: r.n === 118 && !r.bad.length && r.tab && /examined officials/.test(r.hesh) && /banner princes/.test(r.hesh), detail: `${r.n} far realms with their powers named; the Realm tab shows the card: ${r.tab}. ${r.hesh.slice(0, 300)}${r.bad.length ? '; BAD ' + r.bad.slice(0, 6).join(', ') : ''}` };
+  },
+
+  // one world: in a Great Continent game the Known World's cultures speak of the lands past the edge and the far
+  // cultures of the west, and six stories of the chain of hands are secrets with a truth; in a Known World game none
+  async fpOneWorld(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      FPT.great();
+      const V = A.VOICE, bad = [], creatures = LORE.creatures.map(c => c.name.toLowerCase().replace(/^the /, '')).filter(c => c.length > 3);
+      const kw = Object.keys(A.FARP_WEST), far = Object.keys(A.FAR.D.cultures);
+      let west = 0, east = 0;
+      for (const c of kw.concat(far)) {
+        const w = V.lines(c).filter(l => /:w\d+$/.test(l.key));
+        if (!w.length) bad.push(c + ' none');
+        for (const l of w) { if (FPT.raw(l.text) || FPT.words(l.text) > 18 || !l.topics.every(t => V.TOPICS[t]) || creatures.some(x => l.text.toLowerCase().includes(x))) bad.push(l.key); kw.includes(c) ? west++ : east++; }
+      }
+      const secrets = LORE.secrets.filter(s => /^SEC-F/.test(s.id)).length;
+      const sample = [V.lines('CUL-11').find(l => /:w/.test(l.key)).text, V.lines('CUL-60').find(l => /:w/.test(l.key)).text];
+      A.newGame({ seed: 9964, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const knownLines = V.lines('CUL-02').filter(l => /:w/.test(l.key)).length, knownSecrets = LORE.secrets.filter(s => /^SEC-F/.test(s.id)).length;
+      return { kw: kw.length, far: far.length, west, east, secrets, knownLines, knownSecrets, sample, bad };
+    });
+    const ok = r.kw === 24 && !r.bad.length && r.secrets === 6 && !r.knownLines && !r.knownSecrets;
+    return { ok, detail: `${r.kw} Known World cultures speak of the far lands (${r.west} lines) and ${r.far} far cultures of the west (${r.east}); 6 stories of the chain of hands are secrets in a Great Continent game (${r.secrets}); in a Known World game: ${r.knownLines} lines, ${r.knownSecrets} secrets. "${r.sample[0]}" / "${r.sample[1]}"${r.bad.length ? '; BAD ' + r.bad.slice(0, 6).join(', ') : ''}` };
   },
 
   // the Known World plays exactly as it did without this feature: three lives of five years in the Known World, and

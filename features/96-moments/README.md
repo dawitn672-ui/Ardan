@@ -41,6 +41,7 @@ Death is muted (a grey-blue band, no focus lines); a victory is vermilion and go
 - The messages it replaces move into a stack under it, `#toast-stack` (`aria-hidden`, since they were read out when they came): at most three in all, newest on top.
 - Each has an icon and a 3 px edge in its kind, read from the words: a refusal or a loss is danger, a gain is ok, the rest accent.
 - A toast stays 4 s, and pauses while the pointer or focus is on it.
+- Desktop toasts sit at the bottom right. On a phone they hang from the top of the content, with the older ones below.
 
 ## Measured by (`test.mjs`)
 
@@ -62,4 +63,3 @@ Death is muted (a grey-blue band, no focus lines); a victory is vermilion and go
 
 - **Moments come from readings, not from the engine's own events.** A rank won and lost between two draws is never seen. While the clock runs, the readings come from its light redraw, about every 1.5 s, which is always within a month.
 - **Victory needs the battle screen.** A battle resolved without the player on its screen gives no cut-in; neither does a duel.
-- **Toasts on the phone** sit above the bottom bar, not at the top of the content as the brief says.

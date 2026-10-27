@@ -31,6 +31,9 @@
     if (!t) return;
     document.documentElement.style.setProperty('--ts-h', '0px');
     if (!s || !s.children.length) return;
+    // the phone: toasts hang from the top of the content, the newest first and the older ones under it
+    if (window.matchMedia && window.matchMedia('(max-width: 760px)').matches) { s.style.bottom = 'auto'; s.style.top = Math.round(t.getBoundingClientRect().bottom + 8) + 'px'; return; }
+    s.style.top = 'auto';
     const base = parseFloat(getComputedStyle(t).bottom) || 16;
     s.style.bottom = base + 'px';
     document.documentElement.style.setProperty('--ts-h', (s.offsetHeight + 8) + 'px');
@@ -77,7 +80,7 @@
   const R = ':root[data-theme] body';
   const CSS = `
 ${R} #toast{bottom:calc(72px + var(--ts-h,0px));display:flex;align-items:flex-start;gap:8px;transition:opacity var(--m-exit,180ms) var(--ease-exit,ease-in)}
-@media (max-width:760px){${R} #toast{bottom:calc(16px + var(--ts-h,0px))}}
+@media (max-width:760px){${R} #toast{top:calc(56px + env(safe-area-inset-top,0px));bottom:auto;left:16px;right:16px;width:auto}}
 ${R} #toast.ts-on{pointer-events:auto}
 ${R} #toast > .ts-ic, ${R} #toast-stack .ts-ic{flex:none;width:16px;height:16px;margin-top:2px}
 ${R} #toast[data-kind=danger], ${R} #toast-stack [data-kind=danger]{border-left-color:var(--danger)}

@@ -103,7 +103,7 @@
     {
       id: "fv_m_stall_found",
       title: "A free man in the stables",
-      cond: (p, C) => C.realm(p, "POL-92") && C.adult(p) && C.flag(p, "fv_m_false_stall") && A.S.year - p.flags.fv_m_false_stall >= 3,
+      cond: (p, C) => C.realm(p, "POL-92", "POL-78") && C.adult(p) && C.flag(p, "fv_m_false_stall") && A.S.year - p.flags.fv_m_false_stall >= 3,
       w: 3, once: true,
       text: "You have ridden under a bought boy's stall-number since you were fifteen, though you were born free and a free man may not command men who were bought. Now somebody has talked. The stables vote tomorrow on what is to be done with you. Half of them have ridden beside you for years. The other half want your place.",
       choices: [

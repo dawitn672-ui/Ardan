@@ -213,6 +213,42 @@
     };
   }
 
+  // ---- 2b. the year as a far realm names it: the ruler's reign from the lore (A.FARP_REIGN, "king since 1081") until
+  // the throne changes hands in play, the house's years, and the eras the faiths count by (the Ledger's Long Count from
+  // 640 BR, the Lamp from Teshur's lamp of about 190, the Cold Gate's wall from the Sundering of about 2400 BR)
+  if (V) {
+    const reignStart = V.reignStart;
+    V.reignStart = function (R) {
+      const r = reignStart.apply(this, arguments);
+      if (r != null || !far() || !R || !farRealm(R.id)) return r;
+      const L = FL.D.realms[R.id], ru = A.P(R.ruler), G = (A.FARP_REIGN || {})[R.id];
+      if (!ru || !G || G[0] == null || !L.rulerName) return null;
+      // the lore's year is the lore's ruler's: a successor in play has his own in the realm's history
+      const given = A.parseCastName ? A.parseCastName(L.rulerName).given : String(L.rulerName).split(' ')[0];
+      return ru.given === given ? G[0] : null;
+    };
+    FP.ERAS = {
+      lc: y => y + 640,     // the Long Count of the Ledger
+      lamp: y => y - 189,   // the years of Teshur's lamp
+      wall: y => y + 2400,  // the Cold Gate's count from the Sundering
+    };
+    const yearName = V.yearName;
+    V.yearName = function (rid, cid) {
+      if (!far() || !farRealm(rid)) return yearName.apply(this, arguments);
+      const y = A.S.year, D = V.data(cid), R = A.realm(rid), ru = R && A.P(R.ruler), start = V.reignStart(R), G = (A.FARP_REIGN || {})[rid] || [];
+      const tok = { y, ru: ru ? ru.given : null, n: start != null && start <= y ? V.ordinal(y - start + 1) : null,
+        d: G[1] != null && G[1] <= y ? V.ordinal(y - G[1] + 1) : null, house: G[2] ? G[2].replace(/^The /, 'the ') : null };
+      for (const k in FP.ERAS) tok[k] = k === 'lamp' ? V.ordinal(FP.ERAS[k](y)) : String(FP.ERAS[k](y));
+      const tries = [].concat((A.FARP_YEAR || {})[cid] || [], D && D.year ? [D.year] : [], ['the {d} year of {house}', 'the {d} year of the dynasty']);
+      for (const t of tries) {
+        let bad = false;
+        const out = String(t).replace(/\{(\w+)\}/g, (m, k) => (tok[k] != null ? tok[k] : (bad = true, m)));
+        if (!bad) return out;
+      }
+      return `the year ${y}`;
+    };
+  }
+
   // ---- 5. starts: a far birth opens with a scene of its land, its realm's kind and its rank (fp_start, starts.events.js)
   const newGame = A.newGame;
   A.newGame = function (o) {
@@ -229,6 +265,78 @@
   };
   FP.land = pc => { const L = pc && FL.D.realms[pc.realm]; return L ? L.land : null; };
   FP.type = pc => { const L = pc && FL.D.realms[pc.realm]; return L ? L.type : null; };
+
+  // ---- 6. far people in the people views (55, 41, 64 draw UI.personModal): their people, their faith's practice,
+  // their manners. Pure: it reads the person and the data.
+  const esc = s => (UI.esc ? UI.esc(s) : String(s));
+  FP.personHtml = function (t) {
+    if (!far() || !t || !t.cult || !(FL.D.cultures || {})[t.cult]) return '';
+    const C = LORE.cultures[t.cult] || {}, Vd = V && V.data(t.cult), F = (A.FARP_FAITH || {})[t.faith], lines = [];
+    if (Vd) lines.push(`${C.name || 'Their people'}: greets you "${V.fill(t.cult, Vd.greet) || ''}" and swears "${V.fill(t.cult, Vd.oath) || ''}"`);
+    if (F) { const fn = (LORE.faiths[t.faith] || {}).name || 'the faith', fc = FP.faithCustom(t.faith), dn = fc && low(fc.name) !== low(fn) ? low(fc.name) + ' in ' + FP.MONTHS[fc.m] + ', when the household ' : 'every year the household '; lines.push(`Keeps ${low(fn)}: ${dn}${F.rite}; looks to ${F.priest}`); }
+    const cc = (A.FARP_CULT || {})[t.cult];
+    if (cc && cc.length) { const c = FP.custom(cc[V ? V.hash(t.id, 'fpm') % cc.length : 0]); const r = V ? V.fill(t.cult, c.rule) : c.rule; if (r) lines.push('Their manners: ' + r.replace(/\.$/, '')); }
+    const food = (A.FARP_FOOD || {})[t.cult];
+    if (food) lines.push(`Eats ${food}`);
+    return lines.length ? `<div class="fp-person"><div class="group-h">Their people</div>${lines.map(l => `<div class="small prof-li">${esc(/[.!?"]$/.test(l) ? l : l + '.')}</div>`).join('')}</div>` : '';
+  };
+  if (typeof UI.personModal === 'function') {
+    const pm = UI.personModal;
+    UI.personModal = function (t) {
+      const h = pm.apply(this, arguments);
+      try {
+        const block = FP.personHtml(t); if (!block || typeof h !== 'string') return h;
+        const at = h.indexOf('<div class="group-h">Between you</div>');
+        if (at >= 0) return h.slice(0, at) + block + h.slice(at);
+        const end = h.lastIndexOf('</div>');
+        return end > 0 ? h.slice(0, end) + block + h.slice(end) : h + block;
+      } catch (e) { return h; }
+    };
+  }
+
+  // ---- 7. the powers inside a far realm (56-realm-inside's factions, named as the realm would): a Realm tab card
+  FP.powers = rid => { const P = A.FARP_POWERS || {}, L = FL.D.realms[rid]; return P[rid] || (L && P.TYPE && P.TYPE[L.type]) || null; };
+  FP.powersCard = function (pc) {
+    const R = pc && A.realm(pc.realm);
+    if (!far() || !R || !farRealm(R.id)) return '';
+    const P = FP.powers(R.id); if (!P) return '';
+    const live = (A.S.factions || []).filter(f => f && f.realm === R.id);
+    const row = k => { const p = P[k]; if (!p) return ''; const f = live.find(x => x.kind === k), lead = f && A.S.houses && A.S.houses[f.leader];
+      return `<div class="tiny"><b>${esc(p[0].charAt(0).toUpperCase() + p[0].slice(1))}</b> want ${esc(p[1])}.${f ? ` <span class="muted">(a ${esc(((A.FACTIONS || {})[k] || {}).name || k)} stands: ${esc(String((f.members || []).length))} houses${lead ? ', led by ' + esc(lead.name) : ''}, discontent ${esc(String(Math.round(f.discontent || 0)))})</span>` : ''}</div>`; };
+    return `<div class="card small fp-powers" aria-label="The powers of ${esc(R.short)}"><b>The powers of ${esc(R.short)}</b>` +
+      ['peace', 'liberty', 'war', 'claimant', 'independence'].map(row).join('') + `</div>`;
+  };
+  const realmTab = UI.TAB && UI.TAB.realm;
+  if (typeof realmTab === 'function') UI.TAB.realm = function (pc) {
+    const h = realmTab.apply(this, arguments);
+    try { const c = pc && pc.alive ? FP.powersCard(pc) : ''; return c ? h + c : h; } catch (e) { return h; }
+  };
+
+  // ---- 8. one world: each half's voices carry what it believes of the other, and the stories told at one end of the
+  // chain of hands about the other are secrets with a truth (26-belief-truth). In a Great Continent game only.
+  if (V) {
+    const lines = V.lines;
+    V.lines = function (cid, extra) {
+      const out = lines.apply(this, arguments);
+      if (!far()) return out;
+      const land = (FL.D.cultures[cid] || {}).land, add = (A.FARP_WEST || {})[cid] || (land && (A.FARP_EAST || {})[land]) || [];
+      add.forEach((ln, i) => { const text = V.fill(cid, ln[0], extra); if (text) out.push({ key: cid + ':w' + i, text, topics: String(ln[1] || '').split(' '), kind: 'line' }); });
+      return out;
+    };
+  }
+  const install = FL.install, uninstall = FL.uninstall;
+  FL.install = function () {
+    const was = FL.active, r = install.apply(this, arguments);
+    try { if (!was && FL.active && Array.isArray(LORE.secrets)) for (const x of A.FARP_SECRETS || []) if (!LORE.secrets.some(s => s.id === x.id)) LORE.secrets.push(x); } catch (e) {}
+    return r;
+  };
+  FL.uninstall = function () {
+    const r = uninstall.apply(this, arguments);
+    try { if (!FL.active && Array.isArray(LORE.secrets)) { const ids = new Set((A.FARP_SECRETS || []).map(x => x.id)); for (let i = LORE.secrets.length - 1; i >= 0; i--) if (ids.has(LORE.secrets[i].id)) LORE.secrets.splice(i, 1); } } catch (e) {}
+    return r;
+  };
+  // a far game already open when this file runs (never at boot, but a hot reload) gets its secrets too
+  if (FL.active && Array.isArray(LORE.secrets)) for (const x of A.FARP_SECRETS || []) if (!LORE.secrets.some(s => s.id === x.id)) LORE.secrets.push(x);
 
   FP.build();
 })();

@@ -168,8 +168,8 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
   // ---- far@2: a land the lore boxes in on most sides keeps far more than its area after the sea above (the Black
   // Pines held 17.3 M km² against the lore's 9.4 M). Its regions' boxes are the boxes of ragged shapes, so the land
   // is cut a second time by land, not by region: the sea comes in again from the open sea, least worth first, with
-  // no depth limit, and takes any cell of a land while the land holds more than its regions' areas together (the
-  // Rime Coast and the Black Pines count as one, so the sea reaches the pines across the Arctic shore). It never
+  // no depth limit, and takes any cell of a land while the land holds more than its regions' areas together (lands
+  // can be joined to count as one, plan.tight.join). A region already at its area is crossed only at a cost. It never
   // takes the ground round a capital, a strait's shores, or the coast within 250 km of the Known World. Then the
   // land's cells are shared out again among its regions, each bidding for the cells nearest its box, so every region
   // holds its area. A cell's worth here also rises toward its region's middle, so the land stays round the lore's

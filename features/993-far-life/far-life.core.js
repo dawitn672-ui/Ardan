@@ -52,8 +52,38 @@
   };
   const realmName = p => { const r = A.realm(p.realm); return r ? (r.short || r.name || 'the realm') : 'the realm'; };
 
+  // The real people of the world: the realm's ruler, heir and councillors as the world holds them (99-far-lands names
+  // the far rulers from the lore), and its noble houses. Each puts the person in the scene with ctx.pid and fills
+  // ctx.rtitle (the ruler's title, without the lore's bracketed gloss); it returns null when there is nobody fit,
+  // and the caller drops the scene with ctx.skip.
+  const fit = (p, q) => !!(q && q.alive && q.id !== p.id);
+  const titleOf = R => String((R && R.title) || 'ruler').replace(/\s*\(.*?\)\s*/g, ' ').trim() || 'ruler';
+  const put = (p, ctx, q) => {
+    const R = A.realm(p.realm);
+    ctx.rtitle = titleOf(R);
+    if (!fit(p, q)) { ctx.skip = 1; return null; }
+    ctx.pid = q.id;
+    return q;
+  };
+  const figures = {
+    ruler: (p, ctx) => { const R = A.realm(p.realm); return put(p, ctx, R && A.P(R.ruler)); },
+    heir: (p, ctx) => { const R = A.realm(p.realm); return put(p, ctx, R && R.heir != null ? A.P(R.heir) : null); },
+    councillor: (p, ctx, seat) => {
+      const R = A.realm(p.realm), c = (R && R.council) || {};
+      const id = seat ? c[seat] : Object.values(c).find(x => fit(p, A.P(x)));
+      return put(p, ctx, id != null ? A.P(id) : null);
+    },
+    house: (p, ctx) => {
+      const hs = (A.realmHouses ? A.realmHouses(p.realm) : []).filter(h => h && !h.extinct && h.name);
+      if (!hs.length) { ctx.skip = 1; return null; }
+      const h = hs[(p.id.length + A.S.year) % hs.length];
+      ctx.house = h.name; ctx.seat = h.seat || h.name;
+      return h;
+    },
+  };
+
   A.FV = {
-    cap, yrs, span, hAge, make, kin, realmName,
+    cap, yrs, span, hAge, make, kin, realmName, titleOf, ...figures,
     ago: (p, f) => span(yrs(p, f)),
     Ago: (p, f) => cap(span(yrs(p, f))),
     fresh: (p, id) => !(p.flags.ev && p.flags.ev[id] != null),

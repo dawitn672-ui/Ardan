@@ -40,7 +40,7 @@ export default {
       for (const id of ids) if (!A.EV[id]) problems.push(`${id}: not registered`);
       const evs = ids.map(id => A.EV[id]).filter(Boolean);
       for (const e of evs) { const k = e.id.split('_')[1]; stats.perLand[k] = (stats.perLand[k] || 0) + 1; }
-      for (const L of ['r', 'f', 'b', 'h', 'm', 'a', 't', 'n', 'i', 'd']) if ((stats.perLand[L] || 0) < 10) problems.push(`land ${L}: only ${stats.perLand[L] || 0} events`);
+      for (const L of ['r', 'f', 'b', 'h', 'm', 'a', 't', 'n', 'i', 'd']) if ((stats.perLand[L] || 0) < 15) problems.push(`land ${L}: only ${stats.perLand[L] || 0} events`);
       if ((stats.perLand.x || 0) < 18) problems.push(`across the world: only ${stats.perLand.x || 0} events`);
       if ((stats.perLand.y || 0) < 15) problems.push(`faiths: only ${stats.perLand.y || 0} events`);
       // every flag read is set by some other fv_ event
@@ -54,6 +54,10 @@ export default {
       }
       const orphans = Object.keys(setBy).filter(f => !evs.some(e => new RegExp(`C\\.flag\\(p,\\s*"${f}"\\)|flags\\.${f}\\b`).test(e.cond.toString() + src(e.text) + (e.choices || []).map(c => src(c.fx) + src(c.r)).join(' '))));
       stats.orphans = orphans;
+      // far realms with a scene of their own (named in an fv_ cond)
+      const own = new Set(evs.flatMap(e => [...e.cond.toString().matchAll(/"POL-(\d+)"/g)].map(m => +m[1]).filter(n => n >= 36)));
+      stats.ownRealms = own.size;
+      if (own.size < 118) problems.push(`only ${own.size} of 118 far realms have a scene of their own`);
 
       let cur = '';
       const ce = console.error;
@@ -85,6 +89,8 @@ export default {
         }
         if (v.orphan) for (const id of p.parents || []) { const q = A.P(id); if (q) q.alive = false; }
         for (const f of v.flags || []) p.flags[f] = A.S.year - v.ago;
+        // a realm without a base of its own: the character is moved to its capital (C.realm and C.land then hold)
+        if (v.move) { const R = A.realm(v.move); p.realm = v.move; if (R && R.capitalProv != null) p.home = R.capitalProv; }
       };
       for (const e of evs) {
         const cs = e.cond.toString();
@@ -92,7 +98,7 @@ export default {
         const lands = [...new Set([...cs.matchAll(/C\.land\(p,\s*([^)]*)\)/g)].flatMap(m => [...m[1].matchAll(/"([A-Z])"/g)].map(x => x[1])))];
         if (!realms.length) realms = lands.length ? lands.flatMap(L => REALMS[L]) : /!C\.farLand/.test(cs) ? REALMS.K : ['POL-36', 'POL-58', 'POL-91', 'POL-127', 'POL-142'];
         else if (lands.length) realms = realms.filter(r => !landOf(r) || landOf(r) === 'K' || lands.includes(landOf(r))).concat(lands.flatMap(L => REALMS[L]));
-        realms = [...new Set(realms)].filter(r => LORE.realms[r]).slice(0, 5);
+        realms = [...new Set(realms)].filter(r => LORE.realms[r] && A.realm(r)).slice(0, 5);
         const flags = [...new Set([...cs.matchAll(/C\.flag\(p,\s*"(\w+)"\)/g)].map(m => m[1]))].filter(f => !new RegExp(`!C\\.flag\\(p,\\s*"${f}"\\)`).test(cs));
         const faiths = [...new Set([...cs.matchAll(/(!?)C\.faith\(p,\s*([^)]*)\)/g)].filter(m => !m[1]).flatMap(m => [...m[2].matchAll(/"(REL-\d+)"/g)].map(x => x[1])))];
         const want = { ruler: /C\.ruler\(p\)/.test(cs) && !/!C\.ruler\(p\)/.test(cs), coast: /C\.coast\(p\)/.test(cs), kids: /C\.hasKids\(p\)/.test(cs), orphan: /!C\.parentsAlive\(p\)/.test(cs) };
@@ -102,21 +108,28 @@ export default {
         const flagSets = flags.length > 1 ? [flags, ...flags.map(f => [f])] : [flags];
         let found = null;
         search: for (const realm of realms) {
-          A.deserialize(JSON.parse(baseFor(realm)));
+          const baseRealm = landOf(realm) ? realm : 'POL-36', move = baseRealm === realm ? null : realm;
+          A.deserialize(JSON.parse(baseFor(baseRealm)));
           const p = A.pc(), snap = JSON.stringify({ born: p.born, sex: p.sex, status: p.status, coin: p.coin, job: p.job, faith: p.faith, home: p.home, flags: p.flags, ruler: p.ruler });
           for (const fs of flagSets) for (const ago of agos) for (const age of AGES) for (const sex of ['M', 'F']) for (const status of STATUS) for (const job of JOBS) for (const faith of faiths.length ? faiths : [null]) {
-            const v = { age, sex, status, job, faith, ruler: want.ruler, coast: want.coast, kids: want.kids, orphan: want.orphan, flags: fs, ago };
+            const v = { age, sex, status, job, faith, ruler: want.ruler, coast: want.coast, kids: want.kids, orphan: want.orphan, flags: fs, ago, move, baseRealm };
             const o = JSON.parse(snap); Object.assign(p, { born: o.born, sex: o.sex, status: o.status, coin: o.coin, job: o.job, faith: o.faith, home: o.home, flags: o.flags, ruler: o.ruler });
             apply(p, v, e);
             let ok = false; try { ok = !!e.cond(p, A.C); } catch (err) { problems.push(`${e.id}: cond throws ${err.message}`); break search; }
-            if (ok) { found = { realm, v }; break search; }
+            if (ok) {
+              // a scene whose setup finds nobody fit (no heir, no house) declines; look in the next realm
+              const q0 = { type: 'event', ev: e.id };
+              let v0 = null; try { v0 = A.eventView(q0); } catch (err) { problems.push(`${e.id}: view throws ${err.message}`); break search; }
+              if (v0 && v0.skip && q0.ctx && q0.ctx.skip) { stats.declined = (stats.declined || 0) + 1; continue search; }
+              found = { realm, v }; break search;
+            }
           }
         }
         if (!found) { problems.push(`${e.id}: never eligible in a Great Continent character`); continue; }
         stats.variants++;
         const { realm, v } = found, vtag = `${e.id} [${realm} ${v.sex} ${v.age} ${v.status} ${v.job || '-'}]`;
         cur = vtag;
-        A.deserialize(JSON.parse(baseFor(realm)));
+        A.deserialize(JSON.parse(baseFor(v.baseRealm)));
         apply(A.pc(), v, e);
         const timed = v.flags.filter(f => new RegExp(`A\\.S\\.year - \\(?p\\.flags\\.${f}\\b`).test(cs));
         if (timed.length && timed.length === v.flags.length) {
@@ -169,7 +182,7 @@ export default {
     return {
       ok: r.problems.length === 0,
       detail: r.problems.length ? `${r.problems.length} problems: ${r.problems.slice(0, 40).join(' / ')}`
-        : `${s.events} events (${Object.entries(s.perLand).map(([k, n]) => k + ' ' + n).join(', ')}), ${s.memory} read a flag (${Math.round(100 * s.memory / s.events)}%), ${s.choices} choices taken, ${s.orphans.length} flags no one reads`,
+        : `${s.events} events (${Object.entries(s.perLand).map(([k, n]) => k + ' ' + n).join(', ')}), ${s.memory} read a flag (${Math.round(100 * s.memory / s.events)}%), ${s.choices} choices taken, ${s.ownRealms} of 118 far realms with scenes of their own, ${s.declined || 0} setups declined in some realm, ${s.orphans.length} flags no one reads`,
       data: { stats: s, problems: r.problems },
     };
   },
@@ -200,26 +213,39 @@ export default {
     return { ok: r.problems.length === 0, detail: r.problems.length ? r.problems.slice(0, 5).join(' / ') : `3 Known World games x 4 years identical with and without ${IDS.length} events; ${r.conds} conds false`, data: r };
   },
 
+  // the quick version, for CI: two far births, six years each
   async fvFarLives(pg) {
-    const r = await pg.evaluate((ids) => {
-      const set = new Set(ids), out = { lives: [], raw: [], fired: 0, shown: 0 };
-      const plan = [['POL-36', 0, 10], ['POL-58', 0, 10], ['POL-91', 0, 10], ['POL-142', 0, 10], ['POL-136', 0, 10],
-        ['POL-127', 16, 6], ['POL-70', 16, 6]];
-      plan.forEach(([realm, startAge, years], i) => {
-        A.newGame({ seed: 8800 + i, lands: 'great', realm, status: i % 3 ? 'peasant' : 'artisan', startAge, sex: i % 2 ? 'F' : 'M' });
-        const L = { realm, startAge, fv: [], events: 0 };
-        T.play(years, { onEvent: v => {
-          L.events++; out.shown++;
-          const all = [v.title, v.text, ...(v.choices || []).map(c => c.t)].join(' | ');
-          if (T.raw.test(all)) out.raw.push(`${realm}: ${all.match(T.raw)[0]} in "${v.title}"`);
-        } });
-        const seen = Object.keys(A.pc().flags.ev || {}).filter(id => set.has(id));
-        L.fv = seen; out.fired += seen.length;
-        out.lives.push(L);
-      });
-      return out;
-    }, IDS);
-    const ok = r.raw.length === 0 && r.fired > 0;
-    return { ok, detail: `${r.lives.length} lives, ${r.shown} events shown, ${r.fired} fv_ events met (${r.lives.map(l => l.realm + ':' + l.fv.length).join(' ')})${r.raw.length ? '; raw: ' + r.raw.slice(0, 3).join(' / ') : ''}`, data: r };
+    return farLives(pg, [['POL-36', 0, 6], ['POL-142', 0, 6]], 1);
+  },
+  // the long version (about five minutes): ten years from birth in six Far Lands and six from sixteen in two more;
+  // the median far newborn must meet at least 3 of the land's own scenes, as a Known World newborn does.
+  // Runs only when named: node tests/run.mjs <build> --features=far-life --only=fvFarLivesLong
+  async fvFarLivesLong(pg) {
+    if (!process.argv.some(a => a.startsWith('--only=') && a.includes('fvFarLivesLong'))) return { ok: true, detail: 'skipped (five minutes): run with --only=fvFarLivesLong' };
+    return farLives(pg, [['POL-36', 0, 10], ['POL-58', 0, 10], ['POL-91', 0, 10], ['POL-142', 0, 10], ['POL-136', 0, 10], ['POL-111', 0, 10],
+      ['POL-127', 16, 6], ['POL-70', 16, 6]], 3);
   },
 };
+
+async function farLives(pg, plan, minMedian) {
+  const r = await pg.evaluate(({ ids, plan }) => {
+    const set = new Set(ids), out = { lives: [], raw: [], fired: 0, shown: 0 };
+    plan.forEach(([realm, startAge, years], i) => {
+      A.newGame({ seed: 8800 + i, lands: 'great', realm, status: i % 3 ? 'peasant' : 'artisan', startAge, sex: i % 2 ? 'F' : 'M' });
+      const L = { realm, startAge, fv: [], events: 0 };
+      T.play(years, { onEvent: v => {
+        L.events++; out.shown++;
+        const all = [v.title, v.text, ...(v.choices || []).map(c => c.t)].join(' | ');
+        if (T.raw.test(all)) out.raw.push(`${realm}: ${all.match(T.raw)[0]} in "${v.title}"`);
+      } });
+      const seen = Object.keys(A.pc().flags.ev || {}).filter(id => set.has(id));
+      L.fv = seen; out.fired += seen.length;
+      out.lives.push(L);
+    });
+    return out;
+  }, { ids: IDS, plan });
+  const births = r.lives.filter(l => l.startAge === 0).map(l => l.fv.length).sort((a, b) => a - b);
+  const median = births.length ? births[Math.floor((births.length - 1) / 2)] : 0;
+  const ok = r.raw.length === 0 && median >= minMedian;
+  return { ok, detail: `${r.lives.length} lives, ${r.shown} events shown, ${r.fired} fv_ scenes met (${r.lives.map(l => l.realm + (l.startAge ? '@' + l.startAge : '') + ':' + l.fv.length).join(' ')}), newborn median ${median}${r.raw.length ? '; raw: ' + r.raw.slice(0, 3).join(' / ') : ''}`, data: r };
+}

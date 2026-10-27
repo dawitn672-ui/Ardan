@@ -17,4 +17,22 @@ export default [
       'now has its own (A.FARP_FAITH[faith].priest: the examined official, the felt-keeper, the tide-caller ...).',
     edits: [['"REL-19":"an old corsair"})[p.faith]||"the priest"', '"REL-19":"an old corsair"})[p.faith]||A.FARP_FAITH&&A.FARP_FAITH[p.faith]&&A.FARP_FAITH[p.faith].priest||"the priest"']],
   },
+  {
+    id: 'FARP-GAME',
+    blob: 'ardan-content',
+    why: 'The childhood scenes name a people\'s children\'s game from the Known World\'s cultures, else "Captains". A far ' +
+      'culture now has its own (A.FARP_GAME: Dyke and Flood, bones, Tiger and Goats ...), asked first; no Known World culture has an entry.',
+    edits: [
+      ['game=p=>p.cult==="CUL-02"||p.cult==="CUL-18"?', 'game=p=>A.FARP_GAME&&A.FARP_GAME[p.cult]||(p.cult==="CUL-02"||p.cult==="CUL-18"?'],
+      ['["Captains","a war game of horse, foot and a marshal on a squared board"],faithFest=', '["Captains","a war game of horse, foot and a marshal on a squared board"]),faithFest='],
+    ],
+  },
+  {
+    id: 'FARP-LORD',
+    blob: 'ardan-content',
+    why: 'The same scenes name the lord a commoner answers to by realm, else "the lord" ("the bailiff of {lord}"). A far ' +
+      'culture now has its own (A.FARP_LORD: the magistrate, the banner captain, the clan-mother ...), asked first.',
+    edits: [['lord=p=>p.realm==="POL-27"?"the abbot":p.realm==="POL-11"||p.realm==="POL-34"?"the clan-mothers":"the lord"',
+      'lord=p=>A.FARP_LORD&&A.FARP_LORD[p.cult]||(p.realm==="POL-27"?"the abbot":p.realm==="POL-11"||p.realm==="POL-34"?"the clan-mothers":"the lord")']],
+  },
 ];

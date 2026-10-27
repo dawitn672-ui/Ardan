@@ -232,7 +232,8 @@
   const menuLands = () => (UI.cr && UI.cr.lands) || FL.MENU_LANDS;
   const ready = great => {
     if (FL.active !== great || (FL.active && FL.part !== D)) { FL.set(great, D); UI.worldReady = false; }
-    if (A.S && FL.isGreat(A.S) !== great) A.S = null;
+    // a world of other lands (or of a legacy part) would sit under the creation screen on the wrong grid: it goes
+    if (A.S && (FL.isGreat(A.S) !== great || ((A.S.world && A.S.world.parts) || []).some(k => FL.LEGACY.includes(k)))) A.S = null;
   };
   for (const k of ['newLife', 'randomLife']) {
     const f = UI.A[k];
