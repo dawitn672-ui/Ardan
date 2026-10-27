@@ -260,7 +260,7 @@ export default {
     const r = await pg.evaluate(() => {
       UI.A.newLife();
       const rid = Object.keys(LORE.realms).find(k => /Busimo/.test(LORE.realms[k].name));
-      const row = () => { for (let st = 0; st < 6; st++) { UI.step = st; UI.render(); const sw = [...document.querySelectorAll('[data-v^="skin:"]')]; if (sw.length) return sw.map(e => e.dataset.v.slice(5)); } return []; };
+      const row = () => { if ("crQuick" in UI) UI.crQuick = false; for (let st = 0; st < 6; st++) { UI.step = st; UI.render(); const sw = [...document.querySelectorAll('[data-v^="skin:"]')]; if (sw.length) return sw.map(e => e.dataset.v.slice(5)); } return []; };
       Object.assign(UI.cr, { race: 'human', realm: rid, sex: 'F', home: null, house: null });
       const far = row();
       UI.A.crApp('skin:' + GD.SKIN.human[0]); row();
