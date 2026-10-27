@@ -226,7 +226,10 @@
       f[i * n + j] = s2 ? E.SEA + E.HOP * steps * 0.5 : E.ROAD + E.HOP * steps;
       dist[i * n + j] = d; sea[i * n + j] = s2 ? 1 : 0;
     }
-    return (E._roads = { S, key, n, f, dist, sea, idx });
+    // each market's roads, cheapest first (ties by index): the caravans stop looking where no price could pay the road
+    const near = [];
+    for (let i = 0; i < n; i++) { const L = []; for (let j = 0; j < n; j++) if (j !== i) L.push(j); L.sort((a, b) => f[i * n + a] - f[i * n + b] || a - b); near.push(L); }
+    return (E._roads = { S, key, n, f, dist, sea, idx, near });
   };
   E.road = function (a, b) {
     const rs = live(), T = E.roads(rs), i = T.idx[a], j = T.idx[b];
@@ -238,22 +241,32 @@
     const S = A.S, eco = S.eco = S.eco || {}, car = [], rs = live(), T = E.roads(rs), N = T.n;
     const cands = [], war = new Int8Array(N * N);   // 0 not yet asked, 1 at peace, 2 at war: asked once a month
     const atPeace = (si, di) => { const x = si < di ? si * N + di : di * N + si; if (!war[x]) war[x] = A.hostile && A.hostile(rs[si].id, rs[di].id) ? 2 : 1; return war[x] === 1; };
+    // a destination pays only if its price beats the source's by more than the road: no price anywhere is above the
+    // dearest, so a source walks its roads cheapest first and stops at the first road the dearest price could not pay
+    // (the same candidates as asking every market, which cost markets² × goods a month on a large map). Each candidate
+    // keeps its place in the old order (source, good, destination), so equal scores sort as before.
+    const Gs = G(), ks = []; for (const k in Gs) ks.push(k);
+    const NK = ks.length, top = {};
+    for (const k of ks) { let m = -Infinity; for (let di = 0; di < N; di++) { const md = rs[di].mkt; if (md && md.p[k] > m) m = md.p[k]; } top[k] = m; }
     for (let si = 0; si < N; si++) {
-      const src = rs[si], ms = A.mkt(src.id);
-      for (const k in G()) {
+      const src = rs[si], ms = A.mkt(src.id), near = T.near[si];
+      for (let ki = 0; ki < NK; ki++) {
+        const k = ks[ki], base = Gs[k].base;
         const spare = ms.s[k] - E.normal(ms, k) * 0.8; if (!(spare > 1)) continue;
-        const floor = ms.p[k] * 1.1 + G()[k].base * E.SEA;   // no road is cheaper than this
-        for (let di = 0; di < N; di++) {
-          if (di === si) continue;
+        const floor = ms.p[k] * 1.1 + base * E.SEA;   // no road is cheaper than this
+        const reach = (top[k] - ms.p[k] * 1.1) / base, lim = reach + Math.abs(reach) * 1e-9 + 1e-9;
+        for (const di of near) {
+          const x = si * N + di;
+          if (T.f[x] > lim) break;
           const dst = rs[di], md = dst.mkt; if (!md || !(md.p[k] > floor)) continue;
-          const x = si * N + di, gain = md.p[k] - ms.p[k] - G()[k].base * T.f[x] - ms.p[k] * 0.1;
+          const gain = md.p[k] - ms.p[k] - base * T.f[x] - ms.p[k] * 0.1;
           if (!(gain > 0)) continue;
           if (!atPeace(si, di)) continue;   // war closes the road
-          cands.push({ src, dst, ms, md, k, score: gain / G()[k].base, R: { dist: T.dist[x], sea: !!T.sea[x] } });
+          cands.push({ src, dst, ms, md, k, score: gain / base, R: { dist: T.dist[x], sea: !!T.sea[x] }, o: (si * NK + ki) * N + di });
         }
       }
     }
-    cands.sort((x, y) => y.score - x.score);
+    cands.sort((x, y) => y.score - x.score || x.o - y.o);
     const sent = {};
     for (const c of cands) {
       if ((sent[c.src.id] || 0) >= E.PER_SRC) continue;

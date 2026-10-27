@@ -92,7 +92,7 @@
   // the road between two market towns: its carting cost per load (a share of the base price), steps, km, days, by sea
   let roadMemo = null;
   MT.road = function (a, b) {
-    const mt = A.S.mt, key = a * 4096 + b;
+    const mt = A.S.mt, key = a * 65536 + b;   // unique for any Int16 province id (4096 capped the map at 4,096 provinces)
     if (!roadMemo || roadMemo.mt !== mt || roadMemo.ver !== mt.ver || roadMemo.prov !== A.S.prov) roadMemo = { mt, ver: mt.ver, prov: A.S.prov, m: new Map() };
     // remembered for the same towns and owners (a pure function of the map and who holds the two towns)
     const Pa = A.prov(a), Pb = A.prov(b), own = Pa && Pb ? Pa.owner + '|' + Pb.owner : '', hit = roadMemo.m.get(key);

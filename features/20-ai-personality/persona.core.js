@@ -236,42 +236,52 @@ A.aiInterestParts = (a, b, out) => { out = out || []; interestPersona(a, b, out)
 A.aiInterestSum = (a, b) => interestPersona(a, b, null);
 
 // relation drift: everything that moves a's opinion of b each year (A.politicsYear adds A.aiPullSum; the UI shows the parts)
+// One body for both: with `out` null only the sum is kept and no label is built (A.politicsYear asks for every pair of
+// realms each year); the terms are added in the same order, so the sum is the parts' sum to the last bit.
+const pullTerms = function (a, b, out) {
+  const ra = A.realm(a), rb = A.realm(b);
+  let sum = 0;
+  if (!ra || !rb) return sum;
+  const add = (l, v) => { if (out) out.push([typeof l === 'function' ? l() : l, v]); else sum += v; };
+  const P = A.rulerPersona(a), allied = (ra.allies || []).includes(b), trade = A.hasTrade(a, b);
+  // the engine's own yearly pulls (unchanged from A.politicsYear)
+  allied && add('Allies', 1);
+  trade && add('Trade partners', 1);
+  const same = ra.faith && rb.faith && ra.faith === rb.faith;
+  same && add('Same faith', .4);
+  A.claimsOn(a, b).length && add('They hold land we claim', -1.5);
+  A.claimsOn(b, a).length && add('They claim our land', -1);
+  rb.infamy > 25 && A.neighbors(a).includes(b) && add(() => `Their infamy (${Math.round(rb.infamy)})`, -rb.infamy / 30);
+  ra.overlord === b && add('We pay them tribute', -.8);
+  // the ruler's character
+  if (P.social && (allied || trade)) add(() => `Ruler is ${lead(P, 'social', Math.sign(P.social))}: ${P.social > 0 ? 'warms to friends' : 'keeps friends at arm\'s length'}`, .4 * P.social * ((allied ? 1 : 0) + (trade ? 1 : 0)));
+  if (ra.faith && rb.faith && P.zeal) {
+    if (same) add(() => `Ruler is ${lead(P, 'zeal', Math.sign(P.zeal))}: ${P.zeal > 0 ? 'one faith' : 'faith matters little'}`, .5 * P.zeal);
+    else if (P.zeal > 0) add(() => `Ruler is ${lead(P, 'zeal', 1)}: another faith`, -.6 * P.zeal);
+  }
+  const rival = (ra.rivals || []).includes(b);
+  if (rival && P.wrath > 0) add(() => `Ruler is ${lead(P, 'wrath', 1)}: nurses the rivalry`, -.8 * P.wrath);
+  if (rival && P.wrath < 0) add(() => `Ruler is ${lead(P, 'wrath', -1)}: lets the quarrel cool`, -.4 * P.wrath);
+  if (P.warmth > 0 && !rival && !A.hostile(a, b)) add(() => `Ruler is ${lead(P, 'warmth', 1)}`, .3 * P.warmth);
+  if (P.pride > 0 && A.neighbors(a).includes(b) && A.realmPower(rb) / Math.max(1, A.realmPower(ra)) > 2.2) add(() => `Ruler is ${lead(P, 'pride', 1)}: resents their strength`, -.6 * P.pride);
+  const Pb = A.rulerPersona(b);
+  if (Math.abs(Pb.honor) >= .3) add(Pb.honor > 0 ? 'Their ruler keeps faith' : 'Their ruler breaks faith', .4 * Pb.honor);
+  return sum;
+};
 A.aiPullParts = function (a, b, ui) {
   const ra = A.realm(a), rb = A.realm(b), out = [];
   if (!ra || !rb) return out;
-  const P = A.rulerPersona(a), allied = (ra.allies || []).includes(b), trade = A.hasTrade(a, b);
-  // the engine's own yearly pulls (unchanged from A.politicsYear)
-  allied && out.push(['Allies', 1]);
-  trade && out.push(['Trade partners', 1]);
-  const same = ra.faith && rb.faith && ra.faith === rb.faith;
-  same && out.push(['Same faith', .4]);
-  A.claimsOn(a, b).length && out.push(['They hold land we claim', -1.5]);
-  A.claimsOn(b, a).length && out.push(['They claim our land', -1]);
-  rb.infamy > 25 && A.neighbors(a).includes(b) && out.push([`Their infamy (${Math.round(rb.infamy)})`, -rb.infamy / 30]);
-  ra.overlord === b && out.push(['We pay them tribute', -.8]);
-  // the ruler's character
-  if (P.social && (allied || trade)) out.push([`Ruler is ${lead(P, 'social', Math.sign(P.social))}: ${P.social > 0 ? 'warms to friends' : 'keeps friends at arm\'s length'}`, .4 * P.social * ((allied ? 1 : 0) + (trade ? 1 : 0))]);
-  if (ra.faith && rb.faith && P.zeal) {
-    if (same) out.push([`Ruler is ${lead(P, 'zeal', Math.sign(P.zeal))}: ${P.zeal > 0 ? 'one faith' : 'faith matters little'}`, .5 * P.zeal]);
-    else if (P.zeal > 0) out.push([`Ruler is ${lead(P, 'zeal', 1)}: another faith`, -.6 * P.zeal]);
-  }
-  const rival = (ra.rivals || []).includes(b);
-  if (rival && P.wrath > 0) out.push([`Ruler is ${lead(P, 'wrath', 1)}: nurses the rivalry`, -.8 * P.wrath]);
-  if (rival && P.wrath < 0) out.push([`Ruler is ${lead(P, 'wrath', -1)}: lets the quarrel cool`, -.4 * P.wrath]);
-  if (P.warmth > 0 && !rival && !A.hostile(a, b)) out.push([`Ruler is ${lead(P, 'warmth', 1)}`, .3 * P.warmth]);
-  if (P.pride > 0 && A.neighbors(a).includes(b) && A.realmPower(rb) / Math.max(1, A.realmPower(ra)) > 2.2) out.push([`Ruler is ${lead(P, 'pride', 1)}: resents their strength`, -.6 * P.pride]);
-  const Pb = A.rulerPersona(b);
-  if (Math.abs(Pb.honor) >= .3) out.push([Pb.honor > 0 ? 'Their ruler keeps faith' : 'Their ruler breaks faith', .4 * Pb.honor]);
+  pullTerms(a, b, out);
   if (ui) {
     // what A.diplomacyYear does on top: allies warm by one more, everyone else drifts 3% back toward neutral
     const v = ra.rel ? ra.rel[b] || 0 : 0;
-    if (allied) out.push(['Sworn friendship', 1]);
+    if ((ra.allies || []).includes(b)) out.push(['Sworn friendship', 1]);
     else if (Math.abs(v * .03) >= .05) out.push(['Old feelings fade', -v * .03]);
     return out.filter(x => Math.abs(x[1]) >= .05).map(([l, x]) => [l, Math.round(x * 10) / 10]);
   }
   return out;
 };
-A.aiPullSum = (a, b) => A.aiPullParts(a, b, false).reduce((s, x) => s + x[1], 0);
+A.aiPullSum = (a, b) => pullTerms(a, b, null);
 
 // ---------- decisions ----------
 // keep or break an alliance (diploAI). Same two rolls the engine made, odds scaled by honor.
