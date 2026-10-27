@@ -115,7 +115,7 @@ export function lorePlan(L) {
   // far@2: the Black Pines and the Southern Peninsulas cut down to their regions' areas (shape.mjs, tighten). Joining
   // the Rime Coast to the pines (join: { N: 'T' }) let the sea through the Arctic shore and left it in islands; alone, the
   // pines are reached from the Ice Bight, the Fog Sea and the gaps in the shore, and the Rime Coast keeps its land
-  const tight = { join: {}, lands: ['T', 'M'], slack: 1.04, capR: 90, mid: 300, noise: 420, keepBy: ['N'], keepKm: 260, keepPairs: [['N', 'T']], waste: ['H', 'R'], wasteSlack: { H: 1.12, R: 0.96 }, grow: ['D'], growGain: { D: 1.14 }, balanceAll: true };
+  const tight = { join: {}, lands: ['T', 'M'], slack: 1.04, capR: 90, mid: 300, noise: 420, keepBy: ['N'], keepKm: 260, keepPairs: [['N', 'T']], waste: ['H', 'R'], wasteSlack: { H: 1.12, R: 0.96 }, grow: ['D'], growGain: { D: 1.14 }, balanceAll: true, balanceAcross: true };
   // the waste regions: high ground along a land's ranges, held by no realm (shape.mjs, wastes)
   const WASTE = { H: ['The High Wastes', [4600, 7400]], R: ['The Rim Wastes', [1400, 3100]] };
   for (const L of tight.waste) {

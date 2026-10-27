@@ -1,6 +1,6 @@
 # War in the Far Lands
 
-**Aspect:** War (round 10, lane 4: the Great Continent as deep in war as the Known World) · **Kind:** system, a generator and its data, no patches, no events.
+**Aspect:** War (round 10, lane 4: the Great Continent as deep in war as the Known World) · **Kind:** system, a generator and its data, 11 events, no patches.
 
 99-far-lands gave every far realm an army borrowed from a Known World realm on the same ground, and nothing else of war: no styles, no orders, no Legends, no Masters. The lore (`canon/lore/war-and-legends.json`, `far-lands.json`) has all of it. This feature turns it into game data and puts it where the release, 32, 38, 48 and 68 already read.
 
@@ -58,6 +58,25 @@ The 40 Legends and 160 Masters are people on 1 January 1105, seeded once in a ne
 - **Conflicts** (68-casus-belli): of the lore's ten, three start as wars on 1 January 1105 (Taulen against the Black Lamp, Vahra against Kethra over the Upper Plain, Busimo against Nkara over the lake islands), each with a casus belli that cites the want ("Taulen's old want: to burn out the Black Lamp before it burns another census roll. Also: the cause given, a holy war."). Six start as a want with a plan behind it (`r.csPlan`, `A.CASUS.WANT`): the Right Wing on the felt, Hesh on the Sau, Kemodari on the Strait, Thinsak on Pravith's throne, the South Chain on the Spear-Marshal's staff, Taulen on Ozand's silk. The Basins' boys is a grudge both ways and nothing more, because it is a secret. Every pair's relations fall (35 for a war or a want, 20 for the grudge) and each names the other a rival.
 - **Sieges** (36): a far city's walls and size make its siege longer. A far capital's walls follow its template (walled river cities, oases, holds and canal cities keep walls 3; tent capitals and boat beaches at most 1). The siege counter of a far province moves 1/k of a day a day, k = 1 + the template's walls (capital only) + 0.3 × log2(people / 450,000), divided by 1 + 0.12 a battalion of engineers among the besiegers (up to 1.5). Venshai: k 1.74, 120 days against 69.
 
+## 6. A life inside it (`c-life.core.js`, `d-life.events.js`)
+
+- **The 18 organisations take the right kind of person.** Each is one of seven kinds, with its own way in and its own duty:
+
+  | Kind | Bodies | Who gets in | The duty (every 4 to 5 months) |
+  | --- | --- | --- | --- |
+  | censors | the Red Wall, the Lacquer Coast Censors | literate, wits 50, honor 50 | a magistrate's grain accounts (`fw_duty_censor`) |
+  | schools | the Hall of Nine Targets, the Strait Navigators, the Tevoane Yard | the style's skill 30, 40 coin | the year's test (`fw_duty_school`) |
+  | spies | the Northern Wind, the Wicks (no courtiers), the Whistling Arrows | intrigue or stealth 30 | a man to be watched (`fw_duty_spy`) |
+  | rings | the Black Belt Ring, the Felt Council's Champions, the Temple Ring of Moinlum | unarmed 30, strength 50 | a bout at new moon (`fw_duty_ring`) |
+  | council | the Twelve Ropes' Council | a ruling house, the gentry or a captain; command 40 | the spring raid (`fw_duty_council`) |
+  | temple | the Inner Well, the Ember and River Bride's Priestesses (women), the Founding Canoe's Keepers | the realm's faith, piety 50 | the night watch (`fw_duty_temple`) |
+  | judges | the Coral Coast Well-Keepers (honor 55), the Rope Men (riding or athletics 30) | will 45 | a quarrel brought in (`fw_duty_judge`) |
+
+  Always: of the body's realm, grown, free, sworn to no other. A member learns the body's style, answers to its head, gains a point of merit a month and more from the duties (fx `fwOrg`), and rises through its ranks at 20, 55 and 120 merit ("Student of the Bow of the Hall of Nine Targets", then "Bearer of the Bow"). The orders card lists the bodies of your realm, with what each asks and a button to ask.
+- **More named people at 1105** (`FW.seedCast`): in every far realm, an instructor at each of its first two schools (living at the school's seat), two officers (three in a realm of 100,000 men or more) and a retired champion, each taught the realm's national styles. 565 people; a far realm's median of people carrying one of its national styles is 5. None is above Elite (`p.fwc` marks them), so the 32-ladder caps are as they were.
+- **A soldier's life in the template's terms.** Enlisting in a far realm opens `fw_recruit` (the ten and the pot for the horse peoples, the military roll for the river empires, where not to stand near an elephant, the oar and the grapnel, the towers of the passes, nine days with an old hunter, the age-set's tall shields); each step up opens `fw_rankup` in the same terms. A soldier of a horse people with no horse is offered one once a year (`fw_horse`): a levy horse against his pay (60 coin, five a month), one bought outright, or walking on. With a horse he moves to the realm's light horse (the Khaganate: scouts to horse archers).
+- **The wars of 1105 are legible.** Each is declared in the news on the first day ("In the far lands: the War of Bharavar…", with 68's casus belli), a player of either side is told the Wars map shows the front, and a recruiter comes to a grown subject of either side who is not already serving (`fw_war_recruit`: sign, and be paid the first month, or send him on).
+
 ## Measured by (`test.mjs`)
 
 | Test | Result |
@@ -68,12 +87,13 @@ The 40 Legends and 160 Masters are people on 1 January 1105, seeded once in a ne
 | `fwPeople` | 40 of 40 Legends at Legend worth, 158 Masters at Master worth and 2 trimmed; realms, styles, ages, homes and weaknesses as the lore; at most 5 Masters a realm; the person card; training under a Master. |
 | `fwConflicts` | 10 conflicts: 3 wars, each casus belli citing its want; 6 plans and wants. |
 | `fwFarPlays` | tempers; Venshai's siege 1.74 times as long; a duel with a Legend fought out; a year of war with battles in far wars; rendering changes neither the state nor the random stream. |
+| `fwLife` | 565 more named people (median 5 per realm carry a national style, none above Elite, at most 5 Masters a realm); the three wars in the news; the recruiter in Vahra; taken into the Hall of Nine Targets, a duty queued, raised a rank; the recruit scene in the Khaganate; the horse offered, scouts to horse archers with a debt of 60; a rank-up scene; every scene with its tokens filled. |
 | `fwSaveLoad` | a far save loads back the same after a Known World game, with its Legends and orders. |
 | `fwKnownSame` | 3 Known World lives of 3 years: the same state and stream without this feature, and after a far game in the same page. |
 
 ## Cost
 
-A new far game takes about 0.6 s more (1.3 s in all on the shared machine). Raising 103 orders read 32-ladder's census once per order (4.5 s); while the far orders are raised at once, the census is kept up to date by hand (`A.ladderCensus` returns that copy for the batch). The page grows by about 110 KB packed (590 KB of text in `a-data.core.js`). Ten years of a far game (99's `flContinentLoads`, same build with and without this feature) took 121 s against 97 s: three more wars from 1 January 1105, 103 more divisions, and generals who think on their temper's clock. A Known World game costs nothing.
+A new far game takes about 0.6 s more (1.3 s in all on the shared machine). Raising 103 orders read 32-ladder's census once per order (4.5 s); while the far orders are raised at once, the census is kept up to date by hand (`A.ladderCensus` returns that copy for the batch). The page grows by about 110 KB packed (590 KB of text in `a-data.core.js`). A far general's template (tempers and doctrines, asked about 50,000 times a year each) is kept per realm for the game in hand. My wrappers come to about 2% of a far year (profile of `fwFarPlays`' year: temper 77 ms, doctrine 47 ms, the siege pre-pass a share of 136 ms, of 10.6 s). Ten years of a far game (99's `flContinentLoads`, same build with and without this feature) took 121 s against 97 s: three more wars from 1 January 1105, 103 more divisions, and generals who think on their temper's clock. A Known World game costs nothing.
 
 ## The data
 
@@ -81,8 +101,9 @@ A new far game takes about 0.6 s more (1.3 s in all on the shared machine). Rais
 
 ## Limits
 
-- **People per far realm are few.** A far realm has few named people besides its court, so a national style is carried by few people at the start; most far fighters met in the world are made as they are needed.
+- **Realms with no national style** (40 of 118, whose styles are all chain or household) have their cast taught a chain style instead.
 - **The lore's conflicts are read by hand** (`FW.CONFLICTS`): who presses whom, and whether it starts as a war, a want or a grudge. A new conflict in the lore needs a line there.
-- **Organisations do nothing yet.** The 18 non-field orders have a seat, a head and a group, but no events, missions or way in.
+- **One duty event per kind of organisation.** Seven events serve 18 bodies; a body's own story (the Wicks' heresy, the Navigators' charts) is not written.
+- **The recruit and rank-up scenes** need a far soldier, so 8 test characters never meet them and the event linter only reads them.
 - **A Master's school seat** moves a student to the province of that name when he enrols; the release takes the first province of that name in the realm, which is the right one for every far seat today.
 - **Tempers are a lean, not a rule.** A far general's own traits still decide when they give a temper; the template only breaks a tie or fills an empty one.

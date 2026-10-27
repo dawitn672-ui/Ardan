@@ -138,6 +138,8 @@
     if (!FW.on || !pc || !pc.alive || !A.S || !A.S.fw) return;
     try {
       const S = A.S, busy = () => S.queue.some(q => q && q.ctx && q.ctx.fwq);
+      // the standing order a loaded save gives a soldier with a stance (A.migrate), so a far save loads back exact
+      if (pc.mil && pc.mil.stance && !pc.tac) pc.tac = { atk: pc.mil.stance === 'press' ? 'assault' : pc.mil.stance === 'spare' ? 'probe' : 'auto', def: 'auto' };
       // the horse debt comes out of pay
       if (pc.fwDebt > 0) { const v = Math.min(pc.fwDebt, 5, pc.coin); pc.coin -= v; pc.fwDebt -= v; if (pc.fwDebt <= 0) { pc.fwDebt = 0; A.log('The horse is paid for. It is yours now, not the hundred\'s.', 'good'); } }
       // rank-up scenes

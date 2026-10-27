@@ -9,7 +9,8 @@ const nameOf = id => { const p = A.P(id); return p ? A.fullName(p, false) : 'som
 const who = id => { const p = A.P(id); return p ? `<span class="click u" data-a="ov" data-v="person:${esc(p.id)}">${esc(A.fullName(p, false))}</span>` : 'someone'; };
 const house = id => { const h = A.S.houses && A.S.houses[id]; return h ? `<span class="click u" data-a="ov" data-v="house:${esc(h.id)}">${esc(h.name)}</span>` : 'a house'; };
 const list = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a[0] || '';
-const facName = k => ((A.FACTIONS || {})[k] || {}).name || 'faction';
+// a far realm names its own powers (990-far-peoples); every other faction keeps the release's name
+const facName = (k, rid) => (rid && A.FARP_POWERS_NAME && A.FARP_POWERS_NAME({ kind: k, realm: rid })) || ((A.FACTIONS || {})[k] || {}).name || 'faction';
 
 // one line of the court's record, in words (pure)
 RI.courtLine = function (r, e) {
@@ -53,14 +54,14 @@ UI.riCourtCard = function (r, pc) {
     h += '<div class="group-h">The great lords</div><div class="tscroll"><table class="t small"><tr><th>House</th><th>Head</th><th>Loyalty</th><th>Wants</th><th>Faction</th></tr>';
     for (const x of top) {
       const p = x.headPid ? A.P(x.headPid) : null, f = A.factionsOf(r.id).find(f => f.members.includes(x.id));
-      h += `<tr${p ? aimTitle(p) : ''}><td>${house(x.id)}</td><td>${p && p.alive ? who(p.id) : '—'}</td><td>${Math.round(x.op != null ? x.op : 50)}</td><td class="small">${p && p.alive ? esc(RI.wantText(RI.aims(p).want)) : ''}</td><td class="small">${f ? esc(facName(f.kind)) : ''}</td></tr>`;
+      h += `<tr${p ? aimTitle(p) : ''}><td>${house(x.id)}</td><td>${p && p.alive ? who(p.id) : '—'}</td><td>${Math.round(x.op != null ? x.op : 50)}</td><td class="small">${p && p.alive ? esc(RI.wantText(RI.aims(p).want)) : ''}</td><td class="small">${f ? esc(facName(f.kind, r.id)) : ''}</td></tr>`;
     }
     h += '</table></div>';
   }
   // the factions are people
   for (const f of A.factionsOf(r.id)) {
     const lead = A.S.houses[f.leader], head = lead && lead.headPid ? A.P(lead.headPid) : null, back = RI.backers(f);
-    h += `<div class="tiny">${esc(facName(f.kind))}: led by ${head && head.alive ? who(head.id) + ' of ' + house(lead.id) : lead ? house(lead.id) : 'nobody'}${head && head.alive ? `, who wants ${esc(RI.wantText(RI.aims(head).want))}` : ''}${back.length ? `; on the council, ${list(back.map(p => who(p.id)))} lean${back.length > 1 ? '' : 's'} its way` : ''}.</div>`;
+    h += `<div class="tiny">${esc(facName(f.kind, r.id))}: led by ${head && head.alive ? who(head.id) + ' of ' + house(lead.id) : lead ? house(lead.id) : 'nobody'}${head && head.alive ? `, who wants ${esc(RI.wantText(RI.aims(head).want))}` : ''}${back.length ? `; on the council, ${list(back.map(p => who(p.id)))} lean${back.length > 1 ? '' : 's'} its way` : ''}.</div>`;
   }
   // what is before the court next
   const ag = r.riAgenda;

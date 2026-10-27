@@ -15,7 +15,13 @@
 (() => {
   const FB = () => A.FB;
   const pick = (p, ctx, fam, f) => { const id = FB() && FB().pick(p, fam, f); if (!id) { ctx.skip = 1; return null; } return FB().fill(p, ctx, id); };
-  const one = (p, ctx, id) => (FB() ? FB().fill(p, ctx, id) : (ctx.skip = 1, null));
+  // one creature; mode 'subject' makes the scene about its named one (a fight with it is the fight with that one),
+  // 'seen' only counts it as seen
+  const one = (p, ctx, id, mode) => {
+    const c = FB() ? FB().fill(p, ctx, id) : (ctx.skip = 1, null);
+    if (c && mode && ctx.fbIndKey && FB().nstate(ctx.fbIndKey).alive) { if (mode === 'subject') ctx.fbNamed = ctx.fbIndKey; else ctx.fbSeen = ctx.fbIndKey; }
+    return c;
+  };
   // what you learn of it (26-belief-truth): 2 seen, 3 known; the line goes to the story log
   const learn = (p, ctx, lvl, how) => { if (A.BT && ctx.beast) A.BT.learn(p, ctx.beast, lvl, how); return ''; };
   const sell = (p, ctx, share) => { const n = Math.max(1, Math.round((ctx.fbCoin || 4) * (share || 1))); p.coin += n; return `It fetches ${A.coin ? A.coin(n) : n + ' suns'}.`; };
@@ -35,7 +41,7 @@
         { t: 'Pen the herds and sit up with them', check: { s: 'survival', s2: 'wil', d: 45 },
           win: { r: 'Three nights by the fire. On the fourth it does not come back.', fx: { skill: { survival: 2 }, happy: 1 } },
           lose: { r: 'You sleep at the wrong hour. Another goat goes.', fx: { coin: -6, happy: -2 } } },
-        { t: 'Keep the children in and let it be', r: 'It takes what it wants for a month, then moves on.', fx: { coin: -3, happy: -1 } },
+        { t: 'Keep the children in and let it be', fbSpare: true, r: 'It takes what it wants for a month, then moves on.', fx: { coin: -3, happy: -1 } },
       ],
     },
     {
@@ -142,11 +148,11 @@
       setup: (p, ctx) => { pick(p, ctx, 'sight'); },
       text: 'Your mother stops on the path and points at the ground. "{fbAc}," she says. "Fresh." She shows you how the weight falls, and which way it went, and which way you should go.',
       choices: [
-        { t: 'Ask everything about it', r: 'She answers until you are home and she is tired of you.', fx: (p, ctx) => { learn(p, ctx, 1, 'Your mother tells you of'); return ''; } },
+        { t: 'Ask everything about it', r: 'She answers until you are home and she is tired of you.', fx: (p, ctx) => { p.flags.fb_tracks = A.S.year; learn(p, ctx, 1, 'Your mother tells you of'); return ''; } },
         { t: 'Follow the tracks when she is not looking', check: { s: 'survival', s2: 'spd', d: 40 },
-          win: { r: 'You follow them to a ridge and see it, far below. You never forget it.', fx: (p, ctx) => { p.flags.fb_child_saw = A.S.year; return learn(p, ctx, 2); } },
+          win: { r: 'You follow them to a ridge and see it, far below. You never forget it.', fx: (p, ctx) => { p.flags.fb_child_saw = A.S.year; p.flags.fb_tracks = A.S.year; return learn(p, ctx, 2); } },
           lose: { r: 'You get lost. Your father finds you after dark, and is not gentle.', fx: { happy: -3, wil: 0.2 } } },
-        { t: 'Hold her hand the rest of the way', r: 'She laughs, but she holds it.', fx: { happy: 2 } },
+        { t: 'Hold her hand the rest of the way', r: 'She laughs, but she holds it.', fx: { happy: 2, flag: 'fb_tracks' } },
       ],
     },
 
@@ -154,9 +160,9 @@
     {
       id: 'fb_ash_mother',
       title: 'The Ash Mother',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-92'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-92') && C.fbAlive(p, 'CRE-92'),
       w: 3.5, cool: 12,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-92'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-92', 'subject'); },
       text: 'A shadow crosses the high pasture and the yaks bolt. She is over the Twin Teeth, the Ash Mother, the oldest the Dragon Watch has counted. A monk with a tally-board runs past you toward the ridge, shouting her count.',
       choices: [
         { t: 'Help the monk keep the count', check: { s: 'int', s2: 'ins', d: 46 },
@@ -171,9 +177,9 @@
     {
       id: 'fb_sovarn_giri',
       title: 'The Wheel-King\'s elephant',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-111'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-111') && C.fbAlive(p, 'CRE-111'),
       w: 3.5, cool: 15, once: true,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-111'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-111', 'seen'); },
       text: 'Sovarn-Giri passes through on the road to the capital, the Wheel-King\'s own elephant, fifty-two years old and taller than the gate. His mahout is drunk. The beast is not. At the well it stops, and looks at the crowd as if counting it.',
       choices: [
         { t: 'Offer it the sugarcane from your load', r: 'It takes the whole bundle, gently. The crowd remembers who fed it.', fx: { coin: -3, fame: 1, happy: 2 } },
@@ -201,16 +207,16 @@
     {
       id: 'fb_masked_one',
       title: 'The mask on the back of the head',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-114'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-114') && C.fbAlive(p, 'CRE-114'),
       w: 3.5, cool: 10,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-114'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-114', 'subject'); },
       text: 'The honey-gatherers go into the mangroves with masks tied to the backs of their heads, so the tiger thinks they are watching. It works on most tigers. The Masked One has killed thirty-one who wore them. The honey season is now.',
       choices: [
         { t: 'Go in with the mask and three others', check: { s: 'survival', s2: 'ins', d: 47 },
           win: { r: 'A good harvest, and all four come out.', fx: { coin: 12, happy: 2 } },
           lose: { r: 'She takes the last man in line. You carry back what is left.', fx: { happy: -6, wil: 0.5, flag: 'fb_masked_loss' } } },
         { t: 'Hunt her before the season', r: 'Someone has to.', fx: { beast: { id: 'CRE-114', place: 'the mangrove channels', title: 'The Masked One' } } },
-        { t: 'Sit this season out', r: 'You buy honey from those who went. It is dearer this year.', fx: { coin: -4 } },
+        { t: 'Sit this season out', fbSpare: true, r: 'You buy honey from those who went. It is dearer this year.', fx: { coin: -4 } },
       ],
     },
     {
@@ -231,9 +237,9 @@
     {
       id: 'fb_bapa_lau',
       title: 'The toll-island',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-130'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-130') && C.fbAlive(p, 'CRE-130'),
       w: 3.5, cool: 10,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-130'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-130', 'subject'); },
       text: 'Your boat must pass the toll-island. The boatmen throw a goat in first, for Bapa Lau, the Strait\'s grandfather, who takes one man a year if he is not fed. Seven metres of him, they say. This year nobody has brought a goat.',
       choices: [
         { t: 'Buy a goat at the landing', r: 'It costs three times what a goat should. The boatmen relax.', fx: { coin: -6, piety: 1 } },
@@ -246,9 +252,9 @@
     {
       id: 'fb_tasieng_grief',
       title: 'Tasieng\'s Grief',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-139'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-139') && C.fbAlive(p, 'CRE-139'),
       w: 3.5, cool: 10,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-139'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-139', 'subject'); },
       text: 'The pearl beds off Tirangga are rich this year, and nobody dives. The great shark is back, the one the harbour-master names for his drowned son. He pays double to anyone who goes down, and treble to anyone who kills it.',
       choices: [
         { t: 'Dive, and keep one eye up', check: { s: 'survival', s2: 'sta', d: 50 },
@@ -261,9 +267,9 @@
     {
       id: 'fb_kalunges_mother',
       title: 'The lake\'s queen',
-      cond: (p, C) => C.fbNear(p, 'CRE-183') && C.age(p) >= 14,
+      cond: (p, C) => C.fbNear(p, 'CRE-183') && C.fbAlive(p, 'CRE-183') && C.age(p) >= 14,
       w: 3.5, once: true,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-183'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-183', 'seen'); },
       text: 'Off the drum island they row an old ox out for Kalunge\'s Mother. The great crocodile chooses kings, they say: the one she lets land on the island is king. This year a second boat has set out, with a cousin of the king in it.',
       choices: [
         { t: 'Beat the drum for the old king', r: 'You are seen with the king\'s men. That is noted.', fx: { rulerOp: 3, flag: 'fb_drum_king' } },
@@ -276,24 +282,24 @@
     {
       id: 'fb_canoe_breaker',
       title: 'The Canoe-Breaker',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-182') && !C.ruler(p),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-182') && C.fbAlive(p, 'CRE-182') && !C.ruler(p),
       w: 3.5, cool: 8,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-182'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-182', 'subject'); },
       text: 'You must cross to the market on the far shore. The bull hippo of Ruvela has sunk eleven canoes, and his ground is the shallows on the short way. The long way round the reeds costs a day.',
       choices: [
         { t: 'Take the short way and paddle hard', check: { s: 'sea', s2: 'spd', d: 48 },
           win: { r: 'You hear him blow behind you, and then you are past.', fx: { coin: 5, happy: 1 } },
           lose: { r: 'Canoe twelve. You swim to the reeds without your goods.', fx: { coin: -10, health: -6 } } },
-        { t: 'Go the long way round the reeds', r: 'A day lost, and the market is half over when you come.', fx: { coin: 1 } },
+        { t: 'Go the long way round the reeds', fbSpare: true, r: 'A day lost, and the market is half over when you come.', fx: { coin: 1 } },
         { t: 'Wade out and meet him with a spear', r: 'The fishermen call you a fool and come to watch.', fx: { beast: { id: 'CRE-182', place: 'the shallows of Ruvela', title: 'The Canoe-Breaker' } } },
       ],
     },
     {
       id: 'fb_grey_matriarch',
       title: 'The Grey Matriarch',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-165'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-165') && C.fbAlive(p, 'CRE-165'),
       w: 3.5, cool: 12,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-165'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-165', 'seen'); },
       text: 'The largest of the mammoth herds comes down to the shore where the walrus haul out, forty of them, the Grey Matriarch leading. A giant of Fjorund stands on the ridge and chants at them, counting. He waves you away from the young ones.',
       choices: [
         { t: 'Do as he says', r: 'The giant nods to you, which is something.', fx: { happy: 2, flag: 'fb_giant_nod' } },
@@ -306,9 +312,9 @@
     {
       id: 'fb_widow_maker',
       title: 'The Widow-Maker',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-162'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-162') && C.fbAlive(p, 'CRE-162'),
       w: 3.5, cool: 8,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-162'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-162', 'subject'); },
       text: 'The hunters go out to the breathing holes in pairs this year. The white bear of the Walrus Strand has killed four hunters since 1095, and he comes from downwind. Your partner is late. The seals will not wait.',
       choices: [
         { t: 'Go out alone and watch the wind', check: { s: 'survival', s2: 'ins', d: 52 },
@@ -341,7 +347,7 @@
       setup: (p, ctx) => { one(p, ctx, C_tiger(p)); },
       text: 'On the trapline the sable are gone from three snares, and the snow says why: Grandfather, as the Woods folk call him. Only a clan\'s chief may hunt one, once, and Burtasar the Trapper did it with a spear, and is still talked about.',
       choices: [
-        { t: 'Move your line to the next valley', r: 'A worse valley. Fewer sable. More of you alive.', fx: { coin: -3 } },
+        { t: 'Move your line to the next valley', fbSpare: true, r: 'A worse valley. Fewer sable. More of you alive.', fx: { coin: -3 } },
         { t: 'Take the spear, chief or no chief', r: 'The elders will have words afterward, if there is an afterward.', fx: { beast: { place: 'the trapline in the snow', title: 'Grandfather' }, honor: -1 } },
         { t: 'Leave him a sable and ask him to go', check: { s: 'wil', s2: 'ins', d: 45 },
           win: { r: 'In the morning the sable is gone, and so is he.', fx: { piety: 2, happy: 1 } },
@@ -364,9 +370,9 @@
     {
       id: 'fb_grey_monk',
       title: 'The Grey Monk of the Ice Stair',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-79'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-79') && C.fbAlive(p, 'CRE-79'),
       w: 3.5, cool: 10,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-79'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-79', 'seen'); },
       text: 'A party of pilgrims wants a guide up the Ice Stair. The monks say the snow leopard lets the pure pass. The Stair Monks themselves carry spears. The Grey Monk, an old male, has taken three pilgrims since 1090.',
       choices: [
         { t: 'Guide them, with a spear', check: { s: 'survival', s2: 'ins', d: 48 },
@@ -379,12 +385,12 @@
     {
       id: 'fb_old_black',
       title: 'Old Black',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-87'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-87') && C.fbAlive(p, 'CRE-87'),
       w: 3.5, cool: 10,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-87'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-87', 'subject'); },
       text: 'Old Black, the wild bull of the Salt Lakes, is standing in your summer grazing, over a tonne of him. The nomads leave him alone. Your yaks will not go near the grass while he is on it.',
       choices: [
-        { t: 'Wait for him to move', r: 'He moves on in his own time, which is nine days.', fx: { coin: -4 } },
+        { t: 'Wait for him to move', fbSpare: true, r: 'He moves on in his own time, which is nine days.', fx: { coin: -4 } },
         { t: 'Drive him off with fire and noise', check: { s: 'survival', s2: 'wil', d: 50 },
           win: { r: 'He goes, offended.', fx: { coin: 3, skill: { survival: 2 } } },
           lose: { r: 'He does not go. He comes.', fx: { health: -14, happy: -2 } } },
@@ -394,16 +400,16 @@
     {
       id: 'fb_ash_father',
       title: 'The Ash Father\'s Eldest',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-129'),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-129') && C.fbAlive(p, 'CRE-129'),
       w: 3.5, cool: 10,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-129'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-129', 'subject'); },
       text: 'On the crater road a goatherd is sitting with his leg bound. The great lizard bit him three days ago and the bite stinks. The lizard is still on the road, three metres of it, the Ash Father\'s Eldest. The villagers say it will grow into a dragon.',
       choices: [
         { t: 'Carry the goatherd down', check: { s: 'sta', s2: 'wil', d: 46 },
           win: { r: 'You get him to the healer in time. He keeps the leg.', fx: { honor: 2, happy: 2 } },
           lose: { r: 'You get him there. He does not keep the leg.', fx: { honor: 1, happy: -2 } } },
         { t: 'Kill it before it bites someone else', r: 'It turns its head to watch you come.', fx: { beast: { id: 'CRE-129', place: 'the crater road', title: 'The Eldest' } } },
-        { t: 'Leave them both to the mountain', r: 'You take the long road home. You do not ask after him.', fx: { honor: -2, coin: 1 } },
+        { t: 'Leave them both to the mountain', fbSpare: true, r: 'You take the long road home. You do not ask after him.', fx: { honor: -2, coin: 1 } },
       ],
     },
     {
@@ -424,9 +430,9 @@
     {
       id: 'fb_grey_ten',
       title: 'A white-death winter',
-      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-67') && !C.ruler(p),
+      cond: (p, C) => C.adult(p) && C.fbNear(p, 'CRE-67') && C.fbAlive(p, 'CRE-67') && !C.ruler(p),
       w: 3.5, cool: 10,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-67'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-67', 'subject'); },
       text: 'The snow has crusted over and the horses cannot dig through it. The herds are starving and the wolves are not. The old men speak of the Grey Ten, who took three hundred horses round Khasgen in the winter of 1100.',
       choices: [
         { t: 'Ride out at night to break the crust', check: { s: 'riding', s2: 'sta', d: 50 },
@@ -439,9 +445,9 @@
     {
       id: 'fb_smoke_wing',
       title: 'An eagle with jesses',
-      cond: (p, C) => C.fbNear(p, 'CRE-68') && C.age(p) >= 10,
+      cond: (p, C) => C.fbNear(p, 'CRE-68') && C.fbAlive(p, 'CRE-68') && C.age(p) >= 10,
       w: 2.5, once: true,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-68'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-68', 'seen'); },
       text: 'An eagle lands on your yurt pole with leather jesses still on its legs. Everyone knows the story: Tegur\'s eagle, Smoke-Wing, flew off at the autumn camp of 1104, and an eagle that leaves its master foretells his death.',
       choices: [
         { t: 'Lure it down and take it to Tegur', check: { s: 'husbandry', s2: 'wil', d: 52 },
@@ -469,13 +475,13 @@
     {
       id: 'fb_old_man_three_steps',
       title: 'The dragon\'s child',
-      cond: (p, C) => C.fbNear(p, 'CRE-98') && C.age(p) >= 12,
+      cond: (p, C) => C.fbNear(p, 'CRE-98') && C.fbAlive(p, 'CRE-98') && C.age(p) >= 12,
       w: 2.5, cool: 15,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-98'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-98', 'seen'); },
       text: 'Under the Gorge Chain lives the Old Man of Three Steps, a giant salamander two metres long, there since before your grandfather. A temple downriver offers silver for him: the dragon\'s child, they say. Your village says he is the stream\'s, and stays.',
       choices: [
         { t: 'Catch him for the temple', check: { s: 'survival', s2: 'str', d: 48 },
-          win: { r: 'You carry him down in a basket. The village does not forgive it.', fx: { coin: 20, rep: -3, flag: 'fb_sold_salamander' } },
+          win: { r: 'You carry him down in a basket. The village does not forgive it.', fx: (p, ctx) => { p.coin += 20; A.applyFx(p, { rep: -3, flag: 'fb_sold_salamander' }, ctx); if (ctx.fbSeen) A.FB.gone(ctx.fbSeen, 'the temple downriver'); return ''; } },
           lose: { r: 'He bites, and slides away into the deep pool.', fx: { health: -5 } } },
         { t: 'Tell the temple he is a salamander', r: 'They do not want to hear it. The village buys you a drink.', fx: { rep: 2, piety: -1 } },
         { t: 'Leave him under his stones', r: 'He is there next year too. So is the stream.', fx: { happy: 1 } },
@@ -484,9 +490,9 @@
     {
       id: 'fb_old_steersman',
       title: 'The Old Steersman',
-      cond: (p, C) => C.fbNear(p, 'CRE-191') && C.age(p) >= 12,
+      cond: (p, C) => C.fbNear(p, 'CRE-191') && C.fbAlive(p, 'CRE-191') && C.age(p) >= 12,
       w: 2.5, once: true,
-      setup: (p, ctx) => { one(p, ctx, 'CRE-191'); },
+      setup: (p, ctx) => { one(p, ctx, 'CRE-191', 'seen'); },
       text: 'The queen\'s line has kept the giant tortoise since about 950. Folk say he is the founding crew\'s steersman, still walking. This year he will not eat, and the keepers are frightened. They are asking the village for anyone who knows animals.',
       choices: [
         { t: 'Offer to tend him', check: { s: 'husbandry', s2: 'int', d: 48 },

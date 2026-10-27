@@ -333,16 +333,22 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
       if (to == null) { owner.delete(p.k); return; }
       take(p, to);
     };
-    for (let round = 0; round < 12; round++) {
+    // a move is made only when it brings the holdings nearer the lore's on the whole: the giver's miss and the
+    // taker's together shrink (a realm with no figures in a region misses by all it holds there)
+    const miss = (ri, g, d) => { const H = holdsOf(ri); const h = H ? (H[g] || 0) : 0, x = (realms[ri].got[g] || 0) + d; return Math.abs(x - h); };
+    for (let pass = 0; pass < 4; pass++) {
+    for (let round = 0; round < 24; round++) {
       let moved = 0;
       for (const p of P) {
-        const ri = owner.get(p.k); if (ri == null || p === realms[ri].cap || !holdsOf(ri)) continue;
-        const ex = -room(ri, p.region); if (ex < p.cells * 50) continue;
-        const nbrs = new Set(); for (const j of adjOf(p)) { if (j < nb) continue; const o = owner.get(prov(j).k); if (o != null && o !== ri) nbrs.add(o); }
-        const to = [...nbrs].filter(o => room(o, p.region) >= p.cells * 50).sort((a, b) => room(b, p.region) - room(a, p.region) || a - b)[0];
-        if (to == null && fullyHeld.has(p.region)) continue;
+        const ri = owner.get(p.k); if (ri == null || p === realms[ri].cap) continue;
+        const s2 = p.cells * 100, g = p.region, loss = miss(ri, g, -s2) - miss(ri, g, 0);
+        if (loss >= 0) continue;
+        const nbrs = new Set(); for (const j of [...adjOf(p), ...seaOf(p)]) { if (j < nb) continue; const o = owner.get(prov(j).k); if (o != null && o !== ri) nbrs.add(o); }
+        let to = null, best = fullyHeld.has(g) ? -1 : loss;   // let go only where the lore leaves the region partly unheld
+        for (const o of [...nbrs].sort((a, b) => a - b)) { const gain = loss + miss(o, g, s2) - miss(o, g, 0); if (gain < best - 1) { best = gain; to = o; } }
+        if (best >= 0 || (to == null && fullyHeld.has(g))) continue;
         if (!whole(ri, p.k)) continue;
-        give(p, ri, to == null ? null : to); moved++;
+        give(p, ri, to); moved++;
       }
       if (!moved) break;
     }
@@ -355,6 +361,7 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
         for (const q of [...cand.values()].sort((a, b) => a.k - b.k)) if (!owner.has(q.k) && room(ri, q.region) >= q.cells * 50) { take(q, ri); moved++; }
       });
       if (!moved) break;
+    }
     }
   }
   // ---- what kind of polity each is follows its size in its land: the largest are kingdoms and empires, the smallest

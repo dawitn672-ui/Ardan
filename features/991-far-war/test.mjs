@@ -266,6 +266,7 @@ export default {
       const queued = ev => A.S.queue.find(q => q && q.ev === ev);
       T.enter(G);
       const S = A.S;
+      delete S.fpStartDue;   // 990-far-peoples' opening scene would hold the clock
       // the cast: people per realm who carry a national style of their realm
       const carry = {};
       for (const id in S.people) { const p = S.people[id]; if (!p.alive || !A.FAR.D.realms[p.realm]) continue; if (Object.keys(p.styles || {}).some(k => (A.style(k) || {}).realm === p.realm && A.style(k).kind === 'national')) carry[p.realm] = (carry[p.realm] || 0) + 1; }

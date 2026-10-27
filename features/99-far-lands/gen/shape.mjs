@@ -327,13 +327,17 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
   if (plan.tight) tighten();
   if (plan.tight && plan.tight.waste) wastes();
   if (plan.tight && plan.tight.grow) grow();
-  // every land's regions brought nearer their areas along their shared borders
-  if (plan.tight && plan.tight.balanceAll) balance(() => true, k => regs[k].land, 6);
   dbg('tightened');
   tidy(['main']);
   dbg('tidied');
   fillHoles();
   dbg('filled');
+  // every land's regions brought nearer their areas along their shared borders
+  if (plan.tight && plan.tight.balanceAll) balance(() => true, k => regs[k].land, 6);
+  // and, where a region still holds too much beside a short one of another land (the Elder Grass beside the Western
+  // Pines), across the lands' bounds too: the line between two lands is the lore's boxes, not a coast
+  if (plan.tight && plan.tight.balanceAcross) balance(() => true, () => 0, 6);
+  dbg('balanced');
   // ---- islands, archipelagos and chains, a channel off the mainland and off each other
   const off = (min) => { const d = edt(GW, GH, i => owner[i] >= 0); return i => d[i] * C >= min; };
   const offMain = off(40);

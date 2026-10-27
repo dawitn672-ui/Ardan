@@ -352,18 +352,19 @@ export default {
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 9961, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
       const D = A.FAR.D, S = A.S, land = {}, held = {};
-      for (const p of S.prov) { if (p.id < D.base) continue; const L = p.region[0]; land[L] = (land[L] || 0) + p.cells * 100; (held[p.owner] = held[p.owner] || {})[p.region] = (held[p.owner][p.region] || 0) + p.cells * 100; }
+      const waste = {}; for (const p of S.prov) { if (p.id < D.base) continue; const L = p.region[0]; if (/-00$/.test(p.region)) { waste[L] = (waste[L] || 0) + p.cells * 100; continue; } land[L] = (land[L] || 0) + p.cells * 100; (held[p.owner] = held[p.owner] || {})[p.region] = (held[p.owner][p.region] || 0) + p.cells * 100; }
       const lands = Object.keys(D.lands).sort().map(L => ({ L, name: D.lands[L].name, got: land[L] || 0, lore: D.lands[L].lore || 0 }));
       let want = 0, off = 0, n = 0, within = 0;
       for (const id in D.realms) { const H = D.realms[id].holds; if (!H) continue; const G = held[id] || {}; for (const g of new Set(Object.keys(H).concat(Object.keys(G)))) { const h = H[g] || 0, x = G[g] || 0; want += h; off += Math.abs(x - h); n++; if (Math.abs(x - h) <= Math.max(0.25 * h, 20000)) within++; } }
-      return { lands, total: lands.reduce((s, x) => s + x.got, 0), lore: lands.reduce((s, x) => s + x.lore, 0), want, off, n, within, key: D.key };
+      return { lands, waste, total: lands.reduce((s, x) => s + x.got, 0), lore: lands.reduce((s, x) => s + x.lore, 0), want, off, n, within, key: D.key };
     });
     const far = x => Math.abs(x.got / x.lore - 1);
     const T = r.lands.find(x => x.L === 'T'), N = r.lands.find(x => x.L === 'N'), err = r.off / r.want;
-    // the Black Pines and the Rime Coast near the lore; the whole within 10%; quotas off by under 40% (far@1: 85% and 70%)
-    const ok = r.key === A_KEY && far(T) < 0.1 && far(N) < 0.25 && Math.abs(r.total / r.lore - 1) < 0.1 && err < 0.4 && r.lands.every(x => far(x) < 0.55);
+    // every land within 15% of the lore (its high waste apart), the whole within 5%; quotas off by under 30% (far@1: 85%
+    // off for the Black Pines, 70% for the quotas)
+    const ok = r.key === A_KEY && far(T) < 0.1 && far(N) < 0.15 && Math.abs(r.total / r.lore - 1) < 0.05 && err < 0.3 && r.lands.every(x => far(x) < 0.15) && (r.waste.H || 0) > 0;
     return { ok, detail: `${(r.total / 1e6).toFixed(1)}M km² of far land against the lore's ${(r.lore / 1e6).toFixed(1)}M: ` + r.lands.map(x => `${x.name.replace(/^The /, '')} ${(x.got / 1e6).toFixed(2)}/${(x.lore / 1e6).toFixed(2)}`).join(', ') +
-      `; realms' holdings off the lore's holds_km2 by ${(100 * err).toFixed(1)}% (${(r.off / 1e6).toFixed(1)}M of ${(r.want / 1e6).toFixed(1)}M km²), ${r.within} of ${r.n} realm-regions within a quarter` };
+      `; high waste apart: ${Object.entries(r.waste).map(([k, v]) => `${k} ${(v / 1e6).toFixed(2)}M`).join(', ')}; realms' holdings off the lore's holds_km2 by ${(100 * err).toFixed(1)}% (${(r.off / 1e6).toFixed(1)}M of ${(r.want / 1e6).toFixed(1)}M km²), ${r.within} of ${r.n} realm-regions within a quarter` };
   },
 
   // every far province is named from its people's own place list: no name twice in the world, no markup

@@ -40,6 +40,8 @@ export function generate() {
   const lands = regions(V.P, G);
   // far@2: what the lore says each land holds, beside what the generator made (the test reads both)
   if (lore) for (const g of lore.regions || []) if (lands[g.land]) lands[g.land].lore = (lands[g.land].lore || 0) + (+g.area_km2 || 0);
+  // the high waste along a land's ranges (shape.mjs, wastes) is held apart from its regions' areas
+  for (const p of V.P) if (/-00$/.test(p.region) && lands[p.land]) lands[p.land].waste = (lands[p.land].waste || 0) + p.cells * 100;
   const nb = base.provinces.length, P = V.P;
   // ---- the ground word: the release's eight, from height, roughness and biome (the release's own mix is hills 41%,
   // forest 15%, steppe 13%, plains 11%, desert 8%, mountains 7%, tundra 3%, marsh 2%)
@@ -142,6 +144,7 @@ export function generate() {
     routes = RT.routes;
     const landAt = (x, y) => { const cx = Math.floor((x - G.F.x0) / CELL), cy = Math.floor((y - G.F.y0) / CELL); return cx >= 0 && cy >= 0 && cx < GW && cy < GH && !!G.land[cy * GW + cx]; };
     atlas = makeAtlas(lore, landAt, G.F, GW, GH);
+    for (const r of plan.regions) if (r.kind === 'waste') atlas.regions[r.id] = r.name;
     log.push(`routes: ${routes.length} strands of ${new Set(routes.map(r => r.id)).size} routes over ${new Set(routes.flatMap(r => r.p)).size} provinces (${routes.filter(r => r.p.some(id => id < nb)).length} reach the Known World), ${RT.lanes} sea lanes added, ${RT.miss} legs not found; ` +
       `atlas: ${Object.keys(atlas.regions).length} regions, ${atlas.ranges.length} ranges, ${atlas.rivers.length} rivers, ${atlas.lakes.length} lakes, ${atlas.seas.length} seas, ${atlas.straits.length} straits, ${atlas.passes.length} passes`);
   }

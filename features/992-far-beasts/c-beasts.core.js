@@ -132,7 +132,13 @@ FB.fill = function (p, ctx, id) {
   ctx.fbLand = FB.landName(FB.landOf(P) || c.lands[0]); ctx.fbRegion = FB.regionName(P && P.region || c.regions[0]).replace(/^The /, 'the ');
   ctx.fbYield = c.yield ? c.yield.what : 'nothing'; ctx.fbCoin = c.yield ? c.yield.coin : 0; ctx.fbBelief = c.belief || ''; ctx.fbTruth = c.truth || '';
   ctx.fbAc = A.cap(ctx.fbA); ctx.fbThec = A.cap(ctx.fbThe); ctx.fbGame = c.quarry || ctx.fbA;
-  const ind = c.inds[0]; if (ind) { ctx.fbInd = ind.name.replace(/^The /, 'the '); ctx.fbIndc = A.cap(ctx.fbInd); ctx.fbIndNote = ind.note; }
+  // the named one: the first still living, else the first; its note says how it died if it died in this game
+  const nm = FB.NAMED.find(n => n.id === id && FB.nstate(n.key).alive) || FB.NAMED.find(n => n.id === id);
+  if (nm) {
+    const st = FB.nstate(nm.key);
+    ctx.fbInd = nm.name.replace(/^The /, 'the '); ctx.fbIndc = A.cap(ctx.fbInd); ctx.fbIndKey = nm.key;
+    ctx.fbIndNote = !st.alive && st.year ? `${st.gone ? 'taken away to' : 'killed by'} ${st.byName || 'hunters'} in ${st.year}, and still talked of` : nm.note;
+  }
   return c;
 };
 FB.wpick = ids => A.wpick(ids, id => RW[FB.byId[id].rarity] || 1);
@@ -143,14 +149,18 @@ FB.wpick = ids => A.wpick(ids, id => RW[FB.byId[id].rarity] || 1);
 // of that beast lives (the lore says "kin" of them), the kin takes its place.
 FB.KIN = { 'CRE-34': ['CRE-70'], 'CRE-31': ['CRE-90'], 'CRE-45': ['CRE-182'], 'CRE-44': ['CRE-127', 'CRE-130', 'CRE-196', 'CRE-115', 'CRE-183'],
   'CRE-51': ['CRE-143'], 'CRE-49': ['CRE-114', 'CRE-100', 'CRE-108', 'CRE-146'], 'CRE-55': ['CRE-185'], 'CRE-35': ['CRE-180'] };
+// 99 lets the Tiger of Ranpur (canon range E-13, E-12) run on into the Southern Peninsulas; the lore gives the
+// peninsulas tigers of their own (the Twin Delta's mangrove tiger, the Southern Hills' and the White Head's next door),
+// so in that land the Known World's tiger is not offered at all, kin or no kin in the province.
+FB.DROP = { 'CRE-49': ['M'] };
 const near0 = A.beastsNear;
 A.beastsNear = function (pc) {
   const out = near0.apply(this, arguments);
   if (!FB.on()) return out;
   const kw = out.filter(id => !FB.byId[id]), P = FB.home(pc);
   if (!P || !FB.isFar(P)) return kw;
-  const mine = FB.near(P).fight;
-  return kw.filter(id => !(FB.KIN[id] || []).some(k => mine.includes(k))).concat(mine);
+  const mine = FB.near(P).fight, L = FB.landOf(P);
+  return kw.filter(id => !(FB.KIN[id] || []).some(k => mine.includes(k)) && !(FB.DROP[id] || []).includes(L)).concat(mine);
 };
 
 // ---- condition helpers for the scenes
@@ -158,6 +168,7 @@ A.C.fbFar = p => FB.on() && FB.isFar(FB.home(p));
 A.C.fbNear = (p, id) => FB.here(p, id);
 A.C.fbHas = (p, fam) => FB.has(p, fam);
 A.C.fbLand = (p, ...L) => FB.on() && L.includes(FB.landOf(FB.home(p)));
+A.C.fbAlive = (p, id) => FB.on() && !!FB.livingNamed(id);
 
 // ---- the hunt: the far lands' own game for the pot, and their own tall tales for the famous hunt
 const hunt = A.startHunt;
@@ -188,8 +199,16 @@ A.duelClose = function () {
     if (c && c.yield && pc && pc.alive && Dd.result === 'win') {
       const coin = Math.max(1, Math.round(c.yield.coin * (Dd.party ? 0.5 : 1)));
       pc.coin += coin;
-      pc.flags['fb_k_' + id] = A.S.year;
+      pc.flags['fb_k_' + id] = A.S.year; pc.flags.fb_trophy = A.S.year;
       A.log(`You take the ${c.yield.what} of ${FB.the(id)}${Dd.party ? ' and share it with the hunters' : ''}: ${A.coin ? A.coin(coin) : coin + ' suns'} at the market.`, 'good');
+    }
+    // a named beast this fight was about (A.S.fbPend, set when the choice was taken): killed once, or got away
+    let pend = A.S.fbPend;
+    if (pend && A.S.year - (pend.y || 0) > 1) { delete A.S.fbPend; pend = null; }   // a fight not taken up (fled the titan's warning)
+    if (pend && Dd && Dd.b && Dd.b.beast === pend.id) {
+      delete A.S.fbPend;
+      if (pc && pc.alive && Dd.result === 'win') FB.slay(pend.key, pc, !!Dd.party);
+      else { const st = FB.nmut(pend.key); st.hunted = (st.hunted || 0) + 1; if (pc && pc.id === A.S.pc) A.log(`${A.cap(FB.nName(pend.key))} gets away. It will be talked of, and so will you.`, 'lore'); }
     }
   } catch (e) { console.error('far beasts duel', e); }
   return r;
@@ -221,9 +240,15 @@ A.onMonth.push(pc => {
   const P = FB.home(pc), n = P && FB.near(P);
   if (!n || !n.sight.length || !A.chance(0.08)) return;
   const id = FB.wpick(n.sight), k = A.ri(0, 2);
-  const BT = A.BT, was = BT ? BT.level(pc, id) : 0;
-  pc.flags.fb_sight = A.S.year;
+  const BT = A.BT, was = BT ? BT.level(pc, id) : 0, S0 = A.S;
   if (BT && was < 2) pc.flags['bt_s_' + id] = A.S.year;
+  // now and then it is the one with a name
+  const nm = FB.livingNamed(id);
+  if (nm && A.chance(0.3)) {
+    const st = FB.nmut(nm.key); st.seen = (st.seen || 0) + 1; st.last = S0.year;
+    if (pc.id === A.S.pc) A.log(`${FB.sightLine(id, P, k).replace(/\.$/, '')}, and the herders say it is ${FB.nName(nm.key)}.${BT && was < 2 ? ' (Codex: Bestiary)' : ''}`, 'lore');
+    return;
+  }
   if (pc.id === A.S.pc) A.log(FB.sightLine(id, P, k) + (BT && was < 2 ? ' (Codex: Bestiary)' : ''), 'lore');
 });
 
@@ -316,6 +341,80 @@ if (BT && typeof BT.pickCreature === 'function' && A.ACT && typeof A.ACT.explore
   };
 }
 
+// ---- the named beasts: the Ash Mother of the Twin Teeth and the rest of the lore's 25 individuals, alive or dead in
+// the game (A.S.fbNamed, made on first need; an old save has none and every one stands as the lore leaves it in 1105:
+// the Man-Eater of the Nine Ridges and five more are already dead). Each is sighted, hunted and killed once; a death
+// goes to the news and, at your hand, into your deeds (the chronicle, 26's tale as told) and the bestiary.
+FB.NAMED = []; FB.NAMEDBY = {};
+for (const c of D.list) c.inds.forEach((ind, i) => {
+  const n = { key: c.id + '#' + i, id: c.id, name: ind.name, note: ind.note, dead0: /killed by|\btaken in\b|caught in|\bserved\b/i.test(ind.note) };
+  FB.NAMED.push(n); FB.NAMEDBY[n.key] = n;
+});
+FB.nName = key => { const n = FB.NAMEDBY[key]; return n ? n.name.replace(/^The /, 'the ') : 'the beast'; };
+// read only (rendering may call it): the stored record, or the lore's start
+FB.nstate = key => { const S = A.S, s = S && S.fbNamed && S.fbNamed[key]; return s || { alive: !(FB.NAMEDBY[key] || {}).dead0, seen: 0, hunted: 0 }; };
+// engine only: the record, made on first need
+FB.nmut = key => { const S = A.S; S.fbNamed = S.fbNamed || {}; return S.fbNamed[key] || (S.fbNamed[key] = Object.assign({}, FB.nstate(key))); };
+FB.livingNamed = id => !FB.on() ? null : FB.NAMED.find(n => n.id === id && FB.nstate(n.key).alive) || null;
+FB.gone = function (key, where) { const st = FB.nmut(key); if (!st.alive) return; st.alive = false; st.year = A.S.year; st.byName = where; st.gone = true; };
+FB.slay = function (key, pc, party) {
+  const st = FB.nmut(key), n = FB.NAMEDBY[key]; if (!n || !st.alive) return;
+  const who = pc ? A.fullName(pc) : 'hunters';
+  st.alive = false; st.year = A.S.year; st.by = pc ? pc.id : null; st.byName = who;
+  if (pc) {
+    pc.flags.fb_slew = A.S.year; pc.fame += party ? 2 : 4;
+    (pc.deeds = pc.deeds || []).push({ y: A.S.year, t: `Killed ${FB.nName(key)}${party ? ' with a hunting party' : ''}` });
+    if (pc.id === A.S.pc) A.log(`${A.cap(FB.nName(key))} is dead. They will tell it at every fire in ${FB.landName(FB.byId[n.id].lands[0]).replace(/^The /, 'the ')}.`, 'good');
+  }
+  A.news(`${A.cap(FB.nName(key))} is dead, killed by ${who}.`, 'beast');
+};
+// the wilds go on without you: about one living named fighter in fifty a year falls to someone else's spear
+A.onMonth.push(pc => {
+  if (!FB.on() || !A.chance(0.02)) return;
+  const live = FB.NAMED.filter(n => FB.byId[n.id].fight && FB.nstate(n.key).alive);
+  if (!live.length || !A.chance(0.12)) return;
+  const n = A.pick(live), st = FB.nmut(n.key), r = FB.regionName(FB.byId[n.id].regions[0]).replace(/^The /, 'the ');
+  st.alive = false; st.year = A.S.year; st.by = null; st.byName = `the hunters of ${r}`;
+  A.news(`${A.cap(FB.nName(n.key))} is dead, killed by the hunters of ${r}.`, 'beast');
+});
+// a choice about a named beast: it was seen; a fight with it is remembered until the duel closes. A choice marked
+// fbSpare lets the scene's beast go (fb_spared, fb_sp_<id>), and a later scene brings it back.
+const choose1 = A.eventChoose;
+A.eventChoose = function (idx) {
+  try {
+    const q = A.S.queue[0], pc = A.pc();
+    if (FB.on() && pc && q && q.type === 'event' && !q.result && q.ctx && q.view) {
+      const e = A.EV[q.ev], vc = q.view.choices[idx], c = vc && e && e.choices ? e.choices[vc.i] : null;
+      if (c && q.ctx.fbSeen && FB.NAMEDBY[q.ctx.fbSeen]) { const st = FB.nmut(q.ctx.fbSeen); st.seen = (st.seen || 0) + 1; st.last = A.S.year; }
+      if (c && q.ctx.fbNamed && FB.NAMEDBY[q.ctx.fbNamed]) {
+        const st = FB.nmut(q.ctx.fbNamed); st.seen = (st.seen || 0) + 1; st.last = A.S.year;
+        const fx = c.fx;
+        if (fx && typeof fx === 'object' && (fx.beast || fx.event === 'hunt_beast')) A.S.fbPend = { key: q.ctx.fbNamed, id: (fx.beast && fx.beast.id) || q.ctx.beast, y: A.S.year };
+      }
+      if (c && c.fbSpare && q.ctx.beast && FB.byId[q.ctx.beast]) { pc.flags.fb_spared = A.S.year; pc.flags['fb_sp_' + q.ctx.beast] = A.S.year; }
+    }
+  } catch (err) { console.error('far beasts choice', err); }
+  return choose1.apply(this, arguments);
+};
+if (choose1.variety) A.eventChoose.variety = true;
+
+// ---- Known World scenes whose beast is only a fallback ("… : 'CRE-21'" when nothing near fits): in a far province
+// where that beast does not live the scene steps aside (its view is skipped, as a setup's ctx.skip does), so nobody
+// meets an Evenwood wolf in the Deep Southland. Engine side: the view is built when the scene comes up.
+const view1 = A.eventView;
+A.eventView = function (q) {
+  const fresh = !!q && !q.view;
+  const v = view1.apply(this, arguments);
+  try {
+    const id = fresh && v && !v.skip && FB.on() && q.ctx ? q.ctx.beast : null;
+    if (id && !FB.byId[id] && A.BEASTS[id]) {
+      const pc = A.pc(), P = FB.home(pc);
+      if (P && FB.isFar(P) && !A.beastsNear(pc).includes(id)) { q.ctx.skip = 1; v.skip = true; FB.stepped = (FB.stepped || 0) + 1; }
+    }
+  } catch (err) { console.error('far beasts view', err); }
+  return v;
+};
+
 // ---- the bestiary's creature line (26-belief-truth's card calls BT.cardLine): id, land and regions, rarity; the tale
 // once the truth is known. Only while the far lands are open; the Known World's bestiary is drawn as before. Pure.
 const RAR = { common: ['t1', 'common'], uncommon: ['t2', 'uncommon'], rare: ['t3', 'rare'], unique: ['t5', 'one of a kind'], legend: ['t6', 'a tale'] };
@@ -332,8 +431,13 @@ if (BT) BT.cardLine = function (c, L) {
   const where = far.lands.map(FB.landName).join(', ');
   const tale = L >= 3 && TALE[far.tale] ? ` <span class="chip">${esc(TALE[far.tale])}</span>` : '';
   const yieldTxt = L >= 3 && far.yield ? ` <span>· yields ${esc(far.yield.what)}, about ${esc(String(far.yield.coin))} suns</span>` : '';
+  const named = L >= 1 ? FB.NAMED.filter(n => n.id === far.id).map(n => {
+    const st = FB.nstate(n.key);
+    return `${n.name}: ${st.alive ? 'alive' + (st.seen ? `, seen ${st.seen} time${st.seen === 1 ? '' : 's'}` : '') + (st.hunted ? `, hunted ${st.hunted}` : '') : st.year ? `${st.gone ? 'taken away to' : 'killed by'} ${st.byName || 'hunters'} in ${st.year}` : n.note}`;
+  }) : [];
   return `<div class="fb-line"><span class="fb-id">${esc(far.id)}</span><span>· ${esc(far.name)} · ${esc(where)}</span>` +
-    ` <span class="chip tier ${R[0]}">${esc(R[1])}</span>${tale}${yieldTxt}</div>`;
+    ` <span class="chip tier ${R[0]}">${esc(R[1])}</span>${tale}${yieldTxt}</div>` +
+    (named.length ? `<div class="small muted fb-named"><b>Known by name:</b> ${named.map(esc).join('; ')}</div>` : '');
 };
 // named beasts the lore knows, for the scenes ("{fbInd}")
 FB.ind = id => { const c = FB.byId[id]; return c && c.inds.length ? c.inds[0] : null; };

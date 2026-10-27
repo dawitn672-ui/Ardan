@@ -115,6 +115,77 @@ export default {
       `${r.wolvesKw} in Evenglade in the same game and ${r.wolvesKnown} in a Known World game` };
   },
 
+  // every flag a scene sets is read by a later scene or by the code: no orphans
+  async fbNoOrphanFlags() {
+    const src = ['beasts.events.js', 'memory.events.js', 'c-beasts.core.js'].map(f => fs.readFileSync(path.join(HERE, f), 'utf8')).join('\n');
+    const set = new Set();
+    for (const m of src.matchAll(/flag:\s*'(fb_[a-z_]+)'/g)) set.add(m[1]);
+    for (const m of src.matchAll(/flags\.(fb_[a-z_]+)\s*=(?!=)/g)) set.add(m[1]);
+    for (const m of src.matchAll(/flags\['(fb_[a-z_]+)'\s*\+/g)) set.add(m[1] + '*');
+    const read = f => f.endsWith('*') ? new RegExp(`'${f.slice(0, -1)}'\\)|latest\\(p, '${f.slice(0, -1)}'`).test(src)
+      : new RegExp(`C\\.flag\\(p, '${f}'\\)|flags\\.${f}\\s*(?:!=|[-<>]|\\|\\||\\))|flags\\.${f} !=`).test(src);
+    const orphans = [...set].filter(f => !read(f));
+    return { ok: set.size >= 15 && !orphans.length, detail: `${set.size} flags set (${[...set].join(', ')}); never read: ${orphans.length ? orphans.join(', ') : 'none'}` };
+  },
+
+  // a named beast lives in A.S: seen when met, killed once (the news, your deeds, the bestiary, its scene no more), kept
+  // by a save; an old save without the record has every one as the lore leaves it
+  async fbNamedPersist(pg) {
+    if (!(await pg.evaluate(GATE))) return { ok: false, detail: 'A.FB not in this build' };
+    await pg.evaluate(FAR_LIFE);
+    const r = await pg.evaluate(async () => {
+      const pc = FBT.start(9851, 'POL-93', 30), out = {};
+      const P = A.S.prov.find(Q => A.FB.isFar(Q) && A.FB.near(Q).fight.includes('CRE-114'));
+      pc.home = P.id;
+      out.n = A.FB.NAMED.length; out.deadAtStart = A.FB.NAMED.filter(n => !A.FB.nstate(n.key).alive).map(n => n.name);
+      out.before = A.C.fbAlive(pc, 'CRE-114') && A.EV.fb_masked_one.cond(pc, A.C);
+      A.S.queue = [{ type: 'event', ev: 'fb_masked_one' }];
+      const v = A.eventView(A.S.queue[0]), fi = v.choices.findIndex(c => c.fight);
+      A.eventChoose(fi); A.eventClose && A.eventClose();
+      out.pend = JSON.stringify(A.S.fbPend || null);
+      const dq = A.S.queue.find(q => q.type === 'duel');
+      if (dq) { while (A.S.queue[0] !== dq) A.S.queue.shift(); dq.d.result = 'win'; dq.d.over = true; A.duelClose(); }
+      const st = A.S.fbNamed && A.S.fbNamed['CRE-114#0'];
+      out.dead = !!st && !st.alive && st.by === pc.id; out.seen = st && st.seen;
+      out.deed = (pc.deeds || []).some(d => /Masked One/.test(d.t)); out.news = A.S.news.some(n => /Masked One/.test(n.t) && /dead/.test(n.t));
+      out.after = A.EV.fb_masked_one.cond(pc, A.C);
+      A.BT.learn(pc, 'CRE-114', 3, 'test'); UI.tab = 'codex'; UI.codex = 'beasts';
+      out.codex = /Masked One: killed by/.test(UI.TAB.codex(pc));
+      const enc = await SAVES.encode(A.S, A.J), d = await SAVES.decode(enc.bytes); UI.enterSave(d);
+      out.kept = !!(A.S.fbNamed && A.S.fbNamed['CRE-114#0'] && !A.S.fbNamed['CRE-114#0'].alive);
+      delete A.S.fbNamed; out.oldSave = A.FB.nstate('CRE-114#0').alive && !A.FB.nstate('CRE-100#0').alive;
+      return out;
+    });
+    const ok = r.n === 25 && r.before && r.dead && r.deed && r.news && !r.after && r.codex && r.kept && r.oldSave && r.deadAtStart.length >= 5;
+    return { ok, detail: `${r.n} named beasts, ${r.deadAtStart.length} dead before 1105 (${r.deadAtStart.join(', ')}); the Masked One's scene ${r.before ? 'eligible' : 'NOT ELIGIBLE'}, fought (${r.pend}) and killed: ` +
+      `${r.dead ? 'dead in A.S' : 'NOT DEAD'}, seen ${r.seen}, deed ${r.deed}, news ${r.news}, scene gone ${!r.after}, bestiary says so ${r.codex}; kept by a save ${r.kept}; with no record (an old save) she stands as the lore has her ${r.oldSave}` };
+  },
+
+  // a Known World scene whose beast is only a fallback steps aside in a far province where that beast does not live,
+  // and the Southern Peninsulas offer no Tiger of Ranpur
+  async fbFallbackStep(pg) {
+    if (!(await pg.evaluate(GATE))) return { ok: false, detail: 'A.FB not in this build' };
+    await pg.evaluate(FAR_LIFE);
+    const r = await pg.evaluate(() => {
+      const pc = FBT.start(9861, 'POL-58', 30), out = { far: 0, farSkip: 0, kw: 0, kwSkip: 0, wolves: 0 };
+      for (const P of A.S.prov) {
+        if (out.far >= 40 && out.kw >= 10) break;
+        const far = A.FB.isFar(P); if ((far && out.far >= 40) || (!far && out.kw >= 10)) continue;
+        pc.home = P.id; A.S.queue = [{ type: 'event', ev: 'wk_hunt_beast' }];
+        const v = A.eventView(A.S.queue[0]), b = A.S.queue[0].ctx.beast;
+        if (far) { out.far++; if (v.skip) out.farSkip++; else if (b && !A.FB.byId[b] && !A.beastsNear(pc).includes(b)) out.wolves++; }
+        else { out.kw++; if (v.skip) out.kwSkip++; }
+      }
+      A.S.queue = [];
+      out.tiger = A.S.prov.filter(P => A.FB.isFar(P) && P.region[0] === 'M').filter(P => { pc.home = P.id; return A.beastsNear(pc).includes('CRE-49'); }).length;
+      out.mTigers = [...new Set(A.S.prov.filter(P => A.FB.isFar(P) && P.region[0] === 'M').flatMap(P => A.FB.near(P).fight).filter(id => /Tiger/.test(A.FB.byId[id].name)))];
+      return out;
+    });
+    const ok = r.wolves === 0 && r.farSkip > 0 && r.tiger === 0 && r.mTigers.length > 0;
+    return { ok, detail: `the bounty scene in ${r.far} far provinces: ${r.farSkip} stepped aside, ${r.wolves} named a beast that does not live there; in ${r.kw} Known World provinces ${r.kwSkip} skipped (as before); ` +
+      `Southern Peninsulas provinces offering the Tiger of Ranpur: ${r.tiger}; their own tigers: ${r.mTigers.join(', ')}` };
+  },
+
   // every scene renders in every far region it can fire in: no raw token, text under 80 words, every choice taken
   // without an error; every notable creature's scene can fire somewhere
   async fbScenesRender(pg) {
@@ -130,8 +201,13 @@ export default {
       const ce = console.error; console.error = (...a) => probs.push('engine error ' + a.map(String).join(' ').slice(0, 160));
       try {
         const chosen = new Set();
+        // the memories the follow-up scenes read (set 25 years ago, as lint-events does), and a creature of home to remember
+        const MEM = new Set(); for (const id of ids) for (const m of String(A.EV[id].cond || '').matchAll(/C\.flag\(p,\s*["']([A-Za-z0-9_]+)["']\)/g)) MEM.add(m[1]);
         for (const pid of provs) for (const age of [9, 30]) {
           A.deserialize(JSON.parse(base)); const p0 = A.pc(); p0.home = pid; if (age === 9) p0.born = A.S.year - 9;
+          for (const f of MEM) p0.flags[f] = A.S.year - 25;
+          const nh = A.FB.near(A.prov(pid)); if (nh && nh.fight.length) { p0.flags['fb_sp_' + nh.fight[0]] = A.S.year - 25; p0.flags['fb_k_' + nh.fight[0]] = A.S.year - 25; }
+          const st = A.FB.nmut('CRE-92#0'); st.by = p0.id; st.year = A.S.year - 20; st.byName = 'you';
           let atHome = null;
           for (const id of ids) {
             const e = A.EV[id]; let ok; try { ok = !e.cond || e.cond(A.pc(), A.C); } catch (err) { probs.push(id + ' cond ' + err.message); continue; }
@@ -170,7 +246,7 @@ export default {
       }
       return { events: ids.length, provs: provs.length, checked, maxW, probs: [...new Set(probs)].slice(0, 10), nProbs: new Set(probs).size, never };
     });
-    const ok = r.events >= 30 && r.nProbs === 0 && !r.never.length && r.checked > 300;
+    const ok = r.events >= 45 && r.nProbs === 0 && !r.never.length && r.checked > 300;
     return { ok, detail: `${r.events} scenes, ${r.checked} renders over ${r.provs} kinds of far province (longest ${r.maxW} words), every choice taken; never eligible: ${r.never.length ? r.never.join(', ') : 'none'}` +
       (r.nProbs ? '; PROBLEMS ' + r.probs.join('; ') : '') };
   },
