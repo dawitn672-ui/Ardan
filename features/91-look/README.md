@@ -67,6 +67,9 @@ The critique found the screen "dim and samey": one leather brown, one gold, one 
 - **A dialog's close button:** its glyph fills the 32 px button.
 - **War rows:** each war of your realm on the War tab carries a strength bar of us against them: the standing armies of each side's realms, ours in green from the left and theirs in vermilion, with both numbers.
 - **The rail's delta flash** (§5.4): a vital or stat that changed since the last draw of the same life shows ▲ +2 or ▼ −3 for 1.6 s, and its bar pulses once (not under reduced motion). The last numbers are UI state (`LOOK.flash`), reset for a new life or a loaded game.
+- **The career ladder** is one horizontal track: a dot per rank on a line, the ranks behind you in gold, yours a larger gold dot.
+- **Sparklines** (60 × 16) under the Realm band's four numbers, and on the stat tiles of the roomy rail. The game keeps no history of these numbers, so `LOOK.hist` samples them once a game month while the game is drawn. It holds at most ten years, resets for a new life or a load, and is never saved.
+- **The rail's proficiency names** stay on one line with an ellipsis, so a long name cannot push the rail's buttons out of sight.
 - **Beasts in the Codex** wear their tier: an animal is common, a great beast rare, a titan legendary, a legend mythic.
 
 ## Measured by (`test.mjs`)

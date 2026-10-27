@@ -20,11 +20,11 @@
 | §4.2 1920×1080 | Done, one difference | Activities in 3 columns, not 4 (at 4, 140 px tiles cut a third of their labels) |
 | §4.3 761–1099 | Done | identity strip and the Stats sheet |
 | §4.4 Phone | Done, one difference | Activities in 3 columns, not 2 (2 made the page 1.45 screens); the event sheet now fits a 375×667 phone with the first-run hint showing (this round) |
-| §4.5 Other tabs as small multiples | Partial (this round) | People rows, the Realm header band, gear rows on Holdings and war strength bars built; holdings' income sparklines and the Path ladder track are missing |
+| §4.5 Other tabs as small multiples | Partial (this round) | People rows, the Realm header band, gear rows on Holdings and war strength bars built; the ladder track and the Realm band's sparklines built; holdings' income sparklines are missing |
 | §5.1 Buttons | Done | 91-look |
 | §5.2 Tabs | Done | the release's tablist already moves by arrow keys (`UI.tabKeys`); badges are the release's |
 | §5.3 Expanders | Done, one difference | 90-fold; the open state is kept in the browser (`ardan_fold_v1`), not in `UI.set.open` |
-| §5.4 Stat bars and tiles | Partial (this round) | bars, tiles and the rail's delta flash done; the 1920 sparklines are missing |
+| §5.4 Stat bars and tiles | Done (this round) | bars, tiles, the rail's delta flash and the 1920 sparklines (sampled while drawn) |
 | §5.5 Chips | Partial (this round) | trait, status, rarity and "+N" done; the realm chip (swatch dot, name in realm ink) on a person's Realm row and the Realm band, not yet in rows and tooltips |
 | §5.6 Cards and tiles | Done | one card level; activity tiles with icon, cost and tooltip |
 | §5.7 Modals and sheets | Done (this round) | the release's modal restyled; the close button's glyph now fills its button |
@@ -115,9 +115,9 @@ A 64 px identity strip, and a Stats button that opens the rail as a sheet.
 | Tab | Status |
 | --- | --- |
 | **People** | **Done.** Each person is a row of about 26 px: a 22 px bust, the name, the relation, age and post (ellipsized), the bond chip, and a 48 px opinion bar. About twenty fit in the panel. The same rows serve the court on the Realm tab and person lists in dialogs. On touch, rows are 44 px. |
-| **Realm** | **Partial.** A header band with the realm's tint and its accent edge, the coat of arms, the name in the realm's ink, the ruler's title and name, the ruler's bust, and four headline numbers: treasury, army, stability, provinces. The council and lords are rows. Missing: sparklines for the four numbers (the realm keeps no history of them). |
+| **Realm** | **Done** (this round). A header band with the realm's tint and its accent edge, the coat of arms, the name in the realm's ink, the ruler's title and name, the ruler's bust, and four headline numbers (treasury, army, stability, provinces), each with a 60×16 sparkline. The game keeps no history of these numbers, so the look samples them once a game month while the game is drawn; a line covers up to ten years since the session or load began. The council and lords are rows. |
 | **Holdings** | **Partial** (this round in part). 90-fold folds it from 5.9 to 2.4 screens (`foldFits`, a peasant). What you carry is one row per slot: the slot, the piece and its tier, what it does, and Sell. The armourer's rows are denser, and only the item's name is a tooltip target. Missing: the 60×16 income sparkline per holding, which needs an income history kept as UI state. |
-| **Path & War** | **Partial** (this round). Each war of your realm carries a strength bar of us against them: the standing armies of each side's realms, ours in `--ok` from the left and theirs in `--danger`, with both numbers. Missing: the ladder as one horizontal track. |
+| **Path & War** | **Partial** (this round). Each war of your realm carries a strength bar of us against them: the standing armies of each side's realms, ours in `--ok` from the left and theirs in `--danger`, with both numbers. The career ladder is now one horizontal track: a dot per rank, the ranks behind you in gold, yours a larger gold dot. |
 
 ## §5 Components
 
@@ -137,7 +137,7 @@ Icon over cap label; the selected tab has a gold bar with a cut corner. The rele
 
 - Done: flat bars with a potential tick, and the 72×36 tiles with icon, abbreviation, number and bar.
 - **Done this round:** the **delta flash**. When a vital or a stat on the rail changes between two draws of the same life, its number shows ▲ +2 in `--ok` or ▼ −3 in `--danger` for 1.6 s, and its bar pulses once (not under reduced motion). The first draw of a life, or a loaded game, shows none.
-- Missing: the **sparklines** of the 1920 rail.
+- **Done this round:** the **sparklines** on the 1920 rail's stat tiles, sampled the same way as the Realm band's.
 
 ### §5.5 Chips: partial
 
@@ -257,7 +257,7 @@ Seen in the world tab and the full map of a Great Continent game. For lane L2:
 | 9 | Cel-shaded anime busts | Done (93); the far peoples this round |
 | 10 | Woodblock skies | Done (94); the far climates this round |
 | 11 | The phone's identity strip, tiles and event sheet | Done (71, 91, 92); the sheet fits a 375×667 phone this round |
-| 12 | People, Holdings and Realm as small-multiple rows with sparklines | Partial: People rows, the Realm band, gear rows and war strength bars this round; every sparkline is missing |
+| 12 | People, Holdings and Realm as small-multiple rows with sparklines | Partial: People rows, the Realm band, gear rows and war strength bars this round; the Realm band and rail sparklines are sampled while drawn; holdings' income lines are missing |
 | 13 | About 40 icons | Done (95) |
 | 14 | Cut-ins for the big moments | Done (96) |
 | 15 | Motion tokens and the Motion setting | Done (91, 96) |
@@ -265,10 +265,9 @@ Seen in the world tab and the full map of a Great Continent game. For lane L2:
 ## Still to build, most visible first
 
 1. **The map takes `UI.realmHex`** (lane L2): without it, the far realms' chips and portrait grounds differ from their map colour.
-2. **Sparklines:** holdings' income, the 1920 stat tiles and the Realm band's four numbers. Each needs a short history, kept as UI state or recorded by the engine.
-3. **Path & War:** the ladder as a horizontal track.
-4. **Realm chips** wherever a realm is named: People rows, tooltips, the war rows.
+2. **Holdings' income sparklines.** This round's sparklines are sampled while the game is drawn. A real ten-year line, one that survives a reload, needs the engine to record a yearly history.
+3. **Realm chips** wherever a realm is named: People rows, tooltips, the war rows.
 
 ## Screenshots
 
-Before (the round's start, `--include-wip`): `/tmp/ardan/L7/shots/before/{life,people,holdings,realm,path,event}-{1366x768,1920x1080,390x844}-{dark,light}.png`. After: `/tmp/ardan/L7/shots/after/…` with the same names. Far peoples, before and after: `/tmp/ardan/L7/shots/far-before.png` and `far-after.png`. "A love philtre" at 375×667: `/tmp/ardan/L7/shots/philtre-375.png` (before) and `/tmp/ardan/L7/shots/after/philtre-375.png`.
+Before (the round's start, `--include-wip`): `/tmp/ardan/L7/shots/before/{life,people,holdings,realm,path,event}-{1366x768,1920x1080,390x844}-{dark,light}.png`. After: `/tmp/ardan/L7/shots/after/…` with the same names. Far peoples, before and after: `/tmp/ardan/L7/shots/far-before.png` and `far-after.png`. "A love philtre" at 375×667: `/tmp/ardan/L7/shots/philtre-375.png` (before) and `/tmp/ardan/L7/shots/after/philtre-375.png`. A year drawn month by month (sparklines, the ladder track, the delta flash): `/tmp/ardan/L7/shots/after/{realm,path,war}-months-1366.png` and `life-months-1920.png`. The far lands' buildings: `/tmp/ardan/L7/shots/arch-sheet.png`.
