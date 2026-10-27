@@ -128,13 +128,14 @@
       return t.innerHTML;
     } catch (e) { return h; }
   };
-  // an event's hint: under the choices, inside the card, never over the picture or the top bar
+  // an event's hint: inside the card under its text, never over the picture or the top bar
   const renderModal = UI.renderModal;
   UI.renderModal = function () {
     const r = renderModal.apply(this, arguments);
     try {
-      const m = document.getElementById('modal'), hint = m && m.querySelector(':scope > .hint-ev'), ch = m && m.querySelector('.mbox .choices');
-      if (hint && ch) ch.after(hint);
+      // at the foot of the text, above the choices: on a phone the choices stay pinned in the thumb's half (71-phone)
+      const m = document.getElementById('modal'), hint = m && m.querySelector(':scope > .hint-ev'), body = m && m.querySelector('.mbox .sc-body'), ch = m && m.querySelector('.mbox .choices');
+      if (hint && body) body.appendChild(hint); else if (hint && ch) ch.before(hint);
     } catch (e) {}
     return r;
   };
