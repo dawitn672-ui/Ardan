@@ -182,4 +182,27 @@ export default {
     const ok = !r.bad.length && r.max <= 15 * 1024 && SKOK(r.count) && r.kwSame && /^jungle\/(stilt|eaves|round)$/.test(r.drawn || '') && !r.archBad.length && r.archMax <= 15 * 1024 && Object.keys(r.arches).filter(k => k !== 'null').length === 6 && r.kwArch;
     return { ok, detail: `${r.n} prints of the five far lands: ${(r.avg / 1024).toFixed(1)} KB average, ${(r.max / 1024).toFixed(1)} KB at most${r.bad.length ? ', BAD ' + r.bad.slice(0, 4).join(', ') : ''}; far provinces by land ${JSON.stringify(r.count)}; Known World words kept ${r.kwSame}; a jungle home draws ${r.drawn}; buildings ${JSON.stringify(r.arches)}, ${r.archBad.length} bad, at most ${(r.archMax / 1024).toFixed(1)} KB, none in the Known World ${r.kwArch}` };
   },
+
+  // cycle 1 visual B3: January snowed on every land but the desert, the Scent Isles' palms included. Snow now follows
+  // the home's climate: temperate, boreal and alpine land gets it, the wet tropics get rain and the dry belts dust.
+  async skyClimate(pg) {
+    const r = await pg.evaluate(() => {
+      const SK = UI.SKIES;
+      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      const provs = Object.values(A.S.prov);
+      const pick = re => provs.find(pv => re.test(pv.biome || '') && pv.terr !== 'mountains');
+      const out = {};
+      for (const [k, re] of [['tropic', /Tropical (rainforest|monsoon)/], ['savanna', /Savanna/], ['dry', /Dry woodland/], ['temperate', /Temperate forest/], ['taiga', /Taiga/]]) {
+        const pv = pick(re); if (!pv) { out[k] = 'none'; continue; }
+        const pc = A.pc(); pc.home = pv.id;
+        const q = { type: 'event', ev: 'lf_love_potion', ctx: {} };
+        const o = SK.optsFor(q);
+        const svgs = ['faith', 'road', 'beast', 'kin'].map(sh => SK.svg(sh, 'clim|1105', 0, Object.assign({}, o, { hour: 'day' })));
+        out[k] = { terr: o.terr, clim: o.clim || '', pal: SK.palette('day', o.terr, 0, false, SK.climOf ? SK.climOf(pv) : undefined).snow, drawn: svgs.filter(x => x.includes('data-snow="1"')).length };
+      }
+      return out;
+    });
+    const ok = ['tropic', 'savanna', 'dry'].every(k => r[k] !== 'none' && !r[k].pal && !r[k].drawn) && ['temperate', 'taiga'].every(k => r[k] !== 'none' && r[k].pal && r[k].drawn === 4);
+    return { ok, detail: JSON.stringify(r) };
+  },
 };

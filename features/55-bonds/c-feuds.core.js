@@ -50,7 +50,7 @@
       if (!A.FAMILY_RELS.includes(r.type)) { r.type = 'enemy'; if (k.rel[pc.id]) k.rel[pc.id].type = 'enemy'; }
       if (k.rel[pc.id]) k.rel[pc.id].op = Math.min(k.rel[pc.id].op || 0, FAM.KILL);
       r.op = Math.min(r.op || 0, -10);
-      const deed = `you killed ${A.his(k)} ${role}, ${p.given}`;
+      const deed = `you killed ${A.his(k)} ${role}, ${A.knownName ? A.knownName(p, pc) : p.given}`;
       BD.add(pc, k, cap(deed), { v: FAM.KILL, h: FAM.KILL_HALF, k: 'kin:' + p.id, s: 'kin', d: deed });
       out.push(k);
     }
@@ -83,7 +83,7 @@
     for (const k of kin) {
       known(pc, k);
       if (k.rel[pc.id]) k.rel[pc.id].op = clamp((k.rel[pc.id].op || 0) + 6, -100, 100);
-      const d = `you came to the door after ${p.given} died`;
+      const d = `you came to the door after ${A.knownName ? A.knownName(p, pc) : p.given} died`;
       BD.add(pc, k, cap(d), { v: 8, h: 8, k: 'visit:' + p.id, s: 'you', d });
     }
     return kin.length ? `(${kin.map(k => k.given).join(', ')} will remember that you came)` : '(there is nobody left at the house)';

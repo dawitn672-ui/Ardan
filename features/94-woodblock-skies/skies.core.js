@@ -99,6 +99,16 @@
     if (/dry woodland/i.test(b) && t !== 'mountains') return 'scrub';
     return t;
   };
+  // a province's climate for the season (cycle 1 visual B3: January snowed on the Scent Isles' palms): only temperate,
+  // boreal and alpine land gets winter snow. The wet tropics get a rainy season, and the dry belts (savanna, desert, dry
+  // woodland, salt flat) a dry, hazy one. A province with no biome keeps the old rule.
+  SK.climOf = function (pr) {
+    const b = pr && typeof pr.biome === 'string' ? pr.biome : '';
+    if (/rainforest|monsoon/i.test(b) && !/temperate/i.test(b)) return 'wet';
+    if (/savanna|desert|dry woodland|salt/i.test(b)) return 'dry';
+    return b ? 'cold' : '';
+  };
+  SK.NO_SNOW = new Set(['desert', 'jungle', 'savanna', 'scrub']);
   SK.TERRAIN_KEYS = Object.keys(TERRAIN);
   // local colours of things, before the hour's light and shadow
   const M = SK.MAT = {
@@ -109,9 +119,10 @@
   const LEAF = [['#7d9aa6', '#e8eef2'], ['#5f9a40', '#f2b8c8'], ['#467a36', null], ['#c4642c', '#e2a238']];   // winter, spring, summer, autumn
 
   // the palette of one picture: the hour, shifted by the terrain and the season
-  SK.palette = function (hour, terr, season, indoor) {
+  SK.palette = function (hour, terr, season, indoor, clim) {
     const h = HOURS[hour] || HOURS.day, T = TERRAIN[terr] || TERRAIN.hills;
-    const winter = season === 0 && terr !== 'desert' || T.winter, day = 1 - h.k * 0.75;
+    const warm = clim === 'wet' || clim === 'dry' || SK.NO_SNOW.has(terr);
+    const winter = season === 0 && !warm || !!T.winter && !warm, day = 1 - h.k * 0.75;
     const sh = (col, spec) => spec ? shift(col, Object.assign({}, spec, { hk: (spec.hk || 0) * day, dL: (spec.dL || 0) * day })) : col;
     let far = sh(h.far, T.far), near = sh(h.near, T.near);
     let st = h.st, sb = h.sb, light = h.light;
@@ -127,6 +138,9 @@
     c.dk = mix(near, SHADE, hour === 'night' || hour === 'dusk' ? 0.42 : 0.22);   // the shadow local colours sink to
     c.leaf = LEAF[season == null ? 2 : season][0]; c.bloom = LEAF[season == null ? 2 : season][1];
     c.snow = winter;
+    // the warm lands' "winter": the wet season's rain, or the dry season's dust haze low in the sky
+    c.wet = season === 0 && clim === 'wet';
+    if (season === 0 && clim === 'dry') { c.sb = mix(c.sb, '#e8c48a', 0.22); c.sm = mix(c.sm, '#e8c48a', 0.12); }
     c.snowC = mix('#ffffff', sb, 0.28);
     c.glowC = hour === 'night' || hour === 'dusk' || hour === 'storm' ? '#ffc56a' : '#ffd88a';
     // indoors after dark the candle is the light: warm lit faces, a shallower shadow
@@ -769,14 +783,14 @@
     const season = month == null ? 1 : [0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 0][month];
     const terr = TERRAIN[opt.terr] ? opt.terr : 'hills', hour = HOURS[opt.hour] ? opt.hour : SK.hourFor(sc, key, '');
     const p = 'sk' + hash([sc, key, month, terr, hour, opt.coast ? 1 : 0].join('|')) + '_';
-    const indoor = INDOOR.has(sc), c = SK.palette(hour, terr, season, indoor);
+    const indoor = INDOOR.has(sc), c = SK.palette(hour, terr, season, indoor, opt.clim);
     c.arch = opt.arch && SK.ARCH.includes(opt.arch) ? opt.arch : null;
     const o = { hz: indoor ? 112 : 146, groundY: 176, floor: 176, indoor, defs: '' };
     o.sea = sc === 'travel' && r() < 0.3;
     o.flip = r() < 0.5 && !['letter', 'learning', 'money', 'favor', 'court', 'subordinate', 'beast', 'weather'].includes(sc);
     o.side = r() < 0.5; o.thatch = r() < 0.5;
     o.sunX = 70 + r() * 250; o.moon = r() < 0.6; o.full = r() < 0.55;
-    o.rain = hour === 'storm' || (season === 1 || season === 3) && !indoor && r() < 0.12;
+    o.rain = hour === 'storm' || (season === 1 || season === 3 || c.wet) && !indoor && r() < (c.wet ? 0.45 : 0.12);
     o.fog = !o.rain && hour !== 'night' && (c.terr === 'marsh' ? r() < 0.7 : r() < 0.18);
     o.petals = r() < 0.6;
     o.win = sc === 'court' ? 'court' : r() < 0.5 ? 'pair' : 'one'; o.wx = 40 + r() * 120;
@@ -802,7 +816,7 @@
     body += L.weather(p, c, r, o);
     body += `<rect x="1" y="1" width="${W - 2}" height="${H - 2}" fill="none" stroke="${INK}" stroke-width="2"/>`;
     const label = 'Colour print: ' + (SK.LABEL[sc] || 'a scene') + ', ' + HOURS[hour].name + (opt.place ? ', ' + opt.place : '');
-    return `<svg class="woodcut" data-print="sky" data-hour="${hour}" data-terr="${terr}"${c.arch ? ` data-arch="${c.arch}"` : ''} viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${UI.esc(label)}" xmlns="http://www.w3.org/2000/svg">${L.defs(p, c, o)}${body}</svg>`;
+    return `<svg class="woodcut" data-print="sky" data-hour="${hour}" data-terr="${terr}"${c.snow && !indoor ? ' data-snow="1"' : ''}${c.arch ? ` data-arch="${c.arch}"` : ''} viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${UI.esc(label)}" xmlns="http://www.w3.org/2000/svg">${L.defs(p, c, o)}${body}</svg>`;
   };
 
   // ---- the event's print: its shape (61), the hour from its shape and words, the land and place from the player's home
@@ -814,6 +828,8 @@
     const words = (v.title || '') + ' ' + (typeof v.text === 'string' ? v.text : '');
     const terr = SK.terrOf(pr);
     const o = { shape, key, month: A.monthOf(A.today()).m, hour: SK.hourFor(SC[shape] ? shape : 'none', key, words), terr, coast: !!(pr && pr.coast), place: pr ? pr.name : '' };
+    const clim = SK.climOf(pr);
+    if (clim) o.clim = clim;
     const arch = SK.archOf(pr);
     if (arch) o.arch = arch;
     return o;

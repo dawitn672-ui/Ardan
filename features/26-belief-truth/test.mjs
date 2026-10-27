@@ -124,4 +124,19 @@ export default {
     const r = await pg.evaluate(() => !!(A.SIGNATURE && A.SIGNATURE.beliefTruth));
     return { ok: r, detail: `A.SIGNATURE.beliefTruth ${r}` };
   },
+  // cycle 1: "Guards the Tea Mother trees..": a lore line that ends in its own stop is not given a second
+  async btOneStop(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 2601, lands: 'great', race: 'human', realm: 'POL-46', status: 'peasant', sex: 'F', startAge: 30 });
+      const pc = A.pc(), out = [];
+      for (const c of LORE.creatures.slice(0, 400)) {
+        if (A.BT.level(pc, c.id) !== 0) continue;
+        A.BT.learn(pc, c.id, 1, 'So that is what they call it:');
+        const L = A.S.log[A.S.log.length - 1], t = L && L.lines ? L.lines.map(l => l[0]).join(' ') : JSON.stringify(L);
+        out.push(t);
+      }
+      return { n: out.length, bad: out.filter(t => /[^.]\.\.(?!\.)|…\./.test(t)).slice(0, 3) };
+    });
+    return { ok: r.n > 50 && !r.bad.length, detail: `${r.n} bestiary lines, ${r.bad.length} with a doubled stop ${r.bad.join(' | ')}` };
+  },
 };

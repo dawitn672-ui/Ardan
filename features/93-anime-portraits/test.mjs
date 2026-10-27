@@ -252,4 +252,25 @@ export default {
     return { ok, detail: `${r.cultures} far cultures in ${r.lands} lands, M and F, palest and darkest stored skin, bust and full figure: ${r.bad.length} invalid, ${r.errors} fallbacks, ${r.outRange.length} out of their land's range; ` +
       `dress by land ${JSON.stringify(r.cuts)}; Known World untouched ${r.kwOk}; in the state, ${r.outState} of ${r.farPeople} far people outside their land's range; 'bald' drawn as ${r.ages.map(([a, b, st]) => a + ':' + (b ? 'bald' : st)).join(' ')}` };
   },
+
+  // cycle 1 visual B4: the skin picked in creation is the skin the game draws. For a far people the swatch row offers
+  // only their land's range, a pick outside it is pressed as the portrait presses it, and the preview carries the
+  // culture; the Known World keeps all eight swatches.
+  async apCreateSkin(pg) {
+    const r = await pg.evaluate(() => {
+      UI.A.newLife();
+      const rid = Object.keys(LORE.realms).find(k => /Busimo/.test(LORE.realms[k].name));
+      const row = () => { UI.step = 1; UI.render(); return [...document.querySelectorAll('[data-v^="skin:"]')].map(e => e.dataset.v.slice(5)); };
+      Object.assign(UI.cr, { race: 'human', realm: rid, sex: 'F', home: null, house: null });
+      const far = row();
+      UI.A.crApp('skin:' + GD.SKIN.human[0]); row();
+      const pv = UI.crPreviewPerson(), chosen = UI.cr.app.skin, drawn = UI.ANIME.drawnApp(Object.assign({}, pv, { cult: UI.crCult() }), pv.app).skin;
+      const hairShown = [...document.querySelectorAll('[data-v^="hair:"]')].filter(e => e.style.display !== 'none').length;
+      Object.assign(UI.cr, { realm: 'POL-01', home: null, house: null });
+      const kw = row();
+      return { rid, far, chosen, drawn, previewCult: pv.cult || null, hairShown, kw: kw.length };
+    });
+    const ok = !!r.rid && r.far.length >= 2 && r.far.length < 8 && r.far.includes(r.chosen) && r.chosen === r.drawn && !!r.previewCult && r.hairShown < 11 && r.kw === 8;
+    return { ok, detail: `${r.rid}: ${r.far.length} skin swatches offered (${r.far.join(' ')}); palest picked -> stored ${r.chosen}, drawn ${r.drawn}, preview culture ${r.previewCult}; ${r.hairShown} hair swatches shown; Known World ${r.kw} swatches` };
+  },
 };

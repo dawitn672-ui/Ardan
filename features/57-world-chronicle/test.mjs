@@ -321,4 +321,21 @@ export default {
     });
     return { ok: r.n > 300 && !r.bad.length && !r.thin.length && r.total >= 60, detail: `${r.total} line templates in ${Object.keys(r.kinds).length} kinds, ${r.n} drawn; kinds with one line ${r.thin.join(', ') || 'none'}; bad ${r.bad.length} ${r.bad.slice(0, 3).join(' | ')}` };
   },
+  // cycle 1: "Since 1105, part of every tax here goes to Khaganate. Nobody forgets it." said in 1105. A "since" line
+  // waits until the year is WC.SINCE_MIN years gone, and a far realm whose short name is a noun takes its article.
+  async wcEchoWords(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5701, lands: 'great', race: 'human', realm: 'POL-59', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), y = A.S.year;
+      const c = (yy, i) => ({ id: 'x' + yy + i, k: 'trib', y: yy, e: { k: 'trib', p: pc.home, a: 'POL-59', b: 'POL-58', w: [], x: 0, y: yy } });
+      const fresh = [], old = [];
+      for (let i = 0; i < 6; i++) { fresh.push(A.WC.recallLine(c(y, i), pc, 'k' + i)); old.push(A.WC.recallLine(c(y - 5, i), pc, 'k' + i)); }
+      return { fresh, old, y };
+    });
+    const freshSince = r.fresh.filter(l => l && /since/i.test(l));
+    const named = r.old.filter(Boolean);
+    const bare = named.filter(l => /\b(to|for) Khaganate\b/.test(l));
+    return { ok: !freshSince.length && named.length > 0 && !bare.length && named.some(l => /the Khaganate/.test(l)),
+      detail: `this year's tribute: ${r.fresh.filter(Boolean).length} lines, ${freshSince.length} saying "since"; five years on: ${named.slice(0, 2).join(' | ')}` };
+  },
 };

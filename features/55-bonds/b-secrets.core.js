@@ -100,7 +100,7 @@
     if (!s) return null;
     const e = st.sec[t.id] = { k: s.k, sev: s.sev, t: BD.clean(s.t), y: A.S.year, how: String(how || 'chance').slice(0, 12) };
     if (pc.rel[t.id]) A.bondNote(pc, t, `You learned ${A.his(t)} secret: ${SEC.KINDS[s.k] ? SEC.KINDS[s.k].name : 'something hidden'}`);
-    A.log(`You know something about ${t.given} now. ${e.t}`, 'muted');
+    A.log(`You know something about ${A.knownName ? A.knownName(t) : t.given} now. ${e.t}`, 'muted');
     return e;
   };
 
@@ -140,9 +140,9 @@
     else st.sec[t.id] = Object.assign({}, s, { used: A.S.year });
     pc.honor = clamp((pc.honor || 0) - (COST[how] || 3) - (crim ? 1 : 0), 0, 100);
     let out = '';
-    if (how === 'favor') { A.addFavor(pc, t.id, crim ? 2 : 1); A.addOp(pc, t, -10); out = `(${t.given} owes you ${crim ? 'two favours' : 'a favour'})`; }
+    if (how === 'favor') { A.addFavor(pc, t.id, crim ? 2 : 1); A.addOp(pc, t, -10); out = `(${A.knownName ? A.knownName(t) : t.given} owes you ${crim ? 'two favours' : 'a favour'})`; }
     if (how === 'coin') { const n = SEC.price(t, crim); t.coin = Math.max(0, (t.coin || 0) - n); pc.coin = (pc.coin || 0) + n; A.addOp(pc, t, -22); out = `(+${BD.coin(n)})`; }
-    if (how === 'support') { A.addOp(pc, t, -6); if (A.classOf(t) >= 3 && A.giveLetter) { const L = A.giveLetter(pc, t, 'any'); out = `(a letter from ${t.given}, weight ${L.power})`; } else { A.fame(pc, 2); out = `(${t.given} speaks well of you)`; } }
+    if (how === 'support') { A.addOp(pc, t, -6); if (A.classOf(t) >= 3 && A.giveLetter) { const L = A.giveLetter(pc, t, 'any'); out = `(a letter from ${A.knownName ? A.knownName(t) : t.given}, weight ${L.power})`; } else { A.fame(pc, 2); out = `(${A.knownName ? A.knownName(t) : t.given} speaks well of you)`; } }
     if (how === 'silence' || crim) { st.hook[t.id] = { until: A.S.year + SEC.HOLD[crim ? 'criminal' : 'shunned'], k: how, y: A.S.year }; if (how === 'silence') A.addOp(pc, t, -8); }
     A.bondNote(pc, t, `You held ${A.his(t)} secret over ${A.him(t)}`, null, { s: 'you' });
     return out;
@@ -165,14 +165,14 @@
     A.addOp(pc, t, -30);
     if (pc.rel[t.id] && !['enemy'].includes(pc.rel[t.id].type) && !A.FAMILY_RELS.includes(pc.rel[t.id].type)) { pc.rel[t.id].type = 'enemy'; if (t.rel[pc.id]) t.rel[pc.id].type = 'enemy'; }
     A.bondNote(pc, t, `You told the world ${A.his(t)} secret`, null, { s: 'you' });
-    return `(${t.given}'s secret is out)`;
+    return `(${A.knownName ? A.knownName(t) : t.given}'s secret is out)`;
   };
   // learn: the secret of ctx.pid (true) or of ctx.oid ('oid'); a search that finds nothing says so
   BD.FX.learn = function (pc, v, ctx) {
     const t = A.P(v === 'oid' ? ctx.oid : ctx.pid);
     if (!t) return '';
     const e = SEC.learn(pc, t, ctx.how || (v === 'oid' ? 'told' : 'seen'));
-    return e ? '' : `(${t.given} hides nothing worth knowing)`;
+    return e ? '' : `(${A.knownName ? A.knownName(t) : t.given} hides nothing worth knowing)`;
   };
 
   // warn: you tell the person a secret is about (ctx.oid) that people are talking
@@ -209,8 +209,8 @@
     if (how === 'pay') { const n = Math.min(pc.coin || 0, +ctx.amtN || 0); pc.coin = (pc.coin || 0) - n; t.coin = (t.coin || 0) + n; if (A.chance(has(t, 'greedy') ? .6 : .35)) BD.again(pc, ctx); return `(−${BD.coin(n)})`; }
     if (how === 'out') return SEC.outMine(pc, s, t);
     if (how === 'blunt') { s.out = A.S.year; return ''; }   // it came out, and you laughed it off
-    if (how === 'turn') { const st = BD.state(pc); st.hook[t.id] = { until: A.S.year + SEC.HOLD.criminal, k: 'standoff', y: A.S.year }; return `(${t.given} will keep quiet while you do)`; }
-    if (how === 'cow') { s.know = s.know.filter(x => x !== String(t.id)); BD.state(pc).hook[t.id] = { until: A.S.year + SEC.HOLD.shunned, k: 'fear', y: A.S.year }; return `(${t.given} will not speak of it again)`; }
+    if (how === 'turn') { const st = BD.state(pc); st.hook[t.id] = { until: A.S.year + SEC.HOLD.criminal, k: 'standoff', y: A.S.year }; return `(${A.knownName ? A.knownName(t) : t.given} will keep quiet while you do)`; }
+    if (how === 'cow') { s.know = s.know.filter(x => x !== String(t.id)); BD.state(pc).hook[t.id] = { until: A.S.year + SEC.HOLD.shunned, k: 'fear', y: A.S.year }; return `(${A.knownName ? A.knownName(t) : t.given} will not speak of it again)`; }
     return '';
   };
   // a blackmailer who was paid may come back (booked through 21-npc-initiative's budget when it is there)

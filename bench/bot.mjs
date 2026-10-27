@@ -112,6 +112,9 @@ export const BOT = () => {
         const r = A.advance(engaged ? 31 : 400);
         let h, g = 0;
         while ((h = A.headReady()) && g++ < 300) {
+          // an event already answered comes back to the head after the fight it started (A.startDuelFront puts the
+          // duel ahead of it, and eventClose returns early): close it, and do not count it as a second scene
+          if (h.type === 'event' && h.result) { A.eventClose(); continue; }
           const day = A.absDay();
           L.gaps.push(day - L.lastDay); L.lastDay = day;
           L.items[h.type] = (L.items[h.type] || 0) + 1;

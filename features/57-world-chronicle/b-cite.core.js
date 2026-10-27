@@ -183,8 +183,10 @@
   };
   WC.RECALL = 34;          // per cent of scenes with a subject that get a recalled line, if an entry fits
   WC.GAP = 730;            // days before the same entry is recalled again
+  WC.SINCE_MIN = 3;        // years before a line may say "since <year>" of an entry
   const fmt = n => (A.fmt ? A.fmt(n) : String(n));
-  const rs = id => (id ? (A.realm(id) ? A.realm(id).short : WC.name(id) || 'a realm now gone') : '');
+  // a far realm whose short name is a noun takes its article ("goes to the Khaganate", 991's A.realmRef)
+  const rs = id => (id ? (A.realm(id) ? (A.realmRef ? A.realmRef(id) : A.realm(id).short) : WC.name(id) || 'a realm now gone') : '');
   const pn = i => (i != null && A.S.prov[i] ? A.S.prov[i].name : '');
   const the = s => String(s || '').replace(/^The /, 'the ');
   // lines by kind: [needsHome, (c, x) => string]; x has the entry's words. Second person, present tense. The lines of a
@@ -314,7 +316,10 @@
   WC.recallLine = function (c, p, key) {
     const set = WC.LINES[c.e ? c.k : ['ruler', 'war'].includes(c.k) ? c.k : 'canon'] || WC.LINES.canon;
     const home = c.e && c.e.p != null && WC.nearProvs(p).has(c.e.p);
-    const ok = set.filter(l => !l[0] || home);
+    // "Since 1105 ... Nobody forgets it" said in 1105 is not a memory: a line that counts "since" a year wants that
+    // year to be at least WC.SINCE_MIN years gone
+    const fresh = A.S.year - c.y < WC.SINCE_MIN;
+    const ok = set.filter(l => (!l[0] || home) && !(fresh && /since/i.test(String(l[1]))));
     if (!ok.length) return null;
     // the lines of a kind come round in turn
     const R = WC.rec(), kc = R.kc = R.kc || {}, n = kc[c.k] = (kc[c.k] || 0) + 1;

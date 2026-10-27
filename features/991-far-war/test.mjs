@@ -208,6 +208,45 @@ export default {
     return { ok, detail: `${r.cf} conflicts: ${r.wars} wars (${r.cited} with the want in the casus belli), ${r.plans} plans, ${r.wants} wants; e.g. "${r.sample.slice(0, 140)}"` };
   },
 
+  // cycle 1 (world review B2, I2): the lore's three wars of 1105 are border wars (before: settled inside 1105, the
+  // Black Lamp and Kethra taken whole or by twelve provinces); the conflicts that waited have dates: Tegur dies, the
+  // Felt Council raises Ulgai and Jagdet claims the felt; Kemodari sails on the Strait in 1106; the Sunrise
+  // election is held in 1106. Lives review B8: a ruler at war is called to a council of war; a taken home is a scene.
+  async fwLoreDates(pg) {
+    const r = await pg.evaluate(G => {
+      const ends = [];
+      const sw = A.settleWar;
+      A.settleWar = function (w, res) { const S = A.S, lose = res === 'att' ? w.leadD : w.leadA, n0 = A.realmProvs(lose).length; const v = sw.apply(this, arguments); if (!S.wars.includes(w)) ends.push({ id: w.id, d: A.absDay() - w.d0, lost: n0 - A.realmProvs(lose).length }); return v; };
+      try {
+        A.newGame(G);
+        const S = A.S, d0 = A.absDay(), lore = S.fw.cf.filter(c => c.mode === 'war').map(c => c.w);
+        const lim = S.wars.filter(w => lore.includes(w.id) && w.fwLimit).length;
+        const news0 = (S.news || []).filter(x => /In the far lands/.test(x.t || x)).length;
+        T.play(2, { each: () => { const q = A.pc(); if (q) q.health = Math.max(q.health, 80); } });
+        const E = ends.filter(e => lore.includes(e.id));
+        const kh = A.P(S.realms['POL-58'].ruler), told = (S.news || []).map(x => x.t || String(x)).concat((S.history || []).map(h => h.t || ''));
+        const all = told.join(' | ');
+        return { lim, news0, ended: E.length, early: E.filter(e => e.d < 540).length, maxLost: Math.max(0, ...E.map(e => e.lost)), kh: kh && A.fullName(kh, false), tegur: S.fw.kh,
+          felt: !!(S.fw.kh && S.fw.kh.claim), strait: S.wars.concat([]).some(w => w.name === 'The War of the Strait') || /Bonevari ships/.test(all) || !!S.fw.due.strait, sunrise: /Spear-Marshal's (staff|term)/.test(all), errs: 0 };
+      } finally { A.settleWar = sw; }
+    }, GREAT({ realm: 'POL-01' }));
+    // a ruler at war: the council of war is queued; a home taken: the scene
+    const q = await pg.evaluate(G => {
+      A.newGame(G);
+      const S = A.S, pc = A.pc(), r = S.realms['POL-91'];
+      A.makeRuler(pc, 'POL-91');
+      for (const f of A.onMonth) f(pc);
+      const council = S.queue.some(x => x.ev === 'fw_war_council');
+      const pc2 = pc; pc2.ruler = null; r.ruler = null;
+      const home = S.prov[pc2.home], other = A.neighbors(pc2.realm)[0];
+      pc2.fwHomeOwner = home.owner; home.owner = other;
+      for (const f of A.onMonth) f(pc2);
+      return { council, home: S.queue.some(x => x.ev === 'fw_home_taken') };
+    }, GREAT({ realm: 'POL-91', startAge: 30 }));
+    const ok = r.lim === 3 && !r.news0 && r.early === 0 && r.maxLost <= 3 && r.tegur && r.tegur.done && /Ulgai/.test(r.kh || '') && r.felt && r.strait && r.sunrise && q.council && q.home;
+    return { ok, detail: `1105: ${r.lim} border wars, ${r.news0} far lines told on the first day; in two years ${r.ended} settled (${r.early} before 18 months, at most ${r.maxLost} provinces lost); khagan ${r.kh} (Tegur died ${r.tegur && r.tegur.done}), Jagdet's claim ${r.felt}; the Strait ${r.strait}; the Sunrise election ${r.sunrise}; council of war queued ${q.council}, the home scene ${q.home}` };
+  },
+
   // tempers, sieges, a duel with a Legend, a year of war in the far lands: no page error, and rendering is pure
   async fwFarPlays(pg) {
     const r = await pg.evaluate(G => {
@@ -339,5 +378,25 @@ export default {
     const after = await pg.evaluate(G => { A.newGame(G); T.play(0.2); return true; }, GREAT()).then(() => pg.evaluate(KNOWN));
     const same = base.join() === mine.join(), same2 = base.join() === after.join();
     return { ok: same && same2 && !B.errs.length, detail: `3 Known World lives of 3 years: ${same ? 'identical' : 'DIFFERENT'} without this feature, ${same2 ? 'identical' : 'DIFFERENT'} after a Great Continent game in the same page` };
+  },
+  // cycle 1: three wars named "The Long War" in one year; "Frost Riders wins", "The Ouro Hunters is no more"
+  async fwWarWords(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9911, lands: 'great', race: 'human', realm: 'POL-36', status: 'peasant', sex: 'M', startAge: 22 });
+      const S = A.S, names = [];
+      for (let i = 0; i < 12; i++) { const n = A.warName('POL-36', 'POL-37'); names.push(n); S.history.push({ y: S.year, t: n + ' (' + S.year + '–' + S.year + '): x' }); }
+      const seen = [], n0 = A.news; A.news = function (t) { seen.push(String(t)); return n0.apply(this, arguments); };
+      const w = A.startWar('POL-132', A.neighbors('POL-132')[0], null, 'conquest');
+      const ends = [], e0 = A.endWar; A.endWar = function (ww, rr, t) { ends.push(String(t)); return e0.apply(this, arguments); };
+      // past 09-scale's peace floor (a far war is not settled in its first months)
+      if (w) { w.d0 = -1e6; w.start = S.year - 5; try { A.settleWar(w, 'att'); } finally { A.endWar = e0; } }
+      const news = ends.join(' | ') + seen.join(' | ');
+      const ouro = A.realm('POL-138'); const was = ouro.alive; A.realmFalls(ouro, null);
+      const fell = seen.join(' | '); A.news = n0;
+      return { names, dup: names.length - new Set(names).size, rv: [A.realmVerb('POL-132', 'wins', 'win'), A.realmVerb('POL-36', 'wins', 'win'), A.realmRef('POL-58')],
+        war: !!w, ends, winWords: /the Frost Riders win\b/.test(news), badWin: /Frost Riders wins/.test(news), fell: /The Ouro Hunters are no more/.test(fell) };
+    });
+    return { ok: !r.dup && r.rv[0] === 'the Frost Riders win' && r.rv[1] === 'Taulen wins' && r.rv[2] === 'the Khaganate' && (!r.war || (r.winWords && !r.badWin)) && r.fell,
+      detail: `12 war names, ${r.dup} repeated: ${r.names.slice(0, 5).join(', ')}; ${r.rv.join(' / ')}; war settled ${r.war}: ${r.ends.join(' | ').slice(0, 160)}; the Ouro Hunters are no more ${r.fell}` };
   },
 };

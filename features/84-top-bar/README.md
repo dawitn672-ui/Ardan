@@ -55,3 +55,33 @@ segmented control (32 high, sunken track, segments at least 44 wide). Play, Quie
 laptop widths. `A.newGame` and loading a save halt a running step. Three guards fixed controls that were dead or broken:
 the playtest bar's Start and Skip (`TOP-PLAYTEST-GUARD`), `aria-pressed` on the creation screen's family filter
 (`TOP-FAMFILTER-PRESSED`), and the full map's "−" and "fit", which are `aria-disabled` when the whole map is in view.
+
+## Cycle 1, lane O: the first hour (first-hour B1, I1, I2, I5, B4; design #9)
+
+**The early years step faster** (`UI.stepPlan`). A newborn pressed Month up to sixteen times for a first event. Under
+five the clock offers **Next season** (the main step, three months, ending where three Months end) beside Next month.
+A child whose last two steps passed with nothing to answer is offered **Until something happens** as the main step: it
+runs on, through the turn of the year, up to 400 days, and ends once the first thing that needs you is settled. W is
+the shorter step on offer and M the main one. Three newborns now reach a first event in 3 presses, where a Month at a
+time took 16 (`tbStepSeason`). Why this and not "run on when empty": the player keeps the step, the label says what
+will pass, and an adult's rhythm (Week, Month) is untouched. A step is a span of days, so the world is the one Months
+reach (`tbStepSeasonSameWorld`).
+
+**Every step ends with a note of what passed** (`UI.stepSumHtml`, at the top of Now): "This week · 7 days · coin +3
+suns · health unchanged", and the story's new lines, up to three. Weeks 2 to 6 of a life had shown nothing at all. A
+note, rather than small weekly events, because it costs the balance bands nothing: it reads the state at the start and
+end of the step and lives on `UI.stepper`, never in `A.S` (`tbStepNote` checks drawing it is pure). It can be dismissed.
+
+**Hints, How to play and activities** live in `97-life-fixes/b-hints.core.js` (lane O's file there) and are tested
+here:
+- `tbHintsBeside`: the first hint is the clock's, under the step buttons (above them in a phone's dock), naming Month
+  and Week, never Play, Space or Next. The tab's hints sit in the page after what they explain, not over it, and take
+  no clicks but their own button's. A step retires the clock's hint; three steps retire any other. What now's "Let time
+  run" is "Live the next month" (or season) and takes the step.
+- `tbHelpFirstHour`: How to play opens on "Your first hour", six steps naming Month and Week; the old pages are folded
+  by subject, and the clock's page is rewritten for the steps.
+- `tbActsSix`: a first life (the browser's first, `UI.set.lfLives`) sees six activities (What now's, the age's own,
+  then the plainest ways to meet people and grow) and "More activities (25)"; an activity's answer is written above the
+  tiles where it was pressed. 98-feedback's toast stays. **For lane V:** 91-look groups the tiles in the DOM; the hidden
+  ones carry `hidden` and `.act-more`, and a group left empty is hidden with its heading. If 91 wants the curation in
+  its own grid, the hook is `UI.ACT_FIRST` / `UI.ACT_SHOW` and the `.acts-six` marker.

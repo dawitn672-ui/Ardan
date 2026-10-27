@@ -27,12 +27,24 @@ export default {
     const r = await pg.evaluate(() => {
       T.enter({ seed: 7010, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 });
       UI.clk.speed = 2; const rows = [];
-      const look = () => { const n = UI.earlyNote(); rows.push([A.age(A.pc()), UI.clkRate(), (n.match(/>([^<]+)</) || [])[1] || '']); };
+      const look = () => { const was = UI.clk.run; UI.clk.run = true; const n = UI.earlyNote(); UI.clk.run = was; rows.push([A.age(A.pc()), UI.clkRate(), (n.match(/>([^<]+)</) || [])[1] || '']); };
       look(); for (const to of [6, 11, 16]) { T.play(to - A.age(A.pc())); if (!A.pc().alive) break; look(); }
       return rows;
     });
     const want = [[40, 'early years ×10'], [12, 'childhood ×3'], [6, 'youth ×1.5'], [4, '']];
     const ok = r.length === 4 && r.every((x, i) => x[1] === want[i][0] && x[2] === want[i][1]);
     return { ok, detail: r.map(([a, v, n]) => `age ${a}: ${v} days a second${n ? ', "' + n + '"' : ', no note'}`).join('; ') };
+  },
+
+  // first-hour I9: "early years ×10" stood beside Week and Month, which it does not speed. It shows only while Play runs.
+  async eyNoteOnlyPlaying(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 7020, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 });
+      const still = UI.earlyNote(), inBar = /early years/.test(UI.clkHtml());
+      UI.clk.run = true; const running = UI.earlyNote(); UI.clk.run = false;
+      return { still, inBar, running };
+    });
+    const ok = !r.still && !r.inBar && /early years ×10/.test(r.running);
+    return { ok, detail: `clock still: note "${r.still}", in the bar ${r.inBar}; clock running: "${(r.running.match(/>([^<]+)</) || [])[1] || ''}"` };
   },
 };

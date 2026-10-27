@@ -111,6 +111,30 @@
     return { k: 'victory', pri: 8, word: 'Victory', sub: String(B.title || ''), who: A.S.pc };
   };
 
+  // a battle lost: the same screen, the other side the winner (brief §5.10 names victory and defeat)
+  MO.battleLost = function () {
+    const q = A.S && A.S.queue && A.S.queue[0], B = q && q.type === 'battle' ? q.b : null;
+    if (!B || B.phase !== 'end' || !B.pcSide || !B.winner || B.winner === B.pcSide || wonSeen.has(B)) return null;
+    wonSeen.add(B);
+    return { k: 'defeat', pri: 8, word: 'Defeat', sub: String(B.title || ''), who: A.S.pc };
+  };
+  // a duel opening (cycle 1 visual I6): two busts and VS, once for each duel, before the first exchange
+  const duelSeen = new WeakSet();
+  MO.duelOpen = function () {
+    const q = A.S && A.S.queue && A.S.queue[0], D = q && q.type === 'duel' ? q.d : null;
+    if (!D || !D.a || !D.b || D.over || duelSeen.has(D)) return null;
+    duelSeen.add(D);
+    if ((D.round || 0) > 0 || D.b.beast) return null;
+    const nm = f => { const p = P(f.pid); return (p && A.fullName ? A.fullName(p, false) : f.name) || f.name || ''; };
+    return { k: 'duel', pri: 8, word: 'VS', sub: `${nm(D.a)} · ${nm(D.b)}`, who: D.a.pid, vs: D.b.pid };
+  };
+  // your own death (cycle 1 visual I5): a muted FAREWELL before the death screen
+  MO.ownDeath = function (a, b) {
+    if (!a || !b || a.S !== b.S || a.pc !== b.pc || !a.alive || b.alive) return null;
+    const pc = P(b.pc);
+    return { k: 'farewell', pri: 10, word: 'Farewell', sub: pc ? `${name(pc)}${pc.born != null ? ` · ${pc.born}–${pc.died || A.S.year}` : ''}` : '', who: b.pc };
+  };
+
   // ---- the check after each draw ---------------------------------------------------------------------------------
   MO.prev = null;
   MO.lastKey = null;       // the game month (year * 12 + month) of the last cut-in
@@ -122,11 +146,14 @@
     const a = MO.prev;
     MO.prev = b;
     const found = MO.found(a, b);
-    const won = MO.battleWon();
-    if (won) found.unshift(won), found.sort((x, y) => y.pri - x.pri);
+    const won = MO.battleWon() || MO.battleLost(), duel = MO.duelOpen(), gone = MO.ownDeath(a, b);
+    for (const x of [won, duel, gone]) if (x) found.unshift(x);
+    found.sort((x, y) => y.pri - x.pri);
     if (!found.length) return null;
     const key = b.year * 12 + b.month, top = found[0];
-    if (UI.set.cutins === false || MO.lastKey === key || MO.el) { MO.note(found, null, key); return null; }
+    // an opening (a duel) and your own death are not held to one a month: they belong to the moment they open
+    const urgent = top.k === 'duel' || top.k === 'farewell';
+    if (UI.set.cutins === false || (MO.lastKey === key && !urgent) || MO.el && !urgent) { MO.note(found, null, key); return null; }
     MO.lastKey = key;
     MO.note(found, top, key);
     MO.show(top);
@@ -152,13 +179,14 @@
     return `<svg class="mo-lines" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="${d}"/></svg>`;
   };
   MO.html = function (m, mode) {
-    const who = P(m.who);
-    let bust = '';
+    const who = P(m.who), vs = m.vs != null ? P(m.vs) : null;
+    let bust = '', bust2 = '';
     try { if (who && typeof PORTRAIT !== 'undefined' && PORTRAIT.svg) bust = PORTRAIT.svg(who, 112); /* a bust: 93 draws the full figure from 120 px */ } catch (e) { bust = ''; }
+    try { if (vs && typeof PORTRAIT !== 'undefined' && PORTRAIT.svg) bust2 = PORTRAIT.svg(vs, 112); } catch (e) { bust2 = ''; }
     const seed = [m.k, m.word, A.S ? A.S.year : 0, A.S ? A.S.pc : ''].join('|');
-    return `<div class="mo-dim" aria-hidden="true"></div>` + (mode === 'full' && m.k !== 'death' ? MO.lines(seed) : '') +
+    return `<div class="mo-dim" aria-hidden="true"></div>` + (mode === 'full' && m.k !== 'death' && m.k !== 'farewell' ? MO.lines(seed) : '') +
       `<div class="mo-band" aria-hidden="true"><div class="mo-band-acc"></div><div class="mo-band-ink"></div></div>` +
-      `<div class="mo-content" aria-hidden="true">${bust ? `<div class="mo-bust">${bust}</div>` : ''}<div class="mo-words"><div class="mo-word">${esc(m.word)}</div>${m.sub ? `<div class="mo-sub">${esc(m.sub)}</div>` : ''}</div></div>` +
+      `<div class="mo-content" aria-hidden="true">${bust ? `<div class="mo-bust">${bust}</div>` : ''}<div class="mo-words"><div class="mo-word">${esc(m.word)}</div>${m.sub ? `<div class="mo-sub">${esc(m.sub)}</div>` : ''}</div>${bust2 ? `<div class="mo-bust mo-bust2">${bust2}</div>` : ''}</div>` +
       `<span class="mo-vh">${esc(m.word)}${m.sub ? ': ' + esc(m.sub) : ''}</span>`;
   };
   MO.TIME = { full: 1200, reduced: 1740, off: 1500 };
@@ -225,6 +253,19 @@
 .mo-cut.mo-k-death{--mo-ink:#161a2c}
 .mo-cut.mo-k-death .mo-word{text-shadow:2px 2px 0 var(--mo-ink)}
 .mo-cut.mo-k-victory{--mo-acc:#ff8a5c;--mo-acc2:#ffd98a}
+.mo-cut.mo-k-defeat{--mo-acc:#c8402a;--mo-acc2:#f0a090;--mo-ink:#1a1222}
+.mo-cut.mo-k-farewell{--mo-acc:#8f9bbd;--mo-acc2:#c4cbe0;--mo-ink:#161a2c}
+.mo-cut.mo-k-farewell .mo-word{text-shadow:2px 2px 0 var(--mo-ink);letter-spacing:.12em}
+.mo-cut.mo-k-farewell .mo-bust{filter:grayscale(.8) drop-shadow(0 10px 18px rgba(0,0,0,.5))}
+.mo-cut.mo-k-duel{--mo-acc:#e8463a;--mo-acc2:#ffd98a}
+.mo-cut.mo-k-duel .mo-content{gap:32px}
+.mo-cut.mo-k-duel .mo-words{align-items:center}
+.mo-cut.mo-k-duel .mo-word{font-size:calc(var(--t-display,44px) * 1.6);font-style:italic}
+.mo-cut .mo-bust2{transform:scaleX(-1)}
+/* Day: the dim is the indigo shade, not a flat grey that reads as disabled, and the focus lines are ink (I9) */
+:root[data-theme=light] .mo-cut .mo-dim{background:radial-gradient(ellipse at 50% 50%,rgba(58,47,107,.12),rgba(58,47,107,.35))}
+:root[data-theme=light] .mo-cut .mo-lines path{fill:#1b1730;opacity:.3}
+.mo-cut .mo-sub{font-size:calc(20px * var(--tx, 1))}
 .mo-cut.mo-k-crowned{--mo-acc:#ffb648;--mo-acc2:#fff0c4}
 .mo-cut.mo-k-wedded{--mo-acc:#f2a3b8;--mo-acc2:#ffe0e8}
 .mo-cut.mo-k-birth{--mo-acc:#f2a77a;--mo-acc2:#ffe3c8}
@@ -232,6 +273,7 @@
 .mo-cut.mo-k-year .mo-word{font-size:calc(var(--t-display,44px) * 1.25)}
 @media (min-width:1600px){.mo-cut{--mo-h:150px}}
 @media (max-width:760px){.mo-cut{--mo-h:104px}.mo-cut .mo-content{gap:14px;padding:0 20px}.mo-cut .mo-bust{width:84px;height:84px}.mo-cut .mo-word{font-size:min(calc(34px * var(--tx, 1)), 8.2vw);white-space:normal;line-height:1.05}.mo-cut .mo-words{max-width:calc(100vw - 140px)}.mo-cut .mo-sub{font-size:var(--t-small,14px);max-width:60vw}}
+@media (max-width:760px){.mo-cut.mo-k-duel .mo-bust{width:68px;height:68px}.mo-cut.mo-k-duel .mo-content{gap:10px}.mo-cut.mo-k-duel .mo-words{max-width:calc(100vw - 196px)}.mo-cut.mo-k-duel .mo-word{font-size:min(calc(44px * var(--tx, 1)), 11vw)}.mo-cut.mo-k-duel .mo-sub{white-space:normal;text-align:center}}
 /* reduced motion and Motion off: a still banner, level, no focus lines */
 .mo-cut.mo-reduced .mo-band, .mo-cut.mo-off .mo-band{transform:none}
 .mo-cut.mo-reduced .mo-content, .mo-cut.mo-off .mo-content{transform:translateY(-50%)}

@@ -62,4 +62,49 @@ export default {
     });
     return { ok: r, detail: r ? 'the same story and seed give the same life' : 'two runs differ' };
   },
+
+  // first-hour I3 and B5: creation was four long steps (12,500 px on a phone) with Lands and age last, the stories hid
+  // behind a closed line, and picking the Known World only after a far realm silently moved the birth. Now "A new life"
+  // opens on one screen with Lands first and three ways in; the full screens put Lands and age above the realm; and the
+  // switch says what it did.
+  async startsQuick(pg, errs, { browser, file }) {
+    const { pathToFileURL } = await import('node:url');
+    const sizes = [];
+    for (const [w, h, mob] of [[1366, 768, false], [390, 844, true]]) {
+      const ctx = await browser.newContext({ viewport: { width: w, height: h }, isMobile: mob, hasTouch: mob }), p = await ctx.newPage();
+      p.on('pageerror', e => errs.push(String(e)));
+      await p.goto(pathToFileURL(file).href);
+      await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      sizes.push(await p.evaluate(() => { UI.set.lfLives = 0; UI.A.newLife(); window.scrollTo(0, 0); return { w: innerWidth, vh: innerHeight, h: document.documentElement.scrollHeight }; }));
+      await ctx.close();
+    }
+    const r = await pg.evaluate(() => {
+      UI.set.lfLives = 0; UI.A.newLife();
+      const app = document.getElementById('app'), q = s => app.querySelector(s);
+      const order = (a, b) => !!(a && b && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING));
+      const quick = { lands: !!q('.crq-lands'), ways: [...app.querySelectorAll('[data-a=crQuick]')].map(b => b.dataset.v).join(','), landsFirst: order(q('.crq-lands'), q('.crq-ways')),
+        cards: app.querySelectorAll('.crq-stories > .opt-grid > [data-a=crStory]').length, all: A.STARTS.every(s => app.textContent.includes(s.title)), score: /multiplied/.test(app.textContent) };
+      // Start at 16 goes straight to a life of 16
+      UI._newLifeOk = true; UI.A.crQuick('adult'); UI._newLifeOk = false;
+      const adult = { screen: UI.screen, age: A.age(A.pc()) };
+      // the full screens: Lands, then age, then the people and the realm
+      UI.A.newLife(); UI.A.crStep(0);
+      const L = q('.fl-lands'), age = [...app.querySelectorAll('.field')].find(f => /Where your story starts/.test(f.textContent)), realm = [...app.querySelectorAll('.field')].find(f => /Realm of birth/i.test(f.textContent));
+      const full = { order: order(L, age) && order(age, realm), begin: (() => { UI.A.crStep(3); return !/Where your story starts/.test(app.textContent) && !app.querySelector('.fl-lands'); })() };
+      // a far realm, then the Known World only: warned before, told after
+      UI.A.crStep(0);
+      const far = Object.keys(A.FAR.D.realms).find(r => A.raceAllowed(UI.cr.race, r)); UI.cr.realm = far; UI.crFix(); UI.render();
+      const warned = !!q('.cr-lands-warn');
+      const toasts = [], t0 = UI.toast; UI.toast = m => toasts.push(m);
+      UI.A.crSet('lands:known'); UI.toast = t0;
+      const told = toasts.some(m => m.includes(A.FAR.D.realms[far].name) && /beyond the Known World/.test(m)) && /beyond the Known World/.test(app.textContent);
+      UI.A.crSet('lands:great');
+      return { quick, adult, full, warned, told };
+    });
+    const [d, ph] = sizes;
+    const ok = r.quick.lands && r.quick.landsFirst && r.quick.ways === 'born,adult,story' && r.quick.cards === 3 && r.quick.all && r.quick.score &&
+      r.adult.screen === 'game' && r.adult.age === 16 && r.full.order && r.full.begin && r.warned && r.told && d.h <= d.vh * 1.15 && ph.h <= ph.vh * 1.8;
+    return { ok, detail: `quick screen ${d.h}px at ${d.w}x${d.vh} and ${ph.h}px at ${ph.w}x${ph.vh} (the four steps were 12,500 px on a phone); ways ${r.quick.ways}, Lands first ${r.quick.landsFirst}, ${r.quick.cards} story cards (all 20 listed ${r.quick.all}), score explained ${r.quick.score}; ` +
+      `Start at 16 -> ${r.adult.screen} at ${r.adult.age}; full screens: Lands, age, realm in order ${r.full.order}, gone from Begin ${r.full.begin}; far realm warned ${r.warned}, the switch says where the birth went ${r.told}` };
+  },
 };

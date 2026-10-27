@@ -117,7 +117,7 @@
     'Take the pack and go', 'You go down to the coast. You come home a year later with a little gold and a lot of stories.', 'Stay by the hearth', 'They call you the hearth-cat, kindly, for the rest of your life.', 'You go away to trade, as young men do.', { skill: { trade: 1 }, coin: 5 }, { honor: -3 }]];
   C['CUL-107'] = [['kmf_tower', 'grave', {}, 'The cremation tower', 'The dead are cremated in towers shaped like the mountain, and the ashes go to the sea.',
     '', '', '', '', '', 'You are burned in a tower shaped like the mountain, and your ashes go to the sea.', {}]];
-  C['CUL-108'] = [['usf_spear', 'ward', { when: 'mounted', every: 2 }, 'The spear battle', 'Each spring the villages fight a mounted battle with blunt spears to bring the rains.',
+  C['CUL-108'] = [['usf_spear', 'ward', { when: 'spring_mounted', every: 2 }, 'The spear battle', 'Each spring the villages fight a mounted battle with blunt spears to bring the rains.',
     'Spring, and the villages ride out against each other with blunt spears to bring the rains. Blood spilled feeds the fields. You have a horse; you are expected.',
     'Ride in the spear battle', 'You are knocked off once and get back on. The rains come in a week.', 'Lead your horse home', 'The rains come anyway, a little late. People blame you a little.', 'You ride in the spring spear battle.', { skill: { mounted: 1 }, health: -3 }, { honor: -2 }]];
   C['CUL-109'] = [['lhf_omen', 'ward', { when: 'any', every: 2 }, 'The omen bird', 'The omen birds\' calendar decides when to plant, travel and fight; a bad call turns a war party home.',

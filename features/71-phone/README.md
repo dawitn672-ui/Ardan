@@ -88,3 +88,7 @@ The two worst were fixed by name. Health is on the Now page now, not a sub-tab a
   - The first draw of Holdings sets `pc.cargo = {}` at any width (66-markets), a one-time state change from rendering.
   - The release's coarse-pointer rule `.click{display:inline-flex}` laid the new-life option cards out sideways on touch screens; fixed here, on phones.
   - The avatar buttons in People's "Beside you" have no accessible name on the desktop either; named here, on phones.
+
+**Cycle 1: the opening view** (first-hour I4). A new life on a phone opens on **Story**, where the birth is told, not on a
+near-empty Now; and Story carries the sub-tab badge when new lines have come in since it was last open
+(`phoneOpensStory`). The badge reads the log only.

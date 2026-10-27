@@ -430,6 +430,27 @@
   // and a gathering's own scenes prefer the ones this life has not seen (patch LF-GATH-SCENES); never 0, so a
   // gathering always has its scenes
   A.lfSceneW = e => (!LF.memOn() || !e ? 1 : Math.pow(0.2, LF.n(A.pc(), e.id)));
+  // A gathering scene this life has seen LF.GATH_SCENE_CAP times gives way to an unseen one, or to none: the gathering
+  // goes on to its last night (patch LF-GATH-CAP). A ruler sees one or two gatherings a year; without this the same
+  // eight scenes came 15 times each in a reign.
+  LF.GATH_SCENE_CAP = 3;
+  A.lfGathPool = function (pool, g) {
+    if (!LF.memOn() || !Array.isArray(pool)) return pool;
+    const pc = A.pc(), out = pool.filter(e => !(e && LF.n(pc, e.id) >= LF.GATH_SCENE_CAP));
+    if (!out.length && pool.length && g && g.pc && !g.pc.lfCut) { g.pc.lfCut = 1; A.log(`The rest of ${A.gathName ? A.gathName(g) : 'the gathering'} is toasts and speeches you have heard before.`, ''); }
+    return out;
+  };
+  // the closed-door bargain of a gathering, seen three times: the envoys settle it, for the influence a fair speech wins
+  A.lfGathBargain = function (g) {
+    if (!LF.memOn() || !g || !g.pc) return false;
+    const pc = A.pc();
+    if (!(LF.n(pc, 'gs_bargain') >= LF.GATH_SCENE_CAP)) return false;
+    g.pc.seen.push('gs_bargain');
+    const sk = A.skill ? A.skill(pc, 'diplomacy') : 0;
+    g.pc.inf = (g.pc.inf || 0) + Math.round(4 + sk / 12);
+    A.log(`Behind closed doors at ${A.gathName ? A.gathName(g) : 'the gathering'}, your envoys do the talking this time.`, '');
+    return true;
+  };
   // and once the life has been through a gathering's last night, later gatherings show one scene fewer (patch LF-GATH-WANT)
   A.lfGathWant = w => (!LF.memOn() || !(LF.n(A.pc(), 'ga_close') >= 1) ? w : Math.max(1, w - 1));
   LF.GATH_KIND_GAP = 6; LF.GATH_ANY_GAP = 3; LF.GATH_KNIGHT_GAP = 5; LF.GATH_CROWN_GAP = 4; LF.GATH_WAR_GAP = 3;

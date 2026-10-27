@@ -340,4 +340,41 @@ export default {
     if (r.err) return { ok: false, detail: r.err };
     return { ok: r.pure && r.share > 0, detail: `every tab drawn: state and random stream unchanged ${r.pure}; an old save played on (${r.s}), ${r.share} scenes counted since` };
   },
+  // cycle 1 text fixes: "Costs 1 suns"; "Master your master hands you a task"; a woman's post "Herd-boy"; the
+  // creation summary's "(King )"
+  async lfWordsCycle1(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      const pc = A.pc();
+      const sup = A.superior; A.superior = () => null;
+      let tok; try { tok = A.ctxTokens(pc, {}); } finally { A.superior = sup; }
+      const out = { one: A.coin(1), two: A.coin(2), big: A.coin(1200), herd: GD.CAREERS.herd.ranks[0][0], pot: GD.CAREERS.brewer.ranks[0][0], bossTitle: tok.bossTitle, boss: tok.boss };
+      A.newGame({ seed: 9702, lands: 'great', race: 'human', realm: 'POL-143', status: 'peasant', sex: 'F', startAge: 20 });
+      const L = A.FAR.D.realms['POL-143'];
+      out.far = UI.crRulerNote(Object.assign({}, LORE.realms['POL-143'] || { title: L.title }, { id: 'POL-143' }));
+      out.farSex = L.rulerSex;
+      out.kw = UI.crRulerNote(LORE.realms['POL-01']);
+      return out;
+    });
+    return { ok: r.one === '1 sun' && r.two === '2 suns' && /suns$/.test(r.big) && r.herd === 'Herd-hand' && r.pot === 'Pot-hand' && r.bossTitle == null && r.boss === 'your master' &&
+      /Kalunge/.test(r.far) && !/\( ?\w* \)/.test(r.far) && (r.farSex !== 'F' || /Queen/.test(r.far)) && /Aldwin/.test(r.kw), detail: JSON.stringify(r) };
+  },
+
+  // cycle 1 (lives B4): a queen hid her sister in the hayloft, a General of 62 was asked "You. Name?", a carpenter of 68
+  // was offered a sellsword's contract
+  async lfTierGates(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9703, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), C = A.C, ok = id => { try { return !!A.EV[id].cond(pc, C); } catch (e) { return 'err'; } };
+      pc.mil = { rank: 1, realm: pc.realm }; const privateOk = ok('camp_officer');
+      pc.mil.rank = 7; const general = [ok('camp_officer'), ok('camp_letter'), ok('camp_drill')];
+      pc.mil = null; const base = [ok('lf_harvest_dance'), ok('ak_sibling_2')]; pc.ruler = { realm: pc.realm }; const ruler = [ok('lf_harvest_dance'), ok('ak_sibling_2')];
+      pc.ruler = null; pc.flags.av_sword = A.S.year; pc.born = A.S.year - 68;
+      const oldSword = ['av_merc_looting', 'av_merc_sack', 'av_road_sellsword_offer'].map(ok);
+      pc.born = A.S.year - 30; const youngSword = ok('av_merc_sack');
+      return { privateOk, general, base, ruler, oldSword, youngSword, top: A.lfTop({ ruler: 1 }) };
+    });
+    return { ok: r.privateOk === true && r.general.every(x => x === false) && r.ruler.every(x => x === false) && r.base[1] === true && r.oldSword.every(x => x === false) && r.top,
+      detail: JSON.stringify(r) };
+  },
 };

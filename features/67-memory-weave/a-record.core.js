@@ -26,6 +26,24 @@
   const low = s => s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
   MW.cap = cap; MW.low = low;
   MW.isPc = p => !!(p && A.S && p.id === A.S.pc);
+  // a name that tells people apart. Lives meet many people of one given name ("Suilan" the patron died in 1122; another
+  // Suilan slandered you in 1148, and read as the dead woman). When someone else the player knows (a bond, kin, alive or
+  // dead) shares the given name, the person is named in full ("Suilan Ruo"), or by the epithet when there is no
+  // family name. Pure: reads the state. Used by the memory weave, 55-bonds' lines and the release's {them} (LF-THEM-NAME).
+  A.knownName = function (t, pc) {
+    if (!t || !t.given) return t ? t.given : '';
+    pc = pc || (A.pc && A.pc());
+    if (!pc || pc.id === t.id) return t.given;
+    const ids = new Set(Object.keys(pc.rel || {}));
+    for (const k of [].concat(pc.parents || [], pc.children || [], pc.spouse ? [pc.spouse] : [])) if (k != null) ids.add(String(k));
+    ids.delete(String(t.id)); ids.delete(String(pc.id));
+    let clash = false;
+    for (const id of ids) { const q = A.P(id); if (q && q.given === t.given) { clash = true; break; } }
+    if (!clash) return t.given;
+    const full = A.fullName ? String(A.fullName(t, false) || '') : '';
+    if (full && full !== t.given) return full;
+    return t.epithet ? `${t.given} ${t.epithet}` : t.given;
+  };
   // FNV hash of ids to a number in [0,1): the weave's variants are picked from it, never from A.rand
   MW.h = (...a) => { let h = 2166136261; const s = a.join('|'); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 100003) / 100003; };
 

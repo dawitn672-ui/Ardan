@@ -34,6 +34,29 @@
       return r;
     };
   }
+  // one first-run hint at a time (cycle 1 visual B2): while an event waits, its odds hint is the one shown, and the
+  // panel's hint waits for the next draw. Reads the queue only, so drawing stays pure.
+  if (typeof UI.hintBox === 'function') {
+    const hb = UI.hintBox;
+    UI.hintBox = function (where, pc, float) {
+      if (where !== 'event') { const q = A.S && A.S.queue && A.S.queue[0]; if (q && q.type === 'event' && UI.hintFor && UI.hintFor('event', A.pc())) return ''; }
+      return hb.apply(this, arguments);
+    };
+  }
+  // test affordances only while a playtest runs (cycle 1 visual B11): the title's "Playtest mode" link and the floating
+  // report flag (the Menu keeps both "Playtest mode" and "Report a problem"). <html data-pt> says a playtest is under
+  // way: UI.pt.on, or ?playtest in the address for a usability session.
+  LOOK.ptMark = function () {
+    try {
+      const d = document.documentElement, on = !!(UI.pt && UI.pt.on) || /[?&]playtest\b/.test(location.search || '');
+      if (on) d.dataset.pt = '1'; else delete d.dataset.pt;
+    } catch (e) {}
+  };
+  if (typeof UI.ptPaint === 'function') {
+    const pp = UI.ptPaint;
+    UI.ptPaint = function () { const r = pp.apply(this, arguments); LOOK.ptMark(); return r; };
+  }
+  if (typeof document !== 'undefined') LOOK.ptMark();
   if (typeof UI.init === 'function') {
     const init = UI.init;
     UI.init = function () { const r = init.apply(this, arguments); try { LOOK.keepLast(); } catch (e) {} return r; };

@@ -126,11 +126,11 @@ export default {
       await p.evaluate(FRESH);
       await p.evaluate(LIFE());
       await p.evaluate(SETTLE);
-      r = await p.evaluate(() => ({ h: document.scrollingElement.scrollHeight, vh: innerHeight, w: document.scrollingElement.scrollWidth, tiles: document.querySelectorAll('#tabbody .lk-acts > .act').length,
+      r = await p.evaluate(() => ({ hint: Math.round(((document.querySelector('#tabbody > .hint') || { getBoundingClientRect: () => ({ height: -10 }) }).getBoundingClientRect().height) + 10), h: document.scrollingElement.scrollHeight - Math.round(((document.querySelector('#tabbody > .hint') || { getBoundingClientRect: () => ({ height: -10 }) }).getBoundingClientRect().height) + 10), vh: innerHeight, w: document.scrollingElement.scrollWidth, tiles: document.querySelectorAll('#tabbody .lk-acts > .act').length,
         small: [...document.querySelectorAll('#tabbody .lk-acts > .act')].filter(t => t.getBoundingClientRect().height < 43.5).length }));
     } finally { await ctx.close(); }
     const screens = +(r.h / r.vh).toFixed(2);
-    return { ok: screens <= 1.3 && r.w <= 391 && r.tiles >= 20 && !r.small, detail: `Life page ${r.h} px in a ${r.vh} px screen: ${screens} screens (was 2.61); ${r.tiles} tiles, ${r.small} under 44 px; page width ${r.w}` };
+    return { ok: screens <= 1.3 && r.w <= 391 && r.tiles >= 20 && !r.small, detail: `Life page ${r.h} px in a ${r.vh} px screen (not counting the first-run hint in flow, ${r.hint} px): ${screens} screens (was 2.61); ${r.tiles} tiles, ${r.small} under 44 px; page width ${r.w}` };
   },
 
   // axe-core on Life, People, Holdings and Realm at 1366 x 768, in the dark and the light theme
@@ -362,6 +362,48 @@ export default {
       } finally { await ctx.close(); }
     }
     const ok = [1366, 390].every(w => ['dark', 'light'].every(th => out[w][th].lo >= 4.5)) && out[390].dark.below && out[390].light.below;
+    return { ok, detail: JSON.stringify(out) };
+  },
+
+  // cycle 1 visual B2: a first-run hint never covers a control. With an event waiting only its odds hint shows (in the
+  // column above the card on desktop, under the last choice on the phone); on the Life page the hint is in flow.
+  async hintsClear(pg, errs, { browser, file }) {
+    const out = {};
+    for (const [w, h] of [[1366, 768], [1920, 1080], [390, 844]]) {
+      const { ctx, pg: p } = await page(browser, file, { viewport: { width: w, height: h }, isMobile: w < 600, hasTouch: w < 600 }, errs);
+      try {
+        out[w] = await p.evaluate(async () => {
+          const settle = () => new Promise(res => setTimeout(res, 350));
+          const cover = () => {
+            const hs = [...document.querySelectorAll('.hint')].filter(e => e.getBoundingClientRect().width);
+            const hits = [];
+            for (const hn of hs) {
+              const r = hn.getBoundingClientRect();
+              for (const b of document.querySelectorAll('button, [data-a], .sc-ch')) {
+                if (hn.contains(b) || b.contains(hn)) continue;
+                const sheet = document.querySelector('#modal.sc-sheet');
+                if (sheet && !sheet.contains(b)) continue;   // under the phone's full-screen sheet
+                const q = b.getBoundingClientRect();
+                if (!q.width || getComputedStyle(b).visibility === 'hidden') continue;
+                // only what is drawn above the page: a control hidden under a modal sheet does not count
+                const top = document.elementFromPoint(Math.min(innerWidth - 1, Math.max(0, (Math.max(q.left, r.left) + Math.min(q.right, r.right)) / 2)), Math.min(innerHeight - 1, Math.max(0, (Math.max(q.top, r.top) + Math.min(q.bottom, r.bottom)) / 2)));
+                if (q.right > r.left + 1 && q.left < r.right - 1 && q.bottom > r.top + 1 && q.top < r.bottom - 1 && top && hn.contains(top)) hits.push((b.dataset.a || b.tagName) + ':' + b.textContent.trim().slice(0, 14) + '@' + Math.round(q.top) + '-' + Math.round(q.bottom) + '/' + Math.round(r.top));
+              }
+            }
+            return { n: hs.length, hits };
+          };
+          T.enter({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+          if (UI.MOMENTS) { UI.set.cutins = false; UI.MOMENTS.skip(); }
+          UI.set.hints = true;
+          A.S.queue = [{ type: 'event', ev: 'lf_love_potion', forced: true, ctx: {} }]; UI.render(); await settle();
+          const ev = cover();
+          A.S.queue = []; UI.render(); await settle();
+          const life = cover();
+          return { ev, life };
+        });
+      } finally { await ctx.close(); }
+    }
+    const ok = Object.values(out).every(o => o.ev.n === 1 && !o.ev.hits.length && o.life.n <= 1 && !o.life.hits.length);
     return { ok, detail: JSON.stringify(out) };
   },
 };

@@ -1,6 +1,6 @@
 # War in the Far Lands
 
-**Aspect:** War (round 10, lane 4: the Great Continent as deep in war as the Known World) · **Kind:** system, a generator and its data, 11 events, no patches.
+**Aspect:** War (round 10, lane 4: the Great Continent as deep in war as the Known World) · **Kind:** system, a generator and its data, 11 events, 2 patches (FW-WAR-WORDS, FW-FALL-WORDS: grammar of far realm names).
 
 99-far-lands gave every far realm an army borrowed from a Known World realm on the same ground, and nothing else of war: no styles, no orders, no Legends, no Masters. The lore (`canon/lore/war-and-legends.json`, `far-lands.json`) has all of it. This feature turns it into game data and puts it where the release, 32, 38, 48 and 68 already read.
 
@@ -107,3 +107,8 @@ A new far game takes about 0.6 s more (1.3 s in all on the shared machine). Rais
 - **The recruit and rank-up scenes** need a far soldier, so 8 test characters never meet them and the event linter only reads them.
 - **A Master's school seat** moves a student to the province of that name when he enrols; the release takes the first province of that name in the realm, which is the right one for every far seat today.
 - **Tempers are a lean, not a rule.** A far general's own traits still decide when they give a temper; the template only breaks a tie or fills an empty one.
+
+## 6. Words (cycle 1, `e-words.core.js`)
+
+- **War names.** The release's namer draws from eight words, so one year held three "The Long War". A name already borne by a live or recorded war takes an ordinal ("The Second Long War"); the namer's own draws come first, so the random stream is unchanged (`fwWarWords`).
+- **Grammar.** Far short names that are nouns take their article and an agreeing verb: "the Frost Riders win; the Walrus Strand pays tribute", "The Ouro Hunters are no more" (`A.realmRef`, `A.realmVerb`, `A.realmNamePlural`; patches FW-WAR-WORDS, FW-FALL-WORDS). 57-world-chronicle's echo lines use `A.realmRef` ("goes to the Khaganate"). All return the release's words outside a far game.

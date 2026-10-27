@@ -479,7 +479,10 @@ RI.session = function (r) {
   if (playerRules) {
     // the player hears the loudest push as a petition (event ri_court_push); the crown's choice is theirs
     const t = RI.agendaOf(T, true, r);
-    if (t && t.pro[0] && A.chance(.6) && !A.S.queue.some(q => q.ev === 'ri_court_push')) {
+    // council business: twice a reign's life, twelve years apart (97-life-fixes' rule for council and duty scenes);
+    // a year the court's push is held back, the matter waits (cycle 1: "The council presses" 21 to 24 times a reign)
+    const held = A.LF && A.LF.held && A.EV.ri_court_push ? A.LF.held(A.EV.ri_court_push, pc) : false;
+    if (t && t.pro[0] && !held && A.chance(.6) && !A.S.queue.some(q => q.ev === 'ri_court_push')) {
       const top = t.pro[0][0], foe = t.con[0] ? t.con[0][0] : null;
       A.queue({ type: 'event', ev: 'ri_court_push', ctx: { pid: top.p.id, push: PUSH[t.k].t, riK: t.k, seatT: top.seat ? 'your ' + A.COUNCIL[top.seat].name : RI.voiceLabel(top, r), wantT: RI.wantText(RI.aims(top.p).want),
         foeName: foe ? A.fullName(foe.p, false) : 'nobody', foeT: foe ? RI.fearText(RI.aims(foe.p).fear) : 'nothing', foeId: foe ? foe.p.id : null, npcMove: true } });

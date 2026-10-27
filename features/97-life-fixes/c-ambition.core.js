@@ -89,6 +89,27 @@
     web: { name: 'Weave a web of alliances', t: 'Bind the crowns around you with alliances',
       fit: p => (p.ruler ? 4 : 0), done: p => allies(p) >= 3,
       step: p => `Allies: ${allies(p)} of 3. Marriages, summits, gifts.`, prog: p => ratio(allies(p), 3) },
+    // for the second half of a life: what comes after the top (asked again when an ambition is met: lfx_amb_top)
+    lord: { name: 'Hold land of your own', t: 'Hold land of your own, and men who answer to you',
+      fit: p => (p.ruler ? 0 : p.noble && p.noble.rung >= 2 && p.noble.rung < 4 ? 6 : p.mil && p.mil.rank >= 5 ? 3 : (p.fame || 0) >= 40 ? 2 : 0),
+      done: p => !!(p.noble && p.noble.rung >= 4),
+      step: p => (p.noble && p.noble.rung >= 2 ? 'A fief from the crown: renown 50, a high command or a council seat, and the crown\'s good opinion.' : 'Be knighted first: renown, a captain\'s rank, the crown\'s eye. Or buy a patent (Decisions).'),
+      prog: p => (p.noble ? ratio(p.noble.rung + 1, 5) : ratio(p.fame || 0, 100)) },
+    legend: { name: 'Be named among the Legends', t: 'Be counted among the five best blades living',
+      fit: p => { const w = A.fightWorth ? A.fightWorth(p) : 0; return w >= 95 && w < 118 ? 6 : w >= 85 ? 2 : 0; },
+      done: p => (A.fightWorth ? A.fightWorth(p) : 0) >= 118,
+      step: p => `Fighting worth ${Math.round(A.fightWorth ? A.fightWorth(p) : 0)} of 118: masters to learn from, real fights, a school's highest rank.`,
+      prog: p => ratio((A.fightWorth ? A.fightWorth(p) : 0) - 60, 58) },
+    work: { name: 'Leave something that lasts', t: 'Build something that outlasts you',
+      fit: p => ((p.coin || 0) >= 20000 && !(Array.isArray(p.lfWorks) && p.lfWorks.length) ? 6 : (p.coin || 0) >= 8000 ? 2 : 0),
+      done: p => Array.isArray(p.lfWorks) && p.lfWorks.some(w => w && w.k !== 'ransom'),
+      step: p => `A great work (Decisions tab): a college, a ship, an almshouse, a patron's gift. You have ${coin(p.coin)}.`,
+      prog: p => ratio(p.coin || 0, 30000) },
+    house: { name: 'Found a house', t: 'Found a house your grandchildren will carry',
+      fit: p => (p.ruler || (p.house && !(p.flags && p.flags.bastard)) ? 0 : (p.fame || 0) >= 20 && (p.coin || 0) >= 1000 ? 5 : 0),
+      done: p => !!(p.house && A.S.houses && A.S.houses[p.house] && A.S.houses[p.house].founder === p.id),
+      step: () => 'Found a house of your own (Decisions tab): renown 25 and 1,500 suns for the heralds.',
+      prog: p => (ratio(p.fame || 0, 25) + ratio(p.coin || 0, 1500)) / 2 },
   };
   LF.ambOf = p => (p && p.amb && typeof p.amb === 'object' && LF.AMB[p.amb.k] ? p.amb : null);
   // a stable order between equal scores: no draw from the random stream, the same for anyone who looks
@@ -103,9 +124,12 @@
       return { k, f, h: hash(p.id + ':' + k + ':' + (when || '')) };
     }).filter(x => x.f > 0).sort((a, b) => b.f - a.f || a.h - b.h);
     if (cur && !cur.done && when === 'mid') out.push(cur.k);
+    // after the top: the second-half ambitions first, where they fit
+    if (when === 'top') all.sort((a, b) => (LF.LATE.includes(b.k) ? 1 : 0) - (LF.LATE.includes(a.k) ? 1 : 0) || b.f - a.f || a.h - b.h);
     for (const x of all) { if (out.length >= 3) break; out.push(x.k); }
     return out;
   };
+  LF.LATE = ['lord', 'legend', 'work', 'house', 'court', 'throne', 'renown', 'teacher'];
   LF.setAmb = function (p, k) {
     if (!p) return '';
     if (!k || !LF.AMB[k]) { delete p.amb; return ''; }
@@ -122,6 +146,8 @@
     if (pc.ruler && f.lfx_amb_r == null && !(LF.ambOf(pc) && ['expand', 'golden', 'web'].includes(pc.amb.k))) when = 'reign';
     else if (f.lfx_amb_y == null && age < 33) when = 'young';
     else if (f.lfx_amb_m == null && age >= 35 && age < 60) when = 'mid';
+    // an ambition met: a year on, a new one fitting the life it made (at most every 8 years, to 70)
+    else if (LF.ambOf(pc) && pc.amb.done && A.S.year - pc.amb.done >= 1 && age < 70 && (f.lfx_amb_t == null || A.S.year - f.lfx_amb_t >= 8)) when = 'top';
     if (!when || !A.EV['lfx_amb_' + when]) return;
     f['lfx_amb_' + when[0]] = A.S.year;
     if (when === 'mid' || when === 'reign') f.lfx_amb_y = f.lfx_amb_y == null ? A.S.year : f.lfx_amb_y;
@@ -157,6 +183,62 @@
       `<div class="small">${a.done ? '' : '<b>Next:</b> '}${UI.esc(step)}</div>` +
       `<div class="lf-amb-bar" role="progressbar" aria-label="How far along" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></section>`;
   };
+  // ---- What now points at the second half of a life (pure: reads the person, draws nothing) ------------------------
+  // The release's list ended at "Look for love" and "Let time run": nothing pointed at the Decisions tab, the orders, a
+  // scheme or a house, so a man with 254,000 suns never saw them (cycle 1, lives I5).
+  LF.whatMore = function (pc) {
+    const out = [], add = (score, t, why, go, act) => out.push({ score, t, why, go, act, cls: '' });
+    if (LF.OFF || !pc || !pc.alive || !A.isAdult(pc) || pc.prison) return out;
+    // a great work or a big decision the purse can bear
+    if (A.decisionsFor && A.decisionState) {
+      let best = null;
+      for (const d of A.decisionsFor(pc)) {
+        if (!d || !/^lfx_|found_house|seat|manor/.test(d.k || '')) continue;
+        if (!A.decisionState(pc, d).ok) continue;
+        const c = d.k && /^lfx_/.test(d.k) && LF.workCost ? LF.workCost(pc, d.k.slice(4)) : 0;
+        if (c && (pc.coin || 0) < 2 * c) continue;
+        if (!best || c > best.c || d.k === 'found_house') best = { d, c };
+        if (d.k === 'found_house') break;
+      }
+      if (best) add(best.d.k === 'found_house' ? 52 : 46, best.d.k === 'found_house' ? 'Found your house' : `You can afford it: ${best.d.name.toLowerCase()}`,
+        best.d.k === 'found_house' ? 'You have the renown and the silver. Your children would be born into a house of your making.' : `${coin(pc.coin)} in hand. The Decisions tab has what a fortune is for.`, 'goals', ['tab', 'goals']);
+    }
+    // an order that would have you, or would if you were knighted
+    if (pc.mil && !pc.mil.merc && !pc.order && GD.ORDERS && A.orderReqs) {
+      for (const id in GD.ORDERS) {
+        const o = GD.ORDERS[id];
+        if (!o || o.realm !== pc.mil.realm) continue;
+        const rs = A.orderReqs(pc, id), miss = rs.filter(x => !x.ok);
+        if (!miss.length) { add(54, `Ask to join ${o.name}`, 'You meet every one of the order\'s terms.', 'war', ['tab', 'war']); break; }
+        if (miss.length === 1 && /knighted|birth/i.test(miss[0].label)) { add(42, `${A.cap ? A.cap(o.name) : o.name} would have you, if you were knighted`, 'Renown and a captain\'s rank bring the crown\'s sword; a patent of nobility (Decisions) is the dear way.', 'war', ['tab', 'war']); break; }
+      }
+    }
+    // someone you hate, within reach of a scheme
+    if (pc.rel) {
+      for (const id in pc.rel) {
+        const r = pc.rel[id], o = A.P(id);
+        if (!r || !o || !o.alive || !['enemy', 'rival'].includes(r.type) || o.realm !== pc.realm || !(r.op <= -50)) continue;
+        add(40, `${o.given} is within reach`, 'An enemy close at hand: a scheme can ruin them (their card on the People tab).', 'people', ['tab', 'people']);
+        break;
+      }
+    }
+    return out;
+  };
+  const what0 = A.whatNow;
+  if (typeof what0 === 'function') A.whatNow = function (pc) {
+    const base = what0.apply(this, arguments);
+    try {
+      if (!Array.isArray(base)) return base;
+      let list = base;
+      // no "train in an extra session" once the skill trained is at the top (100)
+      const P = pc && pc.plan, k = P && P.train;
+      if (k && GD.SKILLS && GD.SKILLS[k] && A.skill(pc, k) >= 100) list = list.filter(x => x.t !== 'Train in an extra session');
+      const more = LF.whatMore(pc);
+      if (!more.length && list === base) return base;
+      return list.concat(more).sort((x, y) => y.score - x.score).slice(0, Math.max(3, base.length));
+    } catch (e) { return base; }
+  };
+
   const wn = UI.whatNowCard;
   if (typeof wn === 'function') UI.whatNowCard = function (pc) { const h = wn.apply(this, arguments); try { return h + UI.lfAmbCard(pc); } catch (e) { return h; } };
   try {

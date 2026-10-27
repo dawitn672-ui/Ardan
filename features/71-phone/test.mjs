@@ -232,4 +232,24 @@ export default {
     const good = x => x.sheet && x.fills && x.wood && x.choices >= 2 && x.low;
     return { ok: good(res.se) && good(res.pixel), detail: Object.entries(res).map(([d, x]) => `${d}: sheet ${x.sheet}, fills the screen ${x.fills}, woodcut full width ${x.wood}, ${x.choices} choices from y ${x.top} of ${x.H}, all in the lower half ${!!x.low}`).join('; ') };
   },
+
+  // first-hour I4: "Be born" on a phone landed on an empty Now with the birth story a sub-tab away. It opens on Story,
+  // and Story carries the badge when new lines come in while you are elsewhere.
+  async phoneOpensStory(pg, errs, { browser, file }) {
+    const { ctx, pg: p } = await openPage(browser, file, 'se', errs);
+    let r;
+    try {
+      r = await p.evaluate(async () => {
+        SAVES.listCache = []; UI.screen = 'title'; UI.render(); UI.A.newLife(); UI.A.crQuick('born');
+        const tab = UI.tab, text = (document.querySelector('#tabbody') || {}).textContent || '';
+        UI.A.tab('life'); const before = !!document.querySelector('#sub-story .badge');
+        A.S.queue = []; A.advance(60); A.S.queue = []; UI.render();
+        const after = !!document.querySelector('#sub-story .badge');
+        UI.A.tab('story'); UI.A.tab('life'); const cleared = !document.querySelector('#sub-story .badge');
+        return { tab, born: /born|father|mother/i.test(text), before, after, cleared };
+      });
+    } finally { await ctx.close(); }
+    const ok = r.tab === 'story' && r.born && !r.before && r.after && r.cleared;
+    return { ok, detail: `a new life opens on ${r.tab} (the birth story in view ${r.born}); Story badge: before ${r.before}, after new lines ${r.after}, after reading ${!r.cleared ? 'STILL' : 'cleared'}` };
+  },
 };

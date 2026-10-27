@@ -368,6 +368,36 @@ export default {
   },
 
   // every far province is named from its people's own place list: no name twice in the world, no markup
+  // cycle 1 (world review B1, B4, B5, B7): the lore's rulers have the lore's sex and birth year (the release made
+  // them at random: 69 of 118 right by sex, 4 by birth year); Fjorund is the giants' hall with the hall's own names and
+  // Fjorund and Hadun keep their faiths; the unheld land holds the few people the lore gives it (was 246 provinces with
+  // 10.2 M); no place name stutters, no root names more than three provinces of a realm, no two neighbours are alike
+  async flLoreWorld(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9972, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
+      const D = A.FAR.D, S = A.S, out = { n: 0, sex: 0, born: 0 };
+      for (const id in D.realms) { const L = D.realms[id]; if (!L.lore) continue; out.n++; const ru = A.P(S.realms[id].ruler); if (ru && ru.sex === L.rulerSex) out.sex++; if (ru && ru.born === L.rulerBorn) out.born++; }
+      const tg = A.P(S.realms['POL-58'].ruler); out.tegur = [A.fullName(tg, false), tg.sex, S.year - tg.born];
+      const fj = S.realms['POL-134'], hv = A.P(fj.ruler); out.hvaldi = [hv.given, hv.race, hv.cult, S.year - hv.born];
+      out.fjNorth = Object.values(S.people).filter(p => p.realm === 'POL-134' && p.cult === 'CUL-02').length;
+      out.faith = [fj.faith, S.realms['POL-152'].faith];
+      const un = S.prov.filter(p => p.id >= D.base && !S.realms[p.owner]); out.un = [un.length, un.reduce((a, p) => a + p.pop, 0)];
+      const bare = s => s.toLowerCase().replace(/[^a-z]/g, '');
+      const stut = s => s.split(/\s+/).some(w => { w = bare(w); for (let len = 2; len <= 4; len++) for (let i = 0; i + len <= w.length; i++) { const c = w.slice(i, i + len); if (!/[aeiouy]/.test(c) || !/[^aeiouy]/.test(c)) continue; const j = w.indexOf(c, i + len); if (j >= 0 && j <= i + len + 2) return true; } return false; });
+      const ed = (a, b) => { a = bare(a); b = bare(b); let pr = Array.from({ length: b.length + 1 }, (_, j) => j); for (let i = 1; i <= a.length; i++) { const c = [i]; for (let j = 1; j <= b.length; j++) c[j] = Math.min(pr[j] + 1, c[j - 1] + 1, pr[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); pr = c; } return pr[b.length]; };
+      const caps = new Set(Object.values(S.realms).map(x => x.capitalProv));
+      const far = S.prov.filter(p => p.id >= D.base);
+      out.stut = far.filter(p => !caps.has(p.id) && stut(p.name)).map(p => p.name);
+      const roots = {}; for (const p of far) if (S.realms[p.owner] && !caps.has(p.id)) { const k = p.owner + '|' + bare(p.name).slice(0, 4); roots[k] = (roots[k] || 0) + 1; }
+      out.rootMax = Math.max(...Object.values(roots));
+      out.near = 0; for (const p of far) for (const j of p.adj) { const q = S.prov[j]; if (q && q.id > p.id && q.id >= D.base && !caps.has(p.id) && !caps.has(q.id) && ed(p.name, q.name) < 3) out.near++; }
+      return out;
+    });
+    const ok = r.sex === r.n && r.born === r.n && r.tegur[1] === 'M' && r.tegur[2] >= 73 && r.hvaldi[1] === 'giant' && r.hvaldi[2] >= 100 && !r.fjNorth && r.faith.every(Boolean) &&
+      r.un[1] < 2e6 && r.stut.length <= 3 && r.rootMax <= 3 && r.near === 0;
+    return { ok, detail: `${r.n} lore rulers: ${r.sex} of the lore's sex, ${r.born} of its birth year; ${r.tegur.join(', ')}; Fjorund's ${r.hvaldi.join(', ')}, ${r.fjNorth} Northfolk there; faiths ${r.faith.join(', ')}; unheld ${r.un[0]} provinces with ${Math.round(r.un[1] / 1000)}k people; ${r.stut.length} stuttering names (${r.stut.slice(0, 3).join(', ')}), a root in at most ${r.rootMax} provinces of a realm, ${r.near} neighbours within two letters`, data: r };
+  },
+
   async flNames(pg) {
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 9971, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });

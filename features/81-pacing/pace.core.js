@@ -37,6 +37,35 @@ A.queue = function (item) {
   try { if (!PACE.OFF && S && S.queue && S.queue.length > n && item && item.type !== 'warroom' && !A._yearTurn) PACE.st().last = DAY(); } catch (e) { console.error('pacing queue', e); }
   return r;
 };
+// ---- 1b. the ceiling of the first adult year ------------------------------------------------------------------------
+// The floor in reverse. A life that comes of age (or starts grown) met every adult door at once: 23 scenes in a noble's
+// first year at 17, the recruiter, the draft, three taverns and a hunt (cycle 1, lives I9). In the first 365 days of
+// adulthood the world's own scenes stop at PACE.FIRST_CAP; NPC moves stop at PACE.FIRST_NPC. Never a scene the player
+// asked for, a choice's consequence, a forced or scheduled one, the start's own scenes or an ambition's.
+PACE.FIRST_CAP = 8; PACE.FIRST_NPC = 4;
+PACE.FIRST_KEEP = /^(fp_|lfx_amb_|ga_|cr_)/;
+PACE.firstYear = function (pc) {
+  if (!pc || !A.isAdult(pc)) return null;
+  const P = PACE.st();
+  if (!P.fy || typeof P.fy !== 'object' || P.fy.pid !== pc.id) P.fy = { pid: pc.id, d0: DAY(), n: 0, npc: 0 };
+  return DAY() - P.fy.d0 < 365 ? P.fy : null;
+};
+PACE.firstDrop = function (item) {
+  if (PACE.OFF || !item || item.type !== 'event' || item.forced || item.lfFrom || A._yearTurn) return false;
+  const LF = A.LF; if (LF && LF.origin) return false;
+  if (PACE.FIRST_KEEP.test(item.ev || '') || (item.ctx && item.ctx.gid)) return false;
+  const pc = A.pc(); if (!isPC(pc)) return false;
+  const fy = PACE.firstYear(pc); if (!fy) return false;
+  const npc = !!(item.ctx && item.ctx.npcMove) || !!(A.EV[item.ev] && A.EV[item.ev].npc);
+  if (npc ? fy.npc >= PACE.FIRST_NPC || fy.n >= PACE.FIRST_CAP : fy.n >= PACE.FIRST_CAP) { fy.cut = (fy.cut || 0) + 1; return true; }
+  fy.n++; if (npc) fy.npc++;
+  return false;
+};
+const queue1 = A.queue;
+A.queue = function (item) {
+  try { if (PACE.firstDrop(item)) return; } catch (e) { console.error('pacing first year', e); }
+  return queue1.apply(this, arguments);
+};
 // ...and what A.yearTurn spreads over the coming year is not a prompt today (what it keeps in the queue, is)
 const year0 = A.yearTurn;
 A.yearTurn = function () {

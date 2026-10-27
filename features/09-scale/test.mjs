@@ -149,6 +149,43 @@ export default {
       ` year-turn month ${r.year} ms wall, ${c(r.yearCpu)} ms CPU, over ${r.months} months${r.bad.length ? '; ' + r.bad.join(' | ') : ''}`, data: r };
   },
 
+  // cycle 1 (world review B2, B3, B9, I5; lives review B8): no far realm starts a war of its own in its land's first
+  // 12 to 18 months; a peace a far realm loses takes at most 15% of its people and land (before: the whole budget, 15 to
+  // 22 Twin Rivers districts, a median of 40% of the loser's people); a far war is not settled with terms inside nine
+  // months; word of the far east is told only once the player has a home (the 1105 wars came on the first day) and
+  // comes up to two years late, its province lists blurred and one line in three wrong in a detail, mended later
+  async scaleFarPeace(pg) {
+    const r = await pg.evaluate(() => {
+      const W = A.WORLD1;
+      A.newGame({ seed: 9091, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
+      const S = A.S, out = {};
+      out.firstDay = S.news.filter(x => /far lands|Taulen|Vahra|Busimo/.test(x.t || '')).length;
+      out.heldPre = (S.newsFar || []).filter(x => /far lands/.test(x.t)).length + (S.newsPre || []).length;
+      const cap = A.warCapFull(), rv = S.realms['POL-37'], rk = S.realms['POL-01'];
+      out.grace = [cap(rv), W.GRACE('R')];
+      // a war Hesh loses to a neighbour with every province of Hesh held and a score of 100
+      const foe = A.neighbors('POL-37').find(id => A.FAR.D.realms[id] && !A.atWar(id).length) || A.neighbors('POL-37')[0];
+      S.wars.filter(w => w.att.concat(w.def).includes('POL-37')).forEach(w => A.endWar(w, 'white'));
+      const w = A.startWar(foe, 'POL-37', 'The Test War', 'conquest', { noAllies: true, silent: true });
+      const mine = A.realmProvs('POL-37'), pop0 = mine.reduce((a, p) => a + p.pop, 0), n0 = mine.length;
+      for (const p of mine) if (p.id !== rv.capitalProv) p.occ = foe;
+      w.score = 100;
+      A.settleWar(w, 'att');
+      out.soon = S.wars.includes(w);
+      w.d0 -= 400;
+      A.settleWar(w, 'att');
+      const left = A.realmProvs('POL-37'), pop1 = left.reduce((a, p) => a + p.pop, 0);
+      out.peace = [n0, n0 - left.length, (1 - pop1 / pop0)];
+      out.alive = rv.alive;
+      const g = W.garble('The Salt War ends: Vahra wins and takes Ana, Bel, Cor, Dun from Kethra.');
+      out.garble = g.t;
+      return out;
+    });
+    const ok = r.firstDay === 0 && r.heldPre >= 3 && r.grace[0] === true && r.soon && r.peace[1] >= 1 && r.peace[2] <= 0.16 && r.alive && !/Ana/.test(r.garble);
+    return { ok, detail: `first-day far lines ${r.firstDay}, held ${r.heldPre}; Hesh in its ${r.grace[1]}-month grace: cap full ${r.grace[0]}; a peace inside nine months refused ${r.soon}; ` +
+      `then Hesh loses ${r.peace[1]} of ${r.peace[0]} provinces (${Math.round(r.peace[2] * 100)}% of its people); "${r.garble}"` };
+  },
+
   async scaleOneWorld(pg) {
     // the Great Continent for ten years (world.core.js): wars are joined only within reach, each land keeps to its
     // share of the war cap, the lore's tributes are made and hold, far news comes late and seldom; and the far world

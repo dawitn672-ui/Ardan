@@ -87,3 +87,11 @@ Two far realms keep a Known World faith in the lore (Fjorund the Hall-giants' Mo
 - **Customs are the player's**, as in 47: NPCs do not sit exams or pay the census.
 - **The voices' creature check** is against the bestiary in the build; a later far beast whose name is a common word (a tiger, a bear) could fail it.
 - **Factions are 56's.** The far realms' powers name the five kinds the engine has; a faction the lore has that fits none of them (the Censorate, the Silk Office) is not a faction of its own. 56 draws a faction by `A.FACTIONS[kind].name`; a one-line hook in 56's `view.core.js` `facName` (`A.FARP_POWERS_NAME && A.FARP_POWERS_NAME(f) || ...`, which takes the faction, not its kind) would show the realm's own name in 56's views too; this feature defines `A.FARP_POWERS_NAME` for it.
+
+## Cycle 1 fixes
+
+- **The holy day said once** (`FP.dayText`): "December, and the Long Night of Lamps. Every Lamp monastery …", not "… Lamps. The Long Night of Lamps." (`fpDayOnce`).
+- **Seasons** (`FP.SEASONS`, `B.WHEN.spring` …): the seven far ward customs whose words name a season (the spring crawl, the Telling of the Walk at midsummer, the Lake Steppe's ice, the Walrus Strand's first catch, the Ridges' autumn meeting, Velden's New Year, the spring spear-ride) come in that season, not on 2 January (`fpSeasons`).
+- **Western institutions** (`FP.westOnly`, `A.evFit`): in a far realm a generic scene built on the manor, the reeve, the corrody, villeins, the enclosure of the common or a barn raising is not drawn; a serfdom scene only for a serf; a city-state (free city, port, treaty, temple or jade city, oasis) draws no village scenes.
+- **Words of faith** (`FP.revoice`, on `A.eventView` and the result in `A.eventChoose`): church > temple, the priest > the faith's clergy, vespers > the evening rite, crypt > vault, abbey > monastery, bishop > temple elder, parish > ward, alehouse > drinking house; the council's Chaplain is the Keeper of Rites (`fpWestWords`). The far lands' own scenes are left alone.
+- **Names** (`FP.renameIfTaken`): a far child is not given a parent's or a sibling's name (Kyipa, daughter of Kyipa); re-picked by a hash of the id, so the random stream is unchanged; a typed name is kept (`fpNoParentName`).

@@ -25,10 +25,11 @@
     r: said(i),
     fx: take(i),
   });
-  const TITLE = { young: 'What you want', mid: 'Half a life', reign: 'What the crown is for' };
+  const TITLE = { young: 'What you want', mid: 'Half a life', reign: 'What the crown is for', top: 'What now, at the top' };
   const TEXT = {
     young: 'By the law of your people you are grown. The question your elders asked at every feast has stopped being a joke: what do you mean to make of your life? It is easier to answer now than it will ever be again.',
     mid: 'Half your life is behind you, more or less. You have done some of what you meant to and not the rest. Lying awake one night, you take stock of what the remaining years are for.',
+    top: 'You have what you set out for, and the morning after is like any other. The people who helped you up want to know what comes next. So, in the small hours, do you.',
     reign: 'The crown is heavier than it looks. In the first quiet hour of your reign, with the hall cleared and the candles low, you ask yourself what it is for. Every ruler is remembered for one thing, if at all.',
   };
   const scene = when => ({
@@ -41,5 +42,6 @@
     Object.assign({ id: 'lfx_amb_young' }, scene('young')),
     Object.assign({ id: 'lfx_amb_mid' }, scene('mid')),
     Object.assign({ id: 'lfx_amb_reign' }, scene('reign')),
+    Object.assign({ id: 'lfx_amb_top' }, scene('top')),
   ]);
 })();

@@ -62,6 +62,8 @@ ${X('.score')}{font-family:var(--f-impact);font-weight:400;color:var(--accent-st
 ${X('.mbox h2, .wr-top h2')}{font-family:var(--f-name)}
 ${X('.mbox:not(.obit) .mtext:first-letter')}{font-family:var(--f-name);font-weight:700;color:var(--accent);text-shadow:none}
 ${X('[data-vellum="1"] .il-vellum p:first-of-type::first-letter, .ts .ts-see::first-letter')}{font-family:var(--f-name);font-weight:700}
+/* no test affordances in the player's face unless a playtest is under way (B11); both stay in the Menu */
+:root:not([data-pt="1"]) #title [data-a="playtest"], :root:not([data-pt="1"]) .mreport{display:none!important}
 /* the vellum page keeps its own ink in both themes (brief §1.1): the Night tokens are re-pointed inside it, so every
    rule that reads var(--ink) and the like lands on the page's ink, not the night's (cycle 1 visual B1) */
 :root[data-theme][data-vellum="1"] .il-vellum{--ink:#2b1d10;--ink-2:#6b4410;--ink-3:#5b4630;--accent:#8e2414;--accent-strong:#8e2414;--line:#cdb88c;--line-strong:#8a6a3a;--raised:#e9dcbc;--raised-hover:#e3d3ad;--surface:#ece0c4;--sunken:#e2d0a8;--overlay:#f1e6cc;color:#2b1d10}

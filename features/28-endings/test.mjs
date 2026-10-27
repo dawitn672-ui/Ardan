@@ -35,7 +35,7 @@ export default {
       const logged = JSON.stringify(S.log.slice(-2)).includes('Here the chronicler writes');
       const end = A.ENDINGS.find(e => e.id === pc.ending.id);
       return { ending: pc.ending, recorded: d.ending === pc.ending.id && S.endings[pc.ending.id] === S.year, shown: txt.includes(end.name) && txt.includes('What became of them'),
-        lines: A.epilogue(pc), pure, legacy: /Endings found \(1\/20/.test(leg), logged, raw: /\{[a-z]/.test(txt) };
+        lines: A.epilogue(pc), pure, legacy: new RegExp('Endings found \\(1/' + A.ENDINGS.length).test(leg), logged, raw: /\{[a-z]/.test(txt) };
     });
     return { ok: r.recorded && r.shown && r.pure && r.legacy && r.logged && !r.raw && r.lines.length >= 2,
       detail: `${JSON.stringify(r.ending)}; on the death screen ${r.shown}; render pure ${r.pure}; collected ${r.legacy}; logged ${r.logged}; epilogue: ${r.lines.join(' | ')}` };
@@ -55,5 +55,24 @@ export default {
     });
     const kinds = Object.keys(r).length;
     return { ok: kinds >= 3 && (r.plain || 0) <= 3, detail: JSON.stringify(r) };
+  },
+  // cycle 1 (lives B5, I8, visual B10): "a kick from a horse" read "as all things end"; a bishop on the council ended
+  // "The Wealthy"; the gold "Your life is over…" bar showed under the obituary
+  async endingsCycle1(pg) {
+    const r = await pg.evaluate(() => {
+      const mk = (cause, prep, age) => { A.newGame({ seed: 2801, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: age || 40 }); const pc = A.pc(); if (prep) prep(pc); pc.cause = cause; return A.endingOf(pc); };
+      const manners = ['a kick from a horse', 'a wound gone bad', 'a bad tooth that poisoned the blood', 'a failing heart', 'a stroke'].map(c => [c, mk(c).manner]);
+      const bishop = mk('old age', pc => { pc.job = { c: 'clergy', r: 3, y: 1100 }; pc.coin = 50000; pc.office = 'chaplain'; }, 59).id;
+      const council = mk('old age', pc => { pc.coin = 50000; pc.office = 'treasurer'; }, 59).id;
+      const rich = mk('old age', pc => { pc.coin = 50000; }, 59).id;
+      T.enter({ seed: 2802, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 40 });
+      A.pcDeath('a fever'); UI.render(); UI.renderModal();
+      const bar = document.getElementById('agebar'), shown = bar ? getComputedStyle(bar).display : 'absent';
+      const obit = !!document.querySelector('#modal .obit');
+      return { manners, bishop, council, rich, bar: shown, obit };
+    });
+    const badM = r.manners.filter(([c, m]) => m === 'other');
+    return { ok: !badM.length && r.bishop === 'shepherd' && r.council === 'council' && r.rich === 'rich' && r.obit && r.bar !== 'block' && r.bar !== 'flex',
+      detail: `manners ${r.manners.map(x => x.join(' > ')).join('; ')}; bishop ${r.bishop}, councillor ${r.council}, merchant ${r.rich}; obituary open ${r.obit}, the bar beneath ${r.bar}` };
   },
 };

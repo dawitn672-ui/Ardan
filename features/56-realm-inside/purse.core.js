@@ -184,8 +184,12 @@ RI.maybeTaken = function (pc, enemy, kind) {
   if (!pc || !pc.alive || pc.id !== A.S.pc || !A.isAdult(pc) || pc.ruler || pc.prison || (pc.flags && pc.flags.unfree)) return false;
   if (pc.flags.ri_taken && A.S.year - pc.flags.ri_taken < 4) return false;
   if (A.S.queue.some(q => q.ev === 'ri_taken')) return false;
+  // never by men of your own cause: a claimant who still holds a commission in the crown's army can lose a battle to
+  // their own faction (cycle 1: "taken by men of Merrick's cause", Merrick being the player)
+  const er = A.realm(enemy);
+  if (er && (er.ruler === pc.id || (er.isRebel && (A.S.wars || []).some(w => w && w.claimant === pc.id && (w.att.includes(er.id) || w.def.includes(er.id)))))) return false;
   if (!A.chance(RI.takenOdds(pc, kind))) return false;
-  const er = A.realm(enemy), n = RI.ransomOf(pc);
+  const n = RI.ransomOf(pc);
   const patron = (() => {
     const h = pc.house && A.S.houses && A.S.houses[pc.house], hd = h && h.headPid ? A.P(h.headPid) : null;
     if (hd && hd.alive && hd.id !== pc.id) return hd;

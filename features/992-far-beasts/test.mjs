@@ -380,4 +380,9 @@ export default {
     return { ok, detail: `a girl of 12 in ${r.region} has heard of ${r.heard} far creatures (${r.mine} of her own land, ${r.other} from elsewhere) and ${r.kwHeard} of the Known World's; ` +
       `the bestiary draws ${r.lines} creature lines, ${r.known} with its id, name, land and tale: ${r.hasLine && r.hasTale}; drawing the bestiary and a scene ${r.pureCodex ? 'changes nothing' : 'CHANGES THE GAME'}, the far duel ${r.pureDuel ? 'changes nothing' : 'CHANGES THE GAME'}` };
   },
+  // cycle 1: the Codex said "You see a Bactrian Wild Camel": a real-world place in Ardan
+  async fbNoRealWorld(pg) {
+    const r = await pg.evaluate(() => { const all = JSON.stringify(A.FB_DATA); return { bactrian: /Bactria/i.test(all), camel: (A.FB_DATA.list || A.FB_DATA.creatures || []).map ? JSON.stringify(A.FB_DATA).match(/"name":"[^"]*Camel[^"]*"/g) : null }; });
+    return { ok: !r.bactrian, detail: JSON.stringify(r) };
+  },
 };

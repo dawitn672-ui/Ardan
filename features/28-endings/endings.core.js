@@ -26,6 +26,11 @@
       t: 'Led men who are still alive because of it, and men who are not.' },
     { id: 'veteran', name: 'The Old Soldier', test: p => ((p.mil || p.veteran || {}).battles || 0) >= 10,
       t: 'Stood in the line more times than anyone counted, and came home most of them.' },
+    // a high churchman or a councillor is remembered for the seat, not the purse ("The Wealthy" bishop on the council)
+    { id: 'shepherd', name: 'Shepherd of the Faith', test: p => !!(p.job && p.job.c === 'clergy' && p.job.r >= 3),
+      t: 'Wore the ring and kept the flock, and the flock kept most of its faith. The lamps will be lit for it a while.' },
+    { id: 'council', name: 'Of the Council', test: p => !!p.office,
+      t: 'Sat at the table where the realm is decided, and decided some of it. The minutes will not say which part.' },
     { id: 'master', name: 'Master of the Craft', test: p => (p.job && p.job.r >= 4) || count(p, /masterwork/) > 0,
       t: 'Made things that will outlast the maker. Somewhere a door still hangs true because of it.' },
     { id: 'rich', name: 'The Wealthy', test: p => worth(p) >= 20000,
@@ -60,11 +65,11 @@
     { id: 'battle', name: 'fell in the field', rx: /battle|front rank|siege|in the line|war\b|wounds taken|arrow|cavalry/i },
     { id: 'duel', name: 'by the blade', rx: /duel|a fight with|champion|stabb|knife|sword/i },
     { id: 'beast', name: 'taken by the wild', rx: /\bthe [A-Z]|beast|wolf|bear|boar|dragon|serpent|drake|wyrm|hound/ },
-    { id: 'sickness', name: 'carried off by sickness', rx: /plague|fever|pox|sick|cough|flux|consumption|illness|disease/i },
+    { id: 'sickness', name: 'carried off by sickness', rx: /plague|fever|pox|sick|cough|flux|consumption|illness|disease|wound gone bad|festering|tooth|poisoned the blood|gangren/i },
     { id: 'violence', name: 'by another\'s hand', rx: /murder|poison|assassin|executed|hanged|beheaded|killed by/i },
-    { id: 'accident', name: 'by mischance', rx: /fall|drown|accident|kicked|fire|collapse/i },
+    { id: 'accident', name: 'by mischance', rx: /fall|drown|accident|kick|fire|collapse|trampl/i },
     { id: 'birth', name: 'in childbed', rx: /childbirth|childbed|labou?r/i },
-    { id: 'age', name: 'in the fullness of time', rx: /old age|age\b|years/i },
+    { id: 'age', name: 'in the fullness of time', rx: /old age|age\b|years|heart|stroke/i },
     { id: 'other', name: 'as all things end', rx: /.*/ },
   ];
   A.endingOf = function (p) {
@@ -156,8 +161,76 @@
       `<div class="small muted">${UI.esc(A.cap ? A.cap(m.name) : m.name)}</div><p class="mtext"><em>${UI.esc(e.t)}</em></p>` +
       `<div class="group-h">What became of them</div>${A.epilogue(pc).map(l => `<p class="small">${UI.esc(l)}</p>`).join('')}</div>`;
     const at = h.indexOf('<div class="score">');
-    return at > 0 ? h.slice(0, at) + box + h.slice(at) : h + box;
+    let out = at > 0 ? h.slice(0, at) + box + h.slice(at) : h + box;
+    // the death screen as a moment (cycle 1 visual I5): a dusk print of the grave behind the page, the epitaph set
+    // large, the heirs with their busts. Drawn from state, hashed by id; nothing random, nothing written.
+    try {
+      let sky = '';
+      if (UI.SKIES && UI.SKIES.svg && UI.set.skies !== false) {
+        const pr = A.S && A.S.prov ? A.S.prov[pc.home] : null, SK = UI.SKIES;
+        let m = 0; try { m = A.monthOf(A.today()).m; } catch (e) {}
+        const o = { hour: 'dusk', terr: SK.terrOf ? SK.terrOf(pr) : 'hills', coast: !!(pr && pr.coast), place: '' };
+        if (SK.climOf) { const c = SK.climOf(pr); if (c) o.clim = c; }
+        sky = SK.svg('death', 'death|' + pc.id, m, o);
+      }
+      if (sky) out = out.replace('<div class="panel mbox obit">', `<div class="panel mbox obit en-moment"><div class="en-sky" aria-hidden="true">${sky}</div>`);
+      out = out.replace(/<button data-a="contAs" data-v="([^"]+)">/g, (all, id) => {
+        const k = A.P(id);
+        let b = '';
+        try { b = k && UI.ANIME && UI.set.anime !== false ? UI.ANIME.svg(k, 48, { bust: true }) : k && UI.portrait ? UI.portrait(k, 48) : ''; } catch (e) { b = ''; }
+        return `<button class="en-heir" data-a="contAs" data-v="${UI.esc(id)}">${b ? `<span class="en-heir-b" aria-hidden="true">${b}</span>` : ''}`;
+      });
+    } catch (e) {}
+    return out;
   };
+  // the life score counts up when the screen opens (the number only; under reduced motion it is simply there)
+  if (typeof UI.renderModal === 'function') {
+    const rm = UI.renderModal;
+    UI.renderModal = function () {
+      const r = rm.apply(this, arguments);
+      try {
+        const sc = document.querySelector('#modal .obit.en-moment > .score');
+        const reduced = document.documentElement.dataset.motion === 'off' || document.documentElement.dataset.motion === 'reduced' || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches && document.documentElement.dataset.motion !== 'full');
+        if (sc && !sc.dataset.counted && !reduced) {
+          sc.dataset.counted = '1';
+          const txt = sc.textContent, n = +txt.replace(/[^0-9]/g, '');
+          if (n > 0) {
+            const t0 = performance.now(), dur = 1100;
+            const step = now => { if (!sc.isConnected) return; const f = Math.min(1, (now - t0) / dur), v = Math.round(n * (1 - Math.pow(1 - f, 3))); sc.textContent = f >= 1 ? txt : (A.fmt ? A.fmt(v) : String(v)); if (f < 1) requestAnimationFrame(step); };
+            requestAnimationFrame(step);
+          }
+        }
+      } catch (e) {}
+      return r;
+    };
+  }
+  // the release's gold "Your life is over…" bar (#agebar) reopens this screen; while the screen is open it said the
+  // same thing twice, under the obituary. Hidden only while the death screen is up (pure CSS, nothing in the state).
+  const deathCss = () => {
+    if (typeof document === 'undefined' || document.getElementById('en-death-style')) return;
+    const st = document.createElement('style'); st.id = 'en-death-style';
+    st.textContent = 'body:has(#modal .obit) #agebar{display:none}' +
+      // no first-run hint over a death, and the obituary as a full-screen dusk page rather than a dialog
+      'body:has(#modal .obit) .hint{display:none!important}' +
+      '#modal:has(> .obit.en-moment){padding:0;align-items:stretch;justify-content:stretch;background:#0b0d1a}' +
+      '#modal > .obit.en-moment{position:relative;width:100%;max-width:none;min-height:100vh;margin:0;border:0;border-radius:0;box-shadow:none;overflow-x:hidden;overflow-y:auto;isolation:isolate;' +
+        'background:linear-gradient(180deg,rgba(13,17,32,0) 0,rgba(13,17,32,.55) 30vh,#0d1120 52vh);color:#eee8da;padding:24vh max(16px,calc(50vw - 360px)) 40px;text-align:center}' +
+      '#modal > .obit.en-moment > .en-sky{position:absolute;left:0;right:0;top:0;height:60vh;z-index:-1;pointer-events:none}' +
+      '#modal > .obit.en-moment > .en-sky svg{width:100%;height:100%;display:block;filter:saturate(.75)}' +
+      '#modal > .obit.en-moment > .en-sky::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,17,32,0) 40%,#0d1120 100%)}' +
+      '#modal > .obit.en-moment h2{color:#f0c062;font-size:calc(32px * var(--tx,1))}' +
+      '#modal > .obit.en-moment .mtext, #modal > .obit.en-moment .small, #modal > .obit.en-moment .years{color:#d9d2c2}' +
+      '#modal > .obit.en-moment .muted{color:#b0aec4}' +
+      '#modal > .obit.en-moment .epilogue .mtext em{font-family:var(--f-prose,serif);font-size:calc(22px * var(--tx,1));line-height:1.45;color:#f3ead6}' +
+      '#modal > .obit.en-moment .epilogue h3{color:#eee8da;font-size:calc(20px * var(--tx,1))}' +
+      '#modal > .obit.en-moment .score{font-size:calc(56px * var(--tx,1))}' +
+      '#modal > .obit.en-moment .en-heir{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px}' +
+      '#modal > .obit.en-moment .en-heir-b{display:block;width:40px;height:40px;flex:none}' +
+      '#modal > .obit.en-moment .en-heir-b svg{width:100%;height:100%;display:block}' +
+      '@media (max-width:760px){#modal > .obit.en-moment{padding-top:18vh}#modal > .obit.en-moment > .en-sky{height:42vh}}';
+    document.head.appendChild(st);
+  };
+  if (typeof document !== 'undefined') { if (document.head) deathCss(); else document.addEventListener('DOMContentLoaded', deathCss); }
   // the collection, in the Legacy tab
   const legacy = UI.TAB.legacy;
   UI.TAB.legacy = function () {

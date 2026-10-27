@@ -112,7 +112,7 @@ export function generate() {
     p.fort = p.type === 'capital city' ? 3 : p.type === 'city' || p.type === 'castle' ? 2 : p.type === 'ring-fort' || p.terr === 'mountains' ? 1 + (h < 0.4 ? 1 : 0) : h < 0.3 ? 1 : 0;
   }
   // the realms' capitals are named for their provinces; the primer says what the realm is, dryly
-  const faithName = id => (RL.faiths.find(f => f.id === id) || {}).name || '';
+  const faithName = id => (RL.faiths.find(f => f.id === id) || (base.LORE.faiths || {})[id] || {}).name || '';
   for (const [id, r] of Object.entries(RL.realms)) {
     const cap = P.find(p => p.pid === r.capId);
     if (r.capName && !used.has(r.capName.toLowerCase())) { used.delete(cap.name.toLowerCase()); cap.name = r.capName; used.add(cap.name.toLowerCase()); }

@@ -146,3 +146,12 @@ The lives differ (a different random stream gives different lives: three of the 
 - **The bots never take decisions**, so the great works change nothing in the balance league; they are for players. Peak coin in the league is the same pile it was.
 - **Ambitions are not on the endings collection.** A fulfilled ambition writes a deed; 28-endings does not read it yet.
 
+
+## Cycle 1 text fixes (`h-words.core.js`, patches LF-ONE-SUN, LF-BOSS-NONE, LF-CR-RULER, LF-TIER-GATES, LF-THEM-NAME)
+
+- "Costs 1 suns": `A.coin(1)` is "1 sun".
+- "Master your master hands you a task": with no superior, `{bossTitle}` is left unfilled, so the superior scenes are dropped.
+- The creation summary's "(King )": the ruler comes from the far lore too, the title follows the ruler's sex, and nothing is printed without a name.
+- "Herd-boy" and "Pot-boy", the first ranks of herding and brewing, are "Herd-hand" and "Pot-hand" for either sex.
+- Tier leaks (lives B4): a reigning ruler or a general (`A.lfTop`) draws no home-front, harvest-dance or learned-duty scene; the rank-and-file camp scenes stop at rank 3 (`A.lfRank`); the mercenary scenes stop at 55, the road offers at 60 (`A.lfOld`, human years). Tests `lfWordsCycle1`, `lfTierGates`.
+- `{them}` names a person in full when someone else the player knows shares the given name (`A.knownName`, 67-memory-weave).

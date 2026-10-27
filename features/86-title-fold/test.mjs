@@ -19,4 +19,20 @@ export default {
     const ok = out.every(o => o.bottom <= o.vh && (o.w < 761 || o.shape < 0.02));
     return { ok, detail: out.map(o => `${o.w}x${o.h}: button ends at ${o.bottom} of ${o.vh}, map ${o.mapH}px tall, shape off by ${(o.shape * 100).toFixed(1)}%`).join('; ') };
   },
+
+  // first-hour B3, visual I4: the title said "Thirty-four realms" and showed the Known World; five buttons of one
+  // weight. Now it pitches the Great Continent with its counts and its map, under the dawn sky, with one primary button.
+  async tfGreat(pg) {
+    const r = await pg.evaluate(() => {
+      UI.screen = 'title'; UI.render();
+      const t = document.getElementById('title'), cv = document.getElementById('titlegc');
+      let colours = 0;
+      if (cv) { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data, seen = new Set(); for (let i = 0; i < d.length; i += 4 * 97) seen.add(d[i] << 16 | d[i + 1] << 8 | d[i + 2]); colours = seen.size; }
+      const D = A.FAR.D, n = Object.keys(D.realms).length + Object.keys(LORE.realms).filter(id => !D.realms[id]).length;
+      return { text: t.textContent, n, old: !!document.getElementById('titlemap'), colours, sky: !!t.querySelector('.tt-sky svg[data-hour="dawn"]'),
+        primary: [...t.querySelectorAll('.btns button.primary')].map(b => b.dataset.a), buttons: t.querySelectorAll('.btns button').length };
+    });
+    const ok = !/Thirty-four/.test(r.text) && r.text.includes(`${r.n} realms`) && !r.old && r.colours > 20 && r.sky && r.primary.length === 1 && r.primary[0] === 'newLife' && r.buttons >= 4;
+    return { ok, detail: `"${r.n} realms" in the pitch ${r.text.includes(`${r.n} realms`)}, "Thirty-four" gone ${!/Thirty-four/.test(r.text)}; the Known World strip gone ${!r.old}, the continent drawn in ${r.colours} colours; dawn sky ${r.sky}; primary buttons: ${r.primary.join(', ')} of ${r.buttons}` };
+  },
 };

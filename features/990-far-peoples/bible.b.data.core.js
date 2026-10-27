@@ -122,7 +122,7 @@
   C['CUL-57'] = [['mri_cicada', 'grave', {}, 'The jade cicada', 'The dead of the jade families are buried with a jade cicada on the tongue.',
     '', '', '', '', '', 'You are buried with a jade cicada on your tongue, as the jade families are.', {}]];
   C['CUL-58'] = [
-    ['ozi_crawl', 'ward', { when: 'any', every: 2 }, 'The spring crawl', 'A channel is cleaned every spring by men who crawl it in the dark; one who has cleaned a whole channel sits with the keepers.',
+    ['ozi_crawl', 'ward', { when: 'spring', every: 2 }, 'The spring crawl', 'A channel is cleaned every spring by men who crawl it in the dark; one who has cleaned a whole channel sits with the keepers.',
       'Spring, and your family\'s channel must be cleaned. The men go down the {w1} shafts with lamps and baskets and crawl the channel, clearing silt, for days.',
       'Crawl your stretch', 'Four days in the wet dark. When you come up the light hurts.',
       'Pay a crawler to go for you', 'He goes. The keepers do not count your family\'s stretch as yours.', 'You crawl your stretch of the channel.', { sta: 1 }, { coin: -5 }],

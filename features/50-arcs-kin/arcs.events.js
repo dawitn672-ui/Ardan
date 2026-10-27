@@ -478,7 +478,7 @@
         { t: 'Give {sibHim} a purse and a bed at the inn', r: '{sib} takes the purse without counting it, and goes to the inn. You lie awake.', fx: { coinPct: -0.02, wil: 1, them: { op: 5, type: 'acquaint' }, arc: { mark: 'akb_inn' } } },
       ] },
     { id: 'ak_sibling_2', title: 'The bailiff from {port}', trigger: true, cool: 1,
-      cond: (p, C) => C.adult(p),
+      cond: (p, C) => C.adult(p) && !(A.lfTop && A.lfTop(p)),
       setup: (p, ctx) => { sibling(p, ctx); },
       text: p => `${M(p, 'akb_inn') ? '{sib} has been a year at the inn in {home}, on your money.' : '{sib} has been in {home} a year.'} {sibHe} drinks with men you would not, and plays dice for more than {sibHe} has. Now a bailiff from {port} is asking for {sibHim}: a man knifed on the quay two winters ago, by a galley-hand with a burned hand. ${M(p, 'akb_doubt') ? 'You still do not know for certain that {sibHe} is your blood.' : "{sibHe} swears it was the other man's knife."}`,
       choices: [

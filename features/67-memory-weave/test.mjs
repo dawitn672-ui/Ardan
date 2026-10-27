@@ -217,4 +217,36 @@ export default {
     });
     return { ok: r.wrapped === r.n && r.reads === r.n && r.withOwn > 50, detail: `${r.wrapped} of ${r.n} events ask the record in their setup; ${r.withOwn} own setups that pick a person still read as such` };
   },
+  // cycle 1: "The last time you were at market, in 1106, you tried to cut it, and failed": a deed whose object is a bare
+  // pronoun is cited only with the scene's title to say what "it" was, and a line cited this year waits for the next.
+  async mwBareObject(pg) {
+    const r = await pg.evaluate(() => {
+      const d = A.MW.citeDeed;
+      return {
+        bare: d({ d: 'you tried to cut it, and failed' }),
+        titled: d({ d: 'you tried to cut it, and failed', t: 'A tooth on a cord' }),
+        full: d({ d: 'you tried to talk the drover down, and failed' }),
+        them: d({ d: 'you chose to take them' }), away: d({ d: 'you chose to send them away' }),
+      };
+    });
+    return { ok: r.bare === '' && /\(a tooth on a cord\)/.test(r.titled) && r.full === 'you tried to talk the drover down, and failed' && r.them === '' && r.away === 'you chose to send them away',
+      detail: JSON.stringify(r) };
+  },
+
+  // cycle 1 (lives B3): a second Suilan read as the dead patron. A person who shares a given name with someone else the
+  // player knows is named in full by {them} and by the weave.
+  async mwKnownName(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 6702, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 30 });
+      const pc = A.pc();
+      const a = A.makeAcquaintance(pc, 'acquaint'), b = A.makeAcquaintance(pc, 'acquaint');
+      pc.rel = pc.rel || {}; pc.rel[a.id] = pc.rel[a.id] || { type: 'friend', op: 20 }; pc.rel[b.id] = pc.rel[b.id] || { type: 'acquaint', op: 0 };
+      const lone = A.knownName(b);
+      b.given = a.given; if (!b.sur) b.sur = 'Tav';
+      a.alive = false;
+      const named = A.knownName(b), tok = A.ctxTokens(pc, { pid: b.id }).them;
+      return { lone, given: b.given, named, tok, full: A.fullName(b, false) };
+    });
+    return { ok: r.lone.length > 0 && r.named !== r.given && r.named.startsWith(r.given) && r.tok === r.named, detail: JSON.stringify(r) };
+  },
 };

@@ -43,6 +43,9 @@ const WEAK = { dragon: 'A torn wing grounds it, and on the ground it is only ver
   croc: 'It is slow away from the water.', serpent: 'It strikes only at what moves.', sea: 'It follows blood in the water for miles.',
   fish: 'It feeds at dusk.', small: 'Shake out your boots.', relic: '–', legend: '–' };
 
+// ---- names that carry a real-world place ("Bactrian"), said in Ardan's own words
+const RENAME = { 'CRE-71': 'Two-humped Wild Camel' };
+
 // ---- hand-written lines where the lore line is long or speaks of canon ids (habit, belief, truth)
 const LINE = {
   'CRE-69': { truth: 'Real; their fleas carried the Marmot Death of 909 to 913.' },
@@ -176,7 +179,7 @@ export function generate() {
     report.kinds[kind] = (report.kinds[kind] || 0) + 1; report.tales[tale] = (report.tales[tale] || 0) + 1;
     if (fightOk) report.fight++; if (quarry) report.quarry++;
     const rec = {
-      id: c.id, name: c.name, kind, cat: c.tier === 'legend' ? (/no such|Does not exist|Invented|story|Unknown/i.test(c.truth) ? 'Legend (hoax)' : 'Legend (misunderstanding)') : KIND_LABEL[kind],
+      id: c.id, name: RENAME[c.id] || c.name, kind, cat: c.tier === 'legend' ? (/no such|Does not exist|Invented|story|Unknown/i.test(c.truth) ? 'Legend (hoax)' : 'Legend (misunderstanding)') : KIND_LABEL[kind],
       tier: tierT, ltier: c.tier, danger: c.danger, lands: c.land_codes.slice(), regions: regionsOk, terr: terr.slice(), sea, kg: +(+kg).toPrecision(3),
       size: c.size || '', rarity, tale, fight: fightOk, fightSea, venom, quarry, yield: stats ? { what: y[1], coin: value } : null,
       habit: clean(L.habit || c.behaviour) || '', belief: clean(L.belief || c.belief) || PLAIN_BELIEF[kind] || '', truth: truthT || 'Real.', weak: WEAK[kind] || '–',

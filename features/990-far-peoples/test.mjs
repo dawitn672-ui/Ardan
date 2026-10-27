@@ -485,4 +485,82 @@ export default {
     const fired = r.filter(x => x.met.length >= 2).length, voiced = r.filter(x => (x.deco.line || 0) + (x.deco.title || 0) + (x.deco.greet || 0) + (x.deco.swap || 0) > 0).length;
     return { ok: fired === 3 && voiced >= 2 && r.every(x => x.start), detail: r.map(x => `${x.realm} ${x.status}, ${x.years}y: met ${x.met.join(' ')}; voice ${JSON.stringify(x.deco)}`).join(' | ') };
   },
+  // cycle 1: the holy day said its name twice ("December, and the Long Night of Lamps. The Long Night of Lamps.")
+  async fpDayOnce(pg) {
+    const r = await pg.evaluate(() => {
+      const out = [];
+      for (const fid of Object.keys(A.FARP_FAITH)) { const c = A.FARP.faithCustom(fid); if (!c) continue;
+        const nm = c.name.replace(/^the /i, '').toLowerCase(), n = c.text.toLowerCase().split(nm).length - 1; if (n > 1) out.push(fid + ': ' + c.text.slice(0, 80)); }
+      return { bad: out, lamps: A.FARP.faithCustom('REL-23').text.slice(0, 70) };
+    });
+    return { ok: !r.bad.length && /^December, and the Long Night of Lamps\. Every/.test(r.lamps), detail: `${r.lamps} | doubled: ${r.bad.length} ${r.bad.slice(0, 2).join(' | ')}` };
+  },
+
+  // cycle 1: "Spring, and your family's channel must be cleaned" came on 2 January. A far custom whose words name a
+  // season comes in that season.
+  async fpSeasons(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9901, lands: 'great', race: 'human', realm: 'POL-80', status: 'peasant', sex: 'M', startAge: 30 });
+      const B = A.BIBLE, c = B.custom ? B.custom('ozi_crawl') : null;
+      const mo = A.monthOf(A.today()).m;
+      const bad = [];
+      for (const rid of Object.keys(A.BIBLE_DATA)) for (const x of A.BIBLE_DATA[rid].customs || []) if (x.kind === 'ward' && /^(Spring|Midsummer|Winter|Autumn|The New Year)\b|^[^.]*\b(spring|autumn)\b/i.test(x.text || '') && (!x.when || ['any', 'landed', 'mounted'].includes(x.when))) bad.push(x.id);
+      return { when: c && c.when, january: mo, springNow: B.WHEN.spring(A.pc()), bad };
+    });
+    return { ok: r.when === 'spring' && r.january === 0 && r.springNow === false && !r.bad.length, detail: JSON.stringify(r) };
+  },
+
+  // cycle 1 (first-hour B6, world I4, design #21, lives I3): far lives met churches, vespers, the church crypt, the
+  // manor court, the reeve and the barn raising, and a "Chaplain" on Taulen's council. In a far realm the faith's words
+  // are the realm's, the western institutions are not drawn, and a city-state draws no village scenes. A Known World
+  // game is untouched.
+  async fpWestWords(pg) {
+    const r = await pg.evaluate(() => {
+      const probe = rid => {
+        A.newGame({ seed: 9902, lands: rid === 'POL-01' ? 'known' : 'great', race: 'human', realm: rid, status: 'peasant', sex: 'F', startAge: 30 });
+        const pc = A.pc(), EV = A.EV, fit = id => (EV[id] ? A.evFit(EV[id], pc) : null);
+        const text = 'The village priest meets you after vespers by the church crypt. A priest. The Bishop.';
+        return { rv: A.FARP.revoice(text, pc), reeve: fit('wr_corrupt_reeve'), dance: fit('lf_harvest_dance'), chap: A.COUNCIL.chaplain.name,
+          gated: Object.keys(EV).filter(id => A.FARP.westOnly(EV[id], pc) && A.evFit(EV[id], pc) === 0).length };
+      };
+      const city = probe('POL-80'), taulen = probe('POL-36'), kw = probe('POL-01');
+      // a scene drawn in Marast reads in Marast's words
+      A.newGame({ seed: 9903, lands: 'great', race: 'human', realm: 'POL-77', status: 'peasant', sex: 'M', startAge: 30 });
+      const scenes = Object.keys(A.EV).filter(id => /\b(church|vespers|crypt)\b/.test(A.EV[id].text && A.EV[id].text.toString ? A.EV[id].text.toString() : '')).slice(0, 40);
+      let drawn = 0; const west = [];
+      for (const id of scenes) { A.S.queue = [{ type: 'event', ev: id, forced: true }]; let v; try { v = A.eventView(A.S.queue[0]); } catch (e) { continue; } if (!v || v.skip) continue; drawn++;
+        const all = [v.title, v.text].concat((v.choices || []).map(c => c.t)).join(' '); if (/\b(church|vespers|crypt)\b/i.test(all)) west.push(id); }
+      A.S.queue = [];
+      // the same scenes in a Known World game keep their words
+      A.newGame({ seed: 9903, lands: 'known', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      let kwWest = 0;
+      for (const id of scenes) { A.S.queue = [{ type: 'event', ev: id, forced: true }]; let v; try { v = A.eventView(A.S.queue[0]); } catch (e) { continue; } if (!v || v.skip) continue;
+        if (/\b(church|vespers|crypt)\b/i.test([v.title, v.text].concat((v.choices || []).map(c => c.t)).join(' '))) kwWest++; }
+      A.S.queue = [];
+      return { city, taulen, kw, drawn, west, kwWest };
+    });
+    const c = r.city, t = r.taulen, k = r.kw;
+    const ok = !/priest|vespers|church|crypt|Bishop/i.test(t.rv) && c.reeve === 0 && c.dance === 0 && t.reeve === 0 && t.chap === 'Keeper of Rites' &&
+      r.kwWest > 0 && k.chap === 'Chaplain' && k.reeve > 0 && r.drawn > 0 && !r.west.length;
+    return { ok, detail: `Taulen: "${t.rv}" (council seat ${t.chap}); Varinj gates ${c.gated} scenes (the reeve ${c.reeve}, the harvest dance ${c.dance}), Taulen ${t.gated} (the reeve ${t.reeve}); Known World: ${r.kwWest} scenes keep church, vespers or crypt, the reeve's weight ${k.reeve}, seat ${k.chap}; ${r.drawn} western-worded scenes drawn in Marast, ${r.west.length} still western ${r.west.slice(0, 3).join(', ')}` };
+  },
+
+  // cycle 1: the newborn Kyipa's mother was Kyipa too. A far child is not given a parent's or a sibling's name, by a
+  // hash, so the random stream is untouched; a name the player types is kept.
+  async fpNoParentName(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9904, lands: 'great', race: 'human', realm: 'POL-36', status: 'peasant', sex: 'F', startAge: 30 });
+      const pc = A.pc(), mother = A.P(pc.parents[1]) || A.P(pc.parents[0]);
+      const rng0 = JSON.stringify(A.S.rng);
+      const kid = A.newPerson({ given: mother.given, sex: mother.sex, race: 'human', realm: pc.realm, cult: mother.cult, faith: mother.faith, parents: pc.parents.slice() });
+      const sameRng = JSON.stringify(A.S.rng) === rng0;
+      A.newGame({ seed: 9904, lands: 'great', race: 'human', realm: 'POL-36', status: 'peasant', sex: 'F', startAge: 30, given: 'Kyipa' });
+      const typed = A.pc().given;
+      A.newGame({ seed: 9904, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 30 });
+      const pk = A.pc(), m2 = A.P(pk.parents[1]) || A.P(pk.parents[0]);
+      const kw = A.newPerson({ given: m2.given, sex: 'F', race: 'human', realm: pk.realm, cult: m2.cult, parents: pk.parents.slice() }).given === m2.given;
+      return { mother: mother.given, kid: kid.given, sameRng, typed, kw };
+    });
+    return { ok: r.kid !== r.mother && r.sameRng && r.typed === 'Kyipa' && r.kw, detail: JSON.stringify(r) };
+  },
 };

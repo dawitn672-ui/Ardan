@@ -23,3 +23,7 @@
 - `eyBands`: 40 days a second at age 0, 12 at 6, 6 at 11 and 4 at 16, each with its note (none at 16).
 
 **For the owner.** One of the three test newborns died at age one, before any event. Canon wants that (life expectancy at birth about 36), but it is a hard first minute for a new player. Many games keep the first life gentler: a protected first childhood, or a start at 16 by default. That is a design call.
+
+**Cycle 1.** The note shows only while Play runs (`eyNoteOnlyPlaying`). Beside the Week and Month steps "early years ×10"
+read as if it applied to them; it never did. The steps answer the early years in their own way: a season at a time under
+five, and "Until something happens" after two empty steps in childhood (84-top-bar's `UI.stepPlan`).

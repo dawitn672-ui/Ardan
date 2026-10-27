@@ -99,6 +99,37 @@
         const t = RUNGS()[n[0]];
         return { deed: `Bought a patent as ${t ? t.title.toLowerCase() : 'a noble'}`, msg: `The patent comes sealed in red. You are ${t ? t.title.toLowerCase() : 'noble'} now, by the crown's leave and your own money.` }; } },
   };
+  // Works that grow with the fortune (cycle 1, lives I4: 132,000 suns by 30 and 438,000 by 60, with nothing above
+  // 60,000 to spend it on). Each costs a share of what you hold, between a floor and a ceiling, and gives more the
+  // more it costs (LF.grand, the square root of the price over the floor, at most 3); each opens its own scene later.
+  const round = n => Math.round(n / 1000) * 1000;
+  LF.scaled = (pc, floor, share, cap) => Math.min(cap, Math.max(floor, round((pc.coin || 0) * share)));
+  LF.grand = (c, floor) => Math.min(3, Math.sqrt(Math.max(1, c / floor)));
+  const kidFor = pc => (pc.children || []).map(A.P).find(c => c && c.alive && !c.spouse && A.age(c) >= 14 && A.age(c) <= 30 && !(c.flags && c.flags.lfx_dowered));
+  const laterCtx = (pc, ev, yrs, ctx) => { if (A.EV[ev] && A.schedule) A.schedule({ type: 'event', ev, forced: true, ctx: Object.assign({ lfWork: 1 }, ctx || {}) }, Math.round(365 * yrs + A.ri(0, 200))); };
+  Object.assign(LF.WORKS, {
+    patron: { cat: 'Learning', name: 'Take an artist under your patronage', cost: pc => LF.scaled(pc, 10000, 0.08, 150000), gap: 15,
+      desc: pc => `A painter, a poet or a builder of organs, paid to make one great thing in ${place(pc)} under your name. The more you give, the greater the thing.`,
+      run: (pc, c) => { const g = LF.grand(c, 10000); if (A.fame) A.fame(pc, Math.round(3 * g)); laterCtx(pc, 'lfx_wk_patron_work', A.ri(2, 4), { grand: Math.round(g * 10) });
+        return { deed: 'Took an artist under their patronage', msg: 'The artist moves into the rooms over your stable with a cart of brushes and an opinion about the light.' }; } },
+    dowry: { cat: 'Family', name: 'Dower a child richly', cost: pc => LF.scaled(pc, 8000, 0.12, 200000), gap: 4, show: pc => !!kidFor(pc),
+      need: pc => R('An unmarried child of 14 to 30', !!kidFor(pc)),
+      desc: pc => { const k = kidFor(pc); return k ? `A dowry for ${k.given} that the great houses will hear of: land, plate and silver.` : ''; },
+      run: (pc, c) => { const k = kidFor(pc); if (!k) return null; k.coin = (k.coin || 0) + c; k.flags = k.flags || {}; k.flags.lfx_dowered = A.S.year;
+        pc.honor = Math.min(100, (pc.honor || 0) + 3); laterCtx(pc, 'lfx_wk_dowry_suitors', A.rf(0.4, 1.2), { pid: k.id });
+        return { deed: `Dowered ${k.given} richly`, msg: `The dowry is written in the family book: ${coin(c)} to ${k.given}. Within the month there are horses in the yard you do not know.` }; } },
+    seat: { cat: 'Family', name: 'Build your house a seat', cost: pc => LF.scaled(pc, 80000, 0.2, 400000), once: true,
+      need: pc => R('A house of your own, or a title', !!(pc.house && A.S.houses && A.S.houses[pc.house] && A.S.houses[pc.house].founder === pc.id) || !!(pc.noble && pc.noble.rung >= 2)),
+      desc: pc => `Towers, a gatehouse and a chapel over ${place(pc)}: the seat your house will be named for. Built to the size of your fortune.`,
+      run: (pc, c) => { const g = LF.grand(c, 80000); if (A.fame) A.fame(pc, Math.round(6 * g)); pc.happy = Math.min(100, (pc.happy || 0) + 8); laterCtx(pc, 'lfx_wk_seat_feast', A.ri(2, 4));
+        return { deed: `Built a seat for the house at ${place(pc)}`, msg: 'Masons from three realms. The gatehouse alone takes two summers, and the valley calls it by your name before it has a roof.', extra: { g: Math.round(g * 10) } }; },
+      year: (pc, w) => { pc.happy = Math.min(100, (pc.happy || 0) + 2); if (A.fame && (pc.fame || 0) < 70 + (w.g || 10)) A.fame(pc, 1); } },
+    school: { cat: 'Learning', name: 'Found a free school', cost: pc => LF.scaled(pc, 15000, 0.05, 60000), once: true,
+      desc: pc => `A schoolroom and a master in ${place(pc)} for children whose fathers cannot pay: letters, sums and a dinner.`,
+      run: pc => { if (A.fame) A.fame(pc, 4); pc.honor = Math.min(100, (pc.honor || 0) + 3); laterCtx(pc, 'lfx_wk_school_pupil', A.ri(5, 9));
+        return { deed: `Founded a free school at ${place(pc)}`, msg: 'Thirty children on the first morning, and one of them can already read.' }; },
+      year: pc => { for (const c of (pc.children || []).map(A.P)) if (c && c.alive && A.age(c) >= 6 && A.age(c) <= 16 && A.trainSkill) A.trainSkill(c, 'learning', 1); } },
+  });
   LF.workCost = (pc, k) => { const W = LF.WORKS[k]; try { return W ? W.cost(pc) : 0; } catch (e) { return 0; } };
   for (const k of Object.keys(LF.WORKS)) {
     const W = LF.WORKS[k];
@@ -121,8 +152,10 @@
       run(pc) {
         const c = LF.workCost(pc, k);
         if (!c || (pc.coin || 0) < c) return null;
+        const res0 = W.run(pc, c);
+        if (res0 === null) return null;
         pc.coin -= c;
-        const res = W.run(pc) || {};
+        const res = res0 || {};
         works(pc).push(Object.assign({ k, y: A.S.year }, res.extra || {}));
         if (res.deed) deed(pc, res.deed);
         pc.flags['lfx_' + k] = A.S.year;

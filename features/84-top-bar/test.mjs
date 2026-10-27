@@ -112,4 +112,137 @@ Object.assign(tests, {
     return { ok, detail: `three monthly steps after the creation screen: ${r.days.join(', ')} days; the stepper is its own object ${r.stepper}, the creation page ${r.page}` };
   },
 });
+
+// ---- cycle 1, lane O (first-hour B1, B4, I1, I2, I5): the hints, the early years, the week's note, How to play, and a
+// first life's activities. Each test sets up what the review saw, then checks it is gone.
+Object.assign(tests, {
+  // B1: the hints named Play, Space and Next; the What now hint lay over What now and caught clicks; it stayed eleven
+  // months. Now: the first hint is the clock's, under the step buttons, naming Week and Month; the tab's hint sits after
+  // What now in the page; a click on What now's first item lands on it; a step retires the clock's hint, three steps
+  // the tab's.
+  async tbHintsBeside(pg) {
+    await pg.evaluate(STEPS);
+    const r = await pg.evaluate(async () => {
+      UI.set.lfLives = 1; UI.set.hintsSeen = {}; UI.set.hintSteps = {}; UI.hintUsed = {}; T.enter({ seed: 8411, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); A.S.queue = []; UI.render();
+      const all = () => [...document.querySelectorAll('.hint')];
+      const words = () => all().map(h => h.textContent).join(' | ');
+      const rect = el => el.getBoundingClientRect(), over = (a, b) => !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
+      const pop = document.querySelector('#clk .clk-step > .hint-pop'), btns = [...document.querySelectorAll('#clk .clk-step > button')];
+      const one = { clock: !!pop, text: words(), covers: pop ? btns.some(b => over(rect(b), rect(pop))) : null, old: /\bPlay\b|Space|\bNext\b(?! month| week| season)/.test(words()) };
+      await __step('stepMonth');
+      A.S.queue = []; UI.render();
+      const wn = document.querySelector('#tabbody .whatnow'), hint = document.querySelector('#tabbody .hint-at');
+      const item = document.querySelector('#tabbody .wn-item'), ir = item && rect(item);
+      const hit = ir && document.elementFromPoint(ir.left + ir.width / 2, ir.top + ir.height / 2);
+      const two = { clockGone: !document.querySelector('#clk .hint-pop') && !!UI.hintSeen('clock'), hint: hint ? hint.dataset.hint : null,
+        after: !!(hint && wn && (wn.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING)), overlaps: !!(hint && [...document.querySelectorAll('#tabbody .wn-item')].some(x => over(rect(x), rect(hint)))),
+        clickable: !!(hit && item.contains(hit)), pe: hint ? getComputedStyle(hint).pointerEvents : '', text: words() };
+      const id = two.hint;
+      for (let i = 0; i < 3; i++) { await __step('stepWeek'); A.S.queue = []; }
+      UI.render();
+      const three = { retired: !!(id && UI.hintSeen(id)), now: (document.querySelector('#tabbody .hint-at') || {}).dataset ? (document.querySelector('#tabbody .hint-at') || { dataset: {} }).dataset.hint : null };
+      const wnText = (A.whatNow(A.pc()) || []).map(x => x.t + '>' + (x.act && x.act[0])).join(', ');
+      return { one, two, three, wnText };
+    });
+    const ok = r.one.clock && !r.one.covers && !r.one.old && /Month/.test(r.one.text) && /Week/.test(r.one.text) &&
+      r.two.clockGone && r.two.hint === 'whatnow' && r.two.after && !r.two.overlaps && r.two.clickable && r.two.pe === 'none' &&
+      r.three.retired && !/Let time run/.test(r.wnText);
+    return { ok, detail: `first hint by the clock: ${r.one.clock} ("${r.one.text.slice(0, 90)}"), covers a step button ${r.one.covers}, names Play/Space/Next ${r.one.old}; ` +
+      `after a Month: clock hint retired ${r.two.clockGone}, next hint "${r.two.hint}" after What now ${r.two.after}, over its items ${r.two.overlaps}, What now's first item takes its click ${r.two.clickable}, hint pointer-events ${r.two.pe}; ` +
+      `three steps later "${r.two.hint}" retired ${r.three.retired}; What now: ${r.wnText}` };
+  },
+  // I1: a newborn pressed Month up to sixteen times for a first event. Now under five the main step is a season, and after
+  // two empty steps "Until something happens"; a season is the days of three Months, so the world is the same.
+  async tbStepSeason(pg) {
+    await pg.evaluate(STEPS);
+    const r = await pg.evaluate(async () => {
+      const go = async kind => { if (kind === 'until') { const d0 = A.absDay(); let ev = 0; UI.A.stepUntil(); while (UI.stepper.run) { if (UI.stepper.wait) { ev++; let g = 0; while (A.headReady() && g++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); } await new Promise(res => setTimeout(res, 4)); } return { events: ev, d1: A.absDay(), d0 }; } return __step({ season: 'stepSeason', month: 'stepMonth', week: 'stepWeek' }[kind]); };
+      const rows = [];
+      for (const seed of [8421, 8422, 8423]) {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 });
+        const plan0 = UI.stepPlan().join('/'); let presses = 0, months = 0, first = null;
+        for (let i = 0; i < 10 && A.pc().alive; i++) { const k = UI.stepPlan()[1], o = await go(k); presses++; if (o.events) { first = A.absDay(); break; } }
+        // the same life a Month at a time: how many presses to the same first event
+        const o = { seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 };
+        A.newGame(o); UI.render();
+        for (let i = 0; i < 30 && A.pc().alive; i++) { const m = await __step('stepMonth'); months++; if (m.events) break; }
+        rows.push({ seed, plan0, presses, months, first });
+      }
+      // a season ends on the third turn of a month, where three Month steps end
+      T.enter({ seed: 8424, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 });
+      const s = await __step('stepSeason');
+      return { rows, season: s, html: UI.clkHtml() };
+    });
+    const MS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+    const okSeason = MS.includes(r.season.w1 - 1) && r.season.d1 - r.season.d0 >= 85 && r.season.d1 - r.season.d0 <= 100;
+    const ok = r.rows.every(x => x.plan0 === 'month/season' && x.presses <= 4 && x.presses < x.months) && okSeason && /data-a="stepSeason"/.test(r.html) && /class="small primary" data-a="stepSeason"/.test(r.html);
+    return { ok, detail: r.rows.map(x => `seed ${x.seed}: steps ${x.plan0}, first event after ${x.presses} press(es) (a Month at a time: ${x.months})`).join('; ') + `; a season: day ${r.season.w0} -> ${r.season.w1} (${r.season.d1 - r.season.d0} days)` };
+  },
+  // the season and "until" steps keep the world: the same days as one long A.advance
+  async tbStepSeasonSameWorld(pg) {
+    await pg.evaluate(STEPS);
+    const r = await pg.evaluate(async () => {
+      const o = { seed: 8425, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 0 };
+      T.enter(o);
+      for (const k of ['stepSeason', 'stepMonth', 'stepSeason']) await __step(k);
+      UI.stepper.empty = 2; UI.A.stepUntil(); while (UI.stepper.run) { if (UI.stepper.wait) { let g = 0; while (A.headReady() && g++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); } await new Promise(res => setTimeout(res, 4)); }
+      const end = A.absDay(), a = { h: T.hash(A.S), rng: A.rngState };
+      A.newGame(o);
+      for (let g = 0; g < 500 && A.absDay() < end; g++) { A.advance(end - A.absDay()); let h, k = 0; while ((h = A.headReady()) && k++ < 50) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); } }
+      return { a, b: { h: T.hash(A.S), rng: A.rngState }, end: A.absDay() === end, days: end };
+    });
+    const ok = r.end && r.a.h === r.b.h && r.a.rng === r.b.rng;
+    return { ok, detail: `seasons, a month and an "until": ${r.a.h}/${r.a.rng}; one advance ${r.b.h}/${r.b.rng}: ${ok ? 'the same world' : 'DIFFERENT'}` };
+  },
+  // I2: weeks 2 to 6 of a life showed nothing at all. Now each step ends with a note of what passed in it; drawing it
+  // changes neither the state nor the random stream.
+  async tbStepNote(pg) {
+    await pg.evaluate(STEPS);
+    const r = await pg.evaluate(async () => {
+      T.enter({ seed: 8431, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      A.pc().coin = 10;
+      const w = await __step('stepWeek'); A.S.queue = [];
+      const h0 = T.hash(A.S), g0 = JSON.stringify(A.rngState);
+      UI.tab = 'life'; UI.render(); UI.render();
+      const el = document.querySelector('#tabbody .step-sum');
+      const pure = T.hash(A.S) === h0 && JSON.stringify(A.rngState) === g0;
+      const text = el ? el.textContent : '';
+      UI.A.stepSumX(); const gone = !document.querySelector('#tabbody .step-sum');
+      return { days: w.d1 - w.d0, text, pure, gone };
+    });
+    const ok = r.days === 7 && /This week/.test(r.text) && /7 days/.test(r.text) && /coin/.test(r.text) && /health/.test(r.text) && r.pure && r.gone;
+    return { ok, detail: `after a week: "${r.text.replace(/\s+/g, ' ').slice(0, 160)}"; drawing it pure ${r.pure}; dismissed ${r.gone}` };
+  },
+  // B4: How to play was 998 words, taught "Press Play (or Space)", never named Week or Month. Now it opens on the first
+  // hour, step by step, and the rest is folded by subject.
+  async tbHelpFirstHour(pg) {
+    const r = await pg.evaluate(() => {
+      UI.screen = 'title'; UI.render(); UI.A.help();
+      const m = document.getElementById('modal'), first = m && m.querySelector('.help-first');
+      const words = t => t.trim().split(/\s+/).length;
+      return { first: first ? first.textContent : '', firstWords: first ? words(first.textContent) : 0, steps: first ? first.querySelectorAll('li').length : 0,
+        folded: m ? m.querySelectorAll('details.help-more').length : 0, open: m ? [...m.querySelectorAll('details.help-more')].filter(d => d.open).length : 0, all: m ? m.textContent : '' };
+    });
+    const ok = /Month/.test(r.first) && /Week/.test(r.first) && r.firstWords <= 90 && r.steps >= 5 && r.folded >= 8 && !r.open && !/Press Play/.test(r.all);
+    return { ok, detail: `first hour: ${r.steps} steps in ${r.firstWords} words, names Week and Month ${/Month/.test(r.first) && /Week/.test(r.first)}; ${r.folded} subjects folded (${r.open} open); "Press Play" gone ${!/Press Play/.test(r.all)}` };
+  },
+  // I5: a first life faced 31 activities, and "Make a friend" answered two columns away. Now it sees six, "More" opens
+  // the rest, and an activity's answer is written above the tiles.
+  async tbActsSix(pg) {
+    const r = await pg.evaluate(() => {
+      UI.set.lfLives = 1; T.enter({ seed: 8441, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); A.S.queue = []; UI.render();
+      const vis = () => [...document.querySelectorAll('#tabbody [data-a="act"]')].filter(b => b.offsetParent !== null).length;
+      const six = vis(), more = document.querySelector('#tabbody [data-a="actsMore"]'), moreText = more ? more.textContent : '';
+      const k = [...document.querySelectorAll('#tabbody [data-a="act"]')].filter(b => b.offsetParent !== null).map(b => b.dataset.v).find(v => v === 'make_friend') || 'make_friend';
+      UI.A.act(k); A.S.queue = []; UI.ov = null; UI.render();
+      const note = document.querySelector('#tabbody .act-res'), grid = document.querySelector('#tabbody .acts, #tabbody .fold-acts');
+      const noteText = note ? note.textContent : '', near = !!(note && grid && (note.compareDocumentPosition(grid) & Node.DOCUMENT_POSITION_FOLLOWING || grid.contains(note)));
+      UI.A.actsMore(); const all = vis();
+      UI.set.lfLives = 4; UI.actsAll = false; UI.render(); const later = vis();
+      return { six, moreText, noteText, near, all, later };
+    });
+    const ok = r.six === 6 && /More activities/.test(r.moreText) && /Make a friend/.test(r.noteText) && r.near && r.all > 20 && r.later > 20;
+    return { ok, detail: `first life: ${r.six} activities shown, "${r.moreText}"; after Make a friend: "${r.noteText.slice(0, 100)}" above the tiles ${r.near}; More shows ${r.all}; a later life ${r.later}` };
+  },
+});
 export default tests;

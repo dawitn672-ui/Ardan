@@ -142,4 +142,31 @@ export default {
     });
     return { ok: !!r.seen, detail: r.seen ? `${r.seen} after ${r.months} months of war` : `no siege scene in ${r.months} months of war` };
   },
+  // cycle 1: !C.child(p) is true for infants (the stage below "child"), so adult siege and chronicle scenes reached
+  // babies ("Tend the neighbours yourself" at age 0). They now ask for a teen or an adult; no events file keeps a bare
+  // !C.child(p), which tools/lint-events.mjs now warns on.
+  async sgNoInfants(pg) {
+    const fs = await import('node:fs'), path = await import('node:path'), url = await import('node:url');
+    const root = path.join(path.dirname(url.fileURLToPath(import.meta.url)), '..', '..');
+    const bare = [];
+    for (const d of fs.readdirSync(path.join(root, 'features'))) {
+      const dir = path.join(root, 'features', d); if (!fs.statSync(dir).isDirectory()) continue;
+      for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.events.js'))) {
+        for (const line of fs.readFileSync(path.join(dir, f), 'utf8').split('\n'))
+          if (/cond:.*!\s*C\.child\(\s*p\s*\)/.test(line) && !/C\.(adult|teen|old|age|ageAdj)\(/.test(line)) bare.push(d + '/' + f);
+      }
+    }
+    const r = await pg.evaluate(() => {
+      const ids = ['sg_walls', 'sg_sacked', 'sg_terms', 'wc_bread_since', 'wc_bells_for_ruler', 'wc_sickness_comes', 'wc_old_coin', 'md_lonely_dog'];
+      const at = age => { A.newGame({ seed: 3600 + age, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: age }); const pc = A.pc();
+        // the stub stands in for the chronicle and mood gates, so only the age is tested
+        const C = Object.assign({}, A.C, { chron: () => true, mood: () => true });
+        return ids.filter(id => A.EV[id]).map(id => [id, !!A.EV[id].cond(pc, C), A.stage(pc)]); };
+      return { baby: at(0), toddler: at(2), teen: at(15), adult: at(30), missing: ids.filter(id => !A.EV[id]) };
+    });
+    const leak = r.baby.concat(r.toddler).filter(x => x[1]).map(x => x[0]);
+    const shut = r.adult.filter(x => !x[1]).map(x => x[0]);
+    return { ok: !leak.length && !shut.length && r.teen.filter(x => x[1]).length >= 7 && !bare.length && !r.missing.length,
+      detail: `infants (age 0 and 2, stage ${r.baby[0] && r.baby[0][2]}) offered ${leak.join(', ') || 'none'} of ${r.baby.length}; a teen ${r.teen.filter(x => x[1]).length}, an adult ${r.adult.filter(x => x[1]).length}; events files with a bare !C.child(p): ${bare.join(', ') || 'none'}` };
+  },
 };

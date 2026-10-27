@@ -69,3 +69,17 @@ The events pass `tools/lint-events.mjs` (40 events, 285 in-browser checks).
 - **Time.** Ages are bound by the engine's start-age cap (the age of adulthood plus 10), so there is no story that starts at 40.
 - **Text, not people.** The people in the openings live in the text (the bailiff, your brother) and are not created as NPCs.
 - **Tie-ins.** No other feature's events read the stories yet, except through the shared flags of 26-belief-truth.
+
+## Cycle 1: a quick start, and the screens in order (first-hour I3, B5; design #3)
+
+- **One screen to begin** (`UI.crQuickHtml`). "A new life" opens on Lands, then three ways in: **Be born**, **Start at 16**
+  (the people's age of adulthood) and **Pick a story**, with three story cards open for a player's first three lives
+  (chosen by the day's date, the other seventeen under "Show all 20"), then the difficulty with a line on what the score
+  multiplier is. "Customise everything" and the four step buttons lead to the full screens. It is 768 px tall at 1366 × 768
+  and about 1,250 px on a 390 × 844 phone, where the four steps ran to 12,500.
+- **The full screens in order.** Lands and "Where your story starts" lead the first step, above the realm, so the realm
+  list is the list of the lands chosen. The last step keeps difficulty, world and seed.
+- **The Known World only says what it does.** With a far realm chosen, the Lands field warns that choosing the Known
+  World only moves the birth; after the switch a toast and a line say from where to where.
+- **The score multiplier is explained** in the summary and on the quick screen.
+- Test: `startsQuick`.

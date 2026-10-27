@@ -40,6 +40,35 @@
     return d;
   };
 
+  // ---- entry by merit, where the order's own lore allows it ------------------------------------------------------
+  // Read from each order's lore.join (data, not a list kept here):
+  // - "a knighthood" (the Iron Wolf: "Gentle birth or a knighthood"): the birth line is met by a knighthood, which a
+  //   commoner of renown can now earn from the crown (994-careers); the line says so.
+  // - "deeds ... worthy" with an invitation (the Gold Masks: "the Rememberers' word that your deeds are worthy"): the
+  //   invitation is met by deeds too, renown 60 and three deeds in the life's record.
+  // A commoner with fighting worth 108 failed the Iron Wolf for birth alone and no life joined an order (cycle 1, I1).
+  GD.ORDER_MERIT_FAME = 60;
+  A.orderMerit = function (id) {
+    const o = GD.ORDERS && GD.ORDERS[id], j = String(o && o.lore && o.lore.join || '');
+    return { knight: /knighthood|knighted/i.test(j), deeds: !!(o && o.req && o.req.invite) && /\bdeeds\b[^.]*\bworthy\b/i.test(j) };
+  };
+  const reqs = A.orderReqs;
+  if (typeof reqs === 'function') A.orderReqs = function (pc, id) {
+    const out = reqs.apply(this, arguments);
+    try {
+      const m = A.orderMerit(id);
+      for (const x of out) {
+        if (m.knight && /^Gentle birth/.test(x.label)) x.label = 'Gentle birth, a title, or a knighthood (the crown knights commoners of renown)';
+        if (m.deeds && /^Invited by the crown/.test(x.label)) {
+          const ok = (pc.fame || 0) >= GD.ORDER_MERIT_FAME && (pc.deeds || []).length >= 3;
+          x.label = `Invited by the crown (its opinion of you 50+), or deeds worthy of the order (renown ${GD.ORDER_MERIT_FAME}, three deeds)`;
+          if (ok) { x.ok = true; x.have = 'deeds'; }
+        }
+      }
+    } catch (e) { console.error('order merit', e); }
+    return out;
+  };
+
   const page = UI.powerPage;
   UI.powerPage = function (pc) {
     const h = page.apply(this, arguments), C = A.ladderCensus();

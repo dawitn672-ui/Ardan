@@ -199,12 +199,16 @@ ${R}.sc-sheet .sc-card .sc-d{min-height:30px}
 ${R}.sc-sheet .sc-card .sc-head > .mreport{position:static;flex:none;align-self:flex-start;margin:4px 0 0 auto;width:44px;height:44px;opacity:.6}
 /* the first-run hint ("Each choice shows your odds") floats over the print instead of pushing the sheet 90 px down,
    which made a short event scroll on a 375 x 667 phone; the tags' row is a little tighter for the same reason */
-${R}.sc-sheet > .hint-float{position:absolute;z-index:6;top:calc(8px + env(safe-area-inset-top,0px));left:8px;right:8px;margin:0;order:0}
+/* since the picture is a 16:6 band (B9) the hint no longer floats over it: it docks under the sheet's last choice, by the
+   odds it explains, in the room the shorter picture left */
+${R}.sc-sheet > .hint-float{position:fixed;z-index:6;top:auto;bottom:calc(8px + env(safe-area-inset-bottom,0px));left:8px;right:8px;margin:0;order:0;transform:none}
+${R}.sc-sheet:has(> .hint-float) > .mbox.sc-card > .sc-in{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 ${R}.sc-sheet .sc-card .choices > button.sc-ch{row-gap:4px;padding-top:9px;padding-bottom:9px}
 ${R}.sc-sheet .sc-card .choices button .risk.sc-odds, ${R}.sc-sheet .sc-card .sc-chk, ${R}.sc-sheet .sc-card .sc-oncew{height:24px}
 /* a short phone (an iPhone SE, 667 px): a smaller bust and tighter gaps, so a three-choice scene fits one sheet */
 @media (max-height:700px){
   ${R}.sc-sheet > .mbox.sc-card > .sc-in > .sc-vig{height:min(calc(100vw * 5 / 16), 140px)}
+  ${R}.sc-sheet:has(> .hint-float) > .mbox.sc-card > .sc-in > .sc-vig{height:88px}
   ${R}.sc-sheet .sc-card .sc-bust{width:60px;height:60px}
   ${R}.sc-sheet .sc-card.sc-has-vig.sc-has-bust .sc-head{margin-top:-20px}
   ${R}.sc-sheet .sc-card .sc-head{padding-top:10px}

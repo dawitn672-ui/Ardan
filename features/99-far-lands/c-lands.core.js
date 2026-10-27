@@ -134,7 +134,13 @@
       // from this data alone) is its colour in the state too, so the map, banners, chips and portrait grounds agree
       let hex = null; try { hex = UI.realmHex ? UI.realmHex(id) : null; } catch (e) { hex = null; }
       put(LORE.realms, id, hex && /^#[0-9a-f]{6}$/i.test(hex) && hex !== r.color ? Object.assign({}, r, { color: hex }) : r);
-      if (r.race === 'human') put(GD.REALM_CULTURE, id, r.cult);
+      if (r.race === 'human') {
+        put(GD.REALM_CULTURE, id, r.cult);
+        // a realm of humans whose culture is another people's (Fjorund's hall, giants and their human partners): its
+        // humans keep that culture's names, not the release's fallback (the Known World's Northfolk)
+        const c = D.cultures[r.cult];
+        if (c && c.race !== 'human') put(GD.REALM_HUMAN_CULTURE, id, r.cult);
+      }
       else {
         put(GD.REALM_CULTURE, id, r.cult);
         const human = Object.values(D.cultures).find(c => c.race === 'human' && c.land === r.land);
@@ -185,7 +191,7 @@
     const f = GD.RACE_CULTURE && GD.RACE_CULTURE[race];
     if (typeof f !== 'function') continue;
     GD.RACE_CULTURE[race] = function (realm) {
-      if (FL.active && D.realms[realm] && D.realms[realm].race === race && D.realms[realm].cult) return D.realms[realm].cult;
+      if (FL.active && D.realms[realm] && (D.realms[realm].race === race || FL.ROYAL_RACE[realm] === race) && D.realms[realm].cult) return D.realms[realm].cult;
       return f.apply(this, arguments);
     };
   }
@@ -196,9 +202,36 @@
     FL.set(!!(o && o.lands === 'great'), D);
     return ng.apply(this, arguments);
   };
+  // cycle 1 (world review B1, B4): the lore's rulers are the lore's people. While the world is built, the release
+  // makes each realm's ruler with A.genNoble(id, 'royal', house, A.ri(30, 60)) and then a royal family round him; for
+  // a lore realm with no ruler yet that call is given the lore's sex and age (Khagan Tegur is a man of 73), so the
+  // family is built round the right person. The royals of a hall the lore gives a giant line (Fjorund's Mothers) are
+  // giants, in a realm of humans.
+  FL.ROYAL_RACE = { 'POL-134': 'giant' };
+  FL.building = false;
+  const gn = A.genNoble;
+  A.genNoble = function (rid, status, house, age, sex) {
+    const S = A.S, L = FL.building && FL.active && status === 'royal' ? D.realms[rid] : null, rr = L && S && S.realms[rid];
+    if (!rr) return gn.apply(this, arguments);
+    const args = [rid, status, house, age, sex];
+    if (L.lore && rr.ruler == null && !FL.seated[rid]) {
+      FL.seated[rid] = 1;
+      if (L.rulerBorn) args[3] = Math.max(16, S.year - L.rulerBorn);
+      if (L.rulerSex === 'M' || L.rulerSex === 'F') args[4] = L.rulerSex;
+    }
+    const race = FL.ROYAL_RACE[rid];
+    if (!race || rr.race === race) return gn.apply(this, args);
+    const was = rr.race; rr.race = race;
+    try { return gn.apply(this, args); } finally { rr.race = was; }
+  };
   const init = A.initWorld;
   A.initWorld = function () {
-    const r = init.apply(this, arguments);
+    FL.building = true; FL.seated = {};
+    // the world is the Great Continent while it is built, so what the release does at its end (the orders raised, the
+    // lore's wars of 1105 declared) already reads as the continent's (09-scale's news, reach and caps)
+    if (FL.active && A.S && FL.part === D) A.S.world = { v: 1, parts: ['ardan', D.key] };
+    let r;
+    try { r = init.apply(this, arguments); } finally { FL.building = false; }
     const S = A.S;
     if (FL.active && S && FL.part === D) {
       S.world = { v: 1, parts: ['ardan', D.key] };

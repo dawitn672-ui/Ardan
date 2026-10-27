@@ -418,3 +418,33 @@ const refreshTab = UI.refreshTab;
 if (refreshTab) UI.refreshTab = function () { const r = refreshTab.apply(this, arguments); try { PH.decoratePage(); } catch (e) { console.error(e); } return r; };
 const renderModal = UI.renderModal;
 UI.renderModal = function () { const r = renderModal.apply(this, arguments); try { PH.decorateModal(); } catch (e) { console.error(e); } return r; };
+
+// ---- the opening view (cycle 1, first-hour I4): a life on a phone opens on its story ------------------------------
+// "Be born" landed on Life → Now, a near-empty page for a newborn, while the page that says who you are and where
+// ("You are born in Amberwick... your father is Hesketh, a shepherd") sat under Story, which nothing pointed to. A new
+// life on a phone now opens on Story, and Story carries the sub-tab badge when new lines have come in since it was last
+// open. The badge reads the log; nothing is written to the world.
+const storyLines = () => { let n = 0; for (const e of (A.S && A.S.log) || []) if (e && Array.isArray(e.lines)) n += e.lines.length; return n; };
+PH.storySeen = 0;
+PH.markStory = () => { PH.storySeen = storyLines(); };
+const startLife = UI.startLife;
+UI.startLife = function () {
+  const S0 = A.S, pc0 = S0 && S0.pc;
+  const r = startLife.apply(this, arguments);
+  try {
+    if (PH.on() && UI.screen === 'game' && A.S && A.pc() && (A.S !== S0 || A.S.pc !== pc0)) { UI.setTab('story'); PH.markStory(); UI.render(); }
+  } catch (e) { console.error('phone story start', e); }
+  return r;
+};
+const setTab = UI.setTab;
+UI.setTab = function () {
+  const was = UI.tab, r = setTab.apply(this, arguments);
+  try { if (was === 'story' || UI.tab === 'story') PH.markStory(); } catch (e) {}
+  return r;
+};
+const tabBadge = UI.tabBadge;
+UI.tabBadge = function (k, pc) {
+  const b = tabBadge.apply(this, arguments);
+  try { if (!b && k === 'story' && PH.on() && UI.tab !== 'story' && A.S && storyLines() > PH.storySeen) return 'new lines in your story'; } catch (e) {}
+  return b;
+};

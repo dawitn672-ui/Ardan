@@ -1,6 +1,59 @@
 // 97-life-fixes: the smallest hooks into the release's flow; the systems are in the *.core.js files.
 export default [
   {
+    id: 'LF-THEM-NAME',
+    blob: 'ardan-core',
+    why: 'The {them} token named the scene\'s person by given name alone, so a second Suilan ("Suilan is going about ' +
+      'saying ...") read as the patron Suilan who died twenty years before. When someone else the player knows shares ' +
+      'the given name, {them} now names the person in full (A.knownName, 67-memory-weave); otherwise as before.',
+    edits: [['t&&(o.them=t.given,o.themFull=A.fullName(t)', 't&&(o.them=A.knownName?A.knownName(t,pc):t.given,o.themFull=A.fullName(t)']],
+  },
+  {
+    id: 'LF-TIER-GATES',
+    blob: 'ardan-content',
+    why: 'Scenes written for a commoner or a private reached the top of the ladder: a queen was told to "Flee to the woods" and ' +
+      '"Turn him in for the bounty" (the home-front war scenes), danced at Harvest Home to be married off by the village, and ' +
+      'kept a scribe\'s duties ("it is only a job"); a General of 62 leading 12,800 was asked "You. Name?" by a passing ' +
+      'captain; a carpenter of 68 was offered the dead captain\'s ring and a sellsword\'s contract. A reigning ruler or a ' +
+      'general (A.lfTop, h-words.core.js) no longer draws the home-front, harvest-dance or learned-duty scenes; the ' +
+      'rank-and-file camp scenes stop at rank 3; the mercenary scenes stop at 55 (human years) and the road offers at 60. ' +
+      'The guards are helpers, not C.ruler/p.mil in the cond text, so A.evAudience classes the scenes as before.',
+    edits: [
+      ['homeFront=(p,C)=>civ(p,C)&&C.atWar(p)', 'homeFront=(p,C)=>civ(p,C)&&C.atWar(p)&&!(A.lfTop&&A.lfTop(p))'],
+      ['id:"lf_harvest_dance",cond:p=>C.adult(p)&&!C.married(p)&&!C.old(p)&&!slave(p)', 'id:"lf_harvest_dance",cond:p=>C.adult(p)&&!C.married(p)&&!C.old(p)&&!slave(p)&&!(A.lfTop&&A.lfTop(p))'],
+      ['D=(careers,e,broad)=>{const extra=e.cond;return Object.assign({cool:6},e,{cond:(p,C)=>C.adult(p)&&', 'D=(careers,e,broad)=>{const extra=e.cond;return Object.assign({cool:6},e,{cond:(p,C)=>C.adult(p)&&!(A.lfTop&&A.lfTop(p))&&'],
+      ['mwar=p=>!p.ruler&&', 'mwar=p=>!p.ruler&&!(A.lfOld&&A.lfOld(p,55))&&'],
+      ['sword=p=>!!p.flags.av_sword||!!p.mil&&!p.ruler', 'sword=p=>!(A.lfOld&&A.lfOld(p,55))&&(!!p.flags.av_sword||!!p.mil&&!p.ruler)'],
+      ['go=p=>A.C.adult(p)&&free(p)&&!p.ruler', 'go=p=>A.C.adult(p)&&free(p)&&!p.ruler&&!(A.lfOld&&A.lfOld(p,60))'],
+      ...['officer', 'letter', 'drill', 'brawl', 'dice'].map(c => [`id:"camp_${c}",trigger:!0,cond:p=>!!p.mil`, `id:"camp_${c}",trigger:!0,cond:p=>!!p.mil&&!(A.lfRank&&A.lfRank(p)>3)`]),
+    ],
+  },
+  {
+    id: 'LF-CR-RULER',
+    blob: 'ardan-core',
+    why: 'The creation summary printed "Realm: <name> (<title> <cast ruler>)" from LORE.cast, which holds the Known World\'s ' +
+      'rulers only: a far realm read "(King )", and the title ignored the ruler\'s sex. It now asks UI.crRulerNote ' +
+      '(h-words.core.js), which takes the far lands\' lore ruler too, sexes the title and prints nothing without a name.',
+    edits: [['<span class="muted">(${UI.esc(realm.title)} ${UI.esc(LORE.cast[realm.ruler]?LORE.cast[realm.ruler].name:"")})</span>',
+      '${UI.crRulerNote?UI.crRulerNote(realm):`<span class="muted">(${UI.esc(realm.title)} ${UI.esc(LORE.cast[realm.ruler]?LORE.cast[realm.ruler].name:"")})</span>`}']],
+  },
+  {
+    id: 'LF-BOSS-NONE',
+    blob: 'ardan-core',
+    why: 'With no superior, the tokens fell back to boss "your master" and bossTitle "master", so the superior scenes ' +
+      '(bd_boss_test, "{bossTitle} {boss} hands you a task") read "Master your master hands you a task". bossTitle is now ' +
+      'left unfilled when there is no superior, so the engine drops a scene about a superior the life does not have; ' +
+      '{boss} alone still falls back to "your master".',
+    edits: [['(o.boss="your master",o.bossFull="your master",o.bossTitle="master")', '(o.boss="your master",o.bossFull="your master")']],
+  },
+  {
+    id: 'LF-ONE-SUN',
+    blob: 'ardan-core',
+    why: 'A.coin wrote every amount from 1 to 99 as "N suns", so a cost chip read "Costs 1 suns" and a log "you pay 1 suns". ' +
+      'Exactly one sun is now "1 sun"; every other amount is written as before.',
+    edits: [['n>=1?Math.round(n*10)/10+" suns"', 'n>=1?Math.round(n*10)/10+(Math.round(n*10)===10?" sun":" suns")']],
+  },
+  {
     id: 'LF-BOSS-PICK',
     blob: 'ardan-core',
     why: 'A.obligationsYear picked one of four superior scenes (bd_boss_test/favor/blame/rival) with A.pick, blind to what the ' +
@@ -50,7 +103,18 @@ export default [
     why: 'A gathering picks its scenes (the toast, the seating, the knife in the dark) from a pool that only avoids repeats within ' +
       'the one gathering, so a courtier saw the same seating quarrel at feast after feast. The pick now also weighs each scene ' +
       'by the life memory (A.lfSceneW: a fifth for each time this life has seen it).',
-    edits: [['e=A.wpick(pool,x=>x.gscene.kinds?3:1);', 'e=A.wpick(pool,x=>(x.gscene.kinds?3:1)*(A.lfSceneW?A.lfSceneW(x):1));']],
+    edits: [['e=A.wpick(pool,x=>x.gscene.kinds?3:1);', 'e=A.wpick(A.lfGathPool?A.lfGathPool(pool,g):pool,x=>(x.gscene.kinds?3:1)*(A.lfSceneW?A.lfSceneW(x):1));']],
+  },
+  {
+    id: 'LF-GATH-CAP',
+    blob: 'ardan-content',
+    why: 'A ruler hosts and attends a gathering most years, and each shows three of its scenes, so a 37-year reign showed the ' +
+      'toast, the seating quarrel, the knife in the crowd and the gift about 15 times each, and the closed-door bargain 26 ' +
+      'times. A gathering scene the life has seen three times now gives way to an unseen one or to none (A.lfGathPool, in the ' +
+      'pick above), and the bargain, once seen three times, is settled by the envoys off stage with a line in the log ' +
+      '(A.lfGathBargain): the same influence a fair speech wins.',
+    edits: [['&&!g.pc.seen.includes("gs_bargain")){g.pc.seen.push("gs_bargain"),q.after="gs_bargain";return}',
+      '&&!g.pc.seen.includes("gs_bargain")&&!(A.lfGathBargain&&A.lfGathBargain(g))){g.pc.seen.push("gs_bargain"),q.after="gs_bargain";return}']],
   },
   {
     id: 'LF-POOL-PICK',

@@ -11,11 +11,26 @@
 (function () {
   if (typeof UI === 'undefined' || !UI.A) return;
   // UI.stepper, not UI.step: the release keeps the creation screen's page number in UI.step
-  const ST = UI.stepper = { run: false, wait: false, kind: null, from: 0, to: 0, note: '', timer: null };
+  const ST = UI.stepper = { run: false, wait: false, kind: null, from: 0, to: 0, note: '', timer: null, hit: false, empty: 0, snap: null, sum: null };
   UI.STEP_SLICE = 20;   // ms of work between two draws
   UI.CLK_BUDGET = 35;   // ms of days per tick of the running clock (TOP-CLOCK-BUDGET), so input and paint keep up
   const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
-  const NAME = { week: 'Next week', month: 'Next month', until: 'Until something happens' };
+  const NAME = { week: 'Next week', month: 'Next month', season: 'Next season', until: 'Until something happens' };
+  UI.STEP_NAME = NAME;
+
+  // ---- which two steps the clock offers (cycle 1, first-hour I1 and design #9). A newborn waited up to sixteen empty
+  // Months for a first event: under five (82-early-years' "early years") the main step is a season, three months, with
+  // a month beside it; and a child whose last two steps passed with nothing to answer is offered "Until something
+  // happens" as the main step. A step is only a span of days: the same days run in the same order, so the world is the
+  // one a Month at a time would reach (tbStepSameWorld, eySeasonSameWorld).
+  UI.STEP_EARLY = 5;
+  UI.stepPlan = function () {
+    const pc = A.S && A.pc ? A.pc() : null;
+    if (!pc || !pc.alive) return ['week', 'month'];
+    const age = A.age(pc), small = age < UI.STEP_EARLY, child = !(A.isAdult ? A.isAdult(pc) : age >= 16);
+    const base = small ? ['month', 'season'] : ['week', 'month'];
+    return child && ST.empty >= 2 ? [base[1], 'until'] : base;
+  };
 
   // where a step ends, as an absolute day (A.absDay): seven days on; or the turn of the next month, the day whose tick
   // runs the month's hooks and draws its events (the tick that makes the war clock a month's first day + 1)
@@ -26,15 +41,55 @@
     // the turn of the next month at least a week away, so a life's first step (on 1 January, a day before the first
     // month's turn) is a month, not a day
     const turns = A.MONTH_START.map(ms => S.year * 365 + ms + 1).concat(A.MONTH_START.map(ms => (S.year + 1) * 365 + ms + 1));
-    const here = A.absDay(), at = c => turns.find(t => t - S.year * 365 > c && t - here >= 7);
-    return at(c) || (S.year + 2) * 365 + A.MONTH_START[0] + 1;
+    const here = A.absDay(), ok = turns.filter(t => t - S.year * 365 > c && t - here >= 7);
+    // a season: the third turn of a month from here, so it ends where three Month steps would
+    if (kind === 'season') return ok[2] || (S.year + 2) * 365 + A.MONTH_START[2] + 1;
+    return ok[0] || (S.year + 2) * 365 + A.MONTH_START[0] + 1;
   };
   const busy = () => { const S = A.S, pc = A.pc(); return !S || !pc || !pc.alive || !!S.queue.length; };
 
   const schedule = () => { if (!ST.timer) ST.timer = setTimeout(slice, 0); };
   const clear = () => { if (ST.timer) { clearTimeout(ST.timer); ST.timer = null; } };
-  const end = (refresh) => { ST.run = false; ST.wait = false; ST.note = ''; clear(); if (refresh) UI.refresh(); else UI.clkPaint(); };
-  const waitEvent = () => { ST.wait = true; ST.note = 'event'; clear(); UI.refresh(); };
+  const end = (refresh) => { if (ST.run) summarise(); ST.run = false; ST.wait = false; ST.note = ''; clear(); if (refresh) UI.refresh(); else UI.clkPaint(); };
+  const waitEvent = () => { ST.wait = true; ST.hit = true; ST.note = 'event'; clear(); UI.refresh(); };
+
+  // ---- what a step brought (cycle 1, first-hour I2): a week rarely holds an event, so a step ends with a short note of
+  // what passed in it: the story's new lines, coin, health and initiative. It is read from the state at the start and
+  // the end of the step and kept on UI.stepper, never in the world, so the world and its random stream are untouched.
+  const logLines = () => { const L = A.S && A.S.log; if (!Array.isArray(L)) return []; const out = []; for (const e of L) if (e && Array.isArray(e.lines)) for (const l of e.lines) out.push(l); return out; };
+  const snapshot = () => {
+    const pc = A.pc(); if (!pc) return null;
+    return { day: A.absDay(), coin: +pc.coin || 0, debt: +pc.debt || 0, health: +pc.health || 0, time: +(A.S.time || 0), lines: logLines().length, pc: pc.id };
+  };
+  function summarise() {
+    try {
+      const a = ST.snap, pc = A.pc(); ST.snap = null;
+      if (!a || !pc || a.pc !== pc.id || A.absDay() <= a.day) return;
+      const lines = logLines().slice(a.lines).filter(l => Array.isArray(l) && l[1] !== 'lore').map(l => String(l[0] || '').replace(/<[^>]*>/g, '').trim()).filter(Boolean);
+      ST.sum = { kind: ST.kind, from: a.day, to: A.absDay(), coin: Math.round((+pc.coin || 0) - a.coin), debt: Math.round((+pc.debt || 0) - a.debt),
+        health: Math.round((+pc.health || 0) - a.health), time: Math.round(((+(A.S.time || 0)) - a.time) * 10) / 10, lines: lines.slice(-3), n: lines.length, alive: !!pc.alive };
+    } catch (e) { console.error('step summary', e); }
+  }
+  UI.stepSumHtml = function () {
+    const m = ST.sum, pc = A.pc && A.pc();
+    if (!m || !pc || ST.run || !pc.alive) return '';
+    const word = { week: 'This week', month: 'This month', season: 'This season', until: 'Since you last stopped' }[m.kind] || 'This step';
+    const sign = (v, u) => `${v > 0 ? '+' : v < 0 ? '−' : '±'}${Math.abs(v)}${u}`;
+    const bits = [];
+    if (m.coin || m.debt) bits.push(`coin ${sign(m.coin, m.coin === 1 || m.coin === -1 ? ' sun' : ' suns')}${m.debt ? `, debt ${sign(m.debt, '')}` : ''}`);
+    else bits.push('coin unchanged');
+    bits.push(m.health ? `health ${sign(m.health, '')}` : 'health unchanged');
+    if (m.time) bits.push(`initiative ${sign(m.time, '⧗')}`);
+    const days = m.to - m.from, news = m.lines.length ? m.lines.map(t => `<li>${UI.esc(t.length > 160 ? t.slice(0, 157) + '…' : t)}</li>`).join('') : '';
+    return `<div class="card step-sum" role="status" aria-label="${UI.esc(word)}"><div class="row"><b class="step-sum-h">${UI.esc(word)}</b><span class="tiny muted">${days} day${days === 1 ? '' : 's'} · ${UI.esc(bits.join(' · '))}</span><span class="grow"></span>` +
+      `<button class="small ghost" data-a="stepSumX" aria-label="Dismiss this note">${UI.icon ? UI.icon('x', 's') : '×'}</button></div>` +
+      (news ? `<ul class="step-sum-news small">${news}</ul>${m.n > m.lines.length ? `<div class="tiny muted">and ${m.n - m.lines.length} more line${m.n - m.lines.length === 1 ? '' : 's'} in your story</div>` : ''}` : '<div class="small muted">Nothing new in your story: the days went by as days do.</div>') + '</div>';
+  };
+  const renderTab = UI.renderTab;
+  if (typeof renderTab === 'function') UI.renderTab = function () {
+    const h = renderTab.apply(this, arguments);
+    try { return UI.tab === 'life' ? UI.stepSumHtml() + h : h; } catch (e) { return h; }
+  };
 
   UI.stepStart = function (kind) {
     const pc = A.pc();
@@ -42,7 +97,7 @@
     if (A.S.queue.length) { if (A.headReady()) { UI.refresh(); return; } }
     if (ST.run) end(false);
     if (UI.clk.run) { UI.clk.wasRun = false; stopClock(); }
-    Object.assign(ST, { run: true, wait: false, kind, from: A.absDay(), to: UI.stepTarget(kind), note: '' });
+    Object.assign(ST, { run: true, wait: false, kind, from: A.absDay(), to: UI.stepTarget(kind), note: '', hit: false, long: false, snap: snapshot(), sum: null });
     UI.clkPaint();
     schedule();
   };
@@ -50,6 +105,8 @@
   UI.stepGo = function () {
     if (!ST.run) return;
     if (busy()) { if (A.S && A.S.queue.length && A.headReady()) UI.refresh(); return; }
+    // "until something happens" has found its something: it ends once that is settled
+    if (ST.kind === 'until' && ST.hit) { ST.empty = 0; return end(true); }
     ST.wait = false; ST.note = ''; UI.clkPaint(); schedule();
   };
 
@@ -59,11 +116,11 @@
     const S = A.S, pc = A.pc();
     if (UI.screen !== 'game' || !S || !pc) return end(false);
     if (!pc.alive) return end(true);
-    if (UI.quietSettle()) UI.clk.dirty = true;
+    if (UI.quietSettle()) { UI.clk.dirty = true; ST.hit = true; }
     if (A.headReady()) return waitEvent();
     const t0 = now();
     for (let n = 0; ST.run; n++) {
-      if (A.absDay() >= ST.to) return end(true);
+      if (A.absDay() >= ST.to) { ST.empty = ST.kind === 'until' || ST.hit || A.S.queue.length ? 0 : ST.empty + 1; return end(true); }
       // the turn of the year and of each month are the long days (a second and a quarter of one on the Great
       // Continent): say so, and draw it, before running one, so the page never stops without a word
       const wc = S.warClock || 0, turn = wc >= 365 ? 'year' : A.MONTH_START.includes(wc) ? 'month' : '';
@@ -71,7 +128,7 @@
       if (n && now() - t0 > UI.STEP_SLICE) break;
       const r = A.dayTick();
       if (turn) ST.note = '';
-      if (r === 'year') { if (UI.set && UI.set.autosave) UI.save(!0); if (ST.kind === 'until') return end(true); }
+      if (r === 'year') { if (UI.set && UI.set.autosave) UI.save(!0); if (ST.kind === 'until' && !ST.long) { ST.empty = 0; return end(true); } }
       if (r === 'dead' || !A.pc() || !A.pc().alive) return end(true);
       if (A.S.queue.length && (UI.quietSettle(), A.headReady())) return waitEvent();
       if (r === 'queue') break;
@@ -100,6 +157,10 @@
   Object.assign(UI.A, {
     stepWeek() { if (busy()) return UI.toast(whyNot()); UI.stepStart('week'); },
     stepMonth() { if (busy()) return UI.toast(whyNot()); UI.stepStart('month'); },
+    stepSeason() { if (busy()) return UI.toast(whyNot()); UI.stepStart('season'); },
+    // the step a quiet childhood is offered runs on through the turn of the year (the old Next stopped there), up to 400 days
+    stepUntil() { if (busy()) return UI.toast(whyNot()); UI.stepStart('until'); ST.long = true; },
+    stepSumX() { ST.sum = null; UI.refreshTab ? UI.refreshTab() : UI.refresh(); },
     stepStop() { UI.stepStop(); },
     stepGo() { if (busy()) return UI.toast('The step goes on when this is settled.'); UI.stepGo(); },
     stepSpeed() { UI.clk.speed = (UI.clk.speed || 1) % 5 + 1; UI.clkPaint(); },
@@ -110,7 +171,7 @@
     clkSkip() { const pc = A.pc(); if (!pc || !pc.alive || A.S.queue.length) return; UI.stepStart('until'); },
   });
   // a new life and a loaded save end any step under way (its days belong to the world that was)
-  const halt = () => { if (ST.run) { ST.run = false; ST.wait = false; ST.note = ''; clear(); } };
+  const halt = () => { if (ST.run) { ST.run = false; ST.wait = false; ST.note = ''; clear(); } ST.empty = 0; ST.sum = null; ST.snap = null; };
   UI.stepHalt = halt;
   for (const k of ['newGame', 'deserialize']) {
     const f = A[k];
@@ -121,7 +182,7 @@
   // the month's own mark: a full moon (the week keeps the calendar; "run until something needs you" keeps skip-forward)
   const MOON = '<circle cx="12" cy="12" r="7.5" fill="currentColor" stroke="none"></circle><path d="M9 9.5a3.5 3.5 0 0 1 3-1.6" stroke-opacity=".5"></path>';
   const NOTE = () => !ST.run ? '' : ST.wait ? 'An event' : ST.note === 'year' ? 'The year turns' : ST.note === 'month' ? 'The month turns' :
-    ST.kind === 'week' ? 'A week passes' : ST.kind === 'month' ? 'A month passes' : 'Time passes';
+    ST.kind === 'week' ? 'A week passes' : ST.kind === 'month' ? 'A month passes' : ST.kind === 'season' ? 'A season passes' : 'Time passes';
   UI.stepHtml = function () {
     if (UI.ICONS && !UI.ICONS['step-moon']) UI.ICONS['step-moon'] = MOON;
     const dis = busy() && !ST.wait, why = whyNot();
@@ -134,10 +195,14 @@
         return `<button class="small clk-go run${pr}" data-a="stepGo"${b ? ' aria-disabled="true"' : ''} title="${UI.esc(b ? 'The step goes on when this is settled' : `Go on to the end of the ${kind}`)}">${UI.icon('play', 's')}<span>Go on</span>${prog}</button>`;
       }
       if (mine) return `<button class="small clk-stop run${pr}" data-a="stepStop" title="Stop here (${UI.esc(label)}: ${pct}% gone)" aria-label="Stop. ${UI.esc(note)}, ${pct}% gone">${UI.icon('pause', 's')}<span class="clk-stoplbl">Stop</span><span class="clk-runlbl">${UI.esc(note)}</span>${prog}</button>`;
-      const tip = dis ? why : `${label}: the world plays on to ${kind === 'week' ? 'seven days from now' : 'the turn of the month'}, its events come up as they fall, then the time is yours (key ${key})`;
-      return `<button class="small${pr}" data-a="${kind === 'week' ? 'stepWeek' : 'stepMonth'}"${dis ? ' aria-disabled="true"' : ''} title="${UI.esc(tip)}" aria-keyshortcuts="${key}">${UI.icon(icon, 's')}<span><span class="clk-nx">Next </span><span class="clk-unit">${kind === 'week' ? 'week' : 'month'}</span></span><kbd class="clk-kbd" aria-hidden="true">${key}</kbd></button>`;
+      const span = { week: 'seven days from now', month: 'the turn of the month', season: 'the turn of the third month from now', until: 'the next thing that needs you, or the new year' }[kind];
+      const tip = dis ? why : `${label}: the world plays on to ${span}, its events come up as they fall, then the time is yours (key ${key})`;
+      const act = { week: 'stepWeek', month: 'stepMonth', season: 'stepSeason', until: 'stepUntil' }[kind];
+      const words = kind === 'until' ? '<span class="clk-unit">until something happens</span>' : `<span class="clk-nx">Next </span><span class="clk-unit">${kind}</span>`;
+      return `<button class="small${pr}" data-a="${act}"${dis ? ' aria-disabled="true"' : ''} title="${UI.esc(tip)}" aria-keyshortcuts="${key}">${UI.icon(icon, 's')}<span>${words}</span><kbd class="clk-kbd" aria-hidden="true">${key}</kbd></button>`;
     };
-    return `<span class="clk-step" role="group" aria-label="Step">${one('week', 'calendar', 'Next week', 'W', false)}${one('month', 'step-moon', 'Next month', 'M', true)}</span>` +
+    const ICON = { week: 'calendar', month: 'step-moon', season: 'sprout', until: 'skip-forward' }, plan = UI.stepPlan();
+    return `<span class="clk-step" role="group" aria-label="Step">${one(plan[0], ICON[plan[0]], NAME[plan[0]], 'W', false)}${one(plan[1], ICON[plan[1]], NAME[plan[1]], 'M', true)}</span>` +
       `<span class="clk-note tiny muted" role="status" aria-live="polite">${UI.esc(note)}</span>`;
   };
   const clkHtml = UI.clkHtml;
@@ -201,7 +266,7 @@
     return gmZoom.apply(this, arguments);
   };
 
-  // ---- keys: W a week, M a month (Space and 1 to 5 stay the clock's)
+  // ---- keys: W a week, M a month, or the two steps the clock offers (Space and 1 to 5 stay the clock's)
   if (typeof document !== 'undefined') document.addEventListener('keydown', e => {
     if (UI.screen !== 'game' || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     const k = (e.key || '').toLowerCase(); if (k !== 'w' && k !== 'm') return;
@@ -209,7 +274,9 @@
     if (tg === 'INPUT' || tg === 'TEXTAREA' || tg === 'SELECT' || (e.target && e.target.isContentEditable)) return;
     if (UI.$('#modal') && !(UI.ov && UI.ov.type === 'warroom' && !A.S.queue.length)) return;
     e.preventDefault();
-    if (ST.run && !ST.wait && ST.kind === (k === 'w' ? 'week' : 'month')) UI.stepStop(); else UI.stepStart(k === 'w' ? 'week' : 'month');
+    // W is the shorter of the two steps on offer, M the main one (a week and a month for most of a life)
+    const kind = UI.stepPlan()[k === 'w' ? 0 : 1];
+    if (ST.run && !ST.wait && ST.kind === kind) UI.stepStop(); else if (kind === 'until') UI.A.stepUntil(); else UI.stepStart(kind);
   });
 
   // ---- the look (tokens of docs/design/brief.md)
@@ -256,6 +323,10 @@
     '#game.phone #clk .ph-dock .clk-step .ic{display:none}',
     '#game.phone #clk .ph-dock>button{min-width:44px}',
     '#game.phone #clk .clk-step button span:not(.clk-prog){font-size:var(--t-small,12px)}',
+    // the note of what a step brought, at the top of Now
+    '.step-sum{margin:0 0 var(--s-2,8px);padding:8px 10px}.step-sum .row{gap:8px;align-items:baseline;flex-wrap:wrap}.step-sum-h{font-family:var(--f-name,inherit)}' +
+      '.step-sum-news{margin:4px 0 0;padding-left:18px;color:var(--ink-2)}.step-sum-news li{margin:2px 0}.step-sum button{min-width:32px}',
+    '#game.phone .step-sum .tiny,#game.phone .step-sum .small{font-size:var(--t-body,14px)}#game.phone .step-sum button{min-width:44px;min-height:44px}',
   ].join('');
   const put = () => { if (typeof document === 'undefined' || document.getElementById('step-style')) return; const s = document.createElement('style'); s.id = 'step-style'; s.textContent = css; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }

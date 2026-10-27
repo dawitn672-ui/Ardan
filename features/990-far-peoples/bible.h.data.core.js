@@ -71,7 +71,7 @@
   R['POL-135'] = { want: 'Iron and wood.',
     fear: 'The frost leviathans in the leads, and a bad ice year.',
     place: ['The walrus rookeries', 'The beaches where the walrus haul out in thousands, and where the camps gather in spring.'],
-    own: ['wst_first', 'ward', { when: 'any', every: 2 }, 'The first walrus', 'The first walrus of spring is shared among every family of the camp before anyone eats; the hunter takes the last portion.',
+    own: ['wst_first', 'ward', { when: 'spring', every: 2 }, 'The first walrus', 'The first walrus of spring is shared among every family of the camp before anyone eats; the hunter takes the last portion.',
       'Spring, and the first {w3} of the year is on the ice. It is shared among every family of the camp before anyone eats, and the hunter takes the last portion.',
       'Share it out and take the last', 'Your portion is a flipper and the ribs. Everyone eats, and they eat looking at you.',
       'Keep the liver for your own', 'The camp eats. Nobody shares their next catch with you.', 'The first walrus is shared through the camp.', { honor: 2 }, { honor: -4 }] };

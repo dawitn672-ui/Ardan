@@ -45,9 +45,23 @@
     const m = d[1] == null ? 0 : d[1], day = low(d[0]);
     return { id: 'fth_' + letters(+String(fid).slice(4) || 0), kind: 'year', m, who: 'adult', faith: fid,
       name: cap(day), rule: `Every household keeps ${day} in ${FP.MONTHS[m]}: it ${F.rite}.`,
-      text: `${FP.MONTHS[m]}, and ${day}. ${F.scene}`, keepT: F.keepT, keep: F.keep,
+      text: FP.dayText(FP.MONTHS[m], day, F.scene), keepT: F.keepT, keep: F.keep,
       defy: { t: F.defyT, r: F.defyR, fx: F.strict ? { piety: -3, honor: -2 } : { piety: -3 } },
       log: `You keep ${day}: your household ${F.rite}.`, fx: { piety: 2, happy: 1, coin: -1 } };
+  };
+  // most scenes open on the day's own name ("The Long Night of Lamps. Every Lamp monastery ..."): the month leads in
+  // and the name is said once ("December, and the Long Night of Lamps. Every ..."; "May. The Lighting at the full moon")
+  FP.dayText = function (month, day, scene) {
+    const sc = String(scene || ''), nm = String(day || '').replace(/^the /i, '');
+    const at = sc.replace(/^the /i, '');
+    if (nm && at.toLowerCase().startsWith(nm.toLowerCase())) {
+      const rest = at.slice(nm.length);
+      if (/^\.\s/.test(rest)) return `${month}, and ${day}.${rest.slice(1)}`;
+      return `${month}. ${sc}`;
+    }
+    // the scene names the day further on ("The first snow, and the Winter Count."): the month alone leads in
+    if (nm && sc.toLowerCase().includes(nm.toLowerCase())) return `${month}. ${sc}`;
+    return `${month}, and ${day}. ${sc}`;
   };
   FP.build = function () {
     const R = A.FARP_REALMS || {}, CC = A.FARP_CULT || {}, D = A.BIBLE_DATA = A.BIBLE_DATA || {};
@@ -73,6 +87,13 @@
   B.KINDS.push(...FP.KINDS);
   B.TOKENS.push(...FP.TOKENS);
   B.WHEN.parent = B.WHEN.parent || (pc => (pc.children || []).length > 0);
+  // a custom whose words name a season comes in that season ("Spring, and your family's channel must be cleaned" came
+  // on 2 January): 47's ward kind has no month, so its `when` names the season (months 0-11, northern reckoning)
+  const inMonths = ms => () => ms.includes(A.monthOf(A.today()).m);
+  FP.SEASONS = { spring: [2, 3, 4], midsummer: [5, 6], autumn: [8, 9, 10], winter: [11, 0, 1], newyear: [0] };
+  for (const k in FP.SEASONS) B.WHEN[k] = B.WHEN[k] || inMonths(FP.SEASONS[k]);
+  B.WHEN.spring_mounted = pc => B.WHEN.spring(pc) && B.WHEN.mounted(pc);
+  B.WHEN.newyear_landed = pc => B.WHEN.newyear(pc) && B.WHEN.landed(pc);
   B.WHO.literate = pc => A.isAdult(pc) && !!pc.literate && !(pc.flags && pc.flags.unfree);
   const who = (pc, w) => (B.WHO[w || 'adult'] || B.WHO.adult)(pc);
   // a household for the census: you, a living spouse, and your living children under 16
@@ -252,7 +273,9 @@
   // ---- 5. starts: a far birth opens with a scene of its land, its realm's kind and its rank (fp_start, starts.events.js)
   const newGame = A.newGame;
   A.newGame = function (o) {
-    const r = newGame.apply(this, arguments);
+    typed = o && o.given ? o.given : null;
+    let r;
+    try { r = newGame.apply(this, arguments); } finally { typed = null; }
     try {
       const pc = A.pc();
       if (far() && pc && farRealm(pc.realm) && !(A.S.story && A.S.story.id) && !(o && o.noStart)) {
@@ -263,6 +286,37 @@
       }
     } catch (e) { console.error('far start', e); }
     return r;
+  };
+  // a newborn (or a sibling, or the player born into a far house) is not given a parent's or a sibling's name: the
+  // single-name peoples (the Skyfolk's Kyipa, daughter of Kyipa) read as one person twice. The name is re-picked from
+  // the same list by a hash of the id, so the random stream is untouched. A name the player typed is kept.
+  FP.takenNames = function (p) {
+    const out = new Set(), par = (p.parents || []).map(A.P).filter(Boolean);
+    for (const q of par) { out.add(q.given); for (const k of (q.children || []).map(A.P)) if (k && k.id !== p.id) out.add(k.given); }
+    const pc = A.S && A.S.pc != null ? A.P(A.S.pc) : null;
+    if (pc && pc.id !== p.id && par.length && (pc.parents || []).some(x => (p.parents || []).includes(x))) out.add(pc.given);
+    return out;
+  };
+  FP.renameIfTaken = function (p) {
+    if (!p || !far() || !Array.isArray(p.parents) || !p.parents.length) return;
+    const taken = FP.takenNames(p);
+    if (!taken.has(p.given)) return;
+    const c = LORE.cultures[p.cult]; if (!c) return;
+    const list = (p.sex === 'F' ? c.f : c.m) && (p.sex === 'F' ? c.f : c.m).length ? (p.sex === 'F' ? c.f : c.m) : c.m || [];
+    if (list.length < 2) return;
+    let h = 0; for (const ch of String(p.id)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    for (let i = 0; i < list.length; i++) { const n = list[(h + i) % list.length]; if (!taken.has(n)) { p.given = n; return; } }
+  };
+  let typed = null;
+  const newPerson = A.newPerson;
+  A.newPerson = function (o) {
+    const p = newPerson.apply(this, arguments);
+    try {
+      // the first person given the typed name is the player: theirs is kept
+      if (typed && o && o.given === typed && Array.isArray(o.parents) && o.parents.length) typed = null;
+      else if (far() && o && Array.isArray(o.parents)) FP.renameIfTaken(p);
+    } catch (e) { console.error('far names', e); }
+    return p;
   };
   const advance = A.advance;
   A.advance = function () {
@@ -353,6 +407,113 @@
   };
   // a far game already open when this file runs (never at boot, but a hot reload) gets its secrets too
   if (FL.active && Array.isArray(LORE.secrets)) for (const x of A.FARP_SECRETS || []) if (!LORE.secrets.some(s => s.id === x.id)) LORE.secrets.push(x);
+
+  // ---- 11. the Known World's institutions in a far life (cycle 1: "the village meets in the church", "after
+  // vespers", "the church crypt", "Take it to the manor court", the reeve, the barn raising, the corrody). The release's
+  // generic scenes were written for the west. In a far realm, in a Great Continent game only:
+  //   - a scene built on a western institution the far realms do not have (the manor and its court, the reeve, the
+  //     corrody, a villein, the enclosure of the common, a barn raised by the parish) is not drawn (A.evFit 0); one built
+  //     on serfdom is not drawn either, unless the player is a serf (then the realm has them);
+  //   - a city-state (a free city, a port, a treaty or temple city, an oasis) does not draw village-and-field scenes;
+  //   - the words of faith and drink are said in the realm's own: church > temple, the priest > the faith's clergy
+  //     (A.FARP_FAITH: the monk, the felt-keeper), vespers > the evening rite, the crypt > the vault, the abbey > the
+  //     monastery, the bishop > the temple elder, the parish > the ward, the alehouse > the drinking house.
+  //   The far lands' own scenes (fv_, fb_, fw_, fp_, rb_) are written in their own words and are left alone.
+  FP.OWN_RX = /^(fv|fb|fw|fp|rb)_/;
+  FP.INST_RX = /\b(manor|manors|manorial|reeve|reeves|corrody|villeins?|demesne|barn[- ]raising|rais(e|ing) (of )?(her|his|the|a) (new )?barn|enclos\w* the common|fence the common|a year and a day in a free town)\b/i;
+  FP.SERF_RX = /\b(serf|serfs|serfdom)\b/i;
+  FP.VILLAGE_RX = /\b(village|villagers|ploughland|the lord's (harvest|fields?)|harvest gangs?|hayloft|barn)\b/i;
+  FP.CITY_TYPES = /^(Free City|City|Free Port|Port|Treaty City|Archive City|Free Town|Republic|Temple-City|Abbey-City|Jade City|Oasis|Sand Gate)$/i;
+  const evSrc = e => {
+    if (e._fpSrc != null) return e._fpSrc;
+    let t = '';
+    try {
+      const str = x => (typeof x === 'function' ? Function.prototype.toString.call(x) : typeof x === 'string' ? x : '');
+      t = [str(e.title), str(e.text)].concat((e.choices || []).map(c => [str(c.t), str(c.r), c.win && str(c.win.r), c.lose && str(c.lose.r)].join(' '))).join(' ');
+    } catch (err) { t = ''; }
+    try { Object.defineProperty(e, '_fpSrc', { value: t, enumerable: false, configurable: true, writable: true }); } catch (err) {}
+    return t;
+  };
+  FP.cityState = rid => { const L = FL.D.realms[rid]; if (!L) return false; const nm = String(L.name || ''); return FP.CITY_TYPES.test(String(L.type || '')) || /^(Free City|City|Free Port|Port|Treaty City|Archive City|Free Town|Republic|Temple-City|Abbey-City|Jade City|Oasis) of /.test(nm); };
+  FP.westOnly = function (e, pc) {
+    if (!e || !e.id || FP.OWN_RX.test(e.id)) return false;
+    const t = evSrc(e);
+    if (FP.INST_RX.test(t)) return true;
+    if (FP.SERF_RX.test(t) && !(pc && (pc.status === 'serf' || (pc.flags && pc.flags.unfree === 'serf')))) return true;
+    if (pc && FP.cityState(pc.realm) && FP.VILLAGE_RX.test(t)) return true;
+    return false;
+  };
+  if (typeof A.evFit === 'function') {
+    const fit = A.evFit;
+    A.evFit = function (e, pc) {
+      const w = fit.apply(this, arguments);
+      try { if (w > 0 && far() && pc && farRealm(pc.realm) && FP.westOnly(e, pc)) return 0; } catch (err) {}
+      return w;
+    };
+  }
+  // the words: [pattern, (match, groups, clergy word) => replacement]; the case of the first letter is kept
+  const clergy = pc => { const F = pc && (A.FARP_FAITH || {})[pc.faith]; return F && F.priest ? String(F.priest).replace(/^(the|a|an) /i, '') : 'priest'; };
+  const an = w => (/^[aeiou]/i.test(w) ? 'an' : 'a');
+  FP.WORDS = [
+    [/\bvespers\b/gi, () => 'the evening rite'],
+    [/\b(the|a|an|your|our|his|her|their|old|young|village|parish) priest\b/gi, (m, g, P) => (/^an?$/i.test(g[0]) ? an(P) : g[0]) + ' ' + P],
+    [/\bpriests\b/gi, (m, g, P) => P + 's'],
+    [/\bchurchyard\b/gi, () => 'temple yard'],
+    [/\bchurch(es)?\b/gi, (m, g) => 'temple' + (g[0] ? 's' : '')],
+    [/\bchapel(s)?\b/gi, (m, g) => 'shrine' + (g[0] ? 's' : '')],
+    [/\bcathedral\b/gi, () => 'great temple'],
+    [/\babbey\b/gi, () => 'monastery'],
+    [/\bbishop(s)?\b/gi, (m, g) => 'temple elder' + (g[0] ? 's' : '')],
+    [/\bparish(es)?\b/gi, (m, g) => 'ward' + (g[0] ? 's' : '')],
+    [/\bcrypt\b/gi, () => 'vault'],
+    [/\balehouse\b/gi, () => 'drinking house'],
+    [/\bchaplain\b/gi, () => 'keeper of rites'],
+    [/\bfresh tonsure\b/gi, () => 'freshly shaved head'],
+  ];
+  FP.revoice = function (s, pc) {
+    if (typeof s !== 'string' || !s) return s;
+    const P = clergy(pc);
+    let out = s;
+    for (const [rx, f] of FP.WORDS) out = out.replace(rx, (...m) => {
+      const r = f(m[0], m.slice(1, -2), P);
+      return /^[A-Z]/.test(m[0]) ? r.charAt(0).toUpperCase() + r.slice(1) : r;
+    });
+    return out;
+  };
+  const revoiceOn = (pc, e) => far() && pc && farRealm(pc.realm) && e && !FP.OWN_RX.test(e.id);
+  const fpView = A.eventView;
+  A.eventView = function (q) {
+    const fresh = !!q && !q.view;
+    const v = fpView.apply(this, arguments);
+    try {
+      const pc = A.pc(), e = q && A.EV[q.ev];
+      if (fresh && v && !v.skip && revoiceOn(pc, e)) {
+        v.title = FP.revoice(v.title, pc); v.text = FP.revoice(v.text, pc);
+        if (v.recall) v.recall = FP.revoice(v.recall, pc);
+        for (const c of v.choices || []) if (c && typeof c.t === 'string') c.t = FP.revoice(c.t, pc);
+      }
+    } catch (err) { console.error('far words', err); }
+    return v;
+  };
+  const fpChoose = A.eventChoose;
+  A.eventChoose = function () {
+    const q = A.S && A.S.queue && A.S.queue[0];
+    const r = fpChoose.apply(this, arguments);
+    try {
+      const pc = A.pc(), e = q && A.EV[q.ev];
+      if (q && q.result && revoiceOn(pc, e)) for (const k of ['text', 'r']) if (typeof q.result[k] === 'string') q.result[k] = FP.revoice(q.result[k], pc);
+    } catch (err) { console.error('far words', err); }
+    return r;
+  };
+  // the council's seat for the faith: no far faith has chaplains (Taulen's council read "... Spymaster or Chaplain")
+  const seats = A.COUNCIL || null;
+  const chap = seats && seats.chaplain;
+  if (chap && Object.getOwnPropertyDescriptor(chap, 'name') && 'value' in Object.getOwnPropertyDescriptor(chap, 'name')) {
+    let base = chap.name;
+    Object.defineProperty(chap, 'name', { configurable: true, enumerable: true,
+      get() { const pc = far() && A.S && A.pc && A.pc(); return pc && farRealm(pc.realm) ? 'Keeper of Rites' : base; },
+      set(v) { base = v; } });
+  }
 
   FP.build();
 })();

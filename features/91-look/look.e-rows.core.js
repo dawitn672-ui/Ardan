@@ -129,7 +129,7 @@
     band.setAttribute('aria-label', 'Your realm');
     if (ink) band.style.cssText = `--lk-tint:${ink.tint};--lk-ink:${ink.ink};--lk-sw:${ink.swatch}`;
     band.innerHTML = `<div class="lk-band-id">${coat ? `<span class="lk-band-coat" aria-hidden="true">${coat}</span>` : ''}<div class="lk-band-t"><b class="lk-band-n">${esc(r.name)}</b>` +
-      `<span class="lk-band-r">${ru ? esc((r.title ? r.title + ' ' : '') + ttl) : 'No ruler'}</span></div>${bust ? `<span class="lk-band-bust" aria-hidden="true">${bust}</span>` : ''}</div>` +
+      `<span class="lk-band-r">${ru ? esc(A.rulerStyle ? A.rulerStyle(ru, r) : (r.title ? r.title + ' ' : '') + ttl) : 'No ruler'}</span></div>${bust ? `<span class="lk-band-bust" aria-hidden="true">${bust}</span>` : ''}</div>` +
       `<dl class="lk-band-k">${nums.map(([k, v, sp]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd>${sp ? `<dd class="lk-band-sp">${sp}</dd>` : ''}</div>`).join('')}</dl>`;
     tb.insertBefore(band, tb.firstChild && tb.firstChild.classList && tb.firstChild.classList.contains('fold-tools') ? tb.firstChild.nextSibling : tb.firstChild);
   };

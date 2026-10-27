@@ -2,20 +2,20 @@
 export default {
   async foBadge(pg) {
     const r = await pg.evaluate(async () => {
-      const ids = ['bd_wild_boar', 'av_wild_village_bounty', 'av_wild_whitewyrm', 'bd_wild_hyenas', 'pf_bow_wolves'];
+      const ids = ['bd_wild_boar', 'av_wild_village_bounty', 'av_wild_whitewyrm', 'bd_wild_hyenas', 'pf_bow_wolves', 'hunt_beast', 'insult_fight'];
       const out = [];
       for (const id of ids) {
         A.newGame({ seed: 7103, race: 'human', realm: 'POL-03', status: 'peasant', sex: 'M', startAge: 17 });
         UI.screen = 'game';
-        A.S.queue.unshift({ type: 'event', ev: id, ctx: {} });
+        A.S.queue.unshift({ type: 'event', ev: id, ctx: id === 'hunt_beast' ? { beast: 'CRE-23' } : {} });
         const v = A.eventView(A.S.queue[0]), e = A.EV[id];
         // which choices fight a beast, from the event itself
-        const fights = v.choices.map(c => { const fx = e.choices[c.i] && e.choices[c.i].fx; return !!fx && (typeof fx === 'object' ? !!fx.beast : /\bbeast\s*:\s*\{/.test(String(fx))); });
+        const fights = v.choices.map(c => { const fx = e.choices[c.i] && e.choices[c.i].fx; return c.odds == null && !!fx && (typeof fx === 'object' ? !!fx.beast : /\bbeast\s*:\s*\{|\bstartDuel(Front)?\(/.test(String(fx))); });
         const s0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
         UI.refresh(); await new Promise(res => setTimeout(res, 50));
         const pure = JSON.stringify(A.S) === s0 && JSON.stringify(A.rngState) === g0;
         const btn = [...document.querySelectorAll('.mbox button[data-a="evChoose"]')].map(b => (b.querySelector('.fo-fight') || {}).textContent || null);
-        out.push({ id, fights, marked: v.choices.map(c => !!c.fight), pct: v.choices.map(c => c.fight ? c.fight.pct : null), oddsKept: v.choices.every((c, i) => !fights[i] || c.odds == null), btn, pure });
+        out.push({ id, fights, marked: v.choices.map(c => !!c.fight && !c.fight.then), badged: v.choices.map(c => !!c.fight), pct: v.choices.map(c => c.fight ? c.fight.pct : null), oddsKept: v.choices.every((c, i) => !fights[i] || c.odds == null), checkThen: v.choices.filter(c => c.odds != null && c.fight).map(c => !!c.fight.then), btn, pure });
         A.S.queue.shift();
       }
       // with the numbers off, the badge still says it is a fight
@@ -32,9 +32,11 @@ export default {
       return { out, plain, weak, strong };
     });
     const bad = r.out.filter(o => o.fights.some((f, i) => f !== o.marked[i]) || !o.oddsKept || !o.pure ||
-      o.marked.some((m, i) => m !== !!o.btn[i]) || o.pct.some(p => p != null && !(p >= 0 && p <= 100)));
-    const ok = !bad.length && r.out.every(o => o.fights.some(Boolean)) && r.plain === 'a fight' && r.strong > r.weak;
-    return { ok, detail: r.out.map(o => `${o.id}: ${o.btn.map(b => b || '-').join(' / ')}`).join('; ') +
+      o.badged.some((m, i) => m !== !!o.btn[i]) || o.pct.some(p => p != null && !(p >= 0 && p <= 100)));
+    // the bug of cycle 1: "The hunt"'s "Attack it head-on" (a function effect calling A.startDuelFront) carried no badge
+    const hunt = r.out.find(o => o.id === 'hunt_beast'), headOn = !!(hunt && hunt.marked[0] && hunt.pct[0] != null);
+    const ok = !bad.length && headOn && r.out.every(o => o.fights.some(Boolean)) && r.plain === 'a fight' && r.strong > r.weak;
+    return { ok, detail: `the hunt's head-on charge badged: ${headOn}; ` + r.out.map(o => `${o.id}: ${o.btn.map(b => b || '-').join(' / ')}`).join('; ') +
       `; numbers off: "${r.plain}"; the boar for a peasant of 17 ${r.weak}%, for a strong fighter ${r.strong}%; checks untouched, drawing pure: ${!bad.length}${bad.length ? ' (bad: ' + bad.map(o => o.id).join(', ') + ')' : ''}` };
   },
   async foInLives(pg) {
@@ -45,9 +47,9 @@ export default {
       A.eventView = function (q) {
         const v = view.apply(this, arguments);
         try { const e = q && A.EV[q.ev]; if (e && v && v.choices) for (const c of v.choices) { const fx = e.choices[c.i] && e.choices[c.i].fx;
-          const f = !!fx && (typeof fx === 'object' ? !!fx.beast : /\bbeast\s*:\s*\{/.test(String(fx)));
-          if (f && c.odds == null) { seen++; if (c.fight) marked++; } else if (c.fight) wrong++;
-          if (c.fight && c.fight.w !== A.FO.word(c.fight.pct)) words++; } } catch (err) {}
+          const f = !!fx && (typeof fx === 'object' ? !!fx.beast : /\bbeast\s*:\s*\{|\bstartDuel(Front)?\(/.test(String(fx)));
+          if (f && c.odds == null) { seen++; if (c.fight) marked++; } else if (c.fight && !c.fight.then) wrong++;
+          if (c.fight && c.fight.pct != null && c.fight.w !== A.FO.word(c.fight.pct)) words++; } } catch (err) {}
         return v;
       };
       try {

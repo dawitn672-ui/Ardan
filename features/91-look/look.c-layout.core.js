@@ -219,8 +219,9 @@ ${X('.acts:not(.lk-acts) > .act:hover:not(:disabled)')}{border-color:var(--accen
   #game.phone .lk-needs{margin:8px 0}
   #game.phone .lk-needs .lk-need{grid-template-rows:auto 3px;row-gap:2px}
   #game.phone #tabbody.lk-plife > .fold-tools{display:none}
-  /* the first-run hint rides above the dock, over the page, until the player dismisses it */
-  #game.phone #tabbody > .hint{position:fixed;left:8px;right:8px;bottom:calc(128px + env(safe-area-inset-bottom, 0px));z-index:46;margin:0;background:var(--overlay);border:1px solid var(--accent);box-shadow:var(--e-3)}
+  /* the first-run hint is in flow at the top of the page: it once rode fixed above the dock, over the Activities grid
+     and the family list it named (cycle 1 visual B2) */
+  #game.phone #tabbody > .hint{position:static;margin:0 0 10px;background:var(--overlay);border:1px solid var(--accent);box-shadow:none}
   #game.phone #tabbody > .whatnow + *{border-top:0}
   /* 71-phone's floors on the screens outside the game (the new life) and for glossary chips (24 px) */
   #app summary{min-height:44px;display:flex;align-items:center}

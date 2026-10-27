@@ -20,8 +20,11 @@
   };
   // the note beside the speed buttons; hidden on narrow screens, where the clock bar has no room (the date's tooltip
   // still says it)
+  // Only while Play runs (cycle 1, first-hour I9): the hurry is the running clock's, and beside the Week and Month
+  // steps the note read as if it applied to them. The steps have their own answer to the early years: a season at a
+  // time under five (84-top-bar's UI.stepPlan).
   UI.earlyNote = function () {
-    const b = EY.band(); if (!b) return '';
+    const b = EY.band(); if (!b || !(UI.clk && UI.clk.run)) return '';
     EY.style();
     const x = EY.X != null ? EY.X : b[1];
     return `<span class="clk-early tiny muted" title="Until you are ${b[0]}, time runs ${x} times faster at every speed. Nothing else changes.">${b[2]} ×${x}</span>`;

@@ -71,7 +71,8 @@
 
   // ---------------------------------------------------------------- the four rules
 
-  const fill = (s, t) => s.replace(/\{Them\}/g, t.given).replace(/\{them\}/g, t.given)
+  const nameOf = t => (A.knownName ? A.knownName(t) : t.given);
+  const fill = (s, t) => s.replace(/\{Them\}/g, nameOf(t)).replace(/\{them\}/g, nameOf(t))
     .replace(/\{Khe\}/g, cap(A.he(t))).replace(/\{khe\}/g, A.he(t)).replace(/\{khim\}/g, A.him(t)).replace(/\{khis\}/g, A.his(t));
   // six wordings a rule (five for a place): which one is a hash of the scene and the year, so a long life does not hear
   // the same frame twice running. The short form is for a scene that would run past 80 words with the long one.

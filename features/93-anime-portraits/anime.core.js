@@ -283,6 +283,57 @@
       return app;
     };
   }
+  // ---- character creation agrees with the game (cycle 1 visual B4): a far people's swatches are their land's range
+  // only, the chosen look is pressed into it as the game presses it, and the preview person carries the culture, so
+  // the preview is drawn as the life will be. Creation state (UI.cr) only; A.S is not touched.
+  const crFar = c => { try { const humanish = c && (c.race === 'human' || c.race === 'halfelf'); return humanish && UI.crCult ? farOf(UI.crCult()) : null; } catch (e) { return null; } };
+  UI.crSkinSet = function (c) {
+    const all = (GD.SKIN && GD.SKIN[c.race]) || [], far = crFar(c);
+    if (!far || c.race !== 'human' && c.race !== 'halfelf') return all;
+    const S = GD.SKIN.human || [], cut = S.slice(far.sk[0], far.sk[1] + 1).filter(x => all.includes(x));
+    return cut.length ? cut : all;
+  };
+  if (typeof UI.crFix === 'function') {
+    const fix = UI.crFix;
+    UI.crFix = function () {
+      const r = fix.apply(this, arguments);
+      try {
+        const c = UI.cr, far = c && c.app && crFar(c);
+        if (far) {
+          const d = AP.drawnApp({ race: c.race, cult: UI.crCult(), app: c.app }, c.app);
+          if (d.skin) c.app.skin = d.skin;
+          if (typeof d.hair === 'number') c.app.hair = d.hair;
+          if (typeof d.eye === 'number') c.app.eye = d.eye;
+        }
+      } catch (e) {}
+      return r;
+    };
+  }
+  // the hair and eye rows the same way: shades the people are never drawn in are taken off the row (silver and white
+  // stay, they are age). A pass over the drawn row, so the release's markup and its indices are unchanged.
+  AP.crTrim = function () {
+    try {
+      if (UI.screen !== 'create' || typeof document === 'undefined') return;
+      const c = UI.cr, far = crFar(c);
+      if (!far) return;
+      for (const el of document.querySelectorAll('#app .sw[data-a="crApp"]')) {
+        const [k, v] = String(el.dataset.v || '').split(':'), i = +v;
+        if (k === 'hair' && i <= 8 && i > far.hr[1] || k === 'eye' && i > far.ey[1]) { el.hidden = true; el.style.display = 'none'; }
+      }
+    } catch (e) {}
+  };
+  if (typeof UI.render === 'function') {
+    const rd = UI.render;
+    UI.render = function () { const r = rd.apply(this, arguments); AP.crTrim(); return r; };
+  }
+  if (typeof UI.crPreviewPerson === 'function') {
+    const prev = UI.crPreviewPerson;
+    UI.crPreviewPerson = function () {
+      const p = prev.apply(this, arguments);
+      try { if (p && !p.cult && UI.crCult) p.cult = UI.crCult(); } catch (e) {}
+      return p;
+    };
+  }
   const COMMON = ['#5b7fb0', '#a0524a', '#5f9070', '#c09a52', '#7d6aa8', '#4f7f8a', '#9a6a4a', '#6a8a4a', '#b0704a', '#5a6a9a'];
   const BANGS_F = { blunt: 3, parted: 3, sideL: 2, sideR: 2, curtain: 3, wisps: 3, long: 2, messy: 1, spiky: .3, short: .3, swept: .7, crest: 0 };
   const BANGS_M = { spiky: 3, messy: 3, sideL: 2, sideR: 2, parted: 2, short: 3, swept: 2, crest: 1.5, wisps: 1, curtain: 1, blunt: .5, long: 1 };
