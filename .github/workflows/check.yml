@@ -9,8 +9,10 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-# Four jobs side by side: the build, linters and a third of the browser tests in each of three (tools/check.mjs
-# --skip-balance --shard=k/3), the balance league in the fourth. As one job the whole check took 80 minutes, and the
+# Five jobs side by side: the build, linters and a third of the browser tests in each of three (tools/check.mjs
+# --skip-balance --shard=k/3), the balance league in the fourth, and the Great Continent's league in the fifth (every path
+# born in the Known World and in the Far Lands of one 2,033-province world: 6 lives a group for 25 years, about half an
+# hour on four workers). As one job the whole check took 80 minutes, and the
 # tests alone up to 104. Two shards ran 81 minutes each against a 120-minute timeout; three leave room for more tests.
 jobs:
   check:
@@ -43,3 +45,16 @@ jobs:
       - run: node tools/build.mjs
       - run: git diff --exit-code index.html
       - run: node bench/balance.mjs index.html --workers=4
+  balance-great:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node tools/build.mjs
+      - run: node bench/balance.mjs index.html --lands=great --workers=4
