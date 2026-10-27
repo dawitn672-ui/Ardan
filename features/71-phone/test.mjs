@@ -139,8 +139,12 @@ export default {
     const first = (a, b) => { for (let i = 0; i < Math.max(a.length, b.length); i++) if (a[i] !== b[i]) return `${a[i]} / ${b[i]}`; return ''; };
     // a screenshot of a still page: taken again until two in a row agree, so a late paint (a font swap, an image
     // decoded after the settle) on a slow runner is not read as the phone layer's doing; a real difference is stable
-    const still = async () => { let h = crypto.createHash('sha1').update(await p.screenshot()).digest('hex');
-      for (let i = 0; i < 4; i++) { await p.evaluate(SETTLE); const h2 = crypto.createHash('sha1').update(await p.screenshot()).digest('hex'); if (h2 === h) break; h = h2; }
+    // Both sides are shot with CSS animations and transitions frozen at their end and the mouse parked in one place, so a
+    // hover style or a transition that a slow runner paints a frame later on one side is not counted as a difference
+    // (CI run 66: holdings differed in pixels only, and never reproduced locally).
+    const shot = async () => { await p.mouse.move(1, 1); return crypto.createHash('sha1').update(await p.screenshot({ animations: 'disabled' })).digest('hex'); };
+    const still = async () => { let h = await shot();
+      for (let i = 0; i < 4; i++) { await p.evaluate(SETTLE); const h2 = await shot(); if (h2 === h) break; h = h2; }
       return h; };
     try {
       for (const name of names) {

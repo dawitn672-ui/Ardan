@@ -75,6 +75,6 @@ The integrated build has all 94 features, 147 patches and 68 event packs, and we
 
 - In "A love philtre", a young love interest was drawn as an old, balding man (93's age reading).
 - On a phone, reading and answering an event now needs 48 px of scrolling at 375 px, because the check chip and odds badge wrap under the label.
-- `phoneDesktopSame` failed once on a loaded machine with "pixels differ" on Holdings, then passed twice alone.
+- `phoneDesktopSame` failed on a loaded machine and in CI run 66 with "pixels differ" on Holdings, and never reproduced alone. Its screenshots are now taken with animations frozen and the mouse parked; it passes 5 of 5 runs, three of them in parallel.
 - The Black Pines come out at 17.3M km² against the lore's 9.4M, because the lore's boxes there are twice their stated areas.
 - 66-markets' road memo key `a*4096+b` will collide past 4,096 provinces.
