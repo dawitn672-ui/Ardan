@@ -167,6 +167,15 @@
   };
   A.onMonth.push(() => { try { if (great()) FW.dueCheck(); } catch (e) { console.error('far war dates', e); } });
 
+  // a soldier's year gives him a stance (A.milYear); the release's load step then gives a soldier with a stance and
+  // no battle tactics the default ones, so a far soldier saved after his first year turn loaded back different (now
+  // that far lives go to war: fwSaveLoad). He is given them with the stance, as the load step would.
+  const my = A.milYear;
+  if (typeof my === 'function') A.milYear = function (pc) {
+    const r = my.apply(this, arguments);
+    try { if (great() && pc && pc.mil && pc.mil.stance && !pc.tac) pc.tac = { atk: pc.mil.stance === 'press' ? 'assault' : pc.mil.stance === 'spare' ? 'probe' : 'auto', def: 'auto' }; } catch (e) {}
+    return r;
+  };
   // ---- lived wars: a council of war for the ruler or general of a realm that goes to war; a scene when home falls
   FW.myArmies = pc => { try { const R = A.cmdRole(pc); return R && R.armies ? [...R.armies] : []; } catch (e) { return []; } };
   A.onMonth.push(pc => {

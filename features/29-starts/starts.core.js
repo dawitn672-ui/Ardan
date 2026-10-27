@@ -154,7 +154,7 @@
     const showStories = lives < 3 || UI.crQuickStories || !!cur;
     const big = (v, title, line, on) => `<button class="opt crq-big${on ? ' on' : ''}" data-a="crQuick" data-v="${v}"${v === 'story' ? ` aria-expanded="${showStories}"` : ''}><b>${UI.esc(title)}</b><span class="small muted">${UI.esc(line)}</span></button>`;  // actions, not a selection
     let h = `<div id="create" class="crq"><div class="row"><h1 style="margin:0">A new life</h1><span class="right"></span><button data-a="toTitle">Back</button><button data-a="randomizeCr">Randomize all</button></div>`;
-    h += '<p class="crq-lede">Choose where and how to begin. Everything else can wait, or be chosen below.</p>';
+    h += '<div class="panel crq-panel"><p class="crq-lede">Choose where and how to begin. Everything else can wait, or be chosen below.</p>';
     if (n) {
       const opt = (k, t) => `<button class="small${L === k ? ' primary' : ''}" data-a="crSet" data-v="lands:${k}" aria-pressed="${L === k}">${t}</button>`;
       h += `<div class="field crq-lands"><label>Lands</label><div class="row wrap crq-seg" role="group" aria-label="Lands">${opt('great', 'The Great Continent')}${opt('known', 'The Known World only')}</div>` +
@@ -176,7 +176,7 @@
       `<div class="small muted">${UI.esc(d[1])} <span title="${UI.esc(UI.crScoreWhy)}">Score ×${d[2].toFixed(2)}</span>: a life's final score is multiplied by this.</div>${UI.lfFirstLine ? UI.lfFirstLine(c) : ''}</div>`;
     h += `<div class="crq-more"><button data-a="crStep" data-v="0">Customise everything ▸</button><span class="small muted">People, realm, rank, face, gifts and traits:</span>` +
       `<span class="crq-steps">${['Blood & birth', 'Body & face', 'Gifts & nature', 'Begin'].map((s, i) => `<button class="small ghost" data-a="crStep" data-v="${i}">${i + 1}. ${UI.esc(s)}</button>`).join('')}</span></div>`;
-    return h + '</div>';
+    return h + '</div></div>';
   };
 
   const fresh = c => { const d = UI.crDefaults(); d.lands = c.lands; d.diff = c.diff; return d; };
@@ -252,7 +252,7 @@
 
   const css = [
     '.crq{max-width:760px;margin:0 auto;padding:16px}',
-    '.crq .crq-lede{margin:6px 0 12px;color:var(--ink-2)}',
+    '.crq .crq-panel{margin-top:10px}.crq .crq-lede{margin:0 0 12px;color:var(--ink-2)}',
     '.crq .crq-seg{gap:6px}',
     '.crq .crq-ways{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}',
     '.crq .crq-big{min-height:84px;text-align:left;display:flex;flex-direction:column;gap:4px;align-items:flex-start;justify-content:center}',

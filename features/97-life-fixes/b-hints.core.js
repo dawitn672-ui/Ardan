@@ -44,7 +44,7 @@
     const plan = UI.stepPlan ? UI.stepPlan() : ['week', 'month'];
     const W = { week: 'Week', month: 'Month', season: 'Season', until: 'Until something happens' };
     const span = { week: 'a shorter step', month: 'a month', season: 'a season, three months', until: 'until something needs you' };
-    return `Press <b>${W[plan[1]]}</b>${key('M')} to live ${plan[1] === 'month' ? 'the next month' : span[plan[1]]}, or <b>${W[plan[0]]}</b>${key('W')} for ${plan[0] === 'week' ? 'a shorter step' : span[plan[0]]}. A step stops whenever something needs you.`;
+    return `Press <b>${W[plan[1]]}</b>${key('M')}${phone() ? ', at the foot of the screen,' : ''} to live ${plan[1] === 'month' ? 'the next month' : span[plan[1]]}, or <b>${W[plan[0]]}</b>${key('W')} for ${plan[0] === 'week' ? 'a shorter step' : span[plan[0]]}. A step stops whenever something needs you.`;
   };
   // the texts, for the steps (none names Play, Space or Next)
   const TEXT = {
@@ -63,7 +63,14 @@
   if (clk) { clk.where = 'clock'; const i = UI.HINTS.indexOf(clk); UI.HINTS.splice(i, 1); UI.HINTS.unshift(clk); }
   const clockDue = () => !!clk && UI.hintsOn() && !UI.hintSeen('clock') && !UI.hintUsed.clock;
   const hintFor = UI.hintFor;
-  UI.hintFor = function (where, pc) { if (where !== 'clock' && where !== 'event' && clockDue()) return null; return hintFor.apply(this, arguments); };
+  // on a phone the clock is a dock at the foot of the screen, and a box floating over the page there would sit over
+  // whatever the page scrolls under it: the clock's hint leads the Life tab instead, in the flow of the page
+  const phone = () => !!(UI.isPhone && UI.isPhone());
+  UI.hintFor = function (where, pc) {
+    if (where === 'clock' && phone()) return null;
+    if (where !== 'clock' && where !== 'event' && clockDue()) return where === 'life' && phone() ? clk : null;
+    return hintFor.apply(this, arguments);
+  };
 
   // a control used retires its hint at once: a step taken (button or key) retires the clock's
   const note = UI.hintNote;
@@ -97,7 +104,7 @@
     const Hh = UI.hintFor(where, pc);
     if (!Hh) return '';
     shown.add(Hh.id);
-    return box(Hh, float ? 'hint-ev' : '');
+    return box(Hh, float ? 'hint-float hint-ev' : '');
   };
   // the tab: the hint the release put at its head moves beside its anchor
   const renderTab = UI.renderTab;
@@ -128,21 +135,12 @@
       return t.innerHTML;
     } catch (e) { return h; }
   };
-  // an event's hint: inside the card under its text, never over the picture or the top bar
-  const renderModal = UI.renderModal;
-  UI.renderModal = function () {
-    const r = renderModal.apply(this, arguments);
-    try {
-      // at the foot of the text, above the choices: on a phone the choices stay pinned in the thumb's half (71-phone)
-      const m = document.getElementById('modal'), hint = m && m.querySelector(':scope > .hint-ev'), body = m && m.querySelector('.mbox .sc-body'), ch = m && m.querySelector('.mbox .choices');
-      if (hint && body) body.appendChild(hint); else if (hint && ch) ch.before(hint);
-    } catch (e) {}
-    return r;
-  };
+  // an event's hint keeps the release's floating box: 92-scene-card docks it above the card on a desktop and under
+  // the last choice on a phone, clear of both (lane V's cycle 1 fix B9); only its words change here
   // the look: in the flow, quiet, and only its own button takes the pointer
   const css = [
-    '#game #tabbody .hint.hint-at,#modal .hint.hint-ev{position:static !important;transform:none !important;inset:auto !important;width:auto !important;z-index:auto !important;margin:6px 0 10px !important;box-shadow:none !important;order:0 !important}',
-    '#game #tabbody .hint.hint-at::before,#modal .hint.hint-ev::before{display:none !important}',
+    '#game #tabbody .hint.hint-at{position:static !important;transform:none !important;inset:auto !important;width:auto !important;z-index:auto !important;margin:6px 0 10px !important;box-shadow:none !important;order:0 !important}',
+    '#game #tabbody .hint.hint-at::before{display:none !important}',
     '.hint.hint-at,.hint.hint-ev,.hint.hint-pop{pointer-events:none}.hint.hint-at button,.hint.hint-ev button,.hint.hint-pop button,.hint .hint-t [data-tt]{pointer-events:auto}',
     '#clk .clk-step{position:relative}',
     '#clk .clk-step > .hint-pop{position:absolute;top:calc(100% + 10px);left:0;width:min(340px,calc(100vw - 24px));z-index:60;margin:0;white-space:normal;text-align:left;background:var(--overlay,var(--surface-2));border:1px solid var(--accent,#e8b04a);box-shadow:var(--e-2,0 4px 14px rgba(0,0,0,.35))}',
