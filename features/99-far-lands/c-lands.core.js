@@ -109,7 +109,10 @@
     for (const f of D.faiths) put(LORE.faiths, f.id, f);
     for (const id in R) {
       const r = R[id], like = RACE_LIKE[r.race] || DOCTRINE_LIKE[r.land];
-      put(LORE.realms, id, r);
+      // the colour a far realm is shown in everywhere (91-look's UI.realmHex: an accent apart from its neighbours, read
+      // from this data alone) is its colour in the state too, so the map, banners, chips and portrait grounds agree
+      let hex = null; try { hex = UI.realmHex ? UI.realmHex(id) : null; } catch (e) { hex = null; }
+      put(LORE.realms, id, hex && /^#[0-9a-f]{6}$/i.test(hex) && hex !== r.color ? Object.assign({}, r, { color: hex }) : r);
       if (r.race === 'human') put(GD.REALM_CULTURE, id, r.cult);
       else {
         put(GD.REALM_CULTURE, id, r.cult);

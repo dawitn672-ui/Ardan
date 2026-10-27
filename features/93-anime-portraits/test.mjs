@@ -231,16 +231,25 @@ export default {
         const p2 = APT.mk({ id: p.id + 'x', sex, age: 28, cult: 'CUL-01', app: { skin: want, hair: 0, eye: 0 } });
         if (L.skin.b !== UI.ANIME.look(p2).skin.b) outRange.push(c.id + ':' + sk);
       }
+      // the state itself: everyone the far world was made with has a look in their land's range (A.genAppearance is
+      // wrapped), so the profile's words and the picture agree
+      let farPeople = 0, outState = 0;
+      for (const q of Object.values(A.S.people)) {
+        const F = UI.ANIME.farOf(q.cult); if (!F || !(q.race === 'human' || q.race === 'halfelf') || !q.app) continue;
+        farPeople++;
+        const i = S.indexOf(String(q.app.skin).toLowerCase());
+        if ((i >= 0 && (i < F.sk[0] || i > F.sk[1])) || (q.app.hair <= 8 && q.app.hair > F.hr[1]) || q.app.eye > F.ey[1]) outState++;
+      }
       // a Known World person is untouched by the far table
       const kw = APT.mk({ id: 'apf_kw', cult: 'CUL-02', age: 30, app: { skin: S[0], hair: 8 } });
       const kwOk = !UI.ANIME.farOf('CUL-02') && UI.ANIME.look(kw).hair.b !== UI.ANIME.look(APT.mk({ id: 'apf_kw', cult: 'CUL-02', age: 30, app: { skin: S[0], hair: 0 } })).hair.b;
       // the young and 'bald'
       const ages = [18, 21, 26, 34, 52, 70].map(age => { const p = APT.mk({ id: 'apf_bald' + age, sex: 'M', age, app: { hstyle: 'bald' } }); const L = UI.ANIME.look(p); return [age, L.bald, L.st]; });
-      return { cultures: far.length, lands: Object.keys(byLand).length, cuts: Object.fromEntries(Object.entries(byLand).map(([k, v]) => [k, [...v].join('/')])), bad, outRange, errors: UI.ANIME.errors - e0, kwOk, ages };
+      return { cultures: far.length, lands: Object.keys(byLand).length, cuts: Object.fromEntries(Object.entries(byLand).map(([k, v]) => [k, [...v].join('/')])), bad, outRange, errors: UI.ANIME.errors - e0, kwOk, ages, farPeople, outState };
     }));
     const young = r.ages.filter(([a]) => a < 30), old = r.ages.filter(([a]) => a >= 45);
-    const ok = r.cultures >= 90 && r.lands === 10 && !r.bad.length && !r.outRange.length && r.errors === 0 && r.kwOk && young.every(x => !x[1]) && old.every(x => x[1]);
+    const ok = r.cultures >= 90 && r.lands === 10 && !r.bad.length && !r.outRange.length && r.errors === 0 && r.kwOk && r.farPeople > 100 && r.outState === 0 && young.every(x => !x[1]) && old.every(x => x[1]);
     return { ok, detail: `${r.cultures} far cultures in ${r.lands} lands, M and F, palest and darkest stored skin, bust and full figure: ${r.bad.length} invalid, ${r.errors} fallbacks, ${r.outRange.length} out of their land's range; ` +
-      `dress by land ${JSON.stringify(r.cuts)}; Known World untouched ${r.kwOk}; 'bald' drawn as ${r.ages.map(([a, b, st]) => a + ':' + (b ? 'bald' : st)).join(' ')}` };
+      `dress by land ${JSON.stringify(r.cuts)}; Known World untouched ${r.kwOk}; in the state, ${r.outState} of ${r.farPeople} far people outside their land's range; 'bald' drawn as ${r.ages.map(([a, b, st]) => a + ':' + (b ? 'bald' : st)).join(' ')}` };
   },
 };

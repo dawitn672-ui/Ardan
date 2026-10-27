@@ -95,6 +95,8 @@ The grid runs 360 km north of the lore's box so the Bone Isles (N-04, north of 7
 
 **The default world.** A game from the menu is on the Great Continent: the creation screen's *Lands* field opens on "The Great Continent", and Randomize and Random life (the title's quick start) use it. "The Known World only" is the other card (the smaller classic map). Both are option cards with their realms, provinces and width. `A.newGame()` called by code with no `lands` keeps the Known World, so every test, bench and bot league that starts its games by code does not move; `A.newGame({ ..., lands: 'great' })` asks for the continent. `A.FAR.MENU_LANDS` (`'great'`) is the menu's default; a harness that drives the menu (bench/run.mjs's accessibility scan does) and wants the Known World sets it to `'known'`.
 
+**Realm colours.** A far realm's colour in `LORE.realms` (and so in the state, the map wash, banners and every release site that reads `r.color`) is 91-look's `UI.realmHex(id)`, the accent it is shown in elsewhere: set at `FL.install` on a copy of the realm record, so the generated data and the Known World's colours do not change.
+
 **The birthplace list.** On the Great Continent the realm of birth lists 152 realms in `<optgroup>`s by land, west to east (the Known World, then the ten Far Lands), each sorted by name; the select's own type-ahead finds a realm (patch `FL-REALMS`). With the Known World only it is the release's list.
 
 **One world.** The lore's routes are roads the economy reads: 66-markets' carters find their way over the province graph and a step along a great route costs `FL.ROAD_F` (0.55) of an ordinary one (`A.MT.roadF`, read by a one-line hook in 66's graph); 45-economy's caravans price a road by the distance between capitals, and two realms on the same route pay the route's rate (a wrapper on `A.ECON.roads`). The Silk Road (TR-17) runs into the Known World at the Tusk Clans' oases and Grakmar and on as TR-09 to Drevna and Velgrad. The lore's nine ties to Known World realms are relations (the Old Mare and the Tusk Clans' friendship, the escorts' trade pacts to Kraoth, Fjorund and Jotunhall, the Cold Gate and Stonehold...). A Known World game has no routes (the factor is 1).
@@ -137,14 +139,16 @@ The grid runs 360 km north of the lore's box so the Bone Isles (N-04, north of 7
 
 ## Cost (`bench.mjs`)
 
-`node features/99-far-lands/bench.mjs <built.html> --lands=known,great --months=25 --scale=on,off`: a peasant of Aldmark, 25 months of 30 days, events auto-chosen; a month holding the New Year counted apart. On the shared machine, 26 October (far@1; far@2 has 40 fewer far provinces):
+`node features/99-far-lands/bench.mjs <built.html> --lands=known,great --months=25 --scale=on,off`: a peasant of Aldmark, 25 months of 30 days, events auto-chosen; a month holding the New Year counted apart. far@2, the default build (no work-in-progress lanes), on the shared machine, 27 October:
 
 | | provinces | realms | new game | month median (p90) | year-turn month | state at start → 2 years |
 | --- | --- | --- | --- | --- | --- | --- |
-| Known World, 09-scale on | 306 | 35 | 0.6 s | 68 ms (271) | 368, 231 ms | 1.5 → 2.0 MB |
-| Great Continent, 09-scale on | 2,033 | 153 | 1.3 s | 560 ms (869) | 2,801, 1,186 ms | 3.5 → 5.3 MB |
-| Known World, 09-scale off | 306 | 35 | 0.5 s | 77 ms (249) | 510, 558 ms | 1.5 → 2.0 MB |
-| Great Continent, 09-scale off | 2,033 | 153 | 1.4 s | 722 ms (1,226) | 4,115, 4,512 ms | 3.5 → 5.3 MB |
+| Known World, 09-scale on | 306 | 35 | 0.3 s | 68 ms (120) | 279, 153 ms | 1.5 → 2.0 MB |
+| Great Continent, 09-scale on | 1,992 | 153 | 0.9 s | 561 ms (854) | 1,229, 1,039 ms | 3.4 → 5.3 MB |
+| Known World, 09-scale off | 306 | 35 | 0.2 s | 45 ms (93) | 337, 232 ms | 1.5 → 2.0 MB |
+| Great Continent, 09-scale off | 1,992 | 153 | 0.8 s | 689 ms (919) | 3,280, 3,607 ms | 3.4 → 5.3 MB |
+
+(far@1 on Oct 26: Great Continent with 09-scale on 1.3 s, 560 ms (869), 2,801 and 1,186 ms; off 1.4 s, 722 ms (1,226), 4,115 and 4,512 ms.)
 
 The page grew by 261 KB with far@1 (4,573 KB → 4,834 KB built); with far@2 it grows by 255 KB (4,870 → 5,125 KB, Oct 27). Twenty-year soaks from a home in the Twin Rivers, the Long Grass and the Black Pines: no page error, 116 of 118 far realms standing, a year in about 5 s.
 

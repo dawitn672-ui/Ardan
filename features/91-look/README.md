@@ -62,7 +62,11 @@ The critique found the screen "dim and samey": one leather brown, one gold, one 
   - Fine is uncommon (◆) and Masterwork is epic (◆◆◆), on `UI.qualChip`. The chip has a tier border, the gem and the tier text, and a gear row takes its piece's tier.
   - `LOOK.gearTier` lifts a people's own make, a master's piece and a famed one.
   - The 37 achievements of the Dynasty tab each have a tier (`LOOK.ACH_TIER`, First Blood common to Legend mythic), shown with gem, edge and tier word, and a glow by night.
-- **Realm chips:** where a page names a realm in a "Realm" row (a person's page), the name gets the realm's 8 px swatch dot and its ink.
+- **Realm chips** (an 8 px swatch dot, the name in the realm's ink) appear in three places:
+  - a person's Realm row;
+  - every People row, after the name (the realm's short name);
+  - inside tooltips: a realm's name in a popover's text becomes a chip (`LOOK.chipLeaves`, on 59's `TT.open`), except in its heading, buttons and nested links.
+- **The profile's "Hair & eyes" words** name what the portrait draws (`UI.ANIME.drawnApp`), so an old save's far person reads as drawn.
 - **Pinned tooltips:** a tooltip pinned by a click gets a 2 px gold top edge and a pin glyph (`LOOK.syncPins`, from 59's stack).
 - **A dialog's close button:** its glyph fills the 32 px button.
 - **War rows:** each war of your realm on the War tab carries a strength bar of us against them: the standing armies of each side's realms, ours in green from the left and theirs in vermilion, with both numbers.

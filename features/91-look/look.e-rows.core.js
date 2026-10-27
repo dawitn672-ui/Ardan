@@ -172,6 +172,56 @@
 
   // ---- realm chips (§5.5): where a page names a realm in a "Realm" row, the name gets the realm's swatch dot and ink
   const realmByName = name => { if (!A.S || !A.S.realms) return null; for (const r of Object.values(A.S.realms)) if (r && (r.name === name || r.short === name)) return r; return null; };
+  LOOK.chipHtml = (r, label) => { const ink = UI.realmInkOf(r); return `<span class="lk-realm" style="--lk-ink:${ink.ink};--lk-sw:${ink.swatch}"><i aria-hidden="true"></i>${esc(label)}</span>`; };
+  // a leaf whose whole text is a realm's name (or short name) becomes a realm chip: tooltips name realms in their rows
+  // realm names in a tooltip become realm chips (an 8 px swatch dot, the name in the realm's ink): whole words in the
+  // popover's text, longest names first, never in its heading, a button or a link to another tooltip
+  LOOK.chipLeaves = function (root) {
+    if (!A.S || !A.S.realms || typeof document === 'undefined') return;
+    const by = new Map();
+    for (const r of Object.values(A.S.realms)) if (r && r.alive !== false) for (const n of [r.name, r.short]) if (n && n.length >= 4 && !by.has(n)) by.set(n, r);
+    if (!by.size) return;
+    const names = [...by.keys()].sort((a, b) => b.length - a.length).map(n => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const rx = new RegExp(`(^|[^\\p{L}])(${names.join('|')})(?![\\p{L}])`, 'u');
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      const pe = n.parentElement;
+      if (!pe || pe.closest('.lk-realm, .tip-h, button, [data-a], [data-tt], h2, h3')) continue;
+      if (rx.test(n.nodeValue)) nodes.push(n);
+    }
+    for (const n of nodes.slice(0, 12)) {
+      const m = rx.exec(n.nodeValue);
+      if (!m) continue;
+      const at = m.index + m[1].length, name = m[2], r = by.get(name);
+      const rest = n.splitText(at); rest.nodeValue = rest.nodeValue.slice(name.length);
+      const span = document.createElement('span');
+      span.innerHTML = LOOK.chipHtml(r, name);
+      rest.parentNode.insertBefore(span.firstChild, rest);
+    }
+  };
+  // People rows: the person's realm as a chip (its short name) after the name
+  LOOK.rowRealms = function (root) {
+    for (const c of root.querySelectorAll('.card.person.lk-row')) {
+      if (c.querySelector('.lk-realm')) continue;
+      const m = /^person:(.+)$/.exec(c.dataset.v || ''), who = m && A.P ? A.P(m[1]) : null;
+      const r = who && who.realm && A.realm ? A.realm(who.realm) : null;
+      const nm = c.querySelector('.lk-row-m > .nm');
+      if (!r || !nm) continue;
+      nm.insertAdjacentHTML('afterend', `<span class="lk-row-r">${LOOK.chipHtml(r, r.short || r.name)}</span>`);
+    }
+  };
+  if (UI.TT && typeof UI.TT.open === 'function') {
+    const open = UI.TT.open;
+    UI.TT.open = function (a, lvl) {
+      const r = open.apply(this, arguments);
+      try {
+        const st = UI.TT.stack.find(x => x && x.a === a);
+        if (st && st.el) { LOOK.chipLeaves(st.el); if (UI.TT.place) UI.TT.place(UI.TT.stack.indexOf(st) + 1); }
+      } catch (e) {}
+      return r;
+    };
+  }
   LOOK.realmChips = function (root) {
     for (const k of root.querySelectorAll('.kv > div, .kv > dt, .prof-kv > div')) {
       if (k.textContent.trim() !== 'Realm') continue;
@@ -253,6 +303,19 @@
     }
   };
 
+  // ---- the profile's "Hair & eyes" words follow the portrait: a far person whose stored look predates 93's land ranges
+  // (an old save) is drawn in their land's tones, and the words name what is drawn (UI.ANIME.drawnApp)
+  LOOK.appWords = function (root, who) {
+    if (!who || !UI.ANIME || !UI.ANIME.drawnApp) return;
+    const d = UI.ANIME.drawnApp(who);
+    if (d.hair === (who.app || {}).hair && d.eye === (who.app || {}).eye) return;
+    for (const k of root.querySelectorAll('.kv > div')) {
+      if (k.textContent.trim() !== 'Hair & eyes') continue;
+      const v = k.nextElementSibling;
+      if (v) v.textContent = `${(GD.HAIR_NAMES || [])[d.hair] || ''}, ${(GD.EYE_NAMES || [])[d.eye] || ''}`;
+    }
+  };
+
   const apply = LOOK.apply;
   LOOK.apply = function () {
     const r = apply.apply(this, arguments);
@@ -263,6 +326,7 @@
       LOOK.statSparks();
       if (tb) {
         LOOK.peopleRows(tb);
+        LOOK.rowRealms(tb);
         LOOK.realmBand(tb, pc);
         LOOK.achTiers(tb);
         LOOK.shopRows(tb);
@@ -271,7 +335,13 @@
       }
       LOOK.deltaFlash(pc);
       const m = document.getElementById('modal');
-      if (m) { LOOK.peopleRows(m); LOOK.shopRows(m); LOOK.realmChips(m); }
+      if (m) {
+        LOOK.peopleRows(m); LOOK.rowRealms(m); LOOK.shopRows(m); LOOK.realmChips(m);
+        let who = pc; try { if (UI.ov && UI.ov.id && A.P) who = A.P(UI.ov.id) || pc; } catch (e) {}
+        LOOK.appWords(m, who);
+      }
+      const pr = document.getElementById('profile');
+      if (pr) LOOK.appWords(pr, pc);
       if (tb) LOOK.realmChips(tb);
     } catch (e) { console.error('look rows', e); }
     return r;
@@ -382,6 +452,8 @@ ${X('.lk-str-n.lk-them')}{color:var(--danger);font-weight:700}
 
 /* ---- a realm chip: an 8 px swatch dot with a line edge, the name in the realm's ink */
 ${X('.lk-realm')}{display:inline-flex;align-items:center;gap:6px;color:var(--lk-ink,var(--ink));font-weight:600}
+${X('.card.person.click.lk-row > .lk-row-m > .lk-row-r')}{flex:none;order:2;font-size:var(--t-small,13px)}
+${X('.card.person.click.lk-row > .lk-row-m > .sub')}{order:1}
 ${X('.lk-realm > i')}{flex:none;width:8px;height:8px;border-radius:2px;background:var(--lk-sw);box-shadow:0 0 0 1px var(--line-strong)}
 
 /* ---- a dialog's close button: the glyph fills its 32 px button (it drew as a speck inside the focus ring) */

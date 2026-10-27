@@ -259,6 +259,30 @@
   AP.FAR_LAND = FAR_LAND; AP.FAR_CULT = FAR_CULT; AP.farOf = farOf;
   // an index pressed into [lo, hi] keeping its order among n
   const squeeze = (i, n, r) => r[0] + Math.round(Math.max(0, Math.min(n - 1, i)) * (r[1] - r[0]) / Math.max(1, n - 1));
+  // the look as drawn: a far person's stored skin, hair and eye pressed into their land's ranges (the same rule the
+  // picture uses), so words that name them can agree with the picture. Returns { skin (hex), hair, eye (indices) }.
+  AP.drawnApp = function (p, app) {
+    const ap = app || (p && p.app) || {}, far = p ? farOf(p.cult) : null, humanish = p && (p.race === 'human' || p.race === 'halfelf');
+    const out = { skin: ap.skin, hair: ap.hair, eye: ap.eye };
+    if (!far || !humanish) return out;
+    const S = (GD.SKIN && GD.SKIN.human) || [], i = S.indexOf(String(ap.skin).toLowerCase());
+    if (i >= 0 && (i < far.sk[0] || i > far.sk[1])) out.skin = S[squeeze(i, S.length, far.sk)];
+    if (typeof ap.hair === 'number' && ap.hair >= 0 && ap.hair <= 8 && ap.hair > far.hr[1]) out.hair = squeeze(ap.hair, 9, far.hr);
+    if (typeof ap.eye === 'number' && ap.eye > far.ey[1]) out.eye = squeeze(ap.eye, (GD.EYES || []).length || 8, far.ey);
+    return out;
+  };
+  // a person born from now on in a far culture is given that look in the state itself (the release's A.genAppearance
+  // knows only the Known World's peoples): the same pressing, no random draw added, so the random stream is the
+  // release's and a Known World game is untouched. Old saves keep their stored look; the picture and the profile's
+  // words press it the same way.
+  if (typeof A.genAppearance === 'function') {
+    const gen = A.genAppearance;
+    A.genAppearance = function (p) {
+      const app = gen.apply(this, arguments);
+      try { if (app && p && farOf(p.cult)) Object.assign(app, AP.drawnApp(p, app)); } catch (e) {}
+      return app;
+    };
+  }
   const COMMON = ['#5b7fb0', '#a0524a', '#5f9070', '#c09a52', '#7d6aa8', '#4f7f8a', '#9a6a4a', '#6a8a4a', '#b0704a', '#5a6a9a'];
   const BANGS_F = { blunt: 3, parted: 3, sideL: 2, sideR: 2, curtain: 3, wisps: 3, long: 2, messy: 1, spiky: .3, short: .3, swept: .7, crest: 0 };
   const BANGS_M = { spiky: 3, messy: 3, sideL: 2, sideR: 2, parted: 2, short: 3, swept: 2, crest: 1.5, wisps: 1, curtain: 1, blunt: .5, long: 1 };

@@ -25,7 +25,7 @@
 | §5.2 Tabs | Done | the release's tablist already moves by arrow keys (`UI.tabKeys`); badges are the release's |
 | §5.3 Expanders | Done, one difference | 90-fold; the open state is kept in the browser (`ardan_fold_v1`), not in `UI.set.open` |
 | §5.4 Stat bars and tiles | Done (this round) | bars, tiles, the rail's delta flash and the 1920 sparklines (sampled while drawn) |
-| §5.5 Chips | Partial (this round) | trait, status, rarity and "+N" done; the realm chip (swatch dot, name in realm ink) on a person's Realm row and the Realm band, not yet in rows and tooltips |
+| §5.5 Chips | Done (this round) | trait, status, rarity, "+N", and the realm chip (swatch dot, name in realm ink) in People rows, tooltips, a person's Realm row and the Realm band |
 | §5.6 Cards and tiles | Done | one card level; activity tiles with icon, cost and tooltip |
 | §5.7 Modals and sheets | Done (this round) | the release's modal restyled; the close button's glyph now fills its button |
 | §5.8 Tooltips | Done (this round) | 59-tooltips with 91's look; a pinned tooltip now shows a gold top edge and a pin |
@@ -142,7 +142,7 @@ Icon over cap label; the selected tab has a gold bar with a cut corner. The rele
 ### §5.5 Chips: partial
 
 - Done: trait, status, rarity (this round) and the "+N" overflow chip.
-- The **realm chip** (an 8 px swatch dot, the name in realm ink) is used on a person's page, in its Realm row (this round), and in the Realm band. It is not yet used in rows or tooltips.
+- The **realm chip** (an 8 px swatch dot, the name in realm ink) is used in People rows, in tooltips that name a realm, on a person's Realm row, and in the Realm band (this round).
 
 ### §5.6 Cards and tiles: done
 
@@ -266,7 +266,6 @@ Seen in the world tab and the full map of a Great Continent game. For lane L2:
 
 1. **The map takes `UI.realmHex`** (lane L2): without it, the far realms' chips and portrait grounds differ from their map colour.
 2. **Holdings' income sparklines.** This round's sparklines are sampled while the game is drawn. A real ten-year line, one that survives a reload, needs the engine to record a yearly history.
-3. **Realm chips** wherever a realm is named: People rows, tooltips, the war rows.
 
 ## Screenshots
 

@@ -181,8 +181,8 @@
     // a phone's dock holds the two steps, Play, the speed, Next and Quiet: Play and Quiet as icons, none under 44 px
     // (71-phone shows every label in its dock and puts Play first: the step leads it here, its buttons say "Month" and
     // "Week", and Play, the speed, Next and Quiet are icons)
-    '#game.phone #clk .ph-dock>.clk-step{order:0 !important;flex:5 1 0;display:flex;gap:4px;min-width:0}',
-    '#game.phone #clk .ph-dock>.clk-step>button{flex:1 1 0;min-width:44px}',
+    '#game.phone #clk .ph-dock>.clk-step{order:0 !important;flex:6 1 0;display:flex;gap:4px;min-width:0}',
+    '#game.phone #clk .ph-dock>.clk-step>button{flex:1 1 0;min-width:64px;min-height:46px;font-weight:700}',
     '#game.phone #clk .ph-dock>.clk-play{flex:1 1 0 !important}',
     '#game.phone #clk .ph-dock button span.clk-nx,#game.phone #clk .ph-dock button span.clk-lbl,#game.phone #clk .ph-dock [data-a=clkSkip] span,#game.phone #clk .ph-dock [data-a=clkQuiet] span{display:none !important}',
     '#game.phone #clk .ph-dock .clk-step .ic{display:none}',

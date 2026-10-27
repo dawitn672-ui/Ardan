@@ -475,10 +475,72 @@
       // the towns are kept with the view; they change only when a capital moves or the display is resized
       const K = iconK(ctx, W, !v || !!v.whole), tk = K.toFixed(2) + ':' + Object.values(A.S.realms).map(r => r.alive ? r.capitalProv : '').join(',');
       drawTiles(ctx, W, H, wholeView(W, H, v), 'b', (c, d) => IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K), tk);
+      try { IM.selGlow(ctx, W, H, wholeView(W, H, v)); } catch (e) {}
+      try { IM.moveArrows(ctx, W, H, wholeView(W, H, v)); } catch (e) {}
       return true;
     } catch (e) { if (typeof console !== 'undefined') console.error(e); return false; }
   };
 
+  // ---- the selected realm (brief 7.3: realm.glow): on the full map, the realm of the province clicked (UI.mapHl) has
+  // its border drawn over in its own colour at 30%, wide and soft. Drawn each frame, not kept in a tile.
+  IM.selGlow = function (ctx, W, H, v) {
+    const id = UI.mapHl, cv = ctx.canvas; if (!id || !cv || cv.id !== 'gmap' || !A.S) return 0;
+    const r = A.S.realms[id]; if (!r) return 0;
+    const hex = UI.realmHex ? UI.realmHex(r) : r.color; if (!/^#[0-9a-f]{6}$/i.test(hex || '')) return 0;
+    const g = buildGeo(), S = A.S, vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KWf(), vh = v ? v.h : KHf(), C = MAP.cell;
+    const x0 = vx, y0 = vy, x1 = vx + vw, y1 = vy + vh, sx = W / vw, sy = H / vh;   // the traced lines are in km
+    const path = new Path2D(); let n = 0;
+    for (const o of g.provPieces) {
+      if (o.x1 < x0 || o.x0 > x1 || o.y1 < y0 || o.y0 > y1) continue;
+      const pa = S.prov[o.a], pb = S.prov[o.b]; if (!pa || !pb || (pa.owner === id) === (pb.owner === id)) continue;
+      const a = o.pts; path.moveTo((a[0] - x0) * sx, (a[1] - y0) * sy); for (let i = 2; i < a.length; i += 2) path.lineTo((a[i] - x0) * sx, (a[i + 1] - y0) * sy); n++;
+    }
+    for (const o of g.coastPieces || []) {
+      if (o.x1 < x0 || o.x0 > x1 || o.y1 < y0 || o.y0 > y1) continue;
+      const a = o.pts, m = Math.min(a.length / 2 - 1, 2) * 2, mx = Math.round((a[m] - KX0f()) / C), my = Math.round((a[m + 1] - KY0f()) / C);
+      let cell = -1; for (const [dx, dy] of [[0, 0], [-1, 0], [0, -1], [-1, -1]]) { const xx = mx + dx, yy = my + dy; if (xx >= 0 && yy >= 0 && xx < g.gw && yy < g.gh && g.grid[yy * g.gw + xx] >= 0) { cell = g.grid[yy * g.gw + xx]; break; } }
+      if (cell < 0 || !S.prov[cell] || S.prov[cell].owner !== id) continue;
+      path.moveTo((a[0] - x0) * sx, (a[1] - y0) * sy); for (let i = 2; i < a.length; i += 2) path.lineTo((a[i] - x0) * sx, (a[i + 1] - y0) * sy); n++;
+    }
+    if (!n) return 0;
+    ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    const [R, G, B] = [1, 3, 5].map(k => parseInt(hex.slice(k, k + 2), 16));
+    ctx.strokeStyle = `rgba(${R},${G},${B},.30)`; ctx.lineWidth = 9; ctx.stroke(path);
+    ctx.strokeStyle = `rgba(${R},${G},${B},.55)`; ctx.lineWidth = 3; ctx.stroke(path);
+    ctx.restore();
+    IM.glowPieces = n;
+    return n;
+  };
+  // ---- the armies' planned moves (brief 7.3, the Into the Breach lesson): from the zoom the banners stand at, every
+  // division on the march gets an arrow along the next steps of its path (about a month's march), in its realm's
+  // colour on an ink line. Read from the divisions' own paths; nothing is planned here.
+  IM.ARROW_STEPS = 3;
+  IM.moveArrows = function (ctx, W, H, v) {
+    if (!A.S || !A.allDivs || IM.zoomNow < IM.BANNER_ZOOM || !UI.set.banners) return 0;
+    const vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KWf(), vh = v ? v.h : KHf(), sx = W / vw, sy = H / vh;
+    const X = P => (P.sx - vx) * sx, Y = P => (P.sy - vy) * sy;
+    let n = 0;
+    ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (const d of A.allDivs()) {
+      if (!d || !Array.isArray(d.path) || !d.path.length) continue;
+      const P0 = A.S.prov[d.loc]; if (!P0) continue;
+      const pts = [P0].concat(d.path.slice(0, IM.ARROW_STEPS).map(id => A.S.prov[id]).filter(Boolean)); if (pts.length < 2) continue;
+      if (pts.every(P => X(P) < -20 || Y(P) < -20 || X(P) > W + 20 || Y(P) > H + 20)) continue;
+      const r = A.S.realms[d.r], raw = r ? (UI.realmHex ? UI.realmHex(r) : r.color) : '#8a8f9e', hex = mix(/^#[0-9a-f]{6}$/i.test(raw || '') ? raw : '#8a8f9e', INK, 0.35);
+      // the line stops short of the last site, so its head shows beside the banner standing there
+      const xs = pts.map(X), ys = pts.map(Y), k = xs.length - 1; xs[k] = xs[k - 1] + (xs[k] - xs[k - 1]) * 0.72; ys[k] = ys[k - 1] + (ys[k] - ys[k - 1]) * 0.72;
+      const line = () => { ctx.beginPath(); ctx.moveTo(xs[0], ys[0]); for (let i = 1; i < xs.length; i++) ctx.lineTo(xs[i], ys[i]); };
+      ctx.strokeStyle = 'rgba(236,224,196,.85)'; ctx.lineWidth = 5; line(); ctx.stroke();
+      ctx.strokeStyle = hex; ctx.lineWidth = 2.6; line(); ctx.stroke();
+      const ang = Math.atan2(ys[k] - ys[k - 1], xs[k] - xs[k - 1]), hx = xs[k], hy = ys[k], L = 11;
+      ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(hx - L * Math.cos(ang - 0.45), hy - L * Math.sin(ang - 0.45)); ctx.lineTo(hx - L * Math.cos(ang + 0.45), hy - L * Math.sin(ang + 0.45)); ctx.closePath();
+      ctx.fillStyle = hex; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 1.2; ctx.stroke();
+      n++;
+    }
+    ctx.restore();
+    IM.arrows = n;
+    return n;
+  };
   // ---- towns and capitals: drawn with the lines layer, kept with the view until a capital moves
   // keeps shrink when a larger frame is seen whole (zoom under 1 exists only there)
   const keepScale = zoom => MAP.big ? clamp(zoom * 1.5, 0.6, 1) : 1;
@@ -608,8 +670,42 @@
       const rib = ds[i] < R ? (1 - ds[i] / R) : 0;
       d[o + 3] = Math.min(175, Math.round(a * 0.42 + rib * 95 * Math.min(1.4, a / 120)));
     }
+    hatch(d, own, ds);
     c.putImageData(im, 0, 0);
     return cv;
+  }
+  // brief 7.3 / 1.6: where two neighbouring realms' colours are closer than 0.08 in OKLab, the smaller is hatched at
+  // 45 degrees in the line ink at a quarter, so a border never rests on colour alone. Rendering only.
+  const oklab = hex => {
+    const v = [1, 3, 5].map(k => parseInt(hex.slice(k, k + 2), 16) / 255).map(c => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+    const l = Math.cbrt(0.4122214708 * v[0] + 0.5363325363 * v[1] + 0.0514459929 * v[2]), m = Math.cbrt(0.2119034982 * v[0] + 0.6806995451 * v[1] + 0.1073969566 * v[2]), q = Math.cbrt(0.0883024619 * v[0] + 0.2817188376 * v[1] + 0.6299787005 * v[2]);
+    return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q];
+  };
+  IM.HATCH_D = 0.08;
+  function hatch(d, own, ds) {
+    const { gw, gh, grid } = MAP, S = A.S; if (!S || !S.realms) return 0;
+    const col = id => { const r = S.realms[id], h = r && (UI.realmHex ? UI.realmHex(r) : r.color); return typeof h === 'string' && /^#[0-9a-f]{6}$/i.test(h) ? h : null; };
+    const size = new Map(), pairs = new Set();
+    for (let i = 0; i < gw * gh; i++) {
+      const pv = grid[i]; if (pv < 0) continue; const o = own[pv]; if (!o) continue;
+      size.set(o, (size.get(o) || 0) + 1);
+      if (ds[i] !== 0) continue;
+      for (const j of [i + 1, i + gw]) { if (j >= gw * gh || grid[j] < 0) continue; const o2 = own[grid[j]]; if (o2 && o2 !== o) pairs.add(o < o2 ? o + '|' + o2 : o2 + '|' + o); }
+    }
+    const lab = new Map(), L = id => { if (!lab.has(id)) { const h = col(id); lab.set(id, h ? oklab(h) : null); } return lab.get(id); };
+    const marked = new Set();
+    for (const k of pairs) {
+      const [a, b] = k.split('|'), p = L(a), q = L(b); if (!p || !q) continue;
+      if (Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]) < IM.HATCH_D) marked.add((size.get(a) || 0) <= (size.get(b) || 0) ? a : b);
+    }
+    if (!marked.size) return 0;
+    const INKC = [27, 23, 48];
+    for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
+      const i = y * gw + x, pv = grid[i]; if (pv < 0 || !marked.has(own[pv]) || (x + y) % 6) continue;
+      const o = i * 4; for (let k = 0; k < 3; k++) d[o + k] = Math.round(d[o + k] * 0.75 + INKC[k] * 0.25); d[o + 3] = Math.max(d[o + 3], 110);
+    }
+    IM.hatched = marked.size;
+    return marked.size;
   }
   IM.inkify = inkify;
   const ovBasic = MAP.overlay;

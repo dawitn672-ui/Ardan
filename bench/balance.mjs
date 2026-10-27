@@ -41,18 +41,17 @@ for (let w = 0; w < WORKERS; w++) {
 const out = { file: path.relative(root, file), build: await pages[0].evaluate(() => window.ARDAN_BUILD), lands: LANDS, lives: PER, years: YEARS, paths: {}, global: {}, failures: [], skipped: {} };
 // every life of the league, in a fixed order; page w plays lives w, w + WORKERS, ...
 const jobs = [];
-for (const [name, P] of Object.entries(TARGETS.paths)) for (let i = 0; i < PER; i++) jobs.push({ name, P, i });
+// --paths=a,b plays only those groups (a quick look; the global numbers are then of those lives alone)
+const ONLY = opt('paths') ? opt('paths').split(',') : null;
+for (const [name, P] of Object.entries(TARGETS.paths)) if (!ONLY || ONLY.includes(name)) for (let i = 0; i < PER; i++) jobs.push({ name, P, i });
 const played = new Array(jobs.length);
 const playLife = (page, { name, P, i }) => {
   // engaged and passive alternate; personalities rotate; seeds are fixed per path and slot
   const pers = ['careful', 'reckless', 'greedy', 'random'][i % 4], engaged = i % 2 === 0;
   return page.evaluate(([o, p, e, Y]) => {
     // a start the world cannot give (no far realm keeps serfs, say) is reported, not played as something else
-    if (o.lands === 'great' && A.statusAllowed && !A.statusAllowed(o.status, o.race, o.realm)) {
-      const was = A.FAR && A.FAR.active; if (A.FAR && !was) A.FAR.set(true);
-      const ok = A.statusAllowed(o.status, o.race, o.realm);
-      if (!ok) return { skip: `no ${o.status} start in ${o.realm}` };
-    }
+    // (only the unfree are asked before the game: the table is fixed; the others depend on the world's houses)
+    if (o.lands === 'great' && (o.status === 'serf' || o.status === 'slave') && A.statusAllowed && !A.statusAllowed(o.status, o.race, o.realm)) return { skip: `no ${o.status} start in ${o.realm}` };
     const L = B.life(o, p, e, Y), S = L.samples || [];
     const max = k => Math.max(0, ...S.map(s => typeof s[k] === 'number' ? s[k] : 0));
     const at = age => (S.find(s => s.age >= age) || S[S.length - 1] || {});
@@ -66,6 +65,7 @@ await Promise.all(pages.map(async (page, w) => {
 }));
 const all = [];
 for (const [name, P] of Object.entries(TARGETS.paths)) {
+  if (ONLY && !ONLY.includes(name)) continue;
   const mine = jobs.map((j, k) => (j.name === name ? played[k] : null)).filter(Boolean), lives = mine.filter(l => !l.skip);
   if (!lives.length) { out.skipped[name] = mine.length ? mine[0].skip : 'no lives'; continue; }
   all.push(...lives);
@@ -73,7 +73,11 @@ for (const [name, P] of Object.entries(TARGETS.paths)) {
   const quiet = new Set(['quiet life', 'working life', 'bound for life', 'cut short']);
   out.paths[name] = {
     lives: lives.length,
-    medianDeathAge: median(deaths.length ? deaths : lives.map(l => l.years + (P.start.startAge || 0))),
+    // a short league (the Great Continent's 25 years) ends with most lives still going: the median over the dead alone
+    // would be the median of those who died young, so there a life still going counts at the age it reached
+    medianDeathAge: TARGETS.years ? median(lives.map(l => l.deathAge != null ? l.deathAge : l.years + (P.start.startAge || 0)))
+      : median(deaths.length ? deaths : lives.map(l => l.years + (P.start.startAge || 0))),
+    outlawSharePct: r1(100 * lives.filter(l => l.arc === 'outlaw').length / lives.length),
     medianPeakCoin: median(lives.map(l => l.peakCoin)),
     medianPeakFame: median(lives.map(l => l.peakFame)),
     notableSharePct: r1(100 * lives.filter(l => !quiet.has(l.arc)).length / lives.length),
@@ -99,6 +103,7 @@ const check = (where, key, v, band) => {
 };
 const rows = [];
 for (const [name, P] of Object.entries(TARGETS.paths)) {
+  if (ONLY && !ONLY.includes(name)) continue;
   if (out.skipped[name]) { console.log(`skip ${name.padEnd(14)} ${out.skipped[name]}${P.note ? ' (see its note in bench/targets.mjs)' : ''}`); continue; }
   for (const [k, band] of Object.entries(P.bands)) { const v = out.paths[name][k]; rows.push([name, k, v, band, check(name, k, v, band)]); }
 }

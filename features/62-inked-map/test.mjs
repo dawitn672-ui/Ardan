@@ -178,4 +178,30 @@ export default {
     for (let i = errs.length - 1; i >= 0; i--) if (/Refused to connect to 'https:\/\/fonts\.googleapis\.com/.test(errs[i])) errs.splice(i, 1);
     return { ok: !found.length, detail: `${found.length} axe violations on the world tab and the full map${found.length ? ': ' + found.slice(0, 6).join(', ') : ''}` };
   },
+
+  // brief 7.3's marks: close neighbours hatched, the selected realm's glow, the armies' next moves as arrows; pure
+  async inkBriefMarks(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 621, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
+      const pc = A.pc(), enemy = A.neighbors('POL-01')[0];
+      A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(pc); A._idIdx = null; A.advance(20); A._idIdx = null;
+      A.S.queue = []; UI.screen = 'game'; UI.set.hints = false; UI.tab = 'world'; UI.worldView = 'map'; UI.set.inkMap = true; UI.set.banners = true;
+      const IM = UI.INKMAP; IM.budgetMs = 1e9; IM.reset(); UI.render();
+      const out = {};
+      IM.hatched = 0; MAP.overlay(); out.hatched = IM.hatched;
+      UI.A.ov('bigmap');
+      const s0 = JSON.stringify(A.S), r0 = A.rngState;
+      const P = A.prov(A.realm('POL-01').capitalProv), at = z => { const w = 7000 / z; UI.gm.view = UI.wrClampView({ x0: P.sx - w / 2, y0: P.sy - w / 3, w, h: 0 }); };
+      UI.mapHl = 'POL-01'; IM.glowPieces = 0; at(1.4); UI.gmDraw(); out.glow = IM.glowPieces;
+      UI.mapHl = null; IM.glowPieces = 0; UI.gmDraw(); out.glowOff = IM.glowPieces;
+      IM.arrows = 0; at(1); UI.gmDraw(); out.arrowsFar = IM.arrows;
+      const d = A.divById(A.pc().mil.div), L = A.S.prov[d.loc]; IM.arrows = 0; const w = 7000 / 4; UI.gm.view = UI.wrClampView({ x0: L.sx - w / 2, y0: L.sy - w / 3, w, h: 0 }); UI.gmDraw(); out.arrowsNear = IM.arrows;
+      out.paths = A.allDivs().filter(x => x.path && x.path.length).length;
+      out.pure = JSON.stringify(A.S) === s0 && A.rngState === r0;
+      UI.ov = null; UI.render();
+      return out;
+    });
+    const ok = r.hatched > 0 && r.glow > 0 && r.glowOff === 0 && r.arrowsFar === 0 && (r.arrowsNear > 0 || r.paths === 0) && r.pure;
+    return { ok, detail: `${r.hatched} realms hatched beside a neighbour of near the same colour; the selected realm's border glows in ${r.glow} pieces (${r.glowOff} with none selected); arrows for marching divisions: ${r.arrowsFar} at zoom 1, ${r.arrowsNear} at zoom 4 (${r.paths} divisions on the march); drawing ${r.pure ? 'pure' : 'CHANGED the state'}` };
+  },
 };

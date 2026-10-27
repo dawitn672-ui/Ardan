@@ -64,15 +64,33 @@ const unhandled = await pg.evaluate(() => {
 
 const CLICKABLE = 'button, [data-a], [role="button"], [role="tab"], summary, [data-tt], [data-tip]';
 const want = (opt('screens') || Object.keys(SCREENS).join(',')).split(',');
+// UI state the game keeps outside A.S (the armourer's page, the codex's view, the settings, the folds) carries over from
+// one click to the next unless it is reset, so the n-th control of a screen could be a different one at the next setup.
+// It is captured once on the fresh page and put back before every setup.
+await pg.evaluate(() => {
+  const plain = v => v == null || ['string', 'number', 'boolean'].includes(typeof v);
+  window.__ui0 = {};
+  for (const k of Object.keys(UI)) { const v = UI[k]; if (plain(v)) window.__ui0[k] = v; else if (v && typeof v === 'object' && !Array.isArray(v) && Object.values(v).every(plain)) window.__ui0[k] = JSON.parse(JSON.stringify(v)); }
+  window.__uiSet0 = JSON.parse(JSON.stringify(UI.set || {}));
+});
+const RESET_UI = () => {
+  try { localStorage.clear(); } catch (e) {}
+  const plain = v => v == null || ['string', 'number', 'boolean'].includes(typeof v);
+  for (const k of Object.keys(UI)) if (!(k in window.__ui0) && plain(UI[k])) delete UI[k];
+  for (const [k, v] of Object.entries(window.__ui0)) UI[k] = v && typeof v === 'object' ? JSON.parse(JSON.stringify(v)) : v;
+  UI.set = Object.assign(UI.set || {}, JSON.parse(JSON.stringify(window.__uiSet0)));
+  if (UI.FOLD) { UI.FOLD.state = {}; UI.FOLD.allOpen = false; }
+};
 const dead = [], broke = [], perScreen = {};
 for (const name of want) {
   const setup = SCREENS[name];
   if (!setup) continue;
   // enumerate once
+  await pg.evaluate(RESET_UI).catch(() => {});
   await pg.evaluate(setup).catch(e => errs.push(name + ' setup: ' + e.message));
   await pg.waitForTimeout(80);
   const list = await pg.evaluate(sel => {
-    const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 2 && r.height > 2 && s.visibility !== 'hidden' && s.display !== 'none' && !e.closest('[hidden]'); };
+    const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 2 && r.height > 2 && s.visibility !== 'hidden' && s.display !== 'none' && !e.closest('[hidden]') && !e.closest('[inert]'); };
     return [...document.querySelectorAll(sel)].filter(vis).map((e, i) => ({ i, a: e.dataset.a || '', v: e.dataset.v || '', tag: e.tagName.toLowerCase(), text: (e.innerText || e.getAttribute('aria-label') || e.title || '').trim().replace(/\s+/g, ' ').slice(0, 48),
       disabled: !!(e.disabled || e.getAttribute('aria-disabled') === 'true' || e.classList.contains('disabled') || e.classList.contains('dis') || e.classList.contains('off')),
       current: e.getAttribute('aria-selected') === 'true' || e.getAttribute('aria-current') === 'page' || e.classList.contains('on') || e.classList.contains('sel') || e.classList.contains('selected') || e.classList.contains('active') || e.getAttribute('aria-pressed') === 'true' || e.getAttribute('aria-checked') === 'true' }));
@@ -80,12 +98,13 @@ for (const name of want) {
   perScreen[name] = { controls: list.length, dead: 0 };
   for (const c of list.slice(0, MAX)) {
     if (c.disabled || c.current) continue;
+    await pg.evaluate(RESET_UI).catch(() => {});
     await pg.evaluate(setup).catch(() => {});
     // a fresh start for every click: no toast and no popover left from the one before
     await pg.evaluate(() => { const t = document.getElementById('toast'); if (t) { t.textContent = ''; t.className = ''; } if (UI.TT && UI.TT.closeAll) UI.TT.closeAll(); if (UI.tipHide) { try { UI.tipHide(1); } catch (e) {} } }).catch(() => {});
     const e0 = errs.length, d0 = dialogs, dl0 = downloads, fc0 = choosers;
     const r = await pg.evaluate(async ({ sel, i }) => {
-      const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 2 && r.height > 2 && s.visibility !== 'hidden' && s.display !== 'none' && !e.closest('[hidden]'); };
+      const vis = e => { const r = e.getBoundingClientRect(), s = getComputedStyle(e); return r.width > 2 && r.height > 2 && s.visibility !== 'hidden' && s.display !== 'none' && !e.closest('[hidden]') && !e.closest('[inert]'); };
       const el = [...document.querySelectorAll(sel)].filter(vis)[i];
       if (!el) return { gone: true };
       const hash = s => { let h = 0; for (let k = 0; k < s.length; k++) h = (h * 31 + s.charCodeAt(k)) | 0; return h; };

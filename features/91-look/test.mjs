@@ -306,6 +306,13 @@ export default {
         const chip = document.querySelector('#modal .lk-realm');
         out.chip = chip ? chip.textContent : null;
         UI.ov = null; UI.render();
+        // realm chips in People rows and in a tooltip that names a realm (the market's price)
+        UI.tab = 'people'; UI.render();
+        out.rowChips = document.querySelectorAll('#tabbody .card.person.lk-row .lk-realm').length;
+        UI.tab = 'holdings'; if (UI.FOLD) UI.FOLD.allOpen = true; UI.render();
+        const ta = document.querySelector('#tabbody [data-tt="mktPrice"], #tabbody [data-tt="tradeRun"]');
+        if (ta && UI.TT) { UI.TT.open(ta, 1, 'click'); const el = UI.TT.stack[0] && UI.TT.stack[0].el; out.ttChip = el ? (el.querySelector('.lk-realm') || {}).textContent || 'none' : 'no popover'; UI.TT.closeAll(); }
+        if (UI.FOLD) UI.FOLD.allOpen = false;
         // sparklines: the Realm band's four numbers get a line once two months have been drawn
         UI.tab = 'realm'; UI.render();
         out.spark0 = document.querySelectorAll('#tabbody .lk-band .lk-spark').length;
@@ -319,8 +326,8 @@ export default {
         out.same = m[0] === m[1]; out.pure = T.hash(A.S) === h0 && JSON.stringify(A.S.rng) === g0;
         return out;
       });
-      const ok = r.wars >= 1 && /^Strength: us .+ against them .+/.test(r.warLabel || '') && r.flash0 === 0 && r.flash1 === 0 && r.flash === '▼ −10' && r.gone && r.beasts >= 10 && r.beastTiers.split(',').length >= 3 && !!r.chip && r.pin && r.spark0 === 0 && r.sparks === 4 && /^Treasury since \d+: /.test(r.sparkLabel || '') && r.same && r.pure;
-      return { ok, detail: `war strength bars ${r.wars} ("${r.warLabel}"); delta flash: none on the first draws (${r.flash0}, ${r.flash1}), "${r.flash}" after a wound, gone after 1.6 s ${r.gone}; ${r.beasts} beasts tiered (${r.beastTiers}); realm chip "${r.chip}"; pinned tooltip marked ${r.pin}; Realm band sparklines ${r.spark0} -> ${r.sparks} ("${r.sparkLabel}"); same markup ${r.same}, pure ${r.pure}` };
+      const ok = r.wars >= 1 && /^Strength: us .+ against them .+/.test(r.warLabel || '') && r.flash0 === 0 && r.flash1 === 0 && r.flash === '▼ −10' && r.gone && r.beasts >= 10 && r.beastTiers.split(',').length >= 3 && !!r.chip && r.pin && r.rowChips >= 3 && r.ttChip && !/^(none|no popover)$/.test(r.ttChip) && r.spark0 === 0 && r.sparks === 4 && /^Treasury since \d+: /.test(r.sparkLabel || '') && r.same && r.pure;
+      return { ok, detail: `war strength bars ${r.wars} ("${r.warLabel}"); delta flash: none on the first draws (${r.flash0}, ${r.flash1}), "${r.flash}" after a wound, gone after 1.6 s ${r.gone}; ${r.beasts} beasts tiered (${r.beastTiers}); realm chip "${r.chip}"; pinned tooltip marked ${r.pin}; realm chips in ${r.rowChips} People rows and in a market tooltip ("${r.ttChip}"); Realm band sparklines ${r.spark0} -> ${r.sparks} ("${r.sparkLabel}"); same markup ${r.same}, pure ${r.pure}` };
     } finally { await ctx.close(); }
   },
 };

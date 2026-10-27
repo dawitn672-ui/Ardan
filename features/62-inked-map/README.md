@@ -71,6 +71,14 @@ Before and after screenshots (world tab, title strip, full map at zoom 1, 3, 8, 
 - No markup: everything is canvas. The menu labels are fixed strings.
 - No external files.
 
+**Brief 7.3's marks (Oct 27).** Three rendering-only additions, each read from the state and drawing nothing random (`inkBriefMarks`):
+
+- **Hatch.** Where two neighbouring realms' colours (`UI.realmHex`, the colour each is shown in) are closer than 0.08 in OKLab (`IM.HATCH_D`), the smaller realm's wash is hatched at 45 degrees in the line ink at a quarter, one line every 60 km (`hatch`, inside the wash). Ten Known World realms take it at the start (Varenna, Ostra, Greyhaven, Morhaven among them).
+- **Selection glow.** On the full map, the realm of the clicked province (`UI.mapHl`) has its border and coast drawn over in its own colour, wide at 30% and narrow at 55% (`IM.selGlow`, each frame, over the tiles).
+- **Planned moves.** From the zoom the banners stand at (`IM.BANNER_ZOOM`, banners on), every division with a path gets an arrow along its next three steps (`IM.ARROW_STEPS`, about a month's march) in its realm's colour darkened by the ink, on a paper halo, its head short of the last site so the banner there does not hide it (`IM.moveArrows`, full map and war room).
+
+Not done: the sea stays the woodcut's ruled vellum (the brief's Prussian-blue bokashi would restyle the whole sea, the Known World's too), and there is no hover outline (the map keeps no hovered realm).
+
 **Limits (what needs a person).**
 
 - **It is procedural, not drawn.**
