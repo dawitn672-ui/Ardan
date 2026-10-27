@@ -258,7 +258,7 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
       let hit = null;
       for (let h = 0; h < bq.length && !hit; h++) {
         const u = bq[h], depth = (function d(k) { let n = 0; while (from.get(k) >= 0) { k = from.get(k); n++; } return n; })(u.k);
-        if (depth >= 6) continue;
+        if (depth >= 2) continue;
         for (const j of [...adjOf(u), ...seaOf(u)]) { if (j < nb) continue; const o = prov(j); if (!o || from.has(o.k)) continue;
           if (mine.has(o.k) && !seen.has(o.k)) { from.set(o.k, u.k); hit = o; break; }
           if (!owner.has(o.k)) { from.set(o.k, u.k); bq.push(o); } }
@@ -267,6 +267,17 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
       for (let k = from.get(hit.k); k >= 0 && !mine.has(k); k = from.get(k)) { const o = P[k]; owner.set(k, ri); r.provs.push(o); mine.add(k); r.area += o.cells * 100; r.got[o.region] = (r.got[o.region] || 0) + o.cells * 100; }
       seen.clear(); seen.add(r.cap.k); const q2 = [r.cap];
       for (let h = 0; h < q2.length; h++) for (const j of [...adjOf(q2[h]), ...seaOf(q2[h])]) { if (j < nb) continue; const o = prov(j); if (o && mine.has(o.k) && !seen.has(o.k)) { seen.add(o.k); q2.push(o); } }
+    }
+    // then join a coastal piece to the coast of the body by a sea lane (the lore's realms hold far shores: the Walrus
+    // Strand's White Shore, a thalassocracy's isles), within 2,500 km
+    for (let tries = 0; tries < 12 && seen.size < mine.size; tries++) {
+      const body = [...seen].map(k => P[k]).filter(p => p.coast), rest = r.provs.filter(p => !seen.has(p.k) && p.coast);
+      let best = null, bd = 2500;
+      for (const a of rest) for (const b of body) { const d = Math.hypot(a.sx - b.sx, a.sy - b.sy); if (d < bd) { bd = d; best = [a, b]; } }
+      if (!best) break;
+      seaOf(best[0]).add(best[1].id); seaOf(best[1]).add(best[0].id);
+      seen.clear(); seen.add(r.cap.k); const q3 = [r.cap];
+      for (let h = 0; h < q3.length; h++) for (const j of [...adjOf(q3[h]), ...seaOf(q3[h])]) { if (j < nb) continue; const o = prov(j); if (o && mine.has(o.k) && !seen.has(o.k)) { seen.add(o.k); q3.push(o); } }
     }
     if (seen.size === mine.size) return;
     for (const p of r.provs) if (!seen.has(p.k)) { owner.delete(p.k); r.area -= p.cells * 100; r.got[p.region] -= p.cells * 100; }
