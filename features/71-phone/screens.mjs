@@ -63,7 +63,7 @@ const EVENT = `(() => { A.S.queue = []; UI.ov = null; const pc = A.pc();
   UI.tab = 'life'; UI.render(); window.scrollTo(0, 0); })()`;
 
 export const SCREENS = [
-  { name: 'title', main: true, js: `(() => { A.S.queue = []; UI.ov = null; UI.screen = 'title'; UI.render(); })()` },
+  { name: 'title', main: true, js: `(() => { if (A.S) A.S.queue = []; UI.ov = null; UI.screen = 'title'; UI.render(); })()` },
   { name: 'create', main: true, js: `(() => { UI.ov = null; UI.A.newLife(); window.scrollTo(0, 0); })()` },
   { name: 'life', main: true, js: LIFE() },
   { name: 'story', main: true, js: tab('story') },
