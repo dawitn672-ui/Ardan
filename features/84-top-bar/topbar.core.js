@@ -10,6 +10,8 @@
     '#topbar .top-right{display:flex;align-items:center;gap:var(--s-2);flex:1 0 auto;justify-content:flex-end;min-width:0}',
     '@media (min-width:761px){#topbar .top-info .top-coin,#topbar .top-info>span:last-child{flex-shrink:0;overflow:visible}}',
     '@media (min-width:761px) and (max-width:1439px){#topbar{flex-wrap:wrap}#topbar .top-right{flex:1 0 360px}#topbar .top-right>button .bt{display:none}}',
+    // two-column widths: the slimmer clock of the step rhythm would leave the place 45 px on one line; the group wraps
+    '@media (min-width:761px) and (max-width:1099px){#topbar .top-right{flex-basis:440px}}',
     '#game.phone #topbar .top-right{display:contents}',
     '#game.phone #topbar .top-right>button{min-width:44px;min-height:44px;padding:0 8px}',
   ].join('');

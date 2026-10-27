@@ -17,4 +17,28 @@ export default [
       'mid-word. It now reads "owes 12,345"; 59-tooltips\' aria-label and tooltip still give the debt in full.',
     edits: [['${pc.debt?` <span class="bad">(debt ${A.coin(pc.debt)})</span>`:""}', '${pc.debt?` <span class="bad" title="Debt: ${A.coin(pc.debt)}">owes ${A.fmt(pc.debt)}</span>`:""}']],
   },
+  // three small guards found on the round-10 design pass (coordinator's leave; not the top bar's own)
+  {
+    id: 'TOP-PLAYTEST-GUARD',
+    blob: 'ardan-core',
+    why: 'UI: the playtest bar\'s Start and Skip (ptGo, ptSkip) threw "Cannot read properties of null" when pressed with no ' +
+      'playtest under way (its markup can outlive UI.pt, as in the War Room). With nothing to start or skip they now do nothing.',
+    edits: [
+      ['ptGo(){const P=UI.pt,T=UI.TASKS[P.i];', 'ptGo(){const P=UI.pt;if(!P||!UI.TASKS[P.i])return;const T=UI.TASKS[P.i];'],
+      ['ptSkip(){const P=UI.pt;P.results.push', 'ptSkip(){const P=UI.pt;if(!P||!UI.TASKS[P.i])return;P.results.push'],
+    ],
+  },
+  {
+    id: 'TOP-FAMFILTER-PRESSED',
+    blob: 'ardan-core',
+    why: 'UI: the creation screen\'s family filter showed the current choice only by colour. Each button now carries "on" and ' +
+      'aria-pressed, so "All" reads as chosen when it is, to the eye and to a screen reader.',
+    edits: [
+      ['<button class="small ${filt==="all"?"primary":""}" data-a="crFamFilter" data-v="all">All</button>',
+        '<button class="small ${filt==="all"?"primary on":""}" data-a="crFamFilter" data-v="all" aria-pressed="${filt==="all"}">All</button>'],
+      ['<button class="small ${filt===k?"primary":""}" data-a="crFamFilter" data-v="${k}">',
+        '<button class="small ${filt===k?"primary on":""}" data-a="crFamFilter" data-v="${k}" aria-pressed="${filt===k}">'],
+    ],
+  },
 ];
+

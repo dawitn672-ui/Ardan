@@ -102,6 +102,18 @@
   // Rakhol's and Kethra's slavers, Lingkaro up the rivers, the boys bought for Navesht's horse and sold at Marast, the
   // Deep Southland's captives at Mosandi and the Coral Coast, Pravith's temple slaves); serfs where debt bondage holds
   // the farmers south of the Cloudwall (the Gulf Plain's ranked houses, the Delta, the peninsula's rice kingdoms)
+  // a far realm's law family, from its people and its land: the orc clans keep the clan-mothers' law and the dwarves
+  // the Law-Carvers'; Silo the crews' vote; where the lore has debt bondage (south of the Cloudwall, the Thousand Isles)
+  // and in the Birch March and the Black Pines' principalities (bound to the creditor's land, as in Drevna and
+  // Velgrad), the east's; the rest keep the release's own "other"
+  FL.lawOf = function (id, r) {
+    if (!r) return null;
+    if (r.race === 'orc') return 'orc';
+    if (r.race === 'dwarf') return 'deep';
+    if (id === 'POL-118') return 'pirate';
+    if (r.land === 'M' || r.land === 'A' || id === 'POL-63' || (r.land === 'T' && /principality|kingdom|fur/i.test(r.type || ''))) return 'east';
+    return null;
+  };
   FL.UNFREE = {
     slave: ['POL-118', 'POL-43', 'POL-42', 'POL-139', 'POL-110', 'POL-114', 'POL-97', 'POL-92', 'POL-78', 'POL-77', 'POL-151', 'POL-147', 'POL-98'],
     serf: ['POL-91', 'POL-93', 'POL-99', 'POL-100', 'POL-101', 'POL-102', 'POL-96'],
@@ -136,6 +148,13 @@
       if (r.race === 'giant' && GD.GIANT_HALLS) put(GD.GIANT_HALLS, id, [r.capital].concat(Object.values(D.houses).filter(h => h.realm === id).map(h => h.seat)));
     }
     for (const id in D.houses) put(LORE.houses, id, D.houses[id]);
+    // the far realms' law families (A.LAW, read by A.lawOf: how a court punishes theft, debt and blood). Without one a
+    // realm falls to the release's "other", the harshest for prison (debt and murder are the cells), which sent far
+    // lives to prison three times as often as the Known World's
+    if (A.LAW) for (const id in R) {
+      const k = FL.lawOf(id, R[id]), L = k && A.LAW[k];
+      if (Array.isArray(L) && !L.includes(id)) { L.push(id); unfreeAdded.push([L, id]); }
+    }
     // the far realms whose lore has unfree people (GD.UNFREE: where a life can be born a slave or a serf)
     if (GD.UNFREE) for (const kind of ['slave', 'serf']) {
       const L = GD.UNFREE[kind]; if (!Array.isArray(L)) continue;

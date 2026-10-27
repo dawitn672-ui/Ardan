@@ -97,6 +97,17 @@ The grid runs 360 km north of the lore's box so the Bone Isles (N-04, north of 7
 
 **Realm colours.** A far realm's colour in `LORE.realms` (and so in the state, the map wash, banners and every release site that reads `r.color`) is 91-look's `UI.realmHex(id)`, the accent it is shown in elsewhere: set at `FL.install` on a copy of the realm record, so the generated data and the Known World's colours do not change.
 
+**The unfree and the law.** `FL.install` adds the far realms whose lore has unfree people to `GD.UNFREE` (removed again at `FL.uninstall`), so a life can be born a slave or a serf there:
+- slaves where they are taken, sold or bought: Silo, the Tide Families, Lamhou, the South Chain, Suraeng, Lingkaro, Rakhol, Kethra, Navesht, Marast, Mosandi, the Coral Coast and Pravith's temples;
+- serfs where debt bondage holds the farmers south of the Cloudwall: Vahra, Juvai, Ayamo, Thinsak, Lioka, Panduro, Dvaarnath.
+
+It adds each far realm to a law family in `A.LAW` too (`FL.lawOf`):
+- orc clans keep the clan-mothers' law, dwarf holds the Law-Carvers', Silo the crews' vote;
+- the realms of debt bondage (the Southern Peninsulas, the Thousand Isles), the Birch March and the Black Pines' kingdoms take the east's, where a debtor is bound to his creditor's land;
+- the rest keep the release's "other".
+
+Before, every far realm fell to "other", where debt and murder both mean the cells. With far@1's habit of taxing every realm of the Long Grass as herders (the Birch March, a farming kingdom, had 59,000 suns a year), that sent far lives to prison far more often than Known World ones: L1's league counted 31% of far lives as outlaws against 10%, and a Birch March royal went to debtors' prison up to six times a life. A settled realm of the Long Grass is now taxed as farmers (the Birch March: 168,000).
+
 **The birthplace list.** On the Great Continent the realm of birth lists 152 realms in `<optgroup>`s by land, west to east (the Known World, then the ten Far Lands), each sorted by name; the select's own type-ahead finds a realm (patch `FL-REALMS`). With the Known World only it is the release's list.
 
 **One world.** The lore's routes are roads the economy reads: 66-markets' carters find their way over the province graph and a step along a great route costs `FL.ROAD_F` (0.55) of an ordinary one (`A.MT.roadF`, read by a one-line hook in 66's graph); 45-economy's caravans price a road by the distance between capitals, and two realms on the same route pay the route's rate (a wrapper on `A.ECON.roads`). The Silk Road (TR-17) runs into the Known World at the Tusk Clans' oases and Grakmar and on as TR-09 to Drevna and Velgrad. The lore's nine ties to Known World realms are relations (the Old Mare and the Tusk Clans' friendship, the escorts' trade pacts to Kraoth, Fjorund and Jotunhall, the Cold Gate and Stonehold...). A Known World game has no routes (the factor is 1).
