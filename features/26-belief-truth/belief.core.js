@@ -53,9 +53,11 @@
     pc.flags['bt_' + ['', 'h', 's', 'k'][lvl] + '_' + id] = A.S.year;
     if (pc.id !== A.S.pc) return true;
     const name = c.name.replace(/^The /, 'the ');
-    const line = lvl === 1 ? `${how || 'You hear tell of'} ${/^the /.test(name) ? name : 'the ' + name}. Folk say: ${short(c.belief, 150)}.`
+    // a lore line that ends in its own stop keeps it ("Guards the Tea Mother trees." gave "trees..")
+    const stop = t => (/[.!?…]$/.test(t) ? t : t + '.');
+    const line = lvl === 1 ? `${how || 'You hear tell of'} ${/^the /.test(name) ? name : 'the ' + name}. Folk say: ${stop(short(c.belief, 150))}`
       : lvl === 2 ? `You have seen ${/^the /.test(name) ? name : 'a ' + name} with your own eyes, and lived. The tales and the beast are not the same thing.`
-      : `${how || 'You learn the truth of'} ${/^the /.test(name) ? name : 'the ' + name}: ${short(c.truth, 120)}.${c.weak && c.weak !== '–' ? ' Its weakness: ' + short(c.weak, 120) + '.' : ''}`;
+      : `${how || 'You learn the truth of'} ${/^the /.test(name) ? name : 'the ' + name}: ${stop(short(c.truth, 120))}${c.weak && c.weak !== '–' ? ' Its weakness: ' + stop(short(c.weak, 120)) : ''}`;
     A.log(line + ' (Codex: Bestiary)', 'lore');
     return true;
   };

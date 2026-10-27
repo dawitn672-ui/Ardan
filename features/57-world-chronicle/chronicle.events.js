@@ -27,7 +27,7 @@ A.defEvents([
     ] },
 
   { id: 'wc_bread_since', title: 'The price of a loaf',
-    cond: (p, C) => !C.child(p) && !C.ruler(p) && C.chron(p, 'famine'),
+    cond: (p, C) => (C.teen(p) || C.adult(p)) && !C.ruler(p) && C.chron(p, 'famine'),
     w: 2, cool: 8,
     setup: pick('famine', { id: 'wc_bread_since' }),
     text: 'The baker\'s girl names the price of a loaf and waits for you to complain. Everyone does, she says, since {wcRef}. Her father still buys flour by the cart each autumn and sleeps beside it.',
@@ -40,7 +40,7 @@ A.defEvents([
     ] },
 
   { id: 'wc_bells_for_ruler', title: 'Bells at noon',
-    cond: (p, C) => !C.child(p) && C.chron(p, 'ruler'),
+    cond: (p, C) => (C.teen(p) || C.adult(p)) && C.chron(p, 'ruler'),
     w: 1, cool: 12,
     setup: pick('ruler', { id: 'wc_bells_for_ruler' }),
     text: 'The bells ring at noon for no reason you know. A woman tells you it is for {wcWho}, who died in {wcYear}, and the bells have rung for it every year since. Some go to the shrine to pray. Some go to the tavern to argue about the reign.',
@@ -62,7 +62,7 @@ A.defEvents([
     ] },
 
   { id: 'wc_sickness_comes', title: 'Chalk on the doors', trigger: true,
-    cond: (p, C) => !C.child(p),
+    cond: (p, C) => (C.teen(p) || C.adult(p)),
     setup: (p, ctx) => { const e = W().ent(ctx.wci); if (!e || e.k !== 'plague') { ctx.skip = true; return; } W().mark('r' + e.i); Object.assign(ctx, { wcSick: W().name('sick:' + e.p + ':' + e.y) || 'the sickness', wcPlace: A.provName(p.home) }); },
     text: '{wcSick} is in {wcPlace}. Doors are marked with chalk. Your neighbour\'s boy has the sweats, and the healer will not come into the street. The carts for the dead come at night.',
     choices: [
@@ -124,7 +124,7 @@ A.defEvents([
     ] },
 
   { id: 'wc_old_coin', title: 'An old coin',
-    cond: (p, C) => !C.child(p) && C.chron(p, 'fallen,founded,crown', 'run'),
+    cond: (p, C) => (C.teen(p) || C.adult(p)) && C.chron(p, 'fallen,founded,crown', 'run'),
     w: 1, cool: 12,
     setup: pick('fallen,founded,crown', { id: 'wc_old_coin', mode: 'run' }),
     text: 'In your change is a coin struck before {wcRef}: an old face, an old name, worn thin at the edges. The money-changer will take it at half its weight. An old man at the stall says he would give more for it, to keep.',

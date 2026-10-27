@@ -167,7 +167,7 @@
         MW.note(pc, pre, q);
         // a memory a scene cited counts its citing, so the same line is not leaned on again and again
         const w = q.ctx && q.ctx.mw;
-        if (w && w.ref && w.ev === q.ev) { const m = MW.lines(pc).find(x => x.y === w.ref[0] && x.e === w.ref[1] && x.c === w.ref[2]); if (m) m.u = (m.u || 0) + 1; }
+        if (w && w.ref && w.ev === q.ev) { const m = MW.lines(pc).find(x => x.y === w.ref[0] && x.e === w.ref[1] && x.c === w.ref[2]); if (m) { m.u = (m.u || 0) + 1; m.uy = A.S.year; } }
       }
     } catch (err) { console.error('memory weave note', err); }
     return r;

@@ -331,4 +331,37 @@ export default {
       return { ok, detail: `war strength bars ${r.wars} ("${r.warLabel}"); delta flash: none on the first draws (${r.flash0}, ${r.flash1}), "${r.flash}" after a wound, gone after 1.6 s ${r.gone}; ${r.beasts} beasts tiered (${r.beastTiers}); realm chip "${r.chip}"; pinned tooltip marked ${r.pin}; realm chips in ${r.rowChips} People rows and in a market tooltip ("${r.ttChip}"); Realm band sparklines ${r.spark0} -> ${r.sparks} ("${r.sparkLabel}"); same markup ${r.same}, pure ${r.pure}` };
     } finally { await ctx.close(); }
   },
+
+  // cycle 1 visual B1: on the Chronicle's vellum every line of text is the page's ink by night and by day (the Night
+  // tokens once printed the headings #eee8da on #ece0c4, 1.1:1), and on the phone the export button sits below the
+  // title instead of beside it
+  async vellumInk(pg, errs, { browser, file }) {
+    const out = {};
+    for (const [w, h] of [[1366, 768], [390, 844]]) {
+      const { ctx, pg: p } = await page(browser, file, { viewport: { width: w, height: h }, isMobile: w < 600, hasTouch: w < 600 }, errs);
+      try {
+        await p.evaluate(CONTRAST);
+        out[w] = await p.evaluate(() => {
+          T.enter({ seed: 91, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+          const r = {};
+          for (const th of ['dark', 'light']) {
+            UI.set.theme = th; UI.applySettings(); UI.A.group('chronicle'); UI.render();
+            const v = document.querySelector('.il-vellum'); if (!v) { r[th] = 'no vellum'; continue; }
+            let lo = 99, worst = '';
+            for (const e of v.querySelectorAll('h1,h2,h3,h4,h5,p,button,span,li,b,i,em')) {
+              if (![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
+              const q = __ratio(getComputedStyle(e).color, '#e2d0a8');   // the page's darkest stop
+              if (q < lo) { lo = q; worst = e.tagName + ' ' + e.textContent.trim().slice(0, 24); }
+            }
+            const b = v.querySelector('[data-a="chronicleExport"]'), t = v.querySelector('h3');
+            const bb = b && b.getBoundingClientRect(), tb = t && t.getBoundingClientRect();
+            r[th] = { lo: +lo.toFixed(2), worst, below: !!(bb && tb && bb.top >= tb.bottom - 1) };
+          }
+          return r;
+        });
+      } finally { await ctx.close(); }
+    }
+    const ok = [1366, 390].every(w => ['dark', 'light'].every(th => out[w][th].lo >= 4.5)) && out[390].dark.below && out[390].light.below;
+    return { ok, detail: JSON.stringify(out) };
+  },
 };

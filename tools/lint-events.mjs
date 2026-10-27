@@ -49,6 +49,9 @@ for (const e of events) {
   if (typeof e.text === 'string' && words(e.text) > 80) errors.push(`${at}: text ${words(e.text)} words`);
   if (!e.trigger && typeof e.cond !== 'function') warns.push(`${at}: no cond, can fire for anyone`);
   if (typeof e.cond === 'function' && !/^\s*(\(\s*p\s*(,\s*C\s*)?\)|p)\s*=>/.test(e.cond.toString())) warns.push(`${at}: cond should be (p, C) => ... using C.* helpers`);
+  // C.child is the "child" stage only; the "infant" stage sits below it, so a bare !C.child(p) lets babies in
+  if (typeof e.cond === 'function' && /!\s*C\.child\(\s*p\s*\)/.test(e.cond.toString()) && !/C\.(adult|teen|old|age|ageAdj)\(/.test(e.cond.toString()))
+    warns.push(`${at}: bare !C.child(p) is true for infants; use (C.teen(p) || C.adult(p)) or C.adult(p)`);
   const ch = e.choices || [];
   if (ch.length < 2 || ch.length > 4) (ch.length ? warns : errors).push(`${at}: ${ch.length} choices`);
   ch.forEach((c, i) => {

@@ -47,7 +47,7 @@ A.defEvents([
       { t: 'Make your excuses', r: 'You thank them and stay in. They do not ask again for a while.', fx: { need: { rest: 8 } } },
     ] },
   { id: 'md_lonely_dog', title: 'A dog at the door',
-    cond: (p, C) => C.mood(p, 'company') && !C.child(p), w: 1.5, cool: 12, once: true,
+    cond: (p, C) => C.mood(p, 'company') && (C.teen(p) || C.adult(p)), w: 1.5, cool: 12, once: true,
     text: 'A thin dog with one torn ear has been sleeping at your door for three nights. It watches you come and go with a patience that is almost rude.',
     choices: [
       { t: 'Take it in', r: 'It eats more than it should and sleeps on your feet. The house is less quiet.', fx: { need: { company: 20, comfort: 4 }, coin: -5 } },

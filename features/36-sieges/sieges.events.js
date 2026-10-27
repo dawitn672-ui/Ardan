@@ -20,7 +20,7 @@ A.defEvents([
       { t: 'Dig latrines and bury the dead', r: 'It is filthy work and nobody thanks you for it. Fewer men sicken that month.', fx: { sgSick: -25, merit: 2, happy: -2 } },
     ] },
   { id: 'sg_walls', title: 'Behind the walls of {place}', trigger: true,
-    cond: (p, C) => !C.child(p), setup: live,
+    cond: (p, C) => C.teen(p) || C.adult(p), setup: live,
     text: 'Day {days} of the siege. From the walls you can see their fires and hear their carpenters. The bread is {food}; the walls are {walls}.',
     choices: [
       { t: 'Take your share of the rationing, and less', r: 'You eat half of what you are given and give the rest to the children on your street. The town holds a little longer.', fx: { siege: -0.1, happy: -4, health: -3, honor: 1 } },
@@ -41,7 +41,7 @@ A.defEvents([
       { t: 'Go back to the camp and tend the sick', r: 'The fever does not stop for a victory. You carry water until dark.', fx: { honor: 1, happy: 2, skill: { medicine: 1 } } },
     ] },
   { id: 'sg_sacked', title: 'They come over the walls', trigger: true,
-    cond: (p, C) => !C.child(p), setup: at,
+    cond: (p, C) => C.teen(p) || C.adult(p), setup: at,
     text: 'They come over the walls of {place} at dawn, the way everyone said they would. By the time the bells stop, there are strangers in the street with torches and sacks.',
     choices: [
       { t: 'Hide what you can, and yourself', check: { s: 'stealth', s2: 'ins', d: 45 },
@@ -53,7 +53,7 @@ A.defEvents([
       { t: 'Run for the river gate', r: 'You leave everything but your life, and keep that.', fx: { coin: -20, happy: -4 } },
     ] },
   { id: 'sg_terms', title: 'The gates open on terms', trigger: true,
-    cond: (p, C) => !C.child(p), setup: at,
+    cond: (p, C) => C.teen(p) || C.adult(p), setup: at,
     text: 'The gates of {place} open on terms you helped to make. They march in by companies, under orders, and the worst that happens on your street is a broken window.',
     choices: [
       { t: 'Watch them come in from your doorway', r: 'Some of your neighbours spit when you pass now. Their houses are still standing.', fx: { wil: 1, happy: -1 } },

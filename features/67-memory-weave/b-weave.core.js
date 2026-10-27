@@ -137,10 +137,16 @@
   // a sentence that starts with the deed starts with a capital: "In 1106 you ..." stays, ". you" does not happen
   const fixCase = s => s.replace(/(^|[.!?]\s+)([a-z])/g, (m, a, b) => a + b.toUpperCase());
 
-  const usable = (m, now) => m && m.y < now && (m.u || 0) < MW.CITE_MAX;
+  // a line cited this year waits for the next one ("you tried to cut it" two scenes running reads as a stammer)
+  const usable = (m, now) => m && m.y < now && (m.u || 0) < MW.CITE_MAX && m.uy !== now;
   // a short deed ("you accepted") carries the scene's title, so the memory says what it was about
-  // (only a title that reads as a thing: "A broken jug", "The toll at the bridge"; otherwise the deed must say enough)
-  const deedOf = m => !m.d ? '' : words(m.d) >= 4 ? m.d : m.t && /^(A|An|The) [a-z]/.test(m.t) && !/[{}]/.test(m.t) ? `${m.d} (${low(m.t)})` : '';
+  // (only a title that reads as a thing: "A broken jug", "The toll at the bridge"; otherwise the deed must say enough).
+  // So does a deed whose object is a bare pronoun ("you tried to cut it, and failed"): the label leaned on the scene
+  // for its noun, so without the title the memory has lost what "it" was.
+  MW.BARE_OBJ = /\b(it|them|him|her|this|that|one)(?=$|,| and failed)/i;
+  const titled = m => m.t && /^(A|An|The) [a-z]/.test(m.t) && !/[{}]/.test(m.t) ? `${m.d} (${low(m.t)})` : '';
+  const deedOf = m => !m.d ? '' : words(m.d) >= 4 && !MW.BARE_OBJ.test(m.d) ? m.d : titled(m);
+  MW.citeDeed = deedOf;
   const recent = (a, b) => b.y - a.y;
 
   MW.rules = {

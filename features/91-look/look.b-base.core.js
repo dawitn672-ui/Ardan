@@ -62,6 +62,17 @@ ${X('.score')}{font-family:var(--f-impact);font-weight:400;color:var(--accent-st
 ${X('.mbox h2, .wr-top h2')}{font-family:var(--f-name)}
 ${X('.mbox:not(.obit) .mtext:first-letter')}{font-family:var(--f-name);font-weight:700;color:var(--accent);text-shadow:none}
 ${X('[data-vellum="1"] .il-vellum p:first-of-type::first-letter, .ts .ts-see::first-letter')}{font-family:var(--f-name);font-weight:700}
+/* the vellum page keeps its own ink in both themes (brief §1.1): the Night tokens are re-pointed inside it, so every
+   rule that reads var(--ink) and the like lands on the page's ink, not the night's (cycle 1 visual B1) */
+:root[data-theme][data-vellum="1"] .il-vellum{--ink:#2b1d10;--ink-2:#6b4410;--ink-3:#5b4630;--accent:#8e2414;--accent-strong:#8e2414;--line:#cdb88c;--line-strong:#8a6a3a;--raised:#e9dcbc;--raised-hover:#e3d3ad;--surface:#ece0c4;--sunken:#e2d0a8;--overlay:#f1e6cc;color:#2b1d10}
+:root[data-theme][data-vellum="1"] .il-vellum h1,:root[data-theme][data-vellum="1"] .il-vellum h2,:root[data-theme][data-vellum="1"] .il-vellum h3{color:#2b1d10;font-family:var(--f-name);letter-spacing:.02em}
+:root[data-theme][data-vellum="1"] .il-vellum p.tiny::first-letter{float:none;font:inherit;margin:0;color:inherit;text-shadow:none}
+:root[data-theme][data-vellum="1"] .il-vellum p.tiny + p.chron-line::first-letter{float:left;font-family:var(--f-name);font-weight:700;font-size:3.2em;line-height:.9;margin:.06em .12em 0 0;color:#8e2414;text-shadow:1px 1px 0 #b98a2a}
+:root[data-theme][data-vellum="1"] .il-vellum h4{color:#6b4410}
+:root[data-theme][data-vellum="1"] .il-vellum button:not(.primary){background:#e9dcbc;color:#2b1d10;border:1px solid #8a6a3a;box-shadow:none}
+:root[data-theme][data-vellum="1"] .il-vellum button:not(.primary):hover{background:#e3d3ad;color:#8e2414;border-color:#8e2414}
+:root[data-theme][data-vellum="1"] .il-vellum .chronicle-book > .row{flex-wrap:wrap;gap:8px;align-items:center}
+@media (max-width:600px){:root[data-theme][data-vellum="1"] .il-vellum .chronicle-book > .row{flex-direction:column;align-items:flex-start}:root[data-theme][data-vellum="1"] .il-vellum .chronicle-book > .row > button{align-self:flex-start}}
 ${X('.ts-strip')}{font-family:var(--f-ui)}
 /* the release's fixed sizes, set on the new scale (12 px is the floor) */
 ${X('table.t')}{font-size:var(--t-small);line-height:var(--lh-small)}
@@ -101,11 +112,10 @@ ${X('.warnbox')}{background:var(--warn-tint);border-color:var(--warn);color:var(
 ${X('.hint')}{background:var(--accent-tint);border:1px solid var(--accent-rule);border-radius:var(--r-m);color:var(--ink);font-size:var(--t-small)}
 ${X('.hint .hint-t b, .hint .hint-ic')}{color:var(--accent-strong)}
 ${X('.hint-float')}{background:var(--overlay);box-shadow:var(--e-3)}
-/* the first-run hint on the Life panel is a one-time callout under the What now header, over the rows, not a block
-   that pushes the panel down (brief §4.1) */
+/* the first-run hint on the Life panel is a callout in flow under the What now header: it pushes the rows down rather
+   than covering the rows it explains (cycle 1 visual B2; it once sat over rows 1 and 2) */
 @media (min-width:761px){
-  #game:not(.phone) #tabbody.lk-life{position:relative}
-  ${X('#game:not(.phone) #tabbody.lk-life > .hint')}{position:absolute;z-index:6;left:12px;right:12px;top:40px;margin:0;background:var(--overlay);border:1px solid var(--accent);box-shadow:var(--e-2)}
+  ${X('#game:not(.phone) #tabbody.lk-life > .hint')}{position:relative;margin:8px 0 10px;background:var(--overlay);border:1px solid var(--accent);box-shadow:var(--e-1, none)}
   ${X('#game:not(.phone) #tabbody.lk-life > .hint::before')}{content:"";position:absolute;left:28px;top:-6px;width:10px;height:10px;background:var(--overlay);border-left:1px solid var(--accent);border-top:1px solid var(--accent);transform:rotate(45deg)}
 }
 ${X('.read')}{background:var(--info-tint);border:1px dashed var(--crown-ink);font-size:var(--t-small)}

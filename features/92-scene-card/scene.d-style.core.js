@@ -26,6 +26,13 @@
 ${R}.sc-dock{display:block;padding:0;background:var(--sc-scrim);backdrop-filter:none}
 ${R}.sc-dock::before{content:"";position:fixed;left:var(--col-x,0);top:var(--col-y,0);width:var(--col-w,0);height:var(--col-h,0);border-radius:var(--r-m,10px);background:var(--sc-well);-webkit-backdrop-filter:blur(3px) saturate(.6);backdrop-filter:blur(3px) saturate(.6);pointer-events:none}
 ${R}.sc-dock > .mbox.sc-card{position:fixed;left:var(--sc-x);top:var(--sc-y);width:var(--sc-w);max-width:none;max-height:var(--sc-h);margin:0}
+/* the first-run odds hint sits in the column above the card and pushes it down, instead of floating over the top
+   bar's step controls (cycle 1 visual B2) */
+${R}.sc-dock:not(.sc-free) > .hint-float{position:fixed;left:var(--sc-x);top:var(--sc-y);width:var(--sc-w);max-width:none;transform:none;margin:0;z-index:2;box-sizing:border-box;min-height:56px}
+${R}.sc-dock:not(.sc-free):has(> .hint-float) > .mbox.sc-card{top:calc(var(--sc-y) + 66px);max-height:calc(var(--sc-h) - 66px)}
+${R}.sc-dock:not(.sc-free):has(> .hint-float) > .mbox.sc-card > .sc-in{max-height:calc(var(--sc-h) - 68px)}
+${R}.sc-dock.sc-free > .hint-float{position:relative;top:auto;left:auto;transform:none;margin:0 0 8px}
+${R}.sc-dock.sc-free:has(> .hint-float){flex-direction:column;align-items:center}
 ${R}.sc-dock.sc-free{display:flex;align-items:flex-start;justify-content:center;padding:32px 16px}
 ${R}.sc-dock.sc-free::before{display:none}
 ${R}.sc-dock.sc-free > .mbox.sc-card{position:relative;left:auto;top:auto;width:min(720px,100%);max-height:calc(100vh - 64px)}
@@ -162,18 +169,19 @@ ${R}.sc-sheet > .mbox.sc-card{padding:0;overflow:hidden;display:flex;flex-direct
 ${R}.sc-sheet > .mbox.sc-card::before{display:none}
 ${R}.sc-sheet > .mbox.sc-card > .sc-in{display:flex;flex-direction:column;max-height:none;clip-path:none;border-radius:inherit;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px)}
 ${R}.sc-sheet > .mbox.sc-card > .sc-in > *{flex:none}
-/* the picture takes the height the words leave, from 390 x 140 up to a third of the screen (the print is sliced, so it
-   crops at the sides rather than stretching) */
-${R}.sc-sheet > .mbox.sc-card > .sc-in > .sc-vig{flex:1 1 auto;min-height:min(calc(100vw * 14 / 39), 30vh);max-height:44vh;overflow:hidden}
+/* the picture is a band of 16:6 at most (146 px at 390 wide, brief §4.4's 390 x 140), never the height the words
+   leave: it once grew to 390 x 371 and pushed the page to 1,200 px (cycle 1 visual B9). The print is sliced, so it
+   crops at the sides rather than stretching, and the choices follow the text instead of sinking to the bottom. */
+${R}.sc-sheet > .mbox.sc-card > .sc-in > .sc-vig{flex:none;height:min(calc(100vw * 6 / 16), 160px);min-height:0;max-height:160px;overflow:hidden}
 ${R}.sc-sheet .sc-card .sc-vig > .woodcut-wrap{height:100%}
-${R}.sc-sheet .sc-card .sc-vig svg.woodcut{aspect-ratio:auto;width:100%;height:100%;min-height:min(calc(100vw * 14 / 39), 30vh);max-height:none}
+${R}.sc-sheet .sc-card .sc-vig svg.woodcut{aspect-ratio:auto;width:100%;height:100%;min-height:0;max-height:none}
 ${R}.sc-sheet .sc-card .sc-head{padding:12px 14px 0;gap:12px}
 ${R}.sc-sheet .sc-card.sc-has-vig.sc-has-bust .sc-head{margin-top:-24px}
 ${R}.sc-sheet .sc-card .sc-bust{width:68px;height:68px}
 ${R}.sc-sheet .sc-card .sc-ttl h2{font-size:${T(21)}}
 ${R}.sc-sheet .sc-card .sc-body{padding:8px 14px 0}
 ${R}.sc-sheet .sc-card .sc-body > .mtext{font-size:var(--t-prose,16px);line-height:var(--lh-prose,1.56);margin-top:0}
-${R}.sc-sheet .sc-card .choices{margin-top:auto;padding:10px 12px 14px;gap:8px}
+${R}.sc-sheet .sc-card .choices{margin-top:0;padding:10px 12px 14px;gap:8px}
 ${R}.sc-sheet .sc-card .choices > button.sc-ch{grid-template-columns:28px minmax(0,1fr);row-gap:6px;min-height:52px;padding:10px 12px}
 ${R}.sc-sheet .sc-card .choices > button.sc-ch::before{width:28px;height:28px}
 ${R}.sc-sheet .sc-card .choices > button.sc-ch > .sc-tags{grid-column:2;grid-row:2;justify-content:flex-start;max-width:none}
@@ -185,7 +193,7 @@ ${R}.sc-sheet .sc-card .choices button .risk.sc-odds{gap:4px;padding:0 6px}
 ${R}.sc-sheet .sc-card .sc-chk{padding:0 6px 0 4px;gap:3px}
 ${R}.sc-sheet .sc-card .risk.sc-odds .sc-w{letter-spacing:.03em}
 ${R}.sc-sheet .sc-card .risk.sc-odds .sc-pips{width:26px;-webkit-mask-size:6.67px 7px;mask-size:6.67px 7px}
-${R}.sc-sheet .sc-card .sc-result{margin-top:auto;padding:8px 12px 14px}
+${R}.sc-sheet .sc-card .sc-result{margin-top:0;padding:8px 12px 14px}
 ${R}.sc-sheet .sc-card .sc-foot .sc-cont{flex:1 1 auto;min-height:52px}
 ${R}.sc-sheet .sc-card .sc-d{min-height:30px}
 ${R}.sc-sheet .sc-card .sc-head > .mreport{position:static;flex:none;align-self:flex-start;margin:4px 0 0 auto;width:44px;height:44px;opacity:.6}
@@ -196,7 +204,7 @@ ${R}.sc-sheet .sc-card .choices > button.sc-ch{row-gap:4px;padding-top:9px;paddi
 ${R}.sc-sheet .sc-card .choices button .risk.sc-odds, ${R}.sc-sheet .sc-card .sc-chk, ${R}.sc-sheet .sc-card .sc-oncew{height:24px}
 /* a short phone (an iPhone SE, 667 px): a smaller bust and tighter gaps, so a three-choice scene fits one sheet */
 @media (max-height:700px){
-  ${R}.sc-sheet > .mbox.sc-card > .sc-in > .sc-vig, ${R}.sc-sheet .sc-card .sc-vig svg.woodcut{min-height:min(calc(100vw * 12 / 39), 30vh)}
+  ${R}.sc-sheet > .mbox.sc-card > .sc-in > .sc-vig{height:min(calc(100vw * 5 / 16), 140px)}
   ${R}.sc-sheet .sc-card .sc-bust{width:60px;height:60px}
   ${R}.sc-sheet .sc-card.sc-has-vig.sc-has-bust .sc-head{margin-top:-20px}
   ${R}.sc-sheet .sc-card .sc-head{padding-top:10px}
