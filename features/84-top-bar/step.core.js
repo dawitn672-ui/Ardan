@@ -110,7 +110,7 @@
       return `<button class="small${primary && !ST.run ? ' primary' : ''}" data-a="${kind === 'week' ? 'stepWeek' : 'stepMonth'}" ${dis ? `disabled title="${UI.esc(why)}"` : `title="${UI.esc(label)}: the world plays on to ${kind === 'week' ? 'seven days from now' : 'the turn of the month'}, its events come up as they fall, then the time is yours (key ${key})"`} aria-keyshortcuts="${key}">${UI.icon(icon, 's')}<span><span class="clk-nx">Next </span><span class="clk-unit">${kind === 'week' ? 'week' : 'month'}</span></span></button>`;
     };
     const note = !ST.run ? '' : ST.wait ? 'An event' : ST.note === 'year' ? 'The year turns' : ST.note === 'month' ? 'The month turns' : ST.kind === 'week' ? 'A week passes' : ST.kind === 'month' ? 'A month passes' : 'Time passes';
-    return `<span class="seg clk-step" role="group" aria-label="Step">${one('week', 'calendar', 'Next week', 'W', false)}${one('month', 'skip-forward', 'Next month', 'M', true)}</span>` +
+    return `<span class="clk-step" role="group" aria-label="Step">${one('week', 'calendar', 'Next week', 'W', false)}${one('month', 'skip-forward', 'Next month', 'M', true)}</span>` +
       `<span class="clk-note tiny muted" role="status" aria-live="polite">${UI.esc(note)}</span>`;
   };
   const clkHtml = UI.clkHtml;
@@ -179,8 +179,14 @@
     '@media (max-width:1439px){#clk .clk-nx{display:none}#clk .clk-unit{text-transform:capitalize}#clk .clk-note{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}}',
     '#game.phone #clk .clk-step button{min-height:44px;padding:0 8px}',
     // a phone's dock holds the two steps, Play, the speed, Next and Quiet: Play and Quiet as icons, none under 44 px
-    '#game.phone #clk .clk-lbl{display:none}',
-    '#game.phone #clk .ph-dock>button,#game.phone #clk .ph-dock .clk-step>button{min-width:44px;flex-shrink:0}',
+    // (71-phone shows every label in its dock and puts Play first: the step leads it here, its buttons say "Month" and
+    // "Week", and Play, the speed, Next and Quiet are icons)
+    '#game.phone #clk .ph-dock>.clk-step{order:0 !important;flex:5 1 0;display:flex;gap:4px;min-width:0}',
+    '#game.phone #clk .ph-dock>.clk-step>button{flex:1 1 0;min-width:44px}',
+    '#game.phone #clk .ph-dock>.clk-play{flex:1 1 0 !important}',
+    '#game.phone #clk .ph-dock button span.clk-nx,#game.phone #clk .ph-dock button span.clk-lbl,#game.phone #clk .ph-dock [data-a=clkSkip] span,#game.phone #clk .ph-dock [data-a=clkQuiet] span{display:none !important}',
+    '#game.phone #clk .ph-dock .clk-step .ic{display:none}',
+    '#game.phone #clk .ph-dock>button{min-width:44px}',
     '#game.phone #clk .clk-step button span:not(.clk-prog){font-size:var(--t-small,12px)}',
   ].join('');
   const put = () => { if (typeof document === 'undefined' || document.getElementById('step-style')) return; const s = document.createElement('style'); s.id = 'step-style'; s.textContent = css; document.head.appendChild(s); };

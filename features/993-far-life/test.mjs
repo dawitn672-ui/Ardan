@@ -11,8 +11,9 @@
 // fvKnownSame   a Known World game is unchanged: the same seed played four years with and without this folder's
 //               events (and with lands: 'known' said outright) gives the same state hash and random stream, and no
 //               fv_ cond is true for Known World characters of every class and age.
-// fvFarLives    ten years from birth in five Far Lands, and six years from sixteen in two more: no page error, no
-//               raw token in any event shown, and fv_ events fire.
+// fvFarLives   the quick version: six years from birth in two Far Lands, no raw token, the newborn meets
+//               the land's scenes. fvFarLivesLong (about five minutes, only with --only=fvFarLivesLong): ten years from
+//               birth in six Far Lands and six from sixteen in two more; the median far newborn meets at least 3.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

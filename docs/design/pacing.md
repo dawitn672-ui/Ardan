@@ -36,6 +36,10 @@ the player the time to act.
 - **Continuous play stays**, as the secondary control: Play with its five speeds, and "until something happens" (the old
   Next, now run in slices too). Starting a step stops the clock, and Play stops a step.
 - **Keys:** W for a week, M for a month, Space for Play and Pause as before.
+- **Where:** the clock in the top bar. Next month is its one primary button (brief 5.1); Next week is secondary; Play,
+  the speeds, the old Next and Quiet follow. At laptop widths (761 to 1439 px) the steps read "Week" and "Month", Play
+  and Quiet are icons and the five speeds one button that steps through them, so the place and the purse keep their
+  room. On a phone the steps lead 71-phone's dock, with the others as icons.
 
 ## Responsive while the world plays
 

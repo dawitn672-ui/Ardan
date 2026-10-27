@@ -73,7 +73,18 @@ const regions = () => {
   if (byRegion) return byRegion;
   byRegion = {}; waived = {};
   for (const q of FAR.provinces()) (byRegion[q.region] = byRegion[q.region] || []).push(q);
-  for (const c of D.list) for (const r of c.regions) {
+  // a lore region the far map holds no province of (the generator may fold a small one into its neighbours) is stood
+  // in for by the nearest region of the same land that has provinces, by the lore's middles
+  FB.standIn = {};
+  const C0 = D.centres || {};
+  for (const r in D.regions) {
+    if (byRegion[r] || !C0[r]) continue;
+    let best = null, bd = Infinity;
+    for (const o in byRegion) if (o[0] === r[0] && C0[o]) { const d = Math.hypot(C0[o][0] - C0[r][0], C0[o][1] - C0[r][1]); if (d < bd) { bd = d; best = o; } }
+    if (best) FB.standIn[r] = best;
+  }
+  for (const c of D.list) c.at = [...new Set(c.regions.map(r => (byRegion[r] ? r : FB.standIn[r])).filter(Boolean))];
+  for (const c of D.list) for (const r of c.at) {
     const ps = byRegion[r] || [];
     // no province of this region fits its ground (or its coast, at sea): the whole region counts
     if (c.sea ? !ps.some(p => p.coast) : !ps.some(p => terrOk(c.terr, p.terr))) waived[c.id + '|' + r] = true;
@@ -81,8 +92,9 @@ const regions = () => {
   return byRegion;
 };
 FB.suits = function (id, P) {
-  const c = FB.byId[id]; if (!c || !P || !FB.isFar(P) || !c.regions.includes(P.region)) return false;
+  const c = FB.byId[id]; if (!c || !P || !FB.isFar(P)) return false;
   regions();
+  if (!c.at.includes(P.region)) return false;
   if (c.tier === 'legend' || c.kind === 'relic' || waived[c.id + '|' + P.region]) return true;
   return c.sea ? !!P.coast : terrOk(c.terr, P.terr);
 };
@@ -284,7 +296,7 @@ if (BT && typeof BT.childHeard === 'function') {
     const P = FB.home(pc), far = FB.byId[c.id], mine = FB.isFar(P);
     if (far) {
       if (!mine) return far.kind === 'dragon' || (far.tier === 'legend' && hash(pc.id + '|' + c.id) % 7 === 0);
-      if (far.regions.includes(P.region)) return true;
+      regions(); if (far.at.includes(P.region)) return true;
       // the land's great beasts and its tales, and a few more by family
       return far.lands.includes(P.region[0]) && (far.tier === 'titan' || far.tier === 'legend' || far.kind === 'dragon' || hash(pc.id + '|' + c.id) % 4 === 0);
     }

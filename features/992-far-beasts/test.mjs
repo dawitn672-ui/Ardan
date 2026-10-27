@@ -87,12 +87,12 @@ export default {
       const wild = L.filter(c => cover[c.id] && !cover[c.id].born).map(c => c.id);
       const ns = Object.values(cover).map(c => c.n).sort((a, b) => a - b);
       return { n: L.length, inLore: LORE.creatures.length, beasts: Object.keys(A.BEASTS).length, bad: bad.slice(0, 8), nBad: bad.length, none, wild,
-        fighters: L.filter(c => c.fight).length, sea: L.filter(c => c.fightSea).length, legends: L.filter(c => c.tier === 'legend').length, kwLeak, minProv: ns[0], medProv: ns[ns.length >> 1] };
+        fighters: L.filter(c => c.fight).length, sea: L.filter(c => c.fightSea).length, legends: L.filter(c => c.tier === 'legend').length, kwLeak, minProv: ns[0], medProv: ns[ns.length >> 1], standIn: Object.entries(A.FB.standIn || {}).map(([a, b]) => a + ' by ' + b) };
     });
     const ok = r.n === 140 && r.nBad === 0 && !r.none.length && r.kwLeak === 0 && r.inLore >= 204;
     return { ok, detail: `${r.n} creatures, ${r.inLore} in LORE.creatures with the far lands open (${r.beasts} stat blocks); ${r.fighters} land fighters and ${r.sea} at sea with fitted curves, ${r.legends} legends; ` +
       `every creature near ${r.minProv} far provinces at least (median ${r.medProv}), ${r.none.length} without a reachable one${r.none.length ? ' ' + r.none.join(', ') : ''}; ` +
-      `${r.wild.length} live only in unclaimed land${r.wild.length ? ' (' + r.wild.join(', ') + ')' : ''}; Known World provinces listing a far beast: ${r.kwLeak}` + (r.nBad ? '; BAD ' + r.bad.join('; ') : '') };
+      `${r.wild.length} live only in unclaimed land${r.wild.length ? ' (' + r.wild.join(', ') + ')' : ''}; Known World provinces listing a far beast: ${r.kwLeak}; lore regions with no province of their own, stood in for: ${r.standIn.length ? r.standIn.join(', ') : 'none'}` + (r.nBad ? '; BAD ' + r.bad.join('; ') : '') };
   },
 
   // a Known World scene that names its own beast (the wolves of the hard winter) is not rolled in a far province where

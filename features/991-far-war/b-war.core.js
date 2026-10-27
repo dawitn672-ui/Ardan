@@ -87,7 +87,14 @@
     const r = A.S && A.S.realms && A.S.realms[rid];
     return r && r.parent ? D.armies[r.parent] || null : null;
   };
-  FW.tplOf = rid => { const a = FW.armyOf(rid); return a ? FW.TPL[a.t] || null : null; };
+  // asked tens of thousands of times a year (tempers, doctrines): kept per realm for the game in hand
+  let TPLC = new Map(), TPLS = null;
+  FW.tplOf = rid => {
+    if (TPLS !== A.S) { TPLS = A.S; TPLC = new Map(); }
+    let T = TPLC.get(rid);
+    if (T === undefined) { const a = FW.armyOf(rid); T = a ? FW.TPL[a.t] || null : null; TPLC.set(rid, T); }
+    return T;
+  };
 
   // ---- armies: shares of men by troop code, and the seven doctrine slots, from the lore's composition
   const CAT = { heavyHorse: ['HC', 'MC', 'CM'], lightHorse: ['HA', 'LC', 'OR', 'SC'], elephants: ['EL'], heavyFoot: ['HI', 'AX', 'PK'], spear: ['SP', 'PK', 'LI'], missile: ['XB', 'AR', 'LB', 'SL', 'EA'], other: ['GA', 'MR', 'LI', 'GI', 'EN', 'SC', 'LV'] };

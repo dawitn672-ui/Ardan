@@ -44,6 +44,17 @@ Words in the event override its shape: an event that says "born", "wedding", "fu
 
 A Known World province keeps its word, so its prints are unchanged.
 
+**The far lands' buildings** (`SK.archOf`). A far province's land also gives its houses their shape, and its towers' caps (each print says it in `data-arch`):
+
+| Shape | Lands | Houses | Tower caps |
+| --- | --- | --- | --- |
+| eaves | the Twin Rivers, the Sunrise Isles, the Southern Peninsulas | plaster under a tiled roof with upturned ends | upturned eaves |
+| dome | the Sand Basins | flat roofs with a small blue dome, arched doors and windows | domes |
+| yurt | the Long Grass, the High Steppes | round felt tents with red bands | the release's cones |
+| stilt | the Thousand Isles | houses on stilts under curved thatch | the release's cones |
+| round | the Deep Southland | round huts under cones of thatch | the release's cones |
+| log | the Black Pines, the Rime Coast | log walls under a steep roof | the release's cones |
+
 **Which land.** The player's home province gives the terrain (plains, hills, forest, steppe, desert, marsh, mountains, tundra) and whether it is on the coast. Winter (December to February, and always on the tundra) lifts every colour by 0.15 L, cuts chroma by 30%, and lays snow.
 
 **Rules kept.**
@@ -65,7 +76,7 @@ A Known World province keeps its word, so its prints are unchanged.
 | `skyPure` | Drawing the event three times, the Chronicle and the map leaves `A.S` and `A.rngState` unchanged, calls `Math.random` 0 times, and gives the same markup; another year gives another picture |
 | `skyToggle` | The menu toggle; off draws 61's woodcut, pictures off draws none, back on draws the print |
 | `skyPhone` | At 375 px the print is 2.78:1 (the brief's 390 × 140), full width, with the cartouche inside it |
-| `skyFarLands` | 375 prints of the five far lands, 10.2 KB on average and 14.1 KB at most. Every far land is some province's: jungle 608, alpine 101, scrub 97, taiga 150, savanna 17. Known World words are kept. A life at home in the monsoon forest gets a jungle print |
+| `skyFarLands` | 375 prints of the five far lands, 10.2 KB on average and 14.1 KB at most. Every far land is some province's: jungle 606, alpine 97, scrub 97, taiga 152, savanna 20. Known World words are kept. A life at home in the monsoon forest gets a jungle print with eaves. The six building shapes in seven scenes: valid, 10.7 KB at most, different from the Known World's. Far provinces by shape: eaves 819, round 243, yurt 238, log 162, stilt 145, dome 67; none in the Known World |
 | `skyAxe` | 0 axe violations (WCAG 2.2 AA) with an event and its print on screen, dark and light |
 
 ## Art review

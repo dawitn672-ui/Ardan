@@ -207,7 +207,7 @@
   };
 
   // ---- the rail's delta flash (§5.4): when a vital or a stat on the rail changes between two draws of the same life,
-  // its number shows the change (▲ +2 in --ok, ▼ −3 in --danger) for 1.6 s and its bar pulses once (not under reduced
+  // its number shows the change in its place (▲ +2 in --ok, ▼ −3 in --danger) for 1.6 s and its bar pulses once (not under reduced
   // motion). The last numbers seen are UI state here, reset for a new life or a loaded game; the first draw of a life
   // shows none. aria-hidden: the number itself is what a screen reader reads.
   LOOK.flash = { S: null, pc: null, vals: {}, live: {} };
@@ -354,14 +354,18 @@ ${X('.card.rar-beast.rar-legendary, .card.rar-beast.rar-mythic')}{border:2px sol
 
 /* ---- the rail's delta flash */
 ${X('#profile .barrow.lk-flashing')}{position:relative}
-${X('#profile .lk-dlt')}{position:absolute;right:0;top:-2px;transform:translateY(-100%);padding:0 4px;border-radius:var(--r-xs,3px);background:var(--overlay);box-shadow:var(--e-1);
+${X('#profile .lk-dlt')}{position:absolute;right:-2px;top:0;padding:0 4px;border-radius:var(--r-xs,3px);background:var(--overlay);box-shadow:var(--e-1);
   font-family:var(--f-ui);font-size:var(--t-cap,12px);font-weight:700;font-variant-numeric:tabular-nums;line-height:16px;white-space:nowrap;pointer-events:none;z-index:2}
 ${X('#profile .lk-dlt.up')}{color:var(--ok)}
 ${X('#profile .lk-dlt.dn')}{color:var(--danger)}
 @keyframes lkPulse{0%{filter:brightness(1)}40%{filter:brightness(1.8)}100%{filter:brightness(1)}}
-@keyframes lkDlt{from{opacity:0;transform:translateY(-70%)}to{opacity:1;transform:translateY(-100%)}}
+@keyframes lkDlt{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:no-preference){:root:not([data-motion=reduced]):not([data-motion=off]) #profile .barrow.lk-pulse .bar > i{animation:lkPulse 300ms ease-out 1}
   :root:not([data-motion=reduced]):not([data-motion=off]) #profile .lk-dlt{animation:lkDlt var(--m-snap,240ms) var(--ease-snap,ease-out) both}}
+
+/* ---- the rail's proficiencies: one line each, the name cut with an ellipsis (a long name such as "Hafts: axe, mace &
+   spear" wrapped to two lines and pushed the rail's buttons out of sight at 1366 x 768); the full name is the row's label */
+@media (min-width:761px){${X('#profile .profs .prow > span:first-child')}{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 
 /* ---- sparklines */
 ${X('.lk-spark')}{display:block;width:60px;height:16px;color:var(--ink-2);overflow:visible}

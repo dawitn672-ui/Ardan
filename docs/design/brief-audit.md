@@ -216,7 +216,14 @@ The motion tokens are defined. Only transform and opacity animate. 96's Motion s
   - **taiga:** close stands of spruce;
   - **alpine:** pasture under snow peaks (the High Steppes and the Sand Basins' mountains);
   - **scrub:** dry woodland bushes on the Twin Rivers' loess.
-- A Known World province keeps its word.
+- **Six building shapes** for the far lands' houses and towers:
+  - curved eaves: the Twin Rivers, the Sunrise Isles and the Peninsulas;
+  - domes: the Sand Basins;
+  - felt tents: the Long Grass and the High Steppes;
+  - stilt houses: the Thousand Isles;
+  - round thatched huts: the Deep Southland;
+  - log houses: the Black Pines and the Rime Coast.
+- A Known World province keeps its word and its buildings.
 - Measured by `skyFarLands`.
 
 ### §7.3 The map: partial (lane L2, 62-inked-map)

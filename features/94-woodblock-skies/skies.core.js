@@ -518,6 +518,73 @@
       (o.small ? '' : `<path d="M${q + 4} ${R(rt + roof * 0.2)}q-9-8 0-15q9-7 1-16" fill="none" stroke="${mix(c.light, '#ffffff', 0.4)}" stroke-width="3" stroke-linecap="round" opacity=".35"/>`);
     return s + '</g>';
   };
+  // ---- the Great Continent's buildings: a far province's land gives its houses and its towers' caps their shape.
+  // Curved eaves on the Twin Rivers, the Sunrise Isles and the Peninsulas; flat roofs and domes in the Sand Basins; the
+  // round felt tents of the Long Grass and the High Steppes; houses on stilts in the Thousand Isles; round huts under
+  // cones of thatch in the Deep Southland; log houses in the Black Pines and on the Rime Coast.
+  SK.ARCH = ['eaves', 'dome', 'yurt', 'stilt', 'round', 'log'];
+  SK.ARCH_OF_LAND = { R: 'eaves', I: 'eaves', M: 'eaves', B: 'dome', F: 'yurt', H: 'yurt', A: 'stilt', D: 'round', T: 'log', N: 'log' };
+  SK.archOf = pr => (pr && typeof pr.region === 'string' && SK.ARCH_OF_LAND[pr.region[0]]) || null;
+  const house0 = P.house;
+  P.house = (c, x, y, w, h, o = {}) => {
+    if (!c.arch) return house0(c, x, y, w, h, o);
+    const R = Math.round, hw = R(w / 2), lit = o.lit, plaster = tone(c, M.plaster, true), plasterD = tone(c, M.plaster, false);
+    const win = (wx, wy, ww, wh) => `<rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" fill="${lit ? c.glowC : tone(c, M.black, false)}"${st(c, 1)}/>` + (lit ? c.glow(x + wx + ww / 2, y + wy + wh / 2, 12) : '');
+    let s = `<g ${at(x, y)}>`;
+    if (c.arch === 'yurt') {
+      const felt = tone(c, M.cloth, true), feltD = tone(c, M.cloth, false), rh = R(h * 0.5);
+      s += `<path d="M${-hw} 0V${-rh}Q${-hw} ${-h} 0 ${-h - 6}Q${hw} ${-h} ${hw} ${-rh}V0z" fill="${felt}"${st(c)}/>` +
+        `<path d="M${R(hw * 0.3)} 0V${-rh}Q${R(hw * 0.4)} ${-h} 0 ${-h - 6}Q${hw} ${-h} ${hw} ${-rh}V0z" fill="${feltD}"/>` +
+        `<path d="M${-hw} ${-rh}H${hw}M${-hw} ${R(-rh * 0.5)}H${hw}" stroke="${tone(c, M.red, false)}" stroke-width="2.2"/>` +
+        `<rect x="-6" y="-18" width="12" height="18" fill="${lit ? c.glowC : tone(c, M.red, false)}"${st(c, 1)}/>` + (lit ? c.glow(x, y - 9, 12) : '');
+      if (o.chimney && !o.small) s += `<path d="M0 ${-h - 8}q-8-8 0-15q8-7 1-16" fill="none" stroke="${mix(c.light, '#ffffff', 0.4)}" stroke-width="3" stroke-linecap="round" opacity=".35"/>`;
+      return s + '</g>';
+    }
+    if (c.arch === 'round') {
+      const rh = R(h * 0.55), mat = tone(c, M.thatch, false), matL = tone(c, M.thatch, true), e = hw + 8;
+      s += `<rect x="${-hw}" y="${-rh}" width="${2 * hw}" height="${rh}" rx="4" fill="${tone(c, M.dirt, true)}"${st(c)}/><path d="M${R(hw * 0.3)} ${-rh}H${hw}V0H${R(hw * 0.3)}z" fill="${tone(c, M.dirt, false)}"/>` +
+        `<path d="M${-e} ${-rh + 2}L0 ${-h - R(h * 0.5)}L${e} ${-rh + 2}z" fill="${mat}"${st(c)}/><path d="M${-e} ${-rh + 2}L0 ${-h - R(h * 0.5)}V${-rh + 2}z" fill="${matL}"/>` +
+        `<path d="M-6 0v-14a6 6 0 0 1 12 0V0z" fill="${lit ? c.glowC : tone(c, M.black, false)}"/>` + (lit ? c.glow(x, y - 8, 12) : '');
+      return s + '</g>';
+    }
+    if (c.arch === 'log') {
+      const wood = tone(c, M.wood, true), woodD = tone(c, M.wood, false), roof = R(h * 0.8), e = hw + 6, rt = -h - roof;
+      let logs = ''; for (let yy = -h + 6; yy < 0; yy += 7) logs += `M${-hw} ${yy}H${hw}`;
+      s += `<rect x="${-hw}" y="${-h}" width="${2 * hw}" height="${h}" fill="${wood}"${st(c)}/><path d="M${R(hw * 0.3)} ${-h}H${hw}V0H${R(hw * 0.3)}z" fill="${woodD}"/>` +
+        `<path d="${logs}" stroke="${tone(c, M.timber, false)}" stroke-width="1.2" opacity=".8"/>` +
+        `<path d="M${-e} ${-h}L0 ${rt}L${e} ${-h}z" fill="${tone(c, M.timber, false)}"${st(c)}/><path d="M${-e} ${-h}L0 ${rt}V${-h}z" fill="${tone(c, M.timber, true)}"/>` +
+        (c.snow ? `<path d="M${-e} ${-h}L0 ${rt}L${e} ${-h}h-5L0 ${rt + 7}L${-e + 5} ${-h}z" fill="${c.snowC}"/>` : '') +
+        `<rect x="-6" y="-18" width="12" height="18" fill="${tone(c, M.timber, false)}"/>` + win(R(w / 4) - 6, R(-h * 0.6), 12, 10);
+      return s + '</g>';
+    }
+    if (c.arch === 'stilt') {
+      const leg = R(h * 0.35), bh = h - leg, roof = R(h * 0.9), e = hw + 8, rt = -h - roof;
+      s += `<path d="M${-hw + 6} 0V${-leg}M${-R(hw / 3)} 0V${-leg}M${R(hw / 3)} 0V${-leg}M${hw - 6} 0V${-leg}" stroke="${tone(c, M.wood, false)}" stroke-width="3"/>` +
+        `<rect x="${-hw}" y="${-h}" width="${2 * hw}" height="${bh}" fill="${tone(c, M.wood, true)}"${st(c)}/><path d="M${R(hw * 0.3)} ${-h}H${hw}V${-leg}H${R(hw * 0.3)}z" fill="${tone(c, M.wood, false)}"/>` +
+        `<path d="M${-e} ${-h}Q${-hw / 2} ${R(rt * 0.6 - h * 0.4)} 0 ${rt}Q${hw / 2} ${R(rt * 0.6 - h * 0.4)} ${e} ${-h}z" fill="${tone(c, M.thatch, false)}"${st(c)}/>` +
+        `<path d="M${-e} ${-h}Q${-hw / 2} ${R(rt * 0.6 - h * 0.4)} 0 ${rt}V${-h}z" fill="${tone(c, M.thatch, true)}"/>` + win(R(w / 4) - 6, R(-h + bh * 0.25), 12, 10);
+      return s + '</g>';
+    }
+    if (c.arch === 'dome') {
+      const dr = R(Math.min(hw * 0.55, h * 0.45));
+      s += `<rect x="${-hw}" y="${-h}" width="${2 * hw}" height="${h}" fill="${plaster}"${st(c)}/><path d="M${R(hw * 0.3)} ${-h}H${hw}V0H${R(hw * 0.3)}z" fill="${plasterD}"/>` +
+        `<path d="M${-hw - 3} ${-h}H${hw + 3}" stroke="${c.ink}" stroke-width="2.4"/>` +
+        (o.small ? '' : `<path d="M${-dr} ${-h}A${dr} ${dr} 0 0 1 ${dr} ${-h}z" fill="${tone(c, M.blue, true)}"${st(c)}/><path d="M0 ${-h - dr}A${dr} ${dr} 0 0 1 ${dr} ${-h}H0z" fill="${tone(c, M.blue, false)}"/>`) +
+        `<path d="M-6 0v-14a6 6 0 0 1 12 0V0z" fill="${tone(c, M.timber, false)}"/>` +
+        `<path d="M${R(w / 4) - 6} ${R(-h * 0.45)}v-6a6 6 0 0 1 12 0v6z" fill="${lit ? c.glowC : tone(c, M.black, false)}"${st(c, 1)}/>` + (lit ? c.glow(x + R(w / 4), y + R(-h * 0.5), 12) : '');
+      return s + '</g>';
+    }
+    // eaves: a plaster wall under a tiled roof whose ends turn up, a ridge with its own small lift
+    const roof = R(h * 0.62), e = hw + 14, rt = -h - roof;
+    s += `<rect x="${-hw}" y="${-h}" width="${2 * hw}" height="${h}" fill="${plaster}"${st(c)}/><path d="M${R(hw * 0.3)} ${-h}H${hw}V0H${R(hw * 0.3)}z" fill="${plasterD}"/>` +
+      `<path d="M${-hw} ${R(-h * 0.5)}H${hw}" stroke="${tone(c, M.timber, false)}" stroke-width="2"/>` +
+      `<path d="M${-e} ${-h - 10}Q${-hw + 4} ${-h - 4} ${-hw + 8} ${rt + 4}H${hw - 8}Q${hw - 4} ${-h - 4} ${e} ${-h - 10}Q${hw + 2} ${-h + 1} ${hw - 4} ${-h}H${-hw + 4}Q${-hw - 2} ${-h + 1} ${-e} ${-h - 10}z" fill="${tone(c, M.tile, false)}"${st(c)}/>` +
+      `<path d="M${-e} ${-h - 10}Q${-hw + 4} ${-h - 4} ${-hw + 8} ${rt + 4}H0V${-h}H${-hw + 4}Q${-hw - 2} ${-h + 1} ${-e} ${-h - 10}z" fill="${tone(c, M.tile, true)}"/>` +
+      `<path d="M${-hw + 2} ${rt + 4}H${hw - 2}" stroke="${c.ink}" stroke-width="2.6" stroke-linecap="round"/>` +
+      (c.snow ? `<path d="M${-hw + 6} ${rt + 4}H${hw - 6}l-3 4H${-hw + 9}z" fill="${c.snowC}"/>` : '') +
+      `<rect x="-6" y="-18" width="12" height="18" fill="${tone(c, M.timber, false)}"/>` + win(R(w / 4) - 6, R(-h * 0.42), 12, 10);
+    return s + '</g>';
+  };
   P.castle = (c, x, y, k = 1) => {
     const lt = tone(c, M.stone, true), sh = tone(c, M.stone, false), cren = 'v-6h8v6h7v-6h8v6h7v-6h8v6h7v-6h8v6';
     return `<g ${at(x, y, k)}><rect x="-30" y="-46" width="60" height="46" fill="${lt}"${st(c)}/><path d="M8-46h22V0H8z" fill="${sh}"/>` +
@@ -525,6 +592,14 @@
       `<rect x="-44" y="-66" width="18" height="66" fill="${lt}"${st(c)}/><rect x="26" y="-66" width="18" height="66" fill="${sh}"${st(c)}/>` +
       `<path d="M-46-66h22l-11-16z" fill="${tone(c, M.tile, true)}"${st(c, 1)}/><path d="M24-66h22l-11-16z" fill="${tone(c, M.tile, false)}"${st(c, 1)}/>` +
       `<path d="M-8 0v-18a8 8 0 0 1 16 0V0z" fill="${tone(c, M.black, false)}"/><rect x="-38" y="-52" width="6" height="9" fill="${c.glowC}"/></g>` + c.glow(x - 35 * k, y - 47 * k, 8);
+  };
+  // the towers' caps: upturned eaves where the houses have them, domes in the Sand Basins
+  const castle0 = P.castle;
+  P.castle = (c, x, y, k = 1) => {
+    const h = castle0(c, x, y, k);
+    if (c.arch === 'eaves') return h.replace('M-46-66h22l-11-16z', 'M-50-64q6 0 8-9h10q2 9 8 9z').replace('M24-66h22l-11-16z', 'M20-64q6 0 8-9h10q2 9 8 9z');
+    if (c.arch === 'dome') return h.replace('M-46-66h22l-11-16z', 'M-44-66a9 9 0 0 1 18 0z').replace('M24-66h22l-11-16z', 'M26-66a9 9 0 0 1 18 0z');
+    return h;
   };
   P.church = (c, x, y) => {
     const lt = tone(c, M.plaster, true), sh = tone(c, M.plaster, false);
@@ -695,6 +770,7 @@
     const terr = TERRAIN[opt.terr] ? opt.terr : 'hills', hour = HOURS[opt.hour] ? opt.hour : SK.hourFor(sc, key, '');
     const p = 'sk' + hash([sc, key, month, terr, hour, opt.coast ? 1 : 0].join('|')) + '_';
     const indoor = INDOOR.has(sc), c = SK.palette(hour, terr, season, indoor);
+    c.arch = opt.arch && SK.ARCH.includes(opt.arch) ? opt.arch : null;
     const o = { hz: indoor ? 112 : 146, groundY: 176, floor: 176, indoor, defs: '' };
     o.sea = sc === 'travel' && r() < 0.3;
     o.flip = r() < 0.5 && !['letter', 'learning', 'money', 'favor', 'court', 'subordinate', 'beast', 'weather'].includes(sc);
@@ -726,7 +802,7 @@
     body += L.weather(p, c, r, o);
     body += `<rect x="1" y="1" width="${W - 2}" height="${H - 2}" fill="none" stroke="${INK}" stroke-width="2"/>`;
     const label = 'Colour print: ' + (SK.LABEL[sc] || 'a scene') + ', ' + HOURS[hour].name + (opt.place ? ', ' + opt.place : '');
-    return `<svg class="woodcut" data-print="sky" data-hour="${hour}" data-terr="${terr}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${UI.esc(label)}" xmlns="http://www.w3.org/2000/svg">${L.defs(p, c, o)}${body}</svg>`;
+    return `<svg class="woodcut" data-print="sky" data-hour="${hour}" data-terr="${terr}"${c.arch ? ` data-arch="${c.arch}"` : ''} viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${UI.esc(label)}" xmlns="http://www.w3.org/2000/svg">${L.defs(p, c, o)}${body}</svg>`;
   };
 
   // ---- the event's print: its shape (61), the hour from its shape and words, the land and place from the player's home
@@ -737,7 +813,10 @@
     const key = q.ev + '|' + (A.S ? A.S.year : 0);
     const words = (v.title || '') + ' ' + (typeof v.text === 'string' ? v.text : '');
     const terr = SK.terrOf(pr);
-    return { shape, key, month: A.monthOf(A.today()).m, hour: SK.hourFor(SC[shape] ? shape : 'none', key, words), terr, coast: !!(pr && pr.coast), place: pr ? pr.name : '' };
+    const o = { shape, key, month: A.monthOf(A.today()).m, hour: SK.hourFor(SC[shape] ? shape : 'none', key, words), terr, coast: !!(pr && pr.coast), place: pr ? pr.name : '' };
+    const arch = SK.archOf(pr);
+    if (arch) o.arch = arch;
+    return o;
   };
   SK.cartouche = place => place ? `<span class="sky-cart" aria-hidden="true">${UI.esc(place)}</span>` : '';
   const drawn = new WeakSet();

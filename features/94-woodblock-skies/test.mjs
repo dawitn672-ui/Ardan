@@ -154,8 +154,19 @@ export default {
         if (doc.querySelector('parsererror') || /NaN|undefined/.test(svg) || !svg.includes(`data-terr="${t}"`)) bad.push(t + '/' + sh + '/' + h);
         sizes.push(svg.length);
       }
+      // the far lands' buildings: every style in the scenes that show houses and towers, within budget
+      const archBad = [], archSizes = [];
+      for (const a of SK.ARCH) for (const sh of ['street', 'tavern', 'kin', 'crime', 'menace', 'subordinate', 'errand']) {
+        if (!SK.SCENE[sh]) continue;
+        const svg = SK.svg(sh, 'ev_arch|1105', 5, { hour: 'day', terr: 'hills', arch: a });
+        const doc = new DOMParser().parseFromString(svg, 'image/svg+xml');
+        if (doc.querySelector('parsererror') || /NaN|undefined/.test(svg) || !svg.includes(`data-arch="${a}"`) || svg === SK.svg(sh, 'ev_arch|1105', 5, { hour: 'day', terr: 'hills' })) archBad.push(a + '/' + sh);
+        archSizes.push(svg.length);
+      }
       A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
-      const count = {};
+      const count = {}, arches = {};
+      for (const pv of LORE.map.provinces) { if (!pv || pv.id < 306) continue; const a = SK.archOf(pv); arches[a] = (arches[a] || 0) + 1; }
+      const kwArch = LORE.map.provinces.filter(pv => pv && pv.id < 306).every(pv => !SK.archOf(pv));
       for (const pv of LORE.map.provinces) { if (!pv || pv.id < 306) continue; const t = SK.terrOf(pv); count[t] = (count[t] || 0) + 1; }
       const kwSame = LORE.map.provinces.filter(pv => pv && pv.id < 306).every(pv => SK.terrOf(pv) === (SK.TERRAIN[pv.terr] ? pv.terr : 'hills'));
       // a home in the far south's monsoon forest: the event's print is a jungle
@@ -164,11 +175,11 @@ export default {
       if (home) {
         const pc = A.pc(); pc.home = home.id; pc.loc = home.id;
         A.S.queue = [{ type: 'event', ev: 'lf_love_potion', forced: true, ctx: {} }]; UI.screen = 'game'; UI.render();
-        const svg = document.querySelector('#modal svg.woodcut'); drawn = svg && svg.dataset.terr;
+        const svg = document.querySelector('#modal svg.woodcut'); drawn = svg && svg.dataset.terr + '/' + (svg.dataset.arch || 'none');
       }
-      return { n: sizes.length, bad, max: Math.max(...sizes), avg: Math.round(sizes.reduce((a, x) => a + x, 0) / sizes.length), count, kwSame, drawn };
+      return { n: sizes.length, bad, max: Math.max(...sizes), avg: Math.round(sizes.reduce((a, x) => a + x, 0) / sizes.length), count, kwSame, drawn, archBad, archMax: Math.max(...archSizes), arches, kwArch };
     });
-    const ok = !r.bad.length && r.max <= 15 * 1024 && SKOK(r.count) && r.kwSame && r.drawn === 'jungle';
-    return { ok, detail: `${r.n} prints of the five far lands: ${(r.avg / 1024).toFixed(1)} KB average, ${(r.max / 1024).toFixed(1)} KB at most${r.bad.length ? ', BAD ' + r.bad.slice(0, 4).join(', ') : ''}; far provinces by land ${JSON.stringify(r.count)}; Known World words kept ${r.kwSame}; a jungle home draws ${r.drawn}` };
+    const ok = !r.bad.length && r.max <= 15 * 1024 && SKOK(r.count) && r.kwSame && /^jungle\/(stilt|eaves|round)$/.test(r.drawn || '') && !r.archBad.length && r.archMax <= 15 * 1024 && Object.keys(r.arches).filter(k => k !== 'null').length === 6 && r.kwArch;
+    return { ok, detail: `${r.n} prints of the five far lands: ${(r.avg / 1024).toFixed(1)} KB average, ${(r.max / 1024).toFixed(1)} KB at most${r.bad.length ? ', BAD ' + r.bad.slice(0, 4).join(', ') : ''}; far provinces by land ${JSON.stringify(r.count)}; Known World words kept ${r.kwSame}; a jungle home draws ${r.drawn}; buildings ${JSON.stringify(r.arches)}, ${r.archBad.length} bad, at most ${(r.archMax / 1024).toFixed(1)} KB, none in the Known World ${r.kwArch}` };
   },
 };

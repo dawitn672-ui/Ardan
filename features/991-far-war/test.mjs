@@ -257,6 +257,58 @@ export default {
       `a duel with a Legend ${r.duel ? 'fought out' : 'STUCK'}; a year at war: ${r.play}, ${r.battles} battles in far wars; rendering ${r.pure ? 'pure' : 'NOT PURE'}` };
   },
 
+  // a life inside it: the cast of each realm, an organisation's way in and duties, the far soldier's scenes, the horse,
+  // and the 1105 wars on the record with a recruiter
+  async fwLife(pg) {
+    const r = await pg.evaluate(G => {
+      const out = {}, FW = A.FW;
+      const render = (ev, ctx) => { const e = A.EV[ev], pc = A.pc(); const t = typeof e.text === 'function' ? e.text(pc, ctx) : e.text; return A.T(t, A.ctxTokens(pc, ctx)); };
+      const queued = ev => A.S.queue.find(q => q && q.ev === ev);
+      T.enter(G);
+      const S = A.S;
+      // the cast: people per realm who carry a national style of their realm
+      const carry = {};
+      for (const id in S.people) { const p = S.people[id]; if (!p.alive || !A.FAR.D.realms[p.realm]) continue; if (Object.keys(p.styles || {}).some(k => (A.style(k) || {}).realm === p.realm && A.style(k).kind === 'national')) carry[p.realm] = (carry[p.realm] || 0) + 1; }
+      const vals = Object.keys(A.FW.D.armies).filter(id => S.realms[id]).map(id => carry[id] || 0).sort((a, b) => a - b);
+      out.cast = FW.stats.cast; out.carryMed = vals[vals.length >> 1]; out.carryMin = vals[0];
+      out.castMasters = Object.values(S.people).filter(p => p.fwc && A.fightWorth(p) >= 91).length;
+      out.maxM = Math.max(...Object.values(A.ladderCensus().masters).map(l => l.length));
+      // the 1105 wars: news, and the recruiter for a grown subject of Vahra
+      out.news = (S.news || []).filter(n => /In the far lands:/.test(n.t || n.text || n)).length;
+      S.queue = []; A.advance(31);
+      const rq = queued('fw_war_recruit'); out.recruiter = !!rq; out.rqText = rq ? render('fw_war_recruit', rq.ctx) : '';
+      S.queue = [];
+      // an organisation: Vahra has none, so a subject of Taulen is taken into the Hall of Nine Targets
+      const pc = A.pc();
+      pc.realm = 'POL-36'; pc.skills.bow = 40; pc.skills.melee = 40; pc.coin = 200;
+      const reqs = FW.orgReqs(pc, 'ORD-074').filter(x => !x.ok).map(x => x.label);
+      const j = FW.orgJoin('ORD-074'); out.org = j.ok ? FW.orgRank(pc) : 'NO: ' + reqs.join('; ');
+      pc.fwOrg.next = 0; A.advance(31);
+      const dq = queued('fw_duty_school'); out.duty = !!dq; out.dutyText = dq ? render('fw_duty_school', dq.ctx) : '';
+      A.applyFx(pc, { fwOrg: 30 }, {}); out.orgRank = FW.orgRank(pc);
+      out.card = (UI.ordersCard(pc) || '').includes('Other bodies of');
+      FW.orgLeave(); S.queue = [];
+      // a soldier of the Khaganate: the recruit scene, the horse, a rank up
+      pc.realm = 'POL-58'; pc.gear.mount = null;
+      A.enlist(pc);
+      const re = queued('fw_recruit'); out.recruit = re ? render('fw_recruit', re.ctx) : '';
+      S.queue = []; out.troop0 = pc.mil && pc.mil.troop;
+      A.advance(31);
+      out.horseAsked = !!queued('fw_horse');
+      A.applyFx(pc, { fwHorse: 'levy' }, {}); out.troop1 = pc.mil.troop; out.debt = pc.fwDebt;
+      S.queue = []; pc.mil.rank = (pc.mil.rank || 0) + 1; A.advance(31);
+      const ru = queued('fw_rankup'); out.rankup = ru ? render('fw_rankup', ru.ctx) : '';
+      S.queue = []; out.play = T.play(0.5);
+      return out;
+    }, GREAT({ realm: 'POL-91', seed: 9927 }));
+    const clean = s => s && !/[{}]/.test(s);
+    const ok = r.cast > 500 && r.carryMed >= 5 && !r.castMasters && r.maxM <= 5 && r.news === 3 && r.recruiter && clean(r.rqText) && /of the Hall of Nine Targets$/.test(r.org) &&
+      r.duty && clean(r.dutyText) && r.card && clean(r.recruit) && r.horseAsked && r.troop1 === 'HA' && r.debt === 60 && clean(r.rankup) && r.play === 'ok';
+    return { ok, detail: `${r.cast} more named people (median ${r.carryMed}, least ${r.carryMin} per far realm carry a national style; ${r.castMasters} above Elite; at most ${r.maxM} Masters a realm); ` +
+      `${r.news} wars in the news; a recruiter: "${(r.rqText || 'NONE').slice(0, 90)}…"; organisation: ${r.org}, a duty ${r.duty ? 'queued' : 'MISSING'} ("${(r.dutyText || '').slice(0, 60)}…"), then ${r.orgRank}; ` +
+      `recruit scene "${(r.recruit || 'NONE').slice(0, 70)}…"; horse offered ${r.horseAsked}, ${r.troop0} to ${r.troop1} with a debt of ${r.debt}; rank-up "${(r.rankup || 'NONE').slice(0, 60)}…"; played on ${r.play}` };
+  },
+
   // a far game saves and loads back with its Legends, orders and conflicts, after a Known World game in the page
   async fwSaveLoad(pg) {
     const r = await pg.evaluate(async G => {

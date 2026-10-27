@@ -102,7 +102,7 @@ export function lorePlan(L) {
   for (const g of L.ranges || []) {
     const h = g.peak && num(g.peak.h); if (!h || !Array.isArray(g.line) || g.line.length < 2 || /not a range/i.test(g.kind || '')) continue;
     const w = (WIDTH.find(([re]) => re.test(g.kind || '')) || [0, 90])[1];
-    ranges.push({ id: g.id, name: g.name, h: h * 0.72, w, pts: g.line.map(pt), peak: g.peak.at ? pt(g.peak.at) : null, peakH: h });
+    ranges.push({ id: g.id, land: g.land, name: g.name, h: h * 0.72, w, pts: g.line.map(pt), peak: g.peak.at ? pt(g.peak.at) : null, peakH: h });
   }
   // rivers: the lore's courses, the great ones (over 2,000 km or 5,000 m3/s) drawn as great rivers
   const rivers = (L.rivers || []).filter(r => Array.isArray(r.path) && r.path.length >= 2 && (num(r.len) || 0) > 0)
@@ -115,6 +115,15 @@ export function lorePlan(L) {
   // far@2: the Black Pines and the Southern Peninsulas cut down to their regions' areas (shape.mjs, tighten). Joining
   // the Rime Coast to the pines (join: { N: 'T' }) let the sea through the Arctic shore and left it in islands; alone, the
   // pines are reached from the Ice Bight, the Fog Sea and the gaps in the shore, and the Rime Coast keeps its land
-  const tight = { join: {}, lands: ['T', 'M'], slack: 1.04, capR: 90, mid: 300, noise: 420 };
+  const tight = { join: {}, lands: ['T', 'M'], slack: 1.04, capR: 90, mid: 300, noise: 420, keepBy: ['N'], keepKm: 260, keepPairs: [['N', 'T']], waste: ['H', 'R'], wasteSlack: { H: 1.12, R: 0.96 }, grow: ['D'], growGain: { D: 1.14 } };
+  // the waste regions: high ground along a land's ranges, held by no realm (shape.mjs, wastes)
+  const WASTE = { H: ['The High Wastes', [4600, 7400]], R: ['The Rim Wastes', [1400, 3100]] };
+  for (const L of tight.waste) {
+    const lr = ranges.filter(g => g.land === L), mid = lr.length ? lr[0].pts[Math.floor(lr[0].pts.length / 2)] : [0, 0];
+    const own = regions.filter(r => r.land === L);
+    regions.push({ id: `${L}-00`, land: L, name: WASTE[L][0], native: '', kind: 'waste', c: mid, bb: { x0: mid[0], x1: mid[0], y0: mid[1], y1: mid[1] }, area: 0,
+      emin: WASTE[L][1][0], emax: WASTE[L][1][1], terr: ['mountains'], warm: null, cold: null, rain: own.length ? Math.round(own.reduce((a, r) => a + (r.rain || 400), 0) / own.length) : 400,
+      climate: 'high and cold', people: 2000, held: [], stateless: [], open: 0, caps: [], lanes: [], density: 0.01 });
+  }
   return { lore: true, tight, landNames, frame, regions, caps, straits, keep, water, lakes, ranges, rivers, chains: [], plateaus: [], edgeSea: 0 };
 }

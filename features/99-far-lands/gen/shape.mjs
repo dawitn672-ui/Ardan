@@ -154,6 +154,12 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
     // (geo.mjs eases it into the old map's own), so a bay of the old map is no road into the new
     const toBox = edt(GW, GH, i => isBase(i)), hp = new Heap(), queued = new Uint8Array(N), DEEP = 320;
     for (let i = 0; i < N; i++) if (toBox[i] * C < 250) queued[i] = 1;
+    // far@2: where two lands must stay one shore (the Rime Coast and the Black Pines), the ground either side of their
+    // meeting is never the sea's
+    for (const [a, b] of (plan.tight && plan.tight.keepPairs) || []) {
+      const dA = edt(GW, GH, i => owner[i] >= 0 && regs[owner[i]].land === a), dB = edt(GW, GH, i => owner[i] >= 0 && regs[owner[i]].land === b), w = (plan.tight.keepKm || 80) / C;
+      for (let i = 0; i < N; i++) if (owner[i] >= 0 && ((regs[owner[i]].land === a && dB[i] <= w) || (regs[owner[i]].land === b && dA[i] <= w))) queued[i] = 1;
+    }
     const touch = i => nbr4(i).some(j => owner[j] < 0 && !isBase(j));
     for (let i = 0; i < N; i++) if (owner[i] >= 0 && !queued[i] && touch(i)) { hp.push(worth[i], i); queued[i] = 1; }
     while (hp.size) {
@@ -183,6 +189,11 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
     if (!over.length) return;
     const isOver = new Set(over), toBox = edt(GW, GH, i => isBase(i)), hp = new Heap(), queued = new Uint8Array(N), safe = new Uint8Array(N);
     for (let i = 0; i < N; i++) if (toBox[i] * C < 250) safe[i] = 1;
+    // a land the sea must not cut off from the mainland keeps the ground next to it (the Rime Coast is the pines' shore)
+    if (T.keepBy && T.keepBy.length) {
+      const by = new Set(T.keepBy), d = edt(GW, GH, i => owner[i] >= 0 && by.has(regs[owner[i]].land));
+      for (let i = 0; i < N; i++) if (d[i] * C <= (T.keepKm || 80)) safe[i] = 1;
+    }
     for (const r of regs) {
       for (const cp of r.caps) disc(cp.x, cp.y, T.capR || 90, i => { safe[i] = 1; });
       for (const l of r.lanes) { const n = Math.ceil(Math.hypot(l.b[0] - l.a[0], l.b[1] - l.a[1]) / 20); for (let s = 0; s <= n; s++) disc(l.a[0] + (l.b[0] - l.a[0]) * s / n, l.a[1] + (l.b[1] - l.a[1]) * s / n, 40, i => { safe[i] = 1; }); }
@@ -207,6 +218,7 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
       if (k < 0) continue;
       const g = grp(k); if (have[g] <= want[g]) continue;
       const now = key(i); if (now > at + 1e-3) { hp.push(now, i); continue; }
+      if (!simple(i)) continue;   // the sea never cuts the land in two: no channel, no new island
       owner[i] = -1; have[g]--; count[k]--;
       for (const j of nbr4(i)) if (!queued[j] && cand(j)) { queued[j] = 1; hp.push(key(j), j); }
     }
@@ -235,10 +247,76 @@ export function loreShape(F, GW, GH, plan, seed, isBase, baseLand) {
   }
   // a capital's own ground stays its region's
   function safe2(i, k) { for (const cp of regs[k].caps) if (Math.hypot(kmX(i) - cp.x, kmY(i) - cp.y) < 60) return true; return false; }
+  // ---- far@2: a land the lore boxes in on every side (the High Steppes, the Twin Rivers) cannot lose land to the sea
+  // without opening seas inside the continent. Its excess becomes high waste along the lore's own ranges instead:
+  // the cells nearest its ranges' lines (moved by the shared noise, so the band is ragged), taken while the land holds
+  // more than its regions' areas, go to the land's waste region (kind 'waste', code L-00: no realm, few people,
+  // mountains). The ground round a capital, a strait's shores and the seam with the Known World stay as they are.
+  function wastes() {
+    const T = plan.tight, toBox = edt(GW, GH, i => isBase(i));
+    for (const L of T.waste) {
+      const wk = regs.findIndex(r => r.kind === 'waste' && r.land === L); if (wk < 0) continue;
+      const mine = new Set(main.filter(k => regs[k].land === L));
+      let have = 0, want = 0; for (const k of mine) want += target[k];
+      for (let i = 0; i < N; i++) if (owner[i] >= 0 && mine.has(owner[i])) have++;
+      want = Math.round(want * ((T.wasteSlack && T.wasteSlack[L]) || 1));   // province bounds later shift a little land between waste and region
+      if (have <= want) continue;
+      const lines = (plan.ranges || []).filter(g => g.land === L || (T.wasteRanges && T.wasteRanges[L] && T.wasteRanges[L].includes(g.id)));
+      if (!lines.length) continue;
+      const m = new Uint8Array(N);
+      for (const g of lines) { const pts = g.pts.map(([x, y]) => [(x - F.x0) / C, (y - F.y0) / C]); for (let a = 1; a < pts.length; a++) { const n = Math.ceil(Math.hypot(pts[a][0] - pts[a - 1][0], pts[a][1] - pts[a - 1][1])); for (let t = 0; t <= n; t++) { const x = Math.round(pts[a - 1][0] + (pts[a][0] - pts[a - 1][0]) * t / n), y = Math.round(pts[a - 1][1] + (pts[a][1] - pts[a - 1][1]) * t / n); if (x >= 0 && y >= 0 && x < GW && y < GH) m[y * GW + x] = 1; } } }
+      const dR = edt(GW, GH, i => m[i] === 1), safe = new Uint8Array(N);
+      for (let i = 0; i < N; i++) if (toBox[i] * C < 200) safe[i] = 1;
+      for (const r of regs) { for (const cp of r.caps) disc(cp.x, cp.y, T.capR || 90, i => { safe[i] = 1; }); }
+      const cand = [];
+      for (let i = 0; i < N; i++) if (owner[i] >= 0 && mine.has(owner[i]) && !safe[i] && dR[i] * C < (T.wasteKm || 450)) cand.push([dR[i] * C - (T.wasteNoise || 160) * nz[i], i]);
+      cand.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      for (const [, i] of cand) { if (have <= want) break; count[owner[i]]--; owner[i] = wk; count[wk]++; have--; }
+    }
+  }
+  // ---- far@2: a land the lore's boxes give less ground than its area (the Deep Southland) grows into the sea round
+  // its boxes, nearest them first, by the region beside it that is shortest of its area; never into the Known
+  // World's box or within 150 km of it, never nearer than 60 km to another land, never past 350 km from a box
+  function grow() {
+    const T = plan.tight, toBox = edt(GW, GH, i => isBase(i));
+    for (const L of T.grow) {
+      const mine = main.filter(k => regs[k].land === L), set = new Set(mine);
+      let have = 0, want = 0; for (const k of mine) want += target[k];
+      want = Math.round(want * ((T.growGain && T.growGain[L]) || 1));   // the coast's noise, the lakes and the seam with the Known World take some back
+      for (let i = 0; i < N; i++) if (owner[i] >= 0 && set.has(owner[i])) have++;
+      if (process.env.FL_DEBUG) console.log('grow', L, have, want);
+      if (have >= want) continue;
+      const other = edt(GW, GH, i => owner[i] >= 0 && !set.has(owner[i]));
+      const boxOut = i => { let b = 1e9; const kx = kmX(i), ky = kmY(i); for (const k of mine) { const bb = regs[k].bb; b = Math.min(b, Math.hypot(Math.max(0, bb.x0 - kx, kx - bb.x1), Math.max(0, bb.y0 - ky, ky - bb.y1))); } return b; };
+      const ok = i => owner[i] < 0 && !banned[i] && !isBase(i) && toBox[i] * C >= 150 && other[i] * C >= 60;
+      const hp = new Heap(), seen = new Uint8Array(N);
+      const push = i => { if (seen[i] || !ok(i)) return; const b = boxOut(i); if (b > (T.growKm || 350)) return; seen[i] = 1; hp.push(b - 120 * nz[i], i); };
+      for (let i = 0; i < N; i++) if (owner[i] >= 0 && set.has(owner[i])) for (const j of nbr4(i)) push(j);
+      while (hp.size && have < want) {
+        const i = hp.pop(); if (owner[i] >= 0) continue;
+        let best = -1, bs = -Infinity; for (const j of nbr4(i)) { const k = owner[j]; if (k >= 0 && set.has(k)) { const sc = target[k] - count[k]; if (sc > bs) { bs = sc; best = k; } } }
+        if (best < 0) continue;
+        owner[i] = best; count[best]++; have++;
+        for (const j of nbr4(i)) push(j);
+      }
+      if (process.env.FL_DEBUG) console.log('grown', L, have, want);
+    }
+  }
+  // a land cell the sea may take without cutting the land in two: its land neighbours, round the ring (a corner
+  // counts only with both its sides, as land joins by edges), make at most one run
+  function simple(i) {
+    const x = i % GW, y = (i / GW) | 0, L = (dx, dy) => { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) return false; const j = yy * GW + xx; return owner[j] >= 0 || (isBase(j) && baseLand(j)); };
+    const o = [L(0, -1), L(1, -1), L(1, 0), L(1, 1), L(0, 1), L(-1, 1), L(-1, 0), L(-1, -1)];
+    for (const d of [1, 3, 5, 7]) o[d] = o[d] && o[d - 1] && o[(d + 1) % 8];
+    let runs = 0; for (let k = 0; k < 8; k++) if (o[k] && !o[(k + 7) % 8]) runs++;
+    return runs <= 1;
+  }
   function disc(x, y, r, put) { const cx = (x - F.x0) / C, cy = (y - F.y0) / C, rr = r / C; for (let yy = Math.floor(cy - rr); yy <= Math.ceil(cy + rr); yy++) for (let xx = Math.floor(cx - rr); xx <= Math.ceil(cx + rr); xx++) if (xx >= 0 && yy >= 0 && xx < GW && yy < GH && (xx + 0.5 - cx) ** 2 + (yy + 0.5 - cy) ** 2 <= rr * rr) put(yy * GW + xx); }
-  const dbg = tag => { if (!process.env.FL_DEBUG) return; const c0 = new Int32Array(regs.length); for (let i = 0; i < N; i++) if (owner[i] >= 0) c0[owner[i]]++; console.log(tag, ['B-08', 'N-02', 'F-01', 'T-08', 'M-10'].map(id => { const k = regs.findIndex(r => r.id === id); return id + ':' + (c0[k] / target[k]).toFixed(2); }).join(' ')); };
+  const dbg = tag => { if (!process.env.FL_DEBUG) return; const c0 = new Int32Array(regs.length); for (let i = 0; i < N; i++) if (owner[i] >= 0) c0[owner[i]]++; const col = x => { const seg = []; let cur = null; for (let y = 0; y < 300; y++) { const o = owner[y * GW + Math.round((x - F.x0) / C)], id = o >= 0 ? regs[o].id : '~'; if (id !== cur) { seg.push((F.y0 + y * C) + ':' + id); cur = id; } } return seg.join(' '); }; console.log(tag, 'top@10000', JSON.stringify(col(10000)), 'top@9500', JSON.stringify(col(9500)), ['N-01', 'T-05', 'F-01', 'T-08', 'M-10'].map(id => { const k = regs.findIndex(r => r.id === id); return id + ':' + (c0[k] / target[k]).toFixed(2); }).join(' ')); };
   dbg('eroded');
   if (plan.tight) tighten();
+  if (plan.tight && plan.tight.waste) wastes();
+  if (plan.tight && plan.tight.grow) grow();
   dbg('tightened');
   tidy(['main']);
   dbg('tidied');
