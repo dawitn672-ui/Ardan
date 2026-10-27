@@ -375,7 +375,7 @@
 /* ---- rarity (§1.5): a 2 px edge in the tier's colour, the gem, a glow by night */
 ${TIER_VARS.map(t => `${X(`.rar-${t}`)}{--tier:var(--r-${t})}`).join('\n')}
 ${X('.chip.rar')}{border:1.5px solid var(--tier);color:var(--tier);background:transparent;gap:3px;display:inline-flex;align-items:center}
-${X('.rar-gem')}{color:var(--tier);font-size:.85em;line-height:1;margin-right:3px}
+${X('.rar-gem')}{color:var(--tier);font-size:1em;line-height:1;margin-right:3px}
 ${X('.card.gear-c.rar-card')}{border:2px solid var(--tier)}
 ${X('.card.gear-c[data-tier=uncommon]')}{--tier:var(--r-uncommon)} ${X('.card.gear-c[data-tier=rare]')}{--tier:var(--r-rare)} ${X('.card.gear-c[data-tier=epic]')}{--tier:var(--r-epic)} ${X('.card.gear-c[data-tier=legendary]')}{--tier:var(--r-legendary)}
 ${X('.card.gear-c[data-tier=common]')}{border-width:1px}

@@ -207,14 +207,15 @@ export default {
       UI.screen = 'game'; UI.render();
       const D = A.FL_DATA, P = D.provinces, owner = new Map();
       for (let i = 0; i < P.id.length; i++) owner.set(P.id[i], P.realm[i]);
-      const far = (Array.isArray(D.realms) ? D.realms : Object.entries(D.realms)).map(x => x[0]);
+      const RL = Array.isArray(D.realms) ? D.realms : Object.entries(D.realms), far = RL.map(x => x[0]);
+      const loreCol = new Map(RL.map(([id, x]) => [id, String(x.color).toLowerCase()]));   // the lore's colours, before the accents
       const lin = c => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
       const lab = h => { const [r, g, b] = [1, 3, 5].map(i => lin(parseInt(h.slice(i, i + 2), 16) / 255)); const l = Math.cbrt(0.4122 * r + 0.5363 * g + 0.0514 * b), m = Math.cbrt(0.2119 * r + 0.6807 * g + 0.1074 * b), s = Math.cbrt(0.0883 * r + 0.2817 * g + 0.6300 * b); return [0.2105 * l + 0.7936 * m - 0.0041 * s, 1.9780 * l - 2.4286 * m + 0.4506 * s, 0.0259 * l + 0.7828 * m - 0.8087 * s]; };
       const dist = (a, b) => { const p = lab(a), q = lab(b); return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); };
       const pairs = new Set();
       for (let i = 0; i < P.id.length; i++) for (const j of P.adj[i] || []) { const a = P.realm[i], b = owner.get(j); if (a && b && a !== b && a !== 'unclaimed' && b !== 'unclaimed' && far.includes(a) && far.includes(b)) pairs.add(a < b ? a + '|' + b : b + '|' + a); }
       const dNew = [], dOld = [];
-      for (const k of pairs) { const [a, b] = k.split('|'); dNew.push(dist(UI.realmHex(a), UI.realmHex(b))); dOld.push(dist(A.S.realms[a].color, A.S.realms[b].color)); }
+      for (const k of pairs) { const [a, b] = k.split('|'); dNew.push(dist(UI.realmHex(a), UI.realmHex(b))); dOld.push(dist(loreCol.get(a), loreCol.get(b))); }
       dNew.sort((x, y) => x - y); dOld.sort((x, y) => x - y);
       const med = a => a[Math.floor(a.length / 2)];
       const known = Object.values(A.S.realms).filter(x => !far.includes(x.id) && /^POL-\d+$/.test(x.id) && +x.id.slice(4) <= 35);

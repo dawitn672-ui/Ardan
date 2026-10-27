@@ -96,7 +96,16 @@
   // each land's armies are drilled like a realm of the Known World that fights on the same ground (layer 5.4)
   const DOCTRINE_LIKE = { T: 'POL-26', N: 'POL-23', F: 'POL-12', B: 'POL-17', H: 'POL-27', R: 'POL-01', M: 'POL-30', A: 'POL-32', I: 'POL-14', D: 'POL-22' };
   const RACE_LIKE = { orc: 'POL-34', dwarf: 'POL-28', giant: 'POL-23' };
-  const reg = [];
+  const reg = [], unfreeAdded = [];
+  // who is unfree in the far lands, from the lore (far-lands.json and the compendium): slaves where they are taken,
+  // sold or bought (Silo's raids, the Tide Families' and the Strait's trade, Lamhou and the South Chain that buy them,
+  // Rakhol's and Kethra's slavers, Lingkaro up the rivers, the boys bought for Navesht's horse and sold at Marast, the
+  // Deep Southland's captives at Mosandi and the Coral Coast, Pravith's temple slaves); serfs where debt bondage holds
+  // the farmers south of the Cloudwall (the Gulf Plain's ranked houses, the Delta, the peninsula's rice kingdoms)
+  FL.UNFREE = {
+    slave: ['POL-118', 'POL-43', 'POL-42', 'POL-139', 'POL-110', 'POL-114', 'POL-97', 'POL-92', 'POL-78', 'POL-77', 'POL-151', 'POL-147', 'POL-98'],
+    serf: ['POL-91', 'POL-93', 'POL-99', 'POL-100', 'POL-101', 'POL-102', 'POL-96'],
+  };
   const put = (obj, k, v) => { if (!obj || v == null || Object.prototype.hasOwnProperty.call(obj, k)) return; obj[k] = v; reg.push([obj, k]); };
   FL.install = function (part) {
     part = part || D;
@@ -127,6 +136,11 @@
       if (r.race === 'giant' && GD.GIANT_HALLS) put(GD.GIANT_HALLS, id, [r.capital].concat(Object.values(D.houses).filter(h => h.realm === id).map(h => h.seat)));
     }
     for (const id in D.houses) put(LORE.houses, id, D.houses[id]);
+    // the far realms whose lore has unfree people (GD.UNFREE: where a life can be born a slave or a serf)
+    if (GD.UNFREE) for (const kind of ['slave', 'serf']) {
+      const L = GD.UNFREE[kind]; if (!Array.isArray(L)) continue;
+      for (const id of FL.UNFREE[kind]) if (D.realms[id] && !L.includes(id)) { L.push(id); unfreeAdded.push([L, id]); }
+    }
     FL.rels = D.relations.slice();
     for (const x of FL.rels) LORE.relations.push(x);
     FL.active = true;
@@ -135,6 +149,8 @@
   FL.uninstall = function () {
     if (!FL.active) return;
     for (let i = reg.length - 1; i >= 0; i--) delete reg[i][0][reg[i][1]];
+    for (const [L, id] of unfreeAdded) { const k = L.indexOf(id); if (k >= 0) L.splice(k, 1); }
+    unfreeAdded.length = 0;
     reg.length = 0;
     const drop = new Set(FL.rels || []);
     for (let i = LORE.relations.length - 1; i >= 0; i--) if (drop.has(LORE.relations[i])) LORE.relations.splice(i, 1);

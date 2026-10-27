@@ -439,7 +439,10 @@ export function makeRealms(P, adjOf, seaOf, seed, base, lore, provAtKm) {
   });
   realms.forEach((r, ri) => {
     const pop = r.provs.reduce((s, p) => s + p.pop, 0), L = r.L, [type, title, gov, law] = r.kind;
-    const nomad = L === 'F' || type === 'sea-hunter clans' || type === 'chiefdom' || type === 'horse clans' || r.race === 'orc';
+    // herders are taxed as herders; a farming kingdom or a town of the Long Grass (the Birch March, the free towns) as
+    // farmers and townsmen (far@2: far@1 taxed every realm of the Long Grass as nomads)
+    const settled = /farm|town|city|republic|kingdom|league|march/i.test(((r.lore && r.lore.typeFull) || '') + ' ' + type) && !/khagan|horde|clan|confedera|nomad/i.test(type);
+    const nomad = (L === 'F' && !settled) || type === 'sea-hunter clans' || type === 'chiefdom' || type === 'horse clans' || r.race === 'orc';
     const income = Math.round(pop * (nomad ? 0.06 : type === 'city-state' || type === 'port city' || type === 'caravan league' ? 0.32 : 0.17));
     const army = r.lore && r.lore.standing ? Math.round(r.lore.standing) : Math.max(300, Math.round(pop * (nomad ? 0.016 : r.race === 'giant' ? 0.002 : 0.011) / 100) * 100);
     const c = COMP[L], comp = { standing: army };
