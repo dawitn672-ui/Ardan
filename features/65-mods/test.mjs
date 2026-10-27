@@ -346,7 +346,8 @@ export default {
     await pg.evaluate(SETUP);
     await pg.evaluate(() => { MT.reset(); UI.screen = 'title'; UI.ov = null; UI.render(); });
     await pg.evaluate(fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8'));
-    const scan = () => pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => `${v.id}(${v.nodes.length})`));
+    // the panel's open transition settles first: mid-fade, muted text reads as low contrast (CI run 68, on a busy runner)
+    const scan = () => pg.evaluate(async () => (await Promise.race([Promise.all(document.getAnimations().filter(a => a.effect && a.effect.getTiming().iterations !== Infinity).map(a => a.finished.catch(() => {}))), new Promise(r => setTimeout(r, 2000))]), await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => `${v.id}(${v.nodes.length}: ${v.nodes.slice(0, 2).map(n => n.target.join(' ')).join(', ')})`));
     const found = [];
     await pg.click('#title [data-a="mods"]');
     const opened = await pg.evaluate(() => !!document.querySelector('#modal .mods-panel'));
