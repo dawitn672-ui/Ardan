@@ -5,7 +5,7 @@
 //     Rivers kingdom, allies marching 3,000 km to wars with no front;
 //   - the release's cap of four wars at once (A.aiWarCheck) was shared by the whole continent, so a war in the Black
 //     Pines kept the Known World at peace (the cap was full on 18-36% of days);
-//   - none of the lore's 53 tributes was made (the release reads a tribute as a trade pact), so no tie of the lore held;
+//   - none of the lore's 53 tributes was made (the release reads a tribute as a trade pact) nor its 3 alliances sworn;
 //   - the news took every line from every realm (about 400 a year against 100 on the Known World), so the 220 lines the
 //     player sees reached back half a year and were mostly about lands they will never see.
 // Everything here is gated on the Great Continent: a Known World game never calls any of it (patches.mjs asks
@@ -77,6 +77,12 @@
           if (a.allies) a.allies = a.allies.filter(id => id !== b.id);
           if (b.allies) b.allies = b.allies.filter(id => id !== a.id);
           S.loreTies[a.id] = { o: b.id, y: S.year };
+        }
+        // and the lore's alliances are sworn (the release read them as opinion only)
+        for (const x of F.D.relations) {
+          if (x.rel !== 'alliance') continue;
+          const a = S.realms[x.a], b = S.realms[x.b];
+          if (a && b && a.alive && b.alive && a !== b && a.overlord !== b.id && b.overlord !== a.id && A.ally) A.ally(a.id, b.id);
         }
       }
     } catch (e) { console.error('lore ties', e); }

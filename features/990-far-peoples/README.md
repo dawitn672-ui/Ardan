@@ -48,6 +48,16 @@ Two far realms keep a Known World faith in the lore (Fjorund the Hall-giants' Mo
 
 **5. Starts** (`starts.events.js`): a life born in a far realm opens with `fp_start`, built from its land (10), its realm's kind (12) and its rank (8): 80 openings, with three choices for the unfree, the common, the trades and the high-born. The choice comes back six years on (`fp_start_echo`). A Known World birth and a chosen 29 story open as before.
 
+**6. The year as each realm names it** (`years.data.core.js`, and the generator's `A.FARP_REIGN` from `far-lands.json`). 77 far rulers have the year they came to power in the lore ("king since 1081", "took the throne in 1096"), and 115 houses the year they began to rule. 54's year name now uses them, until the throne changes hands in play (then the realm's own history counts), and the eras the faiths count by: *year 1745 of the Long Count, the 174th of House Ishe* (Taulen), *the tenth year of Bargai, year 1745 of the Long Count* (Hesh), *the fifth year of Vahesh, the 916th of the Lamp* (Ozand), *the seventy-fifth year of Kaldur on the wall, rune 3505 of the Long Count* (the Cold Gate), *the twentieth turn of the Wheel under Ishvan, the seventy-second of House Dhanvar* (Vahra). All 118 far realms name the year their own way.
+
+**7. The release's two other per-culture tables** (`tables.data.core.js`, patches `FARP-GAME` and `FARP-LORD`): every far culture has its children's game (Dyke and Flood, Tiger and Goats, Thirty-One, Gebeta) and the lord a commoner answers to (the magistrate, the banner captain, the clan-mother, the dyke-head), which the release's childhood and village scenes now show.
+
+**8. Far people in the people views.** The person view (`UI.personModal`, which 55, 41 and 64 draw into) gets a "Their people" section for a far person, courtier, spouse or stranger: their people's greeting and oath, their faith's holy day and rite and its clergy, one of their people's manners, their food.
+
+**9. The powers inside each far realm** (`powers.data.core.js`): the release's five kinds of faction (56 fills them with houses by their wants) named as each realm's own politics on a Realm tab card, "The powers of Hesh": the Sennish ministers (peace), the examined officials (liberty), the banner princes (war), the khagan's friends at court (claimant), the Wall Households (independence), with the faction that stands now, its houses, leader and discontent. 21 realms are named from their lore (Taulen's Chancellery and silk guilds, the Khaganate's Felt Keepers and Right Wing, Menaro's Kalvaro and Harovi), the rest by their kind of realm.
+
+**10. One world** (`world.data.core.js`): in a Great Continent game the Known World's 24 cultures speak of the lands past the edge (48 lines: *Velgrad's silk merchants say silk comes from beyond the east edge, and say nothing more*), every far culture speaks of the west (220 lines, by land: *A broker never tells the truth about distance, and the west is very far away*), and six stories of the chain of hands are secrets with their truth in 26-belief-truth's `LORE.secrets` (where silk comes from, the road's length, the east's barbarians, Ranpur's white elephant, the first forge, the sails without oars). None of it is in a Known World game.
+
 ## Measured by (`test.mjs`)
 
 | Test | Result |
@@ -59,6 +69,11 @@ Two far realms keep a Known World faith in the lore (Fjorund the Hall-giants' Mo
 | `fpFaiths` | 55 far faiths with clergy and a holy day; under the Ledger the feast days are the New Year of the Ledger, the Sweeping of Graves, the Hungry Ghosts and the Emperor's Furrow, in the Known World New Year's Day as before; a Flame believer under the Ledger keeps the New Day |
 | `fpScore` | 330 pieces (110 cultures × 3 dates) in 16 families: each composed twice the same, all 330 different, every note in its mode in peace and war, every phrase ending on the tonic or the fifth; the Khaganate hears the Left Wing Khuul, read without touching the state |
 | `fpStarts` | 80 openings (10 lands × 8 ranks) render and resolve; the callback reads the choice; none for a Known World birth or a chosen story |
+| `fpYearNames` | 118 of 118 far realms name the year their own way (77 by the lore's reign); Hesh counts from 1096, and a successor does not inherit the lore's year; Aldmark still *the twenty-fifth winter of Aldwin* |
+| `fpTables` | 110 of 110 far cultures with a game and a lord; the game scene shows a far child's own game and the bailiff scene its own lord in 40 of 40; Aldmark's children still play the Ring Game |
+| `fpPeopleViews` | 33 of 33 far people, Hesh's court among them, show their people in the person view, without touching the state; a Known World person shows none |
+| `fpPowers` | 118 far realms with their powers named; the card is on the Realm tab and pure |
+| `fpOneWorld` | 24 Known World cultures with 48 lines about the far lands, 110 far cultures with 220 about the west, 6 secrets, all only in a Great Continent game |
 | `fpKnownWorldSame` | 3 Known World lives of 5 years (Aldmark, the Red Waste, Stonehold) with and without this feature (the build derived by cutting its code, events and patches): the same state hash and random stream |
 | `fpFarLives` | three far births play ten years on the Great Continent. Taulen, a peasant: the exams met 3 times, the Sweeping of Graves 10; the Khaganate: the count of tens 10, the horse-name at the ring hunt, the White Month 10; Kemodari, an artisan: the water calendar 10, the Silent Day 10. Voices in every life: greetings in the culture's words, titles, lines and the speakers' manner |
 
@@ -68,7 +83,7 @@ Two far realms keep a Known World faith in the lore (Fjorund the Hall-giants' Mo
 
 ## Limits
 
-- **The year has no name in the far lands.** 54 names the year by the ruler's reign, read from the realm's history or the lore's list of rulers; the far realms have neither yet, so the year reads "the year 1105".
+- **41 lore rulers have no accession year**; their realms count the year by their house, an era, or their own reckoning.
 - **Customs are the player's**, as in 47: NPCs do not sit exams or pay the census.
 - **The voices' creature check** is against the bestiary in the build; a later far beast whose name is a common word (a tiger, a bear) could fail it.
-- **The release's other per-culture tables** in its scenes (the children's games, the lord's word) still fall back to the Known World's plain words for a far people.
+- **Factions are 56's.** The far realms' powers name the five kinds the engine has; a faction the lore has that fits none of them (the Censorate, the Silk Office) is not a faction of its own. 56 draws a faction by `A.FACTIONS[kind].name`; a one-line hook in 56's `view.core.js` `facName` (`A.FARP_POWERS_NAME && A.FARP_POWERS_NAME(f) || ...`, which takes the faction, not its kind) would show the realm's own name in 56's views too; this feature defines `A.FARP_POWERS_NAME` for it.

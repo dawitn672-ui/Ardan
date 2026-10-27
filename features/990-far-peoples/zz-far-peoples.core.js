@@ -296,6 +296,13 @@
 
   // ---- 7. the powers inside a far realm (56-realm-inside's factions, named as the realm would): a Realm tab card
   FP.powers = rid => { const P = A.FARP_POWERS || {}, L = FL.D.realms[rid]; return P[rid] || (L && P.TYPE && P.TYPE[L.type]) || null; };
+  // a faction's name as its realm would say it (for a one-line hook in 56's view.core.js facName, and the release's
+  // eight A.FACTIONS[f.kind].name): null outside a far realm, so every other faction keeps its name
+  FP.factionName = A.FARP_POWERS_NAME = function (f) {
+    if (!far() || !f || !farRealm(f.realm)) return null;
+    const P = FP.powers(f.realm), p = P && P[f.kind];
+    return p ? p[0].charAt(0).toUpperCase() + p[0].slice(1) : null;
+  };
   FP.powersCard = function (pc) {
     const R = pc && A.realm(pc.realm);
     if (!far() || !R || !farRealm(R.id)) return '';

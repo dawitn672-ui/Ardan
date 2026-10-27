@@ -395,6 +395,8 @@
     for (const P of A.S.prov) if (P && P.name && !provIdx.has(P.name)) provIdx.set(P.name, P.id);
     return provIdx;
   };
+  FW.provNamed = name => provByName().get(name);
+  FW.PROF_GEAR = PROF_GEAR; FW.WEAPON_SKILLS = WEAPON_SKILLS;
   FW.homeFor = function (x) {
     const M = provByName(), txt = (x.where || '') + ' ' + (x.school || '');
     let best = null;
@@ -515,6 +517,7 @@
       else if (T.walls >= 0.2) P.fort = Math.max(P.fort || 0, 2);
       else if (T.walls < 0) P.fort = Math.min(P.fort || 0, 1);
     }
+    try { if (FW.seedCast) FW.seedCast(); } catch (e) { console.error('far war cast', e); }   // c-life.core.js
     FW.stats.seeded++;
   };
   // the conflicts begin once the world stands (after the orders are raised)
@@ -536,7 +539,7 @@
       if (c.mode === 'war') {
         try {
           const already = A.atWar(c.a).some(w => w && ((w.leadA === c.a && w.leadD === c.b) || (w.leadA === c.b && w.leadD === c.a)));
-          if (!already) { const w = A.startWar(c.a, c.b, null, c.cb, { silent: true }); rec.w = w && w.id != null ? w.id : true; }
+          if (!already) { const w = A.startWar(c.a, c.b, null, c.cb); rec.w = w && w.id != null ? w.id : true; }
         } catch (e) { console.error('far war conflict', c.k, e); }
       } else if (c.mode === 'want') {
         // the plan is on the record from the first year (68-casus-belli keeps it while the ruler's temper holds it)

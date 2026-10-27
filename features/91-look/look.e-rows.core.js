@@ -56,6 +56,53 @@
     }
   };
 
+  // ---- sparklines (§5.4): 60 x 16, a 1.5 px line in --ink-2, the last point a dot in the accent. The game keeps no
+  // history of these numbers, so the look keeps its own while the game is drawn: one sample a game month (the realm's
+  // treasury, army, stability and provinces; the player's six stats), at most ten years, reset for a new life or a
+  // loaded game. It is UI state, never saved; a line appears once there are two months to join.
+  LOOK.hist = { S: null, pc: null, rows: [] };
+  LOOK.sample = function (pc) {
+    if (!pc || !A.S) return;
+    const H = LOOK.hist;
+    if (H.S !== A.S || H.pc !== pc.id) { H.S = A.S; H.pc = pc.id; H.rows = []; }
+    let m = 0; try { m = A.monthOf(A.today()).m; } catch (e) {}
+    const k = A.S.year * 12 + m, last = H.rows[H.rows.length - 1];
+    if (last && last.k === k) return;
+    if (last && k < last.k) H.rows = [];
+    const r = A.realm && A.realm(pc.realm), st = {};
+    for (const s of (GD.STATS || [])) { try { st[s] = Math.round(A.stat(pc, s)); } catch (e) {} }
+    H.rows.push({ k, y: A.S.year, r: r ? { treasury: +r.treasury || 0, army: +r.army || 0, stab: +r.stability || 0, prov: +r.provCount || 0, id: r.id } : null, st });
+    if (H.rows.length > 120) H.rows.shift();
+  };
+  LOOK.spark = function (vals, label, cls) {
+    vals = vals.filter(v => typeof v === 'number' && isFinite(v));
+    if (vals.length < 2) return '';
+    const lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1, n = vals.length;
+    const pts = vals.map((v, i) => [1.5 + i * 57 / (n - 1), 14.5 - (v - lo) / span * 13]);
+    const d = pts.map(([x, y], i) => (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1)).join('');
+    const [lx, ly] = pts[n - 1];
+    return `<svg class="lk-spark${cls ? ' ' + cls : ''}" viewBox="0 0 60 16" width="60" height="16" role="img" aria-label="${esc(label)}"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="1.5" class="lk-spark-dot"/></svg>`;
+  };
+  const sparkOf = (pick, name, fmt) => {
+    const rows = LOOK.hist.rows.filter(x => pick(x) != null), vals = rows.map(pick);
+    if (vals.length < 2) return '';
+    return LOOK.spark(vals, `${name} since ${rows[0].y}: ${fmt(Math.min(...vals))} to ${fmt(Math.max(...vals))}`);
+  };
+  // the roomy rail (1600 px and up): each stat tile gets its line
+  LOOK.statSparks = function () {
+    if (typeof innerWidth === 'undefined' || innerWidth < 1600) return;
+    const pr = document.getElementById('profile');
+    if (!pr) return;
+    for (const r of pr.querySelectorAll('.lk-stats > .barrow')) {
+      if (r.querySelector('.lk-spark')) continue;
+      const k = [...r.classList].map(c => /^st-(\w+)$/.exec(c)).find(Boolean);
+      if (!k) continue;
+      const nm = (LOOK.STATS[k[1]] || [k[1]])[0];
+      const sp = sparkOf(x => x.st ? x.st[k[1]] : null, nm, v => String(v));
+      if (sp) r.insertAdjacentHTML('beforeend', sp);
+    }
+  };
+
   // ---- the Realm tab's header band (§4.5): tint, coat of arms, ruler, name, four numbers
   const big = n => { n = Math.round(+n || 0); const a = Math.abs(n); return a >= 1e6 ? (n / 1e6).toFixed(a >= 1e7 ? 0 : 1) + 'M' : a >= 1e4 ? Math.round(n / 1e3) + 'k' : a >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : String(n); };
   LOOK.realmBand = function (tb, pc) {
@@ -70,11 +117,12 @@
     let bust = '';
     try { bust = ru && UI.portrait ? (UI.ANIME && UI.set.anime !== false ? UI.ANIME.svg(ru, 48, { bust: true }) : UI.portrait(ru, 48)) : ''; } catch (e) { bust = ''; }
     const ttl = ru ? (A.fullName ? A.fullName(ru, false) : ru.given) : '';
+    const mine = x => x.r && x.r.id === r.id ? x.r : null;
     const nums = [
-      ['Treasury', big(r.treasury) + ' suns'],
-      ['Army', big(r.army)],
-      ['Stability', Math.round(+r.stability || 0)],
-      ['Provinces', Math.round(+r.provCount || 0)],
+      ['Treasury', big(r.treasury) + ' suns', sparkOf(x => mine(x) && mine(x).treasury, 'Treasury', v => big(v))],
+      ['Army', big(r.army), sparkOf(x => mine(x) && mine(x).army, 'Army', v => big(v))],
+      ['Stability', Math.round(+r.stability || 0), sparkOf(x => mine(x) && Math.round(mine(x).stab), 'Stability', v => String(v))],
+      ['Provinces', Math.round(+r.provCount || 0), sparkOf(x => mine(x) && mine(x).prov, 'Provinces', v => String(v))],
     ];
     const band = document.createElement('section');
     band.className = 'lk-band';
@@ -82,7 +130,7 @@
     if (ink) band.style.cssText = `--lk-tint:${ink.tint};--lk-ink:${ink.ink};--lk-sw:${ink.swatch}`;
     band.innerHTML = `<div class="lk-band-id">${coat ? `<span class="lk-band-coat" aria-hidden="true">${coat}</span>` : ''}<div class="lk-band-t"><b class="lk-band-n">${esc(r.name)}</b>` +
       `<span class="lk-band-r">${ru ? esc((r.title ? r.title + ' ' : '') + ttl) : 'No ruler'}</span></div>${bust ? `<span class="lk-band-bust" aria-hidden="true">${bust}</span>` : ''}</div>` +
-      `<dl class="lk-band-k">${nums.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
+      `<dl class="lk-band-k">${nums.map(([k, v, sp]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd>${sp ? `<dd class="lk-band-sp">${sp}</dd>` : ''}</div>`).join('')}</dl>`;
     tb.insertBefore(band, tb.firstChild && tb.firstChild.classList && tb.firstChild.classList.contains('fold-tools') ? tb.firstChild.nextSibling : tb.firstChild);
   };
 
@@ -176,11 +224,10 @@
       if (isNaN(v)) continue;
       const was = F.vals[k];
       F.vals[k] = v;
-      if (was != null && v !== was) F.live[k] = { d: v - was + ((F.live[k] && F.live[k].until > now) ? F.live[k].d : 0), until: now + 1600, fresh: true };
+      if (was != null && v !== was) F.live[k] = { d: v - was + ((F.live[k] && F.live[k].until > now) ? F.live[k].d : 0), until: now + 1600 };
       const L = F.live[k];
       if (!L || L.until <= now || r.querySelector('.lk-dlt')) continue;
-      r.classList.add('lk-flashing');
-      if (L.fresh) { r.classList.add('lk-pulse'); L.fresh = false; }
+      r.classList.add('lk-flashing', 'lk-pulse');
       ve.insertAdjacentHTML('afterend', `<span class="lk-dlt ${L.d > 0 ? 'up' : 'dn'}" aria-hidden="true">${L.d > 0 ? '▲ +' : '▼ −'}${Math.abs(L.d)}</span>`);
       const left = Math.max(0, L.until - now);
       setTimeout(() => { try { if (r.isConnected) { r.classList.remove('lk-flashing', 'lk-pulse'); const x = r.querySelector('.lk-dlt'); if (x) x.remove(); } } catch (e) {} }, left);
@@ -212,6 +259,8 @@
     if (LOOK.OFF || typeof document === 'undefined') return r;
     try {
       const tb = document.getElementById('tabbody'); let pc = null; try { pc = A.S && A.pc ? A.pc() : null; } catch (e) { pc = null; }
+      LOOK.sample(pc);
+      LOOK.statSparks();
       if (tb) {
         LOOK.peopleRows(tb);
         LOOK.realmBand(tb, pc);
@@ -314,6 +363,12 @@ ${X('#profile .lk-dlt.dn')}{color:var(--danger)}
 @media (prefers-reduced-motion:no-preference){:root:not([data-motion=reduced]):not([data-motion=off]) #profile .barrow.lk-pulse .bar > i{animation:lkPulse 300ms ease-out 1}
   :root:not([data-motion=reduced]):not([data-motion=off]) #profile .lk-dlt{animation:lkDlt var(--m-snap,240ms) var(--ease-snap,ease-out) both}}
 
+/* ---- sparklines */
+${X('.lk-spark')}{display:block;width:60px;height:16px;color:var(--ink-2);overflow:visible}
+${X('.lk-spark .lk-spark-dot')}{fill:var(--accent)}
+${X('.lk-band-k dd.lk-band-sp')}{margin-top:2px;line-height:0}
+${X('#profile .lk-stats > .barrow > .lk-spark')}{width:100%;max-width:60px;height:12px;margin-top:2px;grid-column:1 / -1}
+
 /* ---- a war's strength, us against them */
 ${X('.lk-str')}{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;margin-top:6px;font-family:var(--f-ui);font-size:var(--t-small,13px);font-variant-numeric:tabular-nums}
 ${X('.lk-str-b')}{height:6px;border-radius:var(--r-xs,3px);background:var(--danger);overflow:hidden;display:block}
@@ -346,6 +401,21 @@ ${X('#tabbody .grid2 > .card.gear-c > .muted')}{font-size:var(--t-small,13px);te
 ${X('#tabbody .grid2 > .card.gear-c > button')}{margin:0;grid-column:4}
 @media (pointer:coarse){${X('#tabbody .grid2 > .card.gear-c')}{min-height:44px}}
 @media (max-width:760px){${X('#tabbody .grid2 > .card.gear-c')}{grid-template-columns:56px minmax(0,1fr) auto}${X('#tabbody .grid2 > .card.gear-c > .muted')}{grid-column:2;grid-row:2;text-align:left;white-space:normal}${X('#tabbody .grid2 > .card.gear-c > button')}{grid-column:3;grid-row:1 / span 2}}
+
+/* ---- a career's ladder as one horizontal track (§4.5): a dot per rank on a line, the ranks behind you filled in gold,
+   your own a larger gold dot with its name in gold; the release's chevrons give way to the line */
+${X('.ladder')}{display:flex;align-items:flex-start;flex-wrap:nowrap;gap:0;margin:10px 0 6px;padding:0 0 4px;overflow-x:auto;background:transparent;border:0}
+${X('.ladder > i')}{display:none}
+${X('.ladder > span, .ladder span')}{flex:1 1 0;min-width:52px;position:relative;margin:0;padding:16px 2px 0;border:0;border-radius:0;background:transparent;text-align:center;
+  font-family:var(--f-ui);font-size:var(--t-small,13px);line-height:1.25;color:var(--ink-3);overflow-wrap:anywhere}
+${X('.ladder > span::before')}{content:"";position:absolute;z-index:1;top:3px;left:50%;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--sunken);box-shadow:0 0 0 1.5px var(--line-strong)}
+${X('.ladder > span::after')}{content:"";position:absolute;top:7px;left:calc(50% + 6px);width:calc(100% - 12px);height:2px;background:var(--line-strong)}
+${X('.ladder > span:last-of-type::after')}{display:none}
+${X('.ladder > span.done')}{color:var(--ink-2)}
+${X('.ladder > span.done::before')}{background:var(--accent);box-shadow:none}
+${X('.ladder > span.done::after')}{background:var(--accent)}
+${X('.ladder > span.now')}{color:var(--accent);font-weight:700;background:transparent;border:0}
+${X('.ladder > span.now::before')}{top:1px;width:13px;height:13px;margin-left:-6.5px;background:var(--accent-fill);box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--accent)}
 
 /* ---- the armourer and the market: dense rows */
 ${X('#tabbody table td, #tabbody table th')}{padding-top:3px;padding-bottom:3px}

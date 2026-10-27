@@ -73,7 +73,7 @@ export default {
       UI.cr = UI.crDefaults(); UI.cr.seed = 'menu-test';
       UI._newLifeOk = true; try { UI.startLife(); } finally { UI._newLifeOk = false; }
       const varied = Array.isArray(A.S.worldNotes);
-      A.newGame({ seed: 7, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      A.newGame({ seed: 7, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20, lands: UI.crDefaults().lands });
       const base = A.S.prov.map(P => P.owner).join();
       UI.cr = UI.crDefaults(); UI.cr.seed = 'menu-test'; UI.cr.world = 'canon';
       UI._newLifeOk = true; try { UI.startLife(); } finally { UI._newLifeOk = false; }

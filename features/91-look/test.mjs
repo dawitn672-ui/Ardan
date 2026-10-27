@@ -306,14 +306,21 @@ export default {
         const chip = document.querySelector('#modal .lk-realm');
         out.chip = chip ? chip.textContent : null;
         UI.ov = null; UI.render();
+        // sparklines: the Realm band's four numbers get a line once two months have been drawn
+        UI.tab = 'realm'; UI.render();
+        out.spark0 = document.querySelectorAll('#tabbody .lk-band .lk-spark').length;
+        for (let i = 0; i < 3; i++) { A.advance(31); A.S.queue = []; UI.render(); }
+        const sp = [...document.querySelectorAll('#tabbody .lk-band .lk-spark')];
+        out.sparks = sp.length; out.sparkLabel = sp[0] && sp[0].getAttribute('aria-label');
+        await new Promise(res => setTimeout(res, 1800));   // the months' delta flashes have run out
         // pure: drawing every tab twice gives the same markup
         const h0 = T.hash(A.S), g0 = JSON.stringify(A.S.rng), m = [];
         for (const pass of [0, 1]) { const x = []; for (const t of T.tabs()) { UI.tab = t; UI.render(); x.push(document.getElementById('app').innerHTML.length); } m.push(x.join(',')); }
         out.same = m[0] === m[1]; out.pure = T.hash(A.S) === h0 && JSON.stringify(A.S.rng) === g0;
         return out;
       });
-      const ok = r.wars >= 1 && /^Strength: us .+ against them .+/.test(r.warLabel || '') && r.flash0 === 0 && r.flash1 === 0 && r.flash === '▼ −10' && r.gone && r.beasts >= 10 && r.beastTiers.split(',').length >= 3 && !!r.chip && r.pin && r.same && r.pure;
-      return { ok, detail: `war strength bars ${r.wars} ("${r.warLabel}"); delta flash: none on the first draws (${r.flash0}, ${r.flash1}), "${r.flash}" after a wound, gone after 1.6 s ${r.gone}; ${r.beasts} beasts tiered (${r.beastTiers}); realm chip "${r.chip}"; pinned tooltip marked ${r.pin}; same markup ${r.same}, pure ${r.pure}` };
+      const ok = r.wars >= 1 && /^Strength: us .+ against them .+/.test(r.warLabel || '') && r.flash0 === 0 && r.flash1 === 0 && r.flash === '▼ −10' && r.gone && r.beasts >= 10 && r.beastTiers.split(',').length >= 3 && !!r.chip && r.pin && r.spark0 === 0 && r.sparks === 4 && /^Treasury since \d+: /.test(r.sparkLabel || '') && r.same && r.pure;
+      return { ok, detail: `war strength bars ${r.wars} ("${r.warLabel}"); delta flash: none on the first draws (${r.flash0}, ${r.flash1}), "${r.flash}" after a wound, gone after 1.6 s ${r.gone}; ${r.beasts} beasts tiered (${r.beastTiers}); realm chip "${r.chip}"; pinned tooltip marked ${r.pin}; Realm band sparklines ${r.spark0} -> ${r.sparks} ("${r.sparkLabel}"); same markup ${r.same}, pure ${r.pure}` };
     } finally { await ctx.close(); }
   },
 };
