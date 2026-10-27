@@ -140,7 +140,7 @@ LOOK.TIERS = { common: '◇', uncommon: '◆', rare: '◆◆', epic: '◆◆◆'
     const raw = typeof hex === 'string' && /^#[0-9a-f]{6}$/i.test(hex) ? hex.toLowerCase() : '#8a8f9e';
     const key = raw + theme;
     if (memo.has(key)) return memo.get(key);
-    const TK = LOOK.THEMES[theme], surf = TK['--surface'], raised = TK['--raised'];
+    const TK = LOOK.THEMES[theme], surf = TK['--surface'], raised = TK['--raised'], sunk = TK['--sunken'] || surf;
     const [L0, a0, b0] = toOklab(hexRgb(raw));
     let C = Math.hypot(a0, b0); const h = Math.atan2(b0, a0);
     const [lo, hi] = theme === 'dark' ? [0.74, 0.90] : [0.30, 0.46];
@@ -149,7 +149,7 @@ LOOK.TIERS = { common: '◇', uncommon: '◆', rare: '◆◆', epic: '◆◆◆'
     if (!inGamut(at(L, C))) C = Math.min(C, 0.16);
     for (let g = 0; g < 40 && !inGamut(at(L, C)); g++) C *= 0.9;
     let ink = rgbHex(at(L, C));
-    for (let g = 0; g < 40 && Math.min(ratio(ink, surf), ratio(ink, raised)) < 4.5; g++) { L += theme === 'dark' ? 0.02 : -0.02; ink = rgbHex(at(Math.max(0, Math.min(1, L)), C)); }
+    for (let g = 0; g < 40 && Math.min(ratio(ink, surf), ratio(ink, raised), ratio(ink, sunk)) < 4.5; g++) { L += theme === 'dark' ? 0.02 : -0.02; ink = rgbHex(at(Math.max(0, Math.min(1, L)), C)); }
     const out = Object.freeze({ swatch: raw, tint: mixHex(raw, surf, theme === 'dark' ? 0.18 : 0.14), ink, glow: raw + '4d' });
     if (memo.size > 400) memo.clear();
     memo.set(key, out);

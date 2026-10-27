@@ -160,7 +160,7 @@
     for (const td of tb.querySelectorAll('td[data-tt="shopItem"]')) {
       const tr = td.closest('tr');
       if (!tr || !tr.querySelector('span[data-tt="shopItem"]')) continue;
-      td.removeAttribute('data-tt'); td.removeAttribute('data-v'); td.classList.add('lk-shop-c');
+      td.classList.add('lk-shop-c');
     }
     // the gear cards: the card takes its piece's rarity
     for (const c of tb.querySelectorAll('.card.gear-c')) {
@@ -172,7 +172,7 @@
 
   // ---- realm chips (§5.5): where a page names a realm in a "Realm" row, the name gets the realm's swatch dot and ink
   const realmByName = name => { if (!A.S || !A.S.realms) return null; for (const r of Object.values(A.S.realms)) if (r && (r.name === name || r.short === name)) return r; return null; };
-  LOOK.chipHtml = (r, label) => { const ink = UI.realmInkOf(r); return `<span class="lk-realm" style="--lk-ink:${ink.ink};--lk-sw:${ink.swatch}"><i aria-hidden="true"></i>${esc(label)}</span>`; };
+  LOOK.chipHtml = (r, label) => { const ink = UI.realmInkOf(r), d = UI.realmInkOf(r, 'dark'), l = UI.realmInkOf(r, 'light'); return `<span class="lk-realm" style="--lk-ink:${ink.ink};--lk-ink-d:${d.ink};--lk-ink-l:${l.ink};--lk-sw:${ink.swatch}"><i aria-hidden="true"></i>${esc(label)}</span>`; };
   // a leaf whose whole text is a realm's name (or short name) becomes a realm chip: tooltips name realms in their rows
   // realm names in a tooltip become realm chips (an 8 px swatch dot, the name in the realm's ink): whole words in the
   // popover's text, longest names first, never in its heading, a button or a link to another tooltip
@@ -229,8 +229,7 @@
       if (!v || v.querySelector('.lk-realm')) continue;
       const r = realmByName(v.textContent.trim());
       if (!r) continue;
-      const ink = UI.realmInkOf(r);
-      v.innerHTML = `<span class="lk-realm" style="--lk-ink:${ink.ink};--lk-sw:${ink.swatch}"><i aria-hidden="true"></i>${esc(v.textContent.trim())}</span>`;
+      v.innerHTML = LOOK.chipHtml(r, v.textContent.trim());
     }
   };
 
@@ -452,6 +451,8 @@ ${X('.lk-str-n.lk-them')}{color:var(--danger);font-weight:700}
 
 /* ---- a realm chip: an 8 px swatch dot with a line edge, the name in the realm's ink */
 ${X('.lk-realm')}{display:inline-flex;align-items:center;gap:6px;color:var(--lk-ink,var(--ink));font-weight:600}
+:root[data-theme=dark] .lk-realm{color:var(--lk-ink-d,var(--lk-ink,var(--ink)))}
+:root[data-theme=light] .lk-realm{color:var(--lk-ink-l,var(--lk-ink,var(--ink)))}
 ${X('.card.person.click.lk-row > .lk-row-m > .lk-row-r')}{flex:none;order:2;font-size:var(--t-small,13px)}
 ${X('.card.person.click.lk-row > .lk-row-m > .sub')}{order:1}
 ${X('.lk-realm > i')}{flex:none;width:8px;height:8px;border-radius:2px;background:var(--lk-sw);box-shadow:0 0 0 1px var(--line-strong)}
