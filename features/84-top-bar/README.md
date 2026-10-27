@@ -45,3 +45,13 @@ is `docs/design/pacing.md`.
 - `tbStepResponsive`: a Great Continent month passes in many slices; the longest task is the month's turn (one day,
   about 0.25 to 0.5 s on this machine), not the month.
 
+**Design pass (round 10, L7's review against the brief).** Week has a calendar and Month a full moon (no icons, and no
+key badges, at laptop widths). The W and M badges are `kbd` and hidden under `pointer: coarse`. A control that cannot
+act now is `aria-disabled` and stays focusable, with the reason in its tooltip and a toast if pressed: the steps while
+something needs you, Go on while an event is open, and Play while a step runs. Go on breathes for 2 s (opacity only,
+still under reduced motion). The running step keeps its primary look, and below 1440 px its label says what passes
+("The month turns"). The progress bar grows by `transform: scaleX`. At 1440 px and wider the speeds are the brief's
+segmented control (32 high, sunken track, segments at least 44 wide). Play, Quiet and Next are 32 × 32 icon buttons at
+laptop widths. `A.newGame` and loading a save halt a running step. Three guards fixed controls that were dead or broken:
+the playtest bar's Start and Skip (`TOP-PLAYTEST-GUARD`), `aria-pressed` on the creation screen's family filter
+(`TOP-FAMFILTER-PRESSED`), and the full map's "−" and "fit", which are `aria-disabled` when the whole map is in view.

@@ -31,13 +31,14 @@ export default [
   {
     id: 'TOP-FAMFILTER-PRESSED',
     blob: 'ardan-core',
-    why: 'UI: the creation screen\'s family filter showed the current choice only by colour. Each button now carries "on" and ' +
-      'aria-pressed, so "All" reads as chosen when it is, to the eye and to a screen reader.',
+    why: 'UI: the creation screen\'s family filter showed the current choice only by colour. Each button now carries ' +
+      'aria-pressed, so "All" reads as chosen when it is to a screen reader. (A class "on" as well made 71-phone\'s stylesheet ' +
+      'restyle it on the desktop: phoneDesktopSame.)',
     edits: [
       ['<button class="small ${filt==="all"?"primary":""}" data-a="crFamFilter" data-v="all">All</button>',
-        '<button class="small ${filt==="all"?"primary on":""}" data-a="crFamFilter" data-v="all" aria-pressed="${filt==="all"}">All</button>'],
+        '<button class="small ${filt==="all"?"primary":""}" data-a="crFamFilter" data-v="all" aria-pressed="${filt==="all"}">All</button>'],
       ['<button class="small ${filt===k?"primary":""}" data-a="crFamFilter" data-v="${k}">',
-        '<button class="small ${filt===k?"primary on":""}" data-a="crFamFilter" data-v="${k}" aria-pressed="${filt===k}">'],
+        '<button class="small ${filt===k?"primary":""}" data-a="crFamFilter" data-v="${k}" aria-pressed="${filt===k}">'],
     ],
   },
 ];
