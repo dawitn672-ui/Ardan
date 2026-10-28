@@ -28,6 +28,8 @@ export default {
     await pg.evaluate(WAR);
     const out = await pg.evaluate(() => {
       const T = window.__T, res = {}, errs = [];
+      // the style is read with the whole map shown: 9991-atlas veils land and sea the player does not know
+      const fog0 = UI.set.atlasFog; UI.set.atlasFog = false;
       for (const on of [true, false]) {
         T.set(on); UI.ov = null; UI.render();
         const wm = UI.$('#worldmap'); MAP.draw(wm, { mode: 'political' });
@@ -46,6 +48,7 @@ export default {
         res[k].sea = [px[0], px[1], px[2]];
       }
       const tiles = UI.INKMAP.stats.tiles;
+      if (fog0 === undefined) delete UI.set.atlasFog; else UI.set.atlasFog = fog0;
       T.set(true);
       return { res, errs, tiles, seaStyle: UI.INKMAP.SEA_STYLE };
     });
