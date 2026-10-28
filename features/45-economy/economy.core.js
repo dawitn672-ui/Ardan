@@ -69,6 +69,7 @@
     // feature fills them (9995-trade-roads does, for the far goods), so a Known World game reads as before
     REGION: {},
     DEMAND_LAND: {},
+    RESOLD: {},               // goods a realm's lore exports but only sells on ("silk re-sold from the east"): not made there
   };
   const G = () => GD.GOODS;
   // grain's seasons now come from the harvest, not from a fixed swing in its price
@@ -84,7 +85,8 @@
     return d;
   };
   // how much more (or less) of a good a realm's land wants than the world's people do (E.DEMAND_LAND; 1 by default)
-  const landWant = (r, k) => { const L = E.DEMAND_LAND[k]; return L && r && r.land && L[r.land] != null ? L[r.land] : 1; };
+  // (a realm with no land of the far lands' ten is the Known World's: 'W')
+  const landWant = (r, k) => { const L = E.DEMAND_LAND[k]; if (!L || !r) return 1; const v = L[r.land || 'W']; return v != null ? v : 1; };
   // what it needs in a month: that, plus what its own workshops draw, so its stores and its caravans allow for them
   E.needOf = function (r, d) {
     const n = Object.assign({}, d), m = r.mkt;
@@ -118,7 +120,7 @@
       const m = A.mkt(r.id), size = Math.sqrt(Math.max(1, P.pop || 1));
       for (const k of landKeys()) {
         let w = landW(P, k) * size;
-        if (m.ex.includes(k)) w = w * 2.5 + size * 0.3;   // what a realm is known for, it makes
+        if (m.ex.includes(k) && !(E.RESOLD[k] && E.RESOLD[k].includes(P.owner))) w = w * 2.5 + size * 0.3;   // what a realm is known for, it makes (unless it only sells it on)
         if (m.im.includes(k)) w *= 0.4;
         if (w > 0) { wp.push([P, k, w]); wsum[k] = (wsum[k] || 0) + w; }
       }
