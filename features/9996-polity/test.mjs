@@ -8,6 +8,8 @@ export default {
       for (const [seed, lands, realm] of [[4101, 'known', 'POL-03'], [4102, 'known', 'POL-01'], [4103, 'great', 'POL-36']]) {
         const P = A.POL; P.stats.made = 0; P.stats.house = 0; P.stats.filled = 0;
         A.newGame(Object.assign(K(seed), { lands, realm }));
+        // the first month: 66's market towns are chosen, and the shires get their offices
+        for (let i = 0; i < 3; i++) { A.advance(20); let h, g = 0; while ((h = A.headReady()) && g++ < 200) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); } }
         let n = 0, ok = 0, bad = [], realms = 0, per = [];
         for (const x of P.realms()) {
           realms++;
