@@ -219,7 +219,8 @@ export default {
         const q = TSX.take(f), names = q.m.ts.men.map(id => A.P(id).given), place = q.m.place;
         let h = q, m = q.m;
         for (let k = 0; k < 30 && h; k++) { if (m.over) break; A.missionChoose(TS_PICK(m, 'steady')); h = A.S.queue[0] && A.S.queue[0].m === m ? A.S.queue[0] : TSX.until('steady'); }
-        if (!m.over || !A.pc().alive) continue;
+        // a division pulled out of the line has its panels when the fight it left is over (twoScalesOtherLives holds that)
+        if (!m.over || !A.pc().alive || (m.ts.end && m.ts.end.out)) continue;
         A.missionClose();
         const lines = A.S.log.flatMap(e => e.lines || []).filter(l => l[1] === 'big' && l[0].includes(place) && names.some(n => l[0].includes(n)));
         const book = A.chronicleBook().flatMap(L => L.chapters.flatMap(c => c.lines)).join(' ');

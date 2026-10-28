@@ -45,15 +45,15 @@ POL.openFief = function (r, h) {
 };
 POL.closeFief = function (r) {
   const F = r.pol.fief; if (!F) return null;
-  r.pol.fief = null;
   const t = POL.fiefTally(r), ids = Object.keys(t).filter(id => live(A.P(id)));
-  if (!ids.length) return null;
+  if (!ids.length) { r.pol.fief = null; return null; }
   ids.sort((a, b) => t[b] - t[a] || String(a).localeCompare(String(b)));
   const lead = ids[0], pc = A.pc(), ru = A.P(r.ruler);
   let win = lead;
   if (pc && pc.ruler === r.id) win = F.pcPick && ids.includes(F.pcPick) ? F.pcPick : lead;
   else if (ru && ids.length > 1) { const P = A.rulerPersona ? A.rulerPersona(r.id) : { caution: 0 }; if (!A.chance(clamp(.7 + .2 * (P.caution || 0), .4, .95))) win = ids.slice().sort((a, b) => A.opinion(ru, A.P(b)) - A.opinion(ru, A.P(a)))[0]; }
   if (win !== lead) for (const b of POL.fiefBackers(r)) if (POL.fiefPick(r, b) === lead && b.p.house && A.S.houses[b.p.house]) { const hh = A.S.houses[b.p.house]; hh.op = clamp((hh.op != null ? hh.op : 50) - 10, 0, 100); }
+  r.pol.fief = null;
   const w = A.P(win), from = A.S.houses[F.h];
   if (w.id === (pc && pc.id)) {
     if (CAR() && CAR().enfeoff && !(pc.noble && pc.noble.rung >= 4)) CAR().enfeoff(pc); else if (pc.noble) pc.noble.rung = Math.max(pc.noble.rung, 4);
