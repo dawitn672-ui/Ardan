@@ -225,8 +225,22 @@ ${R}.sc-sheet .sc-card .choices button .risk.sc-odds, ${R}.sc-sheet .sc-card .sc
 @keyframes scFade{from{opacity:0}to{opacity:1}}
 @keyframes scStamp{0%{opacity:0;transform:skewX(-8deg) scale(1.6) rotate(-6deg)}60%{opacity:1;transform:skewX(-8deg) scale(.94) rotate(0)}100%{opacity:1;transform:skewX(-8deg)}}
 @keyframes scSettle{from{transform:scale(1.035)}to{transform:none}}
+/* the page turn (96's motion system): the card swings in from its left edge, and the print is revealed by a diagonal
+   brush stroke from the left, as a woodblock sheet is lifted off the block */
+@keyframes scTurn{0%{opacity:0;transform:perspective(1600px) rotateY(-14deg) translateX(-16px)}55%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes scWipe{0%{clip-path:polygon(0 0,0 0,-14% 100%,0 100%)}100%{clip-path:polygon(0 0,114% 0,100% 100%,0 100%)}}
+@keyframes scBrush{0%{opacity:0;transform:translateX(-30%) skewX(-12deg)}20%{opacity:.9}100%{opacity:0;transform:translateX(330%) skewX(-12deg)}}
+@keyframes scRing{0%{opacity:.85;transform:scale(.7)}100%{opacity:0;transform:scale(1.6)}}
+@keyframes scThump{0%{transform:none}30%{transform:translateY(2px)}100%{transform:none}}
+@keyframes scShake{0%,100%{transform:none}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
 ${full(`
-${M}.sc-enter{animation:scRise var(--m-enter,280ms) var(--ease-enter,ease-out) both!important}
+${M}.sc-enter{animation:scTurn 420ms var(--ease-enter,ease-out) both!important;transform-origin:0 50%}
+${M}.sc-enter .sc-vig{animation:scWipe 620ms cubic-bezier(.6,.05,.25,1) 60ms both!important}
+${M}.sc-enter .sc-vig::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;z-index:3;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,231,176,.35) 70%,transparent);animation:scBrush 620ms cubic-bezier(.6,.05,.25,1) 60ms both!important}
+${M}.sc-land .sc-verdict{position:relative}
+${M}.sc-land .sc-verdict::after{content:"";position:absolute;inset:-5px -7px;border:2px solid currentColor;border-radius:3px;pointer-events:none;animation:scRing 560ms ease-out 230ms both!important}
+${M}.sc-land{animation:scThump 260ms var(--ease-snap,ease-out) 250ms both!important}
+${M}.sc-land .sc-result > .result.bad{animation:scShake 380ms ease-out 260ms both!important}
 ${M}.sc-enter .sc-vig svg.woodcut{animation:scSettle 900ms var(--ease-enter,ease-out) both!important}
 ${M}.sc-enter .sc-bust{animation:scBust 320ms var(--ease-enter,ease-out) 90ms both!important}
 ${M}.sc-enter .choices > button{animation:scSlide 240ms var(--ease-enter,ease-out) both!important}
@@ -243,7 +257,7 @@ ${M}.sc-land .sc-d:nth-child(4){animation-delay:280ms!important} ${M}.sc-land .s
 `)}
 ${reduced(`
 ${M}.sc-enter, ${M}.sc-land .sc-result{animation:scFade 120ms linear both}
-${M}.sc-enter .choices > button, ${M}.sc-enter .sc-bust, ${M}.sc-enter .sc-vig svg.woodcut, ${M}.sc-land .sc-d, ${M}.sc-land .sc-verdict{animation:none}
+${M}.sc-enter .choices > button, ${M}.sc-enter .sc-bust, ${M}.sc-enter .sc-vig svg.woodcut, ${M}.sc-enter .sc-vig, ${M}.sc-land .sc-d, ${M}.sc-land .sc-verdict, ${M}.sc-land .sc-result > .result{animation:none}
 ${M} .choices > button.sc-ch::after{display:none}
 `)}
 :root[data-motion=off] #modal .sc-card, :root[data-motion=off] #modal .sc-card *{animation:none!important;transition:none!important}

@@ -178,6 +178,41 @@
     }
     return `<svg class="mo-lines" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="${d}"/></svg>`;
   };
+  // an ink splash behind the bust and the word: a blot with a ragged edge and a spray of drops (seeded, no A.rand)
+  MO.splash = function (seedStr) {
+    const r = rng(hash('ink|' + seedStr));
+    // a smooth blob through seeded radii (two harmonics), with a few long tendrils, as ink thrown on paper
+    const blot = (cx, cy, R0, n, tend) => {
+      const ph1 = r() * 6.3, ph2 = r() * 6.3, pts = [];
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2;
+        let rr = R0 * (1 + .16 * Math.sin(a * 3 + ph1) + .09 * Math.sin(a * 5 + ph2) + (r() - .5) * .12);
+        if (tend && r() < .22) rr *= 1.5 + r() * .5;
+        pts.push([cx + Math.cos(a) * rr * 1.55, cy + Math.sin(a) * rr]);
+      }
+      const mid = (p, q) => [((p[0] + q[0]) / 2).toFixed(1), ((p[1] + q[1]) / 2).toFixed(1)];
+      let d = `M${mid(pts[n - 1], pts[0]).join(' ')}`;
+      for (let i = 0; i < n; i++) { const p = pts[i], q = pts[(i + 1) % n]; d += `Q${p[0].toFixed(1)} ${p[1].toFixed(1)} ${mid(p, q).join(' ')}`; }
+      return d + 'Z';
+    };
+    let drops = '';
+    for (let i = 0; i < 14; i++) {
+      const a = r() * Math.PI * 2, dist = 112 + r() * 100, s = 2 + r() * r() * 12;
+      const x = 300 + Math.cos(a) * dist * 1.55, y = 150 + Math.sin(a) * dist * .82;
+      drops += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${(s * 1.25).toFixed(1)}" ry="${s.toFixed(1)}" transform="rotate(${(a * 57.3).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`;
+    }
+    return `<svg class="mo-ink" viewBox="0 0 600 300" aria-hidden="true" focusable="false"><path class="mo-ink-a" d="${blot(300, 150, 96, 26, true)}"/><path class="mo-ink-b" d="${blot(306, 148, 74, 18, false)}"/>${drops}</svg>`;
+  };
+  // speed lines streaming along the band
+  MO.speed = function (seedStr) {
+    const r = rng(hash('speed|' + seedStr));
+    let d = '';
+    for (let i = 0; i < 16; i++) {
+      const y = 4 + r() * 92, x = r() * 100, w = 8 + r() * 30, h = .5 + r() * 1.4;
+      d += `M${x.toFixed(1)} ${y.toFixed(1)}h${w.toFixed(1)}l-2 ${h.toFixed(1)}h-${(w - 2).toFixed(1)}z`;
+    }
+    return `<svg class="mo-speed" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="${d}"/></svg>`;
+  };
   MO.html = function (m, mode) {
     const who = P(m.who), vs = m.vs != null ? P(m.vs) : null;
     let bust = '', bust2 = '';
@@ -185,7 +220,8 @@
     try { if (vs && typeof PORTRAIT !== 'undefined' && PORTRAIT.svg) bust2 = PORTRAIT.svg(vs, 112); } catch (e) { bust2 = ''; }
     const seed = [m.k, m.word, A.S ? A.S.year : 0, A.S ? A.S.pc : ''].join('|');
     return `<div class="mo-dim" aria-hidden="true"></div>` + (mode === 'full' && m.k !== 'death' && m.k !== 'farewell' ? MO.lines(seed) : '') +
-      `<div class="mo-band" aria-hidden="true"><div class="mo-band-acc"></div><div class="mo-band-ink"></div></div>` +
+      `<div class="mo-band" aria-hidden="true"><div class="mo-band-acc"></div><div class="mo-band-ink">${mode === 'full' && m.k !== 'death' && m.k !== 'farewell' ? MO.speed(seed) : ''}</div></div>` +
+      (mode === 'full' && m.k !== 'death' && m.k !== 'farewell' ? `<div class="mo-splash" aria-hidden="true">${MO.splash(seed)}</div>` : '') +
       `<div class="mo-content" aria-hidden="true">${bust ? `<div class="mo-bust">${bust}</div>` : ''}<div class="mo-words"><div class="mo-word">${esc(m.word)}</div>${m.sub ? `<div class="mo-sub">${esc(m.sub)}</div>` : ''}</div>${bust2 ? `<div class="mo-bust mo-bust2">${bust2}</div>` : ''}</div>` +
       `<span class="mo-vh">${esc(m.word)}${m.sub ? ': ' + esc(m.sub) : ''}</span>`;
   };
@@ -289,6 +325,22 @@
 .mo-cut.mo-full .mo-words, .mo-cut.mo-full .mo-bust{animation:moWordIn 1200ms cubic-bezier(.2,.8,.2,1) both!important}
 .mo-cut.mo-full .mo-lines{animation:moLines 1200ms ease-out both!important;transform-origin:50% 50%}
 .mo-cut.mo-full .mo-dim{animation:moDim 1200ms linear both!important}
+/* the ink: a splash in the moment's colour behind the bust and the word, speed lines streaming down the band, and the
+   bust's hair and cloth caught in the wind of it (96's motion system) */
+.mo-cut .mo-splash{position:absolute;left:50%;top:50%;width:min(780px,96vw);aspect-ratio:2/1;transform:translate(-50%,-50%) rotate(-10deg);pointer-events:none}
+.mo-cut .mo-ink{width:100%;height:100%;display:block;overflow:visible}
+.mo-cut .mo-ink path.mo-ink-a, .mo-cut .mo-ink ellipse{fill:var(--mo-acc);opacity:.92}
+.mo-cut .mo-ink path.mo-ink-b{fill:var(--mo-ink);opacity:.9}
+.mo-cut .mo-band-ink{overflow:hidden}
+.mo-cut .mo-speed{position:absolute;inset:0;width:200%;height:100%}
+.mo-cut .mo-speed path{fill:var(--mo-acc2);opacity:.28}
+@keyframes moSplash{0%{opacity:0;transform:translate(-50%,-50%) rotate(-10deg) scale(.25)}14%{opacity:1;transform:translate(-50%,-50%) rotate(-10deg) scale(1.08)}22%{transform:translate(-50%,-50%) rotate(-10deg) scale(1)}78%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(-10deg) scale(1.04)}}
+@keyframes moSpeed{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes moWind{0%{transform:none}20%{transform:skewX(-5deg) translateX(-2px)}45%{transform:skewX(-2deg)}70%{transform:skewX(-4deg) translateX(-1px)}100%{transform:none}}
+.mo-cut.mo-full .mo-splash{animation:moSplash 1200ms cubic-bezier(.2,.8,.2,1) both!important}
+.mo-cut.mo-full .mo-speed{animation:moSpeed 1200ms linear both!important}
+.mo-cut.mo-full .mo-bust svg .ap-hair, .mo-cut.mo-full .mo-bust svg .ap-cloth{transform-box:fill-box;transform-origin:50% 0;animation:moWind 1200ms ease-in-out both!important}
+:root[data-theme=light] .mo-cut .mo-ink path.mo-ink-b{opacity:.85}
 `;
   MO.install = function () {
     if (!doc || !doc.head || doc.getElementById('mo-style')) return;

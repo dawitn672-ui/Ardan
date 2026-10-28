@@ -115,7 +115,7 @@
     // which stops have a scene: all of them up to MAX_SCENES, else spread evenly
     const ns = stops.length, k = Math.min(ns, JR.MAX_SCENES);
     for (let i = 0; i < k; i++) stops[Math.floor((i + 0.5) * ns / k)].sc = 1;
-    return { k: kind, from, to, path: R.path, sea: R.sea, km: R.km, days: R.days, stops, i: 0, t0: A.absDay(), at: from, pi: 0,
+    return { k: kind, from, to, path: R.path, sea: R.sea, pd: R.at.map(x => Math.round(x)), km: R.km, days: R.days, stops, i: 0, t0: A.absDay(), at: from, pi: 0,
       y: A.S.year, seen: [], applied: !!o.applied, home: o.home != null ? o.home : pc.home, extra: o.extra || null };
   };
   JR.start = function (pc, to, kind, o) {
@@ -159,6 +159,8 @@
     const now = A.absDay();
     if (j.wait != null) { if (now >= j.wait) JR.homeward(pc); return; }
     if (A.S.queue.length) return;          // one thing at a time: the scene in hand is played first
+    // the provinces between stops are passed (and seen) as the days go
+    if (Array.isArray(j.pd)) while (j.pi + 1 < j.path.length && j.t0 + j.pd[j.pi + 1] <= now && (j.i >= j.stops.length || j.pi + 1 < j.stops[j.i].pi)) JR.passTo(pc, j, j.pi + 1);
     while (j.i < j.stops.length && j.t0 + j.stops[j.i].d <= now) {
       const st = j.stops[j.i++];
       JR.passTo(pc, j, st.pi);
@@ -227,7 +229,8 @@
   JR.caravanAt = function (id) {
     const P = P_(id), car = A.S && A.S.eco && Array.isArray(A.S.eco.car) ? A.S.eco.car : [];
     if (!P) return null;
-    return car.filter(c => c && (c.f === P.owner || c.t === P.owner) && c.f !== c.t && A.realm(c.f) && A.realm(c.t));
+    const out = car.filter(c => c && (c.f === P.owner || c.t === P.owner) && c.f !== c.t && A.realm(c.f) && A.realm(c.t));
+    return out.length ? out : null;
   };
   JR.newsAt = function (pc, id) {
     const WC = A.WC; if (!WC || !WC.count) return null;
@@ -278,6 +281,7 @@
     ctx.season = JR.season(month(now));
     ctx.fromName = j ? (P_(j.from) || P).name : P.name;
     ctx.purse = String(Math.max(0, Math.round(pc.coin || 0)));
+    ctx.wage = String(JR.wage(j || { km: 600 }));
     if (ev === 'jr_border') {
       const prev = j && j.lastStop != null ? P_(j.path[Math.max(0, (j.lastPi || 1) - 1)]) : null;
       ctx.toll = 2 + Math.round(Math.min(10, (pc.coin || 0) / 60));
@@ -307,6 +311,7 @@
       ctx.good = c && G[c.k] ? String(G[c.k].name).toLowerCase() : 'salt and cloth';
       ctx.carFrom = c ? A.realm(c.f).short : (r ? r.short : 'the west');
       ctx.carTo = c ? A.realm(c.t).short : (dr ? dr.short : 'the east');
+      if (ctx.carFrom === ctx.carTo) ctx.carTo = 'the next market';
       ctx.carDest = c && c.tT != null && P_(c.tT) ? c.tT : (c && A.realm(c.t) ? A.realm(c.t).capitalProv : null);
     }
     if (ev === 'jr_news') {
@@ -333,7 +338,7 @@
 
   // ---- arriving ----------------------------------------------------------------------------------------------------------
   // the release's move, run at the end of the road: the fare was paid when you set out, and the road had its scenes
-  JR.settleAt = function (pc, id) {
+  JR.settleAt = function (pc, id, o) {
     const travel = JR.travel0; if (!travel) return false;
     const opt = A.travelOptions(pc).find(o => o.id === id); if (!opt) return false;
     if (A.isAdult(pc)) pc.coin += opt.cost;
@@ -341,6 +346,14 @@
     let r; try { r = travel.call(A, id); } finally { JR.arriving = false; }
     if (!(r && r.ok) && A.isAdult(pc)) pc.coin = Math.max(0, pc.coin - opt.cost);
     pc.jrAt = pc.home;
+    // the release counts the crow's distance; the road was longer
+    try {
+      const L = A.S.log[A.S.log.length - 1], lines = L && L.lines, rk = o && o.km;
+      if (r && r.ok && lines && rk) for (let i = lines.length - 1; i >= Math.max(0, lines.length - 4); i--) {
+        const l = lines[i], t = Array.isArray(l) ? l[0] : l;
+        if (typeof t === 'string' && /^You travel [\d,]+ km to /.test(t)) { const nt = t.replace(/^You travel [\d,]+ km to /, `You travel ${A.fmt(rk)} km by the road to `); if (Array.isArray(l)) l[0] = nt; else lines[i] = nt; break; }
+      }
+    } catch (e) {}
     return !!(r && r.ok);
   };
   JR.end = function (pc) {
@@ -366,7 +379,7 @@
     }
     if (j.k === 'move') {
       JR.end(pc);
-      if (!JR.settleAt(pc, j.to)) { A.log(`You reach ${T.name}, but cannot stay.`, 'warn'); return; }
+      if (!JR.settleAt(pc, j.to, { km: j.km })) { A.log(`You reach ${T.name}, but cannot stay.`, 'warn'); return; }
       if (A.EV.jr_arrive) A.queue({ type: 'event', ev: 'jr_arrive', ctx, forced: true, lfFrom: 'journey' });
       return;
     }
@@ -508,12 +521,21 @@
   A.onDay.push(pc => JR.tick(pc));
 
   // ---- UI: the road modal and the actions ----------------------------------------------------------------------------------
+  // the two journey actions that are not already commands, so the journal (01-replay) records them
+  A.jrCaravan = function (i) { return JR.caravan(A.pc(), +i); };
+  A.jrTurnBack = function () { return { ok: JR.turnBack(A.pc()) }; };
+  if (Array.isArray(A.COMMANDS)) A.COMMANDS.push('jrCaravan', 'jrTurnBack');
   Object.assign(UI.A, {
     jrMode(v) { UI.jrMode = v === 'visit' ? 'visit' : 'move'; UI.renderModal(); },
     jrGo(v) { const r = A.travelTo(+v, UI.jrMode === 'visit' ? 'visit' : 'move'); r.msg && UI.toast(r.msg); r.ok && (A.simpleClose(), MAP.overlayCache = null); UI.refresh(); },
-    jrCaravan(v) { const pc = A.pc(), r = JR.caravan(pc, +v); r.msg && UI.toast(r.msg); r.ok && A.simpleClose(); UI.refresh(); },
-    jrTurn() { const pc = A.pc(); if (JR.turnBack(pc)) UI.toast('You turn for home.'); A.simpleClose(); UI.refresh(); },
+    jrCaravan(v) { const r = A.jrCaravan(+v); r.msg && UI.toast(r.msg); r.ok && A.simpleClose(); UI.refresh(); },
+    jrTurn() { if (A.jrTurnBack().ok) UI.toast('You turn for home.'); A.simpleClose(); UI.refresh(); },
   });
+  if (typeof document !== 'undefined') {
+    const st = document.createElement('style'); st.id = 'jr-style';
+    st.textContent = '.jr-mode{display:inline-flex;margin:2px 0 6px}.jr-mode button[aria-pressed="true"]{color:var(--on-accent,#1a140c)}';
+    (document.head || document.documentElement).appendChild(st);
+  }
   JR.statusLine = function (pc) {
     const j = pc && pc.journey; if (!JR.on(pc)) return '';
     const T = P_(j.to), at = P_(j.at), now = A.S ? A.absDay() : 0, gone = Math.max(0, now - j.t0), left = Math.max(0, j.days - gone);

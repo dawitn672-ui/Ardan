@@ -34,6 +34,9 @@
     NEWS_KM_DAY: 40,          // a broker's letter, with its relays
     NEWS_HAND_DAYS: 20,       // and the days it waits at each hand
     NEWS_CAP: 1100,
+    // the far regions whose coasts are the open sea (the Isles, the peninsulas, the Deep South, the Twin Rivers' and the
+    // pines' sea coasts, the Rime); the rest of the far lands' "coasts" are lakes and inland seas
+    SEA_REGION: /^(A|I|D|M|N)-|^R-(03|04|08|10|12|14)$|^T-(01|05|12)$/,
   });
   // the lore's chokepoints (far-lands-atlas.md, "Chokepoints"): who holds each, what it takes as a share of the goods'
   // worth (on goods in g only, if given; west/east: only goods going that way), and the months it is shut (0 January)
@@ -101,9 +104,15 @@
         put(P.owner, Q.owner, { dist: km(cap(ra), cap(rb)) * TR.WIND, kind: 'land', via: [] });
       }
     }
-    // 2. by sea, between coastal capitals within 45's reach
+    // 2. by sea, between coastal capitals within 45's reach. A far province's "coast" may be a lake's (the Middle
+    // Lakes, the Salt Lakes, the Shrinking Sea): there only a capital in a region on the open sea is a port, and the
+    // lore's sea roads (3, below) do the rest
+    const farBase = (D() && D().base) || 306;
+    const port = r => { const P = cap(r); if (!P) return false; if (!P.region) return !!coast[r.id]; return !!P.coast && TR.SEA_REGION.test(P.region); };
     for (let i = 0; i < rs.length; i++) for (let j = 0; j < rs.length; j++) {
-      if (i === j || !coast[rs[i].id] || !coast[rs[j].id]) continue;
+      if (i === j || !coast[rs[i].id] || !coast[rs[j].id] || !port(rs[i]) || !port(rs[j])) continue;
+      // no ship sails between the Known World and the Far Lands (the Pearl Meeting, TR-41, is a secret of a few pilots)
+      if ((rs[i].capitalProv < farBase) !== (rs[j].capitalProv < farBase)) continue;
       const d = km(cap(rs[i]), cap(rs[j])); if (d > E.SEA_REACH) continue;
       put(rs[i].id, rs[j].id, { dist: d * 1.1, kind: 'sea', sea: true, via: [] });
     }
@@ -167,10 +176,55 @@
   };
   TR.secretOk = (e, rid, pc) => !e.secret || baseId(rid) === TR.SECRET.league || !!(pc && pc.flags && pc.flags[TR.SECRET.flag] != null);
 
+  // ---- the trips a market's merchants make: every market within MAX_HANDS hands and MAX_KM, by the fastest way
+  // (Dijkstra by days, each relay market a fortnight's wait), cached with the graph
+  TR.MAX_HANDS = 8; TR.MAX_KM = 16000; TR.RELAY_DAYS = 15; TR.RELAY_W = 75;
+  TR.trips = function (src, pc) {
+    const g = TR.graph(), c = g.trips || (g.trips = {}), sec = !!(pc && pc.flags && pc.flags[TR.SECRET.flag] != null), key = src + (sec ? '#' : '');
+    if (c[key]) return c[key];
+    // the way is chosen by days plus RELAY_W for every relay (a merchant would rather pay one broker than three), and
+    // reckoned in days: the road's, and a fortnight at each relay
+    const W = { [src]: 0 }, dist = { [src]: 0 }, hops = { [src]: 0 }, prev = {}, done = new Set(), open = [[0, src]];
+    while (open.length) {
+      let bi = 0; for (let i = 1; i < open.length; i++) if (open[i][0] < open[bi][0]) bi = i;
+      const [w, a] = open.splice(bi, 1)[0];
+      if (done.has(a)) continue; done.add(a);
+      if (hops[a] >= TR.MAX_HANDS) continue;
+      for (const e of g.out[a] || []) {
+        if (!TR.secretOk(e, src, sec ? pc : null)) continue;
+        const nw = w + e.days + (a === src ? 0 : TR.RELAY_W);
+        if (W[e.b] == null || nw < W[e.b]) { W[e.b] = nw; dist[e.b] = dist[a] + e.days + (a === src ? 0 : TR.RELAY_DAYS); prev[e.b] = e; hops[e.b] = hops[a] + 1; open.push([nw, e.b]); }
+      }
+    }
+    const out = [];
+    for (const b in prev) {
+      const legs = []; let x = b; while (x !== src) { const e = prev[x]; legs.unshift(e); x = e.a; }
+      let km = 0, landKm = 0, seaKm = 0; for (const e of legs) { km += e.dist; if (e.sea) seaKm += e.dist; else landKm += e.dist; }
+      if (km > TR.MAX_KM) continue;
+      const through = []; for (const e of legs) for (const v of e.via.concat([e.b])) if (v !== b && !through.includes(v)) through.push(v);
+      const rn = legs.map(e => e.rn).filter(Boolean)[0] || '';
+      out.push({ b, legs, hands: legs.length, days: Math.round(dist[b]), dist: km, landKm, seaKm, through, rn, south: legs.some(e => e.south),
+        lo: Math.pow(1 + TR.BROKER, legs.length), md() { const r = A.realm(b); return r && r.alive ? r.mkt : null; } });
+    }
+    out.sort((x, y) => (x.b < y.b ? -1 : x.b > y.b ? 1 : 0));
+    return (c[key] = out);
+  };
+  // what a load of k bought at ps costs by the time it reaches the trip's end: each hand's carting, tolls and interest,
+  // and the next broker's tenth at every relay (null if k may not pass: no silk west through the Strait)
+  TR.cost = function (T, k, ps, base) {
+    let v = ps;
+    for (let i = 0; i < T.legs.length; i++) {
+      const e = T.legs[i], t = TR.tollOf(e, k); if (t < 0) return null;
+      if (i) v *= 1 + TR.BROKER;
+      v += v * t + base * e.f + v * TR.INTEREST * Math.max(0.5, e.days / 30);
+    }
+    return v;
+  };
+
   // ---- the month: arrivals, then departures (called by 45's E.caravans on the roads)
   TR.month = function () {
     const S = A.S, eco = S.eco = S.eco || {}, now = A.absDay(), mo = A.monthOf(A.today()).m, Gs = GD.GOODS, car = [];
-    const way = Array.isArray(eco.way) ? eco.way : (eco.way = []);
+    let way = Array.isArray(eco.way) ? eco.way : (eco.way = []);
     const g = TR.graph();
     // arrivals: what reaches a market goes into its store (66 puts it in the town)
     const keep = [];
@@ -182,58 +236,61 @@
       md.s[k] = (md.s[k] || 0) + Math.max(0, n - l);
       car.push({ f, t, k, n: Math.round(n - l), lost: Math.round(l), arr: 1, mo: w[6] || 0, y: S.year, m: mo });
     }
-    eco.way = keep;
+    eco.way = way = keep;
     // what is on the way to each market already
     const inb = {};
     for (const w of keep) { const o = inb[w[1]] = inb[w[1]] || {}; o[w[2]] = (o[w[2]] || 0) + w[3] - w[4]; }
-    // departures: where a price beats the road
+    // departures: a caravan goes from one market to another, a hand or several away, wherever the price there beats
+    // what the goods cost by the time they arrive: the road's carting, the tolls, the interest on the money on the
+    // road, and the next broker's tenth at every hand on the way (the goods change hands, not their bales' marks)
     const rs = live(), war = new Map();
     const hostile = (x, y) => { const k = x < y ? x + '|' + y : y + '|' + x; let v = war.get(k); if (v == null) { v = !!(A.hostile && A.hostile(x, y)); war.set(k, v); } return v; };
     const cands = [], ks = Object.keys(Gs), NK = ks.length;
     rs.forEach((src, si) => {
-      const ms = src.mkt, hands = g.out[src.id]; if (!ms || !ms.s || !hands) return;
-      hands.forEach((e, ei) => {
-        const dst = A.realm(e.b), md = dst && dst.mkt; if (!md || !md.s) return;
-        if (!TR.secretOk(e, src.id)) return;
-        let why = null;
-        const months = Math.max(0.5, e.days / 30);
-        for (let ki = 0; ki < NK; ki++) {
-          const k = ks[ki], base = Gs[k].base, ps = ms.p[k], pd = md.p[k];
-          if (!(pd > ps * 1.1)) continue;
-          const spare = (ms.s[k] || 0) - E.normal(ms, k) * 0.8; if (!(spare > 1)) continue;
-          const toll = TR.tollOf(e, k); if (toll < 0) continue;
-          const gain = pd - ps - base * e.f - ps * toll - ps * TR.INTEREST * months - ps * TR.BROKER;
-          if (!(gain > 0)) continue;
-          if (why == null) why = TR.shutWhy(e, mo, hostile);
-          if (why) break;
-          cands.push({ src, dst, ms, md, k, e, toll, score: gain / base, o: (si * 64 + ki) * 4096 + ei });
-        }
-      });
+      const ms = src.mkt; if (!ms || !ms.s) return;
+      const trips = TR.trips(src.id); if (!trips) return;
+      for (let ki = 0; ki < NK; ki++) {
+        const k = ks[ki], base = Gs[k].base, ps = ms.p[k];
+        const spare = (ms.s[k] || 0) - E.normal(ms, k) * 0.8; if (!(spare > 1)) continue;
+        trips.forEach((T, ti) => {
+          const md = T.md(); if (!md || !md.s) return;
+          const pd = md.p[k]; if (!(pd > ps * T.lo)) return;
+          const c = TR.cost(T, k, ps, base); if (c == null) return;
+          const gain = pd - c - ps * TR.BROKER;
+          if (!(gain > 0)) return;
+          cands.push({ src, dst: A.realm(T.b), ms, md, k, T, score: gain / base / Math.sqrt(T.hands), o: (si * 64 + ki) * 4096 + ti });
+        });
+      }
     });
     cands.sort((x, y) => y.score - x.score || x.o - y.o);
-    const sent = {}, pending = {};
+    const sent = {}, pending = {}, shut = new Map();
     for (const c of cands) {
-      if ((sent[c.src.id] || 0) >= E.PER_SRC) continue;
+      // a great market sends more caravans than a small one (45's cap, up to four times it for an empire of millions)
+      if ((sent[c.src.id] || 0) >= E.PER_SRC * Math.max(1, Math.min(4, Math.sqrt((c.src.pop || 0) / 2e6)))) continue;
       const on = (inb[c.dst.id] && inb[c.dst.id][c.k] || 0) + (pending[c.dst.id + c.k] || 0);
-      const want = E.normal(c.md, c.k) * 1.2 - (c.md.s[c.k] || 0) - on, spare = c.ms.s[c.k] - E.normal(c.ms, c.k) * 0.8;
-      let q = Math.min(spare, want, Math.max(E.normal(c.md, c.k) * 0.3, E.normal(c.ms, c.k) * 0.15));
-      if (!(q > 0.5)) continue;
+      const nd = E.normal(c.md, c.k), want = nd * 1.2 - (c.md.s[c.k] || 0) - on, spare = c.ms.s[c.k] - E.normal(c.ms, c.k) * 0.8;
+      let q = Math.min(spare, want, Math.max(nd * 0.3, E.normal(c.ms, c.k) * 0.15));
+      if (!(q > Math.min(0.5, nd * 0.5)) || !(q > 0.05)) continue;
+      // war on any hand of the way, a pass shut, a monsoon not blowing: not this month
+      let why = shut.get(c.T); if (why == null) { why = ''; for (const e of c.T.legs) { why = TR.shutWhy(e, mo, hostile); if (why) break; } shut.set(c.T, why); }
+      if (why) continue;
       sent[c.src.id] = (sent[c.src.id] || 0) + 1;
       pending[c.dst.id + c.k] = (pending[c.dst.id + c.k] || 0) + q;
       c.ms.s[c.k] -= q;
       // bandits on long roads and in unrest; the cyclones of the southern seas
-      const st = Math.min(c.src.stability || 50, c.dst.stability || 50);
-      let lost = 0, risk = Math.min(0.5, Math.pow(1 - st / 100, 2) * c.e.dist / 6000 * (c.e.sea ? 0.5 : 1));
-      if (c.e.south && [6, 7, 8, 9].includes(mo)) risk += 0.08;
+      let st = Math.min(c.src.stability || 50, c.dst.stability || 50);
+      for (const v of c.T.through) { const r = A.realm(v); if (r) st = Math.min(st, r.stability || 50); }
+      let lost = 0, risk = Math.min(0.5, Math.pow(1 - st / 100, 2) * c.T.landKm / 6000 + c.T.seaKm / 24000 * 0.25);
+      if (c.T.south && [6, 7, 8, 9].includes(mo)) risk += 0.08;
       if (A.chance(risk)) lost = q * A.rf(0.15, 0.4);
       // the tolls are paid at the gates, to their holders
-      if (c.toll > 0) for (const ck of c.e.ck) {
-        const t = TR.tollOf({ ck: [ck], west: c.e.west }, c.k); if (!(t > 0)) continue;
+      for (const e of c.T.legs) for (const ck of e.ck) {
+        const t = TR.tollOf({ ck: [ck], west: e.west }, c.k); if (!(t > 0)) continue;
         const hr = A.realm(ck.by); if (hr && hr.alive) { const amt = Math.round(q * c.ms.p[c.k] * t); hr.treasury = (hr.treasury || 0) + amt; hr.tolls = (hr.tolls || 0) + amt; }
       }
-      const mos = Math.max(1, Math.round(c.e.days / 30));
-      way.push([c.src.id, c.dst.id, c.k, Math.round(q * 100) / 100, Math.round(lost * 100) / 100, now + c.e.days, mos]);
-      car.push({ f: c.src.id, t: c.dst.id, k: c.k, n: Math.round(q), lost: 0, dep: 1, mo: mos, km: Math.round(c.e.dist), via: c.e.rn || '', sea: c.e.sea ? 1 : 0, y: S.year, m: mo });
+      const mos = Math.max(1, Math.round(c.T.days / 30));
+      way.push([c.src.id, c.dst.id, c.k, Math.round(q * 100) / 100, Math.round(lost * 100) / 100, now + c.T.days, mos, c.T.hands]);
+      car.push({ f: c.src.id, t: c.dst.id, k: c.k, n: Math.round(q), lost: 0, dep: 1, mo: mos, hands: c.T.hands, km: Math.round(c.T.dist), via: c.T.rn, sea: c.T.seaKm > c.T.landKm ? 1 : 0, y: S.year, m: mo });
     }
     eco.way = way;
     eco.car = car.slice(0, 300);
@@ -244,14 +301,15 @@
 
   // ---- measuring (pure): goods on the road, and how far a caravan goes in a month
   TR.onRoad = function () {
-    const S = A.S, way = (S.eco && S.eco.way) || [], g = TR.on() ? TR.graph() : null;
-    let n = 0, loads = 0, kmMo = 0, longest = 0;
+    const S = A.S, way = (S.eco && S.eco.way) || [], on = TR.on();
+    let n = 0, loads = 0, kmMo = 0, landMo = 0, nl = 0, longest = 0, hands = 0, far = 0;
     for (const w of way) {
-      n++; loads += w[3];
-      const e = g && (g.out[w[0]] || []).find(x => x.b === w[1]);
-      if (e) { const v = e.dist / Math.max(1, w[6] || 1); kmMo += v; longest = Math.max(longest, e.dist); }
+      n++; loads += w[3]; hands += w[7] || 1;
+      const T = on && (TR.trips(w[0]) || []).find(x => x.b === w[1]); if (!T) continue;
+      const v = T.dist / Math.max(1, w[6] || 1); kmMo += v; longest = Math.max(longest, T.dist); if (T.dist > 5000) far++;
+      if (!T.seaKm) { landMo += v; nl++; }
     }
-    return { n, loads: Math.round(loads), kmPerMonth: n ? Math.round(kmMo / n) : 0, longestHand: Math.round(longest), hands: g ? g.n : 0 };
+    return { n, loads: Math.round(loads), kmPerMonth: n ? Math.round(kmMo / n) : 0, landKmPerMonth: nl ? Math.round(landMo / nl) : 0, longest: Math.round(longest), over5k: far, hands: n ? Math.round(hands / n * 100) / 100 : 0, roads: on ? TR.graph().n : 0 };
   };
 
   // ---- the fastest way from one market to another, hand by hand (Dijkstra over the graph by days; pure)

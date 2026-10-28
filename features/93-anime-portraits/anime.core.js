@@ -362,7 +362,13 @@
     [/duel|insult|feud|quarrel|threat|rival|brawl|fight|accus|betray|revenge|enemy/, 'angry'],
     [/gift|feast|festival|joke|reunion|birth|praise|reward|toast/, 'grin'],
     [/secret|discover|strange|omen|vision|ghost|letter|news|stranger/, 'surprised'],
+    // cycle 2: more of the life's turns
+    [/victory|triumph|promot|prize|harvest|blessing|wins?\b|honou?red/, 'grin'],
+    [/debt|tax|fine\b|theft|stolen|robbed|famine|drought|flood|fire|ruin|exile|prison|chains/, 'frown'],
+    [/battle|raid|siege|war\b|ambush|bandit|wolf|bear|beast/, 'angry'],
   ];
+  // the event's subject: the person it names, or you when it names no one
+  const evSubject = q => q && q.type === 'event' ? (q.ctx && q.ctx.pid != null ? q.ctx.pid : A.S && A.S.pc) : q && q.ctx ? q.ctx.pid : null;
   // an event's id and title, read (never set) from the queue item, its view or its definition
   const evKey = q => { let t = ''; try { const e = A.EV && A.EV[q.ev]; t = (q.view && q.view.title) || (e && typeof e.title === 'string' ? e.title : '') || ''; } catch (x) {} return String(q.ev || q.id || '') + ' ' + String(t); };
   function expression(L) {
@@ -372,7 +378,7 @@
     // the scene: the person an event is about wears the event's tone
     let q = AP.ev || null;
     try { if (!q && A.S && Array.isArray(A.S.queue)) q = A.S.queue[0] || null; } catch (e) {}
-    if (q && q.ctx && q.ctx.pid === p.id) {
+    if (q && evSubject(q) === p.id) {
       const key = evKey(q);
       for (const [rx, k, blush] of EV_TONE) if (rx.test(key.toLowerCase())) { out.k = k; out.blush = !!blush; return out; }
     }
@@ -560,7 +566,21 @@
     const sharp = !F && mat > .6 || race === 'orc' || race === 'dwarf' || race === 'giant';
     if (sharp) jaw[2][2] = 1;
     const jawR = mirror(jaw, 50);
-    const lowFace = [[100.5, 50], ...jawR, [50, chinY], ...jaw.slice().reverse(), [-.5, 50]];
+    // a true three-quarter view (cycle 2): the head turns toward the picture's left. The far cheek shows its bone just
+    // under the eye and dips in to a narrower jaw, the chin swings toward the turn, the near jaw is a little fuller,
+    // the far ear goes behind the head and the far eye narrows. q is how far it turns (none for babies and the front
+    // view a foe or a sheet asks for)
+    const q = G.turn && mat > .3 && !L.baby ? clamp(mat, 0, 1) : 0;
+    G.q = q;
+    let jawF = jaw, jawN = jawR, chinX = 50;
+    if (q) {
+      const ey0 = kf(h, 'eyeY'), fo = [0, 3.6, 7.4, -5.6], no = [0, 1.2, 2.6, -6.4];
+      jawF = jaw.map((pt, i) => [pt[0] + fo[i] * q, pt[1], pt[2]]);
+      jawF.splice(1, 0, [jaw[0][0] - 2.4 * q, ey0 + 12]);
+      jawN = jawR.map((pt, i) => [pt[0] + no[i] * q, pt[1], pt[2]]);
+      chinX = 50 - 8.5 * q;
+    }
+    const lowFace = [[100.5, 50], ...jawN, [chinX, chinY], ...jawF.slice().reverse(), [-.5, 50]];
     const faceD = d`M-.5 50A50.5 50.5 0 0 1 100.5 50` + curve(lowFace, false, [100.5, 50]) + 'Z';
     const faceId = G.ref('apf', faceD);
     // ---------- eyes, nose and mouth positions
@@ -574,14 +594,17 @@
 
     // ---------- the back mass of hair (behind the head and the body)
     const hb = backHair(G, L, k, chinY);
-    back += hb;
+    // the hair masses carry a class, so a cut-in's wind can catch them (96's motion system)
+    back += hb ? `<g class="ap-hair">${hb}</g>` : '';
 
     // ---------- the neck (behind the face, under the body's collar), with the chin's occlusion shadow
     const nw = (F ? 30 : 38) * (L.small ? .9 : 1) * ({ orc: 1.5, halforc: 1.25, dwarf: 1.45, giant: 1.55, elf: .9 }[race] || 1) * (race === 'human' || race === 'halfelf' ? L.build : 1);
     const n0 = 50 - nw / 2, n1 = 50 + nw / 2, nb = k.neckTo || 170;
     const neckD = d`M${n0} 88L${n0 - 1} ${nb}L${n1 + 1} ${nb}L${n1} 88Z`;
+    if (q) neck += `<g transform="translate(${R(2.6 * q)} 0)">`;
     neck += `<path d="${neckD}" fill="${sk.b}" stroke="${sk.line}" stroke-width="${lw(1)}"/>`;
     neck += `<path d="${d`M${n0} 88L${n0 - .4} ${chinY + 4}Q50 ${chinY + 13} ${n1 - nw * .26} ${chinY + 8}L${n1 + 1} ${nb}L${n1} 88Z`}" fill="${sk.s}"/>`;
+    if (q) neck += '</g>';
 
     // ---------- ears (behind the side locks; elf points come out through the hair)
     const ear = sd => {
@@ -603,7 +626,7 @@
     };
     // long hair hides human ears; elves' points always show
     const hidden = !['elf', 'halfelf', 'orc', 'halforc'].includes(race) && !L.ear && (L.covered || F && ['long', 'shoulder', 'bob', 'braid', 'tied'].includes(L.back));
-    const earsBack = hidden || race === 'elf' || race === 'halfelf' ? '' : ear(-1) + ear(1);
+    const earsBack = hidden || race === 'elf' || race === 'halfelf' ? '' : (q > .45 ? '' : ear(-1)) + (q ? `<g transform="translate(${R(-3 * q)} 0)">${ear(1)}</g>` : ear(1));
 
     // ---------- the face: skin, the shadow side, the blush
     s += `<use href="#${faceId}" fill="${sk.b}" stroke="${sk.line}" stroke-width="${lw(1.1)}"/>`;
@@ -625,6 +648,8 @@
       const ub = eyeY + eyeH * .75 + 2;
       if (L.oldF > .5) g.push(['M', exL - 5, ub], ['Q', exL, ub + 2.5, exL + 5, ub], ['M', exR - 5, ub], ['Q', exR, ub + 2.5, exR + 5, ub]);
       if (L.oldF > .65) for (const sd of [-1, 1]) { const x = sd < 0 ? exL - eyeW * .62 : exR + eyeW * .62; g.push(['M', x, eyeY - 1], ['L', x + sd * 4, eyeY - 3], ['M', x, eyeY + 2], ['L', x + sd * 4, eyeY + 3]); }
+      // the forehead's creases, from the sixties (cycle 2: age reads at a glance, under the bangs where they part)
+      if (L.oldF > .75) for (const dy of [0, 3.6]) g.push(['M', 50 - 12 + dy, eyeY - 21 - dy], ['Q', 50, eyeY - 23.5 - dy, 50 + 12 - dy, eyeY - 21 - dy]);
       if (L.oldF > .9) g.push(['M', 50 - mouthW, mouthY + 6], ['Q', 50 - mouthW * 1.4, chinY - 6, jaw[2][0] + 6, jaw[2][1] - 1], ['M', 50 + mouthW, mouthY + 6], ['Q', 50 + mouthW * 1.4, chinY - 6, 100 - jaw[2][0] - 6, jaw[2][1] - 1]);
       const a = emit(g);
       s += `<path d="${a}" fill="none" stroke="${sk.line}" stroke-width="${lw(.75)}" stroke-opacity="${op}"/>`;
@@ -632,7 +657,7 @@
 
     // ---------- the eyes, brows, nose, mouth: turned a quarter toward the picture's left (I1(a), a three-quarter
     // view: the features sit off the face's middle, so a bust no longer reads as an ID photo; a foe is mirrored)
-    const turn = G.turn && mat > .3 && !L.baby ? -3.2 * mat : 0;
+    const turn = q ? -6 * q : 0;
     if (turn) s += `<g transform="translate(${R(turn)} 0)">`;
     s += eyes(G, L, k, { exL, exR, eyeY, eyeW, eyeH, lw });
     s += brows(G, L, k, { exL, exR, eyeY, eyeW, eyeH, lw });
@@ -647,13 +672,14 @@
     // scars, burns, brands, marks, war paint
     s += marks(G, L, k, { exL, exR, eyeY, eyeW, eyeH, mouthY, mouthW, chinY, lw });
     // the beard (grown men)
-    if (L.beard !== 'none' && lod >= 1) s += beard(G, L, k, { jaw, chinY, mouthY, mouthW, noseY, lw });
+    if (L.beard !== 'none' && lod >= 1) s += (q ? `<g transform="translate(${R(-4.4 * q)} 0)">` : '') + beard(G, L, k, { jaw, chinY, mouthY, mouthW, noseY, lw }) + (q ? '</g>' : '');
 
     // ---------- hair in front: side locks, the bangs, the extra, then what is worn on the head
     const fr = frontHair(G, L, k, { eyeY, chinY, lw });
     const elfEars = race === 'elf' || race === 'halfelf';
     s = earsBack + s;   // ears first (behind the face line), then the face
-    if (elfEars) s += fr.locks + ear(-1) + ear(1) + fr.bangs; else s += fr.locks + fr.bangs;
+    const bangs = fr.bangs ? `<g class="ap-hair">${fr.bangs}</g>` : '';
+    if (elfEars) s += fr.locks + ear(-1) + ear(1) + bangs; else s += fr.locks + bangs;
     s += headwear(G, L, k, { eyeY, chinY, lw, exL, exR, eyeW, eyeH });
     // the lost eye: a patch on a cord, over the hair
     if (L.lostEye) {
@@ -701,11 +727,11 @@
     let ent = EYES.get(ekey);
     if (!ent) { ent = eyeGroup(L, { w, hh, up1, up2, oy, lo, irx, iry, icx, icy, fl, lod, lw }); if (EYES.size > 600) EYES.clear(); EYES.set(ekey, ent); }
     Object.assign(G.defs, ent.defs);
-    const yid = ent.yid, sc = w / 20;
+    const yid = ent.yid, sc = w / 20, q = G.q || 0;
     for (const sd of [-1, 1]) {
       if (L.lostEye && sd === 1) continue;
-      const x = sd < 0 ? exL : exR;
-      s += `<use href="#${yid}" transform="${sd < 0 ? d`translate(${x} ${eyeY}) scale(-1 1)` : d`translate(${x} ${eyeY})`}"/>`;
+      const x = sd < 0 ? exL + 2 * q : exR, fx = sd < 0 ? 1 - .26 * q : 1 + .04 * q;
+      s += `<use href="#${yid}" transform="${sd < 0 ? d`translate(${x} ${eyeY}) scale(${-fx} 1)` : q ? d`translate(${x} ${eyeY}) scale(${fx} 1)` : d`translate(${x} ${eyeY})`}"/>`;
       // catchlights: r 2.6 at the upper left (the light side), r 1.2 at the lower right
       const gx = x - sd * icx, gy = eyeY + icy;
       s += `<circle cx="${R(gx - irx * .42)}" cy="${R(gy - iry * .36)}" r="${R(2.6 * sc)}" fill="#fff"/>`;
@@ -763,8 +789,9 @@
     const heavy = ['orc', 'dwarf', 'giant'].includes(L.race) ? 1.5 : L.F ? .85 : 1.15;
     const bw = heavy * (lod <= 1 ? 1.5 : 1) * (L.baby ? .6 : 1) * ([1, 1.25, .82][L.ap.brow | 0] || 1);
     const col = mix(L.hair.b, LINE, L.grey > .6 ? .35 : .55);
+    const q = G.q || 0;
     for (const sd of [-1, 1]) {
-      const x = sd < 0 ? exL : exR, ix = x - sd * eyeW * .42, ox = x + sd * eyeW * .62;
+      const fw = sd < 0 ? 1 - .28 * q : 1, x = sd < 0 ? exL + 2 * q : exR, ix = x - sd * eyeW * .42 * fw, ox = x + sd * eyeW * .62 * fw;
       const up = proud && sd === 1 ? -1.8 : 0;
       const iy = by + inner + up, oyy = by + 2 + outer + up;
       const mx = (ix + ox) / 2, my = (iy + oyy) / 2 - arch;
@@ -791,7 +818,9 @@
       return s;
     }
     const kink = L.nose ? d`L${55.6} ${noseY - len * .5}` : '';
-    s += `<path d="${d`M53.4 ${noseY - len}${kink}Q55.4 ${noseY - 1.2} 54.2 ${noseY + .6}`}" fill="none" stroke="${sk.line}" stroke-width="${lw(1)}"/>`;
+    // turned: the bridge runs down the far side and the tip points into the turn
+    if ((G.q || 0) > .5) s += `<path d="${d`M48.8 ${noseY - len - 1.5}Q47.6 ${noseY - len * .4} 45.6 ${noseY - .4}Q46.4 ${noseY + 1.2} 49 ${noseY + .9}`}" fill="none" stroke="${sk.line}" stroke-width="${lw(1)}"/>`;
+    else s += `<path d="${d`M53.4 ${noseY - len}${kink}Q55.4 ${noseY - 1.2} 54.2 ${noseY + .6}`}" fill="none" stroke="${sk.line}" stroke-width="${lw(1)}"/>`;
     if (lod >= 2) s += `<path d="${d`M50.5 ${noseY + 1.2}Q53 ${noseY + 1.8} 54.4 ${noseY + .6}L54.6 ${noseY + 1.8}Q52 ${noseY + 3} 50.5 ${noseY + 1.2}Z`}" fill="${sk.s}"/>`;
     if (L.nose && lod >= 2) s += `<path d="${d`M46.5 ${noseY - len * .55}l7 -1.2l.5 2.4l-7 1.2z`}" fill="#efe3c8" stroke="${sk.line}" stroke-width="${lw(.6)}"/>`;
     return s;
@@ -1235,11 +1264,33 @@
       // a lost hand: the wrist wrapped, the stump bound
       return `<path d="${limb([[W[0] - ux * r * .4, W[1] - uy * r * .4], [W[0] + ux * r * .7, W[1] + uy * r * .7]], [r * .62, r * .55])}" fill="#e8dcc8" stroke="${LINE}" stroke-width="${lw(1)}"/><path d="${d`M${W[0] - uy * r * .6} ${W[1] + ux * r * .6}L${W[0] + uy * r * .6 + ux * r * .3} ${W[1] - ux * r * .6 + uy * r * .3}`}" stroke="#b8a888" stroke-width="${lw(.8)}"/>`;
     }
-    const c = o.gaunt ? '#c4cad8' : L.skin.b;
+    const c = o.gaunt ? '#c4cad8' : L.skin.b, ln = o.gaunt ? LINE : L.skin.line;
     const cx = W[0] + ux * r * .55, cy = W[1] + uy * r * .55;
     const ang = Math.atan2(uy, ux) * 180 / Math.PI;
-    let s = `<ellipse cx="${R(cx)}" cy="${R(cy)}" rx="${R(r * .95)}" ry="${R(r * .7)}" transform="rotate(${R(ang)} ${R(cx)} ${R(cy)})" fill="${c}" stroke="${o.gaunt ? LINE : L.skin.line}" stroke-width="${lw(1)}"/>`;
-    if (G.lod >= 2 && !o.fist) s += `<path d="${d`M${cx - uy * r * .55} ${cy + ux * r * .55}l${ux * r * .6} ${uy * r * .6}`}" stroke="${o.gaunt ? LINE : L.skin.line}" stroke-width="${lw(.7)}"/>`;
+    // cycle 2: a hand, not a mitten. A palm, a thumb on the side o.thumb names, and fingers: split for an open hand,
+    // knuckles for a fist, one finger out for a pointing hand
+    const px = -uy * (o.thumb || 1), py = ux * (o.thumb || 1);
+    let s = '';
+    if (G.lod >= 2) {
+      const tx = cx + px * r * .6 - ux * r * .12, ty = cy + py * r * .6 - uy * r * .12;
+      s += `<ellipse cx="${R(tx)}" cy="${R(ty)}" rx="${R(r * .46)}" ry="${R(r * .24)}" transform="rotate(${R(ang - (o.thumb || 1) * 38)} ${R(tx)} ${R(ty)})" fill="${c}" stroke="${ln}" stroke-width="${lw(.8)}"/>`;
+    }
+    const open = o.open && !o.fist, lng = open ? 1.12 : .95;
+    s += `<ellipse cx="${R(cx + ux * r * (lng - .95) * .5)}" cy="${R(cy + uy * r * (lng - .95) * .5)}" rx="${R(r * lng)}" ry="${R(r * (open ? .66 : .72))}" transform="rotate(${R(ang)} ${R(cx)} ${R(cy)})" fill="${c}" stroke="${ln}" stroke-width="${lw(1)}"/>`;
+    if (G.lod >= 2) {
+      if (o.point) {
+        const fx = cx + ux * r * .8, fy = cy + uy * r * .8;
+        s += `<path d="${limb([[fx, fy], [fx + ux * r * .9, fy + uy * r * .9]], [r * .26, r * .2], true)}" fill="${c}" stroke="${ln}" stroke-width="${lw(.8)}"/>`;
+      } else if (open) {
+        let f = '';
+        for (const k2 of [-.32, 0, .32]) f += d`M${cx + ux * r * .3 - px * r * k2} ${cy + uy * r * .3 - py * r * k2}l${ux * r * .8} ${uy * r * .8}`;
+        s += `<path d="${f}" stroke="${ln}" stroke-width="${lw(.6)}"/>`;
+      } else {
+        let f = '';
+        for (const k2 of [-.3, .05, .38]) f += d`M${cx + ux * r * .55 - px * r * (k2 + .14)} ${cy + uy * r * .55 - py * r * (k2 + .14)}l${px * r * .22} ${py * r * .22}`;
+        s += `<path d="${f}" stroke="${ln}" stroke-width="${lw(.6)}"/>`;
+      }
+    }
     return s;
   }
 
@@ -1407,6 +1458,22 @@
     else if (L.oldF > .7 && h1 < .55) pose = 'staff';
     else if (kind === 'priest' && h1 < .5) pose = 'staff';
     else { const h2 = hf(p, 'pose2'), cross = (L.armor !== 'none' || tr.has('stern') || tr.has('proud') || tr.has('stubborn') ? .45 : .2); pose = h2 < cross ? 'crossed' : h2 < cross + (F ? .4 : .3) ? 'hip' : 'stand'; }
+    // cycle 2: seven more poses, each a gesture of the trade or the temper (13 in all with the swaddled baby)
+    {
+      const h3 = hf(p, 'pose3'), jc = (p.job && p.job.c) || '';
+      if (L.small) { if (hf(p, 'kidpose') < .3) pose = 'wave'; }
+      else if (!L.ruler && !pole && !L.shield && pose !== 'hilt') {
+        if (kind === 'priest' || jc === 'clergy') pose = h3 < .4 ? 'book' : h3 < .7 ? 'chest' : pose;
+        else if (['scribe', 'lawyer', 'teacher', 'healer', 'envoy', 'engineer', 'steward'].includes(jc) && h3 < .65) pose = 'book';
+        else if (['smith', 'mason', 'carpenter', 'miner', 'bowyer', 'weaver', 'labor'].includes(jc) && h3 < .7) pose = 'tool';
+        else if (['farm', 'herd'].includes(jc) && h3 < .6) pose = 'tool';
+        else if (['merchant', 'brewer', 'cook', 'minstrel', 'courtier'].includes(jc) && h3 < .5) pose = 'cup';
+        else if ((L.rank >= 4 || jc === 'knight' || jc === 'explorer') && h3 < .45) pose = 'point';
+        else if (L.noble && h3 < .4) pose = 'chest';
+        else if ((tr.has('gregarious') || tr.has('kind') || tr.has('trusting')) && h3 < .35) pose = 'wave';
+        else if ((L.oldF > .5 || tr.has('stern') || tr.has('patient') || tr.has('humble')) && h3 < .35) pose = 'behind';
+      }
+    }
     const side = hf(p, 'side') < .5 ? -1 : 1;                 // which hand holds or rests
     // ---- what the figure wears
     const longG = L.armor === 'robes' || kind === 'priest' || (F && !['soldier', 'officer'].includes(kind) && L.armor === 'none') || (L.cult.cut === 'robe' && L.armor === 'none' && !L.small) || (L.ruler && hf(p, 'gown') < .5 && L.armor === 'none');
@@ -1428,7 +1495,7 @@
       const cc = L.cloak && L.cloak.look === 'furcloak' ? '#7a5a3a' : L.noble || L.cloak && L.cloak.look === 'finecloak' ? tune(L.arms.f, 1.2, .02, .15, .65, .2, .5) : tune(mix(L.cloth, LINE, .3), 1.1, 0, .1, .5, .15, .45);
       const cb = L.ruler || kind === 'royal' ? GROUND - hh * .02 : Math.min(GROUND - hh * .1, knee + B * .14);
       const D = curve([[100 - sw * 1.02, sh], [100 - sw * 1.18, waist], [100 - Math.max(hemW, sw) * 1.24, cb - hh * .2], [100 - Math.max(hemW, sw) * 1.2, cb, 1], [100, cb + hh * .06], [100 + Math.max(hemW, sw) * 1.2, cb, 1], [100 + Math.max(hemW, sw) * 1.24, cb - hh * .2], [100 + sw * 1.18, waist], [100 + sw * 1.02, sh], [100, sh - hh * .1]], true);
-      back += `<path d="${D}" fill="${shadeOf(cc, .25)}" stroke="${LINE}" stroke-width="${lw(1.1)}"/><path d="${D}" fill="${shadeOf(cc, .55, 1.1)}" clip-path="url(#${useDef(G, 'apsT')})"/>`;
+      back += `<g class="ap-cloth"><path d="${D}" fill="${shadeOf(cc, .25)}" stroke="${LINE}" stroke-width="${lw(1.1)}"/><path d="${D}" fill="${shadeOf(cc, .55, 1.1)}" clip-path="url(#${useDef(G, 'apsT')})"/></g>`;
     }
     if (L.ranged && ['bow'].includes(L.ranged.kind)) back += `<path d="${d`M${100 + sw * .75} ${sh - B * .16}Q${100 - sw * .4} ${waist - B * .1} ${100 - sw * 1.0} ${hip + B * .1}`}" fill="none" stroke="${LINE}" stroke-width="${lw(3.6)}"/><path d="${d`M${100 + sw * .75} ${sh - B * .16}Q${100 - sw * .4} ${waist - B * .1} ${100 - sw * 1.0} ${hip + B * .1}`}" fill="none" stroke="#8a5a34" stroke-width="${lw(2)}"/>`;
     // ---- the legs, the trousers and the boots
@@ -1514,6 +1581,12 @@
       else if (kindA === 'crossed') { E = [100 + sd * sw * 1.02, waist - B * .04]; W = [100 - sd * sw * .5, chest + B * .03]; }
       else if (kindA === 'hilt') { E = [100 + sd * sw * 1.02, waist - B * .015]; W = [100 + sd * hh * .05, crotch - B * .11]; }
       else if (kindA === 'hold') { E = [100 + sd * sw * 1.16, chest + B * .1]; W = [100 + sd * sw * 1.34, chest - B * .005]; }
+      else if (kindA === 'wave') { E = [100 + sd * sw * 1.55, sh + B * .06]; W = [100 + sd * sw * 1.7, sh - B * .16]; }
+      else if (kindA === 'chest') { E = [100 + sd * sw * 1.12, chest + B * .1]; W = [100 - sd * sw * .02, chest - B * .005]; }
+      else if (kindA === 'book') { E = [100 + sd * sw * 1.1, waist - B * .02]; W = [100 + sd * sw * .42, waist - B * .07]; }
+      else if (kindA === 'cup') { E = [100 + sd * sw * 1.22, chest + B * .12]; W = [100 + sd * sw * .8, chest - B * .02]; }
+      else if (kindA === 'behind') { E = [100 + sd * sw * 1.1, waist - B * .05]; W = [100 + sd * ww * .5, hip - B * .02]; }
+      else if (kindA === 'point') { E = [100 + sd * sw * 1.62, sh + B * .07]; W = [100 + sd * sw * 2.3, sh - B * .02]; }
       else { E = [s0[0] + sd * hh * .05, s0[1] + ua]; W = [E[0] + sd * hh * .01, E[1] + fa]; }
       return { s0, E, W };
     };
@@ -1528,7 +1601,7 @@
       if (short) s += celLimb(G, [a.E, [lerp(a.E[0], a.W[0], .3), lerp(a.E[1], a.W[1], .3)]], [aw[1] * 1.14, aw[1] * 1.08], sleeve, lw);
       if (bell && lod >= 2) s += `<path d="${d`M${a.W[0] - aw[2] * 1.7} ${a.W[1] - hh * .05}L${a.W[0] + aw[2] * 1.7} ${a.W[1] - hh * .05}`}" stroke="${L.trim}" stroke-width="${lw(2.4)}"/>`;
       if (L.plate && lod >= 2) s += `<circle cx="${R(a.E[0])}" cy="${R(a.E[1])}" r="${R(aw[1] * .8)}" fill="${steel}" stroke="${LINE}" stroke-width="${lw(.9)}"/>`;
-      if (!o.noHand) s += handAt(G, L, a.W, a.E, hand, lw, { lost: lostSide && sd === 1, gaunt: L.plate, fist: o.fist });
+      if (!o.noHand) s += handAt(G, L, a.W, a.E, hand, lw, { lost: lostSide && sd === 1, gaunt: L.plate, fist: o.fist, open: o.open, point: o.point, thumb: o.thumb || -sd });
       return s;
     };
     const weaponHang = (W, E) => {
@@ -1561,6 +1634,46 @@
       if (lod >= 2) fore += `<path d="${d`M100 ${gy + hh * .05}V${GROUND - hh * .14}`}" stroke="#fff" stroke-opacity=".7" stroke-width="${lw(.9)}"/>`;
       fore += `<path d="${d`M${100 - hh * .26} ${gy}L${100 + hh * .26} ${gy}`}" stroke="${LINE}" stroke-width="${lw(4.4)}"/><path d="${d`M${100 - hh * .26} ${gy}L${100 + hh * .26} ${gy}`}" stroke="#e8b04a" stroke-width="${lw(2.6)}"/><path d="${d`M100 ${gy}L100 ${py}`}" stroke="${LINE}" stroke-width="${lw(3.6)}"/><path d="${d`M100 ${gy}L100 ${py}`}" stroke="#5a3e2a" stroke-width="${lw(2)}"/>`;
       fore += drawArm(-1, armOf(-1, 'hilt'), { fist: true }) + drawArm(1, armOf(1, 'hilt'), { fist: true });
+    } else if (pose === 'wave' || pose === 'point' || pose === 'chest' || pose === 'cup') {
+      // one hand raised (a greeting, a command, a hand on the heart, a cup lifted); the other hangs
+      const a = armOf(side, pose);
+      arms += drawArm(-side, armOf(-side, 'stand'));
+      if (pose === 'cup') {
+        const cx = a.W[0] - side * hand * .1, cy = a.W[1] - hand * .5, cw = hand * .9;
+        fore += drawArm(side, a, { fist: true, thumb: -side });
+        fore += `<path d="${d`M${cx - cw} ${cy - cw * 1.5}L${cx + cw} ${cy - cw * 1.5}L${cx + cw * .7} ${cy + cw * .3}L${cx - cw * .7} ${cy + cw * .3}Z`}" fill="${L.noble ? '#e8b04a' : '#a87a48'}" stroke="${LINE}" stroke-width="${lw(1)}"/>`;
+        if (lod >= 2) fore += `<ellipse cx="${R(cx)}" cy="${R(cy - cw * 1.5)}" rx="${R(cw)}" ry="${R(cw * .3)}" fill="#7a2a3a" stroke="${LINE}" stroke-width="${lw(.7)}"/>`;
+      } else fore += drawArm(side, a, { open: pose !== 'chest', point: pose === 'point', thumb: pose === 'chest' ? side : -side });
+    } else if (pose === 'book') {
+      // a book held in both hands at the waist
+      const aL = armOf(-1, 'book'), aR = armOf(1, 'book');
+      fore += drawArm(-1, aL, { noHand: true }) + drawArm(1, aR, { noHand: true });
+      const bx = 100, by = waist - B * .1, bw2 = sw * .62, bh = hh * .62, cov = L.noble ? '#6a2a3a' : kind === 'priest' ? '#3a3060' : '#6a4a2a';
+      fore += `<path d="${d`M${bx - bw2} ${by - bh * .1}L${bx + bw2} ${by - bh * .22}L${bx + bw2 * .96} ${by + bh * .7}L${bx - bw2 * 1.02} ${by + bh * .82}Z`}" fill="${cov}" stroke="${LINE}" stroke-width="${lw(1.1)}"/>`;
+      fore += `<path d="${d`M${bx - bw2 * .92} ${by + bh * .8}L${bx + bw2 * .9} ${by + bh * .68}L${bx + bw2 * .9} ${by + bh * .76}L${bx - bw2 * .92} ${by + bh * .9}Z`}" fill="#efe6d2" stroke="${LINE}" stroke-width="${lw(.7)}"/>`;
+      if (lod >= 2) fore += `<path d="${d`M${bx - bw2 * .3} ${by + bh * .1}L${bx + bw2 * .3} ${by + bh * .02}M${bx - bw2 * .3} ${by + bh * .25}L${bx + bw2 * .3} ${by + bh * .17}`}" stroke="#e8b04a" stroke-width="${lw(1)}"/>`;
+      fore += handAt(G, L, aL.W, aL.E, hand, lw, { fist: true, thumb: 1 }) + handAt(G, L, aR.W, aR.E, hand, lw, { fist: true, thumb: -1, lost: lostSide });
+    } else if (pose === 'behind') {
+      // hands clasped behind the back: the arms go behind the garment, no hands in sight
+      const t = drawArm(-1, armOf(-1, 'behind'), { noHand: true }) + drawArm(1, armOf(1, 'behind'), { noHand: true });
+      ups += t;
+    } else if (pose === 'tool') {
+      // a tool of the trade: a hammer hanging from the hand for the crafts, a hoe or a crook upright for the land
+      const jc = (p.job && p.job.c) || '';
+      if (['farm', 'herd'].includes(jc)) {
+        const a = armOf(side, 'hold'), px = a.W[0] + side * hand * .2, topY = y0 + hh * .5, botY = GROUND - 1;
+        fore += `<path d="${d`M${px} ${botY}L${px} ${topY}`}" stroke="${LINE}" stroke-width="${lw(4)}"/><path d="${d`M${px} ${botY}L${px} ${topY}`}" stroke="#9a6a3a" stroke-width="${lw(2.2)}"/>`;
+        fore += jc === 'herd' ? `<path d="${d`M${px} ${topY}Q${px} ${topY - hh * .42} ${px - side * hh * .3} ${topY - hh * .36}Q${px - side * hh * .4} ${topY - hh * .14} ${px - side * hh * .2} ${topY - hh * .08}`}" fill="none" stroke="${LINE}" stroke-width="${lw(4)}"/><path d="${d`M${px} ${topY}Q${px} ${topY - hh * .42} ${px - side * hh * .3} ${topY - hh * .36}Q${px - side * hh * .4} ${topY - hh * .14} ${px - side * hh * .2} ${topY - hh * .08}`}" fill="none" stroke="#9a6a3a" stroke-width="${lw(2.2)}"/>`
+          : `<path d="${d`M${px} ${topY}L${px - side * hh * .42} ${topY + hh * .06}L${px - side * hh * .44} ${topY + hh * .26}L${px} ${topY + hh * .14}Z`}" fill="${steel}" stroke="${LINE}" stroke-width="${lw(1)}"/>`;
+        arms += drawArm(-side, armOf(-side, 'stand'));
+        fore += drawArm(side, a, { fist: true });
+      } else {
+        const a = armOf(side, 'stand');
+        arms += drawArm(side, a, { fist: true }) + drawArm(-side, armOf(-side, 'hip'), { fist: true });
+        const len = hh * 1.3, bx = a.W[0], by = a.W[1] + hand * .4, hx = bx + side * hh * .06, hy = by + len;
+        fore += `<path d="${d`M${bx} ${by - hand * .6}L${hx} ${hy}`}" stroke="${LINE}" stroke-width="${lw(3.6)}"/><path d="${d`M${bx} ${by - hand * .6}L${hx} ${hy}`}" stroke="#9a6a3a" stroke-width="${lw(2)}"/>`;
+        fore += `<rect x="${R(hx - hh * .26)}" y="${R(hy - hh * .02)}" width="${R(hh * .52)}" height="${R(hh * .24)}" rx="${R(hh * .03)}" fill="${['weaver', 'bowyer'].includes(jc) ? '#9a6a3a' : '#7a8090'}" stroke="${LINE}" stroke-width="${lw(1)}"/>`;
+      }
     } else if (pose === 'crossed') {
       // arms folded across the chest: the far forearm under, the near one over
       const aL = armOf(-1, 'crossed'), aR = armOf(1, 'crossed');
@@ -1705,7 +1818,7 @@
   AP.cacheKey = (p, size, opts) => {
     let ev = '';
     const q = AP.ev || (A.S && Array.isArray(A.S.queue) ? A.S.queue[0] : null);
-    if (q && q.ctx && q.ctx.pid === p.id) ev = evKey(q);
+    if (q && evSubject(q) === p.id) ev = evKey(q);
     const pc = A.S && A.S.pc;
     const r = pc && p.rel && p.rel[pc] ? p.rel[pc] : null;
     let mood = '';
