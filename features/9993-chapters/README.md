@@ -22,7 +22,7 @@
 | **A reign** | steady the realm (stability +10); fill the treasury; get an heir; bind a neighbour with an alliance |
 | **Your mark (9992)** | design your arms; give a name to something you love; let a thought you hold ripen |
 
-**On screen.** The chapter sits on the Life tab above the ambition: its number and title, the years, and the aims with ticks. The Book lists every chapter of every life by name, with the years and the aims met, before the chronicler's pages.
+**On screen.** The chapter sits on the Life tab above the ambition (on a phone, inside the ambition card, which 90-fold folds to its title line there, so the phone Life page stays at 1.29 screens): its number and title, the years, and the aims with ticks. The Book lists every chapter of every life by name, with the years and the aims met, before the chronicler's pages.
 
 **Dynasty legacies.** When you go on as your heir and the house has renown (the dead members' life scores in thousands plus their deeds, at least 3), `chp_legacy` offers three of five perks not yet taken. Each perk is given to the new head at once and to every heir after:
 - *Strong blood* (+5 health, +2 stamina);

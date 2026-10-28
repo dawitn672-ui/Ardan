@@ -19,7 +19,7 @@
 (function () {
   const TR = A.TRADE; if (!TR || !A.ECON) return;
   const E = A.ECON, M = A.MONEY;
-  Object.assign(TR, { MAX_VENTURES: 3, V_RISK: 0.12, V_SCENE: 0.35 });
+  Object.assign(TR, { MAX_VENTURES: 3, V_RISK: 0.12, V_SCENE: 0.35, FACTOR: 0.1 });   // the far factor who sells for you takes a tenth
   const Gs = () => GD.GOODS;
   const vlist = pc => (pc && Array.isArray(pc.ventures) ? pc.ventures : []);
   TR.ventures = pc => vlist(pc).filter(v => v.st === 'road' || v.st === 'held');
@@ -50,7 +50,7 @@
     for (let i = 0; i < T.legs.length; i++) { const e = T.legs[i]; if (i) v *= 1 + TR.BROKER; const t = TR.tollOf(e, k); const add = v * TR.INTEREST * Math.max(0.5, e.days / 30); interest += add; v += v * t + g.base * e.f + add; }
     const freight = Math.round((c - v0 - interest) * n);
     const got = TR.fetch(T.b, k, n, pc);
-    const cut = M.change(T.b, home) + M.noteLoss(T.b);
+    const cut = M.change(T.b, home) + M.noteLoss(T.b) + TR.FACTOR;
     const net = Math.round(got * (1 - cut));
     const atHome = Math.round(A.sellPrice(home, k, pc) * n);
     return { k, n, b: T.b, hands: T.hands, months: Math.max(1, Math.round(T.days / 30)), freight, sale: Math.round(got), cut, net, atHome, gain: net - freight - atHome, legs: T.legs, T };
@@ -109,12 +109,12 @@
     const got = TR.fetch(at, k, n, pc), depth = A.mktDepth(at, k);
     m.p[k] *= Math.max(0.5, 1 - n * 0.6 / depth / 2);
     if (m.s) m.s[k] = (m.s[k] || 0) + n;
-    const cut = M.change(at, v.f) + M.noteLoss(at), net = Math.round(got * (1 - cut));
+    const cut = M.change(at, v.f) + M.noteLoss(at) + TR.FACTOR, net = Math.round(got * (1 - cut));
     const days = TR.newsDays(at, A.homeMkt(pc)) || 30;
     pc.credits = Array.isArray(pc.credits) ? pc.credits : [];
     pc.credits.push({ amt: net, due: A.absDay() + days, from: at, k, n, cut: Math.round(got - net), paid: v.paid, worth: v.worth });
     v.st = 'sold'; v.sold = net; v.at = at;
-    A.log(`Your ${n} load${n > 1 ? 's' : ''} of ${Gs()[k].name.toLowerCase()} sell at ${A.realmShort(at)} for ${M.fmt(got, at)}${cut > 0 ? `; the money-changers${M.noteLoss(at) ? ' and the half-notes' : ''} take ${A.coin(got - net)}` : ''}. A letter of credit is on its way home.`, 'info');
+    A.log(`Your ${n} load${n > 1 ? 's' : ''} of ${Gs()[k].name.toLowerCase()} sell at ${A.realmShort(at)} for ${M.fmt(got, at)}; your factor${M.change(at, v.f) ? ', the money-changers' : ''}${M.noteLoss(at) ? ' and the half-notes' : ''} take ${A.coin(got - net)}. A letter of credit is on its way home.`, 'info');
   };
   const sceneFor = (v, e, why) => {
     if (why === 'war') return 'tr_road_war';
@@ -173,7 +173,7 @@
     if (opts.length) {
       h += '<table class="tiny" style="width:100%;margin-top:4px"><tr class="muted"><td>Send</td><td>To</td><td class="hide-s">Hands</td><td>Months</td><td>Freight</td><td>Fetches</td><td></td></tr>';
       for (const P of opts) {
-        const tip = `By ${P.legs.map(e => A.realmShort(e.b)).join(', ')}${P.legs.some(e => e.rn) ? ` (${P.legs.map(e => e.rn).filter(Boolean)[0]})` : ''}. Sold there for about ${A.coin(P.sale)}${P.cut > 0 ? `, less ${Math.round(P.cut * 100)} in 100 to the money-changers` : ''}. Sold at home now: ${A.coin(P.atHome)}.`;
+        const tip = `By ${P.legs.map(e => A.realmShort(e.b)).join(', ')}${P.legs.some(e => e.rn) ? ` (${P.legs.map(e => e.rn).filter(Boolean)[0]})` : ''}. Sold there for about ${A.coin(P.sale)}${`, less ${Math.round(P.cut * 100)} in 100 to your factor${P.cut > TR.FACTOR + 1e-9 ? ' and the money-changers' : ''}`}. Sold at home now: ${A.coin(P.atHome)}.`;
         h += `<tr title="${esc(tip)}"><td>${esc(`${P.n} ${G[P.k].name.toLowerCase()}`)}</td><td>${esc(A.realmShort(P.b))}</td><td class="hide-s">${P.hands}</td><td>${P.months}</td><td>${esc(A.coin(P.freight))}</td><td class="${P.gain > 0 ? 'good' : 'muted'}">${esc(A.coin(P.net))}</td><td><button class="btn tiny" data-a="trSend" data-v="${esc(P.b + '|' + P.k)}"${pc.coin < P.freight ? ' disabled' : ''}>Send</button></td></tr>`;
       }
       h += '</table>';

@@ -158,7 +158,6 @@
   AT.ALPHA = [0.88, 0.5, 0];       // unknown, heard of, seen
   AT.fogOn = () => !AT.OFF && !(UI.set && UI.set.atlasFog === false);
   let veilMemo = null;
-  const viewMemo = new WeakMap();   // each canvas's last veiled view (rendering only)
   AT.veilKey = pc => [pc.id, AT.ok(pc) ? pc.atlas.v + ':' + Object.keys(pc.atlas.s).length + ':' + Object.keys(pc.atlas.h).length : 'b' + pc.home + pc.realm, MAP.gridKey, MAP.gw, MAP.gh, A.S.prov.length].join('|');
   AT.veilLayer = function (pc) {
     if (typeof document === 'undefined' || !MAP.grid || !MAP.gw) return null;
@@ -166,10 +165,11 @@
     if (veilMemo && veilMemo.key === key) return veilMemo.cv;
     const N = A.S.prov.length, lv = new Float32Array(N);
     for (let i = 0; i < N; i++) { const l = AT.level(pc, i); lv[i] = l === 2 ? 0 : l === 1 ? 0.55 : 1; }
-    const gw = MAP.gw, gh = MAP.gh, g = MAP.grid, v = new Float32Array(gw * gh), land = new Uint8Array(gw * gh);
-    for (let i = 0; i < v.length; i++) { const id = g[i]; if (id >= 0 && id < N) { v[i] = lv[id]; land[i] = 1; } else v[i] = 1; }
+    // a large frame (the Great Continent) is veiled at half the grid's resolution: 20 km cells, still soft when drawn
+    const F = MAP.gw > 1000 ? 2 : 1, GW = MAP.gw, gw = Math.floor(GW / F), gh = Math.floor(MAP.gh / F), g = MAP.grid, v = new Float32Array(gw * gh), land = new Uint8Array(gw * gh);
+    for (let y = 0, i = 0; y < gh; y++) for (let x = 0; x < gw; x++, i++) { const id = g[y * F * GW + x * F]; if (id >= 0 && id < N) { v[i] = lv[id]; land[i] = 1; } else v[i] = 1; }
     // the sea fades out from the coasts you know: two chamfer passes over the water cells
-    const st = 0.022, sd = 0.031;
+    const st = 0.022 * F, sd = 0.031 * F;
     for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
       const i = y * gw + x; if (land[i]) continue;
       let m = v[i];
@@ -192,31 +192,28 @@
     veilMemo = { key, cv };
     return cv;
   };
-  // 62-inked-map's hook, under the names (patch AT-VEIL)
-  MAP.veil = function (ctx, W, H, v) {
+  // 62-inked-map's hook (patch AT-VEIL): laid into the inked map's own kept view of its lines layer, over the ground,
+  // the wash, the borders and the towns and under the names, so a still or panning map costs nothing more. `host` is
+  // the canvas on screen (the kept view is an offscreen copy); MAP.veilKey tells 62 when the view must be laid again.
+  MAP.veil = function (ctx, W, H, v, host) {
     try {
-      const cv = ctx && ctx.canvas, pc = A.S && A.pc && A.pc();
+      const cv = host || (ctx && ctx.canvas), pc = A.S && A.pc && A.pc();
       if (!AT.fogOn() || !cv || !AT.VEIL_CANVAS[cv.id] || !pc || !A.S.prov) return false;
       const layer = AT.veilLayer(pc); if (!layer) return false;
       const vx = v ? v.x0 : MAP.KX0, vy = v ? v.y0 : MAP.KY0, vw = v ? v.w : MAP.KW, vh = v ? v.h : MAP.KH;
-      // only the part of the picture in view is sampled; a view drawn before (a still map, the world tab) is one copy
+      // only the part of the picture in view is sampled
       const gw = layer.width, gh = layer.height, sx = (vx - MAP.KX0) / MAP.KW * gw, sy = (vy - MAP.KY0) / MAP.KH * gh, sw = vw / MAP.KW * gw, sh = vh / MAP.KH * gh;
       const x0 = Math.max(0, sx), y0 = Math.max(0, sy), x1 = Math.min(gw, sx + sw), y1 = Math.min(gh, sy + sh);
       if (x1 <= x0 || y1 <= y0) return true;
-      const dx = (x0 - sx) / sw * W, dy = (y0 - sy) / sh * H, dw = (x1 - x0) / sw * W, dh = (y1 - y0) / sh * H;
-      const key = [veilMemo.key, W, H, x0, y0, x1, y1].join(','), vc = viewMemo.get(cv);
-      ctx.save();
-      if (vc && vc.key === key) ctx.drawImage(vc.cv, 0, 0);
-      else {
-        const o = vc && vc.cv.width === W && vc.cv.height === H ? vc.cv : document.createElement('canvas'); o.width = W; o.height = H;
-        const oc = o.getContext('2d'); oc.clearRect(0, 0, W, H); oc.imageSmoothingEnabled = true; oc.imageSmoothingQuality = 'low';
-        oc.drawImage(layer, x0, y0, x1 - x0, y1 - y0, dx, dy, dw, dh);
-        viewMemo.set(cv, { key, cv: o });
-        ctx.drawImage(o, 0, 0);
-      }
+      ctx.save(); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low';
+      ctx.drawImage(layer, x0, y0, x1 - x0, y1 - y0, (x0 - sx) / sw * W, (y0 - sy) / sh * H, (x1 - x0) / sw * W, (y1 - y0) / sh * H);
       ctx.restore();
       return true;
     } catch (e) { console.error('atlas veil', e); return false; }
+  };
+  MAP.veilKey = function (cv) {
+    const pc = A.S && A.pc && A.pc();
+    return AT.fogOn() && cv && AT.VEIL_CANVAS[cv.id] && pc && A.S.prov ? '|veil:' + AT.veilKey(pc) : '';
   };
   // 62's province names: an unknown province's name is not written (patch AT-UNNAMED)
   MAP.unnamed = function (p, ctx) {

@@ -345,7 +345,9 @@
             d.men -= n;
             for (const e in d.eq) d.eq[e] = Math.max(0, Math.round(d.eq[e] * (1 - fr * 0.85)));
             b.wd += n * K.WOUNDED;
-            d.coCredit = (d.coCredit || 0) + n;
+            if (s[2] >= 0 && CO.mineIs(d, s[1], s[2]) && pc && pc.mil) pc.mil.coDead = (pc.mil.coDead || 0) + Math.round(n * (1 - K.WOUNDED));
+            if (d.coCreditAt !== B.co.pid) d.coCredit = 0;
+            d.coCredit = (d.coCredit || 0) + n; d.coCreditAt = B.co.pid;
             if (Fg) { if (Fg.aIds.includes(d.id)) Fg.deadA += n; else Fg.deadD += n; const L = (Fg.coL = Fg.coL || {}), row = (L[d.id] = L[d.id] || []); row[s[1]] = (row[s[1]] || 0) + n; }
           }
           const mo = clamp(u.morale - 20, 0, 100);

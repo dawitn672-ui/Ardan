@@ -97,6 +97,18 @@
     } catch (e) { return h; }
   };
 
+  // 72's book: under the men beside you, the company they stand in and the captain over them
+  const TSq = A.TS && A.TS.squadHtml;
+  if (typeof TSq === 'function') A.TS.squadHtml = function (m) {
+    const h = TSq.apply(this, arguments);
+    try {
+      if (m && m.ts && m.ts.levy) return h;
+      const C = CO.myCompany(A.pc());
+      if (!C) return h;
+      return h + `<p class="ts-coy tiny">${esc(C.name)}: ${esc(C.cap.pc ? 'your own company' : 'Captain ' + C.cap.name)}, Serjeant ${esc(C.serjeants[0].given)}. ${A.fmt(C.men)} in the ranks, morale ${Math.round(C.mo)} (${esc(word(C.mo))}).</p>`;
+    } catch (e) { return h; }
+  };
+
   // ---- the battle: your command
   CO.commandPanel = function (B) {
     if (!B || !B.co || B.phase === 'end') return '';

@@ -41,10 +41,15 @@
 
   // ---- what a division is made of
   const isSup = c => !GD.BN[c] && !!GD.SUP[c];
+  const CODES = new WeakMap();   // per template object and its version (never in the state)
   CO.codes = function (d) {
     const t = A.tplOf(d);
     if (!t) return [];
-    return (t.bns || []).filter(c => GD.BN[c]).concat((t.sup || []).filter(s => GD.SUP[s]));
+    const k = (t.bns || []).length + ':' + (t.sup || []).length + ':' + t.v, c = CODES.get(t);
+    if (c && c.k === k) return c.codes;
+    const codes = (t.bns || []).filter(c => GD.BN[c]).concat((t.sup || []).filter(s => GD.SUP[s]));
+    CODES.set(t, { k, codes });
+    return codes;
   };
   const nominal = c => (GD.BN[c] ? GD.BN[c].men : GD.SUP[c] ? GD.SUP[c].men : 100) || 100;
   const nComp = c => (isSup(c) ? 1 : 4);
@@ -110,9 +115,22 @@
   // ---- captains: a seed, made a person only when he matters
   const TEMPERS = ['bold', 'bold', 'bold', 'cautious', 'cautious', 'cautious', 'cunning', 'steady', 'steady', 'steady'];
   CO.TEMPER_TRAIT = { bold: 'brave', cautious: 'cautious', cunning: 'deceitful' };
+  const SEEDS = new WeakMap();   // a record's default seeds, kept beside it (never in the state)
   CO.seedOf = function (d, i, slot) {
     const b = d.bs[i];
-    return b.cs && b.cs[slot] != null ? b.cs[slot] : hash(d.id + '|' + i + '|' + slot);
+    if (b.cs && b.cs[slot] != null) return b.cs[slot];
+    let a = SEEDS.get(b);
+    if (!a || a.id !== d.id || a.i !== i) { a = { id: d.id, i, s: [] }; SEEDS.set(b, a); }
+    return a.s[slot] != null ? a.s[slot] : (a.s[slot] = hash(d.id + '|' + i + '|' + slot));
+  };
+  // what the engine needs of a captain, without his name (pure, cheap)
+  CO.capStat = function (d, i, slot) {
+    const b = d.bs[i];
+    if (slot === 4 && b.vac && !(b.p && b.p[4])) return null;
+    const pid = b.p && b.p[slot];
+    if (pid) { const p = A.P(pid); if (p && p.alive) return { seed: CO.seedOf(d, i, slot), pid, person: p, cmd: A.skill(p, 'command'), temper: A.GENERALS && A.GENERALS.temper ? A.GENERALS.temper(p) : 'steady', sat: b.st ? b.st[slot] || 0 : 0, pc: pid === A.S.pc }; }
+    const seed = CO.seedOf(d, i, slot);
+    return { seed, cmd: 22 + ((seed >>> 9) % 45), temper: TEMPERS[(seed >>> 17) % 10], sat: b.st ? b.st[slot] || 0 : 0 };
   };
   const cultOf = d => { const r = A.realm(d.r); try { return (r && r.cult) || A.cultureFor((r && r.race) || 'human', d.r) || 'CUL-02'; } catch (e) { return 'CUL-02'; } };
   // what a seed is (pure): the same seed is the same man in every view and every replay
@@ -202,7 +220,8 @@
       if (old) { old.k = split(share[i], old.k.length === nComp(c) ? old.k.map(x => Math.max(1, x)) : Array(nComp(c)).fill(1)); if (!Array.isArray(old.q) || old.q.length !== old.k.length) old.q = old.k.map(() => 50); return old; }
       return newRec(d, c, r, share[i], h);
     });
-    for (let i = 0; i < d.bs.length; i++) { const R = CO.rest(d, i); d.bs[i].q = d.bs[i].k.map((_, ci) => keep ? d.bs[i].q[ci] : r1(R[ci].total)); }
+    const drs = keep ? null : CO.drills(d);
+    for (let i = 0; i < d.bs.length; i++) d.bs[i].q = d.bs[i].k.map((_, ci) => keep ? d.bs[i].q[ci] : r1(CO.restVal(d, i, ci, drs[i])));
     if (d.food == null) d.food = K.FOOD0;
     if (d.pay == null) d.pay = 0;
     CO.mean(d);
@@ -262,6 +281,32 @@
     return { total: clamp(total, 5, 100), parts: parts.map(([l, v]) => [l, r1(v)]) };
   };
   CO.rest = (d, i) => d.bs[i].k.map((_, ci) => CO.restOne(d, i, ci));
+  // the same number, for the engine's daily and monthly passes: no labels, the drill passed in (pure)
+  // command and boldness of a slot's captain, with no allocation (the daily pass asks 40 times a division)
+  const capCmd = (d, b, i, slot) => {
+    const pid = b.p && b.p[slot];
+    if (pid) { const p = A.P(pid); if (p && p.alive) return A.skill(p, 'command'); }
+    return 22 + ((CO.seedOf(d, i, slot) >>> 9) % 45);
+  };
+  const capBold = (d, b, i, slot) => {
+    const pid = b.p && b.p[slot];
+    if (pid) { const p = A.P(pid); if (p && p.alive) return (A.GENERALS && A.GENERALS.temper ? A.GENERALS.temper(p) : 'steady') === 'bold'; }
+    return TEMPERS[(CO.seedOf(d, i, slot) >>> 17) % 10] === 'bold';
+  };
+  CO.restVal = function (d, i, ci, drill) {
+    const b = d.bs[i], senOn = !isSup(b.c) && !(b.vac && !(b.p && b.p[4]));
+    const c0 = capCmd(d, b, i, ci), cmd = senOn ? (c0 + capCmd(d, b, i, 4)) / 2 : c0;
+    let v = 50 + b.x / 5 + 0.1 * drill + (cmd - 40) / 4 + (capBold(d, b, i, ci) ? 5 : 0);
+    if (d.pay > 0) v -= 5 * Math.min(4, d.pay);
+    if (d.food != null && d.food <= 0) v -= 10;
+    if (d.loc === b.h) v += 5;
+    return clamp(v, 5, 100);
+  };
+  const DRF = { foot: 'shields', horse: 'charge', missile: 'weapons', beast: 'formation' };
+  CO.drills = function (d) {   // a division's drill on the 0..100 scale, by battalion (one D.of per division)
+    const D = A.DRILL, rec = D && D.of ? D.of(d) : null;
+    return d.bs.map(b => { if (!rec) return 0; const cat = GD.BN[b.c] ? GD.BN[b.c].cat : null; return (rec[DRF[cat] || 'formation'] || 0) * 100; });
+  };
 
   // ---- losses fall on companies
   let FIGHT = null;   // { pid, F, day: Map(d -> {before:[[..]], lost:[[..]]}) } while A.fightDay runs
@@ -272,7 +317,18 @@
     else gainSpread(d, delta);
   }
   function loseSpread(d, n, why) {
-    const bs = d.bs, slots = [];
+    const bs = d.bs;
+    if (why !== 'fight' && n <= 4) {   // a few men (sickness, winter, the odd deserter): from the fullest companies
+      const lost = [];
+      for (let t = 0; t < n; t++) {
+        let bi = -1, bc = -1, bm = 0;
+        for (let i = 0; i < bs.length; i++) for (let ci = 0; ci < bs[i].k.length; ci++) if (bs[i].k[ci] > bm) { bm = bs[i].k[ci]; bi = i; bc = ci; }
+        if (bi < 0) break;
+        bs[bi].k[bc]--; lost.push([bi, bc, 1]);
+      }
+      return lost;
+    }
+    const slots = [];
     for (let i = 0; i < bs.length; i++) for (let ci = 0; ci < bs[i].k.length; ci++) slots.push([i, ci]);
     let groups;
     if (why === 'fight') {
@@ -328,7 +384,7 @@
         CO.stats.lost += n;
         if (why === 'fight' || why === 'battle') {
           for (const [i, , m] of lost) d.bs[i].wd += m * K.WOUNDED;
-          const F = FIGHT && FIGHT.F;
+          const F = FIGHT && (FIGHT.F || (FIGHT.F = A.S.fights && A.S.fights[FIGHT.pid]));
           if (F) { const L = (F.coL = F.coL || {}), row = (L[d.id] = L[d.id] || []); for (const [i, , m] of lost) row[i] = (row[i] || 0) + m; }
         }
         if (why === 'desert') { CO.stats.deserted += n; for (const [i, , m] of lost) { const P = A.S.prov[d.bs[i].h]; if (P) P.coDes = (P.coDes || 0) + m; } }
@@ -428,11 +484,12 @@
   // the line battle's own losses (b-battle.core.js) are taken from the map fight's next days
   const divLoseCredit = A.divLose;
   A.divLose = function (d, k) {
-    if (FIGHT && d && d.coCredit > 0 && (d.atk === FIGHT.pid || d.loc === FIGHT.pid)) {
+    if (FIGHT && d && d.coCredit > 0 && d.coCreditAt === FIGHT.pid && (d.atk === FIGHT.pid || d.loc === FIGHT.pid)) {
+      // these men already fell in the line battle and were counted then: only the rest fall now
       const want = Math.max(0, Math.round(Math.min(d.men, k))), use = Math.min(want, d.coCredit);
       d.coCredit -= use;
-      if (d.coCredit <= 0) delete d.coCredit;
-      return use + (want - use > 0 ? divLoseCredit.call(this, d, want - use) : 0);
+      if (d.coCredit <= 0) { delete d.coCredit; delete d.coCreditAt; }
+      return want - use > 0 ? divLoseCredit.call(this, d, want - use) : 0;
     }
     return divLoseCredit.apply(this, arguments);
   };
@@ -442,7 +499,10 @@
   A.fightEnd = function (pid, winner) {
     const S = A.S, F = S.fights && S.fights[pid], P = S.prov[pid];
     const r = fightEnd.apply(this, arguments);
-    try { if (F && S.coOn) CO.afterFight(F, winner, P); } catch (e) { console.error('companies fight end', e); }
+    try {
+      if (F) for (const id of F.aIds.concat(F.dIds)) { const d = A.divById(id); if (d && d.coCreditAt === pid) { delete d.coCredit; delete d.coCreditAt; } }
+      if (F && S.coOn) CO.afterFight(F, winner, P);
+    } catch (e) { console.error('companies fight end', e); }
     return r;
   };
   CO.afterFight = function (F, winner, P) {
@@ -576,17 +636,18 @@
           const gap = Math.max(0, Math.round(A.divS(d).men - d.men));
           backWounded(d, gap, 1);
         }
+        let drs = null;
         for (let i = 0; i < d.bs.length; i++) {
           const b = d.bs[i];
-          if (!live) { const R = CO.rest(d, i); for (let ci = 0; ci < b.q.length; ci++) b.q[ci] = r1(R[ci].total); }
+          if (!live) { if (!drs) drs = CO.drills(d); for (let ci = 0; ci < b.q.length; ci++) b.q[ci] = r1(CO.restVal(d, i, ci, drs[i])); }
           b.x = r1(d.exp != null ? (b.x * 0.8 + d.exp * 0.2) : b.x);   // the division's xp is the mean of its battalions'
           if (Array.isArray(b.st)) { let any = 0; for (let s = 0; s < b.st.length; s++) { b.st[s] = Math.round((b.st[s] || 0) * 0.95); if (b.st[s]) any = 1; } if (!any) delete b.st; }
           for (let s = 0; s < (isSup(b.c) ? 1 : 5); s++) {
-            const c = CO.cap(d, i, s);
+            if (b.p && b.p[s] && !(A.P(b.p[s]) && A.P(b.p[s]).alive)) { CO.replaceCap(d, i, s, 'died'); continue; }
+            const c = CO.capStat(d, i, s);
             if (!c) continue;
             if (!c.pc) { ofc += c.cmd; ofn++; }
-            if (c.person && !c.person.alive) { CO.replaceCap(d, i, s, 'died'); continue; }
-            if (c.sat <= -50 && !c.pc) CO.leave(d, i, s, c, atWar);
+            if (c.sat <= -50 && !c.pc) CO.leave(d, i, s, CO.cap(d, i, s), atWar);
           }
           if (b.ret) CO.reraise(d);
         }
@@ -668,7 +729,7 @@
         const d = A.divById(id);
         if (!d || !CO.ok(d)) continue;
         for (let i = 0; i < d.bs.length; i++) for (let s = 0; s < (isSup(d.bs[i].c) ? 1 : 5); s++) {
-          const c = CO.cap(d, i, s);
+          const c = CO.capStat(d, i, s);
           if (!c || c.pc) continue;
           if (c.temper === t) CO.sat(d, i, s, 5);
           else if ((c.temper === 'bold' && t === 'cautious') || (c.temper === 'cautious' && t === 'bold')) CO.sat(d, i, s, -10);
@@ -695,13 +756,12 @@
         const n = Math.floor(d.men * K.DESERT + ((hash(d.id + S.warClock) % 100) / 100));
         if (n > 0) { CO.WHY = 'desert'; try { A.divLose(d, n); } finally { CO.WHY = null; } CO.hungerScene(d); }
       } else if (!fighting) {
+        const drs = CO.drills(d);
         for (let i = 0; i < d.bs.length; i++) {
           const b = d.bs[i];
-          let R = null;
           for (let ci = 0; ci < b.q.length; ci++) {
             const qv = b.q[ci];
-            if (!R) R = CO.rest(d, i);
-            const rest = R[ci].total;
+            const rest = CO.restVal(d, i, ci, drs[i]);
             if (qv < rest) b.q[ci] = r1(Math.min(rest, qv + K.MO_BACK));
             else if (qv > rest) b.q[ci] = r1(Math.max(rest, qv - 1));
           }

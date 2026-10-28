@@ -297,7 +297,8 @@
 .mo-cut.mo-k-duel .mo-content{gap:32px}
 .mo-cut.mo-k-duel .mo-words{align-items:center}
 .mo-cut.mo-k-duel .mo-word{font-size:calc(var(--t-display,44px) * 1.6);font-style:italic}
-.mo-cut .mo-bust2{transform:scaleX(-1)}
+/* the busts turn a quarter to the picture's left (93): the first is mirrored, so in VS the two face each other */
+.mo-cut.mo-k-duel .mo-bust:not(.mo-bust2) svg{transform:scaleX(-1)}
 /* Day: the dim is the indigo shade, not a flat grey that reads as disabled, and the focus lines are ink (I9) */
 :root[data-theme=light] .mo-cut .mo-dim{background:radial-gradient(ellipse at 50% 50%,rgba(58,47,107,.12),rgba(58,47,107,.35))}
 :root[data-theme=light] .mo-cut .mo-lines path{fill:#1b1730;opacity:.3}

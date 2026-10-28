@@ -436,7 +436,7 @@ export default {
       p.on('pageerror', e => errs.push(String(e)));
       await p.goto(pathToFileURL(file).href); await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
       const r = await p.evaluate(() => {
-        UI.screen = 'title';
+        UI.screen = 'title'; UI.render();
         const h0 = JSON.stringify(A.S.realms ? Object.keys(A.S.realms).length : 0) + JSON.stringify(A.rngState);
         UI.render(); const a = document.getElementById('title').innerHTML; UI.render(); const b = document.getElementById('title').innerHTML;
         const T = UI.LOOK.TITLE, ppl = T.people(T.seed());

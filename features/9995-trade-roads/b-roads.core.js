@@ -81,7 +81,9 @@
   const sigOf = S => { let h = 7; for (const P of S.prov) { const o = String(P.owner); for (let i = 0; i < o.length; i++) h = (h * 31 + o.charCodeAt(i)) | 0; h = (h * 31 + 1) | 0; } return h; };
   let G = null;
   TR.graph = function () {
-    const S = A.S, key = S.year + ':' + sigOf(S);
+    // rebuilt each year, or when a realm rises or falls (a province changing hands mid-year waits for the new year:
+    // building the graph and every market's trips costs about half a second on the Great Continent)
+    const S = A.S, key = S.year + ':' + live().map(r => r.id).join(',');
     if (G && G.S === S && G.key === key) return G;
     const rs = live(), ids = new Set(rs.map(r => r.id)), E2 = new Map();
     const coast = {}; for (const P of S.prov) if (P.coast && ids.has(P.owner)) coast[P.owner] = 1;
@@ -226,7 +228,7 @@
   TR.month = function () {
     const S = A.S, eco = S.eco = S.eco || {}, now = A.absDay(), mo = A.monthOf(A.today()).m, Gs = GD.GOODS, car = [];
     let way = Array.isArray(eco.way) ? eco.way : (eco.way = []);
-    const g = TR.graph();
+    const t0 = performance.now(), g = TR.graph(), t1 = performance.now();
     // arrivals: what reaches a market goes into its store (66 puts it in the town)
     const keep = [];
     for (const w of way) {
@@ -247,23 +249,34 @@
     const rs = live(), war = new Map();
     const hostile = (x, y) => { const k = x < y ? x + '|' + y : y + '|' + x; let v = war.get(k); if (v == null) { v = !!(A.hostile && A.hostile(x, y)); war.set(k, v); } return v; };
     const cands = [], ks = Object.keys(Gs), NK = ks.length;
+    // the dearest price of each good anywhere: a source whose price, with one broker's tenth, is above it sends none
+    // each good's price in every market, in typed arrays by the market's place in rs (0 where there is no market)
+    const top = {}, ix = {}, PK = {};
+    rs.forEach((r, i) => { ix[r.id] = i; });
+    for (const k of ks) { const a = PK[k] = new Float64Array(rs.length); let m = -Infinity; rs.forEach((r, i) => { const md = r.mkt; const v = md && md.s && md.p ? md.p[k] || 0 : 0; a[i] = v; if (v > m) m = v; }); top[k] = m; }
     rs.forEach((src, si) => {
       const ms = src.mkt; if (!ms || !ms.s) return;
       const trips = TR.trips(src.id); if (!trips) return;
+      const nt = trips.length, bi = new Int32Array(nt), lo = new Float64Array(nt);
+      for (let ti = 0; ti < nt; ti++) { const x = ix[trips[ti].b]; bi[ti] = x == null ? -1 : x; lo[ti] = trips[ti].lo; }
       for (let ki = 0; ki < NK; ki++) {
-        const k = ks[ki], base = Gs[k].base, ps = ms.p[k];
+        const k = ks[ki], base = Gs[k].base, ps = ms.p[k], P = PK[k];
+        if (!(top[k] > ps * (1 + TR.BROKER))) continue;
         const spare = (ms.s[k] || 0) - E.normal(ms, k) * 0.8; if (!(spare > 1)) continue;
-        trips.forEach((T, ti) => {
-          const md = T.md(); if (!md || !md.s) return;
-          const pd = md.p[k]; if (!(pd > ps * T.lo)) return;
-          const c = TR.cost(T, k, ps, base); if (c == null) return;
+        for (let ti = 0; ti < nt; ti++) {
+          const b = bi[ti]; if (b < 0) continue;
+          const pd = P[b]; if (!(pd > ps * lo[ti])) continue;
+          const T = trips[ti], md = rs[b].mkt;
+          const c = TR.cost(T, k, ps, base); if (c == null) continue;
           const gain = pd - c - ps * TR.BROKER;
-          if (!(gain > 0)) return;
+          if (!(gain > 0)) continue;
           cands.push({ src, dst: A.realm(T.b), ms, md, k, T, score: gain / base / Math.sqrt(T.hands), o: (si * 64 + ki) * 4096 + ti });
-        });
+        }
       }
     });
+    const t2 = performance.now();
     cands.sort((x, y) => y.score - x.score || x.o - y.o);
+    TR.last = { cands: cands.length, graph: Math.round(t1 - t0), scan: Math.round(t2 - t1), sort: Math.round(performance.now() - t2) };
     const sent = {}, pending = {}, shut = new Map(), pipe = new Map();
     for (const w of way) { const pk = w[0] + '>' + w[1] + '>' + w[2], o = pipe.get(pk); if (!o || w[5] > o[5]) pipe.set(pk, w); }
     for (const c of cands) {
@@ -301,6 +314,7 @@
       car.push({ f: c.src.id, t: c.dst.id, k: c.k, n: Math.round(q), lost: 0, dep: 1, mo: mos, hands: c.T.hands, km: Math.round(c.T.dist), via: c.T.rn, sea: c.T.seaKm > c.T.landKm ? 1 : 0, y: S.year, m: mo });
     }
     eco.way = way;
+    TR.last.all = Math.round(performance.now() - t0);
     eco.car = car.slice(0, 300);
     eco.carN = car.filter(c => c.dep).length;
     eco.arrN = car.filter(c => c.arr).length;

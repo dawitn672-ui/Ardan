@@ -239,6 +239,7 @@ ${R}.sc-sheet .sc-card .choices button .risk.sc-odds, ${R}.sc-sheet .sc-card .sc
 @keyframes scShake{0%,100%{transform:none}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
 ${full(`
 ${M}.sc-enter{animation:scTurn 420ms var(--ease-enter,ease-out) both!important;transform-origin:0 50%}
+@@[data-theme] #modal.sc-sheet .sc-card.sc-enter{animation:scRise var(--m-enter,280ms) var(--ease-enter,ease-out) both!important}
 ${M}.sc-enter .sc-vig{animation:scWipe 620ms cubic-bezier(.6,.05,.25,1) 60ms both!important}
 ${M}.sc-enter .sc-vig::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;z-index:3;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,231,176,.35) 70%,transparent);animation:scBrush 620ms cubic-bezier(.6,.05,.25,1) 60ms both!important}
 @keyframes scSeal{0%{opacity:0;transform:rotate(-24deg) scale(2.1)}55%{opacity:1;transform:rotate(-6deg) scale(.9)}75%{transform:rotate(-9deg) scale(1.04)}100%{opacity:1;transform:rotate(-8deg)}}

@@ -86,6 +86,8 @@ export default {
       for (const s of document.querySelectorAll('#topbar svg')) if (which(s)) found.top.push(which(s));
       for (const s of document.querySelectorAll('#profile .barrow svg')) { const n = which(s); if (!n) continue; (IS[n].group === 'stat' ? found.stat : found.vital).push(n); }
       for (const s of document.querySelectorAll('#tabbody .act svg, #tabbody .group-h svg')) { const n = which(s); if (n && (IS[n].group === 'group' || (IS[n].also || []).some(x => x[1] === 'group'))) found.group.push(n); }
+      // cycle 2: each action's tile carries its own icon (things.core.js) in place of its group's
+      const actsOwn = UI.ICONS_ACT ? [...document.querySelectorAll('#tabbody .act[data-v] .lk-gi[data-own]')].filter(g => UI.ICONS_ACT[g.closest('.act').dataset.v]).length : 0;
       // the word: the icon's own row, button or label has text or a name
       for (const s of document.querySelectorAll('#app svg.ic')) {
         if (!which(s)) continue;
@@ -99,11 +101,11 @@ export default {
       pc.debt = 0; UI.render();
       const tips = ['stat:str', 'stat:wil', 'health:', 'piety:', 'coin:', 'initiative:'].map(k => { const [a, b] = k.split(':'); const h = UI.TT ? UI.TT.html(a, b) : ''; return [k, /<div class="tip-h"><svg class="ic s ico-tip"/.test(h)]; });
       const uniq = a => [...new Set(a)];
-      return { tab: uniq(found.tab), top: uniq(found.top), vital: uniq(found.vital), stat: uniq(found.stat), group: uniq(found.group), unlabelled: uniq(unlabelled), debt, tips, look: !!UI.LOOK };
+      return { tab: uniq(found.tab), top: uniq(found.top), vital: uniq(found.vital), stat: uniq(found.stat), group: uniq(found.group), actsOwn, unlabelled: uniq(unlabelled), debt, tips, look: !!UI.LOOK };
     });
     const tipsOk = !r.tips.length || r.tips.every(x => x[1]);
-    const ok = r.tab.length === 6 && r.top.length >= 7 && r.vital.length === 6 && r.stat.length === 6 && r.group.length >= 9 && !r.unlabelled.length && r.debt && tipsOk;
-    return { ok, detail: `tabs ${r.tab.join(' ')}; top bar ${r.top.join(' ')}; vitals ${r.vital.join(' ')}; stats ${r.stat.join(' ')}${r.look ? ' (91-look\'s tiles)' : ''}; groups ${r.group.length} (${r.group.join(' ')}); debt shows the broken coin ${r.debt}; ` +
+    const ok = r.tab.length === 6 && r.top.length >= 7 && r.vital.length === 6 && r.stat.length === 6 && (r.group.length >= 9 || r.actsOwn >= 9) && !r.unlabelled.length && r.debt && tipsOk;
+    return { ok, detail: `tabs ${r.tab.join(' ')}; top bar ${r.top.join(' ')}; vitals ${r.vital.join(' ')}; stats ${r.stat.join(' ')}${r.look ? ' (91-look\'s tiles)' : ''}; groups ${r.group.length} (${r.group.join(' ')}), actions with their own icon ${r.actsOwn}; debt shows the broken coin ${r.debt}; ` +
       `tooltips open with the icon ${r.tips.filter(x => x[1]).length}/${r.tips.length}${r.unlabelled.length ? '; WITHOUT A WORD ' + r.unlabelled.slice(0, 5).join(', ') : '; every icon has its word'}` };
   },
 

@@ -52,7 +52,8 @@
 ${D}{grid-template-columns:200px minmax(0,1fr) 200px;gap:20px;align-items:start}
 ${D} > .fighter{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px}
 ${D} > .fighter > svg:first-of-type{width:180px;height:auto;filter:drop-shadow(0 14px 10px rgba(10,8,30,.35))}
-${D} > .fighter ~ .fighter > svg:first-of-type{transform:scaleX(-1)}
+/* the portraits turn a quarter toward the picture's left (93), so you, on the left, are the one mirrored: the two face each other */
+${D} > .fighter:not(.fighter ~ .fighter) > svg:first-of-type{transform:scaleX(-1)}
 ${D} > .fighter::after{content:"";order:1;width:120px;height:10px;margin-top:-14px;border-radius:50%;background:radial-gradient(ellipse at 50% 50%,rgba(10,8,30,.45),rgba(10,8,30,0) 70%);pointer-events:none}
 ${D} > .fighter > *:not(svg){order:2}
 ${D} > .fighter .barrow{display:grid;grid-template-columns:44px minmax(0,1fr) 34px;align-items:center;gap:6px;width:100%}

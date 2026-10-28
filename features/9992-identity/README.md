@@ -6,6 +6,8 @@
 
 ## What it does
 
+**Where the card sits.** "Your mark" is at the foot of the Life tab. On a phone it heads Decisions, beside "Found a house of your own", because 91-look holds the phone Life page to 1.3 screens (`phoneLife`).
+
 **Arms** (`identity.a-mark.core.js`).
 - **The designer** ("Your mark" on the Life tab, *Design your arms*): field, a division or ordinary (chief, fess, pale, bend, chevron, cross, saltire, per pale, per fess, quarterly, bordure) in a second tincture, one of the release's 24+ charges, the charge's tincture, and a motto. Eight tinctures in the woodblock palette (94's pigments), 91's ink line round the shield. Every button is at least 44 px; on a phone the rows stack.
 - **Where it shows.** `PORTRAIT.coat` is taught the ordinary, so the house you head is drawn with your design on every house chip, family card, realm band and share card, with no change to those screens. Before you head a house it is your own device (`pc.mark`); when you found one (`found_house`), the heralds register the device as the house's arms and its motto as the house words.

@@ -1,11 +1,11 @@
-// 9991-atlas: two hooks in 62-inked-map's names pass, so the veil over what you do not know is drawn by the inked
-// map itself (under the names, over the ground, the wash and the borders), and an unknown province's name is not
+// 9991-atlas: two hooks in 62-inked-map: the lines layer and the names pass, so the veil over what you do not know is drawn by the inked
+// map itself (over the ground, the wash, the borders and the towns, under the names), and an unknown province's name is not
 // written. Both only call this feature's code; with it absent (MAP.veil and MAP.unnamed undefined) they do nothing.
 export default [
   {
     id: 'AT-VEIL', blob: 'ardan-core',
-    why: 'Porting: in the inked map\'s names pass, before any name is drawn, call MAP.veil(ctx, W, H, view) so a renderer hook can lay the fog of the unknown over the land and under the names.',
-    edits: [["const whole = !v || !!v.whole; v = wholeView(W, H, v);", "const whole = !v || !!v.whole; v = wholeView(W, H, v); if (MAP.veil) MAP.veil(ctx, W, H, v);"]],
+    why: 'Porting: when the inked map lays its lines layer (borders, towns) into the view it keeps, call MAP.veil on that kept picture after the towns, with the view and the canvas on screen, so a renderer hook can lay the fog of the unknown over the land and under the names; MAP.veilKey(canvas) joins the kept view\'s key so it is laid again when what the player knows changes.',
+    edits: [["(c, d) => IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K), tk);", "(c, d) => { IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K); if (MAP.veil) MAP.veil(c, d.W, d.H, { x0: d.vx, y0: d.vy, w: d.W / d.sx, h: d.H / d.sy }, ctx.canvas); }, tk + (MAP.veilKey ? MAP.veilKey(ctx.canvas) : ''));"]],
   },
   {
     id: 'AT-UNNAMED', blob: 'ardan-core',

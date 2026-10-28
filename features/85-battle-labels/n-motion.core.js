@@ -164,6 +164,12 @@
   BM.after = function (cv, B) {
     if (!cv || !B || !B.sides || !cv.parentElement) return;
     const R = BM.read(B);
+    // on a phone 71-phone moves the canvas into a frame that pans once the draw is done: the overlay follows it there
+    const phone = !!document.querySelector('#game.phone') || (window.matchMedia && window.matchMedia('(max-width: 760px)').matches);
+    if (phone && typeof requestAnimationFrame === 'function') { requestAnimationFrame(() => { if (cv.isConnected) BM.place(cv, B, R); }); return; }
+    BM.place(cv, B, R);
+  };
+  BM.place = function (cv, B, R) {
     const par = cv.parentElement;
     try { if (getComputedStyle(par).position === 'static') par.style.position = 'relative'; } catch (e) {}
     let ov = par.querySelector(':scope > .bm-ov');
