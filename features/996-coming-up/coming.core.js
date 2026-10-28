@@ -155,8 +155,8 @@
 .cu-t{color:var(--ink);min-width:0}
 .cu-initiative .cu-when{color:var(--warn)}
 .cu-ambition .cu-t{color:var(--ink-2)}
-/* a phone: the two soonest things, one line each, so the strip costs two lines of the Life page */
-@media (max-width:760px){.cu-strip{padding:4px 8px}.cu-h{display:none}.cu-item:nth-child(n+3){display:none}
+/* a phone: the soonest thing on one line, so the strip costs one line of the Life page */
+@media (max-width:760px){:root[data-theme] #tabbody .cu-strip.card,.cu-strip{padding:0 4px;margin:0 0 4px;border:0;background:none;box-shadow:none;min-height:0}.cu-h{display:none}.cu-item:nth-child(n+2){display:none}
 .cu-item{grid-template-columns:auto 1fr;font-size:14px}.cu-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('cu-style')) return; const s = document.createElement('style'); s.id = 'cu-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }

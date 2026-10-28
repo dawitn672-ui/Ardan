@@ -225,12 +225,12 @@ export default {
           const wc = box.querySelector('.woodcut-wrap'), w = wc ? wc.getBoundingClientRect() : null;
           const ch = [...box.querySelectorAll('[data-a=evChoose]')].map(c => c.getBoundingClientRect());
           return { sheet: m.classList.contains('ph-sheet'), fills: b.bottom >= innerHeight - 1 && b.top <= hb + 12, wood: !!w && Math.abs(w.width - b.width) < 3,
-            choices: ch.length, low: ch.length && ch.every(r => r.top >= innerHeight * 0.5 && r.bottom <= innerHeight), H: innerHeight, top: ch.length ? Math.round(ch[0].top) : null };
+            choices: ch.length, low: ch.length && ch.every(r => (UI.SCENE ? r.top >= 0 : r.top >= innerHeight * 0.5) && r.bottom <= innerHeight), scene: !!UI.SCENE, H: innerHeight, top: ch.length ? Math.round(ch[0].top) : null };
         });
       } finally { await ctx.close(); }
     }
     const good = x => x.sheet && x.fills && x.wood && x.choices >= 2 && x.low;
-    return { ok: good(res.se) && good(res.pixel), detail: Object.entries(res).map(([d, x]) => `${d}: sheet ${x.sheet}, fills the screen ${x.fills}, woodcut full width ${x.wood}, ${x.choices} choices from y ${x.top} of ${x.H}, all in the lower half ${!!x.low}`).join('; ') };
+    return { ok: good(res.se) && good(res.pixel), detail: Object.entries(res).map(([d, x]) => `${d}: sheet ${x.sheet}, fills the screen ${x.fills}, woodcut full width ${x.wood}, ${x.choices} choices from y ${x.top} of ${x.H}, ${x.scene ? 'all on screen (92-scene-card: the choices follow the text)' : 'all in the lower half'} ${!!x.low}`).join('; ') };
   },
 
   // first-hour I4: "Be born" on a phone landed on an empty Now with the birth story a sub-tab away. It opens on Story,
