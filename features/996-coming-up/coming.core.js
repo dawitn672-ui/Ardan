@@ -128,7 +128,7 @@
     try { items = CU.items(pc); } catch (e) { console.error('coming up', e); return ''; }
     if (!items.length) return '';
     return `<section class="card cu-strip" aria-labelledby="cu-h"><h3 id="cu-h" class="cu-h">${UI.icon ? UI.icon('calendar', 's') : ''} Coming up</h3><ol class="cu-list">` +
-      items.map(x => `<li class="cu-item cu-${esc(x.kind)}"><span class="cu-when">${esc(x.when)}</span><span class="cu-ic" aria-hidden="true">${UI.icon ? UI.icon(x.icon, 's') : ''}</span><span class="cu-t">${esc(x.text)}</span></li>`).join('') +
+      items.map(x => `<li class="cu-item cu-${esc(x.kind)}"><span class="cu-when">${esc(x.when)}</span><span class="cu-t">${UI.icon ? UI.icon(x.icon, 's') : ''}${esc(x.text)}</span></li>`).join('') +
       `</ol></section>`;
   };
   UI.comingUp = CU.strip;
@@ -149,12 +149,15 @@
   const CSS = `.cu-strip{padding:8px 10px;margin-bottom:8px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-m,8px)}
 .cu-h{display:flex;align-items:center;gap:6px;margin:0 0 4px;font-size:var(--t-cap,12px);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
 .cu-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
-.cu-item{display:grid;grid-template-columns:minmax(84px,auto) 16px 1fr;gap:6px;align-items:baseline;font-size:var(--t-small,13px);line-height:var(--lh-small,1.38)}
+.cu-item{display:grid;grid-template-columns:minmax(84px,auto) 1fr;gap:6px;align-items:baseline;font-size:var(--t-small,13px);line-height:var(--lh-small,1.38)}
 .cu-when{color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap}
-.cu-ic .ic{width:14px;height:14px;vertical-align:-2px;color:var(--ink-3)}
+.cu-t .ic{width:14px;height:14px;vertical-align:-2px;margin-right:6px;color:var(--ink-3)}
 .cu-t{color:var(--ink);min-width:0}
 .cu-initiative .cu-when{color:var(--warn)}
-.cu-ambition .cu-t{color:var(--ink-2)}`;
+.cu-ambition .cu-t{color:var(--ink-2)}
+/* a phone: the two soonest things, one line each, so the strip costs two lines of the Life page */
+@media (max-width:760px){.cu-strip{padding:4px 8px}.cu-h{display:none}.cu-item:nth-child(n+3){display:none}
+.cu-item{grid-template-columns:auto 1fr;font-size:14px}.cu-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('cu-style')) return; const s = document.createElement('style'); s.id = 'cu-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();

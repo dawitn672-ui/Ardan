@@ -30,9 +30,14 @@ export default {
       if (cv) { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data, seen = new Set(); for (let i = 0; i < d.length; i += 4 * 97) seen.add(d[i] << 16 | d[i + 1] << 8 | d[i + 2]); colours = seen.size; }
       const D = A.FAR.D, n = Object.keys(D.realms).length + Object.keys(LORE.realms).filter(id => !D.realms[id]).length;
       return { text: t.textContent, n, old: !!document.getElementById('titlemap'), colours, sky: !!t.querySelector('.tt-sky svg[data-hour="dawn"]'),
-        primary: [...t.querySelectorAll('.btns button.primary')].map(b => b.dataset.a), buttons: t.querySelectorAll('.btns button').length };
+        primary: [...t.querySelectorAll('.btns button.primary')].map(b => b.dataset.a), buttons: t.querySelectorAll('.btns button').length,
+        // 995-hall-of-lives' shelf takes the slot left under the buttons, once
+        shelf: (() => { if (!UI.HALL || !UI.HALL.KEY) return 'none';
+          localStorage.setItem(UI.HALL.KEY, JSON.stringify({ v: 1, n: 1, endings: {}, manners: {}, ach: {}, lives: [{ k: 'a', name: 'Edda', realm: 'POL-01', realmName: 'Aldmark', born: 1100, died: 1131, ending: 'cut_short', seed: '1' }] }));
+          UI.render(); const T2 = document.getElementById('title'), sh = T2.querySelectorAll('.hl-shelf'), b = T2.querySelector('.btns');
+          const ok = sh.length === 1 && !!(b.compareDocumentPosition(sh[0]) & Node.DOCUMENT_POSITION_FOLLOWING); localStorage.removeItem(UI.HALL.KEY); return ok ? 'under the buttons' : 'MISPLACED'; })() };
     });
-    const ok = !/Thirty-four/.test(r.text) && r.text.includes(`${r.n} realms`) && !r.old && r.colours > 20 && r.sky && r.primary.length === 1 && r.primary[0] === 'newLife' && r.buttons >= 4;
-    return { ok, detail: `"${r.n} realms" in the pitch ${r.text.includes(`${r.n} realms`)}, "Thirty-four" gone ${!/Thirty-four/.test(r.text)}; the Known World strip gone ${!r.old}, the continent drawn in ${r.colours} colours; dawn sky ${r.sky}; primary buttons: ${r.primary.join(', ')} of ${r.buttons}` };
+    const ok = !/Thirty-four/.test(r.text) && r.text.includes(`${r.n} realms`) && !r.old && r.colours > 20 && r.sky && r.primary.length === 1 && r.primary[0] === 'newLife' && r.buttons >= 4 && r.shelf !== 'MISPLACED';
+    return { ok, detail: `"${r.n} realms" in the pitch ${r.text.includes(`${r.n} realms`)}, "Thirty-four" gone ${!/Thirty-four/.test(r.text)}; the Known World strip gone ${!r.old}, the continent drawn in ${r.colours} colours; dawn sky ${r.sky}; primary buttons: ${r.primary.join(', ')} of ${r.buttons}; Your lives shelf ${r.shelf}` };
   },
 };

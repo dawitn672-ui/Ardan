@@ -110,20 +110,26 @@ A.eventView = function (q) {
   return v;
 };
 // the duel screen's opening measure reads the beast's mod too, so the number on the button and the number the duel
-// opens with agree (A.fighterBeast scales the beast's strength and blood by it; 48's measure read the unharmed beast)
+// opens with agree (A.fighterBeast scales the beast's strength and blood by it; 48's measure read the unharmed beast).
+// The mod is taken from the call itself (foe.mod), never inferred from the beast's blood: a hunting party changes the
+// duel's fighters too, and reading the mod back from them broke 48's flBeastOdds calibration.
+FO.curMod = null;
+const sd = A.startDuel;
+A.startDuel = function (pc, foe) {
+  const was = FO.curMod;
+  FO.curMod = foe && foe.beastId && +foe.mod > 0 ? +foe.mod : null;
+  try { return sd.apply(this, arguments); } finally { FO.curMod = was; }
+};
 if (A.FL && typeof A.FL.duelMeasure === 'function') {
   const dm = A.FL.duelMeasure;
   A.FL.duelMeasure = function (D) {
     const m = dm.apply(this, arguments);
     try {
-      const b = D && D.b, B = b && b.beast && A.BEASTS && A.BEASTS[b.beast];
-      if (B && B.hp > 0 && m.w50 != null) {
-        const mod = Math.round(100 * b.maxHp / Math.round(B.hp)) / 100;
-        if (mod > 0 && Math.abs(mod - 1) > 0.02) {
-          const row = A.FL.duelRow(b.beast), s = D.party ? row[3] : row[1], a = D.a, hf = a.maxHp ? A.clamp(a.hp / a.maxHp, 0.3, 1) : 1;
-          const p = logistic((m.wA - m.w50 * FO.modRatio(b.beast, mod)) / s + A.FL.BEAST_HEALTH * (hf - 1));
-          m.p = A.clamp(p, A.FL.CLAMP[0], A.FL.CLAMP[1]); m.pct = Math.round(m.p * 100); m.mod = mod;
-        }
+      const b = D && D.b, mod = FO.curMod;
+      if (b && b.beast && mod && Math.abs(mod - 1) > 0.001 && m.w50 != null) {
+        const row = A.FL.duelRow(b.beast), s = D.party ? row[3] : row[1], a = D.a, hf = a.maxHp ? A.clamp(a.hp / a.maxHp, 0.3, 1) : 1;
+        const p = logistic((m.wA - m.w50 * FO.modRatio(b.beast, mod)) / s + A.FL.BEAST_HEALTH * (hf - 1));
+        m.p = A.clamp(p, A.FL.CLAMP[0], A.FL.CLAMP[1]); m.pct = Math.round(m.p * 100); m.mod = mod;
       }
     } catch (e) { console.error('fight odds measure', e); }
     return m;

@@ -62,4 +62,20 @@ export default {
     });
     return { ok: r.wrong === 0 && r.words === 0 && r.marked >= Math.ceil(r.seen * 0.8), detail: `${r.seen} beast-fight choices met in 36 years of three lives, ${r.marked} marked; marked without a fight ${r.wrong}; badge words off the scale ${r.words}` };
   },
+  // the duel screen reads a trap's or arrows' mod from the call, and leaves an unharmed beast's measure to 48: reading
+  // the mod back from the beast's blood (which a party and the beast's size change too) broke 48's flBeastOdds
+  async foMeasureMod(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 8905, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const pc = A.pc(), out = {};
+      for (const [k, mod, party] of [['plain', 1, false], ['party', 1, true], ['trap', 0.6, false]]) {
+        A.S.queue = [];
+        const D = A.startDuel(pc, { beastId: 'CRE-23', mod }, { kind: 'beast', forceSolo: true, grounded: true, party: party ? { n: 8 } : undefined });
+        out[k] = D && D.measure ? (D.measure.mod || 1) : null;
+      }
+      A.S.queue = [];
+      return out;
+    });
+    return { ok: r.plain === 1 && r.party === 1 && r.trap === 0.6, detail: `mod read by the duel screen: alone ${r.plain}, with a party ${r.party}, after a trap ${r.trap}` };
+  },
 };

@@ -272,7 +272,9 @@ export default {
         const k = ink ? 'ink' : 'release', V = out.views[k] = {};
         UI.ov = null; UI.tab = 'world'; UI.worldView = 'map'; UI.render();
         const wm = UI.$('#worldmap'); MAP.draw(wm, { mode: 'political' }); V.world = pick(wm, null, site);
-        UI.screen = 'title'; UI.render(); const tm = UI.$('#titlemap'); if (tm) { MAP.draw(tm, { labels: true, home: false }); V.title = pick(tm, null, site); }
+        // the title (86-title-fold, cycle 1) draws the whole continent from this feature's grid, not a map of the world
+        // in play: the release's strip is drawn only where it is still on the title
+        UI.screen = 'title'; UI.render(); const tm = UI.$('#titlemap'); if (tm) { MAP.draw(tm, { labels: true, home: false }); V.title = pick(tm, null, site); } else if (!UI.$('#titlegc')) out.miss.push(k + ' title: no map');
         UI.screen = 'game'; UI.render();
         UI.A.ov('bigmap'); UI.gm.view = null; UI.gmDraw(); V.gmFit = pick(UI.$('#gmap'), UI.gm.view, site);
         for (const z of [1, 3, 8]) {
@@ -302,7 +304,7 @@ export default {
       return out;
     });
     const nViews = Object.values(r.views).reduce((s, V) => s + Object.keys(V).length, 0);
-    return { ok: r.pure && !r.miss.length && nViews >= 18, detail: `${nViews} views (world tab, title strip, full map fitted and at zoom 1, 3, 8, war room at 1.5, 4, 9; inked and release) draw the far lands at their sites` +
+    return { ok: r.pure && !r.miss.length && nViews >= 16, detail: `${nViews} views (world tab, the title strip where it is still drawn, full map fitted and at zoom 1, 3, 8, war room at 1.5, 4, 9; inked and release) draw the far lands at their sites` +
       (r.ink ? `; the inked ground traces ${r.ink.far} far coasts and ${r.ink.farLines} pieces of far province bounds` : '') +
       (r.miss.length ? `; MISSING ${r.miss.join(', ')}` : '') + `; drawing left the state and stream ${r.pure ? 'unchanged' : 'CHANGED'}` };
   },
@@ -315,6 +317,9 @@ export default {
       A.newGame({ seed: 9951, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
       out.code = { active: A.FAR.active, prov: A.S.prov.length, world: A.S.world || null };
       UI.A.newLife();
+      // "A new life" opens on the quick start (29-starts, cycle 1); the Lands cards and the grouped birthplaces are the
+      // full screens', a click away
+      UI.A.crStep(0);
       out.menu = { lands: UI.cr.lands, active: A.FAR.active, realms: Object.keys(LORE.realms).length };
       // the field, and the realm list grouped by land
       let html = '';

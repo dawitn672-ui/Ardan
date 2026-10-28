@@ -17,7 +17,7 @@ The duel screen already opens with the true chance and lets you flee, so the pla
   Cycle 1 found the gap: the release's "The hunt" ("Attack it head-on", a function calling `startDuelFront`) carried no badge, and a merchant of 18 died to a crocodile from it in her first half-year. Every event was swept (22 such choices in 14 events: the hunt, the knight's beast, the bear pit, the sister-school hunt, the brawls of love rivals and insults, the grading bouts, the order's bouts, the titan and the flyer).
 - **A check whose outcome is a fight** keeps its own odds and adds the fight after it: "40% · risky", then "then 22% · a fight" (the fight if the check works; its title gives the fight if it fails).
 - **Not a check.** The field is `c.fight`, not `c.odds`: nothing is rolled, and the bot, the playtest log and the check counts read `c.odds`.
-- **The duel screen agrees.** 48's opening measure read the beast unharmed; it now reads the beast's mod too (`FL.duelMeasure`), so a trap's fight opens with the number its badge showed.
+- **The duel screen agrees.** 48's opening measure read the beast unharmed; it now reads the beast's mod too (`FL.duelMeasure`), so a trap's fight opens with the number its badge showed. The mod is taken from the call (`foe.mod`, held while `A.startDuel` runs), not read back from the beast's blood: an earlier version did that, and since a beast's duel blood differs from its bestiary blood (size, a hunting party), it moved nearly every beast duel's opening number and broke 48's `flBeastOdds` (`foMeasureMod`).
 - **Pure.** The chance is worked out once, engine side, when the view is built; drawing reads it.
 
 ## Measured by

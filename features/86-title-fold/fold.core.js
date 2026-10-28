@@ -107,6 +107,8 @@
       if (btns) for (const x of btns.querySelectorAll('button')) { if (x.dataset.a === 'newLife') { x.classList.add('primary', 'tt-go'); } else { x.classList.remove('primary'); x.classList.add('ghost'); } }
       const go = btns && btns.querySelector('[data-a=newLife]');
       if (go && btns.firstElementChild !== go) btns.prepend(go);
+      // the slot for 995-hall-of-lives' "Your lives" shelf (UI.hallShelf): under the buttons, before the small print
+      if (btns && !root.querySelector('.hl-shelf')) btns.after(document.createComment('hall'));
       root.insertAdjacentHTML('afterbegin', TF.sky());
       return t.innerHTML;
     } catch (e) { console.error('title', e); return h; }
