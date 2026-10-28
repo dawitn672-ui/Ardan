@@ -25,3 +25,14 @@ Each new piece should strengthen at least one pillar, and ideally feed another.
 - **Measure first.** Each grow lane reports a number before and after: places found, distinct events, coin against sinks, shares made, replay unlocks.
 - **One coherent world.** Nothing is faked for the far lands, and nothing is simulated at a lower fidelity.
 - **Reviewers judge growth too.** Cycle 2's reviewers judge what the cycle 1 growth makes possible, as well as what it broke.
+
+## Free rein (owner, Oct 28)
+
+"Growth doesn't have to be new. Can be improved graphics, better UI and animations, more detail. Backtests on the most well designed or popular games and see what can be taken from those. You have free rein to edit in whatever way you want. A full political system. Detailed wars done to the last unit. Complex systems. Beautifully graphic design and motion graphics. Whatever is necessary."
+
+How this changes the lanes:
+- **Growth includes polish.** Lane G covers motion, portraits, the title, the battle screen and fine detail everywhere.
+- **Backtests guide the big systems.** Lane R studies about fifteen of the best-designed games, finds the specific mechanisms behind them, and writes a ranked list of what to bring into Ardan in `docs/research/backtests.md`.
+- **Two big systems are queued after the cycle 1 fixes are integrated:**
+  - Lane P: a full political system, with offices, laws, councils, factions, elections, vassal contracts and legitimacy.
+  - Lane WD: war down to the unit, with companies, named officers, formations, morale per unit, supply and orders.
