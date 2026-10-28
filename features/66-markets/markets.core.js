@@ -288,8 +288,10 @@
       // the merchants go where the good fetches most after the road from where they set out
       if (tt.length > 1) { const pk = (A.realm(c.t).mkt || {}).p, base = G()[c.k].base; for (const t of tt) { const R = MT.road(src, t), v = (pk ? pk[c.k] : base) * MT.rel(t, c.k) - base * (R ? R.f : 1); if (-v < bd) { bd = -v; dst = t; } } }
       c.fT = src; c.tT = dst;
-      (moved[src] = moved[src] || new Float64Array(nk))[i] -= c.n + (c.lost || 0);
-      (moved[dst] = moved[dst] || new Float64Array(nk))[i] += c.n;
+      // on the lore's roads (9995-trade-roads) a caravan is listed when it sets out (dep: it leaves its town) and when
+      // it arrives months later (arr: it reaches the town); a caravan with neither flag does both in the month
+      if (!c.arr) (moved[src] = moved[src] || new Float64Array(nk))[i] -= c.n + (c.lost || 0);
+      if (!c.dep) (moved[dst] = moved[dst] || new Float64Array(nk))[i] += c.n;
     }
     for (const r of rs) {
       const ts = by[r.id]; if (!ts) continue;

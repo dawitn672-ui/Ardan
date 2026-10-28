@@ -711,6 +711,7 @@
   // a captain at the end of his patience: in peace he asks for a transfer; in a civil war he may take his men over
   CO.leave = function (d, i, s, c, atWar) {
     const b = d.bs[i], S = A.S, pc = A.pc();
+    if (CO.mineBn(d, i) && pc && pc.alive) { const q = CO.person(d, i, s); if (q) c = Object.assign({}, c, { person: q, pid: q.id }); }
     const civil = atWar && A.atWar(d.r).some(w => { const other = w.att.includes(d.r) ? w.def : w.att; return other.some(o => { const R = A.realm(o), me = A.realm(d.r); return (R && R.isRebel) || (me && me.isRebel); }); });
     if (civil && s < 4 && b.k[s] > 0) {
       const foe = A.atWar(d.r).map(w => (w.att.includes(d.r) ? w.def : w.att)[0]).find(o => A.realm(o));
@@ -719,7 +720,7 @@
       try { A.divLose(d, n); } finally { CO.WHY = null; }
       const R = foe && A.realm(foe); if (R) R.levy = (R.levy || 0) + n;
       CO.stats.turned++;
-      if (CO.mineBn(d, i) && pc && pc.alive) CO.queueEv('co_turncoat', { capn: c.name, coy: CO.coName(d, i, s, true), foe: foe ? A.realmShort(foe) : 'the other side' });
+      if (CO.mineBn(d, i) && pc && pc.alive) CO.queueEv('co_turncoat', { capn: c.name, pid: c.pid || null, coy: CO.coName(d, i, s, true), foe: foe ? A.realmShort(foe) : 'the other side' });
       else if (A.WC && A.WC.put) A.WC.put('turn', { a: d.r, b: foe, n, x: CO.coName(d, i, s) });
     } else if (CO.mineBn(d, i) && pc && pc.alive && !(pc.flags.co_transfer && S.year - pc.flags.co_transfer < 2)) {
       CO.queueEv('co_transfer_request', { capn: c.name, coy: CO.coName(d, i, s, true), pid: c.person ? c.person.id : null });

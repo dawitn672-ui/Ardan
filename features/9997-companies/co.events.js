@@ -26,13 +26,13 @@ A.defEvents([
   { id: 'co_new_captain', title: 'A new captain', trigger: true, cool: 1, npc: true,
     cond: (p, C) => C.soldier(p) && C.adult(p),
     setup: (p, ctx) => { const C = coyFill(p, ctx); if (!C || !ctx.pid || !A.P(ctx.pid) || !A.P(ctx.pid).alive) ctx.skip = true; ctx.old = ctx.old || 'the captain'; },
-    text: 'They carry Captain {old} back on a door and lay him by the wagons with his boots still on. By dusk the {coy} has a new captain: {them}, who was a serjeant this morning. {khe} walks the lines with a lantern, saying each man\'s name. Some names {khe} has to ask.',
+    text: 'They carry Captain {old} back on a door and lay the body by the wagons, boots still on. By dusk the {coy} has a new captain: {them}, who was a serjeant this morning. {khe} walks the lines with a lantern, saying each man\'s name. Some names {khe} has to ask.',
     choices: [
       { t: 'Stand up when {khe} reaches your fire', r: '{them} stops, looks at you, and nods. It is a small thing. The men saw it.', fx: { them: { op: 12 }, coy: { mo: 4, sat: 8 }, merit: 1 } },
       { t: 'Tell {khim} what {old} meant to do tomorrow', check: { s: 'tactics', s2: 'int', d: 45 },
         win: { r: 'You give it plainly: the ditch on the left, the second rank in reserve. {them} listens, and uses it.', fx: { them: { op: 15 }, merit: 3, skill: { tactics: 1 } } },
         lose: { r: 'You get it half wrong, and {them} knows it. "I will make my own plan, thank you."', fx: { them: { op: -6 }, happy: -2 } } },
-      { t: 'Sit with {old} until they bury him', r: 'You sit with the dead man in the cold. In the morning the chaplain says you were the only one.', fx: { piety: 3, happy: -2, rel: { who: 'comrade', op: 4, all: true } } },
+      { t: 'Sit with {old} until the burial', r: 'You sit with the dead in the cold. In the morning the chaplain says you were the only one.', fx: { piety: 3, happy: -2, rel: { who: 'comrade', op: 4, all: true } } },
     ] },
 
   { id: 'co_passed_over', title: 'Passed over', trigger: true, cool: 2, npc: true,
@@ -40,7 +40,7 @@ A.defEvents([
     setup: (p, ctx) => { if (!coyFill(p, ctx)) return; p.flags.co_passed_over = A.S.year; },
     text: 'The year\'s promotions are read out at muster. The {bn} goes to Captain {capn}, and you are not named. Captain {capn} has fewer fights than you and a better tailor. Your own company watches your face while the list is read.',
     choices: [
-      { t: 'Shake his hand in front of the men', r: 'You shake it hard. The men take it as you meant it. The commander takes it as nothing at all.', fx: { honor: 3, coy: { mo: 3 }, happy: -3 } },
+      { t: 'Shake the new man\'s hand before the men', r: 'You shake it hard. The men take it as you meant it. The commander takes it as nothing at all.', fx: { honor: 3, coy: { mo: 3 }, happy: -3 } },
       { t: 'Ask the commander why', check: { s: 'persuasion', s2: 'wil', d: 52 },
         win: { r: 'He hears you out. "Next year," he says, and writes something down. It may be your name.', fx: { merit: 6, bossOp: 4 } },
         lose: { r: 'He hears you out, and then he tells you why, in front of his aide. You will not ask again.', fx: { bossOp: -10, happy: -5 } } },
@@ -49,20 +49,20 @@ A.defEvents([
 
   { id: 'co_transfer_request', title: 'A captain asks to go', trigger: true, cool: 2, npc: true,
     cond: (p, C) => C.soldier(p) && C.adult(p),
-    setup: (p, ctx) => { if (!coyFill(p, ctx)) return; p.flags.co_transfer = A.S.year; if (ctx.pid && !(A.P(ctx.pid) && A.P(ctx.pid).alive)) delete ctx.pid; ctx.who = ctx.capn; },
-    text: 'Captain {who} of the {coy} has had enough: the pay late, the general a stranger to him, his men buried in places nobody will remember. He has asked for a transfer to the garrisons. The serjeants say he means it. He will go at the end of the week unless somebody gives him a reason not to.',
+    setup: (p, ctx) => { if (!coyFill(p, ctx)) return; p.flags.co_transfer = A.S.year; if (!ctx.pid || !A.P(ctx.pid)) { ctx.skip = true; return; } ctx.who = ctx.capn; },
+    text: 'Captain {who} of the {coy} has had enough: the pay late, the general a stranger, {khis} men buried in places nobody will remember. {khe} has asked for a transfer to the garrisons, and the serjeants say {khe} means it. {khe} goes at the end of the week unless somebody gives {khim} a reason not to.',
     choices: [
-      { t: 'Give him a reason to stay', check: { s: 'persuasion', s2: 'ins', d: 50 },
-        win: { r: 'You talk until the fire is ash. He tears up the letter. He does not say thank you, which is how you know.', fx: { coy: { mo: 5 }, merit: 2 } },
-        lose: { r: 'He listens politely and goes anyway. Serjeant {serj} has the company by Sunday.', fx: { happy: -2 } } },
-      { t: 'Wish him well and mean it', r: 'He goes with your good word and a bottle. Serjeant {serj} takes the company and does well enough.', fx: { honor: 2, happy: 1 } },
-      { t: 'Tell the commander he is shirking', r: 'The commander thanks you for your zeal. The captain leaves in disgrace, and the men know who sent him.', fx: { bossOp: 6, merit: 2, rel: { who: 'comrade', op: -6, all: true }, honor: -4 } },
+      { t: 'Give {khim} a reason to stay', check: { s: 'persuasion', s2: 'ins', d: 50 },
+        win: { r: 'You talk until the fire is ash. {them} tears up the letter, and does not say thank you, which is how you know.', fx: { coy: { mo: 5 }, merit: 2, them: { op: 8 } } },
+        lose: { r: '{them} listens politely and goes anyway. Serjeant {serj} has the company by Sunday.', fx: { happy: -2 } } },
+      { t: 'Wish {khim} well and mean it', r: '{them} goes with your good word and a bottle. Serjeant {serj} takes the company and does well enough.', fx: { honor: 2, happy: 1, them: { op: 10 } } },
+      { t: 'Tell the commander {khe} is shirking', r: 'The commander thanks you for your zeal. The captain leaves in disgrace, and the men know who sent {khim}.', fx: { bossOp: 6, merit: 2, rel: { who: 'comrade', op: -6, all: true }, honor: -4, them: { op: -30 } } },
     ] },
 
   { id: 'co_turncoat', title: 'The company goes over', trigger: true, cool: 3, npc: true,
     cond: (p, C) => C.soldier(p) && C.atWar(p),
     setup: (p, ctx) => { if (!coyFill(p, ctx)) return; ctx.who = ctx.capn; ctx.foe = ctx.foe || 'the other side'; },
-    text: 'Before dawn the picket wakes you. The {coy} is gone: Captain {who} took his men across the river in the dark to {foe}, with the colours and the pay chest. Their fires are still warm. One of them left his boots.',
+    text: 'Before dawn the picket wakes you. The {coy} is gone: Captain {who} took the company across the river in the dark to {foe}, with the colours and the pay chest. Their fires are still warm. Somebody left his boots.',
     choices: [
       { t: 'Ride to warn the commander', r: 'You are the first to tell him. He remembers who was first.', fx: { merit: 5, bossOp: 5, happy: -2 } },
       { t: 'Say nothing until you are asked', r: 'By noon everyone knows. Nobody asks you anything, which is its own kind of answer.', fx: { honor: -2, happy: -1 } },

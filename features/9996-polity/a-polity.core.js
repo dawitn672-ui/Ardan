@@ -215,7 +215,18 @@ POL.leaderOf = function (r, k) {
   if (k === 'comm') { const t = r.pol && r.pol.est && r.pol.est.comm && r.pol.est.comm.lead; const p = t ? A.P(t) : null; return live(p) ? p : null; }
   return null;
 };
+// memoised by the day and everything the reading depends on that can change within it (a module cache, not state)
+const esMemo = new Map();
 POL.estState = function (r) {
+  const pol = r.pol, key = A.absDay() + '|' + POL.GROUPS.map(g => POL.pos(r, g)).join('') + '|' + (pol ? POL.EST.map(k => pol.est[k] ? pol.est[k].mod : 0).join(',') : '') + '|' + Object.values(r.council || {}).join(',') + '|' + Math.round(r.stability || 0) + '|' + (r.army || 0) + '|' + ((pol && pol.lost) || []).length + '|' + (pol && pol.won);
+  const hit = esMemo.get(r.id);
+  if (hit && hit.key === key && hit.S === A.S) return hit.v;
+  const v = POL.estStateNow(r);
+  if (esMemo.size > 400) esMemo.clear();
+  esMemo.set(r.id, { key, S: A.S, v });
+  return v;
+};
+POL.estStateNow = function (r) {
   const cl = POL.clout(r), out = {};
   for (const k of EST) { const ap = POL.approval(r, k); out[k] = { k, cl: cl[k], ap, angry: ap <= -5, loyal: ap >= 5, name: POL.estName(k, r.id), lead: POL.leaderOf(r, k) }; }
   return out;
@@ -357,8 +368,9 @@ POL.ixDirty = () => { pix = null; };
 POL.makeFor = function (r, k) {
   const want = POL.offEst(r, k);
   if (want.includes('nob') || want.includes('army')) {
-    const hs = A.realmHouses(r.id).filter(h => !h.headPid || !live(A.P(h.headPid))).sort((a, b) => A.houseStrength(b) - A.houseStrength(a) || String(a.id).localeCompare(String(b.id)));
-    if (hs.length) { const p = A.houseHead(hs[0].id); if (live(p) && p.realm === r.id) { POL.stats.house = (POL.stats.house || 0) + 1; POL.ixDirty(); return p; } }
+    const trade = h => /merchant|guild|bank/i.test(h.kind || '');
+    const hs = A.realmHouses(r.id).filter(h => (!h.headPid || !live(A.P(h.headPid))) && (want.includes('burg') || !trade(h))).sort((a, b) => A.houseStrength(b) - A.houseStrength(a) || String(a.id).localeCompare(String(b.id)));
+    if (hs.length) { const p = A.houseHead(hs[0].id); POL.ixDirty(); if (live(p) && p.realm === r.id && want.includes(POL.estateOf(p))) { POL.stats.house = (POL.stats.house || 0) + 1; return p; } }
   }
   const e = want[0], status = e === 'burg' ? 'merchant' : e === 'cler' ? 'gentry' : 'gentry';
   const p = A.genNoble(r.id, status, null, A.ri(30, 55));
@@ -613,6 +625,13 @@ A.on && A.on('rulerDied', function (r) {
   try { if (POL.on && r && r.pol) { r.pol.came = r.gov === 'hereditary' ? 'heir' : r.gov === 'council' ? 'council' : 'elected'; r.pol.cameSet = A.S.year; r.pol.ru = r.ruler; r.pol.since = A.S.year; } } catch (e) {}
 });
 
+// market towns (66) are chosen after the world is made: the first month they exist, the shires get their offices
+A.onMonth.push(function () {
+  try {
+    if (!POL.on || !A.MT || !A.MT.on || !A.MT.on()) return;
+    for (const r of POL.realms()) if (r.pol && !r.pol.mt) { r.pol.mt = 1; POL.fillOffices(r); }
+  } catch (e) { console.error('[po] towns', e); }
+});
 // a new world: every realm's Polity sits from the first day (offices named, contracts sworn)
 A.on && A.on('worldInit', function () {
   try { if (!POL.on) return; POL.ixDirty(); for (const r of POL.realms()) { POL.init(r); POL.fillContracts(r); POL.fillOffices(r); } } catch (e) { console.error('[po] init', e); }

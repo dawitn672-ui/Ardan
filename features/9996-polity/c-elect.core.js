@@ -56,7 +56,8 @@ POL.candsOf = function (r, electors) {
 const promisesTo = (c, e, rid) => { const pc = A.pc(); if (!pc || c.id !== pc.id || !pc.pol) return []; return (pc.pol.promises || []).filter(x => x.to === e.id && (!rid || x.rid === rid)); };
 // share a faction: both heads' houses in one faction of the realm
 const sameFaction = (r, a, b) => { const ha = a.house, hb = b.house; if (!ha || !hb) return false; return A.factionsOf(r.id).some(f => f.members.includes(ha) && f.members.includes(hb)); };
-const feud = (a, b) => { try { const L = A.BONDS && A.BONDS.ledger ? A.BONDS.ledger(a.house, b.house) : null; return L != null && Math.abs(L) >= 8; } catch (e) { return false; } };
+// a feud: 55's ledger of what the elector remembers of the candidate reads 8 or more against them
+const feud = (a, b) => { try { return !!(A.BONDS && A.BONDS.mem && A.BONDS.mem(a, b) <= -8); } catch (e) { return false; } };
 // an elector's score for a candidate, with its parts; pure
 POL.scoreParts = function (r, e, c) {
   const out = [], el = r.pol && r.pol.elect;
@@ -69,7 +70,7 @@ POL.scoreParts = function (r, e, c) {
   const g = el && el.gifts && el.gifts[e.id] ? el.gifts[e.id] : 0; if (g) out.push(['Gifts', [0, 10, 15, 17][Math.min(3, g)]]);
   const broke = (r.pol && r.pol.broken && r.pol.broken[e.id] || []).includes(c.id); if (broke) out.push(['Broke a promise to them', -20]);
   const sl = el && el.slander && el.slander[e.id] && el.slander[e.id][c.id]; if (sl) out.push(['Slandered', -10]);
-  if (feud(e, c)) out.push(['Their houses feud', -15]);
+  if (feud(e, c)) out.push(['A feud between them', -15]);
   if (r.gov === 'council' && c.id === r.ruler) out.push(['Holds the seat now', 8]);
   return out;
 };

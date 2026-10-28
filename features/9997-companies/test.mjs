@@ -2,6 +2,10 @@
 // battle from the real division, formations by drill, orders by rank and by courier.
 const findFight = `
   window.__coFight = function (seed, rank) {
+    for (let s = seed; s < seed + 6; s++) { const r = __coFight1(s, rank); if (r) return r; }
+    return null;
+  };
+  window.__coFight1 = function (seed, rank) {
     A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
     const pc = A.pc(), enemy = A.neighbors('POL-01')[0];
     const w = A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(pc);
