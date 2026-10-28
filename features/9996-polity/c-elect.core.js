@@ -236,7 +236,7 @@ if (FW && typeof FW.election === 'function') {
       if (ka && ka.alive) ka.ruler = me.id;
       const w = rec && A.P(rec.winner);
       if (w && w !== ka) { A.makeRuler(w, me.id); me.legit = 60; me.pol.came = 'elected'; me.pol.cameSet = A.S.year; me.pol.ru = me.ruler; me.pol.since = A.S.year; A.news(`The forty households of ${me.short} give the Spear-Marshal's staff to ${A.fullName(w, false)}. ${kname} goes home to his estates.`, 'crown'); }
-      else A.news(`The forty households of ${me.short} keep ${kname} as Spear-Marshal for another term.`, 'crown');
+      else A.news(`The forty households of ${me.short} leave the Spear-Marshal's staff with ${kname} for another term.`, 'crown');
     } catch (e) { console.error('[po] sunrise', e); }
   };
 }
