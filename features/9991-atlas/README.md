@@ -20,12 +20,12 @@
 
   At birth, and in a save from before this feature, you know your home and the land next to it as seen, and your realm and its neighbours' seats as heard of. This is computed without writing (`AT.base`); the atlas is written on the first month.
 - **An heir inherits some of it** (a wrap of `A.continueAs`). What the parent saw becomes heard of: "told often enough: 20 places you have never seen are on the map you keep". The heir also gets half of what the parent heard of, chosen by a hash of the place and the heir, never `A.rand`.
-- **The veil.** Drawn by 62-inked-map's renderer through a hook (patch `AT-VEIL`, `MAP.veil`), over the ground, the wash, the borders and the towns, and under the names:
-  - unknown land is blank vellum at 88%;
-  - land heard of is half-veiled;
-  - the sea fades out over about 200 km from the coasts you know (two chamfer passes over the water cells).
+- **The veil.** Drawn by 62-inked-map's renderer through a hook (patch `AT-VEIL`, `MAP.veil`). It is laid into the picture 62 keeps of its lines layer, after the towns: over the ground, the wash, the borders and the towns, and under the names. A still or panning map costs no more than before, and `MAP.veilKey` makes 62 lay the view again when what you know changes.
+  - Unknown land is blank vellum at 88%.
+  - Land heard of is half-veiled.
+  - The sea fades out over about 200 km from the coasts you know (two chamfer passes over the water cells).
 
-  A province you do not know has no name written when zoomed in (patch `AT-UNNAMED`, `MAP.unnamed`). The veil is laid on the world tab, the full map and the story column's map, not in the war room. It is one picture at grid resolution, cached until what you know changes. "Show the whole map" on the Places page turns it off (`UI.set.atlasFog`).
+  A province you do not know has no name written when zoomed in (patch `AT-UNNAMED`, `MAP.unnamed`). The veil is laid on the world tab, the full map and the story column's map, not in the war room. It is one picture: at grid resolution in the Known World, at half of it (20 km cells) on the Great Continent. It is built again only when what you know changes, which takes about 26 ms on the Great Continent. "Show the whole map" on the Places page turns it off (`UI.set.atlasFog`). With the inked map off there is no veil, except on the story column's map, which lays it itself.
 - **Story | Map** (a wrap of `UI.renderLogWrap`). The story column has a toggle, on a phone too (its Story tab). The map there:
   - opens on where you are, about 2,400 km across;
   - shows your road with the walked part solid, the stops and the destination's flag, your home, your people (a dot with how many live there) and you;
@@ -39,9 +39,9 @@
   - the roads you have walked;
   - every realm's places, seen and heard of, each a button to it on the map, with the wild places found.
 
-**Patches.** Both are one call into this feature in 62's `MAP.marks`:
-- `AT-VEIL`: `if (MAP.veil) MAP.veil(ctx, W, H, v);` before the names.
-- `AT-UNNAMED`: a province name is written unless `MAP.unnamed(p, ctx)` says otherwise.
+**Patches.** Both are calls into this feature in 62-inked-map:
+- `AT-VEIL`: in `MAP.inkLines`, the kept lines view's extra drawing calls `MAP.veil(c, W, H, view, canvas)` after `IM.towns`, and its key gains `MAP.veilKey(canvas)`.
+- `AT-UNNAMED`: in `MAP.marks`, a province name is written unless `MAP.unnamed(p, ctx)` says otherwise.
 
 The core adds `A.onMonth`, wraps `A.continueAs` and `UI.renderLogWrap`, and adds a Chronicle sub-tab.
 
@@ -51,7 +51,7 @@ The core adds `A.onMonth`, wraps `A.continueAs` and `UI.renderLogWrap`, and adds
 - `atlasKnows`: before the first day, home and the land around it are seen, the realm is heard of, and nothing is written. Two years on, more is heard of, from news, caravans, the realm and home. An heir hears of a far place the parent saw (+20 heard of). A save without the atlas loads and makes one.
 - `atlasVeil`: on the world tab, a far unknown province changes from the realm's wash (150,138,117) to vellum (219,208,181), and home is unchanged. The story-column map draws. An unknown province's name is hidden and home's is kept. The Places page renders. Drawing is pure.
 
-62's own tests (`inkDrawsAtZooms`, `inkPure`, `inkSamePixels`, …) are run against the build with this.
+62's own tests were run against the build with this feature. `inkDrawsAtZooms`, `inkPure`, `inkSamePixels`, `inkBanners`, `inkBriefMarks` and `inkLegendView` pass. `inkTiming` swung run to run on the shared machine while the balance leagues ran: the war room, which has no veil, doubled in some runs too. A same-page A/B of the full map at zoom 1, 3 and 8, with the hooks set and unset in turns, showed no consistent cost. Rerun `inkTiming` on a quiet machine before merging.
 
 **Not done / next.**
 - The Hall of Lives (995) could keep a life's widest reach ("places seen: 14 of 1,992").

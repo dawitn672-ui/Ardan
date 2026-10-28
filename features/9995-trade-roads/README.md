@@ -96,33 +96,36 @@ The toll goes to the holder's treasury.
 
 Before means the build without this feature, on the same seed and day. These are 20-year soaks of the Great Continent (seed 777, an Aldmark merchant kept alive), run with `/tmp/ardan/E/probe.cjs`. Prices are the last five years' averages.
 
-**Silk along the Silk Road** (suns a load):
+**Silk along the Silk Road** (suns a load, averaged over all 20 years):
 
 | Market | Before | After |
 | --- | ---: | ---: |
-| Taulen | 127 | 111 |
-| Phelkar | 169 | 300 |
-| Varinj | 426 | 387 |
-| Ushivar | 635 | 317 |
-| Ozand | 455 | 1,055 |
-| Tusk Clans (Kraoth) | 138 | 581 |
-| Velgrad | 311 | 673 |
-| Ostra | 410 | 966 |
+| Taulen | 164 | 110 |
+| Phelkar | 170 | 238 |
+| Varinj | 423 | 356 |
+| Ushivar | 495 | 379 |
+| Ozand | 548 | 668 |
+| Tusk Clans (Kraoth) | 138 | 460 |
+| Velgrad | 296 | 590 |
+| Ostra | 400 | 760 |
 
 **The spread and the road:**
 
 | | Before | After |
 | --- | ---: | ---: |
-| The west (Tusk, Velgrad, Ostra) against Taulen | ×2.25 | **×6.67** |
-| A caravan's road | the distance between capitals, in one month; 1% over 10,000 km | **598 km a month by land**, 800 with sea legs; a trip at most 16,000 km |
+| The west (Tusk, Velgrad, Ostra) against Taulen | ×1.70 (×2.25 over the last 5 years) | **×5.48** (×5.65) |
+| Tea, Taulen to Ostra | (no tea) | 25 → 151 |
+| Silver, Taulen and Ostra | (no silver) | 667 and 408 |
+| A caravan's road | the distance between capitals, in one month; 1% over 10,000 km | **592 km a month by land**, 790 with sea legs; a trip at most 16,000 km |
 | Venshai to Ozand | one month | **4 hands, 16 months, 8,538 km** (Phelkar, Varinj, Ushivar); Kraoth about 20 months (the lore says 22 to 26, with 3 to 5 hands) |
-| Goods on the road at once | none | about 6,000 consignments, 200,000 loads; 2,500 of them on trips over 5,000 km; 2.9 hands each |
+| Goods on the road at once | none | about 9,000 consignments, 350,000 loads; 6,200 of them on trips over 5,000 km; 3.7 hands each |
 
-- **What fixed the gradient.** Before, Ushivar sat above Ozand and the Tusk Clans (Kraoth) below Taulen's own neighbour. After, silk rises at the hands. Ozand's tiny market sits near its ceiling when its silk is late.
-- **Merchant coin.** In the one merchant life of these soaks the peak was 108k before and 28k after. One life is not a measure; the balance league is below.
+- **What fixed the gradient.** Before, Ushivar sat above Ozand and the Tusk Clans (Kraoth) below Taulen's own neighbour. After, silk rises at every hand but one: Ozand's tiny market sits above the Tusk Clans because its own silk is often late.
+- **Merchant coin.** In the one merchant life of these soaks the peak was 108k before and 184k after. One life is not a measure; the balance league is below.
+- **Far treasury growth over 20 years:** ×10.7 before and ×10.2 after; Taulen ×9.3 and ×7.6.
 - **Ventures.** A Venshai merchant sending 6 loads of silk 2 hands to Varinj pays 675 suns of freight and waits 8 months.
 
-**Treasuries (world review I3).** Far treasuries grow about ×10 over 20 years with and without this feature (×10.7 before, ×10.6 after). **The cause is not in 45 or 66.**
+**Treasuries (world review I3).** Far treasuries grow about ×10 over 20 years with and without this feature. **The cause is not in 45 or 66.**
 - **The release's ledger.** Every AI realm gets 92% of its income less 3.2 suns a soldier a year. Taulen's 470,000 men cost it 14% of its income, where the lore says two thirds.
 - **The starting treasuries.** The far realms start at about a quarter of a year's income.
 - **56-realm-inside's ladder** spends down to a reserve and lets the coffers settle at 1.5 to 4 years of income.
@@ -133,7 +136,7 @@ So the ×10 is the convergence from a quarter-year purse to 56's steady state. T
 - the army at its lore share of revenue (Taulen two thirds, Hesh a half, Kethra 55%, Vahra 45%, the Khaganate 30%);
 - the half-notes' fall of 2 in 100 a year on the share of a treasury held in notes.
 
-It is off by default. With `A.TRADE.APPLY_LEDGER = true` (seed 777, 20 years):
+It is off by default. With `A.TRADE.APPLY_LEDGER = true` (seed 777, 20 years, on the revision before the pipeline demand and the merged consignments):
 
 | Treasury | Off | On |
 | --- | ---: | ---: |
@@ -165,8 +168,8 @@ Two other steps would bring the far realms nearer the lore:
 
 ## Cost
 
-- **The month.** On the shared, loaded machine, the roads' month (`TR.month`) is 150–350 ms against 45's caravans at about 350 ms, so about even. Building the graph and every market's trips is 0.6–1 s, once a year.
-- **The state.** Goods on the road add about 455 KB to 7.8 MB of raw state, and 110 KB to a 1.35 MB save (+8%). Consignments on one road that arrive close together travel as one.
+- **The month.** On the shared, loaded machine (`TR.last` keeps the last month's timings), the roads' month (`TR.month`) is 150–350 ms against 45's caravans at about 350 ms, so about even. Building the graph and every market's trips is 0.6–1 s, once a year.
+- **The state.** After 3 years, goods on the road add about 455 KB to 7.8 MB of raw state, and 110 KB to a 1.35 MB save (+8%). Consignments on one road that arrive close together travel as one.
 
 ## Edits outside the folder
 

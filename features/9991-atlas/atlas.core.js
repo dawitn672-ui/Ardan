@@ -10,8 +10,8 @@
 // A person without pc.atlas (a new game before its first day, an old save) knows home and the land next to it as seen,
 // and the rest of their own realm, and its neighbours' seats, as heard of (AT.base), without writing anything.
 //
-// The map. 62-inked-map's names pass draws a veil over what you have not seen (two hooks: MAP.veil, under the names,
-// and MAP.unnamed, which leaves an unknown province's name unwritten), on the world tab, the full map and the story
+// The map. 62-inked-map draws a veil over what you have not seen (two hooks: MAP.veil, laid into its kept lines view
+// under the names, and MAP.unnamed, which leaves an unknown province's name unwritten), on the world tab, the full map and the story
 // column's map: unknown land is blank vellum, land heard of is half-veiled, the sea fades out from the coasts you know.
 // The veil is read from the state and drawn from a cached picture; it writes nothing and draws no random numbers.
 //

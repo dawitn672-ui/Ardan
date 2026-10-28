@@ -10,7 +10,7 @@ const findFight = `
       A.advance(1); let h, k = 0; while ((h = A.headReady()) && k++ < 50) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
       const d = A.divById(pc.mil.div);
       if (!d) continue;
-      for (const pid in A.S.fights) { const f = A.S.fights[pid]; if (f.aIds.includes(d.id) || f.dIds.includes(d.id)) { A.CO.place(pc); return { F: f, pc, w }; } }
+      for (const pid in A.S.fights) { const f = A.S.fights[pid]; if ((f.aIds.includes(d.id) || f.dIds.includes(d.id)) && (d.atk === +pid || d.loc === +pid)) { A.CO.place(pc); return { F: f, pc, w }; } }
     }
     return null;
   };

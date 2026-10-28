@@ -370,7 +370,7 @@
             }
           } else if (c && c.person && c.person.alive && lost >= m0 * 0.25 && A.chance(0.25)) { c.person.health = Math.max(10, (c.person.health || 100) - A.ri(8, 25)); }
         }
-        if (k === B.pcSide && u.coMine && u.cap) lines.push(`The ${u.coLabel || u.name} ${won ? 'held' : B.winner === 'draw' ? 'stood' : 'gave ground'} under ${u.cap.pid === (pc && pc.id) ? 'you' : 'Captain ' + u.cap.name} (lost ${A.fmt(lost)} of ${A.fmt(m0)}${u.form && u.form !== 'line' ? ', in ' + F[u.form].name.toLowerCase() : ''}).`);
+        if (k === B.pcSide && u.coMine && u.cap) lines[u.coMine === 'me' ? 'unshift' : 'push'](`The ${u.coLabel || u.name} ${won ? 'held' : B.winner === 'draw' ? 'stood' : 'gave ground'} under ${u.cap.pid === (pc && pc.id) ? 'you' : 'Captain ' + u.cap.name} (lost ${A.fmt(lost)} of ${A.fmt(m0)}${u.form && u.form !== 'line' ? ', in ' + F[u.form].name.toLowerCase() : ''}).`);
       }
     }
     if (B.aar && lines.length) B.aar.text = (B.aar.text ? B.aar.text + ' ' : '') + lines.slice(0, 2).join(' ');

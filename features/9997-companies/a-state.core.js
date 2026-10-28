@@ -179,6 +179,7 @@
     p.occ = (slot === 4 ? 'Senior Captain of the ' : 'Captain of the ') + (slot === 4 ? CO.bnName(d, i) : CO.coName(d, i, slot));
     p.flags.coCap = A.S.year;
     p.coAt = { d: d.id, b: i, s: slot };
+    CO.touch(b);
     (b.p = b.p || {})[slot] = p.id;
     return p;
   };
@@ -186,6 +187,7 @@
   CO.replaceCap = function (d, i, slot, why) {
     const b = d.bs[i];
     if (!b) return null;
+    CO.touch(b);
     const old = CO.cap(d, i, slot);
     if (b.p && b.p[slot] != null) { delete b.p[slot]; if (!Object.keys(b.p).length) delete b.p; }
     if (b.st) b.st[slot] = 0;
@@ -230,11 +232,14 @@
   };
   CO.sum = d => { let s = 0; for (const b of d.bs || []) for (const m of b.k) s += m; return s; };
   CO.bm = b => { let s = 0; for (const m of b.k) s += m; return s; };
+  const OKC = new WeakMap();   // a record list already checked against this very codes array (never in the state)
   CO.ok = function (d) {
     if (!d || !Array.isArray(d.bs)) return false;
     const codes = CO.codes(d);
+    if (OKC.get(d.bs) === codes && d.bs.length === codes.length) return true;
     if (codes.length !== d.bs.length) return false;
     for (let i = 0; i < codes.length; i++) if (!d.bs[i] || d.bs[i].c !== codes[i] || !Array.isArray(d.bs[i].k)) return false;
+    OKC.set(d.bs, codes);
     return true;
   };
   CO.ensure = function (d) {
@@ -316,6 +321,45 @@
     if (delta < 0) loseSpread(d, -delta, why);
     else gainSpread(d, delta);
   }
+  // take `want` men from the companies of the chosen battalions (mask[i] === on, or all when mask is null), by men,
+  // largest remainder, never more than a company has; no dice, and no garbage (the fight day calls it thousands of times)
+  const FR = new Float64Array(256), FI = new Int16Array(256), FC = new Int16Array(256);
+  function takeProp(bs, mask, on, want, lost) {
+    if (want <= 0) return 0;
+    let tot = 0;
+    for (let i = 0; i < bs.length; i++) if (!mask || mask[i] === on) for (let ci = 0; ci < bs[i].k.length; ci++) tot += bs[i].k[ci];
+    if (tot <= 0) return 0;
+    if (want >= tot) {
+      for (let i = 0; i < bs.length; i++) if (!mask || mask[i] === on) for (let ci = 0; ci < bs[i].k.length; ci++) { const m = bs[i].k[ci]; if (m) { bs[i].k[ci] = 0; lost.push([i, ci, m]); } }
+      return tot;
+    }
+    let n = 0, placed = 0;
+    for (let i = 0; i < bs.length; i++) {
+      if (mask && mask[i] !== on) continue;
+      for (let ci = 0; ci < bs[i].k.length; ci++) {
+        const m = bs[i].k[ci];
+        if (!m) continue;
+        const x = want * m / tot, f = Math.floor(x);
+        if (n < 256) { FR[n] = x - f; FI[n] = i; FC[n] = ci; n++; }
+        if (f) { bs[i].k[ci] -= f; placed += f; lost.push([i, ci, f]); }
+      }
+    }
+    let rem = want - placed;
+    while (rem > 0) {   // the largest remainders, first in order on a tie
+      let best = -1, bv = -1;
+      for (let j = 0; j < n; j++) if (FR[j] > bv && bs[FI[j]].k[FC[j]] > 0) { bv = FR[j]; best = j; }
+      if (best < 0) break;
+      FR[best] = -2;
+      bs[FI[best]].k[FC[best]]--; lost.push([FI[best], FC[best], 1]); placed++; rem--;
+    }
+    return placed;
+  }
+  const LINEC = new WeakMap();
+  function lineMask(d) {   // which battalions stand in line (cached per record list; never in the state)
+    let c = LINEC.get(d.bs);
+    if (!c) { const L = CO.lineOf(d); c = d.bs.map((_, i) => (L.has(i) ? 1 : 0)); LINEC.set(d.bs, c); }
+    return c;
+  }
   function loseSpread(d, n, why) {
     const bs = d.bs;
     if (why !== 'fight' && n <= 4) {   // a few men (sickness, winter, the odd deserter): from the fullest companies
@@ -328,26 +372,17 @@
       }
       return lost;
     }
-    const slots = [];
-    for (let i = 0; i < bs.length; i++) for (let ci = 0; ci < bs[i].k.length; ci++) slots.push([i, ci]);
-    let groups;
-    if (why === 'fight') {
-      const line = CO.lineOf(d), a = slots.filter(([i]) => line.has(i)), b = slots.filter(([i]) => !line.has(i));
-      const am = a.reduce((x, [i, ci]) => x + bs[i].k[ci], 0), bm = b.reduce((x, [i, ci]) => x + bs[i].k[ci], 0);
-      const na = bm > 0 ? Math.min(am, Math.round(n * K.LINE_SHARE)) : Math.min(am, n);
-      groups = [[a, na], [b, n - na]];
-    } else groups = [[slots, n]];
-    let over = 0;
     const lost = [];
-    for (const [list, want] of groups) {
-      const cap = list.map(([i, ci]) => bs[i].k[ci]), got = split(want + over, cap, cap);
-      over = want + over - got.reduce((a, x) => a + x, 0);
-      list.forEach(([i, ci], j) => { if (got[j]) { bs[i].k[ci] -= got[j]; lost.push([i, ci, got[j]]); } });
+    let left = n;
+    if (why === 'fight') {
+      const line = lineMask(d);
+      let am = 0, bm = 0;
+      for (let i = 0; i < bs.length; i++) { const m = CO.bm(bs[i]); if (line[i]) am += m; else bm += m; }
+      const na = bm > 0 ? Math.min(am, Math.round(n * K.LINE_SHARE)) : Math.min(am, n);
+      left -= takeProp(bs, line, 1, na, lost);
+      left -= takeProp(bs, line, 0, left, lost);
     }
-    if (over > 0) {   // anything left over, wherever there are men
-      const cap = slots.map(([i, ci]) => bs[i].k[ci]), got = split(over, cap, cap);
-      slots.forEach(([i, ci], j) => { if (got[j]) { bs[i].k[ci] -= got[j]; lost.push([i, ci, got[j]]); } });
-    }
+    if (left > 0) left -= takeProp(bs, null, 0, left, lost);
     return lost;
   }
   // new men go to the most depleted battalion first; green men dilute the veterans: x' = (x m + 5 D) / (m + D)
@@ -432,7 +467,7 @@
   CO.reraise = function (d) {   // a struck-off battalion that has its men again takes "the new", with new captains
     for (const b of d.bs || []) {
       if (!b.ret || CO.bm(b) < nominal(b.c) * 0.5) continue;
-      delete b.ret; delete b.hon; delete b.p; delete b.st; delete b.vac;
+      delete b.ret; delete b.hon; delete b.p; delete b.st; delete b.vac; CO.touch(b);
       b.nw = 1;
       b.cs = {};
       for (let s = 0; s < 5; s++) b.cs[s] = hash(b.o + ':' + b.c + ':new:' + s + ':' + A.S.year);
@@ -591,6 +626,7 @@
       m = pc.mil.co = { div: d.id, b, i: hash(pc.id) % d.bs[b].k.length, y: A.S.year };
     }
     const rec = d.bs[m.b], rank = pc.mil.rank || 0;
+    CO.touch(rec);
     // who leads whom: a captain is his company's captain, a senior captain his battalion's
     for (let s = 0; s < 5; s++) if (rec.p && rec.p[s] === pc.id && !((rank === 4 || rank === 5) && s === m.i) && !(rank === 6 && s === 4)) delete rec.p[s];
     if (rank === 4 || rank === 5) (rec.p = rec.p || {})[m.i] = pc.id;
@@ -639,16 +675,13 @@
         let drs = null;
         for (let i = 0; i < d.bs.length; i++) {
           const b = d.bs[i];
-          if (!live) { if (!drs) drs = CO.drills(d); for (let ci = 0; ci < b.q.length; ci++) b.q[ci] = r1(CO.restVal(d, i, ci, drs[i])); }
+          if (!live) { if (!drs) drs = drillsNow(d); const R = restNow(d, i, drs[i]); for (let ci = 0; ci < b.q.length; ci++) b.q[ci] = r1(R[ci]); }
           b.x = r1(d.exp != null ? (b.x * 0.8 + d.exp * 0.2) : b.x);   // the division's xp is the mean of its battalions'
           if (Array.isArray(b.st)) { let any = 0; for (let s = 0; s < b.st.length; s++) { b.st[s] = Math.round((b.st[s] || 0) * 0.95); if (b.st[s]) any = 1; } if (!any) delete b.st; }
-          for (let s = 0; s < (isSup(b.c) ? 1 : 5); s++) {
-            if (b.p && b.p[s] && !(A.P(b.p[s]) && A.P(b.p[s]).alive)) { CO.replaceCap(d, i, s, 'died'); continue; }
-            const c = CO.capStat(d, i, s);
-            if (!c) continue;
-            if (!c.pc) { ofc += c.cmd; ofn++; }
-            if (c.sat <= -50 && !c.pc) CO.leave(d, i, s, CO.cap(d, i, s), atWar);
-          }
+          const ns = isSup(b.c) ? 1 : 5;
+          if (b.p) for (let s = 0; s < ns; s++) if (b.p && b.p[s] && !(A.P(b.p[s]) && A.P(b.p[s]).alive)) CO.replaceCap(d, i, s, 'died');
+          if (b.st) for (let s = 0; s < ns; s++) if (b.st && b.st[s] <= -50) { const c = CO.cap(d, i, s); if (c && !c.pc) CO.leave(d, i, s, c, atWar); }
+          if (newYear || !r.ofc) for (let s = 0; s < ns; s++) { const c = CO.capStat(d, i, s); if (c && !c.pc) { ofc += c.cmd; ofn++; } }
           if (b.ret) CO.reraise(d);
         }
         CO.mean(d);
@@ -707,6 +740,7 @@
         cand.sort((x, y) => CO.merit(y[2]) - CO.merit(x[2]) || x[2].seed - y[2].seed);
         const [j, ci, c] = cand[0];
         (b.cs = b.cs || {})[4] = c.seed;
+        CO.touch(b);
         if (c.pid) { (b.p = b.p || {})[4] = c.pid; if (c.person) { c.person.milRank = 5; c.person.occ = 'Senior Captain of the ' + CO.bnName(d, i); } }
         delete b.vac;
         CO.sat(d, i, 4, 15);
@@ -756,12 +790,12 @@
         const n = Math.floor(d.men * K.DESERT + ((hash(d.id + S.warClock) % 100) / 100));
         if (n > 0) { CO.WHY = 'desert'; try { A.divLose(d, n); } finally { CO.WHY = null; } CO.hungerScene(d); }
       } else if (!fighting) {
-        const drs = CO.drills(d);
+        const drs = drillsNow(d);
         for (let i = 0; i < d.bs.length; i++) {
-          const b = d.bs[i];
+          const b = d.bs[i], R = restNow(d, i, drs[i]);
           for (let ci = 0; ci < b.q.length; ci++) {
             const qv = b.q[ci];
-            const rest = CO.restVal(d, i, ci, drs[i]);
+            const rest = R[ci];
             if (qv < rest) b.q[ci] = r1(Math.min(rest, qv + K.MO_BACK));
             else if (qv > rest) b.q[ci] = r1(Math.max(rest, qv - 1));
           }
@@ -771,6 +805,21 @@
       CO.mean(d);
     }
   };
+  // the daily pass's caches (never in the state): resting values per record, drill per division for 16 days
+  const RESTC = new WeakMap(), DRC = new WeakMap();
+  CO.touch = b => { if (b) RESTC.delete(b); };
+  function restNow(d, i, dr) {
+    const b = d.bs[i], key = Math.round(b.x * 10) * 1e7 + Math.round(dr * 10) * 1e4 + Math.min(999, d.pay || 0) * 8 + (d.food <= 0 ? 4 : 0) + (d.loc === b.h ? 2 : 0) + (b.vac ? 1 : 0);
+    let c = RESTC.get(b);
+    if (!c || c.key !== key || c.d !== d || c.i !== i) { c = { key, d, i, v: b.k.map((_, ci) => CO.restVal(d, i, ci, dr)) }; RESTC.set(b, c); }
+    return c.v;
+  }
+  function drillsNow(d) {
+    const t = (A.S.warClock || 0) >> 4;
+    let c = DRC.get(d);
+    if (!c || c.t !== t || c.v.length !== d.bs.length) { c = { t, v: CO.drills(d) }; DRC.set(d, c); }
+    return c.v;
+  }
   CO.forage = function (d, P) {
     const S = A.S;
     d.coFor = S.warClock;
