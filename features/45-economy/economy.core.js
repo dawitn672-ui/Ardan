@@ -64,12 +64,6 @@
     ROAD: 0.06, HOP: 0.02, SEA: 0.04,   // a caravan's cost per load: base price × (ROAD + HOP × steps between capitals), or SEA
     SEA_REACH: 2400,          // coastal realms whose capitals are this close trade by sea
     PER_SRC: 20,              // caravans a market sends in a month
-    // where a good comes from by the lore's region (P.region, the Great Continent's far provinces), on top of the land's
-    // weight; and how much more of a good a land's people want (r.land: 'R' the Twin Rivers...). Both empty unless a
-    // feature fills them (9995-trade-roads does, for the far goods), so a Known World game reads as before
-    REGION: {},
-    DEMAND_LAND: {},
-    RESOLD: {},               // goods a realm's lore exports but only sells on ("silk re-sold from the east"): not made there
   };
   const G = () => GD.GOODS;
   // grain's seasons now come from the harvest, not from a fixed swing in its price
@@ -81,12 +75,9 @@
   // what a realm uses up in a month, by good: its people, its rich, its armies at war
   E.demand = function (r) {
     const d = {}, pop = (r.pop || 0) / 1e4, inc = (r.income || 0) / 1e4, war = atWar(r.id), army = (r.army || 0) / 1e3;
-    for (const k in G()) d[k] = ((E.PEOPLE[k] || 0) * pop + (E.WEALTH[k] || 0) * inc) * landWant(r, k) + (war ? (E.ARMY[k] || 0) * army : 0);
+    for (const k in G()) d[k] = (E.PEOPLE[k] || 0) * pop + (E.WEALTH[k] || 0) * inc + (war ? (E.ARMY[k] || 0) * army : 0);
     return d;
   };
-  // how much more (or less) of a good a realm's land wants than the world's people do (E.DEMAND_LAND; 1 by default)
-  // (a realm with no land of the far lands' ten is the Known World's: 'W')
-  const landWant = (r, k) => { const L = E.DEMAND_LAND[k]; if (!L || !r) return 1; const v = L[r.land || 'W']; return v != null ? v : 1; };
   // what it needs in a month: that, plus what its own workshops draw, so its stores and its caravans allow for them
   E.needOf = function (r, d) {
     const n = Object.assign({}, d), m = r.mkt;
@@ -95,14 +86,10 @@
   };
   // the land's weight for a good in a province
   const landW = (P, k) => {
-    const L = E.LAND[k], R = E.REGION[k]; if (!L && !R) return 0;
-    let w = L ? (L[P.terr] || 0) + (L[P.biome] || 0) + (P.coast ? L.coast || 0 : 0) + (L.any || 0) : 0;
-    if (R && P.region && R[P.region]) w += R[P.region];
+    const L = E.LAND[k]; if (!L) return 0;
+    let w = (L[P.terr] || 0) + (L[P.biome] || 0) + (P.coast ? L.coast || 0 : 0) + (L.any || 0);
     return w;
   };
-  // the goods the land makes: E.LAND's, then any that only a region makes (in that order, so a Known World game sums
-  // the same goods in the same order as before)
-  const landKeys = () => { const ks = Object.keys(E.LAND); for (const k in E.REGION) if (!E.LAND[k] && G()[k]) ks.push(k); return ks; };
   // the world's production of each good, set once to the world's demand in peace, then shared among provinces and towns
   E.plan = function () {
     const S = A.S, rs = live(), worldD = {};
@@ -118,9 +105,9 @@
     for (const P of S.prov) {
       const r = A.realm(P.owner); if (!r || !r.alive || r.isRebel) continue;
       const m = A.mkt(r.id), size = Math.sqrt(Math.max(1, P.pop || 1));
-      for (const k of landKeys()) {
+      for (const k in E.LAND) {
         let w = landW(P, k) * size;
-        if (m.ex.includes(k) && !(E.RESOLD[k] && E.RESOLD[k].includes(P.owner))) w = w * 2.5 + size * 0.3;   // what a realm is known for, it makes (unless it only sells it on)
+        if (m.ex.includes(k)) w = w * 2.5 + size * 0.3;   // what a realm is known for, it makes
         if (m.im.includes(k)) w *= 0.4;
         if (w > 0) { wp.push([P, k, w]); wsum[k] = (wsum[k] || 0) + w; }
       }
@@ -160,25 +147,10 @@
     return clamp(Math.pow(n / Math.max(s, n * 0.05), E.ELASTIC), E.LO, E.HI);
   };
   // start every market at its normal stock
-  // a market made before a good existed (a save from before 9995 added the far goods) gets that good at its lore
-  // price and its normal store, with no dice: the release's A.mktInit rule (an export at 0.7, an import at 1.35)
-  E.fillGoods = function (r, m) {
-    const L = (typeof LORE !== 'undefined' && LORE.realms && LORE.realms[r.id]) || {}, ex = String(L.exports || ''), im = String(L.imports || '');
-    for (const k in G()) {
-      if (m.p[k] != null && m.t[k] != null) continue;
-      const g = G()[k]; let f = 1;
-      if (g.kw && g.kw.test(ex)) { f = 0.7; if (!m.ex.includes(k)) m.ex.push(k); }
-      else if (g.kw && g.kw.test(im)) { f = 1.35; if (!m.im.includes(k)) m.im.push(k); }
-      m.t[k] = f; m.p[k] = Math.max(0.2, g.base * f);
-    }
-  };
   E.init = function () {
     if (A.S.ecoPlan == null) E.plan();
     for (const r of live()) {
-      const m = A.mkt(r.id);
-      if (m.p && m.t) for (const k in G()) if (m.p[k] == null || m.t[k] == null) { E.fillGoods(r, m); break; }
-      m.d = E.demand(r); m.dn = E.needOf(r, m.d);
-      if (m.s) for (const k in G()) if (m.s[k] == null) m.s[k] = (m.dn[k] || 0) * E.months(k);
+      const m = A.mkt(r.id); m.d = E.demand(r); m.dn = E.needOf(r, m.d);
       if (!m.s) { m.s = {}; for (const k in G()) m.s[k] = (m.dn[k] || 0) * E.months(k); }
       m.why = m.why || {};
     }
@@ -266,9 +238,6 @@
     return { f: T.f[x], dist: T.dist[x], sea: !!T.sea[x] };
   };
   E.caravans = function () {
-    // on the lore's roads (9995-trade-roads, a Great Continent game) goods go hand to hand along the roads and take
-    // months on the way; this month's departures and arrivals come back in one list
-    if (E.roadMode && E.roadMode()) return E.roadMonth();
     const S = A.S, eco = S.eco = S.eco || {}, car = [], rs = live(), T = E.roads(rs), N = T.n;
     const cands = [], war = new Int8Array(N * N);   // 0 not yet asked, 1 at peace, 2 at war: asked once a month
     const atPeace = (si, di) => { const x = si < di ? si * N + di : di * N + si; if (!war[x]) war[x] = A.hostile && A.hostile(rs[si].id, rs[di].id) ? 2 : 1; return war[x] === 1; };
@@ -433,18 +402,17 @@
     if (w.made != null) bits.push(`${w.made} loads made and ${w.used} used last month`);
     if (k === 'grain' && m.hv && m.hv.y === A.S.year) bits.push(m.hv.t);
     if (atWar(rid) && E.ARMY[k]) bits.push(`armies at war use ${Math.round(E.ARMY[k] * (r.army || 0) / 1e3)} a month`);
-    // a caravan on the roads (9995) is listed when it sets out (dep) and when it arrives (arr); without either it did both
     const cs = ((A.S.eco || {}).car || []).filter(c => c.k === k && (c.f === rid || c.t === rid));
-    const inn = cs.filter(c => c.t === rid && !c.dep).reduce((a, c) => a + c.n, 0), out = cs.filter(c => c.f === rid && !c.arr).reduce((a, c) => a + c.n, 0);
+    const inn = cs.filter(c => c.t === rid).reduce((a, c) => a + c.n, 0), out = cs.filter(c => c.f === rid).reduce((a, c) => a + c.n, 0);
     if (inn) bits.push(`caravans brought ${inn}`);
     if (out) bits.push(`caravans took ${out} away`);
     return bits.join('; ') + '.';
   };
   E.card = function (rid) {
-    const cs = ((A.S.eco || {}).car || []).filter(c => (c.f === rid && !c.arr) || (c.t === rid && !c.dep)).slice(0, 6);
+    const cs = ((A.S.eco || {}).car || []).filter(c => c.f === rid || c.t === rid).slice(0, 6);
     const m = A.mkt(rid), hv = m && m.hv && m.hv.y === A.S.year ? m.hv.t : null;
     if (!cs.length && !hv) return '';
-    const line = c => c.t === rid ? `${c.n} loads of ${G()[c.k].name.toLowerCase()} in from ${A.realmShort(c.f)}${c.mo ? `, ${c.mo} months on the road` : ''}${c.lost ? ` (${c.lost} lost on the road)` : ''}` : `${c.n} loads of ${G()[c.k].name.toLowerCase()} out to ${A.realmShort(c.t)}${c.mo ? `, ${c.mo} months away` : ''}`;
+    const line = c => c.t === rid ? `${c.n} loads of ${G()[c.k].name.toLowerCase()} in from ${A.realmShort(c.f)}${c.lost ? ` (${c.lost} lost on the road)` : ''}` : `${c.n} loads of ${G()[c.k].name.toLowerCase()} out to ${A.realmShort(c.t)}`;
     return `<div class="tiny muted" style="margin-top:6px">${hv ? UI.esc(`This year: ${hv}. `) : ''}${cs.length ? UI.esc('Caravans this month: ' + cs.map(line).join('; ') + '.') : ''}</div>`;
   };
 })();

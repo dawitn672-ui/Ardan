@@ -66,6 +66,16 @@ export default {
     // Continent a month's turn is one long day, and a click sent mid-turn waits for it (seconds on a slow runner)
     await pg.click('[data-a="clkPlay"]').catch(() => {});
     await pg.waitForFunction(() => !UI.clk.run, null, { timeout: 60000 }).catch(() => {});
+    // a scene that came up while the clock ran is a modal over the top bar, as in play: answer it first (92 tests the card)
+    await pg.evaluate(() => {
+      for (let i = 0; i < 10; i++) {
+        const q = A.S.queue[0];
+        if (!q || q.type !== 'event') break;
+        if (!q.result) UI.A.evChoose(0);
+        if (A.S.queue[0] === q && q.result) A.eventClose();
+      }
+      UI.render();
+    });
     await pg.click('button:has-text("Menu")', { timeout: 60000 });
     await pg.waitForTimeout(200);
     const exp = await pg.$('button:has-text("Export"), button:has-text("Save to file"), button:has-text("Download")');
