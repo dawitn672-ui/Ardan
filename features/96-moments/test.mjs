@@ -212,4 +212,67 @@ export default {
     const ok = r.duel && r.duel.k === 'duel' && r.duel.busts === 2 && / · /.test(r.duel.sub) && !r.again && r.lost === 'defeat' && r.gone === 'farewell';
     return { ok, detail: JSON.stringify(r) };
   },
+
+  // cycle 2, the motion system (motion.core.js): a tab change slides the panel in and its sections in sequence; a stat
+  // that changes tweens its bar and counts its number while the text holds the real value at once; a toast slides in;
+  // a map zoom asked for by the player eases while the view is set at once, and a view set by code is drawn at once.
+  // Reduced: no transform runs and nothing lasts over 120 ms; Off: nothing of ours animates. Pure throughout.
+  async motionSystem(pg, errs, { browser, file }) {
+    const MINE = /^(mo[A-Z]|sc[A-Z]|tl[A-Z]|bm[A-Z])/;
+    const run = async (opts, motion) => {
+      const { ctx, p } = await open(browser, file, errs, opts);
+      const r = await p.evaluate(async ([motion, MINE]) => {
+        const rx = new RegExp(MINE);
+        MOT.start(null, motion);
+        const mine = () => document.getAnimations().filter(a => rx.test(a.animationName || ''));
+        const moving = () => mine().filter(a => a.effect && a.effect.getKeyframes().some(k => k.transform && k.transform !== 'none')).length;
+        const longest = () => Math.max(0, ...mine().map(a => { const t = a.effect.getTiming(); return (+t.duration || 0) + (+t.delay || 0); }));
+        let h0 = T.hash(A.S), rng0 = JSON.stringify(A.rngState);
+        UI.A.group('people');
+        const pure1 = T.hash(A.S) === h0 && JSON.stringify(A.rngState) === rng0;
+        const tab = { cls: document.getElementById('tabbody').className, n: mine().length, moving: moving(), longest: longest(), seq: document.querySelectorAll('.mo-rise').length };
+        UI.A.group('life');
+        for (const a of document.getAnimations()) a.finish();
+        const pc = A.pc(), st0 = (document.querySelector('#profile .lk-stats .barrow .val') || {}).textContent;
+        pc.coin = (+pc.coin || 0) + 41; pc.happy = Math.max(1, (pc.happy || 50) - 20);
+        h0 = T.hash(A.S);
+        UI.refresh();
+        const cnt = [...document.querySelectorAll('.mo-cnt')].map(e => ({ text: e.textContent.trim(), from: e.style.getPropertyValue('--mo-n0') }));
+        const coinText = (document.querySelector('#topbar .top-coin > b') || {}).textContent;
+        const tw = document.querySelectorAll('.bar > i.mo-tw').length;
+        const num = { cnt, coinText, tw, moving: moving(), longest: longest() };
+        UI.toast('You gained 2 suns');
+        await Promise.resolve();
+        const toast = { anim: mine().filter(a => a.animationName === 'moToast').length };
+        // the map: a view set by code is drawn at once; a zoom the player asked for eases, and the view is set at once
+        UI.ov = { type: 'bigmap' }; UI.renderModal();
+        let map = null;
+        if (UI.gmDraw && UI.gm) {
+          UI.gmDraw();
+          const V = UI.MOTION.views.gm;
+          UI.gm.view = Object.assign({}, UI.gm.view, { w: UI.gm.view.w / 1.5, h: UI.gm.view.h / 1.5 }); UI.gmDraw();
+          const byCode = !!(V && V.anim);
+          V.user = performance.now();
+          const want = { w: UI.gm.view.w / 1.25 };
+          UI.gm.view = Object.assign({}, UI.gm.view, { w: UI.gm.view.w / 1.25, h: UI.gm.view.h / 1.25 }); UI.gmDraw();
+          map = { byCode, asked: !!V.anim, viewSet: Math.abs(UI.gm.view.w - want.w) < 1e-6 };
+        }
+        UI.ov = null; UI.renderModal();
+        return { tab, num, toast, map, pure: pure1 && T.hash(A.S) === h0 && JSON.stringify(A.rngState) === rng0, st0 };
+      }, [motion, MINE.source]);
+      await ctx.close();
+      return r;
+    };
+    const full = await run({}, 'system');
+    const red = await run({ reducedMotion: 'reduce' }, 'system');
+    const off = await run({}, 'off');
+    const okFull = full.tab.cls.includes('mo-tabin') && full.tab.moving > 0 && full.tab.seq > 0 && full.num.cnt.some(c => /suns/.test(c.text) && c.from !== '') && /suns/.test(full.num.coinText || '') &&
+      full.num.cnt.every(c => c.text.length > 0) && full.toast.anim === 1 && (!full.map || (!full.map.byCode && full.map.asked && full.map.viewSet));
+    const okRed = red.tab.moving === 0 && red.tab.longest <= 120 && red.num.cnt.length === 0 && red.num.moving === 0 && (!red.map || !red.map.asked);
+    const okOff = off.tab.n === 0 && off.num.cnt.length === 0 && off.toast.anim === 0;
+    const ok = okFull && okRed && okOff && full.pure && red.pure && off.pure;
+    const d = (k, r) => `${k}: tab ${r.tab.n} anims (${r.tab.moving} moving, longest ${Math.round(r.tab.longest)} ms, ${r.tab.seq} in sequence), counting ${r.num.cnt.map(c => c.from + '->' + c.text).join(', ') || 'none'}, bars tweening ${r.num.tw}, toast ${r.toast.anim}` +
+      (r.map ? `, map by code eased ${r.map.byCode}, asked eased ${r.map.asked}, view set at once ${r.map.viewSet}` : '') + `, pure ${r.pure}`;
+    return { ok, detail: [d('full', full), d('reduced', red), d('off', off)].join(' | ') };
+  },
 };

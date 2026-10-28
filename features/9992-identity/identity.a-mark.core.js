@@ -285,7 +285,7 @@
     const sw = (part, k) => `<button class="id-sw${cur[part] === k ? ' sel' : ''}" data-a="idArm" data-v="${part}:${k}" aria-pressed="${cur[part] === k}" title="${esc(ID.TINCT[k][0])}"><i style="background:${ID.TINCT[k][1]}"></i><span>${esc(ID.TINCT[k][0])}</span></button>`;
     const row = (label, part) => `<div class="id-row"><div class="id-lab">${label}</div><div class="id-opts">${Object.keys(ID.TINCT).map(k => sw(part, k)).join('')}</div></div>`;
     const ordB = k => `<button class="id-op${cur.ord === k ? ' sel' : ''}" data-a="idArm" data-v="ord:${k}" aria-pressed="${cur.ord === k}" title="${esc(ID.ORD[k][0])}">${PORTRAIT.coat({ colors: [hexOf(cur.f), hexOf(cur.c)], charge: 'none', ord: k, f2: hexOf(cur.f2) || hexOf(cur.c) }, 26)}<span>${esc(ID.ORD[k][0])}</span></button>`;
-    const chB = k => `<button class="id-op${cur.ch === k ? ' sel' : ''}" data-a="idArm" data-v="ch:${k}" aria-pressed="${cur.ch === k}" title="${esc(k)}">${PORTRAIT.coat({ colors: [hexOf(cur.f), hexOf(cur.c)], charge: k }, 26)}<span>${esc(k)}</span></button>`;
+    const chB = k => `<button class="id-op id-ch${cur.ch === k ? ' sel' : ''}" data-a="idArm" data-v="ch:${k}" aria-pressed="${cur.ch === k}" title="${esc(k)}">${PORTRAIT.coat({ colors: [hexOf(cur.f), hexOf(cur.c)], charge: k }, 26)}<span>${esc(k)}</span></button>`;
     const words = a.words || m.words || '';
     return `<div class="panel mbox wide id-designer" role="document"><button class="ghost closex" data-a="closeOv" aria-label="Close">${UI.icon ? UI.icon('x', 'm') : '×'}</button>` +
       `<div class="row id-d-head"><div class="id-d-prev" aria-hidden="true">${preview}</div><div class="grow"><h2>Your arms</h2>` +
@@ -331,10 +331,21 @@
   if (typeof life === 'function') UI.TAB.life = function (pc) {
     const h = life.apply(this, arguments);
     try {
-      if (typeof h !== 'string' || h.indexOf('id-mark') >= 0) return h;
+      if (typeof h !== 'string' || h.indexOf('id-mark') >= 0 || (UI.isPhone && UI.isPhone())) return h;
       const s = ID.panel(pc || A.pc());
       return s ? h + s : h;
     } catch (e) { console.error('identity panel', e); return h; }
+  };
+  // on a phone the Life page has no room left (91-look holds it to 1.3 screens): the card heads Decisions instead,
+  // beside "Found a house of your own"
+  const goals = UI.TAB && UI.TAB.goals;
+  if (typeof goals === 'function') UI.TAB.goals = function (pc) {
+    const h = goals.apply(this, arguments);
+    try {
+      if (typeof h !== 'string' || h.indexOf('id-mark') >= 0 || !(UI.isPhone && UI.isPhone())) return h;
+      const s = ID.panel(pc || A.pc());
+      return s ? s + h : h;
+    } catch (e) { return h; }
   };
 
   const CSS = `.id-mark{padding:10px 12px;margin-top:8px}
@@ -346,7 +357,8 @@
 .id-kind{display:inline-block;min-width:44px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
 .id-deed{margin-left:48px}
 .id-past{margin-top:4px}
-.id-designer{max-width:680px}
+.id-designer{max-width:680px;max-height:calc(100vh - 32px);overflow:auto;background:var(--overlay,#232c46)}
+.id-namer{background:var(--overlay,#232c46)}
 .id-d-head{gap:14px;align-items:center;margin-bottom:8px}
 .id-d-prev svg{display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
 .id-blazon{color:var(--accent);font-style:italic;margin-top:4px}
@@ -355,13 +367,14 @@
 .id-opts{display:flex;flex-wrap:wrap;gap:4px}
 .id-sw,.id-op{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:4px 8px;border:1px solid var(--line);background:var(--raised);border-radius:8px;font-size:12px;color:var(--ink)}
 .id-sw i{display:block;width:18px;height:18px;border-radius:50%;border:2px solid var(--line-ink,#1b1730)}
-.id-op{flex-direction:column;gap:1px;min-width:56px;padding:4px;font-size:10px;text-transform:capitalize}
+.id-op{flex-direction:column;gap:1px;min-width:56px;padding:4px;font-size:10px}
+.id-ch{text-transform:capitalize}
 .id-op svg{display:block}
 .id-sw.sel,.id-op.sel{border-color:var(--accent);box-shadow:var(--glow-accent)}
 .idv-voice{margin:6px 0 8px;padding:6px 10px;border-left:3px solid var(--accent-rule,var(--accent));font-family:var(--f-prose,inherit);font-style:italic;font-size:13.5px;line-height:1.4;color:var(--ink-2)}
 .idv-who{font-style:normal;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-right:6px}
 .idv-thought .idv-who{color:var(--info)}
-@media (max-width:760px){.id-row{grid-template-columns:1fr}.id-lab{padding-top:0}.id-op{min-width:48px}.idv-voice{margin:4px 0 6px;font-size:13px}}`;
+@media (max-width:760px){.id-mark{padding:6px 8px;margin-top:4px}.id-designer{max-height:none;min-height:100%;border-radius:0}.id-row{grid-template-columns:1fr}.id-lab{padding-top:0}.id-op{min-width:48px}.idv-voice{margin:4px 0 6px;font-size:13px}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('id-style')) return; const s = document.createElement('style'); s.id = 'id-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();

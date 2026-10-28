@@ -241,4 +241,29 @@ export default {
     const ok = r.differ && r.a >= 10 && r.b >= 3 && r.below && r.near1 === 0 && r.kw;
     return { ok, detail: `legend: ${r.a} realms at the whole view, ${r.b} zoomed in (differ ${r.differ}), under the map ${r.below}; far neighbours within 0.08 in OKLab: ${r.near0} in the stored colours, ${r.near1} on the map (of ${r.pairs} borders; the Known World's near pairs are hatched); Known World colours kept ${r.kw}` };
   },
+
+  // cycle 2 (lane G, styling): the sea is a Prussian-blue bokashi, light at the coast and deep offshore; the realm
+  // under the pointer is outlined in gold, and the hint lives in UI state only
+  async inkSeaHover(pg) {
+    await pg.evaluate(WAR);
+    const r = await pg.evaluate(() => {
+      UI.A.ov('bigmap');
+      const cv = document.getElementById('gmap'); if (!cv) return { none: true };
+      UI.gmDraw();
+      const ctx = cv.getContext('2d');
+      // the ground itself, the whole world on a canvas of its own (the atlas's fog, 9991, lies over the live map)
+      const oc = document.createElement('canvas'); oc.width = 400; oc.height = 260; MAP.ground(oc.getContext('2d'), 400, 260, null);
+      const d = oc.getContext('2d').getImageData(0, 0, 400, 260).data;
+      let blue = 0, n = 0, light = 0;
+      for (let i = 0; i < d.length; i += 4 * 7) { n++; const R = d[i], G = d[i + 1], B = d[i + 2]; if (B > R + 30 && B > G) { blue++; if (B > 150) light++; } }
+      const s0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
+      const rid = Object.values(A.S.realms).find(x => x.alive && x.id !== UI.mapHl).id;
+      UI.mapHov = rid;
+      const lines = UI.INKMAP.hoverLine(ctx, cv.width, cv.height, UI.gm.view);
+      UI.mapHov = null; UI.gmDraw();
+      return { blue: blue / n, light: light / Math.max(1, blue), lines, pure: s0 === JSON.stringify(A.S) && g0 === JSON.stringify(A.rngState) };
+    });
+    const ok = !r.none && r.blue > 0.15 && r.light > 0.01 && r.lines > 0 && r.pure;
+    return { ok, detail: r.none ? 'no map' : `sea share ${(r.blue * 100).toFixed(0)}% of the map, ${(r.light * 100).toFixed(0)}% of it the light coastal steps; hover outline ${r.lines} border pieces; pure ${r.pure}` };
+  },
 };

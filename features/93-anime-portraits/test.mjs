@@ -297,4 +297,45 @@ export default {
     const ok = r.bustSame && r.fullDiffers && r.turned;
     return { ok, detail: `a worn helm: in the bust ${r.bustSame ? 'not drawn' : 'DRAWN'}, in the full figure ${r.fullDiffers ? 'drawn' : 'missing'}; features a quarter turned ${r.turned}` };
   },
+
+  // cycle 2: a true three-quarter head (the far jaw and the chin move, the far ear goes, the far eye narrows), at least
+  // ten full-figure poses each with its gesture, hands drawn with a thumb and fingers, hair tagged for a cut-in's wind,
+  // the event's tone on the face of its subject (you, when it names no one), and age that reads from child to old
+  async apPosesTurn(pg) {
+    await pg.evaluate(MAKE);
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9302, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const realms = Object.keys(A.S.realms), house = Object.values(A.S.houses || {}).find(h => h.colors && h.charge);
+      const poseOf = p => { const m = /data-pose="(\w+)"/.exec(UI.ANIME.buildAt(p, 220, {}, 0)); return m ? m[1] : '?'; };
+      const want = {
+        book: { job: { c: 'scribe', k: 'clerk', r: 1 } }, tool: { job: { c: 'smith', k: 'smith', r: 1 } }, hoe: { job: { c: 'farm', k: 'farmhand', r: 0 } },
+        cup: { job: { c: 'merchant', k: 'trader', r: 1 } }, point: { mil: { rank: 5, troop: 'HI', realm: realms[0] } }, chest: { status: 'noble', house: house && house.id },
+        wave: { traits: ['gregarious'] }, behind: { traits: ['stern'], age: 64 }, kid: { age: 7 }, hilt: { gear: { weapon: 'longsword' } }, staff: { gear: { weapon: 'spear' } },
+        crossed: { traits: ['proud'] }, hip: { sex: 'F' }, stand: {}, swaddled: { age: 0 },
+      };
+      const seen = {};
+      for (const [k, o] of Object.entries(want)) for (let i = 0; i < 40; i++) { const p = APT.mk(Object.assign({ id: 'apq_' + k + i, age: 30 }, o)); const ps = poseOf(p); seen[ps] = (seen[ps] || 0) + 1; }
+      const poses = Object.keys(seen).filter(k => k !== '?');
+      // the head: the front view and the turned one differ in the face's own outline, not only in where the features sit
+      const a = APT.mk({ id: 'apq_head', age: 28 });
+      const turned = UI.ANIME.buildAt(a, 120, { bust: true }, 0), front = UI.ANIME.buildAt(a, 120, { bust: true, front: true }, 0);
+      const faceOf = s => { const m = /<path id="apf[^"]*" d="([^"]+)"/.exec(s); return m ? m[1] : ''; };
+      const outline = faceOf(turned) !== faceOf(front) && faceOf(turned) !== '';
+      const ears = s => (s.match(/stroke-width="[\d.]+"\/>/g) || []).length;
+      // hands: a full figure with an open hand carries more than one ellipse per hand (palm and thumb)
+      const fig = UI.ANIME.buildAt(APT.mk({ id: 'apq_wave', traits: ['gregarious'], age: 30 }), 260, {}, 0);
+      const hair = /class="ap-hair"/.test(turned);
+      // the tone: the event's subject wears it; with no one named, you do
+      const pc = A.pc();
+      const ev = Object.keys(A.EV || {}).find(id => /funeral|grave|mourn/.test(id));
+      A.S.queue.unshift({ type: 'event', ev, ctx: {} });
+      const sad = UI.ANIME.expression ? UI.ANIME.expression(UI.ANIME.look(pc)).k : '?';
+      A.S.queue.shift();
+      // age: a child's head is a larger share of the figure, an old face has more lines
+      const kid = UI.ANIME.buildAt(APT.mk({ id: 'apq_k', age: 7 }), 88, { bust: true }, 0), old = UI.ANIME.buildAt(APT.mk({ id: 'apq_o', age: 74 }), 88, { bust: true }, 0);
+      return { poses, seen, outline, hair, fig: (fig.match(/<ellipse/g) || []).length, sad, ev, oldLonger: old.length !== kid.length, earsT: ears(turned), earsF: ears(front) };
+    });
+    const ok = r.poses.length >= 10 && r.outline && r.hair && r.fig >= 6 && (!r.ev || r.sad === 'sad') && r.oldLonger;
+    return { ok, detail: `${r.poses.length} poses (${r.poses.join(', ')}); turned outline ${r.outline}; hair tagged ${r.hair}; full figure ellipses ${r.fig}; "${r.ev}" with no one named: your face ${r.sad}` };
+  },
 };

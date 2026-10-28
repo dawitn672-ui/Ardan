@@ -188,12 +188,58 @@
     return true;
   };
 
+  // ---- beats: one call for a feature to play a registered move on an element (lane R's backtests §3.1) ----------------
+  // UI.MOTION.beat({ kind, el, to, delay, dur }) plays a Web Animation of a registered kind and returns it (or null when
+  // motion is not full: the end state is the element as it is). Kinds only touch transform and opacity (stroke-dashoffset
+  // for 'draw'); UI.MOTION.KINDS is open for features to add their own.
+  MOT.KINDS = {
+    enter: () => ({ k: [{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], dur: MOT.T.enter, ease: 'enter' }),
+    exit: () => ({ k: [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(8px)' }], dur: MOT.T.exit, ease: 'exit' }),
+    stamp: () => ({ k: [{ opacity: 0, transform: 'scale(1.25)' }, { opacity: 1, transform: 'scale(.96)', offset: .7 }, { opacity: 1, transform: 'none' }], dur: MOT.T.snap, ease: 'snap' }),
+    flash: () => ({ k: [{ opacity: 1 }, { opacity: .35 }, { opacity: 1 }], dur: 160, ease: 'std' }),
+    wipe: () => ({ k: [{ opacity: 0, transform: 'translateX(-24px) skewX(-8deg)' }, { opacity: 1, transform: 'none' }], dur: 180, ease: 'enter' }),
+    draw: o => ({ k: [{ strokeDashoffset: o.len || 120 }, { strokeDashoffset: 0 }], dur: MOT.T.ink, ease: 'std' }),
+    // fly: from where the element is to a point o.to = { x, y } (viewport), shrinking and fading as it lands
+    fly: o => { const r = o.el.getBoundingClientRect(), dx = o.to.x - (r.left + r.width / 2), dy = o.to.y - (r.top + r.height / 2);
+      return { k: [{ opacity: 1, transform: 'none' }, { opacity: 1, transform: `translate(${dx * .55}px, ${dy * .55 - 24}px) scale(.9)`, offset: .55 }, { opacity: 0, transform: `translate(${dx}px, ${dy}px) scale(.5)` }], dur: 620, ease: 'std' }; },
+  };
+  MOT.beat = function (o) {
+    if (!o || !o.el || !o.el.animate || !MOT.full()) return null;
+    const K = MOT.KINDS[o.kind]; if (!K) return null;
+    const d = K(o);
+    return o.el.animate(d.k, { duration: o.dur || d.dur, delay: o.delay || 0, easing: MOT.cssEase(d.ease), fill: 'both' });
+  };
+  // the result's chips fly to what they changed: a stat to its tile, a vital to its row, coin to the purse
+  MOT.flyChips = function (animate) {
+    const card = doc.querySelector('#modal .sc-card.sc-land');
+    if (!animate || !card || card._moFly) return;
+    card._moFly = 1;
+    const target = ch => {
+      const k = ch.dataset.k || '', st = ch.dataset.st;
+      const sel = st ? `#profile .lk-stats .st-${st}` : /^v\./.test(k) ? `#profile .lk-v-${({ happy: 'happiness', fame: 'renown' })[k.slice(2)] || k.slice(2)}` : k === 'coin' ? '#topbar .top-coin' : null;
+      const t = sel && doc.querySelector(sel); if (!t) return null;
+      const r = t.getBoundingClientRect(); return r.width ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null;
+    };
+    [...card.querySelectorAll('.sc-deltas .sc-d')].slice(0, 6).forEach((ch, i) => {
+      const to = target(ch); if (!to) return;
+      const r = ch.getBoundingClientRect(); if (!r.width) return;
+      const g = ch.cloneNode(true);
+      g.classList.add('mo-ghost'); g.setAttribute('aria-hidden', 'true'); g.removeAttribute('id');
+      Object.assign(g.style, { position: 'fixed', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', margin: '0', zIndex: '90', pointerEvents: 'none' });
+      doc.body.appendChild(g);
+      const a = MOT.beat({ kind: 'fly', el: g, to, delay: 520 + i * 70 });
+      if (!a) { g.remove(); return; }
+      a.onfinish = a.oncancel = () => g.remove();
+    });
+  };
+
   // ---- the passes after each draw --------------------------------------------------------------------------------------
   // other features add their own: UI.MOTION.passes.push({ name, run(animate) })
   MOT.passes = [
     { name: 'tab', run: a => MOT.tab(a) },
     { name: 'bars', run: a => MOT.bars(a) },
     { name: 'numbers', run: a => MOT.numbers(a) },
+    { name: 'fly', run: a => MOT.flyChips(a) },
   ];
   MOT.log = [];
   MOT.after = function () {
@@ -213,12 +259,17 @@
     const toast = UI.toast;
     UI.toast = function () {
       const r = toast.apply(this, arguments);
-      try {
-        const t = doc.getElementById('toast');
-        if (t && t.classList.contains('ts-on')) MOT.play(t, 'mo-toast', MOT.T.enter + 120);
-        const s = doc.getElementById('toast-stack'), o = s && s.firstElementChild;
-        if (o && !o._mo) { o._mo = 1; MOT.play(o, 'mo-drop', MOT.T.enter); }
-      } catch (e) {}
+      // after the toast's other wrappers have shown it (the stack, the kind)
+      const go = () => {
+        try {
+          if (MOT.mode() !== 'full') return;
+          const t = doc.getElementById('toast');
+          if (t && t.textContent) MOT.play(t, 'mo-toast', MOT.T.enter + 120);
+          const s = doc.getElementById('toast-stack'), o = s && s.firstElementChild;
+          if (o && !o._mo) { o._mo = 1; MOT.play(o, 'mo-drop', MOT.T.enter); }
+        } catch (e) {}
+      };
+      if (typeof queueMicrotask === 'function') queueMicrotask(go); else go();
       return r;
     };
   }
@@ -238,7 +289,9 @@
       const last = st.shown;
       const zoomed = last && Math.abs(last.w - real.w) > real.w * 1e-4;
       const moved = last && (Math.abs(last.x0 - real.x0) > real.w * 0.02 || Math.abs(last.y0 - real.y0) > real.h * 0.02);
-      if (!last || !MOT.full() || (!zoomed && !moved) || (!zoomed && st.drag)) {
+      // only a zoom or a jump the player asked for (the wheel, a zoom button) is eased; a view set by code is drawn at once
+      const asked = st.user && (performance.now() - st.user) < 450;
+      if (!last || !asked || !MOT.full() || (!zoomed && !moved) || (!zoomed && st.drag)) {
         if (st.anim) { st.anim(); st.anim = null; }
         st.shown = copy(real);
         return fn.apply(this, arguments);
@@ -262,6 +315,10 @@
   // a drag pans at once: the pointer marks it
   doc.addEventListener('pointerdown', e => { const id = e.target && e.target.id; if (id === 'gmap' && MOT.views.gm) MOT.views.gm.drag = true; if (id === 'warmap' && MOT.views.wr) MOT.views.wr.drag = true; }, true);
   doc.addEventListener('pointerup', () => { for (const k in MOT.views) MOT.views[k].drag = false; }, true);
+  const asked = () => { const t = performance.now(); for (const k of ['gm', 'wr']) (MOT.views[k] || (MOT.views[k] = { shown: null, anim: null, inFrame: false })).user = t; };
+  doc.addEventListener('wheel', e => { const id = e.target && e.target.id; if (id === 'gmap' || id === 'warmap') asked(); }, { capture: true, passive: true });
+  doc.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-a=gmZoom], [data-a=wrZoom], .mapzoom button, .wr-zoom button'); if (b) asked(); }, true);
+  doc.addEventListener('keydown', e => { if (['+', '-', '=', '_'].includes(e.key) && doc.querySelector('#gmap, #warmap')) asked(); }, true);
 
   // ---- the look -------------------------------------------------------------------------------------------------------
   // full(css): only when motion is full (the system's, or the setting's); the !important beats the release's 1 ms
@@ -274,6 +331,9 @@
 @property --mo-n{syntax:'<integer>';inherits:false;initial-value:0}
 :root{--mo-press:${MOT.T.press}ms;--mo-quick:${MOT.T.quick}ms;--mo-base:${MOT.T.base}ms;--mo-enter:${MOT.T.enter}ms;--mo-exit:${MOT.T.exit}ms;--mo-snap:${MOT.T.snap}ms;--mo-step:${MOT.T.step}ms;
   --mo-e-std:${E('std')};--mo-e-enter:${E('enter')};--mo-e-exit:${E('exit')};--mo-e-snap:${E('snap')};--mo-e-press:${E('press')}}
+.mo-ghost{display:inline-flex;align-items:center;gap:4px;padding:0 8px;box-sizing:border-box;border-radius:999px;background:var(--raised);border:1px solid var(--line-strong);
+  font:600 12px/1 var(--f-ui,sans-serif);color:var(--ink);list-style:none;white-space:nowrap;overflow:hidden;box-shadow:0 0 14px rgba(240,192,98,.45)}
+.mo-ghost.sc-up{color:var(--ok)} .mo-ghost.sc-down{color:var(--danger)} .mo-ghost svg{width:14px;height:14px;flex:none}
 @keyframes moTabIn{from{opacity:0;transform:translateX(var(--mo-dx,18px))}to{opacity:1;transform:none}}
 @keyframes moRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes moPop{0%{opacity:0;transform:translateY(6px) scale(.94)}100%{opacity:1;transform:none}}

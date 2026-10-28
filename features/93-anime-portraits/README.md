@@ -118,3 +118,14 @@ The release's `A.genAppearance` knows only the Known World's peoples, so it gave
 - **Beasts** (`PORTRAIT.beast`) and **coats of arms** (`PORTRAIT.coat`) are still the release's.
 
 **Cycle 1 fixes (visual review).** B4: creation offers a far people's skin range only, presses hair and eyes as the portrait does, and the preview carries the culture (patch `AP-SKINS`, `apCreateSkin`). I1: busts drop the helm (`look(p, bustOnly)`), features sit a quarter turned (`opts.front` turns it off), a grown figure is 6 heads with larger eyes, the rim light is up to 2.8 units (`apBustNoHelm`). Not done: new poses beyond the five, a true ¾ head outline.
+
+**Cycle 2 (lane G).**
+- **A true three-quarter head.** The head turns toward the picture's left: the far cheek shows its bone under the eye and dips to a narrower jaw, the chin swings into the turn, the near jaw is fuller, the neck sits under the turned head, the far ear goes behind it (the near ear moves in), the far eye and brow narrow, and the nose's bridge runs down the far side with its tip into the turn. `opts.front` still draws the front view.
+- **Thirteen poses** (was six): stand, hip, arms crossed, staff, hilt, swaddled, and seven gestures of trade and temper: **book** (scribes, lawyers, teachers, healers, envoys, stewards, priests), **tool** (a hammer for the crafts, a hoe or a crook for the land), **cup** (merchants, brewers, cooks, minstrels, courtiers), **point** (officers of rank 4 and up, knights, explorers), **chest** (a noble's or a priest's hand on the heart), **wave** (the gregarious and the kind; three children in ten) and **hands behind** (the old, the stern, the patient).
+- **Hands, not mittens:** a palm, a thumb on the inner side, and the fingers split for an open hand, knuckles for a fist, one finger out for a pointing hand.
+- **Hair in the wind.** Back hair and bangs carry `class="ap-hair"`, a cloak `ap-cloth`, so 96's cut-ins sway them.
+- **Tone.** Three more tones (a triumph grins; debt, theft, famine and exile frown; battle, raids and beasts anger), and an event that names no one puts its tone on your own face.
+- **Age.** Forehead creases from the sixties, on top of the existing lines.
+- **A far people while its lands are closed** (the title's vista): `farOf` falls back to the generated data's culture (`A.FAR.D.cultures`), read only.
+
+`apPosesTurn`: 13 poses found; the turned face outline differs from the front one; hair tagged; 11 ellipses in a waving figure (hands); a funeral that names no one makes your face sad.

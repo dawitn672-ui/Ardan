@@ -65,3 +65,21 @@ Death is muted (a grey-blue band, no focus lines); a victory is vermilion and go
 - **Victory needs the battle screen.** A battle resolved without the player on its screen gives no cut-in; neither does a duel.
 
 **Cycle 1 fixes (visual review).** I6: a VS cut-in with both busts at a duel's opening; I5: a muted FAREWELL at your own death; I3: DEFEAT for a battle lost. Openings and your death are not held to one a month. I9: on Day the dim is the indigo shade and the focus lines ink; the sub-line is 20 px (`moOpenings`).
+
+## Cycle 2: the motion system (`motion.core.js`, lane G)
+
+**Why.** The owner's bar ("motion graphics", Persona 5, Hades) and brief §6: motion explains a change. Until now each feature animated on its own, and most of the game changed state without showing it: tabs snapped, bars and numbers jumped, toasts popped, the map jumped between zooms.
+
+**What.** One small library, `UI.MOTION`:
+
+- **Tokens:** `MOT.T` (press 80, quick 140, base 200, enter 280, exit 180, snap 240, moment 1200, ink 700, tween 520, count 640, view 260 ms; a 36 ms stagger step, at most 10 steps) and `MOT.EASE` (the brief's five cubic Béziers), as CSS variables (`--mo-*`) and as JS easing functions (`MOT.ease.std(t)`).
+- **Mode:** `MOT.mode()` is `full`, `reduced` or `off`, from the Motion setting and the system (`UI.MOMENTS.mode`).
+- **Primitives:** `MOT.play(el, cls)` restarts a CSS animation class; `MOT.stagger(nodes, cls)` sets each node's place (`--mo-i`); `MOT.animate({ dur, ease, step })` drives a canvas by `requestAnimationFrame`; `MOT.beat({ kind, el, to, delay })` plays a registered Web Animation. `MOT.KINDS` (enter, exit, stamp, flash, wipe, draw, fly) is open: a feature adds its own kind.
+- **Passes after every draw** (`MOT.passes`, open too): the panel slides in from the side of the tab you came from and its sections, tiles and rows enter in sequence; the rail's bars tween from the old width with a glow at the moving end; the rail's numbers and the purse count from the old value; the step's progress bar tweens; a result's delta chips fly to the tile, row or purse they changed.
+- **Toasts** slide in with a small overshoot, and the toast they push down steps into the stack.
+- **The map** (`UI.gmDraw`, `UI.drawWar`): a zoom or jump the player asked for (wheel, zoom buttons, + and −) eases over 260 ms. The view is set at once, so the game and the tests read the target; only the drawing follows. A drag pans with no lag, and a view set by code is drawn at once.
+- **Cut-ins** gained an ink splash in the moment's colour behind the bust and the word, speed lines streaming down the band, and the bust's hair and cloak caught in the wind of it (93 tags them `.ap-hair`, `.ap-cloth`).
+
+**Rules kept.** Nothing moves on a first draw, a new life or a load (the remembered values reset with the life, `MOT.mem`, never in `A.S`). No loop while reading. Reduced: no transform, every fade 120 ms or less, numbers and bars land at once. Off: none of it. A counting number keeps its real text (a pseudo-element draws the count over it), so screen readers and tests read the new value at once. No `A.rand`, no state change; seeded flourishes hash the moment.
+
+**Test.** `motionSystem`: full motion slides the tab in (7 animations, 6 in sequence), counts the purse (5 → 46 suns) and a vital, tweens a bar, slides the toast, eases an asked zoom with the view set at once and draws a coded view at once; reduced: no transform, nothing over 120 ms, no counting, no easing; off: nothing; pure in all three.

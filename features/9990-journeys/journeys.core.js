@@ -206,7 +206,7 @@
     }
     const road = JR.ROAD_EVENTS.filter(id => A.EV[id] && !j.seen.includes(id));
     if (road.length) list.push(['road', 0.8]);
-    j.lastStop = st.p; j.lastPi = st.pi;
+    j.prevStop = prev; j.lastStop = st.p; j.lastPi = st.pi;
     if (!list.length) return false;
     const pick = A.wpick(list, x => x[1]);
     let ev = pick[0];
@@ -283,7 +283,7 @@
     ctx.purse = String(Math.max(0, Math.round(pc.coin || 0)));
     ctx.wage = String(JR.wage(j || { km: 600 }));
     if (ev === 'jr_border') {
-      const prev = j && j.lastStop != null ? P_(j.path[Math.max(0, (j.lastPi || 1) - 1)]) : null;
+      const prev = j && j.prevStop != null ? P_(j.prevStop) : null;
       ctx.toll = 2 + Math.round(Math.min(10, (pc.coin || 0) / 60));
       ctx.fromRealm = prev && A.realm(prev.owner) ? A.realm(prev.owner).short : 'the last realm';
     }
@@ -533,7 +533,7 @@
   });
   if (typeof document !== 'undefined') {
     const st = document.createElement('style'); st.id = 'jr-style';
-    st.textContent = '.jr-mode{display:inline-flex;margin:2px 0 6px}.jr-mode button[aria-pressed="true"]{color:var(--on-accent,#1a140c)}';
+    st.textContent = '.jr-mode{display:inline-flex;margin:2px 0 6px}.jr-mode button[aria-pressed="true"]{color:#1a140c}';
     (document.head || document.documentElement).appendChild(st);
   }
   JR.statusLine = function (pc) {
@@ -542,6 +542,25 @@
     if (j.there) return `In ${T.name}, ${gone} days from home.`;
     return `${A.cap(JR.KINDS[j.k] || 'the road')} to ${T.name}: day ${gone} of about ${j.days}${at && at.id !== j.from ? `, last stop ${at.name}` : ''}${left ? '' : ', nearly there'}.`;
   };
+  // 996's "Coming up": the next stop and the end of the road (a view: reads only)
+  const CU = UI.COMING;
+  if (CU && typeof CU.items === 'function') {
+    const items = CU.items;
+    CU.items = function (pc) {
+      const out = items.apply(this, arguments);
+      try {
+        const j = JR.on(pc) ? pc.journey : null;
+        if (j && !j.there && !JR.OFF) {
+          const st = j.stops[j.i], T = P_(j.to), when = at => (CU.when ? CU.when(at) : '');
+          if (st && P_(st.p)) out.push({ at: j.t0 + st.d, kind: 'road', text: `The next stop on the road: ${P_(st.p).name}`, icon: 'route', when: when(j.t0 + st.d) });
+          if (T) out.push({ at: j.t0 + j.days, kind: 'road', text: `${T.name}, at the end of the road`, icon: 'map', when: when(j.t0 + j.days) });
+          out.sort((a, b) => a.at - b.at);
+          return out.slice(0, CU.MAX || 5);
+        }
+      } catch (e) {}
+      return out;
+    };
+  }
   const travelModal = UI.travelModal;
   UI.travelModal = function () {
     const pc = A.pc();

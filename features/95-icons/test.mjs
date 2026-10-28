@@ -135,4 +135,32 @@ export default {
     dropFontCsp(errs);
     return { ok: !found.length, detail: `${found.length} axe violations on the Life screen with the icons, dark and light${found.length ? ': ' + found.slice(0, 6).join(', ') : ''}` };
   },
+
+  // cycle 2 (things.core.js): every one of the Life tab's actions and every market good has its own icon, each a
+  // valid drawing on the 24 grid in currentColor with at most one fill; the tiles and the market's rows show them
+  async iconThings(pg) {
+    const r = await pg.evaluate(() => {
+      const acts = Object.keys(GD.ACTIVITIES), goods = Object.keys(GD.GOODS || {});
+      const bad = [], miss = [];
+      const check = (k, s) => {
+        if (!s) { miss.push(k); return; }
+        const d = new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${s}</svg>`, 'image/svg+xml');
+        if (d.querySelector('parsererror')) bad.push(k + ' parse');
+        if ((s.match(/fill="(?!currentColor|none)[^"]*"|stroke="(?!currentColor|none)[^"]*"/g) || []).length) bad.push(k + ' paint');
+        if ((s.match(/fill="currentColor"/g) || []).length > 1) bad.push(k + ' fills');
+      };
+      for (const k of acts) check(k, UI.ICONS_ACT[k]);
+      for (const k of goods) check(k, UI.ICONS_GOOD[k]);
+      const distinct = new Set([...acts.map(k => UI.ICONS_ACT[k]), ...goods.map(k => UI.ICONS_GOOD[k])]).size;
+      T.enter({ seed: 951, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
+      const tiles = [...document.querySelectorAll('#tabbody .lk-acts > .act[data-v]')], own = tiles.filter(t => t.querySelector('.lk-gi[data-own]')).length;
+      UI.A.group('holdings'); UI.render();
+      const rows = document.querySelectorAll('#tabbody .ic-good').length, buys = document.querySelectorAll('#tabbody button[data-a="mktBuy"]').length;
+      UI.A.group('life');
+      const bytes = Object.values(UI.ICONS_ACT).join('').length + Object.values(UI.ICONS_GOOD).join('').length;
+      return { acts: acts.length, goods: goods.length, miss, bad, distinct, tiles: tiles.length, own, rows, buys, bytes };
+    });
+    const ok = !r.miss.length && !r.bad.length && r.distinct === r.acts + r.goods && r.tiles > 0 && r.own === r.tiles && (r.buys === 0 || r.rows > 0) && r.bytes <= 20 * 1024;
+    return { ok, detail: `${r.acts} actions and ${r.goods} goods, ${r.distinct} distinct icons (${(r.bytes / 1024).toFixed(1)} KB)${r.miss.length ? '; MISSING ' + r.miss.join(',') : ''}${r.bad.length ? '; BAD ' + r.bad.join(',') : ''}; tiles with their own icon ${r.own} of ${r.tiles}; market rows with a good's icon ${r.rows} (buy buttons ${r.buys})` };
+  },
 };

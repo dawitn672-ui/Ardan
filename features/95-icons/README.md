@@ -64,3 +64,7 @@ Three rounds of review at 16 px changed:
 - **Life and Happiness share the sun,** as the brief lists them; at 16 px only the face tells them apart.
 - **Many places keep Lucide.** The release's other icons (target, sparkles, flag, award, star and the rest) are still Lucide outlines. They are similar in weight, but they are not period objects.
 - **Choice checks.** Stat icons on a choice's check chip, on deltas and on level-ups belong with the scene card (92-scene-card). `UI.ICON_STAT` and `UI.iconOf` are there for it.
+
+## Cycle 2: an icon for every action and every good (`things.core.js`, lane G)
+
+The Life tab's 51 actions shared their 13 groups' icons, and the 26 market goods had none. Each now has its own period object on the same grid, in `currentColor` with at most one fill: a practice dummy, a target, footprints, a tankard, bunting, a rose, a handshake, dice, antlers, a compass, claws, a key, a cudgel, a barrel, a ship, scales, a lance, a gauntlet, a quill and ink, a bundle on a staff, a crown and dagger, a broken chain and the rest; an ear of grain, a fish, a salt heap, a ball of yarn, a bolt of cloth, logs, an ingot, an amphora, an oil jar, a pelt, amber, an oyster with its pearl, a tusk, a dye pot, a jade disc, a vase, paper and a silver cup. 15.6 KB in all. Registries: `UI.ICONS_ACT`, `UI.ICONS_GOOD`, read by `UI.actIcon(k)` and `UI.goodIcon(k)`; the activity tiles and their tooltips, and the market's rows, take them after each draw. `iconThings`.

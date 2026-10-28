@@ -77,3 +77,5 @@ The scene fits one sheet (`scPhoneFit`).
 - **On a phone, short scenes crop the print** to fill the sheet: a subject placed far to one side can be cut.
 
 **Cycle 1 fixes (visual review).** B9: the phone print is a 16:6 band (at most 160 px), choices follow the text; the odds hint docks under the last choice on a phone and above the card on desktop.
+
+**Cycle 2 (lane G, motion).** The card enters as a page turn (it swings in from its left edge) and its print is revealed by a diagonal brush stroke with a gleam along its edge. The roll lands as a seal: vermilion with a check for a success, ink-black with a broken stroke for a failure, stamped at an angle beside the word, with an ink ring spreading from the word, the card thumping once and a failed result shaking. The delta chips then fly to the rail tile, vital row or purse they changed (96's `MOT.flyChips`). Reduced: fades only; Off: none.

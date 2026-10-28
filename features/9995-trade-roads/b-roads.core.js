@@ -34,6 +34,7 @@
     NEWS_KM_DAY: 40,          // a broker's letter, with its relays
     NEWS_HAND_DAYS: 20,       // and the days it waits at each hand
     NEWS_CAP: 1100,
+    MERGE: 120,               // days within which two consignments on one road travel as one (a third of the road's days at most)
     // the far regions whose coasts are the open sea (the Isles, the peninsulas, the Deep South, the Twin Rivers' and the
     // pines' sea coasts, the Rime); the rest of the far lands' "coasts" are lakes and inland seas
     SEA_REGION: /^(A|I|D|M|N)-|^R-(03|04|08|10|12|14)$|^T-(01|05|12)$/,
@@ -263,14 +264,16 @@
       }
     });
     cands.sort((x, y) => y.score - x.score || x.o - y.o);
-    const sent = {}, pending = {}, shut = new Map();
+    const sent = {}, pending = {}, shut = new Map(), pipe = new Map();
+    for (const w of way) { const pk = w[0] + '>' + w[1] + '>' + w[2], o = pipe.get(pk); if (!o || w[5] > o[5]) pipe.set(pk, w); }
     for (const c of cands) {
       // a great market sends more caravans than a small one (45's cap, up to four times it for an empire of millions)
       if ((sent[c.src.id] || 0) >= E.PER_SRC * Math.max(1, Math.min(4, Math.sqrt((c.src.pop || 0) / 2e6)))) continue;
       const on = (inb[c.dst.id] && inb[c.dst.id][c.k] || 0) + (pending[c.dst.id + c.k] || 0);
-      const nd = E.normal(c.md, c.k), want = nd * 1.2 - (c.md.s[c.k] || 0) - on, spare = c.ms.s[c.k] - E.normal(c.ms, c.k) * 0.8;
+      // the market wants its normal store, plus what it will use while these goods are on the road
+      const nd = E.normal(c.md, c.k), want = nd * 1.2 + ((c.md.d && c.md.d[c.k]) || 0) * c.T.days / 30 - (c.md.s[c.k] || 0) - on, spare = c.ms.s[c.k] - E.normal(c.ms, c.k) * 0.8;
       let q = Math.min(spare, want, Math.max(nd * 0.3, E.normal(c.ms, c.k) * 0.15));
-      if (!(q > Math.min(0.5, nd * 0.5)) || !(q > 0.05)) continue;
+      if (!(q > Math.min(0.5, nd * 0.5)) || !(q > 0.2)) continue;
       // war on any hand of the way, a pass shut, a monsoon not blowing: not this month
       let why = shut.get(c.T); if (why == null) { why = ''; for (const e of c.T.legs) { why = TR.shutWhy(e, mo, hostile); if (why) break; } shut.set(c.T, why); }
       if (why) continue;
@@ -289,7 +292,12 @@
         const hr = A.realm(ck.by); if (hr && hr.alive) { const amt = Math.round(q * c.ms.p[c.k] * t); hr.treasury = (hr.treasury || 0) + amt; hr.tolls = (hr.tolls || 0) + amt; }
       }
       const mos = Math.max(1, Math.round(c.T.days / 30));
-      way.push([c.src.id, c.dst.id, c.k, Math.round(q * 100) / 100, Math.round(lost * 100) / 100, now + c.T.days, mos, c.T.hands]);
+      // goods on one road that will arrive close together (within a third of the road's days, 30 to MERGE) travel as one
+      // entry, arriving on the weighted day: the state keeps a fraction as many
+      const pk = c.src.id + '>' + c.dst.id + '>' + c.k, due = now + c.T.days, prevW = pipe.get(pk);
+      if (prevW && Math.abs(prevW[5] - due) <= Math.max(30, Math.min(TR.MERGE, c.T.days / 3))) {
+        const n2 = prevW[3] + q; prevW[5] = Math.round((prevW[5] * prevW[3] + due * q) / n2); prevW[3] = Math.round(n2 * 100) / 100; prevW[4] = Math.round((prevW[4] + lost) * 100) / 100;
+      } else { const w = [c.src.id, c.dst.id, c.k, Math.round(q * 100) / 100, Math.round(lost * 100) / 100, due, mos, c.T.hands]; way.push(w); pipe.set(pk, w); }
       car.push({ f: c.src.id, t: c.dst.id, k: c.k, n: Math.round(q), lost: 0, dep: 1, mo: mos, hands: c.T.hands, km: Math.round(c.T.dist), via: c.T.rn, sea: c.T.seaKm > c.T.landKm ? 1 : 0, y: S.year, m: mo });
     }
     eco.way = way;

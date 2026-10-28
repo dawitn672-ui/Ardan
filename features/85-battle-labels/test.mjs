@@ -50,4 +50,33 @@ export default {
     const ok = r.on && !r.off && r.labels >= 4 && r.counts === r.labels && r.named >= 4 && r.same && r.rng;
     return { ok, detail: `print on ${r.on} (off with the prints off: ${!r.off}); ${r.counts} of ${r.labels} field labels are counts, ${r.named} full names kept for hover; sky pixel ${r.px}; state unchanged ${r.same}, random stream unchanged ${r.rng}` };
   },
+
+  // cycle 2, the field in motion (n-motion.core.js): every wing shows its intent, a pulse brings clash flashes where
+  // men fell, the decisive wing is named and framed by the camera (full motion only), banners sway for the pulse and
+  // stop; drawing changes neither the battle nor the random stream
+  async bfMotion(pg) {
+    await pg.evaluate(`(${KIT})()`);
+    const r = await pg.evaluate(async () => {
+      TT2.life(5968, { status: 'noble', realm: 'POL-02', startAge: 25, years: 1 });
+      UI.set.motion = 'full'; UI.applySettings();
+      const B = TT2.battle(); A.S.queue = [{ type: 'battle', b: B }]; UI.ov = null; UI.render(); if (UI.renderModal) UI.renderModal();
+      const s0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
+      const cv = document.getElementById('battlecv');
+      UI.drawBattle(cv, B); UI.drawBattle(cv, B);
+      const s1 = JSON.stringify(A.S), g1 = JSON.stringify(A.rngState);
+      const deploy = { arrows: document.querySelectorAll('.bm-ov .bm-arrow').length, fresh: !!document.querySelector('.bm-ov .bm-fresh') };
+      try { UI.A.bStep(); } catch (e) {}
+      const cv2 = document.getElementById('battlecv');
+      const pulse = { arrows: document.querySelectorAll('.bm-ov .bm-arrow').length, clash: document.querySelectorAll('.bm-ov .bm-clash').length, std: document.querySelectorAll('.bm-ov .bm-std').length,
+        fresh: !!document.querySelector('.bm-ov .bm-fresh'), decisive: UI.BMOTION.last && UI.BMOTION.last.decisive, cam: !!UI.BMOTION.cams.get(cv2) };
+      const sway = document.getAnimations().filter(a => a.animationName === 'bmSway').map(a => a.effect.getTiming().iterations);
+      // Motion off: the same pulse draws no camera and no moving marks
+      UI.set.motion = 'off'; UI.applySettings(); UI.drawBattle(cv2, B);
+      const off = { cam: !!UI.BMOTION.cams.get(cv2), anims: document.getAnimations().filter(a => /^bm/.test(a.animationName || '')).length };
+      UI.set.motion = 'system'; UI.applySettings();
+      return { deploy, pulse, sway: [...new Set(sway)], off, pure: s0 === s1 && g0 === g1 };
+    });
+    const ok = r.deploy.arrows > 0 && !r.deploy.fresh && r.pulse.fresh && r.pulse.clash > 0 && r.pulse.std > 0 && !!r.pulse.decisive && r.pulse.cam && r.sway.every(n => n === 3) && !r.off.cam && r.off.anims === 0 && r.pure;
+    return { ok, detail: `deployment: ${r.deploy.arrows} intent marks; after a pulse: ${r.pulse.arrows} marks, ${r.pulse.clash} clashes, ${r.pulse.std} standards (sway ${r.sway.join('/')} beats), decisive ${r.pulse.decisive}, camera ${r.pulse.cam}; Motion off: camera ${r.off.cam}, ${r.off.anims} animations; pure ${r.pure}` };
+  },
 };

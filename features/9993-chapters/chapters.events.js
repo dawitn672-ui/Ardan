@@ -12,13 +12,13 @@ A.defEvents([
       ctx.chStage = CH.STAGES[c.st] || 'A new stage';
       ctx.chAims = CH.aimsText(c);
       ctx.chY = String(c.y0); ctx.chAge = String(c.a0);
-      ctx.chA = c.aims[Math.min(2, c.aims.length - 1)].l.toLowerCase();
-      ctx.chB = c.alt ? c.alt.l.toLowerCase() : ctx.chA;
+      ctx.chA = c.aims[Math.min(2, c.aims.length - 1)].l;
+      ctx.chB = c.alt ? c.alt.l : ctx.chA;
     },
     text: (p, ctx) => `${ctx.chRecap ? ctx.chRecap + ' ' : ''}${ctx.chStage} begins, in the year {chY}, at {chAge}. For this chapter of your life you mean to: ${ctx.chAims} The aims stand on the Life tab, and each one met is set down.`,
     choices: [
-      { t: 'I will {chA}', r: 'So it is written at the head of the chapter. The rest is yours to write.', fx: { happy: 1 } },
-      { t: 'I would rather {chB}', req: (p) => !!(p.chap && p.chap.cur && p.chap.cur.alt), r: 'So it is written instead. The rest is yours to write.', fx: { chapter: 'alt', happy: 1 } },
+      { t: 'The third aim: {chA}', r: 'So it is written at the head of the chapter. The rest is yours to write.', fx: { happy: 1 } },
+      { t: 'Rather: {chB}', req: (p) => !!(p.chap && p.chap.cur && p.chap.cur.alt), r: 'So it is written instead. The rest is yours to write.', fx: { chapter: 'alt', happy: 1 } },
     ] },
   { id: 'chp_legacy', title: 'What the house carries', trigger: true,
     cond: (p, C) => C.age(p) >= 1,

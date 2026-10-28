@@ -158,6 +158,7 @@
   AT.ALPHA = [0.88, 0.5, 0];       // unknown, heard of, seen
   AT.fogOn = () => !AT.OFF && !(UI.set && UI.set.atlasFog === false);
   let veilMemo = null;
+  const viewMemo = new WeakMap();   // each canvas's last veiled view (rendering only)
   AT.veilKey = pc => [pc.id, AT.ok(pc) ? pc.atlas.v + ':' + Object.keys(pc.atlas.s).length + ':' + Object.keys(pc.atlas.h).length : 'b' + pc.home + pc.realm, MAP.gridKey, MAP.gw, MAP.gh, A.S.prov.length].join('|');
   AT.veilLayer = function (pc) {
     if (typeof document === 'undefined' || !MAP.grid || !MAP.gw) return null;
@@ -198,8 +199,21 @@
       if (!AT.fogOn() || !cv || !AT.VEIL_CANVAS[cv.id] || !pc || !A.S.prov) return false;
       const layer = AT.veilLayer(pc); if (!layer) return false;
       const vx = v ? v.x0 : MAP.KX0, vy = v ? v.y0 : MAP.KY0, vw = v ? v.w : MAP.KW, vh = v ? v.h : MAP.KH;
-      ctx.save(); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(layer, (MAP.KX0 - vx) / vw * W, (MAP.KY0 - vy) / vh * H, MAP.KW / vw * W, MAP.KH / vh * H);
+      // only the part of the picture in view is sampled; a view drawn before (a still map, the world tab) is one copy
+      const gw = layer.width, gh = layer.height, sx = (vx - MAP.KX0) / MAP.KW * gw, sy = (vy - MAP.KY0) / MAP.KH * gh, sw = vw / MAP.KW * gw, sh = vh / MAP.KH * gh;
+      const x0 = Math.max(0, sx), y0 = Math.max(0, sy), x1 = Math.min(gw, sx + sw), y1 = Math.min(gh, sy + sh);
+      if (x1 <= x0 || y1 <= y0) return true;
+      const dx = (x0 - sx) / sw * W, dy = (y0 - sy) / sh * H, dw = (x1 - x0) / sw * W, dh = (y1 - y0) / sh * H;
+      const key = [veilMemo.key, W, H, x0, y0, x1, y1].join(','), vc = viewMemo.get(cv);
+      ctx.save();
+      if (vc && vc.key === key) ctx.drawImage(vc.cv, 0, 0);
+      else {
+        const o = vc && vc.cv.width === W && vc.cv.height === H ? vc.cv : document.createElement('canvas'); o.width = W; o.height = H;
+        const oc = o.getContext('2d'); oc.clearRect(0, 0, W, H); oc.imageSmoothingEnabled = true; oc.imageSmoothingQuality = 'low';
+        oc.drawImage(layer, x0, y0, x1 - x0, y1 - y0, dx, dy, dw, dh);
+        viewMemo.set(cv, { key, cv: o });
+        ctx.drawImage(o, 0, 0);
+      }
       ctx.restore();
       return true;
     } catch (e) { console.error('atlas veil', e); return false; }
@@ -422,6 +436,7 @@
     st.textContent = [
       '.at-bar{display:flex;align-items:center;gap:10px;padding:6px 10px 0;flex:none;min-width:0}',
       '.at-bar .seg button{min-height:28px;padding:0 12px}',
+      '.at-bar .seg .primary,.jr-mode .primary{color:#1a140c}',
       '.at-sum{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}',
       '.at-map{position:relative;flex:1 1 auto;min-height:220px;margin:8px 8px 0;border-radius:var(--r-m,8px);overflow:hidden;border:1px solid var(--line,#444)}',
       '.at-map canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}',

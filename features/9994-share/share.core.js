@@ -255,7 +255,7 @@
   };
   for (const k of ['shKeep', 'shSave', 'shCopy', 'shShare']) if (Array.isArray(UI.NEEDS_CONTENT) && UI.NEEDS_CONTENT.includes(k)) UI.NEEDS_CONTENT.splice(UI.NEEDS_CONTENT.indexOf(k), 1);
 
-  const CSS = `.sh-box{max-width:420px;text-align:center}
+  const CSS = `.sh-box{max-width:420px;text-align:center;background:var(--overlay,#232c46);max-height:calc(100vh - 32px);overflow:auto}
 .sh-prev img{display:block;margin:6px auto 8px;width:270px;max-width:100%;height:auto;border-radius:6px;box-shadow:var(--e-2)}
 .sh-foot{margin-bottom:8px}
 .sh-box .field{text-align:left}

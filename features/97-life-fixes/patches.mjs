@@ -143,4 +143,13 @@ export default [
       'jousts are their own sequence and are not cut.',
     edits: [['const want=role==="knight"?2:role==="ruler"||role==="envoy"?3:2;', 'const want=(A.lfGathWant||(x=>x))(role==="knight"?2:role==="ruler"||role==="envoy"?3:2);']],
   },
+  {
+    id: 'LF-PLOT-AGE',
+    blob: 'ardan-content',
+    why: 'The court plot ("An invitation") was offered to any adult noble of rung 2 or more, so a duke\'s son of 16 was ' +
+      'asked to join a plot against the crown, failed its hard check and was hanged for treason. In the Great Continent ' +
+      'league this cut the median noble life\'s peak wealth to a third of its band. Conspirators now only approach a ' +
+      'noble of 20 or more.',
+    edits: [['"ct_plot_invite",cool:10,cond:(p,C)=>NB(p,C)&&rung(p)>=2', '"ct_plot_invite",cool:10,cond:(p,C)=>NB(p,C)&&rung(p)>=2&&C.age(p)>=20']],
+  },
 ];

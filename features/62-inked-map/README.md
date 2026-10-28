@@ -93,3 +93,10 @@ Not done: the sea stays the woodcut's ruled vellum (the brief's Prussian-blue bo
 - **61-illumination's sepia filter** sits over this canvas and darkens it; the coordinator decides whether to weaken it.
 
 **Cycle 1 fixes (visual review B7, world B8).** The full map's legend is a "Realms in view" row under the map (shut on a phone), built from the realms whose land is in view; the wash paints with `UI.realmHex` (far neighbours already spread apart by 91) and is laid stronger on the Great Continent; realm names sit on a paper plate so region capitals do not print through (`inkLegendView`). Not done: a full-screen phone map with a bottom sheet.
+
+**Cycle 2 (lane G, styling only).**
+- **The sea** is the brief's Prussian-blue bokashi: deep offshore (`IM.SEA_DEEP`), stepping lighter in four bands to the coast (`IM.SEA_STEPS`), each step edged with a pale ripple, faint pale ruling on the open sea, and the wave marks drawn as small seigaiha arcs. `IM.SEA_STYLE = 'vellum'` brings back the ruled vellum sea.
+- **Hover** (`z-hover.core.js`): on the full map the realm under the pointer is outlined in gold, beside the clicked realm's glow. The pointer's place is a UI hint (`UI.mapHov`), redrawn at most once a frame.
+- The map's zooms and jumps are eased by 96's motion system (the view is set at once; only the drawing follows).
+
+`inkSeaHover`.

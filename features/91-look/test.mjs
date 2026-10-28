@@ -425,4 +425,32 @@ export default {
     const ok = Object.values(r).every(g => g.length <= 1);
     return { ok, detail: JSON.stringify(r) };
   },
+
+  // cycle 2, the title as a vista: three parallax layers over the dawn sky, three busts of three different peoples of
+  // the continent, the logotype over a brush stroke with a seal; seeded (the same title twice), pure, still under
+  // reduced motion; "Begin a new life" still in sight at 1366 x 768
+  async titleVista(pg, errs, { browser, file }) {
+    const { pathToFileURL } = await import('node:url');
+    const run = async opts => {
+      const ctx = await browser.newContext(Object.assign({ viewport: { width: 1366, height: 768 } }, opts)), p = await ctx.newPage();
+      p.on('pageerror', e => errs.push(String(e)));
+      await p.goto(pathToFileURL(file).href); await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      const r = await p.evaluate(() => {
+        UI.screen = 'title';
+        const h0 = JSON.stringify(A.S.realms ? Object.keys(A.S.realms).length : 0) + JSON.stringify(A.rngState);
+        UI.render(); const a = document.getElementById('title').innerHTML; UI.render(); const b = document.getElementById('title').innerHTML;
+        const T = UI.LOOK.TITLE, ppl = T.people(T.seed());
+        const lands = new Set(ppl.map(p => { const D = A.FAR && A.FAR.D; const c = (typeof LORE !== 'undefined' && LORE.cultures[p.cult]) || (D && D.cultures[p.cult]); return c && c.land; }));
+        const moving = document.getAnimations().filter(x => /^tl/.test(x.animationName || '') && x.effect.getKeyframes().some(k => k.transform && k.transform !== 'none')).length;
+        const btn = document.querySelector('[data-a=newLife]').getBoundingClientRect();
+        return { layers: document.querySelectorAll('#title .tl-par svg.tl-l').length, busts: document.querySelectorAll('#title .tl-bust svg').length, lands: lands.size,
+          brush: !!document.querySelector('#title .logo .tl-brush'), seal: !!document.querySelector('#title .logo .tl-seal'), same: a === b, moving,
+          inSight: btn.bottom <= innerHeight, pure: h0 === JSON.stringify(A.S.realms ? Object.keys(A.S.realms).length : 0) + JSON.stringify(A.rngState) };
+      });
+      await ctx.close(); return r;
+    };
+    const full = await run({}), red = await run({ reducedMotion: 'reduce' });
+    const ok = full.layers === 4 && full.busts === 3 && full.lands === 3 && full.brush && full.seal && full.same && full.moving > 0 && full.inSight && full.pure && red.moving === 0;
+    return { ok, detail: `layers ${full.layers}, busts ${full.busts} of ${full.lands} lands, brush ${full.brush}, seal ${full.seal}, same twice ${full.same}, drifting ${full.moving} (reduced ${red.moving}), button in sight ${full.inSight}, pure ${full.pure}` };
+  },
 };

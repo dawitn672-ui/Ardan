@@ -13,6 +13,9 @@
 // one memory it keeps (which phase of which event was last drawn, for the entrance motion) is UI state in a WeakMap.
 (function () {
   const SC = UI.SCENE = UI.SCENE || {};
+  // the roll's seal (cycle 2, lane R's backtests §2.4): a vermilion seal with a check for a success, an ink-black one with a
+  // broken stroke for a failure, stamped beside the word. A drawing, not a script (54's rule: no real language)
+  SC.seal = ok => `<span class="sc-seal ${ok ? 'sc-ok' : 'sc-fail'}" aria-hidden="true"><svg viewBox="0 0 28 28" focusable="false"><rect x="2" y="2" width="24" height="24" rx="4"/><rect class="sc-seal-in" x="5" y="5" width="18" height="18" rx="2"/>${ok ? '<path d="M8.5 14.5l3.6 3.6 7.4-8"/>' : '<path d="M9 9l4.4 4.6M15 15.4l4 3.6M19 9l-3.6 3.6M12.6 15.4 9 19"/>'}</svg></span>`;
   SC.OFF = false;
   SC.off = () => !!SC.OFF || (UI.set && UI.set.sceneCard === false);
   const esc = s => UI.esc(String(s == null ? '' : s));
@@ -198,10 +201,10 @@
     if (ch && ch.label) {
       const line = el(doc, 'div', 'sc-chose');
       line.innerHTML = `<span class="sc-key" aria-hidden="true">${esc(ch.vi + 1)}</span><span class="sc-chose-t"><span class="sc-vh">You chose: </span>${esc(ch.label)}</span>` +
-        (ok === true || ok === false ? `<span class="sc-verdict ${ok ? 'sc-ok' : 'sc-fail'}">${ok ? 'Success' : 'Failed'}${ch.odds != null && SC.digits() ? ` <span class="sc-verdict-n">at ${esc(ch.odds)}%</span>` : ''}</span>` : '');
+        (ok === true || ok === false ? SC.seal(ok) + `<span class="sc-verdict ${ok ? 'sc-ok' : 'sc-fail'}">${ok ? 'Success' : 'Failed'}${ch.odds != null && SC.digits() ? ` <span class="sc-verdict-n">at ${esc(ch.odds)}%</span>` : ''}</span>` : '');
       wrap.appendChild(line);
     } else if (ok === true || ok === false) {
-      wrap.appendChild(el(doc, 'div', 'sc-chose', `<span class="sc-verdict ${ok ? 'sc-ok' : 'sc-fail'}">${ok ? 'Success' : 'Failed'}</span>`));
+      wrap.appendChild(el(doc, 'div', 'sc-chose', SC.seal(ok) + `<span class="sc-verdict ${ok ? 'sc-ok' : 'sc-fail'}">${ok ? 'Success' : 'Failed'}</span>`));
     }
     if (result) { result.id = 'sc-res-t'; wrap.appendChild(result); }
     const d = SC.deltasHtml ? SC.deltasHtml(q) : '';

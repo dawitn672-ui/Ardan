@@ -244,7 +244,9 @@
     if (farMemo.has(cid)) return farMemo.get(cid);
     let out = null;
     try {
-      const c = typeof LORE !== 'undefined' && LORE.cultures && LORE.cultures[cid];
+      let c = typeof LORE !== 'undefined' && LORE.cultures && LORE.cultures[cid];
+      // a far people drawn while its lands are closed (the title's vista): the generated data names its land
+      if (!(c && typeof c.land === 'string')) { const D = A.FAR && A.FAR.D; c = D && D.cultures && D.cultures[cid] || c; }
       const land = c && typeof c.land === 'string' ? FAR_LAND[c.land] : null;
       if (land) {
         const own = FAR_CULT[cid] || {};

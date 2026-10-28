@@ -220,7 +220,7 @@
     const k = met.length;
     return `${L.t} is closed: ${k === 0 ? 'none of its aims met' : k === L.aims.length ? 'every aim met' : `${k} of ${L.aims.length} aims met`}${L.full ? ', and set down among your deeds' : ''}.`;
   };
-  CH.aimsText = c => c.aims.slice(0, 2).map(a => a.l).join('; ') + (c.aims[2] ? '; and either ' + c.aims[2].l.toLowerCase() + (c.alt ? ' or ' + c.alt.l.toLowerCase() : '') : '') + '.';
+  CH.aimsText = c => c.aims.slice(0, 2).map((a, i) => (i ? a.l[0].toLowerCase() + a.l.slice(1) : a.l)).join('; ') + (c.aims[2] ? '; and either ' + c.aims[2].l.toLowerCase() + (c.alt ? ' or ' + c.alt.l.toLowerCase() : '') : '') + '.';
 
   // ---- on screen (pure: reads the person, draws nothing) --------------------------------------------------------------
   CH.card = function (p) {
@@ -228,6 +228,7 @@
     if (CH.OFF || !c || !p.alive) return '';
     const done = c.aims.filter(a => a.d != null).length;
     return `<section class="card chp-card" aria-labelledby="chp-h"><div class="row"><span class="tag">Chapter ${esc(CH.ORD[c.n - 1] || c.n)}</span><b id="chp-h" class="grow chp-t">${esc(c.t)}</b><span class="tiny muted">since ${esc(c.y0)} · ${done} of ${c.aims.length}</span></div>` +
+      (() => { const nx = c.aims.find(a => a.d == null); return nx ? `<div class="chp-next tiny">Next: ${esc(nx.l)}</div>` : ''; })() +
       `<ul class="chp-aims">${c.aims.map(a => `<li class="${a.d != null ? 'chp-done' : ''}"><span class="chp-tick" aria-hidden="true">${a.d != null ? '✓' : '○'}</span><span class="${a.d != null ? 'chp-met' : ''}">${esc(a.l)}</span>${a.d != null ? `<span class="sc-vh"> (met in ${esc(a.d)})</span>` : ''}</li>`).join('')}</ul></section>`;
   };
   const life = UI.TAB && UI.TAB.life;
@@ -238,6 +239,12 @@
       const s = CH.card(pc || A.pc());
       if (!s) return h;
       const at = h.indexOf('<section class="card lf-amb');
+      // on a phone the Life page is one column under the thumb: the chapter rides inside the ambition card, which
+      // 90-fold keeps folded to its title line there, so the page is no longer for it
+      if (at >= 0 && UI.isPhone && UI.isPhone()) {
+        const end = h.indexOf('</section>', at);
+        if (end > at) return h.slice(0, end) + s.replace('<section class="card chp-card"', '<section class="chp-card chp-in-amb"') + h.slice(end);
+      }
       if (at >= 0) return h.slice(0, at) + s + h.slice(at);
       const w = h.indexOf('<section class="card whatnow"');
       return w >= 0 ? h.slice(0, w) + s + h.slice(w) : s + h;
@@ -333,7 +340,10 @@
 .chp-book{margin:8px 0 14px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
 .chp-book h4{margin:0 0 6px}
 .chp-list{margin:2px 0 8px 18px;padding:0;font-size:var(--t-small,13px)}
-.chp-bt{font-family:var(--f-display,inherit)}`;
+.chp-bt{font-family:var(--f-display,inherit)}
+.chp-next{display:none}
+.chp-in-amb{margin:6px 0 0;padding:6px 0 0;border-left:0;border-top:1px solid var(--line)}
+@media (max-width:760px){.chp-card{padding:4px 8px;margin-bottom:4px}.chp-aims{display:none}.chp-next{display:block;color:var(--ink-2);margin-top:2px}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('chp-style')) return; const s = document.createElement('style'); s.id = 'chp-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();

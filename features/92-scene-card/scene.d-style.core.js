@@ -135,6 +135,10 @@ ${C} .sc-chose-t{flex:1 1 auto;min-width:0}
 ${C} .sc-verdict{flex:none;display:inline-flex;align-items:baseline;gap:7px;height:26px;padding:0 12px 0 10px;transform:skewX(-8deg);transform-origin:50% 50%;
   font-family:var(--f-impact,"Dela Gothic One",sans-serif);font-size:var(--t-small,13px);font-weight:400;line-height:26px;letter-spacing:.06em;text-transform:uppercase}
 ${C} .sc-verdict.sc-ok{color:var(--ok);background:var(--ok-tint);box-shadow:inset 0 -2px 0 var(--ok)} ${C} .sc-verdict.sc-fail{color:var(--danger);background:var(--danger-tint);box-shadow:inset 0 -2px 0 var(--danger)}
+${C} .sc-seal{flex:none;width:30px;height:30px;display:inline-grid;margin-right:-4px;transform:rotate(-8deg)}
+${C} .sc-seal svg{width:100%;height:100%;display:block}
+${C} .sc-seal rect{fill:#c23c27} ${C} .sc-seal .sc-seal-in{fill:none;stroke:#f8f1e2;stroke-width:1.4} ${C} .sc-seal path{fill:none;stroke:#f8f1e2;stroke-width:2.6;stroke-linecap:square}
+${C} .sc-seal.sc-fail rect{fill:#1b1730} ${C} .sc-seal.sc-fail .sc-seal-in{stroke:#ff8a73} ${C} .sc-seal.sc-fail path{stroke:#ff8a73}
 ${C} .sc-verdict-n{font-family:var(--f-ui);letter-spacing:0;text-transform:none;font-weight:600;font-size:var(--t-small,13px)}
 ${C} .sc-result > .result{margin:0;padding:12px 16px;border:0;border-left:3px solid var(--accent);border-radius:var(--r-s,6px);
   background:linear-gradient(90deg,var(--accent-tint),transparent 75%),var(--raised);font-family:var(--f-prose,Georgia,serif);font-size:var(--t-prose,15px);line-height:var(--lh-prose,1.53);color:var(--ink);white-space:pre-line}
@@ -237,6 +241,8 @@ ${full(`
 ${M}.sc-enter{animation:scTurn 420ms var(--ease-enter,ease-out) both!important;transform-origin:0 50%}
 ${M}.sc-enter .sc-vig{animation:scWipe 620ms cubic-bezier(.6,.05,.25,1) 60ms both!important}
 ${M}.sc-enter .sc-vig::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;z-index:3;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,231,176,.35) 70%,transparent);animation:scBrush 620ms cubic-bezier(.6,.05,.25,1) 60ms both!important}
+@keyframes scSeal{0%{opacity:0;transform:rotate(-24deg) scale(2.1)}55%{opacity:1;transform:rotate(-6deg) scale(.9)}75%{transform:rotate(-9deg) scale(1.04)}100%{opacity:1;transform:rotate(-8deg)}}
+${M}.sc-land .sc-seal{animation:scSeal 380ms cubic-bezier(.3,1.4,.5,1) 40ms both!important}
 ${M}.sc-land .sc-verdict{position:relative}
 ${M}.sc-land .sc-verdict::after{content:"";position:absolute;inset:-5px -7px;border:2px solid currentColor;border-radius:3px;pointer-events:none;animation:scRing 560ms ease-out 230ms both!important}
 ${M}.sc-land{animation:scThump 260ms var(--ease-snap,ease-out) 250ms both!important}

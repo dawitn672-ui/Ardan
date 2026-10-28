@@ -14,7 +14,14 @@
   if (UI.set.inkMap == null) UI.set.inkMap = true;
   if (UI.set.banners == null) UI.set.banners = true;
   const INK = '#2b1d10', VEL = '#ece0c4', SHADE = '#d6c39b', VERM = '#9e2b1b', GOLD = '#b98a2a', LAPIS = '#2f4a7a', VERD = '#4d7456';
-  const SEA = '#dcd2b4';                       // the sea is the same vellum, a shade darker under its ruling
+  // the sea (cycle 2, brief §7.3): a Prussian-blue bokashi, deep offshore and stepping lighter to the coast, each step
+  // edged with a pale ripple, as the sea is cut in a colour woodblock. IM.SEA_STYLE 'vellum' keeps the old ruled vellum
+  const SEA = '#dcd2b4';                       // the vellum sea (IM.SEA_STYLE 'vellum')
+  IM.SEA_STYLE = 'bokashi';
+  IM.SEA_DEEP = '#173063';
+  IM.SEA_STEPS = [[1, '#1f3f7a'], [.72, '#2c548f'], [.48, '#3d6ba8'], [.26, '#5f8fc8']];   // [share of the coast band, colour]
+  const seaB = () => IM.SEA_STYLE !== 'vellum';
+  const SEAf = () => (seaB() ? IM.SEA_DEEP : SEA);
   // The frame comes from MAP (99-far-lands sets MAP.KW, MAP.KH and MAP.ZREF; without it the world as written, 7,000 x
   // 4,500 km). Zoom is a scale: a view ZREF km wide is zoom 1, in any frame. Levels below 0 exist only in a frame larger
   // than the world as written, whose whole view is coarser than level 0.
@@ -265,7 +272,10 @@
       }
       case 'wave': {
         c.beginPath(); c.moveTo(X - z * 0.4, Y); c.quadraticCurveTo(X - z * 0.2, Y - z * 0.2, X, Y); c.quadraticCurveTo(X + z * 0.2, Y - z * 0.2, X + z * 0.4, Y);
-        c.strokeStyle = 'rgba(43,29,16,.6)'; c.lineWidth = lw * 0.7; c.stroke(); c.strokeStyle = INK; c.lineWidth = lw;
+        c.strokeStyle = seaB() ? 'rgba(200,222,255,.5)' : 'rgba(43,29,16,.6)'; c.lineWidth = lw * 0.7; c.stroke();
+        // on the blue sea the mark is a seigaiha: three nested arcs
+        if (seaB()) { for (const k of [0.55, 0.32]) { c.beginPath(); c.arc(X, Y + z * 0.1, z * k, Math.PI * 1.08, Math.PI * 1.92); c.stroke(); } }
+        c.strokeStyle = INK; c.lineWidth = lw;
         break;
       }
     }
@@ -317,9 +327,9 @@
     const cv = mkCanvas(TILE);
     const c = cv.getContext('2d');
     const up = Math.pow(1.13, L);         // lines thicken a little as the map grows
-    c.fillStyle = SEA; c.fillRect(0, 0, TILE, TILE);
-    // the sea is ruled, like the woodcut sky
-    c.strokeStyle = opaque(0.3); c.lineWidth = 0.8; c.beginPath();
+    c.fillStyle = SEAf(); c.fillRect(0, 0, TILE, TILE);
+    // the sea is ruled, like the woodcut sky (pale hairlines on the blue)
+    c.strokeStyle = seaB() ? 'rgba(168,200,255,.09)' : opaque(0.3); c.lineWidth = 0.8; c.beginPath();
     for (let y = 2; y < TILE; y += 5) { c.moveTo(0, y + 0.5); c.lineTo(TILE, y + 0.5); }
     c.stroke();
     c.setTransform(lp, 0, 0, lp, -x0 * lp, -y0 * lp);
@@ -331,11 +341,21 @@
     if (coast.length) {
       const CP = pathOf(coast);
       // clear the ruling near the shore, then the water lines: each wide ink stroke is cut back by a narrower paper one
-      c.strokeStyle = SEA; c.lineWidth = 2 * (R3 + 3) / lp; c.stroke(CP);
-      const rings = [[R3, 0.42, 0.75], [7.5 * up, 0.6, 0.85], [3.8 * up, 0.78, 0.95]];
-      for (const [r, a, w] of rings) {
-        c.strokeStyle = opaque(a); c.lineWidth = (2 * r + w) / lp; c.stroke(CP);
-        c.strokeStyle = SEA; c.lineWidth = (2 * r - w) / lp; c.stroke(CP);
+      if (seaB()) {
+        // the bokashi: from the outer step in, a pale ripple at the step's edge, then the step's colour inside it
+        const RB = (R3 + 3) * 2.2;
+        for (const [k, col] of IM.SEA_STEPS) {
+          const r = RB * k;
+          c.strokeStyle = 'rgba(214,230,255,.32)'; c.lineWidth = (2 * r + 0.9) / lp; c.stroke(CP);
+          c.strokeStyle = col; c.lineWidth = (2 * r - 0.9) / lp; c.stroke(CP);
+        }
+      } else {
+        c.strokeStyle = SEA; c.lineWidth = 2 * (R3 + 3) / lp; c.stroke(CP);
+        const rings = [[R3, 0.42, 0.75], [7.5 * up, 0.6, 0.85], [3.8 * up, 0.78, 0.95]];
+        for (const [r, a, w] of rings) {
+          c.strokeStyle = opaque(a); c.lineWidth = (2 * r + w) / lp; c.stroke(CP);
+          c.strokeStyle = SEA; c.lineWidth = (2 * r - w) / lp; c.stroke(CP);
+        }
       }
     }
     // the land
@@ -463,7 +483,7 @@
     if (!IM.on() || !A.S || !A.S.prov || !A.S.prov.length) return false;
     try {
       buildGeo();
-      ctx.save(); ctx.fillStyle = SEA; ctx.fillRect(0, 0, W, H); ctx.restore();
+      ctx.save(); ctx.fillStyle = SEAf(); ctx.fillRect(0, 0, W, H); ctx.restore();
       drawTiles(ctx, W, H, wholeView(W, H, v), 'g');
       return true;
     } catch (e) { if (typeof console !== 'undefined') console.error(e); return false; }

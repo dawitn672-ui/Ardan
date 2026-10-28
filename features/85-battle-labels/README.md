@@ -9,3 +9,11 @@
 **Test.** `blNoOverlap` draws the tooltip suite's 3,000-a-side battle in each of its views. No two labels may overlap, and the state and the random stream must be unchanged.
 
 **Cycle 1 (visual I3).** `m-field.core.js` and patch `BF-FIELD`: with the colour prints on, the field is a woodblock print (sky band in the battle's hour, ridges, lit ground), units are banner masses (pikes, horses, bows under a pole in the realm's colour), field labels are counts with the full name on hover, one caption per wing, and the end is a small cartouche with the VICTORY or DEFEAT cut-in (`bfPrint`). Not done: clash flashes and move arrows.
+
+**Cycle 2 (lane G, `n-motion.core.js`; the battle screen's look only, lane WD owns its engine).** Over the field, in the canvas's own coordinates:
+- **Intent:** for each wing of each side, an arrow for advance or charge, a reversed one for withdraw, a shield for hold, from the unit's own order (`u.next`, when 9997 provides it) or else from what the field shows; drawn in with the ink stroke on a new pulse.
+- **Clash flashes** where two wings meet, sized by the men who fell there since the last pulse; **smoke** from the clash and **dust** behind charging horse.
+- **Standards** at the rear of each wing that sway for three beats of a pulse, then stop.
+- **The camera** frames the decisive wing (where most fell, or a side broke): the canvas is redrawn from its own picture, eased in to 1.16× on that wing, held, and eased back; the wing is named in a skewed caption.
+
+The men of each unit at the last pulse are kept in a WeakMap keyed by the battle, never in `A.S`; puffs hash the battle and pulse. Reduced: still marks, no camera; Off: no animation. `bfMotion`.

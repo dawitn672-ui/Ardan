@@ -19,21 +19,21 @@ export default {
       const m = JSON.parse(JSON.stringify(pc.mark));
       UI.tab = 'life'; UI.render();
       const card = document.querySelector('#tabbody .id-mark'), coat = card && card.querySelector('svg.id-coat[data-ord="chevron"]');
-      // found a house: the heralds register the device as the house's arms, and every house chip draws it
-      pc.fame = 30; pc.coin = 2000;
-      A.decide ? A.decide('found_house', 'Wolfmoor') : A.DEC.found_house.run(pc, 'Wolfmoor');
-      const h = A.S.houses[pc.house];
-      UI.render();
-      const chip = document.querySelector(`[data-v="house:${pc.house}"] svg.id-coat`);
-      // a change made now goes to the house
-      A.idSetArms('ch', 'bear');
       // the journal replays the arms
       T.play(1);
       const want = T.hash(JSON.parse(A.serialize()));
       const J = JSON.parse(JSON.stringify(A.J));
       const rep = A.replay(J);
       const same = T.hash(JSON.parse(A.serialize())) === want;
-      return { designer, swatches, prevOrd: prev && prev.getAttribute('data-ord'), m, card: !!card, coat: !!coat, house: h && { colors: h.colors, charge: h.charge, ord: h.ord, f2: h.f2, words: h.words }, chip: !!chip, bear: (A.S.houses[A.pc().house] || {}).charge, rep: rep && (rep.ok !== false), why: rep && (rep.why || rep.errors && rep.errors[0]), same };
+      // found a house: the heralds register the device as the house's arms, and every house chip draws it
+      const pc1 = A.pc(); pc1.fame = 30; pc1.coin = 2000;
+      A.decide('found_house', 'Wolfmoor');
+      const h = A.S.houses[pc1.house];
+      UI.render();
+      const chip = document.querySelector(`[data-v="house:${pc1.house}"] svg.id-coat`);
+      // a change made now goes to the house
+      A.idSetArms('ch', 'bear');
+      return { designer, swatches, prevOrd: prev && prev.getAttribute('data-ord'), m, card: !!card, coat: !!coat, house: h && { colors: h.colors, charge: h.charge, ord: h.ord, f2: h.f2, words: h.words }, chip: !!chip, bear: (A.S.houses[pc1.house] || {}).charge, rep: rep && (rep.ok !== false), why: rep && (rep.why || rep.errors && rep.errors[0]), same };
     });
     const ok = r.designer && r.swatches > 40 && r.prevOrd === 'chevron' && r.m.f === 'azure' && r.m.ch === 'wolf' && r.m.ord === 'chevron' && r.m.words === 'Hold bFastb' &&
       r.card && r.coat && r.house && r.house.ord === 'chevron' && r.house.colors[0] === '#2f5aa8' && r.house.words === 'Hold bFastb' && r.chip && r.bear === 'bear' && r.same;
