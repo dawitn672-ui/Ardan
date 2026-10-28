@@ -207,9 +207,11 @@ export default {
       const on = run(true);
       // the firm signal: the monthly roll draws the probe at its weight (5, against 1 for most events)
       A.newGame({ seed: 6500, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
-      const pc = A.pc(), ev0 = JSON.stringify(pc.flags.ev || {}), rec0 = JSON.stringify(A.S.evRecent || {}), share = { draws: 0, probe: 0, top: 0 }, cnt = {};
+      const pc = A.pc(), ev0 = JSON.stringify(pc.flags.ev || {}), rec0 = JSON.stringify(A.S.evRecent || {}), pace0 = JSON.stringify(A.S.pace || null), share = { draws: 0, probe: 0, top: 0 }, cnt = {};
       for (let i = 0; i < 1500; i++) {
         pc.flags.ev = JSON.parse(ev0); A.S.evRecent = JSON.parse(rec0); A.S.queue = [];
+        // 81's first-year budget (S.pace.fy) counts each draw; reset it too, so every roll is from the same state
+        if (pace0 !== 'null') A.S.pace = JSON.parse(pace0); else delete A.S.pace;
         A.rollEventsN(pc, 1);
         for (const q of A.S.queue) if (q.type === 'event') { share.draws++; cnt[q.ev] = (cnt[q.ev] || 0) + 1; }
       }
