@@ -90,10 +90,10 @@ POL.round = function (r, E, C) {
 };
 const countOf = (v, C) => C.map(c => [c, Object.values(v).filter(x => x === c.id).length]).sort((a, b) => b[1] - a[1] || elder(a[0], b[0]));
 // the election: electors, candidates, rounds; returns {winner, rounds, ...} and records it
-POL.election = function (r, why) {
+POL.election = function (r, why, opt) {
   POL.init(r);
   const E = POL.electorsOf(r, true);
-  const C = POL.candsOf(r, E);
+  const C = opt && opt.cands ? opt.cands.filter(live).slice(0, POL.ELECT.cands) : POL.candsOf(r, E);
   if (!E.length || !C.length) return null;
   const rounds = [];
   let v = POL.round(r, E, C), tally = countOf(v, C), win = null, split = false;
@@ -210,3 +210,33 @@ POL.afterYear = function (r) {
   if (baseAfter) baseAfter.apply(this, arguments);
   POL.seasonYear(r);
 };
+
+// 991's Sunrise election (1106, the Spear-Marshal's term): when the forty households elect, they elect through this
+// machinery, the Harovi claimant against the Spear-Marshal and the realm's other great names, every vote named
+const FW = A.FW;
+if (FW && typeof FW.election === 'function') {
+  const baseFw = FW.election;
+  FW.election = function (me) {
+    if (!POL.on || !me) return baseFw.apply(this, arguments);
+    try {
+      const ka = A.P(me.ruler);
+      const h = A.genNoble(me.id, 'noble', null, A.ri(34, 56), 'M');
+      h.sur = 'Harovi'; h.surMode = 'house'; h.skills.command = Math.max(h.skills.command || 0, 45); h.fame = Math.max(h.fame || 0, 40);
+      const kname = ka ? A.fullName(ka, false) : 'The Spear-Marshal';
+      if (A.chance(clamp(0.25 + (me.legit || 50) / 250 + (me.stability || 50) / 400, 0.3, 0.7))) {
+        me.gov = 'hereditary';
+        A.news(`${kname} marries the Ember Queen and keeps the Spear-Marshal's staff for his house. The Harovi household calls it theft.`, 'crown');
+        if (A.successionWar) A.successionWar(me, h);
+        return;
+      }
+      POL.init(me);
+      const others = POL.candsOf(me, POL.electorsOf(me, false)).filter(p => p !== h && p !== ka);
+      if (ka && ka.alive) { ka.ruler = null; }
+      const rec = POL.election(me, 'sunrise', { cands: [h].concat(ka && ka.alive ? [ka] : [], others).slice(0, POL.ELECT.cands) });
+      if (ka && ka.alive) ka.ruler = me.id;
+      const w = rec && A.P(rec.winner);
+      if (w && w !== ka) { A.makeRuler(w, me.id); me.legit = 60; me.pol.came = 'elected'; me.pol.cameSet = A.S.year; me.pol.ru = me.ruler; me.pol.since = A.S.year; A.news(`The forty households of ${me.short} give the Spear-Marshal's staff to ${A.fullName(w, false)}. ${kname} goes home to his estates.`, 'crown'); }
+      else A.news(`The forty households of ${me.short} keep ${kname} as Spear-Marshal for another term.`, 'crown');
+    } catch (e) { console.error('[po] sunrise', e); }
+  };
+}

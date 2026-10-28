@@ -227,7 +227,7 @@
     const c = p && p.chap && p.chap.cur;
     if (CH.OFF || !c || !p.alive) return '';
     const done = c.aims.filter(a => a.d != null).length;
-    return `<section class="card chp-card" aria-labelledby="chp-h"><div class="row"><span class="tag">Chapter ${esc(CH.ORD[c.n - 1] || c.n)}</span><b id="chp-h" class="grow chp-t">${esc(c.t)}</b><span class="tiny muted">since ${esc(c.y0)} · ${done} of ${c.aims.length}</span></div>` +
+    return `<section class="card chp-card" aria-labelledby="chp-h" data-tt="${esc('Aims: ' + c.aims.map(a => (a.d != null ? '✓ ' : '') + a.l).join('; ') + '.')}"><div class="row"><span class="tag">Chapter ${esc(CH.ORD[c.n - 1] || c.n)}</span><b id="chp-h" class="grow chp-t">${esc(c.t)}</b><span class="tiny muted">since ${esc(c.y0)} · ${done} of ${c.aims.length}</span></div>` +
       (() => { const nx = c.aims.find(a => a.d == null); return nx ? `<div class="chp-next tiny">Next: ${esc(nx.l)}</div>` : ''; })() +
       `<ul class="chp-aims">${c.aims.map(a => `<li class="${a.d != null ? 'chp-done' : ''}"><span class="chp-tick" aria-hidden="true">${a.d != null ? '✓' : '○'}</span><span class="${a.d != null ? 'chp-met' : ''}">${esc(a.l)}</span>${a.d != null ? `<span class="sc-vh"> (met in ${esc(a.d)})</span>` : ''}</li>`).join('')}</ul></section>`;
   };
@@ -343,7 +343,7 @@
 .chp-bt{font-family:var(--f-display,inherit)}
 .chp-next{display:none}
 .chp-in-amb{margin:6px 0 0;padding:6px 0 0;border-left:0;border-top:1px solid var(--line)}
-@media (max-width:760px){.chp-card{padding:4px 8px;margin-bottom:4px}.chp-aims{display:none}.chp-next{display:block;color:var(--ink-2);margin-top:2px}}`;
+@media (max-width:760px),(max-height:860px){.chp-card{padding:4px 8px;margin-bottom:4px}.chp-aims{display:none}.chp-next{display:block;color:var(--ink-2);margin-top:2px}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('chp-style')) return; const s = document.createElement('style'); s.id = 'chp-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();

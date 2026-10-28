@@ -232,8 +232,8 @@
     const map = UI.storyView === 'map', c = AT.counts(pc);
     const road = A.JR && A.JR.statusLine ? A.JR.statusLine(pc) : '';
     return `<div class="at-bar" role="tablist" aria-label="Story or map"><span class="seg at-seg">` +
-      `<button class="small${map ? '' : ' primary'}" role="tab" aria-selected="${!map}" data-a="atView" data-v="story">Story</button>` +
-      `<button class="small${map ? ' primary' : ''}" role="tab" aria-selected="${map}" data-a="atView" data-v="map">Map</button></span>` +
+      `<button class="small${map ? '' : ' on'}" role="tab" aria-selected="${!map}" data-a="atView" data-v="story">Story</button>` +
+      `<button class="small${map ? ' on' : ''}" role="tab" aria-selected="${map}" data-a="atView" data-v="map">Map</button></span>` +
       `<span class="at-sum tiny muted">${road ? esc(road) : `${esc(A.provName(AT.where(pc)))} · seen ${c.seen} of ${A.fmt(c.total)} places`}</span></div>`;
   };
   AT.mapHtml = function (pc) {
@@ -433,7 +433,7 @@
     st.textContent = [
       '.at-bar{display:flex;align-items:center;gap:10px;padding:6px 10px 0;flex:none;min-width:0}',
       '.at-bar .seg button{min-height:28px;padding:0 12px}',
-      '.at-bar .seg .primary,.jr-mode .primary{color:#1a140c}',
+      '.jr-mode .primary{color:#1a140c}',
       '.at-sum{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}',
       '.at-map{position:relative;flex:1 1 auto;min-height:220px;margin:8px 8px 0;border-radius:var(--r-m,8px);overflow:hidden;border:1px solid var(--line,#444)}',
       '.at-map canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}',

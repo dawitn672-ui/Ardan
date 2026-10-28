@@ -59,8 +59,8 @@ A.defEvents([
     text: 'The rolls of {shire} come in at the quarter: hearth money, tolls, fines. Your clerk shows you where the numbers could be smaller and nobody the wiser. Every governor before you did it. One of them was hanged for it.',
     choices: [
       { t: 'Send every sun to the crown', r: 'You seal the rolls as they are and send them on. The crown never thanks a governor for honesty, but the Treasurer has no reason to look.', fx: { poGraft: 0, honor: 2 } },
-      { t: 'Keep a little back, as is customary', r: 'A few in a hundred stay in {shire}. The clerk smiles and makes the numbers agree.', fx: { poGraft: 4, honor: -1 } },
-      { t: 'Keep a great deal back', r: 'A tenth of the shire\'s tax goes into your strongbox. It is a fine strongbox. The audit, when it comes, will be finer.', fx: { poGraft: 10, honor: -3 } },
+      { t: 'Keep a little back, as is customary', r: 'A few in a hundred stay in {shire}. The clerk smiles and makes the numbers agree.', fx: { poGraft: 4, coin: 10, honor: -1 } },
+      { t: 'Keep a great deal back', r: 'A tenth of the shire\'s tax goes into your strongbox. It is a fine strongbox. The audit, when it comes, will be finer.', fx: { poGraft: 10, coin: 30, honor: -3 } },
     ] },
   // queued when a Treasurer's audit finds the player's graft (POL.audit)
   { id: 'po_audit', title: 'The Treasurer\'s men', trigger: true, cool: 1,
@@ -198,8 +198,8 @@ A.defEvents([
     setup: (p, ctx) => { const P = POX(), o = P && P.pcOath(p), ru = o && A.P(o.r.ruler); if (!o || !ru || !(A.favorsOf && A.favorsOf(p, ru.id) > 0) || o.c.rights.length >= 3) { ctx.skip = true; return; } ctx.pid = ru.id; ctx.rid = o.r.id; },
     text: '{them} owes you a favour, and both of you know it. A lawyer at court says the time to ask for a right is when a debt is fresh: a right in the charter outlives the crown that grants it.',
     choices: [
-      { t: 'Ask for a right, and spend the favour', r: 'The charter is redrawn and sealed. The favour is spent. Your house holds something now that a new crown cannot easily take.', fx: { poOath: 'right', owed: -1 } },
-      { t: 'Ask for a lighter share instead', r: 'The share of your rents is lowered a step. The favour is spent, and your steward smiles for a week.', fx: { poOath: 'lower', owed: -1 } },
+      { t: 'Ask for a right, and spend the favour', r: 'The charter is redrawn and sealed. The favour is spent. Your house holds something now that a new crown cannot easily take.', fx: { poOath: 'right', owed: -1, fame: 1 } },
+      { t: 'Ask for a lighter share instead', r: 'The share of your rents is lowered a step. The favour is spent, and your steward smiles for a week.', fx: { poOath: 'lower', owed: -1, happy: 1 } },
       { t: 'Keep the favour for a harder day', r: 'You let it lie. Favours keep, mostly, as long as those who owe them do.', fx: { wil: 1 } },
     ] },
   // queued at a second breach of the oath in ten years: the crown moves to take the land
@@ -345,5 +345,30 @@ A.defEvents([
       { t: 'Smuggle salt from over the border', check: { s: 'stealth', s2: 'ins', d: 55 },
         win: { r: 'Six mule-loads a month by the hill road. You make money and friends.', fx: { coin: 50, honor: -1 } },
         lose: { r: 'The salt-master\'s men are waiting at the hill road. The fine is heavy.', fx: { coinPct: -20, fame: -1 } } },
+    ] },
+  // ------------------------------------------------------------------------------------------------ fiefs
+  // queued when forfeit lands are to be granted and the player stands for them or has a say (POL.openFief)
+  { id: 'po_fief_vote', title: 'Forfeit lands', trigger: true, cool: 2,
+    cond: (p, C) => C.adult(p),
+    setup: (p, ctx) => { const r = A.realm(ctx.rid); if (!r || !r.pol || !r.pol.fief || !ctx.houseT) ctx.skip = true; ctx.role = ctx.cand ? 'Your name is one of three before the crown' : 'The council will be asked whom it backs'; },
+    text: 'The heads of {houseT} are on spikes over the gate of {realmT}, and half their lands are the crown\'s to give. {role}. For sixty days every lord in the realm remembers who his friends are.',
+    choices: [
+      { t: 'Write to the councillors at once', check: { s: 'diplomacy', s2: 'int', d: 50 },
+        win: { r: 'Your letters go out the same night, and three of them are answered warmly. It is a start.', fx: { fame: 1, skill: { diplomacy: 1 } } },
+        lose: { r: 'Your letters arrive after everyone else\'s, and read like it.', fx: { happy: -1 } } },
+      { t: 'Say nothing, and let the crown decide', r: 'You keep your counsel. A man who does not scramble for a traitor\'s lands is sometimes given them. Sometimes.', fx: { honor: 1 } },
+      { t: 'Ride out to look at the lands', r: 'Good river meadow, a mill, a hall with the roof burned. You come home knowing what they are worth to you.', fx: { int: 1, sta: -1 } },
+    ] },
+  // queued when the player stood for forfeit lands and another got them (POL.closeFief)
+  { id: 'po_passed_over', title: 'Passed over', trigger: true, cool: 3,
+    cond: (p, C) => C.adult(p),
+    setup: (p, ctx) => { if (!aliveP(ctx.pid) || !ctx.houseT) ctx.skip = true; },
+    text: 'The lands of {houseT} go to {them}. The herald reads it out, and {theyHe} accepts with a short speech that thanks everyone but you. Your friends at court are suddenly busy elsewhere.',
+    choices: [
+      { t: 'Congratulate {themHim} in front of the court', r: 'You bow and say the right words. {them} is surprised and, later, grateful.', fx: { them: { op: 10 }, happy: -2 } },
+      { t: 'Leave the hall before the feast', r: 'You ride home in the rain. It is noticed, and it is understood.', fx: { them: { op: -6 }, wil: 1 } },
+      { t: 'Ask the crown what you lacked', check: { s: 'etiquette', s2: 'ins', d: 50 },
+        win: { r: 'The answer is honest: renown, and a friend on the council. You know now what to buy.', fx: { int: 1, fame: 1 } },
+        lose: { r: 'The question is taken as a complaint. The crown\'s regard cools.', fx: { fame: -1, happy: -1 } } },
     ] },
 ]);

@@ -22,6 +22,36 @@ const page = await (await browser.newContext()).newPage();
 const errs = []; page.on('pageerror', e => errs.push(String(e).slice(0, 200)));
 await page.goto(pathToFileURL(html).href);
 await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+// --lives: political scenes a decade by start path (noble, merchant, priest, soldier, peasant, ruler), YEARS each
+if (arg('lives')) {
+  const PATHS = { noble: { status: 'noble', realm: 'POL-01' }, merchant: { status: 'merchant', realm: 'POL-04' }, priest: { status: 'peasant', realm: 'POL-03', job: 'clergy' }, soldier: { status: 'peasant', realm: 'POL-01', mil: 4 }, peasant: { status: 'peasant', realm: 'POL-01' }, ruler: { status: 'royal', realm: 'POL-02', ruler: 1 } };
+  const res = {};
+  for (const [name, P0] of Object.entries(PATHS)) for (const seed of SEEDS.slice(0, +arg('lives'))) {
+    const o = await page.evaluate(([seed, P0, YEARS, LANDS]) => {
+      A.newGame({ seed, lands: LANDS, race: 'human', realm: LANDS === 'great' ? (P0.ruler ? 'POL-36' : 'POL-58') : P0.realm, status: P0.status, sex: 'M', startAge: 22 });
+      const pc = A.pc();
+      if (P0.job) { pc.job = { c: 'clergy', r: 3, perf: 50, yrs: 0 }; pc.flags.priest = A.S.year; }
+      if (P0.mil) pc.mil = Object.assign(pc.mil || {}, { rank: P0.mil, xp: 0, realm: pc.realm });
+      if (P0.ruler) A.makeRuler(pc, pc.realm);
+      const y0 = A.S.year, ids = [];
+      const view = A.eventView;
+      A.eventView = function (q) { if (q && !q.view && q.ev) ids.push(q.ev); return view.apply(this, arguments); };
+      const end = y0 + YEARS;
+      for (let k = 0; k < 100000 && A.S.year < end; k++) { A.advance(30); let h, g = 0; while ((h = A.headReady()) && g++ < 300) { if (h.type === 'event') { A.eventView(h); A.eventAuto(); } else A.skipPrompt(); } if (!A.pc() || !A.pc().alive) break; }
+      A.eventView = view;
+      const pol = ids.filter(id => /^po_|^ri_court|^ri_ask/.test(id) || (A.EV[id] && A.EV[id].council)).filter((x, i, a) => true);
+      const uniq = []; let last = null; for (const q of pol) { if (q !== last) uniq.push(q); last = q; }
+      return { years: A.S.year - y0, n: uniq.length, kinds: [...new Set(uniq)].slice(0, 12) };
+    }, [seed, P0, YEARS, LANDS]);
+    (res[name] = res[name] || []).push(o);
+    console.error(`${name} ${seed}: ${o.n} political scenes in ${o.years} years`);
+  }
+  const out = {}; for (const k in res) { const y = res[k].reduce((a, x) => a + x.years, 0), n = res[k].reduce((a, x) => a + x.n, 0); out[k] = { perDecade: +(10 * n / Math.max(1, y)).toFixed(2), years: y, kinds: [...new Set(res[k].flatMap(x => x.kinds))] }; }
+  console.log(JSON.stringify(out, null, 1));
+  if (arg('json')) fs.writeFileSync(arg('json'), JSON.stringify(out, null, 1));
+  await browser.close();
+  process.exit(0);
+}
 const runs = [];
 for (const seed of SEEDS) {
   const t0 = Date.now();

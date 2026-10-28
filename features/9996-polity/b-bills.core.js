@@ -24,7 +24,7 @@ for (const g of POL.NEW) {
     const k = `po_${g}_${to}`;
     NEWK[k] = { g, to };
     if (RI.PUSH) RI.PUSH[k] = { t: `${name.charAt(0).toLowerCase() + name.slice(1)} (${L.n.toLowerCase()})`, law: g, po: true,
-      ok: r => { const cur = POL.pos(r, g); return cur !== to && (!L.ord || Math.abs(cur - to) === 1); } };
+      ok: r => { if (!POL.on) return false; const cur = POL.pos(r, g); return cur !== to && (!L.ord || Math.abs(cur - to) === 1); } };
   });
 }
 POL.NEWK = NEWK;

@@ -19,7 +19,11 @@ POL.clamp = clamp; POL.r2 = r2;
 // a stable 0..1 number from parts: varies the starting laws and breaks ties without touching the random stream
 const hash = (...a) => { let h = 2166136261; const s = a.join('|'); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return ((h >>> 0) % 10007) / 10007; };
 POL.hash = hash;
-POL.on = true;           // the whole Polity; tests may turn it off to compare
+// the whole Polity. POL.ON turns it off everywhere; POL.KNOWN = false keeps the Known World as it was before this
+// feature (a Great Continent game only), if the integrator wants that gate
+POL.ON = true; POL.KNOWN = true;
+const farGame = () => !!(A.FAR && A.FAR.active);
+Object.defineProperty(POL, 'on', { get: () => POL.ON && (POL.KNOWN || farGame()), configurable: true });
 POL.stats = { made: 0, filled: 0, bills: 0, passed: 0, failed: 0, elections: 0, votes: 0, laws2: 0 };
 
 // ---------------------------------------------------------------- the estates

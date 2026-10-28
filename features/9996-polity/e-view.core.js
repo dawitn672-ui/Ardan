@@ -184,7 +184,7 @@ UI.polityView = function (pc, r) {
   if (!r || !r.pol) return '<div class="po-wrap"><div class="po-small muted">The Polity sits at the next New Year.</div></div>';
   const bill = POL.billCard(r, pc);
   const parts = r.pol.bill ? [bill, POL.crownCard(r)] : [POL.crownCard(r), bill];
-  parts.push(POL.electCard(r, pc), POL.councilCard(r, pc), POL.estatesCard(r, pc), POL.factionsCard(r, pc), POL.lordsCard(r, pc), POL.officesCard(r), POL.placeCard(r, pc));
+  parts.push(POL.fiefCard ? POL.fiefCard(r, pc) : '', POL.electCard(r, pc), POL.councilCard(r, pc), POL.estatesCard(r, pc), POL.factionsCard(r, pc), POL.lordsCard(r, pc), POL.officesCard(r), POL.placeCard(r, pc));
   return `<div class="po-wrap">${parts.filter(Boolean).join('')}</div>`;
 };
 
