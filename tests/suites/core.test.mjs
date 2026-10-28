@@ -59,7 +59,14 @@ export default {
     }
     const person = await pg.$('[data-a="ov"]');
     // the mouse is parked first: a hover tooltip under it would take the first Escape (WCAG 1.4.13), not the person view
-    if (person) { await person.click().catch(() => {}); await pg.waitForTimeout(200); await pg.mouse.move(1, 1); await pg.waitForTimeout(100); await pg.keyboard.press('Escape'); }
+    // a hover tip opened while the pointer rested on the view closes TT.HOVER_CLOSE (320 ms) after it leaves; until then
+    // it takes the first Escape, so wait for the tips to close rather than for a fixed time (a slow runner: CI run 73)
+    if (person) {
+      await person.click().catch(() => {}); await pg.waitForTimeout(200); await pg.mouse.move(1, 1);
+      await pg.waitForFunction(() => !(UI.TT && UI.TT.stack && UI.TT.stack.length), null, { timeout: 5000 }).catch(() => {});
+      await pg.keyboard.press('Escape');
+      await pg.waitForFunction(() => !UI.ov, null, { timeout: 5000 }).catch(() => {});
+    }
     await pg.click('button:has-text("Play")');
     await pg.waitForTimeout(3000);
     // pause by the control itself (its label is an icon at laptop widths), then wait for the clock to stop: on the Great
