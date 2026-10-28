@@ -258,7 +258,11 @@
   CO.mean = function (d) {
     let m = 0, w = 0;
     for (const b of d.bs || []) for (let ci = 0; ci < b.k.length; ci++) { m += b.k[ci] * b.q[ci]; w += b.k[ci]; }
+    const was = d.mo;
     d.mo = w ? r1(m / w) : 50;
+    // the division's order moves with its cap: men who lose heart lose order, not just its ceiling (otherwise a
+    // shaken division would read as better ordered, org over a lower cap, and break later on the map)
+    if (was != null && was !== d.mo && d.org > 0) d.org *= (K.ORG_LO + K.ORG_K * d.mo / 100) / (K.ORG_LO + K.ORG_K * was / 100);
     return d.mo;
   };
   CO.bMo = b => { let m = 0, w = 0; for (let ci = 0; ci < b.k.length; ci++) { m += b.k[ci] * b.q[ci]; w += b.k[ci]; } return w ? m / w : (b.q[0] || 50); };

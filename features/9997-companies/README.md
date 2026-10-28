@@ -63,6 +63,7 @@ S.coOn, S.coRet (retired names), S.coForY (forage records), P.coDes (deserters b
 - In a fight a company loses 0.3 morale per 1% of its men lost that day; the beaten side loses 15 more at the fight's end.
 - Out of the fight, morale comes back 5 a day towards rest (down 1 a day if above it). At peace it settles at the month.
 - **On the war map:** `A.divMaxOrg` × (0.85 + 0.3 × mean morale / 100), which is ±15% on the organisation cap. At the typical resting morale of 60–65, that is +3 to +5%.
+  - When morale moves, the division's present order moves with the cap (`CO.mean`). Without that, a division losing heart kept its order under a lower cap. It then read as better ordered, and broke later on the map: the opposite of morale.
 
 **Bread, pay and desertion.**
 
@@ -222,6 +223,16 @@ The battalion records themselves are 673 KB on the Great Continent (`coEveryBatt
 **What is left.**
 - The month pass touches every one of the 7,048 records, as the owner's rule asks.
 - A "settled" flag that skips divisions already at rest would save perhaps a third of the day at war. It was not done, because every write to a company's morale would have to clear it, and a missed one would make warm and cold runs differ.
+
+## 44's rank swing (`rankMovesTheFight`, 100 frozen fights)
+
+| Build | Soldier's section | Officer's company | Wrong way |
+| --- | --- | --- | --- |
+| Everything without 9997 (other lanes' work in progress included) | 13 | 20 | **1** (fails) |
+| 9997, before order moved with morale | **9** (fails) | 15 | 0 |
+| 9997, final | 16 | 17 | **2** (fails) |
+
+The test is red without this feature too. The final build puts both layers inside the plan's band of 10–20, with the officer's above the soldier's. The fights that went the wrong way are a good result losing a fight that no result would have won. That is a sign of how chaotic a frozen fight is: a different order changes which division retreats on which day, and so the random stream that follows. It is not a sign that the result pushes the wrong way.
 
 ## Limits
 
