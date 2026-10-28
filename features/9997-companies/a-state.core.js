@@ -809,16 +809,23 @@
   // the daily pass's caches (never in the state): resting values per record, drill per division for 16 days
   const RESTC = new WeakMap(), DRC = new WeakMap();
   CO.touch = b => { if (b) RESTC.delete(b); };
-  function restNow(d, i, dr) {
-    const b = d.bs[i], key = Math.round(b.x * 10) * 1e7 + Math.round(dr * 10) * 1e4 + Math.min(999, d.pay || 0) * 8 + (d.food <= 0 ? 4 : 0) + (d.loc === b.h ? 2 : 0) + (b.vac ? 1 : 0);
+  function restNow(d, i, dr) {   // exact: every input of CO.restVal is compared, field by field
+    const b = d.bs[i], f0 = d.food <= 0, home = d.loc === b.h, vac = !!b.vac, pay = d.pay || 0;
+    let pk = '';
+    if (b.p) for (const sl in b.p) { const q = A.P(b.p[sl]); pk += sl + ':' + (q && q.alive ? A.skill(q, 'command') + (capBold(d, b, i, +sl) ? 'b' : '') : '-') + ';'; }
     let c = RESTC.get(b);
-    if (!c || c.key !== key || c.d !== d || c.i !== i) { c = { key, d, i, v: b.k.map((_, ci) => CO.restVal(d, i, ci, dr)) }; RESTC.set(b, c); }
+    if (!c || c.d !== d || c.i !== i || c.x !== b.x || c.dr !== dr || c.pay !== pay || c.f0 !== f0 || c.home !== home || c.vac !== vac || c.pk !== pk || c.n !== b.k.length) {
+      c = { d, i, x: b.x, dr, pay, f0, home, vac, pk, n: b.k.length, v: b.k.map((_, ci) => CO.restVal(d, i, ci, dr)) };
+      RESTC.set(b, c);
+    }
     return c.v;
   }
-  function drillsNow(d) {
-    const t = (A.S.warClock || 0) >> 4;
+  function drillsNow(d) {   // exact: the same template and the same drill record give the same numbers
+    const codes = CO.codes(d), dr = d.dr;
+    let t = '';
+    if (dr) for (const k in dr) t += k + dr[k] + ';';
     let c = DRC.get(d);
-    if (!c || c.t !== t || c.v.length !== d.bs.length) { c = { t, v: CO.drills(d) }; DRC.set(d, c); }
+    if (!c || c.t !== t || c.codes !== codes || c.v.length !== d.bs.length) { c = { t, codes, v: CO.drills(d) }; DRC.set(d, c); }
     return c.v;
   }
   CO.forage = function (d, P) {

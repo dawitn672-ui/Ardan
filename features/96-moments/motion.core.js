@@ -88,12 +88,12 @@
 
   // ---- memory of the last values (UI state, one life at a time) ------------------------------------------------------
   MOT.mem = new Map();
-  MOT.owner = null;
+  MOT.lifeOf = null;
   const life = () => (A.S ? A.S.pc : null);
   MOT.fresh = function () {
     // a new world, a load or another heir: forget, so nothing moves on the first draw
-    if (MOT.owner && MOT.owner.S === A.S && MOT.owner.pc === life()) return false;
-    MOT.owner = { S: A.S, pc: life() };
+    if (MOT.lifeOf && MOT.lifeOf.S === A.S && MOT.lifeOf.pc === life()) return false;
+    MOT.lifeOf = { S: A.S, pc: life() };
     MOT.mem.clear();
     MOT.lastTab = null;
     return true;
@@ -243,7 +243,7 @@
   ];
   MOT.log = [];
   MOT.after = function () {
-    if (UI.screen !== 'game' || !A.S) { MOT.owner = null; MOT.lastTab = null; return; }
+    if (UI.screen !== 'game' || !A.S) { MOT.lifeOf = null; MOT.lastTab = null; return; }
     const first = MOT.fresh();
     const animate = !first && MOT.mode() === 'full';
     for (const p of MOT.passes) { try { p.run(animate); } catch (e) { console.error('motion ' + p.name, e); } }

@@ -38,7 +38,8 @@ export default {
         UI.ov = null; UI.render(); UI.warRoomOpen();
         for (const z of [1.5, 4, 9]) { try { res[k]['war' + z] = T.hash(T.war(z)); } catch (e) { errs.push('war' + z + ' ' + e.message); } }
         UI.ov = null; UI.render();
-        // the sea under the inked map is ruled vellum, under the release a dark blue
+        // the sea under the inked map is cycle 2's stepped Prussian blue (IM.SEA_STYLE; 'vellum' is the old ruled sea), under
+        // the release a darker, greyer blue
         const c = UI.$('#worldmap'), g = UI.INKMAP.geo(); let sea = -1;
         for (let i = 0; i < g.grid.length && sea < 0; i += 997) if (g.grid[i] < 0 && g.toLand[i] >= 10) sea = i;
         const px = c.getContext('2d').getImageData(Math.floor((sea % g.gw) / g.gw * c.width), Math.floor(Math.floor(sea / g.gw) / g.gh * c.height), 1, 1).data;
@@ -46,11 +47,11 @@ export default {
       }
       const tiles = UI.INKMAP.stats.tiles;
       T.set(true);
-      return { res, errs, tiles };
+      return { res, errs, tiles, seaStyle: UI.INKMAP.SEA_STYLE };
     });
     const on = out.res.on, off = out.res.off, keys = ['world', 'gm1', 'gm3', 'gm8', 'war1.5', 'war4', 'war9'];
     const differ = keys.filter(k => on[k] && off[k] && on[k] !== off[k]).length;
-    const ok = !out.errs.length && on.ground === true && off.ground === false && differ === keys.length && on.sea[0] > 180 && off.sea[2] > off.sea[0];
+    const ok = !out.errs.length && on.ground === true && off.ground === false && differ === keys.length && (out.seaStyle === 'vellum' ? on.sea[0] > 180 : on.sea[2] > on.sea[0] && on.sea.join() !== off.sea.join()) && off.sea[2] > off.sea[0];
     return { ok, detail: `${keys.length} views drawn with the style on and off, ${differ} differ; sea pixel inked ${on.sea.join(',')} vs release ${off.sea.join(',')}; ${out.tiles} tiles drawn${out.errs.length ? '; ERR ' + out.errs.join('; ') : ''}` };
   },
 

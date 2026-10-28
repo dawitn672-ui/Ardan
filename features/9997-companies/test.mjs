@@ -293,4 +293,23 @@ export default {
     if (r.none) return { ok: false, detail: 'no fight found' };
     return { ok: r.pure && r.oob && r.card && r.path && r.escaped, detail: `order of battle ${r.oob}, company card ${r.card}, Path tab ${r.path}, a captain named with markup shows as text ${r.escaped}; drawing changed nothing ${r.pure}` };
   },
+
+  async coCachesExact(pg) {
+    // the daily pass keeps caches beside the state (never in it); a run that saves and loads half way (cold caches)
+    // must reach the same world as one that does not
+    const r = await pg.evaluate(() => {
+      const go = reload => {
+        A.newGame({ seed: 9711, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+        const enemy = A.neighbors('POL-01')[0];
+        A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(A.pc());
+        const step = () => { A.advance(30); let h, k = 0; while ((h = A.headReady()) && k++ < 300) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); } };
+        for (let m = 0; m < 4; m++) step();
+        if (reload) { const s = A.serialize(), rng = A.rngState; A.deserialize(JSON.parse(s)); A.rngState = rng; }
+        for (let m = 0; m < 4; m++) step();
+        return T.hash(JSON.parse(A.serialize())) + ':' + A.rngState;
+      };
+      return { a: go(false), b: go(true) };
+    });
+    return { ok: r.a === r.b, detail: r.a === r.b ? 'the same world with warm and cold caches' : `worlds differ: ${r.a} vs ${r.b}` };
+  },
 };

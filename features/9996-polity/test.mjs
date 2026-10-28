@@ -234,4 +234,23 @@ export default {
     const ok = r.n >= 25 && !r.bad.length && r.max <= 80;
     return { ok, detail: `${r.n} po_ events, ${r.drawn} drawn with a test context, longest ${r.max} words${r.bad.length ? '; BAD ' + r.bad.slice(0, 5).join(', ') : ''}` };
   },
+  // forfeit lands go by the backers' weight; overriding the leader costs its backers' goodwill
+  async poFiefVote(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5001, race: 'human', realm: 'POL-03', status: 'peasant', sex: 'M', startAge: 16 });
+      const P = A.POL, x = P.realms().find(z => A.realmHouses(z.id).filter(h => h.great === false && h.headPid).length >= 3 && z.id !== A.pc().realm);
+      if (!x) return { none: true };
+      const h = A.realmHouses(x.id).filter(P.landed).sort((a, b) => A.houseStrength(b) - A.houseStrength(a))[0];
+      h.headPid = null;
+      const s0 = A.houseStrength(h), F = P.openFief(x, h);
+      if (!F) return { opened: false };
+      const t = P.fiefTally(x), lead = Object.keys(t).sort((a, b) => t[b] - t[a] || String(a).localeCompare(String(b)))[0];
+      const ch = A.chance; A.chance = () => true;
+      let w; try { w = P.closeFief(x); } finally { A.chance = ch; }
+      const wh = w && w.house && A.S.houses[w.house];
+      return { opened: true, cands: F.cands.length, tally: t, lead, won: w && w.id, share: F.share, lost: s0 - A.houseStrength(h), log: (x.pol.log || [])[0] && x.pol.log[0].k };
+    });
+    const ok = r.opened && r.cands >= 1 && r.won === r.lead && r.share > 0 && r.lost >= r.share - 1 && r.log === 'fief';
+    return { ok, detail: r.none ? 'no realm with three lesser houses' : `${r.cands} candidates, weights ${JSON.stringify(r.tally)}; the leader won ${r.won === r.lead}; ${r.share} of the traitor house's strength granted` };
+  },
 };

@@ -171,9 +171,9 @@ A shape the men never drilled is not offered, and the menu says why ("never dril
 
 ## Hooks (all wraps in this folder; no patches, no edits elsewhere)
 
-- **Engine:** `A.divLose` (twice: the split, then the line battle's credit), `A.divRefill`, `A.newDiv`, `A.divRemove`, `A.fightDay`, `A.fightEnd`, `A.divMaxOrg`, `A.wsDay`, `A.wsSetOrder`, `A.newGame`, `A.enlist`, `A.applyFx`.
+- **Engine:** `A.divLose` (twice: the split, then the line battle's credit, which belongs to its fight and lapses when that fight ends), `A.divRefill`, `A.newDiv`, `A.divRemove`, `A.fightDay`, `A.fightEnd`, `A.divMaxOrg`, `A.wsDay`, `A.wsSetOrder`, `A.newGame`, `A.enlist`, `A.applyFx`.
 - **The line battle:** `A.newBattle`, `A.buildUnits`, `A.tfx`, `A.wingClash`, `A.aiPulse`, `A.battleStep`, `A.battleSetTactic`, `A.battleCommitReserve`, `A.battleFinish`.
-- **Screens:** `UI.wrDivPanel`, `UI.wrMyDivCard`, `UI.armyPathCard`, `UI.wrArmyRow`, `UI.battleModalBasic`.
+- **Screens:** `UI.wrDivPanel`, `UI.wrMyDivCard`, `UI.armyPathCard`, `UI.wrArmyRow`, `UI.battleModalBasic`, and 72's `A.TS.squadHtml` (the book's left leaf names your company, captain and serjeant).
 - **Registries:** `A.onMonth`, `A.COMMANDS`, `UI.A.coOrd`, `UI.C.coForm` and `UI.C.coFollow`, `UI.TIPS.coMo` and `UI.TIPS.coCap`, `GD.SUP.train`, and `A.WC.KINDS` honour, forage and turn.
 
 ## Tests (`test.mjs`)
@@ -190,6 +190,38 @@ A shape the men never drilled is not offered, and the menu says why ("never dril
 | `coCourier` | 5 and 3.5 days for 300 km; the order lands on its day; the median from capitals |
 | `coSaveLoad` | A round trip; an old save with no battalions draws purely and builds them at the month |
 | `coScreens` | Order of battle, company card and Path tab draw; a captain named `<img data-pwn>` shows as text; drawing changes nothing |
+| `coCachesExact` | A war of eight months, saved and loaded at the fourth: the same world and random stream as without the reload |
+
+## Cost (the Great Continent)
+
+`features/09-scale/great-bench.mjs`, seed 1234, a peasant of Aldmark (POL-01) and of Taulen (POL-36), 14 months, main-thread CPU, median month. The machine was shared and heavily loaded (load 17–28 on 4 cores), so wall clock ran 3–6× CPU and single readings move ±25%. All three builds hold every other feature, with work in progress, as of 17:53; the last also holds one feature folder that appeared later.
+
+| Build | Month, POL-01 / POL-36 | Year-turn month | State at start → after 14 months |
+| --- | --- | --- | --- |
+| Without 9997 | 496 / 512 ms | 1,534 / 1,335 ms | 4,556 → 6,650 KB |
+| 9997, first version | 813 / 858 ms | 1,459 / 2,007 ms | 5,204 → 7,375 KB |
+| 9997, with the speed-ups below | 666 / 732 ms | 1,238 / 1,567 ms | 5,390 → 7,847 KB |
+
+The battalion records themselves are 673 KB on the Great Continent (`coEveryBattalion`). The rest of the growth is the world's own different course (more wars and fights), the new captains made people, and the newer folder.
+
+**Where the cost is.** Microbenchmarks on the same loaded machine, with 156–189 divisions at war:
+- the day at war (`CO.day`): 3.8–9 ms a war day;
+- the month (`CO.month`, every division in the world): 50–90 ms;
+- `A.divLose`: 2–4 µs a call;
+- `A.divMaxOrg`: 2.5–4.6 µs a call (the release's own cost included).
+
+**Exact speed-ups made** (in this feature's code; `coCachesExact` holds that a run with a save and load in the middle, with cold caches, reaches the same world as one without):
+
+| Change | Before | After |
+| --- | ---: | ---: |
+| The loss split: allocation-free largest remainder (`takeProp`) in place of the general `split` | 405 µs (40 men) | 4 µs |
+| The day at war: resting morale cached per record, checked field by field against every input; the drill cached per template and drill record; captains' default seeds cached beside the record (`WeakMap`, never in the state) | 23 ms a war day | 3.8 ms |
+| The month: names left out of the engine's captain reads (`CO.capStat`, `CO.restVal`); the officer corps worked out only at the New Year | 123 ms | 51–91 ms |
+| The record check: per template version (`CO.codes`, `CO.ok`) | every call | once per template |
+
+**What is left.**
+- The month pass touches every one of the 7,048 records, as the owner's rule asks.
+- A "settled" flag that skips divisions already at rest would save perhaps a third of the day at war. It was not done, because every write to a company's morale would have to clear it, and a missed one would make warm and cold runs differ.
 
 ## Limits
 

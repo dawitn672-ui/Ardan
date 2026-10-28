@@ -39,7 +39,7 @@ POL.openFief = function (r, h) {
   if (!C.length) return null;
   const share = Math.round(A.houseStrength(h) / 2);
   pol.fief = { h: h.id, from: A.S.year, due: A.absDay() + 60, cands: C, back: {}, share };
-  if (h.levy) h.levy = Math.max(1, Math.round(+h.levy - share));
+  h.levy = Math.max(1, Math.round(A.houseStrength(h) - share));
   if (pc && pc.alive && pc.realm === r.id && (pcOk || POL.fiefBackers(r).some(b => b.p.id === pc.id) || POL.inCouncil(pc, r)) && A.EV.po_fief_vote) A.queue({ type: 'event', ev: 'po_fief_vote', ctx: { rid: r.id, houseT: h.name, realmT: r.short, cand: pcOk ? 1 : 0 } });
   return pol.fief;
 };
