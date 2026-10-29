@@ -266,3 +266,40 @@ const CSS = `.po-wrap{display:flex;flex-direction:column;gap:8px;margin-top:8px;
 @media (max-width:760px){.po-card{padding:12px}.po-row{gap:2px 8px}.po-seat{min-width:0}.po-task{margin-left:0;width:100%}.po-cols{grid-template-columns:1fr}}`;
 const put = () => { if (typeof document === 'undefined' || document.getElementById('po-style')) return; const s = document.createElement('style'); s.id = 'po-style'; s.textContent = CSS; document.head.appendChild(s); };
 if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
+
+// 59's faction power tooltip: the Polity's parts (angry estates, a loyal nobility, a split election) get their own
+// rows, so the rows add up to the power shown (ttSums2)
+const TT = UI.TT, G = UI.TIPS;
+if (TT && typeof TT.facParts === 'function') {
+  const baseParts = TT.facParts;
+  TT.facParts = function (f) {
+    const S = baseParts.apply(this, arguments);
+    try {
+      const add = POL.facAdd(f);
+      if (add.length) {
+        const before = S.now, sum = add.reduce((a, x) => a + x[1], 0);
+        S.pol = add; S.now = Math.max(0, before + sum);
+        if (S.now !== before + sum) S.pol = add.concat([['No faction falls below nothing', S.now - before - sum]]);
+      }
+    } catch (e) {}
+    return S;
+  };
+}
+if (G && typeof G.facPower === 'function' && TT && TT.K) {
+  const baseTip = G.facPower;
+  G.facPower = function (id) {
+    const f = (A.S.factions || []).find(x => x.id === id);
+    const S = f ? TT.facParts(f) : null;
+    if (!S || !S.pol || !S.pol.length) return baseTip.apply(this, arguments);
+    const K = TT.K, F0 = A.FACTIONS[f.kind] || {}, sw = S.mem.reduce((a, x) => a + x[1], 0);
+    const stale = f.power != null && Math.round(f.power * 100) !== Math.round(S.now * 100);
+    const pts = [[`Its swords: ${esc(A.fmt(Math.round(sw)))} of the realm's ${esc(A.fmt(Math.round(S.all)))}`, sw / Math.max(1, S.all) * 100]];
+    if (S.back) pts.push([`On the council, ${S.nb} lean${S.nb === 1 ? 's' : ''} its way${S.lead ? ', and its leader wants what it wants' : ''} (56-realm-inside, at most 15%)`, S.back * 100]);
+    for (const [l, v] of S.pol) pts.push([esc(l), v * 100]);
+    return K.H('Power', K.pct(S.total), esc(F0.name || '')) + K.D('Its houses\' swords, against all the realm\'s: every house, a quarter of the army and a twentieth of the levy; and what the estates make of the crown (9996-polity).') +
+      `<div class="tip-row tt-sum"><span>Its swords</span><b></b></div>` + TT.sumRows(S.mem, sw, 'Swords', v => esc(A.fmt(v))) +
+      `<div class="tip-row tt-sum"><span>${stale ? 'Today' : 'Its power'}</span><b></b></div>` + K.pts(pts, Math.round(S.now * 100), 'Power') +
+      (stale ? K.D(`The card shows ${K.pct(f.power)}, reckoned at the new year; the realm's swords have moved since.`) : '') +
+      K.F('At 40% and 60 discontent it makes its demand.');
+  };
+}

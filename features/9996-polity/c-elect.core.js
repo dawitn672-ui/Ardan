@@ -185,13 +185,7 @@ POL.seasonYear = function (r) {
     r.pol.elect.electors = E.map(p => p.id); r.pol.elect.cands = C.map(p => p.id);
   }
 };
-// a split election: the strongest loser's house leads a claimant faction with +0.2 power for five years
-const basePower = A.factionPower;
-A.factionPower = function (f) {
-  const v = basePower.apply(this, arguments);
-  try { const r = f && A.realm(f.realm), s = r && r.pol && r.pol.split; if (s && f.kind === 'claimant' && f.leader === s.house && A.S.year - s.y < 5) return v + .2; } catch (e) {}
-  return v;
-};
+// a split election's claimant power is one of POL.facAdd's parts (a-polity.core.js)
 // promises kept and broken: a winner who still owes a promised elector after two years has broken it
 POL.promiseYear = function (pc) {
   if (!pc || !pc.pol) return;

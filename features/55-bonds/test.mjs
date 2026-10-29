@@ -221,7 +221,9 @@ export default {
       const lives = [];
       const starts = [['human', 'POL-01', 'artisan'], ['human', 'POL-03', 'merchant'], ['human', 'POL-05', 'peasant'], ['dwarf', 'POL-20', 'artisan'], ['human', 'POL-02', 'noble'], ['orc', 'POL-11', 'peasant']];
       try {
-        starts.forEach(([race, realm, status], i) => {
+        // twelve lives, each start twice: six swung the share by 4 points on how long a few lives lasted (cycle 2: 9.2% on
+        // six against 11.4% on twelve with 9996 and 9997, whose courting and estates add opinion change of their own; 14.2% before)
+        starts.concat(starts).forEach(([race, realm, status], i) => {
           const L = B.life({ seed: 5700 + i, race, realm, status, sex: i % 2 ? 'F' : 'M', startAge: 16 }, ['careful', 'greedy'][i % 2], i % 2 === 0, 40);
           lives.push(L.years);
         });

@@ -132,7 +132,9 @@ POL.pcYear = function (pc) {
   const o = held.length ? held[Math.floor(POL.hash(pc.id, A.S.year) * held.length)] : null;
   if (o && !A.S.queue.some(q => q.ctx && q.ctx.poOff)) {
     const [r, off] = o, ev = { gov: 'po_graft', reeve: 'po_tolls', mag: 'po_case_' + ['land', 'debt', 'poach', 'heresy'][Math.floor(POL.hash(pc.id, A.S.year, 'c') * 4)], warden: 'po_march_raid', customs: 'po_customs' }[off.k];
-    if (A.EV[ev]) A.queue({ type: 'event', ev, ctx: { poOff: off.id, rid: r.id, shire: (A.S.prov[off.at] || {}).name || r.short, realmT: r.short } });
+    // a scene a year at most, and never the same one inside its cooldown (an office is not the same scene each spring)
+    const seen = pc.flags.ev && pc.flags.ev[ev], cool = (A.EV[ev] && A.EV[ev].cool) || 3;
+    if (A.EV[ev] && !(seen != null && A.S.year - seen < cool)) A.queue({ type: 'event', ev, ctx: { poOff: off.id, rid: r.id, shire: (A.S.prov[off.at] || {}).name || r.short, realmT: r.short } });
   }
   // the crown asks more of a lord's oath (a greedy or proud crown, now and then)
   const oath = POL.pcOath(pc);
@@ -145,6 +147,8 @@ A.on && A.on('warStart', function (w) {
     const pc = A.pc(); if (!POL.on || !pc || !pc.alive || !w) return;
     const o = POL.pcOath(pc); if (!o || !o.men) return;
     if (!(w.att || []).includes(o.r.id) && !(w.def || []).includes(o.r.id)) return;
+    const seen = pc.flags.ev && pc.flags.ev.po_muster;
+    if (seen != null && A.S.year - seen < 3) return;
     if (A.EV.po_muster && !A.S.queue.some(q => q.ev === 'po_muster')) A.queue({ type: 'event', ev: 'po_muster', ctx: { pid: o.r.ruler, rid: o.r.id, men: o.men, scut: A.coin(2 * o.men * 3), scutN: 2 * o.men * 3, realmT: o.r.short } });
   } catch (e) { console.error('[po] muster', e); }
 });

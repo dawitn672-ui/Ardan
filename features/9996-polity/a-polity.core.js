@@ -589,20 +589,24 @@ POL.year = function (r) {
   pol.lost = (pol.lost || []).filter(y => A.S.year - y < 6);
 };
 
-// estates' anger adds power to the factions their members join (patch PO-POWER is this wrap, no blob edit)
+// estates' anger adds power to the factions their members join (patch PO-POWER is this wrap, no blob edit). The
+// parts are listed by POL.facAdd, so 59's tooltip can show each one and the sum stays exact.
+POL.facAdd = function (f) {
+  const out = [];
+  if (!POL.on || !f) return out;
+  const r = A.realm(f.realm); if (!r || !r.pol || !r.pol.est) return out;
+  const kinds = f.kind === 'war' ? ['army', 'nob'] : f.kind === 'peace' ? ['comm', 'burg', 'nob'] : ['nob'];
+  for (const k of kinds) { const e = r.pol.est[k]; if (e && e.ap <= -5 && e.cl) out.push([`${POL.estName(k, r.id)} are angry (a tenth of their clout)`, .1 * e.cl]); }
+  // a loyal nobility joins no faction against the crown
+  if (['liberty', 'claimant', 'independence'].includes(f.kind) && r.pol.est.nob && r.pol.est.nob.ap >= 5) out.push([`${POL.estName('nob', r.id)} are loyal to the crown`, -.03]);
+  // a split election: the strongest loser's house leads a claimant faction with +0.2 for five years
+  const s = r.pol.split; if (s && f.kind === 'claimant' && f.leader === s.house && A.S.year - s.y < 5) out.push(['The election its leader lost and would not accept', .2]);
+  return out;
+};
 const basePower = A.factionPower;
 A.factionPower = function (f) {
   const v = basePower.apply(this, arguments);
-  try {
-    if (!POL.on || !f) return v;
-    const r = A.realm(f.realm); if (!r || !r.pol || !r.pol.est) return v;
-    let add = 0;
-    const kinds = f.kind === 'war' ? ['army', 'nob'] : f.kind === 'peace' ? ['comm', 'burg', 'nob'] : ['nob'];
-    for (const k of kinds) { const e = r.pol.est[k]; if (e && e.ap <= -5) add += .1 * (e.cl || 0); }
-    // a loyal nobility joins no faction against the crown
-    if (['liberty', 'claimant', 'independence'].includes(f.kind) && r.pol.est.nob && r.pol.est.nob.ap >= 5) add -= .03;
-    return Math.max(0, v + add);
-  } catch (e) { return v; }
+  try { const add = POL.facAdd(f).reduce((a, x) => a + x[1], 0); return add ? Math.max(0, v + add) : v; } catch (e) { return v; }
 };
 
 // the New Year: after 56's court and the release's factions, the Polity's year for every realm
