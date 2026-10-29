@@ -16,7 +16,8 @@
   CO.K = {
     FOOD0: 14, FOOD_CAP: 30, FOOD_TRAIN: 40,  // days of bread
     FORAGE_AT: 5, FORAGE_DAYS: 3, FORAGE_EVERY: 10, FORAGE_UNREST: 5,
-    DESERT: 0.005,           // a day, at food 0
+    DESERT: 0.002,           // a day, once the bread has been gone HUNGRY days
+    HUNGRY: 3,
     HUNGER_MO: 2,            // morale a day, at food 0
     WOUNDED: 1 / 3,          // of the dead in a fight
     WD_BACK: 1 / 30,         // of the wounded back a day, in supply
@@ -25,7 +26,7 @@
     MO_LOST: 15,             // more, for the side whose fight is lost
     MO_BACK: 5,              // a day back towards rest, out of the fight
     ORG_LO: 0.85, ORG_K: 0.3,// organisation cap x (0.85 + 0.3 x morale/100)
-    HONOUR_LOSS: 0.25, RETIRE: 0.1,
+    HONOUR_LOSS: 0.25, RETIRE: 0.1, MELT: 12,
     COURIER_KM: 60,
   };
   const K = CO.K;
@@ -159,8 +160,8 @@
     c.name = c.given + (c.sur ? ' ' + c.sur : ''); c.sat = sat;
     return c;
   };
-  // his serjeants (pure): the two best men under him, by the same seed
-  CO.serjeants = function (d, i, ci) {
+  // his sergeants (pure): the two best men under him, by the same seed
+  CO.sergeants = function (d, i, ci) {
     const s = CO.seedOf(d, i, ci), b = d.bs[i];
     return [hash(s + ':s0'), hash(s + ':s1')].map(x => { const c = CO.fromSeed(x, cultOf(d), b.h); c.cmd = Math.max(10, c.cmd - 8); c.name = c.given + (c.sur ? ' ' + c.sur : ''); return c; });
   };
@@ -183,7 +184,7 @@
     (b.p = b.p || {})[slot] = p.id;
     return p;
   };
-  // a new captain in a slot: the better of the company's serjeants (or, for slot 4, a vacancy until promotion)
+  // a new captain in a slot: the better of the company's sergeants (or, for slot 4, a vacancy until promotion)
   CO.replaceCap = function (d, i, slot, why) {
     const b = d.bs[i];
     if (!b) return null;
@@ -192,7 +193,7 @@
     if (b.p && b.p[slot] != null) { delete b.p[slot]; if (!Object.keys(b.p).length) delete b.p; }
     if (b.st) b.st[slot] = 0;
     if (slot === 4) { b.vac = 1; return { old, by: null }; }
-    const sj = CO.serjeants(d, i, slot).sort((x, y) => y.cmd - x.cmd || x.seed - y.seed)[0];
+    const sj = CO.sergeants(d, i, slot).sort((x, y) => y.cmd - x.cmd || x.seed - y.seed)[0];
     (b.cs = b.cs || {})[slot] = sj.seed;
     return { old, by: CO.cap(d, i, slot), why };
   };
@@ -477,6 +478,17 @@
       for (let s = 0; s < 5; s++) b.cs[s] = hash(b.o + ':' + b.c + ':new:' + s + ':' + A.S.year);
     }
   };
+  const queueStep = A.queueStep;
+  if (typeof queueStep === 'function') A.queueStep = function (r) {
+    const before = new Set(((r && r.forces && r.forces.divs) || []).map(d => d.id));
+    const out = queueStep.apply(this, arguments);
+    try {
+      if (A.S.coOn && r && r.forces) for (const d of r.forces.divs) if (!before.has(d.id) && CO.ok(d) && CO.sum(d) !== Math.round(d.men)) {
+        CO.build(d, d.bs); for (const b of d.bs) b.x = r1(d.exp || 0); CO.stats.raised = (CO.stats.raised || 0) + 1;
+      }
+    } catch (e) { console.error('companies raise', e); }
+    return out;
+  };
   const divRemove = A.divRemove;
   A.divRemove = function (d) {
     try {
@@ -547,6 +559,7 @@
   CO.afterFight = function (F, winner, P) {
     const S = A.S, atkW = winner === 'att', named = (F.menA + F.menD >= 9000 || F.days >= 3);
     const L = F.coL || {};
+    try { const pc = A.pc(), md = pc && pc.mil && pc.mil.div; if (md && (F.aIds.includes(md) || F.dIds.includes(md))) CO.afterFightScene(F, F.aIds.includes(md) ? atkW : !atkW); } catch (e) { console.error('companies scene', e); }
     for (const id of F.aIds.concat(F.dIds)) {
       const d = A.divById(id);
       if (!d || !CO.ok(d)) continue;
@@ -586,7 +599,7 @@
       CO.stats.capDied++;
       const rep = CO.replaceCap(d, i, ci, 'fell');
       if (CO.mineBn(d, i) && rep && rep.by && pc && pc.alive) {
-        A.log(`Captain ${c.name} falls with the ${CO.coName(d, i, ci)}. Serjeant ${rep.by.given} takes the company.`, 'death');
+        A.log(`Captain ${c.name} falls with the ${CO.coName(d, i, ci)}. Sergeant ${rep.by.given} takes the company.`, 'death');
         if (CO.mineIs(d, i, ci)) { const np = CO.person(d, i, ci); CO.queueEv('co_new_captain', { pid: np ? np.id : null, old: c.given, coy: CO.coName(d, i, ci, true) }); }
       }
     }
@@ -596,6 +609,7 @@
   CO.sat = function (d, i, slot, v) {
     const b = d.bs[i];
     if (!b || !v) return;
+    if (v < 0 && b.lk && (b.lk & (1 << slot))) return;   // the man who took over after an unpaid captain left waits for the New Year
     if (!Array.isArray(b.st)) b.st = [0, 0, 0, 0, 0].slice(0, isSup(b.c) ? 1 : 5);
     b.st[slot] = clamp(Math.round((b.st[slot] || 0) + v), -100, 100);
   };
@@ -610,7 +624,7 @@
   CO.mine = function (pc) {   // pure: where the player stands, if he has a company
     pc = pc || A.pc();
     const m = pc && pc.mil && pc.mil.co, d = m && A.divById(m.div);
-    if (!d || !CO.ok(d) || !d.bs[m.b]) return null;
+    if (!d || !CO.ok(d) || !d.bs[m.b] || (pc.mil.div && pc.mil.div !== m.div)) return null;
     return { d, b: m.b, i: m.i, rec: d.bs[m.b] };
   };
   // engine: put the player in a company of his division (the battalion of his troop, else the first foot)
@@ -636,6 +650,8 @@
     if (rank === 4 || rank === 5) (rec.p = rec.p || {})[m.i] = pc.id;
     else if (rank === 6) { (rec.p = rec.p || {})[4] = pc.id; delete rec.vac; }
     // the man above you is a person you can know
+    // one name for the unit everywhere: the release's own unit name (the oath, the Path card) is the battalion's
+    pc.mil.unit = CO.bnName(d, m.b);
     if (rank <= 3) CO.person(d, m.b, m.i);
     if (rank <= 5) CO.person(d, m.b, 4);
     return m;
@@ -650,7 +666,17 @@
     const M = CO.mine(pc);
     if (!M) return null;
     const { d, b, i, rec } = M, cap = CO.cap(d, b, i), sen = isSup(rec.c) ? null : CO.cap(d, b, 4);
-    return { d, b, i, rec, name: CO.coName(d, b, i), bn: CO.bnName(d, b), cap, sen, serjeants: CO.serjeants(d, b, i), men: rec.k[i], wd: Math.round(rec.wd / rec.k.length), mo: rec.q[i], rest: CO.restOne(d, b, i), food: d.food, pay: d.pay, hon: rec.hon || [] };
+    return { d, b, i, rec, name: CO.coName(d, b, i), bn: CO.bnName(d, b), cap, sen, sergeants: CO.sergeants(d, b, i), men: rec.k[i], wd: Math.round(rec.wd / rec.k.length), mo: rec.q[i], rest: CO.restOne(d, b, i), food: d.food, pay: d.pay, hon: rec.hon || [] };
+  };
+
+  // ---- pay: 0 paid; 1 the mustered host goes unpaid (at war, the chest falling three months running); 2 nobody is paid
+  // (in debt and the debt growing, or deeper than a year's income)
+  CO.unpaid = function (r, atWar, newYear) {
+    const t = r.treasury || 0, last = r.coT != null ? r.coT : t, inc = Math.max(1, r.income || 1);
+    r.coFall = t < last ? (r.coFall || 0) + 1 : 0;
+    if (t < 0 && (t < last || t < -inc)) return 2;
+    if (atWar && r.coFall >= 3 && t < inc / 4) return 1;
+    return 0;
   };
 
   // ---- the month: rest, pay, the wounded, captains' moods, promotion
@@ -663,12 +689,21 @@
     for (const id in S.realms) {
       const r = S.realms[id];
       if (!r || !r.alive || !r.forces || !r.forces.divs) continue;
-      const broke = (r.treasury || 0) < 0, atWar = A.atWar(id).length > 0;
-      let ofc = 0, ofn = 0;
+      const atWar = A.atWar(id).length > 0, unpaid = CO.unpaid(r, atWar, newYear);
+      let ofc = 0, ofn = 0, melted = 0, meltMen = 0, meltAt = null, meltWho = null;
       for (const d of r.forces.divs.slice()) {
         CO.ensure(d);
-        d.pay = broke ? (d.pay || 0) + 1 : 0;
+        // a month behind only when the realm cannot pay: its debt grows or passes a year's income, or, at war, its chest
+        // has fallen three months running (the host's upkeep outruns the income); the mustered host is paid first
+        const owe = unpaid === 2 || (unpaid === 1 && !!d.army);
+        d.pay = owe ? (d.pay || 0) + 1 : 0;
         if (d.pay > 0) CO.satAll(d, -10);
+        // a year unpaid, a division melts away as one: its men go home
+        if (d.pay >= K.MELT && !d.elite) {
+          melted++; meltMen += d.men; if (meltAt == null) { meltAt = d.loc; meltWho = CO.leaderKey(d); }
+          CO.WHY = 'desert'; try { A.divLose(d, d.men); } finally { CO.WHY = null; }
+          A.divRemove(d); CO.stats.melted = (CO.stats.melted || 0) + 1; continue;
+        }
         if (d.riMerc && d.pay >= 2) { A.news(`${d.name}, sellswords unpaid for ${d.pay} months, march off to find a better master.`, 'battle'); A.divRemove(d); continue; }
         const live = !!d.army;
         if (!live) {   // at peace: bread, the wounded home, morale settles
@@ -684,17 +719,27 @@
           if (Array.isArray(b.st)) { let any = 0; for (let s = 0; s < b.st.length; s++) { b.st[s] = Math.round((b.st[s] || 0) * 0.95); if (b.st[s]) any = 1; } if (!any) delete b.st; }
           const ns = isSup(b.c) ? 1 : 5;
           if (b.p) for (let s = 0; s < ns; s++) if (b.p && b.p[s] && !(A.P(b.p[s]) && A.P(b.p[s]).alive)) CO.replaceCap(d, i, s, 'died');
-          if (b.st) for (let s = 0; s < ns; s++) if (b.st && b.st[s] <= -50) { const c = CO.cap(d, i, s); if (c && !c.pc) CO.leave(d, i, s, c, atWar); }
+          if (newYear && b.lk) delete b.lk;
+          if (b.st) for (let s = 0; s < ns; s++) if (b.st && b.st[s] <= -50) { const c = CO.cap(d, i, s); if (c && !c.pc) { CO.leave(d, i, s, c, atWar); if (d.pay > 0) b.lk = (b.lk || 0) | (1 << s); } }
           if (newYear || !r.ofc) for (let s = 0; s < ns; s++) { const c = CO.capStat(d, i, s); if (c && !c.pc) { ofc += c.cmd; ofn++; } }
           if (b.ret) CO.reraise(d);
         }
         CO.mean(d);
       }
       if (newYear || !r.ofc) r.ofc = { cmd: ofn ? Math.round(ofc / ofn) : 40, n: ofn };
-      if (newYear && atWar) CO.promote(r);
+      if (newYear) CO.promote(r);   // in peace too: a vacancy is a man passed over, not a need of war
+      if (melted) {
+        A.news(`${melted > 1 ? melted + ' divisions' : 'A division'} of ${r.short}, unpaid for a year, melt${melted > 1 ? '' : 's'} away: ${A.fmt(meltMen)} men walk home.`, 'battle');
+        if (A.WC && A.WC.put) A.WC.put('melt', { p: meltAt != null ? meltAt : r.capitalProv, a: id, n: meltMen, x: String(melted), w: r.ruler && A.P(r.ruler) ? [r.ruler] : meltWho || [] });
+      }
+      r.coT = r.treasury || 0;
     }
     if (newYear) CO.yearMoods();
-    if (pc && pc.alive && pc.mil) CO.place(pc);
+    if (pc && pc.alive && pc.mil) {
+      CO.place(pc);
+      const M = CO.mine(pc);
+      if (M && CO.sceneDue(pc, M.d.pay > 0 ? CO.GAP : CO.PAY_GAP) && A.atWar(pc.mil.realm || pc.realm).length) CO.queueEv(M.d.pay > 0 ? 'co_arrears' : 'co_pay_day', {});
+    }
   };
   function backWounded(d, gap, frac) {
     let back = 0;
@@ -781,18 +826,21 @@
   CO.day = function () {
     const S = A.S;
     if (!S.coOn) return;
+    const pc = A.pc();
+    if (pc && pc.alive && pc.mil && !pc.mil.merc && pc.mil.div && (!pc.mil.co || pc.mil.co.div !== pc.mil.div)) CO.place(pc);
     for (const d of A.allDivs()) {
       if (!d.army || !Array.isArray(d.bs)) continue;
       if (!CO.ok(d)) CO.ensure(d);
       const t = A.tplOf(d), cap = t && (t.sup || []).includes('train') ? K.FOOD_TRAIN : K.FOOD_CAP, sr = d.sr != null ? d.sr : 1;
       if (d.food == null) d.food = K.FOOD0;
-      d.food = r1(clamp(d.food - 1 + 2 * sr, 0, cap));
+      d.food = r1(clamp(d.food - 1 + 2 * sr * CO.breadF(d, S.prov[d.loc]), 0, cap));
       const P = S.prov[d.loc];
       if (d.food < K.FORAGE_AT && P && (!d.coFor || S.warClock - d.coFor >= K.FORAGE_EVERY)) CO.forage(d, P);
       const fighting = d.atk != null || (S.fights && S.fights[d.loc]);
+      if (d.food <= 0) d.coHg = (d.coHg || 0) + 1; else if (d.coHg) delete d.coHg;
       if (d.food <= 0) {
         for (const b of d.bs) for (let ci = 0; ci < b.q.length; ci++) b.q[ci] = r1(clamp(b.q[ci] - K.HUNGER_MO, 0, 100));
-        const n = Math.floor(d.men * K.DESERT + ((hash(d.id + S.warClock) % 100) / 100));
+        const n = d.coHg > K.HUNGRY ? Math.floor(d.men * K.DESERT + ((hash(d.id + S.warClock) % 100) / 100)) : 0;
         if (n > 0) { CO.WHY = 'desert'; try { A.divLose(d, n); } finally { CO.WHY = null; } CO.hungerScene(d); }
       } else if (!fighting) {
         const drs = drillsNow(d);
@@ -832,6 +880,16 @@
     if (!c || c.t !== t || c.codes !== codes || c.v.length !== d.bs.length) { c = { t, codes, v: CO.drills(d) }; DRC.set(d, c); }
     return c.v;
   }
+  // how much of the supply reaches the bread wagons: winter, enemy ground, a siege, an empty town granary (66)
+  CO.breadF = function (d, P) {
+    if (!P) return 1;
+    let f = 1;
+    if (A.wsWinter && A.wsWinter(P)) f *= 0.6;
+    if (!A.friendly(A.ctrl(P), d.r)) f *= 0.75;
+    if (d.sieging) f *= 0.8;
+    try { const MT = A.MT || window.MT; if (MT && MT.on && MT.on() && MT.townOf) { const t = MT.townOf(P); if (t != null && MT.s(t, 'grain') <= 0) f *= 0.7; } } catch (e) {}
+    return f;
+  };
   CO.forage = function (d, P) {
     const S = A.S;
     d.coFor = S.warClock;
@@ -856,6 +914,23 @@
     const S = A.S;
     if ((S.queue || []).some(q => q.type === 'event' && q.ev === ev)) return;
     A.queue({ type: 'event', ev, ctx: Object.assign({}, ctx), forced: true });
+    const pc = A.pc(); if (pc && pc.flags) pc.flags.co_last = A.absDay ? A.absDay() : 0;
+  };
+  // the company reaches the soldier once a campaign, not once a career: after a fight his division was in, and on pay
+  // day, a company scene comes when none has come for a season (CO.GAP days)
+  CO.GAP = 90;
+  CO.sceneDue = function (pc, gap) {
+    if (!pc || !pc.alive || !pc.mil || pc.mil.merc || !CO.mine(pc)) return false;
+    const now = A.absDay ? A.absDay() : 0, last = pc.flags.co_last;
+    return last == null || now - last >= (gap || CO.GAP);
+  };
+  CO.PAY_GAP = 240;   // pay day is the quiet scene: it comes when no fight has brought one for eight months
+  CO.afterFightScene = function (F, won) {
+    const pc = A.pc(), M = CO.mine(pc);
+    if (!M || !(F.aIds.includes(M.d.id) || F.dIds.includes(M.d.id)) || F.menA + F.menD < 2500 || !CO.sceneDue(pc)) return;
+    const row = (F.coL || {})[M.d.id] || [], lost = row[M.b] || 0;
+    if (lost >= 4) CO.queueEv('co_roll_call', { lost: String(lost), place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 });
+    else { const c = CO.cap(M.d, M.b, M.i); CO.queueEv('co_captain_word', { pid: c && c.pid && !c.pc ? c.pid : null, place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
   };
 
   // ---- morale on the war map: the organisation cap, x (0.85 + 0.3 x mean morale / 100)
@@ -885,7 +960,30 @@
   const enlist = A.enlist;
   A.enlist = function (pc) {
     const r = enlist.apply(this, arguments);
-    try { if (pc && pc.id === A.S.pc && A.S.coOn) CO.place(pc); } catch (e) { console.error('companies enlist', e); }
+    try {
+      if (pc && pc.id === A.S.pc && A.S.coOn && pc.mil && !pc.mil.merc) {
+        const was = pc.mil.unit;
+        if (!pc.mil.div && A.pcDivAttach) A.pcDivAttach(pc);
+        const m = CO.place(pc);
+        if (m && was) CO.renameOath(pc, was);
+      }
+    } catch (e) { console.error('companies enlist', e); }
+    return r;
+  };
+  // the oath line was written with the release's made-up unit; it names the company the soldier joined
+  CO.renameOath = function (pc, was) {
+    const M = CO.mine(pc);
+    if (!M) return;
+    const name = `${CO.coName(M.d, M.b, M.i)} (the ${M.d.name})`;
+    for (let k = A.S.log.length - 1, n = 0; k >= 0 && n < 3; k--, n++) {
+      const e = A.S.log[k];
+      for (const l of e.lines || []) if (typeof l[0] === 'string' && l[0].includes(' of ' + was + '.')) { l[0] = l[0].replace(' of ' + was + '.', ' of the ' + name + '.'); return; }
+    }
+  };
+  const divAttach = A.pcDivAttach;
+  if (typeof divAttach === 'function') A.pcDivAttach = function (pc) {
+    const r = divAttach.apply(this, arguments);
+    try { if (pc && pc.id === A.S.pc && A.S.coOn && pc.mil && pc.mil.div) CO.place(pc); } catch (e) { console.error('companies attach', e); }
     return r;
   };
   // effect key coy: the player's own company. { mo: morale, sat: his captain's satisfaction, food: days, men: men
@@ -913,7 +1011,7 @@
   // GD.SUP: the baggage train (bread for 40 days, not 30)
   if (GD.SUP && !GD.SUP.train) GD.SUP.train = { name: 'Baggage train', men: 60, eq: { horses: 20 }, fx: { spd: -0.1 }, desc: 'Wagons and mules: bread for 40 days, not 30. Slows the march a tenth.' };
   // 57's record learns three kinds
-  if (A.WC && A.WC.KINDS) Object.assign(A.WC.KINDS, { honour: ['battle honour', 1], forage: ['army forages', 1], turn: ['company turns coat', 1] });
+  if (A.WC && A.WC.KINDS) Object.assign(A.WC.KINDS, { honour: ['battle honour', 1], forage: ['army forages', 1], turn: ['company turns coat', 1], melt: ['an unpaid host melts away', 1] });
 
   // ---- 57's record: who and where for the three kinds this feature writes
   // a captain who is not a person is set down by name under a key of his own (as 57 keeps orders' names)
@@ -936,11 +1034,12 @@
   if (A.WC && typeof A.WC.line === 'function') {
     const line = A.WC.line;
     A.WC.line = function (e) {
-      if (!e || !['forage', 'honour', 'turn'].includes(e.k)) return line.apply(this, arguments);
+      if (!e || !['forage', 'honour', 'turn', 'melt'].includes(e.k)) return line.apply(this, arguments);
       const when = `In ${A.WC.month ? A.WC.month(e) : 'the year'} ${e.y}`, P = e.p != null && A.S.prov[e.p] ? A.S.prov[e.p].name : 'the field';
       const R = id => (id ? A.WC.name(id) || (A.realm(id) ? A.realmShort(id) : 'another realm') : 'another realm');
       const who = (e.w || []).map(id => A.WC.name(id)).filter(Boolean), fmt = n => (A.fmt ? A.fmt(n) : String(n));
       const x = String(e.x || 'a battalion');
+      if (e.k === 'melt') return `${when}, ${+x > 1 ? x + ' divisions' : 'a division'} of ${R(e.a)}${who[0] ? `, the host of ${who[0]},` : ''} went a year unpaid and melted away near ${P}: ${fmt(e.n || 0)} men walked home.`;
       if (e.k === 'forage') return `${when}, the ${x} of ${R(e.a)}${who[0] ? `, under ${who[0]},` : ''} ate the harvest of ${P}: ${fmt(e.n || 0)} men with no bread.`;
       if (e.k === 'honour') return `${when}, the ${x} of ${R(e.a)} won the honour of ${P}, losing ${fmt(e.n || 0)} men and holding${who[0] ? `, with ${who[0]} in its ranks` : ''}.`;
       return `${when}, ${who[0] || 'a captain'} took the ${x} of ${R(e.a)} over to ${R(e.b)} near ${P}: ${fmt(e.n || 0)} men.`;

@@ -19,16 +19,25 @@ FOLD.DEFAULT_CLOSED = {
   // Your days folds to its own summary line ("Push for advancement · training is fair") except on a tall screen
   life: ['how you are', 'your days'],
   profile: ['body'],
-  holdings: ['the armorer', 'property', 'the trade roads'],
+  holdings: ['the armorer', 'property', 'the trade roads', 'the market'],
   realm: ['the council', 'the ladder', 'the ways of', 'how the', 'why wars begin', 'factions of'],
   path: ['how you live', 'schools & academies'],
   people: [],
+  // cycle 2 (visual F4, design B8): the long reference sections of the Chronicle start folded to their summaries
+  legacy: ['endings found', 'achievements'],
+  // the road (9990-journeys): every capital of the continent waits behind its header
+  road: ['capitals and far realms'],
 };
+// tabs whose tall cards start folded to their title row (the Codex: one row per faith, people, bloodline or beast),
+// with a filter field at the head of the tab
+FOLD.CARDS_CLOSED = { codex: true };
+FOLD.FIND = { codex: true };
+FOLD.q = '';
 FOLD.ACCORDION = {};                        // tabs whose activity sections open one at a time (none since one grid)
 FOLD.TALL = 180;                            // a card taller than this gets a fold button
 FOLD.ALWAYS = ['whatnow', 'plan-card', 'lf-amb'];   // cards that fold whatever their height (What now, Your days, Ambition)
 // on a phone the Life page is one column under the thumb: the ambition (97-life-fixes) starts folded to its title line
-FOLD.PHONE_CLOSED = { life: ['ambition'] };
+FOLD.PHONE_CLOSED = { life: ['ambition'], road: ['caravans'] };
 // a tall window (1600 x 1000 and up) has room for Your days open (brief §4.2); reading the window is not game state
 FOLD.roomy = () => typeof window !== 'undefined' && window.innerWidth >= 1600 && window.innerHeight >= 1000;
 FOLD.isOpen = function (tab, key, fallback) {
@@ -38,6 +47,8 @@ FOLD.isOpen = function (tab, key, fallback) {
   return fallback;
 };
 FOLD.defaultOpen = function (tab, key) {
+  // the Path tab: the list of paths is for choosing one; once you hold a post it starts folded
+  if (tab === 'path' && key === 'paths') { const pc = A.pc && A.pc(); return !(pc && pc.job); }
   // Your days folds only where 91-look keeps its training select in the header (else the choice made most often would
   // hide behind a click), and not in a tall window
   if (tab === 'life' && key.startsWith('your days') && (FOLD.roomy() || !UI.LOOK)) return true;
@@ -152,10 +163,10 @@ FOLD.cards = function (root, tab) {
   if (!root) return;
   for (const c of root.querySelectorAll(':scope > .card, :scope > section.card, .fold-b > .card')) {
     if (c.dataset.fc || c.tagName === 'DETAILS' || c.classList.contains('person') || c.children.length < 2) continue;
-    if (c.offsetHeight < FOLD.TALL && !FOLD.ALWAYS.some(k => c.classList.contains(k))) continue;
+    if (c.offsetHeight < FOLD.TALL && !FOLD.ALWAYS.some(k => c.classList.contains(k)) && !FOLD.CARDS_CLOSED[tab]) continue;
     const first = c.firstElementChild, label = (first.textContent || '').trim().split('\n')[0];
     const key = 'card ' + slug((c.className.toString().split(/\s+/).filter(x => x !== 'card' && x !== 'small')[0] || '') + ' ' + label.slice(0, 24));
-    const open = FOLD.isOpen(tab, key, FOLD.defaultOpen(tab, slug(label)));
+    const open = FOLD.isOpen(tab, key, FOLD.CARDS_CLOSED[tab] ? false : FOLD.defaultOpen(tab, slug(label)));
     c.dataset.fc = key;
     c.classList.add('fold-card');
     c.classList.toggle('folded', !open);
@@ -207,10 +218,30 @@ FOLD.apply = function () {
     const tb = document.getElementById('tabbody'), pr = document.getElementById('profile'), tab = UI.tab || '';
     const t = tab === 'goals' ? 'life' : tab === 'war' ? 'path' : tab;
     if (tb && t === 'life' && tab === 'life') FOLD.mergeActs(tb);
-    if (tb) { FOLD.sections(tb, t); FOLD.cards(tb, t); FOLD.tools(tb); }
+    if (tb) { tb.dataset.ftab = t; FOLD.sections(tb, t); FOLD.cards(tb, t); FOLD.tools(tb); FOLD.find(tb, t); }
     if (pr) { FOLD.profile(pr); FOLD.sections(pr, 'profile'); }
+    const road = document.querySelector('#modal .mbox.jr-road'); if (road) FOLD.sections(road, 'road');
   } catch (e) { console.error('fold', e); }
 };
+// a filter at the head of a long reference tab: the cards whose words hold the query stay; UI state, never saved
+FOLD.find = function (tb, tab) {
+  if (!tb || !FOLD.FIND[tab] || tb.querySelector(':scope > .fold-find')) return;
+  const cards = tb.querySelectorAll(':scope > .fold-card');
+  if (cards.length < 8) return;
+  const row = document.createElement('div');
+  row.className = 'fold-find';
+  row.innerHTML = `<input type="search" data-c="foldFind" aria-label="Find in this list" placeholder="Find in ${cards.length} entries" value="${UI.esc(FOLD.q)}"><span class="fold-find-n" aria-live="polite"></span>`;
+  const tools = tb.querySelector(':scope > .fold-tools');
+  (tools || cards[0]).after(row);
+  FOLD.filter(tb);
+};
+FOLD.filter = function (tb) {
+  const q = FOLD.q.trim().toLowerCase(), cards = tb ? tb.querySelectorAll(':scope > .fold-card') : [];
+  let n = 0;
+  for (const c of cards) { const hit = !q || c.textContent.toLowerCase().includes(q); c.hidden = !hit; if (hit) n++; }
+  const o = tb && tb.querySelector('.fold-find-n'); if (o) o.textContent = q ? `${n} of ${cards.length}` : '';
+};
+Object.assign(UI.C, { foldFind(el) { FOLD.q = String(el.value || '').slice(0, 60); FOLD.filter(document.getElementById('tabbody')); } });
 // "Open all / Fold all" at the head of a tab that has sections
 FOLD.tools = function (tb) {
   if (!tb || tb.querySelector(':scope > .fold-tools') || !tb.querySelector('.fold, .fold-card')) return;
@@ -240,7 +271,7 @@ const set = (el, open) => {
 Object.assign(UI.A, {
   fold(v, el) {
     if (!el) return;
-    const tab = el.closest('#profile') ? 'profile' : (UI.tab === 'goals' ? 'life' : UI.tab === 'war' ? 'path' : UI.tab || '');
+    const tab = el.closest('#profile') ? 'profile' : el.closest('.jr-road') ? 'road' : (UI.tab === 'goals' ? 'life' : UI.tab === 'war' ? 'path' : UI.tab || '');
     const open = el.getAttribute('aria-expanded') !== 'true';
     set(el, open);
     FOLD.state[tab + '|' + v] = open;
@@ -319,6 +350,15 @@ FOLD.CSS = `
 @media (prefers-reduced-motion:reduce){.fold-h::before{transition:none}}
 .fold-card{position:relative}
 .fold-card.folded > :not(:first-child):not(.fold-x){display:none}
+/* cycle 2: the Codex folded is a list of names, two to a row on a wide panel */
+@media (min-width:1100px){#tabbody[data-ftab=codex] > .fold-card.folded{display:inline-block;vertical-align:top;width:calc(50% - 4px);box-sizing:border-box;margin:0 0 6px}#tabbody[data-ftab=codex] > .fold-card.folded:nth-of-type(odd){margin-right:8px}}
+#tabbody[data-ftab=codex] > .fold-card.folded{padding-top:6px;padding-bottom:6px}
+.fold-card[hidden]{display:none!important}
+#tabbody[data-ftab=legacy] .achgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+#tabbody[data-ftab=legacy] .achgrid > .card.ach{margin:0;padding:6px 8px;font-size:var(--t-small,13px);line-height:1.3}
+.fold-find{display:flex;align-items:center;gap:8px;margin:4px 0 8px}
+.fold-find input{flex:1 1 auto;min-width:0;min-height:32px}
+.fold-find-n{color:var(--ink-3,var(--text-3));font-size:var(--t-small,13px);white-space:nowrap}
 .fold-card.folded > .fold-x + *{display:block}
 .fold-x{float:right;position:relative;z-index:2;width:28px;height:28px;margin:0 0 4px 8px;border-radius:6px;border:1px solid var(--border-2);background:var(--surface-2);cursor:pointer;display:grid;place-items:center;padding:0}
 .fold-x::before{content:"";width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--accent);transition:transform .15s ease}

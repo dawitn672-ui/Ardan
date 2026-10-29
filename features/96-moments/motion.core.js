@@ -280,38 +280,59 @@
   MOT.views = {};
   const copy = v => ({ x0: v.x0, y0: v.y0, w: v.w, h: v.h });
   const lerpV = (a, b, k) => ({ x0: a.x0 + (b.x0 - a.x0) * k, y0: a.y0 + (b.y0 - a.y0) * k, w: a.w + (b.w - a.w) * k, h: a.h + (b.h - a.h) * k });
-  MOT.easeMap = function (name, holder, draw) {
+  // Cycle 2 (visual B2): the ease no longer redraws the map each frame (120-240 ms a frame on the Great Continent). It
+  // scales the last finished picture with drawImage, as a camera would, and draws the map for real once, at the end.
+  // The tween is capped at 200 ms and costs only copies; MOT.mapStats counts tweens, their frames and the real draws.
+  MOT.mapStats = { tweens: 0, frames: 0, real: 0, lastMs: 0 };
+  MOT.easeMap = function (name, holder, draw, canvasOf) {
     const fn = UI[draw];
     if (typeof fn !== 'function') return;
+    const realDraw = (self, args, st, v) => { const t0 = performance.now(); const r = fn.apply(self, args); st.ms = performance.now() - t0; MOT.mapStats.real++; MOT.mapStats.lastMs = st.ms; st.shown = copy(v); return r; };
     UI[draw] = function () {
       const H = holder(), real = H && H.view, st = MOT.views[name] || (MOT.views[name] = { shown: null, anim: null, inFrame: false });
-      if (!real || st.inFrame) return fn.apply(this, arguments);
-      const last = st.shown;
+      const cv = canvasOf(arguments);
+      if (!real || !cv) return fn.apply(this, arguments);
+      const last = st.shown, sameCv = st.cv === cv;
+      st.cv = cv;
       const zoomed = last && Math.abs(last.w - real.w) > real.w * 1e-4;
       const moved = last && (Math.abs(last.x0 - real.x0) > real.w * 0.02 || Math.abs(last.y0 - real.y0) > real.h * 0.02);
       // only a zoom or a jump the player asked for (the wheel, a zoom button) is eased; a view set by code is drawn at once
       const asked = st.user && (performance.now() - st.user) < 450;
-      if (!last || !asked || !MOT.full() || (!zoomed && !moved) || (!zoomed && st.drag)) {
+      if (!last || !sameCv || !asked || !MOT.full() || (!zoomed && !moved) || (!zoomed && st.drag) || !cv.width) {
         if (st.anim) { st.anim(); st.anim = null; }
-        st.shown = copy(real);
-        return fn.apply(this, arguments);
+        clearTimeout(st.settle); st.now = null;
+        return realDraw(this, arguments, st, real);
       }
-      if (st.anim) st.anim();
-      const from = copy(last), to = copy(real), self = this, args = arguments;
+      // the tween starts from what is on the canvas now (a tween in flight shows its own in-between view)
+      const from = copy(st.now ? st.now : last), to = copy(real), self = this, args = arguments;
+      clearTimeout(st.settle);
+      if (st.anim) { st.anim(); st.anim = null; }
+      const W = cv.width, Hh = cv.height, snap = doc.createElement('canvas'); snap.width = W; snap.height = Hh;
+      snap.getContext('2d').drawImage(cv, 0, 0);
+      const ctx = cv.getContext('2d'), sea = (UI.INKMAP && UI.INKMAP.SEA_DEEP) || '#173063';
+      MOT.mapStats.tweens++;
       const frame = k => {
-        const H2 = holder(); if (!H2 || !H2.view) return;
-        const keep = H2.view, v = lerpV(from, to, k);
-        st.shown = v;
-        H2.view = v; st.inFrame = true;
-        try { fn.apply(self, args); } finally { st.inFrame = false; H2.view = keep; }
+        const v = lerpV(from, to, k); st.now = v;
+        const sx = (v.x0 - from.x0) / from.w * W, sy = (v.y0 - from.y0) / from.h * Hh, sw = v.w / from.w * W, sh = v.h / from.h * Hh;
+        ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = sea; ctx.fillRect(0, 0, W, Hh);
+        // the snapshot placed where its view falls in v (drawImage clips a source rect that runs past the picture)
+        const dx = -sx * W / sw, dy = -sy * Hh / sh, dw = W * W / sw, dh = Hh * Hh / sh;
+        ctx.drawImage(snap, dx, dy, dw, dh); ctx.restore();
+        MOT.mapStats.frames++;
       };
       frame(0);
-      st.anim = MOT.animate({ dur: MOT.T.view, ease: 'std', step: frame, done: () => { st.anim = null; st.shown = copy(to); } });
+      const dur = Math.min(200, MOT.T.view);
+      // the real draw waits until the zoom has rested 140 ms, so a run of wheel steps costs one redraw, not one a step
+      clearTimeout(st.settle);
+      st.anim = MOT.animate({ dur, ease: 'std', step: frame, done: () => {
+        st.anim = null; st.now = to; st.shown = copy(to);
+        st.settle = setTimeout(() => { st.now = null; if (cv.isConnected && !st.anim) realDraw(self, args, st, to); }, 140);
+      } });
       return undefined;
     };
   };
-  MOT.easeMap('gm', () => UI.gm, 'gmDraw');
-  MOT.easeMap('wr', () => UI.wr, 'drawWar');
+  MOT.easeMap('gm', () => UI.gm, 'gmDraw', () => doc.getElementById('gmap'));
+  MOT.easeMap('wr', () => UI.wr, 'drawWar', args => args[0] || doc.getElementById('warmap'));
   // a drag pans at once: the pointer marks it
   doc.addEventListener('pointerdown', e => { const id = e.target && e.target.id; if (id === 'gmap' && MOT.views.gm) MOT.views.gm.drag = true; if (id === 'warmap' && MOT.views.wr) MOT.views.wr.drag = true; }, true);
   doc.addEventListener('pointerup', () => { for (const k in MOT.views) MOT.views[k].drag = false; }, true);
@@ -373,4 +394,53 @@ ${reduced(`
     const st = doc.createElement('style'); st.id = 'mot-style'; st.textContent = MOT.CSS; doc.head.appendChild(st);
   };
   if (doc.head) MOT.install(); else doc.addEventListener('DOMContentLoaded', MOT.install);
+})();
+
+// ---- cycle 2 (visual F7, B6): the battle camera as a compositor transform --------------------------------------------
+// 85-battle-labels' camera redrew the canvas from a 1.16x crop of itself on every frame (p95 50 ms a pulse), and the
+// crop cut the field's side bands ("ıdmark"). Here the canvas and its overlay sit in a stage that clips; the camera is
+// a Web Animation of a CSS transform on the two of them (no redraw at all), and the sides' names are drawn in the stage
+// outside the moving group, so they are never cropped. It replaces UI.BMOTION.camera; 85's reading of the field is kept.
+(function () {
+  if (typeof document === 'undefined' || !UI.BMOTION || typeof UI.BMOTION.camera !== 'function') return;
+  const BM = UI.BMOTION, MOT = UI.MOTION;
+  BM.cams = BM.cams || new WeakMap();
+  BM.stageOf = function (cv) {
+    if (!cv || !cv.parentElement) return null;
+    if (cv.parentElement.classList.contains('bm-stage')) return cv.parentElement;
+    if (cv.closest('.ph-pan') || (document.querySelector('#game.phone'))) return null;   // the phone pans its own frame
+    const st = document.createElement('div');
+    st.className = 'bm-stage';
+    cv.before(st); st.appendChild(cv);
+    const ov = st.parentElement && st.parentElement.querySelector(':scope > .bm-ov');
+    if (ov) st.appendChild(ov);
+    return st;
+  };
+  BM.sideNames = function (st, B) {
+    if (!st || !B || !B.sides) return;
+    const side = B.pcSide || 'A', foe = side === 'A' ? 'B' : 'A';
+    let el = st.querySelector(':scope > .bm-sides');
+    if (!el) { el = document.createElement('div'); el.className = 'bm-sides'; el.setAttribute('aria-hidden', 'true'); st.appendChild(el); }
+    el.innerHTML = `<span class="bm-side bm-them">${UI.esc(String(B.sides[foe] && B.sides[foe].name || ''))}</span><span class="bm-side bm-us">${UI.esc(String(B.sides[side] && B.sides[side].name || ''))} (you)</span>`;
+  };
+  BM.camera = function (cv, B, R) {
+    const old = BM.cams.get(cv); if (old && old.anim) { try { old.anim.forEach(a => a.cancel()); } catch (e) {} } BM.cams.delete(cv);
+    const st = BM.stageOf(cv);
+    if (st) BM.sideNames(st, B);
+    if (!st || !R || !R.fresh || !R.decisive || (MOT && MOT.mode() !== 'full') || !cv.animate) return;
+    const ov = st.querySelector(':scope > .bm-ov');
+    if (ov) { ov.style.left = cv.offsetLeft + 'px'; ov.style.top = cv.offsetTop + 'px'; }
+    const fx = { L: 20, C: 50, R: 80 }[R.decisive], Z = 1.14;
+    const k = [{ transform: 'none' }, { transform: `scale(${Z})`, offset: 0.2 }, { transform: `scale(${Z})`, offset: 0.78 }, { transform: 'none' }];
+    const opt = { duration: 2240, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'none' };
+    const anim = [];
+    for (const el of [cv, ov].filter(Boolean)) { el.style.transformOrigin = `${fx}% 50%`; anim.push(el.animate(k, opt)); }
+    BM.cams.set(cv, { anim });
+    anim[0].onfinish = () => BM.cams.delete(cv);
+  };
+  const css = '.bm-stage{position:relative;overflow:hidden;display:block;max-width:100%;border-radius:inherit}.bm-stage > canvas{display:block;will-change:transform}' +
+    '.bm-sides{position:absolute;inset:0;pointer-events:none;z-index:2}.bm-side{position:absolute;left:0;right:0;height:18px;padding:0 8px;background:rgba(0,0,0,.42);color:#f1d58e;font:700 12px/18px Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.bm-them{top:0}.bm-us{bottom:0}';
+  const put = () => { if (document.getElementById('bm-cam-style')) return; const s = document.createElement('style'); s.id = 'bm-cam-style'; s.textContent = css; document.head.appendChild(s); };
+  if (document.head) put(); else document.addEventListener('DOMContentLoaded', put);
 })();

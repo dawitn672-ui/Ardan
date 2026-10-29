@@ -94,4 +94,29 @@ export default {
     for (let i = errs.length - 1; i >= 0; i--) if (/Refused to connect to 'https:\/\/fonts\.googleapis\.com/.test(errs[i])) errs.splice(i, 1);
     return { ok: !found.length, detail: `${found.length} axe violations on the folded Life, Holdings and Realm tabs${found.length ? ': ' + found.join(', ') : ''}` };
   },
+
+  // cycle 2 (visual F4, design B8): the long tabs fold. A noble of 24 on the Great Continent at 1366 x 768: the Codex
+  // (74 entries, each a title row, with a filter), the Dynasty (endings and achievements folded), the Path (the paths
+  // list folded once you hold a post), Holdings (the market folded); and the road's far list folded
+  async foldLongTabs(pg) {
+    await pg.setViewportSize({ width: 1366, height: 768 });
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24, lands: 'great' });
+      UI.set.motion = 'off'; UI.applySettings(); A.S.queue = [];
+      const h0 = T.hash(A.S), rng0 = JSON.stringify(A.rngState);
+      const screens = t => { UI.tab = t; UI.render(); const tb = document.getElementById('tabbody'); return +(tb.scrollHeight / tb.clientHeight).toFixed(2); };
+      const out = { codex: screens('codex') };
+      const tb = document.getElementById('tabbody'), cards = tb.querySelectorAll(':scope > .fold-card').length, input = tb.querySelector('.fold-find input');
+      let found = -1;
+      if (input) { const first = tb.querySelector(':scope > .fold-card b'); input.value = first ? first.textContent.trim().slice(0, 8) : 'x'; input.dispatchEvent(new Event('input', { bubbles: true })); found = [...tb.querySelectorAll(':scope > .fold-card')].filter(c => !c.hidden).length; input.value = ''; input.dispatchEvent(new Event('input', { bubbles: true })); }
+      out.legacy = screens('legacy'); out.path = screens('path'); out.holdings = screens('holdings');
+      // the road
+      let road = null;
+      try { A.S.queue.unshift({ type: 'travel' }); UI.renderModal(); const m = document.querySelector('#modal .jr-road'); if (m) { const caps = [...m.querySelectorAll('.fold')].find(s => /^capitals/.test(s.dataset.fk)); road = { caps: !!caps, closed: caps ? !caps.classList.contains('open') : false }; } } catch (e) { road = { err: String(e).slice(0, 80) }; }
+      A.S.queue = []; UI.ov = null; UI.renderModal(); UI.tab = 'life'; UI.render();
+      return Object.assign(out, { cards, found, road, pure: T.hash(A.S) === h0 && JSON.stringify(A.rngState) === rng0 });
+    });
+    const ok = r.codex <= 3.2 && r.cards > 20 && r.found > 0 && r.found < r.cards && r.legacy <= 1.5 && r.path <= 2.6 && r.holdings <= 2.2 && (!r.road || r.road.err || r.road.closed) && r.pure;
+    return { ok, detail: `screens at 1366: Codex ${r.codex} (${r.cards} entries; a search finds ${r.found}), Dynasty ${r.legacy}, Path ${r.path}, Holdings ${r.holdings}; the road's far list ${r.road ? (r.road.err || (r.road.closed ? 'folded' : 'OPEN')) : 'not drawn'}; pure ${r.pure}` };
+  },
 };

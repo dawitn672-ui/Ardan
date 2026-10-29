@@ -54,7 +54,7 @@
   };
   SH.arms = function (p) {
     try { if (A.ID && A.ID.coatSvg) { const s = A.ID.coatSvg(p, 120); if (s) return s; } } catch (e) {}
-    try { const h = p && p.house && A.S.houses[p.house]; return h ? PORTRAIT.coat(h, 120) : ''; } catch (e) { return ''; }
+    try { const h = p && p.house && A.S.houses[p.house]; return h ? PORTRAIT.coat(h, 120) : SH.seal(p); } catch (e) { return SH.seal(p); }
   };
   SH.skyAt = function (shape, key, hour) {
     const SK = UI.SKIES, pc = A.pc();
@@ -67,6 +67,13 @@
     try { return SK.svg(shape, key, m, o); } catch (e) { return ''; }
   };
   SH.place = function () { const pc = A.pc(); try { return pc ? `${A.provName(pc.home)}, ${A.monthOf ? (A.dateStr ? A.dateStr(A.today(), A.S.year, true) : A.S.year) : A.S.year}` : ''; } catch (e) { return ''; } };
+  SH.short = n => { n = Math.round(+n || 0); return n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1) + 'M' : n >= 1e4 ? Math.round(n / 1000) + 'k' : String(n); };
+  // a seal for a life with no arms: a wax disc with the initial (9992's mark stands in for a coat it does not have)
+  SH.seal = function (p) {
+    const ch = String((p && p.given) || 'A').trim()[0] || 'A';
+    return `<svg viewBox="0 0 40 46" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="23" r="17" fill="#9a2b1f" stroke="#1b1730" stroke-width="2"/><circle cx="20" cy="23" r="12.5" fill="none" stroke="#e8b0a0" stroke-width="1" opacity=".7"/>` +
+      `<text x="20" y="29" text-anchor="middle" font-family="Georgia, serif" font-size="17" font-weight="700" fill="#f3d9cf">${UI.esc(ch.toUpperCase())}</text></svg>`;
+  };
   SH.KINDS = {
     // the scene on screen, once it has a result
     scene() {
@@ -77,9 +84,13 @@
       try { const SK = UI.SKIES, o = SK.optsFor(q, v); sky = SK.svg(o.shape, o.key, o.month, o); } catch (e) { sky = SH.skyAt('none', q.ev + '|' + A.S.year); }
       const ch = UI.SCENE && UI.SCENE.chosen ? UI.SCENE.chosen.get(q) : null;
       const who = q.ctx && q.ctx.pid ? A.P(q.ctx.pid) : null;
-      const place = SH.place();
-      return { kind: 'scene', place, title: v.title || 'A moment', line: clip(q.result.text, 360), sub: ch && ch.label ? 'You chose: ' + ch.label : '', tag: `${pc.given}, ${A.age(pc)}`,
-        epitaph: pc.epithet ? `${A.fullName ? A.fullName(pc, false) : pc.given}, called ${pc.epithet}` : (A.fullName ? A.fullName(pc, false) : pc.given), sky, bust: SH.bust(who && who.app ? who : pc), arms: SH.arms(pc), file: `ardan-${q.ev}-${A.S.year}` };
+      const place = SH.place(), subj = who && who.app && who.alive !== undefined ? who : null;
+      // the face on the card is the scene's subject when it has one: the tag names them, and you go in the line under
+      // the text (cycle 2, design A9: "WULFRIC, 25" printed beside his dance partner's face)
+      const face = subj || pc, you = A.fullName ? A.fullName(pc, false) : pc.given;
+      return { kind: 'scene', place, title: v.title || 'A moment', line: clip(q.result.text, 360), sub: ch && ch.label ? 'You chose: ' + ch.label : '', tag: `${face.given}, ${A.age(face)}`,
+        stats: [['Age', A.age(pc)], ['Renown', Math.round(pc.fame || 0)], ['Purse', SH.short(pc.coin)], ...(ch && ch.odds != null ? [['Odds', ch.odds + '%']] : [['Year', A.S.year]])],
+        epitaph: (subj ? 'With ' : '') + (pc.epithet ? `${you}, called ${pc.epithet}` : you), sky, bust: SH.bust(face), arms: SH.arms(pc), file: `ardan-${q.ev}-${A.S.year}` };
     },
     // the life, on the death screen
     life() {
@@ -90,7 +101,7 @@
       let epi = []; try { epi = A.epilogue ? A.epilogue(pc) : []; } catch (e) {}
       const deeds = (pc.deeds || []).slice(-2).map(d => d.t).join('. ');
       return { kind: 'life', place: (() => { try { return A.provName(pc.home); } catch (e) { return ''; } })(), title: A.fullName ? A.fullName(pc, false) : pc.given, sub: `${pc.born} – ${pc.died || A.S.year} AR${E ? ' · ' + E.name : ''}`,
-        line: clip(E ? E.t : `Died aged ${A.age(pc)}, of ${pc.cause || 'unknown causes'}.`, 260), epitaph: clip(epi[0] || deeds || '', 200), tag: `Died aged ${A.age(pc)}`,
+        line: clip(E ? E.t : `Died aged ${A.age(pc)}, of ${pc.cause || 'unknown causes'}.`, 260), epitaph: clip(epi[0] || deeds || '', 200), tag: `Died aged ${A.age(pc)}`, stats: [['Age', A.age(pc)], ['Renown', Math.round(pc.fame || 0)], ['Children', (pc.children || []).length], ['Left', SH.short(pc.coin)]],
         sky: SH.skyAt('death', 'death|' + pc.id, 'dusk'), bust: SH.bust(pc), arms: SH.arms(pc), file: `ardan-life-of-${String(pc.given).toLowerCase().replace(/[^a-z0-9]+/g, '-')}` };
     },
     // a page of the Book: the chapter in progress and the last lines the chronicler wrote
@@ -101,7 +112,7 @@
       if (!life || !life.chapters.length) return null;
       const ch = life.chapters[life.chapters.length - 1];
       const cur = pc.chap && pc.chap.cur && A.CH ? A.CH.heading(pc.chap.cur) : ch.title;
-      return { kind: 'book', place: SH.place(), title: `The Chronicle of ${pc.given}`, sub: cur, line: clip(ch.lines.slice(-3).join(' '), 380), epitaph: ch.span, tag: `${A.age(pc)} years`,
+      return { kind: 'book', place: SH.place(), title: `The Chronicle of ${pc.given}`, sub: cur, line: clip(ch.lines.slice(-3).join(' '), 380), epitaph: ch.span, tag: `${A.age(pc)} years`, stats: [['Age', A.age(pc)], ['Renown', Math.round(pc.fame || 0)], ['Chapters', pc.chap ? pc.chap.n || 0 : 0], ['Purse', SH.short(pc.coin)]],
         sky: SH.skyAt('letter', 'book|' + pc.id + '|' + A.S.year), bust: SH.bust(pc), arms: SH.arms(pc), file: `ardan-chronicle-${String(pc.given).toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${A.S.year}` };
     },
   };
@@ -116,7 +127,7 @@
     const [sky, bust, arms] = await Promise.all([SH.svgImage(d.sky, 1728, 540), SH.svgImage(d.bust, 400, 400), SH.svgImage(d.arms, 150, 172)]);
     // paper, then the print across the top (cropped from the middle of its 16:5)
     g.fillStyle = SH.PAPER; g.fillRect(0, 0, W, H);
-    const top = 600;
+    const top = 520;
     if (sky) g.drawImage(sky, (1728 - W) / 2, 0, W, top * (1728 / 1728), 0, 0, W, top);
     else { const gr = g.createLinearGradient(0, 0, 0, top); gr.addColorStop(0, '#2f5aa8'); gr.addColorStop(1, '#e9b54e'); g.fillStyle = gr; g.fillRect(0, 0, W, top); }
     g.fillStyle = 'rgba(27,23,48,.18)'; g.fillRect(0, top - 6, W, 6);
@@ -131,7 +142,7 @@
     // the arms, right
     if (arms) { g.save(); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 16; g.shadowOffsetY = 6; g.drawImage(arms, W - 84 - 150, top - 120, 150, 172); g.restore(); }
     // the words
-    let y = top + 290;
+    let y = top + 250;
     const left = 84, maxW = W - 168;
     g.fillStyle = SH.INK; g.textBaseline = 'alphabetic';
     // beside the bust: who, and where
@@ -143,8 +154,23 @@
     if (d.sub) { g.font = `26px ${SH.FONT.ui}`; g.fillStyle = '#4a4560'; for (const l of wrap(g, d.sub, maxW).slice(0, 2)) { g.fillText(l, left, y); y += 36; } y += 6; }
     g.fillStyle = SH.GOLD; g.fillRect(left, y, 120, 5); y += 52;
     g.fillStyle = SH.INK; g.font = `34px ${SH.FONT.prose}`;
-    for (const l of wrap(g, d.line, maxW).slice(0, 8)) { g.fillText(l, left, y); y += 48; }
-    if (d.epitaph) { y += 16; g.font = `italic 30px ${SH.FONT.prose}`; g.fillStyle = '#3a3e55'; for (const l of wrap(g, d.epitaph, maxW).slice(0, 3)) { g.fillText(l, left, y); y += 42; } }
+    // the words stop above the numbers strip (and the epitaph keeps its line): a long result is cut with an ellipsis
+    const floor = H - 92 - (Array.isArray(d.stats) && d.stats.length ? 116 : 0) - 16;
+    const epiH = d.epitaph ? 16 + 42 : 0;
+    const lines = wrap(g, d.line, maxW), room = Math.max(1, Math.floor((floor - epiH - y + 34) / 48));
+    lines.slice(0, room).forEach((l, i) => { g.fillText(i === room - 1 && lines.length > room ? l.replace(/\s*\S*$/, '…') : l, left, y); y += 48; });
+    if (d.epitaph) { y += 16; g.font = `italic 30px ${SH.FONT.prose}`; g.fillStyle = '#3a3e55'; for (const l of wrap(g, d.epitaph, maxW).slice(0, Math.max(1, Math.floor((floor - y + 30) / 42)))) { g.fillText(l, left, y); y += 42; } }
+    // four numbers in a strip above the footer (cycle 2, visual F9: 150 px of empty cream below the line)
+    if (Array.isArray(d.stats) && d.stats.length) {
+      const sy = H - 92 - 116, n = d.stats.length, cw = (W - left * 2) / n;
+      g.strokeStyle = 'rgba(27,23,48,.25)'; g.lineWidth = 2; g.beginPath(); g.moveTo(left, sy); g.lineTo(W - left, sy); g.stroke();
+      d.stats.forEach(([k, v], i) => {
+        const x = left + cw * i + cw / 2;
+        g.textAlign = 'center'; g.fillStyle = SH.INK; g.font = `600 44px ${SH.FONT.ui}`; g.fillText(String(v), x, sy + 56);
+        g.fillStyle = '#6a6278'; g.font = `600 18px ${SH.FONT.ui}`; g.fillText(String(k).toUpperCase(), x, sy + 86);
+      });
+      g.textAlign = 'left';
+    }
     // the footer band
     g.fillStyle = SH.INK; g.fillRect(0, H - 92, W, 92);
     g.fillStyle = SH.GOLD; g.font = `600 30px ${SH.FONT.name}`; g.fillText('ARDAN', left, H - 36);
@@ -191,7 +217,7 @@
     return head + `<div class="sh-prev"><img src="${esc(L.url)}" alt="${esc('A card: ' + L.title)}" width="270" height="338"></div>` +
       `<div class="small muted sh-foot">${esc(L.footer)}</div>` +
       `<div class="field"><label for="shSeed">World seed: a friend can start in the same world with it</label><div class="row"><input id="shSeed" readonly value="${esc(L.seed)}" style="flex:1"><button class="small" data-a="shCopy">Copy the seed</button></div></div>` +
-      `<div class="choices sh-acts"><button class="primary" data-a="shSave">Save the picture (PNG)</button>${share ? '<button data-a="shShare">Share…</button>' : ''}<button data-a="closeOv">Back</button></div></div>`;
+      `<div class="sh-acts"><button class="primary" data-a="shSave">Save the picture (PNG)</button>${share ? '<button data-a="shShare">Share…</button>' : ''}<button class="ghost" data-a="closeOv">Back</button></div></div>`;
   };
   UI.SYS_OV = UI.SYS_OV || [];
   if (!UI.SYS_OV.includes('shCard')) UI.SYS_OV.push('shCard');
@@ -259,7 +285,8 @@
 .sh-prev img{display:block;margin:6px auto 8px;width:270px;max-width:100%;height:auto;border-radius:6px;box-shadow:var(--e-2)}
 .sh-foot{margin-bottom:8px}
 .sh-box .field{text-align:left}
-.sh-acts{justify-content:center}
+.sh-acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.sh-acts button{min-height:44px}
 .sh-keep .ic{width:14px;height:14px;vertical-align:-2px;margin-right:6px}
 .sc-foot .sh-keep{margin-right:auto}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('sh-style')) return; const s = document.createElement('style'); s.id = 'sh-style'; s.textContent = CSS; document.head.appendChild(s); };

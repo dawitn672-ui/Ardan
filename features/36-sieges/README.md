@@ -52,3 +52,7 @@ The events pass `tools/lint-events.mjs` and `tools/lint-choices.mjs`.
 **Limits.**
 - **Not for generals.** A general or ruler running a siege from above still has the release's controls.
 - **The town is not a place.** It has no named people, and no food store beyond what the counter implies.
+
+## Cycle 2: no siege choices for a child (design A3)
+
+Cycle 1 gave the siege scenes a teen-or-adult `cond`. The month hook and the fall queue them with `forced: true`, though, and a forced item skips its `cond` (`A.stillValid`), so a newborn inside the walls was still offered "Go out with the night sortie". The queue now asks the age itself. An infant or a child (`SG.young`, from `A.stage`) gets no `sg_walls`, `sg_sacked` or `sg_terms`. Instead a line in the story tells the child's side, once a siege: the mother's share of the bread, the cellar, the strange soldiers in the street. **Measured by** `sgForcedNoChild`: besieged at 0 and at 6, no siege or fall scene and a story line; at 30, both scenes.

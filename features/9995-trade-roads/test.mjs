@@ -11,6 +11,41 @@ const SETUP = () => {
 };
 
 export default {
+  async trFortune(pg) {
+    // lives review cycle 2, F1: a great purse can lend to a crown and be paid back with interest, or lose it to a broke
+    // crown; the New Year says what the purse did; the card offers it, purely
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4408, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'M', startAge: 30 });
+      A.S.queue.length = 0;
+      const pc = A.pc(); pc.coin = 80000;
+      const st = A.rngState, s0 = JSON.stringify(A.S); const h = A.TRADE.card(pc); const pure = A.rngState === st && JSON.stringify(A.S) === s0;
+      const LT = A.TRADE.loanTargets(pc), R = LT[0], d0 = R.debt || 0;
+      const res = A.TRADE.lend(R.id, 0.25), c1 = pc.coin, debtUp = (R.debt || 0) > d0;
+      T.play(1, { each: () => { pc.health = 90; } });
+      const got = (pc.crownLoans || [])[0] ? pc.crownLoans[0].got : null;
+      // a second loan to a crown gone broke is lost
+      const R2 = LT[1] || LT[0]; A.TRADE.lend(R2.id, 0.25); R2.treasury = -R2.income; R2.debt = R2.income * 3;
+      const n0 = pc.crownLoans.length;
+      T.play(1, { each: () => { pc.health = 90; if (R2.treasury > -R2.income) { R2.treasury = -R2.income; R2.debt = R2.income * 3; } } });
+      const lines = A.S.log.slice(-80).flatMap(e => e.lines.map(l => String(l[0])));
+      return { pure, lend: (h.match(/data-a="trLend"/g) || []).length, inline: /\son[a-z]+=/i.test(h), res, debtUp, c1, got, n0, n1: pc.crownLoans.length, purse: lines.some(t => /^Your purse over/.test(t)), lost: lines.some(t => /cannot pay: your loan/.test(t)) };
+    });
+    const ok = r.pure && r.lend >= 1 && !r.inline && r.res.ok && r.debtUp && r.got > 0 && r.purse && r.lost && r.n1 < r.n0;
+    return { ok, detail: JSON.stringify(r) };
+  },
+
+  async trBrokersPaid(pg) {
+    // world review cycle 2, F5: the relay cities' crowns take dues on their brokers' tenth
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4409, race: 'human', realm: 'POL-70', status: 'merchant', sex: 'M', startAge: 25, lands: 'great' });
+      A.S.queue.length = 0;
+      const end = A.absDay() + 180; while (A.absDay() < end) { A.advance(Math.min(30, end - A.absDay())); A.S.queue.length = 0; const pc = A.pc(); if (!pc.alive) { pc.alive = true; pc.health = 80; } }
+      const paid = Object.values(A.S.realms).filter(x => x.alive && x.dues > 0).sort((a, b) => b.dues - a.dues);
+      return { n: paid.length, top: paid.slice(0, 6).map(x => x.short + ' ' + x.dues), ushivar: (A.realm('POL-72') || {}).dues || 0 };
+    });
+    return { ok: r.n >= 10 && r.ushivar > 0, detail: JSON.stringify(r) };
+  },
+
   async trGoodsAndRoads(pg) {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {

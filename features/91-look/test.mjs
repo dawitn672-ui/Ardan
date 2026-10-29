@@ -450,7 +450,46 @@ export default {
       await ctx.close(); return r;
     };
     const full = await run({}), red = await run({ reducedMotion: 'reduce' });
-    const ok = full.layers === 4 && full.busts === 3 && full.lands === 3 && full.brush && full.seal && full.same && full.moving > 0 && full.inSight && full.pure && red.moving === 0;
-    return { ok, detail: `layers ${full.layers}, busts ${full.busts} of ${full.lands} lands, brush ${full.brush}, seal ${full.seal}, same twice ${full.same}, drifting ${full.moving} (reduced ${red.moving}), button in sight ${full.inSight}, pure ${full.pure}` };
+    // cycle 2 (visual B1): in Day theme the vista's words keep Night's ink: the count line and the tagline at 4.5:1 or
+    // more on the vista's mid ridge (#463f6e), and the title holds no map (it moved to How to play)
+    const day = await (async () => {
+      const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 } }), p = await ctx.newPage();
+      await p.goto(pathToFileURL(file).href); await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      const r = await p.evaluate(() => {
+        UI.set.theme = 'light'; UI.applySettings(); UI.screen = 'title'; UI.render();
+        const lum = c => { const m = c.match(/\d+(\.\d+)?/g).slice(0, 3).map(Number).map(v => v / 255).map(v => v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4)); return .2126 * m[0] + .7152 * m[1] + .0722 * m[2]; };
+        const bg = lum('rgb(70,63,110)'), ratio = el => { const l = lum(getComputedStyle(el).color); return (Math.max(l, bg) + .05) / (Math.min(l, bg) + .05); };
+        const t = document.getElementById('title');
+        return { blurb: ratio(t.querySelector('.blurb')), sub: ratio(t.querySelector('.sub')), map: !!t.querySelector('canvas') };
+      });
+      await ctx.close(); return r;
+    })();
+    const ok = full.layers === 4 && full.busts === 3 && full.lands === 3 && full.brush && full.seal && full.same && full.moving > 0 && full.inSight && full.pure && red.moving === 0 && day.blurb >= 4.5 && day.sub >= 4.5 && !day.map;
+    return { ok, detail: `layers ${full.layers}, busts ${full.busts} of ${full.lands} lands, brush ${full.brush}, seal ${full.seal}, same twice ${full.same}, drifting ${full.moving} (reduced ${red.moving}), button in sight ${full.inSight}, pure ${full.pure}; Day theme: count line ${day.blurb.toFixed(1)}:1, tagline ${day.sub.toFixed(1)}:1 on the vista, map in the title ${day.map}` };
+  },
+
+  // cycle 2 (visual B7, B9, B11): the ladder never breaks a rank's name mid-word; the rail's delta chip does not sit on
+  // the number it reports; a People row's chips end in an ellipsis, never a clipped letter
+  async lookSmallFixes(pg) {
+    await pg.setViewportSize({ width: 1366, height: 768 });
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24, lands: 'great' });
+      UI.set.motion = 'off'; UI.applySettings(); A.S.queue = [];
+      UI.tab = 'path'; UI.render();
+      const spans = [...document.querySelectorAll('#tabbody .ladder > span')];
+      const broken = spans.filter(s => s.scrollWidth > s.clientWidth + 1).map(s => s.textContent.trim());
+      UI.tab = 'life'; UI.render();
+      const pc = A.pc(); pc.health = Math.max(5, (pc.health || 80) - 30); UI.refresh();
+      const d = document.querySelector('#profile .lk-dlt'), row = d && d.closest('.barrow'), v = row && row.querySelector('.val');
+      const over = (a, b) => !(a.right <= b.left || b.right <= a.left || a.bottom <= b.top || b.bottom <= a.top);
+      const covers = d && v ? over(d.getBoundingClientRect(), v.getBoundingClientRect()) : null;
+      UI.tab = 'people'; UI.render();
+      const chips = [...document.querySelectorAll('#tabbody .card.person.lk-row .chip')];
+      const bad = chips.filter(c => c.scrollWidth > c.clientWidth + 1 && getComputedStyle(c).textOverflow !== 'ellipsis').length;
+      UI.tab = 'life'; UI.render();
+      return { n: spans.length, broken, flash: !!d, covers, chips: chips.length, bad };
+    });
+    const ok = !r.broken.length && (!r.flash || r.covers === false) && r.bad === 0;
+    return { ok, detail: `ladder: ${r.n} ranks, broken mid-word ${r.broken.length ? r.broken.join(', ') : 'none'}; delta chip shown ${r.flash}, over its number ${r.covers}; People chips ${r.chips}, clipped without an ellipsis ${r.bad}` };
   },
 };

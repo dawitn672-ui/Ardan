@@ -444,3 +444,22 @@ FB.ind = id => { const c = FB.byId[id]; return c && c.inds.length ? c.inds[0] : 
 
 // the scenes (*.events.js) and the bench count far encounters by these
 FB.EVENT_PREFIX = 'fb_';
+
+// ---- no raw creature id in a scene (cycle 2, lives B4) ---------------------------------------------------------------
+// The base A.ctxTokens sets {beast} to the creature's name, then copies every ctx value over the tokens, so ctx.beast
+// ("CRE-35") wrote the id back over the name: "A CRE-35 has been killing stock". The far creatures are not in
+// LORE.creatures at all. Any token whose value is a creature id now reads as the creature's name (the lore's, else
+// this feature's own), without a leading "The", which the scenes write themselves ("A {beast}", "the {beast}").
+FB.idName = function (id) {
+  const L = (LORE.creatures || []).find(x => x.id === id), c = FB.byId && FB.byId[id];
+  const n = (L && L.name) || (c && c.name) || '';
+  return n ? n.replace(/^The /, '') : '';
+};
+{
+  const tok0 = A.ctxTokens;
+  if (typeof tok0 === 'function') A.ctxTokens = function () {
+    const o = tok0.apply(this, arguments);
+    try { if (o) for (const k in o) if (typeof o[k] === 'string' && /^CRE-\d+$/.test(o[k])) { const n = FB.idName(o[k]); if (n) o[k] = n; } } catch (e) { console.error('far beasts tokens', e); }
+    return o;
+  };
+}

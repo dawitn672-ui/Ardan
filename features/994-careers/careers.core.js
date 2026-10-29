@@ -79,6 +79,8 @@
   // a commoner of renown: a soldier who has led a few hundred men and made a name, or anyone famous enough
   CAR.knightable = function (p) {
     if (!p || !p.alive || p.ruler || born(p) || !free(p) || p.prison || (p.noble && p.noble.rung >= 2) || p.flags.cr_traitor) return false;
+    // twice refused, the crown stops asking (cycle 2, lives F6: offered four times to a man who said no each time)
+    if (p.car && (+p.car.knightNo || 0) >= 2) return false;
     if (!A.isAdult(p) || A.age(p) < 24) return false;
     if (!ruOf(p)) return false;
     const fame = p.fame || 0;

@@ -166,7 +166,8 @@
 
   // ---- the card (pure): the long roads from the player's market, what they carry could fetch, and what is out
   TR.card = function (pc) {
-    if (!pc || !TR.on()) return '';
+    if (!pc) return '';
+    if (!TR.on()) { const f = TR.fortuneCard(pc); return f ? `<div class="tr-card" style="margin-top:10px"><div class="small"><b>A great purse</b></div>${f}</div>` : ''; }
     const home = A.homeMkt(pc), c = M.of(home), esc = UI.esc, G = Gs();
     let h = `<div class="tr-card" style="margin-top:10px"><div class="small"><b>The long roads</b> <span class="tiny muted">${esc(`Money here: the ${c.name} (${c.d}; ${c.sun === 1 ? 'the unit of account' : `about ${c.sun} suns`}).`)}</span></div>`;
     const opts = TR.vOptions(pc, 2);
@@ -184,7 +185,7 @@
       const line = v => { const left = Math.max(0, Math.round(((v.due[v.due.length - 1] || now) - now) / 30)), at = v.leg > 0 ? A.realmShort(v.legs[v.leg - 1]) : A.realmShort(v.f); return `${v.n} ${G[v.k] ? G[v.k].name.toLowerCase() : v.k} to ${A.realmShort(v.t)}: ${v.st === 'held' ? 'held' : 'past'} ${at}, about ${left} month${left === 1 ? '' : 's'} to go${v.loss ? `, ${v.loss} lost` : ''}`; };
       h += `<div class="tiny" style="margin-top:4px">${esc([...vs.map(line), ...cr.map(x => `a letter of credit from ${A.realmShort(x.from)} for ${A.coin(x.amt)}, on its way`)].join('; ') + '.')}</div>`;
     }
-    return h + '</div>';
+    return h + TR.fortuneCard(pc) + '</div>';
   };
   const card = E.card;
   E.card = function (rid) {
@@ -192,7 +193,106 @@
     try { const pc = A.pc(); if (pc && rid === A.homeMkt(pc)) h += TR.card(pc); } catch (e) { console.error('trade card', e); }
     return h;
   };
+  // ---- what a fortune is for (lives review cycle 2, F1: a merchant ended on 1.65 million suns, and nothing late in a
+  // life cost more than a few thousand). Two things a great purse can do on the roads, both with stakes:
+  //   - lend to a crown (TR.lend): its treasury takes the money and its debt grows by it; it pays interest every year
+  //     at a rate set by its credit (6 in 100, and 3 more for every year of income it already owes) and the principal
+  //     back after LOAN_YEARS. A crown that goes broke (04-world-fixes' A.WF.broke) or repudiates its debts pays
+  //     nothing more. A loan sways the ruler (opinion +, a favour owed).
+  //   - endow a caravanserai on the road out of your realm (TR.endow): walls, wells and a garrison. Every caravan
+  //     through the realm loses less to bandits (r.serais, up to SERAI_MAX), and the world remembers who built it.
+  // And at each New Year the log says what the purse did that year, and how much of it came from trade.
+  Object.assign(TR, { LOAN_MIN: 5000, LOAN_YEARS: 5, LOAN_RATE: 0.06, LOAN_DEBT_RATE: 0.03, SERAI_COST: 20000, SERAI_MAX: 5, SERAI_CUT: 0.1 });
+  TR.loanRate = r => { const inc = Math.max(1, r.income || 0); return Math.round((TR.LOAN_RATE + TR.LOAN_DEBT_RATE * Math.min(4, (r.debt || 0) / inc)) * 1000) / 1000; };
+  TR.loanTargets = function (pc) {
+    if (!pc) return [];
+    const home = A.homeMkt(pc), out = [], seen = new Set();
+    const add = id => { const r = A.realm(id); if (!r || !r.alive || r.playerRun || seen.has(id) || (pc.ruler && pc.ruler === id)) return; seen.add(id); out.push(r); };
+    add(pc.realm); add(home);
+    for (const id of (A.neighbors ? A.neighbors(home) : []).slice().sort()) add(id);
+    return out.slice(0, 4);
+  };
+  TR.lend = function (rid, share) {
+    const pc = A.pc(), r = A.realm(rid); if (!pc || !r || !r.alive) return { ok: false, msg: 'No such crown.' };
+    if (!TR.loanTargets(pc).includes(r)) return { ok: false, msg: 'That crown does not borrow from you.' };
+    const amt = Math.round(Math.max(TR.LOAN_MIN, (pc.coin || 0) * (share || 0.25)) / 100) * 100;
+    if (!(pc.coin >= amt) || amt < TR.LOAN_MIN) return { ok: false, msg: `A crown borrows ${A.coin(TR.LOAN_MIN)} at the least.` };
+    const rate = TR.loanRate(r);
+    pc.coin -= amt; r.treasury = (r.treasury || 0) + amt; r.debt = (r.debt || 0) + amt;
+    pc.crownLoans = Array.isArray(pc.crownLoans) ? pc.crownLoans : [];
+    pc.crownLoans.push({ rid, amt, rate, y: A.S.year, until: A.S.year + TR.LOAN_YEARS, got: 0 });
+    const ru = r.ruler != null ? A.P(r.ruler) : null;
+    if (ru && ru.alive && A.addOp) { try { A.addOp(ru, pc, 6); } catch (e) {} }
+    pc.flags = pc.flags || {}; pc.flags.tr_crown_loan = A.S.year;
+    A.log(`You lend ${A.coin(amt)} to the crown of ${A.realmShort(rid)}, at ${Math.round(rate * 100)} in 100 a year, to be repaid in ${A.S.year + TR.LOAN_YEARS}.`, 'info');
+    return { ok: true };
+  };
+  TR.loanYear = function (pc) {
+    const L = Array.isArray(pc.crownLoans) ? pc.crownLoans : null; if (!L || !L.length) return;
+    const keep = [];
+    for (const x of L) {
+      const r = A.realm(x.rid);
+      const broke = !r || !r.alive || (A.WF && A.WF.broke && A.WF.broke(r)) || (r.riDefault != null && r.riDefault >= x.y);
+      if (broke) {
+        A.log(`The crown of ${A.realmShort(x.rid)} cannot pay: your loan of ${A.coin(x.amt)} is lost, after ${A.coin(x.got)} of interest.`, 'bad');
+        pc.flags = pc.flags || {}; pc.flags.tr_loan_lost = A.S.year;
+        continue;
+      }
+      const due = Math.round(x.amt * x.rate) + (A.S.year >= x.until ? x.amt : 0);
+      r.treasury -= due; if (A.S.year >= x.until) r.debt = Math.max(0, (r.debt || 0) - x.amt);
+      pc.coin += due; x.got += due;
+      if (A.S.year >= x.until) A.log(`The crown of ${A.realmShort(x.rid)} repays your loan: ${A.coin(x.amt)}, and ${A.coin(x.got)} in all.`, 'good');
+      else keep.push(x);
+    }
+    pc.crownLoans = keep;
+  };
+  TR.seraiCost = r => TR.SERAI_COST * (1 + (r && r.serais || 0));
+  TR.endow = function () {
+    const pc = A.pc(); if (!pc) return { ok: false };
+    const r = A.realm(A.homeMkt(pc)); if (!r) return { ok: false, msg: 'No road here.' };
+    if ((r.serais || 0) >= TR.SERAI_MAX) return { ok: false, msg: `The roads of ${r.short} have all the caravanserais they can use.` };
+    const c = TR.seraiCost(r); if (!(pc.coin >= c)) return { ok: false, msg: `A caravanserai costs ${A.coin(c)}.` };
+    pc.coin -= c; r.serais = (r.serais || 0) + 1;
+    pc.fame = Math.min(100, (pc.fame || 0) + 4);
+    pc.flags = pc.flags || {}; pc.flags.tr_serai = A.S.year;
+    (pc.deeds = Array.isArray(pc.deeds) ? pc.deeds : []).push({ y: A.S.year, t: `Built a caravanserai on the roads of ${r.short}` });
+    A.log(`You endow a caravanserai on the road out of ${r.short}: walls, a well, a stable and a garrison of ten. ${A.coin(c)}. The caravans will lose less on that road.`, 'good');
+    A.news(`A caravanserai rises on the roads of ${r.short}, built by ${A.fullName ? A.fullName(pc, false) : pc.given}.`, 'realm');
+    return { ok: true };
+  };
+  // the bandits' share on a trip falls with the caravanserais of the realms it passes through (read by TR.month)
+  TR.seraiMul = T => { let n = 0; for (const id of T.through.concat([T.b])) { const r = A.realm(id); n += r && r.serais || 0; } return Math.max(0.5, 1 - TR.SERAI_CUT * n); };
+  // the New Year line: what the purse did, and how much of it was trade
+  TR.purseYear = function (pc) {
+    const P = pc.purseY, t = (pc.flags && pc.flags.traded) || 0;
+    if (P && P.y === A.S.year - 1) {
+      const d = Math.round(pc.coin - P.c), tr = Math.round(t - P.t);
+      if (Math.abs(d) >= 200) A.log(`Your purse over ${P.y}: ${A.coin(pc.coin)} at the New Year, ${d >= 0 ? 'up' : 'down'} ${A.coin(Math.abs(d))}${tr > 0 ? `; trade and ventures brought in ${A.coin(tr)}` : ''}.`, 'info');
+    }
+    pc.purseY = { y: A.S.year, c: Math.round(pc.coin), t: Math.round(t) };
+  };
+  A.onMonth.push(() => {
+    try {
+      const pc = A.pc(); if (!pc || !pc.alive || A.monthOf(A.today()).m !== 0) return;
+      TR.loanYear(pc); TR.purseYear(pc);
+    } catch (e) { console.error('fortune', e); }
+  });
+  // (pure) the card's last part: loans and the caravanserai, for a purse that can afford them
+  TR.fortuneCard = function (pc) {
+    const esc = UI.esc, L = Array.isArray(pc.crownLoans) ? pc.crownLoans : [];
+    let h = '';
+    if ((pc.coin || 0) >= TR.LOAN_MIN) {
+      const rows = TR.loanTargets(pc).map(r => `<button class="btn tiny" data-a="trLend" data-v="${esc(r.id)}" title="${esc(`${Math.round(TR.loanRate(r) * 100)} in 100 a year; its debt is ${A.fmt(Math.round(r.debt || 0))}, its income ${A.fmt(Math.round(r.income || 0))} a year. A broke crown pays nothing more.`)}">${esc(`Lend to ${r.short} (${Math.round(TR.loanRate(r) * 100)}%)`)}</button>`).join(' ');
+      if (rows) h += `<div class="tiny" style="margin-top:6px">${esc(`A crown borrows a quarter of your purse (${A.coin(Math.max(TR.LOAN_MIN, Math.round((pc.coin || 0) * 0.25 / 100) * 100))}) for ${TR.LOAN_YEARS} years:`)} ${rows}</div>`;
+      const r = A.realm(A.homeMkt(pc));
+      if (r && (r.serais || 0) < TR.SERAI_MAX && pc.coin >= TR.seraiCost(r) * 0.5) h += `<div class="tiny" style="margin-top:4px"><button class="btn tiny" data-a="trEndow"${pc.coin < TR.seraiCost(r) ? ' disabled' : ''}>${esc(`Endow a caravanserai (${A.coin(TR.seraiCost(r))})`)}</button> <span class="muted">${esc(`${r.short} has ${r.serais || 0}. Caravans through it lose less to bandits.`)}</span></div>`;
+    }
+    if (L.length) h += `<div class="tiny" style="margin-top:4px">${esc('Out on loan: ' + L.map(x => `${A.coin(x.amt)} to ${A.realmShort(x.rid)} at ${Math.round(x.rate * 100)}% until ${x.until}`).join('; ') + '.')}</div>`;
+    return h;
+  };
   if (typeof UI !== 'undefined' && UI.A) Object.assign(UI.A, {
     trSend(v) { const [dest, k] = String(v || '').split('|'); const r = TR.send(dest, k); if (r && !r.ok && r.msg) A.log(r.msg, 'warn'); UI.render(); },
+    trLend(v) { const r = TR.lend(String(v || ''), 0.25); if (r && !r.ok && r.msg) A.log(r.msg, 'warn'); UI.render(); },
+    trEndow() { const r = TR.endow(); if (r && !r.ok && r.msg) A.log(r.msg, 'warn'); UI.render(); },
   });
 })();

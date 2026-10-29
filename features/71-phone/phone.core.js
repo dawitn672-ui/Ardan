@@ -29,6 +29,9 @@ PH.CSS = `
   #game.phone .mkt-t, #modal .mkt-t, #game.phone .prow, #modal .prow, #game.phone .lore-row, #modal .lore-row, #game.phone .card.ach, #modal .legend,
   #modal .wr-tabs button span, #modal .squad .m, #game.phone .card.ach b, #game.phone .ladder, #game.phone .yh span, .create-grid .field label, .create-grid .card.opt .d, #app .card.opt .d, #app .field label{font-size:${T(14)}}
   @media (pointer: coarse){ #modal .key, #game.phone .key, #modal .choices button:before{font-size:${T(14)}} #modal .actbtns .key{display:none} }
+  /* cycle 2 (visual B10): on touch, a tap anywhere on a choice row chooses. The odds badge and the check chip inside a row
+     no longer open their breakdown popover, which pinned itself over every choice; the row's words carry the odds */
+  @media (pointer: coarse){ #modal .choices > button [data-tt], #modal .choices > button [data-tip], #modal .choices > button .tipt, #modal .choices > button .tt{pointer-events:none} }
   #game.phone #tabs .subbar button, #modal .seg button{font-size:${T(14)}}
 
   /* --- the page: no frame inside a frame; 8 px gutters --- */
@@ -49,6 +52,16 @@ PH.CSS = `
   #game.phone #topbar .ph-stat .clk-date{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #game.phone #topbar .ph-stat .clk-ini{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
   #game.phone #topbar .ph-stat .clk-ini .clk-bar, #game.phone #topbar .ph-stat .clk-ini .tiny{display:none}
+  /* cycle 2 (design A5): the date, the initiative and the purse never print over each other. The initiative and the
+     purse keep their width; the date gives way (its age moves to its tooltip and name) and ends in an ellipsis; a debt
+     is a red dot, its sum in the purse's tooltip and spoken name */
+  #game.phone #topbar .ph-stat .clk-ini, #game.phone #topbar .top-coin{flex:none!important;min-width:auto!important;width:auto!important}
+  #game.phone #topbar .ph-stat .clk-ini > .muted, #game.phone #topbar .ph-stat .clk-date > .muted{display:none}
+  #game.phone #topbar .ph-stat .clk-date{flex:0 1 auto!important;min-width:0!important}
+  #game.phone #topbar .ph-stat .clk-date > b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  #game.phone #topbar .top-coin{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+  #game.phone #topbar .top-coin > .bad{font-size:0;display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--danger,#ff8a73);margin-left:3px;flex:none}
+  #game.phone #topbar .top-coin > .bad > svg{display:none}
   #game.phone #topbar .top-info{flex:0 0 auto;white-space:nowrap}
   #game.phone #topbar > button{min-width:44px;min-height:44px;padding:0 8px}
 
@@ -120,6 +133,21 @@ PH.CSS = `
   table.ph-cards td.ph-act{grid-column:2;grid-row:1 / span 3;align-self:center;display:flex;flex-direction:column;gap:6px;align-items:stretch}
   table.ph-cards td.ph-act button{min-width:64px}
   table.ph-cards td:empty{display:none}
+  /* the market's rows: the good, what it costs here, what it fetches, and the two buttons, on one line */
+  table.ph-cards.ph-mkt > tbody > tr, table.ph-cards.ph-mkt > tr{grid-template-columns:minmax(0,1fr) 3.6em 3.6em auto;column-gap:6px;row-gap:0;align-items:center;padding:2px 0;min-height:44px;border-bottom:1px solid var(--line,rgba(127,127,127,.25))}
+  table.ph-cards.ph-mkt td, table.ph-cards.ph-mkt th{grid-column:auto;grid-row:1;font-size:${T(14)}}
+  table.ph-cards.ph-mkt td[data-th]:not(.ph-t):not(.ph-act):not(:empty)::before{content:none}
+  table.ph-cards.ph-mkt td.ph-t{grid-column:1;font-size:${T(14)};white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  table.ph-cards.ph-mkt td.ph-t .chip{display:none}
+  table.ph-cards.ph-mkt td:nth-child(2), table.ph-cards.ph-mkt td:nth-child(3){text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  table.ph-cards.ph-mkt td:nth-child(4), table.ph-cards.ph-mkt td:nth-child(5){display:none}
+  table.ph-cards.ph-mkt td.ph-act{grid-column:4;grid-row:1;flex-direction:row;gap:4px}
+  table.ph-cards.ph-mkt td.ph-act button{min-width:44px;padding:0 8px}
+  table.ph-cards.ph-mkt td.ph-act button[data-v$="|5"]{display:none}
+  table.ph-cards.ph-mkt tr.ph-headrow, table.ph-cards.ph-mkt > tbody > tr:first-child:has(th){min-height:24px;font-size:${T(12)};color:var(--text-3);text-transform:uppercase;letter-spacing:.05em}
+  table.ph-cards.ph-mkt th{display:block;text-align:right}
+  table.ph-cards.ph-mkt th:first-child{text-align:left}
+  table.ph-cards.ph-mkt th:nth-child(4), table.ph-cards.ph-mkt th:nth-child(5){display:none}
 
   /* --- the profile on You: a compact card with the miniature beside the name --- */
   #game.phone .phone-profile{display:grid;grid-template-columns:104px minmax(0,1fr);column-gap:12px;align-items:start}
@@ -280,6 +308,8 @@ PH.cardify = function (root) {
     }
     if (head && head.parentElement !== tb.tHead) head.classList.add('ph-headrow'), head.style.display = 'none';
     tb.classList.add('ph-cards'); n++;
+    // cycle 2 (visual F4): the market is one short row per good, not a tall card for each of 26
+    if (tb.querySelector('[data-a="mktBuy"]')) { tb.classList.add('ph-mkt'); if (head) head.style.display = ''; }
   }
   return n;
 };

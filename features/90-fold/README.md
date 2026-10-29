@@ -26,3 +26,13 @@ Found on the way: opening the Path tab wrote a default reputation into the playe
 ## Tests
 
 `foldFits` (with 91-look in the build, at most 1.05 screens for Life and the profile, 3.2 for Holdings and 1.6 for Realm; without it 3.2, 1.7, 4.5 and 1.6; and four tabs shorter than with folds off), `foldToggles` (the activities are one section, open, and name the box they control; Your days starts folded with its summary; a fold closes with a summary and opens again, the choice survives a redraw and is stored; a card's corner button; open all), `foldPure` (six tabs drawn and folds clicked: state and random stream unchanged), `foldAxe` (0 violations on the folded Life, Holdings and Realm tabs).
+
+## Cycle 2 (lane G, Oct 29): the long tabs fold
+
+- **Codex:** every entry folds to its title row (two to a row on a wide panel), with a filter field at the head ("Find in 74 entries"; UI state, never saved). 23.9 → 2.7 screens at 1366 (a noble of 24 on the Great Continent).
+- **Dynasty:** Endings found and Achievements start folded to their summaries, and the achievements open as a grid of small tiles. 5.0 → 1.0.
+- **Path:** the list of paths starts folded once you hold a post. 3.9 → 2.1.
+- **Holdings:** the market starts folded with its summary (open it once and it stays open). On a phone the market is one 44 px row a good (71-phone).
+- **The road** (9990's modal): "Capitals and far realms" starts folded, and on a phone "Caravans leaving this month" too.
+
+`foldLongTabs`.

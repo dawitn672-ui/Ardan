@@ -10,8 +10,9 @@ export default {
       await p.goto(pathToFileURL(file).href);
       await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
       out.push(Object.assign({ w, h }, await p.evaluate(() => {
-        const b = document.querySelector('[data-a="newLife"]').getBoundingClientRect(), cv = document.querySelector('#title canvas.mapstrip'), r = cv.getBoundingClientRect();
-        return { bottom: Math.round(b.bottom), vh: innerHeight, mapH: Math.round(r.height), shape: Math.abs((r.width / r.height) / (cv.width / cv.height) - 1) };
+        // cycle 2 (visual F1): the map left the title for How to play; where a strip is still drawn it keeps its shape
+        const b = document.querySelector('[data-a="newLife"]').getBoundingClientRect(), cv = document.querySelector('#title canvas.mapstrip'), r = cv ? cv.getBoundingClientRect() : null;
+        return { bottom: Math.round(b.bottom), vh: innerHeight, mapH: r ? Math.round(r.height) : 0, shape: r ? Math.abs((r.width / r.height) / (cv.width / cv.height) - 1) : 0 };
       })));
       await ctx.close();
     }
@@ -25,11 +26,15 @@ export default {
   async tfGreat(pg) {
     const r = await pg.evaluate(() => {
       UI.screen = 'title'; UI.render();
-      const t = document.getElementById('title'), cv = document.getElementById('titlegc');
+      const t = document.getElementById('title');
+      // the continent's map now opens How to play (cycle 2, visual F1)
+      const text = t.textContent, inTitle = !!t.querySelector('canvas');
+      UI.A.help(); const cv = document.getElementById('helpgc');
       let colours = 0;
       if (cv) { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data, seen = new Set(); for (let i = 0; i < d.length; i += 4 * 97) seen.add(d[i] << 16 | d[i + 1] << 8 | d[i + 2]); colours = seen.size; }
       const D = A.FAR.D, n = Object.keys(D.realms).length + Object.keys(LORE.realms).filter(id => !D.realms[id]).length;
-      return { text: t.textContent, n, old: !!document.getElementById('titlemap'), colours, sky: !!t.querySelector('.tt-sky svg[data-hour="dawn"]'),
+      UI.ov = null; UI.renderModal();
+      return { text, inTitle, n, old: !!document.getElementById('titlemap'), colours, sky: !!t.querySelector('.tt-sky svg[data-hour="dawn"]'),
         primary: [...t.querySelectorAll('.btns button.primary')].map(b => b.dataset.a), buttons: t.querySelectorAll('.btns button').length,
         // 995-hall-of-lives' shelf takes the slot left under the buttons, once
         shelf: (() => { if (!UI.HALL || !UI.HALL.KEY) return 'none';
@@ -37,7 +42,7 @@ export default {
           UI.render(); const T2 = document.getElementById('title'), sh = T2.querySelectorAll('.hl-shelf'), b = T2.querySelector('.btns');
           const ok = sh.length === 1 && !!(b.compareDocumentPosition(sh[0]) & Node.DOCUMENT_POSITION_FOLLOWING); localStorage.removeItem(UI.HALL.KEY); return ok ? 'under the buttons' : 'MISPLACED'; })() };
     });
-    const ok = !/Thirty-four/.test(r.text) && r.text.includes(`${r.n} realms`) && !r.old && r.colours > 20 && r.sky && r.primary.length === 1 && r.primary[0] === 'newLife' && r.buttons >= 4 && r.shelf !== 'MISPLACED';
-    return { ok, detail: `"${r.n} realms" in the pitch ${r.text.includes(`${r.n} realms`)}, "Thirty-four" gone ${!/Thirty-four/.test(r.text)}; the Known World strip gone ${!r.old}, the continent drawn in ${r.colours} colours; dawn sky ${r.sky}; primary buttons: ${r.primary.join(', ')} of ${r.buttons}; Your lives shelf ${r.shelf}` };
+    const ok = !/Thirty-four/.test(r.text) && r.text.includes(`${r.n} realms`) && !r.old && !r.inTitle && r.colours > 20 && r.sky && r.primary.length === 1 && r.primary[0] === 'newLife' && r.buttons >= 4 && r.shelf !== 'MISPLACED';
+    return { ok, detail: `"${r.n} realms" in the pitch ${r.text.includes(`${r.n} realms`)}, "Thirty-four" gone ${!/Thirty-four/.test(r.text)}; the Known World strip gone ${!r.old}, the title free of the map ${!r.inTitle}, the continent drawn in How to play in ${r.colours} colours; dawn sky ${r.sky}; primary buttons: ${r.primary.join(', ')} of ${r.buttons}; Your lives shelf ${r.shelf}` };
   },
 };

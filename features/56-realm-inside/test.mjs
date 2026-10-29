@@ -29,6 +29,21 @@ const SETUP = () => {
 const pct = (a, b) => b ? Math.round(1000 * a / b) / 10 : 0;
 
 export default {
+  async farLedgerPaid(pg) {
+    // world review cycle 2, F5 and F6: every crown starts at its reserve; on the Great Continent the far ledger is paid
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4407, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20, lands: 'great' });
+      A.S.queue.length = 0;
+      // (the first wars of 1105 hire sellswords before the first month: a crown holds at least nine tenths of its reserve)
+      const all = Object.values(A.S.realms).filter(x => x.alive && !x.playerRun && x.income > 0), low = all.filter(x => x.treasury < 0.9 * A.RI.reserveYears(x) * x.income).length;
+      T.play(1, { each: () => { const q = A.pc(); if (q) q.health = 90; } });
+      const TT = A.realm('POL-36'), B = TT.riBook || {};
+      return { low, n: all.length, lore: (B.cats || {}).lore || 0, mul: TT.loreMul, inc: TT.income, armyPay: Math.round(TT.army * 3.2) };
+    });
+    const ok = r.low <= r.n * 0.1 && r.lore > 0 && r.mul >= 1 && r.mul < 6;
+    return { ok, detail: JSON.stringify(r) };
+  },
+
   // Diplomacy 2: every realm's council is five named people, each with a want and a fear
   async riCourtOfPeople(pg) {
     await pg.evaluate(SETUP);

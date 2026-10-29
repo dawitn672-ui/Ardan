@@ -1,6 +1,13 @@
 // Event content fixes: exact find/replace edits on the minified build. See README.md.
 export default [
   {
+    id: 'EVT-DANCE-NIECE',
+    blob: 'ardan-content',
+    why: 'lf_harvest_dance offered "the reeve\'s handsome nephew or niece", the setup\'s word for a partner whose sex it had ' +
+      'just chosen (cycle 2, design A2). It now says niece or nephew by the partner\'s sex.',
+    edits: [['"the reeve\'s handsome nephew or niece"', 'b.sex==="F"?"the reeve\'s handsome niece":"the reeve\'s handsome nephew"']],
+  },
+  {
     id: 'EVT-TOKEN-DIGITS',
     blob: 'ardan-core',
     why: 'Tokens with digits ({mate2}, {h1}, {m2him}, {cap2}, {age2}, {n1}...) were neither filled nor caught, so 39 events ' +

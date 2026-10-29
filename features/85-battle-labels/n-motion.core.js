@@ -70,14 +70,14 @@
   };
 
   // ---- the overlay ----------------------------------------------------------------------------------------------------
-  const INK = '#1b1730', OURS = '#2a6ab0', THEIRS = '#c23c27';
+  const INK = '#1b1730', SIDE = () => (UI.bfSides ? UI.bfSides() : { us: '#2a6ab0', them: '#c23c27' });
   const top = o => Object.entries(o.intent).sort((a, b) => b[1] - a[1])[0];
   BM.arrow = function (x, y, dir, len, col, kind, key) {
     // dir: -1 up the field (toward the top), +1 down; a withdraw points the other way
     const w = kind === 'charge' ? 6 : 4.5, l = kind === 'charge' ? len * 1.3 : len, y1 = y + dir * l, bend = (hash(key) % 2 ? 1 : -1) * 10;
     const d = `M${f1(x)} ${f1(y)}Q${f1(x + bend)} ${f1((y + y1) / 2)} ${f1(x)} ${f1(y1)}`;
     const hw = w * 1.9, hd = `M${f1(x - hw)} ${f1(y1 - dir * hw * .9)}L${f1(x)} ${f1(y1 + dir * hw * .9)}L${f1(x + hw)} ${f1(y1 - dir * hw * .9)}Z`;
-    return `<g class="bm-arrow bm-${kind}"><path class="bm-ink" d="${d}" stroke="${INK}" stroke-width="${w + 3}"/><path class="bm-stroke" d="${d}" stroke="${col}" stroke-width="${w}"/><path class="bm-head" d="${hd}" fill="${col}" stroke="${INK}" stroke-width="1.6"/></g>`;
+    return `<g class="bm-arrow bm-${kind}"><path class="bm-ink" d="${d}" stroke="${INK}" stroke-width="${w + 3}"/><path class="bm-stroke" d="${d}" stroke="${col}" stroke-width="${w}"/><path class="bm-head" d="${hd}" fill="${col}" stroke="${/^#[0-9a-f]{6}$/i.test(edge || '') ? edge : INK}" stroke-width="2"/></g>`;
   };
   BM.shield = (x, y, col) => `<g class="bm-arrow bm-hold"><path d="M${f1(x - 8)} ${f1(y - 9)}H${f1(x + 8)}V${f1(y - 1)}Q${f1(x + 8)} ${f1(y + 7)} ${f1(x)} ${f1(y + 11)}Q${f1(x - 8)} ${f1(y + 7)} ${f1(x - 8)} ${f1(y - 1)}Z" fill="${col}" stroke="${INK}" stroke-width="1.8"/></g>`;
   BM.burst = function (x, y, size, seed) {
@@ -95,10 +95,10 @@
     }
     return s;
   };
-  BM.standard = function (x, y, col, bottom, k) {
+  BM.standard = function (x, y, col, bottom, k, edge) {
     const dir = bottom ? -1 : 1, h = 34, fw = 22;
     return `<g class="bm-std" style="transform-origin:${f1(x)}px ${f1(y - h)}px;--bm-i:${k}"><path d="M${f1(x)} ${f1(y)}V${f1(y - h)}" stroke="${INK}" stroke-width="2.4"/>` +
-      `<path class="bm-flag" d="M${f1(x)} ${f1(y - h)}q${f1(dir * fw * .5)} -3 ${f1(dir * fw)} 1l${-dir * 4} 7l${dir * 4} 7q${f1(-dir * fw * .5)} -4 ${f1(-dir * fw)} -1Z" fill="${col}" stroke="${INK}" stroke-width="1.6"/></g>`;
+      `<path class="bm-flag" d="M${f1(x)} ${f1(y - h)}q${f1(dir * fw * .5)} -3 ${f1(dir * fw)} 1l${-dir * 4} 7l${dir * 4} 7q${f1(-dir * fw * .5)} -4 ${f1(-dir * fw)} -1Z" fill="${col}" stroke="${/^#[0-9a-f]{6}$/i.test(edge || '') ? edge : INK}" stroke-width="2"/></g>`;
   };
   BM.svg = function (B, W, H, R) {
     const mid = H / 2, X = { L: W * .2, C: W * .5, R: W * .8 }, fresh = R.fresh, live = B.phase !== 'end';
@@ -108,8 +108,8 @@
     for (const c of COLS) {
       const o = R.cols[c], x = X[c], key = (B.id || B.title || '') + '|' + (B.pulse || 0) + '|' + c;
       // the standards at the rear of each wing
-      if (o.them.n) s += BM.standard(x + 46, mid - 88, cT, false, 0);
-      if (o.us.n) s += BM.standard(x - 46, mid + 104, cU, true, 1);
+      if (o.them.n) s += BM.standard(x + 46, mid - 88, cT, false, 0, SIDE().them);
+      if (o.us.n) s += BM.standard(x - 46, mid + 104, cU, true, 1, SIDE().us);
       // the clash: both sides in the wing and blood shed this pulse (or the lines touching once the battle is under way)
       const contact = o.us.n && o.them.n && B.phase !== 'deploy';
       if (contact) {
@@ -121,7 +121,7 @@
       if (fresh) for (const [who, y] of [['us', mid + 60], ['them', mid - 60]]) { const t = top(o[who]); if (t && t[0] === 'charge') s += BM.puffs(x, y, 4, key + who, 'bm-dust'); }
       // intent: what each side's wing means to do next
       if (live) {
-        for (const [who, y0, dir, col] of [['them', mid - 40, 1, THEIRS], ['us', mid + 40, -1, OURS]]) {
+        for (const [who, y0, dir, col] of [['them', mid - 40, 1, SIDE().them], ['us', mid + 40, -1, SIDE().us]]) {
           const t = top(o[who]); if (!t) continue;
           const it = t[0], ax = x + (who === 'us' ? 26 : -26);
           if (it === 'hold') s += BM.shield(ax, y0 + dir * -6, col);
@@ -153,7 +153,7 @@
       const t = now - t0, k = t < T0 ? ease(t / T0) : t < T0 + T1 ? 1 : t < T0 + T1 + T2 ? 1 - ease((t - T0 - T1) / T2) : 0;
       const z = 1 + (Z - 1) * k, sw = W / z, sh = H / z;
       const sx = Math.max(0, Math.min(W - sw, (W / 2 + (cx1 - W / 2) * k) - sw / 2)), sy = Math.max(0, Math.min(H - sh, H / 2 - sh / 2));
-      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(off, sx, sy, sw, sh, 0, 0, W, H); ctx.restore();
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(off, sx, sy, sw, sh, 0, 0, W, H); if (k && UI.bfBands) UI.bfBands(ctx, W, H, B); ctx.restore();
       if (g) g.setAttribute('transform', k ? `scale(${z.toFixed(4)}) translate(${(-sx).toFixed(1)} ${(-sy).toFixed(1)})` : '');
       if (t < T0 + T1 + T2) requestAnimationFrame(frame); else { BM.cams.delete(cv); if (g) g.removeAttribute('transform'); }
     };

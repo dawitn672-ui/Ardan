@@ -113,6 +113,23 @@
       return t.innerHTML;
     } catch (e) { console.error('title', e); return h; }
   };
+  // cycle 2 (visual F1): the title is one composition with no map in it; the continent's map and the pitch open How to play
+  TF.pitch = f => `Dawn of 1 January 1105 AR. One continent, ${fmt(f.km)} km from the western sea to the Sunrise Isles: ${fmt(f.realms)} realms and ${fmt(f.provinces)} provinces. ` +
+    'No magic, only blood, steel, coin and will. Be born a slave on a pearl-boat or a prince of the Iron Crown, and live it a week or a month at a time. Then go on as your child.';
+  const help = UI.helpModal;
+  if (typeof help === 'function') UI.helpModal = function () {
+    const h = help.apply(this, arguments);
+    try {
+      const f = TF.facts(), src = f && TF.mapCanvas();
+      if (!f || !src || typeof h !== 'string') return h;
+      const add = `<div class="tf-help"><canvas id="helpgc" class="gcstrip" width="${src.width}" height="${src.height}" role="img" aria-label="${UI.esc(`A map of the Great Continent: ${fmt(f.realms)} realms and ${fmt(f.provinces)} provinces`)}"></canvas><p class="tf-pitch">${UI.esc(TF.pitch(f))}</p></div>`;
+      const m = /<h2[^>]*>[\s\S]*?<\/h2>/.exec(h);
+      return m ? h.slice(0, m.index + m[0].length) + add + h.slice(m.index + m[0].length) : add + h;
+    } catch (e) { return h; }
+  };
+  const drawHelp = () => { const cv = document.getElementById('helpgc'); if (cv && !cv.dataset.drawn) { const src = TF.mapCanvas(); if (src) { cv.getContext('2d').drawImage(src, 0, 0, cv.width, cv.height); cv.dataset.drawn = '1'; } } };
+  const rmod = UI.renderModal;
+  if (typeof rmod === 'function') UI.renderModal = function () { const r = rmod.apply(this, arguments); try { drawHelp(); } catch (e) {} return r; };
   const after = UI.afterRender;
   UI.afterRender = function () {
     const r = after.apply(this, arguments);
@@ -132,6 +149,7 @@
     '#title.tt-dawn .logo{font-size:clamp(48px,9vw,var(--t-display,84px));line-height:1}',
     '#title.tt-dawn .logo::after{content:"";display:block;width:min(240px,40%);height:2px;margin:12px auto 0;background:linear-gradient(90deg,transparent,var(--accent,#e8b04a),transparent)}',
     '#title canvas.gcstrip{border-radius:var(--r-m,8px);image-rendering:auto}',
+    '.tf-help{margin:0 0 12px}.tf-help canvas{display:block;width:100%;height:auto;border-radius:var(--r-m,8px);border:1px solid var(--line-strong)}.tf-help .tf-pitch{margin:8px 0 0;font-family:var(--f-prose,serif)}',
     '@media (min-width:761px){#title canvas.gcstrip{height:clamp(150px,calc(100vh - 500px),420px);width:auto;max-width:100%}}',
     '#title .btns button.ghost{background:rgba(14,16,36,.55);border-color:rgba(233,226,212,.35);color:#f1ead9}',
     '#title .btns button.tt-go{min-width:280px;font-size:calc(20px * var(--tx,1));padding:14px 28px}',

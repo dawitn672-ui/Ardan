@@ -133,6 +133,35 @@ export default {
     return { ok, detail: all.map(r => `seed ${r.seed}: ${r.voiced} of ${r.n} scenes voiced (${r.distinct} lines), draws that moved state or dice ${r.moved}, drawings that differed ${r.differ}, over 14 words ${r.long}; a seen scene quiet ${r.quiet}; setting off ${r.off}`).join(' | ') + `; middle life ${mid} lines` };
   },
 
+  async idVoiceOnce(pg) {
+    // a played life: every voice heard before the choice is made (as the card would show it); no line twice in a life
+    // (cycle 2: "Look at his hands" five times in 20 months), and the name and line read apart to a screen reader
+    const r = await pg.evaluate(() => {
+      const out = [];
+      for (const [seed, status] of [[555, 'peasant'], [556, 'gentry'], [557, 'artisan']]) {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status, sex: seed % 2 ? 'F' : 'M', startAge: 18 });
+        const lines = []; let ev = 0, sr = 0;
+        const end = A.S.year + 5;
+        for (let g = 0; g < 5000 && A.S.year < end; g++) {
+          A.advance(400); let h, k = 0;
+          while ((h = A.headReady()) && k++ < 500) {
+            if (h.type !== 'event') { A.S.queue.shift(); continue; }
+            ev++;
+            const vo = A.ID.voiceFor(A.pc(), h);
+            if (vo) { lines.push(vo.name + ': ' + vo.line); if (/<span class="idv-sr">: <\/span>/.test(A.ID.voiceHtml(vo))) sr++; }
+            A.eventAuto();
+          }
+          if (!A.pc().alive) break;
+        }
+        const c = {}; for (const l of lines) c[l] = (c[l] || 0) + 1;
+        out.push({ seed, ev, voiced: lines.length, sr, repeats: Object.entries(c).filter(x => x[1] > 1).map(x => x.join(' x')) });
+      }
+      return out;
+    });
+    const ok = r.every(x => !x.repeats.length && x.sr === x.voiced) && r.reduce((a, x) => a + x.voiced, 0) >= 15;
+    return { ok, detail: r.map(x => `seed ${x.seed}: ${x.voiced} voices in ${x.ev} scenes, repeated ${x.repeats.length ? x.repeats.join('; ') : 'none'}`).join(' | ') };
+  },
+
   async idThoughts(pg) {
     const r = await pg.evaluate(() => {
       T.enter({ seed: 95, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
@@ -149,15 +178,25 @@ export default {
       const slots = Object.keys(pc.thoughts.held).length, pushed = pc.thoughts.dropped.steel != null;
       A.thDrop('road'); A.applyFx(pc, { thought: 'steel' }, {});    // dropped once: may be taken up again only through a scene
       delete pc.thoughts.dropped.steel; A.ID.adopt(pc, 'steel');
-      pc.thoughts.held.steel -= 13 * 30; ID.thoughtMonth(pc);
+      // ripening asks: the scene names the thought and the trait; letting it in logs the trait with that choice as its reason
+      pc.thoughts.held.steel -= 13 * 30; A.S.queue = []; ID.thoughtMonth(pc);
+      const q = A.S.queue.find(x => x.ev === 'ix_ripe'), v = q && A.eventView(q);
+      const asked = !!q && pc.thoughts.held.steel != null && /Steel answers/.test(v.title) && /wrathful/.test(v.text);
+      A.S.queue.splice(A.S.queue.indexOf(q), 1); A.S.queue.unshift(q); A.eventChoose(v.choices[0].i); A.eventClose();
       const ripe = pc.thoughts.ripe.steel != null, trait = pc.traits.includes('wrathful');
+      const why = A.S.log.flatMap(e => e.lines || []).map(l => l[0]).filter(t => /You have become wrathful/.test(t)).pop() || '';
+      // the other answer keeps the thought a thought: its gains, no trait
+      A.ID.adopt(pc, 'seed'); pc.thoughts.held.seed -= 11 * 30; A.S.queue = []; ID.thoughtMonth(pc);
+      const q2 = A.S.queue.find(x => x.ev === 'ix_ripe'), v2 = q2 && A.eventView(q2);
+      A.S.queue.splice(A.S.queue.indexOf(q2), 1); A.S.queue.unshift(q2); A.eventChoose(v2.choices[1].i); A.eventClose();
+      const kept = pc.thoughts.ripe.seed != null && !pc.traits.includes('ambitious');
       const d2 = A.checkVal(pc, ck), m2 = A.checkVal(pc, ck2);
       // an old save: no thoughts at all
       delete pc.thoughts; const d3 = A.checkVal(pc, ck); UI.render();
-      return { d0, d1, d2, d3, m0, m2, held, shown, slots, pushed, ripe, trait };
+      return { d0, d1, d2, d3, m0, m2, held, shown, slots, pushed, ripe, trait, asked, why, kept };
     });
-    const ok = r.held && r.d1 < r.d0 && r.shown && r.slots === 2 && r.pushed && r.ripe && r.trait && r.d2 < r.d1 && r.m2 > r.m0 + 2 && Math.abs(r.d3 - r.d0) < 0.5;
-    return { ok, detail: `diplomacy check ${r.d0.toFixed(1)} -> held ${r.d1.toFixed(1)} -> ripe ${r.d2.toFixed(1)}; melee ${r.m0.toFixed(1)} -> ${r.m2.toFixed(1)}; two slots ${r.slots}; ripened ${r.ripe}, wrathful ${r.trait}` };
+    const ok = r.held && r.d1 < r.d0 && r.shown && r.slots === 2 && r.pushed && r.asked && r.ripe && r.trait && /Let it become part of you/.test(r.why) && !/: in \d+\./.test(r.why) && r.kept && r.d2 < r.d1 && r.m2 > r.m0 + 2 && Math.abs(r.d3 - r.d0) < 0.5;
+    return { ok, detail: `diplomacy check ${r.d0.toFixed(1)} -> held ${r.d1.toFixed(1)} -> ripe ${r.d2.toFixed(1)}; melee ${r.m0.toFixed(1)} -> ${r.m2.toFixed(1)}; two slots ${r.slots}; asked ${r.asked}, ripened ${r.ripe}, wrathful ${r.trait}: "${r.why}"; kept as a thought, no trait: ${r.kept}` };
   },
 
   async idOldSave(pg) {

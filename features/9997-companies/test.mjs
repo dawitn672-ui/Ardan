@@ -288,7 +288,7 @@ export default {
       const oob = A.CO.oobHtml(d), card = UI.wrMyDivCard(pc, d), path = UI.armyPathCard(pc);
       T.renderAll();
       const pure = T.hash(A.S) === h0 && A.rngState === rng0;
-      return { pure, oob: /Order of battle/.test(oob) && /co-row/.test(oob), card: /Your company|co-card/.test(card) && /Serjeant/.test(card), path: /co-card/.test(path), escaped: !/<img data-pwn>/.test(card + oob) && /&lt;img/.test(card) };
+      return { pure, oob: /Order of battle/.test(oob) && /co-row/.test(oob), card: /Your company|co-card/.test(card) && /[Ss]ergeant/.test(card), path: /co-card/.test(path), escaped: !/<img data-pwn>/.test(card + oob) && /&lt;img/.test(card) };
     });
     if (r.none) return { ok: false, detail: 'no fight found' };
     return { ok: r.pure && r.oob && r.card && r.path && r.escaped, detail: `order of battle ${r.oob}, company card ${r.card}, Path tab ${r.path}, a captain named with markup shows as text ${r.escaped}; drawing changed nothing ${r.pure}` };
@@ -311,5 +311,34 @@ export default {
       return { a: go(false), b: go(true) };
     });
     return { ok: r.a === r.b, detail: r.a === r.b ? 'the same world with warm and cold caches' : `worlds differ: ${r.a} vs ${r.b}` };
+  },
+
+  async coOneName(pg) {
+    // one name for the player's unit: the oath line, the release's unit name, the War tab's place in the army, the War
+    // Room's company card and the two-scales book all read 9997's battalion, company and captain
+    const r = await pg.evaluate(() => {
+      for (let seed = 80; seed < 90; seed++) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
+        UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.render();
+        const pc = A.pc(); A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(pc);
+        for (let m = 0; m < 3 && pc.alive; m++) { A.advance(30); let h, k = 0; while ((h = A.headReady()) && k++ < 300) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); } }
+        const C = A.CO.myCompany(pc);
+        if (!pc.alive || !C) continue;
+        const oath = A.S.log.flatMap(e => (e.lines || []).map(l => l[0])).find(l => /swear the oath/.test(l)) || '';
+        const crumb = UI.oobBreadcrumb ? UI.oobBreadcrumb(pc) : '', card = A.CO.companyCard(pc), book = A.TS && A.TS.squadHtml ? A.TS.squadHtml({ ts: { men: [], state: {} } }) : '';
+        const short = A.CO.coName(C.d, C.b, C.i, true), capName = C.cap.person ? A.fullName(C.cap.person, false) : C.cap.name;
+        const txt = h => { const e = document.createElement('div'); e.innerHTML = h; return e.textContent; };
+        const T = { crumb: txt(crumb), card: txt(card), book: txt(book) };
+        return { seed, oath, unit: pc.mil.unit, bn: C.bn, short, capName, div: C.d.name,
+          oathOk: oath.includes(C.bn), unitOk: pc.mil.unit === C.bn,
+          crumbOk: T.crumb.includes(C.bn) && T.crumb.includes(short) && T.crumb.includes(capName) && T.crumb.includes(C.d.name),
+          cardOk: T.card.includes(C.name) && T.card.includes(C.cap.given), bookOk: !book || (T.book.includes(C.name) && T.book.includes(C.d.name)),
+          spelling: !/Serjeant/.test(T.crumb + T.card + T.book + oath), crumb: T.crumb.slice(0, 300) };
+      }
+      return { none: true };
+    });
+    if (r.none) return { ok: false, detail: 'no soldier with a company' };
+    const ok = r.oathOk && r.unitOk && r.crumbOk && r.cardOk && r.bookOk && r.spelling;
+    return { ok, detail: `seed ${r.seed}: oath "${r.oath}"; unit ${r.unit}; company ${r.short}, ${r.bn}, ${r.div}, Captain ${r.capName}; oath ${r.oathOk}, unit ${r.unitOk}, War tab ${r.crumbOk}, War Room card ${r.cardOk}, book ${r.bookOk}, one spelling ${r.spelling}; War tab: "${r.crumb}"` };
   },
 };

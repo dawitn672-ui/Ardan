@@ -94,3 +94,7 @@ With `lands: 'known'` nothing is installed and every hook passes straight throug
 - The tiers follow the duel engine: a 45 kg snow leopard the lore calls a great beast is an animal here, as 48 retagged the Roc.
 - Size-read stat blocks are for the 80 creatures that are hunted or seen, not fought; only the 53 fighters have fitted curves.
 - The named beasts are records, not people: they have no portrait, no age, and no young.
+
+## Cycle 2: no raw creature ids (lives B4)
+
+"A CRE-35 has been killing stock", "Game is moving along the Elder Grass: CRE-65". The base `A.ctxTokens` sets `{beast}` to the name and then copies every `ctx` value back over the tokens, so `ctx.beast` wrote the id over it. The far creatures are not in `LORE.creatures` at all. A wrapper of `A.ctxTokens` now turns any token holding a creature id into the creature's name, the lore's or this feature's own, without a leading "The" (`FB.idName`). `fb_game_moving` says `{fbA}`. `fb_at_the_herds` now has `cool: 8` (it came 11 times in one 56-year life at 3). **Measured by** `fbNoRawIds`.

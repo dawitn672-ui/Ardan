@@ -129,3 +129,5 @@ The release's `A.genAppearance` knows only the Known World's peoples, so it gave
 - **A far people while its lands are closed** (the title's vista): `farOf` falls back to the generated data's culture (`A.FAR.D.cultures`), read only.
 
 `apPosesTurn`: 13 poses found; the turned face outline differs from the front one; hair tagged; 11 ellipses in a waving figure (hands); a funeral that names no one makes your face sad.
+
+**Cycle 2, round 2 (Oct 29).** The rim light sits inside the silhouette on the lit (upper left) edge, at most 1.5 units and half as bright, so figures no longer read as stickers (visual F6). A 14th pose, **guard**: a fighter in the duel at the head of the queue stands with the weapon raised across the body toward the foe and the weight forward (fists up with no blade); it is read from the queue, so drawing stays pure, and it is in the cache key. The death screen shows the bust at 160 px, not the 150 px full figure (design A9). `apGuardObit`.

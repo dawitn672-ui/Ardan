@@ -122,6 +122,11 @@
       const sky = root.querySelector('.tt-sky');
       if (sky) sky.insertAdjacentHTML('beforeend', `<div class="tl-par" aria-hidden="true">${TL.layers(seed)}</div>`);
       root.insertAdjacentHTML('beforeend', TL.busts(seed));
+      // cycle 2 (visual F1): one composition. The map box leaves the title for How to play (86), and the pitch becomes
+      // one line of counts under the logo
+      const map = root.querySelector('#titlegc'); if (map) map.remove();
+      const f = UI.TITLE && UI.TITLE.facts ? UI.TITLE.facts() : null, bl = root.querySelector('.blurb');
+      if (bl && f) { bl.classList.add('tl-count'); bl.textContent = `${f.realms.toLocaleString('en')} realms · ${f.provinces.toLocaleString('en')} provinces · one life`; }
       const logo = root.querySelector('.logo');
       if (logo && !logo.querySelector('.tl-brush')) { logo.classList.add('tl-logo'); logo.insertAdjacentHTML('afterbegin', TL.brush(seed)); logo.insertAdjacentHTML('beforeend', TL.seal()); }
       return t.innerHTML;
@@ -158,7 +163,32 @@ ${drift(`#title.tl-vista .tl-logo .tl-seal{animation:tlSeal 420ms cubic-bezier(.
 #title.tl-vista .tl-b1{right:calc(max(1vw,8px) + clamp(120px,13vw,230px));bottom:0;width:clamp(120px,13vw,240px)}
 #title.tl-vista .tl-b2{right:max(1vw,8px);width:clamp(140px,15vw,270px)}
 @media (max-width:1180px){#title.tl-vista .tl-b1{display:none}}
-@media (max-width:900px){#title.tl-vista .tl-busts{display:none}}
+/* cycle 2 (visual B1): the vista is always a dawn or night picture, so its words take Night's ink in both themes */
+#title.tl-vista, :root[data-theme] #title.tl-vista{--ink:#eee8da;--ink-2:#bdb8cc;--ink-3:#a9a6bd;color-scheme:dark;color:#eee8da}
+:root[data-theme] #title.tl-vista .sub, :root[data-theme] #title.tl-vista .blurb, :root[data-theme] #title.tl-vista .muted, :root[data-theme] #title.tl-vista .small, :root[data-theme] #title.tl-vista p{color:#e9e2d4}
+:root[data-theme] #title.tl-vista .sub{color:#d9cfe8;text-shadow:0 1px 2px rgba(10,12,30,.8)}
+:root[data-theme] #title.tl-vista .btns button.ghost{background:rgba(14,16,36,.62);border-color:rgba(233,226,212,.42);color:#f1ead9}
+/* cycle 2 (visual F1): one composition. The logo at 38% of the height, one line of counts, the primary 64 px below */
+#title.tl-vista{display:flex;flex-direction:column;align-items:center;min-height:100vh;box-sizing:border-box;padding-top:max(24px,calc(38vh - 96px))}
+:root[data-theme] #title.tl-vista .logo.tl-logo{font-size:clamp(56px,calc(var(--t-display,44px) * 1.6 * var(--tx,1)),112px)}
+#title.tl-vista .blurb.tl-count{max-width:none;margin:10px 0 0;font-family:var(--f-ui,sans-serif);font-size:calc(17px * var(--tx,1));letter-spacing:.08em;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px rgba(10,12,30,.9)}
+#title.tl-vista .btns{margin-top:64px;max-width:min(720px,94vw);display:flex;flex-wrap:wrap;justify-content:center}
+@media (min-width:1600px){
+  #title.tl-vista .tl-bust{width:clamp(320px,21vw,420px)}
+  #title.tl-vista .tl-b0{left:4vw;bottom:-2vh}
+  #title.tl-vista .tl-b1{right:calc(4vw + clamp(250px,17vw,340px));bottom:6vh;width:clamp(300px,19vw,380px)}
+  #title.tl-vista .tl-b2{right:2vw;bottom:-3vh;width:clamp(320px,21vw,420px)}
+}
+/* the phone: the sky, two ridges and one bust behind the logo, faint, still */
+@media (max-width:900px){
+  #title.tl-vista .tl-busts{display:block;position:absolute;left:0;right:0;top:0;height:auto}
+  #title.tl-vista .tl-bust{display:none;animation:none!important}
+  #title.tl-vista .tl-b0{display:block;position:absolute;left:50%;top:max(4px,calc(38vh - 190px));bottom:auto;width:min(120px,32vw);transform:translateX(-50%);opacity:.4;filter:none}
+  #title.tl-vista .tt-sky svg.tl-clouds{display:none}
+  #title.tl-vista{padding-top:max(20px,calc(38vh - 70px))}
+  #title.tl-vista .btns{margin-top:40px}
+}
+
 /* the logotype: Dela Gothic One over a vermilion brush stroke, a seal at its end */
 #title.tl-vista .logo.tl-logo, :root[data-theme] #title.tl-vista .logo.tl-logo{position:relative;display:inline-block;font-family:var(--f-impact,"Dela Gothic One",sans-serif);font-weight:400;letter-spacing:.06em;color:#f8f1e2;
   padding:.08em .5em .14em;text-shadow:3px 3px 0 #1b1730,0 0 30px rgba(255,217,160,.35);background:none;-webkit-text-fill-color:currentColor;isolation:isolate}

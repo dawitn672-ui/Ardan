@@ -15,6 +15,21 @@ const SETUP = () => {
 };
 
 export default {
+  async supplyAnswersPrice(pg) {
+    // world review cycle 2, F7: a good that sits dear is made more of. Twelve years of one world: ivory, which went to
+    // x3.8 in every Known World soak, is planned up, and no good's median market stands above x2.2 of its lore price
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4410, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'M', startAge: 20 });
+      A.S.queue.length = 0;
+      T.play(12, { each: () => { const pc = A.pc(); if (pc) pc.health = 90; } });
+      const med = k => { const v = Object.values(A.S.realms).filter(x => x.alive && x.mkt && x.mkt.d && x.mkt.d[k] > 0.05).map(x => x.mkt.p[k] / (GD.GOODS[k].base * (x.mkt.t[k] || 1))).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : null; };
+      const out = {}; for (const k in GD.GOODS) out[k] = Math.round((med(k) || 0) * 100) / 100;
+      return { med: out, sup: A.S.ecoSup && A.S.ecoSup.m };
+    });
+    const worst = Object.entries(r.med).sort((a, b) => b[1] - a[1])[0];
+    return { ok: worst[1] <= 2.2, detail: `median price against lore target after 12 years: ${JSON.stringify(r.med)}; supply ${JSON.stringify(r.sup)}` };
+  },
+
   async econHolds(pg) {
     // ten years: every market keeps most of its goods between a third of normal and five times it
     await pg.evaluate(SETUP);

@@ -338,4 +338,25 @@ export default {
     const ok = r.poses.length >= 10 && r.outline && r.hair && r.fig >= 6 && (!r.ev || r.sad === 'sad') && r.oldLonger;
     return { ok, detail: `${r.poses.length} poses (${r.poses.join(', ')}); turned outline ${r.outline}; hair tagged ${r.hair}; full figure ellipses ${r.fig}; "${r.ev}" with no one named: your face ${r.sad}` };
   },
+
+  // cycle 2 (visual F6, design A9): a fighter in a duel stands on guard; the death screen shows the bust, not the full
+  // figure; the rim light is inside the silhouette on the lit side (its offset is down and right of the figure)
+  async apGuardObit(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9303, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const pc = A.pc(), foe = A.makeFoe({ realm: pc.realm, tier: 2 }); foe.npcTemp = false; A.S.people[foe.id] = foe;
+      const before = /data-pose="(\w+)"/.exec(UI.ANIME.svg(pc, 200))[1];
+      A.S.queue = []; A.startDuel(pc, foe, { kind: 'duel', lethal: false, toYield: true });
+      const inDuel = [pc, foe].map(p => (/data-pose="(\w+)"/.exec(UI.ANIME.svg(p, 200)) || [])[1]);
+      A.S.queue = [];
+      const after = /data-pose="(\w+)"/.exec(UI.ANIME.svg(pc, 200))[1];
+      const rim = /<feOffset in="(?:w|SourceGraphic)" dx="([\d.]+)" dy="([\d.]+)"/.exec(UI.ANIME.svg(pc, 88, { bust: true }));
+      pc.alive = false; pc.died = A.S.year; pc.cause = 'a fever';
+      const h = UI.deathModal ? UI.deathModal() : '';
+      pc.alive = true;
+      return { before, inDuel, after, rim: rim ? [+rim[1], +rim[2]] : null, obitBust: /class="ap-obit"/.test(h) && !/class="portrait mini anime full"/.test(h.split('</h2>')[0]) };
+    });
+    const ok = r.before !== 'guard' && r.inDuel.every(x => x === 'guard') && r.after !== 'guard' && r.rim && r.rim[0] > 0 && r.rim[1] > 0 && r.obitBust;
+    return { ok, detail: `pose before ${r.before}, in the duel ${r.inDuel.join(' and ')}, after ${r.after}; rim offset ${r.rim && r.rim.join(',')}; death screen shows the bust ${r.obitBust}` };
+  },
 };

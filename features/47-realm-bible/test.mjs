@@ -189,4 +189,26 @@ export default {
     const two = r.filter(x => x.met >= 2).length;
     return { ok: two >= 7, detail: `${two} of ${r.length} lives of 30+ years met at least 2 of their realm's customs: ${r.map(x => `${x.rid} ${x.met} (${x.years}y)`).join(', ')}. bench/customs.mjs measures all 34 realms` };
   },
+  // cycle 2 (design A6): "free" counted nobles and rulers, so the Emperor of Aldmark heard the reeve knock for the
+  // hearth mark. Dues and levies now ask the commons; a ruler hears that the due came in
+  async rbCommonsDues(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const mo = A.monthOf, out = {};
+      A.monthOf = () => ({ m: 0 });
+      try {
+        for (const [k, st] of [['peasant', 'peasant'], ['noble', 'noble'], ['ruler', 'royal']]) {
+          A.newGame({ seed: 4790, race: 'human', realm: 'POL-01', status: st, sex: 'M', startAge: 30 });
+          const pc = A.pc(); if (k === 'ruler') A.makeRuler(pc, pc.realm, true);
+          const nl = () => (A.S.log || []).reduce((a, e) => a + ((e && e.lines) || []).length, 0), n0 = nl();
+          A.BIBLE.month(pc);
+          out[k] = { met: !!(pc.rb && pc.rb.ald_hearth), lines: nl() - n0 };
+        }
+      } finally { A.monthOf = mo; }
+      out.dues = Object.values(A.BIBLE_DATA).flatMap(R => R.customs || []).filter(c => A.BIBLE.isDue(c)).map(c => c.id);
+      return out;
+    });
+    const ok = r.peasant.met && !r.noble.met && !r.ruler.met && r.ruler.lines > 0 && r.dues.includes('ald_hearth') && !r.dues.includes('ald_scutage');
+    return { ok, detail: `the hearth mark: a peasant ${r.peasant.met}, a noble ${r.noble.met}, the Emperor ${r.ruler.met} (a line that it came in: ${r.ruler.lines > 0}); ${r.dues.length} customs read as dues for the commons` };
+  },
 };

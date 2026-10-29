@@ -77,7 +77,7 @@
         for (const [mo, y] of [[m0, S.year], [m1, m1 < m0 ? S.year + 1 : S.year]]) {
           let due = false;
           try {
-            if (c.kind === 'year') due = mo === (c.m || 0) && (!h || h.y !== y) && (!B.WHO || (B.WHO[c.who || 'adult'] || B.WHO.adult)(pc));
+            if (c.kind === 'year') due = mo === (c.m || 0) && (!h || h.y !== y) && (B.whoFor ? B.whoFor(pc, c) : (!B.WHO || (B.WHO[c.who || 'adult'] || B.WHO.adult)(pc)));
             else if (FP && FP.DUE && FP.DUE[c.kind] && FP.far && FP.far()) due = !!FP.DUE[c.kind](pc, c, h, mo, y);
           } catch (e) { due = false; }
           if (!due) continue;
@@ -160,4 +160,77 @@
 .cu-item{grid-template-columns:auto 1fr;font-size:14px}.cu-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('cu-style')) return; const s = document.createElement('style'); s.id = 'cu-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
+})();
+// ---- a step that always says something true (cycle 2, design B4/D2) ----------------------------------------------------
+// 84-top-bar's step note said "Nothing new in your story: the days went by as days do" after 13 of 16 Week steps. When
+// the story got no new line, the note now says what the step did change, from the state the game keeps: the skills
+// that moved, the people whose regard for you moved, and what Coming up has brought nearer. If none of that moved, it
+// says where and when you are. A view: the snapshot is taken by the view when a step starts and kept on UI, never in
+// the world, and nothing here draws a random number.
+(function () {
+  const CU = UI.COMING = UI.COMING || {};
+  const STOCK = 'Nothing new in your story: the days went by as days do.';
+  CU.snap = null;
+  CU.snapshot = function () {
+    const pc = A.pc && A.pc(); if (!pc) return null;
+    const rel = {}; for (const id in pc.rel || {}) { const r = pc.rel[id]; if (r && typeof r.op === 'number') rel[id] = r.op; }
+    return { pc: pc.id, day: A.absDay(), skills: Object.assign({}, pc.skills || {}), rel, items: (CU.items(pc) || []).map(x => x.text) };
+  };
+  const ss = UI.stepStart;
+  if (typeof ss === 'function') UI.stepStart = function () {
+    try { CU.snap = CU.snapshot(); } catch (e) { CU.snap = null; }
+    return ss.apply(this, arguments);
+  };
+  CU.digest = function (pc) {
+    const a = CU.snap, out = [];
+    if (!pc) return '';
+    if (a && a.pc === pc.id) {
+      const moved = Object.keys(pc.skills || {}).map(k => [k, (+pc.skills[k] || 0) - (+a.skills[k] || 0)]).filter(x => x[1] >= 0.05).sort((x, y) => y[1] - x[1]).slice(0, 2);
+      if (moved.length) out.push('You got better at ' + moved.map(([k, d]) => `${(GD.SKILLS && GD.SKILLS[k]) || k} +${d.toFixed(1)}`).join(', '));
+      const ops = Object.keys(pc.rel || {}).map(id => [id, (pc.rel[id] && pc.rel[id].op) - (a.rel[id] != null ? a.rel[id] : pc.rel[id].op)]).filter(x => Math.abs(x[1]) >= 2)
+        .sort((x, y) => Math.abs(y[1]) - Math.abs(x[1])).slice(0, 2);
+      for (const [id, d] of ops) { const p = A.P(id); if (p && p.alive) out.push(`${p.given} thinks ${d > 0 ? 'better' : 'worse'} of you`); }
+      const met = Object.keys(pc.rel || {}).filter(id => a.rel[id] == null && pc.rel[id] && typeof pc.rel[id].op === 'number');
+      if (met.length) { const p = A.P(met[0]); if (p) out.push(`You met ${p.given}${met.length > 1 ? ` and ${met.length - 1} more` : ''}`); }
+    }
+    try {
+      const it = (CU.items(pc) || []).find(x => isFinite(x.at) && x.at >= 0);
+      if (it) out.push(`Coming up: ${it.text} (${String(it.when || '').toLowerCase()})`);
+    } catch (e) {}
+    if (!out.length) {
+      const R = A.realm(pc.realm), mo = (GD.MONTHS || [])[A.monthOf(A.today()).m] || '';
+      out.push(`${mo ? mo + ' ' + A.S.year : 'The year ' + A.S.year} at ${A.provName ? A.provName(pc.home) : 'home'}${R ? ', ' + R.short : ''}. You are ${A.age(pc)}.`);
+    }
+    return out.join('. ').replace(/\.\./g, '.') + (/[.!?]$/.test(out[out.length - 1]) ? '' : '.');
+  };
+  const sum0 = UI.stepSumHtml;
+  if (typeof sum0 === 'function') UI.stepSumHtml = function () {
+    const h = sum0.apply(this, arguments);
+    try { if (h && h.includes(STOCK)) return h.replace(STOCK, UI.esc(CU.digest(A.pc()))); } catch (e) { console.error('step digest', e); }
+    return h;
+  };
+})();
+// ---- a story start's second beat (cycle 2, design B7; scenes in beats.events.js) -----------------------------------------
+// Engine side: once the start's opening scene has been answered, the story's second scene is scheduled two to five
+// months on, with its title as the line Coming up shows (an item's own label). Once a life; old saves without the
+// mark schedule it on their next month.
+(function () {
+  const STORIES = ['serf', 'second_son', 'debt_stone', 'clanless', 'last_tree', 'articles', 'foundling', 'widow', 'smallest', 'horse',
+    'letter_box', 'scribe', 'fever', 'river', 'between', 'salt', 'novice', 'what_took', 'ward', 'unpaid'];
+  UI.COMING.BEATS = STORIES;
+  A.onMonth.push(pc => {
+    try {
+      if (!pc || !pc.alive || pc.id !== A.S.pc || !pc.flags) return;
+      const f = pc.flags, ev = f.ev || {};
+      for (const k of STORIES) {
+        if (f['st_' + k] == null || f.cu_beat_q || ev['st_' + k + '_open'] == null) continue;
+        const id = 'cu_beat_' + k, E = A.EV[id];
+        if (!E || ev[id] != null) continue;
+        f.cu_beat_q = A.S.year;
+        const title = typeof E.title === 'string' ? E.title : 'Your story goes on';
+        A.schedule({ type: 'event', ev: id, ctx: {}, label: title }, A.ri(60, 150));
+        break;
+      }
+    } catch (e) { console.error('story beat', e); }
+  });
 })();

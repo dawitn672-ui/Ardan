@@ -385,4 +385,22 @@ export default {
     const r = await pg.evaluate(() => { const all = JSON.stringify(A.FB_DATA); return { bactrian: /Bactria/i.test(all), camel: (A.FB_DATA.list || A.FB_DATA.creatures || []).map ? JSON.stringify(A.FB_DATA).match(/"name":"[^"]*Camel[^"]*"/g) : null }; });
     return { ok: !r.bactrian, detail: JSON.stringify(r) };
   },
+  // cycle 2 (lives B4): "A CRE-35 has been killing stock", "Game is moving along the Elder Grass: CRE-65". The base
+  // A.ctxTokens wrote ctx.beast back over the beast's name, and far beasts had no name entry
+  async fbNoRawIds(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9921, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const pc = A.pc(), known = A.ctxTokens(pc, { beast: 'CRE-21' }).beast, far = A.ctxTokens(pc, { beast: 'CRE-65', aBeast: 'CRE-87' });
+      const views = [];
+      for (const id of ['pf_spear_boar', 'wk_hunt_beast']) {
+        if (!A.EV[id]) continue;
+        const q = { type: 'event', ev: id, ctx: { beast: 'CRE-35' }, forced: true }; A.S.queue.unshift(q);
+        try { const v = A.eventView(q); if (!v.skip) views.push(id + ': ' + String(v.text).replace(/<[^>]+>/g, '').slice(0, 80)); } catch (e) {}
+        A.S.queue.shift();
+      }
+      return { known, far: [far.beast, far.aBeast], views };
+    });
+    const raw = [r.known].concat(r.far, r.views).filter(t => /CRE-\d/.test(t));
+    return { ok: !raw.length && r.views.length > 0, detail: `{beast} for CRE-21: "${r.known}"; far CRE-65/CRE-87: "${r.far.join('", "')}"; ${r.views.join(' | ')}; raw ids left: ${raw.length}` };
+  },
 };

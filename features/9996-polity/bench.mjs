@@ -57,7 +57,7 @@ for (const seed of SEEDS) {
   const t0 = Date.now();
   runs.push(await page.evaluate(([seed, YEARS, LANDS]) => {
     A.newGame({ seed, lands: LANDS, race: 'human', realm: LANDS === 'great' ? 'POL-36' : 'POL-01', status: 'peasant', sex: 'M', startAge: 16, diff: 'story' });
-    const P = A.POL, o = { seed, ry: 0, realms: 0, changes: 0, byGroup: {}, outside: 0, hoard: 0, throne: 0, revolts: 0, wars: 0, elected: 0, electedVotes: 0, succ: 0, tax60: null, taxEnd: null, offices: [], held: 0, offN: 0, ms: 0 };
+    const P = A.POL, o = { seed, ry: 0, legit: [], low: 0, estN: 0, angry: 0, loyal: 0, claimFy: 0, fac40: 0, facY: 0, realms: 0, changes: 0, byGroup: {}, outside: 0, hoard: 0, throne: 0, revolts: 0, wars: 0, elected: 0, electedVotes: 0, succ: 0, tax60: null, taxEnd: null, offices: [], held: 0, offN: 0, ms: 0 };
     const groups = ['tax', 'auth', 'levy', 'obl', 'just', 'comm', 'trade', 'faith'];
     const posOf = (r, g) => P ? P.pos(r, g) : g === 'tax' ? (r.laws.tax || 1) : g === 'auth' ? r.laws.authority : g === 'levy' ? r.laws.levy : null;
     const last = {}, outside = new Set(), seen = new Set();
@@ -79,6 +79,9 @@ for (const seed of SEEDS) {
       for (const r of ai()) {
         o.ry++; seen.add(r.id);
         if (r.treasury / Math.max(1, r.income) > 6) o.hoard++;
+        o.legit.push(Math.round(r.legit || 0)); if ((r.legit || 0) < 45) o.low++;
+        if (P && r.pol) { const ES = P.estState(r); for (const k of P.EST) { o.estN++; if (ES[k].angry) o.angry++; if (ES[k].loyal) o.loyal++; } }
+        for (const f of A.factionsOf(r.id)) { o.facY++; if (f.kind === 'claimant') o.claimFy++; if ((f.power || 0) >= .4) o.fac40++; }
         const L = last[r.id] = last[r.id] || {};
         for (const gk of groups) {
           const v = posOf(r, gk); if (v == null) continue;
@@ -113,8 +116,11 @@ const out = {
   officesARealm: { p10: offs.length ? offs.slice().sort((a, b) => a - b)[Math.floor(offs.length * .1)] : null, median: med(offs), p90: offs.length ? offs.slice().sort((a, b) => a - b)[Math.floor(offs.length * .9)] : null },
   officesHeldPct: Math.round(100 * sum('held') / Math.max(1, sum('offN'))),
   msPerYear: Math.round(sum('ms') / Math.max(1, runs.length * YEARS)),
+  legitimacy: (() => { const L = runs.flatMap(r => r.legit).sort((a, b) => a - b); return { p10: L[Math.floor(L.length * .1)], median: L[Math.floor(L.length / 2)], p90: L[Math.floor(L.length * .9)], under45Pct: +(100 * sum('low') / Math.max(1, ry)).toFixed(1) }; })(),
+  estatesAngryPct: +(100 * sum('angry') / Math.max(1, sum('estN'))).toFixed(1), estatesLoyalPct: +(100 * sum('loyal') / Math.max(1, sum('estN'))).toFixed(1),
+  claimantFactionYears: sum('claimFy'), factionYearsAt40: sum('fac40'), factionYears: sum('facY'),
   runs, errors: errs.slice(0, 5),
 };
 const txt = JSON.stringify(out, null, 1);
 if (arg('json')) fs.writeFileSync(arg('json'), txt);
-console.log(JSON.stringify(Object.fromEntries(Object.entries(out).filter(([k]) => k !== 'runs')), null, 1));
+console.log(JSON.stringify(Object.fromEntries(Object.entries(out).filter(([k]) => k !== 'runs' && k !== 'byGroup')), null, 1));

@@ -7,12 +7,14 @@ const ID = A.ID;
 const offers = kind => (p, ctx) => { ctx.nm0 = ID.offer(p, kind, 0); ctx.nm1 = ID.offer(p, kind, 1); };
 const named = (p, k) => !!(ID && ID.named(p, k));
 const yrs = (p, k) => (ID ? ID.yearsWith(p, k) : 0);
+// a life's first two months are for the life itself (cycle 2, design B3: five cards on day one)
+const settled = p => !(p.idT0 != null && A.absDay() - p.idT0 < 60);
 const thOpen = (p, id) => { const t = ID.thoughtState(p); return t.ripe[id] == null && t.held[id] == null && t.dropped[id] == null; };
 
 A.defEvents([
   // ---- a dog
   { id: 'ix_pup', title: 'A pup at the door', w: 2, once: true,
-    cond: (p, C) => C.age(p) >= 8 && !C.prison(p) && !C.flag(p, 'ix_no_dog') && !named(p, 'dog'),
+    cond: (p, C) => C.age(p) >= 8 && !C.prison(p) && !C.flag(p, 'ix_no_dog') && !named(p, 'dog') && settled(p),
     setup: offers('dog'),
     text: 'A thin pup has followed you three days running, from the well to your door. It sits a cart-length off and watches you eat. One ear stands up and one does not. Nobody in the lane will own it.',
     choices: [
@@ -224,6 +226,22 @@ A.defEvents([
     choices: [
       { t: 'Hold the thought: the body is a tool, and tools wear', r: 'You start stretching in the mornings like the old man. The others laugh until their own knees go.', fx: { thought: 'tools', skill: { medicine: 1 } } },
       { t: 'Let it pass. Work through it', r: 'You work through it. The knee complains, and you complain back, and the work gets done.', fx: { coin: 3, health: -1, cause: 'a bad knee' } },
+    ] },
+
+  // ---- a thought ripens (identity's month hook queues it with ctx.th): let it in as a trait, or keep it a thought
+  { id: 'ix_ripe', title: '{thName}', trigger: true,
+    cond: (p, C) => C.age(p) >= 8,
+    setup: (p, ctx) => {
+      const th = ID.THOUGHTS[ctx.th], T = th && GD.TRAITS[th.trait];
+      if (!th || !T || ID.thoughtState(p).held[ctx.th] == null) { ctx.skip = true; return; }
+      ctx.thName = th.name; ctx.trName = T.name.toLowerCase();
+      const opp = T.opp && (p.traits || []).includes(T.opp) && GD.TRAITS[T.opp];
+      ctx.trLose = opp ? `, and not ${opp.name.toLowerCase()} any more` : (p.traits || []).filter(t => GD.TRAITS[t]).length >= 5 ? ', and something else in you will give way' : '';
+    },
+    text: 'You have turned it over for most of a year: "{thName}." It fits now, the way a boot fits after a season. Let it in and you will be {trName}{trLose}. Or keep it at arm\'s length, a thing you think rather than a thing you are.',
+    choices: [
+      { t: 'Let it become part of you', r: 'It is not a thought any more. It is how you are.', fx: { ripe: 'in' } },
+      { t: 'Hold to who you were', r: 'You keep it, and you keep yourself. It stays a thought, useful and outside you.', fx: { ripe: 'keep' } },
     ] },
 
   // ---- a thought pressed on you by someone you trust (their trait picks it)

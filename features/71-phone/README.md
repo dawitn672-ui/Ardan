@@ -92,3 +92,8 @@ The two worst were fixed by name. Health is on the Now page now, not a sub-tab a
 **Cycle 1: the opening view** (first-hour I4). A new life on a phone opens on **Story**, where the birth is told, not on a
 near-empty Now; and Story carries the sub-tab badge when new lines have come in since it was last open
 (`phoneOpensStory`). The badge reads the log only.
+
+**Cycle 2 (lane G, Oct 29).**
+- **The top bar** (design A5): the initiative and the purse keep their width, the date gives way with an ellipsis (its age is in its name and tooltip), and a debt is a red dot with its sum in the purse's tooltip. "7.023 suns owes 38" no longer prints over itself. `tbPhone` (84).
+- **The market** is one 44 px row a good: the good, its price here and what it fetches, +1 and Sell (visual F4). `phoneMarketOdds`.
+- **Odds on touch** (visual B10): a tap on a choice row's odds badge or check chip chooses; the breakdown popover no longer pins itself over every choice.

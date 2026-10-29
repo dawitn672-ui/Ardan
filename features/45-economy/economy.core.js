@@ -107,7 +107,13 @@
   E.plan = function () {
     const S = A.S, rs = live(), worldD = {};
     // in an ordinary year some of the world's armies are at war (WAR_SHARE), and they use their share
-    for (const r of rs) { const pop = (r.pop || 0) / 1e4, inc = (r.income || 0) / 1e4, army = (r.army || 0) / 1e3; for (const k in G()) worldD[k] = (worldD[k] || 0) + (E.PEOPLE[k] || 0) * pop + (E.WEALTH[k] || 0) * inc + (E.ARMY[k] || 0) * army * E.WAR_SHARE; }
+    // (each realm's people and rich as E.demand counts them, with their land's appetite: cycle 2 found the far goods
+    // planned without it, so silver, jade and paper were made for a third of the Twin Rivers' want and climbed x3)
+    for (const r of rs) { const pop = (r.pop || 0) / 1e4, inc = (r.income || 0) / 1e4, army = (r.army || 0) / 1e3; for (const k in G()) worldD[k] = (worldD[k] || 0) + ((E.PEOPLE[k] || 0) * pop + (E.WEALTH[k] || 0) * inc) * landWant(r, k) + (E.ARMY[k] || 0) * army * E.WAR_SHARE; }
+    // the makers answer the price (cycle 2, F7: ivory sat at x3.8 in every Known World soak): once a year, a good whose
+    // median market sits well above its lore price is made more of, one well below less (E.supply, in the state)
+    E.supplyYear();
+    for (const k in worldD) worldD[k] *= E.supplyOf(k);
     // what the land must make: people's own use, plus the inputs of the chains that make the rest
     // down the chains, last link first: arms need steel, and steel needs iron
     const need = Object.assign({}, worldD);
@@ -149,6 +155,31 @@
     for (const r of rs) for (const k in E.CHAINS) tsum[k] = (tsum[k] || 0) + tw[r.id][k];
     for (const r of rs) { const m = A.mkt(r.id); m.cap = {}; for (const k in E.CHAINS) m.cap[k] = tsum[k] > 0 ? (need[k] || 0) * 1.25 * tw[r.id][k] / tsum[k] : 0; }
     S.ecoPlan = S.year;
+  };
+  // the makers' answer to the price: each good's median, over the markets that use it, of its price against the
+  // lore's target there (base x the realm's export/import factor), moves what the world makes of it by up to a tenth a
+  // year, between half and four times what the people's need alone would ask. Worked once a year from the state
+  // (S.ecoSup = { y, m: {good: factor} }); a save without it starts at 1
+  E.SUPPLY = { hi: 1.5, lo: 0.75, step: 0.1, min: 0.5, max: 4 };
+  E.supplyOf = k => { const s = A.S.ecoSup; return s && s.m && s.m[k] != null ? s.m[k] : 1; };
+  E.supplyYear = function () {
+    const S = A.S, sup = S.ecoSup = S.ecoSup && S.ecoSup.m ? S.ecoSup : { y: null, y0: S.year, m: {} };
+    if (sup.y === S.year) return;
+    sup.y = S.year;
+    if (sup.y0 == null) sup.y0 = S.year;
+    if (S.year - sup.y0 < 2) return;   // the first stores are still settling
+    const T = E.SUPPLY;
+    for (const k in G()) {
+      const rel = [];
+      for (const r of live()) { const m = r.mkt; if (!m || !m.p || !m.t || !m.d || !(m.d[k] > 0.05)) continue; rel.push(m.p[k] / (G()[k].base * (m.t[k] || 1))); }
+      if (rel.length < 3) continue;
+      rel.sort((a, b) => a - b);
+      const med = rel[Math.floor(rel.length / 2)], f = sup.m[k] != null ? sup.m[k] : 1;
+      let nf = f;
+      if (med > T.hi) nf = f * (1 + T.step); else if (med < T.lo) nf = f * (1 - T.step);
+      nf = Math.max(T.min, Math.min(T.max, nf));
+      if (nf !== 1 || sup.m[k] != null) sup.m[k] = Math.round(nf * 1000) / 1000;
+    }
   };
   // normal stock: months of need
   E.months = k => (k === 'grain' ? E.GRAIN_N[A.monthOf(A.today()).m] : E.NORMAL[k] || 3);
@@ -302,7 +333,9 @@
     for (const c of cands) {
       if ((sent[c.src.id] || 0) >= E.PER_SRC) continue;
       const want = E.normal(c.md, c.k) * 1.2 - c.md.s[c.k], spare = c.ms.s[c.k] - E.normal(c.ms, c.k) * 0.8;
-      let q = Math.min(spare, want, Math.max(E.normal(c.md, c.k) * 0.3, E.normal(c.ms, c.k) * 0.15));
+      // (a caravan carries at least a load: a luxury whose markets use a load a month, like ivory, was otherwise held
+      // to a third of a load and never sent at all, and sat at x3.8 in every Known World soak; cycle 2, F7)
+      let q = Math.min(spare, want, Math.max(E.normal(c.md, c.k) * 0.3, E.normal(c.ms, c.k) * 0.15, 1));
       if (!(q > 0.5)) continue;
       sent[c.src.id] = (sent[c.src.id] || 0) + 1;
       c.ms.s[c.k] -= q;

@@ -49,3 +49,20 @@ ${P} .lk-name, ${P} .fold-pid-t .name, #modal .sc-head h2{letter-spacing:.015em}
   const put = () => { if (document.getElementById('lk-chrome')) return; const s = document.createElement('style'); s.id = 'lk-chrome'; s.textContent = CSS; document.head.appendChild(s); };
   if (document.head) put(); else document.addEventListener('DOMContentLoaded', put);
 })();
+// cycle 2 (visual I10): at 1920 the docked event card left a 350 px well of nothing under it. The well over the story is
+// lighter on a tall window, so the last lines of the log show, faded, under the card
+(function () {
+  if (typeof document === 'undefined') return;
+  const css = '@media (min-width:1600px) and (min-height:900px){:root[data-theme] #modal.sc-dock::before{background:rgba(8,11,22,.42);-webkit-backdrop-filter:blur(1.5px) saturate(.6);backdrop-filter:blur(1.5px) saturate(.6)}' +
+    ':root[data-theme=light] #modal.sc-dock::before{background:rgba(242,237,226,.5)}}';
+  const put = () => { if (document.getElementById('lk-well')) return; const s = document.createElement('style'); s.id = 'lk-well'; s.textContent = css; document.head.appendChild(s); };
+  if (document.head) put(); else document.addEventListener('DOMContentLoaded', put);
+})();
+// cycle 2 (visual B13): the clock's first hint hung over the story's Story / Map toggle; on desktop it now hangs to the
+// right of it, still under the step buttons it explains
+(function () {
+  if (typeof document === 'undefined') return;
+  const css = '@media (min-width:1100px){:root[data-theme] #topbar #clk .clk-step > .hint-pop{transform:translateX(118px)}}';
+  const put = () => { if (document.getElementById('lk-hintpos')) return; const s = document.createElement('style'); s.id = 'lk-hintpos'; s.textContent = css; document.head.appendChild(s); };
+  if (document.head) put(); else document.addEventListener('DOMContentLoaded', put);
+})();

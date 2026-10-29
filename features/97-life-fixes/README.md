@@ -182,3 +182,23 @@ The lives differ (a different random stream gives different lives: three of the 
   A work's `run` now runs before the coin is taken and can refuse (a patent with nothing left to buy no longer charges).
 
 **Measured by** `lfGathCap` (three scenes, one seen three times: two left; all seen three times: none, and the bargain is settled off stage) and `lfAfterTheTop` (a met ambition is followed two years on by one of the late ones; What now names the house or a work, and drawing it changes nothing; patronage for a fortune of 300,000 costs 24,000).
+
+## Cycle 2 (`docs/reviews/cycle-2/lives.md` F2, F3; `design.md` A2, D4)
+
+- **Tier gates for the whole top of the ladder.**
+  - `A.lfTop` now also counts a council seat, a lord of rung 4 or more, and a past rank of 6 or more (`p.veteran`). Before, it held only a ruler and a serving general.
+  - Eleven commoner scenes the release's conds do not gate weigh 0 for the top of the ladder in every roll, pool and NPC move (`LF.TOP_BLOCK`, `LF.TOP_PREFIX`, in `LF.weight`). Among them: the town muster, the village militia, the sellsword's offer, raiders at the village, the widow's two acres, the proclamation nobody can read, and the old-age kin and well scenes.
+  - The scribe's duties (`ln_d_scr_*`) are for a scribe only (`LF.JOB_ONLY`).
+  - **Measured by** `lfTierGatesWide`.
+- **Names that tell people apart** (`i-names.core.js`).
+  - `A.givenName` re-picks a name that is already the player's, a parent's, a sibling's, the spouse's or a child's. It does the same for one held by someone in the scene being set up, or for one of the last six drawn that day.
+  - In a scene's view, the second and later full mentions of a person are cut to the given name.
+  - Two buttons with one label each say whom they mean.
+  - **Measured by** `lfFreshNames`: over 200 Harvest Home dances there are 0 same-name pairs and 0 duplicate labels (4 and 4 on the current build), and your own name is drawn 0 times in 300 (10 before).
+- **What now points at the cycle 1 systems** (`LF.whatMore`, `LF.wnDay`). Each pointer is pure and worked out once a day:
+  - an office you could seek at 40% or better, with no bar (9996);
+  - a cargo that would fetch more down a long road (9995);
+  - "See another realm" for someone who has never left the realm they were born in (9990);
+  - "Make your mark", for anyone of 18 or more with no arms of their own (9992).
+- **A ruler's desk** (`LF.desk`). The crown's debt, when it passes half a year's income or the treasury, scores 89. A bill before the council, or the chance to bring one, scores 66–68. While either is shown, "Look for love" and "Train in an extra session" are dropped. **Measured by** `lfWhatNowSystems`.
+- **The golden age's target** is set when the aim is taken: twice the treasury plus a year's income, at least 20,000 (`p.amb.gt`). Before it was a flat 20,000, so a crown with 229,000 had met the aim before setting it.

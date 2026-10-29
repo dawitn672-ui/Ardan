@@ -50,14 +50,16 @@
     { k: 'friend', st: ['child', 'youth', 'prime', 'age'], fit: p => (friends(p) < 2 ? 4 : 1), base: p => ({ n: friends(p) }), label: () => 'Make a true friend', done: (p, b) => friends(p) > b.n, reward: { happy: 3 } },
     { k: 'skill', st: ['child', 'youth', 'prime', 'age', 'reign'], fit: () => 3,
       base: p => { const k = (p.job && GD.CAREERS[p.job.c] && GD.CAREERS[p.job.c].skill) || bestSkill(p); return { k, t: Math.round(sk(p, k)) + (A.isAdult(p) ? 10 : 6) }; },
-      label: (p, b) => `Bring ${skn(b.k)} to ${b.t}`, done: (p, b) => sk(p, b.k) >= b.t, reward: { wil: 0.5 } },
+      label: (p, b) => `Grow skilled at ${skn(b.k).toLowerCase()}`, detail: (p, b) => `${skn(b.k)} ${b.t}`, done: (p, b) => sk(p, b.k) >= b.t, reward: { wil: 0.5 } },
     { k: 'strong', st: ['child', 'youth'], fit: () => 2, base: p => ({ s: 'sta', t: Math.round(A.stat(p, 'sta')) + 3 }),
-      label: (p, b) => `Grow hardier: Stamina ${b.t}`, done: (p, b) => A.stat(p, b.s) >= b.t, reward: { health: 3 } },
-    { k: 'coin', st: ['youth', 'prime', 'age'], fit: p => (C().unfree(p) ? 1 : 3),
-      base: p => { const n = Math.max(20, Math.round((p.coin || 0) * 0.5 + 30)); return { t: Math.round((p.coin || 0) + n) }; },
-      label: (p, b) => `Have ${coin(b.t)} in your purse`, done: (p, b) => (p.coin || 0) >= b.t, reward: { happy: 2 } },
+      label: () => 'Grow hardier', detail: (p, b) => `Stamina ${b.t}`, done: (p, b) => A.stat(p, b.s) >= b.t, reward: { health: 3 } },
+    // a purse aim for a purse that can still feel it: none past 20,000 suns ("Have 1,247,334 suns" was cycle 2's), and
+    // the sum rounded to two figures
+    { k: 'coin', st: ['youth', 'prime', 'age'], fit: p => ((p.coin || 0) > 20000 ? 0 : C().unfree(p) ? 1 : 3),
+      base: p => ({ t: CH.nice((p.coin || 0) + Math.max(20, (p.coin || 0) * 0.5 + 30)) }),
+      label: (p, b) => `Put by ${coin(b.t)}`, done: (p, b) => (p.coin || 0) >= b.t, reward: { happy: 2 } },
     { k: 'fame', st: ['youth', 'prime', 'age', 'reign'], fit: () => 2, base: p => ({ t: Math.round(p.fame || 0) + 10 }),
-      label: (p, b) => `Be talked of: renown ${b.t}`, done: (p, b) => (p.fame || 0) >= b.t, reward: { happy: 2 } },
+      label: () => 'Be talked of beyond your own street', detail: (p, b) => `renown ${b.t}`, done: (p, b) => (p.fame || 0) >= b.t, reward: { happy: 2 } },
     { k: 'wed', st: ['youth', 'prime'], fit: p => (A.isAdult(p) && !C().married(p) && A.age(p) < 45 ? 4 : 0), label: () => 'Marry', done: p => C().married(p), reward: { happy: 3 } },
     { k: 'kid', st: ['prime', 'reign'], fit: p => (C().married(p) && kids(p) < 3 && A.age(p) < 42 ? 4 : 0), base: p => ({ n: kids(p) }),
       label: (p, b) => (b.n ? 'Have another child' : 'Have a child'), done: (p, b) => kids(p) > b.n, reward: { happy: 3 } },
@@ -71,12 +73,12 @@
       label: p => ((p.assets || []).length ? 'Buy another property' : 'Own a roof of your own'), done: (p, b) => (p.assets || []).length > b.n, reward: { happy: 2 } },
     { k: 'free', st: ['youth', 'prime', 'age'], fit: p => (C().unfree(p) ? 8 : 0), label: () => 'Win your freedom', done: p => !C().unfree(p), reward: { happy: 6 } },
     { k: 'battle', st: ['youth', 'prime'], fit: p => (C().soldier(p) ? 4 : 0), base: p => ({ n: battles(p) }), label: () => 'Stand in a battle line and live', done: (p, b) => battles(p) > b.n, reward: { fame: 2 } },
-    { k: 'warend', st: ['youth', 'prime', 'age', 'reign'], fit: p => (C().atWar(p) ? 4 : 0), label: p => `See the war through`,
+    { k: 'warend', st: ['youth', 'prime', 'age', 'reign'], fit: p => (C().atWar(p) && (C().soldier(p) || p.ruler || C().noble(p)) ? 4 : 0), label: () => 'See the war through',
       done: p => !C().atWar(p), reward: { happy: 3 } },
     { k: 'sea', st: ['youth', 'prime'], fit: p => (C().coast(p) && !C().unfree(p) ? 2 : 0), base: p => ({ t: Math.round(sk(p, 'sea')) + 8 }),
-      label: (p, b) => `Learn the sea: Seamanship ${b.t}`, done: (p, b) => sk(p, 'sea') >= b.t, reward: { ins: 0.5 } },
+      label: () => 'Learn the sea', detail: (p, b) => `Seamanship ${b.t}`, done: (p, b) => sk(p, 'sea') >= b.t, reward: { ins: 0.5 } },
     { k: 'pious', st: ['child', 'youth', 'prime', 'age'], fit: p => ((p.piety || 0) >= 30 || (p.job && p.job.c === 'clergy') ? 3 : 1), base: p => ({ t: Math.min(100, Math.round(p.piety || 0) + 12) }),
-      label: (p, b) => `Grow in faith: piety ${b.t}`, done: (p, b) => (p.piety || 0) >= b.t, reward: { happy: 2 } },
+      label: () => 'Be known at the shrine', detail: (p, b) => `piety ${b.t}`, done: (p, b) => (p.piety || 0) >= b.t, reward: { happy: 2 } },
     { k: 'amb', st: ['youth', 'prime', 'age', 'reign'], fit: p => (A.LF && A.LF.ambOf && A.LF.ambOf(p) && !p.amb.done ? 6 : 0),
       base: p => { let pr = 0; try { pr = A.LF.AMB[p.amb.k].prog(p) || 0; } catch (e) {} return { k: p.amb.k, t: Math.min(1, Math.round((pr + 0.25) * 100) / 100) }; },
       label: (p, b) => `A long step toward your ambition: ${(A.LF && A.LF.AMB[b.k] ? A.LF.AMB[b.k].name : 'your ambition').toLowerCase()}`,
@@ -91,9 +93,9 @@
       base: p => ({ n: (p.children || []).map(A.P).filter(k => k && k.spouse).length }), label: () => 'See a child of yours married',
       done: (p, b) => (p.children || []).map(A.P).filter(k => k && k.spouse).length > b.n, reward: { happy: 3 } },
     { k: 'stab', st: ['reign'], fit: () => 4, base: p => { const r = realm(p); return { t: Math.min(95, Math.round(r ? r.stability : 50) + 10) }; },
-      label: (p, b) => `Steady the realm: stability ${b.t}`, done: (p, b) => { const r = realm(p); return !!(r && r.stability >= b.t); }, reward: { fame: 2 } },
-    { k: 'gold', st: ['reign'], fit: () => 3, base: p => { const r = realm(p), t = r ? r.treasury : 0; return { t: Math.round(t + Math.max(2000, t * 0.5)) }; },
-      label: (p, b) => `Fill the treasury to ${coin(b.t)}`, done: (p, b) => { const r = realm(p); return !!(r && r.treasury >= b.t); }, reward: { fame: 2 } },
+      label: () => 'Steady the realm', detail: (p, b) => `stability ${b.t}`, done: (p, b) => { const r = realm(p); return !!(r && r.stability >= b.t); }, reward: { fame: 2 } },
+    { k: 'gold', st: ['reign'], fit: p => { const r = realm(p); return r && r.treasury > 500000 ? 0 : 3; }, base: p => { const r = realm(p), t = r ? r.treasury : 0; return { t: CH.nice(t + Math.max(2000, t * 0.5)) }; },
+      label: () => 'Fill the treasury', detail: (p, b) => coin(b.t), done: (p, b) => { const r = realm(p); return !!(r && r.treasury >= b.t); }, reward: { fame: 2 } },
     { k: 'heir', st: ['reign'], fit: p => (kids(p) ? 0 : 6), label: () => 'Get an heir', done: p => kids(p) > 0, reward: { happy: 3 } },
     { k: 'ally', st: ['reign'], fit: p => { const r = realm(p); return r && (r.allies || []).length < 3 ? 3 : 0; }, base: p => { const r = realm(p); return { n: r ? (r.allies || []).length : 0 }; },
       label: () => 'Bind a neighbour with an alliance', done: (p, b) => { const r = realm(p); return !!(r && (r.allies || []).length > b.n); }, reward: { fame: 2 } },
@@ -103,13 +105,25 @@
     const b = A1.base ? A1.base(p) : {};
     let l = '';
     try { l = A1.label(p, b); } catch (e) { l = A1.k; }
-    return { k: A1.k, l: String(l).slice(0, 80), b, d: null };
+    const o = { k: A1.k, l: String(l).slice(0, 80), b, d: null };
+    try { if (A1.detail) o.x = String(A1.detail(p, b)).slice(0, 40); } catch (e) {}
+    return o;
+  };
+  // a round target: two significant figures, rounded up (1,247,334 -> 1,300,000; 137 -> 140)
+  CH.nice = function (n) {
+    n = Math.max(1, Math.round(+n || 0));
+    if (n < 100) return Math.ceil(n / 5) * 5;
+    const m = Math.pow(10, Math.floor(Math.log10(n)) - 1);
+    return Math.ceil(n / m) * m;
   };
   // the aims for a chapter: the four best fits for the stage (ties broken by hash of the life and the chapter)
   CH.choose = function (p, st, n) {
     const out = [];
+    // an aim the last chapter left unmet is not set again (cycle 2: "Learn your letters" in five chapters running)
+    const L = p.chap && Array.isArray(p.chap.past) ? p.chap.past[p.chap.past.length - 1] : null;
+    const failed = new Set(L && L.aims ? L.aims.filter(a => a.d == null && a.k).map(a => a.k) : []);
     for (const a of CH.AIMS) {
-      if (!a.st.includes(st)) continue;
+      if (!a.st.includes(st) || failed.has(a.k)) continue;
       let f = 0;
       try { f = a.fit(p) || 0; } catch (e) { f = 0; }
       if (f <= 0) continue;
@@ -161,7 +175,7 @@
     const c = p.chap && p.chap.cur;
     if (!c) return null;
     const met = c.aims.filter(a => a.d != null).length, full = c.aims.length >= 3 && met === c.aims.length;
-    const rec = { n: c.n, st: c.st, t: c.t, y0: c.y0, y1: A.S.year, aims: c.aims.map(a => ({ l: a.l, d: a.d })), full };
+    const rec = { n: c.n, st: c.st, t: c.t, y0: c.y0, y1: A.S.year, aims: c.aims.map(a => ({ k: a.k, l: a.l, d: a.d })), full };
     p.chap.past.push(rec);
     if (p.chap.past.length > 16) p.chap.past.shift();
     p.chap.cur = null;
@@ -188,10 +202,14 @@
         A.log(`Aim met: ${a.l}.`, 'good');
       }
     }
-    const turn = !c || c.st !== st || (st === 'prime' && A.S.year - c.y0 >= CH.PRIME_YEARS) || (st === 'reign' && A.S.year - c.y0 >= 10);
+    // a chapter turns with the stage, after eight years of one stage (ten of a reign: an elf's youth is long), or
+    // a year after its last aim is met
+    const allMet = c && c.aims.length && c.aims.every(a => a.d != null) && A.S.year - Math.max(...c.aims.map(a => a.d)) >= 1;
+    const turn = !c || c.st !== st || A.S.year - c.y0 >= (st === 'reign' ? 10 : CH.PRIME_YEARS) || allMet;
     if (!turn) return;
-    // a card waits at most one at a time; the next month tries again
-    if (A.S.queue.some(q => q && q.ev === 'chp_card')) return;
+    // the card comes in a quiet month: never stacked behind another scene (cycle 2, design B3: on day one the
+    // ambition's question, then the chapter's aims, back to back), and one at a time
+    if (A.S.queue.some(q => q && q.type === 'event')) return;
     const last = c ? CH.close(p) : null;
     CH.open(p, st);
     if (A.EV.chp_card) A.queue({ type: 'event', ev: 'chp_card', ctx: { chN: p.chap.n, chLast: last ? last.n : 0 } });
@@ -222,6 +240,47 @@
   };
   CH.aimsText = c => c.aims.slice(0, 2).map((a, i) => (i ? a.l[0].toLowerCase() + a.l.slice(1) : a.l)).join('; ') + (c.aims[2] ? '; and either ' + c.aims[2].l.toLowerCase() + (c.alt ? ' or ' + c.alt.l.toLowerCase() : '') : '') + '.';
 
+  // ---- the chapter card as a title card (cycle 2, design B6 and visual B12) ------------------------------------------
+  // Not one more scene card: a chapter break. The stage's own print across the top (a toy and a hearth for childhood,
+  // the road for youth, the work for the prime, the window for age, the court for a reign), "Chapter Two" small and the
+  // title large and centred, the years, what the last chapter came to, the two set aims ticked off as a list, and the
+  // third chosen from two. After the choice: the three aims and "Begin the chapter". Drawn from chp_card's view and
+  // the person; pure, as 92's card is. The buttons keep the release's data-a (evChoose, evClose), so keys 1 and 2,
+  // Enter and the focus rules still hold.
+  CH.SHAPE = { child: 'play', youth: 'travel', prime: 'work', age: 'letter', reign: 'court' };
+  CH.titleCard = function (q) {
+    const p = A.pc(), c = p && p.chap && p.chap.cur, v = q.view || A.eventView(q) || {};
+    if (!c || !v || v.skip) return null;
+    let sky = '';
+    try {
+      const SK = UI.SKIES;
+      if (SK && SK.svg && UI.set.skies !== false) { const o = SK.optsFor(q, v); sky = SK.svg(CH.SHAPE[c.st] || 'none', `chp|${p.id}|${c.n}`, o.month, Object.assign({}, o, { place: '' })); }
+    } catch (e) { sky = ''; }
+    const recap = CH.recap(p), done = !!q.result;
+    const aim = (a, i) => `<li><span class="chp-tick" aria-hidden="true">${i + 1}</span><span>${esc(a.l)}${a.x ? ` <span class="chp-x">${esc(a.x)}</span>` : ''}</span></li>`;
+    const set = c.aims.slice(0, done ? 3 : 2);
+    let h = `<div class="panel mbox chp-title${done ? ' chp-done-card' : ''}" data-chp="${esc(c.st)}">` +
+      (sky ? `<div class="chp-sky" aria-hidden="true">${sky}</div>` : '') +
+      `<div class="chp-tc"><div class="chp-k">Chapter ${esc(CH.ORD[c.n - 1] || c.n)}</div><h2 class="chp-h">${esc(c.t)}</h2>` +
+      `<div class="chp-yrs">${esc(CH.STAGES[c.st] || '')} · from ${esc(c.y0)}, aged ${esc(c.a0)}</div>` +
+      (recap ? `<p class="chp-recap">${esc(recap)}</p>` : '') +
+      `<div class="chp-aims-h">${done ? 'The aims of this chapter' : 'This chapter you mean to'}</div><ol class="chp-aimlist">${set.map(aim).join('')}</ol>`;
+    if (!done) {
+      h += `<div class="chp-aims-h">And one more, of your choosing</div><div class="choices chp-choices">` +
+        (v.choices || []).map((ch, vi) => { const a = ch.i === 1 ? c.alt : c.aims[2]; return `<button data-a="evChoose" data-v="${vi}">${esc(a ? a.l : ch.t)}${a && a.x ? ` <span class="chp-x">${esc(a.x)}</span>` : ''}</button>`; }).join('') + '</div>';
+    } else {
+      h += `<div class="chp-foot"><button class="primary sc-cont" data-a="evClose">Begin the chapter</button></div>`;
+    }
+    return h + '</div></div>';
+  };
+  const qmc = UI.queueModal;
+  if (typeof qmc === 'function') UI.queueModal = function (q) {
+    if (q && q.type === 'event' && q.ev === 'chp_card' && !CH.CARD_OFF) {
+      try { const h = CH.titleCard(q); if (h) return h; } catch (e) { console.error('chapter title card', e); }
+    }
+    return qmc.apply(this, arguments);
+  };
+
   // ---- on screen (pure: reads the person, draws nothing) --------------------------------------------------------------
   CH.card = function (p) {
     const c = p && p.chap && p.chap.cur;
@@ -229,7 +288,7 @@
     const done = c.aims.filter(a => a.d != null).length;
     return `<section class="card chp-card" aria-labelledby="chp-h" data-tt="${esc('Aims: ' + c.aims.map(a => (a.d != null ? '✓ ' : '') + a.l).join('; ') + '.')}"><div class="row"><span class="tag">Chapter ${esc(CH.ORD[c.n - 1] || c.n)}</span><b id="chp-h" class="grow chp-t">${esc(c.t)}</b><span class="tiny muted">since ${esc(c.y0)} · ${done} of ${c.aims.length}</span></div>` +
       (() => { const nx = c.aims.find(a => a.d == null); return nx ? `<div class="chp-next tiny">Next: ${esc(nx.l)}</div>` : ''; })() +
-      `<ul class="chp-aims">${c.aims.map(a => `<li class="${a.d != null ? 'chp-done' : ''}"><span class="chp-tick" aria-hidden="true">${a.d != null ? '✓' : '○'}</span><span class="${a.d != null ? 'chp-met' : ''}">${esc(a.l)}</span>${a.d != null ? `<span class="sc-vh"> (met in ${esc(a.d)})</span>` : ''}</li>`).join('')}</ul></section>`;
+      `<ul class="chp-aims">${c.aims.map(a => `<li class="${a.d != null ? 'chp-done' : ''}"><span class="chp-tick" aria-hidden="true">${a.d != null ? '✓' : '○'}</span><span class="${a.d != null ? 'chp-met' : ''}">${esc(a.l)}</span>${a.x ? ` <span class="tiny muted chp-x">${esc(a.x)}</span>` : ''}${a.d != null ? `<span class="sc-vh"> (met in ${esc(a.d)})</span>` : ''}</li>`).join('')}</ul></section>`;
   };
   const life = UI.TAB && UI.TAB.life;
   if (typeof life === 'function') UI.TAB.life = function (pc) {
@@ -342,6 +401,23 @@
 .chp-list{margin:2px 0 8px 18px;padding:0;font-size:var(--t-small,13px)}
 .chp-bt{font-family:var(--f-display,inherit)}
 .chp-next{display:none}
+.chp-x{font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.chp-title{max-width:620px;padding:0;overflow:hidden;text-align:center}
+.chp-sky svg{display:block;width:100%;height:auto;max-height:190px;object-fit:cover}
+.chp-tc{padding:14px 24px 20px}
+.chp-k{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+.chp-h{margin:4px 0 2px;font-family:var(--f-name,inherit);font-size:34px;line-height:1.15;letter-spacing:.02em}
+.chp-yrs{font-size:13px;color:var(--ink-2)}
+.chp-recap{margin:12px auto 0;max-width:46ch;font-family:var(--f-prose,inherit);font-style:italic;color:var(--ink-2)}
+.chp-aims-h{margin:16px 0 6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.chp-aimlist{list-style:none;margin:0 auto;padding:0;max-width:420px;text-align:left;display:flex;flex-direction:column;gap:6px}
+.chp-aimlist li{display:flex;gap:10px;align-items:baseline}
+.chp-aimlist .chp-tick{flex:none;width:20px;height:20px;border-radius:50%;border:1px solid var(--accent-rule,var(--accent));font-size:11px;line-height:18px;text-align:center;color:var(--accent)}
+.chp-choices{display:flex;flex-direction:column;gap:6px;max-width:420px;margin:0 auto}
+.chp-choices button{display:flex;gap:10px;align-items:center;justify-content:flex-start;min-height:44px;text-align:left}
+.chp-key{flex:none;width:20px;height:20px;border-radius:4px;background:var(--raised-hover,var(--raised));font-size:11px;line-height:20px;text-align:center}
+.chp-foot{margin-top:16px}
+@media (max-width:760px){.chp-title{max-width:none}.chp-h{font-size:28px}.chp-tc{padding:12px 16px 16px}.chp-choices button{min-height:52px}}
 .chp-in-amb{margin:6px 0 0;padding:6px 0 0;border-left:0;border-top:1px solid var(--line)}
 @media (max-width:760px),(max-height:860px){.chp-card{padding:4px 8px;margin-bottom:4px}.chp-aims{display:none}.chp-next{display:block;color:var(--ink-2);margin-top:2px}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('chp-style')) return; const s = document.createElement('style'); s.id = 'chp-style'; s.textContent = CSS; document.head.appendChild(s); };

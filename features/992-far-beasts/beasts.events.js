@@ -32,7 +32,7 @@
       id: 'fb_at_the_herds',
       title: 'Something at the herds',
       cond: (p, C) => C.adult(p) && C.fbFar(p) && C.fbHas(p, 'fight'),
-      w: 5, cool: 3,
+      w: 5, cool: 8,   // cycle 2 (lives F6): 11 times in a 56-year life at cool 3
       setup: (p, ctx) => { pick(p, ctx, 'fight'); },
       text: 'Two goats are dead in the fold, and the third is missing. The marks in the mud are fresh. The herders of {fbRegion} know them: {fbA}. {fbHabit}',
       choices: [
@@ -50,7 +50,7 @@
       cond: (p, C) => C.adult(p) && C.fbFar(p) && C.fbHas(p, 'quarry') && !C.ruler(p),
       w: 4, cool: 2,
       setup: (p, ctx) => { pick(p, ctx, 'quarry'); },
-      text: 'Game is moving along {fbRegion}: {beast}, the boys say, more than they could count. There is meat in it, and {fbYield} for the market, if anyone goes now.',
+      text: 'Game is moving along {fbRegion}: {fbA}, the boys say, more than they could count. There is meat in it, and {fbYield} for the market, if anyone goes now.',
       choices: [
         { t: 'Go now, with whatever is to hand', check: { s: 'survival', s2: 'spd', d: 46 },
           win: { r: 'You bring one down at the ford and carry it home in pieces.', fx: (p, ctx) => sell(p, ctx) },

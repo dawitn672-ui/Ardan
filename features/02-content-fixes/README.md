@@ -17,3 +17,5 @@ Raw {tokens} in 39 events, two events that never fired, text-diet misses, a stal
 ## Tests
 
 `tokens` in `test.mjs`. Run them with `node tests/run.mjs --features=content-fixes`.
+
+- `EVT-DANCE-NIECE` (cycle 2, design A2): `lf_harvest_dance` said "the reeve's handsome nephew or niece" of a partner whose sex the setup had chosen. It now says one or the other.

@@ -51,7 +51,21 @@
     married: pc => !!pc.spouse,
     parent: pc => (pc.children || []).length > 0,
   };
-  const who = (pc, w) => (B.WHO[w || 'adult'] || B.WHO.adult)(pc);
+  // the commons: free, not a noble, not a lord, not on a throne. Dues and levies are theirs (cycle 2, design A6: the
+  // Emperor of Aldmark heard the reeve knock for the hearth mark, because "free" counted nobles and rulers)
+  B.WHO.commons = pc => A.isAdult(pc) && !unfree(pc) && !pc.ruler && rank(pc) < 5 && !(pc.noble && pc.noble.rung >= 2) && !pc.office;
+  B.DUE_RX = /tithe|tax|toll|penny|mark|tenth|tribute|levy|loan|receipt|days for|fiftieth|a man or|remount|grain to|month|count/i;
+  B.NOT_DUE_RX = /scutage|forty days or|whose host|dark weeks/i;
+  // a custom of dues (a year's due or a war's levy, read from its name) asks the commons, whatever its own audience
+  B.isDue = c => !!c && (c.who === 'commons' || ((c.kind === 'year' || c.kind === 'levy') && B.DUE_RX.test(c.name || '') && !B.NOT_DUE_RX.test(c.name || '')));
+  const who0 = (pc, w) => (B.WHO[w || 'adult'] || B.WHO.adult)(pc);
+  const who = (pc, w, c) => who0(pc, w) && (!B.isDue(c) || B.WHO.commons(pc));
+  B.whoFor = (pc, c) => !!c && who(pc, c.who, c);
+  // a ruler hears the other side of a due: it comes in, across the realm, once a year
+  B.rulerSide = function (pc, c) {
+    const R = A.realm(pc.ruler), pop = R && (R.pop || R.people);
+    A.log(`${B.fill(pc, c.name)} comes in across ${R ? R.short : 'the realm'}${pop ? `: ${A.fmt ? A.fmt(Math.round(pop)) : Math.round(pop)} souls` : ''}. Your clerks count it into the treasury.`, '');
+  };
   B.WHEN = {
     armed: pc => !!(pc.gear && pc.gear.weapon && !['fists', 'staff', 'club'].includes(pc.gear.weapon)),
     mounted: pc => !!(pc.gear && pc.gear.mount),
@@ -115,7 +129,8 @@
     for (const c of B.mine(pc)) {
       const h = pc.rb[c.id];
       if (c.kind === 'year') {
-        if (mo === (c.m || 0) && (!h || h.y !== S.year) && who(pc, c.who)) B.hit(pc, c);
+        if (mo === (c.m || 0) && (!h || h.y !== S.year) && who(pc, c.who, c)) B.hit(pc, c);
+        else if (mo === (c.m || 0) && pc.ruler && B.isDue(c)) { const rr = pc.rbR && typeof pc.rbR === 'object' ? pc.rbR : (pc.rbR = {}); if (rr[c.id] !== S.year) { rr[c.id] = S.year; B.rulerSide(pc, c); } }
       } else if (c.kind === 'rite') {
         if (!h && age >= (c.age || 16) && age <= (c.age || 16) + 2 && who(pc, c.who || 'all')) B.hit(pc, c);
       } else if (c.kind === 'ward') {
@@ -124,7 +139,7 @@
       } else if (c.kind === 'levy') {
         // once for each war: the war's start year is its mark
         const w = war[0], key = w ? (w.id || w.name || '') + '|' + (w.start || w.y || '') : null;
-        if (w && who(pc, c.who) && !pc.mil && (!h || h.war !== key)) { B.hit(pc, c); pc.rb[c.id].war = key; }
+        if (w && who(pc, c.who, c) && !pc.mil && (!h || h.war !== key)) { B.hit(pc, c); pc.rb[c.id].war = key; }
       }
     }
   };

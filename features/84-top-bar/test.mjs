@@ -247,5 +247,29 @@ Object.assign(tests, {
     const ok = r.six === 6 && /More activities/.test(r.moreText) && /Make a friend/.test(r.noteText) && r.near && r.all > 20 && r.later > 20;
     return { ok, detail: `first life: ${r.six} activities shown, "${r.moreText}"; after Make a friend: "${r.noteText.slice(0, 100)}" above the tiles ${r.near}; More shows ${r.all}; a later life ${r.later}` };
   },
+
+  // cycle 2 (design A5): on a 390 and a 360 px phone with a large purse and a debt, the date, the initiative and the
+  // purse never overlap, and the purse keeps its whole number
+  async tbPhone(pg, errs, { browser, file }) {
+    const { pathToFileURL } = await import('node:url');
+    const out = [];
+    for (const w of [390, 360]) {
+      const ctx = await browser.newContext({ viewport: { width: w, height: 844 }, isMobile: true, hasTouch: true }), p = await ctx.newPage();
+      p.on('pageerror', e => errs.push(String(e)));
+      await p.goto(pathToFileURL(file).href); await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      out.push(Object.assign({ w }, await p.evaluate(() => {
+        A.newGame({ seed: 5, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 }); UI.screen = 'game';
+        const pc = A.pc(); pc.coin = 7023; pc.debt = 38; UI.render();
+        const t = document.querySelector('#topbar'), box = s => { const e = t.querySelector(s); return e ? e.getBoundingClientRect() : null; };
+        const els = ['.clk-date', '.clk-ini', '.top-coin'].map(box).filter(Boolean);
+        let overlap = 0; for (let i = 0; i < els.length; i++) for (let j = i + 1; j < els.length; j++) { const a = els[i], b = els[j]; if (a.right > b.left + 1 && b.right > a.left + 1 && a.bottom > b.top && b.bottom > a.top) overlap++; }
+        const coin = t.querySelector('.top-coin > b'), whole = coin && coin.scrollWidth <= coin.clientWidth + 1;
+        return { overlap, whole, n: els.length };
+      })));
+      await ctx.close();
+    }
+    const ok = out.every(o => o.n === 3 && !o.overlap && o.whole);
+    return { ok, detail: out.map(o => `${o.w} px: ${o.overlap} overlaps, purse whole ${o.whole}`).join('; ') };
+  },
 });
 export default tests;

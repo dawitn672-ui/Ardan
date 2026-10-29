@@ -181,13 +181,13 @@ A.defEvents([
     ] },
 
   { id: 'oa_kin_corrody', title: 'A corrody',
-    cond: (p, C) => C.old(p) && !C.ruler(p) && !C.flag(p, 'oa_corrody') && (C.rich(p) || p.coin >= 60),
+    cond: (p, C) => C.old(p) && !C.ruler(p) && !C.noble(p) && !p.office && !C.flag(p, 'oa_corrody') && p.coin >= 300,
     w: 2, cool: 12, once: true,
     text: 'The cellarer of the abbey has a proposal: pay down a sum now, and the abbey will keep you for life. A room in the guest range, a loaf and a gallon of ale a day, a place at the fire, a monk to read to you. Many do it. The abbey does well out of those who live short.',
     choices: [
-      { t: 'Buy the corrody', r: 'The cellarer counts your money with a holy face. You move in at Michaelmas with a chest and a dog.', fx: { coinPct: -0.25, need: { comfort: 10, purpose: -6 }, health: 4, flag: 'oa_corrody', oa: { later: ['oa_kin_corrody_life', 1, 3] } } },
+      { t: 'Buy the corrody (300 suns)', r: 'The cellarer counts your money with a holy face. You move in at Michaelmas with a chest and a dog.', fx: { coin: -300, need: { comfort: 10, purpose: -6 }, health: 4, flag: 'oa_corrody', oa: { later: ['oa_kin_corrody_life', 1, 3] } } },
       { t: 'Haggle the sum down', check: { s: 'trade', s2: 'int', d: 50 },
-        win: { r: 'He agrees to a smaller sum, betting on your cough. You intend to disappoint him.', fx: { coinPct: -0.15, need: { comfort: 8 }, flag: 'oa_corrody', oa: { later: ['oa_kin_corrody_life', 1, 3] } } },
+        win: { r: 'He agrees to a smaller sum, betting on your cough. You intend to disappoint him.', fx: { coin: -180, need: { comfort: 8 }, flag: 'oa_corrody', oa: { later: ['oa_kin_corrody_life', 1, 3] } } },
         lose: { r: 'He looks at your colour and raises it. You walk out.', fx: { happy: -3 } } },
       { t: 'Keep your money and your door', r: 'You thank him and go home to your own cold house, your own bad ale, your own hour for bed.', fx: { wil: 1, need: { purpose: 4 } } },
     ] },

@@ -333,6 +333,9 @@ ${X('.choices button:hover:not(:disabled)::before')}{background:var(--accent-fil
 ${X('.choices button:active:not(:disabled)')}{background:var(--sunken)}
 ${X('.mbox .mtext')}{font-size:var(--t-prose);line-height:var(--lh-prose);max-width:68ch}
 ${X('.mbox:not(.obit) .mtext:first-letter')}{font-size:2.6em;line-height:.9;padding:4px 6px 0 0}
+/* cycle 2 (visual B13): the drop cap sits against the rest of its word ("You", not "Y ou") */
+${X('.mbox:not(.obit) .mtext:first-letter')}{padding-right:.03em}
+:root[data-theme] #modal .mbox.sc-card .sc-body > .mtext:first-letter{padding-right:.03em;margin-right:0}
 ${X('.mbox h2')}{font-size:var(--t-h2);line-height:1.27;margin-bottom:var(--sp-2)}
 
 /* ---- modals and sheets (brief §5.7) */

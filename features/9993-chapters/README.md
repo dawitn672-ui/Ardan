@@ -33,6 +33,21 @@
 
 They are kept in `S.dynasty.legacies`.
 
+## Cycle 2 (Oct 29)
+
+- **The card is a title card, not one more scene** (design B6, visual B12). It is drawn by its own renderer, not 92's:
+  - the stage's print: *play* for childhood (no more wedding rings), the road for youth, the work for the prime, the window for age, the court for a reign;
+  - "Chapter Two" small, the title large and centred, the stage and the years;
+  - last chapter's recap in italics;
+  - the two set aims as a numbered list, and the third chosen from two;
+  - after the choice, "Begin the chapter".
+  The buttons keep the release's `data-a`, so keys 1 and 2 and Enter work. The choice's result text is empty, so the Book no longer gets "So it is written…" for every chapter.
+- **Aims in the world's terms**, with the number beside them: "Be known at the shrine · piety 42", "Grow skilled at farming & herding · Farming & herding 29", "Be talked of beyond your own street · renown 10".
+- **Round sums** (lives F9): `CH.nice` keeps two figures, rounded up. "Put by 1,900 suns" replaces "Have 1,247,334 suns". There is no purse aim past 20,000 suns and no treasury aim past 500,000.
+- **No stale aims:** an aim the last chapter left unmet is not set again. "See the war through" goes only to a soldier, a ruler or a noble.
+- **No idle chapters:** a chapter turns a year after its last aim is met, and after eight years of any stage. An elf's youth used to sit at three of three for 19 years.
+- **Spacing** (design B3): the card comes only in a month with no other scene waiting, so it no longer follows the ambition's question on day one. In a 16-year-old's first months the order is now the realm custom, the ambition, then the chapter card on day 32.
+
 ## APIs (for later work)
 
 - `A.CH.AIMS.push({ k, st: [stages], fit(p), base(p), label(p, b), done(p, b), reward })`. 13-weekly-challenge or a quest system can add aims; `fit` 0 keeps an aim out.

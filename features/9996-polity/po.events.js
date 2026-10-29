@@ -371,6 +371,22 @@ A.defEvents([
         win: { r: 'The answer is honest: renown, and a friend on the council. You know now what to buy.', fx: { int: 1, fame: 1 } },
         lose: { r: 'The question is taken as a complaint. The crown\'s regard cools.', fx: { fame: -1, happy: -1 } } },
     ] },
+  // ------------------------------------------------------------------------------------------------ the crown lost
+  // queued the month a ruling player loses the throne, however it went (POL.crownMonth)
+  { id: 'po_deposed', title: 'The crown of {realmT}', trigger: true, cool: 1,
+    cond: (p, C) => C.adult(p) && !C.ruler(p),
+    setup: (p, ctx) => { if (!ctx.rid) ctx.skip = true; ctx.who = ctx.pid && aliveP(ctx.pid) ? A.fullName(A.P(ctx.pid), false) : 'Another'; ctx.whoLine = ctx.fell ? 'The realm is gone; its lords have new masters' : `${ctx.who} sits where you sat`; },
+    text: 'It is done. {whoLine}, and the guards at the door are not yours. A few of your household are still with you. One holds the horses, one holds the strongbox, and both are waiting to be told.',
+    choices: [
+      { t: 'Ride for a friendly court', r: 'You leave by the postern before dawn, with what the strongbox holds. A foreign court takes you in. Exiles are useful to it, for now.', fx: { poFate: 'flee', happy: -4, wil: 1 } },
+      { t: 'Kneel to the new ruler, on terms', check: { s: 'diplomacy', s2: 'wil', d: 50 },
+        win: { r: 'You kneel in front of the court and name your terms before you rise: your lands, your life, your household. They are granted. They are watched.', fx: { poFate: 'kneel', fame: -3, honor: -1 } },
+        lose: { r: 'You kneel, and the terms are theirs: half your fortune and a small hall far from the capital. You rise a lesser man.', fx: { poFate: 'kneelPoor', fame: -5, happy: -4 } } },
+      { t: 'Wait for them in your chamber', r: 'They come at noon, politely, and take your sword. The cell is dry, and the door is very thick.', fx: { prison: 3, why: 'a fallen ruler', honor: 2 } },
+      { t: 'Raise your banner and fight for it', req: (p, C, ctx) => !ctx.fell && !!ctx.pid, check: { s: 'command', s2: 'wil', d: 55 },
+        win: { r: 'Men come to your banner: old guards, a few houses that hate the new crown more than they fear it. It is a war now.', fx: { poFate: 'claim', fame: 3 } },
+        lose: { r: 'Nobody comes. You ride out with a dozen and come back with four, and the border is the only road left open.', fx: { poFate: 'flee', health: -10, happy: -6 } } },
+    ] },
 ]);
 
 // the court speaks the place's own words (54-voices): {councilT} and {lordT} are the realm's word for its council and

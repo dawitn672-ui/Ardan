@@ -91,4 +91,16 @@ export default [
       'A.sellPrice=(rid,k,pc)=>A.mkt(rid).p[k]*(1-Math.max(A.spread(pc||A.pc()),.2/A.mktDepth(rid)))',
     ]],
   },
+  {
+    id: 'WLD-DIV-ARTICLE',
+    blob: 'ardan-core',
+    why: 'A division line wrote "The ${d.name}", and a far order is often named "The ..." already: "The The Chain Keepers is cut ' +
+      'off and destroyed at Shulai" (world review cycle 2, B5). A.divThe(name) puts "The" before a name only when it has none.',
+    edits: [
+      ['A.news(`The ${d.name} is ${opts.length?"overrun":"cut off and destroyed"} at ${P.name}.`,"battle")',
+        'A.news(`${A.divThe?A.divThe(d.name):"The "+d.name} is ${opts.length?"overrun":"cut off and destroyed"} at ${P.name}.`,"battle")'],
+      ['A.log(`The ${d.name} finishes training and joins the host (${A.fmt(d.men)} men).`,"good")',
+        'A.log(`${A.divThe?A.divThe(d.name):"The "+d.name} finishes training and joins the host (${A.fmt(d.men)} men).`,"good")'],
+    ],
+  },
 ];

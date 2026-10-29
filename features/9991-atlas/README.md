@@ -58,3 +58,5 @@ The core adds `A.onMonth`, wraps `A.continueAs` and `UI.renderLogWrap`, and adds
 - Heard-of land could carry its rumoured name in faded ink.
 - Battles you fought in could count as seen.
 - The full map could get a "What you know of it" side card.
+
+**Cycle 2 (lane G, Oct 29).** The story column's map is held to the world (visual B4): its view never shows past an edge (it showed a flat navy block west of the west coast), and a view wider than the world is centred on it. On the full map the veil is laid at a quarter (`AT.CANVAS_K.gmap`), since the realms' borders are common knowledge; the story map keeps the full veil. `atlasHeld`.

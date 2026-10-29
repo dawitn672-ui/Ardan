@@ -27,6 +27,11 @@
   const ratio = (a, b) => Math.max(0, Math.min(1, b > 0 ? a / b : 0));
   // k: name on the card, t: the choice's words (12 at most), fit: score when offered (0 = not offered),
   // done, step (the next step, in words), prog (0 to 1)
+  // the golden age's treasury: twice what the crown held when the aim was taken, and a year's income on top, at least
+  // 20,000 (cycle 2, design D4: "229,000 suns of 20,000 suns in the treasury", an aim met before it was set). Kept on
+  // the ambition (p.amb.gt); an ambition from an older save keeps 20,000
+  const goldT = p => (p && p.amb && p.amb.k === 'golden' && p.amb.gt > 0 ? p.amb.gt : 20000);
+  LF.goldTarget = r => Math.max(20000, Math.round((2 * Math.max(0, r.treasury || 0) + Math.max(0, r.income || 0)) / 1000) * 1000);
   LF.AMB = {
     freedom: { name: 'Buy your freedom', t: 'Buy your freedom, whatever it costs',
       fit: p => (unfree(p) ? 10 : 0), done: p => !unfree(p),
@@ -83,9 +88,9 @@
       step: p => `Provinces held: ${provs(p)}; ${p.amb && p.amb.p0 != null ? p.amb.p0 + 3 : provs(p) + 3} would do it.`,
       prog: p => (p.amb && p.amb.p0 != null ? ratio(provs(p) - p.amb.p0, 3) : 0) },
     golden: { name: 'Bring a golden age', t: 'Give the realm a golden age',
-      fit: p => (p.ruler ? 5 : 0), done: p => { const r = realm(p); return !!(r && r.stability >= 85 && r.treasury >= 20000); },
-      step: p => { const r = realm(p); return r ? `Stability ${Math.round(r.stability)} of 85 and ${coin(r.treasury)} of ${coin(20000)} in the treasury.` : ''; },
-      prog: p => { const r = realm(p); return r ? (ratio(r.stability, 85) + ratio(r.treasury, 20000)) / 2 : 0; } },
+      fit: p => (p.ruler ? 5 : 0), done: p => { const r = realm(p); return !!(r && r.stability >= 85 && r.treasury >= goldT(p)); },
+      step: p => { const r = realm(p); return r ? `Stability ${Math.round(r.stability)} of 85 and ${coin(r.treasury)} of ${coin(goldT(p))} in the treasury.` : ''; },
+      prog: p => { const r = realm(p); return r ? (ratio(r.stability, 85) + ratio(r.treasury, goldT(p))) / 2 : 0; } },
     web: { name: 'Weave a web of alliances', t: 'Bind the crowns around you with alliances',
       fit: p => (p.ruler ? 4 : 0), done: p => allies(p) >= 3,
       step: p => `Allies: ${allies(p)} of 3. Marriages, summits, gifts.`, prog: p => ratio(allies(p), 3) },
@@ -135,6 +140,7 @@
     if (!k || !LF.AMB[k]) { delete p.amb; return ''; }
     p.amb = { k, y: A.S.year };
     if (k === 'expand') p.amb.p0 = provs(p);
+    if (k === 'golden') { const r = realm(p); if (r) p.amb.gt = LF.goldTarget(r); }
     return '';
   };
   // when to ask: coming of age, 35, and the first year of a reign
@@ -222,6 +228,64 @@
         break;
       }
     }
+    // ---- the cycle 1 systems, one pointer each (cycle 2, lives F2: What now never named any of them) ----------------
+    const D = LF.wnDay(pc);
+    // an office you could seek (9996): no bar, at fair odds, not sought this year
+    if (D.office) add(56, `Seek the office: ${D.office.name}`, `${Math.round(D.office.p * 100)}% by your own count. ${D.office.who}`, 'realm', ['tab', 'realm']);
+    // a cargo that would fetch more down a long road (9995)
+    if (D.venture) add(50, `Your ${D.venture.good} would fetch more in ${D.venture.dest}`, `About ${coin(D.venture.gain)} more than at home, after freight. The long roads are on your market's card.`, 'holdings', ['tab', 'holdings']);
+    // never been out of the realm (9990)
+    if (D.journey) add(38, 'See another realm', 'You have never left the realm you were born in. A journey there and back takes a season.', 'life', ['act', 'travel']);
+    // no arms of your own (9992): once, from 18
+    if (D.arms) add(36, 'Make your mark', 'Arms of your own: a field, a charge and words to live by. Others will know your seal.', 'life', ['idArms', '']);
+    return out;
+  };
+  // the heavier pointers, worked out once a day for each person (a view's cache: it reads the world and writes nothing
+  // in it)
+  const wnCache = { k: null, v: null };
+  LF.wnDay = function (pc) {
+    const k = pc.id + ':' + A.absDay();
+    if (wnCache.k === k) return wnCache.v;
+    const v = {};
+    try {
+      const POL = A.POL;
+      if (POL && POL.seekable && !pc.ruler) {
+        const best = POL.seekable(pc).filter(x => !x.bar.length && !x.cool && x.p >= 0.4 && !(x.price > (pc.coin || 0))).sort((a, b) => b.p - a.p)[0];
+        if (best) {
+          const r = POL.myRealm(pc), place = (A.S.prov[best.o.at] || {}).name;
+          v.office = { name: `${POL.offName(best.o.k, r && r.id)}${place ? ' of ' + place : ''}`, p: best.p, who: best.holder ? `${best.holder.given} holds it now.` : 'It stands empty.' };
+        }
+      }
+    } catch (e) { v.office = null; }
+    try {
+      const TR = A.TRADE;
+      if (TR && TR.vOptions && TR.on && TR.on()) {
+        const o = TR.vOptions(pc, 1).sort((a, b) => b.gain - a.gain)[0], G = TR.goods ? TR.goods() : (GD.GOODS || {});
+        if (o && o.gain >= 50) v.venture = { good: String(((G && G[o.k]) || {}).name || o.k).toLowerCase(), dest: A.realmShort ? (A.realmShort(o.b) || o.b) : o.b, gain: o.gain };
+      }
+    } catch (e) { v.venture = null; }
+    try {
+      const seen = A.realmsSeen ? A.realmsSeen(pc) : 0;
+      v.journey = seen <= 1 && A.age(pc) >= 18 && A.age(pc) <= 45 && !pc.mil && !pc.ruler && !(pc.flags && pc.flags.unfree) && GD.ACTIVITIES.travel && A.canAct('travel')[0];
+    } catch (e) { v.journey = false; }
+    v.arms = !!(A.ID || A.IDENT || UI.A.idArms) && UI.A && typeof UI.A.idArms === 'function' && !pc.mark && A.age(pc) >= 18;
+    wnCache.k = k; wnCache.v = v;
+    return v;
+  };
+  // ---- the ruler's desk (cycle 2, design D4): a crown 520,000 in debt was told to look for love ----------------------
+  LF.desk = function (pc) {
+    const out = [], add = (score, t, why, go, act, cls) => out.push({ score, t, why, go, act, cls: cls || '' });
+    const r = pc && pc.ruler && A.realm(pc.ruler);
+    if (!r || LF.OFF) return out;
+    const inc = Math.max(1, r.income || 0), debt = r.debt || 0;
+    if (debt > 0 && (debt > inc / 2 || debt > (r.treasury || 0))) add(89, `The crown owes ${coin(debt)}`, `${Math.round(10 * debt / inc) / 10} years of the realm's income. The Realm tab has the ledger and the council's remedies.`, 'realm', ['tab', 'realm'], 'bad');
+    try {
+      const POL = A.POL, pol = r.pol;
+      if (POL && pol && POL.canPropose && POL.canPropose(pc, r)) {
+        if (pol.bill) add(68, 'A bill is before the council', `It comes to a count ${pol.bill.next > A.absDay() ? 'in ' + Math.max(1, Math.round((pol.bill.next - A.absDay()) / 7)) + ' weeks' : 'soon'}: speak for it or against it.`, 'realm', ['tab', 'realm']);
+        else add(66, 'Bring a bill to the council', 'Nothing is before the council. The crown may set the next law on the table.', 'realm', ['tab', 'realm']);
+      }
+    } catch (e) {}
     return out;
   };
   const what0 = A.whatNow;
@@ -233,7 +297,9 @@
       // no "train in an extra session" once the skill trained is at the top (100)
       const P = pc && pc.plan, k = P && P.train;
       if (k && GD.SKILLS && GD.SKILLS[k] && A.skill(pc, k) >= 100) list = list.filter(x => x.t !== 'Train in an extra session');
-      const more = LF.whatMore(pc);
+      const more = LF.whatMore(pc).concat(LF.desk(pc));
+      // a ruler with the crown's business pressing is not told to look for love or to train
+      if (pc.ruler && more.some(x => x.score >= 58)) list = list.filter(x => !['Look for love', 'Train in an extra session'].includes(x.t));
       if (!more.length && list === base) return base;
       return list.concat(more).sort((x, y) => y.score - x.score).slice(0, Math.max(3, base.length));
     } catch (e) { return base; }

@@ -77,6 +77,25 @@ const SETUP = () => {
 };
 
 export default {
+  async peaceFitsWar(pg) {
+    // world review cycle 2, F4 and F3: a short war's peace takes a handful of provinces; an attacker beaten back loses
+    // fewer; a crown that lost to a realm is slow to attack it again, and a shrunken realm is a hard target
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4403, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const P = A.PEACE, now = A.absDay();
+      const w1 = { d0: now - 200 }, w3 = { d0: now - 3 * 365 - 10 };
+      const cap = { short: P.cap(w1, 'att', 120), repulsed: P.cap(w1, 'def', 120), long: P.cap(w3, 'att', 120), small: P.cap(w1, 'att', 10) };
+      const a = 'POL-02', b = 'POL-03', m0 = P.mul(a, b);
+      A.realm(a).lostTo = { [b]: [A.S.year - 2] };
+      const m1 = P.mul(a, b);
+      A.realm(b).provHist = [[A.S.year - 10, Math.max(3, (A.realm(b).provCount || 1) * 2)]];
+      const m2 = P.mul(a, b), wp = A.warPreview(a, b);
+      return { cap, m0, m1, m2, shrunk: !!(wp && wp.shrunk) };
+    });
+    const ok = r.cap.short <= 10 && r.cap.repulsed <= 6 && r.cap.long > r.cap.short && r.cap.small === 3 && r.m0 === 1 && Math.abs(r.m1 - 0.4) < 1e-9 && Math.abs(r.m2 - 0.2) < 1e-9 && r.shrunk;
+    return { ok, detail: JSON.stringify(r) };
+  },
+
   async csWorlds(pg) {
     // 3 worlds x 50 years, played with this feature on and again off: every AI war records a casus belli and shows it
     // in the news and the war log; the share citing a memory or a want, by world; the total war rate before and after;

@@ -53,4 +53,26 @@ export default {
     const ok = r.on && r.dUnk > 20 && r.dHome < r.dUnk && r.jrOk && r.pure && /Places you know/.test(r.page) && r.unnamed === true && r.named === false;
     return { ok, detail: `unknown land veiled (${r.off && r.off.unk} -> ${r.on && r.on.unk}, change ${r.dUnk}) and home clear (change ${r.dHome}); story-column map ${r.jrOk}; unknown name hidden ${r.unnamed}, home named ${!r.named}; rendering pure ${r.pure}; page "${r.page.replace(/\n/g, ' ').slice(0, 100)}"` };
   },
+
+  // cycle 2 (visual B4, F5): the story column's map never shows past the world's edge (it showed a flat navy block west
+  // of the west coast), a view wider than the world is centred on it; on the full map the veil is lighter (0.42), so
+  // the realms read from above
+  async atlasHeld(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 41, lands: 'great', race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
+      const h0 = T.hash(A.S), rng0 = JSON.stringify(A.rngState);
+      UI.tab = 'life'; UI.storyView = 'map'; UI.render(); A.ATLAS.paint(); const cv = UI.$('#jrmap');
+      if (!cv) return { none: true };
+      const AT = A.ATLAS, KX0 = MAP.KX0 || 0, KW = MAP.KW, KY0 = MAP.KY0 || 0, KH = MAP.KH;
+      UI.atV.x0 = KX0 - UI.atV.w; UI.atV.y0 = KY0 - UI.atV.h; AT.draw(cv);
+      const west = { x0: UI.atV.x0 - KX0, y0: UI.atV.y0 - KY0 };
+      UI.atV.x0 = KX0 + KW; AT.draw(cv); const east = KX0 + KW - (UI.atV.x0 + UI.atV.w);
+      const wide = AT.clamp({ x0: 0, y0: 0, w: KW * 1.2, h: KH * 1.2 });
+      const centred = Math.abs((wide.x0 - KX0) + wide.w / 2 - KW / 2) < 1;
+      UI.storyView = 'story'; UI.render();
+      return { west, east, centred, k: AT.CANVAS_K.gmap, pure: T.hash(A.S) === h0 && JSON.stringify(A.rngState) === rng0 };
+    });
+    const ok = !r.none && r.west.x0 >= 0 && r.west.y0 >= 0 && r.east >= -0.01 && r.centred && r.k < 0.6 && r.pure;
+    return { ok, detail: r.none ? 'no story map' : `pushed past the west and north edges: the view starts ${Math.round(r.west.x0)} km and ${Math.round(r.west.y0)} km inside; past the east edge: ${Math.round(r.east)} km inside; a view wider than the world centred ${r.centred}; the full map's veil at ${r.k}; pure ${r.pure}` };
+  },
 };

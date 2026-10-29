@@ -170,4 +170,26 @@ export default {
     return { ok: !leak.length && !shut.length && r.teen.filter(x => x[1]).length >= 7 && !bare.length && !r.missing.length,
       detail: `infants (age 0 and 2, stage ${r.baby[0] && r.baby[0][2]}) offered ${leak.join(', ') || 'none'} of ${r.baby.length}; a teen ${r.teen.filter(x => x[1]).length}, an adult ${r.adult.filter(x => x[1]).length}; events files with a bare !C.child(p): ${bare.join(', ') || 'none'}` };
   },
+  // cycle 2 (design A3): the siege scenes are queued forced, and a forced item skips its cond, so a newborn inside
+  // the walls was offered "Go out with the night sortie". The queue itself now asks the age
+  async sgForcedNoChild(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const out = {};
+      for (const age of [0, 6, 30]) {
+        const { pc, P, enemy } = SGT.inside(64 + age);
+        pc.born = A.S.year - age;
+        const nl = () => (A.S.log || []).reduce((a, e) => a + ((e && e.lines) || []).length, 0), n0 = nl();
+        SGT.month(pc);
+        const walls = A.S.queue.some(q => /^sg_/.test(q.ev || ''));
+        A.S.queue = A.S.queue.filter(q => !/^sg_/.test(q.ev || ''));
+        A.occupy(P, enemy);
+        const fall = A.S.queue.some(q => /^sg_/.test(q.ev || ''));
+        out[age] = { stage: A.stage(pc), walls, fall, lines: nl() - n0 };
+      }
+      return out;
+    });
+    const ok = !r[0].walls && !r[0].fall && !r[6].walls && !r[6].fall && r[0].lines > 0 && r[30].walls && r[30].fall;
+    return { ok, detail: `besieged at 0 (${r[0].stage}): siege scene ${r[0].walls}, fall scene ${r[0].fall}, story lines ${r[0].lines}; at 6 (${r[6].stage}): ${r[6].walls}/${r[6].fall}; at 30: ${r[30].walls}/${r[30].fall}` };
+  },
 };

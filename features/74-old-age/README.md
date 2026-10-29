@@ -109,3 +109,13 @@ The rate holds under 25-variety-guard and the 58 cut. The old-age scenes met spr
 - **58's header and `RETIRED.md` are stale.** They still say 836 and list the ten events I put back. `select.mjs` would put them back on the list if re-run; it needs a veto list, or these ten taken out of its candidates.
 - **The writing wants a human pass.** I wrote 119 scenes in one sitting. The frames repeat in places ("You were {oaAge} that year"), and 67's weave adds its own line under most scenes, so a long old age reads a lot of "In 1090 you tried…". A writer should read a 30-year old age end to end.
 - **`C.ambition` is dead.** The release's ambitions are deleted on load (`A.migrateV10`), so "Not done yet" is gated on low renown instead.
+
+## Cycle 2: old age later, and in the life's own voice (lives F4)
+
+Old age began with `C.old` (50 for a human, 45 for an orc) and filled 16 to 42% of the rest of a life, mostly in a poor villager's voice. A Chancellor bought the abbey corrody with a quarter of 186,000 suns.
+
+- The rolled old-age scenes (`oa_*`, not their follow-ups or the deathbed) wait for 55 in human years (`C.ageAdj`). They come at most three a year (`OA.START`, `OA.YEAR_CAP`, through the `A.evVariety` weight, so the scenes' conds and A.evAudience's reading of them are unchanged).
+- The corrody costs 300 suns (180 haggled), and is offered to neither a noble nor a councillor.
+- The kin, well, thief and cheat scenes and the bounds walk are held from the top of the ladder by 97-life-fixes' tier gate.
+
+**Measured by** `oaStartsLater`: of 114 rolled scenes, 0 are open at 51 and 114 at 56; none after three in a year; the corrody is open to a peasant, not to the Chancellor, at 300 suns.

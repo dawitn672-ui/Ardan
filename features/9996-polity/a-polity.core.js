@@ -132,7 +132,10 @@ POL.init = function (r) {
   if (!r || !r.alive || r.isRebel) return null;
   if (r.pol && r.pol.v === 1) return r.pol;
   const st = POL.start(r);
-  r.pol = { v: 1, est: {}, off: [], bill: null, elect: null, task: {}, laws2: Object.assign({}, st), law0: Object.assign({}, st), came: null, since: A.S.year, ru: r.ruler, lost: [], tyr: 0 };
+  // the reign began when the realm's history last names a new ruler, or some years back by a hash where it does not
+  const H = Array.isArray(r.history) && r.history.length ? r.history[r.history.length - 1] : null;
+  const since = H && +H[0] <= A.S.year && +H[0] > A.S.year - 80 ? +H[0] : A.S.year - Math.round(POL.hash(r.id, 'reign') * 20);
+  r.pol = { v: 1, est: {}, off: [], bill: null, elect: null, task: {}, laws2: Object.assign({}, st), law0: Object.assign({}, st), came: null, since, ru: r.ruler, lost: [], tyr: 0 };
   for (const k of EST) r.pol.est[k] = { ap: 0, mod: 0, lead: null };
   return r.pol;
 };
@@ -188,17 +191,38 @@ POL.clout = function (r) {
 // [[label, value]] the parts of an estate's approval; the total is clamped to -10..10
 POL.approvalParts = function (r, k) {
   const out = [];
+  // the laws as the estate measures them against the realm's custom: a law where it always stood is no grievance
   for (const g of POL.GROUPS) {
-    const L = GD.POL_LAWS[g], v = L.ap[k][POL.pos(r, g)] || 0;
-    if (v) out.push([`${L.n}: ${POL.posName(g, POL.pos(r, g))}`, v]);
+    const L = GD.POL_LAWS[g], i = POL.pos(r, g), c = POL.custom(r, g), v = (L.ap[k][i] || 0) - (L.ap[k][c] || 0);
+    if (v) out.push([`${L.n}: ${POL.posName(g, i)} (custom ${POL.posName(g, c).toLowerCase()})`, v]);
   }
   let seats = 0;
   for (const s in (r.council || {})) { const p = A.P(r.council[s]); if (live(p) && POL.estateOf(p) === k) seats++; }
-  if (seats) out.push([`${seats} seat${seats === 1 ? '' : 's'} on the council`, Math.min(3, seats)]);
+  if (seats) out.push([`${seats} seat${seats === 1 ? '' : 's'} on the council`, Math.min(2, seats)]);
+  else out.push(['No seat on the council', -2]);
   const e = r.pol && r.pol.est && r.pol.est[k];
   if (e && e.mod) out.push(['What has happened lately', Math.round(e.mod)]);
-  if (k === 'comm') { const gi = POL.grainIdx(r); if (gi > 1.0) { const d = -Math.min(4, Math.floor((gi - 1) / .25)); if (d) out.push([`Bread at ${r2(gi)}× its price`, d]); } }
-  if (k === 'army') { const lost = ((r.pol && r.pol.lost) || []).filter(y => A.S.year - y < 5).length; if (lost) out.push([`${lost} war${lost === 1 ? '' : 's'} lost lately`, -Math.min(4, 2 * lost)]); if (r.pol && r.pol.won && A.S.year - r.pol.won < 5) out.push(['A war won', 2]); }
+  const lost = ((r.pol && r.pol.lost) || []).filter(y => A.S.year - y < 5).length, won = r.pol && r.pol.won && A.S.year - r.pol.won < 5;
+  const inc = Math.max(1, r.income || 1), debtY = (r.debt || 0) / inc, tax = POL.pos(r, 'tax'), unrest = POL.unrest(r);
+  if (k === 'comm') {
+    const gi = POL.grainIdx(r); if (gi > 1.0) { const d = -Math.min(4, Math.floor((gi - 1) / .25)); if (d) out.push([`Bread at ${r2(gi)}× its price`, d]); }
+    if (tax >= 3) out.push([tax === 4 ? 'Crushing taxes' : 'Heavy taxes', tax === 4 ? -3 : -2]);
+    const u = -Math.floor(unrest / 7); if (u) out.push([`Unrest in the provinces (stability ${Math.round(r.stability || 0)})`, u]);
+  }
+  if (k === 'army') {
+    if (lost) out.push([`${lost} war${lost === 1 ? '' : 's'} lost lately`, -Math.min(4, 2 * lost)]);
+    if (won) out.push(['A war won', 2]);
+    if ((r.treasury || 0) < 0) out.push(['Pay in arrears', -2]);
+  }
+  if (k === 'nob') {
+    if (lost) out.push([`${lost} war${lost === 1 ? '' : 's'} lost lately`, -Math.min(4, 2 * lost)]);
+    const hs = A.realmHouses(r.id), sore = hs.length ? hs.filter(h => (h.op != null ? h.op : 50) < 40).length / hs.length : 0;
+    if (sore >= .2) out.push([`${Math.round(sore * 100)}% of the houses sullen`, -Math.round(6 * sore)]);
+  }
+  if (k === 'burg') {
+    const d = -Math.min(4, Math.floor(1.5 * debtY)); if (d) out.push([`The crown owes ${r2(debtY)} years of income`, d]);
+    if (A.atWar(r.id).length) out.push(['War on the roads', -1]);
+  }
   if (k === 'cler' && r.riGreatY && A.S.year - r.riGreatY < 8) out.push(['A great work raised to the gods', 1]);
   return out;
 };
@@ -222,7 +246,7 @@ POL.leaderOf = function (r, k) {
 // memoised by the day and everything the reading depends on that can change within it (a module cache, not state)
 const esMemo = new Map();
 POL.estState = function (r) {
-  const pol = r.pol, key = A.absDay() + '|' + POL.GROUPS.map(g => POL.pos(r, g)).join('') + '|' + (pol ? POL.EST.map(k => pol.est[k] ? pol.est[k].mod : 0).join(',') : '') + '|' + Object.values(r.council || {}).join(',') + '|' + Math.round(r.stability || 0) + '|' + (r.army || 0) + '|' + ((pol && pol.lost) || []).length + '|' + (pol && pol.won);
+  const pol = r.pol, key = A.absDay() + '|' + POL.GROUPS.map(g => POL.pos(r, g)).join('') + '|' + (pol ? POL.EST.map(k => pol.est[k] ? pol.est[k].mod : 0).join(',') : '') + '|' + Object.values(r.council || {}).join(',') + '|' + Math.round(r.stability || 0) + '|' + (r.army || 0) + '|' + ((pol && pol.lost) || []).length + '|' + (pol && pol.won) + '|' + Math.floor((r.debt || 0) / Math.max(1, r.income || 1)) + ((r.treasury || 0) < 0 ? 'n' : 'p') + '|' + A.atWar(r.id).length;
   const hit = esMemo.get(r.id);
   if (hit && hit.key === key && hit.S === A.S) return hit.v;
   const v = POL.estStateNow(r);
@@ -238,24 +262,44 @@ POL.estStateNow = function (r) {
 
 // ---------------------------------------------------------------- legitimacy with parts (pure)
 
-POL.CAME = { heir: ['Rightful heir by law', 60], elected: ['Elected', 65], council: ['Named by the council', 55], claimant: ['Took the throne as claimant', 30], conquest: ['Won it by conquest', 25], founded: ['Founded the realm', 55] };
+POL.CAME = { heir: ['Rightful heir by law', 50], elected: ['Elected', 53], council: ['Named by the council', 48], claimant: ['Took the throne as claimant', 30], conquest: ['Won it by conquest', 25], founded: ['Founded the realm', 50] };
 POL.cameOf = r => (r.pol && r.pol.came) || (r.gov === 'hereditary' ? 'heir' : r.gov === 'council' ? 'council' : 'elected');
+// how long the ruling house has held the throne: from the Polity's own record, or for a house it found on the throne,
+// 60 to 140 years by a hash of the realm (a dynasty grows brittle past 60)
+POL.dynYears = function (r) {
+  const d = r.pol && r.pol.dyn;
+  if (d && d.h === r.house) return A.S.year - d.y;
+  return 60 + Math.round(POL.hash(r.id, 'dyn') * 80) + (d ? 0 : 0);
+};
 POL.legitParts = function (r) {
   const out = [], ru = A.P(r.ruler), c = POL.CAME[POL.cameOf(r)] || POL.CAME.heir;
   out.push([c[0], c[1]]);
-  const yrs = clamp(A.S.year - ((r.pol && r.pol.since) || A.S.year), 0, 15);
-  if (yrs) out.push([`${yrs} year${yrs === 1 ? '' : 's'} on the throne`, yrs]);
-  const fm = ru ? Math.min(10, Math.round((ru.fame || 0) / 10)) : 0;
+  // a reign settles for ten years, holds, and after twenty grows old
+  const y = Math.max(0, A.S.year - ((r.pol && r.pol.since) || A.S.year)), yrs = Math.min(10, y) - Math.max(0, Math.min(12, y - 20));
+  if (yrs) out.push([y > 20 ? `${y} years on the throne: an old reign` : `${y} year${y === 1 ? '' : 's'} on the throne`, yrs]);
+  const fm = ru ? Math.min(6, Math.round((ru.fame || 0) / 15)) : 0;
   if (fm) out.push(['Renown', fm]);
+  if (ru && !A.isAdult(ru)) out.push(['A child on the throne', -10]);
+  if (r.gov === 'hereditary') { const dy = POL.dynYears(r); const d = -Math.floor(Math.max(0, dy - 60) / 12); if (d) out.push([`The house has held it ${dy} years`, Math.max(-8, d)]); }
   const ES = POL.estState(r), inGov = new Set();
   for (const s in (r.council || {})) { const p = A.P(r.council[s]); if (live(p)) inGov.add(POL.estateOf(p)); }
   let eg = 0; for (const k of inGov) eg += ES[k].ap * ES[k].cl * 2;
   eg = Math.round(eg);
   if (eg) out.push(['The estates in government', eg]);
+  const angry = POL.EST.filter(k => ES[k].angry);
+  if (angry.length) out.push([`${angry.map(k => ES[k].name).join(', ')} angry with the crown`, -4 * angry.length]);
+  const sour = POL.EST.filter(k => !ES[k].angry && ES[k].ap <= -2);
+  if (sour.length) out.push([`${sour.map(k => ES[k].name).join(', ')} discontented`, -2 * sour.length]);
+  const strong = A.factionsOf(r.id).filter(f => (f.power || 0) >= .3 && f.kind !== 'war' && f.kind !== 'peace');
+  if (strong.length) out.push([`${strong.length === 1 ? 'A faction' : strong.length + ' factions'} against the crown, ${Math.round(100 * Math.max(...strong.map(f => f.power || 0)))}% of the swords`, -4 * strong.length]);
   let cu = 0; for (const g of POL.GROUPS) { const d = Math.abs(POL.pos(r, g) - POL.custom(r, g)); cu += d === 0 ? 1 : d >= 2 ? -2 : 0; }
+  cu = Math.min(4, cu);
   if (cu) out.push(['Laws kept to custom', cu]);
-  const lost = ((r.pol && r.pol.lost) || []).filter(y => A.S.year - y < 5).length;
-  if (lost) out.push([`${lost} war${lost === 1 ? '' : 's'} lost in five years`, -5 * lost]);
+  const st = r.stability != null ? r.stability : 50;
+  if (st < 30) out.push([`Stability ${Math.round(st)}`, -10]); else if (st < 45) out.push([`Stability ${Math.round(st)}`, -4]);
+  if ((r.debt || 0) > Math.max(1, r.income || 1)) out.push(['Debt above a year\'s income', -5]);
+  const lost = ((r.pol && r.pol.lost) || []).filter(y2 => A.S.year - y2 < 5).length;
+  if (lost) out.push([`${lost} war${lost === 1 ? '' : 's'} lost in five years`, -6 * lost]);
   if (r.pol && r.pol.task && r.pol.task.chaplain === 'obey' && r.pol.taskOk && r.pol.taskOk.chaplain) out.push(['The Chaplain preaches obedience', 3]);
   if (POL.grainIdx(r) >= 2) out.push(['Famine', -5]);
   return out;
@@ -576,6 +620,7 @@ POL.year = function (r) {
   // event modifiers fade by 1 a year
   for (const k of EST) { const e = pol.est[k]; if (e.mod) e.mod = e.mod > 0 ? Math.max(0, e.mod - 1) : Math.min(0, e.mod + 1); }
   // a new ruler: when and how they came
+  if (!pol.dyn || pol.dyn.h !== r.house) pol.dyn = { h: r.house, y: pol.dyn ? A.S.year : A.S.year - POL.dynYears(r) };
   if (pol.ru !== r.ruler) { pol.ru = r.ruler; pol.since = A.S.year; if (!pol.cameSet || pol.cameSet < A.S.year - 1) pol.came = null; pol.cameSet = null; }
   POL.fillContracts(r);
   POL.fillOffices(r);

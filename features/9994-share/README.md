@@ -26,6 +26,13 @@
 
 **Pure.** Drawing a card reads the state and writes none of it, and draws no random numbers. The last PNG is UI state (`UI.SHARE.last`) and is never saved.
 
+## Cycle 2 (Oct 29)
+
+- **The face and the name agree** (design A9). When a scene has a subject, the bust and the tag are theirs ("BRAND, 52"), and you go in the line under the text ("With Garth Brambleworth").
+- **The overlay's buttons are a plain row** (visual B8), not `.choices` rows. Save is the gold primary, Back is a ghost, and there are no key badges.
+- **The card's foot** (visual F9) has a strip of four numbers: age, renown, purse, and the odds or the year (a life shows children and what was left). The words stop above it, cut with an ellipsis. The print is 80 px shorter, so a three-line result fits.
+- **A life with no arms gets a wax seal** with its initial, instead of nothing.
+
 ## APIs (for later work)
 
 - `UI.SHARE.KINDS[k] = () => ({ title, sub, line, epitaph, tag, place, sky, bust, arms, file })` adds a kind of card, such as a battle's after-action report or a weekly challenge's result. Then `UI.SHARE.keep(k)` or a `data-a="shKeep" data-v="k"` button.

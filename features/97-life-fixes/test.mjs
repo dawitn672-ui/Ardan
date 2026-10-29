@@ -425,4 +425,64 @@ export default {
     const ok = r.asked && r.offers.length > 0 && late.includes(r.offers[0]) && !!r.took && r.wn.some(t => /afford|house|order|within reach/i.test(t)) && r.pure && r.patron === 24000 && r.seat === 80000 && r.spent === r.patron;
     return { ok, detail: `a met ambition two years on: asked again ${r.asked} (${r.offers.join(', ')}; took ${r.took}); What now: ${r.wn.join(' | ')} (pure ${r.pure}); patronage priced ${r.patron} for a fortune of 300,000, a seat ${r.seat}; spent ${r.spent}` };
   },
+  // cycle 2 (design A2): "Dance with Beatrix / Dance with Beatrix", your mother also Beatrix; a new boy with your own
+  // name; full names said three or four times in a scene
+  async lfFreshNames(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 1106, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const pc = A.pc();
+      let n = 0, same = 0, dup = 0, kin = 0;
+      const family = new Set([pc.given].concat((pc.parents || []).map(id => (A.P(id) || {}).given)));
+      for (let i = 0; i < 200; i++) {
+        const q = { type: 'event', ev: 'lf_harvest_dance', ctx: {}, forced: true }; A.S.queue.unshift(q);
+        const v = A.eventView(q);
+        if (!v.skip) { n++; const ts = v.choices.map(c => c.t); if (new Set(ts).size < ts.length) dup++; if (q.ctx.a === q.ctx.b) same++; if (family.has(q.ctx.a) || family.has(q.ctx.b)) kin++; }
+        A.S.queue.shift();
+      }
+      let own = 0; for (let i = 0; i < 300; i++) if (A.givenName(pc.cult, pc.sex) === pc.given) own++;
+      const p2 = A.makeAcquaintance(pc, 'acquaint'), full = A.fullName(p2, false);
+      const once = A.LF.onceFull(`${full} bows. ${full} smiles. ${full} leaves.`, [p2]);
+      return { n, same, dup, kin, own, once, full, given: p2.given };
+    });
+    const ok = r.n >= 150 && r.same === 0 && r.dup === 0 && r.kin === 0 && r.own === 0 && r.once.split(r.full).length === 2 && r.once.includes(r.given + ' smiles');
+    return { ok, detail: `${r.n} Harvest Home dances: both partners one name ${r.same}, two buttons one label ${r.dup}, a partner named as the family ${r.kin}; your own name drawn ${r.own} of 300 (about 10 before); "${r.once}"` };
+  },
+  // cycle 2 (lives F2, design D4): What now never named an office, a venture, a journey or the arms designer, and a
+  // crown deep in debt was told "Look for love"
+  async lfWhatNowSystems(pg) {
+    const r = await pg.evaluate(() => {
+      const out = {};
+      const pure = f => { const h = JSON.stringify(A.S), g = JSON.stringify(A.rngState); const v = f(); return [v, JSON.stringify(A.S) === h && JSON.stringify(A.rngState) === g]; };
+      A.newGame({ seed: 3004, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+      let pc = A.pc(); pc.skills.diplomacy = 60; pc.skills.stewardship = 60;
+      [out.noble, out.pureNoble] = pure(() => A.LF.whatMore(pc).map(x => x.t));
+      A.newGame({ seed: 3001, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      pc = A.pc(); out.peasant = A.LF.whatMore(pc).map(x => x.t);
+      A.newGame({ seed: 3002, race: 'human', realm: 'POL-01', status: 'royal', sex: 'M', startAge: 26 });
+      pc = A.pc(); A.makeRuler(pc, pc.realm, true); const R = A.realm(pc.ruler); R.debt = Math.round(R.income * 0.6);
+      [out.ruler, out.pureRuler] = pure(() => A.whatNow(pc).map(x => x.t));
+      return out;
+    });
+    const ok = r.noble.some(t => /^Seek the office/.test(t)) && r.peasant.includes('Make your mark') && /^The crown owes/.test(r.ruler[0] || '') &&
+      !r.ruler.includes('Look for love') && r.pureNoble && r.pureRuler;
+    return { ok, detail: `a noble of 30: ${r.noble.join(' | ')}; a peasant of 20: ${r.peasant.join(' | ')}; a crown in debt: ${r.ruler.join(' | ')}; drawing pure ${r.pureNoble && r.pureRuler}` };
+  },
+  // cycle 2 (lives F3): a Marshal of the council who had left the army drilled the town muster; a Chancellor kept the
+  // scribe's love-letter duty. The top of the ladder now takes in councillors, lords and retired commanders
+  async lfTierGatesWide(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9731, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), ids = ['pf_spear_pike_drill', 'rk_vt_militia', 'av_road_sellsword_offer', 'gf_village', 'ln_d_scr_lover', 'ln_d_proclamation'].filter(id => A.EV[id]);
+      const w = () => ids.map(id => A.LF.weight(A.EV[id], pc) > 0);
+      const villager = w(), topV = A.lfTop(pc);
+      pc.office = 'marshal'; const marshal = w(), topM = A.lfTop(pc); pc.office = null;
+      pc.veteran = { rank: 7, years: 20, battles: 9 }; const veteran = A.lfTop(pc); pc.veteran = null;
+      pc.job = { c: 'scribe', r: 0 }; const scribe = A.LF.weight(A.EV.ln_d_scr_lover || { id: 'ln_d_scr_lover' }, pc) > 0;
+      pc.job = { c: 'courtier', r: 2 }; const courtier = A.LF.weight(A.EV.ln_d_scr_lover || { id: 'ln_d_scr_lover' }, pc) > 0;
+      return { ids, villager, topV, marshal, topM, veteran, scribe, courtier };
+    });
+    const i = r.ids.indexOf('ln_d_scr_lover');
+    const ok = !r.topV && r.topM && r.veteran && r.marshal.every(x => !x) && r.villager.filter((x, k) => k !== i).every(Boolean) && r.scribe && !r.courtier;
+    return { ok, detail: `${r.ids.join(', ')}: open to a villager ${r.villager.join('/')}, to a Marshal of the council ${r.marshal.join('/')}; a retired general at the top: ${r.veteran}; the scribe's letters for a scribe ${r.scribe}, for a courtier ${r.courtier}` };
+  },
 };

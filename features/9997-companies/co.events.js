@@ -1,5 +1,5 @@
 // Companies (9997): the life of your own company. Most come when the engine queues them (trigger: true): a captain
-// falls and a serjeant takes his place, you are passed over, the bread runs out, a captain at the end of his
+// falls and a sergeant takes his place, you are passed over, the bread runs out, a captain at the end of his
 // patience. Others come from what the company is: its pay, its new men, its veterans, a name the chronicle retired.
 const CO = () => A.CO;
 const myCo = p => { try { return CO() && CO().myCompany(p); } catch (e) { return null; } };
@@ -9,10 +9,16 @@ const coyFill = (p, ctx) => {
   ctx.coy = ctx.coy || CO().coName(C.d, C.b, C.i, true);
   ctx.bn = ctx.bn || C.bn;
   ctx.capn = ctx.capn || (C.cap.pc ? 'you' : C.cap.given);
-  ctx.serj = C.serjeants[0].given;
+  ctx.serj = C.sergeants[0].given;
   ctx.food = String(Math.round(C.food));
   ctx.pay = String(C.pay);
   return C;
+};
+const pro = (ctx) => {
+  const q = ctx && ctx.pid && A.P(ctx.pid);
+  if (!q) return;
+  ctx.khe = A.he(q); ctx.khim = A.him(q); ctx.khis = A.his(q);
+  ctx.Khe = A.cap(ctx.khe); ctx.Khim = A.cap(ctx.khim); ctx.Khis = A.cap(ctx.khis);
 };
 const capPerson = (p, ctx) => {
   const C = coyFill(p, ctx);
@@ -22,11 +28,12 @@ const capPerson = (p, ctx) => {
   return q;
 };
 
-A.defEvents([
+const withPro = list => list.map(e => (e.setup ? Object.assign(e, { setup: ((f) => (p, ctx) => { const r = f(p, ctx); if (!ctx.skip) pro(ctx); return r; })(e.setup) }) : e));
+A.defEvents(withPro([
   { id: 'co_new_captain', title: 'A new captain', trigger: true, cool: 1, npc: true,
     cond: (p, C) => C.soldier(p) && C.adult(p),
     setup: (p, ctx) => { const C = coyFill(p, ctx); if (!C || !ctx.pid || !A.P(ctx.pid) || !A.P(ctx.pid).alive) ctx.skip = true; ctx.old = ctx.old || 'the captain'; },
-    text: 'They carry Captain {old} back on a door and lay the body by the wagons, boots still on. By dusk the {coy} has a new captain: {them}, who was a serjeant this morning. {khe} walks the lines with a lantern, saying each man\'s name. Some names {khe} has to ask.',
+    text: 'They carry Captain {old} back on a door and lay the body by the wagons, boots still on. By dusk the {coy} has a new captain: {them}, who was a sergeant this morning. {Khe} walks the lines with a lantern, saying each man\'s name. Some names {khe} has to ask.',
     choices: [
       { t: 'Stand up when {khe} reaches your fire', r: '{them} stops, looks at you, and nods. It is a small thing. The men saw it.', fx: { them: { op: 12 }, coy: { mo: 4, sat: 8 }, merit: 1 } },
       { t: 'Tell {khim} what {old} meant to do tomorrow', check: { s: 'tactics', s2: 'int', d: 45 },
@@ -50,12 +57,12 @@ A.defEvents([
   { id: 'co_transfer_request', title: 'A captain asks to go', trigger: true, cool: 2, npc: true,
     cond: (p, C) => C.soldier(p) && C.adult(p),
     setup: (p, ctx) => { if (!coyFill(p, ctx)) return; p.flags.co_transfer = A.S.year; if (!ctx.pid || !A.P(ctx.pid)) { ctx.skip = true; return; } ctx.who = ctx.capn; },
-    text: 'Captain {who} of the {coy} has had enough: the pay late, the general a stranger, {khis} men buried in places nobody will remember. {khe} has asked for a transfer to the garrisons, and the serjeants say {khe} means it. {khe} goes at the end of the week unless somebody gives {khim} a reason not to.',
+    text: 'Captain {who} of the {coy} has had enough: the pay late, the general a stranger, {khis} men buried in places nobody will remember. {Khe} has asked for a transfer to the garrisons, and the sergeants say {khe} means it. {Khe} goes at the end of the week unless somebody gives {khim} a reason not to.',
     choices: [
       { t: 'Give {khim} a reason to stay', check: { s: 'persuasion', s2: 'ins', d: 50 },
         win: { r: 'You talk until the fire is ash. {them} tears up the letter, and does not say thank you, which is how you know.', fx: { coy: { mo: 5 }, merit: 2, them: { op: 8 } } },
-        lose: { r: '{them} listens politely and goes anyway. Serjeant {serj} has the company by Sunday.', fx: { happy: -2 } } },
-      { t: 'Wish {khim} well and mean it', r: '{them} goes with your good word and a bottle. Serjeant {serj} takes the company and does well enough.', fx: { honor: 2, happy: 1, them: { op: 10 } } },
+        lose: { r: '{them} listens politely and goes anyway. Sergeant {serj} has the company by Sunday.', fx: { happy: -2 } } },
+      { t: 'Wish {khim} well and mean it', r: '{them} goes with your good word and a bottle. Sergeant {serj} takes the company and does well enough.', fx: { honor: 2, happy: 1, them: { op: 10 } } },
       { t: 'Tell the commander {khe} is shirking', r: 'The commander thanks you for your zeal. The captain leaves in disgrace, and the men know who sent {khim}.', fx: { bossOp: 6, merit: 2, rel: { who: 'comrade', op: -6, all: true }, honor: -4, them: { op: -30 } } },
     ] },
 
@@ -74,7 +81,7 @@ A.defEvents([
   { id: 'co_forage', title: 'The seed grain', trigger: true, cool: 1, npc: true,
     cond: (p, C) => C.soldier(p) && C.atWar(p),
     setup: (p, ctx) => { if (!coyFill(p, ctx)) return; p.flags.co_forage = A.S.year; ctx.place = ctx.place || 'the village'; },
-    text: 'There are {food} days of bread in the wagons. Serjeant {serj} has found the barn at {place} where the village keeps its seed grain for the spring. The headman stands in the door with his hat in his hands. "That is next year," he says. "That is all of next year."',
+    text: 'There are {food} days of bread in the wagons. Sergeant {serj} has found the barn at {place} where the village keeps its seed grain for the spring. The headman stands in the door with his hat in his hands. "That is next year," he says. "That is all of next year."',
     choices: [
       { t: 'Take the seed grain', r: 'The company eats. The headman watches the sacks go. Next spring, somebody at {place} will not.', fx: { coy: { food: 6, mo: 3 }, honor: -5, piety: -2 } },
       { t: 'Leave it, and take the lord\'s barn instead', check: { s: 'stealth', s2: 'int', d: 50 },
@@ -86,7 +93,7 @@ A.defEvents([
   { id: 'co_hungry_march', title: 'No bread', trigger: true, cool: 1,
     cond: (p, C) => C.soldier(p) && C.atWar(p),
     setup: (p, ctx) => { if (!coyFill(p, ctx)) return; p.flags.co_hungry = A.S.year; },
-    text: 'The wagons are empty. The {coy} marches on what it can pick from the hedges, and men begin to slip away at night. Serjeant {serj} counts them every morning and stops saying the number out loud.',
+    text: 'The wagons are empty. The {coy} marches on what it can pick from the hedges, and men begin to slip away at night. Sergeant {serj} counts them every morning and stops saying the number out loud.',
     choices: [
       { t: 'Share out what you carry', r: 'A heel of bread, two onions, a twist of salt. Divided by forty it is nothing. They remember that you divided it.', fx: { coy: { mo: 5 }, health: -4, rel: { who: 'comrade', op: 6, all: true } } },
       { t: 'Raid the officers\' wagon', check: { s: 'stealth', s2: 'spd', d: 55 },
@@ -98,17 +105,17 @@ A.defEvents([
   { id: 'co_desert', title: 'A word at night', trigger: true, cool: 2,
     cond: (p, C) => C.soldier(p) && C.atWar(p),
     setup: (p, ctx) => { const q = A.P(ctx.pid); if (!q || !q.alive || !coyFill(p, ctx)) { ctx.skip = true; return; } p.flags.co_desert = A.S.year; },
-    text: 'In the dark {them} crouches by your blanket. No bread for days, no pay for longer. {khe} knows a road home that the provosts do not watch. "Two can go as quiet as one," {khe} whispers. "Come, or keep my secret."',
+    text: 'In the dark {them} crouches by your blanket. No bread for days, no pay for longer. {Khe} knows a road home that the provosts do not watch. "Two can go as quiet as one," {khe} whispers. "Come, or keep my secret."',
     choices: [
       { t: 'Talk {khim} out of it', check: { s: 'persuasion', s2: 'wil', d: 48 },
         win: { r: 'You talk until {khe} lies down again. In the morning {khe} will not meet your eye, and {khe} is still there.', fx: { them: { op: 10 } } },
-        lose: { r: 'In the morning {khis} blanket is empty. Serjeant {serj} writes the name in the book with the others.', fx: (p, ctx) => { const q = A.P(ctx.pid); if (q && p.mil) { p.mil.squad = (p.mil.squad || []).filter(id => id !== q.id); q.occ = 'deserter'; p.mil.coDes = (p.mil.coDes || 0) + 1; } return ''; } } },
-      { t: 'Keep the secret and let {khim} go', r: '{khe} squeezes your arm and is gone. You lie awake until the picket changes.', fx: (p, ctx) => { const q = A.P(ctx.pid); if (q && p.mil) { p.mil.squad = (p.mil.squad || []).filter(id => id !== q.id); q.occ = 'deserter'; p.mil.coDes = (p.mil.coDes || 0) + 1; p.happy = Math.max(0, p.happy - 2); } return ''; } },
-      { t: 'Wake the serjeant', r: 'They take {them} in the morning. The flogging is in front of the company. Nobody sits by your fire for a week.', fx: { merit: 3, them: { op: -40 }, honor: -3, rel: { who: 'comrade', op: -8, all: true } } },
+        lose: { r: 'In the morning {khis} blanket is empty. Sergeant {serj} writes the name in the book with the others.', fx: (p, ctx) => { const q = A.P(ctx.pid); if (q && p.mil) { p.mil.squad = (p.mil.squad || []).filter(id => id !== q.id); q.occ = 'deserter'; p.mil.coDes = (p.mil.coDes || 0) + 1; } return ''; } } },
+      { t: 'Keep the secret and let {khim} go', r: '{Khe} squeezes your arm and is gone. You lie awake until the picket changes.', fx: (p, ctx) => { const q = A.P(ctx.pid); if (q && p.mil) { p.mil.squad = (p.mil.squad || []).filter(id => id !== q.id); q.occ = 'deserter'; p.mil.coDes = (p.mil.coDes || 0) + 1; p.happy = Math.max(0, p.happy - 2); } return ''; } },
+      { t: 'Wake the sergeant', r: 'They take {them} in the morning. The flogging is in front of the company. Nobody sits by your fire for a week.', fx: { merit: 3, them: { op: -40 }, honor: -3, rel: { who: 'comrade', op: -8, all: true } } },
     ] },
 
   { id: 'co_arrears', title: 'Pay day without pay', w: 2, cool: 2,
-    cond: (p, C) => C.soldier(p) && C.adult(p) && (() => { const c = myCo(p); return !!(c && c.pay >= 2); })(),
+    cond: (p, C) => C.soldier(p) && C.adult(p) && (() => { const c = myCo(p); return !!(c && c.pay >= 1); })(),
     setup: (p, ctx) => { coyFill(p, ctx); },
     text: 'The paymaster\'s table is set up in the square as it always is, and he sits behind it with an empty chest. The {coy} is {pay} months behind. The men stand in line anyway, because that is what they do on pay day.',
     choices: [
@@ -116,7 +123,7 @@ A.defEvents([
       { t: 'Lend the poorest men what you can', r: 'It is not much, but it buys bread for three families back home.', fx: { coin: -12, honor: 3, coy: { mo: 3 } } },
       { t: 'Go to the town and earn a little on the side', check: { s: 'trade', s2: 'int', d: 45 },
         win: { r: 'You carry sacks at the river for a week. Your purse is heavier, and nobody at the muster noticed.', fx: { coin: 14, sta: 1 } },
-        lose: { r: 'The serjeant notices. Three days on the punishment roll.', fx: { merit: -3, happy: -2 } } },
+        lose: { r: 'The sergeant notices. Three days on the punishment roll.', fx: { merit: -3, happy: -2 } } },
     ] },
 
   { id: 'co_mutiny_talk', title: 'Talk of the chest', w: 1, cool: 4,
@@ -142,28 +149,28 @@ A.defEvents([
     ] },
 
   { id: 'co_the_new_men', title: 'The new men', w: 1, cool: 3,
-    cond: (p, C) => C.soldier(p) && C.adult(p) && (() => { const c = myCo(p); return !!(c && (c.rec.nm || 0) >= 150); })(),
+    cond: (p, C) => C.soldier(p) && C.adult(p) && (() => { const c = myCo(p); return !!(c && (c.rec.nm || 0) >= 60); })(),
     setup: (p, ctx) => { coyFill(p, ctx); },
     text: 'Forty new men came up to the {coy} with the last draft, farm boys mostly, who hold a spear the way they hold a hoe. The old hands call them "the turnips" and make them carry everything. One of them asks you how to keep his feet from bleeding.',
     choices: [
       { t: 'Show them how it is done', r: 'Wet grass in the boots, rags wound tight, and the knack of the shield on the march. By the end of the month they look like soldiers from a distance.', fx: { skill: { command: 1 }, coy: { mo: 3 }, happy: 1 } },
       { t: 'Let them learn as you did', r: 'You learned by bleeding. So will they. Two of them go home in a month; the rest learn.', fx: { wil: 1, coy: { mo: -2 } } },
-      { t: 'Make the turnips carry your kit too', r: 'Your pack is lighter all month. The turnips will remember you the way you remember your first serjeant.', fx: { sta: 1, honor: -2, coy: { mo: -3 } } },
+      { t: 'Make the turnips carry your kit too', r: 'Your pack is lighter all month. The turnips will remember you the way you remember your first sergeant.', fx: { sta: 1, honor: -2, coy: { mo: -3 } } },
     ] },
 
-  { id: 'co_serjeant', title: 'A serjeant for the company', w: 1, cool: 4,
+  { id: 'co_sergeant', title: 'A sergeant for the company', w: 1, cool: 4,
     cond: (p, C) => C.soldier(p) && (p.mil.rank || 0) >= 4 && (() => { try { return A.squad(p).some(q => A.SQUAD && A.SQUAD.standing(q)); } catch (e) { return false; } })(),
     setup: (p, ctx) => {
       const q = A.squad(p).filter(x => A.SQUAD.standing(x)).sort((a, b) => ((b.sq || {}).n || 0) - ((a.sq || {}).n || 0))[0];
       if (!q || !coyFill(p, ctx)) { ctx.skip = true; return; }
       ctx.pid = q.id; ctx.standing = A.SQUAD.standing(q);
     },
-    text: 'Serjeant {serj} of the {coy} has taken a fever and will not march again. The company needs a serjeant by the morning. {them} has come back from more missions with you than anyone, {standing} now. {khe} has never asked for anything.',
+    text: 'Sergeant {serj} of the {coy} has taken a fever and will not march again. The company needs a sergeant by the morning. {them} has come back from more missions with you than anyone, {standing} now. {Khe} has never asked for anything.',
     choices: [
-      { t: 'Give {them} the halberd', r: '{them} takes it without a word, and the next morning has the company up before the drums. You have a serjeant.', fx: (p, ctx) => { const q = A.P(ctx.pid); if (q && p.mil) { p.mil.coSj = q.id; q.occ = 'Serjeant of the ' + ctx.coy; } return ''; } },
+      { t: 'Give {them} the halberd', r: '{them} takes it without a word, and the next morning has the company up before the drums. You have a sergeant.', fx: (p, ctx) => { const q = A.P(ctx.pid); if (q && p.mil) { p.mil.coSj = q.id; q.occ = 'Sergeant of the ' + ctx.coy; } return ''; } },
       { t: 'Keep {khim} beside you in the ranks', r: 'You give the halberd to the next man on the roll. {them} understands, or says so.', fx: { them: { op: -4 }, happy: 1 } },
       { t: 'Let the men choose', check: { s: 'command', s2: 'ins', d: 45 },
-        win: { r: 'They choose {them}, loudly. A serjeant the men chose is worth two the captain chose.', fx: (p, ctx) => { const q = A.P(ctx.pid); if (q && p.mil) { p.mil.coSj = q.id; q.occ = 'Serjeant of the ' + ctx.coy; } return ''; } },
+        win: { r: 'They choose {them}, loudly. A sergeant the men chose is worth two the captain chose.', fx: (p, ctx) => { const q = A.P(ctx.pid); if (q && p.mil) { p.mil.coSj = q.id; q.occ = 'Sergeant of the ' + ctx.coy; } return ''; } },
         lose: { r: 'They choose the loudest man in the company, which is not the same thing.', fx: { coy: { mo: -2 } } } },
     ] },
 
@@ -175,4 +182,39 @@ A.defEvents([
       { t: 'Buy him a drink and ask about the old one', r: 'He tells it all: the ford, the winter, the nine. You carry the name differently after.', fx: { coin: -3, coy: { mo: 3 }, happy: 2 } },
       { t: 'Tell him the new one is better', r: 'He stops laughing. "Then go and prove it," he says, and walks off.', fx: { wil: 1, honor: -1 } },
     ] },
-]);
+  { id: 'co_roll_call', title: 'The roll after the fight', trigger: true, cool: 0.2,
+    cond: (p, C) => C.soldier(p) && C.adult(p),
+    setup: (p, ctx) => { if (!coyFill(p, ctx)) return; ctx.lost = ctx.lost || 'some'; ctx.place = ctx.place || 'the field'; const q = A.squad(p)[0]; if (q) ctx.pid = q.id; else ctx.skip = true; },
+    text: (p, ctx) => `Sergeant {serj} calls the roll of the {coy} by torchlight after ${+ctx.won ? 'the day at {place}, which went your way' : 'the day at {place}, which did not'}. {lost} names get no answer. {them} stands beside you and counts them on {khis} fingers, and stops.`,
+    choices: [
+      { t: 'Say the missing names aloud, each one', r: 'You say them. The men listen. Somebody starts the burying song, badly, and the rest join in.', fx: { coy: { mo: 4 }, piety: 2, happy: -2, rel: { who: 'comrade', op: 4, all: true } } },
+      { t: 'Go back out for the wounded', check: { s: 'medicine', s2: 'sta', d: 48 },
+        win: { r: 'You find three of the missing in a ditch, alive. The surgeons get two of them.', fx: { coy: { wd: 3, mo: 3 }, honor: 3, merit: 2 } },
+        lose: { r: 'You find no one but a picket of theirs, who finds you first.', fx: { health: -10, merit: 1 } } },
+      { t: 'Eat, sleep, and leave the dead to the dead', r: 'You sleep like a stone. In the morning the company is smaller and you are rested.', fx: { health: 3, happy: 1, coy: { mo: -2 } } },
+    ] },
+
+  { id: 'co_captain_word', title: 'A word from the captain', trigger: true, cool: 0.2, npc: true,
+    cond: (p, C) => C.soldier(p) && C.adult(p),
+    setup: (p, ctx) => { if (!coyFill(p, ctx)) return; if (!ctx.pid || !A.P(ctx.pid) || !A.P(ctx.pid).alive) ctx.skip = true; ctx.place = ctx.place || 'the field'; },
+    text: (p, ctx) => `Captain {them} of the {coy} walks the fires after ${+ctx.won ? 'the fight at {place}' : 'the bad day at {place}'} and stops at yours. {Khe} asks what you saw from where you stood, and listens as if it mattered.`,
+    choices: [
+      { t: 'Tell {khim} the truth, the bad part too', r: '{them} nods slowly. Next morning the second rank is a pace further back, where you said.', fx: { them: { op: 10 }, coy: { sat: 6 }, merit: 2 } },
+      { t: 'Tell {khim} what a captain wants to hear', r: '{them} thanks you and moves on. The other fires hear the same thing.', fx: { them: { op: 3 }, happy: 1 } },
+      { t: 'Ask {khim} what comes next', check: { s: 'persuasion', s2: 'ins', d: 46 },
+        win: { r: '{them} tells you more than a captain should. You know the march before the drums do.', fx: { them: { op: 6 }, skill: { tactics: 1 } } },
+        lose: { r: '"Next comes sleep," {khe} says, and walks on.', fx: { happy: -1 } } },
+    ] },
+
+  { id: 'co_pay_day', title: 'Pay day', trigger: true, cool: 0.2,
+    cond: (p, C) => C.soldier(p) && C.adult(p),
+    setup: (p, ctx) => { coyFill(p, ctx); },
+    text: 'The paymaster of the {coy} counts the month\'s silver onto the drumhead, coin by coin, while Sergeant {serj} reads the names. There is bread for {food} days in the wagons. The sutlers have set up behind the lines, and so have the dice.',
+    choices: [
+      { t: 'Send most of it home', r: 'A carter takes the purse and your mark on a scrap of cloth. Somebody at home eats better this winter.', fx: { coin: -8, family: 3, honor: 1 } },
+      { t: 'Stand the section a round at the sutler\'s', r: 'It goes in an evening. The section remembers who stood the round.', fx: { coin: -6, rel: { who: 'comrade', op: 5, all: true }, coy: { mo: 2 } } },
+      { t: 'Try the dice', check: { s: 'gambling', s2: 'ins', d: 50 },
+        win: { r: 'You walk away with twice your pay and three enemies.', fx: { coin: 14, rel: { who: 'comrade', op: -2, all: true } } },
+        lose: { r: 'The month\'s pay is gone by the second candle.', fx: { coin: -10, happy: -3 } } },
+    ] },
+]));

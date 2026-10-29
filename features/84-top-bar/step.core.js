@@ -331,3 +331,22 @@
   const put = () => { if (typeof document === 'undefined' || document.getElementById('step-style')) return; const s = document.createElement('style'); s.id = 'step-style'; s.textContent = css; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();
+
+// cycle 2 (visual I11): at laptop widths Play, the run and Quiet are icons; until the player has used one of them, each
+// carries its word under the icon (brief §7.4: an icon is labelled the first time it appears). The first press of any
+// of them puts the words away (UI.set.tbKnown, saved with the settings; never in the save).
+(function () {
+  if (typeof document === 'undefined') return;
+  const mark = () => { try { document.documentElement.toggleAttribute('data-tb-learn', !UI.set.tbKnown); } catch (e) {} };
+  const css = '@media (min-width:761px) and (max-width:1439px){' +
+    ':root[data-tb-learn] #topbar #clk .clk-play,:root[data-tb-learn] #topbar #clk [data-a=clkQuiet],:root[data-tb-learn] #topbar #clk [data-a=clkSkip]{width:auto;min-width:40px;flex:0 0 auto;flex-direction:column;gap:0;padding:2px 6px;height:40px;min-height:40px}' +
+    ':root[data-tb-learn] #topbar #clk .clk-play .clk-lbl,:root[data-tb-learn] #topbar #clk [data-a=clkQuiet] .clk-lbl,:root[data-tb-learn] #topbar #clk [data-a=clkSkip] .bt{display:block!important;font-size:calc(12px * var(--tx,1));line-height:1;font-weight:600;letter-spacing:.02em}}';
+  const put = () => { if (document.getElementById('tb-learn-style')) return; const s = document.createElement('style'); s.id = 'tb-learn-style'; s.textContent = css; document.head.appendChild(s); mark(); };
+  if (document.head) put(); else document.addEventListener('DOMContentLoaded', put);
+  document.addEventListener('click', e => {
+    const b = e.target && e.target.closest && e.target.closest('#clk [data-a=clkPlay], #clk [data-a=clkQuiet], #clk [data-a=clkSkip]');
+    if (b && !UI.set.tbKnown) { UI.set.tbKnown = true; try { UI.saveSettings(); } catch (x) {} mark(); }
+  }, true);
+  const apply = UI.applySettings;
+  if (typeof apply === 'function') UI.applySettings = function () { const r = apply.apply(this, arguments); mark(); return r; };
+})();

@@ -100,3 +100,5 @@ Not done: the sea stays the woodcut's ruled vellum (the brief's Prussian-blue bo
 - The map's zooms and jumps are eased by 96's motion system (the view is set at once; only the drawing follows).
 
 `inkSeaHover`.
+
+**Cycle 2, round 2 (Oct 29).** The realms read from above (visual F5): on the Great Continent the wash keeps its colour (no browning), lifted in chroma ×2.6, at least 100/255 on land, with the border ribbon at up to 160; the atlas's veil is laid at 0.25 on the full map (9991). At 1600 px and wider the map's frame takes the canvas's own height, so no blank band shows under it (B4).

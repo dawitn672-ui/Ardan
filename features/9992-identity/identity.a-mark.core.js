@@ -238,6 +238,11 @@
       if (A.EV.ix_epithet && !A.S.queue.some(q => q && q.ev === 'ix_epithet')) A.queue({ type: 'event', ev: 'ix_epithet', ctx: { ep } });
     }
   };
+  // the day a life begins (a new game, an heir taken up): the first two months hold the small scenes back
+  for (const k of ['newGame', 'continueAs']) {
+    const f = A[k];
+    if (typeof f === 'function') A[k] = function () { const r = f.apply(this, arguments); try { const pc = A.pc(); if (pc && r !== false) pc.idT0 = A.absDay(); } catch (e) {} return r; };
+  }
   A.onMonth.push(pc => { try { ID.month(pc); } catch (e) { console.error('identity', e); } });
 
   // ---- on screen ----------------------------------------------------------------------------------------------------
@@ -374,6 +379,7 @@
 .idv-voice{margin:6px 0 8px;padding:6px 10px;border-left:3px solid var(--accent-rule,var(--accent));font-family:var(--f-prose,inherit);font-style:italic;font-size:13.5px;line-height:1.4;color:var(--ink-2)}
 .idv-who{font-style:normal;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-right:6px}
 .idv-thought .idv-who{color:var(--info)}
+.idv-sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;padding:0}
 @media (max-width:760px){.id-mark{padding:6px 8px;margin-top:4px}.id-designer{max-height:none;min-height:100%;border-radius:0}.id-row{grid-template-columns:1fr}.id-lab{padding-top:0}.id-op{min-width:48px}.idv-voice{margin:4px 0 6px;font-size:13px}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('id-style')) return; const s = document.createElement('style'); s.id = 'id-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }

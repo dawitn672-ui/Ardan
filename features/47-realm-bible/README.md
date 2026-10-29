@@ -77,3 +77,13 @@ The customs met, over the 102 counted lives (`reports/customs.json`): year 65, m
 - **The want and the fear are words, not AI.** They are on the card and in the bible, but no realm's war choices read them yet.
 - **The customs of the realm you belong to.** Travelling abroad does not bring another realm's customs into play.
 - **Kinds are a toolkit.** About 100 customs share ten mechanisms, so two realms' taxes differ in month, size, words and what defiance costs, not in machinery.
+
+## Cycle 2: dues are for the commons (design A6)
+
+`free` counted nobles and rulers, so on New Year's Day the Emperor of Aldmark heard the reeve knock for the hearth mark. Now:
+
+- A custom of dues asks only the commons (`B.WHO.commons`: free, not noble, no title of rung 2 or more, no council seat, not a ruler). A custom of dues is a year's due or a war's levy whose name says tax, tithe, toll, penny, mark, tenth, tribute, levy, loan or labour days (`B.isDue`); scutage and "whose host" stay with the knights.
+- A ruler hears the other side once a year: "The hearth mark comes in across Aldmark: N souls. Your clerks count it into the treasury."
+- 996's Coming up asks the same rule (`B.whoFor`).
+
+33 of the bibles' customs read as dues. **Measured by** `rbCommonsDues`: the hearth mark reaches a peasant, not a noble and not the Emperor, who gets the line.

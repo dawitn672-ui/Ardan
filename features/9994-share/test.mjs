@@ -31,6 +31,25 @@ export default {
     return { ok, detail: `Keep this on the result ${keep}; ${f.name} ${f.w}x${f.h} ${f.kb} KB; seed ${seed.v}; state unchanged ${after.same}; back on the result ${after.result}` };
   },
 
+  async shSubject(pg) {
+    // a scene about someone: the face is theirs and so is the name beside it; yours goes in the line under the text;
+    // the overlay's buttons are a plain row, Save the gold primary, Back a ghost with no key badge
+    await pg.evaluate(() => {
+      T.enter({ seed: 4242, race: 'human', realm: 'POL-01', status: 'gentry', sex: 'M', startAge: 25 });
+      T.play(1); A.S.queue = [];
+      const pc = A.pc(), id = Object.keys(pc.rel).find(i => { const t = A.P(i); return t && t.alive && t.app && A.isAdult(t); });
+      A.S.queue.unshift({ type: 'event', ev: 'cf_friend_1', ctx: { pid: id } });
+      UI.render(); UI.renderModal();
+    });
+    await pg.click('#modal button[data-a="evChoose"]');
+    const d = await pg.evaluate(() => { const x = UI.SHARE.KINDS.scene(), q = A.S.queue[0], t = A.P(q.ctx.pid), pc = A.pc(); return { tag: x.tag, epi: x.epitaph, them: t.given, me: pc.given, stats: (x.stats || []).length }; });
+    await pg.click('#modal .sh-keep');
+    await pg.waitForSelector('#modal [data-a="shSave"]', { timeout: 20000 });
+    const b = await pg.evaluate(() => { const s = document.querySelector('#modal [data-a="shSave"]'), k = document.querySelector('#modal .sh-acts [data-a="closeOv"]'); return { primary: s.classList.contains('primary'), choices: !!s.closest('.choices'), ghost: k.classList.contains('ghost'), badge: getComputedStyle(k, '::before').content }; });
+    const ok = d.tag.startsWith(d.them + ',') && d.epi.includes(d.me) && d.stats === 4 && b.primary && !b.choices && b.ghost && (b.badge === 'none' || b.badge === 'normal' || b.badge === '""');
+    return { ok, detail: `tag "${d.tag}" (subject ${d.them}), line "${d.epi}", ${d.stats} numbers; Save primary ${b.primary}, in .choices ${b.choices}, Back ghost ${b.ghost}, badge ${b.badge}` };
+  },
+
   async shLife(pg) {
     await pg.evaluate(() => {
       T.enter({ seed: 777, race: 'elf', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });

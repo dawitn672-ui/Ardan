@@ -275,4 +275,30 @@ export default {
       (r.map ? `, map by code eased ${r.map.byCode}, asked eased ${r.map.asked}, view set at once ${r.map.viewSet}` : '') + `, pure ${r.pure}`;
     return { ok, detail: [d('full', full), d('reduced', red), d('off', off)].join(' | ') };
   },
+
+  // cycle 2 (visual B2): an eased zoom of the full map no longer redraws the map each frame: the tween scales the last
+  // picture (drawImage), and the map is drawn for real once, at its end; a tween frame costs a copy, not a redraw
+  async mapEaseCheap(pg) {
+    await pg.setViewportSize({ width: 1366, height: 768 });
+    const r = await pg.evaluate(async () => {
+      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24, lands: 'great' });
+      UI.set.motion = 'full'; UI.applySettings(); A.S.queue = [];
+      UI.ov = { type: 'bigmap' }; UI.renderModal();
+      if (!UI.gm || !document.getElementById('gmap')) return { none: true };
+      UI.gmDraw();
+      const S = UI.MOTION.mapStats, V = UI.MOTION.views.gm;
+      const t0 = performance.now(); UI.gmDraw(); const realMs = performance.now() - t0;
+      const before = { real: S.real, frames: S.frames, tweens: S.tweens };
+      V.user = performance.now();
+      UI.gm.view = Object.assign({}, UI.gm.view, { w: UI.gm.view.w / 1.25, h: UI.gm.view.h / 1.25 });
+      const t1 = performance.now(); UI.gmDraw(); const startMs = performance.now() - t1;
+      const during = { real: S.real - before.real };
+      await new Promise(res => setTimeout(res, 450));
+      const after = { real: S.real - before.real, frames: S.frames - before.frames, tweens: S.tweens - before.tweens };
+      UI.ov = null; UI.renderModal();
+      return { realMs, startMs, during, after };
+    });
+    const ok = r.none || (r.during.real === 0 && r.after.tweens === 1 && r.after.real === 1 && r.after.frames >= 1 && r.startMs < Math.max(30, r.realMs / 2));
+    return { ok, detail: r.none ? 'no full map' : `a real draw ${r.realMs.toFixed(1)} ms; the tween's first frame ${r.startMs.toFixed(1)} ms; real draws during the tween ${r.during.real}, after it ${r.after.real}; tween frames ${r.after.frames}` };
+  },
 };

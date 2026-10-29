@@ -25,6 +25,21 @@ const SETUP = () => {
 };
 
 export default {
+  async warNamesUnique(pg) {
+    // world review cycle 2, B5: a second war of the same name is "The Second ...", in the Known World too
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4406, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      A.S.queue.length = 0;
+      A.startWar('POL-02', 'POL-03', 'The Long War', 'rivalry', { noAllies: true });
+      A.startWar('POL-05', 'POL-06', 'The Long War', 'rivalry', { noAllies: true });
+      A.startWar('POL-07', 'POL-08', 'The War of the Tessaria Succession', 'throne', { noAllies: true });
+      A.startWar('POL-09', 'POL-10', 'The War of the Tessaria Succession', 'throne', { noAllies: true });
+      return A.S.wars.map(w => w.name).slice(-4);
+    });
+    const ok = r[0] === 'The Long War' && r[1] === 'The Second Long War' && r[3] === 'The Second War of the Tessaria Succession';
+    return { ok, detail: r.join('; ') };
+  },
+
   async wcRecordWhole(pg) {
     // W5: sixty years of the world, kept whole: every kind, the oldest entry still there, a place and people on each
     await pg.evaluate(SETUP);

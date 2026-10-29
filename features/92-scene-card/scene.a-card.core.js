@@ -59,6 +59,8 @@
   const HINT = [['coin', 'coin', 'coin'], ['honor', 'honour', 'honour'], ['fame', 'renown', 'renown'], ['piety', 'piety', 'piety'],
     ['happy', 'spirits', 'spirits'], ['health', 'health', 'health']];
   SC.hints = function (c) {
+    // 9998-stakes draws every effect as a chip under the label; the two hints give way to it while it is on
+    if (A.STAKES && A.STAKES.on && A.STAKES.on()) return [];
     if (!c || c.check || c.group || !c.fx || typeof c.fx !== 'object') return [];
     const out = [];
     for (const [k, up, down] of HINT) {
@@ -72,6 +74,9 @@
     if (c.fx.prison) out.push({ k: 'prison', d: -10, w: 'prison' });
     return out.sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, 2);
   };
+
+  // white or red (9998-stakes' rule), or null: no check, or no stakes feature in this build
+  SC.checkKind = (c, e) => (A.STAKES && A.STAKES.on && A.STAKES.on() && A.STAKES.checkKind ? A.STAKES.checkKind(c, e) : null);
 
   // ---- the pieces of a choice row --------------------------------------------------------------------------------
   // the check chip: the stat's icon and short name (a skill: its own short name, in the colour of the stat it rests on),
@@ -137,6 +142,7 @@
     const por = row && [...row.children].find(x => x !== grow);
     const h2 = grow && grow.querySelector('h2');
     const choices = box.querySelector(':scope > .choices');
+    const locked = box.querySelector(':scope > .st-locked');   // 9998-stakes' choices out of reach, kept after the choices
     const result = box.querySelector(':scope > .result');
     const cont = box.querySelector(':scope > button[data-a="evClose"]');
 
@@ -166,6 +172,7 @@
 
     if (phase === 'c' && choices) SC.rows(choices, q, v, e, pc);
     if (choices) inner.appendChild(choices);
+    if (locked) { if (phase === 'c') inner.appendChild(locked); else locked.remove(); }
     if (phase === 'r') inner.appendChild(SC.resultBlock(doc, q, result, cont));
     else { if (result) result.remove(); if (cont) cont.remove(); }
     // anything else a feature put in the box (after the choices, or a piece the card does not know): into the body
@@ -189,7 +196,12 @@
         tags.appendChild(odds);
       }
       for (const hn of SC.hints(c)) tags.insertAdjacentHTML('beforeend', SC.hintHtml(hn));
-      if (SC.isOnce(c)) { b.classList.add('sc-once'); tags.insertAdjacentHTML('beforeend', '<span class="sc-oncew">once</span>'); }
+      // white and red checks (9998-stakes): a red check is one chance (the danger edge, ONE CHANCE); a white one can be
+      // tried again once you are better, and its check chip carries a small mark that says so
+      const wr = SC.checkKind(c, e);
+      if (wr === 'red') { b.classList.add('sc-once', 'sc-red'); tags.insertAdjacentHTML('beforeend', `<span class="sc-oncew st-red"${UI.ttAttrs ? UI.ttAttrs('stCheck', 'red', false) : ''}>one chance</span>`); }
+      else if (SC.isOnce(c)) { b.classList.add('sc-once'); tags.insertAdjacentHTML('beforeend', '<span class="sc-oncew">once</span>'); }
+      if (wr === 'white') { const chk = tags.querySelector('.sc-chk'); if (chk) { b.classList.add('sc-white'); chk.insertAdjacentHTML('beforeend', '<span class="st-wr" aria-hidden="true">↻</span><span class="sc-vh"> (can be tried again)</span>'); } }
       if (tags.firstChild) b.appendChild(tags); else b.classList.add('sc-plain');
     }
   };

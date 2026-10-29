@@ -381,3 +381,85 @@ POL.courtMonth = function (pc) {
   if (A.EV[ev]) A.queue({ type: 'event', ev, ctx: { pid: c.id, rid: r.id, npcMove: true, realmT: r.short, bribe: A.coin(Math.round(30 + (pc.fame || 0))), bribeN: Math.round(30 + (pc.fame || 0)) } });
 };
 A.onMonth.push(pc => { try { POL.courtMonth(pc); } catch (e) { console.error('[po] courted', e); } });
+
+// ---------------------------------------------------------------- the crown lost (cycle 2 lives B2)
+
+// a ruling player who loses the throne (a war of succession, a claimant faction, a realm that falls) gets a fate
+// scene; the person who took it never becomes their patron. Caught by a watch on pc.ruler each month, so every way of
+// losing a crown is covered, and by a wrap of A.makeRuler, which names who took it.
+const baseMake = A.makeRuler;
+A.makeRuler = function (p, rid) {
+  const r = A.realm(rid), pc = A.pc(), was = r && r.ruler;
+  const out = baseMake.apply(this, arguments);
+  try { if (pc && pc.alive && was === pc.id && p && p.id !== pc.id) { const P = POL.pcPol(pc); P.lostTo = { pid: p.id, rid, y: A.S.year }; } } catch (e) {}
+  return out;
+};
+POL.crownMonth = function (pc) {
+  if (!pc || pc.id !== A.S.pc) return;
+  const P = POL.pcPol(pc);
+  if (pc.ruler) { P.crown = pc.ruler; return; }
+  if (!P.crown || !pc.alive) { P.crown = null; return; }
+  const rid = P.crown, r = A.realm(rid), lt = P.lostTo && P.lostTo.rid === rid ? P.lostTo : null, by = lt ? A.P(lt.pid) : r && A.P(r.ruler);
+  P.crown = null;
+  pc.flags.deposed = A.S.year; pc.flags.po_claim = rid;
+  P.deposedBy = by ? by.id : null;
+  const fell = !r || !r.alive;
+  A.log(fell ? `${A.realmShort ? A.realmShort(rid) : 'Your realm'} is no more, and you rule nothing.` : `${by ? A.fullName(by, false) : 'Another'} holds the crown of ${r.short} now. You are no longer its ruler.`, 'bad');
+  if (A.EV.po_deposed && !A.S.queue.some(q => q.ev === 'po_deposed')) A.queue({ type: 'event', ev: 'po_deposed', forced: true, ctx: { rid, pid: by && by.alive && by.id !== pc.id ? by.id : null, realmT: r ? r.short : 'the realm', fell: fell ? 1 : 0 } });
+};
+A.onMonth.push(pc => { try { POL.crownMonth(pc); } catch (e) { console.error('[po] crown lost', e); } });
+// the patron pick never lands on the person who took your throne
+const basePatron = A.findPatron;
+if (typeof basePatron === 'function') A.findPatron = function (pc) {
+  const before = pc && pc.flags && pc.flags.patron;
+  const out = basePatron.apply(this, arguments);
+  try {
+    const bad = pc && pc.pol && pc.pol.deposedBy;
+    if (bad && pc.flags.patron === bad && before !== bad) {
+      if (pc.rel[bad]) { pc.rel[bad].patron = false; A.addOp(pc, A.P(bad), -25); }
+      delete pc.flags.patron;
+      const L = A.S.log && A.S.log[A.S.log.length - 1], lines = L && L.lines;
+      if (Array.isArray(lines) && lines.length && /takes an interest in you/.test(String(lines[lines.length - 1][0]))) lines.pop();
+    }
+  } catch (e) { console.error('[po] patron', e); }
+  return out;
+};
+// the fate scene's effects (fx poFate)
+POL.fate = function (pc, k, ctx) {
+  const r = A.realm(ctx.rid), by = A.P(ctx.pid);
+  if (k === 'flee') {
+    const home = r && r.alive ? r.id : null;
+    const friends = POL.realms().filter(x => x.id !== home && !(by && x.ruler === by.id)).sort((a, b) => (home ? A.relBetween(home, b.id) - A.relBetween(home, a.id) : 0) || String(a.id).localeCompare(String(b.id)));
+    const to = friends[0];
+    if (to) { pc.realm = to.id; pc.home = to.capitalProv != null ? to.capitalProv : pc.home; if (pc.noble) pc.noble.realm = to.id; }
+    pc.coin = Math.round(pc.coin * .6);
+    pc.flags.po_exile = A.S.year;
+    return to ? `(you live at the court of ${to.short} now)` : '';
+  }
+  if (k === 'kneel') {
+    pc.noble = pc.noble || { rung: 4, realm: pc.realm };
+    pc.noble.rung = Math.max(pc.noble.rung || 0, 4); pc.noble.realm = pc.realm;
+    delete pc.flags.po_claim;
+    if (by) { if (pc.rel[by.id]) A.addOp(pc, by, 20); else A.link(pc, by, 'acquaint', 10, 'acquaint'); }
+    return '(you hold your lands of the new crown)';
+  }
+  if (k === 'kneelPoor') {
+    pc.coin = Math.round(pc.coin * .5);
+    pc.noble = pc.noble || { rung: 2, realm: pc.realm };
+    pc.noble.realm = pc.realm;
+    delete pc.flags.po_claim;
+    return '(half your fortune goes to the new crown)';
+  }
+  if (k === 'claim' && r && r.alive && by && A.successionWar) {
+    try { const w = A.successionWar(r, pc); if (w) return '(your banner is raised: a war for the throne)'; } catch (e) {}
+    return '';
+  }
+  return '';
+};
+(A.FX_EXTRA = A.FX_EXTRA || []).push('poFate');
+const baseFx2 = A.applyFx;
+A.applyFx = function (pc, fx, ctx) {
+  const out = baseFx2.apply(this, arguments);
+  try { if (fx && typeof fx === 'object' && fx.poFate && pc && pc.id === A.S.pc && ctx) { const s = POL.fate(pc, fx.poFate, ctx); if (s && Array.isArray(out)) out.push(s); } } catch (e) { console.error('[po] fate', e); }
+  return out;
+};

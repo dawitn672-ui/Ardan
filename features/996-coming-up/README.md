@@ -21,3 +21,9 @@
 **Measured by** (`test.mjs`): `comingUpShows` (a labelled loan and an item's own label shown, an unlabelled surprise hidden, a custom due next month and full initiative shown) and `comingUpPure` (five years drawn every month: the strip appears, no draw moves the state or the dice, and the world is the same with and without looking).
 
 **For other features.** Add `label: 'Spring: the guild judges your masterpiece'` to an `A.schedule` item, or a line to `UI.COMING.LABELS[eventId] = (item, pc) => text | null`.
+
+## Cycle 2
+
+- **A step that always says something** (design B4, D2). 84-top-bar's note ended 13 of 16 Week steps with "Nothing new in your story: the days went by as days do". When the story has no new line, the note now says what the step changed: the skills that moved, whose regard for you moved, who you met, and the nearest dated item in Coming up. If none of that moved, it says where and when you are (`CU.digest`). The view takes a snapshot when a step starts (`UI.stepStart`, kept on `UI.COMING`, not in the world) and draws nothing. **Measured by** `cuStepNote`: 16 Week steps, no stock line, drawing pure.
+- **A story start's second beat** (design B7, `beats.events.js`). Each of 29-starts' 20 stories has a second scene, scheduled 2 to 5 months after the opening, which shows in Coming up under its own title first. Before, "What Took Your Father" had nothing for five years. **Measured by** `cuStoryBeats`: all 20 within 8 months, all 20 named in Coming up first.
+- Coming up's customs ask 47's commons rule.

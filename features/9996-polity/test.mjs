@@ -98,7 +98,7 @@ export default {
       const same = T.hash(A.S) === h0 && A.rngState === rng0;
       b.next = A.absDay(); P.billMonth();
       const after = x.pol.bill ? x.pol.bill.log.length : (x.pol.last ? x.pol.last.log.length : -1);
-      return { k, opened: !!b, sum, same, track: (html.match(/po-g /g) || []).length, odds: /pass \d+%/.test(html), tip: /Balance m/.test(tip), after, src: b && b.src };
+      return { k, opened: !!b, sum, same, track: (html.match(/class="po-node/g) || []).length, odds: /class="po-stack po-odds"/.test(html) && /\d+%<\/span>/.test(html), tip: /Balance m/.test(tip), after, src: b && b.src };
     });
     const ok = r.opened && r.sum >= 99 && r.sum <= 101 && r.same && r.track === 6 && r.odds && r.tip && r.after === 1;
     return { ok, detail: `a bill for ${r.k} brought by the player (${r.src}); next-count odds sum to ${r.sum}%; ${r.track} notches drawn; drawn ${r.same ? 'purely' : 'WITH CHANGES'}; a count logs ${r.after}` };
@@ -201,13 +201,13 @@ export default {
         UI.render(); UI.render();
         const wrap = document.querySelector('.po-wrap');
         const html = wrap ? wrap.innerHTML : '';
-        out[k] = { same: T.hash(A.S) === h0 && A.rngState === rng0, drawn: !!wrap, cards: (html.match(/class="card po-card"/g) || []).length, esc: html.includes('&lt;b&gt;Bad') && !html.includes('<b>Bad'), wide: document.documentElement.scrollWidth <= 392 };
+        out[k] = { same: T.hash(A.S) === h0 && A.rngState === rng0, drawn: !!wrap, cards: (html.match(/class="po-card/g) || []).length, folded: (html.match(/class="po-body"[^>]* hidden/g) || []).length, build: /Drain fields/.test(document.querySelector('#tabbody') ? document.querySelector('#tabbody').innerHTML : html), esc: html.includes('&lt;b&gt;Bad') && !html.includes('<b>Bad'), wide: document.documentElement.scrollWidth <= 392 };
       }
       return out;
     });
     await pg.setViewportSize({ width: 1366, height: 768 });
-    const ok = ['ruler', 'lord'].every(k => r[k].same && r[k].drawn && r[k].cards >= 4 && r[k].esc && r[k].wide);
-    return { ok, detail: ['ruler', 'lord'].map(k => `${k}: ${r[k].cards} cards, ${r[k].same ? 'pure' : 'CHANGED STATE'}, names ${r[k].esc ? 'escaped' : 'NOT ESCAPED'}, ${r[k].wide ? 'no sideways scroll at 390' : 'SCROLLS SIDEWAYS'}`).join('; ') };
+    const ok = ['ruler', 'lord'].every(k => r[k].same && r[k].drawn && r[k].cards >= 4 && r[k].esc && r[k].wide && r[k].folded >= 3) && !r.ruler.build;
+    return { ok, detail: ['ruler', 'lord'].map(k => `${k}: ${r[k].cards} cards (${r[k].folded} folded)${k === 'ruler' ? (r[k].build ? ', BUILD LIST SHOWN' : ', no Build list') : ''}, ${r[k].same ? 'pure' : 'CHANGED STATE'}, names ${r[k].esc ? 'escaped' : 'NOT ESCAPED'}, ${r[k].wide ? 'no sideways scroll at 390' : 'SCROLLS SIDEWAYS'}`).join('; ') };
   },
 
   // every po_ scene renders its choices with no raw token
@@ -252,5 +252,61 @@ export default {
     });
     const ok = r.opened && r.cands >= 1 && r.won === r.lead && r.share > 0 && r.lost >= r.share - 1 && r.log === 'fief';
     return { ok, detail: r.none ? 'no realm with three lesser houses' : `${r.cands} candidates, weights ${JSON.stringify(r.tally)}; the leader won ${r.won === r.lead}; ${r.share} of the traitor house's strength granted` };
+  },
+  // a life that seeks the best open office every year for 20 years holds one great office and one lesser at most
+  async poOfficeCap(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5101, race: 'human', realm: 'POL-03', status: 'noble', sex: 'M', startAge: 30 });
+      const pc = A.pc(), P = A.POL, x = A.realm(pc.realm); pc.fame = 70; pc.literate = true;
+      for (const k of ['stewardship', 'diplomacy', 'command', 'persuasion']) pc.skills[k] = 70;
+      pc.noble = pc.noble || { rung: 3, realm: x.id }; pc.noble.rung = Math.max(pc.noble.rung || 0, 3);
+      let most = 0, tries = 0, bars = new Set();
+      for (let y = 0; y < 20; y++) {
+        A.S.time = 10; A.S.yearActs = {}; if (pc.pol) pc.pol.sought = {};
+        const S = P.seekable(pc).filter(o => !o.bar.length).sort((a, b) => b.p - a.p);
+        for (const o of P.seekable(pc)) for (const b of o.bar) if (/^free of/.test(b)) bars.add(b);
+        if (S[0]) { tries++; P.seek(pc, S[0].o.id); }
+        most = Math.max(most, P.officesOf(pc).length + (pc.office ? 1 : 0));
+        A.S.year++;
+      }
+      const held = P.officesOf(pc).map(([, o]) => o.k);
+      return { most, tries, held, major: held.filter(k => P.MAJOR.includes(k)).length, bars: [...bars] };
+    });
+    const ok = r.most <= 2 && r.major <= 1 && r.tries > 0 && r.bars.length > 0;
+    return { ok, detail: `${r.tries} seeks in 20 years: at most ${r.most} held (${r.held.join(', ')}; ${r.major} great); bars: ${r.bars.join(' / ')}` };
+  },
+
+  // the oath reads the rank table the right way: a knight owes a handful of men, a count thousands
+  async poMusterRung(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5201, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+      const pc = A.pc(), P = A.POL, out = {};
+      pc.noble = pc.noble || { rung: 2, realm: pc.realm };
+      for (const [k, rung] of [['knight', 2], ['baron', 4], ['count', 6]]) { pc.noble.rung = rung; pc.pol = null; const o = P.pcOath(pc); out[k] = o ? Math.round(o.men / P.OBL_LEVY[o.c.levy]) : null; out[k + 'Name'] = (GD.NOBLE_RUNGS[rung] || {}).code; }
+      return out;
+    });
+    const ok = r.knight === 5 && r.count === 4000 && r.baron === 300;
+    return { ok, detail: `levy before the oath's share: knight (${r.knightName}) ${r.knight}, baron (${r.baronName}) ${r.baron}, count (${r.countName}) ${r.count}` };
+  },
+
+  // a ruling player who loses the throne gets a fate scene; the one who took it never becomes the patron
+  async poDeposed(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5301, race: 'human', realm: 'POL-02', status: 'royal', sex: 'M', startAge: 30 });
+      const pc = A.pc(), x = A.realm('POL-02'), P = A.POL;
+      A.makeRuler(pc, x.id); P.crownMonth(pc);
+      const rival = Object.values(A.S.people).find(p => p.alive && p.id !== pc.id && A.isAdult(p) && p.realm === x.id && !p.ruler);
+      A.S.queue = [];
+      pc.ruler = null; A.makeRuler(rival, x.id);
+      P.crownMonth(pc);
+      const q = A.S.queue.find(i => i.ev === 'po_deposed');
+      const v = q ? A.eventView(q) : null;
+      // the usurper as the only candidate for patron: the pick is undone
+      x.council = { chancellor: rival.id }; delete pc.flags.patron;
+      if (A.findPatron) A.findPatron(pc);
+      return { queued: !!q, by: q && q.ctx.pid === rival.id, choices: v ? v.choices.map(c => c.t) : [], flag: !!pc.flags.deposed, patron: pc.flags.patron || null, usurper: rival.id };
+    });
+    const ok = r.queued && r.by && r.choices.length >= 3 && r.flag && r.patron !== r.usurper;
+    return { ok, detail: `po_deposed queued ${r.queued} (naming the usurper ${r.by}); ways: ${r.choices.join(' / ')}; patron after the pick: ${r.patron === r.usurper ? 'THE USURPER' : r.patron || 'none'}` };
   },
 };

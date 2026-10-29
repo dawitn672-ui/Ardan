@@ -255,4 +255,31 @@ export default {
     const ok = r.tab === 'story' && r.born && !r.before && r.after && r.cleared;
     return { ok, detail: `a new life opens on ${r.tab} (the birth story in view ${r.born}); Story badge: before ${r.before}, after new lines ${r.after}, after reading ${!r.cleared ? 'STILL' : 'cleared'}` };
   },
+
+  // cycle 2 (visual F4, B10): on a phone the market is one short row per good (Holdings at most 4 screens with the
+  // market open), and a tap on a choice's odds badge reaches the choice, not a popover
+  async phoneMarketOdds(pg, errs, { browser, file }) {
+    const { pathToFileURL } = await import('node:url');
+    const { HELPERS } = await import('../../tests/helpers.mjs');
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }), p = await ctx.newPage();
+    p.on('pageerror', e => errs.push(String(e)));
+    await p.goto(pathToFileURL(file).href); await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+    await p.evaluate(HELPERS);
+    const r = await p.evaluate(() => {
+      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24, lands: 'great' });
+      UI.set.motion = 'off'; UI.applySettings(); A.S.queue = [];
+      UI.FOLD.state['p-holdings|the market'] = true; UI.FOLD.state['holdings|the market'] = true;
+      UI.tab = 'holdings'; UI.render();
+      const rows = [...document.querySelectorAll('#tabbody table.ph-mkt tr')].filter(tr => tr.querySelector('[data-a="mktBuy"]'));
+      const tall = Math.max(0, ...rows.map(tr => tr.getBoundingClientRect().height));
+      const page = document.scrollingElement.scrollHeight / innerHeight;
+      delete UI.FOLD.state['p-holdings|the market']; delete UI.FOLD.state['holdings|the market'];
+      UI.tab = 'life'; UI.render();
+      const pe = (() => { const st = document.createElement('div'); st.innerHTML = '<div id="modal"><div class="choices"><button><span data-tt="odds">62%</span></button></div></div>'; document.body.appendChild(st); const v = getComputedStyle(st.querySelector('[data-tt]')).pointerEvents; st.remove(); return v; })();
+      return { rows: rows.length, tall, page: +page.toFixed(2), pe };
+    });
+    await ctx.close();
+    const ok = r.rows > 10 && r.tall <= 60 && r.page <= 4.2 && r.pe === 'none';
+    return { ok, detail: `market rows ${r.rows}, the tallest ${Math.round(r.tall)} px; Holdings with the market open ${r.page} screens; the odds badge in a choice row takes no tap (${r.pe})` };
+  },
 };

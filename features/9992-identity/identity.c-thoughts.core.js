@@ -17,13 +17,13 @@
       voice: 'Ask who owns the grain before you ask who is hungry.' },
     steel: { name: 'Steel answers what words cannot', months: 12, trait: 'wrathful', gain: { melee: 4, intimidation: 3 }, cost: { diplomacy: -4 },
       voice: 'You have heard enough. Your hand knows the rest.' },
-    seed: { name: 'Every coin is a seed', months: 10, trait: 'greedy', gain: { trade: 5, stewardship: 2 }, cost: { persuasion: -3 },
+    seed: { name: 'Every coin is a seed', months: 10, trait: 'ambitious', gain: { trade: 5, stewardship: 2 }, cost: { persuasion: -3 },
       voice: 'Spend nothing you could plant.' },
     silence: { name: 'The gods keep their own counsel', months: 14, trait: 'calm', gain: { learning: 4, medicine: 3 }, cost: { faith: -4 },
       voice: 'No sign is coming. Decide as if none ever will.' },
     blood: { name: 'Blood remembers', months: 12, trait: 'proud', gain: { etiquette: 4, command: 3 }, cost: { persuasion: -4 },
       voice: 'Your grandfather would not have bowed to this man.' },
-    road: { name: 'The road is the only home', months: 10, trait: 'curious', gain: { survival: 4, riding: 3 }, cost: { stewardship: -4 },
+    road: { name: 'The road is the only home', months: 10, trait: 'fickle', gain: { survival: 4, riding: 3 }, cost: { stewardship: -4 },
       voice: 'Pack light. You will not stay.' },
     nobody: { name: 'No one is coming to save you', months: 12, trait: 'stubborn', gain: { athletics: 3, survival: 4 }, cost: { persuasion: -3 },
       voice: 'Nobody will do this for you. Get up.' },
@@ -33,11 +33,11 @@
       voice: 'Anyone can hurt him. Try the other thing.' },
     fear: { name: 'Fear is a teacher', months: 10, trait: 'brave', gain: { athletics: 4, tactics: 3 }, cost: { stealth: -3 },
       voice: 'You have been afraid before, and you lived. Listen to it, then go.' },
-    sea: { name: 'The sea does not hate you', months: 10, trait: 'calm', gain: { sea: 5, survival: 2 }, cost: { riding: -3 },
+    sea: { name: 'The sea does not hate you', months: 10, trait: 'content', gain: { sea: 5, survival: 2 }, cost: { riding: -3 },
       voice: 'The water is only water. Read it.' },
     costume: { name: 'Rank is a costume', months: 12, trait: 'humble', gain: { deception: 4, etiquette: 3 }, cost: { command: -3 },
       voice: 'Under the fur he is a man who needs his supper.' },
-    children: { name: 'Children are the only deed that lasts', months: 14, trait: 'patient', gain: { learning: 3, husbandry: 3 }, cost: { tactics: -3 },
+    children: { name: 'Children are the only deed that lasts', months: 14, trait: 'loyal', gain: { learning: 3, husbandry: 3 }, cost: { tactics: -3 },
       voice: 'Think what the little ones will remember of this.' },
     ink: { name: 'Write it down or it is lost', months: 10, trait: 'curious', gain: { learning: 5, stewardship: 2 }, cost: { melee: -3 },
       voice: 'Remember the date. You will want it.' },
@@ -76,24 +76,45 @@
     return true;
   };
   A.COMMANDS.push('thDrop');
-  ID.ripen = function (pc, id) {
+  // Ripening asks first (cycle 2, lives F5: a third of all trait changes came from here, logged "in 1120", and lives
+  // converged). The month hook queues ix_ripe; its choice either lets the trait in, under 49-body-mind's receipt for
+  // that choice ("“Let it become part of you” (Every coin is a seed, 1120)"), or keeps the thought as a thought: the
+  // gains and the cost on checks stay, the trait does not come.
+  ID.ripen = function (pc, id, mode) {
     const t = T(pc), th = ID.THOUGHTS[id];
-    if (!t || !th) return;
+    if (!t || !th || t.held[id] == null) return false;
     delete t.held[id];
     t.ripe[id] = A.S.year;
-    let tr = '';
-    if (th.trait && GD.TRAITS[th.trait] && !(pc.traits || []).includes(th.trait)) {
+    if (mode === 'keep') { t.kept = t.kept || {}; t.kept[id] = A.S.year; return true; }
+    if (th.trait && GD.TRAITS[th.trait] && !(pc.traits || []).includes(th.trait) && A.addTrait) {
       const opp = GD.TRAITS[th.trait].opp;
       if (opp && (pc.traits || []).includes(opp) && A.removeTrait) A.removeTrait(pc, opp);
-      if (A.addTrait) A.addTrait(pc, th.trait);
-      if ((pc.traits || []).includes(th.trait)) tr = ` You are ${GD.TRAITS[th.trait].name.toLowerCase()} now.`;
+      A.addTrait(pc, th.trait);
     }
-    A.log(`A thought has ripened: "${th.name}".${tr}`, 'good');
+    return true;
+  };
+  ID.ripeDue = function (pc) {
+    const t = ID.thoughtState(pc), now = A.absDay();
+    return Object.keys(t.held || {}).filter(id => ID.THOUGHTS[id] && now - t.held[id] >= ID.THOUGHTS[id].months * 30).sort((a, b) => t.held[a] - t.held[b]);
   };
   ID.thoughtMonth = function (pc) {
     if (!pc || !pc.alive || !pc.thoughts) return;
-    const t = T(pc), now = A.absDay();
-    for (const id of Object.keys(t.held)) { const th = ID.THOUGHTS[id]; if (!th) { delete t.held[id]; continue; } if (now - t.held[id] >= th.months * 30) ID.ripen(pc, id); }
+    const t = T(pc);
+    for (const id of Object.keys(t.held)) if (!ID.THOUGHTS[id]) delete t.held[id];
+    const due = ID.ripeDue(pc);
+    if (!due.length || A.S.queue.some(q => q && q.ev === 'ix_ripe')) return;
+    const id = due[0], th = ID.THOUGHTS[id];
+    // a thought whose trait you already have, or that has none, simply ripens: there is nothing to ask
+    if (!th.trait || !GD.TRAITS[th.trait] || (pc.traits || []).includes(th.trait) || !A.EV.ix_ripe) { ID.ripen(pc, id, 'keep'); A.log(`A thought has ripened: "${th.name}".`, 'good'); return; }
+    A.queue({ type: 'event', ev: 'ix_ripe', ctx: { th: id, thName: th.name } });
+  };
+  // fx ripe: 'in' | 'keep' takes the ripening thought (ctx.th) one way or the other
+  (A.FX_EXTRA = A.FX_EXTRA || []).push('ripe');
+  const apR = A.applyFx;
+  A.applyFx = function (pc, fx, ctx) {
+    const r = apR.apply(this, arguments);
+    try { if (fx && typeof fx === 'object' && fx.ripe && ctx && ctx.th) ID.ripen(pc, ctx.th, fx.ripe === 'keep' ? 'keep' : 'in'); } catch (e) { console.error('ripe fx', e); }
+    return r;
   };
   A.onMonth.push(pc => { try { ID.thoughtMonth(pc); } catch (e) { console.error('thoughts', e); } });
 

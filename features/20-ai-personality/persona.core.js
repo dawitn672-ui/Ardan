@@ -101,7 +101,9 @@ A.rulerPersona = function (rid) {
   const r = A.realm(rid);
   const ru = r && r.ruler != null ? A.P(r.ruler) : null;
   const traits = ru && Array.isArray(ru.traits) ? ru.traits : [];
-  const base = A.AGGRO && A.AGGRO[rid] != null ? (+A.AGGRO[rid] || 1) : 1;
+  // the realm's tradition, times its humour in this world (r.aiMood, drawn once per realm per world: cycle 2, F3 found
+  // the same history in every seed, because each realm's appetite was its lore's alone)
+  const base = (A.AGGRO && A.AGGRO[rid] != null ? (+A.AGGRO[rid] || 1) : 1) * (r && r.aiMood > 0 ? r.aiMood : 1);
   const T = A.AI_TUNE, key = (ru ? ru.id : '') + '|' + base + '|' + traits.join(',') + '|' + T.cultExp;
   const hit = cache.get(rid);
   if (hit && hit.key === key) return hit.P;
@@ -558,3 +560,15 @@ A.queueAiOffer = function (pc, r, o) {
   }
   return res;
 };
+
+// ---------- a realm's humour in this world (cycle 2, F3)
+// Each realm draws once, at its first month, how hungry it is in this world against its lore's tradition: between
+// about 0.55 and 1.6 times (log-even, median 1). Zanara, Vahra and Kethra so meet a different neighbour in each
+// seed. Drawn in the month hook, never when the persona is read; an old save's realms draw at their next month.
+A.AI_MOOD = { lo: Math.log(0.55), hi: Math.log(1.6) };
+A.onMonth.push(() => {
+  try {
+    const S = A.S; if (!S || !S.realms) return;
+    for (const id of Object.keys(S.realms).sort()) { const r = S.realms[id]; if (r.alive && r.aiMood == null) r.aiMood = Math.round(Math.exp(A.rf(A.AI_MOOD.lo, A.AI_MOOD.hi)) * 100) / 100; }
+  } catch (e) { console.error('ai mood', e); }
+});

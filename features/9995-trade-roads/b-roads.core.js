@@ -224,6 +224,18 @@
     return v;
   };
 
+  // the broker's tenth at each relay of a trip, per load, as [relay realm, suns]: the same reckoning as TR.cost
+  TR.BROKER_DUES = 0.3;   // the share of a broker's tenth its crown takes in market dues
+  TR.relayCuts = function (T, k, ps, base) {
+    const out = []; let v = ps;
+    for (let i = 0; i < T.legs.length; i++) {
+      const e = T.legs[i], t = TR.tollOf(e, k); if (t < 0) return [];
+      if (i) { out.push([T.legs[i - 1].b, v * TR.BROKER]); v *= 1 + TR.BROKER; }
+      v += v * t + base * e.f + v * TR.INTEREST * Math.max(0.5, e.days / 30);
+    }
+    return out;
+  };
+
   // ---- the month: arrivals, then departures (called by 45's E.caravans on the roads)
   TR.month = function () {
     const S = A.S, eco = S.eco = S.eco || {}, now = A.absDay(), mo = A.monthOf(A.today()).m, Gs = GD.GOODS, car = [];
@@ -285,7 +297,7 @@
       const on = (inb[c.dst.id] && inb[c.dst.id][c.k] || 0) + (pending[c.dst.id + c.k] || 0);
       // the market wants its normal store, plus what it will use while these goods are on the road
       const nd = E.normal(c.md, c.k), want = nd * 1.2 + ((c.md.d && c.md.d[c.k]) || 0) * c.T.days / 30 - (c.md.s[c.k] || 0) - on, spare = c.ms.s[c.k] - E.normal(c.ms, c.k) * 0.8;
-      let q = Math.min(spare, want, Math.max(nd * 0.3, E.normal(c.ms, c.k) * 0.15));
+      let q = Math.min(spare, want, Math.max(nd * 0.3, E.normal(c.ms, c.k) * 0.15, 1));
       if (!(q > Math.min(0.5, nd * 0.5)) || !(q > 0.2)) continue;
       // war on any hand of the way, a pass shut, a monsoon not blowing: not this month
       let why = shut.get(c.T); if (why == null) { why = ''; for (const e of c.T.legs) { why = TR.shutWhy(e, mo, hostile); if (why) break; } shut.set(c.T, why); }
@@ -298,11 +310,19 @@
       for (const v of c.T.through) { const r = A.realm(v); if (r) st = Math.min(st, r.stability || 50); }
       let lost = 0, risk = Math.min(0.5, Math.pow(1 - st / 100, 2) * c.T.landKm / 6000 + c.T.seaKm / 24000 * 0.25);
       if (c.T.south && [6, 7, 8, 9].includes(mo)) risk += 0.08;
+      if (TR.seraiMul) risk *= TR.seraiMul(c.T);   // the caravanserais endowed on the way (c-ventures.core.js)
       if (A.chance(risk)) lost = q * A.rf(0.15, 0.4);
       // the tolls are paid at the gates, to their holders
       for (const e of c.T.legs) for (const ck of e.ck) {
         const t = TR.tollOf({ ck: [ck], west: e.west }, c.k); if (!(t > 0)) continue;
         const hr = A.realm(ck.by); if (hr && hr.alive) { const amt = Math.round(q * c.ms.p[c.k] * t); hr.treasury = (hr.treasury || 0) + amt; hr.tolls = (hr.tolls || 0) + amt; }
+      }
+      // the brokers at each relay take their tenth, and their crown its dues on it (world review cycle 2, F5: the
+      // Silk Road's broker cities were the poorest crowns in the game)
+      for (const [rid, cut] of TR.relayCuts(c.T, c.k, c.ms.p[c.k], GD.GOODS[c.k].base)) {
+        const hr = A.realm(rid); if (!hr || !hr.alive) continue;
+        const amt = Math.round(q * cut * TR.BROKER_DUES); if (!(amt > 0)) continue;
+        hr.treasury = (hr.treasury || 0) + amt; hr.dues = (hr.dues || 0) + amt;
       }
       const mos = Math.max(1, Math.round(c.T.days / 30));
       // goods on one road that will arrive close together (within a third of the road's days, 30 to MERGE) travel as one
@@ -400,30 +420,22 @@
   // 1.5 to 4 years of income; the far realms start the game at a quarter of a year. Taulen's army costs it 14% of its
   // income where the lore says two thirds. TR.LEDGER is the lore's far ledger, and TR.ledgerYear(r) what it would take
   // from a crown in a year: the army at its lore share of revenue, and the half-notes' fall on a treasury that holds
-  // them. It changes nothing unless a treasury calls it (the hook for 56 is in the README) or TR.APPLY_LEDGER is set.
+  // them. 56-realm-inside's yearly ladder pays it (cycle 2), booked as "lore".
   TR.LEDGER = {
     'POL-36': { army: 0.66, notes: 0.6, fall: 0.02, d: 'the army eats two thirds of the revenue; the half-notes lose about two in a hundred a year' },
     'POL-37': { army: 0.5, d: 'the banners are paid in grain, land and the khagan\'s silk' },
     'POL-58': { army: 0.3 }, 'POL-91': { army: 0.45 }, 'POL-92': { army: 0.55, d: 'a month\'s pay late is a revolt' },
   };
   TR.ledgerYear = function (r) {
-    const L = r && TR.LEDGER[baseId(r.id)]; if (!L || !(r.income > 0)) return { army: 0, notes: 0 };
+    const L = r && TR.on() && TR.LEDGER[baseId(r.id)]; if (!L || !(r.income > 0) || r.isRebel) return { army: 0, notes: 0 };
+    // the lore's share is a rate per man, fixed the first year it is read (r.loreMul, optional in old saves): a crown
+    // that cuts its host pays less, not more
     const paid = (r.army || 0) * 3.2 + (r.levy || 0) * 0.05, want = r.income * 0.92 * (L.army || 0);
-    const army = Math.max(0, Math.round(want - paid));
+    // (the rate is set against the lore's own standing army, not the host of the day, which a war may have halved)
+    const ref = ((typeof LORE !== 'undefined' && LORE.realms && LORE.realms[r.id]) || {}).army || r.army0 || r.army || 0;
+    const mul = r.loreMul != null ? r.loreMul : Math.max(1, Math.min(6, ref > 0 ? want / (ref * 3.2) : 1));
+    const army = Math.max(0, Math.round(paid * (mul - 1)));
     const notes = L.notes ? Math.max(0, Math.round((r.treasury || 0) * L.notes * (L.fall || 0))) : 0;
-    return { army, notes };
-  };
-  const wy = A.worldYear;
-  A.worldYear = function () {
-    const out = wy.apply(this, arguments);
-    try {
-      if (TR.APPLY_LEDGER && TR.on()) for (const r of live()) {
-        if (r.playerRun) continue;
-        const x = TR.ledgerYear(r); if (!x.army && !x.notes) continue;
-        r.treasury -= x.army + x.notes; r.ledgerLore = { y: A.S.year, army: x.army, notes: x.notes };
-        if (r.treasury < 0) { r.debt = (r.debt || 0) - r.treasury; r.treasury = 0; }
-      }
-    } catch (e) { console.error('trade ledger', e); }
-    return out;
+    return { army, notes, mul };
   };
 })();

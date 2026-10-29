@@ -269,3 +269,25 @@
     };
   }
 })();
+// ---- when old age begins, and how much of the life it fills (cycle 2, lives F4) ---------------------------------------
+// C.old is the stage "old" (50 for a human, 45 for an orc), and the 119 scenes then took 16 to 42% of the rest of a
+// life. The rolled old-age scenes (oa_*, not their follow-ups, not the deathbed) now wait for 55 in human years
+// (C.ageAdj), and come at most OA_YEAR_CAP times a year. The weight hook is A.evVariety, which every roll multiplies by
+// (25-variety), so the scenes' own conds are left as written (A.evAudience reads their source).
+(function () {
+  const OA = A.OA;
+  OA.START = 55; OA.YEAR_CAP = 3;
+  OA.rollable = e => !!(e && /^oa_/.test(e.id || '') && !e.trigger);
+  OA.thisYear = pc => { const ev = pc && pc.flags && pc.flags.ev; if (!ev || typeof ev !== 'object') return 0; let n = 0; for (const k in ev) if (/^oa_/.test(k) && ev[k] === A.S.year) n++; return n; };
+  OA.held = function (e, pc) {
+    if (!OA.rollable(e) || !pc) return false;
+    if (A.C && A.C.ageAdj && A.C.ageAdj(pc) < OA.START) return true;
+    return OA.thisYear(pc) >= OA.YEAR_CAP;
+  };
+  const v0 = A.evVariety;
+  A.evVariety = function (e, pc) {
+    const v = typeof v0 === 'function' ? v0.apply(this, arguments) : 1;
+    try { if (v && OA.held(e, pc || A.pc())) return 0; } catch (err) { console.error('old age gate', err); }
+    return v;
+  };
+})();

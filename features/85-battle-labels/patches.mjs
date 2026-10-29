@@ -49,4 +49,28 @@ export default [
       ['W/2,mid+9))}', 'W/2,mid+9)))}'],
     ],
   },
+  {
+    id: 'BF-SIDE-EDGE',
+    blob: 'ardan-core',
+    why: 'UI (cycle 2 visual B5): one colour code for the two sides. A unit\'s edge (its cap, and the flag edge of 85\'s ' +
+      'banner masses) takes the side\'s colour from UI.bfSides (the theme\'s --info for ours, --danger for theirs) ' +
+      'instead of a fixed blue and red that the legend, the standards and the intents did not share.',
+    edits: [['const edge=bottom?"#2a6ab0":"#a02a2a",', 'const edge=UI.bfSides?UI.bfSides()[bottom?"us":"them"]:bottom?"#2a6ab0":"#a02a2a",']],
+  },
+  {
+    id: 'BF-MINE',
+    blob: 'ardan-core',
+    why: 'UI (cycle 2 visual B5): the player\'s own company is marked on the field (UI.bfMine: an accent outline, a ' +
+      'chevron and a YOU tag over the unit whose u.coMine is "me", from 9997-companies), drawn before its morale bar.',
+    edits: [['ctx.fillStyle="#111",ctx.fillRect(x,bottom?y+totH+1:y-4,totW,3),', 'UI.bfMine&&UI.bfMine(ctx,u,x,y,totW,totH,bottom,B),ctx.fillStyle="#111",ctx.fillRect(x,bottom?y+totH+1:y-4,totW,3),']],
+  },
+  {
+    id: 'BF-BANDS',
+    blob: 'ardan-core',
+    why: 'UI (cycle 2 visual B6): the side bands (each side\'s name at the field\'s top and bottom) are drawn by ' +
+      'UI.bfBands, so the battle camera can paint them again, unzoomed, over its 1.16x crop instead of cutting them to ' +
+      '"\u0131dmark"; they also carry the side\'s colour key.',
+    edits: [['ctx.fillStyle="rgba(0,0,0,.35)",ctx.fillRect(0,0,W,18),ctx.fillRect(0,H-18,W,18),ctx.fillStyle="#f1d58e",ctx.font="bold 12px Georgia",ctx.textAlign="left",ctx.fillText(B.sides[side==="A"?"B":"A"].name,8,13),ctx.fillText(B.sides[side].name+" (you)",8,H-5),',
+      'UI.bfBands?UI.bfBands(ctx,W,H,B):(ctx.fillStyle="rgba(0,0,0,.35)",ctx.fillRect(0,0,W,18),ctx.fillRect(0,H-18,W,18),ctx.fillStyle="#f1d58e",ctx.font="bold 12px Georgia",ctx.textAlign="left",ctx.fillText(B.sides[side==="A"?"B":"A"].name,8,13),ctx.fillText(B.sides[side].name+" (you)",8,H-5)),']],
+  },
 ];

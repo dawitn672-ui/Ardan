@@ -21,3 +21,5 @@ weight. Now (`fold.core.js`):
 
 With no far lands (or the Known World as the menu's lands) the release's strip and words stay. Tests: `tfGreat`, and
 `tfInSight` as before. Not done (lane V's): the 60 s parallax drift of the ridges and the seeded busts along the bottom.
+
+**Cycle 2 (lane G, Oct 29).** The title is one composition (91-look): the continent's map and the long pitch moved to the top of How to play (`#helpgc`, drawn once from the same picture). `tfInSight` and `tfGreat` follow: the button in sight, the title free of the map, the map in How to play in more than 20 colours.

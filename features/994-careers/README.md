@@ -49,3 +49,7 @@ Other folders carry the rest of the late-game work: 97-life-fixes (ambitions aft
 - Known World games change too: the merit bars, the coup's fate, knighting and the mission size apply in both worlds.
 - The eight orders in `GD.ORDERS` are all Known World orders. A Far Lands soldier has no order to join, knighted or not. That gap is in the content, not the rules.
 - The bot never opens the council or Decisions, so knighting and fiefs show in bot lives only through the scenes this feature queues.
+
+## Cycle 2
+
+- The crown stops offering a knighthood after two refusals (`pc.car.knightNo`). It had offered the same scene four times to a man who declined each time (lives F6).

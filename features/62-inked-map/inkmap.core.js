@@ -689,12 +689,16 @@
     }
     // on the Great Continent the wash is laid a little stronger and browned less: 153 realms in pale accents thinned
     // to 42% on cream read as one family (four "pinks" on the Twin Rivers; cycle 1 world B8)
-    const big = !!MAP.big, keep = big ? 0.92 : 0.86, aw = big ? 0.56 : 0.42;
+    // cycle 2 (visual F5): from above the far realms read apart at last: the wash at about the brief's 35% and the
+    // ribbon along each border at about 60%
+    const big = !!MAP.big, keep = big ? 0.97 : 0.86, aw = big ? 1 : 0.42, ribA = big ? 160 : 95, cap = big ? 230 : 175;
     for (let i = 0; i < gw * gh; i++) {                                 // then thin the colour, and lay the ribbon
       const o = i * 4, a = d[o + 3]; if (!a || grid[i] < 0) continue;
       for (let k = 0; k < 3; k++) d[o + k] = Math.round(d[o + k] * keep + BR[k] * (1 - keep));
+      // the realms' pale lore colours lifted in chroma, so neighbours part from above (cycle 2, visual F5)
+      if (big) { const m = (d[o] + d[o + 1] + d[o + 2]) / 3; for (let k = 0; k < 3; k++) d[o + k] = Math.max(0, Math.min(255, Math.round(m + (d[o + k] - m) * 2.6))); }
       const rib = ds[i] < R ? (1 - ds[i] / R) : 0;
-      d[o + 3] = Math.min(big ? 190 : 175, Math.round(a * aw + rib * 95 * Math.min(1.4, a / 120)));
+      d[o + 3] = Math.min(cap, Math.max(big ? 100 : 0, Math.round(a * aw + rib * ribA * Math.min(1.4, a / 120))));
     }
     hatch(d, own, ds);
     c.putImageData(im, 0, 0);
@@ -897,6 +901,8 @@
     UI.gmDraw = function () { const r = gd.apply(this, arguments); try { IM.legendFill(); } catch (e) {} return r; };
   }
   IM.CSS_LEGEND = `.greatmap .wr-body{overflow:hidden}.greatmap .wr-map{min-height:0;overflow:hidden}
+/* cycle 2 (visual B4): the frame takes the map's own height, so a tall window leaves no blank band under the map */
+@media (min-width:1600px){.greatmap .wr-body{align-items:start;align-content:start}.greatmap .wr-map{height:auto;align-self:start}.greatmap .wr-map canvas{display:block;width:100%;height:auto}}
 .greatmap .im-legend{margin:6px 0 2px;position:relative;z-index:1;clear:both}
 .greatmap .im-legend > summary{cursor:pointer;font-family:var(--f-ui,sans-serif);font-size:var(--t-cap,12px);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2,#bdb8cc);min-height:24px;display:flex;align-items:center}
 .greatmap .im-legend .legend{display:flex;flex-wrap:wrap;gap:4px 10px;max-height:72px;overflow:auto;margin-top:4px}

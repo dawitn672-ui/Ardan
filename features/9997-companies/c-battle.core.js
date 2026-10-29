@@ -364,7 +364,7 @@
             const rep = CO.replaceCap(d, bi, slot, 'fell');
             CO.stats.capDied++;
             if (k === B.pcSide) {
-              const line = rep && rep.by ? `Captain ${c.name} falls with the ${u.name}. Serjeant ${rep.by.given} takes the company.` : `Captain ${c.name} falls at the head of the ${u.name}.`;
+              const line = rep && rep.by ? `Captain ${c.name} falls with the ${u.name}. Sergeant ${rep.by.given} takes the company.` : `Captain ${c.name} falls at the head of the ${u.name}.`;
               B.log.push(line); A.log(line, 'death');
               if (ci >= 0 && CO.mineIs(d, bi, ci) && rep && rep.by) { const np = CO.person(d, bi, ci); CO.queueEv('co_new_captain', { pid: np ? np.id : null, old: c.given, coy: CO.coName(d, bi, ci, true) }); }
             }

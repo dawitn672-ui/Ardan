@@ -1,5 +1,20 @@
 // Browser tests for features/20-ai-personality. Each gets (page, pageErrors, {browser, file, lives}).
 export default {
+  async moodVaries(pg) {
+    // world review cycle 2, F3: each realm draws its humour once per world; two worlds differ
+    const r = await pg.evaluate(() => {
+      const draw = seed => { A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 }); A.S.queue.length = 0; A.advance(30); A.S.queue.length = 0; return Object.fromEntries(Object.values(A.S.realms).filter(x => x.alive).map(x => [x.id, x.aiMood])); };
+      const a = draw(4404), b = draw(4405);
+      const ids = Object.keys(a), vals = ids.map(i => a[i]);
+      const differ = ids.filter(i => a[i] !== b[i]).length;
+      // the persona follows the humour
+      const id = ids[0], R = A.realm(id); R.aiMood = 0.6; const lo = A.rulerPersona(id).war; R.aiMood = 1.5; const hi = A.rulerPersona(id).war;
+      return { n: ids.length, min: Math.min(...vals), max: Math.max(...vals), differ, lo, hi };
+    });
+    const ok = r.n > 20 && r.min >= 0.55 && r.max <= 1.6 && r.differ >= r.n * 0.8 && r.hi > r.lo;
+    return { ok, detail: JSON.stringify(r) };
+  },
+
   async aiPersonalityMapping(pg) {
     // traits -> persona: directions, the A.AGGRO baseline, opposites cancelling, unknown traits ignored, cache refresh
     const r = await pg.evaluate(() => {

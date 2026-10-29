@@ -31,9 +31,10 @@ RI.TUNE = Object.assign({
 
 // ---------------------------------------------------------------- the book
 
-RI.CATS = ['recruits', 'mercs', 'drill', 'works', 'worksUp', 'court', 'bribes', 'subsidy'];
+RI.CATS = ['recruits', 'mercs', 'drill', 'works', 'worksUp', 'court', 'bribes', 'subsidy', 'lore'];
 RI.CAT_T = { recruits: 'New levies trained', mercs: 'Sellswords', drill: 'Drill and arms', works: 'Works: walls, markets, temples, great halls', worksUp: 'Upkeep of works',
-  court: "The council's pay", bribes: 'Pensions, feasts and gifts to the lords', subsidy: 'Gold for allies at war' };
+  court: "The council's pay", bribes: 'Pensions, feasts and gifts to the lords', subsidy: 'Gold for allies at war',
+  lore: "The host at the realm's own rate, and paper money's fall" };
 RI.book = function (r, k, amt) {
   if (!r || !amt) return;
   const y = A.S.year;
@@ -251,6 +252,15 @@ RI.spend = function (r) {
   if ((r.riWorks || 0) > keep) r.riWorks = Math.round(keep);
   const up = Math.round((r.riWorks || 0) * RI.TUNE.worksUp);
   if (up > 0) { r.treasury -= up; RI.book(r, 'worksUp', up); }
+  // the far ledger (9995-trade-roads, A.TRADE.ledgerYear; world review I3 and cycle 2 F6): where the lore says the
+  // host eats a share of the revenue the release's 3.2 suns a man does not reach (Taulen two thirds, Kethra 55%), the
+  // rest of its pay; and the fall of the half-notes on a treasury held partly in them. Only on the Great Continent
+  const lore = A.TRADE && A.TRADE.ledgerYear ? A.TRADE.ledgerYear(r) : null;
+  if (lore && (lore.army || lore.notes)) {
+    if (r.loreMul == null && lore.mul) r.loreMul = lore.mul;
+    const amt = lore.army + lore.notes;
+    r.treasury -= amt; RI.book(r, 'lore', amt);
+  }
   for (const seat in (r.council || {})) {
     const p = A.P(r.council[seat]);
     if (!p || !p.alive || p.id === A.S.pc) continue;
@@ -320,3 +330,25 @@ RI.spend = function (r) {
   }
   return done;
 };
+
+// ---------------------------------------------------------------- the purse a crown starts with
+// (world review cycle 2, F5 and F6) The release starts every crown at about a quarter of a year's income, and the
+// ladder above then fills it to its reserve over the first forty years: the "treasuries x13 to x20" every soak reads
+// is that filling, not growth. The broker cities of the Silk Road (a small income and the lore's army) start below
+// zero within a year and stay there. A crown now starts the world with its reserve in hand (RI.reserveYears, by its
+// ruler's temper), never less than it had.
+{
+  const iw = A.initWorld;
+  if (typeof iw === 'function') A.initWorld = function () {
+    const out = iw.apply(this, arguments);
+    try {
+      const S = A.S, pc = A.pc();
+      for (const id in S.realms) {
+        const r = S.realms[id];
+        if (!r.alive || r.playerRun || (pc && pc.ruler === r.id) || !(r.income > 0)) continue;
+        r.treasury = Math.max(r.treasury || 0, Math.round(RI.reserveYears(r) * r.income));
+      }
+    } catch (e) { console.error('[ri] start purse', e); }
+    return out;
+  };
+}

@@ -85,3 +85,5 @@ here:
   tiles where it was pressed. 98-feedback's toast stays. **For lane V:** 91-look groups the tiles in the DOM; the hidden
   ones carry `hidden` and `.act-more`, and a group left empty is hidden with its heading. If 91 wants the curation in
   its own grid, the hook is `UI.ACT_FIRST` / `UI.ACT_SHOW` and the `.acts-six` marker.
+
+**Cycle 2 (lane G, Oct 29).** At laptop widths Play, the run and Quiet show their words under their icons until the player has pressed one of them (`UI.set.tbKnown`, brief §7.4; visual I11). `tbPhone`: at 390 and 360 px with 7,023 suns and a debt, the date, the initiative and the purse do not overlap and the purse is whole.

@@ -162,6 +162,9 @@
   AT.VEIL_CANVAS = { worldmap: 1, gmap: 1, jrmap: 1 };
   AT.VEIL = [229, 218, 190];       // vellum
   AT.ALPHA = [0.88, 0.5, 0];       // unknown, heard of, seen
+  // cycle 2 (visual F5): on the full map the realms' borders are common knowledge, so the veil there is lighter and the
+  // realms read from above; the story column's map keeps the full veil
+  AT.CANVAS_K = { gmap: 0.25 };
   AT.fogOn = () => !AT.OFF && !(UI.set && UI.set.atlasFog === false);
   let veilMemo = null;
   AT.veilKey = pc => [pc.id, AT.ok(pc) ? pc.atlas.v + ':' + Object.keys(pc.atlas.s).length + ':' + Object.keys(pc.atlas.h).length : 'b' + pc.home + pc.realm, MAP.gridKey, MAP.gw, MAP.gh, A.S.prov.length].join('|');
@@ -212,6 +215,7 @@
       const x0 = Math.max(0, sx), y0 = Math.max(0, sy), x1 = Math.min(gw, sx + sw), y1 = Math.min(gh, sy + sh);
       if (x1 <= x0 || y1 <= y0) return true;
       ctx.save(); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low';
+      if (AT.CANVAS_K[cv.id]) ctx.globalAlpha = AT.CANVAS_K[cv.id];
       ctx.drawImage(layer, x0, y0, x1 - x0, y1 - y0, (x0 - sx) / sw * W, (y0 - sy) / sh * H, (x1 - x0) / sw * W, (y1 - y0) / sh * H);
       ctx.restore();
       return true;
@@ -283,10 +287,13 @@
     const pc = A.pc(), P = P_(AT.where(pc)) || P_(pc.home), W = cv.width, H = cv.height, w = Math.min(KW(), 2400), h = w * H / W;
     return { x0: (P ? P.sx : KX0() + KW() / 2) - w / 2, y0: (P ? P.sy : KY0() + KH() / 2) - h / 2, w, h };
   };
+  // cycle 2 (visual B4): the view is held to the world. It never shows past an edge (a hard navy block at the west
+  // coast); a view wider or taller than the world is centred on it
   AT.clamp = function (v) {
     v.w = Math.max(250, Math.min(KW() * 1.2, v.w));
-    v.x0 = Math.max(KX0() - v.w * 0.4, Math.min(KX0() + KW() - v.w * 0.6, v.x0));
-    v.y0 = Math.max(KY0() - v.h * 0.4, Math.min(KY0() + KH() - v.h * 0.6, v.y0));
+    const hold = (x, w, x0, W) => w >= W ? x0 + (W - w) / 2 : Math.max(x0, Math.min(x0 + W - w, x));
+    v.x0 = hold(v.x0, v.w, KX0(), KW());
+    if (v.h) v.y0 = hold(v.y0, v.h, KY0(), KH());
     return v;
   };
   AT.paint = function () {
@@ -301,6 +308,7 @@
     const ctx = cv.getContext('2d'), W = cv.width, H = cv.height, IM = UI.INKMAP, pc = A.pc(); if (!pc) return;
     const v = UI.atV && UI.atV.w ? UI.atV : (UI.atV = AT.fit(cv));
     v.h = v.w * H / W;
+    AT.clamp(v);
     if (IM && IM.redraws) IM.redraws.set(cv, () => AT.draw(cv));
     const zoom = ZREF() / v.w;
     if (IM) IM.zoomNow = zoom;

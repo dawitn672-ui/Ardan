@@ -102,11 +102,11 @@
     const C = CO.myCompany(pc);
     if (!C) return '';
     const sq = A.squad(pc).slice(0, 3), dead = (pc.mil.coDead || 0), des = (pc.mil.coDes || 0);
-    const cap = C.cap, sj = C.serjeants[0];
+    const cap = C.cap, sj = C.sergeants[0];
     const key = C.d.id + '|' + C.b + '|' + C.i, men = `${tt('coMen', key, `${A.fmt(C.men)} fit`)} · ${tt('coHurt', C.d.id + '|' + C.b, `${A.fmt(C.wd)} hurt`)}${dead ? ` · ${tt('coLoss', 'dead', `${A.fmt(dead)} dead`)}` : ''}${des ? ` · ${tt('coLoss', 'des', `${A.fmt(des)} deserted`)}` : ''}`;
     return `<div class="card co-card" role="region" aria-label="Your company"><div class="row"><b>${esc(C.name)}</b><span class="right tag">${esc(word(C.mo))}</span></div>` +
       `<div class="small">${cap.pc ? 'You are its captain' : `Captain <b>${esc(cap.name)}</b> <span class="muted" data-tt="coCap" data-v="${esc(C.d.id + '|' + C.b + '|' + C.i)}">(${esc((A.GENERALS && A.GENERALS.NAMES && A.GENERALS.NAMES[cap.temper]) || cap.temper)}, command ${Math.round(cap.cmd)})</span>`}${C.sen ? ` · senior captain ${esc(C.sen.pc ? 'you' : C.sen.name)}` : ''}</div>` +
-      `<div class="small">Serjeant ${esc(sj.name)}${sq.length ? ` · beside you: ${sq.map(p => esc(p.given)).join(', ')}` : ''}</div>` +
+      `<div class="small">Company sergeant ${esc(sj.name)}${sq.length ? ` · beside you: ${sq.map(p => esc(p.given)).join(', ')}` : ''}</div>` +
       `<div class="small">${men}</div>` +
       `<div class="small"><span data-tt="coMo" data-v="${esc(C.d.id + '|' + C.b + '|' + C.i)}">Morale ${Math.round(C.mo)}</span> · ${tt('coFood', C.d.id, `bread for ${Math.round(C.food)} days`)} · ${tt('coPay', C.d.id, C.pay ? `pay ${C.pay} month${C.pay > 1 ? 's' : ''} behind` : 'paid up')}${C.hon.length ? ' · honours: ' + C.hon.map(h => esc(h[0] + ' ' + h[1])).join(', ') : ''}</div></div>`;
   };
@@ -151,7 +151,7 @@
       if (m && m.ts && m.ts.levy) return h;
       const C = CO.myCompany(A.pc());
       if (!C) return h;
-      return h + `<p class="ts-coy tiny">${esc(C.name)}: ${esc(C.cap.pc ? 'your own company' : 'Captain ' + C.cap.name)}, Serjeant ${esc(C.serjeants[0].given)}. ${tt('coMen', C.d.id + '|' + C.b + '|' + C.i, `${A.fmt(C.men)} in the ranks`)}, ${tt('coMo', C.d.id + '|' + C.b + '|' + C.i, `morale ${Math.round(C.mo)}`)} (${esc(word(C.mo))}).</p>`;
+      return h + `<p class="ts-coy tiny">${esc(C.name)}, ${esc(C.d.name)}: ${esc(C.cap.pc ? 'your own company' : 'Captain ' + C.cap.name)}, Sergeant ${esc(C.sergeants[0].given)}. ${tt('coMen', C.d.id + '|' + C.b + '|' + C.i, `${A.fmt(C.men)} in the ranks`)}, ${tt('coMo', C.d.id + '|' + C.b + '|' + C.i, `morale ${Math.round(C.mo)}`)} (${esc(word(C.mo))}).</p>`;
     } catch (e) { return h; }
   };
 
@@ -181,6 +181,61 @@
     };
   }
 
+  // ---- the War tab's order of battle (the release's A.oobKids / A.oobPath) reads the same battalions, companies and
+  // captains as everything else: one name for each unit
+  const leaderOf = (d, i, slot, rank) => {
+    const c = CO.cap(d, i, slot), T = GD.MIL[rank] ? GD.MIL[rank].title : '';
+    if (!c) return { name: 'the post is vacant', rank, title: T };
+    const p = c.person;
+    return { name: c.pc ? A.fullName(A.pc(), false) : p ? A.fullName(p, false) : c.name, rank, title: T, pid: c.pid || undefined };
+  };
+  const oobKids = A.oobKids;
+  if (typeof oobKids === 'function') A.oobKids = function (n) {
+    if (!n || n.kids) return oobKids.apply(this, arguments);
+    try {
+      const d = n.ech === 1 && n.divId ? A.divById(n.divId) : n.ech === 2 && n.coDiv ? A.divById(n.coDiv) : null;
+      if (d && CO.ok(d)) {
+        const kids = [];
+        if (n.ech === 1) d.bs.forEach((b, i) => {
+          const men = CO.bm(b), key = n.key + '/B' + (i + 1);
+          if (CO.isSup(b.c)) kids.push({ key, ech: 3, name: CO.bnName(d, i), men, comp: {}, cat: 'foot', troop: null, support: b.c, realm: n.realm, leader: leaderOf(d, i, 0, 4), coDiv: d.id, coB: i });
+          else kids.push({ key, ech: 2, name: CO.bnName(d, i), men, comp: { [b.c]: men }, cat: A.catOf(b.c), troop: b.c, realm: n.realm, leader: leaderOf(d, i, 4, 5), coDiv: d.id, coB: i });
+        });
+        else { const b = d.bs[n.coB]; if (b) b.k.forEach((men, ci) => kids.push({ key: n.key + '/C' + (ci + 1), ech: 3, name: CO.coName(d, n.coB, ci, true), men, comp: { [b.c]: men }, cat: n.cat, troop: b.c, realm: n.realm, leader: leaderOf(d, n.coB, ci, 4), coDiv: d.id, coB: n.coB, coC: ci })); }
+        for (const k of kids) k.coLeader = k.leader;
+        n.kids = kids;
+        return kids;
+      }
+    } catch (e) { console.error('companies oob', e); }
+    return oobKids.apply(this, arguments);
+  };
+  const oobPath = A.oobPath;
+  if (typeof oobPath === 'function') A.oobPath = function (pc, root) {
+    const path = oobPath.apply(this, arguments);
+    try {
+      const M = CO.mine(pc);
+      if (!M || !path[1] || path[1].divId !== M.d.id || path.length < 3) return path;
+      const want = [path[0], path[1]], bn = A.oobKids(path[1]).find(k => k.coB === M.b);
+      if (!bn) return path;
+      want.push(bn);
+      if (path.length > 3) { const co = A.oobKids(bn).find(k => k.coC === M.i); if (co) want.push(co); }
+      if (path.length > 4 && want.length === 4) { const sq = A.oobKids(want[3]); if (sq.length) want.push(sq[A.hash(pc.id + root.key + 4) % sq.length]); }
+      if (want.length !== path.length) return path;
+      // undo the marks the release put on the nodes it picked, then mark the true path as it does
+      const mark = new Set(want);
+      for (const x of path) if (!mark.has(x)) { delete x.onPath; delete x.you; if (x.coLeader) x.leader = x.coLeader; }
+      for (const x of want) { delete x.you; if (x.coLeader) x.leader = x.coLeader; }
+      const rank = pc.mil.rank, me = want[want.length - 1], asLeader = rank >= 2 && rank !== 3;
+      if (asLeader) { me.leader = { name: A.fullName(pc, false), rank, title: GD.MIL[rank].title, pid: pc.id, you: true }; me.you = 'lead'; } else me.you = rank === 3 ? 'second' : 'member';
+      // the superior the release made a person leads the squad above a soldier; above that, the captains are 9997's
+      const sup = A.superior ? A.superior(pc) : null, supAt = asLeader ? want.length - 2 : want.length - 1;
+      if (sup && supAt >= 0 && want[supAt].ech === 4) want[supAt].leader = { name: A.fullName(sup, false), rank: sup.milRank != null ? sup.milRank : 2, title: A.superiorTitle ? A.superiorTitle(pc) : '', pid: sup.id, boss: true };
+      for (const x of want) x.onPath = true;
+      path.length = 0; path.push(...want);
+    } catch (e) { console.error('companies oob path', e); }
+    return path;
+  };
+
   // ---- the battle: your command
   CO.commandPanel = function (B) {
     if (!B || !B.co || B.phase === 'end') return '';
@@ -192,7 +247,7 @@
     for (const u of me) {
       const I = CO.unitInfo(B, u), forms = CO.formsFor(B, u);
       h += `<div class="co-unit"><div class="row"><b data-tt="coUnit" data-v="${esc(u.id)}">${esc(I.name)}</b><span class="right tiny" data-tt="coUnit" data-v="${esc(u.id)}">${A.fmt(u.men)} · morale ${I.morale}${u.status !== 'ok' ? ' · ' + esc(u.status === 'rout' ? 'routing' : u.status) : ''}</span></div>` +
-        `<div class="row wrap">${Object.keys(CO.ORDERS).map(k => { const ok = CO.orderOk(B, u, k); return `<button class="small ${I.order === k ? 'primary' : ''}" data-a="coOrd" data-v="${esc(u.id + '|' + k)}" ${ok ? '' : 'disabled'} ${ok ? '' : `title="${esc(k === 'withdraw' ? 'Your men never drilled a withdrawal in step' : 'Not now')}"`}>${esc(CO.ORDERS[k])}</button>`; }).join('')}` +
+        `<div class="row wrap"><div class="seg co-ord" role="group" aria-label="Order for ${esc(I.name)}">${Object.keys(CO.ORDERS).map(k => { const ok = CO.orderOk(B, u, k); return `<button class="small ${I.order === k ? 'on' : ''}" aria-pressed="${I.order === k ? 'true' : 'false'}" data-a="coOrd" data-v="${esc(u.id + '|' + k)}" ${ok ? '' : 'disabled'} ${ok ? '' : `title="${esc(k === 'withdraw' ? 'Your men never drilled a withdrawal in step' : 'Not now')}"`}>${esc(CO.ORDERS[k])}</button>`; }).join('')}</div>` +
         `<select data-c="coForm" data-k="${esc(u.id)}" aria-label="Shape for ${esc(I.name)}">${forms.map(f => `<option value="${f.k}" ${f.k === I.form ? 'selected' : ''} ${f.ok ? '' : 'disabled'}>${esc(F[f.k].name + (f.why ? ' · ' + f.why : ''))}</option>`).join('')}</select></div></div>`;
     }
     // the enemy's next moves (honest: the engine has already chosen them)
@@ -225,7 +280,7 @@
 .co-row.co-mine,.co-coy.co-mine{background:var(--gold-wash,#d4a01722)}.co-name{min-width:0;flex:1 1 auto}.co-bars{display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .co-bar{display:inline-block;width:44px;height:6px;background:var(--line,#8884);border-radius:3px;overflow:hidden}.co-bar i{display:block;height:100%;background:var(--ink,#333)}.co-bar.mo i{background:var(--accent,#a33)}
 .co-coys{padding-left:14px}.co-coy{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}.co-seal{display:inline-block;min-width:14px;height:14px;line-height:14px;text-align:center;border-radius:50%;background:var(--accent,#a33);color:var(--paper,#fff);font-size:9px}
-.co-card{margin-top:6px}.co-cmd .co-unit{border-top:1px solid var(--line,#ccc3);padding-top:4px;margin-top:4px}.co-cmd select{max-width:100%}.co-parts{margin:2px 0 2px 14px;padding:0}`;
+.co-card{margin-top:6px}.co-cmd .co-unit{border-top:1px solid var(--line,#ccc3);padding-top:4px;margin-top:4px}.co-cmd select{max-width:100%}.co-ord button.on{box-shadow:inset 0 -2px 0 var(--accent,#e8b04a);font-weight:700}.co-parts{margin:2px 0 2px 14px;padding:0}`;
     if (typeof document !== 'undefined' && !document.getElementById('co-css')) { const s = document.createElement('style'); s.id = 'co-css'; s.textContent = css; document.head.appendChild(s); }
   } catch (e) {}
 })();

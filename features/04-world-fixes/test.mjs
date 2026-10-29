@@ -1,5 +1,28 @@
 // Browser tests for world and economy fixes. Each test gets (page, pageErrors, {browser, file}).
 export default {
+  async brokeCrownHolds(pg) {
+    // world review cycle 2, B1: a crown below zero and a year of income in debt raises nothing; one past two years
+    // sends its newest divisions home until its host's pay fits its income
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4401, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      A.S.queue.length = 0;
+      const id = 'POL-14', R = A.realm(id), foe = A.neighbors(id).find(x => x !== 'POL-01' && A.realm(x) && A.realm(x).alive);
+      A.declareWar(foe, id);
+      const men0 = R.army, divs0 = R.forces.divs.length;
+      // a crown that has lost most of its taxes: its host's pay is now several times its income
+      R.baseIncome = Math.round(R.baseIncome * 0.05); A.updateRealmPops();
+      const keepBroke = () => { R.treasury = -R.income; R.debt = R.income * 3; };
+      const until = A.absDay() + 330;
+      while (A.absDay() < until) { keepBroke(); A.advance(Math.min(30, until - A.absDay())); A.S.queue.length = 0; const pc = A.pc(); if (!pc.alive) { pc.alive = true; pc.health = 80; } }
+      const before = R.forces.divs.length, upkeep0 = R.army * 3.2;
+      const end = A.absDay() + 60;
+      while (A.absDay() < end) { keepBroke(); A.advance(Math.min(30, end - A.absDay())); A.S.queue.length = 0; const pc = A.pc(); if (!pc.alive) { pc.alive = true; pc.health = 80; } }
+      return { men0, divs0, before, after: R.forces.divs.length, army: R.army, income: R.income, upkeep0, stats: A.WF.stats, atWar: A.atWar(id).length };
+    });
+    const ok = r.before <= r.divs0 && r.after < r.divs0 && r.army * 3.2 <= r.income * 0.9 + 5000 && r.stats.disbanded > 0 && r.stats.levyHeld + r.stats.refillHeld > 0;
+    return { ok, detail: `divisions ${r.divs0} -> ${r.before} broke for 11 months -> ${r.after} after the New Year; men ${r.men0} -> ${r.army}; host pay ${Math.round(r.army * 3.2)} against income ${r.income}; ${JSON.stringify(r.stats)}` };
+  },
+
   async world(pg) {
     // 40 years of world: stability never negative; report debt and hoarding
     const r = await pg.evaluate(() => {

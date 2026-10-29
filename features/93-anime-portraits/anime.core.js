@@ -406,6 +406,10 @@
     return out;
   }
   AP.expression = expression;
+  // a person fighting the duel at the head of the queue (read only)
+  AP.inDuel = function (p) {
+    try { const q = A.S && Array.isArray(A.S.queue) ? A.S.queue[0] : null, D = q && q.type === 'duel' ? q.d : null; return !!(D && !D.over && p && ((D.a && D.a.pid === p.id) || (D.b && D.b.pid === p.id))); } catch (e) { return false; }
+  };
 
   // ---- what the picture needs to know about a person (read only)
   function look(p, bustOnly) {
@@ -1476,6 +1480,8 @@
         else if ((L.oldF > .5 || tr.has('stern') || tr.has('patient') || tr.has('humble')) && h3 < .35) pose = 'behind';
       }
     }
+    // cycle 2 (visual F6): a fighter in a duel stands on guard, weapon raised across the body, weight forward
+    if (!L.small && AP.inDuel(p)) pose = 'guard';
     const side = hf(p, 'side') < .5 ? -1 : 1;                 // which hand holds or rests
     // ---- what the figure wears
     const longG = L.armor === 'robes' || kind === 'priest' || (F && !['soldier', 'officer'].includes(kind) && L.armor === 'none') || (L.cult.cut === 'robe' && L.armor === 'none' && !L.small) || (L.ruler && hf(p, 'gown') < .5 && L.armor === 'none');
@@ -1501,11 +1507,11 @@
     }
     if (L.ranged && ['bow'].includes(L.ranged.kind)) back += `<path d="${d`M${100 + sw * .75} ${sh - B * .16}Q${100 - sw * .4} ${waist - B * .1} ${100 - sw * 1.0} ${hip + B * .1}`}" fill="none" stroke="${LINE}" stroke-width="${lw(3.6)}"/><path d="${d`M${100 + sw * .75} ${sh - B * .16}Q${100 - sw * .4} ${waist - B * .1} ${100 - sw * 1.0} ${hip + B * .1}`}" fill="none" stroke="#8a5a34" stroke-width="${lw(2)}"/>`;
     // ---- the legs, the trousers and the boots
-    const stance = pose === 'hip' ? hh * .04 : hh * .08;
+    const stance = pose === 'hip' ? hh * .04 : pose === 'guard' ? hh * .16 : hh * .08;
     // thigh, knee, calf, ankle
     const legW = [hw * .5, hh * .12 * raceW, hh * .13 * raceW, hh * .075 * raceW];
     const legPts = sd => {
-      const bent = pose === 'hip' && sd === side ? hh * .1 : 0;
+      const bent = (pose === 'hip' || pose === 'guard') && sd === side ? hh * .1 : 0;
       const kx = 100 + sd * (hw * .42 + stance * .4) - sd * bent, ax = 100 + sd * (hw * .44 + stance) + (L.limp && sd > 0 ? hh * .06 : 0);
       return [[100 + sd * hw * .46, hip], [kx, knee], [lerp(kx, ax, .35) + sd * hh * .015, lerp(knee, ankle, .35)], [ax, ankle]];
     };
@@ -1583,6 +1589,8 @@
       else if (kindA === 'crossed') { E = [100 + sd * sw * 1.02, waist - B * .04]; W = [100 - sd * sw * .5, chest + B * .03]; }
       else if (kindA === 'hilt') { E = [100 + sd * sw * 1.02, waist - B * .015]; W = [100 + sd * hh * .05, crotch - B * .11]; }
       else if (kindA === 'hold') { E = [100 + sd * sw * 1.16, chest + B * .1]; W = [100 + sd * sw * 1.34, chest - B * .005]; }
+      else if (kindA === 'guard') { E = [100 + sd * sw * 1.2, chest + B * .1]; W = [100 + sd * sw * .15, chest - B * .03]; }
+      else if (kindA === 'guard2') { E = [100 + sd * sw * 1.05, waist - B * .02]; W = [100 + sd * sw * .05, chest + B * .03]; }
       else if (kindA === 'wave') { E = [100 + sd * sw * 1.55, sh + B * .06]; W = [100 + sd * sw * 1.7, sh - B * .16]; }
       else if (kindA === 'chest') { E = [100 + sd * sw * 1.12, chest + B * .1]; W = [100 - sd * sw * .02, chest - B * .005]; }
       else if (kindA === 'book') { E = [100 + sd * sw * 1.1, waist - B * .02]; W = [100 + sd * sw * .42, waist - B * .07]; }
@@ -1636,6 +1644,18 @@
       if (lod >= 2) fore += `<path d="${d`M100 ${gy + hh * .05}V${GROUND - hh * .14}`}" stroke="#fff" stroke-opacity=".7" stroke-width="${lw(.9)}"/>`;
       fore += `<path d="${d`M${100 - hh * .26} ${gy}L${100 + hh * .26} ${gy}`}" stroke="${LINE}" stroke-width="${lw(4.4)}"/><path d="${d`M${100 - hh * .26} ${gy}L${100 + hh * .26} ${gy}`}" stroke="#e8b04a" stroke-width="${lw(2.6)}"/><path d="${d`M100 ${gy}L100 ${py}`}" stroke="${LINE}" stroke-width="${lw(3.6)}"/><path d="${d`M100 ${gy}L100 ${py}`}" stroke="#5a3e2a" stroke-width="${lw(2)}"/>`;
       fore += drawArm(-1, armOf(-1, 'hilt'), { fist: true }) + drawArm(1, armOf(1, 'hilt'), { fist: true });
+    } else if (pose === 'guard') {
+      // on guard: the weapon hand at the chest, the blade up and across the body; the other hand on the grip below or a
+      // fist raised; with no blade, both fists up
+      const a = armOf(side, 'guard'), b = armOf(-side, 'guard2');
+      if (blade || pole) {
+        const x0 = a.W[0], y0 = a.W[1], len = pole ? hh * 2.6 : hh * 1.9, ang = 1.05;   // up and toward the picture's left, where a foe stands (the left fighter is mirrored)
+        const tx = x0 - Math.sin(ang) * len, ty = y0 - Math.cos(ang) * len;
+        fore += `<path d="${d`M${x0 + Math.sin(ang) * hh * .3} ${y0 + Math.cos(ang) * hh * .3}L${tx} ${ty}`}" stroke="${LINE}" stroke-width="${lw(pole ? 4 : 4.4)}"/><path d="${d`M${x0} ${y0}L${tx} ${ty}`}" stroke="${pole ? '#8a5a34' : steel}" stroke-width="${lw(pole ? 2.2 : 2.6)}"/>`;
+        if (!pole) fore += `<path d="${d`M${x0 - Math.cos(ang) * hh * .22} ${y0 + Math.sin(ang) * hh * .22}L${x0 + Math.cos(ang) * hh * .22} ${y0 - Math.sin(ang) * hh * .22}`}" stroke="${LINE}" stroke-width="${lw(3.6)}"/><path d="${d`M${x0 - Math.cos(ang) * hh * .2} ${y0 + Math.sin(ang) * hh * .2}L${x0 + Math.cos(ang) * hh * .2} ${y0 - Math.sin(ang) * hh * .2}`}" stroke="#e8b04a" stroke-width="${lw(2)}"/>`;
+        else fore += `<path d="${d`M${tx} ${ty}l${-Math.sin(ang) * hh * .3 + hh * .08} ${-Math.cos(ang) * hh * .3}l${-hh * .16} 0z`}" fill="${steel}" stroke="${LINE}" stroke-width="${lw(1)}"/>`;
+      }
+      fore += drawArm(-side, b, { fist: true }) + drawArm(side, a, { fist: true });
     } else if (pose === 'wave' || pose === 'point' || pose === 'chest' || pose === 'cup') {
       // one hand raised (a greeting, a command, a hand on the heart, a cup lifted); the other hangs
       const a = armOf(side, pose);
@@ -1693,7 +1713,7 @@
         fore += `<path d="${shp}" fill="${sc2}" stroke="${LINE}" stroke-width="${lw(1.3)}"/>` + (lod >= 1 ? `<path d="${shp}" fill="${shadeOf(sc2, .35, 1.1)}" clip-path="url(#${useDef(G, 'apsT')})"/>` : '') + charge(L, sx, sy, hh / 40);
       }
     }
-    if (Wk === 'sword' && pose !== 'hilt') {
+    if (Wk === 'sword' && pose !== 'hilt' && pose !== 'guard') {
       const sx = 100 - side * hw * .95, sy = waist + hh * .02;
       torso += `<path d="${d`M${sx} ${sy}L${sx - side * hh * .42} ${knee - B * .02}`}" stroke="${LINE}" stroke-width="${lw(4.6)}"/><path d="${d`M${sx} ${sy}L${sx - side * hh * .42} ${knee - B * .02}`}" stroke="#4a3a52" stroke-width="${lw(3)}"/><path d="${d`M${sx + side * hh * .12} ${sy - hh * .12}L${sx - side * hh * .1} ${sy + hh * .1}`}" stroke="#e8b04a" stroke-width="${lw(2.4)}"/>`;
     }
@@ -1793,10 +1813,12 @@
       if (L.dead) fig = fig.replace(/#[0-9a-f]{6}/g, c => desat(c));
       if (G.lod >= 1) {
         // I1(f): a rim light you notice (up to 2.8 units, was 2.2)
-        const r = R(clamp(G.inner * .8, .5, 1.2) * px), rw = R(clamp(size / 56, 1.4, 2.8) * px);
+        // cycle 2 (visual F6): the rim sat as a wide pale band on the shadow edge, so figures read as stickers. It is
+        // now inside the silhouette, 1.5 units at most, on the lit (upper left) edge, and half as bright
+        const r = R(clamp(G.inner * .8, .5, 1.2) * px), rw = R(clamp(size / 90, .8, 1.5) * px);
         const fid = 'apo' + (G.full ? 'w' : '') + String(r).replace('.', '_') + '_' + String(rw).replace('.', '_') + rim.slice(1);
         const wob = G.full ? '<feTurbulence type="fractalNoise" baseFrequency=".09" seed="7"/><feDisplacementMap in="SourceGraphic" scale="1.1" xChannelSelector="R" yChannelSelector="G" result="w"/>' : '';
-        G.defs[fid] = `<filter id="${fid}">${wob}<feMorphology ${G.full ? 'in="w" ' : ''}operator="dilate" radius="${r}" result="a"/><feFlood flood-color="${LINE}"/><feComposite in2="a" operator="in" result="o"/><feOffset in="${G.full ? 'w' : 'SourceGraphic'}" dx="${-rw}" result="b"/><feComposite in="${G.full ? 'w' : 'SourceGraphic'}" in2="b" operator="out" result="c"/><feFlood flood-color="${rim}" flood-opacity=".9"/><feComposite in2="c" operator="in"/><feMerge><feMergeNode in="o"/><feMergeNode in="${G.full ? 'w' : 'SourceGraphic'}"/><feMergeNode/></feMerge></filter>`;
+        G.defs[fid] = `<filter id="${fid}">${wob}<feMorphology ${G.full ? 'in="w" ' : ''}operator="dilate" radius="${r}" result="a"/><feFlood flood-color="${LINE}"/><feComposite in2="a" operator="in" result="o"/><feOffset in="${G.full ? 'w' : 'SourceGraphic'}" dx="${rw}" dy="${rw}" result="b"/><feComposite in="${G.full ? 'w' : 'SourceGraphic'}" in2="b" operator="out" result="c"/><feFlood flood-color="${rim}" flood-opacity=".55"/><feComposite in2="c" operator="in"/><feMerge><feMergeNode in="o"/><feMergeNode in="${G.full ? 'w' : 'SourceGraphic'}"/><feMergeNode/></feMerge></filter>`;
         s += `<g clip-path="url(#${clipId})">${f.scen || ''}<g class="ap-fig mn-fig" filter="url(#${fid})" stroke-linecap="round" stroke-linejoin="round">${fig}</g></g>`;
       } else s += `<g clip-path="url(#${clipId})">${f.scen || ''}<g class="ap-fig mn-fig" stroke-linecap="round" stroke-linejoin="round">${fig}</g></g>`;
       // the frame: --line-strong; gold for rulers, the accent for nobles, --ink-3 for the dead
@@ -1828,7 +1850,7 @@
     return [p.id, p.given, p.sur, Math.floor(+A.age(p) || 0), p.alive ? 1 : 0, p.race, p.sex, p.cult, p.realm, p.status, p.ruler || '', p.house || '', p.prison ? 1 : 0,
       JSON.stringify(p.app || {}), JSON.stringify(p.gear || {}), (p.wounds || []).map(w => w && w.k).join(','), (p.quirks || []).join(','), (p.traits || []).join(','),
       p.job ? p.job.c + ':' + p.job.k : '', p.mil ? p.mil.rank + ':' + p.mil.troop + ':' + p.mil.realm : '', p.noble ? p.noble.rung + ':' + p.noble.realm : '', p.flags && p.flags.unfree ? 1 : 0,
-      Math.round((p.happy || 0) / 5), r ? Math.round((r.op || 0) / 10) + r.type : '', (p.health || 0) < 30 ? 1 : 0, mood, ev, UI.set.theme, size, opts && opts.bust ? 1 : 0].join('|');
+      Math.round((p.happy || 0) / 5), r ? Math.round((r.op || 0) / 10) + r.type : '', (p.health || 0) < 30 ? 1 : 0, mood, ev, UI.set.theme, size, opts && opts.bust ? 1 : 0, AP.inDuel(p) ? 'g' : ''].join('|');
   };
   AP.cached = function (p, size, opts) {
     const key = AP.cacheKey(p, size, opts);
@@ -1859,6 +1881,22 @@
     UI.portrait = function (p, size) {
       if (p && p.app && size >= 120 && UI.set.anime !== false && UI.set.miniatures !== false && !AP.wide()) return PORTRAIT.svg(p, 88, { bust: true });
       return up.apply(this, arguments);
+    };
+  }
+  // cycle 2 (design A9): the death screen drew the 150 px full figure (a stiff doll in a box) while every other screen
+  // shows the bust. It now shows the bust at 160 px, still in death (the eyes closed, the ground an ink wash)
+  if (typeof UI.deathModal === 'function') {
+    const dm = UI.deathModal;
+    UI.deathModal = function () {
+      const h = dm.apply(this, arguments);
+      try {
+        const pc = A.pc && A.pc();
+        if (typeof h !== 'string' || !pc || UI.set.anime === false || UI.set.miniatures === false) return h;
+        const m = /<div class="panel mbox obit[^"]*">(?:<div class="en-sky"[^>]*>[\s\S]*?<\/div>)?<div>(<svg[^>]*class="portrait mini anime full"[\s\S]*?<\/svg>)<\/div>/.exec(h);
+        if (!m) return h;
+        const at = m.index + m[0].lastIndexOf(m[1]);
+        return h.slice(0, at) + `<span class="ap-obit">${AP.svg(pc, 160, { bust: true })}</span>` + h.slice(at + m[1].length);
+      } catch (e) { return h; }
     };
   }
   AP.menu = () => `<label class="row"><input type="checkbox" data-c="setAnime" ${UI.set.anime !== false ? 'checked' : ''}> Anime portraits (off: woodcut miniatures)</label>`;

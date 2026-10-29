@@ -281,4 +281,27 @@ export default {
     const ok = r.cut && r.back === 10 && r.stay === 6 && r.n >= 800;
     return { ok, detail: `${r.back} of 10 un-retired old-age events back in the roll; ${r.stay} of 6 weak ones still retired; ${r.n} retired in all` };
   },
+  // cycle 2 (lives F4): old age began at 50 and filled up to 42% of the rest of a life, and a Chancellor bought the
+  // abbey corrody with a quarter of 186,000 suns
+  async oaStartsLater(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 7491, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 51 });
+      const pc = A.pc(); pc.born = A.S.year - 51;
+      const roll = Object.values(A.EV).filter(e => A.OA.rollable(e)), e0 = roll.find(e => e.id === 'oa_kin_corrody') || roll[0];
+      const at51 = roll.filter(e => A.evVariety(e, pc) > 0).length;
+      pc.born = A.S.year - 56;
+      const at56 = roll.filter(e => A.evVariety(e, pc) > 0).length;
+      pc.flags.ev = pc.flags.ev || {}; for (const e of roll.slice(0, 3)) pc.flags.ev[e.id] = A.S.year;
+      const capped = roll.filter(e => A.evVariety(e, pc) > 0).length;
+      for (const e of roll.slice(0, 3)) delete pc.flags.ev[e.id];
+      const C = A.C; pc.coin = 186000;
+      const corrodyPeasant = !!A.EV.oa_kin_corrody.cond(pc, C);
+      pc.office = 'chancellor';
+      const corrodyChancellor = !!A.EV.oa_kin_corrody.cond(pc, C);
+      const price = JSON.stringify(A.EV.oa_kin_corrody.choices[0].fx);
+      return { n: roll.length, at51, at56, capped, corrodyPeasant, corrodyChancellor, price };
+    });
+    const ok = r.n > 50 && r.at51 === 0 && r.at56 > 20 && r.capped === 0 && r.corrodyPeasant && !r.corrodyChancellor && /"coin":-300/.test(r.price) && !/coinPct/.test(r.price);
+    return { ok, detail: `${r.n} rolled old-age scenes: open at 51 ${r.at51}, at 56 ${r.at56}, after three this year ${r.capped}; the corrody for a peasant ${r.corrodyPeasant}, for the Chancellor ${r.corrodyChancellor}, price ${r.price.slice(0, 40)}` };
+  },
 };

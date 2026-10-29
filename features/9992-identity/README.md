@@ -22,14 +22,29 @@
 
 **Inner voices** (`identity.b-voice.core.js`, Disco Elysium). One muted line above the choices, at most 14 words, from the part of you that knows most: the skill a check rests on (your best of them, if 15 or more), else your strongest skill (30 and up) or your most marked trait.
 - **18 voices:** twelve skill families (Steel, The Draw, Fieldcraft, Salt, Silver Tongue, Guile, Menace, The Captain, The Ledger, Letters, The Psalter, Calluses) and six trait families (Nerve, Dread, Pride, Mercy, Hunger, Temper), each with lines by kind of scene (fight, talk, money, faith, wild, court, kin, body, any).
-- **Pure.** The voice and the line are picked by hashing the event and person ids, nothing is written, and it speaks only the first time a life meets an event (`p.flags.ev` has no year for it). About 60% of first sightings carry one. Off in the settings ("Inner voices in scenes").
+- **Pure to draw.** The voice and the line are picked by hashing the event and person ids, and drawing writes nothing. A voice speaks only the first time a life meets an event (`p.flags.ev` has no year for it), and each line once a life (`pc.idv`, written when the choice is made). About 60% of first sightings are eligible. Off in the settings ("Inner voices in scenes").
 - **Open registry:** `A.ID.VOICES[key] = { name, skills, traits, lines: { kind: [...] } }`.
 
 **Thoughts** (`identity.c-thoughts.core.js`, the Thought Cabinet). Sixteen ideas ("The lord's barn is always full", "Steel answers what words cannot", "Every coin is a seed"...), offered by scenes that fit the life you lead (`ix_th_*`, each once) and by people you trust (`ix_th_friend`: their trait picks the idea).
 - **Two slots.** A third thought pushes out the oldest. *Let it go* on the Life card drops one.
 - **A real cost while held:** half the thought's cost on its skill's checks (`A.checkVal`).
-- **Ripening** after 10 to 14 months: the trait (its opposite removed), the full gain on two skills' checks (+2 to +5) and the full cost on a third (−3 to −5).
+- **Ripening** after 10 to 14 months asks first (`ix_ripe`). Letting it in brings the trait (its opposite removed); either answer brings the full gain on two skills' checks (+2 to +5) and the full cost on a third (−3 to −5).
 - **It speaks:** a held or ripe thought takes the inner voice one time in four.
+
+## Cycle 2 (Oct 29)
+
+- **A ripening thought asks first** (lives F5). About a third of all trait changes came from `ID.ripen` calling `A.addTrait`, which logged an empty reason ("You have become proud: in 1120.").
+  - Ripening now queues `ix_ripe` ("You have turned it over for most of a year…"), naming the trait it brings and the one it would push out. *Let it become part of you* adds the trait inside that choice, so 49-body-mind's log gives the choice as the reason: "You have become wrathful: “Let it become part of you” (Steel answers what words cannot, 1106)." *Hold to who you were* keeps the thought's check gains and cost but brings no trait (`thoughts.kept`).
+  - A thought whose trait you already have just ripens, with no scene.
+- **No two thoughts bring the same trait.** Lives were converging, with greedy in 7 of 10 and calm in 5. *Every coin is a seed* now brings ambitious, not greedy. *The sea does not hate you* brings content and no longer calm. The road brings fickle, children loyal, ink curious, the body patient, rank humble.
+- **A voice line is heard once a life** (design B5). "Look at his hands" came five times in 20 months.
+  - `pc.idv` records each line. It is written in `A.eventChoose`, the command every path through a scene takes, and never when the card is drawn.
+  - A line is drawn only from the scene's own kind. The general lines answer only a scene's own check, and a scene of no known kind gets no voice. Lines that need a "him" moved to *talk*.
+  - The first voice with an unheard line for the kind speaks: the check's voice, then your best skills, then your traits.
+  - 40 lines were added for the common kinds.
+  - Over three 5-year lives: 0 repeats, against cycle 2's 5 of one line. Run alone, one 5-year life heard 12 voices in 43 scenes, all different.
+- **Screen readers:** a visually hidden ": " now sits between the voice's name and its line.
+- **Day one:** the pup waits for a life's first two months (`pc.idT0`, set by `A.newGame` and `A.continueAs`).
 
 ## Hooks and APIs (for later work)
 

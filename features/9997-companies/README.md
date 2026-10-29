@@ -9,7 +9,7 @@ The owner asked for "detailed wars done to the last unit". The release's war map
 The backtest proposed full state for battalions everywhere but named captains only in the player's theatre, because captains as persons would be about 36,000 people (36 MB). The owner's standing rule is one coherent world at full fidelity with no level of detail, so this feature does not restrict by distance. It changes the representation instead:
 
 - **Companies are arrays inside a battalion record.** `d.bs[i] = { c, o, h, k: [men ×4], q: [morale ×4], x, wd, … }`. A battalion of four companies is a handful of numbers, not four objects.
-- **A captain is a seed.** Slots 0–3 are the companies' captains and slot 4 is the battalion's senior captain (M07, "a wing of four companies"). His name, byname, command (22–66) and temper (bold, cautious, cunning or steady) are a pure function of the seed (`CO.fromSeed`), so the same man appears in every view and every replay, at no cost in the save. A seed is stored only when it changes (`cs`), for example when a serjeant takes over.
+- **A captain is a seed.** Slots 0–3 are the companies' captains and slot 4 is the battalion's senior captain (M07, "a wing of four companies"). His name, byname, command (22–66) and temper (bold, cautious, cunning or steady) are a pure function of the seed (`CO.fromSeed`), so the same man appears in every view and every replay, at no cost in the save. A seed is stored only when it changes (`cs`), for example when a sergeant takes over.
 - **A captain becomes a full person only when he matters** (`CO.person`, through `A.newPerson`): your own company's captain and your senior captain, and a new captain who takes your company. People made this way keep living like anyone else.
 
 Measured (`coEveryBattalion`, one year of play from a new game):
@@ -78,10 +78,10 @@ S.coOn, S.coRet (retired names), S.coForY (forage records), P.coDes (deserters b
 - +10 for a won fight of 3,000 men or more, −10 for each month of arrears, +15 for a promotion, −20 when passed over by a man of less command.
 - Once a year, +5 under a general of his own temper, −10 under his opposite (bold against cautious).
 - It fades 5% a month.
-- At −50 a captain leaves. In peace he asks for a transfer (`co_transfer_request` if it is your battalion), and his serjeant takes over. In a war against rebels he takes his company over to the other side: its men go to their levy (`co_turncoat`, or 57 kind `turn`).
+- At −50 a captain leaves. In peace he asks for a transfer (`co_transfer_request` if it is your battalion), and his sergeant takes over. In a war against rebels he takes his company over to the other side: its men go to their levy (`co_turncoat`, or 57 kind `turn`).
 - **Promotion.** When a senior captain falls or leaves, the post stays vacant until the New Year. Then, in a realm at war, the best captain of the division by merit (command + satisfaction / 5) takes it, and better men passed over lose 20 (`co_passed_over` if that is you).
 
-**Captains in danger.** At a fight's end, a battalion that lost a quarter or more puts each of its company captains at risk: 3%, or 13% if his side was beaten. In the line battle, a unit that lost a quarter, or routed on the losing side, puts its own captain at the same risk. A fallen captain is replaced by the better of his two serjeants, who is a seed of his own ("Serjeant Ivo takes the company", in the log and the battle log). If it is your company, the serjeant is made a person and `co_new_captain` comes.
+**Captains in danger.** At a fight's end, a battalion that lost a quarter or more puts each of its company captains at risk: 3%, or 13% if his side was beaten. In the line battle, a unit that lost a quarter, or routed on the losing side, puts its own captain at the same risk. A fallen captain is replaced by the better of his two sergeants, who is a seed of his own ("Sergeant Ivo takes the company", in the log and the battle log). If it is your company, the sergeant is made a person and `co_new_captain` comes.
 
 **Honours.** A battalion that won or held a named fight (9,000 men or three days) and lost 25% or more earns "Battle of X, year" (at most 8). Yours gets `co_honour` and a record in 57's chronicle (kind `honour`). Small seals on its row show them.
 
@@ -156,7 +156,7 @@ A shape the men never drilled is not offered, and the menu says why ("never dril
   - for your battalion, its four companies with their captains.
 - **Your company** card, in the war room (`UI.wrMyDivCard`) and the Path tab (`UI.armyPathCard`):
   - the captain, his temper and command, and the senior captain;
-  - your serjeant and the three comrades beside you (37);
+  - your sergeant and the three comrades beside you (37);
   - the rest as counts: fit, hurt, dead, deserted;
   - morale, bread, pay and honours.
 - **The battle's "Your command" panel:** your units, each with its order buttons and its shape menu (shapes not drilled are greyed, with the reason), "follow me" for a senior captain, and the enemy's next moves.
@@ -165,7 +165,7 @@ A shape the men never drilled is not offered, and the menu says why ("never dril
 ## Events (`co.events.js`, 13)
 
 - **Queued by the engine:** `co_new_captain`, `co_passed_over`, `co_transfer_request`, `co_turncoat`, `co_forage`, `co_hungry_march`, `co_desert`, `co_honour`.
-- **From what your company is:** `co_arrears` (2 months unpaid), `co_mutiny_talk` (3), `co_the_new_men` (150 new men), `co_serjeant` (a 37 veteran can be made serjeant), `co_old_company` (your battalion is "the new" one).
+- **From what your company is:** `co_arrears` (2 months unpaid), `co_mutiny_talk` (3), `co_the_new_men` (150 new men), `co_sergeant` (a 37 veteran can be made sergeant), `co_old_company` (your battalion is "the new" one).
 - All are gated on `C.soldier`, and never reach a peasant.
 - Effect key `coy` (declared in `A.FX_EXTRA`): `{ mo, sat, food, men, wd }` on your own company.
 - `tools/lint-events.mjs` reports 0 errors. `tools/lint-choices.mjs` finds 0 obviously best choices.
@@ -174,7 +174,7 @@ A shape the men never drilled is not offered, and the menu says why ("never dril
 
 - **Engine:** `A.divLose` (twice: the split, then the line battle's credit, which belongs to its fight and lapses when that fight ends), `A.divRefill`, `A.newDiv`, `A.divRemove`, `A.fightDay`, `A.fightEnd`, `A.divMaxOrg`, `A.wsDay`, `A.wsSetOrder`, `A.newGame`, `A.enlist`, `A.applyFx`.
 - **The line battle:** `A.newBattle`, `A.buildUnits`, `A.tfx`, `A.wingClash`, `A.aiPulse`, `A.battleStep`, `A.battleSetTactic`, `A.battleCommitReserve`, `A.battleFinish`.
-- **Screens:** `UI.wrDivPanel`, `UI.wrMyDivCard`, `UI.armyPathCard`, `UI.wrArmyRow`, `UI.battleModalBasic`, and 72's `A.TS.squadHtml` (the book's left leaf names your company, captain and serjeant).
+- **Screens:** `UI.wrDivPanel`, `UI.wrMyDivCard`, `UI.armyPathCard`, `UI.wrArmyRow`, `UI.battleModalBasic`, and 72's `A.TS.squadHtml` (the book's left leaf names your company, captain and sergeant).
 - **Registries:** `A.onMonth`, `A.COMMANDS`, `UI.A.coOrd`, `UI.C.coForm` and `UI.C.coFollow`, `UI.TIPS.coMo` and `UI.TIPS.coCap`, `GD.SUP.train`, and `A.WC.KINDS` honour, forage and turn.
 
 ## Tests (`test.mjs`)
@@ -187,7 +187,7 @@ A shape the men never drilled is not offered, and the menu says why ("never dril
 | `coBattleFromDivision` | The units hold exactly the fighting battalions' men (25,431 / 2,052); your battalion is 4 companies under named captains; the dead are counted once; the report cites your companies |
 | `coOrdersByRank` | Rank 4 commands 1 unit, rank 6 commands 4. Orders to other units are refused, and the wing menu leaves them alone. Walls and hedges are withheld at drill 5 and offered at 70. The panel draws purely |
 | `coIntents` | Intents shown are the moves made |
-| `coCaptainDies` | A captain who is a person dies in `A.P`, a serjeant takes the company, the log says so, and `co_new_captain` is queued |
+| `coCaptainDies` | A captain who is a person dies in `A.P`, a sergeant takes the company, the log says so, and `co_new_captain` is queued |
 | `coCourier` | 5 and 3.5 days for 300 km; the order lands on its day; the median from capitals |
 | `coSaveLoad` | A round trip; an old save with no battalions draws purely and builds them at the month |
 | `coScreens` | Order of battle, company card and Path tab draw; a captain named `<img data-pwn>` shows as text; drawing changes nothing |

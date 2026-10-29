@@ -206,6 +206,7 @@
       if (c.querySelector('.lk-realm')) continue;
       const m = /^person:(.+)$/.exec(c.dataset.v || ''), who = m && A.P ? A.P(m[1]) : null;
       const r = who && who.realm && A.realm ? A.realm(who.realm) : null;
+      for (const ch of c.querySelectorAll('.chip')) if (!ch.title && ch.textContent.trim().length > 12) ch.title = ch.textContent.trim();
       const nm = c.querySelector('.lk-row-m > .nm');
       if (!r || !nm) continue;
       nm.insertAdjacentHTML('afterend', `<span class="lk-row-r">${LOOK.chipHtml(r, r.short || r.name)}</span>`);
@@ -423,8 +424,12 @@ ${X('.card.rar-beast.rar-legendary, .card.rar-beast.rar-mythic')}{border:2px sol
 
 /* ---- the rail's delta flash */
 ${X('#profile .barrow.lk-flashing')}{position:relative}
-${X('#profile .lk-dlt')}{position:absolute;right:-2px;top:0;padding:0 4px;border-radius:var(--r-xs,3px);background:var(--overlay);box-shadow:var(--e-1);
+${X('#profile .lk-dlt')}{position:absolute;right:-4px;top:-11px;padding:0 4px;border-radius:var(--r-xs,3px);background:var(--overlay);box-shadow:var(--e-1);
   font-family:var(--f-ui);font-size:var(--t-cap,12px);font-weight:700;font-variant-numeric:tabular-nums;line-height:16px;white-space:nowrap;pointer-events:none;z-index:2}
+/* cycle 2 (visual B9): the chip rides above the row's top-right corner, on its own plate, so the number it reports
+   stays in sight and the label keeps its width */
+${X('#profile .lk-stats .barrow .lk-dlt')}{top:-9px;right:-3px}
+${X('#profile .barrow.lk-flashing > .lbl, #profile .barrow.lk-flashing > .val')}{flex-shrink:0}
 ${X('#profile .lk-dlt.up')}{color:var(--ok)}
 ${X('#profile .lk-dlt.dn')}{color:var(--danger)}
 @keyframes lkPulse{0%{filter:brightness(1)}40%{filter:brightness(1.8)}100%{filter:brightness(1)}}
@@ -454,6 +459,9 @@ ${X('.lk-realm')}{display:inline-flex;align-items:center;gap:6px;color:var(--lk-
 :root[data-theme=dark] .lk-realm{color:var(--lk-ink-d,var(--lk-ink,var(--ink)))}
 :root[data-theme=light] .lk-realm{color:var(--lk-ink-l,var(--lk-ink,var(--ink)))}
 ${X('.card.person.click.lk-row > .lk-row-m > .lk-row-r')}{flex:none;order:2;font-size:var(--t-small,13px)}
+/* cycle 2 (visual B11): a chip in a row ends in an ellipsis, never a clipped letter; its words are in its title */
+${X('.card.person.click.lk-row .chip')}{display:inline-block;max-width:14ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+${X('.card.person.click.lk-row > .lk-row-m > .bondline')}{min-width:0;flex:0 1 auto;overflow:hidden}
 ${X('.card.person.click.lk-row > .lk-row-m > .sub')}{order:1}
 ${X('.lk-realm > i')}{flex:none;width:8px;height:8px;border-radius:2px;background:var(--lk-sw);box-shadow:0 0 0 1px var(--line-strong)}
 
@@ -484,7 +492,11 @@ ${X('#tabbody .grid2 > .card.gear-c > button')}{margin:0;grid-column:4}
 ${X('.ladder')}{display:flex;align-items:flex-start;flex-wrap:nowrap;gap:0;margin:10px 0 6px;padding:0 0 4px;overflow-x:auto;background:transparent;border:0}
 ${X('.ladder > i')}{display:none}
 ${X('.ladder > span, .ladder span')}{flex:1 1 0;min-width:52px;position:relative;margin:0;padding:16px 2px 0;border:0;border-radius:0;background:transparent;text-align:center;
-  font-family:var(--f-ui);font-size:var(--t-small,13px);line-height:1.25;color:var(--ink-3);overflow-wrap:anywhere}
+  font-family:var(--f-ui);font-size:var(--t-small,13px);line-height:1.25;color:var(--ink-3);overflow-wrap:normal;word-break:keep-all;hyphens:none}
+/* cycle 2 (visual B7): a rank's name is never broken mid-word ("Comma / nder"): each stop is as wide as its longest
+   word, the track scrolls sideways if it must, and the passed ranks are not struck through (the gold dots say it) */
+${X('.ladder > span')}{flex:1 0 auto;min-width:min-content;padding-left:4px;padding-right:4px;font-size:var(--t-cap,12px)}
+${X('.ladder > span.done, .ladder > span s, .ladder s, .ladder del')}{text-decoration:none}
 ${X('.ladder > span::before')}{content:"";position:absolute;z-index:1;top:3px;left:50%;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--sunken);box-shadow:0 0 0 1.5px var(--line-strong)}
 ${X('.ladder > span::after')}{content:"";position:absolute;top:7px;left:calc(50% + 6px);width:calc(100% - 12px);height:2px;background:var(--line-strong)}
 ${X('.ladder > span:last-of-type::after')}{display:none}

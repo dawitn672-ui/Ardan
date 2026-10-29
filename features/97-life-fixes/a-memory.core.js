@@ -189,10 +189,23 @@
     const last = P.fam ? LF.lastFam(pc, e.id) : LF.last(pc, e.id);
     return !!(P.gap && last != null && A.S.year - last < P.gap * (P.grow ? n : 1));
   };
+  // Scenes written for the bottom of the ladder, which the release's conds do not gate: no roll, pool or NPC move draws
+  // them for the top of it (A.lfTop: a ruler, a commander, a councillor, a lord, a retired commander). And a trade's
+  // own duties for the trade (the scribe's letters for a scribe). Cycle 2, lives F3.
+  LF.TOP_BLOCK = new Set(['av_road_sellsword_offer', 'pf_spear_pike_drill', 'rk_vt_militia', 'gf_village', 'la_holding_1', 'la_elder_2',
+    'ln_d_proclamation', 'oa_late_well', 'oa_life_thief', 'oa_life_cheat', 'oa_late_bounds_walk']);
+  LF.TOP_PREFIX = /^(oa_kin_|ln_d_scr_)/;
+  LF.JOB_ONLY = [[/^ln_d_scr_/, 'scribe']];
+  LF.gated = function (e, pc) {
+    if (!e || !pc) return false;
+    for (const [rx, job] of LF.JOB_ONLY) if (rx.test(e.id) && !(pc.job && pc.job.c === job)) return true;
+    return !!(A.lfTop && A.lfTop(pc) && (LF.TOP_BLOCK.has(e.id) || LF.TOP_PREFIX.test(e.id)));
+  };
   LF.weight = function (e, pc) {
-    if (!LF.memOn() || !e) return 1;
+    if (!e) return 1;
     pc = pc || A.pc();
-    if (!pc) return 1;
+    if (pc && !LF.OFF && LF.gated(e, pc)) return 0;
+    if (!LF.memOn() || !pc) return 1;
     const n = LF.n(pc, e.id);
     if (LF.freshOnly) { if (n || hurtful(e)) { LF.blocked++; return 0; } return 1; }
     const P = LF.POLICY[LF.cls(e)], nf = P && P.fam ? LF.nFam(pc, e.id) : n;

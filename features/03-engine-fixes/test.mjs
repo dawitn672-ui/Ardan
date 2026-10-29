@@ -1,5 +1,22 @@
 // Browser tests for engine fixes. Each test gets (page, pageErrors, {browser, file}).
 export default {
+  async revoltFounds(pg) {
+    // world review cycle 2, B2: a rebel realm whose war is over becomes a realm of its own
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4402, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      A.S.queue.length = 0;
+      const par = A.realm('POL-05'), p = A.realmProvs('POL-05').find(x => x.id !== par.capitalProv);
+      const nr = A.createRealm({ name: 'Test League', short: 'Testers', title: 'Lord', race: 'human', cult: par.cult, faith: par.faith, color: '#888888', army: 2000, levy: 500, armyQ: 1, income: 5000, stability: 50, legit: 30, treasury: 2000, comp: par.comp });
+      nr.isRebel = true; nr.parent = par.id; p.owner = nr.id; nr.capitalProv = p.id; nr.capital = p.name; A.updateRealmPops();
+      A.startWar(nr.id, par.id, 'The Test Revolt', 'liberty', { noAllies: true });
+      const w = A.S.wars.find(x => x.leadA === nr.id), mid = nr.isRebel;
+      A.endWar(w, 'white', 'The Test Revolt ends.');
+      return { mid, after: nr.isRebel, isNew: !!nr.isNew, legit: nr.legit, from: nr.foundedFrom, truce: (nr.truce || {})[par.id] > A.S.year, stats: A.EF.stats };
+    });
+    const ok = r.mid === true && r.after === false && r.isNew && r.legit >= 45 && r.from === 'POL-05' && r.truce;
+    return { ok, detail: JSON.stringify(r) };
+  },
+
   async engineRules(pg) {
     // small rule checks for fixed engine bugs
     const r = await pg.evaluate(() => {

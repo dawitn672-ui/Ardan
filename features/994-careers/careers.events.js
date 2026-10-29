@@ -81,7 +81,7 @@
         { t: 'Kneel and rise a knight', r: 'The blade touches one shoulder and the other. You rise with a new name and three hundred suns a year, and some of the old families stop speaking when you pass.',
           fx: (p, ctx) => { CAR().knight(p); const ru = ruler(p, ctx); if (ru && A.addOp) A.addOp(ru, p, 8); p.honor = A.clamp((p.honor || 0) + 4, 0, 100); return ''; } },
         { t: 'Thank the crown, and stay what you were born', r: 'A murmur goes round the hall. The crown smiles thinly. In the market they tell it for years: the one who would not kneel for a title.',
-          fx: (p, ctx) => { p.flags.cr_knight_no = A.S.year; A.fame(p, 4); const ru = ruler(p, ctx); if (ru && A.addOp) A.addOp(ru, p, -8); return ''; } },
+          fx: (p, ctx) => { p.flags.cr_knight_no = A.S.year; (p.car = p.car && typeof p.car === "object" ? p.car : {}).knightNo = (+p.car.knightNo || 0) + 1; A.fame(p, 4); const ru = ruler(p, ctx); if (ru && A.addOp) A.addOp(ru, p, -8); return ''; } },
       ],
     },
     {
