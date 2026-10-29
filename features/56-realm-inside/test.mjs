@@ -76,7 +76,8 @@ export default {
       // a session with the dice held: the law changes, and the record names who pushed it and why
       x.treasury = x.income * .2;
       const ch = A.chance; A.chance = () => true; const t0 = x.laws.tax;
-      let e; try { e = RI.session(x); } finally { A.chance = ch; tr.traits = keep; }
+      // with 9996-polity a law opens a bill at the court instead of changing at once: close it, so the change lands
+      let e; try { e = RI.session(x); if (x.pol && x.pol.bill && A.POL && A.POL.endBill) A.POL.endBill(x, true); } finally { A.chance = ch; tr.traits = keep; }
       return { broke, rich, greedy, generous, t0, t1: x.laws.tax, e: e ? { k: e.k, who: A.P(e.who) ? A.fullName(A.P(e.who), false) : null, why: e.why.map(w => w[0]) } : null };
     });
     const ok = r.broke.top === 'taxUp' && r.rich.top !== 'taxUp' && r.rich.taxUp < r.broke.taxUp && r.greedy > r.generous && r.e && r.e.who && r.e.why.length >= 2 && r.t1 !== r.t0;
