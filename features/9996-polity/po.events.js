@@ -380,12 +380,14 @@ A.defEvents([
   const local = (p, ctx) => {
     const r = A.realm((ctx && ctx.rid) || p.ruler || (p.noble ? p.noble.realm : p.realm)), cid = V && V.realmCult ? V.realmCult(r ? r.id : p.realm) : null;
     const w = k => { try { return cid && V.word ? V.word(cid, k) : null; } catch (e) { return null; } };
-    if (!ctx.councilT) ctx.councilT = w('council') || 'council';
-    if (!ctx.lordT) ctx.lordT = w('lord') || 'lord';
+    return { councilT: (ctx && ctx.councilT) || w('council') || 'council', lordT: (ctx && ctx.lordT) || w('lord') || 'lord' };
   };
-  for (const id in A.EV) {
-    if (!/^po_/.test(id)) continue;
-    const e = A.EV[id], base = e.setup;
-    e.setup = function (p, ctx) { local(p, ctx); return base ? base.apply(this, arguments) : undefined; };
-  }
+  // through the token hook, not by wrapping each scene's setup: 67-memory-weave's wrap of the setups must stay the outer
+  // one (mwSourcesIntact), and a token costs nothing for a scene that does not use it
+  const tok0 = A.ctxTokens;
+  A.ctxTokens = function (pc, ctx) {
+    const o = tok0.apply(this, arguments);
+    try { if (o && pc && (o.councilT == null || o.lordT == null)) { const t = local(pc, ctx || {}); if (o.councilT == null) o.councilT = t.councilT; if (o.lordT == null) o.lordT = t.lordT; } } catch (e) {}
+    return o;
+  };
 })();
