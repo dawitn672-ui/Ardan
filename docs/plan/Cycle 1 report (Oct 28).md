@@ -23,9 +23,9 @@ One fix found at integration: the release's court plot ("An invitation") reached
 | Lane | Feature | Status |
 |---|---|---|
 | G | Motion system (`UI.MOTION`), a ¾ head with 13 poses, the title vista, battle intents, clashes and camera, 72 icons, the stepped Prussian-blue sea | Green on CI run 74 |
-| J | 9990 journeys (real days by road, stops, 16 road scenes) and 9991 atlas (seen, heard of, unknown; the veil; Story / Map) | Built by default; CI run 76 |
-| I | 9992 identity (arms, motto, named companions, inner voices, thoughts that ripen), 9993 chapters (three aims a stage, dynasty legacies), 9994 share cards | Built by default; CI run 76 |
-| E | 9995 trade roads (lore goods and coins, hand-to-hand caravans at a caravan's pace, 21 chokepoints, ventures) | Built by default; CI run 76 |
+| J | 9990 journeys (real days by road, stops, 16 road scenes) and 9991 atlas (seen, heard of, unknown; the veil; Story / Map) | Built by default; CI run 76: 206 of 207 tests, both leagues green |
+| I | 9992 identity (arms, motto, named companions, inner voices, thoughts that ripen), 9993 chapters (three aims a stage, dynasty legacies), 9994 share cards | Built by default; CI run 76: 206 of 207 tests, both leagues green |
+| E | 9995 trade roads (lore goods and coins, hand-to-hand caravans at a caravan's pace, 21 chokepoints, ventures) | Built by default; CI run 76: 206 of 207 tests, both leagues green |
 | WD | 9997 companies: every battalion's companies, captains, morale, food and pay; courier orders; enemy intents | Done, still `.wip` |
 | P | 9996 polity: offices, laws, bills, councils, estates, vassal contracts, elections, factions with the meter | Building |
 
@@ -46,7 +46,7 @@ Each batch's CI run found failures that each lane's own tests had not. They were
   | Child gaps a year (floor on) | 0.13 | 0.19 |
 
   The child-gap rate is against about 1.0 with the floor off.
-- **Timing on a slow runner.** A hover tip took the first Escape. A vital bar's 1.6 s glow was caught mid-flash. Each test now waits for the state it needs, not for a fixed time.
+- **Timing on a slow runner.** A hover tip took the first Escape. A vital bar's 1.6 s glow was caught mid-flash. The phone sheet's rise was measured mid-motion (373 of 375 px, CI run 76). Each test now waits for the state it needs, not for a fixed time.
 
 ## What the process taught
 
