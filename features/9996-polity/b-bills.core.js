@@ -28,6 +28,7 @@ for (const g of POL.NEW) {
   });
 }
 POL.NEWK = NEWK;
+POL.NEW_W = .7; POL.NEW_MONEY = .3;   // the weight of the new laws' pushes, and its share while money presses
 // any law push as {g, to}: 56's six and the fifteen new ones; pure
 POL.keyOf = function (r, k) {
   if (NEWK[k]) return NEWK[k];
@@ -57,7 +58,9 @@ RI.stance = function (v, k, r) {
     const P = RI.PUSH[k]; if (!P || !P.ok(r)) return 0;
     const a = RI.aims(v.p); if (!a) return 0;
     const cur = POL.pos(r, x.g), d = (o, kk) => { const t = o && o[kk] && o[kk][x.g]; return t ? (t[x.to] || 0) - (t[cur] || 0) : 0; };
-    let s = d(W_NEW, a.want) + .7 * d(F_NEW, a.fear) + POL.estGain(r, k, POL.estateOf(v.p)) / 5;
+    // an estate's interest presses only when it is sore: the gain counts in full at approval −4, not at all at +2
+    const e = POL.estateOf(v.p), E = r.pol && r.pol.est && r.pol.est[e], ap = E && E.ap != null ? E.ap : 0, sore = Math.max(0, Math.min(1, (2 - ap) / 6));
+    let s = d(W_NEW, a.want) + .7 * d(F_NEW, a.fear) + sore * POL.estGain(r, k, e) / 5;
     if (v.seat === 'chaplain' && x.g === 'faith') s += x.to === 1 ? -.4 : .3;
     if (v.seat === 'treasurer' && x.g === 'trade' && x.to === 1) s += (RI.years(r) < 1 ? .4 : .1);
     if (v.seat === 'marshal' && x.g === 'obl' && x.to > cur) s += .3;
@@ -65,6 +68,10 @@ RI.stance = function (v, k, r) {
     // a push away from the realm's own custom loses force, as 56's do
     const c = POL.custom(r, x.g), d0 = Math.abs(cur - c), d1 = Math.abs(x.to - c);
     if (s > 0) s *= d1 > d0 ? Math.pow(.55, d1 - 1) * (d1 >= 2 ? .8 : 1) : 1.15;
+    // these are matters of the realm's temper, not its purse: they weigh less than 56's pushes, and much less
+    // while the treasury is in crisis or overflowing (then the court argues about money first)
+    const Y = RI.years(r), money = Y < .5 || (r.debt || 0) > (r.income || 0) || Y > 2.5;
+    s *= POL.NEW_W * (money ? POL.NEW_MONEY : 1);
     return clamp(s, -1.5, 1.5);
   } catch (e) { return 0; }
 };
