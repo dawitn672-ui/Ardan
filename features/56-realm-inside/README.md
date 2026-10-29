@@ -185,3 +185,12 @@ reads "the return of the lords' liberties". The court card's lines had no gramma
 
 - **Never taken by your own cause.** `RI.maybeTaken` passes when the realm that beat you is yours, or is the faction of a war for the throne you claimed. Before, a claimant who still held a commission in the crown's army could be "taken by men of Merrick's cause", Merrick being the player (`carNotTakenByOwnCause`, 994-careers).
 - **The council presses less often.** A player-ruler heard the loudest push in 60% of the year's sessions, so a 37-year reign showed "The council presses" 21 to 24 times. The push is now held back by 97-life-fixes' rule for NPC moves (twice a life, ten years apart, `A.LF.held`), and a year it is held, the matter waits (`riCourtPushRare`: two in 30 years).
+
+## Cycle 2: the far ledger, and the purse a crown starts with (world review F5 and F6)
+
+- **The far ledger is paid.** `RI.spend` charges, as a new book line `lore` ("The host at the realm's own rate, and paper money's fall"), what 9995's `A.TRADE.ledgerYear(r)` asks on the Great Continent:
+  - **The host's pay at the lore's share of revenue.** The rate per man is fixed once, against the lore's standing army: Taulen 4.3 times the release's 3.2 suns, so its host eats two thirds of its revenue.
+  - **The half-notes' fall** on the part of Taulen's treasury held in them.
+- **Every crown starts with its reserve.** At world creation every AI crown starts with its reserve (`RI.reserveYears` × income), never less than it had. The release's quarter-year purse made every soak read "treasuries ×13 to ×20" as they filled to 56's steady state. It also left the Silk Road's broker cities below zero from their first year.
+
+Test `farLedgerPaid`.

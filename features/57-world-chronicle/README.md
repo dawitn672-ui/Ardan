@@ -114,3 +114,11 @@ lost its "a Ashmere voice".
 | export sentences: distinct frames; top-ten share | 135; 41.5% | 195; 35.3% |
 
 Test `wcRecallLinesRead` draws every template in every branch and requires a whole sentence each time.
+
+## Cycle 2: no two wars under one name (`d-names.core.js`; world review B5)
+
+**Why.** 991-far-war numbered repeated war names only in far games, and only for names made by `A.warName`. A succession war is named by its caller. One Known World century so read "The Long War" five times, and another "The War of the Tessaria Succession" seven times.
+
+**What changed.** Every war's name is now unique as it starts, in both lands. The namer is wrapped, and so is any name given to `A.startWar`. The second war of a name is "The Second Long War", then "The Third …".
+
+**Test.** `warNamesUnique`.

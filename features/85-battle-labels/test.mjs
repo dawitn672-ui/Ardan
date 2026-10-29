@@ -79,4 +79,40 @@ export default {
     const ok = r.deploy.arrows > 0 && !r.deploy.fresh && r.pulse.fresh && r.pulse.clash > 0 && r.pulse.std > 0 && !!r.pulse.decisive && r.pulse.cam && r.sway.every(n => n === 3) && !r.off.cam && r.off.anims === 0 && r.pure;
     return { ok, detail: `deployment: ${r.deploy.arrows} intent marks; after a pulse: ${r.pulse.arrows} marks, ${r.pulse.clash} clashes, ${r.pulse.std} standards (sway ${r.sway.join('/')} beats), decisive ${r.pulse.decisive}, camera ${r.pulse.cam}; Motion off: camera ${r.off.cam}, ${r.off.anims} animations; pure ${r.pure}` };
   },
+
+  async bfYouAndSides(pg) {
+    // cycle 2 (visual B5, B6): the player's company is marked on the field, the two sides use one colour code
+    // (legend, bands, unit edges), the side bands are painted by UI.bfBands (so the camera can repaint them), and the
+    // action row sticks to the bottom of the side column; drawing changes nothing
+    const r = await pg.evaluate(() => {
+      for (let seed = 9704; seed < 9712; seed++) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
+        const pc = A.pc(); A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(pc); pc.mil.rank = 4;
+        let F = null;
+        for (let day = 0; day < 400 && !F; day++) {
+          A.advance(1); let h, k = 0; while ((h = A.headReady()) && k++ < 50) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
+          const d = A.divById(pc.mil.div); if (!d) continue;
+          for (const pid in A.S.fights) { const f = A.S.fights[pid]; if ((f.aIds.includes(d.id) || f.dIds.includes(d.id)) && (d.atk === +pid || d.loc === +pid)) { F = f; break; } }
+        }
+        if (!F || !A.CO) continue;
+        A.CO.place(pc);
+        A._battlePlace = F.loc; let B; try { B = A.newBattleForPC(pc, F.war, F.aIds.includes(pc.mil.div) ? F.b : F.a); } finally { A._battlePlace = null; }
+        if (!B.co) continue;
+        A.S.queue.unshift({ type: 'battle', b: B }); A.battleStep();
+        const h0 = T.hash(A.S), rng0 = A.rngState;
+        let mine = 0, bands = 0;
+        const m0 = UI.bfMine, b0 = UI.bfBands;
+        UI.bfMine = function (ctx, u) { if (u && u.coMine === 'me') mine++; return m0.apply(this, arguments); };
+        UI.bfBands = function () { bands++; return b0.apply(this, arguments); };
+        UI.screen = 'game'; UI.ov = null; UI.render();
+        UI.bfMine = m0; UI.bfBands = b0;
+        const html = (document.querySelector('#modal') || {}).innerHTML || '';
+        const S = UI.bfSides();
+        return { mine, bands, legend: /bf-key bf-us/.test(html) && /bf-key bf-them/.test(html), act: /class="row bf-act"/.test(html), sides: S.us !== S.them, pure: T.hash(A.S) === h0 && A.rngState === rng0 };
+      }
+      return { none: true };
+    });
+    if (r.none) return { ok: false, detail: 'no company battle found' };
+    return { ok: r.mine >= 1 && r.bands >= 1 && r.legend && r.act && r.sides && r.pure, detail: `your company marked in ${r.mine} draw(s); side bands painted by UI.bfBands ${r.bands}; legend in the side code ${r.legend}; sticky action row ${r.act}; two distinct side colours ${r.sides}; drawing pure ${r.pure}` };
+  },
 };

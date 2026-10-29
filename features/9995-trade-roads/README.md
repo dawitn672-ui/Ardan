@@ -195,3 +195,17 @@ These are both mine (lane E's folders), and both build alone.
 - **The coin name is shown only on the long-roads card.** Writing every purse in the realm's coin (world review I4) can use `A.MONEY.fmt`.
 - **Ventures go from the player's home market only.** Leading a caravan yourself (a journey through 997's sites and the chokepoints, week by week) is the natural sequel.
 - **The Pearl Meeting (TR-41)** is not a road. No ship sails between the Known World and the Far Lands.
+
+## Cycle 2 (world review F5, F6, F7, B5; lives review F1)
+
+- **The brokers are paid** (F5). At each relay of a trip the broker takes his tenth, as before, and now his crown takes 30% of it as market dues (`TR.relayCuts`, `TR.BROKER_DUES`; `r.dues`). In the first half-year of a world, 94 realms take dues. Ushivar's crown, broke for 48 to 100 years of 105 in the review's soaks, ends its first four years at +2,763 instead of −14,367.
+- **The far ledger is on** (F6). `TR.ledgerYear` is now paid by 56's ladder, and the flag `APPLY_LEDGER` and its wrapper are gone. The army's rate per man is set once against the lore's standing army, not the host of the day, so a crown that cuts its host pays less.
+- **A caravan carries at least a load** (F7), as in 45. Silver, jade and paper are planned with the Twin Rivers' appetite (45).
+- **Plural realms agree with their verbs in both lands** (B5, `d-words.core.js`): "the Sand Clans win", not "Sand Clans wins". This wraps 991's `A.realmRef` and `A.realmVerb`; this folder sorts after 991's.
+- **What a fortune is for** (lives F1: a merchant ended on 1.65 million suns).
+  - **Lend to a crown.** A great purse can lend a quarter of itself (at least 5,000) to its own crown or a neighbour's for 5 years, from the market card in both lands (`TR.lend`). The crown's treasury and debt both grow by the loan. It pays 6 in 100 a year, plus 3 more for every year of income it already owes, and the principal at the end. A crown that goes broke (04's `A.WF.broke`) or repudiates pays nothing more. The ruler's opinion rises.
+  - **Endow a caravanserai** on the road out of your realm, at 20,000 suns, then 40,000 and so on, up to 5 (`TR.endow`). Every caravan through that realm loses a tenth less to bandits for each one (`TR.seraiMul`). The builder gains fame and a deed.
+  - **A New Year line** in the log says what the purse did that year, and how much came from trade.
+- **Tests:**
+  - `trFortune`: the card draws purely and offers the loans. A loan raises the crown's debt and pays interest. A loan to a crown gone broke is lost. The New Year line is written.
+  - `trBrokersPaid`: 94 realms take dues in six months, Ushivar among them.

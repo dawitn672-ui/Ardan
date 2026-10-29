@@ -160,3 +160,18 @@ Measured on 12 bot lives of 50 years, the same seeds before and after (`/tmp/ard
 - **"Paid our ransom" is not a debt.** AI rulers are not captured and ransomed in this world, so that kind has nothing to record.
 - **Playtesters guessing an AI's answer (the step's third bar) is not measured.** It needs people.
 - **Balance not run here.** The coordinator runs `bench/balance.mjs`. The war rate is about unchanged, but who fights whom and how long wars last move (a proud ruler holds out longer), so the war and noble bands could move. `bench/balance.mjs`'s `warsPerDecade` is the one to watch.
+
+## Cycle 2: peaces that fit the war, and crowns that learn (`peace.core.js`; world review F4 and F3)
+
+**F4. Peace sizes.** On the Great Continent a peace still moved 16 to 21 districts, because 15% of the Twin Rivers' people is a score of small districts. A wrap of `A.wsTreatyProvinces` (both lands; not throne or liberty wars, nor a player's peace) now caps a peace at:
+
+- `PEACE.base` (3) provinces, or 8% of the loser's provinces if more, for a war of under two years;
+- 4 more for each year of war past the first;
+- for an attacker beaten back, at most 2 provinces or 5% of its own, whichever is more.
+
+**F3. Learning.** In 7 worlds of 8, Zanara attacked Abara in 1105, lost, and went on declaring wars it lost. Now:
+- **A crown remembers the wars it lost** (`r.lostTo[winner]`, kept for 40 years). Each loss to a realm in the last 30 years multiplies its odds of attacking that realm again by 0.4 (`A.cbWarMul`).
+- **A realm that has lost a third of its provinces in 30 years** (`r.provHist`, a sample every 5 years) is a hard target. A neighbour's odds of attacking it are halved, and its side counts a quarter stronger in the war's odds (`A.warPreview`).
+- **The war log gives both reasons.**
+
+Test `peaceFitsWar`.

@@ -19,3 +19,14 @@ Free money, AI debt never repaid, stacking reparations, stability below zero, si
 ## Tests
 
 `world`, `economy` in `test.mjs`. Run them with `node tests/run.mjs --features=world-fixes`.
+
+## Cycle 2: a broke crown cannot raise armies (`broke.core.js`; world review B1)
+
+The release's `A.indMonth` raised levies (`A.emergencyLevy`), finished recruits (`A.queueStep`) and refilled divisions (`A.divReinforce`) with no look at the purse, and charged its workshops' wages to any treasury. The League of the Nine Wells (one oasis, an income of 26,690) reached 1.47 million men and 33.6 million of debt in one soak.
+
+- **Broke** (`A.WF.broke`): treasury below zero and debt above a year's income. A broke AI crown calls no levies, finishes no recruits and refills no divisions.
+- **Workshops** are paid only from a treasury above zero. Below it the month's work is not done: its cost is given back and its output taken off the stock.
+- **Disbanding.** At each New Year, a crown whose debt is above two years' income sends home its newest divisions (never its guard, never the player's) until its host's pay (3.2 suns a man) fits in 90% of its income. Half the men go back to the levy, and the news says so.
+- **Patch `WLD-DIV-ARTICLE`.** "The The Chain Keepers is cut off and destroyed" (B5): `A.divThe(name)` adds "The" only to a name without one.
+
+Test `brokeCrownHolds`: a crown kept broke for a year with its taxes cut to a twentieth goes from 8 divisions to 2. Its host's pay falls to 47,053 against an income of 72,576, and its levies and refills are held.

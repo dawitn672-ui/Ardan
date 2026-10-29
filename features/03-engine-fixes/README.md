@@ -20,3 +20,16 @@ Rule bugs in traits, duels, the training plan and noble actions.
 ## Tests
 
 `engineRules`, `deathNamesTheHurt` and the others in `test.mjs`. Run them with `node tests/run.mjs --features=engine-fixes`.
+
+## Cycle 2: a revolt that wins founds a realm (`rebels.core.js`; world review B2)
+
+The release marks a revolt's new realm `isRebel` and clears the mark only by folding the realm back into its parent. About fifty places skip rebel realms (diplomacy, alliances, politics and the AI's war checks). A revolt that won or made a white peace so left a frozen, friendless shell: the Hall of Valdhall kept one income for 80 years and fell to legitimacy 0.
+
+**Now.** When a war ends (`A.on('warEnd')`), a rebel realm that fought in it, still stands and is at war with no one becomes a realm of its own:
+- `isRebel` is cleared and `isNew` set;
+- `r.foundedFrom` and `r.founded` record where and when;
+- legitimacy is at least 45, stability at least 40;
+- it keeps the ten-year truce the release's war end gives it with its parent;
+- the news says so.
+
+A rebel realm at war with no one in an old save is cleared at its next month. Test `revoltFounds`.

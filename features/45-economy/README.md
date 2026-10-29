@@ -56,3 +56,14 @@ The plan's bar is that the best trade loop must not out-earn a well-run estate. 
 - **One market per realm, at the capital.** "Every town with a market building" is modelled as a local price in each province, not as separate markets with their own stocks.
 - **Money sinks** (Economy 6) are untouched beyond the release's.
 - **NPC merchants are traffic, not people.** The caravans have no names, and you cannot rob, hire or follow one.
+
+## Cycle 2: prices that came down again (world review F7)
+
+Two causes of prices that only climbed:
+
+1. **A caravan was held to a third of a load.** A load was `max(0.3 × the destination's normal store, 0.15 × the source's)`, and a caravan of half a load or less was not sent. A luxury whose markets use a load a month (ivory, pearls) so never moved. Zanara's ivory sat at 0.4 of its price in a glut, every buyer sat at the ceiling, and ivory ended at ×3.8 in every Known World soak. A caravan now carries at least one load.
+2. **The plan left out each land's appetite.** The world's production was planned without `E.DEMAND_LAND`, so the far goods (silver, jade, paper) were made for a fraction of what the Twin Rivers want, and ended at ×3. The plan now counts each realm's people and rich with their land's appetite, as `E.demand` does.
+
+**The makers answer the price** (`E.supplyYear`, `S.ecoSup`). Once a year, a good whose median market sits above 1.5 times its lore target is made a tenth more; one below 0.75 is made a tenth less, between ×0.5 and ×4. A save without it starts at 1.
+
+**Test** `supplyAnswersPrice`: after 12 years of a Known World game no good's median stands above ×2.2 of its lore target. Ivory reads 1.12 and pearls 1.0, and with the one-load fix no supply factor moves at all.

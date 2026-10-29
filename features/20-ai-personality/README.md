@@ -189,3 +189,15 @@ deterministic.
 - **Found while testing, not caused here:** in the base game, the court view's first draw for a brand-new ruler
   consumes `A.rand` (creating house heads). `aiPersonalityRenderPure` works around it by drawing once first. The
   fix layer's `renderRng` does not cover rulers, so it is not caught there.
+
+## Cycle 2: a realm's humour in each world (world review F3)
+
+**Why.** The same history ran in every seed: Zanara fell in 7 worlds of 8, Kethra lost land in 4 of 4, and Vahra always grew. Each realm's appetite for war was its lore's tradition (`A.AGGRO`) and its ruler's traits, and the lore's opening rulers are fixed.
+
+**The humour.** Each realm now draws once, at its first month, a humour for this world: `r.aiMood`, log-even between 0.55 and 1.6, with a median of 1. It is drawn in the month hook, never on a read.
+
+**What it changes.** The persona's tradition baseline is multiplied by the humour, so a realm's war weight, hazard, rest, bar and weariness all follow it. A hungry Vahra and a quiet one are both possible.
+
+68-casus-belli adds learned caution and the shrunken realm's defence (see its README).
+
+**Test.** `moodVaries` shows each realm drawing its humour within the range, two worlds differing for every realm, and the persona's war weight following the humour.
