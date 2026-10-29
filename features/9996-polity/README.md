@@ -74,6 +74,12 @@ The realm already had a court of named people (56-realm-inside), tempers (20-ai-
 | All wars | 183 | 159 | — |
 | Offices held by named people a realm (council + offices), p10 / median / p90 | 5 / 5 / 5 | 9 / 16 / 20 | 8–20, 100% held (99% at a year's end: a dead holder waits for the New Year) |
 
+**Great Continent** (1 world × 8 years, seed 606, 152 realms): law changes a realm-century 18.7 → 23.8; realms with a change outside taxes and authority 43% → 67%; 14 of 19 elective successions with a recorded vote (991's Felt Council names the Khaganate's heir itself); offices a realm, median 2 → 13, all held; hoarding 0 → 0; civil wars 3 → 2. A two-year A/B of the same seed, twice each: 30.7 / 31.3 s without, 31.6 / 35.3 s with; the Polity's own code (the New Year, the counts, the offices) about 0.35 s of each 2 years, the rest the 190 more people its offices name (1,674 → 1,863) and the machine's noise.
+
+**Political scenes a decade by start path** (`bench.mjs --lives=1 --years=20`, Known World, one 20-year life each, seed 606; po_, ri_court and council scenes): noble 0.5 → 5, merchant 0.5 → 1.5, priest 0 → 2, soldier 0 → 1, peasant 0 → 2.5 (a 4-year life), ruler 0.5 → 2.5. Target 3 / 1.5 / 1.5 / 1 / 0.5 / 5: the ruler is short (the bot proposes no bills; a ruling player now argues the council's bills at their debates).
+
+**Balance** (`bench/balance.mjs --paths=royal,noble --lives-per=4 --years=40`, Known World): every path band holds with and without (noble peak coin 182k → 161k, fame 91 → 94, death age 48 → 57; royal peak coin 196k → 40k, fame 74 → 44, death age 57 → 56). `arcTypes` fails in both, as it must on 8 lives of two paths.
+
 `poOfficesFilled` after the first month: Known World 305/305 and 302/302 offices held, none made new; Great Continent 1,365/1,365 in 152 realms, 37 made new (3%).
 
 **Cost.** One Known World world, 30 years, the same seed with and without: 49.7 s against 52.2 s of wall time (noise is larger than the difference). Inside it, `A.politicsYear` took 3.7 s against 1.1 s (about 90 ms a year more, 0.2% of the run). On the Great Continent (2 years, timed inside the page) the Polity's own code (`POL.year`, petitions and elections, the monthly counts) came to about 100 ms a month against 6–7 s of month (about 1.5%).
