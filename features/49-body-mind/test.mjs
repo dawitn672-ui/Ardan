@@ -149,7 +149,9 @@ export default {
     await pg.evaluate(BOT);
     const r = await pg.evaluate(() => {
       const lives = [];
-      for (const seed of [4921, 4922, 4923, 4924, 4925, 4926, 4927, 4928]) {
+      // sixteen lives: on eight the median sat on the bar's edge either way (cycle 2: 7 with 9996 and 9997 on eight; on
+      // sixteen, 5 before them and 6 with them, the busiest lives now changing 8 to 10 times against at most 7 before)
+      for (const seed of [4921, 4922, 4923, 4924, 4925, 4926, 4927, 4928, 4929, 4930, 4931, 4932, 4933, 4934, 4935, 4936]) {
         const st = ['peasant', 'noble', 'artisan', 'merchant'][seed % 4];
         let silent = 0, changes = 0, maxT = 0;
         const L = B.life({ seed, race: 'human', realm: 'POL-01', status: st, sex: seed % 2 ? 'F' : 'M', startAge: 16 }, ['careful', 'reckless', 'greedy', 'random'][seed % 4], seed % 2 === 0, 45);
@@ -164,7 +166,7 @@ export default {
     });
     const ch = r.map(l => l.changes).sort((a, b) => a - b), med = ch[Math.floor(ch.length / 2)];
     const ok = r.every(l => l.maxT <= 5 && l.silent === 0 && l.withReceipts === l.changes) && med >= 1 && med <= 6;
-    return { ok, detail: `8 bot lives: trait changes per life ${ch.join(', ')} (median ${med}); most traits held ${Math.max(...r.map(l => l.maxT))}; changes logged with their deeds ${r.reduce((a, l) => a + l.withReceipts, 0)} of ${r.reduce((a, l) => a + l.changes, 0)}; traits without a reason ${r.reduce((a, l) => a + l.silent, 0)}` };
+    return { ok, detail: `${r.length} bot lives: trait changes per life ${ch.join(', ')} (median ${med}); most traits held ${Math.max(...r.map(l => l.maxT))}; changes logged with their deeds ${r.reduce((a, l) => a + l.withReceipts, 0)} of ${r.reduce((a, l) => a + l.changes, 0)}; traits without a reason ${r.reduce((a, l) => a + l.silent, 0)}` };
   },
 
   async stagesHaveTheirOwnPlay(pg) {
