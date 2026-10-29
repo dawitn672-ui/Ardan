@@ -485,7 +485,7 @@ POL.TASKS = {
 POL.aiTask = function (r, seat, p) {
   const a = A.RI && A.RI.aims ? A.RI.aims(p) : null, w = a ? a.want : 'order', ES = POL.estState(r);
   const angry = EST.filter(k => ES[k].angry).length, war = A.atWar(r.id).length > 0;
-  if (seat === 'chancellor') return angry ? 'court' : (w === 'peace' ? 'mend' : w === 'order' || w === 'liberty' ? 'draft' : hash(p.id, A.S.year, 't') < .5 ? 'court' : 'mend');
+  if (seat === 'chancellor') return angry ? 'court' : (w === 'peace' && hash(p.id, A.S.year, 'm') < .5 ? 'mend' : w === 'order' || w === 'liberty' ? 'draft' : 'court');
   if (seat === 'marshal') return war || w === 'glory' ? (hash(p.id, A.S.year) < .5 ? 'drill' : 'muster') : r.stability < 45 ? 'peace' : 'drill';
   if (seat === 'treasurer') return (r.treasury || 0) < (r.income || 0) * .5 || w === 'wealth' ? 'press' : POL.holders(r, 'gov').length && hash(p.id, A.S.year, 'a') < .45 ? 'audit' : 'fund';
   if (seat === 'spymaster') return w === 'crown' || w === 'order' ? 'court' : POL.hostiles(r).length ? 'realm' : 'estates';
@@ -515,7 +515,7 @@ POL.taskFx = function (r, seat, t, p) {
   if (seat === 'chancellor') {
     if (t === 'court') { const k = EST.slice().sort((a, b) => ES[a].ap * ES[a].cl - ES[b].ap * ES[b].cl)[0]; mod(k, 2); r.pol.courted = k; }
     if (t === 'draft') r.pol.draft = A.S.year;
-    if (t === 'mend') { const n = (A.neighbors(r.id) || []).filter(x => A.realm(x) && A.realm(x).alive).sort((a, b) => A.relBetween(r.id, a) - A.relBetween(r.id, b))[0]; if (n && A.addRel) A.addRel(r.id, n, 10); }
+    if (t === 'mend') { const n = (A.neighbors(r.id) || []).filter(x => A.realm(x) && A.realm(x).alive).sort((a, b) => A.relBetween(r.id, a) - A.relBetween(r.id, b))[0]; if (n && A.addRel && A.relBetween(r.id, n) < 0) A.addRel(r.id, n, 5); }
   }
   if (seat === 'marshal') {
     if (t === 'drill') r.armyQ = clamp((r.armyQ || 1) + .02, .3, 1.6);

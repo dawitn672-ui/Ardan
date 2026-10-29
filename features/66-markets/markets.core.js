@@ -657,16 +657,19 @@
   // month changed the state, and a market set up on the day it was drawn instead of at the first month could start
   // from other numbers (71-phone found the cargo). They are now made when a life starts or loads, and for an heir at the
   // turn of the month, so drawing never has to.
-  const giveCargo = () => {
+  // A loaded save gets no markets here: a realm founded since the last turn of the month (A.createRealm) has none yet,
+  // and making it on load drew its prices (A.mktInit's A.rf) at a point the unsaved game never did, so the loaded
+  // world was not the saved one (flSaveRoundTrip). It gets its market at the next month, as it would have unsaved.
+  const giveCargo = (markets = true) => {
     try {
       const pc = A.pc(); if (pc && !pc.cargo) pc.cargo = {};
       if (pc && !pc.plan && typeof A.plan === 'function') A.plan(pc);
-      if (typeof A.mkt === 'function' && A.S && A.S.realms) for (const rid of Object.keys(A.S.realms)) if (!A.S.realms[rid].mkt) A.mkt(rid);
+      if (markets && typeof A.mkt === 'function' && A.S && A.S.realms) for (const rid of Object.keys(A.S.realms)) if (!A.S.realms[rid].mkt) A.mkt(rid);
     } catch (e) {}
   };
   for (const k of ['newGame', 'deserialize']) {
     const f = A[k];
-    if (typeof f === 'function') A[k] = function () { const r = f.apply(this, arguments); giveCargo(); return r; };
+    if (typeof f === 'function') A[k] = function () { const r = f.apply(this, arguments); giveCargo(k === 'newGame'); return r; };
   }
-  A.onMonth.push(giveCargo);
+  A.onMonth.push(() => giveCargo(true));
 })();

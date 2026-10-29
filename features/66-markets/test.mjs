@@ -46,7 +46,9 @@ const TESTS = {
     const r = await pg.evaluate(() => {
       const ks = ['grain', 'fish', 'salt', 'wool', 'timber', 'iron', 'horses', 'wine', 'linen', 'furs'], rows = {};
       for (const k of ks) rows[k] = { d: [], p: [], near: [], far: [] };
-      for (const seed of [41, 42, 43]) {
+      // six worlds: on three, one feature's draw of the world's dice (cycle 2: 9992's and 9993's monthly hooks) moved
+      // the median spread across its bar (x1.035 against x1.06) with the market rules unchanged
+      for (const seed of [41, 42, 43, 44, 45, 46]) {
         MTT.world(seed); MTT.months(24);
         // each town's price over the third year, month by month (a granary after the harvest holds months of need,
         // and a full store prices alike everywhere)

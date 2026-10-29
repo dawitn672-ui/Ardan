@@ -31,7 +31,7 @@ if (arg('lives')) {
       A.newGame({ seed, lands: LANDS, race: 'human', realm: LANDS === 'great' ? (P0.ruler ? 'POL-36' : 'POL-58') : P0.realm, status: P0.status, sex: 'M', startAge: 22 });
       const pc = A.pc();
       if (P0.job) { pc.job = { c: 'clergy', r: 3, perf: 50, yrs: 0 }; pc.flags.priest = A.S.year; }
-      if (P0.mil) pc.mil = Object.assign(pc.mil || {}, { rank: P0.mil, xp: 0, realm: pc.realm });
+      if (P0.mil && A.enlist) { A.enlist(pc, false); if (pc.mil) pc.mil.rank = Math.max(pc.mil.rank || 0, P0.mil); }
       if (P0.ruler) A.makeRuler(pc, pc.realm);
       const y0 = A.S.year, ids = [];
       const view = A.eventView;

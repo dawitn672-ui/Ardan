@@ -45,6 +45,8 @@ POL.candsOf = function (r, electors) {
   for (const s in (r.council || {})) add(A.P(r.council[s]));
   for (const h of A.realmHouses(r.id)) if (h.headPid) add(A.P(h.headPid));
   for (const p of POL.peopleIx()[r.id] || []) if ((p.fame || 0) >= 35 || (p.noble && p.noble.rung >= 4)) add(p);
+  // where nobody meets A.electable's bar, the electors choose among the heads of the great houses, as the release does
+  if (!C.length) for (const h of A.realmHouses(r.id).slice().sort((a, b) => A.houseStrength(b) - A.houseStrength(a) || String(a.id).localeCompare(String(b.id))).slice(0, 4)) { const p = h.headPid && A.P(h.headPid); if (live(p) && !p.ruler && !seen.has(p.id) && p.realm === r.id && p.id !== A.S.pc) { seen.add(p.id); C.push(p); } }
   const old = A.P(r.ruler); if (r.gov === 'council' && live(old) && old.id !== A.S.pc) { seen.add(old.id); C.push(old); }
   C.sort((a, b) => (b.fame || 0) - (a.fame || 0) || a.born - b.born || String(a.id).localeCompare(String(b.id)));
   let out = C.filter(p => p.id !== A.S.pc).slice(0, POL.ELECT.cands);
@@ -61,8 +63,11 @@ const feud = (a, b) => { try { return !!(A.BONDS && A.BONDS.mem && A.BONDS.mem(a
 // an elector's score for a candidate, with its parts; pure
 POL.scoreParts = function (r, e, c) {
   const out = [], el = r.pol && r.pol.elect;
-  if (e.id === c.id) { out.push(['Votes for themself', 60]); return out; }
-  const op = Math.round(A.opinion(e, c)); if (op) out.push(['Opinion', op]);
+  if (e.id === c.id) out.push(['Their own name', 25]);
+  // electors want a reign that lasts: past 45 (a human's; other peoples by their own old age), 1.5 a year
+  const age = A.age(c), R = GD.RACES[c.race] || GD.RACES.human, past = Math.round(1.5 * (age - 45 * (R.old || 50) / 50));
+  if (past > 0) out.push(['Old for a crown', -past]);
+  const op = e.id === c.id ? 0 : Math.round(A.opinion(e, c)); if (op) out.push(['Opinion', op]);
   if (POL.estateOf(e) === POL.estateOf(c)) out.push(['Same estate', 15]);
   if (sameFaction(r, e, c)) out.push(['Same faction', 10]);
   const fm = Math.round((c.fame || 0) / 4); if (fm) out.push(['Renown', fm]);

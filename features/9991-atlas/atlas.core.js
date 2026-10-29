@@ -28,6 +28,12 @@
     c: 'caravan talk', t: 'a parent\'s tales', o: 'your own realm', b: 'born knowing it' };
   const P_ = id => (A.S && A.S.prov ? A.S.prov[id] : null);
   const km = (a, b) => { const p = P_(a), q = P_(b); return p && q ? Math.hypot(p.x - q.x, p.y - q.y) : Infinity; };
+  // the map's frame in km. 99-far-lands defines MAP.KX0/KY0/KW/KH (and ZREF) for any frame; without it the release's
+  // frame is the grid at its own cell size from 0,0, so a Known World veil is the same with or without 99
+  const cell = () => MAP.cell || (LORE.map && LORE.map.cell) || 10;
+  const KX0 = () => MAP.KX0 || 0, KY0 = () => MAP.KY0 || 0;
+  const KW = () => MAP.KW || (MAP.gw || LORE.map.gw) * cell(), KH = () => MAP.KH || (MAP.gh || LORE.map.gh) * cell();
+  const ZREF = () => MAP.ZREF || 7000;
   const hash = s => { let h = 2166136261; for (const ch of String(s)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
 
   // ---- knowledge -----------------------------------------------------------------------------------------------------
@@ -200,9 +206,9 @@
       const cv = host || (ctx && ctx.canvas), pc = A.S && A.pc && A.pc();
       if (!AT.fogOn() || !cv || !AT.VEIL_CANVAS[cv.id] || !pc || !A.S.prov) return false;
       const layer = AT.veilLayer(pc); if (!layer) return false;
-      const vx = v ? v.x0 : MAP.KX0, vy = v ? v.y0 : MAP.KY0, vw = v ? v.w : MAP.KW, vh = v ? v.h : MAP.KH;
+      const vx = v ? v.x0 : KX0(), vy = v ? v.y0 : KY0(), vw = v ? v.w : KW(), vh = v ? v.h : KH();
       // only the part of the picture in view is sampled
-      const gw = layer.width, gh = layer.height, sx = (vx - MAP.KX0) / MAP.KW * gw, sy = (vy - MAP.KY0) / MAP.KH * gh, sw = vw / MAP.KW * gw, sh = vh / MAP.KH * gh;
+      const gw = layer.width, gh = layer.height, sx = (vx - KX0()) / KW() * gw, sy = (vy - KY0()) / KH() * gh, sw = vw / KW() * gw, sh = vh / KH() * gh;
       const x0 = Math.max(0, sx), y0 = Math.max(0, sy), x1 = Math.min(gw, sx + sw), y1 = Math.min(gh, sy + sh);
       if (x1 <= x0 || y1 <= y0) return true;
       ctx.save(); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'low';
@@ -274,13 +280,13 @@
 
   // the view on the story column's map: centred on where you are, about 2,400 km across (UI state, never in A.S)
   AT.fit = function (cv) {
-    const pc = A.pc(), P = P_(AT.where(pc)) || P_(pc.home), W = cv.width, H = cv.height, w = Math.min(MAP.KW, 2400), h = w * H / W;
-    return { x0: (P ? P.sx : MAP.KX0 + MAP.KW / 2) - w / 2, y0: (P ? P.sy : MAP.KY0 + MAP.KH / 2) - h / 2, w, h };
+    const pc = A.pc(), P = P_(AT.where(pc)) || P_(pc.home), W = cv.width, H = cv.height, w = Math.min(KW(), 2400), h = w * H / W;
+    return { x0: (P ? P.sx : KX0() + KW() / 2) - w / 2, y0: (P ? P.sy : KY0() + KH() / 2) - h / 2, w, h };
   };
   AT.clamp = function (v) {
-    v.w = Math.max(250, Math.min(MAP.KW * 1.2, v.w));
-    v.x0 = Math.max(MAP.KX0 - v.w * 0.4, Math.min(MAP.KX0 + MAP.KW - v.w * 0.6, v.x0));
-    v.y0 = Math.max(MAP.KY0 - v.h * 0.4, Math.min(MAP.KY0 + MAP.KH - v.h * 0.6, v.y0));
+    v.w = Math.max(250, Math.min(KW() * 1.2, v.w));
+    v.x0 = Math.max(KX0() - v.w * 0.4, Math.min(KX0() + KW() - v.w * 0.6, v.x0));
+    v.y0 = Math.max(KY0() - v.h * 0.4, Math.min(KY0() + KH() - v.h * 0.6, v.y0));
     return v;
   };
   AT.paint = function () {
@@ -296,17 +302,17 @@
     const v = UI.atV && UI.atV.w ? UI.atV : (UI.atV = AT.fit(cv));
     v.h = v.w * H / W;
     if (IM && IM.redraws) IM.redraws.set(cv, () => AT.draw(cv));
-    const zoom = MAP.ZREF / v.w;
+    const zoom = ZREF() / v.w;
     if (IM) IM.zoomNow = zoom;
     try {
       if (!(MAP.ground && MAP.ground(ctx, W, H, v))) {
         ctx.fillStyle = '#1d3b57'; ctx.fillRect(0, 0, W, H);
         if (MAP.img && MAP.img.complete && MAP.img.naturalWidth) {
           if (MAP.big) MAP.relief(ctx, W, H, v);
-          else { const iw = MAP.img.naturalWidth, ih = MAP.img.naturalHeight; ctx.drawImage(MAP.img, v.x0 / MAP.IW * iw, v.y0 / MAP.IH * ih, v.w / MAP.IW * iw, v.h / MAP.IH * ih, 0, 0, W, H); }
+          else { const iw = MAP.img.naturalWidth, ih = MAP.img.naturalHeight; ctx.drawImage(MAP.img, v.x0 / KW() * iw, v.y0 / KH() * ih, v.w / KW() * iw, v.h / KH() * ih, 0, 0, W, H); }
         }
       }
-      const sx = (v.x0 - MAP.KX0) / MAP.KW * MAP.gw, sy = (v.y0 - MAP.KY0) / MAP.KH * MAP.gh, sw = v.w / MAP.KW * MAP.gw, sh = v.h / MAP.KH * MAP.gh;
+      const sx = (v.x0 - KX0()) / KW() * MAP.gw, sy = (v.y0 - KY0()) / KH() * MAP.gh, sw = v.w / KW() * MAP.gw, sh = v.h / KH() * MAP.gh;
       ctx.imageSmoothingEnabled = zoom > 1.4;
       ctx.drawImage(MAP.overlay('political', null, null), sx, sy, sw, sh, 0, 0, W, H);
       ctx.imageSmoothingEnabled = true;
@@ -355,7 +361,7 @@
   AT.bind = function (cv) {
     AT.bound = cv;
     const toKm = ev => { const r = cv.getBoundingClientRect(), v = UI.atV; return [v.x0 + (ev.clientX - r.left) / r.width * v.w, v.y0 + (ev.clientY - r.top) / r.height * v.h]; };
-    const provAt = ev => { const [kx, ky] = toKm(ev), gx = Math.floor((kx - MAP.KX0) / MAP.KW * MAP.gw), gy = Math.floor((ky - MAP.KY0) / MAP.KH * MAP.gh); return gx < 0 || gy < 0 || gx >= MAP.gw || gy >= MAP.gh ? -1 : MAP.grid[gy * MAP.gw + gx]; };
+    const provAt = ev => { const [kx, ky] = toKm(ev), gx = Math.floor((kx - KX0()) / KW() * MAP.gw), gy = Math.floor((ky - KY0()) / KH() * MAP.gh); return gx < 0 || gy < 0 || gx >= MAP.gw || gy >= MAP.gh ? -1 : MAP.grid[gy * MAP.gw + gx]; };
     let drag = null;
     cv.onpointerdown = ev => { drag = { x: ev.clientX, y: ev.clientY, moved: false }; try { cv.setPointerCapture(ev.pointerId); } catch (e) {} };
     cv.onpointermove = ev => {

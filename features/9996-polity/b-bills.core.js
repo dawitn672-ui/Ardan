@@ -283,7 +283,7 @@ RI.session = function (r) {
       const top = t.pro[0] ? t.pro[0][0] : null;
       const b = POL.openBill(r, t.k, top ? top.p : null, 'court', pv ? { pc: { side: pv.side, w: pv.w } } : null);
       if (b) {
-        res = { k: t.k, who: top ? top.p.id : null, bill: true, sup: ids(t.pro), opp: ids(t.con) };
+        res = { k: t.k, who: top ? top.p.id : null, seat: top && top.seat || null, bill: true, sup: ids(t.pro), opp: ids(t.con), yes: null, p: Math.round(b.P * 100), why: (b.why || []).slice(0, 5) };
         // a rich realm's lighter taxes, the treasurer's remit (56's p 100), still lands at once
       }
     }

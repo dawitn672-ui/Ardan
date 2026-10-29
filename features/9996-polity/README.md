@@ -61,7 +61,24 @@ The realm already had a court of named people (56-realm-inside), tempers (20-ai-
 
 ## Numbers
 
-(See the lane report for the runs made while building; the integrator's 10 × 100 run belongs here.)
+`bench.mjs`, Known World, 6 worlds × 60 years (seeds 606 … 99), the build without this feature against the build with it:
+
+| Measure | Without | With | Target |
+| --- | --- | --- | --- |
+| Law changes a realm-century (all groups the build has) | 18.5 (tax, authority, levy) | 19.6 (levy 246 · tax 178 · obligations 83 · authority 78 · commons 76 · justice 62 · trade 57 · faith 5 in 2 worlds) | ≥ 20 |
+| Realms with a change outside taxes and authority | 89% (levies) | 100% | ≥ 60% |
+| Successions in elective, council and theocratic realms with a recorded vote | 0 of 159 | 336 of 336, 2,482 votes named | every one |
+| Taxes at an extreme after 60 years | 55% | 44% | ≤ 60% |
+| Hoarding flags | 0 | 0 | ≤ 2 |
+| Wars of succession + liberty revolts | 14 + 12 | 15 + 11 | within ±30% |
+| All wars | 183 | 159 | — |
+| Offices held by named people a realm (council + offices), p10 / median / p90 | 5 / 5 / 5 | 9 / 16 / 20 | 8–20, 100% held (99% at a year's end: a dead holder waits for the New Year) |
+
+`poOfficesFilled` after the first month: Known World 305/305 and 302/302 offices held, none made new; Great Continent 1,365/1,365 in 152 realms, 37 made new (3%).
+
+**Cost.** One Known World world, 30 years, the same seed with and without: 49.7 s against 52.2 s of wall time (noise is larger than the difference). Inside it, `A.politicsYear` took 3.7 s against 1.1 s (about 90 ms a year more, 0.2% of the run). On the Great Continent (2 years, timed inside the page) the Polity's own code (`POL.year`, petitions and elections, the monthly counts) came to about 100 ms a month against 6–7 s of month (about 1.5%).
+
+The number of elective successions moved from 159 to 336 in one 6-world run and not at all in a 30-year single-world probe (15 against 16); worth watching in the integrator's 10 × 100.
 
 ## Rules kept
 

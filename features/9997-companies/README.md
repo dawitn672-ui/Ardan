@@ -234,6 +234,18 @@ The battalion records themselves are 673 KB on the Great Continent (`coEveryBatt
 
 The test is red without this feature too. The final build puts both layers inside the plan's band of 10–20, with the officer's above the soldier's. The fights that went the wrong way are a good result losing a fight that no result would have won. That is a sign of how chaotic a frozen fight is: a different order changes which division retreats on which day, and so the random stream that follows. It is not a sign that the result pushes the wrong way.
 
+## Balance (`bench/balance.mjs --workers=1`, the Known World league, 72 lives)
+
+| | Without 9997 | With 9997 |
+| --- | --- | --- |
+| Out of band | 0 | 1: artisan median peak coin 300,037 (band 5,000–300,000) |
+| Artisan peak coin, the 12 lives sorted (thousands) | 2 15 16 34 84 95 **129** 133 140 258 444 608 | 0 9 20 36 54 159 **300** 365 413 454 612 671 |
+| Check win rate | 50.2% | 49.1% |
+
+The artisan lives fight in no war. Their numbers move because the world they live in takes another course: other wars, other fights, other markets. The median of 12 sits in a gap of the spread (159 to 300). Every other path, and every death, fame and arc band, holds. I did not widen the band in `bench/targets.mjs`.
+
+**Changed outside this folder:** 72-two-scales' `twoScalesChronicle` now skips a fight in which your division was pulled out of the line. That fight's panels come when the fight it left is over, which `twoScalesOtherLives` holds. In this world the first finished fight of the test happened to be one of those.
+
 ## Limits
 
 - **Far templates use the Known World's naming.** 991's words ("Second Thousand of the Left Wing") are not used for battalions yet.
