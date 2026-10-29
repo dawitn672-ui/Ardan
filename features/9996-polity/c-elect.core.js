@@ -142,6 +142,9 @@ POL.voteLine = function (r, rec) {
 const baseElect = A.electRuler;
 A.electRuler = function (r) {
   try {
+    // a lore-named heir (991's Felt Council raising Ulgai in the Khaganate) is the lore's choice, not a vote's
+    const kh = r && r.id === 'POL-58' && A.S.fw && A.S.fw.kh, lore = kh && kh.heir ? A.P(kh.heir) : null;
+    if (lore && lore.alive && !lore.ruler && lore.id !== A.S.pc) return baseElect.apply(this, arguments);
     if (POL.on && POL.elective(r) && r.alive && !r.isRebel) {
       const rec = POL.election(r, 'death');
       const w = rec && A.P(rec.winner);

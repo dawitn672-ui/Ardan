@@ -62,12 +62,17 @@ export default {
         fresh: causeOf({ lastHurt: 'the Hell Boar', _lh: 'lung fever', _lhDay: old, _hTick: 80 }),
         again: causeOf({ lastHurt: 'the Hell Boar', _lh: 'the Hell Boar', _lhDay: old, _hTick: 80 }),
         stale: causeOf({ lastHurt: 'a wound gone bad', _lh: 'a wound gone bad', _lhDay: old, _hTick: 0 }),
-        nameless: (() => { Object.assign(pc, { lastHurt: 'lung fever', _lh: 'lung fever', _lhDay: old, _hTick: 80, _lhAnon: 0, health: 60 });
-          A.applyFx(pc, { health: -200 }, {}); return causeOf({ _lhAnon: pc._lhAnon }); })(),
+        // the nameless case is settled by A.naturalCause, a draw that can itself land on "lung fever" (1 in 5 for a
+        // teen, 1 in 8 for an adult): one draw tipped over when 9996-polity shifted the dice (seed 21: "lung fever").
+        // So it is drawn 40 times: the old fever must not be the cause every time, and the first draw is shown.
+        nameless: (() => { const out = []; for (let i = 0; i < 40; i++) { Object.assign(pc, { lastHurt: 'lung fever', _lh: 'lung fever', _lhDay: old, _hTick: 80, _lhAnon: 0, health: 60 });
+          A.applyFx(pc, { health: -200 }, {}); out.push(causeOf({ _lhAnon: pc._lhAnon })); } return out; })(),
       };
     });
+    const same = r.nameless.filter(c => c === 'lung fever').length;
+    r.nameless = `${r.nameless.find(c => c !== 'lung fever') || r.nameless[0]} (the old fever ${same} of 40 draws, as a natural cause can draw it)`;
     const ok = r.ticked && r.fresh === 'the Hell Boar' && r.again === 'the Hell Boar' && r.stale && r.stale !== 'a wound gone bad' &&
-      r.nameless && r.nameless !== 'lung fever';
+      same < 20;
     return { ok, detail: `the daily tick notes health: ${r.ticked}; gored today after an old fever: "${r.fresh}"; gored again by the same beast: "${r.again}"; ` +
       `health long gone from an old wound: "${r.stale}"; an event's nameless wound after an old fever: "${r.nameless}"` };
   },

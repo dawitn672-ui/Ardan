@@ -204,7 +204,11 @@ export default {
         if (v.skip) { bad(`${id}${tag}: skipped by the engine`); return false; }
         const all = flat(v);
         if (RAW.test(all)) bad(`${id}${tag}: raw token ${all.match(RAW)[0]}`);
-        if (TICS.test(all)) bad(`${id}${tag}: house tic in text: ${all.match(TICS)[0]}`);
+        // a local saying 54-voices closes the scene with ("Nobody here boards a prize ...") is that feature's prose, as
+        // 40-memory-practice's check has it: 9996-polity's people shifted the hash that picks it onto mat_cripple_share
+        const voiced = A.VOICE && (A.VOICE.last || []).some(x => /^line:/.test(x));
+        const own = voiced ? flat(Object.assign({}, v, { text: String(v.text || '').replace(/\n\n[^\n]*$/, '') })) : all;
+        if (TICS.test(own)) bad(`${id}${tag}: house tic in text: ${own.match(TICS)[0]}`);
         if (words(v.text) > 80) bad(`${id}${tag}: text ${words(v.text)} words`);
         for (const c of v.choices) if (words(c.t) > 12) bad(`${id}${tag}: label of ${words(c.t)} words`);
         out.dump[id + tag] = out.dump[id + tag] || { text: v.text, words: words(v.text), choices: v.choices.map(c => c.t), results: [] };

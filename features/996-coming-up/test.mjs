@@ -2,8 +2,8 @@
 export default {
   async comingUpShows(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 8, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 18 });
-      T.play(1);
+      // the first seed whose peasant lives the year (cycle 2: seed 8's dies of a fever in 1106 once 9997 moves the dice)
+      for (let seed = 8; seed < 14; seed++) { T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 18 }); T.play(1); if (A.pc() && A.pc().alive) break; }
       const pc = A.pc(), S = A.S;
       const t = Object.values(S.people).find(p => p.alive && p.id !== pc.id && A.isAdult(p));
       A.schedule({ type: 'event', ev: 'ni_borrow_repaid', ctx: { pid: t.id, amt: '12 suns' }, forced: true }, 200);

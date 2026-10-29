@@ -84,10 +84,15 @@ const KIT2 = () => {
       }
       A.S.queue = []; UI.ov = null; return A.pc();
     },
+    // a soldier alive after a year in the war: the next seed if this one dies in it (cycle 2: seed 5956 deserts and hangs)
     soldier(seed) {
-      A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
-      const pc = A.pc(); A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(pc); A._idIdx = null; A.advance(2); A._idIdx = null;
-      UI.screen = 'game'; UI.set.hints = false; TT2.play(1); A.S.queue = []; UI.ov = null; return A.pc();
+      for (let s = seed; s < seed + 6; s++) {
+        A.newGame({ seed: s, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
+        const pc = A.pc(); A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(pc); A._idIdx = null; A.advance(2); A._idIdx = null;
+        UI.screen = 'game'; UI.set.hints = false; TT2.play(1); A.S.queue = []; UI.ov = null;
+        if (A.pc() && A.pc().alive && A.pc().mil) break;
+      }
+      return A.pc();
     },
     ruler(seed) {
       A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });

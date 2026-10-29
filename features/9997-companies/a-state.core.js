@@ -564,7 +564,7 @@
           if (!b.hon.some(h => h[0] === nm && h[1] === S.year)) {
             b.hon.push([nm, S.year]); if (b.hon.length > 8) b.hon.shift();
             CO.stats.honours++;
-            if (A.WC && A.WC.put && CO.mineIs(d, i)) A.WC.put('honour', { p: P.id, a: d.r, n: lost, x: CO.bnName(d, i) });
+            if (A.WC && A.WC.put && CO.mineIs(d, i)) A.WC.put('honour', { p: P.id, a: d.r, n: lost, x: CO.bnName(d, i), w: [A.S.pc].concat(CO.whoKey(d, i, 4)) });
             const pc = A.pc();
             if (CO.mineIs(d, i) && pc && pc.alive) { pc.flags.co_honour_pend = S.year; CO.queueEv('co_honour', { bn: CO.bnName(d, i), battle: nm }); }
           }
@@ -725,7 +725,7 @@
       const R = foe && A.realm(foe); if (R) R.levy = (R.levy || 0) + n;
       CO.stats.turned++;
       if (CO.mineBn(d, i) && pc && pc.alive) CO.queueEv('co_turncoat', { capn: c.name, pid: c.pid || null, coy: CO.coName(d, i, s, true), foe: foe ? A.realmShort(foe) : 'the other side' });
-      else if (A.WC && A.WC.put) A.WC.put('turn', { a: d.r, b: foe, n, x: CO.coName(d, i, s) });
+      else if (A.WC && A.WC.put) A.WC.put('turn', { p: d.loc, a: d.r, b: foe, n, x: CO.coName(d, i, s), w: CO.whoKey(d, i, s, c) });
     } else if (CO.mineBn(d, i) && pc && pc.alive && !(pc.flags.co_transfer && S.year - pc.flags.co_transfer < 2)) {
       CO.queueEv('co_transfer_request', { capn: c.name, coy: CO.coName(d, i, s, true), pid: c.person ? c.person.id : null });
     }
@@ -841,7 +841,7 @@
     S.coForY = S.coForY || {};
     if (S.coForY[P.id] !== S.year) {
       S.coForY[P.id] = S.year;
-      if (A.WC && A.WC.put) A.WC.put('forage', { p: P.id, a: d.r, n: d.men, x: d.name });
+      if (A.WC && A.WC.put) A.WC.put('forage', { p: P.id, a: d.r, n: d.men, x: d.name, w: CO.leaderKey(d) });
       const pc = A.pc();
       if (pc && pc.alive && pc.mil && pc.mil.div === d.id && !(pc.flags.co_forage && S.year - pc.flags.co_forage < 1)) CO.queueEv('co_forage', { place: P.name });
     }
@@ -914,4 +914,36 @@
   if (GD.SUP && !GD.SUP.train) GD.SUP.train = { name: 'Baggage train', men: 60, eq: { horses: 20 }, fx: { spd: -0.1 }, desc: 'Wagons and mules: bread for 40 days, not 30. Slows the march a tenth.' };
   // 57's record learns three kinds
   if (A.WC && A.WC.KINDS) Object.assign(A.WC.KINDS, { honour: ['battle honour', 1], forage: ['army forages', 1], turn: ['company turns coat', 1] });
+
+  // ---- 57's record: who and where for the three kinds this feature writes
+  // a captain who is not a person is set down by name under a key of his own (as 57 keeps orders' names)
+  CO.whoKey = function (d, i, slot, c) {
+    c = c || CO.cap(d, i, slot);
+    if (!c) return [];
+    if (c.pid) return [c.pid];
+    const key = 'cap:' + c.seed;
+    if (A.WC && A.WC.keepName) A.WC.keepName(key, (slot === 4 ? 'Senior Captain ' : 'Captain ') + c.name);
+    return [key];
+  };
+  // the man who led a division: its commander, its army's general, else its senior captain
+  CO.leaderKey = function (d) {
+    if (d.cmd && A.P(d.cmd)) return [d.cmd];
+    const a = d.army && A.army(d.army);
+    if (a && a.gen && A.P(a.gen)) return [a.gen];
+    const i = d.bs ? d.bs.findIndex(b => !isSup(b.c)) : -1;
+    return i >= 0 ? CO.whoKey(d, i, 4) : [];
+  };
+  if (A.WC && typeof A.WC.line === 'function') {
+    const line = A.WC.line;
+    A.WC.line = function (e) {
+      if (!e || !['forage', 'honour', 'turn'].includes(e.k)) return line.apply(this, arguments);
+      const when = `In ${A.WC.month ? A.WC.month(e) : 'the year'} ${e.y}`, P = e.p != null && A.S.prov[e.p] ? A.S.prov[e.p].name : 'the field';
+      const R = id => (id ? A.WC.name(id) || (A.realm(id) ? A.realmShort(id) : 'another realm') : 'another realm');
+      const who = (e.w || []).map(id => A.WC.name(id)).filter(Boolean), fmt = n => (A.fmt ? A.fmt(n) : String(n));
+      const x = String(e.x || 'a battalion');
+      if (e.k === 'forage') return `${when}, the ${x} of ${R(e.a)}${who[0] ? `, under ${who[0]},` : ''} ate the harvest of ${P}: ${fmt(e.n || 0)} men with no bread.`;
+      if (e.k === 'honour') return `${when}, the ${x} of ${R(e.a)} won the honour of ${P}, losing ${fmt(e.n || 0)} men and holding${who[0] ? `, with ${who[0]} in its ranks` : ''}.`;
+      return `${when}, ${who[0] || 'a captain'} took the ${x} of ${R(e.a)} over to ${R(e.b)} near ${P}: ${fmt(e.n || 0)} men.`;
+    };
+  }
 })();

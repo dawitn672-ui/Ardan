@@ -234,10 +234,12 @@ export default {
   // voices only change words: the same seed played with and without them reaches the same world and random stream
   async sameWorld(pg) {
     const r = await pg.evaluate(() => {
-      const run = off => {
+      // the first seed whose life lasts long enough to be voiced (cycle 2: 9997's war moves the dice, and seed 9090's
+      // peasant is hanged in her first year); both sides always play the same seed
+      const run = (off, seed) => {
         A.VOICE.OFF = off;
         try {
-          A.newGame({ seed: 9090, race: 'human', realm: 'POL-18', status: 'peasant', sex: 'F', startAge: 18 });
+          A.newGame({ seed, race: 'human', realm: 'POL-18', status: 'peasant', sex: 'F', startAge: 18 });
           const end = A.S.year + 15;
           let voiced = 0;
           for (let g = 0; g < 5000 && A.S.year < end && A.pc().alive; g++) {
@@ -260,7 +262,7 @@ export default {
           return { rng: JSON.stringify(A.rngState), people: JSON.stringify(people).length + ':' + T.hash(people), year: A.S.year, voiced };
         } finally { A.VOICE.OFF = false; }
       };
-      return { off: run(true), on: run(false) };
+      for (let seed = 9090; seed < 9096; seed++) { const on = run(false, seed); if (on.voiced > 0 || seed === 9095) return { off: run(true, seed), on, seed }; }
     });
     const ok = r.off.rng === r.on.rng && r.off.people === r.on.people && r.on.voiced > 0 && r.off.voiced === 0;
     return { ok, detail: ok ? `15 years in Tamar with and without voices (${r.on.voiced} events voiced): the same random stream and the same people` : `worlds differ or nothing voiced: ${JSON.stringify(r)}` };
