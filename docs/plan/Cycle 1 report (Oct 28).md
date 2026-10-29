@@ -26,8 +26,8 @@ One fix found at integration: the release's court plot ("An invitation") reached
 | J | 9990 journeys (real days by road, stops, 16 road scenes) and 9991 atlas (seen, heard of, unknown; the veil; Story / Map) | Built by default; CI run 76: 206 of 207 tests, both leagues green |
 | I | 9992 identity (arms, motto, named companions, inner voices, thoughts that ripen), 9993 chapters (three aims a stage, dynasty legacies), 9994 share cards | Built by default; CI run 76: 206 of 207 tests, both leagues green |
 | E | 9995 trade roads (lore goods and coins, hand-to-hand caravans at a caravan's pace, 21 chokepoints, ventures) | Built by default; CI run 76: 206 of 207 tests, both leagues green |
-| WD | 9997 companies: every battalion's companies, captains, morale, food and pay; courier orders; enemy intents | Done, still `.wip` |
-| P | 9996 polity: offices, laws, bills, councils, estates, vassal contracts, elections, factions with the meter | Building |
+| WD | 9997 companies: every battalion's companies, captains, morale, food and pay; courier orders; enemy intents | Built by default; CI run on batch 3 |
+| P | 9996 polity: offices, laws, bills, councils, estates, vassal contracts, elections, factions with the meter | Built by default; CI run on batch 3 |
 
 ## What integration found
 
@@ -47,6 +47,32 @@ Each batch's CI run found failures that each lane's own tests had not. They were
 
   The child-gap rate is against about 1.0 with the floor off.
 - **Timing on a slow runner.** A hover tip took the first Escape. A vital bar's 1.6 s glow was caught mid-flash. The phone sheet's rise was measured mid-motion (373 of 375 px, CI run 76). Each test now waits for the state it needs, not for a fixed time.
+
+### Batch 3 (unit war and politics): 17 failures, each traced
+
+- **Real bugs, fixed:**
+  - A faction's power tooltip left out the estates' part.
+  - The Polity overrode the lore's heir of the Khaganate.
+  - Unit war's forage, honour and turn records named no one and no place.
+  - The War Room's company panels had numbers without tooltips, and the organisation tooltip left out morale.
+  - Pilgrims met the same shrine scene at every shrine (two new scenes).
+  - Keshi and Sylvari had almost no local words.
+- **Test harness:** `T.play` dropped prompts outside the journal, so a replay met a different queue. It now skips through `A.skipPrompt`.
+- **Frames:** the chapter card and a battle's reckoning are frames, not repeats (`LF.FRAMES`).
+- **Samples widened, bars kept.** Each was checked on a bigger sample first:
+
+  | Test | Lives | Result |
+  |---|---|---|
+  | Traits | 16 | median 6, against 5 before |
+  | Bonds | 12 | 11.4%, against 14.2% before |
+  | Repeats | 9 | 14.1% |
+  | Death causes, wounds, fight screens, voices | wider, by the Polity's lane | — |
+
+  Three single-life tests take the next seed when the life ends before its check.
+- **For cycle 2 to judge:**
+  - In the busiest lives, traits now change 8 to 10 times.
+  - The memories' share of opinion change has fallen.
+  - Civil wars are about 35% lower with the Polity (6 worlds).
 
 ## What the process taught
 
