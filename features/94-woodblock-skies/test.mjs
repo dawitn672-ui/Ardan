@@ -109,12 +109,13 @@ export default {
 
   // the print on a phone: 390 x 140 proportions, full width of the sheet, the cartouche inside the print
   async skyPhone(pg, errs, { browser, file }) {
-    const { openPage } = await import('../71-phone/screens.mjs');
+    const { openPage, SETTLE } = await import('../71-phone/screens.mjs');
     const { ctx, pg: p } = await openPage(browser, file, 'se', errs);
     let r;
     try {
       await p.evaluate(() => { A.newGame({ seed: 9431, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 }); UI.screen = 'game'; UI.set.hints = false; });
-      await p.evaluate(EVENT); await p.waitForTimeout(200);
+      // the phone sheet rises in (96's motion): measure once its animations end, not after a fixed 200 ms (CI run 76: 373 of 375)
+      await p.evaluate(EVENT); await p.waitForTimeout(200); await p.evaluate(SETTLE);
       r = await p.evaluate(() => {
         const s = document.querySelector('svg.woodcut[data-print=sky]'), c = document.querySelector('.sky-cart');
         if (!s) return null;
