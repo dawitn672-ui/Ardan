@@ -131,6 +131,22 @@ A.defEvents([
       { t: 'Start for home at once', r: 'You have seen it. That was the point. You are on the road again by noon.', fx: { wil: 0.2, jr: { home: true } } },
       { t: 'Stay. Make a life here', r: 'You take a room by the month. Home will have to get used to the idea.', fx: { jr: { settle: true }, happy: 1 } },
     ] },
+  { id: 'jr_shrine_other', title: 'Another stair, at {dest}', trigger: true, setup: fill('jr_shrine'), cond: onRoad,
+    text: 'You know the look of a shrine town now: the bottle-sellers at the gate, the beggars who know the feast days, the inn that doubles its price at the last bend. At {dest} the stair is shorter and the stone is darker. {days} days on the road. The keepers here do not know your face.',
+    choices: [
+      { t: 'Kneel where the locals kneel, not the pilgrims', r: 'A woman with a basket of bread makes room for you without a word. It is quieter on her side of the rail.', fx: { piety: 5, happy: 2, jr: { home: true } } },
+      { t: 'Compare it with the last shrine, aloud', check: { s: 'persuasion', s2: 'int', d: 45 },
+        win: { r: 'A keeper laughs and tells you what the other shrine owes this one, and what it has never paid back.', fx: { skill: { persuasion: 1 }, piety: 2, jr: { home: true, heard: 'around' } } },
+        lose: { r: 'The keeper does not laugh. You are shown the door, and the price of candles goes up.', fx: { coin: -2, piety: 1, jr: { home: true } } } },
+      { t: 'Buy nothing, see the stone, go', r: 'It takes an hour. You are back on the road before the bells.', fx: { piety: 2, jr: { home: true, fast: true } } },
+    ] },
+  { id: 'jr_shrine_again', title: 'Back at {dest}', trigger: true, setup: fill('jr_shrine'), cond: onRoad,
+    text: 'You have knelt at {dest} before. The stair is the same and the keepers are older. Someone has put a new roof on the spring. The bottle-seller at the gate remembers you, or says he does.',
+    choices: [
+      { t: 'Go up the stair as you did before', r: 'Your knees remember it worse than you do. At the top the stone is where you left it.', fx: { piety: 5, health: -2, jr: { home: true } } },
+      { t: 'Ask what has changed since you were here', r: 'Two keepers dead, a quarrel with the bishop, the roof. You hear all of it over a long supper.', fx: { piety: 2, happy: 3, coin: -2, jr: { home: true, heard: 'around' } } },
+      { t: 'Light a candle for whoever came with you last time', r: 'The keeper does not ask who. Most of them do this, the second time.', fx: { piety: 4, happy: -1, jr: { home: true } } },
+    ] },
   { id: 'jr_shrine', title: 'The shrine at {dest}', trigger: true, setup: fill('jr_shrine'), cond: onRoad,
     text: 'The shrine at {dest} is smaller than the songs make it, and older. Pilgrims go up the last stair on their knees. Keepers sell water from the spring in clay bottles, and candles, and beds, and advice. You have walked {days} days for this.',
     choices: [

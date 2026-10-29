@@ -20,11 +20,14 @@ export default {
           return { shown: sh.shown, rep: sh.repeats, crep: cs.repeats, prompts, years: L.years, master: m.fl_st_master || 0, conf: m.du_ch_confession || 0 };
         } finally { A.LF.OFF = false; }
       };
-      const lives = [
-        { seed: 9701, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 16 },
-        { seed: 9702, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 16, passive: true },
-        { seed: 9703, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 16 },
+      // nine lives, each kind three times: on three, one life's course (a long prison term, a knighthood refused
+      // year after year) moved the share by several points (cycle 2: 19.1% on three with 9996 and 9997, 13.2% without)
+      const kinds = [
+        { race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 16 },
+        { race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 16, passive: true },
+        { race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 16 },
       ];
+      const lives = [0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => Object.assign({ seed: 9701 + i }, kinds[i % 3]));
       const sum = side => lives.map(o => run(side === 'off', o, 40)).reduce((a, x) => ({ shown: a.shown + x.shown, rep: a.rep + x.rep, crep: a.crep + x.crep, prompts: a.prompts + x.prompts, years: a.years + x.years,
         master: Math.max(a.master, x.master), conf: Math.max(a.conf, x.conf) }), { shown: 0, rep: 0, crep: 0, prompts: 0, years: 0, master: 0, conf: 0 });
       const off = sum('off'), on = sum('on');

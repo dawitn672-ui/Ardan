@@ -174,7 +174,7 @@
       ['The houses choose the {ruler}, and expect to be paid back.', 'power money'],
       ['A {lord} sits in the Pepper Hall and votes with his shares.', 'power money'],
     ],
-    swap: [['merchant house', 'w1']],
+    swap: [['merchant house', 'w1'], ['trading house', 'w1'], ['council', 'council']],
   };
 
   V['CUL-12'] = { // Skyfolk: the Roof, the White Stair, butter and wool, sky burial

@@ -59,11 +59,15 @@
     return Math.max(n, seen ? 1 : 0);
   };
   LF.last = (pc, id) => (pc && pc.flags && isObj(pc.flags.ev) && typeof pc.flags.ev[id] === 'number' ? pc.flags.ev[id] : null);
+  // frames: scenes that open a recurring part of the game rather than tell a story, each showing that part's own
+  // numbers (9993's chapter card, one a chapter; 34's reckoning after each battle). They are not counted as repeats.
+  // A feature may add its own; an invitation, an illness or a shrine is a scene, and stays counted.
+  LF.FRAMES = LF.FRAMES || ['chp_card', 'bs_reckoning'];
   // the share of scenes this life has shown that were repeats: sum of (n - 1) over sum of n
   LF.share = function (pc) {
     const m = pc && isObj(pc.evN) ? pc.evN : {};
     let shown = 0, rep = 0;
-    for (const k in m) { const n = +m[k] || 0; shown += n; rep += Math.max(0, n - 1); }
+    for (const k in m) { if (LF.FRAMES.includes(k)) continue; const n = +m[k] || 0; shown += n; rep += Math.max(0, n - 1); }
     return { shown, repeats: rep, pct: shown ? Math.round(1000 * rep / shown) / 10 : 0 };
   };
   // what makes a scene a new case: another person in it, another gathering, custom, record, illness or incident

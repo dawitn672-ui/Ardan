@@ -190,7 +190,7 @@
       ['Nothing here is settled until the {council} meets under the First Oak.', 'power law'],
       ['When an elf dies here, the {w2} is left standing, and nobody cuts it.', 'death kin land'],
     ],
-    swap: [],
+    swap: [['council', 'council'], ['elders', 'council'], ['warden', 'lord'], ['forester', 'lord'], ['the queen', 'ruler']],
   };
 
   V['CUL-20'] = { // Grovers of the Coast: Eldergrove, longships, silence sold by the year

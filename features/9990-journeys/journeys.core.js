@@ -385,7 +385,15 @@
     }
     // a visit, a caravan, a pilgrimage: you are there; the scene asks what next (and the road home starts after a while)
     j.wait = A.absDay() + 12; j.there = 1;
-    const ev = { visit: 'jr_arrive_visit', caravan: 'jr_caravan_end', pilgrim: 'jr_shrine' }[j.k];
+    // a pilgrim's shrine: the first one of a life, another one later, or one already knelt at (pc.jrShrines: place -> year)
+    let shrine = 'jr_shrine';
+    if (j.k === 'pilgrim') {
+      const seen = pc.jrShrines && typeof pc.jrShrines === 'object' ? pc.jrShrines : (pc.jrShrines = {});
+      shrine = seen[j.to] != null ? 'jr_shrine_again' : Object.keys(seen).length ? 'jr_shrine_other' : 'jr_shrine';
+      if (!A.EV[shrine]) shrine = 'jr_shrine';
+      seen[j.to] = A.S.year;
+    }
+    const ev = { visit: 'jr_arrive_visit', caravan: 'jr_caravan_end', pilgrim: shrine }[j.k];
     if (j.k === 'caravan') ctx.wage = String(JR.wage(j));
     if (ev && A.EV[ev]) A.queue({ type: 'event', ev, ctx, forced: true, lfFrom: 'journey' });
   };
