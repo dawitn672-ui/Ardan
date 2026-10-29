@@ -33,6 +33,21 @@
   };
   // move the siege: + brings the fall nearer, - pushes it away (in days)
   SG.push = function (P, days) { if (P && P.sgBy) P.sgd = clamp((P.sgd || 0) + days, 0, (P.sgNeed || 30) + 1); };
+  // an infant or a child (A.stage): the siege happens to them, and they choose nothing in it
+  SG.young = pc => !!pc && ['infant', 'child'].includes(A.stage(pc));
+  SG.CHILD = {
+    walls: P => `${P.name} is shut in. The bread is short, and your mother gives you her share and says she is not hungry.`,
+    sacked: P => `The enemy comes over the walls of ${P.name}. Someone carries you down into a cellar and holds a hand over your mouth until the noise stops.`,
+    terms: P => `${P.name} opens its gates on terms. Strange soldiers in the street; your family keeps you indoors for a month.`,
+  };
+  SG.childLine = function (pc, P, k) {
+    if (!P) return;
+    const key = 'sgChild:' + P.id + ':' + k, f = pc.flags || (pc.flags = {});
+    if (k === 'walls' && f.sgChildAt === P.id + ':' + (P.sgBy || '')) return;
+    if (k === 'walls') f.sgChildAt = P.id + ':' + (P.sgBy || '');
+    A.log(SG.CHILD[k](P), k === 'walls' ? '' : 'bad');
+    return key;
+  };
   SG.fromCtx = ctx => (ctx && ctx.loc != null ? A.S.prov[ctx.loc] : null);
 
   // effect keys for siege events: siege (a share of the whole siege: + brings the fall nearer), sgSick (camp
@@ -69,6 +84,10 @@
     if (S.sgAsked === key) return;
     S.sgAsked = key;
     if (A.S.queue.some(q => q && q.ctx && q.ctx.siege)) return;
+    // a child inside the walls is not asked to sortie or to speak for terms: the siege scenes are queued forced, and a
+    // forced item skips its cond (A.stillValid), so the gate is here (cycle 2, design A3: "Go out with the night sortie"
+    // at age 0). The child's side of it is a line in the story, once a siege.
+    if (SG.young(pc)) { SG.childLine(pc, R.P, 'walls'); return; }
     // forced: headReady drops an event seen in the last 240 days, which would leave one choice per siege. The setup
     // still drops the scene once the siege is over.
     A.queue({ type: 'event', ev: R.side === 'out' ? 'sg_camp' : 'sg_walls', forced: true, ctx: { loc: R.P.id, siege: 1 } });
@@ -87,7 +106,8 @@
     try {
       if (P) { P.sgSick = 0; P.sgTerms = 0; }
       if (pc && pc.alive && was === 'out') A.queue({ type: 'event', ev: 'sg_taken', ctx: { loc: P.id, siege: 1 } });
-      if (pc && pc.alive && was === 'in') A.queue({ type: 'event', ev: surrendered ? 'sg_terms' : 'sg_sacked', ctx: { loc: P.id, siege: 1 } });
+      if (pc && pc.alive && was === 'in' && SG.young(pc)) SG.childLine(pc, P, surrendered ? 'terms' : 'sacked');
+      else if (pc && pc.alive && was === 'in') A.queue({ type: 'event', ev: surrendered ? 'sg_terms' : 'sg_sacked', ctx: { loc: P.id, siege: 1 } });
     } catch (e) { console.error('sieges', e); }
     return r;
   };

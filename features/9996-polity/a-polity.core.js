@@ -328,7 +328,9 @@ POL.officesOf = function (p) {
   for (const x of r && r.pol ? [r] : []) for (const o of x.pol.off || []) if (o.pid === p.id) out.push([x, o]);
   return out;
 };
-POL.MAX_HELD = 2;   // a person may hold two offices of one realm (a governor who is also the shire's magistrate)
+POL.MAX_HELD = 2;
+// a person may hold two offices of one realm (a governor who is also the shire's magistrate)
+POL.MAJOR = ['gov', 'mag', 'warden'];   // great offices; a reeve's or a collector's is a lesser one
 
 // candidates for office k in realm r, from people who exist: council-free adults of the realm whose estate fits.
 // [{p, w}]; pure.

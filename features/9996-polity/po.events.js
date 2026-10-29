@@ -173,8 +173,8 @@ A.defEvents([
   // queued when the player's realm goes to war and the player owes men by their oath
   { id: 'po_muster', title: 'The muster is called', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p) && C.noble(p),
-    setup: (p, ctx) => { if (!ctx.men || !ctx.rid) ctx.skip = true; if (!aliveP(ctx.pid)) ctx.pid = null; },
-    text: 'A rider with the crown\'s badge at your gate: {realmT} is at war, and your oath owes {men} men at the muster within the month. Scutage, the price of keeping them at home, is {scut}. Your steward counts the harvest and looks at you.',
+    setup: (p, ctx) => { if (!ctx.men || !ctx.rid) ctx.skip = true; if (!aliveP(ctx.pid)) ctx.pid = null; ctx.homeLine = POX() && POX().pcHouse(p) ? 'Your steward counts the harvest and looks at you.' : 'You have no harvest to count, only the men who follow you.'; },
+    text: 'A rider with the crown\'s badge at your gate: {realmT} is at war, and your oath owes {men} men at the muster within the month. Scutage, the price of keeping them at home, is {scut}. {homeLine}',
     choices: [
       { t: 'Send the men', r: 'They go down the road in a long file, your colours at the head. Some will not come back. The crown marks your name.', fx: { fame: 1, honor: 1, happy: -1 } },
       { t: 'Pay the scutage instead', req: (p, C, ctx) => p.coin >= (ctx.scutN || 0), r: 'The money goes to the crown\'s clerks and the men stay at the harvest. It is lawful. It is not loved.', fx: { poMuster: 'scutage' } },

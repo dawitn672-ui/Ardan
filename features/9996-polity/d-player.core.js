@@ -30,7 +30,8 @@ POL.pcHouse = function (pc) {
 POL.pcOath = function (pc) {
   const r = POL.myRealm(pc); if (!r || !pc.noble || pc.ruler) return null;
   const h = POL.pcHouse(pc), c = h ? POL.contractOf(h, r) : (pc.pol && pc.pol.contract) || { tax: POL.pos(r, 'obl'), levy: POL.pos(r, 'obl'), rights: [] };
-  const R = GD.NOBLE_RUNGS[GD.NOBLE_RUNGS.length - 1 - (pc.noble.rung || 0)] || {};
+  // GD.NOBLE_RUNGS runs from the franklin (rung 0) to the duke (rung 8): a knight owes 5 men, a count 4,000
+  const R = GD.NOBLE_RUNGS[Math.max(0, Math.min(GD.NOBLE_RUNGS.length - 1, pc.noble.rung || 0))] || {};
   return { r, h, c, men: Math.round((R.levy || 0) * POL.OBL_LEVY[c.tax != null ? c.levy : 1]), share: POL.OBL_TAX[c.tax] };
 };
 const oathOf = pc => { const o = POL.pcOath(pc); if (!o) return null; if (o.h) { o.h.contract = o.c; return o.c; } POL.pcPol(pc).contract = o.c; return o.c; };
@@ -66,6 +67,8 @@ POL.seekScore = function (r, o, p, appointer) {
   const g = pc && p.id === pc.id ? (A.S.yearActs['riGift_' + (appointer && appointer.id)] || 0) : 0;
   if (g) parts.push(['Your gifts', [0, 10, 13, 15][Math.min(3, g)]]);
   if ((p.fame || 0) >= 20) parts.push(['Renown', Math.round((p.fame || 0) / 10)]);
+  // a man who already holds one is a man with less time: the appointer weighs it
+  const n = POL.officesOf(p).length + (p.office ? 1 : 0); if (n) parts.push([`${n === 1 ? 'An office' : n + ' offices'} held already`, -15 * n]);
   return parts;
 };
 // what the player could seek: each office of their realm, its bar, its rival and the odds; pure
@@ -73,9 +76,12 @@ POL.seekable = function (pc) {
   const r = POL.myRealm(pc); if (!r || !r.pol || pc.ruler || !A.isAdult(pc)) return [];
   const mine = POL.pcEstate(pc), out = [];
   const pool = POL.pool(r);
+  const held = POL.officesOf(pc).map(([, o]) => o), major = held.filter(o => POL.MAJOR.includes(o.k)).length + (pc.office ? 1 : 0), minor = held.length - held.filter(o => POL.MAJOR.includes(o.k)).length;
   for (const o of r.pol.off) {
     if (o.pid === pc.id) continue;
     const want = POL.offEst(r, o.k), bar = [];
+    // one great office (a shire, a bench, a march, or a council seat) and one lesser (a town or a port) at most
+    if (POL.MAJOR.includes(o.k) ? major >= 1 : minor >= 1) bar.push(POL.MAJOR.includes(o.k) ? (pc.office ? 'free of your council seat: it is a great office already' : 'free of the great office you hold') : 'free of the town office you hold');
     if (!want.includes(mine)) bar.push(`of ${want.map(e => POL.estName(e, r.id)).join(' or ')}`);
     if (o.k === 'gov' && !(pc.noble && pc.noble.rung >= 2) && mine !== 'army') bar.push('a landed lord or an officer');
     if (o.k === 'warden' && !((pc.mil && pc.mil.rank >= 5) || (pc.noble && pc.noble.rung >= 3))) bar.push('an officer of rank 5, or a lord');
@@ -124,8 +130,10 @@ POL.pcYear = function (pc) {
     // a new ruler sweeps out a third of the officers
     if (r.pol.ru && o.ruSeen && o.ruSeen !== r.ruler && A.chance(.35)) { o.pid = null; A.log(`The new ruler of ${r.short} names another ${POL.offName(o.k, r.id).toLowerCase()} in your place.`, 'bad'); continue; }
     o.ruSeen = r.ruler;
-    pc.coin += o.pay || 0;
-    if (RI.purse) RI.purse(pc, 'office', o.pay || 0, 'Pay of your offices');
+    // two offices cost a deputy: the lesser one pays half
+    const pay = Math.round((o.pay || 0) * (held.length > 1 && !POL.MAJOR.includes(o.k) ? .5 : 1));
+    pc.coin += pay;
+    if (RI.purse) RI.purse(pc, 'office', pay, 'Pay of your offices');
     A.trainSkill && A.trainSkill(pc, SKILL[o.k], .5);
   }
   // one scene a year from the offices held, booked through 21's budget
@@ -146,7 +154,7 @@ POL.pcYear = function (pc) {
 A.on && A.on('warStart', function (w) {
   try {
     const pc = A.pc(); if (!POL.on || !pc || !pc.alive || !w) return;
-    const o = POL.pcOath(pc); if (!o || !o.men) return;
+    const o = POL.pcOath(pc); if (!o || !o.men || o.men < 1) return;
     if (!(w.att || []).includes(o.r.id) && !(w.def || []).includes(o.r.id)) return;
     const seen = pc.flags.ev && pc.flags.ev.po_muster;
     if (seen != null && A.S.year - seen < 3) return;
@@ -301,7 +309,7 @@ A.applyFx = function (pc, fx, ctx) {
       if (fx.poMuster === 'refuse') {
         if (ru && pc.rel[ru.id]) A.addOp(pc, ru, -20);
         const P = POL.pcPol(pc), prev = P.breach; P.breach = A.S.year;
-        if (prev && A.S.year - prev < 10 && A.EV.po_revoke) A.queue({ type: 'event', ev: 'po_revoke', ctx: { pid: r.ruler, rid: r.id, realmT: r.short } });
+        if (prev && A.S.year - prev < 10 && A.EV.po_revoke && POL.pcHouse(pc) && (pc.noble.rung || 0) >= 4) A.queue({ type: 'event', ev: 'po_revoke', ctx: { pid: r.ruler, rid: r.id, realmT: r.short } });
       }
     }
     if (fx.poOath && r) {
