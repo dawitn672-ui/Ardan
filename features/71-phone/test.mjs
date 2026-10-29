@@ -131,6 +131,8 @@ export default {
   async phoneDesktopSame(pg, errs, { browser, file }) {
     const { ctx, pg: p } = await openPage(browser, file, 'desk', errs);
     const crypto = await import('node:crypto');
+    // 91's vital bars glow with a ▲/▼ chip for 1.6 s after a value changes (a timer, not a CSS animation)
+    const calm = () => p.waitForFunction(() => !document.querySelector('.lk-flashing, .lk-dlt'), null, { timeout: 4000 }).catch(() => {});
     const names = ['title', 'create', 'life', 'people', 'path', 'holdings', 'realm', 'world-map', 'chronicle', 'person', 'event', 'duel', 'battle', 'menu', 'death'];
     const diff = [], noise = []; let n = 0, els = 0;
     // every element's box, and the markup's length
@@ -165,10 +167,10 @@ export default {
         const s = SCREENS.find(x => x.name === name);
         await p.evaluate(() => { const st = document.getElementById('ph-css'); if (st) st.disabled = false; UI.PHONE.off = false; });
         // both sides measured after the same call (a redraw), so a transition started by the first draw is not a difference
-        await p.evaluate(s.js); await p.evaluate(() => { UI.render(); window.scrollTo(0, 0); }); await p.evaluate(SETTLE);
+        await p.evaluate(s.js); await p.evaluate(() => { UI.render(); window.scrollTo(0, 0); }); await p.evaluate(SETTLE); await calm();
         const a = await p.evaluate(SIG); const ia = await still(); const bufA = lastBuf;
         await p.evaluate(() => { document.getElementById('ph-css').disabled = true; UI.PHONE.off = true; UI.render(); window.scrollTo(0, 0); });
-        await p.evaluate(SETTLE);
+        await p.evaluate(SETTLE); await calm();
         const b = await p.evaluate(SIG); const ib = await still();
         n++; els += a.length;
         // with the layout the same, a few dozen pixels at one control's edge are anti-aliasing of a sub-pixel position

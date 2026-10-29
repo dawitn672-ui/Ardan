@@ -266,7 +266,19 @@ const baseSession = RI.session;
 RI.session = function (r) {
   if (!POL.on || !r || !r.alive || r.isRebel || !A.COUNCIL) return baseSession.apply(this, arguments);
   const pc = A.pc(), playerRules = !!(pc && pc.ruler === r.id);
-  if (playerRules) return baseSession.apply(this, arguments);   // the player hears the push as a petition (56's ri_court_push)
+  if (playerRules) {
+    // the player hears the loudest push as a petition (56's ri_court_push); in a year it is not heard, the council
+    // brings it as a bill, which the ruling player then argues at its debates (po_debate)
+    const out = baseSession.apply(this, arguments);
+    try {
+      POL.init(r);
+      if (!r.pol.bill && !A.S.queue.some(q => q.ev === 'ri_court_push')) {
+        const t = RI.agendaOf(RI.tally(r), true, r);
+        if (t && t.pro[0]) POL.openBill(r, t.k, t.pro[0][0].p, 'court');
+      }
+    } catch (e) { console.error('[po] ruler bill', e); }
+    return out;
+  }
   A.polInit && A.polInit(r);
   POL.init(r);
   if (!r.riLaw0) r.riLaw0 = { authority: r.laws.authority != null ? r.laws.authority : 1, tax: (r.laws && r.laws.tax) || 1 };
