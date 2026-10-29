@@ -26,8 +26,8 @@ One fix found at integration: the release's court plot ("An invitation") reached
 | J | 9990 journeys (real days by road, stops, 16 road scenes) and 9991 atlas (seen, heard of, unknown; the veil; Story / Map) | Built by default; CI run 76: 206 of 207 tests, both leagues green |
 | I | 9992 identity (arms, motto, named companions, inner voices, thoughts that ripen), 9993 chapters (three aims a stage, dynasty legacies), 9994 share cards | Built by default; CI run 76: 206 of 207 tests, both leagues green |
 | E | 9995 trade roads (lore goods and coins, hand-to-hand caravans at a caravan's pace, 21 chokepoints, ventures) | Built by default; CI run 76: 206 of 207 tests, both leagues green |
-| WD | 9997 companies: every battalion's companies, captains, morale, food and pay; courier orders; enemy intents | Built by default; CI run on batch 3 |
-| P | 9996 polity: offices, laws, bills, councils, estates, vassal contracts, elections, factions with the meter | Built by default; CI run on batch 3 |
+| WD | 9997 companies: every battalion's companies, captains, morale, food and pay; courier orders; enemy intents | Green on CI run 80 (89dfb45) |
+| P | 9996 polity: offices, laws, bills, councils, estates, vassal contracts, elections, factions with the meter | Green on CI run 80 (89dfb45) |
 
 ## What integration found
 
@@ -48,7 +48,9 @@ Each batch's CI run found failures that each lane's own tests had not. They were
   The child-gap rate is against about 1.0 with the floor off.
 - **Timing on a slow runner.** A hover tip took the first Escape. A vital bar's 1.6 s glow was caught mid-flash. The phone sheet's rise was measured mid-motion (373 of 375 px, CI run 76). Each test now waits for the state it needs, not for a fixed time.
 
-### Batch 3 (unit war and politics): 17 failures, each traced
+### Batch 3 (unit war and politics): 17 failures, each traced; green on CI run 80
+
+Run 79 left one: 9996 wrapped each court scene's setup over 67's memory wrap, which must stay outermost. The court words now come through `A.ctxTokens`.
 
 - **Real bugs, fixed:**
   - A faction's power tooltip left out the estates' part.
