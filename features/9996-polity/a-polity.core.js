@@ -286,7 +286,8 @@ const OFF_TYPE = {
 POL.offName = function (k, rid) {
   const r = A.realm(rid), T = r && OFF_TYPE[r.type];
   if (T && T[k]) return T[k];
-  try { const V = A.VOICE, c = V && V.realmCult && V.realmCult(rid), w = c && V.word && k === 'gov' ? V.word(c, 'lord') : null; if (w && k === 'gov' && /hald/i.test(w)) return w.charAt(0).toUpperCase() + w.slice(1) + "'s man"; } catch (e) {}
+  // a governor holds his shire as the crown's lord there: the realm's own word for a lord (54-voices), where it has one
+  try { const V = A.VOICE, c = V && V.realmCult && V.realmCult(rid), w = c && V.word && k === 'gov' ? V.word(c, 'lord') : null; if (w) return w.charAt(0).toUpperCase() + w.slice(1); } catch (e) {}
   return GD.POL_OFFICES[k].n;
 };
 // who may hold office k under the realm's law; pure

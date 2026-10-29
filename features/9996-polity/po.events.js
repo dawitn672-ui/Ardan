@@ -31,7 +31,7 @@ A.defEvents([
     setup: (p, ctx) => { const r = A.realm(ctx.rid); if (!r || !r.pol || !ctx.pk || !ctx.estate || r.pol.bill) ctx.skip = true; if (!ctx.pid) ctx.pid = null; },
     text: 'A roll of parchment as long as a man, sealed by the hundred: {estate} ask for {bill}. They wait in the yard in their best clothes and do not go home. Your steward says they will stand there until you answer, and that they are within their rights.',
     choices: [
-      { t: 'Bring their bill before the council', r: 'You take the roll and give it to the clerks. A cheer goes up in the yard. The council will count it every sixty days, and so will they.', fx: { poPet: 'grant', fame: 1 } },
+      { t: 'Bring their bill before the {councilT}', r: 'You take the roll and give it to the clerks. A cheer goes up in the yard. The {councilT} will count it every sixty days, and so will they.', fx: { poPet: 'grant', fame: 1 } },
       { t: 'Refuse it', r: 'You send them home. They go, slowly, and talk all the way. Nobody in the yard forgets the answer.', fx: { poPet: 'refuse', wil: 1 } },
       { t: 'Receive the leaders and promise to think on it', check: { s: 'persuasion', s2: 'ins', d: 45 },
         win: { r: 'You give their leaders wine and your whole attention for an hour. They leave with nothing in writing and are pleased with it.', fx: { poEst: { comm: 1 }, happy: 1 } },
@@ -88,12 +88,12 @@ A.defEvents([
   { id: 'po_case_land', title: 'A boundary stone', trigger: true, cool: 8,
     cond: (p, C) => C.adult(p) && C.holds(p, 'mag'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
-    text: 'A lord\'s steward and a free farmer of {shire} both claim a strip of meadow. The boundary stone has moved, the farmer says, a yard a year for ten years. The steward says stones do not walk. Both look at you.',
+    text: 'A {lordT}\'s steward and a free farmer of {shire} both claim a strip of meadow. The boundary stone has moved, the farmer says, a yard a year for ten years. The steward says stones do not walk. Both look at you.',
     choices: [
-      { t: 'Find for the lord', r: 'The meadow goes to the lord. The steward bows. The farmer goes home and sharpens nothing, yet.', fx: { poCase: 'nob>comm', coin: 15 } },
+      { t: 'Find for the {lordT}', r: 'The meadow goes to the {lordT}. The steward bows. The farmer goes home and sharpens nothing, yet.', fx: { poCase: 'nob>comm', coin: 15 } },
       { t: 'Find for the farmer', r: 'The stone goes back where the farmer says it was. The steward writes to his master that night.', fx: { poCase: 'comm>nob', honor: 1 } },
       { t: 'Have it measured from the old charter', check: { s: 'stewardship', s2: 'int', d: 50 },
-        win: { r: 'The charter is found and the chain run out. The stone has moved. The lord pays the farmer and blames his steward.', fx: { poCase: 'comm', fame: 2 } },
+        win: { r: 'The charter is found and the chain run out. The stone has moved. The {lordT} pays the farmer and blames his steward.', fx: { poCase: 'comm', fame: 2 } },
         lose: { r: 'The charter is illegible and the chain is short. You split the meadow, and both men hate you.', fx: { poCase: '>nob', happy: -1 } } },
     ] },
   { id: 'po_case_debt', title: 'A merchant\'s debt', trigger: true, cool: 8,
@@ -105,16 +105,16 @@ A.defEvents([
       { t: 'Excuse the debt for the rotten cloth', r: 'The knight thanks you as one gentleman to another. The merchant tears his bond in the street.', fx: { poCase: 'nob>burg', coin: 10 } },
       { t: 'Send them to settle it between them', r: 'They settle it, in the end, at a tenth of what was owed. Neither will come to you again.', fx: { wil: 1, fame: -1 } },
     ] },
-  { id: 'po_case_poach', title: 'Taken in the lord\'s wood', trigger: true, cool: 8,
+  { id: 'po_case_poach', title: 'Taken in the wood', trigger: true, cool: 8,
     cond: (p, C) => C.adult(p) && C.holds(p, 'mag'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
-    text: 'The verderers bring in a boy of {shire} with a hare and a snare. His mother stands at the back. The law is a hand, or a year\'s labour. The lord\'s man says the wood has been stripped this winter.',
+    text: 'The verderers bring in a boy of {shire} with a hare and a snare. His mother stands at the back. The law is a hand, or a year\'s labour. The {lordT}\'s man says the wood has been stripped this winter.',
     choices: [
-      { t: 'Give him the year\'s labour', r: 'The boy works the lord\'s ditches for a year. The verderers are satisfied. His mother does not look at you in the market.', fx: { poCase: 'nob>comm' } },
-      { t: 'A fine, and let him go', r: 'His mother pays the fine with the money for seed. The boy runs home. The lord\'s man writes it down.', fx: { poCase: 'comm>nob', honor: 1 } },
+      { t: 'Give him the year\'s labour', r: 'The boy works the {lordT}\'s ditches for a year. The verderers are satisfied. His mother does not look at you in the market.', fx: { poCase: 'nob>comm' } },
+      { t: 'A fine, and let him go', r: 'His mother pays the fine with the money for seed. The boy runs home. The {lordT}\'s man writes it down.', fx: { poCase: 'comm>nob', honor: 1 } },
       { t: 'Ask why the village is hungry', check: { s: 'persuasion', s2: 'ins', d: 45 },
         win: { r: 'The answer is a bad harvest and a high rent. You have the boy fined a penny and write to the crown about the rent.', fx: { poCase: 'comm', fame: 2, piety: 1 } },
-        lose: { r: 'Nobody will say it in front of the lord\'s man. You give him the labour and feel it.', fx: { poCase: 'nob>comm', happy: -2 } } },
+        lose: { r: 'Nobody will say it in front of the {lordT}\'s man. You give him the labour and feel it.', fx: { poCase: 'nob>comm', happy: -2 } } },
     ] },
   { id: 'po_case_heresy', title: 'A wrong prayer', trigger: true, cool: 8,
     cond: (p, C) => C.adult(p) && C.holds(p, 'mag'),
@@ -206,7 +206,7 @@ A.defEvents([
   { id: 'po_revoke', title: 'Forfeit', trigger: true, cool: 5,
     cond: (p, C) => C.adult(p) && C.noble(p),
     setup: (p, ctx) => { if (!aliveP(ctx.pid)) ctx.skip = true; },
-    text: 'Twice you have kept your men at home when the crown called. {them} has asked the council to declare your lands forfeit. A friend at court sends word: there is a week, perhaps, before the vote.',
+    text: 'Twice you have kept your men at home when the crown called. {them} has asked the {councilT} to declare your lands forfeit. A friend at court sends word: there is a week, perhaps, before the vote.',
     choices: [
       { t: 'Ride to court and kneel', r: 'You kneel in the hall in front of everyone. It is remembered as long as the forfeit would have been, and costs less.', fx: { them: { op: 15 }, fame: -3, honor: -1 } },
       { t: 'Pay a heavy fine', req: (p) => p.coin >= 200, r: 'Two hundred suns, and an oath sworn again in the cathedral. The vote is not held.', fx: { coin: -200, them: { op: 5 } } },
@@ -316,7 +316,7 @@ A.defEvents([
   { id: 'po_arrears', title: 'Pay day passes', w: 2, cool: 5,
     cond: (p, C) => C.adult(p) && C.soldier(p),
     setup: (p, ctx) => { const r = myR(p); if (!r || !r.pol || (r.treasury || 0) > 0) { ctx.skip = true; return; } ctx.rid = r.id; },
-    text: 'The paymaster\'s table stays empty for the second month. In the lines the men talk of the crown\'s debts and of the lord who pays his own on time. A sergeant asks you what an officer thinks.',
+    text: 'The paymaster\'s table stays empty for the second month. In the lines the men talk of the crown\'s debts and of the {lordT} who pays his own on time. A sergeant asks you what an officer thinks.',
     choices: [
       { t: 'Tell them the crown will pay', check: { s: 'command', s2: 'wil', d: 50 },
         win: { r: 'They believe you, for now. The pay comes a month later, and short, but it comes.', fx: { fame: 1, poEst: { army: 1 } } },
@@ -350,8 +350,8 @@ A.defEvents([
   // queued when forfeit lands are to be granted and the player stands for them or has a say (POL.openFief)
   { id: 'po_fief_vote', title: 'Forfeit lands', trigger: true, cool: 2,
     cond: (p, C) => C.adult(p),
-    setup: (p, ctx) => { const r = A.realm(ctx.rid); if (!r || !r.pol || !r.pol.fief || !ctx.houseT) ctx.skip = true; ctx.role = ctx.cand ? 'Your name is one of three before the crown' : 'The council will be asked whom it backs'; },
-    text: 'The heads of {houseT} are on spikes over the gate of {realmT}, and half their lands are the crown\'s to give. {role}. For sixty days every lord in the realm remembers who his friends are.',
+    setup: (p, ctx) => { const r = A.realm(ctx.rid); if (!r || !r.pol || !r.pol.fief || !ctx.houseT) ctx.skip = true; ctx.role = ctx.cand ? 'Your name is one of three before the crown' : 'The {councilT} will be asked whom it backs'; },
+    text: 'The heads of {houseT} are on spikes over the gate of {realmT}, and half their lands are the crown\'s to give. {role}. For sixty days every {lordT} in the realm remembers who his friends are.',
     choices: [
       { t: 'Write to the councillors at once', check: { s: 'diplomacy', s2: 'int', d: 50 },
         win: { r: 'Your letters go out the same night, and three of them are answered warmly. It is a start.', fx: { fame: 1, skill: { diplomacy: 1 } } },
@@ -372,3 +372,20 @@ A.defEvents([
         lose: { r: 'The question is taken as a complaint. The crown\'s regard cools.', fx: { fame: -1, happy: -1 } } },
     ] },
 ]);
+
+// the court speaks the place's own words (54-voices): {councilT} and {lordT} are the realm's word for its council and
+// its lords ("tendaru" and "wesabi" in a Keshi court), or plain English where the culture has none
+(function () {
+  const V = A.VOICE;
+  const local = (p, ctx) => {
+    const r = A.realm((ctx && ctx.rid) || p.ruler || (p.noble ? p.noble.realm : p.realm)), cid = V && V.realmCult ? V.realmCult(r ? r.id : p.realm) : null;
+    const w = k => { try { return cid && V.word ? V.word(cid, k) : null; } catch (e) { return null; } };
+    if (!ctx.councilT) ctx.councilT = w('council') || 'council';
+    if (!ctx.lordT) ctx.lordT = w('lord') || 'lord';
+  };
+  for (const id in A.EV) {
+    if (!/^po_/.test(id)) continue;
+    const e = A.EV[id], base = e.setup;
+    e.setup = function (p, ctx) { local(p, ctx); return base ? base.apply(this, arguments) : undefined; };
+  }
+})();
