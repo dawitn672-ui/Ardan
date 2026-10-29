@@ -210,7 +210,8 @@ POL.billCount = function (r) {
 POL.debate = function (r) {
   const b = r.pol.bill, pc = A.pc();
   const mine = pc && pc.alive && (pc.ruler === r.id || (pc.office && pc.realm === r.id && (r.council || {})[pc.office] === pc.id));
-  if (mine && A.EV.po_debate && !b.scene && !A.S.queue.some(q => q.ev === 'po_debate')) {
+  const last = pc && pc.flags && pc.flags.ev && pc.flags.ev.po_debate;
+  if (mine && A.EV.po_debate && !b.scene && !(last != null && A.S.year - last < (A.EV.po_debate.cool || 4)) && !A.S.queue.some(q => q.ev === 'po_debate')) {
     b.scene = A.S.year;
     const sd = POL.sides(r, b.k), foe = A.P(b.opp[0]), friend = A.P(b.sup[0]);
     A.queue({ type: 'event', ev: 'po_debate', ctx: { rid: r.id, bill: RI.PUSH[b.k].t, pid: foe && foe.alive ? foe.id : null, foeName: foe ? A.fullName(foe, false) : 'an old lord', friendName: friend ? A.fullName(friend, false) : 'nobody', dd: Math.round(45 + 20 * Math.abs(sd.m)) } });
@@ -249,7 +250,7 @@ POL.endBill = function (r, yes, why) {
     A.log(`${r.short}: the bill for ${P.t} ${yes ? 'passes' : 'fails'}${yes ? '' : ' (' + String(why || 'no majority').toLowerCase() + ')'}.`, yes ? 'crown' : 'warn');
     if (yes && A.EV.po_bill_passed && pc.ruler !== r.id && A.isAdult(pc)) {
       const mine = POL.pcEstate(pc), g = (GD.POL_LAWS[b.g].ap[mine][b.to] || 0) - (GD.POL_LAWS[b.g].ap[mine][b.from] || 0);
-      if (g < 0 && !(pc.flags.ev && pc.flags.ev.po_bill_passed && A.S.year - pc.flags.ev.po_bill_passed < 4)) A.queue({ type: 'event', ev: 'po_bill_passed', ctx: { bill: P.t, estate: POL.estName(mine, r.id), realmT: r.short } });
+      if (g < 0 && !(pc.flags.ev && pc.flags.ev.po_bill_passed && A.S.year - pc.flags.ev.po_bill_passed < 8)) A.queue({ type: 'event', ev: 'po_bill_passed', ctx: { bill: P.t, estate: POL.estName(mine, r.id), realmT: r.short } });
     }
   }
 };

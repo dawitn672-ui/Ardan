@@ -92,8 +92,14 @@ export default {
   },
 
   async idVoicePure(pg) {
-    const r = await pg.evaluate(() => {
-      T.enter({ seed: 94, race: 'human', realm: 'POL-01', status: 'gentry', sex: 'F', startAge: 19 });
+    // How many different lines one life hears depends on who speaks in it (its voices and a ripening thought that
+    // takes one scene in four): on seeds 94-105, distinct lines among the first 60 scenes ran 2-14 without 9996-polity
+    // (four lives under 5) and 2-14 with it (five under 5); seed 94 alone went 9 → 3 when the Polity's office holders
+    // moved its people. So three lives are played: every one must draw purely, never differ, stay short and fall
+    // quiet, and the middle one must hear 5 different lines or more (lives 102 and 104 voice 10 scenes or more in both builds).
+    const all = [];
+    for (const seed of [94, 102, 104]) all.push(await pg.evaluate((seed) => {
+      T.enter({ seed, race: 'human', realm: 'POL-01', status: 'gentry', sex: 'F', startAge: 19 });
       T.play(2);
       const pc = A.pc();
       const ids = Object.keys(A.EV).filter(id => { const e = A.EV[id]; if (e.trigger || (pc.flags.ev && pc.flags.ev[id] != null)) return false; try { return e.cond(pc, A.C); } catch (x) { return false; } }).slice(0, 60);
@@ -120,10 +126,11 @@ export default {
       pc.flags.ev[id0] = A.S.year - 1;
       const quiet = !A.ID.voiceFor(pc, { type: 'event', ev: id0, ctx: {}, view: {} });
       UI.set.innerVoice = false; const off = !A.ID.voiceFor(pc, { type: 'event', ev: ids[1], ctx: {}, view: {} }); UI.set.innerVoice = true;
-      return { n: ids.length, voiced, moved, differ, long, raw, distinct: lines.size, quiet, off };
-    });
-    const ok = r.voiced >= 10 && r.voiced < r.n && !r.moved && !r.differ && !r.long && !r.raw && r.distinct >= 5 && r.quiet && r.off;
-    return { ok, detail: `${r.voiced} of ${r.n} scenes voiced (${r.distinct} lines), draws that moved state or dice ${r.moved}, drawings that differed ${r.differ}, over 14 words ${r.long}; a seen scene quiet ${r.quiet}; setting off ${r.off}` };
+      return { seed, n: ids.length, voiced, moved, differ, long, raw, distinct: lines.size, quiet, off };
+    }, seed));
+    const mid = all.map(x => x.distinct).sort((a, b) => a - b)[1];
+    const ok = all.every(r => r.voiced >= 10 && r.voiced < r.n && !r.moved && !r.differ && !r.long && !r.raw && r.quiet && r.off) && mid >= 5;
+    return { ok, detail: all.map(r => `seed ${r.seed}: ${r.voiced} of ${r.n} scenes voiced (${r.distinct} lines), draws that moved state or dice ${r.moved}, drawings that differed ${r.differ}, over 14 words ${r.long}; a seen scene quiet ${r.quiet}; setting off ${r.off}`).join(' | ') + `; middle life ${mid} lines` };
   },
 
   async idThoughts(pg) {

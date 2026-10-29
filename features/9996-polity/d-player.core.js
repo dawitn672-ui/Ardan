@@ -129,7 +129,8 @@ POL.pcYear = function (pc) {
     A.trainSkill && A.trainSkill(pc, SKILL[o.k], .5);
   }
   // one scene a year from the offices held, booked through 21's budget
-  const o = held.length ? held[Math.floor(POL.hash(pc.id, A.S.year) * held.length)] : null;
+  // every other year (a hash of the life and the year), so an office is a part of the life and not its calendar
+  const o = held.length && POL.hash(pc.id, A.S.year, 'off') < .5 ? held[Math.floor(POL.hash(pc.id, A.S.year) * held.length)] : null;
   if (o && !A.S.queue.some(q => q.ctx && q.ctx.poOff)) {
     const [r, off] = o, ev = { gov: 'po_graft', reeve: 'po_tolls', mag: 'po_case_' + ['land', 'debt', 'poach', 'heresy'][Math.floor(POL.hash(pc.id, A.S.year, 'c') * 4)], warden: 'po_march_raid', customs: 'po_customs' }[off.k];
     // a scene a year at most, and never the same one inside its cooldown (an office is not the same scene each spring)

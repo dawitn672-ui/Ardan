@@ -9,7 +9,7 @@ const mine = (p, ctx) => { const o = offOf(ctx); return !!(o && o.pid === p.id);
 A.defEvents([
   // ------------------------------------------------------------------------------------------------ bills
   // queued at a debate on a bill in the player's realm, when the player rules or sits on the council (POL.debate)
-  { id: 'po_debate', title: 'The bill is argued', trigger: true, cool: 1,
+  { id: 'po_debate', title: 'The bill is argued', trigger: true, cool: 4,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { const r = A.realm(ctx.rid); if (!r || !r.pol || !r.pol.bill || !ctx.bill) ctx.skip = true; if (!ctx.pid) ctx.skip = true; },
     text: 'The hall is full for the bill for {bill}. {them} has the floor and spends it on the old charters, one by one. {friendName} looks to you. The clerks have their pens up. Whatever is said now will be counted at the next sitting.',
@@ -39,7 +39,7 @@ A.defEvents([
     ] },
 
   // queued when a bill passes that the player's own estate opposed (POL.endBill)
-  { id: 'po_bill_passed', title: 'The law is cried', trigger: true, cool: 4,
+  { id: 'po_bill_passed', title: 'The law is cried', trigger: true, cool: 8,
     cond: (p, C) => C.adult(p) && !C.ruler(p),
     setup: (p, ctx) => { if (!ctx.bill || !ctx.estate) ctx.skip = true; },
     text: 'A crier reads it at the market cross in {realmT}: {bill}, by order of the crown. Around you {estate} take it badly. A man spits. Another says it will be undone in a year, if the right people are pressed.',
@@ -53,7 +53,7 @@ A.defEvents([
 
   // ------------------------------------------------------------------------------------------------ offices
   // the governor's yearly choice: how much of the shire's tax sticks to your fingers (POL.pcYear)
-  { id: 'po_graft', title: 'The shire\'s accounts', trigger: true, cool: 3,
+  { id: 'po_graft', title: 'The shire\'s accounts', trigger: true, cool: 5,
     cond: (p, C) => C.adult(p) && C.holds(p, 'gov'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
     text: 'The rolls of {shire} come in at the quarter: hearth money, tolls, fines. Your clerk shows you where the numbers could be smaller and nobody the wiser. Every governor before you did it. One of them was hanged for it.',
@@ -75,7 +75,7 @@ A.defEvents([
       { t: 'Give up the shire quietly', r: 'You resign before you are dismissed. Nothing is written down, and nothing is forgotten.', fx: { poOff: 'lose', fame: -1 } },
     ] },
   // the reeve's yearly choice: the tolls of the market
-  { id: 'po_tolls', title: 'Market tolls', trigger: true, cool: 3,
+  { id: 'po_tolls', title: 'Market tolls', trigger: true, cool: 5,
     cond: (p, C) => C.adult(p) && C.holds(p, 'reeve'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
     text: 'The guildmasters of {shire} meet in the hall over the market, and you sit at the head of the table. The carters want the tolls eased. The town wants its walls mended, and walls are paid for by tolls.',
@@ -85,7 +85,7 @@ A.defEvents([
       { t: 'Leave them as they are', r: 'Nobody is pleased and nobody is angry, which in a reeve is called wisdom.', fx: { poToll: 0, wil: 1 } },
     ] },
   // the magistrate's four cases (POL.pcYear picks one by a hash of the life and the year)
-  { id: 'po_case_land', title: 'A boundary stone', trigger: true, cool: 4,
+  { id: 'po_case_land', title: 'A boundary stone', trigger: true, cool: 8,
     cond: (p, C) => C.adult(p) && C.holds(p, 'mag'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
     text: 'A lord\'s steward and a free farmer of {shire} both claim a strip of meadow. The boundary stone has moved, the farmer says, a yard a year for ten years. The steward says stones do not walk. Both look at you.',
@@ -96,7 +96,7 @@ A.defEvents([
         win: { r: 'The charter is found and the chain run out. The stone has moved. The lord pays the farmer and blames his steward.', fx: { poCase: 'comm', fame: 2 } },
         lose: { r: 'The charter is illegible and the chain is short. You split the meadow, and both men hate you.', fx: { poCase: '>nob', happy: -1 } } },
     ] },
-  { id: 'po_case_debt', title: 'A merchant\'s debt', trigger: true, cool: 4,
+  { id: 'po_case_debt', title: 'A merchant\'s debt', trigger: true, cool: 8,
     cond: (p, C) => C.adult(p) && C.holds(p, 'mag'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
     text: 'A cloth merchant of {shire} holds a knight\'s bond for two hundred suns, two years past due. The knight says the cloth was rotten. The merchant says the knight has a new horse. The bond is real.',
@@ -105,7 +105,7 @@ A.defEvents([
       { t: 'Excuse the debt for the rotten cloth', r: 'The knight thanks you as one gentleman to another. The merchant tears his bond in the street.', fx: { poCase: 'nob>burg', coin: 10 } },
       { t: 'Send them to settle it between them', r: 'They settle it, in the end, at a tenth of what was owed. Neither will come to you again.', fx: { wil: 1, fame: -1 } },
     ] },
-  { id: 'po_case_poach', title: 'Taken in the lord\'s wood', trigger: true, cool: 4,
+  { id: 'po_case_poach', title: 'Taken in the lord\'s wood', trigger: true, cool: 8,
     cond: (p, C) => C.adult(p) && C.holds(p, 'mag'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
     text: 'The verderers bring in a boy of {shire} with a hare and a snare. His mother stands at the back. The law is a hand, or a year\'s labour. The lord\'s man says the wood has been stripped this winter.',
@@ -116,7 +116,7 @@ A.defEvents([
         win: { r: 'The answer is a bad harvest and a high rent. You have the boy fined a penny and write to the crown about the rent.', fx: { poCase: 'comm', fame: 2, piety: 1 } },
         lose: { r: 'Nobody will say it in front of the lord\'s man. You give him the labour and feel it.', fx: { poCase: 'nob>comm', happy: -2 } } },
     ] },
-  { id: 'po_case_heresy', title: 'A wrong prayer', trigger: true, cool: 4,
+  { id: 'po_case_heresy', title: 'A wrong prayer', trigger: true, cool: 8,
     cond: (p, C) => C.adult(p) && C.holds(p, 'mag'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
     text: 'A priest of {shire} brings a weaver before you. She was heard praying the old way, to the old names, at a well. The priest wants her made an example. The weavers\' guild has sent a man to watch.',
@@ -126,7 +126,7 @@ A.defEvents([
       { t: 'Bind her over to keep the peace', r: 'A small fine and a promise. Neither side is pleased, which is perhaps the law working.', fx: { wil: 1, coin: 5 } },
     ] },
   // the warden's yearly choice on the march
-  { id: 'po_march_raid', title: 'Across the march', trigger: true, cool: 3,
+  { id: 'po_march_raid', title: 'Across the march', trigger: true, cool: 5,
     cond: (p, C) => C.adult(p) && C.holds(p, 'warden'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
     text: 'Smoke over the hills beyond {shire}: the other side burned a hayrick last night, or says we did. Your riders are saddled. The crown wants the march quiet. The march wants blood for the hayrick.',
@@ -138,7 +138,7 @@ A.defEvents([
       { t: 'Double the watch and wait', r: 'Nothing burns this month. The riders say you are getting old.', fx: { wil: 1, happy: -1 } },
     ] },
   // the collector's yearly choice in the port
-  { id: 'po_customs', title: 'The weighing house', trigger: true, cool: 3,
+  { id: 'po_customs', title: 'The weighing house', trigger: true, cool: 5,
     cond: (p, C) => C.adult(p) && C.holds(p, 'customs'),
     setup: (p, ctx) => { if (!mine(p, ctx)) ctx.skip = true; },
     text: 'Three ships in on the tide at {shire}, and their masters in your weighing house with their manifests. The crown\'s share is a twentieth. Every collector takes a little more for the scales. The masters know it.',
