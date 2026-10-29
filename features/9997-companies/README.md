@@ -37,7 +37,7 @@ pc.mil.co = { div, b, i }                  // your company
 S.coOn, S.coRet (retired names), S.coForY (forage records), P.coDes (deserters by home province)
 ```
 
-- `d.men`, `d.org` and `d.exp` stay authoritative for the war map. **Every loss of men goes through `A.divLose` and every gain through `A.divRefill`**, both wrapped, so the companies always sum to `d.men`. A monthly check (`CO.ensure`) settles any write that went round them and counts it (`CO.stats.mismatch`: 0 in every run so far).
+- `d.men`, `d.org` and `d.exp` stay authoritative for the war map. **Every loss of men goes through `A.divLose` and every gain through `A.divRefill`**, both wrapped, so the companies always sum to `d.men`. A monthly check (`CO.ensure`) settles any write that went round them and counts it in `CO.stats.mismatch`. Cycle 2 found the one path that did: the recruit queue (`A.queueStep`) raises a division at 0 men and then sets `d.men`. It is now wrapped, so the new division's companies are built from its real men; the mismatch count is 0 in 30-year Known World runs and an 8-year Great Continent run (it was 128–255).
 - The records are parallel to the template's battalions and then its support companies (sappers, outriders and so on, one company each). A template change rebuilds them, keeping records of the same troop.
 - Everything is optional: an old save builds its battalions at the first month (`coSaveLoad`).
 
@@ -245,6 +245,66 @@ The test is red without this feature too. The final build puts both layers insid
 The artisan lives fight in no war. Their numbers move because the world they live in takes another course: other wars, other fights, other markets. The median of 12 sits in a gap of the spread (159 to 300). Every other path, and every death, fame and arc band, holds. I did not widen the band in `bench/targets.mjs`.
 
 **Changed outside this folder:** 72-two-scales' `twoScalesChronicle` now skips a fight in which your division was pulled out of the line. That fight's panels come when the fight it left is over, which `twoScalesOtherLives` holds. In this world the first finished fight of the test happened to be one of those.
+
+## Cycle 2 (Oct 29): one name, sane churn, bread and pay that bite, scenes that come, a readable battle
+
+**One name per unit (design A1).** The soldier's unit used to have four names: the release's oath line and Path card ("the Second Goldburg Bows", drawn at random), the War tab's order of battle ("C Company, Captain Merrick"), the War Room ("2nd Company, 1st Kingsmere Foot, Captain Garth") and the two-scales book. Now 9997 is the only source of the name:
+- **The oath line and the Path card.** At enlistment the soldier is attached to his division at once (`A.pcDivAttach`) and placed in his company. `pc.mil.unit` becomes the battalion's name, and the oath line is rewritten to say "…of the 2nd Company, 1st Kingsmere Foot (the 1st Aldmark Line)". A soldier drafted to another division is placed again the next day.
+- **The War tab.** `A.oobKids` and `A.oobPath` are wrapped so the order of battle under a real division shows its 9997 battalions, companies and captains, and the soldier's path runs through his own battalion and company. The release's made-up squad and its leader below the company stay.
+- **The two-scales book** names the company, the battalion and the division.
+- **One spelling:** sergeant.
+- `coOneName` holds that the oath, `pc.mil.unit`, the War tab, the War Room card and the book agree.
+
+**Churn (world B3, B4).**
+- **Arrears.** A realm falls a month behind with all its divisions only while its debt grows, or past a year's income in debt (`CO.unpaid`). At war, the mustered host alone falls behind when the chest has fallen three months running.
+- **Leaving captains.** A captain who leaves an unpaid company is replaced by his sergeant, who keeps the post until the New Year.
+- **Melting.** A division a year unpaid melts away as one: its men go home (`P.coDes`), with one news line and one chronicle record (kind `melt`).
+- **The recruit path** described above ends the drift from `d.men`.
+
+**Bread, pay and promotion (world F8).**
+- **Bread** reaches the wagons at 2 × the supply ratio a day, reduced by the ground (`CO.breadF`): ×0.6 in winter, ×0.75 on enemy ground, ×0.8 in a siege, ×0.7 where the town's granary (66) is empty.
+- **Hunger.** Men desert at 0.2% a day, after three days without bread (it was 0.5% from the first day).
+- **Promotion** happens at every New Year, in peace too.
+
+| 30 years, seed 4848, Known World | Cycle 1 | Cycle 2 |
+| --- | ---: | ---: |
+| Captains who left | 668 | 0 |
+| Companies out of step with `d.men` | 128 | 0 |
+| Battalions with no senior captain at the end | 8 / 1,734 | 0 / 1,769 |
+| Bread at war, 10th percentile | 15 days | 5.2 days |
+| Samples with no bread | 0 | 11 |
+| Men deserted | 3,383 | 49,782 |
+
+| 8 years, seed 2424, Great Continent | Cycle 1 | Cycle 2 |
+| --- | ---: | ---: |
+| Captains who left | 6,589 | 727 |
+| Men deserted | 295,261 | 149,514 |
+| Companies out of step | 255 | 0 |
+| Battalions with no senior captain | 179 / 6,030 | 0 / 5,530 |
+| Division-years unpaid | 250 / 6,829 | 101 / 6,883 |
+| Divisions melted | 0 | 3 |
+
+Seed 606 (Known World, 30 years): 547 captains left before and 0 now; 637 men deserted before and 505 now; 196 companies out of step before and 0 now. Bread now runs short on campaign, so desertion in a warring Known World rises (seed 4848). That is the cost of hunger the system was built for, at 0.2% a day after three hungry days.
+
+**Company scenes (lives F2).** Every cycle 1 scene about a person (`co_new_captain`, `co_desert`, `co_transfer_request`, `co_sergeant`) was silently dropped. Their texts used `{khe}`, `{khim}` and `{khis}`, which the engine fills only when the event's setup sets them. A shared `pro(ctx)` now fills them from `ctx.pid` after every setup, with `{Khe}` at a sentence start.
+- **Triggers.** A company scene now comes after a fight your division was in (`co_roll_call` when your company lost men, else `co_captain_word`), and on pay day (`co_pay_day`, or `co_arrears` when unpaid). At most one comes a season (90 days after a fight scene, 240 for pay day).
+- **`co_the_new_men`** comes at 60 new men, not 150.
+- **Measured.** Four soldier lives of 10 years each in a war started for them:
+
+| | Army-years | Company scenes |
+| --- | ---: | ---: |
+| Cycle 1 | 20.8 | 0 |
+| Cycle 2 | 40 (9.2 at war) | 18 |
+
+  That is about two a year at war. The review counted 10 in 295 army-years.
+
+**The company battle (visual B5, B6), in 85-battle-labels:**
+- **One side code** (`UI.bfSides`: the theme's `--info` for ours, `--danger` for theirs). It is used for unit edges (patch BF-SIDE-EDGE), intents and standards' edges (n-motion), the side bands and the legend squares. A realm's colour stays only as the cloth.
+- **Your company is marked** (`UI.bfMine`, patch BF-MINE): an accent outline, a chevron and a YOU tag.
+- **The side bands** are drawn by `UI.bfBands` (patch BF-BANDS), and the camera paints them again over its zoomed crop, so they are no longer cut.
+- **The action row** (Next pulse, Fight it out) sticks to the bottom of the side column.
+- **The order buttons** are a segmented control (`aria-pressed`), not a gold primary toggle.
+- `bfYouAndSides` tests all of it.
 
 ## Limits
 
