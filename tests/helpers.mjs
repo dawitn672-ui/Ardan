@@ -8,7 +8,8 @@ export const HELPERS = () => {
         let h, g = 0;
         while ((h = A.headReady()) && g++ < 500) {
           if (h.type === 'event') { opts.onEvent && opts.onEvent(A.eventView(h)); A.eventAuto(); }
-          else A.S.queue.shift();
+          // through the journal (A.skipPrompt is the same shift, recorded), so a replay of this life meets the same queue
+          else A.skipPrompt();
         }
         opts.each && opts.each();
         if (r.why === 'dead' || !A.pc() || !A.pc().alive) return 'dead';

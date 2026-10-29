@@ -155,6 +155,32 @@
     } catch (e) { return h; }
   };
 
+  // 59's "most organization" tooltip: the morale factor A.divMaxOrg applies is a row of its own, so the parts multiply
+  // to the figure shown (TT.maxOrgParts keeps the elite order's factor as .elite and folds morale into .ord)
+  const TTk = UI.TT;
+  if (TTk && typeof TTk.maxOrgParts === 'function' && TTk.K && typeof UI.TIPS.divOrg === 'function') {
+    const parts = TTk.maxOrgParts, KK = TTk.K;
+    TTk.maxOrgParts = function (d) {
+      const o = parts.apply(this, arguments);
+      if (o && d && d.mo != null) { const f = CO.K.ORG_LO + CO.K.ORG_K * d.mo / 100; o.elite = o.ord; o.mor = f; o.moV = d.mo; o.ord = o.ord * f; }
+      return o;
+    };
+    const divOrg = UI.TIPS.divOrg;
+    UI.TIPS.divOrg = function (id) {
+      const h = divOrg.apply(this, arguments);
+      try {
+        const d = A.divById(id);
+        if (!h || !d || d.mo == null) return h;
+        const S = TTk.maxOrgParts(d);
+        const rows = (S.elite !== 1 ? KK.R('An elite order', '×' + KK.r2(S.elite), 'tt-sub') : '') +
+          KK.R(`<span data-tt="coDivMo" data-v="${esc(d.id)}">Morale ${esc(String(Math.round(S.moV * 10) / 10))}</span>: 0.85 + 0.3 × morale ÷ 100`, '×' + KK.r2(S.mor), 'tt-sub');
+        const old = KK.R('An elite order', '×' + KK.r2(S.ord), 'tt-sub'), most = KK.R('Most', KK.r0(S.total), 'tt-sum');
+        if (S.ord !== 1 && h.includes(old)) return h.replace(old, rows);
+        return h.includes(most) ? h.replace(most, rows + most) : h;
+      } catch (e) { return h; }
+    };
+  }
+
   // ---- the battle: your command
   CO.commandPanel = function (B) {
     if (!B || !B.co || B.phase === 'end') return '';
