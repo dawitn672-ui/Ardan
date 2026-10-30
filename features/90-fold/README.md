@@ -32,7 +32,7 @@ Found on the way: opening the Path tab wrote a default reputation into the playe
 - **Codex:** every entry folds to its title row (two to a row on a wide panel), with a filter field at the head ("Find in 74 entries"; UI state, never saved). 23.9 → 2.7 screens at 1366 (a noble of 24 on the Great Continent).
 - **Dynasty:** Endings found and Achievements start folded to their summaries, and the achievements open as a grid of small tiles. 5.0 → 1.0.
 - **Path:** the list of paths starts folded once you hold a post. 3.9 → 2.1.
-- **Holdings:** the market starts folded with its summary (open it once and it stays open). On a phone the market is one 44 px row a good (71-phone).
+- **Holdings:** on a phone the market is one 44 px row a good (71-phone); it stays open by default, as the phone tasks and the card fold expect.
 - **The road** (9990's modal): "Capitals and far realms" starts folded, and on a phone "Caravans leaving this month" too.
 
 `foldLongTabs`.

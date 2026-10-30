@@ -116,7 +116,7 @@ export default {
       A.S.queue = []; UI.ov = null; UI.renderModal(); UI.tab = 'life'; UI.render();
       return Object.assign(out, { cards, found, road, pure: T.hash(A.S) === h0 && JSON.stringify(A.rngState) === rng0 });
     });
-    const ok = r.codex <= 3.2 && r.cards > 20 && r.found > 0 && r.found < r.cards && r.legacy <= 1.5 && r.path <= 2.6 && r.holdings <= 2.2 && (!r.road || r.road.err || r.road.closed) && r.pure;
+    const ok = r.codex <= 3.2 && r.cards > 20 && r.found > 0 && r.found < r.cards && r.legacy <= 1.5 && r.path <= 2.6 && r.holdings <= 4 && (!r.road || r.road.err || r.road.closed) && r.pure;
     return { ok, detail: `screens at 1366: Codex ${r.codex} (${r.cards} entries; a search finds ${r.found}), Dynasty ${r.legacy}, Path ${r.path}, Holdings ${r.holdings}; the road's far list ${r.road ? (r.road.err || (r.road.closed ? 'folded' : 'OPEN')) : 'not drawn'}; pure ${r.pure}` };
   },
 };

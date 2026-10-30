@@ -19,7 +19,7 @@ FOLD.DEFAULT_CLOSED = {
   // Your days folds to its own summary line ("Push for advancement · training is fair") except on a tall screen
   life: ['how you are', 'your days'],
   profile: ['body'],
-  holdings: ['the armorer', 'property', 'the trade roads', 'the market'],
+  holdings: ['the armorer', 'property', 'the trade roads'],
   realm: ['the council', 'the ladder', 'the ways of', 'how the', 'why wars begin', 'factions of'],
   path: ['how you live', 'schools & academies'],
   people: [],
@@ -233,6 +233,8 @@ FOLD.find = function (tb, tab) {
   row.innerHTML = `<input type="search" data-c="foldFind" aria-label="Find in this list" placeholder="Find in ${cards.length} entries" value="${UI.esc(FOLD.q)}"><span class="fold-find-n" aria-live="polite"></span>`;
   const tools = tb.querySelector(':scope > .fold-tools');
   (tools || cards[0]).after(row);
+  const inp = row.querySelector('input');
+  inp.addEventListener('input', () => { FOLD.q = String(inp.value || '').slice(0, 60); FOLD.filter(tb); });
   FOLD.filter(tb);
 };
 FOLD.filter = function (tb) {

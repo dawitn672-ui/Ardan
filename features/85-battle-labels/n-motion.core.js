@@ -77,7 +77,7 @@
     const w = kind === 'charge' ? 6 : 4.5, l = kind === 'charge' ? len * 1.3 : len, y1 = y + dir * l, bend = (hash(key) % 2 ? 1 : -1) * 10;
     const d = `M${f1(x)} ${f1(y)}Q${f1(x + bend)} ${f1((y + y1) / 2)} ${f1(x)} ${f1(y1)}`;
     const hw = w * 1.9, hd = `M${f1(x - hw)} ${f1(y1 - dir * hw * .9)}L${f1(x)} ${f1(y1 + dir * hw * .9)}L${f1(x + hw)} ${f1(y1 - dir * hw * .9)}Z`;
-    return `<g class="bm-arrow bm-${kind}"><path class="bm-ink" d="${d}" stroke="${INK}" stroke-width="${w + 3}"/><path class="bm-stroke" d="${d}" stroke="${col}" stroke-width="${w}"/><path class="bm-head" d="${hd}" fill="${col}" stroke="${/^#[0-9a-f]{6}$/i.test(edge || '') ? edge : INK}" stroke-width="2"/></g>`;
+    return `<g class="bm-arrow bm-${kind}"><path class="bm-ink" d="${d}" stroke="${INK}" stroke-width="${w + 3}"/><path class="bm-stroke" d="${d}" stroke="${col}" stroke-width="${w}"/><path class="bm-head" d="${hd}" fill="${col}" stroke="${INK}" stroke-width="1.6"/></g>`;
   };
   BM.shield = (x, y, col) => `<g class="bm-arrow bm-hold"><path d="M${f1(x - 8)} ${f1(y - 9)}H${f1(x + 8)}V${f1(y - 1)}Q${f1(x + 8)} ${f1(y + 7)} ${f1(x)} ${f1(y + 11)}Q${f1(x - 8)} ${f1(y + 7)} ${f1(x - 8)} ${f1(y - 1)}Z" fill="${col}" stroke="${INK}" stroke-width="1.8"/></g>`;
   BM.burst = function (x, y, size, seed) {
