@@ -23,6 +23,8 @@
     // its taxes follow its land from here, through the release's yearly pass (A.updateRealmPops)
     if (r.baseIncome == null && r.income) r.baseIncome = r.income;
     if (A.polInit && !r.pol) { try { A.polInit(r); } catch (e) { /* the polity sets itself up next year */ } }
+    // its council of named people (56-realm-inside), as any crown's
+    if (A.RI && typeof A.RI.fillCouncil === 'function') { try { A.RI.fillCouncil(r); } catch (e) { /* filled at its first session */ } }
     EF.stats.founded++;
     const P = r.foundedFrom && A.realm(r.foundedFrom);
     A.news(`${r.name} stands on its own${P ? `, free of ${A.realmShort(P.id)}` : ''}. The world's courts begin to treat with it.`, 'crown');
