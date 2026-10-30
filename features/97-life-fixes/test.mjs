@@ -1,0 +1,488 @@
+// Tests for features/97-life-fixes. Each fails on a build without the feature (A.LF is missing, or the old behaviour
+// shows) and passes with it.
+import { BOT } from '../../bench/bot.mjs';
+
+export default {
+  // 1. Repeats: the share of the scenes a life shows that it had already shown, over everything the player sees
+  //    (rolls, duties, flows, NPC moves, a superior's scenes, gatherings, activities), with the feature off and on in
+  //    one build, the same lives (engaged, passive, engaged, as the bench league alternates). And the pace must hold.
+  async lfRepeats(pg) {
+    await pg.evaluate(BOT);
+    const r = await pg.evaluate(() => {
+      if (!A.LF) return { err: 'A.LF is missing: the feature is not in this build' };
+      const run = (off, o, years) => {
+        A.LF.OFF = off;
+        try {
+          // engaged and passive alternate, as in the bench league (an engaged bot spends its initiative every month)
+          const L = B.life(o, 'random', !o.passive, years), pc = A.P(A.S.pc), sh = A.LF.share(pc), cs = A.LF.caseShare(pc);
+          const prompts = Object.values(L.items).reduce((a, n) => a + n, 0);
+          const m = pc.evN || {};
+          return { shown: sh.shown, rep: sh.repeats, crep: cs.repeats, prompts, years: L.years, master: m.fl_st_master || 0, conf: m.du_ch_confession || 0 };
+        } finally { A.LF.OFF = false; }
+      };
+      // nine lives, each kind three times: on three, one life's course (a long prison term, a knighthood refused
+      // year after year) moved the share by several points (cycle 2: 19.1% on three with 9996 and 9997, 13.2% without)
+      const kinds = [
+        { race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 16 },
+        { race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 16, passive: true },
+        { race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 16 },
+      ];
+      const lives = [0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => Object.assign({ seed: 9701 + i }, kinds[i % 3]));
+      const sum = side => lives.map(o => run(side === 'off', o, 40)).reduce((a, x) => ({ shown: a.shown + x.shown, rep: a.rep + x.rep, crep: a.crep + x.crep, prompts: a.prompts + x.prompts, years: a.years + x.years,
+        master: Math.max(a.master, x.master), conf: Math.max(a.conf, x.conf) }), { shown: 0, rep: 0, crep: 0, prompts: 0, years: 0, master: 0, conf: 0 });
+      const off = sum('off'), on = sum('on');
+      const pct = x => Math.round(1000 * x.rep / Math.max(1, x.shown)) / 10, cpct = x => Math.round(1000 * x.crep / Math.max(1, x.shown)) / 10, py = x => Math.round(10 * x.prompts / Math.max(1, x.years)) / 10;
+      return { off: Object.assign(off, { pct: pct(off), cpct: cpct(off), perYear: py(off) }), on: Object.assign(on, { pct: pct(on), cpct: cpct(on), perYear: py(on) }) };
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.on.pct <= 15 && r.off.pct >= 20 && r.on.perYear >= 6 && r.on.perYear >= r.off.perYear * 0.8 && r.on.master <= 1 && r.on.conf <= 1;
+    return { ok, detail: `seen before this life: off ${r.off.pct}% of ${r.off.shown} scenes, on ${r.on.pct}% of ${r.on.shown} (the same case again: off ${r.off.cpct}%, on ${r.on.cpct}%); prompts a year off ${r.off.perYear}, on ${r.on.perYear}; most "An old scholar" in a life: off ${r.off.master}, on ${r.on.master}; most confessions: off ${r.off.conf}, on ${r.on.conf}` };
+  },
+
+  // 1b. The doors themselves: a story scene comes once, a duty twice and twelve years apart, and a held-back slot is
+  //     refilled with a scene the life has never seen.
+  async lfDoors(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF) return { err: 'A.LF is missing: the feature is not in this build' };
+      const LF = A.LF;
+      A.newGame({ seed: 9711, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      const pc = A.pc();
+      pc.job = { c: 'clergy', r: 1, y: 3, perf: 60 }; pc.literate = true;
+      const out = { confession: 0, study: 0, master: 0, refills: 0, freshRefill: true };
+      // eighty months of clergy duties and study breakthroughs, the clock moving a month at a time
+      for (let i = 0; i < 80; i++) {
+        A.S.queue = [];
+        A.dutyEvent(pc); A.flowEvent(pc, 'study');
+        for (const q of A.S.queue.slice()) {
+          if (q.type !== 'event') continue;
+          if (q.ev === 'du_ch_confession') out.confession++;
+          if (q.ev === 'fl_st_master') out.master++;
+          const e = A.EV[q.ev];
+          if (e && !e.duty && !e.flow) { out.refills++; if (LF.n(pc, q.ev) > 0) out.freshRefill = false; }
+          A.S.queue = [q].concat(A.S.queue.filter(x => x !== q));
+          if (A.headReady() === q) { A.eventChoose(0); A.eventClose(); }
+          A.S.queue = A.S.queue.filter(x => x !== q);
+        }
+        const end = A.absDay() + 31;
+        for (let g = 0; g < 60 && A.absDay() < end && A.pc().alive; g++) { A.S.queue = []; A.advance(end - A.absDay()); }
+        A.S.queue = [];
+      }
+      // a duty seen twice is held back for the rest of the life; the policy is read straight
+      const duty = A.EV.du_ch_tithe, n0 = LF.n(pc, duty.id);
+      pc.evN = pc.evN || {}; pc.flags.ev = pc.flags.ev || {};
+      pc.evN[duty.id] = 2; pc.flags.ev[duty.id] = A.S.year - 30;
+      const held = LF.weight(duty, pc) === 0;
+      pc.evN[duty.id] = 1; pc.flags.ev[duty.id] = A.S.year - 5;
+      const tooSoon = LF.weight(duty, pc) === 0;
+      pc.evN[duty.id] = 1; pc.flags.ev[duty.id] = A.S.year - 13;
+      const later = LF.weight(duty, pc) > 0;
+      return Object.assign(out, { held, tooSoon, later, n0, stats: A.S.lf && A.S.lf.by });
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.confession <= 1 && r.master <= 1 && r.refills > 0 && r.freshRefill && r.held && r.tooSoon && r.later;
+    return { ok, detail: `80 months of clergy duties and study: confession ${r.confession}, "An old scholar" ${r.master}, fresh refills ${r.refills} (all unseen: ${r.freshRefill}); a duty seen twice held: ${r.held}, seen 5 years ago held: ${r.tooSoon}, 13 years ago allowed: ${r.later}; refills by door ${JSON.stringify(r.stats)}` };
+  },
+
+  // 1c. The second tellings of NPC moves render with a real person, keep to the diet, and every choice plays
+  async lfVariants(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF) return { err: 'A.LF is missing: the feature is not in this build' };
+      const ids = Object.keys(A.EV).filter(id => /^lfx_.*_2$/.test(id));
+      const RAW = /\{[A-Za-z0-9_.]+\}/, w = s => (String(s || '').match(/\S+/g) || []).length;
+      const rendered = new Set(), needs = new Set(), problems = [];
+      // every token a telling uses is one its first telling's own words use (so its setup fills it)
+      const toks = s => new Set([...String(s || '').matchAll(/\{([A-Za-z0-9_]+)\}/g)].map(m => m[1]));
+      for (const id of ids) {
+        const e = A.EV[id], b = A.EV[e.lfVariantOf];
+        if (!b || typeof b.text !== 'string') continue;
+        const have = new Set([...toks(b.text), ...toks(typeof b.title === 'string' ? b.title : ''), ...(b.choices || []).flatMap(c => [...toks(typeof c.r === 'string' ? c.r : ''), ...toks(typeof c.t === 'string' ? c.t : '')]), 'them', 'home', 'khe', 'khim', 'khis', 'past']);
+        for (const t of [...toks(e.text), ...toks(e.title)]) if (!have.has(t)) problems.push(id + ': token {' + t + '} its first telling never uses');
+      }
+      for (const o of [{ seed: 9761, status: 'noble', startAge: 30 }, { seed: 9762, status: 'merchant', startAge: 40 }, { seed: 9763, status: 'peasant', startAge: 25 }]) {
+        A.newGame(Object.assign({ race: 'human', realm: 'POL-01', sex: o.seed % 2 ? 'F' : 'M' }, o));
+        T.play(4); if (!A.pc().alive) continue;
+        const base = A.serialize();
+        for (const id of ids) {
+          for (let i = 0; i < 4; i++) {
+            A.deserialize(JSON.parse(base)); A.S.queue = [];
+            const q = { type: 'event', ev: id, ctx: { npcMove: true } }; A.S.queue.push(q);
+            let v; try { v = A.eventView(q); } catch (e) { problems.push(id + ': view throws ' + e.message); break; }
+            if (v.skip) {
+              // a telling backs out where its first telling does too (it needs a history this person lacks)
+              if (i === 0) { A.deserialize(JSON.parse(base)); A.S.queue = []; const qb = { type: 'event', ev: A.EV[id].lfVariantOf, ctx: { npcMove: true } }; A.S.queue.push(qb);
+                let vb = null; try { vb = A.eventView(qb); } catch (e) {} if (vb && !vb.skip) problems.push(id + ': backs out where ' + qb.ev + ' does not'); else needs.add(id); }
+              break;
+            }
+            if (i === 0) {
+              rendered.add(id);
+              const all = [v.title, v.text, ...v.choices.map(c => c.t)].join(' | ');
+              if (RAW.test(all)) problems.push(id + ': raw token ' + all.match(RAW)[0]);
+              if (w(v.text) > 80) problems.push(id + ': ' + w(v.text) + ' words');
+              if (/(^|[.!?]\s+)(he|she|his|her|him)\b/.test(v.text)) problems.push(id + ': a sentence starts in lower case');
+            }
+            const idx = v.choices.findIndex(c => c.i === i); if (idx < 0) continue;
+            try { A.eventChoose(idx); A.eventClose(); } catch (e) { problems.push(id + ' choice ' + (i + 1) + ': ' + e.message); }
+          }
+        }
+      }
+      // the family: the second telling is what the queue gives once the first has been seen
+      A.newGame({ seed: 9764, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 30 });
+      const pc = A.pc(); pc.evN = { ni_gift: 1 }; pc.flags.ev = pc.flags.ev || {}; pc.flags.ev.ni_gift = A.S.year - 12; A.S.queue = [];
+      A.queue({ type: 'event', ev: 'ni_gift', ctx: { npcMove: true } });
+      const second = A.S.queue.length ? A.S.queue[A.S.queue.length - 1].ev : null;
+      // and the kind is then done for the life
+      pc.evN.lfx_ni_gift_2 = 1; pc.flags.ev.lfx_ni_gift_2 = A.S.year - 11;
+      const held = A.LF.held(A.EV.ni_gift, pc);
+      return { n: ids.length, rendered: rendered.size, missing: ids.filter(id => !rendered.has(id)), problems, second, held };
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.n >= 15 && r.rendered >= 10 && !r.problems.length && r.second === 'lfx_ni_gift_2' && r.held;
+    return { ok, detail: `${r.n} second tellings, ${r.rendered} rendered with a real person (the rest back out exactly where their first telling does, for want of a history: ${r.missing.join(', ') || 'none'}); problems: ${r.problems.slice(0, 4).join('; ') || 'none'}; after one gift the queue gives ${r.second}; after both the kind is held: ${r.held}` };
+  },
+
+  // 2. Hints follow the life: a life begun at birth in 1105 sees the adult hints when it comes of age (1121)
+  async lfHints(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9721, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 });
+      UI.set.hints = true; UI.set.hintsSeen = { whatnow: 1, plan: 1, clock: 1, save: 1 };
+      const pc = A.pc();
+      // grow her up (the hints read age and the calendar, nothing else)
+      A.S.year += 16; A.S.time = 3;
+      const H = UI.hintFor('life', pc);
+      // a tab's hint the first time the tab is opened, at 16
+      const H2 = UI.hintFor('people', pc);
+      return { year: A.S.year, age: A.age(pc), id: H && H.id, people: H2 && H2.id, on: UI.hintsOn() };
+    });
+    const ok = r.on && (r.id === 'initiative' || r.id === 'tips') && r.people === 'people';
+    return { ok, detail: `in ${r.year}, aged ${r.age}: hints on ${r.on}, the Life tab's hint "${r.id}", the People tab's "${r.people}"` };
+  },
+
+  // 3. Ambitions: chosen at coming of age, kept where C.ambition reads it, shown with a next step; the five orphaned
+  //    scenes can fire again
+  async lfAmbition(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF || !A.LF.AMB) return { err: 'no ambitions in this build' };
+      const out = {};
+      A.newGame({ seed: 9731, race: 'human', realm: 'POL-05', status: 'serf', sex: 'M', startAge: 16 });
+      A.S.queue = [];
+      A.LF.ambMonth(A.pc());
+      const q = A.S.queue.find(x => x.ev === 'lfx_amb_young');
+      out.asked = !!q;
+      if (q) {
+        A.S.queue = [q];
+        const v = A.headReady() && A.eventView(q);
+        out.offers = v ? v.choices.map(c => c.t) : [];
+        const i = v ? v.choices.findIndex(c => /freedom/i.test(c.t)) : -1;
+        if (i >= 0) { A.eventChoose(i); A.eventClose(); }
+      }
+      const pc = A.pc();
+      out.amb = pc.amb && pc.amb.k;
+      out.cAmbition = A.C.ambition(pc, 'freedom');
+      out.card = UI.lfAmbCard(pc);
+      // the five scenes the release could never show: each one's condition, for a life it was written for
+      const conds = {};
+      pc.coin = 70;
+      for (const id of ['pa_freedom_buy', 'pa_freedom_kind_master']) conds[id] = !!(A.EV[id] && A.EV[id].cond(pc, A.C));
+      // a ruler: the reign's question offers expand, a golden age, a web of alliances
+      A.newGame({ seed: 9732, race: 'human', realm: 'POL-02', status: 'royal', sex: 'F', startAge: 30 });
+      const k = A.pc(), r0 = Object.values(A.S.realms).find(x => x.alive && A.P(x.ruler) && A.P(x.ruler).alive && x.id === k.realm) || Object.values(A.S.realms).find(x => x.alive);
+      k.ruler = r0.id; A.S.queue = [];
+      A.LF.ambMonth(k);
+      const q2 = A.S.queue.find(x => /^lfx_amb_/.test(x.ev));
+      out.reign = q2 ? (q2.ctx || {}).when : null;
+      for (const key of ['expand', 'golden', 'web']) {
+        A.LF.setAmb(k, key);
+        const id = { expand: 'pa_expand_petition', golden: 'pa_golden_harvest', web: 'pa_web_marriage' }[key];
+        let c = false; try { c = !!A.EV[id].cond(k, A.C); } catch (e) { c = 'error ' + e.message; }
+        conds[id] = c;
+      }
+      out.conds = conds;
+      out.retired = ['pa_freedom_buy', 'pa_freedom_kind_master', 'pa_expand_petition', 'pa_golden_harvest', 'pa_web_marriage'].filter(id => A.EV_RETIRED && A.EV_RETIRED.has && A.EV_RETIRED.has(id));
+      return out;
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const fires = Object.values(r.conds).filter(x => x === true).length;
+    const ok = r.asked && r.amb === 'freedom' && r.cAmbition && /Next:/.test(r.card) && r.reign === 'reign' && fires >= 4 && r.conds.pa_freedom_buy === true && !r.retired.length;
+    return { ok, detail: `asked at 16: ${r.asked} (${(r.offers || []).join(' / ')}); chose ${r.amb}; C.ambition ${r.cAmbition}; card has a next step: ${/Next:/.test(r.card)}; a new ruler is asked: ${r.reign}; scenes that can fire now: ${JSON.stringify(r.conds)}; retired: ${r.retired.join(',') || 'none'}` };
+  },
+
+  // 4. Every disabled control says why: a peasant of 20 and a noble of 30, every tab
+  async lfDisabled(pg) {
+    const r = await pg.evaluate(() => {
+      const res = { disabled: 0, none: 0, kinds: {}, sample: [] };
+      for (const o of [{ seed: 9741, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 }, { seed: 9742, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 30 }]) {
+        T.enter(o); T.play(1);
+        for (const t of T.tabs()) {
+          UI.tab = t; UI.render();
+          for (const b of document.querySelectorAll('button[disabled],select[disabled],input[disabled]')) {
+            res.disabled++;
+            const why = (b.getAttribute('title') || '').trim() || b.getAttribute('data-tip') || b.getAttribute('data-tt');
+            if (!why) { res.none++; const k = (b.getAttribute('data-a') || '?') + ':' + t; res.kinds[k] = (res.kinds[k] || 0) + 1; }
+            else if (res.sample.length < 6 && /mktBuy|decide|orderJoin|applyJob|buyProp/.test(b.getAttribute('data-a') || '')) res.sample.push(b.getAttribute('data-a') + ': ' + why);
+          }
+        }
+      }
+      return res;
+    });
+    return { ok: r.disabled > 20 && r.none === 0, detail: `${r.disabled} disabled controls, ${r.none} without a reason ${JSON.stringify(r.kinds)}; e.g. ${r.sample.join(' | ')}` };
+  },
+
+  // 5. Money matters late: a fortune finds big works, each costs, lasts, is a deed and opens a scene
+  async lfWorks(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF || !A.LF.WORKS) return { err: 'no great works in this build' };
+      A.newGame({ seed: 9751, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'M', startAge: 40 });
+      const pc = A.pc(); pc.coin = 400000; pc.fame = 45; A.S.queue = [];
+      const shown = A.decisionsFor(pc).map(d => d.k).filter(k => /^lfx_/.test(k));
+      const dearest = A.LF.dearest(pc);
+      const piety0 = pc.piety || 0, c0 = pc.coin;
+      const a = A.decide('lfx_chantry'), b = A.decide('lfx_ship'), c = A.decide('lfx_patent');
+      const spent = c0 - pc.coin;
+      const status = pc.status, rung = pc.noble && pc.noble.rung;
+      const sched = (A.S.sched || []).map(x => x.item && x.item.ev).filter(Boolean).filter(id => /^lfx_wk_/.test(id));
+      const deeds = (pc.deeds || []).map(d => d.t).filter(t => /chantry|ship|patent/i.test(t));
+      // a year passes: the chantry's priests, the ship's voyage
+      const p1 = pc.piety; A.S.year++; A.LF.worksYear(pc);
+      // a poor peasant's tab is not filled with what it cannot afford
+      A.newGame({ seed: 9752, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const poor = A.decisionsFor(A.pc()).map(d => d.k).filter(k => /^lfx_/.test(k));
+      return { shown, dearest, ok3: [a.ok, b.ok, c.ok], spent, status, rung, sched, deeds, pietyUp: pc.piety > p1 || p1 >= 100, piety0, poor };
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.shown.length >= 8 && r.dearest >= 50000 && r.ok3.every(Boolean) && r.spent >= 12000 + 30000 + 20000 && r.status === 'gentry' && r.rung === 0 &&
+      r.sched.length >= 2 && r.deeds.length === 3 && r.pietyUp && r.poor.length === 0;
+    return { ok, detail: `a fortune of 400,000 sees ${r.shown.length} works (dearest ${r.dearest}); chantry, ship, patent: ${r.ok3}, spent ${r.spent}; now ${r.status} (rung ${r.rung}); scenes to come ${r.sched.join(', ')}; deeds ${r.deeds.length}; a year's piety from the chantry: ${r.pietyUp}; a poor peasant sees ${r.poor.length}` };
+  },
+
+  // 6. The first life is not lost in the cradle (Story and Hard), later lives and Realism keep canon's odds
+  async lfFirstLife(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF || !A.LF.shielded) return { err: 'no first-life shield in this build' };
+      const die5 = (first, n, seed0) => {
+        let dead = 0;
+        for (let i = 0; i < n; i++) {
+          A.newGame({ seed: seed0 + i, race: 'human', realm: 'POL-07', status: 'serf', sex: i % 2 ? 'F' : 'M', startAge: 0, diff: 'hard', firstLife: first });
+          const pc = A.pc();
+          T.play(5);
+          // before the fifth birthday (a death at five is not an infant's)
+          if (!pc.alive && (pc.died || A.S.year) - pc.born < 5) dead++;
+        }
+        return dead;
+      };
+      const N = 12;
+      const canon = die5(false, N, 97600), first = die5(true, N, 97600);
+      // the rules themselves: the year's death chance, and a fever that runs health to nothing
+      A.newGame({ seed: 97010, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 0, diff: 'hard', firstLife: true });
+      let pc = A.pc(); pc.born = A.S.year - 2;
+      const shieldedChance = A.deathChance(pc);
+      pc.health = 0; pc.lastHurt = 'a fever';
+      const survives = A.mortalCheck(pc, 'a fever') === false && pc.alive && pc.health > 0;
+      A.newGame({ seed: 97010, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 0, diff: 'hard' });
+      pc = A.pc(); pc.born = A.S.year - 2;
+      const canonChance = A.deathChance(pc);
+      // a sibling is not shielded
+      A.newGame({ seed: 97011, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0, diff: 'hard', firstLife: true });
+      const sib = Object.values(A.S.people).find(p => p.id !== A.S.pc && p.alive && A.age(p) < 5);
+      const sibShield = sib ? A.LF.shielded(sib) : false;
+      A.newGame({ seed: 97001, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0, diff: 'realism', firstLife: true });
+      const realismShield = !!(A.S.lf && A.S.lf.shield);
+      // the creation screen says it once, and not after the first life has begun
+      const app = () => (document.querySelector('#app') || {}).innerHTML || '';
+      UI.set.lfLives = 0; UI.A.newLife(); UI.step = 3; UI.render();
+      const says = /spared the deaths of early childhood/.test(app());
+      UI.set.lfLives = 1; UI.render();
+      const saysLater = /spared the deaths of early childhood/.test(app());
+      UI.screen = 'title'; UI.render();
+      return { N, canon, first, shieldedChance, canonChance, survives, sibShield, realismShield, says, saysLater };
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.first === 0 && r.shieldedChance === 0 && r.canonChance > 0 && r.survives && !r.sibShield && !r.realismShield && r.says && !r.saysLater;
+    return { ok, detail: `${r.N} serf newborns on Hard to age 5: ${r.canon} die as before, ${r.first} as a first life; a toddler's yearly death chance ${r.canonChance.toFixed(4)} -> ${r.shieldedChance} shielded; a fever at 0 health: survives ${r.survives}; a sibling shielded: ${r.sibShield}; Realism shields: ${r.realismShield}; the creation screen says so: ${r.says} (and not on a later life: ${!r.saysLater})` };
+  },
+
+  // 7. A choice shows its cost and what failing brings; drawing it changes nothing
+  async lfStakes(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF || !A.LF.stake) return { err: 'no stakes in this build' };
+      T.enter({ seed: 9771, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      A.defEvents([{ id: 'lfx_test_stakes', trigger: true, title: 'A test', text: 'A test scene.', choices: [
+        { t: 'Pay his rent', r: 'Paid.', fx: { coin: -30 } },
+        { t: 'Apologise for the wrong', check: { s: 'persuasion', s2: 'wil', d: 45 }, win: { r: 'Yes.', fx: { happy: 2 } }, lose: { r: 'No.', fx: { health: -10, coin: -5, them: { op: -8 } } } },
+        { t: 'Walk away', r: 'Gone.', fx: {} }] }]);
+      A.S.queue = [{ type: 'event', ev: 'lfx_test_stakes', forced: true }];
+      A.headReady();
+      const rng0 = A.rngState, h0 = T.hash(A.S);
+      UI.render();
+      const html = (document.querySelector('#modal') || document.body).innerHTML;
+      const stakes = [...document.querySelectorAll('.lf-stake')].map(x => x.textContent);
+      const pure = A.rngState === rng0 && T.hash(A.S) === h0;
+      A.S.queue = []; delete A.EV.lfx_test_stakes; UI.render();
+      return { stakes, pure, has: html.includes('lf-stake') };
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.pure && r.stakes.some(s => /Costs 30 suns/.test(s)) && r.stakes.some(s => /If it fails: hurt, −5 suns, their regard/.test(s)) && r.stakes.length === 2;
+    return { ok, detail: `stake lines: ${JSON.stringify(r.stakes)}; drawing them left the state and the random stream alone: ${r.pure}` };
+  },
+
+  // the views this feature adds are pure, and a save from before it plays on
+  async lfPureAndOld(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF) return { err: 'A.LF is missing: the feature is not in this build' };
+      T.enter({ seed: 9781, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 30 });
+      T.play(3);
+      const pc = A.pc(); pc.coin = 90000;
+      A.S.queue = [];
+      const rng0 = A.rngState, h0 = T.hash(A.S);
+      T.renderAll();
+      const pure = A.rngState === rng0 && T.hash(A.S) === h0;
+      // an old save: no memory, no life record, no ambition, no works
+      delete pc.evN; delete A.S.lf; delete pc.amb; delete pc.lfWorks;
+      const s = T.play(4);
+      return { pure, s, share: A.LF.share(A.pc()).shown };
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    return { ok: r.pure && r.share > 0, detail: `every tab drawn: state and random stream unchanged ${r.pure}; an old save played on (${r.s}), ${r.share} scenes counted since` };
+  },
+  // cycle 1 text fixes: "Costs 1 suns"; "Master your master hands you a task"; a woman's post "Herd-boy"; the
+  // creation summary's "(King )"
+  async lfWordsCycle1(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      const pc = A.pc();
+      const sup = A.superior; A.superior = () => null;
+      let tok; try { tok = A.ctxTokens(pc, {}); } finally { A.superior = sup; }
+      const out = { one: A.coin(1), two: A.coin(2), big: A.coin(1200), herd: GD.CAREERS.herd.ranks[0][0], pot: GD.CAREERS.brewer.ranks[0][0], bossTitle: tok.bossTitle, boss: tok.boss };
+      A.newGame({ seed: 9702, lands: 'great', race: 'human', realm: 'POL-143', status: 'peasant', sex: 'F', startAge: 20 });
+      const L = A.FAR.D.realms['POL-143'];
+      out.far = UI.crRulerNote(Object.assign({}, LORE.realms['POL-143'] || { title: L.title }, { id: 'POL-143' }));
+      out.farSex = L.rulerSex;
+      out.kw = UI.crRulerNote(LORE.realms['POL-01']);
+      return out;
+    });
+    return { ok: r.one === '1 sun' && r.two === '2 suns' && /suns$/.test(r.big) && r.herd === 'Herd-hand' && r.pot === 'Pot-hand' && r.bossTitle == null && r.boss === 'your master' &&
+      /Kalunge/.test(r.far) && !/\( ?\w* \)/.test(r.far) && (r.farSex !== 'F' || /Queen/.test(r.far)) && /Aldwin/.test(r.kw), detail: JSON.stringify(r) };
+  },
+
+  // cycle 1 (lives B4): a queen hid her sister in the hayloft, a General of 62 was asked "You. Name?", a carpenter of 68
+  // was offered a sellsword's contract
+  async lfTierGates(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9703, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), C = A.C, ok = id => { try { return !!A.EV[id].cond(pc, C); } catch (e) { return 'err'; } };
+      pc.mil = { rank: 1, realm: pc.realm }; const privateOk = ok('camp_officer');
+      pc.mil.rank = 7; const general = [ok('camp_officer'), ok('camp_letter'), ok('camp_drill')];
+      pc.mil = null; const base = [ok('lf_harvest_dance'), ok('ak_sibling_2')]; pc.ruler = { realm: pc.realm }; const ruler = [ok('lf_harvest_dance'), ok('ak_sibling_2')];
+      pc.ruler = null; pc.flags.av_sword = A.S.year; pc.born = A.S.year - 68;
+      const oldSword = ['av_merc_looting', 'av_merc_sack', 'av_road_sellsword_offer'].map(ok);
+      pc.born = A.S.year - 30; const youngSword = ok('av_merc_sack');
+      return { privateOk, general, base, ruler, oldSword, youngSword, top: A.lfTop({ ruler: 1 }) };
+    });
+    return { ok: r.privateOk === true && r.general.every(x => x === false) && r.ruler.every(x => x === false) && r.base[1] === true && r.oldSword.every(x => x === false) && r.top,
+      detail: JSON.stringify(r) };
+  },
+  // cycle 1 (lives I2): a ruler saw the same eight gathering scenes about 15 times each, the bargain 26 times
+  async lfGathCap(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9771, race: 'human', realm: 'POL-02', status: 'royal', sex: 'M', startAge: 30 });
+      const pc = A.pc(), pool = ['gs_gift', 'gs_toast', 'gs_seating'].map(id => A.EV[id]).filter(Boolean);
+      const before = A.lfGathPool(pool, null).length;
+      pc.evN = Object.assign(pc.evN || {}, { gs_gift: 3, gs_toast: 2 });
+      const some = A.lfGathPool(pool, null).map(e => e.id);
+      pc.evN.gs_toast = 3; pc.evN.gs_seating = 5;
+      const g = { pc: { seen: [], inf: 0 }, kind: 'feast', host: pc.realm };
+      const none = A.lfGathPool(pool, g).length;
+      const noBargain = A.lfGathBargain(g);
+      pc.evN.gs_bargain = 3;
+      const quiet = A.lfGathBargain(g), inf = g.pc.inf, seen = g.pc.seen.includes('gs_bargain');
+      return { n: pool.length, before, some, none, noBargain, quiet, inf, seen };
+    });
+    const ok = r.n === 3 && r.before === 3 && r.some.length === 2 && !r.some.includes('gs_gift') && r.none === 0 && !r.noBargain && r.quiet && r.inf > 0 && r.seen;
+    return { ok, detail: `three gathering scenes, one seen three times: ${r.some.join(', ')} left; all seen three times: ${r.none} left (the gathering closes); the bargain, seen three times, settled off stage: ${r.quiet} (+${r.inf} influence)` };
+  },
+  // cycle 1 (lives I1, I5): a met ambition was never followed by another, and What now never pointed at the
+  // Decisions tab, the orders or a scheme
+  async lfAfterTheTop(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9772, race: 'human', realm: 'POL-01', status: 'merchant', sex: 'M', startAge: 30 });
+      const pc = A.pc();
+      pc.amb = { k: 'wealth', y: A.S.year - 6, done: A.S.year - 2 };
+      pc.flags.lfx_amb_y = A.S.year - 6; pc.flags.lfx_amb_m = A.S.year - 1;
+      pc.coin = 300000; pc.fame = 45;
+      A.LF.ambMonth(pc);
+      const q = A.S.queue.find(x => x.ev === 'lfx_amb_top');
+      let offers = [];
+      if (q) { A.S.queue.splice(A.S.queue.indexOf(q), 1); A.S.queue.unshift(q); const v = A.eventView(q); offers = q.ctx.amb || []; A.eventChoose(0); A.eventClose(); }
+      const took = pc.amb ? pc.amb.k : null;
+      const s0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
+      const wn = A.whatNow(pc).map(x => x.t);
+      const pure = JSON.stringify(A.S) === s0 && JSON.stringify(A.rngState) === g0;
+      // a great work priced to the fortune
+      const patron = A.LF.workCost(pc, 'patron'), seat = A.LF.workCost(pc, 'seat'), coin0 = pc.coin;
+      const res = A.decide('lfx_patron');
+      return { asked: !!q, offers, took, wn, pure, patron, seat, spent: coin0 - pc.coin, ok: res && res.ok !== false, sched: (A.S.sched || A.S.schedule || []).length };
+    });
+    const late = ['lord', 'legend', 'work', 'house', 'court', 'throne', 'renown', 'teacher'];
+    const ok = r.asked && r.offers.length > 0 && late.includes(r.offers[0]) && !!r.took && r.wn.some(t => /afford|house|order|within reach/i.test(t)) && r.pure && r.patron === 24000 && r.seat === 80000 && r.spent === r.patron;
+    return { ok, detail: `a met ambition two years on: asked again ${r.asked} (${r.offers.join(', ')}; took ${r.took}); What now: ${r.wn.join(' | ')} (pure ${r.pure}); patronage priced ${r.patron} for a fortune of 300,000, a seat ${r.seat}; spent ${r.spent}` };
+  },
+  // cycle 2 (design A2): "Dance with Beatrix / Dance with Beatrix", your mother also Beatrix; a new boy with your own
+  // name; full names said three or four times in a scene
+  async lfFreshNames(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 1106, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const pc = A.pc();
+      let n = 0, same = 0, dup = 0, kin = 0;
+      const family = new Set([pc.given].concat((pc.parents || []).map(id => (A.P(id) || {}).given)));
+      for (let i = 0; i < 200; i++) {
+        const q = { type: 'event', ev: 'lf_harvest_dance', ctx: {}, forced: true }; A.S.queue.unshift(q);
+        const v = A.eventView(q);
+        if (!v.skip) { n++; const ts = v.choices.map(c => c.t); if (new Set(ts).size < ts.length) dup++; if (q.ctx.a === q.ctx.b) same++; if (family.has(q.ctx.a) || family.has(q.ctx.b)) kin++; }
+        A.S.queue.shift();
+      }
+      let own = 0; for (let i = 0; i < 300; i++) if (A.givenName(pc.cult, pc.sex) === pc.given) own++;
+      const p2 = A.makeAcquaintance(pc, 'acquaint'), full = A.fullName(p2, false);
+      const once = A.LF.onceFull(`${full} bows. ${full} smiles. ${full} leaves.`, [p2]);
+      return { n, same, dup, kin, own, once, full, given: p2.given };
+    });
+    const ok = r.n >= 150 && r.same === 0 && r.dup === 0 && r.kin === 0 && r.own === 0 && r.once.split(r.full).length === 2 && r.once.includes(r.given + ' smiles');
+    return { ok, detail: `${r.n} Harvest Home dances: both partners one name ${r.same}, two buttons one label ${r.dup}, a partner named as the family ${r.kin}; your own name drawn ${r.own} of 300 (about 10 before); "${r.once}"` };
+  },
+  // cycle 2 (lives F2, design D4): What now never named an office, a venture, a journey or the arms designer, and a
+  // crown deep in debt was told "Look for love"
+  async lfWhatNowSystems(pg) {
+    const r = await pg.evaluate(() => {
+      const out = {};
+      const pure = f => { const h = JSON.stringify(A.S), g = JSON.stringify(A.rngState); const v = f(); return [v, JSON.stringify(A.S) === h && JSON.stringify(A.rngState) === g]; };
+      A.newGame({ seed: 3004, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+      let pc = A.pc(); pc.skills.diplomacy = 60; pc.skills.stewardship = 60;
+      [out.noble, out.pureNoble] = pure(() => A.LF.whatMore(pc).map(x => x.t));
+      A.newGame({ seed: 3001, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      pc = A.pc(); out.peasant = A.LF.whatMore(pc).map(x => x.t);
+      A.newGame({ seed: 3002, race: 'human', realm: 'POL-01', status: 'royal', sex: 'M', startAge: 26 });
+      pc = A.pc(); A.makeRuler(pc, pc.realm, true); const R = A.realm(pc.ruler); R.debt = Math.round(R.income * 0.6);
+      [out.ruler, out.pureRuler] = pure(() => A.whatNow(pc).map(x => x.t));
+      return out;
+    });
+    const ok = r.noble.some(t => /^Seek the office/.test(t)) && r.peasant.includes('Make your mark') && /^The crown owes/.test(r.ruler[0] || '') &&
+      !r.ruler.includes('Look for love') && r.pureNoble && r.pureRuler;
+    return { ok, detail: `a noble of 30: ${r.noble.join(' | ')}; a peasant of 20: ${r.peasant.join(' | ')}; a crown in debt: ${r.ruler.join(' | ')}; drawing pure ${r.pureNoble && r.pureRuler}` };
+  },
+  // cycle 2 (lives F3): a Marshal of the council who had left the army drilled the town muster; a Chancellor kept the
+  // scribe's love-letter duty. The top of the ladder now takes in councillors, lords and retired commanders
+  async lfTierGatesWide(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9731, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), ids = ['pf_spear_pike_drill', 'rk_vt_militia', 'av_road_sellsword_offer', 'gf_village', 'ln_d_scr_lover', 'ln_d_proclamation'].filter(id => A.EV[id]);
+      const w = () => ids.map(id => A.LF.weight(A.EV[id], pc) > 0);
+      const villager = w(), topV = A.lfTop(pc);
+      pc.office = 'marshal'; const marshal = w(), topM = A.lfTop(pc); pc.office = null;
+      pc.veteran = { rank: 7, years: 20, battles: 9 }; const veteran = A.lfTop(pc); pc.veteran = null;
+      pc.job = { c: 'scribe', r: 0 }; const scribe = A.LF.weight(A.EV.ln_d_scr_lover || { id: 'ln_d_scr_lover' }, pc) > 0;
+      pc.job = { c: 'courtier', r: 2 }; const courtier = A.LF.weight(A.EV.ln_d_scr_lover || { id: 'ln_d_scr_lover' }, pc) > 0;
+      return { ids, villager, topV, marshal, topM, veteran, scribe, courtier };
+    });
+    const i = r.ids.indexOf('ln_d_scr_lover');
+    const ok = !r.topV && r.topM && r.veteran && r.marshal.every(x => !x) && r.villager.filter((x, k) => k !== i).every(Boolean) && r.scribe && !r.courtier;
+    return { ok, detail: `${r.ids.join(', ')}: open to a villager ${r.villager.join('/')}, to a Marshal of the council ${r.marshal.join('/')}; a retired general at the top: ${r.veteran}; the scribe's letters for a scribe ${r.scribe}, for a courtier ${r.courtier}` };
+  },
+};

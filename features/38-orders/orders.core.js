@@ -1,0 +1,549 @@
+// Generals with a temper, and orders by letter (Road to Ten, War 3: "give AI generals personalities (cautious, bold,
+// cunning) and visible plans. Your superior's orders arrive as letters you can follow or ignore, with consequences").
+//
+// In the release every AI army thinks alike (A.armyThink): it attacks a province when its odds pass a fixed bar, and
+// sends a third of its divisions at once, on the same clock. Now the general's traits set a temper, and the temper
+// moves five dials:
+//   bold (brave, impetuous, wrathful, reckless, ambitious, proud): attacks at worse odds, sooner, with half its divisions;
+//   cautious (craven, patient, calm, cautious, content): wants better odds and rested men, keeps a third of his host in
+//     reserve, and stays on the defensive while outnumbered on his front;
+//   cunning (deceitful, witty, curious, paranoid): goes for the undefended and keeps away from forts;
+//   and where they go (GO-ARMY-MOVES): a bold general presses a beaten division while it is disordered and piles into
+//   the fight with their main host; a cunning one marches round walls and held places, falls on men already fighting
+//   elsewhere, feints, and leaves a host that stands ready for him alone;
+//   steady (none of these, or a tie between them): the release's army.
+// Each army keeps its plan (a.gtPlan), and the war room shows it with the temper. A soldier whose army has a plan gets
+// it as a letter from his superior (or read out at muster, if he has no captain yet), at most every five months: go in first, hold and wait, make a noise, hold the line.
+// Whatever he does, sixty days later the map says whether the plan worked, and that decides what comes of it.
+//
+// Engine side: A.armyThink reads the dials (patches) and is wrapped to record the plan; the month hook sends the
+// letters and settles them. Rendering only reads the plan.
+(function () {
+  const G = A.GENERALS = {
+    TRAITS: {
+      bold: ['brave', 'impetuous', 'wrathful', 'reckless', 'ambitious', 'proud'],
+      cautious: ['craven', 'patient', 'calm', 'cautious', 'content'],
+      cunning: ['deceitful', 'witty', 'curious', 'paranoid'],
+    },
+    // need: multiplies the odds an attack must reach; spear: the share of divisions sent at once (the release: 1/3);
+    // prep: multiplies the rest (organisation) and planning a division must have before it attacks;
+    // weak: multiplies the pull of an undefended province and the push of a fort
+    // every: the army thinks once in so many ticks of the war clock (the release: 3). Measured over 96 wars a temper,
+    // the four dials alone moved nothing: a division is rarely ready, next to the enemy and near the odds bar all at
+    // once, so the tempo is what a temper mostly is
+    // and four decisions (GO-ARMY-DECIDE), because a bar only delays an attack, it does not call it off:
+    // open: take the offensive only when the front's odds pass the general's stance (1.15 x need), else only free
+    // his own land; commit: the most divisions sent at one defended province (the release: 4); fort: each step of
+    // walls on a defended province multiplies the odds wanted by 1 + fort x this; reserve: the share of his
+    // divisions he keeps out of every attack
+    DIALS: {
+      bold: { need: 0.88, spear: 1 / 2, prep: 0.5, weak: 1, every: 2, open: false, commit: 6, fort: 0, reserve: 0, stand: 0.5 },
+      cautious: { need: 1.3, spear: 2 / 9, prep: 1.25, weak: 1, every: 4, open: true, commit: 4, fort: 0, reserve: 1 / 3 },
+      cunning: { need: 1.1, spear: 2 / 9, prep: 1, weak: 2.2, every: 3, open: false, commit: 4, fort: 1.5, reserve: 0 },
+      steady: { need: 1, spear: 1 / 3, prep: 1, weak: 1, every: 3, open: false, commit: 4, fort: 0, reserve: 0 },
+    },
+    NAMES: { bold: 'Bold', cautious: 'Cautious', cunning: 'Cunning', steady: 'Steady' },
+    WAIT: 60,      // days before an order's outcome is known
+    EVERY: 150,    // days between letters at least
+  };
+  // a person's temper as a general
+  G.temper = function (p) {
+    if (!p || !Array.isArray(p.traits)) return 'steady';
+    let best = 'steady', top = 0, tie = false;
+    for (const k of ['bold', 'cautious', 'cunning']) {
+      const n = G.TRAITS[k].filter(t => p.traits.includes(t)).length;
+      if (n > top) { best = k; top = n; tie = false; } else if (n && n === top) tie = true;
+    }
+    return top && !tie ? best : 'steady';
+  };
+  // an army's temper: its general's, unless the player leads it (then the player decides)
+  G.of = function (a) {
+    if (!a) return 'steady';
+    if (a.gtForce && G.DIALS[a.gtForce]) return a.gtForce;   // for tests
+    if (!a.gen || a.gen === A.S.pc) return 'steady';
+    return G.temper(A.P(a.gen));
+  };
+  G.need = a => G.DIALS[G.of(a)].need;
+  G.spear = a => G.DIALS[G.of(a)].spear;
+  G.weak = a => G.DIALS[G.of(a)].weak;
+  G.prep = a => G.DIALS[G.of(a)].prep;
+  G.every = a => G.DIALS[G.of(a)].every || 3;
+  G.opens = (a, ratio) => !G.DIALS[G.of(a)].open || ratio > 1.15 * G.need(a);
+  G.commit = a => G.DIALS[G.of(a)].commit || 4;
+  G.fortNeed = function (a, P) {
+    const t = G.of(a), f = 1 + (G.DIALS[t].fort || 0) * ((P && P.fort) || 0);
+    if (t !== 'cunning' || !P) return f;
+    // a cunning general goes for men already busy elsewhere or still disordered, and for the weakest of them; a
+    // stronger host standing ready he leaves alone unless the odds are long
+    const now = A.S.warClock;
+    if (G.engaged(P.id, a.realm) || foesAt(P.id, a.realm).some(x => G.disordered(x, now))) return f * 0.8;
+    return f * (A.provDefPow(P.id, a.realm) > 0.35 * G.near(a).maxDef ? G.IDLE[1] : G.IDLE[0]);
+  };
+  // the reserve: the share of his divisions a general never sends into an attack (they hold their posts and fight
+  // whoever comes to them). Which ones is fixed by their ids, so the reserve stays the same men (no random draw)
+  const hashId = x => { let h = 7; x = String(x); for (let i = 0; i < x.length; i++) h = (h * 31 + x.charCodeAt(i)) | 0; return h >>> 0; };
+  let RES = null;
+  G.held = function (a, d) {
+    const k = G.DIALS[G.of(a)].reserve;
+    if (!k || !a || !d) return false;
+    const key = a.id + '|' + A.S.warClock + '|' + a.divs.length;
+    if (!RES || RES.key !== key) {
+      const ids = a.divs.slice().sort((x, y) => hashId(x) - hashId(y) || (x < y ? -1 : 1));
+      RES = { key, set: new Set(ids.slice(ids.length - Math.floor(ids.length * k))) };
+    }
+    return RES.set.has(d.id);
+  };
+
+  // ---- what a bold or a cunning general does that a steady one does not (GO-ARMY-MOVES) -------------------------------
+  // The bars above only delay an attack; these change where it goes. Each runs after the release's think, on the
+  // divisions it left idle (and, for the bold, on those it sent off to sit before an empty wall).
+  //   bold: presses after a win (pursues a beaten division into the province it fell back to, while it is still
+  //     disordered), sends every division that can reach it into the fight with the enemy's main host instead of
+  //     sitting down before empty walls, and breaks later in a fight (stand);
+  //   cunning: falls on divisions already fighting elsewhere (from a new side, which widens the front: a flank),
+  //     goes round walled or held provinces to take the open country behind them, and feints: a detachment takes an
+  //     empty place next to a held one and leaves it again, the garrison comes out to retake it, and the main body
+  //     strikes where it left.
+  // Counts for the tests (not saved): G.stats[temper][move].
+  G.stats = {};
+  const stat = (a, k) => { const t = G.of(a), o = G.stats[t] || (G.stats[t] = {}); o[k] = (o[k] || 0) + 1; };
+  G.RELIEF = 1.5;     // the odds a cunning general wants to go in, all together, against men standing in his own land
+  G.IDLE = [2.5, Infinity];  // cunning: the odds wanted against the weakest host standing ready (x need), and a stronger one (never)
+  G.RAID = 1 / 3;      // the share of a cunning army out on a march round the walls at once
+  G.HEADON = 0.7;     // bold: the odds at which a division goes at their host instead of sitting before an empty wall
+  G.PRESS = 8;          // ticks after a retreat while the beaten division counts as disordered
+  G.stand = d => { const a = d && d.army ? A.army(d.army) : null; return (a && G.DIALS[G.of(a)].stand) || 1; };
+  const foesAt = (j, rid) => A.divsAt(j).filter(x => A.hostile(rid, x.r));
+  const capitalOf = P => { const r = A.realm(P.owner); return !!(r && r.capitalProv === P.id); };
+  const walled = (P, rid) => A.hostile(rid, A.ctrl(P)) && ((P.fort || 0) > 0 || capitalOf(P));
+  // a hostile division is disordered: it fell back from a fight a few ticks ago and has not re-formed
+  G.disordered = (x, now) => x.retreated != null && now - x.retreated <= G.PRESS && x.org < A.divMaxOrg(x) * 0.5;
+  // a province whose men are fighting somewhere else, or are already being fought from another side
+  G.engaged = function (j, rid, from) {
+    const H = foesAt(j, rid);
+    if (!H.length) return false;
+    if (H.some(x => x.atk != null && x.atk !== j)) return true;
+    const F = (A.S.fights || {})[j];
+    if (!F) return false;
+    const locs = new Set(A.allDivs().filter(x => x.atk === j && x.r === rid).map(x => x.loc));
+    return locs.size > 0 && (from == null || !locs.has(from));
+  };
+  const oddsOf = (list, j, rid) => {
+    const P = A.S.prov[j], def = A.provDefPow(j, rid);
+    return list.reduce((x, d) => x + A.divPower(d) * (1 + (d.plan || 0)), 0) / Math.max(1, def * (1 + (P.fort || 0) * 0.08) / (A.ATK_TERR[P.terr] || 1));
+  };
+  // the army's neighbourhood, once a think: the strongest enemy force next to it
+  let NEAR = null;
+  G.near = function (a) {
+    const key = a.id + '|' + A.S.warClock;
+    if (NEAR && NEAR.key === key) return NEAR;
+    const S = A.S, seen = new Set();
+    for (const d of A.armyDivs(a)) { const P = S.prov[d.loc]; if (P) for (const j of P.adj) seen.add(j); }
+    let maxDef = 1;
+    for (const j of seen) if (A.hostile(a.realm, A.ctrl(S.prov[j]))) maxDef = Math.max(maxDef, A.provDefPow(j, a.realm));
+    return (NEAR = { key, maxDef });
+  };
+  // the pull of a province in the release's choice of targets (GO-ARMY-MOVES adds it to the value). Steady and
+  // cautious: none. Bold: the enemy's main host, not an empty wall. Cunning: the weakest division, men already busy
+  // elsewhere, and what feeds them (a depot, a rich province)
+  G.pull = function (a, j, def) {
+    const t = G.of(a);
+    if (t !== 'bold' && t !== 'cunning') return 0;
+    const P = A.S.prov[j], N = G.near(a);
+    if (t === 'bold') return def >= 1 ? 35 * def / N.maxDef + ((P.fort || 0) ? 0 : 10) : walled(P, a.realm) ? -30 : 0;
+    if (def < 1) return 4 * A.provLocalSupply(P) + (P.depot ? 15 : 0);
+    return (G.engaged(j, a.realm) ? 30 : 0) + 20 * (1 - def / N.maxDef);
+  };
+
+  const freeDiv = (a, d, bar) => d.atk == null && !d.path.length && d.org >= A.divMaxOrg(d) * bar && !G.held(a, d);
+  const send = (d, j) => { d.path = [j]; d.prog = 0; };
+  const note = (a, k, v) => { a.gtMove = Object.assign({}, v, { k, t: A.S.warClock }); };
+
+  // bold: pursuit, then everyone into the main fight
+  G.boldMoves = function (a, ds, changed) {
+    const S = A.S, me = a.realm, now = S.warClock, commit = G.commit(a), used = new Set();
+    const seen = new Set();
+    for (const d of ds) for (const j of S.prov[d.loc].adj) seen.add(j);
+    // press after a win: a beaten division, still disordered, next to us
+    for (const j of seen) {
+      const H = foesAt(j, me);
+      if (!H.length || !H.some(x => G.disordered(x, now))) continue;
+      const already = ds.filter(d => d.atk === j || (d.path.length === 1 && d.path[0] === j)).length;
+      const pick = ds.filter(d => !used.has(d.id) && A.adjacent(d.loc, j) && freeDiv(a, d, 0.3)).sort((x, y) => A.divPower(y) - A.divPower(x)).slice(0, Math.max(0, commit - already));
+      if (!pick.length || oddsOf(pick.concat(ds.filter(d => d.atk === j)), j, me) < 0.8) continue;
+      for (const d of pick) { used.add(d.id); send(d, j); }
+      stat(a, 'pursue'); note(a, 'press', { j });
+    }
+    // the main fight: wherever our divisions are going in against men, the rest who can reach it go too, and a
+    // division sent this think to sit before an empty wall goes to the fight instead
+    const fights = [...seen].filter(j => foesAt(j, me).length && ds.some(d => d.atk === j || (d.path.length === 1 && d.path[0] === j)));
+    fights.sort((x, y) => A.provDefPow(y, me) - A.provDefPow(x, me));
+    for (const j of fights) {
+      let have = ds.filter(d => d.atk === j || (d.path.length === 1 && d.path[0] === j)).length;
+      if (have >= commit) continue;
+      const can = ds.filter(d => !used.has(d.id) && A.adjacent(d.loc, j) && d.atk == null && !G.held(a, d) && d.org >= A.divMaxOrg(d) * 0.35 &&
+        (!d.path.length || (changed.has(d.id) && d.path.length === 1 && d.path[0] !== j && !foesAt(d.path[0], me).length && walled(S.prov[d.path[0]], me))));
+      can.sort((x, y) => A.divPower(y) - A.divPower(x));
+      let n = 0;
+      for (const d of can) { if (have >= commit) break; used.add(d.id); send(d, j); have++; n++; }
+      if (n) { stat(a, 'join'); if (!a.gtMove || a.gtMove.t !== now) note(a, 'meet', { j }); }
+    }
+    // and a division sent this think to sit before an empty wall with their host in reach goes at the host, the
+    // strongest it can reach, if it and those already going in have a fighting chance
+    for (const d of ds) {
+      if (used.has(d.id) || !changed.has(d.id) || d.path.length !== 1 || d.atk != null) continue;
+      const w = d.path[0];
+      if (foesAt(w, me).length || !walled(S.prov[w], me)) continue;
+      const hosts = S.prov[d.loc].adj.filter(h => foesAt(h, me).length && A.hostile(me, A.ctrl(S.prov[h])) && !(S.fights || {})[h] || (S.fights || {})[h] && ds.some(x => x.atk === h));
+      hosts.sort((x, y) => A.provDefPow(y, me) - A.provDefPow(x, me));
+      const h = hosts.find(h => ds.filter(x => x.atk === h || (x.path.length === 1 && x.path[0] === h)).length < commit &&
+        oddsOf([d].concat(ds.filter(x => x.atk === h || (x.path.length === 1 && x.path[0] === h))), h, me) >= G.HEADON);
+      if (h == null) continue;
+      used.add(d.id); send(d, h); stat(a, 'headon'); note(a, 'meet', { j: h });
+    }
+  };
+
+  // cunning: the flank, the long way round, and the feint
+  G.roundPath = function (a, d) {
+    // breadth-first over open ground: our own land, or theirs where no wall stands and no man holds it
+    const S = A.S, me = a.realm, prev = new Map([[d.loc, -1]]), depth = new Map([[d.loc, 0]]), q = [d.loc], out = [];
+    while (q.length) {
+      const u = q.shift(), du = depth.get(u);
+      if (du >= 4) continue;
+      for (const v of S.prov[u].adj) {
+        if (prev.has(v)) continue;
+        const Q = S.prov[v], c = A.ctrl(Q);
+        if (foesAt(v, me).length || (S.fights || {})[v]) continue;
+        const theirs = A.hostile(me, c);
+        if (!theirs && !A.friendly(me, c)) continue;
+        prev.set(v, u); depth.set(v, du + 1);
+        if (theirs) out.push(v);
+        if (!theirs || !walled(Q, me)) q.push(v);   // past a wall nobody walks on: they stop to besiege it
+      }
+    }
+    const path = v => { const p = []; for (let x = v; x !== d.loc; x = prev.get(x)) p.unshift(x); return p; };
+    return { out, depth, path };
+  };
+  G.cunningMoves = function (a, ds, changed, need) {
+    const S = A.S, me = a.realm, now = S.warClock, commit = G.commit(a), used = new Set();
+    const ready = d => !used.has(d.id) && freeDiv(a, d, 0.7);
+    const seen = new Set();
+    for (const d of ds) for (const j of S.prov[d.loc].adj) seen.add(j);
+    // the flank: men busy elsewhere, fallen on from a side nobody is attacking from
+    for (const j of seen) {
+      if (!A.hostile(me, A.ctrl(S.prov[j])) && !foesAt(j, me).length) continue;
+      const pick = ds.filter(d => ready(d) && A.adjacent(d.loc, j) && G.engaged(j, me, d.loc)).sort((x, y) => A.divPower(y) - A.divPower(x)).slice(0, 2);
+      if (!pick.length) continue;
+      const with_ = pick.concat(ds.filter(d => d.atk === j));
+      if (oddsOf(with_, j, me) < need * G.fortNeed(a, S.prov[j])) continue;
+      for (const d of pick) { used.add(d.id); send(d, j); }
+      stat(a, 'flank'); note(a, 'flank', { j });
+    }
+    // the feint under way
+    const f = a.gtFeint;
+    if (f) {
+      const det = A.divById(f.det), Y = S.prov[f.y];
+      if (!Y || !A.hostile(me, A.ctrl(Y)) || now - f.t > 24) { a.gtFeint = null; stat(a, 'feintIdle'); }
+      else {
+        // the detachment has made its noise in the empty place: it leaves again, and the place stands open
+        if (det && det.loc === f.x && !det.path.length && det.atk == null && !f.left) { if (A.wsOrderDiv(det, f.from)) f.left = now; }
+        const H = foesAt(f.y, me), pow = A.provDefPow(f.y, me);
+        const lured = H.some(x => x.path && x.path.length && x.path[x.path.length - 1] === f.x);
+        const drawn = lured || pow <= f.pow * 0.7 || H.some(x => x.path && x.path.length && x.path[0] !== f.y);
+        if (drawn) {
+          const pick = ds.filter(d => d.id !== f.det && ready(d) && A.adjacent(d.loc, f.y)).sort((x, y) => A.divPower(y) - A.divPower(x)).slice(0, commit);
+          if (pick.length && (!H.length || oddsOf(pick, f.y, me) > 0.9)) {
+            for (const d of pick) { used.add(d.id); send(d, f.y); }
+            stat(a, 'drawn'); if (lured) stat(a, 'lured'); note(a, 'struck', { j: f.y, x: f.x }); a.gtFeint = null;
+          }
+        }
+      }
+    } else if (ds.length >= 3 && (a.gtFeintAt == null || now - a.gtFeintAt > 20)) {
+      // a new feint: a held place too strong to storm now, and beside it a place they will want back: an empty one of
+      // theirs that a detachment takes and leaves again, or one of theirs we hold with a single division, which leaves
+      let best = null;
+      for (const y of seen) {
+        const H = foesAt(y, me); if (!H.length || !A.hostile(me, A.ctrl(S.prov[y]))) continue;
+        const strikers = ds.filter(d => ready(d) && A.adjacent(d.loc, y));
+        if (!strikers.length) continue;
+        const od = oddsOf(strikers, y, me);
+        if (od >= need || od < 0.35) continue;
+        for (const x of S.prov[y].adj) {
+          const X = S.prov[x], v = od + Math.log10(S.prov[y].pop + 10) / 10;
+          if (x === y || (S.fights || {})[x] || (best && v <= best.v)) continue;
+          if (A.hostile(me, A.ctrl(X))) {
+            if (A.divsAt(x).length || walled(X, me)) continue;
+            const det = ds.filter(d => ready(d) && A.adjacent(d.loc, x) && !strikers.includes(d)).sort((p, q) => A.divPower(p) - A.divPower(q))[0]
+              || (strikers.length >= 3 ? strikers.slice().sort((p, q) => A.divPower(p) - A.divPower(q)).find(d => A.adjacent(d.loc, x)) : null);
+            if (det) best = { v, y, x, det, kind: 'take' };
+          } else if (A.friendly(me, A.ctrl(X)) && X.owner !== me) {
+            const here = A.divsAt(x);
+            if (here.length !== 1 || here[0].r !== me || !ds.includes(here[0]) || here[0].atk != null || here[0].path.length) continue;
+            const to = X.adj.filter(j => j !== y && A.friendly(me, A.ctrl(S.prov[j])) && !foesAt(j, me).length).sort((p, q) => (A.adjacent(q, y) ? 1 : 0) - (A.adjacent(p, y) ? 1 : 0))[0];
+            if (to != null) best = { v, y, x, det: here[0], kind: 'leave', to };
+          }
+        }
+      }
+      if (best) {
+        const det = best.det, from = det.loc;
+        used.add(det.id);
+        if (best.kind === 'take') send(det, best.x); else A.wsOrderDiv(det, best.to);
+        a.gtFeint = { y: best.y, x: best.x, det: det.id, from, t: now, pow: A.provDefPow(best.y, me), left: best.kind === 'leave' ? now : 0 };
+        a.gtFeintAt = now; stat(a, 'feint'); note(a, 'feint', { j: best.y, x: best.x });
+      }
+    }
+    // the long way round: an idle division goes past walls and held places to the open country behind them.
+    // At most a third of the army (G.RAID) is out on such a march at once
+    const out = ds.filter(d => d.gtRaid != null && d.path.length >= 1).length;
+    let room = Math.max(1, Math.round(ds.length * G.RAID)) - out;
+    const aimed = new Set(); for (const d of ds) if (d.path.length) aimed.add(d.path[d.path.length - 1]);
+    for (const d of ds) {
+      if (room <= 0) break;
+      if (!ready(d)) continue;
+      if (A.divsAt(d.loc).filter(x => x.r === me).length < 2 && S.prov[d.loc].adj.some(j => foesAt(j, me).length)) continue;   // nobody leaves a post alone under the enemy's eye
+      const R = G.roundPath(a, d);
+      let pick = null;
+      for (const v of R.out) {
+        const dep = R.depth.get(v), Q = S.prov[v]; if (dep < 2 || aimed.has(v) || walled(Q, me)) continue;
+        const direct = A.wsPath(d.loc, v, me);
+        const wall = direct && direct.slice(0, -1).find(j => { const W = S.prov[j]; return foesAt(j, me).length || walled(W, me); });
+        const val = Math.log10(Q.pop + 10) * 6 + 5 * A.provLocalSupply(Q) + (Q.depot ? 15 : 0) + (capitalOf(Q) ? 20 : 0) - (Q.fort || 0) * 6 - dep * 4 + (wall != null ? 12 : 0);
+        if (!pick || val > pick.val) pick = { v, val, wall };
+      }
+      if (!pick) continue;
+      d.path = R.path(pick.v); d.prog = 0; d.gtRaid = pick.v; used.add(d.id); aimed.add(pick.v); room--;
+      stat(a, pick.wall != null ? 'round' : 'deep');
+      if (pick.wall != null) note(a, 'round', { j: pick.v, w: pick.wall });
+    }
+    for (const d of ds) if (d.gtRaid != null && !d.path.length) delete d.gtRaid;
+  };
+  // cunning on the march: the road goes round walls and held places. The release's road (A.wsPath) only prefers its
+  // own land; this one will not pass through a province of theirs that is walled or has men in it, unless it is where
+  // the division is going. The costs are the release's otherwise. No way round: the release's road
+  G.road = function (d, to) {
+    const a = d && d.army && !d.manual ? A.army(d.army) : null;
+    if (!a || G.of(a) !== 'cunning') return A.wsPath(d.loc, to, d.r);
+    const p = G.roundRoad(d.loc, to, d.r), plain = A.wsPath(d.loc, to, d.r);
+    if (!p) return plain;
+    // the walls the plain road would have walked into
+    const wall = plain && plain.slice(0, -1).find(j => foesAt(j, d.r).length || walled(A.S.prov[j], d.r));
+    if (wall != null && !p.includes(wall)) { stat(a, 'round'); note(a, 'round', { j: to, w: wall }); }
+    return p;
+  };
+  G.roundRoad = function (from, to, rid) {
+    const S = A.S, N = S.prov.length;
+    if (from === to) return [];
+    if (from == null || to == null || !S.prov[from] || !S.prov[to]) return null;
+    const dist = new Float64Array(N).fill(Infinity), prev = new Int32Array(N).fill(-1), done = new Uint8Array(N), heap = [[0, from]];
+    const blocked = v => v !== to && (foesAt(v, rid).length > 0 || walled(S.prov[v], rid));
+    dist[from] = 0;
+    while (heap.length) {
+      let bi = 0; for (let i = 1; i < heap.length; i++) if (heap[i][0] < heap[bi][0]) bi = i;
+      const [du, u] = heap[bi]; heap[bi] = heap[heap.length - 1]; heap.pop();
+      if (done[u]) continue; done[u] = 1;
+      if (u === to) break;
+      const P = S.prov[u];
+      const step = (v, sea) => {
+        if (blocked(v)) return;
+        const Q = S.prov[v], c = A.ctrl(Q), own = A.friendly(c, rid), foe = A.hostile(rid, c);
+        const w = A.wsDist(u, v) / (A.WS.moveTerr[Q.terr] || 1) * (sea ? 2.5 : 1) * (own ? (Q.road ? 0.8 : 1) : foe ? 1.2 : v === to ? 1.5 : 3.5);
+        if (du + w < dist[v]) { dist[v] = du + w; prev[v] = u; heap.push([dist[v], v]); }
+      };
+      for (const v of P.adj) step(v, false);
+      for (const v of P.sea || []) step(v, true);
+    }
+    if (prev[to] < 0) return null;
+    const path = []; for (let v = to; v !== from; v = prev[v]) path.unshift(v);
+    return path;
+  };
+  // a cunning division on the march that finds the enemy across its road goes round (GO-ARMY-MOVES, in A.divMove).
+  // A chosen assault (the last step of its road, into their land) still goes in; and a division going to its post
+  // does not throw itself at men who stand there unless it has the odds
+  G.sidestep = function (d, next) {
+    const a = d && d.army && !d.manual ? A.army(d.army) : null;
+    if (!a || G.of(a) !== 'cunning') return false;
+    const S = A.S, to = d.path[d.path.length - 1];
+    if (d.path.length > 1) {
+      const p = G.roundRoad(d.loc, to, d.r);
+      if (p && p.length && p[0] !== next && !foesAt(p[0], d.r).length) { d.path = p; d.prog = 0; stat(a, 'sidestep'); return true; }
+      return false;
+    }
+    if (A.hostile(d.r, A.ctrl(S.prov[next]))) return false;
+    // they stand in our own land: go in only all together, with the odds
+    const with_ = A.allDivs().filter(x => x.r === d.r && x.army === d.army && A.adjacent(x.loc, next) && (x === d || x.atk === next ||
+      (x.atk == null && (!x.path.length || x.path[0] === next) && x.org >= A.divMaxOrg(x) * 0.5)));
+    if (oddsOf(with_, next, d.r) >= G.RELIEF) { for (const x of with_) if (x.atk == null && !x.path.length) { x.path = [next]; x.prog = 0; } return false; }
+    d.path = []; d.prog = 0; stat(a, 'sidestep');
+    return true;
+  };
+  // after the release's think: the moves of the temper (only on the offensive, and never for a player's army)
+  G.moves = function (a, before) {
+    const t = G.of(a);
+    if ((t !== 'bold' && t !== 'cunning') || !a.order || a.order.k === 'hold' || a.order.k === 'front') return;
+    const enemy = A.armyEnemy(a); if (!enemy) return;
+    const T = A._think, fk = a.realm + '>' + enemy, F = (T && T.front.get(fk)) || A.frontProvs(a.realm, enemy);
+    if (!F.length) return;    // on the march: the release's road
+    if (a.order.k !== 'attack' && a.order.k !== 'free') return;
+    const ds = A.armyDivs(a).filter(d => !d.manual && !(d.train > 30));
+    if (!ds.length) return;
+    const changed = new Set(ds.filter(d => before.get(d.id) !== (d.path || []).join()).map(d => d.id));
+    const k = a.order.k, ratio = a.ratio || 1;
+    const need = ((k === 'attack' ? 1.05 : ratio > 1.15 ? 1.25 : 1.6)) * G.need(a);
+    if (t === 'bold') G.boldMoves(a, ds, changed); else G.cunningMoves(a, ds, changed, need);
+  };
+
+  // the plan: where the army is sending divisions, and where it holds
+  const think = A.armyThink;
+  A.armyThink = function (a) {
+    const t = a && a.order ? G.of(a) : 'steady';
+    const before = t === 'bold' || t === 'cunning' ? new Map(A.armyDivs(a).map(d => [d.id, (d.path || []).join()])) : null;
+    const r = think.apply(this, arguments);
+    if (before) { try { G.moves(a, before); } catch (e) { console.error('orders moves', e); } }
+    try {
+      const S = A.S, ds = A.armyDivs(a), at = [], posts = {};
+      for (const d of ds) {
+        if (d.path && d.path.length === 1) { const P = S.prov[d.path[0]]; if (P && A.hostile(a.realm, A.ctrl(P)) && !at.includes(P.id)) at.push(P.id); }
+        if (d.post != null) posts[d.post] = (posts[d.post] || 0) + 1;
+      }
+      const hold = Object.keys(posts).sort((x, y) => posts[y] - posts[x])[0];
+      const old = a.gtPlan && Array.isArray(a.gtPlan.at) ? a.gtPlan.at.filter(j => S.prov[j] && A.hostile(a.realm, A.ctrl(S.prov[j]))) : [];
+      a.gtPlan = { at: (at.length ? at : old).slice(0, 3), hold: hold != null ? +hold : null, stance: a.stance || null };
+    } catch (e) {}
+    return r;
+  };
+  // the general's latest move (bold or cunning), while it is fresh: a feint under way first (pure)
+  G.MOVE_FRESH = 30;
+  G.move = function (a) {
+    if (!a) return null;
+    const S = A.S, f = a.gtFeint;
+    if (f && S.prov[f.y] && S.prov[f.x]) return { k: 'feint', j: f.y, x: f.x, t: f.t };
+    const m = a.gtMove;
+    return m && typeof m === 'object' && S.warClock - (m.t || 0) <= G.MOVE_FRESH ? m : null;
+  };
+  // the plan in words, for the war room (pure)
+  G.planText = function (a) {
+    const t = G.of(a), pl = a && a.gtPlan, S = A.S;
+    const names = pl && pl.at ? pl.at.map(j => S.prov[j] && S.prov[j].name).filter(Boolean) : [];
+    const hold = pl && pl.hold != null && S.prov[pl.hold] ? S.prov[pl.hold].name : null;
+    const list = names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0];
+    const mv = G.move(a), nm = j => (j != null && S.prov[j] ? S.prov[j].name : null);
+    if (t === 'bold') {
+      if (mv && mv.k === 'press' && nm(mv.j)) return `means to press on to ${nm(mv.j)} while they are broken`;
+      if (mv && mv.k === 'meet' && nm(mv.j)) return `means to meet their main host at ${nm(mv.j)} head-on, with every man he can bring`;
+      return list ? `means to take ${list}, and will not wait for better odds` : 'looking for a fight';
+    }
+    if (t === 'cautious') return hold ? `holds at ${hold}, and will move only at long odds in his favour` : 'waits for the enemy to move';
+    if (t === 'cunning') {
+      if (mv && mv.k === 'feint' && nm(mv.x) && nm(mv.j)) return `makes a show at ${nm(mv.x)}, to strike at ${nm(mv.j)} when its garrison comes out`;
+      if (mv && mv.k === 'struck' && nm(mv.x) && nm(mv.j)) return `drew them out of ${nm(mv.j)} with a show at ${nm(mv.x)}, and goes in where they left`;
+      if (mv && mv.k === 'round' && nm(mv.w)) return A.hostile(a.realm, A.ctrl(S.prov[mv.j])) && nm(mv.j) ? `means to go round the walls of ${nm(mv.w)} and take ${nm(mv.j)}` : `means to go round the walls of ${nm(mv.w)}`;
+      if (mv && mv.k === 'flank' && nm(mv.j)) return `means to fall on ${nm(mv.j)} while they are busy elsewhere`;
+      return list ? `feints, and goes for what is left open: ${list}` : 'watching for a weak place';
+    }
+    return list ? `holds the line and presses at ${list}` : hold ? `holds the line at ${hold}` : 'holds the line';
+  };
+  const row = UI.wrArmyRow;
+  if (typeof row === 'function') UI.wrArmyRow = function (a) {
+    const h = row.apply(this, arguments);
+    try {
+      if (!a || !a.gen || a.gen === A.S.pc) return h;
+      const at = h.lastIndexOf('</div>');
+      if (at < 0) return h;
+      const t = G.of(a), line = `<div class="tiny"><b>${UI.esc(G.NAMES[t])}</b> · ${UI.esc(G.planText(a))}</div>`;
+      return h.slice(0, at) + line + h.slice(at);
+    } catch (e) { return h; }
+  };
+
+  // the soldier's army: his division's, or else his realm's first
+  G.armyFor = function (pc) {
+    if (!pc || !pc.mil) return null;
+    const d = A.divById(pc.mil.div);
+    if (d && d.army) { const a = A.army(d.army); if (a) return { a, d }; }
+    const rid = pc.mil.realm || pc.realm, as = rid ? A.armiesOf(rid) : [];
+    return as.length ? { a: as[0], d } : null;
+  };
+  // what the order is about: a province to take, and a province to hold
+  G.orderFor = function (pc, a, d) {
+    const S = A.S, pl = a.gtPlan || {}, mine = d && d.path && d.path.length === 1 ? d.path[0] : null;
+    let tp = mine != null && A.hostile(a.realm, A.ctrl(S.prov[mine])) ? mine : (pl.at || [])[0];
+    const pp = d && d.post != null ? d.post : pl.hold != null ? pl.hold : d ? d.loc : null;
+    if (tp == null && pp != null) { const P = S.prov[pp]; const j = P && P.adj.find(x => A.hostile(a.realm, A.ctrl(S.prov[x]))); if (j != null) tp = j; }
+    // the general's move, when he has one, is what the letter is about: where he presses, the walls he goes round,
+    // the place of the show and the place of the blow
+    const o = { tp: tp != null ? tp : null, pp: pp != null ? pp : null }, mv = G.move(a), t = G.of(a);
+    const theirs = j => j != null && S.prov[j] && A.hostile(a.realm, A.ctrl(S.prov[j]));
+    if (mv && t === 'bold' && mv.k === 'press' && theirs(mv.j)) { o.tp = mv.j; o.press = 1; }
+    if (mv && t === 'cunning' && mv.k === 'feint' && theirs(mv.j) && S.prov[mv.x]) { o.tp = mv.j; o.noise = mv.x; }
+    if (mv && t === 'cunning' && mv.k === 'round' && theirs(mv.j) && S.prov[mv.w]) { o.tp = mv.j; o.wall = mv.w; }
+    return o;
+  };
+
+  // an order's effect key: obey (as ordered), letter (to the letter, no further), own (your own way), ignore
+  (A.FX_EXTRA = A.FX_EXTRA || []).push('order');
+  const apply = A.applyFx;
+  A.applyFx = function (pc, fx, ctx) {
+    const r = apply.apply(this, arguments);
+    try {
+      if (fx && typeof fx === 'object' && fx.order && ctx && ctx.order && pc && pc.id === A.S.pc) {
+        const S = A.S, t = ctx.temper || 'steady', attack = t === 'bold' || t === 'cunning';
+        const prov = attack ? ctx.tp : ctx.pp;
+        if (prov != null) {
+          S.goPend = (S.goPend || []).slice(-5);
+          S.goPend.push({ due: A.absDay() + G.WAIT, k: fx.order, prov, realm: (pc.mil && pc.mil.realm) || pc.realm, gen: ctx.genId, t, tp: ctx.tp, pp: ctx.pp });
+        }
+      }
+    } catch (e) { console.error('orders fx', e); }
+    return r;
+  };
+  // sixty days on, the map says whether the plan worked
+  G.settle = function (pc, o) {
+    const P = A.S.prov[o.prov];
+    if (!P || !pc || !pc.alive || !pc.mil) return null;
+    const worked = A.ctrl(P) === o.realm || A.friendly(A.ctrl(P), o.realm);
+    const ctx = { order: 2, genId: o.gen, temper: o.t, tp: o.tp, pp: o.pp, worked: worked ? 1 : 0 };
+    const g = A.P(o.gen), gname = g ? A.fullName(g, false) : 'the general';
+    if (o.k === 'obey' || o.k === 'letter') {
+      if (worked) {
+        const m = o.k === 'obey' ? 4 : 2;
+        pc.mil.merit = (pc.mil.merit || 0) + m;
+        A.log(`${gname}'s plan has worked: ${P.name} is ours. You did as you were told, and it is remembered (+${m} merit).`, 'good');
+        return 'credit';
+      }
+      A.queue({ type: 'event', ev: 'go_blame', forced: true, ctx });
+      return 'go_blame';
+    }
+    if (worked) {
+      if (o.k === 'ignore') { A.queue({ type: 'event', ev: 'go_reckoning', forced: true, ctx }); return 'go_reckoning'; }
+      A.log(`${gname}'s plan has worked: ${P.name} is ours. Nobody asks how your company went in.`, 'muted');
+      return 'quiet';
+    }
+    A.queue({ type: 'event', ev: 'go_vindicated', forced: true, ctx });
+    return 'go_vindicated';
+  };
+
+  A.onMonth.push(pc => {
+    const S = A.S, now = A.absDay();
+    // settle what is due
+    if (S.goPend && S.goPend.length) {
+      const due = S.goPend.filter(o => o.due <= now);
+      if (due.length) { S.goPend = S.goPend.filter(o => o.due > now); for (const o of due) { try { G.settle(pc, o); } catch (e) { console.error('orders', e); } } }
+    }
+    // a new letter
+    if (!pc || !pc.alive || !pc.mil || pc.mil.merc || pc.prison) return;   // a company fights where it is paid
+    if (S.goNext && now < S.goNext) return;
+    const F = G.armyFor(pc); if (!F) return;
+    const a = F.a, g = A.P(a.gen);
+    if (!g || !g.alive || g.id === pc.id || !A.atWar(a.realm).length) return;
+    if (S.queue.some(q => q && q.ctx && q.ctx.order)) return;
+    if (!A.chance(0.4)) return;
+    const t = G.of(a), o = G.orderFor(pc, a, F.d);
+    let kind = t;
+    if ((t === 'bold' || t === 'cunning') && o.tp == null) kind = 'steady';
+    if (o.pp == null && (kind === 'cautious' || kind === 'steady')) return;
+    if (kind === 'steady' && o.tp == null) return;
+    S.goNext = now + G.EVERY;
+    const ctx = { order: 1, genId: g.id, temper: kind, tp: o.tp, pp: o.pp };
+    if (kind === t) { if (o.press) ctx.press = 1; if (o.noise != null) ctx.np = o.noise; if (o.wall != null) ctx.wp = o.wall; }
+    A.queue({ type: 'event', ev: 'go_order_' + kind, forced: true, ctx });
+  });
+})();

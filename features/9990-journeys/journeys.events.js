@@ -1,0 +1,166 @@
+// 9990-journeys: the scenes of the road. journeys.core.js picks one at a stop from what the land there offers and
+// fills its tokens: {stop} the province, {stopRealm}/{stopShort} who holds it, {region} its country, {dest} where you
+// are going, {days} days on the road, and for some {toll}, {routeName}, {place}, {custom}, {beastName}, {belief},
+// {good}, {carFrom}, {carTo}, {news}, {newsPlace}, {folk}, {word}, {meaning}, {wage}. Every scene is queued by the road,
+// none is rolled; with no journey (a tool), the land at home stands in.
+(function () {
+const fill = ev => (p, ctx) => { if (A.JR) A.JR.fill(p, ctx, ev); else ctx.skip = true; };
+const onRoad = (p, C) => C.adult(p) || C.teen(p);
+A.defEvents([
+  // ---- stops --------------------------------------------------------------------------------------------------------
+  { id: 'jr_border', title: 'The border at {stop}', trigger: true, setup: fill('jr_border'), cond: onRoad,
+    text: 'The road comes down to a pole across it and a hut with smoke coming out. Past the pole is {stopRealm}. A sergeant with ink on his fingers wants {toll} suns, your name and your business. He writes slowly. Behind you a carter swears at his ox.',
+    choices: [
+      { t: 'Pay the toll and give your name', r: 'He writes you into his book and lifts the pole. You are in {stopShort} now, and on its paper.', fx: { jr: { pay: 'toll' }, honor: 1 } },
+      { t: 'Talk your way past him', check: { s: 'persuasion', s2: 'wil', d: 46 },
+        win: { r: 'You name a man in the next town as your cousin. The sergeant knows the name, or says he does, and waves you through.', fx: { skill: { persuasion: 1 } } },
+        lose: { r: 'He hears you out. Then he doubles the toll for the time it took.', fx: { jr: { pay: 'toll2' }, happy: -1 } } },
+      { t: 'Go round by the sheep tracks', check: { s: 'survival', s2: 'ins', d: 44 },
+        win: { r: 'A shepherd boy shows you the way for a heel of bread. You come out on the road two days on, and nobody has written you down.', fx: { jr: { slow: 2 }, skill: { survival: 1 } } },
+        lose: { r: 'You lose the track in the dark and sleep in the wet. At noon you are back at the pole, paying.', fx: { jr: { pay: 'toll', slow: 1 }, health: -4 } } },
+    ] },
+  { id: 'jr_sea', title: 'A passage by sea', trigger: true, setup: fill('jr_sea'), cond: onRoad,
+    text: 'The ship out of {stop} is a broad trader with a hold of jars and a master who does not like passengers. You sleep on deck between the jars. On the third day the wind comes round, and the sailors stop singing.',
+    choices: [
+      { t: 'Lend a hand with the ropes', check: { s: 'sea', s2: 'sta', d: 46 },
+        win: { r: 'By the end of the passage they let you hold the steering oar in a calm. You know the names of things now.', fx: { skill: { sea: 2 }, happy: 2 } },
+        lose: { r: 'A rope runs through your hands and takes the skin with it. The mate laughs, and shows you how to hold it.', fx: { health: -3, skill: { sea: 1 } } } },
+      { t: 'Keep below and out of the way', r: 'You are sick into a bucket for two days, and then you are not. The coast comes up grey and low.', fx: { health: -2, happy: -1, jr: { fast: 1 } } },
+      { t: 'Ask the master about the coasts ahead', r: 'He talks once he has had his wine: harbours, dues, which lords hang wreckers and which ones are wreckers. You remember most of it.', fx: { jr: { heard: 'coast' }, coin: -1 } },
+    ] },
+  { id: 'jr_route', title: 'On {routeName}', trigger: true, setup: fill('jr_route'), cond: onRoad,
+    text: 'This is {routeName}, and it shows. The road is wide enough for two carts, with a stone at every mile and a well at every day\'s end. The yard of the inn at {stop} is full of beasts and drivers, some of them out of {farRealm}. Everyone has an opinion on the road ahead.',
+    choices: [
+      { t: 'Hire on as a guard for a stretch', check: { s: 'str', s2: 'melee', d: 46 },
+        win: { r: 'Nothing comes for the train while you walk with it. The master pays you off at the next well.', fx: { coin: 6 } },
+        lose: { r: 'Something comes for the train. You keep your post and your teeth, most of them.', fx: { coin: 3, health: -6 } } },
+      { t: 'Listen at the fire for the road ahead', r: 'By midnight you know the next ten days: which well is foul, which inn waters its wine, which lord takes a tithe of all that passes.', fx: { jr: { heard: 'route', fast: 2 } } },
+      { t: 'Sleep early and leave before the crowd', r: 'You are out an hour before dawn with the stars still up. The first carts catch you at noon.', fx: { health: 2, jr: { fast: 1 } } },
+    ] },
+  { id: 'jr_site', title: 'Off the road at {stop}', trigger: true, setup: fill('jr_site'), cond: onRoad,
+    text: 'Where you stop for the night at {stop}, the people point you to {place}, an hour off the road. Nobody goes there, they say, except children on a dare and men who owe money.',
+    choices: [
+      { t: 'Go and look before you move on', r: 'You leave your pack with the innkeeper\'s wife and go.', fx: { jr: { site: true, slow: 1 } } },
+      { t: 'Keep to the road', r: 'You walk on and keep the place in mind. It will be there if you come this way again.', fx: { jr: { fast: 1 } } },
+    ] },
+  { id: 'jr_custom', title: 'The ways of {stopShort}', trigger: true, setup: fill('jr_custom'), cond: onRoad,
+    text: 'A stranger learns the ways of {stopShort} by stepping on them. At {stop} your hosts explain one of theirs over the pot. {custom} They watch to see what you make of it.',
+    choices: [
+      { t: 'Do as they do while you are here', r: 'They are pleased, and a little amused. The old woman of the house gives you the best of the pot.', fx: { honor: 1, happy: 2 } },
+      { t: 'Ask why, and listen to the answer', check: { s: 'int', s2: 'learning', d: 42 },
+        win: { r: 'The answer takes an hour and goes back to a war and a vow. You come away knowing {stopShort} better than some who live there.', fx: { skill: { learning: 1 }, jr: { heard: 'realm' } } },
+        lose: { r: 'The answer is lost in names you do not know. You nod at the right places.', fx: { happy: -1 } } },
+      { t: 'Keep your own ways, and say so', r: 'Nobody argues. Nobody passes you the bread, either. You leave early.', fx: { honor: -1, jr: { fast: 1 } } },
+    ] },
+  { id: 'jr_beast', title: 'Tracks at the ford', trigger: true, setup: fill('jr_beast'), cond: onRoad,
+    text: 'In the mud by the ford at {stop} there are tracks as wide as a plate. The ferryman says it is the {beastName}. What folk say of it: {belief} He has not crossed after dark in nine years, and will not start for you.',
+    choices: [
+      { t: 'Wait by the ford to see it', check: { s: 'stealth', s2: 'ins', d: 50 },
+        win: { r: 'It comes at dusk to drink, bigger than the tracks. You do not breathe until it has gone.', fx: { jr: { beast: 2, slow: 1 }, happy: 3 } },
+        lose: { r: 'It smells you first. You run, and the ferryman has his door barred before you reach it. You sleep in the boat.', fx: { jr: { beast: 1, slow: 1 }, health: -5 } } },
+      { t: 'Pay the ferryman to cross by day', r: 'He takes you over at noon, talking all the way about the thing in the reeds. You learn more than you wanted.', fx: { coin: -1, jr: { beast: 1 } } },
+    ] },
+  { id: 'jr_caravan', title: 'A caravan at {stop}', trigger: true, setup: fill('jr_caravan'), cond: onRoad,
+    text: 'A caravan has put up at {stop} with {good} out of {carFrom}, bound for {carTo}. Forty beasts, a dozen drivers and a master who counts everything twice. They will take a traveller who can walk and hold his tongue.',
+    choices: [
+      { t: 'Walk with them a stretch', r: 'Nobody robs a caravan for one traveller\'s purse. You eat their dust for a week and come to no harm, and you hear a great deal about {carTo}.', fx: { happy: 3, jr: { slow: 3, heard: 'caravan' } } },
+      { t: 'Buy a little of their {good} to sell on', check: { s: 'trade', s2: 'int', d: 46 },
+        win: { r: 'You buy small and sell it two towns on for twice what you paid.', fx: { coin: 8, skill: { trade: 1 } } },
+        lose: { r: 'The master sells you the bottom of the sack. You find out at the next market.', fx: { coin: -5 } } },
+      { t: 'Ask the drivers about {carTo}', r: 'They tell you the dues, the inns, and a woman there who sells good boots. You keep all of it.', fx: { jr: { heard: 'caravan' } } },
+    ] },
+  { id: 'jr_news', title: 'News at {stop}', trigger: true, setup: fill('jr_news'), cond: onRoad,
+    text: 'The inn at {stop} has one room, one fire and one story tonight: {news} The man telling it was not there, but his brother-in-law was.',
+    choices: [
+      { t: 'Hear it out and buy him a cup', r: 'He tells it three times, better each time. You know where {newsPlace} is now, more or less.', fx: { coin: -1, jr: { heard: 'news' } } },
+      { t: 'Go up to bed', r: 'You sleep through the second telling and most of the third.', fx: { health: 2 } },
+      { t: 'Tell a story of your own', check: { s: 'music', s2: 'wil', d: 46 },
+        win: { r: 'The room goes quiet for yours. A carter buys you a cup, and his wife asks your name.', fx: { fame: 1, happy: 2 } },
+        lose: { r: 'Nobody laughs in the right places. The fire gets more attention than you do.', fx: { happy: -2 } } },
+    ] },
+  { id: 'jr_folk', title: 'Guests of the {folk}', trigger: true, setup: fill('jr_folk'), cond: onRoad,
+    text: (p, ctx) => (+ctx.same
+      ? 'A {folk} family at {stop} gives you the corner by the hearth. Your own people, but not your own country: the grandmother says {word}, {meaning}, the way they say it here, and laughs at the way you say it.'
+      : 'A {folk} family at {stop} gives you the corner by the hearth. The grandmother teaches you a word of theirs, slowly, for the foreigner: {word}, {meaning}. The children watch you eat as if it were a test.'),
+    choices: [
+      { t: 'Eat everything, and say the word back', r: 'You say it wrong. They laugh and say it again, and you say it less wrong. By the end of the fire you have three more.', fx: { happy: 3, honor: 1, need: { company: 10 } } },
+      { t: 'Pay for the bed and keep to yourself', r: 'You sleep well and leave early. The children wave from the door anyway.', fx: { coin: -1, health: 3, need: { rest: 10 } } },
+      { t: 'Help in the yard in the morning', r: 'You split their wood and carry their water. The grandmother packs you bread for two days.', fx: { str: 0.2, honor: 1, jr: { slow: 1 } } },
+    ] },
+  { id: 'jr_weather', title: 'Weather on the road', trigger: true, setup: fill('jr_weather'), cond: onRoad,
+    text: (p, ctx) => ({
+      winter: 'Snow comes down on the road at {stop} and does not stop. The innkeeper says the way on is shut until the thaw, and that men who say otherwise are found in the spring.',
+      spring: 'The thaw has the river at {stop} over the ford. Branches go by, and a drowned sheep. The ferryman wants five times his price, and the bridge is a day upstream.',
+      summer: 'The heat at {stop} stops the road at noon. Men lie in the shade of their carts. The next well is a day off, if it is not dry.',
+    }[ctx.wk] || 'Rain for a week at {stop}. The road is a ditch and the ditch is a river. Every inn is full of people who were going somewhere.'),
+    choices: [
+      { t: 'Wait it out', r: 'You wait. You eat the inn\'s bread and lose at the inn\'s dice. It clears on the sixth day.', fx: { jr: { slow: 6 }, coin: -2, health: 2 } },
+      { t: 'Push on regardless', check: { s: 'sta', s2: 'survival', d: 50 },
+        win: { r: 'You go on when others will not, and have the road to yourself on the far side.', fx: { jr: { fast: 2 }, skill: { survival: 1 } } },
+        lose: { r: 'You go on, and are sorry. A fever keeps you two days at the next stage.', fx: { health: -7, jr: { slow: 2 } } } },
+    ] },
+  { id: 'jr_pilgrims', title: 'Fellow pilgrims', trigger: true, setup: fill('jr_pilgrims'), cond: onRoad,
+    text: 'At {stop} you fall in with others bound for {dest}: a widow with her husband\'s ring on a cord, two brothers walking off a vow, and a man who will not say what he did. They walk in silence until noon and sing after.',
+    choices: [
+      { t: 'Walk and sing with them', r: 'The songs are old and the tunes are worse. You know them all by the third day.', fx: { piety: 2, happy: 2, need: { company: 10 } } },
+      { t: 'Walk on alone, faster', r: 'You leave them at a well. The road is quieter and goes quicker.', fx: { jr: { fast: 3 } } },
+      { t: 'Ask the silent man what he did', check: { s: 'persuasion', s2: 'ins', d: 50 },
+        win: { r: 'He tells you on the last night, by the fire. You do not repeat it.', fx: { honor: 1, piety: 1, skill: { persuasion: 1 } } },
+        lose: { r: 'He looks at you, and walks with the others from then on.', fx: { happy: -2 } } },
+    ] },
+  { id: 'jr_exile', title: 'The road out', trigger: true, setup: fill('jr_exile'), cond: onRoad,
+    text: 'At {stop} you look back for the last time, and {fromName} is behind the hills. What you own is on your back. Nobody on this road knows your name, which is the one good thing about it.',
+    choices: [
+      { t: 'Take a new name for the road', r: 'You give the next innkeeper a name you made up that morning. It sits well. Nobody asks after the old one.', fx: { happy: 2, flag: 'jr_road_name' } },
+      { t: 'Keep your name, and your grievance', r: 'You say it plainly at every inn on the road. Some of them have heard of you, and one buys you supper.', fx: { honor: 2, happy: -2, wil: 0.2 } },
+    ] },
+  // ---- arrivals ------------------------------------------------------------------------------------------------------
+  { id: 'jr_arrive', title: 'Into {dest}', trigger: true, setup: fill('jr_arrive'), cond: onRoad,
+    text: 'After {days} days on the road you come into {dest}. {destRealm} is around you now: its coin, its bells, its way of calling out prices. You have {purse} suns, and nobody here owes you anything.',
+    choices: [
+      { t: 'Find a room and sleep a day', r: 'The room is over a stable and smells of it. You sleep through until the next evening.', fx: { health: 3, coin: -1, need: { rest: 15 } } },
+      { t: 'Go to the market and ask for work', check: { s: 'persuasion', s2: 'wil', d: 46 },
+        win: { r: 'A man with a cart needs a back for the week. It is a start.', fx: { coin: 4, happy: 2 } },
+        lose: { r: 'Nobody needs anyone today. Come back tomorrow, they all say.', fx: { happy: -2 } } },
+      { t: 'Walk the town from end to end', r: 'By evening you know the wells, the temples and the streets to keep out of. The place is a little less strange.', fx: { jr: { heard: 'around' }, need: { purpose: 10 } } },
+    ] },
+  { id: 'jr_arrive_visit', title: '{dest}', trigger: true, setup: fill('jr_arrive_visit'), cond: onRoad,
+    text: '{days} days from home, you stand in {dest}. You have seen it with your own eyes now, the place people at home only talk about. Your feet hurt. The question is what comes next.',
+    choices: [
+      { t: 'Rest a week, then start for home', r: 'You see the market, the walls and the great temple, and sleep a great deal. Then you take the road home.', fx: { health: 3, happy: 2, coin: -3, jr: { home: true, slow: 7 } } },
+      { t: 'Start for home at once', r: 'You have seen it. That was the point. You are on the road again by noon.', fx: { wil: 0.2, jr: { home: true } } },
+      { t: 'Stay. Make a life here', r: 'You take a room by the month. Home will have to get used to the idea.', fx: { jr: { settle: true }, happy: 1 } },
+    ] },
+  { id: 'jr_shrine_other', title: 'Another stair, at {dest}', trigger: true, setup: fill('jr_shrine'), cond: onRoad,
+    text: 'You know the look of a shrine town now: the bottle-sellers at the gate, the beggars who know the feast days, the inn that doubles its price at the last bend. At {dest} the stair is shorter and the stone is darker. {days} days on the road. The keepers here do not know your face.',
+    choices: [
+      { t: 'Kneel where the locals kneel, not the pilgrims', r: 'A woman with a basket of bread makes room for you without a word. It is quieter on her side of the rail.', fx: { piety: 5, happy: 2, jr: { home: true } } },
+      { t: 'Compare it with the last shrine, aloud', check: { s: 'persuasion', s2: 'int', d: 45 },
+        win: { r: 'A keeper laughs and tells you what the other shrine owes this one, and what it has never paid back.', fx: { skill: { persuasion: 1 }, piety: 2, jr: { home: true, heard: 'around' } } },
+        lose: { r: 'The keeper does not laugh. You are shown the door, and the price of candles goes up.', fx: { coin: -2, piety: 1, jr: { home: true } } } },
+      { t: 'Buy nothing, see the stone, go', r: 'It takes an hour. You are back on the road before the bells.', fx: { piety: 2, jr: { home: true, fast: true } } },
+    ] },
+  { id: 'jr_shrine_again', title: 'Back at {dest}', trigger: true, setup: fill('jr_shrine'), cond: onRoad,
+    text: 'You have knelt at {dest} before. The stair is the same and the keepers are older. Someone has put a new roof on the spring. The bottle-seller at the gate remembers you, or says he does.',
+    choices: [
+      { t: 'Go up the stair as you did before', r: 'Your knees remember it worse than you do. At the top the stone is where you left it.', fx: { piety: 5, health: -2, jr: { home: true } } },
+      { t: 'Ask what has changed since you were here', r: 'Two keepers dead, a quarrel with the bishop, the roof. You hear all of it over a long supper.', fx: { piety: 2, happy: 3, coin: -2, jr: { home: true, heard: 'around' } } },
+      { t: 'Light a candle for whoever came with you last time', r: 'The keeper does not ask who. Most of them do this, the second time.', fx: { piety: 4, happy: -1, jr: { home: true } } },
+    ] },
+  { id: 'jr_shrine', title: 'The shrine at {dest}', trigger: true, setup: fill('jr_shrine'), cond: onRoad,
+    text: 'The shrine at {dest} is smaller than the songs make it, and older. Pilgrims go up the last stair on their knees. Keepers sell water from the spring in clay bottles, and candles, and beds, and advice. You have walked {days} days for this.',
+    choices: [
+      { t: 'Go up the stair on your knees', r: 'It takes the morning. At the top is a stone worn smooth by hands, and you put yours where theirs were.', fx: { piety: 6, health: -3, jr: { home: true } } },
+      { t: 'Buy a bottle of the water for home', r: 'The keeper seals it with wax and a thumbprint. It weighs nothing, and you carry it the whole way back.', fx: { piety: 3, coin: -2, happy: 2, jr: { home: true } } },
+      { t: 'Ask the keepers what it was before', check: { s: 'learning', s2: 'int', d: 50 },
+        win: { r: 'An old keeper tells you, when the others are out of earshot: a well, then a grave, then a king\'s grave, then this.', fx: { skill: { learning: 2 }, jr: { home: true, heard: 'around' } } },
+        lose: { r: 'They tell you what they tell everyone, and sell you a candle.', fx: { coin: -1, piety: 1, jr: { home: true } } } },
+    ] },
+  { id: 'jr_caravan_end', title: 'The caravan comes in', trigger: true, setup: fill('jr_caravan_end'), cond: onRoad,
+    text: 'The caravan comes into {dest} after {days} days. The master pays you off in the yard, {wage} suns, counted twice. The drivers are already arguing about the next load.',
+    choices: [
+      { t: 'Sign on with a train going home', r: 'There is always a load going back. You walk home behind somebody else\'s beasts.', fx: { skill: { survival: 1 }, jr: { wage: true, home: true } } },
+      { t: 'Stay in {dest} with your pay', r: 'You put the coin in your boot and find a room. The caravan leaves without you.', fx: { jr: { wage: true, settle: true }, happy: 1 } },
+    ] },
+]);
+})();

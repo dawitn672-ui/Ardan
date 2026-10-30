@@ -1,0 +1,35 @@
+name: nightly
+# Road to Ten, Balance 2: a nightly bot league of about 1,000 lives over four personalities, plus the hunts that are too
+# slow for every push: dominant strategies (bench/dominance.mjs), the trade exploit (bench/exploit.mjs) and the customs
+# a life runs into (bench/customs.mjs). The reports are kept as the run's artifact; the push check (check.yml) is the gate.
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+jobs:
+  league:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node tools/build.mjs
+      # 167 lives on each of the six starting paths: 1,002 lives, engaged and passive, four personalities in turn
+      - run: node bench/balance.mjs index.html --lives-per=167 --workers=4 --json=reports/nightly-balance.json
+        continue-on-error: true
+      - run: node bench/dominance.mjs index.html --lives=8 --years=30 --workers=4 --json=reports/nightly-dominance.json
+        continue-on-error: true
+      - run: node bench/exploit.mjs index.html
+        continue-on-error: true
+      - run: node bench/customs.mjs index.html --workers=4 --json=reports/nightly-customs.json
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nightly-reports
+          path: reports/nightly-*.json
+          retention-days: 30
