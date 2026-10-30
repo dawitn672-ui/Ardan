@@ -289,7 +289,7 @@
   LOOK.beastTiers = function (tb) {
     if (UI.tab !== 'codex' || typeof LORE === 'undefined' || !Array.isArray(LORE.creatures)) return;
     let byName = null;
-    for (const c of tb.querySelectorAll('.card:not([data-tier]) > b:first-child')) {
+    for (const c of tb.querySelectorAll('.card:not([data-tier]) > b:first-of-type')) {
       if (!byName) byName = new Map(LORE.creatures.map(x => [String(x.name), x]));
       const cr = byName.get(c.textContent.trim());
       if (!cr) continue;
@@ -424,11 +424,11 @@ ${X('.card.rar-beast.rar-legendary, .card.rar-beast.rar-mythic')}{border:2px sol
 
 /* ---- the rail's delta flash */
 ${X('#profile .barrow.lk-flashing')}{position:relative}
-${X('#profile .lk-dlt')}{position:absolute;right:-4px;top:-11px;padding:0 4px;border-radius:var(--r-xs,3px);background:var(--overlay);box-shadow:var(--e-1);
+${X('#profile .lk-dlt')}{position:absolute;right:-4px;top:-17px;padding:0 4px;border-radius:var(--r-xs,3px);background:var(--overlay);box-shadow:var(--e-1);
   font-family:var(--f-ui);font-size:var(--t-cap,12px);font-weight:700;font-variant-numeric:tabular-nums;line-height:16px;white-space:nowrap;pointer-events:none;z-index:2}
 /* cycle 2 (visual B9): the chip rides above the row's top-right corner, on its own plate, so the number it reports
    stays in sight and the label keeps its width */
-${X('#profile .lk-stats .barrow .lk-dlt')}{top:-9px;right:-3px}
+${X('#profile .lk-stats .barrow .lk-dlt')}{top:-15px;right:-3px}
 ${X('#profile .barrow.lk-flashing > .lbl, #profile .barrow.lk-flashing > .val')}{flex-shrink:0}
 ${X('#profile .lk-dlt.up')}{color:var(--ok)}
 ${X('#profile .lk-dlt.dn')}{color:var(--danger)}

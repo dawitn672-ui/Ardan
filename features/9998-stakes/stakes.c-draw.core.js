@@ -193,6 +193,16 @@
 .st-c.st-again{font-weight:700}
 .st-c.st-red{color:var(--danger,#b3261e);border-color:var(--danger,#b3261e);text-transform:uppercase;letter-spacing:.06em;font-weight:700;background:transparent}
 .st-c[data-tt],.st-lock[data-tt]{cursor:help}
+.st-sep,.st-short{display:none}
+.sc-sheet .st-long{display:none!important} .sc-sheet .st-short{display:inline!important}
+/* a phone sheet: the chips flow as one line of words, not stacked boxes, so a scene still fits one screen */
+.sc-sheet .st-row{display:block!important;line-height:1.3;margin-top:2px;font-size:12px}
+.sc-sheet .st-c{display:inline!important;padding:0!important;border:0!important;background:none!important;min-height:0!important}
+.sc-sheet .st-c.st-red{border:0}
+.sc-sheet .st-sep{display:inline!important;margin:0 5px;color:var(--ink-3,inherit)}
+/* a short phone (an iPhone SE): costs and risks stay; what a check wins and what code touches give way (the scene fits) */
+@media (max-height:700px){.sc-sheet .st-c.st-win,.sc-sheet .st-c.st-touch,.sc-sheet .st-c.st-win+.st-sep,.sc-sheet .st-c.st-win+.sc-vh+.st-sep{display:none!important}
+  .sc-sheet .st-row:not(:has(.st-c:not(.st-win):not(.st-touch))){display:none!important}}
 .st-lock:focus-visible{outline:2px solid var(--accent,currentColor);outline-offset:2px}
 .st-locked{display:flex;flex-direction:column;gap:6px;margin:6px 0 0}
 .st-lock{display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:12px;row-gap:2px;align-items:center;min-height:40px;padding:6px 10px;border-radius:var(--r-m,10px);

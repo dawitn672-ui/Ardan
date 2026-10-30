@@ -477,7 +477,8 @@ export default {
       UI.set.motion = 'off'; UI.applySettings(); A.S.queue = [];
       UI.tab = 'path'; UI.render();
       const spans = [...document.querySelectorAll('#tabbody .ladder > span')];
-      const broken = spans.filter(s => s.scrollWidth > s.clientWidth + 1).map(s => s.textContent.trim());
+      // a word broken across lines has more than one line box
+      const broken = spans.filter(s => { const t = s.firstChild && s.firstChild.nodeType === 3 ? s.firstChild : [...s.childNodes].find(n => n.nodeType === 3); if (!t) return false; const words = t.textContent.split(/(\s+)/); let at = 0; for (const w of words) { if (w.trim()) { const r = document.createRange(); r.setStart(t, at); r.setEnd(t, at + w.length); const lines = new Set([...r.getClientRects()].map(x => Math.round(x.top))); if (lines.size > 1) return true; } at += w.length; } return false; }).map(s => s.textContent.trim());
       UI.tab = 'life'; UI.render();
       const pc = A.pc(); pc.health = Math.max(5, (pc.health || 80) - 30); UI.refresh();
       const d = document.querySelector('#profile .lk-dlt'), row = d && d.closest('.barrow'), v = row && row.querySelector('.val');

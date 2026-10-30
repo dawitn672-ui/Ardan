@@ -160,7 +160,8 @@
   // lore's target there (base x the realm's export/import factor), moves what the world makes of it by up to a tenth a
   // year, between half and four times what the people's need alone would ask. Worked once a year from the state
   // (S.ecoSup = { y, m: {good: factor} }); a save without it starts at 1
-  E.SUPPLY = { hi: 1.5, lo: 0.75, step: 0.1, min: 0.5, max: 4 };
+  // (not grain: its price is the harvest's and the famine's, and the granary already answers it)
+  E.SUPPLY = { hi: 1.5, lo: 0.75, step: 0.1, min: 0.5, max: 4, skip: ['grain'] };
   E.supplyOf = k => { const s = A.S.ecoSup; return s && s.m && s.m[k] != null ? s.m[k] : 1; };
   E.supplyYear = function () {
     const S = A.S, sup = S.ecoSup = S.ecoSup && S.ecoSup.m ? S.ecoSup : { y: null, y0: S.year, m: {} };
@@ -170,6 +171,7 @@
     if (S.year - sup.y0 < 2) return;   // the first stores are still settling
     const T = E.SUPPLY;
     for (const k in G()) {
+      if (T.skip.includes(k)) continue;
       const rel = [];
       for (const r of live()) { const m = r.mkt; if (!m || !m.p || !m.t || !m.d || !(m.d[k] > 0.05)) continue; rel.push(m.p[k] / (G()[k].base * (m.t[k] || 1))); }
       if (rel.length < 3) continue;

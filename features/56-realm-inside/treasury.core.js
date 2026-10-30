@@ -336,13 +336,16 @@ RI.spend = function (r) {
 // ladder above then fills it to its reserve over the first forty years: the "treasuries x13 to x20" every soak reads
 // is that filling, not growth. The broker cities of the Silk Road (a small income and the lore's army) start below
 // zero within a year and stay there. A crown now starts the world with its reserve in hand (RI.reserveYears, by its
-// ruler's temper), never less than it had.
+// ruler's temper), never less than it had. Great Continent only.
 {
   const iw = A.initWorld;
   if (typeof iw === 'function') A.initWorld = function () {
     const out = iw.apply(this, arguments);
     try {
       const S = A.S, pc = A.pc();
+      // the Great Continent only: in the Known World the crowns' early works (granaries among them) would change the
+      // famine and the first wars the Known World's tests and bands are set on
+      if (!(A.FAR && A.FAR.isGreat && A.FAR.isGreat(S))) return out;
       for (const id in S.realms) {
         const r = S.realms[id];
         if (!r.alive || r.playerRun || (pc && pc.ruler === r.id) || !(r.income > 0)) continue;

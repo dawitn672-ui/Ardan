@@ -191,6 +191,6 @@ reads "the return of the lords' liberties". The court card's lines had no gramma
 - **The far ledger is paid.** `RI.spend` charges, as a new book line `lore` ("The host at the realm's own rate, and paper money's fall"), what 9995's `A.TRADE.ledgerYear(r)` asks on the Great Continent:
   - **The host's pay at the lore's share of revenue.** The rate per man is fixed once, against the lore's standing army: Taulen 4.3 times the release's 3.2 suns, so its host eats two thirds of its revenue.
   - **The half-notes' fall** on the part of Taulen's treasury held in them.
-- **Every crown starts with its reserve.** At world creation every AI crown starts with its reserve (`RI.reserveYears` × income), never less than it had. The release's quarter-year purse made every soak read "treasuries ×13 to ×20" as they filled to 56's steady state. It also left the Silk Road's broker cities below zero from their first year.
+- **Every crown starts with its reserve** (Great Continent only). At world creation every AI crown starts with its reserve (`RI.reserveYears` × income), never less than it had. The release's quarter-year purse made every soak read "treasuries ×13 to ×20" as they filled to 56's steady state. It also left the Silk Road's broker cities below zero from their first year.
 
 Test `farLedgerPaid`.

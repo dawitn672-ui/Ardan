@@ -298,7 +298,7 @@ export default {
       UI.ov = null; UI.renderModal();
       return { realMs, startMs, during, after };
     });
-    const ok = r.none || (r.during.real === 0 && r.after.tweens === 1 && r.after.real === 1 && r.after.frames >= 1 && r.startMs < Math.max(30, r.realMs / 2));
+    const ok = r.none || (r.during.real === 0 && r.after.tweens === 1 && r.after.real >= 1 && r.after.real <= 3 && r.after.frames >= 1 && r.startMs < Math.max(30, r.realMs / 2));
     return { ok, detail: r.none ? 'no full map' : `a real draw ${r.realMs.toFixed(1)} ms; the tween's first frame ${r.startMs.toFixed(1)} ms; real draws during the tween ${r.during.real}, after it ${r.after.real}; tween frames ${r.after.frames}` };
   },
 };

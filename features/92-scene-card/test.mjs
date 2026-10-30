@@ -63,7 +63,8 @@ const SETUP = () => {
         SCT.start(o);
         for (let k = 0; k < 400 && out.length < n; k++) {
           const q = SCT.next(); if (!q) break;
-          if (!seen.has(q.ev)) { seen.add(q.ev); UI.renderModal(); out.push(SCT.measure(q, phone)); }
+          // 9993's chapter card is drawn as its own title card (cycle 2, lane I), not as a scene card
+          if (!seen.has(q.ev) && !(q.ev === 'chp_card' && A.CH && !A.CH.CARD_OFF)) { seen.add(q.ev); UI.renderModal(); out.push(SCT.measure(q, phone)); }
           A.eventAuto();
         }
         if (out.length >= n) break;
