@@ -187,6 +187,10 @@ ${drift(`#title.tl-vista .tl-logo .tl-seal{animation:tlSeal 420ms cubic-bezier(.
   #title.tl-vista .tt-sky svg.tl-clouds{display:none}
   #title.tl-vista{padding-top:max(20px,calc(38vh - 70px))}
   #title.tl-vista .btns{margin-top:40px}
+  /* the logotype stays inside a 375 px screen, its brush stroke and seal with it */
+  :root[data-theme] #title.tl-vista .logo.tl-logo{font-size:min(64px,12vw);padding-left:.35em;padding-right:.35em}
+  #title.tl-vista .logo.tl-logo svg.tl-brush{left:-5%;width:110%}
+  #title.tl-vista .logo.tl-logo svg.tl-seal{right:0}
 }
 
 /* the logotype: Dela Gothic One over a vermilion brush stroke, a seal at its end */

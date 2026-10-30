@@ -89,34 +89,30 @@
 | Test | What it holds | Last run |
 | --- | --- | --- |
 | `advRing` | A peasant of 17 hears father and mother (both want her safe). A ruler hears all five seats, each a living person who knows them. The same mother wants `safety` at 17 and `kin` at 30 | pass |
-| `advHonest` | 200 real scenes with checks. Judgement 85 favours your best 200/200. Judgement 10 favours their want 200/200. Hostile and skilled steers away from your best 83/83. No dice | pass |
+| `advHonest` | 200 real scenes with checks. Judgement 85 favours your best 200/200. Judgement 10 favours their want 200/200. Hostile and skilled steers away from your best 82/82. No dice | pass |
 | `advMemory` | Heeding once books it and raises their opinion by 1.5. Three ignores queue `adv_unheeded`. Letting them go takes them out of the ring, and `past` says "sent away" | pass |
 | `advPure` | A modal with counsel drawn twice is the same. A name `<img data-pwn>` is escaped. State hash and dice are untouched. The People card shows | pass |
 | `advScenes` | All 6 scenes, 18 choices played. No raw token. Longest 53 words | pass |
 | `advOldSaveAndWar` | A ruler's save with no `pc.adv` draws every tab, plays a year, and fills the ring (6). The war declaration shows 3 councillors, drawn purely. Declaring books 3 counsels | pass |
-| `advLives` | 4 bot lives (peasant, artisan, noble, ruler): the share of big choices with counsel and of once-scenes (each 80% or more), heeded against ignored outcomes, and distinct advisors a life (3 or more) | see Numbers |
+| `advLives` | 4 bot lives (peasant, artisan, noble, ruler): the share of big choices with counsel and of once-scenes (each 80% or more), heeded against ignored outcomes, and distinct advisors a life (3 or more) | pass, see Numbers |
 
 `lint-events`: 6 events, 42 checked in the browser, 0 errors, 0 warnings. `lint-choices`: 0 of 4 compared obviously best.
 
 ## Numbers
 
-These are bot lives on the full build with this feature (`advLives`, 15 years each, seeds 4141–4444). The bot picks choices at random, so heeding is chance:
+`advLives`: 4 bot lives on the full build with this feature, 10 years each, seeds 4141–4444 (last run, Oct 30). The bot picks choices at random, so whether it heeds counsel is chance:
 
-| Measure | Value |
-| --- | --- |
-| Big choices with counsel | 146 / 167 (87%): peasant 38/42, artisan 27/30, noble 55/56, ruler 26/39. The ruler's misses were scenes whose effects are engine calls; read by their odds since, see below |
-| `once` scenes with counsel | 20 / 22 (91%) |
-| Counsel heeded that went well | 36% (50 / 137) |
-| Counsel ignored that went well | 25% (54 / 219) |
-| Distinct advisors a life | 6.3 (peasant 8, artisan 4, noble 6, ruler 7) |
-| Big choices a year | about 3 for a commoner, about 4 for a noble, many more for a ruler |
+| Measure | Peasant | Artisan | Noble | Ruler | All |
+| --- | --- | --- | --- | --- | --- |
+| Big choices with counsel | 21/25 | 34/38 | 38/39 | 40/44 | **133/146 (91%)** |
+| `once` scenes with counsel | 3/3 | 4/5 | 9/9 | 5/5 | **21/22** |
+| Counsel heeded that went well | 5/17 | 14/35 | 18/30 | 21/42 | **47% (58/124)** |
+| Counsel ignored that went well | 10/26 | 22/42 | 15/62 | 19/71 | **33% (66/201)** |
+| Distinct advisors | 7 | 6 | 6 | 8 | **6.8 a life** |
 
-An earlier probe, 12 years each, before unskilled advisors spoke only from their wants:
-
-- noble: heeded went well 69% (25 / 36), ignored 42% (28 / 66);
-- peasant: heeded 39% (7 / 18), ignored 24% (8 / 34).
-
-Listening helps, and it helps more where the ring knows things.
+- **Listening helps,** by 14 points over all four lives. It helps most where the ring knows things: the noble's 60% against 24%, and the ruler's council 50% against 27%. The peasant's kin, whose judgement sits in the 20s, do no better than chance on 43 counsels.
+- **Big choices come** at about 2.5 a year for a peasant and 4 to 4.5 for an artisan, a noble or a ruler.
+- **The run before** (15 years a life, before unreadable check effects were read by their odds) was 87% with counsel. The ruler's misses then were scenes whose effects are engine calls.
 
 ## Rules kept
 

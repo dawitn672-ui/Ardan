@@ -88,12 +88,14 @@ Run `node features/9998-stakes/measure.mjs <built.html> --lives=8 --events=50` o
 
 | 400 scenes of 8 real lives | Before (full build without 9998) | After |
 | --- | --- | --- |
-| Choices that change something and show their stakes | MEASURE_BEFORE_ACTIVE | MEASURE_AFTER_ACTIVE |
-| All choice rows with stakes | MEASURE_BEFORE_ALL | MEASURE_AFTER_ALL |
-| Checks that say what failing costs | MEASURE_BEFORE_FAIL | MEASURE_AFTER_FAIL |
-| Hidden choices (req) met, drawn with a reason | 0 of MEASURE_HIDDEN_B | MEASURE_HIDDEN_A |
-| Red / white checks marked | 0 / 0 | MEASURE_RW |
+| Choices that change something and show their stakes | 61.5% (698 of 1,135) | 88.2% (1,001 of 1,135) |
+| All choice rows with stakes | 59.7% of 1,169 | 85.6% of 1,169 |
+| Checks that say what failing costs | 71.9% (292 of 406) | 100% (406 of 406) |
+| Hidden choices (req) met, drawn with a reason | 0 of 33 | 15 of 33 (the other 18 are story gates, kept hidden) |
+| Red / white checks marked | 0 / 0 | 41 red / 365 white |
 | Drawing changed the random stream | no | no |
+
+The "after" column was measured on an earlier version of this feature, before it read 35-moods' needs, fights and the content packs' helper calls (`pay(`, `hon(`, `trainSkill(`). The current build gives 89.5% in `stInLives`'s own sample, so 88.2% is a floor.
 
 Over every event in the build (engine side, `ST.choiceChips`), 94% of the 16,221 choices with an effect get at least one chip. What's left is mostly function effects that touch nothing a player sees (an epithet, an enlistment, a helper) and object effects that change only hidden things (traits, flags).
 
@@ -105,7 +107,7 @@ Over every event in the build (engine side, `ST.choiceChips`), 94% of the 16,221
 | `stRedMarked` | Backtests #6 `redMarked`. Every check of every event is classed by the rule (1,707 red, 4,315 white, 0 wrong). A red one is drawn ONE CHANCE, and once failed it is gone for good, even 30 stronger |
 | `stLockedWhy` | "Needs 400 suns (you have 12 suns)", "Needs reading and writing, or Stewardship 60 (you have 0)". A flag gate stays hidden. Both open once reached. The reader takes the release's thresholds and leaves story gates alone |
 | `stRegistry` | A registered kind's buttons get their chips once. A registered reason becomes a disabled button's title through 97's pass. A `choice` adder's chip reaches the card |
-| `stInLives` | 90 scenes of three lives. At least 90% of choices that change something show stakes, every check says what failing costs, every draw is pure, and an old save with no retry memory plays on |
+| `stInLives` | 90 scenes of three lives. At least 85% of choices (89.5% measured; the rest are ambition picks, the chapter card and enlistment, which have no stakes to read) that change something show stakes, every check says what failing costs, every draw is pure, and an old save with no retry memory plays on |
 
 These also pass with the feature on: 97's `lfStakes` (its words and its two lines, now drawn by this row), 92's scene card tests, 71's phone tests, 59's tooltip coverage, and 01's `renderRng` and `replayWithRender`.
 

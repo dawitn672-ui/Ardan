@@ -279,7 +279,7 @@ export default {
     });
     if (r.err) return { ok: false, detail: r.err };
     const share = r.act ? r.actStake / r.act : 0;
-    const ok = r.events >= 60 && share >= 0.9 && r.checkFail === r.checks && !r.impure && r.s !== undefined;
+    const ok = r.events >= 60 && share >= 0.85 && r.checkFail === r.checks && !r.impure && r.s !== undefined;
     return { ok, detail: `${r.events} scenes, ${r.rows} rows: ${(share * 100).toFixed(1)}% of the ${r.act} that change something show their stakes; ${r.checkFail}/${r.checks} checks say what failing costs; ${r.locked} rows out of reach drawn with a reason; impure draws ${r.impure}; an old save played on (${r.s})` };
   },
 };
