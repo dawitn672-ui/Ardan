@@ -193,8 +193,8 @@
 .st-c.st-again{font-weight:700}
 .st-c.st-red{color:var(--danger,#b3261e);border-color:var(--danger,#b3261e);text-transform:uppercase;letter-spacing:.06em;font-weight:700;background:transparent}
 .st-c[data-tt],.st-lock[data-tt]{cursor:help}
-.st-sep,.st-short{display:none}
-.sc-sheet .st-long{display:none!important} .sc-sheet .st-short{display:inline!important}
+.st-sep{display:none}
+.sc-sheet .st-long{font-size:0!important} .sc-sheet .st-long::before{content:attr(data-short);font-size:12px}
 /* a phone sheet: the chips flow as one line of words, not stacked boxes, so a scene still fits one screen */
 .sc-sheet .st-row{display:block!important;line-height:1.3;margin-top:2px;font-size:12px}
 .sc-sheet .st-c{display:inline!important;padding:0!important;border:0!important;background:none!important;min-height:0!important}

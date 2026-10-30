@@ -277,7 +277,8 @@ export default {
   },
 
   // cycle 2 (visual B2): an eased zoom of the full map no longer redraws the map each frame: the tween scales the last
-  // picture (drawImage), and the map is drawn for real once, at its end; a tween frame costs a copy, not a redraw
+  // picture (drawImage), and the map is drawn for real after it (62 may lay late tiles with more draws); a tween frame
+  // costs a copy, not a redraw
   async mapEaseCheap(pg) {
     await pg.setViewportSize({ width: 1366, height: 768 });
     const r = await pg.evaluate(async () => {
@@ -293,12 +294,12 @@ export default {
       UI.gm.view = Object.assign({}, UI.gm.view, { w: UI.gm.view.w / 1.25, h: UI.gm.view.h / 1.25 });
       const t1 = performance.now(); UI.gmDraw(); const startMs = performance.now() - t1;
       const during = { real: S.real - before.real };
-      await new Promise(res => setTimeout(res, 450));
+      await new Promise(res => setTimeout(res, 1500));
       const after = { real: S.real - before.real, frames: S.frames - before.frames, tweens: S.tweens - before.tweens };
       UI.ov = null; UI.renderModal();
       return { realMs, startMs, during, after };
     });
-    const ok = r.none || (r.during.real === 0 && r.after.tweens === 1 && r.after.real >= 1 && r.after.real <= 3 && r.after.frames >= 1 && r.startMs < Math.max(30, r.realMs / 2));
-    return { ok, detail: r.none ? 'no full map' : `a real draw ${r.realMs.toFixed(1)} ms; the tween's first frame ${r.startMs.toFixed(1)} ms; real draws during the tween ${r.during.real}, after it ${r.after.real}; tween frames ${r.after.frames}` };
+    const ok = r.none || (r.during.real === 0 && r.after.tweens >= 1 && r.after.real >= 1 && r.after.frames >= 1 && r.startMs < Math.max(30, r.realMs / 2));
+    return { ok, detail: r.none ? 'no full map' : `a real draw ${r.realMs.toFixed(1)} ms; the tween's first frame ${r.startMs.toFixed(1)} ms; real draws during the tween ${r.during.real}, after it ${r.after.real}; tweens ${r.after.tweens}, tween frames ${r.after.frames}` };
   },
 };

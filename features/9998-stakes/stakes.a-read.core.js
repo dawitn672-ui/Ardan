@@ -344,7 +344,7 @@
   // ---- markup ------------------------------------------------------------------------------------------------------
   const MARK_SR = { '▲▲': 'much more ', '▲': 'more ', '▼▼': 'much less ', '▼': 'less ', '•': 'changes ' };
   // a chip's text with its marks hidden from screen readers and said in words instead
-  ST.chipText = t => UI.esc(t).replace(/^If it (works|fails):/, (m, w) => `<span class="st-long">If it ${w}</span><span class="st-short" aria-hidden="true">${w === 'works' ? 'Works' : 'Fails'}</span>:`).replace(/(▲▲|▼▼|▲|▼|•)\s?/g, (m, g) => `<span aria-hidden="true">${g}</span> <span class="sc-vh">${MARK_SR[g]}</span>`);
+  ST.chipText = t => UI.esc(t).replace(/^If it (works|fails):/, (m, w) => `<span class="st-long" data-short="${w === 'works' ? 'Works' : 'Fails'}">If it ${w}</span>:`).replace(/(▲▲|▼▼|▲|▼|•)\s?/g, (m, g) => `<span aria-hidden="true">${g}</span> <span class="sc-vh">${MARK_SR[g]}</span>`);
   ST.chipHtml = (c, attrs) => `<span class="st-c st-${UI.esc(c.k || 'note')}"${attrs || ''}>${ST.chipText(c.t)}</span>`;
   ST.html = (chips, attrsOf) => (chips || []).map((c, i) => ST.chipHtml(c, attrsOf ? attrsOf(c, i) : '')).join('<span class="sc-vh">; </span><span class="st-sep" aria-hidden="true">·</span>');
 })();
