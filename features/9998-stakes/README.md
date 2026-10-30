@@ -31,6 +31,7 @@ Every event choice carries one row of short chips under its label:
 - **Labels that name a price** ("Pay 30 suns") don't get the cost twice. That is 97's rule.
 - **Hidden things stay hidden.** Flags, queued events, secrets, traits, deeds, epithets and schemes are never chips. A function effect shows only which families it touches, read once from its source (as 89 reads a fight), and never the direction. The odds setting is respected: with numbers off, the "Again" chip and the lock reasons drop their numbers.
 - **The row is 97's row.** It keeps the `.lf-stake` class and 97's words, and 97's own line steps aside while this one is on (`LF.STAKES_OFF` reads `A.STAKES.on()`). 92's two hints also give way.
+- **On a phone sheet** the chips flow as one line of words ("Works: ▲ renown · Fails: hurt"), not boxes. On a short phone (under 700 px high, an iPhone SE), what a check wins and what code touches give way, and the costs and risks stay, so 92's `scPhoneFit` scene still fits one sheet.
 - **Every chip explains itself** through 59-tooltips. A coin cost opens 97's purse popover. Every other chip opens `stChip`: what kind of stake it is, and the chance of a win or a fail when the numbers are on.
 
 ### 2. White and red checks (`stakes.b-checks.core.js`), Disco Elysium's rule
