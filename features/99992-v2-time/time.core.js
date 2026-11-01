@@ -389,10 +389,19 @@
     if (typeof f === 'function') UI[name] = function () { try { V2T.groups(); } catch (e) { console.error('v2 places', e); } return f.apply(this, arguments); };
   }
   // a tap on a group opens its first page if the last one seen there has moved away (War at peace goes under You)
+  // the six old groups' keys still open their pages (a link or a key written for the old bar)
+  V2T.OLD_GROUP = { people: 'family', pathwar: 'you', holdings: 'you', realm: 'world', chronicle: 'world' };
   const grp = UI.A.group;
   if (typeof grp === 'function') UI.A.group = function (v) {
+    try {
+      V2T.groups();
+      if (!UI.GROUPS.some(x => x.k === v) && V2T.OLD_GROUP[v]) {
+        const tab = { people: 'people', pathwar: 'path', holdings: 'holdings', realm: 'realm', chronicle: 'book' }[v];
+        UI.lastSub[V2T.OLD_GROUP[v]] = tab; v = V2T.OLD_GROUP[v];
+      }
+    } catch (e) {}
     try { V2T.groups(); const g = UI.GROUPS.find(x => x.k === v); if (g && UI.lastSub[v] && !UI.subsOf(g).some(s => s[0] === UI.lastSub[v])) delete UI.lastSub[v]; } catch (e) {}
-    return grp.apply(this, arguments);
+    return grp.call(this, v);
   };
 
   // ---- the words that taught the old clock (97-life-fixes' clock hint and How to play) ----------------------------

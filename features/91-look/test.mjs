@@ -416,7 +416,7 @@ export default {
       const out = {};
       T.enter({ seed: 91, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 }); UI.set.hints = false;
       UI.A.group('chronicle'); UI.A.tab('codex'); UI.render(); await tick(); out.codex = gold();
-      UI.ov = { type: 'bigmap' }; UI.renderModal(); await tick(); out.map = gold().filter(a => a !== 'stepMonth' && a !== 'stepSeason' && a !== 'stepWeek');
+      UI.ov = { type: 'bigmap' }; UI.renderModal(); await tick(); out.map = gold().filter(a => a !== 'stepMonth' && a !== 'stepSeason' && a !== 'stepWeek' && a !== 'v2Next');   // v2: the clock's one button is v2Next
       UI.ov = null; UI.renderModal();
       UI.A.newLife(); UI.step = 1; UI.render(); await tick(); out.create = gold();
       UI.screen = 'game'; UI.render();
