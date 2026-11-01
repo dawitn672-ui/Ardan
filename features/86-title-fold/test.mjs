@@ -24,6 +24,9 @@ export default {
   // first-hour B3, visual I4: the title said "Thirty-four realms" and showed the Known World; five buttons of one
   // weight. Now it pitches the Great Continent with its counts and its map, under the dawn sky, with one primary button.
   async tfGreat(pg) {
+    // v2 map lane (docs/v2/LANES.md; the owner's decision of Nov 1): the Far Lands are out of the build (99-far-lands and
+    // its kin carry .wip), so this Great Continent test has nothing to measure; it runs again whenever 99 is built
+    if (!(await pg.evaluate(() => !!A.FAR))) return { ok: true, detail: 'skipped: the Far Lands are out of the build (v2 complaint 3)' };
     const r = await pg.evaluate(() => {
       UI.screen = 'title'; UI.render();
       const t = document.getElementById('title');

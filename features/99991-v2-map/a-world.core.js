@@ -16,7 +16,8 @@
 const VM = A.V2MAP = A.V2MAP || {};
 VM.VERSION = 1;
 VM.GW = 467; VM.GH = 300;                       // the generator's grid: 15 km cells over the release's 7,000 x 4,500 km
-VM.OPTS = { landFraction: 0.38, latTop: 56, latBottom: 16, maxIslands: 0, provinces: 1 };
+// erosion at 0.5 droplets a cell (v2's default is 0.9): the same look at this grid, a third less time
+VM.OPTS = { landFraction: 0.38, latTop: 56, latBottom: 16, maxIslands: 0, provinces: 1, droplets: Math.round(VM.GW * VM.GH * 0.5) };
 VM.ELEV_M = 8000;
 VM.RIVER_T = 120;                               // flow (v2's accumulated moisture) where a river begins                               // v2's land height (0 to 0.62) in metres
 VM.TERR_SHARE = { mountains: 0.065, hills: 0.41 };   // the release's mix: 20 and 126 of 306 provinces

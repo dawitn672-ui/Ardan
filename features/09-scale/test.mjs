@@ -113,6 +113,9 @@ export default {
       [/S\.houses\[id\]=o\}return delete S\.packed/, 'A.unpackState, on load'],
       [/S\.houses\[hid\] = \{ id: hid, name: \/\^\(of /, '70 FR.make (a new house for a fresh realm), inside A.initWorld'],
       [/A\.S\.houses\[hid\]=\{id:hid,name:houseName,realm:null,kind:"royal"/, 'the player founds a realm: a royal house never counts in A.realmHouses, and its realm is set (and told) two statements on'],
+      // v2 map lane: the generated continent's adjacency is written into the new provinces inside A.initWorld, before
+      // any index is built (99991-v2-map, patch V2MAP-PROV)
+      [/p\.adj = q\.adj\.slice\(\); p\.sea = q\.sea\.slice\(\);/, '99991 A.V2MAP.onProv, inside A.initWorld'],
     ];
     const bad = [], seen = { owner: 0, house: 0, adj: 0 };
     const scan = (src, re, kind, told) => {
@@ -155,6 +158,9 @@ export default {
   // months; word of the far east is told only once the player has a home (the 1105 wars came on the first day) and
   // comes up to two years late, its province lists blurred and one line in three wrong in a detail, mended later
   async scaleFarPeace(pg) {
+    // v2 map lane (docs/v2/LANES.md; the owner's decision of Nov 1): the Far Lands are out of the build (99-far-lands and
+    // its kin carry .wip), so this Great Continent test has nothing to measure; it runs again whenever 99 is built
+    if (!(await pg.evaluate(() => !!A.FAR))) return { ok: true, detail: 'skipped: the Far Lands are out of the build (v2 complaint 3)' };
     const r = await pg.evaluate(() => {
       const W = A.WORLD1;
       A.newGame({ seed: 9091, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
@@ -187,6 +193,9 @@ export default {
   },
 
   async scaleOneWorld(pg) {
+    // v2 map lane (docs/v2/LANES.md; the owner's decision of Nov 1): the Far Lands are out of the build (99-far-lands and
+    // its kin carry .wip), so this Great Continent test has nothing to measure; it runs again whenever 99 is built
+    if (!(await pg.evaluate(() => !!A.FAR))) return { ok: true, detail: 'skipped: the Far Lands are out of the build (v2 complaint 3)' };
     // the Great Continent for ten years (world.core.js): wars are joined only within reach, each land keeps to its
     // share of the war cap, the lore's tributes are made and hold, far news comes late and seldom; and the far world
     // stays plausible: realms survive, treasuries do not run away, wars end
