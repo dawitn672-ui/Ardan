@@ -43,3 +43,7 @@ Each lane owns its folders only, builds to `/tmp/ardan/<lane>/`, runs its own fe
 5. Fix together and push once.
 6. Send the owner the build.
 7. Cycle 3 reviews.
+
+## Closed (Nov 1)
+
+The owner stopped the cycle on Oct 30 and asked for a build to test. Lanes A, I, WD, P, G and S reported done. Lanes E (world) and L (life) stopped at a usage limit, partway through; their work is in the build as it stood, checked by their features' tests, the core suites and the event lints. Left for a later cycle: E's and L's unfinished items, the balance leagues on the final code (CI), and the next grow batch above.
