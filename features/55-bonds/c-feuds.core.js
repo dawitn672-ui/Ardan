@@ -28,6 +28,11 @@
 
   // what p was to k: "father", "daughter", "wife", "brother"
   FAM.roleOf = function (p, k) {
+    // v2 (99994-v2-family): one resolver with spouse > blood priority, over the family graph rather than rel.type
+    if (A.V2F && A.V2F.kinOf) {
+      const t = A.V2F.kinOf(k, p), w = t && t.degree <= 1.5 ? t.term.replace(/^half-/, '') : null;
+      return ['father', 'mother', 'son', 'daughter', 'brother', 'sister', 'husband', 'wife'].includes(w) ? w : null;
+    }
     const F = p.sex === 'F';
     if ((k.parents || []).includes(p.id)) return F ? 'mother' : 'father';
     if ((p.parents || []).includes(k.id)) return F ? 'daughter' : 'son';

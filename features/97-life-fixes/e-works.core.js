@@ -93,7 +93,9 @@
       need: pc => { const n = LF.patentNext(pc); return n && n[0] >= 4 ? R('Renown 40', (pc.fame || 0) >= 40) : R('Free', free(pc)); },
       desc: pc => { const n = LF.patentNext(pc), t = n && RUNGS()[n[0]]; return t ? `The heralds will write you down as ${t.title.toLowerCase()} for the right sum: a rung, its income, and old blood that will never forgive you.` : ''; },
       run: pc => { const n = LF.patentNext(pc); if (!n) return null;
-        pc.noble = { rung: n[0], realm: pc.realm, holding: pc.noble && pc.noble.holding != null ? pc.noble.holding : pc.home };
+        const held = pc.noble && pc.noble.holding != null ? pc.noble.holding : pc.home;
+        // v2 (99994-v2-family): a lordship of rung 4 or more takes a province no one else holds
+        pc.noble = { rung: n[0], realm: pc.realm, holding: n[0] >= 4 && A.V2F && A.V2F.freeHolding ? A.V2F.freeHolding(pc.realm, held, pc) : held };
         if ((GD.STATUS[pc.status] || {}).rank < 5) pc.status = 'gentry';
         if (A.fame) A.fame(pc, 4); later(pc, 'lfx_wk_patent_snub', A.ri(1, 3));
         const t = RUNGS()[n[0]];

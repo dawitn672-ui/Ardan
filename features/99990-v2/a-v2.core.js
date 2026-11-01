@@ -847,6 +847,7 @@ var __ARDAN_V2 = (() => {
     const age = year - p.birthYear;
     if (p.traits?.includes("craven")) return "branded craven";
     if (p.traits?.includes("sickly") && age > 16) return "too sickly to rule";
+    if (p.judgedSimple) return "judged simple by the house council";
     if (!p.genes || age < 14) return null;
     const s = stats({ ...p, age });
     if (s.wits < 72 && s.judgment < 75) return "judged simple by the house council";
@@ -879,6 +880,7 @@ var __ARDAN_V2 = (() => {
       let ranked = members.sort((a, b) => a.birthYear - b.birthYear);
       if (law === "elective") {
         const ability = (p) => {
+          if (p.ability != null) return p.ability;
           const s = stats({ ...p, age: year - p.birthYear });
           return s.wits + s.judgment + s.presence + (p.renown ?? 0) * 0.5;
         };
