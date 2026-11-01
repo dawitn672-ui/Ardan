@@ -41,20 +41,21 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 
 **Fighting worth in levies** (`c-fight.core.js`)
 
-- `A.V2.body.fightingWorth` on the body view, times v2's gear multipliers read from the game's slots, gives a worth in levies.
-- The game's fights are all calibrated on its own worth scale: the duel engine's `A.CR`, the beasts' rows, `GD.CROWD`, and 24's duel curve. So the levies are put on that scale with `40.6 + 13.0 × ln levies`, a fit on 1,187 humans (r = 0.83).
-- The fighter that `A.fighterFrom` builds gets exactly that worth. Its skill is moved, as 48 does for a lost hand. So `A.fightWorth`, every fight check and the duel engine's own rounds follow the body.
-- Races now differ (medians at the start of two worlds):
+- `A.V2.body.fightingWorth` measures a fighter in levies: body (might^0.5 × speed^0.5 × toughness^0.6) × skill tier × gear.
+- **Humans keep the release's worth.** The game's fights are all calibrated on its own worth scale: the duel engine's `A.CR`, the beasts' rows, `GD.CROWD`, 24's duel curve, and 48's tiers and lost hand. For a human, that worth already moves with what v2 measures: strength, speed and stamina (now derived from the body), the weapon skill and the gear. v2's levies agree with it (r = 0.83 over 1,187 humans), and `40.6 + 13.0 × ln levies` puts levies on the game's scale.
+- **Other races carry the v2 difference of their bodies.** The shift is `13 × ln(fightingWorth(this body) / fightingWorth(a human body at the same percentiles, skill and gear))`, added through the fighter's skill (as 48 does for a lost hand). So `A.fightWorth`, every fight check and the duel engine's own rounds read the same worth.
+- **The worth is shown in levies:** the sheet's "In a fight" and 48's tier chip.
+- **Races now differ** (medians at the start of two worlds):
 
-  | Race | Levies | Old-scale worth | Lift |
-  |---|---|---|---|
-  | Human | 0.66 | 35 | 124 kg |
-  | Orc | 1.41 | 45 | 269 kg |
-  | Dwarf | 1.05 | 41 | 227 kg |
-  | Giant | 13.4 | 74 | 2,435 kg |
+  | Race | Change in worth |
+  |---|---|
+  | Giant | about +40 (the release had giants at 37, the same as men) |
+  | Orc | about +11 |
+  | Dwarf | about +6 |
+  | Elf | about −3 |
 
-  The release had giants at 37, the same as men.
-- A human master with a breakthrough in order gear (25 levies) stands with an ordinary giant (17).
+- **A human can still reach a giant.** In v2's own units, a human master with a breakthrough in order gear (25 levies) stands with an ordinary giant (17). On the game's scale, a human's old worth grows past a giant's with skill and strength, and a v2 breakthrough raises the potential.
+- **A first version replaced the worth outright** (v2 levies for everyone). Five of 48-fight-ladder's calibration tests failed: duel and beast odds shown against real (worst bins 8 and 23 points), tier texts, the lost hand's two tiers, and the profile line. The race shift keeps every calibrated human fight exact.
 
 **Faith only where it applies** (`d-faith.core.js`, `faith.events.js`)
 
@@ -92,7 +93,7 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 |---|---|
 | `v2sHeight` | Height by age follows the v2 curve from birth (47 cm, 71, 89, 108, 129, 153, 164) and stops at the adult height |
 | `v2sDerive` | In a played life, strength and lift rise from 5 to 25. `fx: { str: 3 }` raises the conditioning and `C.stat`. Lift falls by 70 |
-| `v2sRaces` | Median levies per race, giant > 5 × human, orc > 1.5 × human, dwarf > human, the old-scale worth of a giant 20+ over a man's, v2's giant (12–30) and a master human standing with it |
+| `v2sRaces` | Median worth in levies per race: giant > 5 × human, orc > 1.5 × human, dwarf > human, the old-scale worth of a giant 20+ over a man's; v2's giant (12–30 levies) and a master human standing with it |
 | `v2sAttempt` | 200 sampled events with checks: every check choice is rolled by `attempt()` |
 | `v2sOddsShape` | `attempt()` keeps the chance (50, 80, 20); a tired fool loses more at 85, an iron will wins more at 10 |
 | `v2sMigrate` | An old save (no body) migrates once through a save round trip, and the stats checks read don't move |
@@ -100,17 +101,17 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 | `v2sSheet` | The profile shows kg, m/s, km a day, ms, minds and tiers with hours, and no "Strength 35" |
 | `v2sNoPct` | No percentage on screen across 12 played years (scenes, results, every tab, the profile and skills) |
 | `v2sBadge` | A check choice's badge is odds words with the balance icon, no digits |
-| `v2sWorthFit` | The levies-to-worth fit holds, and `A.fightWorth` is the v2 worth |
+| `v2sWorthFit` | v2's levies agree with the release's worth for humans, a human's worth is unchanged, and other races carry their shift (giant over +25, orc over +4, dwarf over 0, elf at most +1) |
 
 ## Limits
 
 - **NPC bodies follow their old stats.** Only the player's body is stored and grows by v2's curves. An NPC's view is read from its old stats, so the two agree, but NPCs still age by the old engine.
 - **Skill hours are read from the 0–100 skill,** not stored. The old learning curves still decide progress.
-- **The fit is for humans.** Other races are placed by the body alone, which is the point (complaint 12). Beasts and crowds keep the release's worth rows.
+- **Within a race, the worth is the release's.** v2's body sets the gap between races, not the spread within one. Beasts and crowds keep the release's worth rows.
 
 ## Other features' tests changed (they checked digits the owner asked to remove)
 
 - `42-difficulty` `difficultyInformation`: with v2 no setting shows digits on a choice; without v2, the release's rule as before.
-- `48-fight-ladder` `flScreens`: the duel's "N times in 100" is no longer required with v2.
+- `48-fight-ladder` `flScreens`: with v2, the duel's "N times in 100" and the worth beside the tier on the duel measure are no longer required.
 - `59-tooltips` `ttWorthSums`: the tier chip names the worth in levies; with v2 it must name the same total's levies.
 - `9996-polity` `poBillTrack`: the next count's odds are words and a balance, so with v2 the stack must have no "N%" and must have the balance.

@@ -159,8 +159,8 @@ export default {
     // whichever case the life is in.
     const handLine = r.sameTier ? /Lost a hand: worth \d+ to \d+/ : /Lost a hand: \w+ \d+ to \w+ \d+/;
     // v2 (99993-v2-stats): no setting shows the duel's "N times in 100" any more (the owner's "no percentages"), so the
-    // story-setting digits are required only without it
-    const ok = /^Measured: you, \w+/.test(r.ev) && /You: \w+ \d+/.test(r.duel) && (r.duelOdds || r.v2) && (!r.diff || !r.realDigits) && handLine.test(r.prof) && /speed -7/.test(r.prof) && r.pure && r.evPure && r.tiers >= 2;
+    // story-setting digits, and the worth beside the tier on the duel measure, are required only without it
+    const ok = /^Measured: you, \w+/.test(r.ev) && (r.v2 ? /You: \w+/ : /You: \w+ \d+/).test(r.duel) && (r.duelOdds || r.v2) && (!r.diff || !r.realDigits) && handLine.test(r.prof) && /speed -7/.test(r.prof) && r.pure && r.evPure && r.tiers >= 2;
     return { ok, detail: `event: "${r.ev}"; duel: "${r.duel}" (${r.tiers} tier chips; realism hides digits: ${r.diff ? !r.realDigits : 'no 42-difficulty in this build'}); profile: "${r.prof.slice(0, 160)}"; render pure: event ${r.evPure}, duel and profile ${r.pure}` };
   },
 

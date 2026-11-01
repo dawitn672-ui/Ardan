@@ -211,20 +211,24 @@ export default {
     return { ok, detail: `${r.id}: ${r.b.join(' | ')} (${r.svg} balance icon${r.svg === 1 ? '' : 's'}; digits in the HTML: ${r.digits})` };
   },
 
-  // the fit that puts levies on the game's worth scale still holds, and the duel engine reads the same worth
+  // the levies agree with the release's worth for humans (the fit), a human's worth is unchanged, and the other races
+  // carry the v2 difference of their bodies (a giant far above a man), in the duel engine's fighter as in A.fightWorth
   async v2sWorthFit(pg) {
     const r = await pg.evaluate(() => {
       T.enter({ seed: 77 });
-      const xs = [], ys = [], dev = [];
+      const xs = [], ys = [], same = [], shift = {};
       for (const p of Object.values(A.S.people)) {
-        if (!p.alive || p.race !== 'human' || A.age(p) < 16) continue;
-        xs.push(Math.log(A.V2S.leviesOf(p))); ys.push(A.V2S.oldWorth(p));
-        dev.push(Math.abs(A.fightWorth(p) - Math.round(A.V2S.toWorth(A.V2S.leviesOf(p)))));
+        if (!p.alive || A.age(p) < 16) continue;
+        const old = A.V2S.oldWorth(p), now = A.fightWorth(p);
+        if (p.race === 'human') { xs.push(Math.log(A.V2S.v2Levies(p))); ys.push(old); same.push(now === old); }
+        else (shift[p.race] = shift[p.race] || []).push(now - old);
       }
       const m = a => a.reduce((x, y) => x + y, 0) / a.length, mx = m(xs), my = m(ys);
       let c = 0, vx = 0, vy = 0; for (let i = 0; i < xs.length; i++) { c += (xs[i] - mx) * (ys[i] - my); vx += (xs[i] - mx) ** 2; vy += (ys[i] - my) ** 2; }
-      return { n: xs.length, r: c / Math.sqrt(vx * vy), dev: Math.max(...dev) };
+      const med = {}; for (const k in shift) { const a = shift[k].sort((x, y) => x - y); med[k] = a[a.length >> 1]; }
+      return { n: xs.length, r: c / Math.sqrt(vx * vy), same: same.every(Boolean), med };
     });
-    return { ok: r.r > 0.75 && r.dev <= 1, detail: `${r.n} humans: r = ${r.r.toFixed(3)} between ln levies and the release's worth; A.fightWorth is the v2 worth within ${r.dev}` };
+    const ok = r.r > 0.75 && r.same && r.med.giant > 25 && r.med.orc > 4 && r.med.dwarf > 0 && r.med.elf <= 1;
+    return { ok, detail: `${r.n} humans: r = ${r.r.toFixed(3)} between ln v2 levies and the release's worth; a human's worth unchanged: ${r.same}; median shift by race ${Object.entries(r.med).map(([k, v]) => k + ' ' + (v > 0 ? '+' : '') + v).join(', ')}` };
   },
 };
