@@ -23,7 +23,9 @@ VS.oddsOf = pct => OD.oddsWords(VS.capOf(pct), 1);
 VS.minds = function (p) {
   const s = p && p.st ? VS.stats(p) : null;
   return {
-    judgment: s ? s.judgment : 100, will: s ? s.will : 100,
+    // within 2.7 standard deviations: the old willpower grows without bound through adversity (180 and more), and
+    // attempt()'s surge odds grow as e^(0.7 z)
+    judgment: s ? clamp(s.judgment, 60, 140) : 100, will: s ? clamp(s.will, 60, 140) : 100,
     fatigue: p ? clamp((p.flags && p.flags.weary ? 0.3 : 0) + (p.health != null ? Math.max(0, 60 - p.health) / 60 : 0), 0, 1) : 0,
     mood: p && p.happy != null ? clamp((p.happy - 50) / 50, -1, 1) : 0,
   };

@@ -3,6 +3,8 @@
 // goes through UI.esc. Actions use data-a (poPropose, poVoice, poSeek, poTask, poOath, poElect, poJoin, poTab).
 const POL = A.POL, RI = A.RI = A.RI || {};
 const esc = s => UI.esc(String(s == null ? '' : s));
+// v2 (99993-v2-stats): odds in words and a tipped balance, never a percentage (read when drawn: it loads after this)
+const V2W_ = () => (A.V2S && A.V2S.oddsText ? A.V2S : null);
 const live = p => !!(p && p.alive);
 const pct = v => Math.round((v || 0) * 100) + '%';
 const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(Math.round(v));
@@ -147,10 +149,10 @@ POL.billCard = function (r, pc) {
   let h = `<div class="po-small">${effLine(e)}</div><div class="po-small muted">${by ? who(by) : 'The court'} brought it${b.src === 'estate' ? ', for ' + esc(POL.estName(b.est || 'comm', r.id)) : ''}. Next count: ${esc(dateOf(b.next))}.</div>
 <div class="po-track" aria-label="The counts so far">${nodes.join('<i class="po-link"></i>')}</div>
 <div class="po-cap">For and against</div><div class="po-stack" aria-label="Support against opposition">${seg(sd.est.filter(x => x.g > 0), 'po-s-for')}${court ? `<span class="po-s-for po-s-court" style="width:${Math.round(100 * court / tot)}%" title="the court's voices">court</span>` : ''}${seg(sd.est.filter(x => x.g < 0), 'po-s-against')}${courtO ? `<span class="po-s-against po-s-court" style="width:${Math.round(100 * courtO / tot)}%" title="the court's voices">court</span>` : ''}</div>
-<div class="po-cap">The next count</div><div class="po-stack po-odds">${odds.map(([l, v, c]) => v > .005 ? `<span class="${c}" style="width:${Math.round(v * 100)}%">${v >= .12 ? esc(l) + ' ' : ''}${Math.round(v * 100)}%</span>` : '').join('')}</div>
-<div class="po-small">${tt('poBill', r.id, `In the end it passes ${Math.round(o.eventual * 100)}% of the time`)}</div>`;
+<div class="po-cap">The next count</div><div class="po-stack po-odds">${odds.map(([l, v, c]) => v > .005 ? `<span class="${c}" style="width:${Math.round(v * 100)}%">${v >= .12 ? esc(l) : ''}</span>` : '').join('')}</div>
+<div class="po-small">${V2W_() ? V2W_().scaleSvg(V2W_().oddsOf(o.eventual * 100).tilt) + ' ' : ''}${tt('poBill', r.id, V2W_() ? `In the end, its chances: ${V2W_().oddsText(o.eventual * 100)}` : `In the end it passes ${Math.round(o.eventual * 100)}% of the time`)}</div>`;
   if (pc && pc.alive && (POL.canPropose(pc, r) || (RI.canSpeak && RI.canSpeak(pc, r)[0])) && b.spoke !== pc.id) h += `<div class="po-btns"><button class="small" data-a="poVoice" data-v="for">Speak for it (1⧗)</button><button class="small" data-a="poVoice" data-v="against">Speak against it (1⧗)</button></div>`;
-  return card('bill', `The bill: ${esc(P.t)}`, h, '', `count ${b.n + 1} of 6 on ${esc(dateOf(b.next))} · passes ${Math.round(o.eventual * 100)}% in the end`);
+  return card('bill', `The bill: ${esc(P.t)}`, h, '', `count ${b.n + 1} of 6 on ${esc(dateOf(b.next))} · ${V2W_() ? 'in the end: ' + esc(V2W_().oddsText(o.eventual * 100)) : `passes ${Math.round(o.eventual * 100)}% in the end`}`);
 };
 POL.councilCard = function (r, pc) {
   let set = 0;

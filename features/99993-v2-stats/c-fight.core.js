@@ -10,9 +10,9 @@
 const VS = A.V2S, B = A.V2.body;
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
-// fitted on the start of seed 77-80 worlds: 1,187 humans 16 and over, r = 0.93 between ln levies and the old worth; the
-// other races are left to the body (a median giant reads 12.7 levies, 87 on the old scale, where the release had 37)
-VS.W_A = 43.7; VS.W_B = 17.1;
+// fitted on the start of seed 77-80 worlds: 1,187 humans 16 and over, r = 0.83 between ln levies and the old worth; the
+// other races are left to the body (a median giant reads 14 levies, 75 on the old scale, where the release had 37)
+VS.W_A = 40.6; VS.W_B = 13.0;
 // what the gear adds, as v2's GEAR multipliers (none 1, levy 1.25, mail 1.6, plate 2.0), from the game's slots
 VS.ARMOR = { padded: 0.13, leather: 0.13, hide: 0.13, mail: 0.48, dwarfmail: 0.5, brigandine: 0.42, scale: 0.45, lamellar: 0.45, mailplate: 0.7, plate: 0.88, dwarfplate: 0.9 };
 VS.gearMult = function (f, p) {

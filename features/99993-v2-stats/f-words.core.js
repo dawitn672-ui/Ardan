@@ -78,16 +78,17 @@ VS.badges = function (root) {
     if (!vc) continue;
     const pct = vc.odds != null ? vc.odds : vc.fight && vc.fight.pct != null ? vc.fight.pct : null;
     if (pct == null) continue;
-    const el = b.querySelector('.risk:not(.fo-fight), .sc-odds:not(.fo-fight)') || b.querySelector('.fo-fight');
+    const el = b.querySelector('.risk:not(.fo-fight):not(.v2-fo), .sc-odds:not(.fo-fight):not(.v2-fo)') || b.querySelector('.fo-fight');
     if (!el || el.dataset.v2o === String(pct)) continue;
     el.dataset.v2o = String(pct);
     el.classList.add('v2-odds');
     if (el.classList.contains('fo-fight')) {
-      // 89-fight-odds' badge keeps what the fight is; the balance and the words go first
-      const words = el.querySelector('.v2-ow');
-      if (!words) el.insertAdjacentHTML('afterbegin', VS.oddsInner(pct) + ' · ');
-    } else el.innerHTML = VS.oddsInner(pct);
-    el.title = VS.oddsOf(pct).line;
+      // 89-fight-odds' badge keeps what the fight is ("a fight"); the balance and the words go just before it
+      el.classList.remove('v2-odds');
+      const prev = el.previousElementSibling;
+      if (prev && prev.classList.contains('v2-fo')) prev.remove();
+      el.insertAdjacentHTML('beforebegin', `<span class="risk v2-odds v2-fo" title="${esc(VS.oddsOf(pct).line)}">${VS.oddsInner(pct)}</span>`);
+    } else { el.innerHTML = VS.oddsInner(pct); el.title = VS.oddsOf(pct).line; }
   }
   // 92-scene-card's four pips counted the odds: the balance says it now
   for (const p of root.querySelectorAll('.sc-pips')) p.remove();

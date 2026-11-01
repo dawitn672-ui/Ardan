@@ -52,7 +52,9 @@ VS.ATTR = { str: 'lift', spd: 'sprint', ins: 'reaction', sta: 'march', int: 'wit
 VS.PHYS = ['str', 'spd', 'ins', 'sta'];
 VS.MIND = ['int', 'wil'];
 VS.K_COND = 0.4;      // st ~ cond^0.4: v2's whole range of training (x3.8 lift) is x1.7 on the old scale
-VS.K_MOD = 1.33;      // the old multipliers (age fade, wounds, traits) shown in units: st ~ maturity^0.75
+// how far each body attribute moves for a given place among one's own race and age (v2: strength varies more than
+// speed: body.js SPREAD); old prime-age humans run p10..p90 = 0.8..1.29 of typical, so lift spans 0.64..1.66 of a man's
+VS.KAPPA = { lift: 2, sprint: 0.7, march: 1.5, reaction: 0.9, toughness: 1.5 };
 VS.raceMean = (p, s) => 42 + ((GD.RACES[p.race] || GD.RACES.human).mods[s] || 0);
 VS.sex = p => (p.sex === 'F' ? 'female' : 'male');
 VS.humanAge = (p, age) => age / RC.RACES[VS.raceKey(p.race)].ageScale;
@@ -184,33 +186,35 @@ VS.view = function (p) {
   const hit = VS.cache.get(p);
   if (hit && hit.key === key) return hit.v;
   const v = VS.vperson(p, age), R = RC.RACES[v.race];
-  // the body as it is: conditioning times what the old code says age, wounds and traits do to it
-  const cond = Object.assign({}, v.body.cond), stOld = s => (p.v2 ? VS.derive(p, s, age) : (p.st[s] || 0));
-  v.mod = {};
+  // The body as it is, by percentile: each attribute is the race's typical body at this age (v2's base x maturity),
+  // times (the effective old stat / a typical person's of this race and age)^K. A.stat holds what the old code does
+  // with age, wounds, traits and weariness, so the sheet, a fight and an event check read the same person; and a person
+  // keeps their place: twice the typical strength is (2^2) four times the typical lift.
+  v.ratio = {};
   for (const s of GD.STATS) {
-    const base = stOld(s), eff = A.stat(p, s);
-    v.mod[s] = base > 0.5 ? clamp(eff / base, 0.2, 3) : 1;
+    const typ = VS.raceMean(p, s) * 0.78 * VS.grow(p, age);
+    v.ratio[s] = clamp(A.stat(p, s) / Math.max(0.5, typ), 0.05, 12);
   }
-  for (const s of VS.PHYS) cond[VS.ATTR[s]] *= Math.pow(v.mod[s], VS.K_MOD);
-  cond.toughness *= Math.pow(v.mod.sta, VS.K_MOD / 2);
+  const genes = Object.assign({}, v.genes, { lift: 1, sprint: 1, march: 1, reaction: 1, toughness: 1 });
+  const cond = {};
+  for (const s of VS.PHYS) cond[VS.ATTR[s]] = Math.pow(v.ratio[s], VS.KAPPA[VS.ATTR[s]]);
+  cond.toughness = Math.pow(v.ratio.sta, VS.KAPPA.toughness) * Math.pow(v.genes.toughness, 0.5);
+  v.genes = genes;
   v.body = Object.assign({}, v.body, { cond, skills: VS.hoursMap(p) });
-  // fading belongs to the old code (v.mod), so the v2 curves are read at no later than the peak
+  // fading belongs to the old code (in A.stat), so the v2 curves are read at no later than the peak
   const peak = 28 * R.ageScale;
   v.age = Math.min(age, peak);
   v.realAge = age;
-  // minds: the gene, v2's mental maturity at the real age, the mind's training, and the old fading
-  v.mentalXp = {};
-  for (const s of VS.MIND) v.mentalXp[VS.ATTR[s]] = 0;
+  // minds: the race's mind plus 15 points a standard deviation of the old stat (log scale, sd 0.26 as the potentials),
+  // grown by v2's mental maturity at the real age; judgment, memory, presence and cunning from the genes
   const mm = RC.mentalMaturity(v.race, age), mmPeak = RC.mentalMaturity(v.race, v.age);
-  const jb = RC.judgmentAgeBonus(v.race, age) - RC.judgmentAgeBonus(v.race, v.age);
+  v.mentalXp = {};
   for (const s of VS.MIND) {
-    const k = VS.ATTR[s], gk = v.genes[k];
-    v.mentalXp[k] = (gk * mm - gk * mmPeak) + (v.mt[s] - 1) * 30 + (gk * mm) * (Math.sqrt(v.mod[s]) - 1);
+    const k = VS.ATTR[s], want = (R.mental[k] + 15 * Math.log(v.ratio[s]) / 0.26) * mm;
+    v.mentalXp[k] = want - v.genes[k] * mmPeak;
   }
-  v.mentalXp.judgment = jb;
-  v.mentalXp.learning = v.genes.learning * (mm - mmPeak);
-  v.mentalXp.presence = v.genes.presence * (mm - mmPeak);
-  v.mentalXp.cunning = v.genes.cunning * (mm - mmPeak);
+  v.mentalXp.judgment = RC.judgmentAgeBonus(v.race, age) - RC.judgmentAgeBonus(v.race, v.age);
+  for (const k of ['learning', 'presence', 'cunning']) v.mentalXp[k] = v.genes[k] * (mm - mmPeak);
   v.gear = 'none';
   VS.cache.set(p, { key, v });
   return v;

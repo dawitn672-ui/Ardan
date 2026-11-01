@@ -150,7 +150,7 @@ export default {
       // the event modal is pure as well (measured before the duel changed state)
       return { ev: (ev.match(/Measured:[^<]*/) || [''])[0], duel: (duelStory.match(/The measure\.[^<]*<\/b>[^<]*/) || [''])[0],
         duelOdds: /times in 100/.test(duelStory), diff: !!A.DIFF, realDigits: /times in 100|\d+% · /.test(duelReal) || /Measured:[^<]*\d/.test(evReal), prof: (prof.match(/In a fight:[^<]*/) || [''])[0], sameTier, pure, evPure,
-        tiers: (duelStory.match(/class="chip tier/g) || []).length };
+        tiers: (duelStory.match(/class="chip tier/g) || []).length, v2: !!A.V2S };
     });
     // Realism hides the digits where 42-difficulty is built (A.DIFF.showOdds); without it every setting shows them
     // The lost hand's line names both tiers when the tier changes, and reads "worth 31 to 8" when it does not (both
@@ -158,7 +158,9 @@ export default {
     // 3 of 20 such lives (seeds 4601-4620) keep their tier after a lost hand, without it 0 of 20; the line must match
     // whichever case the life is in.
     const handLine = r.sameTier ? /Lost a hand: worth \d+ to \d+/ : /Lost a hand: \w+ \d+ to \w+ \d+/;
-    const ok = /^Measured: you, \w+/.test(r.ev) && /You: \w+ \d+/.test(r.duel) && r.duelOdds && (!r.diff || !r.realDigits) && handLine.test(r.prof) && /speed -7/.test(r.prof) && r.pure && r.evPure && r.tiers >= 2;
+    // v2 (99993-v2-stats): no setting shows the duel's "N times in 100" any more (the owner's "no percentages"), so the
+    // story-setting digits are required only without it
+    const ok = /^Measured: you, \w+/.test(r.ev) && /You: \w+ \d+/.test(r.duel) && (r.duelOdds || r.v2) && (!r.diff || !r.realDigits) && handLine.test(r.prof) && /speed -7/.test(r.prof) && r.pure && r.evPure && r.tiers >= 2;
     return { ok, detail: `event: "${r.ev}"; duel: "${r.duel}" (${r.tiers} tier chips; realism hides digits: ${r.diff ? !r.realDigits : 'no 42-difficulty in this build'}); profile: "${r.prof.slice(0, 160)}"; render pure: event ${r.evPure}, duel and profile ${r.pure}` };
   },
 
