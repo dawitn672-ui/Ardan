@@ -156,9 +156,16 @@ export default {
       T.play(3);
       UI.tab = 'life'; UI.render();
       const h = UI.renderProfile(), t = h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
-      return { t: t.slice(0, 1600), kg: /lifts \d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /(Untrained|Novice|Apprentice|Journeyman|Adept|Expert|Master)/.test(t) && /hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t) };
+      // the playtest's two layout bugs: a second "Body" heading beside 49-body-mind's (the phone's "On this page" listed it
+      // twice), and a skill row whose tier sat in the release's number column; each row now has exactly a tier and hours
+      const heads = (h.match(/<div class="group-h">([^<]*)<\/div>/g) || []).map(x => x.replace(/<[^>]+>/g, ''));
+      const full = UI.profBlock(A.pc());
+      const rows = (full.match(/<div class="prow"[\s\S]*?<div class="bar"/g) || []);
+      const rowsOk = rows.length > 0 && rows.every(x => /class="v2-tier"/.test(x) && /\d hours</.test(x) && !/<b>\d+<\/b>/.test(x));
+      return { t: t.slice(0, 1600), kg: /lifts \d+ kg/.test(t), ms: /\d+(\.\d)? m\/s/.test(t), km: /km a day/.test(t), react: /\d+ ms/.test(t), mind: /Wits/.test(t), tier: /(Untrained|Novice|Apprentice|Journeyman|Adept|Expert|Master)/.test(t) && /hours/.test(t), oldBars: /Strength \d+|Combat Instincts/.test(t),
+        dupHeads: heads.length !== new Set(heads).size, heads, rowsOk, rows: rows.length };
     });
-    const ok = r.kg && r.ms && r.km && r.react && r.mind && r.tier && !r.oldBars;
+    const ok = r.kg && r.ms && r.km && r.react && r.mind && r.tier && !r.oldBars && !r.dupHeads && r.rowsOk;
     return { ok, detail: ok ? r.t.slice(r.t.indexOf('Height'), r.t.indexOf('Height') + 520) : JSON.stringify(r).slice(0, 900) };
   },
 
