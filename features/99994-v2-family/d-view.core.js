@@ -51,8 +51,9 @@
   };
   F.kinCard = function (pc) {
     const ks = F.notable(pc, 10); if (!ks.length) return '';
-    const row = k => `<div class="v2f-kin click" data-a="ov" data-v="person:${esc(k.p.id)}"><b>${esc(A.fullName(k.p))}</b> <span class="muted">${esc(k.relation)} · ${k.alive ? esc(k.age) : '† ' + esc(k.p.died)}</span>${k.why.length ? `<div class="small">${esc(k.why.join(' · '))}</div>` : ''}</div>`;
-    return `<div class="group-h">Kin of note (${ks.length})</div><div class="card v2f-kins">${ks.map(row).join('')}</div>`;
+    // one small card each (90-fold folds a tall card to its first row)
+    const row = k => `<div class="card v2f-kin click" data-a="ov" data-v="person:${esc(k.p.id)}"><div><b>${esc(A.fullName(k.p))}</b> <span class="muted">${esc(k.relation)} · ${k.alive ? esc(k.age) : '† ' + esc(k.p.died)}</span></div>${k.why.length ? `<div class="small">${esc(k.why.join(' · '))}</div>` : ''}</div>`;
+    return `<div class="group-h">Kin of note</div>${ks.map(row).join('')}`;
   };
 
   const list = UI.peopleList;
@@ -62,15 +63,15 @@
     return h;
   };
 
-  // the person view: offices, titles and heir claims
+  // the person view: heir claims
   const modal = UI.personModal;
   if (typeof modal === 'function') UI.personModal = function (t) {
     const h = modal.apply(this, arguments);
     try {
       const pc = A.pc(); if (!t || !pc || typeof h !== 'string') return h;
       const bits = [];
-      if (t.famOffice) bits.push(t.famOffice);
-      if (t.vows) bits.push('sworn to the temple: outside every line of succession');
+      // (an office or vows already show as the person's occupation)
+      if (t.vows) bits.push('outside every line of succession');
       const hh = t.house && A.S.houses[t.house];
       if (live(t) && hh && hh.headPid !== t.id) { const L = F.houseLine(hh.id, 1); if (L.line[0] && L.line[0].p.id === t.id) bits.push(`heir to ${hh.name}`); }
       const r = A.realm(t.realm); if (live(t) && r && r.heir === t.id) bits.push(`heir to the crown of ${r.short || r.name}`);
@@ -81,6 +82,26 @@
     } catch (e) { return h; }
   };
 
-  const CSS = '.v2f-line>div+div{margin-top:3px}.v2f-kins{display:flex;flex-direction:column;gap:6px}.v2f-kin{padding:2px 0;border-bottom:1px solid var(--line,rgba(0,0,0,.08))}.v2f-kin:last-child{border-bottom:0}.v2f-holds{margin:2px 0}';
+  // the family tree (the profile's "Family" button): the release drew grandparents, parents, siblings, spouse and
+  // children; the uncles, aunts (with their spouses) and cousins come from A.V2.kin.familyTree, each with its label
+  const tree = UI.treeModal;
+  if (typeof tree === 'function') UI.treeModal = function (pc) {
+    const h = tree.apply(this, arguments);
+    try {
+      if (!pc || typeof h !== 'string') return h;
+      const P = F.people(), me = P.of(pc), rows = K.familyTree(P, me), parents = new Set(P.parents(me).map(x => x.id));
+      const gen = g => (rows.find(r => r.gen === g) || { people: [] }).people.map(x => x.p);
+      const unc = [];
+      for (const u of gen(-1).filter(x => !parents.has(x.id))) { unc.push(u); for (const s of u.spouseIds.map(P.get).filter(Boolean)) if (!unc.includes(s)) unc.push(s); }
+      const cz = gen(0).filter(x => { const k = F.kinOf(pc, x.game, P); return k && k.line === 'cousin'; });
+      const box = q => { const p = q.game, L = F.label(pc, p, P); return `<div class="card click small" style="text-align:center;width:120px" data-a="ov" data-v="person:${esc(p.id)}">${PORTRAIT.svg(p, 64)}<div><b>${esc(p.given)}</b></div><div class="tiny muted">${esc(L ? L.text : '')}</div><div class="tiny muted">${p.alive ? esc(A.age(p)) : '†' + esc(p.died)}</div></div>`; };
+      const row = (lbl, list) => (list.length ? `<div class="group-h">${lbl}</div><div class="row" style="justify-content:center">${list.map(box).join('')}</div>` : '');
+      const add = row('Uncles and aunts', unc) + row('Cousins', cz);
+      const at = h.indexOf('<div class="group-h">You and your siblings</div>');
+      return add && at > 0 ? h.slice(0, at) + add + h.slice(at) : h;
+    } catch (e) { console.error('v2-family tree', e); return h; }
+  };
+
+  const CSS ='.v2f-line>div+div{margin-top:3px}.v2f-kin{padding:6px 10px;margin:0 0 4px}.v2f-kin .small{margin-top:2px}.v2f-holds{margin:2px 0}';
   try { const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st); } catch (e) {}
 })();
