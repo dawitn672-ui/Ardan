@@ -11,8 +11,16 @@ const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 const logit = p => Math.log(p / (1 - p));
 VS.K = 2.45; // odds.js: edge = ln(capability / difficulty) x 2.45
 
-// the game's dice in the shape attempt() takes. next() is 1 - A.rand(), so the first draw wins exactly when A.rand() < p
-VS.rng = { next: () => 1 - A.rand(), chance: p => A.rand() < p };
+// The game's dice in the shape attempt() takes. The first draw is the release's own A.chance(p), so the plain roll is
+// what it always was (and a test that forces A.chance still forces it); a second draw places attempt()'s logistic noise
+// inside the half that A.chance chose (the noise is then distributed exactly as attempt() draws it). After that,
+// next() is 1 - A.rand() and chance(p) is A.rand() < p.
+VS.realChance = A.chance;
+VS.dice = function (q) {
+  const won = A.chance(q), v = A.rand();
+  let first = Math.min(1 - 1e-9, Math.max(1e-9, won ? (1 - q) + v * q : v * (1 - q)));
+  return { won, rng: { next: () => { if (first != null) { const u = first; first = null; return u; } return 1 - A.rand(); }, chance: p => A.rand() < p } };
+};
 VS.N = { attempts: 0, blunders: 0, surges: 0, breakthroughs: 0 };
 
 // the capability against a difficulty of 1 that gives this chance (blunders and surges aside)
@@ -46,8 +54,10 @@ VS.statOfCheck = function (check) {
 };
 // roll a chance (0..1) for p through attempt(); returns the attempt's result (success, tier, reasons, ...)
 VS.attempt = function (p, chance, opts = {}) {
-  const m = VS.minds(p);
-  const r = OD.attempt(VS.rng, Object.assign({ capability: VS.capOf(chance * 100), difficulty: 1, stakes: opts.stakes != null ? opts.stakes : 0.5, label: opts.label || '' }, m));
+  const m = VS.minds(p), q = clamp(+chance || 0, 0.004, 0.996), D = VS.dice(q);
+  const r = OD.attempt(D.rng, Object.assign({ capability: VS.capOf(q * 100), difficulty: 1, stakes: opts.stakes != null ? opts.stakes : 0.5, label: opts.label || '' }, m));
+  // a test that replaces A.chance to force an outcome gets exactly that outcome
+  if (A.chance !== VS.realChance) Object.assign(r, { success: D.won, blundered: false, surged: false, breakthrough: 0, reasons: [] });
   VS.N.attempts++;
   if (r.blundered) VS.N.blunders++;
   if (r.surged) VS.N.surges++;

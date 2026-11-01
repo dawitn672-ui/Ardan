@@ -31,7 +31,8 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 
 - The old chain still works out the honest chance. That is `A.checkOdds` with 75-fair-checks, 48-fight-ladder's fighting worth, 30, 67 and 81.
 - `A.eventChoose` then rolls it with `A.V2.odds.attempt()`.
-  - The edge is `logit p`. With no blunder and no surge the result is the same as before, and the first draw decides exactly as `A.chance` did.
+  - The edge is `logit p`. The first draw is the release's own `A.chance(p)`, and a second places attempt()'s logistic noise inside the half it chose. So with no blunder and no surge the result is the same as before, and the noise is distributed exactly as attempt() draws it.
+  - A test that replaces `A.chance` to force an outcome still gets that outcome (22 features' tests do this).
   - On top of that, judgment, fatigue (health, weariness) and overconfidence can throw a won check, and will, under the stakes (a fight 0.9, a deadly loss 0.8, otherwise 0.5), can win a lost one.
   - Will and judgment are held within 2.7 standard deviations. The old willpower grows past 180.
 - **A surge against long odds is a breakthrough.** The v2 ceiling rises, conditioning rises, and the old potential gains 3 × the magnitude.
