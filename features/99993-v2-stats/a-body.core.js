@@ -181,8 +181,10 @@ VS.cache = new WeakMap();
 VS.view = function (p) {
   if (!p || !p.st) return null;
   const age = A.age(p);
-  const key = [A.S.year, A.S.pc, age, p.v2 ? JSON.stringify(p.v2.c) + JSON.stringify(p.v2.mt) : '', GD.STATS.map(s => p.st[s] + ':' + (p.pot ? p.pot[s] : '')).join(','),
-    (p.wounds || []).length, (p.traits || []).join(','), p.flags && p.flags.weary ? 1 : 0, p.health | 0, p.looks | 0].join('|');
+  // the key is everything the view reads (A.stat carries wounds, traits, blood, weariness and fading), so a cached view is
+  // never stale and the engine reads the same numbers whether or not anything was drawn in between
+  const key = [A.S.seed, age, p.race, p.sex, GD.STATS.map(s => A.stat(p, s) + ':' + (p.pot ? p.pot[s] : '')).join(','), p.looks,
+    p.app ? p.app.height : '', p.v2 ? JSON.stringify(p.v2) : ''].join('|');
   const hit = VS.cache.get(p);
   if (hit && hit.key === key) return hit.v;
   const v = VS.vperson(p, age), R = RC.RACES[v.race];
@@ -200,7 +202,7 @@ VS.view = function (p) {
   for (const s of VS.PHYS) cond[VS.ATTR[s]] = Math.pow(v.ratio[s], VS.KAPPA[VS.ATTR[s]]);
   cond.toughness = Math.pow(v.ratio.sta, VS.KAPPA.toughness) * Math.pow(v.genes.toughness, 0.5);
   v.genes = genes;
-  v.body = Object.assign({}, v.body, { cond, skills: VS.hoursMap(p) });
+  v.body = Object.assign({}, v.body, { cond, skills: {} });
   // fading belongs to the old code (in A.stat), so the v2 curves are read at no later than the peak
   const peak = 28 * R.ageScale;
   v.age = Math.min(age, peak);
@@ -238,7 +240,7 @@ VS.describe = function (p) {
 };
 VS.skillInfo = function (p, k) {
   const v = VS.view(p); if (!v) return null;
-  return B.skillInfo(v, k);
+  return B.skillInfo(Object.assign({}, v, { body: Object.assign({}, v.body, { skills: VS.hoursMap(p) }) }), k);
 };
 
 // ---- a v2 breakthrough (attempt() won by a surge of will against long odds) ----------------------------------------
