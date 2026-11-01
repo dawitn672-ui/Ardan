@@ -395,6 +395,28 @@
     return grp.apply(this, arguments);
   };
 
+  // ---- the words that taught the old clock (97-life-fixes' clock hint and How to play) ----------------------------
+  const coarse = () => { try { return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); } catch (e) { return false; } };
+  V2T.hintWords = () => {
+    const camp = V2T.campaign(), k = x => (coarse() ? '' : ` (${x})`);
+    return camp ? `You are on campaign: <b>Next day</b>${k('D')} and <b>Next week</b>${k('W')} step through it. A battle stops the clock.`
+      : `Press <b>Next month</b>${k('N')}${UI.isPhone && UI.isPhone() ? ', at the foot of the screen,' : ''} to live the next month. Whatever it brings comes one card at a time; a quiet month just passes.`;
+  };
+  const hint = (UI.HINTS || []).find(h => h && h.id === 'clock');
+  if (hint) { hint.textFn = V2T.hintWords; hint.text = ''; }
+  const help = UI.helpModal;
+  if (typeof help === 'function') UI.helpModal = function () {
+    const h = help.apply(this, arguments);
+    try {
+      if (typeof h !== 'string') return h;
+      const k = x => (coarse() ? '' : ` (${x})`);
+      return h.replace(/<details class="help-more"><summary>Time<\/summary>[\s\S]*?<\/details>/,
+        `<details class="help-more" open><summary>Time</summary><p><b>A month at a time.</b> <i>Next month</i>${k('N')} lives the next month. Its happenings come as cards, one at a time; a quiet month passes with a short note and a line in your story. ` +
+        `On campaign (your host on the march or at a siege, or a long road) the month opens into <i>Next day</i>${k('D')} and <i>Next week</i>${k('W')}, with your standing orders beside them. A battle stops the clock. Between steps the world is still and the time is yours.</p></details>`)
+        .replace(/<li>Press <b>Month<\/b>[\s\S]*?<\/li>/, `<li>Press <b>Next month</b>${k('N')} to live the next month.</li>`);
+    } catch (e) { return h; }
+  };
+
   // ---- 96-moments: no cut-in for the new year (a card that says only the date) ---------------------------------------
   const MO = UI.MOMENTS;
   if (MO && typeof MO.found === 'function') { const found = MO.found; MO.found = function () { const r = found.apply(this, arguments); return Array.isArray(r) ? r.filter(x => x && x.k !== 'year') : r; }; }
