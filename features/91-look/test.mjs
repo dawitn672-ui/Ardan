@@ -130,7 +130,9 @@ export default {
         small: [...document.querySelectorAll('#tabbody .lk-acts > .act')].filter(t => t.getBoundingClientRect().height < 43.5).length }));
     } finally { await ctx.close(); }
     const screens = +(r.h / r.vh).toFixed(2);
-    return { ok: screens <= 1.3 && r.w <= 391 && r.tiles >= 20 && !r.small, detail: `Life page ${r.h} px in a ${r.vh} px screen (not counting the first-run hint in flow, ${r.hint} px): ${screens} screens (was 2.61); ${r.tiles} tiles, ${r.small} under 44 px; page width ${r.w}` };
+    // v2 (99992-v2-time): 1.5, not 1.3. A new chapter's open choice of aim now stands on the page (about 170 px) instead of
+    // inside the folded ambition card: the owner's rule is that nothing hides behind a click. It folds back once chosen.
+    return { ok: screens <= 1.5 && r.w <= 391 && r.tiles >= 20 && !r.small, detail: `Life page ${r.h} px in a ${r.vh} px screen (not counting the first-run hint in flow, ${r.hint} px): ${screens} screens (was 2.61); ${r.tiles} tiles, ${r.small} under 44 px; page width ${r.w}` };
   },
 
   // axe-core on Life, People, Holdings and Realm at 1366 x 768, in the dark and the light theme

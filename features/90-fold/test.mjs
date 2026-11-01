@@ -91,7 +91,7 @@ export default {
     const found = [];
     await pg.evaluate(start => eval(start)(), START.toString());
     for (const g of ['life', 'holdings', 'realm']) {
-      await pg.evaluate(g => document.querySelector(`[data-a="group"][data-v="${g}"]`).click(), g);
+      await pg.evaluate(g => { UI.setTab(g); UI.render(); }, g);   // v2 (99992-v2-time): Holdings and the Realm are pages of You and World
       const v = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => `${v.id}(${v.nodes.length})`));
       found.push(...v.map(x => g + ':' + x));
     }
