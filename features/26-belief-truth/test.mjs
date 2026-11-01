@@ -135,8 +135,10 @@ export default {
         const L = A.S.log[A.S.log.length - 1], t = L && L.lines ? L.lines.map(l => l[0]).join(' ') : JSON.stringify(L);
         out.push(t);
       }
-      return { n: out.length, bad: out.filter(t => /[^.]\.\.(?!\.)|…\./.test(t)).slice(0, 3) };
+      return { n: out.length, far: !!A.FAR, bad: out.filter(t => /[^.]\.\.(?!\.)|…\./.test(t)).slice(0, 3) };
     });
-    return { ok: r.n > 50 && !r.bad.length, detail: `${r.n} bestiary lines, ${r.bad.length} with a doubled stop ${r.bad.join(' | ')}` };
+    // v2 map lane: without the Far Lands (out of the build, owner's decision of Nov 1) a life knows fewer beasts to
+    // learn of (38, not 50+); the check is the doubled stop, so fewer lines still test it
+    return { ok: r.n > (r.far ? 50 : 30) && !r.bad.length, detail: `${r.n} bestiary lines, ${r.bad.length} with a doubled stop ${r.bad.join(' | ')}` };
   },
 };
