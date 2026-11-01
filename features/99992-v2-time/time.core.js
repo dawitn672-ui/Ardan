@@ -285,7 +285,7 @@
       orders = `<span class="v2-orders" role="group" aria-label="Standing orders">${sel('atk', 'Attacking')}${sel('def', 'Defending')}</span>`;
     }
     return `<span class="v2-time v2-camp" role="group" aria-label="Time on campaign">${btn('v2Day', 'day', 'Next day', 'D', false)}${btn('v2Week', 'week', 'Next week', 'W', true)}` +
-      `<span class="v2-camp-note tiny">${esc(camp.text)}</span>${orders}</span>`;
+      `<span class="v2-camp-note">${esc(camp.text)}</span>${orders}</span>`;
   };
   UI.stepHtml = V2T.controlsHtml;
   // the date by month: time is lived a month at a time (on campaign, by the day)
@@ -438,7 +438,7 @@
     '#clk .v2-step{position:relative;min-height:44px;padding:0 18px;font-weight:700;font-size:calc(15px * var(--tx,1));white-space:nowrap;display:inline-flex;align-items:center;gap:6px}',
     '#clk .v2-step.primary{min-width:150px;justify-content:center}',
     '#clk .v2-step[aria-disabled=true]{opacity:.55;cursor:not-allowed}',
-    '#clk .v2-camp-note{color:var(--ink-2);max-width:260px;white-space:normal;line-height:1.25}',
+    '#clk .v2-camp-note{font-size:var(--t-small,13px);color:var(--ink-2);max-width:260px;white-space:normal;line-height:1.25}',
     '#clk .v2-orders{display:inline-flex;gap:6px}',
     '#clk .v2-ord{display:inline-flex;flex-direction:column;font-size:11px;color:var(--ink-3)}',
     '#clk .v2-ord select{min-height:32px;max-width:150px}',
@@ -446,7 +446,7 @@
     '#game.phone #clk .ph-dock{display:flex;gap:8px;align-items:stretch}',
     '#game.phone #clk .ph-dock .v2-time{display:flex;flex:1 1 auto;gap:8px;flex-wrap:wrap}',
     '#game.phone #clk .ph-dock .v2-step{flex:1 1 0;min-height:56px;font-size:calc(17px * var(--tx,1));justify-content:center}',
-    '#game.phone #clk .ph-dock .v2-camp-note{flex:1 1 100%;order:3;max-width:none;font-size:13px}',
+    '#game.phone #clk .ph-dock .v2-camp-note{flex:1 1 100%;order:3;max-width:none;font-size:var(--t-body,14px)!important}',
     '#game.phone #clk .ph-dock .v2-orders{flex:1 1 100%;order:4}',
     '#game.phone #clk .ph-dock .v2-ord select{min-height:44px;max-width:none;width:100%}',
     '#game.phone #clk .ph-dock .v2-ord{flex:1 1 0}',
