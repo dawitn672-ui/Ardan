@@ -8,15 +8,16 @@ export function makeNoise(seed) {
   for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
   const gx = new Float32Array(256), gy = new Float32Array(256);
   for (let i = 0; i < 256; i++) { const a = rng.float(0, Math.PI * 2); gx[i] = Math.cos(a); gy[i] = Math.sin(a); }
-  const fade = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+  // inlined corner gradients (same arithmetic as gx[h] * dx + gy[h] * dy per corner): no closure per call
   function noise(x, y) {
     const xi = Math.floor(x), yi = Math.floor(y);
     const xf = x - xi, yf = y - yi;
     const X = xi & 255, Y = yi & 255;
-    const g = (ix, iy, dx, dy) => { const h = perm[ix + perm[iy]]; return gx[h] * dx + gy[h] * dy; };
-    const n00 = g(X, Y, xf, yf), n10 = g(X + 1, Y, xf - 1, yf);
-    const n01 = g(X, Y + 1, xf, yf - 1), n11 = g(X + 1, Y + 1, xf - 1, yf - 1);
-    const u = fade(xf), v = fade(yf);
+    const py0 = perm[Y], py1 = perm[Y + 1];
+    const h00 = perm[X + py0], h10 = perm[X + 1 + py0], h01 = perm[X + py1], h11 = perm[X + 1 + py1];
+    const n00 = gx[h00] * xf + gy[h00] * yf, n10 = gx[h10] * (xf - 1) + gy[h10] * yf;
+    const n01 = gx[h01] * xf + gy[h01] * (yf - 1), n11 = gx[h11] * (xf - 1) + gy[h11] * (yf - 1);
+    const u = xf * xf * xf * (xf * (xf * 6 - 15) + 10), v = yf * yf * yf * (yf * (yf * 6 - 15) + 10);
     return (n00 + u * (n10 - n00)) + v * ((n01 + u * (n11 - n01)) - (n00 + u * (n10 - n00)));
   }
   function fbm(x, y, oct = 6, lac = 2, gain = 0.5) {

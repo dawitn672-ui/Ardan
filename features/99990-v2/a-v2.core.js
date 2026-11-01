@@ -1711,18 +1711,15 @@ var __ARDAN_V2 = (() => {
       gx[i] = Math.cos(a);
       gy[i] = Math.sin(a);
     }
-    const fade = (t) => t * t * t * (t * (t * 6 - 15) + 10);
     function noise(x, y) {
       const xi = Math.floor(x), yi = Math.floor(y);
       const xf = x - xi, yf = y - yi;
       const X = xi & 255, Y = yi & 255;
-      const g2 = (ix, iy, dx, dy) => {
-        const h = perm[ix + perm[iy]];
-        return gx[h] * dx + gy[h] * dy;
-      };
-      const n00 = g2(X, Y, xf, yf), n10 = g2(X + 1, Y, xf - 1, yf);
-      const n01 = g2(X, Y + 1, xf, yf - 1), n11 = g2(X + 1, Y + 1, xf - 1, yf - 1);
-      const u = fade(xf), v = fade(yf);
+      const py0 = perm[Y], py1 = perm[Y + 1];
+      const h00 = perm[X + py0], h10 = perm[X + 1 + py0], h01 = perm[X + py1], h11 = perm[X + 1 + py1];
+      const n00 = gx[h00] * xf + gy[h00] * yf, n10 = gx[h10] * (xf - 1) + gy[h10] * yf;
+      const n01 = gx[h01] * xf + gy[h01] * (yf - 1), n11 = gx[h11] * (xf - 1) + gy[h11] * (yf - 1);
+      const u = xf * xf * xf * (xf * (xf * 6 - 15) + 10), v = yf * yf * yf * (yf * (yf * 6 - 15) + 10);
       return n00 + u * (n10 - n00) + v * (n01 + u * (n11 - n01) - (n00 + u * (n10 - n00)));
     }
     function fbm(x, y, oct = 6, lac = 2, gain = 0.5) {
@@ -2025,30 +2022,32 @@ var __ARDAN_V2 = (() => {
     }
     for (let i = 0; i < brushW.length; i++) brushW[i] /= wsum;
     const scale = 0.06;
+    let gH = 0, gX = 0, gY = 0;
     const hg = (x, y) => {
       const xi = Math.floor(x), yi = Math.floor(y), u = x - xi, v = y - yi;
       const k = yi * W + xi;
       const a = h[k], b = h[k + 1], c = h[k + W], d = h[k + W + 1];
-      return {
-        h: a * (1 - u) * (1 - v) + b * u * (1 - v) + c * (1 - u) * v + d * u * v,
-        gx: (b - a) * (1 - v) + (d - c) * v,
-        gy: (c - a) * (1 - u) + (d - b) * u
-      };
+      gH = a * (1 - u) * (1 - v) + b * u * (1 - v) + c * (1 - u) * v + d * u * v;
+      gX = (b - a) * (1 - v) + (d - c) * v;
+      gY = (c - a) * (1 - u) + (d - b) * u;
     };
+    const nB = brushOff.length, bOX = Int32Array.from(brushOff, (o) => o[0]), bOY = Int32Array.from(brushOff, (o) => o[1]), bW = Float64Array.from(brushW);
     for (let i = 0; i < drops; i++) {
       let x = rng.float(1, W - 2), y = rng.float(1, H - 2), dx = 0, dy = 0, speed = 1, water = 1, sed = 0;
       for (let s = 0; s < maxSteps; s++) {
         const xi = Math.floor(x), yi = Math.floor(y), u = x - xi, v = y - yi;
-        const g2 = hg(x, y);
-        dx = dx * inertia - g2.gx * (1 - inertia);
-        dy = dy * inertia - g2.gy * (1 - inertia);
+        hg(x, y);
+        const g0 = gH;
+        dx = dx * inertia - gX * (1 - inertia);
+        dy = dy * inertia - gY * (1 - inertia);
         const len = Math.hypot(dx, dy);
         if (len < 1e-9) break;
         dx /= len;
         dy /= len;
         const nx = x + dx, ny = y + dy;
         if (nx < 1 || ny < 1 || nx >= W - 2 || ny >= H - 2) break;
-        const dh = hg(nx, ny).h - g2.h;
+        hg(nx, ny);
+        const dh = gH - g0;
         const cap = Math.max(-dh * speed * water * capacityF, minCap * scale);
         const k = yi * W + xi;
         if (sed > cap || dh > 0) {
@@ -2060,11 +2059,11 @@ var __ARDAN_V2 = (() => {
           h[k + W + 1] += dep * u * v;
         } else {
           const amt = Math.min((cap - sed) * erodeS, -dh);
-          for (let b = 0; b < brushOff.length; b++) {
-            const bx = xi + brushOff[b][0], by = yi + brushOff[b][1];
+          for (let b = 0; b < nB; b++) {
+            const bx = xi + bOX[b], by = yi + bOY[b];
             if (bx < 0 || by < 0 || bx >= W || by >= H) continue;
             const kk = by * W + bx;
-            const take = Math.min(h[kk], amt * brushW[b]);
+            const take = Math.min(h[kk], amt * bW[b]);
             h[kk] -= take;
             sed += take;
           }
@@ -2153,47 +2152,63 @@ var __ARDAN_V2 = (() => {
     return d;
   }
   var MinHeap = class {
-    constructor() {
-      this.k = [];
-      this.v = [];
+    constructor(cap = 1024) {
+      this.k = new Float64Array(cap);
+      this.v = new Int32Array(cap);
+      this.n = 0;
+      this.lastKey = 0;
     }
     push(key, val) {
+      if (this.n === this.k.length) {
+        const k2 = new Float64Array(this.n * 2), v2 = new Int32Array(this.n * 2);
+        k2.set(this.k);
+        v2.set(this.v);
+        this.k = k2;
+        this.v = v2;
+      }
       const K2 = this.k, V = this.v;
-      let i = K2.length;
-      K2.push(key);
-      V.push(val);
+      let i = this.n++;
       while (i > 0) {
         const p = i - 1 >> 1;
-        if (K2[p] <= K2[i]) break;
-        [K2[p], K2[i]] = [K2[i], K2[p]];
-        [V[p], V[i]] = [V[i], V[p]];
+        if (K2[p] <= key) break;
+        K2[i] = K2[p];
+        V[i] = V[p];
         i = p;
       }
+      K2[i] = key;
+      V[i] = val;
     }
     pop() {
       const K2 = this.k, V = this.v;
       const top = V[0], tk = K2[0];
-      const lk = K2.pop(), lv = V.pop();
-      if (K2.length) {
-        K2[0] = lk;
-        V[0] = lv;
+      const n = --this.n;
+      if (n > 0) {
+        const lk = K2[n], lv = V[n];
         let i = 0;
         for (; ; ) {
           const l = 2 * i + 1, r = l + 1;
-          let m = i;
-          if (l < K2.length && K2[l] < K2[m]) m = l;
-          if (r < K2.length && K2[r] < K2[m]) m = r;
-          if (m === i) break;
-          [K2[m], K2[i]] = [K2[i], K2[m]];
-          [V[m], V[i]] = [V[i], V[m]];
+          let m = -1, mk = lk;
+          if (l < n && K2[l] < mk) {
+            m = l;
+            mk = K2[l];
+          }
+          if (r < n && K2[r] < mk) {
+            m = r;
+            mk = K2[r];
+          }
+          if (m < 0) break;
+          K2[i] = K2[m];
+          V[i] = V[m];
           i = m;
         }
+        K2[i] = lk;
+        V[i] = lv;
       }
       this.lastKey = tk;
       return top;
     }
     get size() {
-      return this.k.length;
+      return this.n;
     }
   };
   function rivers(elev, moist, W, H) {
