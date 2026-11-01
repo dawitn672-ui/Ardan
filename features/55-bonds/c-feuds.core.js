@@ -30,6 +30,8 @@
   FAM.roleOf = function (p, k) {
     // v2 (99994-v2-family): one resolver with spouse > blood priority, over the family graph rather than rel.type
     if (A.V2F && A.V2F.kinOf) {
+      // the marriage first (at a death the release clears only the survivor's side of it)
+      if (p.spouse === k.id || k.spouse === p.id) return p.sex === 'F' ? 'wife' : 'husband';
       const t = A.V2F.kinOf(k, p), w = t && t.degree <= 1.5 ? t.term.replace(/^half-/, '') : null;
       return ['father', 'mother', 'son', 'daughter', 'brother', 'sister', 'husband', 'wife'].includes(w) ? w : null;
     }
