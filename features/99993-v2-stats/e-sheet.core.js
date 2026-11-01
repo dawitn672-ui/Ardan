@@ -27,7 +27,7 @@ VS.sheetHtml = function (p, opts = {}) {
   const v = VS.view(p), R = GD.RACES[p.race] || GD.RACES.human, age = A.age(p);
   const growing = age < (R.grown || 20) ? ', still growing' : '';
   let h = '<div class="v2-sheet">';
-  h += `<div class="group-h">Body</div>`;
+  h += `<div class="group-h">Build and strength</div>`;
   h += row('Height', `${d.height}, ${d.weight}`, `${(p.app && p.app.build) || ''}${growing}`.replace(/^, /, ''));
   h += row('Strength', `lifts ${d.lift.value}`, `${d.lift.words.replace(/^can lift /, '')}; ${d.lift.rank}`);
   h += row('Speed', d.sprint.value, d.sprint.words);
@@ -57,15 +57,24 @@ VS.tierOf = function (v) {
 };
 VS.fmtH = n => (n >= 10000 ? Math.round(n / 1000) + ',000' : n >= 1000 ? Math.floor(n / 1000) + ',' + String(n % 1000).padStart(3, '0') : String(n));
 VS.skillRows = function (h) {
+  // the release's row is name, <b>value</b>, <span class="tier">, bar: the value's place takes the tier, the tier's the hours
   return h.replace(/<b>(\d+)<\/b><span class="tier">[^<]*<\/span><div class="bar"><i style="width:\d+(?:\.\d+)?%"><\/i><\/div>/g, (m, n) => {
     const t = VS.tierOf(+n);
-    return `<span class="tier v2-tier">${esc(t.name)}</span><span class="v2-hrs">${esc(VS.fmtH(t.hours))} hours</span>` +
+    return `<b class="v2-tier">${esc(t.name)}</b><span class="tier v2-hrs">${esc(VS.fmtH(t.hours))} hours</span>` +
       `<div class="bar" title="${esc(t.next ? 'on the way to ' + t.next : 'the top')}"><i style="width:${Math.round(t.frac * 100)}%"></i></div>`;
   });
 };
-VS.css = '.v2-sheet{margin:4px 0 6px}.v2-row{display:grid;grid-template-columns:5.6em minmax(0,auto) minmax(0,1fr);gap:2px 8px;align-items:baseline;font-size:var(--t-small,13px);line-height:1.3;padding:2px 0}' +
-  '.v2-l{opacity:.75}.v2-v{font-weight:600;white-space:nowrap}.v2-w{opacity:.85}.v2-hrs{font-size:.85em;opacity:.75;margin-left:6px;white-space:nowrap}' +
-  '@media (max-width:480px){.v2-row{grid-template-columns:5.2em minmax(0,1fr)}.v2-w{grid-column:2}}' +
+// a check chip's value (92-scene-card): a skill as its tier, a stat as a word for your place among your own kind
+VS.statWord = function (p, s, v) {
+  const age = A.age(p), typ = VS.raceMean(p, s) * 0.78 * VS.grow(p, age), r = (+v || 0) / Math.max(0.5, typ);
+  return r < 0.55 ? 'poor' : r < 0.85 ? 'middling' : r < 1.2 ? 'fair' : r < 1.5 ? 'good' : r < 2 ? 'fine' : r < 3 ? 'rare' : 'legendary';
+};
+VS.valueWord = (p, k, v) => (GD.STATS.includes(k) ? VS.statWord(p, k, v) : VS.tierOf(v).name);
+VS.css = '.v2-sheet{margin:4px 0 6px}.v2-row{display:grid;grid-template-columns:6em minmax(0,1fr);gap:0 8px;align-items:baseline;font-size:var(--t-small,13px);line-height:1.3;padding:2px 0}' +
+  '.v2-l{opacity:.75}.v2-v{font-weight:600}.v2-w{grid-column:2;opacity:.8;font-size:.95em}.v2-hrs{white-space:nowrap;opacity:.75;text-align:right}' +
+  '.prow:has(.v2-tier){grid-template-columns:minmax(0,1fr) auto 5.6em;gap:4px 10px}.prow .v2-tier{white-space:nowrap;font-weight:600}' +
+  '.mbox .v2-row{grid-template-columns:6.5em minmax(0,auto) minmax(0,1fr)}.mbox .v2-v{white-space:nowrap}.mbox .v2-w{grid-column:auto}' +
+  '@media (max-width:560px){.mbox .v2-row{grid-template-columns:6em minmax(0,1fr)}.mbox .v2-w{grid-column:2}}' +
   '.v2-odds{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.v2-scale{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em}';
 VS.style = () => { if (typeof document === 'undefined' || document.getElementById('v2s-style')) return; const s = document.createElement('style'); s.id = 'v2s-style'; s.textContent = VS.css; document.head.appendChild(s); };
 
@@ -120,4 +129,28 @@ for (const k of ['topProfs', 'profBlock']) {
   if (!UI[k]) continue;
   const f = UI[k];
   UI[k] = function () { const h = f.apply(this, arguments); try { return typeof h === 'string' ? VS.skillRows(h) : h; } catch (e) { return h; } };
+}
+
+// 92-scene-card's check chip: "INT 39" becomes "INT fair", "Diplomacy 12" "Diplomacy Novice"
+if (UI.SCENE && UI.SCENE.chip) {
+  const chip = UI.SCENE.chip;
+  UI.SCENE.chip = function (pc, ck) {
+    const h = chip.apply(this, arguments);
+    try {
+      if (typeof h !== 'string' || !ck || !ck.s || !pc) return h;
+      return h.replace(/<b class="sc-chk-v">(-?\d+)<\/b>/, (m, n) => `<b class="sc-chk-v">${esc(VS.valueWord(pc, ck.s, +n))}</b>`);
+    } catch (e) { return h; }
+  };
+}
+// 48-fight-ladder's tier chip: "Untrained · 39" becomes "Untrained · about one levy"
+if (UI.tierChip) {
+  const tc = UI.tierChip;
+  UI.tierChip = function (p) {
+    const h = tc.apply(this, arguments);
+    try {
+      if (typeof h !== 'string') return h;
+      return h.replace(/fighting worth (\d+)\./, (m, w) => `worth ${VS.levyWords(VS.fromWorth(+w))} in a fight.`)
+        .replace(/ · (\d+)<\/span>$/, (m, w) => ` · ${esc(VS.levyWords(VS.fromWorth(+w)))}</span>`);
+    } catch (e) { return h; }
+  };
 }

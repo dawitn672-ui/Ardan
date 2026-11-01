@@ -210,7 +210,7 @@ VS.view = function (p) {
   const mm = RC.mentalMaturity(v.race, age), mmPeak = RC.mentalMaturity(v.race, v.age);
   v.mentalXp = {};
   for (const s of VS.MIND) {
-    const k = VS.ATTR[s], want = (R.mental[k] + 15 * Math.log(v.ratio[s]) / 0.26) * mm;
+    const k = VS.ATTR[s], want = (R.mental[k] + 15 * clamp(Math.log(v.ratio[s]) / 0.26, -4, 4)) * mm;
     v.mentalXp[k] = want - v.genes[k] * mmPeak;
   }
   v.mentalXp.judgment = RC.judgmentAgeBonus(v.race, age) - RC.judgmentAgeBonus(v.race, v.age);
