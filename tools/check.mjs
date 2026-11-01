@@ -14,6 +14,10 @@ import { fileURLToPath } from 'node:url';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const run = (args, opts = {}) => execFileSync(process.execPath, args, { cwd: root, stdio: 'inherit', ...opts });
 const before = fs.existsSync(path.join(root, 'index.html')) ? fs.readFileSync(path.join(root, 'index.html')) : null;
+// Ardan v2's engine: its bundle must match src/v2, and its own 24 tests must pass (a failure blocks a release)
+try { run(['tools/build-v2.mjs', '--check']); } catch { process.exitCode = 1; }
+try { execFileSync(process.execPath, ['--test', ...fs.readdirSync(path.join(root, 'tests/v2')).filter(f => f.endsWith('.test.js')).map(f => 'tests/v2/' + f)], { cwd: root, stdio: 'pipe' }); console.log('v2 tests ok (tests/v2)'); }
+catch (e) { console.error('v2 tests FAILED (node --test tests/v2):\n' + String(e.stdout || '').split('\n').filter(l => /^not ok|# (pass|fail)/.test(l)).join('\n')); process.exitCode = 1; }
 run(['tools/build.mjs']);
 const after = fs.readFileSync(path.join(root, 'index.html'));
 if (before && !before.equals(after)) { console.error('index.html was out of date with features/: rebuilt it. Commit the new index.html.'); process.exitCode = 1; }
