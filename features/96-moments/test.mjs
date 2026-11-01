@@ -81,7 +81,7 @@ export default {
       return { n: shown.length, months: new Set(keys).size, kinds: shown.map(x => x.shown).join(','), years: shown.filter(x => x.shown === 'year').length };
     });
     const ok = r.first === 'Wedded' && r.log1.passed.includes('birth') && r.log1.passed.includes('named') && r.same === 'Wedded' && r.log2.shown === null && r.log2.passed.includes('death') &&
-      r.clicked === null && r.next === 'Named' && before && !key.cut && !key.chosen && life.n === life.months && life.years >= 3;
+      r.clicked === null && r.next === 'Named' && before && !key.cut && !key.chosen && life.n === life.months && life.years === 0;   // v2 (99992-v2-time): no cut-in for the new year (a card for the date alone)
     return { ok, detail: `a marriage, a birth and an epithet in one month: "${r.first}" shown, passed over ${r.log1.passed.join(', ')}; a death the same month: still "${r.same}", passed over ${r.log2.passed.join(', ')}; ` +
       `a click skips (${r.clicked === null}); next month "${r.next}"; a key skips it (${!key.cut}) without choosing the scene under it (${!key.chosen}); ` +
       `three years drawn month by month: ${life.n} cut-ins in ${life.months} months (${life.kinds})` };
