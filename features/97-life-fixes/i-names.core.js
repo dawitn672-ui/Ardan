@@ -13,7 +13,9 @@
 (function () {
   const LF = A.LF = A.LF || {};
   LF.NAME_TRIES = 4;
-  const recent = { day: -1, names: [] };
+  // the last names drawn today live in the state, so a replay and the next game draw the same (a page-level list made
+  // the same seed and choices play differently: 51's rivalsPlayThrough, 991's fwKnownSame, cycle 2 close)
+  const recentOf = () => { const S = A.S; if (!S) return { day: -1, names: [] }; if (!S.lfNames || !Array.isArray(S.lfNames.names)) S.lfNames = { day: -1, names: [] }; return S.lfNames; };
   LF.takenNames = function () {
     const out = new Set(), pc = A.S && A.S.pc ? A.P(A.S.pc) : null;
     const add = p => { if (p && p.given) out.add(p.given); };
@@ -26,7 +28,8 @@
     const q = A.S && A.S.queue && A.S.queue[0];
     if (q && q.ctx) for (const k in q.ctx) { const v = q.ctx[k]; if (typeof v === 'string' && /^p\w+$/.test(v)) add(A.P(v)); }
     const day = A.S && A.absDay ? A.absDay() : 0;
-    if (recent.day === day) for (const n of recent.names) out.add(n);
+    const recent = A.S && A.S.lfNames;
+    if (recent && recent.day === day) for (const n of recent.names) out.add(n);
     return out;
   };
   const given0 = A.givenName;
@@ -37,6 +40,7 @@
         const taken = LF.takenNames();
         for (let t = 0; t < LF.NAME_TRIES && taken.has(n); t++) n = given0.apply(this, arguments);
         const day = A.absDay ? A.absDay() : 0;
+        const recent = recentOf();
         if (recent.day !== day) { recent.day = day; recent.names = []; }
         recent.names.push(n); if (recent.names.length > 6) recent.names.shift();
       }

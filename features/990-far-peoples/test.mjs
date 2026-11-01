@@ -288,6 +288,9 @@ export default {
       for (const land of Object.keys(lands)) for (const st of Object.keys(GD.STATUS)) {
         const rid = lands[land][n % lands[land].length]; n++;
         pc.realm = rid; pc.status = st; pc.cult = A.FAR.D.realms[rid].cult;
+        // one person plays all 80 openings: 9998-stakes holds back a white check this person failed at an earlier
+        // opening (pc.retry), which a real life, with one opening, never meets
+        delete pc.retry;
         const q = { type: 'event', ev: 'fp_start', forced: true, ctx: {} };
         A.S.queue = [q]; const v = A.eventView(q);
         const all = [v.title, v.text].concat(v.choices.map(c => c.t));

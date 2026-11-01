@@ -789,18 +789,18 @@
   Object.assign(UI.C, { setAdvisors(el) { UI.set.advisors = el.checked; UI.saveSettings && UI.saveSettings(); UI.renderModal ? UI.renderModal() : UI.render(); } });
 
   const CSS = `.adv-ring{margin:6px 0 8px;display:flex;flex-direction:column;gap:4px}
-.adv-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;font-size:13px;line-height:1.35;padding:3px 8px;border-left:2px solid var(--line,rgba(127,127,127,.35));color:var(--ink-2,inherit)}
-.adv-who{font-weight:600;font-size:12px;white-space:nowrap}
-.adv-role{font-weight:normal;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.75;margin-left:5px}
+.adv-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;font-size:14px;line-height:1.35;padding:3px 8px;border-left:2px solid var(--line,rgba(127,127,127,.35));color:var(--ink-2,inherit)}
+.adv-who{font-weight:600;font-size:14px;white-space:nowrap}
+.adv-role{font-weight:normal;font-size:14px;letter-spacing:.04em;text-transform:uppercase;opacity:.75;margin-left:5px}
 .adv-line{font-family:var(--f-prose,inherit);font-style:italic;flex:1 1 220px;min-width:0}
 .adv-man{font-style:normal;opacity:.75}
-.adv-for{font-size:12px;opacity:.85;white-space:normal}
+.adv-for{font-size:14px;opacity:.85;white-space:normal}
 .adv-sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;padding:0}
 .adv-card .adv-person{display:flex;flex-wrap:wrap;gap:0 10px;padding:4px 0;border-top:1px solid var(--line,rgba(127,127,127,.2))}
 .adv-card .adv-person:first-of-type{border-top:0}
-.adv-pn{flex:1 1 200px;min-width:0}.adv-pw{flex:1 1 180px;font-style:italic;font-size:13px}.adv-pr{flex:1 1 100%}
+.adv-pn{flex:1 1 200px;min-width:0}.adv-pw{flex:1 1 180px;font-style:italic;font-size:14px}.adv-pr{flex:1 1 100%}
 .sc-card .adv-ring{margin:6px 14px 8px}
-@media (max-width:760px){.sc-card .adv-ring{margin:4px 12px 6px}.adv-row{font-size:12.5px;padding:2px 6px}.adv-line{flex-basis:100%}}`;
+@media (max-width:760px){.sc-card .adv-ring{margin:4px 12px 6px}.adv-row{font-size:14px;padding:2px 6px}.adv-line{flex-basis:100%}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('adv-style')) return; const st = document.createElement('style'); st.id = 'adv-style'; st.textContent = CSS; document.head.appendChild(st); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();

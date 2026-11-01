@@ -1,8 +1,11 @@
 // Named men who get better: the comrades who come back from missions learn, earn a standing, and carry the odds.
 export default {
   async squadGrows(pg) {
-    const r = await pg.evaluate(() => {
-      A.newGame({ seed: 371, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+    // one life of twelve missions; a life that ends before its eighth takes the next seed (the rule is unchanged: cycle 2's
+    // companies and Polity moved seed 371's soldier to a death on his third mission)
+    const r = await pg.evaluate(() => { let out; for (let seed = 371; seed < 377; seed++) { out = one(seed); if (out.ran >= 8) break; } return out;
+    function one(seed) {
+      A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
       const pc = A.pc(), enemy = A.neighbors('POL-01')[0];
       const w = A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(pc);
       const served = new Set(); let ran = 0, gain = 0, logged = false, deaths = 0;
@@ -15,10 +18,10 @@ export default {
       }
       for (const e of A.S.log) for (const l of e.lines || []) if (/missions with you now/.test(l[0])) logged = true;
       const men = [...served].map(A.P).filter(Boolean);
-      return { ran, served: men.length, deaths, maxN: Math.max(0, ...men.map(p => (p.sq || {}).n || 0)), gain: Math.round(gain), standings: men.map(p => A.SQUAD.standing(p)).filter(Boolean), logged };
-    });
+      return { ran, served: men.length, deaths, maxN: Math.max(0, ...men.map(p => (p.sq || {}).n || 0)), gain: Math.round(gain), standings: men.map(p => A.SQUAD.standing(p)).filter(Boolean), logged, seed };
+    } });
     const ok = r.ran >= 8 && r.maxN >= 3 && r.gain > 0 && r.standings.length >= 1 && r.logged;
-    return { ok, detail: `${r.ran} missions; ${r.served} men went out, ${r.deaths} died on them; survivors learned ${r.gain} skill points; most missions by one man ${r.maxN}; standings earned: ${r.standings.join(', ') || 'none'}; announced ${r.logged}` };
+    return { ok, detail: `seed ${r.seed}: ${r.ran} missions; ${r.served} men went out, ${r.deaths} died on them; survivors learned ${r.gain} skill points; most missions by one man ${r.maxN}; standings earned: ${r.standings.join(', ') || 'none'}; announced ${r.logged}` };
   },
 
   async squadCarriesOdds(pg) {

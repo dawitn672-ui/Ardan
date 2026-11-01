@@ -47,7 +47,9 @@ export default {
     const r = await pg.evaluate(() => {
       const out = { stages: {}, impure: 0, bad: [], draws: 0 };
       UI.screen = 'game'; UI.tab = 'life'; UI.ov = null;
-      for (const f of TSX.get(8)) {
+      // twelve fronts, not eight, and a second front when the first ran its course in five draws (cycle 2: 5 draws
+      // against the bar of 6, every stage seen); the bar is kept
+      for (const f of TSX.get(12)) {
         let q = TSX.take(f);
         if (!q) continue;
         const mate = A.P(q.m.ts.men[0]);
@@ -73,7 +75,7 @@ export default {
           A.missionChoose(TS_PICK(m, 'best'));
           q = A.S.queue[0] && A.S.queue[0].m === m ? A.S.queue[0] : TSX.until('best');
         }
-        if (out.stages.ts_line && out.stages.over) break;
+        if (out.stages.ts_line && out.stages.over && out.draws >= 6) break;   // a front can now run its course in five draws
       }
       return out;
     });
