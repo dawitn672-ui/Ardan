@@ -97,7 +97,6 @@ export default {
         const res = {};
         const tm = document.querySelector('#titlemap'); if (tm) { MAP.draw(tm, { labels: true, home: false }); res.title = px(tm, 4, 4); }
         A.newGame({ seed: 620, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
-        const h0 = JSON.stringify(A.S), r0 = A.rngState;
         UI.screen = 'game'; UI.set.hints = false; UI.tab = 'world'; UI.worldView = 'map'; UI.set.atlasFog = false; UI.render();
         const wm = document.querySelector('#worldmap');
         if (wm) { MAP.draw(wm, { mode: 'political' }); res.world = [wm.width, wm.height]; }
@@ -119,9 +118,17 @@ export default {
         }
         UI.ov = null; UI.render(); UI.warRoomOpen && UI.warRoomOpen();
         const wc = document.querySelector('#warmap'); if (wc && UI.drawWar) { UI.drawWar(wc); res.war = [wc.width, wc.height]; }
-        UI.ov = null; UI.render();
         res.views = views; res.sea = sea; res.land = land; res.tiles = A.V2MAP.SAT.stats.tiles;
-        res.pure = JSON.stringify(A.S) === h0 && A.rngState === r0;
+        // drawing alone (the screens above may step the engine: the war room raises its day's tick): every view drawn
+        // again from nothing, the satellite tiles too, changes neither the state nor the stream
+        const h1 = JSON.stringify(A.S), r1 = A.rngState;
+        A.V2MAP.satReset(); A.V2MAP.use(null); MAP.init();
+        if (wm) MAP.draw(wm, { mode: 'political' });
+        UI.A.ov('bigmap');
+        for (const z of [1, 3, 9]) { const w = 7000 / z; UI.gm.view = UI.wrClampView({ x0: P.sx - w / 2, y0: P.sy - w / 3.06, w, h: 0 }); UI.gmDraw(); }
+        UI.ov = null; UI.renderModal && UI.renderModal();
+        if (wc && UI.drawWar) UI.drawWar(wc);
+        res.pure = JSON.stringify(A.S) === h1 && A.rngState === r1;
         return res;
       });
       out.push({ W, r, errs: e2 });
