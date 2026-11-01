@@ -330,7 +330,9 @@ POL.petitions = function (r) {
   const angry = POL.EST.filter(e => ES[e].angry && ES[e].cl >= .2).sort((a, b) => ES[a].ap - ES[b].ap || ES[b].cl - ES[a].cl)[0];
   if (!angry) return null;
   const w = POL.estWant(r, angry); if (!w) return null;
-  const lead = ES[angry].lead;
+  // an estate with no one to speak for it has no one to bring its bill: its anger stays in the tally (cycle 2: the
+  // commons' petitions were opened with no bringer, and 56's court record had laws nobody brought)
+  const lead = ES[angry].lead; if (!lead || !lead.alive) return null;
   const pc = A.pc();
   if (pc && pc.ruler === r.id) {
     // a ruling player hears the petition as a scene
