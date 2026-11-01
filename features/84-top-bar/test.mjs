@@ -41,30 +41,15 @@ const STEPS = () => {
   });
 };
 Object.assign(tests, {
-  async tbStepWeekMonth(pg) {
-    await pg.evaluate(STEPS);
-    const r = await pg.evaluate(async () => {
-      T.enter({ seed: 8401, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 22 });
-      const out = [];
-      for (const k of ['stepWeek', 'stepMonth', 'stepWeek', 'stepMonth', 'stepMonth']) out.push(await __step(k));
-      // a month step in December runs through the year turn to the first of January
-      A.S.warClock = 340;
-      out.push(await __step('stepMonth'));
-      const html = UI.clkHtml();
-      return { out, primary: (html.match(/class="[^"]*primary[^"]*"[^>]*data-a="(\w+)"/g) || []).map(x => x.match(/data-a="(\w+)"/)[1]), keys: /aria-keyshortcuts="W"/.test(html) && /aria-keyshortcuts="M"/.test(html) };
-    });
-    const MS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-    const bad = r.out.filter(o => o.alive && (o.kind === 'stepWeek' ? o.d1 - o.d0 !== 7 : !(MS.includes(o.w1 - 1) && o.d1 > o.d0 && o.d1 - o.d0 <= 32)));
-    const ok = !bad.length && r.out[5].w1 === 1 && r.primary.length === 1 && r.primary[0] === 'stepMonth' && r.keys && r.out.some(o => o.events > 0);
-    return { ok, detail: r.out.map(o => `${o.kind === 'stepWeek' ? 'week' : 'month'}: day ${o.w0} -> ${o.w1}${o.year !== 1105 ? ` (${o.year})` : ''}, ${o.events} event stop(s), ${o.slices} polls`).join('; ') + `; primary control: ${r.primary.join(', ')}` };
-  },
+  // v2 (99992-v2-time): tbStepWeekMonth dropped. It drove the Week and Month steps; Week is gone (the owner: Next month only). One month a press is v2tNextMonth.
   async tbStepSameWorld(pg) {
     // three months in steps, with the screen drawn between slices, reach the world one long A.advance reaches
     await pg.evaluate(STEPS);
     const r = await pg.evaluate(async () => {
       const o = { seed: 8402, race: 'human', realm: 'POL-05', status: 'artisan', sex: 'M', startAge: 19 };
       T.enter(o);
-      for (const k of ['stepMonth', 'stepWeek', 'stepMonth', 'stepMonth']) await __step(k);
+      // v2: the Week step is gone; four months
+      for (const k of ['stepMonth', 'stepMonth', 'stepMonth', 'stepMonth']) await __step(k);
       const end = A.absDay(), a = { h: T.hash(A.S), rng: A.rngState };
       A.newGame(o);
       for (let g = 0; g < 500 && A.absDay() < end; g++) {
@@ -81,7 +66,7 @@ Object.assign(tests, {
     await pg.evaluate(STEPS);
     const r = await pg.evaluate(async () => {
       T.enter({ seed: 8403, race: 'human', realm: 'POL-36', status: 'peasant', sex: 'M', startAge: 20, lands: 'great' });
-      await __step('stepWeek');   // the first days build the roads once
+      await __step('stepMonth');   // the first days build the roads once (v2: a month; Week is gone)
       const lt = [];
       const ob = new PerformanceObserver(l => { for (const e of l.getEntries()) lt.push(e.duration); }); ob.observe({ entryTypes: ['longtask'] });
       const t0 = performance.now(), m = await __step('stepMonth'), ms = performance.now() - t0;
@@ -138,13 +123,15 @@ Object.assign(tests, {
         after: !!(hint && wn && (wn.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING)), overlaps: !!(hint && [...document.querySelectorAll('#tabbody .wn-item')].some(x => over(rect(x), rect(hint)))),
         clickable: !!(hit && item.contains(hit)), pe: hint ? getComputedStyle(hint).pointerEvents : '', text: words() };
       const id = two.hint;
-      for (let i = 0; i < 3; i++) { await __step('stepWeek'); A.S.queue = []; }
+      for (let i = 0; i < 3; i++) { await __step('stepMonth'); A.S.queue = []; }   // v2: Week is gone
       UI.render();
       const three = { retired: !!(id && UI.hintSeen(id)), now: (document.querySelector('#tabbody .hint-at') || {}).dataset ? (document.querySelector('#tabbody .hint-at') || { dataset: {} }).dataset.hint : null };
       const wnText = (A.whatNow(A.pc()) || []).map(x => x.t + '>' + (x.act && x.act[0])).join(', ');
       return { one, two, three, wnText };
     });
-    const ok = r.one.clock && !r.one.covers && !r.one.old && /Month/.test(r.one.text) && /Week/.test(r.one.text) &&
+    // v2 (99992-v2-time): the clock is one Next month button with no step group, so its hint no longer sits under a
+    // step group; the hints must still never name Play, Space or the old Next
+    const ok = !r.one.old &&
       r.two.clockGone && r.two.hint === 'whatnow' && r.two.after && !r.two.overlaps && r.two.clickable && r.two.pe === 'none' &&
       r.three.retired && !/Let time run/.test(r.wnText);
     return { ok, detail: `first hint by the clock: ${r.one.clock} ("${r.one.text.slice(0, 90)}"), covers a step button ${r.one.covers}, names Play/Space/Next ${r.one.old}; ` +
@@ -153,69 +140,12 @@ Object.assign(tests, {
   },
   // I1: a newborn pressed Month up to sixteen times for a first event. Now under five the main step is a season, and after
   // two empty steps "Until something happens"; a season is the days of three Months, so the world is the same.
-  async tbStepSeason(pg) {
-    await pg.evaluate(STEPS);
-    const r = await pg.evaluate(async () => {
-      const go = async kind => { if (kind === 'until') { const d0 = A.absDay(); let ev = 0; UI.A.stepUntil(); while (UI.stepper.run) { if (UI.stepper.wait) { ev++; let g = 0; while (A.headReady() && g++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); } await new Promise(res => setTimeout(res, 4)); } return { events: ev, d1: A.absDay(), d0 }; } return __step({ season: 'stepSeason', month: 'stepMonth', week: 'stepWeek' }[kind]); };
-      const rows = [];
-      for (const seed of [8421, 8422, 8423]) {
-        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 });
-        const plan0 = UI.stepPlan().join('/'); let presses = 0, months = 0, first = null;
-        for (let i = 0; i < 10 && A.pc().alive; i++) { const k = UI.stepPlan()[1], o = await go(k); presses++; if (o.events) { first = A.absDay(); break; } }
-        // the same life a Month at a time: how many presses to the same first event
-        const o = { seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 };
-        A.newGame(o); UI.render();
-        for (let i = 0; i < 30 && A.pc().alive; i++) { const m = await __step('stepMonth'); months++; if (m.events) break; }
-        rows.push({ seed, plan0, presses, months, first });
-      }
-      // a season ends on the third turn of a month, where three Month steps end
-      T.enter({ seed: 8424, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 0 });
-      const s = await __step('stepSeason');
-      return { rows, season: s, html: UI.clkHtml() };
-    });
-    const MS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-    const okSeason = MS.includes(r.season.w1 - 1) && r.season.d1 - r.season.d0 >= 85 && r.season.d1 - r.season.d0 <= 100;
-    const ok = r.rows.every(x => x.plan0 === 'month/season' && x.presses <= 4 && x.presses < x.months) && okSeason && /data-a="stepSeason"/.test(r.html) && /class="small primary" data-a="stepSeason"/.test(r.html);
-    return { ok, detail: r.rows.map(x => `seed ${x.seed}: steps ${x.plan0}, first event after ${x.presses} press(es) (a Month at a time: ${x.months})`).join('; ') + `; a season: day ${r.season.w0} -> ${r.season.w1} (${r.season.d1 - r.season.d0} days)` };
-  },
+  // v2 (99992-v2-time): tbStepSeason dropped. The season and "until something happens" steps are gone (Next month only); v2tNextMonth holds the month.
   // the season and "until" steps keep the world: the same days as one long A.advance
-  async tbStepSeasonSameWorld(pg) {
-    await pg.evaluate(STEPS);
-    const r = await pg.evaluate(async () => {
-      const o = { seed: 8425, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'M', startAge: 0 };
-      // the autosave at the turn of the year writes the stream's position into the state (S.rng); one long A.advance
-      // never saves, so it is off for the comparison
-      UI.set.autosave = false;
-      T.enter(o);
-      for (const k of ['stepSeason', 'stepMonth', 'stepSeason']) await __step(k);
-      UI.stepper.empty = 2; UI.A.stepUntil(); while (UI.stepper.run) { if (UI.stepper.wait) { let g = 0; while (A.headReady() && g++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); } await new Promise(res => setTimeout(res, 4)); }
-      const end = A.absDay(), a = { h: T.hash(A.S), rng: A.rngState };
-      A.newGame(o);
-      for (let g = 0; g < 500 && A.absDay() < end; g++) { A.advance(end - A.absDay()); let h, k = 0; while ((h = A.headReady()) && k++ < 50) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); } }
-      return { a, b: { h: T.hash(A.S), rng: A.rngState }, end: A.absDay() === end, days: end };
-    });
-    const ok = r.end && r.a.h === r.b.h && r.a.rng === r.b.rng;
-    return { ok, detail: `seasons, a month and an "until": ${r.a.h}/${r.a.rng}; one advance ${r.b.h}/${r.b.rng}: ${ok ? 'the same world' : 'DIFFERENT'}` };
-  },
+  // v2 (99992-v2-time): tbStepSeasonSameWorld dropped. It drove the season and "until" steps, which are gone; v2tSameWorld and tbStepSameWorld hold the same-world rule for the month.
   // I2: weeks 2 to 6 of a life showed nothing at all. Now each step ends with a note of what passed in it; drawing it
   // changes neither the state nor the random stream.
-  async tbStepNote(pg) {
-    await pg.evaluate(STEPS);
-    const r = await pg.evaluate(async () => {
-      T.enter({ seed: 8431, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
-      A.pc().coin = 10;
-      const w = await __step('stepWeek'); A.S.queue = [];
-      const h0 = T.hash(A.S), g0 = JSON.stringify(A.rngState);
-      UI.tab = 'life'; UI.render(); UI.render();
-      const el = document.querySelector('#tabbody .step-sum');
-      const pure = T.hash(A.S) === h0 && JSON.stringify(A.rngState) === g0;
-      const text = el ? el.textContent : '';
-      UI.A.stepSumX(); const gone = !document.querySelector('#tabbody .step-sum');
-      return { days: w.d1 - w.d0, text, pure, gone };
-    });
-    const ok = r.days === 7 && /This week/.test(r.text) && /7 days/.test(r.text) && /coin/.test(r.text) && /health/.test(r.text) && r.pure && r.gone;
-    return { ok, detail: `after a week: "${r.text.replace(/\s+/g, ' ').slice(0, 160)}"; drawing it pure ${r.pure}; dismissed ${r.gone}` };
-  },
+  // v2 (99992-v2-time): tbStepNote dropped. The step's note card is gone: a quiet month is a 2-second toast and a story line (v2tQuietToast).
   // B4: How to play was 998 words, taught "Press Play (or Space)", never named Week or Month. Now it opens on the first
   // hour, step by step, and the rest is folded by subject.
   async tbHelpFirstHour(pg) {
@@ -226,7 +156,8 @@ Object.assign(tests, {
       return { first: first ? first.textContent : '', firstWords: first ? words(first.textContent) : 0, steps: first ? first.querySelectorAll('li').length : 0,
         folded: m ? m.querySelectorAll('details.help-more').length : 0, open: m ? [...m.querySelectorAll('details.help-more')].filter(d => d.open).length : 0, all: m ? m.textContent : '' };
     });
-    const ok = /Month/.test(r.first) && /Week/.test(r.first) && r.firstWords <= 90 && r.steps >= 5 && r.folded >= 8 && !r.open && !/Press Play/.test(r.all);
+    // v2 (99992-v2-time): the first hour names Next month, the one control (Week is gone)
+    const ok = /Next month/.test(r.first) && !/\bWeek\b/.test(r.first) && r.firstWords <= 90 && r.steps >= 5 && r.folded >= 8 && !r.open && !/Press Play/.test(r.all);
     return { ok, detail: `first hour: ${r.steps} steps in ${r.firstWords} words, names Week and Month ${/Month/.test(r.first) && /Week/.test(r.first)}; ${r.folded} subjects folded (${r.open} open); "Press Play" gone ${!/Press Play/.test(r.all)}` };
   },
   // I5: a first life faced 31 activities, and "Make a friend" answered two columns away. Now it sees six, "More" opens

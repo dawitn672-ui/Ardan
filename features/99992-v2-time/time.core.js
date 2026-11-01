@@ -411,7 +411,7 @@
       if (typeof h !== 'string') return h;
       const k = x => (coarse() ? '' : ` (${x})`);
       return h.replace(/<details class="help-more"><summary>Time<\/summary>[\s\S]*?<\/details>/,
-        `<details class="help-more" open><summary>Time</summary><p><b>A month at a time.</b> <i>Next month</i>${k('N')} lives the next month. Its happenings come as cards, one at a time; a quiet month passes with a short note and a line in your story. ` +
+        `<details class="help-more"><summary>Time</summary><p><b>A month at a time.</b> <i>Next month</i>${k('N')} lives the next month. Its happenings come as cards, one at a time; a quiet month passes with a short note and a line in your story. ` +
         `On campaign (your host on the march or at a siege, or a long road) the month opens into <i>Next day</i>${k('D')} and <i>Next week</i>${k('W')}, with your standing orders beside them. A battle stops the clock. Between steps the world is still and the time is yours.</p></details>`)
         .replace(/<li>Press <b>Month<\/b>[\s\S]*?<\/li>/, `<li>Press <b>Next month</b>${k('N')} to live the next month.</li>`);
     } catch (e) { return h; }
