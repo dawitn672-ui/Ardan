@@ -20,7 +20,8 @@ export default {
         UI.FOLD.OFF = off;
         const row = {};
         for (const g of ['life', 'pathwar', 'holdings', 'realm']) {
-          document.querySelector(`[data-a="group"][data-v="${g}"]`).click();
+          { // v2 (99992-v2-time): the six groups became five places; open the same page by its tab
+          const T2 = { life: 'life', pathwar: 'path', holdings: 'holdings', realm: 'realm', people: 'people', chronicle: 'book' }; UI.setTab(T2[g]); UI.render(); }
           await new Promise(res => setTimeout(res, 40));
           row[g] = screens(document.getElementById('tabbody'));
         }
@@ -56,7 +57,9 @@ export default {
       document.querySelector('#tabbody .fold-acts > .fold-head > .fold-h').click();
       const back = document.querySelector('#tabbody .fold-acts > .fold-head > .fold-h').getAttribute('aria-expanded') === 'true';
       // a tall card's corner button
-      document.querySelector('[data-a="group"][data-v="holdings"]').click(); await new Promise(res => setTimeout(res, 40));
+      // v2 (99992-v2-time): Holdings is a page of the You place
+      (document.querySelector('[data-a="group"][data-v="holdings"]') || document.querySelector('[data-a="group"][data-v="you"]')).click(); await new Promise(res => setTimeout(res, 40));
+      { const sub = document.querySelector('#sub-holdings'); if (sub && UI.tab !== 'holdings') { sub.click(); await new Promise(res => setTimeout(res, 40)); } }
       const x = document.querySelector('#tabbody .fold-card > .fold-x'), card = x && x.closest('.fold-card');
       const was = card && card.classList.contains('folded'); if (x) x.click();
       const cardFlip = !!card && card.classList.contains('folded') !== was;
@@ -74,7 +77,8 @@ export default {
       eval(start)();
       const s0 = JSON.stringify(A.S), g0 = JSON.stringify(A.rngState);
       for (const g of ['life', 'people', 'pathwar', 'holdings', 'realm', 'chronicle']) {
-        document.querySelector(`[data-a="group"][data-v="${g}"]`).click();
+        { // v2 (99992-v2-time): the six groups became five places; open the same page by its tab
+          const T2 = { life: 'life', pathwar: 'path', holdings: 'holdings', realm: 'realm', people: 'people', chronicle: 'book' }; UI.setTab(T2[g]); UI.render(); }
         await new Promise(res => setTimeout(res, 30));
         for (const h of [...document.querySelectorAll('#tabbody [data-a="fold"]')].slice(0, 4)) h.click();
       }
