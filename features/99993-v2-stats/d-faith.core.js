@@ -13,7 +13,8 @@ const kindOf = p => { try { return A.C && A.C.famKind ? A.C.famKind(p, 'clergy')
 const holy = q => !!(q && ((q.flags && q.flags.priest) || (q.job && q.job.c === 'clergy')));
 VS.clergyBorn = function (p) {
   if (!p) return false;
-  if (p.flags && p.flags.clergyBorn) return true;
+  // 29-starts' "The Temple's Child" is raised by the priests
+  if (p.flags && (p.flags.clergyBorn || p.flags.st_foundling)) return true;
   for (const id of p.parents || []) if (holy(A.P ? A.P(id) : A.S.people[id])) return true;
   return !!kindOf(p);
 };

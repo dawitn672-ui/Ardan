@@ -24,7 +24,8 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 - **Old saves migrate once.** Their potential becomes the genes and their stats become conditioning, so the stats come out as they went in (test `v2sMigrate`: moved by at most 0). Skills become practice hours (0 → 0, 5 → 30 = Novice, 15 → 200, 30 → 800 = Journeyman, 45 → 2,500, 60 → 6,000, 75 → 12,000 = Master, 88 → 25,000, 100 → 50,000 = Legend).
 - **The view is by percentile.** Each attribute is the race's typical body at that age (v2's base × maturity) times `(A.stat / a typical person's of this race and age)^K`, with K = lift 2, sprint 0.7, march 1.5, reaction 0.9, toughness 1.5.
   - `A.stat` carries the old age fading, wounds, traits and weariness, so the sheet, a fight and a check all read the same person.
-  - Minds take the race's mind plus 15 points for each standard deviation of the old stat (log scale), grown by v2's mental maturity.
+  - Minds take the race's mind plus 15 points for each standard deviation of the old stat (log scale, within 4), grown by v2's mental maturity.
+  - The view is cached by everything it reads (the six `A.stat` values, the potentials, age, race, sex, looks, height, `p.v2`), so a cached view is never stale and drawing a page can't change what the engine reads.
 
 **Every check through `attempt()`** (`b-odds.core.js`, patch `V2S-ROLL`)
 
@@ -57,7 +58,7 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 
 **Faith only where it applies** (`d-faith.core.js`, `faith.events.js`)
 
-- **Who has faith:** the clergy-born (a parent in holy orders, or the priestly line), a priest, and a player who takes it up. The scene "A preacher in the square" (`v2s_seek_faith`) offers it; nothing forces it.
+- **Who has faith:** the clergy-born (a parent in holy orders, the priestly line, or 29-starts' "The Temple's Child"), a priest, and a player who takes it up. The scene "A preacher in the square" (`v2s_seek_faith`) offers it; nothing forces it.
 - **Everyone else:** piety stays at a neutral 30, so the 1,785 piety effects and the systems that read piety for everyone read a neutral default. Any change is kept as a pull toward faith, which makes the offer likelier.
 - **What the sheet shows:** no piety bar and no piety figure, and no chapter or ambition sets a piety aim. NPCs keep their piety for the AI.
 
@@ -68,6 +69,8 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
   - **Mind:** the v2 words plus "better than all but 1 in N".
   - **Skills:** a named tier with the hours practised. The bar shows the way to the next tier.
   - The 0–100 stat bars and "Tick = potential" are gone.
+- **A check chip** (92-scene-card) says "INT fair" or "Diplomacy Novice", not "INT 39". A stat reads as a word for your place among your own race and age: poor, middling, fair, good, fine, rare, legendary.
+- **48's tier chip** says "Untrained · about one levy", not "Untrained · 39".
 - **Odds are words plus a tipped balance** (`A.V2.odds.oddsWords`).
   - `A.DIFF.showOdds` now says no at every setting, so 48, 59, 89, 92, 97 and 9998 drop their digits.
   - A check choice's badge is the words and the balance, and 92's four pips are gone.
@@ -104,3 +107,10 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 - **NPC bodies follow their old stats.** Only the player's body is stored and grows by v2's curves. An NPC's view is read from its old stats, so the two agree, but NPCs still age by the old engine.
 - **Skill hours are read from the 0–100 skill,** not stored. The old learning curves still decide progress.
 - **The fit is for humans.** Other races are placed by the body alone, which is the point (complaint 12). Beasts and crowds keep the release's worth rows.
+
+## Other features' tests changed (they checked digits the owner asked to remove)
+
+- `42-difficulty` `difficultyInformation`: with v2 no setting shows digits on a choice; without v2, the release's rule as before.
+- `48-fight-ladder` `flScreens`: the duel's "N times in 100" is no longer required with v2.
+- `59-tooltips` `ttWorthSums`: the tier chip names the worth in levies; with v2 it must name the same total's levies.
+- `9996-polity` `poBillTrack`: the next count's odds are words and a balance, so with v2 the stack must have no "N%" and must have the balance.
