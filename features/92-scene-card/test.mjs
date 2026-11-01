@@ -214,6 +214,8 @@ export default {
           const a = SCT.read(q), i = SCT.pick(q);
           UI.A.evChoose(i);
           if (A.S.queue[0] !== q || !q.result || !A.pc().alive) continue;   // a fight came first, or the life ended
+          // the chapter card is 9993's own title card, not a scene card, and shows no result chips (cycle 2)
+          if (q.ev === 'chp_card' && A.CH && !A.CH.CARD_OFF) { A.eventClose(); continue; }
           const b = SCT.read(q), want = SCT.want(a, b);
           const got = [...document.querySelectorAll('#modal .sc-deltas > li')].map(li => li.dataset.k + '=' + (+li.dataset.d)).sort();
           res.n++; res.chips += got.length; if (got.length) res.withChips++;

@@ -460,7 +460,7 @@ ${X('.lk-realm')}{display:inline-flex;align-items:center;gap:6px;color:var(--lk-
 :root[data-theme=light] .lk-realm{color:var(--lk-ink-l,var(--lk-ink,var(--ink)))}
 ${X('.card.person.click.lk-row > .lk-row-m > .lk-row-r')}{flex:none;order:2;font-size:var(--t-small,13px)}
 /* cycle 2 (visual B11): a chip in a row ends in an ellipsis, never a clipped letter; its words are in its title */
-${X('.card.person.click.lk-row .chip')}{display:inline-block;max-width:14ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+${X('.card.person.click.lk-row .chip')}{display:inline-block;max-width:14ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:top;line-height:inherit}
 ${X('.card.person.click.lk-row > .lk-row-m > .bondline')}{min-width:0;flex:0 1 auto;overflow:hidden}
 ${X('.card.person.click.lk-row > .lk-row-m > .sub')}{order:1}
 ${X('.lk-realm > i')}{flex:none;width:8px;height:8px;border-radius:2px;background:var(--lk-sw);box-shadow:0 0 0 1px var(--line-strong)}

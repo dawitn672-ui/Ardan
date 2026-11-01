@@ -800,7 +800,8 @@
 .adv-card .adv-person:first-of-type{border-top:0}
 .adv-pn{flex:1 1 200px;min-width:0}.adv-pw{flex:1 1 180px;font-style:italic;font-size:14px}.adv-pr{flex:1 1 100%}
 .sc-card .adv-ring{margin:6px 14px 8px}
-@media (max-width:760px){.sc-card .adv-ring{margin:4px 12px 6px}.adv-row{font-size:14px;padding:2px 6px}.adv-line{flex-basis:100%}}`;
+@media (max-width:760px){.sc-card .adv-ring{margin:4px 12px 6px}.adv-row{font-size:14px;padding:2px 6px}.adv-line{flex-basis:100%}}
+@media (max-width:760px) and (max-height:700px){.sc-card .adv-ring .adv-row:nth-child(n+2){display:none}.sc-card .adv-ring .adv-man{display:none}}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('adv-style')) return; const st = document.createElement('style'); st.id = 'adv-style'; st.textContent = CSS; document.head.appendChild(st); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();

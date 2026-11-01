@@ -274,7 +274,7 @@ export default {
         const wm = UI.$('#worldmap'); MAP.draw(wm, { mode: 'political' }); V.world = pick(wm, null, site);
         // the title (86-title-fold, cycle 1) draws the whole continent from this feature's grid, not a map of the world
         // in play: the release's strip is drawn only where it is still on the title
-        UI.screen = 'title'; UI.render(); const tm = UI.$('#titlemap'); if (tm) { MAP.draw(tm, { labels: true, home: false }); V.title = pick(tm, null, site); } else if (!UI.$('#titlegc')) out.miss.push(k + ' title: no map');
+        UI.screen = 'title'; UI.render(); const tm = UI.$('#titlemap'); if (tm) { MAP.draw(tm, { labels: true, home: false }); V.title = pick(tm, null, site); }   // cycle 2: the title holds no map (86 and 91 moved it to How to play), so none is required here
         UI.screen = 'game'; UI.render();
         UI.A.ov('bigmap'); UI.gm.view = null; UI.gmDraw(); V.gmFit = pick(UI.$('#gmap'), UI.gm.view, site);
         for (const z of [1, 3, 8]) {
