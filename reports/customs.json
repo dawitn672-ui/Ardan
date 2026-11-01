@@ -1,0 +1,495 @@
+{
+ "file": "../../../tmp/ardan/rbfull/x.html",
+ "seeds": 3,
+ "years": 60,
+ "realms": {
+  "POL-01": {
+   "short": "Aldmark",
+   "median": 3,
+   "met": [
+    3,
+    2,
+    3
+   ],
+   "years": [
+    30,
+    44,
+    61
+   ]
+  },
+  "POL-02": {
+   "short": "Solenne",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    59,
+    61,
+    41
+   ]
+  },
+  "POL-03": {
+   "short": "Varenna",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    40,
+    43,
+    61
+   ]
+  },
+  "POL-04": {
+   "short": "Lucerna",
+   "median": 2,
+   "met": [
+    2,
+    3,
+    2
+   ],
+   "years": [
+    42,
+    58,
+    33
+   ]
+  },
+  "POL-05": {
+   "short": "Ashmere",
+   "median": 3,
+   "met": [
+    3,
+    3,
+    2
+   ],
+   "years": [
+    45,
+    38,
+    50
+   ]
+  },
+  "POL-06": {
+   "short": "Sylvaran",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    44,
+    40,
+    39
+   ]
+  },
+  "POL-07": {
+   "short": "Eldergrove",
+   "median": 2,
+   "met": [
+    2,
+    1,
+    2
+   ],
+   "years": [
+    61,
+    61,
+    61
+   ]
+  },
+  "POL-08": {
+   "short": "Northreach",
+   "median": 3,
+   "met": [
+    2,
+    3,
+    3
+   ],
+   "years": [
+    40,
+    55,
+    31
+   ]
+  },
+  "POL-09": {
+   "short": "Frostholm",
+   "median": 3,
+   "met": [
+    3,
+    3,
+    3
+   ],
+   "years": [
+    61,
+    61,
+    61
+   ]
+  },
+  "POL-10": {
+   "short": "Irondeep",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    1
+   ],
+   "years": [
+    61,
+    61,
+    40
+   ]
+  },
+  "POL-11": {
+   "short": "the Horde",
+   "median": 3,
+   "met": [
+    3,
+    3,
+    3
+   ],
+   "years": [
+    46,
+    44,
+    32
+   ]
+  },
+  "POL-12": {
+   "short": "Nine Winds",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    59,
+    46,
+    49
+   ]
+  },
+  "POL-13": {
+   "short": "Highland",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    43,
+    30,
+    56
+   ]
+  },
+  "POL-14": {
+   "short": "Greyhaven",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    3
+   ],
+   "years": [
+    46,
+    53,
+    58
+   ]
+  },
+  "POL-15": {
+   "short": "Morhaven",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    1
+   ],
+   "years": [
+    50,
+    42,
+    44
+   ]
+  },
+  "POL-16": {
+   "short": "Ostra",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    3
+   ],
+   "years": [
+    56,
+    52,
+    47
+   ]
+  },
+  "POL-17": {
+   "short": "Qadir",
+   "median": 3,
+   "met": [
+    3,
+    3,
+    2
+   ],
+   "years": [
+    50,
+    48,
+    47
+   ]
+  },
+  "POL-18": {
+   "short": "Tamar",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    3
+   ],
+   "years": [
+    59,
+    42,
+    48
+   ]
+  },
+  "POL-19": {
+   "short": "Sand Clans",
+   "median": 3,
+   "met": [
+    2,
+    3,
+    3
+   ],
+   "years": [
+    51,
+    53,
+    50
+   ]
+  },
+  "POL-20": {
+   "short": "Zanara",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    37,
+    59,
+    61
+   ]
+  },
+  "POL-21": {
+   "short": "Kesh",
+   "median": 2,
+   "met": [
+    2,
+    0,
+    2
+   ],
+   "years": [
+    35,
+    48,
+    54
+   ]
+  },
+  "POL-22": {
+   "short": "Abara",
+   "median": 3,
+   "met": [
+    3,
+    3,
+    3
+   ],
+   "years": [
+    48,
+    47,
+    35
+   ]
+  },
+  "POL-23": {
+   "short": "Hrimfell",
+   "median": 2,
+   "met": [
+    2,
+    3,
+    2
+   ],
+   "years": [
+    61,
+    61,
+    61
+   ]
+  },
+  "POL-24": {
+   "short": "Sabra",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    54,
+    52,
+    47
+   ]
+  },
+  "POL-25": {
+   "short": "Velgrad",
+   "median": 2,
+   "met": [
+    3,
+    2,
+    1
+   ],
+   "years": [
+    43,
+    35,
+    49
+   ]
+  },
+  "POL-26": {
+   "short": "Drevna",
+   "median": 3,
+   "met": [
+    2,
+    3,
+    3
+   ],
+   "years": [
+    33,
+    51,
+    42
+   ]
+  },
+  "POL-27": {
+   "short": "Skyhold",
+   "median": 2,
+   "met": [
+    2,
+    3,
+    2
+   ],
+   "years": [
+    61,
+    42,
+    52
+   ]
+  },
+  "POL-28": {
+   "short": "Stonehold",
+   "median": 2,
+   "met": [
+    3,
+    2,
+    2
+   ],
+   "years": [
+    61,
+    36,
+    61
+   ]
+  },
+  "POL-29": {
+   "short": "Emberdeep",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    61,
+    40,
+    61
+   ]
+  },
+  "POL-30": {
+   "short": "Ranpur",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    60,
+    57,
+    35
+   ]
+  },
+  "POL-31": {
+   "short": "Tessaria",
+   "median": 2,
+   "met": [
+    2,
+    2
+   ],
+   "years": [
+    52,
+    33
+   ]
+  },
+  "POL-32": {
+   "short": "Amber Isles",
+   "median": 3,
+   "met": [
+    3,
+    2,
+    3
+   ],
+   "years": [
+    56,
+    60,
+    37
+   ]
+  },
+  "POL-33": {
+   "short": "Blackreef",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    2
+   ],
+   "years": [
+    61,
+    54,
+    49
+   ]
+  },
+  "POL-34": {
+   "short": "Tusk Clans",
+   "median": 2,
+   "met": [
+    2,
+    2,
+    3
+   ],
+   "years": [
+    47,
+    47,
+    46
+   ]
+  }
+ },
+ "pass": 34,
+ "errors": [],
+ "passPct": 100,
+ "kindsMet": {
+  "year": 65,
+  "mourn": 47,
+  "levy": 12,
+  "grave": 6,
+  "rite": 35,
+  "ward": 37,
+  "name": 5,
+  "law": 16,
+  "wed": 11
+ }
+}

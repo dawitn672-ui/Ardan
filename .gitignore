@@ -1,0 +1,7 @@
+.build/
+node_modules/
+test-results/
+reports/*.log
+reports/tmp-*.json
+reports/debug.json
+canon/
