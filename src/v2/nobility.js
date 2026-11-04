@@ -85,7 +85,11 @@ export function buildHierarchy(realm, map, seed, opts = {}) {
     const start = (opts.marchAt || []).find((c) => border.has(c) && !taken.has(c)) ?? pick;
     if (start == null) break;
     const parent = null; // set after duchies exist
-    marqs.push(add('marquis', `March of ${namer.place(realm.culture)}`, parent, grow(start, rng.int(2, 4))));
+    // leave room for the duchies (four counties each), so the marches never eat the realm before a duke is made
+    const room = Math.floor((counties.length - taken.size - nDukes * 4) / (nMarq - m));
+    const size = Math.min(rng.int(2, 4), room);
+    if (size < 1) break;
+    marqs.push(add('marquis', `March of ${namer.place(realm.culture)}`, parent, grow(start, size)));
   }
   for (let d = 0; d < nDukes; d++) {
     const pick = rng.shuffle(counties.filter((c) => !taken.has(c) && !border.has(c)))[0] ?? counties.find((c) => !taken.has(c));

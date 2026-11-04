@@ -101,7 +101,9 @@
     return null;
   };
   F.seatProv = seatProv;
-  const greatLanded = h => h && h.great !== false && h.rung && /^N/.test(h.rung) && seatProv(h) != null;
+  // with a court (99995-v2-nobility) only a house of title rank (duke, marquis, count) holds its seat's county: a lesser
+  // house seated there holds a viscounty, barony or manor under that county's count
+  const greatLanded = h => h && h.great !== false && h.rung && (A.S && A.S.court ? /^N0[123]$/ : /^N/).test(h.rung) && seatProv(h) != null;
 
   function giveHeadship(h, to, from) {
     h.headPid = to ? to.id : null;
@@ -208,7 +210,9 @@
       const ids = hold[k];
       if (ids.length > 1) bad.push({ k: 'lordship', id: k, holders: ids });
       else if (seats[k] && seats[k] !== ids[0]) bad.push({ k: 'lordship-seat', id: k, holders: [ids[0], seats[k]] });
-      else if (caps[k] && caps[k] !== ids[0]) bad.push({ k: 'lordship-crown', id: k, holders: [ids[0], caps[k]] });
+      // a count of the court (99995-v2-nobility) keeps his county when a crown moves its seat into it: the crown sits in
+      // his castle, it does not take his title
+      else if (caps[k] && caps[k] !== ids[0] && !(A.P(ids[0]).noble.court)) bad.push({ k: 'lordship-crown', id: k, holders: [ids[0], caps[k]] });
     }
     return bad;
   };

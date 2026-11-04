@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { makeRng } from '../../src/v2/rng.js';
 import { generateContinent, components } from '../../src/v2/map/continent.js';
-import { makeRealms, buildHierarchy, CAPS } from '../../src/v2/nobility.js';
+import { makeRealms, buildHierarchy, CAPS, dukesFor } from '../../src/v2/nobility.js';
 import { makeUnit, makeArmy, startBattle, battlePhase, afterAction, rumourOfBattle } from '../../src/v2/war.js';
 import { makeDiplomacy, monthTick, setFactor } from '../../src/v2/diplomacy.js';
 import { createGame, nextMonth, choose, sheet } from '../../src/v2/game.js';
@@ -37,6 +37,8 @@ test('noble pyramid: caps hold and the counts look like a real realm', () => {
   for (const r of realms) {
     const h = buildHierarchy(r, m, 'ardan');
     assert.ok(h.summary.dukes <= CAPS.duke && h.summary.marquises <= CAPS.marquis);
+    assert.equal(h.summary.dukes, dukesFor(r.provinces.length), 'the marches leave room for every duchy');
+    if (h.summary.dukes) assert.ok(h.summary.marquises <= 3 * h.summary.dukes, 'at most three marquises a duke');
     assert.ok(h.summary.counts >= r.provinces.length * 0.9);
     assert.ok(h.summary.viscounts >= h.summary.counts * 2 && h.summary.barons >= h.summary.viscounts * 2 && h.summary.lords >= h.summary.barons * 3);
     if (!biggest || r.provinces.length > biggest.r.provinces.length) biggest = { r, h };
