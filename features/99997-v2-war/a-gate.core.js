@@ -197,3 +197,18 @@
     };
   }
 })();
+
+// v2 step 8 at integration: the map's Wars colouring shows only your own wars (it coloured every war in the world, a
+// view of wars you are not in). The overlay is drawn with A.S.wars narrowed, as the war pages are.
+(function () {
+  const W = A.V2W;
+  if (!W || typeof MAP === 'undefined' || typeof MAP.modeInfo !== 'function') return;
+  const mi = MAP.modeInfo;
+  MAP.modeInfo = function (mode) { return mode === 'wars' ? W.withMyWars(() => mi.apply(this, arguments)) : mi.apply(this, arguments); };
+  const ov = MAP.overlay;
+  if (typeof ov === 'function') MAP.overlay = function (mode) {
+    // the overlay caches by a key without the wars, so a Wars map keys on yours too
+    if (mode === 'wars') { const k = W.myWars().map(w => w.id || w.name).join(','); if (MAP._v2wKey !== k) { MAP._v2wKey = k; MAP.overlayCache = null; MAP.ownerKey = null; } }
+    return ov.apply(this, arguments);
+  };
+})();

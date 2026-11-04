@@ -224,4 +224,19 @@ export default {
     });
     return { ok: r.draws >= 10 && !r.impure && !r.pct, detail: `${r.draws} draws, ${r.impure} changed the state or the dice, ${r.pct} showed a percentage` };
   },
+  // integration: the map's Wars colouring shows no war you are not in
+  async v2wMapWars(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 7312, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 24 });
+      const me = A.pc().realm;
+      const x = Object.values(A.S.realms).find(q => q.alive && q.id !== me && !A.neighbors(me).includes(q.id) && A.neighbors(q.id).some(y => y !== me));
+      const y = A.neighbors(x.id).find(z => z !== me);
+      A.startWar(x.id, y, null, 'conquest');
+      const h0 = T.hash(A.S), r0 = A.rngState, n = A.S.wars.length;
+      const info = MAP.modeInfo('wars');
+      const txt = JSON.stringify(info.legend || []);
+      return { wars: n, mentions: A.S.wars.filter(w => txt.includes(w.name) || txt.includes(A.realm(w.att) ? A.realm(w.att).short : '@')).length, kept: A.S.wars.length === n, pure: T.hash(A.S) === h0 && A.rngState === r0, outside: !A.V2W.inWar(A.pc()) };
+    });
+    return { ok: r.wars >= 1 && r.outside && r.mentions === 0 && r.kept && r.pure, detail: `${r.wars} war(s) in the world, the player in none ${r.outside}; the Wars map names ${r.mentions} of them; the world's wars kept ${r.kept}; pure ${r.pure}` };
+  },
 };
