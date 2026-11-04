@@ -21,6 +21,8 @@ export default {
       T.enter({ seed: 32, race: 'human', sex: 'M', startAge: 0 });
       const pc = A.pc(), byAge = [];
       for (let y = 0; y < 30; y++) { T.play(1); if (!pc.alive) break; if ([5, 12, 18, 25].includes(A.age(pc))) byAge.push([A.age(pc), Math.round(A.stat(pc, 'str')), Math.round(A.V2S.stats(pc).lift)]); }
+      // headroom under the old engine's cap (1.02 x potential), which fx and training both stop at
+      if (pc.st.str >= pc.pot.str * 1.02 - 3) { pc.st.str -= 8; A.V2S.sync(pc); }
       const before = { c: pc.v2.c.lift, st: pc.st.str, cstat: A.C.stat(pc, 'str') };
       A.applyFx(pc, { str: 3 }, {});
       A.V2S.sync(pc);
