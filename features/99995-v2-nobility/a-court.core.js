@@ -277,6 +277,24 @@
     return moved;
   };
 
+  // the release's A.houseHead(hid, true) (an elective realm choosing its ruler from a house) makes a new person head of
+  // the house while the old head lives. A court lord stays head of his house, and so keeps his county's seat; the new
+  // person is the house's candidate, not its head.
+  // And a house whose head was cleared while he lives (56-realm-inside's failed-rebellion purge sets headPid = null
+  // even when the beheading did not take) gets its court lord back as head, not a stranger.
+  const houseHead = A.houseHead;
+  A.houseHead = function (hid, fresh) {
+    const h = A.S.houses[hid];
+    if (h && !fresh && !live(h.headPid && A.P(h.headPid))) {
+      const lord = Object.values(A.S.people).find(q => q.alive && q.house === hid && q.noble && q.noble.court);
+      if (lord) { h.headPid = lord.id; return lord; }
+    }
+    const old = h && h.headPid && A.P(h.headPid);
+    const p = houseHead.apply(this, arguments);
+    if (fresh && h && live(old) && old !== p && old.noble && old.noble.court) h.headPid = old.id;
+    return p;
+  };
+
   // ---- world start and old saves -----------------------------------------------------------------------
   const ng = A.newGame;
   A.newGame = function () {
