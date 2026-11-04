@@ -24,7 +24,7 @@ async function releaseSave(browser) {
   const ctx = await browser.newContext(), pg = await ctx.newPage();
   try {
     await pg.goto(pathToFileURL(VENDOR).href);
-    await pg.waitForFunction(() => window.A && A.newGame && window.UI && window.SAVES && (window.ARDAN_CONTENT_READY === true || A.EV), null, { timeout: 120000 });
+    await pg.waitForFunction(() => window.ARDAN_CONTENT_READY === true || (typeof A !== 'undefined' && typeof UI !== 'undefined' && typeof SAVES !== 'undefined' && A.newGame && A.EV && Object.keys(A.EV).length > 100), null, { timeout: 120000 });
     return await pg.evaluate(MAKE, [{ seed: 77, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 }, 3]);
   } finally { await ctx.close(); }
 }
@@ -48,7 +48,7 @@ const MIGRATE = async (b64) => {
   // through a save of its own: exact, and no second migration
   const e = await SAVES.encode(A.S, A.J), d3 = await SAVES.decode(e.bytes);
   out.reSaved = JSON.stringify(d3.S) === JSON.stringify(A.S);
-  out.journal = A.J && A.J.o === null && A.J.e.length === 0;
+  out.journal = A.J && A.J.o === null && A.J.e.length === 0; out.J = A.J && { o: !!A.J.o, e: A.J.e.length, keys: Object.keys(A.J) };
   out.play = T.play(2);
   out.year = A.S.year;
   out.bad1 = SV.check();
@@ -66,7 +66,7 @@ const verdict = (r, label) => {
   return {
     ok, detail: `${label}: version ${r.ver0} migrated once (${r.last && r.last.steps.join(', ')}), ${r.people0} -> ${r.people1} people, stream kept ${r.rng1 === r.rng0}; ` +
       `invariants after load [${r.bad0.join('; ') || 'all hold'}], after 2 years to ${r.year} [${r.bad1.join('; ') || 'all hold'}]; the same twice ${r.sameTwice}, ` +
-      `migrating again changes nothing ${r.idempotent}, its own save exact ${r.reSaved}, fresh journal ${r.journal}; ${r.facts.court} courts, map ${r.facts.v2map && r.facts.v2map.seed}; ` +
+      `migrating again changes nothing ${r.idempotent}, its own save exact ${r.reSaved}, fresh journal ${r.journal} ${JSON.stringify(r.J)}; ${r.facts.court} courts, map ${r.facts.v2map && r.facts.v2map.seed}; ` +
       `percentages on screen: ${r.pct.length ? r.pct.join(' | ') : 'none'}`,
   };
 };
