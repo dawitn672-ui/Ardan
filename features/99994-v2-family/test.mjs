@@ -206,4 +206,61 @@ export default {
     });
     return { ok: !r.bad.length && r.moves > 0, detail: r.bad.slice(0, 4).join('; ') || `no title with two holders in ${r.years} checks over 30 seeds; ${r.moves} headships passed by law` };
   },
+
+  // playtest 1, #14: the house panel never shows a head its own law forbids, and a passed-over line says why
+  async v2fLawPanelTrue(pg) {
+    const r = await pg.evaluate(() => {
+      const F = A.V2F, bad = [];
+      T.enter({ seed: 41, status: 'noble', realm: 'POL-03', startAge: 20 });
+      const pc = A.pc(), h = A.S.houses[pc.house], keep = h.headPid;
+      // a woman at the head of a house whose drawn law is agnatic: the law, not the head, gives way
+      const ids = Object.keys(A.S.houses).filter(id => !F.royalRealmOf(id));
+      const ag = ids.find(id => A.V2.succession.makeHouseLaw(F.rng('law|' + id)).law === 'agnatic');
+      if (ag) {
+        const hh = A.S.houses[ag], k0 = hh.headPid, w = A.newPerson({ sex: 'F', born: A.S.year - 50, race: 'human', house: ag });
+        hh.headPid = w.id;
+        if (F.houseLaw(ag).law === 'agnatic') bad.push('an agnatic house is headed by a woman');
+        if (F.audit().some(x => x.k === 'law')) bad.push('the audit finds a law the head breaks');
+        hh.headPid = k0;
+      } else bad.push('no agnatic house to try');
+      // disinherited: the panel gives the reason and the year
+      pc.flags.disinherited = A.S.year - 2;
+      const txt = F.lineCard(pc);
+      if (!/passed over: you were cut out of the inheritance in \d+/.test(txt) && h && A.P(h.headPid) && h.headPid !== pc.id) bad.push('no reason given: ' + txt.replace(/<[^>]+>/g, ' ').slice(0, 200));
+      delete pc.flags.disinherited; h.headPid = keep;
+      // no man of the family carries a woman's occupation word, nor a woman a man's
+      for (const id of Object.keys(pc.rel)) { const q = A.P(id); if (q && ((q.sex !== 'F' && q.occ === 'a lady of the house') || (q.sex === 'F' && q.occ === 'a lord'))) bad.push(`${q.given} (${q.sex}) is "${q.occ}"`); }
+      return bad;
+    });
+    return { ok: !r.length, detail: r.join('; ') || 'an agnatic house never keeps a woman at its head; "passed over" says why and when; occupation words follow sex' };
+  },
+
+  // playtest 1, #15: one coherent label: "best friend" in words, no "Enemy" beside a warm opinion, one lover, one superior
+  async v2fOneLabel(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 42, status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), bad = [], mk = (sex, g) => A.newPerson({ sex, born: pc.born, race: 'human', given: g });
+      const L = (x) => A.relLabel(x, pc.rel[x.id]);
+      const bf = mk('M', 'Bram'); A.link(pc, bf, 'bestfriend', 70, 'bestfriend');
+      if (L(bf) !== 'Best friend') bad.push(`best friend reads "${L(bf)}"`);
+      const en = mk('M', 'Hesk'); A.link(pc, en, 'enemy', 60, 'enemy');
+      if (/^Enemy/.test(L(en))) bad.push(`a warm enemy reads "${L(en)}"`);
+      const a = mk('F', 'Ada'), b = mk('F', 'Bet');
+      A.link(pc, a, 'lover', 50, 'lover'); pc.rel[a.id].since = A.S.year - 3;
+      A.link(pc, b, 'lover', 50, 'lover'); pc.rel[b.id].since = A.S.year;
+      const lov = [a, b].filter(x => L(x) === 'Lover').length;
+      if (lov !== 1) bad.push(`${lov} people read "Lover"`);
+      const s1 = mk('M', 'Sup1'), s2 = mk('M', 'Sup2');
+      A.link(pc, s1, 'superior', 20, 'subordinate'); A.link(pc, s2, 'superior', 20, 'subordinate');
+      const cur = A.superior ? A.superior(pc) : null;
+      const sups = [s1, s2].filter(x => /^Your superior/.test(L(x))).length;
+      if (sups > (cur && [s1, s2].includes(cur) ? 1 : 0)) bad.push(`${sups} people read "your superior"`);
+      // a death told of someone else takes their pronoun
+      const g = mk('F', 'Gran'); g.born = A.S.year - 90;
+      let n = 0; for (let i = 0; i < 200; i++) { const c = A.naturalCause(g); if (/your sleep/.test(c)) n++; }
+      if (n) bad.push(`${n} of 200 causes say "your sleep" of a grandmother`);
+      return { bad, words: [L(bf), L(en), L(a), L(b)].join(' / ') };
+    });
+    return { ok: !r.bad.length, detail: r.bad.join('; ') || r.words };
+  },
 };

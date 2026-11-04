@@ -38,6 +38,10 @@
     if (!h) return base;
     const r = F.royalRealmOf(hid);
     if (r) return { law: F.LAWMAP[r.law] || 'male-preference', fitness: base.fitness };
+    // a house whose head is a woman does not keep agnatic law (playtest 1, #14: "Agnatic ... Head of the house: Audra,
+    // mother"): the head the world gave it stands, so its law is male-preference
+    const hd = h.headPid && A.P(h.headPid);
+    if (base.law === 'agnatic' && hd && hd.sex === 'F') return { law: 'male-preference', fitness: base.fitness };
     return base;
   };
   F.lawText = function (L) {
@@ -91,7 +95,31 @@
     if (law.law === 'elective') for (const x of P.all()) if (x.house === hid) x.ability = F.ability(x.game);
     const hh = P.of(head); hh.titles = [h.name];
     const r = SU.myPlace(P, P.of(p), hh, law, A.S.year);
-    return { place: r.place, text: r.text, line: r.line.map(e => e.person.game) };
+    return { place: r.place, text: F.whyText(p, r, law, h), line: r.line.map(e => e.person.game) };
+  };
+
+  // where you stand, with its reason (playtest 1, #14: "You are passed over: disinherited." said nothing more)
+  F.whyText = function (p, r, law, h) {
+    const fl = (p && p.flags) || {}, lawName = ((SU.LAWS[law.law] || {}).name || 'the law').toLowerCase();
+    const sk = r.skipped.find(e => e.person.id === p.id);
+    if (sk) {
+      const why = {
+        disinherited: `you were cut out of the inheritance${typeof fl.disinherited === 'number' ? ' in ' + fl.disinherited : ''}, and a disinherited child stands outside the line`,
+        'took holy vows': 'you took holy vows, and the sworn hold nothing',
+        'branded craven': 'the house council judges you craven, and this house passes over the unfit',
+        'too sickly to rule': 'the house council judges you too sickly to rule, and this house passes over the unfit',
+        'judged simple by the house council': 'the house council judges you unfit to rule, and this house passes over the unfit',
+      }[sk.why] || sk.why;
+      return `You are passed over: ${why}.`;
+    }
+    if (r.place == null) {
+      if (fl.bastard && !fl.legitimized) return `You are not in line for ${h.name}: you were born outside the marriage.`;
+      if (law.law === 'agnatic' && p.sex === 'F') return `You are not in line for ${h.name}: under ${lawName} only men, and only through men, inherit.`;
+      if (law.law === 'agnatic') return `You are not in line for ${h.name}: under ${lawName} the line runs only through men, and yours runs through a woman.`;
+      if ((law.law === 'seniority' || law.law === 'elective') && A.age(p) < 16) return `You are not in line for ${h.name} yet: under ${lawName} only grown members of the house stand.`;
+      return p.house === h.id ? `You stand further down the line of ${h.name} than the house counts heirs.` : `You are not in line for ${h.name}: you are not of its blood.`;
+    }
+    return r.text;
   };
 
   // ---- the one mover -----------------------------------------------------------------------------------------------
@@ -209,6 +237,10 @@
     for (const id in S.houses) { const h = S.houses[id]; if (greatLanded(h) && live(A.P(h.headPid))) seats[seatProv(h)] = h.headPid; }
     const caps = {};
     for (const id in S.realms) { const r = S.realms[id]; if (r && r.alive !== false && r.capitalProv != null) caps[r.capitalProv] = r.ruler; }
+    for (const id in S.houses) {
+      const h = S.houses[id], hd = h.headPid && A.P(h.headPid);
+      if (live(hd) && hd.sex === 'F' && F.houseLaw(id).law === 'agnatic') bad.push({ k: 'law', id, holders: [hd.id] });
+    }
     for (const k in hold) {
       const ids = hold[k];
       if (ids.length > 1) bad.push({ k: 'lordship', id: k, holders: ids });

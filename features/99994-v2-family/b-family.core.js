@@ -82,7 +82,7 @@
     const gps = (par.parents || []).map(A.P).filter(Boolean);
     let gf = gps.find(q => q.sex !== 'F'), gm = gps.find(q => q.sex === 'F');
     const newGf = !gf, newGm = !gm;
-    if (!gf) { gf = mk('M', par.born - r.int(m0, Math.min(m1, m0 + 14)), { house: par.house || null }); gf.sur = surOf('M', null); gf.surMode = par.surMode; gf.occ = gf.occ || par.occ || ''; }
+    if (!gf) { gf = mk('M', par.born - r.int(m0, Math.min(m1, m0 + 14)), { house: par.house || null }); gf.sur = surOf('M', null); gf.surMode = par.surMode; gf.occ = gf.occ || (par.sex === 'F' ? '' : par.occ) || ''; }
     if (!gm) { gm = mk('F', Math.max(gf.born - 6, par.born - r.int(f0, Math.min(f1, f0 + 10)))); const fn = famName(gm, 'F'); gm.sur = fn.sur; gm.surMode = fn.mode; }
     if (!gf.spouse && !gm.spouse) marry(gf, gm);
     par.parents = [gf.id, gm.id];
@@ -158,6 +158,7 @@
       sideOf(pc, fa, true, r, out);
       sideOf(pc, mo, false, r, out);
     });
+    for (const id of Object.keys(pc.rel || {})) F.fixOcc(A.P(id));
     pc.flags.v2_family = A.S.year;
     return out;
   };
