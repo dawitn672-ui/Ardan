@@ -192,15 +192,16 @@
   N.slotKey = (rid, county, rank, i) => `${rid}|${county}|${rank}|${i}`;
   N.lower = function (rid, county, rank, i) {
     const k = N.slotKey(rid, county, rank, i), m = A.S.court && A.S.court.met[k];
-    if (typeof m === 'string' && m.startsWith('h:')) {
-      const h = A.S.houses[m.slice(2)], hd = h && h.headPid && A.P(h.headPid);
-      return { key: k, rank, title: `${N.title(rank, hd ? hd.sex : 'M')} ${A.houseSurname(h)}`, given: hd ? hd.given : '', house: h ? h.name : '', sex: hd ? hd.sex : 'M', hid: h && h.id, pid: hd && hd.alive ? hd.id : null };
-    }
-    const p = m && A.P(m);
-    if (p) return { key: k, rank, title: p.noble && p.noble.fief ? `${N.title(rank, p.sex)} of ${p.noble.fief.name}` : N.title(rank, p.sex), given: p.given, house: p.sur, sex: p.sex, pid: p.id, alive: p.alive };
     const r = A.realm(rid) || {};
     const g = NB.lowerNoble(F.seedFor('low'), { id: rid, culture: N.v2culture(r) }, county, rank, i);
-    const sex = g.sex === 'female' ? 'F' : 'M', place = g.title.replace(/^\S+ of /, '');
+    const place = g.title.replace(/^\S+ of /, '');
+    if (typeof m === 'string' && m.startsWith('h:')) {
+      const h = A.S.houses[m.slice(2)], hd = h && h.headPid && A.P(h.headPid), sx = hd ? hd.sex : 'M';
+      return { key: k, rank, title: `${N.title(rank, sx)} of ${place}`, place, given: hd ? hd.given : '', house: h ? A.houseSurname(h) : '', sex: sx, hid: h && h.id, pid: hd && hd.alive ? hd.id : null };
+    }
+    const p = m && A.P(m);
+    if (p) return { key: k, rank, title: `${N.title(rank, p.sex)} of ${place}`, place, given: p.given, house: p.sur, sex: p.sex, pid: p.id, alive: p.alive };
+    const sex = g.sex === 'female' ? 'F' : 'M';
     // the game's own names for the realm's culture, drawn from a stream seeded by the slot (the game's stream is untouched)
     const cult = A.cultureFor ? A.cultureFor(r.race || 'human', rid) : null;
     const nm = N.pureNames('low|' + k, () => ({ given: A.givenName(cult, sex), sur: A.familyName({ cult, realm: rid, status: 'noble', sex }).sur }));
@@ -228,6 +229,13 @@
     const rank = p.noble.rung >= 5 ? 'viscount' : p.noble.rung >= 4 ? 'baron' : null, rid = p.noble.realm || p.realm, c = N.court(rid);
     if (!rank || !c) return null;
     const counts = c.titles.filter(t => t.rank === 'count');
+    // the head of a lesser great house takes the slot its house was given under the count of its seat
+    const met = A.S.court.met, mine = p.house && Object.keys(met).find(k => met[k] === 'h:' + p.house && k.startsWith(rid + '|'));
+    if (mine) {
+      const [, county, rk, i] = mine.split('|'), g = N.lower(rid, +county, rk, +i);
+      p.noble.fief = { county: +county, rank: rk, i: +i, name: g.place };
+      return p.noble.fief;
+    }
     const home = counts.find(t => t.seat === p.home);
     for (const t of [home, ...counts].filter(Boolean)) {
       const n = t[rank === 'viscount' ? 'viscounts' : 'barons'];
@@ -258,9 +266,12 @@
   F.inherit = function (from) {
     const moved = inherit.apply(this, arguments);
     try {
-      const k = from && from.noble && from.noble.court, to = k && from.noble.passed && A.P(from.noble.passed);
-      if (to && to.noble && !hasKey(to, k)) {
-        if (!to.noble.court) to.noble.court = k; else (to.noble.more = to.noble.more || []).push(k);
+      const keys = from && from.noble ? [from.noble.court, ...(from.noble.more || [])].filter(Boolean) : [];
+      const to = keys.length && from.noble.passed && A.P(from.noble.passed);
+      for (const k of keys) {
+        if (to && to.noble && !hasKey(to, k)) { if (!to.noble.court) to.noble.court = k; else (to.noble.more = to.noble.more || []).push(k); }
+        // the title remembers its holder (the dead are pruned from A.S.people, so a chain through them would break)
+        const t = N.titleOf(k); if (t && to && hasKey(to, k)) t.pid = to.id;
       }
     } catch (e) { console.error('v2-nobility inherit', e); }
     return moved;
@@ -281,5 +292,31 @@
     // a fresh viscounty or barony with no county of its own takes a slot under a count
     for (const id in S.people) { const p = S.people[id]; if (p.alive && p.noble && p.noble.rung >= 4 && p.noble.rung <= 5 && p.noble.holding == null && !p.noble.fief) N.grantFief(p); }
   });
+  // the court's lords grow old and die. The release only ages and buries the people you know and the rulers, so a count
+  // no one has met would hold his county for ever; each year every title holder you do not know (and who does not
+  // rule) dies at the release's own rate (A.deathChance), drawn from a stream seeded by the year and the person, never
+  // from the game's. The death goes through A.kill, so the title passes by the family lane's A.V2F.inherit.
+  const CAUSES = ['old age', 'a winter fever', 'the flux', 'a fall from a horse', 'a wasting sickness', 'his heart', 'a wound gone bad'];
+  N.yearOfDeaths = function () {
+    const S = A.S, pc = A.pc(); if (!S.court) return [];
+    const seen = new Set(), out = [];
+    for (const c of Object.values(S.court.realms)) for (const t of c.titles) {
+      if (t.crown || t.heldWith || t.rank === 'king') continue;
+      const p = N.holderOf(t);
+      if (!p || seen.has(p.id) || p.id === S.pc || (pc && pc.rel && pc.rel[p.id]) || (p.ruler && A.realm(p.ruler) && A.realm(p.ruler).ruler === p.id)) continue;
+      seen.add(p.id);
+      const rr = F.rng(`death|${S.year}|${p.id}`);
+      if (rr.next() < A.deathChance(p)) {
+        const cause = rr.pick(CAUSES).replace('his heart', p.sex === 'F' ? 'her heart' : 'his heart');
+        A.kill(p, cause, true);
+        const nx = N.holderOf(t);
+        out.push({ t: t.k, dead: p.id, next: nx && nx.id });
+        if (pc && (t.rank === 'duke' || t.rank === 'marquis') && t.k.startsWith((pc.realm || '') + ':') && A.news) A.news(`${A.fullName(p, false)}, ${N.title(t.rank, p.sex)} of ${A.provName(t.seat)}, is dead (${cause}).${nx ? ` ${A.fullName(nx, false)} holds the ${t.rank === 'duke' ? 'duchy' : 'march'} now.` : ' The title stands empty.'}`, 'crown');
+      }
+    }
+    return out;
+  };
+  (A.onYear = A.onYear || []).push(function () { try { N.yearOfDeaths(); } catch (e) { console.error('v2-nobility deaths', e); } });
+
   A.SIGNATURE = Object.assign(A.SIGNATURE || {}, { nobility: true });
 })();

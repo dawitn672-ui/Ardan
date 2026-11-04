@@ -111,8 +111,11 @@
     if (to && pc && to.id === pc.id && pc.alive) {
       A.log(`You are now head of ${h.name}${from ? `, after ${from.given}` : ''}, by ${(SU.LAWS[F.houseLaw(h.id).law] || {}).name || 'the law of the house'}.`, 'big');
       if (h.rung && h.rung[0] === 'N' && A.rungIndex && (!pc.noble || pc.noble.rung < A.rungIndex(h.rung))) {
-        const sp = seatProv(h);
-        pc.noble = { rung: A.rungIndex(h.rung), realm: h.realm || pc.realm, holding: sp != null ? sp : pc.home };
+        // with a court (99995-v2-nobility) a lesser house's seat lies inside a count's county: its head holds a viscounty,
+        // barony or manor there (A.V2N.grantFief), not the county
+        const sp = A.S.court && !/^N0[123]$/.test(h.rung) ? null : seatProv(h);
+        pc.noble = { rung: A.rungIndex(h.rung), realm: h.realm || pc.realm, holding: sp != null ? sp : A.S.court ? null : pc.home };
+        if (sp == null && A.V2N && A.V2N.grantFief) A.V2N.grantFief(pc);
         A.log(`With it comes the rung of ${A.nobleTitle(pc)}.`, 'big');
       }
     }
