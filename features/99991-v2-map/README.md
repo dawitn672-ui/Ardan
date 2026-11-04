@@ -30,6 +30,8 @@
   - Rivers are canvas vectors, from `riverPaths`, in km, wider with flow; the small ones appear as you zoom in.
   - Borders, towns, keeps, names and the realms' wash stay 62's: smooth vector lines traced from the new grid.
   - `UI.set.v2Sat = false` brings 62's ground back.
+  - The title has no map strip. 86-title-fold took it out for the Great Continent; without the Far Lands the release's strip came back and pushed "Begin a new life" below the fold.
+- **Beasts** (76-beast-habitats) keep their canon regions, matched by province name, which the map keeps. On a v2 map the region alone decides, because the region's terrain is now the new land's: otherwise six beasts would be met nowhere.
 - **Faster generator** (`src/v2/map`), with the same output to the bit (hashes compared over 3 seeds at two sizes):
   - the noise's corner gradients are inlined;
   - the erosion's gradient is computed without an object per step;
@@ -37,7 +39,7 @@
 
 ## Measured
 
-- **Building a world takes 1.3 to 1.9 s in Chromium on the shared 4-core machine.** Generation is about 80% of that; placing the realms and provinces and deriving the fields take 150 to 300 ms. The whole-continent picture adds 0.3 to 0.4 s on the first draw, and a close tile takes 40 to 65 ms. Worlds are cached by seed (the last 3). The target was about 1.5 s; reaching it would mean a coarser generator grid, fewer erosion droplets, or a Web Worker.
+- **Building a world takes about 1.3 to 1.9 s in Chromium on a quiet machine, and 3.7 to 4.9 s under the lanes' shared load.** Erosion runs at 0.5 droplets a cell, a third faster than v2's default 0.9, and looks the same at this grid. Generation is about 80% of that; placing the realms and provinces and deriving the fields take 150 to 300 ms. The whole-continent picture adds 0.3 to 0.4 s on the first draw, and a close tile takes 40 to 65 ms. Worlds are cached by seed (the last 3). The target was about 1.5 s; reaching it would mean a coarser generator grid, fewer erosion droplets, or a Web Worker.
 - The title screen's world (seed 7, from the release's `UI.renderTitle`) is built at boot, so every page load costs one world build.
 - **`test.mjs`:**
   - `v2mapOneContinent`: 3 seeds. Each checks that every province is reachable by land, the land is in one piece, no land touches the frame, the cell counts match the grid, adjacency is symmetric, every site lies inside its province, every realm keeps its province count, and there is no `A.FAR` and no sea link.
