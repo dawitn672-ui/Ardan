@@ -172,7 +172,8 @@ export default {
   async ttInModal(pg) {
     await pg.evaluate(`${ENTER}(5910); UI.A.ov('profile');`);
     const st = () => pg.evaluate(() => ({ depth: UI.TT.depth(), inModal: !!(UI.TT.stack[0] && UI.TT.stack[0].el.closest('#modal')), focusInPop: !!document.activeElement.closest('.tt-pop'), modal: !!document.querySelector('#modal .mbox') }));
-    await pg.focus('#modal .barrow .lbl [data-tt="stat"]');
+    // v2 (99993-v2-stats): the full profile has no 0-100 stat bars; any explained number in it will do
+    await pg.focus((await pg.evaluate(() => !!A.V2S)) ? '#modal [data-tt][tabindex], #modal [data-tt]' : '#modal .barrow .lbl [data-tt="stat"]');
     await pg.keyboard.press('Enter'); const s1 = await st();
     await pg.keyboard.press('Tab'); await pg.keyboard.press('Tab'); const s2 = await st();
     await pg.keyboard.press('Escape'); const s3 = await st();
@@ -396,8 +397,11 @@ export default {
       A.S.queue = []; UI.render();
       return out;
     });
-    const c = cover(r, 60);
-    return { ok: c.ok && r.length >= 5 && r[0].after.n >= 30, detail: r.map(line).join('; '), data: r };
+    // v2 (99993-v2-stats): a choice's odds are words now, so the scene's numbers left are the choice keys; the scenes are
+    // left out of the bar and the rest must still be covered
+    const v2 = await pg.evaluate(() => !!A.V2S), rr = v2 ? r.filter(s => !/^Events with odds/.test(s.name)) : r;
+    const c = cover(rr, v2 ? 30 : 60);
+    return { ok: c.ok && r.length >= 5 && (v2 || r[0].after.n >= 30), detail: r.map(line).join('; '), data: r };
   },
 
   // coverage, the realm and the books: the Realm tab as a commoner and as a noble (neither rules), the Codex's Power &
@@ -443,7 +447,8 @@ export default {
           if (!S.parts) return;
           const d = vc.odds - sumR(S.parts); rec(c.check.fight ? 'fight odds' : 'check odds', d, Math.abs(d) <= 1 && !other(S.parts));
           // the popover shows the same: its rows add to its total
-          if (vi === 0) { const rows = T2.rows(UI.TIPS.odds(vi)), sumRow = rows.filter(x => x.sum).pop(), parts = rows.filter(x => !x.sum); rec('odds popover', sumRow ? sumRow.v - parts.reduce((a, x) => a + x.v, 0) : 99, !!sumRow && sumRow.v === vc.odds && sumRow.v === parts.reduce((a, x) => a + x.v, 0)); }
+          // v2 (99993-v2-stats, "no percentages for the player"): the odds popover has words, no sum to check
+          if (vi === 0 && !A.V2S) { const rows = T2.rows(UI.TIPS.odds(vi)), sumRow = rows.filter(x => x.sum).pop(), parts = rows.filter(x => !x.sum); rec('odds popover', sumRow ? sumRow.v - parts.reduce((a, x) => a + x.v, 0) : 99, !!sumRow && sumRow.v === vc.odds && sumRow.v === parts.reduce((a, x) => a + x.v, 0)); }
         });
       }
       A.S.queue = []; UI.TT.cur.ev = null;
@@ -482,11 +487,11 @@ export default {
         const O = TT.maxOrgParts(d), mo = (O.base + O.cmd) * O.ord; rec('most organization', mo - O.total, Math.abs(mo - O.total) < 1e-6);
       }
       for (const t of Object.values(A.realm('POL-01').forces.tpl)) { const s = A.tplS('POL-01', t.id); for (const k of ['soft', 'hard', 'def', 'men']) { const rows = T2.rows(UI.TIPS.tplStat('POL-01|' + t.id + '|' + k)), sumRow = rows.filter(x => x.sum).pop(), parts = rows.filter(x => !x.sum); rec('template figure', sumRow.v - parts.reduce((a, x) => a + x.v, 0), Math.round(s[k]) === sumRow.v && !rows.some(x => /Rounding/.test(x.l) && Math.abs(x.v) > 1)); } }
-      return { R, bad: [...new Set(bad)], nBad: bad.length, has: { FL: !!A.FL, RI: !!A.RI } };
+      return { R, bad: [...new Set(bad)], nBad: bad.length, has: { FL: !!A.FL, RI: !!A.RI }, v2: !!A.V2S };
     });
     // what is measured depends on what is built: the fights and the duel's measure need 48-fight-ladder, the book, the
     // court and the crown's purse 56-realm-inside
-    const R = r.R, need = ['check odds', 'odds popover', 'duel read', 'job odds', 'market price', 'gear price', 'division figure', 'most organization', 'template figure']
+    const R = r.R, need = ['check odds'].concat(r.v2 ? [] : ['odds popover'], ['duel read']).concat([ 'job odds', 'market price', 'gear price', 'division figure', 'most organization', 'template figure'])
       .concat(r.has.FL ? ['fight odds', 'duel odds'] : [], r.has.RI ? ['money book', 'court odds', 'crown purse'] : []);
     const enough = need.every(k => R[k] && R[k].n >= 3) && R['check odds'].n >= 40;
     return { ok: !r.nBad && enough, detail: Object.entries(R).map(([k, x]) => `${k}: ${x.n}, largest gap ${Math.round(x.worst * 100) / 100}`).join('; ') + (r.nBad ? `; FAILED: ${r.bad.join(', ')} (${r.nBad})` : '') + (enough ? '' : '; too few cases'), data: r };

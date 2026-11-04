@@ -88,7 +88,13 @@ VS.badges = function (root) {
       const prev = el.previousElementSibling;
       if (prev && prev.classList.contains('v2-fo')) prev.remove();
       el.insertAdjacentHTML('beforebegin', `<span class="risk v2-odds v2-fo" title="${esc(VS.oddsOf(pct).line)}">${VS.oddsInner(pct)}</span>`);
-    } else { el.innerHTML = VS.oddsInner(pct); el.title = VS.oddsOf(pct).line; }
+    } else {
+      // 59-tooltips' tap target (data-tt="odds") may sit on a part 92 split out: keep that element as the wrapper
+      const tap = el.querySelector('[data-tt],[data-tip]');
+      if (tap) { const w = tap.cloneNode(false); w.innerHTML = VS.oddsInner(pct); el.replaceChildren(w); }
+      else el.innerHTML = VS.oddsInner(pct);
+      el.title = VS.oddsOf(pct).line;
+    }
   }
   // 92-scene-card's four pips counted the odds: the balance says it now
   for (const p of root.querySelectorAll('.sc-pips')) p.remove();

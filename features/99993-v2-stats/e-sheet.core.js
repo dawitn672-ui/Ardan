@@ -20,7 +20,11 @@ VS.levyRank = function (lv) {
   return lv < 0.7 ? 'not yet a fighter' : lv < 1.6 ? 'a levy\'s worth' : lv < 3.3 ? 'a man-at-arms' : lv < 8 ? 'a knight' : lv < 12 ? 'a champion'
     : lv < 32 ? 'an order knight, or a giant' : lv < 50 ? 'a hero of the age' : 'a legend';
 };
-const row = (lbl, val, words) => `<div class="v2-row"><span class="v2-l">${esc(lbl)}</span><span class="v2-v">${esc(val)}</span><span class="v2-w">${esc(words)}</span></div>`;
+// each row says what its number measures (59-tooltips: every number on the profile explains itself)
+VS.ROW_TIP = { Height: 'Your height and weight now; a child grows each year.', Strength: 'The heaviest dead weight you can raise once.',
+  Speed: 'Your flat-out sprint.', Endurance: 'How far you can march in a day with a pack.', Reflexes: 'How long you take to answer a blow.',
+  Toughness: 'How many blows that would fell an ordinary man you can take.', 'In a fight': 'Your worth in a fight, counted in levies: untrained spearmen in padded coats.' };
+const row = (lbl, val, words) => `<div class="v2-row" title="${esc(VS.ROW_TIP[lbl] || lbl + ', against everyone of your people')}"><span class="v2-l">${esc(lbl)}</span><span class="v2-v">${esc(val)}</span><span class="v2-w">${esc(words)}</span></div>`;
 VS.sheetHtml = function (p, opts = {}) {
   const d = VS.describe(p), s = VS.stats(p);
   if (!d || !s) return '';
@@ -75,7 +79,7 @@ VS.css = '.v2-sheet{margin:4px 0 6px}.v2-row{display:grid;grid-template-columns:
   '.prow:has(.v2-tier){grid-template-columns:minmax(0,1fr) auto 5.6em;gap:4px 10px}.prow .v2-tier{white-space:nowrap;font-weight:600}' +
   '.mbox .v2-row{grid-template-columns:6.5em minmax(0,auto) minmax(0,1fr)}.mbox .v2-v{white-space:nowrap}.mbox .v2-w{grid-column:auto}' +
   '@media (max-width:560px){.mbox .v2-row{grid-template-columns:6em minmax(0,1fr)}.mbox .v2-w{grid-column:2}}' +
-  '.v2-odds{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.v2-scale{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em}';
+  '.v2-odds{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.v2-scale{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em;pointer-events:none}.v2-ow{pointer-events:none}';
 VS.style = () => { if (typeof document === 'undefined' || document.getElementById('v2s-style')) return; const s = document.createElement('style'); s.id = 'v2s-style'; s.textContent = VS.css; document.head.appendChild(s); };
 
 // ---- the sheet's renderers ----------------------------------------------------------------------------------------------
