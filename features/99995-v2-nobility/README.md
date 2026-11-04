@@ -35,6 +35,14 @@ has 850-1,100 nobles; a 30-county realm about 1,300.
   same person. A new barony or viscounty with no county of its own (994's enfeoffment, 97's patent, a ruler's grant,
   now that every county has its count) takes the first free slot of its rank under the count of the grantee's county
   (`A.V2N.grantFief`, from 994's `CAR.enfeoff` and each month): "Baron of Marlford".
+- **The court's lords die.** The release ages and buries only the people you know and the rulers, so a count no one
+  had met would have held his county for ever. Each year every title holder you do not know (and who does not rule)
+  dies at the release's own rate (`A.deathChance`), drawn from a stream seeded by the year and the person, never the
+  game's; the death goes through `A.kill`, so the title passes by `A.V2F.inherit`. Over ten years about 7 in 100
+  titles change hands and 4 in 100 fall vacant (no heir in the line); a vacant title stays empty.
+- **A court lord stays head of his house.** The release's `A.houseHead(hid, true)` (an elective realm drawing its
+  ruler from a house) made a stranger head while the old head lived, and 56-realm-inside's purge after a failed
+  rebellion clears `headPid` even when the beheading did not take; both now leave the court lord at the head.
 - **Old saves** without a court build one on their first month, from the seed. A realm born later (a revolt, a split)
   keeps the counts its counties had; it gets no court of its own.
 
