@@ -48,8 +48,11 @@ export default {
       for (const S of (A.STARTS || []).filter(s => UI.COMING.BEATS.includes(s.id))) {
         A.newGame(Object.assign({ seed: 9960 + out.length, sex: 'F' }, S.cr, { story: S.id }));
         let shown = null, listed = false;
-        for (let m = 0; m < 8 && !shown && A.pc().alive; m++) {
-          A.advance(31);
+        // v2 (99992-v2-time): the month's scenes now fall on its days, so A.advance stops more often inside a month;
+        // eight months are counted in days, not in calls
+        const d0 = A.absDay();
+        for (let m = 0; m < 80 && A.absDay() - d0 < 8 * 31 && !shown && A.pc().alive; m++) {
+          A.advance(Math.min(31, d0 + 8 * 31 - A.absDay()));
           if (!listed) listed = (UI.COMING.items(A.pc()) || []).some(x => x.kind === 'promise');
           let g = 0, q;
           while ((q = A.headReady()) && g++ < 60) {
