@@ -107,11 +107,14 @@
     const dukeAt = ranked.map(c => c.seat), marchAt = ranked.filter(c => c.h.rung !== 'N01').map(c => c.seat);
     const realm = { id: rid, capital, provinces: provs, border, culture: N.v2culture(r), name: r.name };
     const H = NB.buildHierarchy(realm, mapOf(), F.seedFor('titles'), { dukeAt, marchAt });
-    const used = new Set();
+    const used = new Set(), onBorder = id => (S.prov[id].adj || []).some(nb => !inR.has(nb));
     const titles = [], keyOf = t => `${rid}:${t.id}`;
     const take = (rank, t, provsOf) => {
       // a great house seated inside the title holds it; otherwise a new house is raised at its first free county
-      const c = ranked.find(x => !used.has(x.h.id) && provsOf.includes(x.seat));
+      // a march is seated on the border (v2 step 2's generated map has fewer border counties, and a march's first free
+      // county was often inland): its border counties come first
+      if (rank === 'marquis') provsOf = provsOf.filter(id => onBorder(id)).concat(provsOf.filter(id => !onBorder(id)));
+      const c = ranked.find(x => !used.has(x.h.id) && provsOf.includes(x.seat) && (rank !== 'marquis' || onBorder(x.seat)));
       let h, seat, p;
       if (c) { h = c.h; seat = c.seat; used.add(h.id); p = A.houseHead(h.id); }
       else {
