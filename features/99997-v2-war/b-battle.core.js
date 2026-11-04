@@ -143,6 +143,9 @@
   // the soldier's and the sergeant's line, and the captain's company: v2's battle
   const CF = A.CHOICE_FN = A.CHOICE_FN || {};
   const line0 = CF.wsLine, part0 = CF.wsPart;
+  // the layers this replaces (72-two-scales' line, 44/9997's tactical battle) stay callable: 72's levy still uses its
+  // scene, and their own tests reach them here
+  W.classic = { wsLine: line0, wsPart: part0 };
   CF.wsLine = function (arg) {
     try { const r = W.rank(); if (r === 'soldier' || r === 'sergeant') { W.startFrom(arg, r); return; } } catch (e) { console.error('v2 war line', e); }
     return line0 && line0.apply(this, arguments);

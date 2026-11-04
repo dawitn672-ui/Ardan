@@ -174,8 +174,13 @@
     UI.TAB.war = function (pc) {
       let h = W.withMyWars(() => tw.apply(this, arguments));
       if (typeof h !== 'string') return h;
+      if (!W.canRoom(pc)) {
+        // no War Room button and no promise of one for a life outside the army
+        h = h.replace(/<button[^>]*data-a="warRoomView"[^>]*>[\s\S]*?<\/button>/g, '').replace(/The War Room shows [^<.]*(?:, even in peace)?\./g, '');
+      }
       if (!W.inWar(pc)) {
         const rid = pc && pc.realm, atWar = rid && A.atWar(rid).length;
+        if (atWar) h = h.replace(/ is at peace\./g, ' is at war, but you are not in it.');
         h = h.replace('<p class="small muted">None. For now.</p>', atWar
           ? `<p class="small muted">Your realm is at war, but you are not in it: no orders, no maps, no word but what travellers bring.</p>`
           : '<p class="small muted">None. For now.</p>');

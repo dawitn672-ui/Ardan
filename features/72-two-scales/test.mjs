@@ -11,7 +11,10 @@ import { openPage, PROBE, SETTLE } from '../71-phone/screens.mjs';
 const require = createRequire(import.meta.url);
 
 // in the page: frozen fights, a helper that restores one and takes the line, and one that answers a scene
+// 99997-v2-war replaces the soldier's line and the captain's company with v2's battle (V2_SPEC step 8); this scene is
+// still the levy's, and these tests reach the soldier's and captain's way into it through A.V2W.classic
 const SETUP = () => {
+  window.CFN = k => (A.V2W && A.V2W.classic && A.V2W.classic[k]) || A.CHOICE_FN[k];
   window.TSX = {
     fights: null,
     get(n) { if (!TSX.fights || TSX.fights.length < n) TSX.fights = RANKFX_FIGHTS(n, 5000); return TSX.fights; },
@@ -19,7 +22,7 @@ const SETUP = () => {
     take(f) {
       TSX.load(f);
       const pc = A.pc(), pid = +String(f.key).slice(1), F = A.S.fights[pid];
-      A.CHOICE_FN.wsLine({ key: f.key, war: F.war, enemy: A.hostile(F.a, pc.mil.realm) ? F.a : F.b, pid });
+      CFN('wsLine')({ key: f.key, war: F.war, enemy: A.hostile(F.a, pc.mil.realm) ? F.a : F.b, pid });
       return A.S.queue.find(q => q.type === 'mission' && q.m.ts);
     },
     // answer what is in front of the player until the scene is back (or over); returns the scene at the head, if any
@@ -274,7 +277,7 @@ export default {
       for (const fc of TSX.get(24).slice(1)) {
         TSX.load(fc); pc = A.pc(); pc.mil.rank = 4;
         const pid2 = +String(fc.key).slice(1), F2 = A.S.fights[pid2];
-        A.CHOICE_FN.wsPart({ key: fc.key, war: F2.war, enemy: A.hostile(F2.a, pc.mil.realm) ? F2.a : F2.b, pid: pid2 });
+        CFN('wsPart')({ key: fc.key, war: F2.war, enemy: A.hostile(F2.a, pc.mil.realm) ? F2.a : F2.b, pid: pid2 });
         const bq = A.S.queue.find(q => q.type === 'battle'); if (!bq) continue;
         A.S.queue = [bq]; A.battleAuto(bq.b); if (A.S.queue[0] === bq) A.battleClose();
         if (A.S.tsq && A.S.tsq.m.ts.officer === 1) out.captainParked++;
@@ -304,7 +307,7 @@ export default {
       const pid3 = +String(fights[2].key).slice(1), F3 = A.S.fights[pid3];
       const arg = { key: fights[2].key, war: F3.war, enemy: A.hostile(F3.a, pc.mil.realm) ? F3.a : F3.b, pid: pid3 };
       A.fightEnd(pid3, fights[2].weAtt ? 'att' : 'def');
-      A.CHOICE_FN.wsLine(arg);
+      CFN('wsLine')(arg);
       const sq = A.S.queue.findIndex(q => q.type === 'mission' && q.m.ts), rk = A.S.queue.findIndex(q => q.ev === 'bs_reckoning');
       out.short = sq >= 0 && A.S.queue[sq].m.ts.short === 1 && A.S.queue[sq].m.stages.join() === 'ts_break' && (rk < 0 || sq < rk);
       return out;
