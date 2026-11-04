@@ -45,6 +45,22 @@ test('noble pyramid: caps hold and the counts look like a real realm', () => {
   assert.ok(s.dukes >= 1 && s.counts + s.viscounts + s.barons + s.lords > 200, `largest realm nobles: ${JSON.stringify(s)}`);
 });
 
+test('noble pyramid: preferred seats start the marches and duchies, and the draws do not move', () => {
+  const m = generateContinent({ seed: 'ardan' });
+  const { realms } = makeRealms(m, makeRng('r'), 8);
+  const r = realms.reduce((a, b) => (b.provinces.length > a.provinces.length ? b : a));
+  const plain = buildHierarchy(r, m, 'ardan');
+  const pd = plain.titles.filter((t) => t.rank === 'duke');
+  const want = pd[pd.length - 1].provinces[pd[pd.length - 1].provinces.length - 1];
+  const h = buildHierarchy(r, m, 'ardan', { dukeAt: [want] });
+  assert.equal(h.titles.find((t) => t.rank === 'duke').provinces[0], want, 'the first duchy starts at the preferred seat');
+  const march = r.border.find((c) => !plain.titles.some((t) => t.rank !== 'king' && t.rank !== 'count' && t.provinces.includes(c)) && c !== r.capital && !m.provinces.list[r.capital].neighbors.includes(c));
+  const hm = buildHierarchy(r, m, 'ardan', { marchAt: [march] });
+  if (march != null) assert.equal(hm.titles.find((t) => t.rank === 'marquis').provinces[0], march, 'the first march starts at the preferred border seat');
+  assert.equal(h.summary.dukes, plain.summary.dukes);
+  assert.equal(h.titles.filter((t) => t.rank === 'count').length, plain.titles.filter((t) => t.rank === 'count').length);
+});
+
 test('elite orders fight like forces tens of times their size', () => {
   const run = (eliteN, levyN, seed) => {
     const rng = makeRng(seed);

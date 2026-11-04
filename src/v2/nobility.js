@@ -53,8 +53,10 @@ export function makeRealms(map, rng, count = 8, cultures = ['aldic', 'solenne', 
 
 export function dukesFor(nProv) { return nProv >= 24 ? 3 : nProv >= 14 ? 2 : nProv >= 7 ? 1 : 0; }
 
-// Build the title pyramid of one realm.
-export function buildHierarchy(realm, map, seed) {
+// Build the title pyramid of one realm. opts.marchAt / opts.dukeAt: counties (in order of preference) where a march or a
+// duchy should start, such as the seats of a host game's great houses; a preferred start that is taken (or, for a march,
+// not on the border) is skipped. The generator draws the same numbers either way.
+export function buildHierarchy(realm, map, seed, opts = {}) {
   const rng = makeRng(`${seed}:titles:${realm.id}`);
   const namer = makeNamer(rng);
   const provs = map.provinces.list;
@@ -79,13 +81,15 @@ export function buildHierarchy(realm, map, seed) {
   const dukes = [];
   const marqs = [];
   for (let m = 0; m < nMarq; m++) {
-    const start = rng.shuffle([...border].filter((c) => !taken.has(c)))[0];
+    const pick = rng.shuffle([...border].filter((c) => !taken.has(c)))[0];
+    const start = (opts.marchAt || []).find((c) => border.has(c) && !taken.has(c)) ?? pick;
     if (start == null) break;
     const parent = null; // set after duchies exist
     marqs.push(add('marquis', `March of ${namer.place(realm.culture)}`, parent, grow(start, rng.int(2, 4))));
   }
   for (let d = 0; d < nDukes; d++) {
-    const start = rng.shuffle(counties.filter((c) => !taken.has(c) && !border.has(c)))[0] ?? counties.find((c) => !taken.has(c));
+    const pick = rng.shuffle(counties.filter((c) => !taken.has(c) && !border.has(c)))[0] ?? counties.find((c) => !taken.has(c));
+    const start = (opts.dukeAt || []).find((c) => counties.includes(c) && !taken.has(c)) ?? pick;
     if (start == null) break;
     const cl = grow(start, Math.max(3, Math.round(counties.length / (nDukes + 1.5))));
     dukes.push(add('duke', `Duchy of ${namer.place(realm.culture)}`, king.id, cl));
