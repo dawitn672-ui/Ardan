@@ -14,13 +14,15 @@
 //      terrain words read from v2's biomes (terrain by quotas, so the world keeps the release's mix of hills).
 // Pure: no DOM, no A.S, no A.rand (the generator has its own seeded stream; ties break by cell index).
 const VM = A.V2MAP = A.V2MAP || {};
-VM.VERSION = 1;
+VM.VERSION = 2;                                 // 2: sea realms on the shore (playtest 1, #21); a v1 save rebuilds as v1
 VM.GW = 467; VM.GH = 300;                       // the generator's grid: 15 km cells over the release's 7,000 x 4,500 km
 // erosion at 0.5 droplets a cell (v2's default is 0.9): the same look at this grid, a third less time
 VM.OPTS = { landFraction: 0.38, latTop: 56, latBottom: 16, maxIslands: 0, provinces: 1, droplets: Math.round(VM.GW * VM.GH * 0.5) };
 VM.ELEV_M = 8000;
 VM.RIVER_T = 120;                               // flow (v2's accumulated moisture) where a river begins                               // v2's land height (0 to 0.62) in metres
 VM.TERR_SHARE = { mountains: 0.065, hills: 0.41 };   // the release's mix: 20 and 126 of 306 provinces
+VM.ISLE_RX = /\b(isles?|islands?|archipelago)\b/i;            // a realm named for islands: a peninsula on the shore
+VM.COAST_RX = /\b(coast|shore|bay|strand|sea)\b|reef\b/i;       // a realm named for the sea: a seat on the shore
 VM.seedOf = s => 'ardan-v2-map:' + String(s);
 const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
 
@@ -54,13 +56,13 @@ Heap.prototype.pop = function () {
 // Grow regions from seeds over the cells where allowed[k] === tag: each region claims its cheapest frontier cell, the
 // region least filled against its target first, until it is full or walled in; cells left over go to the region
 // that reaches them first. owner[k] receives the region index. Every region is one connected piece.
-function grow(gw, gh, allowed, tag, seeds, targets, cost, owner) {
+function grow(gw, gh, allowed, tag, seeds, targets, cost, owner, bias) {
   const R = seeds.length, heaps = [], count = new Float64Array(R), active = new Uint8Array(R), dist = new Float64Array(R);
   const nb = [0, 0, 0, 0];
   const pushNb = (r, k, d) => {
     const x = k % gw;
     nb[0] = x > 0 ? k - 1 : -1; nb[1] = x < gw - 1 ? k + 1 : -1; nb[2] = k >= gw ? k - gw : -1; nb[3] = k + gw < gw * gh ? k + gw : -1;
-    for (let i = 0; i < 4; i++) { const j = nb[i]; if (j >= 0 && allowed[j] === tag && owner[j] < 0) heaps[r].push(d + cost[j], j); }
+    for (let i = 0; i < 4; i++) { const j = nb[i]; if (j >= 0 && allowed[j] === tag && owner[j] < 0) heaps[r].push(d + cost[j] + (bias && bias[r] ? bias[r][j] : 0), j); }
   };
   for (let r = 0; r < R; r++) { heaps.push(new Heap()); const k = seeds[r]; owner[k] = r; count[r] = 1; active[r] = count[r] < targets[r] ? 1 : 0; pushNb(r, k, 0); }
   // first to the targets; then whatever a walled-in region could not take goes to its neighbours, the least
@@ -170,7 +172,7 @@ const TERR_OF = { 'Temperate forest': 'forest', Taiga: 'forest', 'Tropical rainf
   Steppe: 'steppe', Savanna: 'steppe', 'Dry woodland': 'plains', Desert: 'desert', Marsh: 'marsh', Tundra: 'tundra', Glacier: 'tundra', 'Alpine highland': 'hills' };
 
 // base: { gw, gh, grid (the release's province grid), provinces: [{ id, realm, sx, sy, cells }] } (the map as written)
-VM.build = function (seed, base) {
+VM.build = function (seed, base, v = VM.VERSION) {
   const T = { t0: now() };
   const C = A.V2.continent;
   const gen = C.generateContinent(Object.assign({ width: VM.GW, height: VM.GH, seed }, VM.OPTS));
@@ -216,18 +218,46 @@ VM.build = function (seed, base) {
   }
   const totalCells = units.reduce((s, u) => s + u.cells, 0), used = new Uint8Array(N), placedU = [];
   const seedsU = [], targetsU = [];
-  // the biggest realms are placed first, so the small ones fit in around them
-  const order = units.map((u, i) => i).sort((a, b) => units[b].cells - units[a].cells || a - b), seatU = new Int32Array(units.length);
+  // realms whose names promise the sea (isles, a coast, a reef) take a seat on the shore, the isles on a peninsula,
+  // and grow along the coast rather than inland, so the name fits the land
+  const names = base.realmNames || {};
+  for (const u of units) { const nm = names[u.key] || ''; u.sea = v < 2 ? null : VM.ISLE_RX.test(nm) ? 'peninsula' : VM.COAST_RX.test(nm) ? 'coast' : null; }
+  const toSea = new Float32Array(N).fill(1e9), qs = [];
+  for (let k = 0; k < N; k++) if (ocean[k]) { toSea[k] = 0; qs.push(k); }
+  for (let h = 0; h < qs.length; h++) { const k = qs[h], x = k % gw; for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, k - gw, k + gw]) if (j >= 0 && j < N && toSea[j] > toSea[k] + 1) { toSea[j] = toSea[k] + 1; qs.push(j); } }
+  let expo = null;
+  if (units.some(u => u.sea)) {     // the share of open sea within 12 cells of each cell (a summed-area table)
+    const R = 12, sat = new Int32Array((gw + 1) * (gh + 1));
+    for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) sat[(y + 1) * (gw + 1) + x + 1] = ocean[y * gw + x] + sat[y * (gw + 1) + x + 1] + sat[(y + 1) * (gw + 1) + x] - sat[y * (gw + 1) + x];
+    expo = k => { const x = k % gw, y = (k / gw) | 0, x0 = Math.max(0, x - R), y0 = Math.max(0, y - R), x1 = Math.min(gw, x + R + 1), y1 = Math.min(gh, y + R + 1);
+      return (sat[y1 * (gw + 1) + x1] - sat[y0 * (gw + 1) + x1] - sat[y1 * (gw + 1) + x0] + sat[y0 * (gw + 1) + x0]) / ((x1 - x0) * (y1 - y0)); };
+  }
+  // the sea realms are placed first (the shore is scarce), then the biggest, so the small ones fit in around them
+  const order = units.map((u, i) => i).sort((a, b) => (units[b].sea ? 1 : 0) - (units[a].sea ? 1 : 0) || units[b].cells - units[a].cells || a - b), seatU = new Int32Array(units.length);
   for (const i of order) {
-    const u = units[i], t = nLand * u.cells / totalCells;
+    const u = units[i], t = nLand * u.cells / totalCells, r = Math.sqrt(t / Math.PI);
     const cap = u.provs.find(p => p.type === 'capital city') || u.provs.slice().sort((a, b) => (b.pop || 0) - (a.pop || 0) || a.id - b.id)[0];
     const [nx, ny] = warp(cap.sx / 10 - 0.5, cap.sy / 10 - 0.5);
-    const k = spacedCell(gw, gh, nx, ny, j => land[j] && !used[j], placedU, Math.sqrt(t / Math.PI));
+    let k = -1;
+    if (u.sea) {   // the best shore cell: open to the sea (a peninsula's tip for the isles), not far from where the warp put it
+      let best = -Infinity;
+      for (let f = 0.7; k < 0 && f > 0.01; f -= 0.15) for (let j = 0; j < N; j++) {
+        if (!land[j] || used[j] || toSea[j] > 1) continue;
+        const jx = j % gw, jy = (j / gw) | 0;
+        if (placedU.some(s => { const d = f * (r + s.r); return (s.x - jx) ** 2 + (s.y - jy) ** 2 < d * d; })) continue;
+        const sc = (u.sea === 'peninsula' ? 2 : 0.6) * expo(j) - Math.hypot(jx - nx, jy - ny) / (gw * 0.35);
+        if (sc > best) { best = sc; k = j; }
+      }
+      if (k >= 0) placedU.push({ x: k % gw, y: (k / gw) | 0, r });
+    }
+    if (k < 0) k = spacedCell(gw, gh, nx, ny, j => land[j] && !used[j], placedU, r);
     used[k] = 1; seatU[i] = k;
   }
+  // a sea realm pays for every cell it holds away from the shore
+  const bias = units.map(u => { if (!u.sea) return null; const b = new Float32Array(N); for (let k = 0; k < N; k++) if (land[k]) b[k] = Math.max(0, toSea[k] - 2) * (u.sea === 'peninsula' ? 3 : 1.2); return b; });
   units.forEach((u, i) => { u.seat = seatU[i]; seedsU.push(seatU[i]); targetsU.push(Math.max(u.provs.length, nLand * u.cells / totalCells)); });
   const uOwner = new Int16Array(N).fill(-1);
-  grow(gw, gh, land, 1, seedsU, targetsU, cost, uOwner);
+  grow(gw, gh, land, 1, seedsU, targetsU, cost, uOwner, bias);
   T.realms = now() - T.t0;
 
   // ---- 3. each realm's land among its provinces, seeded where they lay inside the realm
@@ -292,5 +322,5 @@ VM.build = function (seed, base) {
   for (const q of prov) { delete q.relief; delete q.temp; }
   T.ms = now() - T.t0;
   const rivers = C.riverPaths(gen, VM.RIVER_T).map(pts => { const a = new Float32Array(pts.length * 3); pts.forEach(([u, v, f], i) => { a[3 * i] = (u + 0.5) / fx * 10; a[3 * i + 1] = (v + 0.5) / fy * 10; a[3 * i + 2] = f; }); return a; });
-  return { seed, v: VM.VERSION, gw, gh, grid, prov, gen, rivers, land: nLand, units: units.map((u, i) => ({ key: u.key, seat: u.seat, target: targetsU[i] })), T };
+  return { seed, v, gw, gh, grid, prov, gen, rivers, land: nLand, units: units.map((u, i) => ({ key: u.key, seat: u.seat, target: targetsU[i] })), T };
 };

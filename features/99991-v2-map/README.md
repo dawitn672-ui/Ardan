@@ -47,3 +47,15 @@
   - `v2mapSaveLoad`: the round trip is exact, and after another world and an emptied cache, a load brings the save's grid back.
   - `v2mapRenders`: at 420 px and 1366 px, it draws the title, the world tab, the full map at zoom 1, 3 and 9 (tiles) and the war room. It checks that there are no page errors, that the sea is blue, and that drawing is pure.
   - `v2mapNoFarLands`: the creation screen offers no lands choice.
+
+## Playtest 1 fixes (`d-labels.core.js`; map version 2)
+
+- **Names are readable at a phone's width** (#21). Sizes are set in on-screen pixels, scaled by the canvas's display ratio: a realm's name is at least 11 px, a province's at least 10 px. Names are placed by importance (your realm, then the selected one, then the most peopled), and one that would touch a name already written waits for a closer zoom. Your realm and your capital are always written. The letters are light, on a dark halo.
+- **Realms are tints over the satellite ground** (#4), not 62's browned parchment wash. Each realm is its own colour at about 28%, stronger in a band along its borders, and the borders are 62's vector lines. 9991's veil over unknown land is cloud (grey-blue), not vellum.
+- **Sea realms sit on the shore.**
+  - A realm named for islands (the Amber Isles) takes a peninsula: its seat goes to the shore cell most open to the sea near where the warp put it, and it pays for every cell away from the shore.
+  - A realm named for a coast or a reef (the Spice Coast, Blackreef) takes the shore the same way.
+  - These worlds are map version 2 (`A.S.v2map.v`). A version 1 save rebuilds its own map.
+- **Tests:**
+  - `v2mapLabels`: 420 and 1366 px; the world tab and the full map at zoom 1 and 3. It checks the minimum sizes, no overlaps, and that your realm and capital are written.
+  - `v2mapSeaRealms`: 4 seeds. Each sea realm's capital is coastal, and at least two thirds of the isles' provinces are.

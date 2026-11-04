@@ -150,4 +150,62 @@ export default {
     });
     return { ok: !r.far && !r.lands && !r.big, detail: `A.FAR ${r.far}; a lands choice on the creation screen ${r.lands}; a bigger frame ${r.big}` };
   },
+
+  // playtest 1, #21: at a phone's width (420 px) and a laptop's, every name written on the world tab and the full map
+  // (whole, and at zoom 3) is at least VM.LABEL_MIN (realms) or VM.PROV_MIN (provinces) px tall on screen, no two
+  // names overlap, and the player's realm and capital are always among them
+  async v2mapLabels(pg, errs, { browser, file }) {
+    const out = [];
+    for (const [W, H] of [[420, 860], [1366, 900]]) {
+      const ctx = await browser.newContext({ viewport: { width: W, height: H } });
+      const p = await ctx.newPage(); const e2 = [];
+      p.on('pageerror', e => e2.push(String(e.message || e).slice(0, 200)));
+      await p.goto(pathToFileURL(file).href);
+      await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      const r = await p.evaluate(() => {
+        A.newGame({ seed: 2101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+        UI.screen = 'game'; UI.set.hints = false; UI.tab = 'world'; UI.worldView = 'map'; UI.render();
+        const VM = A.V2MAP, views = [], mine = A.realm('POL-01'), cap = A.prov(mine.capitalProv).name;
+        const check = name => {
+          const L = VM.labelsPlaced, realms = L.filter(l => l.kind === 'realm'), provs = L.filter(l => l.kind !== 'realm');
+          let overlap = 0;
+          for (let i = 0; i < L.length; i++) for (let j = i + 1; j < L.length; j++) { const a = L[i], b = L[j]; if (a.x < b.x + b.w - 0.5 && a.x + a.w > b.x + 0.5 && a.y < b.y + b.h - 0.5 && a.y + a.h > b.y + 0.5) overlap++; }
+          views.push({ name, n: L.length, minRealm: Math.min(...realms.map(l => l.px)), minProv: provs.length ? Math.min(...provs.map(l => l.px)) : null, overlap,
+            mine: L.some(l => l.kind === 'realm' && l.t === String(mine.short).toUpperCase()), cap: L.some(l => l.kind === 'capital' && l.t === cap) });
+        };
+        const wm = document.querySelector('#worldmap'); if (wm) { MAP.draw(wm, { mode: 'political' }); check('world tab'); }
+        UI.A.ov('bigmap');
+        const P = A.prov(mine.capitalProv);
+        for (const z of [1, 3]) { const w = 7000 / z; UI.gm.view = UI.wrClampView({ x0: P.sx - w / 2, y0: P.sy - w / 3.06, w, h: 0 }); UI.gmDraw(); check('full map zoom ' + z); }
+        UI.ov = null; UI.render();
+        return { views, LMIN: VM.LABEL_MIN, PMIN: VM.PROV_MIN };
+      });
+      out.push({ W, r, errs: e2 });
+      await ctx.close();
+    }
+    const bad = [];
+    for (const o of out) for (const v of o.r.views) if (!(v.n > 3 && v.minRealm >= o.r.LMIN - 0.01 && (v.minProv == null || v.minProv >= o.r.PMIN - 0.01) && !v.overlap && v.mine && v.cap)) bad.push(`${o.W}px ${v.name}`);
+    const ok = !bad.length && out.every(o => !o.errs.length);
+    return { ok, detail: out.map(o => `${o.W}px: ` + o.r.views.map(v => `${v.name} ${v.n} names, smallest realm ${v.minRealm.toFixed(1)} px, province ${v.minProv == null ? '-' : v.minProv.toFixed(1)} px, ${v.overlap} overlaps, yours ${v.mine}, capital ${v.cap}`).join('; ')).join(' | ') + (bad.length ? ' | BAD ' + bad.join(', ') : '') + (out.some(o => o.errs.length) ? ' | ERR ' + out.find(o => o.errs.length).errs[0] : '') };
+  },
+
+  // playtest 1, #21: a realm named for islands sits on the shore of a peninsula, and one named for a coast or a reef on
+  // the shore: its capital is coastal, and (for the isles) most of its provinces are, on several seeds
+  async v2mapSeaRealms(pg) {
+    const r = await pg.evaluate(() => {
+      const VM = A.V2MAP, out = [];
+      for (const seed of [11, 4242, 90001, 7]) {
+        A.newGame({ seed, realm: 'POL-01', status: 'peasant' });
+        for (const id in LORE.realms) {
+          const nm = LORE.realms[id].name, isle = VM.ISLE_RX.test(nm), coast = VM.COAST_RX.test(nm);
+          if (!isle && !coast) continue;
+          const ps = A.S.prov.filter(p => p.orig === id), capP = ps.find(p => p.type === 'capital city') || ps[0];
+          out.push({ seed, id, nm, isle, n: ps.length, coastal: ps.filter(p => p.coast).length, cap: !!(capP && capP.coast) });
+        }
+      }
+      return out;
+    });
+    const bad = r.filter(x => !x.cap || (x.isle && x.coastal * 3 < x.n * 2));
+    return { ok: r.length >= 3 && !bad.length, detail: `${r.length} realm-seeds named for the sea; ` + r.filter(x => x.seed === 11).map(x => `${x.nm}: capital on the coast ${x.cap}, ${x.coastal}/${x.n} provinces coastal`).join('; ') + (bad.length ? ' | BAD ' + bad.map(x => `${x.nm} seed ${x.seed} ${x.coastal}/${x.n}`).join(', ') : '') };
+  },
 };
