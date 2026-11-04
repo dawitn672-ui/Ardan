@@ -88,4 +88,4 @@
 - `99992-v2-time` `v2tNoPlay`: the noble enlists before he opens the War Room (a life outside the army has none).
 - `99992-v2-time` `v2tPlaces`: the noble enlists when his realm declares war (the War place is for a war you fight in).
 - `58-event-cut` `warRoomByRank`: the peasant enlists before his War Room tabs are read.
-- `72-two-scales` (all its tests): the soldier's line and the captain's way into 72's scene now start v2's battle. 72's scene stays for the levy, and its tests reach the old entry through `A.V2W.classic.wsLine` / `.wsPart`.
+- `72-two-scales` (all its tests): the soldier's line and the captain's way into 72's scene now start v2's battle. 72's scene stays for the levy, and its tests and its lab (`lab.mjs`, used by `twoScalesMovesFront`) reach the old entry through `A.V2W.classic.wsLine` / `.wsPart`.
