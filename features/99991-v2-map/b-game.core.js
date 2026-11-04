@@ -76,3 +76,16 @@ MAP.init = function () {
   VM.sync();
   return r;
 };
+
+// 76-beast-habitats keeps each beast to its canon regions (by province name, which the generated map keeps) and, within
+// them, to the provinces whose terrain words fit it. On a generated continent a region's terrain is the new land's, so
+// a beast whose region drew no fitting terrain would be met nowhere: on a v2 map the canon region alone decides.
+if (A.BH && typeof A.BH.canonSays === 'function') {
+  const says = A.BH.canonSays;
+  A.BH.canonSays = function (id, P) {
+    if (!(A.S && A.S.v2map)) return says.apply(this, arguments);
+    const r = A.BH.resolve(), e = r.E[id];
+    if (!e || !P || !r.regionOf[P.name]) return null;
+    return e.inRange.has(P.id);
+  };
+}

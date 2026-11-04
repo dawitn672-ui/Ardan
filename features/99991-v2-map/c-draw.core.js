@@ -64,12 +64,13 @@
     const ppk = Math.max(sx, sy);
     if (ppk > B.ppk * 1.3) {
       const L = Math.max(1, Math.min(SAT.MAXL, Math.ceil(Math.log2(ppk / B.ppk) - 0.2))), lp = B.ppk * Math.pow(2, L), tk = SAT.TILE / lp;
-      const t0 = now(); let late = false;
+      // one frame budget for the map: 62's (IM.budgetMs) when it is there, so a caller that lifts it lifts both
+      const t0 = now(), budget = (UI.INKMAP && UI.INKMAP.budgetMs) || SAT.budgetMs; let late = false;
       const tx0 = Math.max(0, Math.floor(vx / tk)), tx1 = Math.min(Math.ceil(KW / tk) - 1, Math.floor((vx + vw) / tk));
       const ty0 = Math.max(0, Math.floor(vy / tk)), ty1 = Math.min(Math.ceil(KH / tk) - 1, Math.floor((vy + vh) / tk));
       for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++) {
         let t = tile(w, B, L, tx, ty, false);
-        if (!t && now() - t0 < SAT.budgetMs) t = tile(w, B, L, tx, ty, true);
+        if (!t && now() - t0 < budget) t = tile(w, B, L, tx, ty, true);
         if (!t) { late = true; continue; }
         const dx = Math.round(X(tx * tk)), dy = Math.round(Y(ty * tk));
         ctx.drawImage(t, dx, dy, Math.round(X((tx + 1) * tk)) - dx, Math.round(Y((ty + 1) * tk)) - dy);
@@ -110,4 +111,21 @@
     return ground0 ? ground0.apply(this, arguments) : false;
   };
   VM.onUse = () => { VM.satReset(); };
+})();
+
+// The title is one composition with no map in it (86-title-fold, cycle 2, visual F1: "Begin a new life" in sight on a
+// laptop). 86 took the strip out for the Great Continent only; with the Far Lands out of the build the release's strip
+// came back and pushed the button under the fold, so it goes here too. The continent is seen from the first day.
+(function () {
+  const rt = UI.renderTitle;
+  if (typeof rt !== 'function' || typeof document === 'undefined') return;
+  UI.renderTitle = function () {
+    const h = rt.apply(this, arguments);
+    if (A.FAR || typeof h !== 'string' || h.indexOf('titlemap') < 0) return h;
+    try {
+      const t = document.createElement('template'); t.innerHTML = h;
+      const m = t.content.querySelector('#titlemap'); if (m) m.remove();
+      return t.innerHTML;
+    } catch (e) { return h; }
+  };
 })();

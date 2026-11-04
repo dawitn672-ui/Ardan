@@ -50,10 +50,14 @@ export default {
       const tiles = UI.INKMAP.stats.tiles;
       if (fog0 === undefined) delete UI.set.atlasFog; else UI.set.atlasFog = fog0;
       T.set(true);
-      return { res, errs, tiles, seaStyle: UI.INKMAP.SEA_STYLE };
+      return { res, errs, tiles, seaStyle: UI.INKMAP.SEA_STYLE, sat: !!(A.V2MAP && A.V2MAP.drawOn && A.V2MAP.drawOn()) };
     });
     const on = out.res.on, off = out.res.off, keys = ['world', 'gm1', 'gm3', 'gm8', 'war1.5', 'war4', 'war9'];
     const differ = keys.filter(k => on[k] && off[k] && on[k] !== off[k]).length;
+    // v2 map lane: under 99991-v2-map's satellite ground the sea is the satellite's with the style on or off (62's ink
+    // lines still differ, so every view does); the ground draws in both
+    if (out.sat) { const okSat = !out.errs.length && on.ground === true && off.ground === true && differ === keys.length && on.sea[2] > on.sea[0];
+      return { ok: okSat, detail: `satellite ground: ${keys.length} views drawn with the inked style on and off, ${differ} differ; sea pixel ${on.sea.join(',')}; ${out.tiles} ink tiles drawn${out.errs.length ? '; ERR ' + out.errs.join('; ') : ''}` }; }
     const ok = !out.errs.length && on.ground === true && off.ground === false && differ === keys.length && (out.seaStyle === 'vellum' ? on.sea[0] > 180 : on.sea[2] > on.sea[0] && on.sea.join() !== off.sea.join()) && off.sea[2] > off.sea[0];
     return { ok, detail: `${keys.length} views drawn with the style on and off, ${differ} differ; sea pixel inked ${on.sea.join(',')} vs release ${off.sea.join(',')}; ${out.tiles} tiles drawn${out.errs.length ? '; ERR ' + out.errs.join('; ') : ''}` };
   },
@@ -165,9 +169,11 @@ export default {
       UI.C.setInkMap({ checked: true }); const onGround = MAP.ground(document.createElement('canvas').getContext('2d'), 4, 4, null);
       UI.C.setBanners({ checked: false }); const b0 = UI.set.banners; UI.C.setBanners({ checked: true });
       UI.ov = null; UI.render();
-      return { has, ink0, ban0, offGround, offSet, stored, onGround, b0, b1: UI.set.banners };
+      return { has, ink0, ban0, offGround, offSet, stored, onGround, b0, b1: UI.set.banners, sat: !!(A.V2MAP && A.V2MAP.drawOn && A.V2MAP.drawOn()) };
     });
-    const ok = r.has && r.ink0 && r.ban0 && r.offGround === false && r.offSet === false && r.stored === false && r.onGround === true && r.b0 === false && r.b1 === true;
+    // v2 map lane: under 99991-v2-map's satellite ground the ground is drawn with the inked style off too (the release's
+    // relief picture is of the old map), so off the ground does not decline; the setting still turns 62's ink off
+    const ok = r.has && r.ink0 && r.ban0 && r.offGround === !!r.sat && r.offSet === false && r.stored === false && r.onGround === true && r.b0 === false && r.b1 === true;
     return { ok, detail: `menu toggles ${r.has}, on by default ${r.ink0}/${r.ban0}; inked map off -> ground declines ${r.offGround === false}, saved ${r.stored}; on again ${r.onGround}; banners off/on ${r.b0}/${r.b1}` };
   },
 

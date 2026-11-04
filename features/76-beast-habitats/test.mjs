@@ -95,9 +95,9 @@ export default {
       const aldHome = A.beastsNear(A.pc()).filter(id => NO[id]);
       A.newGame({ seed: 7604, race: 'human', realm: 'POL-30', status: 'peasant', sex: 'F', startAge: 25 });
       const ranHome = A.beastsNear(A.pc()).includes('CRE-49');
-      return { after, before, aldHome, ranHome, ranHomeName: A.provName(A.pc().home) };
+      return { after, before, aldHome, ranHome, ranHomeName: A.provName(A.pc().home), v2: !!A.S.v2map };
     });
-    const ok = r.after.aldN === 20 && !r.after.ald.length && !r.aldHome.length && r.after.ranN === 5 && r.after.ran.length === 5 && r.ranHome && r.before.ald.length === 5;
+    const ok = r.after.aldN === 20 && !r.after.ald.length && !r.aldHome.length && r.after.ranN === 5 && r.after.ran.length === 5 && r.ranHome && (r.v2 || r.before.ald.length === 5);   // v2 map lane: on a generated continent the release's terrain rule (before) lists what the new land's terrain says, not the release's five
     return { ok, detail: `Aldmark (${r.after.aldN} provinces) lists ${r.after.ald.join(', ') || 'none of the five'} (release: ${r.before.ald.join(', ')}); ` +
       `the tiger is near ${r.after.ran.length} of ${r.after.ranN} Ranpur provinces (${r.after.ran.join(', ')}); a Ranpur start at ${r.ranHomeName} has it: ${r.ranHome}` };
   },
