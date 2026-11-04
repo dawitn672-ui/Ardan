@@ -55,6 +55,17 @@
     return per(d) / per(line) * (W.divWorth ? W.divWorth(line) : 1);
   };
 
+  // the orders' page reads the same worth: members times their worth in levies (the release measured it against the
+  // realm's biggest line division, which read 57 a member after the scaling, and nothing where a realm had none)
+  if (typeof A.orderSummary === 'function') {
+    const os = A.orderSummary;
+    A.orderSummary = function (id) {
+      const s = os.apply(this, arguments);
+      try { if (s && GD.ORDERS[id]) { s.likeMen = Math.round((s.men || GD.ORDERS[id].size) * W.orderWorth(id)); s.v2worth = W.orderWorth(id); } } catch (e) {}
+      return s;
+    };
+  }
+
   // ---- terror on the war map --------------------------------------------------------------------------------------------
   W.terrorDay = function (pid) {
     const F = A.S.fights && A.S.fights[pid]; if (!F) return;

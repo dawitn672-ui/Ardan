@@ -85,7 +85,14 @@
     }
     s.rum = keep;
   };
-  A.onMonth.push(() => { try { W.deliver(); } catch (e) { console.error('v2 war rumours', e); } });
+  // the wars you have fought in stay yours to remember (a tavern tale of one is yours to correct)
+  W.noteFought = function () {
+    const s = st(); s.fought = Array.isArray(s.fought) ? s.fought : [];
+    for (const w of W.myWars()) if (!s.fought.includes(w.id)) s.fought.push(w.id);
+    if (s.fought.length > 40) s.fought = s.fought.slice(-40);
+  };
+  W.fought = war => war == null || war === '' || W.fightsIn(war) || !!(A.S && A.S.v2w && (A.S.v2w.fought || []).includes(war));
+  A.onMonth.push(() => { try { W.noteFought(); W.deliver(); } catch (e) { console.error('v2 war rumours', e); } });
 
   const fightEnd = A.fightEnd;
   A.fightEnd = function (pid, winner) {
@@ -146,7 +153,7 @@
   const wrm = UI.warRoomModal;
   if (typeof wrm === 'function') UI.warRoomModal = function () {
     if (!W.canRoom()) return `<div class="panel mbox v2w-shut"><h2>No war of yours</h2><div class="mtext">${UI.esc(W.NOT_YOURS)}</div><div class="choices"><button data-a="wrLeave">Close</button></div></div>`;
-    return W.withMyWars(() => wrm.apply(this, arguments));
+    return W.withSeen(() => wrm.apply(this, arguments));
   };
   // 96-moments: no victory or defeat cut-in for a battle in a war that is not yours
   const MO = UI.MOMENTS;
@@ -169,6 +176,37 @@
     S.wars = all.filter(w => mine.includes(w));
     try { return fn(); } finally { S.wars = all; }
   };
+  // the realms whose forces you can see: both sides of your wars, and your own realm's when you serve or rule
+  W.seen = function (pc) {
+    pc = pc || (A.S && A.pc && A.pc());
+    const out = new Set();
+    for (const w of W.myWars(pc)) for (const r of w.att.concat(w.def)) out.add(r);
+    if (W.canRoom(pc) && W.side(pc)) out.add(W.side(pc));
+    return out;
+  };
+  // draw with only the divisions and fights you can see in A.allDivs and A.S.fights (both put back at once)
+  W.withSeen = function (fn) {
+    const S = A.S; if (!S || !A.allDivs) return fn();
+    const seen = W.seen(), all = A.allDivs, fights = S.fights, wars = S.wars, mine = W.myWars();
+    A.allDivs = function () { return all.apply(this, arguments).filter(d => d && seen.has(d.r)); };
+    const f2 = {};
+    for (const k in fights || {}) { const F = fights[k]; if (F && seen.has(F.a) && seen.has(F.b) && (F.war == null || mine.some(w => w.id === F.war))) f2[k] = F; }
+    S.fights = f2; if (Array.isArray(wars)) S.wars = wars.filter(w => mine.includes(w));
+    try { return fn(); } finally { A.allDivs = all; S.fights = fights; S.wars = wars; }
+  };
+  // the words for an empty list of wars: your realm's war without you, or no war of yours
+  W.emptyWars = function (pc) {
+    pc = pc || A.pc();
+    const rid = pc && pc.realm;
+    if (rid && A.atWar(rid).length) return 'Your realm is at war, but you are not in it. What reaches you of it is rumour.';
+    return A.S && A.S.wars.length ? 'No war of yours. Of the others, only rumour reaches you.' : '';
+  };
+  // the war map, the full map's unit layer and 62's march arrows: only what you can see
+  for (const [o, k] of [[UI, 'drawWar'], [UI, 'drawWarBasic'], [UI.INKMAP, 'moveArrows'], [typeof MAP !== 'undefined' ? MAP : null, 'draw']]) {
+    if (!o || typeof o[k] !== 'function') continue;
+    const f = o[k];
+    o[k] = function () { return W.withSeen(() => f.apply(this, arguments)); };
+  }
   if (UI.TAB && typeof UI.TAB.war === 'function') {
     const tw = UI.TAB.war;
     UI.TAB.war = function (pc) {
@@ -192,8 +230,10 @@
     const tw = UI.TAB.world;
     UI.TAB.world = function () {
       if (UI.worldView !== 'wars') return tw.apply(this, arguments);
-      const h = W.withMyWars(() => tw.apply(this, arguments));
-      return typeof h === 'string' ? h + W.heardHtml() : h;
+      let h = W.withMyWars(() => tw.apply(this, arguments));
+      if (typeof h !== 'string') return h;
+      if (!W.myWars().length) { const t = W.emptyWars(); h = h.replace('<p class="muted">Ardan is, for once, at peace.</p>', t ? `<p class="muted">${UI.esc(t)}</p>` : '<p class="muted">Ardan is, for once, at peace.</p>'); }
+      return h + W.heardHtml();
     };
   }
 })();

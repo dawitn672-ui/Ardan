@@ -233,6 +233,13 @@ export function playerOdds(camp, rank, person, c) {
     return { capability: person.worth * (rank === 'sergeant' ? 1.2 : 1), difficulty: target * (0.7 + c.risk * 0.6), foe };
   }
   const enemyCmd = 1 + (camp.armies[1].commander.judgment ?? 100) / 100 + 0.5;
+  if (rank === 'captain') {
+    // a captain fights the unit across from his company, under their general: his command and his men's worth against
+    // theirs and their general's; a bold order is far harder to carry than holding back
+    const mine = camp.armies[0].units.find((u) => u.id === 'coy') ?? camp.armies[0].units[0];
+    const q = Math.sqrt(Math.max(0.1, foe.worth) / Math.max(0.1, mine?.worth ?? 1));
+    return { capability: person.command ?? 2, difficulty: enemyCmd * q * (0.35 + c.risk * 0.9), foe };
+  }
   return { capability: person.command ?? 2, difficulty: enemyCmd * (0.6 + c.risk * 0.5), foe };
 }
 
