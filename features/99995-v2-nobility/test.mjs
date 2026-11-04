@@ -127,6 +127,48 @@ export default {
     return { ok: !r.bad.length && r.moved > 0 && r.vacant < r.titles * 0.1, detail: r.bad.slice(0, 5).join('; ') || `${r.titles} titles over 10 seeds: ${r.moved} passed by inheritance, ${r.vacant} vacant` };
   },
 
+  // playtest 1 #25: vacant titles are regranted by the liege, so vacancies stay low over 20 years (3 seeds); one holder
+  // per title throughout; the view says "vacant since …, the king's to give" and never "holds" for a vacant title
+  async v2nRegrant(pg) {
+    const r = await pg.evaluate(() => {
+      const bad = [], rows = [];
+      let grants = 0;
+      for (const seed of [201, 202, 203]) {
+        T.enter({ seed, status: 'noble', realm: 'POL-01', startAge: 16 });
+        const N = A.V2N, S = A.S, all = () => Object.values(S.court.realms).flatMap(c => c.titles).filter(t => !t.crown && !t.heldWith && t.rank !== 'king');
+        const g0 = N.regrant; N.regrant = function (t) { const x = g0.apply(this, arguments); if (x) grants++; return x; };
+        let worst = 0;
+        T.play(20, { each: () => { const v = all().filter(t => !N.holderOf(t)).length; worst = Math.max(worst, v); } });
+        N.regrant = g0;
+        if (!A.pc()) continue;
+        const ts = all(), vac = ts.filter(t => !N.holderOf(t));
+        rows.push(`${seed}: ${vac.length} of ${ts.length} vacant after 20 years (worst ${worst})`);
+        if (worst > ts.length * 0.05) bad.push(`${seed}: ${worst} of ${ts.length} vacant at worst`);
+        const by = {};
+        for (const p of Object.values(S.people)) if (p.alive && p.noble) for (const k of [p.noble.court, ...(p.noble.more || [])].filter(Boolean)) (by[k] = by[k] || []).push(p.id);
+        for (const k in by) if (by[k].length > 1) bad.push(`${seed} ${k}: two holders`);
+        if (A.V2F.audit().length) bad.push(`${seed}: ${JSON.stringify(A.V2F.audit()[0])}`);
+        // a vacant duchy in words: force one and draw the card
+        const d = ts.find(t => t.rank === 'duke' && t.k.startsWith('POL-01:'));
+        if (d) {
+          const p = N.holderOf(d), keep = p.noble; p.noble = null; d.vacant = S.year;
+          const html = UI.v2nCourtCard(A.realm('POL-01'), A.pc()), row = html.split('v2n-row').find(x => x.includes(d.name.replace('Duchy of ', '')) && /vacant since/.test(x)) || '';
+          if (!/vacant since \d+, the \w[\w-]*(&#39;|&#x27;|')s to give/.test(row)) bad.push('no "vacant since …, the …\'s to give"');
+          if (/Holds the duchy/.test(row)) bad.push('a vacant duchy "holds"');
+          p.noble = keep; delete d.vacant;
+        }
+      }
+      return { bad, rows, grants };
+    });
+    return { ok: !r.bad.length && r.grants > 0, detail: r.bad.slice(0, 5).join('; ') || `${r.grants} titles regranted; ` + r.rows.join('; ') };
+  },
+
+  // the council's border office is not styled as a rank (playtest 1 #14)
+  async v2nOneRankWord(pg) {
+    const r = await pg.evaluate(() => { T.enter({ seed: 7, status: 'noble', realm: 'POL-01' }); return { n: A.POL && A.POL.offName ? A.POL.offName('warden', 'POL-01') : GD.POL_OFFICES.warden.n }; });
+    return { ok: !/March|Duke|Marquis|Count/.test(r.n), detail: r.n };
+  },
+
   // the court view lists the pyramid in words, without percentages, and fits 420 and 1366 px; calling on a viscount
   // stores that one person
   async v2nCourtView(pg) {
