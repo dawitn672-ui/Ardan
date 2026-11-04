@@ -1,6 +1,13 @@
 // Event content fixes: exact find/replace edits on the minified build. See README.md.
 export default [
   {
+    id: 'EVT-SLOW-RECRUIT-SEX',
+    blob: 'ardan-content',
+    why: 'dr_slow_recruit said "The others have started to hate him" whatever the recruit\'s sex ({rec} is drawn from the ranks, ' +
+      'and is a woman in a mixed company: "One recruit, Nessa ... hate him", v2 playtest 1). It now names the slow one instead.',
+    edits: [['The others have started to hate him for the extra drill', 'The others have started to hate the slow one for the extra drill']],
+  },
+  {
     id: 'EVT-DANCE-NIECE',
     blob: 'ardan-content',
     why: 'lf_harvest_dance offered "the reeve\'s handsome nephew or niece", the setup\'s word for a partner whose sex it had ' +
