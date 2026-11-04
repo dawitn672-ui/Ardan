@@ -1,0 +1,4543 @@
+{
+ "date": "2026-10-16",
+ "builds": [
+  {
+   "file": "../../../tmp/ardan/fight-ladder/fix.html",
+   "build": "b593143+f6.7641965",
+   "featureBuilt": false,
+   "audit": {
+    "events": 3199,
+    "choices": 9635,
+    "fights": 486,
+    "encounters": 1966,
+    "byWhy": {
+     "combat skill": 121,
+     "beast": 71,
+     "fight action": 59,
+     "duel": 229,
+     "group": 6
+    },
+    "byScale": {
+     "one": 308,
+     "beast:?": 7,
+     "beast:?+party": 14,
+     "beast:animal+party": 8,
+     "beast:great": 13,
+     "army": 52,
+     "party": 42,
+     "beast:titan+party": 3,
+     "beast:titan": 9,
+     "beast:animal": 25,
+     "beast:great+party": 5
+    },
+    "byDecided": {
+     "plain check": 162,
+     "beast-duel": 71,
+     "duel": 229,
+     "no roll": 17,
+     "ranged check": 1,
+     "group": 6
+    },
+    "deadlyFights": 49,
+    "sportFights": 128,
+    "rangedFights": 8,
+    "childScuffles": 17,
+    "clashes": {
+     "plainDeadly": 47,
+     "soloGreat": 2,
+     "freeKill": 1,
+     "scaleMismatch": 0,
+     "bestiary": 6
+    },
+    "list": {
+     "plainDeadly": [
+      {
+       "id": "tavern_brawl",
+       "i": 0,
+       "label": "Break his nose again",
+       "skill": "unarmed",
+       "s2": "str",
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "wk_herd_yak",
+       "i": 0,
+       "label": "Rope it and wrestle it down",
+       "skill": "str",
+       "s2": "husbandry",
+       "scale": "beast",
+       "n": 1,
+       "tier": null,
+       "beast": "CRE-20",
+       "btier": "great",
+       "allies": 0
+      },
+      {
+       "id": "rl_os_purple",
+       "i": 0,
+       "label": "March with the dyers",
+       "skill": "ins",
+       "s2": "str",
+       "scale": "army",
+       "n": 3,
+       "tier": 1,
+       "beast": null,
+       "btier": null,
+       "allies": 2
+      },
+      {
+       "id": "bd_sandeye_glare",
+       "i": 0,
+       "label": "Lead a strike at noon, while they cannot see you",
+       "skill": "tactics",
+       "s2": "ins",
+       "scale": "party",
+       "n": 3,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "bd_mistwalker_noon",
+       "i": 0,
+       "label": "Fight anyway, by sound and shadow",
+       "skill": "ins",
+       "s2": "bow",
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "bd_wild_python",
+       "i": 0,
+       "label": "Hack at the coils with your blade",
+       "skill": "axe",
+       "s2": "str",
+       "scale": "beast",
+       "n": 1,
+       "tier": 1,
+       "beast": "CRE-47",
+       "btier": "animal",
+       "allies": 0
+      },
+      {
+       "id": "ct_joust",
+       "i": 0,
+       "label": "Ride hard and aim true",
+       "skill": "lance",
+       "s2": "riding",
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "ct_melee",
+       "i": 2,
+       "label": "Guard your team captain",
+       "skill": "shield",
+       "s2": "str",
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "ct_hunt",
+       "i": 0,
+       "label": "Ride at the front and take the beast yourself",
+       "skill": "riding",
+       "s2": "spear",
+       "scale": "beast",
+       "n": 1,
+       "tier": null,
+       "beast": "CRE-56",
+       "btier": "?",
+       "allies": 8
+      },
+      {
+       "id": "pf_axe_hall_trial",
+       "i": 0,
+       "label": "Take the trial",
+       "skill": "axe",
+       "s2": "sta",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pf_axe_door",
+       "i": 0,
+       "label": "Take an axe to the door",
+       "skill": "axe",
+       "s2": "str",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pf_spear_boar",
+       "i": 0,
+       "label": "Hold your ground and set the spear",
+       "skill": "spear",
+       "s2": "wil",
+       "scale": "beast",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": "?",
+       "allies": 8
+      },
+      {
+       "id": "pf_dagger_kid_knife",
+       "i": 0,
+       "label": "Grab his wrist and twist",
+       "skill": "spd",
+       "s2": "ins",
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pf_dagger_alley",
+       "i": 0,
+       "label": "Draw your own knife",
+       "skill": "dagger",
+       "s2": "spd",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pf_dual_two_robbers",
+       "i": 0,
+       "label": "Draw both blades",
+       "skill": "dualwield",
+       "s2": "spd",
+       "scale": "party",
+       "n": 2,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pf_shield_gap",
+       "i": 0,
+       "label": "Stand in the gap with your shield",
+       "skill": "shield",
+       "s2": "str",
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pf_unarmed_feast_wrestle",
+       "i": 0,
+       "label": "Wrestle for the prize",
+       "skill": "unarmed",
+       "s2": "str",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pf_lance_tilt",
+       "i": 0,
+       "label": "Ride straight and trust the first shock",
+       "skill": "lance",
+       "s2": "riding",
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pf_mounted_stakes",
+       "i": 0,
+       "label": "Ride the line full tilt",
+       "skill": "mounted",
+       "s2": "riding",
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 2
+      },
+      {
+       "id": "pf_mounted_raiders",
+       "i": 0,
+       "label": "Ride them down alone",
+       "skill": "mounted",
+       "s2": "riding",
+       "scale": "party",
+       "n": 3,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "rk_kid_fate",
+       "i": 0,
+       "label": "Throw yourself in the way",
+       "skill": "ins",
+       "s2": "shield",
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "rk_gen_king_charge",
+       "i": 1,
+       "label": "Ride beside {king} and keep the sovereign alive",
+       "skill": "mounted",
+       "s2": "ins",
+       "scale": "army",
+       "n": 3,
+       "tier": 4,
+       "beast": null,
+       "btier": null,
+       "allies": 2
+      },
+      {
+       "id": "hs_feud_burn",
+       "i": 0,
+       "label": "Strike back, hard",
+       "skill": "tactics",
+       "s2": "stealth",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "ww_va_laughing",
+       "i": 1,
+       "label": "Wrestle a Montaro for a bigger signing coin",
+       "skill": "unarmed",
+       "s2": "str",
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "ss_qd_rags",
+       "i": 0,
+       "label": "Hold your heap",
+       "skill": "unarmed",
+       "s2": "wil",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "ss_tm_croc",
+       "i": 0,
+       "label": "Noose it and bind its snout shut",
+       "skill": "ins",
+       "s2": "unarmed",
+       "scale": "beast",
+       "n": 1,
+       "tier": 2,
+       "beast": "CRE-44",
+       "btier": "titan",
+       "allies": 0
+      },
+      {
+       "id": "ss_sb_brawl",
+       "i": 0,
+       "label": "Stop them with your fists",
+       "skill": "unarmed",
+       "s2": "str",
+       "scale": "party",
+       "n": 3,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 2
+      },
+      {
+       "id": "ss_rp_bladehall",
+       "i": 0,
+       "label": "Dance with the steel",
+       "skill": "sword",
+       "s2": "spd",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "ss_rp_oneface",
+       "i": 0,
+       "label": "Grab his arm",
+       "skill": "spd",
+       "s2": "unarmed",
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "ss_rp_pirates",
+       "i": 0,
+       "label": "Fight them at the rail",
+       "skill": "melee",
+       "s2": "ins",
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 2
+      },
+      {
+       "id": "ss_br_dice",
+       "i": 1,
+       "label": "Sail with him and fight well",
+       "skill": "melee",
+       "s2": "ins",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "ss_br_tollboat",
+       "i": 0,
+       "label": "Board her with the hooks",
+       "skill": "melee",
+       "s2": "athletics",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pp_elf_brittle",
+       "i": 0,
+       "label": "Hit him before he can do it again",
+       "skill": "unarmed",
+       "s2": "spd",
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "pp_orc_merc",
+       "i": 0,
+       "label": "Sign on for a season",
+       "skill": "mounted",
+       "s2": "ins",
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 2
+      },
+      {
+       "id": "lf_nb_watch",
+       "i": 1,
+       "label": "Go and look yourself",
+       "skill": "melee",
+       "s2": "ins",
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "lf_mid_crisis",
+       "i": 1,
+       "label": "Take up the sword with the youngsters",
+       "skill": "sword",
+       "s2": "sta",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "av_merc_giant",
+       "i": 2,
+       "label": "Ask {themHim} to teach you to wrestle",
+       "skill": "unarmed",
+       "s2": "str",
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "tr_labor_baggage",
+       "i": 0,
+       "label": "Sign on for the summer",
+       "skill": "sta",
+       "s2": "ins",
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 2
+      },
+      {
+       "id": "cm_sailor_ironjaw",
+       "i": 2,
+       "label": "Take a harpoon to the bow",
+       "skill": "spear",
+       "s2": "str",
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "cm_sailor_press",
+       "i": 0,
+       "label": "Serve the crown at sea for a season",
+       "skill": "sea",
+       "s2": "melee",
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "beast": null,
+       "btier": null,
+       "allies": 2
+      },
+      {
+       "id": "cm_pirate_grapnels",
+       "i": 1,
+       "label": "Go for the cabin and the master's purse",
+       "skill": "stealth",
+       "s2": "spd",
+       "scale": "beast",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": "?",
+       "allies": 2
+      },
+      {
+       "id": "cm_farm_hunt_trample",
+       "i": 0,
+       "label": "Stand in the gap and shout",
+       "skill": "wil",
+       "s2": "intimidation",
+       "scale": "beast",
+       "n": 3,
+       "tier": null,
+       "beast": "CRE-56",
+       "btier": "animal",
+       "allies": 8
+      },
+      {
+       "id": "cm_hunter_great_hunt",
+       "i": 0,
+       "label": "Let him, and stand at his shoulder",
+       "skill": "spear",
+       "s2": "ins",
+       "scale": "beast",
+       "n": 1,
+       "tier": null,
+       "beast": "CRE-56",
+       "btier": "?",
+       "allies": 8
+      },
+      {
+       "id": "sc_spd_face",
+       "i": 1,
+       "label": "Lead him somewhere quiet, and turn round",
+       "skill": "dagger",
+       "s2": "intimidation",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "sc_pt_first",
+       "i": 1,
+       "label": "Get inside and wrestle",
+       "skill": "unarmed",
+       "s2": "str",
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "sc_pt_hand",
+       "i": 1,
+       "label": "Fight left-handed, clear-headed",
+       "skill": "wil",
+       "s2": "ins",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      },
+      {
+       "id": "sc_ss_torch",
+       "i": 0,
+       "label": "Fight by torchlight",
+       "skill": "ins",
+       "s2": "melee",
+       "scale": "one",
+       "n": 1,
+       "tier": null,
+       "beast": null,
+       "btier": null,
+       "allies": 0
+      }
+     ],
+     "soloGreat": [
+      {
+       "id": "wk_herd_yak",
+       "i": 0,
+       "label": "Rope it and wrestle it down",
+       "skill": "str",
+       "s2": "husbandry",
+       "scale": "beast",
+       "n": 1,
+       "tier": null,
+       "beast": "CRE-20",
+       "btier": "great",
+       "allies": 0
+      },
+      {
+       "id": "wk_herd_yak",
+       "i": 2,
+       "label": "Spear it and sell the meat",
+       "skill": null,
+       "s2": null,
+       "scale": "beast",
+       "n": 1,
+       "tier": null,
+       "beast": "CRE-20",
+       "btier": "great",
+       "allies": 0
+      }
+     ],
+     "freeKill": [
+      {
+       "id": "wk_herd_yak",
+       "i": 2,
+       "label": "Spear it and sell the meat",
+       "skill": null,
+       "s2": null,
+       "scale": "beast",
+       "n": 1,
+       "tier": null,
+       "beast": "CRE-20",
+       "btier": "great",
+       "allies": 0
+      }
+     ],
+     "bestiary": [
+      {
+       "id": "CRE-13",
+       "name": "Old Whiskers",
+       "tag": "animal",
+       "want": "titan",
+       "why": "1500 kg: titans are \"over a tonne\""
+      },
+      {
+       "id": "CRE-14",
+       "name": "The Black Maw",
+       "tag": "animal",
+       "want": "titan",
+       "why": "50000 kg: titans are \"over a tonne\""
+      },
+      {
+       "id": "CRE-18",
+       "name": "Wolves of the Sea",
+       "tag": "animal",
+       "want": "titan",
+       "why": "6000 kg: titans are \"over a tonne\""
+      },
+      {
+       "id": "CRE-50",
+       "name": "White Elephant",
+       "tag": "animal",
+       "want": "titan",
+       "why": "5000 kg: titans are \"over a tonne\""
+      },
+      {
+       "id": "CRE-53",
+       "name": "The Roc",
+       "tag": "animal",
+       "want": "great",
+       "why": "HP 200: the engine's own rule makes it great"
+      },
+      {
+       "id": "CRE-55",
+       "name": "Forest Men",
+       "tag": "animal",
+       "want": "great",
+       "why": "HP 170: the engine's own rule makes it great"
+      }
+     ]
+    },
+    "converted": 0,
+    "convertedDeadly": 0,
+    "convertedBy": {},
+    "worthDeadly": 1,
+    "clashTotal": 56,
+    "before": null,
+    "deadlyPlainInFightScenes": {
+     "no blow traded (an accident, a climb, a storm)": 41,
+     "running, hiding, talking or paying": 27,
+     "other": 26,
+     "children scuffling": 1
+    },
+    "convertedList": []
+   },
+   "group": {
+    "claims": [
+     {
+      "k": "Trained vs 2 Brawlers",
+      "src": "Brawler: \"two or three of them make one soldier\"",
+      "closed": 50.1,
+      "rolled": 50.6,
+      "n": 3000
+     },
+     {
+      "k": "Trained vs 3 Brawlers",
+      "src": "",
+      "closed": 40.1,
+      "rolled": 40.2,
+      "n": 3000
+     },
+     {
+      "k": "Veteran vs 2 Trained",
+      "src": "Veteran: \"worth two or three regulars at once\"",
+      "closed": 54.6,
+      "rolled": 55.2,
+      "n": 3000
+     },
+     {
+      "k": "Veteran vs 3 Trained",
+      "src": "",
+      "closed": 44.5,
+      "rolled": 44.7,
+      "n": 3000
+     },
+     {
+      "k": "Elite vs 7 Trained",
+      "src": "Elite: \"can take 7-10 regulars or about 4 veterans\"",
+      "closed": 54,
+      "rolled": 54.1,
+      "n": 3000
+     },
+     {
+      "k": "Elite vs 10 Trained",
+      "src": "",
+      "closed": 45.2,
+      "rolled": 45.4,
+      "n": 3000
+     },
+     {
+      "k": "Elite vs 4 Veterans",
+      "src": "",
+      "closed": 46.1,
+      "rolled": 46.8,
+      "n": 3000
+     },
+     {
+      "k": "Master vs 20 Trained",
+      "src": "Master: \"takes 20-30 regulars or 8-10 veterans\"",
+      "closed": 53.8,
+      "rolled": 54.8,
+      "n": 3000
+     },
+     {
+      "k": "Master vs 30 Trained",
+      "src": "",
+      "closed": 29.8,
+      "rolled": 29.8,
+      "n": 3000
+     },
+     {
+      "k": "Master vs 8 Veterans",
+      "src": "",
+      "closed": 54.8,
+      "rolled": 54,
+      "n": 3000
+     },
+     {
+      "k": "Master vs 10 Veterans",
+      "src": "",
+      "closed": 42.5,
+      "rolled": 41.3,
+      "n": 3000
+     },
+     {
+      "k": "3 Trained vs Elite",
+      "src": "Plan, Power 3: \"3 Trained beat 1 Elite about two times in three\"",
+      "closed": 26.7,
+      "rolled": 26.7,
+      "n": 3000
+     }
+    ],
+    "trainedToBeatEliteTwoInThree": 13
+   },
+   "tiers": [
+    {
+     "k": "animal: Veteran alone",
+     "claim": 50,
+     "real": 44
+    },
+    {
+     "k": "animal: Trained alone",
+     "claim": 25,
+     "real": 23.2
+    },
+    {
+     "k": "animal: Trained with a party",
+     "claim": 90,
+     "real": 80.4
+    },
+    {
+     "k": "great: Master with a party",
+     "claim": 50,
+     "real": 49.6
+    },
+    {
+     "k": "great: Elite with a party",
+     "claim": 10,
+     "real": 10
+    },
+    {
+     "k": "great: Master alone (\"usually dies\")",
+     "claim": 25,
+     "max": 50,
+     "real": 3.2
+    }
+   ],
+   "duels": {
+    "screen": null,
+    "profile": {
+     "bins": [
+      {
+       "bin": "0-9",
+       "n": 136,
+       "shown": 4.4,
+       "real": 0
+      },
+      {
+       "bin": "10-24",
+       "n": 107,
+       "shown": 17.2,
+       "real": 0
+      },
+      {
+       "bin": "25-39",
+       "n": 119,
+       "shown": 32.7,
+       "real": 15.1
+      },
+      {
+       "bin": "40-59",
+       "n": 146,
+       "shown": 49.9,
+       "real": 26
+      },
+      {
+       "bin": "60-74",
+       "n": 143,
+       "shown": 68.6,
+       "real": 62.9
+      },
+      {
+       "bin": "75-89",
+       "n": 201,
+       "shown": 83.4,
+       "real": 85.1
+      },
+      {
+       "bin": "90-100",
+       "n": 345,
+       "shown": 96.2,
+       "real": 98.3
+      }
+     ],
+     "maxErr": 23.9,
+     "meanErr": 8.3,
+     "n": 1197
+    }
+   },
+   "beasts": null,
+   "honest": null,
+   "pageErrors": []
+  },
+  {
+   "file": "../../../tmp/ardan/fight-ladder/full.html",
+   "build": "b593143+f52.ebbdf44",
+   "featureBuilt": false,
+   "audit": {
+    "events": 4115,
+    "choices": 12445,
+    "fights": 546,
+    "encounters": 2452,
+    "byWhy": {
+     "worth": 185,
+     "beast": 72,
+     "duel": 236,
+     "fight action": 42,
+     "combat skill": 5,
+     "group": 6
+    },
+    "byScale": {
+     "one": 339,
+     "beast:?": 7,
+     "beast:?+party": 14,
+     "beast:animal+party": 9,
+     "beast:great": 16,
+     "army": 65,
+     "party": 55,
+     "beast:titan+party": 3,
+     "beast:titan": 11,
+     "beast:animal": 21,
+     "beast:great+party": 6
+    },
+    "byDecided": {
+     "worth": 185,
+     "beast-duel": 72,
+     "duel": 236,
+     "no roll": 18,
+     "plain check": 26,
+     "ranged check": 3,
+     "group": 6
+    },
+    "deadlyFights": 85,
+    "sportFights": 144,
+    "rangedFights": 10,
+    "childScuffles": 19,
+    "clashes": {
+     "plainDeadly": 0,
+     "soloGreat": 0,
+     "freeKill": 0,
+     "scaleMismatch": 0,
+     "bestiary": 0
+    },
+    "list": {
+     "bestiary": []
+    },
+    "converted": 185,
+    "convertedDeadly": 81,
+    "convertedBy": {
+     "one": 124,
+     "beast": 15,
+     "army": 31,
+     "party": 15
+    },
+    "worthDeadly": 82,
+    "clashTotal": 0,
+    "before": {
+     "plainDeadly": 78,
+     "soloGreat": 4,
+     "freeKill": 1,
+     "scaleMismatch": 0
+    },
+    "deadlyPlainInFightScenes": {
+     "no blow traded (an accident, a climb, a storm)": 62,
+     "running, hiding, talking or paying": 33,
+     "children scuffling": 1
+    },
+    "convertedList": [
+     {
+      "id": "deed_name",
+      "i": 2,
+      "label": "Win the wrestling ring at the clan gathering",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 42,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "tavern_brawl",
+      "i": 0,
+      "label": "Break his nose again",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 42,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "festival_day",
+      "i": 1,
+      "label": "Enter the wrestling",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "dice_cheat",
+      "i": 1,
+      "label": "Punch him",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "child_fight",
+      "i": 0,
+      "label": "Fight back",
+      "skill": "str",
+      "s2": "wil",
+      "d": 25,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "ch_fam_sib_fight",
+      "i": 0,
+      "label": "Fight for it",
+      "skill": "str",
+      "s2": "wil",
+      "d": 20,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "ch_bully_bread",
+      "i": 0,
+      "label": "Fight {khim}",
+      "skill": "str",
+      "s2": "wil",
+      "d": 24,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "ch_bully_mock",
+      "i": 1,
+      "label": "Fists",
+      "skill": "str",
+      "s2": "spd",
+      "d": 24,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "wk_herd_yak",
+      "i": 0,
+      "label": "Rope it and wrestle it down",
+      "skill": "str",
+      "s2": "husbandry",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-20",
+       "weapon": "fists",
+       "edge": "husbandry"
+      }
+     },
+     {
+      "id": "wk_herd_yak",
+      "i": 2,
+      "label": "Spear it and sell the meat",
+      "skill": "melee",
+      "s2": "str",
+      "d": 50,
+      "deadly": false,
+      "made": true,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-20"
+      }
+     },
+     {
+      "id": "wk_ostra_commons",
+      "i": 0,
+      "label": "March with the Commons",
+      "skill": "sta",
+      "s2": "ins",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 1,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "fm_spouse_affair",
+      "i": 1,
+      "label": "Go and find {other}",
+      "skill": "str",
+      "s2": "unarmed",
+      "d": 42,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "wr_muster_test",
+      "i": 1,
+      "label": "Ride the ring",
+      "skill": "riding",
+      "s2": "lance",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "spar",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "rl_os_purple",
+      "i": 0,
+      "label": "March with the dyers",
+      "skill": "ins",
+      "s2": "str",
+      "d": 41,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 1,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "rl_sk_circuit",
+      "i": 1,
+      "label": "Guard a party of pilgrims with your staff",
+      "skill": "unarmed",
+      "s2": "ins",
+      "d": 39,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "rl_st_oldtoll",
+      "i": 0,
+      "label": "Join the drill",
+      "skill": "spear",
+      "s2": "str",
+      "d": 34,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "spar",
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "rl_y_toll",
+      "i": 0,
+      "label": "Sign on as an oarsman for the coming fight",
+      "skill": "sta",
+      "s2": "sea",
+      "d": 41,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "edge": "sea"
+      }
+     },
+     {
+      "id": "rl_y_sabra",
+      "i": 0,
+      "label": "POL-24 Help tar the fire-boats Sign on to row the galleys",
+      "skill": "sta",
+      "s2": "craft",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 1,
+       "allies": 2,
+       "allyTier": 2,
+       "edge": "craft"
+      }
+     },
+     {
+      "id": "bd_lion_reach",
+      "i": 0,
+      "label": "Fight at the end of your reach",
+      "skill": "sword",
+      "s2": "ins",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "spar",
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "bd_sandeye_glare",
+      "i": 0,
+      "label": "Lead a strike at noon, while they cannot see you",
+      "skill": "tactics",
+      "s2": "ins",
+      "d": 45,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 2,
+       "edge": "tactics"
+      }
+     },
+     {
+      "id": "bd_fury_friend",
+      "i": 0,
+      "label": "Let it come",
+      "skill": "str",
+      "s2": "unarmed",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "bd_hide_gathering",
+      "i": 0,
+      "label": "Laugh at the scratch and knock him down",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "bd_mistwalker_noon",
+      "i": 0,
+      "label": "Fight anyway, by sound and shadow",
+      "skill": "ins",
+      "s2": "bow",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "bd_skarfell_door",
+      "i": 1,
+      "label": "Answer the runts mockery at the Thing",
+      "skill": "spd",
+      "s2": "unarmed",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "bd_train_body",
+      "i": 2,
+      "label": "Wrestle in the ring",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 38,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "bd_will_humiliation",
+      "i": 1,
+      "label": "Hit him back",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 42,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "bd_wild_python",
+      "i": 0,
+      "label": "Hack at the coils with your blade",
+      "skill": "axe",
+      "s2": "str",
+      "d": 40,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-47",
+       "weapon": "axe"
+      }
+     },
+     {
+      "id": "ct_joust",
+      "i": 0,
+      "label": "Ride hard and aim true",
+      "skill": "lance",
+      "s2": "riding",
+      "d": 48,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "spar",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "ct_melee",
+      "i": 2,
+      "label": "Guard your team captain",
+      "skill": "shield",
+      "s2": "str",
+      "d": 42,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "ct_favor_lance",
+      "i": 0,
+      "label": "Ride for that ribbon and win",
+      "skill": "lance",
+      "s2": "riding",
+      "d": 46,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "ct_hunt",
+      "i": 0,
+      "label": "Ride at the front and take the beast yourself",
+      "skill": "riding",
+      "s2": "spear",
+      "d": 46,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-56",
+       "beastCtx": true,
+       "allies": 8,
+       "weapon": "spear",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "pf_melee_sticks",
+      "i": 0,
+      "label": "Wade in",
+      "skill": "ins",
+      "s2": "spd",
+      "d": 20,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "pf_melee_pell_yard",
+      "i": 2,
+      "label": "Spar with {them} to see if it is worth it",
+      "skill": "melee",
+      "s2": "ins",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "pf_melee_chalk_circle",
+      "i": 0,
+      "label": "Step into the circle for the purse",
+      "skill": "melee",
+      "s2": "ins",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "pf_melee_young_blood",
+      "i": 1,
+      "label": "Disarm {themHim} with a word: offer to teach {themHim}",
+      "skill": "persuasion",
+      "s2": "melee",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "pid": true,
+       "rule": "yield",
+       "edge": "persuasion"
+      }
+     },
+     {
+      "id": "pf_sword_school",
+      "i": 1,
+      "label": "Win the place in a bout with the others",
+      "skill": "sword",
+      "s2": "spd",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "pf_sword_chanari",
+      "i": 0,
+      "label": "Test it: flex it, cut a nail, read the pattern",
+      "skill": "craft",
+      "s2": "sword",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "weapon": "sword",
+       "edge": "craft"
+      }
+     },
+     {
+      "id": "pf_sword_pupil",
+      "i": 2,
+      "label": "Test {themHim} first",
+      "skill": "sword",
+      "s2": "int",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "pid": true,
+       "rule": "yield",
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "pf_axe_hall_trial",
+      "i": 0,
+      "label": "Take the trial",
+      "skill": "axe",
+      "s2": "sta",
+      "d": 48,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "weapon": "axe"
+      }
+     },
+     {
+      "id": "pf_axe_harvest_chop",
+      "i": 0,
+      "label": "Chop for the ram",
+      "skill": "axe",
+      "s2": "str",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "weapon": "axe"
+      }
+     },
+     {
+      "id": "pf_axe_door",
+      "i": 0,
+      "label": "Take an axe to the door",
+      "skill": "axe",
+      "s2": "str",
+      "d": 45,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "weapon": "axe"
+      }
+     },
+     {
+      "id": "pf_spear_boar",
+      "i": 0,
+      "label": "Hold your ground and set the spear",
+      "skill": "spear",
+      "s2": "wil",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": null,
+       "beastCtx": true,
+       "allies": 8,
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "pf_spear_halberd_rival",
+      "i": 0,
+      "label": "Settle it with blunted poles",
+      "skill": "spear",
+      "s2": "ins",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "pf_dagger_kid_knife",
+      "i": 0,
+      "label": "Grab his wrist and twist",
+      "skill": "spd",
+      "s2": "ins",
+      "d": 24,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "pf_dagger_alley",
+      "i": 0,
+      "label": "Draw your own knife",
+      "skill": "dagger",
+      "s2": "spd",
+      "d": 48,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "weapon": "dagger"
+      }
+     },
+     {
+      "id": "pf_dagger_hire",
+      "i": 2,
+      "label": "Do the job",
+      "skill": "dagger",
+      "s2": "stealth",
+      "d": 55,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "yield",
+       "weapon": "dagger",
+       "edge": "stealth"
+      }
+     },
+     {
+      "id": "pf_dual_two_robbers",
+      "i": 0,
+      "label": "Draw both blades",
+      "skill": "dualwield",
+      "s2": "spd",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 2,
+       "tier": 2
+      }
+     },
+     {
+      "id": "pf_shield_pot_lid",
+      "i": 0,
+      "label": "Hold the bridge",
+      "skill": "sta",
+      "s2": "wil",
+      "d": 20,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "pf_shield_muster",
+      "i": 0,
+      "label": "Hold the line all afternoon",
+      "skill": "shield",
+      "s2": "sta",
+      "d": 42,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 3,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "pf_shield_gap",
+      "i": 0,
+      "label": "Stand in the gap with your shield",
+      "skill": "shield",
+      "s2": "str",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "pf_shield_gap",
+      "i": 1,
+      "label": "Hold it with two others, and shout orders",
+      "skill": "command",
+      "s2": "shield",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "edge": "command"
+      }
+     },
+     {
+      "id": "pf_unarmed_feast_wrestle",
+      "i": 0,
+      "label": "Wrestle for the prize",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pf_unarmed_feast_wrestle",
+      "i": 1,
+      "label": "Read {themHim} and use {theirHis} own weight",
+      "skill": "unarmed",
+      "s2": "int",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "pid": true,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pf_unarmed_paid_to_lose",
+      "i": 1,
+      "label": "Refuse, and throw the boy hard",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pf_unarmed_still_hands",
+      "i": 2,
+      "label": "Test the monk yourself",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 65,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pf_unarmed_feud_bout",
+      "i": 0,
+      "label": "Wrestle for your kin",
+      "skill": "unarmed",
+      "s2": "sta",
+      "d": 55,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pf_unarmed_feud_bout",
+      "i": 1,
+      "label": "Win it with a trick at the start",
+      "skill": "unarmed",
+      "s2": "deception",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "fists",
+       "edge": "deception"
+      }
+     },
+     {
+      "id": "pf_lance_tilt",
+      "i": 0,
+      "label": "Ride straight and trust the first shock",
+      "skill": "lance",
+      "s2": "riding",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "pf_mounted_stakes",
+      "i": 0,
+      "label": "Ride the line full tilt",
+      "skill": "mounted",
+      "s2": "riding",
+      "d": 48,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "pf_mounted_raiders",
+      "i": 0,
+      "label": "Ride them down alone",
+      "skill": "mounted",
+      "s2": "riding",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 2,
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "rk_kid_fate",
+      "i": 0,
+      "label": "Throw yourself in the way",
+      "skill": "ins",
+      "s2": "shield",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "rk_gen_king_charge",
+      "i": 1,
+      "label": "Ride beside {king} and keep the sovereign alive",
+      "skill": "mounted",
+      "s2": "ins",
+      "d": 60,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 4,
+       "allies": 2,
+       "allyTier": 2,
+       "mounted": true
+      }
+     },
+     {
+      "id": "rk_gar_tourney",
+      "i": 1,
+      "label": "Ride at the ring",
+      "skill": "riding",
+      "s2": "lance",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "rk_fm_summer",
+      "i": 1,
+      "label": "Grab a spear and stand in the line",
+      "skill": "ins",
+      "s2": "wil",
+      "d": 32,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "hs_reunion",
+      "i": 0,
+      "label": "Challenge {them} to wrestle, like when you were small",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "pid": true,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "hs_feud_burn",
+      "i": 0,
+      "label": "Strike back, hard",
+      "skill": "tactics",
+      "s2": "stealth",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "edge": "tactics"
+      }
+     },
+     {
+      "id": "hs_t_taunted",
+      "i": 0,
+      "label": "Fight the biggest one",
+      "skill": "str",
+      "s2": "ins",
+      "d": 24,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "hs_n_landless",
+      "i": 0,
+      "label": "Ride the tourney circuit for prizes",
+      "skill": "lance",
+      "s2": "riding",
+      "d": 52,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "hs_n_tourney",
+      "i": 0,
+      "label": "Ride hard at the lists",
+      "skill": "lance",
+      "s2": "riding",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "hs_cl_horse_feast",
+      "i": 0,
+      "label": "Wrestle",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": null,
+       "beastCtx": true,
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "hs_gi_thing",
+      "i": 1,
+      "label": "Ask to wrestle {themHim} first, by old custom",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "pid": true,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "ww_ald_lanceyard",
+      "i": 0,
+      "label": "Ride in the close-order charge",
+      "skill": "riding",
+      "s2": "lance",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "ww_va_laughing",
+      "i": 1,
+      "label": "Wrestle a Montaro for a bigger signing coin",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "ww_mh_santorariders",
+      "i": 0,
+      "label": "Gallop and shoot",
+      "skill": "mounted",
+      "s2": "bow",
+      "d": 46,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "yield",
+       "mounted": true
+      }
+     },
+     {
+      "id": "ww_os_buckler",
+      "i": 0,
+      "label": "Fight your way up the stair",
+      "skill": "sword",
+      "s2": "shield",
+      "d": 44,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "ww_vg_bearhall",
+      "i": 0,
+      "label": "Take the great-axe and stand the trial",
+      "skill": "axe",
+      "s2": "str",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "yield",
+       "weapon": "axe"
+      }
+     },
+     {
+      "id": "ss_nw_horsefeast",
+      "i": 1,
+      "label": "Wrestle in the ring",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 42,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "ss_nw_horsefeast",
+      "i": 2,
+      "label": "Shoot at the hanging targets from the gallop",
+      "skill": "mounted",
+      "s2": "bow",
+      "d": 46,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "mounted": true
+      }
+     },
+     {
+      "id": "ss_nw_threshold",
+      "i": 0,
+      "label": "Throw him out by the collar",
+      "skill": "str",
+      "s2": "intimidation",
+      "d": 36,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "edge": "intimidation"
+      }
+     },
+     {
+      "id": "ss_nw_horsethief",
+      "i": 1,
+      "label": "Shoot his horse from under him",
+      "skill": "mounted",
+      "s2": "bow",
+      "d": 44,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "mounted": true
+      }
+     },
+     {
+      "id": "ss_nw_backshot",
+      "i": 0,
+      "label": "Ride the pass again and loose backward",
+      "skill": "mounted",
+      "s2": "bow",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "mounted": true
+      }
+     },
+     {
+      "id": "ss_qd_rags",
+      "i": 0,
+      "label": "Hold your heap",
+      "skill": "unarmed",
+      "s2": "wil",
+      "d": 42,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "ss_qd_seakeep",
+      "i": 0,
+      "label": "Throw yourself into the boarding drill",
+      "skill": "melee",
+      "s2": "athletics",
+      "d": 44,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "ss_tm_croc",
+      "i": 0,
+      "label": "Noose it and bind its snout shut",
+      "skill": "ins",
+      "s2": "unarmed",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-44",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "ss_sc_noon",
+      "i": 0,
+      "label": "Ride the noon drill with them",
+      "skill": "mounted",
+      "s2": "riding",
+      "d": 46,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "ss_zn_ivory",
+      "i": 0,
+      "label": "Join as a spearman",
+      "skill": "spear",
+      "s2": "wil",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-20",
+       "allies": 8,
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "ss_zn_firstmillet",
+      "i": 2,
+      "label": "Wrestle at the harvest feast",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "ss_ab_pike",
+      "i": 0,
+      "label": "Stand in the front rank and hold",
+      "skill": "spear",
+      "s2": "wil",
+      "d": 44,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "ss_ab_pike",
+      "i": 2,
+      "label": "Volunteer for Tamowa",
+      "skill": "sta",
+      "s2": "spear",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "ss_sb_brawl",
+      "i": 0,
+      "label": "Stop them with your fists",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 46,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "ss_rp_bladehall",
+      "i": 0,
+      "label": "Dance with the steel",
+      "skill": "sword",
+      "s2": "spd",
+      "d": 48,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "ss_rp_oneface",
+      "i": 0,
+      "label": "Grab his arm",
+      "skill": "spd",
+      "s2": "unarmed",
+      "d": 44,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "ss_rp_pirates",
+      "i": 0,
+      "label": "Fight them at the rail",
+      "skill": "melee",
+      "s2": "ins",
+      "d": 46,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "ss_br_dice",
+      "i": 1,
+      "label": "Sail with him and fight well",
+      "skill": "melee",
+      "s2": "ins",
+      "d": 46,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "ss_br_tollboat",
+      "i": 0,
+      "label": "Board her with the hooks",
+      "skill": "melee",
+      "s2": "athletics",
+      "d": 48,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "ss_br_oars",
+      "i": 0,
+      "label": "Fight at the next prize for a share-book Speak for the Freed Oars",
+      "skill": "melee",
+      "s2": "persuasion",
+      "d": 44,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "edge": "persuasion"
+      }
+     },
+     {
+      "id": "pp_elf_lightfoot",
+      "i": 0,
+      "label": "Wrestle him. You will not hide behind your blood",
+      "skill": "unarmed",
+      "s2": "spd",
+      "d": 52,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pp_elf_brittle",
+      "i": 0,
+      "label": "Hit him before he can do it again",
+      "skill": "unarmed",
+      "s2": "spd",
+      "d": 46,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pp_dw_livingwall",
+      "i": 1,
+      "label": "Strike back over the rim with the pick",
+      "skill": "axe",
+      "s2": "ins",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "axe"
+      }
+     },
+     {
+      "id": "pp_dw_axehall",
+      "i": 0,
+      "label": "Hook the shield and cut on the pull",
+      "skill": "axe",
+      "s2": "str",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-50",
+       "weapon": "axe"
+      }
+     },
+     {
+      "id": "pp_dw_axehall",
+      "i": 1,
+      "label": "Go low and take the ankle",
+      "skill": "axe",
+      "s2": "ins",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-50",
+       "weapon": "axe"
+      }
+     },
+     {
+      "id": "pp_dw_levy",
+      "i": 1,
+      "label": "Drill in the pike block instead",
+      "skill": "spear",
+      "s2": "sta",
+      "d": 38,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 3,
+       "allies": 2,
+       "allyTier": 2,
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "pp_orc_relay",
+      "i": 0,
+      "label": "Ride every wave at full fury",
+      "skill": "mounted",
+      "s2": "str",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "mounted": true
+      }
+     },
+     {
+      "id": "pp_orc_merc",
+      "i": 0,
+      "label": "Sign on for a season",
+      "skill": "mounted",
+      "s2": "ins",
+      "d": 44,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "mounted": true
+      }
+     },
+     {
+      "id": "pp_orc_ironhide",
+      "i": 0,
+      "label": "Wrestle anyway, fast, before the heat takes you",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 46,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pp_orc_wrestle",
+      "i": 1,
+      "label": "Take the silver, and win anyway",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 52,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pp_gi_pair",
+      "i": 1,
+      "label": "Ask to be tested together in the yard first",
+      "skill": "ins",
+      "s2": "unarmed",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "pp_gi_ale",
+      "i": 1,
+      "label": "Arm-wrestle the bosun instead",
+      "skill": "str",
+      "s2": "unarmed",
+      "d": 20,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "lf_nb_watch",
+      "i": 1,
+      "label": "Go and look yourself",
+      "skill": "melee",
+      "s2": "ins",
+      "d": 40,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "lf_mid_crisis",
+      "i": 1,
+      "label": "Take up the sword with the youngsters",
+      "skill": "sword",
+      "s2": "sta",
+      "d": 35,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield",
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "av_inn_commonroom",
+      "i": 0,
+      "label": "Grab the wrist",
+      "skill": "spd",
+      "s2": "unarmed",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "av_merc_giant",
+      "i": 2,
+      "label": "Ask {themHim} to teach you to wrestle",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "pid": true,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "tr_labor_baggage",
+      "i": 0,
+      "label": "Sign on for the summer",
+      "skill": "sta",
+      "s2": "ins",
+      "d": 48,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "cm_sailor_ironjaw",
+      "i": 2,
+      "label": "Take a harpoon to the bow",
+      "skill": "spear",
+      "s2": "str",
+      "d": 70,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield",
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "cm_sailor_press",
+      "i": 0,
+      "label": "Serve the crown at sea for a season",
+      "skill": "sea",
+      "s2": "melee",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "edge": "sea"
+      }
+     },
+     {
+      "id": "cm_pirate_grapnels",
+      "i": 1,
+      "label": "Go for the cabin and the master's purse",
+      "skill": "stealth",
+      "s2": "spd",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": null,
+       "beastCtx": true,
+       "allies": 2,
+       "edge": "stealth"
+      }
+     },
+     {
+      "id": "cm_farm_hunt_trample",
+      "i": 0,
+      "label": "Stand in the gap and shout",
+      "skill": "wil",
+      "s2": "intimidation",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 3,
+       "beast": "CRE-56",
+       "allies": 8,
+       "edge": "intimidation"
+      }
+     },
+     {
+      "id": "cm_hunter_great_hunt",
+      "i": 0,
+      "label": "Let him, and stand at his shoulder",
+      "skill": "spear",
+      "s2": "ins",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-56",
+       "beastCtx": true,
+       "allies": 8,
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "sc_spd_face",
+      "i": 1,
+      "label": "Lead him somewhere quiet, and turn round",
+      "skill": "dagger",
+      "s2": "intimidation",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "weapon": "dagger",
+       "edge": "intimidation"
+      }
+     },
+     {
+      "id": "sc_pt_first",
+      "i": 1,
+      "label": "Get inside and wrestle",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 42,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "sc_pt_third",
+      "i": 0,
+      "label": "Take the purse and go down in the third",
+      "skill": "deception",
+      "s2": "unarmed",
+      "d": 44,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "fists",
+       "edge": "deception"
+      }
+     },
+     {
+      "id": "sc_pt_ride",
+      "i": 1,
+      "label": "Wrestle to be seen, not to win",
+      "skill": "unarmed",
+      "s2": "ins",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "sc_pt_hand",
+      "i": 1,
+      "label": "Fight left-handed, clear-headed",
+      "skill": "wil",
+      "s2": "ins",
+      "d": 54,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "sc_ss_throw",
+      "i": 0,
+      "label": "Take the purse and lose well",
+      "skill": "deception",
+      "s2": "melee",
+      "d": 44,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "edge": "deception"
+      }
+     },
+     {
+      "id": "sc_ss_feast",
+      "i": 1,
+      "label": "Fight to show the style, clean and correct",
+      "skill": "melee",
+      "s2": "ins",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "sc_ss_torch",
+      "i": 0,
+      "label": "Fight by torchlight",
+      "skill": "ins",
+      "s2": "melee",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "sc_ss_bully",
+      "i": 2,
+      "label": "Teach {kid} to fight back",
+      "skill": "melee",
+      "s2": "command",
+      "d": 46,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "edge": "command"
+      }
+     },
+     {
+      "id": "sc_ss_court",
+      "i": 1,
+      "label": "Make it beautiful rather than fast",
+      "skill": "melee",
+      "s2": "etiquette",
+      "d": 52,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "edge": "etiquette"
+      }
+     },
+     {
+      "id": "pr_tourney_joust",
+      "i": 0,
+      "label": "Ride in the joust yourself",
+      "skill": "lance",
+      "s2": "riding",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "spar",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "pl_overlord_garrison",
+      "i": 0,
+      "label": "Step in",
+      "skill": "melee",
+      "s2": "str",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 2,
+       "tier": 2
+      }
+     },
+     {
+      "id": "du_gl_pits",
+      "i": 1,
+      "label": "Win anyway",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 55,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "spar",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "fl_rn_tourney",
+      "i": 1,
+      "label": "Fight in the mêlée",
+      "skill": "melee",
+      "s2": "str",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "gs_knife",
+      "i": 0,
+      "label": "Throw yourself at him",
+      "skill": "spd",
+      "s2": "unarmed",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "gs_poison",
+      "i": 0,
+      "label": "Seize {themHim}",
+      "skill": "str",
+      "s2": "unarmed",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "pid": true,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "gs_drunk",
+      "i": 0,
+      "label": "Disarm {themHim} gently",
+      "skill": "unarmed",
+      "s2": "spd",
+      "d": 45,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "pid": true,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "gs_joust1",
+      "i": 0,
+      "label": "Aim for the shield, ride hard",
+      "skill": "lance",
+      "s2": "riding",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "gs_joust1",
+      "i": 1,
+      "label": "Aim for the helm — win it all or nothing",
+      "skill": "lance",
+      "s2": "ins",
+      "d": 52,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "weapon": "lance",
+       "mounted": true
+      }
+     },
+     {
+      "id": "gs_joust2",
+      "i": 0,
+      "label": "Ride steady, take the points",
+      "skill": "lance",
+      "s2": "riding",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 4,
+       "tier": 2,
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "gs_joust3",
+      "i": 0,
+      "label": "Ride for the circlet",
+      "skill": "lance",
+      "s2": "riding",
+      "d": 56,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "yield",
+       "weapon": "lance",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "v4_line_wall",
+      "i": 0,
+      "label": "\"Lock shields! Spears over!\"",
+      "skill": "command",
+      "s2": "shield",
+      "d": 48,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "edge": "command"
+      }
+     },
+     {
+      "id": "v4_horse_charge",
+      "i": 0,
+      "label": "Charge without orders",
+      "skill": "mounted",
+      "s2": "riding",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "mounted": true,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "dr_spearwall",
+      "i": 1,
+      "label": "Stand in the front rank yourself",
+      "skill": "wil",
+      "s2": "shield",
+      "d": 44,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "sg_camp",
+      "i": 1,
+      "label": "Go up the ladders with the first wave",
+      "skill": "melee",
+      "s2": "wil",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "sg_walls",
+      "i": 1,
+      "label": "Go out with the night sortie",
+      "skill": "stealth",
+      "s2": "melee",
+      "d": 55,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 3,
+       "allies": 2,
+       "allyTier": 2,
+       "edge": "stealth"
+      }
+     },
+     {
+      "id": "go_order_bold",
+      "i": 0,
+      "label": "Go in with the first wave",
+      "skill": "melee",
+      "s2": "wil",
+      "d": 50,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "go_order_cunning",
+      "i": 2,
+      "label": "Turn the feint into a real attack",
+      "skill": "tactics",
+      "s2": "melee",
+      "d": 60,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 3,
+       "allies": 2,
+       "allyTier": 2,
+       "edge": "tactics"
+      }
+     },
+     {
+      "id": "sch_attempt",
+      "i": 0,
+      "label": "Fight him",
+      "skill": "dagger",
+      "s2": "str",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "weapon": "dagger"
+      }
+     },
+     {
+      "id": "mch_fits_torchlight",
+      "i": 0,
+      "label": "Fight, and keep your eyes off the torches",
+      "skill": "wil",
+      "s2": "ins",
+      "d": 45,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "mpe_elf_torch_bout",
+      "i": 2,
+      "label": "Offer to fight in his place, by torchlight",
+      "skill": "sword",
+      "s2": "ins",
+      "d": 56,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "spar",
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "mpe_elf_silent_yew",
+      "i": 2,
+      "label": "Go down among them with a knife",
+      "skill": "stealth",
+      "s2": "dagger",
+      "d": 54,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "yield",
+       "weapon": "dagger",
+       "edge": "stealth"
+      }
+     },
+     {
+      "id": "mpe_dw_warden_toll",
+      "i": 0,
+      "label": "March with the Old Toll",
+      "skill": "shield",
+      "s2": "sta",
+      "d": 54,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 3,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "mpe_dw_door_axe",
+      "i": 0,
+      "label": "Stand second for {them}",
+      "skill": "shield",
+      "s2": "wil",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "mpe_dw_korrin_stone",
+      "i": 2,
+      "label": "Hold the Iron Road gate while the garrison marches out",
+      "skill": "shield",
+      "s2": "intimidation",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "edge": "intimidation"
+      }
+     },
+     {
+      "id": "mpe_dw_korrin_fort",
+      "i": 0,
+      "label": "Take a spear and go with them",
+      "skill": "spear",
+      "s2": "stealth",
+      "d": 55,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 3,
+       "allies": 2,
+       "allyTier": 2,
+       "weapon": "spear",
+       "edge": "stealth"
+      }
+     },
+     {
+      "id": "mpe_orc_hyena_dusk",
+      "i": 1,
+      "label": "Hunt the pack at dusk, to the last one",
+      "skill": "spear",
+      "s2": "ins",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 3,
+       "beast": "CRE-35",
+       "allies": 2,
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "mpe_orc_wave_young",
+      "i": 2,
+      "label": "Ride beside {themHim} in the first wave",
+      "skill": "mounted",
+      "s2": "str",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "mounted": true
+      }
+     },
+     {
+      "id": "mpe_orc_wave_last",
+      "i": 0,
+      "label": "Ride the first wave once more",
+      "skill": "sta",
+      "s2": "wil",
+      "d": 58,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "mpe_orc_tarn_gordush",
+      "i": 0,
+      "label": "Ride across the Gordush with Tarn",
+      "skill": "mounted",
+      "s2": "stealth",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "mounted": true,
+       "edge": "stealth"
+      }
+     },
+     {
+      "id": "mpe_orc_merc_cousins",
+      "i": 0,
+      "label": "Sign on at sixty",
+      "skill": "mounted",
+      "s2": "ins",
+      "d": 54,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2,
+       "mounted": true
+      }
+     },
+     {
+      "id": "mpe_ho_rider_fire",
+      "i": 0,
+      "label": "Lead them across the Gordush",
+      "skill": "command",
+      "s2": "mounted",
+      "d": 58,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield",
+       "mounted": true,
+       "edge": "command"
+      }
+     },
+     {
+      "id": "mpe_ho_filed_word",
+      "i": 0,
+      "label": "Pull him off his horse",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "mpf_bout_rematch",
+      "i": 0,
+      "label": "Beat {themHim} cleanly, and let them do the sums",
+      "skill": "sword",
+      "s2": "ins",
+      "d": 55,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 1,
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "mpf_bout_rematch",
+      "i": 1,
+      "label": "Throw {themHim} cleanly, and let them do the sums",
+      "skill": "unarmed",
+      "s2": "str",
+      "d": 55,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 1,
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "mpf_quiet_throat",
+      "i": 0,
+      "label": "Do it, the way they taught you",
+      "skill": "dagger",
+      "s2": "stealth",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "yield",
+       "weapon": "dagger",
+       "edge": "stealth"
+      }
+     },
+     {
+      "id": "mpf_rim_ashby",
+      "i": 0,
+      "label": "Lay the point inside the rim",
+      "skill": "lance",
+      "s2": "str",
+      "d": 58,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "spar",
+       "weapon": "lance",
+       "mounted": true
+      }
+     },
+     {
+      "id": "mpf_rim_ashby",
+      "i": 1,
+      "label": "Ride a plain course at the boss",
+      "skill": "lance",
+      "s2": "sta",
+      "d": 54,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 4,
+       "rule": "spar",
+       "weapon": "lance",
+       "mounted": true
+      }
+     },
+     {
+      "id": "mrb_st_march",
+      "i": 0,
+      "label": "Take your pike and march",
+      "skill": "spear",
+      "s2": "str",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 3,
+       "allies": 2,
+       "allyTier": 2,
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "mrb_tk_young_spear",
+      "i": 0,
+      "label": "Walk out beside {themHim}, your spear grounded",
+      "skill": "spear",
+      "s2": "ins",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "beast",
+       "n": 1,
+       "beast": "CRE-20",
+       "allies": 2,
+       "weapon": "spear"
+      }
+     },
+     {
+      "id": "mrb_bd_quick_door",
+      "i": 0,
+      "label": "Shut your eyes and fight by ear",
+      "skill": "sword",
+      "s2": "ins",
+      "d": 60,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 2,
+       "tier": 3,
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "mra_nw_dorin_feast",
+      "i": 0,
+      "label": "Shoot your best and beat him",
+      "skill": "mounted",
+      "s2": "bow",
+      "d": 54,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar",
+       "mounted": true
+      }
+     },
+     {
+      "id": "mra_tm_lamp_night",
+      "i": 0,
+      "label": "Hold the door",
+      "skill": "melee",
+      "s2": "command",
+      "d": 54,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 5,
+       "tier": 2,
+       "edge": "command"
+      }
+     },
+     {
+      "id": "mra_sc_zayd_reckoning",
+      "i": 0,
+      "label": "Ride with {them} against the caravan",
+      "skill": "melee",
+      "s2": "riding",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 2,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "mra_sc_zayd_reckoning",
+      "i": 2,
+      "label": "Ride in front, as {them} asks",
+      "skill": "melee",
+      "s2": "riding",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 2,
+       "edge": "riding"
+      }
+     },
+     {
+      "id": "mrx_sk_still_thief",
+      "i": 0,
+      "label": "Bring {ohim} down, then let {ohim} up",
+      "skill": "unarmed",
+      "s2": "melee",
+      "d": 46,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "brawl",
+       "weapon": "fists"
+      }
+     },
+     {
+      "id": "mrx_sk_still_thief",
+      "i": 1,
+      "label": "Strike to kill",
+      "skill": "melee",
+      "s2": "str",
+      "d": 40,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "mrx_rp_blade_wedding",
+      "i": 0,
+      "label": "Show {ohim}, to first blood",
+      "skill": "sword",
+      "s2": "spd",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "spar",
+       "weapon": "sword"
+      }
+     },
+     {
+      "id": "mrx_rp_blade_forty",
+      "i": 1,
+      "label": "Take it to Kavi Rane",
+      "skill": "etiquette",
+      "s2": "sword",
+      "d": 46,
+      "deadly": false,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 1,
+       "rule": "spar",
+       "weapon": "sword",
+       "edge": "etiquette"
+      }
+     },
+     {
+      "id": "mrx_br_told_page",
+      "i": 2,
+      "label": "Fight {ohim} here",
+      "skill": "melee",
+      "s2": "str",
+      "d": 52,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "mwf_peddler_boots",
+      "i": 2,
+      "label": "Follow him out of town at dusk",
+      "skill": "stealth",
+      "s2": "dagger",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 3,
+       "rule": "yield",
+       "weapon": "dagger",
+       "edge": "stealth"
+      }
+     },
+     {
+      "id": "ak_feud_3",
+      "i": 0,
+      "label": "Stand and fight them in the road",
+      "skill": "melee",
+      "s2": "str",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "ak_match_3",
+      "i": 1,
+      "label": "Take {mate} out to the yard",
+      "skill": "melee",
+      "s2": "str",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "yield"
+      }
+     },
+     {
+      "id": "ak_elope_3",
+      "i": 0,
+      "label": "Fight them in the yard",
+      "skill": "melee",
+      "s2": "str",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "party",
+       "n": 3,
+       "tier": 3
+      }
+     },
+     {
+      "id": "ar_hon_2",
+      "i": 0,
+      "label": "Fight",
+      "skill": "melee",
+      "s2": "spd",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "one",
+       "n": 1,
+       "tier": 2,
+       "rule": "spar"
+      }
+     },
+     {
+      "id": "aw_siege_4",
+      "i": 2,
+      "label": "Stand in the breach with a bill",
+      "skill": "melee",
+      "s2": "wil",
+      "d": 55,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 2,
+       "allies": 2,
+       "allyTier": 2
+      }
+     },
+     {
+      "id": "ao_sword_5",
+      "i": 0,
+      "label": "Carry Kestrel in the line",
+      "skill": "melee",
+      "s2": "wil",
+      "d": 50,
+      "deadly": true,
+      "made": false,
+      "spec": {
+       "scale": "army",
+       "n": 3,
+       "tier": 4,
+       "allies": 2,
+       "allyTier": 2
+      }
+     }
+    ]
+   },
+   "group": {
+    "claims": [
+     {
+      "k": "Trained vs 2 Brawlers",
+      "src": "Brawler: \"two or three of them make one soldier\"",
+      "closed": 50.1,
+      "rolled": 50.1,
+      "n": 3000
+     },
+     {
+      "k": "Trained vs 3 Brawlers",
+      "src": "",
+      "closed": 40.1,
+      "rolled": 38.9,
+      "n": 3000
+     },
+     {
+      "k": "Veteran vs 2 Trained",
+      "src": "Veteran: \"worth two or three regulars at once\"",
+      "closed": 54.6,
+      "rolled": 54.5,
+      "n": 3000
+     },
+     {
+      "k": "Veteran vs 3 Trained",
+      "src": "",
+      "closed": 44.5,
+      "rolled": 45.7,
+      "n": 3000
+     },
+     {
+      "k": "Elite vs 7 Trained",
+      "src": "Elite: \"can take 7-10 regulars or about 4 veterans\"",
+      "closed": 54,
+      "rolled": 52.6,
+      "n": 3000
+     },
+     {
+      "k": "Elite vs 10 Trained",
+      "src": "",
+      "closed": 45.2,
+      "rolled": 44.5,
+      "n": 3000
+     },
+     {
+      "k": "Elite vs 4 Veterans",
+      "src": "",
+      "closed": 46.1,
+      "rolled": 47.3,
+      "n": 3000
+     },
+     {
+      "k": "Master vs 20 Trained",
+      "src": "Master: \"takes 20-30 regulars or 8-10 veterans\"",
+      "closed": 53.8,
+      "rolled": 53.5,
+      "n": 3000
+     },
+     {
+      "k": "Master vs 30 Trained",
+      "src": "",
+      "closed": 29.8,
+      "rolled": 29,
+      "n": 3000
+     },
+     {
+      "k": "Master vs 8 Veterans",
+      "src": "",
+      "closed": 54.8,
+      "rolled": 54.6,
+      "n": 3000
+     },
+     {
+      "k": "Master vs 10 Veterans",
+      "src": "",
+      "closed": 42.5,
+      "rolled": 43.5,
+      "n": 3000
+     },
+     {
+      "k": "3 Trained vs Elite",
+      "src": "Plan, Power 3: \"3 Trained beat 1 Elite about two times in three\"",
+      "closed": 26.7,
+      "rolled": 26.5,
+      "n": 3000
+     }
+    ],
+    "trainedToBeatEliteTwoInThree": 13
+   },
+   "tiers": [
+    {
+     "k": "animal: Veteran alone",
+     "claim": 50,
+     "real": 53
+    },
+    {
+     "k": "animal: Trained alone",
+     "claim": 25,
+     "real": 23.6
+    },
+    {
+     "k": "animal: Trained with a party",
+     "claim": 90,
+     "real": 91.8
+    },
+    {
+     "k": "great: Master with a party",
+     "claim": 50,
+     "real": 48.8
+    },
+    {
+     "k": "great: Elite with a party",
+     "claim": 10,
+     "real": 11.8
+    },
+    {
+     "k": "great: Master alone (\"usually dies\")",
+     "claim": 25,
+     "max": 50,
+     "real": 2.6
+    }
+   ],
+   "duels": {
+    "screen": {
+     "bins": [
+      {
+       "bin": "0-9",
+       "n": 648,
+       "shown": 3,
+       "real": 1.1
+      },
+      {
+       "bin": "10-24",
+       "n": 203,
+       "shown": 16.3,
+       "real": 21.2
+      },
+      {
+       "bin": "25-39",
+       "n": 136,
+       "shown": 31.3,
+       "real": 41.2
+      },
+      {
+       "bin": "40-59",
+       "n": 176,
+       "shown": 50,
+       "real": 46.6
+      },
+      {
+       "bin": "60-74",
+       "n": 127,
+       "shown": 65.9,
+       "real": 55.1
+      },
+      {
+       "bin": "75-89",
+       "n": 192,
+       "shown": 82.6,
+       "real": 81.3
+      },
+      {
+       "bin": "90-100",
+       "n": 914,
+       "shown": 96.9,
+       "real": 99.3
+      }
+     ],
+     "maxErr": 10.8,
+     "meanErr": 3.4,
+     "n": 2396
+    },
+    "profile": {
+     "bins": [
+      {
+       "bin": "0-9",
+       "n": 363,
+       "shown": 2.2,
+       "real": 1.1
+      },
+      {
+       "bin": "10-24",
+       "n": 86,
+       "shown": 17,
+       "real": 26.7
+      },
+      {
+       "bin": "25-39",
+       "n": 60,
+       "shown": 32.8,
+       "real": 45
+      },
+      {
+       "bin": "40-59",
+       "n": 98,
+       "shown": 50.9,
+       "real": 44.9
+      },
+      {
+       "bin": "60-74",
+       "n": 49,
+       "shown": 69,
+       "real": 51
+      },
+      {
+       "bin": "75-89",
+       "n": 92,
+       "shown": 84.1,
+       "real": 84.8
+      },
+      {
+       "bin": "90-100",
+       "n": 449,
+       "shown": 98,
+       "real": 99.6
+      }
+     ],
+     "maxErr": 17.9,
+     "meanErr": 3.5,
+     "n": 1197
+    }
+   },
+   "beasts": {
+    "bins": [
+     {
+      "bin": "0-9",
+      "n": 902,
+      "shown": 2.4,
+      "real": 0.7
+     },
+     {
+      "bin": "10-24",
+      "n": 67,
+      "shown": 16.1,
+      "real": 25.4
+     },
+     {
+      "bin": "25-39",
+      "n": 36,
+      "shown": 31.9,
+      "real": 38.9
+     },
+     {
+      "bin": "40-59",
+      "n": 66,
+      "shown": 49.9,
+      "real": 51.5
+     },
+     {
+      "bin": "60-74",
+      "n": 40,
+      "shown": 66.6,
+      "real": 65
+     },
+     {
+      "bin": "75-89",
+      "n": 49,
+      "shown": 82.5,
+      "real": 63.3
+     },
+     {
+      "bin": "90-100",
+      "n": 440,
+      "shown": 97.1,
+      "real": 99.3
+     }
+    ],
+    "maxErr": 19.2,
+    "meanErr": 2.7,
+    "n": 1600
+   },
+   "honest": {
+    "bins": [
+     {
+      "bin": "0-9",
+      "n": 945,
+      "shown": 3.6,
+      "real": 3.1
+     },
+     {
+      "bin": "10-24",
+      "n": 515,
+      "shown": 16.7,
+      "real": 16.9
+     },
+     {
+      "bin": "25-39",
+      "n": 418,
+      "shown": 31.1,
+      "real": 31.6
+     },
+     {
+      "bin": "40-59",
+      "n": 711,
+      "shown": 49.6,
+      "real": 51.5
+     },
+     {
+      "bin": "60-74",
+      "n": 319,
+      "shown": 66.5,
+      "real": 66.1
+     },
+     {
+      "bin": "75-89",
+      "n": 390,
+      "shown": 81.3,
+      "real": 82.6
+     },
+     {
+      "bin": "90-100",
+      "n": 298,
+      "shown": 95.5,
+      "real": 96.3
+     }
+    ],
+    "maxErr": 1.9,
+    "meanErr": 0.8,
+    "n": 3596,
+    "mismatch": 0,
+    "byScale": {
+     "beast": {
+      "n": 336,
+      "shown": 19.7,
+      "real": 18.8
+     },
+     "one": {
+      "n": 2426,
+      "shown": 40.8,
+      "real": 41.4
+     },
+     "party": {
+      "n": 263,
+      "shown": 28.5,
+      "real": 26.2
+     },
+     "army": {
+      "n": 571,
+      "shown": 49.8,
+      "real": 52
+     }
+    }
+   },
+   "pageErrors": []
+  }
+ ]
+}

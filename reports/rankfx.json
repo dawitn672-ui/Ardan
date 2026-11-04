@@ -1,0 +1,39 @@
+{
+ "fights": 60,
+ "arms": {
+  "none": {
+   "won": 37,
+   "of": 60,
+   "pct": 62
+  },
+  "lineBest": {
+   "won": 41,
+   "of": 60,
+   "pct": 68
+  },
+  "lineSuccess": {
+   "won": 38,
+   "of": 60,
+   "pct": 63
+  },
+  "lineWorst": {
+   "won": 36,
+   "of": 60,
+   "pct": 60
+  },
+  "partBest": {
+   "won": 44,
+   "of": 60,
+   "pct": 73
+  },
+  "partWorst": {
+   "won": 32,
+   "of": 60,
+   "pct": 53
+  }
+ },
+ "swing": {
+  "line": 8,
+  "part": 20
+ }
+}
