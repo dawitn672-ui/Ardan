@@ -124,9 +124,11 @@ export default {
         return { n, seas, fp: A.fingerprint() };
       };
       const a = run(), b = run();
-      return { n: a.n, w: a.seas.winter[0] / a.seas.winter[1], s: a.seas.summer[0] / a.seas.summer[1], same: a.fp === b.fp };
+      // the weights themselves: one life's months are too few to rank the seasons (scheduled scenes take their slots)
+      const mean = m => { const w = A.V2T.weights(A.pc(), m), t = w.reduce((x, y) => x + y, 0); return (w[1] + 2 * w[2] + 3 * w[3]) / t; };
+      return { n: a.n, w: a.seas.winter[0] / a.seas.winter[1], s: a.seas.summer[0] / a.seas.summer[1], ww: mean(0), ws: mean(6), same: a.fp === b.fp };
     });
-    const ok = r.n[4] === 0 && r.n[0] > 0 && r.n[1] > 0 && r.n[2] > 0 && r.n[0] > r.n[1] && r.s > r.w && r.same;
+    const ok = r.n[4] === 0 && r.n[0] > 0 && r.n[1] > 0 && r.n[2] > 0 && r.n[0] > r.n[1] && r.ws > r.ww && r.same;
     return { ok, detail: `months with 0/1/2/3 drawn: ${r.n.slice(0, 4).join('/')} (more: ${r.n[4]}); a winter month ${r.w.toFixed(2)}, a summer month ${r.s.toFixed(2)}; same seed same world: ${r.same}` };
   },
 
@@ -206,5 +208,70 @@ export default {
     });
     const ok = r.open && r.card === 0 && r.took && r.still === 0 && r.plain === 0 && r.clergy > 0 && r.amb === 0 && r.logged && (r.pick === 2 || r.pick === 0);
     return { ok, detail: `chapter open ${r.open}, chapter cards ${r.card}, pick buttons ${r.pick} -> ${r.still}, story line ${r.logged}; shrine aim fit: plain ${r.plain}, clergy ${r.clergy}; faith ambition at piety 45: ${r.amb}` };
+  },
+  // playtest 1, soft-lock: a forced head the game cannot show (its setup gave up: no captain) froze the clock with a
+  // dead "Go on"; and a battle closed by its own screen left the step waiting on an empty queue
+  async v2tNoSoftLock(pg) {
+    await pg.evaluate(DRIVE);
+    const r = await pg.evaluate(async () => {
+      T.enter({ seed: 9221, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const id = Object.keys(A.EV).find(k => A.EV[k].trigger) || Object.keys(A.EV)[0];
+      const dead = () => ({ type: 'event', ev: id, forced: true, ctx: { pid: null, skip: true }, view: { title: 'x', text: 'x', choices: [], skip: true } });
+      // 1. an unshowable forced head, as a save holds it
+      A.S.queue = [dead()]; UI.render();
+      const m0 = A.V2T.monthOf(A.S.warClock || 0);
+      const a = await __press('v2Next');
+      // 2. a step waiting at a card whose screen took it off the queue itself
+      A.S.queue = []; UI.render();
+      const d0 = A.absDay(); UI.A.v2Next();
+      let g = 0; while (UI.stepper.run && !UI.stepper.wait && g++ < 400) await new Promise(res => setTimeout(res, 5));
+      if (UI.stepper.wait) { A.S.queue.shift(); while (A.S.queue.length) A.S.queue.shift(); }
+      else { UI.stepper.run = true; UI.stepper.wait = true; }
+      UI.refresh();
+      g = 0; while (UI.stepper.run && g++ < 800) { if (A.S.queue.length) window.__answer(); await new Promise(res => setTimeout(res, 5)); }
+      const freed = !UI.stepper.run;
+      const b = await __press('v2Next');
+      return { moved: a.m1 !== m0 && !a.stuck, freed, again: !b.stuck && b.d1 > b.d0, go: [...document.querySelectorAll('#clk [data-a=stepGo]')].length };
+    });
+    const ok = r.moved && r.freed && r.again && r.go === 0;
+    return { ok, detail: `unshowable forced head: the month moved ${r.moved}; a wait left with an empty queue ended or went on ${r.freed}; Next month works after ${r.again}; dead Go on buttons ${r.go}` };
+  },
+
+  // playtest 1: 6 and 8 cards in a child's month. The world's own scenes stop at three a month; the rest wait for the next
+  // month; a choice's consequence is never held
+  async v2tMonthCap(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9222, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 13 });
+      A.S.queue = []; A.S.sched = []; A.V2T.st().mn = 0;
+      const all = Object.keys(A.EV).filter(k => !A.EV[k].trigger && !A.EV[k].once).slice(0, 7), ids = all.slice(0, 6);
+      for (const id of ids) A.S.queue.push({ type: 'event', ev: id, ctx: {} });
+      A.S.queue.push({ type: 'event', ev: all[6], ctx: {}, lfFrom: 'chain' });
+      let shown = 0, chain = 0, g = 0, h;
+      while ((h = A.headReady()) && g++ < 20) { shown++; if (h.lfFrom === 'chain') chain++; A.S.queue.shift(); }
+      const held = (A.S.sched || []).filter(x => x.item && ids.includes(x.item.ev)).length, next = A.V2T.nextTurn();
+      return { shown, chain, held, later: (A.S.sched || []).every(x => x.at >= next) };
+    });
+    const ok = r.shown <= 4 && r.chain === 1 && r.held >= 3 && r.later;
+    return { ok, detail: `7 queued at once: ${r.shown} shown (the consequence among them: ${r.chain}), ${r.held} held to next month (all after the turn: ${r.later})` };
+  },
+
+  // playtest 1: on campaign at 1366 the top bar ran to 1648 px; the standing orders are on the page now. And a card's
+  // opening clears a quiet month's toast, so none lies over its title
+  async v2tCampFits(pg) {
+    await pg.setViewportSize({ width: 1366, height: 768 });
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9207, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 30 });
+      const pc = A.pc(), home = A.S.prov[pc.home];
+      const far = A.S.prov.filter(P => P && P.owner === pc.realm && P.id !== pc.home).sort((a, b) => Math.hypot(b.x - home.x, b.y - home.y) - Math.hypot(a.x - home.x, a.y - home.y))[0];
+      A.JR.start(pc, far.id, 'visit'); UI.tab = 'life'; UI.render();
+      const wide = document.scrollingElement.scrollWidth, bar = document.getElementById('topbar').scrollWidth, card = !!document.querySelector('#tabbody .v2-campcard');
+      A.V2T.quietToast('A quiet month.');
+      const on = document.getElementById('toast').classList.contains('ts-on');
+      A.S.queue = [{ type: 'event', ev: Object.keys(A.EV).find(k => !A.EV[k].trigger), ctx: {} }]; A.headReady(); UI.renderModal();
+      const off = !document.getElementById('toast').classList.contains('ts-on');
+      return { wide, bar, card, on, off };
+    });
+    const ok = r.wide <= 1366 && r.bar <= 1366 && r.card && r.on && r.off;
+    return { ok, detail: `page ${r.wide} px, top bar ${r.bar} px at 1366; campaign card on the Life page ${r.card}; toast shown ${r.on}, cleared by the card ${r.off}` };
   },
 };
