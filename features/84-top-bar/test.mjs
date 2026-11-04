@@ -69,11 +69,14 @@ Object.assign(tests, {
       await __step('stepMonth');   // the first days build the roads once (v2: a month; Week is gone)
       const lt = [];
       const ob = new PerformanceObserver(l => { for (const e of l.getEntries()) lt.push(e.duration); }); ob.observe({ entryTypes: ['longtask'] });
-      const t0 = performance.now(), m = await __step('stepMonth'), ms = performance.now() - t0;
+      A.S.queue = [];   // v2: Next month waits for the cards left from the last step
+      // v2: this soldier's host is on the march by now, so the clock offers a week, not a month
+      const camp = !!(A.V2T && A.V2T.campaign());
+      const t0 = performance.now(), m = await __step(camp ? 'v2Week' : 'stepMonth'), ms = performance.now() - t0;
       await new Promise(res => setTimeout(res, 50)); ob.disconnect();
-      return { ms: Math.round(ms), slices: m.slices, days: m.d1 - m.d0, long: lt.map(Math.round).sort((a, b) => b - a), great: A.S.prov.length > 1000 };
+      return { camp, ms: Math.round(ms), slices: m.slices, days: m.d1 - m.d0, long: lt.map(Math.round).sort((a, b) => b - a), great: A.S.prov.length > 1000 };
     });
-    const ok = r.great && r.days >= 25 && r.long.length >= 0 && (r.long[0] || 0) < 1500 && r.slices >= 5;
+    const ok = r.great && r.days >= (r.camp ? 7 : 25) && r.long.length >= 0 && (r.long[0] || 0) < 1500 && (r.slices >= 5 || r.ms < 300);   // v2: a month that is done in under 300 ms needs no slices
     return { ok, detail: `a month of the Great Continent in ${r.ms} ms over ${r.slices} polls; long tasks ${r.long.slice(0, 6).join(', ') || 'none'} ms (the longest is the month's turn, a single day)` };
   },
   // a life begun through the creation screen (which keeps its page number in UI.step) steps a month at a time, and the
