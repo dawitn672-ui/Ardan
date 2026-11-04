@@ -71,6 +71,13 @@
     if (A.hasTrade && A.hasTrade(a, b)) add('trade', 6, 'trade with each other');
     if (ra.overlord === b || rb.overlord === a) add('tribute', -6, `${short(ra.overlord === b ? a : b)} pays tribute`);
     if (A.friendly && A.friendly(a, b) && A.atWar(a).length) add('comrades', 12, 'fight side by side');
+    // a conqueror is feared by those near it (the coalition reads this through the status)
+    for (const [x, y] of [[a, b], [b, a]]) {
+      const inf = +(A.realm(x).infamy || 0);
+      if (inf < 40) continue;
+      const nx = A.neighbors(x), near = nx.includes(y) || A.neighbors(y).some(n => nx.includes(n));
+      if (near) add('fear-' + x, -Math.min(25, (inf - 30) / 2), `fear of ${short(x)}'s conquests`);
+    }
     const R = (A.S.v2dip && A.S.v2dip.ruler) || {};
     for (const x of [a, b]) { const s = R[x] && R[x][1]; if (s != null && Y - s < 3) add('ruler-' + x, 5 - 2 * (Y - s), `a new ruler in ${short(x)} seeks goodwill`); }
     return out;
@@ -182,6 +189,8 @@
       if (e.kind === 'alliance') {
         r.pact = gamePact(a, b);
         if (ra.overlord === b || rb.overlord === a || (ra.allies || []).length >= 3 || (rb.allies || []).length >= 3) continue;
+        // an earlier decision this month (a war, a conqueror's new infamy) may have moved the reasons: act on them as they stand now
+        if (DV.relation(a, b).score < 22) continue;
         if (pr) {
           const o = pr === ra ? rb : ra, pc = A.pc(); pr.offerSeen = pr.offerSeen || {};
           if (pc && A.queueAiOffer && !(pr.offerSeen['ally' + o.id] && Y - pr.offerSeen['ally' + o.id] < 4)) { pr.offerSeen['ally' + o.id] = Y; A.queueAiOffer(pc, pr, { kind: 'ally', rid: o.id }); }

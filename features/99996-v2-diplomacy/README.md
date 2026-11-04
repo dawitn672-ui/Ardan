@@ -26,3 +26,10 @@ derives the status from all the parts: a marriage plus a sworn rivalry reads "un
 - **Views.** The diplomacy card, the realm card and a foreign person's card show the status and "Drawing together" /
   "Pulling apart" in words. The card's hidden "Why they feel this way" is gone, and its treaty odds are words
   (patch `V2DIP-NO-PCT` drops the "% income" in the Diplomacy header).
+- **What you know** (playtest 1 #22, `knowledge.core.js`, patch `V2DIP-SEEN-REALMS`): `A.V2DIP.seen(rid)` is exact for
+  the realm you rule, an estimate ("about 150,000") for a ruler's view of others and a noble's or courtier's view of his
+  own realm, and words and hearsay ("said to be a great host", "said to be unsettled") for everyone else. The realm
+  card, World > Realms, the diplomacy card, bloc strengths and the realm tooltips follow it.
+- **Blocs and coalitions** (playtest 1 #22): an alliance bloc is realms each allied to every other (patch `V2DIP-BLOCS`;
+  chains no longer join all 33 realms). A coalition takes only realms cold or worse with the conqueror by the status
+  (patch `V2DIP-COALITION`), and a conqueror's infamy is a reason of its own ("fear of X's conquests").

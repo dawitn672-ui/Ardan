@@ -134,4 +134,54 @@ export default {
     const ok = !r.bad.length && r.blocks > 0;
     return { ok, detail: `${r.n} realms' cards, diplomacy cards and blocks, ${r.blocks} person views: ${r.bad.slice(0, 3).join(' | ') || 'no %'}` };
   },
+  // playtest 1 #22: a bloc is realms all allied to each other (no chain of 33), and a coalition agrees with the status
+  async v2DipBlocsCoalition(pg) {
+    await pg.evaluate(HELP);
+    const r = await pg.evaluate((seed) => {
+      T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+      DT.run(12);
+      const DV = A.V2DIP, ids = DT.others(), live = Object.values(A.S.realms).filter(x => x.alive && !x.isRebel).length;
+      // a chain: x-y and y-z allied, x and z not
+      const [x, y, z] = ids.filter(id => !A.atWar(id).length).slice(0, 3);
+      for (const q of [x, y, z]) for (const o of A.realm(q).allies.slice()) A.unally(q, o);
+      A.ally(x, y); A.ally(y, z);
+      UI.worldView = 'dipl';
+      const html = UI.worldTabPolitics(A.pc()), d = document.createElement('div'); d.innerHTML = html;
+      const byName = {}; for (const rr of Object.values(A.S.realms)) byName[rr.short] = rr.id;
+      const h = [...d.querySelectorAll('.group-h')].find(e => e.textContent === 'Alliance blocs');
+      const blocs = []; for (let e = h && h.nextElementSibling; e && e.classList.contains('card'); e = e.nextElementSibling) blocs.push(e.querySelector('b').textContent.split(' · ').map(t => byName[t.trim()]));
+      const bad = blocs.filter(bl => bl.some(a => bl.some(b => a !== b && !A.realm(a).allies.includes(b))));
+      const chain = blocs.some(bl => bl.includes(x) && bl.includes(z));
+      const biggest = Math.max(0, ...blocs.map(b => b.length));
+      const army = [...d.querySelectorAll('.card .tiny')].map(e => e.textContent).find(t => /Combined army/.test(t));
+      // a conqueror: the coalition against it is only realms cold or worse with it, none allied to it
+      const t = ids.find(id => A.neighbors(id).length >= 3) || ids[0];
+      A.realm(t).infamy = 75; A.politicsYear();
+      const ms = (A.S.coalitions || {})[t] || [], off = ms.filter(m => !DV.COLD.includes(DV.status(m, t)) || A.realm(m).allies.includes(t));
+      return { live, n: blocs.length, biggest, bad: bad.length, chain, army: army || '', ms: ms.length, off: off.length, fear: ms.length ? DV.relation(ms[0], t).apart.map(q => q.text).join(', ') : '' };
+    }, 61);
+    const ok = r.n > 0 && r.biggest <= 4 && !r.bad && !r.chain && !/\d/.test(r.army) && !r.off;
+    return { ok, detail: `${r.n} blocs, biggest ${r.biggest} of ${r.live} realms, ${r.bad} not all allied, chain joined ${r.chain}; "${r.army}"; coalition of ${r.ms}, ${r.off} not cold to the conqueror (${r.fear})` };
+  },
+
+  // playtest 1 #22: what you see of a realm depends on who you are
+  async v2DipWhatYouKnow(pg) {
+    await pg.evaluate(HELP);
+    const r = await pg.evaluate((seed) => {
+      T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+      DT.run(1);
+      const DV = A.V2DIP, pc = A.pc(), me = pc.realm, o = DT.others()[0], R = A.realm(o), M = A.realm(me);
+      // the army and stability, not the population: the Codex primer on the card may quote one (lore, not a live figure)
+      const has = (h, n) => DT.text(h).includes(A.fmt(n));
+      UI.worldView = 'realms';
+      const peasant = { card: has(UI.realmCard(o), R.army) || /stability \d/.test(DT.text(UI.realmCard(o))), table: has(UI.worldTabBasic ? UI.worldTabBasic(pc) : '', R.army), own: DV.seen(me), seenO: DV.seen(o), words: DT.text(UI.realmCard(o)).includes('said to be') };
+      const tip = UI.TIPS && UI.TIPS.realmGold ? DT.text(UI.TIPS.realmGold(o)) : '';
+      pc.ruler = me; // as the ruler of his own realm
+      const ruler = { own: DV.seen(me), other: DV.seen(o), ownExact: DV.armyText(M) === A.fmt(M.army), otherAbout: /^about /.test(DV.armyText(R)) };
+      pc.ruler = null;
+      return { peasant, tip: tip.includes(A.fmt(R.treasury)), ruler };
+    }, 62);
+    const P = r.peasant, ok = !P.card && !P.table && P.own === 'hearsay' && P.seenO === 'hearsay' && P.words && !r.tip && r.ruler.own === 'exact' && r.ruler.other === 'estimate' && r.ruler.ownExact && r.ruler.otherAbout;
+    return { ok, detail: `peasant: exact figures in the card ${P.card}, the realms table ${P.table}, the treasury tip ${r.tip}; hearsay words ${P.words}; ruler: own ${r.ruler.own}, others ${r.ruler.other}` };
+  },
 };
