@@ -239,4 +239,55 @@ export default {
     });
     return { ok: r.wars >= 1 && r.outside && r.mentions === 0 && r.kept && r.pure, detail: `${r.wars} war(s) in the world, the player in none ${r.outside}; the Wars map names ${r.mentions} of them; the world's wars kept ${r.kept}; pure ${r.pure}` };
   },
+  // playtest round 1: leaving the field ends the step; the call to battle and the reckoning give numbers by rank; an
+  // outsider's map has no other war's divisions or fights; World > Wars says your realm is at war without you; the
+  // captain's choices are rated against the unit he faces and differ; the orders' page reads 14-26 levies a member
+  async v2wRound1(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      const out = {};
+      const f = VWX.get(1)[0];
+      // 1. a finished battle closed mid-step: the step ends, the queue is empty
+      VWX.play(f, 0, 0);
+      const ST = UI.stepper; ST.run = true; ST.wait = true;
+      UI.screen = 'game'; UI.ov = null;
+      UI.A.v2wClose();
+      out.stepAfter = !!ST.run; out.queue = A.S.queue.length;
+      // 2. the call to battle, by rank
+      out.calls = {};
+      for (const [rank, k] of [[0, 'soldier'], [2, 'sergeant'], [5, 'captain'], [7, 'commander']]) {
+        const { F } = VWX.load(f, rank);
+        A.S.pcFightAsk = null;
+        const att = F.aIds.map(A.divById).filter(Boolean), def = F.dIds.map(A.divById).filter(Boolean);
+        A.wsPCFightStart(F, att, def);
+        const q = A.S.queue.find(x => x.type === 'choice');
+        const m = q && /— (.*?) of yours against (.*?) of theirs/.exec(q.text);
+        out.calls[k] = m ? [m[1], m[2]] : null;
+      }
+      out.retell = A.V2W.retell('9 days at X, on hills: 61,538 men. Dead: 47 of yours, 251 of theirs.', 'sergeant');
+      // 5. the captain: the unit across, and words that differ
+      const b = VWX.play(f, 5, 0) || null;
+      const { arg } = VWX.load(f, 5); A.CHOICE_FN.wsPart(arg);
+      const q5 = A.S.queue[0];
+      out.capWords = q5 && q5.type === 'v2battle' ? A.V2.war.CHOICES.captain.map(c => A.V2W.oddsOf(q5.b, c).words) : [];
+      out.capText = q5 && q5.type === 'v2battle' ? A.V2W.view(q5.b).includes('Across from you') : false;
+      A.S.queue = [];
+      // 3 and 4. a peasant outside the war
+      T.enter({ seed: 7311, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      const pc = A.pc(); A.startWar(pc.realm, A.neighbors(pc.realm)[0], null, 'conquest');
+      const n0 = A.allDivs().length, f0 = A.S.fights;
+      out.seenDivs = A.V2W.withSeen(() => A.allDivs().length); out.allDivs = n0; out.restored = A.allDivs().length === n0 && A.S.fights === f0;
+      UI.worldView = 'wars'; const wv = UI.TAB.world(pc);
+      out.peaceLie = /for once, at peace/.test(wv); out.notIn = /not in it/.test(wv);
+      // 6. the orders' page
+      out.orders = Object.keys(GD.ORDERS).map(id => { const s = A.orderSummary(id); return s && s.men ? +(s.likeMen / s.men).toFixed(1) : null; });
+      return out;
+    });
+    const c = r.calls, est = x => x && /^(about|a handful)/.test(x[0]) && /^(about|a handful)/.test(x[1]);
+    const ok = !r.stepAfter && r.queue === 0 && est(c.soldier) && est(c.sergeant) && c.captain && /^some/.test(c.captain[0]) && /^some/.test(c.captain[1]) &&
+      c.commander && /^[\d,]+$/.test(c.commander[0]) && /^(about|a handful)/.test(c.commander[1]) && !/61,538|\b47\b|251/.test(r.retell) &&
+      r.capText && new Set(r.capWords).size >= 2 && r.seenDivs === 0 && r.allDivs > 0 && r.restored && !r.peaceLie && r.notIn &&
+      r.orders.filter(x => x != null).length >= 5 && r.orders.every(x => x == null || (x >= 14 && x <= 26));
+    return { ok, detail: `step after close ${r.stepAfter}, queue ${r.queue}; calls ${JSON.stringify(c)}; reckoning "${r.retell}"; captain words ${r.capWords.join('/')}; outsider sees ${r.seenDivs} of ${r.allDivs} divisions (restored ${r.restored}); World > Wars at peace ${r.peaceLie}, "not in it" ${r.notIn}; orders a member ${r.orders.join(', ')}` };
+  },
 };
