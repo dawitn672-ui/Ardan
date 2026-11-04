@@ -189,6 +189,8 @@
       if (e.kind === 'alliance') {
         r.pact = gamePact(a, b);
         if (ra.overlord === b || rb.overlord === a || (ra.allies || []).length >= 3 || (rb.allies || []).length >= 3) continue;
+        // an earlier decision this month (a war, a conqueror's new infamy) may have moved the reasons: act on them as they stand now
+        if (DV.relation(a, b).score < 22) continue;
         if (pr) {
           const o = pr === ra ? rb : ra, pc = A.pc(); pr.offerSeen = pr.offerSeen || {};
           if (pc && A.queueAiOffer && !(pr.offerSeen['ally' + o.id] && Y - pr.offerSeen['ally' + o.id] < 4)) { pr.offerSeen['ally' + o.id] = Y; A.queueAiOffer(pc, pr, { kind: 'ally', rid: o.id }); }
