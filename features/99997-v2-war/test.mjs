@@ -54,7 +54,7 @@ export default {
       out.queued = A.S.queue.length - n0;
       UI.tab = 'war'; UI.render();
       const tab = UI.TAB.war(pc);
-      out.warCards = /War score|Elsewhere/.test(tab);
+      out.warCards = /War score|Elsewhere/.test(tab); out.peaceLie = /is at peace/.test(tab); out.roomBtn = /warRoomView/.test(tab);
       UI.worldView = 'wars'; const wv = UI.TAB.world(pc); out.worldWars = A.S.wars.filter(w => wv.includes(w.name)).length;
       // three years: battle news of these wars never reaches the news; rumours do
       // (counted only while he is outside every war: the levy or a draft may put him in one)
@@ -76,9 +76,9 @@ export default {
       UI.tab = 'life'; UI.render();
       return out;
     });
-    const ok = !r.inWar && !r.places.includes('war') && !r.room && r.queued === 0 && !r.warCards && r.worldWars === 0 && r.outside >= 6 && r.battleNews === 0 && r.rumours + r.pending > 0 &&
+    const ok = !r.inWar && !r.places.includes('war') && !r.room && r.queued === 0 && !r.warCards && !r.peaceLie && !r.roomBtn && r.worldWars === 0 && r.outside >= 6 && r.battleNews === 0 && r.rumours + r.pending > 0 &&
       /pedlar|swears/i.test(r.sample || 'pedlar') && (r.enlisted === undefined || (r.enlisted && r.room2 && r.places2.includes('war')));
-    return { ok, detail: `outside: in war ${r.inWar}, places ${r.places.join('/')}, war room ${r.room}, battle/war room queued ${r.queued}, war cards ${r.warCards}, world wars listed ${r.worldWars}; 3 years (${r.outside} months outside every war): battle news while outside ${r.battleNews}${r.bn ? ' (' + r.bn + ')' : ''}, rumours ${r.rumours} (+${r.pending} on the road), e.g. "${r.sample.slice(0, 90)}"; enlisted: in war ${r.enlisted}, war room ${r.room2}` };
+    return { ok, detail: `outside: in war ${r.inWar}, places ${r.places.join('/')}, war room ${r.room}, battle/war room queued ${r.queued}, war cards ${r.warCards}, 'at peace' ${r.peaceLie}, War Room button ${r.roomBtn}, world wars listed ${r.worldWars}; 3 years (${r.outside} months outside every war): battle news while outside ${r.battleNews}${r.bn ? ' (' + r.bn + ')' : ''}, rumours ${r.rumours} (+${r.pending} on the road), e.g. "${r.sample.slice(0, 90)}"; enlisted: in war ${r.enlisted}, war room ${r.room2}` };
   },
 
   // the screen at each rank: soldier and sergeant choices against the unit across, estimates only; the captain's company

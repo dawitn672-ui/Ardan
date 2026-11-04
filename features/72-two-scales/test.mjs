@@ -165,7 +165,7 @@ export default {
       const a = play(false), b = play(true);
       // the journal: the clicks recorded, then replayed from the same frozen state
       const ask = () => { const pc = A.pc(), pid = +String(f.key).slice(1), F = A.S.fights[pid];
-        A.S.queue = [{ type: 'choice', title: 'Attack at X', text: '', options: [{ t: 'Take your place in the line', fn: 'wsLine', arg: { key: f.key, war: F.war, enemy: A.hostile(F.a, pc.mil.realm) ? F.a : F.b, pid } }, { t: 'Keep your head down', fn: 'noop' }] }]; };
+        if (A.V2W && A.V2W.classic) A.CHOICE_FN.tsClassicLine = A.V2W.classic.wsLine; A.S.queue = [{ type: 'choice', title: 'Attack at X', text: '', options: [{ t: 'Take your place in the line', fn: A.V2W && A.V2W.classic ? 'tsClassicLine' : 'wsLine', arg: { key: f.key, war: F.war, enemy: A.hostile(F.a, pc.mil.realm) ? F.a : F.b, pid } }, { t: 'Keep your head down', fn: 'noop' }] }]; };
       A.J = null; TSX.load(f); ask(); A.journalStart();
       A.choiceChoose(0);
       for (let k = 0; k < 40; k++) { const h = A.S.queue[0]; if (!h) break; if (h.type === 'mission' && h.m.ts) { if (h.m.over) UI.A.mClose(); else UI.A.mChoose(String(TS_PICK(h.m, 'steady'))); } else if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); }
