@@ -98,7 +98,7 @@ export default {
       const same = T.hash(A.S) === h0 && A.rngState === rng0;
       b.next = A.absDay(); P.billMonth();
       const after = x.pol.bill ? x.pol.bill.log.length : (x.pol.last ? x.pol.last.log.length : -1);
-      return { k, opened: !!b, sum, same, track: (html.match(/class="po-node/g) || []).length, odds: /class="po-stack po-odds"/.test(html) && /\d+%<\/span>/.test(html), tip: /Balance m/.test(tip), after, src: b && b.src };
+      return { k, opened: !!b, sum, same, track: (html.match(/class="po-node/g) || []).length, odds: /class="po-stack po-odds"/.test(html) && (A.V2S ? !/\d+%<\/span>/.test(html) && /class="v2-scale"/.test(html) : /\d+%<\/span>/.test(html)) /* v2 (99993-v2-stats): the odds as words and a balance, no percentage */, tip: /Balance m/.test(tip), after, src: b && b.src };
     });
     const ok = r.opened && r.sum >= 99 && r.sum <= 101 && r.same && r.track === 6 && r.odds && r.tip && r.after === 1;
     return { ok, detail: `a bill for ${r.k} brought by the player (${r.src}); next-count odds sum to ${r.sum}%; ${r.track} notches drawn; drawn ${r.same ? 'purely' : 'WITH CHANGES'}; a count logs ${r.after}` };
