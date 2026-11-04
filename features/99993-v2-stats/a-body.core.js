@@ -131,7 +131,8 @@ VS.migrate = function (p) {
 // the old base stat derived from the body (before the old ageFactor, traits and wounds)
 VS.derive = function (p, s, age) {
   const V = p.v2, T = VS.PHYS.includes(s) ? tOf(V.c[VS.ATTR[s]]) : V.mt[s];
-  return VS.potOf(p, s) * 0.78 * VS.grow(p, age) * T;
+  // never past the old engine's own cap (A.train and fx stop at 1.02 x potential): v2 breakthroughs raise the potential
+  return Math.min(VS.potOf(p, s) * 1.02, VS.potOf(p, s) * 0.78 * VS.grow(p, age) * T);
 };
 // once a month for the player: read what the old code did to p.st into the body, then write p.st from the body
 VS.sync = function (p) {

@@ -34,12 +34,15 @@ VS.sheetHtml = function (p, opts = {}) {
   h += `<div class="group-h">Build and strength</div>`;
   h += row('Height', `${d.height}, ${d.weight}`, `${(p.app && p.app.build) || ''}${growing}`.replace(/^, /, ''));
   h += row('Strength', `lifts ${d.lift.value}`, `${d.lift.words.replace(/^can lift /, '')}; ${d.lift.rank}`);
-  h += row('Speed', d.sprint.value, d.sprint.words);
+  // a grown body is not compared with a child's run (playtest round 1: "runs as fast as a child" on a Grandmaster)
+  const sprintW = age >= (R.grown || 20) && /a (toddler|child)$/.test(d.sprint.words) ? 'runs slower than most grown people' : d.sprint.words;
+  h += row('Speed', d.sprint.value, sprintW);
   h += row('Endurance', d.march.value, d.march.words);
   h += row('Reflexes', d.reaction.value, d.reaction.words);
-  h += row('Toughness', d.toughness.value, d.toughness.words);
+  const tn = Math.round(s.toughness), toughW = /^takes \d+ blows/.test(d.toughness.words) && tn < 2 ? 'stands up to a blow that would fell an ordinary man' : d.toughness.words;
+  h += row('Toughness', d.toughness.value, toughW);
   if (age >= 6) {
-    const lv = VS.leviesOf(p);
+    const lv = VS.shownLevies(p);
     h += row('In a fight', VS.levyWords(lv), VS.levyRank(lv));
   }
   h += `<div class="group-h">Mind</div>`;
@@ -70,6 +73,8 @@ VS.skillRows = function (h) {
 };
 // a check chip's value (92-scene-card): a skill as its tier, a stat as a word for your place among your own kind
 VS.statWord = function (p, s, v) {
+  // a small child is not rated on any scale (playtest round 1: a 1-year-old's "SPD good")
+  if (A.age(p) < 4) return 'too young to tell';
   const age = A.age(p), typ = VS.raceMean(p, s) * 0.78 * VS.grow(p, age), r = (+v || 0) / Math.max(0.5, typ);
   return r < 0.55 ? 'poor' : r < 0.85 ? 'middling' : r < 1.2 ? 'fair' : r < 1.5 ? 'good' : r < 2 ? 'fine' : r < 3 ? 'rare' : 'legendary';
 };
@@ -153,8 +158,9 @@ if (UI.tierChip) {
     const h = tc.apply(this, arguments);
     try {
       if (typeof h !== 'string') return h;
-      return h.replace(/fighting worth (\d+)\./, (m, w) => `worth ${VS.levyWords(VS.fromWorth(+w))} in a fight.`)
-        .replace(/ · (\d+)<\/span>$/, (m, w) => ` · ${esc(VS.levyWords(VS.fromWorth(+w)))}</span>`);
+      const lw = w => VS.levyWords(p && p.st ? VS.shownLevies(p) : VS.fromWorth(+w));
+      return h.replace(/fighting worth (\d+)\./, (m, w) => `worth ${lw(w)} in a fight.`)
+        .replace(/ · (\d+)<\/span>$/, (m, w) => ` · ${esc(lw(w))}</span>`);
     } catch (e) { return h; }
   };
 }

@@ -72,3 +72,7 @@ VS.v2Levies = function (p) {
   const vv = Object.assign({}, v, { body: Object.assign({}, v.body, { skills: { fight: VS.hoursOf(f.skill) } }) });
   return B.fightingWorth(vv, 'fight', 'none').worth * VS.gearMult(f, p);
 };
+
+// the levies a player sees: v2's own scale (a human Master is about a giant's 15-25 only with breakthroughs and order
+// gear), with the race shift already in the body view. Playtest round 1: the game's worth scale put a general at 285.
+VS.shownLevies = p => (p && p.st ? VS.v2Levies(p) : 0);

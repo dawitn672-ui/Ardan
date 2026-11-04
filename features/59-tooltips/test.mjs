@@ -139,7 +139,10 @@ export default {
       }
       return res; })()`);
     const b = r.before, a = r.after, all = x => x.covered === x.n;
-    const ok = all(a.profile) && all(a.top) && a.profile.n >= 15 && b.profile.covered < a.profile.covered;
+    // v2 (99993-v2-stats, playtest round 1): the vitals and stats are words now, so fewer numbers are left and each
+    // explains itself even without the wiring; all of them must still be covered
+    const v2 = await pg.evaluate(() => !!A.V2S);
+    const ok = all(a.profile) && all(a.top) && (v2 ? a.profile.n >= 8 : a.profile.n >= 15 && b.profile.covered < a.profile.covered);
     return { ok, detail: `profile numbers with a tooltip: before ${b.profile.covered} of ${b.profile.n}, after ${a.profile.covered} of ${a.profile.n}; top bar: before ${b.top.covered} of ${b.top.n}, after ${a.top.covered} of ${a.top.n}${a.profile.miss.length || a.top.miss.length ? '; missing: ' + a.profile.miss.concat(a.top.miss).join(' | ') : ''}`, data: r };
   },
 
@@ -251,8 +254,8 @@ export default {
       const rows = [...box.querySelectorAll('.tip-row')], sum = rows.filter(x => !x.classList.contains('tt-sum')).reduce((a, x) => a + parseInt(x.querySelector('b').textContent.replace('−', '-'), 10), 0);
       const total = +rows.find(x => x.classList.contains('tt-sum')).querySelector('b').textContent;
       const W = A.worthParts(pc);
-      // v2 (99993-v2-stats, "words, not numbers"): the chip names the worth in levies; it must be this same total's
-      const v2 = !!A.V2S, chipOk = v2 ? chip.textContent.includes(A.V2S.levyWords(A.V2S.fromWorth(total))) : shown === total;
+      // v2 (99993-v2-stats, "words, not numbers"): the chip names the worth in v2's levies
+      const v2 = !!A.V2S, chipOk = v2 ? chip.textContent.includes(A.V2S.levyWords(A.V2S.shownLevies(pc))) : shown === total;
       return { n: people.length, bad: bad.slice(0, 5), rnd, shown: v2 ? chip.textContent.split('·').pop().trim() : shown, chipOk, sum, total, W: [W.body, W.skill, W.gear] };
     })()`);
     const ok = !r.bad.length && r.chipOk && r.sum === r.total && r.rnd.worth === 0 && r.rnd.gear === 0 && r.rnd.skill === 0 && r.rnd.body <= 2 && r.rnd.stat <= 2;

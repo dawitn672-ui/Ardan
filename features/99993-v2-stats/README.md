@@ -118,3 +118,15 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 - `9998-stakes` `stWhiteRetry`: with v2 the lock reads "Grow in Persuasion and Willpower first" and the chip "better at this now than in 1105", without the numbers.
 - `59-tooltips` `ttSums2` (the odds popover has words, no sum row, with v2), `ttCov2Scenes` (the scenes' odds are words, so that group leaves the coverage bar), `ttInModal` (focuses any explained number in the full profile, which has no stat bars).
 - `9996-polity` `poBillTrack`: the next count's odds are words and a balance, so with v2 the stack must have no "N%" and must have the balance.
+
+## Playtest round 1 (`g-bands.core.js` and small changes elsewhere)
+
+- **A tap on a choice chooses.** The odds badge loses 59's tap target (`data-tt-tap`); its breakdown opens on hover, focus or the keyboard. The odds popover on a check is words only and matches the chip and the badge: your stat or skill in words, the test in words, and what blunders and surges do. The "On Realism" line is gone, and a choice's `risk` is the v2 odds word everywhere it's drawn.
+- **Percentages become whole phrases.** "+30% pay" becomes "about a third more pay"; "4 + 30% of their average" becomes "4 and about a third of their average"; "worth 1.6%" becomes "worth a little"; "all of it from doing" no longer goes on to "the rest from practice".
+- **0–100 scales become bands.** Health, happiness, looks, renown, honour, piety, stability, legitimacy, and a duel's blood and wind are words ("hale", "content", "known in the province"). A result chip says "a great deal more Merewyn's regard". The training picker and log, stat and skill numbers, the orders' trials, "Master fighter (95)" and "Untrained · 18" all say tiers and words. Real units and counts stay numbers.
+- **Levies on v2's scale.** The sheet and the tier chip use v2's own fighting worth (`A.V2S.shownLevies`), so a sword master reads about 3 levies, not 285.
+- **Children under 4 aren't rated** ("too young to tell").
+- **Piety for the faithless** reads as "a pull toward the faith".
+- **Labels.** "Takes 1 blows" now reads "stands up to a blow that would fell an ordinary man", and a grown body is never "as fast as a child".
+- **The derived stat stops at the old engine's cap** (1.02 × potential), where training and fx stop too.
+- **Tests.** The new test `v2sPlaytest1` covers the findings. `59-tooltips` `ttCoverage` is also changed: with v2 every remaining number must be covered.
