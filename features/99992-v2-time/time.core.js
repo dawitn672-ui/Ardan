@@ -100,15 +100,39 @@
         st.quiet = { d: A.absDay(), t };
       }
     } catch (e) { console.error('v2 quiet month', e); }
-    st.turn = A.absDay();
+    st.turn = A.absDay(); st.mn = 0;
     try { V2T.director(pc); } catch (e) { console.error('v2 director', e); }
   };
   if (A.PACE) A.PACE.FLOOR_OFF = true;
   // a card reached the player: the head of the queue, the first time it is ready (every card passes here)
+  // and no month shows more than V2T.MAX of the world's own scenes: a 4th that falls due (the year's events spread over
+  // its months, a scheduled return, a refill) waits for the next month. A choice's consequence ('chain'), a scene the
+  // player asked for ('ask'), a forced scene and a gathering's are never held. (Playtest 1: 6 and 8 cards in a child's
+  // month, from the year's own events landing together.)
+  V2T.holdable = q => !!(q && q.type === 'event' && !q.result && !q.forced && !(q.ctx && (q.ctx.gid || q.ctx.lfFixed)) && q.lfFrom !== 'chain' && q.lfFrom !== 'ask');
   const head0 = A.headReady;
   A.headReady = function () {
-    const h = head0.apply(this, arguments);
-    try { if (h && !h.v2c && h.type !== 'warroom') { h.v2c = 1; const st = V2T.st(); if (st) st.last = A.absDay(); } } catch (e) {}
+    let h = null;
+    for (let g = 0; g < 30; g++) {
+      const S0 = A.S, seen0 = {};
+      try { if (S0 && S0.queue) for (const q of S0.queue) if (q && q.type === 'event' && !(q.ev in seen0)) seen0[q.ev] = S0.evShown ? S0.evShown[q.ev] : undefined; } catch (e) {}
+      h = head0.apply(this, arguments);
+      try {
+        if (!h || h.v2c || h.type === 'warroom') return h;
+        const st = V2T.st(); if (!st) return h;
+        if (st.mn >= V2T.MAX && V2T.holdable(h) && A.S.queue[0] === h) {
+          A.S.queue.shift(); delete h.seen; const lf = h.lfFrom;
+          // not shown after all: the 240-day memory of it goes back to what it was
+          if (A.S.evShown) { if (seen0[h.ev] == null) delete A.S.evShown[h.ev]; else A.S.evShown[h.ev] = seen0[h.ev]; }
+          A.schedule(h, Math.max(1, V2T.nextTurn() - A.absDay()) + A.ri(1, 20));
+          if (lf === undefined) delete h.lfFrom; else h.lfFrom = lf;
+          st.held = (st.held || 0) + 1;
+          continue;
+        }
+        h.v2c = 1; st.last = A.absDay(); st.mn = (st.mn || 0) + 1;
+      } catch (e) {}
+      return h;
+    }
     return h;
   };
   // an old save has no S.v2t: it starts counting at its first turn
@@ -185,9 +209,19 @@
 
   const busy = () => { const S = A.S, pc = A.pc && A.pc(); return !S || !pc || !pc.alive || !!S.queue.length; };
   const why = () => { const pc = A.pc(); return !pc || !pc.alive ? 'Your life is over.' : 'Something needs you first.'; };
+  // a head the game cannot show (its setup gave up, a token it cannot fill) is dropped by A.headReady; whatever is left
+  // is either a card to answer or nothing. (Playtest 1: a forced co_captain_word with no captain froze the clock, and
+  // a battle closed by its own screen left the step waiting on an empty queue.)
+  const settle = () => !!(A.S && A.S.queue.length && A.headReady());
   const start = kind => {
-    if (busy()) { if (A.S && A.S.queue.length && A.headReady()) UI.refresh(); else UI.toast(why()); return; }
-    if (ST && ST.run) return;
+    const pc = A.pc && A.pc();
+    if (!A.S || !pc || !pc.alive) return UI.toast(why());
+    if (settle()) { UI.refresh(); return; }
+    if (ST && ST.run) {
+      if (!ST.wait) return;                                  // a step is running: it ends on its own
+      if (!ui.stopAfter) { UI.stepGo(); return; }            // the card it waited at is gone: go on
+      ui.stopAfter = false; UI.stepStop();                   // a battle ended it: start afresh
+    }
     const camp = V2T.campaign();
     if (kind === 'month' && camp) return UI.toast('You are on campaign: go a day or a week at a time.');
     if (kind !== 'month' && !camp) kind = 'month';
@@ -231,6 +265,7 @@
   const STOPS = ['battle', 'duel', 'campaign', 'warroom'];
   const go0 = UI.stepGo;
   UI.stepGo = function () {
+    try { if (A.S && A.S.queue.length && !A.headReady()) {} } catch (e) {}   // drops a head that cannot be shown
     if (ui.stopAfter && ST && ST.run) { ui.stopAfter = false; return UI.stepStop(); }
     return go0.apply(this, arguments);
   };
@@ -259,10 +294,26 @@
       } catch (e) {}
       const r = f.apply(this, arguments);
       try { ended(); } catch (e) { console.error('v2 step end', e); }
+      try {
+        if (ST && ST.run && ST.wait && A.S && !A.S.queue.length && UI.screen === 'game' && !ui.kick) {
+          ui.kick = setTimeout(() => { ui.kick = null; if (ST.run && ST.wait && A.S && !A.S.queue.length) UI.stepGo(); }, 0);
+        }
+      } catch (e) {}
       return r;
     };
   };
   watch('refresh'); watch('clkPaint');
+  V2T.clearToasts = function () {
+    if (typeof document === 'undefined') return;
+    const t = document.getElementById('toast'); if (t) { t.classList.remove('ts-on'); t.style.opacity = 0; }
+    const s = document.getElementById('toast-stack'); if (s) s.innerHTML = '';
+  };
+  const rm = UI.renderModal;
+  if (typeof rm === 'function') UI.renderModal = function () {
+    const r = rm.apply(this, arguments);
+    try { if (document.querySelector('#modal') && A.S && A.S.queue.length) V2T.clearToasts(); } catch (e) {}
+    return r;
+  };
 
   // ---- the clock: the date, initiative, and the one control that moves time --------------------------------------------
   V2T.controlsHtml = function () {
@@ -272,11 +323,18 @@
     const prog = `<span class="clk-prog" aria-hidden="true"><i style="transform:scaleX(${frac.toFixed(3)})"></i></span>`;
     const btn = (act, kind, label, key, primary) => {
       const mine = running && ST.kind === kind;
-      if (mine && ST.wait) return `<button class="v2-step${primary ? ' primary' : ''} run" data-a="stepGo" title="Go on when this is settled">${icon('play')}<span>Go on</span>${prog}</button>`;
+      if (mine && ST.wait) return `<button class="v2-step${primary ? ' primary' : ''} run" data-a="${act}" title="Go on when this is settled">${icon('play')}<span>Go on</span>${prog}</button>`;
       if (mine) return `<button class="v2-step${primary ? ' primary' : ''} run" data-a="stepStop" aria-label="Stop here">${icon('pause')}<span>${esc(kind === 'month' ? 'The month passes' : kind === 'week' ? 'A week passes' : 'A day passes')}</span>${prog}</button>`;
       return `<button class="v2-step${primary ? ' primary' : ''}" data-a="${act}"${dis ? ' aria-disabled="true"' : ''} aria-keyshortcuts="${key}" title="${esc(dis ? why() : label + ' (key ' + key + ')')}">${icon(kind === 'month' ? 'step-moon' : kind === 'week' ? 'calendar' : 'sun')}<span>${esc(label)}</span>${running ? prog : ''}</button>`;
     };
     if (!camp) return `<span class="v2-time" role="group" aria-label="Time">${btn('v2Next', 'month', 'Next month', 'N', true)}</span>`;
+    const steps = `${btn('v2Day', 'day', 'Next day', 'D', false)}${btn('v2Week', 'week', 'Next week', 'W', true)}`;
+    // a desktop's top bar holds the two steps only; the road or the host and its standing orders are on the Life and War
+    // pages (V2T.campCard), so the bar fits at 1366 (playtest 1: 1648 px). A phone's dock has the room.
+    if (!(UI.isPhone && UI.isPhone())) return `<span class="v2-time v2-camp" role="group" aria-label="Time on campaign">${steps}</span>`;
+    return `<span class="v2-time v2-camp" role="group" aria-label="Time on campaign">${steps}${V2T.campBits(pc, camp)}</span>`;
+  };
+  V2T.campBits = function (pc, camp) {
     let orders = '';
     if (camp.k !== 'road' && (pc.ruler || (pc.mil && pc.mil.rank >= 4)) && A.WTAC) {
       const T = pc.tac || { atk: 'auto', def: 'auto' };
@@ -284,8 +342,18 @@
         Object.keys(A.WTAC).filter(k => !A.WTAC[k].side || A.WTAC[k].side === side).map(k => `<option value="${esc(k)}"${T[side] === k ? ' selected' : ''}>${esc(A.WTAC[k].n)}</option>`).join('') + '</select></label>';
       orders = `<span class="v2-orders" role="group" aria-label="Standing orders">${sel('atk', 'Attacking')}${sel('def', 'Defending')}</span>`;
     }
-    return `<span class="v2-time v2-camp" role="group" aria-label="Time on campaign">${btn('v2Day', 'day', 'Next day', 'D', false)}${btn('v2Week', 'week', 'Next week', 'W', true)}` +
-      `<span class="v2-camp-note">${esc(camp.text)}</span>${orders}</span>`;
+    return `<span class="v2-camp-note">${esc(camp.text)}</span>${orders}`;
+  };
+  // the campaign on the page: where the road or the host stands, and the standing orders, never behind a click
+  V2T.campCard = function () {
+    const pc = A.pc && A.pc(), camp = pc && V2T.campaign(pc);
+    if (!camp || (UI.isPhone && UI.isPhone())) return '';
+    return `<section class="card v2-campcard" aria-label="On campaign"><b>On campaign.</b> ${V2T.campBits(pc, camp)} <span class="small muted">Next day (D) and Next week (W) step through it; a battle stops the clock.</span></section>`;
+  };
+  const rt = UI.renderTab;
+  if (typeof rt === 'function') UI.renderTab = function () {
+    const h = rt.apply(this, arguments);
+    try { return (UI.tab === 'life' || UI.tab === 'war') && typeof h === 'string' ? V2T.campCard() + h : h; } catch (e) { return h; }
   };
   UI.stepHtml = V2T.controlsHtml;
   // the date by month: time is lived a month at a time (on campaign, by the day)
@@ -442,6 +510,7 @@
     '#clk .v2-orders{display:inline-flex;gap:6px}',
     '#clk .v2-ord{display:inline-flex;flex-direction:column;font-size:11px;color:var(--ink-3)}',
     '#clk .v2-ord select{min-height:32px;max-width:150px}',
+    '.v2-campcard{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.v2-campcard .v2-orders{display:inline-flex;gap:8px}.v2-campcard .v2-ord{display:inline-flex;flex-direction:column;font-size:12px;color:var(--ink-3)}.v2-campcard select{min-height:32px}',
     // the phone: one big button under the thumb, above the tab bar
     '#game.phone #clk .ph-dock{display:flex;gap:8px;align-items:stretch}',
     '#game.phone #clk .ph-dock .v2-time{display:flex;flex:1 1 auto;gap:8px;flex-wrap:wrap}',
