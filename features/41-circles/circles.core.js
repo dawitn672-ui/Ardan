@@ -17,7 +17,8 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const CI = A.CIRCLES = {
     CLOSE: ['friend', 'bestfriend', 'lover', 'spouse', 'comrade', 'betrothed'],
-    BLOOD: ['mother', 'father', 'sibling', 'child', 'grandparent', 'grandchild', 'uncle', 'nephew', 'cousin', 'spouse'],
+    // v2 (99994-v2-family): in-laws are family too (an aunt's husband is not one of the regulars of your street)
+    BLOOD: ['mother', 'father', 'sibling', 'child', 'grandparent', 'grandchild', 'uncle', 'nephew', 'cousin', 'spouse', 'inlaw'],
     TIE: 0.4,                 // chance a new acquaintance is already close to someone you know
     WARM: 8, WARM_MAX: 16,    // per friend of yours in their circle
     COOL: 12, COOL_MAX: 24,   // per foe of yours in their circle

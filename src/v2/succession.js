@@ -24,6 +24,8 @@ export function unfitReason(people, p, year) {
   const age = year - p.birthYear;
   if (p.traits?.includes('craven')) return 'branded craven';
   if (p.traits?.includes('sickly') && age > 16) return 'too sickly to rule';
+  // a host game may judge wits itself (a person without v2 genes)
+  if (p.judgedSimple) return 'judged simple by the house council';
   if (!p.genes || age < 14) return null; // too young to judge
   const s = stats({ ...p, age });
   if (s.wits < 72 && s.judgment < 75) return 'judged simple by the house council';
@@ -56,7 +58,7 @@ export function lineOfSuccession(people, holder, houseLaw, year, limit = 10) {
     const members = people.all().filter((p) => p.house === holder.house && alive(p) && p.id !== holder.id && legit(p) && year - p.birthYear >= 16);
     let ranked = members.sort((a, b) => a.birthYear - b.birthYear);
     if (law === 'elective') {
-      const ability = (p) => { const s = stats({ ...p, age: year - p.birthYear }); return s.wits + s.judgment + s.presence + (p.renown ?? 0) * 0.5; };
+      const ability = (p) => { if (p.ability != null) return p.ability; const s = stats({ ...p, age: year - p.birthYear }); return s.wits + s.judgment + s.presence + (p.renown ?? 0) * 0.5; };
       ranked = members.slice().sort((a, b) => ability(b) - ability(a));
       ranked.forEach((p, i) => consider(p, i === 0 ? 'favoured by the house elders' : 'candidate before the elders'));
     } else ranked.forEach((p) => consider(p, 'eldest living member of the house'));
