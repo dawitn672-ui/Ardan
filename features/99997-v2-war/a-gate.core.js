@@ -37,6 +37,9 @@
   // a levy called out at home (72-two-scales) stands in the fight while the scene runs
   W.inLevy = () => !!(A.S && ((A.S.tsq && A.S.tsq.m && A.S.tsq.m.ts && A.S.tsq.m.ts.levy) || (A.S.queue || []).some(q => q && q.type === 'mission' && q.m && q.m.ts && q.m.ts.levy)));
   W.inWar = function (pc) { return W.myWars(pc).length > 0 || W.inLevy(); };
+  // the War Room is the room of those who command or serve: a ruler, an enlisted man, an officer, a general, a
+  // sell-sword under contract. In peace it plans your own forces; in war it shows only your wars (W.withMyWars).
+  W.canRoom = function (pc) { pc = pc || (A.S && A.pc && A.pc()); return !!W.side(pc) || W.inLevy(); };
   W.fightsIn = function (war, pc) {
     if (war == null) return true;  // a fight that belongs to no war (a brawl, a raid, a duel) is not spectating
     const id = typeof war === 'object' ? war.id : war;
@@ -99,10 +102,22 @@
       return r;
     } finally { W._F = prev; }
   };
+  // other war news (a division cut off, an order destroyed, sell-swords marching off): outside every war, none; in
+  // one, only what names a realm on either side of your wars (the realm's name is in every division's name)
+  W.newsOk = function (text) {
+    if (W._F) return W.fightsIn(W._F.F.war);
+    const wars = W.myWars();
+    if (!wars.length) return W.inLevy();
+    const names = new Set();
+    for (const w of wars) for (const r of w.att.concat(w.def)) { const n = A.realmShort(r); if (n) names.add(n); }
+    const t = String(text || '');
+    for (const n of names) if (t.includes(n)) return true;
+    return false;
+  };
   const news = A.news;
   A.news = function (text, cls) {
     // the release's "Battle of X: ... break through after N days. N fall." for a war you are not in
-    if (cls === 'battle' && W._F && !W.fightsIn(W._F.F.war)) return;
+    if (cls === 'battle' && !W.newsOk(text)) return;
     return news.apply(this, arguments);
   };
 
@@ -111,27 +126,27 @@
   const q0 = A.queue;
   A.queue = function (item) {
     try {
-      if (item && item.type === 'warroom' && !W.inWar()) return;
+      if (item && item.type === 'warroom' && !W.canRoom()) return;
       if (item && item.type === 'battle' && item.b && item.b.war != null && !W.fightsIn(item.b.war)) return;
     } catch (e) { console.error('v2 war gate', e); }
     return q0.apply(this, arguments);
   };
   const wrv = A.warRoomView;
-  if (typeof wrv === 'function') A.warRoomView = function () { if (!W.inWar()) return { ok: false, msg: W.NOT_YOURS }; return wrv.apply(this, arguments); };
+  if (typeof wrv === 'function') A.warRoomView = function () { if (!W.canRoom()) return { ok: false, msg: W.NOT_YOURS }; return wrv.apply(this, arguments); };
   // the War place (99992-v2-time) is there only while you fight
   if (A.V2T) A.V2T.atWar = pc => W.inWar(pc);
 
   if (typeof UI === 'undefined') return;
   const wro = UI.warRoomOpen;
   if (typeof wro === 'function') UI.warRoomOpen = function () {
-    if (!W.inWar()) { if (A.S) delete A.S.wantWarRoom; try { UI.toast(W.NOT_YOURS); } catch (e) {} return; }
+    if (!W.canRoom()) { if (A.S) delete A.S.wantWarRoom; try { UI.toast(W.NOT_YOURS); } catch (e) {} return; }
     return wro.apply(this, arguments);
   };
   // a war room asked for before the war ended (or before you left the army) stays shut
   const wrm = UI.warRoomModal;
   if (typeof wrm === 'function') UI.warRoomModal = function () {
-    if (!W.inWar()) return `<div class="panel mbox v2w-shut"><h2>No war of yours</h2><div class="mtext">${UI.esc(W.NOT_YOURS)}</div><div class="choices"><button data-a="wrLeave">Close</button></div></div>`;
-    return wrm.apply(this, arguments);
+    if (!W.canRoom()) return `<div class="panel mbox v2w-shut"><h2>No war of yours</h2><div class="mtext">${UI.esc(W.NOT_YOURS)}</div><div class="choices"><button data-a="wrLeave">Close</button></div></div>`;
+    return W.withMyWars(() => wrm.apply(this, arguments));
   };
   // 96-moments: no victory or defeat cut-in for a battle in a war that is not yours
   const MO = UI.MOMENTS;

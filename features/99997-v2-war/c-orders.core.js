@@ -32,7 +32,9 @@
       (o.comps || []).forEach((c, i) => {
         const code = A.orderCode(id, i), B = GD.BN[code];
         if (!B || B.v2w) return;
-        const f = W.orderWorth(id) * pm(L) / Math.max(1e-6, pm(B));
+        // the simulator multiplies by experience (A.xpLevel): the order's veterans are counted once, here
+        const xm = A.xpLevel ? A.xpLevel(o.exp || 0)[2] || 1 : 1;
+        const f = W.orderWorth(id) * pm(L) / Math.max(1e-6, pm(B)) / xm;
         GD.BN[code] = Object.assign({}, B, { soft: B.soft * f, hard: B.hard * f, def: B.def * f, brk: B.brk * f, hp: B.hp * f, v2w: Math.round(f * 100) / 100 });
       });
     }
@@ -45,9 +47,12 @@
   }
   W.scaleOrders();
   // an order's worth per member as the division simulator reads it, in levies (for the tests and the sheet)
+  // (against an ordinary division of the same realm, as the simulator reads both, times that division's own worth)
   W.simWorth = function (d) {
-    const c = A.divCombat(d), L = GD.BN.LV, lv = (L.soft + L.def + L.hp) / L.men;
-    return ((c.soft + c.def + c.hp) / Math.max(1, d.men)) / lv;
+    const per = x => { const c = A.divCombat(x); return (c.soft + c.def + c.hp) / Math.max(1, x.men); };
+    const r = A.realm(d.r), line = r && r.forces ? r.forces.divs.filter(x => !x.elite && x.men > 500).sort((a, b) => (a.id < b.id ? -1 : 1))[0] : null;
+    if (!line) { const L = GD.BN.LV; return per(d) / ((L.soft + L.def + L.hp) / L.men); }
+    return per(d) / per(line) * (W.divWorth ? W.divWorth(line) : 1);
   };
 
   // ---- terror on the war map --------------------------------------------------------------------------------------------

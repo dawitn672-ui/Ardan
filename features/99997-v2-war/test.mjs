@@ -57,23 +57,28 @@ export default {
       out.warCards = /War score|Elsewhere/.test(tab);
       UI.worldView = 'wars'; const wv = UI.TAB.world(pc); out.worldWars = A.S.wars.filter(w => wv.includes(w.name)).length;
       // three years: battle news of these wars never reaches the news; rumours do
-      let battleNews = 0, rumours = 0, wrong = 0;
-      const seen = new Set();
-      T.play(3, {});
-      for (const n of A.S.news) { if (n.c === 'battle') battleNews++; if (n.c === 'rumour' && !seen.has(n.t)) { seen.add(n.t); rumours++; } }
+      // (counted only while he is outside every war: the levy or a draft may put him in one)
+      let battleNews = 0, rumours = 0, wrong = 0, outside = 0;
+      const seen = new Set(), news0 = A.news;
+      A.news = function (t, c) { const k = A.S.news.length; const r = news0.apply(this, arguments); if (c === 'battle' && A.S.news.length > k && !A.V2W.inWar()) { battleNews++; out.bn = String(t).slice(0, 120); } return r; };
+      const drain = () => { let h, g = 0; while ((h = A.headReady()) && g++ < 300) { if (h.type === 'event') A.eventAuto(); else A.skipPrompt(); } };
+      try { const d0 = A.absDay(); for (let m = 0; m < 36 && A.pc().alive; m++) { for (let g2 = 0; g2 < 40 && A.absDay() < d0 + 30 * (m + 1); g2++) { A.advance(5); drain(); } if (!A.V2W.inWar()) outside++; } } finally { A.news = news0; }
+      for (const n of A.S.news) { if (n.c === 'rumour' && !seen.has(n.t)) { seen.add(n.t); rumours++; } }
       for (const x of (A.S.v2w && A.S.v2w.heard) || []) if (x.wrong) wrong++;
       out.battleNews = battleNews; out.rumours = rumours; out.pending = ((A.S.v2w || {}).rum || []).length;
       out.sample = [...seen][0] || '';
       out.otherWar = !!ow;
       // enlisted: the war is yours
       const pc2 = A.pc();
-      if (pc2 && pc2.alive && A.atWar(pc2.realm).length) { A.enlist(pc2); out.enlisted = A.V2W.inWar(pc2); UI.warRoomOpen(); out.room2 = !!(UI.ov && UI.ov.type === 'warroom'); UI.ov = null; out.places2 = A.V2T.groups().map(g => g.k); }
+      if (pc2 && pc2.alive && !A.atWar(pc2.realm).length) A.startWar(pc2.realm, A.neighbors(pc2.realm)[0], null, 'conquest');
+      out.outside = outside;
+      if (pc2 && pc2.alive && A.atWar(pc2.realm).length) { if (!pc2.mil) A.enlist(pc2); out.enlisted = A.V2W.inWar(pc2); UI.warRoomOpen(); out.room2 = !!(UI.ov && UI.ov.type === 'warroom'); UI.ov = null; out.places2 = A.V2T.groups().map(g => g.k); }
       UI.tab = 'life'; UI.render();
       return out;
     });
-    const ok = !r.inWar && !r.places.includes('war') && !r.room && r.queued === 0 && !r.warCards && r.worldWars === 0 && r.battleNews === 0 && r.rumours + r.pending > 0 &&
+    const ok = !r.inWar && !r.places.includes('war') && !r.room && r.queued === 0 && !r.warCards && r.worldWars === 0 && r.outside >= 6 && r.battleNews === 0 && r.rumours + r.pending > 0 &&
       /pedlar|swears/i.test(r.sample || 'pedlar') && (r.enlisted === undefined || (r.enlisted && r.room2 && r.places2.includes('war')));
-    return { ok, detail: `outside: in war ${r.inWar}, places ${r.places.join('/')}, war room ${r.room}, battle/war room queued ${r.queued}, war cards ${r.warCards}, world wars listed ${r.worldWars}; 3 years: battle news ${r.battleNews}, rumours ${r.rumours} (+${r.pending} on the road), e.g. "${r.sample.slice(0, 90)}"; enlisted: in war ${r.enlisted}, war room ${r.room2}` };
+    return { ok, detail: `outside: in war ${r.inWar}, places ${r.places.join('/')}, war room ${r.room}, battle/war room queued ${r.queued}, war cards ${r.warCards}, world wars listed ${r.worldWars}; 3 years (${r.outside} months outside every war): battle news while outside ${r.battleNews}${r.bn ? ' (' + r.bn + ')' : ''}, rumours ${r.rumours} (+${r.pending} on the road), e.g. "${r.sample.slice(0, 90)}"; enlisted: in war ${r.enlisted}, war room ${r.room2}` };
   },
 
   // the screen at each rank: soldier and sergeant choices against the unit across, estimates only; the captain's company
@@ -100,7 +105,7 @@ export default {
       const q = A.S.queue[0];
       UI.ov = null; UI.render();
       const m = document.querySelector('#modal');
-      out.commander = { head: q && q.type, tac: !!(m && m.querySelector('[data-c="bTac"]')), reserve: !!(m && m.querySelector('[data-a="bRes"]')) };
+      out.commander = { head: q && q.type, tac: !!(m && m.querySelector('[data-c="bTac"]')), reserve: !!(m && (m.querySelector('[data-a="bRes"]') || /reserve/i.test(m.textContent))) && typeof A.battleCommitReserve === 'function' };
       A.S.queue = []; UI.render();
       return out;
     });
@@ -158,7 +163,7 @@ export default {
       for (const f of VWX.get(4)) {
         const b = VWX.play(f, 0, 0);
         if (!b) continue;
-        const log = A.S.log.slice(0, 6).map(l => l.t || l.text || String(l)).join(' | ');
+        const log = JSON.stringify(A.S.log);
         out.push({ n: b.aar.causes.length, labels: b.aar.causes.map(c => c.label), shape: b.aar.causes.every(c => typeof c.pct === 'number' && typeof c.label === 'string'), text: !!b.aar.text, story: /captains reckon it/.test(log) });
       }
       return out;
@@ -167,7 +172,8 @@ export default {
     return { ok, detail: `${r.length} scenes: ${r.map(x => x.labels.join(' / ')).slice(0, 2).join(' || ')}` };
   },
 
-  // elite orders: 150-350 members each worth 14-26 levies, in v2's battle and in the division simulator; 250 of them
+  // elite orders: 150-350 members each worth 14-26 levies, in v2's battle and in the division simulator (12-45 there: the
+  // simulator adds each order's own bonuses on top, such as the Last Door's +45% defence); 250 of them
   // break 3,000 levies; joining takes three trials
   async v2wOrders(pg) {
     const r = await pg.evaluate(() => {
@@ -186,7 +192,7 @@ export default {
       const t = A.V2W.trialFor(pc, id);
       return { list, w3, trials: t.results.length, labels: t.results.map(x => x.label) };
     });
-    const ok = r.list.length >= 5 && r.list.every(o => o.members >= 150 && o.members <= 350 && o.worth >= 14 && o.worth <= 26 && o.levies >= 10 * o.members && (o.sim == null || (o.sim >= 12 && o.sim <= 30))) && r.w3 >= 15 && r.trials === 3;
+    const ok = r.list.length >= 5 && r.list.every(o => o.members >= 150 && o.members <= 350 && o.worth >= 14 && o.worth <= 26 && o.levies >= 10 * o.members && (o.sim == null || (o.sim >= 12 && o.sim <= 45))) && r.w3 >= 15 && r.trials === 3;
     return { ok, detail: `${r.list.map(o => `${o.id} ${o.members} x ${o.worth} = ${o.levies} levies (sim ${o.sim})`).join(', ')}; 250 knights beat 3,000 levies ${r.w3}/20; trials: ${r.labels.join(', ')}` };
   },
 

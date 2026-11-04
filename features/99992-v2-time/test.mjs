@@ -41,6 +41,9 @@ export default {
         T.enter({ seed: 9201, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
         const acts = () => [...document.querySelectorAll('[data-a]')].map(e => e.dataset.a);
         const page = acts();
+        // 99997-v2-war: the War Room opens only for those who serve or rule (no view of a war you are not in), so the
+        // noble enlists before he opens it
+        if (A.V2W && !A.V2W.canRoom()) A.enlist(A.pc());
         UI.warRoomOpen && UI.warRoomOpen();
         const room = acts(), roomTime = [...document.querySelectorAll('.wr-time [data-a]')].map(e => e.dataset.a);
         UI.ov = null; UI.render();
