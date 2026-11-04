@@ -61,7 +61,8 @@
     const wy = (ra.marriages && ra.marriages[b]) || (rb.marriages && rb.marriages[a]);
     if (wy) add('marriage-' + wy, Math.max(5, 16 - 0.6 * (Y - wy)), `royal marriage in ${wy}`);
     if ((ra.rivals || []).includes(b) || (rb.rivals || []).includes(a)) add('feud-rival', -20, 'sworn rivals');
-    let nc = 0; try { nc = A.claimsOn(a, b).length + A.claimsOn(b, a).length; } catch (e) { nc = 0; }
+    const hasCl = r => r.claims && Object.keys(r.claims).length;
+    let nc = 0; try { nc = (hasCl(ra) ? A.claimsOn(a, b).length : 0) + (hasCl(rb) ? A.claimsOn(b, a).length : 0); } catch (e) { nc = 0; }
     if (nc) add('claim', -Math.min(24, 6 + 4 * nc), nc > 2 ? 'many claims on each other\'s land' : 'a claim on the other\'s land');
     if (ra.faith && rb.faith) {
       const fn = ((A.faith && A.faith(ra.faith)) || {}).name || 'one faith';
