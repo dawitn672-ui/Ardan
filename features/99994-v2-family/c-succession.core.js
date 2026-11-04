@@ -101,7 +101,9 @@
     return null;
   };
   F.seatProv = seatProv;
-  const greatLanded = h => h && h.great !== false && h.rung && /^N/.test(h.rung) && seatProv(h) != null;
+  // with a court (99995-v2-nobility) only a house of title rank (duke, marquis, count) holds its seat's county: a lesser
+  // house seated there holds a viscounty, barony or manor under that county's count
+  const greatLanded = h => h && h.great !== false && h.rung && (A.S && A.S.court ? /^N0[123]$/ : /^N/).test(h.rung) && seatProv(h) != null;
 
   function giveHeadship(h, to, from) {
     h.headPid = to ? to.id : null;
@@ -109,8 +111,11 @@
     if (to && pc && to.id === pc.id && pc.alive) {
       A.log(`You are now head of ${h.name}${from ? `, after ${from.given}` : ''}, by ${(SU.LAWS[F.houseLaw(h.id).law] || {}).name || 'the law of the house'}.`, 'big');
       if (h.rung && h.rung[0] === 'N' && A.rungIndex && (!pc.noble || pc.noble.rung < A.rungIndex(h.rung))) {
-        const sp = seatProv(h);
-        pc.noble = { rung: A.rungIndex(h.rung), realm: h.realm || pc.realm, holding: sp != null ? sp : pc.home };
+        // with a court (99995-v2-nobility) a lesser house's seat lies inside a count's county: its head holds a viscounty,
+        // barony or manor there (A.V2N.grantFief), not the county
+        const sp = A.S.court && !/^N0[123]$/.test(h.rung) ? null : seatProv(h);
+        pc.noble = { rung: A.rungIndex(h.rung), realm: h.realm || pc.realm, holding: sp != null ? sp : A.S.court ? null : pc.home };
+        if (sp == null && A.V2N && A.V2N.grantFief) A.V2N.grantFief(pc);
         A.log(`With it comes the rung of ${A.nobleTitle(pc)}.`, 'big');
       }
     }
@@ -208,7 +213,9 @@
       const ids = hold[k];
       if (ids.length > 1) bad.push({ k: 'lordship', id: k, holders: ids });
       else if (seats[k] && seats[k] !== ids[0]) bad.push({ k: 'lordship-seat', id: k, holders: [ids[0], seats[k]] });
-      else if (caps[k] && caps[k] !== ids[0]) bad.push({ k: 'lordship-crown', id: k, holders: [ids[0], caps[k]] });
+      // a count of the court (99995-v2-nobility) keeps his county when a crown moves its seat into it: the crown sits in
+      // his castle, it does not take his title
+      else if (caps[k] && caps[k] !== ids[0] && !(A.P(ids[0]).noble.court)) bad.push({ k: 'lordship-crown', id: k, holders: [ids[0], caps[k]] });
     }
     return bad;
   };
