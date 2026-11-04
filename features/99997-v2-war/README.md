@@ -89,3 +89,24 @@
 - `99992-v2-time` `v2tPlaces`: the noble enlists when his realm declares war (the War place is for a war you fight in).
 - `58-event-cut` `warRoomByRank`: the peasant enlists before his War Room tabs are read.
 - `72-two-scales` (all its tests): the soldier's line and the captain's way into 72's scene now start v2's battle. 72's scene stays for the levy, and its tests and its lab (`lab.mjs`, used by `twoScalesMovesFront`) reach the old entry through `A.V2W.classic.wsLine` / `.wsPart`.
+
+## Playtest round 1 (`e-words.core.js` and small changes)
+
+- **Leaving the field ends the step.** The battle stopped the clock, so "Leave the field" now calls `UI.stepStop` and never resumes into an empty queue. Before, the stepper kept running and the game soft-locked.
+- **Numbers by rank** (`A.V2W.retell`), in the release's call to battle and in 34's reckoning:
+  - a soldier or sergeant gets estimates ("about 20,000");
+  - a captain gets "some 17,600";
+  - a commander knows his own side exactly and the enemy's only as an estimate.
+- **An outsider's maps.**
+  - The war map (`UI.drawWar`, `drawWarBasic`), `MAP.draw`, 62's march arrows and the War Room are drawn with only the divisions and fights you can see (`A.V2W.withSeen`). That means both sides of your wars, plus your own realm's forces when you serve or rule.
+  - 64's tavern tale "How the battle went" comes only for a battle of a war you fought in (`S.v2w.fought`).
+  - 57's folk memory of a battle is told as hearsay.
+- **An empty war list.** World > Wars says "Your realm is at war, but you are not in it" (or "No war of yours") in place of "Ardan is, for once, at peace."
+- **Captains' odds.**
+  - `src/v2/war.js` `playerOdds` now rates a captain against the unit across from his company, under their general. The difficulty scales with √(their worth / his company's) and is steeper with risk (0.35 + 0.9 × risk).
+  - Command grows 0.3 a rank from Captain up.
+  - `tests/v2` pass.
+- **The orders' page** reads members × v2 worth (14–26 a member) for every order, including one whose realm has no line division.
+- **One rank word.** The battle names the army's own title ("a Commander with your men").
+- **Test:** `v2wRound1`.
+- **Not done:** the War Room's division panels still show the release's exact counts (and "current / full" above full) to a commander for enemy divisions.
