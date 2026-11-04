@@ -121,9 +121,13 @@ VS.deNum = function (t, node) {
   const par = node && node.parentNode;
   // the training picker: "Strength — 29", "Survival & hunting — 62"
   if (par && par.nodeName === 'OPTION' && pc) {
-    const m = /^(.+?) — (\d{1,3})$/.exec(t.trim());
-    if (m) { const sk = statKeyOf(m[1]); return `${m[1]} — ${sk ? VS.statWord(pc, sk, +m[2]) : VS.tierOf(+m[2]).name}`; }
+    const m = /^(.+?) — (\d{1,3})( ★)?$/.exec(t.trim());
+    if (m) { const sk = statKeyOf(m[1]); return `${m[1]} — ${sk ? VS.statWord(pc, sk, +m[2]) : VS.tierOf(+m[2]).name}${m[3] || ''}`; }
   }
+  // a stat or a skill with its 0-100 number alone ("Stamina 15", "Lance 15")
+  { const m = /^(\s*)([A-Z][A-Za-z&:,' ]{1,40}?) (\d{1,3})(\s*)$/.exec(t);
+    if (m && pc) { const sk = statKeyOf(m[2]), kk = sk ? null : skillKeyOf(m[2]) || Object.keys(GD.SKILLS || {}).find(k => String(GD.SKILLS[k]).split(/[:&,(]/)[0].trim() === m[2]);
+      if (sk || kk) return `${m[1]}${m[2]} ${sk ? VS.statWord(pc, sk, +m[3]) : VS.tierOf(+m[3]).name}${m[4]}`; } }
   // a number in an element of its own beside its label ("Health <b>97</b>")
   if (par && /^\s*\d{1,3}\s*$/.test(t) && par.nodeType === 1 && par.childNodes.length === 1 && !par.closest('[data-tt="initiative"]')) {
     const prev = par.previousSibling, m = prev ? LABELS.exec(prev.textContent || '') : null;

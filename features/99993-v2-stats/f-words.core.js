@@ -51,7 +51,7 @@ VS.RULES = [
   [new RegExp(`${NUM} (?:chance|odds)`, 'g'), (m, n) => `${VS.oddsText(+n)}`],
   [new RegExp(`${NUM} by your own count`, 'g'), (m, n) => `${VS.oddsText(+n)}, by your own count`],
   // "worth 1.6%" (a rate, not a chance), "4 + 30% of their average" (a sum), "+30% pay" (more of something)
-  [new RegExp(`worth ${NUM}`, 'g'), (m, n) => `worth ${VS.fracWords(+n).replace(/^about /, '')}`],
+  [new RegExp(`worth ${NUM}`, 'g'), (m, n) => `worth ${+n < 5 ? 'a little' : VS.fracWords(+n).replace(/^about /, '')}`],
   [new RegExp(`(\\d)\\s*\\+\\s*${NUM}`, 'g'), (m, d, n) => `${d} and ${VS.fracWords(+n)}`],
   [new RegExp(`\\+\\s?${NUM}(\\s+(?:to|on|in)\\b)?`, 'g'), (m, n, prep) => `${VS.fracWords(+n)} more${prep || ''}`],
   [new RegExp(`[\\u2212\\-]\\s?${NUM}(\\s+(?:to|on|in)\\b)?`, 'g'), (m, n, prep) => `${VS.fracWords(+n)} less${prep || ''}`],
@@ -66,6 +66,7 @@ VS.dePct = function (t) {
   const oddsy = ODDSY.test(s) && !/\b(worth|of the|of its|of their|share)\b/i.test(s);
   s = s.replace(new RegExp(NUM, 'g'), (m, n) => (oddsy ? VS.oddsText(+n) : VS.fracWords(+n)));
   // a percent sign left alone after a number in another element
+  s = s.replace(/\ball of it from doing, the rest from practice/g, 'all of it from doing').replace(/\bnone of it from doing, the rest from practice/g, 'all of it from practice');
   return s.replace(/(^|\s)%(?=\s|$)/g, '$1').replace(/^%/, '');
 };
 

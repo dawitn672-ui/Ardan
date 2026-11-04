@@ -238,4 +238,34 @@ export default {
     const ok = r.r > 0.75 && r.same && r.med.giant > 25 && r.med.orc > 4 && r.med.dwarf > 0 && r.med.elf <= 1;
     return { ok, detail: `${r.n} humans: r = ${r.r.toFixed(3)} between ln v2 levies and the release's worth; a human's worth unchanged: ${r.same}; median shift by race ${Object.entries(r.med).map(([k, v]) => k + ' ' + (v > 0 ? '+' : '') + v).join(', ')}` };
   },
+
+  // playtest round 1: whole phrases in words, 0-100 scales as bands, no tap target on a choice, v2's levies for a
+  // master, a small child not rated, piety for the faithless said as a pull, the odds popover words only
+  async v2sPlaytest1(pg) {
+    const r = await pg.evaluate(async () => {
+      const V = A.V2S, w = t => V.deNum(V.dePct(t));
+      const phrases = [w('+30% pay and +30% from your own house of trade'), w('your stats lend 4 + 30% of their average'), w('Each point of skill above it is worth 1.6%.'),
+        w('100% of it from doing, the rest from practice.'), w('Health 97 · Happiness 66'), w('Master fighter (95), a steady officer'), w('Blood 76 / Wind 100')];
+      T.enter({ seed: 41, startAge: 30 });
+      const pc = A.pc();
+      for (const k of ['sword', 'melee']) pc.skills[k] = 80;
+      A.V2S.cache = new WeakMap();
+      const master = V.shownLevies(pc), chip = UI.SCENE && UI.SCENE.chipHtml ? UI.SCENE.chipHtml({ k: 'them', d: 36, label: "Merewyn's regard" }) : '';
+      const bar = UI.barRow('Health', 97, 100);
+      const e = Object.values(A.EV).find(e => !e.trigger && (e.choices || []).some(c => c.check && !c.check.fight) && typeof e.text === 'string' && !/\{/.test(e.text + e.title) && !('_mwOwnSetup' in e ? e._mwOwnSetup : e.setup));
+      A.S.queue = [{ type: 'event', ev: e.id, forced: true, ctx: {} }]; UI.ov = null; UI.render(); await new Promise(res => setTimeout(res, 0));
+      const taps = document.querySelectorAll('button[data-a="evChoose"] [data-tt-tap], button[data-a="evChoose"][data-tt-tap]').length;
+      const v = A.eventView(A.S.queue[0]), vi = v.choices.findIndex(c => c.odds != null), pop = vi >= 0 ? UI.TIPS.odds(vi) : '';
+      A.S.queue = []; UI.render();
+      T.enter({ seed: 42, startAge: 1 });
+      const baby = V.statWord(A.pc(), 'spd', 6), faithless = !V.hasFaith(A.pc()), piety = V.dePiety('▲▲ much more piety');
+      return { phrases, master, chip, bar, taps, pop, popWords: !/\d/.test(pop.replace(/<[^>]+>/g, '')), baby, faithless, piety };
+    });
+    const p = r.phrases;
+    const ok = p[0] === 'about a third more pay and about a third more from your own house of trade' && p[1] === 'your stats lend 4 and about a third of their average' &&
+      /worth a little/.test(p[2]) && p[3] === 'all of it from doing.' && p[4] === 'Health hale · Happiness content' && p[5] === 'Master fighter, a steady officer' && p[6] === 'Blood bloodied / Wind fresh' &&
+      r.master > 1 && r.master < 40 && /a great deal more/.test(r.chip) && !/\+36/.test(r.chip) && />hale</.test(r.bar) && r.taps === 0 && r.popWords &&
+      r.baby === 'too young to tell' && (!r.faithless || r.piety === '▲▲ a strong pull toward the faith');
+    return { ok, detail: `${p.join(' | ')}; a sword master ${r.master.toFixed(1)} levies; chip ${r.chip.replace(/<[^>]+>/g, '')}; tap targets on choices ${r.taps}; popover words only ${r.popWords}; a 1-year-old's speed "${r.baby}"; piety for the faithless "${r.piety}"` };
+  },
 };
