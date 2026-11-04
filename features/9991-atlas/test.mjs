@@ -35,8 +35,10 @@ export default {
       T.enter({ seed: 41, lands: 'great', race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
       T.play(1);
       const pc = A.pc(), AT = A.ATLAS;
-      const px = (cv, id) => { const P = A.prov(id), v = MAP.whole(cv.width, cv.height) || { x0: 0, y0: 0, w: MAP.KW, h: MAP.KH }; const x = Math.floor((P.sx - v.x0) / v.w * cv.width), y = Math.floor((P.sy - v.y0) / v.h * cv.height); return [...cv.getContext('2d').getImageData(x, y, 1, 1).data].slice(0, 3); };
-      const unk = A.S.prov.find(P => AT.level(pc, P.id) === 0 && A.wsDist(P.id, pc.home) > 4000 && P.cells > 40);
+      const px = (cv, id) => { const P = A.prov(id), v = (MAP.whole && MAP.whole(cv.width, cv.height)) || { x0: 0, y0: 0, w: MAP.KW || 7000, h: MAP.KH || 4500 }; const x = Math.floor((P.sx - v.x0) / v.w * cv.width), y = Math.floor((P.sy - v.y0) / v.h * cv.height); return [...cv.getContext('2d').getImageData(x, y, 1, 1).data].slice(0, 3); };
+      // v2 map lane: without the Far Lands the world is one continent of about 5,000 km (99-far-lands' MAP.whole, KW
+      // and KH are gone, and nowhere is 4,000 km from home), so the unknown place is the farthest one not known
+      const unk = A.S.prov.filter(P => AT.level(pc, P.id) === 0 && P.cells > 40).sort((a, b) => A.wsDist(b.id, pc.home) - A.wsDist(a.id, pc.home))[0];
       const draw = fog => { UI.set.atlasFog = fog; UI.tab = 'world'; UI.render(); const cv = UI.$('#worldmap'); return cv ? { unk: px(cv, unk.id), home: px(cv, pc.home) } : null; };
       const h0 = T.hash(A.S), rng0 = A.rngState;
       const on = draw(true), off = draw(false); UI.set.atlasFog = true;
@@ -63,7 +65,7 @@ export default {
       const h0 = T.hash(A.S), rng0 = JSON.stringify(A.rngState);
       UI.tab = 'life'; UI.storyView = 'map'; UI.render(); A.ATLAS.paint(); const cv = UI.$('#jrmap');
       if (!cv) return { none: true };
-      const AT = A.ATLAS, KX0 = MAP.KX0 || 0, KW = MAP.KW, KY0 = MAP.KY0 || 0, KH = MAP.KH;
+      const AT = A.ATLAS, KX0 = MAP.KX0 || 0, KW = MAP.KW || MAP.gw * 10, KY0 = MAP.KY0 || 0, KH = MAP.KH || MAP.gh * 10;   // the release's frame without 99-far-lands
       UI.atV.x0 = KX0 - UI.atV.w; UI.atV.y0 = KY0 - UI.atV.h; AT.draw(cv);
       const west = { x0: UI.atV.x0 - KX0, y0: UI.atV.y0 - KY0 };
       UI.atV.x0 = KX0 + KW; AT.draw(cv); const east = KX0 + KW - (UI.atV.x0 + UI.atV.w);

@@ -216,24 +216,28 @@ function erode(h, W, H, rng, drops) {
   }
   for (let i = 0; i < brushW.length; i++) brushW[i] /= wsum;
   const scale = 0.06; // erosion strength relative to normalized height
+  // height and gradient at (x, y), bilinear, written to gH, gX, gY: the same arithmetic, no object per step
+  let gH = 0, gX = 0, gY = 0;
   const hg = (x, y) => {
     const xi = Math.floor(x), yi = Math.floor(y), u = x - xi, v = y - yi;
     const k = yi * W + xi;
     const a = h[k], b = h[k + 1], c = h[k + W], d = h[k + W + 1];
-    return { h: a * (1 - u) * (1 - v) + b * u * (1 - v) + c * (1 - u) * v + d * u * v,
-      gx: (b - a) * (1 - v) + (d - c) * v, gy: (c - a) * (1 - u) + (d - b) * u };
+    gH = a * (1 - u) * (1 - v) + b * u * (1 - v) + c * (1 - u) * v + d * u * v;
+    gX = (b - a) * (1 - v) + (d - c) * v; gY = (c - a) * (1 - u) + (d - b) * u;
   };
+  const nB = brushOff.length, bOX = Int32Array.from(brushOff, (o) => o[0]), bOY = Int32Array.from(brushOff, (o) => o[1]), bW = Float64Array.from(brushW);
   for (let i = 0; i < drops; i++) {
     let x = rng.float(1, W - 2), y = rng.float(1, H - 2), dx = 0, dy = 0, speed = 1, water = 1, sed = 0;
     for (let s = 0; s < maxSteps; s++) {
       const xi = Math.floor(x), yi = Math.floor(y), u = x - xi, v = y - yi;
-      const g = hg(x, y);
-      dx = dx * inertia - g.gx * (1 - inertia); dy = dy * inertia - g.gy * (1 - inertia);
+      hg(x, y); const g0 = gH;
+      dx = dx * inertia - gX * (1 - inertia); dy = dy * inertia - gY * (1 - inertia);
       const len = Math.hypot(dx, dy); if (len < 1e-9) break;
       dx /= len; dy /= len;
       const nx = x + dx, ny = y + dy;
       if (nx < 1 || ny < 1 || nx >= W - 2 || ny >= H - 2) break;
-      const dh = hg(nx, ny).h - g.h;
+      hg(nx, ny);
+      const dh = gH - g0;
       const cap = Math.max(-dh * speed * water * capacityF, minCap * scale);
       const k = yi * W + xi;
       if (sed > cap || dh > 0) {
@@ -242,10 +246,10 @@ function erode(h, W, H, rng, drops) {
         h[k] += dep * (1 - u) * (1 - v); h[k + 1] += dep * u * (1 - v); h[k + W] += dep * (1 - u) * v; h[k + W + 1] += dep * u * v;
       } else {
         const amt = Math.min((cap - sed) * erodeS, -dh);
-        for (let b = 0; b < brushOff.length; b++) {
-          const bx = xi + brushOff[b][0], by = yi + brushOff[b][1];
+        for (let b = 0; b < nB; b++) {
+          const bx = xi + bOX[b], by = yi + bOY[b];
           if (bx < 0 || by < 0 || bx >= W || by >= H) continue;
-          const kk = by * W + bx; const take = Math.min(h[kk], amt * brushW[b]);
+          const kk = by * W + bx; const take = Math.min(h[kk], amt * bW[b]);
           h[kk] -= take; sed += take;
         }
       }
@@ -304,16 +308,31 @@ function distanceToWater(elev, W, H) {
   return d;
 }
 
+// A binary min-heap on typed arrays (keys as doubles). Sifts move a hole instead of swapping pairs; the comparisons
+// are the ones the pair-swapping version made, so the pop order (ties included) is the same.
 class MinHeap {
-  constructor() { this.k = []; this.v = []; }
-  push(key, val) { const K = this.k, V = this.v; let i = K.length; K.push(key); V.push(val);
-    while (i > 0) { const p = (i - 1) >> 1; if (K[p] <= K[i]) break; [K[p], K[i]] = [K[i], K[p]]; [V[p], V[i]] = [V[i], V[p]]; i = p; } }
-  pop() { const K = this.k, V = this.v; const top = V[0], tk = K[0]; const lk = K.pop(), lv = V.pop();
-    if (K.length) { K[0] = lk; V[0] = lv; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i;
-      if (l < K.length && K[l] < K[m]) m = l; if (r < K.length && K[r] < K[m]) m = r; if (m === i) break;
-      [K[m], K[i]] = [K[i], K[m]]; [V[m], V[i]] = [V[i], V[m]]; i = m; } }
-    this.lastKey = tk; return top; }
-  get size() { return this.k.length; }
+  constructor(cap = 1024) { this.k = new Float64Array(cap); this.v = new Int32Array(cap); this.n = 0; this.lastKey = 0; }
+  push(key, val) {
+    if (this.n === this.k.length) { const k2 = new Float64Array(this.n * 2), v2 = new Int32Array(this.n * 2); k2.set(this.k); v2.set(this.v); this.k = k2; this.v = v2; }
+    const K = this.k, V = this.v; let i = this.n++;
+    while (i > 0) { const p = (i - 1) >> 1; if (K[p] <= key) break; K[i] = K[p]; V[i] = V[p]; i = p; }
+    K[i] = key; V[i] = val;
+  }
+  pop() {
+    const K = this.k, V = this.v; const top = V[0], tk = K[0]; const n = --this.n;
+    if (n > 0) {
+      const lk = K[n], lv = V[n]; let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1; let m = -1, mk = lk;
+        if (l < n && K[l] < mk) { m = l; mk = K[l]; } if (r < n && K[r] < mk) { m = r; mk = K[r]; }
+        if (m < 0) break;
+        K[i] = K[m]; V[i] = V[m]; i = m;
+      }
+      K[i] = lk; V[i] = lv;
+    }
+    this.lastKey = tk; return top;
+  }
+  get size() { return this.n; }
 }
 
 function rivers(elev, moist, W, H) {

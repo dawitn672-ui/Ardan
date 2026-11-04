@@ -80,6 +80,9 @@ export default {
     }
     const r = await pg.evaluate(() => {
       UI.set.lfLives = 0; UI.A.newLife();
+      // v2 map lane: with the Far Lands out of the build (owner's decision of Nov 1, complaint 3) there is no Lands choice;
+      // without A.FAR the test checks that it is gone, and the rest as before
+      const FAR = !!A.FAR;
       const app = document.getElementById('app'), q = s => app.querySelector(s);
       const order = (a, b) => !!(a && b && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING));
       const quick = { lands: !!q('.crq-lands'), ways: [...app.querySelectorAll('[data-a=crQuick]')].map(b => b.dataset.v).join(','), landsFirst: order(q('.crq-lands'), q('.crq-ways')),
@@ -90,8 +93,9 @@ export default {
       // the full screens: Lands, then age, then the people and the realm
       UI.A.newLife(); UI.A.crStep(0);
       const L = q('.fl-lands'), age = [...app.querySelectorAll('.field')].find(f => /Where your story starts/.test(f.textContent)), realm = [...app.querySelectorAll('.field')].find(f => /Realm of birth/i.test(f.textContent));
-      const full = { order: order(L, age) && order(age, realm), begin: (() => { UI.A.crStep(3); return !/Where your story starts/.test(app.textContent) && !app.querySelector('.fl-lands'); })() };
+      const full = { order: (FAR ? order(L, age) : !L) && order(age, realm), begin: (() => { UI.A.crStep(3); return !/Where your story starts/.test(app.textContent) && !app.querySelector('.fl-lands'); })() };
       // a far realm, then the Known World only: warned before, told after
+      if (!FAR) return { quick, adult, full, warned: true, told: true, FAR };
       UI.A.crStep(0);
       const far = Object.keys(A.FAR.D.realms).find(r => A.raceAllowed(UI.cr.race, r)); UI.cr.realm = far; UI.crFix(); UI.render();
       const warned = !!q('.cr-lands-warn');
@@ -99,10 +103,10 @@ export default {
       UI.A.crSet('lands:known'); UI.toast = t0;
       const told = toasts.some(m => m.includes(A.FAR.D.realms[far].name) && /beyond the Known World/.test(m)) && /beyond the Known World/.test(app.textContent);
       UI.A.crSet('lands:great');
-      return { quick, adult, full, warned, told };
+      return { quick, adult, full, warned, told, FAR };
     });
     const [d, ph] = sizes;
-    const ok = r.quick.lands && r.quick.landsFirst && r.quick.ways === 'born,adult,story' && r.quick.cards === 3 && r.quick.all && r.quick.score &&
+    const ok = (r.FAR ? r.quick.lands && r.quick.landsFirst : !r.quick.lands) && r.quick.ways === 'born,adult,story' && r.quick.cards === 3 && r.quick.all && r.quick.score &&
       r.adult.screen === 'game' && r.adult.age === 16 && r.full.order && r.full.begin && r.warned && r.told && d.h <= d.vh * 1.15 && ph.h <= ph.vh * 1.8;
     return { ok, detail: `quick screen ${d.h}px at ${d.w}x${d.vh} and ${ph.h}px at ${ph.w}x${ph.vh} (the four steps were 12,500 px on a phone); ways ${r.quick.ways}, Lands first ${r.quick.landsFirst}, ${r.quick.cards} story cards (all 20 listed ${r.quick.all}), score explained ${r.quick.score}; ` +
       `Start at 16 -> ${r.adult.screen} at ${r.adult.age}; full screens: Lands, age, realm in order ${r.full.order}, gone from Begin ${r.full.begin}; far realm warned ${r.warned}, the switch says where the birth went ${r.told}` };
