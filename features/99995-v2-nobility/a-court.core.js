@@ -328,8 +328,11 @@
     const free = p => adultOf(p) && !(p.noble && p.noble.court) && p.id !== S.pc && !(p.ruler && A.realm(p.ruler) && A.realm(p.ruler).ruler === p.id);
     const h = t.house && S.houses[t.house];
     if (h && !h.extinct) {
-      const hd = F.headOf ? F.headOf(h.id) : A.P(h.headPid);
-      if (free(hd)) return { p: hd, why: 'house' };
+      let hd = F.headOf ? F.headOf(h.id) : A.P(h.headPid);
+      // a great house with no living head gets one as the release would (A.houseHead), off the game's stream
+      if (!live(hd) && h.great !== false) hd = F.sandbox('head|' + h.id + '|' + S.year, () => A.houseHead(h.id));
+      // the head takes it even as a child (a regency); only a head who rules, holds another court title or is you is passed by
+      if (hd && hd.alive && !(hd.noble && hd.noble.court) && hd.id !== S.pc && !(hd.ruler && A.realm(hd.ruler) && A.realm(hd.ruler).ruler === hd.id)) return { p: hd, why: 'house' };
       const ms = Object.values(S.people).filter(q => q.house === h.id && free(q)).sort((a, b) => a.born - b.born || (a.id < b.id ? -1 : 1));
       if (ms[0]) return { p: ms[0], why: 'house' };
     }
@@ -349,6 +352,13 @@
     });
     if (!c) return null;
     const p = c.p;
+    // the old house (even headless now: the release may give it a head later) no longer sits in this county: its seat follows its head's own
+    // holding, or it has none (one holder per county: F.audit counts a living head's seat as a holding)
+    const oh = t.house && S.houses[t.house], ohd = oh && A.P(oh.headPid);
+    if (oh && oh.id !== p.house && F.seatProv && F.seatProv(oh) === t.seat) {
+      const q = ohd.noble && ohd.noble.holding != null ? S.prov[ohd.noble.holding] : null;
+      oh.v2seatLost = oh.seat; oh.seat = q ? q.name : null; oh.seatId = q ? q.pid : null;
+    }
     // a lesser noble gives up his slot under a count; the slot is generated again
     if (p.noble && p.noble.fief) { const f = p.noble.fief, k = N.slotKey(p.noble.realm || rid, f.county, f.rank, f.i); if (S.court.met[k] === p.id) delete S.court.met[k]; }
     seatHolder(p, rid, t.rank, t.seat, t.k);
