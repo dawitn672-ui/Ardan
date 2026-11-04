@@ -115,4 +115,5 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 - `42-difficulty` `difficultyInformation`: with v2 no setting shows digits on a choice; without v2, the release's rule as before.
 - `48-fight-ladder` `flScreens`: with v2, the duel's "N times in 100" and the worth beside the tier on the duel measure are no longer required.
 - `59-tooltips` `ttWorthSums`: the tier chip names the worth in levies; with v2 it must name the same total's levies.
+- `9998-stakes` `stWhiteRetry`: with v2 the lock reads "Grow in Persuasion and Willpower first" and the chip "better at this now than in 1105", without the numbers.
 - `9996-polity` `poBillTrack`: the next count's odds are words and a balance, so with v2 the stack must have no "N%" and must have the balance.
