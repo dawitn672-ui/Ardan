@@ -8,8 +8,11 @@
 
 - **A war is yours** when you fight in it. That means your realm as its ruler, the realm you serve in (enlisted, an officer, a general, an order's member), or a sell-sword's employer. Being born in a realm at war is not enough (`A.V2W.inWar`, `fightsIn`, `myWars`).
   - 72-two-scales' levy counts while its scene runs: you stand in that fight.
+- **The War Room** belongs to those who serve or rule: a ruler, an enlisted man, an officer, a general, a sell-sword under contract (`A.V2W.canRoom`).
+  - In peace it plans your own forces, as before.
+  - In war it is drawn with only your wars in `A.S.wars`.
+  - For a life outside the army it stays shut (`UI.warRoomOpen`, `A.warRoomView`, a queued `warroom`). The War tab loses its War Room button and reads "is at war, but you are not in it" in place of the release's "is at peace".
 - **The surfaces that stay shut** for any other war:
-  - the War Room (`UI.warRoomOpen`, `A.warRoomView`, and a queued `warroom`);
   - a queued battle that belongs to that war;
   - 96-moments' victory and defeat cut-ins;
   - the War place (99992-v2-time's `V2T.atWar` now reads `inWar`).
@@ -17,7 +20,8 @@
   - A subject of a realm at war who is not in it reads "Your realm is at war, but you are not in it…".
   - Both pages end with **Rumours of war**.
 - **Battles of other wars are rumour only.**
-  - The release's battle news (`A.news(…, 'battle')`) is dropped for them.
+  - The release's battle news (`A.news(…, 'battle')`) is dropped for them. That covers a fight's report, a division cut off, an order destroyed, and sell-swords marching off.
+  - Outside every war, none of it reaches you. In a war, only news naming a realm on either side of your wars does.
   - `A.fightEnd` keeps a rumour instead, using `A.V2.war.rumourOfBattle`. It arrives 18–80 days later (`A.onMonth`). It is wrong about the winner at v2's rate (25% + 5% a month late), the place is half heard, and the dead are a guess (×0.4–3).
   - The dice are v2's `makeRng`, seeded from the game seed and the fight. Nothing is drawn from `A.rand`.
 - **New state:** `S.v2w = { rum, heard }`. It tolerates being missing.
@@ -78,3 +82,10 @@
 - **36-sieges' "behind the walls"** stays for a besieged home town: being besieged puts you in the war.
 - **The scene's result and the war map's result can differ.** The scene is your part of the field; the real fight is decided by the division simulator, which your performance moves.
 - **The release has 8 orders, not v2's 5.** All 8 keep their lore and get v2's numbers. Cutting 3 would remove realms' identities.
+
+## Other features' tests changed (they read spectating)
+
+- `99992-v2-time` `v2tNoPlay`: the noble enlists before he opens the War Room (a life outside the army has none).
+- `99992-v2-time` `v2tPlaces`: the noble enlists when his realm declares war (the War place is for a war you fight in).
+- `58-event-cut` `warRoomByRank`: the peasant enlists before his War Room tabs are read.
+- `72-two-scales` (all its tests): the soldier's line and the captain's way into 72's scene now start v2's battle. 72's scene stays for the levy, and its tests reach the old entry through `A.V2W.classic.wsLine` / `.wsPart`.

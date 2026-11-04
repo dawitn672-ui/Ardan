@@ -156,7 +156,8 @@ export default {
         const pc = A.pc(), groups = () => UI.GROUPS.map(g => g.k), bar = () => [...document.querySelectorAll('[data-a="group"]')].map(b => b.dataset.v);
         const peace = { groups: groups(), bar: bar(), warUnder: (UI.groupOf('war') || {}).k, war: A.atWar(pc.realm).length };
         const foe = Object.keys(A.S.realms).find(id => id !== pc.realm && A.S.realms[id].alive && !A.hostile(pc.realm, id));
-        A.declareWar(pc.realm, foe); UI.render();
+        // 99997-v2-war: the War place is there only for a war you fight in, so the noble enlists as the war begins
+        A.declareWar(pc.realm, foe); if (A.V2W && !A.V2W.inWar(pc)) A.enlist(pc); UI.render();
         const war = { groups: groups(), bar: bar(), warUnder: (UI.groupOf('war') || {}).k, war: A.atWar(pc.realm).length };
         // every page still opens
         const seen = []; for (const g of UI.GROUPS) for (const [k] of UI.subsOf(g)) { UI.setTab(k); UI.render(); if (UI.tab === k) seen.push(k); }

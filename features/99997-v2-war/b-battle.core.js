@@ -93,8 +93,9 @@
     const S2 = VS(), m = S2 ? S2.minds(pc) : { judgment: 100, will: 100, fatigue: 0 };
     const worth = S2 && S2.leviesOf ? Math.max(0.3, S2.leviesOf(pc)) : 1;
     const sk = k => (A.skill ? A.skill(pc, k) || 0 : 0);
-    // command: the tactics and command skills and judgment, on the scale of the enemy general's (1.5 + judgment / 100)
-    const command = clamp(1 + (sk('tactics') + sk('command')) / 70 + (m.judgment - 100) / 60 + (rank === 'captain' ? 0.2 : 0), 0.5, 5);
+    // command: the tactics and command skills, judgment and the years in an officer's post (0.3 a rank from captain up),
+    // on the scale of the enemy general's (1.5 + judgment / 100)
+    const command = clamp(1 + (sk('tactics') + sk('command')) / 70 + (m.judgment - 100) / 60 + (pc.mil && pc.mil.rank >= 4 ? 0.3 * (pc.mil.rank - 3) : rank === 'captain' ? 0.3 : 0), 0.5, 5);
     return { worth: Math.round(worth * 100) / 100, judgment: m.judgment, will: m.will, fatigue: m.fatigue || 0, command: Math.round(command * 100) / 100 };
   };
   // what a man in the ranks can tell of a number: "about 3,500"; a captain: "some 3,400"

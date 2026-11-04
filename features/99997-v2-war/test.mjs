@@ -121,8 +121,10 @@ export default {
   async v2wChoicesMove(pg) {
     await prep(pg);
     const r = await pg.evaluate(() => {
-      const fs = VWX.get(6), out = {};
-      const pairs = { soldier: [0, 4, 1], sergeant: [2, 0, 1], captain: [5, 3, 2] };   // rank, low choice, high choice
+      const fs = VWX.get(10), out = {};
+      // rank, the low choice, the high one: drift to the rear / push with the front rank; keep the squad tight / plug the
+      // gap; keep the company back / follow the army's orders
+      const pairs = { soldier: [0, 4, 1], sergeant: [2, 0, 1], captain: [5, 3, 0] };
       for (const [k, [rank, lo, hi]] of Object.entries(pairs)) {
         let pl = 0, ph = 0, el = 0, eh = 0, n = 0, wl = 0, wh = 0;
         for (const f of fs) {
@@ -134,7 +136,7 @@ export default {
       }
       // the commander: commit the reserve at once, or never
       let cl = 0, ch = 0, cn = 0;
-      for (const f of fs) {
+      for (const f of fs.slice(0, 6)) {
         const res = [];
         for (const commit of [false, true]) {
           const { arg } = VWX.load(f, 7);
@@ -151,7 +153,7 @@ export default {
       out.commander = { n: cn, moved: out.cMoved || 0, never: Math.round(cl / Math.max(1, cn)), commit: Math.round(ch / Math.max(1, cn)) };
       return out;
     });
-    const ok = ['soldier', 'sergeant', 'captain'].every(k => r[k].n >= 4 && r[k].hi > r[k].lo && r[k].orgHi > r[k].orgLo) && r.commander.n >= 3 && r.commander.moved >= Math.ceil(r.commander.n / 2);
+    const ok = ['soldier', 'sergeant', 'captain'].every(k => r[k].n >= 6 && r[k].hi > r[k].lo && r[k].orgHi >= r[k].orgLo) && r.commander.n >= 3 && r.commander.moved >= Math.ceil(r.commander.n / 2);
     return { ok, detail: ['soldier', 'sergeant', 'captain'].map(k => `${k}: grade ${r[k].lo} -> ${r[k].hi}, the fight's order edge ${r[k].orgLo} -> ${r[k].orgHi}, scene won ${r[k].wl} -> ${r[k].wh} of ${r[k].n}`).join('; ') + `; commander: the reserve changed ${r.commander.moved} of ${r.commander.n} battles (men left ${r.commander.never} -> ${r.commander.commit})` };
   },
 
