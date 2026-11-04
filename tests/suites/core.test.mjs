@@ -67,12 +67,19 @@ export default {
       await pg.keyboard.press('Escape');
       await pg.waitForFunction(() => !UI.ov, null, { timeout: 5000 }).catch(() => {});
     }
-    await pg.click('button:has-text("Play")');
-    await pg.waitForTimeout(3000);
-    // pause by the control itself (its label is an icon at laptop widths), then wait for the clock to stop: on the Great
-    // Continent a month's turn is one long day, and a click sent mid-turn waits for it (seconds on a slow runner)
-    await pg.click('[data-a="clkPlay"]').catch(() => {});
-    await pg.waitForFunction(() => !UI.clk.run, null, { timeout: 60000 }).catch(() => {});
+    // v2 (99992-v2-time): Play and its speeds are gone; the one control that moves time is Next month (when
+    // 99992 is not in the build, the release's Play). Press it and wait for the month to end or stop at a card.
+    if (await pg.$('[data-a="v2Next"]')) {
+      await pg.click('[data-a="v2Next"]');
+      await pg.waitForFunction(() => !(UI.stepper && UI.stepper.run) || UI.stepper.wait, null, { timeout: 60000 }).catch(() => {});
+    } else {
+      await pg.click('button:has-text("Play")');
+      await pg.waitForTimeout(3000);
+      // pause by the control itself (its label is an icon at laptop widths), then wait for the clock to stop: on the Great
+      // Continent a month's turn is one long day, and a click sent mid-turn waits for it (seconds on a slow runner)
+      await pg.click('[data-a="clkPlay"]').catch(() => {});
+      await pg.waitForFunction(() => !UI.clk.run, null, { timeout: 60000 }).catch(() => {});
+    }
     // a scene that came up while the clock ran is a modal over the top bar, as in play: answer it first (92 tests the card)
     await pg.evaluate(() => {
       for (let i = 0; i < 10; i++) {
