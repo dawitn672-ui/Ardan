@@ -44,7 +44,8 @@
           const p = Math.min(0.995, Math.max(0.005, n / 100)), ed = Math.log(p / (1 - p));
           return `<span class="pct ${c}" title="">${esc(scale(ed))} ${esc(DV.chanceWords(n))}</span>`;
         });
-        h = h.replace(/(\d+)%/g, (m, n) => esc(DV.chanceWords(n)));
+        // any other share ("+10% income for both") is said as more or less
+        h = h.replace(/>([^<]*)</g, (m, t) => '>' + t.replace(/([+−-])?\d+(\.\d+)?%\s*/g, (q, sg) => (sg && sg !== '+' ? 'less ' : 'more ')) + '<'); // text only, never a style
       } catch (x) { console.error('v2 diplomacy card', x); }
       return h;
     };

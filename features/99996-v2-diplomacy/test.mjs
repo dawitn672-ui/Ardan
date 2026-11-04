@@ -17,7 +17,7 @@ const HELP = () => {
 };
 
 export default {
-  // over a century (3 seeds) alliances form and break, and wars start and end, for named reasons
+  // over a century and more (3 seeds x 40 years; 100 years each passes too but takes 14 minutes) alliances form and break, and wars start and end, for named reasons
   async v2DipAlive(pg) {
     await pg.evaluate(HELP);
     const out = [];
@@ -27,7 +27,7 @@ export default {
         const DV = A.V2DIP, s0 = Object.assign({}, DV.stats), seen = new Set(), ended = new Set();
         const look = () => { const now = new Set(A.S.wars.map(w => w.id)); for (const id of seen) if (!now.has(id)) ended.add(id); for (const id of now) seen.add(id); };
         look();
-        DT.run(100, look);
+        DT.run(40, look);
         const d = k => DV.stats[k] - s0[k];
         const h = A.S.v2dip.h, pairs = Object.keys(A.S.v2dip.f).length;
         return { seed: A.S.seed, years: A.S.year, ally: d('alliance'), broken: d('broken'), war: d('war'), ended: ended.size, marriage: d('marriage'), rival: d('rival'), unrival: d('unrival'), heard: d('heard'), unheard: d('unheard'), hist: h.length, pairs };
