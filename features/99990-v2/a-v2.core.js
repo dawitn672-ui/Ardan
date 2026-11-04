@@ -847,6 +847,7 @@ var __ARDAN_V2 = (() => {
     const age = year - p.birthYear;
     if (p.traits?.includes("craven")) return "branded craven";
     if (p.traits?.includes("sickly") && age > 16) return "too sickly to rule";
+    if (p.judgedSimple) return "judged simple by the house council";
     if (!p.genes || age < 14) return null;
     const s = stats({ ...p, age });
     if (s.wits < 72 && s.judgment < 75) return "judged simple by the house council";
@@ -879,6 +880,7 @@ var __ARDAN_V2 = (() => {
       let ranked = members.sort((a, b) => a.birthYear - b.birthYear);
       if (law === "elective") {
         const ability = (p) => {
+          if (p.ability != null) return p.ability;
           const s = stats({ ...p, age: year - p.birthYear });
           return s.wits + s.judgment + s.presence + (p.renown ?? 0) * 0.5;
         };
@@ -1114,7 +1116,7 @@ var __ARDAN_V2 = (() => {
   function dukesFor(nProv) {
     return nProv >= 24 ? 3 : nProv >= 14 ? 2 : nProv >= 7 ? 1 : 0;
   }
-  function buildHierarchy(realm, map, seed) {
+  function buildHierarchy(realm, map, seed, opts = {}) {
     const rng = makeRng(`${seed}:titles:${realm.id}`);
     const namer = makeNamer(rng);
     const provs = map.provinces.list;
@@ -1144,13 +1146,18 @@ var __ARDAN_V2 = (() => {
     const dukes = [];
     const marqs = [];
     for (let m = 0; m < nMarq; m++) {
-      const start = rng.shuffle([...border].filter((c) => !taken.has(c)))[0];
+      const pick = rng.shuffle([...border].filter((c) => !taken.has(c)))[0];
+      const start = (opts.marchAt || []).find((c) => border.has(c) && !taken.has(c)) ?? pick;
       if (start == null) break;
       const parent = null;
-      marqs.push(add("marquis", `March of ${namer.place(realm.culture)}`, parent, grow(start, rng.int(2, 4))));
+      const room = Math.floor((counties.length - taken.size - nDukes * 4) / (nMarq - m));
+      const size = Math.min(rng.int(2, 4), room);
+      if (size < 1) break;
+      marqs.push(add("marquis", `March of ${namer.place(realm.culture)}`, parent, grow(start, size)));
     }
     for (let d = 0; d < nDukes; d++) {
-      const start = rng.shuffle(counties.filter((c) => !taken.has(c) && !border.has(c)))[0] ?? counties.find((c) => !taken.has(c));
+      const pick = rng.shuffle(counties.filter((c) => !taken.has(c) && !border.has(c)))[0] ?? counties.find((c) => !taken.has(c));
+      const start = (opts.dukeAt || []).find((c) => counties.includes(c) && !taken.has(c)) ?? pick;
       if (start == null) break;
       const cl = grow(start, Math.max(3, Math.round(counties.length / (nDukes + 1.5))));
       dukes.push(add("duke", `Duchy of ${namer.place(realm.culture)}`, king.id, cl));
