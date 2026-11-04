@@ -39,7 +39,15 @@ has 850-1,100 nobles; a 30-county realm about 1,300.
   had met would have held his county for ever. Each year every title holder you do not know (and who does not rule)
   dies at the release's own rate (`A.deathChance`), drawn from a stream seeded by the year and the person, never the
   game's; the death goes through `A.kill`, so the title passes by `A.V2F.inherit`. Over ten years about 7 in 100
-  titles change hands and 4 in 100 fall vacant (no heir in the line); a vacant title stays empty.
+  titles change hands.
+- **A vacant title is the liege's to give** (playtest 1 #25). A title whose line ran out is marked vacant; after 3 to
+  12 months (seeded) the liege gives it to the dead holder's house (its head, else its eldest grown member), else to
+  the realm's highest and most renowned lesser noble who holds no court title (he gives up his slot), else to a new
+  house. Nobody already holding a court title is chosen, so one holder per title holds. Over 20 years at most about
+  4 in 250 titles stand vacant at once. While it waits the view says "vacant since 1120, the king's to give", and a
+  vacant duchy or march never "holds".
+- **One rank word per title** (playtest 1 #14): 9996's border office "Warden of the March" is "Border warden", so a
+  duke on the council is no longer styled the warden of a march.
 - **A court lord stays head of his house.** The release's `A.houseHead(hid, true)` (an elective realm drawing its
   ruler from a house) made a stranger head while the old head lived, and 56-realm-inside's purge after a failed
   rebellion clears `headPid` even when the beheading did not take; both now leave the court lord at the head.
@@ -79,4 +87,6 @@ draws for them (house opinion drift, ageing, deaths), so a life's later draws di
 | `v2nCounties` | 2 seeds: one count for every owned province; the capital the crown's; each holder a stored person at Count's rung or higher holding that county and heading a house; dukes and marquises stored with their rung; the family audit clean |
 | `v2nLowerSame` | a lower noble read twice, read a year later, and met twice is the same; reading moves neither the stream nor the court; a barony grant takes a free slot |
 | `v2nOneHolder` | 10 seeds × 10 years: no title key on two living people, `A.V2F.audit()` clean, titles pass by inheritance, under a tenth vacant |
+| `v2nRegrant` | 3 seeds × 20 years: at most 5 in 100 titles vacant at any time, titles regranted, one holder each, the family audit clean; a vacant duchy reads "vacant since …, the …'s to give", never "Holds" |
+| `v2nOneRankWord` | the council's border office carries no rank word |
 | `v2nCourtView` | 420 and 1366 px: the card is drawn, pure, inside the screen, no percentage, the lower tiers counted, at most 14 rows; calling on a viscount stores one person |
