@@ -20,18 +20,21 @@ VM.release = function () {
   for (let i = 0; i < u16.length; i++) u16[i] = bin.charCodeAt(i * 2) | (bin.charCodeAt(i * 2 + 1) << 8);
   let k = 0; for (let i = 0; i < u16.length; i += 2) { const v = u16[i] - 1, n = u16[i + 1]; g.fill(v, k, k + n); k += n; }
   VM._rel = { gw: m.gw, gh: m.gh, grid: g, n: m.provinces.length,
+    realmNames: Object.fromEntries(Object.keys(LORE.realms).map(id => [id, LORE.realms[id].name])),
     provinces: m.provinces.map(p => ({ id: p.id, realm: p.realm, sx: p.sx, sy: p.sy, cells: p.cells, type: p.type, pop: p.pop })) };
   return VM._rel;
 };
 // on unless switched off or the province list is not the release's (the 09-scale clone harness copies it K times)
 VM.on = () => !VM.OFF && typeof LORE !== 'undefined' && LORE.map && LORE.map.provinces.length === VM.release().n;
 
-VM.world = function (seed) {
-  let w = VM.cache.get(seed);
-  if (w) { VM.cache.delete(seed); VM.cache.set(seed, w); return w; }
-  w = VM.build(seed, VM.release());
+// a world is keyed by its seed and the version of the map that made it, so a save keeps the map it was made on
+VM.world = function (seed, v = VM.VERSION) {
+  const key = seed + '#' + v;
+  let w = VM.cache.get(key);
+  if (w) { VM.cache.delete(key); VM.cache.set(key, w); return w; }
+  w = VM.build(seed, VM.release(), v); w.key = key;
   VM.stats.builds++; VM.stats.ms.push(Math.round(w.T.ms)); if (VM.stats.ms.length > 20) VM.stats.ms.shift();
-  VM.cache.set(seed, w);
+  VM.cache.set(key, w);
   while (VM.cache.size > VM.CACHE) VM.cache.delete(VM.cache.keys().next().value);
   return w;
 };
@@ -53,9 +56,9 @@ VM.onProv = function (S) {
 
 // which world the grid shows: the loaded state's
 VM.cur = null;
-VM.want = () => (A.S && A.S.v2map && A.S.v2map.seed && VM.on() ? String(A.S.v2map.seed) : null);
+VM.want = () => (A.S && A.S.v2map && A.S.v2map.seed && VM.on() ? String(A.S.v2map.seed) + '#' + (A.S.v2map.v || 1) : null);
 VM.use = function (w) {
-  const key = w ? w.seed : null;
+  const key = w ? w.key : null;
   if (VM.cur === key && MAP.grid) return;
   if (w) { MAP.grid = w.grid; MAP.gw = w.gw; MAP.gh = w.gh; VM.w = w; }
   else { const r = VM.release(); MAP.grid = r.grid; MAP.gw = r.gw; MAP.gh = r.gh; VM.w = null; }
@@ -68,7 +71,7 @@ VM.use = function (w) {
 VM.sync = function () {
   const s = VM.want();
   if (s === VM.cur && MAP.grid) return;
-  VM.use(s ? VM.world(s) : null);
+  VM.use(s ? VM.world(s.slice(0, s.lastIndexOf('#')), +s.slice(s.lastIndexOf('#') + 1)) : null);
 };
 const init0 = MAP.init;
 MAP.init = function () {

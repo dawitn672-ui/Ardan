@@ -23,9 +23,9 @@
   // ---- the whole continent, once per world
   let base = null;
   VM.basePic = function (w) {
-    if (base && base.seed === w.seed) return base;
+    if (base && base.seed === w.key) return base;
     const t0 = now(), s = SAT.BASE_W / w.gen.W, kc = KW / w.gen.W;
-    base = { seed: w.seed, cv: toCanvas(A.V2.render.renderMap(w.gen, { scale: s })), s, kc, ppk: s / kc };
+    base = { seed: w.key, cv: toCanvas(A.V2.render.renderMap(w.gen, { scale: s })), s, kc, ppk: s / kc };
     SAT.stats.baseMs = Math.round(now() - t0);
     return base;
   };
@@ -33,7 +33,7 @@
   const cache = new Map(); let cacheSeed = null;
   VM.satReset = () => { cache.clear(); cacheSeed = null; };
   const tile = (w, B, L, tx, ty, make) => {
-    if (cacheSeed !== w.seed) { cache.clear(); cacheSeed = w.seed; }
+    if (cacheSeed !== w.key) { cache.clear(); cacheSeed = w.key; }
     const k = L + ':' + tx + ':' + ty; let t = cache.get(k);
     if (t) { cache.delete(k); cache.set(k, t); return t; }
     if (!make) return null;
