@@ -114,12 +114,20 @@ VS.NUMRULES = [
 const statKeyOf = name => { for (const k in GD.STAT_NAMES || {}) if (GD.STAT_NAMES[k] === name) return k; return null; };
 const skillKeyOf = name => { for (const k in GD.SKILLS || {}) if (GD.SKILLS[k] === name) return k; return null; };
 VS.deNum = function (t, node) {
-  if (typeof t !== 'string' || !/\d/.test(t)) return t;
+  if (typeof t !== 'string') return t;
   const pc = A.S && A.pc && A.pc();
+  if (/piety/i.test(t)) t = VS.dePiety(t);
+  if (!/\d/.test(t)) return t;
+  const par = node && node.parentNode;
   // the training picker: "Strength — 29", "Survival & hunting — 62"
-  if (node && node.parentNode && node.parentNode.nodeName === 'OPTION' && pc) {
+  if (par && par.nodeName === 'OPTION' && pc) {
     const m = /^(.+?) — (\d{1,3})$/.exec(t.trim());
     if (m) { const sk = statKeyOf(m[1]); return `${m[1]} — ${sk ? VS.statWord(pc, sk, +m[2]) : VS.tierOf(+m[2]).name}`; }
+  }
+  // a number in an element of its own beside its label ("Health <b>97</b>")
+  if (par && /^\s*\d{1,3}\s*$/.test(t) && par.nodeType === 1 && par.childNodes.length === 1 && !par.closest('[data-tt="initiative"]')) {
+    const prev = par.previousSibling, m = prev ? LABELS.exec(prev.textContent || '') : null;
+    if (m) return VS.band(m[1], +t);
   }
   let s = t;
   for (const [re, fn] of VS.NUMRULES) s = s.replace(re, fn);
@@ -132,27 +140,4 @@ VS.dePiety = function (t) {
   return t.replace(/\bmuch more piety\b/g, 'a strong pull toward the faith').replace(/\bmore piety\b/g, 'a pull toward the faith')
     .replace(/\bmuch less piety\b/g, 'a strong pull away from the faith').replace(/\bless piety\b/g, 'a pull away from the faith');
 };
-// a number in an element of its own beside its label ("Health <b>97</b>")
 const LABELS = /(health|happiness|looks|renown|honou?r|piety|stability|legitimacy|blood|wind)\s*[:·]?\s*$/i;
-VS.splitNums = function (root) {
-  if (!root || !root.querySelectorAll) return;
-  for (const el of root.querySelectorAll('b, strong, span, em')) {
-    if (el.children.length || !/^\s*\d{1,3}\s*$/.test(el.textContent)) continue;
-    if (el.closest('.barrow') || el.closest('[data-tt="initiative"]')) continue;
-    const prev = el.previousSibling, pt = prev ? prev.textContent || '' : '';
-    const m = LABELS.exec(pt);
-    if (m) el.textContent = VS.band(m[1], +el.textContent);
-  }
-};
-const sweep = VS.sweep;
-VS.sweep = function (root) {
-  sweep.apply(this, arguments);
-  try {
-    if (!root || typeof document === 'undefined') return;
-    if (root.nodeType === 1) {
-      VS.splitNums(root);
-      const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-      for (let n = w.nextNode(); n; n = w.nextNode()) { const v = n.nodeValue; if (v && /piety/i.test(v)) { const t = VS.dePiety(v); if (t !== v) n.nodeValue = t; } }
-    } else if (root.nodeType === 3 && root.nodeValue && /piety/i.test(root.nodeValue)) root.nodeValue = VS.dePiety(root.nodeValue);
-  } catch (e) { console.error('v2 numbers', e); }
-};

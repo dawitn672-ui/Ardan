@@ -112,7 +112,7 @@ VS.sweep = function (root) {
   try { VS.badges(root.nodeType === 1 ? root : document.body); } catch (e) { console.error('v2 odds badge', e); }
   const doText = n => {
     const v = n.nodeValue;
-    if (!v || !/\d/.test(v)) return;
+    if (!v || !(/\d/.test(v) || /piety/i.test(v))) return;
     let t = v.indexOf('%') >= 0 ? VS.dePct(v) : v;
     if (VS.deNum) t = VS.deNum(t, n);
     if (t !== v) n.nodeValue = t;
@@ -130,7 +130,7 @@ VS.sweep = function (root) {
 const render = UI.render;
 UI.render = function () {
   const r = render.apply(this, arguments);
-  try { VS.style && VS.style(); if (typeof document !== 'undefined' && document.body) VS.sweep(document.body); } catch (e) { console.error('v2 words', e); }
+  try { VS.style && VS.style(); if (typeof document !== 'undefined' && document.body) { VS.sweep(document.body); if (VS.mo) VS.mo.takeRecords(); } } catch (e) { console.error('v2 words', e); }
   return r;
 };
 // anything put on the page later (popovers, tooltips, toasts, the duel screen's rounds)
@@ -139,8 +139,9 @@ if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined') 
     for (const m of list) {
       if (m.type === 'characterData') { if (m.target.nodeValue && m.target.nodeValue.indexOf('%') >= 0) VS.sweep(m.target); continue; }
       if (m.type === 'attributes') { const v = m.target.getAttribute(m.attributeName); if (v && v.indexOf('%') >= 0) m.target.setAttribute(m.attributeName, VS.dePct(v)); continue; }
-      for (const n of m.addedNodes) VS.sweep(n);
+      for (const n of m.addedNodes) if (n.isConnected) VS.sweep(n);
     }
+    VS.mo.takeRecords();   // our own edits are not new content
   });
   const start = () => VS.mo.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['title', 'aria-label'] });
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
