@@ -50,16 +50,20 @@ VS.RULES = [
   [new RegExp(`\\(${NUM} (?:chance|odds)\\)`, 'g'), (m, n) => `(${VS.oddsText(+n)})`],
   [new RegExp(`${NUM} (?:chance|odds)`, 'g'), (m, n) => `${VS.oddsText(+n)}`],
   [new RegExp(`${NUM} by your own count`, 'g'), (m, n) => `${VS.oddsText(+n)}, by your own count`],
-  [new RegExp(`([+\\u2212\\-])\\s?${NUM}`, 'g'), (m, s, n) => `${s === '+' ? 'up' : 'down'} ${VS.fracWords(+n).replace(/^about /, 'about ')}`],
+  // "worth 1.6%" (a rate, not a chance), "4 + 30% of their average" (a sum), "+30% pay" (more of something)
+  [new RegExp(`worth ${NUM}`, 'g'), (m, n) => `worth ${VS.fracWords(+n).replace(/^about /, '')}`],
+  [new RegExp(`(\\d)\\s*\\+\\s*${NUM}`, 'g'), (m, d, n) => `${d} and ${VS.fracWords(+n)}`],
+  [new RegExp(`\\+\\s?${NUM}(\\s+(?:to|on|in)\\b)?`, 'g'), (m, n, prep) => `${VS.fracWords(+n)} more${prep || ''}`],
+  [new RegExp(`[\\u2212\\-]\\s?${NUM}(\\s+(?:to|on|in)\\b)?`, 'g'), (m, n, prep) => `${VS.fracWords(+n)} less${prep || ''}`],
   [new RegExp(`×\\s?${NUM}`, 'g'), (m, n) => `× ${VS.fracWords(+n)}`],
 ];
 // does the text speak of chances? then a bare percentage is odds, not a share
-const ODDSY = /\b(chance|odds|likely|win|wins|success|succeed|passes|risky|sure)\b/i;
+const ODDSY = /\b(chance|odds|likely|succeed|passes)\b/i;
 VS.dePct = function (t) {
   if (typeof t !== 'string' || t.indexOf('%') < 0) return t;
   let s = t;
   for (const [re, fn] of VS.RULES) s = s.replace(re, fn);
-  const oddsy = ODDSY.test(s);
+  const oddsy = ODDSY.test(s) && !/\b(worth|of the|of its|of their|share)\b/i.test(s);
   s = s.replace(new RegExp(NUM, 'g'), (m, n) => (oddsy ? VS.oddsText(+n) : VS.fracWords(+n)));
   // a percent sign left alone after a number in another element
   return s.replace(/(^|\s)%(?=\s|$)/g, '$1').replace(/^%/, '');
@@ -81,6 +85,8 @@ VS.badges = function (root) {
     const el = b.querySelector('.risk:not(.fo-fight):not(.v2-fo), .sc-odds:not(.fo-fight):not(.v2-fo)') || b.querySelector('.fo-fight');
     if (!el || el.dataset.v2o === String(pct)) continue;
     el.dataset.v2o = String(pct);
+    // a tap on a choice chooses (playtest round 1): the breakdown opens on hover, focus or the keyboard, not a tap
+    for (const t of [el, ...el.querySelectorAll('[data-tt-tap]')]) t.removeAttribute('data-tt-tap');
     el.classList.add('v2-odds');
     if (el.classList.contains('fo-fight')) {
       // 89-fight-odds' badge keeps what the fight is ("a fight"); the balance and the words go just before it
@@ -98,12 +104,19 @@ VS.badges = function (root) {
   }
   // 92-scene-card's four pips counted the odds: the balance says it now
   for (const p of root.querySelectorAll('.sc-pips')) p.remove();
+  for (const t of root.querySelectorAll('button[data-a="evChoose"] [data-tt-tap]')) t.removeAttribute('data-tt-tap');
 };
 const SKIP = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'NOSCRIPT']);
 VS.sweep = function (root) {
   if (!root || typeof document === 'undefined') return;
   try { VS.badges(root.nodeType === 1 ? root : document.body); } catch (e) { console.error('v2 odds badge', e); }
-  const doText = n => { if (n.nodeValue && n.nodeValue.indexOf('%') >= 0) { const t = VS.dePct(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t; } };
+  const doText = n => {
+    const v = n.nodeValue;
+    if (!v || !/\d/.test(v)) return;
+    let t = v.indexOf('%') >= 0 ? VS.dePct(v) : v;
+    if (VS.deNum) t = VS.deNum(t, n);
+    if (t !== v) n.nodeValue = t;
+  };
   if (root.nodeType === 3) { if (!SKIP.has(root.parentNode && root.parentNode.nodeName)) doText(root); return; }
   if (root.nodeType !== 1 || SKIP.has(root.nodeName)) return;
   const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => (SKIP.has(n.parentNode && n.parentNode.nodeName) ? 2 : 1) });

@@ -251,8 +251,8 @@ export default {
       const rows = [...box.querySelectorAll('.tip-row')], sum = rows.filter(x => !x.classList.contains('tt-sum')).reduce((a, x) => a + parseInt(x.querySelector('b').textContent.replace('−', '-'), 10), 0);
       const total = +rows.find(x => x.classList.contains('tt-sum')).querySelector('b').textContent;
       const W = A.worthParts(pc);
-      // v2 (99993-v2-stats, "words, not numbers"): the chip names the worth in levies; it must be this same total's
-      const v2 = !!A.V2S, chipOk = v2 ? chip.textContent.includes(A.V2S.levyWords(A.V2S.fromWorth(total))) : shown === total;
+      // v2 (99993-v2-stats, "words, not numbers"): the chip names the worth in v2's levies
+      const v2 = !!A.V2S, chipOk = v2 ? chip.textContent.includes(A.V2S.levyWords(A.V2S.shownLevies(pc))) : shown === total;
       return { n: people.length, bad: bad.slice(0, 5), rnd, shown: v2 ? chip.textContent.split('·').pop().trim() : shown, chipOk, sum, total, W: [W.body, W.skill, W.gear] };
     })()`);
     const ok = !r.bad.length && r.chipOk && r.sum === r.total && r.rnd.worth === 0 && r.rnd.gear === 0 && r.rnd.skill === 0 && r.rnd.body <= 2 && r.rnd.stat <= 2;
