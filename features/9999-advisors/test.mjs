@@ -191,7 +191,9 @@ export default {
     const share = S('adv') / Math.max(1, S('big')), onceShare = S('onceAdv') / Math.max(1, S('once'));
     const heedGood = S('kg') / Math.max(1, S('k')), ignGood = S('igg') / Math.max(1, S('ig'));
     const distinct = S('distinct') / r.length;
-    const ok = share >= 0.8 && onceShare >= 0.8 && distinct >= 3;
+    // (v2 playtest 1, #10, 99999-v2-content: a once-a-life scene is no longer big on that alone, so the once-scenes'
+    // share is reported but not held to 80%; counsel on the big choices still is)
+    const ok = share >= 0.8 && distinct >= 3;
     return { ok, data: r, detail: `${r.length} lives: big choices with counsel ${S('adv')}/${S('big')} (${Math.round(share * 100)}%), once-scenes ${S('onceAdv')}/${S('once')}; heeded went well ${Math.round(heedGood * 100)}% (${S('kg')}/${S('k')}), ignored went well ${Math.round(ignGood * 100)}% (${S('igg')}/${S('ig')}); distinct advisors a life ${distinct.toFixed(1)} (${r.map(x => x.status + ' ' + x.distinct).join(', ')})` };
   },
 };

@@ -5,6 +5,9 @@ const SETUP = () => {
     adult(seed) {
       T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
       const pc = A.pc(); pc.alive = true; pc.prison = null;
+      // (v2 playtest 1, #9: 99999-v2-content cites at most one memory in MW.GAP cards; these staged scenes test the
+      // rules themselves, one after another, so the gap is off here. v2cMemoryRare tests the gap in played lives.)
+      if (A.MW && A.MW.GAP) A.MW.GAP = 0;
       return pc;
     },
     stranger(pc) { const t = A.makeAcquaintance(pc, 'acquaint'); A.link(pc, t, 'acquaint', 0, 'acquaint'); return t; },
@@ -18,6 +21,9 @@ const SETUP = () => {
           choices: [{ t: 'Talk it over', check: { s: 'persuasion', d: 45 }, win: { r: 'Agreed.' }, lose: { r: 'No.' } }, { t: 'Send {them} away', r: 'Gone.' }] },
         { id: 'mwt_toll', title: 'The toll at the bridge', cond: () => false, w: 0, text: 'A toll-keeper wants more than the posted price.',
           choices: [{ t: 'Argue the price down', check: { s: 'persuasion', d: 45 }, win: { r: 'He gives way.', fx: { coin: 5 } }, lose: { r: 'He laughs.', fx: { coin: -40 } } }, { t: 'Pay', r: 'You pay.', fx: { coin: -10 } }] },
+        // (a second road scene with a persuasion check: v2 playtest 1 keeps the skill rule to the same kind of scene)
+        { id: 'mwt_ford', title: 'The ferryman', cond: () => false, w: 0, text: 'At the river crossing on the road, {them} wants a word before the ferry goes.',
+          choices: [{ t: 'Talk it over', check: { s: 'persuasion', d: 45 }, win: { r: 'Agreed.' }, lose: { r: 'No.' } }, { t: 'Send {them} away', r: 'Gone.' }] },
         { id: 'mwt_mark', title: 'A fair stall', cond: () => false, w: 0, text: 'A stall at the market sells knives.',
           choices: [{ t: 'Haggle hard', check: { s: 'trade', d: 45 }, win: { r: 'Cheap.' }, lose: { r: 'Dear.' } }, { t: 'Walk past', r: 'You walk past.' }] },
       ]);
@@ -61,7 +67,7 @@ export default {
       MWT.defs();
       // without memories: the same scenes, untouched
       let pc = MWT.adult(6702), t = MWT.stranger(pc);
-      const bare = { ask: MWT.peek('mwt_ask', { pid: t.id }).v, toll: MWT.peek('mwt_toll', {}).v, mark: MWT.peek('mwt_mark', {}).v };
+      const bare = { ask: MWT.peek('mwt_ask', { pid: t.id }).v, toll: MWT.peek('mwt_toll', {}).v, mark: MWT.peek('mwt_mark', {}).v, ford: MWT.peek('mwt_ford', { pid: t.id }).v };
       const bareMw = [MWT.peek('mwt_ask', { pid: t.id }).q.ctx.mw, MWT.peek('mwt_toll', {}).q.ctx.mw];
       // with them
       pc = MWT.adult(6702); t = MWT.stranger(pc);
@@ -74,18 +80,18 @@ export default {
       const again = MWT.peek('mwt_toll', {});              // again rule: label (as in y0), +6 on the won check
       const s2 = MWT.peek('mwt_mark', {});                 // again rule as well (the same scene), +3 on a lost check
       const t2 = MWT.stranger(pc);
-      const skill = MWT.peek('mwt_ask', { pid: t2.id });  // a stranger: the skill rule, from the toll
+      const skill = MWT.peek('mwt_ford', { pid: t2.id }); // a stranger on the road: the skill rule, from the toll
       return { y0, bare, bareMw, person: person.v, pr: person.q.ctx.mw.r, again: again.v, ar: again.q.ctx.mw.r, s2: s2.v, skill: skill.v, sr: skill.q.ctx.mw && skill.q.ctx.mw.r, name: t.given };
     });
     const Y = String(r.y0);
     const pOk = r.pr === 'person' && r.person.text.includes(Y) && r.person.text.includes(r.name) && /pulled him out/.test(r.person.text) && r.person.choices[0].odds === r.bare.ask.choices[0].odds + 6;
     const aOk = r.ar === 'again' && r.again.text.includes(Y) && r.again.choices[0].t.endsWith(`(as in ${Y})`) && r.again.choices[0].odds === r.bare.toll.choices[0].odds + 6;
     const mOk = r.s2.choices[0].odds === r.bare.mark.choices[0].odds + 3 && r.s2.text.includes(Y);
-    const sOk = r.sr === 'skill' && r.skill.text.includes(Y) && /argued the price down/.test(r.skill.text) && r.skill.choices[0].odds === r.bare.ask.choices[0].odds + 5;
+    const sOk = r.sr === 'skill' && r.skill.text.includes(Y) && /argued the price down/.test(r.skill.text) && r.skill.choices[0].odds === r.bare.ford.choices[0].odds + 5;
     const bareOk = !r.bareMw[0] && !r.bareMw[1] && !/\b1\d{3}\b/.test(r.bare.ask.text + r.bare.toll.text);
     return { ok: pOk && aOk && mOk && sOk && bareOk,
       detail: `without memory: no weave (${bareOk}); person ${pOk}: "${r.person.text}" odds ${r.bare.ask.choices[0].odds}→${r.person.choices[0].odds}; again ${aOk}: "${r.again.text}" / "${r.again.choices[0].t}" ${r.bare.toll.choices[0].odds}→${r.again.choices[0].odds}; ` +
-        `again after a loss ${mOk}: ${r.bare.mark.choices[0].odds}→${r.s2.choices[0].odds}; skill ${sOk}: "${r.skill.text}" ${r.bare.ask.choices[0].odds}→${r.skill.choices[0].odds}` };
+        `again after a loss ${mOk}: ${r.bare.mark.choices[0].odds}→${r.s2.choices[0].odds}; skill ${sOk}: "${r.skill.text}" ${r.bare.ford.choices[0].odds}→${r.skill.choices[0].odds}` };
   },
 
   async mwOddsAreTheOddsPlayed(pg) {
@@ -118,12 +124,14 @@ export default {
         pc = MWT.adult(6704);
         MWT.scene('mwt_toll', {}, 0, 0.001); A.S.year++;
         const w = MWT.peek(id, {});
-        out.push({ id, bare: bare.v.text, woven: w.v.text, mw: w.q.ctx.mw ? w.q.ctx.mw.r : null, off: !!(w.q.ctx.mw && w.q.ctx.mw.off), words: MWT.words(w.v.text), raw: T.raw.test(w.v.text + w.v.choices.map(c => c.t).join(' ')) });
+        out.push({ id, sh: A.MW.shapeOf(A.EV[id]), bare: bare.v.text, woven: w.v.text, mw: w.q.ctx.mw ? w.q.ctx.mw.r : null, off: !!(w.q.ctx.mw && w.q.ctx.mw.off), words: MWT.words(w.v.text), raw: T.raw.test(w.v.text + w.v.choices.map(c => c.t).join(' ')) });
       }
       return out;
     });
     const woven = r.filter(x => x.mw && !x.off), changed = woven.filter(x => x.woven !== x.bare), long = r.filter(x => x.words > 80), raw = r.filter(x => x.raw);
-    return { ok: woven.length >= 10 && changed.length === woven.length && !long.length && !raw.length,
+    // (v2 playtest 1, #9, 99999-v2-content: a skill memory is cited only in the same kind of scene, so only the road's
+    // scenes answer to the toll; none of another kind may)
+    return { ok: woven.length >= 1 && woven.every(x => x.sh === 'road') && changed.length === woven.length && !long.length && !raw.length,
       detail: `${r.length} release scenes with a persuasion check: ${woven.length} woven from a won toll argument, all changed: ${changed.length === woven.length}; the rest dropped for length (${r.filter(x => x.off).length}); over 80 words ${long.length}; raw tokens ${raw.length}; e.g. ${woven[0] ? woven[0].id + ': "' + woven[0].woven + '"' : '-'}` };
   },
 
