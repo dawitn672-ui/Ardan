@@ -92,6 +92,41 @@ export default {
     return { ok: r.same && r.on > 100 && r.off === 0, detail: `12 years with the record (${r.on} entries) and without it (${r.off}): ${r.same ? 'the same world, people and random stream' : 'the worlds DIFFER'}` };
   },
 
+  async wcRecallYieldsToVoice(pg) {
+    // the regression under wcObservesOnly (CI run 88): a card carries one extra line, and a recalled line used to push
+    // the life's inner voice (9992-identity) out; the life remembers each voice line it hears (pc.idv), so whether the
+    // record had an entry to recall decided what the character had heard. The recalled line now gives way: on every
+    // card the voice that speaks is the one that would speak with no recalled line, and the record still recalls
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const ID = A.ID; if (!ID || typeof ID.voiceCore !== 'function') return { none: true };
+      let cards = 0, recalls = 0, voices = 0, both = 0;
+      const silenced = [];
+      for (const [seed, status, realm] of [[9090, 'merchant', 'POL-05'], [4242, 'peasant', 'POL-01'], [811, 'artisan', 'POL-03']]) {
+        A.newGame({ seed, race: 'human', realm, status, sex: seed % 2 ? 'F' : 'M', startAge: 18 });
+        WCT.years(10, { onEvent: (q, v) => {
+          if (v.skip) return;
+          cards++;
+          const vo = ID.voiceCore(A.pc(), q);
+          if (vo) voices++;
+          if (!v.recall) return;
+          recalls++;
+          if (vo) both++;
+          // the voice with the recalled line taken away (put back at once: the card is not changed)
+          const line = v.recall; delete v.recall;
+          let bare = null; try { bare = ID.voiceCore(A.pc(), q); } finally { v.recall = line; }
+          if (bare && silenced.length < 4) silenced.push(`${A.S.year} ${q.ev}: "${bare.line}" silenced by "${line}"`);
+          else if (bare) silenced.push('');
+        } });
+      }
+      return { cards, recalls, voices, both, silenced };
+    });
+    if (r.none) return { ok: true, detail: 'no inner voice in this build' };
+    const ok = r.cards > 200 && r.recalls > 0 && r.voices > 0 && !r.both && !r.silenced.length;
+    return { ok, detail: `${r.cards} cards over three lives of 10 years: ${r.recalls} with a recalled line, ${r.voices} with an inner voice, ${r.both} with both; ` +
+      `voices a recalled line silenced: ${r.silenced.length}${r.silenced.length ? ' e.g. ' + r.silenced[0] : ''}` };
+  },
+
   async wcCitesShare(pg) {
     // W6: scenes cite dated entries, and each one is possible where and when it is told.
     // Changed for v2: W6 asked for 15% or more of a life's scenes to cite an entry, and almost all of them were the
