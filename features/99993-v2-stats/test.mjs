@@ -240,6 +240,15 @@ export default {
       T.play(2);
       // the needs, low and high
       pc.needs = { rest: 22, company: 71, purpose: 48, comfort: 88 };
+      // verifier, round 6: 999-confidants' pips on the People tab carry a hover title, "Friend, rank 1 of 5: ... Next rank:
+      // shared history 16 (now 47), their opinion 30." (the opinion is -100..100, the history 55's ledger weight), and this
+      // life never formed a bond in two years, so the title was never drawn. Give her one, a friend at rank 1, before the
+      // tabs are drawn, and require that the pips' title was read and says the next rank in words.
+      let cfTip = '';
+      { const CF = A.CONFIDANTS, ids = Object.keys(pc.rel || {}).filter(id => { const t = A.P(id); return t && t.alive && A.isAdult(t); });
+        let id = CF && ids.find(i => CF.role(pc.rel[i]) === 'friend');
+        if (CF && !id && ids.length) { id = ids[0]; pc.rel[id].type = 'friend'; }
+        if (id) { pc.rel[id].cf = 1; pc.rel[id].cfY = A.S.year; } }
       let rng0 = JSON.stringify(A.S.rng), h0 = T.hash(A.S), pure = true;
       UI.tab = 'life'; UI.ov = null; UI.render(); await tick();
       const card = document.querySelector('.moods'); check('needs card', card ? card.textContent.replace(/How you are/, '\n') : 'none 0');
@@ -249,7 +258,8 @@ export default {
       if (UI.TIPS.act) check('activity popover', swept(UI.TIPS.act('tavern')));
       const wordsShown = !!card && /tired|worn out/.test(card.textContent) && /in good company/.test(card.textContent);
       // (every tab's titles and aria-labels, as the page draws and sweeps them)
-      for (const tab of T.tabs()) { UI.ov = null; UI.tab = tab; UI.render(); await tick(); checkAttrs('peasant ' + tab, document.body); }
+      for (const tab of T.tabs()) { UI.ov = null; UI.tab = tab; UI.render(); await tick(); checkAttrs('peasant ' + tab, document.body);
+        const cf = document.querySelector('#app .cf-pips[title]'); if (cf && !cfTip) cfTip = cf.getAttribute('title'); }
       UI.ov = null; UI.tab = 'life'; UI.render(); await tick();
       // the training pickers and the season's log
       check('training picker', [...document.querySelectorAll('select[data-c="planTrain"] option')].map(o => o.textContent).join('\n'));
@@ -273,6 +283,11 @@ export default {
       // the sweep's other finds: the yard, a door's skill, an ambition's fighting worth, a staff candidate, a sparkline
       for (const t of ['The yard master sends you home: health worn, come back at 50', 'Too hurt for that: health worn, rest to 50 first', 'Needs Crossbow 30 (you have 2), or a bow',
         'Fighting worth 62 of 118: masters to learn from', 'Enzo Montessi — fit 70 · Master', 'They would not take you yet: your chance is under 2 in 100.']) check('phrase', VS.deNum(t));
+      // (the verifier's own pips titles, round 6: a bond past its history, one short of it, a beloved at rank 3)
+      for (const t of ['Friend, rank 1 of 5: Their regard for you will not fade below a floor. Next rank: shared history 16 (now 47), their opinion 30.',
+        'Friend, rank 2 of 5: A gift. Next rank: shared history 26 (now 45), their opinion 40.', 'Beloved, rank 3 of 5: A gift. Next rank: shared history 38 (now 27), their opinion 50.']) {
+        const el = document.createElement('div'); el.innerHTML = '<span class="cf-pips"></span>'; el.firstChild.setAttribute('title', t); document.body.appendChild(el); VS.sweep(el);
+        check('pips title', el.firstChild.getAttribute('title').replace(/rank \d of 5/, '')); el.remove(); }
       { const el = document.createElement('div'); el.innerHTML = '<span title="Stability since 1105: 46 to 61">~</span>'; document.body.appendChild(el); VS.sweep(el); check('sparkline title', el.firstChild.getAttribute('title').replace(/1105/, '')); el.remove(); }
       // infamy, under World > Diplomacy
       const rs = Object.values(A.S.realms).filter(x => x.alive);
@@ -384,10 +399,10 @@ export default {
         // round 4: the three bars, the war weariness popover, the golden age step, the peace table, the Decide title
         barWords, /War weariness tiring/.test(tipWeary), /Stability shaky \(it must be rock steady\) and/.test(golden),
         peace === 'Aldmark is tiring. What they will accept depends on the war score.', /Legitimacy accepted\.$/.test(ttl)], rulerWords = rw.every(Boolean);
-      return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join('') + ' bars: ' + bars.slice(0, 160), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure, attrsRead, skillAria };
+      return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join('') + ' bars: ' + bars.slice(0, 160), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure, attrsRead, skillAria, cfTip };
     });
-    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && / & /.test(r.skillAria);
-    return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.attrsRead} titles and aria-labels read (a skill row: "${r.skillAria}"); ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
+    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && / & /.test(r.skillAria) && /^[^\d]*rank 1 of 5: .*Next rank: [^\d]*$/.test(r.cfTip);
+    return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.attrsRead} titles and aria-labels read (a skill row: "${r.skillAria}"; a confidant's pips: "${r.cfTip}"); ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
   },
 
   // playtest 2 (old 7, new 11, old 20, old 22): no bare 0-100 number beside a stat word on the pages a bot life visits.

@@ -301,6 +301,15 @@ const how = d => (Math.abs(d) <= 3 ? 'a little ' : Math.abs(d) >= 10 ? 'much ' :
 const statDelta = (name, sign, n) => { const w = STAT_DIR[String(name).toLowerCase()]; if (!w) return null; const up = sign === '+'; return how(n) + (up ? w[0] : w[1]); };
 const gain = v => (v < 0.8 ? 'a little' : v < 2 ? 'some' : v < 4 ? 'a good deal' : 'a great deal');
 VS.NUMRULES2 = [
+  // 999-confidants' pips (the People tab, the person view), their hover title: "Next rank: shared history 16 (now 47), their
+  // opinion 30." The history is 55's ledger weight, the opinion -100..100 (verifier, round 6: neither was worded). Said as
+  // how much of the history is there and the regard it asks for, in 59-tooltips' opinion words.
+  [/\bNext rank: shared history (\d+) \(now (\d+)\), their opinion (-?\d{1,3})\./g, (all, need, now, op) => {
+    const f = +need > 0 ? 100 * +now / +need : 100;
+    const hist = f >= 100 ? 'your shared history is already enough' : +now <= 0 ? 'a shared history (you have none yet)'
+      : `more shared history (you have ${VS.fracWords(f)} of what it asks)`;
+    return `Next rank: ${hist}, and for them to think you ${VS.band2 ? VS.band2('opinion', +op) : 'warm'} or better.`;
+  }],
   // 996-coming-up's digest: "You got better at Survival & hunting +2.4, Farming & herding +1.0." (the season's own line,
   // "... of it from doing", is j-numbers' rule, which reads the whole sentence: leave it to that one)
   [/got better at ([^.]*?\+\d[^.]*?(?:\.\d[^.]*?)*)\.( ?)([a-z]?)/g, (all, list, sp, c, off, str) => (/ of it from doing/.test(str) ? all :
