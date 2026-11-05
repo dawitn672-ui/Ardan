@@ -1,324 +1,314 @@
-// v2 stats, part 8 (owner's complaint 11, playtest 1 #7, playtest 2 old 7): the 0-100 numbers g-bands did not reach.
+// v2 stats, part 10 (playtest 2: old 7's remainder, new 11, old 20, old 22): the 0-100 numbers still on the page.
 //
-// - 35-moods' four needs: words (A.MOODS.word, "rested", "alone too often"), in 35's card, 91-look's box and the
-//   need/needs/mood popovers; a popover says where a need settles and what pulls it, in words.
-// - Training: the mentor picker's "Melee (14)" and the council's "(52)" say the tier; the season's training log says
-//   how much each skill grew ("Survival & hunting, a good deal"), not "+2.4"; the profile's "best 59 at 19", a wound's
-//   "worth 42 to 41 (speed -7)" and "−7 speed, Athletics & climbing −10", the perks' "40, 65 and 85" and the decisions'
-//   "A proficiency at 50" and "Learning 55" are tiers and words; a staff candidate's "fit 66" is the tier of that fit.
-// - The War Room's division stat grid (attack, defence, breakthrough, hit points, width, supply, armour, piercing,
-//   organization) compares the division with yours ("far above yours"), and says what its armour and piercing do to your
-//   men; speed stays in km. The order of battle's "mo 64", "xp 18" and "morale 64 (steady)" are the words.
-// - Infamy, under World > Diplomacy (Coalitions and Most feared): words that follow the rules (40 starts a coalition,
-//   more than 58 lets one march, more than 20 makes small realms bow).
-// The game's rules are unchanged. Rendering only: nothing here reads A.rand or writes A.S.
-const VS = A.V2S;
-const esc = s => UI.esc(String(s == null ? '' : s));
-const M = A.MOODS;
-const tierName = v => VS.tierOf(+v || 0).name;
+// The owner's rule: no 0-100 number and no percentage the player sees; words, real units, a tipped scale. g-bands
+// (part 7) put most of the page in words. Playtest 2 still read, among others: Path "Performance 64 / Reputation 38",
+// "Command skill 28 / 35", "Morale 58", "merit 1448"; the duel's "Blood 86 / Wind 100" and "7 damage"; another
+// person's "Body: strength 38 · speed 32 …", "Renown 59", "Opinion of you 39", "Command: 0 — no commander"; the orders'
+// "Master fighter (107)"; diplomacy's "MOST FEARED Aldmark 21" and "Solenne sends 881,788 suns"; and three garbled
+// de-percented lines ("countered their frontal assault about a fifth more", "Moves about a quarter more faster",
+// "+2.3. all of it from doing").
+//
+// Most of these survived because 59-tooltips wraps the number in an element of its own ("Master fighter (<span
+// data-tt="worth">101</span>)"), so a rule on one text node never saw the label beside it. Here:
+//   - an element whose tooltip key says what its number measures (data-tt="perf", "merit", "board", "coMo", "worth",
+//     "fame", "opinion", "loyalty" …) has the number put in words for that measure (VS.keyWords);
+//   - views whose numbers sit in markup of the release's own are rewritten where they are made (another person's page,
+//     the "Most feared" list, the orders' traits, the duel's bars);
+//   - whole lines in the story and the reports get rules of their own (VS.NUMRULES, VS.RULES), ahead of the general ones.
+// The numbers stay in the engine, the state, the tests and the tooltips' sums. Rendering only: nothing here reads
+// A.rand or writes A.S.
+(function () {
+  const VS = A.V2S;
+  if (!VS || !VS.NUMRULES) return;
+  const esc = s => UI.esc(String(s == null ? '' : s));
+  const pick = (bands, v) => { for (const [t, w] of bands) if (v >= t) return w; return bands[bands.length - 1][1]; };
+  const num = s => +String(s).replace(/[,\s]/g, '').replace(/[−–]/g, '-');
+  const tier = v => VS.tierOf(+v || 0).name;
+  const pc = () => (A.S && A.pc ? A.pc() : null);
 
-// ---- needs ----------------------------------------------------------------------------------------------------------
-if (M && M.word) {
-  const NAME = { rest: 'Rest', company: 'Company', purpose: 'Purpose', comfort: 'Comfort' };
-  // 91-look's box of the four needs: the value's place takes the word
-  const LOOK = UI.LOOK;
-  if (LOOK && typeof LOOK.needsBox === 'function') {
-    const box0 = LOOK.needsBox;
-    LOOK.needsBox = function (pc) {
-      const box = box0.apply(this, arguments);
-      try {
-        if (box && pc) {
-          const n = M.needs(pc);
-          for (const row of box.querySelectorAll('.lk-need')) {
-            const v = row.querySelector('.val'), tt = row.querySelector('[data-tt="need"][data-v]'), k = (v && v.getAttribute('data-v')) || (tt && tt.getAttribute('data-v'));
-            if (v && k in n) { v.textContent = M.word(k, n[k]); v.classList.add('v2-needw'); }
-          }
-        }
-      } catch (e) { console.error('v2 needs box', e); }
-      return box;
-    };
-  }
-  // the popovers (59-tooltips' need, needs, mood): words, the same rules
-  const pull = d => (Math.abs(d) >= 20 ? 'a great deal' : Math.abs(d) >= 10 ? 'a good deal' : 'a little');
-  const tip = UI.TIPS = UI.TIPS || {};
-  const ttL = (key, arg, label) => (UI.tt ? UI.tt(key, arg, label) : esc(label));
-  if (tip.need) {
-    tip.need = function (k) {
-      const p = A.pc(); if (!p || !M.NEEDS.includes(k)) return '';
-      const n = M.needs(p)[k], T = M.targets(p)[k], parts = UI.TT && UI.TT.needParts ? UI.TT.needParts(p, k) : null;
-      const way = Math.abs(T - n) < 4 ? 'and holding there' : T > n ? `and rising toward ${M.word(k, T)}` : `and falling toward ${M.word(k, T)}`;
-      let h = `<div class="tip-h">${esc(NAME[k])} <b>${esc(M.word(k, n))}</b></div>` +
-        `<div class="tip-d">${esc(way)}. Each month a need moves a quarter of the way toward where your life puts it; what you do pushes it up or down.</div>`;
-      if (parts) h += parts.filter(x => x[1]).map(([l, v], i) => `<div class="tip-row tt-sub"><span>${l}</span><b>${i === 0 ? esc(M.word(k, v)) : `${v > 0 ? 'raises' : 'lowers'} it ${pull(v)}`}</b></div>`).join('');
-      else h += `<div class="tip-d">Your ${ttL('coin', '', 'coin')} against what feels like enough at your rank, plus your ${ttL('health', '', 'health')}, your freedom, and prison.</div>`;
-      h += `<div class="tip-row tt-sum"><span>Settles at</span><b>${esc(M.word(k, T))}</b></div>`;
-      if (n < M.LOW) h += `<div class="tip-f">This low, it sets a ${ttL('mood', k, 'mood')}.</div>`;
-      return h;
-    };
-  }
-  if (tip.needs) {
-    tip.needs = function () {
-      const p = A.pc(); if (!p) return '';
-      const n = M.needs(p);
-      return '<div class="tip-h">Needs</div>' + M.NEEDS.map(k => `<div class="tip-row"><span>${ttL('need', k, NAME[k])}</span><b>${esc(M.word(k, n[k]))}</b></div>`).join('') +
-        `<div class="tip-f">Together they move ${ttL('happy', '', 'happiness')} every month: well met, up; neglected, down.</div>`;
-    };
-  }
-  if (tip.mood) {
-    const mood0 = tip.mood;
-    tip.mood = function (k) {
-      const h = mood0.apply(this, arguments);
-      try {
-        if (typeof h !== 'string') return h;
-        return h.replace(/Every need at 65 or more\./, `Every need ${esc(M.word('rest', 65))}, ${esc(M.word('company', 65))}, ${esc(M.word('purpose', 65))} and ${esc(M.word('comfort', 65))} or better.`)
-          .replace(/is below \d+\./, `is down to ${esc(M.word(k, M.LOW - 1))}.`);
-      } catch (e) { return h; }
-    };
-  }
-  // 91-look's activity popover: "Meets rest +30, company +12" as how much
-  if (tip.act) {
-    const act0 = tip.act;
-    tip.act = function () {
-      const h = act0.apply(this, arguments);
-      try {
-        return typeof h === 'string' ? h.replace(/(<span>Meets<\/span><b>)([^<]*)(<\/b>)/, (all, a, list, b) =>
-          a + list.split(', ').map(x => { const m = /^(\w+) ([+−-])(\d+)$/.exec(x.trim()); return m ? `${m[1]} ${m[2] === '+' ? 'up' : 'down'} ${pull(+m[3])}` : x; }).join(', ') + b) : h;
-      } catch (e) { return h; }
-    };
-  }
-}
+  // ---- the bands -----------------------------------------------------------------------------------------------------------
+  const B2 = VS.BANDS2 = {
+    perf: [[80, 'excellent'], [60, 'good'], [40, 'adequate'], [20, 'poor'], [-1e9, 'failing']],
+    rep: [[80, 'famed in the trade'], [60, 'well regarded'], [40, 'known'], [20, 'little known'], [-1e9, 'unknown']],
+    morale: [[80, 'eager'], [60, 'steady'], [40, 'grumbling'], [20, 'shaken'], [-1e9, 'near breaking']],
+    // -100..100, the same words as 59-tooltips' glossary ("Yours of them … warm")
+    opinion: [[70, 'devoted'], [40, 'warm'], [10, 'friendly'], [-9, 'indifferent'], [-39, 'cool'], [-69, 'hostile'], [-1e9, 'hateful']],
+    loyalty: [[80, 'devoted'], [60, 'loyal'], [40, 'dutiful'], [25, 'restless'], [-1e9, 'disloyal']],
+    discontent: [[75, 'near revolt'], [50, 'angry'], [25, 'grumbling'], [-1e9, 'quiet']],
+    feud: [[-29, 'a grudge'], [-59, 'a bitter feud'], [-1e9, 'a blood feud']],
+    infamy: [[80, 'a byword for terror'], [60, 'dreaded'], [40, 'feared'], [20, 'mistrusted'], [-1e9, 'watched']],
+    fit: [[70, 'well suited'], [50, 'suited'], [30, 'could serve'], [-1e9, 'ill suited']],
+  };
+  const band = VS.band2 = (k, v) => pick(B2[k], +v);
+  const feudWord = v => (+v > -30 ? 'a grudge' : +v > -60 ? 'a bitter feud' : 'a blood feud');
+  // how much a change is: a 0-100 scale's step, a skill's season, a merit award, a fight's blow
+  const amount = a => (a < 3 ? 'a little' : a < 8 ? 'somewhat' : a < 20 ? 'a good deal' : 'a great deal');
+  const gain = a => (a < 1 ? 'a little' : a < 3 ? 'some' : 'a good deal');
+  const meritGain = n => (n < 8 ? 'a little merit' : n < 25 ? 'some merit' : n < 60 ? 'a good deal of merit' : 'a great deal of merit');
+  const hurt = n => (n < 6 ? 'a graze' : n < 12 ? 'a cut' : n < 20 ? 'a hard blow' : n < 35 ? 'a deep wound' : 'a terrible wound');
+  const cause = n => (n >= 40 ? 'above all' : n >= 20 ? 'a great deal' : n >= 8 ? 'a good deal' : 'a little');
+  VS.hurtWord = hurt;
+  // merit against what the next board asks
+  VS.meritWords = function (have, need) {
+    have = +have || 0;
+    if (!(need > 0)) return have < 50 ? 'a little' : have < 200 ? 'some' : have < 600 ? 'a good deal' : 'a great deal';
+    const f = have / need;
+    return f >= 1.5 ? 'well past what the board asks' : f >= 1 ? 'enough for the board' : f >= 0.85 ? 'nearly enough for the board'
+      : `${VS.fracWords(100 * f)} of what the board asks`;
+  };
+  const meritNeed = p => {
+    try { const b = p && (p.mil ? A.promoBoard(p) : A.jobBoard && p.job ? A.jobBoard(p) : null), r = b && b.find(x => x.k === 'merit'); return r ? r.need : 0; } catch (e) { return 0; }
+  };
+  // a requirement with what you have: the words for both, or "enough"
+  const short = (have, need, w) => {
+    const a = w(have), b = w(need);
+    return +have >= +need ? `${a}, enough` : a === b ? `${a}, a little short` : `${a}; the board asks ${b}`;
+  };
+  const statKey = name => { for (const k in GD.STAT_NAMES || {}) if (GD.STAT_NAMES[k] === name) return k; return null; };
+  const skillKey = name => {
+    if (!name) return null;
+    for (const k in GD.SKILLS || {}) { const n = String(GD.SKILLS[k]); if (n === name || k === name.toLowerCase() || n.split(/[:&,(]/)[0].trim() === name) return k; }
+    return null;
+  };
+  const isNum = t => /^[+−–-]?\d[\d,]*(\.\d+)?$/.test(t);
 
-// ---- infamy ---------------------------------------------------------------------------------------------------------
-// the bands follow the rules: 40 or more and the neighbours band together, over 58 a coalition may march, over 20 small
-// realms seek its protection
-VS.INFAMY = [[80, 'dreaded by every court'], [59, 'so feared a coalition may march'], [40, 'feared: its neighbours band together'], [21, 'distrusted'], [10, 'watched'], [-1e9, 'unremarkable']];
-VS.infamyWord = v => { for (const [t, w] of VS.INFAMY) if (+v >= t) return w; return VS.INFAMY[VS.INFAMY.length - 1][1]; };
-VS.infamyShort = v => (v >= 80 ? 'dreaded' : v >= 59 ? 'hated' : v >= 40 ? 'feared' : v >= 21 ? 'distrusted' : v >= 10 ? 'watched' : 'unremarkable');
-if (typeof UI.worldTabPolitics === 'function') {
-  const pol0 = UI.worldTabPolitics;
-  UI.worldTabPolitics = function () {
-    const h = pol0.apply(this, arguments);
-    try {
-      if (typeof h !== 'string') return h;
-      return h.replace(/\(infamy (\d+)\)/g, (all, v) => `(${esc(VS.infamyWord(+v))})`);
-    } catch (e) { return h; }
+  // ---- a number its tooltip key names -----------------------------------------------------------------------------------
+  // (el, its text) -> the words, or null to leave it
+  VS.keyWords = {
+    perf: t => (isNum(t) ? band('perf', num(t)) : null),
+    rep: t => (isNum(t) ? band('rep', num(t)) : null),
+    fame: t => (isNum(t) ? VS.band('renown', num(t)) : null),
+    opinion: t => (isNum(t) ? band('opinion', num(t)) : null),
+    rulerOp: t => (isNum(t) ? band('opinion', num(t)) : null),
+    loyalty: t => (isNum(t) ? band('loyalty', num(t)) : null),
+    facDisc: t => (isNum(t) ? band('discontent', num(t)) : null),
+    feud: t => (isNum(t) ? feudWord(num(t)) : null),
+    merit: t => (isNum(t) ? VS.meritWords(num(t), meritNeed(pc())) : null),
+    // "Morale 66" (9997-companies' company card)
+    coMo: t => { const m = /^Morale (\d{1,3}(?:\.\d+)?)$/.exec(t); return m ? `Morale: ${band('morale', +m[1])}` : null; },
+    coDivMo: t => { const m = /^Morale (\d{1,3}(?:\.\d+)?)$/.exec(t); return m ? `Morale: ${band('morale', +m[1])}` : null; },
+    // the fighter's worth beside a tier ("Master fighter (101)"): in levies, as the sheet says it
+    worth: (t, el) => {
+      if (!isNum(t)) return null;
+      const id = el.getAttribute('data-v'), P = id ? A.P(id) : pc();
+      return P && VS.shownLevies && VS.levyWords ? VS.levyWords(VS.shownLevies(P)) : null;
+    },
+    // a promotion board's row: "379 / 600", "28 / 35"
+    board: (t, el) => {
+      const m = /^(\d[\d,]*(?:\.\d+)?)\s*\/\s*(\d[\d,]*(?:\.\d+)?)$/.exec(t); if (!m) return null;
+      const k = String(el.getAttribute('data-v') || '').split('|')[1], a = num(m[1]), b = num(m[2]);
+      if (k === 'merit') return VS.meritWords(a, b);
+      if (k === 'cmd' || k === 'skill') return short(a, b, tier);
+      if (k === 'rep') return short(a, b, v => band('rep', v));
+      return null;   // months, battles: real counts
+    },
   };
-}
-// Most feared: the bar stays, the number becomes the word (the realm's short name is the label)
-{
-  const bar0 = UI.barRow;
-  UI.barRow = function (label, v, max, cls, pot, valTxt) {
-    try {
-      if (VS.inFeared && typeof v === 'number' && valTxt == null && Object.values(A.S.realms || {}).some(r => r && r.infamy === v && UI.esc(r.short) === label)) return bar0.call(this, label, v, max, cls, pot, VS.infamyShort(v));
-      if (label === 'Organization' && typeof v === 'number' && max > 0) return bar0.call(this, label, Math.min(v, max), max, cls, pot, VS.orgWord(v / max));
-    } catch (e) {}
-    return bar0.apply(this, arguments);
+  VS.deKeyed = function (root) {
+    if (!root || !root.querySelectorAll) return;
+    const els = root.matches && root.matches('[data-tt]') ? [root, ...root.querySelectorAll('[data-tt]')] : root.querySelectorAll('[data-tt]');
+    for (const el of els) {
+      const f = VS.keyWords[el.getAttribute('data-tt')];
+      if (!f || el.children.length) continue;
+      const t = (el.textContent || '').trim();
+      if (!/\d/.test(t)) continue;
+      let w = null; try { w = f(t, el); } catch (e) {}
+      if (w != null && w !== t) { el.textContent = w; if (el.classList.contains('val') && el.parentNode && el.parentNode.classList) el.parentNode.classList.add('v2-wb'); }
+    }
+    // the release's bars: Blood and Wind in a duel, an opinion, the "Most feared" list (see the wrappers below)
+    for (const v of root.querySelectorAll('.barrow > .val')) {
+      const t = (v.textContent || '').trim(); if (!isNum(t)) continue;
+      const l = ((v.parentNode.querySelector('.lbl') || {}).textContent || '').trim();
+      if (/^(Their )?[Oo]pinion( of you)?$/.test(l)) { v.textContent = band('opinion', num(t)); v.parentNode.classList.add('v2-wb'); }
+    }
   };
-}
-// the Most feared rows are drawn inside worldTabPolitics after the "Most feared" heading: mark that stretch
-if (typeof UI.worldTabPolitics === 'function') {
-  const pol2 = UI.worldTabPolitics;
-  UI.worldTabPolitics = function () {
-    // barRow is only called for Most feared inside this view (the realm rows use their own markup)
-    VS.inFeared = true;
-    try { return pol2.apply(this, arguments); } finally { VS.inFeared = false; }
-  };
-}
-
-// ---- the War Room: the division's numbers as comparisons -------------------------------------------------------------
-VS.orgWord = f => (f >= 0.95 ? 'in full order' : f >= 0.7 ? 'in good order' : f >= 0.4 ? 'shaken' : f >= 0.15 ? 'breaking' : 'broken');
-VS.cmpWord = (r, ref) => (!(r > 0) ? 'none' : r >= 1.6 ? `far above ${ref}` : r >= 1.2 ? `above ${ref}` : r > 0.84 ? `like ${ref}` : r > 0.6 ? `below ${ref}` : `far below ${ref}`);
-const moWord = mo => (mo >= 75 ? 'eager' : mo >= 60 ? 'steady' : mo >= 45 ? 'sullen' : mo >= 30 ? 'shaken' : 'near breaking');
-VS.divRef = function (d) {
-  // yours: the commander's own divisions (not this one); with none, every division in the field ("most")
-  let myR = null; try { myR = UI.wrMyR ? UI.wrMyR(A.pc()) : A.pc().realm; } catch (e) {}
-  const all = (A.allDivs ? A.allDivs() : []).filter(x => x && x.id !== d.id);
-  let set = all.filter(x => x.r === myR), ref = myR === d.r ? 'your others' : 'yours';
-  if (!set.length) { set = all; ref = 'most'; }
-  if (!set.length) return null;
-  const acc = { soft: 0, hard: 0, def: 0, brk: 0, hp: 0, w: 0, sup: 0, arm: 0, prc: 0 };
-  for (const x of set) {
-    const c = A.divCombat(x), s = c.s || {};
-    acc.soft += c.soft; acc.hard += c.hard; acc.def += c.def; acc.brk += c.brk; acc.hp += c.hp;
-    acc.w += +s.w || 0; acc.sup += A.divSupUse(x) || 0; acc.arm += +s.arm || 0; acc.prc += +s.prc || 0;
-  }
-  for (const k in acc) acc[k] /= set.length;
-  acc.ref = ref; acc.mine = myR === d.r;
-  return acc;
-};
-if (typeof UI.wrStatGrid === 'function') {
-  const grid0 = UI.wrStatGrid;
-  UI.wrStatGrid = function (d) {
-    try {
-      const R = VS.divRef(d);
-      if (!R) return grid0.apply(this, arguments);
-      const c = A.divCombat(d), s = c.s || {}, L = A.xpLevel(d.exp), mo = A.divMaxOrg(d);
-      const cell = (k, v, tip) => `<div title="${esc(tip)}"><span>${esc(k)}</span><b>${esc(v)}</b></div>`;
-      const cmp = (a, b) => VS.cmpWord(b > 0 ? a / b : a > 0 ? 9 : 1, R.ref);
-      // armour against piercing (the rule: less piercing than the other side's armour, half the attacks)
-      const arm = R.mine ? cmp(+s.arm || 0, R.arm) : ((+s.arm || 0) > R.prc ? 'too heavy for your blows' : 'your blows bite');
-      const prc = R.mine ? cmp(+s.prc || 0, R.prc) : ((+s.prc || 0) >= R.arm ? 'goes through your armour' : 'glances off your armour');
-      return `<div class="wr-stats v2-wr-stats">${cell('Soft atk', cmp(c.soft, R.soft), 'Attacks per day against men')}${cell('Hard atk', cmp(c.hard, R.hard), 'Attacks per day against armor and beasts')}` +
-        `${cell('Defense', cmp(c.def, R.def), 'Attacks it can block when defending')}${cell('Breakthr.', cmp(c.brk, R.brk), 'Attacks it can block when attacking')}` +
-        `${cell('Org', VS.orgWord((d.org || 0) / Math.max(1, mo)), 'Organization: how long it keeps fighting')}${cell('HP', cmp(c.hp, R.hp), 'How much damage it can take')}` +
-        `${cell('Width', cmp(+s.w || 0, R.w), 'Combat width used: how much of the front it takes')}${cell('Supply', cmp(A.divSupUse(d) || 0, R.sup), 'Supply used per day')}` +
-        `${cell('Speed', A.divSpeed(d).toFixed(0) + ' km', 'Kilometres a day on open ground')}${cell('Armor', arm, 'Enemies with less piercing do half their attacks')}` +
-        `${cell('Piercing', prc, "Beat the enemy's armor or lose half your attacks")}${cell('Exp.', L[1], `${L[1]}: experience adds to attack and defense`)}</div>`;
-    } catch (e) { console.error('v2 war room grid', e); }
-    return grid0.apply(this, arguments);
-  };
-}
-if (typeof UI.wrDivPanel === 'function') {
-  const div0 = UI.wrDivPanel;
-  UI.wrDivPanel = function () {
-    const h = div0.apply(this, arguments);
-    try {
-      if (typeof h !== 'string') return h;
-      // 9997-companies' order of battle: "mo 64", "xp 18", "morale 64 (steady)"
-      return h.replace(/(data-tt="coMo" data-v="[^"]*">)mo (\d+)(<\/span>)/g, (all, a, v, b) => a + esc(moWord(+v)) + b)
-        .replace(/(data-tt="coXp" data-v="[^"]*">)xp (\d+)(<\/span>)/g, (all, a, v, b) => a + esc(A.xpLevel(+v)[1].toLowerCase()) + b)
-        .replace(/(aria-label=")morale (\d+)(")/g, (all, a, v, b) => a + 'morale ' + esc(moWord(+v)) + b)
-        .replace(/morale (\d+) \(([a-z ]+)\)/g, (all, v, w) => `morale ${w}`);
-    } catch (e) { return h; }
-  };
-}
-
-// 59-tooltips' popover on a cell of an enemy's grid gave the exact figure and its parts ("Soft attack 139.9"): what a
-// scout sees is the comparison, and what the figure does
-if (UI.TIPS && typeof UI.TIPS.divStat === 'function') {
-  const ds0 = UI.TIPS.divStat;
-  const NAMES = { soft: ['Soft attack', 'Attacks a day against men.'], hard: ['Hard attack', 'Attacks a day against armor and beasts.'], def: ['Defense', 'Attacks it can turn aside when it is attacked.'],
-    brk: ['Breakthrough', 'Attacks it can turn aside when it attacks.'], hp: ['Hit points', 'How much damage it can take: the men, at their strength.'], w: ['Width', 'How much of a front it fills.'],
-    sup: ['Supply', 'What it eats a day.'], arm: ['Armor', 'An enemy with less piercing does half its attacks.'], prc: ['Piercing', "Beat the enemy's armor or lose half your attacks."],
-    org: ['Organization', 'How long it keeps fighting.'], exp: ['Experience', 'Experience adds to attack and defense.'], spd: ['Speed', 'Kilometres a day on open ground.'] };
-  UI.TIPS.divStat = function (arg) {
-    try {
-      const [id, k] = String(arg).split('|'), d = A.divById ? A.divById(id) : null;
-      let myR = null; try { myR = UI.wrMyR(A.pc()); } catch (e) {}
-      if (d && NAMES[k] && myR && A.hostile(myR, d.r)) {
-        const box = document.createElement('div'); box.innerHTML = UI.wrStatGrid(d);
-        const cell = box.querySelectorAll('.wr-stats > div')[['soft', 'hard', 'def', 'brk', 'org', 'hp', 'w', 'sup', 'spd', 'arm', 'prc', 'exp'].indexOf(k)];
-        const word = cell ? (cell.querySelector('b') || {}).textContent : '';
-        return `<div class="tip-h">${esc(NAMES[k][0])} <b>${esc(word)}</b> <span class="muted">${esc(d.name)}</span></div><div class="tip-d">${esc(NAMES[k][1])} What your outriders can tell, against your own divisions.</div>`;
-      }
-    } catch (e) { console.error('v2 war room popover', e); }
-    return ds0.apply(this, arguments);
-  };
-}
-// the map list's bars: "Organization 81/81 · Strength 98%" in the title
-if (typeof UI.wrBarsBasic === 'function') {
-  const bars0 = UI.wrBarsBasic;
-  UI.wrBarsBasic = function (d) {
-    const h = bars0.apply(this, arguments);
-    try { return typeof h === 'string' ? h.replace(/Organization (\d+)\/(\d+)/, (all, a, b) => esc(VS.orgWord(+a / Math.max(1, +b)))) : h; } catch (e) { return h; }
-  };
-}
-// 9997-companies' popovers in the order of battle: the morale and experience as words
-for (const [k, re, fn] of [
-  ['coXp', /<b>Experience (\d+)<\/b><div class="tiny">Of 100\. /, (all, v) => `<b>Experience: ${esc(A.xpLevel(+v)[1].toLowerCase())}</b><div class="tiny">`],
-  ['coDivMo', /<b>Morale (\d+)<\/b>/, (all, v) => `<b>Morale: ${esc(moWord(+v))}</b>`],
-  ['coMo', /Morale (\d+) \(([a-z ]+)\); it settles towards (\d+):/, (all, v, w, t) => `Morale ${w}; it settles towards ${esc(moWord(+t))}:`],
-]) {
-  const f0 = UI.TIPS && UI.TIPS[k];
-  if (typeof f0 === 'function') UI.TIPS[k] = function () { const h = f0.apply(this, arguments); try { return typeof h === 'string' ? h.replace(re, fn) : h; } catch (e) { return h; } };
-}
-
-// ---- training, skills, the profile: tiers and words -------------------------------------------------------------------
-const STATN = () => Object.values(GD.STAT_NAMES || {});
-const skillKey = name => { for (const k in GD.SKILLS || {}) if (GD.SKILLS[k] === name) return k; return null; };
-const statKey = name => { for (const k in GD.STAT_NAMES || {}) if (GD.STAT_NAMES[k] === name) return k; return null; };
-// a stat's change by its name: "speed -7" -> "a little slower"
-const STAT_DIR = { strength: ['stronger', 'weaker'], speed: ['faster', 'slower'], stamina: ['more stamina', 'less stamina'], 'combat instincts': ['quicker to react', 'slower to react'],
-  instincts: ['quicker to react', 'slower to react'], intelligence: ['sharper', 'duller'], wits: ['sharper', 'duller'], willpower: ['firmer of will', 'weaker of will'], will: ['firmer of will', 'weaker of will'] };
-const how = d => (Math.abs(d) <= 3 ? 'a little ' : Math.abs(d) >= 10 ? 'much ' : '');
-const statDelta = (name, sign, n) => { const w = STAT_DIR[String(name).toLowerCase()]; if (!w) return null; const up = sign === '+'; return how(n) + (up ? w[0] : w[1]); };
-const gain = v => (v < 0.8 ? 'a little' : v < 2 ? 'some' : v < 4 ? 'a good deal' : 'a great deal');
-VS.NUMRULES2 = [
-  // the season's training log: "got better at Survival & hunting +2.4, Farming & herding +1.0. about a third of it ..."
-  [/got better at ([^.]*?\+\d[^.]*?(?:\.\d[^.]*?)*)\.( ?)([a-z]?)/g, (all, list, sp, c) =>
-    'got better at ' + list.replace(/([A-Z][A-Za-z&:' ]*?) \+(\d+(?:\.\d+)?)/g, (m, n, v) => `${n} (${gain(+v)})`) + '.' + sp + c.toUpperCase()],
-  // 49-body-mind's age line: "Strength: best 59 at 19 · holds until about 42"
-  [/\b([A-Z][A-Za-z ]{2,20}): best (\d{1,3}) at (\d{1,3})\b/g, (all, n, v, a) => (statKey(n) || STAT_DIR[n.toLowerCase()] ? `${n}: at its best at ${a}` : all)],
-  // 48-fight-ladder's wound costs: "worth 42 to 41", "Elite 66 to Veteran 58", "(speed -7, stamina -3)"
-  [/\bworth (\d{1,3}) to (\d{1,3})\b/g, (all, a, b) => (+a - +b >= 6 ? 'worth a good deal less' : +a > +b ? 'worth a little less' : 'worth no less')],
-  [/\b(Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero) (\d{1,3}) to (Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero) (\d{1,3})\b/g, (all, a, x, b) => `from ${a} to ${b}`],
-  [/\b(strength|speed|stamina|combat instincts|instincts|intelligence|wits|willpower|will) ([+−-])(\d{1,2})\b/gi, (all, n, s, v) => statDelta(n, s, +v) || all],
-  // 49-body-mind's wounds: "−7 speed, −3 stamina, Athletics & climbing −10"
-  [/([+−-])(\d{1,2}) (strength|speed|stamina|combat instincts|instincts|intelligence|wits|willpower|will)\b/gi, (all, s, v, n) => statDelta(n, s, +v) || all],
-  [/\b([A-Z][A-Za-z&:' ]{2,30}?) ([+−-])(\d{1,2})\b(?!\s*(?:suns?|years?|days?|men|km|kg|%))/g, (all, n, s, v) => (skillKey(n) ? `${n} ${how(+v)}${s === '+' ? 'better' : 'worse'}` : all)],
-  // the proficiencies page: "Perks unlock at 40, 65 and 85"
-  [/Perks unlock at (\d{1,3}), (\d{1,3}) and (\d{1,3})/g, (all, a, b, c) => `Perks unlock at ${tierName(a)}, ${tierName(b)} and ${tierName(c)}`],
-  // the decisions: "A proficiency at 50 (best: Bows & throwing 67)", "Learning 55, or a diploma"
-  [/A proficiency at (\d{1,3}) \(best: ([^)]+?) (\d{1,3})\)/g, (all, a, n, b) => `A proficiency at ${tierName(a)} (best: ${n}, ${tierName(b)})`],
-  [/\bLearning (\d{1,3})(, or a diploma)/g, (all, a, rest) => `Letters & learning at ${tierName(a)}${rest}`],
-  // a staff candidate (Arms): "— fit 66 · Elite" and "fit for the post: 66"
-  [/ — fit (\d{1,3}) · /g, (all, v) => ` — fit: ${tierName(v)} · `],
-  // a door's skill: "Needs Crossbow 30 (you have 2)"
-  [/\bNeeds ([A-Z][A-Za-z&:' ]{2,30}?) (\d{1,3}) \(you have (\d{1,3})\)/g, (all, n, a, b) => (skillKey(n) ? `Needs ${n} at ${tierName(a)} (you are ${tierName(b)})` : all)],
-  // fighting worth on the 0-100 scale (an ambition's step, a fight's popover): the tier
-  [/\bFighting worth (\d{1,3})(?: of (\d{1,3}))?(?![\d+])/g, (all, v, top) => (A.tierOf ? `Fighting worth: ${A.tierOf(+v).n}${top ? `, with ${A.tierOf(+top).n} at the top` : ''}` : all)],
-  // 49-body-mind's yard: "health worn, come back at 50", "rest to 50 first"
-  [/\bcome back at (\d{1,3})\b/g, (all, v) => `come back when you are ${VS.band('health', +v)} or better`],
-  [/\brest to (\d{1,3}) first\b/g, (all, v) => `rest until you are ${VS.band('health', +v)} or better first`],
-  // 97-life-fixes' door: "your chance is under 2 in 100"
-  [/\byour chance is under \d+ in 100\b/g, () => 'your chance is next to none'],
-  // infamy as a number anywhere it is swept: the ruler's coalition letter "(infamy 47)", the Infamy map mode's legend
-  // "Coalition bait (infamy 60+)" (the threshold reads as its band)
-  [/\(infamy (\d{1,3})\+?\)/g, (all, v) => `(${VS.infamyWord(+v)})`],
-  // a realm's sparkline: "Stability since 1105: 46 to 61"
-  [/\b(Stability|Legitimacy|Health|Happiness|Honou?r|Piety) since (\d{4}): (\d{1,3}) to (\d{1,3})\b/g, (all, k, y, a, b) => `${k} since ${y}: ${VS.band(k, +a)} to ${VS.band(k, +b)}`],
-];
-const deNum0 = VS.deNum;
-VS.deNum = function (t, node) {
-  if (typeof t !== 'string' || !/\d/.test(t)) return deNum0.apply(this, arguments);
-  const par = node && node.parentNode;
-  // a picker of skills or people with the skill in brackets: "Melee (14)" (a mentor), "Gerd of Asch (52)" (the council)
-  if (par && par.nodeName === 'OPTION') {
-    const m = /^(.+?) \((\d{1,3})\)$/.exec(t.trim()), sel = par.parentNode && par.parentNode.closest ? par.parentNode.closest('select') : null, c = sel && sel.getAttribute('data-c');
-    if (m && (skillKey(m[1]) || c === 'rAppoint')) return `${m[1]} — ${tierName(m[2])}`;
-  }
-  // "fit for the post: <b>66</b>" (the number alone in its element)
-  if (par && /^\s*\d{1,3}\s*$/.test(t) && par.previousSibling && /fit for the post:\s*$/.test(par.previousSibling.textContent || '')) return tierName(t.trim());
-  let s = t;
-  for (const [re, fn] of VS.NUMRULES2) s = s.replace(re, fn);
-  return deNum0.call(this, s, node);
-};
-// a title that carries one of these numbers (hover text is read too): the same words, at each draw
-VS.sweepTitles = function (root) {
-  if (!root || !root.querySelectorAll) return;
-  for (const el of root.querySelectorAll('[title]')) {
-    const v = el.getAttribute('title');
-    if (!v || !/\d/.test(v) || v.indexOf('%') >= 0) continue;
-    let t = v; for (const [re, fn] of VS.NUMRULES2) t = t.replace(re, fn);
-    if (t !== v) el.setAttribute('title', t);
-  }
-};
-{
-  const sw0 = VS.sweep;
+  const sweep = VS.sweep;
   VS.sweep = function (root) {
-    const r = sw0.apply(this, arguments);
-    try { VS.sweepTitles(root && root.nodeType === 1 ? root : null); } catch (e) {}
+    const r = sweep.apply(this, arguments);
+    try { if (root && root.nodeType === 1) VS.deKeyed(root); else if (root && root.nodeType === 3 && root.parentNode) VS.deKeyed(root.parentNode); } catch (e) { console.error('v2 keyed words', e); }
     return r;
   };
-}
-// the council: "Marshal ... — Command 52" for the holder
-if (typeof UI.realmTabBasic === 'function') {
-  const rt0 = UI.realmTabBasic;
-  UI.realmTabBasic = function () {
-    const h = rt0.apply(this, arguments);
+
+  // a word is wider than the number the release's columns were sized for ("mistrus", "Journe" at 420 px): the value
+  // column takes the word's width and the bar gives way
+  const CSS = '.barrow.v2-wb{grid-template-columns:minmax(0,96px) minmax(24px,1fr) auto}.barrow.v2-wb>.val{width:auto;min-width:0;max-width:none;overflow:visible;white-space:nowrap}' +
+    '.skrow.v2-skw{grid-template-columns:minmax(0,1fr) minmax(24px,90px) auto}.skrow.v2-skw b{white-space:nowrap}';
+  const style = () => { if (typeof document === 'undefined' || !document.head || document.getElementById('v2s-num-style')) return; const el = document.createElement('style'); el.id = 'v2s-num-style'; el.textContent = CSS; document.head.appendChild(el); };
+  const render = UI.render;
+  UI.render = function () { try { style(); } catch (e) {} return render.apply(this, arguments); };
+
+  // ---- the bars the release draws with a number --------------------------------------------------------------------------
+  const barRow0 = UI.barRow, wb = h => (typeof h === 'string' ? h.replace('<div class="barrow">', '<div class="barrow v2-wb">') : h);
+  const barRow = function () { return wb(barRow0.apply(this, arguments)); };
+  UI.barRow = function (label, v, max, cls, pot, valTxt) {
     try {
-      if (typeof h !== 'string') return h;
-      return h.replace(/( — )([^<]{2,40}?) (\d{1,3})(<span class="right">)/g, (all, a, n, v, b) => (skillKey(n) ? `${a}${n}: ${esc(tierName(v))}${b}` : all));
-    } catch (e) { return h; }
+      const l = String(label || '').replace(/<[^>]*>/g, '').trim();
+      if (typeof v === 'number' && max > 0) {
+        // a duel: Blood is the hurt against this fighter's whole, Wind what breath is left
+        if (l === 'Blood') return barRow.call(this, label, v, max, cls, pot, VS.band('blood', 100 * v / max));
+        if (l === 'Wind') return barRow.call(this, label, v, max, cls, pot, VS.band('wind', 100 * v / max));
+        if (/^(Their )?[Oo]pinion( of you)?$/.test(l) && typeof valTxt === 'number') return barRow.call(this, label, v, max, cls, pot, band('opinion', valTxt));
+        if (/^Morale$/.test(l)) return barRow.call(this, label, v, max, cls, pot, band('morale', 100 * v / max));
+      }
+    } catch (e) {}
+    return barRow0.apply(this, arguments);
   };
-}
-// the needs' words take more room than a number: let 91-look's box fit them
-VS.css2 = '.lk-need .val.v2-needw{min-width:0;white-space:nowrap;font-size:.92em}.v2-wr-stats b{font-size:.85em;line-height:1.15;white-space:normal}';
-{
-  const st0 = VS.style;
-  VS.style = function () {
-    if (st0) st0.apply(this, arguments);
-    if (typeof document === 'undefined' || document.getElementById('v2s-style2')) return;
-    const s = document.createElement('style'); s.id = 'v2s-style2'; s.textContent = VS.css2; document.head.appendChild(s);
+
+  // ---- another person's page --------------------------------------------------------------------------------------------
+  // "Renown 59 — known in the realm", "Command: 48 — a steady officer", the skill rows' 0-100 values, "Body: strength 38 ·
+  // speed 32 …", and "No real skills yet" on a grown watch captain
+  const BODY = { strength: 'str', speed: 'spd', instinct: 'ins', stamina: 'sta', wits: 'int', will: 'wil' };
+  VS.personWords = function (h, t) {
+    if (typeof h !== 'string' || !t) return h;
+    const adult = A.age(t) >= ((GD.RACES[t.race] || {}).adult || 16);
+    return h
+      .replace(/(<div>Renown<\/div><div>)(\d{1,3})(?: — [^<]*)?(<\/div>)/, (m, a, n, b) => `${a}${esc(VS.band('renown', +n))}${b}`)
+      .replace(/(<b>Command:<\/b> )\d{1,3} — /, '$1')
+      .replace(/(<div class="skrow"><span>)([^<]*)(<\/span>[\s\S]*?)<b>(\d{1,3})<\/b><i>[^<]*<\/i>/g, (m, a, n, mid, v) => `${a}${n}${mid}<b>${esc(tier(+v))}</b>`.replace('<div class="skrow">', '<div class="skrow v2-skw">'))
+      .replace(/Body: strength \d+ · speed \d+ · instinct \d+ · stamina \d+ · wits \d+ · will \d+/, () =>
+        'Body: ' + Object.entries(BODY).map(([w, k]) => `${w} ${esc(VS.statWord(t, k, A.stat(t, k)))}`).join(' · '))
+      // 55-bonds' history: "you preached on obedience +4, fading"
+      .replace(/<span class="tiny (good|bad)">([+−-])(\d{1,3})(, fading)?<\/span>/g, (m, c, s, n, f) => `<span class="tiny ${c}">${amount(+n)} ${c === 'good' ? 'warmer' : 'colder'}${f || ''}</span>`)
+      .replace('<div class="small muted">No real skills yet.</div>', adult ? '<div class="small muted">No skill above the common run.</div>' : '<div class="small muted">No real skills yet.</div>');
   };
-}
+  if (UI.personModal) {
+    const pm = UI.personModal;
+    UI.personModal = function (t) {
+      const h = pm.apply(this, arguments);
+      try { return VS.personWords(h, t); } catch (e) { console.error('v2 person words', e); return h; }
+    };
+  }
+
+  // ---- World › Diplomacy: "Most feared" is infamy on a 0-100 bar -----------------------------------------------------------
+  if (UI.worldTabPolitics) {
+    const wt = UI.worldTabPolitics;
+    UI.worldTabPolitics = function () {
+      const h = wt.apply(this, arguments);
+      try {
+        if (typeof h !== 'string') return h;
+        return h.replace(/(<div class="group-h">Most feared<\/div>)([\s\S]*?)(?=<div class="group-h">|$)/, (m, head, body) =>
+          head + body.replace(/<div class="barrow"><span class="lbl">([^<]*)<\/span>([\s\S]*?)<span class="val">(\d{1,3})<\/span><\/div>/g,
+            (x, l, bar, n) => `<div class="barrow v2-wb"><span class="lbl">${l}</span>${bar}<span class="val">${esc(band('infamy', +n))}</span></div>`));
+      } catch (e) { return h; }
+    };
+  }
+
+  // ---- the orders' traits: "Moves +25% faster" read "Moves about a quarter more faster" -------------------------------------
+  if (A.orderTraits) {
+    const ot = A.orderTraits;
+    const FX = [[/^Charge \+(\d+)%$/, n => `Charge: ${VS.fracWords(n)} stronger`], [/^Killing power \+(\d+)%$/, n => `Killing power: ${VS.fracWords(n)} more`],
+      [/^Breaks armor \+(\d+)%$/, n => `Breaks armor: ${VS.fracWords(n)} better`], [/^Holds ground \+(\d+)%$/, n => `Holds ground: ${VS.fracWords(n)} better`],
+      [/^Moves \+(\d+)% faster$/, n => `Moves ${VS.fracWords(n)} faster`]];
+    A.orderTraits = function () {
+      const out = ot.apply(this, arguments);
+      try { if (Array.isArray(out)) return out.map(s => { for (const [re, f] of FX) { const m = re.exec(s); if (m) return f(+m[1]); } return s; }); } catch (e) {}
+      return out;
+    };
+  }
+
+  // ---- whole lines: percentages (VS.RULES, before the general ones) -------------------------------------------------------
+  const sgn = s => (s === '+' ? 1 : -1);
+  VS.RULES.unshift(
+    // 23-after-action's line in the story: "the captains reckon it: your counterattack countered their frontal assault +20%, …"
+    [/(the captains reckon it: )((?:[^.]|\.\d)*?%)\./g, (m, a, list) => {
+      const items = [...list.matchAll(/(.*?) ([+−-])(\d{1,3})%(?:, |$)/g)].map(c => `${c[1]} (${sgn(c[2]) > 0 ? 'for you' : 'against you'}, ${cause(+c[3])})`);
+      return items.length ? a + items.join(', ') + '.' : m;
+    }],
+    // its report: "What won it: more men in the line (+18%) and …"
+    [/\(([+−-])(\d{1,3})%\)/g, (m, s, n, off, str) => (/\bWhat (won it|helped you|held it for you|lost it|cost you)\b/.test(str) ? `(${cause(+n)})` : m)],
+  );
+
+  // ---- 23-after-action's card: "+20%" before each cause, and a footnote about shares ------------------------------------
+  if (UI.battleModalBasic) {
+    const bm = UI.battleModalBasic, tag = bm.aar;
+    UI.battleModalBasic = function () {
+      const h = bm.apply(this, arguments);
+      try {
+        if (typeof h !== 'string' || h.indexOf('aar-causes') < 0) return h;
+        return h.replace(/<span class="(good|bad)">([+−-])(\d{1,3})%<\/span>/g, (m, c, s, n) => `<span class="${c}">${sgn(s) > 0 ? '▲' : '▼'} ${esc(cause(+n))}</span>`)
+          .replace('Each figure is the dead that cause added or spared, as a share of those who fell in the fighting before the rout.', 'Each cause is weighed by the dead it added or spared before the rout.');
+      } catch (e) { return h; }
+    };
+    UI.battleModalBasic.aar = tag;
+  }
+
+  // ---- whole lines: numbers (VS.NUMRULES) ---------------------------------------------------------------------------------
+  const STAT_W = '(strength|speed|instinct|instincts|combat instincts|stamina|wits|will|willpower|intelligence)';
+  const skillNames = () => Object.values(GD.SKILLS || {}).map(String).sort((a, b) => b.length - a.length).map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  const down = (s, n) => `${sgn(s) > 0 ? 'up' : 'down'} ${amount(+n)}`;
+  const capF = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const RULES = [
+    // 31-learn-by-doing's season: "…better at Farming & herding +4.2, Persuasion +2.6. about half of it from doing, the rest from practice."
+    [/This season you got better at ((?:[^.]|\.\d)*?\+\d+(?:\.\d+)?(?:[^.]|\.\d)*?)\.\s+([a-z][^.]*?) of it from doing((?:, the rest from practice)?)\./g, (m, list, share, rest) => {
+      const more = /,? and (\d+) more$/.exec(list), items = (more ? list.slice(0, more.index) : list).split(/, (?=[A-Z])/).map(x => {
+        const c = /^(.*?) \+(\d+(?:\.\d+)?)$/.exec(x.trim()); return c ? `${c[1]} (${gain(+c[2])})` : x.trim();
+      });
+      if (more) items.push(`${more[1] === '1' ? 'one thing' : 'a few things'} more`);
+      const l = items.length < 2 ? items.join('') : items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1];
+      const s = /^all$/.test(share) ? 'All of it came from doing' : /^none$/.test(share) ? 'All of it came from practice' : `${capF(share)} of it came from doing${rest}`;
+      return `This season you got better at ${l}. ${s}.`;
+    }],
+    // merit in the story and the battle reports: "(Merit +15)", "Merit +44.", "(merit +24)"
+    [/\((merit) ([+−-])(\d+(?:\.\d+)?)\)/gi, (m, w, s, n) => `(${sgn(s) > 0 ? meritGain(+n) : 'merit lost'})`],
+    [/\bMerit ([+−-])(\d+(?:\.\d+)?)\./g, (m, s, n) => `${capF(sgn(s) > 0 ? meritGain(+n) : 'merit lost')}.`],
+    // the board in a sentence: "merit 379/600, command skill 28/35", "Merit 378/240"
+    [/\b([Mm]erit) (\d{1,3}(?:,\d{3})*)\s?\/\s?(\d{1,3}(?:,\d{3})*)/g, (m, w, a, b) => `${w} (${VS.meritWords(num(a), num(b))})`],
+    [/\b(command skill|[Cc]ommand) (\d{1,3})\s?\/\s?(\d{1,3})\b/g, (m, w, a, b) => `${w} (${short(+a, +b, tier)})`],
+    // a vital or the merit as it changes: "(health −7)", "happiness +3"
+    [/\b(health|happiness|renown|honou?r|looks)\s?([+−-])(\d{1,3})\b(?!\s*(?:suns?|years?|%))/gi, (m, k, s, n) => `${k} ${down(s, n)}`],
+    // a body's stats as a wound changes them: "(speed -7, stamina -3)", "−6 stamina"
+    [new RegExp(`\\b${STAT_W} ([+−-])(\\d{1,2})\\b`, 'gi'), (m, k, s, n) => `${k} ${down(s, n)}`],
+    [new RegExp(`([+−-])(\\d{1,2}) ${STAT_W}\\b`, 'gi'), (m, s, n, k) => `${k} ${down(s, n)}`],
+    // the fighting worth a wound costs: "worth 45 to 43"
+    [/\bworth (\d{1,3}) to (\d{1,3})\b/g, (m, a, b) => { const d = +a - +b; return d <= 0 ? 'no cost to your fighting worth' : `costs ${d < 3 ? 'a little' : d < 8 ? 'some' : 'a good deal'} of your fighting worth`; }],
+    // 49-body-mind's peaks: "Strength: best 35 at 19"
+    [/\bbest (\d{1,3}) at (\d{1,3})\b/g, (m, v, a) => `at its best at ${a}`],
+    // the person page's command line if another feature drew it: "Command: 48 — a steady officer"
+    [/^(\s*)\d{1,3} — (a great commander|a capable commander|a steady officer|a raw officer|no commander)/, (m, sp, w) => `${sp}${w}`],
+    [/\bCommand: \d{1,3} — /g, () => 'Command: '],
+    // a captain or a general by his skills: "(Cunning, command 56)", "command 45 · tactics 30", "(command 60)"
+    [/\b(command|tactics|logistics) (\d{1,3})\b(?!\s*(?:÷|\(÷|×|\/|%))/g, (m, k, v) => `${k} ${tier(+v)}`],
+    // 55-bonds: "holds his opinion of you up (+4)"
+    [/(opinion of you (?:up|down)) \([+−-]\d{1,3}\)/g, '$1'],
+    // the duel's blows: "You take a hit — 7 damage."
+    [/— (\d{1,3}) damage\./g, (m, n) => `— ${hurt(+n)}.`],
+    // decisions: "A proficiency at 50 (best: Lance 57)", "Learning 55, or a diploma", "Spymaster with Intrigue 30+"
+    [/A proficiency at (\d{1,3}) \(best: (.+?) (\d{1,3})\)/g, (m, a, n, b) => `A proficiency at ${tier(+a)} or better (best: ${n}, ${tier(+b)})`],
+    [/\b(Learning|Intrigue|Command|Diplomacy|Persuasion|Stewardship|Trade|Medicine|Faith lore|Letters & learning) (\d{1,3})(\+|, or)/g, (m, n, v, tail) => `${n} at ${tier(+v)}${tail === '+' ? ' or better' : ' or better, or'}`],
+    [/\bThe court's odds for it \((\d{1,3})\)/g, (m, n) => `The court's odds for it: ${VS.oddsText(+n)}`],
+    // 20-ai-personality's "Opinion of you 39" in a reason list
+    [/\bOpinion of you (-?\d{1,3})\b/g, (m, n) => `Opinion of you: ${band('opinion', +n)}`],
+    // the old 0-100 skill in a picker's option: "Melee (9)", and a companion's fitness: "— fit 42 · Brawler"
+    [/ — fit (\d{1,3}) · /g, (m, n) => ` — ${band('fit', +n)} · `],
+  ];
+  // "Riding & the lance −4" (a wound's cost to a skill), after the season's line is read
+  RULES.push([new RegExp(`(${skillNames()}) ([+−-])(\\d{1,2}(?:\\.\\d)?)(?!\\d|[.,/]\\d|\\s*(?:%|suns?|years?))`, 'g'), (m, k, s, n) => `${k} ${down(s, n)}`]);
+  VS.NUMRULES.unshift(...RULES);
+
+  // ---- foreign sums are hearsay (old 22): "Solenne sends 881,788 suns to the Horde" ------------------------------------------
+  // A realm's books are exact only to the one who keeps them: a sum between two crowns, told to someone who rules neither,
+  // is what the road says ("some 900,000 suns").
+  VS.hearsaySum = n => {
+    if (n < 1000) return `${n}`;
+    const e = Math.pow(10, Math.floor(Math.log10(n))), r = Math.round(n / e) * e;
+    return r >= 1e6 ? (r === 1e6 ? 'a million' : `${A.fmt ? A.fmt(r / 1e6) : r / 1e6} million`) : (A.fmt ? A.fmt(r) : String(r));
+  };
+  const SUMVERB = /\b(sends|owes|pays|paid|lends|lent|borrowed|gives|gave|subsidy|tribute|ransom|loan)\b/;
+  VS.NUMRULES.push([/\b(\d{1,3}(?:,\d{3})+|\d{4,}) suns\b/g, (m, n, off, str) => {
+    const p = pc(); if (!p || !SUMVERB.test(str)) return m;
+    // the player's own crown's books are their own
+    const mine = p.ruler && A.realm(p.ruler), names = mine ? [mine.short, mine.name].filter(Boolean) : [];
+    if (names.some(x => str.indexOf(x) >= 0)) return m;
+    const v = num(n); return v >= 1000 ? `some ${VS.hearsaySum(v)} suns` : m;
+  }]);
+
+  // ---- the old 0-100 skill in a picker's option: "Melee (9)" --------------------------------------------------------------
+  const dn = VS.deNum;
+  VS.deNum = function (t, node) {
+    const par = node && node.parentNode;
+    if (par && par.nodeName === 'OPTION' && typeof t === 'string') {
+      const m = /^(.+?) \((\d{1,3})\)$/.exec(t.trim());
+      if (m && (skillKey(m[1]) || statKey(m[1]))) return `${m[1]} (${statKey(m[1]) && pc() ? VS.statWord(pc(), statKey(m[1]), +m[2]) : tier(+m[2])})`;
+    }
+    return dn.apply(this, arguments);
+  };
+})();
