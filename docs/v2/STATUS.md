@@ -1,7 +1,7 @@
 # v2 status (Nov 5)
 
 **Branch and version:** `v2-integration`, PR #2 (stacked on PR #1); version v2.0.0-alpha.10.
-**Where it stands:** the build steps are done (steps 1–9 of `V2_SPEC.md`), and the playtest loop (step 10) is in round 1. Next is CI.
+**Where it stands:** the build steps are done (steps 1–9 of `V2_SPEC.md`). The playtest loop (step 10) is in round 2: playtest 2 is in `playtest-2.md`, and its findings and CI run 88's 50 failures are being fixed group by group. Each fix is checked by an independent verifier before it is merged.
 
 ## The plan, step by step
 
@@ -16,7 +16,7 @@
 | 7 | Diplomacy from `monthTick` | done | alpha.7 |
 | 8 | No spectating; play your rank; elite orders | done | alpha.8 |
 | 9 | Versioned save with one migration | done | alpha.9 |
-| 10 | Playtest loop: scripted pass, playtester, fixes, regression tests | round 1 of fixes: 7 of 8 merged (alpha.10); the content round and kingdom names still running | — |
+| 10 | Playtest loop: scripted pass, playtester, fixes, regression tests | round 1 merged (alpha.10); round 2 (playtest 2 + CI run 88): 11 of 20 groups merged | — |
 
 ## Health
 
@@ -29,6 +29,26 @@
 | Page errors in the playtest | none |
 | **Full browser suite (626 tests) on a v2 build** | **not yet run.** CI on PR #2 is the first full run |
 | **Balance bands (`bench/balance.mjs`) on a v2 build** | **not yet run.** The step 2 map lane passed them, but no run includes steps 4–8 |
+
+## Round 2 of fixes (Nov 5)
+
+CI run 88 (the first full run of a v2 build) failed 50 of about 690 tests; the balance bands all held. Playtest 2 found 20 new problems. Both lists were split into groups by the features they touch; each group is fixed in its own branch, checked by a verifier that tries to reject it, and merged only when it passes.
+
+| Merged | What it fixed |
+|---|---|
+| sameworld | Drawing the war map left an empty key in the save, so the same seed looked like a different world |
+| rolls | A forced test roll now decides the check (`attempt()`'s dice read one way) |
+| warleaks | Annals, The Book, the levy and the general's screens give hearsay and estimates by rank, not exact foreign counts |
+| names | The eight kingdom names, with their articles and verbs, in old saves and exports too |
+| gates | Class gates no longer hide memory events and arcs from the class they were written for |
+| chronicle | Echo words and recalled lines on the new names |
+| phonetap | On a phone the odds have their own 44 px target; a tap on a choice takes it |
+| cardrisk | Cards name the real stake ("a treason trial: the gallows or a deep cell", "could kill you"), and whose regard moves and which way |
+| observes | Recording the world no longer changes the player (a recalled line gives way to the inner voice) |
+| timetest | The month-step timing test runs on the generated continent |
+| body | Lifting by age and training, children against their own age, v2's levy scale kept |
+
+Still in progress: the 0–100 numbers (two groups merged into one branch), renown, family, world systems, battles, map, layout, card lines, and the leftovers.
 
 ## The complaints, after playtest 1 and its fixes
 
