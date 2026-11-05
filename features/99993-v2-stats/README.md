@@ -212,3 +212,6 @@ that own them.
 
 Not changed here: gear's "damage 6, pierce 2" (an item's own figures), the drill bars ("Charge 45 drilled"), the
 needs card, infamy's number in the Coalitions header, and the tooltips' breakdowns, which still show their sums.
+
+Other features' tests changed: `49-body-mind` `bodyMindRenderPure` looked for the lost eye's "Bows & throwing −15" in the
+full profile; with v2 it also accepts "Bows & throwing down a good deal" (the cost is still named and sized).

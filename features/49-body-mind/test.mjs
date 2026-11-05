@@ -290,7 +290,9 @@ export default {
       UI.ov = null; UI.render();
       return { pure: JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0 && A.rngState === r0,
         side: { body: /Broken leg/.test(side) && /Ill with camp fever/.test(side), chip: /Hang him/.test(side) },
-        prof: { body: /Lost an eye/.test(prof) && /bow −15|Bows &amp; throwing −15|throwing −15/.test(prof), who: /Who you are/.test(prof) && /Leaning brave/.test(prof), aging: /Age, stat by stat/.test(prof) },
+        // with v2 (99993-v2-stats i-numbers, playtest 2 old 7: no 0-100 number the player sees) the eye's cost to the bow
+        // reads "Bows & throwing down a good deal", not "−15"; the cost must still be shown, named and sized
+        prof: { body: /Lost an eye/.test(prof) && /bow −15|Bows &amp; throwing −15|throwing −15|Bows &amp; throwing down a good deal/.test(prof), who: /Who you are/.test(prof) && /Leaning brave/.test(prof), aging: /Age, stat by stat/.test(prof) },
         tip: /Holds until about|Fading since/.test(tip) };
     });
     const ok = r.pure && r.side.body && r.side.chip && r.prof.body && r.prof.who && r.prof.aging && r.tip;
