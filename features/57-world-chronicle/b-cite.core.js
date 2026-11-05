@@ -185,8 +185,19 @@
   WC.GAP = 730;            // days before the same entry is recalled again
   WC.SINCE_MIN = 3;        // years before a line may say "since <year>" of an entry
   const fmt = n => (A.fmt ? A.fmt(n) : String(n));
-  // a far realm whose short name is a noun takes its article ("goes to the Khaganate", 991's A.realmRef)
-  const rs = id => (id ? (A.realm(id) ? (A.realmRef ? A.realmRef(id) : A.realm(id).short) : WC.name(id) || 'a realm now gone') : '');
+  // a realm whose short name is a noun takes its article: "goes to the Sand Clans" ("Confederacy of the Sand Clans"),
+  // "the Nine Winds", "the Amber Isles". 991's A.realmRef did this for the Far Lands only (the Khaganate); with the Far
+  // Lands out of the build (v2, complaint 3) it is not loaded, and the continent's own noun-named realms said "goes to
+  // Sand Clans". A short name that stands after "of the" in the full name is a noun.
+  const reEsc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  WC.realmWord = function (id) {
+    const r = A.realm(id);
+    if (!r) return WC.name(id) || 'a realm now gone';
+    const s = A.realmRef ? A.realmRef(id) : r.short;
+    if (!s || /^the /i.test(s) || !r.short || !r.name) return s;
+    return new RegExp('\\bof the ' + reEsc(r.short) + '\\b', 'i').test(r.name) ? 'the ' + s : s;
+  };
+  const rs = id => (id ? WC.realmWord(id) : '');
   const pn = i => (i != null && A.S.prov[i] ? A.S.prov[i].name : '');
   const the = s => String(s || '').replace(/^The /, 'the ');
   // lines by kind: [needsHome, (c, x) => string]; x has the entry's words. Second person, present tense. The lines of a
