@@ -21,7 +21,7 @@
 //             a queued scene's own losses are what the choice can lead to ("what follows can kill you")
 // It is pure: it reads the written choice, the person and the realm's law, and never draws or writes.
 // VS.lossWords(L, pc) says it in words, worst first. The cards (99999-v2-content) and the odds (VS.stakesOf: a deadly loss
-// raises the stakes) both read it, so the chip, the red check and the roll agree.
+// raises the stakes) both read it, so the chip and the roll agree.
 const VS = A.V2S;
 const srcCache = new WeakMap();
 const srcOf = f => { if (typeof f !== 'function') return ''; let s = srcCache.get(f); if (s == null) { try { s = String(f); } catch (e) { s = ''; } srcCache.set(f, s); } return s; };
@@ -136,7 +136,7 @@ VS.lossOf = function (fx, pc, ctx, depth, seen) {
   L.lethal = !!(pc && L.hurt > 0 && typeof pc.health === 'number' && pc.health - L.hurt <= 0);
   return L;
 };
-// the losses that last, as written in the effect itself (not through a later scene): a red check, high stakes
+// the losses that last, as written in the effect itself (not through a later scene): high stakes
 VS.lossSerious = L => !!(L && (L.die || L.dieRisk || L.gallows || L.gallowsRisk || L.prison || L.prisonRisk || L.exile || L.maim || L.law.some(x => x.outlaw)));
 VS.lossDeadly = L => !!(L && (L.die || L.dieRisk || L.gallows || L.gallowsRisk || L.lethal || L.law.some(x => x.outlaw) || L.via.some(v => v.die)));
 VS.healthWord = pc => (VS.band && pc && typeof pc.health === 'number' ? VS.band('health', pc.health) : '');

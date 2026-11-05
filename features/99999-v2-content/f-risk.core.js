@@ -6,7 +6,8 @@
 //   treason trial: the gallows or a deep cell" where it said "Nothing lost if it fails"; "If it fails: a wound, hurt that
 //   could kill you, near death as you are" where it said "a wound, hurt". The words for health are the body sheet's
 //   own bands (VS.band), so the card and the sheet say the same thing.
-// - A check whose failure costs that much is a red check (one chance), as a written die, prison or wound already was.
+// - The red/white mark (9998-stakes' ST.checkKind) is left as 9998 reads it: its own test holds the rule, and the plot
+//   still reads "can be tried again" (reported to the owner; a failure there ends in a cell or on the gallows anyway).
 // - Three scenes that showed "It will be remembered" on every choice, or nothing true, now show what they do:
 //   47-realm-bible's custom scene (rb_custom: "The hearth mark") reads the custom's own effect and the defiance's;
 //   97-life-fixes' ambition scenes (lfx_amb_*: "What you want") say the aim each choice sets and what meeting it brings;
@@ -115,12 +116,14 @@
       if (i >= 0) chips.splice(i, 1, ch); else chips.push(ch);
       return chips;
     }
-    const L = VS.lossOf(c.fx, pc, ctx), W = VS.lossWords(L, pc);
+    // a sure effect keeps its own chips ("▼ death", "▼ punishment", "▼ health": 9998's one chip per family); the stake
+    // is said beside them, without saying again what a chip already says
+    const L = VS.lossOf(c.fx, pc, ctx);
+    const said = new Set(chips.filter(x => typeof x.t === 'string').map(x => x.t.replace(/^[▲▼•]+\s*/, '')));
+    const W = VS.lossWords(L, pc).filter(w => !said.has(w));
     if (!W.length) return chips;
-    const kept = chips.filter(x => !(typeof x.t === 'string' && GENERIC.test(x.t)) && !(L.lethal && /^▼+ health$/.test(x.t)));
     const t = W.slice(0, 2).join(', ');
-    kept.unshift({ k: 'cost', t: t.charAt(0).toUpperCase() + t.slice(1), stake: true });
-    chips.length = 0; chips.push(...kept);
+    chips.unshift({ k: 'cost', t: t.charAt(0).toUpperCase() + t.slice(1), stake: true });
     return chips;
   };
 
@@ -196,26 +199,4 @@
     return chips;
   };
 
-  // ---- a failure that costs that much is a red check ----------------------------------------------------------------------
-  // (read once per choice and the player's realm: the law that hangs a deserter is the realm's)
-  const kind0 = ST.checkKind, why0 = ST.why_red, redCache = new WeakMap();
-  ST.checkKind = function (c, e) {
-    const k = kind0.apply(this, arguments);
-    try {
-      if (k === 'white' && c && c.lose && c.lose.fx) {
-        const me = A.pc && A.pc(), key = (me && me.realm) + ':' + (me && me.ruler ? 1 : 0), h = redCache.get(c);
-        const red = h && h.key === key ? h.red : VS.lossSerious(VS.lossOf(c.lose.fx, me, {}));
-        if (!h || h.key !== key) redCache.set(c, { key, red });
-        if (red) return 'red';
-      }
-    } catch (err) {}
-    return k;
-  };
-  if (typeof why0 === 'function') ST.why_red = function (c, e) {
-    const w = why0.apply(this, arguments);
-    try {
-      if (w === 'a lasting loss' && c && c.lose) { const L = VS.lossOf(c.lose.fx, null, {}); if (L.die || L.gallows || L.gallowsRisk) return 'death'; if (L.prison) return 'prison'; if (L.exile) return 'exile'; }
-    } catch (err) {}
-    return w;
-  };
 })();

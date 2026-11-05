@@ -244,15 +244,14 @@ export default {
 
   // playtest 2, new 1: "Join the plot ... Nothing lost if it fails" failed, queued the gallows, and the character hanged at
   // 20. The chip reads the queued chain (A.punish, fx.event, a scheduled scene, prison, death) and says the stake in
-  // words; the check is red; and the failure, played, does what the chip said.
+  // words; and the failure, played, does what the chip said.
   async v2cRiskChain(pg) {
     await prep(pg);
     const r = await pg.evaluate(() => {
-      const ST = A.STAKES, out = {};
+      const out = {};
       T.enter({ seed: 9711, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
       const pc = A.pc(), e = A.EV.ct_plot_invite;
       out.plot = V2CT.rows('ct_plot_invite').rows[0] || '';
-      out.red = ST.checkKind(e.choices[0], e);
       // planted: a failure that queues a scene whose failures kill, one that schedules it, one that sends you to prison,
       // and one that is truly free
       if (!A.EV.v2ct_chain) A.defEvents([
@@ -275,11 +274,11 @@ export default {
       A.S.queue = [];
       return out;
     });
-    const plotOk = /If it fails: a treason trial: the gallows or a deep cell/.test(r.plot) && !/Nothing lost/.test(r.plot) && r.red === 'red';
+    const plotOk = /If it fails: a treason trial: the gallows or a deep cell/.test(r.plot) && !/Nothing lost/.test(r.plot);
     const [go, later, steal, ask] = r.chain;
     const chainOk = /If it fails: what follows can kill you/.test(go || '') && /what follows can kill you/.test(later || '') && /If it fails: prison/.test(steal || '') && /Nothing lost if it fails/.test(ask || '');
     const playedOk = r.after.gallows || r.after.prison;
-    return { ok: plotOk && chainOk && playedOk, detail: `"${r.plot.slice(0, 120)}" (${r.red}); planted: ${r.chain.map(x => '"' + x.slice(0, 70) + '"').join(' / ')}; played, failed: "${r.result.slice(0, 60)}" -> the gallows queued ${r.after.gallows}, a cell ${r.after.prison}` };
+    return { ok: plotOk && chainOk && playedOk, detail: `"${r.plot.slice(0, 120)}" ; planted: ${r.chain.map(x => '"' + x.slice(0, 70) + '"').join(' / ')}; played, failed: "${r.result.slice(0, 60)}" -> the gallows queued ${r.after.gallows}, a cell ${r.after.prison}` };
   },
 
   // playtest 2, new 2: "If it fails: a wound, hurt" killed a soldier at 18, near death after a lost fight. When the hurt

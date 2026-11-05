@@ -79,7 +79,7 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
   - "If it fails: hurt that could kill you, near death as you are", where it said "a wound, hurt" to a man near death.
     The health word is the profile's own band.
   - A sure effect says it too: "Death", "Perhaps the gallows", "What follows can bring the law on you".
-- **Such a check is red** (one chance), as a written death, cell or wound already was.
+- **The red/white mark is 9998's.** "Join the plot" still says "can be tried again": 9998-stakes' rule and its test (`stRedMarked`) read only a written death, cell, wound or exile. A failure there ends in a cell or on the gallows, so there is no retry anyway. Making such a check red is left to 9998's owner.
 - **A failure's losses read as losses.** "If it fails: honour" said nothing about which way; now it reads "▼ honour".
   A function's "risk of a wound" says what it is: "▼ a wound, perhaps".
 - **The content's helpers have a direction** (`c-cards.core.js`):
@@ -124,7 +124,7 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 | `v2cClassGates` | A 13-year-old apprentice smith never draws the apprentice, undercut, commission or election scenes, and the shop scene doesn't fit him. No study scene of the disputation or inn kind comes at 8. No round is offered at 14 with 0 suns. No Latin anywhere. |
 | `v2cWhoOnCard` | The "Why" line is on the card, in words. The story blurbs are whole at 420 px. |
 | `v2cEveryChoiceShows` | Over 200 played scenes, every choice has a chip row and no scene is shown with one live choice. "Their regard" always names the person. The fresh levy and the song read the unit's effects. The old scholar with no coin is dropped. |
-| `v2cRiskChain` | "Join the plot" says the treason trial and is red. Planted failures that queue or schedule a deadly scene say "what follows can kill you", prison says prison, and a free failure says nothing is lost. Played and failed, the plot sends you to the gallows or a cell. |
+| `v2cRiskChain` | "Join the plot" says the treason trial. Planted failures that queue or schedule a deadly scene say "what follows can kill you", prison says prison, and a free failure says nothing is lost. Played and failed, the plot sends you to the gallows or a cell. |
 | `v2cRiskLethal` | The night watch's failure reads "a wound, hurt" for a hale man. At health 3 it reads "hurt that could kill you, near death as you are", in the profile's word. Played, it leaves him at 0 health. |
 | `v2cChipsDirection` | Staged: "Under the ice", "The grand melee", the gift, the mess brawl and the loaded dice give a direction and a name. The dice name the second messmate. Over every scene for a soldier, under 0.4% of chips give no way. |
 | `v2cEveryChoiceTrue` | "The hearth mark", "What you want" and "The last night" show a real effect on every choice. None shows only "It will be remembered" or "Nothing changes". |
