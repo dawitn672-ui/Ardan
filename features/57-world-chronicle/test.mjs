@@ -93,7 +93,15 @@ export default {
   },
 
   async wcCitesShare(pg) {
-    // W6: the share of a life's scenes that cite a dated entry, and that each one is possible where and when it is told
+    // W6: scenes cite dated entries, and each one is possible where and when it is told.
+    // Changed for v2: W6 asked for 15% or more of a life's scenes to cite an entry, and almost all of them were the
+    // recalled line under a scene ("the world remembers..."): about 17% of cards carried one. The owner's complaint 1
+    // (V2_SPEC: everything on one card, no filler) and playtest 1 #10 ("every card carries filler") ask for extra lines
+    // to be rare and to fit the scene, one at most on a card. So the bar is now the other way round: a recalled line on
+    // fewer than 1 card in 10 over a played life (overall and in the median life, no life above 12%), each one about an
+    // entry that bears on the scene (a person, the home or a named place, a named realm, or the war of the scene), never
+    // beside counsel or a memory; citations must still happen (by line, token or pack). Kept: no citation outside the
+    // character's place or time, no raw token.
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const mixes = [['human', 'POL-01', 'peasant'], ['human', 'POL-05', 'merchant'], ['elf', 'POL-03', 'peasant'], ['dwarf', 'POL-20', 'artisan'],
@@ -107,6 +115,24 @@ export default {
           if (v.skip) return;
           L.seen++;
           if (WCT.raw.test(`${v.title} ${v.text} ${v.recall || ''}`)) L.raw++;
+          if (v.recall) {
+            // the recalled line bears on the scene: read here from the entry and the scene's own words and context
+            const pc = A.pc(), c = A.WC.cite(v.recallId), text = `${v.title || ''} ${v.text || ''}`, ctx = q.ctx || {};
+            const vals = new Set(Object.values(ctx).filter(x => typeof x === 'string'));
+            const named = id => { const r = A.realm(id); return !!r && [r.short, r.name].some(s => s && s.length > 3 && text.includes(s.replace(/^the /i, ''))); };
+            let fits = false;
+            if (c && c.c) fits = c.c.realms.some(id => vals.has(id) || named(id)) || (!!c.c.who && text.includes(c.c.who));
+            else if (c && c.e) {
+              const e = c.e, P = e.p != null && A.S.prov[e.p], wid = Array.isArray(e.x) ? (e.k === 'battle' ? e.x[2] : e.x[0]) : e.x;
+              fits = (e.w || []).some(id => id && (id === pc.id || vals.has(id) || (A.WC.name(id) && text.includes(A.WC.name(id).split(' ').slice(-2).join(' '))))) ||
+                e.p === pc.home || (!!P && P.name.length > 3 && text.includes(P.name.replace(/^The /, ''))) ||
+                [e.a, e.b].some(id => id && (vals.has(id) || named(id))) ||
+                (!!wid && (vals.has(wid) || (!!pc.mil && (A.atWar(pc.mil.realm || pc.realm) || []).some(w => w === wid || (w && w.id) === wid))));
+            }
+            if (!fits) wrong.push(`${q.ev}: recalled "${v.recall}" does not bear on "${v.title}"`);
+            if ((v.adv && v.adv.length) || (ctx.mw && !ctx.mw.off && ctx.mw.ev === q.ev)) wrong.push(`${q.ev}: a recalled line beside counsel or a memory`);
+            L.recall = (L.recall || 0) + 1;
+          }
           if (!A.WC.cites(q)) return;
           L.cite++;
           if (v.recall) L.line++; else if (/^wc_/.test(q.ev)) L.pack++; else L.token++;
@@ -123,6 +149,7 @@ export default {
           if (sample.length < 12 && v.recall) sample.push(v.recall);
         } });
         L.years = A.S.year - 1105; L.pct = Math.round(1000 * L.cite / Math.max(1, L.seen)) / 10;
+        L.recall = L.recall || 0; L.rpct = Math.round(1000 * L.recall / Math.max(1, L.seen)) / 10;
         lives.push(L);
       }
       return { lives, wrong: wrong.slice(0, 5), nWrong: wrong.length, sample };
@@ -130,9 +157,11 @@ export default {
     const seen = r.lives.reduce((a, l) => a + l.seen, 0), cite = r.lives.reduce((a, l) => a + l.cite, 0), pct = Math.round(1000 * cite / seen) / 10;
     const sum = k => r.lives.reduce((a, l) => a + l[k], 0), raw = sum('raw');
     const pcts = r.lives.map(l => l.pct).sort((a, b) => a - b), med = (pcts[3] + pcts[4]) / 2;
-    return { ok: pct >= 15 && med >= 12 && !r.nWrong && !raw, data: r, detail: `${r.lives.length} lives (${r.lives.map(l => `${l.race} ${l.status} ${l.years}y ${l.pct}%`).join(', ')}): ` +
+    const rec = sum('recall'), rpct = Math.round(1000 * rec / seen) / 10, rp = r.lives.map(l => l.rpct).sort((a, b) => a - b), rmed = (rp[3] + rp[4]) / 2, rmax = rp[rp.length - 1];
+    return { ok: rpct < 10 && rmed < 10 && rmax <= 12 && rec > 0 && cite > 0 && !r.nWrong && !raw, data: r, detail: `${r.lives.length} lives (${r.lives.map(l => `${l.race} ${l.status} ${l.years}y ${l.pct}% cite, ${l.rpct}% recalled`).join(', ')}): ` +
+      `a recalled line on ${rec} of ${seen} cards, ${rpct}% (median life ${rmed}%, most ${rmax}%); ` +
       `${cite} of ${seen} scenes cite a dated entry, ${pct}% (median life ${med}%); by a recalled line ${sum('line')}, a scene of the pack ${sum('pack')}, a token ${sum('token')}; ` +
-      `${sum('canon')} of the citations are canon. Citations outside the character's place or time: ${r.nWrong}${r.wrong.length ? ' e.g. ' + r.wrong.slice(0, 3).join(' | ') : ''}; raw tokens ${raw}. ` +
+      `${sum('canon')} of the citations are canon. Citations outside the character's place or time, or lines that do not bear on their scene: ${r.nWrong}${r.wrong.length ? ' e.g. ' + r.wrong.slice(0, 3).join(' | ') : ''}; raw tokens ${raw}. ` +
       `e.g. "${r.sample[0] || ''}"` };
   },
 
