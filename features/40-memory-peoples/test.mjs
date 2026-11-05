@@ -322,7 +322,14 @@ export default {
               const idx = v.choices.findIndex(c => c.i === i);
               if (idx < 0) continue; // a req hid this choice for this character
               cur = `${vtag} choice ${i + 1}${force === null ? '' : force ? ' win' : ' lose'}`;
-              if (force !== null) A.checkOdds = () => force;
+              // Forcing the odds to 100 or 0 forced the roll while A.eventChoose rolled A.chance(pct / 100). Since the
+              // v2 rolls (99993-v2-stats b-odds) a check is played out by attempt(), whose surge can still carry a 0.4%
+              // chance and whose blunder can throw a 99.6% one, and attempt() takes a forced outcome only from a
+              // replaced A.chance (its own comment: "a test that replaces A.chance to force an outcome gets exactly
+              // that outcome"). So the odds are forced as before and A.chance reads them as certain; other draws in
+              // the choice keep the live dice (only a chance within 1% of sure is made sure). The bar is unchanged.
+              const chance0 = A.chance;
+              if (force !== null) { A.checkOdds = () => force; A.chance = x => (x >= 0.99 ? true : x <= 0.01 ? false : chance0(x)); }
               try {
                 A.eventChoose(idx);
                 const res = q.result; // a duel can be queued in front of the event, so read the event's own item
@@ -336,7 +343,7 @@ export default {
                 A.eventClose();
                 stats.outcomes++;
               } catch (err) { problems.push(`${cur}: throws ${err.message}`); }
-              finally { A.checkOdds = odds; }
+              finally { A.checkOdds = odds; A.chance = chance0; }
             }
           }
         }
