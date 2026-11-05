@@ -105,6 +105,8 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 | `v2sNoPct` | No percentage on screen across 12 played years (scenes, results, every tab, the profile and skills) |
 | `v2sBadge` | A check choice's badge is odds words with the balance icon, no digits |
 | `v2sWorthFit` | v2's levies agree with the release's worth for humans, a human's worth is unchanged, and other races carry their shift (giant over +25, orc over +4, dwarf over 0, elf at most +1) |
+| `v2sPlaytest2Body` | Two lives (a human and an orc) from birth: under 3 not measured, no levy legend under 6, a minor compared with others of its age (no "grown man", "toddler", "ordinary man"), no lift named by a person, the mind word and its rarity agree, levy words and rank agree; an untrained human lifts under 65, 105 and 180 kg at 10, 13 and 17 |
+| `v2sPhoneBands` | At 420 px the vitals' band words are whole, and their labels keep icon and tooltip |
 
 ## Limits
 
@@ -112,10 +114,20 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 - **Skill hours are read from the 0–100 skill,** not stored. The old learning curves still decide progress.
 - **Within a race, the worth is the release's.** v2's body sets the gap between races, not the spread within one. Beasts and crowds keep the release's worth rows.
 
+## Playtest round 2 (complaints 11, 12: the body's scales and labels)
+
+- **Lift by age and training is plausible.** An old-code change to a child's stat (`fx: { str: 1 }`, an activity) was read as conditioning against the child's own small base, so a +1 at five grew into +10 by twenty. It is now the same change to the grown body (the training factor moves by delta / (pot × 0.78)), held under the old cap so growing up still shows. The view's lift and march now follow the old stat's place one for one (K was 2 and 1.5: a p90 grown man lifted 315 kg and marched 55 km). Seed 32's untrained boy: 45, 73 and 128 kg at 10, 13 and 17 (was 92, 144 and 250 in the playtest); grown men in a fresh world p10–p90 lift about 80–200 kg.
+- **A child is compared with others of its age** (`src/v2/body.js` `describe`, `peerWords`): "stronger than most your age", "as fast as most your age"; a child's mind is read with the growth of the mind taken out ("better than all but 1 in 7 your age", not "witless, worse than all but 1 in 400" at six). Under 3 the sheet says "too young to measure"; the levy legend shows only with the fight row.
+- **Words agree with each other.** No lift reference is a person ("about a small cask of ale", not "about a grown man; below most grown men"); a mind word and its rarity read the same band ("wavering" is "worse than most people"); `levyRank` uses `levyWords`' bands.
+- **Levies read the fights' worth** (`VS.levyOfWorth`): one quantity decides the tier, the levies and the odds, so "Elite · about one and a half levies" cannot happen. The curve is pinned to the old tiers (Brawler from 0.7 levies, Trained 1.5, Veteran 4, Elite 12, a master about 23, a legend about 64; the release's 285-levy general about 55). v2's own body-and-skill levies (`VS.v2Levies`) stay for tests.
+- **The duel engine's own race edge** (`VS.ENGINE_EDGE`). A giant's blood (× 3.2), an orc's (× 1.12), mass, reach and burst made races fight above or below their worth in duels, and the v2 shift came on top: the duel screen said 37 in 100 where giants won 86, 50 where humans beat orcs 4 times in 100. In a duel each fighter's skill now gives back that edge and 48's `FL.fWorth` counts it, so every race fights at its shown worth (48's `flRaceOdds`). Outside duels nothing changes.
+- **The phone's vitals** keep whole band words: the label and the word share the first line, the bar goes under them (`VS.VITAL_ROW`).
+- `span.v2-w` is at the row's size (14 px; 71's `phoneTargets`).
+
 ## Other features' tests changed (they checked digits the owner asked to remove)
 
 - `42-difficulty` `difficultyInformation`: with v2 no setting shows digits on a choice; without v2, the release's rule as before.
-- `48-fight-ladder` `flScreens`: with v2, the duel's "N times in 100" and the worth beside the tier on the duel measure are no longer required.
+- `48-fight-ladder` `flScreens`: with v2, the duel's "N times in 100" and the worth beside the tier on the duel measure are no longer required; round 2: the profile's wound line is tiers and levies in words ("still Untrained, less than one levy to ..."; "less speed"), not "worth 31 to 8 (speed -7)".
 - `59-tooltips` `ttWorthSums`: the tier chip names the worth in levies; with v2 it must name the same total's levies.
 - `9998-stakes` `stWhiteRetry`: with v2 the lock reads "Grow in Persuasion and Willpower first" and the chip "better at this now than in 1105", without the numbers.
 - `59-tooltips` `ttSums2` (the odds popover has words, no sum row, with v2), `ttCov2Scenes` (the scenes' odds are words, so that group leaves the coverage bar), `ttInModal` (focuses any explained number in the full profile, which has no stat bars).
@@ -126,7 +138,7 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 - **A tap on a choice chooses.** The odds badge loses 59's tap target (`data-tt-tap`); its breakdown opens on hover, focus or the keyboard. The odds popover on a check is words only and matches the chip and the badge: your stat or skill in words, the test in words, and what blunders and surges do. The "On Realism" line is gone, and a choice's `risk` is the v2 odds word everywhere it's drawn.
 - **Percentages become whole phrases.** "+30% pay" becomes "about a third more pay"; "4 + 30% of their average" becomes "4 and about a third of their average"; "worth 1.6%" becomes "worth a little"; "all of it from doing" no longer goes on to "the rest from practice".
 - **0–100 scales become bands.** Health, happiness, looks, renown, honour, piety, stability, legitimacy, and a duel's blood and wind are words ("hale", "content", "known in the province"). A result chip says "a great deal more Merewyn's regard". The training picker and log, stat and skill numbers, the orders' trials, "Master fighter (95)" and "Untrained · 18" all say tiers and words. Real units and counts stay numbers.
-- **Levies on v2's scale.** The sheet and the tier chip use v2's own fighting worth (`A.V2S.shownLevies`), so a sword master reads about 3 levies, not 285.
+- **Levies on v2's scale.** The sheet and the tier chip used v2's own fighting worth (`A.V2S.v2Levies`), so a sword master read about 3 levies, not 285. Round 2 reads them from the worth on a compressed curve (above).
 - **Children under 4 aren't rated** ("too young to tell").
 - **Piety for the faithless** reads as "a pull toward the faith".
 - **Labels.** "Takes 1 blows" now reads "stands up to a blow that would fell an ordinary man", and a grown body is never "as fast as a child".
