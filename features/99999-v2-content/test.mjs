@@ -386,7 +386,7 @@ export default {
   async v2cChipsDirection(pg) {
     await prep(pg);
     const r = await pg.evaluate(() => {
-      const out = { staged: {} };
+      const out = { staged: {}, who: {} };
       T.enter({ seed: 9731, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 19 });
       const pc = A.pc();
       const fr = A.makeAcquaintance(pc, 'friend'); A.link(pc, fr, 'friend', 40, 'friend');
@@ -424,6 +424,56 @@ export default {
       let own = 0;
       const sp = A.makeAcquaintance(pc, 'friend'); sp.sex = 'F'; A.link(pc, sp, 'spouse', 40, 'spouse'); pc.spouse = sp.id;
       out.named.ss_sc_saddle = V2CT.rows('ss_sc_saddle').rows;
+      // (third round) the right person and the right way, read from the written effect without the card's reader:
+      // - code whose every addOp/bump moves T(ctx) (or a name given T(ctx)) moves the scene's person only, so a chip
+      //   that names a person of the scene names ctx.pid, with the way the code's numbers go;
+      // - both(obj, op2(d)) moves ctx.pid by obj's them.op and ctx.m2 by d: a sure choice names both, each its own way,
+      //   and a failure lists neither as a loss when it goes up.
+      // The round-two build named the rival in fm_love_rival, the match in lf_kid_bad_match, the second messmate twice
+      // in rk_sgt_recommend, and "▲ your mother's regard" in lf_lover_faith: each fails here.
+      const ar = n => (n > 0 ? '▲+' : '▼+'), rxq = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const says = (t, way, name) => new RegExp(`(^|[:,] |\\| )${way} ${rxq(name)}'s regard`).test(t);
+      const people = ctx => [...new Set(Object.values(ctx || {}).filter(x => typeof x === 'string' && x !== pc.id).map(x => A.P(x)).filter(x => x && x.id).map(x => nm(x.id)))];
+      const wrong = [], tOnly = { n: 0, named: 0 }, bothOp = { n: 0, named: 0 };
+      const oracle = (id, i, c, q, chips) => {
+        const pidN = q.ctx && q.ctx.pid && A.P(q.ctx.pid) && q.ctx.pid !== pc.id ? nm(q.ctx.pid) : null;
+        const sides = c.check || c.group ? [['win', c.win && c.win.fx, chips.filter(x => /^If it works: /.test(x.t))], ['risk', c.lose && c.lose.fx, chips.filter(x => /^If it fails: /.test(x.t))]] : [['fx', c.fx, chips.filter(x => !/^If it /.test(x.t))]];
+        for (const [side, fx, cs] of sides) {
+          const t = cs.map(x => x.t).join(' | ');
+          if (typeof fx !== 'function' || !pidN) continue;
+          if (!fx.v2parts && !fx.v2meta) {
+            const s = String(fx);
+            const calls = [...s.matchAll(/\b(?:A\.)?(?:addOp|bump)\(\s*p\s*,\s*(T\(ctx\)|\w+)\s*,\s*(-?\d+)\s*[,)]/g)];
+            const all = (s.match(/\b(?:A\.)?(?:addOp|bump)\(/g) || []).length;
+            if (!calls.length || calls.length !== all || /\bthem\s*:|ctx\.pid\s*=[^=]|castFx|rel\s*:\s*\{/.test(s)) continue;
+            if (!calls.every(m => m[1] === 'T(ctx)' || new RegExp(`\\b${m[1]}\\s*=\\s*T\\(ctx\\)`).test(s))) continue;
+            const up = calls.some(m => +m[2] > 0), down = calls.some(m => +m[2] < 0);
+            if (!up && !down) continue;
+            tOnly.n++;
+            for (const other of people(q.ctx)) if (other !== pidN && new RegExp(`[▲▼] ${rxq(other)}'s regard`).test(t)) wrong.push(`${id} ${i} ${side}: names ${other}, the code moves ${pidN}: ${t}`);
+            if (says(t, '(?:▲+|▼+|▲ or ▼)', pidN)) {
+              tOnly.named++;
+              const way = up && down ? '▲ or ▼' : ar(up ? 1 : -1);
+              if (!says(t, way, pidN)) wrong.push(`${id} ${i} ${side}: ${pidN}'s regard the wrong way (${up && down ? 'either way' : up ? 'up' : 'down'}): ${t}`);
+            }
+            continue;
+          }
+          // both(obj, op2(d))
+          const o = (fx.v2parts || []).find(x => x && typeof x === 'object' && x.them && typeof x.them.op === 'number' && x.them.op);
+          const f = (fx.v2parts || []).find(x => typeof x === 'function' && x.v2meta && x.v2meta.who === 'm2' && x.v2meta.op);
+          const m2N = q.ctx.m2 && A.P(q.ctx.m2) ? nm(q.ctx.m2) : null;
+          if (!o || !f || !m2N || m2N === pidN) continue;
+          bothOp.n++;
+          const a = o.them.op, d = f.v2meta.op;
+          if (side === 'fx') {
+            if (says(t, ar(a), pidN) && says(t, ar(d), m2N)) bothOp.named++;
+            else wrong.push(`${id} ${i}: ${pidN} ${a > 0 ? 'up' : 'down'} and ${m2N} ${d > 0 ? 'up' : 'down'}, the card: ${t}`);
+          } else if (side === 'risk') {
+            if (says(t, '▲+', pidN) || says(t, '▲+', m2N) || (a > 0 && says(t, '▼+', pidN)) || (d > 0 && says(t, '▼+', m2N))) wrong.push(`${id} ${i} fails: ${pidN} ${a > 0 ? 'up' : 'down'}, ${m2N} ${d > 0 ? 'up' : 'down'}, the card: ${t}`);
+            else if ((a < 0 && says(t, '▼+', pidN)) || (d < 0 && says(t, '▼+', m2N))) bothOp.named++;
+          }
+        }
+      };
       for (const id in A.EV) {
         const e = A.EV[id]; if (!Array.isArray(e.choices)) continue;
         const q = { type: 'event', ev: id, ctx: {} };
@@ -431,9 +481,18 @@ export default {
         if (!v || v.skip) continue;
         for (const vc of v.choices) {
           if (!vc || vc.i < 0) continue;
-          for (const ch of A.STAKES.choiceChips(e.choices[vc.i], e, q, pc, vc)) { own++; judge(id, ch); }
+          const cs = A.STAKES.choiceChips(e.choices[vc.i], e, q, pc, vc);
+          for (const ch of cs) { own++; judge(id, ch); }
+          oracle(id, vc.i, e.choices[vc.i], q, cs);
+          // the verifier's own cases, kept with their context
+          if (['lf_lover_faith', 'rk_sgt_recommend', 'fm_love_rival', 'lf_kid_bad_match'].includes(id)) {
+            const k = id + ':' + vc.i;
+            out.who[k] = { t: cs.map(x => x.t).join(' | '), pid: q.ctx.pid ? nm(q.ctx.pid) : null, m2: q.ctx.m2 ? nm(q.ctx.m2) : null, other: q.ctx.rvid ? nm(q.ctx.rvid) : q.ctx.mid ? nm(q.ctx.mid) : null };
+          }
         }
       }
+      out.mother = (() => { const m = A.P((pc.parents || [])[1]); return !!(m && m.alive !== false && m.id !== pc.id); })();
+      Object.assign(out, { wrong: wrong.length, wrongEg: wrong.slice(0, 4), tOnly, bothOp });
       Object.assign(out, { own, bare: bare.length, bareEg: bare.slice(0, 3), noway: noway.length, nowayEg: noway.slice(0, 3) });
       return out;
     });
@@ -451,7 +510,19 @@ export default {
       // (a word whose every number is nought is not shown: "Take the post" read "• standing in the ranks" from merit: 0)
       /Take the post ▲ a new post$/.test(row('du_cm_clerk_wanted', 0));
     const corpus = r.own > 3000 && r.bare === 0 && r.noway === 0;
-    return { ok: ok && named && corpus, detail: `named: "${N.parent[0]}" / "${row('wk_gen_windfall', 1)}" / "${row('sc_ss_family', 0)}" / "${row('pl_envoy_abroad', 0).slice(0, 70)}" / "${row('ss_sc_saddle', 0)}" / "${row('ch_inf_steps', 0).slice(0, 60)}" / "${row('ch_dare_orchard', 0).slice(0, 110)}" / "${row('pa_court_scandal', 0).slice(0, 60)}" / "${row('lf_teen_secret_practice', 1).slice(0, 70)}" / "${row('lf_friend_feud_pick', 1)}" / "${row('lf_friend_quarrel', 1)}" / "${row('du_cm_clerk_wanted', 0)}"; every scene, twice (with a friend in ctx.pid, and each with its own context, ${r.own} chips): a bare regard ${r.bare} ${r.bareEg.join(' | ')}, a regard with no way ${r.noway} ${r.nowayEg.join(' | ')}; staged: ${all.filter(x => /Run for help|Hang back|bring a gift|Step between|demand a cut/.test(x)).map(x => '"' + x.slice(0, 90) + '"').join(' / ')} (the second messmate ${r.m2}, the first ${r.pid}); with no way shown ${noWay.length} ${noWay[0] || ''}; every scene: ${r.vague} of ${r.chips} chips give no way (under 0.4%; 1.8% before) ${r.eg.join(' | ')}` };
+    // (third round) the right person, the right way: the verifier's cases, and the corpus read against the written effect
+    const W = r.who, wt = k => (W[k] && W[k].t) || '', rq = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const has = (k, way, name) => !!name && new RegExp(`(^|[:,] |\\| )${way} ${rq(name)}'s regard`).test(wt(k));
+    const fail = k => (/If it fails: [^|]*/.exec(wt(k)) || [''])[0];
+    const right = W['lf_lover_faith:0'] && has('lf_lover_faith:0', '▲+', W['lf_lover_faith:0'].pid) && !/▲+ your mother's regard/.test(wt('lf_lover_faith:0')) &&
+      (!r.mother || /▼+ your mother's regard/.test(wt('lf_lover_faith:0'))) &&
+      W['rk_sgt_recommend:0'] && has('rk_sgt_recommend:0', '▲+', W['rk_sgt_recommend:0'].pid) && has('rk_sgt_recommend:0', '▼+', W['rk_sgt_recommend:0'].m2) &&
+      W['rk_sgt_recommend:1'] && /▼+ /.test(fail('rk_sgt_recommend:1')) && fail('rk_sgt_recommend:1').includes(`▼ ${W['rk_sgt_recommend:1'].pid}'s regard`) && !fail('rk_sgt_recommend:1').includes(W['rk_sgt_recommend:1'].m2) &&
+      W['fm_love_rival:0'] && has('fm_love_rival:0', '▼+', W['fm_love_rival:0'].pid) && !wt('fm_love_rival:0').includes(`${W['fm_love_rival:0'].other}'s regard`) &&
+      W['lf_kid_bad_match:0'] && has('lf_kid_bad_match:0', '▲+', W['lf_kid_bad_match:0'].pid) && !wt('lf_kid_bad_match:0').includes(`${W['lf_kid_bad_match:0'].other}'s regard`);
+    const truth = r.wrong === 0 && r.tOnly.named >= 40 && r.bothOp.named >= 3;
+    return { ok: ok && named && corpus && right && truth, detail: `whose and which way: ${['lf_lover_faith:0', 'rk_sgt_recommend:0', 'rk_sgt_recommend:1', 'fm_love_rival:0', 'lf_kid_bad_match:0'].map(k => `${k} "${wt(k)}" (scene's person ${W[k] && W[k].pid}${W[k] && W[k].m2 ? ', second messmate ' + W[k].m2 : ''}${W[k] && W[k].other ? ', other ' + W[k].other : ''})`).join(' / ')}; ` +
+      `against the written effect: ${r.wrong} wrong ${r.wrongEg.join(' | ')}; code moving only T(ctx) ${r.tOnly.named} named of ${r.tOnly.n}; both(obj, op2) ${r.bothOp.named} of ${r.bothOp.n}; named:"${N.parent[0]}" / "${row('wk_gen_windfall', 1)}" / "${row('sc_ss_family', 0)}" / "${row('pl_envoy_abroad', 0).slice(0, 70)}" / "${row('ss_sc_saddle', 0)}" / "${row('ch_inf_steps', 0).slice(0, 60)}" / "${row('ch_dare_orchard', 0).slice(0, 110)}" / "${row('pa_court_scandal', 0).slice(0, 60)}" / "${row('lf_teen_secret_practice', 1).slice(0, 70)}" / "${row('lf_friend_feud_pick', 1)}" / "${row('lf_friend_quarrel', 1)}" / "${row('du_cm_clerk_wanted', 0)}"; every scene, twice (with a friend in ctx.pid, and each with its own context, ${r.own} chips): a bare regard ${r.bare} ${r.bareEg.join(' | ')}, a regard with no way ${r.noway} ${r.nowayEg.join(' | ')}; staged: ${all.filter(x => /Run for help|Hang back|bring a gift|Step between|demand a cut/.test(x)).map(x => '"' + x.slice(0, 90) + '"').join(' / ')} (the second messmate ${r.m2}, the first ${r.pid}); with no way shown ${noWay.length} ${noWay[0] || ''}; every scene: ${r.vague} of ${r.chips} chips give no way (under 0.4%; 1.8% before) ${r.eg.join(' | ')}` };
   },
 
   // playtest 2, old 19's remainder: "The hearth mark" and "What you want" showed only "It will be remembered" on every

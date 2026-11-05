@@ -144,6 +144,12 @@
   };
   const MAKES = /\bctx\.pid\s*=[^=]/;
   C2.regardWho = function (fx, q, pc) {
+    // an effect built from parts (both(obj, op2(d))): "their regard" is obj's them, the scene's person; op2's own regard
+    // is f-risk's "{m2}'s regard", named there. So the parts read here are the ones that are not op2's.
+    if (typeof fx === 'function' && Array.isArray(fx.v2parts)) {
+      const o = fx.v2parts.find(x => x && typeof x === 'object' && x.them), f = fx.v2parts.find(x => typeof x === 'function' && !x.v2meta);
+      return o ? C2.regardWho(o, q, pc) : f ? C2.regardWho(f, q, pc) : null;
+    }
     const ctx = (q && q.ctx) || {}, me = pc && pc.id, s = C2.srcAll(fx), obj = fx && typeof fx === 'object' ? fx : null;
     const P = id => { const x = id != null && id !== '' ? A.P(id) : null; return x && x.id !== me ? x : null; };
     let none = false, w;
@@ -194,54 +200,108 @@
     if (P(ctx.pid)) return whose(P(ctx.pid), 'regard');
     return none ? '' : null;
   };
-  // a regard the sign reader could give no way ("• Corbin's regard"), read person by person: lf_friend_feud_pick raises
-  // the friend's (bump(p, T(ctx), 15)) and lowers the bully's (bump(p, A.P(ctx.bid), -35)); 40's figures move the
-  // scene's person (eff(p, ctx, { them })) and a named figure (castFx(p, "CHR-0255", { them })) opposite ways; a chance
-  // that goes either way (bump(p, T(ctx), A.chance(.5) ? 8 : -15)) says so. Returns the parts ("▲ Corbin's regard",
-  // "▼ Brand's regard", "▲ or ▼ Isobel's regard"), [] when the code moves no one's regard (bump(p, t, 0) only names a
-  // bond), or null when it cannot tell. Pure: it never makes the figure it names.
+  // whose regard a choice moves, person by person, read from the target each addOp and bump is given (playtest 2, old
+  // 18; the third round: naming the first person the code mentions named the wrong one). fm_love_rival's "Fight him"
+  // links the rival but lowers the lover's regard (addOp(p, T(ctx), -4)); lf_lover_faith's first choice raises the
+  // lover's (bump(p, t, 25), t = T(ctx)) and lowers your mother's (addOp(p, A.P(p.parents[1]), -10)); a both(obj, op2(d))
+  // moves the scene's person by obj's them: { op } and the second messmate by d. A target is T(ctx) (the scene's
+  // person), A.P(ctx.k) (a person of the scene), a parent, the spouse, the crown (addOp(ru, p, n), ru the ruler), your
+  // superior, a messmate or the mess (A.squad), kin in a loop (for (const x of live(p, [...])) addOp(p, x.p, n)), or a
+  // name the code gives one of these (const t = T(ctx), const f = A.P(ctx.fid), const h = ctx.hid ? A.P(ctx.hid) : null).
+  // 40's figures: eff(p, ctx, { them }) moves the scene's person, castFx(p, "CHR-0255", { them }) a named figure.
+  // Returns [{ key, name, up, down, big }] in the order the code moves them (name null: that person is not here, so the
+  // regard reaches no one), or null when a target or a number cannot be read (the caller then names by C2.regardWho).
+  // Pure: the scene's context, the player's kin and the code; it never makes the figure it names.
   const castName = cid => {
     const id = A.S && A.S.castMap && A.S.castMap[cid], t = id && A.P(id);
     if (t) return nameOf(t);
     try { const c = typeof LORE !== 'undefined' && LORE.cast && LORE.cast[cid]; const n = c && A.parseCastName ? A.parseCastName(c.name) : null; return (n && n.given) || null; } catch (e) { return null; }
   };
-  C2.regardParts = function (fx, q, pc) {
-    if (typeof fx !== 'function') return null;
-    const ctx = (q && q.ctx) || {}, me = pc && pc.id;
-    let s = C2.srcAll(fx);
+  const ARG = String.raw`[\w.]+(?:\((?:[^()]|\([^()]*\))*\))?(?:\[\d+\])?(?:\s*\|\|\s*null)?`;
+  const CALL = new RegExp(String.raw`\b(?:A\.)?(addOp|bump)\(\s*(${ARG})\s*,\s*(${ARG})\s*,\s*((?:A\.chance\((?:[^()]|\([^()]*\))*\)\s*\?\s*)?-?[\d.]+(?:\s*:\s*-?[\d.]+)?(?=\s*[,)])|[^,()]*(?:\([^()]*\))?[^,()]*)`, 'g');
+  const CALLS = /\b(?:A\.)?(?:addOp|bump)\(/g, DEFS = /\b(?:A\.)?(?:addOp|bump)\s*=\s*(?:function\s*)?\(/g;
+  C2.regardTargets = function (fx, q, pc, d) {
+    const ctx = (q && q.ctx) || {}, me = pc && pc.id, depth = d || 0;
+    if (depth > 3 || !fx) return null;
+    const seen = new Map(), add = (key, name, v) => { const e = seen.get(key) || { key, name, up: 0, down: 0, big: false }; if (v > 0) e.up++; else if (v < 0) e.down++; if (Math.abs(v) >= 20) e.big = true; seen.set(key, e); };
+    const merge = list => { for (const e of list) { const x = seen.get(e.key) || { key: e.key, name: e.name, up: 0, down: 0, big: false }; x.up += e.up; x.down += e.down; x.big = x.big || e.big; seen.set(e.key, x); } };
     const P = id => { const x = id != null && id !== '' ? A.P(id) : null; return x && x.id !== me ? x : null; };
-    const seen = new Map(), add = (key, name, v) => { if (!name) return; const e = seen.get(key) || { name, up: 0, down: 0, big: false }; if (v > 0) e.up++; else if (v < 0) e.down++; if (Math.abs(v) >= 20) e.big = true; seen.set(key, e); };
-    let parsed = 0;
+    // (a context left empty, as when the chips are read with no scene set up, names no one of the scene: null)
+    const empty = !Object.keys(ctx).length;
+    const person = k => { const t = P(ctx[k]); return t ? whose(t, 'regard') : null; };
+    // an effect written as data: its them: { op } is the scene's person (one that brings someone new in is read by
+    // C2.regardWho); its rel: { who } is shown by C2.relPart
+    if (typeof fx === 'object') {
+      if (fx.awWho || fx.newRel) return null;
+      const n = fx.them && typeof fx.them === 'object' && typeof fx.them.op === 'number' ? fx.them.op : 0;
+      if (n) { if (empty) return null; add('ctx:pid', person('pid'), n); }
+      return [...seen.values()];
+    }
+    if (typeof fx !== 'function') return null;
+    // an effect built from parts (both(obj, fn), op2(d)): each part as written, op2's messmate from its record
+    if (Array.isArray(fx.v2parts) || fx.v2meta) {
+      for (const part of fx.v2parts || []) { const r = C2.regardTargets(part, q, pc, depth + 1); if (!r) return null; merge(r); }
+      const m = fx.v2meta;
+      if (m && typeof m.op === 'number' && m.op) { if (!m.who || empty) return null; add('ctx:' + m.who, person(m.who), m.op); }
+      return [...seen.values()];
+    }
+    let s = ''; try { s = String(fx); } catch (e) { return null; }
+    if (MAKES.test(s) || /\bawWho\s*:/.test(s)) return null;   // a choice that puts someone new in the scene
+    s = s.replace(DEFS, ' ');
     // a figure from 40's cast, moved by its own castFx
     s = s.replace(/\bcastFx\(\s*p\s*,\s*"([\w-]+)"\s*,\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}\s*\)/g, (all, cid, body) => {
       const m = /\bthem\s*:\s*\{[^}]*?\bop\s*:\s*(-?[\d.]+)/.exec(body);
-      if (m) { parsed++; add('cast:' + cid, castName(cid) && castName(cid) + '\'s regard', +m[1]); }
-      return '';
+      if (m) add('cast:' + cid, castName(cid) && castName(cid) + '\'s regard', +m[1]);
+      return ' ';
     });
-    // names the code gives the people it looks up: const t = T(ctx), const f = A.P(ctx.fid), const h = ctx.hid ? A.P(ctx.hid) : null
-    const vars = {};
-    for (const m of s.matchAll(/\b(\w+)\s*=\s*(?:ctx\.\w+\s*\?\s*)?(?:A\.P\(\s*ctx\.(\w+)\s*\)|T\(\s*ctx\s*\))/g)) vars[m[1]] = m[2] || 'pid';
-    const person = key => { const t = P(ctx[key]); return t ? whose(t, 'regard') : null; };
-    const val = v => (/^-?[\d.]+$/.test(v) ? [+v] : (/\?\s*(-?[\d.]+)\s*:\s*(-?[\d.]+)\s*$/.exec(v) || []).slice(1).map(Number));
-    for (const m of s.matchAll(/\b(?:A\.)?(?:addOp|bump)\(\s*p\s*,\s*(T\(\s*ctx\s*\)|A\.P\(\s*ctx\.(\w+)\s*\)|\w+)\s*,\s*((?:A\.chance\([^()]*\)\s*\?\s*)?-?[\d.]+(?:\s*:\s*-?[\d.]+)?)/g)) {
-      const key = /^T\(/.test(m[1]) ? 'pid' : m[2] || vars[m[1]];
-      if (!key) return null;
-      const vs = val(m[3]);
+    // the names the code gives the people it looks up, and the people a loop walks
+    const vars = {}, loops = {};
+    for (const m of s.matchAll(/\b(?:const|let|var)\s+([^;]*)/g)) for (const dm of m[1].matchAll(/(?:^|,)\s*(\w+)\s*=\s*((?:\w+\s*&&\s*)?(?:ctx\.\w+\s*\?\s*)?(?:T\(\s*ctx\s*\)|A\.P\(\s*(?:ctx\.\w+|p\.parents\[\d\]|p\.spouse|\w+\.ruler)\s*\)|spouseOf\(\s*p\s*\)|A\.squad\(\s*p\s*\)\[0\]|A\.superior\(\s*p\s*\)))/g)) {
+      const k = dm[1], v = dm[2].replace(/^\w+\s*&&\s*/, '').replace(/^ctx\.\w+\s*\?\s*/, '');
+      vars[k] = vars[k] && vars[k] !== v ? '?' : v;
+    }
+    for (const m of s.matchAll(/\bfor\s*\(\s*(?:const|let|var)\s+(\w+)\s+of\s+(?:(?:A\.)?(?:live|relsOf)\(\s*p\s*,\s*\[([^\]]*)\]|A\.squad\(\s*p\s*\))/g)) loops[m[1]] = m[2] != null ? 'kin:' + [...m[2].matchAll(/["'](\w+)["']/g)].map(x => x[1]).join(',') : 'squad';
+    const target = (e, dd) => {
+      e = e.replace(/\s*\|\|\s*null$/, '').replace(/\s+/g, '');
+      let m;
+      if (/^T\(ctx\)$/.test(e)) return empty ? undefined : { key: 'ctx:pid', name: person('pid') };
+      if ((m = /^A\.P\(ctx\.(\w+)\)$/.exec(e))) return empty ? undefined : { key: 'ctx:' + m[1], name: person(m[1]) };
+      if ((m = /^A\.P\(p\.parents\[(\d)\]\)$/.exec(e))) { const t = pc && P((pc.parents || [])[+m[1]]); return { key: 'parent:' + m[1], name: t ? kinWord('parent', t) + '\'s regard' : null }; }
+      if (/^A\.P\(p\.spouse\)$|^spouseOf\(p\)$/.test(e)) { const t = pc && P(pc.spouse); return { key: 'spouse', name: t ? kinWord('spouse', t) + '\'s regard' : null }; }
+      if (/^A\.P\(\w+\.ruler\)$/.test(e)) return { key: 'crown', name: 'the crown\'s regard' };
+      if (/^A\.superior\(p\)$/.test(e)) return { key: 'superior', name: 'your superior\'s regard' };
+      if (/^A\.squad\(p\)\[0\]$/.test(e)) { let t = null; try { t = pc && A.squad(pc)[0]; } catch (err) { t = null; } return { key: 'mate0', name: t ? whose(t, 'regard') : null }; }
+      if ((m = /^(\w+)\.p$/.exec(e)) && loops[m[1]] && loops[m[1]].startsWith('kin:')) { const roles = loops[m[1]].slice(4).split(',').filter(Boolean); return { key: loops[m[1]], name: kinWho(pc, roles, false) || null }; }
+      if (/^\w+$/.test(e) && loops[e] === 'squad') return { key: 'squad', name: pc && pc.mil ? 'your messmates\' regard' : null };
+      if (/^\w+$/.test(e) && vars[e] && vars[e] !== '?' && (dd || 0) < 3) return target(vars[e], (dd || 0) + 1);
+      return undefined;
+    };
+    const val = v => (/^-?[\d.]+$/.test(v.trim()) ? [+v] : (/\?\s*(-?[\d.]+)\s*:\s*(-?[\d.]+)\s*$/.exec(v) || []).slice(1).map(Number));
+    let calls = 0;
+    for (const m of s.matchAll(CALL)) {
+      calls++;
+      const a = m[2].replace(/\s+/g, ''), b = m[3].replace(/\s+/g, '');
+      // addOp(p, t, n): t's regard of you; addOp(ru, p, n): the ruler's
+      const t = a === 'p' ? target(b) : b === 'p' && m[1] === 'addOp' ? target(a) : undefined;
+      if (!t) return null;
+      const vs = val(m[4]);
       if (!vs.length) return null;
-      parsed++;
-      for (const v of vs) add('ctx:' + key, person(key), v);
+      for (const v of vs) add(t.key, t.name, v);
     }
+    // every call read, or none of this is to be trusted
+    if (calls !== (s.match(CALLS) || []).length) return null;
     // the scene's person, moved by them: { op } (fx, eff, apply, more, A.applyFx ... with the scene's ctx)
-    for (const m of s.matchAll(/\bthem\s*:\s*\{[^}]*?\bop\s*:\s*(-?[\d.]+)/g)) { parsed++; add('ctx:pid', person('pid'), +m[1]); }
-    for (const m of s.matchAll(/\brel\s*:\s*\{\s*who\s*:\s*["'](\w+)["']\s*,\s*op\s*:\s*(-?[\d.]+)/g)) { parsed++; add('kin:' + m[1], kinWho(pc, [m[1]], true) || null, +m[2]); }
-    for (const m of s.matchAll(/\bnewRel\s*:\s*\{\s*type\s*:\s*["'](\w+)["']\s*,\s*op\s*:\s*(-?[\d.]+)/g)) { parsed++; add('new:' + m[1], `your new ${m[1] === 'mentor' ? 'teacher' : m[1]}'s regard`, +m[2]); }
-    if (!parsed) return null;
-    const out = [];
-    for (const e of seen.values()) {
-      if (!e.up && !e.down) continue;
-      out.push(`${e.up && e.down ? '▲ or ▼' : e.up ? (e.big ? '▲▲' : '▲') : (e.big ? '▼▼' : '▼')} ${e.name}`);
-    }
-    return out;
+    for (const m of s.matchAll(/\bthem\s*:\s*\{[^}]*?\bop\s*:\s*(-?[\d.]+)/g)) { if (empty) return null; add('ctx:pid', person('pid'), +m[1]); }
+    for (const m of s.matchAll(/\brel\s*:\s*\{\s*who\s*:\s*["'](\w+)["']\s*,\s*op\s*:\s*(-?[\d.]+)/g)) add('kin:' + m[1], kinWho(pc, [m[1]], true) || null, +m[2]);
+    for (const m of s.matchAll(/\bnewRel\s*:\s*\{\s*type\s*:\s*["'](\w+)["']\s*,\s*op\s*:\s*(-?[\d.]+)/g)) add('new:' + m[1], `your new ${m[1] === 'mentor' ? 'teacher' : m[1]}'s regard`, +m[2]);
+    return [...seen.values()];
+  };
+  // the same, as chip parts ("▲ Corbin's regard", "▼▼ Brand's regard", "▲ or ▼ Isobel's regard"): [] when the code
+  // moves no one's regard here, null when it cannot tell
+  const partOf = e => `${e.up && e.down ? '▲ or ▼' : e.up ? (e.big ? '▲▲' : '▲') : (e.big ? '▼▼' : '▼')} ${e.name}`;
+  C2.regardParts = function (fx, q, pc) {
+    const r = C2.regardTargets(fx, q, pc);
+    return r ? r.filter(e => e.name && (e.up || e.down)).map(partOf) : null;
   };
   // an effect's rel: { who, op } as a chip part ("▼ your father's regard"), or null when it reaches no one here
   C2.relPart = function (fx, pc) {
@@ -254,6 +314,8 @@
   };
   // a chip's regard part, in any of its forms ("▲ their regard", "• regard", "▼▼ regard")
   const RG_PART = /^(?:[▲▼]+ |• )?(?:their )?regard$/;
+  // the same, with a second messmate's from op2 (f-risk's "{m2}'s regard"): a regard no one has been named for yet
+  const RG_ANY = /^(?:[▲▼]+ (?:or ▼ )?|• )?(?:their |\{m[23]\}'s )?regard$/, PREFIX = /^(If it (?:works|fails): |Fails: )([\s\S]*)$/;
   // a chip without the regard parts that reach nobody; null when nothing is left
   C2.dropRegard = function (t) {
     const m = /^(If it (?:works|fails): |Fails: )([\s\S]*)$/.exec(t);
@@ -270,10 +332,36 @@
         if (!c || typeof c !== 'object') return chips;
         const t = q && q.ctx && q.ctx.pid && A.P(q.ctx.pid);
         const fxOf = ch => (ch.k === 'win' ? c.win && c.win.fx : ch.k === 'risk' ? c.lose && c.lose.fx : c.fx);
+        // (a sure effect shows its regard once: the chips 9998 made for it, "▼ their regard" and "▲ {m2}'s regard", are
+        // one list of the people it moves)
+        const named = new Set();
         for (const ch of chips) {
           if (typeof ch.t !== 'string') continue;
-          // whose regard (playtest 2, old 18: "• changes regard" named nobody); a regard that reaches nobody goes
-          const who = /\bregard\b/.test(ch.t) ? C2.regardWho(fxOf(ch), q, pc) : null;
+          // whose regard, person by person (playtest 2, old 18: "• changes regard" named nobody; the third round: the
+          // name is the target the code moves, and the way is that target's own): "▲ Gerda's regard, ▼ your mother's
+          // regard". A regard that reaches nobody goes. What a failed check costs lists only what goes down.
+          let done = false;
+          if (/\bregard\b/.test(ch.t)) {
+            const fx = fxOf(ch), m = PREFIX.exec(ch.t), pre = m ? m[1] : '', parts = (m ? m[2] : ch.t).split(', ');
+            const at = parts.findIndex(x => RG_ANY.test(x)), T = at >= 0 ? C2.regardTargets(fx, q, pc) : null;
+            if (T) {
+              done = true;
+              const sure = ch.k !== 'win' && ch.k !== 'risk';
+              let repl = sure && named.has(fx) ? [] : T.filter(x => x.name && (x.up || x.down)).map(partOf);
+              if (sure) named.add(fx);
+              if (ch.k === 'risk') repl = repl.filter(x => !/^▲+ (?!or)/.test(x));
+              const rest = parts.filter(x => !RG_ANY.test(x));
+              rest.splice(Math.min(at, rest.length), 0, ...repl);
+              if (!rest.length) {
+                if (ch.k === 'risk') { ch.k = 'safe'; ch.t = 'Nothing lost if it fails'; delete ch.fail; } else ch.gone = true;
+                continue;
+              }
+              ch.t = pre + rest.join(', ');
+              if (!pre && sure && ['touch', 'gain', 'cost'].includes(ch.k) && rest.every(x => /regard$/.test(x))) ch.k = rest.every(x => /^▲+ (?!or)/.test(x)) ? 'gain' : rest.every(x => /^▼/.test(x)) ? 'cost' : 'touch';
+            }
+          }
+          // (a target the code does not say plainly: the person the scene's code names, as C2.regardWho reads it)
+          const who = !done && /\bregard\b/.test(ch.t) ? C2.regardWho(fxOf(ch), q, pc) : null;
           if (who === '') { const t2 = C2.dropRegard(ch.t); if (t2 === null) { ch.gone = true; continue; } ch.t = t2; }
           // which way a code effect goes
           const sg = C2.signs(fxOf(ch));
@@ -290,14 +378,14 @@
           // what a failed check costs is a loss: the regard it names goes down ("If it fails: hurt, ▼ Edith's regard")
           // (a failure that still raises something, "Fails: ▲ regard" in red, reads as a contradiction: it is no loss,
           // so it is not listed among the losses)
-          if (ch.k === 'risk') {
+          if (ch.k === 'risk' && /^If it fails: /.test(ch.t)) {   // (a sure choice's "Starts a fight" is no failure)
             const parts = ch.t.replace(/^If it fails: /, '').split(', ').filter(x => !/^▲/.test(x));
             if (!parts.length) { ch.k = 'safe'; ch.t = 'Nothing lost if it fails'; delete ch.fail; }
             else ch.t = 'If it fails: ' + parts.join(', ').replace(/(^|, )(their regard)\b/g, '$1▼ $2');
           }
           if (who) ch.t = ch.t.replace(/\btheir regard\b/g, who).replace(/• regard\b/g, '• ' + who).replace(/([▲▼]+) regard\b/g, `$1 ${who}`);
           // a regard with no way: read person by person (two people moved opposite ways, or a chance either way)
-          if (/(^|, |: )• [^,]*regard\b/.test(ch.t)) {
+          if (!done && /(^|, |: )• [^,]*regard\b/.test(ch.t)) {
             const parts = C2.regardParts(fxOf(ch), q, pc);
             if (parts && parts.length) {
               ch.t = ch.t.replace(/• [^,]*regard\b/, parts.join(', '));
