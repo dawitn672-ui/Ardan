@@ -126,6 +126,25 @@ export default {
     return { ok, detail: `${r.c}: ${r.rows}; merit row ${r.merit}, deed row (soft) ${r.deed}, a counter on the Path tab ${r.counter}, the deed row shown ${r.path}` };
   },
 
+  // playtest 1 and 2: "Merit 112 / 30", "Merit +7.", "(merit +24)": the soldier's Path tab, the promotion tips and the
+  // log say where you stand in words; no merit counter is left
+  async rnNoCounters(pg) {
+    const r = await pg.evaluate(S => {
+      T.enter(S); const pc = A.pc(); A.enlist(pc);
+      A.RN.within({ wit: 'army', field: 'war', q: 0.3, text: 'the ford' }, A.fame, null, [pc, 3]);
+      UI.tab = 'path'; UI.render();
+      const txt = document.body.innerText;
+      const strip = h => String(h || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+      const tips = ['promoOdds|mil', 'merit|', 'board|mil|deed', 'milRank|'].map(k => { const [f, ...a] = k.split('|'); return strip(UI.TIPS[f] && UI.TIPS[f](a.join('|'))); });
+      const logs = ['Battle of Lavium (1 day): your side wins. 102 fall. Merit +7.', 'Your superiors notice the extra hours. (Merit +15)', 'Kills 3 (merit +24) and a cut.', 'Renown +3', 'Merit 112 / 30']
+        .map(t => A.V2S.deNum(t));
+      const bad = x => /\bmerit\b[^\n]{0,6}\d|\d+\s*\/\s*\d+|%/i.test(x);
+      return { path: bad(txt) ? (txt.match(/.{0,40}\bmerit\b[^\n]{0,6}\d.{0,20}/i) || [''])[0] : '', tips: tips.filter(bad), logs, standing: /deed/i.test(txt) };
+    }, START);
+    const ok = !r.path && !r.tips.length && r.logs.every(t => !/merit|\d+\s*\/\s*\d+|\+\d/i.test(t)) && r.standing;
+    return { ok, detail: `Path tab counter: "${r.path}"; tips with a counter ${r.tips.length}${r.tips.length ? ': ' + r.tips[0].slice(0, 120) : ''}; the log lines read: ${r.logs.map(t => `"${t}"`).join(' ')}; the deed row shown ${r.standing}` };
+  },
+
   // the profile, another person's sheet and the year's lines say renown in words (v2's renownWords), never a 0-100
   // number; an old save with no deed record keeps its fame, and a new deed adds to it
   async rnWords(pg) {

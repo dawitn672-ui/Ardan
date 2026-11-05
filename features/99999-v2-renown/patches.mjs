@@ -24,6 +24,10 @@ export default [
         '<div class="tiny muted">The board sits every three months. A deed that beat the odds in front of the army counts most; steady service and a patron help; a post must fall open. It can come twice in a year, or not for years, and a great deed can carry you past a rank.</div>'],
       ['Merit from battles, missions and ground taken moves you up the ladder; the board meets every three months.', 'Deeds in battle and on missions, seen by the army, move you up the ladder; the board meets every three months, and a post must fall open.'],
       ['Your post is a ladder. Merit earned month by month, skill, reputation and time move you up;', 'Your post is a ladder. Work that stands out, skill, reputation, a patron and a post falling open move you up;'],
+      // the army card on the Path tab, the war room's line, and the superior's answer: no counter
+      ['${m.kills} enemy dead · merit ${Math.round(m.merit)}</div>', '${m.kills} enemy dead${A.RN&&A.RN.on?"":` · merit ${Math.round(m.merit)}`}</div>'],
+      [' · merit ${Math.round(pc.mil.merit)} — your promotion board is in the', '${A.RN&&A.RN.on?"":` · merit ${Math.round(pc.mil.merit)}`} — your promotion board is in the'],
+      ['"Not yet. Earn it." (merit ${Math.round(pc.mil.merit)}/${next.merit})', '"Not yet. Earn it."${A.RN&&A.RN.on?"":` (merit ${Math.round(pc.mil.merit)}/${next.merit})`}'],
     ],
   },
 ];
