@@ -119,7 +119,8 @@
     const r = pc && pc.rel && pc.rel[t.id], k = CF.rank(pc, t.id), role = CF.role(r);
     if (!role || !k) return '';
     let next = '';
-    if (k < 5) next = ` Next rank: shared history ${CF.MEM[k]} (now ${Math.round(mem(pc, t))}), their opinion ${CF.OP[k]}.`;
+    // the regard now beside the regard it asks, as the history has (99993-v2-stats words both: a band alone is wider than the bar)
+    if (k < 5) next = ` Next rank: shared history ${CF.MEM[k]} (now ${Math.round(mem(pc, t))}), their opinion ${CF.OP[k]} (now ${Math.round(theirOp(pc, t))}).`;
     const tip = `${CF.title(pc, t, role)}, rank ${k} of 5: ${CF.GIFT.slice(0, k).join(' ')}${next}`;
     return `<span class="cf-pips" title="${esc(tip)}" role="img" aria-label="${esc(CF.title(pc, t, role) + ', rank ' + k + ' of 5')}">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= k ? 'on' : ''}"></i>`).join('')}</span>`;
   };
