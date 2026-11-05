@@ -49,7 +49,7 @@ The plan asks to "give AI generals personalities (cautious, bold, cunning) and v
   - "means to fall on Torossa while they are busy elsewhere".
 
   Each of these is from a real war in `movesAreVisible`.
-- **Orders by letter.** A soldier whose army is at war gets the plan as a letter, at most every five months. It comes from his superior, or is read out at muster if he has no captain yet. There is one letter per temper:
+- **Orders by letter.** A soldier whose army is at war gets the plan as a letter, at most every five months. The same order again from the same general waits longer (`G.QUIET`, `S.goSeen`): two years for "hold the line" and "hold and wait", one for "the first wave" and "make a noise"; a new general's letter comes at the usual pace. Over nine 40-year lives "hold the line" had come back 15 times (97's `lfRepeats`; playtest 2, old 10: "Orders: hold and wait" seven times in a life). It comes from his superior, or is read out at muster if he has no captain yet. There is one letter per temper:
   - bold: go in with the first wave;
   - cautious: hold and wait, while their foragers eat in plain sight;
   - cunning: make a noise at a place that is not the real blow;

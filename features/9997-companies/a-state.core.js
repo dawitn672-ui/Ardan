@@ -738,7 +738,7 @@
     if (pc && pc.alive && pc.mil) {
       CO.place(pc);
       const M = CO.mine(pc);
-      if (M && CO.sceneDue(pc, M.d.pay > 0 ? CO.GAP : CO.PAY_GAP) && A.atWar(pc.mil.realm || pc.realm).length) CO.queueEv(M.d.pay > 0 ? 'co_arrears' : 'co_pay_day', {});
+      if (M && CO.sceneDue(pc, M.d.pay > 0 ? CO.GAP : CO.PAY_GAP) && A.atWar(pc.mil.realm || pc.realm).length && (M.d.pay > 0 || !CO.recent(pc, 'co_pay_day'))) CO.queueEv(M.d.pay > 0 ? 'co_arrears' : 'co_pay_day', {});
     }
   };
   function backWounded(d, gap, frac) {
@@ -914,7 +914,20 @@
     const S = A.S;
     if ((S.queue || []).some(q => q.type === 'event' && q.ev === ev)) return;
     A.queue({ type: 'event', ev, ctx: Object.assign({}, ctx), forced: true });
-    const pc = A.pc(); if (pc && pc.flags) pc.flags.co_last = A.absDay ? A.absDay() : 0;
+    const pc = A.pc(), now = A.absDay ? A.absDay() : 0;
+    if (pc && pc.flags) pc.flags.co_last = now;
+    if (pc && pc.mil && CO.QUIET[ev]) { pc.mil.coSeen = pc.mil.coSeen || {}; pc.mil.coSeen[ev] = now; }
+  };
+  // The routine company scenes keep a quieter cadence over a life. They are forced scenes, which 97's life memory leaves
+  // alone, and over nine 40-year lives pay day came back 27 times and the roll call 16 (97's lfRepeats; playtest 2, old
+  // 10: "Pay day" five times in one life). When nothing has changed they wait (days): pay day two years (arrears are
+  // their own scene and still come at once), the roll call and the captain's word eighteen months, unless the fight cost
+  // the company twice what the last roll call counted. pc.mil.coSeen holds the day each was last queued (a save from
+  // before has none: the first comes as before)
+  CO.QUIET = { co_pay_day: 730, co_roll_call: 540, co_captain_word: 540 };
+  CO.recent = function (pc, ev) {
+    const t = pc && pc.mil && pc.mil.coSeen ? pc.mil.coSeen[ev] : null, now = A.absDay ? A.absDay() : 0;
+    return t != null && now - t < (CO.QUIET[ev] || 0);
   };
   // the company reaches the soldier once a campaign, not once a career: after a fight his division was in, and on pay
   // day, a company scene comes when none has come for a season (CO.GAP days)
@@ -929,8 +942,9 @@
     const pc = A.pc(), M = CO.mine(pc);
     if (!M || !(F.aIds.includes(M.d.id) || F.dIds.includes(M.d.id)) || F.menA + F.menD < 2500 || !CO.sceneDue(pc)) return;
     const row = (F.coL || {})[M.d.id] || [], lost = row[M.b] || 0;
-    if (lost >= 4) CO.queueEv('co_roll_call', { lost: String(lost), place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 });
-    else { const c = CO.cap(M.d, M.b, M.i); CO.queueEv('co_captain_word', { pid: c && c.pid && !c.pc ? c.pid : null, place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
+    const heavy = lost >= 4 && (!CO.recent(pc, 'co_roll_call') || lost >= 2 * (pc.mil.coRoll || 0));
+    if (heavy) { pc.mil.coRoll = lost; CO.queueEv('co_roll_call', { lost: String(lost), place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
+    else if (!CO.recent(pc, 'co_captain_word')) { const c = CO.cap(M.d, M.b, M.i); CO.queueEv('co_captain_word', { pid: c && c.pid && !c.pc ? c.pid : null, place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
   };
 
   // ---- morale on the war map: the organisation cap, x (0.85 + 0.3 x mean morale / 100)

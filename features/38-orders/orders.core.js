@@ -45,6 +45,10 @@
     NAMES: { bold: 'Bold', cautious: 'Cautious', cunning: 'Cunning', steady: 'Steady' },
     WAIT: 60,      // days before an order's outcome is known
     EVERY: 150,    // days between letters at least
+    // the same order again from the same general waits this long (days): a letter that says what the last one said is
+    // routine, and over nine 40-year lives "hold the line" came back 15 times and "the first wave" 9 (97's lfRepeats;
+    // playtest 2, old 10: "Orders: hold and wait" seven times in one life). A new general's letter comes at the usual pace
+    QUIET: { steady: 730, cautious: 730, bold: 365, cunning: 365 },
   };
   // a person's temper as a general
   G.temper = function (p) {
@@ -541,7 +545,10 @@
     if ((t === 'bold' || t === 'cunning') && o.tp == null) kind = 'steady';
     if (o.pp == null && (kind === 'cautious' || kind === 'steady')) return;
     if (kind === 'steady' && o.tp == null) return;
+    const last = S.goSeen && S.goSeen[kind];
+    if (last && last.gen === g.id && now - last.day < (G.QUIET[kind] || 0)) return;
     S.goNext = now + G.EVERY;
+    S.goSeen = Object.assign({}, S.goSeen, { [kind]: { gen: g.id, day: now } });
     const ctx = { order: 1, genId: g.id, temper: kind, tp: o.tp, pp: o.pp };
     if (kind === t) { if (o.press) ctx.press = 1; if (o.noise != null) ctx.np = o.noise; if (o.wall != null) ctx.wp = o.wall; }
     A.queue({ type: 'event', ev: 'go_order_' + kind, forced: true, ctx });
