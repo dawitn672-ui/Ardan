@@ -84,6 +84,8 @@ VS.css = '.v2-sheet{margin:4px 0 6px}.v2-row{display:grid;grid-template-columns:
   '.prow:has(.v2-tier){grid-template-columns:minmax(0,1fr) auto 5.6em;gap:4px 10px}.prow .v2-tier{white-space:nowrap;font-weight:600}' +
   '.mbox .v2-row{grid-template-columns:6.5em minmax(0,auto) minmax(0,1fr)}.mbox .v2-v{white-space:nowrap}.mbox .v2-w{grid-column:auto}' +
   '@media (max-width:560px){.mbox .v2-row{grid-template-columns:6em minmax(0,1fr)}.mbox .v2-w{grid-column:2}}' +
+  // a phone (71-phone, below 760 px) holds every text at 14 px or more: the words keep the row's size there
+  '@media (max-width:759px){.v2-w{font-size:1em}}' +
   '.v2-odds{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.v2-scale{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em;pointer-events:none}.v2-ow{pointer-events:none}';
 VS.style = () => { if (typeof document === 'undefined' || document.getElementById('v2s-style')) return; const s = document.createElement('style'); s.id = 'v2s-style'; s.textContent = VS.css; document.head.appendChild(s); };
 
