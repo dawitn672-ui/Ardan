@@ -183,7 +183,7 @@ death after a lost fight: the 12 health it took left him nothing, and `A.mortalC
 
 Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, `v2cRiskLethal`).
 
-## The 0-100 numbers g-bands did not reach (`i-numbers.core.js`, complaint 11, playtest 1 #7, playtest 2 old 7)
+## The 0-100 numbers g-bands did not reach (`i-numbers.core.js`, part 8, loads before `j-numbers.core.js`, complaint 11, playtest 1 #7, playtest 2 old 7)
 
 - **Needs.** 35-moods' four needs are words (`A.MOODS.word(k, v)`: "rested", "alone too often", "adrift", "in want"),
   banded on the rules: under 30 a need sets a mood, 65 or more on all four is content. The words are in 35's card,
@@ -192,7 +192,7 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
 - **Training.** The mentor picker's "Melee (14)" and the council's appoint picker say the tier. The season's log says
   how much each skill grew: "Survival & hunting (a good deal)", not "+2.4". The training picker was already in words.
 - **The profile and the decisions.** The profile's age line drops the stat ("Strength: at its best at 19 · holds until
-  about 42"). A wound's cost reads "worth a little less (slower)" and "Athletics & climbing much worse". The perks
+  about 42"). A wound's cost reads "worth a little less (slower)" and "Athletics & climbing down a good deal" (j-numbers' rule). The perks
   unlock "at Journeyman, Expert and Master". A decision needs "A proficiency at Adept" or "Letters & learning at Adept",
   and a door "Crossbow at Apprentice (you are Untrained)". An ambition's step says "Fighting worth: Trained". The yard
   sends you home "come back when you are worn or better". A staff candidate's fit is a tier.
@@ -204,12 +204,38 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
   "feared", "distrusted", "watched". The bands follow the rules: 40 starts a coalition, over 58 one may march, over 20
   small realms bow. The Infamy map mode's legend reads "Coalition bait (so feared a coalition may march)", and the
   ruler's coalition letter "Aldmark has swallowed too much land (feared: its neighbours band together)".
-- **Titles.** A hover title with one of these numbers ("Stability since 1105: 46 to 61") gets the same words.
+- **Infamy, every spelling (round 3).** g-bands has an infamy band ("unremarkable", "watched", "distrusted", "feared",
+  "hated", "dreaded"; feared from 40, where a coalition forms, hated over 58, where it may march), so "Infamy <b>47</b>"
+  in its own element, the Realm tab's bar and any `data-tt="infamy"` number read the word. The rule lines ("At 40
+  neighbors start a coalition; above 60 it may march", "at 40 coalitions form; above 60 they march", "Keep infamy below
+  60") say it in those words; "Your infamy is 47" reads "Your realm is feared abroad"; the advisor's "Infamy 47: ..."
+  (and its title) "Infamy: feared; ..."; a realm's card "· infamy: hated"; "Their infamy (47)" the short word; a war's
+  price "infamy up somewhat · stability up a little" (g-bands had read the release's unsigned "stability 2" as the band
+  of 2). Beside it, the realm's own thresholds and costs: stability's "below 18" ("once it is near collapse"), "An
+  empty treasury costs 6 stability", legitimacy's "(legitimacy − 50) ÷ 25 a year", the treasury's "Income at
+  stability 50", a faction's "40%+ power and 60+ discontent", "(discontent 44)", a realm's "Opinion -4" in the treaty
+  reasons and "(Relations +12.)", the gift's "Opinion +12" toast, and the Path's "Opinion 50+:".
+- **The realm's other bars (round 4).** The Realm tab's Stability, Legitimacy and War weariness bars say the band
+  ("shaky", "doubted", "tiring"), by label and by tooltip key (`realmStab`, `realmLegit`, `realmWeary`). War weariness
+  has a band of its own on the release's words at the peace table (over 30 "tiring", over 60 "exhausted", over 85
+  "broken by war"), so its popover's "War weariness <b>53</b>" reads the word too, and the peace table's "is tiring (war
+  weariness 47)" drops the bracket. 97-life-fixes' golden age step, "Stability 29 of 85 and ...", reads "Stability shaky
+  (it must be rock steady) and ...".
+- **Titles.** A hover title or aria-label with one of these numbers ("Stability since 1105: 46 to 61", the Goals tab's
+  "Still needed: ...; Legitimacy 70.", the People tab's "Opinion 79") goes through the whole of `VS.deNum`, the
+  element itself included (round 4: the titles had taken only the NUMRULES2 rules, and an element added on its own was
+  skipped).
 - The game's rules are unchanged; drawing reads, never writes, and draws nothing.
 
-Test `v2sNumbers` draws each of these views on a played life and fails on a bare 0-100 number in any of them.
+Test `v2sNumbers` draws each of these views on a played life and fails on a bare 0-100 number in any of them. As a
+ruler with infamy 47 it also scans every text node, title and aria-label of the Life, Realm, Goals, Path and People
+tabs (folded or open), every popover those pages offer, the infamy and war weariness popovers, a neighbour's card, the
+war declaration, World's Diplomacy and the Infamy map, and pl_coalition_letter as the page draws it, on any line naming
+infamy, stability, legitimacy, a faction, discontent, loyalty or opinion. Every bar is read as its label with its value,
+and every element whose tooltip key is a realm measure as its key with its text, so a number in an element of its own
+is caught. A popover's breakdown keeps its sums ("Legitimacy +0.8" a year).
 
-## Playtest round 2: the 0-100 numbers left on the page (`j-numbers.core.js`)
+## Playtest round 2: the 0-100 numbers left on the page (`j-numbers.core.js`, part 10)
 
 Playtest 2 (old 7's remainder, new 11, old 20 and old 22) still read 0-100 numbers in views g-bands never reached. Most
 survived because 59-tooltips puts the number in an element of its own (`Master fighter (<span data-tt="worth">101</span>)`),

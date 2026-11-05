@@ -76,8 +76,9 @@
   const isNum = t => /^[+−–-]?\d[\d,]*(\.\d+)?$/.test(t);
 
   // ---- a number its tooltip key names -----------------------------------------------------------------------------------
-  // (el, its text) -> the words, or null to leave it
-  VS.keyWords = {
+  // (el, its text) -> the words, or null to leave it (added to the keys i-numbers.core.js, which loads first, put there:
+  // infamy and the realm's measures)
+  VS.keyWords = Object.assign(VS.keyWords || {}, {
     perf: t => (isNum(t) ? band('perf', num(t)) : null),
     rep: t => (isNum(t) ? band('rep', num(t)) : null),
     fame: t => (isNum(t) ? VS.band('renown', num(t)) : null),
@@ -105,7 +106,7 @@
       if (k === 'rep') return short(a, b, v => band('rep', v));
       return null;   // months, battles: real counts
     },
-  };
+  });
   VS.deKeyed = function (root) {
     if (!root || !root.querySelectorAll) return;
     const els = root.matches && root.matches('[data-tt]') ? [root, ...root.querySelectorAll('[data-tt]')] : root.querySelectorAll('[data-tt]');
@@ -182,7 +183,7 @@
   }
 
   // ---- World › Diplomacy: "Most feared" is infamy on a 0-100 bar -----------------------------------------------------------
-  // The words are i-numbers.core.js's (wf-numbers owns infamy: VS.infamyShort); here the bar gets a value column as wide
+  // The words are i-numbers.core.js's (part 8, which loads first) (wf-numbers owns infamy: VS.infamyShort); here the bar gets a value column as wide
   // as its word (.v2-wb), and a number nobody put in words yet still gets one.
   if (UI.worldTabPolitics) {
     const wt = UI.worldTabPolitics;
