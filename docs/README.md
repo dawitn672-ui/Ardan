@@ -12,4 +12,4 @@
 | [art/](art/) | The illuminated-manuscript style guide |
 | [north-star/](north-star/) | What Ardan looks like with unlimited time and resources |
 
-Where the game stands now: the newest playtest report in [v2/](v2/), and the v2 PR on GitHub.
+Where the game stands now: [v2/STATUS.md](v2/STATUS.md), the newest playtest report in [v2/](v2/), and PR #2 on GitHub.
