@@ -95,6 +95,10 @@
     [/\bKhanate of the Nine Winds\b/g, 'Khanate of Ulun'],
     [/\bLeague of the Tusk Clans\b/g, 'Dominion of Ughrak'],
     [/\bHighland League\b/g, 'Kingdom of Brannoch'],
+    // Gorath the Great founded the Horde: there the realm keeps its full name ("Gorath founded the Horde of Gorath")
+    [/\b(found(?:ed|er of|ing of|s)|[Uu]nit(?:ed|er of|es|ing)|[Uu]nification of|made|into|joined|join) the Horde(?! of Gorath)(?![A-Za-z'’-])/g, '$1 the Horde of Gorath'],
+    // a coast is not a realm to land on
+    [/\bon the Spice Coast\b/g, 'on the coast of Kesh'],
     // the short names, said of the realm or its people
     coll('Amber Isles', 'Ambrel', { plural: true }),
     coll('Spice Coast', 'Kesh'),
@@ -188,11 +192,14 @@
   }
   if (typeof Node !== 'undefined') wrapSet(Node.prototype, 'textContent', code);
   if (typeof HTMLElement !== 'undefined') { wrapSet(HTMLElement.prototype, 'title'); wrapSet(HTMLElement.prototype, 'innerText', code); }
+  // the canvas's own methods are kept in NM.raw (a test listens there to what reaches the canvas)
+  NM.raw = NM.raw || {};
   if (typeof CanvasRenderingContext2D !== 'undefined') {
     const C2 = CanvasRenderingContext2D.prototype;
     for (const f of ['fillText', 'strokeText', 'measureText']) {
-      const o = C2[f];
-      if (typeof o === 'function') C2[f] = function (t) { if (typeof t === 'string' && PRE.test(t)) arguments[0] = NM.fix(t); return o.apply(this, arguments); };
+      if (typeof C2[f] !== 'function' || NM.raw[f]) continue;
+      NM.raw[f] = C2[f];
+      C2[f] = function (t) { if (typeof t === 'string' && PRE.test(t)) arguments[0] = NM.fix(t); return NM.raw[f].apply(this, arguments); };
     }
   }
 
@@ -208,6 +215,16 @@
       if (name !== r.name) { r.name = name; n++; }
       if (short !== r.short) { r.short = short; n++; }
     }
+    // the prose the life has kept: its log, the news, an event still waiting on the screen, people's titles
+    const fx = (o, k) => { if (o && typeof o[k] === 'string') { const w = NM.fix(o[k]); if (w !== o[k]) { o[k] = w; n++; } } };
+    for (const e of Array.isArray(S.log) ? S.log : []) for (const l of (e && Array.isArray(e.lines) ? e.lines : [])) fx(l, 0);
+    for (const k of ['news', 'newsFar']) for (const x of Array.isArray(S[k]) ? S[k] : []) fx(x, 't');
+    for (const q of Array.isArray(S.queue) ? S.queue : []) {
+      const v = q && q.view; if (!v || typeof v !== 'object') continue;
+      fx(v, 'title'); fx(v, 'text'); fx(v, 'more');
+      for (const c of Array.isArray(v.choices) ? v.choices : []) fx(c, 't');
+    }
+    for (const p of Object.values(S.people || {})) fx(p, 'title');
     return n;
   };
   const SV = A.V2SAVE;
