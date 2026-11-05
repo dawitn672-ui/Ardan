@@ -201,9 +201,13 @@ export default {
   // drawing the scene changes neither the state nor the random stream, and shows no percentage
   async v2wPure(pg) {
     await prep(pg);
+    // a frozen fight can end in a rout after two phases (v2's battlePhase: one side all broken; since the generated
+    // continent the first frozen fight is a beaten division at morale 35 against four), so the scene is drawn on the
+    // next frozen fights too until the bar of 10 draws is met. The bar is unchanged.
     const r = await pg.evaluate(() => {
-      const f = VWX.get(1)[0], out = { impure: 0, pct: 0, draws: 0 };
-      for (const rank of [0, 3, 6]) {
+      const out = { impure: 0, pct: 0, draws: 0 };
+      for (const f of VWX.get(3)) for (const rank of [0, 3, 6]) {
+        if (out.draws >= 15) break;
         const { arg } = VWX.load(f, rank);
         (rank >= 4 ? A.CHOICE_FN.wsPart : A.CHOICE_FN.wsLine)(arg);
         const q = A.S.queue[0]; if (!q || q.type !== 'v2battle') continue;
