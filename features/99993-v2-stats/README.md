@@ -215,14 +215,25 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
   empty treasury costs 6 stability", legitimacy's "(legitimacy − 50) ÷ 25 a year", the treasury's "Income at
   stability 50", a faction's "40%+ power and 60+ discontent", "(discontent 44)", a realm's "Opinion -4" in the treaty
   reasons and "(Relations +12.)", the gift's "Opinion +12" toast, and the Path's "Opinion 50+:".
-- **Titles.** A hover title with one of these numbers ("Stability since 1105: 46 to 61") gets the same words.
+- **The realm's other bars (round 4).** The Realm tab's Stability, Legitimacy and War weariness bars say the band
+  ("shaky", "doubted", "tiring"), by label and by tooltip key (`realmStab`, `realmLegit`, `realmWeary`). War weariness
+  has a band of its own on the release's words at the peace table (over 30 "tiring", over 60 "exhausted", over 85
+  "broken by war"), so its popover's "War weariness <b>53</b>" reads the word too, and the peace table's "is tiring (war
+  weariness 47)" drops the bracket. 97-life-fixes' golden age step, "Stability 29 of 85 and ...", reads "Stability shaky
+  (it must be rock steady) and ...".
+- **Titles.** A hover title or aria-label with one of these numbers ("Stability since 1105: 46 to 61", the Goals tab's
+  "Still needed: ...; Legitimacy 70.", the People tab's "Opinion 79") goes through the whole of `VS.deNum`, the
+  element itself included (round 4: the titles had taken only the NUMRULES2 rules, and an element added on its own was
+  skipped).
 - The game's rules are unchanged; drawing reads, never writes, and draws nothing.
 
 Test `v2sNumbers` draws each of these views on a played life and fails on a bare 0-100 number in any of them. As a
-ruler with infamy 47 it also scans every text node and title of the Life and Realm tabs (folded or open), every popover
-those pages offer, the infamy popover, a neighbour's card, the war declaration, World's Diplomacy and the Infamy map, and
-pl_coalition_letter as the page draws it, on any line naming infamy, stability, legitimacy, a faction, discontent,
-loyalty or opinion. A popover's breakdown keeps its sums ("Legitimacy +0.8" a year).
+ruler with infamy 47 it also scans every text node, title and aria-label of the Life, Realm, Goals, Path and People
+tabs (folded or open), every popover those pages offer, the infamy and war weariness popovers, a neighbour's card, the
+war declaration, World's Diplomacy and the Infamy map, and pl_coalition_letter as the page draws it, on any line naming
+infamy, stability, legitimacy, a faction, discontent, loyalty or opinion. Every bar is read as its label with its value,
+and every element whose tooltip key is a realm measure as its key with its text, so a number in an element of its own
+is caught. A popover's breakdown keeps its sums ("Legitimacy +0.8" a year).
 
 ## Playtest round 2: the 0-100 numbers left on the page (`i-numbers.core.js`)
 
