@@ -74,7 +74,7 @@
   W.unitWord = function (pc, d) {
     if (W.cmdsDiv(pc, d)) return 'your division';
     const r = pc && pc.mil ? pc.mil.rank || 0 : 0;
-    return r >= 5 ? 'your battalion' : r >= 4 ? 'your company' : 'your section';
+    return r >= 5 ? 'your battalion' : 'your company';
   };
   // the drill card says "you drill 3,200 of 7,530 men" for the same reason: the division's commander drills his division
   const share0 = A.drillShare;
@@ -88,8 +88,9 @@
     const top = list.slice(0, 6), rest = list.slice(6);
     for (const d of top) {
       if (d === mine) {
-        // your own men are your unit: a company, a battalion, or the whole division you command
-        const all = W.cmdsDiv(pc, d), coy = all ? Math.round(d.men) : Math.min(Math.round(d.men * 0.5), W.leads(pc, d));
+        // your own men are your unit: the company you stand in (about 200, for a soldier and a sergeant too), a Senior
+        // Captain's battalion, or the whole division you command
+        const all = W.cmdsDiv(pc, d), coy = all ? Math.round(d.men) : Math.min(Math.round(d.men * 0.5), Math.max(200, W.leads(pc, d)));
         const u = W.unitOf(d, 'coy', W.unitWord(pc, d), coy); u.div = d.id; units.push(u);
         if (d.men - coy > 0) units.push(W.unitOf(d, d.id, d.name, d.men - coy));
       } else units.push(W.unitOf(d));
@@ -209,10 +210,16 @@
     const o = VW.playerOdds(b.camp, b.rank, person, c);
     return Object.assign(OD.oddsWords(o.capability, o.difficulty), { foe: o.foe });
   };
+  // your grade for a phase, in what it did for the fight (CI run 88: the sergeant's "plug the gap" graded 0.33 against
+  // "keep the squad tight" 0.34, the choice not moving the fight). A choice that works earns what it is worth to the
+  // fight (its reward), so drifting to the rear or keeping the company back earns nothing even when it works (it earned
+  // 0.3, as much as half a charge). A failure costs the same whatever was tried: the risk of a bold choice is to you (the
+  // wound, v2's 15% x risk) and to the army (its army factor, in the engine's contribution, read in W.perfOf), so it is
+  // not counted a third time here
   W.grade = function (c, res) {
     if (!res) return 0;
-    if (res.success) return clamp((0.3 + 0.5 * c.reward) * (res.tier === 'triumph' ? 1.4 : 1), 0, 1);
-    return -0.6 * (0.5 + c.risk / 2) * (res.tier === 'disaster' ? 1.3 : 1);
+    if (res.success) return clamp(0.75 * c.reward * (res.tier === 'triumph' ? 1.4 : 1), 0, 1);
+    return -0.42 * (res.tier === 'disaster' ? 1.3 : 1);
   };
   W.setTac = function (k) {
     const q = A.S.queue[0];
@@ -279,10 +286,13 @@
       });
     }
   };
+  // the performance that reaches the fight's order (44's A.RANKFX): your grade, the scene's result, and your part in it.
+  // Your part (the engine's contribution: your choices' army factor and morale) now also reaches the fight as its dead
+  // (W.foldLosses), so half of it is read here
   W.perfOf = function (b) {
     const gs = b.phases.map(p => p.g), mean = gs.length ? gs.reduce((a, x) => a + x, 0) / gs.length : 0;
     const won = b.camp.battle.winner === 0;
-    return Math.round(clamp(0.55 * mean + (won ? 0.25 : -0.25) + clamp(b.camp.battle.contrib.player, -0.5, 0.5), -1, 1) * 100) / 100;
+    return Math.round(clamp(0.55 * mean + (won ? 0.25 : -0.25) + clamp(0.5 * b.camp.battle.contrib.player, -0.25, 0.25), -1, 1) * 100) / 100;
   };
   W.finish = function (b, pc) {
     b.done = 1;
