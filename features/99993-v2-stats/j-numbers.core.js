@@ -45,6 +45,9 @@
   const amount = a => (a < 3 ? 'a little' : a < 8 ? 'somewhat' : a < 20 ? 'a good deal' : 'a great deal');
   const gain = a => (a < 1 ? 'a little' : a < 3 ? 'some' : 'a good deal');
   const meritGain = n => (n < 8 ? 'a little merit' : n < 25 ? 'some merit' : n < 60 ? 'a good deal of merit' : 'a great deal of merit');
+  // two rolls on the same scale, yours first
+  const vsWords = (a, b) => { const d = a - b; return d >= 20 ? 'your tactics far outclass theirs' : d >= 8 ? 'your tactics beat theirs well' : d >= 0 ? 'your tactics beat theirs narrowly'
+    : d > -8 ? 'your tactics fall just short of theirs' : d > -20 ? 'your tactics fall short of theirs' : 'your tactics fall far short of theirs'; };
   const hurt = n => (n < 6 ? 'a graze' : n < 12 ? 'a cut' : n < 20 ? 'a hard blow' : n < 35 ? 'a deep wound' : 'a terrible wound');
   const cause = n => (n >= 40 ? 'above all' : n >= 20 ? 'a great deal' : n >= 8 ? 'a good deal' : 'a little');
   VS.hurtWord = hurt;
@@ -267,8 +270,12 @@
     // the person page's command line if another feature drew it: "Command: 48 — a steady officer"
     [/^(\s*)\d{1,3} — (a great commander|a capable commander|a steady officer|a raw officer|no commander)/, (m, sp, w) => `${sp}${w}`],
     [/\bCommand: \d{1,3} — /g, () => 'Command: '],
-    // a captain or a general by his skills: "(Cunning, command 56)", "command 45 · tactics 30", "(command 60)"
-    [/\b(command|tactics|logistics) (\d{1,3})\b(?!\s*(?:÷|\(÷|×|\/|%))/g, (m, k, v) => `${k} ${tier(+v)}`],
+    // the war games: "(your tactics 47 vs 52)" and, lost, "rule you "destroyed" (47 vs 52)"; both numbers or neither
+    [/\((your tactics )?(\d{1,3}) vs (\d{1,3})\)/g, (m, yt, a, b, off, str) => (yt || /destroyed["”]? $/.test(str.slice(0, off)) ? `(${vsWords(+a, +b)})` : m)],
+    // a captain or a general by his skills, where they are listed: "(Cunning, command 56)", "(command 60)",
+    // "Name · command 45 · tactics 30 · logistics 20". Only after "(", ", " or "· ", and never a count ("You command
+    // 4,500 men", "command 300 men") or a tooltip's sum ("command 45 ÷ 12").
+    [/(\(|, |· )(command|tactics|logistics) (\d{1,3})(?![\d,.]\d|\d)(?!\s*(?:÷|\(÷|×|\/|%|vs\b|men\b|spears\b|soldiers\b|horse\b|riders\b|levies\b|lances\b|bows\b|archers\b|knights\b|swords\b))/g, (m, pre, k, v) => `${pre}${k} ${tier(+v)}`],
     // 55-bonds: "holds his opinion of you up (+4)"
     [/(opinion of you (?:up|down)) \([+−-]\d{1,3}\)/g, '$1'],
     // the duel's blows: "You take a hit — 7 damage."
@@ -287,19 +294,48 @@
   VS.NUMRULES.unshift(...RULES);
 
   // ---- foreign sums are hearsay (old 22): "Solenne sends 881,788 suns to the Horde" ------------------------------------------
-  // A realm's books are exact only to the one who keeps them: a sum between two crowns, told to someone who rules neither,
-  // is what the road says ("some 900,000 suns").
+  // A realm's books are exact only to the one who keeps them: a sum that passes between crowns, told to someone who
+  // rules neither and is no party to it, is what the road says ("some 900,000 suns"). The rule reads only the sentence
+  // the sum is in, and only when that sentence names a realm (not the player's own), has a verb of payment, and does not
+  // speak of "you": the player's own purse, debts, ransoms and loans stay exact. A sum already hedged ("about 2,000
+  // suns") is left alone.
   VS.hearsaySum = n => {
     if (n < 1000) return `${n}`;
     const e = Math.pow(10, Math.floor(Math.log10(n))), r = Math.round(n / e) * e;
     return r >= 1e6 ? (r === 1e6 ? 'a million' : `${A.fmt ? A.fmt(r / 1e6) : r / 1e6} million`) : (A.fmt ? A.fmt(r) : String(r));
   };
-  const SUMVERB = /\b(sends|owes|pays|paid|lends|lent|borrowed|gives|gave|subsidy|tribute|ransom|loan)\b/;
+  const SUMVERB = /\b(sends|sent|owes|owed|pays|paid|lends|lent|borrowed|gives|gave|subsidy|subsidies|tribute|loan)\b/;
+  const HEDGED = /\b(about|some|nearly|roughly|around|almost|perhaps|over|under|close to|more than|less than|upwards of|at least)\s+$/i;
+  const YOU = /\b(you|your|yours|yourself)\b/i;
+  const reEsc = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const LETTER = 'A-Za-z\\u00C0-\\u024F';
+  // the realms' names and short names, longest first, as one pattern (built again when the realms change)
+  let realmKey = '', realmRx = null;
+  const realmNames = own => {
+    const rs = Object.values((A.S && A.S.realms) || {}).filter(r => r && r.id !== own);
+    const key = own + '|' + rs.map(r => r.id + ':' + r.short).join(',');
+    if (key !== realmKey) {
+      realmKey = key;
+      const ns = [...new Set(rs.flatMap(r => [r.name, r.short]).filter(x => typeof x === 'string' && x.length >= 3))].sort((a, b) => b.length - a.length);
+      realmRx = ns.length ? new RegExp(`(?:^|[^${LETTER}])(?:${ns.map(reEsc).join('|')})(?![${LETTER}])`) : null;
+    }
+    return realmRx;
+  };
+  // the sentence of str that holds offset off
+  const sentenceAt = (str, off) => {
+    const head = str.slice(0, off), a = Math.max(head.lastIndexOf('. '), head.lastIndexOf('! '), head.lastIndexOf('? '), head.lastIndexOf('\n'));
+    const z = str.slice(off).search(/[.!?](?:\s|$)|\n/);
+    return str.slice(a < 0 ? 0 : a + 1, z < 0 ? str.length : off + z + 1);
+  };
   VS.NUMRULES.push([/\b(\d{1,3}(?:,\d{3})+|\d{4,}) suns\b/g, (m, n, off, str) => {
-    const p = pc(); if (!p || !SUMVERB.test(str)) return m;
+    const p = pc(); if (!p) return m;
+    if (HEDGED.test(str.slice(Math.max(0, off - 24), off))) return m;
+    const sent = sentenceAt(str, off);
+    if (!SUMVERB.test(sent) || YOU.test(sent)) return m;
+    const rx = realmNames(p.ruler || ''); if (!rx || !rx.test(sent)) return m;
     // the player's own crown's books are their own
-    const mine = p.ruler && A.realm(p.ruler), names = mine ? [mine.short, mine.name].filter(Boolean) : [];
-    if (names.some(x => str.indexOf(x) >= 0)) return m;
+    const mine = p.ruler && A.realm(p.ruler);
+    if (mine && [mine.short, mine.name].filter(Boolean).some(x => new RegExp(`(?:^|[^${LETTER}])${reEsc(x)}(?![${LETTER}])`).test(sent))) return m;
     const v = num(n); return v >= 1000 ? `some ${VS.hearsaySum(v)} suns` : m;
   }]);
 

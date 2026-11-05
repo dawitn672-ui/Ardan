@@ -352,18 +352,34 @@ export default {
       await scan('duel'); pages++;
       // the playtest's own lines, through the same words
       const V = A.V2S, w = t => V.deNum(V.dePct(t));
+      const RS = Object.values(A.S.realms).filter(x => x && x.alive && x.short && x.id !== A.pc().ruler).map(x => x.short);
       const lines = ['This season you got better at Farming & herding +2.3. 100% of it from doing, the rest from practice.',
         'This season you got better at Riding & the lance +4.7, Command +2.6, Tactics & siegecraft +2.3 and 2 more. 80% of it from doing, the rest from practice.',
         'After the battle, the captains reckon it: your counterattack countered their frontal assault +20%, drill, kit and experience −12%.',
-        'Solenne sends 881,788 suns to the Horde for its war: the siege, in 1110.', 'Abara owes Zanara 402,000 suns from a loan of 1104, and has paid none of it back.',
+        // (the playtest's realms were Solenne, the Horde, Abara and Zanara; this world's own realms stand in for them)
+        `${RS[0]} sends 881,788 suns to ${RS[1]} for its war: the siege, in 1110.`, `${RS[2]} owes ${RS[1]} 402,000 suns from a loan of 1104, and has paid none of it back.`,
         'You take a hit — 7 damage.', 'Your superiors notice the extra hours. (Merit +15)', 'For Senior Captain: merit 379/600, command skill 28/35, months at your present rank 1/16.',
         'In a fight: Crushed knee that never bends right: worth 45 to 43 (speed -7, stamina -3).', 'Captain Godric of Highwold (Cunning, command 56)'].map(w);
       const traits = Object.keys(GD.ORDERS || {}).flatMap(k => A.orderTraits(k));
       for (const l of lines.concat(traits)) if (LINE.test(l) || MORE.some(x => x.test(l)) || /%|\+\d/.test(l)) found.push('line: ' + l.slice(0, 90));
-      return { pages, found: [...new Set(found)], lines, traits: traits.filter(t => /faster|Charge/.test(t)).slice(0, 2) };
+      // verifier: the captain rule ate the release's head count ("You command 4,500 men" -> "You command Untrained,500
+      // men") and the hearsay rule hedged the player's own sums and sums already hedged ("about some 2,000 suns").
+      // These lines must come through unchanged.
+      const keep = [`You command 4,500 men of ${RS[0]} at Highwold.`, 'You command 300 men on the left.', 'Under your command 40 spears hold the ford.',
+        "A knight's ransom runs about 2,000 suns.", `He asks a loan of you for ${RS[0]}'s war. All told, about 2,000 suns.`, 'You lent your cousin 1,250 suns.',
+        'Pay the ransom (2,400 suns)', `${RS[0]} pays you 3,500 suns for the horses.`, 'House Varre owes Brother Anselm 3,400 suns.',
+        "Its general's command 45 ÷ 12", 'The armies meet (300 vs 250).'];
+      const kept = keep.map(l => [l, w(l)]).filter(([a, b]) => a !== b).map(([a, b]) => `${a} -> ${b}`);
+      // the release's war games give both rolls, or neither: "(your tactics 47 vs 52)", lost "(47 vs 52)"
+      const games = ['The war games go your way: your men outmaneuver the "enemy" (your tactics 61 vs 52). The high command takes note.',
+        'The war games go badly: the umpires rule you "destroyed" (47 vs 52). Still, you learn.', 'Sir Hal · command 45 · tactics 30 · logistics 20'].map(w);
+      for (const l of games) if (/\d/.test(l)) found.push('line: ' + l.slice(0, 90));
+      return { pages, found: [...new Set(found)], lines, kept, games, traits: traits.filter(t => /faster|Charge/.test(t)).slice(0, 2) };
     });
-    const ok = r.pages > 60 && r.found.length === 0 && /\(some\)\. All of it came from doing\.$/.test(r.lines[0]) && /some 900,000 suns/.test(r.lines[3]) && /some 400,000 suns/.test(r.lines[4]) && /— a cut\.$/.test(r.lines[5]);
-    return { ok, detail: `${r.pages} pages: ${r.found.length ? r.found.length + ' bare numbers, e.g. ' + r.found.slice(0, 30).join(' | ') : 'no bare 0-100 number by a stat word'}; ${r.lines.slice(0, 4).join(' | ')} | ${r.traits.join(' | ')}` };
+    // (the season's practice line is worded by i-numbers.core.js, wf-numbers' training log, which runs first since the
+    // merge: "(a good deal). All of it from doing." The bar is the same: the amount in words, the share in words.)
+    const ok = r.pages > 60 && r.found.length === 0 && r.kept.length === 0 && /\((?:a little|some|a good deal|a great deal)\)\. All of it (?:came )?from doing\.$/.test(r.lines[0]) && /some 900,000 suns/.test(r.lines[3]) && /some 400,000 suns/.test(r.lines[4]) && /— a cut\.$/.test(r.lines[5]) && /your tactics beat theirs/.test(r.games[0]);
+    return { ok, detail: `${r.pages} pages: ${r.found.length ? r.found.length + ' bare numbers, e.g. ' + r.found.slice(0, 30).join(' | ') : 'no bare 0-100 number by a stat word'}; ${r.kept.length ? 'changed what it must not: ' + r.kept.join(' | ') + '; ' : ''}${r.lines.slice(0, 5).join(' | ')} | ${r.games.join(' | ')} | ${r.traits.join(' | ')}` };
   },
 
   // the odds badge on a check choice is words and a tipped balance
