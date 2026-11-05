@@ -124,6 +124,78 @@ export default {
     return { ok, detail: `a 13-year-old apprentice draws ${JSON.stringify(r.apprenticeSees)}; the apprentice scene fits him ${r.shopFit}; a master may have them ${r.masterOk}; study scenes for a child of 8 ${JSON.stringify(r.at8)}; a round offered at 14 with 0 suns ${r.roundOffered} (on the card ${r.roundShown}); Latin in ${JSON.stringify(r.latin)}` };
   },
 
+  // CI run 88: the shop class hid scenes from the lives they were written for. A clerk is not a shop (a general's,
+  // a ruler's, a reeve's); words shown only under the scene's own test are the writer's gate; "open your own shop" is
+  // a shop to come; a scene that follows a flag follows a scene that put the life there (the dwarf partner's
+  // workshop, the smith's apprentice, the royal bowyer's workshop). A plain "your customers" still needs a shop.
+  async v2cShopGateReadsRight(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9311, race: 'dwarf', realm: 'POL-05', status: 'peasant', sex: 'M', startAge: 40 });
+      const pc = A.pc(); pc.job = null;
+      const mk = (id, text, cond) => { if (!A.EV[id]) A.defEvents([{ id, title: 'A test', cond: cond || (() => false), w: 0, text, choices: [{ t: 'One', r: 'One.' }, { t: 'Two', r: 'Two.' }] }]); return A.EV[id]; };
+      const fake = {
+        clerk: mk('v2ct_shop_clerk', 'Your clerk waits with the pen.'),
+        cond: mk('v2ct_shop_if', p => `Smoke pours from the eaves${A.age(p) > 200 ? ' of your own workshop' : ''}.`),
+        open: mk('v2ct_shop_open', 'Pay the fee, and you may open your own shop.'),
+        flag: mk('v2ct_shop_flag', 'Your apprentice asks to learn the fold.', (p, C) => C.flag(p, 'v2ct_fold')),
+        plain: mk('v2ct_shop', 'Your customers have gone to the fair, and your apprentice sleeps on the bench.'),
+      };
+      const real = ['mpe_dw_partner_clause', 'mpf_dwarf_apprentice', 'mat_royal_bow_order', 'mat_altar_donor', 'rk_gen_successors', 'pl_authority_push', 'po_graft', 'la_heirhouse_2', 'wk_craft_fire', 'pf_craft_masterpiece'].filter(id => A.EV[id]);
+      const read = e => ({ gate: A.V2C.shopScene(e), txt: !!A.evAudience(e).txt.shop, fit: A.evFit(e, pc) });
+      const out = { fake: {}, real: {} };
+      for (const k in fake) out.fake[k] = read(fake[k]);
+      for (const id of real) out.real[id] = read(A.EV[id]);
+      return out;
+    });
+    const wrong = [];
+    for (const k of ['clerk', 'cond', 'open', 'flag']) if (r.fake[k].gate || r.fake[k].txt || !(r.fake[k].fit > 0)) wrong.push(k);
+    for (const id in r.real) if (r.real[id].gate || r.real[id].txt) wrong.push(id);
+    const plain = r.fake.plain.gate && r.fake.plain.txt && r.fake.plain.fit === 0;
+    const ok = !wrong.length && plain;
+    return { ok, detail: `read as needing a shop, wrongly: ${JSON.stringify(wrong)} (of 4 made scenes and ${Object.keys(r.real).length} real ones); "your customers" still needs one: ${plain}` };
+  },
+
+  // playtest 2, old #11 and #15: a boy ran from "a betrothal to a man twice your age"; an orc crossbowman of rank 2 was
+  // told at a tournament "Your horse is groomed and your lance is new"; a soldier's captain sat in the ring as "your
+  // master" and said "Your name in the trade is your fortune."
+  async v2cPlaytest2Class(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      const out = {};
+      // the runaway's reason, for a boy and for a girl
+      const why = sex => {
+        T.enter({ seed: sex === 'M' ? 9321 : 9322, race: 'human', realm: 'POL-01', status: 'peasant', sex, startAge: 14 });
+        const pc = A.pc(), seen = new Set();
+        for (let i = 0; i < 60; i++) { const ctx = {}; A.EV.lf_teen_runaway.setup(pc, ctx); seen.add(ctx.why); }
+        return [...seen];
+      };
+      out.boy = why('M'); out.girl = why('F');
+      // the tournament's opening line, for a soldier of rank 3 with no lance, and for a knight
+      T.enter({ seed: 9323, race: 'orc', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 25 });
+      const pc = A.pc();
+      pc.mil = { rank: 3, realm: pc.realm };
+      A.S.gath = (A.S.gath || []).concat([{ id: 'v2ct_g', kind: 'tournament', host: pc.realm, pc: { role: 'knight' } }]);
+      const open = () => String(A.EV.ga_open.text(pc, { gid: 'v2ct_g', who: 'x' }));
+      if (pc.skills) { pc.skills.lance = 0; }
+      out.soldier = open();
+      pc.job = { c: 'knight', r: 1, y: A.S.year, perf: 50 };
+      out.knight = open();
+      pc.job = null;
+      // a soldier's officer in the ring: a captain, not a master; a craftsman's master stays a master
+      const off = A.makeAcquaintance(pc, 'acquaint'); off.mil = { rank: 5, realm: pc.realm };
+      A.link(pc, off, 'superior', 40, 'superior');
+      out.officerRole = (A.ADV.candidates(pc).find(c => c.id === off.id) || {}).role || null;
+      pc.mil = null; pc.job = { c: 'smith', r: 1, y: A.S.year, perf: 50 };
+      const m = A.makeAcquaintance(pc, 'acquaint'); A.link(pc, m, 'master', 40, 'master');
+      out.masterRole = (A.ADV.candidates(pc).find(c => c.id === m.id) || {}).role || null;
+      return out;
+    });
+    const boyOk = r.boy.length > 1 && !r.boy.some(x => /a man twice/.test(x)), girlOk = r.girl.some(x => /a man twice/.test(x));
+    const ok = boyOk && girlOk && !/lance|horse/.test(r.soldier) && /lance/.test(r.knight) && r.officerRole === 'captain' && r.masterRole === 'master';
+    return { ok, detail: `a boy runs from ${JSON.stringify(r.boy.filter(x => /betrothal/.test(x)))}, a girl from a man twice her age ${girlOk}; a soldier at the tournament: "${r.soldier.slice(-110)}"; a knight hears of his lance ${/lance/.test(r.knight)}; a soldier's officer sits as ${r.officerRole}, a smith's master as ${r.masterRole}` };
+  },
+
   // #18: who the person is stands on the card, not behind "Read more"; the creation screen's story blurbs are whole
   async v2cWhoOnCard(pg) {
     await prep(pg);
