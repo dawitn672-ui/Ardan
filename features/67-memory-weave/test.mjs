@@ -78,7 +78,14 @@ export default {
       A.S.year++;
       const person = MWT.peek('mwt_ask', { pid: t.id });  // person rule: +6 on the check
       const again = MWT.peek('mwt_toll', {});              // again rule: label (as in y0), +6 on the won check
-      const s2 = MWT.peek('mwt_mark', {});                 // again rule as well (the same scene), +3 on a lost check
+      // again rule as well (the same scene), +3 on a lost check.
+      // (9998-stakes holds a lost white check back in its scene until the player is 5 better at it, so a year on, the
+      // lost haggle is not on the card at all; 9998's stWhiteRetry tests that lock, and once it lifts, this rule is what
+      // the scene shows. This stage tests 67's own rule, so the lock is lifted for this one look; the bar is unchanged.)
+      const st = A.STAKES, stOff = st ? st.OFF : null;
+      if (st) st.OFF = true;
+      let s2;
+      try { s2 = MWT.peek('mwt_mark', {}); } finally { if (st) st.OFF = stOff; }
       const t2 = MWT.stranger(pc);
       const skill = MWT.peek('mwt_ford', { pid: t2.id }); // a stranger on the road: the skill rule, from the toll
       return { y0, bare, bareMw, person: person.v, pr: person.q.ctx.mw.r, again: again.v, ar: again.q.ctx.mw.r, s2: s2.v, skill: skill.v, sr: skill.q.ctx.mw && skill.q.ctx.mw.r, name: t.given };

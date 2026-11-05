@@ -123,6 +123,10 @@ Test `wcRecallLinesRead` draws every template in every branch and requires a who
 
 **Test.** `warNamesUnique`.
 
+## v2: what you know of a war (99997-v2-war)
+
+The Annals and The Book's "The world in your time" read each entry through `WC.tellOf(e, pc)`: null while it has not reached the player, else `{ t, mine }`. Here it is every entry as it happened; 99997-v2-war sets it so that a war you were not in reaches you late, as hearsay, and your own at your rank's precision (V2_SPEC complaint 10, playtest 2 findings 3 and 4). `WC.line` itself is unchanged.
+
 ## v2: the recalled line only where it bears on the scene (complaint 1, playtest 1 #10, playtest 2 #9)
 
 **Why.** Playtest 2 counted 12% of cards with this feature's recalled line on top of 18% with a personal memory; a bot

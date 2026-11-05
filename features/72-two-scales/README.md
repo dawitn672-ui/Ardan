@@ -191,3 +191,7 @@ On `--only=two-scales` the scene runs, draws, saves and replays (`twoScalesView`
 - **The print's own words are small on a phone.** At 375 px they are about 7 px. Everything they say is also in the text under the print.
 - **The balance bench was not run here** (the coordinator runs it). Soldier lives may lose a little more of their squad than with the release's line battle (best play about 0.28 of the three men beside you a fight), and no longer get the made-up second battle's war score. I expect the soldier lives inside the peasant path to move a little in fame and happiness. Death bands should hold: no player died in 2,550 played fights.
 - **Not playtested.** Whether the book reads as one moment, the trailer moment, needs a human eye.
+
+## v2: a levy is told estimates (99997-v2-war)
+
+The call to the levy, the front's words, the standards' slips and titles, and the day's tally give counts through `TS.told(n, mine)`: 99997-v2-war's `W.levyCount` when it is in the build ("about 6,500"), else the count itself (playtest 2 finding 5).
