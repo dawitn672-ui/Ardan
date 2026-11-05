@@ -182,3 +182,124 @@ death after a lost fight: the 12 health it took left him nothing, and `A.mortalC
 - It is pure: it reads the choice as written, the person and the law, and draws nothing.
 
 Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, `v2cRiskLethal`).
+
+## The 0-100 numbers g-bands did not reach (`i-numbers.core.js`, part 8, loads before `j-numbers.core.js`, complaint 11, playtest 1 #7, playtest 2 old 7)
+
+- **Needs.** 35-moods' four needs are words (`A.MOODS.word(k, v)`: "rested", "alone too often", "adrift", "in want"),
+  banded on the rules: under 30 a need sets a mood, 65 or more on all four is content. The words are in 35's card,
+  91-look's box (rail and phone You page) and the need, needs and mood popovers. A need's popover says where it settles
+  and what pulls it ("A hard plan: lowers it a great deal"). 91-look's activity popover says "company up a great deal".
+- **Training.** The mentor picker's "Melee (14)" and the council's appoint picker say the tier. The season's log says
+  how much each skill grew: "Survival & hunting (a good deal)", not "+2.4". The training picker was already in words.
+- **The profile and the decisions.** The profile's age line drops the stat ("Strength: at its best at 19 · holds until
+  about 42"). A wound's cost reads "worth a little less (slower)" and "Athletics & climbing down a good deal" (j-numbers' rule). The perks
+  unlock "at Journeyman, Expert and Master". A decision needs "A proficiency at Adept" or "Letters & learning at Adept",
+  and a door "Crossbow at Apprentice (you are Untrained)". An ambition's step says "Fighting worth: Trained". The yard
+  sends you home "come back when you are worn or better". A staff candidate's fit is a tier.
+- **The War Room.** The division grid compares the division with yours ("far above yours", "like your others"); armour
+  and piercing say what they do to your men ("your blows bite", "glances off your armour"); speed stays in km.
+  Organization is "in full order" to "broken". The order of battle's "mo 64" and "xp 18" are "steady" and "trained".
+  59-tooltips' popover on an enemy's cell gives the same word, not the exact figure.
+- **Infamy.** Coalitions read "Against Aldmark (feared: its neighbours band together)"; the Most feared bars say
+  "feared", "distrusted", "watched". The bands follow the rules: 40 starts a coalition, over 58 one may march, over 20
+  small realms bow. The Infamy map mode's legend reads "Coalition bait (so feared a coalition may march)", and the
+  ruler's coalition letter "Aldmark has swallowed too much land (feared: its neighbours band together)".
+- **Infamy, every spelling (round 3).** g-bands has an infamy band ("unremarkable", "watched", "distrusted", "feared",
+  "hated", "dreaded"; feared from 40, where a coalition forms, hated over 58, where it may march), so "Infamy <b>47</b>"
+  in its own element, the Realm tab's bar and any `data-tt="infamy"` number read the word. The rule lines ("At 40
+  neighbors start a coalition; above 60 it may march", "at 40 coalitions form; above 60 they march", "Keep infamy below
+  60") say it in those words; "Your infamy is 47" reads "Your realm is feared abroad"; the advisor's "Infamy 47: ..."
+  (and its title) "Infamy: feared; ..."; a realm's card "· infamy: hated"; "Their infamy (47)" the short word; a war's
+  price "infamy up somewhat · stability up a little" (g-bands had read the release's unsigned "stability 2" as the band
+  of 2). Beside it, the realm's own thresholds and costs: stability's "below 18" ("once it is near collapse"), "An
+  empty treasury costs 6 stability", legitimacy's "(legitimacy − 50) ÷ 25 a year", the treasury's "Income at
+  stability 50", a faction's "40%+ power and 60+ discontent", "(discontent 44)", a realm's "Opinion -4" in the treaty
+  reasons and "(Relations +12.)", the gift's "Opinion +12" toast, and the Path's "Opinion 50+:".
+- **The realm's other bars (round 4).** The Realm tab's Stability, Legitimacy and War weariness bars say the band
+  ("shaky", "doubted", "tiring"), by label and by tooltip key (`realmStab`, `realmLegit`, `realmWeary`). War weariness
+  has a band of its own on the release's words at the peace table (over 30 "tiring", over 60 "exhausted", over 85
+  "broken by war"), so its popover's "War weariness <b>53</b>" reads the word too, and the peace table's "is tiring (war
+  weariness 47)" drops the bracket. 97-life-fixes' golden age step, "Stability 29 of 85 and ...", reads "Stability shaky
+  (it must be rock steady) and ...".
+- **Titles.** A hover title or aria-label with one of these numbers ("Stability since 1105: 46 to 61", the Goals tab's
+  "Still needed: ...; Legitimacy 70.", the People tab's "Opinion 79") goes through the whole of `VS.deNum`, the
+  element itself included (round 4: the titles had taken only the NUMRULES2 rules, and an element added on its own was
+  skipped).
+  The profile's skill rows (59-tooltips' hook writes `aria-label="Melee: 24"`) say the tier to a screen reader,
+  "Stewardship & supply: Apprentice", with the name's "&" plain (the hook escaped it twice). The Realm tab's crown
+  authority buttons say "Income ×0.88; the lords warm to the crown each year", not "vassal mood +8/yr" (round 5).
+  999-confidants' pips (the People tab, the person view) say the next rank in words: "Next rank: more shared history
+  (you have about three quarters of what it asks), and for them to think you warm or better.", not "shared history 38
+  (now 27), their opinion 50." (round 6).
+- The game's rules are unchanged; drawing reads, never writes, and draws nothing.
+
+Test `v2sNumbers` draws each of these views on a played life and fails on a bare 0-100 number in any of them. As a
+ruler with infamy 47 it also scans every text node, title and aria-label of the Life, Realm, Goals, Path and People
+tabs (folded or open), every popover those pages offer, the infamy and war weariness popovers, a neighbour's card, the
+war declaration, World's Diplomacy and the Infamy map, and pl_coalition_letter as the page draws it, on any line naming
+infamy, stability, legitimacy, a faction, discontent, loyalty or opinion. Every bar is read as its label with its value,
+and every element whose tooltip key is a realm measure as its key with its text, so a number in an element of its own
+is caught. A popover's breakdown keeps its sums ("Legitimacy +0.8" a year). Since round 5, every title and aria-label of every tab, for
+the commoner and for the ruler, goes through the same check, not only those that name a realm measure (a skill row's
+"Melee: 24" was never read). Not scales there: dates, ages ("Portrait of X, 28", the clock's "age 19"), "Initiative
+3.0 of 5", a fold's count of entries ("Activities, 32"), a chapter's number, counts with their unit (loads, times,
+galleys, goods carted), and the provinces' sparkline. It also needs one skill row whose aria-label is a tier, and
+(round 6) gives the commoner a confidant at rank 1 before the tabs are drawn: the pips' title must be read and carry
+no number but the rank.
+
+**One layout for both numbers groups.** `i-numbers.core.js` is part 8 (v2-wf-numbers: needs, training, War Room,
+infamy and the realm's bars), `j-numbers.core.js` is part 10 (v2-wf-numbers2: the playtest 2 remainder), and part 8
+loads first. Both add to `VS.keyWords` (whichever runs first makes it). Part 8's training-log rule leaves the season's
+"... of it from doing" line to part 10's whole-sentence rule, and part 8 leaves a skill's cost ("Athletics & climbing
+−10") to part 10's rule, so each line has one owner whatever the order.
+
+## Playtest round 2: the 0-100 numbers left on the page (`j-numbers.core.js`, part 10)
+
+Playtest 2 (old 7's remainder, new 11, old 20 and old 22) still read 0-100 numbers in views g-bands never reached. Most
+survived because 59-tooltips puts the number in an element of its own (`Master fighter (<span data-tt="worth">101</span>)`),
+so a rule on one text node never saw its label. Now:
+
+- **By tooltip key.** An element whose `data-tt` names a 0-100 measure says it in words (`VS.keyWords`, run after every
+  sweep): `perf` (excellent … failing), `rep` (famed in the trade … unknown), `merit` and the board's merit row (against
+  what the board asks: "about two thirds of what the board asks", "enough for the board"), the board's skill and
+  command rows ("Apprentice; the board asks Journeyman"), `coMo` ("Morale: steady"), `worth` (in levies, as the sheet
+  says it: "Master fighter (about 25 levies)"), `fame`, `opinion` and `rulerOp` (devoted … hateful, 59-tooltips' own
+  words), `loyalty`, `facDisc`, `feud`. Months and battles on a board stay counts.
+- **Another person's page** (`UI.personModal`): renown as its band, "Command: a steady officer", skill rows as tiers,
+  "Body: strength fair · speed poor …" (each stat against the person's own race and age), opinion as a word, 55-bonds'
+  history as "somewhat warmer, fading". A grown person with no skill over the release's bar reads "No skill above the
+  common run", not "No real skills yet".
+- **Bars:** a duel's Blood (against the fighter's whole) and Wind as bands; World › Diplomacy's "Most feared" as
+  infamy words (i-numbers' `VS.infamyShort`, which wf-numbers owns). A bar with a word gets a value column as wide
+  as the word (`.v2-wb`, `.v2-skw`), so nothing is cut at 420 px.
+- **Lines in the story and the reports** (ahead of the general rules): a season's practice ("Farming & herding (a good
+  deal) and Persuasion (some). About half of it came from doing, the rest from practice."), merit ("(some merit)",
+  "A good deal of merit."), the board in a sentence, a vital or a stat as a wound moves it ("speed down somewhat"), the
+  worth a wound costs, 49's "best 35 at 19", the duel's blows ("— a cut."), decisions' "A proficiency at 50", "Learning
+  55", "Intrigue 30+" as tiers, a companion's "fit 42". A captain's or a general's skills are tiers where they are listed
+  ("(Cunning, command Adept)", "· command Journeyman · tactics Apprentice"): only after "(", ", " or "· ", never a head
+  count ("You command 4,500 men" stays) or a tooltip's sum ("command 45 ÷ 12" stays). The war games' "(your tactics 47 vs
+  52)" and "(47 vs 52)" are said as a pair ("your tactics fall just short of theirs").
+- **Old 20's garbled lines:** 23-after-action's "the captains reckon it: X +20%" reads "X (for you, a great deal)"; its
+  report's "(+18%)" reads "(a good deal)" and its card's rows "▲ a great deal"; the orders' "Moves +25% faster" reads
+  "Moves about a quarter faster".
+- **Old 22: foreign sums are hearsay.** A sum that changes hands between crowns is rounded to what the road says
+  ("Solenne sends some 900,000 suns"). The rule reads only the sentence the sum is in, and needs a verb of payment
+  (sends, owes, pays, lends, tribute, a loan) and the name of a realm the player does not rule. A sentence that speaks of
+  "you" (the player's own purse, loans and ransoms), one that names the player's own crown, and a sum already hedged
+  ("about 2,000 suns") keep their words.
+
+Rendering only: the engine, the state, the logs as stored and the tooltips' sums keep their numbers.
+
+Test `v2sNoBareNumbers`: two bot lives over 9 years (a commoner in a post, a noble captain), every tab, World's five
+views, the profile, the proficiencies, the pages of family, the ruler and office holders, the War Room and a duel (157
+pages). It fails on a line with a stat word and a bare number, an element whose tooltip key names a 0-100 measure that
+still holds digits, or a bar whose value is a bare number, and it reads the playtest's own lines through the same words.
+On the build without this file it finds 523; with it, none. 35-moods' needs and the drill bars are left to the groups
+that own them.
+
+Not changed here: gear's "damage 6, pierce 2" (an item's own figures), the drill bars ("Charge 45 drilled"), the
+needs card, infamy's number in the Coalitions header, and the tooltips' breakdowns, which still show their sums.
+
+Other features' tests changed: `49-body-mind` `bodyMindRenderPure` looked for the lost eye's "Bows & throwing −15" in the
+full profile; with v2 it also accepts "Bows & throwing down a good deal" (the cost is still named and sized).
