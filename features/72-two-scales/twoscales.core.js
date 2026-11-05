@@ -39,6 +39,9 @@
     LEVY_GAP: 300,    // days between calls to the levy at least
     MAXRUN: 14,       // days the scene's "go on" runs the clock, at most, before it hands back
   };
+  // a count as the levy (a soldier) knows it: an estimate, never to the man (V2_SPEC complaint 10; 99997-v2-war's
+  // W.levyCount). Without 99997 in the build, the count itself.
+  TS.told = (n, mine) => (A.V2W && typeof A.V2W.levyCount === 'function' ? A.V2W.levyCount(n, mine) : A.fmt(Math.round(n || 0)));
   TS.ORD = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth'];
   TS.dayWord = n => TS.ORD[n - 1] || A.ordinal(n);
   TS.NUM = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
@@ -434,7 +437,7 @@
         A.S.tsLevy = A.absDay();
         const P = A.S.prov[F.loc], d = def.filter(x => A.friendly(x.r, pc.realm) || x.r === pc.realm).sort((a, b) => b.men - a.men)[0];
         A.queue({ type: 'choice', now: true, title: `The levy at ${P.name}`,
-          text: `${A.realmShort(F.a)} come over the fields at ${P.name}. The bell rings and keeps ringing: every grown soul who can hold a spear is called to stand with the ${d.name}, ${A.fmt(F.menD)} against ${A.fmt(F.menA)}.`,
+          text: `${A.realmShort(F.a)} come over the fields at ${P.name}. The bell rings and keeps ringing: every grown soul who can hold a spear is called to stand with the ${d.name}, ${TS.told(F.menD, true)} against ${TS.told(F.menA, false)}.`,
           options: [{ t: 'Take a spear and stand with the levy', fn: 'tsLevy', arg: { key: F.key, pid: F.loc } }, { t: 'Bar the door and keep your people close', fn: 'noop' }] });
       }
     } catch (e) { console.error('two scales levy ask', e); }
@@ -575,7 +578,7 @@
     A.willGrow(pc, won ? 0.6 : 1.5, 'battle');
     A.fame(pc, won ? 2 : 0);
     const said = m.ts.end == null ? 'you are carried from the field while it goes on' : e.out ? `on the ${TS.dayWord(e.day || 1)} day your division is pulled out of the line, and the fight goes on without it` : e.won === 1 ? (m.ts.weAtt ? 'your side breaks through' : 'your side holds') : e.won === 0 ? (m.ts.weAtt ? 'your side is thrown back' : 'your side gives way') : 'the fighting is broken off';
-    m.log.push(`— ${m.title}: ${said}${e.out ? '' : ` after ${e.day || fr.day || 1} day${(e.day || fr.day || 1) > 1 ? 's' : ''}`}. ${A.fmt(fr.dead[0])} of yours dead${e.out ? ' so far' : ''}, ${A.fmt(fr.dead[1])} of theirs.`);
+    m.log.push(`— ${m.title}: ${said}${e.out ? '' : ` after ${e.day || fr.day || 1} day${(e.day || fr.day || 1) > 1 ? 's' : ''}`}. ${A.cap(String(TS.told(fr.dead[0], true)))} of yours dead${e.out ? ' so far' : ''}, ${TS.told(fr.dead[1], false)} of theirs.`);
     if (e.out && TS.liveFight(m)) A.S.tsOut = { key: m.ts.key, start: m.ts.start, men: (m.ts.men || []).slice(), realm: m.ts.realm, div: m.ts.div };
     if (pc.health <= 0) m.log.push('You do not walk away from this field.');
     else A.log(TS.chronicle(m, pc), 'big');

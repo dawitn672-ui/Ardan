@@ -56,4 +56,22 @@ export default [
         'rel=d=>(A.V2C&&A.V2C.parts||(f=>f))((p,ctx)=>(ctx&&ctx.destId&&A.realm(ctx.destId)&&ctx.destId!==p.realm&&A.addRel(p.realm,ctx.destId,d),""),null,{rel:d})'],
     ],
   },
+  {
+    id: 'V2C-RUNAWAY-BETROTHAL',
+    blob: 'ardan-content',
+    why: 'lf_teen_runaway picks a reason to run from a list that includes "a betrothal to a man twice your age", so a boy ' +
+      'of 14 ran from a betrothal to a man (playtest 2, old #11). A boy is betrothed to a widow. The list keeps its ' +
+      'length, so the pick draws the same.',
+    edits: [['"a betrothal to a man twice your age"', '(p.sex==="F"?"a betrothal to a man twice your age":"a betrothal to a widow twice your age")']],
+  },
+  {
+    id: 'V2C-TOURNEY-LANCE',
+    blob: 'ardan-content',
+    why: 'ga_open gives every tournament entrant of the "knight" role "Your horse is groomed and your lance is new", and ' +
+      'the role also goes to any soldier of rank 2 or more: an orc crossbowman with no lance to speak of was told of ' +
+      'his lance and groomed horse (playtest 2, old #11). The line is for one who rides with a lance (the role\'s own ' +
+      'tests: a knight\'s post, lance and riding 30, a lord\'s rung); a soldier comes in his company\'s colours.',
+    edits: [['knight:"Your horse is groomed and your lance is new. The heralds are calling the order of the lists."',
+      'knight:p.job&&p.job.c==="knight"||A.skill(p,"lance")>=30&&A.skill(p,"riding")>=30||p.noble&&p.noble.rung>=2?"Your horse is groomed and your lance is new. The heralds are calling the order of the lists.":"You have come in your company\'s colours, with the weapons you know. The heralds are calling the order of the lists."']],
+  },
 ];

@@ -1,6 +1,6 @@
 # 99999-v2-content: text that fits the scene and the character
 
-**Aspect:** v2 playtest 1 (`docs/v2/playtest-1.md`), findings 9, 10, 11, 18 and 19, plus the War Room's numbers and two percentages left in World › Diplomacy and the realm tab · **Kind:** system (5 core files), 5 patches, small edits to `97-life-fixes`, `50-arcs-kin` and `87-echoes`, tests. No new events.
+**Aspect:** v2 playtest 1 (`docs/v2/playtest-1.md`), findings 9, 10, 11, 18 and 19, plus the War Room's numbers and two percentages left in World › Diplomacy and the realm tab · **Kind:** system (6 core files), 7 patches, small edits to `97-life-fixes`, `50-arcs-kin` and `87-echoes`, tests. No new events.
 
 ## What it does
 
@@ -54,9 +54,18 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 
 - `lfx_du_gd_apprentice` ("Your apprentice has ruined a week's work") needs a master (`minR: 2`), and so do `du_gd_undercut` ("Someone is undercutting you") and `du_gd_caravan` (your own caravan). The first is an edit in 97; the other two are patches `V2C-UNDERCUT-MASTER` and `V2C-CARAVAN-MASTER`.
 - **A new audience class, `shop`** (`A.EV_RX.shop`, `A.CX_RX.shop`): a scene whose words say "your shop", "your apprentice", "your customers" or "your caravan" reaches only a life with a shop or a master's rank, unless its condition already asks for one.
+  - It does not read a clerk (a general's, a ruler's and a reeve's clerks hid their scenes), words the scene shows only under its own test (`${hasAsset(p,"workshop")?" of your own workshop":""}`), a shop still to come ("you may open your own shop"), or a scene whose condition reads a flag: that scene follows one that put the life there (the dwarf partner's workshop, the smith's apprentice, the royal bowyer). CI run 88 found these hidden from the lives they were written for (`mpeMemory`, `mpfMemory`).
+  - `A.evAudience(e).txt.shop` reports the gate's reading, so a lint of the classes an event's text trips sees what the gate does.
 - **97's five study scenes have an age, and letters where they read:** the disputation needs 15 and letters (it came at 8, "at the cathedral school"), the chained library 13, the sum in beer at the inn 14, and the map and the window 12.
 - **No Latin in Ardan.** The examination (`V2C-NO-LATIN`), 50-arcs-kin's contract and 87-echoes' two scholars say Old Solen, Ardan's learned tongue (`GD.LANG_LIST`).
 - **"Laugh, and buy the whole tavern a drink (5 suns)"** needs 16 years as well as the coin (`V2C-TAVERN-ROUND-ADULT`). 9998-stakes draws a locked row only for a requirement it can read, so a penniless 14-year-old no longer sees it.
+
+### Playtest 2, old #11 (patches, `f-roles.core.js`)
+
+- **The runaway** (`lf_teen_runaway`, patch `V2C-RUNAWAY-BETROTHAL`): a boy of 14 ran from "a betrothal to a man twice your age". A boy runs from a betrothal to a widow; the list keeps its length, so the pick draws the same.
+- **The tournament's opening line** (`ga_open`, patch `V2C-TOURNEY-LANCE`): the "knight" role goes to any soldier of rank 2 or more, so an orc crossbowman heard "Your horse is groomed and your lance is new". The line is for one who rides with a lance (a knight's post, lance and riding 30, a lord's rung); a soldier comes "in your company's colours, with the weapons you know".
+- **A soldier's officer is his captain** (`f-roles.core.js`): 9999-advisors seated a 'superior' as "your master", so a commander's captain said "Your name in the trade is your fortune" on a siege, and one captain read both "YOUR CAPTAIN" and "YOUR MASTER". For a life under arms, a 'master' candidate who is a soldier or a superior becomes the captain (or is not seated twice). The master at work stays a master.
+- **Left for the owner:** "Plot for the throne" stays on the court tab for a grown commoner. 49-body-mind keeps it there on purpose (it removes only the court's noble acts), and the release has a commoner's ending, "From the Dust to the Throne", that goes through it.
 
 ### What a card says (`c-cards.core.js`, #18 and #19)
 
@@ -122,6 +131,8 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 | `v2cMemoryRare` | Two played lives: memories on under 1 card in 8, none from before 7, none citing a deed that is not in the past tense. The complaint's lines are rejected. |
 | `v2cExtraLinesFit` | Two played lives: never two extra lines on a card; a voice only on a check scene at 14 or older; counsel only on a big scene at 15 or older. The playtest's lines don't fit their scenes ("Mend the roof" on First arrows, "quotes the law" on the bully), and the broken jug and first arrows are not big. |
 | `v2cClassGates` | A 13-year-old apprentice smith never draws the apprentice, undercut, commission or election scenes, and the shop scene doesn't fit him. No study scene of the disputation or inn kind comes at 8. No round is offered at 14 with 0 suns. No Latin anywhere. |
+| `v2cShopGateReadsRight` | A clerk, a line under the scene's own test, a shop still to come and a scene that follows a flag don't need a shop; the dwarf partner, the smith's apprentice, the royal bowyer, the general's and the ruler's clerks are not hidden. A plain "your customers" still needs one. |
+| `v2cPlaytest2Class` | The runaway boy is not betrothed to a man; a soldier with no lance hears no lance at the tournament, a knight does; a soldier's officer sits in the ring as a captain, a smith's master as a master. |
 | `v2cWhoOnCard` | The "Why" line is on the card, in words. The story blurbs are whole at 420 px. |
 | `v2cEveryChoiceShows` | Over 200 played scenes, every choice has a chip row and no scene is shown with one live choice. "Their regard" always names the person. The fresh levy and the song read the unit's effects. The old scholar with no coin is dropped. |
 | `v2cRiskChain` | "Join the plot" says the treason trial. Planted failures that queue or schedule a deadly scene say "what follows can kill you", prison says prison, and a free failure says nothing is lost. Played and failed, the plot sends you to the gallows or a cell. |

@@ -18,6 +18,10 @@ const SETUP = () => {
       try {
         const p = A.makeAcquaintance(pc, 'acquaint'); p.born = A.S.year - 35; p.rel = p.rel || {}; p.health = 100;
         p.traits = (o.traits || []).slice(); p.sex = o.sex || 'M'; p.home = o.home != null ? o.home : pc.home; p.realm = o.realm || pc.realm;
+        // "a grown person": since v2 carried the far peoples onto the continent, an acquaintance can be of a longer-lived
+        // people (an elf is grown only at 50), so a 35-year-old met in town may still count as a child (A.isAdult) and
+        // every scene about him drops. The helper's person is of the player's own people, as it always was in effect.
+        p.race = o.race || pc.race;
         if (o.occ) p.occ = o.occ;
         for (const id of Object.keys(pc.rel)) if (id === String(p.id)) delete pc.rel[id];
         delete p.rel[pc.id];
