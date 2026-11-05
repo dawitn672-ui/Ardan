@@ -226,18 +226,24 @@ so a rule on one text node never saw its label. Now:
   history as "somewhat warmer, fading". A grown person with no skill over the release's bar reads "No skill above the
   common run", not "No real skills yet".
 - **Bars:** a duel's Blood (against the fighter's whole) and Wind as bands; World › Diplomacy's "Most feared" as
-  infamy words (watched, mistrusted, feared, dreaded, a byword for terror). A bar with a word gets a value column as wide
+  infamy words (i-numbers' `VS.infamyShort`, which wf-numbers owns). A bar with a word gets a value column as wide
   as the word (`.v2-wb`, `.v2-skw`), so nothing is cut at 420 px.
 - **Lines in the story and the reports** (ahead of the general rules): a season's practice ("Farming & herding (a good
   deal) and Persuasion (some). About half of it came from doing, the rest from practice."), merit ("(some merit)",
   "A good deal of merit."), the board in a sentence, a vital or a stat as a wound moves it ("speed down somewhat"), the
   worth a wound costs, 49's "best 35 at 19", the duel's blows ("— a cut."), decisions' "A proficiency at 50", "Learning
-  55", "Intrigue 30+" as tiers, a companion's "fit 42".
+  55", "Intrigue 30+" as tiers, a companion's "fit 42". A captain's or a general's skills are tiers where they are listed
+  ("(Cunning, command Adept)", "· command Journeyman · tactics Apprentice"): only after "(", ", " or "· ", never a head
+  count ("You command 4,500 men" stays) or a tooltip's sum ("command 45 ÷ 12" stays). The war games' "(your tactics 47 vs
+  52)" and "(47 vs 52)" are said as a pair ("your tactics fall just short of theirs").
 - **Old 20's garbled lines:** 23-after-action's "the captains reckon it: X +20%" reads "X (for you, a great deal)"; its
   report's "(+18%)" reads "(a good deal)" and its card's rows "▲ a great deal"; the orders' "Moves +25% faster" reads
   "Moves about a quarter faster".
-- **Old 22: foreign sums are hearsay.** A sum that changes hands between crowns (sends, owes, pays, tribute, a loan) is
-  rounded to what the road says ("Solenne sends some 900,000 suns"), unless the player rules one of the realms named.
+- **Old 22: foreign sums are hearsay.** A sum that changes hands between crowns is rounded to what the road says
+  ("Solenne sends some 900,000 suns"). The rule reads only the sentence the sum is in, and needs a verb of payment
+  (sends, owes, pays, lends, tribute, a loan) and the name of a realm the player does not rule. A sentence that speaks of
+  "you" (the player's own purse, loans and ransoms), one that names the player's own crown, and a sum already hedged
+  ("about 2,000 suns") keep their words.
 
 Rendering only: the engine, the state, the logs as stored and the tooltips' sums keep their numbers.
 
