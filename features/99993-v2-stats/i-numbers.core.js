@@ -304,11 +304,16 @@ VS.NUMRULES2 = [
   // 999-confidants' pips (the People tab, the person view), their hover title: "Next rank: shared history 16 (now 47), their
   // opinion 30." The history is 55's ledger weight, the opinion -100..100 (verifier, round 6: neither was worded). Said as
   // how much of the history is there and the regard it asks for, in 59-tooltips' opinion words.
-  [/\bNext rank: shared history (\d+) \(now (\d+)\), their opinion (-?\d{1,3})\./g, (all, need, now, op) => {
+  // The regard is compared with the bar, not named by band: the opinion bands are wider than the bars (friendly is 10-39,
+  // the bars 20-60), so "friendly or better" read as met for a friend at 20 whose rank needs 30 (verifier, round 7).
+  [/\bNext rank: shared history (\d+) \(now (\d+)\), their opinion (-?\d{1,3})(?: \(now (-?\d{1,3})\))?\./g, (all, need, now, op, opNow) => {
     const f = +need > 0 ? 100 * +now / +need : 100;
     const hist = f >= 100 ? 'your shared history is already enough' : +now <= 0 ? 'a shared history (you have none yet)'
       : `more shared history (you have ${VS.fracWords(f)} of what it asks)`;
-    return `Next rank: ${hist}, and for them to think you ${VS.band2 ? VS.band2('opinion', +op) : 'warm'} or better.`;
+    const reg = opNow == null ? 'for them to think better of you'
+      : +opNow >= +op ? 'their regard is already enough'
+      : `for them to think better of you than they do now${VS.band2 ? ` (${VS.band2('opinion', +opNow)} is not yet enough)` : ''}`;
+    return `Next rank: ${hist}, and ${reg}.`;
   }],
   // 996-coming-up's digest: "You got better at Survival & hunting +2.4, Farming & herding +1.0." (the season's own line,
   // "... of it from doing", is j-numbers' rule, which reads the whole sentence: leave it to that one)

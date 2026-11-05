@@ -244,7 +244,7 @@ export default {
       // shared history 16 (now 47), their opinion 30." (the opinion is -100..100, the history 55's ledger weight), and this
       // life never formed a bond in two years, so the title was never drawn. Give her one, a friend at rank 1, before the
       // tabs are drawn, and require that the pips' title was read and says the next rank in words.
-      let cfTip = '';
+      let cfTip = '', cfRegard = [];
       { const CF = A.CONFIDANTS, ids = Object.keys(pc.rel || {}).filter(id => { const t = A.P(id); return t && t.alive && A.isAdult(t); });
         let id = CF && ids.find(i => CF.role(pc.rel[i]) === 'friend');
         if (CF && !id && ids.length) { id = ids[0]; pc.rel[id].type = 'friend'; }
@@ -288,6 +288,13 @@ export default {
         'Friend, rank 2 of 5: A gift. Next rank: shared history 26 (now 45), their opinion 40.', 'Beloved, rank 3 of 5: A gift. Next rank: shared history 38 (now 27), their opinion 50.']) {
         const el = document.createElement('div'); el.innerHTML = '<span class="cf-pips"></span>'; el.firstChild.setAttribute('title', t); document.body.appendChild(el); VS.sweep(el);
         check('pips title', el.firstChild.getAttribute('title').replace(/rank \d of 5/, '')); el.remove(); }
+      // (verifier, round 7: the regard is weighed against the bar, not named by a band wider than it. A friend at 20 whose
+      // next rank needs 30 is "friendly", yet not enough; one at 35 is enough)
+      cfRegard = ['their opinion 30 (now 20).', 'their opinion 30 (now 35).', 'their opinion 50 (now 45).'].map(o => VS.deNum('Next rank: shared history 16 (now 47), ' + o));
+      if (/already enough[^,]*$/.test(cfRegard[0]) || !/think better of you than they do now/.test(cfRegard[0])) bad.push('pips regard: ' + cfRegard[0]);
+      if (!/their regard is already enough/.test(cfRegard[1])) bad.push('pips regard: ' + cfRegard[1]);
+      if (/their regard is already enough/.test(cfRegard[2])) bad.push('pips regard: ' + cfRegard[2]);
+      for (const x of cfRegard) check('pips regard', x);
       { const el = document.createElement('div'); el.innerHTML = '<span title="Stability since 1105: 46 to 61">~</span>'; document.body.appendChild(el); VS.sweep(el); check('sparkline title', el.firstChild.getAttribute('title').replace(/1105/, '')); el.remove(); }
       // infamy, under World > Diplomacy
       const rs = Object.values(A.S.realms).filter(x => x.alive);
