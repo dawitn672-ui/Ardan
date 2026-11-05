@@ -70,6 +70,38 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 - **No scene with one live choice.** If a scene written with two or more choices has fewer than two the player can take, the engine drops it where it builds the view (`A.headReady`). This is the same way it drops a scene whose tokens cannot be filled. "An old scholar" with no coin was the case the playtest found. That scene now has a second choice for a poor student, working off the rent (patch `V2C-SCHOLAR-WORK`).
 - **The creation screen's story blurbs are whole** at phone width. 29-starts clamped them to two lines.
 
+### A card tells the truth about risk (`f-risk.core.js`, playtest 2: new 1, new 2, old 18 and 19)
+
+- **The stake, in words.** `A.V2S.lossOf` (99993-v2-stats) reads what a choice can cost for good, and the chip says it
+  first:
+  - "Join the plot … If it fails: a treason trial: the gallows or a deep cell", where it said "Nothing lost if it fails";
+  - "If it fails: what follows can kill you", for a failure that queues or schedules a scene whose failures kill;
+  - "If it fails: hurt that could kill you, near death as you are", where it said "a wound, hurt" to a man near death.
+    The health word is the profile's own band.
+  - A sure effect says it too: "Death", "Perhaps the gallows", "What follows can bring the law on you".
+- **Such a check is red** (one chance), as a written death, cell or wound already was.
+- **A failure's losses read as losses.** "If it fails: honour" said nothing about which way; now it reads "▼ honour".
+  A function's "risk of a wound" says what it is: "▼ a wound, perhaps".
+- **The content's helpers have a direction** (`c-cards.core.js`):
+  - `pay`, `spend` and `hurt` go down; `gain` and `earn` go up;
+  - `hp(p, v)` is spirits (9998 had read it as health); `willGrow` is willpower; `bump`, `addOp` and `op2` are regard;
+  - `p.honor = cl(p.honor - 3)` is honour down; `coin: -sum(…)` is a cost; `coin: ctx.bribe` is a gain.
+
+  Over every scene staged for a soldier, 28 of 26,017 chips still give no way (0.1%; 1.8% before). Those are effects
+  whose code goes both ways.
+- **Effects built from parts.** 227 soldier-pack choices are `both({ … }, op2(-30))`: closures whose source shows only
+  `applyFx(p, obj, ctx)`. Patch `V2C-FX-PARTS` keeps their parts on the closure (`A.V2C.parts`), and the chips read the
+  parts as written. Nothing they do changes.
+- **Whose regard.** A second messmate's (`op2`: `ctx.m2`) is named. 9998 had named the first messmate instead. A loop
+  over the squad reads "your messmates' regard".
+- **Every choice shows a true effect** (old 19):
+  - 47's custom scene ("The hearth mark") shows the custom's own effect, "Costs 3 suns", and the defiance's, "Costs 6
+    suns · ▲ willpower";
+  - 97's ambition scenes ("What you want") show "Your aim: master learning · When it is done: ▲ spirits, ▲ renown", and
+    "No aim: you take what comes";
+  - the gathering's close ("The last night") shows what you carry home from your role and aim there: "▲ renown,
+    ▲ Etiquette", or "Alliance with Varenna: decided tonight".
+
 ### Numbers (`e-numbers.core.js`)
 
 - **The War Room's division panel,** for an enemy division a scout can see, gives estimates in 99997-v2-war's commander words ("some 7,500"). That covers:
@@ -92,6 +124,10 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 | `v2cClassGates` | A 13-year-old apprentice smith never draws the apprentice, undercut, commission or election scenes, and the shop scene doesn't fit him. No study scene of the disputation or inn kind comes at 8. No round is offered at 14 with 0 suns. No Latin anywhere. |
 | `v2cWhoOnCard` | The "Why" line is on the card, in words. The story blurbs are whole at 420 px. |
 | `v2cEveryChoiceShows` | Over 200 played scenes, every choice has a chip row and no scene is shown with one live choice. "Their regard" always names the person. The fresh levy and the song read the unit's effects. The old scholar with no coin is dropped. |
+| `v2cRiskChain` | "Join the plot" says the treason trial and is red. Planted failures that queue or schedule a deadly scene say "what follows can kill you", prison says prison, and a free failure says nothing is lost. Played and failed, the plot sends you to the gallows or a cell. |
+| `v2cRiskLethal` | The night watch's failure reads "a wound, hurt" for a hale man. At health 3 it reads "hurt that could kill you, near death as you are", in the profile's word. Played, it leaves him at 0 health. |
+| `v2cChipsDirection` | Staged: "Under the ice", "The grand melee", the gift, the mess brawl and the loaded dice give a direction and a name. The dice name the second messmate. Over every scene for a soldier, under 0.4% of chips give no way. |
+| `v2cEveryChoiceTrue` | "The hearth mark", "What you want" and "The last night" show a real effect on every choice. None shows only "It will be remembered" or "Nothing changes". |
 | `v2cWarRoomNumbers` | With a scout beside it, an enemy division and three of them read as estimates. Your own division never reads above full. Restless lords and the army's quality are in words. |
 
 ## Changed elsewhere
