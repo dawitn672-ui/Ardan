@@ -1,4 +1,6 @@
-// 99999-v2-content: regression tests for playtest 1's content findings (#9, #10, #11, #18, #19, the War Room numbers).
+// 99999-v2-content: regression tests for playtest 1's content findings (#9, #10, #11, #18, #19, the War Room numbers),
+// and playtest 2's cards that lied about risk (new 1 and 2, old 18 and 19's remainders: v2cRisk*, v2cChipsDirection,
+// v2cEveryChoiceTrue).
 const SETUP = () => {
   window.V2CT = {
     // play a life, card by card, as the UI draws each one; fn(q, v, html) sees every card before it is chosen
@@ -15,6 +17,15 @@ const SETUP = () => {
       }
     },
     strip: h => String(h).replace(/<span class="sc-vh">[^<]*<\/span>/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(),
+    // a scene staged at the head of the queue, as the card draws it: its choice rows in text
+    rows(ev, ctx) {
+      const q = { type: 'event', ev, ctx: ctx || {} };
+      A.S.queue.unshift(q);
+      const v = A.eventView(q), h = v.skip ? '' : UI.queueModal(q) || '';
+      A.S.queue.shift();
+      // ("If it fails : ..." in text: the chip's label and its words are separate spans)
+      return { q, v, rows: [...h.matchAll(/<button data-a="evChoose"[^>]*>([\s\S]*?)<\/button>/g)].map(m => V2CT.strip(m[1]).replace(/ : /g, ': ')) };
+    },
   };
 };
 const prep = pg => pg.evaluate(SETUP);
@@ -301,5 +312,237 @@ export default {
     });
     const ok = /^(some|about) /.test(r.foeMen) && !r.foeExact && /^(some|about) /.test(r.multi) && !r.multiExact && r.mine && !r.over && r.lords && !/\d/.test(r.lords) && r.quality && !/\d/.test(r.quality);
     return { ok, detail: `enemy division's men "${r.foeMen}" (exact shown ${r.foeExact}); three enemy divisions "${r.multi}"; own division over full reads "${r.mine}" (above full ${r.over}); restless lords "${r.lords}"; army "${r.quality}"` };
+  },
+
+  // playtest 2, new 1: "Join the plot ... Nothing lost if it fails" failed, queued the gallows, and the character hanged at
+  // 20. The chip reads the queued chain (A.punish, fx.event, a scheduled scene, prison, death) and says the stake in
+  // words; and the failure, played, does what the chip said.
+  async v2cRiskChain(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      const out = {};
+      T.enter({ seed: 9711, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
+      const pc = A.pc(), e = A.EV.ct_plot_invite;
+      out.plot = V2CT.rows('ct_plot_invite').rows[0] || '';
+      // planted: a failure that queues a scene whose failures kill, one that schedules it, one that sends you to prison,
+      // and one that is truly free
+      if (!A.EV.v2ct_chain) A.defEvents([
+        { id: 'v2ct_end', title: 'The end', cond: () => false, w: 0, text: 'A cliff.', choices: [
+          { t: 'Jump', check: { s: 'athletics', d: 45 }, win: { r: 'Over.', fx: { fame: 1 } }, lose: { r: 'Down.', fx: { die: 'a fall' } } },
+          { t: 'Climb', check: { s: 'athletics', d: 45 }, win: { r: 'Up.', fx: { fame: 1 } }, lose: { r: 'Down.', fx: { die: 'a fall' } } }] },
+        { id: 'v2ct_chain', title: 'A path', cond: () => false, w: 0, text: 'A path.', choices: [
+          { t: 'Go on', check: { s: 'survival', d: 45 }, win: { r: 'Yes.', fx: { happy: 2 } }, lose: { r: 'Lost.', fx: { event: 'v2ct_end' } } },
+          { t: 'Go later', check: { s: 'survival', d: 45 }, win: { r: 'Yes.', fx: { happy: 2 } }, lose: { r: 'Later.', fx: p => { A.schedule({ type: 'event', ev: 'v2ct_end', ctx: {} }, 30); } } },
+          { t: 'Steal', check: { s: 'stealth', d: 45 }, win: { r: 'Yes.', fx: { coin: 5 } }, lose: { r: 'Caught.', fx: { prison: 2 } } },
+          { t: 'Ask', check: { s: 'persuasion', d: 45 }, win: { r: 'Yes.', fx: { happy: 2 } }, lose: { r: 'No.' } }] }]);
+      out.chain = V2CT.rows('v2ct_chain').rows;
+      // played: the plot fails (the test forces the dice, as the odds' own tests do), and the queue holds what was said
+      const q = { type: 'event', ev: 'ct_plot_invite', ctx: {} };
+      A.S.queue = [q]; A.headReady();
+      const ch = A.chance; A.chance = () => false;
+      try { A.eventChoose(0); } finally { A.chance = ch; }
+      out.result = (q.result && q.result.text) || '';
+      out.after = { gallows: A.S.queue.some(x => x && x.ev === 'gallows'), prison: !!pc.prison };
+      A.S.queue = [];
+      return out;
+    });
+    const plotOk = /If it fails: a treason trial: the gallows or a deep cell/.test(r.plot) && !/Nothing lost/.test(r.plot);
+    const [go, later, steal, ask] = r.chain;
+    const chainOk = /If it fails: what follows can kill you/.test(go || '') && /what follows can kill you/.test(later || '') && /If it fails: prison/.test(steal || '') && /Nothing lost if it fails/.test(ask || '');
+    const playedOk = r.after.gallows || r.after.prison;
+    return { ok: plotOk && chainOk && playedOk, detail: `"${r.plot.slice(0, 120)}" ; planted: ${r.chain.map(x => '"' + x.slice(0, 70) + '"').join(' / ')}; played, failed: "${r.result.slice(0, 60)}" -> the gallows queued ${r.after.gallows}, a cell ${r.after.prison}` };
+  },
+
+  // playtest 2, new 2: "If it fails: a wound, hurt" killed a soldier at 18, near death after a lost fight. When the hurt
+  // would bring this person's health to nothing the card says it could kill, in the body sheet's own word for health.
+  async v2cRiskLethal(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9721, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+      const pc = A.pc(), out = {};
+      pc.health = 90; out.hale = V2CT.rows('lf_nb_watch').rows[1] || '';
+      pc.health = 3; out.low = V2CT.rows('lf_nb_watch').rows[1] || '';
+      out.band = A.V2S.band('health', pc.health);
+      out.sheet = V2CT.strip(UI.barRow('Health', pc.health, 100));
+      // played: the failure takes the 12 health the card counted, and the month's mortal check reads nothing left
+      const q = { type: 'event', ev: 'lf_nb_watch', ctx: {} };
+      A.S.queue = [q]; A.headReady();
+      const ch = A.chance; A.chance = () => false;
+      try { A.eventChoose(1); } finally { A.chance = ch; }
+      out.after = pc.health;
+      A.S.queue = [];
+      return out;
+    });
+    const ok = /If it fails: a wound, hurt/.test(r.hale) && !/kill/.test(r.hale) && r.low.includes('If it fails: hurt that could kill you, ' + r.band + ' as you are') &&
+      r.sheet.includes(r.band) && r.after <= 0;
+    return { ok, detail: `hale: "${r.hale.slice(0, 110)}"; at health 3: "${r.low.slice(0, 140)}"; the sheet's health "${r.sheet}"; played, failed: health ${r.after}` };
+  },
+
+  // playtest 2, old 18's remainder: "• changes regard" named nobody, "• changes coin" / "• changes willpower" gave no way.
+  // The content's helpers (pay, hurt, hp, willGrow, bump, addOp, op2, both) are read; the person is named.
+  // Named across the corpus too (the verifier's objection: 340 chips in the scenes, each staged with its own context, read
+  // a bare "▲ regard" or "▲ their regard"): a person in another ctx key (wk_gen_parent's parId), kin (rel: { who },
+  // A.relsOf roles, p.parents, p.spouse), the crown; a regard that reaches no one here is not shown.
+  async v2cChipsDirection(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      const out = { staged: {}, who: {} };
+      T.enter({ seed: 9731, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 19 });
+      const pc = A.pc();
+      const fr = A.makeAcquaintance(pc, 'friend'); A.link(pc, fr, 'friend', 40, 'friend');
+      out.staged.ice = V2CT.rows('lf_friend_drowning', { pid: fr.id }).rows;
+      out.staged.melee = V2CT.rows('ct_melee').rows;
+      out.staged.gift = V2CT.rows('ni_invite', { pid: fr.id }).rows;
+      if (!pc.mil) A.enlist(pc);
+      out.staged.brawl = V2CT.rows('camp_brawl').rows;
+      const d = V2CT.rows('rk_loaded_dice');
+      out.staged.dice = d.rows;
+      const nm = id => { const t = id && A.P(id); return t ? (A.knownName ? A.knownName(t) : t.given) : '?'; };
+      out.m2 = nm(d.q.ctx.m2); out.pid = nm(d.q.ctx.pid);
+      // the verifier's cases, each staged with the scene's own context (its setup fills it)
+      const gp = V2CT.rows('wk_gen_parent');
+      out.named = { parent: gp.rows, parName: nm(gp.q.ctx.parId) };
+      for (const id of ['wk_gen_windfall', 'sc_ss_family', 'pl_envoy_abroad', 'pa_court_scandal', 'ch_inf_steps', 'lf_teen_secret_practice', 'ch_dare_orchard', 'lf_friend_feud_pick', 'lf_friend_quarrel', 'du_cm_clerk_wanted']) out.named[id] = V2CT.rows(id).rows;
+      out.dad = (pc.parents || []).map(A.P).filter(t => t && t.sex === 'M').length === 1;
+      // every scene, staged for this soldier: the chips that still give no way; and (here and again below, each scene
+      // with its own context) no chip reads a bare regard, and no regard is shown without its way ("• Maren's regard")
+      const BARE = /(^|[•▲▼,:] )(their )?regard\b/, NOWAY = /• [^,]*regard\b/;
+      const bare = [], noway = [], judge = (id, ch) => { if (BARE.test(ch.t)) bare.push(id + ': ' + ch.t); if (NOWAY.test(ch.t)) noway.push(id + ': ' + ch.t); };
+      let chips = 0, vague = 0; const eg = [];
+      for (const id in A.EV) {
+        const e = A.EV[id]; if (!Array.isArray(e.choices)) continue;
+        const q = { type: 'event', ev: id, ctx: { pid: fr.id } };
+        A.S.queue.unshift(q); let v = null; try { v = A.eventView(q); } catch (err) { v = null; } A.S.queue.shift();
+        if (!v || v.skip) continue;
+        for (const vc of v.choices) {
+          if (!vc || vc.i < 0) continue;
+          for (const ch of A.STAKES.choiceChips(e.choices[vc.i], e, q, pc, vc)) { chips++; judge(id, ch); if (/• (coin|willpower|health|honour|regard|spirits|renown|piety)\b/.test(ch.t)) { vague++; if (eg.length < 4) eg.push(id + ': ' + ch.t); } }
+        }
+      }
+      Object.assign(out, { chips, vague, eg });
+      // every scene again, each with its own context (its setup fills it; no friend put in ctx.pid)
+      let own = 0;
+      const sp = A.makeAcquaintance(pc, 'friend'); sp.sex = 'F'; A.link(pc, sp, 'spouse', 40, 'spouse'); pc.spouse = sp.id;
+      out.named.ss_sc_saddle = V2CT.rows('ss_sc_saddle').rows;
+      // (third round) the right person and the right way, read from the written effect without the card's reader:
+      // - code whose every addOp/bump moves T(ctx) (or a name given T(ctx)) moves the scene's person only, so a chip
+      //   that names a person of the scene names ctx.pid, with the way the code's numbers go;
+      // - both(obj, op2(d)) moves ctx.pid by obj's them.op and ctx.m2 by d: a sure choice names both, each its own way,
+      //   and a failure lists neither as a loss when it goes up.
+      // The round-two build named the rival in fm_love_rival, the match in lf_kid_bad_match, the second messmate twice
+      // in rk_sgt_recommend, and "▲ your mother's regard" in lf_lover_faith: each fails here.
+      const ar = n => (n > 0 ? '▲+' : '▼+'), rxq = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const says = (t, way, name) => new RegExp(`(^|[:,] |\\| )${way} ${rxq(name)}'s regard`).test(t);
+      const people = ctx => [...new Set(Object.values(ctx || {}).filter(x => typeof x === 'string' && x !== pc.id).map(x => A.P(x)).filter(x => x && x.id).map(x => nm(x.id)))];
+      const wrong = [], tOnly = { n: 0, named: 0 }, bothOp = { n: 0, named: 0 };
+      const oracle = (id, i, c, q, chips) => {
+        const pidN = q.ctx && q.ctx.pid && A.P(q.ctx.pid) && q.ctx.pid !== pc.id ? nm(q.ctx.pid) : null;
+        const sides = c.check || c.group ? [['win', c.win && c.win.fx, chips.filter(x => /^If it works: /.test(x.t))], ['risk', c.lose && c.lose.fx, chips.filter(x => /^If it fails: /.test(x.t))]] : [['fx', c.fx, chips.filter(x => !/^If it /.test(x.t))]];
+        for (const [side, fx, cs] of sides) {
+          const t = cs.map(x => x.t).join(' | ');
+          if (typeof fx !== 'function' || !pidN) continue;
+          if (!fx.v2parts && !fx.v2meta) {
+            const s = String(fx);
+            const calls = [...s.matchAll(/\b(?:A\.)?(?:addOp|bump)\(\s*p\s*,\s*(T\(ctx\)|\w+)\s*,\s*(-?\d+)\s*[,)]/g)];
+            const all = (s.match(/\b(?:A\.)?(?:addOp|bump)\(/g) || []).length;
+            if (!calls.length || calls.length !== all || /\bthem\s*:|ctx\.pid\s*=[^=]|castFx|rel\s*:\s*\{/.test(s)) continue;
+            if (!calls.every(m => m[1] === 'T(ctx)' || new RegExp(`\\b${m[1]}\\s*=\\s*T\\(ctx\\)`).test(s))) continue;
+            const up = calls.some(m => +m[2] > 0), down = calls.some(m => +m[2] < 0);
+            if (!up && !down) continue;
+            tOnly.n++;
+            for (const other of people(q.ctx)) if (other !== pidN && new RegExp(`[▲▼] ${rxq(other)}'s regard`).test(t)) wrong.push(`${id} ${i} ${side}: names ${other}, the code moves ${pidN}: ${t}`);
+            if (says(t, '(?:▲+|▼+|▲ or ▼)', pidN)) {
+              tOnly.named++;
+              const way = up && down ? '▲ or ▼' : ar(up ? 1 : -1);
+              if (!says(t, way, pidN)) wrong.push(`${id} ${i} ${side}: ${pidN}'s regard the wrong way (${up && down ? 'either way' : up ? 'up' : 'down'}): ${t}`);
+            }
+            continue;
+          }
+          // both(obj, op2(d))
+          const o = (fx.v2parts || []).find(x => x && typeof x === 'object' && x.them && typeof x.them.op === 'number' && x.them.op);
+          const f = (fx.v2parts || []).find(x => typeof x === 'function' && x.v2meta && x.v2meta.who === 'm2' && x.v2meta.op);
+          const m2N = q.ctx.m2 && A.P(q.ctx.m2) ? nm(q.ctx.m2) : null;
+          if (!o || !f || !m2N || m2N === pidN) continue;
+          bothOp.n++;
+          const a = o.them.op, d = f.v2meta.op;
+          if (side === 'fx') {
+            if (says(t, ar(a), pidN) && says(t, ar(d), m2N)) bothOp.named++;
+            else wrong.push(`${id} ${i}: ${pidN} ${a > 0 ? 'up' : 'down'} and ${m2N} ${d > 0 ? 'up' : 'down'}, the card: ${t}`);
+          } else if (side === 'risk') {
+            if (says(t, '▲+', pidN) || says(t, '▲+', m2N) || (a > 0 && says(t, '▼+', pidN)) || (d > 0 && says(t, '▼+', m2N))) wrong.push(`${id} ${i} fails: ${pidN} ${a > 0 ? 'up' : 'down'}, ${m2N} ${d > 0 ? 'up' : 'down'}, the card: ${t}`);
+            else if ((a < 0 && says(t, '▼+', pidN)) || (d < 0 && says(t, '▼+', m2N))) bothOp.named++;
+          }
+        }
+      };
+      for (const id in A.EV) {
+        const e = A.EV[id]; if (!Array.isArray(e.choices)) continue;
+        const q = { type: 'event', ev: id, ctx: {} };
+        A.S.queue.unshift(q); let v = null; try { v = A.eventView(q); } catch (err) { v = null; } A.S.queue.shift();
+        if (!v || v.skip) continue;
+        for (const vc of v.choices) {
+          if (!vc || vc.i < 0) continue;
+          const cs = A.STAKES.choiceChips(e.choices[vc.i], e, q, pc, vc);
+          for (const ch of cs) { own++; judge(id, ch); }
+          oracle(id, vc.i, e.choices[vc.i], q, cs);
+          // the verifier's own cases, kept with their context
+          if (['lf_lover_faith', 'rk_sgt_recommend', 'fm_love_rival', 'lf_kid_bad_match'].includes(id)) {
+            const k = id + ':' + vc.i;
+            out.who[k] = { t: cs.map(x => x.t).join(' | '), pid: q.ctx.pid ? nm(q.ctx.pid) : null, m2: q.ctx.m2 ? nm(q.ctx.m2) : null, other: q.ctx.rvid ? nm(q.ctx.rvid) : q.ctx.mid ? nm(q.ctx.mid) : null };
+          }
+        }
+      }
+      out.mother = (() => { const m = A.P((pc.parents || [])[1]); return !!(m && m.alive !== false && m.id !== pc.id); })();
+      Object.assign(out, { wrong: wrong.length, wrongEg: wrong.slice(0, 4), tOnly, bothOp });
+      Object.assign(out, { own, bare: bare.length, bareEg: bare.slice(0, 3), noway: noway.length, nowayEg: noway.slice(0, 3) });
+      return out;
+    });
+    const S = r.staged, all = Object.values(S).flat();
+    const noWay = all.filter(x => /• (coin|willpower|health|regard)\b/.test(x));
+    const ok = !noWay.length && /Run for help ▲ .*'s regard · ▲ willpower · ▼ spirits/.test(S.ice[2] || '') && /If it fails: ▼ health, ▼ coin/.test(S.melee[1] || '') &&
+      /Go, and bring a gift ▼ coin/.test(S.gift[1] || '') && /your messmates' regard/.test(S.brawl[0] || '') &&
+      (S.dice[1] || '').includes(`▼ ${r.m2}'s regard`) && r.chips > 3000 && r.vague / r.chips < 0.004;
+    const N = r.named, row = (id, i) => (N[id] || [])[i] || '';
+    const named = (N.parent[0] || '').includes(`▲ ${N.parName}'s regard`) && /▲ your (parents'|family's|father's|mother's) regard/.test(row('wk_gen_windfall', 1)) &&
+      /▲ your father's regard/.test(row('sc_ss_family', 0)) && /▲ the crown's regard/.test(row('pl_envoy_abroad', 0)) && /▲ the crown's regard/.test(row('pa_court_scandal', 0)) &&
+      /▲ your wife's regard/.test(row('ss_sc_saddle', 0)) && /If it works: ▲ Riding, ▲ your father's regard/.test(row('ch_inf_steps', 0)) &&
+      /▲ your (father|mother)'s regard/.test(row('lf_teen_secret_practice', 1)) && (!r.dad || /If it fails: [^·]*▼ your father's regard/.test(row('ch_dare_orchard', 0))) &&
+      /Side with .* ▲ [^,]+'s regard, ▼▼ [^,]+'s regard/.test(row('lf_friend_feud_pick', 1)) && /▲ or ▼ [^,]+'s regard/.test(row('lf_friend_quarrel', 1)) &&
+      // (a word whose every number is nought is not shown: "Take the post" read "• standing in the ranks" from merit: 0)
+      /Take the post ▲ a new post$/.test(row('du_cm_clerk_wanted', 0));
+    const corpus = r.own > 3000 && r.bare === 0 && r.noway === 0;
+    // (third round) the right person, the right way: the verifier's cases, and the corpus read against the written effect
+    const W = r.who, wt = k => (W[k] && W[k].t) || '', rq = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const has = (k, way, name) => !!name && new RegExp(`(^|[:,] |\\| )${way} ${rq(name)}'s regard`).test(wt(k));
+    const fail = k => (/If it fails: [^|]*/.exec(wt(k)) || [''])[0];
+    const right = W['lf_lover_faith:0'] && has('lf_lover_faith:0', '▲+', W['lf_lover_faith:0'].pid) && !/▲+ your mother's regard/.test(wt('lf_lover_faith:0')) &&
+      (!r.mother || /▼+ your mother's regard/.test(wt('lf_lover_faith:0'))) &&
+      W['rk_sgt_recommend:0'] && has('rk_sgt_recommend:0', '▲+', W['rk_sgt_recommend:0'].pid) && has('rk_sgt_recommend:0', '▼+', W['rk_sgt_recommend:0'].m2) &&
+      W['rk_sgt_recommend:1'] && /▼+ /.test(fail('rk_sgt_recommend:1')) && fail('rk_sgt_recommend:1').includes(`▼ ${W['rk_sgt_recommend:1'].pid}'s regard`) && !fail('rk_sgt_recommend:1').includes(W['rk_sgt_recommend:1'].m2) &&
+      W['fm_love_rival:0'] && has('fm_love_rival:0', '▼+', W['fm_love_rival:0'].pid) && !wt('fm_love_rival:0').includes(`${W['fm_love_rival:0'].other}'s regard`) &&
+      W['lf_kid_bad_match:0'] && has('lf_kid_bad_match:0', '▲+', W['lf_kid_bad_match:0'].pid) && !wt('lf_kid_bad_match:0').includes(`${W['lf_kid_bad_match:0'].other}'s regard`);
+    const truth = r.wrong === 0 && r.tOnly.named >= 40 && r.bothOp.named >= 3;
+    return { ok: ok && named && corpus && right && truth, detail: `whose and which way: ${['lf_lover_faith:0', 'rk_sgt_recommend:0', 'rk_sgt_recommend:1', 'fm_love_rival:0', 'lf_kid_bad_match:0'].map(k => `${k} "${wt(k)}" (scene's person ${W[k] && W[k].pid}${W[k] && W[k].m2 ? ', second messmate ' + W[k].m2 : ''}${W[k] && W[k].other ? ', other ' + W[k].other : ''})`).join(' / ')}; ` +
+      `against the written effect: ${r.wrong} wrong ${r.wrongEg.join(' | ')}; code moving only T(ctx) ${r.tOnly.named} named of ${r.tOnly.n}; both(obj, op2) ${r.bothOp.named} of ${r.bothOp.n}; named:"${N.parent[0]}" / "${row('wk_gen_windfall', 1)}" / "${row('sc_ss_family', 0)}" / "${row('pl_envoy_abroad', 0).slice(0, 70)}" / "${row('ss_sc_saddle', 0)}" / "${row('ch_inf_steps', 0).slice(0, 60)}" / "${row('ch_dare_orchard', 0).slice(0, 110)}" / "${row('pa_court_scandal', 0).slice(0, 60)}" / "${row('lf_teen_secret_practice', 1).slice(0, 70)}" / "${row('lf_friend_feud_pick', 1)}" / "${row('lf_friend_quarrel', 1)}" / "${row('du_cm_clerk_wanted', 0)}"; every scene, twice (with a friend in ctx.pid, and each with its own context, ${r.own} chips): a bare regard ${r.bare} ${r.bareEg.join(' | ')}, a regard with no way ${r.noway} ${r.nowayEg.join(' | ')}; staged: ${all.filter(x => /Run for help|Hang back|bring a gift|Step between|demand a cut/.test(x)).map(x => '"' + x.slice(0, 90) + '"').join(' / ')} (the second messmate ${r.m2}, the first ${r.pid}); with no way shown ${noWay.length} ${noWay[0] || ''}; every scene: ${r.vague} of ${r.chips} chips give no way (under 0.4%; 1.8% before) ${r.eg.join(' | ')}` };
+  },
+
+  // playtest 2, old 19's remainder: "The hearth mark" and "What you want" showed only "It will be remembered" on every
+  // choice, and "The last night" said nothing of what it does. Each choice now shows its real effect.
+  async v2cEveryChoiceTrue(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9741, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+      const pc = A.pc(), out = {};
+      out.hearth = V2CT.rows('rb_custom', { cid: 'ald_hearth' }).rows;
+      out.amb = V2CT.rows('lfx_amb_young').rows;
+      A.S.gath = (A.S.gath || []).concat([{ id: 'v2ct_g', kind: 'tournament', host: pc.realm, pc: { role: 'servant', aim: null, inf: 2 } }]);
+      pc.job = pc.job || { c: 'labor', r: 0, y: 0, perf: 55 };
+      out.close = V2CT.rows('ga_close', { gid: 'v2ct_g' }).rows;
+      A.S.gath = A.S.gath.filter(g => g.id !== 'v2ct_g');
+      return out;
+    });
+    const vague = x => /It will be remembered|Nothing changes/.test(x);
+    const ok = r.hearth.length === 2 && /Costs 3 suns/.test(r.hearth[0]) && /Costs 6 suns/.test(r.hearth[1]) && r.amb.length >= 2 && r.amb.slice(0, -1).every(x => /Your aim: /.test(x)) &&
+      /No aim|Gives up your aim/.test(r.amb[r.amb.length - 1]) && r.close.length === 1 && /▲ renown/.test(r.close[0]) && ![...r.hearth, ...r.amb, ...r.close].some(vague);
+    return { ok, detail: `the hearth mark: ${r.hearth.map(x => '"' + x + '"').join(' / ')}; what you want: ${r.amb.map(x => '"' + x.slice(0, 70) + '"').join(' / ')}; the last night: ${r.close.map(x => '"' + x + '"').join(' / ')}` };
   },
 };

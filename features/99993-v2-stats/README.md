@@ -112,12 +112,23 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 - **Skill hours are read from the 0–100 skill,** not stored. The old learning curves still decide progress.
 - **Within a race, the worth is the release's.** v2's body sets the gap between races, not the spread within one. Beasts and crowds keep the release's worth rows.
 
+## The odds breakdown on a touch screen (`h-why.core.js`, cycle 3)
+
+Playtest round 1 made a tap on a choice choose, so the badge inside the choice lost its tap target. A phone has no hover, so a phone player could no longer see a choice's breakdown at all. On a touch screen (no hover, or a coarse pointer):
+
+- **The choice body chooses.** The badge inside it takes no tap, as before (71-phone).
+- **The odds badge has a target of its own.** A `role="button"` span sits over the badge as a sibling of the choice button in `.choices`, never inside it. It is at least 44 × 44 px and kept in place by a `ResizeObserver`. A tap on it opens the words-only breakdown and chooses nothing; a second tap closes it. It is a span, not a `<button>`, because the release's number keys and first focus pick `.choices button`. The badge shows a dashed edge to say it is a thing of its own.
+- **The breakdown covers no choice.** It sits above the choices (with a scroll inside if it is taller than the room there), so the next tap on a choice is free: it closes the breakdown and takes that choice. When there is no room above, it may cover them, and then a tap on it closes it.
+- Nothing changes with a mouse. `59-tooltips` `ttPhone2` tests this design.
+- The v2 sheet's words keep the row's 14 px on a phone (71-phone's `phoneTargets`).
+
 ## Other features' tests changed (they checked digits the owner asked to remove)
 
 - `42-difficulty` `difficultyInformation`: with v2 no setting shows digits on a choice; without v2, the release's rule as before.
 - `48-fight-ladder` `flScreens`: with v2, the duel's "N times in 100" and the worth beside the tier on the duel measure are no longer required.
 - `59-tooltips` `ttWorthSums`: the tier chip names the worth in levies; with v2 it must name the same total's levies.
 - `9998-stakes` `stWhiteRetry`: with v2 the lock reads "Grow in Persuasion and Willpower first" and the chip "better at this now than in 1105", without the numbers.
+- `59-tooltips` `ttPhone2` (cycle 3): with v2, a tap on the odds target beside the choice opens the breakdown, words only, over no choice; the target is at least 44 px and outside the choice; the next tap on a choice closes it and takes the choice. The old tap target inside the choice is gone since playtest 1.
 - `59-tooltips` `ttSums2` (the odds popover has words, no sum row, with v2), `ttCov2Scenes` (the scenes' odds are words, so that group leaves the coverage bar), `ttInModal` (focuses any explained number in the full profile, which has no stat bars).
 - `9996-polity` `poBillTrack`: the next count's odds are words and a balance, so with v2 the stack must have no "N%" and must have the balance.
 
@@ -132,3 +143,30 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 - **Labels.** "Takes 1 blows" now reads "stands up to a blow that would fell an ordinary man", and a grown body is never "as fast as a child".
 - **The derived stat stops at the old engine's cap** (1.02 × potential), where training and fx stop too.
 - **Tests.** The new test `v2sPlaytest1` covers the findings. `59-tooltips` `ttCoverage` is also changed: with v2 every remaining number must be covered.
+
+## Playtest round 2: what a failed check costs (`h-loss.core.js`, new 1 and 2)
+
+Two cards lied about risk. "Join the plot … Nothing lost if it fails" ran `A.punish(p, "treason")` on a failure, the
+gallows scene came, and the character hanged at 20. "If it fails: a wound, hurt" killed a soldier at 18 who was near
+death after a lost fight: the 12 health it took left him nothing, and `A.mortalCheck` did the rest.
+
+- **`A.V2S.lossOf(fx, pc, ctx)`** reads an effect, object or function, for the losses that last:
+  - death (`die`, `A.pcDeath`);
+  - the law's sentence for each crime it names (`punish: "theft"`, `A.punish(p, "treason")`), in words, for this
+    person under their realm's law, by the same tree `A.punish` follows (`VS.lawFor`: treason is "the gallows or a deep
+    cell", desertion in Aldmark "the gallows or a flogging", theft a fine, a brand, a flogging or the hand);
+  - the gallows (`event: "gallows"`, the content's `gallows(p)` helper), prison, exile;
+  - the scenes it queues or schedules (`event: "id"`, `A.queue` / `A.schedule` with `ev: "id"`), read in turn, three
+    deep. A later scene counts when a failed check there brings the loss, or when every way out of it does. A choice
+    that walks into it on purpose, such as "Face it with dignity", is the player's own and does not count;
+  - the most health it takes at once, and whether that would bring this person's health to nothing.
+- Code may keep a death or a cell behind a branch of its own, so a function's `die` or `imprison` reads as a risk ("a
+  risk of death", "perhaps the gallows"). Written data reads as a certainty.
+- **`VS.lossWords(L, pc)`** says it worst first. A hurt that could kill uses the profile's own health band: "hurt that
+  could kill you, near death as you are".
+- **The roll agrees with the card.** `VS.stakesOf(check, choice, pc)` counts a deadly or lasting loss read this way as
+  a deadly loss (stakes 0.8), so will can carry a lost check that the card says could kill. A blow of 12 is stakes 0.5
+  for a hale man and 0.8 for one near death.
+- It is pure: it reads the choice as written, the person and the law, and draws nothing.
+
+Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, `v2cRiskLethal`).

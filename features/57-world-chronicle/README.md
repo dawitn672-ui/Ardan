@@ -162,3 +162,22 @@ One bot life (human peasant of Aldmark, 40 years): 44 lines on 316 cards (13.9%)
 `wcCitesShare` on the full v2 build with 99999-v2-names (8 lives, up to 60 years): a recalled line on **109 of 2,932
 cards (3.7%)**, median life 3.35%, most 7.4%; 220 scenes (7.5%) cite an entry by line, token or pack; 0 lines off their
 scene, 0 citations out of place or time. (The old W6 bar of 15% citations no longer holds, by design.)
+
+## v2: the recalled line gives way to the inner voice (CI run 88, `wcObservesOnly`)
+
+**What broke.** After 99993-v2-stats' dice fix, `wcObservesOnly` found the same seed ending with a different person
+with the record on and off. Realms, provinces and the random stream were the same; only the player differed, in
+`pc.idv`, the inner-voice lines a life has heard (9992-identity writes them at the choice). A card carries one extra
+line (99999-v2-content), and the voice gave way to a recalled line. Whether the record had an entry to recall (or, with
+the record off, only the canon) so decided which voice lines the character had heard: on seed 9090 the dying soldier's
+"A deathbed whisper" in 1108 carried a canon line with the record off and the Ledger's voice with it on. The dice did
+not cause it; they moved this seed's life onto such a card.
+
+**Fix.** `WC.recall` asks the voice first (`A.ID.voiceCore`, pure) and sets no line where the voice would speak, so the
+voice is always the one it would be with no record. The record only observes again. `wcCitesShare` on the build: a
+recalled line on 103 of 2,932 cards (3.5%), 214 scenes (7.3%) cite an entry, 0 out of place or time.
+
+**Test.** `wcRecallYieldsToVoice` offers a recalled line on every scene with a subject (`WC.RECALL` 100) over four
+8-year lives, one of them `wcObservesOnly`'s with the record off, and fails if any card's voice would speak without
+its recalled line. It fails before the fix (1105, "rl_sec_archive": the Ledger silenced by a canon line) and passes
+after.

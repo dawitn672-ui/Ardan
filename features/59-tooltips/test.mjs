@@ -584,7 +584,7 @@ export default {
   async ttAxe2(pg, errs) {
     await pg.evaluate(fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8'));
     await pg.evaluate(KIT2);
-    const found = [], opened = [];
+    const found = [], opened = [], evOne = [];
     const run = async (label) => {
       const v = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => `${v.id}(${v.nodes.length}: ${v.nodes.slice(0, 2).map(n => n.target.join(' ')).join(', ')})`));
       found.push(...v.map(x => label + ':' + x)); opened.push(label + ' ' + (await pg.evaluate(() => UI.TT.depth())));
@@ -597,12 +597,22 @@ export default {
       await pg.click('#tabbody table.mkt-t td[data-tt="mktPrice"]'); await pg.click('#tt-pop-1 [data-tt="skill"]');
       await run(theme + ' holdings');
       await pg.evaluate(() => { UI.TT.closeAll(); const q = TT2.oddsEvents(30).find(x => A.EV[x.ev].choices.some(c => c.check && !c.check.fight)); A.S.queue = [q]; UI.ov = null; UI.render(); });
-      await pg.click('#modal [data-tt="odds"][data-tt-tap]'); const s2 = await pg.$('#tt-pop-1 [data-tt="stat"], #tt-pop-1 [data-tt="skill"]'); if (s2) await s2.click();
+      // Changed in cycle 3 (wf-phonetap), with v2 in the build: since playtest 1 (docs/v2/playtest-1.md, finding 3) a
+      // click on a choice chooses, so the odds badge inside it has no click target (99993-v2-stats f-words); with a
+      // mouse its breakdown opens on hover. That breakdown is words only (the owner's rule: no number, and no
+      // description behind a further click), so it holds no word that opens a second popover: the event is checked
+      // one deep. Without v2, the release-era click target and two deep, as before.
+      const v2 = await pg.evaluate(() => !!A.V2S);
+      if (v2) { await pg.mouse.move(1, 1); await pg.hover('#modal button[data-a="evChoose"] [data-tt="odds"]'); await pg.waitForFunction(() => UI.TT.depth() >= 1); }
+      else await pg.click('#modal [data-tt="odds"][data-tt-tap]');
+      const s2 = await pg.$('#tt-pop-1 [data-tt="stat"], #tt-pop-1 [data-tt="skill"]'); if (s2) await s2.click();
+      if (v2) evOne.push(!s2 && !(await pg.$('#tt-pop-1 [data-tt], #tt-pop-1 [data-tip]')));
       await run(theme + ' event');
       await pg.evaluate(() => { UI.TT.closeAll(); A.S.queue = []; UI.ov = null; UI.render(); });
     }
     for (let i = errs.length - 1; i >= 0; i--) if (/Refused to connect to 'https:\/\/fonts\.googleapis\.com/.test(errs[i])) errs.splice(i, 1);
-    const deep = opened.every(x => / 2$/.test(x));
+    // two deep everywhere; with v2 the event's words-only breakdown is one deep, and only when it offers no word inside
+    const deep = opened.every(x => / 2$/.test(x) || (evOne.length === 2 && evOne.every(Boolean) && / event 1$/.test(x)));
     return { ok: !found.length && deep, detail: `open: ${opened.join(', ')}; ${found.length} axe violations${found.length ? ': ' + found.slice(0, 6).join('; ') : ''}` };
   },
 
@@ -629,19 +639,47 @@ export default {
       const top = await p.evaluate(() => document.querySelector('#topbar').getBoundingClientRect().bottom);
       await p.touchscreen.tap(187, Math.round(top) + 4); const b4 = await box();
       const w1 = await p.evaluate(() => document.documentElement.scrollWidth);
-      // an event: the odds by tap
+      // an event: the odds by tap.
+      // Changed in cycle 3 (wf-phonetap), with v2 in the build: since playtest 1 (docs/v2/playtest-1.md, finding 3) a tap
+      // on a choice chooses, so the badge inside the choice is no longer a tap target (99993-v2-stats' v2sPlaytest1
+      // holds that), and a phone, having no hover, could not open the breakdown at all. The design this tests
+      // (99993-v2-stats h-why.core.js): the odds badge has a target of its own beside the choice button, never inside
+      // it, at least 44 × 44 px; a tap on it opens the words-only breakdown and chooses nothing; the breakdown covers no
+      // choice, so the next tap on a choice is free: it closes the breakdown and takes that choice. Without v2 the
+      // release-era design is tested as before (a tap target inside the choice that does not choose).
       await p.evaluate(() => { const q = TT2.oddsEvents(30).find(x => A.EV[x.ev].choices.some(c => c.check)); window.__q = q; A.S.queue = [q]; UI.ov = null; UI.render(); });
-      const pill = await p.$('#modal [data-tt="odds"][data-tt-tap]'); await pill.scrollIntoViewIfNeeded(); await pill.tap(); const e1 = await box();
+      const v2 = await p.evaluate(() => !!A.V2S);
+      const pill = await p.$(v2 ? '#modal .choices > [data-tt][role="button"]:not(button)' : '#modal [data-tt="odds"][data-tt-tap]');
+      await pill.scrollIntoViewIfNeeded(); await pill.tap(); const e1 = await box();
       const kept = await p.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
       const eFits = fit(e1);
+      let ev = { ok: true, note: 'no v2: the old tap target' };
+      if (v2) {
+        ev = await p.evaluate(() => {
+          const t = document.querySelector('#modal .choices > [data-tt][role="button"]:not(button)'), r = t.getBoundingClientRect();
+          const s = UI.TT.stack[0], pr = s ? s.el.getBoundingClientRect() : null;
+          const btns = [...document.querySelectorAll('#modal button[data-a="evChoose"]')];
+          const over = pr ? btns.filter(b => { const q = b.getBoundingClientRect(); return q.left < pr.right && q.right > pr.left && q.top < pr.bottom && q.bottom > pr.top; }).length : -1;
+          const free = btns.find(b => !b.disabled && b.dataset.v !== t.dataset.v) || btns.find(b => !b.disabled);
+          const fr = free.getBoundingClientRect();
+          return { w: Math.round(r.width), h: Math.round(r.height), inside: !!t.closest('[data-a]'), taps: document.querySelectorAll('button[data-a="evChoose"] [data-tt-tap]').length,
+            words: !!pr && !/\d/.test(s.el.textContent), over, at: [Math.round(fr.left + fr.width / 2), Math.round(fr.top + 12)], v: free.dataset.v };
+        });
+        // the next tap, on another choice's body, closes the breakdown and takes that choice
+        await p.touchscreen.tap(ev.at[0], ev.at[1]);
+        const after = await p.evaluate(() => ({ open: UI.TT.stack.length, took: !A.S.queue.length || A.S.queue[0] !== window.__q || !!window.__q.result }));
+        ev.open = after.open; ev.took = after.took;
+        ev.ok = ev.w >= 44 && ev.h >= 44 && !ev.inside && ev.taps === 0 && ev.words && ev.over === 0 && ev.open === 0 && ev.took;
+        ev.note = `the odds target ${ev.w} × ${ev.h} px, outside the choice ${!ev.inside}, tap targets inside choices ${ev.taps}; the breakdown words only ${ev.words}, over ${ev.over} choices; the next tap on a choice closes it (${ev.open} open) and takes the choice ${ev.took}`;
+      }
       await p.evaluate(() => { UI.TT.closeAll(); A.S.queue = []; UI.ov = null; UI.render(); });
       // the War tab
       await p.evaluate(() => { TT2.soldier(5973); UI.tab = 'war'; UI.render(); });
       const n = await p.$('#tabbody [data-tt="divStr"]'); await n.scrollIntoViewIfNeeded(); await n.tap(); const war = await box();
       const w2 = await p.evaluate(() => document.documentElement.scrollWidth);
       await ctx.close();
-      const ok = b1.length === 1 && b2.length === 2 && fits && b3.length === 1 && b4.length === 0 && w1 <= 375 && e1.length === 1 && kept && eFits && war.length === 1 && fit(war) && w2 <= 375;
-      return { ok, detail: `${phone ? '71-phone in the build' : 'no 71-phone in this build'}; Holdings: taps open ${b1.length}, ${b2.length}, inside 375 × 740: ${fits} (${JSON.stringify(b2)}); × leaves ${b3.length}; a tap outside leaves ${b4.length}; page width ${w1}. Event: a tap on the odds opens ${e1.length}, inside: ${eFits}, the choice not taken: ${kept}. War tab: ${war.length} open, inside: ${fit(war)}; page width ${w2}` };
+      const ok = b1.length === 1 && b2.length === 2 && fits && b3.length === 1 && b4.length === 0 && w1 <= 375 && e1.length === 1 && kept && eFits && ev.ok && war.length === 1 && fit(war) && w2 <= 375;
+      return { ok, detail: `${phone ? '71-phone in the build' : 'no 71-phone in this build'}; Holdings: taps open ${b1.length}, ${b2.length}, inside 375 × 740: ${fits} (${JSON.stringify(b2)}); × leaves ${b3.length}; a tap outside leaves ${b4.length}; page width ${w1}. Event: a tap on the odds opens ${e1.length}, inside: ${eFits}, the choice not taken: ${kept}; ${ev.note}. War tab: ${war.length} open, inside: ${fit(war)}; page width ${w2}` };
     } catch (e) { await ctx.close(); throw e; }
   },
 };

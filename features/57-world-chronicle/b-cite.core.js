@@ -406,6 +406,13 @@
     if (!T) return;
     const key = `${q.ev}|${pc.id}|${A.absDay()}`;
     if (hash(key + '|gate') % 100 >= WC.RECALL) return;
+    // the record only observes: it takes a card's one extra line only when the life's own inner voice (9992-identity)
+    // would not speak there. A card carries one extra line (99999-v2-content), and the voice yields to a recalled line;
+    // the life remembers each line it hears (pc.idv, written at the choice), so a recalled line that pushed a voice out
+    // let the record decide what the character had heard: the same seed, recorded or not, ended with a different
+    // person (wcObservesOnly, after 99993's dice fix moved this seed's lives onto such a card). Asked before the line
+    // is set, the voice is the one it would be without any record, so the line now gives way to the voice instead.
+    if (A.ID && typeof A.ID.voiceCore === 'function') { let vo = null; try { vo = A.ID.voiceCore(pc, q); } catch (err) { vo = null; } if (vo) return; }
     const R = WC.rec();
     R.cd = R.cd || {};
     R.lk = Array.isArray(R.lk) ? R.lk : [];
