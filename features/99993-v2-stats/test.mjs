@@ -200,6 +200,81 @@ export default {
     return { ok: r.found.length === 0 && r.evs > 20, detail: `${r.evs} scenes and every tab over 12 years: ${r.found.length ? r.found.length + ' percentages, e.g. ' + r.found.slice(0, 6).join(' | ') : 'no percentage on screen'}` };
   },
 
+  // playtest 2 (old 7, new 11, old 20, old 22): no bare 0-100 number beside a stat word on the pages a bot life visits.
+  // Two lives (a commoner in a post, a noble captain) over 9 years: every tab, World's five views, the profile, the
+  // proficiencies, the pages of family, the ruler and office holders, the War Room, and a duel. Three checks: a line of
+  // text with a stat word and a bare number; an element whose tooltip key names a 0-100 measure (perf, rep, merit,
+  // board, coMo, worth, fame, opinion, loyalty …) and still holds digits; a bar whose value is a bare number. Plus the
+  // playtest's own lines, read through the same words. (35-moods' needs and the drill bars belong to other groups' fixes.)
+  async v2sNoBareNumbers(pg) {
+    const r = await pg.evaluate(async () => {
+      const W = '(strength|speed|instincts?|stamina|wits|will|willpower|intelligence|renown|opinion(?: of you)?|command(?: skill)?|morale|performance|reputation|merit(?: in your post)?|blood|wind|health|happiness|looks|honou?r|piety|loyalty|discontent|infamy)';
+      const LINE = new RegExp(`\\b${W}\\b[:\\s·—–-]{0,3}\\(?[+−-]?\\d{1,4}(?:\\.\\d)?(?:\\s*/\\s*\\d+)?\\b(?!\\s*(?:suns?|years?|days?|months?|men\\b|km|kg|cm|ms|m/s|hours?|levies|blows|AR\\b|of \\d|in \\d))`, 'i');
+      const MORE = [/\b\d{1,3} damage\b/, /\bfighter \(\d/, /\+\d+(?:\.\d)?[,.] (?:[a-z]|all|about|nearly)/, /\bmore faster\b/, /(?:assault|attack|charge|defence|defense|march) about (?:a|two|three|half)[^.,]* (?:more|less)\b/, /\b(?!\d0*(?:,000)+\b)\d{1,3}(?:,\d{3})+ suns (?:to|from)\b/];
+      const KEYS = new Set(['perf', 'rep', 'merit', 'coMo', 'coDivMo', 'worth', 'fame', 'opinion', 'rulerOp', 'loyalty', 'facDisc', 'feud']);
+      const BOARD = /\|(merit|cmd|skill|rep)$/, NEEDS = /^(Rest|Company|Purpose|Comfort)$/;
+      const found = [], tick = () => new Promise(res => setTimeout(res, 0));
+      const scan = async where => {
+        await tick();
+        const root = document.querySelector('#modal') && document.querySelector('#modal').innerText.trim() ? document.querySelector('#modal') : document.querySelector('#tabbody');
+        const roots = [root, document.querySelector('#profile')].filter(Boolean);
+        for (const R of roots) {
+          for (const line of R.innerText.split('\n')) if (/\d/.test(line) && (LINE.test(line) || MORE.some(x => x.test(line)))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
+          for (const el of R.querySelectorAll('[data-tt]')) {
+            const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || '';
+            if (!(KEYS.has(k) || (k === 'board' && BOARD.test(v))) || el.children.length) continue;
+            // a worth is said in levies, a real unit ("about 25 levies")
+            if (/\d/.test(el.textContent) && !(k === 'worth' && /\blev(?:y|ies)$/.test(el.textContent.trim()))) found.push(`${where} [${k}]: ${el.textContent.trim().slice(0, 40)}`);
+          }
+          for (const el of R.querySelectorAll('.barrow > .val')) {
+            const l = ((el.parentNode.querySelector('.lbl') || {}).textContent || '').trim();
+            if (/^\s*[+−-]?\d{1,3}\s*$/.test(el.textContent) && !NEEDS.test(l)) found.push(`${where} [bar ${l.slice(0, 20)}]: ${el.textContent.trim()}`);
+          }
+        }
+      };
+      // the log: the story's own lines (a season's practice, merit, a battle's reckoning)
+      const scanLog = where => { for (const line of (document.querySelector('#log') || { innerText: '' }).innerText.split('\n')) if (/\d/.test(line) && (LINE.test(line) || MORE.some(x => x.test(line)))) found.push(`${where} log: ${line.trim().slice(0, 90)}`); };
+      let pages = 0;
+      for (const st of [{ seed: 38, startAge: 16 }, { seed: 41, startAge: 17, status: 'noble' }]) {
+        T.enter(st);
+        for (let y = 0; y < 9 && A.pc() && A.pc().alive; y++) {
+          T.play(1);
+          if (y % 3 !== 2) continue;
+          const at = `${st.seed}/${A.S.year}`;
+          for (const tab of T.tabs()) { UI.ov = null; UI.tab = tab; UI.render(); await scan(`${at} ${tab}`); pages++; if (tab === 'life') scanLog(at); }
+          for (const v of ['dipl', 'realms', 'wars', 'news', 'history']) { UI.ov = null; UI.tab = 'world'; UI.worldView = v; UI.render(); await scan(`${at} world ${v}`); pages++; }
+          UI.worldView = 'map';
+          for (const ov of ['profile', 'profs']) { UI.A.ov(ov); UI.render(); await scan(`${at} ${ov}`); pages++; }
+          const pc = A.pc(), ids = new Set([pc.father, pc.mother, pc.spouse].filter(Boolean)), realm = A.realm(pc.realm);
+          if (realm && realm.ruler) ids.add(realm.ruler);
+          for (const q of Object.values(A.S.people).filter(q => q.alive && q.id !== pc.id && q.realm === pc.realm && (q.office || q.job)).slice(0, 5)) ids.add(q.id);
+          for (const id of ids) { UI.A.ov('person:' + id); UI.render(); await scan(`${at} person ${id}`); pages++; }
+          UI.ov = { type: 'warroom' }; UI.render(); await scan(`${at} warroom`); pages++;
+          UI.ov = null; UI.tab = 'life'; UI.render();
+        }
+      }
+      // a duel, four rounds in
+      A.newGame({ seed: 11, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); UI.screen = 'game'; UI.ov = null; A.S.queue = []; UI.set.cutins = false; UI.render();
+      const pc = A.pc(), foe = A.makeFoe({ realm: pc.realm, tier: 2 }); foe.npcTemp = false; A.S.people[foe.id] = foe; A.S.queue = [];
+      A.startDuel(pc, foe, { kind: 'duel', lethal: false, toYield: true }); UI.render(); await tick();
+      for (let i = 0; i < 4; i++) { const b = document.querySelector('#modal .actbtns > button'); if (!b) break; b.click(); await tick(); }
+      await scan('duel'); pages++;
+      // the playtest's own lines, through the same words
+      const V = A.V2S, w = t => V.deNum(V.dePct(t));
+      const lines = ['This season you got better at Farming & herding +2.3. 100% of it from doing, the rest from practice.',
+        'This season you got better at Riding & the lance +4.7, Command +2.6, Tactics & siegecraft +2.3 and 2 more. 80% of it from doing, the rest from practice.',
+        'After the battle, the captains reckon it: your counterattack countered their frontal assault +20%, drill, kit and experience −12%.',
+        'Solenne sends 881,788 suns to the Horde for its war: the siege, in 1110.', 'Abara owes Zanara 402,000 suns from a loan of 1104, and has paid none of it back.',
+        'You take a hit — 7 damage.', 'Your superiors notice the extra hours. (Merit +15)', 'For Senior Captain: merit 379/600, command skill 28/35, months at your present rank 1/16.',
+        'In a fight: Crushed knee that never bends right: worth 45 to 43 (speed -7, stamina -3).'].map(w);
+      const traits = Object.keys(GD.ORDERS || {}).flatMap(k => A.orderTraits(k));
+      for (const l of lines.concat(traits)) if (LINE.test(l) || MORE.some(x => x.test(l)) || /%|\+\d/.test(l)) found.push('line: ' + l.slice(0, 90));
+      return { pages, found: [...new Set(found)], lines, traits: traits.filter(t => /faster|Charge/.test(t)).slice(0, 2) };
+    });
+    const ok = r.pages > 60 && r.found.length === 0 && /\(some\)\. All of it came from doing\.$/.test(r.lines[0]) && /some 900,000 suns/.test(r.lines[3]) && /some 400,000 suns/.test(r.lines[4]) && /— a cut\.$/.test(r.lines[5]);
+    return { ok, detail: `${r.pages} pages: ${r.found.length ? r.found.length + ' bare numbers, e.g. ' + r.found.slice(0, 30).join(' | ') : 'no bare 0-100 number by a stat word'}; ${r.lines.slice(0, 4).join(' | ')} | ${r.traits.join(' | ')}` };
+  },
+
   // the odds badge on a check choice is words and a tipped balance
   async v2sBadge(pg) {
     const r = await pg.evaluate(async () => {
