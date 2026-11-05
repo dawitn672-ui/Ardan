@@ -104,6 +104,8 @@
           const sg = C2.signs(fxOf(ch));
           ch.t = ch.t.replace(/• (their regard|regard|health|honour|renown|piety|spirits|stability|the treasury|standing in the ranks|coin)\b/g, (all, w) => (sg[w] ? `${sg[w] > 0 ? '▲' : '▼'} ${w}` : all));
           if (ch.k === 'touch' && /^[▲▼]/.test(ch.t)) ch.k = /^▲/.test(ch.t) ? 'gain' : 'cost';
+          // what a failed check costs is a loss: the regard it names goes down ("If it fails: hurt, ▼ Edith's regard")
+          if (ch.k === 'risk') ch.t = ch.t.replace(/(: |, )(their regard)\b/g, '$1▼ $2');
           // whose regard
           if (t && t.id !== (pc && pc.id)) ch.t = ch.t.replace(/\btheir regard\b/g, whose(t, 'regard')).replace(/• regard\b/g, '• ' + whose(t, 'regard')).replace(/([▲▼]) regard\b/g, `$1 ${whose(t, 'regard')}`);
         }
