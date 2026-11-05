@@ -31,12 +31,12 @@ const tests = {
 // each event it waits at, and let it go on
 const STEPS = () => {
   window.__step = kind => new Promise(res => {
-    const d0 = A.absDay(), w0 = A.S.warClock || 0; let events = 0, slices = 0;
+    const d0 = A.absDay(), w0 = A.S.warClock || 0, ticks = [performance.now()]; let events = 0, slices = 0;
     UI.A[kind]();
     const iv = setInterval(() => {
-      slices++;
+      slices++; ticks.push(performance.now());   // when the page was free to poll: tbStepResponsive reads the gaps
       if (UI.stepper.wait) { events++; let g = 0; while (A.headReady() && g++ < 50) { if (A.S.queue[0].type === 'event') A.eventAuto(); else A.skipPrompt(); } UI.clkResume(); }
-      else if (!UI.stepper.run) { clearInterval(iv); res({ kind, d0, w0, d1: A.absDay(), w1: A.S.warClock || 0, year: A.S.year, events, slices, alive: A.pc().alive }); }
+      else if (!UI.stepper.run) { clearInterval(iv); res({ kind, d0, w0, d1: A.absDay(), w1: A.S.warClock || 0, year: A.S.year, events, slices, ticks, alive: A.pc().alive }); }
     }, 4);
   });
 };
@@ -62,42 +62,65 @@ Object.assign(tests, {
     return { ok, detail: `steps ${r.a.h}/${r.a.rng}, one advance ${r.b.h}/${r.b.rng}: ${ok ? 'the same world' : 'DIFFERENT'}` };
   },
   async tbStepResponsive(pg) {
-    // a month of the world is sliced: many tasks, and the longest is one day (the month's turn), not the month.
+    // a step of the world is sliced: the page is drawn between slices, and no slice runs more than UI.STEP_SLICE ms of
+    // days beyond its one longest day (the month's turn), so the page never stops for a whole step.
     // v2: this life was built with lands:'great', the Great Continent of the Far Lands, which the owner dropped from the
     // build (docs/v2/LANES.md: the Far Lands go out with .wip markers). Every world is now the generated v2 continent
-    // (99991-v2-map marks it with A.S.v2map), so the test steps that world; the 1000-province bar measured the Great
+    // (99991-v2-map marks it with A.S.v2map), so the test steps that world; the 1000-province check measured the Great
     // Continent's size and goes with it. Time is Next month, and on campaign Next day and Next week (99992-v2-time), so
     // the test presses each step the clock offers: the month at home, then a week and a day on the road.
+    // v2, the bar: it was "5 polls or more, or done in under 300 ms". Five polls assumed a Great Continent month, whose
+    // days cost about 20 ms each; a day of the 306-province continent costs a few ms, so a month is honestly done in
+    // three or four slices, and the 300 ms fallback then measured only how loaded the machine was (one month-turn day
+    // and the step's closing draw are 120 to 250 ms each on a loaded 4-core runner: 346 ms over 4 polls failed, 662 ms
+    // over 8 polls passed). The bar now reads the slicing itself, which load does not change: the days the stepper ran
+    // between two polls, less the longest of them, fit in one slice (step.core.js's 20 ms, with 15 ms for timer slack),
+    // and a month is cut into more than one piece. The longest task stays under 1500 ms as before. (With the slicing
+    // turned off, UI.STEP_SLICE = 1e6, a month ran 41 ms of days beyond its turn in one piece and fails the bar; sliced,
+    // 13 to 17 ms.)
     await pg.evaluate(STEPS);
     const r = await pg.evaluate(async () => {
       T.enter({ seed: 8403, race: 'human', realm: 'POL-36', status: 'peasant', sex: 'M', startAge: 20 });
       await __step('stepMonth');   // the first days build the roads once (v2: a month; Week is gone)
       const lt = [];
       const ob = new PerformanceObserver(l => { for (const e of l.getEntries()) lt.push(e.duration); }); ob.observe({ entryTypes: ['longtask'] });
+      const tick = A.dayTick, days = [];
+      // each day the stepper runs, timed (the wrapper only reads the clock: the same days run with the same draws)
+      A.dayTick = function () { const t0 = performance.now(); try { return tick.apply(this, arguments); } finally { days.push([t0, performance.now()]); } };
       const press = async kind => {
         A.S.queue = [];   // v2: a step waits for the cards left from the last one
-        lt.length = 0;
+        lt.length = 0; days.length = 0;
         const plan = UI.stepPlan().join('/');
         const t0 = performance.now(), m = await __step(kind), ms = performance.now() - t0;
         await new Promise(res => setTimeout(res, 50));
-        return { kind, plan, ms: Math.round(ms), slices: m.slices, days: m.d1 - m.d0, long: lt.map(Math.round).sort((a, b) => b - a) };
+        // the days run between two polls of the page: their work less the longest day
+        let worst = 0, pieces = 0;
+        for (let i = 1; i < m.ticks.length; i++) {
+          const d = days.filter(x => x[1] > m.ticks[i - 1] && x[1] <= m.ticks[i]).map(x => x[1] - x[0]);
+          if (!d.length) continue;
+          pieces++;
+          worst = Math.max(worst, d.reduce((a, b) => a + b, 0) - Math.max(...d));
+        }
+        return { kind, plan, ms: Math.round(ms), slices: m.slices, pieces, worst: Math.round(worst), ran: days.length, days: m.d1 - m.d0, long: lt.map(Math.round).sort((a, b) => b - a) };
       };
       const out = [];
-      // v2: a soldier's host may be on the march by now, and then the clock offers a week, not a month
-      out.push(await press(A.V2T && A.V2T.campaign() ? 'v2Week' : 'stepMonth'));
-      // on the road (a journey to the far end of the realm) the clock offers Next week and Next day
-      const pc = A.pc(), home = A.S.prov[pc.home];
-      const far = A.S.prov.filter(P => P && P.owner === pc.realm && P.id !== pc.home).sort((a, b) => Math.hypot(b.x - home.x, b.y - home.y) - Math.hypot(a.x - home.x, a.y - home.y))[0];
-      const j = !!(far && A.JR && A.JR.start(pc, far.id, 'visit')); UI.render();
-      if (j && A.V2T.campaign()) { out.push(await press('v2Week')); if (A.V2T.campaign()) out.push(await press('v2Day')); }
-      ob.disconnect();
-      return { v2map: !!A.S.v2map, prov: A.S.prov.length, j, out };
+      try {
+        // v2: a soldier's host may be on the march by now, and then the clock offers a week, not a month
+        out.push(await press(A.V2T && A.V2T.campaign() ? 'v2Week' : 'stepMonth'));
+        // on the road (a journey to the far end of the realm) the clock offers Next week and Next day
+        const pc = A.pc(), home = A.S.prov[pc.home];
+        const far = A.S.prov.filter(P => P && P.owner === pc.realm && P.id !== pc.home).sort((a, b) => Math.hypot(b.x - home.x, b.y - home.y) - Math.hypot(a.x - home.x, a.y - home.y))[0];
+        const j = !!(far && A.JR && A.JR.start(pc, far.id, 'visit')); UI.render();
+        if (j && A.V2T.campaign()) { out.push(await press('v2Week')); if (A.V2T.campaign()) out.push(await press('v2Day')); }
+        return { v2map: !!A.S.v2map, prov: A.S.prov.length, j, out, slice: UI.STEP_SLICE };
+      } finally { A.dayTick = tick; ob.disconnect(); }
     });
     const need = { stepMonth: 25, v2Week: 7, v2Day: 1 };
-    const fine = s => s.days >= need[s.kind] && (s.long[0] || 0) < 1500 && (s.slices >= 5 || s.ms < 300);   // v2: a step done in under 300 ms needs no slices
+    const SLICE = 20;   // the slice step.core.js promises; a build that widens UI.STEP_SLICE fails here
+    const fine = s => s.days >= need[s.kind] && s.ran >= s.days && (s.long[0] || 0) < 1500 && s.worst <= SLICE + 15 && (s.kind !== 'stepMonth' || s.pieces >= 2);
     const kinds = r.out.map(s => s.kind);
     const ok = r.v2map && r.j && kinds.includes('v2Week') && kinds.includes('v2Day') && r.out.every(fine);
-    return { ok, detail: `the generated continent (${r.prov} provinces${r.v2map ? '' : ', NOT v2'}); journey ${r.j}; ` + r.out.map(s => `${s.kind} (clock ${s.plan}) ${s.days} days in ${s.ms} ms over ${s.slices} polls, long tasks ${s.long.slice(0, 4).join(', ') || 'none'} ms`).join('; ') + ' (the longest is the turn, a single day)' };
+    return { ok, detail: `the generated continent (${r.prov} provinces${r.v2map ? '' : ', NOT v2'}); journey ${r.j}; ` + r.out.map(s => `${s.kind} (clock ${s.plan}) ${s.days} days in ${s.ms} ms, in ${s.pieces} pieces over ${s.slices} polls, at most ${s.worst} ms of days in a piece beyond its longest day (slice ${r.slice} ms, bar ${SLICE + 15}); long tasks ${s.long.slice(0, 4).join(', ') || 'none'} ms`).join('; ') + ' (the longest is a turn or a draw)' };
   },
   // a life begun through the creation screen (which keeps its page number in UI.step) steps a month at a time, and the
   // stepper's state stays readable: a month passes per step and the step ends on its own
