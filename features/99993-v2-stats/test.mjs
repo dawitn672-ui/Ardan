@@ -270,4 +270,31 @@ export default {
       r.baby === 'too young to tell' && (!r.faithless || r.piety === '▲▲ a strong pull toward the faith');
     return { ok, detail: `${p.join(' | ')}; a sword master ${r.master.toFixed(1)} levies; chip ${r.chip.replace(/<[^>]+>/g, '')}; tap targets on choices ${r.taps}; popover words only ${r.popWords}; a 1-year-old's speed "${r.baby}"; piety for the faithless "${r.piety}"` };
   },
+
+  // playtest 2, new 1 and 2: what a failed check costs, read as the engine will play it. A.punish for treason, a queued
+  // gallows and a hurt that would kill this person now are deadly losses: the roll's stakes rise for them (will can
+  // carry a lost check), and VS.lossOf says what they are. The reading draws nothing and writes nothing.
+  async v2sLossStakes(pg) {
+    const r = await pg.evaluate(() => {
+      const VS = A.V2S, out = {};
+      T.enter({ seed: 9751, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const pc = A.pc(), hp0 = pc.health, rng0 = A.rngState, h0 = T.hash(A.S);
+      // (watch: a blow on the night watch as written, 12 health and no wound, so only the health it takes can raise the stakes)
+      const plot = A.EV.ct_plot_invite.choices[0], watch = { check: { s: 'melee', d: 40 }, lose: { fx: { health: -12, cause: 'a blow' } } }, ask = { check: { s: 'persuasion', d: 45 }, lose: { fx: { happy: -2 } } };
+      out.plot = VS.stakesOf(plot.check, plot, pc);
+      out.plotWords = VS.lossWords(VS.lossOf(plot.lose.fx, pc), pc);
+      pc.health = 90; out.hale = VS.stakesOf(watch.check, watch, pc);
+      pc.health = 5; out.low = VS.stakesOf(watch.check, watch, pc); out.lowWords = VS.lossWords(VS.lossOf(watch.lose.fx, pc), pc);
+      pc.health = 90;
+      out.ask = VS.stakesOf(ask.check, ask, pc);
+      out.gallows = VS.lossWords(VS.lossOf({ event: 'gallows' }, pc), pc);
+      out.desert = VS.lawFor(pc, 'desertion').w;
+      pc.health = hp0;
+      out.pure = A.rngState === rng0 && T.hash(A.S) === h0;
+      return out;
+    });
+    const ok = r.plot === 0.8 && /treason trial: the gallows or a deep cell/.test(r.plotWords.join(', ')) && r.hale === 0.5 && r.low === 0.8 &&
+      /could kill you/.test(r.lowWords.join(', ')) && r.ask === 0.5 && r.gallows.includes('the gallows') && /gallows|fingers/.test(r.desert) && r.pure;
+    return { ok, detail: `Join the plot: stakes ${r.plot}, "${r.plotWords.join(', ')}"; a blow of 12: stakes ${r.hale} hale, ${r.low} near death, "${r.lowWords.join(', ')}"; a talk that costs spirits ${r.ask}; a queued gallows "${r.gallows.join(', ')}"; desertion in Aldmark "${r.desert}"; no draw ${r.pure}` };
+  },
 };
