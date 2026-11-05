@@ -56,3 +56,10 @@ ladders to `src/v2/renown.js` (`recordDeed`, `renown`, `renownWords`, `promotion
 - `rnJobBoard`: a post's board has no merit counter; the deed row is soft.
 - `rnNoCounters`: the soldier's Path tab, the promotion tips and the log lines carry no merit counter (playtest 1, 2).
 - `rnWords`: renown in words on the profile and another person's sheet, never a number; an old save keeps its fame.
+
+## Measured (Nov 5, `node bench/balance.mjs --workers=2`, 12 lives a path, 70 years)
+
+Every path inside its bands in `bench/targets.mjs` (none widened). Median peak fame, and the spread of the 12 peaks:
+serf 41 (7–62), peasant 48 (14–67), artisan 37 (0–67), merchant 53 (24–60), noble 62 (41–81), royal 45 (28–81). The
+highest peak of the 72 lives is 81; before, a noble's median peak was 96 and several lives sat at 100. The league's
+first noble life (seed 7156) peaked at 99 by 55 before; now 68, and 64 at 38.
