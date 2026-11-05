@@ -81,6 +81,7 @@
     if (!e || A.age(pc) < 14) return false;
     if (v.adv && v.adv.length) return false;               // one extra line a card: the counsel speaks
     if (woven(q)) return false;                             // ... or the memory does
+    if (v.recall) return false;                             // ... or the world's record (57-world-chronicle)
     const sk = checksOf(e);
     if (!sk.length) return false;                           // no stakes, no voice
     if (vo.thought) {

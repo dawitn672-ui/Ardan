@@ -22,10 +22,10 @@
   // the line that says who they are; the rest stays as lore
   C2.cardWho = function (h) {
     return String(h).replace(/<details class="more"><summary>Read more<\/summary><div class="mtext">([^<]*)<\/div><\/details>/g, (all, line) => {
-      if (/^Why /.test(line)) return `<div class="mtext ev-who small">${C2.whoLine(line)}</div>`;
+      if (/^Why /.test(line)) return `<div class="ev-who small">${C2.whoLine(line)}</div>`;
       const m = /^(.+?[.!?])\s+(\S[\s\S]*)$/.exec(line);
-      if (!m) return `<div class="mtext ev-who small">${line}</div>`;
-      return `<div class="mtext ev-who small">${m[1]}</div><details class="more"><summary>Read more</summary><div class="mtext">${m[2]}</div></details>`;
+      if (!m) return `<div class="ev-who small">${line}</div>`;
+      return `<div class="ev-who small">${m[1]}</div><details class="more"><summary>Read more</summary><div class="mtext">${m[2]}</div></details>`;
     });
   };
   const qm = UI.queueModal;
@@ -105,7 +105,13 @@
           ch.t = ch.t.replace(/• (their regard|regard|health|honour|renown|piety|spirits|stability|the treasury|standing in the ranks|coin)\b/g, (all, w) => (sg[w] ? `${sg[w] > 0 ? '▲' : '▼'} ${w}` : all));
           if (ch.k === 'touch' && /^[▲▼]/.test(ch.t)) ch.k = /^▲/.test(ch.t) ? 'gain' : 'cost';
           // what a failed check costs is a loss: the regard it names goes down ("If it fails: hurt, ▼ Edith's regard")
-          if (ch.k === 'risk') ch.t = ch.t.replace(/(: |, )(their regard)\b/g, '$1▼ $2');
+          // (a failure that still raises something, "Fails: ▲ regard" in red, reads as a contradiction: it is no loss,
+          // so it is not listed among the losses)
+          if (ch.k === 'risk') {
+            const parts = ch.t.replace(/^If it fails: /, '').split(', ').filter(x => !/^▲/.test(x));
+            if (!parts.length) { ch.k = 'safe'; ch.t = 'Nothing lost if it fails'; delete ch.fail; }
+            else ch.t = 'If it fails: ' + parts.join(', ').replace(/(^|, )(their regard)\b/g, '$1▼ $2');
+          }
           // whose regard
           if (t && t.id !== (pc && pc.id)) ch.t = ch.t.replace(/\btheir regard\b/g, whose(t, 'regard')).replace(/• regard\b/g, '• ' + whose(t, 'regard')).replace(/([▲▼]) regard\b/g, `$1 ${whose(t, 'regard')}`);
         }
@@ -140,6 +146,8 @@
     const v = view0.apply(this, arguments);
     try {
       if (fresh && v && !v.skip && q.view === v && !q.result && C2.oneLive(q, v)) { v.skip = true; C2.dropped = (C2.dropped || 0) + 1; }
+      // one extra line a card: a memory or counsel speaks, the world's recalled line (57) gives way
+      if (fresh && v && !v.skip && v.recall && ((v.adv && v.adv.length) || (q.ctx && q.ctx.mw && !q.ctx.mw.off && q.ctx.mw.ev === q.ev))) delete v.recall;
     } catch (err) { console.error('v2 content view', err); }
     return v;
   };

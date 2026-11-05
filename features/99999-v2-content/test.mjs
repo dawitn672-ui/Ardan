@@ -63,7 +63,7 @@ export default {
           const advLines = adv ? v.adv.length : 0;
           const woven = !!(q.ctx && q.ctx.mw && !q.ctx.mw.off && q.ctx.mw.ev === q.ev);
           if (vo) out.voice++; if (adv) out.adv++;
-          if ((vo ? 1 : 0) + advLines > 1 || (vo && woven)) out.two.push(q.ev);
+          if ((vo ? 1 : 0) + advLines + (woven ? 1 : 0) + (/wc-recall/.test(html) ? 1 : 0) > 1) out.two.push(q.ev);
           if (vo) {
             const line = (/<span class="idv-line">([^<]*)</.exec(html) || [])[1] || '';
             const checks = (e.choices || []).some(c => c && c.check);
@@ -137,7 +137,7 @@ export default {
         const q = { type: 'event', ev, ctx: { pid: t.id, npcMove: true, nk: 'gift', niWhy: `Why ${t.given}: thinks well of you (66); your friend.` } };
         A.S.queue.unshift(q); const v = A.eventView(q); const h = v.skip ? '' : UI.queueModal(q) || ''; A.S.queue.shift();
         if (!h) continue;
-        out.cards.push({ ev, hidden: /<summary>Read more<\/summary><div class="mtext">Why /.test(h), shown: (/<div class="mtext ev-who[^"]*">([^<]*)</.exec(h) || [])[1] || '' });
+        out.cards.push({ ev, hidden: /<summary>Read more<\/summary><div class="mtext">Why /.test(h), shown: (/<div class="ev-who[^"]*">([^<]*)</.exec(h) || [])[1] || '' });
       }
       // the creation screen at phone width: a story's blurb is not clamped
       UI.screen = 'title'; UI.render();
