@@ -157,10 +157,15 @@ export default {
     // Untrained). The life at seed 4601 is drawn after the world, so 9996-polity's offices shifted it: with the Polity
     // 3 of 20 such lives (seeds 4601-4620) keep their tier after a lost hand, without it 0 of 20; the line must match
     // whichever case the life is in.
-    const handLine = r.sameTier ? /Lost a hand: worth \d+ to \d+/ : /Lost a hand: \w+ \d+ to \w+ \d+/;
+    // v2 (the owner's rule: no 0-100 number the player sees): the line says the tiers in words, and "less speed" for
+    // the knee; without 99993-v2-stats it keeps the release's worth figures. (No levies: v2's are its own scale, read
+    // from the body, and a worth's tier is not put beside them.)
+    const handLine = r.v2 ? (r.sameTier ? /Lost a hand: still \w+, (a little|much) less in a fight/ : /Lost a hand: \w+ to \w+/)
+      : r.sameTier ? /Lost a hand: worth \d+ to \d+/ : /Lost a hand: \w+ \d+ to \w+ \d+/;
+    const kneeLine = r.v2 ? /less speed/ : /speed -7/;
     // v2 (99993-v2-stats): no setting shows the duel's "N times in 100" any more (the owner's "no percentages"), so the
     // story-setting digits, and the worth beside the tier on the duel measure, are required only without it
-    const ok = /^Measured: you, \w+/.test(r.ev) && (r.v2 ? /You: \w+/ : /You: \w+ \d+/).test(r.duel) && (r.duelOdds || r.v2) && (!r.diff || !r.realDigits) && handLine.test(r.prof) && /speed -7/.test(r.prof) && r.pure && r.evPure && r.tiers >= 2;
+    const ok = /^Measured: you, \w+/.test(r.ev) && (r.v2 ? /You: \w+/ : /You: \w+ \d+/).test(r.duel) && (r.duelOdds || r.v2) && (!r.diff || !r.realDigits) && handLine.test(r.prof) && kneeLine.test(r.prof) && !(r.v2 && /\d/.test(r.prof)) && r.pure && r.evPure && r.tiers >= 2;
     return { ok, detail: `event: "${r.ev}"; duel: "${r.duel}" (${r.tiers} tier chips; realism hides digits: ${r.diff ? !r.realDigits : 'no 42-difficulty in this build'}); profile: "${r.prof.slice(0, 160)}"; render pure: event ${r.evPure}, duel and profile ${r.pure}` };
   },
 
@@ -213,5 +218,99 @@ export default {
     }
     const ok = Object.values(out).every(o => o.moves === 5 && o.overlap === 0 && o.intent && o.quiet === 2) && out[390].fold === 5;
     return { ok, detail: JSON.stringify(out) };
+  },
+
+  // playtest 2 (new 7): the duel screen's chance across peoples. The duel engine gives some races an edge of its own
+  // (a giant's blood, an orc's burst and mass) that the worth never read, and the v2 shift was added on top: the screen
+  // said 37 in 100 where giants won 86, 50 where humans beat orcs 4 times in 100. Each pairing, both seats, is now
+  // within a few points of what the duels do.
+  async flRaceOdds(pg) {
+    await pg.evaluate(FIGHTS_LAB);
+    const r = await pg.evaluate(() => {
+      const L = FLAB, out = [];
+      A.newGame({ seed: 4701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      const byRace = {};
+      for (const id in A.S.realms) { const p = A.makeFoe({ realm: id, tier: 2 }); (byRace[p.race] = byRace[p.race] || []).push(id); }
+      const pool = (rc, n) => { const ids = [], realms = byRace[rc] || []; for (let i = 0; ids.length < n && i < n * 3 && realms.length; i++) { const p = A.makeFoe({ realm: realms[i % realms.length], tier: 1 + i % 5 }); if (p.race !== rc) continue; p.npcTemp = false; A.S.people[p.id] = p; ids.push(p.id); } return ids; };
+      const P = { human: pool('human', 80) };
+      for (const rc of ['orc', 'giant', 'dwarf']) P[rc] = pool(rc, 80);
+      const rr = L.rng(4701);
+      L.quiet(() => {
+        for (const rc of ['orc', 'giant', 'dwarf']) for (const [ra, rb] of [[rc, 'human'], ['human', rc]]) {
+          if (!P[ra].length || !P[rb].length) { out.push({ k: `${ra} v ${rb}`, n: 0 }); continue; }
+          let shown = 0, won = 0, n = 0;
+          for (let k = 0; k < 240; k++) {
+            const a = A.P(P[ra][Math.floor(rr() * P[ra].length)]), b = A.P(P[rb][Math.floor(rr() * P[rb].length)]);
+            a.health = [100, 85, 60][k % 3]; a.wounds = []; b.health = 100; b.wounds = [];
+            A.S.pc = a.id; A.S.queue = [];
+            const D = A.startDuel(a, b, { kind: 'duel', lethal: true, toYield: k % 2 === 0 });
+            if (!D || !D.measure) continue;
+            shown += D.measure.pct; A.duelAuto(D); A.S.queue = []; won += D.result === 'win' ? 1 : 0; n++;
+          }
+          out.push({ k: `${ra} v ${rb}`, n, shown: +(shown / n).toFixed(1), real: +(100 * won / n).toFixed(1) });
+        }
+      });
+      return out;
+    });
+    // 240 duels a pairing: one standard error is about 3 points
+    const ok = r.every(x => x.n >= 200 && Math.abs(x.shown - x.real) <= 9);
+    return { ok, detail: r.map(x => `${x.k}: shown ${x.shown}, won ${x.real} (${x.n})`).join('; ') };
+  },
+
+  // playtest 2 (old 12, old 17, new 7): a child's scuffle is not measured against a grown fighter; a joust is one rider,
+  // not "4 regular soldiers"; the foe fights with the weapon the scene gives them; both duel chips read the measure;
+  // the log's verbs agree ("rushes", not "rushs").
+  async flPlaytest2(pg) {
+    const r = await pg.evaluate(() => {
+      const out = {};
+      // a sister and the pony, at four: the plain check it was written as, and no measure line
+      T.enter({ seed: 4702, race: 'human', sex: 'M', startAge: 4 });
+      let pc = A.pc();
+      const sib = A.EV.ch_fam_sib_fight, ci = sib ? sib.choices.findIndex(c => c.check && c.check.fight) : -1;
+      if (ci >= 0) {
+        const ck = sib.choices[ci].check;
+        out.sib = { spec: ck.fight.scale, odds: A.checkOdds(pc, ck), ladder: A.FL.resolve(pc, ck.fight, {}, ck).pct, applies: A.FL.applies(pc, ck.fight, {}) };
+        A.S.queue = [{ type: 'event', ev: 'ch_fam_sib_fight', forced: true, ctx: {} }];
+        const q = A.S.queue[0]; q.view = A.eventView(q);
+        out.sib.measure = /Measured:/.test(UI.eventModal(q)); A.S.queue = [];
+      } else out.sib = { none: true };
+      // a grown man in a deadly fight is still measured
+      T.enter({ seed: 4702, race: 'human', sex: 'M', startAge: 25 });
+      pc = A.pc();
+      const deadly = A.FL.CONVERTED.find(x => x.deadly && A.EV[x.id].choices[x.i].check.fight.scale === 'one');
+      out.adult = deadly ? A.FL.applies(pc, A.EV[deadly.id].choices[deadly.i].check.fight, {}) : null;
+      // the second tilt: one rider, by the tourney's rules
+      const j = A.EV.gs_joust2, jc = j ? j.choices.map(c => c.check && c.check.fight).filter(Boolean) : [];
+      out.joust = jc.map(f => `${f.scale}/${f.n}/${f.rule}`);
+      // the shepherd's hut: the deserter fights with the army sword the scene gives them
+      const hut = A.EV.av_storm_hut, lose = hut && hut.choices.map(c => c.lose && c.lose.fx && c.lose.fx.duel).find(Boolean);
+      out.hutWeapon = lose && lose.opts ? lose.opts.foeWeapon : null;
+      const foe = Object.values(A.S.people).find(p => p.alive && p.id !== pc.id && p.st && A.age(p) > 20 && (!p.gear.weapon || p.gear.weapon === 'fists'));
+      if (foe && lose) {
+        A.S.queue = [];
+        const D = A.startDuel(pc, foe, Object.assign({ kind: 'duel', lethal: true, toYield: true }, lose.opts));
+        out.duelWeapon = D.b.weapon; out.keptOwn = foe.gear.weapon;
+        const h = UI.duelModal(D), t = h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+        const chips = [...h.matchAll(/<span class="chip tier [^"]*"[^>]*>(?:<svg[\s\S]*?<\/svg>)?([^<]*)<\/span>/g)].map(m => m[1]);
+        out.chips = chips; out.tA = D.measure.tA; out.tB = D.measure.tB; out.box = (t.match(/The measure\.[^.]*\.[^.]*\./) || [''])[0];
+        // the duel's own rounds: no "rushs" or "close ins"
+        let log = '';
+        for (let k = 0; k < 6 && !D.over; k++) { A.duelAuto ? null : null; }
+        A.duelAuto(D); log = D.log.join(' ');
+        out.badVerb = /\b(rushs|close ins|guards s|strikes s)\b/.test(log);
+        out.verbs = (log.match(/Round \d+: you [a-z ]+; [^.]+\./g) || []).slice(0, 4);
+        A.S.queue = [];
+      }
+      out.armed = A.FL.ARMED.length;
+      return out;
+    });
+    // the plain check decides (81-pacing still leaves a check with a fight spec unscaled, so the number is the release's
+    // check, not the paced one): not the ladder's "hopeless" against a grown Brawler, and no measure line
+    const sibOk = r.sib.none || (!r.sib.applies && r.sib.odds > r.sib.ladder + 10 && !r.sib.measure);
+    const joustOk = r.joust.length > 0 && r.joust.every(x => /^one\/1\/tourney$/.test(x));
+    // with v2 each duel chip is the measure's tier alone (no worth number, no levies: those are v2's own scale)
+    const chipsOk = r.chips && r.chips.some(c => c.trim() === r.tA) && r.chips.some(c => c.trim() === r.tB) && r.chips.every(c => !/\d|lev/.test(c));
+    const ok = sibOk && r.adult === true && joustOk && r.hutWeapon === 'sword' && r.duelWeapon === 'Common sword' && (r.keptOwn == null || r.keptOwn === 'fists') && chipsOk && !r.badVerb && /bare-handed|with an? /.test(r.box);
+    return { ok, detail: `sibling scuffle at 4: ${JSON.stringify(r.sib)}; a deadly fight at 25 measured ${r.adult}; second tilt ${r.joust.join(', ')}; hut deserter ${r.hutWeapon} -> duel ${r.duelWeapon} (own kept ${r.keptOwn}); chips ${JSON.stringify(r.chips)} for measure ${r.tA} v ${r.tB}; "${r.box}"; rounds ${JSON.stringify(r.verbs)}; ${r.armed} events arm the foe from their text` };
   },
 };

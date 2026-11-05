@@ -372,4 +372,104 @@ export default {
       /could kill you/.test(r.lowWords.join(', ')) && r.ask === 0.5 && r.gallows.includes('the gallows') && /gallows|fingers/.test(r.desert) && r.pure;
     return { ok, detail: `Join the plot: stakes ${r.plot}, "${r.plotWords.join(', ')}"; a blow of 12: stakes ${r.hale} hale, ${r.low} near death, "${r.lowWords.join(', ')}"; a talk that costs spirits ${r.ask}; a queued gallows "${r.gallows.join(', ')}"; desertion in Aldmark "${r.desert}"; no draw ${r.pure}` };
   },
+
+  // playtest 2 (new 8, old 13, old 17): the body by age. A child is measured against others of its age, an infant is not
+  // measured at all, an untrained youth lifts what a youth lifts, and no row contradicts the one beside it.
+  async v2sPlaytest2Body(pg) {
+    const r = await pg.evaluate(() => {
+      const V = A.V2S, txt = h => h.replace(/<[^>]+>/g, ' ').replace(/&#39;/g, "'").replace(/\s+/g, ' ');
+      const out = { rows: [], bad: [] };
+      const BAD = [/grown m[ae]n/, /ordinary man/, /fells any man/, /toddler/, /as fast as a child/];
+      for (const [seed, race] of [[32, 'human'], [42, 'orc']]) {
+        T.enter({ seed, race, sex: 'M', startAge: 0 });
+        const pc = A.pc();
+        for (let y = 0; y < 26 && pc.alive; y++) {
+          const a = A.age(pc), t = txt(V.sheetHtml(pc)), adult = a >= (GD.RACES[pc.race].grown || 20);
+          if ([1, 6, 10, 13, 17, 25].includes(a)) out.rows.push(`${race} ${a}: ${t.slice(0, 150)}`);
+          if (a < V.MEASURE_AGE && (!/too young to measure/.test(t) || /lifts|levy/i.test(t))) out.bad.push(`${race} ${a}: measured as a babe: ${t.slice(0, 120)}`);
+          if (a < 6 && /A levy:/.test(t)) out.bad.push(`${race} ${a}: the levy legend with no fight row`);
+          if (!adult) for (const re of BAD) if (re.test(t)) out.bad.push(`${race} ${a}: "${re.source}" in ${t.slice(0, 200)}`);
+          if (a >= 6 && !adult && !/your age/.test(t)) out.bad.push(`${race} ${a}: no comparison with others of the same age`);
+          // a lift that names a person ("about a grown man") read as a strength comparison
+          if (/lifts \d+ kg about a (grown )?man/.test(t)) out.bad.push(`${race} ${a}: ${t.slice(0, 120)}`);
+          // the mind word and its rarity agree
+          for (const w of ['Wavering', 'Faint-hearted', 'Quick', 'Dull', 'Slow', 'Determined']) if (new RegExp(w + ' like most').test(t)) out.bad.push(`${race} ${a}: "${w} like most"`);
+          if (race === 'human' && (a === 10 || a === 13 || a === 17)) out['kg' + a] = Math.round(V.stats(pc).lift);
+          T.play(1);
+        }
+      }
+      // the fight row's words and rank read the same bands
+      for (let lv = 0.5; lv < 3.5; lv += 0.05) { const w = V.levyWords(lv), k = V.levyRank(lv); if (/one and a half|about [23] levies/.test(w) && /a levy's worth/.test(k)) out.bad.push(`${w}: ${k}`); }
+      return out;
+    });
+    // an untrained human boy: 10 about 30-60 kg, 13 about 45-100, 17 about 80-170 (playtest 2 saw 92, 144 and 250 kg)
+    const kgOk = r.kg10 < 65 && r.kg13 < 105 && r.kg17 < 180 && r.kg10 < r.kg13 && r.kg13 < r.kg17;
+    const ok = !r.bad.length && kgOk;
+    return { ok, detail: `${r.bad.length} contradictions${r.bad.length ? ' (' + r.bad.slice(0, 5).join(' | ') + ')' : ''}; human lifts ${r.kg10}, ${r.kg13}, ${r.kg17} kg at 10, 13, 17; ${r.rows.join(' || ').slice(0, 1400)}` };
+  },
+
+  // playtest 2 (new 14, the stats part): on a 420 px phone the vitals' band words are whole ("middling", "known to the
+  // neighbours"), not "middlin", "know / neighb" in the 36 px number column; the label keeps its icon and tooltip
+  async v2sPhoneBands(pg, errs, { browser, file }) {
+    const { pathToFileURL } = await import('node:url');
+    const ctx = await browser.newContext({ viewport: { width: 420, height: 900 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+    const p = await ctx.newPage();
+    p.on('pageerror', e => errs.push(String(e.stack || e).slice(0, 300)));
+    let r;
+    try {
+      await p.goto(pathToFileURL(file).href);
+      await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      r = await p.evaluate(async () => {
+        A.newGame({ seed: 77, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); UI.screen = 'game'; UI.ov = null; A.S.queue = []; UI.set.cutins = false; UI.set.hints = false;
+        UI.tab = 'you'; UI.render();
+        await new Promise(res => setTimeout(res, 100));
+        const rows = [...document.querySelectorAll('.barrow')].filter(x => x.querySelector('.lbl [data-tt="health"],.lbl [data-tt="happy"],.lbl [data-tt="looks"],.lbl [data-tt="fame"],.lbl [data-tt="honor"]') && x.offsetParent);
+        return { phone: !!document.querySelector('#game.phone'), rows: rows.map(x => {
+          const v = x.querySelector('.val'), rb = x.getBoundingClientRect(), vb = v.getBoundingClientRect();
+          return { word: v.textContent.trim(), clipped: v.scrollWidth > v.clientWidth + 1 || vb.right > rb.right + 1, lines: Math.round(vb.height / parseFloat(getComputedStyle(v).lineHeight || 20)) || 1, icon: !!x.querySelector('.lbl .ico-l') };
+        }) };
+      });
+    } finally { await ctx.close(); }
+    const ok = r.phone && r.rows.length >= 4 && r.rows.every(x => !x.clipped && !/\d/.test(x.word) && x.icon);
+    return { ok, detail: `${r.phone ? 'phone' : 'not the phone layout'}: ${r.rows.map(x => `${x.word}${x.clipped ? ' (cut off)' : ''}${x.icon ? '' : ' (no icon)'}`).join(', ')}` };
+  },
+  // playtest 2 (old 17) without a new scale: the tier chip says v2's levies alone (the tier name was the release's worth,
+  // which ranks people a little differently: "Elite · about one and a half levies"), the short chip the tier alone, and
+  // the levies stay on v2's scale (V2_SPEC row 12: an order knight 15-25 levies, and only a Master with breakthroughs
+  // stands level with a giant's 20; playtest 1, complaint 8, set orders at 18.8-23.6 a member). A verifier measured a
+  // curve on the worth at 19.9 levies for a plain Elite and 30.4 for a Master: kept from coming back.
+  async v2sLevyScale(pg) {
+    const r = await pg.evaluate(() => {
+      const V = A.V2S, txt = h => h.replace(/<[^>]+>/g, '').trim(), tiers = GD.TIERS.map(t => t.n);
+      A.newGame({ seed: 4701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      const human = Object.keys(A.S.realms).filter(id => A.makeFoe({ realm: id, tier: 2 }).race === 'human');
+      const med = {}, bad = [];
+      for (const tier of [2, 4, 5, 6]) {
+        const lv = [];
+        for (let i = 0; lv.length < 30 && i < 120; i++) {
+          const p = A.makeFoe({ realm: human[i % human.length], tier });
+          if (p.race !== 'human') continue;
+          const s = V.shownLevies(p);
+          if (Math.abs(s - V.v2Levies(p)) > 1e-9) bad.push(`shown ${s} is not v2's ${V.v2Levies(p)}`);
+          lv.push(s);
+        }
+        lv.sort((a, b) => a - b); med[tier] = +lv[lv.length >> 1].toFixed(1);
+      }
+      const chips = [];
+      for (const p of Object.values(A.S.people).filter(p => p.alive && p.st && A.age(p) >= 16).slice(0, 40)) {
+        const full = UI.tierChip(p), short = UI.tierChip(p, true), t = txt(full), ts = txt(short), lw = V.levyWords(V.shownLevies(p));
+        if (t !== lw) bad.push(`chip "${t}" is not "${lw}"`);
+        // a count of levies is a real unit; the worth (0-100) is not said, in the text or the label
+        const al = h => (h.match(/aria-label="([^"]*)"/) || [])[1] || '';
+        if (tiers.some(n => t.includes(n) || al(full).includes(n)) || /worth \d/.test(al(full))) bad.push(`chip "${t}" (${al(full)})`);
+        if (!tiers.includes(ts) || /\d|lev/.test(al(short))) bad.push(`short chip "${ts}" (${al(short)})`);
+        if (chips.length < 4) chips.push(t);
+      }
+      return { med, bad, chips };
+    });
+    // the release's tiers on v2's scale: an Elite a few knights' worth, a Master below an order member, a tier-6 at most
+    // about a giant
+    const ok = !r.bad.length && r.med[2] < 3 && r.med[4] < 10 && r.med[5] < 16 && r.med[6] < 25 && r.med[2] < r.med[4] && r.med[4] < r.med[5];
+    return { ok, detail: `median levies of 30 humans by tier ${JSON.stringify(r.med)}; chips ${JSON.stringify(r.chips)}; ${r.bad.length} problems ${r.bad.slice(0, 4).join(' | ')}` };
+  },
 };

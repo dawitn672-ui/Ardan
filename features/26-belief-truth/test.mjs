@@ -138,7 +138,8 @@ export default {
   // cycle 1: "Guards the Tea Mother trees..": a lore line that ends in its own stop is not given a second
   async btOneStop(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 2601, lands: 'great', race: 'human', realm: 'POL-46', status: 'peasant', sex: 'F', startAge: 30 });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent; POL-46 was a Far Lands realm: the seed now places this life in a continent realm (POL-19)
+      A.newGame({ seed: 2601, race: 'human', realm: 'POL-46', status: 'peasant', sex: 'F', startAge: 30 });
       const pc = A.pc(), out = [];
       for (const c of LORE.creatures.slice(0, 400)) {
         if (A.BT.level(pc, c.id) !== 0) continue;

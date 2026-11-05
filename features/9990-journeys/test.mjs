@@ -40,7 +40,8 @@ export default {
   async journeysKinds(pg) {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      const fresh = () => { A.newGame({ seed: 33, lands: 'great', race: 'human', realm: 'POL-101', status: 'peasant', startAge: 24 }); const pc = A.pc(); pc.coin = 900; JT.seen = []; return pc; };
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent; POL-101 was a Far Lands realm: the seed now places this life in a continent realm (POL-02)
+      const fresh = () => { A.newGame({ seed: 33, race: 'human', realm: 'POL-101', status: 'peasant', startAge: 24 }); const pc = A.pc(); pc.coin = 900; JT.seen = []; return pc; };
       const out = {};
       // go and come back: home is kept, the far end asks, the road home ends at home
       let pc = fresh(); const home = pc.home, R = JT.farCap(pc, 700);
@@ -60,7 +61,8 @@ export default {
       pc = fresh(); const h0 = pc.home; A.exile(pc); A.advance(2);
       out.exile = pc.home !== h0 ? (pc.journey ? pc.journey.k + (pc.journey.applied ? '/told' : '') : 'short') : 'stayed';
       // a caravan of this month (45's S.eco.car) can be joined
-      A.newGame({ seed: 33, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', startAge: 24 }); pc = A.pc(); pc.coin = 900;
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 33, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 24 }); pc = A.pc(); pc.coin = 900;
       for (let g = 0; g < 60 && !A.JR.caravansHome(pc).length; g++) { A.advance(5); JT.clear(); }
       const cars = A.JR.caravansHome(pc);
       out.cars = cars.length; if (cars.length) { const c = A.jrCaravan(0); out.caravan = c.ok && pc.journey && pc.journey.k; }
@@ -77,7 +79,8 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const run = look => {
-        T.enter({ seed: 909, lands: 'great', race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
+        // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent; POL-101 was a Far Lands realm: the seed now places this life in a continent realm (POL-26)
+        T.enter({ seed: 909, race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
         const pc = A.pc(); pc.coin = 900; JT.seen = [];
         A.travelTo(JT.farCap(pc, 1500).capitalProv);
         for (let g = 0; g < 40; g++) {

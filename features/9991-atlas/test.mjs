@@ -4,7 +4,8 @@ export default {
   async atlasKnows(pg) {
     const r = await pg.evaluate(() => {
       const AT = A.ATLAS;
-      A.newGame({ seed: 41, lands: 'great', race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent; POL-101 was a Far Lands realm: the seed now places this life in a continent realm (POL-13)
+      A.newGame({ seed: 41, race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
       const pc = A.pc(), home = pc.home, P = A.prov(home);
       // before the first day: known from the land alone, with nothing written
       const pre = { atlas: pc.atlas === undefined, home: AT.level(pc, home), adj: P.adj.every(id => AT.level(pc, id) === 2), realm: A.S.prov.filter(Q => Q.owner === pc.realm).every(Q => AT.level(pc, Q.id) >= 1) };
@@ -32,7 +33,8 @@ export default {
 
   async atlasVeil(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 41, lands: 'great', race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent; POL-101 was a Far Lands realm: the seed now places this life in a continent realm (POL-13)
+      T.enter({ seed: 41, race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
       T.play(1);
       const pc = A.pc(), AT = A.ATLAS;
       const px = (cv, id) => { const P = A.prov(id), v = (MAP.whole && MAP.whole(cv.width, cv.height)) || { x0: 0, y0: 0, w: MAP.KW || 7000, h: MAP.KH || 4500 }; const x = Math.floor((P.sx - v.x0) / v.w * cv.width), y = Math.floor((P.sy - v.y0) / v.h * cv.height); return [...cv.getContext('2d').getImageData(x, y, 1, 1).data].slice(0, 3); };
@@ -61,7 +63,8 @@ export default {
   // the realms read from above
   async atlasHeld(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 41, lands: 'great', race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent; POL-101 was a Far Lands realm: the seed now places this life in a continent realm (POL-13)
+      T.enter({ seed: 41, race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
       const h0 = T.hash(A.S), rng0 = JSON.stringify(A.rngState);
       UI.tab = 'life'; UI.storyView = 'map'; UI.render(); A.ATLAS.paint(); const cv = UI.$('#jrmap');
       if (!cv) return { none: true };

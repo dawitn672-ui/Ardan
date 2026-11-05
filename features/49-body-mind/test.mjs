@@ -367,4 +367,24 @@ export default {
     });
     return { ok: !r.err, detail: `a save without the new fields and with unplaced wounds loads, draws and plays two years: ${r.err || 'no error'} (alive ${r.alive}, ${r.year})` };
   },
+  // v2svRoundTrip (CI on the v2-wf-body branch): a deed's receipt quotes the choice's label, and a label with its own
+  // quotes ('Ask, "But is it true?"') was stored as it was in pc.deedLog, pc.traitWhy and pc.traitLog; SAVES.clean strips
+  // " < > from those (they are not prose), so the reloaded state differed from the saved one. The receipt is stored as
+  // the save keeps it.
+  async bodyMindReceiptSurvivesSave(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4981, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 25 });
+      const pc = A.pc(), BM = A.BM;
+      const why = BM.receipt({ label: 'Ask, "But is it true?"', title: 'Stories <i>by</i> the "fire"' });
+      BM.deed(pc, 'curious', 1, why);
+      const L = pc.traitLog = Array.isArray(pc.traitLog) ? pc.traitLog : []; L.push([A.S.year, 'curious', '', [why]]);
+      BM.why(pc).curious = { y: A.S.year, by: 'deeds', r: [why] };
+      const before = JSON.stringify({ d: pc.deedLog, w: pc.traitWhy, l: pc.traitLog });
+      const S = JSON.parse(A.serialize()); SAVES.clean({ S });
+      const p2 = S.people[S.pc], after = JSON.stringify({ d: p2.deedLog, w: p2.traitWhy, l: p2.traitLog });
+      return { why, same: before === after, before: before.slice(0, 240), after: after.slice(0, 240) };
+    });
+    const ok = r.same && /‘But is it true\?’/.test(r.why) && !/["<>]/.test(r.why);
+    return { ok, detail: `receipt ${r.why}; deeds, reasons and trait log the same after SAVES.clean: ${r.same}${r.same ? '' : ` (${r.before} -> ${r.after})`}` };
+  },
 };

@@ -4,7 +4,8 @@ export default {
   async carCoupCrushed(pg) {
     const r = await pg.evaluate(() => {
       if (!A.CAR) return { err: 'A.CAR is missing' };
-      A.newGame({ seed: 9941, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', startAge: 30, sex: 'M' });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 9941, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 30, sex: 'M' });
       const pc = A.pc(); A.enlist(pc, false); pc.mil.rank = 7; pc.fame = 60;
       const rl = A.realm(pc.realm);
       A.successionWar(rl, pc);
@@ -18,7 +19,8 @@ export default {
       // and the coup's half-success no longer awards the achievement before the war is won
       out.plot = !/successionWar\(r,p\),A\.ach\("usurper"\)/.test(String(A.EV.plot_throne.choices[0].fx));
       // a bargain ("the claimant kneels") comes with terms
-      A.newGame({ seed: 9942, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', startAge: 30, sex: 'M' });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 9942, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 30, sex: 'M' });
       const p2 = A.pc(); A.enlist(p2, false); A.successionWar(A.realm(p2.realm), p2);
       const w2 = A.S.wars.find(x => x.claimant === p2.id);
       A.endWar(w2, 'white', `${w2.name} ends in a bargain: the claimant kneels, keeps their head, and the rebel lands return.`);
@@ -32,7 +34,8 @@ export default {
   // B1: "taken by men of Merrick's cause" when Merrick was the player
   async carNotTakenByOwnCause(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 9943, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', startAge: 30, sex: 'M' });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 9943, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 30, sex: 'M' });
       const pc = A.pc(); A.enlist(pc, false); pc.mil.rank = 6;
       A.successionWar(A.realm(pc.realm), pc);
       const w = A.S.wars.find(x => x.claimant === pc.id), mine = w.leadA;
@@ -47,7 +50,8 @@ export default {
   // I1: careers top out; a commoner of renown is knighted, the order then admits him, a fief follows, a General can be Marshal
   async carRaised(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 9944, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', startAge: 40, sex: 'M' });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 9944, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 40, sex: 'M' });
       const pc = A.pc(); A.enlist(pc, false); pc.mil.rank = 5; pc.fame = 40;
       const out = { birthBefore: A.orderReqs(pc, 'iron_wolf').find(x => /birth/i.test(x.label)).ok, knightable: A.CAR.knightable(pc) };
       for (let i = 0; i < 40 && !A.S.queue.some(q => q.ev === 'cr_knighted'); i++) { pc.car = {}; A.CAR.month(pc); }
@@ -77,7 +81,8 @@ export default {
   // I5: a life reached Knife fighting 100 and stayed at renown 24; the PC was never a Legend
   async carLegend(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 9945, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', startAge: 30, sex: 'M' });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 9945, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 30, sex: 'M' });
       const pc = A.pc(), f0 = pc.fame || 0;
       for (const k of ['str', 'spd', 'sta', 'ins', 'wil']) { pc.st[k] = 140; if (pc.pot) pc.pot[k] = 160; }
       for (const k of ['sword', 'melee', 'shield', 'dagger', 'athletics']) pc.skills[k] = 100;

@@ -106,9 +106,20 @@ The deadly outcomes that stay behind plain checks in fight scenes are not fights
 
 **Lives** (`flLives`): 4 bot lives of up to 30 years met 22–38 events (two runs) that offered a fight rolled on worth, with no page errors.
 
+## Playtest 2 (old 12, old 17, new 7)
+
+- **A child's scuffle is the plain check it was written as** (`FL.applies`): a fight that cannot kill or maim, against no one named, is not measured against a grown Brawler for a child (a 4-year-old and the pony was "hopeless"). A deadly fight still measures the child against what is there.
+- **A bout counts its foes from the label.** "has unhorsed four men this season" made a tilt "against 4 regular soldiers"; a sport's count now comes from the label, "tilt" is a sport word, and a mounted bout or a joust uses the tourney rules.
+- **The scene's weapon is the duel's** (`FL.armFromText`, `opts.foeWeapon`): "The shepherd's hut" finds the deserter "with an army sword", and the duel armed them with a cudgel. Two events name the weapon of the {them} they start a duel with.
+- **Both duel chips read the measure**, the tier alone with v2 (no worth number, and no levies, which are v2's own scale): your chip said "Brawler" over a measure that said "You: Untrained" (a brawl is bare-handed). "with a bare hands" reads "bare-handed".
+- **The duel log's verbs** (`FL-DUEL-VERBS`, this feature's one patch): "Kettil rushes", "closes in", not "rushs", "close ins".
+- **Odds across peoples.** With 99993-v2-stats, the duel engine's own race edge is counted in `FL.fWorth` (`f.engineEdge`) and taken out of the duel fighter's skill, so the screen's chance holds for orcs, giants and dwarves (`flRaceOdds`: each pairing, both seats, within a few points; giants were shown 37 and won 86).
+- **The wound line in words** with v2: "Lost a hand: Trained to Untrained (less strength, less speed)", or "still Trained, a little less in a fight".
+- **Not reproduced:** "the duel's odds ignore your wounds". The duel screen's chance reads your blood and your wounds (through the stats): for a hurt player (40–50) and for a deep cut or a bad knee its bins are within 2–3 points of the duels' results. The playtest's loss at "You should win this" was an orc against an orc's foe with the wrong weapon (fixed above).
+
 ## Rules kept
 
-- No patches. Wrappers call the originals: `A.defEvents`, `A.checkOdds`, `A.fighterFrom`, `A.startDuel`, `A.armFor`, `A.shownDuelOdds`, `UI.eventModal`, `UI.duelModal`, `UI.profileModal`.
+- One patch (`FL-DUEL-VERBS`, a text fix in the duel log). Wrappers call the originals: `A.defEvents`, `A.checkOdds`, `A.fighterFrom`, `A.startDuel`, `A.armFor`, `A.shownDuelOdds`, `UI.eventModal`, `UI.duelModal`, `UI.profileModal`.
 - Engine draws only `A.rand`. The resolver, the measure lines and `A.armFor` draw nothing, and rendering is pure (tested).
 - No new state fields on people. `D.measure` is plain data on a duel in the queue, and old saves have none.
 - Every interpolated word goes through `UI.esc`.
