@@ -102,7 +102,16 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
   `applyFx(p, obj, ctx)`. Patch `V2C-FX-PARTS` keeps their parts on the closure (`A.V2C.parts`), and the chips read the
   parts as written. Nothing they do changes.
 - **Whose regard.** A second messmate's (`op2`: `ctx.m2`) is named. 9998 had named the first messmate instead. A loop
-  over the squad reads "your messmates' regard".
+  over the squad reads "your messmates' regard". `C2.regardWho` reads the person from the code and the scene, in this
+  order: another context key (`A.P(ctx.parId)`, `ctx.sgtId`), kin (`rel: { who }`, `A.relsOf`/`live` roles,
+  `p.parents`, `p.spouse`: "your father's regard", "your parents' regard", "your family's regard"), the crown (the
+  ruler's `addOp`: "the crown's regard"), someone new the choice brings in ("your new friend's regard"), then the
+  scene's person (`ctx.pid`). A regard that reaches nobody here (no such kin, no one in the context) is not shown.
+- **Kin regard as data.** `rel: { who: "father", op: -4 }` showed nothing on 255 choices ("If it fails: hurt" for a
+  dare that also costs your father's regard). It is shown by name and way where that kin exists.
+- **A regard with no way, person by person** (`C2.regardParts`). Two people moved opposite ways read as two parts
+  ("▲ Svala's regard, ▼▼ Hesketh's regard"); a chance either way reads "▲ or ▼ Svala's regard"; a `bump(p, t, 0)` that
+  only names a bond shows no regard.
 - **Every choice shows a true effect** (old 19):
   - 47's custom scene ("The hearth mark") shows the custom's own effect, "Costs 3 suns", and the defiance's, "Costs 6
     suns · ▲ willpower";
@@ -137,7 +146,7 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 | `v2cEveryChoiceShows` | Over 200 played scenes, every choice has a chip row and no scene is shown with one live choice. "Their regard" always names the person. The fresh levy and the song read the unit's effects. The old scholar with no coin is dropped. |
 | `v2cRiskChain` | "Join the plot" says the treason trial. Planted failures that queue or schedule a deadly scene say "what follows can kill you", prison says prison, and a free failure says nothing is lost. Played and failed, the plot sends you to the gallows or a cell. |
 | `v2cRiskLethal` | The night watch's failure reads "a wound, hurt" for a hale man. At health 3 it reads "hurt that could kill you, near death as you are", in the profile's word. Played, it leaves him at 0 health. |
-| `v2cChipsDirection` | Staged: "Under the ice", "The grand melee", the gift, the mess brawl and the loaded dice give a direction and a name. The dice name the second messmate. Over every scene for a soldier, under 0.4% of chips give no way. |
+| `v2cChipsDirection` | Staged: "Under the ice", "The grand melee", the gift, the mess brawl and the loaded dice give a direction and a name. The dice name the second messmate. Over every scene for a soldier, under 0.4% of chips give no way. The verifier's cases (wk_gen_parent's parent, the windfall's family, sc_ss_family's father, the envoy's and the scandal's crown, the saddle's wife, the first steps' father, a dare's father on failure, a feud's two sides, a quarrel either way) are named. Over every scene, staged with a friend in `ctx.pid` and again each with its own context, no chip reads a bare "regard" or "their regard" and none shows a regard without its way (336 and 68 before). |
 | `v2cEveryChoiceTrue` | "The hearth mark", "What you want" and "The last night" show a real effect on every choice. None shows only "It will be remembered" or "Nothing changes". |
 | `v2cWarRoomNumbers` | With a scout beside it, an enemy division and three of them read as estimates. Your own division never reads above full. Restless lords and the army's quality are in words. |
 
