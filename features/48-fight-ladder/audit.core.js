@@ -38,7 +38,7 @@ const RX = FL.RX = {
   allies: /\b((?:at|to) (?:his|her|their|\{\w+\}) (?:shoulder|side)|your men|your squad|your file|your company|your lance|your riders|your crew|the crew|your friends?|your companions?|your brothers?|your sons?|the hunters|hunters with you|with the hunters|the villagers|the village|the guards with you|beside (?:you|\{\w+\})|at your side|together|your band|your party|your mates|your shield-?mates|your comrades|your fellows|the others|your cousins|your kin|with two others|three friends|with (?:them|\{\w+\}|tarn|him)|join|the beaters|the barge master|the court|the party|in the party|herders?|shepherds)\b/,
   party: /\b(hunting party|hunt is called|the hunt|ivory party|a party of|beaters|hounds? (?:have|bay)|the court|the whole village|expedition)\b/,
   alone: /\b(alone|by yourself|on your own|single-handed|single combat|one spear|no one else)\b/,
-  sport: /\b(joust|tourney|tournament|the lists|ring|wrestling|wrestle for|bout|bouts|spar|sparring|practi[cs]e|lessons?|drill|training|for a purse|for the purse|the prize|exhibition|mock fight|blunted|wooden swords?|first blood|the pit|pit fight|chalk circle|the circle|feast|gathering|the title|games?)\b/,
+  sport: /\b(joust|tilt|tourney|tournament|the lists|ring|wrestling|wrestle for|bout|bouts|spar|sparring|practi[cs]e|lessons?|drill|training|for a purse|for the purse|the prize|exhibition|mock fight|blunted|wooden swords?|first blood|the pit|pit fight|chalk circle|the circle|feast|gathering|the title|games?)\b/,
   trap: /\b(pits?|traps?|snares?|poison|nets?|bait|nooses?|smoke (?:it|them) out|fire-rafts|from cover)\b/,
   child: /(?<![!\w])C\.(?:child|teen)\(/,
 };
@@ -164,7 +164,9 @@ FL.tag = function (e, i) {
   else if (!beast && !personHit && sceneBeast) beast = sceneBeast;
   const sport = RX.sport.test(scene + ' ' + label) && !/\b(to the death|real steel|sharp steel|strike to kill)\b/.test(label + ' ' + scene);
   // the scale
-  const pl = (label + ' ' + scene).match(FOE_PL), armyCue = RX.army.test(label) || RX.service.test(label) || (once('army', () => RX.army.test(scene)) && !RX.sport.test(label));
+  // a bout's text counts past opponents ("has unhorsed four men this season"), not the ones you face (playtest 2: a
+  // tilt against one rider measured "against 4 regular soldiers"), so a sport takes its count from the label alone
+  const pl = (sport ? label : label + ' ' + scene).match(FOE_PL), armyCue = RX.army.test(label) || RX.service.test(label) || (once('army', () => RX.army.test(scene)) && !RX.sport.test(label));
   const allyCue = RX.allies.test(label) || (once('allies', () => RX.allies.test(scene)) && !RX.alone.test(label)), partyCue = RX.party.test(scene + ' ' + label);
   let scale = 'one', n = 1, tier = null, allies = 0;
   const isBeast = !!beast && !(armyCue && !labelBeast && !beastFx);
@@ -228,7 +230,7 @@ FL.spec = function (e, i, t) {
     if (t.allies) { s.allies = t.allies; s.allyTier = 2; }
     if (t.pid && t.scale === 'one') s.pid = true;
     // which duel rules stand in for it: a bout (sport) is fought as a spar, a fist fight as a brawl, the rest as an event's duel
-    if (t.scale === 'one') s.rule = t.sport ? 'spar' : weapon === 'fists' ? 'brawl' : 'yield';
+    if (t.scale === 'one') s.rule = t.sport ? (mounted || /\b(joust|tilt|tourney|tournament|the lists)\b/i.test(t.label + ' ' + FL.words(e.title) + ' ' + FL.words(e.text)) ? 'tourney' : 'spar') : weapon === 'fists' ? 'brawl' : 'yield';
   }
   if (/\$\{ctx\.n\}|\{n\}/.test(FL.words(e.text) + ' ' + t.label) && t.scale === 'party') s.nCtx = true;
   if (weapon) s.weapon = weapon;
