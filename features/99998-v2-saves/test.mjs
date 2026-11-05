@@ -37,7 +37,7 @@ const MIGRATE = async (b64) => {
   const d = await SAVES.decode(bytes);
   out.ver0 = d.S.ver; out.rng0 = d.S.rng; out.people0 = Object.keys(d.S.people).length;
   out.loaded = UI.enterSaveSafe(d);
-  out.last = SV.last; out.rng1 = A.rngState; out.people1 = Object.keys(A.S.people).length;
+  out.last = SV.last; out.nSteps = SV.STEPS.length; out.rng1 = A.rngState; out.people1 = Object.keys(A.S.people).length;
   out.bad0 = SV.check();
   // the same save again gives the same world, and an upgrade of the upgraded state changes nothing
   const one = JSON.stringify(A.S);
@@ -62,7 +62,7 @@ const MIGRATE = async (b64) => {
   return out;
 };
 const verdict = (r, label) => {
-  const ok = r.loaded && r.ver0 === 13 && r.last && r.last.from === 13 && r.last.steps.length === 8 && r.rng1 === r.rng0
+  const ok = r.loaded && r.ver0 === 13 && r.last && r.last.from === 13 && r.last.steps.length === r.nSteps /* 8, and 99999-v2-names' step when it is built */ && r.rng1 === r.rng0
     && !r.bad0.length && r.sameTwice && r.idempotent && r.reSaved && r.journal && r.play === 'ok' && !r.bad1.length && !r.pct.length;
   return {
     ok, detail: `${label}: version ${r.ver0} migrated once (${r.last && r.last.steps.join(', ')}), ${r.people0} -> ${r.people1} people, stream kept ${r.rng1 === r.rng0}; ` +
