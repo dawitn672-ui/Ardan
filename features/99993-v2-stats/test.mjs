@@ -200,6 +200,85 @@ export default {
     return { ok: r.found.length === 0 && r.evs > 20, detail: `${r.evs} scenes and every tab over 12 years: ${r.found.length ? r.found.length + ' percentages, e.g. ' + r.found.slice(0, 6).join(' | ') : 'no percentage on screen'}` };
   },
 
+  // no bare 0-100 number in the views g-bands did not reach (complaint 11, playtest 1 #7, playtest 2 old 7): 35-moods'
+  // needs (card, 91-look's box, popovers), the training pickers and log, the profile's age line and wound costs, the
+  // perks, the War Room's division grid and order of battle (an enemy's when scouted, and your own), infamy under
+  // World > Diplomacy. Each view is drawn and swept as the page does; drawing none of it draws a die or changes the state.
+  async v2sNumbers(pg) {
+    const r = await pg.evaluate(async () => {
+      const tick = () => new Promise(res => setTimeout(res, 0)), bad = [], VS = A.V2S;
+      const swept = h => { const el = document.createElement('div'); el.innerHTML = h; document.body.appendChild(el); VS.sweep(el); const t = el.innerText; el.remove(); return t; };
+      // a bare 0-100 number: digits not part of a date, a count with its unit, a speed in km or a "N more"
+      const BARE = /(?<![\d.,:/×-])\b(\d{1,3})(?:\.\d+)?\b(?![\d,.:/]\d)(?!\s*(?:km|kg|cm|m\/s|ms|suns?|years?|days?|months?|men|more|hours?|initiative|of \d))/;
+      // (a year, a log line's day and month, a count of friends are not scales)
+      const plain = l => l.replace(/\b1[01]\d\d\b/g, '').replace(/^\s*\d{1,2} [A-Z][a-z]{2}/, '').replace(/\d+ friends?|\(up to \d+\)|at its best at \d+|until about \d+|fading since about \d+/g, '');
+      const check = (where, t) => { for (const line of String(t).split('\n')) if (BARE.test(plain(line))) bad.push(`${where}: ${line.trim().slice(0, 90)}`); };
+      T.enter({ seed: 9611, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'F', startAge: 16 });
+      const pc = A.pc(); A.plan(pc).train = 'survival';
+      T.play(2);
+      // the needs, low and high
+      pc.needs = { rest: 22, company: 71, purpose: 48, comfort: 88 };
+      let rng0 = JSON.stringify(A.S.rng), h0 = T.hash(A.S), pure = true;
+      UI.tab = 'life'; UI.ov = null; UI.render(); await tick();
+      const card = document.querySelector('.moods'); check('needs card', card ? card.textContent.replace(/How you are/, '\n') : 'none 0');
+      const box = UI.LOOK && UI.LOOK.needsBox ? UI.LOOK.needsBox(pc) : null; if (box) check('needs box', box.innerText);
+      for (const k of ['rest', 'company', 'purpose', 'comfort']) check('need popover ' + k, swept(UI.TIPS.need(k)));
+      check('needs popover', swept(UI.TIPS.needs())); check('mood popover', swept(UI.TIPS.mood('rest')) + '\n' + swept(UI.TIPS.mood('content')));
+      if (UI.TIPS.act) check('activity popover', swept(UI.TIPS.act('tavern')));
+      const wordsShown = !!card && /tired|worn out/.test(card.textContent) && /in good company/.test(card.textContent);
+      // the training pickers and the season's log
+      check('training picker', [...document.querySelectorAll('select[data-c="planTrain"] option')].map(o => o.textContent).join('\n'));
+      const log = document.getElementById('app').innerText.split('\n').filter(l => /got better at/.test(l));
+      check('training log', log.join('\n'));
+      UI.tab = 'goals'; UI.render(); await tick();
+      check('mentor picker', [...document.querySelectorAll('select[data-c="decArg"] option')].map(o => o.textContent).join('\n'));
+      const logged = VS.deNum('This season you got better at Survival & hunting +2.4, Farming & herding +1.0 and 2 more. About a third of it from doing.');
+      check('log line', logged);
+      // the profile's age line and wound costs, the perks
+      UI.A.ov('profile'); UI.render(); await tick();
+      check('profile', (document.getElementById('modal') || document.body).innerText.split('\n').filter(l => /best|worth|holds until|speed|stamina|Perks/.test(l)).join('\n'));
+      UI.A.ov('profs'); UI.render(); await tick();
+      check('proficiencies', (document.getElementById('modal') || document.body).innerText.split('\n').filter(l => /Perks/.test(l)).join('\n'));
+      UI.ov = null;
+      check('wound line', VS.deNum('In a fight: Bad leg: worth 46 to 43 (speed -9). Legs Bad leg −9 speed, −3 stamina, Athletics & climbing −12'));
+      // infamy, under World > Diplomacy
+      const rs = Object.values(A.S.realms).filter(x => x.alive);
+      const keep = { coal: A.S.coalitions, inf: rs.slice(0, 3).map(x => x.infamy) };
+      rs[0].infamy = 47; rs[1].infamy = 23; rs[2].infamy = 12; A.S.coalitions = { [rs[0].id]: [rs[1].id, rs[2].id] };
+      UI.tab = 'world'; UI.worldView = 'dipl'; UI.render(); await tick();
+      // (the view may sit in a closed fold: read its text nodes, one a line)
+      const texts = []; { const w = document.createTreeWalker(document.getElementById('app'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (n.nodeValue.trim()) texts.push(n.nodeValue.trim()); }
+      const pol = texts.join('\n'), coal = pol.slice(pol.indexOf('Coalitions'), pol.indexOf('Restless lords'));
+      UI.tab = 'life'; UI.worldView = null; UI.render();
+      check('coalitions and most feared', coal);
+      const infamyWords = /feared: its neighbours band together/.test(coal) && /distrusted/.test(coal);
+      A.S.coalitions = keep.coal; rs.slice(0, 3).forEach((x, i) => { x.infamy = keep.inf[i]; });
+      pure = JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0;
+      // the War Room: a scouted enemy division and one of your own
+      A.startWar(pc.realm, A.neighbors(pc.realm)[0], null, 'conquest');
+      rng0 = JSON.stringify(A.S.rng); h0 = T.hash(A.S);
+      const R2 = A.cmdRole(pc), myR = UI.wrMyR(pc), divs = A.allDivs();
+      const foe = divs.find(d => A.hostile(myR, d.r)), mine = divs.find(d => d.r === myR);
+      const wi = UI.wrIntel; UI.wrIntel = () => true;
+      let grid = '';
+      try {
+        for (const d of [foe, mine].filter(Boolean)) {
+          const t = swept(UI.wrDivPanel([d.id], R2));
+          grid += t;
+          const g = t.slice(t.search(/SOFT ATK|Soft atk/i), t.search(/COMPOSITION|Composition/i));
+          check('war room grid', g.replace(/\d+ km/g, ''));
+          check('order of battle', t.split('\n').filter(l => /^(mo|xp|morale)\b|morale \d/.test(l)).join('\n'));
+          check('organization', t.split('\n').filter((l, i, a) => a[i - 1] === 'Organization').join('\n'));
+        }
+      } finally { UI.wrIntel = wi; }
+      const gridWords = /(far above|above|like|below|far below) (yours|your others|most)/.test(grid);
+      pure = pure && JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0;
+      return { bad: [...new Set(bad)], wordsShown, infamyWords, coal: coal.slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure };
+    });
+    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.gridWords && r.foe && r.log > 0 && r.pure;
+    return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"); War Room grid compared ${r.gridWords}; ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
+  },
+
   // the odds badge on a check choice is words and a tipped balance
   async v2sBadge(pg) {
     const r = await pg.evaluate(async () => {
