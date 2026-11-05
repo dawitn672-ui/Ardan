@@ -141,18 +141,38 @@
     A.queue({ type: 'v2battle', b });
     return b;
   };
+  // the fight you are asked into waits for your answer (playtest 2, new 6: 5 of 16 "Rally your section" went straight to
+  // "After X"). The release asks on a fight's first day and fights that day at once, so a short fight was over before
+  // the answer. When the ask is queued, the fight skips that day's fighting (patch V2W-HOLD-FIRST-DAY reads F.v2hold):
+  // the scene you play is its first day, and the map fights it from the next tick.
+  const ask0 = A.wsPCFightStart;
+  if (typeof ask0 === 'function') A.wsPCFightStart = function (F) {
+    const n0 = A.S && A.S.queue ? A.S.queue.length : 0;
+    const r = ask0.apply(this, arguments);
+    try {
+      const Q = A.S.queue;
+      for (let i = n0; i < Q.length; i++) {
+        const q = Q[i];
+        if (q && q.type === 'choice' && (q.options || []).some(o => o && o.arg && (o.arg === F.key || o.arg.key === F.key))) { F.v2hold = 1; break; }
+      }
+    } catch (e) { console.error('v2 war hold', e); }
+    return r;
+  };
+  // the fight is there to be played: the same fight (its key), not a later one at the same place
+  W.live = arg => { const F = arg && (A.S.fights || {})[+String(arg.key || arg).replace(/^F/, '')]; return !!(F && F.key === (arg.key || arg)); };
   // the soldier's and the sergeant's line, and the captain's company: v2's battle
   const CF = A.CHOICE_FN = A.CHOICE_FN || {};
   const line0 = CF.wsLine, part0 = CF.wsPart;
   // the layers this replaces (72-two-scales' line, 44/9997's tactical battle) stay callable: 72's levy still uses its
-  // scene, and their own tests reach them here
+  // scene, and their own tests reach them here. A fight that is over all the same (a save from before the hold) goes to
+  // them too: 72's short scene of a fight over before you reach the front rank, not a log line and nothing to play
   W.classic = { wsLine: line0, wsPart: part0 };
   CF.wsLine = function (arg) {
-    try { const r = W.rank(); if (r === 'soldier' || r === 'sergeant') { W.startFrom(arg, r); return; } } catch (e) { console.error('v2 war line', e); }
+    try { const r = W.rank(); if ((r === 'soldier' || r === 'sergeant') && W.live(arg)) { W.startFrom(arg, r); return; } } catch (e) { console.error('v2 war line', e); }
     return line0 && line0.apply(this, arguments);
   };
   CF.wsPart = function (arg) {
-    try { if (W.rank() === 'captain') { W.startFrom(arg, 'captain'); return; } } catch (e) { console.error('v2 war company', e); }
+    try { if (W.rank() === 'captain' && W.live(arg)) { W.startFrom(arg, 'captain'); return; } } catch (e) { console.error('v2 war company', e); }
     return part0 && part0.apply(this, arguments);
   };
 
