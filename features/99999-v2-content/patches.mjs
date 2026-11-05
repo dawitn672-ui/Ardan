@@ -23,6 +23,15 @@ export default [
     edits: [['scholars twice a year: Latin, law', 'scholars twice a year: Old Solen, law']],
   },
   {
+    id: 'V2C-SCHOLAR-WORK',
+    blob: 'ardan-content',
+    why: 'fl_st_master ("An old scholar") left a student with under 30 suns one live choice, "You cannot afford it", ' +
+      'with the real one out of reach (playtest 1, #19). A poor student may now work off part of the rent: less ' +
+      'learning than paying, and it costs his evenings and some health.',
+    edits: [['{t:"You cannot afford it",r:"He shrugs and goes back to his books.",fx:{}}',
+      '{t:"Offer to work off his rent instead",req:p=>p.coin<30,r:"You carry his water, sweep his stair and copy his letters, and in the gaps he teaches you. It is half a schooling, paid for in sleep.",fx:{skill:{learning:3},int:1,health:-3,need:{rest:-12},them:{type:"mentor",op:20}}},{t:"You cannot afford it",r:"He shrugs and goes back to his books.",fx:{}}']],
+  },
+  {
     id: 'V2C-TAVERN-ROUND-ADULT',
     blob: 'ardan-content',
     why: 'bd_lucky_escape offered "Laugh, and buy the whole tavern a drink (5 suns)" from 12, so a penniless 14-year-old saw ' +

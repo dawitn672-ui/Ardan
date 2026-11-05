@@ -1,6 +1,6 @@
 # 99999-v2-content: text that fits the scene and the character
 
-**Aspect:** v2 playtest 1 (`docs/v2/playtest-1.md`), findings 9, 10, 11, 18 and 19, plus the War Room's numbers and two percentages left in World › Diplomacy and the realm tab · **Kind:** system (5 core files), 4 patches, small edits to `97-life-fixes`, `50-arcs-kin` and `87-echoes`, tests. No new events.
+**Aspect:** v2 playtest 1 (`docs/v2/playtest-1.md`), findings 9, 10, 11, 18 and 19, plus the War Room's numbers and two percentages left in World › Diplomacy and the realm tab · **Kind:** system (5 core files), 5 patches, small edits to `97-life-fixes`, `50-arcs-kin` and `87-echoes`, tests. No new events.
 
 ## What it does
 
@@ -47,7 +47,8 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 **At most one extra line on a card:**
 
 - one counsellor, not two or three;
-- no inner voice on a card that has counsel or a memory.
+- no inner voice on a card that has counsel, a memory or 57-world-chronicle's recalled line;
+- no recalled line on a card that has counsel or a memory.
 
 ### Class gates (`d-gates.core.js`, patches, #11)
 
@@ -64,9 +65,9 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
   - "• their regard" names the person: "▼ Edith's regard".
   - "standing" says where: in the ranks, at work, or "your master's regard".
   - An effect written as code shows its direction when the code's numbers all agree: regard, health, honour, renown, piety, spirits, stability, the treasury, standing, coin.
-  - What a failed check costs in regard reads ▼.
+  - What a failed check costs in regard reads ▼. A failure that still raises something ("Fails: ▲ regard", in red) is not listed as a loss; if nothing is lost, the chip says "Nothing lost if it fails".
 - **Every choice shows something.** The drill scenes' code effects are read: "▲ the unit's order", "▼ the unit's seasoning", "▲ the unit's marching". A choice with no effect says "Nothing changes". One whose effect stays hidden (a flag, a later scene) says "It will be remembered".
-- **No scene with one live choice.** If a scene written with two or more choices has fewer than two the player can take, the engine drops it where it builds the view (`A.headReady`). This is the same way it drops a scene whose tokens cannot be filled. "An old scholar" with no coin was the case the playtest found.
+- **No scene with one live choice.** If a scene written with two or more choices has fewer than two the player can take, the engine drops it where it builds the view (`A.headReady`). This is the same way it drops a scene whose tokens cannot be filled. "An old scholar" with no coin was the case the playtest found. That scene now has a second choice for a poor student, working off the rent (patch `V2C-SCHOLAR-WORK`).
 - **The creation screen's story blurbs are whole** at phone width. 29-starts clamped them to two lines.
 
 ### Numbers (`e-numbers.core.js`)
@@ -97,4 +98,4 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 
 - `97-life-fixes/scenes.events.js`: the study scenes' conditions, and the apprentice scene's `minR`.
 - `50-arcs-kin`, `87-echoes`: Latin becomes Old Solen.
-- `67-memory-weave/test.mjs` and `9999-advisors/test.mjs`: their tests read the old rates. Each change is commented and listed in the lane report.
+- The tests of `67-memory-weave`, `9992-identity`, `9998-stakes`, `9999-advisors` and `97-life-fixes` read the old rates or the old chip words. Each change is commented in place and listed in the lane report.
