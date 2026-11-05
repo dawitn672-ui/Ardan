@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { makeRng } from '../../src/v2/rng.js';
-import { makeGenes, newBody, stats, fightingWorth, describe, breakthrough, practise, train } from '../../src/v2/body.js';
+import { makeGenes, newBody, stats, fightingWorth, describe, breakthrough, practise, train, mindWords, typicalStats } from '../../src/v2/body.js';
 import { attempt, oddsWords } from '../../src/v2/odds.js';
 import { People, bloodTerm, relationLabel, canCallMutualFriend, notableKin } from '../../src/v2/kin.js';
 import { lineOfSuccession } from '../../src/v2/succession.js';
@@ -56,6 +56,53 @@ test('descriptions are concrete words, not x/100', () => {
   assert.match(d.lift.value, /kg/); assert.match(d.lift.words, /can lift about/);
   assert.match(d.sprint.words, /runs as fast as/);
   assert.ok(d.wits.words && d.wits.rarity);
+});
+
+// playtest 2 (old 13): a child is held to children of its age and people, never to grown men
+test('a child is compared with others of its age, a grown man with grown men', () => {
+  const rng = makeRng(7);
+  for (const race of ['human', 'orc', 'dwarf']) for (const age of [2, 6, 10, 13]) {
+    const p = { ...mk(rng, race, 'male', { avg: true }), age };
+    if (age >= 35 && race === 'dwarf') continue;
+    const d = describe(p);
+    for (const w of [d.lift.rank, d.sprint.words, d.march.words, d.reaction.words, d.toughness.words])
+      assert.ok(!/grown|ordinary man|any man|toddler|a child$/.test(w) && /your age/.test(w), `${race} at ${age}: "${w}"`);
+    // an ordinary body of its age is ordinary for its age
+    assert.match(d.lift.rank, /as strong as most your age/, `${race} at ${age}`);
+    if (age >= 6) assert.match(d.wits.rarity, /like most your age/, `${race} at ${age}: wits ${d.wits.words}, ${d.wits.rarity}`);
+  }
+  const man = describe({ ...mk(rng, 'human', 'male', { avg: true }), age: 30 });
+  assert.match(man.lift.rank, /like most grown men/);
+  assert.match(man.wits.rarity, /like most people/);
+});
+
+// playtest 2 (new 8): lifting by age, size and training is plausible; the thing named weighs about what is lifted
+test('lift is plausible by age and training, and its comparison agrees with the number', () => {
+  const rng = makeRng(8); const p = mk(rng, 'human', 'male', { avg: true });
+  const L = (a) => typicalStats(p, a).lift;
+  assert.ok(L(10) > 25 && L(10) < 60, `an untrained boy of 10 lifts ${L(10)} kg`);
+  assert.ok(L(13) > 45 && L(13) < 90, `of 13: ${L(13)} kg`);
+  assert.ok(L(17) > 80 && L(17) < 140, `of 17: ${L(17)} kg`);
+  assert.ok(L(25) > 100 && L(25) < 160, `a grown man: ${L(25)} kg`);
+  for (let a = 1; a <= 30; a++) {
+    const q = { ...p, age: a }, d = describe(q), kg = stats(q).lift;
+    assert.ok(!/grown man|a man\b/.test(d.lift.words), `"${d.lift.words}" names a person`);
+    // the thing named is no heavier than what is lifted, and not far lighter (the steps are at most x2.25 apart)
+    const ref = { 'a loaf of bread': 0.5, 'a hen': 2, 'a goose': 5, 'a pail of water': 10, 'a sack of flour': 20, 'a sack of grain': 45, 'a small cask of ale': 80, 'a big hog': 140 }[d.lift.words.replace('can lift about ', '')];
+    if (ref) assert.ok(ref <= kg + 1e-9 && ref >= kg / 2.3 - 1, `${kg.toFixed(0)} kg as "${d.lift.words}"`);
+  }
+});
+
+// playtest 2 (old 17): the word and the rarity never disagree ("wavering — like most people")
+test('mind words and rarity read the same band', () => {
+  const neutral = { wits: 'ordinary', will: 'steady enough', presence: 'pleasant' };
+  for (let v = 40; v <= 160; v += 0.5) for (const k of Object.keys(neutral)) {
+    const m = mindWords(v, k);
+    if (/like most/.test(m.rarity)) assert.equal(m.words, neutral[k], `${k} ${v}: ${m.words}, ${m.rarity}`);
+    if (m.words === neutral[k]) assert.match(m.rarity, /like most/, `${k} ${v}: ${m.words}, ${m.rarity}`);
+    if (/better/.test(m.rarity)) assert.ok(v > 100);
+    if (/worse/.test(m.rarity)) assert.ok(v < 100);
+  }
 });
 
 test('odds: favourites usually win, but blunder; underdogs usually lose, but surge', () => {

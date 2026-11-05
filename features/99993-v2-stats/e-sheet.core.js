@@ -7,6 +7,7 @@
 const VS = A.V2S, B = A.V2.body;
 const esc = s => UI.esc(String(s == null ? '' : s));
 const cap = s => (s ? s[0].toUpperCase() + s.slice(1) : s);
+VS.MEASURE_AGE = 3;
 VS.MIND_NAME = { wits: 'Wits', learning: 'Memory', judgment: 'Judgment', will: 'Will', presence: 'Presence', cunning: 'Cunning' };
 VS.levyWords = function (lv) {
   if (lv < 0.15) return 'no use in a fight yet';
@@ -16,8 +17,9 @@ VS.levyWords = function (lv) {
   if (lv < 20) return `about ${Math.round(lv)} levies`;
   return `about ${Math.round(lv / 5) * 5} levies`;
 };
+// the rank reads the same bands as the words: "about one and a half levies" is never "a levy's worth" (playtest 2)
 VS.levyRank = function (lv) {
-  return lv < 0.7 ? 'not yet a fighter' : lv < 1.6 ? 'a levy\'s worth' : lv < 3.3 ? 'a man-at-arms' : lv < 8 ? 'a knight' : lv < 12 ? 'a champion'
+  return lv < 0.7 ? 'not yet a fighter' : lv < 1.4 ? 'a levy\'s worth' : lv < 3.3 ? 'a man-at-arms' : lv < 8 ? 'a knight' : lv < 12 ? 'a champion'
     : lv < 32 ? 'an order knight, or a giant' : lv < 50 ? 'a hero of the age' : 'a legend';
 };
 // each row says what its number measures (59-tooltips: every number on the profile explains itself)
@@ -33,6 +35,9 @@ VS.sheetHtml = function (p, opts = {}) {
   let h = '<div class="v2-sheet">';
   h += `<div class="group-h">Build and strength</div>`;
   h += row('Height', `${d.height}, ${d.weight}`, `${(p.app && p.app.build) || ''}${growing}`.replace(/^, /, ''));
+  // a small child is not measured: a babe's "2.4 m/s" or "hardier than anyone your age" says nothing true (playtest 2,
+  // old 13: an infant orc that "stands up to a blow that would fell an ordinary man")
+  if (age < VS.MEASURE_AGE) return h + row('Body', 'too young to measure', 'strength and speed come with the years') + '</div>';
   h += row('Strength', `lifts ${d.lift.value}`, `${d.lift.words.replace(/^can lift /, '')}; ${d.lift.rank}`);
   // a grown body is not compared with a child's run (playtest round 1: "runs as fast as a child" on a Grandmaster)
   const sprintW = age >= (R.grown || 20) && /a (toddler|child)$/.test(d.sprint.words) ? 'runs slower than most grown people' : d.sprint.words;
@@ -41,7 +46,8 @@ VS.sheetHtml = function (p, opts = {}) {
   h += row('Reflexes', d.reaction.value, d.reaction.words);
   const tn = Math.round(s.toughness), toughW = /^takes \d+ blows/.test(d.toughness.words) && tn < 2 ? 'stands up to a blow that would fell an ordinary man' : d.toughness.words;
   h += row('Toughness', d.toughness.value, toughW);
-  if (age >= 6) {
+  const fights = age >= 6;
+  if (fights) {
     const lv = VS.shownLevies(p);
     h += row('In a fight', VS.levyWords(lv), VS.levyRank(lv));
   }
@@ -52,7 +58,8 @@ VS.sheetHtml = function (p, opts = {}) {
   }
   const bt = (v.body.breakthroughs || []);
   if (bt.length) h += `<div class="tiny muted v2-bt">Broke through: ${esc(bt.slice(-3).map(b => `${b.attr === 'lift' ? 'strength' : b.attr} at ${b.age}${b.note ? ' (' + b.note + ')' : ''}`).join('; '))}.</div>`;
-  if (!opts.noLegend) h += `<div class="tiny muted v2-legend">A levy: an untrained spearman in a padded coat.</div>`;
+  // the legend explains the fight row, so it goes only where that row is (playtest 2: "A levy: ..." on a one-year-old)
+  if (!opts.noLegend && fights) h += `<div class="tiny muted v2-legend">A levy: an untrained spearman in a padded coat.</div>`;
   return h + '</div>';
 };
 // skill rows: "Sword  Journeyman · 812 hours" with the bar as the way to the next tier
@@ -80,7 +87,7 @@ VS.statWord = function (p, s, v) {
 };
 VS.valueWord = (p, k, v) => (GD.STATS.includes(k) ? VS.statWord(p, k, v) : VS.tierOf(v).name);
 VS.css = '.v2-sheet{margin:4px 0 6px}.v2-row{display:grid;grid-template-columns:6em minmax(0,1fr);gap:0 8px;align-items:baseline;font-size:var(--t-small,13px);line-height:1.3;padding:2px 0}' +
-  '.v2-l{opacity:.75}.v2-v{font-weight:600}.v2-w{grid-column:2;opacity:.8;font-size:.95em}.v2-hrs{white-space:nowrap;opacity:.75;text-align:right}' +
+  '.v2-l{opacity:.75}.v2-v{font-weight:600}.v2-w{grid-column:2;opacity:.8}.v2-hrs{white-space:nowrap;opacity:.75;text-align:right}' +
   '.prow:has(.v2-tier){grid-template-columns:minmax(0,1fr) auto 5.6em;gap:4px 10px}.prow .v2-tier{white-space:nowrap;font-weight:600}' +
   '.mbox .v2-row{grid-template-columns:6.5em minmax(0,auto) minmax(0,1fr)}.mbox .v2-v{white-space:nowrap}.mbox .v2-w{grid-column:auto}' +
   '@media (max-width:560px){.mbox .v2-row{grid-template-columns:6em minmax(0,1fr)}.mbox .v2-w{grid-column:2}}' +

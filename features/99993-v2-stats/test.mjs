@@ -270,4 +270,39 @@ export default {
       r.baby === 'too young to tell' && (!r.faithless || r.piety === '▲▲ a strong pull toward the faith');
     return { ok, detail: `${p.join(' | ')}; a sword master ${r.master.toFixed(1)} levies; chip ${r.chip.replace(/<[^>]+>/g, '')}; tap targets on choices ${r.taps}; popover words only ${r.popWords}; a 1-year-old's speed "${r.baby}"; piety for the faithless "${r.piety}"` };
   },
+
+  // playtest 2 (new 8, old 13, old 17): the body by age. A child is measured against others of its age, an infant is not
+  // measured at all, an untrained youth lifts what a youth lifts, and no row contradicts the one beside it.
+  async v2sPlaytest2Body(pg) {
+    const r = await pg.evaluate(() => {
+      const V = A.V2S, txt = h => h.replace(/<[^>]+>/g, ' ').replace(/&#39;/g, "'").replace(/\s+/g, ' ');
+      const out = { rows: [], bad: [] };
+      const BAD = [/grown m[ae]n/, /ordinary man/, /fells any man/, /toddler/, /as fast as a child/];
+      for (const [seed, race] of [[32, 'human'], [42, 'orc']]) {
+        T.enter({ seed, race, sex: 'M', startAge: 0 });
+        const pc = A.pc();
+        for (let y = 0; y < 26 && pc.alive; y++) {
+          const a = A.age(pc), t = txt(V.sheetHtml(pc)), adult = a >= (GD.RACES[pc.race].grown || 20);
+          if ([1, 6, 10, 13, 17, 25].includes(a)) out.rows.push(`${race} ${a}: ${t.slice(0, 150)}`);
+          if (a < V.MEASURE_AGE && (!/too young to measure/.test(t) || /lifts|levy/i.test(t))) out.bad.push(`${race} ${a}: measured as a babe: ${t.slice(0, 120)}`);
+          if (a < 6 && /A levy:/.test(t)) out.bad.push(`${race} ${a}: the levy legend with no fight row`);
+          if (!adult) for (const re of BAD) if (re.test(t)) out.bad.push(`${race} ${a}: "${re.source}" in ${t.slice(0, 200)}`);
+          if (a >= 6 && !adult && !/your age/.test(t)) out.bad.push(`${race} ${a}: no comparison with others of the same age`);
+          // a lift that names a person ("about a grown man") read as a strength comparison
+          if (/lifts \d+ kg about a (grown )?man/.test(t)) out.bad.push(`${race} ${a}: ${t.slice(0, 120)}`);
+          // the mind word and its rarity agree
+          for (const w of ['Wavering', 'Faint-hearted', 'Quick', 'Dull', 'Slow', 'Determined']) if (new RegExp(w + ' like most').test(t)) out.bad.push(`${race} ${a}: "${w} like most"`);
+          if (race === 'human' && (a === 10 || a === 13 || a === 17)) out['kg' + a] = Math.round(V.stats(pc).lift);
+          T.play(1);
+        }
+      }
+      // the fight row's words and rank read the same bands
+      for (let lv = 0.5; lv < 3.5; lv += 0.05) { const w = V.levyWords(lv), k = V.levyRank(lv); if (/one and a half|about [23] levies/.test(w) && /a levy's worth/.test(k)) out.bad.push(`${w}: ${k}`); }
+      return out;
+    });
+    // an untrained human boy: 10 about 30-60 kg, 13 about 45-100, 17 about 80-170 (playtest 2 saw 92, 144 and 250 kg)
+    const kgOk = r.kg10 < 65 && r.kg13 < 105 && r.kg17 < 180 && r.kg10 < r.kg13 && r.kg13 < r.kg17;
+    const ok = !r.bad.length && kgOk;
+    return { ok, detail: `${r.bad.length} contradictions${r.bad.length ? ' (' + r.bad.slice(0, 5).join(' | ') + ')' : ''}; human lifts ${r.kg10}, ${r.kg13}, ${r.kg17} kg at 10, 13, 17; ${r.rows.join(' || ').slice(0, 1400)}` };
+  },
 };
