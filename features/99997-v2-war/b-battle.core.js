@@ -286,13 +286,14 @@
       });
     }
   };
-  // the performance that reaches the fight's order (44's A.RANKFX): your grade, the scene's result, and your part in it.
-  // Your part (the engine's contribution: your choices' army factor and morale) now also reaches the fight as its dead
-  // (W.foldLosses), so half of it is read here
+  // the performance that reaches the fight's order (44's A.RANKFX): your grade and the scene's result. Your part in the
+  // scene's result (the engine's contribution: your choices' army factor and morale) reaches the fight as its dead
+  // (W.foldLosses), so it is not counted a second time here: read twice, a sergeant's four failed attempts to plug the
+  // gap in a fight of fifteen divisions cost the whole army's order more than all his successes elsewhere gave it
   W.perfOf = function (b) {
     const gs = b.phases.map(p => p.g), mean = gs.length ? gs.reduce((a, x) => a + x, 0) / gs.length : 0;
     const won = b.camp.battle.winner === 0;
-    return Math.round(clamp(0.55 * mean + (won ? 0.25 : -0.25) + clamp(0.5 * b.camp.battle.contrib.player, -0.25, 0.25), -1, 1) * 100) / 100;
+    return Math.round(clamp(0.55 * mean + (won ? 0.25 : -0.25), -1, 1) * 100) / 100;
   };
   W.finish = function (b, pc) {
     b.done = 1;
