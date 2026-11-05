@@ -162,7 +162,9 @@ export default {
         if (!e || v.skip) return;
         out.scenes++;
         const live = v.choices.filter(x => x.i >= 0);
-        if ((e.choices || []).length >= 2 && live.length < 2) out.lone.push(q.ev);
+        // a lone live choice is allowed when it does something (an arc's opening beside choices out of reach, a finale's
+        // one ending for this path); a lone way out that changes nothing is what #19 forbids
+        if ((e.choices || []).length >= 2 && (live.length === 0 || (live.length === 1 && C2.isWayOut(e.choices[live[0].i])))) out.lone.push(q.ev);
         for (const m of html.matchAll(/<button data-a="evChoose" data-v="\d+"[^>]*>([\s\S]*?)<\/button>/g)) {
           out.choices++;
           if (!/st-row/.test(m[1])) out.bare.push(q.ev + ': ' + V2CT.strip(m[1]).slice(0, 60));

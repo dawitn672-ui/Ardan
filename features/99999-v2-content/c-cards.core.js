@@ -135,17 +135,23 @@
 
   // ---- a scene with one live choice is not shown ------------------------------------------------------------------------
   // (the view is built by A.headReady, an engine step; a dropped scene is shifted off the queue there)
+  // A scene is dropped only when the one choice left is a way out that changes nothing (the old scholar's "You cannot
+  // afford it"). One real choice beside choices out of reach (an arc's opening: "Go yourself for a season", the paid
+  // ways shown with their price) or a finale whose other endings belong to other paths ("Take charge of the new fire
+  // watch") is the scene working as written, and dropping it starved 46's and 52's arcs (lint, CI run 88).
+  C2.isWayOut = c => !!c && !c.check && !c.event && !c.duel && !c.fight && (!c.fx || (typeof c.fx === 'object' && !Object.keys(c.fx).length));
   C2.oneLive = function (q, v) {
     const e = q && A.EV[q.ev];
     if (!e || !v || v.skip || !Array.isArray(e.choices) || e.choices.length < 2 || !Array.isArray(v.choices)) return false;
-    return v.choices.filter(x => x && x.i >= 0).length < 2;
+    const live = v.choices.filter(x => x && x.i >= 0);
+    return live.length === 0 || (live.length === 1 && C2.isWayOut(e.choices[live[0].i]));
   };
   const view0 = A.eventView;
   A.eventView = function (q) {
     const fresh = !!q && q.type === 'event' && !q.view;
     const v = view0.apply(this, arguments);
     try {
-      if (fresh && v && !v.skip && q.view === v && !q.result && C2.oneLive(q, v)) { v.skip = true; C2.dropped = (C2.dropped || 0) + 1; }
+      if (fresh && v && !v.skip && q.view === v && !q.result && C2.oneLive(q, v)) { v.skip = true; q.ctx = q.ctx || {}; q.ctx.skip = 1; C2.dropped = (C2.dropped || 0) + 1; }   // declined on purpose, as a setup's ctx.skip
       // one extra line a card: a memory or counsel speaks, the world's recalled line (57) gives way
       if (fresh && v && !v.skip && v.recall && ((v.adv && v.adv.length) || (q.ctx && q.ctx.mw && !q.ctx.mw.off && q.ctx.mw.ev === q.ev))) delete v.recall;
     } catch (err) { console.error('v2 content view', err); }
