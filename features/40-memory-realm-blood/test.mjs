@@ -144,7 +144,7 @@ export default {
       let cur = '';
       const ce = console.error;
       console.error = (...a) => { problems.push(`${cur}: engine error: ${a.map(x => String(x && x.message || x)).join(' ').slice(0, 160)}`); };
-      const odds = A.checkOdds;
+      const odds = A.checkOdds, chance0 = A.chance;
       const BLOOD = {}; for (const [k, v] of Object.entries(GD.BLOOD)) BLOOD[v.tag] = k;
       const BREALM = { falcon: 'POL-15', taster: 'POL-04', bull: 'POL-01', laughing: 'POL-03', longwind: 'POL-11', quickened: 'POL-06', lightfoot: 'POL-06' };
       const BRACE = { falcon: 'human', taster: 'human', bull: 'human', laughing: 'human', longwind: 'orc', quickened: 'elf', lightfoot: 'elf' };
@@ -242,7 +242,14 @@ export default {
         const idx = v.choices.findIndex(c => c.i === i);
         if (idx < 0) return false;
         cur = `${vtag} choice ${i + 1}${force === null ? '' : force ? ' win' : ' lose'}`;
-        if (force !== null) A.checkOdds = () => force;
+        // Forcing the odds to 100 or 0 forced the roll while A.eventChoose rolled A.chance(pct / 100). Since the v2 rolls
+        // (99993-v2-stats b-odds) a check is played out by attempt(), whose surge can still carry a lost check (CI 89:
+        // mrb_id_eyes_road and mrb_em_gallery, choice 3 lose, won by a surge, so mrb_em_gallery's win booked
+        // mrb_em_curse), and attempt() takes a forced outcome only from a replaced A.chance (its own comment: "a test
+        // that replaces A.chance to force an outcome gets exactly that outcome"). So the odds are forced as before and
+        // A.chance reads them as certain; other draws keep the live dice (only a chance within 1% of sure is made
+        // sure). As 40-memory-peoples' mpeMemory does (51e3e6b). The bar is unchanged.
+        if (force !== null) { A.checkOdds = () => force; A.chance = x => (x >= 0.99 ? true : x <= 0.01 ? false : chance0(x)); }
         const c = e.choices[i], taken = c.check ? (force ? c.win : c.lose) : c;
         const s = src(taken && taken.fx), books = [...s.matchAll(/later\("(mrb_\w+)"/g)].map(m => m[1]), promised = sets(s);
         try {
@@ -265,7 +272,7 @@ export default {
           stats.choicesTaken++;
           if (after) after(books, promised);
         } catch (err) { problems.push(`${cur}: throws ${err.message}`); }
-        finally { A.checkOdds = odds; }
+        finally { A.checkOdds = odds; A.chance = chance0; }
         return true;
       };
       // 7. the arc, end to end: years pass, and the same character meets the second step
@@ -344,7 +351,7 @@ export default {
         if (!eligibleOnce) problems.push(`${e.id}: never eligible`);
       }
       console.error = ce;
-      A.checkOdds = odds;
+      A.checkOdds = odds; A.chance = chance0;
       return { problems: [...new Set(problems)], stats };
     }, { ids: IDS, chunk: CHUNK, world: WORLD });
     const read = Object.values(r.stats.flags).filter(x => x.length).length;
