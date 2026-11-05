@@ -110,3 +110,23 @@
 - **One rank word.** The battle names the army's own title ("a Commander with your men").
 - **Test:** `v2wRound1`.
 - **Not done:** the War Room's division panels still show the release's exact counts (and "current / full" above full) to a commander for enemy divisions.
+
+## Playtest round 2 (`f-told.core.js`, small gated edits in 57, 72)
+
+What each rank may know, and what outsiders hear (playtest 2 findings 3, 4, 5 and playtest 1's 4).
+
+- **World › Annals and The Book** (57-world-chronicle's views read `WC.tellOf`, which this sets):
+  - an entry of a war (war begun, peace, battle, siege, fall, an order cut down) that you fought in, that happened at your door (home and the provinces beside it), or that names you is set down as it was, its counts at your rank's precision (`W.band`: a soldier or sergeant "about 24,000", a captain or commander "some 24,300");
+  - any other reaches you 10–80 days late (`W.entLag`) and as hearsay (`W.hearsay`): "In 1116, word came of a battle near Nagdur: Aldmark beat Greyhaven, as it was told, and about 5,500 lay dead, by one account." The winner is wrong at v2's rate (25% + 5% a month late), the place is half heard, the dead are a guess (×0.4–3), and no generals are named. Until it reaches you it is not in the annals;
+  - the wars you fought keep their two sides in `S.v2w.fw` (tolerates being missing), so their sieges and falls stay yours after the peace;
+  - the hearsay dice are v2's `makeRng`, seeded from the game seed and the entry: pure, the same every draw.
+- **64-npc-beliefs:** a battle you had no part in and did not see is not one you know (`NB.pcKnows` returns null for it: a neighbour's war no longer counts), and "The record" where you do know it (`NB.recordLine`: the belief cards, the Tales, the Chronicle, the scene that puts you right) gives the counts at your rank's precision.
+- **72-two-scales' levy** reads `TS.told` (this feature's `W.levyCount`): the call to arms ("about 6,500 against about 30,000"), the front's words, the standards' slips ("~5.5k"), their titles and the day's tally are estimates.
+- **The commander's battle** (the release's modal, 9997-companies' panel, 60-drill's tags): his own side exactly, the enemy's as an estimate (the side line, the opening line, volleys and the wings' losses in the log, the result); morale in words ("steady", "eager"); drill in words ("drilled", "Drill: the charge (drilled)"), no 0–100 number. 59's tooltip on the two side lines goes with the numbers it explained.
+- **Tests:** `v2wAnnalsHearsay`, `v2wBeliefRecord`, `v2wRankCounts`.
+
+### Tests of other features changed (CI run 88)
+
+- `26-belief-truth` `btRumors`: v2 drops an outsider's far battle report, so 26's inflation is tested on `war` news, and the drop is asserted.
+- `64-npc-beliefs` (the `NBT.person` helper): the acquaintance is of the player's own people. Since the far peoples came onto the continent it could be an elf of 35, still a child (grown at 50), and every scene about him dropped (`nbRevenge`'s "undefined" outcome). Not the dice.
+- `99997-v2-war` `v2wPure`: the first frozen fight now routs after two phases, so the next frozen fights are drawn too, to the same bar of 10 draws.

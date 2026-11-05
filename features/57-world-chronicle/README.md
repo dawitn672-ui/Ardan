@@ -122,3 +122,7 @@ Test `wcRecallLinesRead` draws every template in every branch and requires a who
 **What changed.** Every war's name is now unique as it starts, in both lands. The namer is wrapped, and so is any name given to `A.startWar`. The second war of a name is "The Second Long War", then "The Third …".
 
 **Test.** `warNamesUnique`.
+
+## v2: what you know of a war (99997-v2-war)
+
+The Annals and The Book's "The world in your time" read each entry through `WC.tellOf(e, pc)`: null while it has not reached the player, else `{ t, mine }`. Here it is every entry as it happened; 99997-v2-war sets it so that a war you were not in reaches you late, as hearsay, and your own at your rank's precision (V2_SPEC complaint 10, playtest 2 findings 3 and 4). `WC.line` itself is unchanged.
