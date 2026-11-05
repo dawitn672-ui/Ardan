@@ -99,7 +99,7 @@
   - a commander knows his own side exactly and the enemy's only as an estimate.
 - **An outsider's maps.**
   - The war map (`UI.drawWar`, `drawWarBasic`), `MAP.draw`, 62's march arrows and the War Room are drawn with only the divisions and fights you can see (`A.V2W.withSeen`). That means both sides of your wars, plus your own realm's forces when you serve or rule.
-  - 64's tavern tale "How the battle went" comes only for a battle of a war you fought in (`S.v2w.fought`).
+  - 64's tavern tale "How the battle went" comes only for a battle of a war you fought in (`S.v2w.fought`). The gate wraps the setup that 67-memory-weave already wrapped, and reads as that setup's text and then its own, so the event's own source stays first and the record it asks stays readable (67's `mwSourcesIntact`).
   - 57's folk memory of a battle is told as hearsay.
 - **An empty war list.** World > Wars says "Your realm is at war, but you are not in it" (or "No war of yours") in place of "Ardan is, for once, at peace."
 - **Captains' odds.**
