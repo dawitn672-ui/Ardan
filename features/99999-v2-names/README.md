@@ -19,12 +19,16 @@ Ids, peoples, cultures, governments, rulers' titles (Khan, Speaker, War-Mother�
 
 1. **`A.V2NAMES.fix(text)`**: ordered rules keyed to how the release refers to these realms, not to bare words.
    - Full names go first.
-   - Then the short names, said of the realm or its people. A plural old name takes a singular verb ("the Sand Clans are" becomes "Sahrim is"). "Among the Sand Clans" becomes "In Sahrim". A possessive becomes "Sahrim's". When a noun follows, the name is an adjective and keeps its article ("the Nine Winds envoy" becomes "the Ulun envoy").
+   - Then the short names, said of the realm or its people. A plural old name takes a singular verb ("the Sand Clans are" becomes "Sahrim is"), also across an adverb ("Ulun now breeds them") or a closing tag ("<b>Sahrim</b> wins"). "Among the Sand Clans" becomes "In Sahrim". A possessive becomes "Sahrim's". When a noun follows, the name is an adjective and keeps its article ("the Nine Winds envoy" becomes "the Ulun envoy").
+   - The verb changes only when the name is its subject. After a preposition the verb is the noun's before it ("Children of Ulun ride", "horses from Ulun come ashore"), and "Aldmark and Sahrim are" has two subjects. The Horde was never plural, so its verbs never change ("the children in Gorath are watching").
+   - "The southern Sand Clans'" are some of the clans, not the realm: "the southern Sahrim clans'".
    - Then the adjectives: Sand Clan, Tusk riders, Amber fleet/ships/captains…, Highland law/crossbows…, Highlanders.
    - Then "a" becomes "an" before Ulun, Ughrak and Ambrel.
+   - A new name standing for the realm drops an article the text gave it: "of the {realm}" in Kesh reads "of Kesh", and so does any "the Gorath." or "The Kesh is" that code writes from the state. Before a noun ("the Kesh fleet"), in a war's name ("The Sahrim–Aldmark War") and with its people's word ("the Sahrim Confederacy") it keeps it. `fix` also wakes for these new-name forms, not only for the old words.
    - "Gorath founded the Horde" reads "the Horde of Gorath", so it doesn't come out as "Gorath founded Gorath". Ulun's events' "the Khanate" reads "Ulun".
    - Markup is masked, so `data-*` values never change. Of a tag's attributes, only `title`, `aria-label`, `alt` and `placeholder` are fixed.
    - **What stays:** the Kingsmere Amber Guild, raw amber, the Amber Capes / Road / Row / King / Wyrms, Great Amber, the Highland March and Highland Spears (Ambrel), the Highland Javelins (Abara), the Highveld's "Highland farmers", every "Highlands" and lowercase "highland", the Old Horde, the Horde Wars, Horde clans and "Horde riders" (the name still holds Horde), the Tusk Hills / War / Great Ride, the Corsair Isles, Sandfolk.
+   - **Governments stay too**, so their words do: "the League" of Kesh's four towns, of Ughrak's 31 clans and of Brannoch's valleys, "the Brotherhood" of Corvasse's pirates, and their councils, courts and musters. "The Khanate" was only a name (Ulun is ruled by a confederacy of nine tribes), so it reads Ulun.
 2. **The lore:** every string in `LORE` is rewritten once at load. The lazy tables (cast, families, houseDeep, styles, academies) are rewritten on first read through their getters.
    - Strings that are place keys stay as data: a province's name, a seat, a capital such as "Blackreef". The game finds places by these names (habitats, seats, `S.prov.find(p => p.name === seat)`).
    - These keys are renamed wherever they are shown.
@@ -46,7 +50,7 @@ Every layer is pure. Nothing draws from `A.rand`, and rendering writes nothing t
 
 | Test | What it checks |
 | --- | --- |
-| `nmRules` | 27 lines that must change read as written, 35 that must stay don't change, the lore keeps the ordinary words and the province key Blackreef, the eight lore realms carry their new names |
+| `nmRules` | 42 lines that must change read as written (among them the verb and article cases an audit of every renamed string found), 44 that must stay don't change, the lore keeps the ordinary words and the province key Blackreef, the eight lore realms carry their new names |
 | `nmLives` | A 20-year life in each of the eight realms. No old name in any event (title, text, choices), log line, news line, realm or title, nor in a sweep at year 10 and year 20 of every tab, every Codex page, each realm view a tab opens for the eight, every title/aria-label, and every map label drawn. The same seed twice gives the same world. Against a build without this feature it fails at once (checked with `NM_ONLY=POL-19`). |
 | `nmOldSaves` | A release save (Sand Clans, 1 year) migrates with the `names` step: renamed, every page and the stored prose clean. A v2 save holding the old names loads renamed. Its own save comes back exactly. |
 | `nmPlaces` | Ambrel, Kesh and Corvasse keep their shore on two seeds. The Ughrak Dominion's school is still an orc school. |
