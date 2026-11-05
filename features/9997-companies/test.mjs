@@ -30,11 +30,15 @@ const every = (o, f) => Object.values(o).every(f);
 
 export default {
   async coEveryBattalion(pg) {
-    // every battalion everywhere has state, on both worlds; the companies always sum to the division's men
+    // every battalion everywhere has state, on two worlds; the companies always sum to the division's men.
+    // v2: the second world was the Great Continent (lands: 'great', with more divisions than the known lands), which the
+    // owner dropped from the build with the Far Lands (docs/v2/LANES.md, Nov 1). newGame ignores the option now, so both
+    // passes played the same world (207 divisions twice) and 'great has more divisions' could not hold. The second world
+    // is now another seed's generated continent; the per-world checks are unchanged
     const r = await pg.evaluate(() => {
       const out = {};
-      for (const lands of [undefined, 'great']) {
-        A.newGame({ seed: 9701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18, lands });
+      for (const [lands, seed] of [['known', 9701], ['other', 9711]]) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
         const t0 = performance.now();
         T.play(1);
         const ms = Math.round(performance.now() - t0);
@@ -47,11 +51,12 @@ export default {
           named.add(CO.bnName(d, i));
         }
         const kb = Math.round(divs.reduce((a, d) => a + JSON.stringify({ bs: d.bs, food: d.food, pay: d.pay, mo: d.mo }).length, 0) / 1024);
-        out[lands || 'known'] = { divs: divs.length, bad, bns, coys, caps, persons, uniqueNames: named.size, kb, stateKb: Math.round(JSON.stringify(A.S).length / 1024), ms, retired: (A.S.coRet || []).length };
+        out[lands] = { divs: divs.length, bad, bns, coys, caps, persons, uniqueNames: named.size, kb, stateKb: Math.round(JSON.stringify(A.S).length / 1024), ms, retired: (A.S.coRet || []).length };
       }
       return out;
     });
-    const ok = every(r, x => x.bad === 0 && x.bns > 0 && x.caps >= x.bns * 4) && r.great.divs > r.known.divs;
+    // (and the second pass is a different world: its battalions are not the first's)
+    const ok = every(r, x => x.bad === 0 && x.bns > 0 && x.caps >= x.bns * 4) && (r.other.divs !== r.known.divs || r.other.bns !== r.known.bns || r.other.uniqueNames !== r.known.uniqueNames);
     return { ok, detail: Object.entries(r).map(([k, x]) => `${k}: ${x.divs} divisions, ${x.bns} battalion records, ${x.coys} companies, ${x.caps} captains (${x.persons} made people), ${x.uniqueNames} names; ${x.bad} out of step with d.men; battalion state ${x.kb} KB of ${x.stateKb} KB; a year in ${x.ms} ms; ${x.retired} names retired`).join(' | ') };
   },
 
@@ -85,13 +90,20 @@ export default {
       A.advance(3);
       const CO = A.CO, d = A.allDivs().find(x => x.r === 'POL-01' && x.army);
       if (!d) return { none: true };
-      d.food = 4; const P = A.S.prov[d.loc], u0 = P.unrest || 0;
+      // the unrest is read where the division forages: on the generated continent it marches on in these days (seed
+      // 9703's division forages in another province than the one it stood in), so the unrest of its first province never moved.
+      // The unrest each province had at the start is kept, and the forage's province is the one it stands in when the
+      // forage day comes (d.coFor moves)
+      d.food = 4; const u00 = A.S.prov.map(x => x.unrest || 0);
+      let P = A.S.prov[d.loc], u0 = P.unrest || 0;
       const rec0 = A.WC ? A.WC.count() : 0;
       // cut off from every depot: the supply ratio is 0 every day
       const sup = A.wsSupplyDayRun; A.wsSupplyDayRun = function (live) { const r = sup.apply(this, arguments); for (const x of live) if (x === d) x.sr = 0; return r; };
       const foods = [], mos = [], men = [];
       d.coFor = A.S.warClock;   // it foraged a day ago: the next forage is ten days off
-      for (let i = 0; i < 16; i++) { A.wsDay(); foods.push(d.food); mos.push(d.mo); men.push(d.men); }
+      let at = null;
+      for (let i = 0; i < 16; i++) { const f0 = d.coFor; A.wsDay(); foods.push(d.food); mos.push(d.mo); men.push(d.men); if (at == null && d.coFor !== f0) at = d.loc; }
+      if (at != null) { P = A.S.prov[at]; u0 = u00[at]; }
       A.wsSupplyDayRun = sup;
       const foraged = d.coFor !== undefined && CO.stats.foraged > 0;
       const recs = A.WC ? Array.from({ length: A.WC.count() - rec0 }, (_, j) => A.WC.ent(rec0 + j)).filter(e => e && e.k === 'forage') : [];
