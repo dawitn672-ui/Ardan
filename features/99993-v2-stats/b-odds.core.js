@@ -14,15 +14,20 @@ VS.K = 2.45; // odds.js: edge = ln(capability / difficulty) x 2.45
 // The game's dice in the shape attempt() takes. The first draw is the release's own A.chance(p), so the plain roll is
 // what it always was (and a test that forces A.chance still forces it); a second draw places attempt()'s logistic noise
 // inside the half that A.chance chose (the noise is then distributed exactly as attempt() draws it).
-// After that the rng is v2's makeRng in shape, on the game's dice turned round so that a low draw is a good day, as it
-// is for A.chance: next() is 1 - A.rand() and chance(p) is next() < p. The placement reads the dice the same way: a
-// lower second draw is a better day inside the half (1 - v·q in a won half, (1 - q)(1 - v) in a lost one, kept just
-// off the half's edge so the plain roll stays exactly A.chance's). So a roll held at either end decides the check:
-// held near 0 (the release's sure win) no chance in attempt() fires and the check is won near the top of its half;
-// held near 1 (its sure loss) the check is lost at the bottom of its half, deeper than any surge lifts.
-// Before, chance(p) was A.rand() < p, the other way round from next(), and the noise sat at the losing edge of a won
-// half: held at 0.001, A.chance won the roll, then attempt()'s blunder chance (never under 0.002) fired every time and
-// threw the check. With live dice the odds, the blunders and the surges are distributed exactly as before.
+//
+// One orientation for every draw. The release's dice read low as good (A.chance(p) is A.rand() < p), attempt() reads
+// its rng's next() high as good (the noise is logit next()) and fires each chance(p) on a low next(), as v2's makeRng
+// does (chance(p) is next() < p). So the rng attempt() gets is makeRng's shape on the game's dice turned round:
+// next() is 1 - A.rand() and chance(p) is next() < p, and the noise is placed the same way, a lower second draw higher
+// in the half (1 - v·q in a won half, (1 - q)(1 - v) in a lost one, kept just off the half's edge so the plain roll stays
+// exactly A.chance's). A roll held low is then attempt()'s best day: the release's roll won, the noise at the top of the
+// won half, and no blunder (held at 0.001, chance(p) fires only for p over 0.999; a blunder's is 0.35 at most). A roll
+// held high is its worst: the roll lost and the noise at the bottom of the lost half (held at 0.999, perf is under -6.9),
+// deeper than any surge lifts (5.4 at the most, with will held within 2.7 deviations). With live dice the odds, the
+// blunders and the surges are distributed exactly as attempt() draws them.
+// (Before, chance(p) was A.rand() < p and a won half was filled from its losing edge, against the release's dice: held
+// at 0.001, A.chance won the roll, the noise sat on the edge, and the blunder chance, never under 0.002, fired every
+// time and threw the check, so a test holding A.rand to win a check lost it.)
 VS.realChance = A.chance;
 VS.dice = function (q) {
   const won = A.chance(q), v = A.rand(), e = 1e-9;
