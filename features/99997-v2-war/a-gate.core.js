@@ -198,8 +198,11 @@
     A.allDivs = function () { return all.apply(this, arguments).filter(d => d && seen.has(d.r)); };
     const f2 = {};
     for (const k in fights || {}) { const F = fights[k]; if (F && seen.has(F.a) && seen.has(F.b) && (F.war == null || mine.some(w => w.id === F.war))) f2[k] = F; }
+    // a world with no fight yet has no S.fights key: put back exactly that (no key, not an undefined one), or the
+    // key's place in the save moves and the drawn world's fingerprint parts from the plain one (v2tSameWorld)
+    const had = Object.prototype.hasOwnProperty.call(S, 'fights');
     S.fights = f2; if (Array.isArray(wars)) S.wars = wars.filter(w => mine.includes(w));
-    try { return fn(); } finally { A.allDivs = all; S.fights = fights; S.wars = wars; }
+    try { return fn(); } finally { A.allDivs = all; if (had) S.fights = fights; else delete S.fights; S.wars = wars; }
   };
   // the words for an empty list of wars: your realm's war without you, or no war of yours
   W.emptyWars = function (pc) {
