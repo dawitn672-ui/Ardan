@@ -380,6 +380,9 @@ export default {
 
   // playtest 2, old 18's remainder: "• changes regard" named nobody, "• changes coin" / "• changes willpower" gave no way.
   // The content's helpers (pay, hurt, hp, willGrow, bump, addOp, op2, both) are read; the person is named.
+  // Named across the corpus too (the verifier's objection: 340 chips in the scenes, each staged with its own context, read
+  // a bare "▲ regard" or "▲ their regard"): a person in another ctx key (wk_gen_parent's parId), kin (rel: { who },
+  // A.relsOf roles, p.parents, p.spouse), the crown; a regard that reaches no one here is not shown.
   async v2cChipsDirection(pg) {
     await prep(pg);
     const r = await pg.evaluate(() => {
@@ -396,7 +399,15 @@ export default {
       out.staged.dice = d.rows;
       const nm = id => { const t = id && A.P(id); return t ? (A.knownName ? A.knownName(t) : t.given) : '?'; };
       out.m2 = nm(d.q.ctx.m2); out.pid = nm(d.q.ctx.pid);
-      // every scene, staged for this soldier: the chips that still give no way
+      // the verifier's cases, each staged with the scene's own context (its setup fills it)
+      const gp = V2CT.rows('wk_gen_parent');
+      out.named = { parent: gp.rows, parName: nm(gp.q.ctx.parId) };
+      for (const id of ['wk_gen_windfall', 'sc_ss_family', 'pl_envoy_abroad', 'pa_court_scandal', 'ch_inf_steps', 'lf_teen_secret_practice', 'ch_dare_orchard', 'lf_friend_feud_pick', 'lf_friend_quarrel']) out.named[id] = V2CT.rows(id).rows;
+      out.dad = (pc.parents || []).map(A.P).filter(t => t && t.sex === 'M').length === 1;
+      // every scene, staged for this soldier: the chips that still give no way; and (here and again below, each scene
+      // with its own context) no chip reads a bare regard, and no regard is shown without its way ("• Maren's regard")
+      const BARE = /(^|[•▲▼,:] )(their )?regard\b/, NOWAY = /• [^,]*regard\b/;
+      const bare = [], noway = [], judge = (id, ch) => { if (BARE.test(ch.t)) bare.push(id + ': ' + ch.t); if (NOWAY.test(ch.t)) noway.push(id + ': ' + ch.t); };
       let chips = 0, vague = 0; const eg = [];
       for (const id in A.EV) {
         const e = A.EV[id]; if (!Array.isArray(e.choices)) continue;
@@ -405,10 +416,25 @@ export default {
         if (!v || v.skip) continue;
         for (const vc of v.choices) {
           if (!vc || vc.i < 0) continue;
-          for (const ch of A.STAKES.choiceChips(e.choices[vc.i], e, q, pc, vc)) { chips++; if (/• (coin|willpower|health|honour|regard|spirits|renown|piety)\b/.test(ch.t)) { vague++; if (eg.length < 4) eg.push(id + ': ' + ch.t); } }
+          for (const ch of A.STAKES.choiceChips(e.choices[vc.i], e, q, pc, vc)) { chips++; judge(id, ch); if (/• (coin|willpower|health|honour|regard|spirits|renown|piety)\b/.test(ch.t)) { vague++; if (eg.length < 4) eg.push(id + ': ' + ch.t); } }
         }
       }
       Object.assign(out, { chips, vague, eg });
+      // every scene again, each with its own context (its setup fills it; no friend put in ctx.pid)
+      let own = 0;
+      const sp = A.makeAcquaintance(pc, 'friend'); sp.sex = 'F'; A.link(pc, sp, 'spouse', 40, 'spouse'); pc.spouse = sp.id;
+      out.named.ss_sc_saddle = V2CT.rows('ss_sc_saddle').rows;
+      for (const id in A.EV) {
+        const e = A.EV[id]; if (!Array.isArray(e.choices)) continue;
+        const q = { type: 'event', ev: id, ctx: {} };
+        A.S.queue.unshift(q); let v = null; try { v = A.eventView(q); } catch (err) { v = null; } A.S.queue.shift();
+        if (!v || v.skip) continue;
+        for (const vc of v.choices) {
+          if (!vc || vc.i < 0) continue;
+          for (const ch of A.STAKES.choiceChips(e.choices[vc.i], e, q, pc, vc)) { own++; judge(id, ch); }
+        }
+      }
+      Object.assign(out, { own, bare: bare.length, bareEg: bare.slice(0, 3), noway: noway.length, nowayEg: noway.slice(0, 3) });
       return out;
     });
     const S = r.staged, all = Object.values(S).flat();
@@ -416,7 +442,14 @@ export default {
     const ok = !noWay.length && /Run for help ▲ .*'s regard · ▲ willpower · ▼ spirits/.test(S.ice[2] || '') && /If it fails: ▼ health, ▼ coin/.test(S.melee[1] || '') &&
       /Go, and bring a gift ▼ coin/.test(S.gift[1] || '') && /your messmates' regard/.test(S.brawl[0] || '') &&
       (S.dice[1] || '').includes(`▼ ${r.m2}'s regard`) && r.chips > 3000 && r.vague / r.chips < 0.004;
-    return { ok, detail: `staged: ${all.filter(x => /Run for help|Hang back|bring a gift|Step between|demand a cut/.test(x)).map(x => '"' + x.slice(0, 90) + '"').join(' / ')} (the second messmate ${r.m2}, the first ${r.pid}); with no way shown ${noWay.length} ${noWay[0] || ''}; every scene: ${r.vague} of ${r.chips} chips give no way (under 0.4%; 1.8% before) ${r.eg.join(' | ')}` };
+    const N = r.named, row = (id, i) => (N[id] || [])[i] || '';
+    const named = (N.parent[0] || '').includes(`▲ ${N.parName}'s regard`) && /▲ your (parents'|family's|father's|mother's) regard/.test(row('wk_gen_windfall', 1)) &&
+      /▲ your father's regard/.test(row('sc_ss_family', 0)) && /▲ the crown's regard/.test(row('pl_envoy_abroad', 0)) && /▲ the crown's regard/.test(row('pa_court_scandal', 0)) &&
+      /▲ your wife's regard/.test(row('ss_sc_saddle', 0)) && /If it works: ▲ Riding, ▲ your father's regard/.test(row('ch_inf_steps', 0)) &&
+      /▲ your (father|mother)'s regard/.test(row('lf_teen_secret_practice', 1)) && (!r.dad || /If it fails: [^·]*▼ your father's regard/.test(row('ch_dare_orchard', 0))) &&
+      /Side with .* ▲ [^,]+'s regard, ▼▼ [^,]+'s regard/.test(row('lf_friend_feud_pick', 1)) && /▲ or ▼ [^,]+'s regard/.test(row('lf_friend_quarrel', 1));
+    const corpus = r.own > 3000 && r.bare === 0 && r.noway === 0;
+    return { ok: ok && named && corpus, detail: `named: "${N.parent[0]}" / "${row('wk_gen_windfall', 1)}" / "${row('sc_ss_family', 0)}" / "${row('pl_envoy_abroad', 0).slice(0, 70)}" / "${row('ss_sc_saddle', 0)}" / "${row('ch_inf_steps', 0).slice(0, 60)}" / "${row('ch_dare_orchard', 0).slice(0, 110)}" / "${row('pa_court_scandal', 0).slice(0, 60)}" / "${row('lf_teen_secret_practice', 1).slice(0, 70)}" / "${row('lf_friend_feud_pick', 1)}" / "${row('lf_friend_quarrel', 1)}"; every scene, twice (with a friend in ctx.pid, and each with its own context, ${r.own} chips): a bare regard ${r.bare} ${r.bareEg.join(' | ')}, a regard with no way ${r.noway} ${r.nowayEg.join(' | ')}; staged: ${all.filter(x => /Run for help|Hang back|bring a gift|Step between|demand a cut/.test(x)).map(x => '"' + x.slice(0, 90) + '"').join(' / ')} (the second messmate ${r.m2}, the first ${r.pid}); with no way shown ${noWay.length} ${noWay[0] || ''}; every scene: ${r.vague} of ${r.chips} chips give no way (under 0.4%; 1.8% before) ${r.eg.join(' | ')}` };
   },
 
   // playtest 2, old 19's remainder: "The hearth mark" and "What you want" showed only "It will be remembered" on every

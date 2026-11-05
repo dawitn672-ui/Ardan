@@ -47,7 +47,7 @@
   // v) is willpower; bump(p, t, v) and addOp(p, T(ctx), v) are regard; p.honor = cl(p.honor - 3) is honour down.)
   // A captured word is a direction of its own: pay/spend/hurt down, gain/earn up; a pattern with no capture is up
   // (coin: ctx.bribe, coin: cost(p, 25): a sum the scene pays you).
-  const OP = /\bop\s*:\s*(-?[\d.]+)/g, ADDOP = /\baddOp\(\s*[\w.]+\s*,\s*(?:[\w.]+\([^()]*\)|[\w.]+)\s*,\s*(-?[\d.]+)/g,
+  const OP = /\bop\s*:\s*(-?[\d.]+)/g, ADDOP = /\baddOp\(\s*[\w.]+\s*,\s*(?:\((?:[^()]|\([^()]*\))*\)[\w.]*|[\w.]+\((?:[^()]|\([^()]*\))*\)|[\w.]+)\s*,\s*(-?[\d.]+)/g,
     BUMP = /\bbump\(\s*\w+\s*,\s*(?:[\w.]+\([^()]*\)|[\w.]+)\s*,\s*(-?[\d.]+)/g, OPSET = /\.op\s*([-+])=\s*[\d.]+/g, OPN = /\bop[23]\(\s*(-?[\d.]+)/g;
   const as = k => new RegExp('\\.' + k + '\\s*=\\s*[\\w.]*\\(?\\s*\\w+\\.' + k + '\\s*([-+])', 'g');
   const SIGNED = [
@@ -110,17 +110,151 @@
   const isEmpty = fx => !fx || (typeof fx === 'object' && !Object.keys(fx).length) || (typeof fx === 'function' && /^\s*(\([^)]*\)|\w+)\s*=>\s*(""|''|\(\s*""\s*\)|void 0|null|undefined)\s*$/.test(String(fx)));
   const nameOf = t => (A.knownName ? A.knownName(t) : t.given);
   const whose = (t, w) => `${nameOf(t)}'s ${w}`;
-  // whose regard a choice moves: a second messmate (99's op2 helper reads ctx.m2), the person the scene is about
-  // (ctx.pid), or, in a loop over the squad or a word to your superior, them. Pure: the scene's context and the code.
+  // whose regard a choice moves (playtest 2, old 18: "• changes regard" named nobody). Read from the scene's context and
+  // the effect's code, as written: a second messmate (99's op2 reads ctx.m2); a person the code looks up in the context
+  // (A.P(ctx.parId), ctx.sgtId); kin (rel: { who: "father" }, A.relsOf(p, ["mother", "father", ...]), p.parents,
+  // p.spouse); the crown (the ruler's addOp); someone new the choice brings in (newRel, a castaway it names); the person
+  // the scene is about (them: ctx.pid); the squad; your superior.
+  // Returns the words ("Edith's regard", "your father's regard", "your family's regard", "the crown's regard"), '' when
+  // the code reaches nobody here (no such kin, no one in the context: the regard changes for no one, so the chip goes),
+  // or null when it cannot tell. Pure: the scene's context, the player's kin and the code.
+  const FAMILY = ['father', 'mother', 'parent', 'sibling', 'spouse', 'child', 'son', 'daughter'];
+  const kinWord = (type, t) => {
+    const F = t && t.sex === 'F';
+    if (type === 'spouse') return F ? 'your wife' : 'your husband';
+    if (type === 'sibling') return F ? 'your sister' : 'your brother';
+    if (type === 'child' || type === 'son' || type === 'daughter') return F ? 'your daughter' : 'your son';
+    if (type === 'parent') return F ? 'your mother' : 'your father';
+    if (type === 'mentor') return 'your teacher';
+    return 'your ' + type;
+  };
+  const kinWho = (pc, roles, first) => {
+    if (!pc || !roles.length) return null;
+    let list = [];
+    try { list = A.relsOf(pc, roles).filter(x => x && x.p && x.p.id !== pc.id); } catch (e) { list = []; }
+    if (first) list = list.slice(0, 1);
+    if (!list.length) return '';
+    if (list.length === 1) return kinWord(list[0].r.type, list[0].p) + '\'s regard';
+    const types = [...new Set(list.map(x => x.r.type))];
+    if (types.length === 1) return types[0] === 'sibling' ? 'your brothers\' and sisters\' regard' : types[0] === 'child' ? 'your children\'s regard' : `your ${types[0]}s' regard`;
+    if (types.every(t => t === 'father' || t === 'mother')) return 'your parents\' regard';
+    if (types.every(t => FAMILY.includes(t))) return 'your family\'s regard';
+    return 'your people\'s regard';
+  };
+  const MAKES = /\bctx\.pid\s*=[^=]/;
   C2.regardWho = function (fx, q, pc) {
-    const ctx = (q && q.ctx) || {}, me = pc && pc.id, s = C2.srcAll(fx);
+    const ctx = (q && q.ctx) || {}, me = pc && pc.id, s = C2.srcAll(fx), obj = fx && typeof fx === 'object' ? fx : null;
     const P = id => { const x = id != null && id !== '' ? A.P(id) : null; return x && x.id !== me ? x : null; };
+    let none = false, w;
+    const got = x => { if (x === '') none = true; return x || null; };
     if (/\bop2\(|ctx\.m2\b/.test(s) && P(ctx.m2)) return whose(P(ctx.m2), 'regard');
     if (/\bop3\(|ctx\.m3\b/.test(s) && P(ctx.m3)) return whose(P(ctx.m3), 'regard');
-    if (P(ctx.pid)) return whose(P(ctx.pid), 'regard');
+    // a person the code looks up in the context, other than ctx.pid (A.P(ctx.parId), ctx.sgtId)
+    for (const m of s.matchAll(/\bA\.P\(\s*ctx\.(\w+)\s*\)|\bctx\.(\w+Id)\b/g)) {
+      const k = m[1] || m[2];
+      if (k === 'pid' || k === 'm2' || k === 'm3') continue;
+      const t = P(ctx[k]);
+      if (t) return whose(t, 'regard');
+      none = true;
+    }
+    // kin: rel: { who } (the first of that kin, or all), a loop over kin, a parent, the spouse
+    const relObj = obj && obj.rel && typeof obj.rel === 'object' && obj.rel.who ? obj.rel : null;
+    const relM = /\brel\s*:\s*\{\s*who\s*:\s*(?:["'](\w+)["']|ctx\.(\w+))/.exec(s);
+    const rw = relObj ? relObj.who : relM ? (relM[1] || ctx[relM[2]]) : null;
+    if (rw && (w = got(kinWho(pc, [String(rw)], !(relObj && relObj.all))))) return w;
+    for (const m of s.matchAll(/\b(?:relsOf|live)\(\s*\w+\s*,\s*\[([^\]]*)\]/g)) {
+      const roles = [...m[1].matchAll(/["'](\w+)["']/g)].map(x => x[1]);
+      if ((w = got(kinWho(pc, roles, false)))) return w;
+    }
+    for (const m of s.matchAll(/\bp\.parents\[(\d)\]/g)) {
+      const t = pc && P((pc.parents || [])[+m[1]]);
+      if (t) return kinWord('parent', t) + '\'s regard';
+      none = true;
+    }
+    if (/\bA\.P\(\s*p\.spouse\s*\)/.test(s)) { const t = pc && P(pc.spouse); if (t) return kinWord('spouse', t) + '\'s regard'; none = true; }
+    // the crown: the ruler's regard of you (addOp(ru, p, n) after r.ruler)
+    if (/\.ruler\b/.test(s) && /\baddOp\(\s*ru\b|\baddOp\(\s*\w+\s*,\s*ru\b/.test(s)) return 'the crown\'s regard';
+    // the person the scene is about, or someone new the choice brings in
+    const them = !!(obj && obj.them && typeof obj.them === 'object') || /\bthem\s*:\s*\{/.test(s);
+    const fresh = !!(obj && (obj.newRel || obj.awWho)) || /\bnewRel\s*:|\bawWho\s*:/.test(s) || MAKES.test(s);
+    if (them && P(ctx.pid) && !MAKES.test(s)) return whose(P(ctx.pid), 'regard');
+    if (fresh) {
+      const occ = /\bocc\s*:\s*"([^"]+)"/.exec(s), ty = (obj && obj.newRel && obj.newRel.type) || (/\bnewRel\s*:\s*\{\s*type\s*:\s*["'](\w+)["']/.exec(s) || [])[1];
+      if (occ && MAKES.test(s)) return 'the regard of ' + occ[1];
+      return `your new ${ty === 'mentor' ? 'teacher' : ty || 'friend'}'s regard`;
+    }
+    if (them) none = true;
     if (/\bA\.squad\(/.test(s)) return 'your messmates\' regard';
     if (/\bA\.superior\(/.test(s)) return 'your superior\'s regard';
-    return null;
+    if (P(ctx.pid)) return whose(P(ctx.pid), 'regard');
+    return none ? '' : null;
+  };
+  // a regard the sign reader could give no way ("• Corbin's regard"), read person by person: lf_friend_feud_pick raises
+  // the friend's (bump(p, T(ctx), 15)) and lowers the bully's (bump(p, A.P(ctx.bid), -35)); 40's figures move the
+  // scene's person (eff(p, ctx, { them })) and a named figure (castFx(p, "CHR-0255", { them })) opposite ways; a chance
+  // that goes either way (bump(p, T(ctx), A.chance(.5) ? 8 : -15)) says so. Returns the parts ("▲ Corbin's regard",
+  // "▼ Brand's regard", "▲ or ▼ Isobel's regard"), [] when the code moves no one's regard (bump(p, t, 0) only names a
+  // bond), or null when it cannot tell. Pure: it never makes the figure it names.
+  const castName = cid => {
+    const id = A.S && A.S.castMap && A.S.castMap[cid], t = id && A.P(id);
+    if (t) return nameOf(t);
+    try { const c = typeof LORE !== 'undefined' && LORE.cast && LORE.cast[cid]; const n = c && A.parseCastName ? A.parseCastName(c.name) : null; return (n && n.given) || null; } catch (e) { return null; }
+  };
+  C2.regardParts = function (fx, q, pc) {
+    if (typeof fx !== 'function') return null;
+    const ctx = (q && q.ctx) || {}, me = pc && pc.id;
+    let s = C2.srcAll(fx);
+    const P = id => { const x = id != null && id !== '' ? A.P(id) : null; return x && x.id !== me ? x : null; };
+    const seen = new Map(), add = (key, name, v) => { if (!name) return; const e = seen.get(key) || { name, up: 0, down: 0, big: false }; if (v > 0) e.up++; else if (v < 0) e.down++; if (Math.abs(v) >= 20) e.big = true; seen.set(key, e); };
+    let parsed = 0;
+    // a figure from 40's cast, moved by its own castFx
+    s = s.replace(/\bcastFx\(\s*p\s*,\s*"([\w-]+)"\s*,\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}\s*\)/g, (all, cid, body) => {
+      const m = /\bthem\s*:\s*\{[^}]*?\bop\s*:\s*(-?[\d.]+)/.exec(body);
+      if (m) { parsed++; add('cast:' + cid, castName(cid) && castName(cid) + '\'s regard', +m[1]); }
+      return '';
+    });
+    // names the code gives the people it looks up: const t = T(ctx), const f = A.P(ctx.fid), const h = ctx.hid ? A.P(ctx.hid) : null
+    const vars = {};
+    for (const m of s.matchAll(/\b(\w+)\s*=\s*(?:ctx\.\w+\s*\?\s*)?(?:A\.P\(\s*ctx\.(\w+)\s*\)|T\(\s*ctx\s*\))/g)) vars[m[1]] = m[2] || 'pid';
+    const person = key => { const t = P(ctx[key]); return t ? whose(t, 'regard') : null; };
+    const val = v => (/^-?[\d.]+$/.test(v) ? [+v] : (/\?\s*(-?[\d.]+)\s*:\s*(-?[\d.]+)\s*$/.exec(v) || []).slice(1).map(Number));
+    for (const m of s.matchAll(/\b(?:A\.)?(?:addOp|bump)\(\s*p\s*,\s*(T\(\s*ctx\s*\)|A\.P\(\s*ctx\.(\w+)\s*\)|\w+)\s*,\s*((?:A\.chance\([^()]*\)\s*\?\s*)?-?[\d.]+(?:\s*:\s*-?[\d.]+)?)/g)) {
+      const key = /^T\(/.test(m[1]) ? 'pid' : m[2] || vars[m[1]];
+      if (!key) return null;
+      const vs = val(m[3]);
+      if (!vs.length) return null;
+      parsed++;
+      for (const v of vs) add('ctx:' + key, person(key), v);
+    }
+    // the scene's person, moved by them: { op } (fx, eff, apply, more, A.applyFx ... with the scene's ctx)
+    for (const m of s.matchAll(/\bthem\s*:\s*\{[^}]*?\bop\s*:\s*(-?[\d.]+)/g)) { parsed++; add('ctx:pid', person('pid'), +m[1]); }
+    for (const m of s.matchAll(/\brel\s*:\s*\{\s*who\s*:\s*["'](\w+)["']\s*,\s*op\s*:\s*(-?[\d.]+)/g)) { parsed++; add('kin:' + m[1], kinWho(pc, [m[1]], true) || null, +m[2]); }
+    for (const m of s.matchAll(/\bnewRel\s*:\s*\{\s*type\s*:\s*["'](\w+)["']\s*,\s*op\s*:\s*(-?[\d.]+)/g)) { parsed++; add('new:' + m[1], `your new ${m[1] === 'mentor' ? 'teacher' : m[1]}'s regard`, +m[2]); }
+    if (!parsed) return null;
+    const out = [];
+    for (const e of seen.values()) {
+      if (!e.up && !e.down) continue;
+      out.push(`${e.up && e.down ? '▲ or ▼' : e.up ? (e.big ? '▲▲' : '▲') : (e.big ? '▼▼' : '▼')} ${e.name}`);
+    }
+    return out;
+  };
+  // an effect's rel: { who, op } as a chip part ("▼ your father's regard"), or null when it reaches no one here
+  C2.relPart = function (fx, pc) {
+    const rl = fx && typeof fx === 'object' && fx.rel && typeof fx.rel === 'object' ? fx.rel : null;
+    if (!rl || !rl.who || typeof rl.op !== 'number' || !rl.op) return null;
+    const w = kinWho(pc, [String(rl.who)], !rl.all);
+    if (!w) return null;
+    const big = Math.abs(rl.op) >= 20;
+    return { op: rl.op, t: `${rl.op > 0 ? (big ? '▲▲' : '▲') : (big ? '▼▼' : '▼')} ${w}` };
+  };
+  // a chip's regard part, in any of its forms ("▲ their regard", "• regard", "▼▼ regard")
+  const RG_PART = /^(?:[▲▼]+ |• )?(?:their )?regard$/;
+  // a chip without the regard parts that reach nobody; null when nothing is left
+  C2.dropRegard = function (t) {
+    const m = /^(If it (?:works|fails): |Fails: )([\s\S]*)$/.exec(t);
+    if (!m) return RG_PART.test(t) ? null : t;
+    const parts = m[2].split(', ').filter(x => !RG_PART.test(x));
+    return parts.length ? m[1] + parts.join(', ') : null;
   };
 
   if (ST && typeof ST.choiceChips === 'function') {
@@ -133,6 +267,9 @@
         const fxOf = ch => (ch.k === 'win' ? c.win && c.win.fx : ch.k === 'risk' ? c.lose && c.lose.fx : c.fx);
         for (const ch of chips) {
           if (typeof ch.t !== 'string') continue;
+          // whose regard (playtest 2, old 18: "• changes regard" named nobody); a regard that reaches nobody goes
+          const who = /\bregard\b/.test(ch.t) ? C2.regardWho(fxOf(ch), q, pc) : null;
+          if (who === '') { const t2 = C2.dropRegard(ch.t); if (t2 === null) { ch.gone = true; continue; } ch.t = t2; }
           // which way a code effect goes
           const sg = C2.signs(fxOf(ch));
           ch.t = ch.t.replace(SIGN_RX, (all, w) => (sg[w] ? `${sg[w] > 0 ? '▲' : '▼'} ${w}` : all));
@@ -145,9 +282,36 @@
             if (!parts.length) { ch.k = 'safe'; ch.t = 'Nothing lost if it fails'; delete ch.fail; }
             else ch.t = 'If it fails: ' + parts.join(', ').replace(/(^|, )(their regard)\b/g, '$1▼ $2');
           }
-          // whose regard (playtest 2, old 18: "• changes regard" named nobody)
-          const who = C2.regardWho(fxOf(ch), q, pc);
           if (who) ch.t = ch.t.replace(/\btheir regard\b/g, who).replace(/• regard\b/g, '• ' + who).replace(/([▲▼]+) regard\b/g, `$1 ${who}`);
+          // a regard with no way: read person by person (two people moved opposite ways, or a chance either way)
+          if (/(^|, |: )• [^,]*regard\b/.test(ch.t)) {
+            const parts = C2.regardParts(fxOf(ch), q, pc);
+            if (parts && parts.length) {
+              ch.t = ch.t.replace(/• [^,]*regard\b/, parts.join(', '));
+              const up = parts.every(x => /^▲/.test(x) && !/ or ▼/.test(x)), down = parts.every(x => /^▼/.test(x));
+              if (ch.k === 'touch' && (up || down)) ch.k = up ? 'gain' : 'cost';
+            } else if (parts) {
+              const m = /^(If it (?:works|fails): |Fails: )([\s\S]*)$/.exec(ch.t);
+              const rest = (m ? m[2] : ch.t).split(', ').filter(x => !/^• [^,]*regard$/.test(x));
+              if (!rest.length) ch.gone = true; else ch.t = (m ? m[1] : '') + rest.join(', ');
+            }
+          }
+        }
+        // (a chip whose regard reached no one goes; two families read as the same person's regard show once)
+        for (let i = chips.length - 1; i >= 0; i--) if (chips[i] && (chips[i].gone || chips.findIndex(x => x.t === chips[i].t) < i)) chips.splice(i, 1);
+        // kin's regard written as data (rel: { who: "father", op: -4 }): 255 choices moved it and showed nothing of it
+        // ("If it fails: hurt" for a dare that also costs your father's regard). Shown by name and way, where that kin is.
+        for (const side of ['fx', 'win', 'risk']) {
+          const fx = side === 'fx' ? (!c.check && !c.group ? c.fx : null) : side === 'win' ? c.win && c.win.fx : c.lose && c.lose.fx;
+          const r = C2.relPart(fx, pc);
+          if (!r || (side === 'risk' && r.op > 0)) continue;
+          if (side === 'fx') { if (!chips.some(x => /\bregard\b/.test(x.t) && !/^If it/.test(x.t))) chips.push({ k: r.op > 0 ? 'gain' : 'cost', t: r.t }); continue; }
+          const k = side === 'win' ? 'win' : 'risk', ch = chips.find(x => x.k === k);
+          if (ch) { if (!/\bregard\b/.test(ch.t)) ch.t += ', ' + r.t; continue; }
+          const safe = side === 'risk' ? chips.findIndex(x => x.k === 'safe') : -1;
+          if (safe >= 0) chips[safe] = { k: 'risk', t: 'If it fails: ' + r.t };
+          else if (side === 'win') chips.unshift({ k: 'win', t: 'If it works: ' + r.t });
+          else chips.push({ k: 'risk', t: 'If it fails: ' + r.t });
         }
         // the drill scenes' code effects
         if (!c.check && !c.group) for (const x of C2.unitChips(c.fx)) if (chips.length < 4) chips.push(x);
