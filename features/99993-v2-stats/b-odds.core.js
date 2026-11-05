@@ -13,13 +13,22 @@ VS.K = 2.45; // odds.js: edge = ln(capability / difficulty) x 2.45
 
 // The game's dice in the shape attempt() takes. The first draw is the release's own A.chance(p), so the plain roll is
 // what it always was (and a test that forces A.chance still forces it); a second draw places attempt()'s logistic noise
-// inside the half that A.chance chose (the noise is then distributed exactly as attempt() draws it). After that,
-// next() is 1 - A.rand() and chance(p) is A.rand() < p.
+// inside the half that A.chance chose (the noise is then distributed exactly as attempt() draws it).
+// After that the rng is v2's makeRng in shape, on the game's dice turned round so that a low draw is a good day, as it
+// is for A.chance: next() is 1 - A.rand() and chance(p) is next() < p. The placement reads the dice the same way: a
+// lower second draw is a better day inside the half (1 - v·q in a won half, (1 - q)(1 - v) in a lost one, kept just
+// off the half's edge so the plain roll stays exactly A.chance's). So a roll held at either end decides the check:
+// held near 0 (the release's sure win) no chance in attempt() fires and the check is won near the top of its half;
+// held near 1 (its sure loss) the check is lost at the bottom of its half, deeper than any surge lifts.
+// Before, chance(p) was A.rand() < p, the other way round from next(), and the noise sat at the losing edge of a won
+// half: held at 0.001, A.chance won the roll, then attempt()'s blunder chance (never under 0.002) fired every time and
+// threw the check. With live dice the odds, the blunders and the surges are distributed exactly as before.
 VS.realChance = A.chance;
 VS.dice = function (q) {
-  const won = A.chance(q), v = A.rand();
-  let first = Math.min(1 - 1e-9, Math.max(1e-9, won ? (1 - q) + v * q : v * (1 - q)));
-  return { won, rng: { next: () => { if (first != null) { const u = first; first = null; return u; } return 1 - A.rand(); }, chance: p => A.rand() < p } };
+  const won = A.chance(q), v = A.rand(), e = 1e-9;
+  let first = won ? Math.min(1 - e, Math.max(1 - q + e, 1 - v * q)) : Math.max(e, Math.min(1 - q - e, (1 - q) * (1 - v)));
+  const next = () => { if (first != null) { const u = first; first = null; return u; } return 1 - A.rand(); };
+  return { won, rng: { next, chance: p => 1 - A.rand() < p } };
 };
 VS.N = { attempts: 0, blunders: 0, surges: 0, breakthroughs: 0 };
 
