@@ -229,7 +229,7 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
   "Stewardship & supply: Apprentice", with the name's "&" plain (the hook escaped it twice). The Realm tab's crown
   authority buttons say "Income ×0.88; the lords warm to the crown each year", not "vassal mood +8/yr" (round 5).
   999-confidants' pips (the People tab, the person view) say the next rank in words: "Next rank: more shared history
-  (you have about two thirds of what it asks), and for them to think you warm or better.", not "shared history 38
+  (you have about three quarters of what it asks), and for them to think you warm or better.", not "shared history 38
   (now 27), their opinion 50." (round 6).
 - The game's rules are unchanged; drawing reads, never writes, and draws nothing.
 
