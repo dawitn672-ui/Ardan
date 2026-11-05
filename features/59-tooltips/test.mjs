@@ -584,7 +584,7 @@ export default {
   async ttAxe2(pg, errs) {
     await pg.evaluate(fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8'));
     await pg.evaluate(KIT2);
-    const found = [], opened = [];
+    const found = [], opened = [], evOne = [];
     const run = async (label) => {
       const v = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => `${v.id}(${v.nodes.length}: ${v.nodes.slice(0, 2).map(n => n.target.join(' ')).join(', ')})`));
       found.push(...v.map(x => label + ':' + x)); opened.push(label + ' ' + (await pg.evaluate(() => UI.TT.depth())));
@@ -597,12 +597,22 @@ export default {
       await pg.click('#tabbody table.mkt-t td[data-tt="mktPrice"]'); await pg.click('#tt-pop-1 [data-tt="skill"]');
       await run(theme + ' holdings');
       await pg.evaluate(() => { UI.TT.closeAll(); const q = TT2.oddsEvents(30).find(x => A.EV[x.ev].choices.some(c => c.check && !c.check.fight)); A.S.queue = [q]; UI.ov = null; UI.render(); });
-      await pg.click('#modal [data-tt="odds"][data-tt-tap]'); const s2 = await pg.$('#tt-pop-1 [data-tt="stat"], #tt-pop-1 [data-tt="skill"]'); if (s2) await s2.click();
+      // Changed in cycle 3 (wf-phonetap), with v2 in the build: since playtest 1 (docs/v2/playtest-1.md, finding 3) a
+      // click on a choice chooses, so the odds badge inside it has no click target (99993-v2-stats f-words); with a
+      // mouse its breakdown opens on hover. That breakdown is words only (the owner's rule: no number, and no
+      // description behind a further click), so it holds no word that opens a second popover: the event is checked
+      // one deep. Without v2, the release-era click target and two deep, as before.
+      const v2 = await pg.evaluate(() => !!A.V2S);
+      if (v2) { await pg.mouse.move(1, 1); await pg.hover('#modal button[data-a="evChoose"] [data-tt="odds"]'); await pg.waitForFunction(() => UI.TT.depth() >= 1); }
+      else await pg.click('#modal [data-tt="odds"][data-tt-tap]');
+      const s2 = await pg.$('#tt-pop-1 [data-tt="stat"], #tt-pop-1 [data-tt="skill"]'); if (s2) await s2.click();
+      if (v2) evOne.push(!s2 && !(await pg.$('#tt-pop-1 [data-tt], #tt-pop-1 [data-tip]')));
       await run(theme + ' event');
       await pg.evaluate(() => { UI.TT.closeAll(); A.S.queue = []; UI.ov = null; UI.render(); });
     }
     for (let i = errs.length - 1; i >= 0; i--) if (/Refused to connect to 'https:\/\/fonts\.googleapis\.com/.test(errs[i])) errs.splice(i, 1);
-    const deep = opened.every(x => / 2$/.test(x));
+    // two deep everywhere; with v2 the event's words-only breakdown is one deep, and only when it offers no word inside
+    const deep = opened.every(x => / 2$/.test(x) || (evOne.length === 2 && evOne.every(Boolean) && / event 1$/.test(x)));
     return { ok: !found.length && deep, detail: `open: ${opened.join(', ')}; ${found.length} axe violations${found.length ? ': ' + found.slice(0, 6).join('; ') : ''}` };
   },
 
