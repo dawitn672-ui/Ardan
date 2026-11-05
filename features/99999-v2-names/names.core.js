@@ -2,11 +2,11 @@
 // histories stay; only the names change, everywhere the player reads them.
 //
 //   POL-32 Sultanate of the Amber Isles / Amber Isles  ->  Sultanate of Ambrel / Ambrel
-//   POL-21 League of the Spice Coast / Kesh             ->  League of Kesh / Kesh
+//   POL-21 League of the Spice Coast / Kesh             ->  Kesh / Kesh
 //   POL-33 Brotherhood of Blackreef / Blackreef         ->  Principality of Corvasse / Corvasse (its capital too)
-//   POL-19 Confederacy of the Sand Clans / Sand Clans   ->  Confederacy of Sahrim / Sahrim
-//   POL-12 Khanate of the Nine Winds / Nine Winds       ->  Khanate of Ulun / Ulun
-//   POL-34 League of the Tusk Clans / Tusk Clans        ->  Dominion of Ughrak / Ughrak
+//   POL-19 Confederacy of the Sand Clans / Sand Clans   ->  Sahrim Confederacy / Sahrim
+//   POL-12 Khanate of the Nine Winds / Nine Winds       ->  Kingdom of Ulun / Ulun
+//   POL-34 League of the Tusk Clans / Tusk Clans        ->  Ughrak Dominion / Ughrak
 //   POL-13 Highland League / Highland                   ->  Kingdom of Brannoch / Brannoch
 //   POL-11 Horde of Gorath / the Horde                  ->  Horde of Gorath / Gorath
 //
@@ -26,17 +26,17 @@
   const NM = A.V2NAMES = A.V2NAMES || {};
   NM.REALMS = {
     'POL-32': { from: ['Sultanate of the Amber Isles', 'Amber Isles'], name: 'Sultanate of Ambrel', short: 'Ambrel' },
-    'POL-21': { from: ['League of the Spice Coast', 'Kesh'], name: 'League of Kesh', short: 'Kesh' },
+    'POL-21': { from: ['League of the Spice Coast', 'Kesh'], name: 'Kesh', short: 'Kesh' },
     'POL-33': { from: ['Brotherhood of Blackreef', 'Blackreef'], name: 'Principality of Corvasse', short: 'Corvasse' },
-    'POL-19': { from: ['Confederacy of the Sand Clans', 'Sand Clans'], name: 'Confederacy of Sahrim', short: 'Sahrim' },
-    'POL-12': { from: ['Khanate of the Nine Winds', 'Nine Winds'], name: 'Khanate of Ulun', short: 'Ulun' },
-    'POL-34': { from: ['League of the Tusk Clans', 'Tusk Clans'], name: 'Dominion of Ughrak', short: 'Ughrak' },
+    'POL-19': { from: ['Confederacy of the Sand Clans', 'Sand Clans'], name: 'Sahrim Confederacy', short: 'Sahrim' },
+    'POL-12': { from: ['Khanate of the Nine Winds', 'Nine Winds'], name: 'Kingdom of Ulun', short: 'Ulun' },
+    'POL-34': { from: ['League of the Tusk Clans', 'Tusk Clans'], name: 'Ughrak Dominion', short: 'Ughrak' },
     'POL-13': { from: ['Highland League', 'Highland'], name: 'Kingdom of Brannoch', short: 'Brannoch' },
     'POL-11': { from: ['Horde of Gorath', 'the Horde'], name: 'Horde of Gorath', short: 'Gorath' },
   };
 
   // ---- 1. the rules ------------------------------------------------------------------------------------------------
-  const PRE = /Amber|Spice Coast|Blackreef|Sand Clan|Nine Winds|Tusk|Highland|Horde/;
+  const PRE = /Amber|Spice Coast|Blackreef|Sand Clan|Nine Winds|Tusk|Highland|Horde|[Kk]hanate/;
   const TAG = '(?:\\uE000\\d+\\uE001)*';           // a masked tag between the article and the name
   const AP = "(?:'|’|&#39;)";
   // a plural name followed by its verb: the verb agrees with the singular name
@@ -88,12 +88,15 @@
   const RULES = [
     // full names first
     [/\bSultanate of the Amber Isles\b/g, 'Sultanate of Ambrel'],
-    [/\bLeague of the Spice Coast\b/g, 'League of Kesh'],
-    [/\bSpice Coast League\b/g, 'League of Kesh'],
+    // Kesh is its own full name: "the League of the Spice Coast" is just "Kesh"
+    [/\b(?:[Tt]he )?(?:League of the Spice Coast|Spice Coast League)\b/g, 'Kesh'],
     [/\bBrotherhood of Blackreef\b/g, 'Principality of Corvasse'],
-    [/\bConfederacy of the Sand Clans\b/g, 'Confederacy of Sahrim'],
-    [/\bKhanate of the Nine Winds\b/g, 'Khanate of Ulun'],
-    [/\bLeague of the Tusk Clans\b/g, 'Dominion of Ughrak'],
+    [/\bConfederacy of the Sand Clans\b/g, 'Sahrim Confederacy'],
+    [/\bKhanate of the Nine Winds\b/g, 'Kingdom of Ulun'],
+    // Ulun is a kingdom now: its own events' "the Khanate" is Ulun, the lore's "the khanate" the kingdom
+    [/\b[Tt]he Khanate\b(?! of)/g, 'Ulun'],
+    [/\bthe khanate\b(?! of)/g, 'the kingdom'],
+    [/\bLeague of the Tusk Clans\b/g, 'Ughrak Dominion'],
     [/\bHighland League\b/g, 'Kingdom of Brannoch'],
     // Gorath the Great founded the Horde: there the realm keeps its full name ("Gorath founded the Horde of Gorath")
     [/\b(found(?:ed|er of|ing of|s)|[Uu]nit(?:ed|er of|es|ing)|[Uu]nification of|made|into|joined|join) the Horde(?! of Gorath)(?![A-Za-z'’-])/g, '$1 the Horde of Gorath'],

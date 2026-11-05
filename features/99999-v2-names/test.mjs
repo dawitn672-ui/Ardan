@@ -9,7 +9,7 @@ const IDS = ['POL-32', 'POL-21', 'POL-33', 'POL-19', 'POL-12', 'POL-34', 'POL-13
 // and a sweep of everything readable: every tab, the Codex's pages, the realm views, the modal, titles, the canvas
 const SETUP = () => {
   window.NMT = {
-    OLD: /Amber Isles|Spice Coast|Blackreef|Sand Clans?\b|Nine Winds|Tusk Clans?\b|Highland League|\bHighland\b(?![ -](?:Spears?|March|Javelins|farmers|riding|custom holds)\b)|\b[Tt]he Horde\b(?! of Gorath)(?! Wars?\b)|\bAmber (?:fleet|ships?|marines?|merchants?|captains?|harbou?rs?)\b|\bTusk riders\b/,
+    OLD: /Amber Isles|Spice Coast|Blackreef|Sand Clans?\b|Nine Winds|Tusk Clans?\b|Highland League|\bHighland\b(?![ -](?:Spears?|March|Javelins|farmers|riding|custom holds)\b)|\b[Tt]he Horde\b(?! of Gorath)(?! Wars?\b)|\bAmber (?:fleet|ships?|marines?|merchants?|captains?|harbou?rs?)\b|\bTusk riders\b|\b[Tt]he Khanate\b(?! of)/,
     hits: [],
     look(where, s) {
       if (typeof s !== 'string' || !s) return;
@@ -71,7 +71,7 @@ export default {
     const r = await pg.evaluate(() => {
       const NM = A.V2NAMES, bad = [];
       const CHANGE = [
-        ['Confederacy of the Sand Clans', 'Confederacy of Sahrim'],
+        ['Confederacy of the Sand Clans', 'Sahrim Confederacy'],
         ['the price, and the Sand Clans are threatening to close the Salt Road', 'the price, and Sahrim is threatening to close the Salt Road'],
         ["Among the Sand Clans a traveler who accepts water", 'In Sahrim a traveler who accepts water'],
         ["The Sand Clans' unicorns", "Sahrim's unicorns"],
@@ -89,12 +89,12 @@ export default {
         ['as Highlanders do on feast days', 'as Brannoch folk do on feast days'],
         ['Sultan of the Amber Isles, Guardian of the Wells', 'Sultan of Ambrel, Guardian of the Wells'],
         ['An Amber factor pays well', 'An Ambrel factor pays well'],
-        ['League of the Spice Coast', 'League of Kesh'],
+        ['the League of the Spice Coast', 'Kesh'], ['In the Khanate, people still look at the horse', 'In Ulun, people still look at the horse'],
         ['A merchant from the Spice Coast sells', 'A merchant from Kesh sells'],
         ['Brotherhood of Blackreef', 'Principality of Corvasse'],
         ["Blackreef's dragon", "Corvasse's dragon"],
-        ['League of the Tusk Clans', 'Dominion of Ughrak'],
-        ['Khanate of the Nine Winds', 'Khanate of Ulun'],
+        ['League of the Tusk Clans', 'Ughrak Dominion'],
+        ['Khanate of the Nine Winds', 'Kingdom of Ulun'],
         ['the <b>Sand Clans</b> win', 'the <b>Sahrim</b> win'.replace('the <b>', '<b>')],
         ['<span title="the Sand Clans ride" data-v="Sand Clans">x</span>', '<span title="Sahrim rides" data-v="Sand Clans">x</span>'],
         ['the Sand Clans&#39; oases', 'Sahrim&#39;s oases'],
@@ -116,8 +116,8 @@ export default {
       const names = Object.fromEntries(['POL-32', 'POL-21', 'POL-33', 'POL-19', 'POL-12', 'POL-34', 'POL-13', 'POL-11'].map(id => [id, LORE.realms[id].name + ' / ' + LORE.realms[id].short]));
       return { bad, names, n: CHANGE.length + KEEP.length };
     });
-    const want = { 'POL-32': 'Sultanate of Ambrel / Ambrel', 'POL-21': 'League of Kesh / Kesh', 'POL-33': 'Principality of Corvasse / Corvasse',
-      'POL-19': 'Confederacy of Sahrim / Sahrim', 'POL-12': 'Khanate of Ulun / Ulun', 'POL-34': 'Dominion of Ughrak / Ughrak',
+    const want = { 'POL-32': 'Sultanate of Ambrel / Ambrel', 'POL-21': 'Kesh / Kesh', 'POL-33': 'Principality of Corvasse / Corvasse',
+      'POL-19': 'Sahrim Confederacy / Sahrim', 'POL-12': 'Kingdom of Ulun / Ulun', 'POL-34': 'Ughrak Dominion / Ughrak',
       'POL-13': 'Kingdom of Brannoch / Brannoch', 'POL-11': 'Horde of Gorath / Gorath' };
     const wrong = Object.keys(want).filter(id => r.names[id] !== want[id]).map(id => `${id}: ${r.names[id]}`);
     const ok = !r.bad.length && !wrong.length;
@@ -206,7 +206,7 @@ export default {
       (r.relHits.length || r.v2Hits.length ? ' | OLD: ' + [...r.relHits, ...r.v2Hits].slice(0, 4).join(' | ') : '') };
   },
 
-  // the renamed sea realms keep their shore (by id now), and the orc schools still know the Dominion of Ughrak
+  // the renamed sea realms keep their shore (by id now), and the orc schools still know the Ughrak Dominion
   async nmPlaces(pg) {
     const r = await pg.evaluate(() => {
       const out = { coast: {}, seaId: !!(A.V2MAP && A.V2MAP.SEA_ID) };
@@ -219,12 +219,12 @@ export default {
       }
       const pc = A.pc(), sc = A.schoolOptions ? A.schoolOptions(pc) : [];
       const why = n => (sc.find((s, i) => LORE.schools[i] && LORE.schools[i].realmName === n) || {}).why;
-      out.ughrak = why('Dominion of Ughrak'); out.horde = why('Horde of Gorath');
+      out.ughrak = why('Ughrak Dominion'); out.horde = why('Horde of Gorath');
       out.schoolNames = LORE.schools.filter(s => /Ughrak|Gorath|Tusk/.test(s.realmName)).map(s => s.realmName);
       return out;
     });
     const shore = Object.values(r.coast).every(a => a.every(s => +s.split('/')[0] > 0));
-    const orc = r.schoolNames.includes('Dominion of Ughrak') ? r.ughrak !== undefined && r.ughrak === r.horde : true;
+    const orc = r.schoolNames.includes('Ughrak Dominion') ? r.ughrak !== undefined && r.ughrak === r.horde : true;
     return { ok: r.seaId && shore && orc, detail: `shore: ${JSON.stringify(r.coast)}; Ughrak school ${JSON.stringify(r.ughrak)} = Horde school ${JSON.stringify(r.horde)}` };
   },
 };

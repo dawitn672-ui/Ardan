@@ -19,6 +19,9 @@ The release's save is `SAVES` (IndexedDB `SAVES.DB`, gzipped, a header with `fmt
   6. **diplomacy**: `S.v2dip` with empty factor maps and each living realm's ruler known since long ago (`[ruler, -99]`, as 99996's tick would write).
   7. **war**: `S.v2w = { rum: [], heard: [] }` (99997).
   8. **time**: `S.v2t` (99992).
+  9. **names** (added by 99999-v2-names when it is built): the eight renamed realms take their new names, and the
+     life's log, news, waiting event and titles read them. It also runs after every load, since a v2 save made before
+     the names holds the old ones.
   Each step only fills what is missing, so a v2 state upgraded again is unchanged. The lanes draw from v2's seeded
   generators or inside `A.V2F.sandbox`; the game's stream is put back after the upgrade. The lanes' own lazy paths
   (the court on the first month, the body on the first sync) stay as a fallback for states made by code.
