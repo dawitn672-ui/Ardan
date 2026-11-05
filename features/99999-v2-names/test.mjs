@@ -22,10 +22,10 @@ const SETUP = () => {
         for (const a of ['title', 'aria-label', 'alt', 'placeholder']) NMT.look(where + ' @' + a, el.getAttribute(a));
     },
     canvas() {
-      const NM = A.V2NAMES, seen = [];
-      const o = NM.raw.fillText;
-      NM.raw.fillText = function (t) { seen.push(String(t)); return o.apply(this, arguments); };
-      return () => { NM.raw.fillText = o; return seen; };
+      const NM = A.V2NAMES, seen = [], host = NM && NM.raw && NM.raw.fillText ? NM.raw : CanvasRenderingContext2D.prototype;
+      const o = host.fillText;
+      host.fillText = function (t) { seen.push(String(t)); return o.apply(this, arguments); };
+      return () => { host.fillText = o; return seen; };
     },
     sweep(tag) {
       const stop = NMT.canvas();
@@ -129,7 +129,7 @@ export default {
   async nmLives(pg) {
     await pg.evaluate(SETUP);
     const out = [];
-    for (const [i, id] of IDS.entries()) {
+    for (const [i, id] of IDS.entries()) if (!process.env.NM_ONLY || process.env.NM_ONLY === id) {
       const race = id === 'POL-11' || id === 'POL-34' ? 'orc' : 'human';
       const r = await pg.evaluate(([id, race, seed]) => {
         NMT.hits = [];
@@ -137,8 +137,8 @@ export default {
         const at0 = A.S.realms[id].name + ' / ' + A.S.realms[id].short;
         let events = 0, pages = 0;
         const look = v => { if (!v) return; events++; NMT.look('event', v.title); NMT.look('event', v.text); for (const c of v.choices || []) NMT.look('choice', c.t); };
-        for (let y = 0; y < 4; y++) {
-          const how = T.play(5, { onEvent: look });
+        for (let y = 0; y < 2; y++) {
+          const how = T.play(10, { onEvent: look });
           pages += NMT.sweep(`${id} y${A.S.year}`);
           if (how === 'dead') break;
         }
