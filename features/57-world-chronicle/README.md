@@ -157,7 +157,8 @@ realm a proper name (the Sand Clans are Sahrim, the Nine Winds Ulun, the Amber I
 12%), checks each one against the scene's own words and context, and checks none sits beside counsel or a memory; it
 keeps its place-and-time and raw-token checks. `wcEchoWords` no longer plays the dropped Far Lands' Khaganate, nor any
 realm by name: it gives POL-19 a noun name inside the test ("League of the Salt Marches"), restores it, and holds both
-that draw ("the Salt Marches") and POL-19's own proper name ("Sahrim", no article) to `WC.realmWord`'s rule. One bot life (human peasant of Aldmark, 40 years): 44 lines on 316 cards (13.9%) before, 18 (5.7%) after.
-`wcCitesShare` on the full v2 build (8 lives, up to 60 years): a recalled line on **118 of 2,925 cards (4.0%)**, median
-life 3.95%, most 5.6%; 242 scenes (8.3%) cite an entry by line, token or pack; 0 lines off their scene, 0 citations out of
-place or time. (The old W6 bar of 15% citations no longer holds, by design.)
+that draw ("the Salt Marches") and POL-19's own proper name ("Sahrim", no article) to `WC.realmWord`'s rule.
+One bot life (human peasant of Aldmark, 40 years): 44 lines on 316 cards (13.9%) before, 18 (5.7%) after.
+`wcCitesShare` on the full v2 build with 99999-v2-names (8 lives, up to 60 years): a recalled line on **109 of 2,932
+cards (3.7%)**, median life 3.35%, most 7.4%; 220 scenes (7.5%) cite an entry by line, token or pack; 0 lines off their
+scene, 0 citations out of place or time. (The old W6 bar of 15% citations no longer holds, by design.)
