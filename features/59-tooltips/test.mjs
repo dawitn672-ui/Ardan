@@ -403,7 +403,10 @@ export default {
     // v2 (99993-v2-stats): a choice's odds are words now, so the scene's numbers left are the choice keys; the scenes are
     // left out of the bar and the rest must still be covered
     const v2 = await pg.evaluate(() => !!A.V2S), rr = v2 ? r.filter(s => !/^Events with odds/.test(s.name)) : r;
-    const c = cover(rr, v2 ? 30 : 60);
+    // v2 (99997-v2-war, playtest 2 finding 5): the commander's morale ("eager") and drill ("drilled") are words now, not
+    // 0-100 numbers, so the battle screens carry fewer numbers to cover (39 before, 23 with the duel); the share that
+    // must be covered (90% of each screen, every screen with a number) is unchanged
+    const c = cover(rr, v2 ? 20 : 60);
     return { ok: c.ok && r.length >= 5 && (v2 || r[0].after.n >= 30), detail: r.map(line).join('; '), data: r };
   },
 

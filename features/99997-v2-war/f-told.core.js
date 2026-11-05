@@ -180,9 +180,13 @@
       let k = 0;
       h = h.replace(/(<b>[^<]*<\/b> )((?:<span[^>]*>)?)([\d,]+) \/ ([\d,]+)((?:<\/span>)?) <span class="muted">\(((?:<span[^>]*>)?)morale (\d+)((?:<\/span>)?)\)<\/span>/g,
         (m, nm, o1, live, full, c1, o2, mo, c2) => {
-          const mine = k++ === 0, w = W.moWord(+mo);
-          if (mine) return `${nm}${o1}${live} / ${full}${c1} <span class="muted">(${o2}${esc(w)}${c2})</span>`;
-          return `${nm}${esc(W.told(num(live), rank, false))} <span class="muted">(${esc(w)})</span>`;
+          const mine = k++ === 0, w = W.moWord(+mo), sk = mine ? side : side === 'A' ? 'B' : 'A';
+          // 59-tooltips draws its bSide and bMorale triggers after this (it wraps UI.battleModal, outside), and its
+          // pattern wants "(morale N)": the triggers are put on here instead, as 59's own number triggers, and its
+          // popovers are the ones redrawn below (the enemy's an estimate, morale a word)
+          const tn = (key, label, o) => (!o1 && typeof UI.ttNum === 'function' ? UI.ttNum(key, sk, label, o) : label);
+          if (mine) return `${nm}${o1}${tn('bSide', `${live} / ${full}`, { focus: true })}${c1} <span class="muted">(${o2}${tn('bMorale', esc(w))}${c2})</span>`;
+          return `${nm}${tn('bSide', esc(W.told(num(live), rank, false)), { focus: true })} <span class="muted">(${tn('bMorale', esc(w))})</span>`;
         });
       // the log: a number beside the enemy's name is an estimate; the pulse's losses on either side by whose they are
       // (the names are matched as the page has them, escaped)
