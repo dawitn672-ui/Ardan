@@ -75,9 +75,14 @@ Object.assign(tests, {
     // and the step's closing draw are 120 to 250 ms each on a loaded 4-core runner: 346 ms over 4 polls failed, 662 ms
     // over 8 polls passed). The bar now reads the slicing itself, which load does not change: the days the stepper ran
     // between two polls, less the longest of them, fit in one slice (step.core.js's 20 ms, with 15 ms for timer slack),
-    // and a month is cut into more than one piece. The longest task stays under 1500 ms as before. (With the slicing
-    // turned off, UI.STEP_SLICE = 1e6, a month ran 41 ms of days beyond its turn in one piece and fails the bar; sliced,
-    // 13 to 17 ms.)
+    // and a month is cut into more than one piece. The longest task stays under 1500 ms as before.
+    // v2, the guard: a 306-province day is so cheap that an unsliced month ran only 20 to 40 ms of days beyond its turn,
+    // inside the bar, and step.core.js always yields once before the turn day whatever UI.STEP_SLICE is, so "two pieces"
+    // held with no slicing at all (the test passed 3 runs in 5 with UI.STEP_SLICE = 1e6). So each timed day now carries a
+    // fixed 8 ms of busy-wait (it reads only the clock: the world, its draws and A.S are untouched), which makes a month
+    // 200 ms and more of days, as heavy as the Great Continent's were; and the pieces counted are only those that hold no
+    // turn day: a month and a week must each be cut into two such pieces or more. With UI.STEP_SLICE = 1e6 the test now
+    // fails every run (one piece, 200+ ms of days beyond its longest); sliced, each piece stays within the 20 ms slice.
     await pg.evaluate(STEPS);
     const r = await pg.evaluate(async () => {
       // v2: POL-36 is past the continent's realms, so the seed places this life in one of them (POL-22)
@@ -85,9 +90,14 @@ Object.assign(tests, {
       await __step('stepMonth');   // the first days build the roads once (v2: a month; Week is gone)
       const lt = [];
       const ob = new PerformanceObserver(l => { for (const e of l.getEntries()) lt.push(e.duration); }); ob.observe({ entryTypes: ['longtask'] });
-      const tick = A.dayTick, days = [];
-      // each day the stepper runs, timed (the wrapper only reads the clock: the same days run with the same draws)
-      A.dayTick = function () { const t0 = performance.now(); try { return tick.apply(this, arguments); } finally { days.push([t0, performance.now()]); } };
+      const tick = A.dayTick, days = [], LOAD = 8;
+      // each day the stepper runs, timed (the wrapper only reads the clock: the same days run with the same draws), with
+      // LOAD ms of busy-wait so that a day weighs what slicing is for; a turn day (the year's or a month's) is marked
+      const turnDay = wc => wc >= 365 || (A.MONTH_START || []).includes(wc);
+      A.dayTick = function () {
+        const t0 = performance.now(), turn = turnDay(A.S.warClock || 0);
+        try { return tick.apply(this, arguments); } finally { while (performance.now() - t0 < LOAD); days.push([t0, performance.now(), turn]); }
+      };
       const press = async kind => {
         A.S.queue = [];   // v2: a step waits for the cards left from the last one
         lt.length = 0; days.length = 0;
@@ -95,11 +105,12 @@ Object.assign(tests, {
         const t0 = performance.now(), m = await __step(kind), ms = performance.now() - t0;
         await new Promise(res => setTimeout(res, 50));
         // the days run between two polls of the page: their work less the longest day
+        // pieces: those that hold no turn day (the stepper yields before a turn whatever its slice, so those prove nothing)
         let worst = 0, pieces = 0;
         for (let i = 1; i < m.ticks.length; i++) {
-          const d = days.filter(x => x[1] > m.ticks[i - 1] && x[1] <= m.ticks[i]).map(x => x[1] - x[0]);
+          const run = days.filter(x => x[1] > m.ticks[i - 1] && x[1] <= m.ticks[i]), d = run.map(x => x[1] - x[0]);
           if (!d.length) continue;
-          pieces++;
+          if (!run.some(x => x[2])) pieces++;
           worst = Math.max(worst, d.reduce((a, b) => a + b, 0) - Math.max(...d));
         }
         return { kind, plan, ms: Math.round(ms), slices: m.slices, pieces, worst: Math.round(worst), ran: days.length, days: m.d1 - m.d0, long: lt.map(Math.round).sort((a, b) => b - a) };
@@ -118,10 +129,10 @@ Object.assign(tests, {
     });
     const need = { stepMonth: 25, v2Week: 7, v2Day: 1 };
     const SLICE = 20;   // the slice step.core.js promises; a build that widens UI.STEP_SLICE fails here
-    const fine = s => s.days >= need[s.kind] && s.ran >= s.days && (s.long[0] || 0) < 1500 && s.worst <= SLICE + 15 && (s.kind !== 'stepMonth' || s.pieces >= 2);
+    const fine = s => s.days >= need[s.kind] && s.ran >= s.days && (s.long[0] || 0) < 1500 && s.worst <= SLICE + 15 && (s.kind === 'v2Day' || s.pieces >= 2);
     const kinds = r.out.map(s => s.kind);
     const ok = r.v2map && r.j && kinds.includes('v2Week') && kinds.includes('v2Day') && r.out.every(fine);
-    return { ok, detail: `the generated continent (${r.prov} provinces${r.v2map ? '' : ', NOT v2'}); journey ${r.j}; ` + r.out.map(s => `${s.kind} (clock ${s.plan}) ${s.days} days in ${s.ms} ms, in ${s.pieces} pieces over ${s.slices} polls, at most ${s.worst} ms of days in a piece beyond its longest day (slice ${r.slice} ms, bar ${SLICE + 15}); long tasks ${s.long.slice(0, 4).join(', ') || 'none'} ms`).join('; ') + ' (the longest is a turn or a draw)' };
+    return { ok, detail: `the generated continent (${r.prov} provinces${r.v2map ? '' : ', NOT v2'}); journey ${r.j}; ` + r.out.map(s => `${s.kind} (clock ${s.plan}) ${s.days} days in ${s.ms} ms, in ${s.pieces} pieces without a turn day over ${s.slices} polls, at most ${s.worst} ms of days in a piece beyond its longest day (slice ${r.slice} ms, bar ${SLICE + 15}); long tasks ${s.long.slice(0, 4).join(', ') || 'none'} ms`).join('; ') + ' (the longest is a turn or a draw)' };
   },
   // a life begun through the creation screen (which keeps its page number in UI.step) steps a month at a time, and the
   // stepper's state stays readable: a month passes per step and the step ends on its own
