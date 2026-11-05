@@ -289,10 +289,49 @@ export default {
       } finally { UI.wrIntel = wi; }
       const gridWords = /(far above|above|like|below|far below) (yours|your others|most)/.test(grid);
       pure = pure && JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0;
-      return { bad: [...new Set(bad)], wordsShown, infamyWords, coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure };
+      // verifier, round 3: infamy reached a ruler as a number in more spellings than "(infamy N)": the Realm tab's bar
+      // ("Infamy" with "47" in its own element) and its rule line ("At 40 ... above 60"), the coalition warning ("Keep
+      // infamy below 60"), the infamy popover, the Life tab's advisor hint and its title ("Infamy 47: ..."),
+      // pl_coalition_letter ("Your infamy is 47 — at 40 ..."), a war's cost ("infamy +6", "stability -5"), a realm's
+      // card ("· infamy 61"), and the realm's other measures beside it. As a ruler with infamy 47: every text node and
+      // title of each page, folded or open, and every popover the page offers, scanned for a bare number by these words.
+      T.enter({ seed: 90210, race: 'human', realm: 'POL-02', status: 'royal', sex: 'M', startAge: 30 });
+      const ru = A.pc(); A.makeRuler(ru, ru.realm, true); T.play(1);
+      const rr = A.realm(ru.ruler), nbs = A.neighbors(rr.id);
+      rr.infamy = 47; nbs.forEach((id, i) => { A.realm(id).infamy = i === 0 ? 61 : 23; }); A.S.coalitions = { [rr.id]: nbs.slice(0, 2) };
+      const RW = /infam|coalition|stabil|legitim|faction|discontent|loyalty|opinion|relations/i;
+      const nodes = root => { const a = []; const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (n.nodeValue.trim()) a.push(n.nodeValue.trim()); for (const el of root.querySelectorAll('[title]')) a.push(el.getAttribute('title')); return a; };
+      // (a count of houses or of heeded advice is a count)
+      // (a popover's breakdown keeps its sums, "Legitimacy +0.8" a year, as i-numbers' README says of the tooltips'
+      // sums: the measure's own figure in a label is still caught)
+      const scanR = (where, lines) => { for (const l of lines) if (RW.test(l)) check(where, l.replace(/\b\d+ (?:houses?|of \d+)\b/g, '').replace(/ popover /.test(where) ? /[+−-]\d[\d,]*(?:\.\d+)?$/ : /$^/, '')); };
+      const tipsOf = (where, root) => { const seen = new Set(); for (const el of root.querySelectorAll('[data-tt]')) { const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || ''; if (seen.has(k + '|' + v) || !UI.TIPS[k]) continue; seen.add(k + '|' + v); let h = ''; try { h = UI.TIPS[k](v); } catch (e) {} if (typeof h === 'string' && h) scanR(where + ' popover ' + k, swept(h).split('\n')); } };
+      const shown = {};
+      rng0 = JSON.stringify(A.S.rng); h0 = T.hash(A.S);
+      for (const tab of ['life', 'realm']) {
+        UI.ov = null; UI.tab = tab; UI.render(); await tick();
+        const app = document.getElementById('app'), t = nodes(app); shown[tab] = t.join('\n');
+        scanR('ruler ' + tab, t); tipsOf('ruler ' + tab, app);
+      }
+      const tipInf = swept(UI.TIPS.infamy(rr.id)); scanR('infamy popover', tipInf.split('\n'));
+      { const el = document.createElement('div'); el.innerHTML = UI.diplCard(rr, A.realm(nbs[0])); document.body.appendChild(el); VS.sweep(el); scanR('realm card', nodes(el)); shown.card = nodes(el).join('\n'); el.remove(); }
+      UI.ov = { type: 'warDecl', id: nbs[0] }; UI.render(); await tick();
+      { const m = document.getElementById('modal') || document.body; scanR('war cost', nodes(m)); shown.war = nodes(m).join('\n'); }
+      UI.ov = null; UI.tab = 'world'; UI.worldView = 'dipl'; UI.render(); await tick(); scanR('ruler diplomacy', nodes(document.getElementById('app')));
+      UI.worldView = 'map'; UI.mapMode = 'danger'; UI.render(); await tick(); scanR('ruler map', nodes(document.getElementById('app')));
+      UI.mapMode = mm0; UI.tab = 'life'; UI.render();
+      pure = pure && JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0;
+      // the letter, as the page draws the event
+      A.S.queue.unshift({ type: 'event', ev: 'pl_coalition_letter', ctx: {} });
+      const hd = A.headReady(); UI.ov = null; UI.render(); await tick();
+      const letter = hd && hd.ev === 'pl_coalition_letter' ? nodes(document.getElementById('modal') || document.body).join('\n') : 'no letter 0';
+      scanR('coalition letter event', letter.split('\n'));
+      const rw = [/Infamy\s*\n?\s*feared/.test(shown.realm), /Infamy: feared/.test(shown.life), /Infamy feared/.test(tipInf), /infamy: hated/.test(shown.card),
+        /infamy up /.test(shown.war), /feared abroad/.test(letter), !/near collapse/.test(shown.war)], rulerWords = rw.every(Boolean);
+      return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join(''), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure };
     });
-    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.gridWords && r.foe && r.log > 0 && r.pure;
-    return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"); War Room grid compared ${r.gridWords}; ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
+    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure;
+    return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
   },
 
   // playtest 2 (old 7, new 11, old 20, old 22): no bare 0-100 number beside a stat word on the pages a bot life visits.

@@ -91,9 +91,40 @@ if (M && M.word) {
 // ---- infamy ---------------------------------------------------------------------------------------------------------
 // the bands follow the rules: 40 or more and the neighbours band together, over 58 a coalition may march, over 20 small
 // realms seek its protection
-VS.INFAMY = [[80, 'dreaded by every court'], [59, 'so feared a coalition may march'], [40, 'feared: its neighbours band together'], [21, 'distrusted'], [10, 'watched'], [-1e9, 'unremarkable']];
+VS.INFAMY = [[80, 'dreaded by every court'], [58.5, 'so feared a coalition may march'], [40, 'feared: its neighbours band together'], [21, 'distrusted'], [10, 'watched'], [-1e9, 'unremarkable']];
 VS.infamyWord = v => { for (const [t, w] of VS.INFAMY) if (+v >= t) return w; return VS.INFAMY[VS.INFAMY.length - 1][1]; };
-VS.infamyShort = v => (v >= 80 ? 'dreaded' : v >= 59 ? 'hated' : v >= 40 ? 'feared' : v >= 21 ? 'distrusted' : v >= 10 ? 'watched' : 'unremarkable');
+// the short word (a bar, a list, a line): g-bands' band, the same thresholds
+VS.infamyShort = v => VS.band('infamy', +v || 0);
+// the rule in words, for the lines that gave it as "At 40 ... above 60 ..."
+VS.INFAMY_RULE = 'once a realm is feared, its neighbours start a coalition; once it is hated, the coalition may march';
+// how much it moves ("infamy +6" in a war's cost)
+const infAmount = a => (a < 3 ? 'a little' : a < 8 ? 'somewhat' : a < 20 ? 'a good deal' : 'a great deal');
+// the realm tab's bar (and any bar labelled Infamy): the word in the value's place
+{
+  const bar1 = UI.barRow;
+  UI.barRow = function (label, v, max, cls, pot, valTxt) {
+    try {
+      const l = String(label || '');
+      if (typeof v === 'number' && valTxt == null && (/^Infamy$/.test(l) || /data-tt="infamy"[^>]*>Infamy</.test(l))) return bar1.call(this, label, v, max, cls, pot, VS.infamyShort(v));
+    } catch (e) {}
+    return bar1.apply(this, arguments);
+  };
+}
+// a number whose tooltip key is infamy (59-tooltips wires the realm's bar and its label)
+if (VS.keyWords) VS.keyWords.infamy = t => (/^\d{1,3}(\.\d+)?$/.test(t) ? VS.infamyShort(+t) : null);
+// the infamy popover (59-tooltips' glossary): "Infamy <b>47</b>" and the rule's thresholds
+if (UI.TIPS && typeof UI.TIPS.infamy === 'function') {
+  const inf0 = UI.TIPS.infamy;
+  UI.TIPS.infamy = function (id) {
+    const h = inf0.apply(this, arguments);
+    try {
+      if (typeof h !== 'string') return h;
+      const r = A.realm(id) || A.realm((A.pc() || {}).ruler) || null;
+      return h.replace(/(<div class="tip-h">Infamy )<b>[\d.]+<\/b>/, (all, a) => `${a}<b>${esc(VS.infamyShort(r ? r.infamy || 0 : 0))}</b>`)
+        .replace(/At 40 neighbors start a coalition; above 60 they march together\./, () => esc(VS.INFAMY_RULE.charAt(0).toUpperCase() + VS.INFAMY_RULE.slice(1)) + '.');
+    } catch (e) { return h; }
+  };
+}
 if (typeof UI.worldTabPolitics === 'function') {
   const pol0 = UI.worldTabPolitics;
   UI.worldTabPolitics = function () {
@@ -122,6 +153,30 @@ if (typeof UI.worldTabPolitics === 'function') {
     // barRow is only called for Most feared inside this view (the realm rows use their own markup)
     VS.inFeared = true;
     try { return pol2.apply(this, arguments); } finally { VS.inFeared = false; }
+  };
+}
+
+// a war's price in the declaration ("infamy +4 · stability 2 · legitimacy -3"; the release prints a gain with no sign,
+// and g-bands read "stability 2" as the band of 2): how each moves, in words
+if (typeof UI.warDeclModal === 'function') {
+  const wd0 = UI.warDeclModal;
+  UI.warDeclModal = function () {
+    const h = wd0.apply(this, arguments);
+    try {
+      if (typeof h !== 'string') return h;
+      return h.replace(/(<div>Price<\/div><div>)([^<]*)(<\/div>)/, (all, a, list, b) => a + list.split(' · ').map(x => {
+        const m = /^(infamy|stability|legitimacy) ([+−-]?)(\d{1,3})$/.exec(x.trim());
+        return m ? `${m[1]} ${m[2] === '-' || m[2] === '−' ? 'down' : 'up'} ${infAmount(+m[3])}` : x;
+      }).join(' · ') + b);
+    } catch (e) { return h; }
+  };
+}
+// 59-tooltips' treasury popover: "Income at <stability> 50, with the treasurer" (the baseline the income is told at)
+if (UI.TIPS && typeof UI.TIPS.realmGold === 'function') {
+  const rg0 = UI.TIPS.realmGold;
+  UI.TIPS.realmGold = function () {
+    const h = rg0.apply(this, arguments);
+    try { return typeof h === 'string' ? h.replace(/Income at (<span [^>]*data-tt="realmStab"[^>]*>stability<\/span>) (\d{1,3})\b/g, (all, sp, v) => `Income while ${sp} is ${esc(VS.band('stability', +v))}`) : h; } catch (e) { return h; }
   };
 }
 
@@ -264,9 +319,49 @@ VS.NUMRULES2 = [
   [/\brest to (\d{1,3}) first\b/g, (all, v) => `rest until you are ${VS.band('health', +v)} or better first`],
   // 97-life-fixes' door: "your chance is under 2 in 100"
   [/\byour chance is under \d+ in 100\b/g, () => 'your chance is next to none'],
-  // infamy as a number anywhere it is swept: the ruler's coalition letter "(infamy 47)", the Infamy map mode's legend
-  // "Coalition bait (infamy 60+)" (the threshold reads as its band)
+  // infamy as a number anywhere it is swept (every spelling the game and its features use):
+  // - the rule's thresholds: "At 40 neighbors start a coalition; above 60 it may march." (the realm tab, the popover),
+  //   "at 40 coalitions form; above 60 they march." (pl_coalition_letter), "Keep infamy below 60 or they will march
+  //   together." (the realm tab's coalition warning)
+  [/\b([Aa])t 40 (?:neighbors start a coalition|coalitions form); above 60 (?:they march together|it may march|they march)\./g, (all, a) =>
+    (a === 'A' ? VS.INFAMY_RULE.charAt(0).toUpperCase() + VS.INFAMY_RULE.slice(1) : VS.INFAMY_RULE) + '.'],
+  [/\bKeep infamy below 60 or they will march together\./g, () => 'Do not let them come to hate you, or they will march together.'],
+  // - "Your infamy is 47" (pl_coalition_letter)
+  [/\b([Yy])our infamy is (\d{1,3})\b/g, (all, y, v) => `${y}our realm is ${VS.infamyShort(+v)} abroad`],
+  // - "(infamy 47)" (the ruler's coalition letter, the Coalitions list) and the map legend's "(infamy 60+)"
   [/\(infamy (\d{1,3})\+?\)/g, (all, v) => `(${VS.infamyWord(+v)})`],
+  // - "Their infamy (47)", "Aldmark's infamy (61)" (a realm's reasons, the AI's reasons for a coalition)
+  [/\b([Ii]nfamy) \((\d{1,3})\)/g, (all, w, v) => `${w} (${VS.infamyShort(+v)})`],
+  // - a change: "infamy +6" (a war's cost)
+  [/\b([Ii]nfamy) ([+−-])(\d{1,3})\b(?!\.\d)/g, (all, w, sg, v) => `${w} ${sg === '+' ? 'up' : 'down'} ${infAmount(+v)}`],
+  // a realm's other 0-100 measures as they change: "stability -5", "legitimacy -3" (a war's cost; g-bands' rule read the
+  // sign as a separator and gave the band of 5, "near collapse")
+  [/\b(stability|legitimacy|authority|war weariness)\s?([+−-])(\d{1,3})\b(?![.,]\d|\s*(?:suns?|years?|%))/gi, (all, w, sg, v) => `${w} ${sg === '+' ? 'up' : 'down'} ${infAmount(+v)}`],
+  // - "Infamy 47: your neighbors talk of a coalition" (the advisor's hint and its title), "· infamy 47" (a realm's card)
+  [/\b([Ii]nfamy):? (\d{1,3})(?![\d+%]|\.\d)(:?)/g, (all, w, v, c) => `${w}: ${VS.infamyShort(+v)}${c ? ';' : ''}`],
+  // the realm's other thresholds and costs, as the realm tab and its popovers say them (59-tooltips' glossary):
+  // stability "below 18 a rising becomes likely", "An empty treasury costs 6 stability", legitimacy's yearly pull
+  // "(legitimacy − 50) ÷ 25 a year"
+  [/\bbelow 18 a rising becomes likely/g, () => `once it is ${VS.band('stability', 17)} a rising becomes likely`],
+  [/\bcosts (\d{1,2}) stability\b/g, (all, v) => `costs ${+v < 3 ? 'a little' : +v < 8 ? 'some' : 'a good deal'} of its stability`],
+  [/: \(legitimacy − 50\) ÷ 25 a year/g, () => ': up a little each year while legitimacy is more than middling, down while it is less'],
+  // a faction's demand (the rules: 40% of the power and 60 discontent), after the percentage became words:
+  // "A faction with about two in five+ power and 60+ discontent", "At about two in five and 60 discontent",
+  // "At 60, with about two in five of the power, ... sets it back to 0"
+  [/\b(about two in five|40%)\+ power and 60\+ discontent\b/g, () => `about two in five of the power, once it is ${VS.band2 ? VS.band2('discontent', 60) : 'angry'},`],
+  [/\bAt (about two in five|40%) and 60 discontent\b/g, () => `At about two in five of the power, once it is ${VS.band2 ? VS.band2('discontent', 60) : 'angry'},`],
+  [/\bAt 60, with (about two in five|40%) of the power, (.*?) sets it back to 0\b/g, (all, a, mid) => `Once it is ${VS.band2 ? VS.band2('discontent', 60) : 'angry'}, with about two in five of the power, ${mid} quiets it again`],
+  // 56-realm-inside's court reasons: "A faction stirs (discontent 44)", "The lords are sullen (mean loyalty 38)"
+  [/\((discontent|mean loyalty) (\d{1,3})\)/g, (all, k, v) => `(${k === 'discontent' ? 'discontent' : 'loyalty'}: ${VS.band2 ? VS.band2(k === 'discontent' ? 'discontent' : 'loyalty', +v) : VS.band('stability', +v)})`],
+  // a realm's opinion of another in the treaty reasons and an envoy's letter: "Opinion -4 (−2)", "(Relations +12.)"
+  [/(?<=[(·]\s?)\b(Opinion|Relations) ([+−-]?\d{1,3})(?=\s*$|\s*\(|\.\))/g, (all, k, v) => (VS.band2 ? `${k}: ${VS.band2('opinion', +String(v).replace('−', '-'))}` : all)],
+  // 59-tooltips' treasury popover: "Income at stability 50, with the treasurer"
+  [/\bIncome at stability (\d{1,3})\b/g, (all, v) => `Income while the realm is ${VS.band('stability', +v)}`],
+  // a superior's letter in the Path's asks: "Opinion 50+: a letter from them"
+  [/\bOpinion (\d{1,3})\+:/g, (all, v) => (VS.band2 ? `When they think you ${VS.band2('opinion', +v)} or better:` : all)],
+  // an embassy's gifts: the toast "Opinion +12" and the log's "Their opinion of you rises (+12)." (a change)
+  [/^(\s*)Opinion \+(\d{1,3})(\s*)$/, (all, a, v, b) => `${a}Their opinion of you rises ${infAmount(+v)}${b}`],
+  [/\b(opinion of you (?:rises|falls)) \([+−-](\d{1,3})\)/g, (all, w, v) => `${w} ${infAmount(+v)}`],
   // a realm's sparkline: "Stability since 1105: 46 to 61"
   [/\b(Stability|Legitimacy|Health|Happiness|Honou?r|Piety) since (\d{4}): (\d{1,3}) to (\d{1,3})\b/g, (all, k, y, a, b) => `${k} since ${y}: ${VS.band(k, +a)} to ${VS.band(k, +b)}`],
 ];

@@ -204,10 +204,25 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
   "feared", "distrusted", "watched". The bands follow the rules: 40 starts a coalition, over 58 one may march, over 20
   small realms bow. The Infamy map mode's legend reads "Coalition bait (so feared a coalition may march)", and the
   ruler's coalition letter "Aldmark has swallowed too much land (feared: its neighbours band together)".
+- **Infamy, every spelling (round 3).** g-bands has an infamy band ("unremarkable", "watched", "distrusted", "feared",
+  "hated", "dreaded"; feared from 40, where a coalition forms, hated over 58, where it may march), so "Infamy <b>47</b>"
+  in its own element, the Realm tab's bar and any `data-tt="infamy"` number read the word. The rule lines ("At 40
+  neighbors start a coalition; above 60 it may march", "at 40 coalitions form; above 60 they march", "Keep infamy below
+  60") say it in those words; "Your infamy is 47" reads "Your realm is feared abroad"; the advisor's "Infamy 47: ..."
+  (and its title) "Infamy: feared; ..."; a realm's card "· infamy: hated"; "Their infamy (47)" the short word; a war's
+  price "infamy up somewhat · stability up a little" (g-bands had read the release's unsigned "stability 2" as the band
+  of 2). Beside it, the realm's own thresholds and costs: stability's "below 18" ("once it is near collapse"), "An
+  empty treasury costs 6 stability", legitimacy's "(legitimacy − 50) ÷ 25 a year", the treasury's "Income at
+  stability 50", a faction's "40%+ power and 60+ discontent", "(discontent 44)", a realm's "Opinion -4" in the treaty
+  reasons and "(Relations +12.)", the gift's "Opinion +12" toast, and the Path's "Opinion 50+:".
 - **Titles.** A hover title with one of these numbers ("Stability since 1105: 46 to 61") gets the same words.
 - The game's rules are unchanged; drawing reads, never writes, and draws nothing.
 
-Test `v2sNumbers` draws each of these views on a played life and fails on a bare 0-100 number in any of them.
+Test `v2sNumbers` draws each of these views on a played life and fails on a bare 0-100 number in any of them. As a
+ruler with infamy 47 it also scans every text node and title of the Life and Realm tabs (folded or open), every popover
+those pages offer, the infamy popover, a neighbour's card, the war declaration, World's Diplomacy and the Infamy map, and
+pl_coalition_letter as the page draws it, on any line naming infamy, stability, legitimacy, a faction, discontent,
+loyalty or opinion. A popover's breakdown keeps its sums ("Legitimacy +0.8" a year).
 
 ## Playtest round 2: the 0-100 numbers left on the page (`i-numbers.core.js`)
 

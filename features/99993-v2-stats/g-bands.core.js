@@ -20,9 +20,12 @@ VS.BANDS = {
   legitimacy: [[80, 'unquestioned'], [60, 'accepted'], [40, 'doubted'], [20, 'contested'], [-1e9, 'usurping']],
   blood: [[80, 'unhurt'], [55, 'bloodied'], [30, 'badly hurt'], [-1e9, 'failing']],
   wind: [[75, 'fresh'], [45, 'breathing hard'], [20, 'blown'], [-1e9, 'spent']],
+  // a realm's infamy, on the rules (j-numbers): 40 and the neighbours start a coalition, over 58 it may march, over 20
+  // small realms bow and the wary turn hostile
+  infamy: [[80, 'dreaded'], [58.5, 'hated'], [40, 'feared'], [21, 'distrusted'], [10, 'watched'], [-1e9, 'unremarkable']],
 };
 const KEY = { health: 'health', happiness: 'happiness', happy: 'happiness', looks: 'looks', renown: 'renown', fame: 'renown', honor: 'honor', honour: 'honor',
-  piety: 'piety', stability: 'stability', legitimacy: 'legitimacy', blood: 'blood', wind: 'wind' };
+  piety: 'piety', stability: 'stability', legitimacy: 'legitimacy', blood: 'blood', wind: 'wind', infamy: 'infamy' };
 VS.band = (k, v) => { const b = VS.BANDS[KEY[String(k).toLowerCase()]]; return b ? pick(b, +v) : String(v); };
 const amount = a => (a < 3 ? 'a little' : a < 8 ? 'some' : a < 20 ? 'a lot' : 'a great deal');
 
@@ -99,7 +102,7 @@ A.eventView = function () {
 };
 
 // ---- numbers in text: the 0-100 scales as bands, tier numbers dropped -------------------------------------------------
-const VITAL_RE = /\b(Health|Happiness|Looks|Renown|Honou?r|Piety|Stability|Legitimacy|Blood|Wind)(\s*[:·—–-]?\s*)(\d{1,3})\b(?!\s*(?:suns?|years?|days?|months?|men|km|kg|cm|ms|hours?|levies|[/,.]\d|→))/gi;
+const VITAL_RE = /\b(Health|Happiness|Looks|Renown|Honou?r|Piety|Stability|Legitimacy|Blood|Wind|Infamy)(\s*[:·—–-]?\s*)(\d{1,3})\b(?!\s*(?:suns?|years?|days?|months?|men|km|kg|cm|ms|hours?|levies|[/,.]\d|→))/gi;
 const TIER = '(Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero|Novice|Apprentice|Journeyman|Adept|Expert|Grandmaster)';
 VS.NUMRULES = [
   [/\ball of it from doing, the rest from practice/g, () => 'all of it from doing'],
@@ -144,4 +147,4 @@ VS.dePiety = function (t) {
   return t.replace(/\bmuch more piety\b/g, 'a strong pull toward the faith').replace(/\bmore piety\b/g, 'a pull toward the faith')
     .replace(/\bmuch less piety\b/g, 'a strong pull away from the faith').replace(/\bless piety\b/g, 'a pull away from the faith');
 };
-const LABELS = /(health|happiness|looks|renown|honou?r|piety|stability|legitimacy|blood|wind)\s*[:·]?\s*$/i;
+const LABELS = /(health|happiness|looks|renown|honou?r|piety|stability|legitimacy|blood|wind|infamy)\s*[:·]?\s*$/i;
