@@ -49,6 +49,20 @@ const SETUP = () => {
       for (const s of stop()) NMT.look(tag + ' canvas', s);
       return pages;
     },
+    // what the player takes away: the Book's text file, read from the Blob the export hands the browser (a kept place
+    // key, "Blackreef", once leaked here, past every display layer)
+    async exported(tag) {
+      NMT.look(tag + ' chronicleText', typeof A.chronicleText === 'function' ? A.chronicleText() : '');
+      if (!UI.A.chronicleExport) return 0;
+      const blobs = [], cou = URL.createObjectURL, rev = URL.revokeObjectURL, click = HTMLAnchorElement.prototype.click;
+      URL.createObjectURL = b => { blobs.push(b); return 'blob:nm-test'; };
+      URL.revokeObjectURL = () => {};
+      HTMLAnchorElement.prototype.click = function () {};
+      try { UI.A.chronicleExport(); } finally { URL.createObjectURL = cou; HTMLAnchorElement.prototype.click = click; setTimeout(() => { URL.revokeObjectURL = rev; }, 600); }
+      let n = 0;
+      for (const b of blobs) { const t = await b.text(); n += t.length; NMT.look(tag + ' export', t); }
+      return n;
+    },
     state(tag) {
       for (const e of A.S.log || []) for (const l of e.lines || []) NMT.look(tag + ' log', l[0]);
       for (const n of A.S.news || []) NMT.look(tag + ' news', n.t);
@@ -155,7 +169,7 @@ export default {
     const out = [];
     for (const [i, id] of IDS.entries()) if (!process.env.NM_ONLY || process.env.NM_ONLY === id) {
       const race = id === 'POL-11' || id === 'POL-34' ? 'orc' : 'human';
-      const r = await pg.evaluate(([id, race, seed]) => {
+      const r = await pg.evaluate(async ([id, race, seed]) => {
         NMT.hits = [];
         T.enter({ seed, race, realm: id, status: 'peasant', sex: seed % 2 ? 'M' : 'F', startAge: 16 });
         const at0 = A.S.realms[id].name + ' / ' + A.S.realms[id].short;
@@ -167,7 +181,8 @@ export default {
           if (how === 'dead') break;
         }
         NMT.state(id);
-        return { id, at0, events, pages, year: A.S.year, hits: NMT.hits.slice() };
+        const exported = await NMT.exported(id);
+        return { id, at0, events, pages, exported, year: A.S.year, hits: NMT.hits.slice() };
       }, [id, race, 300 + i]);
       out.push(r);
     }
@@ -177,7 +192,7 @@ export default {
     });
     const hits = out.flatMap(r => r.hits.map(h => r.id + ' ' + h));
     const ok = !hits.length && det[0] === det[1];
-    return { ok, detail: `${out.map(r => `${r.at0} (${r.events} events, ${r.pages} pages, to ${r.year})`).join('; ')}; same seed twice ${det[0] === det[1]}` + (hits.length ? ` | OLD: ${hits.slice(0, 5).join(' | ')}` : '') };
+    return { ok, detail: `${out.map(r => `${r.at0} (${r.events} events, ${r.pages} pages, ${r.exported} chars exported, to ${r.year})`).join('; ')}; same seed twice ${det[0] === det[1]}` + (hits.length ? ` | OLD: ${hits.slice(0, 5).join(' | ')}` : '') };
   },
 
   // saves: a release save (Sand Clans, 1 year) and a v2 save holding the old names both load renamed and read right
@@ -207,6 +222,7 @@ export default {
       out.steps = A.V2SAVE && A.V2SAVE.last ? A.V2SAVE.last.steps : null;
       out.release = names();
       NMT.hits = []; UI.screen = 'game'; out.pages = NMT.sweep('release save'); NMT.state('release save');
+      out.exported = await NMT.exported('release save');
       out.relHits = NMT.hits.slice();
       // 2. a v2 save made before the names: the old names written back into a fresh state, saved and loaded
       T.enter({ seed: 62, race: 'human', realm: 'POL-13', status: 'peasant', sex: 'F', startAge: 20 }); T.play(1);
@@ -225,7 +241,7 @@ export default {
     const same = o => Object.keys(want).every(id => o[id] === want[id]);
     const ok = r.oldIn === 'Confederacy of the Sand Clans' && r.loaded && same(r.release) && !r.relHits.length && (!r.steps || r.steps.includes('names')) &&
       r.v2loaded && same(r.v2) && r.v2full === 'Kingdom of Brannoch' && !r.v2Hits.length && r.exact;
-    return { ok, detail: `release save (${r.oldIn}) loaded ${r.loaded}, steps ${r.steps && r.steps.join(',')}, renamed ${same(r.release)}, ${r.pages} pages clean ${!r.relHits.length}; ` +
+    return { ok, detail: `release save (${r.oldIn}) loaded ${r.loaded}, steps ${r.steps && r.steps.join(',')}, renamed ${same(r.release)}, ${r.pages} pages and ${r.exported} chars exported clean ${!r.relHits.length}; ` +
       `v2 save with old names renamed ${same(r.v2)} (${r.v2full}), clean ${!r.v2Hits.length}; own save exact ${r.exact}` +
       (r.relHits.length || r.v2Hits.length ? ' | OLD: ' + [...r.relHits, ...r.v2Hits].slice(0, 4).join(' | ') : '') };
   },

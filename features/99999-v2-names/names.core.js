@@ -244,6 +244,22 @@
     }
   }
 
+  // ---- 4b. text the player takes away -----------------------------------------------------------------------------
+  // the Book's export (A.chronicleText, through UI.download) reaches no display layer, and a kept place key
+  // ("Blackreef", the seat) is still in the prose it is built from; any text file handed to the player goes through the rules
+  const ct0 = A.chronicleText;
+  if (typeof ct0 === 'function') A.chronicleText = function () { return NM.fix(ct0.apply(this, arguments)); };
+  const dl0 = UI.download;
+  if (typeof dl0 === 'function') UI.download = function (bytes, name, type) {
+    if (/^text\//.test(String(type || ''))) {
+      try {
+        const s = typeof bytes === 'string' ? bytes : new TextDecoder().decode(bytes), w = NM.fix(s);
+        if (w !== s) arguments[0] = typeof bytes === 'string' ? w : new TextEncoder().encode(w);
+      } catch (e) {}
+    }
+    return dl0.apply(this, arguments);
+  };
+
   // ---- 5. saves ------------------------------------------------------------------------------------------------------
   // the eight realms by id; any other realm's name (one born in play from an old name) through the rules
   NM.renameState = function (S) {
