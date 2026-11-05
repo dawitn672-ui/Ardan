@@ -13,4 +13,17 @@ export default [
       ['F.days===1&&A.wsPCFightStart&&A.wsPCFightStart(F,att,def);const T=A.tacDay(', 'F.days===1&&!F.v2asked&&A.wsPCFightStart&&A.wsPCFightStart(F,att,def);if(F.v2hold){delete F.v2hold;F.days=0;F.v2asked=1;return}const T=A.tacDay('],
     ],
   },
+  {
+    id: 'V2W-RANK-WORDS',
+    blob: 'ardan-core',
+    why: 'Rank words that contradict (playtest 2, new 16). The chain of command said "Commander · leads 3,200" (GD.MIL\'s number) under ' +
+      '"2nd Aldmark Line 7,530 · Commander … you": the release makes a Commander his division\'s commander (d.cmd), so he leads all of ' +
+      'it; A.V2W.leads gives the division\'s men then, else the rank\'s number. The arm-of-service card said "You are a sergeant now" to ' +
+      'anyone who reached rank 2 without an arm, a noble who enlisted as a Squad Captain included; it now names the rank he holds. In ' +
+      'the source: read the division\'s men for its commander, and the rank title in the card.',
+    edits: [
+      ['GD.MIL[m.rank].title+" · leads "+A.fmt(GD.MIL[m.rank].leads)', 'GD.MIL[m.rank].title+" · leads "+A.fmt(A.V2W&&A.V2W.leads?A.V2W.leads(pc):GD.MIL[m.rank].leads)'],
+      ['text:ch.tier==="arm"?"You are a sergeant now, and', 'text:ch.tier==="arm"?"You are "+(t=>(/^[AEIOU]/.test(t)?"an ":"a ")+t.toLowerCase())(GD.MIL[pc.mil.rank].title)+" now, and'],
+    ],
+  },
 ];

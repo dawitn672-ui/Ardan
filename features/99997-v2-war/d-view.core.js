@@ -4,16 +4,19 @@
   const W = A.V2W, VW = A.V2 && A.V2.war;
   if (!W || !VW || typeof UI === 'undefined' || !UI.queueModal) return;
   const esc = s => UI.esc(s);
+  W.cap = s => String(s).charAt(0).toUpperCase() + String(s).slice(1);
   const scale = tilt => (A.V2S && A.V2S.scaleSvg ? A.V2S.scaleSvg(tilt) : '');
   const RANK_NAME = { soldier: 'a soldier in the line', sergeant: 'a sergeant with your section', captain: 'a captain with your company', commander: 'in command' };
   const TIER = { triumph: 'a triumph', success: 'it goes your way', 'narrow success': 'it goes your way, barely', 'narrow failure': 'it nearly works', failure: 'it goes wrong', disaster: 'a disaster', mixed: 'neither here nor there' };
 
   // one rank word: the army's own title (a Commander leads his men as a captain does), then what he leads
   const TAIL = { soldier: 'in the line', sergeant: 'with your section', captain: 'with your men', commander: 'in command' };
-  W.rankWords = function (pc, rank) {
+  // and the men you order are named as what you lead (b.unit: your company, your battalion, your division)
+  W.rankWords = function (pc, rank, b) {
     const t = pc && pc.mil && GD.MIL && GD.MIL[pc.mil.rank] ? GD.MIL[pc.mil.rank].title : null;
     if (!t) return RANK_NAME[rank] || rank;
-    return `${/^[AEIOU]/.test(t) ? 'an' : 'a'} ${t} ${TAIL[rank] || ''}`.trim();
+    const tail = rank === 'captain' && b && b.unit ? 'with ' + b.unit : TAIL[rank] || '';
+    return `${/^[AEIOU]/.test(t) ? 'an' : 'a'} ${t} ${tail}`.trim();
   };
   W.sideLine = function (b, side) {
     const a = b.camp.armies[side], men = VW.armyMen(a), rank = b.rank;
@@ -22,7 +25,7 @@
   W.view = function (b) {
     const pc = A.pc(), camp = b.camp, ph = camp.battle.phase;
     let h = `<div class="panel mbox v2w-battle" data-rank="${esc(b.rank)}"><h2>${esc(b.title)}</h2>`;
-    h += `<div class="small muted">You fight as ${esc(W.rankWords(pc, b.rank))}${b.div ? ' of the ' + esc(b.div) : ''}, ${esc(VW.TERRAIN[camp.battle.terrain].at)}.</div>`;
+    h += `<div class="small muted">You fight as ${esc(W.rankWords(pc, b.rank, b))}${b.div ? ' of the ' + esc(b.div) : ''}, ${esc(VW.TERRAIN[camp.battle.terrain].at)}.</div>`;
     h += `<div class="small v2w-sides">${W.sideLine(b, 0)} · ${W.sideLine(b, 1)}</div>`;
     for (const p of b.phases) {
       h += `<div class="small v2w-ph"><b>${esc(p.ph)}.</b> ${esc(p.t)}: ${esc(TIER[p.tier] || p.tier)}${p.why === 'blunder' ? ', a blunder' : p.why === 'surge' ? ', something in you will not give' : ''}.`;
@@ -40,7 +43,7 @@
     const who = `${foe ? W.estimate(foe.count, b.rank) + ' of the ' + foe.name : 'their line'}, ${W.quality(foe ? foe.worth : 1)}${b.rank === 'captain' ? ', under ' + gen : ''}`;
     h += `<div class="mtext"><b>${esc(VW.PHASES[ph])}.</b> Across from you: ${esc(who)}.</div>`;
     if (b.rank === 'captain') {
-      h += `<div class="row v2w-tac"><span class="tiny muted">Your company:</span>${W.TACS.map(k => `<button class="small ${b.tac === k ? 'primary' : ''}" data-a="v2wTac" data-v="${esc(k)}">${esc(VW.TACTICS[k].name)}</button>`).join('')}</div>`;
+      h += `<div class="row v2w-tac"><span class="tiny muted">${esc(W.cap(b.unit || 'your company'))}:</span>${W.TACS.map(k => `<button class="small ${b.tac === k ? 'primary' : ''}" data-a="v2wTac" data-v="${esc(k)}">${esc(VW.TACTICS[k].name)}</button>`).join('')}</div>`;
     }
     h += `<div class="choices">${W.choices(b).map((c, i) => {
       const o = W.oddsOf(b, c, pc);
