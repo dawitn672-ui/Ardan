@@ -210,8 +210,8 @@ export default {
       const swept = h => { const el = document.createElement('div'); el.innerHTML = h; document.body.appendChild(el); VS.sweep(el); const t = el.innerText; el.remove(); return t; };
       // a bare 0-100 number: digits not part of a date, a count with its unit, a speed in km or a "N more"
       const BARE = /(?<![\d.,:/×-])\b(\d{1,3})(?:\.\d+)?\b(?![\d,.:/]\d)(?!\s*(?:km|kg|cm|m\/s|ms|suns?|years?|days?|months?|men|more|hours?|initiative|of \d))/;
-      // (a year, a log line's day and month, a count of friends are not scales)
-      const plain = l => l.replace(/\b1[01]\d\d\b/g, '').replace(/^\s*\d{1,2} [A-Z][a-z]{2}/, '').replace(/\d+ friends?|\(up to \d+\)|at its best at \d+|until about \d+|fading since about \d+/g, '');
+      // (a year, a log line's day and month, a count of friends are not scales) (round 4: nor a count of provinces, "Hold 25 provinces", on the Goals tab)
+      const plain = l => l.replace(/\b1[01]\d\d\b/g, '').replace(/^\s*\d{1,2} [A-Z][a-z]{2}/, '').replace(/\d+ friends?|\(up to \d+\)|at its best at \d+|until about \d+|fading since about \d+|\bHold \d+ provinces\b/g, '');
       const check = (where, t) => { for (const line of String(t).split('\n')) if (BARE.test(plain(line))) bad.push(`${where}: ${line.trim().slice(0, 90)}`); };
       T.enter({ seed: 9611, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'F', startAge: 16 });
       const pc = A.pc(); A.plan(pc).train = 'survival';
@@ -299,20 +299,46 @@ export default {
       const ru = A.pc(); A.makeRuler(ru, ru.realm, true); T.play(1);
       const rr = A.realm(ru.ruler), nbs = A.neighbors(rr.id);
       rr.infamy = 47; nbs.forEach((id, i) => { A.realm(id).infamy = i === 0 ? 61 : 23; }); A.S.coalitions = { [rr.id]: nbs.slice(0, 2) };
+      // (verifier, round 4: the Realm tab's other three bars, Stability, Legitimacy and War weariness, kept their numbers)
+      rr.stability = 29; rr.legit = 53; rr.exhaustion = 47;
       const RW = /infam|coalition|stabil|legitim|faction|discontent|loyalty|opinion|relations/i;
-      const nodes = root => { const a = []; const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (n.nodeValue.trim()) a.push(n.nodeValue.trim()); for (const el of root.querySelectorAll('[title]')) a.push(el.getAttribute('title')); return a; };
+      // (the titles and, since round 4, the aria-labels: the People tab's opinion bars said "Opinion 79" to a screen reader)
+      const nodes = root => { const a = []; const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (n.nodeValue.trim()) a.push(n.nodeValue.trim()); for (const el of root.querySelectorAll('[title],[aria-label]')) for (const k of ['title', 'aria-label']) if (el.getAttribute(k)) a.push(el.getAttribute(k)); return a; };
       // (a count of houses or of heeded advice is a count)
       // (a popover's breakdown keeps its sums, "Legitimacy +0.8" a year, as i-numbers' README says of the tooltips'
       // sums: the measure's own figure in a label is still caught)
       const scanR = (where, lines) => { for (const l of lines) if (RW.test(l)) check(where, l.replace(/\b\d+ (?:houses?|of \d+)\b/g, '').replace(/ popover /.test(where) ? /[+−-]\d[\d,]*(?:\.\d+)?$/ : /$^/, '')); };
       const tipsOf = (where, root) => { const seen = new Set(); for (const el of root.querySelectorAll('[data-tt]')) { const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || ''; if (seen.has(k + '|' + v) || !UI.TIPS[k]) continue; seen.add(k + '|' + v); let h = ''; try { h = UI.TIPS[k](v); } catch (e) {} if (typeof h === 'string' && h) scanR(where + ' popover ' + k, swept(h).split('\n')); } };
+      // verifier, round 4: a value in an element of its own ("29" under "Stability") never matched RW as a text node, so it
+      // was never checked. Every bar (its label with its value) and every element whose tooltip key is a realm measure
+      // is read as one line now.
+      const REALM_TT = new Set(['realmStab', 'realmLegit', 'realmWeary', 'infamy']);
+      const scanEls = (where, root) => {
+        for (const b of root.querySelectorAll('.barrow')) { const l = ((b.querySelector('.lbl') || {}).textContent || '').trim(), v = ((b.querySelector('.val') || {}).textContent || '').trim(); if (RW.test(l) || /weariness/i.test(l)) check(where + ' bar', `${l} ${v}`); }
+        for (const el of root.querySelectorAll('[data-tt]')) if (REALM_TT.has(el.getAttribute('data-tt')) && !el.children.length && /\d/.test(el.textContent)) check(where + ' ' + el.getAttribute('data-tt'), `${el.getAttribute('data-tt')} ${el.textContent.trim()}`);
+      };
       const shown = {};
       rng0 = JSON.stringify(A.S.rng); h0 = T.hash(A.S);
-      for (const tab of ['life', 'realm']) {
+      // (round 4: the Goals and Path tabs too, whose Decide buttons carry "Still needed: ...; Legitimacy 70." as a title,
+      // and the People tab, whose opinion bars carry "Opinion 79")
+      for (const tab of ['life', 'realm', 'goals', 'path', 'people']) {
         UI.ov = null; UI.tab = tab; UI.render(); await tick();
         const app = document.getElementById('app'), t = nodes(app); shown[tab] = t.join('\n');
-        scanR('ruler ' + tab, t); tipsOf('ruler ' + tab, app);
+        scanR('ruler ' + tab, t); tipsOf('ruler ' + tab, app); scanEls('ruler ' + tab, app);
       }
+      UI.tab = 'realm'; UI.render(); await tick();
+      const bars = [...document.querySelectorAll('#app .barrow')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).join(' | ');
+      const barWords = /Stability shaky/.test(bars) && /Legitimacy doubted/.test(bars) && /War weariness tiring/.test(bars) && /Infamy feared/.test(bars);
+      const tipWeary = swept(UI.TIPS.realmWeary(rr.id)); scanR('war weariness popover', tipWeary.split('\n'));
+      // 97-life-fixes' golden age step (a ruler's ambition, the Life tab and the log)
+      const golden = VS.deNum('Bring a golden age: Stability 29 of 85 and 1,008,000 suns of 4,896,000 suns in the treasury.');
+      check('golden age step', golden);
+      // the peace table's line on the foe
+      const peace = VS.deNum('Aldmark is tiring (war weariness 47). What they will accept depends on the war score.');
+      check('peace table', peace);
+      // a title as sweepTitles reads it (the element itself too)
+      let ttl; { const el = document.createElement('button'); el.title = 'Still needed: Hold 25 provinces; A tributary realm; Legitimacy 70.'; document.body.appendChild(el); VS.sweep(el); ttl = el.title; el.remove(); }
+      check('decide title', ttl);
       const tipInf = swept(UI.TIPS.infamy(rr.id)); scanR('infamy popover', tipInf.split('\n'));
       { const el = document.createElement('div'); el.innerHTML = UI.diplCard(rr, A.realm(nbs[0])); document.body.appendChild(el); VS.sweep(el); scanR('realm card', nodes(el)); shown.card = nodes(el).join('\n'); el.remove(); }
       UI.ov = { type: 'warDecl', id: nbs[0] }; UI.render(); await tick();
@@ -327,8 +353,11 @@ export default {
       const letter = hd && hd.ev === 'pl_coalition_letter' ? nodes(document.getElementById('modal') || document.body).join('\n') : 'no letter 0';
       scanR('coalition letter event', letter.split('\n'));
       const rw = [/Infamy\s*\n?\s*feared/.test(shown.realm), /Infamy: feared/.test(shown.life), /Infamy feared/.test(tipInf), /infamy: hated/.test(shown.card),
-        /infamy up /.test(shown.war), /feared abroad/.test(letter), !/near collapse/.test(shown.war)], rulerWords = rw.every(Boolean);
-      return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join(''), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure };
+        /infamy up /.test(shown.war), /feared abroad/.test(letter), !/near collapse/.test(shown.war),
+        // round 4: the three bars, the war weariness popover, the golden age step, the peace table, the Decide title
+        barWords, /War weariness tiring/.test(tipWeary), /Stability shaky \(it must be rock steady\) and/.test(golden),
+        peace === 'Aldmark is tiring. What they will accept depends on the war score.', /Legitimacy accepted\.$/.test(ttl)], rulerWords = rw.every(Boolean);
+      return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join('') + ' bars: ' + bars.slice(0, 160), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure };
     });
     const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure;
     return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };

@@ -106,12 +106,20 @@ const infAmount = a => (a < 3 ? 'a little' : a < 8 ? 'somewhat' : a < 20 ? 'a go
     try {
       const l = String(label || '');
       if (typeof v === 'number' && valTxt == null && (/^Infamy$/.test(l) || /data-tt="infamy"[^>]*>Infamy</.test(l))) return bar1.call(this, label, v, max, cls, pot, VS.infamyShort(v));
+      // the three bars beside it on the Realm tab (verifier, round 4: "Stability 29", "Legitimacy 53", "War weariness 53")
+      const m = /^(Stability|Legitimacy|War weariness)$/.exec(l) || /data-tt="(realmStab|realmLegit|realmWeary)"/.exec(l);
+      if (m && typeof v === 'number' && valTxt == null) return bar1.call(this, label, v, max, cls, pot, VS.band(REALM_KEY[m[1]] || m[1], v));
     } catch (e) {}
     return bar1.apply(this, arguments);
   };
 }
-// a number whose tooltip key is infamy (59-tooltips wires the realm's bar and its label)
-if (VS.keyWords) VS.keyWords.infamy = t => (/^\d{1,3}(\.\d+)?$/.test(t) ? VS.infamyShort(+t) : null);
+// a number whose tooltip key is infamy, or one of the realm's other 0-100 measures (59-tooltips wires the realm's bars
+// and their labels: realmStab, realmLegit, realmWeary)
+const REALM_KEY = { realmStab: 'stability', realmLegit: 'legitimacy', realmWeary: 'war weariness' };
+if (VS.keyWords) {
+  VS.keyWords.infamy = t => (/^\d{1,3}(\.\d+)?$/.test(t) ? VS.infamyShort(+t) : null);
+  for (const k in REALM_KEY) VS.keyWords[k] = t => (/^\d{1,3}(\.\d+)?$/.test(t) ? VS.band(REALM_KEY[k], +t) : null);
+}
 // the infamy popover (59-tooltips' glossary): "Infamy <b>47</b>" and the rule's thresholds
 if (UI.TIPS && typeof UI.TIPS.infamy === 'function') {
   const inf0 = UI.TIPS.infamy;
@@ -361,6 +369,11 @@ VS.NUMRULES2 = [
   // an embassy's gifts: the toast "Opinion +12" and the log's "Their opinion of you rises (+12)." (a change)
   [/^(\s*)Opinion \+(\d{1,3})(\s*)$/, (all, a, v, b) => `${a}Their opinion of you rises ${infAmount(+v)}${b}`],
   [/\b(opinion of you (?:rises|falls)) \([+−-](\d{1,3})\)/g, (all, w, v) => `${w} ${infAmount(+v)}`],
+  // 97-life-fixes' golden age step: "Stability 29 of 85 and 1,008,000 suns of 4,896,000 suns in the treasury" (g-bands'
+  // rule made it "Stability shaky of 85")
+  [/\bStability (\d{1,3}) of (\d{1,3})\b/g, (all, a, b) => `Stability ${VS.band('stability', +a)} (${+a >= +b ? 'as it must be' : `it must be ${VS.band('stability', +b)}`})`],
+  // the peace table: "Aldmark is tiring (war weariness 47)." The word is already there
+  [/ \(war weariness (\d{1,3})\)/g, () => ''],
   // a realm's sparkline: "Stability since 1105: 46 to 61"
   [/\b(Stability|Legitimacy|Health|Happiness|Honou?r|Piety) since (\d{4}): (\d{1,3}) to (\d{1,3})\b/g, (all, k, y, a, b) => `${k} since ${y}: ${VS.band(k, +a)} to ${VS.band(k, +b)}`],
 ];
@@ -380,13 +393,23 @@ VS.deNum = function (t, node) {
   return deNum0.call(this, s, node);
 };
 // a title that carries one of these numbers (hover text is read too): the same words, at each draw
+// (verifier, round 4: the titles took NUMRULES2 only, so the Goals tab's "Still needed: ...; Legitimacy 70." kept its
+// number; they take the whole of VS.deNum now, the element itself too, and the aria-label a screen reader says)
+const titleWords = v => {
+  const t = v.indexOf('%') >= 0 && VS.dePct ? VS.dePct(v) : v;
+  // a person's opinion bar (the People tab): "Opinion 79"
+  const m = /^Opinion (-?\d{1,3})$/.exec(t.trim());
+  if (m && VS.band2) return `Opinion: ${VS.band2('opinion', +m[1])}`;
+  return VS.deNum(t);
+};
 VS.sweepTitles = function (root) {
   if (!root || !root.querySelectorAll) return;
-  for (const el of root.querySelectorAll('[title]')) {
-    const v = el.getAttribute('title');
-    if (!v || !/\d/.test(v) || v.indexOf('%') >= 0) continue;
-    let t = v; for (const [re, fn] of VS.NUMRULES2) t = t.replace(re, fn);
-    if (t !== v) el.setAttribute('title', t);
+  const els = root.matches && root.matches('[title],[aria-label]') ? [root, ...root.querySelectorAll('[title],[aria-label]')] : root.querySelectorAll('[title],[aria-label]');
+  for (const el of els) for (const a of ['title', 'aria-label']) {
+    const v = el.getAttribute(a);
+    if (!v || !/\d/.test(v)) continue;
+    let t = v; try { t = titleWords(v); } catch (e) {}
+    if (typeof t === 'string' && t !== v) el.setAttribute(a, t);
   }
 };
 {
