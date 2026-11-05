@@ -2,6 +2,7 @@
 // monthly hazard on the game's own ladders, not a counter; renown and standing in words (V2_SPEC complaint 15;
 // playtest 1: "renown at 100 by 38", merit shown as counters).
 import { BOT } from '../../bench/bot.mjs';
+import { TARGETS } from '../../bench/targets.mjs';
 
 const START = { seed: 7411, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 };
 // a clean record (no birth standing, no deeds), so a test measures only what it adds
@@ -54,11 +55,12 @@ export default {
       out.peak = peak; out.oldPeak = old; out.words = RN.wordsOf(pc);
       return out;
     }, START);
-    const life = await pg.evaluate(BOT).then(() => pg.evaluate(() => {
-      const L = B.life({ seed: 7156, sex: 'M', race: 'human', realm: 'POL-02', status: 'noble', startAge: 16 }, 'careful', true, 60);
+    // the balance league's first noble life (bench/balance.mjs: seed 7001 + 5 x 31, engaged, careful)
+    const life = await pg.evaluate(BOT).then(() => pg.evaluate(o => {
+      const L = B.life(o, 'careful', true, 60);
       const S = L.samples || [], at = a => (S.find(s => s.age >= a) || S[S.length - 1] || {}).fame;
       return { peak: Math.max(0, ...S.map(s => s.fame)), at38: at(38), at55: at(55), years: L.years, words: A.RN.wordsOf(A.pc()) };
-    }));
+    }, Object.assign({ seed: 7001 + 5 * 31, sex: 'M' }, TARGETS.paths.noble.start)));
     const ok = r.oldPeak >= 99 && r.peak < 90 && life.peak < 95 && life.at38 < 90;
     return { ok, detail: `busy life, fame by age (new / old): ${Object.keys(r.by).map(a => `${a}: ${r.by[a]} / ${r.old[a]}`).join(', ')}; peak ${r.peak.toFixed(1)} (old ${Math.round(r.oldPeak)}), "${r.words}". Bot noble life (${life.years} years): peak ${life.peak}, at 38 ${life.at38}, at 55 ${life.at55}, "${life.words}"` };
   },
