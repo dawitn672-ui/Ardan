@@ -40,7 +40,7 @@ Every foundational or significant change is a version (`docs/VERSIONS.md`, `tool
 - **Major:** a new design the owner set (v1 = the shipped release and its rounds; v2 = `docs/v2/V2_SPEC.md`).
 - **Minor:** a round, cycle or step that adds or replaces a system. **Patch:** fixes only.
 - **Pre-release** (`-alpha.N`, `-beta.N`, `-rc.N`) while a major is being built.
-- Tag a clean commit whose CI is green, or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, `git push origin --tags`.
+- Tag a clean commit whose CI is green, or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, `git push` (tags too where the remote allows them).
 
 ## v2
 

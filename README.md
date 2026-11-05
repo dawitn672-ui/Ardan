@@ -32,7 +32,7 @@ CLAUDE.md                   working rules for anyone (human or agent) changing t
 
 ## Versions
 
-Every foundational or significant change is a version: a git tag on a commit whose `index.html` is that version of
+Every foundational or significant change is a version: a row in docs/VERSIONS.md naming the commit whose `index.html` is that version of
 the game. `node tools/version.mjs list` lists them; `node tools/version.mjs get v1.5.0` writes that version's playable
 file to `versions/`. The history is in [docs/VERSIONS.md](docs/VERSIONS.md): v1.0.0 is the shipped release, v1.1-v1.6
 are the rounds and cycles built on it, and v2.0.0-alpha.N are the steps of the owner's v2 spec.
@@ -46,7 +46,7 @@ are the rounds and cycles built on it, and v2.0.0-alpha.N are the steps of the o
 | `v2-integration` | v2: the owner's spec built step by step on top of v1.6 (its own PR, stacked on PR #1) |
 | `v2-fix-*` | Work in progress for the next v2 round; merged into `v2-integration`, then deleted |
 
-Finished lane branches are deleted once merged; each is kept as a tag `archive/<branch>` so its own history stays.
+Finished lane branches are deleted once they are merged; their work lives in the squashed step commits on `v2-integration`.
 
 ## What is in the build
 

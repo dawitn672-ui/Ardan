@@ -1,13 +1,14 @@
 # Versions
 
-Every foundational or significant change to Ardan is a version: an annotated git tag (`vX.Y.Z`) on a commit that
-holds the built game (`index.html`). Any version can be played exactly as it was:
+Every foundational or significant change to Ardan is a version: a row in the table below naming the commit that holds
+that version's built game (`index.html`). Annotated git tags of the same names exist where they can be pushed (this
+session's git proxy refuses tag pushes, so the table is the record). Any version can be played exactly as it was:
 
 ```sh
 node tools/version.mjs list                         # every version
 node tools/version.mjs get v1.5.0                   # writes versions/ardan-v1.5.0.html (ignored by git); open it in a browser
 node tools/version.mjs new v2.0.0-beta.1 "Title"    # tag the current clean commit and add its row below
-git push origin --tags                              # publish the tags
+git push                                            # publish the row (and git push origin --tags where allowed)
 ```
 
 **What gets a version** (also in CLAUDE.md):
