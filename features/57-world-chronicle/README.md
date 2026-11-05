@@ -150,3 +150,6 @@ far realms; with the Far Lands out of the build the continent's own read "goes t
 12%), checks each one against the scene's own words and context, and checks none sits beside counsel or a memory; it
 keeps its place-and-time and raw-token checks. `wcEchoWords` plays the Sand Clans instead of the dropped Far Lands'
 Khaganate. One bot life (human peasant of Aldmark, 40 years): 44 lines on 316 cards (13.9%) before, 18 (5.7%) after.
+`wcCitesShare` on the full v2 build (8 lives, up to 60 years): a recalled line on **118 of 2,925 cards (4.0%)**, median
+life 3.95%, most 5.6%; 242 scenes (8.3%) cite an entry by line, token or pack; 0 lines off their scene, 0 citations out of
+place or time. (The old W6 bar of 15% citations no longer holds, by design.)
