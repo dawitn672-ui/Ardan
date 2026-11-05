@@ -20,7 +20,10 @@
   RN.on = true;
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   // the curve from renown (v2's units: 3 known to comrades ... 90 a name in the realm ... 500 a living legend) to fame
-  RN.K = 120; RN.A = 0.85;
+  // The game's fame points are worth SCALE of v2's weight units (a battle the army saw, fame 3, is a deed of 18: "talked
+  // about in camp"; a council seat, fame 6 at court, 48: "known across the province"). K is the renown at which fame
+  // stands at 50; the curve reaches 64 at "a name in the realm" (90), 78 at "famous" (200), 89 at "a living legend" (500).
+  RN.SCALE = 2; RN.K = 45; RN.A = 0.85;
   RN.F = R => (R > 0 ? 100 * Math.pow(R, RN.A) / (Math.pow(R, RN.A) + Math.pow(RN.K, RN.A)) : 0);
   RN.Finv = f => { f = clamp(+f || 0, 0, 99.5); return f > 0 ? RN.K * Math.pow(f / (100 - f), 1 / RN.A) : 0; };
   RN.FADE = 0.88;           // as v2's renown(): a deed's weight a year later
@@ -51,8 +54,9 @@
   };
 
   // ---- what a deed is worth --------------------------------------------------------------------------------------------
-  // odds beaten: a sure thing counts once; a deed at even odds about 1.7 times; one at one chance in twenty about 4 times
-  RN.oddsMult = q => (q == null || !(q < 1) ? 1 : 1 + Math.log(1 / clamp(q, 0.03, 1)));
+  // odds beaten: a sure thing counts once; a deed at even odds about 1.4 times; one at one chance in five about twice;
+  // one at one chance in twenty about 2.8 times
+  RN.oddsMult = q => (q == null || !(q < 1) ? 1 : 1 + 0.6 * Math.log(1 / clamp(q, 0.03, 1)));
   const WIT = ['alone', 'comrades', 'company', 'army', 'court', 'realm'];
   const more = (a, b) => (WIT.indexOf(a) >= WIT.indexOf(b) ? a : b);
   // a large change of fame in the game's own scale was a public thing: no quieter than this
@@ -106,7 +110,7 @@
   // record one deed (the weight is in the game's fame points) and keep the list short
   RN.record = function (p, d, ctx) {
     const r = RN.st(p), c = ctx || RN.context(p, d);
-    const w = d * RN.oddsMult(c.q);
+    const w = d * RN.SCALE * RN.oddsMult(c.q);
     const out = V.recordDeed({ deeds: r.d }, { weight: w, witnesses: c.wit, year: c.year != null ? c.year : year(), month: c.month != null ? c.month : month(),
       text: String(c.text || '').replace(/[<>"]/g, '').slice(0, 80), field: c.field });
     if (r.d.length > RN.MAX) {
