@@ -102,13 +102,15 @@ const infAmount = a => (a < 3 ? 'a little' : a < 8 ? 'somewhat' : a < 20 ? 'a go
 // the realm tab's bar (and any bar labelled Infamy): the word in the value's place
 {
   const bar1 = UI.barRow;
+  // a word is wider than the number the value column was sized for ("broken by war" at 420 px): i-numbers' v2-wb column
+  const wide = h => (typeof h === 'string' ? h.replace('<div class="barrow">', '<div class="barrow v2-wb">') : h);
   UI.barRow = function (label, v, max, cls, pot, valTxt) {
     try {
       const l = String(label || '');
-      if (typeof v === 'number' && valTxt == null && (/^Infamy$/.test(l) || /data-tt="infamy"[^>]*>Infamy</.test(l))) return bar1.call(this, label, v, max, cls, pot, VS.infamyShort(v));
+      if (typeof v === 'number' && valTxt == null && (/^Infamy$/.test(l) || /data-tt="infamy"[^>]*>Infamy</.test(l))) return wide(bar1.call(this, label, v, max, cls, pot, VS.infamyShort(v)));
       // the three bars beside it on the Realm tab (verifier, round 4: "Stability 29", "Legitimacy 53", "War weariness 53")
       const m = /^(Stability|Legitimacy|War weariness)$/.exec(l) || /data-tt="(realmStab|realmLegit|realmWeary)"/.exec(l);
-      if (m && typeof v === 'number' && valTxt == null) return bar1.call(this, label, v, max, cls, pot, VS.band(REALM_KEY[m[1]] || m[1], v));
+      if (m && typeof v === 'number' && valTxt == null) return wide(bar1.call(this, label, v, max, cls, pot, VS.band(REALM_KEY[m[1]] || m[1], v)));
     } catch (e) {}
     return bar1.apply(this, arguments);
   };
