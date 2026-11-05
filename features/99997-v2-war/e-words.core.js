@@ -43,7 +43,7 @@
   if (ev && typeof ev.setup === 'function' && !ev.v2w) {
     ev.v2w = 1;
     const su = ev.setup;
-    ev.setup = function (p, ctx) {
+    const gate = function (p, ctx) {
       const r = su.apply(this, arguments);
       try {
         if (!ctx.skip && A.WC && A.NPCB) {
@@ -56,6 +56,13 @@
       } catch (er) { ctx.skip = 1; }
       return r;
     };
+    // Tools and tests read a setup as text, and every wrapper keeps the event's own source first (67-memory-weave's
+    // wrap does; its mwSourcesIntact counts the setups that pick a person and ask the record). This gate wraps 67's
+    // wrapper, so it reads as that wrapper's text (String() keeps its toString: the event's own setup, then the record
+    // it asks) and then its own. A plain function here read as the gate alone, and the tale lost both.
+    const src = String(su) + '\n' + Function.prototype.toString.call(gate);
+    Object.defineProperty(gate, 'toString', { value: () => src, enumerable: false, configurable: true, writable: true });
+    ev.setup = gate;
   }
   };
   gateTale();

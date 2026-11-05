@@ -88,8 +88,15 @@
   // the wars you have fought in stay yours to remember (a tavern tale of one is yours to correct)
   W.noteFought = function () {
     const s = st(); s.fought = Array.isArray(s.fought) ? s.fought : [];
-    for (const w of W.myWars()) if (!s.fought.includes(w.id)) s.fought.push(w.id);
+    // and each such war's two sides, so its sieges and falls are yours to know after the peace (f-told)
+    s.fw = Array.isArray(s.fw) ? s.fw : [];
+    for (const w of W.myWars()) {
+      if (!s.fought.includes(w.id)) s.fought.push(w.id);
+      const row = s.fw.find(x => Array.isArray(x) && x[0] === w.id), sides = [w.id, w.att.slice(0, 12), w.def.slice(0, 12)];
+      if (row) { row[1] = sides[1]; row[2] = sides[2]; } else s.fw.push(sides);
+    }
     if (s.fought.length > 40) s.fought = s.fought.slice(-40);
+    if (s.fw.length > 40) s.fw = s.fw.slice(-40);
   };
   W.fought = war => war == null || war === '' || W.fightsIn(war) || !!(A.S && A.S.v2w && (A.S.v2w.fought || []).includes(war));
   A.onMonth.push(() => { try { W.noteFought(); W.deliver(); } catch (e) { console.error('v2 war rumours', e); } });

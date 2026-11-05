@@ -226,9 +226,14 @@ export default {
         A.ARCS.storyMonth(pc2, pc2.arcs, A.age(pc2)); again = Object.keys(pc2.arcs).filter(k => k === first).length === 1 && Object.keys(pc2.arcs).length === 2;
       } finally { A.chance = ch; }
       void pc;
-      return { yes, child, elope, will, second, first, busy, again };
+      const story = A.ARCS.stories().includes(first);
+      return { yes, child, elope, will, second, first, story, busy, again };
     });
-    const ok = r.yes.length === 13 && !r.child.length && !r.elope && !r.will && !r.second && r.busy && r.again && /^ak_/.test(r.first);
+    // The first pick was checked as /^ak_/, which held while 50's arcs were the only story arcs. In the full build
+    // 51-53 register story arcs on the same track (46's A.ARCS.story), and the weighted pick for seed 7507 lands on
+    // ar_elec (CI run 88). What the test measures is unchanged: the track starts one story arc of those that can
+    // start, none while it runs, a different one after; `yes` still holds all 13 kin arcs to their starts.
+    const ok = r.yes.length === 13 && !r.child.length && !r.elope && !r.will && !r.second && r.busy && r.again && r.story;
     return { ok, detail: `a fitted life can start ${r.yes.length} of 13; a child ${r.child.length}; a married life the night road: ${r.elope}; both parents living, the will: ${r.will}; no father, the other house: ${r.second}. Track: first pick ${r.first}, none while it runs (${r.busy}), a different one after (${r.again})` };
   },
 
