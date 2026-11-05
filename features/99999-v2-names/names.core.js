@@ -36,7 +36,8 @@
   };
 
   // ---- 1. the rules ------------------------------------------------------------------------------------------------
-  const PRE = /Amber|Spice Coast|Blackreef|Sand Clan|Nine Winds|Tusk|Highland|Horde|[Kk]hanate/;
+  // the old words, and the new names after an article (text made from the new names in the state: "the Kesh", "a Ulun")
+  const PRE = /Amber|Spice Coast|Blackreef|Sand Clan|Nine Winds|Tusk|Highland|Horde|[Kk]hanate|\b[Tt]he\s+(?:<[^<>]*>)*(?:Kesh|Sahrim|Ulun|Ughrak|Ambrel|Corvasse|Brannoch|Gorath)\b|\b[Aa]\s+(?:<[^<>]*>)*(?:Ulun|Ughrak|Ambrel)\b/;
   const TAG = '(?:\\uE000\\d+\\uE001)*';           // a masked tag between the article and the name
   const AP = "(?:'|’|&#39;)";
   // a plural name followed by its verb: the verb agrees with the singular name
@@ -58,26 +59,58 @@
     'stumbles comes wants needs sells pays goes takes keeps holds owes rules lies swore wins loses gets got').split(' '));
   const ING_NOUN = /^(king|ring|wing|thing|sling|string|spring|morning|evening|wedding|building|gathering|meeting|crossing|landing|clothing|bedding|offering|herring|tiding)s?$/;
   const ED_NOUN = /^(bed|red|steed|seed|weed|creed|breed|shed|sled|speed|hundred|need|reed)s?$/;
-  const verbish = w => FUNC.has(w) || (/^[a-z]{3,}ing$/.test(w) && !ING_NOUN.test(w)) || (/^[a-z]{3,}ed$/.test(w) && !ED_NOUN.test(w));
+  // "-ly" words are adverbs ("a war with the Amber Isles badly enough"), but for these nouns
+  const LY_NOUN = /^(family|ally|belly|gully|holly|lily|folly|rally|assembly|monopoly|fly|jelly|bully|supply|tally)$/;
+  const verbish = w => FUNC.has(w) || (/^[a-z]{3,}ing$/.test(w) && !ING_NOUN.test(w)) || (/^[a-z]{3,}ed$/.test(w) && !ED_NOUN.test(w)) ||
+    (/^[a-z]{3,}ly$/.test(w) && !LY_NOUN.test(w));
   const apo = ps => (/&#39;/.test(ps) ? '&#39;' : /’/.test(ps) ? '’' : "'") + 's';
+  // The verb after a plural name is the name's own only when the name is its subject. After a preposition it belongs
+  // to the noun before ("Children of the Nine Winds ride", "horses from the Nine Winds come", "the ships promised to
+  // the Amber Isles are"), and "Aldmark and the Sand Clans are" has two subjects: there the plural verb stays.
+  const NOT_SUBJ = /(?:^|[^A-Za-z’'-])(?:of|from|to|in|on|at|with|by|for|into|onto|against|over|under|across|through|toward|towards|near|beyond|between|behind|past|around|upon|without|within|about|like|than|amid|amongst|beside|besides|via|outside|inside|throughout|along)\s+(?:\d+)*$/i;
+  const AND_SUBJ = /\b[A-Z][\w’'-]*(?:\d+)*\s+(?:and|or|nor)\s+(?:\d+)*$/;
+  const isSubject = (str, off) => !NOT_SUBJ.test(str.slice(Math.max(0, off - 40), off)) && !AND_SUBJ.test(str.slice(Math.max(0, off - 60), off));
+  NM.isSubject = isSubject;
 
-  // "(among) (the) NAME('s) (next)": a realm's collective name (plural or not)
+  // "(among) (the) NAME('s) (next)": a realm's collective name (plural or not). A closing tag may stand between the
+  // name and the next word ("the <b>Sand Clans</b> win" -> "<b>Sahrim</b> wins").
   const coll = (nameRx, NEW, { plural = false, needThe = false } = {}) => [
-    new RegExp(`(\\b[Aa]mong\\s+)?(\\b[Tt]he\\s+)?(${TAG})\\b(?:${nameRx})(?![A-Za-z])(${AP}s${plural ? '?' : ''})?(-)?(?:(\\s+)([a-z][a-z’'-]*))?`, 'g'),
-    (m, among, the, tags, ps, hy, sp, nx) => {
+    new RegExp(`(\\b[Aa]mong\\s+)?(\\b[Tt]he\\s+)?(${TAG})\\b(?:${nameRx})(?![A-Za-z])(${AP}s${plural ? '?' : ''})?(-)?(${TAG})(?:(\\s+)([a-z][a-z’'-]*))?`, 'g'),
+    (m, among, the, tags, ps, hy, tags2, sp, nx, off, str) => {
       if (needThe && !the) return m;
       let keepThe = false, nxOut = nx || '';
       if (ps) { /* a possessive: "Sahrim's" */ }
       else if (hy) keepThe = true;                         // "the Horde-held" -> "the Gorath-held"
       else if (nx) {
-        if (PL2SG[nx]) nxOut = PL2SG[nx];
+        // a plural name's verb agrees with the singular name; a singular one's (the Horde's) never changes
+        if (PL2SG[nx]) { if (plural && isSubject(str, off)) nxOut = PL2SG[nx]; }
         else if (!verbish(nx)) keepThe = true;            // a noun follows: the name is an adjective
       }
       let pre = among || '';
       if (among && the && !keepThe) pre = among[0] === 'A' ? 'In ' : 'in ';
-      return pre + (keepThe && the ? the : '') + tags + NEW + (ps ? apo(ps) : '') + (hy || '') + (sp || '') + nxOut;
+      return pre + (keepThe && the ? the : '') + tags + NEW + (ps ? apo(ps) : '') + (hy || '') + (tags2 || '') + (sp || '') + nxOut;
     },
   ];
+  // "the Nine Winds now breed them": an adverb between a plural name and its verb ("Ulun now breeds them")
+  const ADV = 'now|still|also|never|always|often|already|once|soon|rarely|seldom|only|even|usually|sometimes';
+  const ADV_VERB = Object.assign({ breed: 'breeds', believe: 'believes', build: 'builds', buy: 'buys', carry: 'carries',
+    eat: 'eats', marry: 'marries', sing: 'sings', speak: 'speaks', tell: 'tells', wear: 'wears' }, PL2SG);
+  const advVerb = [new RegExp(`\\b(Ambrel|Sahrim|Ulun|Ughrak)(${TAG})(\\s+)(${ADV})(\\s+)(${Object.keys(ADV_VERB).join('|')})\\b`, 'g'),
+    (m, n, t, s1, adv, s2, v, off, str) => (isSubject(str, off) ? n + t + s1 + adv + s2 + ADV_VERB[v] : m)];
+  // A new name is a proper name: no article before it when it stands for the realm ("the first lance of the {realm}"
+  // in Kesh, code that writes "the " + a name). Before a noun it is an adjective and keeps it ("the Kesh fleet"), and
+  // "the Sahrim Confederacy" and "the Ughrak Dominion" keep theirs.
+  const NEWN = 'Kesh|Sahrim|Ulun|Ughrak|Ambrel|Corvasse|Brannoch|Gorath';
+  const BARE_VERB = 'is|was|has|had|does|did|can|could|will|would|shall|should|may|might|must|says|sends|holds|keeps|' +
+    'wants|needs|takes|makes|gives|pays|rules|wins|won|loses|lost|lies|stands|goes|comes|knows|itself';
+  // (a dash joined to the name is a compound, as in a war's name: "The Sahrim–Aldmark War" keeps its article)
+  const bare = [new RegExp(`\\b([Tt])he\\s+(${TAG})(${NEWN})\\b(?!\\s+(?:Confederacy|Dominion)\\b)(?![-–—])`, 'g'),
+    (m, T, tags, n, off, str) => {
+      const after = str.slice(off + m.length, off + m.length + 40).replace(/^(?:\d+)+/, '');
+      const alone = /^(?:['’]s\b|\s*[,.;:!?)"”…]|\s+[–—]|\s*$)/.test(after) || /^\s+(?:and|or|nor)\s+(?:\d+)*[A-Z]/.test(after) ||
+        new RegExp(`^\\s+(?:${BARE_VERB})\\b`).test(after);
+      return alone ? tags + n : m;
+    }];
   const AMBER_N = 'fleets?|ships?|harbou?rs?|marines?|merchants?|house|houses|hill|captains?|cogs?|gold|flagships?|' +
     'sailors?|galleys?|tongue|highlands?|factors?|pilots?|loans?|alliance|mark|marks|clerks?|spice|sultans?|hunters?|' +
     'silver|squadrons?|boathook|pursers?|clove|coat|features|command|flags?|lenders?|manners|name|blockade|warships?|' +
@@ -102,6 +135,9 @@
     [/\b(found(?:ed|er of|ing of|s)|[Uu]nit(?:ed|er of|es|ing)|[Uu]nification of|made|into|joined|join) the Horde(?! of Gorath)(?![A-Za-z'’-])/g, '$1 the Horde of Gorath'],
     // a coast is not a realm to land on
     [/\bon the Spice Coast\b/g, 'on the coast of Kesh'],
+    // some of the clans, not the realm: "the southern Sand Clans' debts" -> "the southern Sahrim clans' debts"
+    [/\b([Tt]he (?:northern|southern|eastern|western) )Sand Clans\b/g, '$1Sahrim clans'],
+    [/\b([Tt]he (?:northern|southern|eastern|western) )Tusk Clans\b/g, '$1Ughrak clans'],
     // the short names, said of the realm or its people
     coll('Amber Isles', 'Ambrel', { plural: true }),
     coll('Spice Coast', 'Kesh'),
@@ -123,6 +159,8 @@
     [/\bBlackreef(?![A-Za-z])/g, 'Corvasse'],
     // "a Nine Winds rider" -> "an Ulun rider"
     [new RegExp(`\\b([Aa])(\\s+${TAG})(Ulun|Ughrak|Ambrel)\\b`, 'g'), '$1n$2$3'],
+    advVerb,
+    bare,
   ];
   NM.RULES = RULES;
   const run = s => { for (const [rx, to] of RULES) s = s.replace(rx, to); return s; };

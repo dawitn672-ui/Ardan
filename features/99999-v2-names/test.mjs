@@ -77,7 +77,26 @@ export default {
         ["The Sand Clans' unicorns", "Sahrim's unicorns"],
         ['A Nine Winds rider recognizes you', 'An Ulun rider recognizes you'],
         ['The Nine Winds envoy speaks', 'The Ulun envoy speaks'],
-        ['Children of the Nine Winds ride before they walk', 'Children of Ulun rides before they walk'],
+        // was 'Children of Ulun rides': the verb is the children's, not the realm's (the event "From the saddle")
+        ['Children of the Nine Winds ride before they walk', 'Children of Ulun ride before they walk'],
+        // after a preposition, or as one of two subjects, the name does not own the verb that follows
+        ['Steppe horses from the Nine Winds come ashore', 'Steppe horses from Ulun come ashore'],
+        ['the new ships promised to the Amber Isles are nearly done', 'the new ships promised to Ambrel are nearly done'],
+        ['The Maruang of the Amber Isles have a storm-sense', 'The Maruang of Ambrel have a storm-sense'],
+        ['Aldmark and the Sand Clans are at war', 'Aldmark and Sahrim are at war'],
+        ['Blackreef hires 800 crossbowmen and the Nine Winds sell her oil', 'Corvasse hires 800 crossbowmen and Ulun sells her oil'],
+        // the Horde was never plural: its verbs stay as they are
+        ['where smugglers who arm the Horde are hanged', 'where smugglers who arm Gorath are hanged'],
+        ['The other children in the Horde are watching.', 'The other children in Gorath are watching.'],
+        ['the proudest clans of the Horde lose their ancestor', 'the proudest clans of Gorath lose their ancestor'],
+        // an adverb between the name and its verb; an adverb after the name is not a noun
+        ['and the Nine Winds now breed them', 'and Ulun now breeds them'],
+        ['Wants a war with the Amber Isles badly enough', 'Wants a war with Ambrel badly enough'],
+        ["the southern Sand Clans' debts", "the southern Sahrim clans' debts"],
+        // a new name alone takes no article, as "of the {realm}" makes it in Kesh
+        ['You are the first lance of the Kesh.', 'You are the first lance of Kesh.'],
+        ['The Gorath is at war', 'Gorath is at war'],
+        ['a Ulun rider', 'an Ulun rider'],
         ['the Tusk Clans take one part', 'Ughrak takes one part'],
         ['a Tusk drummer', 'an Ughrak drummer'],
         ['War-Chief of the Horde', 'War-Chief of Gorath'],
@@ -95,7 +114,8 @@ export default {
         ["Blackreef's dragon", "Corvasse's dragon"],
         ['League of the Tusk Clans', 'Ughrak Dominion'],
         ['Khanate of the Nine Winds', 'Kingdom of Ulun'],
-        ['the <b>Sand Clans</b> win', 'the <b>Sahrim</b> win'.replace('the <b>', '<b>')],
+        // was '<b>Sahrim</b> win': the closing tag no longer hides the verb from the rule
+        ['the <b>Sand Clans</b> win', '<b>Sahrim</b> wins'],
         ['<span title="the Sand Clans ride" data-v="Sand Clans">x</span>', '<span title="Sahrim rides" data-v="Sand Clans">x</span>'],
         ['the Sand Clans&#39; oases', 'Sahrim&#39;s oases'],
       ];
@@ -105,7 +125,11 @@ export default {
         'nosebleeds in the highlands', 'Highland farmers and cattle-keepers', 'the Old Horde', 'Horde of Gorath',
         'the Second Horde War', 'in both Horde Wars', 'a horde of rats', 'mare (Horde)', 'Horde clans', 'Horde riders',
         'the Tusk Hills', 'the Tusk War', 'the Tusk Great Ride', 'The Copper-Tusk Finish', 'Grete Tuskcutter',
-        'the Corsair Isles', 'the Monastery Isles', 'Sandfolk', 'the nine winds of the steppe', 'Amber eyes', 'Amber on the shore'];
+        'the Corsair Isles', 'the Monastery Isles', 'Sandfolk', 'the nine winds of the steppe', 'Amber eyes', 'Amber on the shore',
+        // the new names as an adjective, in a compound, or with their people's word keep their article
+        'the Kesh fleet', 'the Ulun envoy', 'The Sahrim–Aldmark War ends: Sahrim wins', 'the Gorath-held Skardush Pass',
+        'the Sahrim Confederacy', 'In the Ughrak Dominion', 'The Brannoch and orc herders share the high meadows',
+        'the Corvasse slips', 'an Ulun rider', 'rode to the new Ulun and swore'];
       for (const [a, b] of CHANGE) { const f = NM.fix(a); if (f !== b) bad.push(`${a} -> ${f} (want ${b})`); }
       for (const a of KEEP) { const f = NM.fix(a); if (f !== a) bad.push(`kept? ${a} -> ${f}`); }
       // the lore keeps them too, and the place keys
