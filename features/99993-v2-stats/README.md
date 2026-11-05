@@ -170,3 +170,28 @@ death after a lost fight: the 12 health it took left him nothing, and `A.mortalC
 - It is pure: it reads the choice as written, the person and the law, and draws nothing.
 
 Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, `v2cRiskLethal`).
+
+## The 0-100 numbers g-bands did not reach (`i-numbers.core.js`, complaint 11, playtest 1 #7, playtest 2 old 7)
+
+- **Needs.** 35-moods' four needs are words (`A.MOODS.word(k, v)`: "rested", "alone too often", "adrift", "in want"),
+  banded on the rules: under 30 a need sets a mood, 65 or more on all four is content. The words are in 35's card,
+  91-look's box (rail and phone You page) and the need, needs and mood popovers. A need's popover says where it settles
+  and what pulls it ("A hard plan: lowers it a great deal"). 91-look's activity popover says "company up a great deal".
+- **Training.** The mentor picker's "Melee (14)" and the council's appoint picker say the tier. The season's log says
+  how much each skill grew: "Survival & hunting (a good deal)", not "+2.4". The training picker was already in words.
+- **The profile and the decisions.** The profile's age line drops the stat ("Strength: at its best at 19 · holds until
+  about 42"). A wound's cost reads "worth a little less (slower)" and "Athletics & climbing much worse". The perks
+  unlock "at Journeyman, Expert and Master". A decision needs "A proficiency at Adept" or "Letters & learning at Adept",
+  and a door "Crossbow at Apprentice (you are Untrained)". An ambition's step says "Fighting worth: Trained". The yard
+  sends you home "come back when you are worn or better". A staff candidate's fit is a tier.
+- **The War Room.** The division grid compares the division with yours ("far above yours", "like your others"); armour
+  and piercing say what they do to your men ("your blows bite", "glances off your armour"); speed stays in km.
+  Organization is "in full order" to "broken". The order of battle's "mo 64" and "xp 18" are "steady" and "trained".
+  59-tooltips' popover on an enemy's cell gives the same word, not the exact figure.
+- **Infamy.** Coalitions read "Against Aldmark (feared: its neighbours band together)"; the Most feared bars say
+  "feared", "distrusted", "watched". The bands follow the rules: 40 starts a coalition, over 58 one may march, over 20
+  small realms bow.
+- **Titles.** A hover title with one of these numbers ("Stability since 1105: 46 to 61") gets the same words.
+- The game's rules are unchanged; drawing reads, never writes, and draws nothing.
+
+Test `v2sNumbers` draws each of these views on a played life and fails on a bare 0-100 number in any of them.

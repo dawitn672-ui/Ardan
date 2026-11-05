@@ -156,8 +156,8 @@ if (typeof UI.wrStatGrid === 'function') {
       const cell = (k, v, tip) => `<div title="${esc(tip)}"><span>${esc(k)}</span><b>${esc(v)}</b></div>`;
       const cmp = (a, b) => VS.cmpWord(b > 0 ? a / b : a > 0 ? 9 : 1, R.ref);
       // armour against piercing (the rule: less piercing than the other side's armour, half the attacks)
-      const arm = R.mine ? cmp(+s.arm || 0, R.arm) : ((+s.arm || 0) > R.prc ? 'too heavy for your blows: half of them glance off' : 'your blows bite');
-      const prc = R.mine ? cmp(+s.prc || 0, R.prc) : ((+s.prc || 0) >= R.arm ? 'goes through your armour' : 'glances off your armour: half its blows lost');
+      const arm = R.mine ? cmp(+s.arm || 0, R.arm) : ((+s.arm || 0) > R.prc ? 'too heavy for your blows' : 'your blows bite');
+      const prc = R.mine ? cmp(+s.prc || 0, R.prc) : ((+s.prc || 0) >= R.arm ? 'goes through your armour' : 'glances off your armour');
       return `<div class="wr-stats v2-wr-stats">${cell('Soft atk', cmp(c.soft, R.soft), 'Attacks per day against men')}${cell('Hard atk', cmp(c.hard, R.hard), 'Attacks per day against armor and beasts')}` +
         `${cell('Defense', cmp(c.def, R.def), 'Attacks it can block when defending')}${cell('Breakthr.', cmp(c.brk, R.brk), 'Attacks it can block when attacking')}` +
         `${cell('Org', VS.orgWord((d.org || 0) / Math.max(1, mo)), 'Organization: how long it keeps fighting')}${cell('HP', cmp(c.hp, R.hp), 'How much damage it can take')}` +
