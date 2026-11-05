@@ -383,9 +383,10 @@ A.startDuel = function (pc, foe, opts) {
 FL.css = '.fl-measure{display:block;font-size:.82em;opacity:.8;margin-top:2px;font-weight:normal}' +
   '.fl-duel{margin:6px 0 8px;text-align:center}.fl-wounds{margin-top:4px}';
 FL.style = () => { if (typeof document === 'undefined' || document.getElementById('fl-style')) return; const s = document.createElement('style'); s.id = 'fl-style'; s.textContent = FL.css; document.head.appendChild(s); };
+FL.v2 = () => !!A.V2S;
 FL.digits = () => (A.DIFF && A.DIFF.showOdds ? A.DIFF.showOdds() : true);
-// a worth as the player reads it: v2's levies where 99993-v2-stats is in the build, else the number
-FL.worthText = w => (A.V2S && A.V2S.levyWords && A.V2S.levyOfWorth ? A.V2S.levyWords(A.V2S.levyOfWorth(w)) : String(w));
+// v2 (99993-v2-stats) shows no worth number (the owner's rule: no 0-100 number the player sees), and its levies are
+// its own scale, read from the body, which a worth cannot be turned into; so beside a worth's tier there is nothing
 FL.duelBox = function (D) {
   const m = D.measure; if (!m) return '';
   const pc = A.pc(), dg = FL.digits(), num = w => (dg && w != null ? ' ' + w : '');
@@ -414,7 +415,7 @@ UI.duelModal = function (D) {
       const P = D[side] && D[side].pid ? A.P(D[side].pid) : null;
       if (!P || w == null) continue;
       const chip = UI.tierChip(P), t = A.tierOf(w);
-      if (h.includes(chip)) h = h.replace(chip, `<span class="chip tier ${t.k}" title="${UI.esc(side === 'a' ? 'Your worth in this fight, armed as you are for it' : 'Their worth in this fight, armed as they are for it')}">${UI.icon ? UI.icon('swords', 's') : ''}${UI.esc(t.n)} · ${UI.esc(FL.worthText(w))}</span>`);
+      if (h.includes(chip)) h = h.replace(chip, `<span class="chip tier ${t.k}" title="${UI.esc(side === 'a' ? 'Your worth in this fight, armed as you are for it' : 'Their worth in this fight, armed as they are for it')}">${UI.icon ? UI.icon('swords', 's') : ''}${UI.esc(t.n)}${FL.v2() ? '' : ' · ' + UI.esc(w)}</span>`);
     }
   } catch (e) { console.error('fight-ladder duel screen', e); }
   return h;
@@ -468,9 +469,9 @@ if (typeof profileModal === 'function') UI.profileModal = function (pc) {
     if (rows.length && at >= 0) {
       // with v2 (99993-v2-stats) the player reads words: the tiers and the levies, and which stats a wound takes, not
       // "worth 31 to 8 (strength -10)" (the owner's rule: no 0-100 number the player sees)
-      const v2 = !!(A.V2S && A.V2S.levyOfWorth), wt = FL.worthText;
+      const v2 = FL.v2();
       const cost = r => (r.before === r.after ? 'no cost to your fighting worth' : !v2 ? (r.tb === r.ta ? `worth ${r.before} to ${r.after}` : `${r.tb} ${r.before} to ${r.ta} ${r.after}`)
-        : r.tb === r.ta ? (wt(r.before) === wt(r.after) ? `still ${r.ta}, a little less in a fight` : `still ${r.ta}, ${wt(r.before)} to ${wt(r.after)}`) : `${r.tb} (${wt(r.before)}) to ${r.ta} (${wt(r.after)})`);
+        : r.tb === r.ta ? `still ${r.ta}, ${r.before - r.after >= 8 ? 'much' : 'a little'} less in a fight` : `${r.tb} to ${r.ta}`);
       const stats = r => (v2 ? r.statWords : r.stats);
       const line = rows.map(r => `${r.name}: ${cost(r)}${stats(r).length ? ' (' + stats(r).join(', ') + ')' : ''}`).join('. ');
       h = h.slice(0, at) + `<div class="group-h">Wounds in a fight</div><div class="small ink2 fl-wounds">In a fight: ${UI.esc(line)}.</div>` + h.slice(at);

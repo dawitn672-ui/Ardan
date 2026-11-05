@@ -166,17 +166,20 @@ if (UI.SCENE && UI.SCENE.chip) {
     } catch (e) { return h; }
   };
 }
-// 48-fight-ladder's tier chip: "Untrained · 39" becomes "Untrained · about one levy"
+// 48-fight-ladder's tier chip: "Untrained · 39" becomes "about one levy"
 if (UI.tierChip) {
   const tc = UI.tierChip;
-  UI.tierChip = function (p) {
+  UI.tierChip = function (p, short) {
     const h = tc.apply(this, arguments);
     try {
       if (typeof h !== 'string') return h;
-      // the levies of the chip's own worth, so the tier beside them is the same reading
-      const lw = w => VS.levyWords(VS.levyOfWorth(+w));
-      return h.replace(/fighting worth (\d+)\./, (m, w) => `worth ${lw(w)} in a fight.`)
-        .replace(/ · (\d+)<\/span>$/, (m, w) => ` · ${esc(lw(w))}</span>`);
+      // the chip says v2's levies alone: the tier name it carried is the release's worth, which ranks people a little
+      // differently (playtest 2, old 17: "Elite · about one and a half levies" beside the sheet's "a levy's worth").
+      // The short chip keeps the tier name, with no levies beside it.
+      const lw = w => VS.levyWords(p && p.st ? VS.shownLevies(p) : VS.fromWorth(+w));
+      if (short) return h.replace(/, fighting worth \d+\./, '.');
+      return h.replace(/aria-label="[^"]*?, fighting worth (\d+)\./, (m, w) => `aria-label="Worth ${esc(lw(w))} in a fight.`)
+        .replace(/>[^<>]* · (\d+)<\/span>$/, (m, w) => `>${esc(lw(w))}</span>`);
     } catch (e) { return h; }
   };
 }

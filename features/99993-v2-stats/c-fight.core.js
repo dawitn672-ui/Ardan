@@ -99,13 +99,9 @@ VS.v2Levies = function (p) {
   return B.fightingWorth(vv, 'fight', 'none').worth * VS.gearMult(f, p);
 };
 
-// The levies a player sees are read from the worth the fights roll, so a tier, its levies and the odds never disagree
-// (playtest 2, old 17: "Elite · about one and a half levies", a duel's "Brawler · about 2 levies" over "You: Untrained").
-// They were v2's own body-and-skill levies (VS.v2Levies), which rank people differently from the worth (r = 0.78).
-// The curve: each 13 points of worth an e-fold (as VS.fromWorth) up to an elite (80: about 15 levies), then half as
-// steep, so a master (91) is about 23, a legend (118) about 64, and the release's general at 114 about 55, not 285
-// (playtest round 1). It is pinned so the old tiers fall in levyRank's bands: a Brawler (40, "a green levy") starts at
-// 0.7, a levy's worth; Trained (50) at 1.5, a man-at-arms; Veteran (63) at 4, a knight; Elite (77, "the knights of the
-// eight orders") at 12, an order knight; Master and Legend the heroes. A green levy of GD.CROWD (46) is about one.
-VS.levyOfWorth = w => { w = +w || 0; return w <= 80 ? Math.exp((w - 44.6) / 13) : Math.exp(35.4 / 13 + (w - 80) / 26); };
-VS.shownLevies = p => (p && p.st ? VS.levyOfWorth(A.fightWorth(p)) : 0);
+// the levies a player sees: v2's own scale (a human Master is about a giant's 15-25 only with breakthroughs and order
+// gear), with the race shift already in the body view. Playtest round 1: the game's worth scale put a general at 285.
+// v2's levies rank people a little differently from the release's worth (r = 0.78), so the worth's tier name is never
+// put beside them (playtest 2, old 17: "Elite · about one and a half levies"): the chip says the levies alone, the sheet
+// says them with VS.levyRank, read from the same levies, and the duel and wound lines say the worth's tiers alone.
+VS.shownLevies = p => (p && p.st ? VS.v2Levies(p) : 0);

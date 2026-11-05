@@ -157,9 +157,10 @@ export default {
     // Untrained). The life at seed 4601 is drawn after the world, so 9996-polity's offices shifted it: with the Polity
     // 3 of 20 such lives (seeds 4601-4620) keep their tier after a lost hand, without it 0 of 20; the line must match
     // whichever case the life is in.
-    // v2 (the owner's rule: no 0-100 number the player sees): the line says the tiers and the levies, and "less speed"
-    // for the knee, in words; without 99993-v2-stats it keeps the release's worth figures
-    const handLine = r.v2 ? (r.sameTier ? /Lost a hand: still \w+, [a-z ]+/ : /Lost a hand: \w+ \([a-z ]*lev[a-z ]*\) to \w+ \([a-z ]*lev[a-z ]*\)/)
+    // v2 (the owner's rule: no 0-100 number the player sees): the line says the tiers in words, and "less speed" for
+    // the knee; without 99993-v2-stats it keeps the release's worth figures. (No levies: v2's are its own scale, read
+    // from the body, and a worth's tier is not put beside them.)
+    const handLine = r.v2 ? (r.sameTier ? /Lost a hand: still \w+, (a little|much) less in a fight/ : /Lost a hand: \w+ to \w+/)
       : r.sameTier ? /Lost a hand: worth \d+ to \d+/ : /Lost a hand: \w+ \d+ to \w+ \d+/;
     const kneeLine = r.v2 ? /less speed/ : /speed -7/;
     // v2 (99993-v2-stats): no setting shows the duel's "N times in 100" any more (the owner's "no percentages"), so the
@@ -307,7 +308,8 @@ export default {
     // check, not the paced one): not the ladder's "hopeless" against a grown Brawler, and no measure line
     const sibOk = r.sib.none || (!r.sib.applies && r.sib.odds > r.sib.ladder + 10 && !r.sib.measure);
     const joustOk = r.joust.length > 0 && r.joust.every(x => /^one\/1\/tourney$/.test(x));
-    const chipsOk = r.chips && r.chips.some(c => c.startsWith(r.tA + ' ·')) && r.chips.some(c => c.startsWith(r.tB + ' ·')) && r.chips.every(c => !/· \d/.test(c));
+    // with v2 each duel chip is the measure's tier alone (no worth number, no levies: those are v2's own scale)
+    const chipsOk = r.chips && r.chips.some(c => c.trim() === r.tA) && r.chips.some(c => c.trim() === r.tB) && r.chips.every(c => !/\d|lev/.test(c));
     const ok = sibOk && r.adult === true && joustOk && r.hutWeapon === 'sword' && r.duelWeapon === 'Common sword' && (r.keptOwn == null || r.keptOwn === 'fists') && chipsOk && !r.badVerb && /bare-handed|with an? /.test(r.box);
     return { ok, detail: `sibling scuffle at 4: ${JSON.stringify(r.sib)}; a deadly fight at 25 measured ${r.adult}; second tilt ${r.joust.join(', ')}; hut deserter ${r.hutWeapon} -> duel ${r.duelWeapon} (own kept ${r.keptOwn}); chips ${JSON.stringify(r.chips)} for measure ${r.tA} v ${r.tB}; "${r.box}"; rounds ${JSON.stringify(r.verbs)}; ${r.armed} events arm the foe from their text` };
   },

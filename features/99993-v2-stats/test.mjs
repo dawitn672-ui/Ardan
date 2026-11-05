@@ -331,4 +331,43 @@ export default {
     const ok = r.phone && r.rows.length >= 4 && r.rows.every(x => !x.clipped && !/\d/.test(x.word) && x.icon);
     return { ok, detail: `${r.phone ? 'phone' : 'not the phone layout'}: ${r.rows.map(x => `${x.word}${x.clipped ? ' (cut off)' : ''}${x.icon ? '' : ' (no icon)'}`).join(', ')}` };
   },
+  // playtest 2 (old 17) without a new scale: the tier chip says v2's levies alone (the tier name was the release's worth,
+  // which ranks people a little differently: "Elite · about one and a half levies"), the short chip the tier alone, and
+  // the levies stay on v2's scale (V2_SPEC row 12: an order knight 15-25 levies, and only a Master with breakthroughs
+  // stands level with a giant's 20; playtest 1, complaint 8, set orders at 18.8-23.6 a member). A verifier measured a
+  // curve on the worth at 19.9 levies for a plain Elite and 30.4 for a Master: kept from coming back.
+  async v2sLevyScale(pg) {
+    const r = await pg.evaluate(() => {
+      const V = A.V2S, txt = h => h.replace(/<[^>]+>/g, '').trim(), tiers = GD.TIERS.map(t => t.n);
+      A.newGame({ seed: 4701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      const human = Object.keys(A.S.realms).filter(id => A.makeFoe({ realm: id, tier: 2 }).race === 'human');
+      const med = {}, bad = [];
+      for (const tier of [2, 4, 5, 6]) {
+        const lv = [];
+        for (let i = 0; lv.length < 30 && i < 120; i++) {
+          const p = A.makeFoe({ realm: human[i % human.length], tier });
+          if (p.race !== 'human') continue;
+          const s = V.shownLevies(p);
+          if (Math.abs(s - V.v2Levies(p)) > 1e-9) bad.push(`shown ${s} is not v2's ${V.v2Levies(p)}`);
+          lv.push(s);
+        }
+        lv.sort((a, b) => a - b); med[tier] = +lv[lv.length >> 1].toFixed(1);
+      }
+      const chips = [];
+      for (const p of Object.values(A.S.people).filter(p => p.alive && p.st && A.age(p) >= 16).slice(0, 40)) {
+        const full = UI.tierChip(p), short = UI.tierChip(p, true), t = txt(full), ts = txt(short), lw = V.levyWords(V.shownLevies(p));
+        if (t !== lw) bad.push(`chip "${t}" is not "${lw}"`);
+        // a count of levies is a real unit; the worth (0-100) is not said, in the text or the label
+        const al = h => (h.match(/aria-label="([^"]*)"/) || [])[1] || '';
+        if (tiers.some(n => t.includes(n) || al(full).includes(n)) || /worth \d/.test(al(full))) bad.push(`chip "${t}" (${al(full)})`);
+        if (!tiers.includes(ts) || /\d|lev/.test(al(short))) bad.push(`short chip "${ts}" (${al(short)})`);
+        if (chips.length < 4) chips.push(t);
+      }
+      return { med, bad, chips };
+    });
+    // the release's tiers on v2's scale: an Elite a few knights' worth, a Master below an order member, a tier-6 at most
+    // about a giant
+    const ok = !r.bad.length && r.med[2] < 3 && r.med[4] < 10 && r.med[5] < 16 && r.med[6] < 25 && r.med[2] < r.med[4] && r.med[4] < r.med[5];
+    return { ok, detail: `median levies of 30 humans by tier ${JSON.stringify(r.med)}; chips ${JSON.stringify(r.chips)}; ${r.bad.length} problems ${r.bad.slice(0, 4).join(' | ')}` };
+  },
 };
