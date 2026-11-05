@@ -301,8 +301,7 @@ VS.NUMRULES2 = [
   [/\b(strength|speed|stamina|combat instincts|instincts|intelligence|wits|willpower|will) ([+−-])(\d{1,2})\b/gi, (all, n, s, v) => statDelta(n, s, +v) || all],
   // 49-body-mind's wounds: "−7 speed, −3 stamina, Athletics & climbing −10"
   [/([+−-])(\d{1,2}) (strength|speed|stamina|combat instincts|instincts|intelligence|wits|willpower|will)\b/gi, (all, s, v, n) => statDelta(n, s, +v) || all],
-  // (not a season's "+2.3", which is a gain, not a cost)
-  [/\b([A-Z][A-Za-z&:' ]{2,30}?) ([+−-])(\d{1,2})\b(?![.,/]\d|\s*(?:suns?|years?|days?|men|km|kg|%))/g, (all, n, s, v) => (skillKey(n) ? `${n} ${how(+v)}${s === '+' ? 'better' : 'worse'}` : all)],
+  // (a skill's cost, "Athletics & climbing −10", is i-numbers' rule: "Athletics & climbing down a good deal")
   // the proficiencies page: "Perks unlock at 40, 65 and 85"
   [/Perks unlock at (\d{1,3}), (\d{1,3}) and (\d{1,3})/g, (all, a, b, c) => `Perks unlock at ${tierName(a)}, ${tierName(b)} and ${tierName(c)}`],
   // the decisions: "A proficiency at 50 (best: Bows & throwing 67)", "Learning 55, or a diploma"

@@ -192,7 +192,7 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
 - **Training.** The mentor picker's "Melee (14)" and the council's appoint picker say the tier. The season's log says
   how much each skill grew: "Survival & hunting (a good deal)", not "+2.4". The training picker was already in words.
 - **The profile and the decisions.** The profile's age line drops the stat ("Strength: at its best at 19 · holds until
-  about 42"). A wound's cost reads "worth a little less (slower)" and "Athletics & climbing much worse". The perks
+  about 42"). A wound's cost reads "worth a little less (slower)" and "Athletics & climbing down a good deal" (i-numbers' rule). The perks
   unlock "at Journeyman, Expert and Master". A decision needs "A proficiency at Adept" or "Letters & learning at Adept",
   and a door "Crossbow at Apprentice (you are Untrained)". An ambition's step says "Fighting worth: Trained". The yard
   sends you home "come back when you are worn or better". A staff candidate's fit is a tier.
