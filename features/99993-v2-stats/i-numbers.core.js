@@ -183,6 +183,28 @@ if (typeof UI.wrDivPanel === 'function') {
   };
 }
 
+// 59-tooltips' popover on a cell of an enemy's grid gave the exact figure and its parts ("Soft attack 139.9"): what a
+// scout sees is the comparison, and what the figure does
+if (UI.TIPS && typeof UI.TIPS.divStat === 'function') {
+  const ds0 = UI.TIPS.divStat;
+  const NAMES = { soft: ['Soft attack', 'Attacks a day against men.'], hard: ['Hard attack', 'Attacks a day against armor and beasts.'], def: ['Defense', 'Attacks it can turn aside when it is attacked.'],
+    brk: ['Breakthrough', 'Attacks it can turn aside when it attacks.'], hp: ['Hit points', 'How much damage it can take: the men, at their strength.'], w: ['Width', 'How much of a front it fills.'],
+    sup: ['Supply', 'What it eats a day.'], arm: ['Armor', 'An enemy with less piercing does half its attacks.'], prc: ['Piercing', "Beat the enemy's armor or lose half your attacks."],
+    org: ['Organization', 'How long it keeps fighting.'], exp: ['Experience', 'Experience adds to attack and defense.'], spd: ['Speed', 'Kilometres a day on open ground.'] };
+  UI.TIPS.divStat = function (arg) {
+    try {
+      const [id, k] = String(arg).split('|'), d = A.divById ? A.divById(id) : null;
+      let myR = null; try { myR = UI.wrMyR(A.pc()); } catch (e) {}
+      if (d && NAMES[k] && myR && A.hostile(myR, d.r)) {
+        const box = document.createElement('div'); box.innerHTML = UI.wrStatGrid(d);
+        const cell = box.querySelectorAll('.wr-stats > div')[['soft', 'hard', 'def', 'brk', 'org', 'hp', 'w', 'sup', 'spd', 'arm', 'prc', 'exp'].indexOf(k)];
+        const word = cell ? (cell.querySelector('b') || {}).textContent : '';
+        return `<div class="tip-h">${esc(NAMES[k][0])} <b>${esc(word)}</b> <span class="muted">${esc(d.name)}</span></div><div class="tip-d">${esc(NAMES[k][1])} What your outriders can tell, against your own divisions.</div>`;
+      }
+    } catch (e) { console.error('v2 war room popover', e); }
+    return ds0.apply(this, arguments);
+  };
+}
 // the map list's bars: "Organization 81/81 · Strength 98%" in the title
 if (typeof UI.wrBarsBasic === 'function') {
   const bars0 = UI.wrBarsBasic;
@@ -218,7 +240,7 @@ VS.NUMRULES2 = [
   // 49-body-mind's age line: "Strength: best 59 at 19 · holds until about 42"
   [/\b([A-Z][A-Za-z ]{2,20}): best (\d{1,3}) at (\d{1,3})\b/g, (all, n, v, a) => (statKey(n) || STAT_DIR[n.toLowerCase()] ? `${n}: at its best at ${a}` : all)],
   // 48-fight-ladder's wound costs: "worth 42 to 41", "Elite 66 to Veteran 58", "(speed -7, stamina -3)"
-  [/\bworth (\d{1,3}) to (\d{1,3})\b/g, (all, a, b) => (+a - +b >= 6 ? 'a good deal less in a fight' : +a > +b ? 'a little less in a fight' : 'no less in a fight')],
+  [/\bworth (\d{1,3}) to (\d{1,3})\b/g, (all, a, b) => (+a - +b >= 6 ? 'worth a good deal less' : +a > +b ? 'worth a little less' : 'worth no less')],
   [/\b(Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero) (\d{1,3}) to (Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero) (\d{1,3})\b/g, (all, a, x, b) => `from ${a} to ${b}`],
   [/\b(strength|speed|stamina|combat instincts|instincts|intelligence|wits|willpower|will) ([+−-])(\d{1,2})\b/gi, (all, n, s, v) => statDelta(n, s, +v) || all],
   // 49-body-mind's wounds: "−7 speed, −3 stamina, Athletics & climbing −10"
@@ -231,6 +253,17 @@ VS.NUMRULES2 = [
   [/\bLearning (\d{1,3})(, or a diploma)/g, (all, a, rest) => `Letters & learning at ${tierName(a)}${rest}`],
   // a staff candidate (Arms): "— fit 66 · Elite" and "fit for the post: 66"
   [/ — fit (\d{1,3}) · /g, (all, v) => ` — fit: ${tierName(v)} · `],
+  // a door's skill: "Needs Crossbow 30 (you have 2)"
+  [/\bNeeds ([A-Z][A-Za-z&:' ]{2,30}?) (\d{1,3}) \(you have (\d{1,3})\)/g, (all, n, a, b) => (skillKey(n) ? `Needs ${n} at ${tierName(a)} (you are ${tierName(b)})` : all)],
+  // fighting worth on the 0-100 scale (an ambition's step, a fight's popover): the tier
+  [/\bFighting worth (\d{1,3})(?: of (\d{1,3}))?(?![\d+])/g, (all, v, top) => (A.tierOf ? `Fighting worth: ${A.tierOf(+v).n}${top ? `, with ${A.tierOf(+top).n} at the top` : ''}` : all)],
+  // 49-body-mind's yard: "health worn, come back at 50", "rest to 50 first"
+  [/\bcome back at (\d{1,3})\b/g, (all, v) => `come back when you are ${VS.band('health', +v)} or better`],
+  [/\brest to (\d{1,3}) first\b/g, (all, v) => `rest until you are ${VS.band('health', +v)} or better first`],
+  // 97-life-fixes' door: "your chance is under 2 in 100"
+  [/\byour chance is under \d+ in 100\b/g, () => 'your chance is next to none'],
+  // a realm's sparkline: "Stability since 1105: 46 to 61"
+  [/\b(Stability|Legitimacy|Health|Happiness|Honou?r|Piety) since (\d{4}): (\d{1,3}) to (\d{1,3})\b/g, (all, k, y, a, b) => `${k} since ${y}: ${VS.band(k, +a)} to ${VS.band(k, +b)}`],
 ];
 const deNum0 = VS.deNum;
 VS.deNum = function (t, node) {
@@ -247,6 +280,24 @@ VS.deNum = function (t, node) {
   for (const [re, fn] of VS.NUMRULES2) s = s.replace(re, fn);
   return deNum0.call(this, s, node);
 };
+// a title that carries one of these numbers (hover text is read too): the same words, at each draw
+VS.sweepTitles = function (root) {
+  if (!root || !root.querySelectorAll) return;
+  for (const el of root.querySelectorAll('[title]')) {
+    const v = el.getAttribute('title');
+    if (!v || !/\d/.test(v) || v.indexOf('%') >= 0) continue;
+    let t = v; for (const [re, fn] of VS.NUMRULES2) t = t.replace(re, fn);
+    if (t !== v) el.setAttribute('title', t);
+  }
+};
+{
+  const sw0 = VS.sweep;
+  VS.sweep = function (root) {
+    const r = sw0.apply(this, arguments);
+    try { VS.sweepTitles(root && root.nodeType === 1 ? root : null); } catch (e) {}
+    return r;
+  };
+}
 // the council: "Marshal ... — Command 52" for the holder
 if (typeof UI.realmTabBasic === 'function') {
   const rt0 = UI.realmTabBasic;

@@ -241,6 +241,10 @@ export default {
       check('proficiencies', (document.getElementById('modal') || document.body).innerText.split('\n').filter(l => /Perks/.test(l)).join('\n'));
       UI.ov = null;
       check('wound line', VS.deNum('In a fight: Bad leg: worth 46 to 43 (speed -9). Legs Bad leg −9 speed, −3 stamina, Athletics & climbing −12'));
+      // the sweep's other finds: the yard, a door's skill, an ambition's fighting worth, a staff candidate, a sparkline
+      for (const t of ['The yard master sends you home: health worn, come back at 50', 'Too hurt for that: health worn, rest to 50 first', 'Needs Crossbow 30 (you have 2), or a bow',
+        'Fighting worth 62 of 118: masters to learn from', 'Enzo Montessi — fit 70 · Master', 'They would not take you yet: your chance is under 2 in 100.']) check('phrase', VS.deNum(t));
+      { const el = document.createElement('div'); el.innerHTML = '<span title="Stability since 1105: 46 to 61">~</span>'; document.body.appendChild(el); VS.sweep(el); check('sparkline title', el.firstChild.getAttribute('title').replace(/1105/, '')); el.remove(); }
       // infamy, under World > Diplomacy
       const rs = Object.values(A.S.realms).filter(x => x.alive);
       const keep = { coal: A.S.coalitions, inf: rs.slice(0, 3).map(x => x.infamy) };
@@ -273,7 +277,7 @@ export default {
       } finally { UI.wrIntel = wi; }
       const gridWords = /(far above|above|like|below|far below) (yours|your others|most)/.test(grid);
       pure = pure && JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0;
-      return { bad: [...new Set(bad)], wordsShown, infamyWords, coal: coal.slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure };
+      return { bad: [...new Set(bad)], wordsShown, infamyWords, coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure };
     });
     const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.gridWords && r.foe && r.log > 0 && r.pure;
     return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"); War Room grid compared ${r.gridWords}; ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
