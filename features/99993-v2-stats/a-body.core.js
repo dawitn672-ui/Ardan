@@ -53,8 +53,10 @@ VS.PHYS = ['str', 'spd', 'ins', 'sta'];
 VS.MIND = ['int', 'wil'];
 VS.K_COND = 0.4;      // st ~ cond^0.4: v2's whole range of training (x3.8 lift) is x1.7 on the old scale
 // how far each body attribute moves for a given place among one's own race and age (v2: strength varies more than
-// speed: body.js SPREAD); old prime-age humans run p10..p90 = 0.8..1.29 of typical, so lift spans 0.64..1.66 of a man's
-VS.KAPPA = { lift: 2, sprint: 0.7, march: 1.5, reaction: 0.9, toughness: 1.5 };
+// speed: body.js SPREAD). Grown men in a fresh world run p10..p90 = 0.64..1.56 of typical on the old scale (seed 32), so
+// lift and march follow it one for one: lift p10..p90 = 83..203 kg, march 18..44 km. (Playtest 2: K = 2 for lift and
+// 1.5 for march made p90 a 315 kg lifter and a 55 km marcher, and the player's 1.5 of typical a 250 kg one.)
+VS.KAPPA = { lift: 1, sprint: 0.7, march: 1, reaction: 0.9, toughness: 1.5 };
 VS.raceMean = (p, s) => 42 + ((GD.RACES[p.race] || GD.RACES.human).mods[s] || 0);
 VS.sex = p => (p.sex === 'F' ? 'female' : 'male');
 VS.humanAge = (p, age) => age / RC.RACES[VS.raceKey(p.race)].ageScale;
@@ -143,13 +145,19 @@ VS.sync = function (p) {
     const was = V.last[s], now = p.st[s];
     if (was == null || Math.abs(now - was) < 1e-9) continue;
     // a change made by the old code: the stat it wants, as conditioning (or the mind's training)
-    const want = Math.max(0, (VS.derive(p, s, age) + (now - was)));
-    const base = VS.potOf(p, s) * 0.78 * VS.grow(p, age);
+    // A change is kept as the same change to the grown body: training factor T moves by delta / (pot x 0.78), not by
+    // delta / (pot x 0.78 x grow). Read against the child's own small base, a +1 at five was +24% conditioning that
+    // grew with the child into +10 at twenty (playtest 2: an untrained 17-year-old copyist lifting 250 kg, and
+    // v2sDerive's lift falling from 18 to 25 because the stat had hit the old cap of 1.02 x potential by 18).
+    // The training factor is held under that cap, so growing up still shows.
+    const g = VS.grow(p, age), adult = VS.potOf(p, s) * 0.78;
+    const want = Math.max(0, VS.derive(p, s, age) / Math.max(0.01, g) + (now - was));
+    const base = adult, capT = 1.02 / 0.78;
     if (VS.PHYS.includes(s)) {
       const a = VS.ATTR[s], cap = B.ceiling(v, a);
-      V.c[a] = r4(clamp(condOf(want / Math.max(0.01, base)), 0.5, cap));
+      V.c[a] = r4(clamp(condOf(Math.min(capT, want / Math.max(0.01, base))), 0.5, cap));
       if (a === 'march') V.c.toughness = r4(clamp(Math.sqrt(V.c.march), 0.5, B.ceiling(v, 'toughness')));
-    } else V.mt[s] = r4(clamp(want / Math.max(0.01, base), 0.5, 3));
+    } else V.mt[s] = r4(clamp(want / Math.max(0.01, base), 0.5, capT));
   }
   for (const s of GD.STATS) { p.st[s] = Math.round(VS.derive(p, s, age) * 100) / 100; V.last[s] = p.st[s]; }
 };

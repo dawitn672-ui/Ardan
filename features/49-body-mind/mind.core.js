@@ -143,7 +143,11 @@
   };
   for (const k of Object.keys(choose)) A.eventChoose[k] = choose[k];
   BM.costs = ch => { const fx = ch && (ch.fx || (ch.win && ch.win.fx)); return !!(fx && typeof fx === 'object' && (fx.coin < 0 || fx.coinPct < 0 || fx.family < 0)); };
-  BM.receipt = cur => `“${String(cur.label).replace(/[.!]+$/, '')}” (${cur.title ? cur.title + ', ' : ''}${yearOf()})`;
+  // The receipt is stored (pc.deedLog, pc.traitWhy, pc.traitLog), and those are not prose fields, so SAVES.clean strips
+  // " < > from them on load: a label 'Ask, "But is it true?"' came back as 'Ask, But is it true?' and the reloaded state
+  // differed (v2svRoundTrip). The label's own quotes become single ones inside the receipt's, and markup goes.
+  BM.plain = s => String(s == null ? '' : s).replace(/[<>]/g, '').replace(/"([^"]*)"/g, '‘$1’').replace(/"/g, '’');
+  BM.receipt = cur => `“${BM.plain(cur.label).replace(/[.!]+$/, '')}” (${cur.title ? BM.plain(cur.title) + ', ' : ''}${yearOf()})`;
   const apply = A.applyFx;
   A.applyFx = function (pc, fx, ctx) {
     if (!isPC(pc) || !fx || typeof fx !== 'object' || Array.isArray(fx)) return apply.apply(this, arguments);
