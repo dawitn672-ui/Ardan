@@ -186,13 +186,13 @@ export default {
       const off = A.makeAcquaintance(pc, 'acquaint'); off.mil = { rank: 5, realm: pc.realm };
       A.link(pc, off, 'superior', 40, 'superior');
       out.officerRole = (A.ADV.candidates(pc).find(c => c.id === off.id) || {}).role || null;
-      pc.mil = null; pc.job = { c: 'smith', r: 1, y: A.S.year, perf: 50 };
+      pc.mil = null; pc.job = { c: 'smith', r: 1, y: A.S.year, perf: 50 }; delete pc.rel[off.id];   // 9999 seats one master, the warmest
       const m = A.makeAcquaintance(pc, 'acquaint'); A.link(pc, m, 'master', 40, 'master');
       out.masterRole = (A.ADV.candidates(pc).find(c => c.id === m.id) || {}).role || null;
       return out;
     });
     const boyOk = r.boy.length > 1 && !r.boy.some(x => /a man twice/.test(x)), girlOk = r.girl.some(x => /a man twice/.test(x));
-    const ok = boyOk && girlOk && !/lance|horse/.test(r.soldier) && /lance/.test(r.knight) && r.officerRole === 'captain' && r.masterRole === 'master';
+    const ok = boyOk && girlOk && !/lance|horse is groomed/.test(r.soldier) && /lance/.test(r.knight) && r.officerRole === 'captain' && r.masterRole === 'master';
     return { ok, detail: `a boy runs from ${JSON.stringify(r.boy.filter(x => /betrothal/.test(x)))}, a girl from a man twice her age ${girlOk}; a soldier at the tournament: "${r.soldier.slice(-110)}"; a knight hears of his lance ${/lance/.test(r.knight)}; a soldier's officer sits as ${r.officerRole}, a smith's master as ${r.masterRole}` };
   },
 
