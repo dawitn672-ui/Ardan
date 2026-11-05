@@ -27,6 +27,15 @@
       comfort: { name: 'In want', why: 'there is too little coin and too little warmth' },
     },
   };
+  // a need in words, not its 0-100 number (V2 rule: no 0-100 number the player sees). The bands follow the rules: under
+  // M.LOW (30) a need sets a mood, at 65 or more every need together makes you content.
+  M.WORDS = {
+    rest: [[80, 'well rested'], [65, 'rested'], [45, 'a little tired'], [30, 'tired'], [15, 'worn out'], [-1e9, 'exhausted']],
+    company: [[80, 'among friends'], [65, 'in good company'], [45, 'a little alone'], [30, 'alone too often'], [15, 'lonely'], [-1e9, 'utterly alone']],
+    purpose: [[80, 'driven'], [65, 'with a purpose'], [45, 'unsure of the way'], [30, 'drifting'], [15, 'adrift'], [-1e9, 'lost']],
+    comfort: [[80, 'at ease'], [65, 'comfortable'], [45, 'getting by'], [30, 'pinched'], [15, 'in want'], [-1e9, 'in misery']],
+  };
+  M.word = (k, v) => { const b = M.WORDS[k]; if (!b) return ''; for (const [t, w] of b) if (+v >= t) return w; return b[b.length - 1][1]; };
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   // a person's needs; missing (an old save, or a person not yet lived as) means all met
   M.needs = p => {
@@ -117,7 +126,7 @@
     const h = life.apply(this, arguments);
     if (!pc || !pc.alive || A.age(pc) < 6) return h;
     const n = M.needs(pc), m = M.mood(pc), NAME = { rest: 'Rest', company: 'Company', purpose: 'Purpose', comfort: 'Comfort' };
-    const bar = k => `<div class="row tiny" style="gap:6px;align-items:center"><span style="min-width:64px">${NAME[k]}</span><span class="hpbar" style="flex:1;height:6px;background:var(--line,#8884);border-radius:3px;overflow:hidden"><span style="display:block;height:100%;width:${Math.round(n[k])}%;background:${n[k] < M.LOW ? 'var(--bad,#c55)' : 'var(--gold,#c9a54a)'}"></span></span><span class="muted" style="min-width:24px;text-align:right">${Math.round(n[k])}</span></div>`;
+    const bar = k => `<div class="row tiny" style="gap:6px;align-items:center"><span style="min-width:64px">${NAME[k]}</span><span class="hpbar" style="flex:1;height:6px;background:var(--line,#8884);border-radius:3px;overflow:hidden"><span style="display:block;height:100%;width:${Math.round(n[k])}%;background:${n[k] < M.LOW ? 'var(--bad,#c55)' : 'var(--gold,#c9a54a)'}"></span></span><span class="muted" style="min-width:7em;text-align:right">${UI.esc(M.word(k, n[k]))}</span></div>`;
     const card = `<div class="card small moods" aria-label="How you are"><div class="row"><b>How you are</b><span class="right ${m && m.k !== 'content' ? 'bad' : 'good'}">${m ? UI.esc(m.name) : 'Well enough'}</span></div>` +
       (m ? `<div class="tiny muted">${UI.esc(m.name)}: ${UI.esc(m.why)}.</div>` : '') + M.NEEDS.map(bar).join('') + '</div>';
     const at = h.indexOf('<div class="row small muted" style="margin:6px 0 4px">');

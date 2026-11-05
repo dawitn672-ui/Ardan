@@ -179,6 +179,8 @@
   }
 
   // ---- World › Diplomacy: "Most feared" is infamy on a 0-100 bar -----------------------------------------------------------
+  // The words are i-numbers.core.js's (wf-numbers owns infamy: VS.infamyShort); here the bar gets a value column as wide
+  // as its word (.v2-wb), and a number nobody put in words yet still gets one.
   if (UI.worldTabPolitics) {
     const wt = UI.worldTabPolitics;
     UI.worldTabPolitics = function () {
@@ -186,8 +188,8 @@
       try {
         if (typeof h !== 'string') return h;
         return h.replace(/(<div class="group-h">Most feared<\/div>)([\s\S]*?)(?=<div class="group-h">|$)/, (m, head, body) =>
-          head + body.replace(/<div class="barrow"><span class="lbl">([^<]*)<\/span>([\s\S]*?)<span class="val">(\d{1,3})<\/span><\/div>/g,
-            (x, l, bar, n) => `<div class="barrow v2-wb"><span class="lbl">${l}</span>${bar}<span class="val">${esc(band('infamy', +n))}</span></div>`));
+          head + body.replace(/<div class="barrow"><span class="lbl">([^<]*)<\/span>([\s\S]*?)<span class="val">([^<]*)<\/span><\/div>/g,
+            (x, l, bar, n) => `<div class="barrow v2-wb"><span class="lbl">${l}</span>${bar}<span class="val">${/^\d{1,3}$/.test(n) ? esc(VS.infamyShort ? VS.infamyShort(+n) : band('infamy', +n)) : n}</span></div>`));
       } catch (e) { return h; }
     };
   }
