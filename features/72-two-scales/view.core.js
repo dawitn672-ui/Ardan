@@ -47,6 +47,8 @@
   };
   // one standard: the pole on its shadow, the cloth (square for foot, swallowtail for horse, a pennon for bows), the
   // house's charge, a slip with the men, a bar for the order
+  // the men on a standard's slip, as the levy reckons them: "~5.5k", not 5,412 (TS.told's estimate, shortened)
+  const slip = d => { const t = String(TS.told(d.men, d.ours)), n = +t.replace(/[^\d]/g, ''); return !/\d/.test(t) ? t.replace(/^a /, '') : n >= 1000 ? (t === A.fmt(n) ? '' : '~') + f1(n / 1000) + 'k' : (t === A.fmt(n) ? '' : '~') + n; };
   function standard(d, x, foot, K) {
     const fw = 34 * K, fh = 19 * K, top = foot - 50 * K, px = x - fw / 2, col = safeCol(colourOf(d.r));
     const ink = lum(col) > 0.5 ? INK : VEL, ch = chargeOf(d.r), gone = d.gone, breaking = !gone && d.o < 0.3;
@@ -63,12 +65,12 @@
     // the slip and the order
     const qy = top + fh + 3 * K, qw = fw, qh = 11 * K, edge = d.me ? GOLD : d.ours ? INK : VERM;
     s += `<rect x="${f1(px + 3)}" y="${f1(qy)}" width="${f1(qw)}" height="${f1(qh)}" fill="${VEL}" stroke="${edge}" stroke-width="${d.me ? 2.4 : 1.2}"/>`;
-    s += `<text x="${f1(px + 3 + qw / 2)}" y="${f1(qy + qh * 0.78)}" text-anchor="middle" font-size="${f1(9.5 * K)}" font-weight="700" fill="${INK}">${esc(d.men >= 1000 ? f1(d.men / 1000) + 'k' : d.men)}</text>`;
+    s += `<text x="${f1(px + 3 + qw / 2)}" y="${f1(qy + qh * 0.78)}" text-anchor="middle" font-size="${f1(9.5 * K)}" font-weight="700" fill="${INK}">${esc(slip(d))}</text>`;
     s += `<rect x="${f1(px + 3)}" y="${f1(qy + qh + 1)}" width="${f1(qw)}" height="${f1(3.4 * K)}" fill="${INK}" opacity=".3"/><rect x="${f1(px + 3)}" y="${f1(qy + qh + 1)}" width="${f1(qw * clamp(d.o, 0, 1))}" height="${f1(3.4 * K)}" fill="${breaking ? VERM : VERD}"/>`;
     if (breaking) s += `<path d="M${f1(px + fw + 6)} ${f1(top + 2)}l7 -5M${f1(px + fw + 7)} ${f1(top + 9)}l8 0M${f1(px + fw + 6)} ${f1(top + 16)}l7 5" stroke="${VERM}" stroke-width="2"/>`;
     if (gone) s += `<path d="M${f1(px - 4)} ${f1(top - 4)}L${f1(px + fw + 6)} ${f1(foot)}" stroke="${VERM}" stroke-width="2.2"/>`;
     if (d.me) s += `<path d="M${f1(px + fw / 2 - 6)} ${f1(top - 20 * K)}h12l-6 8z" fill="${GOLD}" stroke="${INK}" stroke-width="1.2"/>`;
-    return s + `<title>${esc((d.ours ? (d.me ? 'Yours: ' : 'Yours: ') : 'Theirs: ') + d.n + ', ' + A.fmt(d.men) + ' men, order ' + pct(d.o) + (gone ? ', gone from the field' : breaking ? ', giving way' : ''))}</title></g>`;
+    return s + `<title>${esc((d.ours ? (d.me ? 'Yours: ' : 'Yours: ') : 'Theirs: ') + d.n + ', ' + TS.told(d.men, d.ours) + ' men, order ' + pct(d.o) + (gone ? ', gone from the field' : breaking ? ', giving way' : ''))}</title></g>`;
   }
   // a smooth line through points (Catmull-Rom as cubic Béziers)
   const smooth = pts => {
@@ -176,14 +178,14 @@
     const ours = fr.divs.filter(d => d.ours), mi = ours.findIndex(d => d.me), me = ours[mi];
     const nb = (i, side) => { const d = ours[i]; return d ? `on your ${side} the ${d.n} (${d.gone ? 'gone from the field' : 'order ' + pct(d.o) + (d.o < 0.3 ? ', giving way' : '')})` : null; };
     out.push(`Your side holds ${pct(fr.share)} of the order on the field${pv && pv.share != null && Math.abs(pv.share - fr.share) >= 0.01 ? `, ${fr.share > pv.share ? 'up' : 'down'} from ${pct(pv.share)}` : ''}.`);
-    if (me) out.push(`${m.ts.levy ? 'The levy stands with' : 'Yours is'} the ${me.n}: ${A.fmt(me.men)} men, order ${pct(me.o)}${me.gone ? ', gone from the field' : ''}.`);
+    if (me) out.push(`${m.ts.levy ? 'The levy stands with' : 'Yours is'} the ${me.n}: ${TS.told(me.men, true)} men, order ${pct(me.o)}${me.gone ? ', gone from the field' : ''}.`);
     const sides = [nb(mi - 1, 'left'), nb(mi + 1, 'right')].filter(Boolean);
     if (sides.length) out.push(sides.join('; ').replace(/^o/, 'O') + '.');
     const th = fr.divs.filter(d => !d.ours && !d.gone), broke = fr.divs.filter(d => !d.ours && d.o < 0.3 && !d.gone);
     if (broke.length) out.push(`Their ${broke[0].n} is giving way.`);
     else if (th.length) out.push(`Facing you, ${th.length} of theirs, order ${pct(th.reduce((a, d) => a + d.o, 0) / th.length)} on average.`);
     if (fr.plan && fr.plan.text) out.push(`Your general${fr.plan.gen ? ', ' + fr.plan.gen : ''}${fr.plan.temper ? ' (' + fr.plan.temper.toLowerCase() + ')' : ''}, ${fr.plan.text}.`);
-    out.push(`Dead so far: ${A.fmt(fr.dead[0])} of yours, ${A.fmt(fr.dead[1])} of theirs.`);
+    out.push(`Dead so far: ${TS.told(fr.dead[0], true)} of yours, ${TS.told(fr.dead[1], false)} of theirs.`);
     return out;
   };
 

@@ -294,4 +294,108 @@ export default {
       r.orders.filter(x => x != null).length >= 5 && r.orders.every(x => x == null || (x >= 14 && x <= 26));
     return { ok, detail: `step after close ${r.stepAfter}, queue ${r.queue}; calls ${JSON.stringify(c)}; reckoning "${r.retell}"; captain words ${r.capWords.join('/')}; outsider sees ${r.seenDivs} of ${r.allDivs} divisions (restored ${r.restored}); World > Wars at peace ${r.peaceLie}, "not in it" ${r.notIn}; orders a member ${r.orders.join(', ')}` };
   },
+  // playtest 2, finding 3 (and 4's Book): World > Annals and The Book give a war you were not in only as hearsay, late
+  // and without exact counts; a battle of your own war at your rank's precision; drawing is pure
+  async v2wAnnalsHearsay(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 7341, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 22 });
+      T.play(6);
+      const pc = A.pc(), S = A.S, WC = A.WC, me = pc.realm, nb = new Set(A.neighbors(me));
+      const far = Object.keys(S.realms).filter(id => S.realms[id].alive && id !== me && !nb.has(id)).sort();
+      const fp = S.prov.find(P => P.owner === far[0] && P.id !== pc.home && !(A.prov(pc.home).adj || []).includes(P.id));
+      // a far battle of a war he is not in: one long past, one this week
+      const old = WC.put('battle', { p: fp.id, a: far[0], b: far[1], w: [], n: 31234, x: [6789, 2, 'W-far'], y: S.year - 1, d: 10 });
+      const fresh = WC.put('battle', { p: fp.id, a: far[0], b: far[1], w: [], n: 41234, x: [7891, 2, 'W-far'] });
+      // a battle of his own war (he is enlisted in it)
+      A.enlist(pc); const en = A.neighbors(me)[0]; A.startWar(me, en, null, 'conquest'); const war = A.V2W.myWars(pc)[0];
+      const mine = WC.put('battle', { p: fp.id, a: me, b: en, w: [], n: 25432, x: [5321, 3, war ? war.id : ''] });
+      const rng0 = A.rngState, h0 = T.hash(A.S);
+      UI.tab = 'world'; UI.worldView = 'annals'; UI.wcGroup = 'field'; UI.wcNear = false; UI.wcPage = 0; UI.render();
+      const rows = [...document.querySelectorAll('.wc-entry')].map(x => x.textContent);
+      const exact = rows.filter(t => /\b\d{1,3},\d{3} (men|dead)/.test(t) || /\b\d{1,3},\d{3}\b/.test(t.replace(/(about|some) [\d,]+/g, '')));
+      const oldT = WC.tellOf(WC.ent(old), pc), freshT = WC.tellOf(WC.ent(fresh), pc), mineT = WC.tellOf(WC.ent(mine), pc);
+      UI.tab = 'book'; UI.render();
+      const bk = document.querySelector('#tabbody').textContent, wy = bk.slice(Math.max(0, bk.indexOf('The world in your time')));
+      const text = A.chronicleText ? A.chronicleText() : '';
+      const out = { rows: rows.length, exact: exact.slice(0, 2), old: oldT && oldT.t, oldMine: oldT && oldT.mine, fresh: freshT, mine: mineT && mineT.t,
+        bookExact: (wy.match(/\b\d{1,3},\d{3} (men in the field|dead)/g) || []).length, textExact: /31,234|6,789|41,234/.test(text),
+        names: document.querySelectorAll('.wc-heard').length, pure: A.rngState === rng0 && T.hash(A.S) === h0 };
+      UI.tab = 'life'; UI.worldView = 'map'; UI.render();
+      return out;
+    });
+    const ok = r.rows > 0 && !r.exact.length && r.old && r.oldMine === false && /word came/.test(r.old) && !/6,789|31,234/.test(r.old) && r.fresh === null &&
+      r.mine && /about [\d,]+ men in the field, about [\d,]+ dead/.test(r.mine) && !r.bookExact && !r.textExact && r.pure;
+    return { ok, detail: `${r.rows} rows on the Annals' battles page, ${r.exact.length} with an exact count ${JSON.stringify(r.exact)}; a far battle of last year: "${r.old}"; this week's not yet heard ${r.fresh === null}; ` +
+      `his own war's: "${r.mine}"; exact counts in The Book ${r.bookExact}, in the export ${r.textExact}; pure ${r.pure}` };
+  },
+  // playtest 2, finding 4: a belief card's "The record" is a battle you know, at your rank's precision, and a
+  // neighbour's battle you had no part in is not one you know
+  async v2wBeliefRecord(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 7342, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 30 });
+      const NB = A.NPCB, WC = A.WC, pc = A.pc(), S = A.S;
+      if (!NB || !WC || !NB.battleClaim) return { skip: true };
+      const nbR = A.neighbors(pc.realm)[0], nbP = S.prov.find(P => P.owner === nbR && P.id !== pc.home && !(A.prov(pc.home).adj || []).includes(P.id));
+      const other = A.neighbors(nbR).find(x => x !== pc.realm) || nbR;
+      const iN = WC.put('battle', { p: nbP.id, a: nbR, b: other, w: [], n: 33333, x: [4444, 2, 'W-nb'] });
+      const iH = WC.put('battle', { p: pc.home, a: pc.realm, b: nbR, w: [], n: 22222, x: [3333, 1, 'W-home'] });
+      const cN = NB.claim(NB.battleClaim(iN, 'T')), cH = NB.claim(NB.battleClaim(iH, 'T'));
+      return { knowsNb: NB.pcKnows(pc, cN), knowsHome: NB.pcKnows(pc, cH), line: NB.recordLine(cH) };
+    });
+    if (r.skip) return { ok: true, detail: 'no 64-npc-beliefs in this build' };
+    const ok = r.knowsNb === null && r.knowsHome === true && /about [\d,]+ men in the field, about [\d,]+ dead/.test(r.line) && !/22,222|3,333/.test(r.line);
+    return { ok, detail: `a neighbour's battle he had no part in: known ${r.knowsNb}; one at his door: known ${r.knowsHome}, the record "${r.line}"` };
+  },
+  // playtest 2, finding 5 and playtest 1's 4: the levy is told estimates (its call, the front, the standards, the
+  // day's tally); the commander's battle has his own side exactly, the enemy's as an estimate, morale and drill in
+  // words
+  async v2wRankCounts(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      const out = {};
+      const exactIn = t => (String(t).replace(/(about|some) [\d,]+/g, '').match(/\b\d{1,3}(,\d{3})+\b/g) || []);
+      // the levy
+      const fs = VWX.get(6);
+      for (const f of fs) {
+        const { pc, F } = VWX.load(f, 0); const pid = +String(f.key).slice(1);
+        const def = A.divsAt(pid).filter(d => A.hostile(F.a, d.r)), att = F.aIds.map(A.divById).filter(Boolean);
+        if (!def.length) continue;
+        pc.mil = null; pc.home = pid; pc.realm = def[0].r; A.S.tsLevy = null;
+        A.wsPCFightStart(F, att, def);
+        const ask = A.S.queue.find(q => q.type === 'choice' && /levy/i.test(q.title || ''));
+        if (!ask) continue;
+        out.ask = ask.text; out.askExact = exactIn(ask.text);
+        A.S.queue = [ask]; A.choiceChoose(0);
+        const q = A.S.queue.find(x => x.type === 'mission' && x.m.ts);
+        if (!q) break;
+        A.S.queue = [q]; UI.screen = 'game'; UI.ov = null; UI.render();
+        const m = document.querySelector('#modal'), txt = m ? m.textContent : '';
+        out.front = A.TS.frontWords(q.m).join(' '); out.frontExact = exactIn(out.front);
+        out.slips = [...document.querySelectorAll('#modal .ts-std text')].map(x => x.textContent);
+        out.sceneExact = exactIn(txt);
+        A.missionChoose(0); if (A.S.queue[0] === q) A.missionChoose(0);
+        out.log = (q.m.log || []).find(l => /^— /.test(l)) || '';
+        break;
+      }
+      // the commander
+      const f = fs[0]; const { arg } = VWX.load(f, 8);
+      A.CHOICE_FN.wsLead(arg.key);
+      const q = A.S.queue[0];
+      if (q && q.type === 'battle') {
+        const B = q.b, en = B.sides[B.pcSide === 'A' ? 'B' : 'A'], me = B.sides[B.pcSide];
+        UI.screen = 'game'; UI.ov = null; UI.render();
+        const h0 = T.hash(A.S), r0 = A.rngState;
+        const html = UI.battleModal(B); UI.render();
+        out.pure = T.hash(A.S) === h0 && A.rngState === r0;
+        const t = html.replace(/<[^>]+>/g, ' ');
+        out.cmd = { enemyExact: t.includes(A.fmt(en.men0)), ownExact: t.includes(A.fmt(me.men0)), morale: /morale \d+/.test(t), drill: /drilled \d+|Drill: [^.]*\d/.test(t) };
+      }
+      return out;
+    });
+    const L = r.cmd || {};
+    const ok = !!r.ask && /about [\d,]+ against about [\d,]+/.test(r.ask) && !r.askExact.length && !r.frontExact.length && !r.sceneExact.length && r.slips.length > 0 && r.slips.every(s => !/^\d{1,3}(\.\d)?k$|^\d{3,}$/.test(s) || /^~/.test(s)) &&
+      /(about [\d,]+|a handful) of yours dead/.test(r.log) && r.cmd && !L.enemyExact && L.ownExact && !L.morale && !L.drill && r.pure;
+    return { ok, detail: `levy call: "${(r.ask || '').slice(-60)}"; front: "${(r.front || '').slice(0, 160)}"; standards ${JSON.stringify((r.slips || []).slice(0, 6))}; tally "${r.log}"; ` +
+      `commander: enemy exact ${L.enemyExact}, own exact ${L.ownExact}, a morale number ${L.morale}, a drill number ${L.drill}; pure ${r.pure}` };
+  },
 };
