@@ -920,11 +920,11 @@
   };
   // The routine company scenes keep a quieter cadence over a life. They are forced scenes, which 97's life memory leaves
   // alone, and over nine 40-year lives pay day came back 27 times and the roll call 16 (97's lfRepeats; playtest 2, old
-  // 10: "Pay day" five times in one life). When nothing has changed they wait (days): pay day two years (arrears are
-  // their own scene and still come at once), the roll call and the captain's word eighteen months, unless the fight cost
-  // the company twice what the last roll call counted. pc.mil.coSeen holds the day each was last queued (a save from
-  // before has none: the first comes as before)
-  CO.QUIET = { co_pay_day: 730, co_roll_call: 540, co_captain_word: 540 };
+  // 10: "Pay day" five times in one life). When nothing has changed they wait (days): pay day four years (arrears are
+  // their own scene and still come at once), the roll call and the captain's word three years, unless the fight cost the
+  // company twice the most a roll call has counted. pc.mil.coSeen holds the day each was last queued (a save from before
+  // has none: the first comes as before)
+  CO.QUIET = { co_pay_day: 1460, co_roll_call: 1095, co_captain_word: 1095 };
   CO.recent = function (pc, ev) {
     const t = pc && pc.mil && pc.mil.coSeen ? pc.mil.coSeen[ev] : null, now = A.absDay ? A.absDay() : 0;
     return t != null && now - t < (CO.QUIET[ev] || 0);
@@ -943,7 +943,7 @@
     if (!M || !(F.aIds.includes(M.d.id) || F.dIds.includes(M.d.id)) || F.menA + F.menD < 2500 || !CO.sceneDue(pc)) return;
     const row = (F.coL || {})[M.d.id] || [], lost = row[M.b] || 0;
     const heavy = lost >= 4 && (!CO.recent(pc, 'co_roll_call') || lost >= 2 * (pc.mil.coRoll || 0));
-    if (heavy) { pc.mil.coRoll = lost; CO.queueEv('co_roll_call', { lost: String(lost), place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
+    if (heavy) { pc.mil.coRoll = Math.max(pc.mil.coRoll || 0, lost); CO.queueEv('co_roll_call', { lost: String(lost), place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
     else if (!CO.recent(pc, 'co_captain_word')) { const c = CO.cap(M.d, M.b, M.i); CO.queueEv('co_captain_word', { pid: c && c.pid && !c.pc ? c.pid : null, place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
   };
 

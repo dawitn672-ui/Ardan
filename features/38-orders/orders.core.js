@@ -48,7 +48,7 @@
     // the same order again from the same general waits this long (days): a letter that says what the last one said is
     // routine, and over nine 40-year lives "hold the line" came back 15 times and "the first wave" 9 (97's lfRepeats;
     // playtest 2, old 10: "Orders: hold and wait" seven times in one life). A new general's letter comes at the usual pace
-    QUIET: { steady: 730, cautious: 730, bold: 365, cunning: 365 },
+    QUIET: { steady: 1095, cautious: 1095, bold: 730, cunning: 730 },
   };
   // a person's temper as a general
   G.temper = function (p) {
