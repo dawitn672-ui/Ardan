@@ -101,17 +101,24 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 - **Effects built from parts.** 227 soldier-pack choices are `both({ … }, op2(-30))`: closures whose source shows only
   `applyFx(p, obj, ctx)`. Patch `V2C-FX-PARTS` keeps their parts on the closure (`A.V2C.parts`), and the chips read the
   parts as written. Nothing they do changes.
-- **Whose regard.** A second messmate's (`op2`: `ctx.m2`) is named. 9998 had named the first messmate instead. A loop
-  over the squad reads "your messmates' regard". `C2.regardWho` reads the person from the code and the scene, in this
-  order: another context key (`A.P(ctx.parId)`, `ctx.sgtId`), kin (`rel: { who }`, `A.relsOf`/`live` roles,
-  `p.parents`, `p.spouse`: "your father's regard", "your parents' regard", "your family's regard"), the crown (the
-  ruler's `addOp`: "the crown's regard"), someone new the choice brings in ("your new friend's regard"), then the
-  scene's person (`ctx.pid`). A regard that reaches nobody here (no such kin, no one in the context) is not shown.
+- **Whose regard, and which way: the target the code moves** (`C2.regardTargets`, third round). Each `addOp` and
+  `bump` is read for the person it is given, and that person's way: `T(ctx)` (the scene's person), `A.P(ctx.k)`,
+  `A.P(p.parents[i])` ("your mother's regard"), the spouse, the ruler ("the crown's regard"), `A.superior`, the mess
+  (`A.squad`), kin in a loop (`live`/`relsOf`), or a name the code gives one of these (`const t = T(ctx)`). A
+  `both(obj, op2(d))` is read part by part: obj's `them: { op }` is the scene's person, `op2`'s `d` the second messmate.
+  So "Leave your faith for {them}" reads "▲▲ Gerda's regard, ▼ your mother's regard" (it read "▲ your mother's
+  regard"), "Name {mate}" reads "▲ Maren's regard, ▼ Aldred's regard" (it read Aldred both ways), and "Fight him"
+  names the lover whose regard falls, not the rival it links. What a failure costs lists only those whose regard goes
+  down. A regard that reaches nobody here (no such kin, no one in the context) is not shown.
+  `C2.regardWho` is the fallback, for code whose target cannot be read (four choices over every scene): another context
+  key, kin, the crown, someone new the choice brings in, then the scene's person. `v2cChipsDirection` checks the cards
+  against the written effect: code that moves only `T(ctx)` names `ctx.pid` the way its numbers go, and every
+  `both(obj, op2(d))` names both people, each their own way (12 wrong on the round-two build, 0 now).
 - **Kin regard as data.** `rel: { who: "father", op: -4 }` showed nothing on 255 choices ("If it fails: hurt" for a
   dare that also costs your father's regard). It is shown by name and way where that kin exists.
-- **A regard with no way, person by person** (`C2.regardParts`). Two people moved opposite ways read as two parts
-  ("▲ Svala's regard, ▼▼ Hesketh's regard"); a chance either way reads "▲ or ▼ Svala's regard"; a `bump(p, t, 0)` that
-  only names a bond shows no regard.
+- **Two people, or a chance** (`C2.regardParts`, the same reading as parts). Two people moved opposite ways read as
+  two parts ("▲ Svala's regard, ▼▼ Hesketh's regard"); a chance either way reads "▲ or ▼ Svala's regard"; a
+  `bump(p, t, 0)` that only names a bond shows no regard.
 - **Every choice shows a true effect** (old 19):
   - 47's custom scene ("The hearth mark") shows the custom's own effect, "Costs 3 suns", and the defiance's, "Costs 6
     suns · ▲ willpower";

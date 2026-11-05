@@ -111,7 +111,8 @@
   const isEmpty = fx => !fx || (typeof fx === 'object' && !Object.keys(fx).length) || (typeof fx === 'function' && /^\s*(\([^)]*\)|\w+)\s*=>\s*(""|''|\(\s*""\s*\)|void 0|null|undefined)\s*$/.test(String(fx)));
   const nameOf = t => (A.knownName ? A.knownName(t) : t.given);
   const whose = (t, w) => `${nameOf(t)}'s ${w}`;
-  // whose regard a choice moves (playtest 2, old 18: "• changes regard" named nobody). Read from the scene's context and
+  // whose regard a choice moves, when C2.regardTargets (below) cannot read the target its code gives addOp or bump: the
+  // fallback, for four choices over every scene (playtest 2, old 18: "• changes regard" named nobody). Read from the scene's context and
   // the effect's code, as written: a second messmate (99's op2 reads ctx.m2); a person the code looks up in the context
   // (A.P(ctx.parId), ctx.sgtId); kin (rel: { who: "father" }, A.relsOf(p, ["mother", "father", ...]), p.parents,
   // p.spouse); the crown (the ruler's addOp); someone new the choice brings in (newRel, a castaway it names); the person
