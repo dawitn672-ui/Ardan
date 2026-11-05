@@ -402,7 +402,7 @@ export default {
       // the verifier's cases, each staged with the scene's own context (its setup fills it)
       const gp = V2CT.rows('wk_gen_parent');
       out.named = { parent: gp.rows, parName: nm(gp.q.ctx.parId) };
-      for (const id of ['wk_gen_windfall', 'sc_ss_family', 'pl_envoy_abroad', 'pa_court_scandal', 'ch_inf_steps', 'lf_teen_secret_practice', 'ch_dare_orchard', 'lf_friend_feud_pick', 'lf_friend_quarrel']) out.named[id] = V2CT.rows(id).rows;
+      for (const id of ['wk_gen_windfall', 'sc_ss_family', 'pl_envoy_abroad', 'pa_court_scandal', 'ch_inf_steps', 'lf_teen_secret_practice', 'ch_dare_orchard', 'lf_friend_feud_pick', 'lf_friend_quarrel', 'du_cm_clerk_wanted']) out.named[id] = V2CT.rows(id).rows;
       out.dad = (pc.parents || []).map(A.P).filter(t => t && t.sex === 'M').length === 1;
       // every scene, staged for this soldier: the chips that still give no way; and (here and again below, each scene
       // with its own context) no chip reads a bare regard, and no regard is shown without its way ("• Maren's regard")
@@ -447,9 +447,11 @@ export default {
       /▲ your father's regard/.test(row('sc_ss_family', 0)) && /▲ the crown's regard/.test(row('pl_envoy_abroad', 0)) && /▲ the crown's regard/.test(row('pa_court_scandal', 0)) &&
       /▲ your wife's regard/.test(row('ss_sc_saddle', 0)) && /If it works: ▲ Riding, ▲ your father's regard/.test(row('ch_inf_steps', 0)) &&
       /▲ your (father|mother)'s regard/.test(row('lf_teen_secret_practice', 1)) && (!r.dad || /If it fails: [^·]*▼ your father's regard/.test(row('ch_dare_orchard', 0))) &&
-      /Side with .* ▲ [^,]+'s regard, ▼▼ [^,]+'s regard/.test(row('lf_friend_feud_pick', 1)) && /▲ or ▼ [^,]+'s regard/.test(row('lf_friend_quarrel', 1));
+      /Side with .* ▲ [^,]+'s regard, ▼▼ [^,]+'s regard/.test(row('lf_friend_feud_pick', 1)) && /▲ or ▼ [^,]+'s regard/.test(row('lf_friend_quarrel', 1)) &&
+      // (a word whose every number is nought is not shown: "Take the post" read "• standing in the ranks" from merit: 0)
+      /Take the post ▲ a new post$/.test(row('du_cm_clerk_wanted', 0));
     const corpus = r.own > 3000 && r.bare === 0 && r.noway === 0;
-    return { ok: ok && named && corpus, detail: `named: "${N.parent[0]}" / "${row('wk_gen_windfall', 1)}" / "${row('sc_ss_family', 0)}" / "${row('pl_envoy_abroad', 0).slice(0, 70)}" / "${row('ss_sc_saddle', 0)}" / "${row('ch_inf_steps', 0).slice(0, 60)}" / "${row('ch_dare_orchard', 0).slice(0, 110)}" / "${row('pa_court_scandal', 0).slice(0, 60)}" / "${row('lf_teen_secret_practice', 1).slice(0, 70)}" / "${row('lf_friend_feud_pick', 1)}" / "${row('lf_friend_quarrel', 1)}"; every scene, twice (with a friend in ctx.pid, and each with its own context, ${r.own} chips): a bare regard ${r.bare} ${r.bareEg.join(' | ')}, a regard with no way ${r.noway} ${r.nowayEg.join(' | ')}; staged: ${all.filter(x => /Run for help|Hang back|bring a gift|Step between|demand a cut/.test(x)).map(x => '"' + x.slice(0, 90) + '"').join(' / ')} (the second messmate ${r.m2}, the first ${r.pid}); with no way shown ${noWay.length} ${noWay[0] || ''}; every scene: ${r.vague} of ${r.chips} chips give no way (under 0.4%; 1.8% before) ${r.eg.join(' | ')}` };
+    return { ok: ok && named && corpus, detail: `named: "${N.parent[0]}" / "${row('wk_gen_windfall', 1)}" / "${row('sc_ss_family', 0)}" / "${row('pl_envoy_abroad', 0).slice(0, 70)}" / "${row('ss_sc_saddle', 0)}" / "${row('ch_inf_steps', 0).slice(0, 60)}" / "${row('ch_dare_orchard', 0).slice(0, 110)}" / "${row('pa_court_scandal', 0).slice(0, 60)}" / "${row('lf_teen_secret_practice', 1).slice(0, 70)}" / "${row('lf_friend_feud_pick', 1)}" / "${row('lf_friend_quarrel', 1)}" / "${row('du_cm_clerk_wanted', 0)}"; every scene, twice (with a friend in ctx.pid, and each with its own context, ${r.own} chips): a bare regard ${r.bare} ${r.bareEg.join(' | ')}, a regard with no way ${r.noway} ${r.nowayEg.join(' | ')}; staged: ${all.filter(x => /Run for help|Hang back|bring a gift|Step between|demand a cut/.test(x)).map(x => '"' + x.slice(0, 90) + '"').join(' / ')} (the second messmate ${r.m2}, the first ${r.pid}); with no way shown ${noWay.length} ${noWay[0] || ''}; every scene: ${r.vague} of ${r.chips} chips give no way (under 0.4%; 1.8% before) ${r.eg.join(' | ')}` };
   },
 
   // playtest 2, old 19's remainder: "The hearth mark" and "What you want" showed only "It will be remembered" on every

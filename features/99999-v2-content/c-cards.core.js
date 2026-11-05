@@ -82,9 +82,10 @@
     if (signCache.has(fx)) return signCache.get(fx);
     const s = C2.srcAll(fx), out = {};
     for (const [w, rxs] of SIGNED) {
-      let up = 0, down = 0;
-      for (const rx of rxs) for (const m of s.matchAll(rx)) { const v = m[1] === undefined ? 1 : m[1] === '+' ? 1 : m[1] === '-' ? -1 : WORD_SIGN[m[1]] || +m[1]; if (v > 0) up++; else if (v < 0) down++; }
-      if (up && !down) out[w] = 1; else if (down && !up) out[w] = -1;
+      let up = 0, down = 0, zero = 0;
+      for (const rx of rxs) for (const m of s.matchAll(rx)) { const v = m[1] === undefined ? 1 : m[1] === '+' ? 1 : m[1] === '-' ? -1 : WORD_SIGN[m[1]] || +m[1]; if (v > 0) up++; else if (v < 0) down++; else zero++; }
+      // (only zeros: the word names nothing that changes, as merit: 0 in a new post's record)
+      if (up && !down) out[w] = 1; else if (down && !up) out[w] = -1; else if (zero && !up && !down) out[w] = 0;
     }
     signCache.set(fx, out);
     return out;
@@ -157,11 +158,11 @@
       if (t) return whose(t, 'regard');
       none = true;
     }
-    // kin: rel: { who } (the first of that kin, or all), a loop over kin, a parent, the spouse
-    const relObj = obj && obj.rel && typeof obj.rel === 'object' && obj.rel.who ? obj.rel : null;
+    // kin: rel: { who } in code (the first of that kin), a loop over kin, a parent, the spouse. (An effect written as
+    // data has its regard chip from them: { op }, the scene's person; its rel: { who } is a chip of its own, C2.relPart.)
     const relM = /\brel\s*:\s*\{\s*who\s*:\s*(?:["'](\w+)["']|ctx\.(\w+))/.exec(s);
-    const rw = relObj ? relObj.who : relM ? (relM[1] || ctx[relM[2]]) : null;
-    if (rw && (w = got(kinWho(pc, [String(rw)], !(relObj && relObj.all))))) return w;
+    const rw = relM ? (relM[1] || ctx[relM[2]]) : null;
+    if (rw && (w = got(kinWho(pc, [String(rw)], true)))) return w;
     for (const m of s.matchAll(/\b(?:relsOf|live)\(\s*\w+\s*,\s*\[([^\]]*)\]/g)) {
       const roles = [...m[1].matchAll(/["'](\w+)["']/g)].map(x => x[1]);
       if ((w = got(kinWho(pc, roles, false)))) return w;
@@ -176,14 +177,18 @@
     if (/\.ruler\b/.test(s) && /\baddOp\(\s*ru\b|\baddOp\(\s*\w+\s*,\s*ru\b/.test(s)) return 'the crown\'s regard';
     // the person the scene is about, or someone new the choice brings in
     const them = !!(obj && obj.them && typeof obj.them === 'object') || /\bthem\s*:\s*\{/.test(s);
-    const fresh = !!(obj && (obj.newRel || obj.awWho)) || /\bnewRel\s*:|\bawWho\s*:/.test(s) || MAKES.test(s);
-    if (them && P(ctx.pid) && !MAKES.test(s)) return whose(P(ctx.pid), 'regard');
+    // (awWho, or code that puts someone new in ctx.pid, makes them the scene's person; a newRel's bond is a person of its
+    // own, so its regard is "your new friend's" only where no them: { op } names the scene's person)
+    const made = !!(obj && obj.awWho) || /\bawWho\s*:/.test(s) || MAKES.test(s), fresh = made || (!them && (!!(obj && obj.newRel) || /\bnewRel\s*:/.test(s)));
+    if (them && P(ctx.pid) && !made) return whose(P(ctx.pid), 'regard');
     if (fresh) {
       const occ = /\bocc\s*:\s*"([^"]+)"/.exec(s), ty = (obj && obj.newRel && obj.newRel.type) || (/\bnewRel\s*:\s*\{\s*type\s*:\s*["'](\w+)["']/.exec(s) || [])[1];
       if (occ && MAKES.test(s)) return 'the regard of ' + occ[1];
       return `your new ${ty === 'mentor' ? 'teacher' : ty || 'friend'}'s regard`;
     }
-    if (them) none = true;
+    // (no one in a context the scene filled: the regard reaches nobody. A context left empty, as when the chips are read
+    // with no scene set up (9998's own readings), keeps "their regard": there is no scene to name anyone from)
+    if (them && Object.keys(ctx).length) none = true;
     if (/\bA\.squad\(/.test(s)) return 'your messmates\' regard';
     if (/\bA\.superior\(/.test(s)) return 'your superior\'s regard';
     if (P(ctx.pid)) return whose(P(ctx.pid), 'regard');
@@ -273,6 +278,14 @@
           // which way a code effect goes
           const sg = C2.signs(fxOf(ch));
           ch.t = ch.t.replace(SIGN_RX, (all, w) => (sg[w] ? `${sg[w] > 0 ? '▲' : '▼'} ${w}` : all));
+          // a word whose every number is nought changes nothing: it goes (du_cm_clerk_wanted's "Take the post" read
+          // "• standing in the ranks" from the new post's own record, merit: 0; the post itself is shown below)
+          if (Object.values(sg).some(x => x === 0)) {
+            const m = /^(If it (?:works|fails): |Fails: )([\s\S]*)$/.exec(ch.t);
+            const rest = (m ? m[2] : ch.t).split(', ').filter(x => { const k = /^• (.+)$/.exec(x); return !(k && sg[k[1]] === 0); });
+            if (!rest.length) { ch.gone = true; continue; }
+            ch.t = (m ? m[1] : '') + rest.join(', ');
+          }
           if (ch.k === 'touch' && /^[▲▼]/.test(ch.t)) ch.k = /^▲/.test(ch.t) ? 'gain' : 'cost';
           // what a failed check costs is a loss: the regard it names goes down ("If it fails: hurt, ▼ Edith's regard")
           // (a failure that still raises something, "Fails: ▲ regard" in red, reads as a contradiction: it is no loss,
@@ -305,14 +318,17 @@
           const fx = side === 'fx' ? (!c.check && !c.group ? c.fx : null) : side === 'win' ? c.win && c.win.fx : c.lose && c.lose.fx;
           const r = C2.relPart(fx, pc);
           if (!r || (side === 'risk' && r.op > 0)) continue;
-          if (side === 'fx') { if (!chips.some(x => /\bregard\b/.test(x.t) && !/^If it/.test(x.t))) chips.push({ k: r.op > 0 ? 'gain' : 'cost', t: r.t }); continue; }
+          const name = r.t.replace(/^[▲▼]+ /, '');
+          if (side === 'fx') { if (!chips.some(x => x.t.includes(name) && !/^If it/.test(x.t))) chips.push({ k: r.op > 0 ? 'gain' : 'cost', t: r.t }); continue; }
           const k = side === 'win' ? 'win' : 'risk', ch = chips.find(x => x.k === k);
-          if (ch) { if (!/\bregard\b/.test(ch.t)) ch.t += ', ' + r.t; continue; }
+          if (ch) { if (!ch.t.includes(name)) ch.t += ', ' + r.t; continue; }
           const safe = side === 'risk' ? chips.findIndex(x => x.k === 'safe') : -1;
           if (safe >= 0) chips[safe] = { k: 'risk', t: 'If it fails: ' + r.t };
           else if (side === 'win') chips.unshift({ k: 'win', t: 'If it works: ' + r.t });
           else chips.push({ k: 'risk', t: 'If it fails: ' + r.t });
         }
+        // a new post set in code (p.job = { c: "scribe", ... }), as 9998 shows job: written as data
+        if (!c.check && !c.group && typeof c.fx === 'function' && /\bp\.job\s*=\s*\{/.test(C2.srcAll(c.fx)) && !chips.some(x => /a new post/.test(x.t))) chips.push({ k: 'gain', t: '▲ ' + ((ST.KEY && ST.KEY.job && ST.KEY.job.w) || 'a new post') });
         // the drill scenes' code effects
         if (!c.check && !c.group) for (const x of C2.unitChips(c.fx)) if (chips.length < 4) chips.push(x);
         if ((c.check || c.group)) {
