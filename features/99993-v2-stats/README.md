@@ -228,6 +228,9 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
   The profile's skill rows (59-tooltips' hook writes `aria-label="Melee: 24"`) say the tier to a screen reader,
   "Stewardship & supply: Apprentice", with the name's "&" plain (the hook escaped it twice). The Realm tab's crown
   authority buttons say "Income ×0.88; the lords warm to the crown each year", not "vassal mood +8/yr" (round 5).
+  999-confidants' pips (the People tab, the person view) say the next rank in words: "Next rank: more shared history
+  (you have about two thirds of what it asks), and for them to think you warm or better.", not "shared history 38
+  (now 27), their opinion 50." (round 6).
 - The game's rules are unchanged; drawing reads, never writes, and draws nothing.
 
 Test `v2sNumbers` draws each of these views on a played life and fails on a bare 0-100 number in any of them. As a
@@ -240,7 +243,9 @@ is caught. A popover's breakdown keeps its sums ("Legitimacy +0.8" a year). Sinc
 the commoner and for the ruler, goes through the same check, not only those that name a realm measure (a skill row's
 "Melee: 24" was never read). Not scales there: dates, ages ("Portrait of X, 28", the clock's "age 19"), "Initiative
 3.0 of 5", a fold's count of entries ("Activities, 32"), a chapter's number, counts with their unit (loads, times,
-galleys, goods carted), and the provinces' sparkline. It also needs one skill row whose aria-label is a tier.
+galleys, goods carted), and the provinces' sparkline. It also needs one skill row whose aria-label is a tier, and
+(round 6) gives the commoner a confidant at rank 1 before the tabs are drawn: the pips' title must be read and carry
+no number but the rank.
 
 **One layout for both numbers groups.** `i-numbers.core.js` is part 8 (v2-wf-numbers: needs, training, War Room,
 infamy and the realm's bars), `j-numbers.core.js` is part 10 (v2-wf-numbers2: the playtest 2 remainder), and part 8
