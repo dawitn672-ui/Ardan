@@ -305,4 +305,30 @@ export default {
     const ok = !r.bad.length && kgOk;
     return { ok, detail: `${r.bad.length} contradictions${r.bad.length ? ' (' + r.bad.slice(0, 5).join(' | ') + ')' : ''}; human lifts ${r.kg10}, ${r.kg13}, ${r.kg17} kg at 10, 13, 17; ${r.rows.join(' || ').slice(0, 1400)}` };
   },
+
+  // playtest 2 (new 14, the stats part): on a 420 px phone the vitals' band words are whole ("middling", "known to the
+  // neighbours"), not "middlin", "know / neighb" in the 36 px number column; the label keeps its icon and tooltip
+  async v2sPhoneBands(pg, errs, { browser, file }) {
+    const { pathToFileURL } = await import('node:url');
+    const ctx = await browser.newContext({ viewport: { width: 420, height: 900 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+    const p = await ctx.newPage();
+    p.on('pageerror', e => errs.push(String(e.stack || e).slice(0, 300)));
+    let r;
+    try {
+      await p.goto(pathToFileURL(file).href);
+      await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      r = await p.evaluate(async () => {
+        A.newGame({ seed: 77, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); UI.screen = 'game'; UI.ov = null; A.S.queue = []; UI.set.cutins = false; UI.set.hints = false;
+        UI.tab = 'you'; UI.render();
+        await new Promise(res => setTimeout(res, 100));
+        const rows = [...document.querySelectorAll('.barrow')].filter(x => x.querySelector('.lbl [data-tt="health"],.lbl [data-tt="happy"],.lbl [data-tt="looks"],.lbl [data-tt="fame"],.lbl [data-tt="honor"]') && x.offsetParent);
+        return { phone: !!document.querySelector('#game.phone'), rows: rows.map(x => {
+          const v = x.querySelector('.val'), rb = x.getBoundingClientRect(), vb = v.getBoundingClientRect();
+          return { word: v.textContent.trim(), clipped: v.scrollWidth > v.clientWidth + 1 || vb.right > rb.right + 1, lines: Math.round(vb.height / parseFloat(getComputedStyle(v).lineHeight || 20)) || 1, icon: !!x.querySelector('.lbl .ico-l') };
+        }) };
+      });
+    } finally { await ctx.close(); }
+    const ok = r.phone && r.rows.length >= 4 && r.rows.every(x => !x.clipped && !/\d/.test(x.word) && x.icon);
+    return { ok, detail: `${r.phone ? 'phone' : 'not the phone layout'}: ${r.rows.map(x => `${x.word}${x.clipped ? ' (cut off)' : ''}${x.icon ? '' : ' (no icon)'}`).join(', ')}` };
+  },
 };

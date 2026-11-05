@@ -48,6 +48,32 @@ A.fighterFrom = function (p, opts) {
   } catch (e) { console.error('v2 worth', e); }
   return f;
 };
+// The duel engine already makes some races fight above or below the worth A.CR reads: a giant has 3.2 times a man's
+// blood, an orc 1.12 and a dwarf 1.1, and races carry mass, reach and an opening burst that the worth (read at round 5,
+// at full blood) never sees. Measured on 6,300 duels against humans with no v2 shift (the duel engine's auto-play,
+// fighters of tiers 1-5 and every ninth raised, the player's seat at health 40-100, a third of foes drawing a weapon;
+// maximum likelihood on FL.duelP's curve), that edge is, in worth points: giant +40.5, orc +14.5, elf -2, dwarf -6.5;
+// refit with the shift in place (the engine does not take skill and blood one for one), orc +16.5, elf -2.5, dwarf -10.5.
+// Playtest 2 (new 7): with the v2 shift on top, a giant fought as about +80, an orc +25, and the duel screen said 37 in
+// 100 where giants won 86 (orcs 55 and 73; a dwarf 55 and 47). So in a duel each fighter's skill gives back the edge
+// the engine adds of itself (f.engineEdge, which 48's FL.fWorth counts), and every race fights at the worth it shows:
+// the v2 difference of its body. Outside a duel (A.fightWorth, its parts, the group resolver) nothing changes.
+// Half-races (no realm to measure in) take half of the parent people's edge.
+VS.ENGINE_EDGE = { human: 0, giant: 40.5, orc: 16.5, elf: -2.5, dwarf: -10.5, halforc: 8, halfelf: -1 };
+VS.engineEdge = f => (f && !f.beast && f.race && !VS.fwOff ? VS.ENGINE_EDGE[f.race] || 0 : 0);
+VS.evenDuel = function (D) {
+  for (const f of [D && D.a, D && D.b]) {
+    const e0 = VS.engineEdge(f);
+    if (!e0 || f.engineEdge != null) continue;
+    f.skill -= e0 / 0.42; f.engineEdge = e0;
+  }
+};
+const startDuel = A.startDuel;
+A.startDuel = function () {
+  const D = startDuel.apply(this, arguments);
+  try { if (D && D.a && D.b) VS.evenDuel(D); } catch (e) { console.error('v2 duel', e); }
+  return D;
+};
 // worth in levies, as the fights read it
 VS.leviesOf = p => (p && p.st ? VS.fromWorth(A.fightWorth(p)) : 0);
 // the old worth, for tests (never shown)
@@ -73,6 +99,13 @@ VS.v2Levies = function (p) {
   return B.fightingWorth(vv, 'fight', 'none').worth * VS.gearMult(f, p);
 };
 
-// the levies a player sees: v2's own scale (a human Master is about a giant's 15-25 only with breakthroughs and order
-// gear), with the race shift already in the body view. Playtest round 1: the game's worth scale put a general at 285.
-VS.shownLevies = p => (p && p.st ? VS.v2Levies(p) : 0);
+// The levies a player sees are read from the worth the fights roll, so a tier, its levies and the odds never disagree
+// (playtest 2, old 17: "Elite · about one and a half levies", a duel's "Brawler · about 2 levies" over "You: Untrained").
+// They were v2's own body-and-skill levies (VS.v2Levies), which rank people differently from the worth (r = 0.78).
+// The curve: each 13 points of worth an e-fold (as VS.fromWorth) up to an elite (80: about 15 levies), then half as
+// steep, so a master (91) is about 23, a legend (118) about 64, and the release's general at 114 about 55, not 285
+// (playtest round 1). It is pinned so the old tiers fall in levyRank's bands: a Brawler (40, "a green levy") starts at
+// 0.7, a levy's worth; Trained (50) at 1.5, a man-at-arms; Veteran (63) at 4, a knight; Elite (77, "the knights of the
+// eight orders") at 12, an order knight; Master and Legend the heroes. A green levy of GD.CROWD (46) is about one.
+VS.levyOfWorth = w => { w = +w || 0; return w <= 80 ? Math.exp((w - 44.6) / 13) : Math.exp(35.4 / 13 + (w - 80) / 26); };
+VS.shownLevies = p => (p && p.st ? VS.levyOfWorth(A.fightWorth(p)) : 0);

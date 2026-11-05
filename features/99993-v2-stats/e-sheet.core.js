@@ -86,11 +86,19 @@ VS.statWord = function (p, s, v) {
   return r < 0.55 ? 'poor' : r < 0.85 ? 'middling' : r < 1.2 ? 'fair' : r < 1.5 ? 'good' : r < 2 ? 'fine' : r < 3 ? 'rare' : 'legendary';
 };
 VS.valueWord = (p, k, v) => (GD.STATS.includes(k) ? VS.statWord(p, k, v) : VS.tierOf(v).name);
+// a vital's band word (g-bands) on the phone: a word is wider than the number the release's 36 px value column was
+// sized for (playtest 2, new 14: "middlin", "pleasin", "know / neighb" at 420 px), so the label and the word share
+// the first line and the bar goes under them. By the label's tooltip key (59-tooltips): other features' wrappers
+// read the row's markup as the release writes it, so the row itself is not marked.
+VS.VITAL_ROW = '#game.phone .barrow:is(:has(.lbl [data-tt="health"]),:has(.lbl [data-tt="happy"]),:has(.lbl [data-tt="looks"]),:has(.lbl [data-tt="fame"]),:has(.lbl [data-tt="honor"]),:has(.lbl [data-tt="piety"]))';
 VS.css = '.v2-sheet{margin:4px 0 6px}.v2-row{display:grid;grid-template-columns:6em minmax(0,1fr);gap:0 8px;align-items:baseline;font-size:var(--t-small,13px);line-height:1.3;padding:2px 0}' +
   '.v2-l{opacity:.75}.v2-v{font-weight:600}.v2-w{grid-column:2;opacity:.8}.v2-hrs{white-space:nowrap;opacity:.75;text-align:right}' +
   '.prow:has(.v2-tier){grid-template-columns:minmax(0,1fr) auto 5.6em;gap:4px 10px}.prow .v2-tier{white-space:nowrap;font-weight:600}' +
   '.mbox .v2-row{grid-template-columns:6.5em minmax(0,auto) minmax(0,1fr)}.mbox .v2-v{white-space:nowrap}.mbox .v2-w{grid-column:auto}' +
   '@media (max-width:560px){.mbox .v2-row{grid-template-columns:6em minmax(0,1fr)}.mbox .v2-w{grid-column:2}}' +
+  VS.VITAL_ROW + '{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l v" "b b";row-gap:0;column-gap:8px}' +
+  VS.VITAL_ROW + '>.lbl{grid-area:l}' + VS.VITAL_ROW + '>:nth-child(2){grid-area:b}' +
+  VS.VITAL_ROW + '>.val{grid-area:v;width:auto;min-width:0;max-width:none;white-space:nowrap;text-align:right;overflow:visible}' +
   '.v2-odds{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.v2-scale{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em;pointer-events:none}.v2-ow{pointer-events:none}';
 VS.style = () => { if (typeof document === 'undefined' || document.getElementById('v2s-style')) return; const s = document.createElement('style'); s.id = 'v2s-style'; s.textContent = VS.css; document.head.appendChild(s); };
 
@@ -165,7 +173,8 @@ if (UI.tierChip) {
     const h = tc.apply(this, arguments);
     try {
       if (typeof h !== 'string') return h;
-      const lw = w => VS.levyWords(p && p.st ? VS.shownLevies(p) : VS.fromWorth(+w));
+      // the levies of the chip's own worth, so the tier beside them is the same reading
+      const lw = w => VS.levyWords(VS.levyOfWorth(+w));
       return h.replace(/fighting worth (\d+)\./, (m, w) => `worth ${lw(w)} in a fight.`)
         .replace(/ · (\d+)<\/span>$/, (m, w) => ` · ${esc(lw(w))}</span>`);
     } catch (e) { return h; }
