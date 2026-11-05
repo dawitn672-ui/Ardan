@@ -39,8 +39,12 @@ ladders to `src/v2/renown.js` (`recordDeed`, `renown`, `renownWords`, `promotion
   for promotion, never for renown), so steady work still moves you, slowly and irregularly.
 - A deed three times what the rank asks can **skip a rank** (v2's 30%), below the high command for the army.
 - The board's merit row is now "A deed that stands out" (a post's: "Work that stands out"), in words; the year's
-  summary says where you stand for the next rank in words; "Merit +7" and "(Merit +15)" are gone from the text
-  (`c-words.core.js`, through 99993-v2-stats' sweep).
+  summary says where you stand for the next rank in words; the army card on the Path tab, the war room's line and a
+  superior's "Not yet" lose their merit counter (patch RN-WORDS); "Merit +7", "(Merit +15)" and "Renown +3" become
+  words in the text (`c-words.core.js`, through 99993-v2-stats' sweep).
+- 59-tooltips' Path tips (the board's odds, merit, a board row, the rank) explained the counter, its formula and a
+  percentage a year; they now say what the board asks, in words: the standout deed, the places above you, steady
+  service, a patron.
 
 ## Tests (`test.mjs`)
 
@@ -50,4 +54,5 @@ ladders to `src/v2/renown.js` (`recordDeed`, `renown`, `renownWords`, `promotion
 - `rnPromoNonlinear`: 60 careers through the game's own board: gaps' CV > 0.6, some within a year, some over five
   years, ranks skipped; no deeds and a full merit counter rarely raise anyone; no merit counter on the board.
 - `rnJobBoard`: a post's board has no merit counter; the deed row is soft.
+- `rnNoCounters`: the soldier's Path tab, the promotion tips and the log lines carry no merit counter (playtest 1, 2).
 - `rnWords`: renown in words on the profile and another person's sheet, never a number; an old save keeps its fame.
