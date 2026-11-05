@@ -33,6 +33,23 @@ node tests/run.mjs                                        # everything against i
 git gc --prune=now                                        # after every integration round (see below)
 ```
 
+## Versions
+
+Every foundational or significant change is a version (`docs/VERSIONS.md`, `tools/version.mjs`):
+
+- **Major:** a new design the owner set (v1 = the shipped release and its rounds; v2 = `docs/v2/V2_SPEC.md`).
+- **Minor:** a round, cycle or step that adds or replaces a system. **Patch:** fixes only.
+- **Pre-release** (`-alpha.N`, `-beta.N`, `-rc.N`) while a major is being built.
+- Tag a clean commit whose CI is green, or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, `git push origin --tags`.
+
+## v2
+
+The owner's v2 spec is `docs/v2/V2_SPEC.md`; lanes follow `docs/v2/LANES.md`. The v2 engine is `src/v2/` (bundled by
+`node tools/build-v2.mjs` into `features/99990-v2/a-v2.core.js`, on the page as `A.V2`; never edit the bundle), its
+tests are `tests/v2/` (`tools/check.mjs` runs them). The owner's v2 rules: no description hidden behind a click; no
+percentage the player sees (words and a tipped scale); every system deterministic from the seed; report a conflict
+with how the code works before doing it.
+
 ## Rules that keep the build working
 
 **Repack after each round.** The last step of an integration round, after the push, is `git gc --prune=now`. Every round commits a rebuilt `index.html` of about 3.7 MB, and git keeps each one as a loose object: twenty of them had `.git` at 74 MB with no packfile at all, which repacked to 18 MB. Repacking is cheap, it is safe on a pushed branch (it touches only local object storage, never history), and skipping it makes every later clone slower.

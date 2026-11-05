@@ -6,3 +6,4 @@ reports/tmp-*.json
 reports/debug.json
 canon/
 .claude/worktrees/
+versions/
