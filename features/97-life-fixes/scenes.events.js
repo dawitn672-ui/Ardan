@@ -82,7 +82,8 @@
       ] },
 
     // ---- the study plan: five new breakthroughs, each once a life ----
-    { id: 'lfx_st_disputation', flow: ['study'], trigger: true, lfOnce: true, title: 'A disputation',
+    // (v2 playtest 1, #11: each has an age and, where it reads or is read to, letters; a disputation came at 8)
+    { id: 'lfx_st_disputation', flow: ['study'], trigger: true, lfOnce: true, cond: (p, C) => C.age(p) >= 15 && C.literate(p), title: 'A disputation',
       text: 'The masters of the cathedral school hold a disputation on the feast day: one question, argued before the town. This year it is whether a lie told to save a life is still a lie. The master looks down the benches for someone to take the side nobody wants.',
       choices: [
         { t: 'Take the side nobody wants', check: { s: 'learning', s2: 'int', d: 46 },
@@ -91,7 +92,7 @@
         { t: 'Take notes from the back bench', r: 'You fill four pages. Two are worth keeping.', fx: { skill: { learning: 2 } } },
         { t: 'Argue it out afterwards at the alehouse', r: 'The alehouse decides for the lie, loudly, and you pay for the jug.', fx: { coin: -2, happy: 3, skill: { persuasion: 2 } } },
       ] },
-    { id: 'lfx_st_chained', flow: ['study'], trigger: true, lfOnce: true, title: 'The chained library',
+    { id: 'lfx_st_chained', flow: ['study'], trigger: true, lfOnce: true, cond: (p, C) => C.age(p) >= 13 && C.literate(p), title: 'The chained library',
       text: 'The monks of the river house keep their books on chains and let nobody in. But the librarian is old and his eyes are going. He will let you read for a week if you copy him a page a day in a fair hand.',
       choices: [
         { t: 'Copy by day and read by night', r: 'Seven nights of candles. Your eyes ache and your head is full.', fx: { skill: { learning: 3 }, health: -3 } },
@@ -100,7 +101,7 @@
           lose: { r: 'He takes offence. The door closes, gently, for good.', fx: { happy: -2 } } },
         { t: 'Pay for the roof instead of copying', r: 'The house needs a roof more than another page. He lets you read three days.', fx: { coin: -15, skill: { learning: 2 } } },
       ] },
-    { id: 'lfx_st_reckoning', flow: ['study'], trigger: true, lfOnce: true, title: 'A sum drawn in beer',
+    { id: 'lfx_st_reckoning', flow: ['study'], trigger: true, lfOnce: true, cond: (p, C) => C.age(p) >= 14, title: 'A sum drawn in beer',
       text: 'A wool merchant at the inn has a sum he cannot do on his fingers: three partners, unequal shares, half a cargo lost at sea. He has drawn it on the table in beer. A sun to anyone who can do it, he says, and three to anyone who can show him how.',
       choices: [
         { t: 'Do the sum, and show him how', check: { s: 'int', s2: 'trade', d: 44 },
@@ -111,7 +112,7 @@
           lose: { r: 'The beer dries before you finish.', fx: { skill: { learning: 1 } } } },
         { t: 'Watch the drovers try it', r: 'Four of them, four answers. You learn something about drovers.', fx: { happy: 1, skill: { trade: 1 } } },
       ] },
-    { id: 'lfx_st_map', flow: ['study'], trigger: true, lfOnce: true, title: 'A map that is wrong',
+    { id: 'lfx_st_map', flow: ['study'], trigger: true, lfOnce: true, cond: (p, C) => C.age(p) >= 12 && C.literate(p), title: 'A map that is wrong',
       text: 'In the back of a borrowed book is a map of Ardan, beautifully drawn and wrong in a dozen places you know: rivers on the wrong side of hills, a town that burned before your grandfather was born. There is room in the margin.',
       choices: [
         { t: 'Correct it in your own hand', r: 'It is less beautiful now and more true. The owner may not thank you.', fx: { skill: { learning: 2, survival: 1 }, happy: 2 } },
@@ -120,7 +121,7 @@
           win: { r: 'A carter, a pilgrim and a deserter between them redraw the north.', fx: { skill: { learning: 2, tracking: 1 }, fame: 1 } },
           lose: { r: 'Every traveller has a different north. You stop asking.', fx: { skill: { learning: 1 }, happy: -1 } } },
       ] },
-    { id: 'lfx_st_window', flow: ['study'], trigger: true, lfOnce: true, title: 'A face at the window',
+    { id: 'lfx_st_window', flow: ['study'], trigger: true, lfOnce: true, cond: (p, C) => C.age(p) >= 12 && C.literate(p), title: 'A face at the window',
       text: 'For a month a child has watched you read through the window, nose to the glass, every evening until called home. Tonight there is a knock. It is the miller\'s youngest, with a slate and a stub of chalk.',
       choices: [
         { t: 'Teach the child the letters', r: 'Twenty-six marks over a winter of evenings. Teaching them, you learn them again.', fx: { skill: { learning: 2 }, honor: 2, need: { rest: -8 } } },
@@ -158,7 +159,8 @@
         { t: 'Pay a substitute out of your own purse', r: 'Twenty-five suns buys a man to march in her father\'s place.', fx: { coin: -25, honor: 4 } },
         { t: 'File it with the rest', r: 'It goes in the box with the others. The box is very full.', fx: { merit: 1, happy: -3 } },
       ] },
-    { id: 'lfx_du_gd_apprentice', duty: ['guild'], trigger: true, lfOnce: true, title: 'An apprentice\'s mistake',
+    // (v2 playtest 1, #11: an apprentice of 13 was given an apprentice of his own; this is a master's scene)
+    { id: 'lfx_du_gd_apprentice', duty: ['guild'], minR: 2, trigger: true, lfOnce: true, title: 'An apprentice\'s mistake',
       text: 'Your apprentice has ruined a week\'s work with one careless hand, and stands waiting to be beaten, as his last master beat him. He is fourteen. The customer comes on Saturday.',
       choices: [
         { t: 'Work through the nights to make it again', r: 'You make it again, better. The boy watches every stroke.', fx: { health: -4, perf: 4 } },

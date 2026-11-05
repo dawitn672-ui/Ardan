@@ -320,7 +320,10 @@ export default {
       return { stakes, pure, has: html.includes('lf-stake') };
     });
     if (r.err) return { ok: false, detail: r.err };
-    const ok = r.pure && r.stakes.some(s => /Costs 30 suns/.test(s)) && r.stakes.some(s => /If it fails: hurt, −5 suns, their regard/.test(s)) && r.stakes.length === 2;
+    // (v2 playtest 1, #18/#19, 99999-v2-content: the regard lost on a failure reads "▼ less their regard", and the choice that
+    // does nothing says "Nothing changes", so every choice shows a line)
+    const ok = r.pure && r.stakes.some(s => /Costs 30 suns/.test(s)) && r.stakes.some(s => /If it fails: hurt, −5 suns, (▼ less )?their regard/.test(s)) &&
+      (r.stakes.length === 2 || (r.stakes.length === 3 && r.stakes.includes('Nothing changes')));
     return { ok, detail: `stake lines: ${JSON.stringify(r.stakes)}; drawing them left the state and the random stream alone: ${r.pure}` };
   },
 

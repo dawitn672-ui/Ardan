@@ -70,12 +70,15 @@ export default {
     if (!has('Pay his rent', /▲▲.*their regard/)) fails.push('large gain');
     if (!has('Pay his rent', /▲.*spirits/)) fails.push('small gain');
     if (!has('Argue him down', /^If it works: \+4 suns, ▲.*renown$/)) fails.push('win');
-    if (!has('Argue him down', /^If it fails: hurt, −5 suns, their regard$/)) fails.push('fail (97 words)');
+    // (v2 playtest 1, #18/#19, 99999-v2-content: a regard lost on a failure reads ▼; a hidden effect says only "It will be
+    // remembered", never what it is; a code effect whose numbers all go one way shows that way; a choice that does
+    // nothing says "Nothing changes", so every choice shows something)
+    if (!has('Argue him down', /^If it fails: hurt, −5 suns, (▼ (less )?)?their regard$/)) fails.push('fail (97 words)');
     if (!has('Ask nicely', /^Nothing lost if it fails$/)) fails.push('nothing lost');
     if (!has('Wade the ford', /If it fails: a wound, hurt/)) fails.push('wound');
-    if (by('Mark the stone').chips.length) fails.push('hidden flag/trait/event shown: ' + by('Mark the stone').chips);
-    if (!has('Say a word for him', /^• .*honour$/)) fails.push('function touch');
-    if (by('Walk away').chips.length) fails.push('nothing to say, but chips');
+    if (by('Mark the stone').chips.some(c => !/^It will be remembered$/.test(c))) fails.push('hidden flag/trait/event shown: ' + by('Mark the stone').chips);
+    if (!has('Say a word for him', /^[•▲] .*honour$/)) fails.push('function touch');
+    if (by('Walk away').chips.some(c => !/^Nothing changes$/.test(c))) fails.push('nothing to say, but chips');
     if (!r.pure) fails.push('drawing changed the state or the stream');
     return { ok: !fails.length, detail: fails.length ? 'missing: ' + fails.join('; ') + ' ' + JSON.stringify(r.R.rows) : `${r.R.rows.length} rows, ${r.lf.length} stake lines, pure` };
   },

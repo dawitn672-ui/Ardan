@@ -129,7 +129,9 @@ export default {
       return { seed, n: ids.length, voiced, moved, differ, long, raw, distinct: lines.size, quiet, off };
     }, seed));
     const mid = all.map(x => x.distinct).sort((a, b) => a - b)[1];
-    const ok = all.every(r => r.voiced >= 10 && r.voiced < r.n && !r.moved && !r.differ && !r.long && !r.raw && r.quiet && r.off) && mid >= 5;
+    // (v2 playtest 1, #10, 99999-v2-content: a voice now speaks only on a check of its own skill, where its line fits the
+    // scene, so a life hears few; the purity checks are unchanged, and the lives together must still be voiced)
+    const ok = all.every(r => r.voiced < r.n && !r.moved && !r.differ && !r.long && !r.raw && r.quiet && r.off) && all.reduce((a, r) => a + r.voiced, 0) >= 5;
     return { ok, detail: all.map(r => `seed ${r.seed}: ${r.voiced} of ${r.n} scenes voiced (${r.distinct} lines), draws that moved state or dice ${r.moved}, drawings that differed ${r.differ}, over 14 words ${r.long}; a seen scene quiet ${r.quiet}; setting off ${r.off}`).join(' | ') + `; middle life ${mid} lines` };
   },
 
@@ -158,7 +160,8 @@ export default {
       }
       return out;
     });
-    const ok = r.every(x => !x.repeats.length && x.sr === x.voiced) && r.reduce((a, x) => a + x.voiced, 0) >= 15;
+    // (v2 playtest 1, #10, 99999-v2-content: voices are rare now; none may repeat, and some must speak)
+    const ok = r.every(x => !x.repeats.length && x.sr === x.voiced) && r.reduce((a, x) => a + x.voiced, 0) >= 1;
     return { ok, detail: r.map(x => `seed ${x.seed}: ${x.voiced} voices in ${x.ev} scenes, repeated ${x.repeats.length ? x.repeats.join('; ') : 'none'}`).join(' | ') };
   },
 
