@@ -135,7 +135,7 @@
   }
 
   // ---- 72-two-scales' levy: a levy is a soldier (72 reads this when it is there) ------------------------------------
-  W.levyCount = (n, mine) => W.told(n, W.rank() || 'soldier', mine);
+  W.levyCount = (n, mine) => (Math.round(n || 0) <= 0 ? 'none' : W.told(n, W.rank() || 'soldier', mine));
 
   // ---- the commander's battle: his own side exactly, the enemy's an estimate, morale and drill in words -------------
   W.moWord = mo => (mo >= 75 ? 'eager' : mo >= 60 ? 'steady' : mo >= 45 ? 'sullen' : mo >= 30 ? 'shaken' : 'near breaking');

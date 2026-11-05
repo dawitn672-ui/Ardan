@@ -578,7 +578,7 @@
     A.willGrow(pc, won ? 0.6 : 1.5, 'battle');
     A.fame(pc, won ? 2 : 0);
     const said = m.ts.end == null ? 'you are carried from the field while it goes on' : e.out ? `on the ${TS.dayWord(e.day || 1)} day your division is pulled out of the line, and the fight goes on without it` : e.won === 1 ? (m.ts.weAtt ? 'your side breaks through' : 'your side holds') : e.won === 0 ? (m.ts.weAtt ? 'your side is thrown back' : 'your side gives way') : 'the fighting is broken off';
-    m.log.push(`— ${m.title}: ${said}${e.out ? '' : ` after ${e.day || fr.day || 1} day${(e.day || fr.day || 1) > 1 ? 's' : ''}`}. ${TS.told(fr.dead[0], true)} of yours dead${e.out ? ' so far' : ''}, ${TS.told(fr.dead[1], false)} of theirs.`);
+    m.log.push(`— ${m.title}: ${said}${e.out ? '' : ` after ${e.day || fr.day || 1} day${(e.day || fr.day || 1) > 1 ? 's' : ''}`}. ${A.cap(String(TS.told(fr.dead[0], true)))} of yours dead${e.out ? ' so far' : ''}, ${TS.told(fr.dead[1], false)} of theirs.`);
     if (e.out && TS.liveFight(m)) A.S.tsOut = { key: m.ts.key, start: m.ts.start, men: (m.ts.men || []).slice(), realm: m.ts.realm, div: m.ts.div };
     if (pc.health <= 0) m.log.push('You do not walk away from this field.');
     else A.log(TS.chronicle(m, pc), 'big');

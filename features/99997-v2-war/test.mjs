@@ -312,7 +312,7 @@ export default {
       const rng0 = A.rngState, h0 = T.hash(A.S);
       UI.tab = 'world'; UI.worldView = 'annals'; UI.wcGroup = 'field'; UI.wcNear = false; UI.wcPage = 0; UI.render();
       const rows = [...document.querySelectorAll('.wc-entry')].map(x => x.textContent);
-      const exact = rows.filter(t => /\b\d{1,3},\d{3} (men|dead)/.test(t) || /\b\d{1,3},\d{3}\b/.test(t.replace(/(about|some) [\d,]+/g, '')));
+      const exact = rows.filter(t => /\b\d{1,3},\d{3}\b/.test(t.replace(/(about|some) [\d,]+/g, '')));
       const oldT = WC.tellOf(WC.ent(old), pc), freshT = WC.tellOf(WC.ent(fresh), pc), mineT = WC.tellOf(WC.ent(mine), pc);
       UI.tab = 'book'; UI.render();
       const bk = document.querySelector('#tabbody').textContent, wy = bk.slice(Math.max(0, bk.indexOf('The world in your time')));
@@ -373,7 +373,8 @@ export default {
         out.front = A.TS.frontWords(q.m).join(' '); out.frontExact = exactIn(out.front);
         out.slips = [...document.querySelectorAll('#modal .ts-std text')].map(x => x.textContent);
         out.sceneExact = exactIn(txt);
-        A.missionChoose(0); if (A.S.queue[0] === q) A.missionChoose(0);
+        // the day's tally, as the scene's end sets it down
+        A.TS.finish(q.m);
         out.log = (q.m.log || []).find(l => /^— /.test(l)) || '';
         break;
       }
@@ -394,7 +395,7 @@ export default {
     });
     const L = r.cmd || {};
     const ok = !!r.ask && /about [\d,]+ against about [\d,]+/.test(r.ask) && !r.askExact.length && !r.frontExact.length && !r.sceneExact.length && r.slips.length > 0 && r.slips.every(s => !/^\d{1,3}(\.\d)?k$|^\d{3,}$/.test(s) || /^~/.test(s)) &&
-      /(about [\d,]+|a handful) of yours dead/.test(r.log) && r.cmd && !L.enemyExact && L.ownExact && !L.morale && !L.drill && r.pure;
+      /(about [\d,]+|a handful|none) of yours dead/.test(r.log) && !/\b\d{1,3}(,\d{3})+\b/.test(r.log.replace(/(about|some) [\d,]+/g, "")) && r.cmd && !L.enemyExact && L.ownExact && !L.morale && !L.drill && r.pure;
     return { ok, detail: `levy call: "${(r.ask || '').slice(-60)}"; front: "${(r.front || '').slice(0, 160)}"; standards ${JSON.stringify((r.slips || []).slice(0, 6))}; tally "${r.log}"; ` +
       `commander: enemy exact ${L.enemyExact}, own exact ${L.ownExact}, a morale number ${L.morale}, a drill number ${L.drill}; pure ${r.pure}` };
   },
