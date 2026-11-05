@@ -55,7 +55,8 @@
     const cult = A.cultureFor ? A.cultureFor(r.race || 'human', rid) : null;
     const fn = A.familyName({ cult, realm: rid, status: 'noble', sex: 'M' });
     let sur = (fn && fn.sur) || q.name;
-    const id = `FAM-C${rid.replace(/\W/g, '')}-${county}`;
+    let id = `FAM-C${rid.replace(/\W/g, '')}-${county}`;
+    if (S.houses[id]) id += '-' + S.year; // a house raised again for a title its first house lost
     const palette = ['#2a4f8f', '#8f2a2a', '#2a6f3f', '#6f5a2a', '#4a2a6f', '#1f1f1f', '#cfd3d6', '#c9a227', '#7a1f3d', '#3d5a6f'];
     const charges = ['tower', 'boar', 'stag', 'wolf', 'lion', 'oak', 'key', 'bell', 'ship', 'star', 'wheat', 'bear', 'hawk', 'sword'];
     const c1 = rng.pick(palette);
@@ -312,7 +313,87 @@
     if (!S.court) N.build();
     // a fresh viscounty or barony with no county of its own takes a slot under a count
     for (const id in S.people) { const p = S.people[id]; if (p.alive && p.noble && p.noble.rung >= 4 && p.noble.rung <= 5 && p.noble.holding == null && !p.noble.fief) N.grantFief(p); }
+    try { N.regrantMonth(); } catch (e) { console.error('v2-nobility regrant', e); }
   });
+
+  // ---- a vacant title is the liege's to give (playtest 1 #25) --------------------------------------------------------
+  // A title with no living holder (its line ran out) is marked vacant (t.vacant = the year). After 3 to 12 months
+  // (seeded by the title and the year) the liege gives it: first to the dead holder's house (its living head, else its
+  // eldest grown member), as the house law would; else to the realm's highest and most renowned lesser noble (a
+  // viscount, baron or knight who holds no court title; he gives up his slot); else a new house is raised. The grant
+  // sets p.noble with the title's key; nobody who already holds a court title is chosen, so one holder per title holds.
+  const adultOf = p => p && p.alive && A.age(p) >= ((GD.RACES[p.race] || {}).adult || 16) + 2;
+  N.candidateFor = function (t) {
+    const S = A.S, rid = t.k.split(':')[0];
+    const free = p => adultOf(p) && !(p.noble && p.noble.court) && p.id !== S.pc && !(p.ruler && A.realm(p.ruler) && A.realm(p.ruler).ruler === p.id);
+    const h = t.house && S.houses[t.house];
+    if (h && !h.extinct) {
+      let hd = F.headOf ? F.headOf(h.id) : A.P(h.headPid);
+      // a great house with no living head gets one as the release would (A.houseHead), off the game's stream
+      if (!live(hd) && h.great !== false) hd = F.sandbox('head|' + h.id + '|' + S.year, () => A.houseHead(h.id));
+      // the head takes it even as a child (a regency); only a head who rules, holds another court title or is you is passed by
+      if (hd && hd.alive && !(hd.noble && hd.noble.court) && hd.id !== S.pc && !(hd.ruler && A.realm(hd.ruler) && A.realm(hd.ruler).ruler === hd.id)) return { p: hd, why: 'house' };
+      const ms = Object.values(S.people).filter(q => q.house === h.id && free(q)).sort((a, b) => a.born - b.born || (a.id < b.id ? -1 : 1));
+      if (ms[0]) return { p: ms[0], why: 'house' };
+    }
+    const vs = Object.values(S.people).filter(q => free(q) && q.noble && q.noble.rung >= 2 && q.noble.rung <= 5 && (q.noble.realm || q.realm) === rid)
+      .sort((a, b) => b.noble.rung - a.noble.rung || (b.fame || 0) - (a.fame || 0) || (a.id < b.id ? -1 : 1));
+    if (vs[0]) return { p: vs[0], why: 'vassal' };
+    return null;
+  };
+  N.regrant = function (t) {
+    const S = A.S, rid = t.k.split(':')[0], r = A.realm(rid);
+    if (!r || r.alive === false || N.holderOf(t)) return null;
+    let c = N.candidateFor(t);
+    if (!c) F.sandbox('regrant|' + t.k + '|' + S.year, () => {
+      const rng = F.rng('regrant|' + t.k + '|' + S.year);
+      const h = newHouse(r, rid, t.rank, t.seat, rng);
+      c = { p: newHolder(r, rid, h, t.rank, rng), why: 'new' };
+    });
+    if (!c) return null;
+    const p = c.p;
+    // the old house (even headless now: the release may give it a head later) no longer sits in this county: its seat follows its head's own
+    // holding, or it has none (one holder per county: F.audit counts a living head's seat as a holding)
+    const oh = t.house && S.houses[t.house], ohd = oh && A.P(oh.headPid);
+    if (oh && oh.id !== p.house && F.seatProv && F.seatProv(oh) === t.seat) {
+      const q = ohd.noble && ohd.noble.holding != null ? S.prov[ohd.noble.holding] : null;
+      oh.v2seatLost = oh.seat; oh.seat = q ? q.name : null; oh.seatId = q ? q.pid : null;
+    }
+    // a lesser noble gives up his slot under a count; the slot is generated again
+    if (p.noble && p.noble.fief) { const f = p.noble.fief, k = N.slotKey(p.noble.realm || rid, f.county, f.rank, f.i); if (S.court.met[k] === p.id) delete S.court.met[k]; }
+    seatHolder(p, rid, t.rank, t.seat, t.k);
+    t.pid = p.id;
+    const hh = p.house && S.houses[p.house];
+    if (hh && hh.headPid === p.id) {
+      if (!hh.v2rung) hh.v2rung = hh.rung || '';
+      if (!/^N0[123]$/.test(hh.rung || '') || hh.rung > CODE[t.rank]) hh.rung = CODE[t.rank];
+      hh.title = N.title(t.rank, p.sex);
+      const q = S.prov[t.seat]; if (q) { hh.seat = q.name; hh.seatId = q.pid; }
+    }
+    t.house = p.house || t.house;
+    const was = t.vacant; delete t.vacant; delete t.vacN;
+    t.granted = S.year;
+    const pc = A.pc(), ru = A.P(r.ruler);
+    if (pc && pc.realm === rid && (t.rank !== 'count' || pc.home === t.seat) && A.news) A.news(`${ru ? A.fullName(ru, false) : 'The crown'} gives the ${t.name}, vacant since ${was}, to ${A.fullName(p, false)}.`, 'crown');
+    return { t: t.k, to: p.id, why: c.why };
+  };
+  N.regrantMonth = function () {
+    const S = A.S; if (!S.court) return [];
+    const out = [];
+    for (const c of Object.values(S.court.realms)) for (const t of c.titles) {
+      if (t.crown || t.heldWith || t.rank === 'king') continue;
+      if (N.holderOf(t)) { if (t.vacant) { delete t.vacant; delete t.vacN; } continue; }
+      if (!t.vacant) { t.vacant = S.year; t.vacN = 0; continue; }
+      t.vacN = (t.vacN || 0) + 1;
+      if (t.vacN >= F.rng('wait|' + t.k + '|' + t.vacant).int(3, 12)) { const g = N.regrant(t); if (g) out.push(g); }
+    }
+    return out;
+  };
+  // "the king's to give", in the realm's own word for its ruler
+  N.givenBy = function (rid) {
+    const r = A.realm(rid);
+    return `the ${String((r && r.title) || 'crown').split(' / ')[0].split(' (')[0].toLowerCase()}'s to give`;
+  };
   // the court's lords grow old and die. The release only ages and buries the people you know and the rulers, so a count
   // no one has met would hold his county for ever; each year every title holder you do not know (and who does not
   // rule) dies at the release's own rate (A.deathChance), drawn from a stream seeded by the year and the person, never
@@ -338,6 +419,10 @@
     return out;
   };
   (A.onYear = A.onYear || []).push(function () { try { N.yearOfDeaths(); } catch (e) { console.error('v2-nobility deaths', e); } });
+
+  // playtest 1 #14: 9996-polity's border office was "Warden of the March", which beside a court of dukes and marches
+  // read as a rank ("Duke, Warden of the March of Kingsmere"). It is an office, so it is named as one.
+  if (GD.POL_OFFICES && GD.POL_OFFICES.warden) GD.POL_OFFICES.warden.n = 'Border warden';
 
   A.SIGNATURE = Object.assign(A.SIGNATURE || {}, { nobility: true });
 })();

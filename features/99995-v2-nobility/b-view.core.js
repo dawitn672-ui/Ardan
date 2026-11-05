@@ -10,10 +10,11 @@
   const who = p => p ? `<span class="click" data-a="ov" data-v="person:${esc(p.id)}">${esc(A.fullName(p))}</span>` : '<i>vacant</i>';
   const many = (n, rank) => `${n} ${N.rankName(rank, n)}`;
 
+  N.vacantWords = t => `<i>vacant${t.vacant ? ' since ' + esc(t.vacant) : ''}, ${esc(N.givenBy(t.k.split(':')[0]))}</i>`;
   N.countLine = function (t) {
     const p = N.holderOf(t), q = A.S.prov[t.seat];
     const lost = q && q.owner !== t.k.split(':')[0] ? ` <span class="muted">(${esc(q.name)} is now held by ${esc((A.realm(q.owner) || {}).short || 'another realm')})</span>` : '';
-    return `${esc(A.provName(t.seat))}${t.crown ? '' : ` (${who(p)})`}${lost}`;
+    return `${esc(A.provName(t.seat))}${t.crown ? '' : ` (${p ? who(p) : N.vacantWords(t)})`}${lost}`;
   };
 
   UI.v2nCourtCard = function (r, pc) {
@@ -41,13 +42,16 @@
         const mp = N.holderOf(m), mc = kids(m.k).filter(t => t.rank === 'count' && !t.heldWith);
         bits.push(`the March of ${esc(A.provName(m.seat))} (${who(mp)}${mc.length ? `, over ${and(mc.map(N.countLine))}` : ''})`);
       }
-      rows.push(`<div><b>${esc(style)}</b>: ${who(p)}<div class="small">${d.rank === 'marquis' ? 'Holds the march for the crown' : 'Holds the duchy'}${bits.length ? '; under ' + (p && p.sex === 'F' ? 'her' : 'him') + ', ' + bits.join('; ') : ''}.</div></div>`);
+      // a vacant title does not "hold": it waits for the liege, and what lies under it is named plainly
+      const lead = p ? (d.rank === 'marquis' ? 'Holds the march for the crown' : 'Holds the duchy') : 'No one holds it';
+      const tail = bits.length ? (p ? '; under ' + (p.sex === 'F' ? 'her' : 'him') + ', ' : '; under it, ') + bits.join('; ') : '';
+      rows.push(`<div><b>${esc(style)}</b>: ${p ? who(p) : N.vacantWords(d)}<div class="small">${lead}${tail}.</div></div>`);
     }
     // your county, if it is in this realm
     const home = pc && N.countyOf(r.id, pc.home);
     if (home) {
       const hp = N.holderOf(home), over = home.heldWith && N.titleOf(home.heldWith);
-      const hold = home.crown ? 'The crown holds it.' : over ? `${esc(N.title(over.rank, hp ? hp.sex : 'M'))} of ${esc(A.provName(over.seat))}, who holds it with the ${over.rank === 'duke' ? 'duchy' : 'march'}: ${who(hp)}.` : `The ${esc(N.title('count', hp ? hp.sex : 'M').toLowerCase())}: ${who(hp)}.`;
+      const hold = home.crown ? 'The crown holds it.' : !hp ? `It is ${N.vacantWords(over || home)}.` : over ? `${esc(N.title(over.rank, hp ? hp.sex : 'M'))} of ${esc(A.provName(over.seat))}, who holds it with the ${over.rank === 'duke' ? 'duchy' : 'march'}: ${who(hp)}.` : `The ${esc(N.title('count', hp ? hp.sex : 'M').toLowerCase())}: ${who(hp)}.`;
       const vs = [];
       for (let i = 0; i < home.viscounts; i++) {
         const g = N.lower(r.id, home.seat, 'viscount', i);
