@@ -289,6 +289,9 @@
     [/\bOpinion of you (-?\d{1,3})\b/g, (m, n) => `Opinion of you: ${band('opinion', +n)}`],
     // the old 0-100 skill in a picker's option: "Melee (9)", and a companion's fitness: "— fit 42 · Brawler"
     [/ — fit (\d{1,3}) · /g, (m, n) => ` — ${band('fit', +n)} · `],
+    // the Realm tab's crown authority buttons: "Income ×0.88; vassal mood +8/yr" (the lords' yearly drift of opinion)
+    [/\bvassal mood ([+−-]?)(\d{1,2})\/yr\b/g, (m, sg, n) => (+n === 0 ? "the lords' mood holds" : sg === '+' || sg === ''
+      ? `the lords warm to the crown${+n >= 10 ? ' fast' : ''} each year` : `the lords cool toward the crown${+n >= 10 ? ' fast' : ''} each year`)],
   ];
   // "Riding & the lance −4" (a wound's cost to a skill), after the season's line is read
   RULES.push([new RegExp(`(${skillNames()}) ([+−-])(\\d{1,2}(?:\\.\\d)?)(?!\\d|[.,/]\\d|\\s*(?:%|suns?|years?))`, 'g'), (m, k, s, n) => `${k} ${down(s, n)}`]);

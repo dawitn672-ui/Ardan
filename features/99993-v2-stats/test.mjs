@@ -213,6 +213,28 @@ export default {
       // (a year, a log line's day and month, a count of friends are not scales) (round 4: nor a count of provinces, "Hold 25 provinces", on the Goals tab)
       const plain = l => l.replace(/\b1[01]\d\d\b/g, '').replace(/^\s*\d{1,2} [A-Z][a-z]{2}/, '').replace(/\d+ friends?|\(up to \d+\)|at its best at \d+|until about \d+|fading since about \d+|\bHold \d+ provinces\b/g, '');
       const check = (where, t) => { for (const line of String(t).split('\n')) if (BARE.test(plain(line))) bad.push(`${where}: ${line.trim().slice(0, 90)}`); };
+      // verifier, round 5: titles and aria-labels went only through the ruler pass's scanR, which reads a line only when it
+      // names a realm measure, so a skill row's aria-label ("Melee: 24", 59-tooltips' profile hook) was never read. Every
+      // title and aria-label of each scanned tab is checked now, in both passes. Not scales: a portrait's age ("Portrait
+      // of X, 28"), the clock's "age 19", "Initiative 3.0 of 5"; dates ("18 March", "December 3"); counts with their unit
+      // (loads, times, galleys, "3 carted in", "caravans brought 2"), a fold's count of entries ("Activities, 32",
+      // "Family (26)"), a chapter's number ("The ladder (Part 12)"), a count of provinces ("Provinces since 1105: 4 to 5"), and what BARE already lets through.
+      const MON = '(?:January|February|March|April|May|June|July|August|September|October|November|December)';
+      const DATE = new RegExp(`\\b\\d{1,2} ${MON}\\b|\\b${MON} \\d{1,2}\\b`, 'g');
+      const attrPlain = (v, el) => {
+        let t = v.replace(/^Portrait of [^,]*, \d{1,3}$/, '').replace(/\bInitiative [\d.]+ of \d+/g, '').replace(/,? age \d{1,3}\b/g, '')
+          .replace(DATE, '').replace(/^Provinces since \d+: \d+ to \d+$/, '')
+          .replace(/\(Part \d+\)/g, '').replace(/<?\d[\d,]*(?: \/ \d+)? (?:[A-Z][a-z]+ )?(?:loads?|times|galleys?|ships?|carted|used)|\b\d+ of (?:\d+|those)\b|\bcaravans (?:brought|took) \d+/g, '');
+        if (el.classList && (el.classList.contains('fold-h') || el.classList.contains('fold-x'))) t = t.replace(/(?:, \d+| \(\d+\))$/, '');
+        return t;
+      };
+      // (and the profile's skill rows must say their tier to a screen reader, a name with "&" unescaped: "Survival & hunting:
+      // Apprentice", not "Survival &amp; hunting: 37")
+      let attrsRead = 0, skillAria = '';
+      const checkAttrs = (where, root) => {
+        for (const el of root.querySelectorAll('[title],[aria-label]')) for (const k of ['title', 'aria-label']) { const v = el.getAttribute(k); if (v) { attrsRead++; check(`${where} [${k}]`, attrPlain(v, el)); } }
+        for (const el of root.querySelectorAll('.prow[aria-label]')) if (!/ & /.test(skillAria) && /^(?!.*&amp;)[^:]+: [A-Z][a-z]+$/.test(el.getAttribute('aria-label'))) skillAria = el.getAttribute('aria-label');
+      };
       T.enter({ seed: 9611, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'F', startAge: 16 });
       const pc = A.pc(); A.plan(pc).train = 'survival';
       T.play(2);
@@ -226,6 +248,9 @@ export default {
       check('needs popover', swept(UI.TIPS.needs())); check('mood popover', swept(UI.TIPS.mood('rest')) + '\n' + swept(UI.TIPS.mood('content')));
       if (UI.TIPS.act) check('activity popover', swept(UI.TIPS.act('tavern')));
       const wordsShown = !!card && /tired|worn out/.test(card.textContent) && /in good company/.test(card.textContent);
+      // (every tab's titles and aria-labels, as the page draws and sweeps them)
+      for (const tab of T.tabs()) { UI.ov = null; UI.tab = tab; UI.render(); await tick(); checkAttrs('peasant ' + tab, document.body); }
+      UI.ov = null; UI.tab = 'life'; UI.render(); await tick();
       // the training pickers and the season's log
       check('training picker', [...document.querySelectorAll('select[data-c="planTrain"] option')].map(o => o.textContent).join('\n'));
       const log = document.getElementById('app').innerText.split('\n').filter(l => /got better at/.test(l));
@@ -324,8 +349,10 @@ export default {
       for (const tab of ['life', 'realm', 'goals', 'path', 'people']) {
         UI.ov = null; UI.tab = tab; UI.render(); await tick();
         const app = document.getElementById('app'), t = nodes(app); shown[tab] = t.join('\n');
-        scanR('ruler ' + tab, t); tipsOf('ruler ' + tab, app); scanEls('ruler ' + tab, app);
+        scanR('ruler ' + tab, t); tipsOf('ruler ' + tab, app); scanEls('ruler ' + tab, app); checkAttrs('ruler ' + tab, document.body);
       }
+      // (and every other tab's titles and aria-labels, as the verifier's probe drew them for a ruler)
+      for (const tab of T.tabs()) { UI.ov = null; UI.tab = tab; UI.render(); await tick(); checkAttrs('ruler ' + tab, document.body); }
       UI.tab = 'realm'; UI.render(); await tick();
       const bars = [...document.querySelectorAll('#app .barrow')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).join(' | ');
       const barWords = /Stability shaky/.test(bars) && /Legitimacy doubted/.test(bars) && /War weariness tiring/.test(bars) && /Infamy feared/.test(bars);
@@ -357,10 +384,10 @@ export default {
         // round 4: the three bars, the war weariness popover, the golden age step, the peace table, the Decide title
         barWords, /War weariness tiring/.test(tipWeary), /Stability shaky \(it must be rock steady\) and/.test(golden),
         peace === 'Aldmark is tiring. What they will accept depends on the war score.', /Legitimacy accepted\.$/.test(ttl)], rulerWords = rw.every(Boolean);
-      return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join('') + ' bars: ' + bars.slice(0, 160), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure };
+      return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join('') + ' bars: ' + bars.slice(0, 160), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure, attrsRead, skillAria };
     });
-    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure;
-    return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
+    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && / & /.test(r.skillAria);
+    return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.attrsRead} titles and aria-labels read (a skill row: "${r.skillAria}"); ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
   },
 
   // playtest 2 (old 7, new 11, old 20, old 22): no bare 0-100 number beside a stat word on the pages a bot life visits.
@@ -448,9 +475,10 @@ export default {
       for (const l of games) if (/\d/.test(l)) found.push('line: ' + l.slice(0, 90));
       return { pages, found: [...new Set(found)], lines, kept, games, traits: traits.filter(t => /faster|Charge/.test(t)).slice(0, 2) };
     });
-    // (the season's practice line is worded by i-numbers.core.js, wf-numbers' training log, which runs first since the
-    // merge: "(a good deal). All of it from doing." The bar is the same: the amount in words, the share in words.)
-    const ok = r.pages > 60 && r.found.length === 0 && r.kept.length === 0 && /\((?:a little|some|a good deal|a great deal)\)\. All of it (?:came )?from doing\.$/.test(r.lines[0]) && /some 900,000 suns/.test(r.lines[3]) && /some 400,000 suns/.test(r.lines[4]) && /— a cut\.$/.test(r.lines[5]) && /your tactics beat theirs/.test(r.games[0]);
+    // (the season's practice line is j-numbers.core.js's: i-numbers' training-log rule leaves a line that says "of it
+    // from doing" to it, so on the one layout of both groups the line is again "(some). All of it came from doing.", and
+    // the bar is wf-numbers' exact one again, not the looser one the swapped layout needed)
+    const ok = r.pages > 60 && r.found.length === 0 && r.kept.length === 0 && /\(some\)\. All of it came from doing\.$/.test(r.lines[0]) && /some 900,000 suns/.test(r.lines[3]) && /some 400,000 suns/.test(r.lines[4]) && /— a cut\.$/.test(r.lines[5]) && /your tactics beat theirs/.test(r.games[0]);
     return { ok, detail: `${r.pages} pages: ${r.found.length ? r.found.length + ' bare numbers, e.g. ' + r.found.slice(0, 30).join(' | ') : 'no bare 0-100 number by a stat word'}; ${r.kept.length ? 'changed what it must not: ' + r.kept.join(' | ') + '; ' : ''}${r.lines.slice(0, 5).join(' | ')} | ${r.games.join(' | ')} | ${r.traits.join(' | ')}` };
   },
 

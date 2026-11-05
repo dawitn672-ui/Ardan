@@ -404,6 +404,11 @@ const titleWords = v => {
   // a person's opinion bar (the People tab): "Opinion 79"
   const m = /^Opinion (-?\d{1,3})$/.exec(t.trim());
   if (m && VS.band2) return `Opinion: ${VS.band2('opinion', +m[1])}`;
+  // a skill row's aria-label (59-tooltips' profile hook, "Melee: 24", "Stewardship & supply: 29"): its tier, as the row
+  // itself says it (verifier, round 5: every tab's screen-reader text kept the 0-100 level). The hook escapes a name
+  // that is already escaped, so the label read "Stewardship &amp; supply": the name is read, and written, plain.
+  const s = /^(.+?): (\d{1,3})$/.exec(t.trim()), sk = s && s[1].replace(/&amp;/g, '&');
+  if (s && skillKey(sk)) return `${sk}: ${tierName(s[2])}`;
   return VS.deNum(t);
 };
 VS.sweepTitles = function (root) {

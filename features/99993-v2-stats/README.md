@@ -225,6 +225,9 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
   "Still needed: ...; Legitimacy 70.", the People tab's "Opinion 79") goes through the whole of `VS.deNum`, the
   element itself included (round 4: the titles had taken only the NUMRULES2 rules, and an element added on its own was
   skipped).
+  The profile's skill rows (59-tooltips' hook writes `aria-label="Melee: 24"`) say the tier to a screen reader,
+  "Stewardship & supply: Apprentice", with the name's "&" plain (the hook escaped it twice). The Realm tab's crown
+  authority buttons say "Income ×0.88; the lords warm to the crown each year", not "vassal mood +8/yr" (round 5).
 - The game's rules are unchanged; drawing reads, never writes, and draws nothing.
 
 Test `v2sNumbers` draws each of these views on a played life and fails on a bare 0-100 number in any of them. As a
@@ -233,7 +236,17 @@ tabs (folded or open), every popover those pages offer, the infamy and war weari
 war declaration, World's Diplomacy and the Infamy map, and pl_coalition_letter as the page draws it, on any line naming
 infamy, stability, legitimacy, a faction, discontent, loyalty or opinion. Every bar is read as its label with its value,
 and every element whose tooltip key is a realm measure as its key with its text, so a number in an element of its own
-is caught. A popover's breakdown keeps its sums ("Legitimacy +0.8" a year).
+is caught. A popover's breakdown keeps its sums ("Legitimacy +0.8" a year). Since round 5, every title and aria-label of every tab, for
+the commoner and for the ruler, goes through the same check, not only those that name a realm measure (a skill row's
+"Melee: 24" was never read). Not scales there: dates, ages ("Portrait of X, 28", the clock's "age 19"), "Initiative
+3.0 of 5", a fold's count of entries ("Activities, 32"), a chapter's number, counts with their unit (loads, times,
+galleys, goods carted), and the provinces' sparkline. It also needs one skill row whose aria-label is a tier.
+
+**One layout for both numbers groups.** `i-numbers.core.js` is part 8 (v2-wf-numbers: needs, training, War Room,
+infamy and the realm's bars), `j-numbers.core.js` is part 10 (v2-wf-numbers2: the playtest 2 remainder), and part 8
+loads first. Both add to `VS.keyWords` (whichever runs first makes it). Part 8's training-log rule leaves the season's
+"... of it from doing" line to part 10's whole-sentence rule, and part 8 leaves a skill's cost ("Athletics & climbing
+−10") to part 10's rule, so each line has one owner whatever the order.
 
 ## Playtest round 2: the 0-100 numbers left on the page (`j-numbers.core.js`, part 10)
 
