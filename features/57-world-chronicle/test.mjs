@@ -370,21 +370,40 @@ export default {
   // waits until the year is WC.SINCE_MIN years gone, and a realm whose short name is a noun takes its article.
   // Changed for v2: this test played a Far Lands realm (lands: 'great', POL-59 paying POL-58, "the Khaganate"). The
   // owner removed the Far Lands from the build (V2_SPEC complaint 3, LANES "The Far Lands"), so POL-58 no longer exists
-  // and the line read "the share for a realm now gone". The bar is the same, on the continent's own noun-named realm:
-  // POL-01 paying the Sand Clans ("Confederacy of the Sand Clans") must say "the Sand Clans", never "to Sand Clans".
+  // and the line read "the share for a realm now gone". The bar is the same, but the realm is now made inside the test:
+  // 99999-v2-names gave every continent realm a proper name (POL-19 "Confederacy of the Sand Clans" is now "Sahrim
+  // Confederacy"), so no realm in the v2 build is noun-named, and a hardcoded name breaks with the next rename. The test
+  // gives POL-19 a noun name for one draw ("League of the Salt Marches" / "Salt Marches", a name no rename table
+  // touches), restores it, then draws again on POL-19's own proper name. Both draws are held to WC.realmWord's rule,
+  // restated here: a short name that stands after "of the" in the full name takes "the"; any other takes no article.
   async wcEchoWords(pg) {
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 5701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
-      const pc = A.pc(), y = A.S.year;
+      const pc = A.pc(), y = A.S.year, R = A.realm('POL-19');
       const c = (yy, i) => ({ id: 'x' + yy + i, k: 'trib', y: yy, e: { k: 'trib', p: pc.home, a: 'POL-01', b: 'POL-19', w: [], x: 0, y: yy } });
-      const fresh = [], old = [];
-      for (let i = 0; i < 6; i++) { fresh.push(A.WC.recallLine(c(y, i), pc, 'k' + i)); old.push(A.WC.recallLine(c(y - 5, i), pc, 'k' + i)); }
-      return { fresh, old, y };
+      const draw = tag => {
+        const fresh = [], old = [];
+        for (let i = 0; i < 6; i++) { fresh.push(A.WC.recallLine(c(y, i), pc, tag + i)); old.push(A.WC.recallLine(c(y - 5, i), pc, tag + i)); }
+        return { fresh, old, name: R.name, short: R.short, word: A.WC.realmWord('POL-19') };
+      };
+      const keep = { name: R.name, short: R.short };
+      let noun;
+      try { R.name = 'League of the Salt Marches'; R.short = 'Salt Marches'; noun = draw('n'); }
+      finally { R.name = keep.name; R.short = keep.short; }
+      return { y, noun, proper: draw('p') };
     });
-    const freshSince = r.fresh.filter(l => l && /since/i.test(l));
-    const named = r.old.filter(Boolean);
-    const bare = named.filter(l => /\b(to|for) Sand Clans\b/.test(l));
-    return { ok: !freshSince.length && named.length > 0 && !bare.length && named.some(l => /the Sand Clans/.test(l)),
-      detail: `this year's tribute: ${r.fresh.filter(Boolean).length} lines, ${freshSince.length} saying "since"; five years on: ${named.slice(0, 2).join(' | ')}` };
+    const esc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const rule = d => (new RegExp('\\bof the ' + esc(d.short) + '\\b', 'i').test(d.name) ? 'the ' + d.short : d.short);
+    const judge = d => {
+      const want = rule(d), named = d.old.filter(Boolean), sh = esc(d.short);
+      // a noun name must never stand bare ("to Salt Marches"); a proper name must never take "the" ("the Sahrim")
+      const wrong = want.startsWith('the ') ? new RegExp('\\b(to|for) ' + sh + '\\b') : new RegExp('\\b[Tt]he ' + sh + '\\b');
+      const bad = named.filter(l => wrong.test(l)), since = d.fresh.filter(l => l && /since/i.test(l));
+      return { want, named, bad, since, ok: d.word === want && named.length > 0 && !bad.length && !since.length && named.every(l => l.includes(want)) };
+    };
+    const n = judge(r.noun), p = judge(r.proper);
+    const say = (k, d, j) => `${k} "${d.name}" -> "${d.word}" (rule "${j.want}"): ${j.named.length} lines five years on, ${j.bad.length} wrong, ${j.since.length} saying "since" this year; ${j.named[0] || ''}`;
+    return { ok: n.ok && p.ok && n.want.startsWith('the ') && !p.want.startsWith('the '),
+      detail: `${say('noun', r.noun, n)} || ${say('proper', r.proper, p)}` };
   },
 };

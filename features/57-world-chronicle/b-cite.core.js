@@ -247,7 +247,8 @@
   // a realm whose short name is a noun takes its article: "goes to the Sand Clans" ("Confederacy of the Sand Clans"),
   // "the Nine Winds", "the Amber Isles". 991's A.realmRef did this for the Far Lands only (the Khaganate); with the Far
   // Lands out of the build (v2, complaint 3) it is not loaded, and the continent's own noun-named realms said "goes to
-  // Sand Clans". A short name that stands after "of the" in the full name is a noun.
+  // Sand Clans". A short name that stands after "of the" in the full name is a noun. 99999-v2-names has since given
+  // every continent realm a proper name (Sahrim, Ulun, Ambrel), so in v2 this fires only for a noun name set later.
   const reEsc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   WC.realmWord = function (id) {
     const r = A.realm(id);

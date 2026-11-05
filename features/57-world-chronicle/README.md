@@ -147,13 +147,17 @@ the scene is about:
 
 Canon stands in only when the scene names one of its realms or its ruler. 99999-v2-content still drops the line on a
 card with counsel or a memory, so a card has one extra line at most. The view keeps `recallId`, the entry recalled.
-`WC.realmWord` gives a noun-named realm its article ("goes to the Sand Clans"), which 991's Far Lands helper did only for
-far realms; with the Far Lands out of the build the continent's own read "goes to Sand Clans".
+`WC.realmWord` gives a noun-named realm its article: a short name that stands after "of the" in the full name ("League
+of the Salt Marches") reads "goes to the Salt Marches", any other reads bare ("goes to Sahrim"). 991's Far Lands helper
+did this only for far realms. **In v2 the rule does not fire on the continent as built:** 99999-v2-names gives every
+realm a proper name (the Sand Clans are Sahrim, the Nine Winds Ulun, the Amber Isles Ambrel), so no full name holds
+"of the <short>". It stays for a realm a mod, a save or a later naming lane gives a noun name.
 
 **Tests.** `wcCitesShare` now holds the recalled line under 1 card in 10 (overall and the median life, no life above
 12%), checks each one against the scene's own words and context, and checks none sits beside counsel or a memory; it
-keeps its place-and-time and raw-token checks. `wcEchoWords` plays the Sand Clans instead of the dropped Far Lands'
-Khaganate. One bot life (human peasant of Aldmark, 40 years): 44 lines on 316 cards (13.9%) before, 18 (5.7%) after.
+keeps its place-and-time and raw-token checks. `wcEchoWords` no longer plays the dropped Far Lands' Khaganate, nor any
+realm by name: it gives POL-19 a noun name inside the test ("League of the Salt Marches"), restores it, and holds both
+that draw ("the Salt Marches") and POL-19's own proper name ("Sahrim", no article) to `WC.realmWord`'s rule. One bot life (human peasant of Aldmark, 40 years): 44 lines on 316 cards (13.9%) before, 18 (5.7%) after.
 `wcCitesShare` on the full v2 build (8 lives, up to 60 years): a recalled line on **118 of 2,925 cards (4.0%)**, median
 life 3.95%, most 5.6%; 242 scenes (8.3%) cite an entry by line, token or pack; 0 lines off their scene, 0 citations out of
 place or time. (The old W6 bar of 15% citations no longer holds, by design.)
