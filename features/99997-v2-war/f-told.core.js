@@ -63,7 +63,16 @@
   };
   // the dice of one entry's hearsay (pure; the same entry always reaches you the same way)
   const dice = e => V2.rng.makeRng(`${A.S ? A.S.seed : 0}:v2w-annal:${e.i}:${e.k}:${e.y}:${e.d || 0}`);
-  W.entLag = function (e) { const r = dice(e); return e.k === 'war' || e.k === 'peace' ? r.int(10, 40) : r.int(18, 80); };
+  // the lag is read for every entry each time the Annals filter their rows, so it is kept per entry (a cache of a pure
+  // function of the seed and the entry, outside A.S; dropped when a new game or a load replaces A.S)
+  let lagC = { S: null, m: new Map() };
+  W.entLag = function (e) {
+    if (lagC.S !== A.S) lagC = { S: A.S, m: new Map() };
+    const key = `${e.i}:${e.k}:${e.y}:${e.d || 0}`;
+    let v = lagC.m.get(key);
+    if (v == null) { const r = dice(e); v = e.k === 'war' || e.k === 'peace' ? r.int(10, 40) : r.int(18, 80); lagC.m.set(key, v); }
+    return v;
+  };
   const dayOf = e => (e.y || 0) * 365 + (e.d || 0);
   W.entHeard = function (e, pc) { return W.entMine(e, pc) || !A.absDay || A.absDay() >= dayOf(e) + W.entLag(e); };
 
@@ -107,10 +116,12 @@
   W.entTold = function (e, pc) {
     if (!e || !A.WC) return null;
     pc = pc || (A.pc && A.pc());
-    if (!WAR_K[e.k]) return { t: A.WC.line(e), mine: true };
-    if (W.entMine(e, pc)) return { t: W.bandLine(e, pc), mine: true };
+    // the line is a getter, made only when read: The Book asks of every entry whether it is known, and sets down few
+    const told = (mine, f) => { let t = null; return { mine, get t() { return t == null ? (t = f()) : t; } }; };
+    if (!WAR_K[e.k]) return told(true, () => A.WC.line(e));
+    if (W.entMine(e, pc)) return told(true, () => W.bandLine(e, pc));
     if (!W.entHeard(e, pc)) return null;
-    return { t: W.hearsay(e), mine: false };
+    return told(false, () => W.hearsay(e));
   };
   if (A.WC) { A.WC.tellOf = W.entTold; A.WC.TOLD = true; }
 

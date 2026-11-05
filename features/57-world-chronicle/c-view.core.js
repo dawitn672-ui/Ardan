@@ -103,8 +103,8 @@
     const R = A.S && A.S.wrec; if (!R || !R.e.length) return [];
     // only what the living player has heard of, each line as they know it (WC.tellOf)
     const pc = A.pc ? A.pc() : null, told = new Map();
-    const all = WC.all().filter(e => { const t = WC.tellOf(e, pc); if (t) told.set(e.i, t.t); return !!t; });
-    const line = e => (told.has(e.i) ? told.get(e.i) : WC.line(e));
+    const all = WC.all().filter(e => { const t = WC.tellOf(e, pc); if (t) told.set(e.i, t); return !!t; });
+    const line = e => (told.has(e.i) ? told.get(e.i).t : WC.line(e));   // read only for the lines kept (t may be a getter)
     const mine = WC.livesRealms();
     const isMine = e => mine.has(e.a) || mine.has(e.b);
     const wars = {}; for (const e of all) if (e.k === 'peace' && Array.isArray(e.x)) wars[e.x[0]] = e;
