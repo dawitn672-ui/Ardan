@@ -253,9 +253,17 @@ export default {
       // (the view may sit in a closed fold: read its text nodes, one a line)
       const texts = []; { const w = document.createTreeWalker(document.getElementById('app'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (n.nodeValue.trim()) texts.push(n.nodeValue.trim()); }
       const pol = texts.join('\n'), coal = pol.slice(pol.indexOf('Coalitions'), pol.indexOf('Restless lords'));
+      // verifier: World > Map > the Infamy map mode drew 'Coalition bait (infamy 60+)' in its legend
+      const mm0 = UI.mapMode; UI.worldView = 'map'; UI.mapMode = 'danger'; UI.render(); await tick();
+      const lg = document.querySelector('#app .legend'), legend = lg ? lg.innerText : 'no legend 0';
+      UI.mapMode = mm0;
+      check('infamy map legend', legend);
+      const legendWords = /so feared a coalition may march/.test(legend);
       UI.tab = 'life'; UI.worldView = null; UI.render();
       check('coalitions and most feared', coal);
-      const infamyWords = /feared: its neighbours band together/.test(coal) && /distrusted/.test(coal);
+      // verifier: the ruler's coalition letter named the infamy as a number
+      check('coalition letter', VS.deNum('Aldmark has swallowed too much land (infamy 47). The neighbors are forming a league.'));
+      const infamyWords = /feared: its neighbours band together/.test(coal) && /distrusted/.test(coal) && legendWords;
       A.S.coalitions = keep.coal; rs.slice(0, 3).forEach((x, i) => { x.infamy = keep.inf[i]; });
       pure = JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0;
       // the War Room: a scouted enemy division and one of your own

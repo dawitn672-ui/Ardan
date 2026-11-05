@@ -262,6 +262,9 @@ VS.NUMRULES2 = [
   [/\brest to (\d{1,3}) first\b/g, (all, v) => `rest until you are ${VS.band('health', +v)} or better first`],
   // 97-life-fixes' door: "your chance is under 2 in 100"
   [/\byour chance is under \d+ in 100\b/g, () => 'your chance is next to none'],
+  // infamy as a number anywhere it is swept: the ruler's coalition letter "(infamy 47)", the Infamy map mode's legend
+  // "Coalition bait (infamy 60+)" (the threshold reads as its band)
+  [/\(infamy (\d{1,3})\+?\)/g, (all, v) => `(${VS.infamyWord(+v)})`],
   // a realm's sparkline: "Stability since 1105: 46 to 61"
   [/\b(Stability|Legitimacy|Health|Happiness|Honou?r|Piety) since (\d{4}): (\d{1,3}) to (\d{1,3})\b/g, (all, k, y, a, b) => `${k} since ${y}: ${VS.band(k, +a)} to ${VS.band(k, +b)}`],
 ];

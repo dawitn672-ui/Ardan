@@ -202,7 +202,8 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
   59-tooltips' popover on an enemy's cell gives the same word, not the exact figure.
 - **Infamy.** Coalitions read "Against Aldmark (feared: its neighbours band together)"; the Most feared bars say
   "feared", "distrusted", "watched". The bands follow the rules: 40 starts a coalition, over 58 one may march, over 20
-  small realms bow.
+  small realms bow. The Infamy map mode's legend reads "Coalition bait (so feared a coalition may march)", and the
+  ruler's coalition letter "Aldmark has swallowed too much land (feared: its neighbours band together)".
 - **Titles.** A hover title with one of these numbers ("Stability since 1105: 46 to 61") gets the same words.
 - The game's rules are unchanged; drawing reads, never writes, and draws nothing.
 
