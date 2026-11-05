@@ -1,4 +1,6 @@
-// 99999-v2-content: regression tests for playtest 1's content findings (#9, #10, #11, #18, #19, the War Room numbers).
+// 99999-v2-content: regression tests for playtest 1's content findings (#9, #10, #11, #18, #19, the War Room numbers),
+// and playtest 2's cards that lied about risk (new 1 and 2, old 18 and 19's remainders: v2cRisk*, v2cChipsDirection,
+// v2cEveryChoiceTrue).
 const SETUP = () => {
   window.V2CT = {
     // play a life, card by card, as the UI draws each one; fn(q, v, html) sees every card before it is chosen
@@ -15,6 +17,15 @@ const SETUP = () => {
       }
     },
     strip: h => String(h).replace(/<span class="sc-vh">[^<]*<\/span>/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(),
+    // a scene staged at the head of the queue, as the card draws it: its choice rows in text
+    rows(ev, ctx) {
+      const q = { type: 'event', ev, ctx: ctx || {} };
+      A.S.queue.unshift(q);
+      const v = A.eventView(q), h = v.skip ? '' : UI.queueModal(q) || '';
+      A.S.queue.shift();
+      // ("If it fails : ..." in text: the chip's label and its words are separate spans)
+      return { q, v, rows: [...h.matchAll(/<button data-a="evChoose"[^>]*>([\s\S]*?)<\/button>/g)].map(m => V2CT.strip(m[1]).replace(/ : /g, ': ')) };
+    },
   };
 };
 const prep = pg => pg.evaluate(SETUP);
@@ -229,5 +240,132 @@ export default {
     });
     const ok = /^(some|about) /.test(r.foeMen) && !r.foeExact && /^(some|about) /.test(r.multi) && !r.multiExact && r.mine && !r.over && r.lords && !/\d/.test(r.lords) && r.quality && !/\d/.test(r.quality);
     return { ok, detail: `enemy division's men "${r.foeMen}" (exact shown ${r.foeExact}); three enemy divisions "${r.multi}"; own division over full reads "${r.mine}" (above full ${r.over}); restless lords "${r.lords}"; army "${r.quality}"` };
+  },
+
+  // playtest 2, new 1: "Join the plot ... Nothing lost if it fails" failed, queued the gallows, and the character hanged at
+  // 20. The chip reads the queued chain (A.punish, fx.event, a scheduled scene, prison, death) and says the stake in
+  // words; the check is red; and the failure, played, does what the chip said.
+  async v2cRiskChain(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      const ST = A.STAKES, out = {};
+      T.enter({ seed: 9711, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
+      const pc = A.pc(), e = A.EV.ct_plot_invite;
+      out.plot = V2CT.rows('ct_plot_invite').rows[0] || '';
+      out.red = ST.checkKind(e.choices[0], e);
+      // planted: a failure that queues a scene whose failures kill, one that schedules it, one that sends you to prison,
+      // and one that is truly free
+      if (!A.EV.v2ct_chain) A.defEvents([
+        { id: 'v2ct_end', title: 'The end', cond: () => false, w: 0, text: 'A cliff.', choices: [
+          { t: 'Jump', check: { s: 'athletics', d: 45 }, win: { r: 'Over.', fx: { fame: 1 } }, lose: { r: 'Down.', fx: { die: 'a fall' } } },
+          { t: 'Climb', check: { s: 'athletics', d: 45 }, win: { r: 'Up.', fx: { fame: 1 } }, lose: { r: 'Down.', fx: { die: 'a fall' } } }] },
+        { id: 'v2ct_chain', title: 'A path', cond: () => false, w: 0, text: 'A path.', choices: [
+          { t: 'Go on', check: { s: 'survival', d: 45 }, win: { r: 'Yes.', fx: { happy: 2 } }, lose: { r: 'Lost.', fx: { event: 'v2ct_end' } } },
+          { t: 'Go later', check: { s: 'survival', d: 45 }, win: { r: 'Yes.', fx: { happy: 2 } }, lose: { r: 'Later.', fx: p => { A.schedule({ type: 'event', ev: 'v2ct_end', ctx: {} }, 30); } } },
+          { t: 'Steal', check: { s: 'stealth', d: 45 }, win: { r: 'Yes.', fx: { coin: 5 } }, lose: { r: 'Caught.', fx: { prison: 2 } } },
+          { t: 'Ask', check: { s: 'persuasion', d: 45 }, win: { r: 'Yes.', fx: { happy: 2 } }, lose: { r: 'No.' } }] }]);
+      out.chain = V2CT.rows('v2ct_chain').rows;
+      // played: the plot fails (the test forces the dice, as the odds' own tests do), and the queue holds what was said
+      const q = { type: 'event', ev: 'ct_plot_invite', ctx: {} };
+      A.S.queue = [q]; A.headReady();
+      const ch = A.chance; A.chance = () => false;
+      try { A.eventChoose(0); } finally { A.chance = ch; }
+      out.result = (q.result && q.result.text) || '';
+      out.after = { gallows: A.S.queue.some(x => x && x.ev === 'gallows'), prison: !!pc.prison };
+      A.S.queue = [];
+      return out;
+    });
+    const plotOk = /If it fails: a treason trial: the gallows or a deep cell/.test(r.plot) && !/Nothing lost/.test(r.plot) && r.red === 'red';
+    const [go, later, steal, ask] = r.chain;
+    const chainOk = /If it fails: what follows can kill you/.test(go || '') && /what follows can kill you/.test(later || '') && /If it fails: prison/.test(steal || '') && /Nothing lost if it fails/.test(ask || '');
+    const playedOk = r.after.gallows || r.after.prison;
+    return { ok: plotOk && chainOk && playedOk, detail: `"${r.plot.slice(0, 120)}" (${r.red}); planted: ${r.chain.map(x => '"' + x.slice(0, 70) + '"').join(' / ')}; played, failed: "${r.result.slice(0, 60)}" -> the gallows queued ${r.after.gallows}, a cell ${r.after.prison}` };
+  },
+
+  // playtest 2, new 2: "If it fails: a wound, hurt" killed a soldier at 18, near death after a lost fight. When the hurt
+  // would bring this person's health to nothing the card says it could kill, in the body sheet's own word for health.
+  async v2cRiskLethal(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9721, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+      const pc = A.pc(), out = {};
+      pc.health = 90; out.hale = V2CT.rows('lf_nb_watch').rows[1] || '';
+      pc.health = 3; out.low = V2CT.rows('lf_nb_watch').rows[1] || '';
+      out.band = A.V2S.band('health', pc.health);
+      out.sheet = V2CT.strip(UI.barRow('Health', pc.health, 100));
+      // played: the failure takes the 12 health the card counted, and the month's mortal check reads nothing left
+      const q = { type: 'event', ev: 'lf_nb_watch', ctx: {} };
+      A.S.queue = [q]; A.headReady();
+      const ch = A.chance; A.chance = () => false;
+      try { A.eventChoose(1); } finally { A.chance = ch; }
+      out.after = pc.health;
+      A.S.queue = [];
+      return out;
+    });
+    const ok = /If it fails: a wound, hurt/.test(r.hale) && !/kill/.test(r.hale) && r.low.includes('If it fails: hurt that could kill you, ' + r.band + ' as you are') &&
+      r.sheet.includes(r.band) && r.after <= 0;
+    return { ok, detail: `hale: "${r.hale.slice(0, 110)}"; at health 3: "${r.low.slice(0, 140)}"; the sheet's health "${r.sheet}"; played, failed: health ${r.after}` };
+  },
+
+  // playtest 2, old 18's remainder: "• changes regard" named nobody, "• changes coin" / "• changes willpower" gave no way.
+  // The content's helpers (pay, hurt, hp, willGrow, bump, addOp, op2, both) are read; the person is named.
+  async v2cChipsDirection(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      const out = { staged: {} };
+      T.enter({ seed: 9731, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 19 });
+      const pc = A.pc();
+      const fr = A.makeAcquaintance(pc, 'friend'); A.link(pc, fr, 'friend', 40, 'friend');
+      out.staged.ice = V2CT.rows('lf_friend_drowning', { pid: fr.id }).rows;
+      out.staged.melee = V2CT.rows('ct_melee').rows;
+      out.staged.gift = V2CT.rows('ni_invite', { pid: fr.id }).rows;
+      if (!pc.mil) A.enlist(pc);
+      out.staged.brawl = V2CT.rows('camp_brawl').rows;
+      const d = V2CT.rows('rk_loaded_dice');
+      out.staged.dice = d.rows;
+      const nm = id => { const t = id && A.P(id); return t ? (A.knownName ? A.knownName(t) : t.given) : '?'; };
+      out.m2 = nm(d.q.ctx.m2); out.pid = nm(d.q.ctx.pid);
+      // every scene, staged for this soldier: the chips that still give no way
+      let chips = 0, vague = 0; const eg = [];
+      for (const id in A.EV) {
+        const e = A.EV[id]; if (!Array.isArray(e.choices)) continue;
+        const q = { type: 'event', ev: id, ctx: { pid: fr.id } };
+        A.S.queue.unshift(q); let v = null; try { v = A.eventView(q); } catch (err) { v = null; } A.S.queue.shift();
+        if (!v || v.skip) continue;
+        for (const vc of v.choices) {
+          if (!vc || vc.i < 0) continue;
+          for (const ch of A.STAKES.choiceChips(e.choices[vc.i], e, q, pc, vc)) { chips++; if (/• (coin|willpower|health|honour|regard|spirits|renown|piety)\b/.test(ch.t)) { vague++; if (eg.length < 4) eg.push(id + ': ' + ch.t); } }
+        }
+      }
+      Object.assign(out, { chips, vague, eg });
+      return out;
+    });
+    const S = r.staged, all = Object.values(S).flat();
+    const noWay = all.filter(x => /• (coin|willpower|health|regard)\b/.test(x));
+    const ok = !noWay.length && /Run for help ▲ .*'s regard · ▲ willpower · ▼ spirits/.test(S.ice[2] || '') && /If it fails: ▼ health, ▼ coin/.test(S.melee[1] || '') &&
+      /Go, and bring a gift ▼ coin/.test(S.gift[1] || '') && /your messmates' regard/.test(S.brawl[0] || '') &&
+      (S.dice[1] || '').includes(`▼ ${r.m2}'s regard`) && r.chips > 3000 && r.vague / r.chips < 0.004;
+    return { ok, detail: `staged: ${all.filter(x => /Run for help|Hang back|bring a gift|Step between|demand a cut/.test(x)).map(x => '"' + x.slice(0, 90) + '"').join(' / ')} (the second messmate ${r.m2}, the first ${r.pid}); with no way shown ${noWay.length} ${noWay[0] || ''}; every scene: ${r.vague} of ${r.chips} chips give no way (under 0.4%; 1.8% before) ${r.eg.join(' | ')}` };
+  },
+
+  // playtest 2, old 19's remainder: "The hearth mark" and "What you want" showed only "It will be remembered" on every
+  // choice, and "The last night" said nothing of what it does. Each choice now shows its real effect.
+  async v2cEveryChoiceTrue(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9741, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+      const pc = A.pc(), out = {};
+      out.hearth = V2CT.rows('rb_custom', { cid: 'ald_hearth' }).rows;
+      out.amb = V2CT.rows('lfx_amb_young').rows;
+      A.S.gath = (A.S.gath || []).concat([{ id: 'v2ct_g', kind: 'tournament', host: pc.realm, pc: { role: 'servant', aim: null, inf: 2 } }]);
+      pc.job = pc.job || { c: 'labor', r: 0, y: 0, perf: 55 };
+      out.close = V2CT.rows('ga_close', { gid: 'v2ct_g' }).rows;
+      A.S.gath = A.S.gath.filter(g => g.id !== 'v2ct_g');
+      return out;
+    });
+    const vague = x => /It will be remembered|Nothing changes/.test(x);
+    const ok = r.hearth.length === 2 && /Costs 3 suns/.test(r.hearth[0]) && /Costs 6 suns/.test(r.hearth[1]) && r.amb.length >= 2 && r.amb.slice(0, -1).every(x => /Your aim: /.test(x)) &&
+      /No aim|Gives up your aim/.test(r.amb[r.amb.length - 1]) && r.close.length === 1 && /▲ renown/.test(r.close[0]) && ![...r.hearth, ...r.amb, ...r.close].some(vague);
+    return { ok, detail: `the hearth mark: ${r.hearth.map(x => '"' + x + '"').join(' / ')}; what you want: ${r.amb.map(x => '"' + x.slice(0, 70) + '"').join(' / ')}; the last night: ${r.close.map(x => '"' + x + '"').join(' / ')}` };
   },
 };

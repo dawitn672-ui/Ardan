@@ -39,11 +39,14 @@ VS.minds = function (p) {
   };
 };
 // how much rides on it: a fight or a deadly loss most, a choice whose loss costs little least
-VS.stakesOf = function (check, ch) {
+// (playtest 2, new 1 and 2: a loss written as code, A.punish for treason or a queued gallows, and a hurt that would kill
+// this person at their health now, are deadly losses too; VS.lossOf reads them, the same reading the card's chip says)
+VS.stakesOf = function (check, ch, pc) {
   if (check && check.stakes != null) return check.stakes;
   if (check && check.fight) return 0.9;
   const lose = ch && ch.lose && ch.lose.fx;
   if (lose && typeof lose === 'object' && (lose.die || lose.wound || lose.prison || lose.duel || lose.beast)) return 0.8;
+  try { if (lose && VS.lossOf) { const L = VS.lossOf(lose, pc); if (VS.lossDeadly(L) || VS.lossSerious(L)) return 0.8; } } catch (e) {}
   return 0.5;
 };
 VS.statOfCheck = function (check) {
@@ -72,7 +75,7 @@ VS.rollP = (p, chance, opts) => VS.attempt(p, chance, opts).success;
 // an event check, as A.eventChoose rolls it (patch V2S-ROLL): the chance the old chain gives, played out by attempt()
 VS.roll = function (pc, check, ch) {
   const pct = A.checkOdds(pc, check);
-  const r = VS.attempt(pc, pct / 100, { stakes: VS.stakesOf(check, ch), stat: VS.statOfCheck(check), label: check && check.s });
+  const r = VS.attempt(pc, pct / 100, { stakes: VS.stakesOf(check, ch, pc), stat: VS.statOfCheck(check), label: check && check.s });
   r.pct = pct;
   return r.success;
 };

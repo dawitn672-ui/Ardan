@@ -42,27 +42,48 @@
     if (K.bossOp) K.bossOp.w = 'your master\'s regard';
   }
   // the way a code effect goes, when its code says so: { family word: +1 | -1 }
+  // (playtest 2, old 18: "• changes coin", "• changes willpower" gave no direction. The content's own helpers are read
+  // too: pay(p, n) and spend take coin, gain and earn give it; hurt(p, n) takes health; hp(p, v) is spirits; willGrow(p,
+  // v) is willpower; bump(p, t, v) and addOp(p, T(ctx), v) are regard; p.honor = cl(p.honor - 3) is honour down.)
+  // A captured word is a direction of its own: pay/spend/hurt down, gain/earn up; a pattern with no capture is up
+  // (coin: ctx.bribe, coin: cost(p, 25): a sum the scene pays you).
+  const OP = /\bop\s*:\s*(-?[\d.]+)/g, ADDOP = /\baddOp\(\s*[\w.]+\s*,\s*(?:[\w.]+\([^()]*\)|[\w.]+)\s*,\s*(-?[\d.]+)/g,
+    BUMP = /\bbump\(\s*\w+\s*,\s*(?:[\w.]+\([^()]*\)|[\w.]+)\s*,\s*(-?[\d.]+)/g, OPSET = /\.op\s*([-+])=\s*[\d.]+/g, OPN = /\bop[23]\(\s*(-?[\d.]+)/g;
+  const as = k => new RegExp('\\.' + k + '\\s*=\\s*[\\w.]*\\(?\\s*\\w+\\.' + k + '\\s*([-+])', 'g');
   const SIGNED = [
-    ['their regard', [/\bop\s*:\s*(-?[\d.]+)/g, /\baddOp\([^,()]+,[^,()]+,\s*(-?[\d.]+)/g, /\.op\s*([-+])=\s*[\d.]+/g]],
-    ['regard', [/\bop\s*:\s*(-?[\d.]+)/g, /\baddOp\([^,()]+,[^,()]+,\s*(-?[\d.]+)/g, /\.op\s*([-+])=\s*[\d.]+/g]],
-    ['health', [/\bhealth\s*:\s*(-?[\d.]+)/g, /\.health\s*([-+])=/g]],
-    ['honour', [/\bhonor\s*:\s*(-?[\d.]+)/g, /\.honor\s*([-+])=/g]],
-    ['renown', [/\bfame\s*:\s*(-?[\d.]+)/g, /\.fame\s*([-+])=/g]],
-    ['piety', [/\bpiety\s*:\s*(-?[\d.]+)/g, /\.piety\s*([-+])=/g]],
-    ['spirits', [/\bhappy\s*:\s*(-?[\d.]+)/g, /\.happy\s*([-+])=/g]],
-    ['stability', [/\bstability\s*:\s*(-?[\d.]+)/g, /\.stability\s*([-+])=/g]],
+    ['their regard', [OP, ADDOP, BUMP, OPSET, OPN]],
+    ['regard', [OP, ADDOP, BUMP, OPSET, OPN]],
+    ['health', [/\bhealth\s*:\s*(-?[\d.]+)/g, /\bhealth\s*:\s*(-)\s*[A-Za-z_(]/g, /\.health\s*([-+])=/g, as('health'), /\b(hurt)\(\s*\w+\s*,\s*[\d.]/g]],
+    ['honour', [/\bhonor\s*:\s*(-?[\d.]+)/g, /\bhonor\s*:\s*(-)\s*[A-Za-z_(]/g, /\.honor\s*([-+])=/g, as('honor'), /\bhon\(\s*p\s*,\s*(-?[\d.]+)/g]],
+    ['renown', [/\bfame\s*:\s*(-?[\d.]+)/g, /\bfame\s*:\s*(-)\s*[A-Za-z_(]/g, /\.fame\s*([-+])=/g, as('fame'), /\bA\.fame\(\s*p\s*,\s*(-?[\d.]+)/g]],
+    ['piety', [/\bpiety\s*:\s*(-?[\d.]+)/g, /\.piety\s*([-+])=/g, as('piety'), /\bpie\(\s*p\s*,\s*(-?[\d.]+)/g]],
+    ['spirits', [/\bhappy\s*:\s*(-?[\d.]+)/g, /\bhappy\s*:\s*(-)\s*[A-Za-z_(]/g, /\.happy\s*([-+])=/g, as('happy'), /\bhp\(\s*p\s*,\s*(-?[\d.]+)/g]],
+    ['stability', [/\bstability\s*:\s*(-?[\d.]+)/g, /\.stability\s*([-+])=/g, as('stability')]],
     ['the treasury', [/\btreasury\s*:\s*(-?[\d.]+)/g, /\.treasury\s*([-+])=/g]],
     ['standing in the ranks', [/\bmerit\s*:\s*(-?[\d.]+)/g, /\.merit\s*([-+])=/g]],
-    ['coin', [/\bcoin\s*:\s*(-?[\d.]+)/g, /\.coin\s*([-+])=/g]],
+    ['coin', [/\bcoin\s*:\s*(-?[\d.]+)/g, /\bcoin\s*:\s*(-)\s*[A-Za-z_(]/g, /\.coin\s*([-+])=/g, as('coin'), /\.coin\s*=\s*Math\.max\(\s*0\s*,\s*\w+\.coin\s*([-+])/g, /\b(pay|spend|gain|earn)\(\s*p\b/g, /\bcoin\s*:\s*(?=ctx\.|cost\(|A\.ri\(|Math\.(?:round|floor|ceil)\()/g]],
+    ['willpower', [/\bwil\s*:\s*(-?[\d.]+)/g, /\bwillGrow\(\s*\w+\s*,\s*(-?[\d.]+)/g]],
+    ['relations', [/\baddRel\([^,()]+,[^,()]+(?:\([^()]*\))?[^,()]*,\s*(-?[\d.]+)/g, /\brealmRel\s*:\s*(-?[\d.]+)/g]],
+    ['the army', [/\.army\s*([-+])=/g, /\barmyXp\s*:\s*(-?[\d.]+)/g]],
   ];
+  const WORD_SIGN = { pay: -1, spend: -1, hurt: -1, gain: 1, earn: 1 };
+  C2.SIGNED_WORDS = SIGNED.map(x => x[0]);
+  const SIGN_RX = new RegExp('• (' + C2.SIGNED_WORDS.join('|') + ')\\b', 'g');
   const signCache = new WeakMap();
+  // a function effect's code, with the code of the parts it was built from (f-risk: both(obj, fn) keeps fn on v2parts)
+  C2.srcAll = function (fx, d) {
+    if (typeof fx !== 'function') return '';
+    let s = ''; try { s = String(fx); } catch (e) { s = ''; }
+    if (Array.isArray(fx.v2parts) && (d || 0) < 3) for (const f of fx.v2parts) if (typeof f === 'function') s += '\n' + C2.srcAll(f, (d || 0) + 1);
+    return s;
+  };
   C2.signs = function (fx) {
     if (typeof fx !== 'function') return {};
     if (signCache.has(fx)) return signCache.get(fx);
-    const s = String(fx), out = {};
+    const s = C2.srcAll(fx), out = {};
     for (const [w, rxs] of SIGNED) {
       let up = 0, down = 0;
-      for (const rx of rxs) for (const m of s.matchAll(rx)) { const v = m[1] === '+' ? 1 : m[1] === '-' ? -1 : +m[1]; if (v > 0) up++; else if (v < 0) down++; }
+      for (const rx of rxs) for (const m of s.matchAll(rx)) { const v = m[1] === undefined ? 1 : m[1] === '+' ? 1 : m[1] === '-' ? -1 : WORD_SIGN[m[1]] || +m[1]; if (v > 0) up++; else if (v < 0) down++; }
       if (up && !down) out[w] = 1; else if (down && !up) out[w] = -1;
     }
     signCache.set(fx, out);
@@ -72,7 +93,7 @@
   const EDGE = { march: 'marching', formation: 'formation', weapons: 'weapon drill', siege: 'siege drill', missile: 'shooting', mounted: 'riding drill', any: 'drill' };
   C2.unitChips = function (fx) {
     if (typeof fx !== 'function') return [];
-    const s = String(fx), out = [];
+    const s = C2.srcAll(fx), out = [];
     const sum = rx => { let n = 0, seen = false; for (const m of s.matchAll(rx)) { seen = true; n += +m[1]; } return seen ? n : null; };
     const org = sum(/\borg\(\s*p\s*,\s*(-?[\d.]+)/g), exp = sum(/\bexp\(\s*p\s*,\s*(-?[\d.]+)/g);
     if (org) out.push({ k: org > 0 ? 'gain' : 'cost', t: `${org > 0 ? '▲' : '▼'} the unit's order` });
@@ -89,6 +110,18 @@
   const isEmpty = fx => !fx || (typeof fx === 'object' && !Object.keys(fx).length) || (typeof fx === 'function' && /^\s*(\([^)]*\)|\w+)\s*=>\s*(""|''|\(\s*""\s*\)|void 0|null|undefined)\s*$/.test(String(fx)));
   const nameOf = t => (A.knownName ? A.knownName(t) : t.given);
   const whose = (t, w) => `${nameOf(t)}'s ${w}`;
+  // whose regard a choice moves: a second messmate (99's op2 helper reads ctx.m2), the person the scene is about
+  // (ctx.pid), or, in a loop over the squad or a word to your superior, them. Pure: the scene's context and the code.
+  C2.regardWho = function (fx, q, pc) {
+    const ctx = (q && q.ctx) || {}, me = pc && pc.id, s = C2.srcAll(fx);
+    const P = id => { const x = id != null && id !== '' ? A.P(id) : null; return x && x.id !== me ? x : null; };
+    if (/\bop2\(|ctx\.m2\b/.test(s) && P(ctx.m2)) return whose(P(ctx.m2), 'regard');
+    if (/\bop3\(|ctx\.m3\b/.test(s) && P(ctx.m3)) return whose(P(ctx.m3), 'regard');
+    if (P(ctx.pid)) return whose(P(ctx.pid), 'regard');
+    if (/\bA\.squad\(/.test(s)) return 'your messmates\' regard';
+    if (/\bA\.superior\(/.test(s)) return 'your superior\'s regard';
+    return null;
+  };
 
   if (ST && typeof ST.choiceChips === 'function') {
     const chips0 = ST.choiceChips;
@@ -102,7 +135,7 @@
           if (typeof ch.t !== 'string') continue;
           // which way a code effect goes
           const sg = C2.signs(fxOf(ch));
-          ch.t = ch.t.replace(/• (their regard|regard|health|honour|renown|piety|spirits|stability|the treasury|standing in the ranks|coin)\b/g, (all, w) => (sg[w] ? `${sg[w] > 0 ? '▲' : '▼'} ${w}` : all));
+          ch.t = ch.t.replace(SIGN_RX, (all, w) => (sg[w] ? `${sg[w] > 0 ? '▲' : '▼'} ${w}` : all));
           if (ch.k === 'touch' && /^[▲▼]/.test(ch.t)) ch.k = /^▲/.test(ch.t) ? 'gain' : 'cost';
           // what a failed check costs is a loss: the regard it names goes down ("If it fails: hurt, ▼ Edith's regard")
           // (a failure that still raises something, "Fails: ▲ regard" in red, reads as a contradiction: it is no loss,
@@ -112,8 +145,9 @@
             if (!parts.length) { ch.k = 'safe'; ch.t = 'Nothing lost if it fails'; delete ch.fail; }
             else ch.t = 'If it fails: ' + parts.join(', ').replace(/(^|, )(their regard)\b/g, '$1▼ $2');
           }
-          // whose regard
-          if (t && t.id !== (pc && pc.id)) ch.t = ch.t.replace(/\btheir regard\b/g, whose(t, 'regard')).replace(/• regard\b/g, '• ' + whose(t, 'regard')).replace(/([▲▼]) regard\b/g, `$1 ${whose(t, 'regard')}`);
+          // whose regard (playtest 2, old 18: "• changes regard" named nobody)
+          const who = C2.regardWho(fxOf(ch), q, pc);
+          if (who) ch.t = ch.t.replace(/\btheir regard\b/g, who).replace(/• regard\b/g, '• ' + who).replace(/([▲▼]+) regard\b/g, `$1 ${who}`);
         }
         // the drill scenes' code effects
         if (!c.check && !c.group) for (const x of C2.unitChips(c.fx)) if (chips.length < 4) chips.push(x);

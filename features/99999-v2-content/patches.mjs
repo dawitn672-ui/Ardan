@@ -39,4 +39,21 @@ export default [
       'the coin. (9998-stakes shows a locked row only for a requirement it can read, so a child no longer sees it.)',
     edits: [['t:"Laugh, and buy the whole tavern a drink (5 suns)",req:p=>p.coin>=5,', 't:"Laugh, and buy the whole tavern a drink (5 suns)",req:p=>p.coin>=5&&A.age(p)>=16,']],
   },
+  {
+    id: 'V2C-FX-PARTS',
+    blob: 'ardan-content',
+    why: 'The soldier packs build 227 choices as both({ honor: 2, ... }, op2(-30)): a closure whose source shows only ' +
+      '"applyFx(p, obj, ctx)", so the card could read none of what they do (playtest 2, old 18 and 19: "It will be ' +
+      'remembered", "• changes regard" naming nobody). The closures now carry their parts (A.V2C.parts: f.v2parts, and ' +
+      'op2\'s regard and messmate as f.v2meta), which the chips read as written. Nothing they do changes. In the source: ' +
+      'write these effects as data, or give the helpers a way to say what they hold.',
+    edits: [
+      ['both=(obj,fn)=>(p,ctx)=>{const a=A.applyFx(p,obj,ctx),b=fn(p,ctx);return[a,b].filter(x=>typeof x=="string"&&x).join(" ")}',
+        'both=(obj,fn)=>(A.V2C&&A.V2C.parts||(f=>f))((p,ctx)=>{const a=A.applyFx(p,obj,ctx),b=fn(p,ctx);return[a,b].filter(x=>typeof x=="string"&&x).join(" ")},[obj,fn])', 3],
+      ['op2=d=>(p,ctx)=>{const c=A.P(ctx.m2);return c&&A.addOp(p,c,d),""}',
+        'op2=d=>(A.V2C&&A.V2C.parts||(f=>f))((p,ctx)=>{const c=A.P(ctx.m2);return c&&A.addOp(p,c,d),""},null,{op:d,who:"m2"})', 2],
+      ['rel=d=>(p,ctx)=>(ctx&&ctx.destId&&A.realm(ctx.destId)&&ctx.destId!==p.realm&&A.addRel(p.realm,ctx.destId,d),"")',
+        'rel=d=>(A.V2C&&A.V2C.parts||(f=>f))((p,ctx)=>(ctx&&ctx.destId&&A.realm(ctx.destId)&&ctx.destId!==p.realm&&A.addRel(p.realm,ctx.destId,d),""),null,{rel:d})'],
+    ],
+  },
 ];
