@@ -105,7 +105,8 @@ export default {
   async foldLongTabs(pg) {
     await pg.setViewportSize({ width: 1366, height: 768 });
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24, lands: 'great' });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24 });
       UI.set.motion = 'off'; UI.applySettings(); A.S.queue = [];
       const h0 = T.hash(A.S), rng0 = JSON.stringify(A.rngState);
       const screens = t => { UI.tab = t; UI.render(); const tb = document.getElementById('tabbody'); return +(tb.scrollHeight / tb.clientHeight).toFixed(2); };

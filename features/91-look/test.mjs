@@ -475,7 +475,8 @@ export default {
   async lookSmallFixes(pg) {
     await pg.setViewportSize({ width: 1366, height: 768 });
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24, lands: 'great' });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24 });
       UI.set.motion = 'off'; UI.applySettings(); A.S.queue = [];
       UI.tab = 'path'; UI.render();
       const spans = [...document.querySelectorAll('#tabbody .ladder > span')];

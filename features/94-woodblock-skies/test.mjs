@@ -189,7 +189,8 @@ export default {
   async skyClimate(pg) {
     const r = await pg.evaluate(() => {
       const SK = UI.SKIES;
-      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
       const provs = Object.values(A.S.prov);
       const pick = re => provs.find(pv => re.test(pv.biome || '') && pv.terr !== 'mountains');
       const out = {};

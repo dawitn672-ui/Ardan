@@ -220,7 +220,8 @@ export default {
   // colour it is shown in elsewhere, so neighbours that shared one pink on the Twin Rivers now differ.
   async inkLegendView(pg) {
     const r = await pg.evaluate(async () => {
-      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
       UI.screen = 'game'; A.S.queue = []; UI.set.hints = false; if (UI.INKMAP) UI.INKMAP.budgetMs = 1e9; UI.render();
       UI.ov = { type: 'bigmap' }; UI.renderModal(); UI.gmDraw && UI.gmDraw();
       const L = document.getElementById('imLegendList');

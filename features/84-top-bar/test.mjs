@@ -80,6 +80,7 @@ Object.assign(tests, {
     // 13 to 17 ms.)
     await pg.evaluate(STEPS);
     const r = await pg.evaluate(async () => {
+      // v2: POL-36 is past the continent's realms, so the seed places this life in one of them (POL-22)
       T.enter({ seed: 8403, race: 'human', realm: 'POL-36', status: 'peasant', sex: 'M', startAge: 20 });
       await __step('stepMonth');   // the first days build the roads once (v2: a month; Week is gone)
       const lt = [];
