@@ -355,15 +355,41 @@ export default {
       const sup = A.superior; A.superior = () => null;
       let tok; try { tok = A.ctxTokens(pc, {}); } finally { A.superior = sup; }
       const out = { one: A.coin(1), two: A.coin(2), big: A.coin(1200), herd: GD.CAREERS.herd.ranks[0][0], pot: GD.CAREERS.brewer.ranks[0][0], bossTitle: tok.bossTitle, boss: tok.boss };
-      A.newGame({ seed: 9702, lands: 'great', race: 'human', realm: 'POL-143', status: 'peasant', sex: 'F', startAge: 20 });
-      const L = A.FAR.D.realms['POL-143'];
-      out.far = UI.crRulerNote(Object.assign({}, LORE.realms['POL-143'] || { title: L.title }, { id: 'POL-143' }));
-      out.farSex = L.rulerSex;
+      if (A.FAR && A.FAR.D) {
+        A.newGame({ seed: 9702, lands: 'great', race: 'human', realm: 'POL-143', status: 'peasant', sex: 'F', startAge: 20 });
+        const L = A.FAR.D.realms['POL-143'];
+        out.far = UI.crRulerNote(Object.assign({}, LORE.realms['POL-143'] || { title: L.title }, { id: 'POL-143' }));
+        out.farSex = L.rulerSex;
+      } else {
+        // The Far Lands are out of the v2 build (the owner's decision of Nov 1: .wip markers), so A.FAR is missing and
+        // the Far realm POL-143 cannot be read (CI run 88: "reading 'D'"). The finding was "(King )" and a queen
+        // called King in the creation summary; the same reading is checked on every realm of the generated continent:
+        // no empty "( )", and a woman's title where the ruler is a woman.
+        const FEM = /Queen|Empress|Sultana|Princess|Rani|Khatun|Emira|Abbess|Dogaressa|Duchess|Lady/;
+        const ids = Object.keys(LORE.realms || {});
+        out.cont = { n: 0, empty: [], fem: 0, femBad: [] };
+        for (const id of ids) {
+          const R = LORE.realms[id], c = LORE.cast && LORE.cast[R.ruler], note = UI.crRulerNote(Object.assign({}, R, { id }));
+          if (!note) continue;
+          out.cont.n++;
+          if (/\( ?\w* \)/.test(note)) out.cont.empty.push(id);
+          const t = String(R.title || '').split(' / ')[0];
+          if (c && c.sex === 'F' && /^(King|Emperor|Sultan|Prince|Raja|Khan|Emir|Abbot|Doge|Duke|Khagan|Lord)$/.test(t)) { out.cont.fem++; if (!FEM.test(note)) out.cont.femBad.push(id + ': ' + note); }
+        }
+        // a world with no queen on its thrones: crown one for the reading (the cast entry is put back)
+        const R1 = LORE.realms['POL-01'], c1 = LORE.cast && LORE.cast[R1.ruler];
+        if (c1) {
+          LORE.cast[R1.ruler] = Object.assign({}, c1, { sex: 'F' });
+          try { out.cont.queen = UI.crRulerNote(Object.assign({}, R1, { id: 'POL-01' })); } finally { LORE.cast[R1.ruler] = c1; }
+          if (!FEM.test(out.cont.queen)) out.cont.femBad.push('POL-01 crowned a woman: ' + out.cont.queen);
+        }
+      }
       out.kw = UI.crRulerNote(LORE.realms['POL-01']);
       return out;
     });
     return { ok: r.one === '1 sun' && r.two === '2 suns' && /suns$/.test(r.big) && r.herd === 'Herd-hand' && r.pot === 'Pot-hand' && r.bossTitle == null && r.boss === 'your master' &&
-      /Kalunge/.test(r.far) && !/\( ?\w* \)/.test(r.far) && (r.farSex !== 'F' || /Queen/.test(r.far)) && /Aldwin/.test(r.kw), detail: JSON.stringify(r) };
+      (r.cont ? r.cont.n > 0 && !r.cont.empty.length && !r.cont.femBad.length
+        : /Kalunge/.test(r.far) && !/\( ?\w* \)/.test(r.far) && (r.farSex !== 'F' || /Queen/.test(r.far))) && /Aldwin/.test(r.kw), detail: JSON.stringify(r) };
   },
 
   // cycle 1 (lives B4): a queen hid her sister in the hayloft, a General of 62 was asked "You. Name?", a carpenter of 68
