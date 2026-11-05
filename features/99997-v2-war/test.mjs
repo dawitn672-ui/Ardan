@@ -395,7 +395,7 @@ export default {
     });
     const L = r.cmd || {};
     const ok = !!r.ask && /about [\d,]+ against about [\d,]+/.test(r.ask) && !r.askExact.length && !r.frontExact.length && !r.sceneExact.length && r.slips.length > 0 && r.slips.every(s => !/^\d{1,3}(\.\d)?k$|^\d{3,}$/.test(s) || /^~/.test(s)) &&
-      /(about [\d,]+|a handful|none) of yours dead/.test(r.log) && !/\b\d{1,3}(,\d{3})+\b/.test(r.log.replace(/(about|some) [\d,]+/g, "")) && r.cmd && !L.enemyExact && L.ownExact && !L.morale && !L.drill && r.pure;
+      /(about [\d,]+|a handful|none) of yours dead/i.test(r.log) && !/\b\d{1,3}(,\d{3})+\b/.test(r.log.replace(/(about|some) [\d,]+/gi, "")) && r.cmd && !L.enemyExact && L.ownExact && !L.morale && !L.drill && r.pure;
     return { ok, detail: `levy call: "${(r.ask || '').slice(-60)}"; front: "${(r.front || '').slice(0, 160)}"; standards ${JSON.stringify((r.slips || []).slice(0, 6))}; tally "${r.log}"; ` +
       `commander: enemy exact ${L.enemyExact}, own exact ${L.ownExact}, a morale number ${L.morale}, a drill number ${L.drill}; pure ${r.pure}` };
   },
