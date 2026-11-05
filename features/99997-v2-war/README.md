@@ -41,7 +41,7 @@
   - A captain also sets his company's tactic.
   - Odds show as words plus the tipped balance. A soldier and a sergeant see numbers only as estimates ("about 3,500"). A captain sees "some 3,400".
 - **The commander keeps the release's command of the battle** (`wsLead`: 9997-companies' company and division simulator, a tactic for each wing, and the reserve).
-- **The result moves the real fight.** It is a performance from −1 to 1 (your grade each phase, your part in the result, and the result), fed into 44-rank-battles' `A.RANKFX.apply` (layers `line` and `part`). The war map's division simulator then decides the fight.
+- **The result moves the real fight.** It is a performance from −1 to 1 (your grade each phase: what a choice that works is worth to the fight, and one cost for any failure; half your part in the result, which also reaches the fight as its dead; and the result), fed into 44-rank-battles' `A.RANKFX.apply` (layers `line` and `part`). The war map's division simulator then decides the fight.
 - **The after-action report** has three causes in words (`afterAction`'s contributions: ground, tactics, numbers, quality, elites, your part).
   - It is kept as `b.aar = { causes: [{ label, pct }], text }`, which is 23's shape. `pct` is the signed contribution × 40, for the bench; the player sees only the words.
   - It is also kept in the story, and on the war's battle record when 23 didn't already give one.
