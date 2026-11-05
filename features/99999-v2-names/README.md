@@ -35,6 +35,7 @@ Ids, peoples, cultures, governments, rulers' titles (Khan, Speaker, War-Motherâ€
    - `LORE.realms[id].name/short` are set exactly, so a new game's `S.realms` has the new names.
 3. **Text as it is made:** `A.T` covers every event title, text, choice and result. `A.log` and `A.news` run their text through `fix`, so the state a new life writes holds only the new names.
 4. **Text as it is shown:** the `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `textContent`, `innerText` and `title` setters, `setAttribute` (title, aria-label, alt), and the canvas's `fillText`, `strokeText` and `measureText` (the map's labels). Script, style and textarea elements are skipped. This covers the literal names in code: the release's and features' UI strings, the 29-starts blurbs, the 47-realm-bible data.
+4b. **Text the player takes away:** `A.chronicleText` and any `text/*` file given to `UI.download` (the Book's "Save the chronicle as text") go through `fix`. The chronicle is built from prose that still holds the kept place key "Blackreef" (the seat's plague and siege lines), and a file reaches none of the display layers above.
 5. **Saves:** step 9 `names` of 99998's `A.V2SAVE.upgrade` renames `S.realms` by id, then the prose a life keeps: log lines, news, an event waiting on screen, people's titles. The step also runs after every `A.deserialize`, because a v2 save made before this feature holds the old names. It changes nothing on a second run. `SAVE_VER` is not bumped.
 
 Every layer is pure. Nothing draws from `A.rand`, and rendering writes nothing to `A.S`.
@@ -51,8 +52,8 @@ Every layer is pure. Nothing draws from `A.rand`, and rendering writes nothing t
 | Test | What it checks |
 | --- | --- |
 | `nmRules` | 42 lines that must change read as written (among them the verb and article cases an audit of every renamed string found), 44 that must stay don't change, the lore keeps the ordinary words and the province key Blackreef, the eight lore realms carry their new names |
-| `nmLives` | A 20-year life in each of the eight realms. No old name in any event (title, text, choices), log line, news line, realm or title, nor in a sweep at year 10 and year 20 of every tab, every Codex page, each realm view a tab opens for the eight, every title/aria-label, and every map label drawn. The same seed twice gives the same world. Against a build without this feature it fails at once (checked with `NM_ONLY=POL-19`). |
-| `nmOldSaves` | A release save (Sand Clans, 1 year) migrates with the `names` step: renamed, every page and the stored prose clean. A v2 save holding the old names loads renamed. Its own save comes back exactly. |
+| `nmLives` | A 20-year life in each of the eight realms. No old name in any event (title, text, choices), log line, news line, realm or title, nor in a sweep at year 10 and year 20 of every tab, every Codex page, each realm view a tab opens for the eight, every title/aria-label, and every map label drawn, nor in the Book's exported text file (read from the Blob the export hands the browser) or `A.chronicleText()`. The same seed twice gives the same world. Against a build without this feature it fails at once (checked with `NM_ONLY=POL-19`). |
+| `nmOldSaves` | A release save (Sand Clans, 1 year) migrates with the `names` step: renamed, every page, the stored prose and the exported chronicle clean. A v2 save holding the old names loads renamed. Its own save comes back exactly. |
 | `nmPlaces` | Ambrel, Kesh and Corvasse keep their shore on two seeds. The Ughrak Dominion's school is still an orc school. |
 
 `NM_ONLY=POL-xx` limits `nmLives` to one realm.
