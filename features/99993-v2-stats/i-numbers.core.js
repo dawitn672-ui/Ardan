@@ -112,13 +112,13 @@
       const t = (el.textContent || '').trim();
       if (!/\d/.test(t)) continue;
       let w = null; try { w = f(t, el); } catch (e) {}
-      if (w != null && w !== t) el.textContent = w;
+      if (w != null && w !== t) { el.textContent = w; if (el.classList.contains('val') && el.parentNode && el.parentNode.classList) el.parentNode.classList.add('v2-wb'); }
     }
     // the release's bars: Blood and Wind in a duel, an opinion, the "Most feared" list (see the wrappers below)
     for (const v of root.querySelectorAll('.barrow > .val')) {
       const t = (v.textContent || '').trim(); if (!isNum(t)) continue;
       const l = ((v.parentNode.querySelector('.lbl') || {}).textContent || '').trim();
-      if (/^(Their )?[Oo]pinion( of you)?$/.test(l)) v.textContent = band('opinion', num(t));
+      if (/^(Their )?[Oo]pinion( of you)?$/.test(l)) { v.textContent = band('opinion', num(t)); v.parentNode.classList.add('v2-wb'); }
     }
   };
   const sweep = VS.sweep;
@@ -128,8 +128,17 @@
     return r;
   };
 
+  // a word is wider than the number the release's columns were sized for ("mistrus", "Journe" at 420 px): the value
+  // column takes the word's width and the bar gives way
+  const CSS = '.barrow.v2-wb{grid-template-columns:minmax(0,96px) minmax(24px,1fr) auto}.barrow.v2-wb>.val{width:auto;min-width:0;max-width:none;overflow:visible;white-space:nowrap}' +
+    '.skrow.v2-skw{grid-template-columns:minmax(0,1fr) minmax(24px,90px) auto}.skrow.v2-skw b{white-space:nowrap}';
+  const style = () => { if (typeof document === 'undefined' || !document.head || document.getElementById('v2s-num-style')) return; const el = document.createElement('style'); el.id = 'v2s-num-style'; el.textContent = CSS; document.head.appendChild(el); };
+  const render = UI.render;
+  UI.render = function () { try { style(); } catch (e) {} return render.apply(this, arguments); };
+
   // ---- the bars the release draws with a number --------------------------------------------------------------------------
-  const barRow = UI.barRow;
+  const barRow0 = UI.barRow, wb = h => (typeof h === 'string' ? h.replace('<div class="barrow">', '<div class="barrow v2-wb">') : h);
+  const barRow = function () { return wb(barRow0.apply(this, arguments)); };
   UI.barRow = function (label, v, max, cls, pot, valTxt) {
     try {
       const l = String(label || '').replace(/<[^>]*>/g, '').trim();
@@ -141,7 +150,7 @@
         if (/^Morale$/.test(l)) return barRow.call(this, label, v, max, cls, pot, band('morale', 100 * v / max));
       }
     } catch (e) {}
-    return barRow.apply(this, arguments);
+    return barRow0.apply(this, arguments);
   };
 
   // ---- another person's page --------------------------------------------------------------------------------------------
@@ -154,7 +163,7 @@
     return h
       .replace(/(<div>Renown<\/div><div>)(\d{1,3})(?: — [^<]*)?(<\/div>)/, (m, a, n, b) => `${a}${esc(VS.band('renown', +n))}${b}`)
       .replace(/(<b>Command:<\/b> )\d{1,3} — /, '$1')
-      .replace(/(<div class="skrow"><span>)([^<]*)(<\/span>[\s\S]*?)<b>(\d{1,3})<\/b><i>[^<]*<\/i>/g, (m, a, n, mid, v) => `${a}${n}${mid}<b>${esc(tier(+v))}</b>`)
+      .replace(/(<div class="skrow"><span>)([^<]*)(<\/span>[\s\S]*?)<b>(\d{1,3})<\/b><i>[^<]*<\/i>/g, (m, a, n, mid, v) => `${a}${n}${mid}<b>${esc(tier(+v))}</b>`.replace('<div class="skrow">', '<div class="skrow v2-skw">'))
       .replace(/Body: strength \d+ · speed \d+ · instinct \d+ · stamina \d+ · wits \d+ · will \d+/, () =>
         'Body: ' + Object.entries(BODY).map(([w, k]) => `${w} ${esc(VS.statWord(t, k, A.stat(t, k)))}`).join(' · '))
       // 55-bonds' history: "you preached on obedience +4, fading"
@@ -178,7 +187,7 @@
         if (typeof h !== 'string') return h;
         return h.replace(/(<div class="group-h">Most feared<\/div>)([\s\S]*?)(?=<div class="group-h">|$)/, (m, head, body) =>
           head + body.replace(/<div class="barrow"><span class="lbl">([^<]*)<\/span>([\s\S]*?)<span class="val">(\d{1,3})<\/span><\/div>/g,
-            (x, l, bar, n) => `<div class="barrow"><span class="lbl">${l}</span>${bar}<span class="val">${esc(band('infamy', +n))}</span></div>`));
+            (x, l, bar, n) => `<div class="barrow v2-wb"><span class="lbl">${l}</span>${bar}<span class="val">${esc(band('infamy', +n))}</span></div>`));
       } catch (e) { return h; }
     };
   }
@@ -256,6 +265,8 @@
     // the person page's command line if another feature drew it: "Command: 48 — a steady officer"
     [/^(\s*)\d{1,3} — (a great commander|a capable commander|a steady officer|a raw officer|no commander)/, (m, sp, w) => `${sp}${w}`],
     [/\bCommand: \d{1,3} — /g, () => 'Command: '],
+    // a captain or a general by his skills: "(Cunning, command 56)", "command 45 · tactics 30", "(command 60)"
+    [/\b(command|tactics|logistics) (\d{1,3})\b(?!\s*(?:÷|\(÷|×|\/|%))/g, (m, k, v) => `${k} ${tier(+v)}`],
     // 55-bonds: "holds his opinion of you up (+4)"
     [/(opinion of you (?:up|down)) \([+−-]\d{1,3}\)/g, '$1'],
     // the duel's blows: "You take a hit — 7 damage."
