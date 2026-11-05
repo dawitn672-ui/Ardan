@@ -34,7 +34,8 @@ export default {
           const pc = A.pc();
           if (w.y - pc.born < MW.MIN_AGE) out.young.push(q.ev + ': ' + w.long);
           const deed = w.ref ? (MW.lines(pc).find(m => m.y === w.ref[0] && m.e === w.ref[1] && m.c === w.ref[2]) || {}).d : null;
-          if (/\byou (are|pay|sign|have)\b|\bshe says\b|\bit is\b|while you are/.test(w.long) || (deed && !MW.pastDeed(deed))) out.present.push(w.long);
+          // the deed is judged, not 67's own frame around it ("... and you have not forgotten how" is the frame's)
+          if (/while you are/.test(w.long) || (deed && (!MW.pastDeed(deed) || /\byou (are|pay|sign|have)\b|\bshe says\b|\bit is\b/.test(deed)))) out.present.push(w.long);
           if (out.eg.length < 3) out.eg.push(w.long);
         });
       }
