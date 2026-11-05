@@ -390,13 +390,49 @@ export default {
         out.pure = T.hash(A.S) === h0 && A.rngState === r0;
         const t = html.replace(/<[^>]+>/g, ' ');
         out.cmd = { enemyExact: t.includes(A.fmt(en.men0)), ownExact: t.includes(A.fmt(me.men0)), morale: /morale \d+/.test(t), drill: /drilled \d+|Drill: [^.]*\d/.test(t) };
+        // then every screen of the battle: as it opens, after one pulse, and fought out to its end (the "Fight it
+        // out" button). The text and every tooltip on it (59-tooltips' bSide, bMorale, bWing, bDead) must give no exact
+        // count of the enemy's, living or dead, and no 0-100 morale; his own dead stay exact. (The verifier's catch:
+        // the release's closing "Dead: 540 of Varenna, 2,241 of Qadir.", bDead's "Theirs 2,241" and bWing's
+        // "morale 96" were left as numbers, and the first-render check alone could not see them.)
+        const enK = B.pcSide === 'A' ? 'B' : 'A', meK = B.pcSide;
+        const liveMen = s => s.units.filter(u => u.status === 'ok' || u.status === 'shaken').reduce((a, u) => a + u.men, 0);
+        const scan = when => {
+          const box = document.createElement('div'); box.innerHTML = UI.battleModal(B);
+          const tips = [...box.querySelectorAll('[data-tt]')].map(el => {
+            const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v'), fn = UI.TIPS && UI.TIPS[k];
+            return { k, t: fn ? String(fn(v) || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ') : '' };
+          });
+          const all = box.textContent + ' ' + tips.map(x => x.t).join(' ');
+          // the enemy's exact numbers that are not also one of ours (so a coincidence is not a leak)
+          const dead = k => (B.dead && B.dead[k]) || B.sides[k].units.reduce((a, u) => a + (u.killed || 0), 0);
+          const ours = new Set([dead(meK), me.men0, liveMen(me)].map(n => A.fmt(n)));
+          const theirs = [dead(enK), en.men0, liveMen(en)].filter(n => n >= 100).map(n => A.fmt(n)).filter(n => !ours.has(n));
+          const hit = n => new RegExp(`(^|[^\\d,])${n}($|[^\\d,])`).test(all);
+          return { when, phase: B.phase, tips: tips.map(x => x.k).join(','), theirs, leaked: theirs.filter(hit),
+            ownDead: A.fmt(dead(meK)), ownShown: all.includes(A.fmt(dead(meK))), morale: (all.match(/morale\s*\d+|Morale\s+\d+/gi) || []).slice(0, 3),
+            shown: (box.textContent.match(/[^.]*(hold the field\.[^.]*\.[^.]*\.|drawn field\.[^.]*\.)/) || [''])[0].slice(0, 200) };
+        };
+        out.scans = [scan('opening')];
+        if (B.phase !== 'end') { A.battleStep(); out.scans.push(scan('a pulse in')); }
+        if (UI.A.bAuto) UI.A.bAuto(); else A.battleAuto(B);
+        out.scans.push(scan('the end'));
+        out.line = (B.log || []).slice(-1)[0];
+        // the closing line's other forms (the enemy's side first; a drawn field), read through the same words
+        const e = UI.esc(en.name), m = UI.esc(me.name), dE = A.fmt(6074), dM = A.fmt(540);
+        out.forms = [`${e} hold the field. ${m} are beaten. Dead: ${dE} of ${e}, ${dM} of ${m}.`, `Night falls on a drawn field. ${dM} dead for ${m}, ${dE} for ${e}.`,
+          `Night falls on a drawn field. ${dE} dead for ${e}, ${dM} for ${m}.`].map(l => A.V2W.battleWords(`<div class="blog"><div>${l}</div></div>`, B).replace(/<[^>]+>/g, ''));
+        out.formsOk = out.forms.every(l => !l.includes(dE) && l.includes(dM) && /about [\d,]+/i.test(l) && !/\. [a-z]/.test(l));
       }
       return out;
     });
-    const L = r.cmd || {};
+    const L = r.cmd || {}, S = r.scans || [], E = S[S.length - 1] || {};
     const ok = !!r.ask && /about [\d,]+ against about [\d,]+/.test(r.ask) && !r.askExact.length && !r.frontExact.length && !r.sceneExact.length && r.slips.length > 0 && r.slips.every(s => !/^\d{1,3}(\.\d)?k$|^\d{3,}$/.test(s) || /^~/.test(s)) &&
-      /(about [\d,]+|a handful|none) of yours dead/i.test(r.log) && !/\b\d{1,3}(,\d{3})+\b/.test(r.log.replace(/(about|some) [\d,]+/gi, "")) && r.cmd && !L.enemyExact && L.ownExact && !L.morale && !L.drill && r.pure;
+      /(about [\d,]+|a handful|none) of yours dead/i.test(r.log) && !/\b\d{1,3}(,\d{3})+\b/.test(r.log.replace(/(about|some) [\d,]+/gi, "")) && r.cmd && !L.enemyExact && L.ownExact && !L.morale && !L.drill && r.pure &&
+      S.length === 3 && E.phase === 'end' && /bDead/.test(E.tips) && /bWing/.test(S[1].tips) && E.ownShown && S.every(x => !x.leaked.length && !x.morale.length) && r.formsOk;
     return { ok, detail: `levy call: "${(r.ask || '').slice(-60)}"; front: "${(r.front || '').slice(0, 160)}"; standards ${JSON.stringify((r.slips || []).slice(0, 6))}; tally "${r.log}"; ` +
-      `commander: enemy exact ${L.enemyExact}, own exact ${L.ownExact}, a morale number ${L.morale}, a drill number ${L.drill}; pure ${r.pure}` };
+      `commander: enemy exact ${L.enemyExact}, own exact ${L.ownExact}, a morale number ${L.morale}, a drill number ${L.drill}; pure ${r.pure} ` +
+      S.map(x => `; ${x.when} (${x.phase}; tips ${x.tips}): enemy exact ${JSON.stringify(x.leaked)} of ${JSON.stringify(x.theirs)}, own dead ${x.ownDead} shown ${x.ownShown}, morale numbers ${JSON.stringify(x.morale)}`).join('') +
+      `; the log's last line "${r.line}", shown "${E.shown}"; its other forms ${JSON.stringify(r.forms)}` };
   },
 };

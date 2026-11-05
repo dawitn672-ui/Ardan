@@ -191,7 +191,13 @@
       if (enN && meN) {
         const est = n => W.told(num(n), rank, false);
         h = h.replace(/<div class="blog">([\s\S]*?)<\/div>/, (m, body) => {
-          let b = body.replace(new RegExp(`([\\d,]{2,}) (${enN})\\b`, 'g'), (x, n, nm) => `${est(n)} ${nm}`)
+          // the release's closing line: "X hold the field. Y are beaten. Dead: n of A, m of B." (A's first, whichever
+          // side is yours) or "Night falls on a drawn field. n dead for A, m for B."
+          let b = body.replace(new RegExp(`Dead: ([\\d,]+) of (${meN}), ([\\d,]+) of (${enN})\\.`, 'g'), (x, a, ma, n, nm) => `Dead: ${a} of ${ma}, ${est(n)} of ${nm}.`)
+            .replace(new RegExp(`Dead: ([\\d,]+) of (${enN}), ([\\d,]+) of (${meN})\\.`, 'g'), (x, n, nm, a, ma) => `Dead: ${est(n)} of ${nm}, ${a} of ${ma}.`)
+            .replace(new RegExp(`([\\d,]+) dead for (${meN}), ([\\d,]+) for (${enN})\\.`, 'g'), (x, a, ma, n, nm) => `${a} dead for ${ma}, ${est(n)} for ${nm}.`)
+            .replace(new RegExp(`([\\d,]+) dead for (${enN}), ([\\d,]+) for (${meN})\\.`, 'g'), (x, n, nm, a, ma) => `${A.cap(est(n))} dead for ${nm}, ${a} for ${ma}.`)
+            .replace(new RegExp(`([\\d,]{2,}) (${enN})\\b`, 'g'), (x, n, nm) => `${est(n)} ${nm}`)
             .replace(new RegExp(`drop ([\\d,]+) of (${enN})\\b`, 'g'), (x, n, nm) => `drop ${est(n)} of ${nm}`)
             // "A drive into B: [B's dead] fall to [A's dead]" and "B push A back: [A's dead] fall to [B's dead]"
             .replace(new RegExp(`(${meN}) (drive into|push) (${enN})( back)?: ([\\d,]+) fall to ([\\d,]+)`, 'g'),
@@ -210,6 +216,53 @@
     UI.battleModalBasic = function (B) {
       const h = bm.apply(this, arguments);
       try { return W.battleWords(h, B); } catch (e) { console.error('v2 war battle words', e); return h; }
+    };
+  }
+  // 59-tooltips' popovers on the same screen (the sides, a side's morale, a wing, the dead): the enemy's counts as an
+  // estimate, morale in words. They draw from the battle on the screen, as 59's own do; nothing is drawn or written.
+  const G = typeof UI !== 'undefined' && UI.TIPS, K = G && UI.TT && UI.TT.K;
+  if (K && G.bDead) {
+    const { esc, H, R, D, F, L } = K;
+    const battle = () => { const q = A.S.queue[0]; return (UI.TT.cur && UI.TT.cur.battle) || (q && q.type === 'battle' ? q.b : null); };
+    const live = s => s.units.filter(u => u.status === 'ok' || u.status === 'shaken');
+    const WING = { L: 'Left wing', C: 'Center', R: 'Right wing', X: 'Reserve' };
+    const n = (B, k, v) => esc(W.told(v || 0, W.rank() || 'soldier', B.pcSide === k));
+    G.bSide = function (k) {
+      const B = battle(); if (!B || !B.sides[k]) return '';
+      const S = B.sides[k], us = live(S), men = us.reduce((a, u) => a + u.men, 0), mine = B.pcSide === k;
+      if (!mine) return H(esc(S.name), n(B, k, men), 'the enemy') + D('What your scouts and the standards in the line tell you, not a muster of theirs.') +
+        R(L('bMorale', k, 'Morale'), esc(W.moWord(A.avgMorale(B, k))), 'tt-sum');
+      const out = S.units.filter(u => !(u.status === 'ok' || u.status === 'shaken')).reduce((a, u) => a + u.men, 0);
+      const parts = Object.keys(WING).map(w => [L('bWing', k + '|' + w, WING[w]), us.filter(u => u.wing === w).reduce((a, u) => a + u.men, 0)]);
+      return H(esc(S.name), n(B, k, men), `of ${n(B, k, S.men0)} · yours`) +
+        `<div class="tip-row tt-sum"><span>Still in the line</span><b></b></div>` + parts.map(([l, v]) => R(l, n(B, k, v), 'tt-sub')).join('') +
+        (out ? R('Routed or gone (not counted)', n(B, k, out), 'tt-sub') : '') + (B.dead && B.dead[k] ? R('Dead so far', n(B, k, B.dead[k]), 'tt-sub') : '') +
+        R(L('bMorale', k, 'Morale'), esc(W.moWord(A.avgMorale(B, k))), 'tt-sum');
+    };
+    G.bMorale = function (k) {
+      const B = battle(); if (!B || !B.sides[k]) return '';
+      const us = live(B.sides[k]), mine = B.pcSide === k;
+      return H('Morale', esc(W.moWord(A.avgMorale(B, k))), esc(B.sides[k].name)) + D('Each unit\'s heart for the fight, weighed by its men. Losses, flanks and a broken wing beside it pull it down; a line breaks long before it is dead.') +
+        (mine ? us.map(u => R(`${esc(u.name)} (${n(B, k, u.men)})`, esc(W.moWord(u.morale)) + (u.status === 'shaken' ? ' · shaken' : ''), 'tt-sub')).join('') : '') +
+        (us.length ? '' : D('Nobody is left standing.'));
+    };
+    G.bWing = function (arg) {
+      const B = battle(); const [k, w] = String(arg).split('|'); if (!B || !B.sides[k]) return '';
+      const us = B.sides[k].units.filter(u => u.wing === w && u.status !== 'gone');
+      const T = GD.BATTLE_TACTICS[(us[0] || {}).tac] || {}, mine = B.pcSide === k;
+      return H(WING[w] || w, n(B, k, us.reduce((a, u) => a + u.men, 0)), esc(B.sides[k].name)) +
+        (mine ? us.map(u => R(`${esc(u.name)}${u.status === 'rout' ? ' (routing)' : u.status === 'shaken' ? ' (shaken)' : ''}`, `${n(B, k, u.men)} of ${n(B, k, u.men0 || u.men)} · ${esc(W.moWord(u.morale))}`, 'tt-sub')).join('') : '') +
+        (mine && T.name ? F(`Orders: ${esc(T.name)}.`) : '');
+    };
+    const dead = G.bDead;
+    G.bDead = function () {
+      const B = battle(); if (!B || !B.dead) return '';
+      const me = B.pcSide, en = me === 'A' ? 'B' : 'A';
+      // 59's own popover, its header and two rows put back with the enemy's dead as an estimate (the rest, where they
+      // fell, is kept as 59 draws it)
+      const h = dead.apply(this, arguments);
+      const rest = h.indexOf('<div class="tip-row tt-sum"><span>Where they fell'), tail = rest >= 0 ? h.slice(rest) : F('Most of the dead fall in the rout, not the clash.');
+      return H('The dead', null, 'yours counted, theirs a guess') + R('Yours', n(B, me, B.dead[me])) + R('Theirs', n(B, en, B.dead[en])) + tail;
     };
   }
 })();
