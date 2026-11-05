@@ -409,10 +409,15 @@ export default {
           const ours = new Set([dead(meK), me.men0, liveMen(me)].map(n => A.fmt(n)));
           const theirs = [dead(enK), en.men0, liveMen(en)].filter(n => n >= 100).map(n => A.fmt(n)).filter(n => !ours.has(n));
           const hit = n => new RegExp(`(^|[^\\d,])${n}($|[^\\d,])`).test(all);
-          return { when, phase: B.phase, tips: tips.map(x => x.k).join(','), theirs, leaked: theirs.filter(hit),
+          // the morale word on a popover agrees with its side line's (both from the rounded average)
+          const sideWords = ['A', 'B'].map(k => A.V2W.moWord(Math.round(A.avgMorale(B, k))));
+          const moTips = tips.filter(x => x.k === 'bMorale' || x.k === 'bSide').map(x => (x.t.match(/Morale (eager|steady|sullen|shaken|near breaking)/) || [])[1]).filter(Boolean);
+          const moAgree = moTips.every(w => sideWords.includes(w));
+          return { when, phase: B.phase, tips: tips.map(x => x.k).join(','), theirs, moAgree, moTips: moTips.join('/'), leaked: theirs.filter(hit),
             ownDead: A.fmt(dead(meK)), ownShown: all.includes(A.fmt(dead(meK))), morale: (all.match(/morale\s*\d+|Morale\s+\d+/gi) || []).slice(0, 3),
             shown: (box.textContent.match(/[^.]*(hold the field\.[^.]*\.[^.]*\.|drawn field\.[^.]*\.)/) || [''])[0].slice(0, 200) };
         };
+        out.edgeWord = A.V2W.moWord(74.957) === A.V2W.moWord(75);   // a band's edge reads as the rounded side line does
         out.scans = [scan('opening')];
         if (B.phase !== 'end') { A.battleStep(); out.scans.push(scan('a pulse in')); }
         if (UI.A.bAuto) UI.A.bAuto(); else A.battleAuto(B);
@@ -429,10 +434,10 @@ export default {
     const L = r.cmd || {}, S = r.scans || [], E = S[S.length - 1] || {};
     const ok = !!r.ask && /about [\d,]+ against about [\d,]+/.test(r.ask) && !r.askExact.length && !r.frontExact.length && !r.sceneExact.length && r.slips.length > 0 && r.slips.every(s => !/^\d{1,3}(\.\d)?k$|^\d{3,}$/.test(s) || /^~/.test(s)) &&
       /(about [\d,]+|a handful|none) of yours dead/i.test(r.log) && !/\b\d{1,3}(,\d{3})+\b/.test(r.log.replace(/(about|some) [\d,]+/gi, "")) && r.cmd && !L.enemyExact && L.ownExact && !L.morale && !L.drill && r.pure &&
-      S.length === 3 && E.phase === 'end' && /bDead/.test(E.tips) && /bWing/.test(S[1].tips) && E.ownShown && S.every(x => !x.leaked.length && !x.morale.length) && r.formsOk;
+      S.length === 3 && E.phase === 'end' && /bDead/.test(E.tips) && /bWing/.test(S[1].tips) && E.ownShown && S.every(x => !x.leaked.length && !x.morale.length && x.moAgree) && r.edgeWord && r.formsOk;
     return { ok, detail: `levy call: "${(r.ask || '').slice(-60)}"; front: "${(r.front || '').slice(0, 160)}"; standards ${JSON.stringify((r.slips || []).slice(0, 6))}; tally "${r.log}"; ` +
       `commander: enemy exact ${L.enemyExact}, own exact ${L.ownExact}, a morale number ${L.morale}, a drill number ${L.drill}; pure ${r.pure} ` +
-      S.map(x => `; ${x.when} (${x.phase}; tips ${x.tips}): enemy exact ${JSON.stringify(x.leaked)} of ${JSON.stringify(x.theirs)}, own dead ${x.ownDead} shown ${x.ownShown}, morale numbers ${JSON.stringify(x.morale)}`).join('') +
-      `; the log's last line "${r.line}", shown "${E.shown}"; its other forms ${JSON.stringify(r.forms)}` };
+      S.map(x => `; ${x.when} (${x.phase}; tips ${x.tips}): enemy exact ${JSON.stringify(x.leaked)} of ${JSON.stringify(x.theirs)}, own dead ${x.ownDead} shown ${x.ownShown}, morale numbers ${JSON.stringify(x.morale)}, popover morale ${x.moTips} agrees ${x.moAgree}`).join('') +
+      `; edge word ${r.edgeWord}; the log's last line "${r.line}", shown "${E.shown}"; its other forms ${JSON.stringify(r.forms)}` };
   },
 };

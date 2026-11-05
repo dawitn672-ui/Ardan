@@ -149,7 +149,9 @@
   W.levyCount = (n, mine) => (Math.round(n || 0) <= 0 ? 'none' : W.told(n, W.rank() || 'soldier', mine));
 
   // ---- the commander's battle: his own side exactly, the enemy's an estimate, morale and drill in words -------------
-  W.moWord = mo => (mo >= 75 ? 'eager' : mo >= 60 ? 'steady' : mo >= 45 ? 'sullen' : mo >= 30 ? 'shaken' : 'near breaking');
+  // rounds first, as the release's side line does (Math.round(A.avgMorale)), so a popover handed the unrounded average
+  // gives the same word at a band's edge (74.96 read 'steady' beside the line's 'eager': the verifier's catch)
+  W.moWord = m => { const mo = Math.round(+m); return (mo >= 75 ? 'eager' : mo >= 60 ? 'steady' : mo >= 45 ? 'sullen' : mo >= 30 ? 'shaken' : 'near breaking'); };
   const D = A.DRILL;
   if (D && typeof D.word === 'function') {
     const dw = v => D.word(v || 0);
