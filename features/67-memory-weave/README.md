@@ -99,6 +99,12 @@ How the line is placed and shown:
 
 `tools/lint-events.mjs` and `tools/lint-choices.mjs` have nothing of this feature's own to check, since it adds no events. `--feature=bonds` lints clean on this build.
 
+Later features and these tests (v2 wf rolls):
+
+- **9998-stakes** holds a lost white check back in its scene until the player is 5 better at it. So `mwWeaveOnlyWithMemory` lifts that lock (`A.STAKES.OFF`) for its one look at the lost haggle a year on; its bar is unchanged. 9998's `stWhiteRetry` tests the lock.
+- **99993-v2-stats** rolls every check through attempt(). Its dice read every draw the release's way round, so `MWT.scene`'s `A.rand` held at 0.001 still wins a check and at 0.999 still loses one.
+- **99997-v2-war** gates the tavern tale `nb_battle_tale` with a wrapper around this feature's. It reads as this wrapper's text and then its own, so `mwSourcesIntact` counts it.
+
 ## Rules kept
 
 - **Deterministic.** The record and the weave draw no random number. Wording comes from an FNV hash of the event and the year.

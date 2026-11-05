@@ -66,17 +66,26 @@ export default {
   },
 
   async btRumors(pg) {
+    // v2 (V2_SPEC complaint 10, 99997-v2-war): the release's battle report of a war the player is not in never reaches
+    // him; he gets 99997's late, sometimes wrong rumour instead. So the far reports are sent as 'war' news (26 inflates
+    // both classes alike), and the test also checks that an outsider's far 'battle' report is not set down at all.
+    // The bar (8-30 of 40 inflated, none near, all high, all corrected within a year) is unchanged.
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 45, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
       const far = Object.values(A.S.realms).filter(x => x.alive && x.id !== 'POL-01' && !A.neighbors('POL-01').includes(x.id));
       const nearR = A.realm(A.neighbors('POL-01')[0]);
+      const outsider = !(A.V2W && A.V2W.inWar(A.pc()));
+      const tb = `Battle of Farfield: ${far[0].short} hold after 2 days. ${A.fmt(4321)} fall.`;
+      A.news(tb, 'battle');
+      const battleKept = (A.S.news || []).some(e => e.t === tb || e.truth === tb);
+      const cls = A.V2W ? 'war' : 'battle';
       let distorted = 0, n = 0, nearBad = 0;
       for (let i = 0; i < 40; i++) {
         const R = far[i % far.length], t = `Battle of Testmere ${i}: ${R.short} hold after 2 days. ${A.fmt(1000 + i * 731)} fall.`;
-        A.news(t, 'battle'); const e = A.S.news[0]; n++;
-        if (e.truth === t && e.t !== t) distorted++;
+        A.news(t, cls); const e = A.S.news[0]; n++;
+        if (e && e.truth === t && e.t !== t) distorted++;
         const t2 = `Battle of Nearby ${i}: ${nearR.short} hold after 2 days. ${A.fmt(1200 + i * 97)} fall.`;
-        A.news(t2, 'battle'); if (A.S.news[0].t !== t2) nearBad++;
+        A.news(t2, cls); if (!A.S.news[0] || A.S.news[0].t !== t2) nearBad++;
       }
       // a rumor's counts run high, never low
       const high = A.S.news.filter(e => e.truth).every(e => { const a = +(e.t.match(/some ([\d,]+)/) || [0, '0'])[1].replace(/,/g, ''), b = +(e.truth.match(/([\d,]+) fall/) || [0, '0'])[1].replace(/,/g, ''); return a > b; });
@@ -87,10 +96,12 @@ export default {
       try { T.play(1); } finally { A.news = nw; }
       const fixed = A.S.news.filter(e => e.truth && e.fixed).length, pending = (A.S.rumors || []).filter(x => /Testmere/.test(x.truth)).length;
       const note = A.BT.newsNote(A.S.news.find(e => e.truth && e.fixed) || {});
-      return { n, distorted, nearBad, high, fixed, corrections, note, pending };
+      return { n, distorted, nearBad, high, fixed, corrections, note, pending, v2: !!A.V2W, outsider, battleKept };
     });
-    return { ok: r.distorted >= 8 && r.distorted <= 30 && r.nearBad === 0 && r.high && r.corrections === r.distorted && r.pending === 0 && /ran high/.test(r.note),
-      detail: `${r.distorted} of ${r.n} far reports inflated, ${r.nearBad} near ones; all ran high ${r.high}; every one corrected within a year (${r.corrections} correction notes, ${r.pending} pending, ${r.fixed} original lines still listed and marked)` };
+    const v2ok = !r.v2 || (r.outsider && !r.battleKept);
+    return { ok: r.distorted >= 8 && r.distorted <= 30 && r.nearBad === 0 && r.high && r.corrections === r.distorted && r.pending === 0 && /ran high/.test(r.note) && v2ok,
+      detail: `${r.distorted} of ${r.n} far reports inflated, ${r.nearBad} near ones; all ran high ${r.high}; every one corrected within a year (${r.corrections} correction notes, ${r.pending} pending, ${r.fixed} original lines still listed and marked)` +
+        (r.v2 ? `; v2: an outsider (${r.outsider}) is given the far battle report ${r.battleKept}` : '') };
   },
 
   async btTaleAsTold(pg) {

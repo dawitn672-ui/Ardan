@@ -10,6 +10,10 @@
   const NUM = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
   const say = n => (n < NUM.length ? NUM[n] : String(n));
   const times = n => (n === 1 ? 'once' : n === 2 ? 'twice' : `${say(n)} times`);
+  // what the player knows of an entry: null while it has not reached them, else { t: the line as they know it, mine:
+  // whether they saw it or fought in it }. Here, everything as it happened; 99997-v2-war sets WC.tellOf so that a war
+  // you were not in reaches you late, as hearsay, and your own as your rank knew it (V2_SPEC complaint 10).
+  if (typeof WC.tellOf !== 'function') WC.tellOf = e => (e ? { t: WC.line(e), mine: true } : null);
 
   // ---- the Annals: every entry, newest first, by kind and by place
   WC.GROUPS = [
@@ -31,6 +35,7 @@
       const e = R.e[i];
       if (ks && !ks.has(e[0])) continue;
       if (realms && !((e[3] != null && provs.has(e[3])) || realms.has(e[4]) || realms.has(e[5]))) continue;
+      if (!WC.tellOf(WC.ent(i), pc)) continue;   // not yet heard of
       out.push(i);
     }
     return out;
@@ -40,17 +45,19 @@
     const group = UI.wcGroup || 'all', near = UI.wcNear != null ? !!UI.wcNear : !!(A.WORLD1 && A.WORLD1.great()), rows = WC.annalsRows(pc, group, near);
     const pages = Math.max(1, Math.ceil(rows.length / WC.PAGE)), page = Math.min(Math.max(0, UI.wcPage || 0), pages - 1);
     const kinds = R ? new Set(R.e.map(e => e[0])).size : 0;
-    let h = `<div class="group-h">The annals of Ardan</div><p class="small muted">Everything the world has done since the record opened in 1105: ${A.fmt(R ? R.e.length : 0)} entries of ${kinds} kinds, none dropped. ` +
-      `The newest first. Far news reached people as hearsay; this is what happened.</p>`;
+    let h = `<div class="group-h">The annals of Ardan</div><p class="small muted">` + (WC.TOLD
+      ? `What you have heard of the world since the record opened in 1105, the newest first. What you saw, and the wars you fought in, are set down as you knew them; the rest as it reached you, late, and not always right.</p>`
+      : `Everything the world has done since the record opened in 1105: ${A.fmt(R ? R.e.length : 0)} entries of ${kinds} kinds, none dropped. ` +
+      `The newest first. Far news reached people as hearsay; this is what happened.</p>`);
     h += `<div class="row" style="flex-wrap:wrap;gap:4px;margin:6px 0">${WC.GROUPS.map(([k, n]) => `<button class="small ${group === k ? 'primary' : ''}" data-a="wcGroup" data-v="${esc(k)}">${esc(n)}</button>`).join('')}` +
       `<button class="small ${near ? 'primary' : ''}" data-a="wcNear" data-v="${near ? 0 : 1}">${near ? 'Near you' : 'All Ardan'}</button></div>`;
     if (!rows.length) return h + '<p class="small muted">Nothing of this kind is set down yet.</p>';
     let last = null;
     for (const i of rows.slice(page * WC.PAGE, (page + 1) * WC.PAGE)) {
-      const e = WC.ent(i);
+      const e = WC.ent(i), told = WC.tellOf(e, pc);
       if (e.y !== last) { h += `<div class="tiny muted" style="margin-top:6px"><b>${e.y}</b></div>`; last = e.y; }
-      const who = WC.people(e);
-      h += `<div class="small wc-entry" style="margin:2px 0">${esc(WC.line(e))}${who.length ? ` <span class="tiny muted">(${esc(who.join(', '))})</span>` : ''}</div>`;
+      const who = told.mine ? WC.people(e) : [];
+      h += `<div class="small wc-entry${told.mine ? '' : ' wc-heard'}" style="margin:2px 0">${esc(told.t)}${who.length ? ` <span class="tiny muted">(${esc(who.join(', '))})</span>` : ''}</div>`;
     }
     if (pages > 1) {
       h += `<div class="row" style="gap:6px;margin-top:8px;align-items:center">` +
@@ -94,7 +101,11 @@
   };
   WC.legends = function () {
     const R = A.S && A.S.wrec; if (!R || !R.e.length) return [];
-    const mine = WC.livesRealms(), all = WC.all();
+    // only what the living player has heard of, each line as they know it (WC.tellOf)
+    const pc = A.pc ? A.pc() : null, told = new Map();
+    const all = WC.all().filter(e => { const t = WC.tellOf(e, pc); if (t) told.set(e.i, t); return !!t; });
+    const line = e => (told.has(e.i) ? told.get(e.i).t : WC.line(e));   // read only for the lines kept (t may be a getter)
+    const mine = WC.livesRealms();
     const isMine = e => mine.has(e.a) || mine.has(e.b);
     const wars = {}; for (const e of all) if (e.k === 'peace' && Array.isArray(e.x)) wars[e.x[0]] = e;
     const decades = new Map();
@@ -104,20 +115,20 @@
     const byKind = k => all.filter(e => e.k === k);
     for (const e of byKind('war')) {
       const id = Array.isArray(e.x) ? e.x[0] : null, end = id && wars[id];
-      let s = WC.line(e).replace(/\.$/, '');
+      let s = line(e).replace(/\.$/, '');
       if (end) {
         const res = Array.isArray(end.x) ? end.x[1] : 'white', got = Array.isArray(end.x) && Array.isArray(end.x[2]) ? end.x[2].map(pn).filter(Boolean) : [];
         s += res === 'white' ? `. It ended in ${end.y} in a white peace` : `. It ended in ${end.y}${end.n ? `, after ${say(end.n)} year${end.n > 1 ? 's' : ''},` : ''} with ${rs(end.a)} the victor${got.length ? `, and ${got.slice(0, 3).join(', ')} passed to ${rs(end.a)}` : ''}`;
       } else if (A.S.wars.some(w => w.id === id)) s += '. It is still being fought';
       add(e, s + '.', isMine(e) ? 6 : 4);
     }
-    for (const k of ['fallen', 'founded', 'legend', 'revolt']) for (const e of byKind(k)) add(e, WC.line(e), isMine(e) ? 6 : 4);
-    for (const e of byKind('ruler')) if (isMine(e)) add(e, WC.line(e), 4);
-    for (const e of byKind('crown')) if (isMine(e)) add(e, WC.line(e), 3);
-    for (const k of ['wedding', 'alliance', 'trib']) for (const e of byKind(k)) if (isMine(e)) add(e, WC.line(e), 2);
-    for (const e of byKind('famine').concat(byKind('plague'))) if (isMine(e)) add(e, WC.line(e), 3);
+    for (const k of ['fallen', 'founded', 'legend', 'revolt']) for (const e of byKind(k)) add(e, line(e), isMine(e) ? 6 : 4);
+    for (const e of byKind('ruler')) if (isMine(e)) add(e, line(e), 4);
+    for (const e of byKind('crown')) if (isMine(e)) add(e, line(e), 3);
+    for (const k of ['wedding', 'alliance', 'trib']) for (const e of byKind(k)) if (isMine(e)) add(e, line(e), 2);
+    for (const e of byKind('famine').concat(byKind('plague'))) if (isMine(e)) add(e, line(e), 3);
     // the field: the greatest battles and the sacked towns of each decade, and any the lives were part of
-    const top = (k, n, f) => { const by = new Map(); for (const e of byKind(k)) { if (f && !f(e)) continue; const d = dec(e.y); if (!by.has(d)) by.set(d, []); by.get(d).push(e); } for (const L of by.values()) for (const e of L.sort((a, b) => (b.n || 0) - (a.n || 0)).slice(0, n)) add(e, WC.line(e), 3); };
+    const top = (k, n, f) => { const by = new Map(); for (const e of byKind(k)) { if (f && !f(e)) continue; const d = dec(e.y); if (!by.has(d)) by.set(d, []); by.get(d).push(e); } for (const L of by.values()) for (const e of L.sort((a, b) => (b.n || 0) - (a.n || 0)).slice(0, n)) add(e, line(e), 3); };
     top('battle', 2, e => !isMine(e)); top('battle', 3, isMine);
     top('fall', 2, e => (e.x || 0) >= 2);
     const out = [];

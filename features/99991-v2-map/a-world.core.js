@@ -23,6 +23,8 @@ VM.RIVER_T = 120;                               // flow (v2's accumulated moistu
 VM.TERR_SHARE = { mountains: 0.065, hills: 0.41 };   // the release's mix: 20 and 126 of 306 provinces
 VM.ISLE_RX = /\b(isles?|islands?|archipelago)\b/i;            // a realm named for islands: a peninsula on the shore
 VM.COAST_RX = /\b(coast|shore|bay|strand|sea)\b|reef\b/i;       // a realm named for the sea: a seat on the shore
+// the realms renamed like kingdoms (99999-v2-names) keep the sea their old names promised, by id
+VM.SEA_ID = { 'POL-32': 'peninsula', 'POL-21': 'coast', 'POL-33': 'coast' };
 VM.seedOf = s => 'ardan-v2-map:' + String(s);
 const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
 
@@ -221,7 +223,7 @@ VM.build = function (seed, base, v = VM.VERSION) {
   // realms whose names promise the sea (isles, a coast, a reef) take a seat on the shore, the isles on a peninsula,
   // and grow along the coast rather than inland, so the name fits the land
   const names = base.realmNames || {};
-  for (const u of units) { const nm = names[u.key] || ''; u.sea = v < 2 ? null : VM.ISLE_RX.test(nm) ? 'peninsula' : VM.COAST_RX.test(nm) ? 'coast' : null; }
+  for (const u of units) { const nm = names[u.key] || ''; u.sea = v < 2 ? null : VM.SEA_ID[u.key] || (VM.ISLE_RX.test(nm) ? 'peninsula' : VM.COAST_RX.test(nm) ? 'coast' : null); }
   const toSea = new Float32Array(N).fill(1e9), qs = [];
   for (let k = 0; k < N; k++) if (ocean[k]) { toSea[k] = 0; qs.push(k); }
   for (let h = 0; h < qs.length; h++) { const k = qs[h], x = k % gw; for (const j of [x > 0 ? k - 1 : -1, x < gw - 1 ? k + 1 : -1, k - gw, k + gw]) if (j >= 0 && j < N && toSea[j] > toSea[k] + 1) { toSea[j] = toSea[k] + 1; qs.push(j); } }

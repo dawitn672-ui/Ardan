@@ -141,9 +141,10 @@
     const R = A.realm(p.realm);
     if (R && R.alive) {
       const ru = A.P(R.ruler), wars = A.atWar ? A.atWar(R.id) : [];
-      const rn = /^(the |[A-Z][a-z]+ of )/.test(R.name) && !/^the /i.test(R.name) ? 'the ' + R.name : R.name;
+      // "the Kingdom of Ulun", and a name led by its people's word ("the Sahrim Confederacy", 99999-v2-names) too
+      const rn = /^(the |[A-Z][a-z]+ of |[A-Z][\w-]* (Confederacy|Dominion|League)$)/.test(R.name) && !/^the /i.test(R.name) ? 'the ' + R.name : R.name;
       out.push(`In ${rn}${ru && ru.id !== p.id ? ', ' + name(ru) + ' rules' : ''}${wars.length ? ', and the realm is at war' : ', and the realm is at peace, for now'}.`);
-    } else if (R) out.push(`${/^[A-Z][a-z]+ of /.test(R.name) ? 'The ' + R.name : R.name} itself is gone, swallowed by its neighbours. Your grandchildren will call themselves something else.`);
+    } else if (R) out.push(`${/^([A-Z][a-z]+ of |[A-Z][\w-]* (Confederacy|Dominion|League)$)/.test(R.name) ? 'The ' + R.name : R.name} itself is gone, swallowed by its neighbours. Your grandchildren will call themselves something else.`);
     // the tale, if belief-truth is in the build
     if (A.BT && A.BT.tale && p.deeds && p.deeds.length && (p.fame || 0) >= 20) {
       const d = p.deeds[p.deeds.length - 1]; out.push('In the taverns it is told this way: ' + A.BT.tale(d.t, p.id + '|' + d.y));

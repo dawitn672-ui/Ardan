@@ -197,7 +197,9 @@ export default {
       for (const seed of [11, 4242, 90001, 7]) {
         A.newGame({ seed, realm: 'POL-01', status: 'peasant' });
         for (const id in LORE.realms) {
-          const nm = LORE.realms[id].name, isle = VM.ISLE_RX.test(nm), coast = VM.COAST_RX.test(nm);
+          // the realms 99999-v2-names renamed keep their sea by id (VM.SEA_ID)
+          const nm = LORE.realms[id].name, sea = VM.SEA_ID && VM.SEA_ID[id];
+          const isle = sea === 'peninsula' || (!sea && VM.ISLE_RX.test(nm)), coast = sea === 'coast' || (!sea && VM.COAST_RX.test(nm));
           if (!isle && !coast) continue;
           const ps = A.S.prov.filter(p => p.orig === id), capP = ps.find(p => p.type === 'capital city') || ps[0];
           out.push({ seed, id, nm, isle, n: ps.length, coastal: ps.filter(p => p.coast).length, cap: !!(capP && capP.coast) });

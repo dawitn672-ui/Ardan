@@ -13,13 +13,27 @@ VS.K = 2.45; // odds.js: edge = ln(capability / difficulty) x 2.45
 
 // The game's dice in the shape attempt() takes. The first draw is the release's own A.chance(p), so the plain roll is
 // what it always was (and a test that forces A.chance still forces it); a second draw places attempt()'s logistic noise
-// inside the half that A.chance chose (the noise is then distributed exactly as attempt() draws it). After that,
-// next() is 1 - A.rand() and chance(p) is A.rand() < p.
+// inside the half that A.chance chose (the noise is then distributed exactly as attempt() draws it).
+//
+// One orientation for every draw. The release's dice read low as good (A.chance(p) is A.rand() < p), attempt() reads
+// its rng's next() high as good (the noise is logit next()) and fires each chance(p) on a low next(), as v2's makeRng
+// does (chance(p) is next() < p). So the rng attempt() gets is makeRng's shape on the game's dice turned round:
+// next() is 1 - A.rand() and chance(p) is next() < p, and the noise is placed the same way, a lower second draw higher
+// in the half (1 - v·q in a won half, (1 - q)(1 - v) in a lost one, kept just off the half's edge so the plain roll stays
+// exactly A.chance's). A roll held low is then attempt()'s best day: the release's roll won, the noise at the top of the
+// won half, and no blunder (held at 0.001, chance(p) fires only for p over 0.999; a blunder's is 0.35 at most). A roll
+// held high is its worst: the roll lost and the noise at the bottom of the lost half (held at 0.999, perf is under -6.9),
+// deeper than any surge lifts (5.4 at the most, with will held within 2.7 deviations). With live dice the odds, the
+// blunders and the surges are distributed exactly as attempt() draws them.
+// (Before, chance(p) was A.rand() < p and a won half was filled from its losing edge, against the release's dice: held
+// at 0.001, A.chance won the roll, the noise sat on the edge, and the blunder chance, never under 0.002, fired every
+// time and threw the check, so a test holding A.rand to win a check lost it.)
 VS.realChance = A.chance;
 VS.dice = function (q) {
-  const won = A.chance(q), v = A.rand();
-  let first = Math.min(1 - 1e-9, Math.max(1e-9, won ? (1 - q) + v * q : v * (1 - q)));
-  return { won, rng: { next: () => { if (first != null) { const u = first; first = null; return u; } return 1 - A.rand(); }, chance: p => A.rand() < p } };
+  const won = A.chance(q), v = A.rand(), e = 1e-9;
+  let first = won ? Math.min(1 - e, Math.max(1 - q + e, 1 - v * q)) : Math.max(e, Math.min(1 - q - e, (1 - q) * (1 - v)));
+  const next = () => { if (first != null) { const u = first; first = null; return u; } return 1 - A.rand(); };
+  return { won, rng: { next, chance: p => 1 - A.rand() < p } };
 };
 VS.N = { attempts: 0, blunders: 0, surges: 0, breakthroughs: 0 };
 
