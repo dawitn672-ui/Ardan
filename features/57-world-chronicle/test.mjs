@@ -96,34 +96,39 @@ export default {
     // the regression under wcObservesOnly (CI run 88): a card carries one extra line, and a recalled line used to push
     // the life's inner voice (9992-identity) out; the life remembers each voice line it hears (pc.idv), so whether the
     // record had an entry to recall decided what the character had heard. The recalled line now gives way: on every
-    // card the voice that speaks is the one that would speak with no recalled line, and the record still recalls
+    // card the voice that speaks is the one that would speak with no recalled line, and the record still recalls.
+    // To meet the case often, every scene with a subject is offered a recalled line here (WC.RECALL 100, put back after);
+    // the first life is the one wcObservesOnly plays, with the record off, where the canon alone is recalled.
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const ID = A.ID; if (!ID || typeof ID.voiceCore !== 'function') return { none: true };
       let cards = 0, recalls = 0, voices = 0, both = 0;
-      const silenced = [];
-      for (const [seed, status, realm] of [[9090, 'merchant', 'POL-05'], [4242, 'peasant', 'POL-01'], [811, 'artisan', 'POL-03']]) {
-        A.newGame({ seed, race: 'human', realm, status, sex: seed % 2 ? 'F' : 'M', startAge: 18 });
-        WCT.years(10, { onEvent: (q, v) => {
-          if (v.skip) return;
-          cards++;
-          const vo = ID.voiceCore(A.pc(), q);
-          if (vo) voices++;
-          if (!v.recall) return;
-          recalls++;
-          if (vo) both++;
-          // the voice with the recalled line taken away (put back at once: the card is not changed)
-          const line = v.recall; delete v.recall;
-          let bare = null; try { bare = ID.voiceCore(A.pc(), q); } finally { v.recall = line; }
-          if (bare && silenced.length < 4) silenced.push(`${A.S.year} ${q.ev}: "${bare.line}" silenced by "${line}"`);
-          else if (bare) silenced.push('');
-        } });
-      }
+      const silenced = [], share = A.WC.RECALL;
+      A.WC.RECALL = 100;
+      try {
+        for (const [seed, status, realm, age, off] of [[9090, 'merchant', 'POL-05', 20, true], [9090, 'merchant', 'POL-05', 20, false], [4242, 'peasant', 'POL-01', 18, false], [811, 'artisan', 'POL-03', 18, false]]) {
+          A.WC.OFF = off;
+          A.newGame({ seed, race: 'human', realm, status, sex: seed % 2 ? 'M' : 'F', startAge: age });
+          WCT.years(8, { onEvent: (q, v) => {
+            if (v.skip) return;
+            cards++;
+            const vo = ID.voiceCore(A.pc(), q);
+            if (vo) voices++;
+            if (!v.recall) return;
+            recalls++;
+            if (vo) both++;
+            // the voice with the recalled line taken away (put back at once: the card is not changed)
+            const line = v.recall; delete v.recall;
+            let bare = null; try { bare = ID.voiceCore(A.pc(), q); } finally { v.recall = line; }
+            if (bare) silenced.push(`${A.S.year} ${q.ev}: "${bare.line}" silenced by "${line}"`);
+          } });
+        }
+      } finally { A.WC.RECALL = share; A.WC.OFF = false; }
       return { cards, recalls, voices, both, silenced };
     });
     if (r.none) return { ok: true, detail: 'no inner voice in this build' };
     const ok = r.cards > 200 && r.recalls > 0 && r.voices > 0 && !r.both && !r.silenced.length;
-    return { ok, detail: `${r.cards} cards over three lives of 10 years: ${r.recalls} with a recalled line, ${r.voices} with an inner voice, ${r.both} with both; ` +
+    return { ok, detail: `${r.cards} cards over four lives of 8 years: ${r.recalls} with a recalled line, ${r.voices} with an inner voice, ${r.both} with both; ` +
       `voices a recalled line silenced: ${r.silenced.length}${r.silenced.length ? ' e.g. ' + r.silenced[0] : ''}` };
   },
 
