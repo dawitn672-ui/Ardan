@@ -41,7 +41,7 @@
   - A captain also sets his company's tactic.
   - Odds show as words plus the tipped balance. A soldier and a sergeant see numbers only as estimates ("about 3,500"). A captain sees "some 3,400".
 - **The commander keeps the release's command of the battle** (`wsLead`: 9997-companies' company and division simulator, a tactic for each wing, and the reserve).
-- **The result moves the real fight.** It is a performance from −1 to 1 (your grade each phase: what a choice that works is worth to the fight, and one cost for any failure; and the result; your part in the result reaches the fight as its dead, so it is not counted again), fed into 44-rank-battles' `A.RANKFX.apply` (layers `line` and `part`). The war map's division simulator then decides the fight.
+- **The result moves the real fight.** It is a performance from −1 to 1 (your grade each phase: what a choice that works is worth to the fight, less what it took from the army when it holds back (`W.SHIRK`), and one cost for any failure; and the result; your part in the result reaches the fight as its dead, so it is not counted again), fed into 44-rank-battles' `A.RANKFX.apply` (layers `line` and `part`). The war map's division simulator then decides the fight.
 - **The after-action report** has three causes in words (`afterAction`'s contributions: ground, tactics, numbers, quality, elites, your part).
   - It is kept as `b.aar = { causes: [{ label, pct }], text }`, which is 23's shape. `pct` is the signed contribution × 40, for the bench; the player sees only the words.
   - It is also kept in the story, and on the war's battle record when 23 didn't already give one.
@@ -75,6 +75,7 @@
 | `v2wNoSpectate` | A peasant in a realm at war: no War place, no war room, no battle or war room queued, no war cards, no war in the World's Wars view, no battle news in 3 years, rumours instead. Enlisted, the war is his |
 | `v2wRankScreens` | The soldier, sergeant and captain screens: their own choices, estimates for the ranks, the captain's tactic row and enemy general. The commander gets the battle with wing tactics and the reserve |
 | `v2wChoicesMove` | Paired seeds on 6 frozen fights: the bold choice gives a higher grade and a better order balance in the real fight at soldier, sergeant and captain; the commander's reserve changes his battle |
+| `v2wShirkCosts` | At every rank, a working choice that takes from the army (keeping the company back, drifting to the rear) grades below zero and below every other working choice; a failure costs the same whatever was tried |
 | `v2wAfterAction` | Three distinct causes in 23's shape, in the story |
 | `v2wOrders` | 150–350 members × 14–26 levies, 10× their numbers or more; in the division simulator 21–44 a member against an ordinary division of the realm (the simulator adds the orders' own bonuses: the Shadow's +35% soft attack, the Last Door's +45% defence); 250 knights beat 3,000 levies; three trials |
 | `v2wPure` | Drawing the scene changes neither the state nor the dice; no percentage |

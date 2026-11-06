@@ -215,10 +215,16 @@
   // fight (its reward), so drifting to the rear or keeping the company back earns nothing even when it works (it earned
   // 0.3, as much as half a charge). A failure costs the same whatever was tried: the risk of a bold choice is to you (the
   // wound, v2's 15% x risk) and to the army (its army factor, in the engine's contribution, read in W.perfOf), so it is
-  // not counted a third time here
+  // not counted a third time here.
+  // A choice that takes from the army (its army factor under 1: keeping the company back, drifting to the rear) has no
+  // reward to carry it, so when it works it costs the fight what it took (W.SHIRK a point of the army's blow). Earning
+  // nothing, it was the captain's best grade by luck of the dice (CI run 88 merged: "keep the company back" 0.17 against
+  // "follow the army's orders" 0.16): a kept-back company is easy to keep back (seven phases in ten work), and following
+  // orders against a general is an even match. It stays the safe choice for the man himself (a wound a tenth as often)
+  W.SHIRK = 4;
   W.grade = function (c, res) {
     if (!res) return 0;
-    if (res.success) return clamp(0.75 * c.reward * (res.tier === 'triumph' ? 1.4 : 1), 0, 1);
+    if (res.success) return clamp(0.75 * c.reward * (res.tier === 'triumph' ? 1.4 : 1) - W.SHIRK * Math.max(0, 1 - (c.army || 1)), -1, 1);
     return -0.42 * (res.tier === 'disaster' ? 1.3 : 1);
   };
   W.setTac = function (k) {

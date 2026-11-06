@@ -47,8 +47,8 @@
     EVERY: 150,    // days between letters at least
     // the same order again from the same general waits this long (days): a letter that says what the last one said is
     // routine, and over nine 40-year lives "hold the line" came back 15 times and "the first wave" 9 (97's lfRepeats;
-    // playtest 2, old 10: "Orders: hold and wait" seven times in one life). A new general's letter comes at the usual pace,
-    // but not the same order as the last general's within its base quiet (below, at the letter)
+    // playtest 2, old 10: "Orders: hold and wait" seven times in one life). A new general's other orders come at the
+    // usual pace, but the same order as the last letter's waits its quiet, whoever sends it (below, at the letter)
     QUIET: { steady: 1095, cautious: 1095, bold: 730, cunning: 730 },
     // and once a war (on the v2 build the quiet alone still let "hold and wait" come five times in one life of the
     // nine, "hold the line" four): the same order from the same general comes again only in another war, and the quiet
@@ -564,14 +564,17 @@
     if ((t === 'bold' || t === 'cunning') && o.tp == null) kind = 'steady';
     if (o.pp == null && (kind === 'cautious' || kind === 'steady')) return;
     if (kind === 'steady' && o.tp == null) return;
-    const last = S.goSeen && S.goSeen[kind], war = A.atWar(a.realm).map(w => w.id).sort().join();
+    // (a life's own letters: an heir starts with none; an entry from a save before has no pc and stands)
+    const l0 = S.goSeen && S.goSeen[kind], last = l0 && (l0.pc == null || l0.pc === pc.id) ? l0 : null, war = A.atWar(a.realm).map(w => w.id).sort().join();
     const n = last && last.gen === g.id ? last.n || 1 : 0;
-    if (n && (now - last.day < (G.QUIET[kind] || 0) * Math.pow(2, Math.min(3, n)) || (G.WAR_ONCE && last.war === war))) return;
-    // the same order from another general waits the base quiet: on the merged v2 build a soldier moved between armies
-    // had "make a noise" from three generals in a year and a half (lfRepeats). A new general's other orders come as usual
-    if (last && !n && now - last.day < (G.QUIET[kind] || 0)) return;
+    // the quiet doubles with each letter of the kind, from whichever general (all; a save from before has only n): on
+    // the merged v2 build a soldier moved between armies had "make a noise" from three generals in a year and a half,
+    // and "hold the line" five times in a life from three (lfRepeats). The same general's also comes once a war
+    const all = last ? last.all || last.n || 1 : 0;
+    if (all && now - last.day < (G.QUIET[kind] || 0) * Math.pow(2, Math.min(3, all))) return;
+    if (n && G.WAR_ONCE && last.war === war) return;
     S.goNext = now + G.EVERY;
-    S.goSeen = Object.assign({}, S.goSeen, { [kind]: { gen: g.id, day: now, war, n: n + 1 } });
+    S.goSeen = Object.assign({}, S.goSeen, { [kind]: { gen: g.id, day: now, war, n: n + 1, all: all + 1, pc: pc.id } });
     const ctx = { order: 1, genId: g.id, temper: kind, tp: o.tp, pp: o.pp };
     if (kind === t) { if (o.press) ctx.press = 1; if (o.noise != null) ctx.np = o.noise; if (o.wall != null) ctx.wp = o.wall; }
     A.queue({ type: 'event', ev: 'go_order_' + kind, forced: true, ctx });
