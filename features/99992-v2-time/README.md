@@ -55,3 +55,7 @@ calendar month a press, December into January, a mid-month save to the next mont
 dialog), `v2tQuietToast` (the toast is the story's line and is gone after 2 s), `v2tBusyMonths` (0 to 3, summer busier
 than winter, same seed same world), `v2tSameWorld` (the button path with and without drawing every page),
 `v2tPlaces`, `v2tCampaign`, `v2tChapters`.
+
+**Playtest 2 (Nov 6).** `v2tWarPlace`: a tap on War opens the War page from any page, at 420 and 1366 px (new 15 was
+the playtest driver taking the War page's own "Path tab" link). `v2tChapterPanel`: the chapter is only an optional
+Life panel, folded on a phone, and a full chapter is no longer a deed (old 16).

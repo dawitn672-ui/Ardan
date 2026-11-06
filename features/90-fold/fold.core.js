@@ -18,9 +18,14 @@ const slug = t => String(t || '').toLowerCase().replace(/\(\d+\)|\d+/g, '').repl
 FOLD.DEFAULT_CLOSED = {
   // Your days folds to its own summary line ("Push for advancement · training is fair") except on a tall screen
   life: ['how you are', 'your days'],
+  // v2 (99993-v2-stats): the body and mind in real units and words are 13 rows, 730 px of a 700 px rail at 1366 x 768.
+  // On the desktop rail they fold under one header, "Body and mind", to a line of their own words ("175 cm, 73 kg;
+  // lifts 111 kg; a man-at-arms. Quick, retentive, ..."), which FOLD.SUMMARY writes whole, never cut ('body' covers
+  // it). On a phone the profile is its own page and stays open. The Full profile shows every row.
   profile: ['body'],
   holdings: ['the armorer', 'property', 'the trade roads'],
-  realm: ['the council', 'the ladder', 'the ways of', 'how the', 'why wars begin', 'factions of'],
+  // v2 (99995-v2-nobility): the great lords' list is 650 px; it folds to its count ("852 nobles hold land ...")
+  realm: ['the great lords', 'the council', 'the ladder', 'the ways of', 'how the', 'why wars begin', 'factions of'],
   path: ['how you live', 'schools & academies'],
   people: [],
   // cycle 2 (visual F4, design B8): the long reference sections of the Chronicle start folded to their summaries
@@ -35,9 +40,13 @@ FOLD.FIND = { codex: true };
 FOLD.q = '';
 FOLD.ACCORDION = {};                        // tabs whose activity sections open one at a time (none since one grid)
 FOLD.TALL = 180;                            // a card taller than this gets a fold button
-FOLD.ALWAYS = ['whatnow', 'plan-card', 'lf-amb'];   // cards that fold whatever their height (What now, Your days, Ambition)
-// on a phone the Life page is one column under the thumb: the ambition (97-life-fixes) starts folded to its title line
-FOLD.PHONE_CLOSED = { life: ['ambition'], road: ['caravans'] };
+// cards that fold whatever their height (What now, Your days, Ambition, and the chapter: v2 keeps chapters only as an
+// optional Life panel, complaint 7, so it can always be put away)
+FOLD.ALWAYS = ['whatnow', 'plan-card', 'lf-amb', 'chp-card'];
+// on a phone the Life page is one column under the thumb: the ambition (97-life-fixes) and the chapter (9993) start
+// folded to their title lines ("Chapter One The Hard Winter · since 1105 · 0 of 3"); the third aim, while unchosen,
+// waits inside (the first of the two holds until then)
+FOLD.PHONE_CLOSED = { life: ['ambition', 'chapter'], road: ['caravans'] };
 // a tall window (1600 x 1000 and up) has room for Your days open (brief §4.2); reading the window is not game state
 FOLD.roomy = () => typeof window !== 'undefined' && window.innerWidth >= 1600 && window.innerHeight >= 1000;
 FOLD.isOpen = function (tab, key, fallback) {
@@ -62,9 +71,21 @@ const idFrom = (pre, tab, key) => {
   while (document.getElementById(id)) id = base + '-' + (++n);
   return id;
 };
+// v2's body and mind (99993-v2-stats' sheet): a closed group says what it holds in its own words, whole
+const v2rows = box => [...box.querySelectorAll('.v2-row')].map(r => ({ l: ((r.querySelector('.v2-l') || {}).textContent || '').trim(), v: ((r.querySelector('.v2-v') || {}).textContent || '').trim(), w: ((r.querySelector('.v2-w') || {}).textContent || '').trim() }));
+FOLD.SUMMARY = {
+  'body and mind': box => {
+    const R = v2rows(box), of = l => R.find(r => r.l === l), mind = R.filter(r => r.l && /^(Wits|Memory|Judgment|Will|Presence|Cunning)$/.test(r.l));
+    const body = [of('Height') && of('Height').v, of('Strength') && of('Strength').v, of('In a fight') && of('In a fight').w, of('Body') && of('Body').v].filter(Boolean).join('; ');
+    const m = mind.map(r => r.v.toLowerCase()).filter(Boolean).join(', ');
+    return [body, m && m[0].toUpperCase() + m.slice(1)].filter(Boolean).join('. ') + (body || m ? '.' : '');
+  },
+};
 // the one-line summary a closed section shows in its header: the first words of what it holds
 FOLD.summaryOf = function (box) {
   if (!box) return '';
+  const own = box.parentElement && box.parentElement.dataset && FOLD.SUMMARY[box.parentElement.dataset.fk];
+  if (own && box.querySelector('.v2-row')) { const t = own(box); if (t) return t; }
   const first = box.firstElementChild;
   // a table says how many rows it holds; anything else gives its first words (text nodes joined with spaces)
   const tb = first && (first.matches('table') ? first : first.matches('.tscroll') ? first.querySelector('table') : null);
@@ -211,6 +232,15 @@ FOLD.profile = function (root) {
   for (const k of [...root.children]) { if (k.classList && k.classList.contains('barrow')) run.push(k); else flush(); }
   flush();
 };
+// v2's body and mind (99993-v2-stats) sit under one header on the desktop rail, so the two fold as one
+FOLD.v2Head = function (pr) {
+  const vs = pr && pr.querySelector(':scope > .v2-sheet');
+  if (!vs || (vs.previousElementSibling && vs.previousElementSibling.classList.contains('lk-v2h'))) return;
+  const h = document.createElement('div');
+  h.className = 'group-h lk-v2h';
+  h.textContent = 'Body and mind';
+  vs.before(h);
+};
 FOLD.tabOf = () => (UI.isPhone && UI.isPhone() ? 'p-' : '') + (UI.tab || '');
 FOLD.apply = function () {
   if (FOLD.OFF || typeof document === 'undefined') return;
@@ -219,7 +249,7 @@ FOLD.apply = function () {
     const t = tab === 'goals' ? 'life' : tab === 'war' ? 'path' : tab;
     if (tb && t === 'life' && tab === 'life') FOLD.mergeActs(tb);
     if (tb) { tb.dataset.ftab = t; FOLD.sections(tb, t); FOLD.cards(tb, t); FOLD.tools(tb); FOLD.find(tb, t); }
-    if (pr) { FOLD.profile(pr); FOLD.sections(pr, 'profile'); }
+    if (pr) { FOLD.profile(pr); FOLD.v2Head(pr); FOLD.sections(pr, 'profile'); }
     const road = document.querySelector('#modal .mbox.jr-road'); if (road) FOLD.sections(road, 'road');
   } catch (e) { console.error('fold', e); }
 };
@@ -342,6 +372,10 @@ FOLD.CSS = `
 .fold{margin:0 0 var(--s-2,8px)}
 .fold > .fold-head{cursor:pointer;user-select:none;margin:var(--s-3,10px) 0 var(--s-1,4px)}
 .fold > .fold-head:hover{color:var(--accent-2)}
+/* v2: the body and mind fold to their own words, on a line of their own under the header and never cut */
+#profile > .fold[data-fk="body and mind"] > .fold-head{flex-wrap:wrap;row-gap:0}
+#profile > .fold[data-fk="body and mind"] > .fold-head > .fold-h{align-items:flex-start;padding-top:12px}
+#profile > .fold[data-fk="body and mind"] > .fold-head > .fold-sum{flex:1 1 100%;white-space:normal;overflow:visible;text-overflow:clip;text-align:left;padding:0 0 4px;margin-left:0;line-height:1.35}
 .fold-h{flex:none;width:22px;height:22px;margin:0 -2px 0 -4px;padding:0;border:0;border-radius:4px;background:none;cursor:pointer;display:inline-grid;place-items:center;order:-1}
 .fold-h::before{content:"";width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:6px solid var(--accent);transition:transform .15s ease}
 .fold-h[aria-expanded="false"]::before{transform:rotate(-90deg)}

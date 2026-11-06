@@ -179,10 +179,10 @@
     p.chap.past.push(rec);
     if (p.chap.past.length > 16) p.chap.past.shift();
     p.chap.cur = null;
-    if (full) {
-      if (p.deeds) p.deeds.push({ y: A.S.year, t: `Closed ${CH.heading(c)} with every aim met` });
-      if (A.fame) A.fame(p, 2);
-    }
+    // v2 (complaint 7, playtest 2 old 16): chapters stay only as the optional Life panel, so a full chapter is no
+    // longer a deed (it came back as "Gudrun ... tells them all that you closed Chapter One: The Cold Hearth"); the
+    // 2 renown for meeting every aim stays
+    if (full && A.fame) A.fame(p, 2);
     return rec;
   };
   CH.month = function (p) {
@@ -248,7 +248,7 @@
     if (!L || L.n !== (p.chap.cur ? p.chap.cur.n - 1 : -1)) return '';
     const met = L.aims.filter(a => a.d != null);
     const k = met.length;
-    return `${L.t} is closed: ${k === 0 ? 'none of its aims met' : k === L.aims.length ? 'every aim met' : `${k} of ${L.aims.length} aims met`}${L.full ? ', and set down among your deeds' : ''}.`;
+    return `${L.t} is closed: ${k === 0 ? 'none of its aims met' : k === L.aims.length ? 'every aim met' : `${k} of ${L.aims.length} aims met`}.`;
   };
   CH.aimsText = c => c.aims.slice(0, 2).map((a, i) => (i ? a.l[0].toLowerCase() + a.l.slice(1) : a.l)).join('; ') + (c.aims[2] ? '; and either ' + c.aims[2].l.toLowerCase() + (c.alt ? ' or ' + c.alt.l.toLowerCase() : '') : '') + '.';
 
