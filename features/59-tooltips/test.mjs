@@ -402,11 +402,15 @@ export default {
     });
     // v2 (99993-v2-stats): a choice's odds are words now, so the scene's numbers left are the choice keys; the scenes are
     // left out of the bar and the rest must still be covered
-    const v2 = await pg.evaluate(() => !!A.V2S), rr = v2 ? r.filter(s => !/^Events with odds/.test(s.name)) : r;
+    // v2 (99993-v2-stats, playtest 2 old 7 "the duel is all numbers"; commit 55223b6): the duel's Blood, Wind and blows
+    // are words now, so the duel screen holds no number left to explain; like the event scenes it is left out of the bar
+    // (while it holds none: a number that comes back is counted and must be covered)
+    const v2 = await pg.evaluate(() => !!A.V2S), rr = v2 ? r.filter(s => !/^Events with odds/.test(s.name) && !(s.name === 'Duel' && s.after.n === 0)) : r;
     // v2 (99997-v2-war, playtest 2 finding 5): the commander's morale ("eager") and drill ("drilled") are words now, not
-    // 0-100 numbers, so the battle screens carry fewer numbers to cover (39 before, 23 with the duel); the share that
-    // must be covered (90% of each screen, every screen with a number) is unchanged
-    const c = cover(rr, v2 ? 20 : 60);
+    // 0-100 numbers, so the battle screens carry fewer numbers to cover (39 before, 23 with the duel, 17 on the three
+    // battle screens once the duel's went to words in round 2); the share that must be covered (90% of each screen,
+    // every screen with a number) is unchanged, and the floor is the battle screens' own numbers
+    const c = cover(rr, v2 ? 15 : 60);
     return { ok: c.ok && r.length >= 5 && (v2 || r[0].after.n >= 30), detail: r.map(line).join('; '), data: r };
   },
 
