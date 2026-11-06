@@ -170,7 +170,7 @@ export default {
     await pg.evaluate(HELP);
     const r = await pg.evaluate((seed) => {
       T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
-      const DV = A.V2DIP, D = A.V2.diplomacy, mt = D.monthTick, pk = A.cbPreview ? 'cbPreview' : 'warPreview', pv = A[pk], me = A.pc().realm;
+      const DV = A.V2DIP, pk = A.cbPreview ? 'cbPreview' : 'warPreview', pv = A[pk], me = A.pc().realm;
       const free = id => { const x = A.realm(id); return x && x.alive && !x.isRebel && !x.playerRun && id !== me && !A.atWar(id).length && (x.stability || 0) >= 30 && !x.overlord; };
       let pair = null;
       for (const a of DT.others()) {
@@ -181,13 +181,13 @@ export default {
       if (!pair) return { pair: null };
       let ratio = 5;
       const RA = A.realm(pair[0]), had = { lw: 'aiLastWar' in RA, lwv: RA.aiLastWar, ex: RA.exhaustion }, W0 = Object.assign({}, DV.WAR);
-      D.monthTick = (d, world) => { const ix = rid => world.realms.findIndex(x => x.rid === rid); return [{ kind: 'war', a: ix(pair[0]), b: ix(pair[1]), year: A.S.year, month: 0, text: 'war' }]; };
+      // the war preview's strength ratio is set by the test (the opening is what is tested, not the armies)
       A[pk] = function () { const P = pv.apply(this, arguments); return P && Object.assign({}, P, { ratio }); };
+      // DV.tryWar is what DV.tick calls for each war monthTick names (A.V2.diplomacy is a module: it cannot be stubbed)
       const once = () => {
-        const w0 = DV.stats.war, k0 = Object.assign({}, DV.stats.warWait), n0 = A.S.wars.length; DV.tick();
-        const wait = Object.keys(DV.stats.warWait).filter(k => DV.stats.warWait[k] !== (k0[k] || 0)).join();
+        const w0 = DV.stats.war, n0 = A.S.wars.length, said = DV.tryWar(pair[0], pair[1], -40);
         const w = A.S.wars.length > n0 ? A.S.wars[A.S.wars.length - 1] : null;
-        return { war: DV.stats.war - w0, wait, casus: w && w.casus ? w.casus.t : null };
+        return { war: DV.stats.war - w0, wait: said === 'war' ? '' : said, casus: w && w.casus ? w.casus.t : null };
       };
       const out = {};
       // the aggressor stays pair[0] (DV.WAR.pick could hand the war to the side with a grudge, which is not tested here)
@@ -199,13 +199,18 @@ export default {
         ratio = 0.2; out.nerve = once(); ratio = 5;
         DV.WAR.p = 0; out.chance = once();
         DV.WAR.p = 100; out.go = once(); // a certain declaration whatever the court's reasons weigh (none of them nil)
-      } finally { D.monthTick = mt; A[pk] = pv; Object.assign(DV.WAR, W0); }
+      } finally { A[pk] = pv; Object.assign(DV.WAR, W0); }
+      // a want aimed at a neighbour (68-casus-belli's CS.WANT) is a named reason pulling the two apart
+      const wa = Object.keys((A.CASUS && A.CASUS.WANT) || {}).find(x => A.realm(x) && A.realm(x).alive && A.CASUS.WANT[x].t.some(y => A.realm(y) && A.realm(y).alive));
+      const wb = wa && A.CASUS.WANT[wa].t.find(y => A.realm(y) && A.realm(y).alive), rel = wa ? DV.relation(wa, wb) : null;
+      out.want = { pair: wa ? wa + ' on ' + wb : null, text: rel ? (rel.apart.find(x => /\bwants\b/.test(x.text)) || {}).text || null : null };
       return { pair, out };
     }, 2024);
     const o = r.out || {};
     const ok = !!r.pair && o.rest.wait === 'rest' && !o.rest.war && o.weary.wait === 'weary' && !o.weary.war && o.nerve.wait === 'nerve' && !o.nerve.war &&
-      o.chance.wait === 'chance' && !o.chance.war && o.go.war === 1 && !o.go.wait && !!o.go.casus;
-    return { ok, detail: r.pair ? `${r.pair.join(' on ')}: ` + Object.entries(o).map(([k, v]) => `${k}: ${v.war ? 'war' + (v.casus ? ` ("${v.casus}")` : ' without a casus belli') : 'waits (' + (v.wait || 'nothing counted') + ')'}`).join('; ') : 'no free bordering pair' };
+      o.chance.wait === 'chance' && !o.chance.war && o.go.war === 1 && !o.go.wait && !!o.go.casus && !!o.want.text;
+    const W = o.want || {};
+    return { ok, detail: `want ${W.pair}: "${W.text}"; ` + (r.pair ? `${r.pair.join(' on ')}: ` + Object.entries(o).filter(([k]) => k !== 'want').map(([k, v]) => `${k}: ${v.war ? 'war' + (v.casus ? ` ("${v.casus}")` : ' without a casus belli') : 'waits (' + (v.wait || 'nothing counted') + ')'}`).join('; ') : 'no free bordering pair') };
   },
 
   // playtest 1 #22: what you see of a realm depends on who you are

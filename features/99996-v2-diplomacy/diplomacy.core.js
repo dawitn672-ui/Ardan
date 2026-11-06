@@ -171,6 +171,36 @@
     try { if (A.cbWarMul) m *= Math.max(0, +A.cbWarMul(a, b, P || null)); if (A.feudWarMul) m *= Math.max(0, +A.feudWarMul(a, b)); } catch (x) { m = 1; }
     return isFinite(m) ? m : 1;
   }
+  // a war v2 names between a and b (hostility score sc): who declares, and whether it is declared this month.
+  // Returns 'war', 'refused' (no war is possible now), or the reason it waits ('rest', 'weary', 'nerve', 'chance').
+  DV.tryWar = function (a, b, sc) {
+    const S = A.S, Y = yr(), m = month();
+    let agg = a, tgt = b;
+    if (A.realm(agg).playerRun) { if (A.realm(tgt).playerRun) return 'refused'; agg = b; tgt = a; }
+    // the side with the court's reason (a plan, an old wrong, a want, a feud) is the one that declares
+    else if (DV.WAR.pick && !A.realm(tgt).playerRun && courtMul(b, a) > Math.max(1.01, courtMul(a, b))) { agg = b; tgt = a; }
+    const RA = A.realm(agg), capFull = A.warCapFull && A.warCapFull();
+    if (A.atWar(agg).length || RA.overlord === tgt || A.realm(tgt).overlord === agg || (RA.stability || 0) < 30 ||
+      (!capFull && S.wars.filter(w => w.cb !== 'throne').length >= 4) || (capFull && capFull(RA)) || (A.outOfReach && A.outOfReach(agg, tgt))) { DV.stats.warRefused++; return 'refused'; }
+    // war pace: hostility is the reason, but a crown still rests after a war it started, waits out war-weariness and
+    // waits for an opening (the release's own rest, weariness and nerve, 20-ai-personality), and even then a
+    // hostile month becomes a declaration only sometimes (DV.WAR.p, from v2's seeded makeRng, never A.rand)
+    const cb = A.cbOn ? A.cbOn(agg, tgt) : null, rel = A.relBetween(agg, tgt);
+    let P = null; try { P = A.cbPreview ? A.cbPreview(agg, tgt) : A.warPreview(agg, tgt); } catch (x) { P = null; }
+    const WP = DV.WAR, wait = (k) => { DV.stats.warWait[k] = (DV.stats.warWait[k] || 0) + 1; DV.stats.warRefused++; return k; };
+    if (WP.rest && A.aiResting && A.aiResting(RA)) return wait('rest');
+    if (WP.weary && A.aiWeary && (+RA.exhaustion || 0) > A.aiWeary(agg)) return wait('weary');
+    // a grudge wants less of an edge (55-bonds' A.feudNerve), as it does in the release's own war roll
+    let fn = 0; try { fn = A.feudNerve ? +A.feudNerve(agg, tgt) || 0 : 0; } catch (x) { fn = 0; }
+    if (WP.nerve && P && A.aiNerve && +P.ratio < (A.aiNerve(agg) - fn) * WP.nerve) return wait('nerve');
+    // deeper hostility, a casus belli and the court's own reasons (courtMul) raise the chance, as in the release's roll
+    const pw = Math.min(1, WP.p * (1 + Math.max(0, -(+sc || 0) - 25) / 40) * (cb ? WP.cbMul : 1) * courtMul(agg, tgt, P));
+    if (!rngFor(`war|${agg}|${tgt}`).chance(pw)) return wait('chance');
+    const res = A.declareWar(agg, tgt, cb ? { cb } : undefined);
+    if (A.aiNoteWar && P) A.aiNoteWar(agg, tgt, P, rel, cb, res);
+    if (res && res.ok) { DV.stats.war++; store().h.push([Y, m, 'war', agg, tgt]); return 'war'; }
+    DV.stats.warRefused++; return 'refused';
+  };
   DV.tick = function () {
     const S = A.S;
     if (!DV.ON || !S || !S.realms) return [];
@@ -223,30 +253,7 @@
         V2.h.push([Y, m, 'broken', a, b]);
       } else if (e.kind === 'war') {
         r.pact = gamePact(a, b);
-        let agg = a, tgt = b;
-        if (A.realm(agg).playerRun) { if (A.realm(tgt).playerRun) continue; agg = b; tgt = a; }
-        // the side with the court's reason (a plan, an old wrong, a want, a feud) is the one that declares
-        else if (DV.WAR.pick && !A.realm(tgt).playerRun && courtMul(b, a) > Math.max(1.01, courtMul(a, b))) { agg = b; tgt = a; }
-        const RA = A.realm(agg), capFull = A.warCapFull && A.warCapFull();
-        if (A.atWar(agg).length || RA.overlord === tgt || A.realm(tgt).overlord === agg || (RA.stability || 0) < 30 ||
-          (!capFull && S.wars.filter(w => w.cb !== 'throne').length >= 4) || (capFull && capFull(RA)) || (A.outOfReach && A.outOfReach(agg, tgt))) { DV.stats.warRefused++; continue; }
-        // war pace: hostility is the reason, but a crown still rests after a war it started, waits out war-weariness and
-        // waits for an opening (the release's own rest, weariness and nerve, 20-ai-personality), and even then a
-        // hostile month becomes a declaration only sometimes (DV.WAR.p, from v2's seeded makeRng, never A.rand)
-        const cb = A.cbOn ? A.cbOn(agg, tgt) : null, rel = A.relBetween(agg, tgt);
-        let P = null; try { P = A.cbPreview ? A.cbPreview(agg, tgt) : A.warPreview(agg, tgt); } catch (x) { P = null; }
-        const WP = DV.WAR, wait = (k) => { DV.stats.warWait[k] = (DV.stats.warWait[k] || 0) + 1; DV.stats.warRefused++; };
-        if (WP.rest && A.aiResting && A.aiResting(RA)) { wait('rest'); continue; }
-        if (WP.weary && A.aiWeary && (+RA.exhaustion || 0) > A.aiWeary(agg)) { wait('weary'); continue; }
-        // a grudge wants less of an edge (55-bonds' A.feudNerve), as it does in the release's own war roll
-        let fn = 0; try { fn = A.feudNerve ? +A.feudNerve(agg, tgt) || 0 : 0; } catch (x) { fn = 0; }
-        if (WP.nerve && P && A.aiNerve && +P.ratio < (A.aiNerve(agg) - fn) * WP.nerve) { wait('nerve'); continue; }
-        // the court's own reasons weigh on the chance as they do in the release's roll (courtMul)
-        const sc = D.score(d, i, j), pw = Math.min(1, WP.p * (1 + Math.max(0, -sc - 25) / 40) * (cb ? WP.cbMul : 1) * courtMul(agg, tgt, P));
-        if (!rngFor(`war|${agg}|${tgt}`).chance(pw)) { wait('chance'); continue; }
-        const res = A.declareWar(agg, tgt, cb ? { cb } : undefined);
-        if (A.aiNoteWar && P) A.aiNoteWar(agg, tgt, P, rel, cb, res);
-        if (res && res.ok) { r.pact = 'war'; DV.stats.war++; V2.h.push([Y, m, 'war', agg, tgt]); } else DV.stats.warRefused++;
+        if (DV.tryWar(a, b, D.score(d, i, j)) === 'war') r.pact = 'war';
       } else if (e.kind === 'peace') {
         // wars end through the war machinery (war score, peace terms); v2's own peace roll is not used
         r.pact = gamePact(a, b);
