@@ -40,7 +40,7 @@
   // the same rules for a deed another feature quotes (55-bonds' "Between you", 21-npc-initiative's "You both
   // remember"): a past deed of three words or more, from 7 on, that says enough without a title before a colon
   MW.grownAt = grownAt;
-  MW.deedReads = d => typeof d === 'string' && words(d) >= 3 && MW.pastDeed(d.replace(/\s*\([^)]*\)\s*$/, '')) && !/[:;?]/.test(d);
+  MW.deedReads = d => typeof d === 'string' && words(d) >= 3 && !/\b(?:tonight|today|tomorrow|now)\b/i.test(d) && MW.pastDeed(d.replace(/\s*\([^)]*\)\s*$/, '')) && !/[:;?]/.test(d);
 
   // the record as the rules read it: only lines fit to be cited
   const lines0 = MW.lines;
@@ -90,6 +90,28 @@
     if (!w) return null;
     const sh = MW.shapeOf(e), m = lineOf(p, w.ref);
     return sh && m && m.sh === sh ? w : null;
+  };
+
+  // place: the scene must name the place in its own words (playtest 2, old #9: "You were last at market in 1108, when
+  // you tried to partner with a foreign merchant ... You keep your back to the wall." on the muster, whose scutage is a
+  // price; "The last time you were at market" on a siege). 67 reads the place from the scene's shape, which a word of
+  // trade or a coin is enough to make "market".
+  MW.PLACE_WORDS = {
+    market: /\b(market|marketplace|stalls?|fair|bazaar|pedlars?|haggle)\b/i,
+    tavern: /\b(tavern|inn|alehouse|taproom)\b/i,
+    law: /\b(watch|watchmen|watchman|bailiff|reeve|judge|magistrate|gaol|jail|cell|arrest|sheriff|constable)\b/i,
+    temple: /\b(temple|shrine|priests?|chapel|church|altar)\b/i,
+    court: /\b(court|hall|throne|king|queen|steward|council|courtiers?)\b/i,
+    war: /\b(soldiers?|camp|army|company|sergeant|captain|march|battle|siege|muster|levy|drill|garrison|ranks|regiment)\b/i,
+    sea: /\b(sea|ship|boat|deck|harbou?r|sail|sailors?)\b/i,
+  };
+  const ownWords = e => { let s = String((e && e.title) || ''); try { s += ' ' + String(e && e.text); } catch (err) {} return s; };
+  const place0 = R.place;
+  if (typeof place0 === 'function') R.place = function (p, ctx, e, now) {
+    const w = place0.apply(this, arguments);
+    if (!w) return null;
+    const rx = MW.PLACE_WORDS[MW.shapeOf(e)];
+    return !rx || rx.test(ownWords(e)) ? w : null;
   };
 
   // one memory in GAP cards

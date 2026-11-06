@@ -66,7 +66,7 @@ export default {
   async v2cExtraLinesFit(pg) {
     await prep(pg);
     const r = await pg.evaluate(() => {
-      const C2 = A.V2C, ID = A.ID, ADV = A.ADV, out = { cards: 0, voice: 0, adv: 0, two: [], offVoice: [], offAdv: [], child: [] };
+      const C2 = A.V2C, ID = A.ID, ADV = A.ADV, out = { cards: 0, voice: 0, adv: 0, two: [], offVoice: [], offAdv: [], child: [], offWords: [] };
       for (const [status, seed, age, years] of [['peasant', 9201, 6, 22], ['noble', 9202, 14, 18]]) {
         V2CT.life({ seed, status, startAge: age }, years, (q, v, html) => {
           out.cards++;
@@ -75,7 +75,10 @@ export default {
           const advLines = adv ? v.adv.length : 0;
           const woven = !!(q.ctx && q.ctx.mw && !q.ctx.mw.off && q.ctx.mw.ev === q.ev);
           if (vo) out.voice++; if (adv) out.adv++;
-          if ((vo ? 1 : 0) + advLines + (woven ? 1 : 0) + (/wc-recall/.test(html) ? 1 : 0) > 1) out.two.push(q.ev);
+          // (playtest 2: 55-bonds' "Between you" line is an extra line too, and counts toward the one a card)
+          if ((vo ? 1 : 0) + advLines + (woven ? 1 : 0) + (/wc-recall/.test(html) ? 1 : 0) + (/bd-past/.test(html) ? 1 : 0) > 1) out.two.push(q.ev);
+          // (playtest 2, old #10: counsel's words fit the matter: no trade saying on raiders)
+          if (adv) for (const a of v.adv) { const dom = ADV.domOf(q, v, e), txt = `${v.title || ''} ${v.text || ''} ${(e.choices || []).map(c => c && c.t).join(' ')}`; if (!C2.counselFits(a.l, dom, txt)) out.offWords.push(q.ev + ' (' + dom + '): ' + a.l); }
           if (vo) {
             const line = (/<span class="idv-line">([^<]*)</.exec(html) || [])[1] || '';
             const checks = (e.choices || []).some(c => c && c.check);
@@ -93,11 +96,141 @@ export default {
       out.arrows = ADV.isBig(A.EV.pf_bow_butts, { type: 'event', ev: 'pf_bow_butts', ctx: {} }, pc);
       return out;
     });
-    const ok = r.cards >= 150 && !r.two.length && !r.offVoice.length && !r.offAdv.length && !r.roof && !r.law && r.fever && !r.jug && !r.arrows && r.voice + r.adv < r.cards / 4;
-    return { ok, detail: `${r.cards} cards: a voice on ${r.voice}, counsel on ${r.adv}; two extra lines on one card ${r.two.length} ${r.two[0] || ''}; voice off its scene ${r.offVoice.length} ${r.offVoice[0] || ''}; counsel on a small choice ${r.offAdv.length} ${r.offAdv[0] || ''}; ` +
+    const ok = r.cards >= 150 && !r.two.length && !r.offVoice.length && !r.offAdv.length && !r.offWords.length && !r.roof && !r.law && r.fever && !r.jug && !r.arrows && r.voice + r.adv < r.cards / 4;
+    return { ok, detail: `${r.cards} cards: a voice on ${r.voice}, counsel on ${r.adv}; two extra lines on one card ${r.two.length} ${r.two[0] || ''}; voice off its scene ${r.offVoice.length} ${r.offVoice[0] || ''}; counsel on a small choice ${r.offAdv.length} ${r.offAdv[0] || ''}; counsel's words off the matter ${r.offWords.length} ${r.offWords[0] || ''}; ` +
       `"Mend the roof" fits First arrows ${r.roof}; "quotes the law" fits a bully ${r.law}; "fever" fits a fever ${r.fever}; the broken jug is big ${r.jug}, first arrows ${r.arrows}` };
   },
 
+  // playtest 2, old #9 and new #13: the personal lines (a woven memory, 55-bonds' "Between you", 21-npc-initiative's
+  // "You both remember") come under one card in MW.GAP between them (18% before), and every deed they quote reads as a
+  // past deed of its own, from 7 on, without naming the person it is said to
+  async v2cPersonalLinesRare(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      const MW = A.MW, out = { cards: 0, mw: 0, aside: 0, past: 0, bad: [], eg: [] };
+      for (const [status, seed, age, years] of [['peasant', 9211, 16, 20], ['noble', 9212, 16, 16]]) {
+        V2CT.life({ seed, status, startAge: age }, years, (q, v, html) => {
+          out.cards++;
+          const pc = A.pc(), t = q.ctx && q.ctx.pid && A.P(q.ctx.pid);
+          if (q.ctx && q.ctx.mw && !q.ctx.mw.off && q.ctx.mw.ev === q.ev) out.mw++;
+          const bd = /bd-past[^>]*>Between you: (\d{4}), ([^<]*)\.</.exec(html);
+          const ni = /You both remember (\d{4}): ([^.]*)\./.exec(String((q.ctx && q.ctx.past) || ''));
+          for (const [m, k] of [[bd, 'aside'], [ni, 'past']]) {
+            if (!m) continue;
+            out[k]++;
+            const d = m[2].replace(/&#39;/g, "'");
+            if (!MW.deedReads(d) || +m[1] - pc.born < MW.MIN_AGE || (t && t.given && d.includes(t.given))) out.bad.push(m[0]);
+            else if (out.eg.length < 4) out.eg.push(m[0]);
+          }
+        });
+      }
+      // the playtest's own lines are not quoted
+      out.lines = ['you tried to wait until she sleeps', 'you asked what the debt is', 'you told Maren it is hopeless', 'an ordinary person: you told Maren it went well'].map(d => MW.deedReads(d));
+      out.good = MW.deedReads('you pulled him out of the millrace');
+      return out;
+    });
+    const n = r.mw + r.aside + r.past, rate = n / Math.max(1, r.cards);
+    const ok = r.cards >= 150 && rate <= 1 / 9 && !r.bad.length && !r.lines.some(Boolean) && r.good;
+    return { ok, detail: `${r.cards} cards: a memory on ${r.mw}, "Between you" on ${r.aside}, "You both remember" on ${r.past}: ${(rate * 100).toFixed(1)}% (at most 11.1%); ` +
+      `deeds that do not read ${r.bad.length} ${r.bad[0] || ''}; the playtest's lines quoted ${JSON.stringify(r.lines)}; a past deed quoted ${r.good}; e.g. ${r.eg.join(' / ')}` };
+  },
+
+  // playtest 2, old #10: counsel's words fit the matter ("Your name in the trade is your fortune" on raiders, "Good work
+  // speaks louder than a good speech" on hiring a killer); who speaks and which way they lean are 9999's
+  async v2cCounselWordsFit(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      const C2 = A.V2C, ADV = A.ADV;
+      T.enter({ seed: 9221, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc();
+      const war = 'Raiders at the ford. Twenty riders are burning the mill. Your men look to you.';
+      const out = {
+        tradeOnRaid: C2.counselFits('Your name in the trade is your fortune.', 'war', war),
+        workOnKiller: C2.counselFits('Good work speaks louder than a good speech.', 'court', 'A man in the alley offers to kill your rival for 40 suns.'),
+        tradeOnWork: C2.counselFits('Your name in the trade is your fortune.', 'work', 'A guild master asks to see your best piece.'),
+        stoneOnRaid: C2.counselFits('Stone outlives speeches.', 'war', war),
+      };
+      // a raid scene with a trade saying: the words change to ones that fit, the speaker and the choice stay
+      if (!A.EV.v2ct_raid) A.defEvents([{ id: 'v2ct_raid', title: 'Raiders at the ford', cond: () => false, w: 0, text: war, choices: [{ t: 'Ride at them', r: 'You ride.', fx: { happy: 1 } }, { t: 'Hold the bridge', r: 'You hold.', fx: { happy: 1 } }] }]);
+      const q = { type: 'event', ev: 'v2ct_raid', ctx: {} };
+      A.S.queue.unshift(q); const v = A.eventView(q); A.S.queue.shift();
+      const o = { id: 'x1', r: 'father', i: 1, y: 'want', c: 30, l: 'Your name in the trade is your fortune.', m: '' };
+      const w = C2.counselWords(pc, q, v, o), dom = ADV.domOf(q, v, A.EV.v2ct_raid);
+      out.dom = dom; out.now = w.l; out.same = w.id === o.id && w.i === o.i && w.r === o.r;
+      out.fits = C2.counselFits(w.l, dom, war);
+      out.again = C2.counselWords(pc, q, v, o).l === w.l;
+      return out;
+    });
+    const ok = !r.tradeOnRaid && !r.workOnKiller && r.tradeOnWork && !r.stoneOnRaid && r.now !== 'Your name in the trade is your fortune.' && r.fits && r.same && r.again;
+    return { ok, detail: `a trade saying on raiders fits ${r.tradeOnRaid}, on hiring a killer ${r.workOnKiller}, on a matter of work ${r.tradeOnWork}; "Stone outlives speeches" on raiders ${r.stoneOnRaid}; ` +
+      `the raid (${r.dom}) now hears "${r.now}" (fits ${r.fits}; same speaker and choice ${r.same}; the same each time ${r.again})` };
+  },
+
+  // playtest 2, new #19: a token's article after the text's own ("Keep the a slingshot", "of the the Lantern Company",
+  // "of the The Greyfeathers", "Edda's a wooden horse"), a raw id in a title ("A friend of pyt"), "loses some 0"
+  async v2cTokenGrammar(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9231, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 8 });
+      const pc = A.pc(), out = {};
+      out.T = [A.T('Keep the {toy}', { toy: 'a slingshot' }), A.T('about 150 of the {c}', { c: 'The Greyfeathers' }), A.T('of the {c}.', { c: 'the Lantern Company' }), A.T('{npc} has {toy}.', { npc: 'Edda', toy: 'a slingshot' })];
+      // the small grave, as the card draws it
+      const gid = Object.keys(A.EV).find(id => A.EV[id].title === 'A small grave');
+      const g = V2CT.rows(gid, {});
+      out.grave = `${g.v.text} | ${g.rows.join(' | ')}`;
+      // a friend of your foe: the title names the foe
+      pc.born = A.S.year - 30;
+      const people = Object.values(A.S.people).filter(p => p.alive && p.id !== pc.id && A.age(p) >= 18).slice(0, 2);
+      const c = V2CT.rows('cir_foes_friend', { pid: people[0].id, foe: people[1].id });
+      out.cirTitle = String(c.v.title); out.foe = people[1].id; out.foeName = people[1].given;
+      out.est = [A.V2W.estimate(0, 'captain'), A.V2W.estimate(3, 'captain'), A.V2W.estimate(12, 'captain')];
+      return out;
+    });
+    const bad = /\b(?:the|The) (?:a|an|the|The) |'s a (?:bone|wooden|clay|slingshot|corn)/;
+    const ok = !r.T.some(s => bad.test(s)) && r.T[3] === 'Edda has a slingshot.' && !bad.test(r.grave) && /Keep the (?:bone whistle|wooden horse|clay marble|slingshot|corn doll)/.test(r.grave) &&
+      !r.cirTitle.includes(r.foe) && r.cirTitle.includes(r.foeName) && r.est[0] === 'none' && r.est[1] === 'a few' && r.est[2] === 'some 10';
+    return { ok, detail: `${r.T.join(' / ')}; the small grave: ${r.grave}; "${r.cirTitle}" (foe ${r.foe}); a captain's count of 0, 3, 12: ${r.est.join(', ')}` };
+  },
+
+  // playtest 2, new #18: the death screen's words fit the death: "The Old Soldier" needs the years as well as the
+  // battles (a captain dead at 18 had it); a hanging and a blow on the night watch had "as all things end"; the tavern's
+  // tale tagged "and in the rain" onto "Set out to rise in the army, and did"
+  async v2cEndsFit(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9241, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 18 });
+      const pc = A.pc(), out = {};
+      pc.mil = pc.mil || {}; pc.mil.battles = 32;
+      out.at18 = A.endingOf(pc).id;
+      pc.born = A.S.year - 45; out.at45 = A.endingOf(pc).id;
+      pc.cause = 'hanging'; out.hang = A.endingOf(pc).manner;
+      pc.cause = 'a blow on the night watch'; out.watch = A.endingOf(pc).manner;
+      out.tales = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => A.BT.tale('Set out to rise in the army, and did', 'v2c' + i));
+      out.plain = [0, 1, 2, 3, 4, 5].map(i => A.BT.tale('Held the bridge at Amberwick', 'v2c' + i));
+      return out;
+    });
+    const ok = r.at18 !== 'veteran' && r.at45 === 'veteran' && r.hang === 'violence' && r.watch === 'battle' && !r.tales.some(t => /and did, and /.test(t)) && r.plain.some(t => /, and /.test(t));
+    return { ok, detail: `32 battles at 18: ${r.at18}; at 45: ${r.at45}; a hanging: ${r.hang}; a blow on the night watch: ${r.watch}; tales ${[...new Set(r.tales)].join(' / ')}; a plain deed keeps its tags ${r.plain.some(t => /, and /.test(t))}` };
+  },
+
+  // playtest 2, old #16: a faithless life (99993-v2-stats: piety only for the clergy-born, a priest, or a life that took
+  // it up) is not offered piety on the card ("Watch the rites ▲ more piety" at 4); one who has the faith still is
+  async v2cNoPietyFaithless(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9251, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 6 });
+      const pc = A.pc(), fid = Object.keys(A.EV).find(id => A.EV[id].title === 'Feast day' && /fest/.test(String(A.EV[id].text)));
+      const rows = () => V2CT.rows(fid, {}).rows;
+      const faithless = !A.V2S.hasFaith(pc), a = rows();
+      pc.flags.v2_faith = A.S.year;
+      const faithful = A.V2S.hasFaith(pc), b = rows();
+      delete pc.flags.v2_faith;
+      return { faithless, faithful, a, b };
+    });
+    const pious = rs => rs.filter(x => /piety|toward the faith/.test(x));
+    const ok = r.faithless && r.faithful && !pious(r.a).length && pious(r.b).length > 0;
+    return { ok, detail: `faithless: ${r.a.join(' | ')}; with the faith: ${pious(r.b).join(' | ')}` };
+  },
   // #11: scenes that need a shop, a rank, letters or years reach only lives that have them; no Latin in Ardan
   async v2cClassGates(pg) {
     await prep(pg);

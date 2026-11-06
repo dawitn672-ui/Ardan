@@ -180,8 +180,9 @@
   //   - the deed must read as a past deed of its own (MW.deedReads: no "is", no "she sleeps", no "title: deed"), from
   //     the age of 7 on, and must not name the person it is said to.
   const MW = A.MW, BD = A.BONDS, NI = A.NPCI;
-  const gapOk = pc => !!(pc && pc.mw && typeof pc.mw === 'object') && !(typeof pc.mw.lw === 'number' && (+pc.mw.n || 0) - pc.mw.lw < ((MW && MW.GAP) || 10));
-  const spend = pc => { pc.mw.lw = +pc.mw.n || 0; };
+  // (a life with no record of cards, pc.mw, from a build or a save without 67-memory-weave, is not spaced)
+  const gapOk = pc => !!pc && !(pc.mw && typeof pc.mw === 'object' && typeof pc.mw.lw === 'number' && (+pc.mw.n || 0) - pc.mw.lw < ((MW && MW.GAP) || 10));
+  const spend = pc => { if (pc.mw && typeof pc.mw === 'object') pc.mw.lw = +pc.mw.n || 0; };
   C2.deedFor = function (pc, t, y, d) {
     if (typeof d !== 'string' || !MW || typeof MW.deedReads !== 'function') return false;
     if (MW.grownAt && !MW.grownAt(pc, y)) return false;

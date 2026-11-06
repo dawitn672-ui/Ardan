@@ -127,6 +127,27 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
   - the gathering's close ("The last night") shows what you carry home from your role and aim there: "▲ renown,
     ▲ Etiquette", or "Alliance with Varenna: decided tonight".
 
+### Playtest 2: extra lines, counsel and token grammar (`a-weave`, `b-lines`, `g-ends.core.js`, a patch)
+
+Playtest 2 found 32% of cards with an extra line (18% personal, 12% the world's record), garbled or wrong-side lines, counsel that did not fit, and token grammar slips. Over three played lives (416 cards) the share of cards with any extra line is now 21.6%, against 30.5% before; the personal lines are 6.7%, against 17% (`v2cPersonalLinesRare`: 7.2% over two more lives).
+
+- **One extra line a card, counsel included.** CI run 88 found a memory and counsel together on the muster. Counsel now keeps its peace when a memory is woven into the scene (it is set in the scene's setup, before counsel is drawn).
+- **The personal lines share the memory's spacing** (`MW.GAP` cards between two, `pc.mw.lw`):
+  - 55-bonds' "Between you" line is chosen once, when the scene is drawn up, and kept on the view (`v.bdAside`). It is not shown on a card with counsel, a woven memory or a scene that already quotes the past. The world's recalled line and the inner voice give way to it.
+  - 21-npc-initiative's "You both remember" (`{past}`, in the scene's setup) spends the spacing when it speaks, and is left out when the spacing is not there.
+- **A quoted deed reads as a past deed** (`MW.deedReads`): three words or more, no title before a colon, from the age of 7, and not naming the person it is said to. `MW.pastDeed` also rejects a third person in the present ("you tried to wait until she sleeps"). 55-bonds' deed maker puts a second verb it does not know into the past when a pronoun follows it ("you applied and dazzled them").
+- **A memory of a place needs the place in the scene's words** (`MW.PLACE_WORDS`): "You were last at market in 1108" no longer comes on the muster, whose scutage is only a price.
+- **Counsel's words fit the matter** (`C2.counselFits`, `C2.counselWords`). Who speaks and which way they lean stay as 9999 chose. A trade saying ("Your name in the trade is your fortune") is for a matter of work, a builder's saying for work, money or the court, and a line that names a thing needs that thing in the scene. A line that doesn't fit gives way to the domain's own words.
+- **57's recalled line is said from the right side.** "Mothers here still frighten children with the men of Aldmark" and "People here bar their doors" are not said where the taker is the player's realm or the place's.
+- **Token grammar.** `A.T` drops a token's own article after "the", "your", "his" and the like ("Keep the slingshot", "of the Greyfeathers"). It reads the template, so a sentence the writer wrote is never touched. Patch `V2C-TOY-ARTICLE` names the small grave's toy bare ("Edda's wooden horse"). 41-circles' title names the foe, not their id ("A friend of Harald"). A captain's count of none or a few reads "none" or "a few", not "some 0". The battle view reads "of the Lantern Company".
+- **The death screen.**
+  - "The Old Soldier" needs 40 years as well as 10 battles.
+  - A hanging is "by another's hand", and a blow on the night watch is "fell in the field".
+  - The tavern's tale says "Set out to rise in the army, and did, the story goes", not "and did, and in the rain".
+- **No piety offered to the faithless.** 99993-v2-stats turns a faithless player's piety into a quiet pull toward the faith. The card's chips now leave piety out for such a life. A choice left with nothing else shows "It will be remembered".
+- **Already fixed elsewhere:** "with a bare hands" (48-fight-ladder reads "bare-handed" since the body lane's 3ddf09c).
+- **Left to other lanes:** the soldier filler repeats ("Orders: hold and wait", "Pay day") belong to the warbattles group (lfRepeats). Counsel's labels and the pronoun paths belong to the family group. 57's recall rate belongs to the chronicle group.
+
 ### Numbers (`e-numbers.core.js`)
 
 - **The War Room's division panel,** for an enemy division a scout can see, gives estimates in 99997-v2-war's commander words ("some 7,500"). That covers:
@@ -145,7 +166,7 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 | Test | Checks |
 | --- | --- |
 | `v2cMemoryRare` | Two played lives: memories on under 1 card in 8, none from before 7, none citing a deed that is not in the past tense. The complaint's lines are rejected. |
-| `v2cExtraLinesFit` | Two played lives: never two extra lines on a card; a voice only on a check scene at 14 or older; counsel only on a big scene at 15 or older. The playtest's lines don't fit their scenes ("Mend the roof" on First arrows, "quotes the law" on the bully), and the broken jug and first arrows are not big. |
+| `v2cExtraLinesFit` | Two played lives: never two extra lines on a card (55-bonds' "Between you" counted too); counsel's words fit the matter; a voice only on a check scene at 14 or older; counsel only on a big scene at 15 or older. The playtest's lines don't fit their scenes ("Mend the roof" on First arrows, "quotes the law" on the bully), and the broken jug and first arrows are not big. |
 | `v2cClassGates` | A 13-year-old apprentice smith never draws the apprentice, undercut, commission or election scenes, and the shop scene doesn't fit him. No study scene of the disputation or inn kind comes at 8. No round is offered at 14 with 0 suns. No Latin anywhere. |
 | `v2cShopGateReadsRight` | A clerk, a line under the scene's own test, a shop still to come and a scene that follows a flag don't need a shop; the dwarf partner, the smith's apprentice, the royal bowyer, the general's and the ruler's clerks are not hidden. A plain "your customers" still needs one. |
 | `v2cPlaytest2Class` | The runaway boy is not betrothed to a man; a soldier with no lance hears no lance at the tournament, a knight does; a soldier's officer sits in the ring as a captain, a smith's master as a master. |
@@ -155,6 +176,11 @@ A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big
 | `v2cRiskLethal` | The night watch's failure reads "a wound, hurt" for a hale man. At health 3 it reads "hurt that could kill you, near death as you are", in the profile's word. Played, it leaves him at 0 health. |
 | `v2cChipsDirection` | Staged: "Under the ice", "The grand melee", the gift, the mess brawl and the loaded dice give a direction and a name. The dice name the second messmate. Over every scene for a soldier, under 0.4% of chips give no way. The verifier's cases (wk_gen_parent's parent, the windfall's family, sc_ss_family's father, the envoy's and the scandal's crown, the saddle's wife, the first steps' father, a dare's father on failure, a feud's two sides, a quarrel either way) are named. Over every scene, staged with a friend in `ctx.pid` and again each with its own context, no chip reads a bare "regard" or "their regard" and none shows a regard without its way (336 and 68 before). |
 | `v2cEveryChoiceTrue` | "The hearth mark", "What you want" and "The last night" show a real effect on every choice. None shows only "It will be remembered" or "Nothing changes". |
+| `v2cPersonalLinesRare` | Two played lives: a woven memory, "Between you" and "You both remember" together on at most 1 card in 9; every deed they quote reads as a past deed, from 7 on, without the person's own name. The playtest's lines are not quoted. |
+| `v2cCounselWordsFit` | A trade saying does not fit raiders or hiring a killer, and does fit a matter of work. On a staged raid the father's trade saying becomes the war's own words; the speaker and the choice stay. |
+| `v2cTokenGrammar` | "Keep the slingshot", "of the Greyfeathers", "Edda has a slingshot" (an article the writer wrote stays). The small grave names the toy bare. "A friend of" names the foe. A captain's count of 0, 3, 12 is none, a few, some 10. |
+| `v2cEndsFit` | 32 battles at 18 are not "The Old Soldier"; at 45 they are. A hanging is by another's hand; a blow on the night watch fell in the field. No "and did, and in the rain". |
+| `v2cNoPietyFaithless` | The feast day for a faithless child of 6 shows no piety; with the faith taken up it does. |
 | `v2cWarRoomNumbers` | With a scout beside it, an enemy division and three of them read as estimates. Your own division never reads above full. Restless lords and the army's quality are in words. |
 
 ## Changed elsewhere
