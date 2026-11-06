@@ -503,6 +503,38 @@ export default {
     return { ok: !r.nBad && enough, detail: Object.entries(R).map(([k, x]) => `${k}: ${x.n}, largest gap ${Math.round(x.worst * 100) / 100}`).join('; ') + (r.nBad ? `; FAILED: ${r.bad.join(', ')} (${r.nBad})` : '') + (enough ? '' : '; too few cases'), data: r };
   },
 
+  // CI 89 (ttSums2): 9992-identity's thoughts move a check's value (a ripe one's gain and cost, half the cost of one held),
+  // and the odds' parts did not say so: a life holding "Fear is a teacher" (stealth -3) showed every stealth check with an
+  // "Other things in play" row. Now a thought that bears on the check is a row of its own, named in words, and the rows
+  // add up to the odds. Held, ripe, on the first skill and on the second; a thought on neither adds no row.
+  async ttThoughtRow(pg) {
+    await pg.evaluate(KIT2);
+    const r = await pg.evaluate(() => {
+      const TT = UI.TT, ID = A.ID, out = [];
+      if (!ID || !ID.THOUGHTS || !ID.THOUGHTS.fear) return { skip: true };
+      A.newGame({ seed: 5970, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 28 });
+      const pc = A.pc(); A.S.queue = [];
+      const cases = [
+        ['held, first skill', { held: { fear: A.absDay() }, ripe: {} }, { s: 'stealth', s2: 'int', d: 40 }, true],
+        ['ripe, first skill', { held: {}, ripe: { fear: A.S.year } }, { s: 'stealth', d: 40 }, true],
+        ['ripe gain, second skill', { held: {}, ripe: { fear: A.S.year } }, { s: 'persuasion', s2: 'athletics', d: 45 }, true],
+        ['bears on neither', { held: { fear: A.absDay() }, ripe: {} }, { s: 'persuasion', s2: 'wil', d: 45 }, false],
+      ];
+      for (const [name, th, ck, want] of cases) {
+        pc.thoughts = Object.assign({ dropped: {} }, th);
+        const odds = A.checkOdds(pc, ck), S = TT.checkParts(pc, ck, {}, odds, null);
+        const row = S.parts.find(x => /^A thought you hold/.test(x[0])), sum = S.parts.reduce((a, x) => a + x[1], 0);
+        // the base is rounded to a whole point and that half point has no row of its own, hence a gap up to 0.5
+        out.push({ name, odds, row: row ? row[0] : null, other: S.parts.some(x => /Other things in play/.test(x[0])), gap: Math.round((odds - sum) * 100) / 100, want, pct: !!row && /\d\s*%/.test(row[0]) });
+      }
+      pc.thoughts = null;
+      return { out };
+    });
+    if (r.skip) return { ok: true, detail: 'no 9992-identity thoughts in this build' };
+    const ok = r.out.every(x => !!x.row === x.want && !x.other && Math.abs(x.gap) <= 0.5 && !x.pct && (!x.want || /Fear is a teacher/.test(x.row)));
+    return { ok, detail: r.out.map(x => `${x.name}: ${x.odds}, ${x.row ? 'row' : 'no row'}${x.other ? ', other' : ''}, gap ${x.gap}`).join('; ') };
+  },
+
   // nested: a price opens its trade skill, which opens its tiers; a division's strength opens its organization, which
   // opens its general; a choice's odds open by a tap on the odds (the choice is not taken), then the stat, then its
   // potential; by keyboard, Right arrow on the choice opens its odds and Esc gives focus back to the choice
