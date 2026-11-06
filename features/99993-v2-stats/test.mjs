@@ -422,7 +422,14 @@ export default {
     const r = await pg.evaluate(async () => {
       const W = '(strength|speed|instincts?|stamina|wits|will|willpower|intelligence|renown|opinion(?: of you)?|command(?: skill)?|morale|performance|reputation|merit(?: in your post)?|blood|wind|health|happiness|looks|honou?r|piety|loyalty|discontent|infamy)';
       const LINE = new RegExp(`\\b${W}\\b[:\\s·—–-]{0,3}\\(?[+−-]?\\d{1,4}(?:\\.\\d)?(?:\\s*/\\s*\\d+)?\\b(?!\\s*(?:suns?|years?|days?|months?|men\\b|km|kg|cm|ms|m/s|hours?|levies|blows|AR\\b|of \\d|in \\d))`, 'i');
-      const MORE = [/\b\d{1,3} damage\b/, /\bfighter \(\d/, /\+\d+(?:\.\d)?[,.] (?:[a-z]|all|about|nearly)/, /\bmore faster\b/, /(?:assault|attack|charge|defence|defense|march) about (?:a|two|three|half)[^.,]* (?:more|less)\b/, /\b(?!\d0*(?:,000)+\b)\d{1,3}(?:,\d{3})+ suns (?:to|from)\b/];
+      // (CI 90: the exact-sum check is j-numbers' hearsay rule's other side, "a sum that passes between crowns" told to
+      // one who is no party to it: it flagged a learned secret, "He owes 4,785 suns to a moneylender in" a town, a
+      // count of suns (a real unit) owed by one man to another, which names no realm and is no 0-100 scale. The check
+      // now reads, as the rule does, only a line that names a realm other than the player's own.)
+      const SUM = /\b(?!\d0*(?:,000)+\b)\d{1,3}(?:,\d{3})+ suns (?:to|from)\b/;
+      const realmIn = l => { const p = A.pc(), own = p && p.ruler; return Object.values(A.S.realms || {}).some(x => x && x.id !== own && [x.name, x.short].some(n => typeof n === 'string' && n.length >= 3 && new RegExp(`(?:^|[^A-Za-z\\u00C0-\\u024F])${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![A-Za-z\\u00C0-\\u024F])`).test(l))); };
+      const FOREIGN_SUM = { test: l => SUM.test(l) && realmIn(l) };
+      const MORE = [/\b\d{1,3} damage\b/, /\bfighter \(\d/, /\+\d+(?:\.\d)?[,.] (?:[a-z]|all|about|nearly)/, /\bmore faster\b/, /(?:assault|attack|charge|defence|defense|march) about (?:a|two|three|half)[^.,]* (?:more|less)\b/, FOREIGN_SUM];
       const KEYS = new Set(['perf', 'rep', 'merit', 'coMo', 'coDivMo', 'worth', 'fame', 'opinion', 'rulerOp', 'loyalty', 'facDisc', 'feud']);
       const BOARD = /\|(merit|cmd|skill|rep)$/, NEEDS = /^(Rest|Company|Purpose|Comfort)$/;
       const found = [], tick = () => new Promise(res => setTimeout(res, 0));
