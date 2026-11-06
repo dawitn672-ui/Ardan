@@ -33,3 +33,14 @@ derives the status from all the parts: a marriage plus a sworn rivalry reads "un
 - **Blocs and coalitions** (playtest 1 #22): an alliance bloc is realms each allied to every other (patch `V2DIP-BLOCS`;
   chains no longer join all 33 realms). A coalition takes only realms cold or worse with the conqueror by the status
   (patch `V2DIP-COALITION`), and a conqueror's infamy is a reason of its own ("fear of X's conquests").
+- **War pace** (CI 88, `riGoldGetsUsed`): v2's `monthTick` names a war whenever a bordering pair is hostile (score -25
+  with an ambitious ruler, or -45) and wins a 2 to 3% monthly roll, and a hostile pair stays hostile, so `DV.tick`
+  declared about three times the release's rate. Its war branch now first asks what the release's AI asks
+  (20-ai-personality): a crown rests after a war it started (`A.aiResting`), waits out war-weariness (`A.aiWeary`) and
+  waits for an opening (the war preview's strength ratio at least `A.aiNerve`); then the hostile month becomes a
+  declaration with chance `DV.WAR.p` 0.35, more as the score falls below -25 and x1.5 with a casus belli, drawn from
+  v2's `makeRng` (never `A.rand`). The reasons still drive it: no hostile status, no war. Each wait is counted in
+  `A.V2DIP.stats.warWait`. Over `riGoldGetsUsed`'s 3 worlds x 30 years (seeds 606, 1212, 2424): before, 0.043 wars a
+  realm-year (127 wars, 116 of them from `DV.tick`) and an army 10th percentile of 0.44 of normal; after, 0.017 (53
+  wars, 39 from `DV.tick`; the band is 0.012 to 0.03, the fix layer 0.018) and 0.82. Most of the cut is the opening:
+  over those runs 260 declarations waited for one, 18 for weariness, 9 for rest, 4 on the chance.
