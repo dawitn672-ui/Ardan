@@ -72,20 +72,27 @@ const idFrom = (pre, tab, key) => {
   return id;
 };
 // v2's body and mind (99993-v2-stats' sheet): a closed group says what it holds in its own words, whole
-const v2rows = box => [...box.querySelectorAll('.v2-row')].map(r => ({ l: ((r.querySelector('.v2-l') || {}).textContent || '').trim(), v: ((r.querySelector('.v2-v') || {}).textContent || '').trim(), w: ((r.querySelector('.v2-w') || {}).textContent || '').trim() }));
+const v2rows = box => [...box.querySelectorAll('.v2-row')].map(r => ({ l: ((r.querySelector('.v2-l') || {}).textContent || '').trim(), v: ((r.querySelector('.v2-v') || {}).textContent || '').trim(), w: ((r.querySelector('.v2-w') || {}).textContent || '').trim(), tt: r.getAttribute('title') || '' }));
+// (CI 90, 59-tooltips' ttCoverage: the folded line held the sheet's numbers, "165 cm, 66 kg; lifts 149 kg", with no
+// tooltip, where each row of the open sheet explains itself. A summary may now be a list of parts, {t, tt}: each part
+// that comes from a row carries that row's own title, so the line says the same words and each number explains itself
+// as it does on the sheet. Its text is unchanged.)
 FOLD.SUMMARY = {
   'body and mind': box => {
     const R = v2rows(box), of = l => R.find(r => r.l === l), mind = R.filter(r => r.l && /^(Wits|Memory|Judgment|Will|Presence|Cunning)$/.test(r.l));
-    const body = [of('Height') && of('Height').v, of('Strength') && of('Strength').v, of('In a fight') && of('In a fight').w, of('Body') && of('Body').v].filter(Boolean).join('; ');
-    const m = mind.map(r => r.v.toLowerCase()).filter(Boolean).join(', ');
-    return [body, m && m[0].toUpperCase() + m.slice(1)].filter(Boolean).join('. ') + (body || m ? '.' : '');
+    const bits = [['Height', 'v'], ['Strength', 'v'], ['In a fight', 'w'], ['Body', 'v']].map(([l, k]) => of(l) && of(l)[k] ? { t: of(l)[k], tt: of(l).tt } : null).filter(Boolean);
+    const m = mind.map(r => r.v.toLowerCase()).filter(Boolean).join(', '), out = [];
+    bits.forEach((b, i) => { if (i) out.push({ t: '; ' }); out.push(b); });
+    if (m) { if (out.length) out.push({ t: '. ' }); out.push({ t: m[0].toUpperCase() + m.slice(1) }); }
+    if (out.length) out.push({ t: '.' });
+    return out;
   },
 };
 // the one-line summary a closed section shows in its header: the first words of what it holds
 FOLD.summaryOf = function (box) {
   if (!box) return '';
   const own = box.parentElement && box.parentElement.dataset && FOLD.SUMMARY[box.parentElement.dataset.fk];
-  if (own && box.querySelector('.v2-row')) { const t = own(box); if (t) return t; }
+  if (own && box.querySelector('.v2-row')) { const t = own(box); if (t && t.length) return t; }
   const first = box.firstElementChild;
   // a table says how many rows it holds; anything else gives its first words (text nodes joined with spaces)
   const tb = first && (first.matches('table') ? first : first.matches('.tscroll') ? first.querySelector('table') : null);
@@ -98,9 +105,16 @@ FOLD.summaryOf = function (box) {
 };
 const putSummary = (head, text) => {
   let s = head.querySelector(':scope > .fold-sum');
-  if (!text) { if (s) s.remove(); return; }
+  if (!text || (Array.isArray(text) && !text.length)) { if (s) s.remove(); return; }
   if (!s) { s = document.createElement('span'); s.className = 'fold-sum'; s.setAttribute('aria-hidden', 'true'); head.appendChild(s); }
-  s.textContent = text;
+  if (!Array.isArray(text)) { s.textContent = text; return; }
+  // a summary in parts: a part from a row of the sheet keeps that row's tooltip (its title, as the sheet has it)
+  s.textContent = '';
+  for (const x of text) {
+    if (!x || !x.t) continue;
+    if (!x.tt) { s.appendChild(document.createTextNode(x.t)); continue; }
+    const e = document.createElement('span'); e.textContent = x.t; e.setAttribute('title', x.tt); s.appendChild(e);
+  }
 };
 FOLD.putSummary = putSummary;
 // the Life tab's activities: every group (Only now, Body & mind, Social ...) into one grid, in the groups' order. Each
@@ -197,7 +211,12 @@ FOLD.cards = function (root, tab) {
     btn.dataset.a = 'fold';
     btn.dataset.v = key;
     btn.setAttribute('aria-expanded', String(open));
-    btn.dataset.label = label.slice(0, 40) || 'this card';
+    // (CI 90, 99993-v2-stats' v2sNumbers: the label was the first row's text run together and cut at 40 letters, so the
+    // chapter card's "Chapter One", "Mending and Making Do", "since 1105" read "Open Chapter OneMending and Making Dosince
+    // 11", a year cut to a bare number. The label is the row's parts with spaces between, cut whole at a word, and a card
+    // may name its own (data-fold-label). The key above still reads the old text, so a card the player folded stays so.)
+    const spoken = (c.dataset.foldLabel || [...first.childNodes].map(n => (n.textContent || '').replace(/\s+/g, ' ').trim()).filter(Boolean).join(' ')).trim();
+    btn.dataset.label = (spoken.length > 40 ? spoken.slice(0, 41).replace(/\s+\S*$/, '').replace(/[\s·,;:–—-]+$/, '') : spoken) || 'this card';
     btn.setAttribute('aria-label', (open ? 'Fold ' : 'Open ') + btn.dataset.label);
     if (!c.id) c.id = idFrom('fold-c', tab, key);
     btn.setAttribute('aria-controls', c.id);

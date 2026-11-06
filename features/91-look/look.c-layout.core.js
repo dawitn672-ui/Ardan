@@ -29,6 +29,13 @@
   ${D} #profile > *{flex:none;margin:0}
   ${D} #side > #tabbody{padding:4px 12px 8px}
 }
+/* 1100-1599, the compact three columns (CI 90, fitsOneScreen at 1366 x 768: the panel 619 of 615 and the rail 707 of 698
+   on the CI runner): a little less air, the rail's sections 6 px apart and its ends 8, the panel's foot 4, so both fit
+   with room to spare; nothing folds or hides for it, and >= 1600 keeps its own spacing */
+@media (min-width:1100px) and (max-width:1599px){
+  ${D} #profile{padding:8px 10px;gap:6px}
+  ${D} #side > #tabbody{padding:4px 12px 4px}
+}
 /* 1100-1279: the same three columns, a little narrower at the sides (240 / flexible / 440) */
 @media (min-width:1100px) and (max-width:1279px){
   ${D}{grid-template-columns:240px minmax(0,1fr) 440px}
