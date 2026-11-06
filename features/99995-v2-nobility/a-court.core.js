@@ -68,6 +68,9 @@
       colors: [c1, rng.pick(palette.filter(x => x !== c1))], charge: rng.pick(charges), words: '', arms: '',
       notes: `Raised to hold ${q.name}.`, members: [], v2court: rid,
     };
+    // 09-scale keeps the houses of each realm in an index: a house raised in play (a regrant) must tell it, or
+    // A.realmHouses misses the new house until the monthly check finds it (scaleSites reads this line as text)
+    if (A.scaleHouse) A.scaleHouse();
     return S.houses[id];
   }
   function newHolder(r, rid, h, rank, rng) {

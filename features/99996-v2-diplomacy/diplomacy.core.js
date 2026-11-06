@@ -17,7 +17,9 @@
 (function () {
   const V = A.V2, D = V && V.diplomacy;
   if (!D) return;
-  const DV = A.V2DIP = { ON: true, inAI: false, inFlow: false, stats: { ticks: 0, alliance: 0, broken: 0, war: 0, warRefused: 0, marriage: 0, rival: 0, unrival: 0, heard: 0, unheard: 0 } };
+  const DV = A.V2DIP = { ON: true, inAI: false, inFlow: false, stats: { ticks: 0, alliance: 0, broken: 0, war: 0, warRefused: 0, marriage: 0, rival: 0, unrival: 0, heard: 0, unheard: 0, warWait: {} } };
+  // the pace at which hostility turns to war (DV.tick's war branch; see the README for the numbers it was tuned on)
+  DV.WAR = { rest: true, weary: true, nerve: 1, p: 0.35, cbMul: 1.5, pick: true, want: 10 };
 
   const byId = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
   const live = () => Object.values(A.S.realms || {}).filter(r => r && r.alive && !r.isRebel).sort(byId);
@@ -78,6 +80,9 @@
       const nx = A.neighbors(x), near = nx.includes(y) || A.neighbors(y).some(n => nx.includes(n));
       if (near) add('fear-' + x, -Math.min(25, (inf - 30) / 2), `fear of ${short(x)}'s conquests`);
     }
+    // a realm's old want aimed at the other (47-realm-bible's want, as 68-casus-belli reads it) pulls them apart
+    const CSW = A.CASUS && A.CASUS.wantOf;
+    if (CSW && DV.WAR.want) for (const [x, y] of [[a, b], [b, a]]) { let W = null; try { W = CSW(x, y); } catch (e) { W = null; } if (W && W.s) add('want-' + x, -DV.WAR.want, `${short(x)} wants ${W.s}`); }
     const R = (A.S.v2dip && A.S.v2dip.ruler) || {};
     for (const x of [a, b]) { const s = R[x] && R[x][1]; if (s != null && Y - s < 3) add('ruler-' + x, 5 - 2 * (Y - s), `a new ruler in ${short(x)} seeks goodwill`); }
     return out;
@@ -159,6 +164,43 @@
   const why = (W, i, j) => D.reasons(W.d, i, j).slice(0, 3).map(x => [x.text, x.toward ? 0.5 : -0.5]);
   const logAi = (k, a, b, t, w) => { try { A.aiLogAdd && A.aiLogAdd(k, a, b, t, w); } catch (e) {} };
 
+  // the court's own reasons for a war on b, as the release's war roll weighs them: 68-casus-belli's A.cbWarMul (a
+  // plan's target at the right moment, an old wrong or a want; nil against a benefactor) and 55-bonds' A.feudWarMul
+  function courtMul(a, b, P) {
+    let m = 1;
+    try { if (A.cbWarMul) m *= Math.max(0, +A.cbWarMul(a, b, P || null)); if (A.feudWarMul) m *= Math.max(0, +A.feudWarMul(a, b)); } catch (x) { m = 1; }
+    return isFinite(m) ? m : 1;
+  }
+  // a war v2 names between a and b (hostility score sc): who declares, and whether it is declared this month.
+  // Returns 'war', 'refused' (no war is possible now), or the reason it waits ('rest', 'weary', 'nerve', 'chance').
+  DV.tryWar = function (a, b, sc) {
+    const S = A.S, Y = yr(), m = month();
+    let agg = a, tgt = b;
+    if (A.realm(agg).playerRun) { if (A.realm(tgt).playerRun) return 'refused'; agg = b; tgt = a; }
+    // the side with the court's reason (a plan, an old wrong, a want, a feud) is the one that declares
+    else if (DV.WAR.pick && !A.realm(tgt).playerRun && courtMul(b, a) > Math.max(1.01, courtMul(a, b))) { agg = b; tgt = a; }
+    const RA = A.realm(agg), capFull = A.warCapFull && A.warCapFull();
+    if (A.atWar(agg).length || RA.overlord === tgt || A.realm(tgt).overlord === agg || (RA.stability || 0) < 30 ||
+      (!capFull && S.wars.filter(w => w.cb !== 'throne').length >= 4) || (capFull && capFull(RA)) || (A.outOfReach && A.outOfReach(agg, tgt))) { DV.stats.warRefused++; return 'refused'; }
+    // war pace: hostility is the reason, but a crown still rests after a war it started, waits out war-weariness and
+    // waits for an opening (the release's own rest, weariness and nerve, 20-ai-personality), and even then a
+    // hostile month becomes a declaration only sometimes (DV.WAR.p, from v2's seeded makeRng, never A.rand)
+    const cb = A.cbOn ? A.cbOn(agg, tgt) : null, rel = A.relBetween(agg, tgt);
+    let P = null; try { P = A.cbPreview ? A.cbPreview(agg, tgt) : A.warPreview(agg, tgt); } catch (x) { P = null; }
+    const WP = DV.WAR, wait = (k) => { DV.stats.warWait[k] = (DV.stats.warWait[k] || 0) + 1; DV.stats.warRefused++; return k; };
+    if (WP.rest && A.aiResting && A.aiResting(RA)) return wait('rest');
+    if (WP.weary && A.aiWeary && (+RA.exhaustion || 0) > A.aiWeary(agg)) return wait('weary');
+    // a grudge wants less of an edge (55-bonds' A.feudNerve), as it does in the release's own war roll
+    let fn = 0; try { fn = A.feudNerve ? +A.feudNerve(agg, tgt) || 0 : 0; } catch (x) { fn = 0; }
+    if (WP.nerve && P && A.aiNerve && +P.ratio < (A.aiNerve(agg) - fn) * WP.nerve) return wait('nerve');
+    // deeper hostility, a casus belli and the court's own reasons (courtMul) raise the chance, as in the release's roll
+    const pw = Math.min(1, WP.p * (1 + Math.max(0, -(+sc || 0) - 25) / 40) * (cb ? WP.cbMul : 1) * courtMul(agg, tgt, P));
+    if (!rngFor(`war|${agg}|${tgt}`).chance(pw)) return wait('chance');
+    const res = A.declareWar(agg, tgt, cb ? { cb } : undefined);
+    if (A.aiNoteWar && P) A.aiNoteWar(agg, tgt, P, rel, cb, res);
+    if (res && res.ok) { DV.stats.war++; store().h.push([Y, m, 'war', agg, tgt]); return 'war'; }
+    DV.stats.warRefused++; return 'refused';
+  };
   DV.tick = function () {
     const S = A.S;
     if (!DV.ON || !S || !S.realms) return [];
@@ -211,16 +253,7 @@
         V2.h.push([Y, m, 'broken', a, b]);
       } else if (e.kind === 'war') {
         r.pact = gamePact(a, b);
-        let agg = a, tgt = b;
-        if (A.realm(agg).playerRun) { if (A.realm(tgt).playerRun) continue; agg = b; tgt = a; }
-        const RA = A.realm(agg), capFull = A.warCapFull && A.warCapFull();
-        if (A.atWar(agg).length || RA.overlord === tgt || A.realm(tgt).overlord === agg || (RA.stability || 0) < 30 ||
-          (!capFull && S.wars.filter(w => w.cb !== 'throne').length >= 4) || (capFull && capFull(RA)) || (A.outOfReach && A.outOfReach(agg, tgt))) { DV.stats.warRefused++; continue; }
-        const cb = A.cbOn ? A.cbOn(agg, tgt) : null, rel = A.relBetween(agg, tgt);
-        let P = null; try { P = A.cbPreview ? A.cbPreview(agg, tgt) : A.warPreview(agg, tgt); } catch (x) { P = null; }
-        const res = A.declareWar(agg, tgt, cb ? { cb } : undefined);
-        if (A.aiNoteWar && P) A.aiNoteWar(agg, tgt, P, rel, cb, res);
-        if (res && res.ok) { r.pact = 'war'; DV.stats.war++; V2.h.push([Y, m, 'war', agg, tgt]); } else DV.stats.warRefused++;
+        if (DV.tryWar(a, b, D.score(d, i, j)) === 'war') r.pact = 'war';
       } else if (e.kind === 'peace') {
         // wars end through the war machinery (war score, peace terms); v2's own peace roll is not used
         r.pact = gamePact(a, b);
@@ -300,6 +333,19 @@
       return sg.apply(this, arguments);
     };
   }
+
+  // a coalition's members are realms cold or worse with the conqueror (patch V2DIP-COALITION) when it forms; a later
+  // step of the same year (another coalition's war that puts a member at the conqueror's side, "fight side by side")
+  // can warm one of them, and the list then said otherwise than the status. At the year's end the list follows the status.
+  A.on && A.on('politicsYearEnd', () => {
+    const C = DV.ON && A.S && A.S.coalitions;
+    if (!C || typeof C !== 'object') return;
+    for (const t of Object.keys(C)) {
+      if (!Array.isArray(C[t]) || !A.realm(t)) continue;
+      const keep = C[t].filter(m => A.realm(m) && DV.COLD.includes(DV.status(m, t)) && !(A.realm(m).allies || []).includes(t));
+      if (keep.length >= 2) C[t] = keep; else delete C[t];
+    }
+  });
 
   A.onMonth = A.onMonth || [];
   A.onMonth.push(function () { try { DV.tick(); } catch (e) { console.error('v2 diplomacy', e); } });

@@ -16,7 +16,7 @@
 | 7 | Diplomacy from `monthTick` | done | alpha.7 |
 | 8 | No spectating; play your rank; elite orders | done | alpha.8 |
 | 9 | Versioned save with one migration | done | alpha.9 |
-| 10 | Playtest loop: scripted pass, playtester, fixes, regression tests | round 1 merged (alpha.10); round 2 (playtest 2 + CI run 88): 11 of 20 groups merged | — |
+| 10 | Playtest loop: scripted pass, playtester, fixes, regression tests | round 1 merged (alpha.10); round 2 (playtest 2 + CI runs 88-89): 20 of 21 groups merged; repeat-scene spacing last | — |
 
 ## Health
 
@@ -48,7 +48,20 @@ CI run 88 (the first full run of a v2 build) failed 50 of about 690 tests; the b
 | timetest | The month-step timing test runs on the generated continent |
 | body | Lifting by age and training, children against their own age, v2's levy scale kept |
 
-Still in progress: the 0–100 numbers (two groups merged into one branch), renown, family, world systems, battles, map, layout, card lines, and the leftovers.
+| numbers | 0–100 numbers in words everywhere: realm bars, infamy, war weariness, screen-reader labels, a confidant's next rank |
+| rollsfallout | Three tests the dice change exposed: forced checks, a thought itemized in the odds, the trait-pace bar |
+| renown | Renown no longer saturates; promotion is uneven; no counters; the tooltip in words |
+| family | Orc clans by law, kin read from the real tree, one relation label, pronouns by sex |
+| map | Map speed, beasts on fitting ground, realm colours, the phone map, fresh realms split cleanly |
+| lines | One extra line a card, counsel that fits, token grammar, death screens that fit the life, no piety for the faithless |
+| layout | No sideways scroll on phones, shorter pages, icons back, the War place opens on war |
+| round2 | Last CI leftovers: phone width, the Life panel, war strength bars, chips, companies, a 12 px note |
+| world | Realm gold, famine prices, epidemic scenes; v2 diplomacy's war pace back in the release's band (0.018 a realm-year) |
+| warbattles | Army routine scenes spaced over a life; a choice moves the fight at every rank |
+
+Still in progress: spacing the non-army scenes that repeat (gatherings, jousts, debates), for 97-life-fixes' repeat bar.
+
+Owner's open questions (each has a default in the build): the inner voice wins over a recalled world line; trait pace (about 6.5 changes a life against the release's 4.7, mostly from thoughts the player embraces); orc clans in equal-law realms follow the father; captains are at best evenly matched against an ordinary general.
 
 ## The complaints, after playtest 1 and its fixes
 

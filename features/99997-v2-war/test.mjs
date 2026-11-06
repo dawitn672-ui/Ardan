@@ -157,6 +157,23 @@ export default {
     return { ok, detail: ['soldier', 'sergeant', 'captain'].map(k => `${k}: grade ${r[k].lo} -> ${r[k].hi}, the fight's order edge ${r[k].orgLo} -> ${r[k].orgHi}, scene won ${r[k].wl} -> ${r[k].wh} of ${r[k].n}`).join('; ') + `; commander: the reserve changed ${r.commander.moved} of ${r.commander.n} battles (men left ${r.commander.never} -> ${r.commander.commit})` };
   },
 
+  // CI run 88 (merged): "keep the company back" graded 0.17 against "follow the army's orders" 0.16, because a choice that
+  // takes from the army earned nothing (not less) when it worked, and it works seven times in ten. At every rank, a
+  // working choice that takes from the army grades below zero and below every working choice that does not; a failure
+  // still costs the same whatever was tried
+  async v2wShirkCosts(pg) {
+    const r = await pg.evaluate(() => {
+      const W = A.V2W, CH = A.V2.war.CHOICES, out = {};
+      for (const [rank, list] of Object.entries(CH)) {
+        const ok = { success: true, tier: 'success' }, bad = { success: false, tier: 'failure' };
+        const takes = list.filter(c => (c.army || 1) < 1), rest = list.filter(c => (c.army || 1) >= 1);
+        out[rank] = { takes: takes.map(c => [c.id, W.grade(c, ok)]), least: rest.length ? Math.min(...rest.map(c => W.grade(c, ok))) : null, fails: [...new Set(list.map(c => W.grade(c, bad)))] };
+      }
+      return out;
+    });
+    const ok = Object.values(r).every(x => x.takes.every(([, g]) => g < 0 && (x.least == null || g < x.least)) && x.fails.length === 1) && r.captain.takes.length > 0;
+    return { ok, detail: Object.entries(r).map(([k, x]) => `${k}: ${x.takes.map(([id, g]) => `${id} ${g.toFixed(3)}`).join(', ') || 'none take'} (least of the rest ${x.least}), failure ${x.fails.join('/')}`).join('; ') };
+  },
   // the after-action report: three causes, in words, on the scene (b.aar, 23's shape), in the story and on the war's record
   async v2wAfterAction(pg) {
     await prep(pg);

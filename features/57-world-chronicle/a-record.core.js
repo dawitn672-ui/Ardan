@@ -326,7 +326,8 @@
   WC.sickName = (pid, y) => { let h = 2166136261; for (const ch of pid + '|' + y) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return WC.SICK[(h >>> 0) % WC.SICK.length]; };
   WC.plagueChance = function (r) {
     const S = S_(); let c = 0.035;
-    try { const m = A.mkt && A.mkt(r.id); if (m && m.hv && m.hv.f <= 0.4 && m.hv.y >= S.year - 1) c += 0.05; } catch (e) {}
+    // a rebel realm's market is read, never made (A.mkt would make one, and the economy keeps none for rebels)
+    try { const m = r.isRebel ? r.mkt : A.mkt && A.mkt(r.id); if (m && m.hv && m.hv.f <= 0.4 && m.hv.y >= S.year - 1) c += 0.05; } catch (e) {}
     if (S.prov.some(P => P.owner === r.id && P.sgBy)) c += 0.02;
     if ((r.provPop || r.pop || 0) > 3e6) c += 0.01;
     return Math.min(0.1, c);
@@ -335,7 +336,9 @@
     if (!WC.EPIDEMIC) return;
     const S = S_();
     for (const id of Object.keys(S.realms).sort()) {
-      const r = S.realms[id]; if (!r.alive || r.isRebel) continue;
+      // land held by rebels sickens too: a player whose town had gone over to a rising never saw an epidemic at home
+      // (CI run 88: seed 4243's home was held by a rebel league when the test struck it)
+      const r = S.realms[id]; if (!r.alive) continue;
       if (!A.chance(WC.plagueChance(r) / 12)) continue;
       const mine = S.prov.filter(P => P.owner === id);
       if (!mine.length) continue;
