@@ -489,6 +489,19 @@
     } catch (e) { console.error('companies raise', e); }
     return out;
   };
+  // a crown that recuts its templates in its yearly review (56-realm-inside's RI.fitHost: divisions to brigades and
+  // back, the template's version moving) left its standing divisions on the old battalion list until the next month's
+  // CO.ensure; a save taken in between held divisions whose records no longer matched their template (coSaveLoad, CI
+  // run 90, seed 9709: DPOL09-1 with 8 GI records under a 5-GI brigade). Reconcile them at once, keeping their records
+  // (CO.build with keep draws nothing). Divisions with no records yet are left to the paths that raise them.
+  const forcesAI = A.forcesAI;
+  if (typeof forcesAI === 'function') A.forcesAI = function (r) {
+    const out = forcesAI.apply(this, arguments);
+    try {
+      if (A.S.coOn && r && r.forces && r.forces.divs) for (const d of r.forces.divs) if (Array.isArray(d.bs) && !CO.ok(d)) { CO.ensure(d); CO.stats.refit = (CO.stats.refit || 0) + 1; }
+    } catch (e) { console.error('companies refit', e); }
+    return out;
+  };
   const divRemove = A.divRemove;
   A.divRemove = function (d) {
     try {

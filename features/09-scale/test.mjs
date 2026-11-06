@@ -116,16 +116,25 @@ const oneWorldV2 = async pg => {
     let greatDays = 0, capDays = 0, reach = 0;
     A.onDay.push(() => { if (A.S !== S0) return; if (W.great()) greatDays++; if (A.warCapFull() !== null) capDays++; });
     const startY = A.S.year;
-    T.play(10);
+    // the bar is ten years of the world, not of one life: T.play stops when the player dies, and on seed 9090 the
+    // merged v2 world (CI run 90) has him killed by a horse at 23, in the seventh year. A death ends a life, not the
+    // world, so the game goes on as his eldest living child (or other living kin), as a player would (A.continueAs)
+    let heirs = 0;
+    for (let k = 0; k < 6 && A.S.year < startY + 10; k++) {
+      if (T.play(startY + 10 - A.S.year) !== 'dead') break;
+      const pc = A.pc(), kin = A.heirsOf(pc).concat(Object.keys(pc.rel || {}).map(A.P).filter(p => p && p.alive && p.id !== pc.id));
+      if (!kin.length || !A.continueAs(kin[0].id)) break;
+      heirs++;
+    }
     for (const a of ids) for (const b of ids) if (a < b && A.outOfReach(a, b)) reach++;
     const alive = ids.filter(id => A.realm(id) && A.realm(id).alive).length;
     const tr = Object.values(A.S.realms).filter(x => x && x.alive).map(x => x.treasury / Math.max(1, x.income || 1)).sort((a, b) => a - b);
     const oldWars = A.S.wars.filter(w => A.S.year - w.start > 8 && w.cb !== 'throne').length;
-    return { years: A.S.year - startY, n: ids.length, alive, greatDays, capDays, reach, word: A.S.news.filter(n => /^Word from the /.test(n.t || '')).length,
+    return { years: A.S.year - startY, heirs, n: ids.length, alive, greatDays, capDays, reach, word: A.S.news.filter(n => /^Word from the /.test(n.t || '')).length,
       held: (A.S.newsFar || []).length + (A.S.newsPre || []).length, stats: JSON.stringify(W.stats) === stats0, trMed: tr[Math.floor(tr.length / 2)], trMax: tr[tr.length - 1], oldWars };
   });
   const ok = r.years >= 10 && !r.greatDays && !r.capDays && !r.reach && !r.word && !r.held && r.stats && r.alive >= r.n * 0.85 && r.trMax < 200 && r.oldWars === 0;
-  return { ok, detail: `v2, no Far Lands: ${r.years} years of the continent; days under the Great Continent's rules ${r.greatDays}, with its war cap ${r.capDays}; realm pairs out of reach ${r.reach}; ` +
+  return { ok, detail: `v2, no Far Lands: ${r.years} years of the continent (${r.heirs} heir${r.heirs === 1 ? '' : 's'} played on); days under the Great Continent's rules ${r.greatDays}, with its war cap ${r.capDays}; realm pairs out of reach ${r.reach}; ` +
     `far news ${r.word} told, ${r.held} held, its counters untouched ${r.stats}; ${r.alive} of ${r.n} realms standing; treasury against a year's income: median ${r.trMed && r.trMed.toFixed(1)}, highest ${r.trMax && r.trMax.toFixed(1)}; wars older than 8 years: ${r.oldWars}` };
 };
 
