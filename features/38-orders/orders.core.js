@@ -427,12 +427,14 @@
     const hold = pl && pl.hold != null && S.prov[pl.hold] ? S.prov[pl.hold].name : null;
     const list = names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0];
     const mv = G.move(a), nm = j => (j != null && S.prov[j] ? S.prov[j].name : null);
+    // the general's own pronoun (playtest 2, old #24: "Aldith Alderley ... with every man he can bring")
+    const gen = a && A.P(a.gen), he = gen && gen.sex === 'F' ? 'she' : 'he', his = gen && gen.sex === 'F' ? 'her' : 'his';
     if (t === 'bold') {
       if (mv && mv.k === 'press' && nm(mv.j)) return `means to press on to ${nm(mv.j)} while they are broken`;
-      if (mv && mv.k === 'meet' && nm(mv.j)) return `means to meet their main host at ${nm(mv.j)} head-on, with every man he can bring`;
+      if (mv && mv.k === 'meet' && nm(mv.j)) return `means to meet their main host at ${nm(mv.j)} head-on, with every man ${he} can bring`;
       return list ? `means to take ${list}, and will not wait for better odds` : 'looking for a fight';
     }
-    if (t === 'cautious') return hold ? `holds at ${hold}, and will move only at long odds in his favour` : 'waits for the enemy to move';
+    if (t === 'cautious') return hold ? `holds at ${hold}, and will move only at long odds in ${his} favour` : 'waits for the enemy to move';
     if (t === 'cunning') {
       if (mv && mv.k === 'feint' && nm(mv.x) && nm(mv.j)) return `makes a show at ${nm(mv.x)}, to strike at ${nm(mv.j)} when its garrison comes out`;
       if (mv && mv.k === 'struck' && nm(mv.x) && nm(mv.j)) return `drew them out of ${nm(mv.j)} with a show at ${nm(mv.x)}, and goes in where they left`;
