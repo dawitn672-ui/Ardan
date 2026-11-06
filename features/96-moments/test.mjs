@@ -277,8 +277,9 @@ export default {
   },
 
   // cycle 2 (visual B2): an eased zoom of the full map no longer redraws the map each frame: the tween scales the last
-  // picture (drawImage), and the map is drawn for real after it (62 may lay late tiles with more draws); a tween frame
-  // costs a copy, not a redraw
+  // picture, and the map is drawn for real after it (62 may lay late tiles with more draws); a tween frame costs a
+  // copy, not a redraw. (CI run 88: the scaling is now a CSS transform on the canvas, so the first frame reads no
+  // pixel; this comment changed, the bar did not.)
   async mapEaseCheap(pg) {
     await pg.setViewportSize({ width: 1366, height: 768 });
     const r = await pg.evaluate(async () => {
@@ -302,5 +303,49 @@ export default {
     });
     const ok = r.none || (r.during.real === 0 && r.after.tweens >= 1 && r.after.real >= 1 && r.after.frames >= 1 && r.startMs < Math.max(30, r.realMs / 2));
     return { ok, detail: r.none ? 'no full map' : `a real draw ${r.realMs.toFixed(1)} ms; the tween's first frame ${r.startMs.toFixed(1)} ms; real draws during the tween ${r.during.real}, after it ${r.after.real}; tweens ${r.after.tweens}, tween frames ${r.after.frames}` };
+  },
+  // CI run 88 (mapEaseCheap): the eased zoom's camera is a CSS transform on the canvas, not a pixel copy. While it runs
+  // the canvas shows its last real picture where the in-between view puts it, keeps its box for the pointer, and is
+  // clipped to that box; once the map is drawn for real the canvas carries no transform, clip or stand-in box again
+  async mapEaseCamera(pg) {
+    await pg.setViewportSize({ width: 1366, height: 768 });
+    const r = await pg.evaluate(async () => {
+      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24 });
+      UI.set.motion = 'full'; UI.applySettings(); A.S.queue = [];
+      UI.ov = { type: 'bigmap' }; UI.renderModal();
+      const cv = document.getElementById('gmap');
+      if (!UI.gm || !cv) return { none: true };
+      // the modal comes in with a short rise; the box is measured once it has come to rest
+      await new Promise(res => setTimeout(res, 700));
+      UI.gmDraw();
+      const V = UI.MOTION.views.gm, box = cv.getBoundingClientRect(), pic0 = Object.assign({}, UI.gm.view);
+      const zoom = f => { V.user = performance.now(); const v = UI.gm.view; UI.gm.view = UI.wrClampView({ x0: v.x0 + v.w * (1 - 1 / f) / 2, y0: v.y0 + v.h * (1 - 1 / f) / 2, w: v.w / f, h: v.h / f }); UI.gmDraw(); };
+      // a few wheel steps, each after two frames of the tween before it, until the picture shown is one in between
+      const frames2 = () => new Promise(res => requestAnimationFrame(() => requestAnimationFrame(res)));
+      for (let i = 0; i < 4; i++) { zoom(1.15); await frames2(); if (V.now && V.pic && V.now.w < V.pic.w * 0.999) break; }
+      zoom(1.15);
+      // right after the second step: the picture still shows view pic, placed as the in-between view V.now puts it
+      const now = Object.assign({}, V.now), pic = Object.assign({}, V.pic);
+      const seen = Element.prototype.getBoundingClientRect.call(cv), asked = cv.getBoundingClientRect();
+      // the picture inside the box: inside the border, fitted by object-fit: contain (a band may lie beside it)
+      const cs = getComputedStyle(cv), bw = parseFloat(cs.borderLeftWidth) || 0, iw = box.width - 2 * bw, ih = box.height - 2 * bw;
+      const cw = Math.min(iw, ih * cv.width / cv.height), ch = Math.min(ih, iw * cv.height / cv.width), ox = bw + (iw - cw) / 2, oy = bw + (ih - ch) / 2;
+      // where the picture is on the screen (the box as transformed, scaled by sc), and where view now puts view pic
+      const sc = seen.width / box.width, scy = seen.height / box.height;
+      const got = { left: seen.left + sc * ox, top: seen.top + scy * oy, width: sc * cw, height: scy * ch };
+      const want = { left: box.left + ox + (pic.x0 - now.x0) / now.w * cw, top: box.top + oy + (pic.y0 - now.y0) / now.h * ch, width: cw * pic.w / now.w, height: ch * pic.h / now.h };
+      const placed = ['left', 'top', 'width', 'height'].every(k => Math.abs(got[k] - want[k]) < 1.5);
+      const kept = ['left', 'top', 'width', 'height'].every(k => Math.abs(asked[k] - box[k]) < 0.5);
+      const during = { transform: cv.style.transform, clip: cv.style.clipPath, picSame: Math.abs(pic.w - pic0.w) < 1e-6 };
+      await new Promise(res => setTimeout(res, 1500));
+      const after = { transform: cv.style.transform, clip: cv.style.clipPath, shadow: cv.style.boxShadow, own: Object.prototype.hasOwnProperty.call(cv, 'getBoundingClientRect'), real: Element.prototype.getBoundingClientRect.call(cv) };
+      const back = ['left', 'top', 'width', 'height'].every(k => Math.abs(after.real[k] - box[k]) < 0.5);
+      UI.ov = null; UI.renderModal();
+      return { placed, kept, during, after: { transform: after.transform, clip: after.clip, shadow: after.shadow, own: after.own }, back, seen: [got.left, got.top, got.width].map(Math.round), boxes: [box, after.real].map(b => [b.left, b.top, b.width, b.height].map(Math.round).join(',')), want: [want.left, want.top, want.width].map(Math.round), zoomedIn: now.w < pic.w };
+    });
+    if (r.none) return { ok: true, detail: 'no full map' };
+    const ok = r.placed && r.kept && /scale/.test(r.during.transform) && /inset/.test(r.during.clip) &&
+      r.zoomedIn && !r.after.transform && !r.after.clip && !r.after.shadow && !r.after.own && r.back;
+    return { ok, detail: `mid-zoom: picture at left/top/width ${r.seen.join('/')} px, the view puts it at ${r.want.join('/')}; the last real picture still shown ${r.during.picSame}, zoomed in ${r.zoomedIn}; the pointer's box kept ${r.kept}; transform '${r.during.transform}', clip '${r.during.clip}' | after the real draw: transform '${r.after.transform}', clip '${r.after.clip}', shadow '${r.after.shadow}', stand-in box left ${r.after.own}, box as laid out ${r.back} (${r.boxes.join(' -> ')})` };
   },
 };
