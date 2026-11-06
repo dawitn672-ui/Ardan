@@ -90,6 +90,12 @@ export default {
       const ST = A.STAKES; if (!ST) return { err: 'no A.STAKES' };
       T.enter({ seed: 99802, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
       const pc = A.pc();
+      // (CI 90: under v2 a life is faithless unless it takes up the faith (99993-v2-stats' VS.hasFaith), and by the
+      // owner's design piety is for the faithful: 99999-v2-content's g-ends leaves piety off a faithless life's chips.
+      // This peasant was faithless, so every choice that moves piety read as a missing chip. The chips are read for a
+      // life that has taken up the faith, where every family, piety too, must still show; 99999-v2-content's own test
+      // holds the faithless side.)
+      if (A.V2S && typeof A.V2S.hasFaith === 'function' && !A.V2S.hasFaith(pc)) { pc.flags = pc.flags || {}; pc.flags.v2_faith = A.S.year; }
       const fam = (fx) => {
         const out = new Set();
         for (const k in fx) {

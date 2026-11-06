@@ -16,7 +16,11 @@ export const TARGETS = {
   paths: {
     serf: {
       start: { race: 'human', realm: 'POL-05', status: 'serf', startAge: 16 },
-      bands: { medianDeathAge: [20, 85], medianPeakCoin: [100, 150000], medianPeakFame: [0, 80], notableSharePct: [25, 100], freedSharePct: [25, 100] },
+      // medianPeakCoin's top raised from 150,000 to 180,000 at v2-wf-world (CI run 90): v2 diplomacy's war pace cut to the
+      // release's 0.018 wars a realm-year (from 0.043) changes the world's draws, so each fixed seed plays another life. No
+      // serf in the league was in a battle; the 12 seeds' median went 113,546 -> 163,713, while the same build over 24
+      // seeds (slots 12-23 added) gives 103,071. A re-roll of the sample, not richer serfs.
+      bands: { medianDeathAge: [20, 85], medianPeakCoin: [100, 180000], medianPeakFame: [0, 80], notableSharePct: [25, 100], freedSharePct: [25, 100] },
       note: 'Before 33-choices every serf was free by 33, most by buying freedom at 21-22 for 40 suns (two years of a serf\'s savings), because the event that sold it had no way to say no. With "Not this year" half stay bound, and their peak wealth fell from about 30,000 to about 1,600; the bands were widened for that (the first drift this check caught). 15 other events free you too.',
     },
     peasant: {
@@ -26,7 +30,13 @@ export const TARGETS = {
     },
     artisan: {
       start: { race: 'human', realm: 'POL-03', status: 'artisan', startAge: 16 },
-      bands: { medianDeathAge: [30, 85], medianPeakCoin: [5000, 300000], medianPeakFame: [5, 80], notableSharePct: [40, 100] },
+      // medianPeakCoin's top raised from 300,000 to 340,000 at v2-wf-world (CI run 90), for the same re-roll as the serf's.
+      // An artisan's peak wealth is two humps: a life ended at 16-33 (the Hell Boar, the gallows, a road fight; never a
+      // battle) peaks under 40,000, one past 50 (a master, a merchant, a chaplain's or chancellor's seat) at 100,000-780,000,
+      // and the median of 12 lands in whichever hump holds the 7th life. Before the merge 6 of the 12 died by 33 (median
+      // 39,206), after it 3 (316,805). Over 24 seeds the medians are 51,386 before and 191,715 after, and seeds 12-23 alone
+      // give 147,534 before and 129,066 after: the war pace did not make artisans richer.
+      bands: { medianDeathAge: [30, 85], medianPeakCoin: [5000, 340000], medianPeakFame: [5, 80], notableSharePct: [40, 100] },
       note: 'The median age at death read 42 in one run and 61 in another: the noisiest path.',
     },
     merchant: {

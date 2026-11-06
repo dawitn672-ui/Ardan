@@ -294,11 +294,12 @@
   };
 
   // ---- on screen (pure: reads the person, draws nothing) --------------------------------------------------------------
+  // (data-fold-label: what 90-fold's button says to a screen reader, "Open Chapter One: Mending and Making Do", CI 90)
   CH.card = function (p) {
     const c = p && p.chap && p.chap.cur;
     if (CH.OFF || !c || !p.alive) return '';
     const done = c.aims.filter(a => a.d != null).length;
-    return `<section class="card chp-card" aria-labelledby="chp-h" data-tt="${esc('Aims: ' + c.aims.map(a => (a.d != null ? '✓ ' : '') + a.l).join('; ') + '.')}"><div class="row"><span class="tag">Chapter ${esc(CH.ORD[c.n - 1] || c.n)}</span><b id="chp-h" class="grow chp-t">${esc(c.t)}</b><span class="tiny muted">since ${esc(c.y0)} · ${done} of ${c.aims.length}</span></div>` +
+    return `<section class="card chp-card" aria-labelledby="chp-h" data-fold-label="${esc('Chapter ' + (CH.ORD[c.n - 1] || c.n) + ': ' + c.t)}" data-tt="${esc('Aims: ' + c.aims.map(a => (a.d != null ? '✓ ' : '') + a.l).join('; ') + '.')}"><div class="row"><span class="tag">Chapter ${esc(CH.ORD[c.n - 1] || c.n)}</span><b id="chp-h" class="grow chp-t">${esc(c.t)}</b><span class="tiny muted">since ${esc(c.y0)} · ${done} of ${c.aims.length}</span></div>` +
       (() => { const nx = c.aims.find(a => a.d == null); return nx ? `<div class="chp-next tiny">Next: ${esc(nx.l)}</div>` : ''; })() +
       (c.pick && c.alt ? (() => { const k = Math.min(2, c.aims.length - 1), a = c.aims[k], b = c.alt;
         return `<div class="chp-pick small"><span>Your third aim, of your choosing:</span> <button class="small" data-a="chpPick" data-v="0">${esc(a.l)}${a.x ? ` <span class="chp-x">${esc(a.x)}</span>` : ''}</button> <button class="small" data-a="chpPick" data-v="1">${esc(b.l)}${b.x ? ` <span class="chp-x">${esc(b.x)}</span>` : ''}</button></div>`; })() : '') +
