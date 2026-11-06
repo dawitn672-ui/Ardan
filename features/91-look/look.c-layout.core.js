@@ -66,10 +66,11 @@ ${D} #profile .lk-chips.lk-open > .chip.lk-cut{display:inline-flex}
 ${X('.chip.lk-more')}{border-style:dashed;color:var(--ink-2);background:transparent;cursor:pointer;min-height:22px;font-family:var(--f-ui)}
 ${X('.chip.lk-more:hover')}{color:var(--accent);border-color:var(--accent)}
 ${D} #profile > .sep, ${D} #profile > .tiny.muted{display:none}
-/* vitals: 2 columns x 3 rows of 24 */
-${D} #profile .lk-vitals{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;row-gap:0}
-${D} #profile .lk-vitals .barrow{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'l v' 'b b';grid-template-rows:24px 3px;row-gap:0;margin:0 0 2px;align-content:center;font-size:var(--t-small);line-height:1.2}
-${D} #profile .lk-vitals .barrow > .lbl{grid-area:l;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+/* vitals: one to a row (v2, playtest 2 new 14: two to a row cut "Happiness" and "Looks" to "☀ ..." beside v2's longer
+   words, "content", "pleasing", "known to the neighbours"); the label never cuts, the word wraps under it if it must */
+${D} #profile .lk-vitals{display:grid;grid-template-columns:minmax(0,1fr);column-gap:12px;row-gap:0}
+${D} #profile .lk-vitals .barrow{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:12px;grid-template-areas:'l v' 'b b';grid-template-rows:minmax(24px,auto) 3px;row-gap:0;margin:0 0 2px;align-content:center;font-size:var(--t-small);line-height:1.2}
+${D} #profile .lk-vitals .barrow > .lbl{grid-area:l;color:var(--ink-2);white-space:nowrap;line-height:1.2}
 ${D} #profile .lk-vitals .barrow > .lbl .tt, ${D} #profile .lk-vitals .barrow > .val[data-tt]{min-height:24px;display:inline-flex;align-items:center}
 ${D} #profile .lk-vitals .barrow > .val{grid-area:v;font-weight:700;font-size:var(--t-small);color:var(--ink);min-width:24px;justify-content:flex-end;text-align:right}
 ${D} #profile .lk-vitals .barrow > .bar{grid-area:b;height:3px}
@@ -108,6 +109,14 @@ ${D} #profile .lk-stats .barrow:hover{border-color:var(--sc)}
 /* proficiencies and the buttons */
 ${D} #profile .profs .prow{grid-template-columns:minmax(0,1fr) 28px 64px;min-height:24px;padding:0;align-content:center;font-size:var(--t-small);line-height:1.2;row-gap:2px}
 ${D} #profile .profs .prow .tier{font-size:var(--t-cap);color:var(--ink-3);opacity:1}
+/* v2 (99993-v2-stats): a skill row is a tier word and its hours, not a number, so the 28 px number column let
+   "Journeyman" run over "1,262 hours". The name and its tier on one line, the bar and the hours under them; the name
+   wraps rather than cut */
+${D} #profile .profs .prow:has(.v2-tier){grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'n t' 'b h';column-gap:8px;row-gap:0;min-height:0;padding:0 0 2px;line-height:1.15}
+${D} #profile .profs .prow:has(.v2-tier) > span:first-child{grid-area:n;white-space:normal;overflow:visible;text-overflow:clip}
+${D} #profile .profs .prow:has(.v2-tier) > .v2-tier{grid-area:t;text-align:right}
+${D} #profile .profs .prow:has(.v2-tier) > .v2-hrs{grid-area:h;text-align:right;line-height:1}
+${D} #profile .profs .prow:has(.v2-tier) > .bar{grid-area:b;align-self:center}
 ${D} #profile .fold > .fold-b{padding:0 0 var(--sp-1)}
 ${D} #profile .fold{border-top:1px solid var(--line)}
 ${D} #profile .bm-body svg{width:40px;height:auto}
@@ -203,6 +212,9 @@ ${X('.acts:not(.lk-acts) > .act:hover:not(:disabled)')}{border-color:var(--accen
   #game.phone .lk-acts > .act > .an{display:inline;font-size:${T(14)};line-height:1.15;-webkit-line-clamp:unset}
   #game.phone .lk-acts > .act > .cost{float:right;margin:1px 0 0 4px;font-size:${T(14)};line-height:1.15}
   #game.phone #tabbody > .moods, #game.phone #tabbody > .lk-ini{display:none}
+  /* the needs on the phone's You page (v2 words, "a little alone", which 99993 sets at .92em): body text, 14 px
+     (71-phone's phoneTargets) */
+  #game.phone .lk-needs .lk-need, #game.phone .lk-needs .lk-mood, #game.phone .lk-needs .lk-need > .val.v2-needw{font-size:${T(14)}}
   #game.phone .whatnow{padding:0;border:0}
   #game.phone .whatnow > .fold-x, #game.phone .whatnow > .wn-h{display:none}
   #game.phone .whatnow .wn-list > li:not(:first-child){display:none}

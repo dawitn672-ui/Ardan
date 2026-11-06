@@ -11,7 +11,7 @@
 - the new one's title, drawn from your life so far by hash among the names that fit: at war "The Years of Smoke", unfree "Other Men's Fields", a poor childhood "The Hungry Years", a noble youth "The Gilded Cage", a sailor "Salt", a reign "The Weight of the Crown", age "The Long Evening" (18 situations, 3 or 4 names each);
 - three aims. Two are set, and for the third you choose between two ("I will see a realm you have never seen" or "I would rather make a true friend").
 
-**Aims are concrete and checkable**, measured from where you stand when the chapter opens. Each month they are checked; one that is met says so ("Aim met: Have 140 suns in your purse.") and pays a small reward. A chapter closed with all three met writes a deed ("Closed Chapter Two: Silver and Silk with every aim met") and 2 renown. There are 29 aims across the stages:
+**Aims are concrete and checkable**, measured from where you stand when the chapter opens. Each month they are checked; one that is met says so ("Aim met: Have 140 suns in your purse.") and pays a small reward. A chapter closed with all three met gives 2 renown (since v2 no deed: chapters are only an optional Life panel, and the deed came back as an NPC's tale, playtest 2 old 16). There are 29 aims across the stages:
 
 | From | Aims |
 | --- | --- |
