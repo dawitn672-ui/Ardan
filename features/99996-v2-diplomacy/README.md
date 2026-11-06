@@ -32,4 +32,27 @@ derives the status from all the parts: a marriage plus a sworn rivalry reads "un
   card, World > Realms, the diplomacy card, bloc strengths and the realm tooltips follow it.
 - **Blocs and coalitions** (playtest 1 #22): an alliance bloc is realms each allied to every other (patch `V2DIP-BLOCS`;
   chains no longer join all 33 realms). A coalition takes only realms cold or worse with the conqueror by the status
-  (patch `V2DIP-COALITION`), and a conqueror's infamy is a reason of its own ("fear of X's conquests").
+  (patch `V2DIP-COALITION`), and a conqueror's infamy is a reason of its own ("fear of X's conquests"). At the year's
+  end (`politicsYearEnd`) a coalition drops the members the status no longer calls cold: another coalition's war in the
+  same year can put a member at the conqueror's side ("fight side by side"), and the list then said otherwise.
+- **War pace** (CI 88, `riGoldGetsUsed`; `DV.tryWar`, tuned by `DV.WAR`): v2's `monthTick` names a war whenever a
+  bordering pair is hostile (score -25 with an ambitious ruler, or -45) and wins a 2 to 3% monthly roll, and a hostile
+  pair stays hostile, so `DV.tick` declared about three times the release's rate. Each war it names now goes through
+  `DV.tryWar`, which asks what the release's AI asks (20-ai-personality): a crown rests after a war it started
+  (`A.aiResting`), waits out war-weariness (`A.aiWeary`) and waits for an opening (the war preview's strength ratio at
+  least `A.aiNerve`, less by 55-bonds' `A.feudNerve` against a realm it holds a grudge on). Then the hostile month
+  becomes a declaration with chance `DV.WAR.p` 0.35, more as the score falls below -25, x1.5 with a casus belli, and
+  times the court's own reasons as the release's roll weighs them (68-casus-belli's `A.cbWarMul`: a plan's target at
+  the right moment, an old wrong or a want, nil against a benefactor; 55-bonds' `A.feudWarMul`). The die is v2's
+  `makeRng` (never `A.rand`). The side with those court reasons is the one that declares (`DV.WAR.pick`), and a want
+  one realm holds against the other (47-realm-bible's want, as `CS.WANT` aims it) is a named reason of its own, -10:
+  "Aldmark wants to push the Horde back over the Gordush and plough the steppe edge". The reasons still drive it: no
+  hostile status, no war. Each wait is counted in `A.V2DIP.stats.warWait`; `v2DipWarPace` tests each one.
+  - `riGoldGetsUsed` (3 worlds x 30 years, seeds 606, 1212, 2424): before, 0.043 wars a realm-year (127 wars, 116 from
+    `DV.tick`) and an army 10th percentile of 0.44 of normal; after, 0.018 (the band is 0.012 to 0.03, the fix layer
+    0.018) and 0.82. Most of the cut is the opening: in a run with the gates alone, 260 declarations waited for one,
+    18 for weariness, 9 for rest, 4 on the chance.
+  - `csWorlds` (3 worlds x 50 years): the gates alone left 13% of AI wars citing a memory or a want (bar 18%; wars
+    beget the grudges that later wars cite, so fewer wars meant fewer). With the court's reasons, the side that
+    declares and the want as a reason: 27.6% (off 17.3%), 0.0169 wars a realm-year against 0.0141 with 68 off (bar
+    x1.3), 10 struck by a crown that had planned it, decisions in character 80.0%.
