@@ -40,9 +40,13 @@ FOLD.FIND = { codex: true };
 FOLD.q = '';
 FOLD.ACCORDION = {};                        // tabs whose activity sections open one at a time (none since one grid)
 FOLD.TALL = 180;                            // a card taller than this gets a fold button
-FOLD.ALWAYS = ['whatnow', 'plan-card', 'lf-amb'];   // cards that fold whatever their height (What now, Your days, Ambition)
-// on a phone the Life page is one column under the thumb: the ambition (97-life-fixes) starts folded to its title line
-FOLD.PHONE_CLOSED = { life: ['ambition'], road: ['caravans'] };
+// cards that fold whatever their height (What now, Your days, Ambition, and the chapter: v2 keeps chapters only as an
+// optional Life panel, complaint 7, so it can always be put away)
+FOLD.ALWAYS = ['whatnow', 'plan-card', 'lf-amb', 'chp-card'];
+// on a phone the Life page is one column under the thumb: the ambition (97-life-fixes) and the chapter (9993) start
+// folded to their title lines ("Chapter One The Hard Winter · since 1105 · 0 of 3"); the third aim, while unchosen,
+// waits inside (the first of the two holds until then)
+FOLD.PHONE_CLOSED = { life: ['ambition', 'chapter'], road: ['caravans'] };
 // a tall window (1600 x 1000 and up) has room for Your days open (brief §4.2); reading the window is not game state
 FOLD.roomy = () => typeof window !== 'undefined' && window.innerWidth >= 1600 && window.innerHeight >= 1000;
 FOLD.isOpen = function (tab, key, fallback) {

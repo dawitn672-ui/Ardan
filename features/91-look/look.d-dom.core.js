@@ -108,6 +108,22 @@
     rb.textContent = LOOK.railOpen ? 'Close' : 'Stats';
     pr.appendChild(rb);
     LOOK.chipFit(pr);
+    LOOK.nameFit(pr.querySelector('.fold-pid-t .pname'));
+  };
+  // a name whose longest word is wider than its column ("Mogash of Clan Kozrak, Hoofbreaker" in the rail's capitals
+  // broke as "HOOFBREAKE / R", playtest 2 new 14) is set smaller until that word fits; it reads the layout only
+  LOOK.nameFit = function (n) {
+    if (!n || !n.offsetWidth) return;
+    n.style.fontSize = '';
+    const W = n.clientWidth, words = (n.textContent || '').trim().split(/\s+/).filter(Boolean);
+    if (!W || !words.length) return;
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:inherit;letter-spacing:inherit;text-transform:inherit;font-variant:inherit';
+    n.appendChild(probe);
+    let widest = 0;
+    for (const w of words) { probe.textContent = w; widest = Math.max(widest, probe.getBoundingClientRect().width); }
+    probe.remove();
+    if (widest > W) n.style.fontSize = Math.max(11, Math.floor(parseFloat(getComputedStyle(n).fontSize) * W / widest * 0.97)) + 'px';
   };
   // the four needs of 35-moods with the mood: 2 x 2 rows, each a tooltip (59-tooltips' need and needs entries)
   LOOK.needsBox = function (pc) {
@@ -130,6 +146,7 @@
     const rows = pp.querySelectorAll(':scope > .barrow'), last = rows[rows.length - 1];
     const nb = LOOK.needsBox(pc);
     if (nb && last) last.after(nb);
+    LOOK.nameFit(pp.querySelector(':scope > .pname'));
   };
   // the chips in one row: what does not fit is counted in a "+N" chip that shows the rest
   LOOK.chipFit = function (pr) {
