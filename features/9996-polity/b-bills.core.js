@@ -168,7 +168,7 @@ POL.openBill = function (r, k, by, src, extra) {
   if (pol.draft && A.S.year - pol.draft <= 1) { adv = 1; pol.draft = null; }
   const B = POL.billTarget(r, k, null, adv), t = B.t || { pro: [], con: [] };
   const day = A.absDay();
-  pol.bill = Object.assign({ k, g: x.g, to: x.to, from: POL.pos(r, x.g), by: by ? by.id : null, src: src || 'court', since: day, next: day + POL.BILL.every, n: 0, adv, st: 0,
+  pol.bill = Object.assign({ k, g: x.g, to: x.to, from: POL.pos(r, x.g), by: by ? by.id : null, byName: by ? A.fullName(by, false) : null, src: src || 'court', since: day, next: day + POL.BILL.every, n: 0, adv, st: 0,
     m0: B.m, dm: 0, p0: r2(B.p0), P: r2(B.P), h: B.h, log: [], sup: (t.pro || []).slice(0, 3).map(x => x[0].p.id), opp: (t.con || []).slice(0, 3).map(x => x[0].p.id), why: B.o.why.slice(0, 5) }, extra || {});
   POL.stats.bills++;
   return pol.bill;
@@ -191,9 +191,28 @@ POL.moveBill = function (r, d) {
 };
 const GLYPH = { pass: '✓', adv: '→', stall: '‖', deb: '⁇', fail: '✗' };
 POL.GLYPH = GLYPH;
+// A bill runs up to a year, and the one who brought it can die before its end; A.gcPeople then drops the dead (CI run
+// 91: 1 of 1069 decided pushes named an id that was gone, pl4 dead in 1121, the bill ended in 1122). The bill passes to
+// the first living supporter, else the late mover's house head, else the Chancellor, else the ruler, and its reasons
+// say whose it was ("Brought by the late X"). byName is kept from the opening; a bill from an older save without it
+// says only that its mover died. Four reasons at most, so the reason it ends is still read. No dice. Returns the bill.
+POL.billHeir = function (r, b) {
+  if (!b || !b.by) return b;
+  const was = A.P(b.by);
+  if (live(was)) return b;
+  const name = b.byName || (was ? A.fullName(was, false) : null);
+  const hh = was && was.house && A.S.houses && A.S.houses[was.house];
+  const cand = (b.sup || []).filter(id => id !== b.by).concat([hh && hh.headPid, (r.council || {}).chancellor, r.ruler]);
+  const heir = cand.map(id => A.P(id)).find(live) || null;
+  b.by = heir ? heir.id : null;
+  b.byName = heir ? A.fullName(heir, false) : null;
+  b.why = [[name ? `Brought by the late ${name}` : 'Its first mover died', 0]].concat((b.why || []).filter(w => !/^Brought by the late |^Its first mover died/.test(w[0]))).slice(0, 4);
+  return b;
+};
 // one count of the bill
 POL.billCount = function (r) {
   const b = r.pol.bill; if (!b) return null;
+  POL.billHeir(r, b);
   const P = RI.PUSH[b.k];
   if (!P || !P.ok(r)) { POL.endBill(r, false, 'The law changed under it'); return 'void'; }
   const o = POL.billOdds(r), x = A.rf(0, 1);
@@ -224,6 +243,7 @@ POL.debate = function (r) {
 POL.endBill = function (r, yes, why) {
   const b = r.pol.bill; if (!b) return;
   r.pol.bill = null;
+  POL.billHeir(r, b);
   const P = RI.PUSH[b.k], who = A.P(b.by);
   const T = RI.tally(r), t = T[b.k] || { pro: [], con: [] };
   if (yes) {

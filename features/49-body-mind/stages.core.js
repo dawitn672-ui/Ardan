@@ -66,6 +66,8 @@
       const s = BM.stageOf(pc), i = BM.STAGES.indexOf(s), j = BM.STAGES.indexOf(D.stage);
       if (i !== j) return [false, i < j ? 'Too young' : 'Too old'];
     }
+    // (CI run 91: putting coin by refuses under 5 suns; the button now says so instead of standing lit)
+    if (key === 'bm_putby' && pc && pc.alive && (pc.coin || 0) < 5) return [false, 'You have nothing to put by.'];
     return can.apply(this, arguments);
   };
 

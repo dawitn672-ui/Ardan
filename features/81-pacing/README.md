@@ -96,7 +96,7 @@ One seed set is noisy: prompts per year moves about ±0.5 between builds that di
 | `pcWinter` | An adult's free days come at 14/365 a day in January and December, 7/365 in July and November: 8.99 a year for 7 free days. 2/365 in prison in January. The popover says "Winter: the fields sleep" in January and nothing in July. An infant still has none. |
 | `pcScale` | Seasoned adult (44), d 45: speed and stamina shift 14.6, 21% → 44%; persuasion and will 0, 53% → 53%; intrigue and intellect 4.8, 42% → 49%; will and insight (d 50) 2.8, 57% → 59%; strength and intellect with no written d 10.2, 35% → 51%. The written d comes back (also when absent), the state and the random stream are unchanged, a fight's odds are untouched. |
 | `pcScaleRolled` | `ch_inf_flux` (one of 893 events with a stat side the rule eases) shows 83% (70% without) and rolls at 83%; the popover adds up to 83 with the rule's own row and no "Other things in play". |
-| `pcLives` | 8 bot lives (bench/bot.mjs), birth to 30, the feature off and on. Off: 5.3 prompts a year, 4.4 actions a year (engaged), 43.0% of 400 checks. On: **6.7**, **5.4**, **47.2%** of 341. |
+| `pcLives` | 16 bot lives since CI run 91 (8 before; bench/bot.mjs), birth to 30, the feature off and on. Off: 5.3 prompts a year, 4.4 actions a year (engaged), 43.0% of 400 checks. On: **6.7**, **5.4**, **47.2%** of 341. CI run 91, 16 lives: off 6.4, 4.8, 51.9% of 952; on 6.2, **6.0**, 53.0% of 907. |
 
 With `--features=replay,fair-checks,tooltips` on the same build, all 28 pass, among them `renderRng`, `replayWithRender` and `journalReplay` (the floor draws in the engine, so a replay draws the same), 59's `ttSums2` and `ttPure2` (popovers add up and change nothing), and 75's four.
 

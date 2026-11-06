@@ -33,3 +33,7 @@ The release marks a revolt's new realm `isRebel` and clears the mark only by fol
 - the news says so.
 
 A rebel realm at war with no one in an old save is cleared at its next month. Test `revoltFounds`.
+
+## CI run 91: a lit activity is one the game allows (`acts.core.js`)
+
+The release's `A.canAct` allowed "Lend money" at any purse; `A.doActivity` then refused it under 50 suns ("You need coin to lend coin.", a stake under 20). The button stood lit and the month went on a refusal: in the bench bot's greedy lives to 30, 164 and 204 such months with 81-pacing's winter initiative on, so its extra free days never became actions (`pcLives`, 4.8 a year on and off). `A.canAct` now gives that refusal first, in the same words. 49-body-mind does the same for putting coin by under 5 suns.
