@@ -17,7 +17,9 @@
 (function () {
   const V = A.V2, D = V && V.diplomacy;
   if (!D) return;
-  const DV = A.V2DIP = { ON: true, inAI: false, inFlow: false, stats: { ticks: 0, alliance: 0, broken: 0, war: 0, warRefused: 0, marriage: 0, rival: 0, unrival: 0, heard: 0, unheard: 0 } };
+  const DV = A.V2DIP = { ON: true, inAI: false, inFlow: false, stats: { ticks: 0, alliance: 0, broken: 0, war: 0, warRefused: 0, marriage: 0, rival: 0, unrival: 0, heard: 0, unheard: 0, warWait: {} } };
+  // the pace at which hostility turns to war (DV.tick's war branch; see the README for the numbers it was tuned on)
+  DV.WAR = { rest: true, weary: true, nerve: 1, p: 0.35, cbMul: 1.5 };
 
   const byId = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
   const live = () => Object.values(A.S.realms || {}).filter(r => r && r.alive && !r.isRebel).sort(byId);
@@ -216,8 +218,17 @@
         const RA = A.realm(agg), capFull = A.warCapFull && A.warCapFull();
         if (A.atWar(agg).length || RA.overlord === tgt || A.realm(tgt).overlord === agg || (RA.stability || 0) < 30 ||
           (!capFull && S.wars.filter(w => w.cb !== 'throne').length >= 4) || (capFull && capFull(RA)) || (A.outOfReach && A.outOfReach(agg, tgt))) { DV.stats.warRefused++; continue; }
+        // war pace: hostility is the reason, but a crown still rests after a war it started, waits out war-weariness and
+        // waits for an opening (the release's own rest, weariness and nerve, 20-ai-personality), and even then a
+        // hostile month becomes a declaration only sometimes (DV.WAR.p, from v2's seeded makeRng, never A.rand)
         const cb = A.cbOn ? A.cbOn(agg, tgt) : null, rel = A.relBetween(agg, tgt);
         let P = null; try { P = A.cbPreview ? A.cbPreview(agg, tgt) : A.warPreview(agg, tgt); } catch (x) { P = null; }
+        const WP = DV.WAR, wait = (k) => { DV.stats.warWait[k] = (DV.stats.warWait[k] || 0) + 1; DV.stats.warRefused++; };
+        if (WP.rest && A.aiResting && A.aiResting(RA)) { wait('rest'); continue; }
+        if (WP.weary && A.aiWeary && (+RA.exhaustion || 0) > A.aiWeary(agg)) { wait('weary'); continue; }
+        if (WP.nerve && P && A.aiNerve && +P.ratio < A.aiNerve(agg) * WP.nerve) { wait('nerve'); continue; }
+        const sc = D.score(d, i, j), pw = Math.min(1, WP.p * (1 + Math.max(0, -sc - 25) / 40) * (cb ? WP.cbMul : 1));
+        if (!rngFor(`war|${agg}|${tgt}`).chance(pw)) { wait('chance'); continue; }
         const res = A.declareWar(agg, tgt, cb ? { cb } : undefined);
         if (A.aiNoteWar && P) A.aiNoteWar(agg, tgt, P, rel, cb, res);
         if (res && res.ok) { r.pact = 'war'; DV.stats.war++; V2.h.push([Y, m, 'war', agg, tgt]); } else DV.stats.warRefused++;
