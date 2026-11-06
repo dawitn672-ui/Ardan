@@ -39,8 +39,17 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const rows = [];
-      for (const [seed, rid] of [[22, 'POL-02'], [24, 'POL-06'], [26, 'POL-10'], [27, 'POL-07'], [23, 'POL-04']]) {
+      // v2: the exporter was POL-04 by name. On the generated continent its lore's grain is "re-shipped Tamari grain" and
+      // its land one inland hill county (seed 23: its own harvest is 1.7 times its need, not the old four), so behind
+      // closed roads it starves like any importer. The control row is now the realm in that world that grows the most
+      // grain for its need among those that export it: what the comment above means by an exporter
+      const grower = () => {
+        const E = A.ECON, hv = E.HARVESTS.reduce((a, h) => a + h[0] * h[1], 0), self = r => (A.mkt(r.id).pr.grain || 0) * hv / Math.max(1, E.demand(r).grain || 0);
+        return ECT.live().filter(r => A.mkt(r.id).ex.includes('grain')).sort((a, b) => self(b) - self(a) || (a.id < b.id ? -1 : 1))[0].id;
+      };
+      for (const [seed, rid0] of [[22, 'POL-02'], [24, 'POL-06'], [26, 'POL-10'], [27, 'POL-07'], [23, null]]) {
         ECT.world(seed); ECT.months(6);   // June: the harvest is known
+        const rid = rid0 || grower();
         const M0 = A.mkt(rid), norm = GD.GOODS.grain.base * M0.t.grain;
         const snap = JSON.stringify(A.S), rng = A.rngState, out = { rid, exports: M0.ex.includes('grain') };
         for (const [k, f, closed] of [['ordinary', 1, false], ['failed', 0.4, false], ['famine', 0.25, true]]) {
