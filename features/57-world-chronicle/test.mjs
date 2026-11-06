@@ -328,7 +328,9 @@ export default {
       const realms = Object.values(A.S.realms).filter(x => !x.isRebel).length;
       // force one into the player's home: the scene comes
       const pc = A.pc(), chance = A.WC.plagueChance;
-      A.WC.plagueChance = r => (r.id === (A.prov(pc.home) || {}).owner ? 12 : 0);
+      // what the forced roll saw of its realm, in the rebel strike: the regression has to reach the roll as a rebel
+      let sawRebel = null, inRebel = false;
+      A.WC.plagueChance = r => { const v = r.id === (A.prov(pc.home) || {}).owner ? 12 : 0; if (v && inRebel) sawRebel = !!r.isRebel; return v; };
       const P = A.prov(pc.home); P.adj = P.adj || [];
       const wp = A.wpick; A.wpick = (arr, f) => (arr.some(x => x && x.id === pc.home) ? arr.find(x => x.id === pc.home) : wp(arr, f));
       let queued = false;
@@ -338,7 +340,7 @@ export default {
       clearOthers();
       const strike = () => { let got = false; for (let i = 0; i < 6 && !got; i++) { A.advance(31); got = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!got) clearOthers(); } return got; };
       let q, v, rebelQueued = null;
-      const base = A.serialize();
+      const base = A.serialize(), found = A.EF && A.EF.found;
       try {
         queued = strike();
         q = A.S.queue.find(x => x.ev === 'wc_sickness_comes'); v = q && A.eventView(q);
@@ -347,11 +349,14 @@ export default {
         // home's holder a rebel realm, the scene still comes
         A.deserialize(JSON.parse(base));
         const own = A.realm((A.prov(A.pc().home) || {}).owner);
-        if (own) { own.isRebel = true; clearOthers(); rebelQueued = strike(); }
-      } finally { A.WC.plagueChance = chance; A.wpick = wp; }
-      return { n: pl.length, fam: fam.length, realms, perRealm20: Math.round(100 * pl.length / realms / 2) / 100, famPer20: Math.round(100 * fam.length / realms / 2) / 100, queued, rebelQueued, text: v ? v.text : '', skip: v ? v.skip : null };
+        // 03-engine-fixes founds any rebel realm at peace each month (EF.found clears isRebel) before the roll, so a
+        // home holder at peace made a rebel here was a crown again by the time it was rolled, and this passed on the old
+        // code too (the verifier's finding). Founding is held off for the strike, and the roll must see a rebel.
+        if (own) { own.isRebel = true; if (A.EF && found) A.EF.found = () => false; inRebel = true; clearOthers(); rebelQueued = strike(); }
+      } finally { A.WC.plagueChance = chance; A.wpick = wp; if (A.EF && found) A.EF.found = found; inRebel = false; }
+      return { n: pl.length, fam: fam.length, realms, perRealm20: Math.round(100 * pl.length / realms / 2) / 100, famPer20: Math.round(100 * fam.length / realms / 2) / 100, queued, rebelQueued, sawRebel, text: v ? v.text : '', skip: v ? v.skip : null };
     });
-    return { ok: r.n > 0 && r.queued && r.rebelQueued === true && r.skip === false && !/\{/.test(r.text), detail: `40 years: ${r.n} epidemics (${r.perRealm20} per realm per 20 years) and ${r.fam} famines (${r.famPer20}) over ${r.realms} realms; struck at home, the scene comes: ${r.queued}; under a rebel holder too: ${r.rebelQueued}: "${r.text}"` };
+    return { ok: r.n > 0 && r.queued && r.rebelQueued === true && r.sawRebel === true && r.skip === false && !/\{/.test(r.text), detail: `40 years: ${r.n} epidemics (${r.perRealm20} per realm per 20 years) and ${r.fam} famines (${r.famPer20}) over ${r.realms} realms; struck at home, the scene comes: ${r.queued}; under a rebel holder too: ${r.rebelQueued} (the roll saw a rebel: ${r.sawRebel}): "${r.text}"` };
   },
 
   async wcScenesRender(pg) {
