@@ -228,9 +228,12 @@
       const m = /^[^:?!]{2,60}[:?!]\s+((?:you|she|he)\b.*)$/i.exec(e.t);
       return low(m ? m[1] : e.t).replace(/[.!?]$/, '');
     };
-    // called from the scene's setup (an engine step): it spends the spacing when it speaks
+    // called from the scene's setup (an engine step). The line is the scene's own text, about the person the scene is about
+    // (21's scenes are written around it, and 55's bondsInRealLives holds them to two a decade), so it is not spaced; it
+    // spends the spacing, so no memory or "Between you" line follows it within MW.GAP cards
     NI.pastLine = function (pc, t) {
-      if (!gapOk(pc)) return '';
+      // (but not on a card that already has a memory woven in: the weave spent the spacing on this very card)
+      if (pc && pc.mw && typeof pc.mw === 'object' && typeof pc.mw.lw === 'number' && pc.mw.lw === (+pc.mw.n || 0) && (+pc.mw.n || 0) > 0) return '';
       const h = NI.histOf(pc, t).filter(e => e && e.y < A.S.year && typeof e.t === 'string' && !TRIVIAL.test(e.t));
       for (let i = h.length - 1; i >= 0; i--) {
         const d = C2.histDeed(h[i]);
