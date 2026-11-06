@@ -111,9 +111,17 @@
   // Counts for the tests (not saved): G.stats[temper][move].
   G.stats = {};
   const stat = (a, k) => { const t = G.of(a), o = G.stats[t] || (G.stats[t] = {}); o[k] = (o[k] || 0) + 1; };
-  G.RELIEF = 1.5;     // the odds a cunning general wants to go in, all together, against men standing in his own land
-  G.IDLE = [2.5, Infinity];  // cunning: the odds wanted against the weakest host standing ready (x need), and a stronger one (never)
+  // v2 (the generated continent; CI run 88, temperMovesTheWar 'FAILED cunning'): with the old dials (RELIEF 1.5, IDLE
+  // [2.5, never], raids only two steps or more away) a cunning army took 276 provinces for 2,254k men down, 12.2 per
+  // 100k against cautious's 15.8. It left every strong host standing, and so their land, and lost more of its own men
+  // to hunger and to divisions cut off at home (615k and 905k, against cautious's 237k and 469k) than to his assaults.
+  // Now he goes in against a strong host standing ready at crushing odds (5 x need), relieves his own land at better
+  // than even odds (1.1), and an idle division also takes the open country next to it: 362 taken for 2,226k down,
+  // 16.3 per 100k, with 89% of orders still at empty or engaged places (see README)
+  G.RELIEF = 1.1;     // the odds a cunning general wants to go in, all together, against men standing in his own land
+  G.IDLE = [2.5, 5];  // cunning: the odds wanted against the weakest host standing ready (x need), and a stronger one
   G.RAID = 1 / 3;      // the share of a cunning army out on a march round the walls at once
+  G.RAID_DEPTH = 1;    // the nearest open country a raid goes to (steps away; it was 2, past the next province)
   G.HEADON = 0.7;     // bold: the odds at which a division goes at their host instead of sitting before an empty wall
   G.PRESS = 8;          // ticks after a retreat while the beaten division counts as disordered
   G.stand = d => { const a = d && d.army ? A.army(d.army) : null; return (a && G.DIALS[G.of(a)].stand) || 1; };
@@ -296,7 +304,8 @@
         a.gtFeintAt = now; stat(a, 'feint'); note(a, 'feint', { j: best.y, x: best.x });
       }
     }
-    // the long way round: an idle division goes past walls and held places to the open country behind them.
+    // the long way round: an idle division goes past walls and held places to the open country behind them, or to the
+    // open country next to it (G.RAID_DEPTH).
     // At most a third of the army (G.RAID) is out on such a march at once
     const out = ds.filter(d => d.gtRaid != null && d.path.length >= 1).length;
     let room = Math.max(1, Math.round(ds.length * G.RAID)) - out;
@@ -308,7 +317,7 @@
       const R = G.roundPath(a, d);
       let pick = null;
       for (const v of R.out) {
-        const dep = R.depth.get(v), Q = S.prov[v]; if (dep < 2 || aimed.has(v) || walled(Q, me)) continue;
+        const dep = R.depth.get(v), Q = S.prov[v]; if (dep < G.RAID_DEPTH || aimed.has(v) || walled(Q, me)) continue;
         const direct = A.wsPath(d.loc, v, me);
         const wall = direct && direct.slice(0, -1).find(j => { const W = S.prov[j]; return foesAt(j, me).length || walled(W, me); });
         const val = Math.log10(Q.pop + 10) * 6 + 5 * A.provLocalSupply(Q) + (Q.depot ? 15 : 0) + (capitalOf(Q) ? 20 : 0) - (Q.fort || 0) * 6 - dep * 4 + (wall != null ? 12 : 0);
