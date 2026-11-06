@@ -289,7 +289,7 @@
   // picture inside that box, and a sea-coloured shadow fills the edge a zoom out uncovers. The tween is capped at 200
   // ms; MOT.mapStats counts tweens, their frames and the real draws.
   MOT.mapStats = { tweens: 0, frames: 0, real: 0, lastMs: 0 };
-  const CAM = ['transform', 'transformOrigin', 'clipPath', 'boxShadow', 'willChange'];
+  const CAM = ['transform', 'transformOrigin', 'clipPath', 'boxShadow', 'willChange', 'borderColor'];
   const camOff = (cv, st) => {
     if (!st.cam) return;
     for (const k of CAM) cv.style[k] = st.cam.style[k];
@@ -343,9 +343,19 @@
             return { left: l, top: t, right: l + box.width, bottom: t + box.height, width: box.width, height: box.height, x: l, y: t, toJSON() { return this; } };
           };
         }
-        const sea = (A.V2MAP && A.V2MAP.SAT && A.V2MAP.SAT.SEA) || (UI.INKMAP && UI.INKMAP.SEA_DEEP) || '#173063';
         cv.style.transformOrigin = `${st.cam.fit.ox}px ${st.cam.fit.oy}px`; cv.style.willChange = 'transform';
-        cv.style.boxShadow = `0 0 0 ${Math.round(Math.max(box.width, box.height) * 4)}px ${sea}`;
+        cv.style.borderColor = 'transparent';   // the frame would grow and shrink with the picture; it is hidden meanwhile
+      }
+      // a zoom out uncovers the edge of the box: a sea-coloured shadow just wide enough for the smallest scale of this
+      // tween fills it (none for a zoom in; a wider one would make the moving layer, and its painting, needlessly large)
+      {
+        // the share of the box left bare at view v, on one axis, in the picture's own (scaled) units
+        const bare = (p0, pw, v0, vw) => { const k = pw / vw, t = (p0 - v0) / vw; return (Math.max(0, t) + Math.max(0, 1 - t - k)) / k; };
+        const need = v => Math.max(bare(pic.x0, pic.w, v.x0, v.w), bare(pic.y0, pic.h, v.y0, v.h));
+        const share = Math.max(need(from), need(to), need(lerpV(from, to, 0.5)));
+        const sea = (A.V2MAP && A.V2MAP.SAT && A.V2MAP.SAT.SEA) || (UI.INKMAP && UI.INKMAP.SEA_DEEP) || '#173063';
+        const F0 = st.cam.fit, spread = share > 1e-4 ? Math.ceil(share * Math.max(F0.W, F0.H) + Math.max(F0.ox, F0.oy) + 2) : 0;
+        cv.style.boxShadow = spread ? `0 0 0 ${spread}px ${sea}` : st.cam.style.boxShadow;
       }
       MOT.mapStats.tweens++;
       const F = st.cam.fit, px = x => x.toFixed(2) + 'px';
