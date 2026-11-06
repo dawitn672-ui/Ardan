@@ -32,7 +32,9 @@ derives the status from all the parts: a marriage plus a sworn rivalry reads "un
   card, World > Realms, the diplomacy card, bloc strengths and the realm tooltips follow it.
 - **Blocs and coalitions** (playtest 1 #22): an alliance bloc is realms each allied to every other (patch `V2DIP-BLOCS`;
   chains no longer join all 33 realms). A coalition takes only realms cold or worse with the conqueror by the status
-  (patch `V2DIP-COALITION`), and a conqueror's infamy is a reason of its own ("fear of X's conquests").
+  (patch `V2DIP-COALITION`), and a conqueror's infamy is a reason of its own ("fear of X's conquests"). At the year's
+  end (`politicsYearEnd`) a coalition drops the members the status no longer calls cold: another coalition's war in the
+  same year can put a member at the conqueror's side ("fight side by side"), and the list then said otherwise.
 - **War pace** (CI 88, `riGoldGetsUsed`; `DV.tryWar`, tuned by `DV.WAR`): v2's `monthTick` names a war whenever a
   bordering pair is hostile (score -25 with an ambitious ruler, or -45) and wins a 2 to 3% monthly roll, and a hostile
   pair stays hostile, so `DV.tick` declared about three times the release's rate. Each war it names now goes through

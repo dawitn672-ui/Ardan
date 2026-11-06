@@ -334,6 +334,19 @@
     };
   }
 
+  // a coalition's members are realms cold or worse with the conqueror (patch V2DIP-COALITION) when it forms; a later
+  // step of the same year (another coalition's war that puts a member at the conqueror's side, "fight side by side")
+  // can warm one of them, and the list then said otherwise than the status. At the year's end the list follows the status.
+  A.on && A.on('politicsYearEnd', () => {
+    const C = DV.ON && A.S && A.S.coalitions;
+    if (!C || typeof C !== 'object') return;
+    for (const t of Object.keys(C)) {
+      if (!Array.isArray(C[t]) || !A.realm(t)) continue;
+      const keep = C[t].filter(m => A.realm(m) && DV.COLD.includes(DV.status(m, t)) && !(A.realm(m).allies || []).includes(t));
+      if (keep.length >= 2) C[t] = keep; else delete C[t];
+    }
+  });
+
   A.onMonth = A.onMonth || [];
   A.onMonth.push(function () { try { DV.tick(); } catch (e) { console.error('v2 diplomacy', e); } });
 })();
