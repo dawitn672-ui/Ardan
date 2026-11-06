@@ -175,7 +175,7 @@ export default {
       let pair = null;
       for (const a of DT.others()) {
         if (!free(a)) continue;
-        const b = A.neighbors(a).find(o => free(o) && A.realm(o).overlord !== a && !(A.outOfReach && A.outOfReach(a, o)) && !A.hostile(a, o) && !(A.realm(a).allies || []).includes(o));
+        const b = A.neighbors(a).find(o => free(o) && A.realm(o).overlord !== a && !(A.outOfReach && A.outOfReach(a, o)) && !A.hostile(a, o) && !(A.realm(a).allies || []).includes(o) && !(A.cbWarMul && !(A.cbWarMul(a, o, null) > 0)));
         if (b) { pair = [a, b]; break; }
       }
       if (!pair) return { pair: null };
@@ -190,13 +190,15 @@ export default {
         return { war: DV.stats.war - w0, wait, casus: w && w.casus ? w.casus.t : null };
       };
       const out = {};
+      // the aggressor stays pair[0] (DV.WAR.pick could hand the war to the side with a grudge, which is not tested here)
+      DV.WAR.pick = false;
       try {
         RA.aiLastWar = A.S.year; out.rest = once();
         if (had.lw) RA.aiLastWar = had.lwv; else delete RA.aiLastWar;
         RA.exhaustion = 99; out.weary = once(); RA.exhaustion = had.ex;
         ratio = 0.2; out.nerve = once(); ratio = 5;
         DV.WAR.p = 0; out.chance = once();
-        DV.WAR.p = 1; out.go = once();
+        DV.WAR.p = 100; out.go = once(); // a certain declaration whatever the court's reasons weigh (none of them nil)
       } finally { D.monthTick = mt; A[pk] = pv; Object.assign(DV.WAR, W0); }
       return { pair, out };
     }, 2024);
