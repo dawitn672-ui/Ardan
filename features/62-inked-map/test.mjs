@@ -108,32 +108,40 @@ export default {
   },
 
   // a warm frame costs at most about twice the release's; a cold start (geometry and first tiles) is reported
+  // Loaded runners (CI's 4 workers; a shared 4-core machine at load 24): the release pass and the inked pass are timed
+  // seconds apart, so a burst of load in one of them swings a view's ratio either way (CI run 90: gmZoom 35->98 and
+  // war1.5 33->71 failed, while locally under 4 workers the release was the slower one, gm8 152->31, gmPan 84->14; the
+  // views over 2x changed run to run, and the ink layer's own work is ~2 ms of a 70 ms gmZoom frame). So a view over the
+  // bar on its first comparison is timed again as an off/on pair, up to 3 more times, and each side keeps its fastest
+  // (min) median: the same views and the same 2x bar, but a real regression is over in every pair and still fails.
   async inkTiming(pg) {
     await pg.evaluate(WAR);
     const r = await pg.evaluate(() => {
-      const T = window.__T, t = {};
+      const T = window.__T, t = { off: {}, on: {} };
       const geo0 = performance.now(); UI.INKMAP.geo(); const geoMs = UI.INKMAP.geo().ms;
-      for (const on of [false, true]) {
-        T.set(on); const k = on ? 'on' : 'off'; t[k] = {};
-        UI.ov = null; UI.render();
-        t[k].world = T.time(() => { const c = UI.$('#worldmap'); MAP.draw(c, { mode: 'political' }); return c; });
-        UI.A.ov('bigmap');
-        for (const z of [1, 3, 8]) { T.gm(z); t[k]['gm' + z] = T.time(() => T.gm(z)); }
-        T.gm(3); t[k].gmPan = T.time(() => { UI.gm.view.x0 += 12; UI.gmDraw(); return UI.$('#gmap'); });
-        // a wheel step in, then out again: the scale changes every frame (tiles warm, the kept view laid again)
-        { let i = 0; const zs = [3, 3.75]; zs.forEach(z => T.gm(z)); t[k].gmZoom = T.time(() => T.gm(zs[i++ % 2])); }
-        UI.ov = null; UI.render(); UI.warRoomOpen();
-        for (const z of [1.5, 4, 9]) { T.war(z); t[k]['war' + z] = T.time(() => T.war(z)); }
-        T.war(4); t[k].warPan = T.time(() => { UI.wr.view.x0 += 10; const c = UI.$('#warmap'); UI.drawWar(c); return c; });
-        UI.ov = null; UI.render();
-      }
+      const world = () => { UI.ov = null; UI.render(); }, gmap = () => { world(); UI.A.ov('bigmap'); }, war = () => { world(); UI.warRoomOpen(); };
+      // each view: the screen it is on, its warm-up and its timed frame (the release's first pass order is kept)
+      const V = [['world', world, () => {}, () => { const c = UI.$('#worldmap'); MAP.draw(c, { mode: 'political' }); return c; }]];
+      for (const z of [1, 3, 8]) V.push(['gm' + z, gmap, () => T.gm(z), () => T.gm(z)]);
+      V.push(['gmPan', gmap, () => T.gm(3), () => { UI.gm.view.x0 += 12; UI.gmDraw(); return UI.$('#gmap'); }]);
+      // a wheel step in, then out again: the scale changes every frame (tiles warm, the kept view laid again)
+      { let i = 0; const zs = [3, 3.75]; V.push(['gmZoom', gmap, () => zs.forEach(z => T.gm(z)), () => T.gm(zs[i++ % 2])]); }
+      for (const z of [1.5, 4, 9]) V.push(['war' + z, war, () => T.war(z), () => T.war(z)]);
+      V.push(['warPan', war, () => T.war(4), () => { UI.wr.view.x0 += 10; const c = UI.$('#warmap'); UI.drawWar(c); return c; }]);
+      const time = (v, on) => { const k = on ? 'on' : 'off', [name, open, warm, frame] = v; open(); warm(); const ms = T.time(frame); t[k][name] = Math.min(t[k][name] ?? Infinity, ms); };
+      for (const on of [false, true]) { T.set(on); for (const v of V) time(v, on); world(); }
+      const over = k => t.on[k] > 2 * t.off[k] + 3, first = V.map(v => v[0]).filter(over), retries = {};
+      for (const v of V) for (let n = 0; n < 3 && over(v[0]); n++) { retries[v[0]] = n + 1; for (const on of [false, true]) { T.set(on); time(v, on); } world(); }
+      T.set(true);
       const st = UI.INKMAP.stats;
-      return { t, geoMs, tileMs: st.tileMs / Math.max(1, st.tiles), tiles: st.tiles };
+      return { t, geoMs, tileMs: st.tileMs / Math.max(1, st.tiles), tiles: st.tiles, first, retries };
     });
     const keys = Object.keys(r.t.on), over = keys.filter(k => r.t.on[k] > 2 * r.t.off[k] + 3);
     const sum = o => keys.reduce((a, k) => a + o[k], 0);
     const ok = over.length <= 1 && sum(r.t.on) <= 2 * sum(r.t.off) + 6;
-    return { ok, detail: `warm frame ms, release -> inked: ${keys.map(k => `${k} ${r.t.off[k].toFixed(1)}->${r.t.on[k].toFixed(1)}`).join(', ')}; total ${sum(r.t.off).toFixed(1)}->${sum(r.t.on).toFixed(1)}; cold: geometry ${r.geoMs.toFixed(0)} ms once, ${r.tileMs.toFixed(1)} ms per tile (${r.tiles} tiles)${over.length ? '; over 2x: ' + over.join(',') : ''}` };
+    const tried = Object.entries(r.retries).map(([k, n]) => `${k} x${n}`).join(', ');
+    return { ok, detail: `warm frame ms, release -> inked: ${keys.map(k => `${k} ${r.t.off[k].toFixed(1)}->${r.t.on[k].toFixed(1)}`).join(', ')}; total ${sum(r.t.off).toFixed(1)}->${sum(r.t.on).toFixed(1)}; ` +
+      `over 2x at first ${r.first.length ? r.first.join(',') : 'none'}, timed again ${tried || 'none'}; cold: geometry ${r.geoMs.toFixed(0)} ms once, ${r.tileMs.toFixed(1)} ms per tile (${r.tiles} tiles)${over.length ? '; over 2x: ' + over.join(',') : ''}` };
   },
 
   // on a world at war, zoomed in, the war room and the full map raise standards; zoomed out, or with banners off, boxes
