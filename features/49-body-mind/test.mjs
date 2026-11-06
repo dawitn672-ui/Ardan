@@ -397,4 +397,24 @@ export default {
     const ok = r.same && /‘But is it true\?’/.test(r.why) && !/["<>]/.test(r.why);
     return { ok, detail: `receipt ${r.why}; deeds, reasons and trait log the same after SAVES.clean: ${r.same}${r.same ? '' : ` (${r.before} -> ${r.after})`}` };
   },
+
+  // lfRepeats (v2 merge): a sickness after the first, within the quiet (8 years, doubling), is treated as the last one
+  // was, with a line in the log and no scene; outside it, or with no treatment on record, the scene asks
+  async illnessAsBefore(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-life-fixes) is missing' };
+      A.newGame({ seed: 4911, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 30 });
+      const pc = A.pc(), y = A.S.year, out = {};
+      const onset = () => { pc.ill = null; pc.health = 100; A.S.queue = []; const n0 = A.S.log ? A.S.log.length : 0; A.bmFallIll(pc, 'cough', GD.DISEASES.cough, 10, 100); return { asked: A.S.queue.some(q => q.ev === 'bm_ill'), t: pc.ill && pc.ill.t }; };
+      pc.evN = {}; out.first = onset();
+      pc.evN.bm_ill = 1; pc.flags.ev = pc.flags.ev || {}; pc.flags.ev.bm_ill = y - 2; pc.bmTreat = 'prayer';
+      const p0 = pc.piety; out.within = onset(); out.piety = pc.piety - p0;
+      pc.flags.ev.bm_ill = y - 8; out.after = onset();
+      pc.flags.ev.bm_ill = y - 2; delete pc.bmTreat; out.none = onset();
+      return out;
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.first.asked && !r.within.asked && r.within.t === 'prayer' && r.piety > 0 && r.after.asked && r.none.asked;
+    return { ok, detail: `first sickness asks ${r.first.asked}; two years after one, prayed over last time: asks ${r.within.asked}, treated with ${r.within.t} (+${r.piety} piety); eight years after: asks ${r.after.asked}; no treatment on record: asks ${r.none.asked}` };
+  },
 };

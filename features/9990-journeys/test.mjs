@@ -97,4 +97,33 @@ export default {
     });
     return { ok: r.same && r.pure, detail: `same life with and without looking at the road ${r.same}; rendering pure ${r.pure}; scenes ${r.a}` };
   },
+
+  // lfRepeats (v2 merge): a stop's scene the life has seen waits a quiet that doubles (6, 12... years), and a shrine
+  // knelt at before is a scene once a life: after that the stair is climbed with a line in the log, and the road home starts
+  async journeysSpaced(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-life-fixes) is missing' };
+      A.newGame({ seed: 33, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 24 });
+      const pc = A.pc(), y = A.S.year, out = {};
+      pc.coin = 900; pc.evN = pc.evN || {}; pc.flags.ev = pc.flags.ev || {};
+      pc.evN.jr_folk = 1; pc.flags.ev.jr_folk = y - 5; out.folk5 = A.JR.fresh(pc, 'jr_folk');
+      pc.flags.ev.jr_folk = y - 6; out.folk6 = A.JR.fresh(pc, 'jr_folk');
+      pc.evN.jr_folk = 2; out.folk2 = A.JR.fresh(pc, 'jr_folk');
+      // a pilgrimage to a shrine this life has knelt at, and "Back at the shrine" already seen
+      A.S.time = 9; A.doActivity('pilgrimage');
+      const j = pc.journey; out.pilgrim = j && j.k;
+      if (j) { pc.jrShrines = { [j.to]: y - 10 }; pc.evN.jr_shrine_again = 1; pc.flags.ev.jr_shrine_again = y - 10; }
+      const p0 = pc.piety; JT.seen = [];
+      for (let g = 0; g < 200 && pc.journey && !pc.journey.there && pc.journey.k === 'pilgrim'; g++) { A.advance(5); JT.clear(); }
+      out.scene = JT.seen.some(s => /^jr_shrine/.test(s));
+      out.home = !pc.journey || pc.journey.k === 'return' || !!pc.journey.home || pc.journey.k !== 'pilgrim';
+      out.line = (A.S.log || []).some(l => /climb the stair/.test(l.t || l.text || l.msg || String(l)));
+      out.piety = pc.piety >= p0;
+      return out;
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = !r.folk5 && r.folk6 && !r.folk2 && r.pilgrim === 'pilgrim' && !r.scene && r.home && r.line && r.piety;
+    return { ok, detail: `folk on the road seen once: 5 years on ${r.folk5}, 6 years on ${r.folk6}; seen twice, 6 years on ${r.folk2}; pilgrimage ${r.pilgrim}; at a shrine knelt at before: scene ${r.scene}, log line ${r.line}, homeward ${r.home}` };
+  },
 };

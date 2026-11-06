@@ -152,7 +152,7 @@ POL.pcYear = function (pc) {
 
 // a war: a landed lord's levy is called (po_muster)
 POL.MUSTER_QUIET = 6;
-A.on && A.on('warStart', function (w) {
+POL.musterCall = function (w) {
   try {
     const pc = A.pc(); if (!POL.on || !pc || !pc.alive || !w) return;
     const o = POL.pcOath(pc); if (!o || !o.men || o.men < 1) return;
@@ -171,7 +171,8 @@ A.on && A.on('warStart', function (w) {
     }
     if (A.EV.po_muster && !A.S.queue.some(q => q.ev === 'po_muster')) A.queue({ type: 'event', ev: 'po_muster', ctx });
   } catch (e) { console.error('[po] muster', e); }
-});
+};
+A.on && A.on('warStart', w => POL.musterCall(w));
 // PO-CEDE: the player's home passes to another crown at a peace (A.polOnTransfer emits provTransfer)
 A.on && A.on('provTransfer', function (prov, from, to) {
   try {

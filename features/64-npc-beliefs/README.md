@@ -117,6 +117,7 @@ Every realm keeps **"what is said here"**: up to 6 tellings of the great entries
 
 - **You hear what is said in your realm** of far battles, wars won, rulers' deaths, sicknesses and Legends, and take it on trust (40% a year each; `pc.nbk`, 10 kept), unless you know better (you were there, it was your realm's or a neighbour's battle, you were the dead ruler's kin or at his court). A line in the story log: "Word in Aldmark: That Lucerna won at Skarfell in 1105, and some 13,000 fell."
 - **It comes out.** Each year a false belief of this kind is found out with a chance of 12% (more if literate, clever, or if you know someone from that realm; certain once you come to know it). Half the time it is the scene `nb_record_wrong` ("{who} … puts you right without unkindness: {the record's line}"): take the plain account, hold to the tale, carry it to the alehouse (others take your word), or ask who first told it otherwise. Otherwise a line in the story log.
+  - `nb_record_wrong` waits a quiet of 8 years, doubling with each one the life has seen (97's `A.lfSpaced`); in between the record is set right with a line in the log (v2 merge, lfRepeats).
 - **The Chronicle** sets it down for each life, beside 26's "As the tale is told" (what is told of you): "What the world told {name}": "In 1105, word came that Lucerna won at Skarfell … In 1106 he learned otherwise. In May 1105, at Skarfell, …", or "As far as he ever knew, it was so." The text export has it too. Lives already played keep 8 such lines.
 - **Signature.** `A.SIGNATURE.beliefWorld = true`.
 

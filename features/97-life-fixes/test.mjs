@@ -514,4 +514,34 @@ export default {
     const ok = !r.topV && r.topM && r.veteran && r.marshal.every(x => !x) && r.villager.filter((x, k) => k !== i).every(Boolean) && r.scribe && !r.courtier;
     return { ok, detail: `${r.ids.join(', ')}: open to a villager ${r.villager.join('/')}, to a Marshal of the council ${r.marshal.join('/')}; a retired general at the top: ${r.veteran}; the scribe's letters for a scribe ${r.scribe}, for a courtier ${r.courtier}` };
   },
+
+  // lfRepeats (v2 merge): a scene its owner queues is spaced by A.lfSpaced, a quiet that doubles with each showing, and
+  // a guest's quiet for the same kind of gathering doubles with each one attended (6, 12, 24 years)
+  async lfSpacedDoubles(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF || !A.lfSpaced) return { err: 'A.lfSpaced is missing' };
+      A.newGame({ seed: 9781, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), y = A.S.year, out = {};
+      pc.evN = {}; pc.flags.ev = pc.flags.ev || {};
+      const at = (n, ago, base) => { pc.evN.lf_t = n; if (n) pc.flags.ev.lf_t = y - ago; else delete pc.flags.ev.lf_t; return A.lfSpaced(pc, 'lf_t', base); };
+      out.first = at(0, 0, 4);
+      out.one = [at(1, 3, 4), at(1, 4, 4)];            // 4 years after the first
+      out.three = [at(3, 15, 4), at(3, 16, 4)];        // 16 after the third
+      out.once = at(1, 30, Infinity);
+      A.LF.OFF = true; out.off = at(5, 0, Infinity); A.LF.OFF = false;
+      // a guest asked to the same kind of gathering: 6 years after the first, 12 after the second, 24 after the third
+      const role0 = A.gathRole, y0 = A.S.year, asked = [];
+      A.gathRole = () => 'noble';
+      try {
+        A.S.lf = {};
+        const g = { kind: 'wedding', couple: [], host: 'POL-09' };
+        for (let d = 0; d <= 50; d++) { A.S.year = y0 + d; if (A.lfGathRole(pc, g)) asked.push(d); }
+      } finally { A.gathRole = role0; A.S.year = y0; }
+      out.asked = asked;
+      return out;
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.first && !r.one[0] && r.one[1] && !r.three[0] && r.three[1] && !r.once && r.off && r.asked.join() === '0,6,18,42';
+    return { ok, detail: `first ${r.first}; after one showing, 3 and 4 years on: ${r.one.join('/')}; after three, 15 and 16 years on: ${r.three.join('/')}; once a life, 30 years on: ${r.once}; memory off: ${r.off}; a guest asked to the same kind in years ${r.asked.join(', ')}` };
+  },
 };

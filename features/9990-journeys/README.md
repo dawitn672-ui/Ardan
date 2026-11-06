@@ -37,6 +37,7 @@
   - **visit** ("Go and come back", 1.6 times the fare): home is kept. `jr_arrive_visit` asks whether to rest and go home, go home at once, or stay for good. The road home is a journey of its own (`return`).
   - **caravan**: the modal lists this month's caravans out of your realm (45 and 66's towns). Walk with one for no fare and a guard's wage at the far end (`jr_caravan_end`: go home with a train, or stay).
   - **pilgrim**: the release's pilgrimage keeps its fare and piety, then takes the road to the nearest capital of your faith 150 km off or more (`JR.shrineFor`), then back (`jr_shrine`).
+  - A stop's scene the life has seen waits 6 years, doubling with each showing (`JR.SCENE_QUIET`, 97's `A.lfSpaced`); a stop with nothing new is passed. A shrine knelt at before is a scene once a life (`jr_shrine_again`); after that the stair is climbed with a line in the log and the road home starts. Test `journeysSpaced`.
   - **return**: home again. Any outward road can be turned back from (`A.jrTurnBack`, the road modal's "Turn back for home").
   - **told journeys**: exile, flight, emigrating, a school, 52's arc moves, anything that sets `pc.home` some other way. The life does not jump. The road between is told after (`applied: true`): its provinces are seen, its scenes come, and the release's move stands. They are found by `pc.jrAt` (where the road last saw you live), and `A.exile` tags its own.
 - **The record.** `pc.jrLog` keeps the last 30 journeys (kind, from, to, year, days, km), for the Atlas.

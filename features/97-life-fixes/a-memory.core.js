@@ -124,11 +124,11 @@
     try {
       if (fresh && q.result && q.ev === 'ga_invite' && q.ctx && q.ctx.gid && q.view) {
         const g = (A.S.gath || []).find(x => x.id === q.ctx.gid), c = q.view.choices[arguments[0]];
-        if (g && c && (c.t === 'Go' || /regrets/i.test(c.t))) { const st = LF.st(); if (!isObj(st.gaAns)) st.gaAns = {}; st.gaAns[g.kind + ':' + (g.pc && g.pc.role)] = c.t === 'Go' ? 1 : 0; }
+        if (g && c && (c.t === 'Go' || /regrets/i.test(c.t))) { const st = LF.st(); if (!isObj(st.gaAns)) st.gaAns = {}; st.gaAns[g.kind + ':' + (g.pc && g.pc.role)] = st.gaAns['*:' + (g.pc && g.pc.role)] = c.t === 'Go' ? 1 : 0; }
       }
       if (fresh && q.result && q.ev === 'ga_open' && q.ctx && q.ctx.gid && q.view && !LF.quiet) {
         const g = (A.S.gath || []).find(x => x.id === q.ctx.gid), c = q.view.choices[arguments[0]], aims = q.ctx.aims || [];
-        if (g && c) { const st = LF.st(); if (!isObj(st.gaAim)) st.gaAim = {}; st.gaAim[g.kind + ':' + (g.pc && g.pc.role)] = c.i < aims.length && aims[c.i] ? String(aims[c.i].k || '') : '-'; }
+        if (g && c) { const st = LF.st(); if (!isObj(st.gaAim)) st.gaAim = {}; st.gaAim[g.kind + ':' + (g.pc && g.pc.role)] = st.gaAim['*:' + (g.pc && g.pc.role)] = c.i < aims.length && aims[c.i] ? String(aims[c.i].k || '') : '-'; }
       }
       if (fresh && q.result && pc && q.ev && !LF.quiet) {
         const m = LF.mem(pc); m[q.ev] = (m[q.ev] || 0) + 1;
@@ -328,7 +328,10 @@
         const v = A.eventView(q);
         // an invitation to a kind of gathering the player went to last time, in the same role: they go again
         if (v && !v.skip && q.ev === 'ga_invite') {
-          const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), ans = g && isObj(st.gaAns) ? st.gaAns[g.kind + ':' + (g.pc && g.pc.role)] : null;
+          // (an invitation to another kind, in a role the life has answered before: the same answer as last time; on
+          // the merged v2 build a courtier's nine kinds of invitation were 20 of 540 repeats in nine lives, lfRepeats)
+          const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), role = g && g.pc && g.pc.role;
+          const a0 = g && isObj(st.gaAns) ? st.gaAns[g.kind + ':' + role] : null, ans = a0 != null ? a0 : g && isObj(st.gaAns) ? st.gaAns['*:' + role] : null;
           const go = v.choices.findIndex(c => c.t === 'Go'), no = v.choices.findIndex(c => /regrets/i.test(c.t)), pick = ans === 1 ? go : ans === 0 ? no : -1;
           if (g && pick >= 0) {
             LF.quiet = true;
@@ -341,8 +344,11 @@
         // the opening of a kind of gathering attended before in the same role: the same aim as last time, if it is on offer
         if (v && !v.skip && q.ev === 'ga_open') {
           const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), want = g && isObj(st.gaAim) ? st.gaAim[g.kind + ':' + (g.pc && g.pc.role)] : null, aims = q.ctx.aims || [];
+          // another kind's opening in the same role: the aim pressed last time, if this one offers it
+          const any = g && isObj(st.gaAim) ? st.gaAim['*:' + (g.pc && g.pc.role)] : null;
           let pick = -1;
-          if (want && want !== '-') { const j = aims.findIndex(a => a && String(a.k || '') === want); if (j >= 0) pick = v.choices.findIndex(c => c.i === j); }
+          if (want == null && any && any !== '-') { const j = aims.findIndex(a => a && String(a.k || '') === any); if (j >= 0) pick = v.choices.findIndex(c => c.i === j); }
+          else if (want && want !== '-') { const j = aims.findIndex(a => a && String(a.k || '') === want); if (j >= 0) pick = v.choices.findIndex(c => c.i === j); }
           else if (want === '-') pick = v.choices.findIndex(c => c.i >= aims.length);
           if (pick >= 0) {
             LF.quiet = true;
@@ -386,7 +392,7 @@
   // comes again only after ASK_GAP x 2^(n-1) years (a quiet that doubles each time: on the merged v2 build the pilgrim
   // road, at ASK_GAP x n, still came four times in a life); in between, the action does its work without the scene.
   // Scenes about a person (getting to know someone), a beast or a gathering are new cases each time and always come.
-  LF.ASK_GAP = 5;
+  LF.ASK_GAP = 6;
   LF.ASK_LINE = { pilgrimage: 'The road is long and the shrine is as you remember it.', gamble: 'The dice go round. Nobody accuses anybody of anything tonight.',
     explore: 'You walk the country for days and find nothing you have not seen before.', tavern: 'A quiet evening at the tavern: the same faces, the same songs.',
     festival: 'You spend the feast day in the square with everyone else, and come home tired and pleased.' };

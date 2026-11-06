@@ -50,6 +50,9 @@ In the release a realm's ways are paragraphs in its primer. Legal customs exist 
 | `bibleComplete` | 34 realms, 102 customs, 24 cultures with words; every custom of a known kind |
 | `everySceneRenders` | All 99 scenes (grave customs have none) render from a life in their own realm and resolve: no raw token, none over 80 words, every label 12 words or fewer |
 | `firstMeetingIsAScene` | The first meeting is a scene; keeping applies the custom, defying applies its cost and is remembered; a year later it is applied with a log line and no scene |
+
+A first meeting is a scene at most every `SCENE_QUIET` (3) years, doubling with each scene of the life (97's `A.lfSpaced`); the rest are met quietly with their log line (v2 merge, lfRepeats).
+
 | `everyKindFires` | Each of the ten kinds fires at its moment: a bride price paid (287), a child named for its grandfather, an equal share of a father's estate, the levy once a war, a tenth off a sale |
 | `sharesFollowTheLaw` | A middle son of three, estate 250: eldest 0, eldest son 0, youngest 0, daughters 0, equal 83, after the temple's tenth 75, to the lord 0 |
 | `cardPureAndEscaped` | The card escapes its words, and drawing it changes neither the state nor the random stream |

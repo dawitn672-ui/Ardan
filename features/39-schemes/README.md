@@ -28,6 +28,7 @@ The plan asks for "schemes both ways: sway, befriend, seduce, slander, murder". 
   - A found plot: deny it, own it, or shrug. They become your enemy or your rival if it goes badly.
   - A murder found out: run, deny it, or confess to the law (`punish: 'attempted murder'`).
 - **They plot too** (`pc.scAgainst`), at most one plot a decade. Someone who hates you (opinion −40 or worse) may start a slander. If they hate you at −75 or worse and are cruel, vengeful or wrathful, it is a murder.
+  - The decade between plots against you doubles with each plot of the life (10, 20, 40 years; `pc.scN`), so the same slander does not come four times in a life (v2 merge, lfRepeats).
   - Each month you may notice something wrong. The chance is 5% plus your intrigue and insight.
   - Then you can find out who, double the locks (the plot slows by 40), or put it out of your mind.
   - Once you know who: confront them, expose them, answer in kind (your own slander), or let it go and watch.

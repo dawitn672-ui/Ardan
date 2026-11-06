@@ -309,4 +309,31 @@ export default {
     const ok = r.queued && r.by && r.choices.length >= 3 && r.flag && r.patron !== r.usurper;
     return { ok, detail: `po_deposed queued ${r.queued} (naming the usurper ${r.by}); ways: ${r.choices.join(' / ')}; patron after the pick: ${r.patron === r.usurper ? 'THE USURPER' : r.patron || 'none'}` };
   },
+
+  // lfRepeats (v2 merge): after the first, a muster within the quiet (6 years, doubling) is answered as the last one
+  // was when that was the men or the scutage, with a line in the log; a lord who refused is asked again
+  async poMusterAsBefore(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-life-fixes) is missing' };
+      const POL = A.POL;
+      for (let seed = 5201; seed < 5221; seed++) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+        const pc = A.pc(); pc.noble = pc.noble || { rung: 2, realm: pc.realm }; pc.noble.rung = Math.max(2, pc.noble.rung || 0); pc.coin = 0;
+        const o = POL.pcOath && POL.pcOath(pc);
+        if (!o || !o.men) continue;
+        const war = () => ({ att: [o.r.id], def: ['POL-XX'] }), y = A.S.year, out = { seed };
+        const call = () => { A.S.queue = []; pc.flags.ev = pc.flags.ev || {}; POL.musterCall(war()); return A.S.queue.some(q => q.ev === 'po_muster'); };
+        pc.evN = {}; delete pc.flags.ev.po_muster; out.first = call();
+        pc.evN.po_muster = 1; pc.flags.ev.po_muster = y - 4; pc.poMusterLast = 'send';
+        const f0 = pc.fame; out.within = call(); out.fame = pc.fame - f0;
+        pc.poMusterLast = 'refuse'; out.refused = call();
+        pc.poMusterLast = 'send'; pc.flags.ev.po_muster = y - 6; out.after = call();
+        return out;
+      }
+      return { err: 'no landed lord with an oath in 20 seeds' };
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.first && !r.within && r.fame > 0 && r.refused && r.after;
+    return { ok, detail: `seed ${r.seed}: first muster asks ${r.first}; four years after one where the men went: asks ${r.within} (+${r.fame} fame); after a refusal: asks ${r.refused}; six years after: asks ${r.after}` };
+  },
 };
