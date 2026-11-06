@@ -402,7 +402,13 @@
     const regent = sp && sp.alive && A.isAdult(sp) ? sp : (A.relsOf(ru, ['sibling']).map(x => x.p).find(p => p && p.alive && A.isAdult(p)) ||
       (() => { const h = A.realmHouses(r.id).slice().sort((a, b) => A.houseStrength(b) - A.houseStrength(a))[0]; return h ? A.houseHead(h.id) : null; })());
     const oldName = A.rulerStyle(ru, r);
-    A.rulerDies(r, 'a winter fever');
+    // the tension is a regency, not a war: a rival's claim pressed at this death (the release's contested succession)
+    // raised a throne war at the start that took the realm's land outside the split's accounting and no note told of
+    // it (CI run 88, freshRealmsValid world 16: Varenna cut in two by "Bertran Ardane's faction"). The claim may still
+    // be pressed later, in play.
+    const press = A.aiPressClaim;
+    A.aiPressClaim = () => false;
+    try { A.rulerDies(r, 'a winter fever'); } finally { A.aiPressClaim = press; }
     r.heirLocked = null;
     const now = A.P(r.ruler);
     if (!now || !regent || A.isAdult(now)) return { k: 'regency', a: r.id, note: `${oldName} of ${r.short} died last winter` };
