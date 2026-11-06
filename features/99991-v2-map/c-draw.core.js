@@ -156,6 +156,8 @@
     if (VM.drawOn()) { try { return VM.drawGround(ctx, W, H, v); } catch (e) { console.error('v2 map', e); } }
     return ground0 ? ground0.apply(this, arguments) : false;
   };
+  // while the satellite ground is drawn, 62's tiles carry only their lines (its inked ground would never be seen)
+  if (UI.INKMAP) UI.INKMAP.groundElsewhere = () => VM.drawOn();
   VM.onUse = () => { VM.satReset(); };
 })();
 

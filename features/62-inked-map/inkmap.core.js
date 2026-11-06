@@ -321,12 +321,25 @@
   // on the graphics card, so copying it each frame is cheap.
   const mkCanvas = n => { if (typeof OffscreenCanvas === 'function' && IM.bitmaps) return new OffscreenCanvas(n, n); const c = document.createElement('canvas'); c.width = c.height = n; return c; };
   const frozen = c => (c.transferToImageBitmap ? c.transferToImageBitmap() : c);
+  // IM.groundElsewhere (set by 99991-v2-map): another ground (the satellite picture) takes the place of the inked one,
+  // so a tile draws only its lines. CI run 88's inkTiming: every tile drew its whole sea, coast, glyphs and paper too,
+  // never shown under the satellite ground, and that work (most of a tile's cost) and its memory came back as slow
+  // frames after each warm-up.
+  const bareGround = () => !!(IM.groundElsewhere && IM.groundElsewhere());
   function renderTile(L, tx, ty) {
-    const t0 = now(), g = buildGeo(), S = A.S;
+    const t0 = now(), g = buildGeo(), S = A.S, bare = bareGround();
     const lp = BASE * Math.pow(2, L), tw = TILE / lp, x0 = tx * tw, y0 = ty * tw, x1 = x0 + tw, y1 = y0 + tw;
-    const cv = mkCanvas(TILE);
-    const c = cv.getContext('2d');
     const up = Math.pow(1.13, L);         // lines thicken a little as the map grows
+    const R3 = 12 * up, m = (R3 + 4) / lp;
+    const hit = o => !(o.x1 < x0 - m || o.x0 > x1 + m || o.y1 < y0 - m || o.y0 > y1 + m);
+    const pathOf = list => { const P = new Path2D(); for (const o of list) { const a = o.pts; P.moveTo(a[0], a[1]); for (let i = 2; i < a.length; i += 2) P.lineTo(a[i], a[i + 1]); } return P; };
+    // the land, which also keeps the lines off the sea
+    const loops = g.coastLoops.filter(o => !(o.x1 < x0 || o.x0 > x1 || o.y1 < y0 || o.y0 > y1));
+    let LP = null;
+    if (loops.length) { LP = new Path2D(); for (const o of loops) { const a = o.pts; LP.moveTo(a[0], a[1]); for (let i = 2; i < a.length; i += 2) LP.lineTo(a[i], a[i + 1]); LP.closePath(); } }
+    const cv = bare ? null : mkCanvas(TILE);
+    if (cv) {
+    const c = cv.getContext('2d');
     c.fillStyle = SEAf(); c.fillRect(0, 0, TILE, TILE);
     // the sea is ruled, like the woodcut sky (pale hairlines on the blue)
     c.strokeStyle = seaB() ? 'rgba(168,200,255,.09)' : opaque(0.3); c.lineWidth = 0.8; c.beginPath();
@@ -334,9 +347,6 @@
     c.stroke();
     c.setTransform(lp, 0, 0, lp, -x0 * lp, -y0 * lp);
     c.lineJoin = 'round'; c.lineCap = 'round';
-    const R3 = 12 * up, m = (R3 + 4) / lp;
-    const hit = o => !(o.x1 < x0 - m || o.x0 > x1 + m || o.y1 < y0 - m || o.y0 > y1 + m);
-    const pathOf = list => { const P = new Path2D(); for (const o of list) { const a = o.pts; P.moveTo(a[0], a[1]); for (let i = 2; i < a.length; i += 2) P.lineTo(a[i], a[i + 1]); } return P; };
     const coast = g.coastPieces.filter(hit);
     if (coast.length) {
       const CP = pathOf(coast);
@@ -358,10 +368,7 @@
         }
       }
     }
-    // the land
-    const loops = g.coastLoops.filter(o => !(o.x1 < x0 || o.x0 > x1 || o.y1 < y0 || o.y0 > y1));
-    let LP = null;
-    if (loops.length) { LP = new Path2D(); for (const o of loops) { const a = o.pts; LP.moveTo(a[0], a[1]); for (let i = 2; i < a.length; i += 2) LP.lineTo(a[i], a[i + 1]); LP.closePath(); } c.fillStyle = VEL; c.fill(LP, 'evenodd'); }
+    if (LP) { c.fillStyle = VEL; c.fill(LP, 'evenodd'); }
     if (coast.length) { c.strokeStyle = INK; c.lineWidth = 1.6 * up / lp; c.stroke(pathOf(coast)); }
     // glyphs, in tile pixels
     c.setTransform(1, 0, 0, 1, 0, 0);
@@ -370,6 +377,7 @@
     // the paper
     foxing(c, x0, y0, x1, y1, lp);
     c.globalCompositeOperation = 'multiply'; c.drawImage(grain(), 0, 0); c.globalCompositeOperation = 'source-over';
+    }
     // the lines: province bounds dotted, realm borders dashed on a thin paper halo, kept to the land
     let lv = null;
     const prov = LP ? g.provPieces.filter(hit) : [];
@@ -387,7 +395,7 @@
       }
     }
     IM.stats.tiles++; IM.stats.tileMs += now() - t0;
-    return { g: frozen(cv), b: lv && frozen(lv) };
+    return { g: cv && frozen(cv), b: lv && frozen(lv) };
   }
 
   // ---- the tile cache: keyed by level and position, flushed when the borders or the land change
@@ -420,7 +428,8 @@
   // when the scale changes or the view leaves the margin.
   let views = new WeakMap(); const PAD = 256;
   function drawTiles(ctx, W, H, v, layer, extra, extraKey) {
-    const wk = IM.worldKey(); if (wk !== cacheKey) { cache.clear(); cacheKey = wk; gen++; }
+    // a tile drawn with no ground (bareGround) is laid again once the inked ground is wanted
+    const wk = IM.worldKey() + (bareGround() ? '#bare' : ''); if (wk !== cacheKey) { cache.clear(); cacheKey = wk; gen++; }
     const vx = v ? v.x0 : 0, vy = v ? v.y0 : 0, vw = v ? v.w : KWf(), vh = v ? v.h : KHf(), sx = W / vw, sy = H / vh;
     const cvs = ctx.canvas, out = { vx, vy, sx, sy, zoom: ZREF / vw };
     if (typeof document === 'undefined' || !IM.keepViews || !cvs) {
