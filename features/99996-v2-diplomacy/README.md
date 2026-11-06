@@ -49,10 +49,10 @@ derives the status from all the parts: a marriage plus a sworn rivalry reads "un
   "Aldmark wants to push the Horde back over the Gordush and plough the steppe edge". The reasons still drive it: no
   hostile status, no war. Each wait is counted in `A.V2DIP.stats.warWait`; `v2DipWarPace` tests each one.
   - `riGoldGetsUsed` (3 worlds x 30 years, seeds 606, 1212, 2424): before, 0.043 wars a realm-year (127 wars, 116 from
-    `DV.tick`) and an army 10th percentile of 0.44 of normal; after, 0.017 (the band is 0.012 to 0.03, the fix layer
-    0.018) and 0.87. Most of the cut is the opening: in a run with the gates alone, 260 declarations waited for one,
+    `DV.tick`) and an army 10th percentile of 0.44 of normal; after, 0.018 (the band is 0.012 to 0.03, the fix layer
+    0.018) and 0.82. Most of the cut is the opening: in a run with the gates alone, 260 declarations waited for one,
     18 for weariness, 9 for rest, 4 on the chance.
   - `csWorlds` (3 worlds x 50 years): the gates alone left 13% of AI wars citing a memory or a want (bar 18%; wars
     beget the grudges that later wars cite, so fewer wars meant fewer). With the court's reasons, the side that
-    declares and the want as a reason: 27.8% (off 17.3%), 0.0171 wars a realm-year against 0.0141 with 68 off (bar
-    x1.3), 11 struck by a crown that had planned it, decisions in character 80.3%.
+    declares and the want as a reason: 27.6% (off 17.3%), 0.0169 wars a realm-year against 0.0141 with 68 off (bar
+    x1.3), 10 struck by a crown that had planned it, decisions in character 80.0%.
