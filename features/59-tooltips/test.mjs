@@ -402,11 +402,15 @@ export default {
     });
     // v2 (99993-v2-stats): a choice's odds are words now, so the scene's numbers left are the choice keys; the scenes are
     // left out of the bar and the rest must still be covered
-    const v2 = await pg.evaluate(() => !!A.V2S), rr = v2 ? r.filter(s => !/^Events with odds/.test(s.name)) : r;
+    // v2 (99993-v2-stats, playtest 2 old 7 "the duel is all numbers"; commit 55223b6): the duel's Blood, Wind and blows
+    // are words now, so the duel screen holds no number left to explain; like the event scenes it is left out of the bar
+    // (while it holds none: a number that comes back is counted and must be covered)
+    const v2 = await pg.evaluate(() => !!A.V2S), rr = v2 ? r.filter(s => !/^Events with odds/.test(s.name) && !(s.name === 'Duel' && s.after.n === 0)) : r;
     // v2 (99997-v2-war, playtest 2 finding 5): the commander's morale ("eager") and drill ("drilled") are words now, not
-    // 0-100 numbers, so the battle screens carry fewer numbers to cover (39 before, 23 with the duel); the share that
-    // must be covered (90% of each screen, every screen with a number) is unchanged
-    const c = cover(rr, v2 ? 20 : 60);
+    // 0-100 numbers, so the battle screens carry fewer numbers to cover (39 before, 23 with the duel, 17 on the three
+    // battle screens once the duel's went to words in round 2); the share that must be covered (90% of each screen,
+    // every screen with a number) is unchanged, and the floor is the battle screens' own numbers
+    const c = cover(rr, v2 ? 15 : 60);
     return { ok: c.ok && r.length >= 5 && (v2 || r[0].after.n >= 30), detail: r.map(line).join('; '), data: r };
   },
 
@@ -558,17 +562,33 @@ export default {
     await pg.mouse.move(1, 1);
     await pg.evaluate(() => { UI.TT.closeAll(); UI.ov = null; const pc = A.pc(); const q = TT2.oddsEvents(40).find(x => A.EV[x.ev].choices.some(c => c.check && !c.check.fight && (GD.STATS.includes(c.check.s)))); window.__q = q; A.S.queue = [q]; UI.render(); });
     const before = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
-    await pg.click('#modal [data-tt="odds"][data-tt-tap]'); out.e1 = await depth();
+    // Changed in round 2 (wf-round2), with v2 in the build, as ttAxe2 was in cycle 3: since playtest 1
+    // (docs/v2/playtest-1.md, finding 3) a click on a choice chooses, so the odds inside it take no tap (99993-v2-stats
+    // f-words); with a mouse they open on hover. Their breakdown is words only, with no stat or potential that opens
+    // a further popover (the owner's rules: no number, no description behind a click), so the event is one deep and
+    // the test checks that the breakdown holds no word that opens another. The Right arrow and Esc part is unchanged:
+    // the keyboard still reaches the odds (f-words marks them data-tt-key). Without v2, the tap and three deep as before.
+    out.v2 = await pg.evaluate(() => !!A.V2S);
+    if (out.v2) { await pg.hover('#modal button[data-a="evChoose"] [data-tt="odds"]'); await pg.waitForFunction(() => UI.TT.depth() >= 1, null, { timeout: 5000 }).catch(() => {}); }
+    else await pg.click('#modal [data-tt="odds"][data-tt-tap]');
+    out.e1 = await depth();
     out.notChosen = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
-    await pg.click('#tt-pop-1 [data-tt="stat"]'); out.e2 = await depth();
-    await pg.click('#tt-pop-2 [data-tt="potential"]'); out.e3 = await depth();
+    if (out.v2) {
+      out.inner = await pg.evaluate(() => document.querySelectorAll('#tt-pop-1 [data-tt], #tt-pop-1 [data-tip]').length);
+      out.words = await pg.evaluate(() => { const t = (document.querySelector('#tt-pop-1') || {}).textContent || ''; return t.length > 20 && !/\d/.test(t); });
+      await pg.mouse.move(1, 1);
+    } else {
+      await pg.click('#tt-pop-1 [data-tt="stat"]'); out.e2 = await depth();
+      await pg.click('#tt-pop-2 [data-tt="potential"]'); out.e3 = await depth();
+    }
     await pg.evaluate(() => UI.TT.closeAll());
-    await pg.focus('#modal button[data-a="evChoose"]:has([data-tt-tap])');
+    await pg.focus(out.v2 ? '#modal button[data-a="evChoose"]:has([data-tt-key])' : '#modal button[data-a="evChoose"]:has([data-tt-tap])');
     await pg.keyboard.press('ArrowRight'); out.k1 = await depth(); out.kFocus = await pg.evaluate(() => !!document.activeElement.closest('.tt-pop'));
     await pg.keyboard.press('Escape'); out.k0 = await depth(); out.kBack = await pg.evaluate(() => document.activeElement.matches('button[data-a="evChoose"]'));
     out.stillNot = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
-    const ok = out.h1 === 1 && out.h2 === 2 && out.h3 === 3 && out.h0 === 0 && out.w1 === 1 && (!out.wHasGen || out.w2 === 2) && before && out.e1 === 1 && out.notChosen && out.e2 === 2 && out.e3 === 3 && out.k1 === 1 && out.kFocus && out.k0 === 0 && out.kBack && out.stillNot;
-    return { ok, detail: `Holdings: a price ${out.h1}, its trade skill ${out.h2}, the tiers ${out.h3}, a click outside ${out.h0}. War Room: organization ${out.w1}, its general ${out.w2 || 'none'}. Event: a tap on the odds ${out.e1} (choice not taken: ${out.notChosen}), the stat ${out.e2}, its potential ${out.e3}; Right arrow on the choice ${out.k1} (focus inside ${out.kFocus}), Esc ${out.k0} (focus back on the choice ${out.kBack}); still not chosen ${out.stillNot}`, data: out };
+    const deepEv = out.v2 ? out.inner === 0 && out.words : out.e2 === 2 && out.e3 === 3;
+    const ok = out.h1 === 1 && out.h2 === 2 && out.h3 === 3 && out.h0 === 0 && out.w1 === 1 && (!out.wHasGen || out.w2 === 2) && before && out.e1 === 1 && out.notChosen && deepEv && out.k1 === 1 && out.kFocus && out.k0 === 0 && out.kBack && out.stillNot;
+    return { ok, detail: `Holdings: a price ${out.h1}, its trade skill ${out.h2}, the tiers ${out.h3}, a click outside ${out.h0}. War Room: organization ${out.w1}, its general ${out.w2 || 'none'}. Event: ${out.v2 ? 'a hover on' : 'a tap on'} the odds ${out.e1} (choice not taken: ${out.notChosen}), ${out.v2 ? `words only ${out.words}, words inside that open another ${out.inner}` : `the stat ${out.e2}, its potential ${out.e3}`}; Right arrow on the choice ${out.k1} (focus inside ${out.kFocus}), Esc ${out.k0} (focus back on the choice ${out.kBack}); still not chosen ${out.stillNot}`, data: out };
   },
 
   // render purity on each screen: draw it, open every trigger and the first word inside it, close; the state and the

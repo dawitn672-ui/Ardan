@@ -60,20 +60,45 @@
     });
   };
   W.side = W.side || (() => null);
+  // what you lead (playtest 2, new 16: "Commander · leads 3,200" beside "2nd Aldmark Line 7,530 · Commander … you", and
+  // "You fight as a Commander" with only "Your company" to order). The release makes a Commander (rank 6) his division's
+  // commander (d.cmd), so he leads all of it; below that, the rank's own number (a Captain 200, a Senior Captain 800)
+  W.cmdsDiv = (pc, d) => !!(pc && d && d.cmd === pc.id);
+  W.leads = function (pc, d) {
+    pc = pc || A.pc();
+    if (!pc || !pc.mil) return 0;
+    d = d || (pc.mil.div && A.divById ? A.divById(pc.mil.div) : null);
+    if (W.cmdsDiv(pc, d)) return Math.max(1, Math.round(d.men));
+    return (GD.MIL[pc.mil.rank] || {}).leads || 1;
+  };
+  W.unitWord = function (pc, d) {
+    if (W.cmdsDiv(pc, d)) return 'your division';
+    const r = pc && pc.mil ? pc.mil.rank || 0 : 0;
+    return r >= 5 ? 'your battalion' : 'your company';
+  };
+  // the drill card says "you drill 3,200 of 7,530 men" for the same reason: the division's commander drills his division
+  const share0 = A.drillShare;
+  if (typeof share0 === 'function') A.drillShare = function (pc) {
+    try { const d = A.myUnit && A.myUnit(pc); if (W.cmdsDiv(pc, d)) return 1; } catch (e) { console.error('v2 war drill share', e); }
+    return share0.apply(this, arguments);
+  };
   W.armyOf = function (divs, name, mine, pc) {
     const list = divs.filter(d => d && d.men > 0).sort((a, b) => (mine && a === mine ? -1 : mine && b === mine ? 1 : b.men - a.men || (a.id < b.id ? -1 : 1)));
     const units = [];
     const top = list.slice(0, 6), rest = list.slice(6);
     for (const d of top) {
       if (d === mine) {
-        const coy = Math.min(Math.round(d.men * 0.5), 200);
-        units.push(W.unitOf(d, 'coy', 'your company', coy));
+        // your own men are your unit: the company you stand in (about 200, for a soldier and a sergeant too), a Senior
+        // Captain's battalion, or the whole division you command
+        const all = W.cmdsDiv(pc, d), coy = all ? Math.round(d.men) : Math.min(Math.round(d.men * 0.5), Math.max(200, W.leads(pc, d)));
+        const u = W.unitOf(d, 'coy', W.unitWord(pc, d), coy); u.div = d.id; units.push(u);
         if (d.men - coy > 0) units.push(W.unitOf(d, d.id, d.name, d.men - coy));
       } else units.push(W.unitOf(d));
     }
     if (rest.length) {
       const men = rest.reduce((a, d) => a + d.men, 0), wsum = rest.reduce((a, d) => a + d.men * W.divWorth(d), 0);
       const u = VW.makeUnit('rest', `${rest.length} more divisions`, 'line', men, Math.round(wsum / Math.max(1, men) * 100) / 100, { morale: 0.6 });
+      u.divs = rest.map(d => d.id);
       units.push(u);
     }
     return units;
@@ -130,7 +155,7 @@
     return {
       v: 1, key: F.key, pid: F.loc, start: F.start, war: F.war, rank, layer: rank === 'captain' ? 'part' : 'line',
       title: `Battle of ${P ? P.name : 'the field'}`, place: P ? P.name : '', weAtt: weAtt ? 1 : 0, realm: myR, foe: foeR,
-      div: myDiv ? myDiv.name : '', tac: 'advance', camp, picks: [], phases: [], done: 0, aar: null, perf: 0,
+      div: myDiv ? myDiv.name : '', unit: W.unitWord(pc, myDiv), tac: 'advance', camp, picks: [], phases: [], done: 0, aar: null, perf: 0,
     };
   };
   W.startFrom = function (arg, rank) {
@@ -141,18 +166,38 @@
     A.queue({ type: 'v2battle', b });
     return b;
   };
+  // the fight you are asked into waits for your answer (playtest 2, new 6: 5 of 16 "Rally your section" went straight to
+  // "After X"). The release asks on a fight's first day and fights that day at once, so a short fight was over before
+  // the answer. When the ask is queued, the fight skips that day's fighting (patch V2W-HOLD-FIRST-DAY reads F.v2hold):
+  // the scene you play is its first day, and the map fights it from the next tick.
+  const ask0 = A.wsPCFightStart;
+  if (typeof ask0 === 'function') A.wsPCFightStart = function (F) {
+    const n0 = A.S && A.S.queue ? A.S.queue.length : 0;
+    const r = ask0.apply(this, arguments);
+    try {
+      const Q = A.S.queue;
+      for (let i = n0; i < Q.length; i++) {
+        const q = Q[i];
+        if (q && q.type === 'choice' && (q.options || []).some(o => o && o.arg && (o.arg === F.key || o.arg.key === F.key))) { F.v2hold = 1; break; }
+      }
+    } catch (e) { console.error('v2 war hold', e); }
+    return r;
+  };
+  // the fight is there to be played: the same fight (its key), not a later one at the same place
+  W.live = arg => { const F = arg && (A.S.fights || {})[+String(arg.key || arg).replace(/^F/, '')]; return !!(F && F.key === (arg.key || arg)); };
   // the soldier's and the sergeant's line, and the captain's company: v2's battle
   const CF = A.CHOICE_FN = A.CHOICE_FN || {};
   const line0 = CF.wsLine, part0 = CF.wsPart;
   // the layers this replaces (72-two-scales' line, 44/9997's tactical battle) stay callable: 72's levy still uses its
-  // scene, and their own tests reach them here
+  // scene, and their own tests reach them here. A fight that is over all the same (a save from before the hold) goes to
+  // them too: 72's short scene of a fight over before you reach the front rank, not a log line and nothing to play
   W.classic = { wsLine: line0, wsPart: part0 };
   CF.wsLine = function (arg) {
-    try { const r = W.rank(); if (r === 'soldier' || r === 'sergeant') { W.startFrom(arg, r); return; } } catch (e) { console.error('v2 war line', e); }
+    try { const r = W.rank(); if ((r === 'soldier' || r === 'sergeant') && W.live(arg)) { W.startFrom(arg, r); return; } } catch (e) { console.error('v2 war line', e); }
     return line0 && line0.apply(this, arguments);
   };
   CF.wsPart = function (arg) {
-    try { if (W.rank() === 'captain') { W.startFrom(arg, 'captain'); return; } } catch (e) { console.error('v2 war company', e); }
+    try { if (W.rank() === 'captain' && W.live(arg)) { W.startFrom(arg, 'captain'); return; } } catch (e) { console.error('v2 war company', e); }
     return part0 && part0.apply(this, arguments);
   };
 
@@ -165,10 +210,16 @@
     const o = VW.playerOdds(b.camp, b.rank, person, c);
     return Object.assign(OD.oddsWords(o.capability, o.difficulty), { foe: o.foe });
   };
+  // your grade for a phase, in what it did for the fight (CI run 88: the sergeant's "plug the gap" graded 0.33 against
+  // "keep the squad tight" 0.34, the choice not moving the fight). A choice that works earns what it is worth to the
+  // fight (its reward), so drifting to the rear or keeping the company back earns nothing even when it works (it earned
+  // 0.3, as much as half a charge). A failure costs the same whatever was tried: the risk of a bold choice is to you (the
+  // wound, v2's 15% x risk) and to the army (its army factor, in the engine's contribution, read in W.perfOf), so it is
+  // not counted a third time here
   W.grade = function (c, res) {
     if (!res) return 0;
-    if (res.success) return clamp((0.3 + 0.5 * c.reward) * (res.tier === 'triumph' ? 1.4 : 1), 0, 1);
-    return -0.6 * (0.5 + c.risk / 2) * (res.tier === 'disaster' ? 1.3 : 1);
+    if (res.success) return clamp(0.75 * c.reward * (res.tier === 'triumph' ? 1.4 : 1), 0, 1);
+    return -0.42 * (res.tier === 'disaster' ? 1.3 : 1);
   };
   W.setTac = function (k) {
     const q = A.S.queue[0];
@@ -213,18 +264,45 @@
     const causes = top.map(([k, v]) => ({ key: k, label: `${names[k]} ${v > 0 ? 'favoured us' : v < 0 ? 'favoured them' : 'counted for little'}${Math.abs(v) > 0.6 ? ' heavily' : ''}`, pct: Math.round(v * W.CAUSE_PCT) }));
     return { won: r.won, headline: r.headline, causes, text: `${r.headline} What decided it: ${causes.map(c => c.label).join('; ')}.`, losses: r.losses };
   };
+  // the scene is the fight's first day (the map held it for you: V2W-HOLD-FIRST-DAY), so the men who fell in it fell in
+  // the fight: each unit's dead come off its divisions (a grouped unit's in proportion to their men) and go on the
+  // fight's dead. The battle report after it then counts them (playtest 2, new 17: "Ashmere: about 1,000 men", then
+  // "Dead: about 1,500 of theirs", the scene's own losses nowhere in the fight's)
+  W.foldLosses = function (b, F) {
+    const CO = A.CO;
+    for (const army of b.camp.armies) for (const u of army.units) {
+      const lost = Math.max(0, Math.round((u.start || 0) - (u.count || 0)));
+      if (!lost) continue;
+      const ids = u.divs || [u.div || u.id], ds = ids.map(A.divById).filter(d => d && d.men > 0);
+      const tot = ds.reduce((a, d) => a + d.men, 0);
+      let left = lost;
+      ds.forEach((d, j) => {
+        const want = j === ds.length - 1 ? left : Math.round(lost * d.men / Math.max(1, tot));
+        if (CO) CO.WHY = 'battle';
+        let n = 0;
+        try { n = A.divLose(d, Math.min(want, left)); } finally { if (CO) CO.WHY = null; }
+        left -= n;
+        if (F.aIds.includes(d.id)) F.deadA += n; else if (F.dIds.includes(d.id)) F.deadD += n;
+      });
+    }
+  };
+  // the performance that reaches the fight's order (44's A.RANKFX): your grade and the scene's result. Your part in the
+  // scene's result (the engine's contribution: your choices' army factor and morale) reaches the fight as its dead
+  // (W.foldLosses), so it is not counted a second time here: read twice, a sergeant's four failed attempts to plug the
+  // gap in a fight of fifteen divisions cost the whole army's order more than all his successes elsewhere gave it
   W.perfOf = function (b) {
     const gs = b.phases.map(p => p.g), mean = gs.length ? gs.reduce((a, x) => a + x, 0) / gs.length : 0;
     const won = b.camp.battle.winner === 0;
-    return Math.round(clamp(0.55 * mean + (won ? 0.25 : -0.25) + clamp(b.camp.battle.contrib.player, -0.5, 0.5), -1, 1) * 100) / 100;
+    return Math.round(clamp(0.55 * mean + (won ? 0.25 : -0.25), -1, 1) * 100) / 100;
   };
   W.finish = function (b, pc) {
     b.done = 1;
     b.aar = W.aarOf(b);
     b.perf = W.perfOf(b);
     const S = A.S, F = (S.fights || {})[b.pid];
-    if (F && F.key === b.key && F.start === b.start && A.RANKFX && A.RANKFX.apply) {
-      try { A.RANKFX.apply(b.key, b.layer, b.perf); } catch (e) { console.error('v2 war rank fx', e); }
+    if (F && F.key === b.key && F.start === b.start) {
+      try { W.foldLosses(b, F); } catch (e) { console.error('v2 war losses', e); }
+      if (A.RANKFX && A.RANKFX.apply) { try { A.RANKFX.apply(b.key, b.layer, b.perf); } catch (e) { console.error('v2 war rank fx', e); } }
       F.v2w = { rank: b.rank, perf: b.perf, aar: b.aar.causes };
     }
     const kills = b.phases.reduce((a, p) => a + p.kills, 0);

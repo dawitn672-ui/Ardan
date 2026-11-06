@@ -58,4 +58,6 @@ than winter, same seed same world), `v2tSameWorld` (the button path with and wit
 
 **Playtest 2 (Nov 6).** `v2tWarPlace`: a tap on War opens the War page from any page, at 420 and 1366 px (new 15 was
 the playtest driver taking the War page's own "Path tab" link). `v2tChapterPanel`: the chapter is only an optional
-Life panel, folded on a phone, and a full chapter is no longer a deed (old 16).
+Life panel, folded on a phone, and a full chapter is no longer a deed (old 16). On a desktop it stands open, or, where
+the Life panel has no room for it (91-look's `LOOK.fitLife`, round 2), folded to its title line until the player opens
+it; one click keeps it open. The War Room's campaign note is 14 px on a phone (71-phone's `phoneTargets`).
