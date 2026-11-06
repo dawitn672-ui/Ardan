@@ -308,16 +308,21 @@
     const pc = p || A.pc(); if (!pc || !pc.mil) return h;
     const D0 = pc.mil.drill || {}, d = A.myUnit && A.myUnit(pc), share = A.drillShare ? A.drillShare(pc) : 1;
     h = h.replace(/<span class="tiny muted">(you drill [^<]*)<\/span>/, (m, t) => `<span class="tiny muted">${N('drillShare', '', t, { focus: true })}</span>`);
+    // 60-drill writes the class as `dr-b ${on}`: the bar in focus is "dr-b on", every other one "dr-b " with a trailing
+    // space. The pattern took only "dr-b on", so a sergeant's other seven bars read a bare number, and the one bar it
+    // took was given the first drill's key whichever drill was in focus. It takes both now, in order.
     let i = 0; const fams = Object.keys(GD.DRILLS);
-    h = h.replace(/<div class="dr-b( on)?" title="([^"]*)">/g, (m, on, t) => { const k = fams[i++]; if (!k) return m; const own = (D0.own || {})[k] || 0, dv = d ? (d.dr || {})[k] || 0 : 0, v = share >= 0.99 ? dv : own; return `<div class="dr-b${on || ''}" title="${t}"${UI.ttAttrs('drill', k + '|' + v)}>`; });
+    h = h.replace(/<div class="dr-b( ?on| )?" title="([^"]*)">/g, (m, on, t) => { const k = fams[i++]; if (!k) return m; const own = (D0.own || {})[k] || 0, dv = d ? (d.dr || {})[k] || 0 : 0, v = share >= 0.99 ? dv : own; return `<div class="dr-b${on || ''}" title="${t}"${UI.ttAttrs('drill', k + '|' + v)}>`; });
     h = h.replace(/(The tick on each bar is as far as your officers can teach )\((\d+)\)/, (m, a, n) => `${a}(${N('drillCap', '', n)})`)
       .replace(/(your drill counts for )(\d+%)/, (m, a, n) => `${a}${N('drillShare', '', n)}`)
-      .replace(/<span class="tiny muted">(next review in \d+ days)<\/span>/, (m, t) => `<span class="tiny muted"${A_('initiative', '')}>${t}</span>`);
-    // 60-drill's unlocks: each drill and what it opens
+      .replace(/<span class="tiny muted">(next review in \d+ days)<\/span>/, (m, t) => `<span class="tiny muted"${A_('initiative', '')}>${t}</span>`)
+      // the review's cost: the button starts with an icon, which TT.wireCosts' button pattern ([^<]*) does not cross
+      .replace(/(<button class="small" data-a="drillReview"[^>]*>)((?:<svg\b[\s\S]*?<\/svg>)?)([^<]*?)\((\d+)⧗\)/, (m, b, ic, t, n) => `${b}${ic}${t}(${N('initiative', '', n + '⧗')})`);
+    // 60-drill's unlocks: each drill and what it opens (as the bars: one that is not muted is "dr-unl " with a space)
     if (A.DRILL) {
       const byShort = {}; for (const f in GD.DRILLS) byShort[UI.esc(GD.DRILLS[f].short || GD.DRILLS[f].name)] = f;
       const rec = A.DRILL.mine ? A.DRILL.mine(pc) : null;
-      h = h.replace(/<div class="dr-unl( muted)?"><b>([^<]*?) (\d+)<\/b> <span class="tiny">/g, (m, mu, nm, v) => { const f = byShort[nm]; return f ? `<div class="dr-unl${mu || ''}"${UI.ttAttrs('drill', f + '|' + (rec ? rec[f] || 0 : +v / 100))}><b>${nm} ${v}</b> <span class="tiny">` : m; });
+      h = h.replace(/<div class="dr-unl( ?muted| )?"><b>([^<]*?) (\d+)<\/b> <span class="tiny">/g, (m, mu, nm, v) => { const f = byShort[nm]; return f ? `<div class="dr-unl${mu || ''}"${UI.ttAttrs('drill', f + '|' + (rec ? rec[f] || 0 : +v / 100))}><b>${nm} ${v}</b> <span class="tiny">` : m; });
       h = h.replace(/<div class="tiny">([^<:]+): ((?:(?:shield walls|the charge|the feigned flight|skirmish|weapons|formation|marches|field works) \d+(?:, )?)+)<\/div>/g, (m, nm, list) => `<div class="tiny"${A_('drill', 'formation|')}>${nm}: ${list}</div>`);
     }
     return TT.wireCosts(h);
