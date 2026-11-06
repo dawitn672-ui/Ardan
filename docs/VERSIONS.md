@@ -41,6 +41,7 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.0.0-alpha.8 | 2026-11-04 | `db821a1` | v2 step 8: no spectating; you play your rank; elite orders |
 | v2.0.0-alpha.9 | 2026-11-04 | `a42fbbd` | v2 step 9: v2 state in the versioned save, one migration |
 | v2.0.0-alpha.10 | 2026-11-05 | `2ccd001` | v2 playtest 1, fixes round 1: soft-locks, spectating leaks, words for numbers, labels, regrants, blocs, map labels |
+| v2.0.0-beta.1 | 2026-11-06 | `86d8cc2` | Playtest 2 and CI round 2 fixed: 21 groups (cards tell the stakes, war by rank, kingdom names, bodies by age, family and clans, numbers in words, map, layout, war pace) |
 <!-- versions:end -->
 
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's
