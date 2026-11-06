@@ -579,7 +579,11 @@
             CO.stats.honours++;
             if (A.WC && A.WC.put && CO.mineIs(d, i)) A.WC.put('honour', { p: P.id, a: d.r, n: lost, x: CO.bnName(d, i), w: [A.S.pc].concat(CO.whoKey(d, i, 4)) });
             const pc = A.pc();
-            if (CO.mineIs(d, i) && pc && pc.alive) { pc.flags.co_honour_pend = S.year; CO.queueEv('co_honour', { bn: CO.bnName(d, i), battle: nm }); }
+            // one name for the colours a year comes as a scene: a second the same year (two fights on one day) is a log line
+            if (CO.mineIs(d, i) && pc && pc.alive) {
+              if (pc.flags.co_honour_pend === S.year) A.log(`The ${CO.bnName(d, i)} has another name for its colours: ${nm}.`, 'good');
+              else { pc.flags.co_honour_pend = S.year; CO.queueEv('co_honour', { bn: CO.bnName(d, i), battle: nm }); }
+            }
           }
         }
         if (frac >= K.HONOUR_LOSS) CO.capsInDanger(d, i, frac, !won, 'map');
@@ -738,7 +742,10 @@
     if (pc && pc.alive && pc.mil) {
       CO.place(pc);
       const M = CO.mine(pc);
-      if (M && CO.sceneDue(pc, M.d.pay > 0 ? CO.GAP : CO.PAY_GAP) && A.atWar(pc.mil.realm || pc.realm).length && (M.d.pay > 0 || !CO.recent(pc, 'co_pay_day'))) CO.queueEv(M.d.pay > 0 ? 'co_arrears' : 'co_pay_day', {});
+      if (M && CO.sceneDue(pc, M.d.pay > 0 ? CO.GAP : CO.PAY_GAP) && A.atWar(pc.mil.realm || pc.realm).length && (M.d.pay > 0 || !CO.recent(pc, 'co_pay_day'))) {
+        if (M.d.pay > 0 || !CO.once(pc, 'co_pay_day')) CO.queueEv(M.d.pay > 0 ? 'co_arrears' : 'co_pay_day', {});
+        else CO.toldInLog(pc, 'co_pay_day', `Pay day in the ${CO.coName(M.d, M.b, M.i)}: the paymaster counts the silver onto the drumhead. Bread for ${Math.round(M.d.food)} days in the wagons.`);
+      }
     }
   };
   function backWounded(d, gap, frac) {
@@ -938,14 +945,30 @@
   // told by the log line that names him ("Sergeant X takes the company"), not by the scene again (CO.HUSH). And the
   // quiet doubles each time the scene has come (pc.mil.coN counts them): the fourth pay day of a life waits sixteen
   // years after the third, so a soldier of forty years sees four, not seven
+  //
+  // Measured again on the merged v2 build (lfRepeats 15.2% against 15%), the wars on the generated continent are short
+  // and many (a new one every five to eight years), so once a war bound little: pay day still came back eight times in
+  // the nine lives, the roll call five, the captain's word four, and the quiet's first wait was its base. So the quiet
+  // doubles from the first scene (the second waits twice the base: pay day eight years, the roll call and the captain's
+  // word six), and pay day is a scene once a life (CO.ONCE): later pay days, when the quiet has passed, are a line in
+  // the log with the bread in the wagons, not the drumhead scene again. Arrears are still their own scene, at once
   CO.QUIET = { co_pay_day: 1460, co_roll_call: 1095, co_captain_word: 1095, co_new_captain: 1095 };
+  CO.ONCE = { co_pay_day: 1 };
+  CO.once = (pc, ev) => !!(CO.ONCE[ev] && pc && pc.mil && pc.mil.coN && pc.mil.coN[ev] > 0);
+  // a routine scene told in the log instead keeps the scene's cadence: its quiet runs from the line as from a scene
+  CO.toldInLog = function (pc, ev, line) {
+    A.log(line, 'muted');
+    const now = A.absDay ? A.absDay() : 0;
+    pc.mil.coSeen = pc.mil.coSeen || {}; pc.mil.coSeen[ev] = now;
+    if (CO.WAR_ONCE[ev]) { pc.mil.coWar = pc.mil.coWar || {}; pc.mil.coWar[ev] = CO.wars(pc); }
+  };
   CO.WAR_ONCE = { co_pay_day: 1, co_roll_call: 1, co_captain_word: 1 };
   CO.HUSH = { co_new_captain: 1 };
   CO.wars = pc => A.atWar((pc && pc.mil && pc.mil.realm) || (pc && pc.realm)).map(w => w.id).sort();
   CO.recent = function (pc, ev) {
     const t = pc && pc.mil && pc.mil.coSeen ? pc.mil.coSeen[ev] : null, now = A.absDay ? A.absDay() : 0;
     if (t == null) return false;
-    const k = pc.mil.coN && pc.mil.coN[ev] > 1 ? Math.min(4, pc.mil.coN[ev] - 1) : 0;
+    const k = pc.mil.coN && pc.mil.coN[ev] > 0 ? Math.min(4, pc.mil.coN[ev]) : 0;
     if (now - t < (CO.QUIET[ev] || 0) * Math.pow(2, k)) return true;
     const was = CO.WAR_ONCE[ev] && pc.mil.coWar && Array.isArray(pc.mil.coWar[ev]) ? pc.mil.coWar[ev] : null;
     return !!was && !CO.wars(pc).some(id => !was.includes(id));

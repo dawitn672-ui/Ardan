@@ -51,7 +51,10 @@
     QUIET: { steady: 1095, cautious: 1095, bold: 730, cunning: 730 },
     // and once a war (on the v2 build the quiet alone still let "hold and wait" come five times in one life of the
     // nine, "hold the line" four): the same order from the same general comes again only in another war, and the quiet
-    // doubles each time it has come from him (S.goSeen[kind].n)
+    // doubles each time it has come from him (S.goSeen[kind].n). Measured again on the merged v2 build (lfRepeats 15.2%
+    // against 15%), the generated continent's wars are short and many, so once a war bound little and "hold the line"
+    // came back six times in the nine lives: the quiet now doubles from the first letter (the second of a kind from the
+    // same general waits six years, a bold or cunning one four)
     WAR_ONCE: true,
   };
   // a person's temper as a general
@@ -560,7 +563,7 @@
     if (kind === 'steady' && o.tp == null) return;
     const last = S.goSeen && S.goSeen[kind], war = A.atWar(a.realm).map(w => w.id).sort().join();
     const n = last && last.gen === g.id ? last.n || 1 : 0;
-    if (n && (now - last.day < (G.QUIET[kind] || 0) * Math.pow(2, Math.min(3, n - 1)) || (G.WAR_ONCE && last.war === war))) return;
+    if (n && (now - last.day < (G.QUIET[kind] || 0) * Math.pow(2, Math.min(3, n)) || (G.WAR_ONCE && last.war === war))) return;
     S.goNext = now + G.EVERY;
     S.goSeen = Object.assign({}, S.goSeen, { [kind]: { gen: g.id, day: now, war, n: n + 1 } });
     const ctx = { order: 1, genId: g.id, temper: kind, tp: o.tp, pp: o.pp };

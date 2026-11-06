@@ -246,7 +246,10 @@ export default {
         } finally { G.QUIET = Q0; G.WAR_ONCE = W0; }
         return seen;
       };
-      const close = (list, Q) => { let n = 0; const last = {}; for (const x of list) { const k = x.kind + '|' + x.gen, l = last[k]; if (l && (x.day - l.day < (Q[x.kind] || 0) || l.war === x.war)) n++; last[k] = x; } return n; };
+      // (lfRepeats on the merged v2 build: the quiet doubles from the first letter, so the second of a kind from the
+      // same general waits twice the base, the third four times; 'close' now holds the letters to that, which is
+      // stricter than the base quiet it held them to before)
+      const close = (list, Q) => { let n = 0; const last = {}, cnt = {}; for (const x of list) { const k = x.kind + '|' + x.gen, l = last[k]; if (l && (x.day - l.day < (Q[x.kind] || 0) * Math.pow(2, Math.min(3, cnt[k])) || l.war === x.war)) n++; last[k] = x; cnt[k] = (cnt[k] || 0) + 1; } return n; };
       const on = run(true), off = run(false);
       return { on: on.length, off: off.length, closeOn: close(on, Q0), closeOff: close(off, Q0) };
     });

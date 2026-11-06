@@ -72,6 +72,60 @@ export default {
     return { ok, detail: `eight years of war: quiet ${r.on}; without it ${r.off}${r.bad.length ? '; too soon: ' + r.bad.join(', ') : ''}` };
   },
 
+  // lfRepeats on the merged v2 build (15.2% against 15%; playtest 2 old 10, "Pay day" five times in a life): the
+  // generated continent's wars are short and many, so once a war bound little. Over sixteen years of war, a new war each
+  // four years: pay day is a scene once and later pay days are log lines; a second roll call or captain's word waits
+  // twice its base quiet (a roll call that counts twice the most one has may come after a year); and two names for the
+  // colours in one year (two fights won at a cost) make one scene and a log line.
+  async coRoutineOnce(pg) {
+    const r = await pg.evaluate(() => {
+      const CO = A.CO, Q = CO.QUIET, KEYS = ['co_pay_day', 'co_roll_call', 'co_captain_word', 'co_honour'];
+      let seen = [];
+      const lines = [];
+      const q0 = A.queue, l0 = A.log;
+      A.queue = function (it) { if (it && it.type === 'event' && KEYS.includes(it.ev)) seen.push({ ev: it.ev, day: A.absDay(), lost: +(it.ctx && it.ctx.lost || 0) }); return q0.apply(this, arguments); };
+      A.log = function (t) { lines.push(String(t)); return l0.apply(this, arguments); };
+      let honour = null, life = [];
+      try {
+        A.newGame({ seed: 9742, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+        const en = A.neighbors('POL-01')[0];
+        A.startWar('POL-01', en, null, 'conquest'); A.enlist(A.pc());
+        const d0 = A.absDay();
+        for (let g = 0; g < 800 && A.absDay() - d0 < 16 * 365 && A.pc().alive; g++) {
+          if (g % 48 === 47) for (const w of A.atWar('POL-01')) A.endWar(w, 'white');
+          if (!A.atWar('POL-01').length) A.startWar('POL-01', en, null, 'conquest');
+          if (!A.pc().mil) A.enlist(A.pc());
+          A.S.queue = []; A.advance(30);
+        }
+        life = seen; seen = [];
+        // two costly fights won in one year by the soldier's battalion, in a fresh life
+        A.newGame({ seed: 9743, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+        A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(A.pc());
+        let M = null;
+        for (let g = 0; g < 24 && !M; g++) { A.S.queue = []; A.advance(30); M = A.pc().alive && A.pc().mil ? CO.mine(A.pc()) : null; }
+        if (M) {
+          A.S.queue = []; seen = []; delete A.pc().flags.co_honour_pend;
+          const k0 = lines.length, provs = A.S.prov.filter(x => x && x.name).slice(0, 2);
+          for (const P of provs) {
+            const row = []; row[M.b] = Math.max(50, CO.bm(M.d.bs[M.b]));
+            CO.afterFight({ aIds: [M.d.id], dIds: [], coL: { [M.d.id]: row }, menA: 12000, menD: 9000, days: 3, loc: P.id }, 'att', P);
+            A.S.queue = [];   // the first scene is shown and gone before the second fight
+          }
+          honour = { scenes: seen.filter(x => x.ev === 'co_honour').length, lines: lines.slice(k0).filter(t => /another name for its colours/.test(t)).length };
+        }
+      } finally { A.queue = q0; A.log = l0; }
+      const L = ev => life.filter(x => x.ev === ev);
+      const bad = [];
+      for (const ev of ['co_roll_call', 'co_captain_word']) {
+        const l = L(ev);
+        for (let i = 1; i < l.length; i++) { const gap = l[i].day - l[i - 1].day, prev = Math.max(...l.slice(0, i).map(x => x.lost)); if (gap < 2 * Q[ev] && !(ev === 'co_roll_call' && l[i].lost >= 2 * prev && gap >= 365)) bad.push(ev.slice(3) + ' again after ' + gap + ' days'); }
+      }
+      return { bad, pay: L('co_pay_day').length, payLines: lines.filter(t => /^Pay day in the /.test(t)).length, roll: L('co_roll_call').length, word: L('co_captain_word').length, honour };
+    });
+    const ok = !r.bad.length && r.pay === 1 && r.payLines >= 1 && !!r.honour && r.honour.scenes === 1 && r.honour.lines === 1;
+    return { ok, detail: `sixteen years of war: pay day ${r.pay} scene(s) and ${r.payLines} log line(s); roll calls ${r.roll}, captain's words ${r.word}${r.bad.length ? '; ' + r.bad.join(', ') : ''}; two names for the colours in a year: ${r.honour ? r.honour.scenes + ' scene(s), ' + r.honour.lines + ' log line(s)' : 'no company'}` };
+  },
+
   async coEveryBattalion(pg) {
     // every battalion everywhere has state, on two worlds; the companies always sum to the division's men.
     // v2: the second world was the Great Continent (lands: 'great', with more divisions than the known lands), which the
