@@ -408,7 +408,10 @@ export default {
       const onset = () => { pc.ill = null; pc.health = 100; A.S.queue = []; const n0 = A.S.log ? A.S.log.length : 0; A.bmFallIll(pc, 'cough', GD.DISEASES.cough, 10, 100); return { asked: A.S.queue.some(q => q.ev === 'bm_ill'), t: pc.ill && pc.ill.t }; };
       pc.evN = {}; out.first = onset();
       pc.evN.bm_ill = 1; pc.flags.ev = pc.flags.ev || {}; pc.flags.ev.bm_ill = y - 2; pc.bmTreat = 'prayer';
-      const p0 = pc.piety; out.within = onset(); out.piety = pc.piety - p0;
+      // piety or, for a player without faith, its pull toward faith: v2 keeps a faithless player's piety at a neutral
+      // 30 and turns what an fx would add into p.v2.pull (99993-v2-stats' d-faith, V2_SPEC complaint 7)
+      const pull = () => (pc.v2 && +pc.v2.pull) || 0;
+      const p0 = pc.piety + pull(); out.within = onset(); out.piety = pc.piety + pull() - p0;
       pc.flags.ev.bm_ill = y - 8; out.after = onset();
       pc.flags.ev.bm_ill = y - 2; delete pc.bmTreat; out.none = onset();
       return out;

@@ -118,7 +118,8 @@ export default {
       for (let g = 0; g < 200 && pc.journey && !pc.journey.there && pc.journey.k === 'pilgrim'; g++) { A.advance(5); JT.clear(); }
       out.scene = JT.seen.some(s => /^jr_shrine/.test(s));
       out.home = !pc.journey || pc.journey.k === 'return' || !!pc.journey.home || pc.journey.k !== 'pilgrim';
-      out.line = (A.S.log || []).some(l => /climb the stair/.test(l.t || l.text || l.msg || String(l)));
+      // the story log is a list of years, each with its lines as [text, class, ...]: search the lines
+      out.line = (A.S.log || []).some(e => (e && e.lines || []).some(l => /climb the stair/.test(Array.isArray(l) ? l[0] : String(l))));
       out.piety = pc.piety >= p0;
       return out;
     });

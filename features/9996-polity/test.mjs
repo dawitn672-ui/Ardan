@@ -323,7 +323,8 @@ export default {
         if (!o || !o.men) continue;
         const war = () => ({ att: [o.r.id], def: ['POL-XX'] }), y = A.S.year, out = { seed };
         const call = () => { A.S.queue = []; pc.flags.ev = pc.flags.ev || {}; POL.musterCall(war()); return A.S.queue.some(q => q.ev === 'po_muster'); };
-        pc.evN = {}; delete pc.flags.ev.po_muster; out.first = call();
+        // (a new game has no pc.flags.ev yet: make it before the delete, which threw on an absent object)
+        pc.evN = {}; pc.flags.ev = pc.flags.ev || {}; delete pc.flags.ev.po_muster; out.first = call();
         pc.evN.po_muster = 1; pc.flags.ev.po_muster = y - 4; pc.poMusterLast = 'send';
         const f0 = pc.fame; out.within = call(); out.fame = pc.fame - f0;
         pc.poMusterLast = 'refuse'; out.refused = call();
