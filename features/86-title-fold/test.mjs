@@ -23,8 +23,15 @@ export default {
 
   // first-hour B3, visual I4: the title said "Thirty-four realms" and showed the Known World; five buttons of one
   // weight. Now it pitches the Great Continent with its counts and its map, under the dawn sky, with one primary button.
+  // v2: this test returned a pass with nothing checked when A.FAR was missing, which is every v2 build (the owner
+  // dropped the Far Lands, docs/v2/LANES.md). The Great Continent pitch and its map in How to play were the Far Lands'
+  // (TF.facts reads A.FAR) and went with them, so without A.FAR the pitch is the release's and must name the realm
+  // count of the world it opens on (LORE.realms, the realms the generated v2 continent carries), in words; the rest
+  // (no Known World strip, no map in the title, the dawn sky, one primary button, the Your lives shelf) is checked
+  // either way.
   async tfGreat(pg) {
     const r = await pg.evaluate(() => {
+      const far = !!(typeof A.FAR !== 'undefined' && A.FAR);
       UI.screen = 'title'; UI.render();
       const t = document.getElementById('title');
       // the continent's map now opens How to play (cycle 2, visual F1)
@@ -32,9 +39,12 @@ export default {
       UI.A.help(); const cv = document.getElementById('helpgc');
       let colours = 0;
       if (cv) { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data, seen = new Set(); for (let i = 0; i < d.length; i += 4 * 97) seen.add(d[i] << 16 | d[i + 1] << 8 | d[i + 2]); colours = seen.size; }
-      const D = A.FAR.D, n = Object.keys(D.realms).length + Object.keys(LORE.realms).filter(id => !D.realms[id]).length;
+      const D = far ? A.FAR.D : { realms: {} }, n = Object.keys(D.realms).length + Object.keys(LORE.realms).filter(id => !D.realms[id]).length;
+      // v2: the release's pitch writes the count in words ("Thirty-four realms")
+      const ONES = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'], TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+      const word = k => (k >= 20 && k < 100 ? TENS[Math.floor(k / 10)] + (k % 10 ? '-' + ONES[k % 10] : '') : String(k)), said = new RegExp(`\\b${word(n)} realms`, 'i');
       UI.ov = null; UI.renderModal();
-      return { text, inTitle, n, old: !!document.getElementById('titlemap'), colours, sky: !!t.querySelector('.tt-sky svg[data-hour="dawn"]'),
+      return { far, said: far ? text.includes(`${n} realms`) : said.test(text), text, inTitle, n, old: !!document.getElementById('titlemap'), colours, sky: !!t.querySelector('.tt-sky svg[data-hour="dawn"]'),
         primary: [...t.querySelectorAll('.btns button.primary')].map(b => b.dataset.a), buttons: t.querySelectorAll('.btns button').length,
         // 995-hall-of-lives' shelf takes the slot left under the buttons, once
         shelf: (() => { if (!UI.HALL || !UI.HALL.KEY) return 'none';
@@ -42,7 +52,8 @@ export default {
           UI.render(); const T2 = document.getElementById('title'), sh = T2.querySelectorAll('.hl-shelf'), b = T2.querySelector('.btns');
           const ok = sh.length === 1 && !!(b.compareDocumentPosition(sh[0]) & Node.DOCUMENT_POSITION_FOLLOWING); localStorage.removeItem(UI.HALL.KEY); return ok ? 'under the buttons' : 'MISPLACED'; })() };
     });
-    const ok = !/Thirty-four/.test(r.text) && r.text.includes(`${r.n} realms`) && !r.old && !r.inTitle && r.colours > 20 && r.sky && r.primary.length === 1 && r.primary[0] === 'newLife' && r.buttons >= 4 && r.shelf !== 'MISPLACED';
-    return { ok, detail: `"${r.n} realms" in the pitch ${r.text.includes(`${r.n} realms`)}, "Thirty-four" gone ${!/Thirty-four/.test(r.text)}; the Known World strip gone ${!r.old}, the title free of the map ${!r.inTitle}, the continent drawn in How to play in ${r.colours} colours; dawn sky ${r.sky}; primary buttons: ${r.primary.join(', ')} of ${r.buttons}; Your lives shelf ${r.shelf}` };
+    // v2: without the Far Lands, "Thirty-four" is the true count, and How to play has no continent map to draw
+    const ok = (r.far ? !/Thirty-four/.test(r.text) && r.colours > 20 : true) && r.said && !r.old && !r.inTitle && r.sky && r.primary.length === 1 && r.primary[0] === 'newLife' && r.buttons >= 4 && r.shelf !== 'MISPLACED';
+    return { ok, detail: `${r.far ? 'the Far Lands' : 'v2, no Far Lands'}: ${r.n} realms named in the pitch ${r.said}, "Thirty-four" gone ${!/Thirty-four/.test(r.text)}; the Known World strip gone ${!r.old}, the title free of the map ${!r.inTitle}, the continent drawn in How to play in ${r.colours} colours; dawn sky ${r.sky}; primary buttons: ${r.primary.join(', ')} of ${r.buttons}; Your lives shelf ${r.shelf}` };
   },
 };

@@ -165,7 +165,17 @@ export default {
       return lives;
     });
     const ch = r.map(l => l.changes).sort((a, b) => a - b), med = ch[Math.floor(ch.length / 2)];
-    const ok = r.every(l => l.maxT <= 5 && l.silent === 0 && l.withReceipts === l.changes) && med >= 1 && med <= 6;
+    // Bar 1 to 7 (was 1 to 6): the median of sixteen lives sits on the edge, and which side it falls is the stream's.
+    // CI 89 read 7 (3,3,3,5,5,6,7,7,7,8,8,8,8,8,9,11) after 99993-v2-stats' one-orientation dice (d52d61d). That change
+    // only re-draws the stream: on one tree, 100,000 rolls per chance (5% to 95%) and stakes (0.5, 0.8) won, blundered,
+    // surged and landed each tier at the same rates with the old dice and the new, within a few in a thousand. The lives
+    // differ only by which stream they draw: on the same tree, these seeds and two more sets of sixteen (4937-4952,
+    // 4953-4968) have medians 7, 6, 4 with the new dice and 4, 6, 5 with the old. Pooled over 48 lives the median is
+    // 6 (new) and 5 (old), and 6.5 and 5.8 changes for every 45 years lived. A set of sixteen moves the median by 1 to 2
+    // either way, mostly by how many lives end early (a life cut short at 9 or 15 changes 1 to 3 times). About three in
+    // five changes are 9992-identity's thoughts let in at ripening ("Let it become part of you"), a choice the player is
+    // asked; the deeds alone change about 2.5 traits a life. The cap (5 held), the receipts and the reasons are unchanged.
+    const ok = r.every(l => l.maxT <= 5 && l.silent === 0 && l.withReceipts === l.changes) && med >= 1 && med <= 7;
     return { ok, detail: `${r.length} bot lives: trait changes per life ${ch.join(', ')} (median ${med}); most traits held ${Math.max(...r.map(l => l.maxT))}; changes logged with their deeds ${r.reduce((a, l) => a + l.withReceipts, 0)} of ${r.reduce((a, l) => a + l.changes, 0)}; traits without a reason ${r.reduce((a, l) => a + l.silent, 0)}` };
   },
 
@@ -290,7 +300,9 @@ export default {
       UI.ov = null; UI.render();
       return { pure: JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0 && A.rngState === r0,
         side: { body: /Broken leg/.test(side) && /Ill with camp fever/.test(side), chip: /Hang him/.test(side) },
-        prof: { body: /Lost an eye/.test(prof) && /bow −15|Bows &amp; throwing −15|throwing −15/.test(prof), who: /Who you are/.test(prof) && /Leaning brave/.test(prof), aging: /Age, stat by stat/.test(prof) },
+        // with v2 (99993-v2-stats i-numbers, playtest 2 old 7: no 0-100 number the player sees) the eye's cost to the bow
+        // reads "Bows & throwing down a good deal", not "−15"; the cost must still be shown, named and sized
+        prof: { body: /Lost an eye/.test(prof) && /bow −15|Bows &amp; throwing −15|throwing −15|Bows &amp; throwing down a good deal/.test(prof), who: /Who you are/.test(prof) && /Leaning brave/.test(prof), aging: /Age, stat by stat/.test(prof) },
         tip: /Holds until about|Fading since/.test(tip) };
     });
     const ok = r.pure && r.side.body && r.side.chip && r.prof.body && r.prof.who && r.prof.aging && r.tip;
@@ -364,5 +376,48 @@ export default {
       return { err, alive: A.pc().alive, year: A.S.year };
     });
     return { ok: !r.err, detail: `a save without the new fields and with unplaced wounds loads, draws and plays two years: ${r.err || 'no error'} (alive ${r.alive}, ${r.year})` };
+  },
+  // v2svRoundTrip (CI on the v2-wf-body branch): a deed's receipt quotes the choice's label, and a label with its own
+  // quotes ('Ask, "But is it true?"') was stored as it was in pc.deedLog, pc.traitWhy and pc.traitLog; SAVES.clean strips
+  // " < > from those (they are not prose), so the reloaded state differed from the saved one. The receipt is stored as
+  // the save keeps it.
+  async bodyMindReceiptSurvivesSave(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4981, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 25 });
+      const pc = A.pc(), BM = A.BM;
+      const why = BM.receipt({ label: 'Ask, "But is it true?"', title: 'Stories <i>by</i> the "fire"' });
+      BM.deed(pc, 'curious', 1, why);
+      const L = pc.traitLog = Array.isArray(pc.traitLog) ? pc.traitLog : []; L.push([A.S.year, 'curious', '', [why]]);
+      BM.why(pc).curious = { y: A.S.year, by: 'deeds', r: [why] };
+      const before = JSON.stringify({ d: pc.deedLog, w: pc.traitWhy, l: pc.traitLog });
+      const S = JSON.parse(A.serialize()); SAVES.clean({ S });
+      const p2 = S.people[S.pc], after = JSON.stringify({ d: p2.deedLog, w: p2.traitWhy, l: p2.traitLog });
+      return { why, same: before === after, before: before.slice(0, 240), after: after.slice(0, 240) };
+    });
+    const ok = r.same && /‘But is it true\?’/.test(r.why) && !/["<>]/.test(r.why);
+    return { ok, detail: `receipt ${r.why}; deeds, reasons and trait log the same after SAVES.clean: ${r.same}${r.same ? '' : ` (${r.before} -> ${r.after})`}` };
+  },
+
+  // lfRepeats (v2 merge): a sickness after the first, within the quiet (8 years, doubling), is treated as the last one
+  // was, with a line in the log and no scene; outside it, or with no treatment on record, the scene asks
+  async illnessAsBefore(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-life-fixes) is missing' };
+      A.newGame({ seed: 4911, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 30 });
+      const pc = A.pc(), y = A.S.year, out = {};
+      const onset = () => { pc.ill = null; pc.health = 100; A.S.queue = []; const n0 = A.S.log ? A.S.log.length : 0; A.bmFallIll(pc, 'cough', GD.DISEASES.cough, 10, 100); return { asked: A.S.queue.some(q => q.ev === 'bm_ill'), t: pc.ill && pc.ill.t }; };
+      pc.evN = {}; out.first = onset();
+      pc.evN.bm_ill = 1; pc.flags.ev = pc.flags.ev || {}; pc.flags.ev.bm_ill = y - 2; pc.bmTreat = 'prayer';
+      // piety or, for a player without faith, its pull toward faith: v2 keeps a faithless player's piety at a neutral
+      // 30 and turns what an fx would add into p.v2.pull (99993-v2-stats' d-faith, V2_SPEC complaint 7)
+      const pull = () => (pc.v2 && +pc.v2.pull) || 0;
+      const p0 = pc.piety + pull(); out.within = onset(); out.piety = pc.piety + pull() - p0;
+      pc.flags.ev.bm_ill = y - 8; out.after = onset();
+      pc.flags.ev.bm_ill = y - 2; delete pc.bmTreat; out.none = onset();
+      return out;
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.first.asked && !r.within.asked && r.within.t === 'prayer' && r.piety > 0 && r.after.asked && r.none.asked;
+    return { ok, detail: `first sickness asks ${r.first.asked}; two years after one, prayed over last time: asks ${r.within.asked}, treated with ${r.within.t} (+${r.piety} piety); eight years after: asks ${r.after.asked}; no treatment on record: asks ${r.none.asked}` };
   },
 };

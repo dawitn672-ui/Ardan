@@ -124,11 +124,21 @@
     try {
       if (fresh && q.result && q.ev === 'ga_invite' && q.ctx && q.ctx.gid && q.view) {
         const g = (A.S.gath || []).find(x => x.id === q.ctx.gid), c = q.view.choices[arguments[0]];
-        if (g && c && (c.t === 'Go' || /regrets/i.test(c.t))) { const st = LF.st(); if (!isObj(st.gaAns)) st.gaAns = {}; st.gaAns[g.kind + ':' + (g.pc && g.pc.role)] = c.t === 'Go' ? 1 : 0; }
+        // only the player's own answer is remembered (an answer given for them, below, is not): per kind, as before, and
+        // for the role the year of their last 'Go' (st.gaGo), cleared by their regrets
+        if (g && c && !LF.quiet && (c.t === 'Go' || /regrets/i.test(c.t))) {
+          const st = LF.st(), role = g.pc && g.pc.role; if (!isObj(st.gaAns)) st.gaAns = {}; if (!isObj(st.gaGo)) st.gaGo = {};
+          st.gaAns[g.kind + ':' + role] = c.t === 'Go' ? 1 : 0;
+          if (c.t === 'Go') st.gaGo[role] = A.S.year; else delete st.gaGo[role];
+        }
       }
       if (fresh && q.result && q.ev === 'ga_open' && q.ctx && q.ctx.gid && q.view && !LF.quiet) {
         const g = (A.S.gath || []).find(x => x.id === q.ctx.gid), c = q.view.choices[arguments[0]], aims = q.ctx.aims || [];
-        if (g && c) { const st = LF.st(); if (!isObj(st.gaAim)) st.gaAim = {}; st.gaAim[g.kind + ':' + (g.pc && g.pc.role)] = c.i < aims.length && aims[c.i] ? String(aims[c.i].k || '') : '-'; }
+        if (g && c) {
+          const st = LF.st(), role = g.pc && g.pc.role, k = c.i < aims.length && aims[c.i] ? String(aims[c.i].k || '') : '-';
+          if (!isObj(st.gaAim)) st.gaAim = {}; if (!isObj(st.gaAimY)) st.gaAimY = {};
+          st.gaAim[g.kind + ':' + role] = st.gaAim['*:' + role] = k; st.gaAimY[role] = A.S.year;
+        }
       }
       if (fresh && q.result && pc && q.ev && !LF.quiet) {
         const m = LF.mem(pc); m[q.ev] = (m[q.ev] || 0) + 1;
@@ -188,6 +198,19 @@
     if (P.cap != null && n >= P.cap) return true;
     const last = P.fam ? LF.lastFam(pc, e.id) : LF.last(pc, e.id);
     return !!(P.gap && last != null && A.S.year - last < P.gap * (P.grow ? n : 1));
+  };
+  // A scene an owner queues itself, spaced the same way (A.lfSpaced): the first showing always; after n showings the
+  // next only once base x 2^(n-1) years have passed since the last (a quiet that doubles each time); base Infinity is
+  // once a life. ids may be a list (a scene and its other tellings, counted together). The owner shows its log line
+  // in place of the scene when this says no. Off with the memory (LF.OFF, or the guard switched off).
+  LF.spaced = A.lfSpaced = function (pc, ids, base) {
+    if (!LF.memOn() || !pc || !ids) return true;
+    const list = Array.isArray(ids) ? ids : [ids];
+    let n = 0, last = null;
+    for (const id of list) { n += LF.n(pc, id); const l = LF.last(pc, id); if (l != null && (last == null || l > last)) last = l; }
+    if (!n) return true;
+    if (!(base < Infinity)) return false;
+    return last == null || A.S.year - last >= base * Math.pow(2, Math.min(4, n - 1));
   };
   // Scenes written for the bottom of the ladder, which the release's conds do not gate: no roll, pool or NPC move draws
   // them for the top of it (A.lfTop: a ruler, a commander, a councillor, a lord, a retired commander). And a trade's
@@ -305,6 +328,10 @@
   // is taken, and its result goes to the story log, as the release's quiet settle does for small scenes.
   LF.frame = q => !!(q && q.type === 'event' && !q.result && q.ctx && q.ctx.gid && /^ga_/.test(q.ev || ''));
   LF.quiet = false;
+  // an answer the player gave in one gathering's frame, carried to another kind's: only until CARRY_GAP x 2^(n-1) years
+  // after they gave it (n: how often they have been shown that frame), a quiet that doubles each time, as A.lfSpaced
+  LF.CARRY_GAP = 6;
+  LF.carry = (pc, id, y) => typeof y === 'number' && A.S.year - y < LF.CARRY_GAP * Math.pow(2, Math.min(4, Math.max(0, LF.n(pc, id) - 1)));
   LF.screen = function () {
     const S = A.S, pc = S && A.pc();
     if (!LF.memOn() || !pc || !pc.alive) return 0;
@@ -315,7 +342,13 @@
         const v = A.eventView(q);
         // an invitation to a kind of gathering the player went to last time, in the same role: they go again
         if (v && !v.skip && q.ev === 'ga_invite') {
-          const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), ans = g && isObj(st.gaAns) ? st.gaAns[g.kind + ':' + (g.pc && g.pc.role)] : null;
+          // (an invitation to another kind, in a role the player last answered 'Go': they go again, but only within a
+          // quiet that doubles with each invitation they were shown (LF.carry), so the player is asked again after it.
+          // Regrets are never carried to another kind: a declined funeral does not decline the next wedding. On the
+          // merged v2 build a courtier's nine kinds of invitation were 20 of 540 repeats in nine lives, lfRepeats)
+          const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), role = g && g.pc && g.pc.role;
+          const a0 = g && isObj(st.gaAns) ? st.gaAns[g.kind + ':' + role] : null;
+          const ans = a0 != null ? a0 : g && isObj(st.gaGo) && LF.carry(pc, 'ga_invite', st.gaGo[role]) ? 1 : null;
           const go = v.choices.findIndex(c => c.t === 'Go'), no = v.choices.findIndex(c => /regrets/i.test(c.t)), pick = ans === 1 ? go : ans === 0 ? no : -1;
           if (g && pick >= 0) {
             LF.quiet = true;
@@ -328,8 +361,12 @@
         // the opening of a kind of gathering attended before in the same role: the same aim as last time, if it is on offer
         if (v && !v.skip && q.ev === 'ga_open') {
           const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), want = g && isObj(st.gaAim) ? st.gaAim[g.kind + ':' + (g.pc && g.pc.role)] : null, aims = q.ctx.aims || [];
+          // another kind's opening in the same role: the aim the player pressed last time, if this one offers it, within
+          // the same doubling quiet as an invitation (LF.carry); after it the player chooses again
+          const any = g && isObj(st.gaAim) && isObj(st.gaAimY) && LF.carry(pc, 'ga_open', st.gaAimY[g.pc && g.pc.role]) ? st.gaAim['*:' + (g.pc && g.pc.role)] : null;
           let pick = -1;
-          if (want && want !== '-') { const j = aims.findIndex(a => a && String(a.k || '') === want); if (j >= 0) pick = v.choices.findIndex(c => c.i === j); }
+          if (want == null && any && any !== '-') { const j = aims.findIndex(a => a && String(a.k || '') === any); if (j >= 0) pick = v.choices.findIndex(c => c.i === j); }
+          else if (want && want !== '-') { const j = aims.findIndex(a => a && String(a.k || '') === want); if (j >= 0) pick = v.choices.findIndex(c => c.i === j); }
           else if (want === '-') pick = v.choices.findIndex(c => c.i >= aims.length);
           if (pick >= 0) {
             LF.quiet = true;
@@ -365,12 +402,15 @@
   LF.FAMILY.tavern_brawl = LF.FAMILY.tavern_brawl || ['tavern_stranger', 'tavern_song', 'tavern_dice', 'tavern_rumor', 'tavern_recruit'];
   LF.FAMILY.explore_ruin = LF.FAMILY.explore_ruin || ['explore_cave', 'explore_road', 'explore_lair', 'explore_battlefield'];
   LF.FAMILY.child_fight = LF.FAMILY.child_fight || ['child_dare', 'child_lost'];
-  // years between scenes once a family is used up, times how often each has been seen
+  // years between scenes once a family is used up, doubling with each showing past the first round (lfRepeats: on the
+  // merged v2 build the courting and festival families, quiet only n x 4 and n x 3 years, were 45 of 540 repeats in
+  // nine lives; now 4, 8, 16... years apart once each telling has been seen)
   LF.FAMILY_GAP = { meet_love: 4, festival_day: 3, tavern_brawl: 3, explore_ruin: 3, child_fight: 1 };
   // Any other scene an action of the player's queues (a pilgrimage's road, a game of dice): once it has been seen, it
-  // comes again only after ASK_GAP x n years; in between, the action does its work without the scene. Scenes about a
-  // person (getting to know someone), a beast or a gathering are new cases each time and always come.
-  LF.ASK_GAP = 4;
+  // comes again only after ASK_GAP x 2^(n-1) years (a quiet that doubles each time: on the merged v2 build the pilgrim
+  // road, at ASK_GAP x n, still came four times in a life); in between, the action does its work without the scene.
+  // Scenes about a person (getting to know someone), a beast or a gathering are new cases each time and always come.
+  LF.ASK_GAP = 6;
   LF.ASK_LINE = { pilgrimage: 'The road is long and the shrine is as you remember it.', gamble: 'The dice go round. Nobody accuses anybody of anything tonight.',
     explore: 'You walk the country for days and find nothing you have not seen before.', tavern: 'A quiet evening at the tavern: the same faces, the same songs.',
     festival: 'You spend the feast day in the square with everyone else, and come home tired and pleased.' };
@@ -392,7 +432,9 @@
       const n = LF.n(pc, id);
       if (n < bn) { best = id; bn = n; }
     }
-    return { id: best || base, n: bn, last: Math.max(-1e9, ...fam.map(id => LF.last(pc, id) || -1e9)) };
+    // past: the showings beyond the first round (each telling once), which double the quiet
+    const tot = fam.reduce((a, id) => a + LF.n(pc, id), 0), seen = fam.filter(id => LF.n(pc, id) > 0).length;
+    return { id: best || base, n: bn, past: Math.max(0, tot - seen), last: Math.max(-1e9, ...fam.map(id => LF.last(pc, id) || -1e9)) };
   };
   // what an activity does when its family has nothing new this year: the work, without the scene
   LF.QUIET = {
@@ -425,7 +467,7 @@
         const base = LF.familyOf(item.ev), pc = base && A.pc();
         if (pc) {
           const v = LF.variant(pc, base), gap = LF.FAMILY_GAP[base];
-          if (v.n >= 1 && gap && A.S.year - v.last < gap * v.n) {
+          if (v.n >= 1 && gap && A.S.year - v.last < gap * Math.pow(2, Math.min(4, v.past))) {
             tally('quiet');
             if (LF.QUIET[base]) LF.QUIET[base](pc, item);
             return;
@@ -435,7 +477,7 @@
           const p = A.pc(), e = A.EV[item.ev];
           if (p && e && e.trigger) {
             const n = LF.nFam(p, item.ev), last = LF.lastFam(p, item.ev);
-            if (n >= 1 && last != null && A.S.year - last < LF.ASK_GAP * n) { tally('quiet'); A.log(LF.askLine(), ''); return; }
+            if (n >= 1 && last != null && A.S.year - last < LF.ASK_GAP * Math.pow(2, Math.min(4, n - 1))) { tally('quiet'); A.log(LF.askLine(), ''); return; }
           }
         }
       }
@@ -481,6 +523,11 @@
     if (Array.isArray(g.couple) && g.couple.some(id => kin.includes(id))) return role;
     const st = LF.st(), y = A.S.year;
     if (!isObj(st.ga)) st.ga = {};
+    // the same kind's quiet doubles with each one attended in the life (st.gaN; a save from before counts one): on the
+    // merged v2 build a courtier's invitation, opening and jousts were still 78 of 540 repeats in nine lives (lfRepeats)
+    if (!isObj(st.gaN)) st.gaN = {};
+    const kindGap = (k, base) => base * Math.pow(2, Math.min(3, Math.max(0, (st.gaN[k] || (st.ga[k] != null ? 1 : 0)) - 1)));
+    const went = k => { st.gaN[k] = (st.gaN[k] || (st.ga[k] != null ? 1 : 0)) + 1; st.ga[k] = y; };
     const crown = role === 'ruler' || role === 'envoy';
     if (crown) {
       // a ruler always sits at a peace congress or a war council; an envoy (a chancellor sent by the crown) at most
@@ -495,16 +542,16 @@
       if (g.host === pc.ruler || g.host === pc.realm) return role;
       const k = 'c:' + g.kind;
       if (st.gaCrown != null && y - st.gaCrown < LF.GATH_CROWN_GAP) return null;
-      if (st.ga[k] != null && y - st.ga[k] < LF.GATH_KIND_GAP) return null;
-      st.ga[k] = y; st.gaCrown = y;
+      if (st.ga[k] != null && y - st.ga[k] < kindGap(k, LF.GATH_KIND_GAP)) return null;
+      went(k); st.gaCrown = y;
       return role;
     }
     if (!LF.GUEST_ROLES.includes(role)) return role;
     if (st.gaAny != null && y - st.gaAny < LF.GATH_ANY_GAP) return null;
     // a knight's trade is the lists: tourneys every 5 years, not 6
     const gap = role === 'knight' && g.kind === 'tournament' ? LF.GATH_KNIGHT_GAP : LF.GATH_KIND_GAP;
-    if (st.ga[g.kind] != null && y - st.ga[g.kind] < gap) return null;
-    st.ga[g.kind] = y; st.gaAny = y;
+    if (st.ga[g.kind] != null && y - st.ga[g.kind] < kindGap(g.kind, gap)) return null;
+    went(g.kind); st.gaAny = y;
     return role;
   };
 })();

@@ -84,7 +84,8 @@ export default {
       const found = { tab: [], top: [], vital: [], stat: [], group: [] }, unlabelled = [];
       for (const b of document.querySelectorAll('#tabs [role=tab]')) { const s = b.querySelector('svg'); if (s && which(s)) found.tab.push(which(s)); }
       for (const s of document.querySelectorAll('#topbar svg')) if (which(s)) found.top.push(which(s));
-      for (const s of document.querySelectorAll('#profile .barrow svg')) { const n = which(s); if (!n) continue; (IS[n].group === 'stat' ? found.stat : found.vital).push(n); }
+      // v2 (99993-v2-stats): the stat bars are the body and mind rows (.v2-row) in real units and words
+      for (const s of document.querySelectorAll('#profile .barrow svg, #profile .v2-row svg')) { const n = which(s); if (!n) continue; (IS[n].group === 'stat' ? found.stat : found.vital).push(n); }
       for (const s of document.querySelectorAll('#tabbody .act svg, #tabbody .group-h svg')) { const n = which(s); if (n && (IS[n].group === 'group' || (IS[n].also || []).some(x => x[1] === 'group'))) found.group.push(n); }
       // cycle 2: each action's tile carries its own icon (things.core.js) in place of its group's
       const actsOwn = UI.ICONS_ACT ? [...document.querySelectorAll('#tabbody .act[data-v] .lk-gi[data-own]')].filter(g => UI.ICONS_ACT[g.closest('.act').dataset.v]).length : 0;
@@ -101,10 +102,17 @@ export default {
       pc.debt = 0; UI.render();
       const tips = ['stat:str', 'stat:wil', 'health:', 'piety:', 'coin:', 'initiative:'].map(k => { const [a, b] = k.split(':'); const h = UI.TT ? UI.TT.html(a, b) : ''; return [k, /<div class="tip-h"><svg class="ic s ico-tip"/.test(h)]; });
       const uniq = a => [...new Set(a)];
-      return { tab: uniq(found.tab), top: uniq(found.top), vital: uniq(found.vital), stat: uniq(found.stat), group: uniq(found.group), actsOwn, unlabelled: uniq(unlabelled), debt, tips, look: !!UI.LOOK };
+      // v2: the places in the bar (99992-v2-time: Life, You, Family, World, and War only at war) and piety's vital
+      // only for the devout (99993-v2-stats, complaint 7)
+      const places = UI.GROUPS.length, piety = !!document.querySelector('#profile .barrow [data-tt="piety"]');
+      return { tab: uniq(found.tab), top: uniq(found.top), vital: uniq(found.vital), stat: uniq(found.stat), group: uniq(found.group), actsOwn, unlabelled: uniq(unlabelled), debt, tips, look: !!UI.LOOK, places, piety };
     });
     const tipsOk = !r.tips.length || r.tips.every(x => x[1]);
-    const ok = r.tab.length === 6 && r.top.length >= 7 && r.vital.length === 6 && r.stat.length === 6 && (r.group.length >= 9 || r.actsOwn >= 9) && !r.unlabelled.length && r.debt && tipsOk;
+    // v2: the owner's five places at most (docs/v2/V2_SPEC.md complaint 2) replace the six tabs, so every place has its
+    // icon (4 at peace); the piety vital shows only for the devout (complaint 7), so 5 vitals for everyone else. The top
+    // bar's play, next and quiet icons went with Play, Next and Quiet living (complaint 8, 99992-v2-time): the five
+    // icons left must all be there (initiative, place, purse, save, menu)
+    const ok = r.tab.length === r.places && r.places >= 4 && r.places <= 5 && ['hourglass', 'pin', 'sun-coin', 'seal', 'menu'].every(k => r.top.includes(k)) && r.vital.length === (r.piety ? 6 : 5) && r.stat.length === 6 && (r.group.length >= 9 || r.actsOwn >= 9) && !r.unlabelled.length && r.debt && tipsOk;
     return { ok, detail: `tabs ${r.tab.join(' ')}; top bar ${r.top.join(' ')}; vitals ${r.vital.join(' ')}; stats ${r.stat.join(' ')}${r.look ? ' (91-look\'s tiles)' : ''}; groups ${r.group.length} (${r.group.join(' ')}), actions with their own icon ${r.actsOwn}; debt shows the broken coin ${r.debt}; ` +
       `tooltips open with the icon ${r.tips.filter(x => x[1]).length}/${r.tips.length}${r.unlabelled.length ? '; WITHOUT A WORD ' + r.unlabelled.slice(0, 5).join(', ') : '; every icon has its word'}` };
   },

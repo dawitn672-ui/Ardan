@@ -44,6 +44,20 @@
     else if (eff !== raw) how = 'with perks';
     return { v: Math.max(eff, floor), how };
   };
+  // what 9992-identity's thoughts add to the check's value (its A.checkVal wrapper, read back with ID.thoughtMod): a ripe
+  // thought's gain and cost, half the cost of one still held. CI 89 (ttSums2): a life that held "Fear is a teacher"
+  // (stealth -3, so -1 while held) showed every stealth check with an "Other things in play" row of -1. Pure.
+  TT.thoughtsOn = function (p, ck, w1) {
+    const ID = A.ID, none = { v: 0, label: '' };
+    if (!ID || typeof ID.thoughtMod !== 'function' || !p || !p.thoughts || !ck) return none;
+    const v = ID.thoughtMod(p, ck.s) * w1 + (ck.s2 ? ID.thoughtMod(p, ck.s2) * 0.4 : 0);
+    if (!v) return none;
+    const t = ID.thoughtState(p), bears = th => th && [ck.s, ck.s2].some(k => k && ((th.gain || {})[k] || (th.cost || {})[k]));
+    const names = [];
+    for (const id in (t.ripe || {})) { const th = (ID.THOUGHTS || {})[id]; if (bears(th)) names.push(`“${esc(th.name)}”, ripe`); }
+    for (const id in (t.held || {})) { const th = (ID.THOUGHTS || {})[id]; if (bears(th) && Object.keys(th.cost || {}).some(k => k === ck.s || k === ck.s2)) names.push(`“${esc(th.name)}”, still turned over`); }
+    return { v, label: `A thought you hold: ${names.join('; ') || 'what you are turning over'}` };
+  };
   TT.checkParts = function (p, ck, ctx, shown, evId) {
     const d0 = ck.d || 45, add = ck.dctx ? +((ctx || {})[ck.dctx]) || 0 : 0;
     const a = TT.checkValue(p, ck.s), b = ck.s2 ? TT.checkValue(p, ck.s2) : null, bonus = ck.bonus ? +ck.bonus(p) || 0 : 0;
@@ -52,7 +66,9 @@
     if (b) parts.push([`${skillLink(ck.s2, skillName(ck.s2) + ' ' + r0(b.v))}${b.how ? ' (' + b.how + ')' : ''} against ${d0}, 40% of it`, (b.v - d0) * 0.4 * 1.6]);
     if (bonus) parts.push(['Your circumstances', bonus * 1.6]);
     if (add) parts.push([add > 0 ? `The scene makes it harder (+${add})` : `The scene makes it easier (${add})`, -add * 1.6]);
-    const raw = 50 + (a.v * w1 + (b ? b.v * 0.4 : 0) + bonus - d0 - add) * 1.6, base = A.clamp(Math.round(raw), 4, 96);
+    const th = TT.thoughtsOn(p, ck, w1);
+    if (th.v) parts.push([th.label, th.v * 1.6]);
+    const raw = 50 + (a.v * w1 + (b ? b.v * 0.4 : 0) + bonus + th.v - d0 - add) * 1.6, base = A.clamp(Math.round(raw), 4, 96);
     if (base !== Math.round(raw)) parts.push(['Never below 4% or above 96%', base - raw]);
     const mem = TT.memOf(ctx, evId, ck);
     if (mem && shown != null) { const v = A.clamp(base + mem, 4, 96); parts.push(['What you remember of it before (67-memory-weave)', v - base]); if (shown !== v) parts.push(['Other things in play', shown - v]); }

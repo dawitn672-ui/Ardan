@@ -80,7 +80,7 @@
     opts = opts || {};
     if (!p || !A.S) return null;
     const cd = opts.cd || {}, now = A.absDay(), fresh = c => !(cd[c.id] && now - cd[c.id] < (opts.gap || 730));
-    let pool = WC.near(p, kinds, { max: 30, minDays: opts.minDays != null ? opts.minDays : 60, home: opts.home, since: opts.since }).map(fromEntry).filter(fresh);
+    let pool = WC.near(p, kinds, { max: opts.max || 30, minDays: opts.minDays != null ? opts.minDays : 60, home: opts.home, since: opts.since }).map(fromEntry).filter(fresh);
     if (opts.canon !== false && pool.length < 2 && !opts.home) {
       const since = opts.living ? Math.max(1000, (p.born || A.S.year) - 40) : 1000;
       pool = pool.concat(WC.canonNear(p, kinds, { since }).map(c => WC.cite(c.id)).filter(fresh));
@@ -181,12 +181,83 @@
     for (const T of WC.TOPICS) { const m = T.rx.exec(s); if (m && m.index < bestAt) { best = T; bestAt = m.index; } }
     return best;
   };
+  // ---- does an entry bear on this scene? (v2, complaint 1 and playtest 1 #10: an extra line on a card only when it fits
+  // the scene.) A subject in common is not enough: "the hearth mark" with a war of 1092, "a new tax" with a coronation
+  // of 1081 is filler. The entry must share something the scene is about:
+  //   person  someone in the scene (ctx.pid or another person in its context, or named in its words) is in the entry,
+  //           or the player was there (a battle fought, a town taken) and the scene is a soldier's or at that place;
+  //   place   a battle, siege, sack, sickness or cession in the player's own home province, or in one the scene names;
+  //   realm   the scene names a realm (or carries one in its context) that the entry is about;
+  //   war     the scene carries a war in its context, or is a war scene while the player serves in a war, and the entry
+  //           belongs to that war.
+  // Pure: read from the queued item, the view's words and the state.
+  const wordRx = s => new RegExp('\\b' + reEsc(s) + '\\b');
+  WC.scene = function (q, v, pc) {
+    const ctx = (q && q.ctx) || {}, text = `${(v && v.title) || ''} ${(v && typeof v.text === 'string') ? v.text : ''}`;
+    const people = new Set(), realms = new Set(), provs = new Set(), wars = new Set();
+    if (pc.home != null) provs.add(pc.home);
+    const warIds = new Set((A.S.wars || []).map(w => w && w.id).filter(Boolean));
+    for (const k of Object.keys(ctx)) {
+      const x = ctx[k];
+      if (typeof x !== 'string' || !x || x.length > 40) continue;
+      if (warIds.has(x)) wars.add(x);
+      else if (A.realm(x)) realms.add(x);
+      else if (A.P && A.P(x)) people.add(x);
+    }
+    for (const r of Object.values(A.S.realms || {})) {
+      if (!r || !r.id || realms.has(r.id)) continue;
+      if ([r.short, r.name].some(s => s && s.length > 3 && wordRx(String(s).replace(/^the /i, '')).test(text))) realms.add(r.id);
+    }
+    return { text, people, realms, provs, wars, ctx };
+  };
+  // the war an entry belongs to, if any
+  const entryWar = e => (e.k === 'war' || e.k === 'peace') && Array.isArray(e.x) ? e.x[0] : e.k === 'battle' && Array.isArray(e.x) ? e.x[2] : e.k === 'cede' && typeof e.x === 'string' ? e.x : null;
+  const nameIn = (id, text) => {
+    const n = WC.name(id); if (!n || n.length < 4) return false;
+    if (text.includes(n)) return true;
+    const w = n.split(' ');   // "King Roderic III Valdane" is "Roderic" in a scene's words often enough
+    return w.length >= 3 && w.slice(1).join(' ').length > 3 && text.includes(w.slice(1).join(' '));
+  };
+  // the kinds whose province is where the thing happened; a war, a peace, a death on the throne or a famine is set
+  // down at a capital, which is not where a scene in that town is
+  WC.PLACED = new Set(['battle', 'siege', 'fall', 'plague', 'cede', 'order', 'legend']);
+  WC.bears = function (c, sc, pc, T) {
+    if (!c || !sc) return false;
+    if (!c.e) {
+      // the realm's canon: only when the scene names a realm of it, or the ruler it names
+      return c.c.realms.some(r => sc.realms.has(r)) ? 'realm' : (!!c.c.who && c.c.who.length > 3 && sc.text.includes(c.c.who)) ? 'person' : false;
+    }
+    const e = c.e;
+    if ((e.w || []).some(id => id && id !== pc.id && (sc.people.has(id) || nameIn(id, sc.text)))) return 'person';
+    // the player was there: on a soldier's scene, or where it happened at home
+    if ((e.w || []).includes(pc.id) && ((T && T.k === 'war') || e.p === pc.home)) return 'person';
+    if (e.p != null && WC.PLACED.has(e.k) && (sc.provs.has(e.p) || (A.S.prov[e.p] && A.S.prov[e.p].name && A.S.prov[e.p].name.length > 3 && wordRx(A.S.prov[e.p].name.replace(/^The /, '')).test(sc.text)))) return 'place';
+    if ((e.a && sc.realms.has(e.a)) || (e.b && sc.realms.has(e.b))) return 'realm';
+    const wid = entryWar(e);
+    if (wid) {
+      if (sc.wars.has(wid)) return 'war';
+      if (T && T.k === 'war' && pc.mil && (A.atWar ? A.atWar(pc.mil.realm || pc.realm) : []).some(w => w === wid || (w && w.id) === wid)) return 'war';
+    }
+    return false;
+  };
   WC.RECALL = 34;          // per cent of scenes with a subject that get a recalled line, if an entry fits
   WC.GAP = 730;            // days before the same entry is recalled again
   WC.SINCE_MIN = 3;        // years before a line may say "since <year>" of an entry
   const fmt = n => (A.fmt ? A.fmt(n) : String(n));
-  // a far realm whose short name is a noun takes its article ("goes to the Khaganate", 991's A.realmRef)
-  const rs = id => (id ? (A.realm(id) ? (A.realmRef ? A.realmRef(id) : A.realm(id).short) : WC.name(id) || 'a realm now gone') : '');
+  // a realm whose short name is a noun takes its article: "goes to the Sand Clans" ("Confederacy of the Sand Clans"),
+  // "the Nine Winds", "the Amber Isles". 991's A.realmRef did this for the Far Lands only (the Khaganate); with the Far
+  // Lands out of the build (v2, complaint 3) it is not loaded, and the continent's own noun-named realms said "goes to
+  // Sand Clans". A short name that stands after "of the" in the full name is a noun. 99999-v2-names has since given
+  // every continent realm a proper name (Sahrim, Ulun, Ambrel), so in v2 this fires only for a noun name set later.
+  const reEsc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  WC.realmWord = function (id) {
+    const r = A.realm(id);
+    if (!r) return WC.name(id) || 'a realm now gone';
+    const s = A.realmRef ? A.realmRef(id) : r.short;
+    if (!s || /^the /i.test(s) || !r.short || !r.name) return s;
+    return new RegExp('\\bof the ' + reEsc(r.short) + '\\b', 'i').test(r.name) ? 'the ' + s : s;
+  };
+  const rs = id => (id ? WC.realmWord(id) : '');
   const pn = i => (i != null && A.S.prov[i] ? A.S.prov[i].name : '');
   const the = s => String(s || '').replace(/^The /, 'the ');
   // lines by kind: [needsHome, (c, x) => string]; x has the entry's words. Second person, present tense. The lines of a
@@ -226,9 +297,9 @@
     ],
     fall: [
       [0, x => x.how === 3 ? `Since ${x.P} burned in ${x.y}, its people are scattered all over; you hear their voices in every market.` : x.how === 2 ? `A pedlar sells spoons he swears came out of the sack of ${x.P} in ${x.y}.` : `People still speak of the day ${x.A} took ${x.P}, in ${x.y}.`],
-      [0, x => `Mothers here still frighten children with the men of ${x.A}, who took ${x.P} in ${x.y}.`],
+      [0, x => `Mothers here still frighten children with the men of ${x.A}, who took ${x.P} in ${x.y}.`, 'foe'],
       [0, x => `A woman from ${x.P} sells thread at the corner. She left it in ${x.y}, the year ${x.A} came.`],
-      [0, x => `People here bar their doors at dusk. They have done it since ${x.A} took ${x.P}, in ${x.y}.`],
+      [0, x => `People here bar their doors at dusk. They have done it since ${x.A} took ${x.P}, in ${x.y}.`, 'foe'],
       [0, x => `A carter says the road past ${x.P} has been quiet since ${x.A} took it in ${x.y}.`],
     ],
     war: [
@@ -319,7 +390,12 @@
     // "Since 1105 ... Nobody forgets it" said in 1105 is not a memory: a line that counts "since" a year wants that
     // year to be at least WC.SINCE_MIN years gone
     const fresh = A.S.year - c.y < WC.SINCE_MIN;
-    const ok = set.filter(l => (!l[0] || home) && !(fresh && /since/i.test(String(l[1]))));
+    // a line marked 'foe' fears the side that took the town (playtest 2, new #13: "Mothers here still frighten children
+    // with the men of Aldmark" was said in Aldmark): it is said only where the taker is not the realm of the player or of
+    // the place
+    const ours = new Set([p.realm, (A.prov(p.home) || {}).owner].filter(Boolean));
+    const foeOurs = !!(c.e && c.e.a && ours.has(c.e.a));
+    const ok = set.filter(l => (!l[0] || home) && !(fresh && /since/i.test(String(l[1]))) && !(l[2] === 'foe' && foeOurs));
     if (!ok.length) return null;
     // the lines of a kind come round in turn
     const R = WC.rec(), kc = R.kc = R.kc || {}, n = kc[c.k] = (kc[c.k] || 0) + 1;
@@ -335,14 +411,23 @@
     if (!T) return;
     const key = `${q.ev}|${pc.id}|${A.absDay()}`;
     if (hash(key + '|gate') % 100 >= WC.RECALL) return;
+    // the record only observes: it takes a card's one extra line only when the life's own inner voice (9992-identity)
+    // would not speak there. A card carries one extra line (99999-v2-content), and the voice yields to a recalled line;
+    // the life remembers each line it hears (pc.idv, written at the choice), so a recalled line that pushed a voice out
+    // let the record decide what the character had heard: the same seed, recorded or not, ended with a different
+    // person (wcObservesOnly, after 99993's dice fix moved this seed's lives onto such a card). Asked before the line
+    // is set, the voice is the one it would be without any record, so the line now gives way to the voice instead.
+    if (A.ID && typeof A.ID.voiceCore === 'function') { let vo = null; try { vo = A.ID.voiceCore(pc, q); } catch (err) { vo = null; } if (vo) return; }
     const R = WC.rec();
     R.cd = R.cd || {};
     R.lk = Array.isArray(R.lk) ? R.lk : [];
-    const c = WC.choose(pc, T.kinds, key, { cd: R.cd, gap: WC.GAP, canon: true, living: true, minDays: 60, recent: R.lk });
+    const sc = WC.scene(q, v, pc);
+    const c = WC.choose(pc, T.kinds, key, { cd: R.cd, gap: WC.GAP, canon: true, living: true, minDays: 60, recent: R.lk, max: 80, filter: x => WC.bears(x, sc, pc, T) });
     if (!c) return;
     const line = WC.recallLine(c, pc, key);
     if (!line) return;
     v.recall = line;
+    v.recallId = c.id;   // the entry the line recalls (the tests check it bears on the scene)
     R.lk.push(c.k); if (R.lk.length > 8) R.lk.splice(0, R.lk.length - 8);
     q.ctx = q.ctx || {};
     WC.mark(c.id);

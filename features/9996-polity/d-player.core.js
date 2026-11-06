@@ -151,16 +151,28 @@ POL.pcYear = function (pc) {
 };
 
 // a war: a landed lord's levy is called (po_muster)
-A.on && A.on('warStart', function (w) {
+POL.MUSTER_QUIET = 6;
+POL.musterCall = function (w) {
   try {
     const pc = A.pc(); if (!POL.on || !pc || !pc.alive || !w) return;
     const o = POL.pcOath(pc); if (!o || !o.men || o.men < 1) return;
     if (!(w.att || []).includes(o.r.id) && !(w.def || []).includes(o.r.id)) return;
     const seen = pc.flags.ev && pc.flags.ev.po_muster;
     if (seen != null && A.S.year - seen < 3) return;
-    if (A.EV.po_muster && !A.S.queue.some(q => q.ev === 'po_muster')) A.queue({ type: 'event', ev: 'po_muster', ctx: { pid: o.r.ruler, rid: o.r.id, men: o.men, scut: A.coin(2 * o.men * 3), scutN: 2 * o.men * 3, realmT: o.r.short } });
+    const ctx = { pid: o.r.ruler, rid: o.r.id, men: o.men, scut: A.coin(2 * o.men * 3), scutN: 2 * o.men * 3, realmT: o.r.short };
+    // After the first, a muster within the quiet (POL.MUSTER_QUIET years, doubling with each scene: 97's A.lfSpaced)
+    // is answered as the last one was, if that was the men or the scutage, with a line in the log; a lord who refused
+    // last time is asked again. On the merged v2 build a landed lord's life showed the summons eight times (lfRepeats).
+    const last = pc.poMusterLast, coin = pc.coin >= ctx.scutN;
+    if ((last === 'send' || (last === 'scutage' && coin)) && A.lfSpaced && !A.lfSpaced(pc, 'po_muster', POL.MUSTER_QUIET)) {
+      A.applyFx(pc, last === 'send' ? { fame: 1, honor: 1, poMuster: 'send' } : { poMuster: 'scutage' }, ctx);
+      A.log(last === 'send' ? `${o.r.short} is at war, and your ${o.men} men go to the muster under your colours, as last time.` : `${o.r.short} is at war. You pay the scutage, ${ctx.scut}, as last time, and the men stay at home.`, '');
+      return;
+    }
+    if (A.EV.po_muster && !A.S.queue.some(q => q.ev === 'po_muster')) A.queue({ type: 'event', ev: 'po_muster', ctx });
   } catch (e) { console.error('[po] muster', e); }
-});
+};
+A.on && A.on('warStart', w => POL.musterCall(w));
 // PO-CEDE: the player's home passes to another crown at a peace (A.polOnTransfer emits provTransfer)
 A.on && A.on('provTransfer', function (prov, from, to) {
   try {
@@ -199,7 +211,8 @@ Object.assign(UI.A, {
     b.spoke = pc.id;
     const side = v === 'against' ? -1 : 1, o = POL.billOdds(r), d = Math.round(45 + 20 * Math.abs(o.m));
     const p = A.checkOdds ? A.checkOdds(pc, { s: 'persuasion', s2: 'wil', d }) / 100 : clamp(.5 + (A.skill(pc, 'persuasion') - d) / 62, .05, .95);
-    const win = A.chance(p);
+    // v2 (99993-v2-stats): the speech is an attempt, with blunders and surges, on the same chance
+    const win = A.V2S && A.V2S.rollP ? A.V2S.rollP(pc, p, { stakes: 0.4, label: 'persuasion' }) : A.chance(p);
     if (win) POL.moveBill(r, side * POL.BILL.pdm);
     b.pc = { side: side > 0 ? 'for' : 'against', w: RI.pcWeight ? RI.pcWeight(pc) : .5 };
     A.trainSkill && A.trainSkill(pc, 'persuasion', 1);
@@ -305,6 +318,7 @@ A.applyFx = function (pc, fx, ctx) {
     }
     if (fx.poMuster && ctx && r) {
       const ru = A.P(r.ruler);
+      pc.poMusterLast = fx.poMuster;   // how the last summons was answered (send, scutage, refuse)
       if (fx.poMuster === 'scutage') { const n = Math.min(pc.coin, ctx.scutN || 0); pc.coin -= n; r.treasury += n; if (RI.purse) RI.purse(pc, 'taxes', -n, 'Scutage instead of your levy'); }
       if (fx.poMuster === 'refuse') {
         if (ru && pc.rel[ru.id]) A.addOp(pc, ru, -20);

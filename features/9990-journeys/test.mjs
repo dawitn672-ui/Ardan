@@ -40,7 +40,8 @@ export default {
   async journeysKinds(pg) {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      const fresh = () => { A.newGame({ seed: 33, lands: 'great', race: 'human', realm: 'POL-101', status: 'peasant', startAge: 24 }); const pc = A.pc(); pc.coin = 900; JT.seen = []; return pc; };
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent; POL-101 was a Far Lands realm: the seed now places this life in a continent realm (POL-02)
+      const fresh = () => { A.newGame({ seed: 33, race: 'human', realm: 'POL-101', status: 'peasant', startAge: 24 }); const pc = A.pc(); pc.coin = 900; JT.seen = []; return pc; };
       const out = {};
       // go and come back: home is kept, the far end asks, the road home ends at home
       let pc = fresh(); const home = pc.home, R = JT.farCap(pc, 700);
@@ -60,7 +61,8 @@ export default {
       pc = fresh(); const h0 = pc.home; A.exile(pc); A.advance(2);
       out.exile = pc.home !== h0 ? (pc.journey ? pc.journey.k + (pc.journey.applied ? '/told' : '') : 'short') : 'stayed';
       // a caravan of this month (45's S.eco.car) can be joined
-      A.newGame({ seed: 33, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', startAge: 24 }); pc = A.pc(); pc.coin = 900;
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 33, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 24 }); pc = A.pc(); pc.coin = 900;
       for (let g = 0; g < 60 && !A.JR.caravansHome(pc).length; g++) { A.advance(5); JT.clear(); }
       const cars = A.JR.caravansHome(pc);
       out.cars = cars.length; if (cars.length) { const c = A.jrCaravan(0); out.caravan = c.ok && pc.journey && pc.journey.k; }
@@ -77,7 +79,8 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const run = look => {
-        T.enter({ seed: 909, lands: 'great', race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
+        // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent; POL-101 was a Far Lands realm: the seed now places this life in a continent realm (POL-26)
+        T.enter({ seed: 909, race: 'human', realm: 'POL-101', status: 'peasant', startAge: 20 });
         const pc = A.pc(); pc.coin = 900; JT.seen = [];
         A.travelTo(JT.farCap(pc, 1500).capitalProv);
         for (let g = 0; g < 40; g++) {
@@ -93,5 +96,37 @@ export default {
       return { same: a === b, pure: T.hash(A.S) === h0 && A.rngState === rng0, a: a.slice(-120) };
     });
     return { ok: r.same && r.pure, detail: `same life with and without looking at the road ${r.same}; rendering pure ${r.pure}; scenes ${r.a}` };
+  },
+
+  // lfRepeats (v2 merge): a stop's scene the life has seen waits a quiet that doubles (6, 12... years), and a shrine
+  // knelt at before is a scene once a life: after that the stair is climbed with a line in the log, and the road home starts
+  async journeysSpaced(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-life-fixes) is missing' };
+      A.newGame({ seed: 33, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 24 });
+      const pc = A.pc(), y = A.S.year, out = {};
+      pc.coin = 900; pc.evN = pc.evN || {}; pc.flags.ev = pc.flags.ev || {};
+      pc.evN.jr_folk = 1; pc.flags.ev.jr_folk = y - 5; out.folk5 = A.JR.fresh(pc, 'jr_folk');
+      pc.flags.ev.jr_folk = y - 6; out.folk6 = A.JR.fresh(pc, 'jr_folk');
+      pc.evN.jr_folk = 2; out.folk2 = A.JR.fresh(pc, 'jr_folk');
+      // a pilgrimage to a shrine this life has knelt at, and "Back at the shrine" already seen
+      A.S.time = 9; A.doActivity('pilgrimage');
+      const j = pc.journey; out.pilgrim = j && j.k;
+      if (j) { pc.jrShrines = { [j.to]: y - 10 }; pc.evN.jr_shrine_again = 1; pc.flags.ev.jr_shrine_again = y - 10; }
+      // piety with v2's pull toward faith: a faithless player's piety is held at a neutral 30 each month and what an fx
+      // adds is kept as p.v2.pull (99993-v2-stats' d-faith, V2_SPEC complaint 7)
+      const pull = () => (pc.v2 && +pc.v2.pull) || 0, p0 = pc.piety + pull(); JT.seen = [];
+      for (let g = 0; g < 200 && pc.journey && !pc.journey.there && pc.journey.k === 'pilgrim'; g++) { A.advance(5); JT.clear(); }
+      out.scene = JT.seen.some(s => /^jr_shrine/.test(s));
+      out.home = !pc.journey || pc.journey.k === 'return' || !!pc.journey.home || pc.journey.k !== 'pilgrim';
+      // the story log is a list of years, each with its lines as [text, class, ...]: search the lines
+      out.line = (A.S.log || []).some(e => (e && e.lines || []).some(l => /climb the stair/.test(Array.isArray(l) ? l[0] : String(l))));
+      out.piety = pc.piety + pull() >= p0; out.pv = [p0, pc.piety + pull()];
+      return out;
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = !r.folk5 && r.folk6 && !r.folk2 && r.pilgrim === 'pilgrim' && !r.scene && r.home && r.line && r.piety;
+    return { ok, detail: `folk on the road seen once: 5 years on ${r.folk5}, 6 years on ${r.folk6}; seen twice, 6 years on ${r.folk2}; pilgrimage ${r.pilgrim}; at a shrine knelt at before: scene ${r.scene}, log line ${r.line}, homeward ${r.home}; piety and pull ${(r.pv || []).join(' -> ')}` };
   },
 };

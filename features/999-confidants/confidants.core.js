@@ -25,6 +25,13 @@
   const esc = s => UI.esc(String(s == null ? '' : s));
   const alive = id => { const t = A.P(id); return t && t.alive ? t : null; };
   CF.role = r => (r ? CF.ROLE[r.type] || null : null);
+  // v2 (99994-v2-family): kinship comes first (spouse > blood > in-law > bond), so a cousin who is a friend reads
+  // "Cousin and friend", never just "Friend"
+  CF.title = function (pc, t, role) {
+    const k = A.V2F && A.V2F.kinOf ? A.V2F.kinOf(pc, t) : null, n = CF.NAME[role] || 'Confidant';
+    if (!k || k.line === 'spouse') return n;
+    return k.term.charAt(0).toUpperCase() + k.term.slice(1) + ' and ' + n.toLowerCase();
+  };
   CF.rank = (pc, id) => { const r = pc && pc.rel && pc.rel[id]; return r && r.cf > 0 ? Math.min(5, Math.floor(r.cf)) : 0; };
   const mem = (pc, t) => (A.BONDS && A.BONDS.mem ? A.BONDS.mem(pc, t) : 0);
   const theirOp = (pc, t) => (t.rel && t.rel[pc.id] ? t.rel[pc.id].op : pc.rel[t.id] ? pc.rel[t.id].op : 0);
@@ -112,9 +119,10 @@
     const r = pc && pc.rel && pc.rel[t.id], k = CF.rank(pc, t.id), role = CF.role(r);
     if (!role || !k) return '';
     let next = '';
-    if (k < 5) next = ` Next rank: shared history ${CF.MEM[k]} (now ${Math.round(mem(pc, t))}), their opinion ${CF.OP[k]}.`;
-    const tip = `${CF.NAME[role]}, rank ${k} of 5: ${CF.GIFT.slice(0, k).join(' ')}${next}`;
-    return `<span class="cf-pips" title="${esc(tip)}" role="img" aria-label="${esc(CF.NAME[role] + ', rank ' + k + ' of 5')}">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= k ? 'on' : ''}"></i>`).join('')}</span>`;
+    // the regard now beside the regard it asks, as the history has (99993-v2-stats words both: a band alone is wider than the bar)
+    if (k < 5) next = ` Next rank: shared history ${CF.MEM[k]} (now ${Math.round(mem(pc, t))}), their opinion ${CF.OP[k]} (now ${Math.round(theirOp(pc, t))}).`;
+    const tip = `${CF.title(pc, t, role)}, rank ${k} of 5: ${CF.GIFT.slice(0, k).join(' ')}${next}`;
+    return `<span class="cf-pips" title="${esc(tip)}" role="img" aria-label="${esc(CF.title(pc, t, role) + ', rank ' + k + ' of 5')}">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= k ? 'on' : ''}"></i>`).join('')}</span>`;
   };
   const bonds = UI.peopleBonds;
   if (typeof bonds === 'function') UI.peopleBonds = function (pc) {
@@ -131,7 +139,7 @@
       const pc = A.pc(); if (!t || !pc || typeof h !== 'string') return h;
       const p = CF.pips(pc, t); if (!p) return h;
       const k = CF.rank(pc, t.id), role = CF.role(pc.rel[t.id]);
-      const line = `<div class="cf-line small">${p} <b>${esc(CF.NAME[role])}, rank ${k} of 5.</b> <span class="muted">${esc(CF.GIFT.slice(0, k).join(' '))}</span></div>`;
+      const line = `<div class="cf-line small">${p} <b>${esc(CF.title(pc, t, role))}, rank ${k} of 5.</b> <span class="muted">${esc(CF.GIFT.slice(0, k).join(' '))}</span></div>`;
       const at = h.indexOf('<div class="sep">');
       return at > 0 ? h.slice(0, at) + line + h.slice(at) : h + line;
     } catch (e) { return h; }

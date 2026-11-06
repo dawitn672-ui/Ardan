@@ -95,6 +95,7 @@
 | `advScenes` | All 6 scenes, 18 choices played. No raw token. Longest 53 words | pass |
 | `advOldSaveAndWar` | A ruler's save with no `pc.adv` draws every tab, plays a year, and fills the ring (6). The war declaration shows 3 councillors, drawn purely. Declaring books 3 counsels | pass |
 | `advLives` | 4 bot lives (peasant, artisan, noble, ruler): the share of big choices with counsel and of once-scenes (each 80% or more), heeded against ignored outcomes, and distinct advisors a life (3 or more) | pass, see Numbers |
+| `advRightLabel` | playtest 2, new #12 and old #15: a captain, comrade, friend or councillor never speaks a parent's line ("Come home whole"); a mother keeps hers; a master's trade sayings only on a matter of work; at the gallows (every shown choice can kill: `ADV.isDoom`) nobody bids you home; an acquaintance with an old confidant's rank is not seated as "your friend"; a cousin in the friend's seat is "your first cousin"; a former superior (someone else is your superior now, the People tab says "Former superior") is not seated as your master | pass |
 
 `lint-events`: 6 events, 42 checked in the browser, 0 errors, 0 warnings. `lint-choices`: 0 of 4 compared obviously best.
 

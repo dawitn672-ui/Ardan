@@ -69,8 +69,20 @@
     liege: 'your liege', spouse: null, father: 'your father', mother: 'your mother', eldest: null, friend: 'your friend',
     master: 'your master', captain: 'your captain', comrade: 'a comrade',
   };
+  // the seat's name; for the seats a bond gives (your friend, your master) the word is the bond's own, so the counsel
+  // label and the People tab say the same thing (playtest 2, old #15)
+  const FRIEND_WORD = { bestfriend: 'your best friend', 'best friend': 'your best friend', comrade: 'a comrade', student: 'your student', lover: 'your lover', betrothed: 'your betrothed',
+    mentor: 'your mentor', master: 'your master', patron: 'your patron' };
+  const MASTER_WORD = { mentor: 'your mentor', patron: 'your patron', superior: 'your superior' };
   ADV.roleName = function (role, p) {
     if (A.COUNCIL && A.COUNCIL[role]) return A.COUNCIL[role].name;
+    const pc = p && A.S && A.P(A.S.pc), r = pc && pc.rel && p && pc.rel[p.id];
+    if (role === 'friend' && pc) {
+      const k = A.V2F && A.V2F.kinOf ? A.V2F.kinOf(pc, p) : null;
+      if (k && k.line !== 'spouse') return 'your ' + k.term;
+      if (r && FRIEND_WORD[r.type]) return FRIEND_WORD[r.type];
+    }
+    if (role === 'master' && pc && !(pc.job && pc.job.boss === p.id) && r && MASTER_WORD[r.type]) return MASTER_WORD[r.type];
     if (role === 'spouse') return p && p.sex === 'F' ? 'your wife' : 'your husband';
     if (role === 'eldest') return p && p.sex === 'F' ? 'your eldest daughter' : 'your eldest son';
     return ADV.ROLE[role] || role;
@@ -107,13 +119,24 @@
     // your master at work, or a mentor
     let bm = null, bmv = -1e9;
     if (pc.job && pc.job.boss) { const b = live(pc.job.boss); if (b) { bm = b; bmv = 1e6; } }
-    for (const id in rel) if (MASTER.includes(rel[id].type)) { const t = live(id); const v = myOp(pc, t) + theirOp(t, pc); if (t && v > bmv) { bm = t; bmv = v; } }
+    // a 'superior' while someone else is your superior now (A.superior) reads "Former superior" on the People tab
+    // (playtest 2, old #15: Beatrix "your superior" and "Former superior", Gerda "Your superior"): not your master
+    const curSup = A.superior ? (() => { try { return A.superior(pc); } catch (e) { return null; } })() : null;
+    for (const id in rel) if (MASTER.includes(rel[id].type)) {
+      const t = live(id); if (!t) continue;
+      if (rel[id].type === 'superior' && curSup && curSup.id !== t.id) continue;
+      const v = myOp(pc, t) + theirOp(t, pc); if (v > bmv) { bm = t; bmv = v; }
+    }
     if (bm) add(bm, 'master', pc.job ? 66 : 50);
     // the confidant: the highest rank of 999's ladder, then the warmest bond
     const fr = [];
     for (const id in rel) {
       const r = rel[id], t = live(id);
-      if (!t || !adult(t) || !(FRIEND.includes(r.type) || (r.cf || 0) > 0)) continue;
+      // the friend's seat is for a bond that is a friendship now (playtest 2, old #15: "Merewyn Ashcombe your friend"
+      // in counsel while the People tab listed her under Acquaintances): a confidant's rank (999) counts while the bond
+      // is still of a kind 999 ranks, not once it has cooled to an acquaintance
+      const ranked = (r.cf || 0) > 0 && !!(A.CONFIDANTS && A.CONFIDANTS.role ? A.CONFIDANTS.role(r) : !['acquaint', 'ex', 'rival', 'enemy'].includes(r.type));
+      if (!t || !adult(t) || !(FRIEND.includes(r.type) || ranked)) continue;
       fr.push({ t, v: (r.cf || 0) * 25 + (r.op || 0) + theirOp(t, pc), comrade: r.type === 'comrade' });
     }
     fr.sort((x, y) => y.v - x.v || (x.t.id < y.t.id ? -1 : 1));
@@ -424,15 +447,59 @@
       works: ['Build for your grandchildren. This lasts.', 'Stone outlives speeches.'],
       crown: ['Climb while the ladder holds.', 'Every step up is a step nearer the high seat.'],
       safety: ['Come home whole. That is all I ask.', 'There is no shame in the safe road.', 'I have buried enough. Do not make me bury you.'],
+      // the same want from anyone who is not your family
+      safetyAny: ['There is no shame in the safe road.', 'Take the road with fewer graves on it.', 'Nothing in this is worth your neck.'],
       kin: ['Think of the family. They will be here after.', 'Blood first. Strangers last.', 'Do what you could own to at the table, after.'],
       craft: ['Good work speaks louder than a good speech.', 'Learn from it. That is worth more than the fee.', 'Your name in the trade is your fortune.'],
       company: ['Stay near. Whatever you choose, choose it here.', 'Do the thing that lets you sleep tonight.', 'Have a little joy of it, for once.'],
       rise: ['People are watching. Give them something to see.', 'This is how a name is made.', 'Aim higher. You were not made for the back of the hall.'],
     },
   };
+  // a want's words in the mouth of who says them (playtest 2, new #12: "Brand YOUR CAPTAIN: Come home whole. That is all
+  // I ask." was a parent's line): kin, the men you serve with and a master each have their own; a master's trade sayings
+  // are for a matter of work
+  ADV.ROLE_GROUP = { father: 'kin', mother: 'kin', spouse: 'kin', eldest: 'kin', captain: 'war', comrade: 'war', marshal: 'war', superior: 'war', master: 'work' };
+  ADV.LINES.byGroup = {
+    kin: {
+      safety: ['Come home whole. That is all I ask.', 'I have buried enough. Do not make me bury you.', 'There is no shame in the safe road.'],
+    },
+    war: {
+      safety: ['Keep your shield up and your head down. I need you standing.', 'Dead men hold no ground. Take the careful way.', 'The bold ones fill the pits. Be the one who walks home.'],
+      company: ['Stay with the line. A man alone is a man dead.', 'Keep close to your mates. That is how we come through.'],
+      kin: ['Think of who waits for you at home. Then choose.'],
+    },
+    work: {
+      craft: ['Good work speaks louder than a good speech.', 'Learn from it. That is worth more than the fee.', 'Your name in the trade is your fortune.'],
+    },
+  };
+  // a master's want for good work, on a matter that is not work: a careful hand's words, not the trade's
+  ADV.LINES.workOff = ['Measure twice. Then choose.', 'Do it properly or not at all.', 'Think it through, the way you would a hard piece of work.'];
+  // a scene where every way ends in a rope or a grave (the gallows): no one bids you come home safe
+  ADV.LINES.doom = {
+    kin: ['Whatever comes, you are ours. Remember it.', 'I am here. I will not look away.'],
+    any: ['Steady. Whatever you choose, choose it standing.', 'Keep your face. It is the one thing they cannot take.'],
+  };
+  ADV.wantLines = function (role, want, dom) {
+    const g = ADV.ROLE_GROUP[role];
+    if (g === 'work' && want === 'craft' && dom !== 'work') return ADV.LINES.workOff;
+    return (g && ADV.LINES.byGroup[g] && ADV.LINES.byGroup[g][want]) || (want === 'safety' && g !== 'kin' ? ADV.LINES.want.safetyAny : ADV.LINES.want[want]);
+  };
+  // every shown choice can kill (a check whose failure dies, or a death outright)
+  const DIES = /\bdie\b["']?\s*:/;
+  ADV.isDoom = function (e, v) {
+    if (!e || !Array.isArray(e.choices) || !v || !Array.isArray(v.choices)) return false;
+    const shown = v.choices.filter(c => c && c.i >= 0 && e.choices[c.i]);
+    if (shown.length < 2) return false;
+    return shown.every(c => {
+      const ch = e.choices[c.i];
+      try { return DIES.test(JSON.stringify(ch.check ? ch.lose : ch, (k, x) => (typeof x === 'function' ? String(x) : x))); } catch (err) { return false; }
+    });
+  };
   // the line: their want's words, or (for one who knows the matter) the matter's; never a line already said
-  ADV.lineFor = function (t, role, want, dom, why, key, used) {
-    const L = why === 'want' ? ADV.LINES.want[want] || ADV.LINES.sense.any : (ADV.LINES.sense[dom] || ADV.LINES.sense.any).concat(why === 'both' ? ADV.LINES.want[want] || [] : []);
+  ADV.lineFor = function (t, role, want, dom, why, key, used, doom) {
+    const W = ADV.wantLines(role, want, dom);
+    const L = doom ? ADV.LINES.doom[ADV.ROLE_GROUP[role] === 'kin' ? 'kin' : 'any']
+      : why === 'want' ? W || ADV.LINES.sense.any : (ADV.LINES.sense[dom] || ADV.LINES.sense.any).concat(why === 'both' ? W || [] : []);
     const h = hash(key + '|line');
     for (let k = 0; k < L.length; k++) { const l = L[(h + k) % L.length]; if (!used || !used.includes(l)) return l; }
     return L[h % L.length];
@@ -452,7 +519,7 @@
     if (ADV.OFF || !pc || !pc.alive || !q || q.type !== 'event' || !v || v.skip || age(pc) < 10) return null;
     const e = A.EV[q.ev];
     if (!e || !Array.isArray(v.choices) || v.choices.length < 2 || !ADV.isBig(e, q, pc)) return null;
-    const ring = ADV.ring(pc), pid = q.ctx && q.ctx.pid, dom = ADV.domOf(q, v, e), y = A.S.year;
+    const ring = ADV.ring(pc), pid = q.ctx && q.ctx.pid, dom = ADV.domOf(q, v, e), y = A.S.year, doom = ADV.isDoom(e, v);
     const cand = [];
     for (const x of ring) {
       if (x.id === pid) continue;
@@ -474,7 +541,7 @@
       let bi = 0, bv = -1e9;
       cand.forEach((c, k) => { const v2 = c.rel + (out.length && !out.some(o => o.i === c.pk.j) ? 25 : 0); if (v2 > bv) { bv = v2; bi = k; } });
       const c = cand.splice(bi, 1)[0];
-      out.push({ id: c.x.id, r: c.x.role, i: c.pk.j, y: c.pk.why, c: c.comp, l: ADV.lineFor(c.t, c.x.role, c.x.w, dom, c.pk.why, c.key, out.map(o => o.l)), m: ADV.manner(c.t, c.key) });
+      out.push({ id: c.x.id, r: c.x.role, i: c.pk.j, y: c.pk.why, c: c.comp, l: ADV.lineFor(c.t, c.x.role, c.x.w, dom, c.pk.why, c.key, out.map(o => o.l), doom), m: ADV.manner(c.t, c.key) });
     }
     for (const f of ADV.counsel) {
       try {
@@ -584,11 +651,15 @@
       if (!w) return;
       ctx.pid = w.id; ctx.foeId = f.foe;
     } else { ctx.pid = f.pid; if (f.foe) ctx.foeId = f.foe; if (f.pair) ctx.pair = f.pair; }
+    // a queue wrapper further in (81-pacing's first adult year, 58-event-cut) may drop the scene: only a scene that
+    // really lands spends 21's budget and starts its cooldowns, or the advisor's turn is lost on a scene never shown
+    const n0 = S.queue.length;
+    A.queue({ type: 'event', ev: f.ev, ctx });
+    if (S.queue.length <= n0) return;
     s.fy[f.ev] = y;
     if (f.ev === 'adv_unheeded' && s.m[ctx.pid]) s.m[ctx.pid].uy = y;
     if (f.ev === 'adv_quarrel' && f.pair) s.dis[f.pair] = 0;
     if (st) { st.b -= 1; st.hy[y] = (st.hy[y] || 0) + 1; st.tot = (st.tot || 0) + 1; }
-    A.queue({ type: 'event', ev: f.ev, ctx });
   };
 
   ADV.stats = { big: 0, adv: 0, lines: 0 };   // this page's tally (not saved), for the bench

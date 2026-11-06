@@ -6,29 +6,47 @@
 
 ## How this repo works
 
-The game's original source is not here. What is here is the shipped release (`vendor/`), and on top of it a set of **features**: each one a folder that patches the release, adds readable code or events, and brings its own tests. `tools/build.mjs` applies them in order and writes `index.html`.
+The game's original source is not here. What is here is the shipped release (`vendor/`), and on top of it a set of
+**features**: each one a folder that patches the release, adds readable code or events, and tests itself.
+`tools/build.mjs` turns the release plus every feature into `index.html`.
 
 ```
-index.html                  the game: release + every feature
-vendor/                     the untouched release build b593143
-features/NN-name/           one unit of change each
+index.html                  the game: release + every feature (built; CI checks it matches)
+vendor/                     the untouched release build b593143 (never edited)
+features/NN-name/           one unit of change each; 00-09 are the fix layer, 99990-99999 are v2
   patches.mjs               exact edits to the minified code, each with a "why"
   *.core.js                 new engine/UI code, appended to the core
   *.events.js               new events, appended as content packs
   test.mjs                  browser tests for this feature
-  README.md                 what it does, which aspect it serves, how it is measured
-tools/                      build, pack/unpack, function viewer, event linter
-tests/                      test runner, shared helpers, whole-game suites
-bench/                      measurement harnesses (bot league, duels, pacing...) -> reports/
-reports/                    generated scorecards
-docs/plan/                  the Road to Ten
-docs/reviews/               the deep analysis and the Road to 100 review
-docs/benchmarks/            how Ardan compares with the best-designed games, aspect by aspect
-docs/north-star/            what Ardan looks like with unlimited time and resources
+  README.md                 what it does, why, how it is measured
+  .wip                      out of the build (work in progress, or retired like the Far Lands 99, 990-993, 9995)
+src/v2/                     the v2 engine as plain ES modules (body, odds, kin, nobility, diplomacy, war, map...)
+tests/v2/                   its node tests (node --test tests/v2); tests/run.mjs runs the browser tests
+tools/                      build, build-v2 (bundles src/v2), version, pack/unpack, show, linters, check
+tools/v2/                   the v2 kit's demo build and map renders
+bench/                      measurement harnesses (bot league, balance bands) -> reports/
+docs/                       plans, reviews, research, the v2 spec: see docs/README.md
+.claude/skills/             the project's skills (playtest loop, life-sim systems, continent maps)
 CLAUDE.md                   working rules for anyone (human or agent) changing the game
 ```
 
-`features/00-` to `09-` are fixes and are always built. Higher numbers are new systems and content.
+## Versions
+
+Every foundational or significant change is a version: a row in docs/VERSIONS.md naming the commit whose `index.html` is that version of
+the game. `node tools/version.mjs list` lists them; `node tools/version.mjs get v1.5.0` writes that version's playable
+file to `versions/`. The history is in [docs/VERSIONS.md](docs/VERSIONS.md): v1.0.0 is the shipped release, v1.1-v1.6
+are the rounds and cycles built on it, and v2.0.0-alpha.N are the steps of the owner's v2 spec.
+
+## Branches
+
+| Branch | What it holds |
+| --- | --- |
+| `main` | The release as uploaded, and the owner's v2 kit |
+| `claude/dreamy-sagan-anwszt` | v1.1 to v1.6: the fix layer, the Road to Ten rounds, cycles 1 and 2 (PR #1 into `main`) |
+| `v2-integration` | v2: the owner's spec built step by step on top of v1.6 (its own PR, stacked on PR #1) |
+| `v2-fix-*` | Work in progress for the next v2 round; merged into `v2-integration`, then deleted |
+
+Finished lane branches are deleted once they are merged; their work lives in the squashed step commits on `v2-integration`.
 
 ## What is in the build
 

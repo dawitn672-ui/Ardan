@@ -9,7 +9,8 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-# Five jobs side by side: the build, linters and a third of the browser tests in each of three (tools/check.mjs
+# Nine jobs side by side: eight test shards and the balance league (v2: 8 shards instead of 3, so a full run takes
+# about 25 minutes, not an hour; the Great Continent league left with the Far Lands in v2 step 2): the build, linters and a third of the browser tests in each of three (tools/check.mjs
 # --skip-balance --shard=k/3), the balance league in the fourth, and the Great Continent's league in the fifth (every path
 # born in the Known World and in the Far Lands of one 2,033-province world: 6 lives a group for 25 years, about half an
 # hour on four workers). As one job the whole check took 80 minutes, and the
@@ -21,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,7 +31,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node tools/check.mjs --skip-balance --shard=${{ matrix.shard }}/3
+      - run: node tools/check.mjs --skip-balance --shard=${{ matrix.shard }}/8
   balance:
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
     timeout-minutes: 120
@@ -45,16 +46,3 @@ jobs:
       - run: node tools/build.mjs
       - run: git diff --exit-code index.html
       - run: node bench/balance.mjs index.html --workers=4
-  balance-great:
-    runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
-    timeout-minutes: 120
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: node tools/build.mjs
-      - run: node bench/balance.mjs index.html --lands=great --workers=4

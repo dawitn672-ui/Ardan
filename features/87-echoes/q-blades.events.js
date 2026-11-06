@@ -32,7 +32,7 @@
       text: "The priest who taught you your letters by your sickbed, the weeks you watched the light move across the wall, is blind now. He has a box of books and nobody to read them to him. His boy says he has asked for you, since the world had more in it after.",
       choices: [
         { t: "Go and read to him, twice a week",
-          r: "Two evenings a week for a year. He corrects your Latin from memory. You have never read so much.",
+          r: "Two evenings a week for a year. He corrects your Old Solen from memory. You have never read so much.",
           fx: { skill: { learning: 2 }, piety: 2, need: { purpose: 6 } } },
         { t: "Find a child to read to him, and teach the child",
           r: "A sharp girl from the lane. You teach her, she reads to him. He says she has your bad habits.",

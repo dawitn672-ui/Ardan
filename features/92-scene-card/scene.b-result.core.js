@@ -40,6 +40,10 @@
     if (a.them && b.them && a.them.id === b.them.id) {
       if (a.them.op != null && b.them.op != null && b.them.op !== a.them.op) out.push({ k: 'them', d: b.them.op - a.them.op, label: `${b.them.name}'s regard`, icon: 'people' });
       else if (a.them.op == null && b.them.op != null && b.them.op) out.push({ k: 'them', d: b.them.op, label: `${b.them.name}'s regard`, icon: 'people' });
+    } else if (!a.them && b.them && b.them.op) {
+      // someone the choice brought into the scene (52's awWho makes a ward, a friend, a rival and puts them in ctx.pid):
+      // their regard is new with the choice, so it is a chip as a first regard is (aw_plague_5's orphan, scDeltas)
+      out.push({ k: 'them', d: b.them.op, label: `${b.them.name}'s regard`, icon: 'people' });
     }
     for (const k of Object.keys(b.sk)) { const d = b.sk[k] - (a.sk[k] || 0); if (d) out.push({ k: 'sk.' + k, d, label: SC.longName(k), skill: k }); }
     for (const t of b.traits) if (!a.traits.includes(t)) out.push({ k: 'tr.' + t, d: 1, label: (GD.TRAITS && GD.TRAITS[t] && GD.TRAITS[t].name) || t, trait: true });

@@ -10,8 +10,6 @@ const EVENT = `(() => { A.S.queue = []; UI.ov = null; const pc = A.pc(); let q =
   for (let g = 0; g < 60 && !q; g++) { A.advance(30); const h = A.S.queue[0]; if (h && h.type === 'event') { const v = A.eventView(h); if (v && v.choices && v.choices.length >= 2 && !v.skip) { q = h; A.S.queue = [h]; break; } } A.S.queue = []; if (!pc.alive) { pc.alive = true; pc.health = 80; } }
   UI.tab = 'life'; UI.render(); return q ? q.ev : null; })()`;
 
-// every one of the five far lands is some far province's
-const SKOK = c => ['jungle', 'savanna', 'taiga', 'alpine', 'scrub'].every(t => (c[t] || 0) > 0);
 
 export default {
   // 25 scenes x 6 hours x 8 lands x 4 seasons: valid SVG, the same input gives the same string, other events and years
@@ -143,9 +141,14 @@ export default {
     dropFontCsp(errs);
     return { ok: !found.length, detail: `${found.length} axe violations with an event and its print on screen, dark and light${found.length ? ': ' + found.slice(0, 6).join(', ') : ''}` };
   },
-  // the Great Continent's climates: a far province's biome picks its land (jungle, savanna, taiga, alpine pasture,
-  // scrub), each new land prints for every scene within budget, a life in the far lands gets its home's climate, and a
-  // Known World province keeps its word
+  // the climates' prints: each of the five climates beyond the eight words (jungle, savanna, taiga, alpine pasture,
+  // scrub) and each of the six building styles prints for every scene within budget, and a province of the continent
+  // keeps its word and its houses.
+  // Changed for v2 (docs/v2/LANES.md: the Far Lands are dropped from the build): this also counted the far provinces
+  // by climate and building and played a life in a far jungle home; there are no far provinces now (it read {} and
+  // null). It now measures the same on the generated continent: every province prints its own word and no far
+  // building, and a home's event print carries that word. The far climates' and buildings' prints stay measured, for
+  // when far lands are carried onto the continent.
   async skyFarLands(pg) {
     const r = await pg.evaluate(() => {
       const SK = UI.SKIES, bad = [], sizes = [];
@@ -155,7 +158,6 @@ export default {
         if (doc.querySelector('parsererror') || /NaN|undefined/.test(svg) || !svg.includes(`data-terr="${t}"`)) bad.push(t + '/' + sh + '/' + h);
         sizes.push(svg.length);
       }
-      // the far lands' buildings: every style in the scenes that show houses and towers, within budget
       const archBad = [], archSizes = [];
       for (const a of SK.ARCH) for (const sh of ['street', 'tavern', 'kin', 'crime', 'menace', 'subordinate', 'errand']) {
         if (!SK.SCENE[sh]) continue;
@@ -164,24 +166,21 @@ export default {
         if (doc.querySelector('parsererror') || /NaN|undefined/.test(svg) || !svg.includes(`data-arch="${a}"`) || svg === SK.svg(sh, 'ev_arch|1105', 5, { hour: 'day', terr: 'hills' })) archBad.push(a + '/' + sh);
         archSizes.push(svg.length);
       }
-      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
-      const count = {}, arches = {};
-      for (const pv of LORE.map.provinces) { if (!pv || pv.id < 306) continue; const a = SK.archOf(pv); arches[a] = (arches[a] || 0) + 1; }
-      const kwArch = LORE.map.provinces.filter(pv => pv && pv.id < 306).every(pv => !SK.archOf(pv));
-      for (const pv of LORE.map.provinces) { if (!pv || pv.id < 306) continue; const t = SK.terrOf(pv); count[t] = (count[t] || 0) + 1; }
-      const kwSame = LORE.map.provinces.filter(pv => pv && pv.id < 306).every(pv => SK.terrOf(pv) === (SK.TERRAIN[pv.terr] ? pv.terr : 'hills'));
-      // a home in the far south's monsoon forest: the event's print is a jungle
-      const home = LORE.map.provinces.find(pv => pv && pv.id >= 306 && SK.terrOf(pv) === 'jungle' && pv.realm && pv.realm !== 'unclaimed');
-      let drawn = null;
-      if (home) {
-        const pc = A.pc(); pc.home = home.id; pc.loc = home.id;
-        A.S.queue = [{ type: 'event', ev: 'lf_love_potion', forced: true, ctx: {} }]; UI.screen = 'game'; UI.render();
-        const svg = document.querySelector('#modal svg.woodcut'); drawn = svg && svg.dataset.terr + '/' + (svg.dataset.arch || 'none');
-      }
-      return { n: sizes.length, bad, max: Math.max(...sizes), avg: Math.round(sizes.reduce((a, x) => a + x, 0) / sizes.length), count, kwSame, drawn, archBad, archMax: Math.max(...archSizes), arches, kwArch };
+      A.newGame({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      const provs = A.S.prov.filter(Boolean), count = {};
+      for (const pv of provs) { const t = SK.terrOf(pv); count[t] = (count[t] || 0) + 1; }
+      const kwSame = provs.every(pv => SK.terrOf(pv) === (SK.TERRAIN[pv.terr] ? pv.terr : 'hills'));
+      const kwArch = provs.every(pv => !SK.archOf(pv));
+      // a home on the continent: the event's print carries the home's word
+      const pc = A.pc(), home = A.S.prov[pc.home];
+      A.S.queue = [{ type: 'event', ev: 'lf_love_potion', forced: true, ctx: {} }]; UI.screen = 'game'; UI.render();
+      const svg = document.querySelector('#modal svg.woodcut'), drawn = svg && svg.dataset.terr + '/' + (svg.dataset.arch || 'none');
+      return { n: sizes.length, bad, max: Math.max(...sizes), avg: Math.round(sizes.reduce((a, x) => a + x, 0) / sizes.length), count, kwSame, kwArch, drawn, want: SK.terrOf(home) + '/none',
+        archBad, archMax: Math.max(...archSizes), provs: provs.length };
     });
-    const ok = !r.bad.length && r.max <= 15 * 1024 && SKOK(r.count) && r.kwSame && /^jungle\/(stilt|eaves|round)$/.test(r.drawn || '') && !r.archBad.length && r.archMax <= 15 * 1024 && Object.keys(r.arches).filter(k => k !== 'null').length === 6 && r.kwArch;
-    return { ok, detail: `${r.n} prints of the five far lands: ${(r.avg / 1024).toFixed(1)} KB average, ${(r.max / 1024).toFixed(1)} KB at most${r.bad.length ? ', BAD ' + r.bad.slice(0, 4).join(', ') : ''}; far provinces by land ${JSON.stringify(r.count)}; Known World words kept ${r.kwSame}; a jungle home draws ${r.drawn}; buildings ${JSON.stringify(r.arches)}, ${r.archBad.length} bad, at most ${(r.archMax / 1024).toFixed(1)} KB, none in the Known World ${r.kwArch}` };
+    const ok = !r.bad.length && r.max <= 15 * 1024 && r.kwSame && r.kwArch && r.provs >= 300 && r.drawn === r.want && !r.archBad.length && r.archMax <= 15 * 1024;
+    return { ok, detail: `${r.n} prints of the five far climates: ${(r.avg / 1024).toFixed(1)} KB average, ${(r.max / 1024).toFixed(1)} KB at most${r.bad.length ? ', BAD ' + r.bad.slice(0, 4).join(', ') : ''}; ` +
+      `six building styles: ${r.archBad.length} bad, at most ${(r.archMax / 1024).toFixed(1)} KB; the continent's ${r.provs} provinces by print ${JSON.stringify(r.count)}, each its own word ${r.kwSame}, no far buildings ${r.kwArch}; a home's event draws ${r.drawn} (want ${r.want})` };
   },
 
   // cycle 1 visual B3: January snowed on every land but the desert, the Scent Isles' palms included. Snow now follows
@@ -189,7 +188,8 @@ export default {
   async skyClimate(pg) {
     const r = await pg.evaluate(() => {
       const SK = UI.SKIES;
-      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
       const provs = Object.values(A.S.prov);
       const pick = re => provs.find(pv => re.test(pv.biome || '') && pv.terr !== 'mountains');
       const out = {};

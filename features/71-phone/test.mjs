@@ -266,7 +266,8 @@ export default {
     await p.goto(pathToFileURL(file).href); await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
     await p.evaluate(HELPERS);
     const r = await p.evaluate(() => {
-      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24, lands: 'great' });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      T.enter({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24 });
       UI.set.motion = 'off'; UI.applySettings(); A.S.queue = [];
       UI.FOLD.state['p-holdings|the market'] = true; UI.FOLD.state['holdings|the market'] = true;
       UI.tab = 'holdings'; UI.render();

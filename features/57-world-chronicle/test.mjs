@@ -92,8 +92,56 @@ export default {
     return { ok: r.same && r.on > 100 && r.off === 0, detail: `12 years with the record (${r.on} entries) and without it (${r.off}): ${r.same ? 'the same world, people and random stream' : 'the worlds DIFFER'}` };
   },
 
+  async wcRecallYieldsToVoice(pg) {
+    // the regression under wcObservesOnly (CI run 88): a card carries one extra line, and a recalled line used to push
+    // the life's inner voice (9992-identity) out; the life remembers each voice line it hears (pc.idv), so whether the
+    // record had an entry to recall decided what the character had heard. The recalled line now gives way: on every
+    // card the voice that speaks is the one that would speak with no recalled line, and the record still recalls.
+    // To meet the case often, every scene with a subject is offered a recalled line here (WC.RECALL 100, put back after);
+    // the first life is the one wcObservesOnly plays, with the record off, where the canon alone is recalled.
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const ID = A.ID; if (!ID || typeof ID.voiceCore !== 'function') return { none: true };
+      let cards = 0, recalls = 0, voices = 0, both = 0;
+      const silenced = [], share = A.WC.RECALL;
+      A.WC.RECALL = 100;
+      try {
+        for (const [seed, status, realm, age, off] of [[9090, 'merchant', 'POL-05', 20, true], [9090, 'merchant', 'POL-05', 20, false], [4242, 'peasant', 'POL-01', 18, false], [811, 'artisan', 'POL-03', 18, false]]) {
+          A.WC.OFF = off;
+          A.newGame({ seed, race: 'human', realm, status, sex: seed % 2 ? 'M' : 'F', startAge: age });
+          WCT.years(8, { onEvent: (q, v) => {
+            if (v.skip) return;
+            cards++;
+            const vo = ID.voiceCore(A.pc(), q);
+            if (vo) voices++;
+            if (!v.recall) return;
+            recalls++;
+            if (vo) both++;
+            // the voice with the recalled line taken away (put back at once: the card is not changed)
+            const line = v.recall; delete v.recall;
+            let bare = null; try { bare = ID.voiceCore(A.pc(), q); } finally { v.recall = line; }
+            if (bare) silenced.push(`${A.S.year} ${q.ev}: "${bare.line}" silenced by "${line}"`);
+          } });
+        }
+      } finally { A.WC.RECALL = share; A.WC.OFF = false; }
+      return { cards, recalls, voices, both, silenced };
+    });
+    if (r.none) return { ok: true, detail: 'no inner voice in this build' };
+    const ok = r.cards > 200 && r.recalls > 0 && r.voices > 0 && !r.both && !r.silenced.length;
+    return { ok, detail: `${r.cards} cards over four lives of 8 years: ${r.recalls} with a recalled line, ${r.voices} with an inner voice, ${r.both} with both; ` +
+      `voices a recalled line silenced: ${r.silenced.length}${r.silenced.length ? ' e.g. ' + r.silenced[0] : ''}` };
+  },
+
   async wcCitesShare(pg) {
-    // W6: the share of a life's scenes that cite a dated entry, and that each one is possible where and when it is told
+    // W6: scenes cite dated entries, and each one is possible where and when it is told.
+    // Changed for v2: W6 asked for 15% or more of a life's scenes to cite an entry, and almost all of them were the
+    // recalled line under a scene ("the world remembers..."): about 17% of cards carried one. The owner's complaint 1
+    // (V2_SPEC: everything on one card, no filler) and playtest 1 #10 ("every card carries filler") ask for extra lines
+    // to be rare and to fit the scene, one at most on a card. So the bar is now the other way round: a recalled line on
+    // fewer than 1 card in 10 over a played life (overall and in the median life, no life above 12%), each one about an
+    // entry that bears on the scene (a person, the home or a named place, a named realm, or the war of the scene), never
+    // beside counsel or a memory; citations must still happen (by line, token or pack). Kept: no citation outside the
+    // character's place or time, no raw token.
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const mixes = [['human', 'POL-01', 'peasant'], ['human', 'POL-05', 'merchant'], ['elf', 'POL-03', 'peasant'], ['dwarf', 'POL-20', 'artisan'],
@@ -107,6 +155,24 @@ export default {
           if (v.skip) return;
           L.seen++;
           if (WCT.raw.test(`${v.title} ${v.text} ${v.recall || ''}`)) L.raw++;
+          if (v.recall) {
+            // the recalled line bears on the scene: read here from the entry and the scene's own words and context
+            const pc = A.pc(), c = A.WC.cite(v.recallId), text = `${v.title || ''} ${v.text || ''}`, ctx = q.ctx || {};
+            const vals = new Set(Object.values(ctx).filter(x => typeof x === 'string'));
+            const named = id => { const r = A.realm(id); return !!r && [r.short, r.name].some(s => s && s.length > 3 && text.includes(s.replace(/^the /i, ''))); };
+            let fits = false;
+            if (c && c.c) fits = c.c.realms.some(id => vals.has(id) || named(id)) || (!!c.c.who && text.includes(c.c.who));
+            else if (c && c.e) {
+              const e = c.e, P = e.p != null && A.S.prov[e.p], wid = Array.isArray(e.x) ? (e.k === 'battle' ? e.x[2] : e.x[0]) : e.x;
+              fits = (e.w || []).some(id => id && (id === pc.id || vals.has(id) || (A.WC.name(id) && text.includes(A.WC.name(id).split(' ').slice(-2).join(' '))))) ||
+                e.p === pc.home || (!!P && P.name.length > 3 && text.includes(P.name.replace(/^The /, ''))) ||
+                [e.a, e.b].some(id => id && (vals.has(id) || named(id))) ||
+                (!!wid && (vals.has(wid) || (!!pc.mil && (A.atWar(pc.mil.realm || pc.realm) || []).some(w => w === wid || (w && w.id) === wid))));
+            }
+            if (!fits) wrong.push(`${q.ev}: recalled "${v.recall}" does not bear on "${v.title}"`);
+            if ((v.adv && v.adv.length) || (ctx.mw && !ctx.mw.off && ctx.mw.ev === q.ev)) wrong.push(`${q.ev}: a recalled line beside counsel or a memory`);
+            L.recall = (L.recall || 0) + 1;
+          }
           if (!A.WC.cites(q)) return;
           L.cite++;
           if (v.recall) L.line++; else if (/^wc_/.test(q.ev)) L.pack++; else L.token++;
@@ -123,6 +189,7 @@ export default {
           if (sample.length < 12 && v.recall) sample.push(v.recall);
         } });
         L.years = A.S.year - 1105; L.pct = Math.round(1000 * L.cite / Math.max(1, L.seen)) / 10;
+        L.recall = L.recall || 0; L.rpct = Math.round(1000 * L.recall / Math.max(1, L.seen)) / 10;
         lives.push(L);
       }
       return { lives, wrong: wrong.slice(0, 5), nWrong: wrong.length, sample };
@@ -130,9 +197,11 @@ export default {
     const seen = r.lives.reduce((a, l) => a + l.seen, 0), cite = r.lives.reduce((a, l) => a + l.cite, 0), pct = Math.round(1000 * cite / seen) / 10;
     const sum = k => r.lives.reduce((a, l) => a + l[k], 0), raw = sum('raw');
     const pcts = r.lives.map(l => l.pct).sort((a, b) => a - b), med = (pcts[3] + pcts[4]) / 2;
-    return { ok: pct >= 15 && med >= 12 && !r.nWrong && !raw, data: r, detail: `${r.lives.length} lives (${r.lives.map(l => `${l.race} ${l.status} ${l.years}y ${l.pct}%`).join(', ')}): ` +
+    const rec = sum('recall'), rpct = Math.round(1000 * rec / seen) / 10, rp = r.lives.map(l => l.rpct).sort((a, b) => a - b), rmed = (rp[3] + rp[4]) / 2, rmax = rp[rp.length - 1];
+    return { ok: rpct < 10 && rmed < 10 && rmax <= 12 && rec > 0 && cite > 0 && !r.nWrong && !raw, data: r, detail: `${r.lives.length} lives (${r.lives.map(l => `${l.race} ${l.status} ${l.years}y ${l.pct}% cite, ${l.rpct}% recalled`).join(', ')}): ` +
+      `a recalled line on ${rec} of ${seen} cards, ${rpct}% (median life ${rmed}%, most ${rmax}%); ` +
       `${cite} of ${seen} scenes cite a dated entry, ${pct}% (median life ${med}%); by a recalled line ${sum('line')}, a scene of the pack ${sum('pack')}, a token ${sum('token')}; ` +
-      `${sum('canon')} of the citations are canon. Citations outside the character's place or time: ${r.nWrong}${r.wrong.length ? ' e.g. ' + r.wrong.slice(0, 3).join(' | ') : ''}; raw tokens ${raw}. ` +
+      `${sum('canon')} of the citations are canon. Citations outside the character's place or time, or lines that do not bear on their scene: ${r.nWrong}${r.wrong.length ? ' e.g. ' + r.wrong.slice(0, 3).join(' | ') : ''}; raw tokens ${raw}. ` +
       `e.g. "${r.sample[0] || ''}"` };
   },
 
@@ -259,7 +328,9 @@ export default {
       const realms = Object.values(A.S.realms).filter(x => !x.isRebel).length;
       // force one into the player's home: the scene comes
       const pc = A.pc(), chance = A.WC.plagueChance;
-      A.WC.plagueChance = r => (r.id === (A.prov(pc.home) || {}).owner ? 12 : 0);
+      // what the forced roll saw of its realm, in the rebel strike: the regression has to reach the roll as a rebel
+      let sawRebel = null, inRebel = false;
+      A.WC.plagueChance = r => { const v = r.id === (A.prov(pc.home) || {}).owner ? 12 : 0; if (v && inRebel) sawRebel = !!r.isRebel; return v; };
       const P = A.prov(pc.home); P.adj = P.adj || [];
       const wp = A.wpick; A.wpick = (arr, f) => (arr.some(x => x && x.id === pc.home) ? arr.find(x => x.id === pc.home) : wp(arr, f));
       let queued = false;
@@ -267,11 +338,25 @@ export default {
       // A.advance stops on them before the epidemic's month comes (80-callbacks' events were enough to do it)
       const clearOthers = () => { A.S.queue = A.S.queue.filter(q => q.ev === 'wc_sickness_comes'); };
       clearOthers();
-      try { for (let i = 0; i < 6 && !queued; i++) { A.advance(31); queued = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!queued) clearOthers(); } } finally { A.WC.plagueChance = chance; A.wpick = wp; }
-      const q = A.S.queue.find(x => x.ev === 'wc_sickness_comes'), v = q && A.eventView(q);
-      return { n: pl.length, fam: fam.length, realms, perRealm20: Math.round(100 * pl.length / realms / 2) / 100, famPer20: Math.round(100 * fam.length / realms / 2) / 100, queued, text: v ? v.text : '', skip: v ? v.skip : null };
+      const strike = () => { let got = false; for (let i = 0; i < 6 && !got; i++) { A.advance(31); got = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!got) clearOthers(); } return got; };
+      let q, v, rebelQueued = null;
+      const base = A.serialize(), found = A.EF && A.EF.found;
+      try {
+        queued = strike();
+        q = A.S.queue.find(x => x.ev === 'wc_sickness_comes'); v = q && A.eventView(q);
+        // CI run 88: the player's home was held by a rebel league after 40 years, and rebel-held land never sickened, so
+        // the scene never came. From the same day again (a scene seen is not shown twice inside 240 days), with the
+        // home's holder a rebel realm, the scene still comes
+        A.deserialize(JSON.parse(base));
+        const own = A.realm((A.prov(A.pc().home) || {}).owner);
+        // 03-engine-fixes founds any rebel realm at peace each month (EF.found clears isRebel) before the roll, so a
+        // home holder at peace made a rebel here was a crown again by the time it was rolled, and this passed on the old
+        // code too (the verifier's finding). Founding is held off for the strike, and the roll must see a rebel.
+        if (own) { own.isRebel = true; if (A.EF && found) A.EF.found = () => false; inRebel = true; clearOthers(); rebelQueued = strike(); }
+      } finally { A.WC.plagueChance = chance; A.wpick = wp; if (A.EF && found) A.EF.found = found; inRebel = false; }
+      return { n: pl.length, fam: fam.length, realms, perRealm20: Math.round(100 * pl.length / realms / 2) / 100, famPer20: Math.round(100 * fam.length / realms / 2) / 100, queued, rebelQueued, sawRebel, text: v ? v.text : '', skip: v ? v.skip : null };
     });
-    return { ok: r.n > 0 && r.queued && r.skip === false && !/\{/.test(r.text), detail: `40 years: ${r.n} epidemics (${r.perRealm20} per realm per 20 years) and ${r.fam} famines (${r.famPer20}) over ${r.realms} realms; struck at home, the scene comes: ${r.queued}: "${r.text}"` };
+    return { ok: r.n > 0 && r.queued && r.rebelQueued === true && r.sawRebel === true && r.skip === false && !/\{/.test(r.text), detail: `40 years: ${r.n} epidemics (${r.perRealm20} per realm per 20 years) and ${r.fam} famines (${r.famPer20}) over ${r.realms} realms; struck at home, the scene comes: ${r.queued}; under a rebel holder too: ${r.rebelQueued} (the roll saw a rebel: ${r.sawRebel}): "${r.text}"` };
   },
 
   async wcScenesRender(pg) {
@@ -337,21 +422,67 @@ export default {
     });
     return { ok: r.n > 300 && !r.bad.length && !r.thin.length && r.total >= 60, detail: `${r.total} line templates in ${Object.keys(r.kinds).length} kinds, ${r.n} drawn; kinds with one line ${r.thin.join(', ') || 'none'}; bad ${r.bad.length} ${r.bad.slice(0, 3).join(' | ')}` };
   },
+  // playtest 2, new #13: "Mothers here still frighten children with the men of Aldmark" was said in Aldmark. A line that
+  // fears the side that took a town ('foe') is said only where the taker is not the player's realm nor the place's
+  async wcRecallRightSide(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5711, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const WC = A.WC, pc = A.pc(), other = Object.keys(A.S.realms).find(id => id !== pc.realm && A.S.realms[id].alive);
+      const P = A.S.prov.findIndex(p => p && p.name && p.owner === pc.realm);
+      const FOE = /frighten children|bar their doors/;
+      const draw = (taker, n) => {
+        const out = [];
+        for (let i = 0; i < n; i++) {
+          const y = A.S.year - 6, c = { id: 'rT' + i, y, k: 'fall', e: { i: 0, y, k: 'fall', a: taker, b: taker === pc.realm ? other : pc.realm, p: P, w: [], x: 1 } };
+          const line = WC.recallLine(c, pc, 'wcRightSide|' + i);
+          if (line) out.push(line);
+        }
+        return out;
+      };
+      const ours = draw(pc.realm, 40), theirs = draw(other, 40);
+      return { ours: ours.filter(l => FOE.test(l)), oursN: ours.length, theirs: theirs.filter(l => FOE.test(l)).length, theirsN: theirs.length };
+    });
+    return { ok: r.oursN >= 20 && !r.ours.length && r.theirs > 0,
+      detail: `the player's own realm took the town: ${r.oursN} lines, ${r.ours.length} fear the taker ${r.ours[0] || ''}; another realm took it: ${r.theirs} of ${r.theirsN} may` };
+  },
   // cycle 1: "Since 1105, part of every tax here goes to Khaganate. Nobody forgets it." said in 1105. A "since" line
-  // waits until the year is WC.SINCE_MIN years gone, and a far realm whose short name is a noun takes its article.
+  // waits until the year is WC.SINCE_MIN years gone, and a realm whose short name is a noun takes its article.
+  // Changed for v2: this test played a Far Lands realm (lands: 'great', POL-59 paying POL-58, "the Khaganate"). The
+  // owner removed the Far Lands from the build (V2_SPEC complaint 3, LANES "The Far Lands"), so POL-58 no longer exists
+  // and the line read "the share for a realm now gone". The bar is the same, but the realm is now made inside the test:
+  // 99999-v2-names gave every continent realm a proper name (POL-19 "Confederacy of the Sand Clans" is now "Sahrim
+  // Confederacy"), so no realm in the v2 build is noun-named, and a hardcoded name breaks with the next rename. The test
+  // gives POL-19 a noun name for one draw ("League of the Salt Marches" / "Salt Marches", a name no rename table
+  // touches), restores it, then draws again on POL-19's own proper name. Both draws are held to WC.realmWord's rule,
+  // restated here: a short name that stands after "of the" in the full name takes "the"; any other takes no article.
   async wcEchoWords(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 5701, lands: 'great', race: 'human', realm: 'POL-59', status: 'peasant', sex: 'M', startAge: 30 });
-      const pc = A.pc(), y = A.S.year;
-      const c = (yy, i) => ({ id: 'x' + yy + i, k: 'trib', y: yy, e: { k: 'trib', p: pc.home, a: 'POL-59', b: 'POL-58', w: [], x: 0, y: yy } });
-      const fresh = [], old = [];
-      for (let i = 0; i < 6; i++) { fresh.push(A.WC.recallLine(c(y, i), pc, 'k' + i)); old.push(A.WC.recallLine(c(y - 5, i), pc, 'k' + i)); }
-      return { fresh, old, y };
+      A.newGame({ seed: 5701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), y = A.S.year, R = A.realm('POL-19');
+      const c = (yy, i) => ({ id: 'x' + yy + i, k: 'trib', y: yy, e: { k: 'trib', p: pc.home, a: 'POL-01', b: 'POL-19', w: [], x: 0, y: yy } });
+      const draw = tag => {
+        const fresh = [], old = [];
+        for (let i = 0; i < 6; i++) { fresh.push(A.WC.recallLine(c(y, i), pc, tag + i)); old.push(A.WC.recallLine(c(y - 5, i), pc, tag + i)); }
+        return { fresh, old, name: R.name, short: R.short, word: A.WC.realmWord('POL-19') };
+      };
+      const keep = { name: R.name, short: R.short };
+      let noun;
+      try { R.name = 'League of the Salt Marches'; R.short = 'Salt Marches'; noun = draw('n'); }
+      finally { R.name = keep.name; R.short = keep.short; }
+      return { y, noun, proper: draw('p') };
     });
-    const freshSince = r.fresh.filter(l => l && /since/i.test(l));
-    const named = r.old.filter(Boolean);
-    const bare = named.filter(l => /\b(to|for) Khaganate\b/.test(l));
-    return { ok: !freshSince.length && named.length > 0 && !bare.length && named.some(l => /the Khaganate/.test(l)),
-      detail: `this year's tribute: ${r.fresh.filter(Boolean).length} lines, ${freshSince.length} saying "since"; five years on: ${named.slice(0, 2).join(' | ')}` };
+    const esc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const rule = d => (new RegExp('\\bof the ' + esc(d.short) + '\\b', 'i').test(d.name) ? 'the ' + d.short : d.short);
+    const judge = d => {
+      const want = rule(d), named = d.old.filter(Boolean), sh = esc(d.short);
+      // a noun name must never stand bare ("to Salt Marches"); a proper name must never take "the" ("the Sahrim")
+      const wrong = want.startsWith('the ') ? new RegExp('\\b(to|for) ' + sh + '\\b') : new RegExp('\\b[Tt]he ' + sh + '\\b');
+      const bad = named.filter(l => wrong.test(l)), since = d.fresh.filter(l => l && /since/i.test(l));
+      return { want, named, bad, since, ok: d.word === want && named.length > 0 && !bad.length && !since.length && named.every(l => l.includes(want)) };
+    };
+    const n = judge(r.noun), p = judge(r.proper);
+    const say = (k, d, j) => `${k} "${d.name}" -> "${d.word}" (rule "${j.want}"): ${j.named.length} lines five years on, ${j.bad.length} wrong, ${j.since.length} saying "since" this year; ${j.named[0] || ''}`;
+    return { ok: n.ok && p.ok && n.want.startsWith('the ') && !p.want.startsWith('the '),
+      detail: `${say('noun', r.noun, n)} || ${say('proper', r.proper, p)}` };
   },
 };

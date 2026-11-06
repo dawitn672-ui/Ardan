@@ -119,6 +119,24 @@
     return h;
   };
 
+  // v2 (99993-v2-stats): the six stat bars became the body and mind in real units and words, rows that 99993 draws
+  // after this file runs; each row that answers to one of the six stats takes that stat's icon before its word. The
+  // wrap goes on at UI.init, when every feature has wrapped the profile.
+  const V2_STAT = { Strength: 'str', Speed: 'spd', Endurance: 'sta', Reflexes: 'ins', Wits: 'int', Will: 'wil' };
+  const v2Icons = h => typeof h === 'string' && h.indexOf('class="v2-l"') >= 0
+    ? h.replace(/<span class="v2-l">(Strength|Speed|Endurance|Reflexes|Wits|Will)<\/span>/g, (m, w) => `<span class="v2-l">${UI.iconOf(STAT[V2_STAT[w]], 's v2-ic')}${w}</span>`) : h;
+  UI.ICON_V2_STAT = V2_STAT;
+  const init0 = UI.init;
+  if (typeof init0 === 'function') UI.init = function () {
+    try {
+      for (const k of ['renderProfile', 'profileModal']) {
+        const f = UI[k];
+        if (typeof f === 'function' && !f.v2icons) { UI[k] = function () { const h = f.apply(this, arguments); try { return v2Icons(h); } catch (e) { return h; } }; UI[k].v2icons = true; }
+      }
+    } catch (e) { console.error('v2 stat icons', e); }
+    return init0.apply(this, arguments);
+  };
+
   // ---- the purse: the debt beside the coin gets the broken coin; icon-only buttons keep their word as a tooltip
   const top = UI.renderTop;
   if (typeof top === 'function') UI.renderTop = function () {
@@ -165,6 +183,8 @@
   .ico-l .ic{width:14px;height:14px}
   #profile .lk-vitals .ico-l{margin-right:2px}
   #profile .lk-vitals .ico-l .ic{width:12px;height:12px}
+  .v2-row .v2-l > .v2-ic{width:12px;height:12px;margin-right:3px;vertical-align:-.15em;color:var(--ink-3,var(--text-3))}
+  #profile .v2-row{grid-template-columns:7em minmax(0,1fr)}
   .group-h > .ic{width:16px;height:16px;margin-right:6px;vertical-align:-.22em;color:var(--accent)}
   .tip-h > .ico-tip{width:16px;height:16px;margin-right:6px;vertical-align:-.2em}
   #topbar .bad > .ic{width:14px;height:14px;margin-right:2px}

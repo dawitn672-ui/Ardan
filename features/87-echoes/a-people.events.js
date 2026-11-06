@@ -17,7 +17,7 @@
       text: "{Nm}'s landlady stops you in the street. The old scholar you kept for two winters, {yrs} years ago, is behind on his rent again, and coughing. He has not asked anyone. He would sooner sell his books, she says, and he has already sold the good ones.",
       choices: [
         { t: "Pay his rent for the year",
-          r: "The landlady takes it and bites a coin, out of habit. {Nm} sends a note in a shaking hand, three lines long, with one Latin word you have to look up.",
+          r: "The landlady takes it and bites a coin, out of habit. {Nm} sends a note in a shaking hand, three lines long, with one Old Solen word you have to look up.",
           fx: { coin: -30, honor: 2, them: { op: 15 } } },
         { t: "Take him into your own house",
           r: "He comes with one chest and a cat. He corrects your grammar at supper and keeps a candle burning half the night, at your cost.",

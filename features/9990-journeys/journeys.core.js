@@ -197,14 +197,19 @@
     jr_exile: (pc, j) => (['exile', 'flight', 'emigrate'].includes(j.k) && !j.seen.length ? 8 : 0),
   };
   JR.ROAD_EVENTS = ['road_bandits', 'road_inn', 'road_beast', 'road_stranger', 'road_storm'];
+  // A stop's scene this life has seen comes again only after SCENE_QUIET years, doubling with each showing (97's
+  // A.lfSpaced); a stop with nothing new is passed on the road. On the merged v2 build a merchant's caravans showed
+  // "Folk on the road" seven times and the border crossing six in one life (97's lfRepeats).
+  JR.SCENE_QUIET = 6;
+  JR.fresh = (pc, id) => !A.lfSpaced || A.lfSpaced(pc, id, JR.SCENE_QUIET);
   JR.scene = function (pc, j, st) {
     const prev = j.lastStop != null ? j.lastStop : j.from, list = [];
     for (const id in JR.SCENES) {
-      if (!A.EV[id] || j.seen.includes(id)) continue;
+      if (!A.EV[id] || j.seen.includes(id) || !JR.fresh(pc, id)) continue;
       let w = 0; try { w = JR.SCENES[id](pc, j, st, prev) || 0; } catch (e) { w = 0; }
       if (w > 0) list.push([id, w]);
     }
-    const road = JR.ROAD_EVENTS.filter(id => A.EV[id] && !j.seen.includes(id));
+    const road = JR.ROAD_EVENTS.filter(id => A.EV[id] && !j.seen.includes(id) && JR.fresh(pc, id));
     if (road.length) list.push(['road', 0.8]);
     j.prevStop = prev; j.lastStop = st.p; j.lastPi = st.pi;
     if (!list.length) return false;
@@ -392,6 +397,13 @@
       shrine = seen[j.to] != null ? 'jr_shrine_again' : Object.keys(seen).length ? 'jr_shrine_other' : 'jr_shrine';
       if (!A.EV[shrine]) shrine = 'jr_shrine';
       seen[j.to] = A.S.year;
+    }
+    // a shrine knelt at before is a scene once a life, and after that the stair is climbed without one: the piety of
+    // the stair, and the road home (on the merged v2 build "Back at the shrine" came seven times in one life)
+    if (shrine === 'jr_shrine_again' && A.lfSpaced && !A.lfSpaced(pc, 'jr_shrine_again', Infinity)) {
+      A.log(`You climb the stair at ${ctx.dest || T.name} again, as you did before, and start for home.`, 'good');
+      A.applyFx(pc, { piety: 4, jr: { home: true } }, ctx);
+      return;
     }
     const ev = { visit: 'jr_arrive_visit', caravan: 'jr_caravan_end', pilgrim: shrine }[j.k];
     if (j.k === 'caravan') ctx.wage = String(JR.wage(j));

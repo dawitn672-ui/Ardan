@@ -19,9 +19,13 @@
     // share of each division's full order moved per unit of performance: up (+) to theirs and ours, down (-) to ours.
     // The section's were raised by 30% for the integrated world: pooled over 300 fights it moved 9 points, now 13.
     // Round 7 raised them 20% more: 38-orders' bold generals stand longer in a fight, and the section read 8-9 on 100.
+    // v2 (99997-v2-war's V2W-HOLD-FIRST-DAY): the fight you are asked into now waits for your answer, so the result lands
+    // before its first day, not after it, and every fight you are asked into counts, the short ones that were over by the
+    // evening too (they were skipped, playtest 2 new 6). On that population, 100 fights frozen at the ask, the old
+    // weights moved 5 (section) and 8 (company) points; x1.8 and x1.5 move 12 and 12 (rankMovesTheFight's band is 10-20)
     LAYERS: {
-      line: { name: 'your section', theirs: 0.31, ours: 0.11, fall: 0.35 },
-      part: { name: 'your company', theirs: 0.36, ours: 0.13, fall: 0.33 },
+      line: { name: 'your section', theirs: 0.56, ours: 0.2, fall: 0.63 },
+      part: { name: 'your company', theirs: 0.54, ours: 0.2, fall: 0.5 },
     },
     GRADE: { triumph: 1, success: 0.5, mixed: 0, failure: -0.8 },
   };

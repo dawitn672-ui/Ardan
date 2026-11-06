@@ -57,6 +57,9 @@ POL.closeFief = function (r) {
   const w = A.P(win), from = A.S.houses[F.h];
   if (w.id === (pc && pc.id)) {
     if (CAR() && CAR().enfeoff && !(pc.noble && pc.noble.rung >= 4)) CAR().enfeoff(pc); else if (pc.noble) pc.noble.rung = Math.max(pc.noble.rung, 4);
+    // v2 (99994-v2-family): the forfeit house's seat is the land granted, when no one else holds it
+    const fs = from && A.V2F && A.V2F.seatProv ? A.V2F.seatProv(from) : null;
+    if (pc.noble && fs != null && A.V2F.freeHolding(r.id, fs, pc) === fs) pc.noble.holding = fs;
     A.log(`The crown grants you the forfeit lands of ${from ? from.name : 'a traitor house'}.`, 'crown');
   } else {
     const hh = w.house && A.S.houses[w.house];

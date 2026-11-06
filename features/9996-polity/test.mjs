@@ -98,10 +98,32 @@ export default {
       const same = T.hash(A.S) === h0 && A.rngState === rng0;
       b.next = A.absDay(); P.billMonth();
       const after = x.pol.bill ? x.pol.bill.log.length : (x.pol.last ? x.pol.last.log.length : -1);
-      return { k, opened: !!b, sum, same, track: (html.match(/class="po-node/g) || []).length, odds: /class="po-stack po-odds"/.test(html) && /\d+%<\/span>/.test(html), tip: /Balance m/.test(tip), after, src: b && b.src };
+      return { k, opened: !!b, sum, same, track: (html.match(/class="po-node/g) || []).length, odds: /class="po-stack po-odds"/.test(html) && (A.V2S ? !/\d+%<\/span>/.test(html) && /class="v2-scale"/.test(html) : /\d+%<\/span>/.test(html)) /* v2 (99993-v2-stats): the odds as words and a balance, no percentage */, tip: /Balance m/.test(tip), after, src: b && b.src };
     });
     const ok = r.opened && r.sum >= 99 && r.sum <= 101 && r.same && r.track === 6 && r.odds && r.tip && r.after === 1;
     return { ok, detail: `a bill for ${r.k} brought by the player (${r.src}); next-count odds sum to ${r.sum}%; ${r.track} notches drawn; drawn ${r.same ? 'purely' : 'WITH CHANGES'}; a count logs ${r.after}` };
+  },
+
+  // CI run 91 (56's riCourtInTheWorld): a bill's mover died before its end and A.gcPeople dropped him, so the court's
+  // record named an id that was gone. The bill passes to a living supporter, and its reasons name the late mover
+  async poBillMoverDies(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4302, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const P = A.POL, x = Object.values(A.S.realms).find(r => r.alive && !r.isRebel && r.id !== A.pc().realm && Object.keys(A.RI.PUSH).some(k => A.RI.PUSH[k].law && A.RI.PUSH[k].ok(r)));
+      P.init(x); x.pol.bill = null; A.RI.fillCouncil(x);
+      const k = Object.keys(A.RI.PUSH).find(k => A.RI.PUSH[k].law && A.RI.PUSH[k].ok(x));
+      const ppl = Object.values(A.S.people).filter(p => p.alive && p.id !== A.S.pc && p.id !== x.ruler && A.isAdult(p));
+      const mover = ppl[0], friend = ppl[1];
+      const b = P.openBill(x, k, mover, 'court');
+      b.sup = [mover.id, friend.id];
+      const name = A.fullName(mover, false);
+      mover.alive = false; mover.died = A.S.year; delete A.S.people[mover.id];
+      P.endBill(x, false, 'Six counts and no majority');
+      const e = x.riCourt[0];
+      return { name, who: e.who, friend: friend.id, live: !!(A.P(e.who) && A.P(e.who).alive), why0: e.why[0] && e.why[0][0], last: e.why[e.why.length - 1][0] };
+    });
+    const ok = r.who === r.friend && r.live && r.why0 === `Brought by the late ${r.name}` && /no majority/.test(r.last);
+    return { ok, detail: `the mover died and was cleared: the record names ${r.who} (the first living supporter ${r.friend}, alive ${r.live}); reasons "${r.why0}" … "${r.last}"` };
   },
 
   // the same seed gives the same votes; a candidate who broke a promise to four electors loses; the tally names all
@@ -308,5 +330,33 @@ export default {
     });
     const ok = r.queued && r.by && r.choices.length >= 3 && r.flag && r.patron !== r.usurper;
     return { ok, detail: `po_deposed queued ${r.queued} (naming the usurper ${r.by}); ways: ${r.choices.join(' / ')}; patron after the pick: ${r.patron === r.usurper ? 'THE USURPER' : r.patron || 'none'}` };
+  },
+
+  // lfRepeats (v2 merge): after the first, a muster within the quiet (6 years, doubling) is answered as the last one
+  // was when that was the men or the scutage, with a line in the log; a lord who refused is asked again
+  async poMusterAsBefore(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-life-fixes) is missing' };
+      const POL = A.POL;
+      for (let seed = 5201; seed < 5221; seed++) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+        const pc = A.pc(); pc.noble = pc.noble || { rung: 2, realm: pc.realm }; pc.noble.rung = Math.max(2, pc.noble.rung || 0); pc.coin = 0;
+        const o = POL.pcOath && POL.pcOath(pc);
+        if (!o || !o.men) continue;
+        const war = () => ({ att: [o.r.id], def: ['POL-XX'] }), y = A.S.year, out = { seed };
+        const call = () => { A.S.queue = []; pc.flags.ev = pc.flags.ev || {}; POL.musterCall(war()); return A.S.queue.some(q => q.ev === 'po_muster'); };
+        // (a new game has no pc.flags.ev yet: make it before the delete, which threw on an absent object)
+        pc.evN = {}; pc.flags.ev = pc.flags.ev || {}; delete pc.flags.ev.po_muster; out.first = call();
+        pc.evN.po_muster = 1; pc.flags.ev.po_muster = y - 4; pc.poMusterLast = 'send';
+        const f0 = pc.fame; out.within = call(); out.fame = pc.fame - f0;
+        pc.poMusterLast = 'refuse'; out.refused = call();
+        pc.poMusterLast = 'send'; pc.flags.ev.po_muster = y - 6; out.after = call();
+        return out;
+      }
+      return { err: 'no landed lord with an oath in 20 seeds' };
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.first && !r.within && r.fame > 0 && r.refused && r.after;
+    return { ok, detail: `seed ${r.seed}: first muster asks ${r.first}; four years after one where the men went: asks ${r.within} (+${r.fame} fame); after a refusal: asks ${r.refused}; six years after: asks ${r.after}` };
   },
 };

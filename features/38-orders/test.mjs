@@ -220,6 +220,77 @@ export default {
     return { ok: !!r.seen && !/\{/.test(r.text), detail: r.seen ? `${r.seen} after ${r.months} months: "${r.text}"` : `no letter in ${r.months} months` };
   },
 
+  // playtest 2, old 10 ("Orders: hold and wait" seven times in one life) and 97's lfRepeats: the same order letter from
+  // the same general waits G.QUIET days, and comes once a war (a letter that says what the last one said is routine).
+  // The same eight years of war are played twice, with G.QUIET and G.WAR_ONCE as built and with them off: as built no
+  // letter of a kind comes from the same general sooner than that or twice in a war, and the quiet is what holds them back
+  async ordersQuiet(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const G = A.GENERALS, Q0 = G.QUIET, W0 = G.WAR_ONCE;
+      const run = quiet => {
+        G.QUIET = quiet ? Q0 : {}; G.WAR_ONCE = quiet ? W0 : false;
+        const seen = [];
+        try {
+          const { enemy } = GOT.soldier(86);
+          const q0 = A.queue;
+          A.queue = function (it) { if (it && it.type === 'event' && /^go_order_/.test(it.ev)) seen.push({ kind: it.ctx.temper, gen: it.ctx.genId, day: A.absDay(), war: A.atWar('POL-01').map(w => w.id).sort().join() }); return q0.apply(this, arguments); };
+          try {
+            const d0 = A.absDay();
+            for (let g = 0; g < 400 && A.absDay() - d0 < 8 * 365 && A.pc().alive; g++) {
+              if (!A.atWar('POL-01').length) A.startWar('POL-01', enemy, null, 'conquest');
+              if (!A.pc().mil) A.enlist(A.pc());
+              A.S.queue = []; A.advance(30);
+            }
+          } finally { A.queue = q0; }
+        } finally { G.QUIET = Q0; G.WAR_ONCE = W0; }
+        return seen;
+      };
+      // (lfRepeats on the merged v2 build: the quiet doubles from the first letter of a kind, whichever general sends it,
+      // so the second of a kind waits twice the base, the third four times; and the same general's comes once a war.
+      // 'close' now holds the letters to that, which is stricter than the base quiet per general it held them to before)
+      const close = (list, Q) => { let n = 0; const last = {}, cnt = {}; for (const x of list) { const l = last[x.kind]; if (l && (x.day - l.day < (Q[x.kind] || 0) * Math.pow(2, Math.min(3, cnt[x.kind])) || (l.gen === x.gen && l.war === x.war))) n++; last[x.kind] = x; cnt[x.kind] = (cnt[x.kind] || 0) + 1; } return n; };
+      const on = run(true), off = run(false);
+      return { on: on.length, off: off.length, closeOn: close(on, Q0), closeOff: close(off, Q0) };
+    });
+    const ok = r.on >= 2 && r.closeOn === 0 && r.closeOff > 0;
+    return { ok, detail: `eight years of war: ${r.on} letters, ${r.closeOn} the same as the last of its kind within the quiet, or from the same general in the same war; without it ${r.off} letters, ${r.closeOff} so` };
+  },
+
+  // lfRepeats on the merged v2 build: a soldier moved between armies had "make a noise" from three generals in a year
+  // and a half. The same order as the last letter's, from another general, waits the base quiet. One life is played
+  // until its first letter (day D); the same life again, where every order had been read from another general a month
+  // before D, gets no letter for the base quiet after that reading.
+  async ordersAnotherGeneral(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const G = A.GENERALS, minQ = Math.min(...Object.values(G.QUIET));
+      const run = (readAt, until) => {
+        const { F, enemy } = GOT.soldier(86, 'steady');
+        if (!F) return null;
+        const d0 = A.absDay(), seen = [];
+        if (readAt != null) { A.S.goSeen = {}; for (const k of Object.keys(G.QUIET)) A.S.goSeen[k] = { gen: 'someone else', day: d0 + readAt, war: 'another war', n: 1 }; }
+        const q0 = A.queue;
+        A.queue = function (it) { if (it && it.type === 'event' && /^go_order_/.test(it.ev)) seen.push({ kind: it.ctx.temper, gen: it.ctx.genId, day: A.absDay() - d0 }); return q0.apply(this, arguments); };
+        try {
+          for (let g = 0; g < 400 && A.absDay() - d0 < until && A.pc().alive && !(readAt == null && seen.length); g++) {
+            if (!A.atWar('POL-01').length) A.startWar('POL-01', enemy, null, 'conquest');
+            if (!A.pc().mil) A.enlist(A.pc());
+            A.S.queue = []; A.advance(30);
+          }
+        } finally { A.queue = q0; }
+        return seen;
+      };
+      const first = run(null, 8 * 365);
+      if (!first || !first.length) return { none: true };
+      const D = first[0].day, on = run(D - 30, D - 30 + minQ - 30);
+      return { D, kind: first[0].kind, on };
+    });
+    if (r.none) return { ok: false, detail: 'no letter in eight years of war' };
+    const ok = !!r.on && r.on.length === 0;
+    return { ok, detail: `the first letter ("${r.kind}") on day ${r.D}; with every order read from another general a month before, ${r.on ? r.on.length : '?'} letters in the base quiet after${r.on && r.on.length ? ' (' + r.on.map(x => x.kind + ' on day ' + x.day).join(', ') + ')' : ''}` };
+  },
+
   async ordersSettle(pg) {
     // what you did, and whether the plan worked, decide what comes of it
     await pg.evaluate(SETUP);

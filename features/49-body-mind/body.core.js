@@ -129,13 +129,38 @@
     pc.health = clamp(pc.health - first, 0, mh); pc.lastHurt = D.name; pc._lhDay = A.absDay();
     pc.ill = { k, name: D.name, m, tot: m, dmg: Math.max(0, Math.round(dmg - first)), t: '', y: A.S.year, crisis: pc.health <= 0 ? 1 : 0 };
     A.log(`You fall ill with ${D.name}. It will not be quick: ${m} month${m > 1 ? 's' : ''}, perhaps more.` + (pc.health < 30 ? ' For a while the priests are sent for.' : ''), 'bad');
+    // after the first, a sickness within the quiet (BM.ILL_QUIET years, doubling with each scene: 97's A.lfSpaced) is
+    // treated as the last one was, with a line in the log; the course and its toll are the same as a choice's
+    if (A.age(pc) >= 4 && A.EV.bm_ill && BM.TREAT[pc.bmTreat] && A.lfSpaced && !A.lfSpaced(pc, 'bm_ill', BM.ILL_QUIET)) { BM.asBefore(pc, D); return true; }
     if (A.age(pc) >= 4 && A.EV.bm_ill) { pc.ill.ask = 1; const t = BM.the(D.name); A.queue({ type: 'event', ev: 'bm_ill', forced: true, now: true, ctx: { ill: D.name, illThe: t[0].toUpperCase() + t.slice(1) } }); }
     else pc.ill.t = 'rest';   // a small child is put to bed
     return true;
   };
+  // A sickness abed is a scene the first time; on the merged v2 build a life showed it eight times (97's lfRepeats).
+  // Within the quiet, the house does what it did last time (pc.bmTreat, the last treatment chosen).
+  BM.ILL_QUIET = 8;
+  BM.AS_BEFORE = {
+    physician: { fx: { coin: -4, coinPct: -0.03 }, line: 'The physician is sent for again, and takes his fee again.' },
+    herbs: { line: 'The wise woman by the ford is sent for again.' },
+    prayer: { fx: { piety: 3, happy: 3 }, line: 'The priest comes again and prays over you.' },
+    rest: { fx: { need: { rest: 30, purpose: -15 } }, line: 'You lie still and let it run, as you did last time.' },
+  };
+  BM.asBefore = function (pc, D) {
+    const k = pc.bmTreat, W = BM.AS_BEFORE[k] || BM.AS_BEFORE.rest;
+    let how = k;
+    if (k === 'herbs') {   // her roots are right or wrong on the same check the scene makes
+      const p = A.checkOdds ? A.checkOdds(pc, { s: 'medicine', s2: 'int', d: 40 }) : 50;
+      how = A.chance(p / 100) ? 'herbs' : 'herbs_bad';
+      A.applyFx(pc, how === 'herbs' ? { coin: -1 } : { coin: -1, health: -5 }, {});
+    } else if (W.fx) A.applyFx(pc, W.fx, {});
+    A.log(`${BM.the(D.name)[0].toUpperCase() + BM.the(D.name).slice(1)} again. ${W.line}${how === 'herbs_bad' ? ' This time the root is the wrong root.' : ''}`, '');
+    const r = BM.treat(pc, how);
+    if (r) A.log(r, '');
+  };
   // fx.treat: the treatment chosen
   BM.treat = function (pc, how) {
     const I = pc && pc.ill; if (!I || I.m <= 0 || I.t) return '';
+    pc.bmTreat = how === 'physician_fever' ? 'physician' : how === 'herbs_bad' ? 'herbs' : how;
     if (how === 'physician' && BM.FEVER.has(I.k)) how = 'physician_fever';
     const T = BM.TREAT[how]; if (!T) return '';
     I.t = how; I.m = Math.max(1, Math.round(I.m * T.m)); I.dmg = Math.round(I.dmg * T.dmg * (how === 'prayer' && A.has(pc, 'zealous') ? 0.85 : 1));

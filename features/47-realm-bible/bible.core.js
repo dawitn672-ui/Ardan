@@ -29,6 +29,9 @@
     WARD_EVERY: 3,      // years between two meetings with a standing rule
     TOKENS: ['w1', 'w2', 'w3', 'realm', 'dowry', 'paid', 'got', 'estate', 'parent', 'child', 'cut'],
     SCENE_GAP: 30,      // days between two first-meeting scenes; inside it a custom is met quietly
+    // and years between two in a life, doubling with each scene (97's A.lfSpaced): a merchant crossing realms met a
+    // new custom as a scene four times in one life on the merged v2 build (lfRepeats); the rest are met quietly
+    SCENE_QUIET: 3,
   };
   B.of = rid => (A.BIBLE_DATA || {})[rid] || null;
   B.words = cid => (A.BIBLE_WORDS || {})[cid] || [];
@@ -61,6 +64,18 @@
   const who0 = (pc, w) => (B.WHO[w || 'adult'] || B.WHO.adult)(pc);
   const who = (pc, w, c) => who0(pc, w) && (!B.isDue(c) || B.WHO.commons(pc));
   B.whoFor = (pc, c) => !!c && who(pc, c.who, c);
+  // A rite's own age is the coming of age it marks, so for a rite "adult" (and the "free", "commoner", "male" and
+  // "female" that build on it) does not also wait for the race's adulthood. Irondeep's piece before the masters, at 25
+  // for "every soul of the hold", asked a dwarf to be adult (30) as well, and no dwarf ever met it (CI run 91,
+  // realLivesMeetCustoms: 0 of 12 Irondeep lives). Human rites (17, 18; adult at 16) are unchanged.
+  B.RITE_WHO = {
+    adult: () => true,
+    free: pc => !unfree(pc),
+    commoner: pc => rank(pc) <= 3,
+    male: pc => pc.sex === 'M',
+    female: pc => pc.sex === 'F',
+  };
+  B.riteWho = (pc, w) => (B.RITE_WHO[w || 'all'] || B.WHO[w || 'all'] || B.WHO.all)(pc);
   // a ruler hears the other side of a due: it comes in, across the realm, once a year
   B.rulerSide = function (pc, c) {
     const R = A.realm(pc.ruler), pop = R && (R.pop || R.people);
@@ -97,7 +112,7 @@
     pc.rb = pc.rb && typeof pc.rb === 'object' ? pc.rb : {};
     const h = pc.rb[c.id];
     const scene = !h && c.kind !== 'grave' && pc.alive && (S.rbScene == null || now - S.rbScene >= B.SCENE_GAP) &&
-      !S.queue.some(q => q && q.ev === 'rb_custom');
+      !S.queue.some(q => q && q.ev === 'rb_custom') && (!A.lfSpaced || A.lfSpaced(pc, 'rb_custom', B.SCENE_QUIET));
     pc.rb[c.id] = { n: (h ? h.n : 0) + 1, y: S.year, first: h ? h.first : S.year };
     if (scene) {
       S.rbScene = now;
@@ -132,7 +147,7 @@
         if (mo === (c.m || 0) && (!h || h.y !== S.year) && who(pc, c.who, c)) B.hit(pc, c);
         else if (mo === (c.m || 0) && pc.ruler && B.isDue(c)) { const rr = pc.rbR && typeof pc.rbR === 'object' ? pc.rbR : (pc.rbR = {}); if (rr[c.id] !== S.year) { rr[c.id] = S.year; B.rulerSide(pc, c); } }
       } else if (c.kind === 'rite') {
-        if (!h && age >= (c.age || 16) && age <= (c.age || 16) + 2 && who(pc, c.who || 'all')) B.hit(pc, c);
+        if (!h && age >= (c.age || 16) && age <= (c.age || 16) + 2 && B.riteWho(pc, c.who || 'all')) B.hit(pc, c);
       } else if (c.kind === 'ward') {
         const f = B.WHEN[c.when] || B.WHEN.any;
         if ((!h || S.year - h.y >= (c.every || B.WARD_EVERY)) && A.isAdult(pc) && f(pc)) B.hit(pc, c);

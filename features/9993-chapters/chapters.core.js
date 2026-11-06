@@ -77,7 +77,7 @@
       done: p => !C().atWar(p), reward: { happy: 3 } },
     { k: 'sea', st: ['youth', 'prime'], fit: p => (C().coast(p) && !C().unfree(p) ? 2 : 0), base: p => ({ t: Math.round(sk(p, 'sea')) + 8 }),
       label: () => 'Learn the sea', detail: (p, b) => `Seamanship ${b.t}`, done: (p, b) => sk(p, 'sea') >= b.t, reward: { ins: 0.5 } },
-    { k: 'pious', st: ['child', 'youth', 'prime', 'age'], fit: p => ((p.piety || 0) >= 30 || (p.job && p.job.c === 'clergy') ? 3 : 1), base: p => ({ t: Math.min(100, Math.round(p.piety || 0) + 12) }),
+    { k: 'pious', st: ['child', 'youth', 'prime', 'age'], fit: p => ((A.V2T && A.V2T.devout ? A.V2T.devout(p) : (p.job && p.job.c === 'clergy')) ? 3 : 0), base: p => ({ t: Math.min(100, Math.round(p.piety || 0) + 12) }),
       label: () => 'Be known at the shrine', detail: (p, b) => `piety ${b.t}`, done: (p, b) => (p.piety || 0) >= b.t, reward: { happy: 2 } },
     { k: 'amb', st: ['youth', 'prime', 'age', 'reign'], fit: p => (A.LF && A.LF.ambOf && A.LF.ambOf(p) && !p.amb.done ? 6 : 0),
       base: p => { let pr = 0; try { pr = A.LF.AMB[p.amb.k].prog(p) || 0; } catch (e) {} return { k: p.amb.k, t: Math.min(1, Math.round((pr + 0.25) * 100) / 100) }; },
@@ -179,10 +179,10 @@
     p.chap.past.push(rec);
     if (p.chap.past.length > 16) p.chap.past.shift();
     p.chap.cur = null;
-    if (full) {
-      if (p.deeds) p.deeds.push({ y: A.S.year, t: `Closed ${CH.heading(c)} with every aim met` });
-      if (A.fame) A.fame(p, 2);
-    }
+    // v2 (complaint 7, playtest 2 old 16): chapters stay only as the optional Life panel, so a full chapter is no
+    // longer a deed (it came back as "Gudrun ... tells them all that you closed Chapter One: The Cold Hearth"); the
+    // 2 renown for meeting every aim stays
+    if (full && A.fame) A.fame(p, 2);
     return rec;
   };
   CH.month = function (p) {
@@ -207,13 +207,25 @@
     const allMet = c && c.aims.length && c.aims.every(a => a.d != null) && A.S.year - Math.max(...c.aims.map(a => a.d)) >= 1;
     const turn = !c || c.st !== st || A.S.year - c.y0 >= (st === 'reign' ? 10 : CH.PRIME_YEARS) || allMet;
     if (!turn) return;
-    // the card comes in a quiet month: never stacked behind another scene (cycle 2, design B3: on day one the
-    // ambition's question, then the chapter's aims, back to back), and one at a time
-    if (A.S.queue.some(q => q && q.type === 'event')) return;
+    // v2 (complaint 1 and 7): no card. A chapter opens in the story and stands on the Life tab, where the third aim is
+    // chosen (A.chpPick) whenever the player likes; until then the first of the two holds. The chp_card scene stays
+    // defined for old saves that have one queued.
     const last = c ? CH.close(p) : null;
-    CH.open(p, st);
-    if (A.EV.chp_card) A.queue({ type: 'event', ev: 'chp_card', ctx: { chN: p.chap.n, chLast: last ? last.n : 0 } });
+    const cur = CH.open(p, st);
+    if (cur.alt) cur.pick = 1;
+    const rc = last ? CH.recap(p) : '';
+    A.log(`${rc ? rc + ' ' : ''}${CH.heading(cur)} begins. Its aims stand on the Life tab.`, 'good');
   };
+  // the third aim, chosen on the Life tab: 0 keeps the one set, 1 takes the other (a journal command, so a replay agrees)
+  A.chpPick = function (i) {
+    const p = A.pc(), c = p && p.chap && p.chap.cur;
+    if (!c || !c.pick) return false;
+    if (+i === 1 && c.alt) { const k = Math.min(2, c.aims.length - 1), was = c.aims[k]; c.aims[k] = c.alt; c.alt = was; }
+    c.pick = 0;
+    return true;
+  };
+  if (Array.isArray(A.COMMANDS) && !A.COMMANDS.includes('chpPick')) A.COMMANDS.push('chpPick');
+  if (typeof UI !== 'undefined' && UI.A) Object.assign(UI.A, { chpPick(v) { if (A.chpPick(+v)) UI.toast('The aim is set.'); UI.refreshTab ? UI.refreshTab() : UI.refresh(); } });
   A.onMonth.push(p => { try { CH.month(p); } catch (e) { console.error('chapters', e); } });
 
   // fx: chapter: 'alt' swaps the third aim for the other one offered
@@ -236,7 +248,7 @@
     if (!L || L.n !== (p.chap.cur ? p.chap.cur.n - 1 : -1)) return '';
     const met = L.aims.filter(a => a.d != null);
     const k = met.length;
-    return `${L.t} is closed: ${k === 0 ? 'none of its aims met' : k === L.aims.length ? 'every aim met' : `${k} of ${L.aims.length} aims met`}${L.full ? ', and set down among your deeds' : ''}.`;
+    return `${L.t} is closed: ${k === 0 ? 'none of its aims met' : k === L.aims.length ? 'every aim met' : `${k} of ${L.aims.length} aims met`}.`;
   };
   CH.aimsText = c => c.aims.slice(0, 2).map((a, i) => (i ? a.l[0].toLowerCase() + a.l.slice(1) : a.l)).join('; ') + (c.aims[2] ? '; and either ' + c.aims[2].l.toLowerCase() + (c.alt ? ' or ' + c.alt.l.toLowerCase() : '') : '') + '.';
 
@@ -282,12 +294,15 @@
   };
 
   // ---- on screen (pure: reads the person, draws nothing) --------------------------------------------------------------
+  // (data-fold-label: what 90-fold's button says to a screen reader, "Open Chapter One: Mending and Making Do", CI 90)
   CH.card = function (p) {
     const c = p && p.chap && p.chap.cur;
     if (CH.OFF || !c || !p.alive) return '';
     const done = c.aims.filter(a => a.d != null).length;
-    return `<section class="card chp-card" aria-labelledby="chp-h" data-tt="${esc('Aims: ' + c.aims.map(a => (a.d != null ? '✓ ' : '') + a.l).join('; ') + '.')}"><div class="row"><span class="tag">Chapter ${esc(CH.ORD[c.n - 1] || c.n)}</span><b id="chp-h" class="grow chp-t">${esc(c.t)}</b><span class="tiny muted">since ${esc(c.y0)} · ${done} of ${c.aims.length}</span></div>` +
+    return `<section class="card chp-card" aria-labelledby="chp-h" data-fold-label="${esc('Chapter ' + (CH.ORD[c.n - 1] || c.n) + ': ' + c.t)}" data-tt="${esc('Aims: ' + c.aims.map(a => (a.d != null ? '✓ ' : '') + a.l).join('; ') + '.')}"><div class="row"><span class="tag">Chapter ${esc(CH.ORD[c.n - 1] || c.n)}</span><b id="chp-h" class="grow chp-t">${esc(c.t)}</b><span class="tiny muted">since ${esc(c.y0)} · ${done} of ${c.aims.length}</span></div>` +
       (() => { const nx = c.aims.find(a => a.d == null); return nx ? `<div class="chp-next tiny">Next: ${esc(nx.l)}</div>` : ''; })() +
+      (c.pick && c.alt ? (() => { const k = Math.min(2, c.aims.length - 1), a = c.aims[k], b = c.alt;
+        return `<div class="chp-pick small"><span>Your third aim, of your choosing:</span> <button class="small" data-a="chpPick" data-v="0">${esc(a.l)}${a.x ? ` <span class="chp-x">${esc(a.x)}</span>` : ''}</button> <button class="small" data-a="chpPick" data-v="1">${esc(b.l)}${b.x ? ` <span class="chp-x">${esc(b.x)}</span>` : ''}</button></div>`; })() : '') +
       `<ul class="chp-aims">${c.aims.map(a => `<li class="${a.d != null ? 'chp-done' : ''}"><span class="chp-tick" aria-hidden="true">${a.d != null ? '✓' : '○'}</span><span class="${a.d != null ? 'chp-met' : ''}">${esc(a.l)}</span>${a.x ? ` <span class="tiny muted chp-x">${esc(a.x)}</span>` : ''}${a.d != null ? `<span class="sc-vh"> (met in ${esc(a.d)})</span>` : ''}</li>`).join('')}</ul></section>`;
   };
   const life = UI.TAB && UI.TAB.life;
@@ -300,7 +315,7 @@
       const at = h.indexOf('<section class="card lf-amb');
       // on a phone the Life page is one column under the thumb: the chapter rides inside the ambition card, which
       // 90-fold keeps folded to its title line there, so the page is no longer for it
-      if (at >= 0 && UI.isPhone && UI.isPhone()) {
+      if (at >= 0 && UI.isPhone && UI.isPhone() && !(pc || A.pc()).chap.cur.pick) {
         const end = h.indexOf('</section>', at);
         if (end > at) return h.slice(0, end) + s.replace('<section class="card chp-card"', '<section class="chp-card chp-in-amb"') + h.slice(end);
       }

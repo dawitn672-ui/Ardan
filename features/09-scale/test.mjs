@@ -73,6 +73,71 @@ async function timeWorld(pg, K, months) {
   return { ...setup, month: med(plain), monthCpu: med(plainC), year: med(year), yearCpu: med(yearC), months: plain.length + year.length, ...end };
 }
 
+// v2: the Far Lands are out of the build (the owner's decision of Nov 1, docs/v2/LANES.md: 99-far-lands and its kin carry
+// .wip), and every world is the generated continent of about 35 realms, which plays as one world under the release's
+// rules. scaleFarPeace and scaleOneWorld used to return a pass with nothing checked there. What they guard on the v2
+// build is that world.core.js stays out of it (every rule there is gated on A.WORLD1.great()) and that the world it
+// plays stays sound; the Great Continent checks still run whenever 99-far-lands is built (A.FAR present).
+// a lost war on the continent: the release's peace, not the Far Lands' 15% cap or nine-month wait; no far news held
+const farPeaceV2 = async pg => {
+  const r = await pg.evaluate(() => {
+    const W = A.WORLD1;
+    A.newGame({ seed: 9091, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
+    const S = A.S, out = { great: W.great() };
+    let capped = 0; const cap0 = W.capTreaty; W.capTreaty = function () { capped++; return cap0.apply(this, arguments); };
+    try {
+      out.firstDay = S.news.filter(x => /^Word from the /.test(x.t || '')).length;
+      out.held = (S.newsFar || []).length + (S.newsPre || []).length;
+      // a realm of four provinces or more, not the player's, beaten by a neighbour at peace
+      const vic = Object.keys(S.realms).find(id => S.realms[id].alive && id !== A.pc().realm && A.realmProvs(id).length >= 4 && A.neighbors(id).some(n => S.realms[n] && S.realms[n].alive));
+      const foe = A.neighbors(vic).find(id => S.realms[id] && S.realms[id].alive && !A.atWar(id).length) || A.neighbors(vic)[0];
+      S.wars.filter(w => w.att.concat(w.def).includes(vic)).forEach(w => A.endWar(w, 'white'));
+      const rv = S.realms[vic], w = A.startWar(foe, vic, 'The Test War', 'conquest', { noAllies: true, silent: true });
+      const mine = A.realmProvs(vic), pop0 = mine.reduce((a, p) => a + p.pop, 0), n0 = mine.length;
+      for (const p of mine) if (p.id !== rv.capitalProv) p.occ = foe;
+      w.score = 100;
+      A.settleWar(w, 'att');
+      const left = A.realmProvs(vic), pop1 = left.reduce((a, p) => a + p.pop, 0);
+      Object.assign(out, { vic: A.realm(vic).short || vic, foe: A.realm(foe).short || foe, cap: A.warCapFull(), reach: A.outOfReach(foe, vic), soon: S.wars.includes(w), peace: [n0, n0 - left.length, 1 - pop1 / pop0], capped });
+    } finally { W.capTreaty = cap0; }
+    return out;
+  });
+  const ok = !r.great && r.cap === null && r.reach === false && r.firstDay === 0 && r.held === 0 && !r.soon && r.capped === 0 && r.peace[1] >= 1;
+  return { ok, detail: `v2, no Far Lands: the Great Continent's rules ${r.great ? 'ON' : 'off'} (war cap ${r.cap}, out of reach ${r.reach}); first-day far lines ${r.firstDay}, held ${r.held}; ` +
+    `${r.foe} beats ${r.vic} at once: settled ${!r.soon}, the far peace cap asked ${r.capped} times, ${r.peace[1]} of ${r.peace[0]} provinces taken (${Math.round(r.peace[2] * 100)}% of its people, the release's terms)` };
+};
+// ten years of the continent: the one-world rules stay off every day, no far news, and the realms, treasuries and wars
+// stay sound (the old bar's far realms are now every realm; the lore's 53 Far Lands tributes went with them)
+const oneWorldV2 = async pg => {
+  const r = await pg.evaluate(() => {
+    const W = A.WORLD1;
+    A.newGame({ seed: 9090, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
+    const S0 = A.S, ids = Object.keys(S0.realms).filter(id => S0.realms[id].alive), stats0 = JSON.stringify(W.stats);
+    let greatDays = 0, capDays = 0, reach = 0;
+    A.onDay.push(() => { if (A.S !== S0) return; if (W.great()) greatDays++; if (A.warCapFull() !== null) capDays++; });
+    const startY = A.S.year;
+    // the bar is ten years of the world, not of one life: T.play stops when the player dies, and on seed 9090 the
+    // merged v2 world (CI run 90) has him killed by a horse at 23, in the seventh year. A death ends a life, not the
+    // world, so the game goes on as his eldest living child (or other living kin), as a player would (A.continueAs)
+    let heirs = 0;
+    for (let k = 0; k < 6 && A.S.year < startY + 10; k++) {
+      if (T.play(startY + 10 - A.S.year) !== 'dead') break;
+      const pc = A.pc(), kin = A.heirsOf(pc).concat(Object.keys(pc.rel || {}).map(A.P).filter(p => p && p.alive && p.id !== pc.id));
+      if (!kin.length || !A.continueAs(kin[0].id)) break;
+      heirs++;
+    }
+    for (const a of ids) for (const b of ids) if (a < b && A.outOfReach(a, b)) reach++;
+    const alive = ids.filter(id => A.realm(id) && A.realm(id).alive).length;
+    const tr = Object.values(A.S.realms).filter(x => x && x.alive).map(x => x.treasury / Math.max(1, x.income || 1)).sort((a, b) => a - b);
+    const oldWars = A.S.wars.filter(w => A.S.year - w.start > 8 && w.cb !== 'throne').length;
+    return { years: A.S.year - startY, heirs, n: ids.length, alive, greatDays, capDays, reach, word: A.S.news.filter(n => /^Word from the /.test(n.t || '')).length,
+      held: (A.S.newsFar || []).length + (A.S.newsPre || []).length, stats: JSON.stringify(W.stats) === stats0, trMed: tr[Math.floor(tr.length / 2)], trMax: tr[tr.length - 1], oldWars };
+  });
+  const ok = r.years >= 10 && !r.greatDays && !r.capDays && !r.reach && !r.word && !r.held && r.stats && r.alive >= r.n * 0.85 && r.trMax < 200 && r.oldWars === 0;
+  return { ok, detail: `v2, no Far Lands: ${r.years} years of the continent (${r.heirs} heir${r.heirs === 1 ? '' : 's'} played on); days under the Great Continent's rules ${r.greatDays}, with its war cap ${r.capDays}; realm pairs out of reach ${r.reach}; ` +
+    `far news ${r.word} told, ${r.held} held, its counters untouched ${r.stats}; ${r.alive} of ${r.n} realms standing; treasury against a year's income: median ${r.trMed && r.trMed.toFixed(1)}, highest ${r.trMax && r.trMax.toFixed(1)}; wars older than 8 years: ${r.oldWars}` };
+};
+
 export default {
   async scaleIdentical(pg) {
     // the same seed reaches the same world, bit for bit, with the scale path on and off
@@ -113,6 +178,9 @@ export default {
       [/S\.houses\[id\]=o\}return delete S\.packed/, 'A.unpackState, on load'],
       [/S\.houses\[hid\] = \{ id: hid, name: \/\^\(of /, '70 FR.make (a new house for a fresh realm), inside A.initWorld'],
       [/A\.S\.houses\[hid\]=\{id:hid,name:houseName,realm:null,kind:"royal"/, 'the player founds a realm: a royal house never counts in A.realmHouses, and its realm is set (and told) two statements on'],
+      // v2 map lane: the generated continent's adjacency is written into the new provinces inside A.initWorld, before
+      // any index is built (99991-v2-map, patch V2MAP-PROV)
+      [/p\.adj = q\.adj\.slice\(\); p\.sea = q\.sea\.slice\(\);/, '99991 A.V2MAP.onProv, inside A.initWorld'],
     ];
     const bad = [], seen = { owner: 0, house: 0, adj: 0 };
     const scan = (src, re, kind, told) => {
@@ -127,7 +195,9 @@ export default {
     };
     for (const src of [core, content]) {
       scan(src, /\.owner\s*=(?![=>])/g, 'owner', /^[^;{}]*?A\.scaleLand\(\)|^\.owner=to,A\.scaleLand/);
-      scan(src, /houses\[[^\]]+\]\s*=(?![=>])/g, 'house', /^houses\[hid\]=\{id:hid,name:"House "\+sur,[^;]*?members:\[pc\.id\]\},A\.scaleHouse/);
+      // v2: 99995-v2-nobility's newHouse (a court house, raised at the world's start and again when a vacant title
+      // finds no heir in play) writes one object literal and tells the index on the next statement
+      scan(src, /houses\[[^\]]+\]\s*=(?![=>])/g, 'house', /^houses\[hid\]=\{id:hid,name:"House "\+sur,[^;]*?members:\[pc\.id\]\},A\.scaleHouse|^houses\[id\] = \{[^;]*?v2court: rid,\s*\};\s*(?:\/\/[^\n]*\n\s*)*if \(A\.scaleHouse\) A\.scaleHouse\(\);/);
       scan(src, /\.adj\s*=(?![=>])|\.(adj|sea)\.(push|splice|unshift)\(/g, 'adj', null);
     }
     // ctx.owner in events is a token, not a province; AK.adj is a helper
@@ -140,9 +210,13 @@ export default {
     // the month took about 800 ms of CPU (1.1-2.3 s wall) and the month holding the New Year about 1.6 s of CPU
     // (2.3-5 s wall), against 1.2-1.5 s and 15-20 s of CPU without 09-scale. The bounds are three times that, so they
     // hold on a slow CI runner and still catch the year turn going quadratic again.
+    // v2 (Nov 2026): the New Year month does real new work in every realm (99995's courts of about 900 nobles, 99996's
+    // diplomacy, 99994's families), 3.6-3.8 s of CPU on this machine and on a quick CI runner (run 92), 5.6-6.4 s on a
+    // slow one (run 93, where every test in the shard ran about 1.5x slower). The year bound is three times the v2 cost
+    // again, held under 10 s so a quadratic year turn (15-20 s in v1, far more with v2's courts) still fails it.
     await pg.evaluate(CLONE);
     const r = await timeWorld(pg, 10, 14);
-    const cpuOk = r.monthCpu != null ? r.monthCpu <= 2400 && r.yearCpu <= 5000 : r.month <= 6000 && r.year <= 15000;
+    const cpuOk = r.monthCpu != null ? r.monthCpu <= 2400 && r.yearCpu <= 10000 : r.month <= 6000 && r.year <= 15000;
     const ok = r.provs === 3060 && r.month != null && r.year != null && cpuOk && !r.bad.length && !r.missed;
     const c = v => v == null ? 'n/a' : Math.round(v);
     return { ok, detail: `10x world (${r.provs} provinces, ${r.realms} realms): new game ${r.ng} ms; month median ${r.month} ms wall, ${c(r.monthCpu)} ms CPU;` +
@@ -155,6 +229,9 @@ export default {
   // months; word of the far east is told only once the player has a home (the 1105 wars came on the first day) and
   // comes up to two years late, its province lists blurred and one line in three wrong in a detail, mended later
   async scaleFarPeace(pg) {
+    // v2: without the Far Lands (A.FAR missing, every v2 build) this was a pass with nothing checked; it now checks the
+    // continent's peace and news keep to the release's rules (farPeaceV2 above). The Great Continent body runs with 99.
+    if (!(await pg.evaluate(() => typeof A.FAR !== 'undefined' && !!A.FAR))) return farPeaceV2(pg);
     const r = await pg.evaluate(() => {
       const W = A.WORLD1;
       A.newGame({ seed: 9091, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16, lands: 'great' });
@@ -187,6 +264,9 @@ export default {
   },
 
   async scaleOneWorld(pg) {
+    // v2: without the Far Lands (A.FAR missing, every v2 build) this was a pass with nothing checked; it now plays ten
+    // years of the continent (oneWorldV2 above). The Great Continent body runs with 99.
+    if (!(await pg.evaluate(() => typeof A.FAR !== 'undefined' && !!A.FAR))) return oneWorldV2(pg);
     // the Great Continent for ten years (world.core.js): wars are joined only within reach, each land keeps to its
     // share of the war cap, the lore's tributes are made and hold, far news comes late and seldom; and the far world
     // stays plausible: realms survive, treasuries do not run away, wars end

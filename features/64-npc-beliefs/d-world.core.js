@@ -580,7 +580,10 @@
       const side = Object.keys(pc.rel || {}).some(pid => { const t = A.P(pid), W = WC(), en = W && W.ent(c.o); return t && t.alive && en && (t.realm === en.a || t.realm === en.b) && t.realm !== pc.realm; });
       const p = near ? 1 : 0.12 + (pc.literate ? 0.06 : 0) + (side ? 0.1 : 0) + clamp((pc.int || 0) / 1000, 0, 0.05);
       if (!A.chance(p)) continue;
-      if (!queued && A.EV.nb_record_wrong && A.chance(0.5) && !(A.S.queue || []).some(q => q && q.ev === 'nb_record_wrong')) { A.queue({ type: 'event', ev: 'nb_record_wrong', forced: true, ctx: { cid: c.id } }); queued = true; continue; }
+      // the scene half the time, and only after a quiet that doubles with each one this life has seen (97's A.lfSpaced,
+      // from 8 years); otherwise the line in the log. On the merged v2 build it came three times in a life, three
+      // lives in nine (97's lfRepeats)
+      if (!queued && A.EV.nb_record_wrong && A.chance(0.5) && (!A.lfSpaced || A.lfSpaced(pc, 'nb_record_wrong', NB.WRONG_QUIET || 8)) && !(A.S.queue || []).some(q => q && q.ev === 'nb_record_wrong')) { A.queue({ type: 'event', ev: 'nb_record_wrong', forced: true, ctx: { cid: c.id } }); queued = true; continue; }
       NB.worldFix(pc, c, true);
     }
   };

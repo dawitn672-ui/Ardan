@@ -4,7 +4,7 @@
 //   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs)
 //   4. run every browser test
 //   5. play the balance league and hold each path's numbers to their bands (bench/balance.mjs, bench/targets.mjs)
-//   6. the same on the Great Continent: every path born in the Known World and in the Far Lands (--lands=great)
+//   6. (retired in v2 step 2 with the Far Lands: the Great Continent league)
 //   node tools/check.mjs [--skip-tests] [--skip-balance] [--skip-great] [--shard=k/n]
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -14,6 +14,10 @@ import { fileURLToPath } from 'node:url';
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const run = (args, opts = {}) => execFileSync(process.execPath, args, { cwd: root, stdio: 'inherit', ...opts });
 const before = fs.existsSync(path.join(root, 'index.html')) ? fs.readFileSync(path.join(root, 'index.html')) : null;
+// Ardan v2's engine: its bundle must match src/v2, and its own 24 tests must pass (a failure blocks a release)
+try { run(['tools/build-v2.mjs', '--check']); } catch { process.exitCode = 1; }
+try { execFileSync(process.execPath, ['--test', ...fs.readdirSync(path.join(root, 'tests/v2')).filter(f => f.endsWith('.test.js')).map(f => 'tests/v2/' + f)], { cwd: root, stdio: 'pipe' }); console.log('v2 tests ok (tests/v2)'); }
+catch (e) { console.error('v2 tests FAILED (node --test tests/v2):\n' + String(e.stdout || '').split('\n').filter(l => /^not ok|# (pass|fail)/.test(l)).join('\n')); process.exitCode = 1; }
 run(['tools/build.mjs']);
 const after = fs.readFileSync(path.join(root, 'index.html'));
 if (before && !before.equals(after)) { console.error('index.html was out of date with features/: rebuilt it. Commit the new index.html.'); process.exitCode = 1; }
@@ -32,4 +36,4 @@ if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs', `--wor
 // balance: target numbers per path, held by a fixed-seed league (bench/targets.mjs)
 if (!process.argv.includes('--skip-balance')) { try { run(['bench/balance.mjs', 'index.html']); } catch { process.exitCode = 1; } }
 // the Great Continent league (bench/targets.mjs GREAT): about four times the Known World's cost a life-year
-if (!process.argv.includes('--skip-balance') && !process.argv.includes('--skip-great')) { try { run(['bench/balance.mjs', 'index.html', '--lands=great']); } catch { process.exitCode = 1; } }
+// the Great Continent league (--lands=great) left with the Far Lands in v2 step 2

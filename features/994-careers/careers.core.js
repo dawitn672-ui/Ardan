@@ -134,9 +134,13 @@
     return '';
   };
   CAR.enfeoff = function (p) {
-    p.noble = { rung: 4, realm: p.realm, holding: p.home };
+    // v2 (99994-v2-family): a fief no one else holds (home, when home is not another lord's, a great house's seat or a capital)
+    const at = A.V2F && A.V2F.freeHolding ? A.V2F.freeHolding(p.realm, p.home, p) : p.home;
+    p.noble = { rung: 4, realm: p.realm, holding: at };
+    // v2 (99995-v2-nobility): when every county has its count, the fief is a barony under the count of your county
+    const fief = at == null && A.V2N && A.V2N.grantFief ? A.V2N.grantFief(p) : null;
     p.flags.cr_fief = A.S.year;
-    deed(p, `Given a fief at ${A.provName ? A.provName(p.home) : 'home'}`);
+    deed(p, `Given a fief at ${fief ? fief.name : at != null && A.provName ? A.provName(at) : 'home'}`);
     return '';
   };
 

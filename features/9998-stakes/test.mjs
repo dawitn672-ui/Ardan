@@ -70,12 +70,15 @@ export default {
     if (!has('Pay his rent', /▲▲.*their regard/)) fails.push('large gain');
     if (!has('Pay his rent', /▲.*spirits/)) fails.push('small gain');
     if (!has('Argue him down', /^If it works: \+4 suns, ▲.*renown$/)) fails.push('win');
-    if (!has('Argue him down', /^If it fails: hurt, −5 suns, their regard$/)) fails.push('fail (97 words)');
+    // (v2 playtest 1, #18/#19, 99999-v2-content: a regard lost on a failure reads ▼; a hidden effect says only "It will be
+    // remembered", never what it is; a code effect whose numbers all go one way shows that way; a choice that does
+    // nothing says "Nothing changes", so every choice shows something)
+    if (!has('Argue him down', /^If it fails: hurt, −5 suns, (▼ (less )?)?their regard$/)) fails.push('fail (97 words)');
     if (!has('Ask nicely', /^Nothing lost if it fails$/)) fails.push('nothing lost');
     if (!has('Wade the ford', /If it fails: a wound, hurt/)) fails.push('wound');
-    if (by('Mark the stone').chips.length) fails.push('hidden flag/trait/event shown: ' + by('Mark the stone').chips);
-    if (!has('Say a word for him', /^• .*honour$/)) fails.push('function touch');
-    if (by('Walk away').chips.length) fails.push('nothing to say, but chips');
+    if (by('Mark the stone').chips.some(c => !/^It will be remembered$/.test(c))) fails.push('hidden flag/trait/event shown: ' + by('Mark the stone').chips);
+    if (!has('Say a word for him', /^[•▲] .*honour$/)) fails.push('function touch');
+    if (by('Walk away').chips.some(c => !/^Nothing changes$/.test(c))) fails.push('nothing to say, but chips');
     if (!r.pure) fails.push('drawing changed the state or the stream');
     return { ok: !fails.length, detail: fails.length ? 'missing: ' + fails.join('; ') + ' ' + JSON.stringify(r.R.rows) : `${r.R.rows.length} rows, ${r.lf.length} stake lines, pure` };
   },
@@ -87,6 +90,12 @@ export default {
       const ST = A.STAKES; if (!ST) return { err: 'no A.STAKES' };
       T.enter({ seed: 99802, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
       const pc = A.pc();
+      // (CI 90: under v2 a life is faithless unless it takes up the faith (99993-v2-stats' VS.hasFaith), and by the
+      // owner's design piety is for the faithful: 99999-v2-content's g-ends leaves piety off a faithless life's chips.
+      // This peasant was faithless, so every choice that moves piety read as a missing chip. The chips are read for a
+      // life that has taken up the faith, where every family, piety too, must still show; 99999-v2-content's own test
+      // holds the faithless side.)
+      if (A.V2S && typeof A.V2S.hasFaith === 'function' && !A.V2S.hasFaith(pc)) { pc.flags = pc.flags || {}; pc.flags.v2_faith = A.S.year; }
       const fam = (fx) => {
         const out = new Set();
         for (const k in fx) {
@@ -129,7 +138,8 @@ export default {
       STT.choose(vi, false);
       const rec = pc.retry && pc.retry['stx_test:1'];
       const R1 = STT.show('stx_test'); A.S.queue = [];
-      const lockedAfterFail = !R1.rows.some(x => x.label === 'Argue him down') && R1.locked.some(t => /Argue him down.*Not yet: you failed this in \d+\. Grow 5 more in Persuasion and Willpower/.test(t));
+      const lockedAfterFail = !R1.rows.some(x => x.label === 'Argue him down') && R1.locked.some(t => (A.V2S ? /Argue him down.*Not yet: you failed this in \d+\. Grow in Persuasion and Willpower/ : /Argue him down.*Not yet: you failed this in \d+\. Grow 5 more in Persuasion and Willpower/).test(t));
+      // v2 (99993-v2-stats): no digits for the player, so the lock and the chip say it in words
       // +3: still held back
       const v0 = A.checkVal(pc, ck);
       for (let i = 0; i < 60 && A.checkVal(pc, ck) < v0 + 3; i++) A.trainSkill(pc, 'persuasion', 1);
@@ -138,7 +148,7 @@ export default {
       for (let i = 0; i < 80 && A.checkVal(pc, ck) < v0 + 5.5; i++) A.trainSkill(pc, 'persuasion', 1);
       const R3 = STT.show('stx_test');
       const back = R3.rows.find(x => x.label === 'Argue him down');
-      const again = !!back && back.again && back.chips.some(c => /^Again: you are better at this now \(\+\d+ since \d+\)$/.test(c));
+      const again = !!back && back.again && back.chips.some(c => (A.V2S ? /^Again: you are better at this now than in \d+$/ : /^Again: you are better at this now \(\+\d+ since \d+\)$/).test(c));
       const vi3 = R3.rows.findIndex(x => x.label === 'Argue him down');
       STT.choose(vi3, true);
       const cleared = !(pc.retry && pc.retry['stx_test:1']);

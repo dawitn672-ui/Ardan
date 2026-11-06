@@ -67,6 +67,9 @@ FL.fWorth = function (f) {
   if (!f) return 0;
   let v = A.CR(Object.assign({ fat: 0, burst: 0, fury: 0, hp: 100, maxHp: 100, adapt: 0, mounted: false }, f, { fat: 0, adapt: 0 }), { round: 5 });
   v += (f.wdmg || 3) * 0.9 + (f.prot || 0) * 1.1 + (f.shield || 0) * 1.4;
+  // the race edge the duel engine gives on its own (blood, mass, reach, burst), when a feature measured it (99993's
+  // c-fight sets f.engineEdge, and A.fightWorth adds the same), so the duel screen reads what the duel does
+  v += f.engineEdge || 0;
   return Math.max(0, v);
 };
 // a person's worth with a given weapon or on horseback; pure (fighterFrom may create p.styles, which is put back)
@@ -148,9 +151,21 @@ FL.resolve = function (pc, spec, ctx, check) {
 };
 // the event being decided (A.checkOdds is called with the event at the head of the queue, as 30-get-to-know reads it)
 FL.headCtx = function () { const q = A.S && A.S.queue && A.S.queue[0]; return q && q.type === 'event' ? q.ctx || {} : {}; };
+// A child is not measured against a grown fighter in a scuffle (playtest 2, old 12: a 4-year-old fighting a sister for
+// the pony was shown "against one Brawler", hopeless). The static tag knows a children's event only by C.child( in its
+// condition; at the roll the child's age is known, so a fight that cannot kill or maim, against no one named, is the
+// plain check it was written as. A deadly fight (a bandit, a beast) still measures the child against what is there.
+FL.isChild = pc => !!(pc && pc.st && A.age(pc) < ((GD.RACES[pc.race] || {}).adult || 16));
+FL.applies = function (pc, spec, ctx) {
+  if (!spec) return false;
+  if (!FL.isChild(pc) || spec.deadly || spec.scale === 'beast') return true;
+  return !!(spec.pid && ctx && ctx.pid && A.P(ctx.pid) && A.P(ctx.pid).st);
+};
 const checkOdds = A.checkOdds;
 A.checkOdds = function (pc, check) {
-  if (check && check.fight && pc && pc.st) { try { return FL.resolve(pc, check.fight, FL.headCtx(), check).pct; } catch (e) { console.error('fight-ladder odds', e); } }
+  if (check && check.fight && pc && pc.st) {
+    try { const ctx = FL.headCtx(); if (FL.applies(pc, check.fight, ctx)) return FL.resolve(pc, check.fight, ctx, check).pct; } catch (e) { console.error('fight-ladder odds', e); }
+  }
   return checkOdds.apply(this, arguments);
 };
 
@@ -172,12 +187,12 @@ FL.convertChoice = function (e, i, t0) {
   if (t.decided === 'plain check') {
     const body = t.combatSkill || FL.BODY.includes(t.skill);
     if (!t.deadly && !body) return false;
-    c.check = Object.assign({}, c.check, { fight: FL.spec(e, i, t) });
+    c.check = Object.assign({}, c.check, { fight: Object.assign(FL.spec(e, i, t), t.deadly ? { deadly: true } : {}) });
   } else if (t.decided === 'no roll' && FL.clashes(e, i, t).length) {
     const sp = FL.spec(e, i, t), L = sp.scale === 'beast' ? FL.LOSE.beast : FL.LOSE.men;
     c.win = { r: c.r, fx: c.fx };
     c.lose = { r: L.r, fx: Object.assign({}, L.fx) };
-    c.check = { s: sp.weapon ? Object.keys(FL.WEAPON_OF).find(k => FL.WEAPON_OF[k] === sp.weapon) || 'melee' : 'melee', s2: 'str', d: 50, fight: sp };
+    c.check = { s: sp.weapon ? Object.keys(FL.WEAPON_OF).find(k => FL.WEAPON_OF[k] === sp.weapon) || 'melee' : 'melee', s2: 'str', d: 50, fight: Object.assign(sp, { deadly: true }) };
     delete c.r; delete c.fx;
     t.made = true;
   } else return false;
@@ -199,6 +214,38 @@ FL.convertEvent = function (e) {
       if (FL.convertChoice(e, i, t)) n++;
     } catch (err) { console.error('fight-ladder convert', e.id, err); }
   }
+  return n;
+};
+// The weapon a scene puts in the foe's hand is the one they fight with (playtest 2, new 7: "The shepherd's hut" finds
+// someone "with an army sword", and the duel armed them with a cudgel). A duel against {them} started by an event
+// whose text names their weapon carries it as opts.foeWeapon; A.startDuel puts it in their hand if theirs is empty.
+FL.TEXT_WEAPON = [[/\b(?:great ?axe)\b/, 'greataxe'], [/\bsword|blade|sabre|saber\b/, 'sword'], [/\baxe\b/, 'axe'], [/\bspear\b/, 'spear'], [/\b(?:dagger|knife)\b/, 'dagger'],
+  [/\b(?:cudgel|club)\b/, 'club'], [/\bmace\b/, 'mace'], [/\b(?:quarter)?staff\b/, 'staff'], [/\bpike\b/, 'pike']];
+FL.textWeapon = function (e) {
+  const t = typeof e.text === 'string' ? e.text : '';
+  const m = /\{them\}[^.]{0,60}?\b(?:with|carrying|holding|clutching|wearing)\b[^.]{0,40}/i.exec(t);
+  if (!m) return null;
+  for (const [rx, k] of FL.TEXT_WEAPON) if (rx.test(m[0].toLowerCase()) && GD.GEAR[k]) return k;
+  return null;
+};
+FL.ARMED = [];
+FL.armFromText = function (e) {
+  const k = FL.textWeapon(e);
+  if (!k) return 0;
+  let n = 0;
+  for (const c of e.choices || []) for (const fx of [c && c.fx, c && c.win && c.win.fx, c && c.lose && c.lose.fx]) {
+    const d = fx && typeof fx === 'object' ? fx.duel : null;
+    if (!d || d.foe !== 'them' || (d.opts && d.opts.foeWeapon)) continue;
+    d.opts = Object.assign({}, d.opts, { foeWeapon: k }); n++;
+  }
+  if (n) FL.ARMED.push({ id: e.id, weapon: k, n });
+  return n;
+};
+const convertEvent0 = FL.convertEvent;
+FL.convertEvent = function (e) {
+  const fresh = e && typeof e === 'object' && !FL.done.has(e);
+  const n = convertEvent0.apply(this, arguments);
+  if (fresh) try { FL.armFromText(e); } catch (err) { console.error('fight-ladder arms', e.id, err); }
   return n;
 };
 FL.convertAll = function () { let n = 0; for (const id in A.EV) n += FL.convertEvent(A.EV[id]); return n; };
@@ -257,7 +304,8 @@ FL.woundCosts = function (p) {
     const without = A.fightWorth(Object.assign({}, p, { wounds: p.wounds.filter(x => x && x.k !== k) }));
     const st = Object.entries(W.fx || {}).filter(([, v]) => v).map(([s, v]) => `${FL.STAT_WORD[s] || s} ${v > 0 ? '+' : ''}${v}`);
     if (without === now && !st.length) continue;
-    out.push({ k, name: W.name, perm: !!W.perm, before: without, after: now, tb: A.tierOf(without).n, ta: A.tierOf(now).n, stats: st });
+    const sw = Object.entries(W.fx || {}).filter(([, v]) => v).map(([s, v]) => `${v > 0 ? 'more' : 'less'} ${FL.STAT_WORD[s] || s}`);
+    out.push({ k, name: W.name, perm: !!W.perm, before: without, after: now, tb: A.tierOf(without).n, ta: A.tierOf(now).n, stats: st, statWords: sw });
   }
   return out;
 };
@@ -317,7 +365,11 @@ FL.weighLine = function (D) {
 const startDuel = A.startDuel;
 A.startDuel = function (pc, foe, opts) {
   const k = (opts && opts.kind) || 'duel', drew = !!(foe && !foe.beastId && foe.gear && !['brawl', 'spar', 'tourney'].includes(k) && (!foe.gear.weapon || foe.gear.weapon === 'fists' || !GD.GEAR[foe.gear.weapon]));
-  const D = startDuel.apply(this, arguments);
+  // the scene's weapon, drawn as the fight starts, in place of the everyday one A.armFor would pick
+  const fw = opts && opts.foeWeapon, keep = drew && fw && GD.GEAR[fw] ? foe.gear.weapon : undefined, swap = drew && fw && GD.GEAR[fw];
+  if (swap) foe.gear.weapon = fw;
+  let D;
+  try { D = startDuel.apply(this, arguments); } finally { if (swap) foe.gear.weapon = keep; }
   try {
     if (D && D.a && D.b && Array.isArray(D.log)) {
       if (drew) Object.defineProperty(D, '_flDrew', { value: true, enumerable: true, writable: true, configurable: true });
@@ -331,7 +383,10 @@ A.startDuel = function (pc, foe, opts) {
 FL.css = '.fl-measure{display:block;font-size:.82em;opacity:.8;margin-top:2px;font-weight:normal}' +
   '.fl-duel{margin:6px 0 8px;text-align:center}.fl-wounds{margin-top:4px}';
 FL.style = () => { if (typeof document === 'undefined' || document.getElementById('fl-style')) return; const s = document.createElement('style'); s.id = 'fl-style'; s.textContent = FL.css; document.head.appendChild(s); };
+FL.v2 = () => !!A.V2S;
 FL.digits = () => (A.DIFF && A.DIFF.showOdds ? A.DIFF.showOdds() : true);
+// v2 (99993-v2-stats) shows no worth number (the owner's rule: no 0-100 number the player sees), and its levies are
+// its own scale, read from the body, which a worth cannot be turned into; so beside a worth's tier there is nothing
 FL.duelBox = function (D) {
   const m = D.measure; if (!m) return '';
   const pc = A.pc(), dg = FL.digits(), num = w => (dg && w != null ? ' ' + w : '');
@@ -340,7 +395,7 @@ FL.duelBox = function (D) {
     const I = GD.TIER_INFO[m.btier] || {};
     them = `${A.cap(A.beastShort ? A.beastShort(m.beast) : 'the beast')}: ${I.name || m.btier}${m.party ? ', and the hunters are with you' : ', and you are alone'}`;
   } else {
-    const wn = String(m.weaponB || '').toLowerCase(), arms = !wn || wn === 'fists' ? 'bare-handed' : `with ${/^[aeiou]/.test(wn) ? 'an' : 'a'} ${wn}`;
+    const wn = String(m.weaponB || '').toLowerCase(), arms = !wn || wn === 'fists' || wn === 'bare hands' ? 'bare-handed' : `with ${/^[aeiou]/.test(wn) ? 'an' : 'a'} ${wn}`;
     them = `${D.b.short || D.b.name}: ${m.tB}${num(m.wB)}, ${arms}${m.drew ? ' drawn as the fight starts' : ''}`;
   }
   const odds = dg ? `Fighters like you win this about ${m.pct} times in 100.` : m.pct >= 75 ? 'You should win this.' : m.pct >= 50 ? 'You have the better of it.' : m.pct >= 30 ? 'The odds are against you.' : 'You will probably lose.';
@@ -353,11 +408,14 @@ UI.duelModal = function (D) {
     FL.style();
     const box = FL.duelBox(D), at = h.indexOf('<div class="duellog">');
     if (box && at >= 0 && !D.over) h = h.slice(0, at) + box + h.slice(at);
-    // the foe's chip reads the worth they fight with (armed), not the worth they carry about
-    const foe = D.b && D.b.pid ? A.P(D.b.pid) : null, m = D.measure;
-    if (foe && m && m.wB != null) {
-      const chip = UI.tierChip(foe), t = A.tierOf(m.wB);
-      if (h.includes(chip)) h = h.replace(chip, `<span class="chip tier ${t.k}" title="${UI.esc('Fighting worth ' + m.wB + ', armed as they are for this fight')}">${UI.icon ? UI.icon('swords', 's') : ''}${UI.esc(t.n)} · ${m.wB}</span>`);
+    // both chips read the worth each fights with here (armed, or bare-handed in a brawl), so the chip, the measure and
+    // the chance agree (playtest 2: your chip "Brawler" over a measure saying "You: Untrained")
+    const m = D.measure;
+    for (const [side, w] of [['b', m && m.wB], ['a', m && m.wA]]) {
+      const P = D[side] && D[side].pid ? A.P(D[side].pid) : null;
+      if (!P || w == null) continue;
+      const chip = UI.tierChip(P), t = A.tierOf(w);
+      if (h.includes(chip)) h = h.replace(chip, `<span class="chip tier ${t.k}" title="${UI.esc(side === 'a' ? 'Your worth in this fight, armed as you are for it' : 'Their worth in this fight, armed as they are for it')}">${UI.icon ? UI.icon('swords', 's') : ''}${UI.esc(t.n)}${FL.v2() ? '' : ' · ' + UI.esc(w)}</span>`);
     }
   } catch (e) { console.error('fight-ladder duel screen', e); }
   return h;
@@ -393,7 +451,7 @@ UI.eventModal = function (q) {
       FL.style();
       h = h.replace(/(<button data-a="evChoose" data-v="(\d+)"><span class="grow">)([^<]*)(<\/span>)/g, (all, a, idx, label, b) => {
         const vc = v.choices[+idx], c = vc && e.choices[vc.i];
-        if (!c || !c.check || !c.check.fight) return all;
+        if (!c || !c.check || !c.check.fight || !FL.applies(pc, c.check.fight, q.ctx || {})) return all;
         return a + label + `<small class="fl-measure">${UI.esc(FL.measureText(pc, c.check.fight, q.ctx || {}, c.check))}</small>` + b;
       });
     }
@@ -409,7 +467,13 @@ if (typeof profileModal === 'function') UI.profileModal = function (pc) {
     // its own block just above the wounds (49-body-mind redraws the wounds block itself, and keeps what comes before it)
     const P = pc && pc.st ? pc : A.pc(), rows = FL.woundCosts(P), at = h.indexOf('<div class="group-h">Wounds & scars</div>');
     if (rows.length && at >= 0) {
-      const line = rows.map(r => `${r.name}: ${r.before === r.after ? 'no cost to your fighting worth' : r.tb === r.ta ? `worth ${r.before} to ${r.after}` : `${r.tb} ${r.before} to ${r.ta} ${r.after}`}${r.stats.length ? ' (' + r.stats.join(', ') + ')' : ''}`).join('. ');
+      // with v2 (99993-v2-stats) the player reads words: the tiers and the levies, and which stats a wound takes, not
+      // "worth 31 to 8 (strength -10)" (the owner's rule: no 0-100 number the player sees)
+      const v2 = FL.v2();
+      const cost = r => (r.before === r.after ? 'no cost to your fighting worth' : !v2 ? (r.tb === r.ta ? `worth ${r.before} to ${r.after}` : `${r.tb} ${r.before} to ${r.ta} ${r.after}`)
+        : r.tb === r.ta ? `still ${r.ta}, ${r.before - r.after >= 8 ? 'much' : 'a little'} less in a fight` : `${r.tb} to ${r.ta}`);
+      const stats = r => (v2 ? r.statWords : r.stats);
+      const line = rows.map(r => `${r.name}: ${cost(r)}${stats(r).length ? ' (' + stats(r).join(', ') + ')' : ''}`).join('. ');
       h = h.slice(0, at) + `<div class="group-h">Wounds in a fight</div><div class="small ink2 fl-wounds">In a fight: ${UI.esc(line)}.</div>` + h.slice(at);
     }
   } catch (e) { console.error('fight-ladder profile', e); }

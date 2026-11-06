@@ -1,0 +1,11 @@
+import { generateContinent, riverPaths } from '../../src/v2/map/continent.js';
+import { renderMap, drawRivers } from '../../src/v2/map/render.js';
+import { makeRealms, buildHierarchy } from '../../src/v2/nobility.js';
+import { makeRng } from '../../src/v2/rng.js';
+import { writePng } from './png.js';
+const seed = process.argv[2] || 'ardan';
+const map = generateContinent({ seed });
+const { realms, realmOf } = makeRealms(map, makeRng(seed).fork('realms'), 8);
+for (const r of realms) console.log(r.name.padEnd(34), 'provinces', String(r.provinces.length).padStart(3), JSON.stringify(buildHierarchy(r, map, seed).summary));
+const img = renderMap(map, { scale: 1.5, borders: true, realmOfProvince: (p) => (p < 0 ? -1 : realmOf[p]) });
+writePng(`out/realms-${seed}.png`, drawRivers(img, riverPaths(map), 1.5));

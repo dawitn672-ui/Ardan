@@ -191,7 +191,10 @@
       }
       return;
     }
-    if (pc.scLast != null && S.year - pc.scLast < SC.AGAIN) return;   // one plot against you a decade at most
+    // one plot against you a decade at most, and the wait doubles with each plot of the life (pc.scN; a save from
+    // before counts one): on the merged v2 build a merchant's life had the same slander four times (97's lfRepeats)
+    const nPl = pc.scN || (pc.scLast != null ? 1 : 0);
+    if (pc.scLast != null && S.year - pc.scLast < SC.AGAIN * Math.pow(2, Math.min(2, Math.max(0, nPl - 1)))) return;
     const foes = SC.enemies(pc);
     if (!foes.length) return;
     const { p, op } = foes[0];
@@ -199,7 +202,7 @@
     if (!A.chance(0.03 * spite)) return;
     const killer = op <= -75 && (has(p, 'cruel') || has(p, 'vengeful') || has(p, 'wrathful'));
     pc.scAgainst = { by: p.id, k: killer ? 'murder' : 'slander', prog: 0, m: 0, y: S.year, noticed: 0 };
-    pc.scLast = S.year;
+    pc.scLast = S.year; pc.scN = nPl + 1;
   });
 
   // the Life tab: your schemes, and a sense that something is wrong (pure)

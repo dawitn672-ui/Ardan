@@ -139,7 +139,10 @@ export default {
       }
       return res; })()`);
     const b = r.before, a = r.after, all = x => x.covered === x.n;
-    const ok = all(a.profile) && all(a.top) && a.profile.n >= 15 && b.profile.covered < a.profile.covered;
+    // v2 (99993-v2-stats, playtest round 1): the vitals and stats are words now, so fewer numbers are left and each
+    // explains itself even without the wiring; all of them must still be covered
+    const v2 = await pg.evaluate(() => !!A.V2S);
+    const ok = all(a.profile) && all(a.top) && (v2 ? a.profile.n >= 8 : a.profile.n >= 15 && b.profile.covered < a.profile.covered);
     return { ok, detail: `profile numbers with a tooltip: before ${b.profile.covered} of ${b.profile.n}, after ${a.profile.covered} of ${a.profile.n}; top bar: before ${b.top.covered} of ${b.top.n}, after ${a.top.covered} of ${a.top.n}${a.profile.miss.length || a.top.miss.length ? '; missing: ' + a.profile.miss.concat(a.top.miss).join(' | ') : ''}`, data: r };
   },
 
@@ -172,7 +175,8 @@ export default {
   async ttInModal(pg) {
     await pg.evaluate(`${ENTER}(5910); UI.A.ov('profile');`);
     const st = () => pg.evaluate(() => ({ depth: UI.TT.depth(), inModal: !!(UI.TT.stack[0] && UI.TT.stack[0].el.closest('#modal')), focusInPop: !!document.activeElement.closest('.tt-pop'), modal: !!document.querySelector('#modal .mbox') }));
-    await pg.focus('#modal .barrow .lbl [data-tt="stat"]');
+    // v2 (99993-v2-stats): the full profile has no 0-100 stat bars; any explained number in it will do
+    await pg.focus((await pg.evaluate(() => !!A.V2S)) ? '#modal [data-tt][tabindex], #modal [data-tt]' : '#modal .barrow .lbl [data-tt="stat"]');
     await pg.keyboard.press('Enter'); const s1 = await st();
     await pg.keyboard.press('Tab'); await pg.keyboard.press('Tab'); const s2 = await st();
     await pg.keyboard.press('Escape'); const s3 = await st();
@@ -250,9 +254,11 @@ export default {
       const rows = [...box.querySelectorAll('.tip-row')], sum = rows.filter(x => !x.classList.contains('tt-sum')).reduce((a, x) => a + parseInt(x.querySelector('b').textContent.replace('−', '-'), 10), 0);
       const total = +rows.find(x => x.classList.contains('tt-sum')).querySelector('b').textContent;
       const W = A.worthParts(pc);
-      return { n: people.length, bad: bad.slice(0, 5), rnd, shown, sum, total, W: [W.body, W.skill, W.gear] };
+      // v2 (99993-v2-stats, "words, not numbers"): the chip names the worth in v2's levies
+      const v2 = !!A.V2S, chipOk = v2 ? chip.textContent.includes(A.V2S.levyWords(A.V2S.shownLevies(pc))) : shown === total;
+      return { n: people.length, bad: bad.slice(0, 5), rnd, shown: v2 ? chip.textContent.split('·').pop().trim() : shown, chipOk, sum, total, W: [W.body, W.skill, W.gear] };
     })()`);
-    const ok = !r.bad.length && r.shown === r.total && r.sum === r.total && r.rnd.worth === 0 && r.rnd.gear === 0 && r.rnd.skill === 0 && r.rnd.body <= 2 && r.rnd.stat <= 2;
+    const ok = !r.bad.length && r.chipOk && r.sum === r.total && r.rnd.worth === 0 && r.rnd.gear === 0 && r.rnd.skill === 0 && r.rnd.body <= 2 && r.rnd.stat <= 2;
     return { ok, detail: `chip ${r.shown} = body ${r.W[0]} + skill ${r.W[1]} + gear ${r.W[2]} = popover rows ${r.sum} = its total ${r.total}; ${r.n} people: body + skill + gear = worth in all${r.bad.length ? ' but ' + r.bad.join(', ') : ''}; largest rounding row: body ${r.rnd.body}, skill ${r.rnd.skill}, gear ${r.rnd.gear}, stats ${r.rnd.stat}` };
   },
 
@@ -394,8 +400,18 @@ export default {
       A.S.queue = []; UI.render();
       return out;
     });
-    const c = cover(r, 60);
-    return { ok: c.ok && r.length >= 5 && r[0].after.n >= 30, detail: r.map(line).join('; '), data: r };
+    // v2 (99993-v2-stats): a choice's odds are words now, so the scene's numbers left are the choice keys; the scenes are
+    // left out of the bar and the rest must still be covered
+    // v2 (99993-v2-stats, playtest 2 old 7 "the duel is all numbers"; commit 55223b6): the duel's Blood, Wind and blows
+    // are words now, so the duel screen holds no number left to explain; like the event scenes it is left out of the bar
+    // (while it holds none: a number that comes back is counted and must be covered)
+    const v2 = await pg.evaluate(() => !!A.V2S), rr = v2 ? r.filter(s => !/^Events with odds/.test(s.name) && !(s.name === 'Duel' && s.after.n === 0)) : r;
+    // v2 (99997-v2-war, playtest 2 finding 5): the commander's morale ("eager") and drill ("drilled") are words now, not
+    // 0-100 numbers, so the battle screens carry fewer numbers to cover (39 before, 23 with the duel, 17 on the three
+    // battle screens once the duel's went to words in round 2); the share that must be covered (90% of each screen,
+    // every screen with a number) is unchanged, and the floor is the battle screens' own numbers
+    const c = cover(rr, v2 ? 15 : 60);
+    return { ok: c.ok && r.length >= 5 && (v2 || r[0].after.n >= 30), detail: r.map(line).join('; '), data: r };
   },
 
   // coverage, the realm and the books: the Realm tab as a commoner and as a noble (neither rules), the Codex's Power &
@@ -441,7 +457,8 @@ export default {
           if (!S.parts) return;
           const d = vc.odds - sumR(S.parts); rec(c.check.fight ? 'fight odds' : 'check odds', d, Math.abs(d) <= 1 && !other(S.parts));
           // the popover shows the same: its rows add to its total
-          if (vi === 0) { const rows = T2.rows(UI.TIPS.odds(vi)), sumRow = rows.filter(x => x.sum).pop(), parts = rows.filter(x => !x.sum); rec('odds popover', sumRow ? sumRow.v - parts.reduce((a, x) => a + x.v, 0) : 99, !!sumRow && sumRow.v === vc.odds && sumRow.v === parts.reduce((a, x) => a + x.v, 0)); }
+          // v2 (99993-v2-stats, "no percentages for the player"): the odds popover has words, no sum to check
+          if (vi === 0 && !A.V2S) { const rows = T2.rows(UI.TIPS.odds(vi)), sumRow = rows.filter(x => x.sum).pop(), parts = rows.filter(x => !x.sum); rec('odds popover', sumRow ? sumRow.v - parts.reduce((a, x) => a + x.v, 0) : 99, !!sumRow && sumRow.v === vc.odds && sumRow.v === parts.reduce((a, x) => a + x.v, 0)); }
         });
       }
       A.S.queue = []; UI.TT.cur.ev = null;
@@ -480,14 +497,46 @@ export default {
         const O = TT.maxOrgParts(d), mo = (O.base + O.cmd) * O.ord; rec('most organization', mo - O.total, Math.abs(mo - O.total) < 1e-6);
       }
       for (const t of Object.values(A.realm('POL-01').forces.tpl)) { const s = A.tplS('POL-01', t.id); for (const k of ['soft', 'hard', 'def', 'men']) { const rows = T2.rows(UI.TIPS.tplStat('POL-01|' + t.id + '|' + k)), sumRow = rows.filter(x => x.sum).pop(), parts = rows.filter(x => !x.sum); rec('template figure', sumRow.v - parts.reduce((a, x) => a + x.v, 0), Math.round(s[k]) === sumRow.v && !rows.some(x => /Rounding/.test(x.l) && Math.abs(x.v) > 1)); } }
-      return { R, bad: [...new Set(bad)], nBad: bad.length, has: { FL: !!A.FL, RI: !!A.RI } };
+      return { R, bad: [...new Set(bad)], nBad: bad.length, has: { FL: !!A.FL, RI: !!A.RI }, v2: !!A.V2S };
     });
     // what is measured depends on what is built: the fights and the duel's measure need 48-fight-ladder, the book, the
     // court and the crown's purse 56-realm-inside
-    const R = r.R, need = ['check odds', 'odds popover', 'duel read', 'job odds', 'market price', 'gear price', 'division figure', 'most organization', 'template figure']
+    const R = r.R, need = ['check odds'].concat(r.v2 ? [] : ['odds popover'], ['duel read']).concat([ 'job odds', 'market price', 'gear price', 'division figure', 'most organization', 'template figure'])
       .concat(r.has.FL ? ['fight odds', 'duel odds'] : [], r.has.RI ? ['money book', 'court odds', 'crown purse'] : []);
     const enough = need.every(k => R[k] && R[k].n >= 3) && R['check odds'].n >= 40;
     return { ok: !r.nBad && enough, detail: Object.entries(R).map(([k, x]) => `${k}: ${x.n}, largest gap ${Math.round(x.worst * 100) / 100}`).join('; ') + (r.nBad ? `; FAILED: ${r.bad.join(', ')} (${r.nBad})` : '') + (enough ? '' : '; too few cases'), data: r };
+  },
+
+  // CI 89 (ttSums2): 9992-identity's thoughts move a check's value (a ripe one's gain and cost, half the cost of one held),
+  // and the odds' parts did not say so: a life holding "Fear is a teacher" (stealth -3) showed every stealth check with an
+  // "Other things in play" row. Now a thought that bears on the check is a row of its own, named in words, and the rows
+  // add up to the odds. Held, ripe, on the first skill and on the second; a thought on neither adds no row.
+  async ttThoughtRow(pg) {
+    await pg.evaluate(KIT2);
+    const r = await pg.evaluate(() => {
+      const TT = UI.TT, ID = A.ID, out = [];
+      if (!ID || !ID.THOUGHTS || !ID.THOUGHTS.fear) return { skip: true };
+      A.newGame({ seed: 5970, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 28 });
+      const pc = A.pc(); A.S.queue = [];
+      const cases = [
+        ['held, first skill', { held: { fear: A.absDay() }, ripe: {} }, { s: 'stealth', s2: 'int', d: 40 }, true],
+        ['ripe, first skill', { held: {}, ripe: { fear: A.S.year } }, { s: 'stealth', d: 40 }, true],
+        ['ripe gain, second skill', { held: {}, ripe: { fear: A.S.year } }, { s: 'persuasion', s2: 'athletics', d: 45 }, true],
+        ['bears on neither', { held: { fear: A.absDay() }, ripe: {} }, { s: 'persuasion', s2: 'wil', d: 45 }, false],
+      ];
+      for (const [name, th, ck, want] of cases) {
+        pc.thoughts = Object.assign({ dropped: {} }, th);
+        const odds = A.checkOdds(pc, ck), S = TT.checkParts(pc, ck, {}, odds, null);
+        const row = S.parts.find(x => /^A thought you hold/.test(x[0])), sum = S.parts.reduce((a, x) => a + x[1], 0);
+        // the base is rounded to a whole point and that half point has no row of its own, hence a gap up to 0.5
+        out.push({ name, odds, row: row ? row[0] : null, other: S.parts.some(x => /Other things in play/.test(x[0])), gap: Math.round((odds - sum) * 100) / 100, want, pct: !!row && /\d\s*%/.test(row[0]) });
+      }
+      pc.thoughts = null;
+      return { out };
+    });
+    if (r.skip) return { ok: true, detail: 'no 9992-identity thoughts in this build' };
+    const ok = r.out.every(x => !!x.row === x.want && !x.other && Math.abs(x.gap) <= 0.5 && !x.pct && (!x.want || /Fear is a teacher/.test(x.row)));
+    return { ok, detail: r.out.map(x => `${x.name}: ${x.odds}, ${x.row ? 'row' : 'no row'}${x.other ? ', other' : ''}, gap ${x.gap}`).join('; ') };
   },
 
   // nested: a price opens its trade skill, which opens its tiers; a division's strength opens its organization, which
@@ -513,17 +562,33 @@ export default {
     await pg.mouse.move(1, 1);
     await pg.evaluate(() => { UI.TT.closeAll(); UI.ov = null; const pc = A.pc(); const q = TT2.oddsEvents(40).find(x => A.EV[x.ev].choices.some(c => c.check && !c.check.fight && (GD.STATS.includes(c.check.s)))); window.__q = q; A.S.queue = [q]; UI.render(); });
     const before = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
-    await pg.click('#modal [data-tt="odds"][data-tt-tap]'); out.e1 = await depth();
+    // Changed in round 2 (wf-round2), with v2 in the build, as ttAxe2 was in cycle 3: since playtest 1
+    // (docs/v2/playtest-1.md, finding 3) a click on a choice chooses, so the odds inside it take no tap (99993-v2-stats
+    // f-words); with a mouse they open on hover. Their breakdown is words only, with no stat or potential that opens
+    // a further popover (the owner's rules: no number, no description behind a click), so the event is one deep and
+    // the test checks that the breakdown holds no word that opens another. The Right arrow and Esc part is unchanged:
+    // the keyboard still reaches the odds (f-words marks them data-tt-key). Without v2, the tap and three deep as before.
+    out.v2 = await pg.evaluate(() => !!A.V2S);
+    if (out.v2) { await pg.hover('#modal button[data-a="evChoose"] [data-tt="odds"]'); await pg.waitForFunction(() => UI.TT.depth() >= 1, null, { timeout: 5000 }).catch(() => {}); }
+    else await pg.click('#modal [data-tt="odds"][data-tt-tap]');
+    out.e1 = await depth();
     out.notChosen = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
-    await pg.click('#tt-pop-1 [data-tt="stat"]'); out.e2 = await depth();
-    await pg.click('#tt-pop-2 [data-tt="potential"]'); out.e3 = await depth();
+    if (out.v2) {
+      out.inner = await pg.evaluate(() => document.querySelectorAll('#tt-pop-1 [data-tt], #tt-pop-1 [data-tip]').length);
+      out.words = await pg.evaluate(() => { const t = (document.querySelector('#tt-pop-1') || {}).textContent || ''; return t.length > 20 && !/\d/.test(t); });
+      await pg.mouse.move(1, 1);
+    } else {
+      await pg.click('#tt-pop-1 [data-tt="stat"]'); out.e2 = await depth();
+      await pg.click('#tt-pop-2 [data-tt="potential"]'); out.e3 = await depth();
+    }
     await pg.evaluate(() => UI.TT.closeAll());
-    await pg.focus('#modal button[data-a="evChoose"]:has([data-tt-tap])');
+    await pg.focus(out.v2 ? '#modal button[data-a="evChoose"]:has([data-tt-key])' : '#modal button[data-a="evChoose"]:has([data-tt-tap])');
     await pg.keyboard.press('ArrowRight'); out.k1 = await depth(); out.kFocus = await pg.evaluate(() => !!document.activeElement.closest('.tt-pop'));
     await pg.keyboard.press('Escape'); out.k0 = await depth(); out.kBack = await pg.evaluate(() => document.activeElement.matches('button[data-a="evChoose"]'));
     out.stillNot = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
-    const ok = out.h1 === 1 && out.h2 === 2 && out.h3 === 3 && out.h0 === 0 && out.w1 === 1 && (!out.wHasGen || out.w2 === 2) && before && out.e1 === 1 && out.notChosen && out.e2 === 2 && out.e3 === 3 && out.k1 === 1 && out.kFocus && out.k0 === 0 && out.kBack && out.stillNot;
-    return { ok, detail: `Holdings: a price ${out.h1}, its trade skill ${out.h2}, the tiers ${out.h3}, a click outside ${out.h0}. War Room: organization ${out.w1}, its general ${out.w2 || 'none'}. Event: a tap on the odds ${out.e1} (choice not taken: ${out.notChosen}), the stat ${out.e2}, its potential ${out.e3}; Right arrow on the choice ${out.k1} (focus inside ${out.kFocus}), Esc ${out.k0} (focus back on the choice ${out.kBack}); still not chosen ${out.stillNot}`, data: out };
+    const deepEv = out.v2 ? out.inner === 0 && out.words : out.e2 === 2 && out.e3 === 3;
+    const ok = out.h1 === 1 && out.h2 === 2 && out.h3 === 3 && out.h0 === 0 && out.w1 === 1 && (!out.wHasGen || out.w2 === 2) && before && out.e1 === 1 && out.notChosen && deepEv && out.k1 === 1 && out.kFocus && out.k0 === 0 && out.kBack && out.stillNot;
+    return { ok, detail: `Holdings: a price ${out.h1}, its trade skill ${out.h2}, the tiers ${out.h3}, a click outside ${out.h0}. War Room: organization ${out.w1}, its general ${out.w2 || 'none'}. Event: ${out.v2 ? 'a hover on' : 'a tap on'} the odds ${out.e1} (choice not taken: ${out.notChosen}), ${out.v2 ? `words only ${out.words}, words inside that open another ${out.inner}` : `the stat ${out.e2}, its potential ${out.e3}`}; Right arrow on the choice ${out.k1} (focus inside ${out.kFocus}), Esc ${out.k0} (focus back on the choice ${out.kBack}); still not chosen ${out.stillNot}`, data: out };
   },
 
   // render purity on each screen: draw it, open every trigger and the first word inside it, close; the state and the
@@ -571,7 +636,7 @@ export default {
   async ttAxe2(pg, errs) {
     await pg.evaluate(fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8'));
     await pg.evaluate(KIT2);
-    const found = [], opened = [];
+    const found = [], opened = [], evOne = [];
     const run = async (label) => {
       const v = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => `${v.id}(${v.nodes.length}: ${v.nodes.slice(0, 2).map(n => n.target.join(' ')).join(', ')})`));
       found.push(...v.map(x => label + ':' + x)); opened.push(label + ' ' + (await pg.evaluate(() => UI.TT.depth())));
@@ -584,12 +649,22 @@ export default {
       await pg.click('#tabbody table.mkt-t td[data-tt="mktPrice"]'); await pg.click('#tt-pop-1 [data-tt="skill"]');
       await run(theme + ' holdings');
       await pg.evaluate(() => { UI.TT.closeAll(); const q = TT2.oddsEvents(30).find(x => A.EV[x.ev].choices.some(c => c.check && !c.check.fight)); A.S.queue = [q]; UI.ov = null; UI.render(); });
-      await pg.click('#modal [data-tt="odds"][data-tt-tap]'); const s2 = await pg.$('#tt-pop-1 [data-tt="stat"], #tt-pop-1 [data-tt="skill"]'); if (s2) await s2.click();
+      // Changed in cycle 3 (wf-phonetap), with v2 in the build: since playtest 1 (docs/v2/playtest-1.md, finding 3) a
+      // click on a choice chooses, so the odds badge inside it has no click target (99993-v2-stats f-words); with a
+      // mouse its breakdown opens on hover. That breakdown is words only (the owner's rule: no number, and no
+      // description behind a further click), so it holds no word that opens a second popover: the event is checked
+      // one deep. Without v2, the release-era click target and two deep, as before.
+      const v2 = await pg.evaluate(() => !!A.V2S);
+      if (v2) { await pg.mouse.move(1, 1); await pg.hover('#modal button[data-a="evChoose"] [data-tt="odds"]'); await pg.waitForFunction(() => UI.TT.depth() >= 1); }
+      else await pg.click('#modal [data-tt="odds"][data-tt-tap]');
+      const s2 = await pg.$('#tt-pop-1 [data-tt="stat"], #tt-pop-1 [data-tt="skill"]'); if (s2) await s2.click();
+      if (v2) evOne.push(!s2 && !(await pg.$('#tt-pop-1 [data-tt], #tt-pop-1 [data-tip]')));
       await run(theme + ' event');
       await pg.evaluate(() => { UI.TT.closeAll(); A.S.queue = []; UI.ov = null; UI.render(); });
     }
     for (let i = errs.length - 1; i >= 0; i--) if (/Refused to connect to 'https:\/\/fonts\.googleapis\.com/.test(errs[i])) errs.splice(i, 1);
-    const deep = opened.every(x => / 2$/.test(x));
+    // two deep everywhere; with v2 the event's words-only breakdown is one deep, and only when it offers no word inside
+    const deep = opened.every(x => / 2$/.test(x) || (evOne.length === 2 && evOne.every(Boolean) && / event 1$/.test(x)));
     return { ok: !found.length && deep, detail: `open: ${opened.join(', ')}; ${found.length} axe violations${found.length ? ': ' + found.slice(0, 6).join('; ') : ''}` };
   },
 
@@ -616,19 +691,47 @@ export default {
       const top = await p.evaluate(() => document.querySelector('#topbar').getBoundingClientRect().bottom);
       await p.touchscreen.tap(187, Math.round(top) + 4); const b4 = await box();
       const w1 = await p.evaluate(() => document.documentElement.scrollWidth);
-      // an event: the odds by tap
+      // an event: the odds by tap.
+      // Changed in cycle 3 (wf-phonetap), with v2 in the build: since playtest 1 (docs/v2/playtest-1.md, finding 3) a tap
+      // on a choice chooses, so the badge inside the choice is no longer a tap target (99993-v2-stats' v2sPlaytest1
+      // holds that), and a phone, having no hover, could not open the breakdown at all. The design this tests
+      // (99993-v2-stats h-why.core.js): the odds badge has a target of its own beside the choice button, never inside
+      // it, at least 44 × 44 px; a tap on it opens the words-only breakdown and chooses nothing; the breakdown covers no
+      // choice, so the next tap on a choice is free: it closes the breakdown and takes that choice. Without v2 the
+      // release-era design is tested as before (a tap target inside the choice that does not choose).
       await p.evaluate(() => { const q = TT2.oddsEvents(30).find(x => A.EV[x.ev].choices.some(c => c.check)); window.__q = q; A.S.queue = [q]; UI.ov = null; UI.render(); });
-      const pill = await p.$('#modal [data-tt="odds"][data-tt-tap]'); await pill.scrollIntoViewIfNeeded(); await pill.tap(); const e1 = await box();
+      const v2 = await p.evaluate(() => !!A.V2S);
+      const pill = await p.$(v2 ? '#modal .choices > [data-tt][role="button"]:not(button)' : '#modal [data-tt="odds"][data-tt-tap]');
+      await pill.scrollIntoViewIfNeeded(); await pill.tap(); const e1 = await box();
       const kept = await p.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
       const eFits = fit(e1);
+      let ev = { ok: true, note: 'no v2: the old tap target' };
+      if (v2) {
+        ev = await p.evaluate(() => {
+          const t = document.querySelector('#modal .choices > [data-tt][role="button"]:not(button)'), r = t.getBoundingClientRect();
+          const s = UI.TT.stack[0], pr = s ? s.el.getBoundingClientRect() : null;
+          const btns = [...document.querySelectorAll('#modal button[data-a="evChoose"]')];
+          const over = pr ? btns.filter(b => { const q = b.getBoundingClientRect(); return q.left < pr.right && q.right > pr.left && q.top < pr.bottom && q.bottom > pr.top; }).length : -1;
+          const free = btns.find(b => !b.disabled && b.dataset.v !== t.dataset.v) || btns.find(b => !b.disabled);
+          const fr = free.getBoundingClientRect();
+          return { w: Math.round(r.width), h: Math.round(r.height), inside: !!t.closest('[data-a]'), taps: document.querySelectorAll('button[data-a="evChoose"] [data-tt-tap]').length,
+            words: !!pr && !/\d/.test(s.el.textContent), over, at: [Math.round(fr.left + fr.width / 2), Math.round(fr.top + 12)], v: free.dataset.v };
+        });
+        // the next tap, on another choice's body, closes the breakdown and takes that choice
+        await p.touchscreen.tap(ev.at[0], ev.at[1]);
+        const after = await p.evaluate(() => ({ open: UI.TT.stack.length, took: !A.S.queue.length || A.S.queue[0] !== window.__q || !!window.__q.result }));
+        ev.open = after.open; ev.took = after.took;
+        ev.ok = ev.w >= 44 && ev.h >= 44 && !ev.inside && ev.taps === 0 && ev.words && ev.over === 0 && ev.open === 0 && ev.took;
+        ev.note = `the odds target ${ev.w} × ${ev.h} px, outside the choice ${!ev.inside}, tap targets inside choices ${ev.taps}; the breakdown words only ${ev.words}, over ${ev.over} choices; the next tap on a choice closes it (${ev.open} open) and takes the choice ${ev.took}`;
+      }
       await p.evaluate(() => { UI.TT.closeAll(); A.S.queue = []; UI.ov = null; UI.render(); });
       // the War tab
       await p.evaluate(() => { TT2.soldier(5973); UI.tab = 'war'; UI.render(); });
       const n = await p.$('#tabbody [data-tt="divStr"]'); await n.scrollIntoViewIfNeeded(); await n.tap(); const war = await box();
       const w2 = await p.evaluate(() => document.documentElement.scrollWidth);
       await ctx.close();
-      const ok = b1.length === 1 && b2.length === 2 && fits && b3.length === 1 && b4.length === 0 && w1 <= 375 && e1.length === 1 && kept && eFits && war.length === 1 && fit(war) && w2 <= 375;
-      return { ok, detail: `${phone ? '71-phone in the build' : 'no 71-phone in this build'}; Holdings: taps open ${b1.length}, ${b2.length}, inside 375 × 740: ${fits} (${JSON.stringify(b2)}); × leaves ${b3.length}; a tap outside leaves ${b4.length}; page width ${w1}. Event: a tap on the odds opens ${e1.length}, inside: ${eFits}, the choice not taken: ${kept}. War tab: ${war.length} open, inside: ${fit(war)}; page width ${w2}` };
+      const ok = b1.length === 1 && b2.length === 2 && fits && b3.length === 1 && b4.length === 0 && w1 <= 375 && e1.length === 1 && kept && eFits && ev.ok && war.length === 1 && fit(war) && w2 <= 375;
+      return { ok, detail: `${phone ? '71-phone in the build' : 'no 71-phone in this build'}; Holdings: taps open ${b1.length}, ${b2.length}, inside 375 × 740: ${fits} (${JSON.stringify(b2)}); × leaves ${b3.length}; a tap outside leaves ${b4.length}; page width ${w1}. Event: a tap on the odds opens ${e1.length}, inside: ${eFits}, the choice not taken: ${kept}; ${ev.note}. War tab: ${war.length} open, inside: ${fit(war)}; page width ${w2}` };
     } catch (e) { await ctx.close(); throw e; }
   },
 };

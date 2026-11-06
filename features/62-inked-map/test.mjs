@@ -50,10 +50,14 @@ export default {
       const tiles = UI.INKMAP.stats.tiles;
       if (fog0 === undefined) delete UI.set.atlasFog; else UI.set.atlasFog = fog0;
       T.set(true);
-      return { res, errs, tiles, seaStyle: UI.INKMAP.SEA_STYLE };
+      return { res, errs, tiles, seaStyle: UI.INKMAP.SEA_STYLE, sat: !!(A.V2MAP && A.V2MAP.drawOn && A.V2MAP.drawOn()) };
     });
     const on = out.res.on, off = out.res.off, keys = ['world', 'gm1', 'gm3', 'gm8', 'war1.5', 'war4', 'war9'];
     const differ = keys.filter(k => on[k] && off[k] && on[k] !== off[k]).length;
+    // v2 map lane: under 99991-v2-map's satellite ground the sea is the satellite's with the style on or off (62's ink
+    // lines still differ, so every view does); the ground draws in both
+    if (out.sat) { const okSat = !out.errs.length && on.ground === true && off.ground === true && differ === keys.length && on.sea[2] > on.sea[0];
+      return { ok: okSat, detail: `satellite ground: ${keys.length} views drawn with the inked style on and off, ${differ} differ; sea pixel ${on.sea.join(',')}; ${out.tiles} ink tiles drawn${out.errs.length ? '; ERR ' + out.errs.join('; ') : ''}` }; }
     const ok = !out.errs.length && on.ground === true && off.ground === false && differ === keys.length && (out.seaStyle === 'vellum' ? on.sea[0] > 180 : on.sea[2] > on.sea[0] && on.sea.join() !== off.sea.join()) && off.sea[2] > off.sea[0];
     return { ok, detail: `${keys.length} views drawn with the style on and off, ${differ} differ; sea pixel inked ${on.sea.join(',')} vs release ${off.sea.join(',')}; ${out.tiles} tiles drawn${out.errs.length ? '; ERR ' + out.errs.join('; ') : ''}` };
   },
@@ -104,32 +108,40 @@ export default {
   },
 
   // a warm frame costs at most about twice the release's; a cold start (geometry and first tiles) is reported
+  // Loaded runners (CI's 4 workers; a shared 4-core machine at load 24): the release pass and the inked pass are timed
+  // seconds apart, so a burst of load in one of them swings a view's ratio either way (CI run 90: gmZoom 35->98 and
+  // war1.5 33->71 failed, while locally under 4 workers the release was the slower one, gm8 152->31, gmPan 84->14; the
+  // views over 2x changed run to run, and the ink layer's own work is ~2 ms of a 70 ms gmZoom frame). So a view over the
+  // bar on its first comparison is timed again as an off/on pair, up to 3 more times, and each side keeps its fastest
+  // (min) median: the same views and the same 2x bar, but a real regression is over in every pair and still fails.
   async inkTiming(pg) {
     await pg.evaluate(WAR);
     const r = await pg.evaluate(() => {
-      const T = window.__T, t = {};
+      const T = window.__T, t = { off: {}, on: {} };
       const geo0 = performance.now(); UI.INKMAP.geo(); const geoMs = UI.INKMAP.geo().ms;
-      for (const on of [false, true]) {
-        T.set(on); const k = on ? 'on' : 'off'; t[k] = {};
-        UI.ov = null; UI.render();
-        t[k].world = T.time(() => { const c = UI.$('#worldmap'); MAP.draw(c, { mode: 'political' }); return c; });
-        UI.A.ov('bigmap');
-        for (const z of [1, 3, 8]) { T.gm(z); t[k]['gm' + z] = T.time(() => T.gm(z)); }
-        T.gm(3); t[k].gmPan = T.time(() => { UI.gm.view.x0 += 12; UI.gmDraw(); return UI.$('#gmap'); });
-        // a wheel step in, then out again: the scale changes every frame (tiles warm, the kept view laid again)
-        { let i = 0; const zs = [3, 3.75]; zs.forEach(z => T.gm(z)); t[k].gmZoom = T.time(() => T.gm(zs[i++ % 2])); }
-        UI.ov = null; UI.render(); UI.warRoomOpen();
-        for (const z of [1.5, 4, 9]) { T.war(z); t[k]['war' + z] = T.time(() => T.war(z)); }
-        T.war(4); t[k].warPan = T.time(() => { UI.wr.view.x0 += 10; const c = UI.$('#warmap'); UI.drawWar(c); return c; });
-        UI.ov = null; UI.render();
-      }
+      const world = () => { UI.ov = null; UI.render(); }, gmap = () => { world(); UI.A.ov('bigmap'); }, war = () => { world(); UI.warRoomOpen(); };
+      // each view: the screen it is on, its warm-up and its timed frame (the release's first pass order is kept)
+      const V = [['world', world, () => {}, () => { const c = UI.$('#worldmap'); MAP.draw(c, { mode: 'political' }); return c; }]];
+      for (const z of [1, 3, 8]) V.push(['gm' + z, gmap, () => T.gm(z), () => T.gm(z)]);
+      V.push(['gmPan', gmap, () => T.gm(3), () => { UI.gm.view.x0 += 12; UI.gmDraw(); return UI.$('#gmap'); }]);
+      // a wheel step in, then out again: the scale changes every frame (tiles warm, the kept view laid again)
+      { let i = 0; const zs = [3, 3.75]; V.push(['gmZoom', gmap, () => zs.forEach(z => T.gm(z)), () => T.gm(zs[i++ % 2])]); }
+      for (const z of [1.5, 4, 9]) V.push(['war' + z, war, () => T.war(z), () => T.war(z)]);
+      V.push(['warPan', war, () => T.war(4), () => { UI.wr.view.x0 += 10; const c = UI.$('#warmap'); UI.drawWar(c); return c; }]);
+      const time = (v, on) => { const k = on ? 'on' : 'off', [name, open, warm, frame] = v; open(); warm(); const ms = T.time(frame); t[k][name] = Math.min(t[k][name] ?? Infinity, ms); };
+      for (const on of [false, true]) { T.set(on); for (const v of V) time(v, on); world(); }
+      const over = k => t.on[k] > 2 * t.off[k] + 3, first = V.map(v => v[0]).filter(over), retries = {};
+      for (const v of V) for (let n = 0; n < 3 && over(v[0]); n++) { retries[v[0]] = n + 1; for (const on of [false, true]) { T.set(on); time(v, on); } world(); }
+      T.set(true);
       const st = UI.INKMAP.stats;
-      return { t, geoMs, tileMs: st.tileMs / Math.max(1, st.tiles), tiles: st.tiles };
+      return { t, geoMs, tileMs: st.tileMs / Math.max(1, st.tiles), tiles: st.tiles, first, retries };
     });
     const keys = Object.keys(r.t.on), over = keys.filter(k => r.t.on[k] > 2 * r.t.off[k] + 3);
     const sum = o => keys.reduce((a, k) => a + o[k], 0);
     const ok = over.length <= 1 && sum(r.t.on) <= 2 * sum(r.t.off) + 6;
-    return { ok, detail: `warm frame ms, release -> inked: ${keys.map(k => `${k} ${r.t.off[k].toFixed(1)}->${r.t.on[k].toFixed(1)}`).join(', ')}; total ${sum(r.t.off).toFixed(1)}->${sum(r.t.on).toFixed(1)}; cold: geometry ${r.geoMs.toFixed(0)} ms once, ${r.tileMs.toFixed(1)} ms per tile (${r.tiles} tiles)${over.length ? '; over 2x: ' + over.join(',') : ''}` };
+    const tried = Object.entries(r.retries).map(([k, n]) => `${k} x${n}`).join(', ');
+    return { ok, detail: `warm frame ms, release -> inked: ${keys.map(k => `${k} ${r.t.off[k].toFixed(1)}->${r.t.on[k].toFixed(1)}`).join(', ')}; total ${sum(r.t.off).toFixed(1)}->${sum(r.t.on).toFixed(1)}; ` +
+      `over 2x at first ${r.first.length ? r.first.join(',') : 'none'}, timed again ${tried || 'none'}; cold: geometry ${r.geoMs.toFixed(0)} ms once, ${r.tileMs.toFixed(1)} ms per tile (${r.tiles} tiles)${over.length ? '; over 2x: ' + over.join(',') : ''}` };
   },
 
   // on a world at war, zoomed in, the war room and the full map raise standards; zoomed out, or with banners off, boxes
@@ -165,9 +177,11 @@ export default {
       UI.C.setInkMap({ checked: true }); const onGround = MAP.ground(document.createElement('canvas').getContext('2d'), 4, 4, null);
       UI.C.setBanners({ checked: false }); const b0 = UI.set.banners; UI.C.setBanners({ checked: true });
       UI.ov = null; UI.render();
-      return { has, ink0, ban0, offGround, offSet, stored, onGround, b0, b1: UI.set.banners };
+      return { has, ink0, ban0, offGround, offSet, stored, onGround, b0, b1: UI.set.banners, sat: !!(A.V2MAP && A.V2MAP.drawOn && A.V2MAP.drawOn()) };
     });
-    const ok = r.has && r.ink0 && r.ban0 && r.offGround === false && r.offSet === false && r.stored === false && r.onGround === true && r.b0 === false && r.b1 === true;
+    // v2 map lane: under 99991-v2-map's satellite ground the ground is drawn with the inked style off too (the release's
+    // relief picture is of the old map), so off the ground does not decline; the setting still turns 62's ink off
+    const ok = r.has && r.ink0 && r.ban0 && r.offGround === !!r.sat && r.offSet === false && r.stored === false && r.onGround === true && r.b0 === false && r.b1 === true;
     return { ok, detail: `menu toggles ${r.has}, on by default ${r.ink0}/${r.ban0}; inked map off -> ground declines ${r.offGround === false}, saved ${r.stored}; on again ${r.onGround}; banners off/on ${r.b0}/${r.b1}` };
   },
 
@@ -214,7 +228,8 @@ export default {
   // colour it is shown in elsewhere, so neighbours that shared one pink on the Twin Rivers now differ.
   async inkLegendView(pg) {
     const r = await pg.evaluate(async () => {
-      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      // v2: no lands:'great' (the Far Lands are out of the build, docs/v2/LANES.md): every world is the generated continent
+      A.newGame({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
       UI.screen = 'game'; A.S.queue = []; UI.set.hints = false; if (UI.INKMAP) UI.INKMAP.budgetMs = 1e9; UI.render();
       UI.ov = { type: 'bigmap' }; UI.renderModal(); UI.gmDraw && UI.gmDraw();
       const L = document.getElementById('imLegendList');
@@ -269,5 +284,26 @@ export default {
     });
     const ok = !r.none && r.blue > 0.15 && r.light > 0.01 && r.lines > 0 && r.pure;
     return { ok, detail: r.none ? 'no map' : `sea share ${(r.blue * 100).toFixed(0)}% of the map, ${(r.light * 100).toFixed(0)}% of it the light coastal steps; hover outline ${r.lines} border pieces; pure ${r.pure}` };
+  },
+  // CI run 88 (inkTiming): under the satellite ground the tiles draw only their lines (no sea, coast, glyphs or paper
+  // that nobody sees). The inked ground is still whole when it is wanted: a full map drawn with the satellite turned off
+  // is the same picture whether or not line-only tiles were made first, and differs from the satellite's
+  async inkLinesUnderSat(pg) {
+    await pg.evaluate(WAR);
+    const r = await pg.evaluate(() => {
+      const T = window.__T, IM = UI.INKMAP;
+      T.set(true); UI.A.ov('bigmap');
+      const was = UI.set.v2Sat, bareOn = IM.groundElsewhere ? IM.groundElsewhere() : null;
+      UI.set.v2Sat = false; IM.reset(); T.gm(3); const inked = T.hash(T.gm(3)), bareOff = IM.groundElsewhere ? IM.groundElsewhere() : null;
+      UI.set.v2Sat = was; IM.reset();
+      const st = IM.stats, n0 = st.tiles, ms0 = st.tileMs;
+      T.gm(3); const sat = T.hash(T.gm(3)); const n = st.tiles - n0, ms = st.tileMs - ms0;
+      UI.set.v2Sat = false; T.gm(3); const after = T.hash(T.gm(3));
+      UI.set.v2Sat = was; T.gm(3); const sat2 = T.hash(T.gm(3));
+      UI.ov = null; UI.render();
+      return { bareOn, bareOff, inked, sat, after, sat2, n, per: ms / Math.max(1, n) };
+    });
+    const ok = r.bareOn === true && r.bareOff === false && r.inked === r.after && r.sat === r.sat2 && r.inked !== r.sat && r.n > 0;
+    return { ok, detail: `line-only tiles under the satellite ${r.bareOn}, with it off ${r.bareOff}; inked ground ${r.inked}, after line-only tiles ${r.after}; satellite ${r.sat} / again ${r.sat2}; ${r.n} line-only tiles at ${r.per.toFixed(1)} ms each` };
   },
 };

@@ -320,7 +320,10 @@ export default {
       return { stakes, pure, has: html.includes('lf-stake') };
     });
     if (r.err) return { ok: false, detail: r.err };
-    const ok = r.pure && r.stakes.some(s => /Costs 30 suns/.test(s)) && r.stakes.some(s => /If it fails: hurt, −5 suns, their regard/.test(s)) && r.stakes.length === 2;
+    // (v2 playtest 1, #18/#19, 99999-v2-content: the regard lost on a failure reads "▼ less their regard", and the choice that
+    // does nothing says "Nothing changes", so every choice shows a line)
+    const ok = r.pure && r.stakes.some(s => /Costs 30 suns/.test(s)) && r.stakes.some(s => /If it fails: hurt, −5 suns, (▼ less )?their regard/.test(s)) &&
+      (r.stakes.length === 2 || (r.stakes.length === 3 && r.stakes.includes('Nothing changes')));
     return { ok, detail: `stake lines: ${JSON.stringify(r.stakes)}; drawing them left the state and the random stream alone: ${r.pure}` };
   },
 
@@ -352,15 +355,41 @@ export default {
       const sup = A.superior; A.superior = () => null;
       let tok; try { tok = A.ctxTokens(pc, {}); } finally { A.superior = sup; }
       const out = { one: A.coin(1), two: A.coin(2), big: A.coin(1200), herd: GD.CAREERS.herd.ranks[0][0], pot: GD.CAREERS.brewer.ranks[0][0], bossTitle: tok.bossTitle, boss: tok.boss };
-      A.newGame({ seed: 9702, lands: 'great', race: 'human', realm: 'POL-143', status: 'peasant', sex: 'F', startAge: 20 });
-      const L = A.FAR.D.realms['POL-143'];
-      out.far = UI.crRulerNote(Object.assign({}, LORE.realms['POL-143'] || { title: L.title }, { id: 'POL-143' }));
-      out.farSex = L.rulerSex;
+      if (A.FAR && A.FAR.D) {
+        A.newGame({ seed: 9702, lands: 'great', race: 'human', realm: 'POL-143', status: 'peasant', sex: 'F', startAge: 20 });
+        const L = A.FAR.D.realms['POL-143'];
+        out.far = UI.crRulerNote(Object.assign({}, LORE.realms['POL-143'] || { title: L.title }, { id: 'POL-143' }));
+        out.farSex = L.rulerSex;
+      } else {
+        // The Far Lands are out of the v2 build (the owner's decision of Nov 1: .wip markers), so A.FAR is missing and
+        // the Far realm POL-143 cannot be read (CI run 88: "reading 'D'"). The finding was "(King )" and a queen
+        // called King in the creation summary; the same reading is checked on every realm of the generated continent:
+        // no empty "( )", and a woman's title where the ruler is a woman.
+        const FEM = /Queen|Empress|Sultana|Princess|Rani|Khatun|Emira|Abbess|Dogaressa|Duchess|Lady/;
+        const ids = Object.keys(LORE.realms || {});
+        out.cont = { n: 0, empty: [], fem: 0, femBad: [] };
+        for (const id of ids) {
+          const R = LORE.realms[id], c = LORE.cast && LORE.cast[R.ruler], note = UI.crRulerNote(Object.assign({}, R, { id }));
+          if (!note) continue;
+          out.cont.n++;
+          if (/\( ?\w* \)/.test(note)) out.cont.empty.push(id);
+          const t = String(R.title || '').split(' / ')[0];
+          if (c && c.sex === 'F' && /^(King|Emperor|Sultan|Prince|Raja|Khan|Emir|Abbot|Doge|Duke|Khagan|Lord)$/.test(t)) { out.cont.fem++; if (!FEM.test(note)) out.cont.femBad.push(id + ': ' + note); }
+        }
+        // a world with no queen on its thrones: crown one for the reading (the cast entry is put back)
+        const R1 = LORE.realms['POL-01'], c1 = LORE.cast && LORE.cast[R1.ruler];
+        if (c1) {
+          LORE.cast[R1.ruler] = Object.assign({}, c1, { sex: 'F' });
+          try { out.cont.queen = UI.crRulerNote(Object.assign({}, R1, { id: 'POL-01' })); } finally { LORE.cast[R1.ruler] = c1; }
+          if (!FEM.test(out.cont.queen)) out.cont.femBad.push('POL-01 crowned a woman: ' + out.cont.queen);
+        }
+      }
       out.kw = UI.crRulerNote(LORE.realms['POL-01']);
       return out;
     });
     return { ok: r.one === '1 sun' && r.two === '2 suns' && /suns$/.test(r.big) && r.herd === 'Herd-hand' && r.pot === 'Pot-hand' && r.bossTitle == null && r.boss === 'your master' &&
-      /Kalunge/.test(r.far) && !/\( ?\w* \)/.test(r.far) && (r.farSex !== 'F' || /Queen/.test(r.far)) && /Aldwin/.test(r.kw), detail: JSON.stringify(r) };
+      (r.cont ? r.cont.n > 0 && !r.cont.empty.length && !r.cont.femBad.length
+        : /Kalunge/.test(r.far) && !/\( ?\w* \)/.test(r.far) && (r.farSex !== 'F' || /Queen/.test(r.far))) && /Aldwin/.test(r.kw), detail: JSON.stringify(r) };
   },
 
   // cycle 1 (lives B4): a queen hid her sister in the hayloft, a General of 62 was asked "You. Name?", a carpenter of 68
@@ -484,5 +513,80 @@ export default {
     const i = r.ids.indexOf('ln_d_scr_lover');
     const ok = !r.topV && r.topM && r.veteran && r.marshal.every(x => !x) && r.villager.filter((x, k) => k !== i).every(Boolean) && r.scribe && !r.courtier;
     return { ok, detail: `${r.ids.join(', ')}: open to a villager ${r.villager.join('/')}, to a Marshal of the council ${r.marshal.join('/')}; a retired general at the top: ${r.veteran}; the scribe's letters for a scribe ${r.scribe}, for a courtier ${r.courtier}` };
+  },
+
+  // lfRepeats (v2 merge): a scene its owner queues is spaced by A.lfSpaced, a quiet that doubles with each showing, and
+  // a guest's quiet for the same kind of gathering doubles with each one attended (6, 12, 24 years)
+  async lfSpacedDoubles(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF || !A.lfSpaced) return { err: 'A.lfSpaced is missing' };
+      A.newGame({ seed: 9781, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc(), y = A.S.year, out = {};
+      pc.evN = {}; pc.flags.ev = pc.flags.ev || {};
+      const at = (n, ago, base) => { pc.evN.lf_t = n; if (n) pc.flags.ev.lf_t = y - ago; else delete pc.flags.ev.lf_t; return A.lfSpaced(pc, 'lf_t', base); };
+      out.first = at(0, 0, 4);
+      out.one = [at(1, 3, 4), at(1, 4, 4)];            // 4 years after the first
+      out.three = [at(3, 15, 4), at(3, 16, 4)];        // 16 after the third
+      out.once = at(1, 30, Infinity);
+      A.LF.OFF = true; out.off = at(5, 0, Infinity); A.LF.OFF = false;
+      // a guest asked to the same kind of gathering: 6 years after the first, 12 after the second, 24 after the third
+      const role0 = A.gathRole, y0 = A.S.year, asked = [];
+      A.gathRole = () => 'noble';
+      try {
+        A.S.lf = {};
+        const g = { kind: 'wedding', couple: [], host: 'POL-09' };
+        for (let d = 0; d <= 50; d++) { A.S.year = y0 + d; if (A.lfGathRole(pc, g)) asked.push(d); }
+      } finally { A.gathRole = role0; A.S.year = y0; }
+      out.asked = asked;
+      return out;
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.first && !r.one[0] && r.one[1] && !r.three[0] && r.three[1] && !r.once && r.off && r.asked.join() === '0,6,18,42';
+    return { ok, detail: `first ${r.first}; after one showing, 3 and 4 years on: ${r.one.join('/')}; after three, 15 and 16 years on: ${r.three.join('/')}; once a life, 30 years on: ${r.once}; memory off: ${r.off}; a guest asked to the same kind in years ${r.asked.join(', ')}` };
+  },
+
+  // lfRepeats (v2 merge, verifier): an invitation to another kind of gathering is answered for the player only with
+  // their own last 'Go', and only within a quiet that doubles with each invitation they were shown; their regrets
+  // (a declined funeral) never decline another kind, and an answer given for them is not remembered as theirs. The
+  // same kind keeps 97's rule: answered as last time.
+  async lfInviteCarry(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF || !A.LF.carry) return { err: 'A.LF.carry is missing' };
+      A.newGame({ seed: 9783, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 30 });
+      const pc = A.pc(), S = A.S, y = S.year, LF = A.LF;
+      const role0 = A.gathRole; A.gathRole = () => 'noble';
+      const gath0 = S.gath, out = {};
+      try {
+        let k = 0;
+        // shown: how many invitations the player has had, lastGo: years since their own last 'Go' (null: none)
+        const ask = (kind, set) => {
+          const id = 'lft' + (++k), g = { id, kind, host: 'POL-09', guests: ['POL-09'], couple: [], at: (S.day || 0) + 60, pc: { role: 'noble' } };
+          S.gath = (gath0 || []).concat([g]);
+          S.queue.length = 0; S.queue.push({ type: 'event', ev: 'ga_invite', ctx: { gid: id } });
+          pc.evN = Object.assign(pc.evN || {}, { ga_invite: set.shown }); pc.flags.ev = Object.assign(pc.flags.ev || {}, { ga_invite: y - 1 });
+          const st = LF.st(); st.gaAns = Object.assign({}, set.ans || {}); st.gaGo = set.lastGo == null ? {} : { noble: y - set.lastGo };
+          const v = A.eventView(S.queue[0]);
+          if (!v || v.skip) return 'no view';
+          LF.screen();
+          const asked = S.queue[0] && S.queue[0].ev === 'ga_invite' && !S.queue[0].result;
+          return asked ? 'asked' : g.pc.accepted === true ? 'went' : g.pc.accepted === false ? 'regrets' : 'gone';
+        };
+        out.declined = ask('wedding', { shown: 1, ans: { 'funeral:noble': 0 } });
+        out.carried = ask('wedding', { shown: 1, ans: { 'funeral:noble': 1 }, lastGo: 2 });
+        out.carriedKept = LF.st().gaAns['wedding:noble'];
+        out.lapsed = ask('wedding', { shown: 1, ans: { 'funeral:noble': 1 }, lastGo: 7 });
+        out.doubled = ask('wedding', { shown: 2, ans: { 'funeral:noble': 1 }, lastGo: 7 });
+        out.doubledLapsed = ask('wedding', { shown: 2, ans: { 'funeral:noble': 1 }, lastGo: 13 });
+        out.sameNo = ask('wedding', { shown: 1, ans: { 'wedding:noble': 0 } });
+        out.sameGo = ask('wedding', { shown: 1, ans: { 'wedding:noble': 1 }, lastGo: 30 });
+        // an opening's aim carried to another kind: within the quiet, not after it
+        out.aim = [LF.carry(pc, 'ga_open', y - 3), LF.carry(pc, 'ga_open', y - 40), LF.carry(pc, 'ga_open', undefined)];
+      } finally { A.gathRole = role0; S.gath = gath0; S.queue.length = 0; }
+      return out;
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.declined === 'asked' && r.carried === 'went' && r.carriedKept === undefined && r.lapsed === 'asked' && r.doubled === 'went' &&
+      r.doubledLapsed === 'asked' && r.sameNo === 'regrets' && r.sameGo === 'went' && r.aim[0] && !r.aim[1] && !r.aim[2];
+    return { ok, detail: `a wedding after the player's regrets to a funeral: ${r.declined}; after their 'Go' two years ago: ${r.carried} (remembered as theirs: ${r.carriedKept}); seven years on: ${r.lapsed}; seven years on after two invitations: ${r.doubled}, thirteen: ${r.doubledLapsed}; the same kind declined: ${r.sameNo}, attended: ${r.sameGo}; an aim carried 3/40 years/never: ${r.aim.join('/')}` };
   },
 };

@@ -34,7 +34,7 @@ In the release the world remembers two kinds of thing (`S.history`: war ends and
    Each entry is `[kind, year, day, province, realm, other realm, [people], number, extra]`. People are ids, and their names go into a table when the entry is made, because the release prunes the dead from `S.people` after 30 years. Nothing is ever removed. Wars already being fought when the world opens are entered with their real start (the Tessarian Civil War, 1061).
 2. **It observes; it does not act.** Every hook calls the original first. It draws no random numbers, and it changes no realm, person or province. The exception is the **epidemic**, because the release simulates no sickness in the world. Each month each realm rolls for one: 3.5% a year, plus 5 points after a failed harvest, 2 points under siege and 1 point for a large realm, capped at 10%. A sickness takes 4 stability, adds unrest where it strikes, spreads to up to three neighbouring provinces, and makes the news. If it reaches the player's town it brings a scene, "Chalk on the doors". `A.WC.EPIDEMIC = false` turns it off for a later world-events feature that brings its own.
 3. **Events cite it** (`b-cite.core.js`) in three ways:
-   - **Recalled lines.** About one scene in three whose subject touches the record gets one line, under its text. Bread, prices and markets recall a famine. Soldiers and camps recall a battle or a siege. A court recalls a dead ruler. A temple recalls the plague. Taverns recall Legends and sacks. Examples:
+   - **Recalled lines.** About one scene in three whose subject touches the record, and where an entry bears on the scene (v2: see below), gets one line, under its text. Bread, prices and markets recall a famine. Soldiers and camps recall a battle or a siege. A court recalls a dead ruler. A temple recalls the plague. Taverns recall Legends and sacks. Examples:
      - *"Bread has not been cheap in the Horde since the harvest failed there in 1114."*
      - *"They still talk about the siege of Stagley in 1105: 23 days, and the dogs eaten by the end."*
      - *"An old servant compares everything to the days of Queen Ithrien, dead since 1107."*
@@ -122,3 +122,62 @@ Test `wcRecallLinesRead` draws every template in every branch and requires a who
 **What changed.** Every war's name is now unique as it starts, in both lands. The namer is wrapped, and so is any name given to `A.startWar`. The second war of a name is "The Second Long War", then "The Third …".
 
 **Test.** `warNamesUnique`.
+
+## v2: what you know of a war (99997-v2-war)
+
+The Annals and The Book's "The world in your time" read each entry through `WC.tellOf(e, pc)`: null while it has not reached the player, else `{ t, mine }`. Here it is every entry as it happened; 99997-v2-war sets it so that a war you were not in reaches you late, as hearsay, and your own at your rank's precision (V2_SPEC complaint 10, playtest 2 findings 3 and 4). `WC.line` itself is unchanged.
+
+## v2: the recalled line only where it bears on the scene (complaint 1, playtest 1 #10, playtest 2 #9)
+
+**Why.** Playtest 2 counted 12% of cards with this feature's recalled line on top of 18% with a personal memory; a bot
+life measured 12 to 20% (17% typical). Most lines were filler: "The hearth mark" with the Winter Crossing of 1092, "A new
+tax" with a coronation of 1081, a tavern sign for a royal wedding on "The old soldier's story". A subject in common
+(market, war, court ...) was all it took. The owner's complaint 1 (everything on one card, no filler) and playtest 1 #10
+ask for extra lines to be rare, to fit the scene, and one at most on a card.
+
+**What changed** (`b-cite.core.js`, `WC.scene` and `WC.bears`). An entry may be recalled only when it shares something
+the scene is about:
+- **a person**: someone in the scene's context (`ctx.pid` or another person id) or named in its words is in the entry;
+  or the player was there (fought the battle, was in the town taken) and the scene is a soldier's, or at that place;
+- **a place**: a battle, siege, sack, sickness, cession, order's fall or Legend's death in the player's home province, or
+  in a province the scene names (a war, a peace, a throne or a famine is set down at a capital, so its province is not
+  where a scene in that town is);
+- **a realm**: the scene names a realm (or carries one in its context) that the entry is about;
+- **a war**: the scene carries the war in its context, or is a soldier's scene while the player serves in that war.
+
+Canon stands in only when the scene names one of its realms or its ruler. 99999-v2-content still drops the line on a
+card with counsel or a memory, so a card has one extra line at most. The view keeps `recallId`, the entry recalled.
+`WC.realmWord` gives a noun-named realm its article: a short name that stands after "of the" in the full name ("League
+of the Salt Marches") reads "goes to the Salt Marches", any other reads bare ("goes to Sahrim"). 991's Far Lands helper
+did this only for far realms. **In v2 the rule does not fire on the continent as built:** 99999-v2-names gives every
+realm a proper name (the Sand Clans are Sahrim, the Nine Winds Ulun, the Amber Isles Ambrel), so no full name holds
+"of the <short>". It stays for a realm a mod, a save or a later naming lane gives a noun name.
+
+**Tests.** `wcCitesShare` now holds the recalled line under 1 card in 10 (overall and the median life, no life above
+12%), checks each one against the scene's own words and context, and checks none sits beside counsel or a memory; it
+keeps its place-and-time and raw-token checks. `wcEchoWords` no longer plays the dropped Far Lands' Khaganate, nor any
+realm by name: it gives POL-19 a noun name inside the test ("League of the Salt Marches"), restores it, and holds both
+that draw ("the Salt Marches") and POL-19's own proper name ("Sahrim", no article) to `WC.realmWord`'s rule.
+One bot life (human peasant of Aldmark, 40 years): 44 lines on 316 cards (13.9%) before, 18 (5.7%) after.
+`wcCitesShare` on the full v2 build with 99999-v2-names (8 lives, up to 60 years): a recalled line on **109 of 2,932
+cards (3.7%)**, median life 3.35%, most 7.4%; 220 scenes (7.5%) cite an entry by line, token or pack; 0 lines off their
+scene, 0 citations out of place or time. (The old W6 bar of 15% citations no longer holds, by design.)
+
+## v2: the recalled line gives way to the inner voice (CI run 88, `wcObservesOnly`)
+
+**What broke.** After 99993-v2-stats' dice fix, `wcObservesOnly` found the same seed ending with a different person
+with the record on and off. Realms, provinces and the random stream were the same; only the player differed, in
+`pc.idv`, the inner-voice lines a life has heard (9992-identity writes them at the choice). A card carries one extra
+line (99999-v2-content), and the voice gave way to a recalled line. Whether the record had an entry to recall (or, with
+the record off, only the canon) so decided which voice lines the character had heard: on seed 9090 the dying soldier's
+"A deathbed whisper" in 1108 carried a canon line with the record off and the Ledger's voice with it on. The dice did
+not cause it; they moved this seed's life onto such a card.
+
+**Fix.** `WC.recall` asks the voice first (`A.ID.voiceCore`, pure) and sets no line where the voice would speak, so the
+voice is always the one it would be with no record. The record only observes again. `wcCitesShare` on the build: a
+recalled line on 103 of 2,932 cards (3.5%), 214 scenes (7.3%) cite an entry, 0 out of place or time.
+
+**Test.** `wcRecallYieldsToVoice` offers a recalled line on every scene with a subject (`WC.RECALL` 100) over four
+8-year lives, one of them `wcObservesOnly`'s with the record off, and fails if any card's voice would speak without
+its recalled line. It fails before the fix (1105, "rl_sec_archive": the Ledger silenced by a canon line) and passes
+after.

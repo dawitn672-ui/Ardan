@@ -84,6 +84,8 @@ export default {
       m.st = 2; if (st) { st.b = 2; st.hy = {}; }
       const e = A.EV[q.ev];
       ADV.st(pc).fy = {};
+      // past the first adult year, whose cap on world scenes (81-pacing) is not what this test is about
+      if (A.S.pace && A.S.pace.fy) A.S.pace.fy.d0 -= 365;
       const fol = ADV.book(pc, [{ id: x.id, r: x.role, i: 0, y: 'want', c: 50, l: 'x' }], 1, { good: false, bad: false }, q.ev);
       A.S.queue = A.S.queue.filter(z => !/^adv_/.test(z.ev || ''));
       ADV.follow(pc, fol);
@@ -117,6 +119,52 @@ export default {
     })()`);
     const ok = !r.none && r.same && r.has && !r.raw && r.esc && r.pure && r.card && r.cardRows >= 1;
     return { ok, detail: r.none ? 'no counsel met' : `drawn twice the same ${r.same}; escaped ${r.esc} (raw ${r.raw}); state and dice untouched ${r.pure}; People card with ${r.cardRows} advisors; "${r.words}"` };
+  },
+
+  // playtest 2, new #12 and old #15: counsel under the right label. A captain never speaks a parent's line ("Brand YOUR
+  // CAPTAIN: Come home whole. That is all I ask."); no one bids you come home at the gallows; a master's trade sayings
+  // are for work; an acquaintance with an old confidant's rank is not "your friend"; a former superior is not your
+  // master; the friend's label is the bond's own word
+  async advRightLabel(pg) {
+    const r = await pg.evaluate(() => {
+      const ADV = A.ADV, bad = [];
+      const KIN = ADV.LINES.byGroup.kin.safety.filter(l => !ADV.LINES.want.safetyAny.includes(l));
+      const said = (role, want, dom, doom) => { const out = new Set(); for (let k = 0; k < 60; k++) out.add(ADV.lineFor(null, role, want, dom, 'want', 'k' + k, [], doom)); return [...out]; };
+      for (const role of ['captain', 'comrade', 'friend', 'chancellor', 'master']) {
+        const l = said(role, 'safety', 'war');
+        if (l.some(x => KIN.includes(x))) bad.push(`${role} says a parent's line: ${l.filter(x => KIN.includes(x)).join(' / ')}`);
+      }
+      if (!said('mother', 'safety', 'war').some(x => KIN.includes(x))) bad.push('a mother lost her own line');
+      const craft = ADV.LINES.byGroup.work.craft;
+      if (said('master', 'craft', 'war').some(x => craft.includes(x))) bad.push('a master speaks of the trade on a matter of war');
+      if (!said('master', 'craft', 'work').some(x => craft.includes(x))) bad.push('a master has no trade saying on a matter of work');
+      // the gallows: every way ends in a rope; counsel there says nothing of coming home
+      const e = A.EV.gallows, v = { choices: e.choices.map((c, i) => ({ t: 'x', i })) };
+      if (!ADV.isDoom(e, v)) bad.push('the gallows is not read as a scene with no way home');
+      for (const role of ['mother', 'captain', 'friend']) for (const w of ['safety', 'kin', 'glory']) {
+        const l = said(role, w, 'any', true); if (l.some(x => /home|safe road|bury you/i.test(x))) bad.push(`${role} (${w}) at the gallows: ${l.join(' / ')}`);
+      }
+      const plain = A.EV[Object.keys(A.EV).find(id => /^adv_/.test(id))];
+      if (ADV.isDoom(plain, { choices: plain.choices.map((c, i) => ({ t: 'x', i })) })) bad.push('an ordinary scene read as doom');
+      // the ring's seats and their names
+      T.enter({ seed: 5151, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const pc = A.pc();
+      const ac = A.makeAcquaintance(pc, 'acquaint'); A.link(pc, ac, 'acquaint', 60, 'acquaint'); pc.rel[ac.id].cf = 2; ac.rel[pc.id].op = 60;
+      const fr = A.makeAcquaintance(pc, 'friend'); A.link(pc, fr, 'friend', 80, 'friend'); fr.rel[pc.id].op = 80;
+      const cand = ADV.candidates(pc);
+      if (cand.some(c => c.id === ac.id && c.role === 'friend')) bad.push('an acquaintance with an old rank sits as "your friend"');
+      if (ADV.roleName('friend', fr) !== 'your friend') bad.push(`a friend is named "${ADV.roleName('friend', fr)}"`);
+      const cz = A.AKIN && A.AKIN.KIN.cousins(pc)[0];
+      if (cz && !/^your first cousin/.test(ADV.roleName('friend', cz))) bad.push(`a cousin in the friend's seat is "${ADV.roleName('friend', cz)}"`);
+      // a superior at work now (the boss), and an old one who reads "Former superior"
+      const boss = A.makeAcquaintance(pc, 'acquaint'); pc.job = { c: 'smith', r: 1, y: A.S.year, perf: 50, boss: boss.id }; A.link(pc, boss, 'superior', 20, 'subordinate');
+      const old = A.makeAcquaintance(pc, 'acquaint'); A.link(pc, old, 'superior', 70, 'subordinate'); old.rel[pc.id].op = 90;
+      if (A.superior(pc) !== boss) bad.push('the boss is not the superior');
+      if (ADV.candidates(pc).some(c => c.id === old.id && c.role === 'master')) bad.push('a former superior sits as "your master"');
+      if (A.relLabel(old, pc.rel[old.id]) !== 'Former superior') bad.push(`the old superior reads "${A.relLabel(old, pc.rel[old.id])}" on the People tab`);
+      return { bad, friend: ADV.roleName('friend', fr), cz: cz ? ADV.roleName('friend', cz) : '-', cap: said('captain', 'safety', 'war').join(' / ') };
+    });
+    return { ok: !r.bad.length, detail: r.bad.length ? 'BAD: ' + r.bad.join('; ') : `a captain who wants you safe: "${r.cap}"; a friend reads "${r.friend}", a cousin "${r.cz}"; the gallows draws no "come home"` };
   },
 
   // every scene of the ring renders with its people, no raw token, at 80 words or fewer, and each choice applies
@@ -191,7 +239,9 @@ export default {
     const share = S('adv') / Math.max(1, S('big')), onceShare = S('onceAdv') / Math.max(1, S('once'));
     const heedGood = S('kg') / Math.max(1, S('k')), ignGood = S('igg') / Math.max(1, S('ig'));
     const distinct = S('distinct') / r.length;
-    const ok = share >= 0.8 && onceShare >= 0.8 && distinct >= 3;
+    // (v2 playtest 1, #10, 99999-v2-content: a once-a-life scene is no longer big on that alone, so the once-scenes'
+    // share is reported but not held to 80%; counsel on the big choices still is)
+    const ok = share >= 0.8 && distinct >= 3;
     return { ok, data: r, detail: `${r.length} lives: big choices with counsel ${S('adv')}/${S('big')} (${Math.round(share * 100)}%), once-scenes ${S('onceAdv')}/${S('once')}; heeded went well ${Math.round(heedGood * 100)}% (${S('kg')}/${S('k')}), ignored went well ${Math.round(ignGood * 100)}% (${S('igg')}/${S('ig')}); distinct advisors a life ${distinct.toFixed(1)} (${r.map(x => x.status + ' ' + x.distinct).join(', ')})` };
   },
 };
