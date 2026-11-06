@@ -96,10 +96,14 @@ export default {
     await pg.evaluate(DRIVE);
     const r = await pg.evaluate(async () => {
       T.enter({ seed: 9203, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
-      for (let i = 0; i < 24; i++) {
+      for (let i = 0; i < 48; i++) {
+        // since the v2 war (99997) a peasant of 30 can be levied, and on campaign Next month is refused with its own
+        // notice ("You are on campaign: ..."), which is not a quiet month: march the campaign out a week at a time and
+        // hold only a month that was lived to the quiet-month toast
+        if (A.V2T.campaign()) { await __press('v2Week'); continue; }
         const lines = A.S.log.reduce((a, e) => a + e.lines.length, 0);
         const s = await __press('v2Next');
-        if (s.cards === 0 && s.alive) {
+        if (s.cards === 0 && s.alive && s.d1 > s.d0) {
           const L = A.S.log[A.S.log.length - 1].lines, last = L[L.length - 1][0];
           const t = document.getElementById('toast'), shown = t && t.classList.contains('ts-on');
           await new Promise(res => setTimeout(res, 2400));
@@ -110,7 +114,7 @@ export default {
       return { found: false };
     });
     const ok = r.found && !r.modal && r.toast === r.last && r.logged && r.shown && r.gone;
-    return { ok, detail: r.found ? `toast "${r.toast}", story "${r.last}", shown ${r.shown}, gone after 2.4 s ${r.gone}, dialog ${r.modal}` : 'no quiet month in 24' };
+    return { ok, detail: r.found ? `toast "${r.toast}", story "${r.last}", shown ${r.shown}, gone after 2.4 s ${r.gone}, dialog ${r.modal}` : 'no quiet month in 48 steps' };
   },
 
   // the director: 0 to 3 scenes a month with season weights, from the seed alone

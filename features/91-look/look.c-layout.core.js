@@ -212,6 +212,9 @@ ${X('.acts:not(.lk-acts) > .act:hover:not(:disabled)')}{border-color:var(--accen
   #game.phone .lk-acts > .act > .an{display:inline;font-size:${T(14)};line-height:1.15;-webkit-line-clamp:unset}
   #game.phone .lk-acts > .act > .cost{float:right;margin:1px 0 0 4px;font-size:${T(14)};line-height:1.15}
   #game.phone #tabbody > .moods, #game.phone #tabbody > .lk-ini{display:none}
+  /* the needs on the phone's You page (v2 words, "a little alone", which 99993 sets at .92em): body text, 14 px
+     (71-phone's phoneTargets) */
+  #game.phone .lk-needs .lk-need, #game.phone .lk-needs .lk-mood, #game.phone .lk-needs .lk-need > .val.v2-needw{font-size:${T(14)}}
   #game.phone .whatnow{padding:0;border:0}
   #game.phone .whatnow > .fold-x, #game.phone .whatnow > .wn-h{display:none}
   #game.phone .whatnow .wn-list > li:not(:first-child){display:none}
