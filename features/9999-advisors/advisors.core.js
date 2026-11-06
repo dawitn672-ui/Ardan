@@ -651,11 +651,15 @@
       if (!w) return;
       ctx.pid = w.id; ctx.foeId = f.foe;
     } else { ctx.pid = f.pid; if (f.foe) ctx.foeId = f.foe; if (f.pair) ctx.pair = f.pair; }
+    // a queue wrapper further in (81-pacing's first adult year, 58-event-cut) may drop the scene: only a scene that
+    // really lands spends 21's budget and starts its cooldowns, or the advisor's turn is lost on a scene never shown
+    const n0 = S.queue.length;
+    A.queue({ type: 'event', ev: f.ev, ctx });
+    if (S.queue.length <= n0) return;
     s.fy[f.ev] = y;
     if (f.ev === 'adv_unheeded' && s.m[ctx.pid]) s.m[ctx.pid].uy = y;
     if (f.ev === 'adv_quarrel' && f.pair) s.dis[f.pair] = 0;
     if (st) { st.b -= 1; st.hy[y] = (st.hy[y] || 0) + 1; st.tot = (st.tot || 0) + 1; }
-    A.queue({ type: 'event', ev: f.ev, ctx });
   };
 
   ADV.stats = { big: 0, adv: 0, lines: 0 };   // this page's tally (not saved), for the bench

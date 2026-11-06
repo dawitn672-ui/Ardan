@@ -84,6 +84,8 @@ export default {
       m.st = 2; if (st) { st.b = 2; st.hy = {}; }
       const e = A.EV[q.ev];
       ADV.st(pc).fy = {};
+      // past the first adult year, whose cap on world scenes (81-pacing) is not what this test is about
+      if (A.S.pace && A.S.pace.fy) A.S.pace.fy.d0 -= 365;
       const fol = ADV.book(pc, [{ id: x.id, r: x.role, i: 0, y: 'want', c: 50, l: 'x' }], 1, { good: false, bad: false }, q.ev);
       A.S.queue = A.S.queue.filter(z => !/^adv_/.test(z.ev || ''));
       ADV.follow(pc, fol);
