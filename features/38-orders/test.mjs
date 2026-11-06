@@ -257,6 +257,40 @@ export default {
     return { ok, detail: `eight years of war: ${r.on} letters, ${r.closeOn} the same as the last from the same general within the quiet or in the same war; without it ${r.off} letters, ${r.closeOff} so` };
   },
 
+  // lfRepeats on the merged v2 build: a soldier moved between armies had "make a noise" from three generals in a year
+  // and a half. The same order as the last letter's, from another general, waits the base quiet. One life is played
+  // until its first letter (day D); the same life again, where every order had been read from another general a month
+  // before D, gets no letter for the base quiet after that reading.
+  async ordersAnotherGeneral(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const G = A.GENERALS, minQ = Math.min(...Object.values(G.QUIET));
+      const run = (readAt, until) => {
+        const { F, enemy } = GOT.soldier(86, 'steady');
+        if (!F) return null;
+        const d0 = A.absDay(), seen = [];
+        if (readAt != null) { A.S.goSeen = {}; for (const k of Object.keys(G.QUIET)) A.S.goSeen[k] = { gen: 'someone else', day: d0 + readAt, war: 'another war', n: 1 }; }
+        const q0 = A.queue;
+        A.queue = function (it) { if (it && it.type === 'event' && /^go_order_/.test(it.ev)) seen.push({ kind: it.ctx.temper, gen: it.ctx.genId, day: A.absDay() - d0 }); return q0.apply(this, arguments); };
+        try {
+          for (let g = 0; g < 400 && A.absDay() - d0 < until && A.pc().alive && !(readAt == null && seen.length); g++) {
+            if (!A.atWar('POL-01').length) A.startWar('POL-01', enemy, null, 'conquest');
+            if (!A.pc().mil) A.enlist(A.pc());
+            A.S.queue = []; A.advance(30);
+          }
+        } finally { A.queue = q0; }
+        return seen;
+      };
+      const first = run(null, 8 * 365);
+      if (!first || !first.length) return { none: true };
+      const D = first[0].day, on = run(D - 30, D - 30 + minQ - 30);
+      return { D, kind: first[0].kind, on };
+    });
+    if (r.none) return { ok: false, detail: 'no letter in eight years of war' };
+    const ok = !!r.on && r.on.length === 0;
+    return { ok, detail: `the first letter ("${r.kind}") on day ${r.D}; with every order read from another general a month before, ${r.on ? r.on.length : '?'} letters in the base quiet after${r.on && r.on.length ? ' (' + r.on.map(x => x.kind + ' on day ' + x.day).join(', ') + ')' : ''}` };
+  },
+
   async ordersSettle(pg) {
     // what you did, and whether the plan worked, decide what comes of it
     await pg.evaluate(SETUP);

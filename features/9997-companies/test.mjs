@@ -74,7 +74,8 @@ export default {
 
   // lfRepeats on the merged v2 build (15.2% against 15%; playtest 2 old 10, "Pay day" five times in a life): the
   // generated continent's wars are short and many, so once a war bound little. Over sixteen years of war, a new war each
-  // four years: pay day is a scene once and later pay days are log lines; a second roll call or captain's word waits
+  // four years, and a discharge and a new enlistment every five (the memory lived on pc.mil, so a man who joined again
+  // had pay day back as new): pay day is a scene once and later pay days are log lines; a second roll call or captain's word waits
   // twice its base quiet (a roll call that counts twice the most one has may come after a year); and two names for the
   // colours in one year (two fights won at a cost) make one scene and a log line.
   async coRoutineOnce(pg) {
@@ -93,6 +94,8 @@ export default {
         const d0 = A.absDay();
         for (let g = 0; g < 800 && A.absDay() - d0 < 16 * 365 && A.pc().alive; g++) {
           if (g % 48 === 47) for (const w of A.atWar('POL-01')) A.endWar(w, 'white');
+          // and he leaves the army and joins again every five years: the memory is his, not the enlistment's
+          if (g % 60 === 59) A.pc().mil = null;
           if (!A.atWar('POL-01').length) A.startWar('POL-01', en, null, 'conquest');
           if (!A.pc().mil) A.enlist(A.pc());
           A.S.queue = []; A.advance(30);
