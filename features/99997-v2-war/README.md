@@ -1,6 +1,6 @@
 # 99997-v2-war: only your war, at your rank, and elite orders worth their numbers
 
-**Aspect:** the owner's v2 complaints 9 (few elite orders, as strong as forces tens of times larger), 10 (you can see wars you're not in) and 16 (combat detail, words not percentages), `docs/v2/V2_SPEC.md` integration step 8 · **Kind:** system (4 core files), tests. No patches, no events.
+**Aspect:** the owner's v2 complaints 9 (few elite orders, as strong as forces tens of times larger), 10 (you can see wars you're not in) and 16 (combat detail, words not percentages), `docs/v2/V2_SPEC.md` integration step 8 · **Kind:** system (6 core files), 2 patches (`V2W-HOLD-FIRST-DAY`, `V2W-RANK-WORDS`), tests. No events.
 
 ## What it does
 
@@ -41,11 +41,14 @@
   - A captain also sets his company's tactic.
   - Odds show as words plus the tipped balance. A soldier and a sergeant see numbers only as estimates ("about 3,500"). A captain sees "some 3,400".
 - **The commander keeps the release's command of the battle** (`wsLead`: 9997-companies' company and division simulator, a tactic for each wing, and the reserve).
-- **The result moves the real fight.** It is a performance from −1 to 1 (your grade each phase, your part in the result, and the result), fed into 44-rank-battles' `A.RANKFX.apply` (layers `line` and `part`). The war map's division simulator then decides the fight.
+- **The result moves the real fight.** It is a performance from −1 to 1 (your grade each phase: what a choice that works is worth to the fight, and one cost for any failure; and the result; your part in the result reaches the fight as its dead, so it is not counted again), fed into 44-rank-battles' `A.RANKFX.apply` (layers `line` and `part`). The war map's division simulator then decides the fight.
 - **The after-action report** has three causes in words (`afterAction`'s contributions: ground, tactics, numbers, quality, elites, your part).
   - It is kept as `b.aar = { causes: [{ label, pct }], text }`, which is 23's shape. `pct` is the signed contribution × 40, for the bench; the player sees only the words.
   - It is also kept in the story, and on the war's battle record when 23 didn't already give one.
 - **Skipping the card** (a bot's `skipPrompt`) is the same as not taking part.
+- **The fight waits for your answer** (patch `V2W-HOLD-FIRST-DAY`; playtest 2, new 6: 5 of 16 "Rally your section" asks went straight to "After X"). The release asks on a fight's first day and fights that day at once, so a short fight was over before the answer (13 of 24 asks in a probe). When the ask is queued (`F.v2hold`, set by the `A.wsPCFightStart` wrapper), the fight skips that day's fighting: your scene is its first day, and the map fights it from the next tick (`F.days` back to 0, `F.v2asked` so the ask is made once). A key that is gone all the same (a save from before) goes to the classic layer, 72-two-scales' short scene, not to a log line.
+- **The scene's dead are the fight's dead** (`W.foldLosses`; playtest 2, new 17: "Ashmere: about 1,000 men", then "Dead: about 1,500 of theirs"). Each unit's losses come off its divisions (a grouped unit's in proportion) and go on `F.deadA`/`F.deadD`, so the battle report after it counts at least them, and the scene starts from the men the ask named.
+- **What you lead** (`W.leads`, `W.unitWord`, patch `V2W-RANK-WORDS`; playtest 2, new 16). A Commander (rank 6) is his division's commander (`d.cmd`), so the chain of command says he leads its men, the drill card that he drills all of them (`A.drillShare` 1), and his scene's unit is his division ("Your division:", "You fight as a Commander with your division"). A Senior Captain leads a battalion of 800, a Captain a company of 200. The arm-of-service card names the rank held ("You are a squad captain now"), not "a sergeant" for everyone.
 
 **Elite orders** (`c-orders.core.js`)
 
@@ -75,6 +78,9 @@
 | `v2wAfterAction` | Three distinct causes in 23's shape, in the story |
 | `v2wOrders` | 150–350 members × 14–26 levies, 10× their numbers or more; in the division simulator 21–44 a member against an ordinary division of the realm (the simulator adds the orders' own bonuses: the Shadow's +35% soft attack, the Last Door's +45% defence); 250 knights beat 3,000 levies; three trials |
 | `v2wPure` | Drawing the scene changes neither the state nor the dice; no percentage |
+| `v2wFightWaits` | Every ask at a v2 rank (soldier, sergeant, captain) opens a scene of a live fight not yet fought, asked once; a gone key opens no v2 scene |
+| `v2wRankWordsAgree` | The arm card names a Squad Captain's rank; a Commander of his division leads its men in the chain, drills all of it, and fights with his division; a Captain with a company of 200 |
+| `v2wReportAgrees` | The scene starts from the men the ask named, and the fight's dead after it include the scene's |
 
 ## Limits
 

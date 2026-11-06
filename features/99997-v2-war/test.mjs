@@ -440,4 +440,118 @@ export default {
       S.map(x => `; ${x.when} (${x.phase}; tips ${x.tips}): enemy exact ${JSON.stringify(x.leaked)} of ${JSON.stringify(x.theirs)}, own dead ${x.ownDead} shown ${x.ownShown}, morale numbers ${JSON.stringify(x.morale)}, popover morale ${x.moTips} agrees ${x.moAgree}`).join('') +
       `; edge word ${r.edgeWord}; the log's last line "${r.line}", shown "${E.shown}"; its other forms ${JSON.stringify(r.forms)}` };
   },
+
+  // playtest 2, new 6: "Rally your section in the line" went straight to "After X" with nothing to play (5 of 16 asks in
+  // L2). The release asked on a fight's first day and fought that day at once, so a short fight was over before the
+  // answer. Now the fight waits for the answer (V2W-HOLD-FIRST-DAY): every ask at a v2 rank opens a scene of a live
+  // fight, the ask is made once, and a key that is gone goes to the classic layer, not to a log line
+  async v2wFightWaits(pg) {
+    const r = await pg.evaluate(() => {
+      const drain = () => { let h, n = 0; while ((h = A.S.queue[0]) && n++ < 200) { if (h.type === 'event') { try { A.eventAuto(); } catch (e) { A.S.queue.shift(); } } else A.S.queue.shift(); } };
+      const out = { asked: 0, live: 0, played: 0, held: 0, twice: 0, ranks: {} };
+      for (let seed = 1; seed <= 9; seed++) {
+        A.newGame({ seed: 7300 + seed, race: 'human', realm: ['POL-01', 'POL-02', 'POL-03'][seed % 3], status: 'peasant', sex: 'M', startAge: 22 });
+        const pc = A.pc(), me = pc.realm, en = A.neighbors(me)[seed % 2];
+        if (!en) continue;
+        A.startWar(me, en, null, 'conquest'); A.enlist(pc); pc.mil.rank = [0, 2, 5][seed % 3];
+        const asked = new Map();
+        for (let d = 0; d < 240 && pc.alive && out.asked < 18; d++) {
+          A.advance(1);
+          const q = A.S.queue.find(x => x.type === 'choice' && /^(Attack|Under attack) at/.test(x.title || ''));
+          if (q) {
+            const o = q.options.find(x => x.arg && (x.arg.key || typeof x.arg === 'string'));
+            const key = o && (typeof o.arg === 'string' ? o.arg : o.arg.key), F = key && A.S.fights[+String(key).slice(1)];
+            out.asked++;
+            if (F && F.key === key) { out.live++; if (F.days === 0 && !F.deadA && !F.deadD) out.held++; asked.set(key + '|' + F.start, (asked.get(key + '|' + F.start) || 0) + 1); }
+            if (o) {
+              A.S.queue = [q].concat(A.S.queue.filter(x => x !== q));
+              A.CHOICE_FN[o.fn](o.arg);
+              const k = A.V2W.rank(pc); out.ranks[k] = (out.ranks[k] || 0) + 1;
+              if (A.S.queue.some(x => x.type === 'v2battle')) { out.played++; A.V2W.auto(); }
+            }
+            A.S.queue = [];
+          }
+          drain();
+        }
+        for (const n of asked.values()) if (n > 1) out.twice++;
+      }
+      // a fight that is gone (a save from before the hold): the classic layer takes it, and no v2 scene of nothing opens
+      A.newGame({ seed: 7301, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); A.enlist(A.pc());
+      A.S.queue = [];
+      A.CHOICE_FN.wsLine({ key: 'F99999', war: null, enemy: 'POL-02', pid: 99999 });
+      out.staleV2 = A.S.queue.some(x => x.type === 'v2battle');
+      return out;
+    });
+    const ok = r.asked >= 10 && r.live === r.asked && r.held === r.asked && r.played === r.asked && r.twice === 0 && !r.staleV2 && Object.keys(r.ranks).length >= 3;
+    return { ok, detail: `${r.asked} asks (${JSON.stringify(r.ranks)}): the fight still there ${r.live}, not yet fought ${r.held}, a scene played ${r.played}; asked twice ${r.twice}; a gone fight opened a v2 scene ${r.staleV2}` };
+  },
+
+  // playtest 2, new 16: rank words that contradict. A noble enlisted as "Squad Captain" was told "You are a sergeant
+  // now"; a Commander (rank 6, his division's commander) read "Commander · leads 3,200" under "2nd Aldmark Line 7,530",
+  // and fought "as a Commander" with only "Your company" to order
+  async v2wRankWordsAgree(pg) {
+    await pg.evaluate(RANKFX_LAB); await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const out = {};
+      T.enter({ seed: 7321, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
+      const pc = A.pc(); if (!pc.mil) A.enlist(pc);
+      pc.mil.rank = 3; delete pc.mil.arm; A.S.queue = [];
+      A.specYear(pc);
+      const q = A.S.queue.find(x => x.type === 'choice' && x.spec);
+      out.arm = q ? q.text.slice(0, 60) : null;
+      // a Commander of his division
+      const f = VWX.get(1)[0], { pc: p2, arg } = VWX.load(f, 6), d = A.divById(p2.mil.div);
+      if (d) d.cmd = p2.id;
+      const chain = UI.chainOfCommand(p2).replace(/<[^>]+>/g, ' ');
+      out.chainLeads = (chain.match(/leads ([\d,]+)/) || [])[1] || null; out.divMen = d ? A.fmt(Math.round(d.men)) : null;
+      out.share = A.drillShare(p2);
+      const d3 = d;
+      A.CHOICE_FN.wsPart(arg);
+      const sc = A.S.queue[0];
+      if (sc && sc.type === 'v2battle') {
+        const b = sc.b, coy = b.camp.armies[0].units.find(u => u.id === 'coy');
+        UI.screen = 'game'; UI.ov = null; UI.render();
+        const m = document.querySelector('#modal') || document.body;
+        out.unit = b.unit; out.coy = coy ? coy.count : 0; out.divMen3 = d3 ? Math.round(d3.men) : 0;
+        out.tacLabel = ((m.querySelector('.v2w-tac .muted') || {}).textContent || '').trim();
+        out.fightAs = ((m.textContent.match(/You fight as [^,.]*/) || [])[0] || '');
+        A.S.queue = []; UI.render();
+      }
+      // a Captain still leads a company of 200
+      const { pc: p4, arg: a4 } = VWX.load(f, 4); A.CHOICE_FN.wsPart(a4);
+      const s4 = A.S.queue[0]; out.capUnit = s4 && s4.b ? s4.b.unit : null; out.capCoy = s4 && s4.b ? (s4.b.camp.armies[0].units.find(u => u.id === 'coy') || {}).count : 0;
+      A.S.queue = [];
+      return out;
+    });
+    const ok = /^You are a squad captain now/.test(r.arm || '') && r.chainLeads && r.chainLeads === r.divMen && r.share === 1 && r.unit === 'your division' && r.coy === r.divMen3 &&
+      /^Your division/.test(r.tacLabel) && /Commander with your division/.test(r.fightAs) && r.capUnit === 'your company' && r.capCoy > 0 && r.capCoy <= 200;
+    return { ok, detail: `arm of service: "${r.arm}"; chain: leads ${r.chainLeads} of a division of ${r.divMen}, drill share ${r.share}; the Commander's scene: ${r.unit} of ${r.coy} (division ${r.divMen3}), tactic row "${r.tacLabel}", "${r.fightAs}"; a Captain: ${r.capUnit} of ${r.capCoy}` };
+  },
+
+  // playtest 2, new 17: the report contradicted its numbers ("Ashmere: about 1,000 men", then "Dead: about 1,500 of
+  // theirs"). The scene is the fight's first day now: it starts from the men the ask named, and its dead are the
+  // fight's dead, so the report after it counts at least them
+  async v2wReportAgrees(pg) {
+    await pg.evaluate(RANKFX_LAB); await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const out = [];
+      for (const f of VWX.get(5)) {
+        const { pc, F, arg } = VWX.load(f, 2);
+        const weAtt = F.aIds.includes(pc.mil.div);
+        const men = ids => ids.map(A.divById).filter(d => d && d.men > 0).reduce((a, d) => a + d.men, 0);
+        const ask = [men(weAtt ? F.aIds : F.dIds), men(weAtt ? F.dIds : F.aIds)], dead0 = [weAtt ? F.deadA : F.deadD, weAtt ? F.deadD : F.deadA];
+        A.CHOICE_FN.wsLine(arg);
+        const q = A.S.queue[0]; if (!q || q.type !== 'v2battle') continue;
+        const b = q.b, start = b.camp.armies.map(a => a.units.reduce((x, u) => x + u.start, 0));
+        A.V2W.auto();
+        const lost = b.camp.armies.map(a => a.units.reduce((x, u) => x + Math.max(0, Math.round(u.start - u.count)), 0));
+        const F2 = A.S.fights[+String(f.key).slice(1)];
+        const dead = F2 ? [weAtt ? F2.deadA : F2.deadD, weAtt ? F2.deadD : F2.deadA] : null;
+        out.push({ ask, start, lost, dead0, dead, fresh: F.days === 0 });
+      }
+      return out;
+    });
+    const ok = r.length >= 4 && r.every(x => x.fresh && Math.abs(x.start[0] - x.ask[0]) <= 2 && Math.abs(x.start[1] - x.ask[1]) <= 2 && x.dead && x.dead[0] - x.dead0[0] >= x.lost[0] - 2 && x.dead[1] - x.dead0[1] >= x.lost[1] - 2) && r.some(x => x.lost[1] > 0);
+    return { ok, detail: r.map(x => `asked ${x.ask.join(' v ')}, the scene began with ${x.start.join(' v ')} and lost ${x.lost.join(' / ')}; the fight's dead ${x.dead0.join('/')} -> ${x.dead && x.dead.join('/')}`).join('; ') };
+  },
 };

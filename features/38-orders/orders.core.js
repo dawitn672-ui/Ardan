@@ -45,6 +45,18 @@
     NAMES: { bold: 'Bold', cautious: 'Cautious', cunning: 'Cunning', steady: 'Steady' },
     WAIT: 60,      // days before an order's outcome is known
     EVERY: 150,    // days between letters at least
+    // the same order again from the same general waits this long (days): a letter that says what the last one said is
+    // routine, and over nine 40-year lives "hold the line" came back 15 times and "the first wave" 9 (97's lfRepeats;
+    // playtest 2, old 10: "Orders: hold and wait" seven times in one life). A new general's letter comes at the usual pace,
+    // but not the same order as the last general's within its base quiet (below, at the letter)
+    QUIET: { steady: 1095, cautious: 1095, bold: 730, cunning: 730 },
+    // and once a war (on the v2 build the quiet alone still let "hold and wait" come five times in one life of the
+    // nine, "hold the line" four): the same order from the same general comes again only in another war, and the quiet
+    // doubles each time it has come from him (S.goSeen[kind].n). Measured again on the merged v2 build (lfRepeats 15.2%
+    // against 15%), the generated continent's wars are short and many, so once a war bound little and "hold the line"
+    // came back six times in the nine lives: the quiet now doubles from the first letter (the second of a kind from the
+    // same general waits six years, a bold or cunning one four)
+    WAR_ONCE: true,
   };
   // a person's temper as a general
   G.temper = function (p) {
@@ -107,9 +119,17 @@
   // Counts for the tests (not saved): G.stats[temper][move].
   G.stats = {};
   const stat = (a, k) => { const t = G.of(a), o = G.stats[t] || (G.stats[t] = {}); o[k] = (o[k] || 0) + 1; };
-  G.RELIEF = 1.5;     // the odds a cunning general wants to go in, all together, against men standing in his own land
-  G.IDLE = [2.5, Infinity];  // cunning: the odds wanted against the weakest host standing ready (x need), and a stronger one (never)
+  // v2 (the generated continent; CI run 88, temperMovesTheWar 'FAILED cunning'): with the old dials (RELIEF 1.5, IDLE
+  // [2.5, never], raids only two steps or more away) a cunning army took 276 provinces for 2,254k men down, 12.2 per
+  // 100k against cautious's 15.8. It left every strong host standing, and so their land, and lost more of its own men
+  // to hunger and to divisions cut off at home (615k and 905k, against cautious's 237k and 469k) than to his assaults.
+  // Now he goes in against a strong host standing ready at crushing odds (5 x need), relieves his own land at better
+  // than even odds (1.1), and an idle division also takes the open country next to it: 362 taken for 2,226k down,
+  // 16.3 per 100k, with 89% of orders still at empty or engaged places (see README)
+  G.RELIEF = 1.1;     // the odds a cunning general wants to go in, all together, against men standing in his own land
+  G.IDLE = [2.5, 5];  // cunning: the odds wanted against the weakest host standing ready (x need), and a stronger one
   G.RAID = 1 / 3;      // the share of a cunning army out on a march round the walls at once
+  G.RAID_DEPTH = 1;    // the nearest open country a raid goes to (steps away; it was 2, past the next province)
   G.HEADON = 0.7;     // bold: the odds at which a division goes at their host instead of sitting before an empty wall
   G.PRESS = 8;          // ticks after a retreat while the beaten division counts as disordered
   G.stand = d => { const a = d && d.army ? A.army(d.army) : null; return (a && G.DIALS[G.of(a)].stand) || 1; };
@@ -292,7 +312,8 @@
         a.gtFeintAt = now; stat(a, 'feint'); note(a, 'feint', { j: best.y, x: best.x });
       }
     }
-    // the long way round: an idle division goes past walls and held places to the open country behind them.
+    // the long way round: an idle division goes past walls and held places to the open country behind them, or to the
+    // open country next to it (G.RAID_DEPTH).
     // At most a third of the army (G.RAID) is out on such a march at once
     const out = ds.filter(d => d.gtRaid != null && d.path.length >= 1).length;
     let room = Math.max(1, Math.round(ds.length * G.RAID)) - out;
@@ -304,7 +325,7 @@
       const R = G.roundPath(a, d);
       let pick = null;
       for (const v of R.out) {
-        const dep = R.depth.get(v), Q = S.prov[v]; if (dep < 2 || aimed.has(v) || walled(Q, me)) continue;
+        const dep = R.depth.get(v), Q = S.prov[v]; if (dep < G.RAID_DEPTH || aimed.has(v) || walled(Q, me)) continue;
         const direct = A.wsPath(d.loc, v, me);
         const wall = direct && direct.slice(0, -1).find(j => { const W = S.prov[j]; return foesAt(j, me).length || walled(W, me); });
         const val = Math.log10(Q.pop + 10) * 6 + 5 * A.provLocalSupply(Q) + (Q.depot ? 15 : 0) + (capitalOf(Q) ? 20 : 0) - (Q.fort || 0) * 6 - dep * 4 + (wall != null ? 12 : 0);
@@ -543,7 +564,14 @@
     if ((t === 'bold' || t === 'cunning') && o.tp == null) kind = 'steady';
     if (o.pp == null && (kind === 'cautious' || kind === 'steady')) return;
     if (kind === 'steady' && o.tp == null) return;
+    const last = S.goSeen && S.goSeen[kind], war = A.atWar(a.realm).map(w => w.id).sort().join();
+    const n = last && last.gen === g.id ? last.n || 1 : 0;
+    if (n && (now - last.day < (G.QUIET[kind] || 0) * Math.pow(2, Math.min(3, n)) || (G.WAR_ONCE && last.war === war))) return;
+    // the same order from another general waits the base quiet: on the merged v2 build a soldier moved between armies
+    // had "make a noise" from three generals in a year and a half (lfRepeats). A new general's other orders come as usual
+    if (last && !n && now - last.day < (G.QUIET[kind] || 0)) return;
     S.goNext = now + G.EVERY;
+    S.goSeen = Object.assign({}, S.goSeen, { [kind]: { gen: g.id, day: now, war, n: n + 1 } });
     const ctx = { order: 1, genId: g.id, temper: kind, tp: o.tp, pp: o.pp };
     if (kind === t) { if (o.press) ctx.press = 1; if (o.noise != null) ctx.np = o.noise; if (o.wall != null) ctx.wp = o.wall; }
     A.queue({ type: 'event', ev: 'go_order_' + kind, forced: true, ctx });

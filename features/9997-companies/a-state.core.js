@@ -579,7 +579,11 @@
             CO.stats.honours++;
             if (A.WC && A.WC.put && CO.mineIs(d, i)) A.WC.put('honour', { p: P.id, a: d.r, n: lost, x: CO.bnName(d, i), w: [A.S.pc].concat(CO.whoKey(d, i, 4)) });
             const pc = A.pc();
-            if (CO.mineIs(d, i) && pc && pc.alive) { pc.flags.co_honour_pend = S.year; CO.queueEv('co_honour', { bn: CO.bnName(d, i), battle: nm }); }
+            // one name for the colours a year comes as a scene: a second the same year (two fights on one day) is a log line
+            if (CO.mineIs(d, i) && pc && pc.alive) {
+              if (pc.flags.co_honour_pend === S.year) A.log(`The ${CO.bnName(d, i)} has another name for its colours: ${nm}.`, 'good');
+              else { pc.flags.co_honour_pend = S.year; CO.queueEv('co_honour', { bn: CO.bnName(d, i), battle: nm }); }
+            }
           }
         }
         if (frac >= K.HONOUR_LOSS) CO.capsInDanger(d, i, frac, !won, 'map');
@@ -738,7 +742,10 @@
     if (pc && pc.alive && pc.mil) {
       CO.place(pc);
       const M = CO.mine(pc);
-      if (M && CO.sceneDue(pc, M.d.pay > 0 ? CO.GAP : CO.PAY_GAP) && A.atWar(pc.mil.realm || pc.realm).length) CO.queueEv(M.d.pay > 0 ? 'co_arrears' : 'co_pay_day', {});
+      if (M && CO.sceneDue(pc, M.d.pay > 0 ? CO.GAP : CO.PAY_GAP) && A.atWar(pc.mil.realm || pc.realm).length && (M.d.pay > 0 || !CO.recent(pc, 'co_pay_day'))) {
+        if (M.d.pay > 0 || !CO.once(pc, 'co_pay_day')) CO.queueEv(M.d.pay > 0 ? 'co_arrears' : 'co_pay_day', {});
+        else CO.toldInLog(pc, 'co_pay_day', `Pay day in the ${CO.coName(M.d, M.b, M.i)}: the paymaster counts the silver onto the drumhead. Bread for ${Math.round(M.d.food)} days in the wagons.`);
+      }
     }
   };
   function backWounded(d, gap, frac) {
@@ -910,11 +917,75 @@
     if (!(pc.flags.co_hungry && S.year - pc.flags.co_hungry < 1)) CO.queueEv('co_hungry_march', {});
     else if ((pc.mil.rank || 0) <= 5 && A.squad(pc).length && !(pc.flags.co_desert && S.year - pc.flags.co_desert < 2)) { const c = A.squad(pc)[0]; CO.queueEv('co_desert', { pid: c.id }); }
   };
-  CO.queueEv = function (ev, ctx) {
+  CO.queueEv = function (ev, ctx, again) {
     const S = A.S;
     if ((S.queue || []).some(q => q.type === 'event' && q.ev === ev)) return;
+    const pc = A.pc(), now = A.absDay ? A.absDay() : 0;
+    // a new captain within the quiet is told in the log line that names him, not in a scene again
+    if (CO.HUSH[ev] && !again && CO.recent(pc, ev)) return;
     A.queue({ type: 'event', ev, ctx: Object.assign({}, ctx), forced: true });
-    const pc = A.pc(); if (pc && pc.flags) pc.flags.co_last = A.absDay ? A.absDay() : 0;
+    if (pc && pc.flags) pc.flags.co_last = now;
+    if (pc && pc.mil && CO.QUIET[ev]) {
+      const m = CO.mem(pc);
+      m.seen[ev] = now; m.n[ev] = (m.n[ev] || 0) + 1;
+      if (CO.WAR_ONCE[ev]) m.war[ev] = CO.wars(pc);
+    }
+  };
+  // The routine company scenes keep a quieter cadence over a life. They are forced scenes, which 97's life memory leaves
+  // alone, and over nine 40-year lives pay day came back 27 times and the roll call 16 (97's lfRepeats; playtest 2, old
+  // 10: "Pay day" five times in one life). When nothing has changed they wait (days): pay day four years (arrears are
+  // their own scene and still come at once), the roll call and the captain's word three years, unless the fight cost the
+  // company twice the most a roll call has counted. CO.mem(pc).seen holds the day each was last queued (a save from
+  // before has none: the first comes as before)
+  //
+  // Measured on the v2 build, that still left pay day 13 times again and the roll call 4 in the nine lives (lfRepeats
+  // 15.6% against 15%): a soldier of forty years saw seven pay days, one every five years of the same war. So pay day,
+  // the roll call and the captain's word also come once a war (CO.WAR_ONCE: again only when a war he had not served in
+  // has begun since; CO.mem(pc).war holds the wars at the last one), and a new captain within three years of the last is
+  // told by the log line that names him ("Sergeant X takes the company"), not by the scene again (CO.HUSH). And the
+  // quiet doubles each time the scene has come (CO.mem(pc).n counts them): the fourth pay day of a life waits sixteen
+  // years after the third, so a soldier of forty years sees four, not seven
+  //
+  // Measured again on the merged v2 build (lfRepeats 15.2% against 15%), the wars on the generated continent are short
+  // and many (a new one every five to eight years), so once a war bound little: pay day still came back eight times in
+  // the nine lives, the roll call five, the captain's word four, and the quiet's first wait was its base. So the quiet
+  // doubles from the first scene (the second waits twice the base: pay day eight years, the roll call and the captain's
+  // word six), and pay day is a scene once a life (CO.ONCE): later pay days, when the quiet has passed, are a line in
+  // the log with the bread in the wagons, not the drumhead scene again. Arrears are still their own scene, at once
+  CO.QUIET = { co_pay_day: 1460, co_roll_call: 1095, co_captain_word: 1095, co_new_captain: 1095 };
+  CO.ONCE = { co_pay_day: 1 };
+  //
+  // And the memory is the soldier's, not the enlistment's: it lived on pc.mil, which a discharge drops and the next
+  // enlistment makes anew, so a man who left and joined again had his pay day, roll call and captain's word back as if
+  // he had never seen them (one of the nine lives saw pay day three times, the third at a second enlistment fifteen
+  // years on). CO.mem(pc) is pc.coMem { seen, n, war, roll }: the day each was last told, how many times, the wars
+  // then, and the most a roll call has counted. A save from before has none and takes what its pc.mil held
+  CO.mem = function (pc) {
+    if (pc.coMem && typeof pc.coMem === 'object' && pc.coMem.seen && pc.coMem.n && pc.coMem.war) return pc.coMem;
+    const o = pc.mil || {}, obj = x => (x && typeof x === 'object' && !Array.isArray(x) ? Object.assign({}, x) : {});
+    pc.coMem = { seen: obj(o.coSeen), n: obj(o.coN), war: obj(o.coWar), roll: +o.coRoll || 0 };
+    return pc.coMem;
+  };
+  // (reading needs no record: a soldier with none has seen nothing)
+  CO.memOf = pc => (pc && pc.coMem && pc.coMem.seen && pc.coMem.n && pc.coMem.war ? pc.coMem : pc && pc.mil && pc.mil.coSeen ? { seen: pc.mil.coSeen, n: pc.mil.coN || {}, war: pc.mil.coWar || {}, roll: +pc.mil.coRoll || 0 } : null);
+  CO.once = (pc, ev) => { const m = CO.ONCE[ev] && CO.memOf(pc); return !!(m && m.n[ev] > 0); };
+  // a routine scene told in the log instead keeps the scene's cadence: its quiet runs from the line as from a scene
+  CO.toldInLog = function (pc, ev, line) {
+    A.log(line, 'muted');
+    const m = CO.mem(pc);
+    m.seen[ev] = A.absDay ? A.absDay() : 0;
+    if (CO.WAR_ONCE[ev]) m.war[ev] = CO.wars(pc);
+  };
+  CO.WAR_ONCE = { co_pay_day: 1, co_roll_call: 1, co_captain_word: 1 };
+  CO.HUSH = { co_new_captain: 1 };
+  CO.wars = pc => A.atWar((pc && pc.mil && pc.mil.realm) || (pc && pc.realm)).map(w => w.id).sort();
+  CO.recent = function (pc, ev) {
+    const m = CO.memOf(pc), t = m ? m.seen[ev] : null, now = A.absDay ? A.absDay() : 0;
+    if (t == null) return false;
+    const k = m.n[ev] > 0 ? Math.min(4, m.n[ev]) : 0;
+    if (now - t < (CO.QUIET[ev] || 0) * Math.pow(2, k)) return true;
+    const was = CO.WAR_ONCE[ev] && Array.isArray(m.war[ev]) ? m.war[ev] : null;
+    return !!was && !CO.wars(pc).some(id => !was.includes(id));
   };
   // the company reaches the soldier once a campaign, not once a career: after a fight his division was in, and on pay
   // day, a company scene comes when none has come for a season (CO.GAP days)
@@ -929,8 +1000,11 @@
     const pc = A.pc(), M = CO.mine(pc);
     if (!M || !(F.aIds.includes(M.d.id) || F.dIds.includes(M.d.id)) || F.menA + F.menD < 2500 || !CO.sceneDue(pc)) return;
     const row = (F.coL || {})[M.d.id] || [], lost = row[M.b] || 0;
-    if (lost >= 4) CO.queueEv('co_roll_call', { lost: String(lost), place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 });
-    else { const c = CO.cap(M.d, M.b, M.i); CO.queueEv('co_captain_word', { pid: c && c.pid && !c.pc ? c.pid : null, place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
+    // a roll call sooner than its quiet when the fight cost twice the most one has counted, but not within the year
+    const m0 = CO.memOf(pc), t0 = m0 ? m0.seen.co_roll_call : null, now = A.absDay ? A.absDay() : 0;
+    const heavy = lost >= 4 && (!CO.recent(pc, 'co_roll_call') || (lost >= 2 * (m0 ? m0.roll : 0) && (t0 == null || now - t0 >= 365)));
+    if (heavy) { const m = CO.mem(pc); m.roll = Math.max(m.roll || 0, lost); CO.queueEv('co_roll_call', { lost: String(lost), place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
+    else if (!CO.recent(pc, 'co_captain_word')) { const c = CO.cap(M.d, M.b, M.i); CO.queueEv('co_captain_word', { pid: c && c.pid && !c.pc ? c.pid : null, place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
   };
 
   // ---- morale on the war map: the organisation cap, x (0.85 + 0.3 x mean morale / 100)
