@@ -150,6 +150,9 @@ export default {
         cond: mk('v2ct_shop_if', p => `Smoke pours from the eaves${A.age(p) > 200 ? ' of your own workshop' : ''}.`),
         open: mk('v2ct_shop_open', 'Pay the fee, and you may open your own shop.'),
         flag: mk('v2ct_shop_flag', 'Your apprentice asks to learn the fold.', (p, C) => C.flag(p, 'v2ct_fold')),
+        // a negated flag follows nothing: the scene still needs a shop (round 2: FOLLOWS took any C.flag( as a sequel)
+        notflag: mk('v2ct_shop_notflag', 'Your apprentice asks to learn the fold.', (p, C) => !C.flag(p, 'v2ct_fold')),
+        notflag2: mk('v2ct_shop_notflag2', 'Your customers want the fold.', (p, C) => C.adult(p) && ! C.flag(p, 'v2ct_fold')),
         plain: mk('v2ct_shop', 'Your customers have gone to the fair, and your apprentice sleeps on the bench.'),
       };
       const real = ['mpe_dw_partner_clause', 'mpf_dwarf_apprentice', 'mat_royal_bow_order', 'mat_altar_donor', 'rk_gen_successors', 'pl_authority_push', 'po_graft', 'la_heirhouse_2', 'wk_craft_fire', 'pf_craft_masterpiece'].filter(id => A.EV[id]);
@@ -163,8 +166,9 @@ export default {
     for (const k of ['clerk', 'cond', 'open', 'flag']) if (r.fake[k].gate || r.fake[k].txt || !(r.fake[k].fit > 0)) wrong.push(k);
     for (const id in r.real) if (r.real[id].gate || r.real[id].txt) wrong.push(id);
     const plain = r.fake.plain.gate && r.fake.plain.txt && r.fake.plain.fit === 0;
-    const ok = !wrong.length && plain;
-    return { ok, detail: `read as needing a shop, wrongly: ${JSON.stringify(wrong)} (of 4 made scenes and ${Object.keys(r.real).length} real ones); "your customers" still needs one: ${plain}` };
+    const negated = ['notflag', 'notflag2'].filter(k => !(r.fake[k].gate && r.fake[k].txt && r.fake[k].fit === 0));
+    const ok = !wrong.length && plain && !negated.length;
+    return { ok, detail: `read as needing a shop, wrongly: ${JSON.stringify(wrong)} (of 4 made scenes and ${Object.keys(r.real).length} real ones); "your customers" still needs one: ${plain}; a negated flag still needs one, wrongly not: ${JSON.stringify(negated)}` };
   },
 
   // playtest 2, old #11 and #15: a boy ran from "a betrothal to a man twice your age"; an orc crossbowman of rank 2 was
