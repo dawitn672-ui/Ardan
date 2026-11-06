@@ -210,9 +210,13 @@ export default {
     // the month took about 800 ms of CPU (1.1-2.3 s wall) and the month holding the New Year about 1.6 s of CPU
     // (2.3-5 s wall), against 1.2-1.5 s and 15-20 s of CPU without 09-scale. The bounds are three times that, so they
     // hold on a slow CI runner and still catch the year turn going quadratic again.
+    // v2 (Nov 2026): the New Year month does real new work in every realm (99995's courts of about 900 nobles, 99996's
+    // diplomacy, 99994's families), 3.6-3.8 s of CPU on this machine and on a quick CI runner (run 92), 5.6-6.4 s on a
+    // slow one (run 93, where every test in the shard ran about 1.5x slower). The year bound is three times the v2 cost
+    // again, held under 10 s so a quadratic year turn (15-20 s in v1, far more with v2's courts) still fails it.
     await pg.evaluate(CLONE);
     const r = await timeWorld(pg, 10, 14);
-    const cpuOk = r.monthCpu != null ? r.monthCpu <= 2400 && r.yearCpu <= 5000 : r.month <= 6000 && r.year <= 15000;
+    const cpuOk = r.monthCpu != null ? r.monthCpu <= 2400 && r.yearCpu <= 10000 : r.month <= 6000 && r.year <= 15000;
     const ok = r.provs === 3060 && r.month != null && r.year != null && cpuOk && !r.bad.length && !r.missed;
     const c = v => v == null ? 'n/a' : Math.round(v);
     return { ok, detail: `10x world (${r.provs} provinces, ${r.realms} realms): new game ${r.ng} ms; month median ${r.month} ms wall, ${c(r.monthCpu)} ms CPU;` +
