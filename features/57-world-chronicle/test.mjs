@@ -417,6 +417,29 @@ export default {
     });
     return { ok: r.n > 300 && !r.bad.length && !r.thin.length && r.total >= 60, detail: `${r.total} line templates in ${Object.keys(r.kinds).length} kinds, ${r.n} drawn; kinds with one line ${r.thin.join(', ') || 'none'}; bad ${r.bad.length} ${r.bad.slice(0, 3).join(' | ')}` };
   },
+  // playtest 2, new #13: "Mothers here still frighten children with the men of Aldmark" was said in Aldmark. A line that
+  // fears the side that took a town ('foe') is said only where the taker is not the player's realm nor the place's
+  async wcRecallRightSide(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 5711, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
+      const WC = A.WC, pc = A.pc(), other = Object.keys(A.S.realms).find(id => id !== pc.realm && A.S.realms[id].alive);
+      const P = A.S.prov.findIndex(p => p && p.name && p.owner === pc.realm);
+      const FOE = /frighten children|bar their doors/;
+      const draw = (taker, n) => {
+        const out = [];
+        for (let i = 0; i < n; i++) {
+          const y = A.S.year - 6, c = { id: 'rT' + i, y, k: 'fall', e: { i: 0, y, k: 'fall', a: taker, b: taker === pc.realm ? other : pc.realm, p: P, w: [], x: 1 } };
+          const line = WC.recallLine(c, pc, 'wcRightSide|' + i);
+          if (line) out.push(line);
+        }
+        return out;
+      };
+      const ours = draw(pc.realm, 40), theirs = draw(other, 40);
+      return { ours: ours.filter(l => FOE.test(l)), oursN: ours.length, theirs: theirs.filter(l => FOE.test(l)).length, theirsN: theirs.length };
+    });
+    return { ok: r.oursN >= 20 && !r.ours.length && r.theirs > 0,
+      detail: `the player's own realm took the town: ${r.oursN} lines, ${r.ours.length} fear the taker ${r.ours[0] || ''}; another realm took it: ${r.theirs} of ${r.theirsN} may` };
+  },
   // cycle 1: "Since 1105, part of every tax here goes to Khaganate. Nobody forgets it." said in 1105. A "since" line
   // waits until the year is WC.SINCE_MIN years gone, and a realm whose short name is a noun takes its article.
   // Changed for v2: this test played a Far Lands realm (lands: 'great', POL-59 paying POL-58, "the Khaganate"). The

@@ -297,9 +297,9 @@
     ],
     fall: [
       [0, x => x.how === 3 ? `Since ${x.P} burned in ${x.y}, its people are scattered all over; you hear their voices in every market.` : x.how === 2 ? `A pedlar sells spoons he swears came out of the sack of ${x.P} in ${x.y}.` : `People still speak of the day ${x.A} took ${x.P}, in ${x.y}.`],
-      [0, x => `Mothers here still frighten children with the men of ${x.A}, who took ${x.P} in ${x.y}.`],
+      [0, x => `Mothers here still frighten children with the men of ${x.A}, who took ${x.P} in ${x.y}.`, 'foe'],
       [0, x => `A woman from ${x.P} sells thread at the corner. She left it in ${x.y}, the year ${x.A} came.`],
-      [0, x => `People here bar their doors at dusk. They have done it since ${x.A} took ${x.P}, in ${x.y}.`],
+      [0, x => `People here bar their doors at dusk. They have done it since ${x.A} took ${x.P}, in ${x.y}.`, 'foe'],
       [0, x => `A carter says the road past ${x.P} has been quiet since ${x.A} took it in ${x.y}.`],
     ],
     war: [
@@ -390,7 +390,12 @@
     // "Since 1105 ... Nobody forgets it" said in 1105 is not a memory: a line that counts "since" a year wants that
     // year to be at least WC.SINCE_MIN years gone
     const fresh = A.S.year - c.y < WC.SINCE_MIN;
-    const ok = set.filter(l => (!l[0] || home) && !(fresh && /since/i.test(String(l[1]))));
+    // a line marked 'foe' fears the side that took the town (playtest 2, new #13: "Mothers here still frighten children
+    // with the men of Aldmark" was said in Aldmark): it is said only where the taker is not the realm of the player or of
+    // the place
+    const ours = new Set([p.realm, (A.prov(p.home) || {}).owner].filter(Boolean));
+    const foeOurs = !!(c.e && c.e.a && ours.has(c.e.a));
+    const ok = set.filter(l => (!l[0] || home) && !(fresh && /since/i.test(String(l[1]))) && !(l[2] === 'foe' && foeOurs));
     if (!ok.length) return null;
     // the lines of a kind come round in turn
     const R = WC.rec(), kc = R.kc = R.kc || {}, n = kc[c.k] = (kc[c.k] || 0) + 1;
