@@ -25,15 +25,22 @@
   // "every name she says", "that it is a good law", "the question that keeps you awake")
   const BASE = 'are|am|is|be|pay|sign|go|do|have|want|need|know|keep|say|can|will|must|get|make|take|see|come|give|ask|tell|think|try|stay|leave|find|hold|buy|sell|win|lose|fight|wait|walk|run|read|write|speak|look|help|owe|mean|like|love|hate|live|die|work|eat|drink|sleep|play|learn|wish|hope|own|stand|sit';
   const PRESENT = new RegExp(`\\b(?:you|we|they|i)\\s+(?:${BASE})\\b|\\b(?:he|she|it|that|who|which|this)\\s+(?:is|are|has|does|says|keeps|wants|needs|knows|thinks|goes|comes|lives|owns|holds|means|stands|can|will|must)\\b|\\b(?:is|are|am)\\b|\\b\\w+'(?:s|re|ll|ve)\\s+(?:not\\s+)?\\w+ing\\b|\\byou're\\b`, 'i');
+  // ... and a third person's verb in the present ("you tried to wait until she sleeps", playtest 2 old #9; "until he
+  // goes", "the debt she owes"): he, she or it, then a word in -s that is not "was" or an adverb
+  const PRESENT3 = /\b(?:he|she|it)\s+(?!was\b|always\b|perhaps\b|thus\b|less\b|unless\b|towards?\b)[a-z]{2,}s\b/i;
   MW.pastDeed = d => {
     const s = String(d || '').replace(/^you\s+/i, '');
-    return !!s && !PRESENT.test(s);
+    return !!s && !PRESENT.test(s) && !PRESENT3.test(s);
   };
   const born = p => (p && typeof p.born === 'number' ? p.born : null);
   const grownAt = (p, y) => born(p) == null || y - born(p) >= MW.MIN_AGE;
   // the deed must say enough by itself: 67 put the scene's title in brackets after a bare "it" ("(the ford)")
   const deedOk = d => typeof d === 'string' && words(d) >= 4 && !MW.BARE_OBJ.test(d) && MW.pastDeed(d) && !/[:;]/.test(d);
   MW.lineFits = (p, m) => !!m && grownAt(p, m.y) && deedOk(m.d);
+  // the same rules for a deed another feature quotes (55-bonds' "Between you", 21-npc-initiative's "You both
+  // remember"): a past deed of three words or more, from 7 on, that says enough without a title before a colon
+  MW.grownAt = grownAt;
+  MW.deedReads = d => typeof d === 'string' && words(d) >= 3 && MW.pastDeed(d.replace(/\s*\([^)]*\)\s*$/, '')) && !/[:;?]/.test(d);
 
   // the record as the rules read it: only lines fit to be cited
   const lines0 = MW.lines;

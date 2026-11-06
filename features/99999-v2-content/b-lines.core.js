@@ -82,6 +82,7 @@
     if (v.adv && v.adv.length) return false;               // one extra line a card: the counsel speaks
     if (woven(q)) return false;                             // ... or the memory does
     if (v.recall) return false;                             // ... or the world's record (57-world-chronicle)
+    if (v.bdAside) return false;                            // ... or what passed between you (55-bonds, below)
     const sk = checksOf(e);
     if (!sk.length) return false;                           // no stakes, no voice
     if (vo.thought) {
@@ -131,10 +132,135 @@
     });
     if (typeof ADV.counselFor === 'function') {
       const counsel0 = ADV.counselFor;
-      ADV.counselFor = function () {
+      ADV.counselFor = function (pc, q) {
+        // one extra line a card: a memory woven into the scene's text (67-memory-weave, set in the scene's setup,
+        // before the view) speaks, and counsel keeps its peace (CI run 88: a memory and counsel together on a muster)
+        if (woven(q)) return null;
         const out = counsel0.apply(this, arguments);
-        return Array.isArray(out) && out.length ? out.slice(0, 1) : out;
+        if (!Array.isArray(out) || !out.length) return out;
+        const one = out.slice(0, 1);
+        try { one[0] = C2.counselWords(pc, q, arguments[2], one[0]); } catch (err) {}
+        return one;
       };
     }
+    // the words fit the matter (playtest 2, old #10: "Your name in the trade is your fortune" on raiders, "Good work
+    // speaks louder than a good speech" on hiring a killer). Who speaks and which way they lean stay as 9999 chose; a
+    // line of the trade (craft) is for a matter of work, a builder's line (works) for work, money or the court, and a
+    // line that names a thing (C2.REF) needs that thing in the scene. A line that does not fit gives way to a plain one.
+    const PLAIN = ['I have weighed it. This is the better way.', 'This one, I think. The rest only look easier.', 'Think it through. Then choose this.'];
+    const hash = s => { let h = 2166136261; s = String(s); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+    const linesOf = want => [].concat((ADV.LINES.want || {})[want] || [], ((ADV.LINES.byGroup || {}).work || {})[want] || []);
+    C2.counselFits = function (line, dom, text) {
+      if (linesOf('craft').includes(line) && dom !== 'work') return false;
+      if (linesOf('works').includes(line) && !['work', 'money', 'court'].includes(dom)) return false;
+      return C2.lineFits(line, text);
+    };
+    C2.counselWords = function (pc, q, v, o) {
+      const e = q && A.EV[q.ev];
+      if (!o || typeof o.l !== 'string' || !e || !v) return o;
+      const dom = ADV.domOf ? ADV.domOf(q, v, e) : 'any';
+      if (C2.counselFits(o.l, dom, sceneText(q, v, e))) return o;
+      const pool = (ADV.ROLE_GROUP && ADV.ROLE_GROUP[o.r] === 'work' && Array.isArray(ADV.LINES.workOff) && dom !== 'work' ? ADV.LINES.workOff : (ADV.LINES.sense && ADV.LINES.sense[dom]) || PLAIN)
+        .filter(l => C2.counselFits(l, dom, sceneText(q, v, e)));
+      const L = pool.length ? pool : PLAIN;
+      return Object.assign({}, o, { l: L[hash(`${q.ev}|${o.id}|${A.S.year}|fit`) % L.length] });
+    };
+  }
+
+  // ---- what passed between you: 55-bonds' "Between you" and 21-npc-initiative's "You both remember" ---------------------
+  // Playtest 2 (old #9, new #13): 18% of cards carried a personal line besides the scene's own text, and some were garbled
+  // or from the wrong side: "Between you: 1126, you applied and dazzle them in the disputation", "You both remember 1118:
+  // an ordinary person: you told Maren it is hopeless", "Between you: 1119, you asked what the debt is". Now:
+  //   - the line is chosen once, when the scene is drawn up (A.eventView, an engine step, as 57's recalled line), and
+  //     kept on the view (v.bdAside), so the card, the choice and a replay see the same;
+  //   - it shares the memory insert's spacing (a-weave: MW.GAP cards between two, pc.mw.lw), so a memory, a "Between
+  //     you" line and a "You both remember" line together come under one card in MW.GAP;
+  //   - it is one extra line: none on a card with counsel, a woven memory or a scene that already quotes the past; the
+  //     world's recalled line gives way to it, and the inner voice does;
+  //   - the deed must read as a past deed of its own (MW.deedReads: no "is", no "she sleeps", no "title: deed"), from
+  //     the age of 7 on, and must not name the person it is said to.
+  const MW = A.MW, BD = A.BONDS, NI = A.NPCI;
+  const gapOk = pc => !!(pc && pc.mw && typeof pc.mw === 'object') && !(typeof pc.mw.lw === 'number' && (+pc.mw.n || 0) - pc.mw.lw < ((MW && MW.GAP) || 10));
+  const spend = pc => { pc.mw.lw = +pc.mw.n || 0; };
+  C2.deedFor = function (pc, t, y, d) {
+    if (typeof d !== 'string' || !MW || typeof MW.deedReads !== 'function') return false;
+    if (MW.grownAt && !MW.grownAt(pc, y)) return false;
+    if (t && t.given && String(t.given).length > 2 && d.includes(t.given)) return false;
+    return MW.deedReads(d);
+  };
+  if (BD && typeof BD.aside === 'function' && typeof BD.deedLine === 'function') {
+    const aside0 = BD.aside;
+    C2.asideFor = function (pc, t, v) {
+      const line = aside0(pc, t, v);
+      if (!line) return '';
+      const e = BD.cite(pc, t, { min: BD.CITE });
+      return e && C2.deedFor(pc, t, e.y, BD.deedLine(e)) ? line : '';
+    };
+    // the card shows the line the view kept, and only that
+    BD.aside = (pc, t, v) => (v && typeof v.bdAside === 'string' ? v.bdAside : '');
+    const view1 = A.eventView;
+    A.eventView = function (q) {
+      const fresh = !!q && q.type === 'event' && !q.view;
+      const v = view1.apply(this, arguments);
+      try {
+        if (fresh && v && !v.skip && q.view === v && !q.result) {
+          const pc = A.pc(), pid = q.ctx && q.ctx.pid, t = pid && A.P(pid);
+          if (pc && t && t.id !== pc.id && pc.rel && pc.rel[t.id] && gapOk(pc) && !(v.adv && v.adv.length) && !woven(q) && !BD.citesInText(q, v)) {
+            const line = C2.asideFor(pc, t, v);
+            if (line) {
+              v.bdAside = line; spend(pc);
+              if (v.recall) { delete v.recall; delete v.recallId; }
+            }
+          }
+        }
+      } catch (err) { console.error('v2 content aside', err); }
+      return v;
+    };
+  }
+  if (NI && typeof NI.pastLine === 'function' && typeof NI.histOf === 'function') {
+    const TRIVIAL = /^(you spent a day together|a long talk|you trained together|you sparred|you asked (his|her) advice)$/i;
+    const low = s => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
+    // "An ordinary person: you told Maren ..." is a title and a deed; "Can you help? You helped" a question and a deed
+    C2.histDeed = e => {
+      if (!e || typeof e.t !== 'string') return '';
+      if (typeof e.d === 'string' && e.d) return e.d;
+      const m = /^[^:?!]{2,60}[:?!]\s+((?:you|she|he)\b.*)$/i.exec(e.t);
+      return low(m ? m[1] : e.t).replace(/[.!?]$/, '');
+    };
+    // called from the scene's setup (an engine step): it spends the spacing when it speaks
+    NI.pastLine = function (pc, t) {
+      if (!gapOk(pc)) return '';
+      const h = NI.histOf(pc, t).filter(e => e && e.y < A.S.year && typeof e.t === 'string' && !TRIVIAL.test(e.t));
+      for (let i = h.length - 1; i >= 0; i--) {
+        const d = C2.histDeed(h[i]);
+        if (C2.deedFor(pc, t, h[i].y, d)) { spend(pc); return ` You both remember ${h[i].y}: ${d}.`; }
+      }
+      return '';
+    };
+  }
+
+  // ---- token grammar (playtest 2, new #19) --------------------------------------------------------------------------------
+  // A token filled with its own article after one the text already has: "Keep the a slingshot", "of the the Lantern
+  // Company", "of the The Greyfeathers". When a word that takes a noun ("the", "your", "his" ...) stands right before a
+  // token whose value starts with an article, the value's article goes. The template is read, not the filled text, so a
+  // sentence the writer wrote is never touched.
+  const T0 = A.T;
+  if (typeof T0 === 'function') {
+    const DET = /\b(the|The|your|Your|his|His|her|Her|their|Their|my|My|our|Our)\s+\{(\w+)\}/g;
+    C2.tidyTemplate = function (str, ctx) {
+      if (typeof str !== 'string' || str.indexOf('{') < 0 || !ctx || typeof ctx !== 'object') return str;
+      return str.replace(DET, (m, det, k) => {
+        let x;
+        try { x = ctx[k]; } catch (err) { return m; }
+        if (typeof x !== 'string' || !/^(?:a|an|the|The)\s+\S/.test(x)) return m;
+        return `${det} ${x.replace(/^(?:a|an|the|The)\s+/, '')}`;
+      });
+    };
+    A.T = function (str, ctx) {
+      if (typeof str === 'string' && str.indexOf('{') >= 0 && ctx && typeof ctx === 'object') {
+        try { arguments[0] = C2.tidyTemplate(str, ctx); } catch (err) {}
+      }
+      return T0.apply(this, arguments);
+    };
   }
 })();
