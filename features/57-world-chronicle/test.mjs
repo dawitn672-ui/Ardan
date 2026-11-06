@@ -336,11 +336,22 @@ export default {
       // A.advance stops on them before the epidemic's month comes (80-callbacks' events were enough to do it)
       const clearOthers = () => { A.S.queue = A.S.queue.filter(q => q.ev === 'wc_sickness_comes'); };
       clearOthers();
-      try { for (let i = 0; i < 6 && !queued; i++) { A.advance(31); queued = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!queued) clearOthers(); } } finally { A.WC.plagueChance = chance; A.wpick = wp; }
-      const q = A.S.queue.find(x => x.ev === 'wc_sickness_comes'), v = q && A.eventView(q);
-      return { n: pl.length, fam: fam.length, realms, perRealm20: Math.round(100 * pl.length / realms / 2) / 100, famPer20: Math.round(100 * fam.length / realms / 2) / 100, queued, text: v ? v.text : '', skip: v ? v.skip : null };
+      const strike = () => { let got = false; for (let i = 0; i < 6 && !got; i++) { A.advance(31); got = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!got) clearOthers(); } return got; };
+      let q, v, rebelQueued = null;
+      const base = A.serialize();
+      try {
+        queued = strike();
+        q = A.S.queue.find(x => x.ev === 'wc_sickness_comes'); v = q && A.eventView(q);
+        // CI run 88: the player's home was held by a rebel league after 40 years, and rebel-held land never sickened, so
+        // the scene never came. From the same day again (a scene seen is not shown twice inside 240 days), with the
+        // home's holder a rebel realm, the scene still comes
+        A.deserialize(JSON.parse(base));
+        const own = A.realm((A.prov(A.pc().home) || {}).owner);
+        if (own) { own.isRebel = true; clearOthers(); rebelQueued = strike(); }
+      } finally { A.WC.plagueChance = chance; A.wpick = wp; }
+      return { n: pl.length, fam: fam.length, realms, perRealm20: Math.round(100 * pl.length / realms / 2) / 100, famPer20: Math.round(100 * fam.length / realms / 2) / 100, queued, rebelQueued, text: v ? v.text : '', skip: v ? v.skip : null };
     });
-    return { ok: r.n > 0 && r.queued && r.skip === false && !/\{/.test(r.text), detail: `40 years: ${r.n} epidemics (${r.perRealm20} per realm per 20 years) and ${r.fam} famines (${r.famPer20}) over ${r.realms} realms; struck at home, the scene comes: ${r.queued}: "${r.text}"` };
+    return { ok: r.n > 0 && r.queued && r.rebelQueued === true && r.skip === false && !/\{/.test(r.text), detail: `40 years: ${r.n} epidemics (${r.perRealm20} per realm per 20 years) and ${r.fam} famines (${r.famPer20}) over ${r.realms} realms; struck at home, the scene comes: ${r.queued}; under a rebel holder too: ${r.rebelQueued}: "${r.text}"` };
   },
 
   async wcScenesRender(pg) {
