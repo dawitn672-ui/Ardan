@@ -235,6 +235,104 @@ export default {
     return { ok: !r.length, detail: r.join('; ') || 'an agnatic house never keeps a woman at its head; "passed over" says why and when; occupation words follow sex' };
   },
 
+  // playtest 2, new #9: orc full siblings were each "of Clan" something else ("Tarn of Clan Gholruk / Ozrak of Clan
+  // Hrogul / Brak of Clan Mukhoth", parents Zardak and Ozhgar, you Kozrak). A child takes a parent's clan by the law:
+  // the father's where the crown goes to sons or to either, the mother's where it goes to daughters (the Tusk Clans);
+  // you, your elder siblings, the brothers and sisters born later and the father's brothers all share one clan
+  async v2fClanByLaw(pg) {
+    const r = await pg.evaluate(() => {
+      const bad = [], rows = [], clan = q => (/^of Clan (.+)$/.exec(q.sur || '') || [])[1] || null;
+      for (const [seed, realm] of [[4242, 'POL-01'], [4243, 'POL-11'], [4244, 'POL-34'], [4245, 'POL-34']]) {
+        T.enter({ seed, race: 'orc', realm, status: 'artisan', sex: seed % 2 ? 'F' : 'M', startAge: 18 });
+        const pc = A.pc(), fa = A.AKIN ? A.AKIN.parent(pc, 'M') : A.P(pc.parents[0]), mo = A.AKIN ? A.AKIN.parent(pc, 'F') : A.P(pc.parents[1]);
+        if (pc.surMode !== 'deed') { bad.push(`${seed}: an orc artisan named in ${pc.surMode} mode`); continue; }
+        const female = A.realm(pc.realm).law === 'female', want = clan(female ? mo : fa);
+        // two brothers or sisters born now, by the game's own birth
+        const n0 = mo.children.length;
+        for (let i = 0; i < 2; i++) { const ch = A.chance; A.chance = () => true; try { A.birth(mo, fa, true, true); } finally { A.chance = ch; } }
+        const sibs = [...new Set([...fa.children, ...mo.children])].map(A.P).filter(q => q && q.id !== pc.id);
+        const born = mo.children.length - n0;
+        const unc = (fa.parents || []).map(A.P).filter(Boolean).flatMap(g => g.children).map(A.P).filter(q => q && q.id !== fa.id && q.sex !== 'F');
+        const off = [pc, ...sibs].filter(q => clan(q) !== want).map(q => `${q.given} ${q.sur}`);
+        if (off.length || pc.flags.clan !== want) bad.push(`${seed} ${realm}: want Clan ${want} (${female ? "mother's" : "father's"}); off: ${off.join(', ') || 'flag ' + pc.flags.clan}`);
+        const uoff = unc.filter(q => clan(q) !== clan(fa)).map(q => q.given + ' ' + q.sur);
+        if (uoff.length) bad.push(`${seed}: the father's brothers ${uoff.join(', ')} not of Clan ${clan(fa)}`);
+        // the grandparent the law runs through has the parent's clan, on both sides
+        for (const par of [fa, mo]) {
+          const g = (par.parents || []).map(A.P).find(q => q && (q.sex === 'F') === female);
+          if (g && clan(g) !== clan(par)) bad.push(`${seed}: ${par.given} of Clan ${clan(par)}, but ${female ? 'mother' : 'father'} ${g.given} ${g.sur}`);
+        }
+        if (!born) bad.push(`${seed}: no child born`);
+        rows.push(`${realm} (${female ? 'through the mother' : 'through the father'}): father ${fa.sur}, mother ${mo.sur}, you and ${sibs.length} siblings (${born} born now) ${want}`);
+      }
+      // the release's draw is still made: the stream after a name is the same as before the fix
+      T.enter({ seed: 4250, race: 'orc', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 18 });
+      const pc = A.pc(), s0 = A.rngState;
+      const a = A.familyName({ cult: pc.cult, realm: pc.realm, status: 'artisan', father: A.P(pc.parents[0]), mother: A.P(pc.parents[1]), sex: 'M' });
+      const s1 = A.rngState; A.rngState = s0;
+      const ch = A.familyName({ cult: pc.cult, realm: pc.realm, status: 'artisan', sex: 'M' });
+      if (A.rngState !== s1) bad.push('naming a child with parents draws differently from naming one without');
+      if (a.clan !== clan(A.P(pc.parents[0]))) bad.push(`familyName with parents gave Clan ${a.clan}`);
+      void ch;
+      return { bad, rows };
+    });
+    return { ok: !r.bad.length, detail: (r.bad.length ? 'BAD: ' + r.bad.slice(0, 5).join('; ') + '. ' : '') + r.rows.join('; ') };
+  },
+
+  // playtest 2, old #24: a person made for a scene takes the sex the scene's words give them ("Hilda ... the price of
+  // his rent", "Nazga ... he has noticed" and later "you exposed him", "Edda ... give him a blanket-beating"); a scene
+  // with pronoun tokens or both sexes in its words is left to chance; the game's stream is not moved; the general's
+  // plan speaks of her as "she" (38-orders); and old #15: a plain soldier's messmates stand beside him, not under him
+  async v2fSceneSex(pg) {
+    const r = await pg.evaluate(() => {
+      const F = A.V2F, bad = [], rows = [];
+      const want = { fl_st_master: 'M', du_ct_crooked_bailiff: 'M', dr_slow_recruit: 'M' };
+      for (const id in want) if (F.sceneSex(A.EV[id]) !== want[id]) bad.push(`${id} reads as ${F.sceneSex(A.EV[id])}`);
+      const tok = Object.keys(A.EV).find(id => { const e = A.EV[id]; return typeof e.text === 'string' && /\{khe\}|\{theyHe\}/.test(e.text); });
+      if (tok && F.sceneSex(A.EV[tok]) !== null) bad.push(`${tok}, with a pronoun token, read as ${F.sceneSex(A.EV[tok])}`);
+      // the scenes as played: twelve lives each, the stranger always of the scene's sex, the stream as without the fix
+      const play = (id, seed, setup) => {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status: 'artisan', sex: seed % 2 ? 'F' : 'M', startAge: 24 });
+        const pc = A.pc(); if (setup) setup(pc);
+        const q = { type: 'event', ev: id, ctx: {} }; A.S.queue = [q];
+        const v = A.eventView(q), ctx = q.ctx, t = A.P(ctx.pid || ctx.recId);
+        A.S.queue = [];
+        return { t, v, rng: A.rngState };
+      };
+      const soldier = pc => { pc.mil = { rank: 3, realm: pc.realm, merit: 0 }; };
+      for (const [id, setup] of [['fl_st_master'], ['du_ct_crooked_bailiff'], ['dr_slow_recruit', soldier]]) {
+        let n = 0, off = [];
+        for (let i = 0; i < 12; i++) {
+          const x = play(id, 7700 + i, setup);
+          if (!x.t) continue;
+          n++;
+          if (x.t.sex !== want[id]) off.push(x.t.given);
+        }
+        if (!n || off.length) bad.push(`${id}: ${off.length} of ${n} strangers of the wrong sex (${off.slice(0, 3).join(', ')})`);
+        rows.push(`${id} ${n} lives`);
+      }
+      // the stream: the same seed with the fix turned off for the call makes the same draws
+      const on = play('fl_st_master', 7801);
+      const keep = F.sceneSex; F.sceneSex = () => null;
+      let offRun; try { offRun = play('fl_st_master', 7801); } finally { F.sceneSex = keep; }
+      if (on.rng !== offRun.rng) bad.push('making the scholar of the scene\'s sex moved the stream');
+      // the general's plan: her own pronoun
+      const G = A.GENERALS || A.ORDERS || null;
+      const gen = A.newPerson({ sex: 'F', given: 'Aldith', born: A.S.year - 40, race: 'human' });
+      if (typeof A.S.warClock !== 'number') A.S.warClock = 0;
+      const army = { gen: gen.id, realm: A.pc().realm, gtPlan: { at: [0] }, gtMove: { k: 'meet', j: 0, t: A.S.warClock } };
+      if (G && G.planText && G.of) {
+        const of = G.of; G.of = () => 'bold';
+        try { const s = G.planText(army); if (!/she can bring/.test(s)) bad.push(`a woman general's plan: "${s}"`); rows.push(`plan "${s}"`); } finally { G.of = of; }
+      }
+      // the Around you card: a plain soldier's messmates are beside him
+      const ro = [{ p: gen, role: 'in your mess', grp: 'Under you' }, { p: gen, role: 'one of your sergeants', grp: 'Under you' }];
+      if (F.rosterGroup(ro[0]) !== 'Beside you' || F.rosterGroup(ro[1]) !== 'Under you') bad.push(`roster groups ${F.rosterGroup(ro[0])} / ${F.rosterGroup(ro[1])}`);
+      return { bad, rows };
+    });
+    return { ok: !r.bad.length, detail: (r.bad.length ? 'BAD: ' + r.bad.slice(0, 5).join('; ') + '. ' : '') + r.rows.join('; ') };
+  },
+
   // playtest 1, #15: one coherent label: "best friend" in words, no "Enemy" beside a warm opinion, one lover, one superior
   async v2fOneLabel(pg) {
     const r = await pg.evaluate(() => {
