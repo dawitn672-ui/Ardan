@@ -96,10 +96,14 @@ export default {
     await pg.evaluate(DRIVE);
     const r = await pg.evaluate(async () => {
       T.enter({ seed: 9203, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
-      for (let i = 0; i < 24; i++) {
+      for (let i = 0; i < 48; i++) {
+        // since the v2 war (99997) a peasant of 30 can be levied, and on campaign Next month is refused with its own
+        // notice ("You are on campaign: ..."), which is not a quiet month: march the campaign out a week at a time and
+        // hold only a month that was lived to the quiet-month toast
+        if (A.V2T.campaign()) { await __press('v2Week'); continue; }
         const lines = A.S.log.reduce((a, e) => a + e.lines.length, 0);
         const s = await __press('v2Next');
-        if (s.cards === 0 && s.alive) {
+        if (s.cards === 0 && s.alive && s.d1 > s.d0) {
           const L = A.S.log[A.S.log.length - 1].lines, last = L[L.length - 1][0];
           const t = document.getElementById('toast'), shown = t && t.classList.contains('ts-on');
           await new Promise(res => setTimeout(res, 2400));
@@ -110,7 +114,7 @@ export default {
       return { found: false };
     });
     const ok = r.found && !r.modal && r.toast === r.last && r.logged && r.shown && r.gone;
-    return { ok, detail: r.found ? `toast "${r.toast}", story "${r.last}", shown ${r.shown}, gone after 2.4 s ${r.gone}, dialog ${r.modal}` : 'no quiet month in 24' };
+    return { ok, detail: r.found ? `toast "${r.toast}", story "${r.last}", shown ${r.shown}, gone after 2.4 s ${r.gone}, dialog ${r.modal}` : 'no quiet month in 48 steps' };
   },
 
   // the director: 0 to 3 scenes a month with season weights, from the seed alone
@@ -169,6 +173,60 @@ export default {
     const ok = out.every(o => o.peace.groups.length <= 5 && !o.peace.groups.includes('war') && o.peace.warUnder === 'you' &&
       o.war.war > 0 && o.war.groups.length === 5 && o.war.groups[4] === 'war' && o.war.warUnder === 'war' && o.peace.bar.length <= 5 && o.war.bar.length <= 5 && o.seen.includes('war') && o.seen.includes('codex'));
     return { ok, detail: out.map(o => `${o.w}px: peace ${o.peace.groups.join('/')} (bar ${o.peace.bar.length}), war ${o.war.groups.join('/')} (bar ${o.war.bar.length}); ${o.seen.length} pages open`).join('; ') };
+  },
+
+  // playtest 2 old 16: the chapter stays only as an optional Life panel. On a phone it starts folded to its title line
+  // (its third aim waits inside), on a desktop it stands open and can be folded; a chapter closed with every aim met is
+  // no longer a deed, so no one tells it back as a tale ("you closed Chapter One: The Cold Hearth")
+  async v2tChapterPanel(pg) {
+    const out = {};
+    for (const w of [420, 1366]) {
+      await pg.setViewportSize({ width: w, height: w < 500 ? 900 : 768 });
+      out[w] = await pg.evaluate(() => {
+        try { localStorage.removeItem('ardan_fold_v1'); } catch (e) {} if (UI.FOLD) { UI.FOLD.state = {}; UI.FOLD.allOpen = false; }
+        T.enter({ seed: 9208, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 13 });
+        const pc = A.pc(); T.play(3);
+        UI.tab = 'life'; UI.render();
+        const c = document.querySelector('#tabbody .chp-card');
+        return { card: !!c, folded: !!(c && c.classList.contains('folded')), foldable: !!(c && c.querySelector(':scope > .fold-x')), head: c ? c.firstElementChild && (c.querySelector('.chp-t') || {}).textContent : null };
+      });
+    }
+    const deed = await pg.evaluate(() => {
+      const pc = A.pc(), CH = A.CH, c = pc.chap && pc.chap.cur;
+      if (!c) return null;
+      for (const a of c.aims) a.d = A.S.year;
+      const n0 = (pc.deeds || []).length; CH.close(pc);
+      return { full: pc.chap.past[pc.chap.past.length - 1].full, added: (pc.deeds || []).length - n0 };
+    });
+    const ok = out[420].card && out[420].folded && out[420].foldable && out[1366].card && !out[1366].folded && out[1366].foldable && deed && deed.full && deed.added === 0;
+    return { ok, detail: `420 px: chapter ${out[420].card ? (out[420].folded ? 'folded' : 'OPEN') : 'missing'}; 1366 px: ${out[1366].card ? (out[1366].folded ? 'FOLDED' : 'open') : 'missing'}, foldable ${out[1366].foldable}; a full chapter closed adds ${deed ? deed.added : '?'} deeds` };
+  },
+
+  // playtest 2 new 15: "the War place opens You: Path". It does not: a tap on War opens the War page under War, from
+  // Path or anywhere else, at 420 and 1366 px. (The playtest's driver then took the War page's own "Path tab" link, its
+  // one visible [data-a=tab], which drew You: Path.) This holds the tap to the War page.
+  async v2tWarPlace(pg) {
+    const out = [];
+    for (const w of [420, 1366]) {
+      await pg.setViewportSize({ width: w, height: w < 500 ? 900 : 768 });
+      out.push(await pg.evaluate(() => {
+        T.enter({ seed: 9206, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 18 });
+        const pc = A.pc();
+        const foe = Object.keys(A.S.realms).find(id => id !== pc.realm && A.S.realms[id].alive && !A.hostile(pc.realm, id));
+        A.declareWar(pc.realm, foe); if (A.V2W && !A.V2W.inWar(pc)) A.enlist(pc);
+        const from = [];
+        for (const t of ['path', 'life', 'people']) {
+          UI.setTab(t); UI.render();
+          const b = document.querySelector('[data-a="group"][data-v="war"]');
+          if (b) b.click();
+          const on = [...document.querySelectorAll('[data-a="group"].on, [data-a="group"][aria-selected="true"]')].map(x => x.dataset.v);
+          from.push({ t, btn: !!b, tab: UI.tab, on: [...new Set(on)].join('/') });
+        }
+        return { w: innerWidth, from };
+      }));
+    }
+    const ok = out.every(o => o.from.every(f => f.btn && f.tab === 'war' && f.on === 'war'));
+    return { ok, detail: out.map(o => `${o.w}px: ` + o.from.map(f => `${f.t} -> ${f.tab} (${f.on || 'no place lit'})`).join(', ')).join('; ') };
   },
 
   // on the road the clock offers a day and a week, not a month; Next day is one day

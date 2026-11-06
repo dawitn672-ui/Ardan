@@ -154,7 +154,7 @@ PH.CSS = `
   #game.phone .phone-profile > *{grid-column:1 / -1}
   #game.phone .phone-profile > .portrait-wrap{grid-column:1;grid-row:1 / span 3;margin:0;justify-content:flex-start}
   #game.phone .phone-profile > .portrait-wrap svg{width:104px;height:auto}
-  #game.phone .phone-profile > .pname{grid-column:2;grid-row:1;text-align:left;margin-top:4px}
+  #game.phone .phone-profile > .pname{grid-column:2;grid-row:1;text-align:left;margin-top:4px;min-width:0;overflow-wrap:anywhere}
   #game.phone .phone-profile > .ptitle{grid-column:2;grid-row:2;text-align:left}
   #game.phone .phone-profile > .center{grid-column:2;grid-row:3;justify-content:flex-start;text-align:left}
   #game.phone .phone-profile > .center .chip{margin:2px 4px 2px 0}
