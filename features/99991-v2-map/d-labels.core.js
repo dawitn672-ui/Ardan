@@ -34,6 +34,19 @@
       ctx.fillStyle = fill; ctx.fillText(t, x, y);
       return true;
     };
+    // playtest 2, old #21: 61's compass rose sits over the world map's corner and covered the name under it (the Amber
+    // Isles); its box, in canvas pixels, is taken before any name, so a name there waits for another view
+    try {
+      const cv = ctx.canvas, rose = cv && cv.parentElement && cv.parentElement.querySelector(':scope > .il-compass');
+      if (rose && rose.getClientRects().length) {
+        const cr = cv.getBoundingClientRect(), rr = rose.getBoundingClientRect();
+        if (cr.width > 0 && cr.height > 0 && rr.width > 0) {
+          const fx = W / cr.width, fy = H / cr.height;
+          placed.push([(rr.left - cr.left) * fx, (rr.top - cr.top) * fy, rr.width * fx, rr.height * fy]);
+          VM.roseBox = placed[0].slice();
+        }
+      } else VM.roseBox = null;
+    } catch (e) {}
     ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     if (opts.labels !== false) {
       const px = Math.max(VM.LABEL_MIN * k, whole ? W / 92 : Math.max(11, 15 - zoom) * Math.min(k, 1.4));

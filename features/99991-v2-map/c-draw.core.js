@@ -159,6 +159,56 @@
   VM.onUse = () => { VM.satReset(); };
 })();
 
+// Playtest 2, #20: on a phone the full map filled only the top third of the screen. Its canvas is 1100 x 720 at the
+// page's width, so at 420 px it stood 256 px high above an empty modal. On a narrow, upright screen the canvas now
+// takes the height there is room for (up to 1.7 times its width), and the view takes the canvas's shape: the
+// continent at its full height, a slice of its width, centred on your home, panned with a finger. UI.wrClampView is
+// the full map's alone (the war room clamps with UI.wrClamp), so its aspect follows the canvas. Drawing only: the view
+// is UI state, never A.S.
+(function () {
+  if (typeof document === 'undefined' || typeof UI.gmDraw !== 'function' || typeof UI.wrClampView !== 'function') return;
+  const VM = A.V2MAP, ASP = 1100 / 720, KW = 7000, KH = 4500;
+  VM.gmAsp = () => { const cv = document.getElementById('gmap'); return cv && cv.width && cv.height ? cv.width / cv.height : ASP; };
+  const clamp0 = UI.wrClampView;
+  UI.wrClampView = function (v) {
+    const asp = VM.gmAsp();
+    if (Math.abs(asp - ASP) < 1e-3) return clamp0.apply(this, arguments);
+    v.w = A.clamp(v.w, 500, KW); v.h = v.w / asp;
+    if (v.h > KH) { v.h = KH; v.w = v.h * asp; }
+    v.x0 = A.clamp(v.x0, 0, KW - v.w); v.y0 = A.clamp(v.y0, 0, KH - v.h);
+    return v;
+  };
+  const fit0 = UI.gmFit;
+  if (typeof fit0 === 'function') UI.gmFit = function () {
+    const v = fit0.apply(this, arguments);
+    if (v && v.w < KW - 1) { const pc = A.pc && A.pc(), hp = pc && A.prov(pc.home); v.x0 = (hp ? hp.sx : KW / 2) - v.w / 2; UI.wrClampView(v); }
+    return v;
+  };
+  // the canvas's height for this screen, set once per canvas and screen size
+  const fitted = new WeakMap();
+  VM.fitGm = function (cv) {
+    const key = innerWidth + 'x' + innerHeight;
+    if (fitted.get(cv) === key) return;
+    const r = cv.getBoundingClientRect(); if (!r.width) return;
+    fitted.set(cv, key);
+    let h = 720;
+    if (innerWidth <= 600 && innerHeight > innerWidth * 1.2) {
+      // room for the line under the map and the legend's heading below it; the release caps a map canvas at 52vh
+      // under 900 px (the war room keeps that cap)
+      const room = innerHeight - Math.max(0, r.top) - 132;
+      h = Math.round(cv.width * Math.max(r.width / ASP, Math.min(r.width * 1.7, room)) / r.width);
+      cv.style.maxHeight = 'none';
+    } else cv.style.maxHeight = '';
+    if (cv.height !== h) { cv.height = h; if (UI.gm && UI.gm.view) UI.wrClampView(UI.gm.view); }
+  };
+  const draw0 = UI.gmDraw;
+  UI.gmDraw = function () {
+    const cv = document.getElementById('gmap');
+    if (cv) { try { VM.fitGm(cv); } catch (e) {} }
+    return draw0.apply(this, arguments);
+  };
+})();
+
 // The title is one composition with no map in it (86-title-fold, cycle 2, visual F1: "Begin a new life" in sight on a
 // laptop). 86 took the strip out for the Great Continent only; with the Far Lands out of the build the release's strip
 // came back and pushed the button under the fold, so it goes here too. The continent is seen from the first day.
