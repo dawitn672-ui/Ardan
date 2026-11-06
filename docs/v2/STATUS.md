@@ -16,7 +16,7 @@
 | 7 | Diplomacy from `monthTick` | done | alpha.7 |
 | 8 | No spectating; play your rank; elite orders | done | alpha.8 |
 | 9 | Versioned save with one migration | done | alpha.9 |
-| 10 | Playtest loop: scripted pass, playtester, fixes, regression tests | round 1 merged (alpha.10); round 2 (playtest 2 + CI runs 88-89): 20 of 21 groups merged; repeat-scene spacing last | — |
+| 10 | Playtest loop: scripted pass, playtester, fixes, regression tests | round 1 merged (alpha.10); round 2 (playtest 2 + CI runs 88-91): all 21 groups merged, plus the fixes CI 90 and 91 asked for | — |
 
 ## Health
 
@@ -59,9 +59,12 @@ CI run 88 (the first full run of a v2 build) failed 50 of about 690 tests; the b
 | world | Realm gold, famine prices, epidemic scenes; v2 diplomacy's war pace back in the release's band (0.018 a realm-year) |
 | warbattles | Army routine scenes spaced over a life; a choice moves the fight at every rank |
 
-Still in progress: spacing the non-army scenes that repeat (gatherings, jousts, debates), for 97-life-fixes' repeat bar.
+| repeats | Gatherings, jousts, debates, shrines and other routine scenes spaced over a life (lfRepeats 11.3%, bar 15%); an invitation of another kind asks again |
+| CI 90-91 fixes | Companies refit after a template recut (exact saves), the 10-year world test across an heir, the map timing test re-timed under load, words for a chapter label and the body line's tooltips, a dead mover's bill passed on, a dwarf rite now reachable, 'Lend money' greyed out with its reason when the purse is empty; serf and artisan wealth bands widened for the re-rolled sample (reason in bench/targets.mjs) |
 
-Owner's open questions (each has a default in the build): the inner voice wins over a recalled world line; trait pace (about 6.5 changes a life against the release's 4.7, mostly from thoughts the player embraces); orc clans in equal-law realms follow the father; captains are at best evenly matched against an ordinary general.
+CI went from 50 failures (run 88) to 31 (89), 8 (90) and 3 (91).
+
+Owner's open questions (each has a default in the build): a declined gathering kind stays declined for the life (97's rule, unchanged); the inner voice wins over a recalled world line; trait pace (about 6.5 changes a life against the release's 4.7, mostly from thoughts the player embraces); orc clans in equal-law realms follow the father; captains are at best evenly matched against an ordinary general.
 
 ## The complaints, after playtest 1 and its fixes
 
