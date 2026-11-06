@@ -228,6 +228,28 @@ export default {
     });
     return { ok: r.draws >= 10 && !r.impure && !r.pct, detail: `${r.draws} draws, ${r.impure} changed the state or the dice, ${r.pct} showed a percentage` };
   },
+  // round 2: drawing a seen-only page (W.withSeen) puts back exactly what was there: a state with no S.fights or no
+  // S.wars key gets none back (an undefined key moves the key's place in the save, v2tSameWorld), and a state with them
+  // gets the same arrays back
+  async v2wSeenRestores(pg) {
+    await prep(pg);
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9741, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
+      const W = A.V2W, S = A.S, out = {};
+      const wars = S.wars, fights = S.fights, hadF = Object.prototype.hasOwnProperty.call(S, 'fights');
+      W.withSeen(() => 0);
+      out.same = S.wars === wars && (hadF ? S.fights === fights : !('fights' in S));
+      delete S.wars; delete S.fights;
+      let inside = null;
+      W.withSeen(() => { inside = Object.keys(S).filter(k => k === 'wars' || k === 'fights'); });
+      out.inside = inside;
+      out.after = ['wars', 'fights'].filter(k => Object.prototype.hasOwnProperty.call(S, k));
+      S.wars = wars; if (hadF) S.fights = fights;
+      return out;
+    });
+    const ok = r.same && r.after.length === 0;
+    return { ok, detail: `with both keys: the same arrays back ${r.same}; without them: keys while drawing ${JSON.stringify(r.inside)}, keys left after ${JSON.stringify(r.after)}` };
+  },
   // integration: the map's Wars colouring shows no war you are not in
   async v2wMapWars(pg) {
     const r = await pg.evaluate(() => {

@@ -520,6 +520,8 @@
     '#game.phone #clk .ph-dock .v2-ord select{min-height:44px;max-width:none;width:100%}',
     '#game.phone #clk .ph-dock .v2-ord{flex:1 1 0}',
     '.warroom .wr-time .v2-time{display:inline-flex;gap:6px;align-items:center}.warroom .wr-time .v2-camp-note{font-size:12px;color:var(--ink-2)}',
+    // on a phone the war room's campaign note is body text (71-phone's phoneTargets: 14 px and up)
+    '@media (max-width:760px){.warroom .wr-time .v2-camp-note{font-size:calc(14px * var(--tx,1))}}',
   ].join('');
   const put = () => { if (typeof document === 'undefined' || document.getElementById('v2t-style')) return; const s = document.createElement('style'); s.id = 'v2t-style'; s.textContent = css; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }

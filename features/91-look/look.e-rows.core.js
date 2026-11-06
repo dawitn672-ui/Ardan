@@ -250,9 +250,13 @@
       const side = A.warSide ? (A.warSide(w, myR) || 'att') : (w.att.includes(myR) ? 'att' : 'def');
       const us = men(side === 'att' ? w.att : w.def), them = men(side === 'att' ? w.def : w.att), tot = Math.max(1, us + them);
       const pct = Math.round(us / tot * 100);
+      // v2 (99997-v2-war, playtest 1 finding 4): the numbers as your rank knows them, a soldier "about 160,000", a
+      // commander his own side exactly and the enemy's as an estimate (A.V2W.told; pure)
+      const V = A.V2W && typeof A.V2W.told === 'function' ? A.V2W : null, rk = V && V.rank ? V.rank(pc) : null;
+      const tu = V ? V.told(us, rk, true) : big(us), tt = V ? V.told(them, rk, false) : big(them);
       c.classList.add('lk-war');
-      c.insertAdjacentHTML('beforeend', `<div class="lk-str" role="img" aria-label="${esc(`Strength: us ${big(us)} against them ${big(them)}`)}">` +
-        `<span class="lk-str-n lk-us">${esc(big(us))}</span><span class="lk-str-b"><i style="width:${pct}%"></i></span><span class="lk-str-n lk-them">${esc(big(them))}</span></div>`);
+      c.insertAdjacentHTML('beforeend', `<div class="lk-str" role="img" aria-label="${esc(`Strength: us ${tu} against them ${tt}`)}">` +
+        `<span class="lk-str-n lk-us">${esc(tu)}</span><span class="lk-str-b"><i style="width:${pct}%"></i></span><span class="lk-str-n lk-them">${esc(tt)}</span></div>`);
     }
   };
 

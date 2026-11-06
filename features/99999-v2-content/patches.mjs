@@ -74,4 +74,12 @@ export default [
     edits: [['knight:"Your horse is groomed and your lance is new. The heralds are calling the order of the lists."',
       'knight:p.job&&p.job.c==="knight"||A.skill(p,"lance")>=30&&A.skill(p,"riding")>=30||p.noble&&p.noble.rung>=2?"Your horse is groomed and your lance is new. The heralds are calling the order of the lists.":"You have come in your company\'s colours, with the weapons you know. The heralds are calling the order of the lists."']],
   },
+  {
+    id: 'V2C-TOY-ARTICLE',
+    blob: 'ardan-content',
+    why: 'The small grave ("Today there is a small grave, and {npc}\'s {toy} is lying in the lane") and its choice "Keep the ' +
+      '{toy}" took a toy with its article, so the card read "Edda\'s a wooden horse" and "Keep the a slingshot" (playtest 2, ' +
+      'new #19). The toy is named bare; the list keeps its length and order, so the pick draws the same.',
+    edits: [['ctx.toy=A.pick(["a bone whistle","a wooden horse","a clay marble","a slingshot","a corn doll"])', 'ctx.toy=A.pick(["bone whistle","wooden horse","clay marble","slingshot","corn doll"])']],
+  },
 ];

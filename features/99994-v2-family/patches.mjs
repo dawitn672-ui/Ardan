@@ -73,4 +73,16 @@ export default [
       'Kin and spouses now group under Family by the family graph (A.V2F.groupType), whatever the bond.',
     edits: [['list=rels.filter(x=>UI.relGroups[g].includes(x.r.type))', 'list=rels.filter(x=>UI.relGroups[g].includes(A.V2F&&A.V2F.groupType?A.V2F.groupType(pc,x.p,x.r):x.r.type))']],
   },
+  {
+    id: 'V2F-ROSTER-GROUP',
+    blob: 'ardan-core',
+    why: 'A.roster put a plain soldier\'s messmates ("in your mess") in the group "Under you", so the People tab\'s Around ' +
+      'you card and the person view listed a private\'s fellow privates as under him (playtest 2, old #15). The group shown ' +
+      'is now A.V2F.rosterGroup(x): messmates stand "Beside you" until you lead them (a sergeant\'s men stay "Under you"). ' +
+      'Only the heading changes: the roster entry keeps its group, which A.getToKnow and 30-get-to-know read for the bond.',
+    edits: [
+      ['for(const x of ro)(groups[x.grp]=groups[x.grp]||[]).push(x)', 'for(const x of ro){const gk=A.V2F&&A.V2F.rosterGroup?A.V2F.rosterGroup(x):x.grp;(groups[gk]=groups[gk]||[]).push(x)}'],
+      ['ro&&does.push(A.cap(ro.role)+(ro.grp?" ("+ro.grp.toLowerCase()+")":""))', 'ro&&does.push(A.cap(ro.role)+(ro.grp?" ("+(A.V2F&&A.V2F.rosterGroup?A.V2F.rosterGroup(ro):ro.grp).toLowerCase()+")":""))'],
+    ],
+  },
 ];

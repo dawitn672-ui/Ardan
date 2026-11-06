@@ -36,3 +36,13 @@ Found on the way: opening the Path tab wrote a default reputation into the playe
 - **The road** (9990's modal): "Capitals and far realms" starts folded, and on a phone "Caravans leaving this month" too.
 
 `foldLongTabs`.
+
+## v2 (playtest 2, Nov 6): the v2 profile and court fit again
+
+- The v2 body and mind (99993-v2-stats: 13 rows in real units and words, 730 px of a 700 px rail) sit under one header,
+  **Body and mind**, which on the desktop rail starts folded to a line of their own words, whole and never cut ("175 cm,
+  73 kg; lifts 111 kg; a man-at-arms. Quick, retentive, level-headed, ..."; `FOLD.SUMMARY`). On a phone the profile is
+  its own page and stays open; the Full profile shows every row.
+- The Court's **great lords** (99995-v2-nobility, 650 px) start folded to their count. Profile 1.01 screens, Court 1.
+- The **chapter** (9993) folds like the ambition: open on a desktop, folded to its title line on a phone.
+- `foldLongTabs`: the Codex bar is 15 entries and up (the Far Lands' faiths left with the Far Lands).

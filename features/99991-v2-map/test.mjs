@@ -210,4 +210,81 @@ export default {
     const bad = r.filter(x => !x.cap || (x.isle && x.coastal * 3 < x.n * 2));
     return { ok: r.length >= 3 && !bad.length, detail: `${r.length} realm-seeds named for the sea; ` + r.filter(x => x.seed === 11).map(x => `${x.nm}: capital on the coast ${x.cap}, ${x.coastal}/${x.n} provinces coastal`).join('; ') + (bad.length ? ' | BAD ' + bad.map(x => `${x.nm} seed ${x.seed} ${x.coastal}/${x.n}`).join(', ') : '') };
   },
+  // playtest 2, #20: at 420 px the full map filled only the top third of the screen (a 1100 x 720 canvas at the
+  // page's width). On an upright phone it now takes the height there is room for, the view takes the canvas's shape
+  // (so nothing is stretched or boxed), it opens on your home, a zoom and a pan keep the shape, and drawing changes
+  // neither the state nor the stream; at 1366 px it is the release's canvas.
+  async v2mapPhoneFills(pg, errs, { browser, file }) {
+    const out = [];
+    for (const [W, H] of [[420, 860], [1366, 768]]) {
+      const ctx = await browser.newContext({ viewport: { width: W, height: H } });
+      const p = await ctx.newPage(); const e2 = [];
+      p.on('pageerror', e => e2.push(String(e.message || e).slice(0, 200)));
+      await p.goto(pathToFileURL(file).href);
+      await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      const r = await p.evaluate(() => {
+        A.newGame({ seed: 777, race: 'human', realm: 'POL-02', status: 'noble', sex: 'F', startAge: 24 });
+        UI.screen = 'game'; UI.set.hints = false; A.S.queue = []; UI.render();
+        const h0 = JSON.stringify(A.S), r0 = A.rngState;
+        UI.A.ov('bigmap');
+        const cv = document.getElementById('gmap');
+        if (!cv) return { none: true };
+        const shape = () => { const b = cv.getBoundingClientRect(), v = UI.gm.view; return { top: b.top, bottom: b.bottom, h: b.height, cssAsp: b.width / b.height, cvAsp: cv.width / cv.height, vAsp: v.w / v.h }; };
+        const first = shape(), v = UI.gm.view, home = A.prov(A.pc().home);
+        const homeIn = home.sx >= v.x0 && home.sx <= v.x0 + v.w && home.sy >= v.y0 && home.sy <= v.y0 + v.h;
+        UI.A.gmZoom('2'); const zoomed = shape();
+        UI.gm.view.x0 += 300; UI.wrClampView(UI.gm.view); UI.gmDraw(); const panned = shape();
+        UI.A.gmZoom('fit'); UI.gmDraw(); const fit = shape();
+        const canvas = [cv.width, cv.height];
+        UI.ov = null; UI.renderModal && UI.renderModal();
+        return { first, zoomed, panned, fit, homeIn, canvas, pure: JSON.stringify(A.S) === h0 && A.rngState === r0 };
+      });
+      out.push({ W, H, r, errs: e2 });
+      await ctx.close();
+    }
+    // the picture's shape on screen too, on the phone (at 1366 x 768 the release boxes the canvas under its height cap)
+    const same = (s, W) => (W >= 600 || Math.abs(s.cssAsp - s.cvAsp) < 0.01) && Math.abs(s.vAsp - s.cvAsp) < 0.01;
+    const okOne = ({ W, H, r, errs }) => !errs.length && !r.none && r.pure && [r.first, r.zoomed, r.panned, r.fit].every(s => same(s, W)) && r.homeIn &&
+      (W < 600 ? r.first.h >= H * 0.5 && r.first.bottom <= H + 1 : r.canvas[0] === 1100 && r.canvas[1] === 720);
+    const ok = out.every(okOne);
+    return { ok, detail: out.map(({ W, H, r, errs }) => r.none ? `${W}px: no full map` : `${W}x${H}: canvas ${r.canvas.join('x')}, shown ${Math.round(r.first.h)} px high (${Math.round(100 * r.first.h / H)}% of the screen, bottom at ${Math.round(r.first.bottom)}), ` +
+      `canvas, picture and view one shape ${[r.first, r.zoomed, r.panned, r.fit].every(s => same(s, W))} (after a zoom, a pan and a fit), home in view ${r.homeIn}, pure ${r.pure}${errs.length ? ', ERR ' + errs[0] : ''}`).join(' | ') };
+  },
+  // playtest 2, old #21: 61's compass rose, over the world map's lower right corner, covered the name under it (the
+  // Amber Isles). No name is written under the rose now, at a phone's width and a laptop's; with the rose hidden the
+  // same views do put names there (so the test bites), and drawing is pure.
+  async v2mapRoseClear(pg, errs, { browser, file }) {
+    const out = [];
+    for (const [W, H] of [[420, 860], [1366, 900]]) {
+      const ctx = await browser.newContext({ viewport: { width: W, height: H } });
+      const p = await ctx.newPage(); const e2 = [];
+      p.on('pageerror', e => e2.push(String(e.message || e).slice(0, 200)));
+      await p.goto(pathToFileURL(file).href);
+      await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+      const r = await p.evaluate(() => {
+        const VM = A.V2MAP, res = { seeds: 0, under: 0, underHidden: 0, rose: 0, pure: true };
+        const inside = (l, b) => l.x < b[0] + b[2] && l.x + l.w > b[0] && l.y < b[1] + b[3] && l.y + l.h > b[1];
+        for (const seed of [11, 12, 13, 14, 15, 16]) {
+          A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+          UI.screen = 'game'; UI.set.hints = false; UI.tab = 'world'; UI.worldView = 'map'; UI.set.atlasFog = false; UI.render();
+          const wm = document.querySelector('#worldmap'), rose = wm && wm.parentElement.querySelector(':scope > .il-compass');
+          if (!wm || !rose) continue;
+          const h0 = JSON.stringify(A.S), r0 = A.rngState;
+          res.seeds++;
+          MAP.draw(wm, { mode: 'political' });
+          const box = VM.roseBox; if (box) res.rose++;
+          if (box) res.under += VM.labelsPlaced.filter(l => !/capital/.test(l.kind) && inside(l, box)).length;
+          rose.style.display = 'none'; MAP.draw(wm, { mode: 'political' });
+          if (box) res.underHidden += VM.labelsPlaced.filter(l => inside(l, box)).length;
+          rose.style.display = '';
+          if (JSON.stringify(A.S) !== h0 || A.rngState !== r0) res.pure = false;
+        }
+        return res;
+      });
+      out.push({ W, r, errs: e2 });
+      await ctx.close();
+    }
+    const ok = out.every(o => !o.errs.length && o.r.seeds >= 4 && o.r.rose === o.r.seeds && o.r.under === 0 && o.r.pure) && out.some(o => o.r.underHidden > 0);
+    return { ok, detail: out.map(o => `${o.W}px: ${o.r.seeds} worlds, the rose's box read in ${o.r.rose}; names under the rose ${o.r.under} (with the rose hidden ${o.r.underHidden}); pure ${o.r.pure}${o.errs.length ? ', ERR ' + o.errs[0] : ''}`).join(' | ') };
+  },
 };

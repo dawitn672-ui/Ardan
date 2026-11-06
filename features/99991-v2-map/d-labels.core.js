@@ -34,6 +34,19 @@
       ctx.fillStyle = fill; ctx.fillText(t, x, y);
       return true;
     };
+    // playtest 2, old #21: 61's compass rose sits over the world map's corner and covered the name under it (the Amber
+    // Isles); its box, in canvas pixels, is taken before any name, so a name there waits for another view
+    try {
+      const cv = ctx.canvas, rose = cv && cv.parentElement && cv.parentElement.querySelector(':scope > .il-compass');
+      if (rose && rose.getClientRects().length) {
+        const cr = cv.getBoundingClientRect(), rr = rose.getBoundingClientRect();
+        if (cr.width > 0 && cr.height > 0 && rr.width > 0) {
+          const fx = W / cr.width, fy = H / cr.height;
+          placed.push([(rr.left - cr.left) * fx, (rr.top - cr.top) * fy, rr.width * fx, rr.height * fy]);
+          VM.roseBox = placed[0].slice();
+        }
+      } else VM.roseBox = null;
+    } catch (e) {}
     ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     if (opts.labels !== false) {
       const px = Math.max(VM.LABEL_MIN * k, whole ? W / 92 : Math.max(11, 15 - zoom) * Math.min(k, 1.4));
@@ -72,6 +85,7 @@
   };
 
   VM.overlay = function (mode, hl, focus) {
+    mode = mode || 'political';    // as every caller defaults it
     MAP.init();
     const S = A.S, key = 'v2|' + mode + '|' + (MAP.cb() ? 'cb' : '') + '|' + (hl || '') + '|' + (focus || '') + '|' + S.year + '|' + (UI.mapVer || 0) + '|' +
       S.prov.map(p => p.owner + (p.occ || '')).join(',') + Object.values(S.realms).map(r => r.color + r.allies.length).join('');
@@ -100,6 +114,9 @@
       a += (1 - ds[i] / R) * (info ? 50 : 85);
       d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = Math.min(200, Math.round(a));
     }
+    // 62's rule (brief 7.3 / 1.6): of two bordering realms closer than 0.08 in OKLab, the smaller is hatched, so a border
+    // never rests on colour alone. These tints replace 62's wash, which carried the hatching (CI run 88, inkBriefMarks).
+    if (!info && mode !== 'terrain' && UI.INKMAP && typeof UI.INKMAP.hatch === 'function') UI.INKMAP.hatch(d, own, ds);
     c.putImageData(im, 0, 0);
     MAP.overlayCache = cv; MAP.ownerKey = key;
     return cv;

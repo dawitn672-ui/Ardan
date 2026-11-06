@@ -210,68 +210,77 @@ export default {
     for (let i = errs.length - 1; i >= 0; i--) if (/Refused to connect to 'https:\/\/fonts\.googleapis\.com/.test(errs[i])) errs.splice(i, 1);
     return { ok: !found.length && shown >= 3, detail: `${found.length} axe violations on the people tab, the profile and a person's page, with ${shown} anime portraits on those screens${found.length ? ': ' + found.slice(0, 5).join(', ') : ''}` };
   },
-  // the Great Continent's peoples: every far culture draws (bust and full figure) in its land's dress and in skin, hair
-  // and eye tones of its land's range, kin keep their order of tones, and a Known World person is drawn as before.
-  // And the young are not drawn bald: the love interest of "A love philtre" (a man of 21 the release gave 'bald') came
-  // out as an old, balding man.
+  // the continent's peoples: every culture draws (bust and full figure), M and F, at the palest and darkest stored skin,
+  // and is drawn in the skin it stores; the young are not drawn bald (the love interest of "A love philtre", a man of
+  // 21 the release gave 'bald', came out as an old, balding man).
+  // Changed for v2 (docs/v2/LANES.md: the Far Lands are dropped from the build): this measured the Great Continent's
+  // 90-odd far cultures in their ten lands' dress and tone ranges; LORE carries none of them now, so it measured nothing
+  // (0 of 0). It now measures the same on the generated continent's peoples: every human culture in LORE draws without
+  // falling back, none is pressed by the far table (the picture and the stored look agree), and everyone in the state
+  // is drawn in their stored skin, hair and eyes. 93's far table stays in the code for when far peoples are carried.
   async apFarPeoples(pg) {
     const r = await pg.evaluate(MAKE).then(() => pg.evaluate(() => {
-      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      A.newGame({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
       UI.screen = 'game'; UI.render();
-      const e0 = UI.ANIME.errors, bad = [], byLand = {}, outRange = [];
+      const e0 = UI.ANIME.errors, bad = [], outRange = [];
       const S = GD.SKIN.human;
-      const far = Object.values(LORE.cultures).filter(c => c.land && UI.ANIME.FAR_LAND[c.land] && c.race === 'human');
-      for (const c of far) for (const sex of ['M', 'F']) for (const sk of [0, 7]) {
+      const cults = Object.values(LORE.cultures).filter(c => c && (!c.race || c.race === 'human'));
+      for (const c of cults) for (const sex of ['M', 'F']) for (const sk of [0, 7]) {
         const p = APT.mk({ id: 'apf_' + c.id + sex + sk, sex, age: 28, cult: c.id, app: { skin: S[sk], hair: 8, eye: 5 } });
-        const L = UI.ANIME.look(p), F = UI.ANIME.farOf(c.id);
         for (const [size, o] of [[88, { bust: true }], [176, {}]]) { const s = PORTRAIT.svg(p, size, o); if (!/class="portrait mini anime/.test(s) || !APT.parse(s)) bad.push(c.id + '@' + size); }
-        (byLand[c.land] = byLand[c.land] || new Set()).add(L.cult.cut);
-        // the drawn skin is the land's own tone, run through the cel tune: compare by the tone it came from
-        const want = S[sk === 0 ? F.sk[0] : F.sk[1]];
-        const p2 = APT.mk({ id: p.id + 'x', sex, age: 28, cult: 'CUL-01', app: { skin: want, hair: 0, eye: 0 } });
-        if (L.skin.b !== UI.ANIME.look(p2).skin.b) outRange.push(c.id + ':' + sk);
+        // the drawn skin is the stored one: compare with the same tone drawn for a culture of the Known World
+        const p2 = APT.mk({ id: p.id + 'x', sex, age: 28, cult: 'CUL-02', app: { skin: S[sk], hair: 0, eye: 0 } });
+        if (UI.ANIME.farOf(c.id) || UI.ANIME.look(p).skin.b !== UI.ANIME.look(p2).skin.b) outRange.push(c.id + ':' + sk);
       }
-      // the state itself: everyone the far world was made with has a look in their land's range (A.genAppearance is
-      // wrapped), so the profile's words and the picture agree
-      let farPeople = 0, outState = 0;
+      // the state itself: everyone is drawn in the look they store, so the profile's words and the picture agree
+      let people = 0, outState = 0;
       for (const q of Object.values(A.S.people)) {
-        const F = UI.ANIME.farOf(q.cult); if (!F || !(q.race === 'human' || q.race === 'halfelf') || !q.app) continue;
-        farPeople++;
-        const i = S.indexOf(String(q.app.skin).toLowerCase());
-        if ((i >= 0 && (i < F.sk[0] || i > F.sk[1])) || (q.app.hair <= 8 && q.app.hair > F.hr[1]) || q.app.eye > F.ey[1]) outState++;
+        if (!q || !q.app || !(q.race === 'human' || q.race === 'halfelf')) continue;
+        people++;
+        const d = UI.ANIME.drawnApp(q, q.app);
+        if (d.skin !== q.app.skin || d.hair !== q.app.hair || d.eye !== q.app.eye) outState++;
       }
-      // a Known World person is untouched by the far table
-      const kw = APT.mk({ id: 'apf_kw', cult: 'CUL-02', age: 30, app: { skin: S[0], hair: 8 } });
-      const kwOk = !UI.ANIME.farOf('CUL-02') && UI.ANIME.look(kw).hair.b !== UI.ANIME.look(APT.mk({ id: 'apf_kw', cult: 'CUL-02', age: 30, app: { skin: S[0], hair: 0 } })).hair.b;
       // the young and 'bald'
       const ages = [18, 21, 26, 34, 52, 70].map(age => { const p = APT.mk({ id: 'apf_bald' + age, sex: 'M', age, app: { hstyle: 'bald' } }); const L = UI.ANIME.look(p); return [age, L.bald, L.st]; });
-      return { cultures: far.length, lands: Object.keys(byLand).length, cuts: Object.fromEntries(Object.entries(byLand).map(([k, v]) => [k, [...v].join('/')])), bad, outRange, errors: UI.ANIME.errors - e0, kwOk, ages, farPeople, outState };
+      return { cultures: cults.length, bad, outRange, errors: UI.ANIME.errors - e0, ages, people, outState };
     }));
     const young = r.ages.filter(([a]) => a < 30), old = r.ages.filter(([a]) => a >= 45);
-    const ok = r.cultures >= 90 && r.lands === 10 && !r.bad.length && !r.outRange.length && r.errors === 0 && r.kwOk && r.farPeople > 100 && r.outState === 0 && young.every(x => !x[1]) && old.every(x => x[1]);
-    return { ok, detail: `${r.cultures} far cultures in ${r.lands} lands, M and F, palest and darkest stored skin, bust and full figure: ${r.bad.length} invalid, ${r.errors} fallbacks, ${r.outRange.length} out of their land's range; ` +
-      `dress by land ${JSON.stringify(r.cuts)}; Known World untouched ${r.kwOk}; in the state, ${r.outState} of ${r.farPeople} far people outside their land's range; 'bald' drawn as ${r.ages.map(([a, b, st]) => a + ':' + (b ? 'bald' : st)).join(' ')}` };
+    const ok = r.cultures >= 8 && !r.bad.length && !r.outRange.length && r.errors === 0 && r.people > 100 && r.outState === 0 && young.every(x => !x[1]) && old.every(x => x[1]);
+    return { ok, detail: `${r.cultures} human cultures of the continent, M and F, palest and darkest stored skin, bust and full figure: ${r.bad.length} invalid, ${r.errors} fallbacks, ${r.outRange.length} not drawn in their stored skin${r.outRange.length ? ' (' + r.outRange.slice(0, 4).join(', ') + ')' : ''}; ` +
+      `in the state, ${r.outState} of ${r.people} people drawn otherwise than they store; 'bald' drawn as ${r.ages.map(([a, b, st]) => a + ':' + (b ? 'bald' : st)).join(' ')}` };
   },
 
-  // cycle 1 visual B4: the skin picked in creation is the skin the game draws. For a far people the swatch row offers
-  // only their land's range, a pick outside it is pressed as the portrait presses it, and the preview carries the
-  // culture; the Known World keeps all eight swatches.
+  // cycle 1 visual B4: the skin picked in creation is the skin the game draws, and the preview carries the culture.
+  // Changed for v2 (docs/v2/LANES.md: the Far Lands are dropped from the build): this picked Busimo, a far realm whose
+  // swatch row offered only its land's range; no far realm is offered now. It now measures the same on the continent:
+  // for realms of several different cultures, the swatch row offers the Known World's eight, the palest picked is the
+  // skin stored and the skin drawn, the preview carries the realm's culture, and the darkest picked is drawn as stored.
   async apCreateSkin(pg) {
     const r = await pg.evaluate(() => {
       UI.A.newLife();
-      const rid = Object.keys(LORE.realms).find(k => /Busimo/.test(LORE.realms[k].name));
       const row = () => { if ("crQuick" in UI) UI.crQuick = false; for (let st = 0; st < 6; st++) { UI.step = st; UI.render(); const sw = [...document.querySelectorAll('[data-v^="skin:"]')]; if (sw.length) return sw.map(e => e.dataset.v.slice(5)); } return []; };
-      Object.assign(UI.cr, { race: 'human', realm: rid, sex: 'F', home: null, house: null });
-      const far = row();
-      UI.A.crApp('skin:' + GD.SKIN.human[0]); row();
-      const pv = UI.crPreviewPerson(), chosen = UI.cr.app.skin, drawn = UI.ANIME.drawnApp(Object.assign({}, pv, { cult: UI.crCult() }), pv.app).skin;
+      const far = typeof LORE !== 'undefined' && Object.keys(LORE.realms).find(k => /Busimo/.test(LORE.realms[k].name));
+      // three realms of three different human cultures, POL-01 first
+      const seen = new Set(), rids = [];
+      for (const id of Object.keys(LORE.realms).sort()) { const c = Object.values(LORE.cultures).find(x => x && x.race === 'human' && (x.pols || []).includes(id)); if (!/^POL-\d+$/.test(id) || !c || seen.has(c.id)) continue; seen.add(c.id); rids.push(id); if (rids.length === 3) break; }
+      const out = [];
+      for (const rid of rids) {
+        Object.assign(UI.cr, { race: 'human', realm: rid, sex: 'F', home: null, house: null });
+        const sw = row(), got = {};
+        for (const k of [0, 7]) {
+          UI.A.crApp('skin:' + GD.SKIN.human[k]); row();
+          const pv = UI.crPreviewPerson(), chosen = UI.cr.app.skin, drawn = UI.ANIME.drawnApp(Object.assign({}, pv, { cult: UI.crCult() }), pv.app).skin;
+          got[k] = { want: GD.SKIN.human[k], chosen, drawn, cult: pv.cult || null };
+        }
+        out.push({ rid, n: sw.length, got });
+      }
       const hairShown = [...document.querySelectorAll('[data-v^="hair:"]')].filter(e => e.style.display !== 'none').length;
-      Object.assign(UI.cr, { realm: 'POL-01', home: null, house: null });
-      const kw = row();
-      return { rid, far, chosen, drawn, previewCult: pv.cult || null, hairShown, kw: kw.length };
+      return { far: far || null, out, hairShown };
     });
-    const ok = !!r.rid && r.far.length >= 2 && r.far.length < 8 && r.far.includes(r.chosen) && r.chosen === r.drawn && !!r.previewCult && r.hairShown < 11 && r.kw === 8;
-    return { ok, detail: `${r.rid}: ${r.far.length} skin swatches offered (${r.far.join(' ')}); palest picked -> stored ${r.chosen}, drawn ${r.drawn}, preview culture ${r.previewCult}; ${r.hairShown} hair swatches shown; Known World ${r.kw} swatches` };
+    const each = x => x.n === 8 && [0, 7].every(k => x.got[k].chosen === x.got[k].want && x.got[k].drawn === x.got[k].chosen && !!x.got[k].cult);
+    const ok = !r.far && r.out.length === 3 && r.out.every(each);
+    return { ok, detail: r.out.map(x => `${x.rid}: ${x.n} skin swatches; palest stored ${x.got[0].chosen} drawn ${x.got[0].drawn}, darkest stored ${x.got[7].chosen} drawn ${x.got[7].drawn}, preview culture ${x.got[0].cult}`).join('; ') +
+      `; ${r.hairShown} hair swatches shown; a far realm offered ${r.far}` };
   },
 
   // cycle 1 visual I1: busts (the rail, rows, cut-ins) show no helmet, which covered the brow and the eyes at 88 px; the

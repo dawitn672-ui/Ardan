@@ -59,3 +59,21 @@
 - **Tests:**
   - `v2mapLabels`: 420 and 1366 px; the world tab and the full map at zoom 1 and 3. It checks the minimum sizes, no overlaps, and that your realm and capital are written.
   - `v2mapSeaRealms`: 4 seeds. Each sea realm's capital is coastal, and at least two thirds of the isles' provinces are.
+
+## CI run 88 and playtest 2 fixes
+
+- **Faster drawing** (`c-draw.core.js`; CI's `inkTiming` had zoom 8 and the war room at 9 over twice the release, and `mapEaseCheap` a 136 ms first tween frame).
+  - Where the close tiles cover the view, the whole-continent picture is no longer scaled up beneath them at high quality. It is drawn only as the stand-in for a late tile, at low quality. Tiles are drawn at medium quality: they are rendered within a factor of two of the screen's scale.
+  - The far view is one cached picture per world, the base and its big rivers at 1.5 times the base's scale. A far frame is one copy, not a high-quality scaling plus the rivers' strokes.
+  - Rivers are batched: the runs of one width (to a quarter pixel) go in one path and one stroke. A run wholly outside the view is left out.
+  - On a loaded 4-core machine a full-map frame at zoom 1 went from about 35 ms to about 6 ms, and zoom 8 from about 54 ms to about 17 ms.
+- **Hatching kept** (`d-labels.core.js`). These tints replace 62's wash, which carried 62's hatching: of two bordering realms closer than 0.08 in OKLab, the smaller is hatched. The tints call 62's `UI.INKMAP.hatch` again (`inkBriefMarks`).
+- **Beasts on fitting ground** (`b-game.core.js`). 76's terrain waiver (a beast is met anywhere in its region only where none of the region's provinces fits its terrain words) is read from the live provinces on a v2 map: `A.BH.looseOf(id)`. Before, the region alone decided, which put S-07's marsh leech on its region's hills and forests (`bhInsideHabitat`).
+- **The full map fills a phone** (playtest 2, #20). At 420 px the 1100 x 720 canvas stood 256 px high, the top third of the screen.
+  - On a narrow, upright screen the canvas takes the height there is room for (up to 1.7 times its width; the release's 52vh cap is lifted for this map only).
+  - The view takes the canvas's shape: `UI.wrClampView` is the full map's alone, so its aspect follows `#gmap`. The map opens on your home.
+  - Desktop is unchanged.
+- **The compass rose keeps its corner clear** (playtest 2, old #21). 61's rose covered the name under it (the Amber Isles). Its box is taken before any name is placed, so a name there waits for another view.
+- **Tests:**
+  - `v2mapPhoneFills`: at 420 x 860 the map is at least half the screen and ends on it; canvas, picture and view keep one shape after a zoom, a pan and a fit; home in view; pure. At 1366 px the canvas is 1100 x 720.
+  - `v2mapRoseClear`: 6 worlds at 420 and 1366 px. No name sits under the rose, names do sit there with the rose hidden, and drawing is pure.

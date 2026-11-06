@@ -209,9 +209,11 @@
       if (el) el.focus();
       return;
     }
-    // an action holding a tap target (a choice and its odds): Right arrow opens the odds, Esc comes back to the action
+    // an action holding a tap target (a choice and its odds): Right arrow opens the odds, Esc comes back to the action.
+    // data-tt-key marks a target that opens by the keyboard (and hover) but takes no tap: with v2 a tap on a choice
+    // chooses (99993-v2-stats f-words turns the odds' data-tt-tap into it), and the keyboard keeps its way in
     if (e.key === 'ArrowRight' && t && t.matches && t.matches('[data-a]') && !popOf(t)) {
-      const a = t.querySelector('[data-tt-tap]');
+      const a = t.querySelector('[data-tt-tap]') || t.querySelector('[data-tt-key]');
       if (a) { e.preventDefault(); e.stopImmediatePropagation(); const el = TT.open(a, TT.levelOf(a), 'key'); if (el) { TT.stack[TT.stack.length - 1].back = t; el.focus(); } return; }
     }
     if (e.key === 'Tab' && TT.stack.length) {

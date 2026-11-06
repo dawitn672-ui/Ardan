@@ -78,6 +78,7 @@
 | `v2wAfterAction` | Three distinct causes in 23's shape, in the story |
 | `v2wOrders` | 150–350 members × 14–26 levies, 10× their numbers or more; in the division simulator 21–44 a member against an ordinary division of the realm (the simulator adds the orders' own bonuses: the Shadow's +35% soft attack, the Last Door's +45% defence); 250 knights beat 3,000 levies; three trials |
 | `v2wPure` | Drawing the scene changes neither the state nor the dice; no percentage |
+| `v2wSeenRestores` | Round 2: `W.withSeen` puts back exactly what was there: the same `S.wars` and `S.fights`, and no key at all where there was none (it put back `S.wars = undefined`, as it once did `S.fights`, commit 0451bd1) |
 | `v2wFightWaits` | Every ask at a v2 rank (soldier, sergeant, captain) opens a scene of a live fight not yet fought, asked once; a gone key opens no v2 scene |
 | `v2wRankWordsAgree` | The arm card names a Squad Captain's rank; a Commander of his division leads its men in the chain, drills all of it, and fights with his division; a Captain with a company of 200 |
 | `v2wReportAgrees` | The scene starts from the men the ask named, and the fight's dead after it include the scene's |

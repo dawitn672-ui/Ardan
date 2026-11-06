@@ -592,7 +592,9 @@ export default {
       const cases = [['Rock him and sing', 'you rocked him and sang'], ['Lie low and wait', 'you lay low and waited'], ['Just listen', 'you listened'],
         ['Quietly pay him', 'you quietly paid him'], ['Make him confess and pay', 'you made him confess and pay'], ['Yes', 'you said yes'],
         ['Say nothing. It may skip you', 'you said nothing'], ['Take the bread and water', 'you took the bread and water'], ['Drive the cart home', 'you drove the cart home'],
-        ['Fists', null], ['Climb the nearest oak', 'you climbed the nearest oak'], ['Begin the song yourself', 'you began the song yourself']];
+        ['Fists', null], ['Climb the nearest oak', 'you climbed the nearest oak'], ['Begin the song yourself', 'you began the song yourself'],
+        // playtest 2, new #13: a second verb the list does not know, before a pronoun, is a verb ("you applied and dazzle them")
+        ['Apply and dazzle them in the disputation', 'you applied and dazzled them in the disputation']];
       const wrong = cases.filter(([l, want]) => D(l) !== want).map(([l, want]) => `${l} -> ${D(l)} (want ${want})`);
       const failed = A.BONDS.deedOf('Fight him', true);
       return { n, deeds, chose, mangled, wrong, failed };

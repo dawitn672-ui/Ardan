@@ -81,14 +81,32 @@ MAP.init = function () {
 };
 
 // 76-beast-habitats keeps each beast to its canon regions (by province name, which the generated map keeps) and, within
-// them, to the provinces whose terrain words fit it. On a generated continent a region's terrain is the new land's, so
-// a beast whose region drew no fitting terrain would be met nowhere: on a v2 map the canon region alone decides.
+// them, to the provinces whose terrain words fit it, waiving the words only in a region where no province fits them.
+// 76 reads that waiver from the map as written (LORE.map). On a generated continent a region's terrain is the new
+// land's, so on a v2 map the waiver is read from the live provinces instead: a beast keeps to fitting ground where its
+// region has any, and is met across the whole region where it has none, so no beast is met nowhere. (Before, the region
+// alone decided on a v2 map, which put S-07's marsh leech on the hills and forests beside its marsh: CI run 88.)
 if (A.BH && typeof A.BH.canonSays === 'function') {
   const says = A.BH.canonSays;
+  let looseKey = null, looseMemo = null;
+  // the provinces of beast `id`'s range where the map in play waives its terrain words (module data, never state)
+  A.BH.looseOf = function (id) {
+    const r = A.BH.resolve(), e = r.E[id];
+    if (!e) return new Set();
+    if (!(A.S && A.S.v2map && Array.isArray(A.S.prov))) return e.loose;
+    const key = A.S.v2map.seed + '|' + A.S.v2map.v + '|' + A.S.prov.length;
+    if (key !== looseKey) { looseKey = key; looseMemo = new Map(); }
+    if (looseMemo.has(id)) return looseMemo.get(id);
+    const byCode = {}, out = new Set();
+    for (const P of A.S.prov) if (P && e.inRange.has(P.id)) { const c = r.regionOf[P.name]; (byCode[c] = byCode[c] || []).push(P); }
+    for (const c in byCode) if (!byCode[c].some(P => A.BH.terrOk(A.BEASTS[id], P.terr))) for (const P of byCode[c]) out.add(P.id);
+    looseMemo.set(id, out);
+    return out;
+  };
   A.BH.canonSays = function (id, P) {
     if (!(A.S && A.S.v2map)) return says.apply(this, arguments);
     const r = A.BH.resolve(), e = r.E[id];
     if (!e || !P || !r.regionOf[P.name]) return null;
-    return e.inRange.has(P.id);
+    return e.inRange.has(P.id) && (A.BH.looseOf(id).has(P.id) || A.BH.terrOk(A.BEASTS[id], P.terr));
   };
 }

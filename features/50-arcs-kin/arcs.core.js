@@ -39,12 +39,114 @@
   // a made-up name or word, chosen once
   AK.name = (p, k, role, make) => { const nm = AK.st(p, k).nm; if (nm[role] == null) nm[role] = String(make()); return nm[role]; };
 
-  // a given name not already used by someone in this arc (or by the player and their nearest), chosen once
+  // ---- the real family tree (playtest 2, new #10: "Your mother's brother Hamo, who never married" while Hamo was the
+  // player's grandfather). An arc that names kin reads them from the family graph (p.parents, p.children, p.spouse:
+  // 99994-v2-family fills in grandparents, uncles, aunts and cousins). When the tree has nobody who fits, the person the
+  // arc makes is written into the tree where the text puts them (a parent's brother is a child of that parent's
+  // parents), and a name an arc makes up is never one already in the family.
+  AK.parent = (p, sex) => ((p && p.parents) || []).map(A.P).find(q => q && (q.sex === 'F') === (sex === 'F')) || null;
+  // brothers and sisters (by either parent), living or dead
+  AK.sibs = q => {
+    const out = [];
+    for (const g of ((q && q.parents) || []).map(A.P)) if (g) for (const id of g.children || []) { const s = A.P(id); if (s && s.id !== q.id && !out.includes(s)) out.push(s); }
+    return out;
+  };
+  AK.everWed = q => !!(q && (q.spouse || (q.exSpouses || []).length || Object.values(q.rel || {}).some(r => r && r.type === 'spouse')));
+  // everyone within four steps of the family graph (parents, children, spouse): the people a family name could clash with
+  AK.family = p => {
+    const seen = new Map(); let edge = [p];
+    for (let d = 0; d < 4 && edge.length; d++) {
+      const next = [];
+      for (const q of edge) {
+        if (!q || seen.has(q.id)) continue;
+        seen.set(q.id, q);
+        for (const id of [...(q.parents || []), ...(q.children || []), q.spouse]) { const x = id != null && A.P(id); if (x && !seen.has(x.id)) next.push(x); }
+      }
+      edge = next;
+    }
+    for (const q of edge) if (q && !seen.has(q.id)) seen.set(q.id, q);
+    seen.delete(p.id);
+    return [...seen.values()];
+  };
+  // the parent through whom q is kin (the parent q is a brother or sister of), or null
+  AK.sideOf = (p, q) => [AK.parent(p, 'M'), AK.parent(p, 'F')].find(par => par && AK.sibs(par).includes(q)) || null;
+  // a quiet death now (the scene is the burial): no succession, no notices; the person holds nothing
+  AK.bury = (q, cause) => {
+    if (!q || !q.alive) return;
+    q.alive = false; q.died = A.S.year; q.cause = cause || 'a fever';
+    const sp = q.spouse && A.P(q.spouse);
+    if (sp && sp.spouse === q.id) { sp.spouse = null; sp.widowed = A.S.year; }
+  };
+  const holdsNothing = q => !q.ruler && !(q.noble && q.noble.rung >= 2) && !(q.house && A.S.houses && A.S.houses[q.house] && A.S.houses[q.house].headPid === q.id);
+  // a brother or sister of the parent `par`, made now and written into the tree under par's parents
+  AK.sibOf = (p, par, o = {}) => {
+    const gp = (par.parents || []).map(A.P).filter(Boolean), gf = gp.find(g => g.sex !== 'F');
+    const sex = o.sex || (A.chance(0.5) ? 'M' : 'F');
+    const sur = par.surMode === 'patron' ? (sex === 'F' ? 'daughter of ' : 'son of ') + (gf ? gf.given : A.givenName(par.cult, 'M')) : par.sur;
+    const q = AK.mk(p, Object.assign({ race: par.race, cult: par.cult, faith: par.faith, status: par.status === 'royal' ? 'noble' : par.status, sur, surMode: par.surMode, parents: gp.map(g => g.id) }, o, { sex }));
+    q.born = Math.min(A.S.year - 1, par.born + (A.chance(0.5) ? -1 : 1) * A.ri(1, 6));
+    for (const g of gp) if (!g.children.includes(q.id)) g.children.push(q.id);
+    AK.uniqueName(p, q);
+    A.link(p, q, 'uncle', A.ri(15, 50), 'nephew');
+    if (!par.rel[q.id]) A.link(par, q, 'sibling', A.ri(15, 60), 'sibling');
+    return q;
+  };
+  // a child of `fa` and `mo` (either may be null), made now and written into the tree
+  AK.childOfPair = (p, fa, mo, o = {}) => {
+    const by = fa || mo, sex = o.sex || (A.chance(0.5) ? 'M' : 'F');
+    const sur = by.surMode === 'patron' ? (sex === 'F' ? 'daughter of ' : 'son of ') + (fa ? fa.given : A.givenName(by.cult, 'M')) : by.sur;
+    const q = AK.mk(p, Object.assign({ race: by.race, cult: by.cult, faith: by.faith, status: by.status === 'royal' ? 'noble' : by.status, sur, surMode: by.surMode,
+      parents: [fa ? fa.id : null, mo ? mo.id : null].filter(x => x != null) }, o, { sex }));
+    for (const g of [fa, mo]) if (g && !g.children.includes(q.id)) g.children.push(q.id);
+    AK.uniqueName(p, q);
+    return q;
+  };
+  AK.uniqueName = (p, q) => {
+    const fam = AK.family(p).filter(x => x !== q);
+    const used = new Set([p.given, ...fam.map(x => x.given)]);
+    for (let i = 0; i < 10 && used.has(q.given); i++) q.given = A.givenName(q.cult, q.sex);
+    return q;
+  };
+  AK.kinNames = p => new Set(AK.family(p).map(q => q.given));
+
+  // a given name not already used by someone in this arc (or by anyone in the player's family), chosen once
   AK.used = (p, k) => {
     const st = AK.st(p, k), u = new Set(Object.values(st.nm).map(String));
     for (const id of Object.values(st.who)) { const q = A.P(id); if (q) u.add(q.given); }
     for (const q of [p, AK.spouse(p), AK.father(p), AK.mother(p)]) if (q) u.add(q.given);
+    if (p && p.id) for (const n of AK.kinNames(p)) u.add(n);
     return u;
+  };
+  // the real kin a scene names, by role (read once, kept on the arc like anyone it makes)
+  AK.KIN = {
+    // a parent's brother who never married, living or lately dead, who holds nothing; else one written into the tree
+    unwedUncle(p) {
+      const sides = [AK.parent(p, 'M'), AK.parent(p, 'F')].filter(Boolean);
+      if (sides.length > 1 && A.chance(0.5)) sides.reverse();
+      for (const par of sides) {
+        const u = AK.sibs(par).find(s => s.sex !== 'F' && !AK.everWed(s) && !(s.children || []).length && !s.vows && holdsNothing(s)
+          && A.isAdult(s) && (s.alive || (s.died != null && A.S.year - s.died <= 1)));
+        if (u) return u;
+      }
+      return sides.length ? AK.sibOf(p, sides[0], { sex: 'M', age: AK.adj(sides[0]) + A.ri(-5, 5) }) : null;
+    },
+    // a first cousin on q's side of the family (a child of q's brothers and sisters other than your own parent)
+    cousinBy(p, q, ok) {
+      const par = AK.sideOf(p, q);
+      const aunts = AK.sibs(q).filter(s => s !== par);
+      for (const s of aunts) for (const id of s.children || []) { const c = A.P(id); if (c && c.id !== p.id && ok(c)) return c; }
+      return null;
+    },
+    // all your first cousins (children of your parents' brothers and sisters)
+    cousins(p) {
+      const out = [];
+      for (const par of [AK.parent(p, 'M'), AK.parent(p, 'F')]) if (par) for (const s of AK.sibs(par)) for (const id of s.children || []) {
+        const c = A.P(id); if (c && c.id !== p.id && !out.includes(c)) out.push(c);
+      }
+      return out;
+    },
+    // the father of a cousin (your uncle by blood or by marriage)
+    fatherOf: q => AK.parent(q, 'M'),
   };
   AK.given = (p, k, role, sex, cult) => AK.name(p, k, role, () => {
     const u = AK.used(p, k); let n = '';
@@ -162,6 +264,8 @@
     farm: (pc, ctx) => grant(pc, 'farm', ctx.arc, ctx.ground ? ctx.ground.replace(/^the /, 'The ') + ', the old family ground' : null),
     mill: (pc, ctx) => grant(pc, 'workshop', ctx.arc, ctx.mill),
     cottage: (pc, ctx) => grant(pc, 'cottage', ctx.arc),
+    // the feud's uncle, killed at the ford: the real man dies (the next scene buries him)
+    buryUncle: (pc, ctx) => { AK.bury(AK.who(pc, ctx.arc || 'ak_feud', 'unc'), 'a spear-thrust at the ford'); return ''; },
     sell: (pc, ctx) => ungrant(pc, ctx.arc),
     // the dowry's match: you (who.kin is the player) or your son or daughter, with the creditor's grandchild
     wedMatch: (pc, ctx) => {
@@ -224,7 +328,8 @@
     start: (p, C) => C.adult(p) && adj(p) >= 22 && adj(p) <= 66 && !C.unfree(p) });
   S('ak_blood', { title: 'What runs in the blood', lasting: 'trait', gap: [1, 4],
     stages: ['ak_blood_1', 'ak_blood_2', 'ak_blood_3', 'ak_blood_4', 'ak_blood_5'],
-    start: (p, C) => C.adult(p) && adj(p) >= 26 && adj(p) <= 48 });
+    // the first scene says your mother's father "went the same way": he is in his grave (playtest 2, new #10)
+    start: (p, C) => C.adult(p) && adj(p) >= 26 && adj(p) <= 48 && !(AK.parent(AK.parent(p, 'F'), 'M') || { alive: false }).alive });
   S('ak_adopt', { title: 'The carter\'s child', lasting: 'bond', gap: [2, 4],
     stages: ['ak_adopt_1', 'ak_adopt_2', 'ak_adopt_3', 'ak_adopt_4', 'ak_adopt_5'],
     start: (p, C) => C.adult(p) && adj(p) >= 24 && adj(p) <= 54 && !C.ruler(p) });

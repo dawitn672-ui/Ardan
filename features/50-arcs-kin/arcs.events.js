@@ -17,7 +17,35 @@
     const hi = H.hi(p), town = H.town(p, FEUD);
     const foe = H.get(p, FEUD, 'foe', () => H.mk(p, { age: Math.min(60, H.adj(p) + 16), sex: 'M', occ: hi ? 'a lord with a mill on the river' : 'the miller' }));
     const son = H.get(p, FEUD, 'son', () => H.mk(p, { age: Math.max(17, Math.min(40, H.adj(p) - 4)), sex: 'M', parents: [foe.id], sur: foe.sur, surMode: foe.surMode, occ: 'a son of ' + foe.given }));
-    ctx.town = town; ctx.cuz = H.given(p, FEUD, 'cuz', 'M', p.cult);
+    ctx.town = town;
+    // the dead cousin and the uncle by his body are real kin (playtest 2, new #10): a grown male first cousin whose father
+    // is living, else a son made for a living uncle, else an uncle and his son written into the tree. An arc saved before
+    // this keeps the name it made up.
+    if (H.st(p, FEUD).nm.cuz != null) ctx.cuz = H.st(p, FEUD).nm.cuz;
+    else {
+      const cuz = H.get(p, FEUD, 'cuz', () => {
+        const ok = c => c.sex !== 'F' && c.alive && A.isAdult(c) && H.KIN.fatherOf(c) && H.KIN.fatherOf(c).alive;
+        const c = H.KIN.cousins(p).find(ok);
+        if (c) return c;
+        const sides = [H.parent(p, 'M'), H.parent(p, 'F')].filter(Boolean);
+        let unc = null;
+        for (const par of sides) for (const s of H.sibs(par)) {
+          const fa = s.sex === 'F' ? H.spouse(s) : s;
+          if (!unc && fa && fa.alive && A.isAdult(fa) && H.adj(fa) >= 34) unc = fa;
+        }
+        if (!unc && sides.length) unc = H.sibOf(p, sides[0], { sex: 'M', age: H.adj(sides[0]) + A.ri(-4, 4) });
+        if (!unc) return null;
+        const mo = unc.sex === 'F' ? unc : H.spouse(unc);
+        const k = H.childOfPair(p, unc, mo && mo.sex === 'F' ? mo : null, { sex: 'M', age: Math.max(17, Math.min(H.adj(unc) - 20, H.adj(p) + A.ri(-5, 3))) });
+        A.link(p, k, 'cousin', A.ri(20, 60), 'cousin');
+        return k;
+      });
+      if (cuz) {
+        H.keep(p, FEUD, 'unc', H.KIN.fatherOf(cuz));
+        H.bury(cuz, 'a broken skull in the mill-race');
+        ctx.cuz = cuz.given;
+      } else ctx.cuz = H.given(p, FEUD, 'cuz', 'M', p.cult);
+    }
     ctx.foeRole = hi ? 'lord of ' + town : 'the miller'; ctx.foeSeat = hi ? 'hall' : 'mill';
     // the old man dead before the end: his son has the quarrel now, and says the old man's lines
     const head = foe.alive || !son.alive ? foe : son;
@@ -53,13 +81,31 @@
   const INH = 'ak_inherit';
   const inherit = (p, ctx) => {
     const town = H.town(p, INH);
+    // the uncle is a real one from the family tree (playtest 2, new #10: a made-up "mother's brother" had the
+    // grandfather's name): a parent's brother who never married, buried now; an arc saved before this keeps the name it
+    // made up
+    const madeUp = H.st(p, INH).nm.u != null;
+    const u = madeUp ? null : H.get(p, INH, 'u', () => H.KIN.unwedUncle(p));
+    if (u) H.bury(u, 'a winter fever');
+    const by = u && H.sideOf(p, u);
+    const grown = q => q.alive && A.isAdult(q);
     const cz = H.get(p, INH, 'cz', () => {
-      const c = A.relsOf(p, ['cousin']).map(x => x.p).find(q => q.alive && A.isAdult(q));
-      return c || H.mk(p, { age: H.adj(p) + A.ri(-6, 6), occ: 'a cousin of yours' });
+      // a cousin on the uncle's side first (a child of his brothers and sisters), then any cousin, then one made as the
+      // child of his married brother or sister
+      const c = (u && H.KIN.cousinBy(p, u, grown)) || H.KIN.cousins(p).find(grown) || A.relsOf(p, ['cousin']).map(x => x.p).find(grown);
+      if (c) return c;
+      const sib = u && H.sibs(u).find(s => s !== by && H.spouse(s));
+      if (sib) {
+        const sp = H.spouse(sib), [fa, mo] = sib.sex === 'F' ? [sp, sib] : [sib, sp];
+        const k = H.childOfPair(p, fa, mo, { age: H.adj(p) + A.ri(-6, 6) });
+        A.link(p, k, 'cousin', A.ri(10, 40), 'cousin');
+        return k;
+      }
+      return H.mk(p, { age: H.adj(p) + A.ri(-6, 6), occ: 'a cousin of yours' });
     });
     ctx.town = town; H.tok(ctx, 'cz', cz);
-    ctx.u = H.given(p, INH, 'u', 'M', p.cult);
-    ctx.side = H.name(p, INH, 'side', () => (A.chance(0.5) ? "father's" : "mother's"));
+    ctx.u = u ? u.given : H.given(p, INH, 'u', 'M', p.cult);
+    ctx.side = by ? (by.sex === 'F' ? "mother's" : "father's") : H.name(p, INH, 'side', () => (A.chance(0.5) ? "father's" : "mother's"));
     ctx.hk = H.given(p, INH, 'hk', 'F', p.cult);
     ctx.court = H.hi(p) ? "the lord's court" : 'the manor court';
     ctx.mill = 'The mill below ' + town + ' (two stones)';
@@ -125,7 +171,14 @@
   const blood = (p, ctx) => {
     H.name(p, BLOOD, 'fate', () => (A.chance(0.5) ? '1' : '0'));
     ctx.town = H.town(p, BLOOD);
-    ctx.au = H.given(p, BLOOD, 'au', 'F', p.cult);
+    // the aunt is your mother's real sister (playtest 2, new #10), buried now: a living or lately dead one, else one
+    // written into the tree. An arc saved before this keeps the name it made up.
+    const mo = H.parent(p, 'F');
+    const au = H.st(p, BLOOD).nm.au != null || !mo ? null : H.get(p, BLOOD, 'au', () =>
+      H.sibs(mo).find(s => s.sex === 'F' && A.isAdult(s) && H.adj(s) >= 40 && (s.alive || (s.died != null && A.S.year - s.died <= 1)))
+      || H.sibOf(p, mo, { sex: 'F', age: H.adj(mo) + A.ri(-4, 4) }));
+    if (au) { H.bury(au, 'the shaking sickness'); ctx.au = au.given; }
+    else ctx.au = H.given(p, BLOOD, 'au', 'F', p.cult);
     ctx.oc = H.given(p, BLOOD, 'oc', 'F', p.cult);
     ctx.doc = H.given(p, BLOOD, 'doc', 'M', p.cult);
     const s = H.spouse(p); if (s) { H.tok(ctx, 'sp', s); ctx.pid = s.id; }
@@ -269,7 +322,7 @@
           lose: { r: 'The magistrate dines with {foe} on Sundays. He writes it down as a drowning.', fx: { honor: 1, happy: -4, them: { op: -15, type: 'enemy' }, arc: { mark: 'akf_scorned' } } } },
         { t: 'Ride after {son} with your uncle', check: { s: 'riding', s2: 'str', d: 50 },
           win: { r: 'You run him down at the ford. Your uncle breaks his arm with the spear-butt, and you bring him back tied to his own saddle.', fx: { fame: 2, honor: -1, them: { op: -30, type: 'enemy' }, arc: { mark: 'akf_caught' } } },
-          lose: { r: '{son} is waiting at the ford with two cousins of his own. You come home bleeding. Your uncle comes home across his horse.', fx: { wound: 'deep_cut', health: -10, them: { op: -25, type: 'enemy' }, arc: { mark: 'akf_ford' } } } },
+          lose: { r: '{son} is waiting at the ford with two cousins of his own. You come home bleeding. Your uncle comes home across his horse.', fx: { wound: 'deep_cut', health: -10, them: { op: -25, type: 'enemy' }, akin: 'buryUncle', arc: { mark: 'akf_ford' } } } },
         { t: "Go to {foe}'s door and ask the blood-price", r: '{foe} pays it at his own gate, forty suns and a heifer, in front of the whole street. It is a fair price. Your uncle will not speak to you.',
           fx: { coin: 40, honor: -2, happy: -2, them: { op: -5, type: 'enemy' }, arc: { mark: 'akf_price' } } },
       ] },

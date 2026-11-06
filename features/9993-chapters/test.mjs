@@ -43,14 +43,16 @@ export default {
       const met0 = c.aims[0].d != null, said = A.S.log.some(e => (e.lines || []).some(l => /^Aim met: Put by/.test(l[0])));
       pc.fame = c.aims[1].b.t; c.aims[2].d = A.S.year; CH.month(pc);
       const all = c.aims.every(a => a.d != null);
-      // eight years on, the next chapter of the prime: the last one closes with every aim met, set down as a deed
+      // eight years on, the next chapter of the prime: the last one closes with every aim met (no deed since v2)
       c.y0 -= 8; A.S.queue = []; const deeds0 = pc.deeds.length; CH.month(pc);
       // v2: the recap opens the next chapter's line in the story (no card)
       const past = pc.chap.past[pc.chap.past.length - 1], next = pc.chap.cur, L = A.S.log[A.S.log.length - 1].lines;
       const v = { text: L[L.length - 1][0] };
       return { met0, said, all, full: past && past.full, deed: pc.deeds.length > deeds0 && /every aim met/.test(pc.deeds[pc.deeds.length - 1].t), n: next && next.n, recap: v && v.text.split('.')[0] };
     });
-    const ok = r.met0 && r.said && r.all && r.full && r.deed && r.n === 2 && /is closed: every aim met/.test(r.recap);
+    // v2: a full chapter is no longer set down as a deed (the owner keeps chapters only as the optional Life panel,
+    // docs/v2/STATUS.md complaint 7; playtest 2 old 16 met it again as an NPC's tale), so the deed must NOT be written
+    const ok = r.met0 && r.said && r.all && r.full && !r.deed && r.n === 2 && /is closed: every aim met/.test(r.recap);
     return { ok, detail: `aim met and said ${r.met0}/${r.said}; all met ${r.all}; closed full ${r.full}, deed ${r.deed}; next chapter ${r.n}: "${r.recap}"` };
   },
 

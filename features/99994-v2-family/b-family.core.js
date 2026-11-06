@@ -66,6 +66,38 @@
   }
   const famName = (p, sex) => A.familyName({ cult: p.cult, realm: p.realm, status: p.status, home: p.home, sex });
 
+  // ---- a child's clan comes from its parents, by the law (playtest 2, new #9) -------------------------------------
+  // The release names an orc commoner "of Clan X" ("deed" mode) and drew X afresh for every birth, parents or not: it
+  // passed a parent's name on only for the house, clan, trade ... modes, never for "deed". So full brothers and sisters
+  // were "Tarn of Clan Gholruk", "Ozrak of Clan Hrogul", "Brak of Clan Mukhoth", and none of them their father's. Now a
+  // child whose parents have a clan takes one of theirs by the law: the house's law (F.houseLaw) for a child of a house,
+  // else the realm's custom; a realm whose crown goes to daughters (law "female": the Tusk Clans' War-Mother) reckons
+  // the clan through the mother, every other law through the father. The release's draw is still made (the stream does
+  // not move); only the name changes.
+  F.clanOfName = p => {
+    if (!p) return null;
+    if (p.flags && p.flags.clan) return p.flags.clan;
+    const m = /^of Clan (.+)$/.exec(p.sur || '');
+    return p.surMode === 'deed' && m ? m[1] : null;
+  };
+  F.clanThroughMother = function (o) {
+    const hid = o.house || (o.father && o.father.house) || (o.mother && o.mother.house);
+    if (hid && A.S.houses && A.S.houses[hid] && F.houseLaw) {
+      const r = F.royalRealmOf && F.royalRealmOf(hid);
+      if (r) return r.law === 'female';
+    }
+    const r = A.S.realms && A.S.realms[o.realm];
+    return !!(r && r.law === 'female');
+  };
+  const familyName = A.familyName;
+  A.familyName = function (o) {
+    const out = familyName.apply(this, arguments);
+    if (!out || out.mode !== 'deed' || !o) return out;
+    const fa = F.clanOfName(o.father), mo = F.clanOfName(o.mother);
+    const clan = F.clanThroughMother(o) ? (mo || fa) : (fa || mo);
+    return clan ? Object.assign({}, out, { sur: 'of Clan ' + clan, clan }) : out;
+  };
+
   function sideOf(pc, par, paternal, r, out) {
     const S = A.S, race = par.race, R2 = GD.RACES[race] || GD.RACES.human;
     const [m0, m1] = A.parentAgeRange(race, 'M'), [f0, f1] = A.parentAgeRange(race, 'F');
@@ -84,6 +116,11 @@
     const newGf = !gf, newGm = !gm;
     if (!gf) { gf = mk('M', par.born - r.int(m0, Math.min(m1, m0 + 14)), { house: par.house || null }); gf.sur = surOf('M', null); gf.surMode = par.surMode; gf.occ = gf.occ || (par.sex === 'F' ? '' : par.occ) || ''; }
     if (!gm) { gm = mk('F', Math.max(gf.born - 6, par.born - r.int(f0, Math.min(f1, f0 + 10)))); const fn = famName(gm, 'F'); gm.sur = fn.sur; gm.surMode = fn.mode; }
+    // a clan reckoned through the mother (playtest 2, new #9): the parent's clan is the grandmother's, and the
+    // grandfather is of the clan she married into (the same names, swapped: no draw is added)
+    if (newGf && newGm && par.surMode === 'deed' && gm.surMode === 'deed' && F.clanThroughMother({ realm: par.realm, house: par.house })) {
+      const other = gm.sur; gm.sur = par.sur; gf.sur = other;
+    }
     if (!gf.spouse && !gm.spouse) marry(gf, gm);
     par.parents = [gf.id, gm.id];
     for (const g of [gf, gm]) { if (!g.children.includes(par.id)) g.children.push(par.id); }
@@ -141,6 +178,8 @@
         const c = mk(cs, by, { house: fa.house || null, parents: [fa.id, mo.id] });
         const csur = fa === s ? surOf(cs, s) : (sp.surMode === 'patron' ? (cs === 'F' ? 'daughter of ' : 'son of ') + sp.given : sp.sur);
         c.sur = csur; c.surMode = fa === s ? par.surMode : sp.surMode;
+        // a clan goes to the child by the law (playtest 2, new #9): through the mother where the crown goes to daughters
+        if (fa.surMode === 'deed' && mo.surMode === 'deed' && F.clanThroughMother({ realm: par.realm, house: fa.house })) { c.sur = mo.sur; c.surMode = 'deed'; }
         fa.children.push(c.id); mo.children.push(c.id);
         A.link(pc, c, 'cousin', r.int(10, 70), 'cousin');
         if (r.chance(0.07)) pastDeath(c, Math.min(S.year - 1, c.born + r.int(0, 4)), r.pick(YOUNG));
