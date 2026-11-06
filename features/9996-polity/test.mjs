@@ -104,6 +104,28 @@ export default {
     return { ok, detail: `a bill for ${r.k} brought by the player (${r.src}); next-count odds sum to ${r.sum}%; ${r.track} notches drawn; drawn ${r.same ? 'purely' : 'WITH CHANGES'}; a count logs ${r.after}` };
   },
 
+  // CI run 91 (56's riCourtInTheWorld): a bill's mover died before its end and A.gcPeople dropped him, so the court's
+  // record named an id that was gone. The bill passes to a living supporter, and its reasons name the late mover
+  async poBillMoverDies(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 4302, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+      const P = A.POL, x = Object.values(A.S.realms).find(r => r.alive && !r.isRebel && r.id !== A.pc().realm && Object.keys(A.RI.PUSH).some(k => A.RI.PUSH[k].law && A.RI.PUSH[k].ok(r)));
+      P.init(x); x.pol.bill = null; A.RI.fillCouncil(x);
+      const k = Object.keys(A.RI.PUSH).find(k => A.RI.PUSH[k].law && A.RI.PUSH[k].ok(x));
+      const ppl = Object.values(A.S.people).filter(p => p.alive && p.id !== A.S.pc && p.id !== x.ruler && A.isAdult(p));
+      const mover = ppl[0], friend = ppl[1];
+      const b = P.openBill(x, k, mover, 'court');
+      b.sup = [mover.id, friend.id];
+      const name = A.fullName(mover, false);
+      mover.alive = false; mover.died = A.S.year; delete A.S.people[mover.id];
+      P.endBill(x, false, 'Six counts and no majority');
+      const e = x.riCourt[0];
+      return { name, who: e.who, friend: friend.id, live: !!(A.P(e.who) && A.P(e.who).alive), why0: e.why[0] && e.why[0][0], last: e.why[e.why.length - 1][0] };
+    });
+    const ok = r.who === r.friend && r.live && r.why0 === `Brought by the late ${r.name}` && /no majority/.test(r.last);
+    return { ok, detail: `the mover died and was cleared: the record names ${r.who} (the first living supporter ${r.friend}, alive ${r.live}); reasons "${r.why0}" … "${r.last}"` };
+  },
+
   // the same seed gives the same votes; a candidate who broke a promise to four electors loses; the tally names all
   async poElectionDeterministic(pg) {
     const r = await pg.evaluate(() => {
