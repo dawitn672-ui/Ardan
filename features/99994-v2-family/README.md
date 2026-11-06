@@ -48,6 +48,11 @@ head and how they are kin to you, where you stand: "You are third in line. Ahead
 *Kin of note* (`A.V2.kin.notableKin`: the uncle who is a castellan, the cousin your age, the half-brother who is heir to
 the crown). The person view says what someone holds and is heir to. All of it is pure.
 
+**Playtest 2 fixes.** A child's clan (`b-family.core.js`: `A.familyName` is wrapped; the release drew a fresh clan for
+every orc birth). A stranger's sex from the scene's words (`a-kin.core.js`: `A.makeAcquaintance` inside an event's
+setup; `F.sceneSex`). The Around you card's group for messmates (`d-view.core.js` `F.rosterGroup`, patch
+`V2F-ROSTER-GROUP`, display only: the roster entry keeps "Under you", which `A.getToKnow` reads for the bond).
+
 ## Determinism
 
 The family's shape comes from v2's `makeRng`, seeded from the game's seed. The people are made by the game's
@@ -71,3 +76,5 @@ people without v2 genes (`tests/v2/consistency.test.js`, "succession takes a hos
 | `v2fMarriageFeud` | a wife whose bond is rivalry reads "Wife (at odds with you)", stays under Family, and `{rival}` names someone else |
 | `v2fSuccessionLaw` | absolute, male-preference, agnatic and the depth-first line (a dead heir's son before his uncle) for a house; the same for a crown |
 | `v2fOneHolder` | 30 seeds × 10 years: no crown, headship or lordship with two living holders, three fresh grants per seed included; headships pass by law |
+| `v2fClanByLaw` | playtest 2, new #9: an orc child takes a parent's clan by the law (the father's, or the mother's where the crown goes to daughters: the Tusk Clans), so you, your elder siblings, those born later and the father's brothers share one clan; the grandparent the law runs through has it too; the release's name draw is still made |
+| `v2fSceneSex` | playtest 2, old #24 and #15: a stranger made for a scene whose words speak of one sex is of that sex (the old scholar's "his rent", the bailiff "he has noticed", the slow recruit "give him a blanket-beating"); a scene with pronoun tokens is left alone; the stream does not move; a woman general's plan says "she" (38-orders); a plain soldier's messmates are "Beside you" (`V2F-ROSTER-GROUP`) |

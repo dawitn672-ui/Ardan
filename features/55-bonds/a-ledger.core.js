@@ -238,7 +238,14 @@
   // A word after it that is a pronoun, a name or a thing stays as it was ("the bread and cheese")
   // after "make him", "let her", "help them" the next verb is theirs, not yours: "Make him confess and pay" stays as it is
   const CAUSE = new Set(['make', 'let', 'have', 'help', 'watch', 'see', 'hear', 'bid', 'leave']);
-  const andVerbs = rest => rest.replace(/\b(and|or|then)\s+([a-z]+)\b/g, (m, c, x) => (VERBS.has(x) && !NOUNISH.has(x) && !NOT_VERB.has(x) ? `${c} ${pastOf(x)}` : m));
+  // A word this list does not know is a verb all the same when a pronoun follows it: "Apply and dazzle them in the
+  // disputation" -> "you applied and dazzled them" (playtest 2, new #13, read "you applied and dazzle them")
+  const OBJ = /^\s+(?:him|her|them|it|us|me|yourself|himself|herself|themselves)\b/;
+  const andVerbs = rest => rest.replace(/\b(and|or|then)\s+([a-z]+)\b/g, (m, c, x, at, s) => {
+    if (NOUNISH.has(x) || NOT_VERB.has(x)) return m;
+    if (VERBS.has(x) || (x.length > 2 && !/(?:ed|ing|s)$/.test(x) && OBJ.test(s.slice(at + m.length)))) return `${c} ${pastOf(x)}`;
+    return m;
+  });
   // how a failed attempt ends, picked by the label so the same choice always reads the same
   const PHR = { 'lie low': 'lay low', 'lie down': 'lay down', 'lie still': 'lay still', 'lie quiet': 'lay quiet', 'lie awake': 'lay awake', 'lie in': 'lay in',
     'lie with': 'lay with', 'lie back': 'lay back', 'lie flat': 'lay flat', 'lie hidden': 'lay hidden' };

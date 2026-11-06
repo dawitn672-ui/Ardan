@@ -75,6 +75,11 @@ VS.headView = function () {
   const q = A.S && A.S.queue && A.S.queue[0];
   return q && q.type === 'event' && q.view ? q.view : null;
 };
+VS.untap = function (t) {
+  if (!t.hasAttribute('data-tt-tap')) return;
+  t.removeAttribute('data-tt-tap');
+  if (t.hasAttribute('data-tt')) t.setAttribute('data-tt-key', '1');
+};
 VS.badges = function (root) {
   const v = VS.headView();
   if (!v || !root.querySelectorAll) return;
@@ -86,8 +91,9 @@ VS.badges = function (root) {
     const el = b.querySelector('.risk:not(.fo-fight):not(.v2-fo), .sc-odds:not(.fo-fight):not(.v2-fo)') || b.querySelector('.fo-fight');
     if (!el || el.dataset.v2o === String(pct)) continue;
     el.dataset.v2o = String(pct);
-    // a tap on a choice chooses (playtest round 1): the breakdown opens on hover, focus or the keyboard, not a tap
-    for (const t of [el, ...el.querySelectorAll('[data-tt-tap]')]) t.removeAttribute('data-tt-tap');
+    // a tap on a choice chooses (playtest round 1): the breakdown opens on hover, focus or the keyboard, not a tap.
+    // The tap mark becomes a key mark (data-tt-key), so 59-tooltips' Right arrow on the choice still opens it
+    for (const t of [el, ...el.querySelectorAll('[data-tt-tap]')]) VS.untap(t);
     el.classList.add('v2-odds');
     if (el.classList.contains('fo-fight')) {
       // 89-fight-odds' badge keeps what the fight is ("a fight"); the balance and the words go just before it
@@ -105,7 +111,7 @@ VS.badges = function (root) {
   }
   // 92-scene-card's four pips counted the odds: the balance says it now
   for (const p of root.querySelectorAll('.sc-pips')) p.remove();
-  for (const t of root.querySelectorAll('button[data-a="evChoose"] [data-tt-tap]')) t.removeAttribute('data-tt-tap');
+  for (const t of root.querySelectorAll('button[data-a="evChoose"] [data-tt-tap]')) VS.untap(t);
 };
 const SKIP = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'NOSCRIPT']);
 VS.sweep = function (root) {

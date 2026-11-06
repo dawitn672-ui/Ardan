@@ -22,7 +22,9 @@
 (function () {
   A.EV_RX.shop = /(?<!\bopen )\byour (own )?(shop|workshop|apprentices?|journeymen|journeyman|customers?|stall|caravans?|warehouse|counting-?house|shopfront)\b/i;
   A.CX_RX.shop = /C\.ownShop\(|C\.jobRank\(|\.job\.own\b|minR/;
-  const FOLLOWS = /C\.flag\(/;
+  // a positive C.flag( only: a scene whose condition says !C.flag(...) asks that something has NOT happened, so it
+  // follows nothing and still needs the shop its words name
+  const FOLLOWS = /(?<!!\s*)C\.flag\(/;
   const C2 = A.V2C = A.V2C || {};
   C2.hasShop = pc => !!(pc && pc.job && (pc.job.own || (typeof pc.job.r === 'number' && pc.job.r >= 2)));
   // the words a scene always says: a template's conditional parts (`${test ? "..." : "..."}`) are left out

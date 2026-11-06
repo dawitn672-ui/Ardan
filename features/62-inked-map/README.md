@@ -97,6 +97,7 @@ Not done: the sea stays the woodcut's ruled vellum (the brief's Prussian-blue bo
 **Cycle 2 (lane G, styling only).**
 - **The sea** is the brief's Prussian-blue bokashi: deep offshore (`IM.SEA_DEEP`), stepping lighter in four bands to the coast (`IM.SEA_STEPS`), each step edged with a pale ripple, faint pale ruling on the open sea, and the wave marks drawn as small seigaiha arcs. `IM.SEA_STYLE = 'vellum'` brings back the ruled vellum sea.
 - **Hover** (`z-hover.core.js`): on the full map the realm under the pointer is outlined in gold, beside the clicked realm's glow. The pointer's place is a UI hint (`UI.mapHov`), redrawn at most once a frame.
+- **Lines only under the satellite ground** (v2, CI run 88 `inkTiming`): while 99991-v2-map draws its satellite ground (`IM.groundElsewhere()`), a tile draws only its borders, not the sea, coast, glyphs and paper nobody would see; a tile costs about a sixth of what it did, and the cache is keyed on it, so the inked ground is whole again when the satellite is off. `inkLinesUnderSat`.
 - The map's zooms and jumps are eased by 96's motion system (the view is set at once; only the drawing follows).
 
 `inkSeaHover`.

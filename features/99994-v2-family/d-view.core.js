@@ -102,6 +102,10 @@
     } catch (e) { console.error('v2-family tree', e); return h; }
   };
 
+  // the heading a roster entry is shown under (patch V2F-ROSTER-GROUP): a plain soldier's messmates are beside him, not
+  // under him (playtest 2, old #15: messmates "UNDER YOU" for a plain Soldier). Pure.
+  F.rosterGroup = x => (x && x.grp === 'Under you' && x.role === 'in your mess' ? 'Beside you' : x && x.grp);
+
   const CSS ='.v2f-line>div+div{margin-top:3px}.v2f-kin{padding:6px 10px;margin:0 0 4px}.v2f-kin .small{margin-top:2px}.v2f-holds{margin:2px 0}';
   try { const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st); } catch (e) {}
 })();

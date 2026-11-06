@@ -108,6 +108,22 @@
     rb.textContent = LOOK.railOpen ? 'Close' : 'Stats';
     pr.appendChild(rb);
     LOOK.chipFit(pr);
+    LOOK.nameFit(pr.querySelector('.fold-pid-t .pname'));
+  };
+  // a name whose longest word is wider than its column ("Mogash of Clan Kozrak, Hoofbreaker" in the rail's capitals
+  // broke as "HOOFBREAKE / R", playtest 2 new 14) is set smaller until that word fits; it reads the layout only
+  LOOK.nameFit = function (n) {
+    if (!n || !n.offsetWidth) return;
+    n.style.fontSize = '';
+    const W = n.clientWidth, words = (n.textContent || '').trim().split(/\s+/).filter(Boolean);
+    if (!W || !words.length) return;
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:inherit;letter-spacing:inherit;text-transform:inherit;font-variant:inherit';
+    n.appendChild(probe);
+    let widest = 0;
+    for (const w of words) { probe.textContent = w; widest = Math.max(widest, probe.getBoundingClientRect().width); }
+    probe.remove();
+    if (widest > W) n.style.fontSize = Math.max(11, Math.floor(parseFloat(getComputedStyle(n).fontSize) * W / widest * 0.97)) + 'px';
   };
   // the four needs of 35-moods with the mood: 2 x 2 rows, each a tooltip (59-tooltips' need and needs entries)
   LOOK.needsBox = function (pc) {
@@ -130,6 +146,7 @@
     const rows = pp.querySelectorAll(':scope > .barrow'), last = rows[rows.length - 1];
     const nb = LOOK.needsBox(pc);
     if (nb && last) last.after(nb);
+    LOOK.nameFit(pp.querySelector(':scope > .pname'));
   };
   // the chips in one row: what does not fit is counted in a "+N" chip that shows the rest
   LOOK.chipFit = function (pr) {
@@ -193,6 +210,37 @@
     }
   };
 
+  // the Life panel fits the window (fitsOneScreen): where the cards above Activities leave it less than its least
+  // height, the cards the player has not opened or closed fold to their title lines, in this order, until it fits:
+  // the ambition (its next step is in Coming up's Ambition line), then the chapter (an optional panel, v2). A card the
+  // player opened stays open; one click on its title line opens it. Reads layout only, as 90-fold does: no game state.
+  LOOK.FIT = ['lf-amb', 'chp-card'];
+  LOOK.fitLife = function (tb) {
+    const F = UI.FOLD;
+    if (!tb || !tb.classList.contains('lk-life') || !F || F.allOpen || !tb.clientHeight) return;
+    const over = () => tb.scrollHeight > tb.clientHeight + 4, mine = c => c.dataset.lkFit && !(('life|' + c.dataset.fc) in F.state);
+    const put = (c, open) => {
+      const x = c.querySelector(':scope > .fold-x');
+      c.classList.toggle('folded', !open);
+      if (x) { x.setAttribute('aria-expanded', String(open)); x.setAttribute('aria-label', (open ? 'Fold ' : 'Open ') + (x.dataset.label || 'this card')); }
+    };
+    // this draw's fit: what an earlier call folded opens again first (a refresh may have left the panel another height)
+    for (const c of tb.querySelectorAll(':scope > .fold-card[data-lk-fit]')) { if (mine(c)) put(c, true); delete c.dataset.lkFit; }
+    for (const cls of LOOK.FIT) {
+      if (!over()) return;
+      const c = tb.querySelector(':scope > .fold-card.' + cls + ':not(.folded)');
+      if (!c || !c.querySelector(':scope > .fold-x') || ('life|' + c.dataset.fc) in F.state) continue;
+      c.dataset.lkFit = '1';
+      put(c, false);
+    }
+  };
+  // the text's height moves when the fonts arrive (after the first draws) and with the window: fit again then
+  const refit = () => { try { const g = document.getElementById('game'); if (g && !g.classList.contains('phone') && UI.tab === 'life') LOOK.fitLife(document.getElementById('tabbody')); } catch (e) {} };
+  if (typeof document !== 'undefined') {
+    if (document.fonts && document.fonts.addEventListener) { document.fonts.addEventListener('loadingdone', refit); if (document.fonts.ready) document.fonts.ready.then(refit, () => {}); }
+    if (typeof window !== 'undefined') window.addEventListener('resize', refit);
+  }
+
   // a name for an avatar that opens a person (a button with only a picture), from the name beside it that opens the
   // same; 71-phone does the same on a phone
   LOOK.names = function (root) {
@@ -253,6 +301,7 @@
       game.classList.toggle('lk-rail-open', !!LOOK.railOpen && !phone);
       if (!phone) LOOK.rail(document.getElementById('profile'), pc);
       LOOK.panel(document.getElementById('tabbody'), phone);
+      if (!phone) LOOK.fitLife(document.getElementById('tabbody'));
       if (phone && UI.tab === 'you') LOOK.phoneYou(pc);
       if (!phone) LOOK.names(document.getElementById('tabbody'));
       LOOK.ground();

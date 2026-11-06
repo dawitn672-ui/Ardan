@@ -17,6 +17,10 @@ PH.CSS = `
 @media (max-width: 760px){
   /* --- type: nothing a reader needs under 14 px; uppercase labels and the tab bar's captions at 13 --- */
   :root{--fs-1:${T(14)};--fs-2:${T(14)}}
+  /* 96-moments slides a page in from 18 px to the right (moTabIn): the panel clips it, or for that moment the page is
+     393 px wide and scrolls sideways (59-tooltips' ttPhoneTap, after a tap on the You pages' tab bar). The panel holds #tabbody;
+     clip, not hidden, so it is no scroll box and nothing sticky inside changes */
+  #game.phone main.panel{overflow-x:clip}
   #game.phone, #modal, #title, .create-grid{-webkit-text-size-adjust:100%}
   #game.phone .chip, #modal .chip, #game.phone .tier, #modal .tier, #game.phone .cost, #modal .cost, #game.phone .req, #modal .req,
   #game.phone .risk, #modal .risk, #game.phone .apt, #modal .apt, #game.phone .key, #game.phone small, #modal small,
@@ -154,7 +158,7 @@ PH.CSS = `
   #game.phone .phone-profile > *{grid-column:1 / -1}
   #game.phone .phone-profile > .portrait-wrap{grid-column:1;grid-row:1 / span 3;margin:0;justify-content:flex-start}
   #game.phone .phone-profile > .portrait-wrap svg{width:104px;height:auto}
-  #game.phone .phone-profile > .pname{grid-column:2;grid-row:1;text-align:left;margin-top:4px}
+  #game.phone .phone-profile > .pname{grid-column:2;grid-row:1;text-align:left;margin-top:4px;min-width:0;overflow-wrap:anywhere}
   #game.phone .phone-profile > .ptitle{grid-column:2;grid-row:2;text-align:left}
   #game.phone .phone-profile > .center{grid-column:2;grid-row:3;justify-content:flex-start;text-align:left}
   #game.phone .phone-profile > .center .chip{margin:2px 4px 2px 0}

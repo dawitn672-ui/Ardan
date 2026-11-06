@@ -28,6 +28,9 @@ const SETUP = () => {
       }
       if (k === 'ak_will') { const m = A.P(pc.parents[1]) || A.P(pc.parents[0]); if (m && m.alive) A.kill(m, 'old age', true); }
       if (k === 'ak_second') { const f = A.P(pc.parents[0]); if (f && !f.alive) { f.alive = true; f.died = null; } }
+      // the blood arc's first scene says your mother's father "went the same way", so it starts only once he is dead
+      // (playtest 2, new #10): a life fitted to it has him in his grave
+      if (k === 'ak_blood') { const g = A.AKIN.parent(A.AKIN.parent(pc, 'F'), 'M'); if (g && g.alive) { g.alive = false; g.died = A.S.year - 3; g.cause = 'the shaking sickness'; } }
       A.S.queue = [];
       return pc;
     },
@@ -235,6 +238,59 @@ export default {
     // start, none while it runs, a different one after; `yes` still holds all 13 kin arcs to their starts.
     const ok = r.yes.length === 13 && !r.child.length && !r.elope && !r.will && !r.second && r.busy && r.again && r.story;
     return { ok, detail: `a fitted life can start ${r.yes.length} of 13; a child ${r.child.length}; a married life the night road: ${r.elope}; both parents living, the will: ${r.will}; no father, the other house: ${r.second}. Track: first pick ${r.first}, none while it runs (${r.busy}), a different one after (${r.again})` };
+  },
+
+  // playtest 2, new #10: "Your mother's brother Hamo, who never married" while Hamo was the player's grandfather. The
+  // kin a scene names come from the family tree: the mill's uncle is a parent's unmarried brother on the side the text
+  // names, the feud's dead cousin is a first cousin whose father is living, the blood arc's aunt is the mother's sister;
+  // each is buried in the tree as the scene buries them. With no one to fit, the uncle is written into the tree (a child
+  // of the grandparents) under a name no one in the family has
+  async kinRealTree(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const H = A.AKIN, bad = [], rows = [];
+      const scene = (pc, k, ev, role) => {
+        pc.arcs[k] = { stage: 0, m: [], story: 1, y: A.S.year };
+        A.S.queue = [{ type: 'event', ev, ctx: { arc: k } }];
+        const v = A.eventView(A.S.queue[0]), ctx = A.S.queue[0].ctx;
+        A.S.queue = [];
+        const q = H.who(pc, k, role);
+        return { v, ctx, q, kin: q && A.V2F.kinOf(pc, q) };
+      };
+      for (let i = 0; i < 6; i++) {
+        const pc = AKT.life('ak_feud', 9100 + i * 17, i % 2 ? 'F' : 'M', ['artisan', 'peasant', 'merchant'][i % 3]);
+        const m = scene(pc, 'ak_inherit', 'ak_inherit_1', 'u');
+        const side = m.q && H.sideOf(pc, m.q);
+        if (!m.q || !m.kin || m.kin.term !== 'uncle' || m.q.alive || H.everWed(m.q)) bad.push(`${i} mill: ${m.q && m.q.given} is ${m.kin && m.kin.term}, alive ${m.q && m.q.alive}`);
+        else if (!side || !m.v.text.includes(`Your ${side.sex === 'F' ? "mother's" : "father's"} brother ${m.q.given}`)) bad.push(`${i} mill: the text names the wrong side: ${m.v.text.slice(0, 60)}`);
+        const cz = H.who(pc, 'ak_inherit', 'cz'), czk = cz && A.V2F.kinOf(pc, cz);
+        if (!czk || czk.term !== 'first cousin') bad.push(`${i} mill: the cousin who nursed him is ${czk && czk.term}`);
+        const f = scene(pc, 'ak_feud', 'ak_feud_1', 'cuz'), unc = H.who(pc, 'ak_feud', 'unc');
+        if (!f.kin || f.kin.term !== 'first cousin' || f.q.alive || !unc || !unc.alive || H.KIN.fatherOf(f.q) !== unc) bad.push(`${i} feud: ${f.q && f.q.given} is ${f.kin && f.kin.term}, his father living ${!!(unc && unc.alive)}`);
+        const g = H.parent(H.parent(pc, 'F'), 'M'); if (g && g.alive) { g.alive = false; g.died = A.S.year - 2; }
+        const b = scene(pc, 'ak_blood', 'ak_blood_1', 'au');
+        if (!b.kin || b.kin.term !== 'aunt' || b.q.alive || H.sideOf(pc, b.q) !== H.parent(pc, 'F')) bad.push(`${i} blood: ${b.q && b.q.given} is ${b.kin && b.kin.term}`);
+        // the names a scene makes up (the housekeeper, the old cousin) are no one's in the family
+        const names = H.kinNames(pc);
+        for (const t of [m.ctx.hk, b.ctx.oc, b.ctx.doc]) if (names.has(t)) bad.push(`${i}: a made-up name ${t} is already in the family`);
+        rows.push(`${m.ctx.side} brother ${m.q && m.q.given}, cousin ${f.q && f.q.given} (father ${unc && unc.given}), aunt ${b.q && b.q.given}`);
+      }
+      // no unmarried uncle in the tree: one is written in, a child of the grandparents, with a name of his own
+      const pc = AKT.life('ak_feud', 9301, 'M');
+      for (const par of [H.parent(pc, 'M'), H.parent(pc, 'F')]) for (const s of H.sibs(par)) if (!H.everWed(s)) s.exSpouses = ['x'];
+      const before = new Set(H.family(pc).map(q => q.id)), names = H.kinNames(pc);
+      const m = scene(pc, 'ak_inherit', 'ak_inherit_1', 'u');
+      const made = m.q && !before.has(m.q.id);
+      if (!made || !m.kin || m.kin.term !== 'uncle' || names.has(m.q.given) || !H.sideOf(pc, m.q)) bad.push(`made uncle: ${m.q && m.q.given} new ${made}, ${m.kin && m.kin.term}, name in the family ${m.q && names.has(m.q.given)}`);
+      // an arc saved before this (a made-up name kept) plays on with that name
+      const old = AKT.life('ak_feud', 9302, 'M');
+      old.arcs.ak_inherit = { stage: 1, m: [], story: 1, y: A.S.year - 1, nm: { u: 'Oldname', side: "father's" } };
+      A.S.queue = [{ type: 'event', ev: 'ak_inherit_2', ctx: { arc: 'ak_inherit' } }];
+      const ov = A.eventView(A.S.queue[0]); A.S.queue = [];
+      if (!/Oldname/.test(ov.text)) bad.push(`old save: ${ov.text.slice(0, 60)}`);
+      return { bad, rows, made: m.q && m.q.given };
+    });
+    return { ok: !r.bad.length, detail: `${r.bad.length ? 'BAD: ' + r.bad.slice(0, 5).join('; ') + '. ' : ''}${r.rows.join('; ')}; with no unmarried uncle, ${r.made} is written into the tree` };
   },
 
   // old saves: an arc state without the people it keeps, and a life with no arcs at all, play on

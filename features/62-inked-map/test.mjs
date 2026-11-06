@@ -277,4 +277,25 @@ export default {
     const ok = !r.none && r.blue > 0.15 && r.light > 0.01 && r.lines > 0 && r.pure;
     return { ok, detail: r.none ? 'no map' : `sea share ${(r.blue * 100).toFixed(0)}% of the map, ${(r.light * 100).toFixed(0)}% of it the light coastal steps; hover outline ${r.lines} border pieces; pure ${r.pure}` };
   },
+  // CI run 88 (inkTiming): under the satellite ground the tiles draw only their lines (no sea, coast, glyphs or paper
+  // that nobody sees). The inked ground is still whole when it is wanted: a full map drawn with the satellite turned off
+  // is the same picture whether or not line-only tiles were made first, and differs from the satellite's
+  async inkLinesUnderSat(pg) {
+    await pg.evaluate(WAR);
+    const r = await pg.evaluate(() => {
+      const T = window.__T, IM = UI.INKMAP;
+      T.set(true); UI.A.ov('bigmap');
+      const was = UI.set.v2Sat, bareOn = IM.groundElsewhere ? IM.groundElsewhere() : null;
+      UI.set.v2Sat = false; IM.reset(); T.gm(3); const inked = T.hash(T.gm(3)), bareOff = IM.groundElsewhere ? IM.groundElsewhere() : null;
+      UI.set.v2Sat = was; IM.reset();
+      const st = IM.stats, n0 = st.tiles, ms0 = st.tileMs;
+      T.gm(3); const sat = T.hash(T.gm(3)); const n = st.tiles - n0, ms = st.tileMs - ms0;
+      UI.set.v2Sat = false; T.gm(3); const after = T.hash(T.gm(3));
+      UI.set.v2Sat = was; T.gm(3); const sat2 = T.hash(T.gm(3));
+      UI.ov = null; UI.render();
+      return { bareOn, bareOff, inked, sat, after, sat2, n, per: ms / Math.max(1, n) };
+    });
+    const ok = r.bareOn === true && r.bareOff === false && r.inked === r.after && r.sat === r.sat2 && r.inked !== r.sat && r.n > 0;
+    return { ok, detail: `line-only tiles under the satellite ${r.bareOn}, with it off ${r.bareOff}; inked ground ${r.inked}, after line-only tiles ${r.after}; satellite ${r.sat} / again ${r.sat2}; ${r.n} line-only tiles at ${r.per.toFixed(1)} ms each` };
+  },
 };

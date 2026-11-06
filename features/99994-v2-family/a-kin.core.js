@@ -210,6 +210,65 @@
     else if (p.sex !== 'F' && p.occ === 'a lady of the house') p.occ = 'a lord';
   };
 
+  // ---- a person made for a scene takes the sex its words give them (playtest 2, old #24) ---------------------------
+  // The release's scenes make their stranger with A.makeAcquaintance (content's stranger() and ranker()), which draws
+  // the sex at random, while the scene's own words fix it: "{themFull}, an old scholar ... for the price of his rent",
+  // "{themFull}, bailiff of the next manor ... he has noticed", "One recruit, {rec} ... give him a blanket-beating". So
+  // Hilda paid "his" rent, Nazga "has noticed" as "he" and was later remembered as "you exposed him", Edda got "him".
+  // Here a scene whose words speak of one sex only (he/him/his and no she/her, or the reverse), and that has no
+  // pronoun token of its own ({khe}, {theyHe}, {xHim}, A.he(...)), makes its fresh person of that sex. The release's
+  // draws are all still made (the stream does not move); the person is flipped after, with a name of the right sex
+  // picked by a hash of their id. A person who already exists is never changed.
+  const SEXTOK = /\{[A-Za-z0-9]*(?:[Hh]e|[Hh]im|[Hh]is|Her|Hers)\}|\{k(?:he|him|his)\}|A\.(?:he|him|his)\(/;
+  const MALE = /\b(?:he|him|his|himself)\b/i, FEMALE = /\b(?:she|her|hers|herself)\b/i;
+  const sexCache = new Map();
+  const textsOf = e => {
+    const out = [];
+    const put = x => { if (typeof x === 'string') out.push(x); else if (typeof x === 'function') out.push(String(x)); };
+    put(e.text);
+    for (const c of e.choices || []) { if (!c) continue; put(c.t); put(c.r); if (c.win) put(c.win.r); if (c.lose) put(c.lose.r); }
+    return out.join(' \n ');
+  };
+  F.sceneSex = function (e) {
+    if (!e || !e.id) return null;
+    if (sexCache.has(e.id)) return sexCache.get(e.id);
+    let s = null;
+    try {
+      const all = textsOf(e);
+      if (!SEXTOK.test(all)) { const m = MALE.test(all), f = FEMALE.test(all); s = m && !f ? 'M' : f && !m ? 'F' : null; }
+    } catch (err) { s = null; }
+    sexCache.set(e.id, s);
+    return s;
+  };
+  const nameHash = s => { let h = 2166136261; for (const ch of String(s)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };
+  F.setSex = function (p, sex) {
+    if (!p || !sex || p.sex === sex) return p;
+    p.sex = sex;
+    try {
+      const c = (typeof LORE !== 'undefined' && LORE.cultures && (LORE.cultures[p.cult] || LORE.cultures['CUL-02'])) || null;
+      const list = c ? (sex === 'F' ? c.f : c.m) : null;
+      if (list && list.length) p.given = list[nameHash(p.id + '|' + sex) % list.length];
+    } catch (e) {}
+    if (p.surMode === 'patron' && typeof p.sur === 'string') p.sur = p.sur.replace(/^(son|daughter) of /, sex === 'F' ? 'daughter of ' : 'son of ');
+    F.fixOcc(p);
+    return p;
+  };
+  let sceneSex = null;
+  const mkAcq = A.makeAcquaintance;
+  if (typeof mkAcq === 'function') A.makeAcquaintance = function () {
+    const p = mkAcq.apply(this, arguments);
+    try { if (sceneSex && p && p.sex !== sceneSex) F.setSex(p, sceneSex); } catch (e) {}
+    return p;
+  };
+  const evView = A.eventView;
+  A.eventView = function (q) {
+    const e = q && !q.view && A.EV && A.EV[q.ev];
+    if (!e || !e.setup) return evView.apply(this, arguments);
+    const was = sceneSex;
+    sceneSex = F.sceneSex(e);
+    try { return evView.apply(this, arguments); } finally { sceneSex = was; }
+  };
+
   // ---- circles and gossip (41-circles, 55-bonds): "close to X (your friend)" never names your kin ----------------------
   const CI = A.CIRCLES;
   if (CI && typeof CI.circleOf === 'function') {
