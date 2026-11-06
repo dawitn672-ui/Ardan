@@ -60,6 +60,26 @@
     const rank = kind === 'mil' ? (p.mil ? p.mil.rank : 0) : (p.job ? p.job.r : 0);
     return H(kind === 'mil' ? 'A deed that stands out' : 'Work that stands out', esc(RN.standWords(p, kind, rank)), 'helps') + D(esc(HOW));
   };
+  // ---- 59-tooltips' Renown tip: it explained the old rule (each deed added d × (1 − fame/105), "a deed worth 10 now
+  // gives 9.1", "Renown 9 of 100"). Renown is now the memory of deeds (a-deeds): the tip says it in words, names the
+  // deeds that made the name, and says what a deed is worth (the odds it beat, who saw it), that deeds fade and that a
+  // name keeps half of its best. No number and no "of 100" (the owner's v2 rule).
+  const WIT_WORDS = { alone: 'no one saw it', comrades: 'your comrades saw it', company: 'the company saw it', army: 'the army saw it', court: 'the court heard of it', realm: 'the whole realm heard of it' };
+  RN.oddsWord = q => (q == null || !(q < 0.9) ? 'a sure thing' : q >= 0.6 ? 'better than even odds' : q >= 0.4 ? 'about even odds' : q >= 0.2 ? 'long odds' : q >= 0.08 ? 'very long odds' : 'odds no one would take');
+  RN.whenWord = (y, now) => { const a = Math.max(0, now - y); return a < 1 ? 'this year' : a < 2 ? 'last year' : a < 6 ? 'a few years ago' : a < 15 ? 'years ago' : 'long ago'; };
+  G.fame = function () {
+    const p = A.pc(); if (!p) return '';
+    const y = A.S.year, best = RN.best(p, 3);
+    const deedRow = x => R(esc(x.text), esc([RN.whenWord(x.year, y), x.wit ? WIT_WORDS[x.wit] || '' : '', x.wit ? 'against ' + RN.oddsWord(x.q) : ''].filter(Boolean).join('; ')));
+    // read only: RN.st would give an old save its record here, and a tip must not change the state
+    const st = p.rn && Array.isArray(p.rn.s) ? RN.stains(p) : 0, feeds = [`your ${K.L('score', '', 'score')}`, 'votes for an office', 'a plot for the throne', 'a master taking you on', `as a ruler, ${K.L('realmLegit', p.ruler || p.realm, 'legitimacy')}`];
+    return H('Renown', esc(RN.wordsOf(p))) +
+      D('How far your name has travelled. It is made of deeds: the best one counts in full, the next ones less and less, so one great deed outweighs years of small ones, and a life of small deeds levels off.') +
+      (best.length ? '<div class="tip-d"><b>The deeds that made your name</b></div>' + best.map(deedRow).join('') : D('No deed of yours is talked about yet.')) +
+      D('What a deed is worth: the odds it beat (a long chance counts two or three times a sure thing) and who saw it (your comrades, the company, the army, the court, the realm). Deeds fade year by year; a name once made keeps half of its best. Scandal and defeat stain it, and a stain fades the same way.') +
+      (st > 0.5 ? R('A stain on your name', st >= 8 ? 'still spoken of' : st >= 2 ? 'fading' : 'nearly forgotten') : '') +
+      `<div class="tt-feeds"><i>Feeds</i> ${feeds.join(' · ')}</div>`;
+  };
   const rank0 = G.milRank;
   if (rank0) G.milRank = function () {
     const h = rank0.apply(this, arguments);

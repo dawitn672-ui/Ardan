@@ -151,7 +151,10 @@ export default {
     const r = await pg.evaluate(S => {
       const RN = A.RN;
       T.enter(S); const pc = A.pc();
-      RN.within({ wit: 'army', field: 'war', q: 0.2 }, A.fame, null, [pc, 6]);
+      RN.within({ wit: 'army', field: 'war', q: 0.2, text: 'the ford at dusk' }, A.fame, null, [pc, 6]);
+      // the Renown tip (59-tooltips' UI.TIPS.fame, here re-said): words, the deed, who saw it and its odds; no digit and
+      // no "of 100" (the verifier of this fix: it still read "Renown unknown of 100 ... A deed worth 10 now gives 9.1")
+      const tip = String(UI.TIPS.fame('') || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
       UI.tab = 'life'; UI.render();
       const words = A.V2.renown.RENOWN_WORDS.map(x => x[1]);
       const txt = document.body.innerText;
@@ -164,9 +167,10 @@ export default {
       // an old save: no p.rn, fame 50
       delete pc.rn; pc.fame = 50; A.fame(pc, 1);
       const kept = pc.fame;
-      return { mine: RN.wordsOf(pc), shown, num, other, kept };
+      return { mine: RN.wordsOf(pc), shown, num, other, kept, tip };
     }, START);
-    const ok = r.shown.length > 0 && !r.num && (!r.other || (r.other.words && !r.other.num)) && r.kept > 50 && r.kept < 52;
-    return { ok, detail: `yours: "${r.mine}"; words on the page: ${r.shown.join(', ') || 'none'}; a renown number ${r.num}; another person ${JSON.stringify(r.other)}; an old save at 50 after a small deed: ${r.kept.toFixed(2)}` };
+    const t = r.tip, tipOk = /\d/.test(t) === false && !/of 100/i.test(t) && t.includes(r.mine) && /the ford at dusk/.test(t) && /the army saw it/.test(t) && /against long odds/.test(t) && /fade/.test(t) && /half of its best/.test(t);
+    const ok = r.shown.length > 0 && !r.num && (!r.other || (r.other.words && !r.other.num)) && r.kept > 50 && r.kept < 52 && tipOk;
+    return { ok, detail: `yours: "${r.mine}"; words on the page: ${r.shown.join(', ') || 'none'}; a renown number ${r.num}; another person ${JSON.stringify(r.other)}; an old save at 50 after a small deed: ${r.kept.toFixed(2)}; the Renown tip ${tipOk ? 'in words' : 'wrong'}: "${t.slice(0, 260)}"` };
   },
 };

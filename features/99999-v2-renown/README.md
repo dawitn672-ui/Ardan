@@ -45,6 +45,13 @@ ladders to `src/v2/renown.js` (`recordDeed`, `renown`, `renownWords`, `promotion
 - 59-tooltips' Path tips (the board's odds, merit, a board row, the rank) explained the counter, its formula and a
   percentage a year; they now say what the board asks, in words: the standout deed, the places above you, steady
   service, a patron.
+- 59-tooltips' Renown tip (`UI.TIPS.fame`) explained the old rule with numbers ("Renown 9 of 100", "a deed worth 10
+  now gives 9.1"). It now says renown in words, lists the best deeds (when, who saw them, the odds they beat; each
+  deed keeps `wit` and `q` for this), and says that deeds fade and a name keeps half of its best. No digit, no "of 100".
+- Promotion runs faster than the merit counter let it, so a soldier is a sergeant within a year more often, and the
+  drill yard card shows. Its wiring in 59-tooltips (`W.drillCard`) matched only the bar in focus (`dr-b on`; the
+  others are `dr-b ` with a trailing space), the unlocks that were not muted, and not the review's cost behind its
+  icon; it matches all of them now (`ttCov2War`'s soldier is a sergeant: War tab 54 of 54 numbers tipped).
 
 ## Tests (`test.mjs`)
 
@@ -56,6 +63,7 @@ ladders to `src/v2/renown.js` (`recordDeed`, `renown`, `renownWords`, `promotion
 - `rnJobBoard`: a post's board has no merit counter; the deed row is soft.
 - `rnNoCounters`: the soldier's Path tab, the promotion tips and the log lines carry no merit counter (playtest 1, 2).
 - `rnWords`: renown in words on the profile and another person's sheet, never a number; an old save keeps its fame.
+  The Renown tip has no digit and no "of 100", and names the deed, who saw it and its odds.
 
 ## Measured (Nov 5, `node bench/balance.mjs --workers=2`, 12 lives a path, 70 years)
 

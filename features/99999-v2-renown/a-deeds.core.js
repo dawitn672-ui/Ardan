@@ -113,6 +113,9 @@
     const w = d * RN.SCALE * RN.oddsMult(c.q);
     const out = V.recordDeed({ deeds: r.d }, { weight: w, witnesses: c.wit, year: c.year != null ? c.year : year(), month: c.month != null ? c.month : month(),
       text: String(c.text || '').replace(/[<>"]/g, '').slice(0, 80), field: c.field });
+    // who saw it and the odds it beat, for the Renown tip's words (a deed from an older save has neither)
+    const last = r.d[r.d.length - 1];
+    if (last) { last.wit = WIT.includes(c.wit) ? c.wit : 'comrades'; if (Number.isFinite(c.q) && c.q < 1) last.q = Math.round(clamp(c.q, 0, 1) * 1000) / 1000; }
     if (r.d.length > RN.MAX) {
       const y = year(), fw = x => x.w * Math.pow(RN.FADE, Math.max(0, y - x.year));
       r.d.sort((a, b) => fw(b) - fw(a)); r.d.length = RN.MAX; r.d.sort((a, b) => a.year - b.year || (a.month || 0) - (b.month || 0));
