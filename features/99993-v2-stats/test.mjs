@@ -200,6 +200,310 @@ export default {
     return { ok: r.found.length === 0 && r.evs > 20, detail: `${r.evs} scenes and every tab over 12 years: ${r.found.length ? r.found.length + ' percentages, e.g. ' + r.found.slice(0, 6).join(' | ') : 'no percentage on screen'}` };
   },
 
+  // no bare 0-100 number in the views g-bands did not reach (complaint 11, playtest 1 #7, playtest 2 old 7): 35-moods'
+  // needs (card, 91-look's box, popovers), the training pickers and log, the profile's age line and wound costs, the
+  // perks, the War Room's division grid and order of battle (an enemy's when scouted, and your own), infamy under
+  // World > Diplomacy. Each view is drawn and swept as the page does; drawing none of it draws a die or changes the state.
+  async v2sNumbers(pg) {
+    const r = await pg.evaluate(async () => {
+      const tick = () => new Promise(res => setTimeout(res, 0)), bad = [], VS = A.V2S;
+      const swept = h => { const el = document.createElement('div'); el.innerHTML = h; document.body.appendChild(el); VS.sweep(el); const t = el.innerText; el.remove(); return t; };
+      // a bare 0-100 number: digits not part of a date, a count with its unit, a speed in km or a "N more"
+      const BARE = /(?<![\d.,:/×-])\b(\d{1,3})(?:\.\d+)?\b(?![\d,.:/]\d)(?!\s*(?:km|kg|cm|m\/s|ms|suns?|years?|days?|months?|men|more|hours?|initiative|of \d))/;
+      // (a year, a log line's day and month, a count of friends are not scales) (round 4: nor a count of provinces, "Hold 25 provinces", on the Goals tab)
+      const plain = l => l.replace(/\b1[01]\d\d\b/g, '').replace(/^\s*\d{1,2} [A-Z][a-z]{2}/, '').replace(/\d+ friends?|\(up to \d+\)|at its best at \d+|until about \d+|fading since about \d+|\bHold \d+ provinces\b/g, '');
+      const check = (where, t) => { for (const line of String(t).split('\n')) if (BARE.test(plain(line))) bad.push(`${where}: ${line.trim().slice(0, 90)}`); };
+      // verifier, round 5: titles and aria-labels went only through the ruler pass's scanR, which reads a line only when it
+      // names a realm measure, so a skill row's aria-label ("Melee: 24", 59-tooltips' profile hook) was never read. Every
+      // title and aria-label of each scanned tab is checked now, in both passes. Not scales: a portrait's age ("Portrait
+      // of X, 28"), the clock's "age 19", "Initiative 3.0 of 5"; dates ("18 March", "December 3"); counts with their unit
+      // (loads, times, galleys, "3 carted in", "caravans brought 2"), a fold's count of entries ("Activities, 32",
+      // "Family (26)"), a chapter's number ("The ladder (Part 12)"), a count of provinces ("Provinces since 1105: 4 to 5"), and what BARE already lets through.
+      const MON = '(?:January|February|March|April|May|June|July|August|September|October|November|December)';
+      const DATE = new RegExp(`\\b\\d{1,2} ${MON}\\b|\\b${MON} \\d{1,2}\\b`, 'g');
+      const attrPlain = (v, el) => {
+        let t = v.replace(/^Portrait of [^,]*, \d{1,3}$/, '').replace(/\bInitiative [\d.]+ of \d+/g, '').replace(/,? age \d{1,3}\b/g, '')
+          .replace(DATE, '').replace(/^Provinces since \d+: \d+ to \d+$/, '')
+          .replace(/\(Part \d+\)/g, '').replace(/<?\d[\d,]*(?: \/ \d+)? (?:[A-Z][a-z]+ )?(?:loads?|times|galleys?|ships?|carted|used)|\b\d+ of (?:\d+|those)\b|\bcaravans (?:brought|took) \d+/g, '');
+        if (el.classList && (el.classList.contains('fold-h') || el.classList.contains('fold-x'))) t = t.replace(/(?:, \d+| \(\d+\))$/, '');
+        return t;
+      };
+      // (and the profile's skill rows must say their tier to a screen reader, a name with "&" unescaped: "Survival & hunting:
+      // Apprentice", not "Survival &amp; hunting: 37")
+      let attrsRead = 0, skillAria = '';
+      const checkAttrs = (where, root) => {
+        for (const el of root.querySelectorAll('[title],[aria-label]')) for (const k of ['title', 'aria-label']) { const v = el.getAttribute(k); if (v) { attrsRead++; check(`${where} [${k}]`, attrPlain(v, el)); } }
+        for (const el of root.querySelectorAll('.prow[aria-label]')) if (!/ & /.test(skillAria) && /^(?!.*&amp;)[^:]+: [A-Z][a-z]+$/.test(el.getAttribute('aria-label'))) skillAria = el.getAttribute('aria-label');
+      };
+      T.enter({ seed: 9611, race: 'human', realm: 'POL-02', status: 'peasant', sex: 'F', startAge: 16 });
+      const pc = A.pc(); A.plan(pc).train = 'survival';
+      T.play(2);
+      // the needs, low and high
+      pc.needs = { rest: 22, company: 71, purpose: 48, comfort: 88 };
+      // verifier, round 6: 999-confidants' pips on the People tab carry a hover title, "Friend, rank 1 of 5: ... Next rank:
+      // shared history 16 (now 47), their opinion 30." (the opinion is -100..100, the history 55's ledger weight), and this
+      // life never formed a bond in two years, so the title was never drawn. Give her one, a friend at rank 1, before the
+      // tabs are drawn, and require that the pips' title was read and says the next rank in words.
+      let cfTip = '', cfRegard = [];
+      { const CF = A.CONFIDANTS, ids = Object.keys(pc.rel || {}).filter(id => { const t = A.P(id); return t && t.alive && A.isAdult(t); });
+        let id = CF && ids.find(i => CF.role(pc.rel[i]) === 'friend');
+        if (CF && !id && ids.length) { id = ids[0]; pc.rel[id].type = 'friend'; }
+        if (id) { pc.rel[id].cf = 1; pc.rel[id].cfY = A.S.year; } }
+      let rng0 = JSON.stringify(A.S.rng), h0 = T.hash(A.S), pure = true;
+      UI.tab = 'life'; UI.ov = null; UI.render(); await tick();
+      const card = document.querySelector('.moods'); check('needs card', card ? card.textContent.replace(/How you are/, '\n') : 'none 0');
+      const box = UI.LOOK && UI.LOOK.needsBox ? UI.LOOK.needsBox(pc) : null; if (box) check('needs box', box.innerText);
+      for (const k of ['rest', 'company', 'purpose', 'comfort']) check('need popover ' + k, swept(UI.TIPS.need(k)));
+      check('needs popover', swept(UI.TIPS.needs())); check('mood popover', swept(UI.TIPS.mood('rest')) + '\n' + swept(UI.TIPS.mood('content')));
+      if (UI.TIPS.act) check('activity popover', swept(UI.TIPS.act('tavern')));
+      const wordsShown = !!card && /tired|worn out/.test(card.textContent) && /in good company/.test(card.textContent);
+      // (every tab's titles and aria-labels, as the page draws and sweeps them)
+      for (const tab of T.tabs()) { UI.ov = null; UI.tab = tab; UI.render(); await tick(); checkAttrs('peasant ' + tab, document.body);
+        const cf = document.querySelector('#app .cf-pips[title]'); if (cf && !cfTip) cfTip = cf.getAttribute('title'); }
+      UI.ov = null; UI.tab = 'life'; UI.render(); await tick();
+      // the training pickers and the season's log
+      check('training picker', [...document.querySelectorAll('select[data-c="planTrain"] option')].map(o => o.textContent).join('\n'));
+      const log = document.getElementById('app').innerText.split('\n').filter(l => /got better at/.test(l));
+      check('training log', log.join('\n'));
+      UI.tab = 'goals'; UI.render(); await tick();
+      check('mentor picker', [...document.querySelectorAll('select[data-c="decArg"] option')].map(o => o.textContent).join('\n'));
+      // (the line as 31-learn-by-doing writes it, percentage and all, read through the page's two sweeps; with
+      // v2-wf-numbers2 merged its whole-sentence rule reads it, so the hand-written short form gave way to the real one)
+      const logged = VS.deNum(VS.dePct('This season you got better at Survival & hunting +2.4, Farming & herding +1.0 and 2 more. 33% of it from doing, the rest from practice.'));
+      check('log line', logged);
+      // 996-coming-up's digest of the month
+      check('digest line', VS.deNum('You got better at Melee +0.4, Riding & the lance +1.2. Nothing else moved.'));
+      // the profile's age line and wound costs, the perks
+      UI.A.ov('profile'); UI.render(); await tick();
+      check('profile', (document.getElementById('modal') || document.body).innerText.split('\n').filter(l => /best|worth|holds until|speed|stamina|Perks/.test(l)).join('\n'));
+      UI.A.ov('profs'); UI.render(); await tick();
+      check('proficiencies', (document.getElementById('modal') || document.body).innerText.split('\n').filter(l => /Perks/.test(l)).join('\n'));
+      UI.ov = null;
+      check('wound line', VS.deNum('In a fight: Bad leg: worth 46 to 43 (speed -9). Legs Bad leg −9 speed, −3 stamina, Athletics & climbing −12'));
+      // the sweep's other finds: the yard, a door's skill, an ambition's fighting worth, a staff candidate, a sparkline
+      for (const t of ['The yard master sends you home: health worn, come back at 50', 'Too hurt for that: health worn, rest to 50 first', 'Needs Crossbow 30 (you have 2), or a bow',
+        'Fighting worth 62 of 118: masters to learn from', 'Enzo Montessi — fit 70 · Master', 'They would not take you yet: your chance is under 2 in 100.']) check('phrase', VS.deNum(t));
+      // (the verifier's own pips titles, round 6: a bond past its history, one short of it, a beloved at rank 3)
+      for (const t of ['Friend, rank 1 of 5: Their regard for you will not fade below a floor. Next rank: shared history 16 (now 47), their opinion 30.',
+        'Friend, rank 2 of 5: A gift. Next rank: shared history 26 (now 45), their opinion 40.', 'Beloved, rank 3 of 5: A gift. Next rank: shared history 38 (now 27), their opinion 50.']) {
+        const el = document.createElement('div'); el.innerHTML = '<span class="cf-pips"></span>'; el.firstChild.setAttribute('title', t); document.body.appendChild(el); VS.sweep(el);
+        check('pips title', el.firstChild.getAttribute('title').replace(/rank \d of 5/, '')); el.remove(); }
+      // (verifier, round 7: the regard is weighed against the bar, not named by a band wider than it. A friend at 20 whose
+      // next rank needs 30 is "friendly", yet not enough; one at 35 is enough)
+      cfRegard = ['their opinion 30 (now 20).', 'their opinion 30 (now 35).', 'their opinion 50 (now 45).'].map(o => VS.deNum('Next rank: shared history 16 (now 47), ' + o));
+      if (/already enough[^,]*$/.test(cfRegard[0]) || !/think better of you than they do now/.test(cfRegard[0])) bad.push('pips regard: ' + cfRegard[0]);
+      if (!/their regard is already enough/.test(cfRegard[1])) bad.push('pips regard: ' + cfRegard[1]);
+      if (/their regard is already enough/.test(cfRegard[2])) bad.push('pips regard: ' + cfRegard[2]);
+      for (const x of cfRegard) check('pips regard', x);
+      { const el = document.createElement('div'); el.innerHTML = '<span title="Stability since 1105: 46 to 61">~</span>'; document.body.appendChild(el); VS.sweep(el); check('sparkline title', el.firstChild.getAttribute('title').replace(/1105/, '')); el.remove(); }
+      // infamy, under World > Diplomacy
+      const rs = Object.values(A.S.realms).filter(x => x.alive);
+      const keep = { coal: A.S.coalitions, inf: rs.slice(0, 3).map(x => x.infamy) };
+      rs[0].infamy = 47; rs[1].infamy = 23; rs[2].infamy = 12; A.S.coalitions = { [rs[0].id]: [rs[1].id, rs[2].id] };
+      UI.tab = 'world'; UI.worldView = 'dipl'; UI.render(); await tick();
+      // (the view may sit in a closed fold: read its text nodes, one a line)
+      const texts = []; { const w = document.createTreeWalker(document.getElementById('app'), NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (n.nodeValue.trim()) texts.push(n.nodeValue.trim()); }
+      const pol = texts.join('\n'), coal = pol.slice(pol.indexOf('Coalitions'), pol.indexOf('Restless lords'));
+      // verifier: World > Map > the Infamy map mode drew 'Coalition bait (infamy 60+)' in its legend
+      const mm0 = UI.mapMode; UI.worldView = 'map'; UI.mapMode = 'danger'; UI.render(); await tick();
+      const lg = document.querySelector('#app .legend'), legend = lg ? lg.innerText : 'no legend 0';
+      UI.mapMode = mm0;
+      check('infamy map legend', legend);
+      const legendWords = /so feared a coalition may march/.test(legend);
+      UI.tab = 'life'; UI.worldView = null; UI.render();
+      check('coalitions and most feared', coal);
+      // verifier: the ruler's coalition letter named the infamy as a number
+      check('coalition letter', VS.deNum('Aldmark has swallowed too much land (infamy 47). The neighbors are forming a league.'));
+      const infamyWords = /feared: its neighbours band together/.test(coal) && /distrusted/.test(coal) && legendWords;
+      A.S.coalitions = keep.coal; rs.slice(0, 3).forEach((x, i) => { x.infamy = keep.inf[i]; });
+      pure = JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0;
+      // the War Room: a scouted enemy division and one of your own
+      A.startWar(pc.realm, A.neighbors(pc.realm)[0], null, 'conquest');
+      rng0 = JSON.stringify(A.S.rng); h0 = T.hash(A.S);
+      const R2 = A.cmdRole(pc), myR = UI.wrMyR(pc), divs = A.allDivs();
+      const foe = divs.find(d => A.hostile(myR, d.r)), mine = divs.find(d => d.r === myR);
+      const wi = UI.wrIntel; UI.wrIntel = () => true;
+      let grid = '';
+      try {
+        for (const d of [foe, mine].filter(Boolean)) {
+          const t = swept(UI.wrDivPanel([d.id], R2));
+          grid += t;
+          const g = t.slice(t.search(/SOFT ATK|Soft atk/i), t.search(/COMPOSITION|Composition/i));
+          check('war room grid', g.replace(/\d+ km/g, ''));
+          check('order of battle', t.split('\n').filter(l => /^(mo|xp|morale)\b|morale \d/.test(l)).join('\n'));
+          check('organization', t.split('\n').filter((l, i, a) => a[i - 1] === 'Organization').join('\n'));
+        }
+      } finally { UI.wrIntel = wi; }
+      const gridWords = /(far above|above|like|below|far below) (yours|your others|most)/.test(grid);
+      pure = pure && JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0;
+      // verifier, round 3: infamy reached a ruler as a number in more spellings than "(infamy N)": the Realm tab's bar
+      // ("Infamy" with "47" in its own element) and its rule line ("At 40 ... above 60"), the coalition warning ("Keep
+      // infamy below 60"), the infamy popover, the Life tab's advisor hint and its title ("Infamy 47: ..."),
+      // pl_coalition_letter ("Your infamy is 47 — at 40 ..."), a war's cost ("infamy +6", "stability -5"), a realm's
+      // card ("· infamy 61"), and the realm's other measures beside it. As a ruler with infamy 47: every text node and
+      // title of each page, folded or open, and every popover the page offers, scanned for a bare number by these words.
+      T.enter({ seed: 90210, race: 'human', realm: 'POL-02', status: 'royal', sex: 'M', startAge: 30 });
+      const ru = A.pc(); A.makeRuler(ru, ru.realm, true); T.play(1);
+      const rr = A.realm(ru.ruler), nbs = A.neighbors(rr.id);
+      rr.infamy = 47; nbs.forEach((id, i) => { A.realm(id).infamy = i === 0 ? 61 : 23; }); A.S.coalitions = { [rr.id]: nbs.slice(0, 2) };
+      // (verifier, round 4: the Realm tab's other three bars, Stability, Legitimacy and War weariness, kept their numbers)
+      rr.stability = 29; rr.legit = 53; rr.exhaustion = 47;
+      const RW = /infam|coalition|stabil|legitim|faction|discontent|loyalty|opinion|relations/i;
+      // (the titles and, since round 4, the aria-labels: the People tab's opinion bars said "Opinion 79" to a screen reader)
+      const nodes = root => { const a = []; const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (n.nodeValue.trim()) a.push(n.nodeValue.trim()); for (const el of root.querySelectorAll('[title],[aria-label]')) for (const k of ['title', 'aria-label']) if (el.getAttribute(k)) a.push(el.getAttribute(k)); return a; };
+      // (a count of houses or of heeded advice is a count)
+      // (a popover's breakdown keeps its sums, "Legitimacy +0.8" a year, as j-numbers' README says of the tooltips'
+      // sums: the measure's own figure in a label is still caught)
+      const scanR = (where, lines) => { for (const l of lines) if (RW.test(l)) check(where, l.replace(/\b\d+ (?:houses?|of \d+)\b/g, '').replace(/ popover /.test(where) ? /[+−-]\d[\d,]*(?:\.\d+)?$/ : /$^/, '')); };
+      const tipsOf = (where, root) => { const seen = new Set(); for (const el of root.querySelectorAll('[data-tt]')) { const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || ''; if (seen.has(k + '|' + v) || !UI.TIPS[k]) continue; seen.add(k + '|' + v); let h = ''; try { h = UI.TIPS[k](v); } catch (e) {} if (typeof h === 'string' && h) scanR(where + ' popover ' + k, swept(h).split('\n')); } };
+      // verifier, round 4: a value in an element of its own ("29" under "Stability") never matched RW as a text node, so it
+      // was never checked. Every bar (its label with its value) and every element whose tooltip key is a realm measure
+      // is read as one line now.
+      const REALM_TT = new Set(['realmStab', 'realmLegit', 'realmWeary', 'infamy']);
+      const scanEls = (where, root) => {
+        for (const b of root.querySelectorAll('.barrow')) { const l = ((b.querySelector('.lbl') || {}).textContent || '').trim(), v = ((b.querySelector('.val') || {}).textContent || '').trim(); if (RW.test(l) || /weariness/i.test(l)) check(where + ' bar', `${l} ${v}`); }
+        for (const el of root.querySelectorAll('[data-tt]')) if (REALM_TT.has(el.getAttribute('data-tt')) && !el.children.length && /\d/.test(el.textContent)) check(where + ' ' + el.getAttribute('data-tt'), `${el.getAttribute('data-tt')} ${el.textContent.trim()}`);
+      };
+      const shown = {};
+      rng0 = JSON.stringify(A.S.rng); h0 = T.hash(A.S);
+      // (round 4: the Goals and Path tabs too, whose Decide buttons carry "Still needed: ...; Legitimacy 70." as a title,
+      // and the People tab, whose opinion bars carry "Opinion 79")
+      for (const tab of ['life', 'realm', 'goals', 'path', 'people']) {
+        UI.ov = null; UI.tab = tab; UI.render(); await tick();
+        const app = document.getElementById('app'), t = nodes(app); shown[tab] = t.join('\n');
+        scanR('ruler ' + tab, t); tipsOf('ruler ' + tab, app); scanEls('ruler ' + tab, app); checkAttrs('ruler ' + tab, document.body);
+      }
+      // (and every other tab's titles and aria-labels, as the verifier's probe drew them for a ruler)
+      for (const tab of T.tabs()) { UI.ov = null; UI.tab = tab; UI.render(); await tick(); checkAttrs('ruler ' + tab, document.body); }
+      UI.tab = 'realm'; UI.render(); await tick();
+      const bars = [...document.querySelectorAll('#app .barrow')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).join(' | ');
+      const barWords = /Stability shaky/.test(bars) && /Legitimacy doubted/.test(bars) && /War weariness tiring/.test(bars) && /Infamy feared/.test(bars);
+      const tipWeary = swept(UI.TIPS.realmWeary(rr.id)); scanR('war weariness popover', tipWeary.split('\n'));
+      // 97-life-fixes' golden age step (a ruler's ambition, the Life tab and the log)
+      const golden = VS.deNum('Bring a golden age: Stability 29 of 85 and 1,008,000 suns of 4,896,000 suns in the treasury.');
+      check('golden age step', golden);
+      // the peace table's line on the foe
+      const peace = VS.deNum('Aldmark is tiring (war weariness 47). What they will accept depends on the war score.');
+      check('peace table', peace);
+      // a title as sweepTitles reads it (the element itself too)
+      let ttl; { const el = document.createElement('button'); el.title = 'Still needed: Hold 25 provinces; A tributary realm; Legitimacy 70.'; document.body.appendChild(el); VS.sweep(el); ttl = el.title; el.remove(); }
+      check('decide title', ttl);
+      const tipInf = swept(UI.TIPS.infamy(rr.id)); scanR('infamy popover', tipInf.split('\n'));
+      { const el = document.createElement('div'); el.innerHTML = UI.diplCard(rr, A.realm(nbs[0])); document.body.appendChild(el); VS.sweep(el); scanR('realm card', nodes(el)); shown.card = nodes(el).join('\n'); el.remove(); }
+      UI.ov = { type: 'warDecl', id: nbs[0] }; UI.render(); await tick();
+      { const m = document.getElementById('modal') || document.body; scanR('war cost', nodes(m)); shown.war = nodes(m).join('\n'); }
+      UI.ov = null; UI.tab = 'world'; UI.worldView = 'dipl'; UI.render(); await tick(); scanR('ruler diplomacy', nodes(document.getElementById('app')));
+      UI.worldView = 'map'; UI.mapMode = 'danger'; UI.render(); await tick(); scanR('ruler map', nodes(document.getElementById('app')));
+      UI.mapMode = mm0; UI.tab = 'life'; UI.render();
+      pure = pure && JSON.stringify(A.S.rng) === rng0 && T.hash(A.S) === h0;
+      // the letter, as the page draws the event
+      A.S.queue.unshift({ type: 'event', ev: 'pl_coalition_letter', ctx: {} });
+      const hd = A.headReady(); UI.ov = null; UI.render(); await tick();
+      const letter = hd && hd.ev === 'pl_coalition_letter' ? nodes(document.getElementById('modal') || document.body).join('\n') : 'no letter 0';
+      scanR('coalition letter event', letter.split('\n'));
+      const rw = [/Infamy\s*\n?\s*feared/.test(shown.realm), /Infamy: feared/.test(shown.life), /Infamy feared/.test(tipInf), /infamy: hated/.test(shown.card),
+        /infamy up /.test(shown.war), /feared abroad/.test(letter), !/near collapse/.test(shown.war),
+        // round 4: the three bars, the war weariness popover, the golden age step, the peace table, the Decide title
+        barWords, /War weariness tiring/.test(tipWeary), /Stability shaky \(it must be rock steady\) and/.test(golden),
+        peace === 'Aldmark is tiring. What they will accept depends on the war score.', /Legitimacy accepted\.$/.test(ttl)], rulerWords = rw.every(Boolean);
+      return { bad: [...new Set(bad)], wordsShown, infamyWords, rulerWords, rw: rw.map(Number).join('') + ' bars: ' + bars.slice(0, 160), letter: letter.split('\n').filter(l => /infam|feared/.test(l)).join(' ').slice(0, 200), coal: coal.replace(/\n/g, " ").slice(0, 160), gridWords, foe: !!foe, log: log.length, logged, pure, attrsRead, skillAria, cfTip };
+    });
+    const ok = r.bad.length === 0 && r.wordsShown && r.infamyWords && r.rulerWords && r.gridWords && r.foe && r.log > 0 && r.pure && r.attrsRead > 100 && / & /.test(r.skillAria) && /^[^\d]*rank 1 of 5: .*Next rank: [^\d]*$/.test(r.cfTip);
+    return { ok, detail: `${r.bad.length ? r.bad.length + ' bare numbers, e.g. ' + r.bad.slice(0, 6).join(' | ') : 'no bare 0-100 number'}; needs in words ${r.wordsShown}; infamy in words ${r.infamyWords} ("${r.coal}"), for a ruler ${r.rulerWords} (${r.rw}: "${r.letter}"); War Room grid compared ${r.gridWords}; ${r.attrsRead} titles and aria-labels read (a skill row: "${r.skillAria}"; a confidant's pips: "${r.cfTip}"); ${r.log} training log lines, e.g. "${r.logged}"; no draw ${r.pure}` };
+  },
+
+  // playtest 2 (old 7, new 11, old 20, old 22): no bare 0-100 number beside a stat word on the pages a bot life visits.
+  // Two lives (a commoner in a post, a noble captain) over 9 years: every tab, World's five views, the profile, the
+  // proficiencies, the pages of family, the ruler and office holders, the War Room, and a duel. Three checks: a line of
+  // text with a stat word and a bare number; an element whose tooltip key names a 0-100 measure (perf, rep, merit,
+  // board, coMo, worth, fame, opinion, loyalty …) and still holds digits; a bar whose value is a bare number. Plus the
+  // playtest's own lines, read through the same words. (35-moods' needs and the drill bars belong to other groups' fixes.)
+  async v2sNoBareNumbers(pg) {
+    const r = await pg.evaluate(async () => {
+      const W = '(strength|speed|instincts?|stamina|wits|will|willpower|intelligence|renown|opinion(?: of you)?|command(?: skill)?|morale|performance|reputation|merit(?: in your post)?|blood|wind|health|happiness|looks|honou?r|piety|loyalty|discontent|infamy)';
+      const LINE = new RegExp(`\\b${W}\\b[:\\s·—–-]{0,3}\\(?[+−-]?\\d{1,4}(?:\\.\\d)?(?:\\s*/\\s*\\d+)?\\b(?!\\s*(?:suns?|years?|days?|months?|men\\b|km|kg|cm|ms|m/s|hours?|levies|blows|AR\\b|of \\d|in \\d))`, 'i');
+      const MORE = [/\b\d{1,3} damage\b/, /\bfighter \(\d/, /\+\d+(?:\.\d)?[,.] (?:[a-z]|all|about|nearly)/, /\bmore faster\b/, /(?:assault|attack|charge|defence|defense|march) about (?:a|two|three|half)[^.,]* (?:more|less)\b/, /\b(?!\d0*(?:,000)+\b)\d{1,3}(?:,\d{3})+ suns (?:to|from)\b/];
+      const KEYS = new Set(['perf', 'rep', 'merit', 'coMo', 'coDivMo', 'worth', 'fame', 'opinion', 'rulerOp', 'loyalty', 'facDisc', 'feud']);
+      const BOARD = /\|(merit|cmd|skill|rep)$/, NEEDS = /^(Rest|Company|Purpose|Comfort)$/;
+      const found = [], tick = () => new Promise(res => setTimeout(res, 0));
+      const scan = async where => {
+        await tick();
+        const root = document.querySelector('#modal') && document.querySelector('#modal').innerText.trim() ? document.querySelector('#modal') : document.querySelector('#tabbody');
+        const roots = [root, document.querySelector('#profile')].filter(Boolean);
+        for (const R of roots) {
+          for (const line of R.innerText.split('\n')) if (/\d/.test(line) && (LINE.test(line) || MORE.some(x => x.test(line)))) found.push(`${where}: ${line.trim().slice(0, 90)}`);
+          for (const el of R.querySelectorAll('[data-tt]')) {
+            const k = el.getAttribute('data-tt'), v = el.getAttribute('data-v') || '';
+            if (!(KEYS.has(k) || (k === 'board' && BOARD.test(v))) || el.children.length) continue;
+            // a worth is said in levies, a real unit ("about 25 levies")
+            if (/\d/.test(el.textContent) && !(k === 'worth' && /\blev(?:y|ies)$/.test(el.textContent.trim()))) found.push(`${where} [${k}]: ${el.textContent.trim().slice(0, 40)}`);
+          }
+          for (const el of R.querySelectorAll('.barrow > .val')) {
+            const l = ((el.parentNode.querySelector('.lbl') || {}).textContent || '').trim();
+            if (/^\s*[+−-]?\d{1,3}\s*$/.test(el.textContent) && !NEEDS.test(l)) found.push(`${where} [bar ${l.slice(0, 20)}]: ${el.textContent.trim()}`);
+          }
+        }
+      };
+      // the log: the story's own lines (a season's practice, merit, a battle's reckoning)
+      const scanLog = where => { for (const line of (document.querySelector('#log') || { innerText: '' }).innerText.split('\n')) if (/\d/.test(line) && (LINE.test(line) || MORE.some(x => x.test(line)))) found.push(`${where} log: ${line.trim().slice(0, 90)}`); };
+      let pages = 0;
+      for (const st of [{ seed: 38, startAge: 16 }, { seed: 41, startAge: 17, status: 'noble' }]) {
+        T.enter(st);
+        for (let y = 0; y < 9 && A.pc() && A.pc().alive; y++) {
+          T.play(1);
+          if (y % 3 !== 2) continue;
+          const at = `${st.seed}/${A.S.year}`;
+          for (const tab of T.tabs()) { UI.ov = null; UI.tab = tab; UI.render(); await scan(`${at} ${tab}`); pages++; if (tab === 'life') scanLog(at); }
+          for (const v of ['dipl', 'realms', 'wars', 'news', 'history']) { UI.ov = null; UI.tab = 'world'; UI.worldView = v; UI.render(); await scan(`${at} world ${v}`); pages++; }
+          UI.worldView = 'map';
+          for (const ov of ['profile', 'profs']) { UI.A.ov(ov); UI.render(); await scan(`${at} ${ov}`); pages++; }
+          const pc = A.pc(), ids = new Set([pc.father, pc.mother, pc.spouse].filter(Boolean)), realm = A.realm(pc.realm);
+          if (realm && realm.ruler) ids.add(realm.ruler);
+          for (const q of Object.values(A.S.people).filter(q => q.alive && q.id !== pc.id && q.realm === pc.realm && (q.office || q.job)).slice(0, 5)) ids.add(q.id);
+          for (const id of ids) { UI.A.ov('person:' + id); UI.render(); await scan(`${at} person ${id}`); pages++; }
+          UI.ov = { type: 'warroom' }; UI.render(); await scan(`${at} warroom`); pages++;
+          UI.ov = null; UI.tab = 'life'; UI.render();
+        }
+      }
+      // a duel, four rounds in
+      A.newGame({ seed: 11, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); UI.screen = 'game'; UI.ov = null; A.S.queue = []; UI.set.cutins = false; UI.render();
+      const pc = A.pc(), foe = A.makeFoe({ realm: pc.realm, tier: 2 }); foe.npcTemp = false; A.S.people[foe.id] = foe; A.S.queue = [];
+      A.startDuel(pc, foe, { kind: 'duel', lethal: false, toYield: true }); UI.render(); await tick();
+      for (let i = 0; i < 4; i++) { const b = document.querySelector('#modal .actbtns > button'); if (!b) break; b.click(); await tick(); }
+      await scan('duel'); pages++;
+      // the playtest's own lines, through the same words
+      const V = A.V2S, w = t => V.deNum(V.dePct(t));
+      const RS = Object.values(A.S.realms).filter(x => x && x.alive && x.short && x.id !== A.pc().ruler).map(x => x.short);
+      const lines = ['This season you got better at Farming & herding +2.3. 100% of it from doing, the rest from practice.',
+        'This season you got better at Riding & the lance +4.7, Command +2.6, Tactics & siegecraft +2.3 and 2 more. 80% of it from doing, the rest from practice.',
+        'After the battle, the captains reckon it: your counterattack countered their frontal assault +20%, drill, kit and experience −12%.',
+        // (the playtest's realms were Solenne, the Horde, Abara and Zanara; this world's own realms stand in for them)
+        `${RS[0]} sends 881,788 suns to ${RS[1]} for its war: the siege, in 1110.`, `${RS[2]} owes ${RS[1]} 402,000 suns from a loan of 1104, and has paid none of it back.`,
+        'You take a hit — 7 damage.', 'Your superiors notice the extra hours. (Merit +15)', 'For Senior Captain: merit 379/600, command skill 28/35, months at your present rank 1/16.',
+        'In a fight: Crushed knee that never bends right: worth 45 to 43 (speed -7, stamina -3).', 'Captain Godric of Highwold (Cunning, command 56)'].map(w);
+      const traits = Object.keys(GD.ORDERS || {}).flatMap(k => A.orderTraits(k));
+      for (const l of lines.concat(traits)) if (LINE.test(l) || MORE.some(x => x.test(l)) || /%|\+\d/.test(l)) found.push('line: ' + l.slice(0, 90));
+      // verifier: the captain rule ate the release's head count ("You command 4,500 men" -> "You command Untrained,500
+      // men") and the hearsay rule hedged the player's own sums and sums already hedged ("about some 2,000 suns").
+      // These lines must come through unchanged.
+      const keep = [`You command 4,500 men of ${RS[0]} at Highwold.`, 'You command 300 men on the left.', 'Under your command 40 spears hold the ford.',
+        "A knight's ransom runs about 2,000 suns.", `He asks a loan of you for ${RS[0]}'s war. All told, about 2,000 suns.`, 'You lent your cousin 1,250 suns.',
+        'Pay the ransom (2,400 suns)', `${RS[0]} pays you 3,500 suns for the horses.`, 'House Varre owes Brother Anselm 3,400 suns.',
+        "Its general's command 45 ÷ 12", 'The armies meet (300 vs 250).'];
+      const kept = keep.map(l => [l, w(l)]).filter(([a, b]) => a !== b).map(([a, b]) => `${a} -> ${b}`);
+      // the release's war games give both rolls, or neither: "(your tactics 47 vs 52)", lost "(47 vs 52)"
+      const games = ['The war games go your way: your men outmaneuver the "enemy" (your tactics 61 vs 52). The high command takes note.',
+        'The war games go badly: the umpires rule you "destroyed" (47 vs 52). Still, you learn.', 'Sir Hal · command 45 · tactics 30 · logistics 20'].map(w);
+      for (const l of games) if (/\d/.test(l)) found.push('line: ' + l.slice(0, 90));
+      return { pages, found: [...new Set(found)], lines, kept, games, traits: traits.filter(t => /faster|Charge/.test(t)).slice(0, 2) };
+    });
+    // (the season's practice line is j-numbers.core.js's: i-numbers' training-log rule leaves a line that says "of it
+    // from doing" to it, so on the one layout of both groups the line is again "(some). All of it came from doing.", and
+    // the bar is wf-numbers' exact one again, not the looser one the swapped layout needed)
+    const ok = r.pages > 60 && r.found.length === 0 && r.kept.length === 0 && /\(some\)\. All of it came from doing\.$/.test(r.lines[0]) && /some 900,000 suns/.test(r.lines[3]) && /some 400,000 suns/.test(r.lines[4]) && /— a cut\.$/.test(r.lines[5]) && /your tactics beat theirs/.test(r.games[0]);
+    return { ok, detail: `${r.pages} pages: ${r.found.length ? r.found.length + ' bare numbers, e.g. ' + r.found.slice(0, 30).join(' | ') : 'no bare 0-100 number by a stat word'}; ${r.kept.length ? 'changed what it must not: ' + r.kept.join(' | ') + '; ' : ''}${r.lines.slice(0, 5).join(' | ')} | ${r.games.join(' | ')} | ${r.traits.join(' | ')}` };
+  },
+
   // the odds badge on a check choice is words and a tipped balance
   async v2sBadge(pg) {
     const r = await pg.evaluate(async () => {
