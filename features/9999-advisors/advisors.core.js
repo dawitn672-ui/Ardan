@@ -71,7 +71,8 @@
   };
   // the seat's name; for the seats a bond gives (your friend, your master) the word is the bond's own, so the counsel
   // label and the People tab say the same thing (playtest 2, old #15)
-  const FRIEND_WORD = { bestfriend: 'your best friend', 'best friend': 'your best friend', comrade: 'a comrade', student: 'your student', lover: 'your lover', betrothed: 'your betrothed' };
+  const FRIEND_WORD = { bestfriend: 'your best friend', 'best friend': 'your best friend', comrade: 'a comrade', student: 'your student', lover: 'your lover', betrothed: 'your betrothed',
+    mentor: 'your mentor', master: 'your master', patron: 'your patron' };
   const MASTER_WORD = { mentor: 'your mentor', patron: 'your patron', superior: 'your superior' };
   ADV.roleName = function (role, p) {
     if (A.COUNCIL && A.COUNCIL[role]) return A.COUNCIL[role].name;
