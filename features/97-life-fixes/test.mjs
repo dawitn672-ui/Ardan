@@ -544,4 +544,49 @@ export default {
     const ok = r.first && !r.one[0] && r.one[1] && !r.three[0] && r.three[1] && !r.once && r.off && r.asked.join() === '0,6,18,42';
     return { ok, detail: `first ${r.first}; after one showing, 3 and 4 years on: ${r.one.join('/')}; after three, 15 and 16 years on: ${r.three.join('/')}; once a life, 30 years on: ${r.once}; memory off: ${r.off}; a guest asked to the same kind in years ${r.asked.join(', ')}` };
   },
+
+  // lfRepeats (v2 merge, verifier): an invitation to another kind of gathering is answered for the player only with
+  // their own last 'Go', and only within a quiet that doubles with each invitation they were shown; their regrets
+  // (a declined funeral) never decline another kind, and an answer given for them is not remembered as theirs. The
+  // same kind keeps 97's rule: answered as last time.
+  async lfInviteCarry(pg) {
+    const r = await pg.evaluate(() => {
+      if (!A.LF || !A.LF.carry) return { err: 'A.LF.carry is missing' };
+      A.newGame({ seed: 9783, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 30 });
+      const pc = A.pc(), S = A.S, y = S.year, LF = A.LF;
+      const role0 = A.gathRole; A.gathRole = () => 'noble';
+      const gath0 = S.gath, out = {};
+      try {
+        let k = 0;
+        // shown: how many invitations the player has had, lastGo: years since their own last 'Go' (null: none)
+        const ask = (kind, set) => {
+          const id = 'lft' + (++k), g = { id, kind, host: 'POL-09', guests: ['POL-09'], couple: [], at: (S.day || 0) + 60, pc: { role: 'noble' } };
+          S.gath = (gath0 || []).concat([g]);
+          S.queue.length = 0; S.queue.push({ type: 'event', ev: 'ga_invite', ctx: { gid: id } });
+          pc.evN = Object.assign(pc.evN || {}, { ga_invite: set.shown }); pc.flags.ev = Object.assign(pc.flags.ev || {}, { ga_invite: y - 1 });
+          const st = LF.st(); st.gaAns = Object.assign({}, set.ans || {}); st.gaGo = set.lastGo == null ? {} : { noble: y - set.lastGo };
+          const v = A.eventView(S.queue[0]);
+          if (!v || v.skip) return 'no view';
+          LF.screen();
+          const asked = S.queue[0] && S.queue[0].ev === 'ga_invite' && !S.queue[0].result;
+          return asked ? 'asked' : g.pc.accepted === true ? 'went' : g.pc.accepted === false ? 'regrets' : 'gone';
+        };
+        out.declined = ask('wedding', { shown: 1, ans: { 'funeral:noble': 0 } });
+        out.carried = ask('wedding', { shown: 1, ans: { 'funeral:noble': 1 }, lastGo: 2 });
+        out.carriedKept = LF.st().gaAns['wedding:noble'];
+        out.lapsed = ask('wedding', { shown: 1, ans: { 'funeral:noble': 1 }, lastGo: 7 });
+        out.doubled = ask('wedding', { shown: 2, ans: { 'funeral:noble': 1 }, lastGo: 7 });
+        out.doubledLapsed = ask('wedding', { shown: 2, ans: { 'funeral:noble': 1 }, lastGo: 13 });
+        out.sameNo = ask('wedding', { shown: 1, ans: { 'wedding:noble': 0 } });
+        out.sameGo = ask('wedding', { shown: 1, ans: { 'wedding:noble': 1 }, lastGo: 30 });
+        // an opening's aim carried to another kind: within the quiet, not after it
+        out.aim = [LF.carry(pc, 'ga_open', y - 3), LF.carry(pc, 'ga_open', y - 40), LF.carry(pc, 'ga_open', undefined)];
+      } finally { A.gathRole = role0; S.gath = gath0; S.queue.length = 0; }
+      return out;
+    });
+    if (r.err) return { ok: false, detail: r.err };
+    const ok = r.declined === 'asked' && r.carried === 'went' && r.carriedKept === undefined && r.lapsed === 'asked' && r.doubled === 'went' &&
+      r.doubledLapsed === 'asked' && r.sameNo === 'regrets' && r.sameGo === 'went' && r.aim[0] && !r.aim[1] && !r.aim[2];
+    return { ok, detail: `a wedding after the player's regrets to a funeral: ${r.declined}; after their 'Go' two years ago: ${r.carried} (remembered as theirs: ${r.carriedKept}); seven years on: ${r.lapsed}; seven years on after two invitations: ${r.doubled}, thirteen: ${r.doubledLapsed}; the same kind declined: ${r.sameNo}, attended: ${r.sameGo}; an aim carried 3/40 years/never: ${r.aim.join('/')}` };
+  },
 };

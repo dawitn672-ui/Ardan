@@ -124,11 +124,21 @@
     try {
       if (fresh && q.result && q.ev === 'ga_invite' && q.ctx && q.ctx.gid && q.view) {
         const g = (A.S.gath || []).find(x => x.id === q.ctx.gid), c = q.view.choices[arguments[0]];
-        if (g && c && (c.t === 'Go' || /regrets/i.test(c.t))) { const st = LF.st(); if (!isObj(st.gaAns)) st.gaAns = {}; st.gaAns[g.kind + ':' + (g.pc && g.pc.role)] = st.gaAns['*:' + (g.pc && g.pc.role)] = c.t === 'Go' ? 1 : 0; }
+        // only the player's own answer is remembered (an answer given for them, below, is not): per kind, as before, and
+        // for the role the year of their last 'Go' (st.gaGo), cleared by their regrets
+        if (g && c && !LF.quiet && (c.t === 'Go' || /regrets/i.test(c.t))) {
+          const st = LF.st(), role = g.pc && g.pc.role; if (!isObj(st.gaAns)) st.gaAns = {}; if (!isObj(st.gaGo)) st.gaGo = {};
+          st.gaAns[g.kind + ':' + role] = c.t === 'Go' ? 1 : 0;
+          if (c.t === 'Go') st.gaGo[role] = A.S.year; else delete st.gaGo[role];
+        }
       }
       if (fresh && q.result && q.ev === 'ga_open' && q.ctx && q.ctx.gid && q.view && !LF.quiet) {
         const g = (A.S.gath || []).find(x => x.id === q.ctx.gid), c = q.view.choices[arguments[0]], aims = q.ctx.aims || [];
-        if (g && c) { const st = LF.st(); if (!isObj(st.gaAim)) st.gaAim = {}; st.gaAim[g.kind + ':' + (g.pc && g.pc.role)] = st.gaAim['*:' + (g.pc && g.pc.role)] = c.i < aims.length && aims[c.i] ? String(aims[c.i].k || '') : '-'; }
+        if (g && c) {
+          const st = LF.st(), role = g.pc && g.pc.role, k = c.i < aims.length && aims[c.i] ? String(aims[c.i].k || '') : '-';
+          if (!isObj(st.gaAim)) st.gaAim = {}; if (!isObj(st.gaAimY)) st.gaAimY = {};
+          st.gaAim[g.kind + ':' + role] = st.gaAim['*:' + role] = k; st.gaAimY[role] = A.S.year;
+        }
       }
       if (fresh && q.result && pc && q.ev && !LF.quiet) {
         const m = LF.mem(pc); m[q.ev] = (m[q.ev] || 0) + 1;
@@ -318,6 +328,10 @@
   // is taken, and its result goes to the story log, as the release's quiet settle does for small scenes.
   LF.frame = q => !!(q && q.type === 'event' && !q.result && q.ctx && q.ctx.gid && /^ga_/.test(q.ev || ''));
   LF.quiet = false;
+  // an answer the player gave in one gathering's frame, carried to another kind's: only until CARRY_GAP x 2^(n-1) years
+  // after they gave it (n: how often they have been shown that frame), a quiet that doubles each time, as A.lfSpaced
+  LF.CARRY_GAP = 6;
+  LF.carry = (pc, id, y) => typeof y === 'number' && A.S.year - y < LF.CARRY_GAP * Math.pow(2, Math.min(4, Math.max(0, LF.n(pc, id) - 1)));
   LF.screen = function () {
     const S = A.S, pc = S && A.pc();
     if (!LF.memOn() || !pc || !pc.alive) return 0;
@@ -328,10 +342,13 @@
         const v = A.eventView(q);
         // an invitation to a kind of gathering the player went to last time, in the same role: they go again
         if (v && !v.skip && q.ev === 'ga_invite') {
-          // (an invitation to another kind, in a role the life has answered before: the same answer as last time; on
-          // the merged v2 build a courtier's nine kinds of invitation were 20 of 540 repeats in nine lives, lfRepeats)
+          // (an invitation to another kind, in a role the player last answered 'Go': they go again, but only within a
+          // quiet that doubles with each invitation they were shown (LF.carry), so the player is asked again after it.
+          // Regrets are never carried to another kind: a declined funeral does not decline the next wedding. On the
+          // merged v2 build a courtier's nine kinds of invitation were 20 of 540 repeats in nine lives, lfRepeats)
           const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), role = g && g.pc && g.pc.role;
-          const a0 = g && isObj(st.gaAns) ? st.gaAns[g.kind + ':' + role] : null, ans = a0 != null ? a0 : g && isObj(st.gaAns) ? st.gaAns['*:' + role] : null;
+          const a0 = g && isObj(st.gaAns) ? st.gaAns[g.kind + ':' + role] : null;
+          const ans = a0 != null ? a0 : g && isObj(st.gaGo) && LF.carry(pc, 'ga_invite', st.gaGo[role]) ? 1 : null;
           const go = v.choices.findIndex(c => c.t === 'Go'), no = v.choices.findIndex(c => /regrets/i.test(c.t)), pick = ans === 1 ? go : ans === 0 ? no : -1;
           if (g && pick >= 0) {
             LF.quiet = true;
@@ -344,8 +361,9 @@
         // the opening of a kind of gathering attended before in the same role: the same aim as last time, if it is on offer
         if (v && !v.skip && q.ev === 'ga_open') {
           const g = (S.gath || []).find(x => x.id === q.ctx.gid), st = LF.st(), want = g && isObj(st.gaAim) ? st.gaAim[g.kind + ':' + (g.pc && g.pc.role)] : null, aims = q.ctx.aims || [];
-          // another kind's opening in the same role: the aim pressed last time, if this one offers it
-          const any = g && isObj(st.gaAim) ? st.gaAim['*:' + (g.pc && g.pc.role)] : null;
+          // another kind's opening in the same role: the aim the player pressed last time, if this one offers it, within
+          // the same doubling quiet as an invitation (LF.carry); after it the player chooses again
+          const any = g && isObj(st.gaAim) && isObj(st.gaAimY) && LF.carry(pc, 'ga_open', st.gaAimY[g.pc && g.pc.role]) ? st.gaAim['*:' + (g.pc && g.pc.role)] : null;
           let pick = -1;
           if (want == null && any && any !== '-') { const j = aims.findIndex(a => a && String(a.k || '') === any); if (j >= 0) pick = v.choices.findIndex(c => c.i === j); }
           else if (want && want !== '-') { const j = aims.findIndex(a => a && String(a.k || '') === want); if (j >= 0) pick = v.choices.findIndex(c => c.i === j); }
