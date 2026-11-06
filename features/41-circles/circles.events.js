@@ -25,7 +25,7 @@ A.defEvents([
     ] },
 
   // queued when you meet someone close to one of your foes
-  { id: 'cir_foes_friend', title: 'A friend of {foe}', trigger: true, cool: 1, npc: true,
+  { id: 'cir_foes_friend', title: 'A friend of {foeName}', trigger: true, cool: 1, npc: true,
     cond: (p, C) => C.adult(p),
     setup: (p, ctx) => { ctx.foe = ctx.foe != null ? ctx.foe : null; const f = A.P(ctx.foe), t = A.P(ctx.pid); if (!f || !t || !t.alive) { ctx.skip = true; return; } ctx.foeName = f.given; },
     text: '{them} is civil, and no more. {theyHe} has known {foeName} for years, and has heard {foeName}\'s side of everything that passed between you.',
