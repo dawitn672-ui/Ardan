@@ -29,6 +29,9 @@
     WARD_EVERY: 3,      // years between two meetings with a standing rule
     TOKENS: ['w1', 'w2', 'w3', 'realm', 'dowry', 'paid', 'got', 'estate', 'parent', 'child', 'cut'],
     SCENE_GAP: 30,      // days between two first-meeting scenes; inside it a custom is met quietly
+    // and years between two in a life, doubling with each scene (97's A.lfSpaced): a merchant crossing realms met a
+    // new custom as a scene four times in one life on the merged v2 build (lfRepeats); the rest are met quietly
+    SCENE_QUIET: 3,
   };
   B.of = rid => (A.BIBLE_DATA || {})[rid] || null;
   B.words = cid => (A.BIBLE_WORDS || {})[cid] || [];
@@ -97,7 +100,7 @@
     pc.rb = pc.rb && typeof pc.rb === 'object' ? pc.rb : {};
     const h = pc.rb[c.id];
     const scene = !h && c.kind !== 'grave' && pc.alive && (S.rbScene == null || now - S.rbScene >= B.SCENE_GAP) &&
-      !S.queue.some(q => q && q.ev === 'rb_custom');
+      !S.queue.some(q => q && q.ev === 'rb_custom') && (!A.lfSpaced || A.lfSpaced(pc, 'rb_custom', B.SCENE_QUIET));
     pc.rb[c.id] = { n: (h ? h.n : 0) + 1, y: S.year, first: h ? h.first : S.year };
     if (scene) {
       S.rbScene = now;
