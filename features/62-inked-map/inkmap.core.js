@@ -738,6 +738,7 @@
     return marked.size;
   }
   IM.inkify = inkify;
+  IM.hatch = hatch;     // for 99991-v2-map's tints over the satellite ground, which take the place of the wash above
   const ovBasic = MAP.overlay;
   MAP.overlay = function () {
     const cv = ovBasic.apply(this, arguments);
