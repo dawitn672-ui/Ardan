@@ -235,6 +235,50 @@ export default {
     return { ok: !r.length, detail: r.join('; ') || 'an agnatic house never keeps a woman at its head; "passed over" says why and when; occupation words follow sex' };
   },
 
+  // playtest 2, new #9: orc full siblings were each "of Clan" something else ("Tarn of Clan Gholruk / Ozrak of Clan
+  // Hrogul / Brak of Clan Mukhoth", parents Zardak and Ozhgar, you Kozrak). A child takes a parent's clan by the law:
+  // the father's where the crown goes to sons or to either, the mother's where it goes to daughters (the Tusk Clans);
+  // you, your elder siblings, the brothers and sisters born later and the father's brothers all share one clan
+  async v2fClanByLaw(pg) {
+    const r = await pg.evaluate(() => {
+      const bad = [], rows = [], clan = q => (/^of Clan (.+)$/.exec(q.sur || '') || [])[1] || null;
+      for (const [seed, realm] of [[4242, 'POL-01'], [4243, 'POL-11'], [4244, 'POL-34'], [4245, 'POL-34']]) {
+        T.enter({ seed, race: 'orc', realm, status: 'artisan', sex: seed % 2 ? 'F' : 'M', startAge: 18 });
+        const pc = A.pc(), fa = A.AKIN ? A.AKIN.parent(pc, 'M') : A.P(pc.parents[0]), mo = A.AKIN ? A.AKIN.parent(pc, 'F') : A.P(pc.parents[1]);
+        if (pc.surMode !== 'deed') { bad.push(`${seed}: an orc artisan named in ${pc.surMode} mode`); continue; }
+        const female = A.realm(pc.realm).law === 'female', want = clan(female ? mo : fa);
+        // two brothers or sisters born now, by the game's own birth
+        const n0 = mo.children.length;
+        for (let i = 0; i < 2; i++) { const ch = A.chance; A.chance = () => true; try { A.birth(mo, fa, true, true); } finally { A.chance = ch; } }
+        const sibs = [...new Set([...fa.children, ...mo.children])].map(A.P).filter(q => q && q.id !== pc.id);
+        const born = mo.children.length - n0;
+        const unc = (fa.parents || []).map(A.P).filter(Boolean).flatMap(g => g.children).map(A.P).filter(q => q && q.id !== fa.id && q.sex !== 'F');
+        const off = [pc, ...sibs].filter(q => clan(q) !== want).map(q => `${q.given} ${q.sur}`);
+        if (off.length || pc.flags.clan !== want) bad.push(`${seed} ${realm}: want Clan ${want} (${female ? "mother's" : "father's"}); off: ${off.join(', ') || 'flag ' + pc.flags.clan}`);
+        const uoff = unc.filter(q => clan(q) !== clan(fa)).map(q => q.given + ' ' + q.sur);
+        if (uoff.length) bad.push(`${seed}: the father's brothers ${uoff.join(', ')} not of Clan ${clan(fa)}`);
+        // the grandparent the law runs through has the parent's clan, on both sides
+        for (const par of [fa, mo]) {
+          const g = (par.parents || []).map(A.P).find(q => q && (q.sex === 'F') === female);
+          if (g && clan(g) !== clan(par)) bad.push(`${seed}: ${par.given} of Clan ${clan(par)}, but ${female ? 'mother' : 'father'} ${g.given} ${g.sur}`);
+        }
+        if (!born) bad.push(`${seed}: no child born`);
+        rows.push(`${realm} (${female ? 'through the mother' : 'through the father'}): father ${fa.sur}, mother ${mo.sur}, you and ${sibs.length} siblings (${born} born now) ${want}`);
+      }
+      // the release's draw is still made: the stream after a name is the same as before the fix
+      T.enter({ seed: 4250, race: 'orc', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 18 });
+      const pc = A.pc(), s0 = A.rngState;
+      const a = A.familyName({ cult: pc.cult, realm: pc.realm, status: 'artisan', father: A.P(pc.parents[0]), mother: A.P(pc.parents[1]), sex: 'M' });
+      const s1 = A.rngState; A.rngState = s0;
+      const ch = A.familyName({ cult: pc.cult, realm: pc.realm, status: 'artisan', sex: 'M' });
+      if (A.rngState !== s1) bad.push('naming a child with parents draws differently from naming one without');
+      if (a.clan !== clan(A.P(pc.parents[0]))) bad.push(`familyName with parents gave Clan ${a.clan}`);
+      void ch;
+      return { bad, rows };
+    });
+    return { ok: !r.bad.length, detail: (r.bad.length ? 'BAD: ' + r.bad.slice(0, 5).join('; ') + '. ' : '') + r.rows.join('; ') };
+  },
+
   // playtest 1, #15: one coherent label: "best friend" in words, no "Enemy" beside a warm opinion, one lover, one superior
   async v2fOneLabel(pg) {
     const r = await pg.evaluate(() => {
