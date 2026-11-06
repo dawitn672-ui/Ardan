@@ -168,6 +168,45 @@ RI.greatWork = function (r, cost) {
   return g.n;
 };
 
+// ---------------------------------------------------------------- a host cut to the realm's size
+// The release sizes a realm's divisions once, at the world's start: a realm whose host is under 1.6 divisions gets
+// brigades (A.tplDefaults). A realm that later loses most of its land keeps divisions bigger than its whole normal host,
+// and the release raises a division only with twice its men in the levy: on the generated continent (v2) realms shrink
+// fast, and one in eight AI realm-years had no army at all, at peace, with gold in the treasury (POL-21 at seed 606:
+// two counties, a host of 1,700, divisions of 7,350; CI run 88). Each year before the release's recruiting, an AI crown
+// cuts its templates to brigades by the release's own rule, and gives them back their full battalions once its host
+// can hold 1.6 of them again. Nothing is drawn; the template's version moves, so A.tplS reads it afresh.
+RI.fitHost = function (r) {
+  const F = r && r.forces; if (!F || !F.tpl) return 0;
+  const base = normalHost(r), tids = Object.keys(F.tpl).filter(id => F.tpl[id].kind !== 'garrison' && !F.tpl[id].order);
+  if (!tids.length) return 0;
+  const ssum = tids.reduce((a, id) => a + (F.tpl[id].share || 1), 0) || 1;
+  let changed = 0;
+  for (const id of tids) {
+    const t = F.tpl[id], full = t.riFull || null, s = A.tplS(r.id, id); if (!s || !s.men || !t.bns || !t.bns.length) continue;
+    const want = base * (t.share || 1) / ssum, perBn = s.men / t.bns.length;
+    if (full) {
+      // grown again: its full battalions come back when the host could hold 1.6 such divisions
+      const fullMen = perBn * full.bns.length;
+      if (want >= fullMen * 1.6) { t.bns = full.bns.slice(); t.sup = full.sup.slice(); t.name = full.name; delete t.riFull; t.v = (t.v || 1) + 1; changed++; continue; }
+    }
+    if (base >= s.men * 1.6) continue;
+    const n = Math.max(1, Math.min(t.bns.length, Math.round(want / (2 * perBn))));
+    if (n >= t.bns.length) continue;
+    if (!t.riFull) t.riFull = { bns: t.bns.slice(), sup: (t.sup || []).slice(), name: t.name };
+    const keep = [], step = t.bns.length / n;
+    for (let i = 0; i < n; i++) keep.push(t.bns[Math.floor(i * step)]);
+    t.bns = keep; t.sup = (t.sup || []).slice(0, 1); t.name = String(t.name).replace('Division', 'Brigade').replace('Corps', 'Brigade');
+    t.v = (t.v || 1) + 1; changed++;
+  }
+  return changed;
+};
+const baseForcesAI = A.forcesAI;
+A.forcesAI = function (r) {
+  try { const pc = A.pc(); if (r && !r.playerRun && !(pc && pc.ruler === r.id) && !(A.myRealm && A.myRealm() === r)) RI.fitHost(r); } catch (e) { console.error('[ri] fit host', e); }
+  return baseForcesAI.apply(this, arguments);
+};
+
 // ---------------------------------------------------------------- sellswords
 
 const COMPANY = ['Grey', 'Red', 'Free', 'Iron', 'Black', 'Golden', 'Salt', 'Wolf', 'Lantern', 'Ashen'];

@@ -147,6 +147,35 @@ export default {
     return { ok, detail: `a claimant's share of the army: ${r.loyal}% when every house is loyal, ${r.split}% when the stronger half hate the crown (${r.backers} backers); the war gave them ${r.got}%; "${r.news}"; after the claim failed the backers' loyalty fell by ${r.drop.join(', ')} and ${r.hunted} heads were taken` };
   },
 
+  // CI run 88: a realm cut down to a few counties kept divisions bigger than its whole normal host and raised none (army
+  // 0 at peace for a decade). Its templates now shrink to brigades by the release's own rule, it raises one, and the full
+  // battalions come back when the realm grows again; nothing is drawn
+  async riHostFitsRealm(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      RIT.life(5610, { status: 'peasant', startAge: 16 });
+      const RI = A.RI, x = RIT.ai().filter(o => o.forces && o.army > 20000 && !A.atWar(o.id).length).sort((a, b) => a.id < b.id ? -1 : 1)[0];
+      const F = x.forces, main = Object.keys(F.tpl).filter(id => F.tpl[id].kind !== 'garrison' && !F.tpl[id].order)[0];
+      const men0 = A.tplS(x.id, main).men, bns0 = F.tpl[main].bns.length;
+      // the realm loses nine tenths of its people and its whole host
+      const pop0 = x.provPop; x.provPop = Math.round(x.basePop * .08);
+      for (const d of F.divs.slice()) A.divRemove(d);
+      A.forcesSync(x); F.queue = [];
+      const normal = (LORE.realms[x.id] ? LORE.realms[x.id].army : x.army0 || x.army) * x.provPop / x.basePop;
+      x.levy = Math.max(x.levy || 0, Math.round(normal * 2)); x.treasury = Math.max(x.treasury, x.income * 2);
+      const rng0 = JSON.stringify(A.rngState);
+      RI.fitHost(x);
+      const drew = JSON.stringify(A.rngState) !== rng0, men1 = A.tplS(x.id, main).men, name1 = F.tpl[main].name;
+      A.forcesAI(x);
+      const raised = F.queue.reduce((a, q) => a + q.men, 0);
+      // grown back: the full division returns
+      x.provPop = pop0; RI.fitHost(x);
+      return { realm: x.id, men0, bns0, normal: Math.round(normal), men1, name1, raised, drew, back: F.tpl[main].bns.length, full: !F.tpl[main].riFull };
+    });
+    const ok = r.men1 * 1.6 <= r.normal * 1.25 && r.men1 < r.men0 && r.raised > 0 && !r.drew && r.back === r.bns0 && r.full;
+    return { ok, detail: `${r.realm} cut to a normal host of ${r.normal}: its ${r.men0}-man division becomes a ${r.men1}-man ${r.name1}; it raises ${r.raised} men; draws nothing: ${!r.drew}; grown again, ${r.back} of ${r.bns0} battalions come back` };
+  },
+
   // Diplomacy 5: AI gold is spent, not burned; the hoarding flag reads 0; armies, stability and wars stay sane
   async riGoldGetsUsed(pg) {
     await pg.evaluate(SETUP);
