@@ -114,17 +114,19 @@ export default {
       A.S.time = 9; A.doActivity('pilgrimage');
       const j = pc.journey; out.pilgrim = j && j.k;
       if (j) { pc.jrShrines = { [j.to]: y - 10 }; pc.evN.jr_shrine_again = 1; pc.flags.ev.jr_shrine_again = y - 10; }
-      const p0 = pc.piety; JT.seen = [];
+      // piety with v2's pull toward faith: a faithless player's piety is held at a neutral 30 each month and what an fx
+      // adds is kept as p.v2.pull (99993-v2-stats' d-faith, V2_SPEC complaint 7)
+      const pull = () => (pc.v2 && +pc.v2.pull) || 0, p0 = pc.piety + pull(); JT.seen = [];
       for (let g = 0; g < 200 && pc.journey && !pc.journey.there && pc.journey.k === 'pilgrim'; g++) { A.advance(5); JT.clear(); }
       out.scene = JT.seen.some(s => /^jr_shrine/.test(s));
       out.home = !pc.journey || pc.journey.k === 'return' || !!pc.journey.home || pc.journey.k !== 'pilgrim';
       // the story log is a list of years, each with its lines as [text, class, ...]: search the lines
       out.line = (A.S.log || []).some(e => (e && e.lines || []).some(l => /climb the stair/.test(Array.isArray(l) ? l[0] : String(l))));
-      out.piety = pc.piety >= p0;
+      out.piety = pc.piety + pull() >= p0; out.pv = [p0, pc.piety + pull()];
       return out;
     });
     if (r.err) return { ok: false, detail: r.err };
     const ok = !r.folk5 && r.folk6 && !r.folk2 && r.pilgrim === 'pilgrim' && !r.scene && r.home && r.line && r.piety;
-    return { ok, detail: `folk on the road seen once: 5 years on ${r.folk5}, 6 years on ${r.folk6}; seen twice, 6 years on ${r.folk2}; pilgrimage ${r.pilgrim}; at a shrine knelt at before: scene ${r.scene}, log line ${r.line}, homeward ${r.home}` };
+    return { ok, detail: `folk on the road seen once: 5 years on ${r.folk5}, 6 years on ${r.folk6}; seen twice, 6 years on ${r.folk2}; pilgrimage ${r.pilgrim}; at a shrine knelt at before: scene ${r.scene}, log line ${r.line}, homeward ${r.home}; piety and pull ${(r.pv || []).join(' -> ')}` };
   },
 };
