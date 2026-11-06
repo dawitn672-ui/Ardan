@@ -220,6 +220,40 @@ export default {
     return { ok: !!r.seen && !/\{/.test(r.text), detail: r.seen ? `${r.seen} after ${r.months} months: "${r.text}"` : `no letter in ${r.months} months` };
   },
 
+  // playtest 2, old 10 ("Orders: hold and wait" seven times in one life) and 97's lfRepeats: the same order letter from
+  // the same general waits G.QUIET days, and comes once a war (a letter that says what the last one said is routine).
+  // The same eight years of war are played twice, with G.QUIET and G.WAR_ONCE as built and with them off: as built no
+  // letter of a kind comes from the same general sooner than that or twice in a war, and the quiet is what holds them back
+  async ordersQuiet(pg) {
+    await pg.evaluate(SETUP);
+    const r = await pg.evaluate(() => {
+      const G = A.GENERALS, Q0 = G.QUIET, W0 = G.WAR_ONCE;
+      const run = quiet => {
+        G.QUIET = quiet ? Q0 : {}; G.WAR_ONCE = quiet ? W0 : false;
+        const seen = [];
+        try {
+          const { enemy } = GOT.soldier(86);
+          const q0 = A.queue;
+          A.queue = function (it) { if (it && it.type === 'event' && /^go_order_/.test(it.ev)) seen.push({ kind: it.ctx.temper, gen: it.ctx.genId, day: A.absDay(), war: A.atWar('POL-01').map(w => w.id).sort().join() }); return q0.apply(this, arguments); };
+          try {
+            const d0 = A.absDay();
+            for (let g = 0; g < 400 && A.absDay() - d0 < 8 * 365 && A.pc().alive; g++) {
+              if (!A.atWar('POL-01').length) A.startWar('POL-01', enemy, null, 'conquest');
+              if (!A.pc().mil) A.enlist(A.pc());
+              A.S.queue = []; A.advance(30);
+            }
+          } finally { A.queue = q0; }
+        } finally { G.QUIET = Q0; G.WAR_ONCE = W0; }
+        return seen;
+      };
+      const close = (list, Q) => { let n = 0; const last = {}; for (const x of list) { const k = x.kind + '|' + x.gen, l = last[k]; if (l && (x.day - l.day < (Q[x.kind] || 0) || l.war === x.war)) n++; last[k] = x; } return n; };
+      const on = run(true), off = run(false);
+      return { on: on.length, off: off.length, closeOn: close(on, Q0), closeOff: close(off, Q0) };
+    });
+    const ok = r.on >= 2 && r.closeOn === 0 && r.closeOff > 0;
+    return { ok, detail: `eight years of war: ${r.on} letters, ${r.closeOn} the same as the last from the same general within the quiet or in the same war; without it ${r.off} letters, ${r.closeOff} so` };
+  },
+
   async ordersSettle(pg) {
     // what you did, and whether the plan worked, decide what comes of it
     await pg.evaluate(SETUP);

@@ -910,13 +910,19 @@
     if (!(pc.flags.co_hungry && S.year - pc.flags.co_hungry < 1)) CO.queueEv('co_hungry_march', {});
     else if ((pc.mil.rank || 0) <= 5 && A.squad(pc).length && !(pc.flags.co_desert && S.year - pc.flags.co_desert < 2)) { const c = A.squad(pc)[0]; CO.queueEv('co_desert', { pid: c.id }); }
   };
-  CO.queueEv = function (ev, ctx) {
+  CO.queueEv = function (ev, ctx, again) {
     const S = A.S;
     if ((S.queue || []).some(q => q.type === 'event' && q.ev === ev)) return;
-    A.queue({ type: 'event', ev, ctx: Object.assign({}, ctx), forced: true });
     const pc = A.pc(), now = A.absDay ? A.absDay() : 0;
+    // a new captain within the quiet is told in the log line that names him, not in a scene again
+    if (CO.HUSH[ev] && !again && CO.recent(pc, ev)) return;
+    A.queue({ type: 'event', ev, ctx: Object.assign({}, ctx), forced: true });
     if (pc && pc.flags) pc.flags.co_last = now;
-    if (pc && pc.mil && CO.QUIET[ev]) { pc.mil.coSeen = pc.mil.coSeen || {}; pc.mil.coSeen[ev] = now; }
+    if (pc && pc.mil && CO.QUIET[ev]) {
+      pc.mil.coSeen = pc.mil.coSeen || {}; pc.mil.coSeen[ev] = now;
+      pc.mil.coN = pc.mil.coN || {}; pc.mil.coN[ev] = (pc.mil.coN[ev] || 0) + 1;
+      if (CO.WAR_ONCE[ev]) { pc.mil.coWar = pc.mil.coWar || {}; pc.mil.coWar[ev] = CO.wars(pc); }
+    }
   };
   // The routine company scenes keep a quieter cadence over a life. They are forced scenes, which 97's life memory leaves
   // alone, and over nine 40-year lives pay day came back 27 times and the roll call 16 (97's lfRepeats; playtest 2, old
@@ -924,10 +930,25 @@
   // their own scene and still come at once), the roll call and the captain's word three years, unless the fight cost the
   // company twice the most a roll call has counted. pc.mil.coSeen holds the day each was last queued (a save from before
   // has none: the first comes as before)
-  CO.QUIET = { co_pay_day: 1460, co_roll_call: 1095, co_captain_word: 1095 };
+  //
+  // Measured on the v2 build, that still left pay day 13 times again and the roll call 4 in the nine lives (lfRepeats
+  // 15.6% against 15%): a soldier of forty years saw seven pay days, one every five years of the same war. So pay day,
+  // the roll call and the captain's word also come once a war (CO.WAR_ONCE: again only when a war he had not served in
+  // has begun since; pc.mil.coWar holds the wars at the last one), and a new captain within three years of the last is
+  // told by the log line that names him ("Sergeant X takes the company"), not by the scene again (CO.HUSH). And the
+  // quiet doubles each time the scene has come (pc.mil.coN counts them): the fourth pay day of a life waits sixteen
+  // years after the third, so a soldier of forty years sees four, not seven
+  CO.QUIET = { co_pay_day: 1460, co_roll_call: 1095, co_captain_word: 1095, co_new_captain: 1095 };
+  CO.WAR_ONCE = { co_pay_day: 1, co_roll_call: 1, co_captain_word: 1 };
+  CO.HUSH = { co_new_captain: 1 };
+  CO.wars = pc => A.atWar((pc && pc.mil && pc.mil.realm) || (pc && pc.realm)).map(w => w.id).sort();
   CO.recent = function (pc, ev) {
     const t = pc && pc.mil && pc.mil.coSeen ? pc.mil.coSeen[ev] : null, now = A.absDay ? A.absDay() : 0;
-    return t != null && now - t < (CO.QUIET[ev] || 0);
+    if (t == null) return false;
+    const k = pc.mil.coN && pc.mil.coN[ev] > 1 ? Math.min(4, pc.mil.coN[ev] - 1) : 0;
+    if (now - t < (CO.QUIET[ev] || 0) * Math.pow(2, k)) return true;
+    const was = CO.WAR_ONCE[ev] && pc.mil.coWar && Array.isArray(pc.mil.coWar[ev]) ? pc.mil.coWar[ev] : null;
+    return !!was && !CO.wars(pc).some(id => !was.includes(id));
   };
   // the company reaches the soldier once a campaign, not once a career: after a fight his division was in, and on pay
   // day, a company scene comes when none has come for a season (CO.GAP days)
@@ -942,7 +963,9 @@
     const pc = A.pc(), M = CO.mine(pc);
     if (!M || !(F.aIds.includes(M.d.id) || F.dIds.includes(M.d.id)) || F.menA + F.menD < 2500 || !CO.sceneDue(pc)) return;
     const row = (F.coL || {})[M.d.id] || [], lost = row[M.b] || 0;
-    const heavy = lost >= 4 && (!CO.recent(pc, 'co_roll_call') || lost >= 2 * (pc.mil.coRoll || 0));
+    // a roll call sooner than its quiet when the fight cost twice the most one has counted, but not within the year
+    const t0 = pc.mil.coSeen && pc.mil.coSeen.co_roll_call, now = A.absDay ? A.absDay() : 0;
+    const heavy = lost >= 4 && (!CO.recent(pc, 'co_roll_call') || (lost >= 2 * (pc.mil.coRoll || 0) && (t0 == null || now - t0 >= 365)));
     if (heavy) { pc.mil.coRoll = Math.max(pc.mil.coRoll || 0, lost); CO.queueEv('co_roll_call', { lost: String(lost), place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
     else if (!CO.recent(pc, 'co_captain_word')) { const c = CO.cap(M.d, M.b, M.i); CO.queueEv('co_captain_word', { pid: c && c.pid && !c.pc ? c.pid : null, place: (A.S.prov[F.loc] || {}).name || 'the field', won: won ? 1 : 0 }); }
   };

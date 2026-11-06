@@ -49,6 +49,10 @@
     // routine, and over nine 40-year lives "hold the line" came back 15 times and "the first wave" 9 (97's lfRepeats;
     // playtest 2, old 10: "Orders: hold and wait" seven times in one life). A new general's letter comes at the usual pace
     QUIET: { steady: 1095, cautious: 1095, bold: 730, cunning: 730 },
+    // and once a war (on the v2 build the quiet alone still let "hold and wait" come five times in one life of the
+    // nine, "hold the line" four): the same order from the same general comes again only in another war, and the quiet
+    // doubles each time it has come from him (S.goSeen[kind].n)
+    WAR_ONCE: true,
   };
   // a person's temper as a general
   G.temper = function (p) {
@@ -554,10 +558,11 @@
     if ((t === 'bold' || t === 'cunning') && o.tp == null) kind = 'steady';
     if (o.pp == null && (kind === 'cautious' || kind === 'steady')) return;
     if (kind === 'steady' && o.tp == null) return;
-    const last = S.goSeen && S.goSeen[kind];
-    if (last && last.gen === g.id && now - last.day < (G.QUIET[kind] || 0)) return;
+    const last = S.goSeen && S.goSeen[kind], war = A.atWar(a.realm).map(w => w.id).sort().join();
+    const n = last && last.gen === g.id ? last.n || 1 : 0;
+    if (n && (now - last.day < (G.QUIET[kind] || 0) * Math.pow(2, Math.min(3, n - 1)) || (G.WAR_ONCE && last.war === war))) return;
     S.goNext = now + G.EVERY;
-    S.goSeen = Object.assign({}, S.goSeen, { [kind]: { gen: g.id, day: now } });
+    S.goSeen = Object.assign({}, S.goSeen, { [kind]: { gen: g.id, day: now, war, n: n + 1 } });
     const ctx = { order: 1, genId: g.id, temper: kind, tp: o.tp, pp: o.pp };
     if (kind === t) { if (o.press) ctx.press = 1; if (o.noise != null) ctx.np = o.noise; if (o.wall != null) ctx.wp = o.wall; }
     A.queue({ type: 'event', ev: 'go_order_' + kind, forced: true, ctx });

@@ -29,6 +29,49 @@ const findFight = `
 const every = (o, f) => Object.values(o).every(f);
 
 export default {
+  // playtest 2, old 10 ("Pay day" five times in one life) and 97's lfRepeats: the routine company scenes keep a quieter
+  // cadence over a soldier's years. The same eight years of war are played twice, with CO.QUIET as built and with it
+  // emptied: as built, pay day comes no sooner than four years after the last and once a war, the captain's word and
+  // the roll call three years and once a war (a roll call sooner only when the fight cost twice the most it has
+  // counted, and not within the year)
+  async coRoutineQuiet(pg) {
+    const r = await pg.evaluate(() => {
+      const CO = A.CO, Q0 = CO.QUIET, KEYS = ['co_pay_day', 'co_roll_call', 'co_captain_word', 'co_new_captain', 'co_arrears'];
+      const run = quiet => {
+        CO.QUIET = quiet ? Q0 : {};
+        const seen = [];
+        try {
+          A.newGame({ seed: 9741, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 20 });
+          const pc = A.pc(), en = A.neighbors('POL-01')[0];
+          A.startWar('POL-01', en, null, 'conquest'); A.enlist(pc);
+          const q0 = A.queue;
+          A.queue = function (it) { if (it && it.type === 'event' && KEYS.includes(it.ev)) seen.push({ ev: it.ev, day: A.absDay(), lost: +(it.ctx && it.ctx.lost || 0), wars: A.atWar('POL-01').map(w => w.id) }); return q0.apply(this, arguments); };
+          try {
+            const d0 = A.absDay();
+            for (let g = 0; g < 400 && A.absDay() - d0 < 8 * 365 && A.pc().alive; g++) {
+              if (!A.atWar('POL-01').length) A.startWar('POL-01', en, null, 'conquest');
+              if (!A.pc().mil) A.enlist(A.pc());
+              A.S.queue = []; A.advance(30);
+            }
+          } finally { A.queue = q0; }
+        } finally { CO.QUIET = Q0; }
+        return seen;
+      };
+      const on = run(true), off = run(false);
+      const gaps = (list, ev) => { const L = list.filter(x => x.ev === ev), out = []; for (let i = 1; i < L.length; i++) out.push({ gap: L[i].day - L[i - 1].day, lost: L[i].lost, prev: Math.max(...L.slice(0, i).map(x => x.lost)), same: L[i].wars.every(id => L[i - 1].wars.includes(id)) }); return out; };
+      const n = (list, ev) => list.filter(x => x.ev === ev).length;
+      const bad = [];
+      for (const g of gaps(on, 'co_pay_day')) if (g.gap < Q0.co_pay_day || g.same) bad.push('pay day after ' + g.gap + ' days' + (g.same ? ' in the same war' : ''));
+      for (const g of gaps(on, 'co_captain_word')) if (g.gap < Q0.co_captain_word || g.same) bad.push('captain\'s word after ' + g.gap + ' days' + (g.same ? ' in the same war' : ''));
+      for (const g of gaps(on, 'co_roll_call')) if ((g.gap < Q0.co_roll_call || g.same) && (g.lost < 2 * g.prev || g.gap < 365)) bad.push('roll call after ' + g.gap + ' days, ' + g.lost + ' lost');
+      for (const g of gaps(on, 'co_new_captain')) if (g.gap < Q0.co_new_captain) bad.push('a new captain\'s scene after ' + g.gap + ' days');
+      const c = list => KEYS.map(k => `${k.slice(3)} ${n(list, k)}`).join(', ');
+      return { bad, on: c(on), off: c(off), nOn: on.filter(x => x.ev !== 'co_arrears').length, nOff: off.filter(x => x.ev !== 'co_arrears').length, payOn: n(on, 'co_pay_day') };
+    });
+    const ok = !r.bad.length && r.payOn >= 1 && r.nOff > r.nOn;
+    return { ok, detail: `eight years of war: quiet ${r.on}; without it ${r.off}${r.bad.length ? '; too soon: ' + r.bad.join(', ') : ''}` };
+  },
+
   async coEveryBattalion(pg) {
     // every battalion everywhere has state, on two worlds; the companies always sum to the division's men.
     // v2: the second world was the Great Continent (lands: 'great', with more divisions than the known lands), which the
