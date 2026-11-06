@@ -99,6 +99,10 @@ ${D} #profile .lk-stats .barrow:hover{border-color:var(--sc)}
 .lk-needs .lk-need > .lbl .tt{min-height:24px;display:inline-flex;align-items:center}
 .lk-needs .lk-need > .val{grid-area:v;font-weight:700;min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:flex-end}
 .lk-needs .lk-need > .bar{grid-area:b;height:3px}
+/* v2 (99993-v2-stats): a need's value is a word ("unsure of the way"); on a phone it is body text (71-phone's
+   phoneTargets: none under 14 px) and the four stand one to a row, so a word never runs into its label */
+#game.phone .lk-needs{grid-template-columns:1fr}
+#game.phone .lk-needs .lk-need > .val{font-size:calc(14px * var(--tx,1))}
 .lk-needs .lk-need > .bar > i{background:var(--vital)}
 .lk-needs .lk-need.lk-low > .bar > i{background:var(--danger)}
 .lk-needs .lk-mood{grid-column:1 / -1;font-size:var(--t-small);color:var(--warn);line-height:1.3;margin-top:2px}
@@ -123,6 +127,8 @@ ${D} #profile .bm-body svg{width:40px;height:auto}
 ${D} #profile .bm-body{min-height:40px}
 .lk-railrow{display:flex;gap:4px;flex-wrap:wrap}
 .lk-railrow button{flex:1 1 auto;min-height:28px;padding:0 8px;font-size:var(--t-small)}
+/* the rail's three links on one row at 1366 (fitsOneScreen: a second row of one button was the rail's 9 px too many) */
+${D} #profile .lk-railrow button{padding:0 5px}
 @media (min-width:1600px){
   ${D} #profile .fold-pid{grid-template-columns:1fr;justify-items:start}
   ${D} #profile .fold-pid .portrait-wrap{display:block;width:176px;margin:0}

@@ -284,9 +284,15 @@ export default {
         const pc = A.pc(), out = {};
         // a war
         const en = A.neighbors(pc.realm)[0]; A.startWar(pc.realm, en, null, 'conquest'); A.S.queue = [];
+        // Changed in round 2 (wf-round2), with v2 in the build: a war you are not in is rumour only (99997-v2-war,
+        // playtest 1 findings 5 and 10), so its card and bar are gone for this peasant; he enlists to see his war, and
+        // its strength is told as his rank knows it (finding 4: estimates, "about 160,000"), never exact
+        out.v2 = !!A.V2W;
+        if (out.v2) { A.enlist(pc); A._idIdx = null; A.advance(2); A._idIdx = null; A.S.queue = []; UI.ov = null; }
         UI.tab = 'war'; UI.render();
         const st = [...document.querySelectorAll('#tabbody .lk-str')];
         out.wars = st.length; out.warLabel = st[0] && st[0].getAttribute('aria-label');
+        out.warShown = st[0] ? st[0].textContent : '';
         // the delta flash: the first draw shows none; a change shows it on that row
         UI.tab = 'life'; UI.render();
         out.flash0 = document.querySelectorAll('#profile .lk-dlt').length;
@@ -294,6 +300,7 @@ export default {
         pc.health = Math.max(1, pc.health - 10); UI.render();
         const d = document.querySelector('#profile .lk-v-health .lk-dlt');
         out.flash = d ? d.textContent : null;
+        out.anyFlash = [...document.querySelectorAll('#profile .lk-dlt')].map(x => x.textContent);
         await new Promise(res => setTimeout(res, 1800));
         out.gone = !document.querySelector('#profile .lk-dlt');
         // beasts in the Codex
@@ -331,8 +338,13 @@ export default {
         out.same = m[0] === m[1]; out.pure = T.hash(A.S) === h0 && JSON.stringify(A.S.rng) === g0;
         return out;
       });
-      const ok = r.wars >= 1 && /^Strength: us .+ against them .+/.test(r.warLabel || '') && r.flash0 === 0 && r.flash1 === 0 && r.flash === '▼ −10' && r.gone && r.beasts >= 10 && r.beastTiers.split(',').length >= 3 && !!r.chip && r.pin && r.rowChips >= 3 && r.ttChip && !/^(none|no popover)$/.test(r.ttChip) && r.spark0 === 0 && r.sparks === 4 && /^Treasury since \d+: /.test(r.sparkLabel || '') && r.same && r.pure;
-      return { ok, detail: `war strength bars ${r.wars} ("${r.warLabel}"); delta flash: none on the first draws (${r.flash0}, ${r.flash1}), "${r.flash}" after a wound, gone after 1.6 s ${r.gone}; ${r.beasts} beasts tiered (${r.beastTiers}); realm chip "${r.chip}"; pinned tooltip marked ${r.pin}; realm chips in ${r.rowChips} People rows and in a market tooltip ("${r.ttChip}"); Realm band sparklines ${r.spark0} -> ${r.sparks} ("${r.sparkLabel}"); same markup ${r.same}, pure ${r.pure}` };
+      // v2: the bar's numbers are estimates (W.estimate's words), and the rail's vitals are words, not 0-100 numbers (the
+      // owner's rule), so a wound flashes no "▼ −10": no number flashes at all (changed in round 2, wf-round2)
+      const est = s => /^Strength: us (about [\d,]+|some [\d,]+|a handful) against them (about [\d,]+|some [\d,]+|a handful)$/.test(s || '');
+      const warOk = r.wars >= 1 && /^Strength: us .+ against them .+/.test(r.warLabel || '') && (!r.v2 || (est(r.warLabel) && !/\d+(\.\d)?k\b/.test(r.warShown)));
+      const flashOk = r.v2 ? r.flash === null && !r.anyFlash.length : r.flash === '▼ −10';
+      const ok = warOk && r.flash0 === 0 && r.flash1 === 0 && flashOk && r.gone && r.beasts >= 10 && r.beastTiers.split(',').length >= 3 && !!r.chip && r.pin && r.rowChips >= 3 && r.ttChip && !/^(none|no popover)$/.test(r.ttChip) && r.spark0 === 0 && r.sparks === 4 && /^Treasury since \d+: /.test(r.sparkLabel || '') && r.same && r.pure;
+      return { ok, detail: `war strength bars ${r.wars} ("${r.warLabel}"${r.v2 ? `, shown "${r.warShown}"` : ''}); delta flash: none on the first draws (${r.flash0}, ${r.flash1}), "${r.flash}" after a wound${r.v2 ? ` (with v2 none with a number: ${JSON.stringify(r.anyFlash)})` : ''}, gone after 1.6 s ${r.gone}; ${r.beasts} beasts tiered (${r.beastTiers}); realm chip "${r.chip}"; pinned tooltip marked ${r.pin}; realm chips in ${r.rowChips} People rows and in a market tooltip ("${r.ttChip}"); Realm band sparklines ${r.spark0} -> ${r.sparks} ("${r.sparkLabel}"); same markup ${r.same}, pure ${r.pure}` };
     } finally { await ctx.close(); }
   },
 

@@ -184,7 +184,15 @@ export default {
         const pc = A.pc(); T.play(3);
         UI.tab = 'life'; UI.render();
         const c = document.querySelector('#tabbody .chp-card');
-        return { card: !!c, folded: !!(c && c.classList.contains('folded')), foldable: !!(c && c.querySelector(':scope > .fold-x')), head: c ? c.firstElementChild && (c.querySelector('.chp-t') || {}).textContent : null };
+        const o = { card: !!c, folded: !!(c && c.classList.contains('folded')), foldable: !!(c && c.querySelector(':scope > .fold-x')), head: c ? c.firstElementChild && (c.querySelector('.chp-t') || {}).textContent : null };
+        // folded only for want of room (91-look's LOOK.fitLife, round 2): one click opens it, and it stays open
+        o.fit = !!(c && c.dataset.lkFit);
+        if (o.folded && o.fit && innerWidth > 760) {
+          c.querySelector(':scope > .fold-x').click(); UI.render();
+          const c2 = document.querySelector('#tabbody .chp-card');
+          o.reopened = !!(c2 && !c2.classList.contains('folded'));
+        }
+        return o;
       });
     }
     const deed = await pg.evaluate(() => {
@@ -194,8 +202,14 @@ export default {
       const n0 = (pc.deeds || []).length; CH.close(pc);
       return { full: pc.chap.past[pc.chap.past.length - 1].full, added: (pc.deeds || []).length - n0 };
     });
-    const ok = out[420].card && out[420].folded && out[420].foldable && out[1366].card && !out[1366].folded && out[1366].foldable && deed && deed.full && deed.added === 0;
-    return { ok, detail: `420 px: chapter ${out[420].card ? (out[420].folded ? 'folded' : 'OPEN') : 'missing'}; 1366 px: ${out[1366].card ? (out[1366].folded ? 'FOLDED' : 'open') : 'missing'}, foldable ${out[1366].foldable}; a full chapter closed adds ${deed ? deed.added : '?'} deeds` };
+    // Changed in round 2 (wf-round2): at 1366 x 768 the Life panel cannot hold every card above Activities (91-look's
+    // fitsOneScreen: 723 px of a 615 px panel with Coming up, What now, the chapter, the ambition and the arcs open), so
+    // 91-look folds the cards the player has not touched, the ambition first and then the chapter, until it fits. The
+    // chapter on a desktop is open, or folded for want of room only, and then one click opens it for good (the owner's
+    // complaint 7 wants no scripted chapters: this panel is the optional part that may give way)
+    const desk = out[1366], deskOk = desk.card && desk.foldable && (!desk.folded || (desk.fit && desk.reopened));
+    const ok = out[420].card && out[420].folded && out[420].foldable && deskOk && deed && deed.full && deed.added === 0;
+    return { ok, detail: `420 px: chapter ${out[420].card ? (out[420].folded ? 'folded' : 'OPEN') : 'missing'}; 1366 px: ${desk.card ? (desk.folded ? (desk.fit ? `folded for want of room, a click opens it for good ${desk.reopened}` : 'FOLDED') : 'open') : 'missing'}, foldable ${desk.foldable}; a full chapter closed adds ${deed ? deed.added : '?'} deeds` };
   },
 
   // playtest 2 new 15: "the War place opens You: Path". It does not: a tap on War opens the War page under War, from
