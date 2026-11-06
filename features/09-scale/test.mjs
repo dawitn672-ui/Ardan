@@ -186,7 +186,9 @@ export default {
     };
     for (const src of [core, content]) {
       scan(src, /\.owner\s*=(?![=>])/g, 'owner', /^[^;{}]*?A\.scaleLand\(\)|^\.owner=to,A\.scaleLand/);
-      scan(src, /houses\[[^\]]+\]\s*=(?![=>])/g, 'house', /^houses\[hid\]=\{id:hid,name:"House "\+sur,[^;]*?members:\[pc\.id\]\},A\.scaleHouse/);
+      // v2: 99995-v2-nobility's newHouse (a court house, raised at the world's start and again when a vacant title
+      // finds no heir in play) writes one object literal and tells the index on the next statement
+      scan(src, /houses\[[^\]]+\]\s*=(?![=>])/g, 'house', /^houses\[hid\]=\{id:hid,name:"House "\+sur,[^;]*?members:\[pc\.id\]\},A\.scaleHouse|^houses\[id\] = \{[^;]*?v2court: rid,\s*\};\s*(?:\/\/[^\n]*\n\s*)*if \(A\.scaleHouse\) A\.scaleHouse\(\);/);
       scan(src, /\.adj\s*=(?![=>])|\.(adj|sea)\.(push|splice|unshift)\(/g, 'adj', null);
     }
     // ctx.owner in events is a token, not a province; AK.adj is a helper
