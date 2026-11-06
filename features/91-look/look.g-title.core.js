@@ -57,14 +57,17 @@
     // the continent's peoples: the lore's while its lands are open, else the generated data's (read only)
     const Lc = Object.assign({}, D && D.cultures || {}, Lore || {});
     if (!S || !S.realms || !Lc || !GD.SKIN) return [];
-    let realms = Object.values(S.realms).filter(r => r && r.alive && r.cult && Lc[r.cult] && Lc[r.cult].land)
+    // v2 (docs/v2/LANES.md): the Far Lands are out of the build, so the continent's cultures carry no land; there each
+    // human culture is its own people (the busts are drawn as humans, so the other races' cultures are left out)
+    const landOf = id => { const c = Lc[id]; return !c ? null : c.land || (!D && (!c.race || c.race === 'human') ? 'cult:' + id : null); };
+    let realms = Object.values(S.realms).filter(r => r && r.alive && r.cult && landOf(r.cult))
       .sort((a, b) => (b.pop || 0) - (a.pop || 0) || (a.id < b.id ? -1 : 1)).slice(0, 40);
     // before a life begins the world in memory may be the old one: then the continent's peoples come from the lore
-    if (realms.length < 3) realms = Object.keys(Lc).filter(id => Lc[id] && Lc[id].land).sort().map(id => ({ id: null, cult: id }));
+    if (realms.length < 3) realms = Object.keys(Lc).filter(id => landOf(id)).sort().map(id => ({ id: null, cult: id }));
     const r = rng(hash('peoples|' + seedStr)), seen = new Set(), out = [];
     const pool = realms.slice().sort((a, b) => hash(seedStr + a.cult + a.id) - hash(seedStr + b.cult + b.id));
     for (const R of pool) {
-      const land = Lc[R.cult].land;
+      const land = landOf(R.cult);
       if (seen.has(land)) continue;
       seen.add(land);
       const i = out.length, F = r() < .5, age = [24, 19, 33][i];

@@ -280,44 +280,95 @@
   MOT.views = {};
   const copy = v => ({ x0: v.x0, y0: v.y0, w: v.w, h: v.h });
   const lerpV = (a, b, k) => ({ x0: a.x0 + (b.x0 - a.x0) * k, y0: a.y0 + (b.y0 - a.y0) * k, w: a.w + (b.w - a.w) * k, h: a.h + (b.h - a.h) * k });
-  // Cycle 2 (visual B2): the ease no longer redraws the map each frame (120-240 ms a frame on the Great Continent). It
-  // scales the last finished picture with drawImage, as a camera would, and draws the map for real once, at the end.
-  // The tween is capped at 200 ms and costs only copies; MOT.mapStats counts tweens, their frames and the real draws.
+  // Cycle 2 (visual B2): the ease no longer redraws the map each frame (120-240 ms a frame on the Great Continent). The
+  // map is drawn for real once, at the end; in between the canvas's last real picture is moved and scaled as a camera
+  // would. CI run 88 (mapEaseCheap, the tween's first frame 136 ms): that camera was a pixel copy of the canvas, and a
+  // copy makes the browser finish the last real draw's pending work then and there. It is now a CSS transform on the
+  // canvas: no pixel is read, the compositor scales the picture it already shows. The canvas keeps its box for the
+  // pointer (its getBoundingClientRect answers the box before the transform while the tween runs), a clip keeps the
+  // picture inside that box, and a sea-coloured shadow fills the edge a zoom out uncovers. The tween is capped at 200
+  // ms; MOT.mapStats counts tweens, their frames and the real draws.
   MOT.mapStats = { tweens: 0, frames: 0, real: 0, lastMs: 0 };
+  const CAM = ['transform', 'transformOrigin', 'clipPath', 'boxShadow', 'willChange', 'borderColor'];
+  const camOff = (cv, st) => {
+    if (!st.cam) return;
+    for (const k of CAM) cv.style[k] = st.cam.style[k];
+    if (st.cam.rect) delete cv.getBoundingClientRect;
+    st.cam = null;
+  };
   MOT.easeMap = function (name, holder, draw, canvasOf) {
     const fn = UI[draw];
     if (typeof fn !== 'function') return;
-    const realDraw = (self, args, st, v) => { const t0 = performance.now(); const r = fn.apply(self, args); st.ms = performance.now() - t0; MOT.mapStats.real++; MOT.mapStats.lastMs = st.ms; st.shown = copy(v); return r; };
+    const realDraw = (self, args, st, v) => {
+      if (st.cv) camOff(st.cv, st);
+      const t0 = performance.now(); const r = fn.apply(self, args); st.ms = performance.now() - t0; MOT.mapStats.real++; MOT.mapStats.lastMs = st.ms;
+      st.shown = copy(v); st.pic = copy(v); return r;
+    };
     UI[draw] = function () {
       const H = holder(), real = H && H.view, st = MOT.views[name] || (MOT.views[name] = { shown: null, anim: null, inFrame: false });
       const cv = canvasOf(arguments);
       if (!real || !cv) return fn.apply(this, arguments);
       const last = st.shown, sameCv = st.cv === cv;
+      if (!sameCv && st.cv) camOff(st.cv, st);
       st.cv = cv;
       const zoomed = last && Math.abs(last.w - real.w) > real.w * 1e-4;
       const moved = last && (Math.abs(last.x0 - real.x0) > real.w * 0.02 || Math.abs(last.y0 - real.y0) > real.h * 0.02);
       // only a zoom or a jump the player asked for (the wheel, a zoom button) is eased; a view set by code is drawn at once
       const asked = st.user && (performance.now() - st.user) < 450;
-      if (!last || !sameCv || !asked || !MOT.full() || (!zoomed && !moved) || (!zoomed && st.drag) || !cv.width) {
+      if (!last || !sameCv || !st.pic || !asked || !MOT.full() || (!zoomed && !moved) || (!zoomed && st.drag) || !cv.width) {
         if (st.anim) { st.anim(); st.anim = null; }
         clearTimeout(st.settle); st.now = null;
         return realDraw(this, arguments, st, real);
       }
-      // the tween starts from what is on the canvas now (a tween in flight shows its own in-between view)
-      const from = copy(st.now ? st.now : last), to = copy(real), self = this, args = arguments;
+      // the tween starts from what is shown now (a tween in flight shows its own in-between view)
+      const from = copy(st.now ? st.now : last), to = copy(real), self = this, args = arguments, pic = st.pic;
       clearTimeout(st.settle);
       if (st.anim) { st.anim(); st.anim = null; }
-      const W = cv.width, Hh = cv.height, snap = doc.createElement('canvas'); snap.width = W; snap.height = Hh;
-      snap.getContext('2d').drawImage(cv, 0, 0);
-      const ctx = cv.getContext('2d'), sea = (UI.INKMAP && UI.INKMAP.SEA_DEEP) || '#173063';
+      if (!st.cam) {
+        const style = {}; for (const k of CAM) style[k] = cv.style[k];
+        const own = Object.prototype.hasOwnProperty.call(cv, 'getBoundingClientRect');
+        // the box as laid out, read before the transform goes on, and where the picture sits in it (the canvas has a
+        // border and fits its picture by object-fit: contain, so a band may lie beside it)
+        const box = Element.prototype.getBoundingClientRect.call(cv), cs = getComputedStyle(cv);
+        const bl = parseFloat(cs.borderLeftWidth) || 0, bt = parseFloat(cs.borderTopWidth) || 0;
+        const iw = box.width - bl - (parseFloat(cs.borderRightWidth) || 0), ih = box.height - bt - (parseFloat(cs.borderBottomWidth) || 0);
+        const asp = cv.width / cv.height, fill = cs.objectFit === 'fill' || !iw || !ih;
+        const cw = fill ? iw : Math.min(iw, ih * asp), ch = fill ? ih : Math.min(ih, iw / asp);
+        st.cam = { style, rect: !own, fit: { W: box.width, H: box.height, ox: bl + (iw - cw) / 2, oy: bt + (ih - ch) / 2, cw, ch } };
+        if (!own) {
+          // the pointer's handlers map a click by the box: while the picture moves, the box is the one laid out
+          const dx = box.left + scrollX, dy = box.top + scrollY;
+          cv.getBoundingClientRect = function () {
+            const l = dx - scrollX, t = dy - scrollY;
+            return { left: l, top: t, right: l + box.width, bottom: t + box.height, width: box.width, height: box.height, x: l, y: t, toJSON() { return this; } };
+          };
+        }
+        cv.style.transformOrigin = `${st.cam.fit.ox}px ${st.cam.fit.oy}px`; cv.style.willChange = 'transform';
+        cv.style.borderColor = 'transparent';   // the frame would grow and shrink with the picture; it is hidden meanwhile
+      }
+      // a zoom out uncovers the edge of the box: a sea-coloured shadow just wide enough for the smallest scale of this
+      // tween fills it (none for a zoom in; a wider one would make the moving layer, and its painting, needlessly large)
+      {
+        // the share of the box left bare at view v, on one axis, in the picture's own (scaled) units
+        const bare = (p0, pw, v0, vw) => { const k = pw / vw, t = (p0 - v0) / vw; return (Math.max(0, t) + Math.max(0, 1 - t - k)) / k; };
+        const need = v => Math.max(bare(pic.x0, pic.w, v.x0, v.w), bare(pic.y0, pic.h, v.y0, v.h));
+        const share = Math.max(need(from), need(to), need(lerpV(from, to, 0.5)));
+        const sea = (A.V2MAP && A.V2MAP.SAT && A.V2MAP.SAT.SEA) || (UI.INKMAP && UI.INKMAP.SEA_DEEP) || '#173063';
+        const F0 = st.cam.fit, spread = share > 1e-4 ? Math.ceil(share * Math.max(F0.W, F0.H) + Math.max(F0.ox, F0.oy) + 2) : 0;
+        cv.style.boxShadow = spread ? `0 0 0 ${spread}px ${sea}` : st.cam.style.boxShadow;
+      }
       MOT.mapStats.tweens++;
+      const F = st.cam.fit, px = x => x.toFixed(2) + 'px';
       const frame = k => {
         const v = lerpV(from, to, k); st.now = v;
-        const sx = (v.x0 - from.x0) / from.w * W, sy = (v.y0 - from.y0) / from.h * Hh, sw = v.w / from.w * W, sh = v.h / from.h * Hh;
-        ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = sea; ctx.fillRect(0, 0, W, Hh);
-        // the snapshot placed where its view falls in v (drawImage clips a source rect that runs past the picture)
-        const dx = -sx * W / sw, dy = -sy * Hh / sh, dw = W * W / sw, dh = Hh * Hh / sh;
-        ctx.drawImage(snap, dx, dy, dw, dh); ctx.restore();
+        // the picture of view pic shown as view v: scaled by pic.w / v.w about its corner, that corner moved to where
+        // it falls in v
+        const kx = pic.w / v.w, ky = pic.h / v.h, tx = (pic.x0 - v.x0) / v.w * F.cw, ty = (pic.y0 - v.y0) / v.h * F.ch;
+        cv.style.transform = `translate(${px(tx)},${px(ty)}) scale(${kx.toFixed(5)},${ky.toFixed(5)})`;
+        // the clip, in the canvas's own (scaled) frame, is its box on the screen: screen x = ox + tx + kx * (local - ox)
+        const loc = (s, o, t, k) => o + (s - o - t) / k;
+        const l = loc(0, F.ox, tx, kx), t = loc(0, F.oy, ty, ky), r = F.W - loc(F.W, F.ox, tx, kx), b = F.H - loc(F.H, F.oy, ty, ky);
+        cv.style.clipPath = `inset(${px(t)} ${px(r)} ${px(b)} ${px(l)})`;
         MOT.mapStats.frames++;
       };
       frame(0);
@@ -326,7 +377,7 @@
       clearTimeout(st.settle);
       st.anim = MOT.animate({ dur, ease: 'std', step: frame, done: () => {
         st.anim = null; st.now = to; st.shown = copy(to);
-        st.settle = setTimeout(() => { st.now = null; if (cv.isConnected && !st.anim) realDraw(self, args, st, to); }, 140);
+        st.settle = setTimeout(() => { st.now = null; if (cv.isConnected && !st.anim) realDraw(self, args, st, to); else camOff(cv, st); }, 140);
       } });
       return undefined;
     };

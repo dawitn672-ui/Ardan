@@ -18,8 +18,10 @@ const CHECKER = () => {
       const nar = (A.BH.NARROW[nm] || {})[code];
       if (!rg.regions.includes(code) || (nar && !nar.includes(P.name))) return { ok: false, why: `${P.name} is in ${code}, outside ${rg.range}` };
       if (this.terr(A.BEASTS[id], P.terr)) return { ok: true };
-      // the terrain word may be waived only where no province of that region (as narrowed) fits it
-      const peers = this.map.filter(p => this.regionOf(p.name) === code && (!nar || nar.includes(p.name)));
+      // the terrain word may be waived only where no province of that region (as narrowed) fits it. Changed for v2: on a
+      // generated continent (A.S.v2map) the region's ground is the live provinces' terrain, not the map as written's,
+      // so the peers are read from A.S.prov there; the bar (no beast off fitting ground its region has) is the same.
+      const peers = (A.S && A.S.v2map ? A.S.prov : this.map).filter(p => this.regionOf(p.name) === code && (!nar || nar.includes(p.name)));
       return peers.some(p => this.terr(A.BEASTS[id], p.terr)) ? { ok: false, why: `terrain ${P.terr} where ${code} has fitting ground` } : { ok: true };
     },
     // the beast list for every province, with the test character moved there and back
@@ -45,7 +47,8 @@ export default {
         const { P, ids } = after[i];
         for (const id of ids) { pairs++; const a = BHT.allowed(id, P); if (!a.ok) bad.push(`${id} at ${P.name}: ${a.why}`); }
         // the wrapper only removes from the release's list, apart from regions whose ground never fits the terrain words
-        for (const id of ids) if (!before[i].ids.includes(id) && !A.BH.resolve().E[id].loose.has(P.id)) added.push(`${id} at ${P.name}`);
+        // (v2: the waived provinces are the live map's, A.BH.looseOf, when 99991-v2-map gives it; else the map as written's)
+        for (const id of ids) if (!before[i].ids.includes(id) && !(A.BH.looseOf ? A.BH.looseOf(id) : A.BH.resolve().E[id].loose).has(P.id)) added.push(`${id} at ${P.name}`);
         for (const id of before[i].ids) { beforePairs++; if (!BHT.allowed(id, P).ok) beforeBad++; }
       }
       return { provinces: after.length, pairs, beforePairs, beforeBad, bad: bad.slice(0, 5), nBad: bad.length, added: added.slice(0, 5), missing: A.BH.resolve().unmatchedBeasts.concat(A.BH.resolve().unmatchedPlaces) };
@@ -84,12 +87,14 @@ export default {
       A.newGame({ seed: 7603, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
       const NO = { 'CRE-49': 'Tiger of Ranpur', 'CRE-53': 'the Roc', 'CRE-51': 'World Python', 'CRE-55': 'Forest Men', 'CRE-24': 'Old Man of the Trees' };
       const realmOf = id => BHT.map.find(x => x.id === id).realm;
-      const tally = rows => { const ald = new Set(), ran = []; let aldN = 0, ranN = 0;
+      // ranFit: Ranpur's provinces whose ground fits the tiger (forest, plains, hills), or all of them where none does
+      const fits = P => A.BH.terrOk(A.BEASTS['CRE-49'], P.terr) || (A.BH.looseOf ? A.BH.looseOf('CRE-49') : A.BH.resolve().E['CRE-49'].loose).has(P.id);
+      const tally = rows => { const ald = new Set(), ran = []; let aldN = 0, ranN = 0, ranFit = 0;
         for (const { P, ids } of rows) {
           if (realmOf(P.id) === 'POL-01') { aldN++; for (const id of ids) if (NO[id]) ald.add(NO[id]); }
-          if (realmOf(P.id) === 'POL-30') { ranN++; if (ids.includes('CRE-49')) ran.push(P.name); }
+          if (realmOf(P.id) === 'POL-30') { ranN++; if (fits(P)) ranFit++; if (ids.includes('CRE-49')) ran.push(P.name); }
         }
-        return { ald: [...ald], ran, aldN, ranN }; };
+        return { ald: [...ald], ran, aldN, ranN, ranFit }; };
       const after = tally(BHT.sweep(false)), before = tally(BHT.sweep(true));
       // the start a player would get: a peasant of Aldmark at home, and one of Ranpur
       const aldHome = A.beastsNear(A.pc()).filter(id => NO[id]);
@@ -97,8 +102,12 @@ export default {
       const ranHome = A.beastsNear(A.pc()).includes('CRE-49');
       return { after, before, aldHome, ranHome, ranHomeName: A.provName(A.pc().home), v2: !!A.S.v2map };
     });
-    const ok = r.after.aldN === 20 && !r.after.ald.length && !r.aldHome.length && r.after.ranN === 5 && r.after.ran.length === 5 && r.ranHome && (r.v2 || r.before.ald.length === 5);   // v2 map lane: on a generated continent the release's terrain rule (before) lists what the new land's terrain says, not the release's five
+    const ok = r.after.aldN === 20 && !r.after.ald.length && !r.aldHome.length && r.after.ranN === 5 && r.after.ran.length === (r.v2 ? r.after.ranFit : 5) && r.after.ran.length >= 3 && r.ranHome && (r.v2 || r.before.ald.length === 5);   // v2 map lane: on a generated continent the release's terrain rule (before) lists what the new land's terrain says, not the release's five
     return { ok, detail: `Aldmark (${r.after.aldN} provinces) lists ${r.after.ald.join(', ') || 'none of the five'} (release: ${r.before.ald.join(', ')}); ` +
+      // v2: on a generated continent a Ranpur province may be desert (seed 7603's Tiravi), which 76's own rule
+      // (bhInsideHabitat) keeps the tiger off; so on a v2 map the bar is every Ranpur province whose ground fits it
+      // (and at least three of the five), where the release map's five all fit
+      `${r.v2 ? r.after.ranFit + ' of Ranpur\'s provinces fit its ground; ' : ''}` +
       `the tiger is near ${r.after.ran.length} of ${r.after.ranN} Ranpur provinces (${r.after.ran.join(', ')}); a Ranpur start at ${r.ranHomeName} has it: ${r.ranHome}` };
   },
 

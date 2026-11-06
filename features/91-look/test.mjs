@@ -201,39 +201,41 @@ export default {
     });
     return { ok: r.pure && r.same, detail: `${r.n} draws twice: state and random stream unchanged ${r.pure}, same markup ${r.same}` };
   },
-  // §1.6 for 153 realms: the Great Continent's 118 get accents that stand apart from the realms they border, the Known
-  // World's 35 keep their own colour, every one has an AA ink in both themes, and the palette is the same every time
+  // §1.6: every realm has a colour and an AA ink in both themes, and the palette is the same every time.
+  // Changed for v2 (docs/v2/LANES.md: the Far Lands are dropped from the build): this measured the Great Continent's 118
+  // accents, which no longer exist (A.FL_DATA is absent). It now measures the same on the generated continent, whose
+  // realms are the Known World's 35 and those 70-fresh-realms carves out: the Known World keeps its own colours, every
+  // realm in play has a valid colour and an AA ink in both themes, and reading them is pure and stable (the release gives
+  // two far-apart realms one colour, so the distinct count is reported). Bordering realms of near the same colour are
+  // reported here; 62-inked-map hatches them (inkBriefMarks).
   async realmColours(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 7101, lands: 'great', race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
+      A.newGame({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
       UI.screen = 'game'; UI.render();
-      const D = A.FL_DATA, P = D.provinces, owner = new Map();
-      for (let i = 0; i < P.id.length; i++) owner.set(P.id[i], P.realm[i]);
-      const RL = Array.isArray(D.realms) ? D.realms : Object.entries(D.realms), far = RL.map(x => x[0]);
-      const loreCol = new Map(RL.map(([id, x]) => [id, String(x.color).toLowerCase()]));   // the lore's colours, before the accents
       const lin = c => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
       const lab = h => { const [r, g, b] = [1, 3, 5].map(i => lin(parseInt(h.slice(i, i + 2), 16) / 255)); const l = Math.cbrt(0.4122 * r + 0.5363 * g + 0.0514 * b), m = Math.cbrt(0.2119 * r + 0.6807 * g + 0.1074 * b), s = Math.cbrt(0.0883 * r + 0.2817 * g + 0.6300 * b); return [0.2105 * l + 0.7936 * m - 0.0041 * s, 1.9780 * l - 2.4286 * m + 0.4506 * s, 0.0259 * l + 0.7828 * m - 0.8087 * s]; };
       const dist = (a, b) => { const p = lab(a), q = lab(b); return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); };
+      const ids = Object.keys(A.S.realms).filter(id => id !== 'unclaimed' && A.S.realms[id]);
+      const owner = new Map(A.S.prov.map(p => [p.id, p.owner]));
       const pairs = new Set();
-      for (let i = 0; i < P.id.length; i++) for (const j of P.adj[i] || []) { const a = P.realm[i], b = owner.get(j); if (a && b && a !== b && a !== 'unclaimed' && b !== 'unclaimed' && far.includes(a) && far.includes(b)) pairs.add(a < b ? a + '|' + b : b + '|' + a); }
-      const dNew = [], dOld = [];
-      for (const k of pairs) { const [a, b] = k.split('|'); dNew.push(dist(UI.realmHex(a), UI.realmHex(b))); dOld.push(dist(loreCol.get(a), loreCol.get(b))); }
-      dNew.sort((x, y) => x - y); dOld.sort((x, y) => x - y);
-      const med = a => a[Math.floor(a.length / 2)];
-      const known = Object.values(A.S.realms).filter(x => !far.includes(x.id) && /^POL-\d+$/.test(x.id) && +x.id.slice(4) <= 35);
-      const keep = known.every(x => UI.realmHex(x) === x.color.toLowerCase());
+      for (const P of A.S.prov) for (const j of P.adj || []) { const a = P.owner, b = owner.get(j); if (a && b && a !== b && a !== 'unclaimed' && b !== 'unclaimed') pairs.add(a < b ? a + '|' + b : b + '|' + a); }
+      const d = [...pairs].map(k => { const [a, b] = k.split('|'); return dist(UI.realmHex(a), UI.realmHex(b)); }).sort((x, y) => x - y);
+      const known = Object.values(A.S.realms).filter(x => x && /^POL-\d+$/.test(x.id) && +x.id.slice(4) <= 35);
+      const lore = (typeof LORE !== 'undefined' && LORE.realms) || {};
+      const keep = known.every(x => UI.realmHex(x) === String((lore[x.id] || x).color).toLowerCase());
+      const hexOk = ids.every(id => /^#[0-9a-f]{6}$/.test(UI.realmHex(id)));
       let inkOk = 0, n = 0;
-      for (const id of far) for (const th of ['dark', 'light']) { n++; const k = UI.realmInk(UI.realmHex(id), th), T = UI.LOOK.THEMES[th]; if (Math.min(UI.LOOK.contrast(k.ink, T['--surface']), UI.LOOK.contrast(k.ink, T['--raised'])) >= 4.5) inkOk++; }
-      const distinct = new Set(far.map(id => UI.realmHex(id))).size;
+      for (const id of ids) for (const th of ['dark', 'light']) { n++; const k = UI.realmInk(UI.realmHex(id), th), T = UI.LOOK.THEMES[th]; if (Math.min(UI.LOOK.contrast(k.ink, T['--surface']), UI.LOOK.contrast(k.ink, T['--raised'])) >= 4.5) inkOk++; }
+      const distinct = new Set(ids.map(id => UI.realmHex(id))).size;
       const h0 = T.hash(A.S);
-      const again = far.every(id => UI.realmHex(id) === UI.realmHex(A.S.realms[id]));
-      return { pairs: pairs.size, minNew: dNew[0], medNew: med(dNew), minOld: dOld[0], medOld: med(dOld), close: dNew.filter(d => d < 0.04).length, closeOld: dOld.filter(d => d < 0.04).length,
-        keep, known: known.length, inkOk, n, distinct, far: far.length, pure: T.hash(A.S) === h0, again };
+      const again = ids.every(id => UI.realmHex(id) === UI.realmHex(A.S.realms[id]));
+      return { realms: ids.length, pairs: pairs.size, min: d[0], med: d[Math.floor(d.length / 2)], close: d.filter(x => x < 0.04).length,
+        keep, known: known.length, hexOk, inkOk, n, distinct, pure: T.hash(A.S) === h0, again, far: typeof A.FL_DATA !== 'undefined' && !!A.FL_DATA };
     });
-    const f = x => x.toFixed(3);
-    const ok = r.keep && r.inkOk === r.n && r.distinct >= r.far - 4 && r.medNew > r.medOld && r.close < r.closeOld && r.pure && r.again;
-    return { ok, detail: `${r.far} far realms, ${r.distinct} distinct colours; ${r.pairs} bordering pairs: OKLab distance median ${f(r.medOld)} -> ${f(r.medNew)}, least ${f(r.minOld)} -> ${f(r.minNew)}, pairs under 0.04 ${r.closeOld} -> ${r.close}; ` +
-      `the Known World's ${r.known} unchanged ${r.keep}; AA ink ${r.inkOk}/${r.n}; pure ${r.pure}, stable ${r.again}` };
+    const f = x => (x || 0).toFixed(3);
+    const ok = !r.far && r.known >= 30 && r.keep && r.hexOk && r.inkOk === r.n && r.pure && r.again;
+    return { ok, detail: `${r.realms} realms on the continent, ${r.distinct} distinct colours; ${r.pairs} bordering pairs: OKLab distance median ${f(r.med)}, least ${f(r.min)}, ${r.close} under 0.04 (hatched by 62); ` +
+      `the Known World's ${r.known} keep their colours ${r.keep}; AA ink ${r.inkOk}/${r.n}; pure ${r.pure}, stable ${r.again}; Far Lands data present ${r.far}` };
   },
 
   // §4.5 and §1.5: People as rows (twenty fit), the Realm tab's header band, rarity on gear quality and achievements; pure
@@ -442,7 +444,9 @@ export default {
         const h0 = JSON.stringify(A.S.realms ? Object.keys(A.S.realms).length : 0) + JSON.stringify(A.rngState);
         UI.render(); const a = document.getElementById('title').innerHTML; UI.render(); const b = document.getElementById('title').innerHTML;
         const T = UI.LOOK.TITLE, ppl = T.people(T.seed());
-        const lands = new Set(ppl.map(p => { const D = A.FAR && A.FAR.D; const c = (typeof LORE !== 'undefined' && LORE.cultures[p.cult]) || (D && D.cultures[p.cult]); return c && c.land; }));
+        // v2: without the Far Lands (docs/v2/LANES.md) the continent's cultures carry no land, and each is its own people,
+        // so the three busts must be of three different cultures there (three lands, where cultures have them)
+        const lands = new Set(ppl.map(p => { const D = A.FAR && A.FAR.D; const c = (typeof LORE !== 'undefined' && LORE.cultures[p.cult]) || (D && D.cultures[p.cult]); return c && (c.land || 'cult:' + p.cult); }));
         const moving = document.getAnimations().filter(x => /^tl/.test(x.animationName || '') && x.effect.getKeyframes().some(k => k.transform && k.transform !== 'none')).length;
         const btn = document.querySelector('[data-a=newLife]').getBoundingClientRect();
         return { layers: document.querySelectorAll('#title .tl-par svg.tl-l').length, busts: document.querySelectorAll('#title .tl-bust svg').length, lands: lands.size,
