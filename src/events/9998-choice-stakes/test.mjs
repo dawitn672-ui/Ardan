@@ -236,7 +236,7 @@ export default {
       const n = ST.decorate(box);
       const chips = [...box.querySelectorAll('.st-row')].map(x => x.textContent);
       if (A.LF && A.LF.explainDisabled) A.LF.explainDisabled(box);
-      const title = box.querySelector('[disabled]').getAttribute('title');
+      const dis = box.querySelector('[disabled]'), title = dis.getAttribute('data-note') || dis.getAttribute('title');   // B4: the reason is a click-to-open note (data-note), not a hover title
       const again = ST.decorate(box);
       const R = STT.show('stx_test'); A.S.queue = [];
       box.remove();
@@ -245,7 +245,7 @@ export default {
     });
     if (r.err) return { ok: false, detail: r.err };
     const ok = r.n === 2 && r.again === 0 && /−40 suns/.test(r.chips[0]) && /the commons/.test(r.chips[0]) && r.title === 'The council will not hear it this season.' && (r.walk || []).includes('Your advisor frowns');
-    return { ok, detail: `decorated ${r.n} (again ${r.again}): ${JSON.stringify(r.chips)}; disabled title "${r.title}"; a choice adder: ${JSON.stringify(r.walk)}` };
+    return { ok, detail: `decorated ${r.n} (again ${r.again}): ${JSON.stringify(r.chips)}; disabled reason "${r.title}"; a choice adder: ${JSON.stringify(r.walk)}` };
   },
 
   // over real lives: the rows that change something show their stakes, every check shows what failing costs, drawing
