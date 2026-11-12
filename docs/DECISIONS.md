@@ -94,5 +94,5 @@ necessary" with the game's goals in mind. D-009's table stays as the default gui
   `tools/` and earlier evidence; grep with context instead of reading big files or minified blobs.
 - **Few, targeted test runs:** run the tests a change touches locally; one full CI run per finished step.
 - **Don't overload the 4-core machine:** at most 3 browser-driving agents at once.
-- No browser-based AI tools are available to this session beyond Playwright; none are used.
+- Browser AI is allowed (owner, Nov 12). This session has web search and a web-reading agent (used for research and references, on a small model); no other browser-AI tool is connected.
 **Why:** the owner's order; it also keeps the 5-hour usage window from stopping the work.
