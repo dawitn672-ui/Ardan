@@ -366,9 +366,9 @@ const candidates = function (r) {
     if (c.realm !== r.id || c.ruler || c.role === 'ruler') continue;
     const pid = A.S.castMap && A.S.castMap[c.id], p = pid ? A.P(pid) : null;
     if (p ? (!p.alive || p.ruler || p.id === pcId || taken.has(p.id) || p.realm !== r.id) : !castAgeOk(c)) continue;
-    out.push({ cid: c.id, p, c, kind: 'cast' });
+    out.push({ cid: c.id, p, c, kind: 'cast', young: !!p && !A.isAdult(p) });
   }
-  for (const h of RI.topHouses(r.id)) { const p = h.headPid ? A.P(h.headPid) : null; if (live(p) && !p.ruler && p.id !== pcId && !taken.has(p.id) && !out.some(x => x.p === p)) out.push({ p, h, kind: 'house' }); }
+  for (const h of RI.topHouses(r.id)) { const p = h.headPid ? A.P(h.headPid) : null; if (live(p) && !p.ruler && p.id !== pcId && !taken.has(p.id) && !out.some(x => x.p === p)) out.push({ p, h, kind: 'house', young: !A.isAdult(p) }); }
   if (ru) for (const x of A.relsOf(ru, ['sibling', 'child'])) { const p = x.p; if (live(p) && A.isAdult(p) && !p.ruler && p.id !== pcId && !taken.has(p.id) && !out.some(y => y.p === p)) out.push({ p, kind: 'kin' }); }
   return out;
 };
@@ -399,7 +399,11 @@ RI.fillCouncil = function (r) {
     if (!vacant && !(fresh && A.chance(.35))) continue;
     const C = candidates(r);
     if (!C.length) { if (vacant) delete r.council[seat]; continue; }
-    const best = C.map(x => [x, fit(seat, x, ru) + A.rf(0, 15)]).sort((a, b) => b[1] - a[1])[0][0];
+    // nobody under age takes a seat (round 2 A3a: the heir of Kesh was Chancellor at 2 on day 0). The young stay in the
+    // list for their draw, so the stream moves as it did and only the choice changes
+    const ranked = C.map(x => [x, fit(seat, x, ru) + A.rf(0, 15)]).filter(y => !y[0].young).sort((a, b) => b[1] - a[1]);
+    if (!ranked.length) { if (vacant) delete r.council[seat]; continue; }
+    const best = ranked[0][0];
     const p = best.p || A.personFromCast(best.cid);
     if (!live(p)) continue;
     const sk = A.COUNCIL[seat].skill;

@@ -122,3 +122,17 @@ playable file in every commit is how versions are restored), revisit in X5; a ye
 stops at any card that needs a choice, a war call, an illness, a birth or death in the family, or when the initiative
 pool is full. **Why:** the owner said "continue with structure according to plan" without answering these.
 
+### D-015 · What the coherency net counts, and the day-0 fixes (2026-11-12 10:35 ET, A3a)
+**Chosen:** (1) Any `console.error` fails a test, bench, soak or coherency run; the only project-wide exception is the
+CSP refusing the security tests' own probes (`tools/lib/page-errors.mjs`), and a test that provokes an error on
+purpose names it with `expectError`. (2) Known contradictions are counted per check in `tests/coherency-baseline.json`
+and may only shrink; raising a count needs a line here. (3) Land titles are left out of "no child in an adult office":
+they pass by blood and a child may hold one as a ward (council seats, shire offices and armies are held to the race's
+age of majority; elf lords made at human ages are left to A2 and C6). (4) A rebel faction still at war (`r.isRebel`,
+not yet `r.isNew`: the Tessarian pretender's Andros on day 0) needs no council. (5) Day 0 passes every check:
+`A.newGame` makes the v2 stores (no seed's world changes; only the key order of `A.S`, so `A.fingerprint`, differs
+from older builds), and `RI.fillCouncil` passes over anyone under age (the young keep their draw, but every seed's
+world now differs from day 0: the heir of Kesh, aged 2, sat as Chancellor in every world). **Why:** CRITIQUE A3a; "a
+new game passes every check on day 0" needed the council rule; (3) and (4) keep the checks to contradictions rather
+than to medieval custom.
+

@@ -1,0 +1,30 @@
+{
+  "about": "Known contradictions, counted per coherency check (src/core/08-coherency), that round 2 must remove. Counts may only shrink: tests/suites/coherency.test.mjs fails in CI when a 'quick' count rises, tools/coherency.mjs --baseline=nightly fails the nightly run when a 'nightly' count rises. Lower a count when a step removes contradictions (node tools/coherency.mjs --baseline=<section> --write); never raise one without a line in docs/DECISIONS.md. Empty when round 2 ends (CRITIQUE A3a). Owners: dead and child holders A2, councils of new realms A2, styled offices A2 and C6.",
+  "quick": {
+    "seeds": 1,
+    "lives": 4,
+    "years": 16,
+    "every": 4,
+    "counts": {
+      "every realm has a council": 5,
+      "no child in an adult office": 8,
+      "no dead holder: shire offices": 30,
+      "one holder per council seat": 2,
+      "one office, one styled holder": 123
+    }
+  },
+  "nightly": {
+    "seeds": 1,
+    "years": 60,
+    "every": 5,
+    "counts": {
+      "every realm has a council": 229,
+      "family links agree": 10,
+      "no child in an adult office": 37,
+      "no dead holder: shire offices": 232,
+      "no dead holder: titles": 64,
+      "one holder per council seat": 58,
+      "one office, one styled holder": 1110
+    }
+  }
+}

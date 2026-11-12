@@ -1,4 +1,6 @@
 // Whole-game tests that belong to no single feature.
+// the long lives: more than the runner's default limit when the machine is loaded
+export const limits = { lives: 2400 };
 export default {
   async boot(pg, errs) {
     const r = await pg.evaluate(() => ({ events: Object.keys(A.EV).length, build: window.ARDAN_BUILD }));

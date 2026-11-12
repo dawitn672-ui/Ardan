@@ -19,6 +19,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { BOT } from './bot.mjs';
 import { analyzeChoices } from '../choice-analyzer.mjs';
+import { watchPage } from '../lib/page-errors.mjs';
 
 const require = createRequire(import.meta.url);
 let pw; try { pw = require('playwright'); } catch { pw = require('/opt/node-tools/node_modules/playwright'); }
@@ -269,7 +270,7 @@ const MODULES = {
 const browser = await pw.chromium.launch();
 const ctx = await browser.newContext();
 const page = await ctx.newPage();
-const perrs = []; page.on('pageerror', e => perrs.push(String(e).slice(0, 200)));
+const perrs = []; watchPage(page, perrs, { max: 200 });   // console.errors count as page errors (round 2 A3a)
 await page.goto(pathToFileURL(file).href);
 await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
 await page.evaluate(BOT);
@@ -289,3 +290,4 @@ const prev = fs.existsSync(out) ? JSON.parse(fs.readFileSync(out, 'utf8')) : nul
 if (prev && only) report.modules = Object.assign(prev.modules || {}, report.modules);
 fs.writeFileSync(out, JSON.stringify(report, null, 1));
 console.log('wrote', path.relative(root, out));
+if (perrs.length) { console.log(`${perrs.length} page errors or console.errors (the bench fails on any; round 2 A3a), first: ${perrs[0]}`); process.exitCode = 1; }

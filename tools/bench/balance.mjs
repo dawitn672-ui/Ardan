@@ -13,6 +13,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { BOT } from './bot.mjs';
+import { watchPage } from '../lib/page-errors.mjs';
 import { TARGETS as KNOWN, GREAT } from './targets.mjs';
 const require = createRequire(import.meta.url);
 let pw; try { pw = require('playwright'); } catch { pw = require('/opt/node-tools/node_modules/playwright'); }
@@ -31,7 +32,7 @@ const errs = [];
 const pages = [];
 for (let w = 0; w < WORKERS; w++) {
   const page = await browser.newPage();
-  page.on('pageerror', e => errs.push(String(e.message || e)));
+  watchPage(page, errs, { max: 300 });   // uncaught errors and console.errors both fail the league (round 2 A3a)
   await page.goto(pathToFileURL(file).href);
   await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
   await page.evaluate(BOT);
@@ -113,4 +114,5 @@ const json = opt('json') || path.join(root, 'tools', 'bench', 'reports', LANDS =
 fs.mkdirSync(path.dirname(json), { recursive: true });
 fs.writeFileSync(json, JSON.stringify(out, null, 1));
 console.log(out.failures.length ? `${out.failures.length} out of band` : 'all within their bands');
+if (errs.length) console.log(`page errors and console.errors (global.pageErrors must be 0): ${errs.length}; first: ${errs[0]}`);
 if (out.failures.length) process.exitCode = 1;

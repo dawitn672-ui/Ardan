@@ -263,7 +263,7 @@ export default {
   async wcExportLegends(pg) {
     // Replayability 5: the Chronicle's export gains "The world in your time", the run's great entries in prose
     await pg.evaluate(SETUP);
-    if (!(await pg.evaluate(() => typeof A.chronicleText === 'function'))) return { ok: true, detail: 'skipped: 22-chronicle is not in this build (the section wraps its export)' };
+    if (!(await pg.evaluate(() => typeof A.chronicleText === 'function'))) return { ok: true, skip: '22-chronicle is not in this build (the section wraps its export)' };
     const r = await pg.evaluate(() => {
       // a life long enough to see decades of the world (a shifted random stream can end one at 18): the first that lives 30 years
       let seed = 5150;
@@ -290,7 +290,7 @@ export default {
   async wcExportDownload(pg) {
     // the export action: the downloaded file carries the world's section
     await pg.evaluate(SETUP);
-    if (!(await pg.evaluate(() => !!(UI.A.chronicleExport && A.chronicleText)))) return { ok: true, detail: 'skipped: 22-chronicle is not in this build' };
+    if (!(await pg.evaluate(() => !!(UI.A.chronicleExport && A.chronicleText)))) return { ok: true, skip: '22-chronicle is not in this build' };
     await pg.evaluate(() => { T.enter({ seed: 61, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 18 }); WCT.years(15); A.S.queue = []; UI.ov = null; UI.tab = 'book'; UI.render(); });
     // the button's own action (22-chronicle's test clicks the button itself; the page's ink animations keep it moving)
     const dl = pg.waitForEvent('download', { timeout: 30000 }).catch(e => null);
