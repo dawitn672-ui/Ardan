@@ -4,7 +4,7 @@ The checklist of every work item, in the order they are being done. Tick an item
 green, with the stamp and the commit; never delete a line. Details live in `docs/HISTORY.md`; the plan and the
 reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 
-*Last updated 2026-11-12 17:05 ET*
+*Last updated 2026-11-12 18:16 ET*
 
 ## Done
 - [x] **Step 0** · Repo restructured by system, with a memory (CLAUDE.md, HISTORY, DECISIONS, IDEAS, CHANGELOG, OWNER_ORDERS) · `d906efc`, CI 95 green · 2026-11-11 23:43 ET
@@ -20,7 +20,8 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 - [x] **C8a** · Character design plan, realistic version (`docs/design/characters.md`) · `e7d199d` · 2026-11-12 11:48 ET
 - [x] **C8b gate 1** · Character demos: 8 sheets + live face maker (`docs/design/demo/`) — a working draft, below the bar · `397b55f` · 2026-11-12 15:52 ET · reviewed: owner chose **detailed 2D illustration** (D-024)
 
-- [ ] **C8 2D** · Plan the 2D part library, then a new demo for the owner (D-024)
+- [x] **C8 2D plan** · The 2D illustrated part system (`docs/design/characters.md`) · `389041f` · 2026-11-12 17:27 ET
+- [x] **C8 2D gate 1** · Style frame: four sitters in two finishes (`docs/design/demo-2d/gate1.*`) · `655fe2c` · 2026-11-12 18:16 ET · **with the owner for review**
 - [ ] **CI fix** · The 22 tests CI 97 failed after A3a
 
 ## Next, in order
