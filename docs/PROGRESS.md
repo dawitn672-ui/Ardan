@@ -4,7 +4,7 @@ The checklist of every work item, in the order they are being done. Tick an item
 green, with the stamp and the commit; never delete a line. Details live in `docs/HISTORY.md`; the plan and the
 reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 
-*Last updated 2026-11-12 12:03 ET (was 2026-11-12 11:17 ET)*
+*Last updated 2026-11-12 12:07 ET*
 
 ## Done
 - [x] **Step 0** · Repo restructured by system, with a memory (CLAUDE.md, HISTORY, DECISIONS, IDEAS, CHANGELOG, OWNER_ORDERS) · `d906efc`, CI 95 green · 2026-11-11 23:43 ET
@@ -15,7 +15,7 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 
 ## In progress
 - [x] **X6** · Naming pass: 79 clear renames, `docs/NAMES.md` lookup, `docs/README.md` index · `7a5e71d` (CI pending) · 2026-11-12 12:03 ET (moved to immediate priority by the owner, 2026-11-12 11:17 ET)
-- [ ] **A3a** · The net: hidden errors fail tests; coherency checks in the build; nightly 60-year audit
+- [x] **A3a** · The net: hidden errors fail tests; 12 coherency checks in the build; baseline that may only shrink; nightly 60-year audit · merged (CI pending) · 2026-11-12 12:07 ET
 - [ ] **B4** · Click-to-open descriptions; nothing on hover
 - [ ] **C8a** · Character design plan, realistic version (D-015, D-020) · then demo sheets for the owner before building
 

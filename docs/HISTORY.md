@@ -148,3 +148,26 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   the same order; 29/29 engine tests; boot, savesStillLoad, scaleSites, cutNotFromFeatures, sgNoInfants, phoneTasks
   pass; full suite: the CI run on this push.
 - **Archived:** nothing. **Undo:** `git revert -m 1 7a5e71d`, rebuild.
+
+### H-007 · 2026-11-12 12:07 ET · A3a: the net (Q1, Q3, Q5, Q10, P22; part of Q4, Q8)
+- **Commits:** `eb64f8b` (the work, by an Opus 5.5 agent in a worktree), merged as `git log --grep='\[H-007\]'`.
+- **What and why:** every later step changes systems whose errors were swallowed, so failures become loud first.
+  - Tests, benches, the soak, the 60-year life and the coherency run fail on any `console.error`
+    (`tools/lib/page-errors.mjs`: one watcher, one allowlist entry for the security tests' own CSP probes; a test that
+    provokes an error names it with `expectError`).
+  - `src/core/08-coherency-checks` is in the default build with 12 checks (adds: no dead holder of titles, house heads,
+    shire offices; every realm has a council; no child in an adult office; one office, one styled holder).
+  - `tests/coherency-baseline.json`: the known contradictions, which may only shrink (nightly 8 lives × 60 years:
+    one office/one styled holder 1,110, dead shire officers 232, realms without a council 229, dead title holders 64,
+    dead councillors 58, children in adult offices 37, family links 10). A2 and C6 empty it.
+  - Day 0 passes every check: `A.newGame` makes the v2 stores (same world, different key order); `RI.fillCouncil`
+    passes over children (the 2-year-old Chancellor of Kesh is gone), which changes every seed's world from day 0.
+  - The runner survives a browser crash, limits each test's time (1,800 s default), reports SKIP, offers `cpu()`.
+  - CI builds and lints once, then shards the tests; the nightly `net` job runs the 8×60 coherency run, seed 7's
+    60-year life and the soak.
+  - Its decision record arrived numbered D-015, which was taken; it is **D-021** (what the net counts, the day-0 fixes).
+- **Complaints answered:** owner's complaint 2 (contradictions now counted and guarded); CRITIQUE Q1, Q3, Q5, Q10, P22.
+- **Tests and checks:** suites and the touched features (63) pass; boot, coherencyDay0, savesStillLoad pass after the
+  merge; the full suite and the balance league (the council fix moves every world) run on CI with this push; X6's
+  CI run is superseded by this one, which checks both.
+- **Archived:** nothing. **Undo:** `git revert -m 1` the merge, rebuild.
