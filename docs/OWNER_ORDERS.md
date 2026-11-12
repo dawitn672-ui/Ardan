@@ -18,7 +18,7 @@ order is replaced, strike it through and say by what.
 11. **Pause after the critique:** once docs/CRITIQUE.md is done, stop all work and wait for the owner's review. (Nov 12)
 12. **Token efficiency by any means, with the game's goals in mind; full discretion over model and effort** (the Nov 12 model table, docs/DECISIONS.md D-009, is guidance, not a rule). See D-010. (Nov 12)
 13. **Don't make the owner repeat instructions:** save them here. (Nov 12)
-14. **Browser AI is allowed** for anything it makes cheaper or better (research, references, checking pages). This session has web search and a web-reading agent; any other browser AI must be connected by the owner as a connector. (Nov 12)
+14. **Any outside tool or AI is allowed** (web search, web pages, ChatGPT, Codex, anything) where it makes the work cheaper or better. **Everything it produces goes back into the repo, fully structured** (data in `data/`, research in `docs/research/`, code in `src/`, with a HISTORY entry naming the source). Outside AIs that need an account are reached through their API with a key the owner saves via the secure credential form; none is set up yet. (Nov 12)
 
 ## Game rules (design)
 1. Descriptions open on click (button or info icon), never on hover. (Nov 12, replaces "never hide a description behind a click")
