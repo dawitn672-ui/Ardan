@@ -398,7 +398,9 @@ ${X('.card.person.click.lk-row > .pp > svg, .card.person.click.lk-row > .pp > .p
 ${X('.card.person.click.lk-row > .lk-row-m')}{display:flex;align-items:baseline;gap:8px;min-width:0;white-space:nowrap;overflow:hidden}
 ${X('.card.person.click.lk-row > .lk-row-m > .nm')}{flex:none;font-family:var(--f-ui);font-size:var(--t-ui,14px);font-weight:600;line-height:20px;max-width:55%;overflow:hidden;text-overflow:ellipsis}
 ${X('.card.person.click.lk-row > .lk-row-m > .sub')}{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:var(--t-small,13px);color:var(--ink-3)}
-${X('.card.person.click.lk-row > .lk-row-m > .bondline')}{order:3;flex:none;margin:0;display:flex;gap:4px}
+/* the bondline sits on the row's middle: a friend's rank pips (999-confidants) have no text, so on the row's baseline they
+   pushed the line down and the row grew from 27 to 34 px */
+${X('.card.person.click.lk-row > .lk-row-m > .bondline')}{order:3;flex:none;margin:0;display:flex;gap:4px;align-self:center;align-items:center}
 ${X('.card.person.click.lk-row > .lk-row-m > .bondline .chip')}{height:18px;line-height:16px;padding:0 6px;font-size:var(--t-cap,12px)}
 ${X('.card.person.click.lk-row > .opbar')}{width:48px;margin:0}
 ${X('.card.person.click.lk-row > .opbar .bar')}{height:4px}

@@ -12,6 +12,7 @@ const findFight = `
     pc.mil.rank = rank;
     for (let day = 0; day < 500; day++) {
       A.advance(1); let h, k = 0; while ((h = A.headReady()) && k++ < 50) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
+      if (!pc.mil) return null; // the war ended in peace before he saw a field and he went home: try the next seed
       const d = A.divById(pc.mil.div);
       if (!d) continue;
       for (const pid in A.S.fights) { const f = A.S.fights[pid]; if ((f.aIds.includes(d.id) || f.dIds.includes(d.id)) && (d.atk === +pid || d.loc === +pid)) { A.CO.place(pc); return { F: f, pc, w }; } }
@@ -395,14 +396,18 @@ export default {
       if (!got) return { none: true };
       const pc = got.pc, d = A.divById(pc.mil.div), M = A.CO.mine(pc);
       M.rec.cs = Object.assign({}, M.rec.cs);
-      const c = A.CO.cap(M.d, M.b, M.i); if (c.person) c.person.given = '<img data-pwn>Oswin';
+      // a captain the card names: his own company's, or, once he has risen to lead that company himself, the battalion's
+      // senior captain (slot 4)
+      const c = [M.i, 4].map(i => A.CO.cap(M.d, M.b, i)).find(x => x && x.person && !x.pc && x.person !== pc);
+      if (!c) return { none: true };
+      c.person.given = '<img data-pwn>Oswin';
       const h0 = T.hash(A.S), rng0 = A.rngState;
       const oob = A.CO.oobHtml(d), card = UI.wrMyDivCard(pc, d), path = UI.armyPathCard(pc);
       T.renderAll();
       const pure = T.hash(A.S) === h0 && A.rngState === rng0;
       return { pure, oob: /Order of battle/.test(oob) && /co-row/.test(oob), card: /Your company|co-card/.test(card) && /[Ss]ergeant/.test(card), path: /co-card/.test(path), escaped: !/<img data-pwn>/.test(card + oob) && /&lt;img/.test(card) };
     });
-    if (r.none) return { ok: false, detail: 'no fight found' };
+    if (r.none) return { ok: false, detail: 'no fight found, or no captain beside him' };
     return { ok: r.pure && r.oob && r.card && r.path && r.escaped, detail: `order of battle ${r.oob}, company card ${r.card}, Path tab ${r.path}, a captain named with markup shows as text ${r.escaped}; drawing changed nothing ${r.pure}` };
   },
 

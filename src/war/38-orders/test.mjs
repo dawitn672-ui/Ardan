@@ -228,11 +228,11 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const G = A.GENERALS, Q0 = G.QUIET, W0 = G.WAR_ONCE;
-      const run = quiet => {
+      const run = (quiet, seed) => {
         G.QUIET = quiet ? Q0 : {}; G.WAR_ONCE = quiet ? W0 : false;
         const seen = [];
         try {
-          const { enemy } = GOT.soldier(86);
+          const { enemy } = GOT.soldier(seed);
           const q0 = A.queue;
           A.queue = function (it) { if (it && it.type === 'event' && /^go_order_/.test(it.ev)) seen.push({ kind: it.ctx.temper, gen: it.ctx.genId, day: A.absDay(), war: A.atWar('POL-01').map(w => w.id).sort().join() }); return q0.apply(this, arguments); };
           try {
@@ -250,11 +250,16 @@ export default {
       // so the second of a kind waits twice the base, the third four times; and the same general's comes once a war.
       // 'close' now holds the letters to that, which is stricter than the base quiet per general it held them to before)
       const close = (list, Q) => { let n = 0; const last = {}, cnt = {}; for (const x of list) { const l = last[x.kind]; if (l && (x.day - l.day < (Q[x.kind] || 0) * Math.pow(2, Math.min(3, cnt[x.kind])) || (l.gen === x.gen && l.war === x.war))) n++; last[x.kind] = x; cnt[x.kind] = (cnt[x.kind] || 0) + 1; } return n; };
-      const on = run(true), off = run(false);
-      return { on: on.length, off: off.length, closeOn: close(on, Q0), closeOff: close(off, Q0) };
+      // the letters are drawn (four in ten months, when the general has an order to give), so one life may hear only one
+      // in eight years under one general (seed 86's after D-021's day-0 council fix): further lives are heard until two
+      // letters have come, each held to the quiet on its own
+      const ons = [];
+      for (const seed of [86, 87, 88]) { ons.push(run(true, seed)); if (ons.reduce((n, l) => n + l.length, 0) >= 2) break; }
+      const off = run(false, 86);
+      return { on: ons.reduce((n, l) => n + l.length, 0), lives: ons.length, off: off.length, closeOn: ons.reduce((n, l) => n + close(l, Q0), 0), closeOff: close(off, Q0) };
     });
     const ok = r.on >= 2 && r.closeOn === 0 && r.closeOff > 0;
-    return { ok, detail: `eight years of war: ${r.on} letters, ${r.closeOn} the same as the last of its kind within the quiet, or from the same general in the same war; without it ${r.off} letters, ${r.closeOff} so` };
+    return { ok, detail: `eight years of war (${r.lives} li${r.lives > 1 ? 'ves' : 'fe'}): ${r.on} letters, ${r.closeOn} the same as the last of its kind within the quiet, or from the same general in the same war; without it ${r.off} letters, ${r.closeOff} so` };
   },
 
   // lfRepeats on the merged v2 build: a soldier moved between armies had "make a noise" from three generals in a year

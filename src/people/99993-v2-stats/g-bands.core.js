@@ -39,6 +39,8 @@ UI.barRow = function (label, v, max, cls, pot, valTxt) {
   try {
     const l = String(label || ''), m = /data-tt="(health|happy|looks|fame|honor|piety)"/.exec(l) || /^(Health|Happiness|Looks|Renown|Honou?r|Piety)$/.exec(l);
     if (m && typeof v === 'number') return barRow.call(this, label, v, max, cls, pot, VS.band(m[1], v));
+    // a duel's Adapting bar (what each has learned of the other, 0-30) said "+2": an amount, like the season's learning
+    if ((l === 'Adapting' || /data-tt="duelAdapt"/.test(l)) && /^\+\d{1,3}$/.test(String(valTxt))) return barRow.call(this, label, v, max, cls, pot, amount(+String(valTxt).slice(1)));
   } catch (e) {}
   return barRow.apply(this, arguments);
 };

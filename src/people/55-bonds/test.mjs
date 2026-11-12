@@ -409,7 +409,10 @@ export default {
       // decisions: (1) the alliance A.diploAI would seek: Math.min(interest(x, y), interest(y, x) + 10) against the ruler's bar.
       // Find a pair of realms that would ally today, give x a grudge from forty years ago (y took its capital under the
       // ruler of that time), let x's ruler die, and ask again
-      // (a new ruler has a new character, so a pair is kept only if, under the successor, it would still ally without the grudge)
+      // (a new ruler has a new character, so a pair is kept only if, under the successor, it would still ally without the
+      // grudge, and by no more than the same margin the first ruler was chosen for: a successor who wants the alliance
+      // far more than his father did, as Lucerna's did after D-021's day-0 council fix, 66 against a bar of 42, is a
+      // pair no forty-year-old grudge could part)
       const allyV = (x, y) => Math.min(A.interest(x, y), A.interest(y, x) + 10), barOf = x => A.aiAllyBar ? A.aiAllyBar(x) : 48;
       const ids = Object.values(A.S.realms).filter(x => x.alive && !x.isRebel && x.id !== A.pc().realm).map(x => x.id), save = A.serialize();
       let al = null, v0 = null, vOn = null, vOff = null, bar = null, allyHeir = null, tries = 0;
@@ -423,7 +426,7 @@ export default {
         const g = FE.add(x, y, 'capital', { place: rx.capital }); g.y = A.S.year - 40;
         A.rulerDies(rx, 'old age');
         const on = allyV(x, y); FE.ON = false; const off = allyV(x, y); FE.ON = true;
-        if (off >= barOf(x)) { al = { x: rx, y: ry }; v0 = v; vOn = on; vOff = off; bar = barOf(x); allyHeir = FE.origin(g); }
+        if (off >= barOf(x) && off < barOf(x) + 18) { al = { x: rx, y: ry }; v0 = v; vOn = on; vOff = off; bar = barOf(x); allyHeir = FE.origin(g); }
         else { A.deserialize(JSON.parse(save)); }
       }
       const live = Object.values(A.S.realms).filter(x => x.alive && !x.isRebel && x.id !== A.pc().realm);

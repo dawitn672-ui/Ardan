@@ -1,4 +1,4 @@
-// Loads the part library from assets/parts/ (source JSON, read as it is: the gate-1 stand-in for tools/parts/pack.mjs)
+// Loads the part library from assets/parts/ (source JSON, read as it is: the gate-1 stand-in for tools/parts/blob-pack.mjs)
 // and holds the four sitters of the style frame. Used by build.mjs and tests/v2/draw.test.js.
 import fs from 'node:fs';
 import path from 'node:path';

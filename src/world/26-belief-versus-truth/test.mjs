@@ -79,11 +79,11 @@ export default {
       A.news(tb, 'battle');
       const battleKept = (A.S.news || []).some(e => e.t === tb || e.truth === tb);
       const cls = A.V2W ? 'war' : 'battle';
-      let distorted = 0, n = 0, nearBad = 0;
+      let distorted = 0, n = 0, nearBad = 0; const told = [];
       for (let i = 0; i < 40; i++) {
         const R = far[i % far.length], t = `Battle of Testmere ${i}: ${R.short} hold after 2 days. ${A.fmt(1000 + i * 731)} fall.`;
         A.news(t, cls); const e = A.S.news[0]; n++;
-        if (e && e.truth === t && e.t !== t) distorted++;
+        if (e && e.truth === t && e.t !== t) { distorted++; told.push(e); }
         const t2 = `Battle of Nearby ${i}: ${nearR.short} hold after 2 days. ${A.fmt(1200 + i * 97)} fall.`;
         A.news(t2, cls); if (!A.S.news[0] || A.S.news[0].t !== t2) nearBad++;
       }
@@ -95,12 +95,15 @@ export default {
       A.news = function (t) { if (/^A truer account reaches you/.test(t) && /Testmere/.test(t)) corrections++; return nw.apply(this, arguments); };
       try { T.play(1); } finally { A.news = nw; }
       const fixed = A.S.news.filter(e => e.truth && e.fixed).length, pending = (A.S.rumors || []).filter(x => /Testmere/.test(x.truth)).length;
-      const note = A.BT.newsNote(A.S.news.find(e => e.truth && e.fixed) || {});
-      return { n, distorted, nearBad, high, fixed, corrections, note, pending, v2: !!A.V2W, outsider, battleKept };
+      // every inflated line still in the list is marked; the note is read off one of them, or, when a busy year has
+      // scrolled them all off the 220 lines (seed 45 since D-021's day-0 council fix), off one as the correction marks it
+      const listed = told.filter(e => A.S.news.includes(e)), unmarked = listed.filter(e => !e.fixed).length;
+      const note = A.BT.newsNote(listed.find(e => e.fixed) || (told[0] ? Object.assign({}, told[0], { fixed: A.S.year }) : {}));
+      return { n, distorted, nearBad, high, fixed, corrections, note, pending, unmarked, v2: !!A.V2W, outsider, battleKept };
     });
     const v2ok = !r.v2 || (r.outsider && !r.battleKept);
-    return { ok: r.distorted >= 8 && r.distorted <= 30 && r.nearBad === 0 && r.high && r.corrections === r.distorted && r.pending === 0 && /ran high/.test(r.note) && v2ok,
-      detail: `${r.distorted} of ${r.n} far reports inflated, ${r.nearBad} near ones; all ran high ${r.high}; every one corrected within a year (${r.corrections} correction notes, ${r.pending} pending, ${r.fixed} original lines still listed and marked)` +
+    return { ok: r.distorted >= 8 && r.distorted <= 30 && r.nearBad === 0 && r.high && r.corrections === r.distorted && r.pending === 0 && r.unmarked === 0 && /ran high/.test(r.note) && v2ok,
+      detail: `${r.distorted} of ${r.n} far reports inflated, ${r.nearBad} near ones; all ran high ${r.high}; every one corrected within a year (${r.corrections} correction notes, ${r.pending} pending, ${r.fixed} original lines still listed and marked, ${r.unmarked} listed unmarked)` +
         (r.v2 ? `; v2: an outsider (${r.outsider}) is given the far battle report ${r.battleKept}` : '') };
   },
 

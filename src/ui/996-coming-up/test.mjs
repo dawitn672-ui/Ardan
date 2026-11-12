@@ -6,6 +6,9 @@ export default {
       for (let seed = 8; seed < 14; seed++) { T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 18 }); T.play(1); if (A.pc() && A.pc().alive) break; }
       const pc = A.pc(), S = A.S;
       const t = Object.values(S.people).find(p => p.alive && p.id !== pc.id && A.isAdult(p));
+      // the strip holds the five soonest lines, so the life's own dated returns are set aside for the test's (the peasant's
+      // apprenticeship, ending next month in the world after D-021's day-0 council fix, pushed the repayment off it)
+      const keepSched = S.sched; S.sched = (S.sched || []).filter(s => !(s && s.item && UI.COMING.schedLine(s.item, pc)));
       A.schedule({ type: 'event', ev: 'ni_borrow_repaid', ctx: { pid: t.id, amt: '12 suns' }, forced: true }, 200);
       A.schedule({ type: 'event', ev: 'ni_secret_cost', ctx: { pid: t.id }, forced: true }, 100);      // a surprise: hidden
       A.schedule({ type: 'event', ev: 'gk_meet', label: 'The guild judges your masterpiece' }, 60);       // an item's own label
@@ -17,6 +20,7 @@ export default {
       UI.tab = 'life'; UI.render();
       const el = document.querySelector('#tabbody .cu-strip'), txt = el ? el.textContent : '';
       if (c) c.m = was;
+      S.sched = keepSched;
       return { items, shown: !!el, repay: txt.includes('is due to repay 12 suns'), own: txt.includes('The guild judges your masterpiece'),
         secret: /secret|betray/i.test(txt), custom: c ? items.some(x => x.startsWith('Next month') && x.includes(A.BIBLE.fill(pc, c.name))) : null, ini: txt.includes('Initiative is full') };
     });

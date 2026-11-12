@@ -252,6 +252,8 @@ ${X('.acts:not(.lk-acts) > .act:hover:not(:disabled)')}{border-color:var(--accen
   /* 71-phone's floors on the screens outside the game (the new life) and for glossary chips (24 px) */
   #app summary{min-height:44px;display:flex;align-items:center}
   ${X('#game.phone .chip, #modal .chip')}{min-height:24px}
+  /* a chip that opens something keeps 71-phone's 44 px (the floor above outranked it: "They owe you: Merrick ×1" was 43) */
+  ${X('#game.phone .chip.click, #game.phone .chip[data-a], #modal .chip.click, #modal .chip[data-a]')}{min-height:44px}
   /* the event sheet: prose at 16 / 25 (brief §4.4) */
   #modal.ph-sheet .mtext{font-size:var(--t-prose);line-height:var(--lh-prose)}
 }

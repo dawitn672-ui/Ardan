@@ -357,6 +357,9 @@ export default {
         T.enter({ seed: 7101, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
         if (UI.MOMENTS) { UI.set.cutins = false; UI.MOMENTS.skip(); }
         UI.set.hints = true;
+        // the philtre's first choice asks a few suns, so she has them (all three rows are measured; seed 7101's woman was
+        // penniless after D-021's day-0 council fix, and the row was not offered)
+        A.pc().coin = Math.max(A.pc().coin || 0, 20);
         A.S.queue = [{ type: 'event', ev: 'lf_love_potion', forced: true, ctx: {} }]; UI.render();
         const m = document.getElementById('modal'), inn = m.querySelector('.sc-in'), hint = m.querySelector(':scope > .hint-float');
         const card = m.querySelector('.sc-card').getBoundingClientRect();

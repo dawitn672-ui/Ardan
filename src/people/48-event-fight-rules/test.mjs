@@ -202,7 +202,8 @@ export default {
           const pc = A.pc(), foe = A.makeFoe({ realm: pc.realm, tier: 2 }); foe.npcTemp = false; A.S.people[foe.id] = foe; A.S.queue = [];
           A.startDuel(pc, foe, { kind: 'duel', lethal: false, toYield: true }); UI.render();
           await new Promise(res => setTimeout(res, 300));
-          const bs = [...document.querySelectorAll('#modal .actbtns > button')];
+          // the five moves (B4 put an info button beside each, a sibling in the same row)
+          const bs = [...document.querySelectorAll('#modal .actbtns > button[data-a="duel"]')];
           let overlap = 0;
           for (const b of bs) {
             const k = b.querySelector('.key'), t = [...b.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());

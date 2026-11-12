@@ -241,7 +241,7 @@ It replaces `UI.crStepBody`, under one line: "This is the face you will grow int
 - **Look, then correct.** Every drawing is rendered to a sheet across its sliders and ages, against a model sheet, and a second agent critiques it before it is kept.
 - **Open to a human hand.** The files import from and export to plain SVG, so the owner or a hired illustrator can redraw any master in any editor.
 
-**Files.** Source is readable JSON, `assets/parts/<family>/<name>.json`: layers of whole-number points (a curve is nodes with two handles; a line adds a width), roles, level tags, anchor ties, and masters as differences from the base. `tools/parts/pack.mjs` packs it into `data/parts/*.json`, which the build puts on the page. The packed files are generated and never edited, like the v2 bundle.
+**Files.** Source is readable JSON, `assets/parts/<family>/<name>.json`: layers of whole-number points (a curve is nodes with two handles; a line adds a width), roles, level tags, anchor ties, and masters as differences from the base. `tools/parts/blob-pack.mjs` packs it into `data/parts/*.json`, which the build puts on the page. The packed files are generated and never edited, like the v2 bundle.
 
 **Tools** (`tools/parts/`, small, plain JS).
 - `sheet.mjs`: any part across its masters, sliders and ages, as SVG and PNG. The agents' eyes.

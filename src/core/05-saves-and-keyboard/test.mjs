@@ -26,8 +26,10 @@ export default {
     return { ok: unreachable === 0 && (!card || opened) && kept !== 'body', detail: `${unreachable} clickable elements unreachable by Tab; Enter on a person card ${card ? (opened ? 'opens it' : 'does NOTHING') : '(no card)'}; focus after 4 s of clock: ${kept}` };
   },
 
-  async saveSafety(pg) {
-    // a failed autosave speaks up; a new life over a living save asks first
+  async saveSafety(pg, errs, { expectError }) {
+    // a failed autosave speaks up; a new life over a living save asks first. The test makes the store refuse the save,
+    // and the game logs that refusal with console.error (as it should), so the error is expected
+    expectError(/QuotaExceededError/);
     const r = await pg.evaluate(async () => {
       UI.screen = 'title'; UI.render();
       UI.A.randomLife(); await UI.save(false); await new Promise(res => setTimeout(res, 300));

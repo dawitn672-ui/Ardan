@@ -19,16 +19,22 @@ export default {
     // ten years: every market keeps most of its goods between a third of normal and five times it
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      ECT.world(11); ECT.months(120);
+      // the chains are read over the tenth year, a month at a time: a workshop works only in a month when its good pays
+      // (economy.core.js), so the great weaveries stop and start as the price of cloth crosses twice that of wool, and
+      // a single month can fall in a pause (seed 11's tenth December did, 224 made against 340 used, after D-021)
+      ECT.world(11); ECT.months(108);
+      const made = {}, used = {};
+      for (let mo = 0; mo < 12; mo++) {
+        ECT.months(1);
+        for (const R of ECT.live()) { const M = A.mkt(R.id); for (const k of ['cloth', 'steel', 'arms']) { made[k] = (made[k] || 0) + ((M.why[k] || {}).made || 0) / 12; used[k] = (used[k] || 0) + (M.d[k] || 0) / 12; } }
+      }
       let n = 0, ok = 0; const bad = {};
       for (const R of ECT.live()) { const M = A.mkt(R.id); for (const k in GD.GOODS) { if (!(M.d[k] > 0.5)) continue; n++; const x = ECT.ratio(R.id, k); if (x >= 0.3 && x <= 5) ok++; else bad[k] = (bad[k] || 0) + 1; } }
-      const made = {}, used = {};
-      for (const R of ECT.live()) { const M = A.mkt(R.id); for (const k of ['cloth', 'steel', 'arms']) { made[k] = (made[k] || 0) + ((M.why[k] || {}).made || 0); used[k] = (used[k] || 0) + (M.d[k] || 0); } }
       return { n, ok, pct: Math.round(100 * ok / n), bad, made, used, caravans: A.S.eco.carN };
     });
     // armies at war burn arms faster than peace-time towns make them: that is what makes arms dear in war
     const chainsRun = ['cloth', 'steel', 'arms'].every(k => r.made[k] >= r.used[k] * 0.7);
-    return { ok: r.pct >= 85 && chainsRun && r.caravans > 50, detail: `${r.pct}% of ${r.n} realm-goods hold a normal stock after ten years (outside: ${JSON.stringify(r.bad)}); chains made/used a month: ${['cloth', 'steel', 'arms'].map(k => `${k} ${Math.round(r.made[k])}/${Math.round(r.used[k])}`).join(', ')}; ${r.caravans} caravans last month` };
+    return { ok: r.pct >= 85 && chainsRun && r.caravans > 50, detail: `${r.pct}% of ${r.n} realm-goods hold a normal stock after ten years (outside: ${JSON.stringify(r.bad)}); chains made/used a month over the tenth year: ${['cloth', 'steel', 'arms'].map(k => `${k} ${Math.round(r.made[k])}/${Math.round(r.used[k])}`).join(', ')}; ${r.caravans} caravans last month` };
   },
 
   async famineTriplesGrain(pg) {
