@@ -1,0 +1,46 @@
+# Round 2 progress
+
+The checklist of every work item, in the order they are being done. Tick an item the moment it is merged and CI is
+green, with the stamp and the commit; never delete a line. Details live in `docs/HISTORY.md`; the plan and the
+reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
+
+*Last updated 2026-11-12 11:17 ET.*
+
+## Done
+- [x] **Step 0** · Repo restructured by system, with a memory (CLAUDE.md, HISTORY, DECISIONS, IDEAS, CHANGELOG, OWNER_ORDERS) · `d906efc`, CI 95 green · 2026-11-11 23:43 ET
+- [x] **Step 1** · Harsh critique: 162 flaws rated, 22-step work order (`docs/CRITIQUE.md`) · `f3fca58` · 2026-11-12 06:15 ET
+- [x] **Prep C7** · Name data: one common English pool (3,820 given, 4,083 family names) + 9 pools for non-humans and far peoples (`docs/research/c7-names.json`) · `6ae93dd` · 2026-11-12 07:05 ET
+- [x] **Prep D11** · Military branches and battlefield strategy draft (`docs/research/d11-branches.*`) · `85df7b0` · 2026-11-12 05:57 ET
+- [x] **A0** · Stop the bleeding: the lag's main cause (whole-page restyle), the two-lords crash, text fixes, bench harnesses · `db98217`, CI 96 green · 2026-11-12 11:02 ET
+
+## In progress
+- [ ] **X6** · Naming pass: clear, self-explanatory names across the repo (moved to immediate priority by the owner, 2026-11-12 11:17 ET)
+- [ ] **A3a** · The net: hidden errors fail tests; coherency checks in the build; nightly 60-year audit
+- [ ] **B4** · Click-to-open descriptions; nothing on hover
+- [ ] **C8a** · Character design plan, realistic version (D-015, D-020) · then demo sheets for the owner before building
+
+## Next, in order
+- [ ] **A1** · Lag: one redraw per press, append-only log, performance gate in CI
+- [ ] **B6** · Next month or Next year; no initiative cap; only notable events stop time (D-019)
+- [ ] **X1** · Own the release: the patched release becomes readable source
+- [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017)
+- [ ] **B5** · Declutter (two parts)
+- [ ] **C8b** · Faces and bodies (after the owner approves the demo sheets)
+- [ ] **X2** · Named stages
+- [ ] **D10** · War screens only when deployed
+- [ ] **C6** · Relationships and households
+- [ ] **X3** · Honest cards and clocks
+- [ ] **C7** · Names and cultures in the game (one common language, D-013)
+- [ ] **C8c** · Dress, class and regalia (changeable outfits)
+- [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
+- [ ] **D12a** · Branches and command: one design (Fable 5.2)
+- [ ] **D11** · Military branches (feudal armies, D-012)
+- [ ] **D12b** · War and command depth
+- [ ] **X4** · Balance pass
+- [ ] **X5** · State diet; stop committing index.html every round (D-018)
+
+## Milestones
+- [ ] `release/v2.1-foundations` (after A1, A3a, B6, A2)
+- [ ] `release/v2.2-interface` (after B4, B5)
+- [ ] `release/v2.3-people` (after C6, C7, C8)
+- [ ] `release/v2.4-war` (after D9 to D12)

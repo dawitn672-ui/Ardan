@@ -8,7 +8,7 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
 
 ## Every session, first
 
-1. Read this file, `docs/OWNER_ORDERS.md` (every standing order of the owner's), the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
+1. Read this file, `docs/OWNER_ORDERS.md` (every standing order of the owner's), `docs/PROGRESS.md` (the checklist of what is done and what is next), the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
    undo a recorded decision without a new record), `docs/V2_SPEC.md` (the owner's design rules) and the skills in
    `.claude/skills/`.
 2. Work on a branch, one step per commit. After each step: tests, the coherency checks, a playtest pass
