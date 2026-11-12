@@ -20,6 +20,7 @@ order is replaced, strike it through and say by what.
 13. **Don't make the owner repeat instructions:** save them here. (Nov 12) · recorded 2026-11-12 05:44 UTC
 14. **Any outside tool or AI is allowed** (web search, web pages, ChatGPT, Codex, anything) where it makes the work cheaper or better. **Everything it produces goes back into the repo, fully structured** (data in `data/`, research in `docs/research/`, code in `src/`, with a HISTORY entry naming the source). Outside AIs that need an account are reached through their API with a key the owner saves via the secure credential form; none is set up yet. (Nov 12) · recorded 2026-11-12 05:47 UTC
 15. **Time-stamp every entry** in the repo's memory (orders, decisions, history, critique, research, ideas) with the date and UTC time it was recorded, so it is clear which matters more and which is out of date; when an entry is replaced, mark the old one `superseded by <id>, <stamp>` and the new one `supersedes <id>`. · recorded 2026-11-12 11:11 UTC
+16. **Auto-resume after limits, even when the owner is away:** a scheduled task ("Ardan auto-resume after limits", id `trig_01Brt9jMjwCyjDebRAxoZpfc`, hourly at :12 into this session) resumes agents stopped by a usage limit or restart, pushes stray work and checks PR #2's CI; it never starts new steps while a pause is in force and stays silent when nothing changed. If the session is replaced, recreate it. · recorded 2026-11-12 11:12 UTC
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
