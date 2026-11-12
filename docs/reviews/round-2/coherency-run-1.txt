@@ -1,0 +1,18 @@
+../../../tmp/ardan/coh/c.html: 120 features, 196 patches, 226 code files, 80 event packs, 5035 KB
+xxxxxxxx
+8 lives, 10 years each, checked every 5 years, in 837 s
+
+FAIL v2 invariants (src/core/99998-v2-saves): 24 problems in 8 of 8 lives
+   seed 7101 noble from 16, 1105 (age 16): no v2dip
+   seed 7100 peasant from 0, 1105 (age 0): no v2dip
+   seed 7102 peasant from 17, 1105 (age 17): no v2dip
+   seed 7103 noble from 20, 1105 (age 20): no v2dip
+   seed 7104 merchant from 25, 1105 (age 25): no v2dip
+   seed 7105 royal from 18, 1105 (age 18): no v2dip
+
+FAIL one holder per council seat (src/core/08-coherency): 3 problems in 3 of 8 lives
+   seed 7100 peasant from 0, 1115 (age 10): Kesh spymaster: held by Majaliwa Mnazi (pml, dead)
+   seed 7103 noble from 20, 1110 (age 25): Gorath spymaster: held by Gorm Ughrak (pho, dead)
+   seed 7107 artisan from 30, 1115 (age 40): Zanara treasurer: held by Kwame Sorondo (p7h, dead)
+
+[exited with code 0]
