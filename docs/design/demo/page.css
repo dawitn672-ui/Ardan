@@ -1,0 +1,34 @@
+:root { --bg: #14131c; --panel: #1d1b27; --ink: #e9e3d6; --dim: #a39c8f; --line: #3a3550; --gold: #c7a14a; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Georgia, "Times New Roman", serif; }
+header, section, footer { max-width: 800px; margin: 0 auto; padding: 18px 16px; }
+h1 { font-size: 26px; margin: 8px 0; color: var(--gold); font-weight: normal; letter-spacing: 0.02em; }
+h2 { font-size: 22px; margin: 4px 0 6px; color: var(--gold); font-weight: normal; }
+h3 { font: 600 12px/1.4 system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dim); margin: 16px 0 6px; }
+.blurb, header p { color: var(--dim); margin: 0 0 8px; }
+nav { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 13px system-ui, sans-serif; }
+nav a { color: var(--ink); }
+.sheet { background: var(--panel); border-top: 1px solid var(--line); margin-top: 14px; }
+.grid { display: grid; grid-template-columns: repeat(var(--cols), max-content); gap: 8px; justify-content: start; overflow-x: auto; }
+figure { margin: 0; }
+figure img { display: block; max-width: 100%; height: auto; background: #222; }
+figcaption { font: 11px/1.3 system-ui, sans-serif; color: var(--dim); margin-top: 3px; max-width: 160px; }
+.grid.small figcaption { max-width: 60px; font-size: 10px; }
+table { border-collapse: collapse; font: 13px system-ui, sans-serif; }
+td, th { border-bottom: 1px solid var(--line); padding: 4px 12px 4px 0; text-align: left; }
+footer { color: var(--dim); font-size: 12px; }
+#maker { display: grid; grid-template-columns: 384px 1fr; gap: 16px; }
+@media (max-width: 760px) { #maker { grid-template-columns: 1fr; } }
+#mk-main { width: 384px; height: 384px; max-width: 100%; height: auto; background: #222; }
+.mk-views canvas { width: 186px; height: 186px; background: #222; margin-right: 6px; }
+.mk-strip { display: flex; gap: 4px; flex-wrap: wrap; } .mk-strip canvas { width: 50px; height: 50px; background: #222; }
+.mk-strip figcaption { text-align: center; }
+.mk-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.mk-tabs button, .mk-ctl button { font: 12px system-ui, sans-serif; background: #2a2738; color: var(--ink); border: 1px solid var(--line); padding: 4px 8px; cursor: pointer; }
+.mk-tabs button[aria-selected="true"] { border-color: var(--gold); color: var(--gold); }
+.mk-sl, .mk-sel { display: grid; grid-template-columns: 110px 70px 1fr 70px; align-items: center; gap: 6px; font: 12px system-ui, sans-serif; margin: 3px 0; }
+.mk-sel { grid-template-columns: 110px 1fr; }
+.mk-w { color: var(--dim); font-size: 11px; } .mk-w:last-child { text-align: left; }
+.mk-sl .mk-w:nth-child(2) { text-align: right; }
+.mk-note { color: var(--dim); font: 12px system-ui, sans-serif; }
+.mk-code { margin-top: 12px; font: 12px system-ui, sans-serif; } .mk-code input { font: 13px monospace; width: 210px; background: #111; color: var(--ink); border: 1px solid var(--line); padding: 3px; }
