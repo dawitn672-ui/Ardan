@@ -95,3 +95,28 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Archived:** nothing.
 - **Undo:** `git revert` the H-003 commit (documents only).
 - **State:** paused by the owner's order 11 until the owner has reviewed `docs/CRITIQUE.md`.
+
+### H-004 · 2026-11-12 09:56 ET · A0: stop the bleeding (P1, P20, R5, E10, Q7)
+- **Commits:** `6d22b09` (the work, by an Opus agent in a worktree), merged as `db98217`; `git log --grep='\[H-004\]'`.
+- **What and why:**
+  - **P1, the lag's main cause.** Four `:has(#modal …)` rules on `<body>` (91-look, 28-endings) and two rules with a
+    structural pseudo-class after a `:has()` made every DOM insert restyle the whole page once a hint or the dead
+    player's bar had been drawn. Now three body classes (`lk-mbox`, `lk-mhint`, `en-obit`) set after each draw, on
+    close and by MutationObservers. One insert: 5.6–18 ms → 0.01–0.05 ms. A year-50 month after a death: 1,303 →
+    529 ms CPU; with a hint on, 1,473 → 661 ms.
+  - **P20.** The toasts' `--ts-h` moved from `:root` to `#toast`.
+  - **R5.** `N.regrant` decides first and creates last, takes back a failed raise, and each title is tried on its
+    own: seed 7's 60-year life has no throw and an empty title audit (was 3 throws and two lords of one seat).
+  - **E10.** "would teach you f" and "1 armies in the field · 1 battles raging" fixed (`TXT-WAR-PLURALS`, `A.plural`).
+  - **Q7.** `tools/bench/press.mjs`, `life.mjs`, `style-probe.mjs`: the press harness, long-life auditor and style
+    probe, taking a built page's path.
+- **Complaints answered:** owner's complaint 1 (lag), in large part; complaint 2 (two holders of one post), the crash
+  that caused one case. CRITIQUE P1, P20, R5, E10, Q7.
+- **Files touched:** 91-look (b-base, c-layout, z-wire), 28-endings, 99993-v2-stats e-sheet, 96-moments toasts,
+  99995-v2-nobility a-court and test, 998-people-want, 02-content-fixes (patch, plural.core.js, test), 59-tooltips
+  tt.wire2, `tests/suites/style.test.mjs`, `tools/bench/{press,life,style-probe}.mjs`, READMEs, CLAUDE.md, index.html.
+- **Tests and checks:** new `cssHasLint`, `styleInsertProbe`, `v2nRegrantHeadless`, `warPlurals`, `peopleWantTeach`;
+  94 of 94 pass in the touched features plus tests/suites; full suite: the CI run on this push. The CSS lint exempts
+  selectors under `#modal` (two phone-sheet rules measured harmless at 0.014 ms); kept as is.
+- **Archived:** nothing (press.cjs and gen.cjs moved with git mv; superseded probes stay in tools/critique-probes/).
+- **Undo:** `git revert -m 1 db98217`, then rebuild `index.html`.

@@ -5,6 +5,11 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased (round 2)
 
+- The game no longer slows down after you have seen a hint or lived on as an heir: a month late in a long life
+  costs about half what it did.
+- A court bug that could leave two lords on one seat for the rest of a game is fixed.
+- "Would teach you f" and "1 armies in the field" now read properly.
+
 - Nothing changes in play yet: the game's files were reorganised so the work ahead (lag, ranks, click-to-open
   descriptions, a cleaner screen, real households, real-world names, distinct faces, a detailed map, real military
   branches and deeper war) has a clear home.
