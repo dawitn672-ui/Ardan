@@ -57,7 +57,8 @@ Push every change; a session that ends with unpushed work has lost it.
 6. Time: Next month or Next year (a year stops early when something needs you); Next day/week in campaigns. (Nov 12, D-008)
 7. Relationships start with only the people really in your life (commoner: parents, siblings; noble: also maids, nurses, tutors, guard knights); others enter through what you do. (Nov 12)
 8. Names and cultures modelled on real-world ones; humans mainly white/European, diverse where it makes sense. (Nov 12)
-9. If an order conflicts with how the code works, record the conflict and the fix chosen (DECISIONS). (v2, Nov 12)
+9. **Keep it game-like and simple** (Nov 12): names are basic, mostly simple names (not exotic or scholarly); "medieval military" means the strategy of fighting with knights, cavalry, infantry and archers (what beats what, terrain, timing), not historical detail for its own sake.
+10. If an order conflicts with how the code works, record the conflict and the fix chosen (DECISIONS). (v2, Nov 12)
 
 ## Round 2 work list (Nov 12)
 Step 0 restructure (done) · Step 1 harsh critique (in progress) · A1 lag · A2 one holder per post · A3 coherency
