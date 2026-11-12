@@ -1,4 +1,4 @@
-# Critique probes (stamped 2026-11-12 11:15 UTC)
+# Critique probes (stamped 2026-11-12 06:15 ET)
 
 The Playwright and Node scripts the round 2 critics wrote to measure and reproduce what `docs/CRITIQUE.md` reports
 (the lag over 50 years, the marshal bug, relationships at birth, hover anchors, words per screen, portraits, map

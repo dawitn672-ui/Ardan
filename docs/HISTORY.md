@@ -18,7 +18,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 
 ## Round 2 (the owner's "Round 2 orders", Nov 12)
 
-### H-001 · 2026-11-12 04:43 UTC · Step 0: the repo restructured, and given a memory
+### H-001 · 2026-11-11 23:43 ET · Step 0: the repo restructured, and given a memory
 - **Commit:** `git log --grep='\[H-001\]'` on `v2-integration`, on top of `b8ca78c` (v2.0.0-beta.1's record commit).
 - **What and why:** the owner's Step 0: a layout anyone can find their way around, nothing thrown away, and files that
   let any later session retrace and undo every step.
@@ -49,7 +49,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   last built at `437efa6`) and the v2 kit's demo UI (`archive/v2-kit-demo-ui`, never shipped).
 - **Undo:** `git revert` the H-001 commit (it is moves plus path rewrites; nothing else depends on it yet).
 
-### H-002 · 2026-11-12 05:32 UTC · Step 0 verified by CI; the coherency registry started (out of the build); owner orders recorded
+### H-002 · 2026-11-12 00:32 ET · Step 0 verified by CI; the coherency registry started (out of the build); owner orders recorded
 - **Commits:** `d906efc` (H-001, step 0), `f4bcc66` (08-coherency, `.wip`), `93fcd5a` (DECISIONS D-008, D-009), and the
   commit that adds this entry (`git log --grep='\[H-002\]'`).
 - **What and why:**
@@ -69,7 +69,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Undo:** delete `src/core/08-coherency/` and `tools/coherency.mjs` (nothing depends on them yet); D-008 and D-009
   are the owner's orders and stay.
 
-### H-003 · 2026-11-12 11:11 UTC · Step 1 done: the critique and the order of work; prep for C7 and D11; timestamps
+### H-003 · 2026-11-12 06:11 ET · Step 1 done: the critique and the order of work; prep for C7 and D11; timestamps
 - **Commit:** `git log --grep='\[H-003\]'`.
 - **What and why:**
   - `docs/CRITIQUE.md`: the harsh critique of beta.1 by the lead critic (Fable, max effort) from five lens reports

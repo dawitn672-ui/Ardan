@@ -1,6 +1,6 @@
 # Ardan v2.0.0-beta.1: the critique, and the order of work that follows from it
 
-*Round 2, step 1 · stamped 2026-11-12 11:11 UTC · written by the lead critic (Fable, maximum effort) from five lens reports (two of
+*Round 2, step 1 · stamped 2026-11-12 06:11 ET · written by the lead critic (Fable, maximum effort) from five lens reports (two of
 them redone by deciding critics), the map of posts, the first coherency run, and the lead's own checks on the frozen
 build and the live code. Sources: `docs/reviews/round-2/`. By the owner's order 11, nothing in section 2 starts until
 the owner has read this.*

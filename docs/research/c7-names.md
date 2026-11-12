@@ -1,6 +1,6 @@
 # Name data for Ardan (c7)
 
-*Stamped 2026-11-12 11:28 UTC · expanded for C7/D11 (owner: lists too small to name whole kingdoms), not wired into the game · supersedes the 2026-11-12 10:59 UTC draft*
+*Stamped 2026-11-12 06:28 ET · expanded for C7/D11 (owner: lists too small to name whole kingdoms), not wired into the game · supersedes the 2026-11-12 05:59 ET draft*
 
 Data file: `docs/research/c7-names.json`. One entry per release culture (CUL-01 to CUL-24), each with 200+ male
 names, 200+ female names, 300+ surnames or bynames, 60+ place names, a `patterns` block and an `uniqueFullNames`
@@ -9,7 +9,7 @@ estimate (all above 100,000). Nothing is wired in yet.
 Owner rule 8 and 9 (Nov 12): names modelled on real cultures, humans mainly white/European, diverse where it makes
 sense, and kept basic, common and easy to read.
 
-## Counts per culture (expanded 2026-11-12 11:28 UTC)
+## Counts per culture (expanded 2026-11-12 06:28 ET)
 
 | Id | Flavour | Male | Female | Surnames/bynames | Places | uniqueFullNames |
 | --- | --- | --- | --- | --- | --- | --- |

@@ -1,5 +1,5 @@
 {
- "_stamp": "2026-11-12 11:28 UTC",
+ "_stamp": "2026-11-12 06:28 ET",
  "_about": "Name data for Ardan (c7), expanded: per culture 200+ male and 200+ female given names, 300+ surnames or bynames, 60+ place names, a patterns block and an uniqueFullNames estimate (all above 100,000). Simple, common, real-flavoured names; same-flavour cultures share a part of their pools and keep their own core. Nothing is wired in yet. Rules: 'patterns.forms' use tokens <given> <surname> <father> <mother> <place> <trade> <epithet>; female forms differ only where given.",
  "cultures": {
   "CUL-01": {

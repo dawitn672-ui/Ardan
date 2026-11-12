@@ -5,22 +5,24 @@ start of every session (CLAUDE.md points here). Add new orders at the bottom of 
 order is replaced, strike it through and say by what.
 
 ## How to work
-1. **Read before starting:** CLAUDE.md, the end of docs/HISTORY.md, docs/DECISIONS.md, docs/V2_SPEC.md, this file, the skills. (Nov 12) · recorded 2026-11-12 05:44 UTC
-2. **Plan first, then exceed the ask.** Research, build or improve skills, troubleshoot with your own judgment instead of stopping. (Nov 12) · recorded 2026-11-12 05:44 UTC
-3. **Rebuild freely**, any tools or languages, as long as the goal is clear. (Nov 12) · recorded 2026-11-12 05:44 UTC
-4. **Never throw work away:** retired code goes to archive/ with a note; record the last commit that had it. (Nov 12) · recorded 2026-11-12 05:44 UTC
-5. **Record everything:** append-only docs/HISTORY.md per step, docs/DECISIONS.md, docs/IDEAS.md, CHANGELOG.md; update CLAUDE.md and the skills when they change. (Nov 12) · recorded 2026-11-12 05:44 UTC
-6. **Milestones:** a release branch `release/<name>` (tags are refused by the git proxy) and sample saves in tests/saves that must keep loading. (Nov 12) · recorded 2026-11-12 05:44 UTC
-7. **After each step:** tests, coherency checks, a playtest pass (scripted, then a playtester agent), fix what they find, then tell the owner what changed and what to test. (Nov 12) · recorded 2026-11-12 05:44 UTC
-8. **Honest ETAs, padded for at least one extra CI round;** give a playable build early rather than waiting for green. (Nov 6) · recorded 2026-11-12 05:44 UTC
-9. **CI:** `[skip ci]` on intermediate pushes while a run is going; never an empty commit to kick CI. One full CI run per finished step, not per commit. (Nov 6, Nov 12) · recorded 2026-11-12 05:44 UTC
-10. **Branch deletion is left to the owner.** (Nov 6) · recorded 2026-11-12 05:44 UTC
-11. **Pause after the critique:** once docs/CRITIQUE.md is done, stop all work and wait for the owner's review. (Nov 12) · recorded 2026-11-12 05:44 UTC
-12. **Token efficiency by any means, with the game's goals in mind; full discretion over model and effort** (the Nov 12 model table, docs/DECISIONS.md D-009, is guidance, not a rule). See D-010. (Nov 12) · recorded 2026-11-12 05:44 UTC
-13. **Don't make the owner repeat instructions:** save them here. (Nov 12) · recorded 2026-11-12 05:44 UTC
-14. **Any outside tool or AI is allowed** (web search, web pages, ChatGPT, Codex, anything) where it makes the work cheaper or better. **Everything it produces goes back into the repo, fully structured** (data in `data/`, research in `docs/research/`, code in `src/`, with a HISTORY entry naming the source). Outside AIs that need an account are reached through their API with a key the owner saves via the secure credential form; none is set up yet. (Nov 12) · recorded 2026-11-12 05:47 UTC
-15. **Time-stamp every entry** in the repo's memory (orders, decisions, history, critique, research, ideas) with the date and UTC time it was recorded, so it is clear which matters more and which is out of date; when an entry is replaced, mark the old one `superseded by <id>, <stamp>` and the new one `supersedes <id>`. · recorded 2026-11-12 11:11 UTC
-16. **Auto-resume after limits, even when the owner is away:** a scheduled task ("Ardan auto-resume after limits", id `trig_01Brt9jMjwCyjDebRAxoZpfc`, hourly at :12 into this session) resumes agents stopped by a usage limit or restart, pushes stray work and checks PR #2's CI; it never starts new steps while a pause is in force and stays silent when nothing changed. If the session is replaced, recreate it. · recorded 2026-11-12 11:12 UTC
+1. **Read before starting:** CLAUDE.md, the end of docs/HISTORY.md, docs/DECISIONS.md, docs/V2_SPEC.md, this file, the skills. (Nov 12) · recorded 2026-11-12 00:44 ET
+2. **Plan first, then exceed the ask.** Research, build or improve skills, troubleshoot with your own judgment instead of stopping. (Nov 12) · recorded 2026-11-12 00:44 ET
+3. **Rebuild freely**, any tools or languages, as long as the goal is clear. (Nov 12) · recorded 2026-11-12 00:44 ET
+4. **Never throw work away:** retired code goes to archive/ with a note; record the last commit that had it. (Nov 12) · recorded 2026-11-12 00:44 ET
+5. **Record everything:** append-only docs/HISTORY.md per step, docs/DECISIONS.md, docs/IDEAS.md, CHANGELOG.md; update CLAUDE.md and the skills when they change. (Nov 12) · recorded 2026-11-12 00:44 ET
+6. **Milestones:** a release branch `release/<name>` (tags are refused by the git proxy) and sample saves in tests/saves that must keep loading. (Nov 12) · recorded 2026-11-12 00:44 ET
+7. **After each step:** tests, coherency checks, a playtest pass (scripted, then a playtester agent), fix what they find, then tell the owner what changed and what to test. (Nov 12) · recorded 2026-11-12 00:44 ET
+8. **Honest ETAs, padded for at least one extra CI round;** give a playable build early rather than waiting for green. (Nov 6) · recorded 2026-11-12 00:44 ET
+9. **CI:** `[skip ci]` on intermediate pushes while a run is going; never an empty commit to kick CI. One full CI run per finished step, not per commit. (Nov 6, Nov 12) · recorded 2026-11-12 00:44 ET
+10. **Branch deletion is left to the owner.** (Nov 6) · recorded 2026-11-12 00:44 ET
+11. ~~**Pause after the critique:** once docs/CRITIQUE.md is done, stop all work and wait for the owner's review.~~ Done; **superseded by order 17**, 2026-11-12 06:49 ET. (Nov 12) · recorded 2026-11-12 00:44 ET
+12. **Token efficiency by any means, with the game's goals in mind; full discretion over model and effort** (the Nov 12 model table, docs/DECISIONS.md D-009, is guidance, not a rule). See D-010. (Nov 12) · recorded 2026-11-12 00:44 ET
+13. **Don't make the owner repeat instructions:** save them here. (Nov 12) · recorded 2026-11-12 00:44 ET
+14. **Any outside tool or AI is allowed** (web search, web pages, ChatGPT, Codex, anything) where it makes the work cheaper or better. **Everything it produces goes back into the repo, fully structured** (data in `data/`, research in `docs/research/`, code in `src/`, with a HISTORY entry naming the source). Outside AIs that need an account are reached through their API with a key the owner saves via the secure credential form; none is set up yet. (Nov 12) · recorded 2026-11-12 00:47 ET
+15. **Time-stamp every entry** in the repo's memory (orders, decisions, history, critique, research, ideas) with the date and US East Coast time (New York/Maryland, written `ET`) it was recorded (changed from UTC 2026-11-12 06:49 ET; older UTC stamps converted), so it is clear which matters more and which is out of date; when an entry is replaced, mark the old one `superseded by <id>, <stamp>` and the new one `supersedes <id>`. · recorded 2026-11-12 06:11 ET
+16. **Auto-resume after limits, even when the owner is away:** a scheduled task ("Ardan auto-resume after limits", id `trig_01Brt9jMjwCyjDebRAxoZpfc`, hourly at :12 into this session) resumes agents stopped by a usage limit or restart, pushes stray work and checks PR #2's CI; it never starts new steps while a pause is in force and stays silent when nothing changed. If the session is replaced, recreate it. · recorded 2026-11-12 06:12 ET
+17. **Continue with the structure according to plan:** the owner reviewed the critique and answered its decisions (DECISIONS D-011 to D-014); work follows docs/CRITIQUE.md §2 in order. · recorded 2026-11-12 06:49 ET
+18. **Many more names:** the name pools must be large enough to name whole kingdoms, and then noticeably larger again. · recorded 2026-11-12 06:49 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
@@ -48,20 +50,23 @@ order is replaced, strike it through and say by what.
 The cloud container is wiped between sessions; only what is pushed survives. The memory is this repo: this file
 (orders), `CLAUDE.md` (how to work), `docs/HISTORY.md` (what was done, how to undo), `docs/DECISIONS.md` (why),
 `docs/IDEAS.md` (later), `CHANGELOG.md` (for players), `docs/CRITIQUE.md` (what is wrong, in what order to fix it).
-Push every change; a session that ends with unpushed work has lost it. Every entry carries a UTC stamp (order 15);
+Push every change; a session that ends with unpushed work has lost it. Every entry carries an ET stamp (order 15);
 the newest stamp wins when two entries disagree, unless the older one is an owner's order that was never superseded.
 
 ## Game rules (design)
-1. Descriptions open on click (button or info icon), never on hover. (Nov 12, replaces "never hide a description behind a click") · recorded 2026-11-12 05:44 UTC
-2. No percentages the player sees: words and a tipped scale. (v2) · recorded 2026-11-12 05:44 UTC
-3. Every system deterministic from the seed. (v2) · recorded 2026-11-12 05:44 UTC
-4. One holder per post; a promotion hands over the real command and takes the old post; leaving a post has consequences. (Nov 12) · recorded 2026-11-12 05:44 UTC
-5. War screens only when deployed, on a mission, or the situation allows. (Nov 12) · recorded 2026-11-12 05:44 UTC
-6. Time: Next month or Next year (a year stops early when something needs you); Next day/week in campaigns. (Nov 12, D-008) · recorded 2026-11-12 05:44 UTC
-7. Relationships start with only the people really in your life (commoner: parents, siblings; noble: also maids, nurses, tutors, guard knights); others enter through what you do. (Nov 12) · recorded 2026-11-12 05:44 UTC
-8. Names and cultures modelled on real-world ones; humans mainly white/European, diverse where it makes sense. (Nov 12) · recorded 2026-11-12 05:44 UTC
-9. **Keep it game-like and simple** (Nov 12): names are basic, mostly simple names (not exotic or scholarly); "medieval military" means the strategy of fighting with knights, cavalry, infantry and archers (what beats what, terrain, timing), not historical detail for its own sake. · recorded 2026-11-12 10:55 UTC
-10. If an order conflicts with how the code works, record the conflict and the fix chosen (DECISIONS). (v2, Nov 12) · recorded 2026-11-12 10:55 UTC
+1. Descriptions open on click (button or info icon), never on hover. (Nov 12, replaces "never hide a description behind a click") · recorded 2026-11-12 00:44 ET
+2. No percentages the player sees: words and a tipped scale. (v2) · recorded 2026-11-12 00:44 ET
+3. Every system deterministic from the seed. (v2) · recorded 2026-11-12 00:44 ET
+4. One holder per post; a promotion hands over the real command and takes the old post; leaving a post has consequences. (Nov 12) · recorded 2026-11-12 00:44 ET
+5. War screens only when deployed, on a mission, or the situation allows. (Nov 12) · recorded 2026-11-12 00:44 ET
+6. Time: Next month or Next year (a year stops early when something needs you); Next day/week in campaigns. (Nov 12, D-008) · recorded 2026-11-12 00:44 ET
+7. Relationships start with only the people really in your life (commoner: parents, siblings; noble: also maids, nurses, tutors, guard knights); others enter through what you do. (Nov 12) · recorded 2026-11-12 00:44 ET
+8. ~~Names and cultures modelled on real-world ones; humans mainly white/European, diverse where it makes sense. (Nov 12)~~ **Superseded by rule 11**, 2026-11-12 06:49 ET. · recorded 2026-11-12 00:44 ET
+9. **Keep it game-like and simple** (Nov 12): names are basic, mostly simple names (not exotic or scholarly); "medieval military" means the strategy of fighting with knights, cavalry, infantry and archers (what beats what, terrain, timing), not historical detail for its own sake. · recorded 2026-11-12 05:55 ET
+10. If an order conflicts with how the code works, record the conflict and the fix chosen (DECISIONS). (v2, Nov 12) · recorded 2026-11-12 05:55 ET
+11. **One common language, different cultures:** most countries speak the same (English) language, so most realms use plain English-language names; cultures differ in customs, dress, faith and ways, not in language. A few far or non-human peoples may sound different. · recorded 2026-11-12 06:49 ET
+12. **Art: animated (anime), but far more detailed, as if a real character designer drew it,** with many more customisation options for hair, height, facial features and build. · recorded 2026-11-12 06:49 ET
+13. **The crown appoints the Marshal** of its armies, from any rank. Armies are feudal: nobles hold troops in proportion to their rank; the crown has royal knights; the elite orders serve the crown but draw their men from the whole kingdom by prowess; a duchy's knights march with the kingdom in war but, forced to choose, stay loyal to their duchy. · recorded 2026-11-12 06:49 ET
 
 ## Round 2 work list (Nov 12)
 Step 0 restructure (done) · Step 1 harsh critique (in progress) · A1 lag · A2 one holder per post · A3 coherency
