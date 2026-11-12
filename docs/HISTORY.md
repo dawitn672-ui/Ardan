@@ -129,3 +129,22 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   shown unchanged as in step 0.
 - **Files touched:** `docs/OWNER_ORDERS.md` (order 20), this file. **Undo:** nothing to undo (a plan).
 
+
+### H-006 · 2026-11-12 12:03 ET · X6: the naming pass (owner's orders 20, immediate)
+- **Commits:** `caed4d4` (the work, by an Opus 5.5 agent in a worktree), merged as `7a5e71d`; `git log --grep='\[H-006\]'`.
+  Also recorded here: CI run 96 on `3f68f42` (A0) passed everything, and v2.1.0-alpha.1 was made at `af27000`.
+- **What and why:** clear, self-explanatory names across the repo so it is easy to navigate. `tools/rename-pass.mjs`
+  reads `tools/rename-map.json` (old path → new path), renames with `git mv` and rewrites every reference; it is safe to
+  re-run after any merge. 79 renames: 41 feature folders (prefixes and build order unchanged: 59-tooltips →
+  59-descriptions, 88-queue-head → 88-skip-dropped-events, 9998-stakes → 9998-choice-stakes, 90-fold →
+  90-collapsible-sections, 91-look → 91-visual-style, 47-realm-bible → 47-realm-customs, 68-casus-belli →
+  68-reasons-for-war, 99990-v2 → 99990-v2-engine, ...), 12 files inside features, 15 docs (no spaces or parentheses),
+  11 tools (pack.mjs → blob-pack.mjs, bench/press.mjs → next-month-speed.mjs, ...). `docs/NAMES.md` maps every old
+  name to its new one; `docs/README.md` is an index of every doc. Records of the past (this file, VERSIONS,
+  CHANGELOG, archive/, reports, saves) keep the old names. Five strings the player sees that leak folder names were
+  kept word for word (to be fixed by B4/B5).
+- **Complaints answered:** the owner's order 20 (navigation).
+- **Tests and checks:** the built code matches the old build token for token, comments aside; the same 757 tests in
+  the same order; 29/29 engine tests; boot, savesStillLoad, scaleSites, cutNotFromFeatures, sgNoInfants, phoneTasks
+  pass; full suite: the CI run on this push.
+- **Archived:** nothing. **Undo:** `git revert -m 1 7a5e71d`, rebuild.
