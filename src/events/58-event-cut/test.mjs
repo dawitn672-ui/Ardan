@@ -1,6 +1,8 @@
 import { featureDirs, featurePath } from '../../../tools/lib/features.mjs';
 // Tests for src/events/58-event-cut: the retire list, the roll that skips it, queued events that still work,
 // the classic-pool setting, the pool floors, and the War Room tabs by rank.
+// eight lives of 25 years: longer than the runner's default limit on a loaded CI machine
+export const limits = { cutRollSkips: 2400 };
 export default {
   async cutListSane(pg) {
     const r = await pg.evaluate(() => {

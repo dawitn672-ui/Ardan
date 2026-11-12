@@ -20,6 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { watchPage } from '../lib/page-errors.mjs';
 
 const require = createRequire(import.meta.url);
 let pw; try { pw = require('playwright'); } catch { pw = require(process.env.PLAYWRIGHT_PATH || '/opt/node-tools/node_modules/playwright'); }
@@ -85,8 +86,8 @@ async function main() {
   const ctx = await browser.newContext({ viewport: { width: W, height: phone ? 860 : 900 }, deviceScaleFactor: 1, hasTouch: phone, isMobile: phone });
   const page = await ctx.newPage(); page.setDefaultTimeout(1800000);
   const errs = [];
-  page.on('pageerror', e => errs.push('pageerror: ' + String(e.stack || e).slice(0, 400)));
-  page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') errs.push(m.type() + ': ' + m.text().slice(0, 300)); });
+  watchPage(page, errs);   // a press that logs an error fails the harness (round 2 A3a); warnings are kept apart
+  const warns = []; page.on('console', m => { if (m.type() === 'warning') warns.push('warning: ' + m.text().slice(0, 300)); });
   const cdp = await ctx.newCDPSession(page);
   await cdp.send('Performance.enable', { timeDomain: 'threadTicks' });
   const metrics = async () => Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(x => [x.name, x.value]));
@@ -152,7 +153,8 @@ async function main() {
     withCards: busy.length, withCardsMedian: med(busy.map(p => p.cpuSettled)), cardsPerMonth: +(ok.reduce((a, p) => a + p.cards, 0) / Math.max(1, ok.length)).toFixed(2), styleMedian: med(ok.map(p => p.styleMs)), layoutsMedian: med(ok.map(p => p.layouts)), errors: errs.length };
   fs.writeFileSync(`${OUT}/press-${TAG}.json`, JSON.stringify({ tag: TAG, html: HTML, W, NOTIMED, DEATH, st, summary, presses, errs }, null, 0));
   log(`SUMMARY months ${summary.months}: cpu median ${summary.cpuMedian} mean ${summary.cpuMean}; quiet ${summary.quiet}: median ${summary.quietMedian}; with cards ${summary.withCards}: median ${summary.withCardsMedian}, cards/mo ${summary.cardsPerMonth}; style median ${summary.styleMedian}; layouts/mo median ${summary.layoutsMedian}; errors ${errs.length}`);
-  if (errs.length) log('errors:', errs.slice(0, 5).join(' | '));
+  if (errs.length) { log('errors:', errs.slice(0, 5).join(' | ')); process.exitCode = 1; }
+  if (warns.length) log('warnings:', warns.length, warns[0]);
   await browser.close();
 }
 

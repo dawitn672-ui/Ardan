@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { allowed } from './lib/page-errors.mjs';
 
 const require = createRequire(import.meta.url);
 let pw;
@@ -67,7 +68,7 @@ async function oneRun(browser, run) {
   let step = 0, last = 'boot';
   const add = (kind, msg) => found.push({ kind, msg: String(msg).slice(0, 400), run, step, after: last });
   pg.on('pageerror', e => add('pageerror', e.stack || e));
-  pg.on('console', m => { if (m.type() === 'error') add('console', m.text()); });
+  pg.on('console', m => { if (m.type() === 'error' && !allowed(m.text())) add('console', m.text()); });   // the project's allowlist: tools/lib/page-errors.mjs
   pg.on('requestfailed', r => add('request', r.url().slice(0, 160) + ' ' + ((r.failure() || {}).errorText || '')));
   pg.on('dialog', d => (R() < .5 ? d.accept() : d.dismiss()).catch(() => {}));
   pg.on('filechooser', fc => fc.setFiles([]).catch(() => {}));

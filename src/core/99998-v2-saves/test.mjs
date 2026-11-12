@@ -113,7 +113,9 @@ export default {
   },
 
   // a save from a newer version, a newer format, or the Great Continent is refused with a sentence, and the game goes on
-  async v2svRefused(pg) {
+  async v2svRefused(pg, errs, { expectError }) {
+    // the refused load is reported with console.error by design (the player sees the sentence); not a fault
+    expectError(/the save was made by a newer version of the game|far lands this version/);
     const r = await pg.evaluate(async () => {
       T.enter({ seed: 9, realm: 'POL-01', status: 'peasant' });
       const keep = JSON.stringify(A.S), out = {};

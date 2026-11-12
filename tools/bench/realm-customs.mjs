@@ -13,6 +13,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { BOT } from './bot.mjs';
+import { watchPage } from '../lib/page-errors.mjs';
 const require = createRequire(import.meta.url);
 let pw; try { pw = require('playwright'); } catch { pw = require('/opt/node-tools/node_modules/playwright'); }
 
@@ -27,7 +28,7 @@ const browser = await pw.chromium.launch({ executablePath: fs.existsSync('/opt/p
 const errs = [], pages = [];
 for (let w = 0; w < WORKERS; w++) {
   const page = await browser.newPage();
-  page.on('pageerror', e => errs.push(String(e.message || e)));
+  watchPage(page, errs, { max: 300 });
   await page.goto(pathToFileURL(file).href);
   await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
   await page.evaluate(BOT);

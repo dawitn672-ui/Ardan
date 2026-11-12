@@ -33,3 +33,30 @@ jobs:
           name: nightly-reports
           path: tools/bench/reports/nightly-*.json
           retention-days: 30
+  # Round 2 A3a, the net (CRITIQUE Q1, Q3): 8 lives of every class played 60 years with every check of
+  # src/core/08-coherency-checks (the v2 invariants and A.V2F's title audit among them) every 5 years, held to the "nightly"
+  # counts of tests/coherency-baseline.json; seed 7's 60-year life audited every month (tools/bench/long-life-audit.mjs); and the
+  # soak, a monkey clicking through the real screens. Each fails on any page error or console.error.
+  net:
+    runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: mkdir -p tools/bench/reports
+      - run: node tools/coherency.mjs index.html --baseline=nightly --workers=4 --json=tools/bench/reports/nightly-coherency.json
+      - if: always()
+        run: node tools/bench/long-life-audit.mjs index.html --seed=7 --years=60 --json=tools/bench/reports/nightly-life.json
+      - if: always()
+        run: node tools/soak-test.mjs index.html --runs=8 --steps=600 --workers=2 --json=tools/bench/reports/nightly-soak.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-net
+          path: tools/bench/reports/nightly-*.json
+          retention-days: 30

@@ -72,15 +72,24 @@ node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
-node tests/run.mjs                                        # everything against index.html (757 tests; CI shards it 8 ways)
+node tests/run.mjs                                        # everything against index.html (759 tests; CI shards it 8 ways)
 node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
 node tools/bench/next-month-speed.mjs /tmp/me.html --state=save.json [--death]   # real Next month presses, in CPU time
 node tools/bench/style-probe.mjs /tmp/me.html             # one <span> insert's style time after a hint and a death (< 1 ms)
 node tools/bench/long-life-audit.mjs /tmp/me.html --seed=7 --years=60    # a long bot life with the one-holder audit and error counts
 node tools/check.mjs                                      # everything CI runs
+node tools/coherency.mjs --quick                          # the coherency checks over a few lives (src/core/08-coherency-checks)
+node tools/coherency.mjs --baseline=quick                 # the same run CI holds to tests/coherency-baseline.json
 node tools/version.mjs get v2.0.0-beta.1                  # any version, playable: versions/ardan-<v>.html
 git gc --prune=now                                        # after every integration round (see below)
 ```
+
+**The net (round 2 A3a).** A test, bench, soak or coherency run fails on any uncaught error *and any `console.error`*
+(the few messages that are not the game's faults are listed with reasons in `tools/lib/page-errors.mjs`; a test that
+provokes an error on purpose calls `expectError(/.../)`). A test that cannot run in a build returns `{ ok: true, skip:
+'why' }` and shows as SKIP. Each test has a time limit (`--limit=`, default 1800 s) and the runner relaunches a crashed
+browser. Time with the runner's `cpu()` (main-thread CPU), never the wall clock. Known contradictions are counted in
+`tests/coherency-baseline.json`, which may only shrink.
 
 The browser tests use the container's Playwright (`/opt/node-tools/node_modules/playwright`): if `npm ci` installs
 the pinned one, delete `node_modules/playwright*` or point `PLAYWRIGHT_PATH` at the container's copy.

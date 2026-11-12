@@ -122,7 +122,7 @@ export default {
 
   // The report says what the drill did, in words, with the same number as the tactic's cause.
   async drillReportSaysIt(pg) {
-    if (!(await pg.evaluate(() => typeof A.aarBuild === 'function'))) return { ok: true, detail: 'skipped: the report is 23-after-action\'s, not in this build' };
+    if (!(await pg.evaluate(() => typeof A.aarBuild === 'function'))) return { ok: true, skip: 'the report is 23-after-action\'s, not in this build' };
     await pg.evaluate(DRILL_LAB);
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 23, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });

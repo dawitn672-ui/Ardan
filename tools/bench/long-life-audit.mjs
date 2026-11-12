@@ -17,6 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { watchPage } from '../lib/page-errors.mjs';
 
 const require = createRequire(import.meta.url);
 let pw; try { pw = require('playwright'); } catch { pw = require(process.env.PLAYWRIGHT_PATH || '/opt/node-tools/node_modules/playwright'); }
@@ -58,8 +59,7 @@ async function main() {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, deviceScaleFactor: 1 });
   const page = await ctx.newPage(); page.setDefaultTimeout(3600000);
   const errs = [];
-  page.on('pageerror', e => errs.push('pageerror: ' + String(e.stack || e).slice(0, 400)));
-  page.on('console', m => { if (m.type() === 'error') errs.push('error: ' + m.text().slice(0, 400)); });
+  watchPage(page, errs);
   const cdp = await ctx.newCDPSession(page);
   await cdp.send('Performance.enable', { timeDomain: 'threadTicks' });
   const cpu = async () => (await cdp.send('Performance.getMetrics')).metrics.find(x => x.name === 'ThreadTime').value;

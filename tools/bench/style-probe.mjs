@@ -13,6 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
+import { watchPage } from '../lib/page-errors.mjs';
 
 const require = createRequire(import.meta.url);
 let pw; try { pw = require('playwright'); } catch { pw = require(process.env.PLAYWRIGHT_PATH || '/opt/node-tools/node_modules/playwright'); }
@@ -39,8 +40,7 @@ async function main() {
   const ctx = await browser.newContext({ viewport: { width: W, height: phone ? 860 : 900 }, deviceScaleFactor: 1, hasTouch: phone, isMobile: phone });
   const page = await ctx.newPage(); page.setDefaultTimeout(600000);
   const errs = [];
-  page.on('pageerror', e => errs.push(String(e).slice(0, 200)));
-  page.on('console', m => { if (m.type() === 'error') errs.push(m.text().slice(0, 200)); });
+  watchPage(page, errs, { max: 200 });
   const cdp = await ctx.newCDPSession(page);
   await cdp.send('Performance.enable', { timeDomain: 'threadTicks' });
   const metrics = async () => Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(x => [x.name, x.value]));
@@ -101,7 +101,7 @@ async function main() {
   console.log(`worst ${worst} ms per insert (budget 1 ms); page errors ${errs.length}${errs.length ? ': ' + errs[0] : ''}`);
   if (JSONOUT) fs.writeFileSync(JSONOUT, JSON.stringify({ html: HTML, w: W, state: STATE, new: STATE ? null : NEW, probes: out, worst, errs }, null, 1));
   await browser.close();
-  process.exitCode = worst >= 1 ? 1 : 0;
+  process.exitCode = worst >= 1 || errs.length ? 1 : 0;
 }
 
 // every :has() rule out, then each put back alone and the probe run: names the rules that switch the restyle on

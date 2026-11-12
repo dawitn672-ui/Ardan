@@ -47,7 +47,8 @@
       if (!V.p || typeof V.p !== 'object') V.p = {};
       if (!V.ruler || typeof V.ruler !== 'object') V.ruler = {};
       if (!Array.isArray(V.h)) V.h = [];
-      for (const id of Object.keys(S.realms || {}).sort()) { const r = S.realms[id]; if (r && r.alive !== false && !V.ruler[id]) V.ruler[id] = [r.ruler != null ? String(r.ruler) : '', -99]; }
+      // the realms DV.tick knows (alive, not a rebel faction), so a new game's store is the one its first tick made
+      for (const id of Object.keys(S.realms || {}).sort()) { const r = S.realms[id]; if (r && r.alive && !r.isRebel && !V.ruler[id]) V.ruler[id] = [r.ruler != null ? String(r.ruler) : '', -99]; }
     }],
     // 7. war: no rumours yet (99997's store)
     ['war', S => {
@@ -73,6 +74,24 @@
     if (A.cacheResetAll) A.cacheResetAll();
     S.ver = SV.VER;
     return ran;
+  };
+
+  // ---- a new game is born complete (round 2 A3a, CRITIQUE P22) ----------------------------------------------------------
+  // v2 diplomacy, war and time made their stores (S.v2dip, S.v2w, S.v2t) on the first day's tick, so a game on day 0
+  // failed SV.check ("no v2dip"). A.newGame now runs those three upgrade steps at its end. They fill exactly what the
+  // first tick filled (empty lists, each ruler known as of old) and draw nothing, and the stream is put back, so a seed
+  // plays the same world as before; only the order of keys in A.S (and so A.fingerprint) differs from the older build.
+  SV.NEW_GAME_STEPS = ['diplomacy', 'war', 'time'];
+  const ng = A.newGame;
+  A.newGame = function () {
+    const r = ng.apply(this, arguments), S = A.S;
+    if (S && S.people) {
+      const keepR = A.rngState;
+      try { for (const [k, f] of SV.STEPS) if (SV.NEW_GAME_STEPS.includes(k)) f(S); }
+      catch (e) { console.error('v2 new game stores', e); }
+      finally { A.rngState = keepR; }
+    }
+    return r;
   };
 
   // the release's A.migrate (and the features' wrappers) first, then the v2 step, once, for a state made before it
