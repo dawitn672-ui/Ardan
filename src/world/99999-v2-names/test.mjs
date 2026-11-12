@@ -18,8 +18,10 @@ const SETUP = () => {
     },
     page(where) {
       NMT.look(where, document.body.innerText || '');
-      for (const el of document.querySelectorAll('[title],[aria-label],[alt],[placeholder]'))
-        for (const a of ['title', 'aria-label', 'alt', 'placeholder']) NMT.look(where + ' @' + a, el.getAttribute(a));
+      for (const el of document.querySelectorAll('[title],[aria-label],[alt],[placeholder],[aria-description],[data-tt="note"]'))
+        for (const a of ['title', 'aria-label', 'alt', 'placeholder', 'aria-description']) NMT.look(where + ' @' + a, el.getAttribute(a));
+      // round 2 B4: a description that was a title now sits in the note's data-v (and an info button's)
+      for (const el of document.querySelectorAll('[data-tt="note"][data-v]')) NMT.look(where + ' @note', el.getAttribute('data-v'));
     },
     canvas() {
       const NM = A.V2NAMES, seen = [], host = NM && NM.raw && NM.raw.fillText ? NM.raw : CanvasRenderingContext2D.prototype;

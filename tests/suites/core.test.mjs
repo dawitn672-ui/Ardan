@@ -60,9 +60,8 @@ export default {
       for (const s of subs) { await pg.click(`#tabs [data-a="tab"][data-v="${s}"]`).catch(() => {}); await pg.waitForTimeout(120); seen.push(s); }
     }
     const person = await pg.$('[data-a="ov"]');
-    // the mouse is parked first: a hover tooltip under it would take the first Escape (WCAG 1.4.13), not the person view
-    // a hover tip opened while the pointer rested on the view closes TT.HOVER_CLOSE (320 ms) after it leaves; until then
-    // it takes the first Escape, so wait for the tips to close rather than for a fixed time (a slow runner: CI run 73)
+    // a tip that a press opened takes the first Escape, not the person view (WCAG 1.4.13); since round 2 B4 nothing
+    // opens on hover, so the mouse only needs to be out of the way, and the test waits for any tip to be closed
     if (person) {
       await person.click().catch(() => {}); await pg.waitForTimeout(200); await pg.mouse.move(1, 1);
       await pg.waitForFunction(() => !(UI.TT && UI.TT.stack && UI.TT.stack.length), null, { timeout: 5000 }).catch(() => {});

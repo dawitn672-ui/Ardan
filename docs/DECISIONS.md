@@ -48,6 +48,16 @@ is missing; in a fresh container delete the pinned copy after `npm ci`.
 **Chosen:** hover pop-ups are removed; a button or an info icon opens a description. This replaces V2_SPEC's older
 rule "never hide a description behind a click".
 **Why:** the owner's order. To be done in step B4; recorded now so nobody re-adds hover tooltips meanwhile.
+**Done in B4 (Nov 12), and where the order met the code:**
+- A choice on an event card keeps its tap for the choice (playtest round 1: a tap on a choice chooses), so its odds open through
+  an info glyph `ⓘ` kept inside the button (`UI.TT.sweepChoices`), not through the odds text. An activity tile opens a sheet.
+  Every other anchor inside a row or card explains itself when pressed, and the rest of the row still acts.
+- The roughly 150 descriptive `title=` sites (mostly in the release's minified code) are lifted at run time by `UI.TT.sweepTitles`
+  (a text element becomes the trigger, a button gets an info button beside it); feature code writes `data-note="..."`. A short
+  title (three words or fewer) stays. The time dock's own hints (Next month and the speeds) are `aria-description` only, since the
+  dock is B6's. A disabled control's reason opens through an info button beside it.
+- The maps' province cards and the battle field's unit names show on a press, not on a moving pointer.
+- Test and lint: `src/ui/99998-click-open/test.mjs` (`clickNoHover`, `clickOpens`, `clickLint`, `clickActSheet`).
 
 ### D-008 · Time moves by Next month or Next year (2026-11-12 00:07 ET, owner's order)
 **Chosen:** two buttons, Next month and Next year. A year runs month by month underneath and stops early when

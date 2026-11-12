@@ -1,5 +1,15 @@
 # Nested tooltips
 
+> **Round 2, B4 (`docs/DECISIONS.md` D-007): descriptions open on click, never on hover.** Everything below that says a
+> popover opens on hover is out of date and kept for the record: the `pointerover` listener, the 0.3 s hover close and
+> the `how: 'hover'` paths are gone. A trigger opens on a click, a tap, or Enter or Space; a second press on it, Esc, or a
+> press elsewhere closes it. An anchor inside a row or a card explains itself when pressed and the row waits (a choice and
+> an activity tile keep their tap for the action: the choice's odds open through the info glyph `ⓘ` kept inside the button,
+> and a tile opens a sheet, `src/ui/99998-click-open`). The descriptions that sat in `title=` (every activity, trait,
+> skill, price reason, disabled reason: some 150 sites) are lifted by `descriptions.note.core.js` into the same engine: see below. The
+> maps' province cards (`patches.mjs`) and the battle field's unit names show on a press, not on a moving pointer.
+> `src/ui/99998-click-open/test.mjs` hovers every anchor of every page and asserts nothing opens, and lints the code.
+
 **Aspect:** UI and UX (Road to Ten, UI and UX 2; and the phone part of UI and UX 6) · **Kind:** UI system, no patches, no events
 
 The plan asks: "Add nested tooltips. Every number and keyword shows its breakdown on hover or tap (fighting worth = body 34 + skill 41 + gear 18), and words inside the tooltip open their own." The benchmark row adds: "Fighting worth opens into body + skill + gear, each part opens again; the six stats explain themselves. Opens by hover, tap or Enter; Esc closes."
@@ -17,8 +27,7 @@ The two-level engine stopped at level 2. The body tip listed stats but did not a
 **What it does.**
 
 - **One engine, any depth** (`descriptions.engine.core.js`). `data-tt="key"` with `data-v="arg"` opens `UI.TIPS[key](arg)`. The release's `data-tip="key:arg"` anchors go through the same engine, so there is one stack and one set of listeners, delegated from `window`. It replaces `UI.tipsInit`, `UI.tipShow` and `UI.tipHide`, and keeps their names.
-  - **Hover** opens. Moving into the popover keeps it open, and moving away closes what hover opened after 0.3 s.
-  - **Click or tap** pins a popover. A click in a lower popover closes the ones above it, a click outside closes them all, and each popover has a × button.
+  - **Click or tap** opens a popover (round 2: hover opens nothing). A second press on the same anchor closes it, a click in a lower popover closes the ones above it, a click outside closes them all, and each popover has a × button.
   - **Enter or Space** on a focused trigger opens a popover and moves focus into it. Tab cycles through its links, Enter on a link opens the next level, and **Esc** closes only the top one and returns focus to the word that opened it.
   - Up to six levels. Each sits beside the one below it, or under its word when the screen is too narrow (375 px).
   - ARIA: the trigger is `role="button"` with `aria-haspopup="dialog"`, `aria-expanded` and `aria-controls`. The popover is a non-modal `role="dialog"` labelled by its heading. A `role="tooltip"` may not contain links, and these do. Inside a modal, the popover joins the modal so the screen reader and the modal's focus trap still reach it.
@@ -46,7 +55,7 @@ The two-level engine stopped at level 2. The body tip listed stats but did not a
   - the top bar (`UI.clkHtml`, `UI.renderTop`): the date and age, initiative, coin and debt;
   - the full profile (`UI.profileModal`): the stat bars and the renown, honor and piety line;
   - the Realm tab for a ruler (`UI.realmTabBasic`): treasury, stability, legitimacy, war weariness, infamy;
-  - People: each opinion bar (on hover only: the card itself is a button, and a tap opens the person);
+  - People: each opinion bar (a press on the bar explains it and the card waits; a press elsewhere on the card opens the person);
   - the "How you are" card of 35-moods.
 
   Titles elsewhere stay as they were.
@@ -144,7 +153,7 @@ Lore pages of the Codex (faiths, bloodlines, songs, secrets, families) and the W
 
 - **Lore and the World tab are not wired.** The Codex's lore pages and the World tab's views (the realm list, the news, the annals, the history) keep their plain text. The realm list's columns could be wired with the realm entries that exist.
 - **Some numbers are counted as prose and still wired.** The duel's measure ("…about 30 times in 100") and your instincts' read sit in sentences, so the count leaves them out, but they open their breakdowns.
-- **A number inside an action opens on hover only** (an army row, a division row, a person card, a cost in a button): a tap stays the action's. The choice's odds are the one exception, a tap target of their own.
+- **A number inside an action explains itself when pressed** (an army row, a division row, a person card, a cost in a button), and the rest of the action still acts (round 2: it was hover only). A choice and an activity tile keep their tap for the action; the choice's odds open through the info glyph kept inside the button (`TT.sweepChoices`), and a tile opens its sheet.
 - **Some breakdowns are products or steps, not sums.** A price and a division's figure are products, each factor a row; a fight's chance is a curve, split into steps from even odds, each row what it moved the chance. The steps add up to the number shown; their order is fixed (worth first), and another order would split the same total differently.
 - **A fight against many, a group check and the war score have no parts.** The first two are side against side; the war score is a running tally the engine keeps without its history. Their popovers name what they rest on.
 - **A faction's power on its card is last new year's.** The popover reckons it today and says so when the two differ.
@@ -152,3 +161,11 @@ Lore pages of the Codex (faiths, bloodlines, songs, secrets, families) and the W
 - **Some forecasts leave the dice out.** Happiness (±4), stability (±3), loyalty (±2) and illness are shown before their random part, and the popover says so.
 - **Opinion has no reasons.** The release stores one number per bond, not its causes. A list of reasons needs the engine to keep them (as `A.opinionParts` does for realms).
 - **No player has used it yet.** Whether five levels is too many, and whether the wording reads quickly, is for the usability tests of UI and UX 8.
+
+
+## Round 2, B4: click-to-open (D-007)
+
+- **Engine** (`descriptions.engine.core.js`). No `pointerover`, `mouseover` or hover timer. `TT.swallows(a)` says which presses an anchor inside an action takes. The listeners are put up when the file loads, ahead of every later feature's key handler (99992-v2-time swallows Space on the page), and `Space` is also held back on key-up so a trigger made of a button is not clicked shut again. `TT.hideMapTips` closes the maps' province cards (Esc, or a press anywhere but on the map). A canvas can be an anchor for the press that lands on a unit (the battle field).
+- **Notes** (`descriptions.note.core.js`). `UI.TIPS.note`, `UI.note(text, label)`, `UI.noteBtn(text, about)` (the info button), and `TT.sweepTitles`, which lifts any `title` of more than three words and any `data-note` under a node: onto the element when it is plain text (underlined when inline, a trailing `ⓘ` when a block), into an info button beside it when it is a button or a link, inside it when it is a table part. It runs after every redraw and, through a `MutationObserver`, after any change a feature makes on its own. Features write `data-note="..."` (or `UI.noteBtn`), never a `title=` over three words; a short label may stay (three words or fewer) or be an `aria-label`. Text for assistive technology alone (the time dock's buttons) is `aria-description`.
+- **Sheets** (`src/ui/99998-click-open`). An activity tile opens a sheet before it commits; its answer is whole.
+- **Tests**: `clickNoHover`, `clickOpens`, `clickLint`, `clickActSheet` (in `99998-click-open`); `ttNestedClick`, `ttNested2`, `ttAxe2` here now press where they once hovered.

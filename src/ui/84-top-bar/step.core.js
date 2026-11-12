@@ -192,14 +192,14 @@
       const mine = ST.run && ST.kind === kind, pr = primary ? ' primary' : '';
       if (mine && ST.wait) {
         const b = busy();
-        return `<button class="small clk-go run${pr}" data-a="stepGo"${b ? ' aria-disabled="true"' : ''} title="${UI.esc(b ? 'The step goes on when this is settled' : `Go on to the end of the ${kind}`)}">${UI.icon('play', 's')}<span>Go on</span>${prog}</button>`;
+        return `<button class="small clk-go run${pr}" data-a="stepGo"${b ? ' aria-disabled="true"' : ''} aria-description="${UI.esc(b ? 'The step goes on when this is settled' : `Go on to the end of the ${kind}`)}">${UI.icon('play', 's')}<span>Go on</span>${prog}</button>`;
       }
-      if (mine) return `<button class="small clk-stop run${pr}" data-a="stepStop" title="Stop here (${UI.esc(label)}: ${pct}% gone)" aria-label="Stop. ${UI.esc(note)}, ${pct}% gone">${UI.icon('pause', 's')}<span class="clk-stoplbl">Stop</span><span class="clk-runlbl">${UI.esc(note)}</span>${prog}</button>`;
+      if (mine) return `<button class="small clk-stop run${pr}" data-a="stepStop" aria-label="Stop. ${UI.esc(note)}, ${pct}% gone">${UI.icon('pause', 's')}<span class="clk-stoplbl">Stop</span><span class="clk-runlbl">${UI.esc(note)}</span>${prog}</button>`;
       const span = { week: 'seven days from now', month: 'the turn of the month', season: 'the turn of the third month from now', until: 'the next thing that needs you, or the new year' }[kind];
       const tip = dis ? why : `${label}: the world plays on to ${span}, its events come up as they fall, then the time is yours (key ${key})`;
       const act = { week: 'stepWeek', month: 'stepMonth', season: 'stepSeason', until: 'stepUntil' }[kind];
       const words = kind === 'until' ? '<span class="clk-unit">until something happens</span>' : `<span class="clk-nx">Next </span><span class="clk-unit">${kind}</span>`;
-      return `<button class="small${pr}" data-a="${act}"${dis ? ' aria-disabled="true"' : ''} title="${UI.esc(tip)}" aria-keyshortcuts="${key}">${UI.icon(icon, 's')}<span>${words}</span><kbd class="clk-kbd" aria-hidden="true">${key}</kbd></button>`;
+      return `<button class="small${pr}" data-a="${act}"${dis ? ' aria-disabled="true"' : ''} aria-description="${UI.esc(tip)}" aria-keyshortcuts="${key}">${UI.icon(icon, 's')}<span>${words}</span><kbd class="clk-kbd" aria-hidden="true">${key}</kbd></button>`;
     };
     const ICON = { week: 'calendar', month: 'step-moon', season: 'sprout', until: 'skip-forward' }, plan = UI.stepPlan();
     return `<span class="clk-step" role="group" aria-label="Step">${one(plan[0], ICON[plan[0]], NAME[plan[0]], 'W', false)}${one(plan[1], ICON[plan[1]], NAME[plan[1]], 'M', true)}</span>` +
@@ -217,13 +217,13 @@
       // Play is the second way to let time run now: one primary control a view (the step)
       if (play) {
         play.classList.remove('primary');
-        if (ST.run && !ST.wait) { play.removeAttribute('disabled'); play.setAttribute('aria-disabled', 'true'); play.title = `${NOTE()}: stop the step first, or let it end`; }
+        if (ST.run && !ST.wait) { play.removeAttribute('disabled'); play.setAttribute('aria-disabled', 'true'); play.setAttribute('aria-description', `${NOTE()}: stop the step first, or let it end`); }
       }
       if (skip) {
         // the old Next, a run until something needs you: an icon beside the speeds, named for screen readers
         const mine = ST.run && ST.kind === 'until';
         skip.setAttribute('aria-label', mine ? 'Stop the run' : 'Run until something needs you');
-        skip.title = mine ? 'Stop the run here' : 'Run until something needs you (or to the new year)';
+        skip.setAttribute('aria-description', mine ? 'Stop the run here' : 'Run until something needs you (or to the new year)');
         if (mine) { skip.dataset.a = 'stepStop'; skip.removeAttribute('disabled'); skip.classList.add('on'); }
         const sp = skip.querySelector('span'); if (sp) sp.className = 'bt';
       }
@@ -235,7 +235,7 @@
       if (seg) {
         const sp = UI.clk.speed || 1, b = document.createElement('button');
         b.className = 'small clk-spd1'; b.dataset.a = 'stepSpeed';
-        b.setAttribute('aria-label', `Speed ${sp} of 5`); b.title = `Speed ${sp}: about ${UI.CLK_SPEEDS ? UI.CLK_SPEEDS[sp] : sp} days a second. Click for ${sp < 5 ? 'faster' : 'speed 1'} (keys 1 to 5)`;
+        b.setAttribute('aria-label', `Speed ${sp} of 5`); b.setAttribute('aria-description', `Speed ${sp}: about ${UI.CLK_SPEEDS ? UI.CLK_SPEEDS[sp] : sp} days a second. Press for ${sp < 5 ? 'faster' : 'speed 1'} (keys 1 to 5)`);
         b.innerHTML = `<span aria-hidden="true">×</span><b>${UI.esc(sp)}</b>`;
         seg.after(b);
       }
@@ -255,7 +255,7 @@
       const v = UI.gm && UI.gm.view, f = v && UI.gmFit ? UI.gmFit() : null, whole = !v || !f || v.w >= f.w * 0.995;
       for (const b of document.querySelectorAll('.mapzoom [data-a=gmZoom]')) {
         const k = b.dataset.v; if (k !== 'fit' && k !== '0.66') continue;
-        if (whole) { b.setAttribute('aria-disabled', 'true'); b.title = 'The whole map is in view'; } else { b.removeAttribute('aria-disabled'); b.title = k === 'fit' ? 'Show the whole map' : 'Zoom out'; }
+        if (whole) { b.setAttribute('aria-disabled', 'true'); b.setAttribute('aria-description', 'The whole map is in view'); } else { b.removeAttribute('aria-disabled'); b.setAttribute('aria-description', k === 'fit' ? 'Show the whole map' : 'Zoom out'); }
       }
     } catch (e) {}
     return r;

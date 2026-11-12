@@ -2,7 +2,7 @@
 
 This is the shared brief for the agents that carry out `docs/V2_SPEC.md`'s integration plan. The owner's rules (Nov 1) apply to every lane:
 
-- **No hidden descriptions.** Don't bring back any popup that hides a description behind a click.
+- **Descriptions open on click, never on hover** (round 2 order B4, `docs/DECISIONS.md` D-007; replaces the older "no popup that hides a description behind a click"). Use `UI.tt`, `UI.note` or `UI.noteBtn` (src/ui/59-descriptions); write `data-note="..."`, never `title="..."` over three words; no pointerover or mouseover handler may open anything. `src/ui/99998-click-open/test.mjs` lints this.
 - **No percentages for the player.** Replace every percentage the player sees with words plus a tipped-scale icon (`A.V2.odds.oddsWords`). Tests and AI may keep numbers.
 - **Determinism.** Every system stays deterministic from the seed.
   - Engine code draws from `A.rand` and its siblings, or from v2's own seeded `makeRng` with a seed derived from the game's seed.

@@ -141,6 +141,6 @@ UI.fightBadge = function (c) {
   const f = c && c.fight;
   if (!f) return '';
   const nums = (A.DIFF ? A.DIFF.showOdds() : UI.set.odds) && f.pct != null;
-  const title = f.then ? ` title="${UI.esc(f.onWin ? 'If it works, ' + f.what + ' follows' + (f.lose != null ? (nums ? `; if it fails, ${f.what} at ${+f.lose}%` : '; if it fails, a worse one') : '') : 'If it fails, ' + f.what + ' follows')}"` : '';
+  const title = f.then ? ` data-note="${UI.esc(f.onWin ? 'If it works, ' + f.what + ' follows' + (f.lose != null ? (nums ? `; if it fails, ${f.what} at ${+f.lose}%` : '; if it fails, a worse one') : '') : 'If it fails, ' + f.what + ' follows')}"` : '';
   return `<span class="fo-fight risk ${FO.cls(f.w)}"${title}>${f.then ? (f.onWin ? 'then ' : 'or ') : ''}${nums ? `${+f.pct}% · ` : ''}${UI.esc(f.what || 'a fight')}</span>`;
 };

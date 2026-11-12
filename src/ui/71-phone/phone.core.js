@@ -265,7 +265,7 @@ UI.clkHtml = function () {
     const b = document.createElement('button');
     b.className = 'small ph-spd'; b.dataset.a = 'phSpeed';
     b.setAttribute('aria-label', `Speed ${sp} of 5: tap for ${sp < 5 ? 'faster' : 'speed 1'}`);
-    b.title = `Speed ${sp}: about ${UI.CLK_SPEEDS ? UI.CLK_SPEEDS[sp] : sp} days a second`;
+    b.setAttribute('aria-description', `Speed ${sp}: about ${UI.CLK_SPEEDS ? UI.CLK_SPEEDS[sp] : sp} days a second`);   // B4: no title; nothing opens on hover
     b.innerHTML = `<span aria-hidden="true">×</span><b>${UI.esc(sp)}</b>`;
     dock.appendChild(b); seg.closest('#clk > *').remove();
   }

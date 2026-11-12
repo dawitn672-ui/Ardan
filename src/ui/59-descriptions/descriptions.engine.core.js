@@ -1,10 +1,18 @@
-// Nested tooltips (Road to Ten, UI and UX 2): the engine.
+// Nested tooltips (Road to Ten, UI and UX 2): the engine. Round 2, B4 (D-007): descriptions open on click, never on hover.
 //
-// Any element with data-tt="key" (and data-v="arg") opens a popover on hover, on tap or click, or on Enter or Space
-// when it has focus. Inside a popover, keywords are data-tt links of their own and open the next popover, up to six
-// deep. Esc closes the top one and gives focus back to what opened it, a click outside closes them all, and a click
-// in a lower popover closes the ones above it. The release's own data-tip="key:arg" anchors (UI.tip, the tier chip)
-// go through the same engine, so there is one stack and one set of listeners, not two.
+// Any element with data-tt="key" (and data-v="arg") opens a popover on a tap or click, or on Enter or Space when it has
+// focus. Nothing opens when the pointer merely rests on it. Inside a popover, keywords are data-tt links of their own
+// and open the next popover, up to six deep. A second tap on the same anchor closes it, Esc closes the top one and gives
+// focus back to what opened it, a click outside closes them all, and a click in a lower popover closes the ones above
+// it. The release's own data-tip="key:arg" anchors (UI.tip, the tier chip) go through the same engine, so there is one
+// stack and one set of listeners, not two.
+//
+// An anchor inside an action (a card that opens, a row that selects, a choice) explains itself when pressed and the
+// action waits; the rest of the action still acts. A mouse pointer, a finger and the keyboard all reach the same
+// description: that is the rule of the owner's round 2, order B4.
+//
+// Descriptions that used to sit in a title="..." of more than three words (or in data-note) are lifted by TT.sweepTitles
+// into the same engine: the element becomes the trigger, or gets an info button (see the sweeper below).
 //
 // The content of key k is UI.TIPS[k](arg), a pure function that returns HTML (see descriptions.glossary.core.js). Showing a
 // popover only reads the game: it never changes A.S and never draws a random number.
@@ -14,8 +22,7 @@
 (function () {
   const TT = UI.TT = UI.TT || {};
   TT.MAX = 6;               // popovers open at once
-  TT.HOVER_CLOSE = 320;     // ms after the pointer leaves before hover-opened popovers close
-  TT.stack = [];            // [{ a: anchor, el: popover, how: 'hover' | 'click' | 'key', sel }]
+  TT.stack = [];            // [{ a: anchor, el: popover, how: 'click' | 'key', sel }]
   TT.wired = true;          // the wrappers in descriptions.wire.core.js add triggers only while this is on (the tests count both)
 
   const SEL = '[data-tt],[data-tip]';
@@ -61,10 +68,13 @@
     return el;
   };
 
-  TT.open = function (a, lvl, how) {
+  TT.open = function (a, lvl, how, pt) {
     lvl = Math.min(lvl || TT.levelOf(a), TT.MAX);
-    const [key, arg] = TT.spec(a), body = A.asDrawing ? A.asDrawing(TT.html, TT, [key, arg]) : TT.html(key, arg);   // drawing: reads only (21's guard)
+    const [key, arg] = TT.spec(a); let body = A.asDrawing ? A.asDrawing(TT.html, TT, [key, arg]) : TT.html(key, arg);   // drawing: reads only (21's guard)
     if (!body) return null;
+    // a title that this anchor once carried (TT.liftOne), when the popover does not already say it
+    const more = a.dataset.more ? a.dataset.more.split('\n').filter(t => t && !body.replace(/<[^>]*>/g, '').includes(esc(t).replace(/&#39;/g, "'"))).map(t => `<div class="tip-f">${esc(t)}</div>`).join('') : '';
+    if (more) body += more;
     TT.close(lvl);
     const el = TT.pop(lvl);
     // inside a modal dialog the popover joins it, so a screen reader (and the dialog's focus trap) still reach it
@@ -73,11 +83,11 @@
     el.innerHTML = body + `<button type="button" class="tt-x" data-tt-close="${lvl}" aria-label="Close">×</button>`;
     const h = el.querySelector('.tip-h');
     if (h) { h.id = el.id + '-h'; el.setAttribute('aria-labelledby', h.id); el.removeAttribute('aria-label'); }
-    else { el.removeAttribute('aria-labelledby'); el.setAttribute('aria-label', (a.textContent || key).trim().slice(0, 60)); }
+    else { el.removeAttribute('aria-labelledby'); el.setAttribute('aria-label', (a.getAttribute('aria-label') || a.textContent || key).trim().slice(0, 60)); }
     el.classList.toggle('tt-deep', lvl > 1);
     el.hidden = false;
     TT.mark(a, el);
-    TT.stack[lvl - 1] = { a, el, how, sel: TT.selOf(a) };
+    TT.stack[lvl - 1] = { a, el, how, sel: TT.selOf(a), arg, pt: pt || null };
     TT.place(lvl);
     if (UI.hintUsed) UI.hintUsed.tip = 1;
     return el;
@@ -112,7 +122,8 @@
     const el = s.el, W = window.innerWidth, H = window.innerHeight, w = Math.min(330, W - 16);
     el.style.width = w + 'px';
     el.style.left = '0px'; el.style.top = '0px';
-    const r = s.a.getBoundingClientRect(), h = el.offsetHeight;
+    // a canvas has no parts: the popover sits where it was pressed
+    const r = s.pt ? { left: s.pt.x, right: s.pt.x, top: s.pt.y, bottom: s.pt.y } : s.a.getBoundingClientRect(), h = el.offsetHeight;
     let x, y;
     const below = TT.stack[lvl - 2];
     if (below && W >= 2 * w + 40) {
@@ -149,51 +160,44 @@
   const focusables = el => [...el.querySelectorAll('[data-tt][tabindex="0"],[data-tip][tabindex="0"],button,[href]')].filter(x => !x.disabled && !x.hidden);
   const isAnchor = t => t && t.closest ? t.closest(SEL) : null;
 
-  // ---- the listeners (one of each, delegated from the window)
-  let hoverT = 0;
-  const trimHover = keep => {
-    clearTimeout(hoverT);
-    hoverT = setTimeout(() => {
-      while (TT.stack.length > keep && TT.stack[TT.stack.length - 1].how === 'hover') TT.close(TT.stack.length);
-    }, TT.HOVER_CLOSE);
+  // ---- the listeners (one of each, delegated from the window). There is no pointerover or mouseover one: nothing opens on hover.
+  // an anchor inside an action: which presses explain it (the action waits) and which go to the action. A choice, an
+  // activity tile and the like keep their tap for the action (a tap on a choice chooses); there only the info glyph
+  // (class tt-i, kept inside the button as a span) explains. Anywhere else an anchor inside an action (a row, a card, a
+  // cost in a button) explains itself when pressed, and the rest of the action still acts.
+  TT.ACT_KEEPS = '[data-a="evChoose"],[data-a="v2wChoose"],[data-a="act"]';
+  TT.swallows = function (a) {
+    const act = a.closest('[data-a]');
+    if (!act || act === a) return false;
+    if (a.classList.contains('tt-i') || a.dataset.ttTap) return true;
+    return !act.matches(TT.ACT_KEEPS);
   };
-  TT.onOver = function (e) {
-    if (e.pointerType && e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
-    const t = e.target, a = isAnchor(t), pop = popOf(t), inLvl = pop ? +pop.dataset.lvl : 0;
-    if (pop && inLvl > TT.stack.length) return;           // a popover that is closing
-    if (a && !a.closest('[aria-disabled="true"]')) {
-      const lvl = TT.levelOf(a);
-      clearTimeout(hoverT);
-      if (lvl > TT.MAX) return;
-      const cur = TT.stack[lvl - 1];
-      if (!cur || cur.a !== a) {
-        if (cur && cur.how !== 'hover' && !pop) return;       // a pinned popover stays until it is dismissed
-        TT.open(a, lvl, 'hover');
-      }
-      return;
-    }
-    if (!TT.stack.length) return;
-    trimHover(inLvl);
+  TT.hideMapTips = function () {
+    let n = 0;
+    for (const t of document.querySelectorAll('.maptip:not(.hidden)')) { t.classList.add('hidden'); n++; }
+    return n;
   };
   TT.onClick = function (e) {
     const t = e.target;
     const x = t.closest && t.closest('[data-tt-close]');
     if (x) { const l = +x.dataset.ttClose, s = TT.stack[l - 1]; TT.close(l); s && s.a.isConnected && s.a.focus(); return; }
     const a = isAnchor(t), pop = popOf(t);
-    // a number that is its own tap target inside an action (data-tt-tap): the tap explains it, and the action waits
-    if (a && !pop && a.dataset.ttTap && a.closest('[data-a]')) { e.preventDefault(); e.stopPropagation(); }
-    if (a && !(a.closest('[data-a]') && !pop && !a.dataset.ttTap)) {
+    // a map's province card closes with the next press anywhere but on that map (a press on the map moves or shows it)
+    if (!(t.closest && t.closest('.maptip, canvas'))) TT.hideMapTips();
+    if (a && !pop && a.closest('[data-a]') && TT.swallows(a)) { e.preventDefault(); e.stopPropagation(); }
+    // an anchor that is the action itself, or sits in a choice, leaves the press to the action
+    if (a && (pop || !a.closest('[data-a]') || TT.swallows(a))) {
       const lvl = TT.levelOf(a), cur = TT.stack[lvl - 1];
-      if (cur && cur.a === a && cur.how !== 'hover') { TT.close(lvl); return; }
-      if (cur && cur.a === a) { cur.how = 'click'; TT.close(lvl + 1); return; }  // hovered, now pinned
-      TT.open(a, lvl, 'click');
+      if (cur && cur.a === a && (a.tagName !== 'CANVAS' || cur.arg === a.dataset.v)) { TT.close(lvl); return; }       // a second tap closes it
+      TT.open(a, lvl, 'click', a.tagName === 'CANVAS' ? { x: e.clientX, y: e.clientY } : null);
       return;
     }
     if (pop) { TT.close(+pop.dataset.lvl + 1); return; }
     if (TT.stack.length) TT.closeAll();
   };
   TT.onKey = function (e) {
-    if (e.key === 'Escape' && TT.stack.length) {
+    if (e.key === 'Escape' && (TT.stack.length || document.querySelector('.maptip:not(.hidden)'))) {
+      if (!TT.stack.length) { TT.hideMapTips(); e.preventDefault(); e.stopImmediatePropagation(); return; }
       const s = TT.stack[TT.stack.length - 1], back = s.back && s.back.isConnected ? s.back : s.a;
       TT.close(TT.stack.length);
       if (back && back.isConnected) back.focus();
@@ -204,16 +208,15 @@
     if ((e.key === 'Enter' || e.key === ' ') && t && t.matches && t.matches('[data-tt][tabindex],[data-tip][tabindex]') && !t.matches('[data-a]')) {
       e.preventDefault(); e.stopImmediatePropagation();
       const lvl = TT.levelOf(t), cur = TT.stack[lvl - 1];
-      if (cur && cur.a === t && cur.how !== 'hover') { TT.close(lvl); return; }
+      if (cur && cur.a === t) { TT.close(lvl); return; }
       const el = TT.open(t, lvl, 'key');
       if (el) el.focus();
       return;
     }
-    // an action holding a tap target (a choice and its odds): Right arrow opens the odds, Esc comes back to the action.
-    // data-tt-key marks a target that opens by the keyboard (and hover) but takes no tap: with v2 a tap on a choice
-    // chooses (99993-v2-stats f-words turns the odds' data-tt-tap into it), and the keyboard keeps its way in
+    // an action holding an anchor it cannot focus (a choice and its odds): Right arrow opens it, Esc comes back to the
+    // action. A tap on the action does what the action does; the info glyph in it (tt-i) takes the tap
     if (e.key === 'ArrowRight' && t && t.matches && t.matches('[data-a]') && !popOf(t)) {
-      const a = t.querySelector('[data-tt-tap]') || t.querySelector('[data-tt-key]');
+      const a = t.querySelector('.tt-i') || t.querySelector('[data-tt-tap]') || t.querySelector('[data-tt-key]');
       if (a) { e.preventDefault(); e.stopImmediatePropagation(); const el = TT.open(a, TT.levelOf(a), 'key'); if (el) { TT.stack[TT.stack.length - 1].back = t; el.focus(); } return; }
     }
     if (e.key === 'Tab' && TT.stack.length) {
@@ -226,6 +229,11 @@
       n.focus();
     }
   };
+  // Space on a button-made anchor clicks it when the key comes up; the key already opened it when it went down
+  TT.onKeyUp = function (e) {
+    const t = e.target;
+    if (e.key === ' ' && t && t.matches && t.matches('[data-tt][tabindex],[data-tip][tabindex]') && !t.matches('[data-a]')) { e.preventDefault(); e.stopImmediatePropagation(); }
+  };
   TT.onFocus = function (e) {
     const t = e.target;
     if (!TT.stack.length || popOf(t)) return;
@@ -234,14 +242,22 @@
   };
   TT.onResize = () => { for (let l = 1; l <= TT.stack.length; l++) TT.place(l); };
 
+  // The listeners are put up when this file loads, ahead of every later feature's key handler (99992-v2-time swallows
+  // Space on the page, which would never reach a focused trigger otherwise); TT.init only adds the stylesheet.
+  TT.listen = function () {
+    if (TT.listening || typeof window === 'undefined') return;
+    TT.listening = true;
+    window.addEventListener('click', TT.onClick, true);
+    window.addEventListener('keydown', TT.onKey, true);
+    window.addEventListener('keyup', TT.onKeyUp, true);
+    window.addEventListener('focusin', TT.onFocus, true);
+    window.addEventListener('resize', TT.onResize);
+  };
+  TT.listen();
   TT.init = function () {
     if (TT.ready || typeof window === 'undefined') return;
     TT.ready = true;
-    window.addEventListener('pointerover', TT.onOver, true);
-    window.addEventListener('click', TT.onClick, true);
-    window.addEventListener('keydown', TT.onKey, true);
-    window.addEventListener('focusin', TT.onFocus, true);
-    window.addEventListener('resize', TT.onResize);
+    TT.listen();
     TT.css();
   };
 
@@ -281,12 +297,12 @@
   :root .tt-pop button.tt-x{position:absolute;top:4px;right:5px;min-width:0;min-height:0;width:24px;height:24px;padding:0;border:0;background:none;box-shadow:none;color:var(--tt-ink3);font-size:16px;line-height:20px;cursor:pointer}
   :root .tt-pop button.tt-x:hover{color:var(--tt-gold);background:none}
   @media (pointer:coarse){:root .tt-pop button.tt-x{width:32px;height:32px;top:0;right:0;font-size:20px}.tt-pop .tt,.tt-pop .tipt{display:inline-block;padding:2px 0}}
-  .tt{cursor:help;border-bottom:1px dotted var(--accent-line);display:inline-flex;align-items:center;min-height:24px}
+  .tt{cursor:pointer;border-bottom:1px dotted var(--accent-line);display:inline-flex;align-items:center;min-height:24px}
   .barrow .lbl .tt{border-bottom-style:solid;border-bottom-color:rgba(216,174,85,.3)}
   .tt:focus-visible,[data-tt][tabindex]:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:3px}
   .tt.tt-on,.tipt.tt-on,[data-tt].tt-on{color:var(--accent-2)}
-  .barrow .val[data-tt],.prow[data-tt],.opbar[data-tt]{cursor:help}
-  .chip[data-tt]{cursor:help}
+  .barrow .val[data-tt],.prow[data-tt],.opbar[data-tt]{cursor:pointer}
+  .chip[data-tt]{cursor:pointer}
   `;
   TT.css = function () {
     if (typeof document === 'undefined' || document.getElementById('tt-css')) return;
@@ -318,6 +334,7 @@
       const fe = document.activeElement, fsel = fe && fe.matches && fe.matches(SEL) && !popOf(fe) ? TT.selOf(fe) : null;
       const r = f.apply(this, arguments);
       try {
+        if (TT.sweepAll) TT.sweepAll(document.body);   // titles become click-to-open before anything else looks at the page
         if (UI.screen !== 'game') TT.closeAll(); else TT.relink();
         if (fsel && !fe.isConnected) { const n = document.querySelector(fsel); n && n.focus(); }
       } catch (e) { console.error('tooltips relink', e); }

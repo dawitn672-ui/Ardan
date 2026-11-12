@@ -1,7 +1,7 @@
 // The battle field as a woodblock battle print (cycle 1 visual I3; brief §7.2's layers, Kuniyoshi's warrior prints):
 // a sky band in the battle's hour and weather, a far and a mid ridge in its terrain, the near ground lit along its top
 // edge; each unit is a mass of pikes, horses or bows under a banner pole in its realm's colour, not a box with a cross;
-// the labels on the field are counts only, and the unit's full name shows on hover or focus (the canvas's title, and
+// the labels on the field are counts only, and the unit's full name opens on a press (the canvas as an anchor, and
 // the side panel as before); one caption per wing at the field's edge; the end is a small cartouche, and the VICTORY
 // or DEFEAT cut-in (96-big-moments) carries the moment.
 // Drawing only: the colours come from 94-woodblock-skies' palette, every seeded mark hashes the battle's id, and
@@ -107,7 +107,7 @@
     ctx.fillStyle = B.winner === side ? '#7f5100' : B.winner === 'draw' ? INK : '#9e2b1b'; ctx.fillText(t, W / 2, y + 18);
     ctx.restore();
   };
-  // labels on hover: the field keeps the count, the canvas title names the unit under the pointer
+  // the field keeps the count; a press on a count names the unit (round 2 B4: descriptions open on click, never on hover)
   BF.hover = function (cv) {
     if (cv.__bfHovOn) return;
     cv.__bfHovOn = true;
@@ -118,7 +118,11 @@
       for (const h of cv.__bfHov || []) { const d = (h.x - x) ** 2 + (h.y - y) ** 2; if (d < bd) { bd = d; best = h; } }
       return best;
     };
-    cv.addEventListener('mousemove', e => { const h = near(e); const t = h ? h.t : ''; if (cv.title !== t) cv.title = t; });
+    // the canvas becomes an anchor of the tooltip engine for the press that lands on a unit, and is none otherwise
+    cv.addEventListener('pointerdown', e => {
+      const h = near(e);
+      if (h) { cv.dataset.tt = 'note'; cv.dataset.v = h.t; } else { delete cv.dataset.tt; delete cv.dataset.v; }
+    }, true);
   };
   const lab = UI.bfLabel;
   if (typeof lab === 'function') {

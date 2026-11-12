@@ -1,7 +1,7 @@
 // 97-first-life-fixes, part 2: hints follow the life, not the calendar.
 //
 // The release switched every hint off ten game years after 1105 (UI.hintsOn: A.S.year < 1105 + UI.HINT_YEARS). A life
-// begun at birth comes of age in 1121, so the two adult hints ("You have initiative to spend", "Hover or tap your
+// begun at birth comes of age in 1121, so the two adult hints ("You have initiative to spend", "Tap or click your
 // fighting worth") could never show, nor any hint for a tab first opened after the age of ten. Each hint already shows
 // once per browser (UI.set.hintsSeen) and only when its own condition holds (its `when`). So:
 // - UI.hintsOn no longer reads the year: hints are on unless the player turned them off (Menu, the setting).
@@ -52,7 +52,7 @@
     whatnow: () => '<b>What now</b>, just above, lists the three things most worth doing. One click does each.',
     plan: () => 'Your <b>plan</b>, just above, decides what your free hours build. Pick a training focus: it grows a little every day.',
     initiative: () => 'Each activity below costs <b>initiative ⧗</b>, which builds up week by week. Try one.',
-    tips: () => `Underlined words explain themselves. ${coarse() ? 'Tap' : 'Hover over'} your <b>fighting worth</b> (on a phone: Life → You) to see where it comes from.`,
+    tips: () => `Underlined words explain themselves. ${coarse() ? 'Tap' : 'Click'} your <b>fighting worth</b> (on a phone: Life → You) to see where it comes from.`,
     event: () => `Each choice shows your <b>odds</b>, set by your stats and skills.${coarse() ? '' : ' Keys 1 to 6 choose too.'}`,
     save: () => 'The game saves itself every year. <b>Menu → Export</b> keeps a copy as a file; <b>Menu → Report a problem</b> if something breaks.',
   };

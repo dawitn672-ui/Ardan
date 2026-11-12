@@ -52,7 +52,7 @@ The renames kept the build exactly as it was: feature folders keep their numbers
 | `src/world/26-belief-truth` | `src/world/26-belief-versus-truth` | 2026-11-12 11:23 ET |
 | `src/world/47-realm-bible` | `src/world/47-realm-customs` | 2026-11-12 11:23 ET |
 
-## Files inside features (12)
+## Files inside features (13)
 
 | Old | New | Renamed |
 | --- | --- | --- |
@@ -64,6 +64,7 @@ The renames kept the build exactly as it was: feature folders keep their numbers
 | `src/ui/59-tooltips/tt.more-path.core.js` | `src/ui/59-descriptions/descriptions.more-path.core.js` | 2026-11-12 11:23 ET |
 | `src/ui/59-tooltips/tt.more-realm.core.js` | `src/ui/59-descriptions/descriptions.more-realm.core.js` | 2026-11-12 11:23 ET |
 | `src/ui/59-tooltips/tt.more-war.core.js` | `src/ui/59-descriptions/descriptions.more-war.core.js` | 2026-11-12 11:23 ET |
+| `src/ui/59-tooltips/tt.note.core.js` | `src/ui/59-descriptions/descriptions.note.core.js` | 2026-11-12 11:23 ET |
 | `src/ui/59-tooltips/tt.wire.core.js` | `src/ui/59-descriptions/descriptions.wire.core.js` | 2026-11-12 11:23 ET |
 | `src/ui/59-tooltips/tt.wire2.core.js` | `src/ui/59-descriptions/descriptions.wire2.core.js` | 2026-11-12 11:23 ET |
 | `src/core/88-queue-head/head.core.js` | `src/core/88-skip-dropped-events/skip-dropped.core.js` | 2026-11-12 11:23 ET |

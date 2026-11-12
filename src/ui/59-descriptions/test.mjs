@@ -24,7 +24,8 @@ function countIn(sel) {
     const own = [...el.childNodes].filter(x => x.nodeType === 3).map(x => x.textContent).join('');
     if (!/\d/.test(own)) continue;
     out.n++;
-    if (el.closest('[data-tt],[data-tip],[title]')) out.covered++; else out.miss.push(own.trim().slice(0, 30));
+    // (round 2 B4: a button that names what it shows, such as "+5" for five more chips, is described by aria-description)
+    if (el.closest('[data-tt],[data-tip],[title],[aria-description]')) out.covered++; else out.miss.push(own.trim().slice(0, 30));
   }
   return out;
 }
@@ -37,7 +38,7 @@ function countIn(sel) {
 // or "38%" or "0.80". Not counted: prose (a block of 12 words or more, or a running log: the battle's and the duel's
 // log, the chronicle, an event's text), years (a lone 700 to 1299), ordinals ("5th"), codes ("POL-01"), keyboard hints,
 // and quantity controls ("+1", "+5", a speed button "3"). A number is covered when it sits in a trigger of the engine
-// (data-tt or data-tip); a plain title= is reported apart and does not count.
+// (data-tt or data-tip, or, for a button that is itself an action, the info button beside it: round 2 B4); a plain title= is reported apart and does not count.
 const KIT2 = () => {
   // coverage counts every number, so every section is drawn open (90-collapsible-sections would fold some)
   if (typeof UI !== 'undefined' && UI.FOLD) UI.FOLD.allOpen = true;
@@ -59,7 +60,7 @@ const KIT2 = () => {
           if (/^[A-Z]|\d(st|nd|rd|th)$/.test(m[0])) continue;
           const after = t.slice(m.index + m[0].length);
           if (/^\d{3,4}$/.test(m[0]) && +m[0] >= 700 && +m[0] < 1300 && !/^\s*(%|suns?|men|loads|k\b|km|days)/.test(after)) continue;
-          out.push({ tok: m[0], tt: !!el.closest('[data-tt],[data-tip]'), title: !!el.closest('[title]'), text: t.trim().slice(0, 40) });
+          out.push({ tok: m[0], tt: !!el.closest('[data-tt],[data-tip]') || !!(el.closest('button') && el.closest('button').nextElementSibling && el.closest('button').nextElementSibling.classList.contains('tt-i')), title: !!el.closest('[title]'), text: t.trim().slice(0, 40) });
         }
       }
       return out;
@@ -184,7 +185,7 @@ export default {
     return { ok, detail: `Enter on a stat in the full profile: ${s1.depth} open, inside the dialog ${s1.inModal}; after two Tabs focus is still in the popover: ${s2.focusInPop}; Esc: ${s3.depth} open, the dialog still open ${s3.modal}` };
   },
 
-  // mouse: click opens, a click in a lower popover closes the ones above it, a click outside closes all; hover opens too
+  // mouse: click opens, a click in a lower popover closes the ones above it, a click outside closes all; hover opens nothing (B4)
   async ttNestedClick(pg) {
     await pg.evaluate(`${ENTER}(5903)`);
     const depth = () => pg.evaluate(() => UI.TT.depth());
@@ -194,18 +195,20 @@ export default {
     await pg.click('#tt-pop-1 .tip-f', { position: { x: 4, y: 4 } }); const back = await depth();
     await pg.click('#tt-pop-1 [data-tt="worthGear"]'); const g2 = await depth();
     await pg.click('#profile .pname'); const out = await depth();
-    // hover: open on the way in, gone after the pointer leaves
-    await pg.hover('#profile .barrow .val[data-tt="health"]'); await pg.waitForTimeout(50); const h1 = await depth();
+    // round 2 B4 (D-007): nothing opens on hover; the number answers to a press, and the word in it to the next
+    await pg.hover('#profile .barrow .val[data-tt="health"]'); await pg.waitForTimeout(400); const hov = await depth();
+    await pg.click('#profile .barrow .val[data-tt="health"]'); await pg.waitForTimeout(50); const h1 = await depth();
     const kind = await pg.evaluate(() => UI.TT.stack[0] && UI.TT.stack[0].a.dataset.tt);
-    if (!h1) return { ok: false, detail: 'hover on the health number opened nothing; ' + JSON.stringify(await pg.evaluate(() => [UI.TT.depth(), document.activeElement.outerHTML.slice(0, 120)])) };
+    if (!h1) return { ok: false, detail: 'a click on the health number opened nothing; ' + JSON.stringify(await pg.evaluate(() => [UI.TT.depth(), document.activeElement.outerHTML.slice(0, 120)])) };
     if (!(await pg.$('#tt-pop-1 [data-tt="stat"]'))) return { ok: false, detail: 'no stat link: ' + JSON.stringify(await pg.evaluate(() => { const v = document.querySelector('#profile .barrow .val[data-tt="health"]'), r = v.getBoundingClientRect(); return [UI.TT.stack.map(s => s.how + ' ' + s.a.outerHTML.slice(0, 80)), [r.x, r.y, r.width, r.height], document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2).outerHTML.slice(0, 100)]; })) };
-    await pg.hover('#tt-pop-1 [data-tt="stat"]'); await pg.waitForTimeout(50); const h2 = await depth();
-    await pg.hover('#profile .pname'); await pg.waitForTimeout(600); const h0 = await depth();
+    await pg.hover('#tt-pop-1 [data-tt="stat"]'); await pg.waitForTimeout(400); const hov2 = await depth();
+    await pg.click('#tt-pop-1 [data-tt="stat"]'); await pg.waitForTimeout(50); const h2 = await depth();
+    await pg.click('#profile .pname'); await pg.waitForTimeout(100); const h0 = await depth();
     // Esc with three open closes one
     await pg.click('#profile .chip.tier'); await pg.click('#tt-pop-1 [data-tt="worthBody"]'); await pg.click('#tt-pop-2 [data-tt="stat"]');
     const before = await depth(); await pg.keyboard.press('Escape'); const after = await depth();
-    const ok = d1 === 1 && d2 === 2 && d3 === 3 && back === 1 && g2 === 2 && out === 0 && h1 === 1 && kind === 'health' && h2 === 2 && h0 === 0 && before === 3 && after === 2;
-    return { ok, detail: `click: ${d1}, ${d2}, ${d3} deep; a click in the first closes the others (${back}); gear opens (${g2}); outside closes all (${out}). Hover on the health number: ${h1}, its stat link: ${h2}, away: ${h0}. Esc with ${before} open leaves ${after}` };
+    const ok = d1 === 1 && d2 === 2 && d3 === 3 && back === 1 && g2 === 2 && out === 0 && hov === 0 && hov2 === 1 && h1 === 1 && kind === 'health' && h2 === 2 && h0 === 0 && before === 3 && after === 2;
+    return { ok, detail: `click: ${d1}, ${d2}, ${d3} deep; a click in the first closes the others (${back}); gear opens (${g2}); outside closes all (${out}). Hover on the health number opens ${hov}, a click ${h1}; hover on its stat link keeps ${hov2}, a click ${h2}; a click away: ${h0}. Esc with ${before} open leaves ${after}` };
   },
 
   // a phone: tap opens, a tap on a word inside opens the next, the popover fits a 375 px screen, a tap outside closes all
@@ -556,20 +559,19 @@ export default {
     out.wHasGen = !!(await pg.$('#tt-pop-1 [data-tt="genSkills"]'));
     if (out.wHasGen) { await pg.click('#tt-pop-1 [data-tt="genSkills"]'); out.w2 = await depth(); }
     await pg.keyboard.press('Escape'); await pg.keyboard.press('Escape');
-    // the mouse is still where the War Room click left it; over a lower choice's odds it opens that tip on hover, and
-    // the tip (placed above for want of room) covers the first odds, which Playwright then waits on forever. A player
-    // reaching for the first odds would move off it; the test parks the mouse in a corner first.
+    // the mouse is parked in a corner (a tip opened by a press, placed above for want of room, could cover the first odds)
     await pg.mouse.move(1, 1);
     await pg.evaluate(() => { UI.TT.closeAll(); UI.ov = null; const pc = A.pc(); const q = TT2.oddsEvents(40).find(x => A.EV[x.ev].choices.some(c => c.check && !c.check.fight && (GD.STATS.includes(c.check.s)))); window.__q = q; A.S.queue = [q]; UI.render(); });
     const before = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
     // Changed in round 2 (wf-round2), with v2 in the build, as ttAxe2 was in cycle 3: since playtest 1
     // (docs/v2/playtest-1.md, finding 3) a click on a choice chooses, so the odds inside it take no tap (99993-v2-stats
-    // f-words); with a mouse they open on hover. Their breakdown is words only, with no stat or potential that opens
+    // f-words); round 2 B4 (D-007) gave each choice an info glyph (tt-i, kept inside the button) that opens them on a
+    // press, and nothing opens on hover. Their breakdown is words only, with no stat or potential that opens
     // a further popover (the owner's rules: no number, no description behind a click), so the event is one deep and
     // the test checks that the breakdown holds no word that opens another. The Right arrow and Esc part is unchanged:
-    // the keyboard still reaches the odds (f-words marks them data-tt-key). Without v2, the tap and three deep as before.
+    // the keyboard still reaches the odds (the Right arrow opens the info glyph). Without v2, the tap and three deep as before.
     out.v2 = await pg.evaluate(() => !!A.V2S);
-    if (out.v2) { await pg.hover('#modal button[data-a="evChoose"] [data-tt="odds"]'); await pg.waitForFunction(() => UI.TT.depth() >= 1, null, { timeout: 5000 }).catch(() => {}); }
+    if (out.v2) { await pg.hover('#modal button[data-a="evChoose"] [data-tt="odds"]'); await pg.waitForTimeout(400); out.hovered = await depth(); await pg.click('#modal button[data-a="evChoose"] .tt-i'); await pg.waitForFunction(() => UI.TT.depth() >= 1, null, { timeout: 5000 }).catch(() => {}); }
     else await pg.click('#modal [data-tt="odds"][data-tt-tap]');
     out.e1 = await depth();
     out.notChosen = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
@@ -582,12 +584,12 @@ export default {
       await pg.click('#tt-pop-2 [data-tt="potential"]'); out.e3 = await depth();
     }
     await pg.evaluate(() => UI.TT.closeAll());
-    await pg.focus(out.v2 ? '#modal button[data-a="evChoose"]:has([data-tt-key])' : '#modal button[data-a="evChoose"]:has([data-tt-tap])');
+    await pg.focus(out.v2 ? '#modal button[data-a="evChoose"]:has(.tt-i)' : '#modal button[data-a="evChoose"]:has([data-tt-tap])');
     await pg.keyboard.press('ArrowRight'); out.k1 = await depth(); out.kFocus = await pg.evaluate(() => !!document.activeElement.closest('.tt-pop'));
     await pg.keyboard.press('Escape'); out.k0 = await depth(); out.kBack = await pg.evaluate(() => document.activeElement.matches('button[data-a="evChoose"]'));
     out.stillNot = await pg.evaluate(() => A.S.queue[0] === window.__q && !window.__q.result);
     const deepEv = out.v2 ? out.inner === 0 && out.words : out.e2 === 2 && out.e3 === 3;
-    const ok = out.h1 === 1 && out.h2 === 2 && out.h3 === 3 && out.h0 === 0 && out.w1 === 1 && (!out.wHasGen || out.w2 === 2) && before && out.e1 === 1 && out.notChosen && deepEv && out.k1 === 1 && out.kFocus && out.k0 === 0 && out.kBack && out.stillNot;
+    const ok = out.h1 === 1 && out.h2 === 2 && out.h3 === 3 && out.h0 === 0 && out.w1 === 1 && (!out.v2 || out.hovered === 0) && (!out.wHasGen || out.w2 === 2) && before && out.e1 === 1 && out.notChosen && deepEv && out.k1 === 1 && out.kFocus && out.k0 === 0 && out.kBack && out.stillNot;
     return { ok, detail: `Holdings: a price ${out.h1}, its trade skill ${out.h2}, the tiers ${out.h3}, a click outside ${out.h0}. War Room: organization ${out.w1}, its general ${out.w2 || 'none'}. Event: ${out.v2 ? 'a hover on' : 'a tap on'} the odds ${out.e1} (choice not taken: ${out.notChosen}), ${out.v2 ? `words only ${out.words}, words inside that open another ${out.inner}` : `the stat ${out.e2}, its potential ${out.e3}`}; Right arrow on the choice ${out.k1} (focus inside ${out.kFocus}), Esc ${out.k0} (focus back on the choice ${out.kBack}); still not chosen ${out.stillNot}`, data: out };
   },
 
@@ -650,12 +652,12 @@ export default {
       await run(theme + ' holdings');
       await pg.evaluate(() => { UI.TT.closeAll(); const q = TT2.oddsEvents(30).find(x => A.EV[x.ev].choices.some(c => c.check && !c.check.fight)); A.S.queue = [q]; UI.ov = null; UI.render(); });
       // Changed in cycle 3 (wf-phonetap), with v2 in the build: since playtest 1 (docs/v2/playtest-1.md, finding 3) a
-      // click on a choice chooses, so the odds badge inside it has no click target (99993-v2-stats f-words); with a
-      // mouse its breakdown opens on hover. That breakdown is words only (the owner's rule: no number, and no
+      // click on a choice chooses, so the odds badge inside it has no click target (99993-v2-stats f-words); round 2 B4
+      // (D-007): its info glyph opens the breakdown on a press, and hover opens nothing. That breakdown is words only (the owner's rule: no number, and no
       // description behind a further click), so it holds no word that opens a second popover: the event is checked
       // one deep. Without v2, the release-era click target and two deep, as before.
       const v2 = await pg.evaluate(() => !!A.V2S);
-      if (v2) { await pg.mouse.move(1, 1); await pg.hover('#modal button[data-a="evChoose"] [data-tt="odds"]'); await pg.waitForFunction(() => UI.TT.depth() >= 1); }
+      if (v2) { await pg.mouse.move(1, 1); await pg.click('#modal button[data-a="evChoose"] .tt-i'); await pg.waitForFunction(() => UI.TT.depth() >= 1); }
       else await pg.click('#modal [data-tt="odds"][data-tt-tap]');
       const s2 = await pg.$('#tt-pop-1 [data-tt="stat"], #tt-pop-1 [data-tt="skill"]'); if (s2) await s2.click();
       if (v2) evOne.push(!s2 && !(await pg.$('#tt-pop-1 [data-tt], #tt-pop-1 [data-tip]')));

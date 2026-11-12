@@ -66,6 +66,7 @@
     { "kind": "feature-file", "from": "src/ui/59-tooltips/tt.more-path.core.js", "to": "src/ui/59-descriptions/descriptions.more-path.core.js" },
     { "kind": "feature-file", "from": "src/ui/59-tooltips/tt.more-realm.core.js", "to": "src/ui/59-descriptions/descriptions.more-realm.core.js" },
     { "kind": "feature-file", "from": "src/ui/59-tooltips/tt.more-war.core.js", "to": "src/ui/59-descriptions/descriptions.more-war.core.js" },
+    { "kind": "feature-file", "from": "src/ui/59-tooltips/tt.note.core.js", "to": "src/ui/59-descriptions/descriptions.note.core.js" },
     { "kind": "feature-file", "from": "src/ui/59-tooltips/tt.wire.core.js", "to": "src/ui/59-descriptions/descriptions.wire.core.js" },
     { "kind": "feature-file", "from": "src/ui/59-tooltips/tt.wire2.core.js", "to": "src/ui/59-descriptions/descriptions.wire2.core.js" },
     { "kind": "feature-file", "from": "src/core/88-queue-head/head.core.js", "to": "src/core/88-skip-dropped-events/skip-dropped.core.js" },

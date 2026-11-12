@@ -216,7 +216,9 @@ export default {
           UI.tab = t; UI.render();
           for (const b of document.querySelectorAll('button[disabled],select[disabled],input[disabled]')) {
             res.disabled++;
-            const why = (b.getAttribute('title') || '').trim() || b.getAttribute('data-tip') || b.getAttribute('data-tt');
+            // round 2 B4 (D-007): the reason is no title now; an info button beside the control opens it on a press
+            const nx = b.nextElementSibling, beside = nx && nx.classList.contains('tt-i') && nx.dataset.tt === 'note' ? nx.dataset.v : '';
+            const why = (b.getAttribute('title') || '').trim() || beside || (b.getAttribute('aria-description') || '').trim() || b.getAttribute('data-tip') || b.getAttribute('data-tt');
             if (!why) { res.none++; const k = (b.getAttribute('data-a') || '?') + ':' + t; res.kinds[k] = (res.kinds[k] || 0) + 1; }
             else if (res.sample.length < 6 && /mktBuy|decide|orderJoin|applyJob|buyProp/.test(b.getAttribute('data-a') || '')) res.sample.push(b.getAttribute('data-a') + ': ' + why);
           }

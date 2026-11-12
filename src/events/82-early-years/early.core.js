@@ -27,7 +27,7 @@
     const b = EY.band(); if (!b || !(UI.clk && UI.clk.run)) return '';
     EY.style();
     const x = EY.X != null ? EY.X : b[1];
-    return `<span class="clk-early tiny muted" title="Until you are ${b[0]}, time runs ${x} times faster at every speed. Nothing else changes.">${b[2]} ×${x}</span>`;
+    return `<span class="clk-early tiny muted" data-note="Until you are ${b[0]}, time runs ${x} times faster at every speed. Nothing else changes.">${b[2]} ×${x}</span>`;
   };
   EY.style = () => {
     if (typeof document === 'undefined' || document.getElementById('ey-style')) return;

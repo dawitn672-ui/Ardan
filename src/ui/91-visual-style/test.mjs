@@ -157,7 +157,8 @@ export default {
     return { ok: n === 8 && !found.length, detail: `${n} screens (Life, People, Holdings, Realm × dark, light): ${found.length} violations${found.length ? ': ' + found.slice(0, 6).join('; ') : ''}` };
   },
 
-  // the activity tiles: one grid, each tile with its group's icon, and its description in a tooltip that opens on hover
+  // the activity tiles: one grid, each tile with its group's icon, and its description on the sheet that a press opens
+  // (round 2 B4, D-007: it was a tooltip that opened on hover; nothing opens on hover now)
   async lookTiles(pg, errs, { browser, file }) {
     const { ctx, pg: p } = await page(browser, file, { viewport: { width: 1366, height: 768 } }, errs);
     let r;
@@ -165,20 +166,24 @@ export default {
       await p.evaluate(FRESH);
       await p.evaluate(LIFE());
       await p.evaluate(SETTLE);
-      const t = await p.$('#tabbody .lk-acts > .act[data-tt="act"]:not(:disabled)');
+      const t = await p.$('#tabbody .lk-acts > .act[data-a="act"]:not(:disabled):not([aria-disabled="true"])');
       await t.hover();
+      await p.waitForTimeout(400);
+      const hov = await p.evaluate(() => !!document.querySelector('.tt-pop:not([hidden]), #modal .act-sheet'));
+      const key = await t.getAttribute('data-v');
+      await t.click();
       await p.waitForTimeout(150);
-      r = await p.evaluate(() => {
-        const tiles = [...document.querySelectorAll('#tabbody .lk-acts > .act')], pop = document.getElementById('tt-pop-1');
-        const first = document.querySelector('#tabbody .lk-acts > .act[data-tt="act"]:not(:disabled)');
-        const D = GD.ACTIVITIES[first.dataset.v];
-        return { n: tiles.length, grids: document.querySelectorAll('#tabbody .lk-acts').length, icons: tiles.filter(t => t.querySelector('.lk-gi svg')).length, tips: tiles.filter(t => t.dataset.tt === 'act' || t.dataset.a !== 'act').length,
+      r = await p.evaluate(key => {
+        const tiles = [...document.querySelectorAll('#tabbody .lk-acts > .act')], sheet = document.querySelector('#modal .act-sheet');
+        const D = GD.ACTIVITIES[key];
+        return { n: tiles.length, grids: document.querySelectorAll('#tabbody .lk-acts').length, icons: tiles.filter(t => t.querySelector('.lk-gi svg')).length, tips: tiles.filter(t => t.dataset.a === 'act' || t.dataset.a !== 'act').length,
           h: Math.max(...tiles.map(t => Math.round(t.getBoundingClientRect().height))), cols: new Set(tiles.map(t => Math.round(t.getBoundingClientRect().left))).size,
-          open: !!pop && !pop.hidden && pop.textContent.includes(D.desc) && pop.textContent.includes(D.name) };
-      });
+          open: !!sheet && sheet.textContent.includes(D.desc) && sheet.textContent.includes(D.name) };
+      }, key);
+      r.hov = hov;
     } finally { await ctx.close(); }
-    const ok = r.grids === 1 && r.n >= 20 && r.icons === r.n && r.tips === r.n && r.h <= 40 && r.cols === 3 && r.open;
-    return { ok, detail: `${r.n} tiles in ${r.grids} grid, ${r.cols} columns, at most ${r.h} px tall; ${r.icons} with their group's icon; ${r.tips} with a tooltip; hover opens the description ${r.open}` };
+    const ok = r.grids === 1 && r.n >= 20 && r.icons === r.n && r.tips === r.n && r.h <= 40 && r.cols === 3 && r.open && !r.hov;
+    return { ok, detail: `${r.n} tiles in ${r.grids} grid, ${r.cols} columns, at most ${r.h} px tall; ${r.icons} with their group's icon; hover opens nothing (${!r.hov}); a press opens the sheet with the description ${r.open}` };
   },
 
   // drawing with the look: every tab, the rail, the chips' "+N", the two-column sheet: the state and the random stream

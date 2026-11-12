@@ -206,7 +206,6 @@
       if (c.querySelector('.lk-realm')) continue;
       const m = /^person:(.+)$/.exec(c.dataset.v || ''), who = m && A.P ? A.P(m[1]) : null;
       const r = who && who.realm && A.realm ? A.realm(who.realm) : null;
-      for (const ch of c.querySelectorAll('.chip')) if (!ch.title && ch.textContent.trim().length > 12) ch.title = ch.textContent.trim();
       const nm = c.querySelector('.lk-row-m > .nm');
       if (!r || !nm) continue;
       nm.insertAdjacentHTML('afterend', `<span class="lk-row-r">${LOOK.chipHtml(r, r.short || r.name)}</span>`);

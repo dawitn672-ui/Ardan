@@ -113,7 +113,7 @@ const putSummary = (head, text) => {
   for (const x of text) {
     if (!x || !x.t) continue;
     if (!x.tt) { s.appendChild(document.createTextNode(x.t)); continue; }
-    const e = document.createElement('span'); e.textContent = x.t; e.setAttribute('title', x.tt); s.appendChild(e);
+    const e = document.createElement('span'); e.textContent = x.t; e.setAttribute('data-note', x.tt); s.appendChild(e);
   }
 };
 FOLD.putSummary = putSummary;

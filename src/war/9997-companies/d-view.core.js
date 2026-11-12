@@ -260,7 +260,7 @@
     let h = modal.apply(this, arguments);
     try {
       if (!B || !B.co || B.phase === 'end' || B.co.rank >= 7) return h;
-      h = h.replace(/<select data-c="bTac"/g, '<select data-c="bTac" disabled title="The wings move on the general\'s orders and their captains\'"');
+      h = h.replace(/<select data-c="bTac"/g, '<select data-c="bTac" disabled data-note="The wings move on the general\'s orders and their captains\'"');
       h = h.replace(/<button class="small" data-a="bRes"[^>]*>[^<]*<\/button>/g, '');
       const at = h.indexOf('<div class="wingctl');
       const p = CO.commandPanel(B);
