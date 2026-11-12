@@ -184,11 +184,24 @@
     } catch (e) {}
     return out;
   };
+  // <body class="en-obit"> while the death screen is open (deathCss below hides the bar and the hints by it). It replaces
+  // :has(#modal .obit) rules on <body>, which made the browser restyle the whole page on every DOM insert once the dead
+  // player's bar had been drawn (round 2 A0, docs/CRITIQUE.md P1). Written only when it changes; drawing only.
+  UI.endObitFlag = function () {
+    if (typeof document === 'undefined' || !document.body) return;
+    const on = !!document.querySelector('#modal .obit');
+    if (document.body.classList.contains('en-obit') !== on) document.body.classList.toggle('en-obit', on);
+  };
+  if (typeof UI.modalClosed === 'function') {
+    const mc = UI.modalClosed;
+    UI.modalClosed = function () { const r = mc.apply(this, arguments); try { UI.endObitFlag(); } catch (e) {} return r; };
+  }
   // the life score counts up when the screen opens (the number only; under reduced motion it is simply there)
   if (typeof UI.renderModal === 'function') {
     const rm = UI.renderModal;
     UI.renderModal = function () {
       const r = rm.apply(this, arguments);
+      try { UI.endObitFlag(); } catch (e) {}
       try {
         const sc = document.querySelector('#modal .obit.en-moment > .score');
         const reduced = document.documentElement.dataset.motion === 'off' || document.documentElement.dataset.motion === 'reduced' || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches && document.documentElement.dataset.motion !== 'full');
@@ -206,13 +219,13 @@
     };
   }
   // the release's gold "Your life is over…" bar (#agebar) reopens this screen; while the screen is open it said the
-  // same thing twice, under the obituary. Hidden only while the death screen is up (pure CSS, nothing in the state).
+  // same thing twice, under the obituary. Hidden only while the death screen is up (a class UI.endObitFlag sets on <body>, nothing in the state).
   const deathCss = () => {
     if (typeof document === 'undefined' || document.getElementById('en-death-style')) return;
     const st = document.createElement('style'); st.id = 'en-death-style';
-    st.textContent = 'body:has(#modal .obit) #agebar{display:none}' +
+    st.textContent = 'body.en-obit #agebar{display:none}' +
       // no first-run hint over a death, and the obituary as a full-screen dusk page rather than a dialog
-      'body:has(#modal .obit) .hint{display:none!important}' +
+      'body.en-obit .hint{display:none!important}' +
       '#modal:has(> .obit.en-moment){padding:0;align-items:stretch;justify-content:stretch;background:#0b0d1a}' +
       '#modal > .obit.en-moment{position:relative;width:100%;max-width:none;min-height:100vh;margin:0;border:0;border-radius:0;box-shadow:none;overflow-x:hidden;overflow-y:auto;isolation:isolate;' +
         'background:linear-gradient(180deg,rgba(13,17,32,0) 0,rgba(13,17,32,.55) 30vh,#0d1120 52vh);color:#eee8da;padding:24vh max(16px,calc(50vw - 360px)) 40px;text-align:center}' +

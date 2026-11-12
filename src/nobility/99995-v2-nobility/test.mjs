@@ -163,6 +163,64 @@ export default {
     return { ok: !r.bad.length && r.grants > 0, detail: r.bad.slice(0, 5).join('; ') || `${r.grants} titles regranted; ` + r.rows.join('; ') };
   },
 
+  // round 2 A0 (docs/CRITIQUE.md R5): a vacant county whose old house has no head, and no one to take it. N.regrant read
+  // the headless house's head (null) after it had raised a new house: it threw, the new house sat in the county with
+  // nobody seated, the month's pass stopped, and the audit found two lords of one seat for good (seed 7, 1159-60). Now
+  // the new house is seated, the old one leaves the county and the audit stays empty; a failure while raising the
+  // house takes back every person and house it made; and one title's failure does not stop the pass.
+  async v2nRegrantHeadless(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 7, status: 'peasant', realm: 'POL-01', startAge: 16 });
+      const N = A.V2N, F = A.V2F, S = A.S, bad = [], seen = [];
+      const audit0 = F.audit().length;
+      const ts = Object.values(S.court.realms).flatMap(c => c.titles).filter(t => {
+        if (t.rank !== 'count' || t.crown || t.heldWith || !t.house || !S.houses[t.house]) return false;
+        const p = N.holderOf(t); return p && p.id !== S.pc && !p.ruler && S.houses[t.house].headPid === p.id && F.seatProv(S.houses[t.house]) === t.seat;
+      }).slice(0, 4);
+      if (ts.length < 4) return { bad: [`only ${ts.length} counties to test`], seen };
+      // the holder dies with no heir; his house is left without a head, still seated in the county
+      const headless = t => { const p = N.holderOf(t), h = S.houses[t.house]; p.alive = false; p.noble.passed = null; h.headPid = null; return h; };
+      const cf = N.candidateFor, gn = A.genNoble, rg = N.regrant, ce = console.error, logged = [];
+      N.candidateFor = () => null;
+      console.error = (...a) => logged.push(a.map(String).join(' ').slice(0, 120));
+      try {
+        // 1. the case that threw: a new house takes the county, the headless one leaves it
+        const t1 = ts[0], h1 = headless(t1);
+        let g = null; try { g = N.regrant(t1); } catch (e) { bad.push('regrant threw: ' + String(e).slice(0, 120)); }
+        const p1 = N.holderOf(t1);
+        if (!g || g.why !== 'new' || !p1) bad.push(`no new holder (${JSON.stringify(g)})`);
+        else if (p1.house === h1.id) bad.push('the headless house kept the county');
+        if (F.seatProv(h1) === t1.seat) bad.push('the headless house still sits in the county');
+        if (t1.vacant) bad.push('the county is still marked vacant');
+        seen.push(`1: ${t1.name} to ${p1 ? A.fullName(p1, false) : '-'} (${g && g.why}); old house's seat ${h1.seat}`);
+        // 2. raising the new house fails: nothing it made is left behind, and the county waits
+        const t2 = ts[1]; headless(t2);
+        const nP = Object.keys(S.people).length, nH = Object.keys(S.houses).length, id0 = S.nextId;
+        A.genNoble = function () { throw new Error('test: genNoble refused'); };
+        let threw = false; try { N.regrant(t2); } catch (e) { threw = true; }
+        A.genNoble = gn;
+        if (!threw) bad.push('a failed raise did not report itself');
+        if (Object.keys(S.people).length !== nP || Object.keys(S.houses).length !== nH || S.nextId !== id0) bad.push(`a failed raise left ${Object.keys(S.people).length - nP} people and ${Object.keys(S.houses).length - nH} houses (nextId ${id0} -> ${S.nextId})`);
+        if (N.holderOf(t2)) bad.push('the failed county has a holder');
+        seen.push(`2: failed raise left ${Object.keys(S.people).length - nP} people, ${Object.keys(S.houses).length - nH} houses`);
+        // 3. one title throws in the monthly pass: the next one is still granted
+        const t3 = ts[2], t4 = ts[3]; headless(t3); headless(t4);
+        for (const t of [t2, t3, t4]) { t.vacant = S.year - 1; t.vacN = 30; }
+        N.regrant = function (t) { if (t === t3) throw new Error('test: one title fails'); return rg.apply(this, arguments); };
+        let pass = null; try { pass = N.regrantMonth(); } catch (e) { bad.push('the pass threw: ' + String(e).slice(0, 120)); }
+        N.regrant = rg;
+        if (!pass || !pass.some(x => x.t === t4.k)) bad.push('the pass stopped at the failing title');
+        if (!N.holderOf(t2)) bad.push('the county whose raise failed was not granted next month');
+        if (!logged.some(s => /v2-nobility regrant/.test(s))) bad.push('the failure was not logged');
+        seen.push(`3: pass granted ${(pass || []).map(x => x.t).join(', ')}; logged ${logged.length}`);
+      } finally { N.candidateFor = cf; A.genNoble = gn; N.regrant = rg; console.error = ce; }
+      const au = F.audit();
+      if (au.length > audit0) bad.push('audit: ' + JSON.stringify(au[0]).slice(0, 200));
+      return { bad, seen };
+    });
+    return { ok: !r.bad.length, detail: r.bad.slice(0, 5).join('; ') || r.seen.join('; ') };
+  },
+
   // the council's border office is not styled as a rank (playtest 1 #14)
   async v2nOneRankWord(pg) {
     const r = await pg.evaluate(() => { T.enter({ seed: 7, status: 'noble', realm: 'POL-01' }); return { n: A.POL && A.POL.offName ? A.POL.offName('warden', 'POL-01') : GD.POL_OFFICES.warden.n }; });

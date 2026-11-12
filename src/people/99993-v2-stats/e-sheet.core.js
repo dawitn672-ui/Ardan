@@ -89,7 +89,8 @@ VS.valueWord = (p, k, v) => (GD.STATS.includes(k) ? VS.statWord(p, k, v) : VS.ti
 // a vital's band word (g-bands) on the phone: a word is wider than the number the release's 36 px value column was
 // sized for (playtest 2, new 14: "middlin", "pleasin", "know / neighb" at 420 px), so the label and the word share
 // the first line and the bar goes under them. By the label's tooltip key (59-tooltips): other features' wrappers
-// read the row's markup as the release writes it, so the row itself is not marked.
+// read the row's markup as the release writes it, so the row itself is not marked. The bar is named by its class: a
+// structural ">:nth-child(2)" after a :has() made every DOM insert restyle the whole page (round 2 A0, CRITIQUE P1).
 VS.VITAL_ROW = '#game.phone .barrow:is(:has(.lbl [data-tt="health"]),:has(.lbl [data-tt="happy"]),:has(.lbl [data-tt="looks"]),:has(.lbl [data-tt="fame"]),:has(.lbl [data-tt="honor"]),:has(.lbl [data-tt="piety"]))';
 VS.css = '.v2-sheet{margin:4px 0 6px}.v2-row{display:grid;grid-template-columns:6em minmax(0,1fr);gap:0 8px;align-items:baseline;font-size:var(--t-small,13px);line-height:1.3;padding:2px 0}' +
   '.v2-l{opacity:.75}.v2-v{font-weight:600}.v2-w{grid-column:2;opacity:.8}.v2-hrs{white-space:nowrap;opacity:.75;text-align:right}' +
@@ -99,7 +100,7 @@ VS.css = '.v2-sheet{margin:4px 0 6px}.v2-row{display:grid;grid-template-columns:
   // a phone (71-phone, below 760 px) holds every text at 14 px or more: the words keep the row's size there
   '@media (max-width:759px){.v2-w{font-size:1em}}' +
   VS.VITAL_ROW + '{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l v" "b b";row-gap:0;column-gap:8px}' +
-  VS.VITAL_ROW + '>.lbl{grid-area:l}' + VS.VITAL_ROW + '>:nth-child(2){grid-area:b}' +
+  VS.VITAL_ROW + '>.lbl{grid-area:l}' + VS.VITAL_ROW + '>.bar{grid-area:b}' +
   VS.VITAL_ROW + '>.val{grid-area:v;width:auto;min-width:0;max-width:none;white-space:nowrap;text-align:right;overflow:visible}' +
   '.v2-odds{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.v2-scale{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em;pointer-events:none}.v2-ow{pointer-events:none}';
 VS.style = () => { if (typeof document === 'undefined' || document.getElementById('v2s-style')) return; const s = document.createElement('style'); s.id = 'v2s-style'; s.textContent = VS.css; document.head.appendChild(s); };

@@ -17,4 +17,24 @@ export default {
     });
     return { ok: r.length === 0, detail: `${r.length} events would show an unfilled {token}` + (r.length ? ': ' + r.slice(0, 8).map(([i, t]) => `${i} ${t}`).join(', ') : '') };
   },
+
+  // round 2 A0 (docs/CRITIQUE.md E10): the war room said "1 armies in the field · 1 battles raging"
+  async warPlurals(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 5, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
+      const pc = A.pc(), keep = { atWar: A.atWar, armiesOf: A.armiesOf }, f0 = A.S.fights, out = [];
+      try {
+        for (const [na, nf] of [[1, 1], [2, 3]]) {
+          A.atWar = () => [{ id: 'w', leadA: 'x', leadD: 'y' }]; A.armiesOf = () => Array.from({ length: na }, (_, i) => ({ id: 'a' + i }));
+          A.S.fights = Object.fromEntries(Array.from({ length: nf }, (_, i) => ['f' + i, { a: pc.realm, b: 'POL-02' }]));
+          const h = UI.warTabClock(pc), d = document.createElement('div'); d.innerHTML = h;
+          out.push({ line: (d.textContent.match(/\d+ arm\w+ in the field · \d+ battles? raging/) || [''])[0], tip: /warFront/.test(h) });
+        }
+      } finally { Object.assign(A, keep); A.S.fights = f0; }
+      return { out, one: A.plural(1, 'army', 'armies'), many: A.plural(0, 'battle') };
+    });
+    const [a, b] = r.out;
+    const ok = a.line === '1 army in the field · 1 battle raging' && b.line === '2 armies in the field · 3 battles raging' && a.tip && b.tip && r.one === '1 army' && r.many === '0 battles';
+    return { ok, detail: `"${a.line}" (tooltip ${a.tip}); "${b.line}" (tooltip ${b.tip}); ${r.one}; ${r.many}` };
+  },
 };

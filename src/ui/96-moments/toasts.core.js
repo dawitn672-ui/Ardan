@@ -25,18 +25,21 @@
     return s;
   };
   const shown = t => !!(t && t.textContent && t.classList.contains('ts-on'));
-  // the newest toast sits above the stack: the stack is anchored where #toast was, and #toast rises by its height
+  // the newest toast sits above the stack: the stack is anchored where #toast was, and #toast rises by its height.
+  // --ts-h lives on #toast, the one element that reads it, and is written only when it changes: on :root it made the
+  // browser restyle the whole document twice a toast (round 2 A0, docs/CRITIQUE.md P20)
+  const tsH = (t, v) => { if (t.style.getPropertyValue('--ts-h') !== v) t.style.setProperty('--ts-h', v); };
   TS.place = function () {
     const t = document.getElementById('toast'), s = document.getElementById('toast-stack');
     if (!t) return;
-    document.documentElement.style.setProperty('--ts-h', '0px');
+    tsH(t, '0px');
     if (!s || !s.children.length) return;
     // the phone: toasts hang from the top of the content, the newest first and the older ones under it
     if (window.matchMedia && window.matchMedia('(max-width: 760px)').matches) { s.style.bottom = 'auto'; s.style.top = Math.round(t.getBoundingClientRect().bottom + 8) + 'px'; return; }
     s.style.top = 'auto';
     const base = parseFloat(getComputedStyle(t).bottom) || 16;
     s.style.bottom = base + 'px';
-    document.documentElement.style.setProperty('--ts-h', (s.offsetHeight + 8) + 'px');
+    tsH(t, (s.offsetHeight + 8) + 'px');
   };
   TS.push = function (text, kind) {
     const s = stackEl();

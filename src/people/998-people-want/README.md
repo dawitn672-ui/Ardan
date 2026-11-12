@@ -25,3 +25,5 @@ Soldiers (`t.mil`, or an armed occupation) and your rivals and enemies keep the 
 **Rules kept.** Nothing writes the state or draws a random number; 21's desire is read inside `A.asDrawing`. Every string is escaped.
 
 **Measured by** (`test.mjs`): `peopleShowWants` (a stranger shows "?", a cast member the lore's want, a rival keeps the tier, no non-fighter in "Around you" keeps a tier chip, no raw token, drawing is pure, a want with markup is escaped).
+
+**Round 2 A0 (Nov 12, docs/CRITIQUE.md E10).** "Would teach you f": `skName` read `GD.SKILLS[k][0]`, the first letter of the skill's name (a string). It now reads the string ("would teach you swordsmanship").
