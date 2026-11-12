@@ -120,3 +120,12 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   selectors under `#modal` (two phone-sheet rules measured harmless at 0.014 ms); kept as is.
 - **Archived:** nothing (press.cjs and gen.cjs moved with git mv; superseded probes stay in tools/critique-probes/).
 - **Undo:** `git revert -m 1 db98217`, then rebuild `index.html`.
+
+### H-005 · 2026-11-12 10:57 ET · Queued: X6, the naming pass (owner's order)
+- **What:** the owner asked to go through the whole repo and relabel everything with clear, self-explanatory names.
+  Queued as work item X6, right after X1 (own the release) and before A2, so the renames happen once the release is
+  readable source and before A2 routes its ~70 write sites. Rules: `git mv` (history kept), feature build order kept
+  (numeric prefixes unchanged in order), a redirect table `docs/NAMES.md`, every tool and doc updated, the build
+  shown unchanged as in step 0.
+- **Files touched:** `docs/OWNER_ORDERS.md` (order 20), this file. **Undo:** nothing to undo (a plan).
+
