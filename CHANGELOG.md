@@ -3,7 +3,11 @@
 What changed for the player, in plain words, one section per version (newest first). The technical record is
 `docs/HISTORY.md`; the list of versions and their commits is `docs/VERSIONS.md`.
 
-## Unreleased (round 2)
+## Unreleased
+
+- Nothing yet.
+
+## v2.1.0-alpha.1 (2026-11-12 11:20 ET) · Round 2 begins
 
 - The game no longer slows down after you have seen a hint or lived on as an heir: a month late in a long life
   costs about half what it did.

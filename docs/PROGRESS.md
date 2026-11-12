@@ -39,6 +39,15 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 - [ ] **X4** · Balance pass
 - [ ] **X5** · State diet; stop committing index.html every round (D-018)
 
+## Versions
+Every finished step is a version: a row in `docs/VERSIONS.md`, a section in `CHANGELOG.md`, a `release/<version>`
+branch on GitHub, and a sample save in `tests/saves/`.
+
+| Version | Stamp | What it holds |
+|---|---|---|
+| v2.0.0-beta.1 | 2026-11-06 15:06 ET | Playtest 2 and CI round 2 fixed (the last version before round 2) |
+| v2.1.0-alpha.1 | 2026-11-12 11:20 ET | Round 2 begins: repo by system with a memory, the critique and work order, A0 (lag's main cause and the two-lords crash fixed), name and military prep |
+
 ## Milestones
 - [ ] `release/v2.1-foundations` (after A1, A3a, B6, A2)
 - [ ] `release/v2.2-interface` (after B4, B5)
