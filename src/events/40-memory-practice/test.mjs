@@ -318,7 +318,7 @@ export default {
                   if (RAW.test(all)) out.problems.push(`${cur}: raw token ${all.match(RAW)[0]}`);
                   if (words(v.text) > 80) out.problems.push(`${cur}: text ${words(v.text)} words`);
                   for (const c of v.choices) if (words(c.t) > 12) out.problems.push(`${cur}: label ${words(c.t)} words`);
-                  // a local saying 54-voices closes the scene with ("Nobody here boards a prize ...") is that feature's prose
+                  // a local saying 54-character-voices closes the scene with ("Nobody here boards a prize ...") is that feature's prose
                   const voiced = A.VOICE && (A.VOICE.last || []).some(x => /^line:/.test(x));
                   if (TICS.test(voiced ? v.text.replace(/\n\n[^\n]*$/, '') : v.text)) out.problems.push(`${cur}: house tic in rendered text`);
                 }

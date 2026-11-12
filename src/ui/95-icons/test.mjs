@@ -113,7 +113,7 @@ export default {
     // bar's play, next and quiet icons went with Play, Next and Quiet living (complaint 8, 99992-v2-time): the five
     // icons left must all be there (initiative, place, purse, save, menu)
     const ok = r.tab.length === r.places && r.places >= 4 && r.places <= 5 && ['hourglass', 'pin', 'sun-coin', 'seal', 'menu'].every(k => r.top.includes(k)) && r.vital.length === (r.piety ? 6 : 5) && r.stat.length === 6 && (r.group.length >= 9 || r.actsOwn >= 9) && !r.unlabelled.length && r.debt && tipsOk;
-    return { ok, detail: `tabs ${r.tab.join(' ')}; top bar ${r.top.join(' ')}; vitals ${r.vital.join(' ')}; stats ${r.stat.join(' ')}${r.look ? ' (91-look\'s tiles)' : ''}; groups ${r.group.length} (${r.group.join(' ')}), actions with their own icon ${r.actsOwn}; debt shows the broken coin ${r.debt}; ` +
+    return { ok, detail: `tabs ${r.tab.join(' ')}; top bar ${r.top.join(' ')}; vitals ${r.vital.join(' ')}; stats ${r.stat.join(' ')}${r.look ? ' (91-visual-style\'s tiles)' : ''}; groups ${r.group.length} (${r.group.join(' ')}), actions with their own icon ${r.actsOwn}; debt shows the broken coin ${r.debt}; ` +
       `tooltips open with the icon ${r.tips.filter(x => x[1]).length}/${r.tips.length}${r.unlabelled.length ? '; WITHOUT A WORD ' + r.unlabelled.slice(0, 5).join(', ') : '; every icon has its word'}` };
   },
 

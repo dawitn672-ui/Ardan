@@ -434,7 +434,7 @@ It replaces `UI.crStepBody`, under one line: "This is the face you will grow int
 
 **Delivery.**
 - `PORTRAIT.tag(p, size, opts)` returns one `<img>` with a blob URL from the cache (the CSP already allows `img-src blob:`): one node a portrait, not 115 (P15). An unpainted one returns its stand-in with `data-pt="<key>"`, and gets its picture when painted.
-- `PORTRAIT.svg` keeps its name and returns the same tag. Its 29 call sites put the string straight into the page, so they need no change beyond their styles and tests. `UI.ANIME.svg` stays as an alias until its four callers (91-look, 28-endings, 9996-polity, 9994-share) are moved; the share card takes its bitmap from `UI.PT.bitmap`.
+- `PORTRAIT.svg` keeps its name and returns the same tag. Its 29 call sites put the string straight into the page, so they need no change beyond their styles and tests. `UI.ANIME.svg` stays as an alias until its four callers (91-visual-style, 28-endings, 9996-polity, 9994-share-a-picture) are moved; the share card takes its bitmap from `UI.PT.bitmap`.
 - The frame is CSS round the image: the brief's cut corner, its metal by station (§9). The dead are greyed by CSS until C8c's memorial plate.
 
 **Cache.**
@@ -491,16 +491,16 @@ X1 and X6 (the naming pass) may move paths: `docs/NAMES.md` gives the new name f
 - `src/people/99993-v2-looks/` (new): `a-genes.core.js` (wraps `A.genAppearance`; `A.LOOKS.fromWords`, `A.LOOKS.wear`, the family that fits your face), `b-wounds.core.js` (`A.addWound`, `A.LOOKS.seedScars`, the quirk), `c-migrate.core.js` (`A.LOOKS.migrateAll`), `test.mjs`.
 - `data/looks.json`: each people's base measurements and spreads, feature means, tones, shades, textures and 12 designed faces. `data/materials.json`.
 - `src/core/99998-v2-saves/saves.core.js`: the `looks` step and the version.
-- `b-battle.core.js`, `src/war/72-two-scales`, `A.duelConsequences`, `A.lineBattleResult`, `A.stageOutcome`: wounds with places.
+- `b-battle.core.js`, `src/war/72-one-battle-two-scales`, `A.duelConsequences`, `A.lineBattleResult`, `A.stageOutcome`: wounds with places.
 - `src/ui/93-portraits/` (new): `a-look.core.js` (`UI.PT.look`, `UI.PT.key`, and `UI.PT.armsTile`, which turns a house's coat into a tile for the painter), `b-cache.core.js` (the cache, the queue, `UI.PT.settled()` for tests), `c-image-tag.core.js` (`PORTRAIT.tag`, `PORTRAIT.svg`, `UI.portrait`, `UI.PT.bitmap`, the frame), `d-live-portrait.core.js` (mood, scene tone, the blink), `e-creation-screen.core.js` (replaces `UI.crStepBody`, `UI.crPreviewPerson`, `UI.crRandomize`; face codes), `test.mjs`, `README.md`. Until C8c it dresses people from `PORTRAIT.outfit`'s ten kinds and their own gear.
 - `src/ui/93-anime-portraits/` goes whole to `archive/` when 93-portraits serves every call site, with a note, and the last commit that had it in HISTORY.
 - `tools/sheets/demo.mjs` (the demo of §14) and `tools/sheets/portraits.mjs` (every sheet below, drawn in Node from the engine, or from a built page where a sheet needs a world).
-- A check, `looksAgree`, in `src/core/08-coherency`: words against look, a wound with no place, a scarred newborn.
+- A check, `looksAgree`, in `src/core/08-coherency-checks`: words against look, a wound with no place, a scarred newborn.
 
 **C8c.**
 - `data/dress.json`; `src/ui/93-portraits/f-dress-kit.core.js` (`UI.DRESS.kit`, `UI.DRESS.words`, `UI.DRESS.era`) and `g-wardrobe.core.js` (`UI.wardrobe`); `PORTRAIT.outfit` goes.
-- `src/ui/63-miniatures/` and the release's paper dolls (`PORTRAIT.full`, `PORTRAIT.bust`) go to `archive/` with notes, and their two settings with them. `PORTRAIT.coat`, `PORTRAIT.charges`, `PORTRAIT.device` and `PORTRAIT.beast` stay.
-- C7's culture data (the `dress` key), `tools/lint-events.mjs` (`scene`), `src/ui/94-woodblock-skies`, `src/ui/96-moments`, `docs/art/style-guide.md`.
+- `src/ui/63-miniature-portraits/` and the release's paper dolls (`PORTRAIT.full`, `PORTRAIT.bust`) go to `archive/` with notes, and their two settings with them. `PORTRAIT.coat`, `PORTRAIT.charges`, `PORTRAIT.device` and `PORTRAIT.beast` stay.
+- C7's culture data (the `dress` key), `tools/lint-events.mjs` (`scene`), `src/ui/94-woodblock-skies`, `src/ui/96-big-moments`, `docs/art/style-guide.md`.
 
 ## 14. Acceptance
 

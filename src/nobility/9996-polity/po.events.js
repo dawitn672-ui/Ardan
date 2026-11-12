@@ -389,7 +389,7 @@ A.defEvents([
     ] },
 ]);
 
-// the court speaks the place's own words (54-voices): {councilT} and {lordT} are the realm's word for its council and
+// the court speaks the place's own words (54-character-voices): {councilT} and {lordT} are the realm's word for its council and
 // its lords ("tendaru" and "wesabi" in a Keshi court), or plain English where the culture has none
 (function () {
   const V = A.VOICE;
@@ -398,7 +398,7 @@ A.defEvents([
     const w = k => { try { return cid && V.word ? V.word(cid, k) : null; } catch (e) { return null; } };
     return { councilT: (ctx && ctx.councilT) || w('council') || 'council', lordT: (ctx && ctx.lordT) || w('lord') || 'lord' };
   };
-  // through the token hook, not by wrapping each scene's setup: 67-memory-weave's wrap of the setups must stay the outer
+  // through the token hook, not by wrapping each scene's setup: 67-choice-memories's wrap of the setups must stay the outer
   // one (mwSourcesIntact), and a token costs nothing for a scene that does not use it
   const tok0 = A.ctxTokens;
   A.ctxTokens = function (pc, ctx) {

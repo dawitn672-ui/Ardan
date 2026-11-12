@@ -6,7 +6,7 @@
 //     dice fall as they would on the release's map.
 //   - MAP.init is wrapped: the grid on screen is the loaded world's. A save carries only the seed; its provinces carry
 //     their own geometry, and the grid is regenerated from the seed the first time the map is drawn after a load.
-//     A state without A.S.v2map (a save from before, or the 09-scale clone harness) keeps the map as written.
+//     A state without A.S.v2map (a save from before, or the 09-engine-at-scale clone harness) keeps the map as written.
 //   - Worlds are cached by seed (the last few), so a reload, a replay or a second look costs nothing.
 const VM = A.V2MAP;
 VM.OFF = false;
@@ -24,7 +24,7 @@ VM.release = function () {
     provinces: m.provinces.map(p => ({ id: p.id, realm: p.realm, sx: p.sx, sy: p.sy, cells: p.cells, type: p.type, pop: p.pop })) };
   return VM._rel;
 };
-// on unless switched off or the province list is not the release's (the 09-scale clone harness copies it K times)
+// on unless switched off or the province list is not the release's (the 09-engine-at-scale clone harness copies it K times)
 VM.on = () => !VM.OFF && typeof LORE !== 'undefined' && LORE.map && LORE.map.provinces.length === VM.release().n;
 
 // a world is keyed by its seed and the version of the map that made it, so a save keeps the map it was made on

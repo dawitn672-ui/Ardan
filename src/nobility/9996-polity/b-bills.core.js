@@ -1,4 +1,4 @@
-// The Polity, part two: bills (Victoria 3's enactment, calibrated to 56-realm-inside's one-shot odds).
+// The Polity, part two: bills (Victoria 3's enactment, calibrated to 56-court-and-treasury's one-shot odds).
 //
 // A law no longer changes at once. 56's loudest push at the New Year court opens a bill (RI.session, replaced here
 // from this folder: patch PO-BILL is this wrap, no blob edit), and so do the ruler, the Chancellor's draft, an angry

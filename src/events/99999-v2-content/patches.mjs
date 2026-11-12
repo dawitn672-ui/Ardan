@@ -36,7 +36,7 @@ export default [
     blob: 'ardan-content',
     why: 'bd_lucky_escape offered "Laugh, and buy the whole tavern a drink (5 suns)" from 12, so a penniless 14-year-old saw ' +
       'it on the card as an option out of reach. Standing a round is a grown man\'s choice: it needs 16 years as well as ' +
-      'the coin. (9998-stakes shows a locked row only for a requirement it can read, so a child no longer sees it.)',
+      'the coin. (9998-choice-stakes shows a locked row only for a requirement it can read, so a child no longer sees it.)',
     edits: [['t:"Laugh, and buy the whole tavern a drink (5 suns)",req:p=>p.coin>=5,', 't:"Laugh, and buy the whole tavern a drink (5 suns)",req:p=>p.coin>=5&&A.age(p)>=16,']],
   },
   {

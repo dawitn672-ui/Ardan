@@ -3,12 +3,12 @@
 //   - a scheduled return that carries a public label: an item's own `label` (any A.schedule call may add one), or a
 //     promise made in the open (a loan to be repaid, a venture to come to account, a wedding agreed), named by
 //     COMING.LABELS. Every other scheduled item stays hidden: a surprise stays a surprise.
-//   - the customs of your realm (47-realm-bible, 990-far-peoples) due this month or next;
+//   - the customs of your realm (47-realm-customs, 990-far-peoples) due this month or next;
 //   - your faith's holy day, or the next feast day (GD.FESTIVALS, which 990 turns into a far faith's days);
-//   - your ambition's next step (97-life-fixes);
+//   - your ambition's next step (97-first-life-fixes);
 //   - initiative at or near full, which stops filling.
 // It is a view: it reads the state and never writes it, draws no random number and calls no engine command. It uses
-// 91-look's tokens.
+// 91-visual-style's tokens.
 (function () {
   const CU = UI.COMING = UI.COMING || {};
   CU.MAX = 5;

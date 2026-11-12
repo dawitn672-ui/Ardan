@@ -1,5 +1,5 @@
 // The Polity, part six: fiefs by vote (Bannerlord). When a house's head is taken for treason after a failed claim
-// (56-realm-inside hunts the backers), half its land is forfeit to the crown and a grant opens for 60 days: up to three
+// (56-court-and-treasury hunts the backers), half its land is forfeit to the crown and a grant opens for 60 days: up to three
 // candidates (the heads of the realm's lesser houses, and the player when 994's bar for a fief is met), each
 // councillor and each great house head backing one (a seat weighs 1, a house 0.5 + opinion/200), the ruler deciding.
 // Overriding the leader costs 10 with each of its backers' houses. The player may lobby a backer (1 initiative).

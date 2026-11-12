@@ -20,7 +20,7 @@ Free money, AI debt never repaid, stacking reparations, stability below zero, si
 
 `world`, `economy` in `test.mjs`. Run them with `node tests/run.mjs --features=world-fixes`.
 
-## Cycle 2: a broke crown cannot raise armies (`broke.core.js`; world review B1)
+## Cycle 2: a broke crown cannot raise armies (`broke-crown-levies.core.js`; world review B1)
 
 The release's `A.indMonth` raised levies (`A.emergencyLevy`), finished recruits (`A.queueStep`) and refilled divisions (`A.divReinforce`) with no look at the purse, and charged its workshops' wages to any treasury. The League of the Nine Wells (one oasis, an income of 26,690) reached 1.47 million men and 33.6 million of debt in one soak.
 

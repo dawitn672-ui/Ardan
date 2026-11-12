@@ -6,11 +6,11 @@
 //   treason trial: the gallows or a deep cell" where it said "Nothing lost if it fails"; "If it fails: a wound, hurt that
 //   could kill you, near death as you are" where it said "a wound, hurt". The words for health are the body sheet's
 //   own bands (VS.band), so the card and the sheet say the same thing.
-// - The red/white mark (9998-stakes' ST.checkKind) is left as 9998 reads it: its own test holds the rule, and the plot
+// - The red/white mark (9998-choice-stakes' ST.checkKind) is left as 9998 reads it: its own test holds the rule, and the plot
 //   still reads "can be tried again" (reported to the owner; a failure there ends in a cell or on the gallows anyway).
 // - Three scenes that showed "It will be remembered" on every choice, or nothing true, now show what they do:
-//   47-realm-bible's custom scene (rb_custom: "The hearth mark") reads the custom's own effect and the defiance's;
-//   97-life-fixes' ambition scenes (lfx_amb_*: "What you want") say the aim each choice sets and what meeting it brings;
+//   47-realm-customs's custom scene (rb_custom: "The hearth mark") reads the custom's own effect and the defiance's;
+//   97-first-life-fixes' ambition scenes (lfx_amb_*: "What you want") say the aim each choice sets and what meeting it brings;
 //   the gathering's close (ga_close: "The last night") says what you carry home, from your role and your aim there.
 // The reading is pure: the person, the realm's law, the gathering and the written choice; no draw, no write.
 (function () {

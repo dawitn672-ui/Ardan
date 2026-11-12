@@ -33,7 +33,7 @@ export default [
       'near ground over the release\'s olive fill, and the release\'s speckles, ellipses, fog wash and rain lines are ' +
       'skipped (UI.bfGroundOn). Each unit block goes through UI.bfBlock, a banner pole and a mass of pikes, horses or ' +
       'bows in the realm\'s colour instead of a box with a cross; the wing captions move to the field\'s edge; and the ' +
-      'end strip gives way to a small cartouche (the VICTORY or DEFEAT cut-in of 96-moments carries the moment).',
+      'end strip gives way to a small cartouche (the VICTORY or DEFEAT cut-in of 96-big-moments carries the moment).',
     edits: [
       ['g.addColorStop(1,terrCol[1]),ctx.fillStyle=g,ctx.fillRect(0,0,W,H),ctx.globalAlpha=.12,ctx.fillStyle="#000";for(let i=0;i<160;i++)',
         'g.addColorStop(1,terrCol[1]),ctx.fillStyle=g,ctx.fillRect(0,0,W,H),UI.bfGround&&UI.bfGround(ctx,W,H,B),ctx.globalAlpha=.12,ctx.fillStyle="#000";for(let i=0;i<(UI.bfGroundOn?0:160);i++)'],

@@ -38,7 +38,7 @@ The plan's step is "more markets: every town with a market building, with prices
 - **45's luxury trade paid on a quote that one load would wipe out.** Pearls bought for 300 sold for 1,900 into a realm whose store was empty. On an early version of this build, that took `noTradeLoop`'s bot to 1.78× the estate. Selling along the town's own store (item 7) closed it.
 - **Carters who close half the gap a month leave a producing town holding twice its month's output.** Prices then ran well past the carting cost, and a cloth trader from Varenna reached 2.7× the estate. Closing nine tenths, or all a town can spare, keeps gaps at the carting cost.
 - **A town on the border reaches 45's standing gaps more cheaply than a capital does.** Venina is Varenna's weaving town, holding 9 months of cloth at 33 a load. A short road from it reached Solenne at 100–130 a load, and a trader there made 8× the estate in five years. The 40-caravan cap and the abroad carting floor (items 4 and 6) closed that.
-- **`tools/bench/exploit.mjs` counts the merchant career's pay as trading.** The bot starts without a job, but events hand it a guild place. Its merit comes from its runs, and at rank 4 the wage is about 20,000 suns a year. Two runs on this build read 41.7× and 26.8× the estate. In both, the trades themselves had lost money (−5,148 and +116 over ten years). Run with the job dropped every month, the same seeds read 0.22×. The bench is not this feature's to change, and it needs a human or the coordinator to decide.
+- **`tools/bench/trade-exploit.mjs` counts the merchant career's pay as trading.** The bot starts without a job, but events hand it a guild place. Its merit comes from its runs, and at rank 4 the wage is about 20,000 suns a year. Two runs on this build read 41.7× and 26.8× the estate. In both, the trades themselves had lost money (−5,148 and +116 over ten years). Run with the job dropped every month, the same seeds read 0.22×. The bench is not this feature's to change, and it needs a human or the coordinator to decide.
 
 **Measured by** (`test.mjs`, on the economy + markets build; the full build in brackets where it differs).
 
@@ -59,8 +59,8 @@ The plan's step is "more markets: every town with a market building, with prices
 
 | Run (the trader's wealth against the estate's) | Without this feature | With it |
 | --- | --- | --- |
-| `tools/bench/exploit.mjs`, ten years, four seeds, full build | worst ×1.09 | **worst ×0.28** (0.22, 0.28, 0.22, 0.10) |
-| `tools/bench/exploit.mjs`, economy only (45 and this) | worst ×1.16 | worst ×1.15 (an earlier version of this build, before the carting floor, the 40 caravans and the floor abroad) |
+| `tools/bench/trade-exploit.mjs`, ten years, four seeds, full build | worst ×1.09 | **worst ×0.28** (0.22, 0.28, 0.22, 0.10) |
+| `tools/bench/trade-exploit.mjs`, economy only (45 and this) | worst ×1.16 | worst ×1.15 (an earlier version of this build, before the carting floor, the 40 caravans and the floor abroad) |
 | Trading only (the job dropped every month), eight seeds of five years, full build | mean ×0.74, worst ×1.58 | **mean ×0.24, worst ×0.57** |
 
 The bar is ×1.3 and it holds. But no greedy trader in these runs makes money with market towns: seven of eight end with only their wagon. That is a design call for a human (see "Expected to move").

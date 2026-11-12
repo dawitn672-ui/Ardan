@@ -1,6 +1,6 @@
 // Old age, part 6: late things. A late love, a late ambition, letters at sixty, the custom of the manor that only the
 // oldest can swear to, the realm's young ruler, wisdom asked for and ignored, and your story told wrong: a deed of
-// this life (pc.deeds) as 26-belief-truth's tale tells it, and as an enemy tells it.
+// this life (pc.deeds) as 26-belief-versus-truth's tale tells it, and as an enemy tells it.
 (function () {
 const OAl = {
   deed: (age, id) => (p, ctx) => { A.OA.pickDeed(p, ctx, age, id); },

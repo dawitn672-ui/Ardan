@@ -87,14 +87,14 @@ Every map canvas has the world's 14:9 shape (7000:4500).
 
 | Canvas | Size | Drawn by | Zoom and pan |
 | --- | --- | --- | --- |
-| `#titlemap` (title strip) | 1050×675 | `MAP.draw`. 86-title-fold only sets its CSS height. | none |
+| `#titlemap` (title strip) | 1050×675 | `MAP.draw`. 86-title-screen-in-view only sets its CSS height. | none |
 | `#worldmap` (World tab) | 1050×675 | `MAP.draw` and `MAP.attach`, from `UI.afterRender` | none; hover tip and click (`MAP.provAt`) |
 | `#bigmap` | 1400×900 | `MAP.draw` | none |
 | `#gmap` (full map) | 1100×720 | `UI.gmDraw`, `UI.gmAttach` | wheel ×1.25 per step, drag to pan; `UI.gm.view = {x0,y0,w,h}` in km; `UI.wrClampView` holds `w` to 500–7,000 |
 | `#warmap` (war room) | 1100×720 | `UI.drawWar`, `UI.drawWarBasic`, `UI.wrOverlay`, `MAP.front` | `UI.wrView` frames the fronts; `UI.wrClamp`; `UI.wrProvAt` |
 | `#campmap` | 1050×675 | `UI.drawCamp` | none |
 
-`UI.drawBattle` and the 72-two-scales view are battlefield views, not world maps.
+`UI.drawBattle` and the 72-one-battle-two-scales view are battlefield views, not world maps.
 
 **The layers of one frame:**
 
@@ -118,7 +118,7 @@ The modes, in `MAP.MODES`, are political, diplomatic, alliances, wars, faith, da
   19 coast loops and 1,447 border pieces, plus distance fields, built in 149 ms once per session.
 - **Edge keys:** each edge is keyed `a*4096+b`, so **4,096 provinces is a hard limit**.
 - **Tiles:** up to 150 are cached, and all of them are flushed when a border moves.
-- 61-illumination tints the map and adds a compass. It has no geometry of its own.
+- 61-illuminated-chronicle tints the map and adds a compass. It has no geometry of its own.
 
 **Hard-coded world size.** The literals `7e3` and `4500` appear in these release functions: `MAP.toCanvas`,
 `UI.gmFit`, `UI.gmDraw` (5 and 4 times), `UI.gmAttach`, `UI.wrView`, `UI.wrClamp`, `UI.wrClampView`,
@@ -137,7 +137,7 @@ A province id is stored in an `Int16Array`, so ids above **32,767** do not fit.
 | Thing | Count | Where |
 | --- | ---: | --- |
 | Provinces | 306 (31 capitals, 25 unclaimed) | `LORE.map.provinces`, `S.prov` |
-| Realms | 34 in the lore, 35 at start (the release adds `POL-31A`, Andros's Tessaria), 35 to 37 with 70-fresh-realms | `LORE.realms`, `S.realms` |
+| Realms | 34 in the lore, 35 at start (the release adds `POL-31A`, Andros's Tessaria), 35 to 37 with 70-fresh-realms-and-tensions | `LORE.realms`, `S.realms` |
 | Provinces per realm | 1 (Lucerna, Irondeep) to 22 (Sylvaran, Sand Clans, Zanara) | |
 | Cultures | 24 (`CUL-01..24`, each with 30 male and 30 female names, 20 houses and 15 epithets) | `LORE.cultures`, `GD.NAMING` (24) |
 | Faiths | 19 (`REL-01..19`) | `LORE.faiths`, `GD.REALM_FAITH`, `MAP.FAITH_COL` (19) |
@@ -189,8 +189,8 @@ edge keys; the Int16 grid.
 
 - `GD.REALM_CULTURE` (35), `GD.REALM_FAITH` (35), `GD.REALM_HUMAN_CULTURE` (9), `A.AGGRO` (19), `GD.DOCTRINE` (36);
 - `A.GOV`, `LORE.titlesByRealm`, `LORE.academies`, `LORE.rulerHistory`;
-- 47-realm-bible's data;
-- 54-voices, which is keyed by culture.
+- 47-realm-customs's data;
+- 54-character-voices, which is keyed by culture.
 
 **Creation screen.** It lists `Object.keys(LORE.realms)`. There are 5 such reads in the core. A realm that is not in
 `LORE` cannot be a birthplace; 70's README says so.
@@ -246,13 +246,13 @@ blob of the full build.
 | `A.politicsYear` → `politicsYearNow` → `A.aiPullSum(r, o)` for **every pair of live realms** → `A.aiPullParts` | release loop; 20-ai-personality's pull | **10.6 s of a 13.2 s year** | R² pairs. Each pair calls `A.claimsOn` twice and `A.neighbors` up to twice, and **each of those scans all of `S.prov`**: R²·P |
 | `A.claimsOn(a, b)` = `S.prov.filter(p => p.owner === b && r.claims[p.id] …)` | release | 6.9 s | O(P) a call |
 | `A.neighbors(rid)` = a scan of all of `S.prov` and its `adj` | release | 1.3 s | O(P·adj) a call, no memo |
-| `A.realmHouses(rid)` = `Object.values(S.houses).filter(...)`, from `A.factionsYear` and 56's court | release; 56-realm-inside | 2.5 s | O(H) a call, R calls a year |
+| `A.realmHouses(rid)` = `Object.values(S.houses).filter(...)`, from `A.factionsYear` and 56's court | release; 56-court-and-treasury | 2.5 s | O(H) a call, R calls a year |
 | `E.caravans`, `A.priceTarget` | 45-economy | 4.2 s, about 330 ms a month | candidates for every pair of markets × 21 goods: R²·G |
 | `MT.month`, `MT.path`, `MT.build` | 66-markets | 1.6 s | pathfinding across the map for each route |
 | `A.mktMonth` | release market | 1.8 s | R × goods |
 | `A.wsDay` → `A.wsSupplyDay`, `A.supplyMap` | release war system | 4.0 s with 4 wars | a Dijkstra over all P **for each warring realm, every day** |
-| `A.diploMonth` → `A.diploAI(5)`, `A.interest`, `A.threatsTo`, `A.aiWarCheck` | release; 55-bonds; 68-casus-belli | 3.5 s | `threatsTo` reads neighbours of neighbours; `interest` is pairwise |
-| `RI.voices`, `RI.session`, `RI.topHouses`; `NB.year`; `WC.canonNear` | 56-realm-inside; 64-npc-beliefs; 57-world-chronicle | 0.5–2 s each | O(R·H) and O(R²) yearly passes |
+| `A.diploMonth` → `A.diploAI(5)`, `A.interest`, `A.threatsTo`, `A.aiWarCheck` | release; 55-bonds; 68-reasons-for-war | 3.5 s | `threatsTo` reads neighbours of neighbours; `interest` is pairwise |
+| `RI.voices`, `RI.session`, `RI.topHouses`; `NB.year`; `WC.canonNear` | 56-court-and-treasury; 64-npc-beliefs; 57-world-chronicle | 0.5–2 s each | O(R·H) and O(R²) yearly passes |
 
 Also measured:
 
@@ -327,7 +327,7 @@ wraps `A.newGame` and `A.initWorld`, then:
 - breaks up to 3 alliances;
 - starts up to 2 feuds.
 
-**70-fresh-realms creates them.** On the same guard it does the following:
+**70-fresh-realms-and-tensions creates them.** On the same guard it does the following:
 
 - **Split.** It splits 1 to 3 realms of 8 provinces or more. Each loses a contiguous block of 2 to 4 provinces far
   from its capital (`FR.block`, which checks the rest stays in one piece with `FR.pieces`).
@@ -425,7 +425,7 @@ so the Tiger of Ranpur was near 244 of 306 provinces. Now:
 
 ### 4.3 Stages
 
-Folder numbers are left as `NN`: take the next free numbers when the work starts (`src/ui/90-fold/` is already taken). Stage 0 must build before the other stages, since they rely on its indexes.
+Folder numbers are left as `NN`: take the next free numbers when the work starts (`src/ui/90-collapsible-sections/` is already taken). Stage 0 must build before the other stages, since they rely on its indexes.
 
 **Stage 0. Make the engine scale. No visible change.** Folder: `features/NN-world-scale/`.
 
@@ -530,7 +530,7 @@ doctrines) and `NN-far-events`.
 
 - **Beasts.**
   - Add stat blocks to `A.BEASTS`, entries in `LORE.creatures`, `GD.BEAST_TIER` and `GD.BEAST_DUEL`, and the fight
-    tables 48-fight-ladder reads.
+    tables 48-event-fight-rules reads.
   - Each beast carries a `range`.
 - **Fighting styles.** Each needs:
   - a `LORE.styles` record (`id, kind, house, name, prof, weapons, origin, philosophy, strengths, weakness, school,

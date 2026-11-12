@@ -1,4 +1,4 @@
-// The odds popover (59-tooltips) names the rule: its rows add up to the number on the button, and the rule's share is a
+// The odds popover (59-descriptions) names the rule: its rows add up to the number on the button, and the rule's share is a
 // row of its own ("Your stage of life"), not "Other things in play". Pure: it reads A.checkOdds with the rule on and off.
 if (UI.TT && typeof UI.TT.checkParts === 'function') {
   const FC = A.FC, parts0 = UI.TT.checkParts;

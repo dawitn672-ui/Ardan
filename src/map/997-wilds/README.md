@@ -14,7 +14,7 @@
   | wreck | a coastal province |
   | river, pass, lake | the Great Continent's atlas (99-far-lands' `D.atlas`): a named river within 220 of the province, a pass or range, a lake; the region's name goes in the scene |
   | field | a lowland province whose realm fought one of the lore's wars (`LORE.wars`) |
-  | lair | a beast that lives near home (76-beast-habitats, 992-far-beasts, `A.beastsNear`), with what folk say of it (26-belief-truth's `belief`) |
+  | lair | a beast that lives near home (76-beast-habitats, 992-far-beasts, `A.beastsNear`), with what folk say of it (26-belief-versus-truth's `belief`) |
 
   In the Known World 247 of 306 provinces have one (8 kinds); on the Great Continent 1,593 of 1,992 (11 kinds, about half by a named river or pass).
 - **Exploring.** A wrap of `A.ACT.explore` takes you to the first place not yet found in your home province, then in the provinces next to it ("a day's walk out, in Ago, in the Ninefold Lakes"). Once every place in reach is found, exploring falls back to the release's five scenes, rationed by 97 as before.

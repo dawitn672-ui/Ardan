@@ -30,7 +30,7 @@
   - Rivers are canvas vectors, from `riverPaths`, in km, wider with flow; the small ones appear as you zoom in.
   - Borders, towns, keeps, names and the realms' wash stay 62's: smooth vector lines traced from the new grid.
   - `UI.set.v2Sat = false` brings 62's ground back.
-  - The title has no map strip. 86-title-fold took it out for the Great Continent; without the Far Lands the release's strip came back and pushed "Begin a new life" below the fold.
+  - The title has no map strip. 86-title-screen-in-view took it out for the Great Continent; without the Far Lands the release's strip came back and pushed "Begin a new life" below the fold.
 - **Beasts** (76-beast-habitats) keep their canon regions, matched by province name, which the map keeps. On a v2 map the region alone decides, because the region's terrain is now the new land's: otherwise six beasts would be met nowhere.
 - **Faster generator** (`src/v2/map`), with the same output to the bit (hashes compared over 3 seeds at two sizes):
   - the noise's corner gradients are inlined;

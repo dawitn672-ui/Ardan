@@ -99,5 +99,5 @@ Verdicts are the playtester's. Notes in brackets cover fixes merged since, not y
 1. Merge the content round and the kingdom names into `v2-integration`.
 2. Read PR #2's CI, then fix and push until the full suite and the balance bands are green.
 3. Playtest 2, against the complaint list and the 25 findings of playtest 1. Fix and add regression tests. Repeat until it finds nothing structural.
-4. Tag v2.0.0-beta.1. Then five real players (`docs/plan/Playtest kit.md`), because bots check numbers but only people judge fun.
+4. Tag v2.0.0-beta.1. Then five real players (`docs/plan/playtest-kit.md`), because bots check numbers but only people judge fun.
 5. Merge PR #1, then PR #2, into `main`.

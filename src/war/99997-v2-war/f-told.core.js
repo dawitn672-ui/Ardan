@@ -10,9 +10,9 @@
 //   - 64-npc-beliefs: a battle you were not part of is not one you "know" (NB.pcKnows), and the record's own line
 //     where you do know it (NB.recordLine: the belief cards, the Tales, the Chronicle, a scene putting you right)
 //     gives the counts as your rank would know them, not to the man.
-//   - 72-two-scales' levy (its call to arms, the front's words, the standards, the day's tally) gives estimates: a
+//   - 72-one-battle-two-scales' levy (its call to arms, the front's words, the standards, the day's tally) gives estimates: a
 //     levy is a soldier (TS.told, read there).
-//   - The commander's battle (the release's battle modal, 9997-companies' panel, 60-drill's tags): his own side
+//   - The commander's battle (the release's battle modal, 9997-companies' panel, 60-unit-drill's tags): his own side
 //     exactly, the enemy's as an estimate, morale and drill in words, not 0-100.
 // Everything here is pure: the hearsay dice are v2's makeRng seeded from the game's seed and the entry, nothing is
 // drawn from A.rand and nothing is written to A.S.
@@ -145,7 +145,7 @@
     };
   }
 
-  // ---- 72-two-scales' levy: a levy is a soldier (72 reads this when it is there) ------------------------------------
+  // ---- 72-one-battle-two-scales' levy: a levy is a soldier (72 reads this when it is there) ------------------------------------
   W.levyCount = (n, mine) => (Math.round(n || 0) <= 0 ? 'none' : W.told(n, W.rank() || 'soldier', mine));
 
   // ---- the commander's battle: his own side exactly, the enemy's an estimate, morale and drill in words -------------
@@ -178,12 +178,12 @@
       const side = B.pcSide, me = B.sides[side], en = B.sides[side === 'A' ? 'B' : 'A'];
       if (!me || !en) return h;
       const rank = W.rank() || 'soldier', esc = UI.esc;
-      // the two sides' line (59-tooltips may have wrapped the counts and the morale in its own spans)
+      // the two sides' line (59-descriptions may have wrapped the counts and the morale in its own spans)
       let k = 0;
       h = h.replace(/(<b>[^<]*<\/b> )((?:<span[^>]*>)?)([\d,]+) \/ ([\d,]+)((?:<\/span>)?) <span class="muted">\(((?:<span[^>]*>)?)morale (\d+)((?:<\/span>)?)\)<\/span>/g,
         (m, nm, o1, live, full, c1, o2, mo, c2) => {
           const mine = k++ === 0, w = W.moWord(+mo), sk = mine ? side : side === 'A' ? 'B' : 'A';
-          // 59-tooltips draws its bSide and bMorale triggers after this (it wraps UI.battleModal, outside), and its
+          // 59-descriptions draws its bSide and bMorale triggers after this (it wraps UI.battleModal, outside), and its
           // pattern wants "(morale N)": the triggers are put on here instead, as 59's own number triggers, and its
           // popovers are the ones redrawn below (the enemy's an estimate, morale a word)
           const tn = (key, label, o) => (!o1 && typeof UI.ttNum === 'function' ? UI.ttNum(key, sk, label, o) : label);
@@ -224,7 +224,7 @@
       try { return W.battleWords(h, B); } catch (e) { console.error('v2 war battle words', e); return h; }
     };
   }
-  // 59-tooltips' popovers on the same screen (the sides, a side's morale, a wing, the dead): the enemy's counts as an
+  // 59-descriptions' popovers on the same screen (the sides, a side's morale, a wing, the dead): the enemy's counts as an
   // estimate, morale in words. They draw from the battle on the screen, as 59's own do; nothing is drawn or written.
   const G = typeof UI !== 'undefined' && UI.TIPS, K = G && UI.TT && UI.TT.K;
   if (K && G.bDead) {

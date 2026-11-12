@@ -50,10 +50,10 @@ There were no page errors in about 1,300 steps, and no soft-locks.
 | 2 | "If it fails: a wound, hurt" killed at 18 after a lost fight; the card never says it can kill. | 1, 16 | 99999-v2-content, 99993-v2-stats |
 | 3 | World › Annals shows every war's true record to anyone. | 10 | 57-world-chronicle via 99997-v2-war |
 | 4 | The Book and a belief card give exact foreign battles to a commoner. | 10 | 57 c-view, 64-npc-beliefs via 99997 |
-| 5 | Exact counts for the levy and the general; "Drill: the charge 60". | 10 | 72-two-scales, 9997-companies via 99997 |
+| 5 | Exact counts for the levy and the general; "Drill: the charge 60". | 10 | 72-one-battle-two-scales, 9997-companies via 99997 |
 | 6 | You choose to fight and the battle is skipped (5 of 16 in L2). | 10 | 99997-v2-war |
-| 7 | The duel is all numbers, its odds ignore wounds, the card's weapon differs from the duel's. | 11, 16 | 48-fight-ladder, 99993-v2-stats |
-| 8 | The strength scale is off: lifts 92 kg at 10, 250 kg for an untrained 17-year-old. | 11, 12 | 99990-v2 body, 99993 |
+| 7 | The duel is all numbers, its odds ignore wounds, the card's weapon differs from the duel's. | 11, 16 | 48-event-fight-rules, 99993-v2-stats |
+| 8 | The strength scale is off: lifts 92 kg at 10, 250 kg for an untrained 17-year-old. | 11, 12 | 99990-v2-engine body, 99993 |
 | 9 | Orc full siblings each belong to a different clan. | 5, 14 | 99994-v2-family |
 | 10 | An event invents an uncle who is the player's grandfather. | 5, 14 | 50-arcs-kin via 99994 |
 | 11 | Other people's bodies and command shown as 0–100; a watch captain with "No real skills yet". | 11 | 99993-v2-stats |

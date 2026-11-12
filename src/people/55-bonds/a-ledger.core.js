@@ -458,7 +458,7 @@
     return best;
   };
   // a deed of a word or two ("you accepted") carries the scene's title when the title names a thing: "you accepted (the
-  // toll at the bridge)", as 67-memory-weave does
+  // toll at the bridge)", as 67-choice-memories does
   BD.deedLine = e => {
     const d = e.d || low(e.t), m = e.d && (e.d.split(' ').length <= 3 || e.d === 'you gave your answer') && /^((?:A|An|The) [a-z][^:?!]{2,50}):/.exec(e.t || '');
     return m && !/[{}]/.test(m[1]) ? `${d} (${low(m[1])})` : d;

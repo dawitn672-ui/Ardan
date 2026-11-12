@@ -1,5 +1,5 @@
 // The coherency checks over many lives (round 2, Foundations item 3). Plays lives of every class by code and, every
-// --every years, runs A.COHERENCY.run() (src/core/08-coherency and every check a feature registers). Prints each
+// --every years, runs A.COHERENCY.run() (src/core/08-coherency-checks and every check a feature registers). Prints each
 // contradiction found, with the seed, the year and ids, and exits 1 if there was any. Run it after every update and
 // fix what it finds before calling the update done.
 //

@@ -77,7 +77,7 @@ days, L about a week, XL longer and split into parts. A playtester agent (Sonnet
 ### 2. A3a · The net
 - **Why now.** Every later step changes systems whose errors are swallowed today. Until a failure is loud, each fix
   can break something nobody sees. **Needs** A0.
-- **Done when.** Tests, benches and the soak fail on any `console.error`. `08-coherency` is in the default build, and
+- **Done when.** Tests, benches and the soak fail on any `console.error`. `08-coherency-checks` is in the default build, and
   8 seeds × 60 years run every night with every audit. A committed baseline of known contradictions may only
   shrink, and is empty when round 2 ends. A new game passes every check on day 0. The test runner survives a
   browser crash, limits each test's time and reports SKIP as its own state.
@@ -202,7 +202,7 @@ days, L about a week, XL longer and split into parts. A playtester agent (Sonnet
 ### 15. C7 · Names and cultures
 - **Why now.** The owner's sixth complaint, under his rule 9: basic, common names. It follows A2, because titles and
   seats must be read from the registry before they are reworded, and it comes before dress and the map, which are
-  keyed by culture. **Needs** A2. The draft name data is in `docs/research/c7-names.json` (not wired in).
+  keyed by culture. **Needs** A2. The draft name data is in `docs/research/c7-name-data.json` (not wired in).
 - **Done when.** Names are plain and easy to read, and each realm has a flavour of its own. A census of 35 realms
   finds ports and market towns with 15 to 35% of births from trade partners, and border provinces with 20 to 40%
   from the neighbour. In 12 worlds × 30 years no full name is shared in a town, and no given name among siblings
@@ -235,7 +235,7 @@ days, L about a week, XL longer and split into parts. A playtester agent (Sonnet
 - **Why now.** What an arm can do is what a commander can order, so one design keeps D11 and D12b from
   contradicting each other. The owner's rule 9 sets its subject: knights, cavalry, infantry and archers; what
   beats what, on what ground, and when. It is written while the map is built. **Needs** D9's data model. The
-  draft notes and data are in `docs/research/d11-branches.md` and `.json`.
+  draft notes and data are in `docs/research/d11-military-branches.md` and `.json`.
 - **Done when.** The owner has approved `docs/design/war.md`: the table of what beats what; what each kind of
   ground does to each arm; what each rank of each arm decides in each phase, on the march, in camp and at a siege;
   how scouting changes what you know; what each rank's screens show; and the checks for D11 and D12b.
@@ -302,7 +302,7 @@ Each table runs from the most severe down. The last words of each fix name the w
 
 | # | Flaw (concrete evidence) | Severity /10 | How to fix |
 |---|---|---|---|
-| P1 | **Sticky whole-page restyle.** Four CSS rules hang `:has()` on `body` (`src/events/28-endings/endings.core.js:213`, `src/ui/91-look/look.b-base.core.js:66`). Once a hint box or the dead player's bar has been drawn, every DOM insert restyles about 2,900 elements until the page is reloaded: a year-50 month costs 1,555 ms of CPU, not 633. Every life ends in a death, so every long session ends here. [eng; lead: rules read] | 10 | Delete the four rules (use `#app[inert]` and a class on `#game`); a CSS lint; a CI probe. **A0** |
+| P1 | **Sticky whole-page restyle.** Four CSS rules hang `:has()` on `body` (`src/events/28-endings/endings.core.js:213`, `src/ui/91-visual-style/look.b-base.core.js:66`). Once a hint box or the dead player's bar has been drawn, every DOM insert restyles about 2,900 elements until the page is reloaded: a year-50 month costs 1,555 ms of CPU, not 633. Every life ends in a death, so every long session ends here. [eng; lead: rules read] | 10 | Delete the four rules (use `#app[inert]` and a class on `#game`); a CSS lint; a CI probe. **A0** |
 | P2 | **A month redraws the page three to six times.** At year 50 one press runs `UI.refresh` 2.9 times and 110 forced layouts; the engine is 20 to 70 ms of a 500 ms press; each card adds 173 to 358 ms. At four-times throttle a quiet month takes 3.0 to 3.9 s. [eng, ux, design] | 9 | One owner of redraw: paint only the clock while stepping and only the modal at a card; one refresh at the end; dirty flags per region. **A1** |
 | P3 | **Behaviour is a stack of wrappers.** 2,403 definitions for 1,679 names; 351 are defined more than once; `A.applyFx` 32 times, `A.newGame` 20, `UI.render` 18. A function does whatever folder order adds up to. [eng] | 8 | Named stages with one owner each; a lint when a hot function gains a wrapper. **X2** |
 | P4 | **The release is patched, not owned.** 196 exact-string patches on a one-line blob; 10 match only text an earlier feature wrote. Its own names are intact, so a formatter makes it readable. [eng; lead] | 8 | Bake the patches in, format into source files, build from those. **X1** |
@@ -353,7 +353,7 @@ Each table runs from the most severe down. The last words of each fix name the w
 
 | # | Flaw (concrete evidence) | Severity /10 | How to fix |
 |---|---|---|---|
-| U1 | **Descriptions still open on hover.** `TT.init` listens for `pointerover` (`src/ui/59-tooltips/tt.engine.core.js:240`): 12 of 12 anchors opened on hover. Another 154 `title="` sites hold real descriptions (every activity, traits, skills) that never show on touch. [ux; lead: listener read] | 9 | Delete the hover paths; keep click, tap and Enter; an ⓘ, or the underlined term as a button; a lint and a hover test. **B4** |
+| U1 | **Descriptions still open on hover.** `TT.init` listens for `pointerover` (`src/ui/59-descriptions/descriptions.engine.core.js:240`): 12 of 12 anchors opened on hover. Another 154 `title="` sites hold real descriptions (every activity, traits, skills) that never show on touch. [ux; lead: listener read] | 9 | Delete the hover paths; keep click, tap and Enter; an ⓘ, or the underlined term as a button; a lint and a hover test. **B4** |
 | U2 | **Clutter.** A desktop's first view holds a median 520 words and 51 controls, and 360 of the words are the fixed top bar, profile and story. Phone pages run long: Story 8.6 screens, People 5.5, Holdings 5.4 with 109 controls. [ux] | 9 | Budgets held by a test (phone 120 words and 12 controls; desktop 250 and 25; 3 screens); the UX report's first-glance table. **B5** |
 | U3 | **The desktop starves the page you opened**: 486 px of 1366 (28% of the screen) beside a 598 px story and a 248 px profile; 26% at 1920. [ux; lead: screenshot] | 8 | A rail of 280 to 300 px and the page; the story becomes Life's feed and a drawer. **B5** |
 | U4 | **Screens ignore age, class and rank.** A peasant of 9 has an Arms page with "Ask to join"; a newborn sees "See a physician" and "Looks homely"; a father's card offers "Pick a fight"; a Chancellor is told "Find work"; a child of 12 is offered "Burgle a house". [ux, design] | 8 | One `UI.scope(pc)` read by every page and by `A.canAct`; a persona test. **B5** |
@@ -471,7 +471,7 @@ Each table runs from the most severe down. The last words of each fix name the w
 | # | Flaw (concrete evidence) | Severity /10 | How to fix |
 |---|---|---|---|
 | W1 | **Battle choices ignore the battle.** `W.choices = b => VW.CHOICES[b.rank]` (`src/war/99997-v2-war/b-battle.core.js:205`) is a fixed list per rank. A Squad Captain got "Keep the squad tight / Plug the gap in the line / Pick off stragglers" in all four phases, in a mountain pass against horse and on hills against levies. The engine holds a table of what beats what (`src/war/engine/war.js`), and no choice shows it to the player. [design, ux; lead: code read] | 9 | Choices built from your arm, the ground, the enemy and the phase ("ground the butts and brace"), each saying in words what it beats and fears. **D12b** |
-| W2 | **The arm of service is a label.** Enlisting is one click and a toast ("among the spearmen", said to a trained lancer); the arm is chosen a year later and changes nothing. There are 34 troop types [lead: probe], but no arm has its own ranks, training, gear, missions or career. [design] | 8 | Branches as data (drafted in `docs/research/d11-branches.json`); enlisting is a muster that fixes the arm from birth, skill and gear. **D11** |
+| W2 | **The arm of service is a label.** Enlisting is one click and a toast ("among the spearmen", said to a trained lancer); the arm is chosen a year later and changes nothing. There are 34 troop types [lead: probe], but no arm has its own ranks, training, gear, missions or career. [design] | 8 | Branches as data (drafted in `docs/research/d11-military-branches.json`); enlisting is a muster that fixes the arm from birth, skill and gear. **D11** |
 | W3 | **The campaign between battles is empty clicking**: 21 of 27 weeks had nothing to answer; "Your host sits before enemy walls." came five weeks running. [design] | 8 | Each week is a decision drawn from the army's state, or it is skipped. **D12b** |
 | W4 | **War screens ignore rank and deployment**: a File-Leader's War Room shows the whole theatre and enemy stacks marked "7.3k"; a child of 9 reads an elite order's strength. [ux] | 8 | War pages only when deployed; the War Room by post; enemy numbers as estimates. **D10** |
 | W5 | **Flank, ambush, siege and supply are numbers, not moves**: a daily pick matched like rock-paper-scissors (`A.WTAC`); a siege is a day counter with a monthly card; supply is a ratio; blockades exist only in the lore [lead: code read]. The owner asked for each as command. | 8 | Orders with a place: cut this road, hold that ford, close the port; scouting sharpens estimates. **D12b** |
@@ -487,7 +487,7 @@ Each table runs from the most severe down. The last words of each fix name the w
 
 | # | Flaw (concrete evidence) | Severity /10 | How to fix |
 |---|---|---|---|
-| E1 | **Cards hide lethal fights behind mild words.** "Go forward to meet them / Starts a fight / +25 suns" opened an ambush "to the death" and killed a boy of 19; none of 19 such choices mentioned death. The chip has one wording for every fight (`src/events/9998-stakes/stakes.a-read.core.js:220`). [design; lead: code read] | 8 | Build the stake from the fight the choice opens; a lint. **X3** |
+| E1 | **Cards hide lethal fights behind mild words.** "Go forward to meet them / Starts a fight / +25 suns" opened an ambush "to the death" and killed a boy of 19; none of 19 such choices mentioned death. The chip has one wording for every fight (`src/events/9998-choice-stakes/stakes.a-read.core.js:220`). [design; lead: code read] | 8 | Build the stake from the fight the choice opens; a lint. **X3** |
 | E2 | **The card's promise is not what happens**: "Costs 3 suns" charged 27.4; "blunted steel" became "a good sword drawn"; "(+15898 suns.)" stood beside "▲ +7,949 suns". [design] | 7 | Preview and effect from one `fx` object; a replay test. **X3** |
 | E3 | **Infants make adults' decisions**: at 7 months, "Tend the neighbours yourself (Check: Medicine)"; a child of 4 hires on for the hay; "Send your child Tamsin in your place" on the day she is born. [design] | 7 | Age gates on every pool; world arcs worded as the parents' choice. **X3** |
 | E4 | **Cards ignore your station**: a captain of 17 is asked for his voice at the council; a farmhand of 14 passes the College's law examination; a pedlar gets "your journeyman". [design] | 6 | Gate with `C.office`, `C.jobRank`, `C.prof`; lint station words. **X3** |
@@ -496,7 +496,7 @@ Each table runs from the most severe down. The last words of each fix name the w
 | E7 | **Counsel comes from people who are not there and favours what they did not say** (40 of 465 cards). [design] | 5 | Only someone present counsels; write the line from the choice. **X3** |
 | E8 | **Pronoun and identity slips**: "Oriana, a prince of Sahrim, rises unsteadily with his cup"; 75 texts hard-code he or she after `{them}`. [world, design] | 4 | A lint on pronouns and names. **X3** |
 | E9 | **Filler glued onto scenes, and lines that repeat**: "Fieldcraft: Rain by nightfall" in a famine; "Short days and long evenings. Nothing of note." two months running. [design, ux; lead: screenshot] | 4 | One extra line at most, on the card's subject; no quiet line twice in a year. **X3** |
-| E10 | **Copy bugs in plain sight**: "Would teach you f" (`src/people/998-people-want/want.core.js:17`); "1 armies in the field". [ux, world; lead: line read] | 4 | Fix `skName`; a plural helper. **A0** |
+| E10 | **Copy bugs in plain sight**: "Would teach you f" (`src/people/998-npc-wants/want.core.js:17`); "1 armies in the field". [ux, world; lead: line read] | 4 | Fix `skName`; a plural helper. **A0** |
 | E11 | **A drugging is a free romance option**: "A love philtre… slip it in her cup", with no risk. [design] | 4 | Cut it, or make it a crime. **X3** |
 | E12 | Small things: choices that change nothing; cards with one choice; miles beside kilometres. [design] | 3 | Say what a choice costs; one system of units. **X3** |
 
@@ -504,9 +504,9 @@ Each table runs from the most severe down. The last words of each fix name the w
 
 | # | Flaw (concrete evidence) | Severity /10 | How to fix |
 |---|---|---|---|
-| Q1 | **Errors are swallowed and no test can see them.** The built core has 1,112 `try` blocks (the release had 72), 297 with an empty `catch`. Tests fail on `pageerror` only; `tools/soak.mjs` is in no workflow; the one-holder test plays 10 years where R5 needs 54. [eng] | 9 | Fail on any `console.error`; one `A.guard`; 8 seeds × 60 years every night. **A3a** |
+| Q1 | **Errors are swallowed and no test can see them.** The built core has 1,112 `try` blocks (the release had 72), 297 with an empty `catch`. Tests fail on `pageerror` only; `tools/soak-test.mjs` is in no workflow; the one-holder test plays 10 years where R5 needs 54. [eng] | 9 | Fail on any `console.error`; one `A.guard`; 8 seeds × 60 years every night. **A3a** |
 | Q2 | **No performance gate plays the game**: the bench times the engine alone, on the wall clock; nothing presses the button at year 50, shows a hint or dies. [eng] | 8 | The press loop in CI on committed saves, with budgets. **A1** |
-| Q3 | **The coherency checks are not in the build** (`src/core/08-coherency` is `.wip`). Its first run found dead councillors in 3 of 8 lives and raised 24 false alarms (P22). The audits that exist would have caught R5, and nothing runs them for long enough. [coh, eng; lead] | 7 | Into the build, with a baseline that may only shrink. **A3a** |
+| Q3 | **The coherency checks are not in the build** (`src/core/08-coherency-checks` is `.wip`). Its first run found dead councillors in 3 of 8 lives and raised 24 false alarms (P22). The audits that exist would have caught R5, and nothing runs them for long enough. [coh, eng; lead] | 7 | Into the build, with a baseline that may only shrink. **A3a** |
 | Q4 | **Playtests cannot see what the owner sees.** Bots step with `A.advance` and answer with `A.eventAuto`; the first critique round measured that way and missed P1. Nothing checks one persona's screen, a hover or a face. The owner found his complaints by playing. [lead] | 7 | The real-press harness; a persona test; picture sheets judged by agents. **A3a, B5, C8b** |
 | Q5 | **The test runner dies with the browser**: a crash ends the shard with no summary; no test has a time limit; each of 8 shards rebuilds and relints. [eng] | 6 | Relaunch on a crash; a limit per test; build once. **A3a** |
 | Q6 | **The skills and docs teach the old rules**: "One button moves time", "Never hide a description behind a click", a family that walks three generations; the test `v2tNoPlay` asserts one button. [lead: files read] | 6 | Each step updates the skill, the spec and the test it reverses. **B4, B6, C6** |
@@ -523,7 +523,7 @@ These are good. No step above should tear them down.
   the same fingerprint. With it: the journal, `A.replay`, the fingerprint in every save, the four-slot backup ring.
 - **The engine's month**: flat for 60 years, at 8.4 to 12.5 s of CPU a decade with a bot answering every card.
 - **A reproducible build**, the CSP with script hashes, no inline handlers, `UI.esc` on every value.
-- **The v2 engine as plain modules with unit tests**, its audits, 09-scale's CPU timing and `tools/soak.mjs`.
+- **The v2 engine as plain modules with unit tests**, its audits, 09-engine-at-scale's CPU timing and `tools/soak-test.mjs`.
 - **9997's captains as seeds**: 30,376 named captains for 673 KB. It is the pattern for sparse posts (A2) and for
   commoners held until met (C6).
 - **The continent engine**: one landmass, erosion, flow, river paths to the sea. D9 needs no new generator.

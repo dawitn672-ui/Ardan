@@ -105,7 +105,7 @@
   // ---- the tabs
   for (const g of UI.GROUPS || []) if (TABS[g.k]) g.icon = TABS[g.k];
 
-  // ---- the profile: each vital and stat carries its icon before its word (91-look's stat tiles take ours instead)
+  // ---- the profile: each vital and stat carries its icon before its word (91-visual-style's stat tiles take ours instead)
   const LOOK = UI.LOOK;
   if (LOOK && LOOK.STAT_ICON) for (const k in STAT) LOOK.STAT_ICON[k] = IS[STAT[k]].svg;
   const prof = UI.renderProfile;
@@ -149,7 +149,7 @@
     return h;
   };
 
-  // ---- the Life tab: each group's header carries its icon; 91-look's tiles take ours too
+  // ---- the Life tab: each group's header carries its icon; 91-visual-style's tiles take ours too
   const life = UI.TAB && UI.TAB.life;
   if (typeof life === 'function') UI.TAB.life = function () {
     let h = life.apply(this, arguments);

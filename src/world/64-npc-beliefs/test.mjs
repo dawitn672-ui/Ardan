@@ -484,7 +484,7 @@ export default {
   },
 
   async nbBelievedGrudge(pg) {
-    // 68-casus-belli's grudges read the believed history: a sack told as a burning, and a king's death laid on the
+    // 68-reasons-for-war's grudges read the believed history: a sack told as a burning, and a king's death laid on the
     // neighbour, add to 55's ledger sum; a vengeful crown makes a plan of it; without the belief, none
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {

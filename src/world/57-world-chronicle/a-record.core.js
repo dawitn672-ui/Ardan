@@ -296,7 +296,7 @@
     }
   }
 
-  // ---- the death of a Legend (the top of the ladder, 32-ladder)
+  // ---- the death of a Legend (the top of the ladder, 32-legend-and-master-caps)
   const isLegend = p => { try { return !!(p && p.st && A.fightWorth && A.tierOf && A.tierOf(A.fightWorth(p)).k === 't6'); } catch (e) { return false; } };
   const kill = A.kill;
   A.kill = function (p, cause) {

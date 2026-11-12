@@ -112,7 +112,7 @@
     if (CAR.fiefable(pc) && ago(pc, 'cr_fief_ask') >= 8 && ago(pc, 'cr_knighted') >= 3 && !queued('cr_fief') && A.chance(0.3)) {
       pc.flags.cr_fief_ask = A.S.year; A.queue({ type: 'event', ev: 'cr_fief', ctx: { pid: ruOf(pc).id } }); return;
     }
-    // a fighter past the Legend line (worth 118, 48-fight-ladder's t6) is named one, while the world has room (GD.LEGEND_CAP)
+    // a fighter past the Legend line (worth 118, 48-event-fight-rules's t6) is named one, while the world has room (GD.LEGEND_CAP)
     if (pc.flags.cr_legend == null && A.isAdult(pc) && !pc.prison && A.fightWorth && A.fightWorth(pc) >= CAR.LEGEND_W && !queued('cr_legend') &&
       (!A.ladderCensus || A.ladderCensus().legends.length < (GD.LEGEND_CAP || 5))) {
       pc.flags.cr_legend = A.S.year; A.fame(pc, 15); deed(pc, 'Named among the Legends of Ardan');

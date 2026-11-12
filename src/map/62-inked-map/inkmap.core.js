@@ -861,7 +861,7 @@
   }
 
   // ---- the colours and the legend (cycle 1 visual B7, world B8)
-  // the wash is painted in the colour each realm is shown in everywhere else (UI.realmHex, 91-look: the far realms are
+  // the wash is painted in the colour each realm is shown in everywhere else (UI.realmHex, 91-visual-style: the far realms are
   // spread apart from their neighbours), not the lore's pale family per land, so four neighbouring pinks on the Twin
   // Rivers are four colours. The colour-blind palette keeps its own assignment. The Known World's colours are unchanged.
   if (typeof MAP.realmColor === 'function') {

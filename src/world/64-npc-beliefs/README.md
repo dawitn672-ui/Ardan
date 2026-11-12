@@ -4,7 +4,7 @@
 
 The plan asks: "Build signature system 2, belief versus truth, everywhere: beasts, people, battles and events all have what people believe and what is true, and your character's knowledge can be wrong." The benchmark bar (W10) adds: "≥20% of rumors are false; the player can hold a false belief."
 
-`26-belief-truth` gave the player a knowledge state for beasts and secrets, far news that runs high, and a legend in the Chronicle. `55-bonds` gave people secrets, `57-world-chronicle` a true dated record, `34-both-scales` three accounts of a battle. But the people of the world believed nothing of their own. What a neighbour thought of you followed only from what happened between you. Here every person around you, and every court, holds beliefs, and some of them are false. And every realm has its own account of the great events of the age (part 6), which feeds its grudges and its wariness; people act on what they believe (part 7); and what you are told of the world can be wrong, and be found out (part 8).
+`26-belief-versus-truth` gave the player a knowledge state for beasts and secrets, far news that runs high, and a legend in the Chronicle. `55-bonds` gave people secrets, `57-world-chronicle` a true dated record, `34-squad-and-front-panels` three accounts of a battle. But the people of the world believed nothing of their own. What a neighbour thought of you followed only from what happened between you. Here every person around you, and every court, holds beliefs, and some of them are false. And every realm has its own account of the great events of the age (part 6), which feeds its grudges and its wariness; people act on what they believe (part 7); and what you are told of the world can be wrong, and be found out (part 8).
 
 ## What it does
 
@@ -34,7 +34,7 @@ A **claim** is one thing someone might believe. Each one knows whether it is tru
 
 ### 2. How beliefs travel (`b-spread.core.js`)
 
-- **Once a year, people pass on what they believe** to the people close to them (41-circles' circles, or friends and kin). The gregarious talk more and the shy less. Whether the listener takes it depends on their traits, on what they think of the teller, and on what they think of the person it is about: the worst is easy to believe of someone you hate.
+- **Once a year, people pass on what they believe** to the people close to them (41-friend-circles' circles, or friends and kin). The gregarious talk more and the shy less. Whether the listener takes it depends on their traits, on what they think of the teller, and on what they think of the person it is about: the worst is easy to believe of someone you hate.
 - **Corrections travel the same roads.** Someone who has been set right tells it with more zeal, is believed more readily, and is hard to fool again. Now and then a false belief about someone who lives in the same town is simply seen through (3% a year).
 - **A court's word reaches the people.** Each year some of those around you take up one of their realm's court beliefs: a noble or an officer one time in three, a commoner one in seventeen.
 - **NPC moves** (21-npc-initiative's monthly step, its budget, cooldowns and "Why …" line). Without that feature, a small budget of this one runs them.
@@ -100,7 +100,7 @@ Every realm keeps **"what is said here"**: up to 6 tellings of the great entries
 
 - **Side and distance decide the version.** The weights depend on the realm's role in the entry: own, other side, a neighbour of either, or far.
 - **Drift and propaganda.** Each year a true telling may drift to the realm's own version: 3% plus 7% times its propaganda (from the realm's legitimacy, its ruler's fame and the skill of 56's chancellor, 0 to 1), 3% more once it is 8 years old. A false telling is set right 2% a year, and 27% a year once a peace has been made with the realm it blames.
-- **The believed history weighs on grudges.** What a realm believes its neighbour did to it (a town burned, its king poisoned by the neighbour's agents, the sickness brought) is added to 55-bonds' ledger sum (`FE.sum`), the number 68-casus-belli's plans and 55's war odds read, at full weight when false and half when true (a true wrong is mostly in the ledger already), at most 10. Where 55's ledger has no line, the same is added to `A.memSum`. The opinion tooltip names it: "What is said in Varenna: That the Horde burned Varenna and put its people to the sword, in 1105 −8".
+- **The believed history weighs on grudges.** What a realm believes its neighbour did to it (a town burned, its king poisoned by the neighbour's agents, the sickness brought) is added to 55-bonds' ledger sum (`FE.sum`), the number 68-reasons-for-war's plans and 55's war odds read, at full weight when false and half when true (a true wrong is mostly in the ledger already), at most 10. Where 55's ledger has no line, the same is added to `A.memSum`. The opinion tooltip names it: "What is said in Varenna: That the Horde burned Varenna and put its people to the sword, in 1105 −8".
 - **Tales of cruelty make a realm warier.** Each telling of a town burned or sacked by the other realm, or of its agents poisoning a king, and each court belief that its ruler is a killer, takes 3 (2 for the court) from `A.interest`, the number alliances, pacts and guarantees read, at most 6.
 - **Where you see it.** A realm's diplomacy card: "What is said in X" (and "At court in X"). The Realm tab: "What is said here", with the grudges it feeds and the councillors the court doubts. The World tab: a "Tales" view, each great event as the realms around you tell it. Each line is marked "so it was" or "not so" (with the record's line) only where you know how it went; otherwise "(you heard it so)", "(you heard it otherwise)" or "(you cannot say)".
 
@@ -145,7 +145,7 @@ Every realm keeps **"what is said here"**: up to 6 tellings of the great entries
 | `nbPlayerWorld` | A far battle, told at home with the count run high: you cannot know it, and take it on trust ("Word in Aldmark: That Lucerna won at Skarfell in 1105, and some 13,000 fell."). A year on it comes out (`nb_record_wrong`), and the belief is set right. The Chronicle: "What the world told …", "learned otherwise" with the record's line, a king's death still believed ("As far as he ever knew"); in the export too; pure. An old save without the tellings plays on |
 | `nbWorldViews` | The diplomacy card ("What is said in"), the Realm tab ("What is said here"), the World tab's Tales button and view: the record's line for a battle you know, "cannot say from here" for a far one, "(you heard it so)". A realm name with markup is escaped. Drawing all of it changes neither the state nor the random stream |
 
-The core suites (`boot`, `lives`, `saveRoundTrip`, `uiSmoke`) pass alongside. The events pass `tools/lint-events.mjs` (0 errors) and `tools/lint-choices.mjs` (0 obviously best) on the full build. The tests of 21-npc-initiative, 26-belief-truth, 39-schemes, 55-bonds, 56-realm-inside and 68-casus-belli pass on the same build. 57-world-chronicle's pass but one, `wcExportLegends` (see Limits).
+The core suites (`boot`, `lives`, `saveRoundTrip`, `uiSmoke`) pass alongside. The events pass `tools/lint-events.mjs` (0 errors) and `tools/lint-choices.mjs` (0 obviously best) on the full build. The tests of 21-npc-initiative, 26-belief-versus-truth, 39-schemes, 55-bonds, 56-court-and-treasury and 68-reasons-for-war pass on the same build. 57-world-chronicle's pass but one, `wcExportLegends` (see Limits).
 
 `node src/world/64-npc-beliefs/bench.mjs <built.html>`, the full build. 16 bot lives, 429 years, a census every 5 years (97 censuses):
 
@@ -172,12 +172,12 @@ The core suites (`boot`, `lives`, `saveRoundTrip`, `uiSmoke`) pass alongside. Th
 - **Neighbours are guarded.** Every neighbour feature is read through `if (A.X)` and the feature degrades without it:
   - without 21-npc-initiative, a budget of its own (half a move a year) runs the NPC moves, `nb_avenge` among them;
   - without 39-schemes, nobody plots against you over a killing (they still turn on the one they blame);
-  - without 41-circles, people talk to their friends and kin;
+  - without 41-friend-circles, people talk to their friends and kin;
   - without 55-bonds, secrets come from a hash, killings are traced from the cause of death, and the believed history weighs only on opinion (`A.memSum`);
-  - without 56-realm-inside, no councillor is put out;
+  - without 56-court-and-treasury, no councillor is put out;
   - without 57-world-chronicle, there are no battle beliefs and no tellings of the world;
-  - without 26-belief-truth, there are no beast beliefs, and tales use their own wording;
-  - 68-casus-belli reads 55's `FE.sum` at call time, so it sees the believed history without being touched.
+  - without 26-belief-versus-truth, there are no beast beliefs, and tales use their own wording;
+  - 68-reasons-for-war reads 55's `FE.sum` at call time, so it sees the believed history without being touched.
 - **57 still observes.** The realms' tellings are seeded with the battles (`NB.seedBattles`), so 57's `wcObservesOnly`, which holds that back, still finds the same world with and without the record.
 - **Signature.** `A.SIGNATURE.beliefPeople` and `A.SIGNATURE.beliefWorld` are added beside 26's `beliefTruth`, which is left alone.
 - **No patches.** Everything is wrappers that call the original: `A.kill`, `A.rulerDies`, `A.link`, `A.memSum`, `A.opinionParts`, `A.interest`, `A.eventChoose`, `A.interact`, `A.interactOptions`, `A.applyFx`, 55's `FEUD.sum`, 56's `RI.fillCouncil`, `UI.personModal`, `UI.diplCard`, `UI.TAB.realm`, `UI.TAB.world`, `UI.TAB.book` and `A.chronicleText`.
@@ -207,4 +207,4 @@ Test `nbClaimsRead` checks title deeds, twists, the scene deed and secret wordin
 - **The player's knowledge.** You can be wrong about far battles, wars, rulers' deaths, sicknesses and Legends, and about people. You are never wrong about your own realm's or a neighbour's battles (you know them), which follows the earlier rule.
 - **The bot does not talk.** The bench's lives answer the scenes the game puts to them, but never use "Talk of what is said" or the release's interactions, so the measured rates leave out the player's own telling.
 - **57's `wcExportLegends` fails on the full build.** Its single life (seed 5150) now dies of a lung fever at 18, two years in, on the random stream this feature shifts; with the earlier version of this feature it lived 50 years, and seeds 5151 and 5152 live 50 years on this build. The test needs to take the first seed that lives (57 is not this feature's folder).
-- **The tests assume the neighbours.** On the fix layer with this feature alone, the tests that need a neighbour skip or adapt, except two: `nbEveryScene` stages the beast scenes with 26-belief-truth, and `nbInRealLives` finds 2 of 3 lives meeting belief against truth (there is no world record to tell, so no tales of the world to find wrong).
+- **The tests assume the neighbours.** On the fix layer with this feature alone, the tests that need a neighbour skip or adapt, except two: `nbEveryScene` stages the beast scenes with 26-belief-versus-truth, and `nbInRealLives` finds 2 of 3 lives meeting belief against truth (there is no world record to tell, so no tales of the world to find wrong).

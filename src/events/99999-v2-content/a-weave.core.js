@@ -1,4 +1,4 @@
-// 99999-v2-content, part 1: the memory insert (67-memory-weave) only when it truly bears on the scene (playtest 1, #9).
+// 99999-v2-content, part 1: the memory insert (67-choice-memories) only when it truly bears on the scene (playtest 1, #9).
 //
 // The playtest found the insert on about half of all cards, often wrong: "In 1106 you tried to walk, and failed. You
 // have not forgotten it, and it makes you slow." on a knife fight at 12 (a check of the same stat, from infancy), and

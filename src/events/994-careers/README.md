@@ -35,7 +35,7 @@ Bot lives on the Great Continent showed careers that topped out by 30 and then w
   - Levies called out log one line per realm a month (`A.levyLog`, patch `CAR-LEVY-LOG`), not one per division.
   - "The X is held without you" is logged only for gatherings that had a place for you (patch `CAR-HELD-WITHOUT`).
 
-Other folders carry the rest of the late-game work: 97-life-fixes (ambitions after the top, What now, great works scaled to the fortune, gathering caps), 32-ladder (order entry by merit), 56-realm-inside (`ri_taken` and the council's pushes) and 81-pacing (the first-year ceiling).
+Other folders carry the rest of the late-game work: 97-first-life-fixes (ambitions after the top, What now, great works scaled to the fortune, gathering caps), 32-legend-and-master-caps (order entry by merit), 56-court-and-treasury (`ri_taken` and the council's pushes) and 81-pacing (the first-year ceiling).
 
 ## Measured by (`test.mjs`)
 

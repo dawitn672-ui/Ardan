@@ -49,7 +49,7 @@ has 850-1,100 nobles; a 30-county realm about 1,300.
 - **One rank word per title** (playtest 1 #14): 9996's border office "Warden of the March" is "Border warden", so a
   duke on the council is no longer styled the warden of a march.
 - **A court lord stays head of his house.** The release's `A.houseHead(hid, true)` (an elective realm drawing its
-  ruler from a house) made a stranger head while the old head lived, and 56-realm-inside's purge after a failed
+  ruler from a house) made a stranger head while the old head lived, and 56-court-and-treasury's purge after a failed
   rebellion clears `headPid` even when the beheading did not take; both now leave the court lord at the head.
 - **Old saves** without a court build one on their first month, from the seed. A realm born later (a revolt, a split)
   keeps the counts its counties had; it gets no court of its own.
@@ -58,7 +58,7 @@ has 850-1,100 nobles; a 30-county realm about 1,300.
 <realm>*: how many nobles hold land, tier by tier, in words and numbers (no percentages); what the crown holds itself
 and which counts answer to it; each duke with the counts and marches under him; the marches that answer to the crown;
 and your own county, with its count and its viscounts by name (call on one to meet them) and its barons and lords
-counted. A county that has since been taken by another realm says so. One small card a row (90-fold would fold a tall
+counted. A county that has since been taken by another realm says so. One small card a row (90-collapsible-sections would fold a tall
 card). All of it is pure.
 
 ## Small edits elsewhere
@@ -92,4 +92,4 @@ draws for them (house opinion drift, ageing, deaths), so a life's later draws di
 | `v2nOneRankWord` | the council's border office carries no rank word |
 | `v2nCourtView` | 420 and 1366 px: the card is drawn, pure, inside the screen, no percentage, the lower tiers counted, at most 14 rows; calling on a viscount stores one person |
 
-**Round 2 A0 (Nov 12, docs/CRITIQUE.md R5).** `N.regrant` decided last and created first: it raised a new house and its people, then read the old house's head, which a headless house does not have, and threw. The new house was left in the county with no one seated, the month's pass stopped (164 titles skipped in seed 7's 1159), and from 1160 the family audit found two lords of Rushzag Oasis for good. Now every read and check comes first and nothing is made until they pass; a failure while making the new holder takes back every person and house it made (and `S.nextId`); `N.regrantMonth` tries each title on its own and logs a failure. Seed 7's 60-year peasant life (`node tools/bench/life.mjs`) runs with no throw and an empty audit throughout.
+**Round 2 A0 (Nov 12, docs/CRITIQUE.md R5).** `N.regrant` decided last and created first: it raised a new house and its people, then read the old house's head, which a headless house does not have, and threw. The new house was left in the county with no one seated, the month's pass stopped (164 titles skipped in seed 7's 1159), and from 1160 the family audit found two lords of Rushzag Oasis for good. Now every read and check comes first and nothing is made until they pass; a failure while making the new holder takes back every person and house it made (and `S.nextId`); `N.regrantMonth` tries each title on its own and logs a failure. Seed 7's 60-year peasant life (`node tools/bench/long-life-audit.mjs`) runs with no throw and an empty audit throughout.

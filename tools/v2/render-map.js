@@ -1,6 +1,6 @@
 import { generateContinent, components, riverPaths } from '../../src/map/engine/continent.js';
 import { renderMap, drawRivers } from '../../src/map/engine/render.js';
-import { writePng } from './png.js';
+import { writePng } from './png-encoder.js';
 const seed = process.argv[2] || 'ardan';
 const t0 = Date.now();
 const map = generateContinent({ seed });

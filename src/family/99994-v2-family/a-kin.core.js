@@ -269,7 +269,7 @@
     try { return evView.apply(this, arguments); } finally { sceneSex = was; }
   };
 
-  // ---- circles and gossip (41-circles, 55-bonds): "close to X (your friend)" never names your kin ----------------------
+  // ---- circles and gossip (41-friend-circles, 55-bonds): "close to X (your friend)" never names your kin ----------------------
   const CI = A.CIRCLES;
   if (CI && typeof CI.circleOf === 'function') {
     const circleOf = CI.circleOf;

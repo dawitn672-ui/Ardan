@@ -1,6 +1,6 @@
 // v2 stats, part 8 (owner's complaint 11, playtest 1 #7, playtest 2 old 7): the 0-100 numbers g-bands did not reach.
 //
-// - 35-moods' four needs: words (A.MOODS.word, "rested", "alone too often"), in 35's card, 91-look's box and the
+// - 35-moods' four needs: words (A.MOODS.word, "rested", "alone too often"), in 35's card, 91-visual-style's box and the
 //   need/needs/mood popovers; a popover says where a need settles and what pulls it, in words.
 // - Training: the mentor picker's "Melee (14)" and the council's "(52)" say the tier; the season's training log says
 //   how much each skill grew ("Survival & hunting, a good deal"), not "+2.4"; the profile's "best 59 at 19", a wound's
@@ -20,7 +20,7 @@ const tierName = v => VS.tierOf(+v || 0).name;
 // ---- needs ----------------------------------------------------------------------------------------------------------
 if (M && M.word) {
   const NAME = { rest: 'Rest', company: 'Company', purpose: 'Purpose', comfort: 'Comfort' };
-  // 91-look's box of the four needs: the value's place takes the word
+  // 91-visual-style's box of the four needs: the value's place takes the word
   const LOOK = UI.LOOK;
   if (LOOK && typeof LOOK.needsBox === 'function') {
     const box0 = LOOK.needsBox;
@@ -38,7 +38,7 @@ if (M && M.word) {
       return box;
     };
   }
-  // the popovers (59-tooltips' need, needs, mood): words, the same rules
+  // the popovers (59-descriptions' need, needs, mood): words, the same rules
   const pull = d => (Math.abs(d) >= 20 ? 'a great deal' : Math.abs(d) >= 10 ? 'a good deal' : 'a little');
   const tip = UI.TIPS = UI.TIPS || {};
   const ttL = (key, arg, label) => (UI.tt ? UI.tt(key, arg, label) : esc(label));
@@ -75,7 +75,7 @@ if (M && M.word) {
       } catch (e) { return h; }
     };
   }
-  // 91-look's activity popover: "Meets rest +30, company +12" as how much
+  // 91-visual-style's activity popover: "Meets rest +30, company +12" as how much
   if (tip.act) {
     const act0 = tip.act;
     tip.act = function () {
@@ -115,7 +115,7 @@ const infAmount = a => (a < 3 ? 'a little' : a < 8 ? 'somewhat' : a < 20 ? 'a go
     return bar1.apply(this, arguments);
   };
 }
-// a number whose tooltip key is infamy, or one of the realm's other 0-100 measures (59-tooltips wires the realm's bars
+// a number whose tooltip key is infamy, or one of the realm's other 0-100 measures (59-descriptions wires the realm's bars
 // and their labels: realmStab, realmLegit, realmWeary)
 const REALM_KEY = { realmStab: 'stability', realmLegit: 'legitimacy', realmWeary: 'war weariness' };
 // (this file loads before j-numbers.core.js, which runs VS.keyWords after every sweep and adds its own keys to these)
@@ -124,7 +124,7 @@ VS.keyWords = VS.keyWords || {};
   VS.keyWords.infamy = t => (/^\d{1,3}(\.\d+)?$/.test(t) ? VS.infamyShort(+t) : null);
   for (const k in REALM_KEY) VS.keyWords[k] = t => (/^\d{1,3}(\.\d+)?$/.test(t) ? VS.band(REALM_KEY[k], +t) : null);
 }
-// the infamy popover (59-tooltips' glossary): "Infamy <b>47</b>" and the rule's thresholds
+// the infamy popover (59-descriptions' glossary): "Infamy <b>47</b>" and the rule's thresholds
 if (UI.TIPS && typeof UI.TIPS.infamy === 'function') {
   const inf0 = UI.TIPS.infamy;
   UI.TIPS.infamy = function (id) {
@@ -183,7 +183,7 @@ if (typeof UI.warDeclModal === 'function') {
     } catch (e) { return h; }
   };
 }
-// 59-tooltips' treasury popover: "Income at <stability> 50, with the treasurer" (the baseline the income is told at)
+// 59-descriptions' treasury popover: "Income at <stability> 50, with the treasurer" (the baseline the income is told at)
 if (UI.TIPS && typeof UI.TIPS.realmGold === 'function') {
   const rg0 = UI.TIPS.realmGold;
   UI.TIPS.realmGold = function () {
@@ -250,7 +250,7 @@ if (typeof UI.wrDivPanel === 'function') {
   };
 }
 
-// 59-tooltips' popover on a cell of an enemy's grid gave the exact figure and its parts ("Soft attack 139.9"): what a
+// 59-descriptions' popover on a cell of an enemy's grid gave the exact figure and its parts ("Soft attack 139.9"): what a
 // scout sees is the comparison, and what the figure does
 if (UI.TIPS && typeof UI.TIPS.divStat === 'function') {
   const ds0 = UI.TIPS.divStat;
@@ -303,7 +303,7 @@ const gain = v => (v < 0.8 ? 'a little' : v < 2 ? 'some' : v < 4 ? 'a good deal'
 VS.NUMRULES2 = [
   // 999-confidants' pips (the People tab, the person view), their hover title: "Next rank: shared history 16 (now 47), their
   // opinion 30." The history is 55's ledger weight, the opinion -100..100 (verifier, round 6: neither was worded). Said as
-  // how much of the history is there and the regard it asks for, in 59-tooltips' opinion words.
+  // how much of the history is there and the regard it asks for, in 59-descriptions' opinion words.
   // The regard is compared with the bar, not named by band: the opinion bands are wider than the bars (friendly is 10-39,
   // the bars 20-60), so "friendly or better" read as met for a friend at 20 whose rank needs 30 (verifier, round 7).
   [/\bNext rank: shared history (\d+) \(now (\d+)\), their opinion (-?\d{1,3})(?: \(now (-?\d{1,3})\))?\./g, (all, need, now, op, opNow) => {
@@ -321,7 +321,7 @@ VS.NUMRULES2 = [
     'got better at ' + list.replace(/([A-Z][A-Za-z&:' ]*?) \+(\d+(?:\.\d+)?)/g, (m, n, v) => `${n} (${gain(+v)})`) + '.' + sp + c.toUpperCase())],
   // 49-body-mind's age line: "Strength: best 59 at 19 · holds until about 42"
   [/\b([A-Z][A-Za-z ]{2,20}): best (\d{1,3}) at (\d{1,3})\b/g, (all, n, v, a) => (statKey(n) || STAT_DIR[n.toLowerCase()] ? `${n}: at its best at ${a}` : all)],
-  // 48-fight-ladder's wound costs: "worth 42 to 41", "Elite 66 to Veteran 58", "(speed -7, stamina -3)"
+  // 48-event-fight-rules's wound costs: "worth 42 to 41", "Elite 66 to Veteran 58", "(speed -7, stamina -3)"
   [/\bworth (\d{1,3}) to (\d{1,3})\b/g, (all, a, b) => (+a - +b >= 6 ? 'worth a good deal less' : +a > +b ? 'worth a little less' : 'worth no less')],
   [/\b(Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero) (\d{1,3}) to (Untrained|Brawler|Trained|Veteran|Elite|Master|Champion|Legend|Hero) (\d{1,3})\b/g, (all, a, x, b) => `from ${a} to ${b}`],
   [/\b(strength|speed|stamina|combat instincts|instincts|intelligence|wits|willpower|will) ([+−-])(\d{1,2})\b/gi, (all, n, s, v) => statDelta(n, s, +v) || all],
@@ -342,7 +342,7 @@ VS.NUMRULES2 = [
   // 49-body-mind's yard: "health worn, come back at 50", "rest to 50 first"
   [/\bcome back at (\d{1,3})\b/g, (all, v) => `come back when you are ${VS.band('health', +v)} or better`],
   [/\brest to (\d{1,3}) first\b/g, (all, v) => `rest until you are ${VS.band('health', +v)} or better first`],
-  // 97-life-fixes' door: "your chance is under 2 in 100"
+  // 97-first-life-fixes' door: "your chance is under 2 in 100"
   [/\byour chance is under \d+ in 100\b/g, () => 'your chance is next to none'],
   // infamy as a number anywhere it is swept (every spelling the game and its features use):
   // - the rule's thresholds: "At 40 neighbors start a coalition; above 60 it may march." (the realm tab, the popover),
@@ -364,7 +364,7 @@ VS.NUMRULES2 = [
   [/\b(stability|legitimacy|authority|war weariness)\s?([+−-])(\d{1,3})\b(?![.,]\d|\s*(?:suns?|years?|%))/gi, (all, w, sg, v) => `${w} ${sg === '+' ? 'up' : 'down'} ${infAmount(+v)}`],
   // - "Infamy 47: your neighbors talk of a coalition" (the advisor's hint and its title), "· infamy 47" (a realm's card)
   [/\b([Ii]nfamy):? (\d{1,3})(?![\d+%]|\.\d)(:?)/g, (all, w, v, c) => `${w}: ${VS.infamyShort(+v)}${c ? ';' : ''}`],
-  // the realm's other thresholds and costs, as the realm tab and its popovers say them (59-tooltips' glossary):
+  // the realm's other thresholds and costs, as the realm tab and its popovers say them (59-descriptions' glossary):
   // stability "below 18 a rising becomes likely", "An empty treasury costs 6 stability", legitimacy's yearly pull
   // "(legitimacy − 50) ÷ 25 a year"
   [/\bbelow 18 a rising becomes likely/g, () => `once it is ${VS.band('stability', 17)} a rising becomes likely`],
@@ -376,18 +376,18 @@ VS.NUMRULES2 = [
   [/\b(about two in five|40%)\+ power and 60\+ discontent\b/g, () => `about two in five of the power, once it is ${VS.band2 ? VS.band2('discontent', 60) : 'angry'},`],
   [/\bAt (about two in five|40%) and 60 discontent\b/g, () => `At about two in five of the power, once it is ${VS.band2 ? VS.band2('discontent', 60) : 'angry'},`],
   [/\bAt 60, with (about two in five|40%) of the power, (.*?) sets it back to 0\b/g, (all, a, mid) => `Once it is ${VS.band2 ? VS.band2('discontent', 60) : 'angry'}, with about two in five of the power, ${mid} quiets it again`],
-  // 56-realm-inside's court reasons: "A faction stirs (discontent 44)", "The lords are sullen (mean loyalty 38)"
+  // 56-court-and-treasury's court reasons: "A faction stirs (discontent 44)", "The lords are sullen (mean loyalty 38)"
   [/\((discontent|mean loyalty) (\d{1,3})\)/g, (all, k, v) => `(${k === 'discontent' ? 'discontent' : 'loyalty'}: ${VS.band2 ? VS.band2(k === 'discontent' ? 'discontent' : 'loyalty', +v) : VS.band('stability', +v)})`],
   // a realm's opinion of another in the treaty reasons and an envoy's letter: "Opinion -4 (−2)", "(Relations +12.)"
   [/(?<=[(·]\s?)\b(Opinion|Relations) ([+−-]?\d{1,3})(?=\s*$|\s*\(|\.\))/g, (all, k, v) => (VS.band2 ? `${k}: ${VS.band2('opinion', +String(v).replace('−', '-'))}` : all)],
-  // 59-tooltips' treasury popover: "Income at stability 50, with the treasurer"
+  // 59-descriptions' treasury popover: "Income at stability 50, with the treasurer"
   [/\bIncome at stability (\d{1,3})\b/g, (all, v) => `Income while the realm is ${VS.band('stability', +v)}`],
   // a superior's letter in the Path's asks: "Opinion 50+: a letter from them"
   [/\bOpinion (\d{1,3})\+:/g, (all, v) => (VS.band2 ? `When they think you ${VS.band2('opinion', +v)} or better:` : all)],
   // an embassy's gifts: the toast "Opinion +12" and the log's "Their opinion of you rises (+12)." (a change)
   [/^(\s*)Opinion \+(\d{1,3})(\s*)$/, (all, a, v, b) => `${a}Their opinion of you rises ${infAmount(+v)}${b}`],
   [/\b(opinion of you (?:rises|falls)) \([+−-](\d{1,3})\)/g, (all, w, v) => `${w} ${infAmount(+v)}`],
-  // 97-life-fixes' golden age step: "Stability 29 of 85 and 1,008,000 suns of 4,896,000 suns in the treasury" (g-bands'
+  // 97-first-life-fixes' golden age step: "Stability 29 of 85 and 1,008,000 suns of 4,896,000 suns in the treasury" (g-bands'
   // rule made it "Stability shaky of 85")
   [/\bStability (\d{1,3}) of (\d{1,3})\b/g, (all, a, b) => `Stability ${VS.band('stability', +a)} (${+a >= +b ? 'as it must be' : `it must be ${VS.band('stability', +b)}`})`],
   // the peace table: "Aldmark is tiring (war weariness 47)." The word is already there
@@ -418,7 +418,7 @@ const titleWords = v => {
   // a person's opinion bar (the People tab): "Opinion 79"
   const m = /^Opinion (-?\d{1,3})$/.exec(t.trim());
   if (m && VS.band2) return `Opinion: ${VS.band2('opinion', +m[1])}`;
-  // a skill row's aria-label (59-tooltips' profile hook, "Melee: 24", "Stewardship & supply: 29"): its tier, as the row
+  // a skill row's aria-label (59-descriptions' profile hook, "Melee: 24", "Stewardship & supply: 29"): its tier, as the row
   // itself says it (verifier, round 5: every tab's screen-reader text kept the 0-100 level). The hook escapes a name
   // that is already escaped, so the label read "Stewardship &amp; supply": the name is read, and written, plain.
   const s = /^(.+?): (\d{1,3})$/.exec(t.trim()), sk = s && s[1].replace(/&amp;/g, '&');
@@ -454,7 +454,7 @@ if (typeof UI.realmTabBasic === 'function') {
     } catch (e) { return h; }
   };
 }
-// the needs' words take more room than a number: let 91-look's box fit them
+// the needs' words take more room than a number: let 91-visual-style's box fit them
 VS.css2 = '.lk-need .val.v2-needw{min-width:0;white-space:nowrap;font-size:.92em}.v2-wr-stats b{font-size:.85em;line-height:1.15;white-space:normal}';
 {
   const st0 = VS.style;

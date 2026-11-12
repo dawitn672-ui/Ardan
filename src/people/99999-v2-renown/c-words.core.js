@@ -17,7 +17,7 @@
     [/\bMerit(?: in your post)?:? \d+\s?\/\s?\d+\b/g, () => 'Standing for the next rank: in the board\'s hands'],
   );
 
-  // ---- 59-tooltips' Path tips: what the board asks now, in words (they explained the counter and its percentages) -----
+  // ---- 59-descriptions' Path tips: what the board asks now, in words (they explained the counter and its percentages) -----
   const G = UI.TIPS, RN = A.RN, K = UI.TT && UI.TT.K;
   if (!G || !RN || !K) return;
   const { esc, H, R, D, F } = K;
@@ -60,7 +60,7 @@
     const rank = kind === 'mil' ? (p.mil ? p.mil.rank : 0) : (p.job ? p.job.r : 0);
     return H(kind === 'mil' ? 'A deed that stands out' : 'Work that stands out', esc(RN.standWords(p, kind, rank)), 'helps') + D(esc(HOW));
   };
-  // ---- 59-tooltips' Renown tip: it explained the old rule (each deed added d × (1 − fame/105), "a deed worth 10 now
+  // ---- 59-descriptions' Renown tip: it explained the old rule (each deed added d × (1 − fame/105), "a deed worth 10 now
   // gives 9.1", "Renown 9 of 100"). Renown is now the memory of deeds (a-deeds): the tip says it in words, names the
   // deeds that made the name, and says what a deed is worth (the odds it beat, who saw it), that deeds fade and that a
   // name keeps half of its best. No number and no "of 100" (the owner's v2 rule).

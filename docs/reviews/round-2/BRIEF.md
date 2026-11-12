@@ -12,7 +12,7 @@ designers, developers, VFX artists, character designers, artists and programmers
   `docs/v2/playtest-2.md` (the last playtest's findings), `docs/v2/STATUS.md`.
 - Architecture: the shipped release `vendor/ardan-b593143.html` (minified) is patched by ~126 feature folders in
   `features/NN-name/` (patches on minified code, readable `*.core.js`, `*.events.js` event packs). The v2 engine source
-  is `src/v2/` (bundled into `features/99990-v2/`). `tools/build.mjs` builds it all.
+  is `src/v2/` (bundled into `features/99990-v2-engine/`). `tools/build.mjs` builds it all.
 - Playwright is at `/opt/node-tools/node_modules/playwright`:
   `const { chromium } = require('/opt/node-tools/node_modules/playwright');` (do NOT npm install anything).
 - In the page: `A` is the engine, `UI` the interface, `A.S` the state, `A.pc()` the player. `tests/helpers.mjs` shows

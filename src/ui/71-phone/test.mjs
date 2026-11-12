@@ -41,7 +41,7 @@ export default {
   },
 
   // on every audited screen at 375 px: each control (button, link, select, field, tab, anything with an action) is at
-  // least 44 x 44; a glossary word (59-tooltips) at least WCAG 2.5.8's 24 x 24; no text under 14 px but the tab bar's
+  // least 44 x 44; a glossary word (59-descriptions) at least WCAG 2.5.8's 24 x 24; no text under 14 px but the tab bar's
   // captions (13 px)
   async phoneTargets(pg, errs, { browser, file }) {
     const { ctx, pg: p } = await openPage(browser, file, 'se', errs);
@@ -87,7 +87,7 @@ export default {
       const d = r.desk[t.name], worst = Math.max(...['se', 'pixel'].map(p => r[p][t.name].cost / d.cost));
       for (const dev of ['desk', 'se', 'pixel']) if (!r[dev][t.name].ok) bad.push(`${dev} could not ${t.name}${r[dev][t.name].why ? ' (' + r[dev][t.name].why + ')' : ''}`);
       // a task the phone does in two taps without scrolling cannot be made easier; it passes even when the desktop got
-      // cheaper (91-look tightened Holdings, so the market sits higher on a desktop and the ratio rose to 1.65)
+      // cheaper (91-visual-style tightened Holdings, so the market sits higher on a desktop and the ratio rose to 1.65)
       const easy = ['se', 'pixel'].every(p => r[p][t.name].taps <= 2 && !r[p][t.name].scroll);
       if (!(worst <= 1.5) && !easy) bad.push(`${t.name} ${worst.toFixed(2)}`);
       rows.push(`${t.name} ${d.taps}/${r.se[t.name].taps} taps, ${r.se[t.name].scroll} px, ×${worst.toFixed(2)}`);

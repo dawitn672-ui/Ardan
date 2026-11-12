@@ -1,6 +1,6 @@
 // NPC beliefs, part 3 of 3: beasts as other people know them, and the person view.
 //
-//   - What someone knows of a beast is their own: 26-belief-truth's four states (unknown, heard tell, seen, known),
+//   - What someone knows of a beast is their own: 26-belief-versus-truth's four states (unknown, heard tell, seen, known),
 //     computed from where they live and what they do (a hunter of the hills has likely seen what lives there), plus any
 //     truth they were taught. It is a hash, never stored, so drawing it is pure; a truth taught is a claim (Z).
 //   - The person view shows "What they believe about you", "What they say of others" and "What you have heard of them",
@@ -136,7 +136,7 @@
     };
   }
 
-  // the signature: belief versus truth now reaches people and courts (26-belief-truth registered the system)
+  // the signature: belief versus truth now reaches people and courts (26-belief-versus-truth registered the system)
   A.SIGNATURE = Object.assign(A.SIGNATURE || {}, { beliefPeople: true });
   if (!A.SIGNATURE.beliefTruth) A.SIGNATURE.beliefTruth = true;
 })();

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { unpack } from '/tmp/ardan/snap/tools/pack.mjs';
+import { unpack } from '/tmp/ardan/snap/tools/blob-pack.mjs';
 const root = '/tmp/ardan/snap';
 const vend = unpack(fs.readFileSync(root + '/vendor/ardan-b593143.html', 'utf8'));
 const vhtml = fs.readFileSync(root + '/vendor/ardan-b593143.html', 'utf8');

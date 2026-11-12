@@ -74,7 +74,7 @@ export default {
     // on or off (the pack's scenes are held back in both, since they only exist where there is a record)
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      // features that read the record (64-npc-beliefs seeds beliefs from its battles; 9991-atlas hears of places from its
+      // features that read the record (64-npc-beliefs seeds beliefs from its battles; 9991-atlas-of-known-places hears of places from its
       // news) are held back too: they act on what the record says, which is their business; this test is about whether
       // recording itself changes anything (with the atlas on, only pc.atlas differs: realms, provinces and the stream match)
       const chron = A.C.chron, ep = A.WC.EPIDEMIC, NB = A.NPCB, seed = NB && NB.seedBattles, AT = A.ATLAS, atOff = AT && AT.OFF;
@@ -335,7 +335,7 @@ export default {
       const wp = A.wpick; A.wpick = (arr, f) => (arr.some(x => x && x.id === pc.home) ? arr.find(x => x.id === pc.home) : wp(arr, f));
       let queued = false;
       // whatever 40 years left waiting is answered first, and other scenes are stepped past while the month turns, or
-      // A.advance stops on them before the epidemic's month comes (80-callbacks' events were enough to do it)
+      // A.advance stops on them before the epidemic's month comes (80-orphan-flag-callbacks' events were enough to do it)
       const clearOthers = () => { A.S.queue = A.S.queue.filter(q => q.ev === 'wc_sickness_comes'); };
       clearOthers();
       const strike = () => { let got = false; for (let i = 0; i < 6 && !got; i++) { A.advance(31); got = A.S.queue.some(q => q.ev === 'wc_sickness_comes'); if (!got) clearOthers(); } return got; };
@@ -395,7 +395,7 @@ export default {
       return { ids: ids.length, shown, bad: bad.slice(0, 5), nBad: bad.length };
     });
     const n = Object.keys(r.shown).length;
-    // some scenes need what only other features make (a famine needs 45-economy, a Legend 32-ladder) or a rare event
+    // some scenes need what only other features make (a famine needs 45-economy, a Legend 32-legend-and-master-caps) or a rare event
     return { ok: !r.nBad && n >= 8, detail: `${n} of ${r.ids} scenes drawn from lives 30 years in (${Object.entries(r.shown).map(([k, v]) => `${k.replace('wc_', '')} ${v}`).join(', ')}); problems ${r.nBad}${r.bad.length ? ': ' + r.bad.join('; ') : ''}` };
   },
   async wcRecallLinesRead(pg) {

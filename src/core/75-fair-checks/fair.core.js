@@ -15,7 +15,7 @@
 // a scene already written for children is not made easier than even. Nothing changes for a seasoned adult or for the
 // old where they have kept what they learned (an old person's strength fades, and checks on it ease by that much).
 // Your own place against the typical stays: a skill you never trained, a wound, or fading strength still give long odds.
-// Fights (check.fight, 48-fight-ladder) roll on fighting worth and are left alone. The number shown is the number rolled:
+// Fights (check.fight, 48-event-fight-rules) roll on fighting worth and are left alone. The number shown is the number rolled:
 // A.eventChoose rolls A.checkOdds.
 const FC = A.FC = {};
 FC.OFF = false;
@@ -58,7 +58,7 @@ FC.explain = function (pc, check) {
   return { d: check.d || 45, dEff: Math.round(FC.dFor(pc, check) * 10) / 10, band: FC.band(pc), tv: T ? Math.round(FC.typVal(T, check) * 10) / 10 : null, ref: R ? Math.round(FC.typVal(R, check) * 10) / 10 : null };
 };
 // The wrapped A.checkOdds reads the same check object with its difficulty set for the call (30-get-to-know adds a
-// scene's own shift to it, and 67-memory-weave finds the choice by the check object, so it must be the same object),
+// scene's own shift to it, and 67-choice-memories finds the choice by the check object, so it must be the same object),
 // then puts the written difficulty back. Nothing outside the call sees the change.
 const checkOdds = A.checkOdds;
 A.checkOdds = function (pc, check) {

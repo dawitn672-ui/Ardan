@@ -6,4 +6,4 @@ Callback events for flags the release sets but never reads ("orphan memories", l
 
 Events: `adventure-trade.events.js`. Tests: `test.mjs` checks every chunk flag is read and the events play. Lint: `node tools/lint-events.mjs --feature=memory-adventure-trade`.
 
-Written by an agent writer; the hostile-editor pass was cut short by a usage limit, so this chunk was edited by spot check only (see docs/reviews/Ardan Road to 100.md, "Round 2").
+Written by an agent writer; the hostile-editor pass was cut short by a usage limit, so this chunk was edited by spot check only (see docs/reviews/road-to-100.md, "Round 2").

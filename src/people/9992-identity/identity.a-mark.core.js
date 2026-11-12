@@ -341,7 +341,7 @@
       return s ? h + s : h;
     } catch (e) { console.error('identity panel', e); return h; }
   };
-  // on a phone the Life page has no room left (91-look holds it to 1.3 screens): the card heads Decisions instead,
+  // on a phone the Life page has no room left (91-visual-style holds it to 1.3 screens): the card heads Decisions instead,
   // beside "Found a house of your own"
   const goals = UI.TAB && UI.TAB.goals;
   if (typeof goals === 'function') UI.TAB.goals = function (pc) {

@@ -29,11 +29,11 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 
 **Every check through `attempt()`** (`b-odds.core.js`, patch `V2S-ROLL`)
 
-- The old chain still works out the honest chance. That is `A.checkOdds` with 75-fair-checks, 48-fight-ladder's fighting worth, 30, 67 and 81.
+- The old chain still works out the honest chance. That is `A.checkOdds` with 75-fair-checks, 48-event-fight-rules's fighting worth, 30, 67 and 81.
 - `A.eventChoose` then rolls it with `A.V2.odds.attempt()`.
   - The edge is `logit p`. The first draw is the release's own `A.chance(p)`, and a second places attempt()'s logistic noise inside the half it chose. So with no blunder and no surge the result is the same as before, and the noise is distributed exactly as attempt() draws it.
   - A test that replaces `A.chance` to force an outcome still gets that outcome (22 features' tests do this).
-  - **Every draw reads the dice one way.** The release's dice read low as good (`A.chance(p)` is `A.rand() < p`); attempt() reads its rng high as good for the noise and fires each `chance(p)` on a low draw, as v2's `makeRng` does. So attempt() gets `makeRng`'s shape on the game's dice turned round (`next()` is `1 − A.rand()`, `chance(p)` is `next() < p`), and the noise is placed in its half the same way. A roll held low is attempt()'s best day: won, the noise at the top of the won half, no blunder. A roll held high is its worst: lost, deeper than any surge lifts. So 67-memory-weave's tests, which hold `A.rand` at 0.001 to win a check and at 0.999 to lose one, still decide it. With live dice nothing is distributed differently.
+  - **Every draw reads the dice one way.** The release's dice read low as good (`A.chance(p)` is `A.rand() < p`); attempt() reads its rng high as good for the noise and fires each `chance(p)` on a low draw, as v2's `makeRng` does. So attempt() gets `makeRng`'s shape on the game's dice turned round (`next()` is `1 − A.rand()`, `chance(p)` is `next() < p`), and the noise is placed in its half the same way. A roll held low is attempt()'s best day: won, the noise at the top of the won half, no blunder. A roll held high is its worst: lost, deeper than any surge lifts. So 67-choice-memories's tests, which hold `A.rand` at 0.001 to win a check and at 0.999 to lose one, still decide it. With live dice nothing is distributed differently.
   - (The first version filled a won half from its losing edge and fired a chance on a low `A.rand()`: held at 0.001, the release's roll won, then the blunder chance, never under 0.002, fired every time and threw the check.)
   - On top of that, judgment, fatigue (health, weariness) and overconfidence can throw a won check, and will, under the stakes (a fight 0.9, a deadly loss 0.8, otherwise 0.5), can win a lost one.
   - Will and judgment are held within 2.7 standard deviations. The old willpower grows past 180.
@@ -58,11 +58,11 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
   | Elf | about −3 |
 
 - **A human can still reach a giant.** In v2's own units, a human master with a breakthrough in order gear (25 levies) stands with an ordinary giant (17). On the game's scale, a human's old worth grows past a giant's with skill and strength, and a v2 breakthrough raises the potential.
-- **A first version replaced the worth outright** (v2 levies for everyone). Five of 48-fight-ladder's calibration tests failed: duel and beast odds shown against real (worst bins 8 and 23 points), tier texts, the lost hand's two tiers, and the profile line. The race shift keeps every calibrated human fight exact.
+- **A first version replaced the worth outright** (v2 levies for everyone). Five of 48-event-fight-rules's calibration tests failed: duel and beast odds shown against real (worst bins 8 and 23 points), tier texts, the lost hand's two tiers, and the profile line. The race shift keeps every calibrated human fight exact.
 
 **Faith only where it applies** (`d-faith.core.js`, `faith.events.js`)
 
-- **Who has faith:** the clergy-born (a parent in holy orders, the priestly line, or 29-starts' "The Temple's Child"), a priest, and a player who takes it up. The scene "A preacher in the square" (`v2s_seek_faith`) offers it; nothing forces it.
+- **Who has faith:** the clergy-born (a parent in holy orders, the priestly line, or 29-starting-stories' "The Temple's Child"), a priest, and a player who takes it up. The scene "A preacher in the square" (`v2s_seek_faith`) offers it; nothing forces it.
 - **Everyone else:** piety stays at a neutral 30, so the 1,785 piety effects and the systems that read piety for everyone read a neutral default. Any change is kept as a pull toward faith, which makes the offer likelier.
 - **What the sheet shows:** no piety bar and no piety figure, and no chapter or ambition sets a piety aim. NPCs keep their piety for the AI.
 
@@ -121,7 +121,7 @@ Playtest round 1 made a tap on a choice choose, so the badge inside the choice l
 - **The choice body chooses.** The badge inside it takes no tap, as before (71-phone).
 - **The odds badge has a target of its own.** A `role="button"` span sits over the badge as a sibling of the choice button in `.choices`, never inside it. It is at least 44 × 44 px and kept in place by a `ResizeObserver`. A tap on it opens the words-only breakdown and chooses nothing; a second tap closes it. It is a span, not a `<button>`, because the release's number keys and first focus pick `.choices button`. The badge shows a dashed edge to say it is a thing of its own.
 - **The breakdown covers no choice.** It sits above the choices (with a scroll inside if it is taller than the room there), so the next tap on a choice is free: it closes the breakdown and takes that choice. When there is no room above, it may cover them, and then a tap on it closes it.
-- Nothing changes with a mouse. `59-tooltips` `ttPhone2` tests this design.
+- Nothing changes with a mouse. `59-descriptions` `ttPhone2` tests this design.
 - The v2 sheet's words keep the row's 14 px on a phone (71-phone's `phoneTargets`).
 
 ## Playtest round 2 (complaints 11, 12: the body's scales and labels)
@@ -137,11 +137,11 @@ Playtest round 1 made a tap on a choice choose, so the badge inside the choice l
 ## Other features' tests changed (they checked digits the owner asked to remove)
 
 - `42-difficulty` `difficultyInformation`: with v2 no setting shows digits on a choice; without v2, the release's rule as before.
-- `48-fight-ladder` `flScreens`: with v2, the duel's "N times in 100" and the worth beside the tier on the duel measure are no longer required; round 2: the profile's wound line is tiers in words ("Trained to Untrained", "still Trained, a little less in a fight"; "less speed"), not "worth 31 to 8 (speed -7)".
-- `59-tooltips` `ttWorthSums`: the tier chip names the worth in levies; with v2 it must name the same total's levies.
-- `9998-stakes` `stWhiteRetry`: with v2 the lock reads "Grow in Persuasion and Willpower first" and the chip "better at this now than in 1105", without the numbers.
-- `59-tooltips` `ttPhone2` (cycle 3): with v2, a tap on the odds target beside the choice opens the breakdown, words only, over no choice; the target is at least 44 px and outside the choice; the next tap on a choice closes it and takes the choice. The old tap target inside the choice is gone since playtest 1.
-- `59-tooltips` `ttSums2` (the odds popover has words, no sum row, with v2), `ttCov2Scenes` (the scenes' odds are words, so that group leaves the coverage bar), `ttInModal` (focuses any explained number in the full profile, which has no stat bars).
+- `48-event-fight-rules` `flScreens`: with v2, the duel's "N times in 100" and the worth beside the tier on the duel measure are no longer required; round 2: the profile's wound line is tiers in words ("Trained to Untrained", "still Trained, a little less in a fight"; "less speed"), not "worth 31 to 8 (speed -7)".
+- `59-descriptions` `ttWorthSums`: the tier chip names the worth in levies; with v2 it must name the same total's levies.
+- `9998-choice-stakes` `stWhiteRetry`: with v2 the lock reads "Grow in Persuasion and Willpower first" and the chip "better at this now than in 1105", without the numbers.
+- `59-descriptions` `ttPhone2` (cycle 3): with v2, a tap on the odds target beside the choice opens the breakdown, words only, over no choice; the target is at least 44 px and outside the choice; the next tap on a choice closes it and takes the choice. The old tap target inside the choice is gone since playtest 1.
+- `59-descriptions` `ttSums2` (the odds popover has words, no sum row, with v2), `ttCov2Scenes` (the scenes' odds are words, so that group leaves the coverage bar), `ttInModal` (focuses any explained number in the full profile, which has no stat bars).
 - `9996-polity` `poBillTrack`: the next count's odds are words and a balance, so with v2 the stack must have no "N%" and must have the balance.
 
 ## Playtest round 1 (`g-bands.core.js` and small changes elsewhere)
@@ -154,7 +154,7 @@ Playtest round 1 made a tap on a choice choose, so the badge inside the choice l
 - **Piety for the faithless** reads as "a pull toward the faith".
 - **Labels.** "Takes 1 blows" now reads "stands up to a blow that would fell an ordinary man", and a grown body is never "as fast as a child".
 - **The derived stat stops at the old engine's cap** (1.02 × potential), where training and fx stop too.
-- **Tests.** The new test `v2sPlaytest1` covers the findings. `59-tooltips` `ttCoverage` is also changed: with v2 every remaining number must be covered.
+- **Tests.** The new test `v2sPlaytest1` covers the findings. `59-descriptions` `ttCoverage` is also changed: with v2 every remaining number must be covered.
 
 ## Playtest round 2: what a failed check costs (`h-loss.core.js`, new 1 and 2)
 
@@ -187,8 +187,8 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
 
 - **Needs.** 35-moods' four needs are words (`A.MOODS.word(k, v)`: "rested", "alone too often", "adrift", "in want"),
   banded on the rules: under 30 a need sets a mood, 65 or more on all four is content. The words are in 35's card,
-  91-look's box (rail and phone You page) and the need, needs and mood popovers. A need's popover says where it settles
-  and what pulls it ("A hard plan: lowers it a great deal"). 91-look's activity popover says "company up a great deal".
+  91-visual-style's box (rail and phone You page) and the need, needs and mood popovers. A need's popover says where it settles
+  and what pulls it ("A hard plan: lowers it a great deal"). 91-visual-style's activity popover says "company up a great deal".
 - **Training.** The mentor picker's "Melee (14)" and the council's appoint picker say the tier. The season's log says
   how much each skill grew: "Survival & hunting (a good deal)", not "+2.4". The training picker was already in words.
 - **The profile and the decisions.** The profile's age line drops the stat ("Strength: at its best at 19 · holds until
@@ -199,7 +199,7 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
 - **The War Room.** The division grid compares the division with yours ("far above yours", "like your others"); armour
   and piercing say what they do to your men ("your blows bite", "glances off your armour"); speed stays in km.
   Organization is "in full order" to "broken". The order of battle's "mo 64" and "xp 18" are "steady" and "trained".
-  59-tooltips' popover on an enemy's cell gives the same word, not the exact figure.
+  59-descriptions' popover on an enemy's cell gives the same word, not the exact figure.
 - **Infamy.** Coalitions read "Against Aldmark (feared: its neighbours band together)"; the Most feared bars say
   "feared", "distrusted", "watched". The bands follow the rules: 40 starts a coalition, over 58 one may march, over 20
   small realms bow. The Infamy map mode's legend reads "Coalition bait (so feared a coalition may march)", and the
@@ -219,13 +219,13 @@ Test `v2sLossStakes`. 99999-v2-content draws the chips from it (`v2cRiskChain`, 
   ("shaky", "doubted", "tiring"), by label and by tooltip key (`realmStab`, `realmLegit`, `realmWeary`). War weariness
   has a band of its own on the release's words at the peace table (over 30 "tiring", over 60 "exhausted", over 85
   "broken by war"), so its popover's "War weariness <b>53</b>" reads the word too, and the peace table's "is tiring (war
-  weariness 47)" drops the bracket. 97-life-fixes' golden age step, "Stability 29 of 85 and ...", reads "Stability shaky
+  weariness 47)" drops the bracket. 97-first-life-fixes' golden age step, "Stability 29 of 85 and ...", reads "Stability shaky
   (it must be rock steady) and ...".
 - **Titles.** A hover title or aria-label with one of these numbers ("Stability since 1105: 46 to 61", the Goals tab's
   "Still needed: ...; Legitimacy 70.", the People tab's "Opinion 79") goes through the whole of `VS.deNum`, the
   element itself included (round 4: the titles had taken only the NUMRULES2 rules, and an element added on its own was
   skipped).
-  The profile's skill rows (59-tooltips' hook writes `aria-label="Melee: 24"`) say the tier to a screen reader,
+  The profile's skill rows (59-descriptions' hook writes `aria-label="Melee: 24"`) say the tier to a screen reader,
   "Stewardship & supply: Apprentice", with the name's "&" plain (the hook escaped it twice). The Realm tab's crown
   authority buttons say "Income ×0.88; the lords warm to the crown each year", not "vassal mood +8/yr" (round 5).
   999-confidants' pips (the People tab, the person view) say the next rank in words: "Next rank: more shared history
@@ -256,14 +256,14 @@ loads first. Both add to `VS.keyWords` (whichever runs first makes it). Part 8's
 ## Playtest round 2: the 0-100 numbers left on the page (`j-numbers.core.js`, part 10)
 
 Playtest 2 (old 7's remainder, new 11, old 20 and old 22) still read 0-100 numbers in views g-bands never reached. Most
-survived because 59-tooltips puts the number in an element of its own (`Master fighter (<span data-tt="worth">101</span>)`),
+survived because 59-descriptions puts the number in an element of its own (`Master fighter (<span data-tt="worth">101</span>)`),
 so a rule on one text node never saw its label. Now:
 
 - **By tooltip key.** An element whose `data-tt` names a 0-100 measure says it in words (`VS.keyWords`, run after every
   sweep): `perf` (excellent … failing), `rep` (famed in the trade … unknown), `merit` and the board's merit row (against
   what the board asks: "about two thirds of what the board asks", "enough for the board"), the board's skill and
   command rows ("Apprentice; the board asks Journeyman"), `coMo` ("Morale: steady"), `worth` (in levies, as the sheet
-  says it: "Master fighter (about 25 levies)"), `fame`, `opinion` and `rulerOp` (devoted … hateful, 59-tooltips' own
+  says it: "Master fighter (about 25 levies)"), `fame`, `opinion` and `rulerOp` (devoted … hateful, 59-descriptions' own
   words), `loyalty`, `facDisc`, `feud`. Months and battles on a board stay counts.
 - **Another person's page** (`UI.personModal`): renown as its band, "Command: a steady officer", skill rows as tiers,
   "Body: strength fair · speed poor …" (each stat against the person's own race and age), opinion as a word, 55-bonds'

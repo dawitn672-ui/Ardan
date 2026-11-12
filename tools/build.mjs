@@ -25,7 +25,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { unpack, repack, BLOBS } from './pack.mjs';
+import { unpack, repack, BLOBS } from './blob-pack.mjs';
 import { allFeatures, findFeature, isWip as isWipFeature } from './lib/features.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');

@@ -152,7 +152,7 @@ export default {
       const RN = A.RN;
       T.enter(S); const pc = A.pc();
       RN.within({ wit: 'army', field: 'war', q: 0.2, text: 'the ford at dusk' }, A.fame, null, [pc, 6]);
-      // the Renown tip (59-tooltips' UI.TIPS.fame, here re-said): words, the deed, who saw it and its odds; no digit and
+      // the Renown tip (59-descriptions' UI.TIPS.fame, here re-said): words, the deed, who saw it and its odds; no digit and
       // no "of 100" (the verifier of this fix: it still read "Renown unknown of 100 ... A deed worth 10 now gives 9.1")
       const tip = String(UI.TIPS.fame('') || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
       UI.tab = 'life'; UI.render();

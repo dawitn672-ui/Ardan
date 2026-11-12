@@ -407,9 +407,9 @@ With 1 to 11 built and their tests green, I expect Power to reach about 8 and Ba
 - Museum of Play: https://www.museumofplay.org/blog/gdc-2010-game-psychology-101/
 
 **Ardan**
-- `docs/plan/Ardan The Road to Ten.md`
-- `docs/reviews/Ardan Road to 100.md`
-- `docs/reviews/Ardan Deep Analysis.md`
+- `docs/plan/road-to-ten.md`
+- `docs/reviews/road-to-100.md`
+- `docs/reviews/deep-analysis.md`
 - Engine functions: `A.fightWorth`, `A.CR`, `UI.vsYou`, `UI.personModal`, `A.weighText`, `A.startDuel`, `A.armFor`, `A.fighterFrom`, `A.duelAct`, `A.duelCheckEnd`, `A.duelAuto`, `A.duelClose`, `A.groupOddsSides`, `A.strengthOf`, `A.checkOdds`, `A.eventChoose`, `A.mortalCheck`, `GD.TIERS`, `GD.TIER_INFO`, `GD.BEAST_TIER`, `GD.WOUNDS`, `GD.CROWD`, `GD.LEGEND_CAP` (read with `node tools/show.mjs`)
 - The bench built in parallel: `tools/bench/run.mjs`, `tools/bench/rubric.mjs`, `tools/bench/reports/release.json`
 

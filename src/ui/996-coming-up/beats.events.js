@@ -1,6 +1,6 @@
 // 996-coming-up: the second beat of each story start (cycle 2, design B7). "What Took Your Father" opened well and then
 // said nothing for five years: its only callback waited for story(p, 'what_took', 5). Each of the twenty stories of
-// 29-starts now has a second scene two to six months in (coming.core.js schedules it, with a line in Coming up), so the
+// 29-starting-stories now has a second scene two to six months in (coming.core.js schedules it, with a line in Coming up), so the
 // promise of the start is kept within the first session. Each reads its story's flag (st_<story>), set at the start.
 (function () {
   const beat = (story, o) => Object.assign({ id: 'cu_beat_' + story, trigger: true, once: true }, o);

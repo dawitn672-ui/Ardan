@@ -7,7 +7,7 @@ The plan asks for two things:
 - **Visual art 3:** "Redraw the map in the same hand: inked coasts, mountain glyphs, small town icons, a parchment texture, and more detail as you zoom in."
 - **Visual art 4:** "Swap the military-style boxes for banners and unit standards when zoomed in, keeping the boxes as a clarity option."
 
-In the release the map is a generated relief picture (a JPEG) under flat realm fills with pixel borders. Armies and divisions are NATO-style boxes. 61-illumination tints the canvas to sepia and adds a compass, but the drawing underneath is the release's.
+In the release the map is a generated relief picture (a JPEG) under flat realm fills with pixel borders. Armies and divisions are NATO-style boxes. 61-illuminated-chronicle tints the canvas to sepia and adds a compass, but the drawing underneath is the release's.
 
 **What it does** (`inkmap.core.js`).
 
@@ -90,7 +90,7 @@ Not done: the sea stays the woodcut's ruled vellum (the brief's Prussian-blue bo
 - **The war room keeps some clarity marks** in the release's colours (fort squares, depots, siege rings, the front line) and its side colours. Only the ground, the borders, the names and the standards are inked.
 - **Banners at a capital** can cover the realm's name on the full map, as the boxes did.
 - **Timings come from headless software drawing.** With a graphics card the copies should be cheaper still, but that was not measured.
-- **61-illumination's sepia filter** sits over this canvas and darkens it; the coordinator decides whether to weaken it.
+- **61-illuminated-chronicle's sepia filter** sits over this canvas and darkens it; the coordinator decides whether to weaken it.
 
 **Cycle 1 fixes (visual review B7, world B8).** The full map's legend is a "Realms in view" row under the map (shut on a phone), built from the realms whose land is in view; the wash paints with `UI.realmHex` (far neighbours already spread apart by 91) and is laid stronger on the Great Continent; realm names sit on a paper plate so region capitals do not print through (`inkLegendView`). Not done: a full-screen phone map with a bottom sheet.
 

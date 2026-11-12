@@ -1,7 +1,7 @@
 name: nightly
 # Road to Ten, Balance 2: a nightly bot league of about 1,000 lives over four personalities, plus the hunts that are too
-# slow for every push: dominant strategies (tools/bench/dominance.mjs), the trade exploit (tools/bench/exploit.mjs) and the customs
-# a life runs into (tools/bench/customs.mjs). The reports are kept as the run's artifact; the push check (check.yml) is the gate.
+# slow for every push: dominant strategies (tools/bench/dominant-strategies.mjs), the trade exploit (tools/bench/trade-exploit.mjs) and the customs
+# a life runs into (tools/bench/realm-customs.mjs). The reports are kept as the run's artifact; the push check (check.yml) is the gate.
 on:
   schedule:
     - cron: '17 3 * * *'
@@ -22,11 +22,11 @@ jobs:
       # 167 lives on each of the six starting paths: 1,002 lives, engaged and passive, four personalities in turn
       - run: node tools/bench/balance.mjs index.html --lives-per=167 --workers=4 --json=tools/bench/reports/nightly-balance.json
         continue-on-error: true
-      - run: node tools/bench/dominance.mjs index.html --lives=8 --years=30 --workers=4 --json=tools/bench/reports/nightly-dominance.json
+      - run: node tools/bench/dominant-strategies.mjs index.html --lives=8 --years=30 --workers=4 --json=tools/bench/reports/nightly-dominance.json
         continue-on-error: true
-      - run: node tools/bench/exploit.mjs index.html
+      - run: node tools/bench/trade-exploit.mjs index.html
         continue-on-error: true
-      - run: node tools/bench/customs.mjs index.html --workers=4 --json=tools/bench/reports/nightly-customs.json
+      - run: node tools/bench/realm-customs.mjs index.html --workers=4 --json=tools/bench/reports/nightly-customs.json
         continue-on-error: true
       - uses: actions/upload-artifact@v4
         with:

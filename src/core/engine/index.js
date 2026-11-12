@@ -1,5 +1,5 @@
 // Ardan v2's engine, gathered for the game's build: tools/build-v2.mjs bundles this file into
-// src/core/99990-v2/a-v2.core.js, which puts it on the page as A.V2 (and window.ARDAN_V2). The modules stay plain ES
+// src/core/99990-v2-engine/a-v2.core.js, which puts it on the page as A.V2 (and window.ARDAN_V2). The modules stay plain ES
 // modules so their own tests (tests/v2/*.test.js) run them under node --test.
 export * as rng from './rng.js';
 export * as body from '../../people/engine/body.js';

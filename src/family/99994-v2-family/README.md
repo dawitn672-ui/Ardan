@@ -19,7 +19,7 @@ release's kin do.
 creation step (patches `V2F-PICKER-*`), a random character draws none (`V2F-RANDOMIZE`), and `A.newGame` ignores an
 `order` option. The number of elder siblings comes from the family's seed (none 3 in 9, one 3 in 9, two 2 in 9, three
 1 in 9: v2's weights; `V2F-ELDER`). Two exceptions, both not a choice of position: a half-elf or half-orc of a noble
-house is born outside the marriage (the release's rule), and a hand-made story whose premise is a birth (29-starts'
+house is born outside the marriage (the release's rule), and a hand-made story whose premise is a birth (29-starting-stories'
 "No Land for a Second Son", "The Letter in Your Mother's Box", "The Queen's Ward") keeps it.
 
 **One relation label** (`a-kin.core.js`). Every relation the player reads goes through `A.V2.kin.relationLabel` over

@@ -5,7 +5,7 @@
 // numbers were drawn moved the serf's median peak wealth between 11,000 and 153,000 and the merchant's median age at
 // death between 29 and 67, so a feature that drew one more number could fail the check without anything being wrong.
 // The league now plays 8 lives a path. Four builds that differ only in their random stream (the full build, and the
-// build without 37-squad, without 38-orders, and with 39-schemes) all sit inside every band, but the spread is still
+// build without 37-named-squad, without 38-orders, and with 39-schemes) all sit inside every band, but the spread is still
 // wide: serf median peak wealth 4,500-107,000 (freed serfs get rich, bound ones don't, and the middle of 8 falls on
 // either side), royal median age at death 37-73, noble median peak wealth 57,000-461,000. So the bands catch a
 // collapse, not a shift.
@@ -21,7 +21,7 @@ export const TARGETS = {
       // serf in the league was in a battle; the 12 seeds' median went 113,546 -> 163,713, while the same build over 24
       // seeds (slots 12-23 added) gives 103,071. A re-roll of the sample, not richer serfs.
       bands: { medianDeathAge: [20, 85], medianPeakCoin: [100, 180000], medianPeakFame: [0, 80], notableSharePct: [25, 100], freedSharePct: [25, 100] },
-      note: 'Before 33-choices every serf was free by 33, most by buying freedom at 21-22 for 40 suns (two years of a serf\'s savings), because the event that sold it had no way to say no. With "Not this year" half stay bound, and their peak wealth fell from about 30,000 to about 1,600; the bands were widened for that (the first drift this check caught). 15 other events free you too.',
+      note: 'Before 33-no-obvious-choices every serf was free by 33, most by buying freedom at 21-22 for 40 suns (two years of a serf\'s savings), because the event that sold it had no way to say no. With "Not this year" half stay bound, and their peak wealth fell from about 30,000 to about 1,600; the bands were widened for that (the first drift this check caught). 15 other events free you too.',
     },
     peasant: {
       start: { race: 'human', realm: 'POL-01', status: 'peasant', startAge: 16 },

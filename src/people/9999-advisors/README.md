@@ -55,7 +55,7 @@
   - **Their opinion of you under −25:** they argue for their want and against your good. Whom to trust is learned, as in KoDP.
   - **Unreadable effects** (function effects that call the engine): a check's win counts as good and its loss as bad, so the odds still tell.
   - **No view:** an advisor who sees nothing to choose between the choices stays quiet.
-- **What it looks like.** One line each: their name and place, their manner (54-voices: "smiling", "without heat"), a line from their want or from the matter, then "→ 3 Sort them by what will please the crown". The row's tooltip gives their want, their fear, what they are good for, their loyalty in words, and your record with them: "You heeded her 3 of 5 times; it went well twice of those". Lines are picked by hashing the event, the advisor and the year, and never repeat within one counsel.
+- **What it looks like.** One line each: their name and place, their manner (54-character-voices: "smiling", "without heat"), a line from their want or from the matter, then "→ 3 Sort them by what will please the crown". The row's tooltip gives their want, their fear, what they are good for, their loyalty in words, and your record with them: "You heeded her 3 of 5 times; it went well twice of those". Lines are picked by hashing the event, the advisor and the year, and never repeat within one counsel.
 - **When it is worked out.** Once, when the view is built, stored on it as `v.adv`. Drawing it again reads the same thing.
 - **The war declaration** (`UI.warDeclModal`) carries the council's counsel too. The odds come from `A.warPreview`'s strength ratio. Declaring is booked in the engine (`A.diplDo`), so a replay keeps the same memory.
 

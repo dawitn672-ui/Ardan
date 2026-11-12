@@ -42,10 +42,10 @@ derives the status from all the parts: a marriage plus a sworn rivalry reads "un
   (`A.aiResting`), waits out war-weariness (`A.aiWeary`) and waits for an opening (the war preview's strength ratio at
   least `A.aiNerve`, less by 55-bonds' `A.feudNerve` against a realm it holds a grudge on). Then the hostile month
   becomes a declaration with chance `DV.WAR.p` 0.35, more as the score falls below -25, x1.5 with a casus belli, and
-  times the court's own reasons as the release's roll weighs them (68-casus-belli's `A.cbWarMul`: a plan's target at
+  times the court's own reasons as the release's roll weighs them (68-reasons-for-war's `A.cbWarMul`: a plan's target at
   the right moment, an old wrong or a want, nil against a benefactor; 55-bonds' `A.feudWarMul`). The die is v2's
   `makeRng` (never `A.rand`). The side with those court reasons is the one that declares (`DV.WAR.pick`), and a want
-  one realm holds against the other (47-realm-bible's want, as `CS.WANT` aims it) is a named reason of its own, -10:
+  one realm holds against the other (47-realm-customs's want, as `CS.WANT` aims it) is a named reason of its own, -10:
   "Aldmark wants to push the Horde back over the Gordush and plough the steppe edge". The reasons still drive it: no
   hostile status, no war. Each wait is counted in `A.V2DIP.stats.warWait`; `v2DipWarPace` tests each one.
   - `riGoldGetsUsed` (3 worlds x 30 years, seeds 606, 1212, 2424): before, 0.043 wars a realm-year (127 wars, 116 from

@@ -1,0 +1,316 @@
+// Fights on the ladder: the audit finds no clash, fights roll on fighting worth, the odds shown are the odds rolled,
+// the group resolver keeps the tier texts, wounds cost tiers, and the screens show the math (and only read).
+import { FIGHTS_LAB } from '../../../tools/bench/fights-audit.mjs';
+
+const fmtBins = b => b.bins.filter(x => x.n >= 30).map(x => `${x.bin}: ${x.shown}/${x.real} (${x.n})`).join(', ');
+// a sampled check: every bin of 60 or more within 3.5 standard errors of what it shows, plus a point
+const seOk = b => b.bins.filter(x => x.n >= 60).every(x => { const p = Math.min(0.98, Math.max(0.02, x.shown / 100)); return Math.abs(x.shown - x.real) <= 350 * Math.sqrt(p * (1 - p) / x.n) + 1; });
+
+export default {
+  async flAudit(pg) {
+    // every fight and beast encounter tagged; after conversion no clash with the ladder is left
+    const r = await pg.evaluate(() => {
+      const a = A.FL.audit();
+      let kept = 0, lost = [];
+      for (const x of A.FL.CONVERTED) {
+        const c = A.EV[x.id].choices[x.i];
+        if (c.win && c.lose && (c.win.r || c.win.fx) && (c.lose.r || c.lose.fx)) kept++; else lost.push(x.id);
+      }
+      return { a: Object.assign({}, a, { list: undefined }), before: A.FL.BEFORE, kept, lost: lost.slice(0, 5), n: A.FL.CONVERTED.length };
+    });
+    const a = r.a, before = Object.values(r.before).reduce((s, x) => s + x, 0);
+    const ok = a.clashTotal === 0 && r.n >= 100 && a.convertedDeadly >= 40 && r.kept === r.n && before > 0;
+    return { ok, detail: `${a.events} events, ${a.fights} fight choices (${JSON.stringify(a.byScale)}); clashes as written ${before} (${JSON.stringify(r.before)}), after ${a.clashTotal}; ` +
+      `${r.n} choices now roll on worth, ${a.convertedDeadly} of them can kill or maim; all keep their win and lose text: ${r.kept === r.n}` };
+  },
+
+  async flHonest(pg) {
+    // converted choices: the odds on the button are the odds the roll uses, and come up that often
+    await pg.evaluate(FIGHTS_LAB);
+    const r = await pg.evaluate(() => FLAB.honest(3000, 4401));
+    // exact: the roll is A.chance of the number shown. Sampled: each bin within 3.5 standard errors (plus a point)
+    const ok = r && r.mismatch === 0 && seOk(r) && r.meanErr <= 3 && r.n >= 2000;
+    return { ok, detail: `${r.n} rolls, ${r.mismatch} where the roll used another number; by shown odds (shown/real): ${fmtBins(r)}; mean error ${r.meanErr}, worst bin ${r.maxErr} pts`, data: r };
+  },
+
+  async flDuelOdds(pg) {
+    // the duel screen's chance against what duels do: foes who draw a weapon at the start, a hurt player, both rule sets;
+    // and the profile's odds against the plain lethal duels they are fitted on
+    await pg.evaluate(FIGHTS_LAB);
+    const r = await pg.evaluate(() => {
+      const out = FLAB.duels(4000, 4201);
+      // the opening line reads the same chance as the number
+      let agree = 0, n = 0;
+      FLAB.quiet(() => { const ids = FLAB.pool(4211, 60); for (let k = 0; k < 120; k++) { const a = A.P(ids[k % 60]), b = A.P(ids[(k * 7 + 3) % 60]); if (a === b) continue;
+        A.S.pc = a.id; A.S.queue = []; const D = A.startDuel(a, b, { kind: 'duel', lethal: true, toYield: true }); n++; if (D.log.includes(A.FL.weighLine(D))) agree++; A.S.queue = []; } });
+      return Object.assign(out, { agree, n, honestOdds: typeof A.shownDuelOdds === 'function' });
+    });
+    const s = r.screen, p = r.profile;
+    // the profile's number is 24-honest-duel-odds' A.shownDuelOdds (with the drawn weapon and health added here); without
+    // that feature in the build the person view shows the release's formula, which this feature does not touch
+    const ok = s.meanErr <= 3 && seOk(s) && (!r.honestOdds || p.meanErr <= 4) && r.agree === r.n;
+    return { ok, detail: `duel screen ${s.n} duels, mean error ${s.meanErr}, worst bin ${s.maxErr} (${fmtBins(s)}); profile ${p.n} duels, mean error ${p.meanErr}, worst bin ${p.maxErr}; opening line agrees in ${r.agree}/${r.n}` };
+  },
+
+  async flBeastOdds(pg) {
+    // the duel screen's chance against beasts, alone and with a hunting party, at health 60-100
+    await pg.evaluate(FIGHTS_LAB);
+    const r = await pg.evaluate(() => FLAB.beasts(3000, 4301));
+    const ok = r.meanErr <= 4 && seOk(r);
+    return { ok, detail: `${r.n} beast duels, mean error ${r.meanErr}, worst bin ${r.maxErr} (${fmtBins(r)})` };
+  },
+
+  async flGroupTiers(pg) {
+    // the group resolver (A.groupFight, rolled 3,000 times a matchup) against the sentences of GD.TIERS; and the plan's
+    // "3 Trained beat 1 Elite about two times in three", which the game's own ladder (an Elite takes 7-10 regulars) refutes
+    await pg.evaluate(FIGHTS_LAB);
+    const r = await pg.evaluate(() => FLAB.group(3000));
+    const C = Object.fromEntries(r.claims.map(c => [c.k, c]));
+    const inBand = (k, lo, hi) => C[k].closed >= lo && C[k].closed <= hi;
+    const rolledOk = r.claims.every(c => Math.abs(c.rolled - c.closed) <= 3.5);
+    const ladder = inBand('Trained vs 2 Brawlers', 45, 60) && inBand('Trained vs 3 Brawlers', 25, 55) && inBand('Veteran vs 2 Trained', 45, 60) && inBand('Veteran vs 3 Trained', 25, 55) &&
+      inBand('Elite vs 7 Trained', 45, 60) && inBand('Elite vs 10 Trained', 25, 55) && inBand('Elite vs 4 Veterans', 35, 60) && inBand('Master vs 20 Trained', 45, 60) &&
+      inBand('Master vs 30 Trained', 20, 55) && inBand('Master vs 8 Veterans', 45, 60) && inBand('Master vs 10 Veterans', 25, 55);
+    const plan = C['3 Trained vs Elite'];
+    return { ok: rolledOk && ladder, detail: r.claims.map(c => `${c.k} ${c.closed}% (rolled ${c.rolled}%)`).join('; ') +
+      `. Plan's 3 Trained vs 1 Elite: ${plan.closed}%, not 67%; ${r.trainedToBeatEliteTwoInThree} Trained beat an Elite two times in three` };
+  },
+
+  async flTierTexts(pg) {
+    // GD.TIER_INFO's beast texts, as rewritten, against duels (500 a line)
+    await pg.evaluate(FIGHTS_LAB);
+    const r = await pg.evaluate(() => ({ t: FLAB.tiers(500, 4101), animal: GD.TIER_INFO.animal.who, great: GD.TIER_INFO.great.who }));
+    const ok = r.t.every(x => x.real != null && (x.max != null ? x.real < x.claim : Math.abs(x.real - x.claim) <= 10)) && /one time in four/.test(r.animal);
+    return { ok, detail: r.t.map(x => `${x.k}: ${x.real}% (text ${x.max != null ? 'under ' + x.claim : x.claim}%)`).join('; ') };
+  },
+
+  async flWounds(pg) {
+    // a lost hand takes two tiers off every weapon; lost fingers cost every hand weapon; a bad knee cuts speed; the duel
+    // fighter, the worth and its parts all see it
+    const r = await pg.evaluate(() => {
+      // A lost hand costs about 38% of worth, which is two tiers, except where the worth sits on a tier's floor (63, 76,
+      // 91 ...) before or after: then the cut lands one tier short or past. On 20 seeds × 27 fighters that happened to
+      // 12 of 540 with 9996-polity and 11 of 540 without (always at a floor); seed 4501 alone tipped over when the
+      // Polity's people shifted the dice (fists 63→39). So four seeds are played (108 fighters), and a fighter on a floor
+      // (within 1 point, before or after) is shown but not counted against the rule.
+      const tiers = GD.TIERS.map(t => t.k), floors = GD.TIERS.map(t => t.min != null ? t.min : t.lo).filter(x => x > 0), out = [], bad = [], onFloor = [];
+      const atFloor = v => floors.some(f => Math.abs(v - f) <= 1);
+      const weapons = ['sword', 'axe', 'spear', 'mace', 'dagger', 'fists', 'halberd', 'longsword', 'warhammer'];
+      for (const seed of [4501, 4502, 4503, 4504]) { A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 26 });
+      for (const t of [3, 4, 5]) for (const w of weapons) {
+        const p = A.makeFoe({ realm: 'POL-01', tier: t }); p.npcTemp = false; A.S.people[p.id] = p;
+        p.gear = { weapon: w === 'fists' ? null : w, armor: 'padded', shield: null, helm: null, ranged: null, mount: null };
+        const sk = GD.WEAPON_SKILL[(GD.GEAR[w] || GD.GEAR.fists).kind] || 'unarmed'; p.skills[sk] = Math.max(p.skills[sk] || 0, 30 + 10 * t);
+        const w0 = A.fightWorth(p), t0 = tiers.indexOf(A.tierOf(w0).k);
+        p.wounds = [{ k: 'lost_hand', until: 0 }];
+        const w1 = A.fightWorth(p), t1 = tiers.indexOf(A.tierOf(w1).k);
+        p.wounds = [{ k: 'lost_fingers', until: 0 }];
+        const wf = A.fightWorth(p);
+        p.wounds = [{ k: 'lost_hand', until: 0 }];
+        const parts = A.worthParts(p), sum = parts.body + parts.skill + parts.gear;
+        const f = A.fighterFrom(p, {});
+        out.push([w, w0, w1, t0, t1]);
+        const tierOk = t0 < 2 ? w0 - w1 >= 20 : t1 === t0 - 2;
+        if (!tierOk && (atFloor(w0) || atFloor(w1))) onFloor.push(`${w} ${w0}->${w1}`);
+        else if (!tierOk || wf >= w0 || sum !== parts.total || !f.oneHand) bad.push(`${w}: ${w0}->${w1} (tier ${t0}->${t1}), fingers ${wf}, parts ${sum}/${parts.total}`);
+        if (tierOk && (wf >= w0 || sum !== parts.total || !f.oneHand)) bad.push(`${w}: fingers ${wf}, parts ${sum}/${parts.total}`);
+      } }
+      const p = A.pc(), s0 = A.stat(p, 'spd'), v0 = A.fightWorth(p); p.wounds.push({ k: 'bad_knee', until: 0 });
+      return { out, bad, onFloor, knee: [s0, A.stat(p, 'spd'), v0, A.fightWorth(p)] };
+    });
+    const ok = !r.bad.length && r.knee[1] === r.knee[0] - 7 && r.knee[3] < r.knee[2];
+    const ex = r.out.filter((x, i) => i % 9 === 0 || x[0] === 'spear').slice(0, 5).map(x => `${x[0]} ${x[1]}→${x[2]}`).join(', ');
+    return { ok, detail: `${r.out.length} fighters (4 seeds x 3 tiers x 9 weapons): a lost hand drops each by two tiers (${ex}); ${r.onFloor.length} on a tier's floor (${r.onFloor.slice(0, 3).join(', ')}); ${r.bad.length} misses ${r.bad.slice(0, 2).join('; ')}; bad knee: speed ${r.knee[0]}→${r.knee[1]}, worth ${r.knee[2]}→${r.knee[3]}` };
+  },
+
+  async flScreens(pg) {
+    // the math on screen: a measure under event fights, both tiers and the chance on the duel screen, the cost of each
+    // wound on the profile; no digits on Realism; and rendering reads only
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 4601, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 28 });
+      const pc = A.pc(); pc.skills.melee = 40; pc.skills.unarmed = 35;
+      const C = A.FL.CONVERTED.find(x => x.id === 'tavern_brawl') || A.FL.CONVERTED[0];
+      const q = { type: 'event', ev: C.id, ctx: {} }; A.S.queue = [q]; A.eventView(q);
+      const R = () => JSON.stringify([A.rngState, A.S.rng]);
+      const rng0 = R(), h0 = T.hash(A.S);
+      const ev = UI.eventModal(q);
+      const evPure = R() === rng0 && T.hash(A.S) === h0;
+      const foe = A.makeFoe({ realm: 'POL-01', tier: 2 }); foe.npcTemp = false; A.S.people[foe.id] = foe; foe.gear.weapon = null;
+      A.S.queue = [];
+      A.S.settings.diff = 'story';
+      const D = A.startDuel(pc, foe, { kind: 'duel', lethal: true, toYield: true });
+      const rng1 = R(), h1 = T.hash(A.S);
+      const duelStory = UI.duelModal(D);
+      A.S.settings.diff = 'realism';
+      const duelReal = UI.duelModal(D), evReal = UI.eventModal(Object.assign({}, q));
+      A.S.settings.diff = 'story';
+      pc.wounds.push({ k: 'lost_hand', until: 0 }, { k: 'bad_knee', until: 0 });
+      const prof = UI.profileModal(pc, ''), hand = A.FL.woundCosts(pc).find(x => /hand/i.test(x.name)), sameTier = !!(hand && hand.tb === hand.ta);
+      const pure = R() === rng1;
+      // the event modal is pure as well (measured before the duel changed state)
+      return { ev: (ev.match(/Measured:[^<]*/) || [''])[0], duel: (duelStory.match(/The measure\.[^<]*<\/b>[^<]*/) || [''])[0],
+        duelOdds: /times in 100/.test(duelStory), diff: !!A.DIFF, realDigits: /times in 100|\d+% · /.test(duelReal) || /Measured:[^<]*\d/.test(evReal), prof: (prof.match(/In a fight:[^<]*/) || [''])[0], sameTier, pure, evPure,
+        tiers: (duelStory.match(/class="chip tier/g) || []).length, v2: !!A.V2S };
+    });
+    // Realism hides the digits where 42-difficulty is built (A.DIFF.showOdds); without it every setting shows them
+    // The lost hand's line names both tiers when the tier changes, and reads "worth 31 to 8" when it does not (both
+    // Untrained). The life at seed 4601 is drawn after the world, so 9996-polity's offices shifted it: with the Polity
+    // 3 of 20 such lives (seeds 4601-4620) keep their tier after a lost hand, without it 0 of 20; the line must match
+    // whichever case the life is in.
+    // v2 (the owner's rule: no 0-100 number the player sees): the line says the tiers in words, and "less speed" for
+    // the knee; without 99993-v2-stats it keeps the release's worth figures. (No levies: v2's are its own scale, read
+    // from the body, and a worth's tier is not put beside them.)
+    const handLine = r.v2 ? (r.sameTier ? /Lost a hand: still \w+, (a little|much) less in a fight/ : /Lost a hand: \w+ to \w+/)
+      : r.sameTier ? /Lost a hand: worth \d+ to \d+/ : /Lost a hand: \w+ \d+ to \w+ \d+/;
+    const kneeLine = r.v2 ? /less speed/ : /speed -7/;
+    // v2 (99993-v2-stats): no setting shows the duel's "N times in 100" any more (the owner's "no percentages"), so the
+    // story-setting digits, and the worth beside the tier on the duel measure, are required only without it
+    const ok = /^Measured: you, \w+/.test(r.ev) && (r.v2 ? /You: \w+/ : /You: \w+ \d+/).test(r.duel) && (r.duelOdds || r.v2) && (!r.diff || !r.realDigits) && handLine.test(r.prof) && kneeLine.test(r.prof) && !(r.v2 && /\d/.test(r.prof)) && r.pure && r.evPure && r.tiers >= 2;
+    return { ok, detail: `event: "${r.ev}"; duel: "${r.duel}" (${r.tiers} tier chips; realism hides digits: ${r.diff ? !r.realDigits : 'no 42-difficulty in this build'}); profile: "${r.prof.slice(0, 160)}"; render pure: event ${r.evPure}, duel and profile ${r.pure}` };
+  },
+
+  async flLives(pg) {
+    // real lives with the feature: fights met on the ladder, no errors
+    const r = await pg.evaluate(() => {
+      let met = 0, rolls = 0, lives = 0, dead = 0;
+      const conv = new Set(A.FL.CONVERTED.map(x => x.id + ':' + x.i));
+      for (const [seed, status] of [[4701, 'peasant'], [4702, 'noble'], [4703, 'serf'], [4704, 'artisan']]) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status, sex: 'M', startAge: 16 }); lives++;
+        const r0 = T.play(30, { onEvent: v => { const q = A.S.queue[0]; if (q && v && v.choices) for (const c of v.choices) if (conv.has(q.ev + ':' + c.i)) { met++; break; } } });
+        if (r0 === 'dead') dead++;
+        rolls += Object.keys((A.pc().flags || {}).ev || {}).length;
+      }
+      return { met, lives, dead };
+    });
+    return { ok: r.lives === 4, detail: `${r.lives} lives of up to 30 years: ${r.met} events offered a fight that rolls on worth; ${r.dead} died` };
+  },
+
+  // cycle 1 visual B6 and I6: the duel's key badges sit above the move names (they overlapped "3Guard" at 1920), the
+  // foe's read is an intent mark over its head, Yield and Flee are quiet, and on a phone the five moves are on screen.
+  async flDuelFace(pg, errs, { browser, file }) {
+    const { pathToFileURL } = await import('node:url');
+    const out = {};
+    for (const [w, h] of [[1920, 1080], [1366, 768], [390, 844]]) {
+      const ctx = await browser.newContext({ viewport: { width: w, height: h }, isMobile: w < 600, hasTouch: w < 600, reducedMotion: 'reduce' });
+      const p = await ctx.newPage();
+      p.on('pageerror', e => errs.push(String(e.stack || e).slice(0, 300)));
+      try {
+        await p.goto(pathToFileURL(file).href);
+        await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+        out[w] = await p.evaluate(async () => {
+          A.newGame({ seed: 11, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 }); UI.screen = 'game'; UI.ov = null; A.S.queue = []; UI.set.cutins = false; UI.set.hints = false; UI.render();
+          const pc = A.pc(), foe = A.makeFoe({ realm: pc.realm, tier: 2 }); foe.npcTemp = false; A.S.people[foe.id] = foe; A.S.queue = [];
+          A.startDuel(pc, foe, { kind: 'duel', lethal: false, toYield: true }); UI.render();
+          await new Promise(res => setTimeout(res, 300));
+          const bs = [...document.querySelectorAll('#modal .actbtns > button')];
+          let overlap = 0;
+          for (const b of bs) {
+            const k = b.querySelector('.key'), t = [...b.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+            if (!k || !t || getComputedStyle(k).display === 'none') continue;
+            const rg = document.createRange(); rg.selectNodeContents(t); const tr = rg.getBoundingClientRect(), kr = k.getBoundingClientRect();
+            if (kr.right > tr.left + 1 && kr.left < tr.right - 1 && kr.bottom > tr.top + 1 && kr.top < tr.bottom - 1) overlap++;
+          }
+          const fold = bs.filter(b => b.getBoundingClientRect().bottom <= innerHeight + 1).length;
+          const quiet = [...document.querySelectorAll('#modal .dl-quiet')].length;
+          return { moves: bs.length, overlap, fold, intent: !!document.querySelector('#modal .dl-intent'), quiet };
+        });
+      } finally { await ctx.close(); }
+    }
+    const ok = Object.values(out).every(o => o.moves === 5 && o.overlap === 0 && o.intent && o.quiet === 2) && out[390].fold === 5;
+    return { ok, detail: JSON.stringify(out) };
+  },
+
+  // playtest 2 (new 7): the duel screen's chance across peoples. The duel engine gives some races an edge of its own
+  // (a giant's blood, an orc's burst and mass) that the worth never read, and the v2 shift was added on top: the screen
+  // said 37 in 100 where giants won 86, 50 where humans beat orcs 4 times in 100. Each pairing, both seats, is now
+  // within a few points of what the duels do.
+  async flRaceOdds(pg) {
+    await pg.evaluate(FIGHTS_LAB);
+    const r = await pg.evaluate(() => {
+      const L = FLAB, out = [];
+      A.newGame({ seed: 4701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      const byRace = {};
+      for (const id in A.S.realms) { const p = A.makeFoe({ realm: id, tier: 2 }); (byRace[p.race] = byRace[p.race] || []).push(id); }
+      const pool = (rc, n) => { const ids = [], realms = byRace[rc] || []; for (let i = 0; ids.length < n && i < n * 3 && realms.length; i++) { const p = A.makeFoe({ realm: realms[i % realms.length], tier: 1 + i % 5 }); if (p.race !== rc) continue; p.npcTemp = false; A.S.people[p.id] = p; ids.push(p.id); } return ids; };
+      const P = { human: pool('human', 80) };
+      for (const rc of ['orc', 'giant', 'dwarf']) P[rc] = pool(rc, 80);
+      const rr = L.rng(4701);
+      L.quiet(() => {
+        for (const rc of ['orc', 'giant', 'dwarf']) for (const [ra, rb] of [[rc, 'human'], ['human', rc]]) {
+          if (!P[ra].length || !P[rb].length) { out.push({ k: `${ra} v ${rb}`, n: 0 }); continue; }
+          let shown = 0, won = 0, n = 0;
+          for (let k = 0; k < 240; k++) {
+            const a = A.P(P[ra][Math.floor(rr() * P[ra].length)]), b = A.P(P[rb][Math.floor(rr() * P[rb].length)]);
+            a.health = [100, 85, 60][k % 3]; a.wounds = []; b.health = 100; b.wounds = [];
+            A.S.pc = a.id; A.S.queue = [];
+            const D = A.startDuel(a, b, { kind: 'duel', lethal: true, toYield: k % 2 === 0 });
+            if (!D || !D.measure) continue;
+            shown += D.measure.pct; A.duelAuto(D); A.S.queue = []; won += D.result === 'win' ? 1 : 0; n++;
+          }
+          out.push({ k: `${ra} v ${rb}`, n, shown: +(shown / n).toFixed(1), real: +(100 * won / n).toFixed(1) });
+        }
+      });
+      return out;
+    });
+    // 240 duels a pairing: one standard error is about 3 points
+    const ok = r.every(x => x.n >= 200 && Math.abs(x.shown - x.real) <= 9);
+    return { ok, detail: r.map(x => `${x.k}: shown ${x.shown}, won ${x.real} (${x.n})`).join('; ') };
+  },
+
+  // playtest 2 (old 12, old 17, new 7): a child's scuffle is not measured against a grown fighter; a joust is one rider,
+  // not "4 regular soldiers"; the foe fights with the weapon the scene gives them; both duel chips read the measure;
+  // the log's verbs agree ("rushes", not "rushs").
+  async flPlaytest2(pg) {
+    const r = await pg.evaluate(() => {
+      const out = {};
+      // a sister and the pony, at four: the plain check it was written as, and no measure line
+      T.enter({ seed: 4702, race: 'human', sex: 'M', startAge: 4 });
+      let pc = A.pc();
+      const sib = A.EV.ch_fam_sib_fight, ci = sib ? sib.choices.findIndex(c => c.check && c.check.fight) : -1;
+      if (ci >= 0) {
+        const ck = sib.choices[ci].check;
+        out.sib = { spec: ck.fight.scale, odds: A.checkOdds(pc, ck), ladder: A.FL.resolve(pc, ck.fight, {}, ck).pct, applies: A.FL.applies(pc, ck.fight, {}) };
+        A.S.queue = [{ type: 'event', ev: 'ch_fam_sib_fight', forced: true, ctx: {} }];
+        const q = A.S.queue[0]; q.view = A.eventView(q);
+        out.sib.measure = /Measured:/.test(UI.eventModal(q)); A.S.queue = [];
+      } else out.sib = { none: true };
+      // a grown man in a deadly fight is still measured
+      T.enter({ seed: 4702, race: 'human', sex: 'M', startAge: 25 });
+      pc = A.pc();
+      const deadly = A.FL.CONVERTED.find(x => x.deadly && A.EV[x.id].choices[x.i].check.fight.scale === 'one');
+      out.adult = deadly ? A.FL.applies(pc, A.EV[deadly.id].choices[deadly.i].check.fight, {}) : null;
+      // the second tilt: one rider, by the tourney's rules
+      const j = A.EV.gs_joust2, jc = j ? j.choices.map(c => c.check && c.check.fight).filter(Boolean) : [];
+      out.joust = jc.map(f => `${f.scale}/${f.n}/${f.rule}`);
+      // the shepherd's hut: the deserter fights with the army sword the scene gives them
+      const hut = A.EV.av_storm_hut, lose = hut && hut.choices.map(c => c.lose && c.lose.fx && c.lose.fx.duel).find(Boolean);
+      out.hutWeapon = lose && lose.opts ? lose.opts.foeWeapon : null;
+      const foe = Object.values(A.S.people).find(p => p.alive && p.id !== pc.id && p.st && A.age(p) > 20 && (!p.gear.weapon || p.gear.weapon === 'fists'));
+      if (foe && lose) {
+        A.S.queue = [];
+        const D = A.startDuel(pc, foe, Object.assign({ kind: 'duel', lethal: true, toYield: true }, lose.opts));
+        out.duelWeapon = D.b.weapon; out.keptOwn = foe.gear.weapon;
+        const h = UI.duelModal(D), t = h.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+        const chips = [...h.matchAll(/<span class="chip tier [^"]*"[^>]*>(?:<svg[\s\S]*?<\/svg>)?([^<]*)<\/span>/g)].map(m => m[1]);
+        out.chips = chips; out.tA = D.measure.tA; out.tB = D.measure.tB; out.box = (t.match(/The measure\.[^.]*\.[^.]*\./) || [''])[0];
+        // the duel's own rounds: no "rushs" or "close ins"
+        let log = '';
+        for (let k = 0; k < 6 && !D.over; k++) { A.duelAuto ? null : null; }
+        A.duelAuto(D); log = D.log.join(' ');
+        out.badVerb = /\b(rushs|close ins|guards s|strikes s)\b/.test(log);
+        out.verbs = (log.match(/Round \d+: you [a-z ]+; [^.]+\./g) || []).slice(0, 4);
+        A.S.queue = [];
+      }
+      out.armed = A.FL.ARMED.length;
+      return out;
+    });
+    // the plain check decides (81-pacing still leaves a check with a fight spec unscaled, so the number is the release's
+    // check, not the paced one): not the ladder's "hopeless" against a grown Brawler, and no measure line
+    const sibOk = r.sib.none || (!r.sib.applies && r.sib.odds > r.sib.ladder + 10 && !r.sib.measure);
+    const joustOk = r.joust.length > 0 && r.joust.every(x => /^one\/1\/tourney$/.test(x));
+    // with v2 each duel chip is the measure's tier alone (no worth number, no levies: those are v2's own scale)
+    const chipsOk = r.chips && r.chips.some(c => c.trim() === r.tA) && r.chips.some(c => c.trim() === r.tB) && r.chips.every(c => !/\d|lev/.test(c));
+    const ok = sibOk && r.adult === true && joustOk && r.hutWeapon === 'sword' && r.duelWeapon === 'Common sword' && (r.keptOwn == null || r.keptOwn === 'fists') && chipsOk && !r.badVerb && /bare-handed|with an? /.test(r.box);
+    return { ok, detail: `sibling scuffle at 4: ${JSON.stringify(r.sib)}; a deadly fight at 25 measured ${r.adult}; second tilt ${r.joust.join(', ')}; hut deserter ${r.hutWeapon} -> duel ${r.duelWeapon} (own kept ${r.keptOwn}); chips ${JSON.stringify(r.chips)} for measure ${r.tA} v ${r.tB}; "${r.box}"; rounds ${JSON.stringify(r.verbs)}; ${r.armed} events arm the foe from their text` };
+  },
+};

@@ -18,7 +18,7 @@
 // Will, where the typical adult stands above 45, is not made harder than written. The rule reads only the check, never
 // the person, so your own place against the typical stays: weak stats, a wound or an untrained skill still give long odds.
 // It composes with 75-fair-checks, which brings each stage of life to the seasoned adult (75 sees the eased d): this
-// brings the seasoned adult's stats to the house scale. Fights (check.fight, 48-fight-ladder) are left alone.
+// brings the seasoned adult's stats to the house scale. Fights (check.fight, 48-event-fight-rules) are left alone.
 const SC = A.SCALE = A.SCALE || {};
 SC.OFF = false;
 SC.TARGET = 45;
@@ -60,7 +60,7 @@ A.checkOdds = function (pc, check) {
   finally { if (had) check.d = d0; else delete check.d; }
 };
 
-// The odds popover (59-tooltips) names the rule in a row of its own, so its rows still add up to the number on the
+// The odds popover (59-descriptions) names the rule in a row of its own, so its rows still add up to the number on the
 // button. Its share is taken with 75's rule off; 75's own row is taken with this one on, so the two add up. Pure.
 if (UI.TT && typeof UI.TT.checkParts === 'function') {
   const parts0 = UI.TT.checkParts;

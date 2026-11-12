@@ -12,7 +12,7 @@ Oct 26, 2026 · checked against a fresh build of `main` (`/tmp/ardan/complaints/
 
 - **Six bot lives from birth** (seeds 101 to 606, peasant, noble and merchant, Hard). They ran headless with `T.play` (random choices) and recorded 2,240 scenes, 336 game years in all, plus time per game year, the cost of drawing each tab, the save size and the time to encode a save.
 - **Screens.** 22 screens at 1366×768 and 390×844 (a peasant of 20 and a noble of 30, every tab, an open event). For each one the probe recorded the height of each scrolling region against its view, the visible controls, the disabled controls with and without a stated reason, the words on screen and the tooltip targets.
-- **A dead-click scan.** `tools/deadclicks.mjs` on eight screens, plus its static check for any `data-a` action that has no handler.
+- **A dead-click scan.** `tools/dead-clicks.mjs` on eight screens, plus its static check for any `data-a` action that has no handler.
 - **The code**, read from the unpacked build, and the repo's own reports: `tools/bench/reports/scorecard.md`, `tools/bench/reports/balance.json`, `tools/bench/reports/dominance.json`, `docs/plan/*`, and `docs/design/critique.md` (Oct 26).
 
 The probe scripts are not in the repo. They are small, and the numbers can be reproduced from the description above.
@@ -152,7 +152,7 @@ The probe scripts are not in the repo. They are small, and the numbers can be re
   - Road to 100 noted "hints are tied to the calendar"; it is still true.
 - **Two of What now's three suggestions do nothing when pressed:** "Choose what to train" and "Spend your initiative" (dead-click scan, see 10).
 - What now is at the top of a 4.7-screen column, and nothing on screen points to it after the Play button (critique: "after Play there is no second step").
-- No human has played it: the five-player playtest (`docs/plan/Playtest kit.md`) has not been run.
+- No human has played it: the five-player playtest (`docs/plan/playtest-kit.md`) has not been run.
 
 **Fix.**
 1. Tie hints to the life: on for a hint's first applicable moment, for example on coming of age. Keep a setting to turn them off.
@@ -303,7 +303,7 @@ The probe scripts are not in the repo. They are small, and the numbers can be re
 - **Some don't.**
   - On a peasant's Holdings tab, **91 controls are disabled and 57 give no reason**. They are the market's "+1 / +5" buttons (`mktBuy`), with no title and no text.
   - The elite orders' "Ask to join" on the War tab is disabled without a reason.
-- **The dead-click scan.** `tools/deadclicks.mjs` clicked the first 80 controls on each of eight screens (1,166 controls listed in all). It found **5 dead clicks**:
+- **The dead-click scan.** `tools/dead-clicks.mjs` clicked the first 80 controls on each of eight screens (1,166 controls listed in all). It found **5 dead clicks**:
   - **Two of What now's three suggestions do nothing.** "Choose what to train" and "Spend your initiative" both send `["tab","life"]`, and the player is already on the Life tab. They are found on the Life screen and again behind an open event. These are the buttons a lost new player is told to press.
   - On the Realm tab, a "3⧗" cost badge looks clickable and does nothing.
 - `docs/design/critique.md` rates dead controls 🔴 Critical: "a button that does nothing teaches the player that buttons cannot be trusted."
@@ -315,7 +315,7 @@ The probe scripts are not in the repo. They are small, and the numbers can be re
 
    No suggestion should ever point to the tab the player is already on.
 2. Every disabled control carries a reason, both in `title` and as visible small text where it fits ("no cart", "no coin", "orders take knights only"), or it is not drawn.
-3. Make `tools/deadclicks.mjs` part of `tools/check.mjs`, with a test that every disabled control has a reason.
+3. Make `tools/dead-clicks.mjs` part of `tools/check.mjs`, with a test that every disabled control has a reason.
 
 ## 11. Performance: **Medium-low**
 
@@ -353,7 +353,7 @@ The probe scripts are not in the repo. They are small, and the numbers can be re
 - CK3 players ask for mods that hide, disable or delay the map tooltip ("would be a godsend") and for the old "less intrusive tooltips" option ([Steam workshop](https://steamcommunity.com/sharedfiles/filedetails/comments/2216876966)). Translated button text that only fits in the tooltip is another complaint ([Steam workshop](https://steamcommunity.com/sharedfiles/filedetails/comments/3140405364?l=danish)).
 
 **Ardan today.**
-- 59-tooltips explains 97 to 100% of the numbers on each screen, through about 140 entries that nest six deep. Esc closes the top one, and a tap opens a breakdown without taking the choice. This is CK3's model, done well.
+- 59-descriptions explains 97 to 100% of the numbers on each screen, through about 140 entries that nest six deep. Esc closes the top one, and a tap opens a breakdown without taking the choice. This is CK3's model, done well.
 - **Density.** Holdings has 300 to 307 tooltip targets on one screen, and Path 140 to 151.
 - One known bug, since fixed: a hover tip covered the next odds badge (the `ttNested2` flake, Oct 23).
 - Nobody has measured whether players read tooltips or drown in them ("Reading speed needs players").
@@ -406,7 +406,7 @@ The probe scripts are not in the repo. They are small, and the numbers can be re
 
 **Ardan today.**
 - **The odds are honest.**
-  - 24-honest-odds fits the duel odds shown on screen to 2,100 real duels (largest gap 2 points).
+  - 24-honest-duel-odds fits the duel odds shown on screen to 2,100 real duels (largest gap 2 points).
   - 75-fair-checks fits a scene's odds to the stage of life.
   - 81 puts all six stats on one scale for checks.
   - Checks are won 51.6% of the time (scorecard) to 58% (81's league), inside the 45 to 65% band.
@@ -447,7 +447,7 @@ The probe scripts are not in the repo. They are small, and the numbers can be re
   - That report predates about 20 features, and its own flag says it should be re-checked.
 
 **Fix.**
-1. Re-run `tools/bench/dominance.mjs` on the current build. Its nightly run already exists; read its artifact.
+1. Re-run `tools/bench/dominant-strategies.mjs` on the current build. Its nightly run already exists; read its artifact.
 2. A "fill the cart" control.
 
 ## 18. Economy exploits: **Low**
@@ -483,9 +483,9 @@ Ranked by how many new players each would reach, times its severity, divided by 
 5. **Split Holdings into sub-tabs.** It is 8 screens on desktop and 13 on a phone, with 236 to 246 controls.
 6. **Protect the first life's childhood**, or start the first life on Story. Today 1 newborn in 20 dies before 5 on Hard, the default.
 7. **A chosen ambition** at 16 and at 35, shown with its next step. It also brings back `C.ambition` and the 5 events that cannot fire.
-8. **Give every disabled control a reason** or hide it (57 of 91 on Holdings have none, and so does "Ask to join"). Put `tools/deadclicks.mjs` in `tools/check.mjs`.
+8. **Give every disabled control a reason** or hide it (57 of 91 on Holdings have none, and so does "Ask to join"). Put `tools/dead-clicks.mjs` in `tools/check.mjs`.
 9. **Show costs and stakes on choices.** A cost chip from `fx` and `req`, and an "if it fails" line from `lose.fx`.
-10. **Run the five-player playtest** (`docs/plan/Playtest kit.md`) once 1 to 4 are in. Every UI severity above is a guess until someone has played.
+10. **Run the five-player playtest** (`docs/plan/playtest-kit.md`) once 1 to 4 are in. Every UI severity above is a guess until someone has played.
 11. **Big sinks with stakes for rich lives** (a title, a claimant, a foundation), each opening an arc. Fortunes reach 100,000 to 600,000 against a top purchase of 3,500.
 12. **Ask `persist()` on the first autosave, and show "Saved · 1 min ago".**
 13. **Start late-life arcs when they become possible**, plus a "nothing new for 2 years" detector that queues something new.

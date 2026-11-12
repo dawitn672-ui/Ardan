@@ -176,7 +176,7 @@ joined, rankSince, div, army, co, cmdr, stance, curWar, contract, ... }`, `rank`
   99999-v2-renown `b-promo.core.js` `A.promoCheck` wrapper ("raised past a rank", below 7), by content events
   `rk_fm_inherit` (`p.mil.rank` up to 6, "the family office") and `rk_vt_recall` (back to the veteran's rank, at
   most 4), and by release `A.makeRuler` (`rank = max(rank, 9)`, unreachable for the player because
-  `leaveRolesFor(p,'ruler')` ran first). Temporarily shimmed by 72-two-scales `TS.front` / `TS.reckoning`
+  `leaveRolesFor(p,'ruler')` ran first). Temporarily shimmed by 72-one-battle-two-scales `TS.front` / `TS.reckoning`
   (`pc.mil = { realm }`, deleted after). NPCs: 9996 `POL.makeFor` gives a made officer `p.mil = { rank: 4, xp: 0 }`.
 - **Cleared** (`pc.mil = null`): release `A.leaveRolesFor` (any new role but "army"), `A.roleCheck` (a free
   company), `A.resign`, `A.desert`, `A.imprison`, `A.travelTo` (another realm), `A.foundCompany`, `A.foundRealm`,
@@ -351,7 +351,7 @@ replacement seed; `b.vac` marks slot 4 vacant until the New Year. A captain made
 
 - **Written.** `r.orders[id]` (the Grand Master, a made noble, `occ` `A.orderLeadTitle`): release `A.orderRaise`
   (from `A.ordersEnsure`, at start and when an order rises again), `A.migrateOrders` (renames; a removed order's
-  leader becomes "once ..."). 32-ladder wraps `A.orderRaise` (the Master cap). The order's division `d.cmd` = the
+  leader becomes "once ..."). 32-legend-and-master-caps wraps `A.orderRaise` (the Master cap). The order's division `d.cmd` = the
   Grand Master. `pc.order = { id, rank 0-3, since, merit }`: `A.orderJoin` (+ 99997's three trials), `A.orderMonth`
   (rank up to 3, e.g. "Marshal of the Wolves"), `A.orderLeave`, `CAR.closeCareer`, `A.migrateOrders`. Joining also
   sets `pc.mil.div` to the order's division.
@@ -736,7 +736,7 @@ slots), `A.leaveRolesFor`, `A.divRemove`.
 `CO.replaceCap`, `CO.promote`, `CO.reraise`, `CO.build`, `CO.leave`, `CO.month` (death sweep), and the 9997
 `A.divRemove` wrapper.
 
-**Order masters (`order:`)**: release `A.orderRaise` (via `A.ordersEnsure`; 32-ladder's wrapper), `A.migrateOrders`.
+**Order masters (`order:`)**: release `A.orderRaise` (via `A.ordersEnsure`; 32-legend-and-master-caps's wrapper), `A.migrateOrders`.
 Order membership stays a grade (`pc.order`): release `A.orderJoin` (99997 trials wrapper), `A.orderMonth`,
 `A.orderLeave`; 994 `CAR.closeCareer`.
 

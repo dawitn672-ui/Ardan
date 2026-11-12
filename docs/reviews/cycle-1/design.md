@@ -68,12 +68,12 @@ The bugs I met on the way are in their own section after the improvements.
 **Why it works for this audience.** BitLife's ribbons are the reason its players start the next life. Exactly one ribbon is given per life, as a verdict, and it goes into a collection the player chases to 100%. Players also set themselves runs ("this time, a pirate"). Hades and Reigns make death the start of progress. Wildermyth sends surviving heroes to a legacy pool for later campaigns. Young players are strongly driven by completion and visible progress. A collection that resets is worse than none, because it teaches them the game doesn't remember them.
 
 **How to build it.** A new feature, `features/NN-hall-of-lives/`.
-- **The store.** Keep a per-browser record, like the one 97-life-fixes uses for `UI.set.lfLives` (`f-shield.core.js:72`). It needs try/catch, and the page must work without it. Each entry holds `{name, race, realm, years, ending, manner, epitaph, score, achievements[], seed}`. Write it in a wrapper of `A.pcDeath` after 28 has set `pc.ending`.
+- **The store.** Keep a per-browser record, like the one 97-first-life-fixes uses for `UI.set.lfLives` (`f-shield.core.js:72`). It needs try/catch, and the page must work without it. Each entry holds `{name, race, realm, years, ending, manner, epitaph, score, achievements[], seed}`. Write it in a wrapper of `A.pcDeath` after 28 has set `pc.ending`.
 - **Where it shows.**
   - The title screen gets a "Your lives" shelf of the last 12 portraits with their epitaphs.
   - The Legacy tab's "Endings found" reads the union of the save and the Hall.
   - The death screen says "New: *Cut Short* (3 of 20)".
-- **Unlocks.** Some of 29-starts' 20 stories open only after a given ending: dying "Unremembered" opens "The beggar's heir", say. Pass the unlock into `o` as 97 does with `o.firstLife`, so the journal replays it. The engine never reads the Hall.
+- **Unlocks.** Some of 29-starting-stories' 20 stories open only after a given ending: dying "Unremembered" opens "The beggar's heir", say. Pass the unlock into `o` as 97 does with `o.firstLife`, so the journal replays it. The engine never reads the Hall.
 - **Rules.** Rendering stays pure. Strings go through `UI.esc`.
 
 ### 2. "Coming up": the calendar strip (S, impact 4)
@@ -82,7 +82,7 @@ The bugs I met on the way are in their own section after the improvements.
 - The life is lived a Week or a Month at a time (84-top-bar), but nothing shows what is ahead.
 - The engine knows a lot about the future:
   - `A.S.sched` holds scheduled returns, arc stages and debts;
-  - 47-realm-bible has customs "in a set month each year" (taxes, fasts, musters, festivals);
+  - 47-realm-customs has customs "in a set month each year" (taxes, fasts, musters, festivals);
   - events promise dates: "The guild will judge your masterpiece at the spring session" (`g1-events.txt`).
 - No feature renders `S.sched` (checked by grep in `.build/` and `features/`). Initiative sat at "7.0/7 full" all through g1 and g3 (`g3-tab-path.png`), and nothing said it was going to waste.
 
@@ -100,12 +100,12 @@ The bugs I met on the way are in their own section after the improvements.
 ### 3. Start stories up front (S, impact 4)
 
 **What I saw.**
-- The 20 hand-made starts (29-starts), Ardan's best way in, sit behind a closed `<summary>` line on step 1 of the creation screen: "▸ Begin from a story (20 hand-made starts; or build your own below)" (`g2-create1.png`).
+- The 20 hand-made starts (29-starting-stories), Ardan's best way in, sit behind a closed `<summary>` line on step 1 of the creation screen: "▸ Begin from a story (20 hand-made starts; or build your own below)" (`g2-create1.png`).
 - The open part of the screen is a set of sliders: people, realm (a select of 152 realms), rank.
 
 **Why it works.** Stellaris shows its origins as the first, illustrated choice, and each one changes how the game plays. King of Dragon Pass credits its replay to pre-game choices. A 14-year-old picks "the plague orphan" in two seconds. Picking among 152 realms in a dropdown, they freeze.
 
-**How to build it.** In `src/events/29-starts/starts.core.js`:
+**How to build it.** In `src/events/29-starting-stories/starts.core.js`:
 - Open the details by default for the first three lives (`UI.set.lfLives`).
 - Show three story cards, with picture and one line each, picked by hashing the date. "Show all 20" opens the rest, and "Build your own" stays one click away.
 - Unlocked stories from #1 carry a "New" tag.
@@ -137,7 +137,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 ### 5. "Explore the wilds" reads the land (M, impact 5)
 
-**What I saw.** The activity is `explore(pc){return A.queue({type:"event",ev:A.pick(["explore_ruin","explore_cave","explore_road","explore_lair","explore_battlefield"])})…}` (`.build/ardan-core.js`). On a continent of 1,992 provinces, 110 cultures and 140 beasts, exploring anywhere draws one of the same five scenes. 97-life-fixes then rations them as a family.
+**What I saw.** The activity is `explore(pc){return A.queue({type:"event",ev:A.pick(["explore_ruin","explore_cave","explore_road","explore_lair","explore_battlefield"])})…}` (`.build/ardan-core.js`). On a continent of 1,992 provinces, 110 cultures and 140 beasts, exploring anywhere draws one of the same five scenes. 97-first-life-fixes then rations them as a family.
 
 **Why it works.** Genshin is built on "what's that on the ridge?": each region has its own landmarks, puzzles and secrets. Kenshi and Dwarf Fortress adventure mode make the world's real history the thing you stumble on. Creative, adventurous players want the world to be different where they go. Ardan has the data to do it, and the activity ignores it.
 
@@ -146,7 +146,7 @@ The bugs I met on the way are in their own section after the improvements.
   - the province's terrain and coast;
   - beasts from 76-beast-habitats / 992-far-beasts `A.beastsNear`;
   - places named in the realm atlas (ruins, groves, battlefields from `A.S.history` and 57's world record);
-  - a local legend from 26-belief-truth (what folk say, and what is true).
+  - a local legend from 26-belief-versus-truth (what folk say, and what is true).
 - **One scene, filled in.** Write a parametrised event pack, about 12 shapes such as "a ruin of {who}" and "a lair of {beast}", that takes `ctx` from the site. Each shape has its own checks and its own result.
 - **The record.** A found site goes into `pc.sites` (tolerating its absence). It writes a line in the Chronicle and feeds #11.
 - **The patch.** One wrap of `UI.A`'s `explore` action.
@@ -166,7 +166,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 ### 7. Inner voices (S–M, impact 4)
 
-**What I saw.** A scene card shows the text, the choices and the odds (`g1-ev2.png`). The skill numbers are there, but the character has no voice of its own. 54-voices gives NPCs voices by culture and trait. The player gets none.
+**What I saw.** A scene card shows the text, the choices and the odds (`g1-ev2.png`). The skill numbers are there, but the character has no voice of its own. 54-character-voices gives NPCs voices by culture and trait. The player gets none.
 
 **Why it works.** Disco Elysium's skills speak as characters ("skills would often chime in during conversations to analyze, advise, and comment"). Each one is a hint, a joke and a mirror of who you built. Players quote those lines and share them. It turns a stat into a personality.
 
@@ -182,7 +182,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 **Why it works.** CK3's character card leads with traits and goals, which makes every face a story hook. For a teenager, "wants land of her own; fears the lord's bailiff" makes a person interesting at a glance. "Untrained" makes them a stat block.
 
-**How to build it.** In the People list renderer, through 59-tooltips and a small UI wrap:
+**How to build it.** In the People list renderer, through 59-descriptions and a small UI wrap:
 - Replace the tier chip with the person's want once known (after get-to-know, or from `rel.hist`), and a "?" before that.
 - Keep the tier for soldiers and rivals, or inside the profile.
 
@@ -217,7 +217,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 ### 11. The Atlas (M, impact 4)
 
-**What I saw.** Nothing records where the player has been. There is no `visited` or `seen` field in the engine or the features (grep). `A.travelTo` moves `pc.home` and writes one log line. The Great Continent's 1,992 provinces are all drawn as known from birth, and so is its edge, though 26-belief-truth's line is "what you know depends on how you came by it".
+**What I saw.** Nothing records where the player has been. There is no `visited` or `seen` field in the engine or the features (grep). `A.travelTo` moves `pc.home` and writes one log line. The Great Continent's 1,992 provinces are all drawn as known from birth, and so is its edge, though 26-belief-versus-truth's line is "what you know depends on how you came by it".
 
 **Why it works.**
 - In Sunless Sea, "you start in London with an empty map and have to find your way to all the ports, islands and wrecks". The map filling in is your progress.
@@ -234,13 +234,13 @@ The bugs I met on the way are in their own section after the improvements.
 ### 12. Chapter cards (M, impact 4)
 
 **What I saw.**
-- 97-life-fixes restored ambitions, asked at coming of age and at 35, and they work. In g1 the Life tab showed "Raise a full house · Next: find someone to marry".
+- 97-first-life-fixes restored ambitions, asked at coming of age and at 35, and they work. In g1 the Life tab showed "Raise a full house · Next: find someone to marry".
 - Between those two questions are 19 years with one long-range aim. 22-chronicle has chapters only looking back ("one chapter per decade").
 - The Decisions tab still opens with "There are no quest lists in Ardan" (`g3-tab-goals.png`).
 
 **Why it works.** Pentiment's acts jump years, and each act has its own question. Reigns gives a few objectives per reign that unlock new cards. BitLife's challenges are 4 or 5 short aims. Short aims fit a session of 20 to 40 minutes. A lifelong ambition doesn't.
 
-**How to build it.** Extend `src/events/97-life-fixes/c-ambition.core.js`, or add `features/NN-chapters/`.
+**How to build it.** Extend `src/events/97-first-life-fixes/c-ambition.core.js`, or add `features/NN-chapters/`.
 - **The card.** At each life stage (49-body-mind's stages) and on big turns (a marriage, a move, a war), show a title card: "Chapter Three: The Hungry Years". The name comes from the situation, by id hash.
 - **Three aims for about five years**, from the situation and the realm, such as "Get your own plough", "Win Vijaena's trust", "See the sea".
 - **On screen.** The aims go under Ambition, with ticks. A finished one writes a deed and gives a small reward.
@@ -248,7 +248,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 ### 13. A weekly challenge (S–M, impact 4)
 
-**What I saw.** The world is deterministic from a seed, and 43-varied-worlds and 29-starts make a seed plus a start a reproducible life. Nothing offers a shared run.
+**What I saw.** The world is deterministic from a seed, and 43-varied-worlds and 29-starting-stories make a seed plus a start a reproducible life. Nothing offers a shared run.
 
 **Why it works.** BitLife's weekly challenges "add a fun competitive twist, encouraging players to experiment". Spelunky's daily run gives a whole community one world to compare. It is a reason to come back weekly, and a conversation ("how did you get the ship?").
 
@@ -259,7 +259,7 @@ The bugs I met on the way are in their own section after the improvements.
   - three goals checked by the engine (ambition keys, achievements, endings);
   - "beat your best score" (73's score).
 - **Determinism.** The seed is an input, so the life replays. Store the best in the Hall (#1).
-- **Where it goes.** In 29-starts, plus a small title-screen patch.
+- **Where it goes.** In 29-starting-stories, plus a small title-screen patch.
 
 ### 14. Make your mark (M, impact 4)
 
@@ -281,7 +281,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 **Why it works.** Persona's cast is your classmates. You grow up beside them, and the calendar gives them days. Stardew's villagers are the same few people every season. Young players care most about people their own age. A rival or a friend from age 8 who is still there at 40 is what a life sim's best stories are made of.
 
-**How to build it.** Extend 41-circles.
+**How to build it.** Extend 41-friend-circles.
 - **The circle.** The first "Play with other children" or "Run with the young bloods" makes three or four named peers of the player's age, in the home province, as one circle (41 already models circles).
 - **The roles.** One of them is marked the "rival of your youth" for 51-arcs-rivals, and one the "first friend" for 40-memory-childhood's callbacks.
 - **What it does.** Peers age with you, and 21 gives them moves at each stage.
@@ -292,7 +292,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 **Why it works.** Persona gives one evening and a handful of places. Reigns gives one card. Choice overload makes new players pick nothing, or the first tile. A grid of 29 also hides the tiles that make a life distinctive.
 
-**How to build it.** In 90-fold and 91-look's tile grid:
+**How to build it.** In 90-collapsible-sections and 91-visual-style's tile grid:
 - Group the tiles into four intents: get better, meet people, make money, take a risk.
 - Show 4 suggested tiles first, from the ambition (#12), the moods (35) and What now, with the rest under "More (25)".
 
@@ -312,7 +312,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 ### 18. The web of people (M, impact 3)
 
-**What I saw.** The north star asks for "a web view of who loves and hates whom". 41-circles and 55-bonds hold the data, but the People tab is a list.
+**What I saw.** The north star asks for "a web view of who loves and hates whom". 41-friend-circles and 55-bonds hold the data, but the People tab is a list.
 
 **Why it works.** CK3's relation lines and Dwarf Fortress's legends let players see the drama and screenshot it. A web makes "my friend is my enemy's lover" visible at once.
 
@@ -320,7 +320,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 ### 19. Thoughts you adopt (M, impact 3)
 
-**What I saw.** Choices set flags (`pc.flags`) and 67-memory-weave cites them, but a repeated stance never becomes part of who you are. Hiding grain three hungry winters running doesn't make you anyone.
+**What I saw.** Choices set flags (`pc.flags`) and 67-choice-memories cites them, but a repeated stance never becomes part of who you are. Hiding grain three hungry winters running doesn't make you anyone.
 
 **Why it works.** Disco Elysium's Thought Cabinet lets you "install opinions, ruminate on them, and let them modify future perception". Each one has a cost and a payoff, and it marks the build as yours. It is identity play, which is central at 13 to 23.
 
@@ -347,7 +347,7 @@ The bugs I met on the way are in their own section after the improvements.
 **Why it works.** King of Dragon Pass is remembered because every line is in its culture's voice. When the default world is the Great Continent, western words in eastern lands break the adventure of being somewhere else.
 
 **How to build it.**
-- Add place-words to the token set: `{temple}`, `{priest}`, `{service}`, `{lord}`, `{crypt}`. Fill them per faith and culture from 990-far-peoples' faith data, through 54-voices' culture terms.
+- Add place-words to the token set: `{temple}`, `{priest}`, `{service}`, `{lord}`, `{crypt}`. Fill them per faith and culture from 990-far-peoples' faith data, through 54-character-voices' culture terms.
 - Have a lint rule in `tools/lint-events.mjs` flag "church", "vespers" and "priest" in events with no culture or faith condition. The tools are not this reviewer's to change, so this is a proposal.
 - Re-word the about 40 commonest generic scenes to use the tokens.
 
@@ -358,11 +358,11 @@ The bugs I met on the way are in their own section after the improvements.
 | Bug | Where seen | Fix | Size | Impact |
 |---|---|---|---|---|
 | Endings and achievements reset on every new game. A.S.ach and S.endings live in the state `A.newState` rebuilds. | Code; `g1-tab-legacy.png` | #1 above. At least, carry `S.endings`, `S.manners` and `S.ach` through `UI.A.newLife` as a browser record. | M | 5 |
-| A memory citation pastes the choice label and loses its object: "The last time you were at market, in 1106, you tried to cut it, and failed". It came two scenes running ("Strangers in the market", "A tooth on a cord"). | `g3-live.txt`, 1107 | `src/events/67-memory-weave/a-record.core.js:97-98` builds `d` from the label's first words. Skip labels whose verb takes a pronoun object ("it", "them", "him", "her") unless the scene supplies a noun. Don't cite the same memory in two scenes within a year. | S | 3 |
+| A memory citation pastes the choice label and loses its object: "The last time you were at market, in 1106, you tried to cut it, and failed". It came two scenes running ("Strangers in the market", "A tooth on a cord"). | `g3-live.txt`, 1107 | `src/events/67-choice-memories/a-record.core.js:97-98` builds `d` from the label's first words. Skip labels whose verb takes a pronoun object ("it", "them", "him", "her") unless the scene supplies a noun. Don't cite the same memory in two scenes within a year. | S | 3 |
 | A festival line repeats its name: "The Long Night of Lamps. The Long Night of Lamps. Every Lamp monastery…" | `g3-live.txt`, Dec 1105 | `archive/990-far-peoples/faiths.data.core.js:28`: the description begins with the name, and the scene adds the name again. Strip a leading copy of the name in the scene's setup. | S | 2 |
-| A bestiary line ends with two full stops: "Guards the Tea Mother trees..". | `n1-tab-life.png` | The "So that is what they call it" line (26-belief-truth) appends "." to a lore line that has one. Trim the trailing punctuation before adding. | S | 1 |
+| A bestiary line ends with two full stops: "Guards the Tea Mother trees..". | `n1-tab-life.png` | The "So that is what they call it" line (26-belief-versus-truth) appends "." to a lore line that has one. Trim the trailing punctuation before adding. | S | 1 |
 | The newborn Kyipa's mother is also named Kyipa. | `n1-tab-people.png` | The naming for single-name cultures (Skyfolk) doesn't exclude the parents' names. Re-pick when it matches a parent or sibling. | S | 2 |
-| The title screen still pitches the old world: "Thirty-four realms, a hundred million souls", over the Known World map. The default is the Great Continent (152 realms, 1,992 provinces). | `g2-title.png`, `g2-create4.png` | 86-title-fold or 99-far-lands: the text and map should follow the default lands. | S | 2 |
+| The title screen still pitches the old world: "Thirty-four realms, a hundred million souls", over the Known World map. The default is the Great Continent (152 realms, 1,992 provinces). | `g2-title.png`, `g2-create4.png` | 86-title-screen-in-view or 99-far-lands: the text and map should follow the default lands. | S | 2 |
 | The death and creation screens draw the old paper-doll portrait, while the game draws 93's anime bust. | `death.png`, `g2-create1.png` | 93-anime-portraits: route those two renderers through the same portrait call. | S | 3 |
 
 ---

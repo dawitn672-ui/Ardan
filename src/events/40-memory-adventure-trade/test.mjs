@@ -204,7 +204,7 @@ export default {
         if (v.skip) { bad(`${id}${tag}: skipped by the engine`); return false; }
         const all = flat(v);
         if (RAW.test(all)) bad(`${id}${tag}: raw token ${all.match(RAW)[0]}`);
-        // a local saying 54-voices closes the scene with ("Nobody here boards a prize ...") is that feature's prose, as
+        // a local saying 54-character-voices closes the scene with ("Nobody here boards a prize ...") is that feature's prose, as
         // 40-memory-practice's check has it: 9996-polity's people shifted the hash that picks it onto mat_cripple_share
         const voiced = A.VOICE && (A.VOICE.last || []).some(x => /^line:/.test(x));
         const own = voiced ? flat(Object.assign({}, v, { text: String(v.text || '').replace(/\n\n[^\n]*$/, '') })) : all;

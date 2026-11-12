@@ -1,6 +1,6 @@
 # Beast habitats
 
-**Aspect:** Balance and difficulty (the scorecard's median death age; canon puts it at 55–65 for humans who reach 20) and the plan's Power-scaling bar, "0 lore clashes in events" (`docs/plan/Ardan The Road to Ten.md`) · **Kind:** system (one core file, no patches, no events)
+**Aspect:** Balance and difficulty (the scorecard's median death age; canon puts it at 55–65 for humans who reach 20) and the plan's Power-scaling bar, "0 lore clashes in events" (`docs/plan/road-to-ten.md`) · **Kind:** system (one core file, no patches, no events)
 
 ## The bug (in the release)
 
@@ -72,7 +72,7 @@ It matters twice:
 
 - The hunt (`startHunt`) checks `near.length` first.
 - Scenes that need a beast either check `A.beastsNear(p).length > 0` in `cond` (`av_wild_lair`, `av_wild_village_bounty`, `av_wild_hunt_contract`) or fall back to a fixed beast.
-- 26-belief-truth and 48-fight-ladder read `A.BEASTS` only.
+- 26-belief-versus-truth and 48-event-fight-rules read `A.BEASTS` only.
 - 40-memory-adventure-trade's `beastNear` falls back to `CRE-21`.
 
 The `bhEmptySafe` test runs every scene whose code reads the list in a province with no beast.
@@ -85,7 +85,7 @@ The `bhEmptySafe` test runs every scene whose code reads the list in a province 
   - one beast per terrain: the content's `killer`.
 
   So a Solenne peasant can still meet "a cave bear" through those few scenes, and they now fire in 191 provinces. The fix belongs in those scenes: skip, or tell of a plain wolf or boar, when the list is empty.
-- **29-starts' "What Took Your Father"** (`starts.core.js`, Northreach, W-13) picks its beast from `LORE.creatures` by terrain word alone, not through `A.beastsNear`. It can still pick a tropical beast for a Northreach father. Filtering its pool with `A.BH.suits(c.id, home)` would fix it; W-13 is in no beast's range, so it would fall to its own fallback.
+- **29-starting-stories' "What Took Your Father"** (`starts.core.js`, Northreach, W-13) picks its beast from `LORE.creatures` by terrain word alone, not through `A.beastsNear`. It can still pick a tropical beast for a Northreach father. Filtering its pool with `A.BH.suits(c.id, home)` would fix it; W-13 is in no beast's range, so it would fall to its own fallback.
 
 ## Decisions a human should check
 
@@ -122,7 +122,7 @@ The Tiger of Ranpur killed 10 of the 96 lives before (8 of them before 50) and n
 
 **What still kills off-range.** After the change, 12 of the 15 beast deaths (at any age) are by beasts whose canon range does not include the life's starting region. Examples: the Cave Bear in Eldergrove and the Horde, the Evenwood Wolf in Ashmere and Eldergrove, the Hell Boar in Ashmere and Aldmark, the Cave Hyena in Aldmark and Solenne, the Grey Stag in Eldergrove. These come from the content's fixed fallbacks (`"CRE-25"` in `explore_cave`, `hunt_beast` and `beastNear`; `"CRE-21"` elsewhere) and from pickers that never call `A.beastsNear`: `C_beast` in the `pf_*` scenes picks by terrain only (steppe → Cave Hyena, forest → Evenwood Wolf or Hell Boar, mountains → Cave Bear). Scenes gated by realm, such as `av_wild_greystag` (Sylvaran, Eldergrove, Aldmark, Ashmere), also name a fixed beast. Moving them to `A.beastsNear`, or to a plain wolf or boar, is the next step for "0 lore clashes". The probe records the start, not later moves, so a few of these lives may have moved home.
 
-Cross-feature tests on the full build (26-belief-truth, 29-starts, 40-memory-adventure-trade, 48-fight-ladder, 49-body-mind, plus the core suites) all pass with and without this feature. The only differences are in the numbers of bot-life tests whose random stream shifts when fewer beasts are offered. For example, `flLives` went from 12 fight scenes and 2 deaths to 33 and 0, and `traitsInLives` from a median of 1 trait change to 2.
+Cross-feature tests on the full build (26-belief-versus-truth, 29-starting-stories, 40-memory-adventure-trade, 48-event-fight-rules, 49-body-mind, plus the core suites) all pass with and without this feature. The only differences are in the numbers of bot-life tests whose random stream shifts when fewer beasts are offered. For example, `flLives` went from 12 fight scenes and 2 deaths to 33 and 0, and `traitsInLives` from a median of 1 trait change to 2.
 
 ## Measured by (`test.mjs`)
 

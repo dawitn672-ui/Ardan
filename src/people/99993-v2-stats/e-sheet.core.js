@@ -22,7 +22,7 @@ VS.levyRank = function (lv) {
   return lv < 0.7 ? 'not yet a fighter' : lv < 1.4 ? 'a levy\'s worth' : lv < 3.3 ? 'a man-at-arms' : lv < 8 ? 'a knight' : lv < 12 ? 'a champion'
     : lv < 32 ? 'an order knight, or a giant' : lv < 50 ? 'a hero of the age' : 'a legend';
 };
-// each row says what its number measures (59-tooltips: every number on the profile explains itself)
+// each row says what its number measures (59-descriptions: every number on the profile explains itself)
 VS.ROW_TIP = { Height: 'Your height and weight now; a child grows each year.', Strength: 'The heaviest dead weight you can raise once.',
   Speed: 'Your flat-out sprint.', Endurance: 'How far you can march in a day with a pack.', Reflexes: 'How long you take to answer a blow.',
   Toughness: 'How many blows that would fell an ordinary man you can take.', 'In a fight': 'Your worth in a fight, counted in levies: untrained spearmen in padded coats.' };
@@ -88,7 +88,7 @@ VS.statWord = function (p, s, v) {
 VS.valueWord = (p, k, v) => (GD.STATS.includes(k) ? VS.statWord(p, k, v) : VS.tierOf(v).name);
 // a vital's band word (g-bands) on the phone: a word is wider than the number the release's 36 px value column was
 // sized for (playtest 2, new 14: "middlin", "pleasin", "know / neighb" at 420 px), so the label and the word share
-// the first line and the bar goes under them. By the label's tooltip key (59-tooltips): other features' wrappers
+// the first line and the bar goes under them. By the label's tooltip key (59-descriptions): other features' wrappers
 // read the row's markup as the release writes it, so the row itself is not marked. The bar is named by its class: a
 // structural ">:nth-child(2)" after a :has() made every DOM insert restyle the whole page (round 2 A0, CRITIQUE P1).
 VS.VITAL_ROW = '#game.phone .barrow:is(:has(.lbl [data-tt="health"]),:has(.lbl [data-tt="happy"]),:has(.lbl [data-tt="looks"]),:has(.lbl [data-tt="fame"]),:has(.lbl [data-tt="honor"]),:has(.lbl [data-tt="piety"]))';
@@ -169,7 +169,7 @@ if (UI.SCENE && UI.SCENE.chip) {
     } catch (e) { return h; }
   };
 }
-// 48-fight-ladder's tier chip: "Untrained · 39" becomes "about one levy"
+// 48-event-fight-rules's tier chip: "Untrained · 39" becomes "about one levy"
 if (UI.tierChip) {
   const tc = UI.tierChip;
   UI.tierChip = function (p, short) {

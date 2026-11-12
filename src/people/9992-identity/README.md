@@ -2,11 +2,11 @@
 
 **Aspect:** Identity and story (design review cycle 1, #14 Make your mark, #7 Inner voices, #19 Thoughts you adopt) · **Kind:** three readable core files, 28 events (`identity.events.js`, prefix `ix_`), tests. No patches.
 
-**Why.** The only thing a player wrote in a whole life was a house name in a text box. Nothing was theirs: no arms, no named horse, no voice of their own in a scene, and a repeated stance never became part of who they were. Creative players of 13 to 23 want a character that is theirs, and a sigil they made is the best thing to share (9994-share).
+**Why.** The only thing a player wrote in a whole life was a house name in a text box. Nothing was theirs: no arms, no named horse, no voice of their own in a scene, and a repeated stance never became part of who they were. Creative players of 13 to 23 want a character that is theirs, and a sigil they made is the best thing to share (9994-share-a-picture).
 
 ## What it does
 
-**Where the card sits.** "Your mark" is at the foot of the Life tab. On a phone it heads Decisions, beside "Found a house of your own", because 91-look holds the phone Life page to 1.3 screens (`phoneLife`).
+**Where the card sits.** "Your mark" is at the foot of the Life tab. On a phone it heads Decisions, beside "Found a house of your own", because 91-visual-style holds the phone Life page to 1.3 screens (`phoneLife`).
 
 **Arms** (`identity.a-mark.core.js`).
 - **The designer** ("Your mark" on the Life tab, *Design your arms*): field, a division or ordinary (chief, fess, pale, bend, chevron, cross, saltire, per pale, per fess, quarterly, bordure) in a second tincture, one of the release's 24+ charges, the charge's tincture, and a motto. Eight tinctures in the woodblock palette (94's pigments), 91's ink line round the shield. Every button is at least 44 px; on a phone the rows stack.

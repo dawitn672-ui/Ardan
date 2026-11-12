@@ -35,7 +35,7 @@ Rams wrote ten principles for good design in the late 1970s: it is innovative, u
 **What it means for Ardan.**
 
 - **Useful and understandable first.** Every element on the Life screen should answer "what is happening to me, and what can I do now". The 30 activity descriptions are always visible. They are useful the first time and noise the fiftieth, so they belong in a tooltip.
-- **Honest.** The odds badges must be the odds the engine rolls. 24-honest-odds already does this; the redesign must not round them into vaguer words.
+- **Honest.** The odds badges must be the odds the engine rolls. 24-honest-duel-odds already does this; the redesign must not round them into vaguer words.
 - **Thorough.** Disabled buttons give their reason. Every number has a unit. Every icon has a label. Empty states say what to do.
 - **As little design as possible** means one card level, not cards inside cards inside columns. The critique counted three nested frames around What now.
 
@@ -109,7 +109,7 @@ Norman's *The Design of Everyday Things* (1988; revised 2013) separates an **aff
 
 **What it means for Ardan.**
 
-- **One look for "you can press this".** Every button has a visible boundary (fill or a 3:1 border) and a hover change. Text that is not clickable never uses the button look. Glossary words keep the dotted underline that 59-tooltips gives them.
+- **One look for "you can press this".** Every button has a visible boundary (fill or a 3:1 border) and a hover change. Text that is not clickable never uses the button look. Glossary words keep the dotted underline that 59-descriptions gives them.
 - **Feedback for every choice.** After a choice: the button presses in (80 ms), the result appears in place, the changed numbers flash their delta (+2 Strength, in the stat's colour) and a short toast lists the changes. Today the player often has to compare numbers before and after.
 - **Mapping.** The six stats sit in the same order and colours everywhere: the profile, checks on choices, tooltips, level-ups.
 - **The conceptual model.** The screen should show the three layers of the game the same way every time: you (left), what happens (centre), what you can do (right).
@@ -159,7 +159,7 @@ NN/g: progressive disclosure "defers advanced or rarely used features to a secon
 - **The Life tab is many short sections:** What now, Your days, How you are, and 13 groups of activities. That is the accordion case. Each section header carries a one-line summary ("Your days · Push for advancement · steady"), so a collapsed section still informs.
 - **Layer 1, always visible:** what happens now, your vitals, your stats, the three suggested actions, the action names.
 - **Layer 2, one click:** descriptions, breakdowns, the full proficiency list.
-- **Layer 3, a tooltip inside a tooltip:** the formula behind a number (59-tooltips).
+- **Layer 3, a tooltip inside a tooltip:** the formula behind a number (59-descriptions).
 - **Remember each section's open state.** Do not collapse what the player opened; NN/g's cost of hiding content is paid again on every visit otherwise.
 
 ---
@@ -312,7 +312,7 @@ CK3 introduced nested tooltips: hold a tooltip, then hover a highlighted word in
 - [Paradox: CK3 console dev diary #3, UI/UX and controls](https://www.paradoxinteractive.com/games/crusader-kings-iii/news/ck3-console-dev-diary-3-uiux-and-controls)
 - [Obsidian forum: nested popovers, describing CK3](https://forum.obsidian.md/t/nested-popovers/573)
 
-**What it means for Ardan.** 59-tooltips already gives Ardan CK3-style nesting. That is what makes the dense layout safe: a stat can show only "34" because the breakdown is one hover away. The redesign gives tooltips one consistent look and a "pinned" state with a visible edge, and colours the trigger words the same way everywhere.
+**What it means for Ardan.** 59-descriptions already gives Ardan CK3-style nesting. That is what makes the dense layout safe: a stat can show only "34" because the breakdown is one hover away. The redesign gives tooltips one consistent look and a "pinned" state with a visible edge, and colours the trigger words the same way everywhere.
 
 ### 2.10 Hollow Knight and Ori
 
@@ -390,7 +390,7 @@ Sources:
 
 ## Part 3. Anime language that a browser can make
 
-All of this is CSS, inline SVG and canvas, with no image files. 61-illumination and 63-miniatures already prove the pipeline: seeded, pure SVG strings, 6 to 20 KB each.
+All of this is CSS, inline SVG and canvas, with no image files. 61-illuminated-chronicle and 63-miniature-portraits already prove the pipeline: seeded, pure SVG strings, 6 to 20 KB each.
 
 ### 3.1 Cel shading
 
@@ -444,7 +444,7 @@ Sources:
   4. a soft shadow under the upper lid;
   5. two catchlights, one large and one small, on opposite sides.
 - **Hair:** front and back layers are separate groups. Back hair is drawn behind the head, bangs and side locks in front. Reallusion's Cartoon Animator SVG rig uses the same split.
-- **A generator** picks parts by a hash of the person's id, as 63-miniatures already does.
+- **A generator** picks parts by a hash of the person's id, as 63-miniature-portraits already does.
 
 Sources:
 
@@ -455,7 +455,7 @@ Sources:
 - [Reallusion: SVG structure for characters (front and back hair groups)](https://manual.reallusion.com/Cartoon-Animator/Content/Resources/5.1/07-SVG-Out/SVG-Structure-Character.htm)
 - [Anime OC Maker: 13 layers, back hair and bangs](https://tool.teamzlab.com/design/anime-oc-maker/)
 
-**What it means for Ardan.** 63-miniatures has the right skeleton: parts per head, hair, garment, arms and weapon, seeded by id, pure, and escaped. It draws painted miniatures, though: hatching, a two-tone wash, small faces. The anime portrait changes the face and the shading, not the system:
+**What it means for Ardan.** 63-miniature-portraits has the right skeleton: parts per head, hair, garment, arms and weapon, seeded by id, pure, and escaped. It draws painted miniatures, though: hatching, a two-tone wash, small faces. The anime portrait changes the face and the shading, not the system:
 
 - a bigger head-to-body ratio;
 - big layered eyes;

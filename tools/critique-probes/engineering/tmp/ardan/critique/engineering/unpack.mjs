@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { unpack } from '/tmp/ardan/snap/tools/pack.mjs';
+import { unpack } from '/tmp/ardan/snap/tools/blob-pack.mjs';
 const html = fs.readFileSync(process.argv[2], 'utf8');
 const parts = unpack(html);
 for (const [k, v] of Object.entries(parts)) { fs.writeFileSync(`${process.argv[3]}/${k}.js`, v); console.log(k, (v.length/1024).toFixed(0), 'KB'); }

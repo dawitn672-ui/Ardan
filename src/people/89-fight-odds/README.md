@@ -1,6 +1,6 @@
 # Fight odds
 
-**Aspect:** Clarity and honest odds (the Road to Ten's "every risk is shown before you take it"; `24-honest-odds`, `48-fight-ladder`) · **Kind:** system (one core file, one patch), plus tests
+**Aspect:** Clarity and honest odds (the Road to Ten's "every risk is shown before you take it"; `24-honest-duel-odds`, `48-event-fight-rules`) · **Kind:** system (one core file, one patch), plus tests
 
 ## Why
 
@@ -10,7 +10,7 @@ The duel screen already opens with the true chance and lets you flee, so the pla
 
 ## What it does
 
-- **The chance on the button.** When an event comes up, `A.eventView` marks each choice whose effect is a beast fight with `c.fight = { pct, beast, w }`: 48-fight-ladder's chance that you win that fight alone (`FL.resolve`, the curve the duel screen opens with, at your health and arms). The badge reads "2% · a fight", coloured as a check of those odds would be. With the numbers turned off (difficulty or the odds setting) it reads "a fight".
+- **The chance on the button.** When an event comes up, `A.eventView` marks each choice whose effect is a beast fight with `c.fight = { pct, beast, w }`: 48-event-fight-rules's chance that you win that fight alone (`FL.resolve`, the curve the duel screen opens with, at your health and arms). The badge reads "2% · a fight", coloured as a check of those odds would be. With the numbers turned off (difficulty or the odds setting) it reads "a fight".
 - **Which fight.** The effect's own `beast.id`, else the scene's beast (`ctx.beast`), as `A.applyFx` picks it. A function effect is read once, for a `beast: {` or for a call to `A.startDuel` / `A.startDuelFront`:
   - with `{beastId: ...}` it is a beast fight, at the call's `mod` (a trap's 0.6, arrows' 0.5: the beast's worth at that mod against its worth unharmed moves the curve) and with a hunting party if the call brings one (`party:`);
   - with a person, the one the scene names (`const t = A.P(ctx.pid)`) or a stranger of a tier (`A.makeFoe({tier: N})`), by 48's one-to-one curve and the fight's rule (a brawl, a bout, a fight). A foe the effect makes up as it goes (a grading bout) is badged without a number.

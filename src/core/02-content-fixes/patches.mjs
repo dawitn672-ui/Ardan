@@ -82,7 +82,7 @@ export default [
     id: 'TXT-WAR-PLURALS',
     blob: 'ardan-core',
     why: 'The war room counted "1 armies in the field · 1 battles raging" (round 2 A0, docs/CRITIQUE.md E10). Both counts ' +
-      'now go through A.plural (plural.core.js): "1 army in the field · 2 battles raging". 59-tooltips reads the line by ' +
+      'now go through A.plural (plural.core.js): "1 army in the field · 2 battles raging". 59-descriptions reads the line by ' +
       'its words and accepts both forms.',
     edits: [[
       '${A.armiesOf(myR).length} armies in the field · ${Object.values(S.fights||{}).filter(F=>A.friendly(F.a,myR)||A.friendly(F.b,myR)).length} battles raging',

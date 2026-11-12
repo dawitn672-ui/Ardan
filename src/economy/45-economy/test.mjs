@@ -1,7 +1,7 @@
 // Goods that come from somewhere and go somewhere: markets hold their stock over ten years, a famine triples grain,
 // war makes arms dear, caravans pull prices together, prices differ by distance, and the chains run and pay; and the
-// best trade loop a bot can find does not out-earn land (tools/bench/exploit.mjs runs it for ten years on four seeds).
-import { EXPLOIT } from '../../../tools/bench/exploit.mjs';
+// best trade loop a bot can find does not out-earn land (tools/bench/trade-exploit.mjs runs it for ten years on four seeds).
+import { EXPLOIT } from '../../../tools/bench/trade-exploit.mjs';
 const SETUP = () => {
   window.ECT = {
     world(seed, realm) { A.newGame({ seed, race: 'human', realm: realm || 'POL-01', status: 'merchant', sex: 'M', startAge: 25 }); return A.pc(); },

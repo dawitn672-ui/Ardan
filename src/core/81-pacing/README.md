@@ -39,7 +39,7 @@ This is `replayability-pacing.md`'s step 3 ("a director floor ... force a stage-
 - In the dark months, **December to February** (the war engine's own winter, `A.wsWinter`'s days), the fields sleep and the roads close, and **free days come twice as fast**. An adult's 7 free days a year become about 9, a child's 4 about 5.1.
 - It is the release's own hook: `A.initiativeRate` multiplies by `A.initiativeMul(pc)`, which the release reads but never set. The cap (`A.initiativeCap`) is unchanged, so saving up is not easier, spending is.
 - Not in prison. An infant still has none.
-- The initiative popover (59-tooltips) already shows "Rate ×" when the rate is not 1; it now says why: "Winter: the fields sleep, free days come twice as fast."
+- The initiative popover (59-descriptions) already shows "Rate ×" when the rate is not 1; it now says why: "Winter: the fields sleep, free days come twice as fast."
 
 Stardew Valley's winter is the same idea: no crops, so the season is for people, the mines and the things you never had time for. King of Dragon Pass plans its year by seasons for the same reason.
 
@@ -56,14 +56,14 @@ d' = d - sum over the check's stat sides of  weight x max(0, 45 - REF[stat])    
 - **Never harder than written.** Will, where the typical adult stands above 45, is not raised.
 - **It reads the check, never the person.** Weak stats, a wound, an untrained skill still give long odds.
 - **It composes with 75-fair-checks, it does not repeat it.** 75 brings each stage of life to the seasoned adult; this brings the seasoned adult's stats to the scale. 75's rule sees the eased `d`, and its never-below-typical floor still holds for a child.
-- **Fights are left alone** (`check.fight`, 48-fight-ladder).
-- **The number shown is the number rolled.** The wrapper sets the difficulty on the same check object for the call and puts the written one back, as 75's does (67-memory-weave finds its choice by that object, 30-get-to-know adds its scene shift to it).
-- **The odds popover** (59-tooltips) names it in a row of its own: "One scale for every stat: a typical grown stamina is 31, not 45, so the scene asks 8 less". Its share is taken with 75's rule off and 75's with this one on, so the rows still add up to the number on the button.
+- **Fights are left alone** (`check.fight`, 48-event-fight-rules).
+- **The number shown is the number rolled.** The wrapper sets the difficulty on the same check object for the call and puts the written one back, as 75's does (67-choice-memories finds its choice by that object, 30-get-to-know adds its scene shift to it).
+- **The odds popover** (59-descriptions) names it in a row of its own: "One scale for every stat: a typical grown stamina is 31, not 45, so the scene asks 8 less". Its share is taken with 75's rule off and 75's with this one on, so the rows still add up to the number on the button.
 - **A wider version was tried and set aside:** lifting the skill side too, so that a typical seasoned adult meets every d 45 at even odds. On the league it took check success from 51.1% to **61.3%**, past the scorecard's 55, because it lifts every long shot the reckless bot takes. The numbers for it are in the table below.
 
 ## Measured by
 
-`test.mjs` (`node tests/run.mjs <build> --features=pacing`) and the league (`tools/bench/run.mjs --only=league`), on two full builds of the same tree, one with this feature and one without. (87-echoes joined the build between the two runs; the build with this feature leaves it out, so the pair differs only by this feature. Nothing else in the tree changed but tests and docs.)
+`test.mjs` (`node tests/run.mjs <build> --features=pacing`) and the league (`tools/bench/run.mjs --only=league`), on two full builds of the same tree, one with this feature and one without. (87-echo-scenes joined the build between the two runs; the build with this feature leaves it out, so the pair differs only by this feature. Nothing else in the tree changed but tests and docs.)
 
 **The league** (64 lives, the scorecard's seeds; builds `b593143+f80` without and `b593143+f81` with):
 
@@ -98,7 +98,7 @@ One seed set is noisy: prompts per year moves about ±0.5 between builds that di
 | `pcScaleRolled` | `ch_inf_flux` (one of 893 events with a stat side the rule eases) shows 83% (70% without) and rolls at 83%; the popover adds up to 83 with the rule's own row and no "Other things in play". |
 | `pcLives` | 16 bot lives since CI run 91 (8 before; tools/bench/bot.mjs), birth to 30, the feature off and on. Off: 5.3 prompts a year, 4.4 actions a year (engaged), 43.0% of 400 checks. On: **6.7**, **5.4**, **47.2%** of 341. CI run 91, 16 lives: off 6.4, 4.8, 51.9% of 952; on 6.2, **6.0**, 53.0% of 907. |
 
-With `--features=replay,fair-checks,tooltips` on the same build, all 28 pass, among them `renderRng`, `replayWithRender` and `journalReplay` (the floor draws in the engine, so a replay draws the same), 59's `ttSums2` and `ttPure2` (popovers add up and change nothing), and 75's four.
+With `--features=replay,fair-checks,descriptions` on the same build, all 28 pass, among them `renderRng`, `replayWithRender` and `journalReplay` (the floor draws in the engine, so a replay draws the same), 59's `ttSums2` and `ttPure2` (popovers add up and change nothing), and 75's four.
 
 `tools/lint-events.mjs` and `tools/lint-choices.mjs` (`--feature=pacing`) pass with nothing to check: the feature adds no events.
 
@@ -113,19 +113,19 @@ With `--features=replay,fair-checks,tooltips` on the same build, all 28 pass, am
 ## Limits
 
 - **The numbers are bot numbers, and one seed set is noisy.** Prompts per year moves about ±0.5 between builds that differ only in their random stream, so a single league says less than it seems. The floor's own effect is better read in `pcFloor` (the same childhoods and adulthoods, floor off and on).
-- **A prompt is counted when it is queued.** An event the base roll queues and `A.headReady` then drops (an unfillable token, shown under 240 days ago) still counts as a prompt that month, so a quiet stretch can run a month past its limit. Counting at display time would need the engine to see what the screen draws, which `replayWithRender` forbids. 88-queue-head now settles the head inside `A.advance`, which makes such drops rarer.
+- **A prompt is counted when it is queued.** An event the base roll queues and `A.headReady` then drops (an unfillable token, shown under 240 days ago) still counts as a prompt that month, so a quiet stretch can run a month past its limit. Counting at display time would need the engine to see what the screen draws, which `replayWithRender` forbids. 88-skip-dropped-events now settles the head inside `A.advance`, which makes such drops rarer.
 - **The hurt filter is read from source text** (`PACE.HURT_RX`). It errs toward leaving scenes out (any `cause` or `duel` key, any health cost, even a small one on a win). In the child pool it leaves enough for 4 to 5 prompts a year; a designer may want a tag on events instead.
 - **Winter is the same everywhere.** The war engine's winter is northern provinces, tundra and mountains only (`A.wsWinter`); the slack season here is December to February for every home, because every farming year has one and a southern start should not have less agency. A designer may prefer it by climate, or a different season in the south.
 - **Winter adds agency, it does not move it.** An adult's free days rise from 7 to about 9 a year. An even-total version (more in winter, less in summer) would keep the rhythm without the extra actions; the scorecard's ≥ 6 would then stay short.
 - **The scale eases long shots too.** The reckless bot takes the worst odds on offer, so a rule that lifts only some checks moves its choice to another long shot: a paired estimate over 16 lives (every event priced both ways, each personality's pick taken under each) gave +3.6 points for this rule and +8.5 for the wider one, where a naive estimate gave +5 and +10.
 - **The reference is 75's** (`FC.TYP.adult3`, measured in bot lives without either rule). If stats or skills change, re-measure it there and both rules follow.
-- **Other features' tests.** On the full build with this feature, 01-replay (`renderRng`, `replayWithRender`, `journalReplay`), 59-tooltips (all 22) and 75-fair-checks (all 4) pass. With the wider scale set aside above, three of 75's tests (`fcRule`, `fcLeavesAlone`, `fcLives`) failed, because they toggle `A.FC.OFF` and expect the release's odds underneath; a future rule on checks should set `A.SCALE.OFF` in that file's `SETUP`. That build's random stream also walked 59's `ttPure2` into a real purity gap that is not this feature's: the soldier's war-tab popovers created `people.pb4.staff = {}` through `A.staffHolder`, which 21-npc-initiative's `draw-pure.core.js` guards while drawing (`UI.render`) but not while a popover is open (`UI.TT.open`). Any seed can walk into it.
+- **Other features' tests.** On the full build with this feature, 01-replay (`renderRng`, `replayWithRender`, `journalReplay`), 59-descriptions (all 22) and 75-fair-checks (all 4) pass. With the wider scale set aside above, three of 75's tests (`fcRule`, `fcLeavesAlone`, `fcLives`) failed, because they toggle `A.FC.OFF` and expect the release's odds underneath; a future rule on checks should set `A.SCALE.OFF` in that file's `SETUP`. That build's random stream also walked 59's `ttPure2` into a real purity gap that is not this feature's: the soldier's war-tab popovers created `people.pb4.staff = {}` through `A.staffHolder`, which 21-npc-initiative's `draw-pure.core.js` guards while drawing (`UI.render`) but not while a popover is open (`UI.TT.open`). Any seed can walk into it.
 
 ## Cycle 1: the ceiling of the first adult year (`docs/reviews/cycle-1/lives.md`, I9)
 
 A noble who came of age at 17 met 23 scenes in his first year: the recruiter, the draft, three taverns, a hunt, a custom. Every adult door opened at once. In the first 365 days of adulthood, the world's own scenes now stop at `PACE.FIRST_CAP` (8) and NPC moves at `PACE.FIRST_NPC` (4). The cut never touches:
 
-- a scene the player asked for, or a choice's consequence (97-life-fixes' `LF.origin` and `lfFrom` marks);
+- a scene the player asked for, or a choice's consequence (97-first-life-fixes' `LF.origin` and `lfFrom` marks);
 - a forced or scheduled scene, or a gathering's;
 - the start's own scenes (`fp_*`), the ambition (`lfx_amb_*`) and the careers scenes (`cr_*`).
 

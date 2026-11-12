@@ -8,7 +8,7 @@
 // Engine side: A.fightEnd notes the fight it closes, A.news drops a battle report for a war that is not yours and keeps
 // a rumour instead, A.onMonth hands out rumours that are due. The rumour's dice are v2's own makeRng, seeded from the
 // game's seed and the fight, so nothing is drawn from A.rand. UI side: UI.warRoomOpen, A.warRoomView, A.queue
-// (a war's battle or war room), V2T.atWar (the War place), 96-moments' battle cut-in, and the war lists of the War tab
+// (a war's battle or war room), V2T.atWar (the War place), 96-big-moments' battle cut-in, and the war lists of the War tab
 // and the World's Wars view.
 (function () {
   const V2 = A.V2 || {}, VW = V2.war;
@@ -34,7 +34,7 @@
     const rid = W.side(pc);
     return rid && A.atWar ? A.atWar(rid) : [];
   };
-  // a levy called out at home (72-two-scales) stands in the fight while the scene runs
+  // a levy called out at home (72-one-battle-two-scales) stands in the fight while the scene runs
   W.inLevy = () => !!(A.S && ((A.S.tsq && A.S.tsq.m && A.S.tsq.m.ts && A.S.tsq.m.ts.levy) || (A.S.queue || []).some(q => q && q.type === 'mission' && q.m && q.m.ts && q.m.ts.levy)));
   W.inWar = function (pc) { return W.myWars(pc).length > 0 || W.inLevy(); };
   // the War Room is the room of those who command or serve: a ruler, an enlisted man, an officer, a general, a
@@ -162,7 +162,7 @@
     if (!W.canRoom()) return `<div class="panel mbox v2w-shut"><h2>No war of yours</h2><div class="mtext">${UI.esc(W.NOT_YOURS)}</div><div class="choices"><button data-a="wrLeave">Close</button></div></div>`;
     return W.withSeen(() => wrm.apply(this, arguments));
   };
-  // 96-moments: no victory or defeat cut-in for a battle in a war that is not yours
+  // 96-big-moments: no victory or defeat cut-in for a battle in a war that is not yours
   const MO = UI.MOMENTS;
   for (const k of ['battleWon', 'battleLost']) if (MO && typeof MO[k] === 'function') {
     const f = MO[k];

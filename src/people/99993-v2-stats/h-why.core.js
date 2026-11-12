@@ -1,4 +1,4 @@
-// v2 stats, part 8: the odds breakdown on a touch screen (cycle 3; 59-tooltips' ttPhone2).
+// v2 stats, part 8: the odds breakdown on a touch screen (cycle 3; 59-descriptions' ttPhone2).
 //
 // Playtest round 1 made a tap on a choice choose: the odds badge inside the choice lost its tap target, and its
 // breakdown opens on hover, focus or the keyboard. A phone has no hover, so a phone player could not see why a

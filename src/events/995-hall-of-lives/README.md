@@ -6,12 +6,12 @@
 
 **What it does.**
 
-- **The store.** Every life that ends is written once to a browser record, `UI.store` key `ardan.hall.v1`, the way 97-life-fixes keeps `UI.set.lfLives`. Each entry: name, people, realm (and its colour), years and age, ending and manner, cause, score, the achievements that life earned, the world seed, the start story and the lands. The last 60 lives are listed; how many lives found each ending, manner and achievement is counted for ever. It is never in `A.S`, a save or the journal, and the engine never reads it.
+- **The store.** Every life that ends is written once to a browser record, `UI.store` key `ardan.hall.v1`, the way 97-first-life-fixes keeps `UI.set.lfLives`. Each entry: name, people, realm (and its colour), years and age, ending and manner, cause, score, the achievements that life earned, the world seed, the start story and the lands. The last 60 lives are listed; how many lives found each ending, manner and achievement is counted for ever. It is never in `A.S`, a save or the journal, and the engine never reads it.
 - **When it is written.** In a wrap of `A.pcDeath`, after 28 has named the ending. Never while `A.replay` runs (`A.jPaused`), and a life already in the Hall (same seed, person, birth and death year) is not counted again. Reading tolerates a missing, broken or hand-edited record: every field is re-typed, strings lose `<>"{}`, a colour must be `#rrggbb`.
 - **The title screen: "Your lives".** The last 12 lives as cards: an initial on the realm's colour, name, years, realm, the ending and manner, the epitaph, the seed. A header counts lives, endings, ways to go and achievements across the Hall, and the stories still shut say what opens them. `UI.hallShelf()` returns the markup. The title belongs to lane O, so the shelf is placed by a wrap of `UI.renderTitle`: in a `<!--hall-->` slot if the title has one, else above the playtest line, else at the end; and not at all if the title already drew `hl-shelf` itself.
 - **The death screen.** "The Hall of Lives. New: *Cut Short* (3 of 22 endings) · *fell in the field* (4 of 9 ways to go) · First Blood." If the life opened a story, it says so.
 - **The Dynasty tab.** A line under the save's own collection: "Across your 7 lives in this browser: 5/22 endings, 4/9 ways to go, 9/37 achievements". An ending or achievement this save lacks but the Hall has shows its text and "In an earlier life".
-- **Three stories the Hall opens** (`UI.HALL.STARTS`, kept beside 29-starts' twenty and applied by this feature's own wraps of `A.storyFor`, `A.newGame` and the creation screen, the way 29 applies its own; gated by `UI.HALL.GATES`):
+- **Three stories the Hall opens** (`UI.HALL.STARTS`, kept beside 29-starting-stories' twenty and applied by this feature's own wraps of `A.storyFor`, `A.newGame` and the creation screen, the way 29 applies its own; gated by `UI.HALL.GATES`):
 
   | Story | Opens after | Start |
   | --- | --- | --- |

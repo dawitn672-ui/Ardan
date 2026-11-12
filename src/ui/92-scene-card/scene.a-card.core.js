@@ -34,7 +34,7 @@
   SC.statOf = k => isStat(k) ? k : (GD.SKILL_STAT && GD.SKILL_STAT[k] && GD.SKILL_STAT[k][0]) || 'int';
   SC.icon = (name, cls) => (UI.iconOf && name ? UI.iconOf(name, cls || 's') : '');
   SC.statIcon = s => SC.icon(UI.ICON_STAT && UI.ICON_STAT[s]);
-  // your value in a check, as 59-tooltips' odds popover counts it (untrained floors, synergies, perks)
+  // your value in a check, as 59-descriptions' odds popover counts it (untrained floors, synergies, perks)
   SC.valueOf = function (pc, k) {
     try { if (UI.TT && UI.TT.checkValue) return Math.round(UI.TT.checkValue(pc, k).v); } catch (e) {}
     return isStat(k) ? A.stat(pc, k) : A.skill(pc, k);
@@ -55,11 +55,11 @@
     return false;
   };
   // an effect the written choice states plainly (an object fx, no check): at most two, the largest first. Costs in
-  // coin are left to 97-life-fixes' stake line ("Costs 30 suns"), which already says them.
+  // coin are left to 97-first-life-fixes' stake line ("Costs 30 suns"), which already says them.
   const HINT = [['coin', 'coin', 'coin'], ['honor', 'honour', 'honour'], ['fame', 'renown', 'renown'], ['piety', 'piety', 'piety'],
     ['happy', 'spirits', 'spirits'], ['health', 'health', 'health']];
   SC.hints = function (c) {
-    // 9998-stakes draws every effect as a chip under the label; the two hints give way to it while it is on
+    // 9998-choice-stakes draws every effect as a chip under the label; the two hints give way to it while it is on
     if (A.STAKES && A.STAKES.on && A.STAKES.on()) return [];
     if (!c || c.check || c.group || !c.fx || typeof c.fx !== 'object') return [];
     const out = [];
@@ -75,13 +75,13 @@
     return out.sort((a, b) => Math.abs(b.d) - Math.abs(a.d)).slice(0, 2);
   };
 
-  // white or red (9998-stakes' rule), or null: no check, or no stakes feature in this build
+  // white or red (9998-choice-stakes' rule), or null: no check, or no stakes feature in this build
   SC.checkKind = (c, e) => (A.STAKES && A.STAKES.on && A.STAKES.on() && A.STAKES.checkKind ? A.STAKES.checkKind(c, e) : null);
 
   // ---- the pieces of a choice row --------------------------------------------------------------------------------
   // the check chip: the stat's icon and short name (a skill: its own short name, in the colour of the stat it rests on),
   // and your value; a second stat in the check is named after it
-  // With 59-tooltips the chip explains its value: a plain check opens the choice's odds (where the value is counted as
+  // With 59-descriptions the chip explains its value: a plain check opens the choice's odds (where the value is counted as
   // the check counts it, against the difficulty); a fight, or a choice with no odds shown, opens the stat or skill.
   SC.chipTip = function (ck, vi, vc) {
     if (!UI.ttAttrs || !ck || !ck.s) return '';
@@ -96,7 +96,7 @@
       `<b class="sc-chk-v">${esc(v)}</b>${two}</span>`;
   };
   // the odds badge restyled in place: the release's "40% · risky" (or 89's "40% · a fight") is split into the number,
-  // the separator and the word, so its text (and 59-tooltips' tap target on it) is unchanged; the four pips are an
+  // the separator and the word, so its text (and 59-descriptions' tap target on it) is unchanged; the four pips are an
   // empty span drawn by CSS, so they add no text
   SC.oddsBadge = function (el, band) {
     const doc = el.ownerDocument, txt = el.textContent || '', m = /^\s*(\d+)%\s*·\s*([\s\S]+)$/.exec(txt);
@@ -142,7 +142,7 @@
     const por = row && [...row.children].find(x => x !== grow);
     const h2 = grow && grow.querySelector('h2');
     const choices = box.querySelector(':scope > .choices');
-    const locked = box.querySelector(':scope > .st-locked');   // 9998-stakes' choices out of reach, kept after the choices
+    const locked = box.querySelector(':scope > .st-locked');   // 9998-choice-stakes' choices out of reach, kept after the choices
     const result = box.querySelector(':scope > .result');
     const cont = box.querySelector(':scope > button[data-a="evClose"]');
 
@@ -196,7 +196,7 @@
         tags.appendChild(odds);
       }
       for (const hn of SC.hints(c)) tags.insertAdjacentHTML('beforeend', SC.hintHtml(hn));
-      // white and red checks (9998-stakes): a red check is one chance (the danger edge, ONE CHANCE); a white one can be
+      // white and red checks (9998-choice-stakes): a red check is one chance (the danger edge, ONE CHANCE); a white one can be
       // tried again once you are better, and its check chip carries a small mark that says so
       const wr = SC.checkKind(c, e);
       if (wr === 'red') { b.classList.add('sc-once', 'sc-red'); tags.insertAdjacentHTML('beforeend', `<span class="sc-oncew st-red"${UI.ttAttrs ? UI.ttAttrs('stCheck', 'red', false) : ''}>one chance</span>`); }

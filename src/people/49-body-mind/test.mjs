@@ -402,7 +402,7 @@ export default {
   // was, with a line in the log and no scene; outside it, or with no treatment on record, the scene asks
   async illnessAsBefore(pg) {
     const r = await pg.evaluate(() => {
-      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-life-fixes) is missing' };
+      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-first-life-fixes) is missing' };
       A.newGame({ seed: 4911, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 30 });
       const pc = A.pc(), y = A.S.year, out = {};
       const onset = () => { pc.ill = null; pc.health = 100; A.S.queue = []; const n0 = A.S.log ? A.S.log.length : 0; A.bmFallIll(pc, 'cough', GD.DISEASES.cough, 10, 100); return { asked: A.S.queue.some(q => q.ev === 'bm_ill'), t: pc.ill && pc.ill.t }; };

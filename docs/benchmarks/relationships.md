@@ -318,8 +318,8 @@ All external pages below were read as search-engine excerpts, or come from the s
 - GameBanshee interview: https://gamebanshee.com/xykr3
 
 **Ardan**
-- `docs/plan/Ardan The Road to Ten.md` (Relationships section: steps 1 to 7 and the gate)
-- `docs/reviews/Ardan Road to 100.md` and `docs/reviews/Ardan Deep Analysis.md` (strict score 4; "NPCs do nothing first"; 573 cast members with wants and fears; the duel yield at 30%)
+- `docs/plan/road-to-ten.md` (Relationships section: steps 1 to 7 and the gate)
+- `docs/reviews/road-to-100.md` and `docs/reviews/deep-analysis.md` (strict score 4; "NPCs do nothing first"; 573 cast members with wants and fears; the duel yield at 30%)
 - `tools/bench/reports/scorecard.md` (the bench's NPC-move metric reads 0 on the fixes build)
 - Engine functions read for this doc: `A.addOp`, `A.link`, `A.opinion`, `A.interactOptions`, `A.INT_FN`, `A.getToKnow`, `A.kill`, `A.obligationsYear`, `A.bondsYear`, `A.familyYear`, `A.bondCap`, `A.favorOptions`, `A.callFavor`, `A.personFromCast`, `A.remember`, `A.DMEM`, `A.opinionParts`, `UI.personModal`
 - `src/people/21-npc-initiative/` (in progress, read and measured, not changed)

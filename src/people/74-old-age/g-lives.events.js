@@ -2,7 +2,7 @@
 // nurse), the old serf freed because he can no longer work, the old soldier at the muster, the merchant's ledger of
 // debts to forgive, the old priest, the old ruler and the child heir, the elf who outlives the humans' great-
 // grandchildren, the dwarf's name in the hall, the orc who did not die in battle. And the best and worst days of
-// the life, from 67-memory-weave's record.
+// the life, from 67-choice-memories's record.
 (function () {
 const OAg = {
   spouse: (p, ctx, pre) => { const s = p.spouse && A.P(p.spouse); if (!s || !s.alive) { ctx.skip = true; return null; } return A.OA.put(p, ctx, s, pre || 'oa', true); },

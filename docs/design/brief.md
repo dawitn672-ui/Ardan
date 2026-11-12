@@ -141,7 +141,7 @@ All tier colours pass 4.5:1 as text on every surface (dark ≥5.4, light ≥4.8)
 
 Realms carry their own hex in state. Never print the raw value as text. A pure, memoized helper, `UI.realmInk(hex, theme)`, returns four values:
 
-1. **Validate.** Match `/^#[0-9a-f]{6}$/i`, or fall back to `#8a8f9e`. 63-miniatures already validates colours like this.
+1. **Validate.** Match `/^#[0-9a-f]{6}$/i`, or fall back to `#8a8f9e`. 63-miniature-portraits already validates colours like this.
 2. **`swatch`**, the raw colour. Use it only for fills of at least 8×8 px with a `--line-strong` border: map regions, banner cloth, chips' dots.
 3. **`tint`**, the raw colour mixed into `--surface`: 18% in dark, 14% in light. It is the background for a realm's rows, cards and the portrait ground. `--ink` on a tint measured ≥9.5:1 for red, blue, green, purple and yellow realms.
 4. **`ink`**, for text:
@@ -425,7 +425,7 @@ Every component uses the tokens above, works by `data-a` / `data-v` with `UI.A` 
 **Stat tile** (the rail, 3 × 2):
 
 - 72×36 (three across the 224 px inner rail, 4 px gaps): icon 14 in the stat colour, label `--t-cap` (STR), number `--t-num-lg`, a bar along the bottom edge;
-- a tooltip on hover or focus with the breakdown (59-tooltips).
+- a tooltip on hover or focus with the breakdown (59-descriptions).
 
 **Delta flash:** when a value changes, the number shows "+2" in `--ok` or "−3" in `--danger` with ▲ or ▼ beside it for 1.6 s. The bar's new segment pulses once (300 ms). Under reduced motion there is no pulse.
 
@@ -465,7 +465,7 @@ Every component uses the tokens above, works by `data-a` / `data-v` with `UI.A` 
 - **Phone:** a bottom sheet with an 8 px grab handle, full width, max height 92%.
 - **Behaviour:** focus is trapped, Esc closes, focus returns to the opener, and the page behind does not scroll.
 
-### 5.8 Tooltips (59-tooltips' behaviour, one look)
+### 5.8 Tooltips (59-descriptions' behaviour, one look)
 
 - `--overlay`, 1 px `--line-strong`, `--r-s` (8), `--e-2`, max width 320, padding 8 12.
 - Title in `--t-h3`, body in `--t-small` `--ink-2`, numbers `--t-num`.
@@ -548,7 +548,7 @@ Motion explains a change: where a thing came from, what changed and what you pre
 | `--m-exit` | 180 ms | `cubic-bezier(.3,0,.8,.15)` | anything leaving |
 | `--m-snap` | 240 ms | `cubic-bezier(.3,1.4,.5,1)` (a small overshoot) | badges and deltas popping in, the odds badge on first show; never on panels |
 | `--m-moment` | 1,200 ms total | in `--m-enter`, out `--m-exit` | cut-ins |
-| `--m-ink` | 700 ms | `ease-out` | 61-illumination's ink-in for prints, kept |
+| `--m-ink` | 700 ms | `ease-out` | 61-illuminated-chronicle's ink-in for prints, kept |
 
 - **Animate only `transform` and `opacity`** (plus `color` and `background-color` on hover). Never width, height or top; expanders use `grid-template-rows: 0fr → 1fr`.
 - **No looping motion on screen while reading.** The exceptions are a slow drift of the title-screen parallax (60 s cycles) and a 2 s breathing glow on the Play button while the game is paused for an event.
@@ -563,7 +563,7 @@ Motion explains a change: where a thing came from, what changed and what you pre
 
 ### 7.1 Portraits: cel-shaded anime busts
 
-A new renderer reuses 63-miniatures' skeleton (parts by hash of id, culture tables, wounds, age, the `UI.set` toggle, the fallback to the release) and changes the drawing. It covers four sizes: a bust (1:1) at 20, 32, 48, 72, 88 and 120 px, and a full figure (2:3) at 200×300.
+A new renderer reuses 63-miniature-portraits' skeleton (parts by hash of id, culture tables, wounds, age, the `UI.set` toggle, the fallback to the release) and changes the drawing. It covers four sizes: a bust (1:1) at 20, 32, 48, 72, 88 and 120 px, and a full figure (2:3) at 200×300.
 
 **Proportions** (head box 100 wide × 120 tall; the cranium is a circle of radius 50 at (50, 50)):
 
@@ -641,7 +641,7 @@ Every person must read as a black silhouette at 32 px.
 
 ### 7.2 Event vignettes: colour woodblock skies
 
-These restyle 61-illumination's 25 compositions. The shapes, the seeds, the season and hour rules and the "same event, same year, same picture" rule all stay. The size is 16:5: 598×187 at 1366, 720×225 at 1920 and 390×140 on phone.
+These restyle 61-illuminated-chronicle's 25 compositions. The shapes, the seeds, the season and hour rules and the "same event, same year, same picture" rule all stay. The size is 16:5: 598×187 at 1366, 720×225 at 1920 and 390×140 on phone.
 
 **The layers, back to front:**
 
@@ -722,7 +722,7 @@ Terrain shifts the land colours:
 7. **Dock events as a scene card in the centre column, with a vignette, a bust and choice rows carrying check chips and odds badges**, because events are the game's main surface, and the player should see their stats while choosing (Disco Elysium; the HSR pop-up lesson).
 8. **Show every choice's result in place with delta chips**, because Norman's feedback principle is the most visible gap today: players compare numbers by hand.
 9. **Draw portraits as cel-shaded anime busts with layered eyes, hair masses, a rim light and a realm ground**, because portraits are the strongest "anime" signal for this audience and appear on almost every screen.
-10. **Restyle the 25 woodcut vignettes as colour woodblock skies** (bokashi, ridges, light), because it is the bridge from the current art to anime, and it reuses all of 61-illumination's seeds and compositions.
+10. **Restyle the 25 woodcut vignettes as colour woodblock skies** (bokashi, ridges, light), because it is the bridge from the current art to anime, and it reuses all of 61-illuminated-chronicle's seeds and compositions.
 11. **Add the phone layout's identity strip, 2-column tiles and full-screen event sheet**, because the phone's Life screen is 5.1 screens and its event 5.2, and the audience plays on phones.
 12. **Make People, Holdings and Realm small-multiple rows with sparklines**, because Holdings at 9.2 screens is the worst scroll in the game, and rows let a glance compare twenty items (Tufte).
 13. **Draw a set of about 40 icons** for stats, vitals, resources, action groups and tabs, because icons let the dense layout shed words, as Slay the Spire's intents do.
@@ -740,7 +740,7 @@ Terrain shifts the land colours:
   - `93-anime-portraits`;
   - `94-woodblock-skies`;
   - `95-icons`;
-  - `96-moments` (toasts and cut-ins);
+  - `96-big-moments` (toasts and cut-ins);
   - `97-small-multiples` (People, Holdings, Realm rows).
 
   Each owns only its folder (CLAUDE.md, "Parallel safety").

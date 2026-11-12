@@ -33,7 +33,7 @@ export default [
     blob: 'ardan-core',
     why: 'The dials above are bars, and a bar only delays an attack. Measured in the full world (36 wars a temper), a ' +
       'cautious army passed 21% fewer chances to attack than a steady one would have at the same moment, in every build ' +
-      'with or without the richer, drilled hosts of 56-realm-inside and 60-drill, and still made as many assaults: the ' +
+      'with or without the richer, drilled hosts of 56-court-and-treasury and 60-unit-drill, and still made as many assaults: the ' +
       'division held back went in a few days later. The share sent at once never bound (an army rarely has more targets ' +
       'than a third of its divisions), so the cunning pull, which only orders the targets, did nothing either. The ' +
       'temper now makes four decisions (A.GENERALS.opens, held, commit and fortNeed): whether to take the offensive at ' +

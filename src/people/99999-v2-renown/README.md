@@ -42,14 +42,14 @@ ladders to `src/people/engine/renown.js` (`recordDeed`, `renown`, `renownWords`,
   summary says where you stand for the next rank in words; the army card on the Path tab, the war room's line and a
   superior's "Not yet" lose their merit counter (patch RN-WORDS); "Merit +7", "(Merit +15)" and "Renown +3" become
   words in the text (`c-words.core.js`, through 99993-v2-stats' sweep).
-- 59-tooltips' Path tips (the board's odds, merit, a board row, the rank) explained the counter, its formula and a
+- 59-descriptions' Path tips (the board's odds, merit, a board row, the rank) explained the counter, its formula and a
   percentage a year; they now say what the board asks, in words: the standout deed, the places above you, steady
   service, a patron.
-- 59-tooltips' Renown tip (`UI.TIPS.fame`) explained the old rule with numbers ("Renown 9 of 100", "a deed worth 10
+- 59-descriptions' Renown tip (`UI.TIPS.fame`) explained the old rule with numbers ("Renown 9 of 100", "a deed worth 10
   now gives 9.1"). It now says renown in words, lists the best deeds (when, who saw them, the odds they beat; each
   deed keeps `wit` and `q` for this), and says that deeds fade and a name keeps half of its best. No digit, no "of 100".
 - Promotion runs faster than the merit counter let it, so a soldier is a sergeant within a year more often, and the
-  drill yard card shows. Its wiring in 59-tooltips (`W.drillCard`) matched only the bar in focus (`dr-b on`; the
+  drill yard card shows. Its wiring in 59-descriptions (`W.drillCard`) matched only the bar in focus (`dr-b on`; the
   others are `dr-b ` with a trailing space), the unlocks that were not muted, and not the review's cost behind its
   icon; it matches all of them now (`ttCov2War`'s soldier is a sergeant: War tab 54 of 54 numbers tipped).
 

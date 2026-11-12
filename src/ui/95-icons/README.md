@@ -23,10 +23,10 @@ Every icon is a stroke drawing in `currentColor`. The release's `.ic` class sets
 
 - **Through the release's own hook.** `UI.ICONS` gains the new names, and the release's names the set covers are redrawn: coins, users, swords, crown, book-open, scroll, house, hourglass, map-pin, save, menu, play, skip-forward, moon, info, triangle-alert, check, lock, x, chevron-right, heart, shield, eye, flame and sun. Every place that already asks for one of them (the clock, the purse, the place, Save, Menu, cards and boards) gets the new drawing with no patch. The release's own set is kept as `UI.ICONS_RELEASE`.
 - **The tabs.** `UI.GROUPS` asks for sun, people, swords, house, crown and open book.
-- **The profile.** Each vital's label starts with its icon. The six stats take theirs from `UI.ICON_STAT`. When 91-look is in the build, its 3 × 2 stat tiles draw ours (`LOOK.STAT_ICON`). Without it, the release's stat rows carry them before the word.
-- **The Life tab.** Each group header carries its group's icon. When 91-look draws the activities as tiles, each tile takes ours (`LOOK.groupIcon`).
+- **The profile.** Each vital's label starts with its icon. The six stats take theirs from `UI.ICON_STAT`. When 91-visual-style is in the build, its 3 × 2 stat tiles draw ours (`LOOK.STAT_ICON`). Without it, the release's stat rows carry them before the word.
+- **The Life tab.** Each group header carries its group's icon. When 91-visual-style draws the activities as tiles, each tile takes ours (`LOOK.groupIcon`).
 - **The purse.** A debt gets the broken coin. Save and Menu, which show only their icons at mid widths (84-top-bar), gain a `title` with their word.
-- **Tooltips.** A stat's, a vital's, the purse's, the clock's and an activity's popover (59-tooltips' `TT.html`) opens with the icon beside its word in the heading.
+- **Tooltips.** A stat's, a vital's, the purse's, the clock's and an activity's popover (59-descriptions' `TT.html`) opens with the icon beside its word in the heading.
 
 **Labels.** The brief says an icon is always labelled the first time it appears on a screen, and in its tooltip. Every one of our icons on the Life screen sits in a row, button or label with its word, or in a button named by `aria-label` or `title`. `iconsWired` checks this. Icons are `aria-hidden` because their word is already there. `UI.iconOf(name, cls, true)` gives a labelled one for any place that uses an icon alone.
 

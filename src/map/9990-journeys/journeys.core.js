@@ -5,7 +5,7 @@
 // D.routes), by ship on a sea lane, and slower again in the wrong season (snow on the passes, the thaw on the fords,
 // summer on the sands). The route passes through stops, about one every JR.STOP_KM; the journey goes on as the days
 // pass (A.onDay), and at up to JR.MAX_SCENES of its stops a scene of that land comes up: its border, a sea passage,
-// a great route, its customs (47-realm-bible, 990-far-peoples), its folk and their words, a beast near it (76, 992),
+// a great route, its customs (47-realm-customs, 990-far-peoples), its folk and their words, a beast near it (76, 992),
 // a wild place (997-wilds), a caravan (45-economy's S.eco.car), the news at the inn (57's world record), the weather.
 //
 // Kinds of journey:
@@ -19,7 +19,7 @@
 //
 // State: pc.journey (the road you are on; optional, old saves have none), pc.jrAt (where the journey system last saw you
 // live, so a move made elsewhere becomes a told journey), pc.jrLog (the last 30 journeys, for the Atlas). The atlas
-// (9991-atlas, A.ATLAS) is told what you pass through. Every draw goes through A.rand; rendering only reads.
+// (9991-atlas-of-known-places, A.ATLAS) is told what you pass through. Every draw goes through A.rand; rendering only reads.
 (function () {
   const JR = A.JR = A.JR || {};
   JR.OFF = false;
@@ -141,7 +141,7 @@
     return JR.start(pc, to, kind || 'move', { from, applied: true, home: to });
   };
 
-  // ---- the atlas is told what you see (9991-atlas; nothing if it is not built)
+  // ---- the atlas is told what you see (9991-atlas-of-known-places; nothing if it is not built)
   JR.see = function (pc, id, how) { try { if (A.ATLAS && A.ATLAS.see) A.ATLAS[how === 'heard' ? 'hear' : 'see'](pc, id, how === 'heard' ? 'r' : 'j'); } catch (e) {} };
 
   // ---- the road, day by day (A.onDay) -----------------------------------------------------------------------------------

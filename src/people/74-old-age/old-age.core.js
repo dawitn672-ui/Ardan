@@ -3,7 +3,7 @@
 //
 //   who      the people of a long life, found without a dice roll: living children and grandchildren, the heir,
 //            the dead among your friends, kin and enemies (with the year they died), the young around you
-//   memory   the lines a scene can cite: 67-memory-weave's record (pc.mw: a wrong, a kindness, a hurt, years ago),
+//   memory   the lines a scene can cite: 67-choice-memories's record (pc.mw: a wrong, a kindness, a hurt, years ago),
 //            55-bonds' weighed lines (an old grudge, an old debt), the deeds of the life (pc.deeds, and 26-belief-
 //            truth's tale of them), 57-world-chronicle's record (an entry 25 years old that few still remember)
 //   C.*      condition helpers built on those, so a scene's cond and its setup always agree
@@ -79,7 +79,7 @@
   };
 
   // ---------------------------------------------------------------- memory: what this life did and saw
-  // 67-memory-weave's record: a line of these kinds, at least minAge years old
+  // 67-choice-memories's record: a line of these kinds, at least minAge years old
   OA.mwLines = (p, kinds, minAge) => {
     const L = p && p.mw && Array.isArray(p.mw.m) ? p.mw.m : [];
     const ks = kinds ? (Array.isArray(kinds) ? kinds : String(kinds).split(',')) : null;
@@ -129,7 +129,7 @@
     const w0 = t.split(' ')[0];
     const verb = /ed$/i.test(w0) || /^(Wrote|Saw|Sold|Gave|Paid|Had|Made|Built|Won|Took|Led|Fought|Slew|Became|Taught|Held|Kept|Sent|Set|Got|Bought|Brought|Ran|Rode|Stood|Spoke|Swore|Broke|Drove|Threw|Beat|Bore|Struck|Sang|Hung|Dug|Found|Fed|Met|Left|Lost|Came|Went|Did|Told|Put|Cut|Shot|Hid|Bit|Wove|Forged|Freed)$/.test(w0);
     ctx.oaDeed = (verb ? '' : 'were ') + low(t); ctx.oaDeedYear = String(d.y); ctx.oaDeedAgo = OA.years(Y() - d.y);
-    // as the tale is told (26-belief-truth): the numbers doubled and a flourish added; without it, a plain flourish
+    // as the tale is told (26-belief-versus-truth): the numbers doubled and a flourish added; without it, a plain flourish
     const tale = A.BT && A.BT.tale ? A.BT.tale(t, p.id + '|' + d.y + '|oa') : t + ', single-handed, some swear.';
     ctx.oaTale = clean(tale).replace(/[.]+$/, '');
     return d;

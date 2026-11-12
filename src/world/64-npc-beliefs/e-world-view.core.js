@@ -4,7 +4,7 @@
 //   UI.TAB.realm  (wrapper) the Realm tab: "What is said here", for the player's realm, with the grudges it feeds
 //   UI.TAB.world  (wrapper) a "Tales" view in the World tab: the great events as each realm near you tells them
 //   UI.TAB.book, A.chronicleText (wrappers) the Chronicle: "What the world told …", what a life was told of the world,
-//                 set beside the record where they came to know it (26-belief-truth's "As the tale is told" is of you)
+//                 set beside the record where they came to know it (26-belief-versus-truth's "As the tale is told" is of you)
 (function () {
   const NB = A.NPCB; if (!NB || !NB.tellings) return;
   const esc = s => UI.esc(s == null ? '' : String(s)), cap = NB.cap;

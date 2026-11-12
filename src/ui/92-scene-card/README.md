@@ -1,6 +1,6 @@
 # 92-scene-card: the event as a scene card
 
-**Aspect:** UI and UX, visual design (`docs/design/brief.md` §5.9, §4.1–4.4, §6; changes 7, 8 and 11 of §8) · **Kind:** UI layer: four readable core files and one stylesheet, no patches, no events, no engine change. Built on 91-look (tokens, type), 94-woodblock-skies (the print), 93-anime-portraits (the bust), 95-icons (the stat icons), 59-tooltips (odds popovers), 89-fight-odds (the fight badge), 97-life-fixes (the stake line).
+**Aspect:** UI and UX, visual design (`docs/design/brief.md` §5.9, §4.1–4.4, §6; changes 7, 8 and 11 of §8) · **Kind:** UI layer: four readable core files and one stylesheet, no patches, no events, no engine change. Built on 91-visual-style (tokens, type), 94-woodblock-skies (the print), 93-anime-portraits (the bust), 95-icons (the stat icons), 59-descriptions (odds popovers), 89-fight-odds (the fight badge), 97-first-life-fixes (the stake line).
 
 ## Why
 

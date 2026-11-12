@@ -14,7 +14,7 @@
   - **so:** a soldier, 22, enlisted in a war. 10 months, four line battles (`so-log.txt`).
   - **Week test:** 16 Week steps in a row as a 20-year-old (`js/week.cjs`).
 - **The new layers, one by one** (`js/tour.cjs`, `js/pol.cjs`, `js/death.cjs`): the help modal, Story / Map with zoom, Places, the arms designer, the road modal, a share card (saved as a PNG), the Politics view, the War Room, the death screen with "Keep this life", and the Hall shelf on the title.
-- **Every button:** a copy of `tools/deadclicks.mjs` with ten more screens (`js/dc2.mjs`). The extra screens are Story/Map, Places, arms, share, the road, the ruler's Politics, a noble's politics, the soldier's War tab and the War Room. It ran 21 screens and listed 2,348 controls. It clicked the first 70 enabled controls of each screen, each from a fresh state (`dc2.txt`, `dc2.json`).
+- **Every button:** a copy of `tools/dead-clicks.mjs` with ten more screens (`js/dc2.mjs`). The extra screens are Story/Map, Places, arms, share, the road, the ruler's Politics, a noble's politics, the soldier's War tab and the War Room. It ran 21 screens and listed 2,348 controls. It clicked the first 70 enabled controls of each screen, each from a fresh state (`dc2.txt`, `dc2.json`).
 - **Scroll length:** every tab, for a peasant of 25, a noble of 30, a ruler and a soldier, at 1366×768 and 390×844 (`js/screens.cjs` → `screens-desk.txt`, `screens-phone.txt`).
 - **Screenshots** are in `/tmp/ardan/cycle2/design/s/`, written `s/…` below.
 - **Load:** the machine was shared with three other reviewers. Load averaged about 9 on 4 cores, so the step timings below are pessimistic.
@@ -91,7 +91,7 @@ Then the backtests' remaining list, ranked for this game now (section C), and fo
 **Why it matters.** "War to the last unit" is the owner's ask, and 9997 built it. A teenager who reads three names for their own company stops believing any of them. Coherence is the whole value of detail.
 
 **Fix.**
-- **9997-companies owns the truth.** The War tab's order of battle (release / 37-squad), the oath line (release enlist text) and the line battle's section panel (72-two-scales / 37-squad) should all read `CO.coName`, `CO.bnName` and the captain from `CO.fromSeed`.
+- **9997-companies owns the truth.** The War tab's order of battle (release / 37-named-squad), the oath line (release enlist text) and the line battle's section panel (72-one-battle-two-scales / 37-named-squad) should all read `CO.coName`, `CO.bnName` and the captain from `CO.fromSeed`.
 - Add a test, `coOneName`: the four strings agree for the player's unit.
 - Pick one spelling of serjeant.
 
@@ -107,7 +107,7 @@ Then the backtests' remaining list, ranked for this game now (section C), and fo
 **Why it matters.** This is the bug players screenshot to mock a game. It also breaks choices: two buttons with the same label.
 
 **Fix.**
-- **One helper** in 97-life-fixes or 02-content-fixes: `A.freshName(p, cult, sex)` re-picks a given name that matches the player, their parents, their siblings, their spouse or anyone else in the same scene's `ctx`. Wrap the name maker that `mk()` and the peer and suitor setups use.
+- **One helper** in 97-first-life-fixes or 02-content-fixes: `A.freshName(p, cult, sex)` re-picks a given name that matches the player, their parents, their siblings, their spouse or anyone else in the same scene's `ctx`. Wrap the name maker that `mk()` and the peer and suitor setups use.
 - **`lf_harvest_dance`:** pick `bd` by the person's sex ("nephew" or "niece").
 - **A lint rule:** two choices of one event must not render the same label.
 
@@ -139,7 +139,7 @@ Then the backtests' remaining list, ranked for this game now (section C), and fo
 
 **Fix (9996-polity `e-view.core.js`).**
 - When `UI.realmView === 'pol'`, drop the Build block (it belongs to State or Build).
-- Fold every `po-cap` section, using 90-fold, with a one-line summary in each header:
+- Fold every `po-cap` section, using 90-collapsible-sections, with a one-line summary in each header:
   - "The bill: none before the realm · bring one (1⧗)";
   - "The council: 5 seats, 2 tasks set";
   - "Factions: 1, Liberty at 34% of its demand".
@@ -166,9 +166,9 @@ Then the backtests' remaining list, ranked for this game now (section C), and fo
 
 The Book then says "He writes your name twice. In spring his men take a pig for it" (`ru-log.txt`, `s/ru-99-end.png`).
 
-**Cause.** `src/world/47-realm-bible/bible.core.js:43`: `free: pc => A.isAdult(pc) && !unfree(pc)`. Nobles and rulers count as "free".
+**Cause.** `src/world/47-realm-customs/bible.core.js:43`: `free: pc => A.isAdult(pc) && !unfree(pc)`. Nobles and rulers count as "free".
 
-**Fix (47-realm-bible).**
+**Fix (47-realm-customs).**
 - Add a `commons` audience (free, not noble, not ruler), and move hearth, tithe and levy customs to it.
 - Give rulers the other side: "The hearth mark comes in: 9,500,000 souls, one mark a roof".
 
@@ -182,7 +182,7 @@ The Book then says "He writes your name twice. In spring his men take a pig for 
 **Fix (9990-journeys).**
 - Fold "Capitals and far realms" closed by default, with a count.
 - Grey out unaffordable rows with the reason on the row ("11 suns; you have 10").
-- Use the selected-button token from 91-look for `jr-mode`.
+- Use the selected-button token from 91-visual-style for `jr-mode`.
 - Best of all, let a click on a place in the Story / Map open "Go there" (see D3).
 
 ### A8. Season and place (S, impact 3)
@@ -192,7 +192,7 @@ The Book then says "He writes your name twice. In spring his men take a pig for 
 - "The last dance at Harvest Home" fired in **February** (`st-log.txt`).
 - Cycle 1 already reported "The spring crawl" on 2 January (first-hour B6).
 
-**Fix.** Gate seasonal scenes on `A.S.month`. A small lint rule in `tools/` (a proposal; not this reviewer's folder) would flag event text with summer, harvest, spring or winter and no month in `cond`. Owners: 02-content-fixes for the release scenes, 97-life-fixes for `lf_*`.
+**Fix.** Gate seasonal scenes on `A.S.month`. A small lint rule in `tools/` (a proposal; not this reviewer's folder) would flag event text with summer, harvest, spring or winter and no month in `cond`. Owners: 02-content-fixes for the release scenes, 97-first-life-fixes for `lf_*`.
 
 ### A9. The death screen and the share card (S, impact 3)
 
@@ -204,15 +204,15 @@ The Book then says "He writes your name twice. In spring his men take a pig for 
 
 **Fix.**
 - 93-anime-portraits: route the obituary portrait through the bust.
-- 9994-share: when the bust is the subject, print the subject's name, with yours in the epitaph line.
+- 9994-share-a-picture: when the bust is the subject, print the subject's name, with yours in the epitaph line.
 
 ### A10. Copy and small UI bugs (S, impact 2)
 
 - **"A small grave"** (release content): "Keep the a clay marble" and "Aldred's a clay marble". `ctx.toy` carries its article. 02-content-fixes: strip the article for `{toy}` in labels, or store `toyBare`.
 - **Drop caps still split words** in `innerText`: "Arecruiting sergeant", "Amonk", "Aman", "6suns is gone" (`p16-log.txt`, `st-log.txt`). This is first-hour B8, still open (92-scene-card).
 - **While a scene is open,** the skip button shows a clipped gold "Nex" next to "Go on" (`s/crop-topbar-event.png`). Two "go" controls, one cut off (84-top-bar `step.core.js`).
-- **Decisions still opens with** "There are no quest lists in Ardan", above a game that now has chapter aims and an ambition (`s/D-ruler-life-goals.png`; 97-life-fixes or 9993).
-- **The People tab** files a private soldier's messmates under "Under you" (`s/D-soldier-people-people.png`). The superior's want is cut off: "Wants to cross the Gordush on 2 May." (998-people-want).
+- **Decisions still opens with** "There are no quest lists in Ardan", above a game that now has chapter aims and an ambition (`s/D-ruler-life-goals.png`; 97-first-life-fixes or 9993).
+- **The People tab** files a private soldier's messmates under "Under you" (`s/D-soldier-people-people.png`). The superior's want is cut off: "Wants to cross the Gordush on 2 May." (998-npc-wants).
 - **The newborn carries the quirk "Old childhood scar: a fall you do not remember"**, and 93 draws it as a red slash across the baby's face (`s/n1-born.png`). Don't roll that quirk for a start age under 3 (release data; 02-content-fixes).
 - **Step dates still land on the 2nd** ("2 February", "2 March"). First-hour B8, still open.
 
@@ -220,7 +220,7 @@ The Book then says "He writes your name twice. In spring his men take a pig for 
 
 **What I saw.** On the quick start, "Pick a story" does nothing, because the three story cards are already open under it (`dc2.txt`: `DEAD create button data-a=crQuick v=story`).
 
-**Fix (29-starts).** Make it open all 20 ("Show all 20 stories") and scroll to them. Or drop it and let the three cards plus "Show all" carry the choice.
+**Fix (29-starting-stories).** Make it open all 20 ("Show all 20 stories") and scroll to them. Or drop it and let the three cards plus "Show all" carry the choice.
 
 ---
 
@@ -287,7 +287,7 @@ The Book then says "He writes your name twice. In spring his men take a pig for 
 
 **Why it matters.** The first minute is the advert. Two goal-setting cards in a row, both asking "what do you want", feel like a form. Reigns gives one card; Hades gives one goal.
 
-**Fix (9993-chapters with 97-life-fixes, 9992-identity).**
+**Fix (9993-life-chapters with 97-first-life-fixes, 9992-identity).**
 - On the first chapter of a life, fold the ambition question into the chapter card: "Chapter One: The Years of Smoke. What do you want from your life?" The ambition's four answers become the card's choices, and the three aims follow from it.
 - Hold the pup and naming scenes (`ix_pup`) back for the first 2 months. 81-pacing's first-hour guard is the place for it.
 - Hold the realm custom to its second year, or show it as a Coming up line in year one.
@@ -334,7 +334,7 @@ The result lines then sit in the Book as "So it is written at the head of the ch
 
 **Why it matters.** Pentiment's act cards and Persona's calendar days are moments. This one is a form with numbers in it. The right panel's chapter line ("Chapter One · Lean Years · 0 of 3 · Next: Learn your letters") is good. The card is the weak part.
 
-**Fix (9993-chapters).**
+**Fix (9993-life-chapters).**
 - Give the card its own frame: the title large and centred, the years, a woodblock sky (94) for the stage, and the aims as a ticked list.
 - Word aims in the world's terms: "Be known at the shrine" rather than "piety 42".
 - Write the Book line once per life, not per chapter.
@@ -345,7 +345,7 @@ The result lines then sit in the Book as "So it is written at the head of the ch
 
 **Why it matters.** A story start is a promise of a story. A teenager who picked "what took my father" wants the second beat within the session. Five years is about 60 Month presses.
 
-**Fix (29-starts).**
+**Fix (29-starting-stories).**
 - Give each of the 23 stories (20 plus the Hall's 3) a second beat at 2 to 6 months.
 - Show it in Coming up: "Spring: the tracks on the fells again".
 - Match the start job to the blurb.
@@ -377,9 +377,9 @@ Scroll length of each main screen (scrollHeight ÷ view height; `screens-desk.tx
 - **The big wins.** The Life tab went from 4.7 screens to one, and the phone's Holdings from 13 to 7.
 - **What is still long.** Codex, Dynasty, Politics and the ruler's Decisions run 5 to 7 screens with no folds. The road modal is nearly 11 screens on a phone.
 - **Fix.**
-  - Wrap each section of those tabs in 90-fold's fold, with a summary line, the way Life now does.
+  - Wrap each section of those tabs in 90-collapsible-sections's fold, with a summary line, the way Life now does.
   - Add complaint #1's proposed test: no tab over 2.0 screens at 1366×768 with folds closed.
-  - Owners: 90-fold (the helper), 9996-polity, 22-chronicle (Dynasty), 26-belief-truth or 59-tooltips (Codex), 9990-journeys (the road).
+  - Owners: 90-collapsible-sections (the helper), 9996-polity, 22-chronicle (Dynasty), 26-belief-versus-truth or 59-descriptions (Codex), 9990-journeys (the road).
 
 ### B9. How the new layers read to a new player
 
@@ -456,7 +456,7 @@ The best new surface (Story / Map) and the most promising system (journeys) don'
 - what you know of it (9991);
 - days and suns by road, and a "Go there / Go and come back" button (9990).
 
-The 170-button modal becomes the fallback list. It is the 80 Days loop: the map is where you choose. Owners: 9991-atlas (the click) and 9990-journeys (the card).
+The 170-button modal becomes the fallback list. It is the 80 Days loop: the map is where you choose. Owners: 9991-atlas-of-known-places (the click) and 9990-journeys (the card).
 
 ### D4. The ruler's desk (M, impact 4)
 
@@ -468,7 +468,7 @@ Give rulers, lords and officers a short desk at the top of Realm:
 - the faction nearest its demand;
 - the treasury's month.
 
-Each line should be a one-click action. Also scale the "golden age" aim to the realm's treasury (the ×10 growth noted in the cycle 1 report). Owners: 9996-polity (the desk), 97-life-fixes (`A.whatNow` lines and the ambition's target).
+Each line should be a one-click action. Also scale the "golden age" aim to the realm's treasury (the ×10 growth noted in the cycle 1 report). Owners: 9996-polity (the desk), 97-first-life-fixes (`A.whatNow` lines and the ambition's target).
 
 ---
 

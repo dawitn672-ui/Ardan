@@ -24,7 +24,7 @@
     add('violence', 'hang|gallows|rope|noose|headsman|the block|a blow');
   }
 
-  // ---- the tale in the taverns (26-belief-truth) ----------------------------------------------------------------------
+  // ---- the tale in the taverns (26-belief-versus-truth) ----------------------------------------------------------------------
   const BT = A.BT;
   if (BT && typeof BT.tale === 'function') {
     const tale0 = BT.tale;
@@ -57,7 +57,7 @@
     };
   }
 
-  // ---- no piety for the faithless on the card (99993-v2-stats' faith, 9998-stakes' chips) -------------------------------
+  // ---- no piety for the faithless on the card (99993-v2-stats' faith, 9998-choice-stakes' chips) -------------------------------
   const ST = A.STAKES, VS = A.V2S;
   if (ST && typeof ST.choiceChips === 'function' && typeof ST.read === 'function' && VS && typeof VS.hasFaith === 'function') {
     const chips0 = ST.choiceChips, noPiety = R => {

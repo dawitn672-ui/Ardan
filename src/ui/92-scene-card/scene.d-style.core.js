@@ -1,8 +1,8 @@
 // 92-scene-card, part 4: the look (brief §5.9 the card, §1.3 the stat colours, §1.4 the odds bands, §3.2 the cut corner,
-// §3.3 elevation, §6 motion). One <style id="sc-style">. 91-look's stylesheet is kept last in <head>, so every rule here
+// §3.3 elevation, §6 motion). One <style id="sc-style">. 91-visual-style's stylesheet is kept last in <head>, so every rule here
 // that meets one of 91's carries more weight (#modal and the card's classes) rather than coming later.
 //
-// Motion follows the Motion setting when 96-moments is in the build (<html data-motion="full|reduced|off">), else the
+// Motion follows the Motion setting when 96-big-moments is in the build (<html data-motion="full|reduced|off">), else the
 // system: full motion rises, slides and pops; reduced motion only fades (120 ms or less); off is still.
 (function () {
   const SC = UI.SCENE;

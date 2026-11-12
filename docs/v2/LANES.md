@@ -20,7 +20,7 @@ The owner's decisions (Nov 1):
 
 ## How a lane works
 
-- **Read first:** `CLAUDE.md` (the build model, patches on minified code, rules), `docs/V2_SPEC.md`, `.claude/skills/*/SKILL.md`, and `src/core/99990-v2/README.md`.
+- **Read first:** `CLAUDE.md` (the build model, patches on minified code, rules), `docs/V2_SPEC.md`, `.claude/skills/*/SKILL.md`, and `src/core/99990-v2-engine/README.md`.
   - The v2 engine is on the page as `A.V2`, from `src/v2`. Change `src/v2` only through `node tools/build-v2.mjs`. Keep `tests/v2` passing; add tests there for engine changes.
 - **Own your folder.** You run in your own git worktree. Your work goes in your own new feature folder `features/9999N-v2-<name>/`, which loads after everything else. You may also mark other features `.wip` or make small edits to the features named in your task.
 - **Build and test privately.**
