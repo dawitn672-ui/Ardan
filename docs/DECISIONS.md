@@ -211,3 +211,10 @@ before building).
 **Kept:** `src/people/engine/face.js` (the 39-feature face code, inheritance, distance), reused by the 2D path.
 **Superseded:** the 3D render path (`anatomy.js`, `basemesh*.js`, `src/ui/engine/paint/*`, `docs/design/demo/`) moves
 to `archive/c8-3d-render/` when the 2D demo replaces it; the MakeHuman base (D-022) leaves with it.
+
+### D-025 · The 2D character plan's own calls (2026-11-12 17:27 ET)
+**Chosen (by the plan, docs/design/characters.md of 2026-11-12 17:27 ET):** portraits in one three-quarter view (front
+and profile dropped), one standing pose instead of six, part art authored as path data in `assets/parts/*.json` and
+packed into `data/parts/`; outside image AI used for reference sheets only (auto-traced faces cannot be masters).
+Gates: gate 1 a four-portrait style frame in two finishes for the owner, gate 2 a demo page and ten sheets in
+`docs/design/demo-2d/`. Budgets per portrait: 1 ms (small), 4 ms (medium), 16 ms (large), 18 ms (full figure).
