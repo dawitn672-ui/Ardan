@@ -242,3 +242,19 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   items); M 144 px ≈ 3–5 + 1.2 ms (287); L 480 px ≈ 4–6 + 1.5 ms (361). Over the plan's S budget (1 ms) and its 150
   shapes; within M and L.
 - **Undo:** delete the four paths above (no other file depends on them).
+
+### H-012 · 2026-11-12 18:29 ET · CI 97's 22 failures fixed (5 game bugs, 17 tests made robust)
+- **Commits:** `e4d5c90` (by an Opus 5.5 agent), merged as `d5f42ab`.
+- **What and why:** building without D-021's day-0 council fix showed 19 of the 21 failures came from the worlds it
+  legitimately changed. **Game bugs fixed:** the duel's intent mark used the instinct's words and misnamed half the
+  tells (now the duel's own read); the duel's Adapting bar showed "+2" (now words); a disinherited heir the line search
+  never reached was not told why; a clickable phone chip was 43 px (now 44); a person row with a friend's pips grew to
+  34 px (now 26). **Tests made robust, no bar changed:** fight searches skip a seed whose war ended in peace; coScreens
+  renames a captain who is not the player; flDuelFace counts moves, not B4's ⓘ buttons; and eleven more choose their
+  scenario robustly (list in the merge). saveSafety expects the error it provokes.
+- **Found, for a design look:** with 81-pacing on, engaged bot lives die young far more often (5 of 8 against 1 of 8),
+  including a lethal duel chosen at 15 and a wolf at 13.
+- **Tests:** all 22 pass; suites and touched features 105/105; balance league within every band. After the merge with A1,
+  B4 and the demos: boot, saveSafety, lookRows, flDuelFace, phoneTargets, coScreens, rdOnePerPress, clickOpens,
+  v2sNoBareNumbers pass. This push runs the full CI on X6 + A3a + B4 + A1 + these fixes.
+- **Undo:** `git revert -m 1 d5f42ab`, rebuild.

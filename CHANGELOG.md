@@ -5,7 +5,12 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
-- Nothing yet.
+- Descriptions open when you click or tap, never on hover; long explanations sit behind a small ⓘ. An activity
+  shows what it is, what it costs and how it may go before you commit, and its result is never cut short.
+- Next month is much lighter: the page redraws once per press, the story log updates in place, and a long life no
+  longer gets slower. Starting a life shows a progress line.
+- Fixes: the duel's hint about your foe's move is right; the Adapting bar uses words; a passed-over heir is told why;
+  phone buttons and person rows are the right size; no two-year-old sits on a royal council.
 
 ## v2.1.0-alpha.1 (2026-11-12 11:20 ET) · Round 2 begins
 
