@@ -194,3 +194,9 @@ assets as carried in the mpfb2 repository). Only the numbers are used, no AGPL/G
 `docs/design/demo/mh-prep.mjs`, the generated data file and the demo page's footer. **Why:** the plan's own blended-
 ellipsoid head read as "a lumpy alien bust"; the plan named this fallback. **Status:** the look is still below the
 owner's bar (mannequin feel, shell hair, crude cloth, far over the time budget); the owner reviews and chooses the path.
+
+### D-023 · The press gate reports, and does not block, until the engine's share is cut (2026-11-12 16:27 ET)
+**Chosen:** the CI `press` job runs `tools/bench/press-gate.mjs index.html --report`. The drawing side of A1 meets its
+goals (one full redraw per press, year 50 no slower than year 0); the quiet-month CPU (150 ms) and the 4× throttle
+wall time (1 s) are still over, mostly because the engine's own month costs 80–170 ms on this machine. Drop
+`--report` once the engine work lands (P12 `A.wsDay` in D12b, the month work in X5), or budget the drawing share only.

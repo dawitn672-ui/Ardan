@@ -202,3 +202,19 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **State:** paused by the owner's order 23 until the owner has reviewed the demos; A1 (lag) and the CI-97 fixes
   that were already running finish and are merged.
 - **Undo:** `git revert -m 1 397b55f` (files only).
+
+### H-010 · 2026-11-12 16:27 ET · A1: lag, the drawing side (one redraw per press)
+- **Commits:** `03e143c` (by an Opus 5.5 agent), merged as `b9a656c`.
+- **What and why:** the owner's first complaint. New last feature `src/ui/999999-one-redraw`: while a step runs only the
+  card and the clock are drawn, the clock repaints only when what it says changes, and one full refresh ends the step;
+  post-draw passes run once per outermost draw; the story log keeps 2 years on the page (earlier on demand) and appends
+  in place; FOLD.cards, LOOK.chipFit and LOOK.nameFit read before they write; a progress line while a life starts;
+  `UI.stepTarget('year')` ready for B6. Bench: `tools/bench/press-gate.mjs` on `tests/saves/press/`, a CI job (D-023).
+- **Numbers (CPU ms, before → after):** full redraws per press 5–7 → 1; layouts in a quiet press 29–46 → 10–14; each
+  card 190–395 → 54–211; quiet month 212–338 → 176–197 (engine 80–170 of it); year 50 vs year 0 1.59× → 0.90×; year 50 at
+  4× throttle 3.1 s → 1.4–1.5 s. Still over: quiet month and throttle (engine), year-50 layouts 14 vs 12.
+- **Also fixed in this merge:** CLAUDE.md, which the B4 merge had overwritten with B4's whole copy, dropping A0/X6/A3a's
+  notes; rebuilt from A1's copy plus B4's rule.
+- **Tests:** rdOnePerPress, rdLogInPlace, rdStartLine, renderRng, tbStepSameWorld, boot, savesStillLoad, clickOpens,
+  clickNoHover pass on the merged build; full suite on CI once the CI-97 fixes land.
+- **Undo:** `git revert -m 1 b9a656c`, rebuild.
