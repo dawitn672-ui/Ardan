@@ -152,3 +152,12 @@ and day-to-day happenings never stop a month or a year; only notable events or p
 war call, an illness or wound, a death or birth in the family, coming of age, a deadline).
 **C7:** the owner confirmed one common English language (D-013).
 
+
+### D-020 · Characters: the owner's detailed answers (2026-11-12 10:52 ET; refines D-015)
+**Chosen:** the register (anime or realistic) is re-evaluated by the plan, which picks the better one and says why.
+The player can customise every feature of the face by hand; customisation comes first, genes and inheritance second
+(defaults, NPCs, children). Height and build show. 38 hair styles, realistic and drawn well. Scars come from battles:
+mostly looks, with small debuffs only where it makes sense (an eye, a knee, a hand). Clothing is accurate to class,
+culture and role by default, and the player can change it. In-depth customisation. **Demos first:** before any
+building, the owner sees prototype sheets (faces, ages, scars, builds, hair, outfits) and approves them; that is C8b's
+first gate. Family redraw to match the player's face: yes. Retire the two older renderers: yes.
