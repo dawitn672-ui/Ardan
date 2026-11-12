@@ -323,9 +323,9 @@
     const prog = `<span class="clk-prog" aria-hidden="true"><i style="transform:scaleX(${frac.toFixed(3)})"></i></span>`;
     const btn = (act, kind, label, key, primary) => {
       const mine = running && ST.kind === kind;
-      if (mine && ST.wait) return `<button class="v2-step${primary ? ' primary' : ''} run" data-a="${act}" title="Go on when this is settled">${icon('play')}<span>Go on</span>${prog}</button>`;
+      if (mine && ST.wait) return `<button class="v2-step${primary ? ' primary' : ''} run" data-a="${act}" aria-description="Go on when this is settled">${icon('play')}<span>Go on</span>${prog}</button>`;
       if (mine) return `<button class="v2-step${primary ? ' primary' : ''} run" data-a="stepStop" aria-label="Stop here">${icon('pause')}<span>${esc(kind === 'month' ? 'The month passes' : kind === 'week' ? 'A week passes' : 'A day passes')}</span>${prog}</button>`;
-      return `<button class="v2-step${primary ? ' primary' : ''}" data-a="${act}"${dis ? ' aria-disabled="true"' : ''} aria-keyshortcuts="${key}" title="${esc(dis ? why() : label + ' (key ' + key + ')')}">${icon(kind === 'month' ? 'step-moon' : kind === 'week' ? 'calendar' : 'sun')}<span>${esc(label)}</span>${running ? prog : ''}</button>`;
+      return `<button class="v2-step${primary ? ' primary' : ''}" data-a="${act}"${dis ? ' aria-disabled="true"' : ''} aria-keyshortcuts="${key}" aria-description="${esc(dis ? why() : label + ' (key ' + key + ')')}">${icon(kind === 'month' ? 'step-moon' : kind === 'week' ? 'calendar' : 'sun')}<span>${esc(label)}</span>${running ? prog : ''}</button>`;
     };
     if (!camp) return `<span class="v2-time" role="group" aria-label="Time">${btn('v2Next', 'month', 'Next month', 'N', true)}</span>`;
     const steps = `${btn('v2Day', 'day', 'Next day', 'D', false)}${btn('v2Week', 'week', 'Next week', 'W', true)}`;

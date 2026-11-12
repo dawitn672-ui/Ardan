@@ -425,6 +425,7 @@ const titleWords = v => {
   if (s && skillKey(sk)) return `${sk}: ${tierName(s[2])}`;
   return VS.deNum(t);
 };
+VS.titleWords = titleWords;   // B4: 59-tooltips' notes (a title lifted into a click-to-open description) read the same words
 VS.sweepTitles = function (root) {
   if (!root || !root.querySelectorAll) return;
   const els = root.matches && root.matches('[title],[aria-label]') ? [root, ...root.querySelectorAll('[title],[aria-label]')] : root.querySelectorAll('[title],[aria-label]');

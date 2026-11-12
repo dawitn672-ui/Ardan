@@ -35,7 +35,7 @@
       const k = read ? LOOK.duelIntent(read.textContent) : null;
       if (k && MOVE_ICON[k]) {
         const name = { strike: 'a strike', feint: 'a feint', guard: 'a guard', press: 'an all-out press', grapple: 'a grapple' }[k];
-        foe.insertAdjacentHTML('afterbegin', `<span class="dl-intent" role="img" aria-label="Your instinct says: ${UI.esc(name)}" title="Your instinct says: ${UI.esc(name)}">${icon(MOVE_ICON[k])}</span>`);
+        foe.insertAdjacentHTML('afterbegin', `<span class="dl-intent" role="img" aria-label="Your instinct says: ${UI.esc(name)}">${icon(MOVE_ICON[k])}</span>`);
       }
     }
   };

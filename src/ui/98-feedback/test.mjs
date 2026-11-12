@@ -20,9 +20,10 @@ export default {
         UI.screen = 'game'; UI.set.hints = false; A.S.queue = []; UI.ov = null; UI.tab = 'life'; UI.render();
         const t = document.getElementById('toast'); if (t) { t.textContent = ''; t.classList.remove('show'); }
         const f = on ? UI.A.act : (UI.A.act._orig || null);
-        UI.A.act(k);
+        UI.A.act(k); UI.A.actDo(k);   // round 2 B4: a press opens the sheet, Do it commits, and the card says what happened
         await new Promise(res => setTimeout(res, 50));
-        return { toast: (document.getElementById('toast') || {}).textContent || '', hash: JSON.stringify(A.S).length, rng: JSON.stringify(A.rngState) };
+        const card = document.querySelector('#modal .act-res-text');
+        return { toast: (card && card.textContent) || (document.getElementById('toast') || {}).textContent || '', hash: JSON.stringify(A.S).length, rng: JSON.stringify(A.rngState) };
       };
       const out = {};
       for (const k of ['enlist', 'merc', 'crime_burgle', 'tournament']) out[k] = await run(k, true);
@@ -35,7 +36,7 @@ export default {
     const r = await pg.evaluate(() => {
       const go = () => { A.newGame({ seed: 91, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 }); UI.screen = 'game'; UI.set.hints = false; A.S.queue = []; UI.render(); };
       go(); const before = JSON.stringify(A.rngState);
-      UI.A.act('enlist');
+      UI.A.act('enlist'); UI.A.actDo('enlist');
       const withFb = JSON.stringify(A.S), rngA = JSON.stringify(A.rngState);
       go(); A.doActivity('enlist'); UI.refresh();
       return { same: JSON.stringify(A.S) === withFb, rng: JSON.stringify(A.rngState) === rngA, moved: before !== rngA };

@@ -20,8 +20,10 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
 ## Standing rules (the owner's)
 
 - **Descriptions open on click, never on hover.** A button or an info icon opens a description; nothing pops up on
-  hover. (Round 2 order B4; replaces the older "never hide a description behind a click" rule. Until B4 lands the
-  hover tooltips of `src/ui/59-tooltips` are still in the build.)
+  hover. (Round 2 order B4, done: `src/ui/59-tooltips` opens on click, tap and Enter only, a `title=` of more than
+  three words is lifted into a click-to-open note, an activity opens a sheet first, and `src/ui/99998-click-open/test.mjs`
+  lints it. Write `data-note="..."` for a description, never a long `title=`. Replaces the older "never hide a
+  description behind a click" rule, D-007.)
 - **No percentages for the player.** Odds and amounts are words and a tipped scale. Percentages are fine in tests,
   tools and AI.
 - **One holder per post.** Every title, office and command has exactly one holder at a time. A promotion hands over

@@ -259,7 +259,7 @@ export default {
       const wordsShown = !!card && /tired|worn out/.test(card.textContent) && /in good company/.test(card.textContent);
       // (every tab's titles and aria-labels, as the page draws and sweeps them)
       for (const tab of T.tabs()) { UI.ov = null; UI.tab = tab; UI.render(); await tick(); checkAttrs('peasant ' + tab, document.body);
-        const cf = document.querySelector('#app .cf-pips[title]'); if (cf && !cfTip) cfTip = cf.getAttribute('title'); }
+        const cf = document.querySelector('#app .cf-pips'); if (cf && !cfTip) { const nx = cf.nextElementSibling, ib = nx && nx.classList.contains('tt-i') ? nx : null; cfTip = cf.getAttribute('title') || cf.getAttribute('data-v') || (ib && ib.getAttribute('data-v')) || (cf.parentElement && cf.parentElement.getAttribute('data-v')) || ''; } }   // B4: the title is lifted into a note (data-v)
       UI.ov = null; UI.tab = 'life'; UI.render(); await tick();
       // the training pickers and the season's log
       check('training picker', [...document.querySelectorAll('select[data-c="planTrain"] option')].map(o => o.textContent).join('\n'));

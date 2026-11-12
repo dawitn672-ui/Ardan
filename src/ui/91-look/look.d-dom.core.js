@@ -87,7 +87,7 @@
         const s = document.createElement('span'); s.className = 'lk-si'; s.innerHTML = svg(LOOK.STAT_ICON[k] || ''); r.prepend(s);
         const lbl = r.querySelector('.lbl'), t = lbl && (lbl.querySelector('[data-tt],[data-tip],.tt,.tipt') || lbl);
         const nm = LOOK.STATS[k];
-        if (t && nm) { const full = t.textContent.trim() || nm[0]; t.textContent = nm[1]; t.setAttribute('aria-label', `${full} (${nm[1]})`); t.setAttribute('title', full); }
+        if (t && nm) { const full = t.textContent.trim() || nm[0]; t.textContent = nm[1]; t.setAttribute('aria-label', `${full} (${nm[1]})`); t.setAttribute('data-note', full); }
       });
       // the needs of 35-moods, after the stats
       const nb = LOOK.needsBox(pc);
@@ -161,7 +161,7 @@
     b.type = 'button'; b.className = 'chip lk-more'; b.dataset.a = 'lookChips';
     b.setAttribute('aria-expanded', String(LOOK.chipsOpen));
     b.setAttribute('aria-label', LOOK.chipsOpen ? 'Show fewer' : `Show ${cut} more`);
-    b.title = LOOK.chipsOpen ? 'Show fewer' : `${cut} more: ` + chips.filter(c => c.classList.contains('lk-cut')).map(c => c.textContent.trim()).join(', ');
+    b.setAttribute('aria-description', LOOK.chipsOpen ? 'Show fewer' : `${cut} more: ` + chips.filter(c => c.classList.contains('lk-cut')).map(c => c.textContent.trim()).join(', '));
     b.textContent = LOOK.chipsOpen ? 'fewer' : '+' + cut;
     row.classList.toggle('lk-open', LOOK.chipsOpen);
     row.appendChild(b);
@@ -192,7 +192,7 @@
         s.classList.add('lk-keep'); s.textContent = txt;
       }
     }
-    if (!phone) for (const w of tb.querySelectorAll('.wn-item')) { const y = w.querySelector('.wn-why'); if (y && !w.title) w.title = y.textContent.trim(); }
+    if (!phone) for (const w of tb.querySelectorAll('.wn-item')) { const y = w.querySelector('.wn-why'); if (y && !w.hasAttribute('aria-description')) w.setAttribute('aria-description', y.textContent.trim()); }   // B4: a hover title became assistive text; the reason is on screen on a phone
     // Your days: what you train is chosen often, so its select rides in the header and stays in reach when the card is
     // folded to its summary; the rest (how hard, free hours, the breakthrough) is one click away
     const plan = tb.querySelector('.plan-card');
@@ -281,7 +281,7 @@
         el.textContent = LOOK.chipsOpen ? 'fewer' : '+' + n;
         el.setAttribute('aria-expanded', String(LOOK.chipsOpen));
         el.setAttribute('aria-label', LOOK.chipsOpen ? 'Show fewer' : `Show ${n} more`);
-        el.title = LOOK.chipsOpen ? 'Show fewer' : `${n} more: ` + cut.map(c => c.textContent.trim()).join(', ');
+        el.setAttribute('aria-description', LOOK.chipsOpen ? 'Show fewer' : `${n} more: ` + cut.map(c => c.textContent.trim()).join(', '));
       }
     },
     lookRail(v, el) {

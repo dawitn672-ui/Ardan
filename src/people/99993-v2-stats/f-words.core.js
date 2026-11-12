@@ -106,7 +106,7 @@ VS.badges = function (root) {
       const tap = el.querySelector('[data-tt],[data-tip]');
       if (tap) { const w = tap.cloneNode(false); w.innerHTML = VS.oddsInner(pct); el.replaceChildren(w); }
       else el.innerHTML = VS.oddsInner(pct);
-      el.title = VS.oddsOf(pct).line;
+      el.setAttribute('aria-description', VS.oddsOf(pct).line);   // B4: a choice's odds explain through the info glyph, not a title
     }
   }
   // 92-scene-card's four pips counted the odds: the balance says it now

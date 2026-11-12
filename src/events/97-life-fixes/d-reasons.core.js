@@ -58,9 +58,9 @@
     const pc = A.S ? A.pc() : null;
     let n = 0;
     for (const el of (root || document).querySelectorAll('button[disabled],select[disabled],input[disabled]')) {
-      if ((el.getAttribute('title') || '').trim() || el.getAttribute('data-tip') || el.getAttribute('data-tt')) continue;
+      if ((el.getAttribute('title') || '').trim() || (el.getAttribute('data-note') || '').trim() || el.getAttribute('data-tip') || el.getAttribute('data-tt')) continue;
       const why = LF.reasonFor(el, pc);
-      el.setAttribute('title', why);
+      el.setAttribute('data-note', why);   // B4: the reason opens on a press (an info button beside the control), not on hover
       n++;
     }
     return n;

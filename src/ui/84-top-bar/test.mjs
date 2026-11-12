@@ -226,14 +226,14 @@ Object.assign(tests, {
       const vis = () => [...document.querySelectorAll('#tabbody [data-a="act"]')].filter(b => b.offsetParent !== null).length;
       const six = vis(), more = document.querySelector('#tabbody [data-a="actsMore"]'), moreText = more ? more.textContent : '';
       const k = [...document.querySelectorAll('#tabbody [data-a="act"]')].filter(b => b.offsetParent !== null).map(b => b.dataset.v).find(v => v === 'make_friend') || 'make_friend';
-      UI.A.act(k); A.S.queue = []; UI.ov = null; UI.render();
+      UI.A.act(k); const sheet = !!(UI.ov && UI.ov.type === 'actSheet'); UI.A.actDo(k); A.S.queue = []; UI.ov = null; UI.render();   // B4: a press opens the sheet, Do it commits
       const note = document.querySelector('#tabbody .act-res'), grid = document.querySelector('#tabbody .acts, #tabbody .fold-acts');
       const noteText = note ? note.textContent : '', near = !!(note && grid && (note.compareDocumentPosition(grid) & Node.DOCUMENT_POSITION_FOLLOWING || grid.contains(note)));
       UI.A.actsMore(); const all = vis();
       UI.set.lfLives = 4; UI.actsAll = false; UI.render(); const later = vis();
-      return { six, moreText, noteText, near, all, later };
+      return { six, moreText, noteText, near, all, later, sheet };
     });
-    const ok = r.six === 6 && /More activities/.test(r.moreText) && /Make a friend/.test(r.noteText) && r.near && r.all > 20 && r.later > 20;
+    const ok = r.sheet && r.six === 6 && /More activities/.test(r.moreText) && /Make a friend/.test(r.noteText) && r.near && r.all > 20 && r.later > 20;
     return { ok, detail: `first life: ${r.six} activities shown, "${r.moreText}"; after Make a friend: "${r.noteText.slice(0, 100)}" above the tiles ${r.near}; More shows ${r.all}; a later life ${r.later}` };
   },
 

@@ -271,7 +271,7 @@ export default {
         const h0 = T.hash(A.S), rng0 = A.rngState;
         const html = UI.battleModal(B);
         const pure = T.hash(A.S) === h0 && A.rngState === rng0;
-        out[rank] = { cmd, all, refused, wingKept, okOrder, never, wallOff, wallOn, pure, panel: /Your command/.test(html) && /data-a="coOrd"/.test(html) && /data-c="coForm"/.test(html) && /disabled title="The wings/.test(html), code: mine.code };
+        out[rank] = { cmd, all, refused, wingKept, okOrder, never, wallOff, wallOn, pure, panel: /Your command/.test(html) && /data-a="coOrd"/.test(html) && /data-c="coForm"/.test(html) && /disabled data-note="The wings/.test(html), code: mine.code };
         A.S.queue.shift();
       }
       return out;

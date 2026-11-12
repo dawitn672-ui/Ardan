@@ -36,9 +36,9 @@
   // the product of a list of factors, as mul() multiplies them (the tests check it against the number shown)
   TT.prodOf = (start, factors) => factors.reduce((v, [, f]) => v * (f == null ? 1 : f), start);
 
-  // a trigger on a number inside an action (a card that opens, a row that selects): hover opens it; a tap or a click
-  // goes to the action. With tap = true the number is its own tap target: a tap opens the popover and the action
-  // waits (the odds of a choice: a tap on "38% · risky" explains it, a tap on the words chooses).
+  // a trigger on a number inside an action (a card that opens, a row that selects): a press on it opens the popover and
+  // the action waits; a press elsewhere on the action acts (round 2 B4: nothing opens on hover). In a choice or a tile
+  // the tap is the action's, and the info glyph (tt-i) in it takes the press instead (see TT.swallows).
   UI.ttNum = (key, arg, label, o = {}) => `<span class="tt-n${o.cls ? ' ' + o.cls : ''}"${UI.ttAttrs(key, arg, !!o.focus)}${o.tap ? ' data-tt-tap="1"' : ''}>${label}</span>`;
 
   // ---- the wiring that has to wait: features after this one (60-drill to 71-phone) draw parts of these screens, so
@@ -79,7 +79,7 @@
   };
 
   TT.CSS2 = `
-  .tt-n{cursor:help;border-bottom:1px dotted var(--accent-line)}
+  .tt-n{cursor:pointer;border-bottom:1px dotted var(--accent-line)}
   .tt-n.tt-on{color:var(--accent-2)}
   [data-tt-tap]{border-bottom-style:solid}
   @media (pointer:coarse){.tt-n{display:inline-block;min-height:24px;min-width:24px;text-align:center;line-height:24px}
