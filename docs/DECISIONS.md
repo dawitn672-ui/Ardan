@@ -186,3 +186,11 @@ world now differs from day 0: the heir of Kesh, aged 2, sat as Chancellor in eve
 new game passes every check on day 0" needed the council rule; (3) and (4) keep the checks to contradictions rather
 than to medieval custom.
 
+
+### D-022 · Character demos built on MakeHuman's CC0 base mesh (2026-11-12 15:52 ET)
+**Chosen:** the first-gate demos use MakeHuman's sculpted base mesh and shape targets (github.com/makehumancommunity/
+makehuman; each file states "explicitly released as CC0 in september 2020"; the age/sex/build targets from the same
+assets as carried in the mpfb2 repository). Only the numbers are used, no AGPL/GPL code. Recorded in
+`docs/design/demo/mh-prep.mjs`, the generated data file and the demo page's footer. **Why:** the plan's own blended-
+ellipsoid head read as "a lumpy alien bust"; the plan named this fallback. **Status:** the look is still below the
+owner's bar (mannequin feel, shell hair, crude cloth, far over the time budget); the owner reviews and chooses the path.

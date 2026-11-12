@@ -188,3 +188,17 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   `tools/bench/reports/ci97-failures.txt`), the net doing its job: tests that logged console errors, and seed-bound
   tests moved by the council fix. A fix agent works through them next.
 - **Undo:** `git revert -m 1 c00a91b`, rebuild.
+
+### H-009 · 2026-11-12 15:52 ET · C8b first gate: the character demos (a working draft); pause for the owner's review (order 23)
+- **Commits:** `2d8e4c6` (by an Opus 5.5 agent), merged as `397b55f`. Nothing wired into the game (`index.html`
+  untouched; the v2 bundle unchanged).
+- **What:** `docs/design/demo/characters.html` (offline, 6.9 MB, with a live face maker: 39 features, colours, hair,
+  height, build, station, views, an age strip, copy/paste of the face code) and eight sheets
+  (`sheet-{faces,ages,scars,builds,hair,outfits,sizes,registers}.png`); engine modules `src/people/engine/{face,anatomy,
+  basemesh}.js` and `src/ui/engine/paint/*`; 21 new engine tests (50/50 pass). Source of the base mesh: D-022.
+- **Honest judgement (the builder's and the session's):** growth, ageing, scars, clothing and identity all read, and
+  20 faces are distinct; but people look like CG mannequins with a paint filter, hair reads as a helmet, cloth is
+  crude, babies read as small adults in a bust, and a portrait costs 230–1,150 ms against a 3–105 ms budget.
+- **State:** paused by the owner's order 23 until the owner has reviewed the demos; A1 (lag) and the CI-97 fixes
+  that were already running finish and are merged.
+- **Undo:** `git revert -m 1 397b55f` (files only).

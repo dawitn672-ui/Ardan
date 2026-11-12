@@ -4,7 +4,7 @@ The checklist of every work item, in the order they are being done. Tick an item
 green, with the stamp and the commit; never delete a line. Details live in `docs/HISTORY.md`; the plan and the
 reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 
-*Last updated 2026-11-12 15:05 ET*
+*Last updated 2026-11-12 15:52 ET*
 
 ## Done
 - [x] **Step 0** · Repo restructured by system, with a memory (CLAUDE.md, HISTORY, DECISIONS, IDEAS, CHANGELOG, OWNER_ORDERS) · `d906efc`, CI 95 green · 2026-11-11 23:43 ET
@@ -17,7 +17,8 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 - [x] **X6** · Naming pass: 79 clear renames, `docs/NAMES.md` lookup, `docs/README.md` index · `7a5e71d` (CI pending) · 2026-11-12 12:03 ET (moved to immediate priority by the owner, 2026-11-12 11:17 ET)
 - [x] **A3a** · The net: hidden errors fail tests; 12 coherency checks in the build; baseline that may only shrink; nightly 60-year audit · merged (CI pending) · 2026-11-12 12:07 ET
 - [x] **B4** · Click-to-open descriptions; nothing on hover; activities open a sheet first · `c00a91b` (CI pending) · 2026-11-12 15:05 ET
-- [ ] **C8a** · Character design plan, realistic version (D-015, D-020) · then demo sheets for the owner before building
+- [x] **C8a** · Character design plan, realistic version (`docs/design/characters.md`) · `e7d199d` · 2026-11-12 11:48 ET
+- [x] **C8b gate 1** · Character demos: 8 sheets + live face maker (`docs/design/demo/`) — a working draft, below the bar · `397b55f` · 2026-11-12 15:52 ET · **PAUSED for the owner's review (order 23)**
 
 ## Next, in order
 - [ ] **A1** · Lag: one redraw per press, append-only log, performance gate in CI
