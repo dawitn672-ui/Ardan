@@ -13,6 +13,9 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
    `.claude/skills/`.
 2. Work on a branch, one step per commit. After each step: tests, the coherency checks, a playtest pass
    (`.claude/skills/game-ux-playtest-loop`), then a `docs/HISTORY.md` entry, `CHANGELOG.md` and this file if they change.
+3. Use the owner's model plan for each part of round 2 (`docs/DECISIONS.md`, D-009): for example Fable at max effort
+   for the critique and the big designs, Opus at high effort for systems, Sonnet at high effort for interface and
+   data work, Sonnet at default effort for playtester agents.
 
 ## Standing rules (the owner's)
 
