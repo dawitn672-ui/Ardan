@@ -203,6 +203,9 @@ export default {
       A.newGame({ seed: 621, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
       const pc = A.pc(), enemy = A.neighbors('POL-01')[0];
       A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(pc); A._idIdx = null; A.advance(20); A._idIdx = null;
+      // on until a division the player can see is on the march (at most three more months)
+      const seenMarch = () => { const sn = A.V2W && A.V2W.seen ? A.V2W.seen() : null; return A.allDivs().some(x => x.path && x.path.length && A.S.prov[x.loc] && (!sn || sn.has(x.r))); };
+      for (let i = 0; i < 90 && !seenMarch() && A.pc().alive; i++) { A.S.queue = []; A.advance(1); A._idIdx = null; }
       A.S.queue = []; UI.screen = 'game'; UI.set.hints = false; UI.tab = 'world'; UI.worldView = 'map'; UI.set.inkMap = true; UI.set.banners = true;
       const IM = UI.INKMAP; IM.budgetMs = 1e9; IM.reset(); UI.render();
       const out = {};
@@ -213,14 +216,18 @@ export default {
       UI.mapHl = 'POL-01'; IM.glowPieces = 0; at(1.4); UI.gmDraw(); out.glow = IM.glowPieces;
       UI.mapHl = null; IM.glowPieces = 0; UI.gmDraw(); out.glowOff = IM.glowPieces;
       IM.arrows = 0; at(1); UI.gmDraw(); out.arrowsFar = IM.arrows;
-      const d = A.divById(A.pc().mil.div), L = A.S.prov[d.loc]; IM.arrows = 0; const w = 7000 / 4; UI.gm.view = UI.wrClampView({ x0: L.sx - w / 2, y0: L.sy - w / 3, w, h: 0 }); UI.gmDraw(); out.arrowsNear = IM.arrows;
-      out.paths = A.allDivs().filter(x => x.path && x.path.length).length;
+      // the arrows are drawn only for the divisions the player can see (99997-v2-war's fog: both sides of his wars), so
+      // those are the ones counted, and the near view is on one of them when one marches (seed 621's two marching
+      // divisions after D-021's day-0 council fix were a far realm's, rightly unseen, and not near his own)
+      const seen = A.V2W && A.V2W.seen ? A.V2W.seen() : null, marching = A.allDivs().filter(x => x.path && x.path.length && A.S.prov[x.loc] && (!seen || seen.has(x.r)));
+      const d = marching[0] || A.divById(A.pc().mil.div), L = A.S.prov[d.loc]; IM.arrows = 0; const w = 7000 / 4; UI.gm.view = UI.wrClampView({ x0: L.sx - w / 2, y0: L.sy - w / 3, w, h: 0 }); UI.gmDraw(); out.arrowsNear = IM.arrows;
+      out.paths = marching.length;
       out.pure = JSON.stringify(A.S) === s0 && A.rngState === r0;
       UI.ov = null; UI.render();
       return out;
     });
     const ok = r.hatched > 0 && r.glow > 0 && r.glowOff === 0 && r.arrowsFar === 0 && (r.arrowsNear > 0 || r.paths === 0) && r.pure;
-    return { ok, detail: `${r.hatched} realms hatched beside a neighbour of near the same colour; the selected realm's border glows in ${r.glow} pieces (${r.glowOff} with none selected); arrows for marching divisions: ${r.arrowsFar} at zoom 1, ${r.arrowsNear} at zoom 4 (${r.paths} divisions on the march); drawing ${r.pure ? 'pure' : 'CHANGED the state'}` };
+    return { ok, detail: `${r.hatched} realms hatched beside a neighbour of near the same colour; the selected realm's border glows in ${r.glow} pieces (${r.glowOff} with none selected); arrows for marching divisions: ${r.arrowsFar} at zoom 1, ${r.arrowsNear} at zoom 4 (${r.paths} divisions you can see on the march); drawing ${r.pure ? 'pure' : 'CHANGED the state'}` };
   },
 
   // cycle 1 visual B7 and world B8: the full map's legend names the realms in view (it listed the same 40 at every

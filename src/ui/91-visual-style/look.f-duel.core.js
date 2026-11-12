@@ -8,7 +8,7 @@
 //     line it already is;
 //   - the log well is as tall as what it holds;
 //   - on a phone the fighters are 96 px side by side and the moves a grid of two rows above the fold, the log under.
-// Drawing only: the pass reads the modal's own text, never A.rand, never A.S.
+// Drawing only: the pass reads the modal's own text and the duel's read, never A.rand, and changes nothing in A.S.
 (function () {
   const LOOK = UI.LOOK, X = LOOK.X, T = LOOK.T;
   const MOVE_ICON = { strike: 'swords', feint: 'mask', guard: 'shield', press: 'flame', grapple: 'fist' };
@@ -32,7 +32,11 @@
     const fighters = box.querySelectorAll(':scope > .fighter');
     const foe = fighters[fighters.length - 1], read = box.querySelector('.read');
     if (foe && fighters.length > 1 && !foe.querySelector('.dl-intent')) {
-      const k = read ? LOOK.duelIntent(read.textContent) : null;
+      // the move the instinct names is the game's own (the duel's readHint.act); the words are only a fallback, since
+      // half the tells never name their move ("a little too much shoulder in it — a trick?" is a feint, "eyes fix on
+      // your guard — the cut is coming" a strike, not a guard). Read only: nothing in A.S changes
+      const q = A.S && A.S.queue && A.S.queue[0], hint = q && q.type === 'duel' && q.d && !q.d.over && q.d.readHint;
+      const k = read ? (hint && MOVE_ICON[hint.act] ? hint.act : LOOK.duelIntent(read.textContent)) : null;
       if (k && MOVE_ICON[k]) {
         const name = { strike: 'a strike', feint: 'a feint', guard: 'a guard', press: 'an all-out press', grapple: 'a grapple' }[k];
         foe.insertAdjacentHTML('afterbegin', `<span class="dl-intent" role="img" aria-label="Your instinct says: ${UI.esc(name)}">${icon(MOVE_ICON[k])}</span>`);

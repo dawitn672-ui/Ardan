@@ -559,9 +559,12 @@ export default {
       const V = A.V2S, w = t => V.deNum(V.dePct(t));
       const phrases = [w('+30% pay and +30% from your own house of trade'), w('your stats lend 4 + 30% of their average'), w('Each point of skill above it is worth 1.6%.'),
         w('100% of it from doing, the rest from practice.'), w('Health 97 · Happiness 66'), w('Master fighter (95), a steady officer'), w('Blood 76 / Wind 100')];
-      T.enter({ seed: 41, startAge: 30 });
-      const pc = A.pc();
+      // a sword master: a body of ordinary make (at least half a levy untrained; a frail man of strength 20 is under one
+      // levy even as a master, rightly) with a sword in his hand (a cudgel is not moved by the sword skill)
+      let pc = null;
+      for (let seed = 41; seed < 61; seed++) { T.enter({ seed, startAge: 30 }); pc = A.pc(); A.V2S.cache = new WeakMap(); if (V.shownLevies(pc) >= 0.5) break; }
       for (const k of ['sword', 'melee']) pc.skills[k] = 80;
+      pc.gear = Object.assign({}, pc.gear, { weapon: 'sword' });
       A.V2S.cache = new WeakMap();
       const master = V.shownLevies(pc), chip = UI.SCENE && UI.SCENE.chipHtml ? UI.SCENE.chipHtml({ k: 'them', d: 36, label: "Merewyn's regard" }) : '';
       const bar = UI.barRow('Health', 97, 100);

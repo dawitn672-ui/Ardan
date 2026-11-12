@@ -218,11 +218,17 @@ export default {
         __frPlay(1.2);
         out.regency = { ok: child && !r.regency && r.ruler === kid.id && A.isAdult(kid), note: t.note, after: `child ruler ${child}; ${persona}; after the coming of age regency ${r.regency ? 'still on' : 'over'}` }; }
       // debt: paid a fifth each New Year, or a cause for the creditor
-      { const t = fresh(845, 'debt'), a = A.realm(t.a), b = A.realm(t.b), b0 = b.treasury;
-        t.amt = t.left = 1e9;   // a debt the debtor cannot meet
-        __frPlay(3.1);
+      // (the world runs only while the life does: seed 845's soldier was hanged by lot in his first year after D-021's
+      // day-0 council fix, so the first seed whose life sees the three years out is played)
+      { let t, a, b, seed = 845;
+        for (; seed < 851; seed++) {
+          t = fresh(seed, 'debt'); a = A.realm(t.a); b = A.realm(t.b);
+          t.amt = t.left = 1e9;   // a debt the debtor cannot meet
+          __frPlay(3.1);
+          if (A.pc() && A.pc().alive) break;
+        }
         const missed = t.missed, cb = (A.realm(t.b).cbs || {})[t.a], cause = cb && cb.k, reads = A.cbOn(t.b, t.a);
-        const t2 = fresh(845, 'debt'), a2 = A.realm(t2.a); a2.treasury = 1e7; __frPlay(1.1);
+        const t2 = fresh(seed, 'debt'), a2 = A.realm(t2.a); a2.treasury = 1e7; __frPlay(1.1);
         out.debt = { ok: missed >= 2 && cause === 'tribute' && reads != null && t2.left < t2.amt, note: t.note, after: `an empty treasury misses ${missed} payments and ${b.short} gains the cause "${cause}"; a full one pays ${t2.amt - t2.left} of ${t2.amt}` }; }
       return out;
     });

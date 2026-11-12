@@ -91,6 +91,7 @@ export default {
         let F = null;
         for (let day = 0; day < 400 && !F; day++) {
           A.advance(1); let h, k = 0; while ((h = A.headReady()) && k++ < 50) { if (h.type === 'event') A.eventAuto(); else A.S.queue.shift(); }
+          if (!pc.mil) break; // the war ended in peace and he went home: try the next seed
           const d = A.divById(pc.mil.div); if (!d) continue;
           for (const pid in A.S.fights) { const f = A.S.fights[pid]; if ((f.aIds.includes(d.id) || f.dIds.includes(d.id)) && (d.atk === +pid || d.loc === +pid)) { F = f; break; } }
         }

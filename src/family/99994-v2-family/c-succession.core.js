@@ -101,7 +101,9 @@
   // where you stand, with its reason (playtest 1, #14: "You are passed over: disinherited." said nothing more)
   F.whyText = function (p, r, law, h) {
     const fl = (p && p.flags) || {}, lawName = ((SU.LAWS[law.law] || {}).name || 'the law').toLowerCase();
-    const sk = r.skipped.find(e => e.person.id === p.id);
+    // a disinherited child the search never reached (a nephew of a head whose own parents the world does not know) is
+    // still passed over for that reason, not "further down the line than the house counts heirs"
+    const sk = r.skipped.find(e => e.person.id === p.id) || (r.place == null && fl.disinherited != null && p.house === h.id ? { why: 'disinherited' } : null);
     if (sk) {
       const why = {
         disinherited: `you were cut out of the inheritance${typeof fl.disinherited === 'number' ? ' in ' + fl.disinherited : ''}, and a disinherited child stands outside the line`,

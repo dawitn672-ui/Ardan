@@ -2,10 +2,13 @@
 export default {
   async bothScalesReckoning(pg) {
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 12, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 19 });
+      // a soldier's first three years of a war; some seeds' divisions never meet a big enough field (seed 12's, since the
+      // day-0 council fix of D-021, sits out its war), so the next seed is tried
+      let seen = null;
+      for (let seed = 12; seed < 20 && !seen; seed++) {
+      T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 19 });
       const nb = A.neighbors('POL-01'); A.startWar('POL-01', nb[0] || 'POL-02', null, 'conquest');
       A.enlist(A.pc());
-      let seen = null;
       for (let m = 0; m < 36 && A.pc().alive && !seen; m++) {
         A.advance(30);
         let g = 0, h;
@@ -17,6 +20,7 @@ export default {
           else if (h.type === 'duel') { A.duelAuto(h.d); A.duelClose(); }
           else A.S.queue.shift();
         }
+      }
       }
       if (!seen) return { seen: false };
       const c = seen.ctx;
@@ -30,7 +34,7 @@ export default {
       const v = A.eventView(seen);
       return { seen: true, panels, pure, disagree, raw: /\{[a-z]/.test(txt), choices: v.choices.length, saw: c.saw, front: c.front, chron: c.chron };
     });
-    if (!r.seen) return { ok: false, detail: 'no reckoning in three years of war as a soldier' };
+    if (!r.seen) return { ok: false, detail: 'no reckoning in three years of war as a soldier, in eight seeds' };
     return { ok: r.panels && r.pure && r.disagree && !r.raw && r.choices >= 2,
       detail: `three panels ${r.panels}; render pure ${r.pure}; the chronicle disagrees with the front ${r.disagree}. Saw: "${r.saw}" Front: "${r.front}" Chronicle: ${r.chron}` };
   },

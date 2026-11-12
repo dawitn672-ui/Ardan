@@ -124,7 +124,7 @@ export default {
       const PERS = ['reckless', 'random', 'greedy', 'careful'];
       const run = off => {
         A.PACE.OFF = off; A.SCALE.OFF = off;
-        let items = 0, years = 0, acts = 0, eyears = 0, c = 0, w = 0;
+        let items = 0, years = 0, acts = 0, eyears = 0, c = 0, w = 0; const per = [];
         try {
           // 16 lives, not 8 (CI run 91). Each world re-rolled with v2's slower war pace, and the first 8 lives' prompts
           // fell 6.72 -> 6.11 a year with the feature on, past the 0.3 bar below; lives 8-15 rose 6.12 -> 6.32 and
@@ -134,13 +134,23 @@ export default {
           for (let i = 0; i < 16; i++) {
             const [race, realm, status] = STARTS[i % 4];
             const L = B.life({ seed: 8150 + i * 7919, sex: i % 2 ? 'F' : 'M', race, realm, status }, PERS[i % 4], i % 2 === 0, 30);
-            items += Object.values(L.items).reduce((a, n) => a + n, 0); years += L.years; c += L.checks; w += L.wins;
+            const n = Object.values(L.items).reduce((a, n) => a + n, 0);
+            per.push({ items: n, years: L.years, full: L.deathAge == null });
+            items += n; years += L.years; c += L.checks; w += L.wins;
             if (L.engaged) { acts += L.actions; eyears += L.years; }
           }
         } finally { A.PACE.OFF = false; A.SCALE.OFF = false; }
-        return { prompts: Math.round(10 * items / years) / 10, acts: Math.round(10 * acts / eyears) / 10, rate: Math.round(1000 * w / Math.max(1, c)) / 10, checks: c };
+        return { prompts: Math.round(10 * items / years) / 10, acts: Math.round(10 * acts / eyears) / 10, rate: Math.round(1000 * w / Math.max(1, c)) / 10, checks: c, per };
       };
-      return { off: run(true), on: run(false) };
+      const off = run(true), on = run(false);
+      // prompts a year compare the same lives over the same years: a life cut short in one set and not the other (CI run 97,
+      // after D-021's day-0 council fix: with the feature on, four engaged lives died at 13, 15, 18 and 23, of a wolf, a
+      // duel, a wound and a bear, and 'on' lost 44 grown years, the years richest in prompts, so its rate fell 6.2 -> 5.8
+      // by the mix of ages alone) is left out of both, and the lives that saw the whole span in both sets are compared
+      const both = off.per.map((x, i) => x.full && on.per[i].full ? i : -1).filter(i => i >= 0);
+      const rate = set => Math.round(10 * both.reduce((a, i) => a + set.per[i].items, 0) / Math.max(1, both.reduce((a, i) => a + set.per[i].years, 0))) / 10;
+      off.whole = rate(off); on.whole = rate(on); off.n = on.n = both.length;
+      return { off, on };
     });
     // the win rate compares two sets of lives (on and off play out differently), about 900 checks each over 16 lives: its standard
     // error is about 2.4 points (it is computed below from the counts), so 'on' must be no worse than 'off' beyond twice that (cycle 2: 43.1% against 44.4%,
@@ -148,8 +158,8 @@ export default {
     const se = Math.sqrt(r.on.rate * (100 - r.on.rate) / Math.max(1, r.on.checks) + r.off.rate * (100 - r.off.rate) / Math.max(1, r.off.checks));
     // v2 (99992-v2-time): with the floor off, 81 no longer adds prompts (the month's director sets them), so prompts
     // need only not fall; the winter rule's actions and the check scale still must rise
-    const ok = r.on.prompts >= r.off.prompts - 0.3 && r.on.acts > r.off.acts && r.on.rate >= r.off.rate - 2 * se && r.on.rate <= 70;
-    return { ok, detail: `16 lives, birth to 30. Off: ${r.off.prompts} prompts a year, ${r.off.acts} actions a year (engaged), ${r.off.rate}% of ${r.off.checks} checks; on: ${r.on.prompts}, ${r.on.acts}, ${r.on.rate}% of ${r.on.checks}` };
+    const ok = r.on.n >= 8 && r.on.whole >= r.off.whole - 0.3 && r.on.acts > r.off.acts && r.on.rate >= r.off.rate - 2 * se && r.on.rate <= 70;
+    return { ok, detail: `16 lives, birth to 30. Off: ${r.off.prompts} prompts a year (${r.off.whole} over the ${r.off.n} lives whole in both sets), ${r.off.acts} actions a year (engaged), ${r.off.rate}% of ${r.off.checks} checks; on: ${r.on.prompts} (${r.on.whole}), ${r.on.acts}, ${r.on.rate}% of ${r.on.checks}` };
   },
   // cycle 1 (lives I9): 23 scenes in a noble's first adult year at 17. The world's own scenes stop at 8 in the first
   // adult year, NPC moves at 4; consequences, asked-for and forced scenes are never cut
