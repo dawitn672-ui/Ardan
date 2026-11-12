@@ -48,3 +48,23 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Archived:** the five Far Lands features (`archive/99-far-lands`, `990`–`993`; out of the build since `f933c89`,
   last built at `437efa6`) and the v2 kit's demo UI (`archive/v2-kit-demo-ui`, never shipped).
 - **Undo:** `git revert` the H-001 commit (it is moves plus path rewrites; nothing else depends on it yet).
+
+### H-002 · 2026-11-12 · Step 0 verified by CI; the coherency registry started (out of the build); owner orders recorded
+- **Commits:** `d906efc` (H-001, step 0), `f4bcc66` (08-coherency, `.wip`), `93fcd5a` (DECISIONS D-008, D-009), and the
+  commit that adds this entry (`git log --grep='\[H-002\]'`).
+- **What and why:**
+  - CI run 95 on `d906efc` (step 0) passed everything: the build check (`index.html` current), every event pack's
+    lint, the choices check, the 752 browser tests in 8 shards and the balance league. Step 0 changed no behaviour.
+  - `src/core/08-coherency/` (A.COHERENCY: read-only checks for contradictions) and `tools/coherency.mjs` (plays lives
+    of every class and runs them) are committed with a `.wip` marker: the default build and `index.html` are
+    unchanged until the post registry lands. A first run (8 lives, 10 years, built with `--include-wip`) found dead
+    people still holding council seats in 3 of 8 lives (for example "Kesh spymaster: held by Majaliwa Mnazi, dead"),
+    and v2 diplomacy's store missing in fresh games played by the bot (to be explained by the critique).
+  - The owner's orders of Nov 12: time by Next month or Next year (D-008, to be built as B6); the model and effort for
+    each part of round 2 (D-009); and "once you finish the full critique, pause everything and wait for me".
+- **Complaints answered:** Round 2 Step 0 (verified); A3 started (not yet in the build).
+- **Files touched:** `src/core/08-coherency/*`, `tools/coherency.mjs`, `docs/DECISIONS.md`, `CLAUDE.md`, this file.
+- **Tests and checks:** CI run 95 green. Coherency run: see above (no fixes made; the owner asked for the critique first).
+- **Archived:** nothing.
+- **Undo:** delete `src/core/08-coherency/` and `tools/coherency.mjs` (nothing depends on them yet); D-008 and D-009
+  are the owner's orders and stay.
