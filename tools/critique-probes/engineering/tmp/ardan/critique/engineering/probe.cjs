@@ -1,0 +1,35 @@
+const { chromium } = require('/opt/node-tools/node_modules/playwright');
+(async () => {
+  const browser = await chromium.launch({ args: ['--enable-precise-memory-info', '--js-flags=--expose-gc'] });
+  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, deviceScaleFactor: 1 });
+  const page = await ctx.newPage();
+  const errs = [];
+  page.on('pageerror', e => errs.push(String(e).slice(0, 300)));
+  page.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text().slice(0, 300)); });
+  const t0 = Date.now();
+  await page.goto('file:///tmp/ardan/snap/index.html');
+  await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 180000 });
+  console.log('boot ms', Date.now() - t0);
+  const r = await page.evaluate(() => {
+    const out = {};
+    out.boot = window.ARDAN_BOOT;
+    out.build = window.ARDAN_BUILD;
+    A.newGame({ seed: 11, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 16 });
+    UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.render();
+    out.keys = Object.keys(A.S).map(k => [k, JSON.stringify(A.S[k] === undefined ? null : A.S[k]).length]).sort((a, b) => b[1] - a[1]);
+    out.total = JSON.stringify(A.S).length;
+    out.groups = UI.GROUPS.map(g => [g.k || g.id || g.name || g.label, g.subs.map(s => s[0])]);
+    out.people = Object.keys(A.S.people).length;
+    out.alive = Object.values(A.S.people).filter(p => p.alive).length;
+    out.year = A.S.year;
+    out.dom = document.getElementsByTagName('*').length;
+    out.mem = performance.memory ? { used: performance.memory.usedJSHeapSize, total: performance.memory.totalJSHeapSize } : null;
+    out.uiKeys = Object.keys(UI).filter(k => typeof UI[k] === 'function').length;
+    out.aKeys = Object.keys(A).length;
+    out.aFns = Object.keys(A).filter(k => typeof A[k] === 'function').length;
+    return out;
+  });
+  console.log(JSON.stringify(r, null, 1));
+  console.log('errors', errs);
+  await browser.close();
+})();

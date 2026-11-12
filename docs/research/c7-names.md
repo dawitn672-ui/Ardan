@@ -1,5 +1,7 @@
 # Name data for Ardan (c7)
 
+*Stamped 2026-11-12 10:59 UTC · draft prep for C7/D11, not wired into the game · superseded by nothing yet*
+
 Data file: `docs/research/c7-names.json`. One entry per release culture (CUL-01 to CUL-24), each with about 38 male
 names, 38 female names, 40 surnames or bynames and 20 place names. Nothing is wired in yet.
 

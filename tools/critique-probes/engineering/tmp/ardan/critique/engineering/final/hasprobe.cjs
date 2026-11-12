@@ -1,0 +1,53 @@
+// Deciding critic: when does one small DOM insertion restyle the whole document? A probe mutation (append a span to
+// #tabbody, read offsetHeight, remove it, read again) is timed in several page states.
+const fs = require('fs');
+const { chromium } = require('/opt/node-tools/node_modules/playwright');
+const pressSrc = fs.readFileSync(__dirname + '/press.cjs', 'utf8');
+const INSTALL = eval('(' + pressSrc.slice(pressSrc.indexOf('const INSTALL = ') + 16, pressSrc.indexOf('\n(async () => {')).replace(/;\s*$/, '') + ')');
+const STATE = process.argv[2] || '/tmp/ardan/critique/engineering/out/noble-y50-state.json';
+(async () => {
+  const browser = await chromium.launch();
+  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, deviceScaleFactor: 1 });
+  const page = await ctx.newPage(); page.setDefaultTimeout(3600000);
+  const cdp = await ctx.newCDPSession(page);
+  await cdp.send('Performance.enable', { timeDomain: 'threadTicks' });
+  const metrics = async () => Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(x => [x.name, x.value]));
+  await page.goto('file:///tmp/ardan/snap/index.html');
+  await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 3600000 });
+  const s = fs.readFileSync(STATE, 'utf8');
+  await page.evaluate(s => { A.deserialize(JSON.parse(s)); UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.render(); }, s);
+  await page.evaluate(INSTALL, true);
+  const out = [];
+  const probe = async label => {
+    await page.evaluate(() => new Promise(r => setTimeout(r, 400)));
+    const info = await page.evaluate(() => ({ hints: [...document.querySelectorAll('.hint')].map(h => (h.parentElement ? (h.parentElement.id || h.parentElement.className || h.parentElement.tagName) : '?') + ' > ' + h.className + ' "' + h.textContent.trim().slice(0, 50) + '"'), agebar: !!document.getElementById('agebar'), modal: !!document.getElementById('modal'), toast: (document.getElementById('toast') || {}).className || null, stack: (document.getElementById('toast-stack') || { children: [] }).children.length, rootStyle: (document.documentElement.getAttribute('style') || '').replace(/--ground-img:[^;]*;?/, '').slice(0, 80), anims: document.getAnimations().length, doc: document.getElementsByTagName('*').length, inert: !!(document.getElementById('app') || {}).inert }));
+    const a = await metrics();
+    await page.evaluate(() => { const tb = document.getElementById('tabbody'); for (let i = 0; i < 20; i++) { const sp = document.createElement('span'); tb.appendChild(sp); void tb.offsetHeight; sp.remove(); void tb.offsetHeight; } });
+    const b = await metrics();
+    const a2 = await metrics();
+    await page.evaluate(() => { const tb = document.getElementById('tabbody'); const c = tb.querySelector('.card') || tb.firstElementChild; for (let i = 0; i < 20; i++) { c.classList.add('zz-probe'); void tb.offsetHeight; c.classList.remove('zz-probe'); void tb.offsetHeight; } });
+    const b2 = await metrics();
+    const r = { label, insertMsPerRecalc: +(((b.RecalcStyleDuration - a.RecalcStyleDuration) * 1000) / (b.RecalcStyleCount - a.RecalcStyleCount)).toFixed(2), insertRecalcs: b.RecalcStyleCount - a.RecalcStyleCount, classMsPerRecalc: +(((b2.RecalcStyleDuration - a2.RecalcStyleDuration) * 1000) / Math.max(1, b2.RecalcStyleCount - a2.RecalcStyleCount)).toFixed(2), classRecalcs: b2.RecalcStyleCount - a2.RecalcStyleCount, info };
+    console.log(JSON.stringify(r)); out.push(r);
+  };
+  await probe('A: state loaded and drawn');
+  let p = await page.evaluate(() => __P.press()); console.log('press', JSON.stringify({ cards: p.cards, days: p.days }));
+  await probe('B: after one real Next month');
+  p = await page.evaluate(() => __P.press()); console.log('press', JSON.stringify({ cards: p.cards, days: p.days }));
+  await probe('B2: after a second');
+  await page.evaluate(() => new Promise(r => setTimeout(r, 6000)));
+  await probe('B3: six seconds later (toasts gone)');
+  await page.evaluate(() => { for (const h of document.querySelectorAll('.hint')) h.remove(); });
+  await probe('C: every .hint element removed');
+  await page.evaluate(() => { UI.refresh(); });
+  await probe('C2: after a plain UI.refresh()');
+  const del = test => page.evaluate(src => { const test = new RegExp(src); let n = 0; const walk = owner => { const L = owner.cssRules; for (let i = L.length - 1; i >= 0; i--) { const r = L[i]; if (r.type === 1) { if (test.test(r.selectorText || '')) { owner.deleteRule(i); n++; } } else if (r.cssRules) walk(r); } }; for (const sh of document.styleSheets) { try { walk(sh); } catch (e) {} } return n; }, test);
+  console.log('deleted body:has', await del('(^|,)\\s*body[^,]*:has\\('));
+  await probe('D: body:has() rules deleted');
+  console.log('deleted #modal…:has', await del('#modal[^,]*:has\\('));
+  await probe('E: #modal …:has() rules deleted too');
+  console.log('deleted all :has', await del(':has\\('));
+  await probe('F: every :has() rule deleted');
+  fs.writeFileSync('/tmp/ardan/critique/engineering/final/out/hasprobe.json', JSON.stringify(out, null, 1));
+  await browser.close();
+})().catch(e => { console.error('FATAL', e.stack || e); process.exit(1); });

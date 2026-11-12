@@ -18,7 +18,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 
 ## Round 2 (the owner's "Round 2 orders", Nov 12)
 
-### H-001 · 2026-11-12 · Step 0: the repo restructured, and given a memory
+### H-001 · 2026-11-12 04:43 UTC · Step 0: the repo restructured, and given a memory
 - **Commit:** `git log --grep='\[H-001\]'` on `v2-integration`, on top of `b8ca78c` (v2.0.0-beta.1's record commit).
 - **What and why:** the owner's Step 0: a layout anyone can find their way around, nothing thrown away, and files that
   let any later session retrace and undo every step.
@@ -49,7 +49,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   last built at `437efa6`) and the v2 kit's demo UI (`archive/v2-kit-demo-ui`, never shipped).
 - **Undo:** `git revert` the H-001 commit (it is moves plus path rewrites; nothing else depends on it yet).
 
-### H-002 · 2026-11-12 · Step 0 verified by CI; the coherency registry started (out of the build); owner orders recorded
+### H-002 · 2026-11-12 05:32 UTC · Step 0 verified by CI; the coherency registry started (out of the build); owner orders recorded
 - **Commits:** `d906efc` (H-001, step 0), `f4bcc66` (08-coherency, `.wip`), `93fcd5a` (DECISIONS D-008, D-009), and the
   commit that adds this entry (`git log --grep='\[H-002\]'`).
 - **What and why:**
@@ -68,3 +68,30 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Archived:** nothing.
 - **Undo:** delete `src/core/08-coherency/` and `tools/coherency.mjs` (nothing depends on them yet); D-008 and D-009
   are the owner's orders and stay.
+
+### H-003 · 2026-11-12 11:11 UTC · Step 1 done: the critique and the order of work; prep for C7 and D11; timestamps
+- **Commit:** `git log --grep='\[H-003\]'`.
+- **What and why:**
+  - `docs/CRITIQUE.md`: the harsh critique of beta.1 by the lead critic (Fable, max effort) from five lens reports
+    (engineering and UX redone by deciding Fable critics), the post map and the first coherency run: 162 flaws in 11
+    areas, each rated /10 with a fix, a Keep list, and claims rejected. Its sources are in `docs/reviews/round-2/`;
+    the critics' probe scripts (the seeds of the A1, A2, C6 and B5 regression tests) in `tools/critique-probes/`.
+  - **The order of work** (CRITIQUE §2), recorded here as the owner asked: 1 A0 stop the bleeding · 2 A3a the net ·
+    3 A1 lag · 4 B6 Next month or Next year · 5 B4 click-to-open · 6 C8a character design plan · 7 X1 own the release
+    · 8 A2 one holder per post · 9 B5 declutter · 10 C8b faces and bodies · 11 X2 named stages · 12 D10 war screens
+    only when deployed · 13 C6 relationships and households · 14 X3 honest cards and clocks · 15 C7 names and
+    cultures · 16 C8c dress and regalia · 17 D9 map detail · 18 D12a branches and command design · 19 D11 military
+    branches · 20 D12b war and command depth · 21 X4 balance · 22 X5 state diet. Seven decisions for the owner are
+    listed at the end of CRITIQUE §2.
+  - Prep the owner approved during the pause (not wired into the game): `docs/research/c7-names.*` (basic names for
+    the 24 cultures) and `docs/research/d11-branches.*` (game-like branches, counters, terrain, tactics).
+  - The owner's orders 9 (keep it game-like and simple) and 15 (time-stamp every memory entry, mark what is
+    superseded): stamps added to every order, decision and history heading (the time each line was committed, from
+    git blame). This is the only change to earlier entries, made by the owner's order.
+- **Complaints answered:** Round 2 Step 1.
+- **Files touched:** `docs/CRITIQUE.md`, `docs/reviews/round-2/*`, `tools/critique-probes/*`, `docs/research/c7-*`,
+  `docs/research/d11-*`, `docs/OWNER_ORDERS.md`, `docs/DECISIONS.md`, this file.
+- **Tests and checks:** documents only; the game is unchanged (`index.html` untouched).
+- **Archived:** nothing.
+- **Undo:** `git revert` the H-003 commit (documents only).
+- **State:** paused by the owner's order 11 until the owner has reviewed `docs/CRITIQUE.md`.

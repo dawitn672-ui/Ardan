@@ -1,5 +1,7 @@
 # D11: military branches and battlefield strategy (design notes)
 
+*Stamped 2026-11-12 10:59 UTC · draft prep for C7/D11, not wired into the game · superseded by nothing yet*
+
 Preparation only; nothing is built. Companion data: `d11-branches.json`. It fits what exists: the v2 battle
 (`src/war/engine/war.js`: tactics hold, advance, charge, flank, volley, feint, withdraw; terrains open, hills, forest,
 ford, pass; phases Skirmish, Clash, Press, Decision), drills that gate tactics (60-drill), companies of 200 and
