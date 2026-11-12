@@ -171,3 +171,20 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   merge; the full suite and the balance league (the council fix moves every world) run on CI with this push; X6's
   CI run is superseded by this one, which checks both.
 - **Archived:** nothing. **Undo:** `git revert -m 1` the merge, rebuild.
+
+### H-008 · 2026-11-12 15:05 ET · B4: click-to-open (D-007); CI 97 red after A3a, as expected
+- **Commits:** `33bfb9a` (the work, by a Sonnet 5.5 agent in a worktree), merged as `c00a91b` (`git log --grep='\[H-008\]'`).
+- **What and why:** descriptions open on click, tap, Enter or Space; nothing opens on hover (the owner's rule). The
+  hover listener and timer of `src/ui/59-descriptions` are gone; every `title` over three words and every
+  `data-note` becomes a click-to-open note (`descriptions.note.core.js`, an ⓘ beside buttons); event choices keep
+  their tap and get an ⓘ for the odds; map and battle-field cards open on a press; an activity opens a sheet (what,
+  cost, how it may go, Do it) before it commits, and its answer is shown whole (`src/ui/99998-click-open`). Last
+  commit with hover tooltips: `d558b1d`.
+- **Tests:** new clickNoHover (48 pages, 3,949 anchors, 196 real pointer moves: nothing opened), clickOpens,
+  clickLint, clickActSheet; hover-based tests of 59, 91, 84, 97, 98, 9997, v2-stats and v2-names now press. All pass
+  after the merge, with boot and coherencyDay0. Gap: the map-card press/Esc path was not hit by the sample (no land
+  under the presses); to be covered.
+- **CI 97** (on `c7840f8`, X6 + A3a): 22 tests failed across the 8 shards (list in
+  `tools/bench/reports/ci97-failures.txt`), the net doing its job: tests that logged console errors, and seed-bound
+  tests moved by the council fix. A fix agent works through them next.
+- **Undo:** `git revert -m 1 c00a91b`, rebuild.
