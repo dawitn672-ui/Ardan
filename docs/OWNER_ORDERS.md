@@ -27,6 +27,7 @@ order is replaced, strike it through and say by what.
 20. **Queued: a naming pass (work item X6).** Go through the whole repo and rename folders, files, docs, scripts, tests and branches with clear, self-explanatory titles so it is much easier to navigate. Done with `git mv` (history kept), keeping every feature's build order (the numeric prefixes and their order stay), with a redirect table in `docs/NAMES.md` from old name to new. ~~Scheduled right after X1~~ **Moved to immediate priority by the owner (2026-11-12 11:17 ET), so the repo is easy to navigate now.** · recorded 2026-11-12 10:57 ET
 21. **Keep `docs/PROGRESS.md` current:** tick every work item the moment it is merged and green (stamp and commit), so progress is always visible at a glance. · recorded 2026-11-12 11:17 ET
 22. **Every finished step is a new version, organised and tracked:** `node tools/version.mjs new` (row in docs/VERSIONS.md), a CHANGELOG section, a pushed `release/<version>` branch, a line in docs/PROGRESS.md "Versions", a sample save in tests/saves; pre-releases `v2.1.0-alpha.N` until a milestone. · recorded 2026-11-12 11:20 ET
+23. **Pause for review after the character demos:** once the C8 demo sheets are done (faces, ages, scars, builds, hair, outfits), stop starting new work, finish and merge only what is already running, show the owner the demos, and wait for the owner's review. · recorded 2026-11-12 11:44 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
