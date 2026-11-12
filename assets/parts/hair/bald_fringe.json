@@ -1,0 +1,26 @@
+{
+  "id": "bald_fringe",
+  "_note": "A bald crown with a fringe left round the back at ear height, grown long to the collar and thinning: wispy locks over and behind the ear, a tuft beyond the far temple. The bare scalp takes the window's light on its dome. Grey comes lock by lock from the person's grey amount.",
+  "layers": [
+    {"id": "scalp_hl", "z": "face", "role": "skin.hl", "clip": "head.skin", "lod": 0, "d": "M 418 286 S 450 258 500 250 540 258 520 276 478 286 440 298 Z", "alpha": 0.9},
+    {"id": "scalp_hl2", "z": "face", "role": "skin.hl", "clip": "head.skin", "lod": 1, "d": "M 548 256 S 570 260 588 270 576 276 556 270 Z", "alpha": 0.7},
+    {"id": "spots", "z": "face", "role": "skin.half", "clip": "head.skin", "lod": 1, "d": "M 470 300 S 476 296 480 302 474 306 Z M 520 290 S 528 286 532 294 524 298 Z M 556 300 S 560 297 563 302 558 304 Z M 438 318 S 443 315 446 320 441 322 Z", "alpha": 0.8},
+    {"id": "mass", "role": "hair.shadow", "d": "M 620 360 S 660 330 690 350 712 410 722 490 724 570 716 650 704 730 L 676 750 S 668 690 660 640 L 650 600 S 652 540 644 490 L 630 470 S 616 440 600 410 594 384 Z"},
+    {"id": "back", "ramp": "hair", "locks": [
+      {"g": "M 660 352 S 696 400 712 466 718 540 714 620 704 700 696 744", "w": [16, 20, 20, 16, 10, 4], "edge": 1, "t": "half"},
+      {"g": "M 652 380 S 682 430 696 500 700 580 692 660 682 730", "w": [22, 26, 24, 18, 8], "t": "half"},
+      {"g": "M 646 430 S 672 484 684 552 684 630 674 706", "w": [20, 24, 22, 12, 4]},
+      {"g": "M 638 476 S 660 530 670 600 670 668 662 726", "w": [18, 22, 18, 10, 3]},
+      {"g": "M 624 396 S 646 430 656 474 660 520 656 566", "w": [16, 20, 16, 6]},
+      {"g": "M 600 384 S 610 414 614 450 612 490", "w": [12, 14, 8, 3]}
+    ]},
+    {"id": "far", "z": "back", "ramp": "hair", "locks": [
+      {"g": "M 364 420 S 350 448 344 486 346 526", "w": [7, 9, 7, 2], "edge": -1, "strands": 1},
+      {"g": "M 368 448 S 356 486 354 524", "w": [6, 7, 1], "edge": -1, "strands": 0}
+    ]},
+    {"id": "wisps", "z": "front", "ramp": "hair", "locks": [
+      {"g": "M 700 600 S 716 650 722 700 714 750", "w": [5, 6, 4, 1], "edge": 1, "strands": 0, "hl": false},
+      {"g": "M 676 680 S 686 720 684 760", "w": [5, 5, 1], "strands": 0, "hl": false}
+    ]}
+  ]
+}

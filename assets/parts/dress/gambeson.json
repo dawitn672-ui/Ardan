@@ -1,0 +1,19 @@
+{
+  "id": "gambeson",
+  "z": "dress",
+  "mats": {"cloth": "ochre"},
+  "_note": "A quilted coat of linen stuffed with tow, worn under mail. Only its standing collar shows above the hauberk: a padded band round the neck in vertical channels, its inside visible behind the neck. Seen from a little above, so the front of the ring sits lower than the back.",
+  "layers": [
+    {"id": "inside", "z": "body", "role": "cloth.shadow", "d": "M 600 808 S 650 780 704 770 744 778 752 818 L 700 838 Z"},
+    {"id": "inside_deep", "z": "body", "role": "cloth.deep", "lod": 1, "d": "M 640 812 S 680 786 720 780 742 794 L 700 832 Z", "alpha": 0.8},
+    {"id": "band", "role": "cloth.light", "d": "M 410 816 S 470 828 540 828 610 814 680 798 744 786 L 764 848 S 720 860 640 876 560 890 480 894 400 881 Z"},
+    {"id": "band_half", "role": "cloth.half", "clip": "band", "d": "M 560 772 S 590 822 600 905 L 800 905 L 800 772 Z"},
+    {"id": "band_shadow", "role": "cloth.shadow", "clip": "band", "d": "M 650 772 S 670 822 680 905 L 800 905 L 800 772 Z"},
+    {"id": "chin_cast", "role": "cloth.shadow", "clip": "band", "d": "M 400 802 S 460 818 520 822 580 812 L 590 842 S 520 856 460 852 400 842 Z", "alpha": 0.8},
+    {"id": "top_roll", "role": "cloth.hl", "lod": 1, "line": "M 414 820 S 470 830 540 830 600 818", "w": [0.5, 3, 3, 0.5], "k": "tone"},
+    {"id": "quilt", "role": "cloth.shadow", "pat": {"type": "ribs", "role": "cloth.shadow", "lit": "cloth.hl", "litLod": 1, "top": "M 418 822 S 480 832 540 832 610 818 680 802 740 792", "bot": "M 404 879 S 480 892 560 887 640 874 720 858 760 848", "n": 13, "w": [0.6, 2.6, 0.6], "bow": 3}},
+    {"id": "stitch", "pat": {"type": "stitch", "role": "cloth.deep", "along": "M 404 872 S 480 885 560 881 640 868 720 852 758 842", "gap": 8, "w": 1.4}},
+    {"id": "top_line", "role": "cloth.line", "line": "M 410 816 S 470 828 540 828 610 814 680 798 744 786", "w": [2, 3, 3, 3, 3, 2], "k": "contour"},
+    {"id": "back_line", "z": "body", "role": "cloth.line", "line": "M 652 790 S 700 772 744 778 752 818", "w": [1, 2, 2, 1], "k": "contour"}
+  ]
+}

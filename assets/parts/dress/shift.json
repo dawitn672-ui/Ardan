@@ -1,0 +1,19 @@
+{
+  "id": "shift",
+  "z": "dress",
+  "mats": {"cloth": "linen"},
+  "_note": "A linen shift, the layer next to the skin: only its neckline shows above the kirtle, gathered on a drawstring into many fine folds (linen folds small and many; wool few and broad), tied with a small bow at the front.",
+  "layers": [
+    {"id": "body", "role": "cloth.light", "d": "M 300 896 S 372 924 436 950 482 958 532 950 592 920 650 876 694 846 L 720 1100 L 280 1100 Z"},
+    {"id": "half", "role": "cloth.half", "clip": "body", "d": "M 560 840 S 600 920 640 1100 L 760 1100 L 760 840 Z"},
+    {"id": "cast", "role": "cloth.shadow", "clip": "body", "d": "M 280 960 S 380 990 480 1000 580 990 680 950 L 700 1100 L 280 1100 Z", "alpha": 0.9},
+    {"id": "gathers", "pat": {"type": "ribs", "role": "cloth.shadow", "lit": "cloth.hl", "top": "M 304 900 S 374 928 438 954 482 962 532 954 592 924 648 882 690 852", "bot": "M 300 950 S 370 978 436 1000 482 1006 532 1000 594 972 650 930 694 900", "n": 26, "w": [1.6, 1.8, 0.4], "jit": 0.5, "short": 0.4, "to": 0.9}},
+    {"id": "edge", "role": "cloth.line", "line": "M 300 896 S 372 924 436 950 482 958 532 950 592 920 650 876 694 846", "w": [1.6, 2, 2.2, 2.2, 2.2, 2, 1.6, 1], "k": "contour"},
+    {"id": "string", "role": "cloth.shadow", "lod": 1, "line": "M 306 906 S 374 934 438 960 482 968 532 960 592 930 648 888", "w": [1.4, 1.6, 1.6, 1.6, 1.6, 1.6, 1.4], "k": "tone"},
+    {"id": "bow_l", "role": "cloth.hl", "e": [470, 968, 9, 5, -20]},
+    {"id": "bow_r", "role": "cloth.hl", "e": [493, 966, 9, 5, 20]},
+    {"id": "bow_line", "role": "cloth.line", "lod": 1, "d": "M 461 964 S 470 961 479 968 470 974 Z M 484 968 S 494 960 502 963 494 972 Z", "stroke": 1.2},
+    {"id": "bow_ends", "role": "cloth.shadow", "line": "M 480 970 S 476 984 470 998", "w": [1.6, 1.4, 0.6], "k": "tone"},
+    {"id": "bow_ends2", "role": "cloth.shadow", "line": "M 484 970 S 490 984 494 994", "w": [1.6, 1.4, 0.6], "k": "tone"}
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "gown",
+  "z": "dress",
+  "mats": {"cloth": "crimson", "trim": "gold", "band": "forest"},
+  "_note": "A lord's long gown of crimson wool, a small woven figure in the cloth (full size only), a collar band and a placket of dark cloth worked in gold thread, gold buttons down the front. Mostly seen between the edges of the mantle.",
+  "layers": [
+    {"id": "body", "role": "cloth.light", "d": "M 396 858 S 470 880 540 880 620 862 690 832 L 762 846 S 856 908 936 984 966 1090 976 1516 L 88 1516 S 98 1090 132 984 206 918 300 880 Z"},
+    {"id": "half", "role": "cloth.half", "clip": "body", "d": "M 540 880 S 560 980 570 1100 572 1516 L 1000 1516 L 1000 840 Z"},
+    {"id": "figure", "pat": {"type": "motif", "along": "M 440 920 L 436 1216", "gap": 36, "lod": 2, "m": [{"role": "cloth.half", "d": "M 0 -7 L 5 0 L 0 7 L -5 0 Z"}, {"role": "cloth.hl", "d": "M 0 -3 L 2 0 L 0 3 L -2 0 Z"}]}},
+    {"id": "figure2", "pat": {"type": "motif", "along": "M 540 920 L 544 1216", "gap": 36, "lod": 2, "m": [{"role": "cloth.shadow", "d": "M 0 -7 L 5 0 L 0 7 L -5 0 Z"}]}},
+    {"id": "cast", "role": "cloth.shadow", "clip": "body", "d": "M 380 860 S 470 900 560 900 660 860 L 700 900 S 600 940 480 944 380 920 Z", "alpha": 0.8},
+    {"id": "band", "role": "band.shadow", "line": "M 398 866 S 470 888 540 888 620 870 690 840", "w": [22, 24, 24, 24, 22], "k": "tone"},
+    {"id": "band_work", "pat": {"type": "motif", "along": "M 404 868 S 470 889 540 889 620 871 686 842", "gap": 18, "lod": 1, "m": [{"role": "trim.light", "d": "M 0 -6 L 4 0 L 0 6 L -4 0 Z"}, {"role": "trim.hl", "d": "M -1 -3 L 1 -3 L 1 -1 L -1 -1 Z"}, {"role": "trim.half", "d": "M 7 -1 L 11 -1 L 11 1 L 7 1 Z"}]}},
+    {"id": "band_edge", "role": "trim.light", "lod": 1, "line": "M 398 877 S 470 899 540 899 620 881 690 851", "w": [1.6, 1.8, 1.8, 1.8, 1.6], "k": "tone"},
+    {"id": "placket", "role": "band.shadow", "line": "M 486 896 L 482 1216", "w": [22, 22], "k": "tone"},
+    {"id": "buttons", "pat": {"type": "rivets", "metal": "trim", "along": "M 486 920 L 482 1216", "gap": 38, "r": 6}},
+    {"id": "placket_edge", "role": "trim.half", "lod": 1, "line": "M 474 896 L 470 1216", "w": [1.6, 1.6], "k": "tone"},
+    {"id": "line", "role": "cloth.line", "line": "M 396 858 S 470 880 540 880 620 862 690 832", "w": [2, 2.4, 2.4, 2.4, 2], "k": "contour"}
+  ]
+}

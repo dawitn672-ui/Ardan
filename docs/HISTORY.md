@@ -218,3 +218,27 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Tests:** rdOnePerPress, rdLogInPlace, rdStartLine, renderRng, tbStepSameWorld, boot, savesStillLoad, clickOpens,
   clickNoHover pass on the merged build; full suite on CI once the CI-97 fixes land.
 - **Undo:** `git revert -m 1 b9a656c`, rebuild.
+
+### H-011 · 2026-11-12 · C8 2D, gate 1: the style frame (characters.md §15)
+- **What and why:** the owner's first look at the 2D illustrated register (D-024, D-025, order 24) before any library
+  is drawn. Four sitters by the plan's part system, each in the two finishes (line-led, tone-led) at tier L (480 px),
+  46 px and 88 px, with a face zoom at full detail: Wat Hollin (man-at-arms, 32: quilted collar, mail with a brass-ring
+  border, a riveted strap and buckle, a cut on the cheek still red), Alys (27: russet kirtle laced over a gathered
+  linen shift, one plait), Mae (6: woad smock with a patch and a running stitch, two plaits, freckles), Sir Oswin
+  Garde (71: crimson gown with gold work and buttons, green mantle lined with vair, a gold ring brooch with a garnet,
+  balding, a full grey beard, an old cut through the brow, the nose broken).
+- **Files:** engine `src/ui/engine/draw/` (`geom`, `compose`, `hair`, `dress`, `canvas`, `svg`, `index`; plain ES
+  modules, not yet imported by `src/core/engine/index.js`, so the game's bundle is unchanged); art `assets/parts/`
+  (path data: head, eyes, brows, nose, mouth, ear, bust; 4 hair styles, 2 beards, wounds, 9 dress pieces; palettes);
+  deliverables `docs/design/demo-2d/` (`build.mjs`, `lib.mjs`, `pngq.mjs`, `gate1.html`, `gate1.png`); tests
+  `tests/v2/draw.test.js` (11). Nothing in `data/`, `index.html` or any feature.
+- **How a portrait is made:** a master is a warp (a few handles), so the face sliders, sex, age (child, elder) and a
+  broken nose bend the same drawing; the head's warp carries hair, beard and scars; features hang on the head's
+  anchors; locks are guide curves with widths (shadow strip, light ribbon, a highlight at the lock's own height,
+  strands, an outer contour only on the outline); mail, rivets, fur, embroidery, stitches, quilting and hatching are
+  generated from a few numbers. Deterministic: whole-number art, arithmetic only, ids hashed for anything that looks
+  random; a test hashes the list.
+- **Measured (headless Chromium, software canvas, median of 48):** S 64 px ≈ 2.5 ms compose + 0.7 ms draw (185
+  items); M 144 px ≈ 3–5 + 1.2 ms (287); L 480 px ≈ 4–6 + 1.5 ms (361). Over the plan's S budget (1 ms) and its 150
+  shapes; within M and L.
+- **Undo:** delete the four paths above (no other file depends on them).

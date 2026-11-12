@@ -1,0 +1,21 @@
+{
+  "id": "bust",
+  "z": "body",
+  "_note": "Shoulders and chest under the dress, turned with the head (the near shoulder on the right). Garments are drawn on this base and follow its masters: frame (slight to broad), bulk, a woman's narrower shoulders and a child's.",
+  "layers": [
+    {"id": "skin", "role": "skin.light", "d": "M 432 836 S 330 878 210 924 136 986 102 1090 92 1510 L 972 1510 S 962 1090 932 986 852 912 760 850 680 800 Z"},
+    {"id": "shadow", "role": "skin.shadow", "clip": "skin", "d": "M 600 840 S 640 960 700 1060 760 1510 L 990 1510 L 990 800 Z"},
+    {"id": "clav_f", "role": "skin.half", "lod": 1, "line": "M 470 914 S 400 920 330 916 260 924", "w": [1, 5, 4, 1], "k": "tone"},
+    {"id": "clav_f_hl", "role": "skin.hl", "lod": 1, "line": "M 466 906 S 400 910 330 906 270 914", "w": [1, 3, 3, 1], "k": "tone"},
+    {"id": "clav_n", "role": "skin.half", "lod": 1, "line": "M 520 912 S 580 916 640 918 700 912", "w": [1, 5, 4, 1], "k": "tone"},
+    {"id": "line", "role": "skin.line", "line": "M 432 836 S 330 878 210 924 136 986 102 1090 92 1510", "w": [2, 3, 4, 4, 4, 4], "k": "contour"},
+    {"id": "line_n", "role": "skin.line", "line": "M 680 800 S 760 850 852 912 932 986 962 1090 972 1510", "w": [3, 4, 5, 5, 5], "k": "contour"}
+  ],
+  "masters": {
+    "female": {"warp": [[900, 990, -52, 6, 220], [130, 990, 42, 8, 200], [500, 1210, 0, 0, 120]]},
+    "child": {"warp": [[900, 990, -40, 30, 240], [130, 990, 40, 30, 220]]},
+    "frame+": {"warp": [[900, 990, 30, 0, 220], [130, 990, -26, 0, 200]]},
+    "frame-": {"warp": [[900, 990, -30, 0, 220], [130, 990, 24, 0, 200]]},
+    "bulk+": {"warp": [[900, 1100, 24, 0, 220], [110, 1100, -20, 0, 200]]}
+  }
+}
