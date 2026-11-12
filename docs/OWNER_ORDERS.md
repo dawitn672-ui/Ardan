@@ -20,6 +20,34 @@ order is replaced, strike it through and say by what.
 13. **Don't make the owner repeat instructions:** save them here. (Nov 12)
 14. **Any outside tool or AI is allowed** (web search, web pages, ChatGPT, Codex, anything) where it makes the work cheaper or better. **Everything it produces goes back into the repo, fully structured** (data in `data/`, research in `docs/research/`, code in `src/`, with a HISTORY entry naming the source). Outside AIs that need an account are reached through their API with a key the owner saves via the secure credential form; none is set up yet. (Nov 12)
 
+## Permissions (what a session may do on its own, and what needs the owner)
+**Free to do without asking:**
+- Change, rebuild or replace any game code, data, tests, tools, docs and skills (`.claude/skills/`: research, add,
+  remove, improve; keep them true to the code). Never edit `vendor/ardan-b593143.html` (the untouched release).
+- Use any language, tool, model, effort level, agent, web search, web page or outside AI (orders 3, 12, 14).
+- Commit and push to `v2-integration` (the round 2 working branch, PR #2), push `release/<name>` milestone branches,
+  run and re-run CI once per failure, watch PR #2 and fix its CI.
+- Spend tokens and time where the game's goals need it, efficiently (D-010).
+
+**Ask the owner first:**
+- Merging any pull request, deleting any branch, pushing to `main` or another person's branch, rewriting pushed
+  history (no force-push, rebase or amend on pushed commits).
+- Opening a new pull request, or anything else outward-facing beyond PR #2's normal CI work.
+- Starting new work while a pause the owner ordered is in force (order 11).
+- Saving any secret: API keys go only through the secure credential form, never into chat or the repo.
+
+## Talking to the owner
+- Friendly game-companion voice, short plain sentences, a little personality, mild language fine; straight and
+  serious when something really matters. Not bullet-heavy.
+- Give times in New York time. Give honest, padded ETAs, and say plainly when something slipped and why.
+- After each major step: what changed, and what to test by playing. Send a playable build early.
+
+## Memory
+The cloud container is wiped between sessions; only what is pushed survives. The memory is this repo: this file
+(orders), `CLAUDE.md` (how to work), `docs/HISTORY.md` (what was done, how to undo), `docs/DECISIONS.md` (why),
+`docs/IDEAS.md` (later), `CHANGELOG.md` (for players), `docs/CRITIQUE.md` (what is wrong, in what order to fix it).
+Push every change; a session that ends with unpushed work has lost it.
+
 ## Game rules (design)
 1. Descriptions open on click (button or info icon), never on hover. (Nov 12, replaces "never hide a description behind a click")
 2. No percentages the player sees: words and a tipped scale. (v2)
