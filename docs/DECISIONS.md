@@ -200,3 +200,14 @@ owner's bar (mannequin feel, shell hair, crude cloth, far over the time budget);
 goals (one full redraw per press, year 50 no slower than year 0); the quiet-month CPU (150 ms) and the 4× throttle
 wall time (1 s) are still over, mostly because the engine's own month costs 80–170 ms on this machine. Drop
 `--report` once the engine work lands (P12 `A.wsDay` in D12b, the month work in X5), or budget the drawing share only.
+
+### D-024 · Characters: a detailed 2D illustrated style (2026-11-12 17:05 ET, the owner's choice after the demos; supersedes the 3D render path of D-015/D-022)
+**Chosen:** option 2 of the demo review: a large library of hand-designed 2D parts (face shapes, eyes, noses, mouths,
+ears, hair, beards, scars, garments, armour pieces, heraldry), layered like a character designer's work (in the
+manner of layered strategy-game portraits and a detailed graphic novel), drawn as vector art, fast, deterministic, with
+deep customisation, accurate ageing, lasting scars and detailed clothing as layers. Everything else D-015 and D-020 set
+still holds (realism of growth, scars with small debuffs, changeable clothing, full face customisation first, demos
+before building).
+**Kept:** `src/people/engine/face.js` (the 39-feature face code, inheritance, distance), reused by the 2D path.
+**Superseded:** the 3D render path (`anatomy.js`, `basemesh*.js`, `src/ui/engine/paint/*`, `docs/design/demo/`) moves
+to `archive/c8-3d-render/` when the 2D demo replaces it; the MakeHuman base (D-022) leaves with it.

@@ -4,7 +4,7 @@ The checklist of every work item, in the order they are being done. Tick an item
 green, with the stamp and the commit; never delete a line. Details live in `docs/HISTORY.md`; the plan and the
 reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 
-*Last updated 2026-11-12 16:27 ET*
+*Last updated 2026-11-12 17:05 ET*
 
 ## Done
 - [x] **Step 0** · Repo restructured by system, with a memory (CLAUDE.md, HISTORY, DECISIONS, IDEAS, CHANGELOG, OWNER_ORDERS) · `d906efc`, CI 95 green · 2026-11-11 23:43 ET
@@ -18,7 +18,10 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 - [x] **A3a** · The net: hidden errors fail tests; 12 coherency checks in the build; baseline that may only shrink; nightly 60-year audit · merged (CI pending) · 2026-11-12 12:07 ET
 - [x] **B4** · Click-to-open descriptions; nothing on hover; activities open a sheet first · `c00a91b` (CI pending) · 2026-11-12 15:05 ET
 - [x] **C8a** · Character design plan, realistic version (`docs/design/characters.md`) · `e7d199d` · 2026-11-12 11:48 ET
-- [x] **C8b gate 1** · Character demos: 8 sheets + live face maker (`docs/design/demo/`) — a working draft, below the bar · `397b55f` · 2026-11-12 15:52 ET · **PAUSED for the owner's review (order 23)**
+- [x] **C8b gate 1** · Character demos: 8 sheets + live face maker (`docs/design/demo/`) — a working draft, below the bar · `397b55f` · 2026-11-12 15:52 ET · reviewed: owner chose **detailed 2D illustration** (D-024)
+
+- [ ] **C8 2D** · Plan the 2D part library, then a new demo for the owner (D-024)
+- [ ] **CI fix** · The 22 tests CI 97 failed after A3a
 
 ## Next, in order
 - [x] **A1** · Lag, drawing side: one redraw per press, log in place, year 50 = year 0; engine share left to X5/D12b (D-023) · `b9a656c` · 2026-11-12 16:27 ET
