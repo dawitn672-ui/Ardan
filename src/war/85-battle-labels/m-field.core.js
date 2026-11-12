@@ -3,7 +3,7 @@
 // edge; each unit is a mass of pikes, horses or bows under a banner pole in its realm's colour, not a box with a cross;
 // the labels on the field are counts only, and the unit's full name shows on hover or focus (the canvas's title, and
 // the side panel as before); one caption per wing at the field's edge; the end is a small cartouche, and the VICTORY
-// or DEFEAT cut-in (96-moments) carries the moment.
+// or DEFEAT cut-in (96-big-moments) carries the moment.
 // Drawing only: the colours come from 94-woodblock-skies' palette, every seeded mark hashes the battle's id, and
 // nothing reads A.rand or writes A.S. With the colour prints off (UI.set.skies false) the release's field is drawn.
 (function () {

@@ -11,7 +11,7 @@
 //   - a cut-corner frame on a bokashi ground in the realm's tint, the house charge faint behind the head, gold for
 //     rulers, the accent for nobles, an ink wash for the dead (who are desaturated);
 //   - busts at any size (detail drops under 60, 44 and 28 px) and a 200 x 300 full figure for the profile.
-// It reuses 63-miniatures' skeleton: parts hashed from the person's id, 63's culture table (UI.MINI.CULT), its wound,
+// It reuses 63-miniature-portraits' skeleton: parts hashed from the person's id, 63's culture table (UI.MINI.CULT), its wound,
 // age and greying rules, the release's outfit and arms, the UI.set toggle and the fallback to the earlier portrait.
 // Everything here is the UI's: no random draws, no change to the game state, the same SVG for the same person.
 (function () {
@@ -1874,7 +1874,7 @@
     UI.eventModal = function (q) { const prev = AP.ev; AP.ev = q || null; try { return em.apply(this, arguments); } finally { AP.ev = prev; } };
   }
   // the profile (the only caller of UI.portrait): the brief puts a bust at 88 beside the name in the 1366 layout and the
-  // 200 x 300 full figure on the wide (1920) rail; 90-fold's compact head shows the portrait at 84 px either way
+  // 200 x 300 full figure on the wide (1920) rail; 90-collapsible-sections's compact head shows the portrait at 84 px either way
   if (typeof UI.portrait === 'function') {
     const up = UI.portrait;
     AP.wide = () => { try { return window.innerWidth >= 1600; } catch (e) { return true; } };

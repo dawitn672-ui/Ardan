@@ -188,7 +188,7 @@
   // the soldier's and the sergeant's line, and the captain's company: v2's battle
   const CF = A.CHOICE_FN = A.CHOICE_FN || {};
   const line0 = CF.wsLine, part0 = CF.wsPart;
-  // the layers this replaces (72-two-scales' line, 44/9997's tactical battle) stay callable: 72's levy still uses its
+  // the layers this replaces (72-one-battle-two-scales' line, 44/9997's tactical battle) stay callable: 72's levy still uses its
   // scene, and their own tests reach them here. A fight that is over all the same (a save from before the hold) goes to
   // them too: 72's short scene of a fight over before you reach the front rank, not a log line and nothing to play
   W.classic = { wsLine: line0, wsPart: part0 };

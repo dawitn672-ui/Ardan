@@ -1,6 +1,6 @@
 # Woodblock skies
 
-**Aspect:** Visual art (docs/design/brief.md §7.2, change 10 of §8) · **Kind:** UI system, no patches, no events. It restyles 61-illumination's event woodcuts.
+**Aspect:** Visual art (docs/design/brief.md §7.2, change 10 of §8) · **Kind:** UI system, no patches, no events. It restyles 61-illuminated-chronicle's event woodcuts.
 
 The brief moves Ardan from a European woodcut toward a colour woodblock print lit like an anime background. Events are the game's main surface, and 61 already gives each one a picture: 25 compositions, one per event shape, seeded from the event and the year. This feature keeps 61's compositions, seeds and rules and replaces how they are drawn.
 

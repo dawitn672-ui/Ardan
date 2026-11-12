@@ -1,6 +1,6 @@
 // A choice that starts a fight shows the fight's chance, as a choice with a check shows its own.
 // The release put the odds on every check ("39% · risky") and none on a choice whose effect is a fight, so "Take the
-// bounty and hunt it" looked like the safe answer beside "Track it first". The chance is 48-fight-ladder's own measure
+// bounty and hunt it" looked like the safe answer beside "Track it first". The chance is 48-event-fight-rules's own measure
 // (FL.resolve, the curve the duel screen opens with). It is a separate field (c.fight), not c.odds: no check is rolled,
 // and nothing that counts checks should count it.
 // Two ways an effect starts a fight: fx.beast (A.applyFx's beast fight), or a function effect that calls

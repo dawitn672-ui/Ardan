@@ -6,7 +6,7 @@
 - **One group** (patch `TOP-GROUP`). The place, the purse, Save and Menu sit in one `.top-right` box that wraps to a second line as a whole. Allowed to wrap on their own, Menu dropped to a line by itself.
 - **The purse never shrinks** (`topbar.core.js`). A long town name takes the ellipsis instead.
 - **Icon-only buttons on mid widths.** Between 761 and 1439 px, Save and Menu show only their icons, and each keeps its aria-label. The bar then fits on one line at 1280 px, the most common laptop width, and wraps tidily below.
-- **The debt in fewer words** (patch `TOP-DEBT`). "(debt 12,345 suns)" now reads "owes 12,345". The coin's tooltip and spoken label (59-tooltips) and a `title` still give it in full.
+- **The debt in fewer words** (patch `TOP-DEBT`). "(debt 12,345 suns)" now reads "owes 12,345". The coin's tooltip and spoken label (59-descriptions) and a `title` still give it in full.
 - **On a phone the group dissolves** (`display: contents`), and its buttons keep 71-phone's 44 px touch targets. The phone layout is exactly as it was.
 
 **Test.** `tbFits` uses the longest home name in the world, 1,234,567 suns and a debt of 12,345, at 1024, 1180, 1280 and 1440 px. At each width the purse and debt must be whole and the place at least 60 px wide. That is room for the start of the longest name in the world with an ellipsis, while the bar stays one line tall from 1280 px up.
@@ -72,7 +72,7 @@ suns · health unchanged", and the story's new lines, up to three. Weeks 2 to 6 
 note, rather than small weekly events, because it costs the balance bands nothing: it reads the state at the start and
 end of the step and lives on `UI.stepper`, never in `A.S` (`tbStepNote` checks drawing it is pure). It can be dismissed.
 
-**Hints, How to play and activities** live in `97-life-fixes/b-hints.core.js` (lane O's file there) and are tested
+**Hints, How to play and activities** live in `97-first-life-fixes/b-hints.core.js` (lane O's file there) and are tested
 here:
 - `tbHintsBeside`: the first hint is the clock's, under the step buttons (above them in a phone's dock), naming Month
   and Week, never Play, Space or Next. The tab's hints sit in the page after what they explain, not over it, and take
@@ -82,7 +82,7 @@ here:
   by subject, and the clock's page is rewritten for the steps.
 - `tbActsSix`: a first life (the browser's first, `UI.set.lfLives`) sees six activities (What now's, the age's own,
   then the plainest ways to meet people and grow) and "More activities (25)"; an activity's answer is written above the
-  tiles where it was pressed. 98-feedback's toast stays. **For lane V:** 91-look groups the tiles in the DOM; the hidden
+  tiles where it was pressed. 98-action-feedback's toast stays. **For lane V:** 91-visual-style groups the tiles in the DOM; the hidden
   ones carry `hidden` and `.act-more`, and a group left empty is hidden with its heading. If 91 wants the curation in
   its own grid, the hook is `UI.ACT_FIRST` / `UI.ACT_SHOW` and the `.acts-six` marker.
 

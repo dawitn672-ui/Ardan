@@ -170,7 +170,7 @@ export default {
           const pc = ART.life(o, 6301 + ki * 13 + life);
           for (let run = 0; run < 6; run++) {
             for (const f of Object.keys(pc.flags)) if (/^la_ar_/.test(f)) delete pc.flags[f];
-            // Each run is a fresh telling of the arc, so 9998-stakes' memory of a check failed in an earlier run goes
+            // Each run is a fresh telling of the arc, so 9998-choice-stakes' memory of a check failed in an earlier run goes
             // too. Kept, it held that check back on the next run ("not until you are better"); in the full v2 build the
             // life is old by the later runs and its odds no longer rise, so ar_pupil_3 and seven others showed one live
             // choice (CI run 88). A life meets each arc once (46's storyMonth never starts one twice), so play never

@@ -281,13 +281,13 @@ After X1 the release's functions are readable source; paths may move, names stay
 - `src/people/99993-v2-looks/` (new): `a-genes.core.js` (wraps `A.genAppearance`; `A.LOOKS.fromWords`), `b-wounds.core.js` (`A.addWound`, `seedScars`, the quirk), `c-migrate.core.js`, `test.mjs`.
 - `data/looks.json`: each people's means, tones, shades and textures.
 - `src/core/99998-v2-saves/saves.core.js`: step 10, version 15.
-- `b-battle.core.js`, `src/war/72-two-scales`, `A.duelConsequences`, `A.lineBattleResult`, `A.stageOutcome`: wounds with places.
+- `b-battle.core.js`, `src/war/72-one-battle-two-scales`, `A.duelConsequences`, `A.lineBattleResult`, `A.stageOutcome`: wounds with places.
 - `src/ui/93-anime-portraits/`: `anime.core.js` goes to `archive/93-anime-portraits-v1/` with a note. New files: `a-rig`, `b-face`, `c-hair`, `d-body`, `e-marks`, `f-express`, `g-frame` (tiers, cache, `PORTRAIT.tag`), `h-create` (replaces `UI.crStepBody`, `UI.crPreviewPerson`, `UI.crRandomize`).
-- `tools/sheets/portraits.mjs` (the sheets below) and a check `looksAgree` in `src/core/08-coherency`: words against look, a wound with no place, a scarred newborn.
+- `tools/sheets/portraits.mjs` (the sheets below) and a check `looksAgree` in `src/core/08-coherency-checks`: words against look, a wound with no place, a scarred newborn.
 
 **C8c.**
 - `data/dress.json` and `src/ui/93-anime-portraits/i-dress.core.js`: the kit; `PORTRAIT.outfit` goes.
-- C7's culture data (the `dress` key), `tools/lint-events.mjs` (`scene`), `src/ui/94-woodblock-skies`, `src/ui/96-moments`, `docs/art/style-guide.md`.
+- C7's culture data (the `dress` key), `tools/lint-events.mjs` (`scene`), `src/ui/94-woodblock-skies`, `src/ui/96-big-moments`, `docs/art/style-guide.md`.
 
 ## 14. Acceptance
 

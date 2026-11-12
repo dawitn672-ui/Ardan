@@ -2,8 +2,8 @@
 //
 // A.V2.body.fightingWorth measures a fighter in levies (1 = an untrained spearman in a padded coat): body
 // (might^0.5 x speed^0.5 x toughness^0.6) x skill tier x gear. The game's fights are all calibrated on its own worth
-// scale (A.fightWorth: the duel engine's rating A.CR, the beasts' w50 rows, GD.CROWD's tiers, 24-honest-odds' duel curve,
-// 48-fight-ladder's tiers and lost hand), and for a human that worth already moves with the same things: strength,
+// scale (A.fightWorth: the duel engine's rating A.CR, the beasts' w50 rows, GD.CROWD's tiers, 24-honest-duel-odds' duel curve,
+// 48-event-fight-rules's tiers and lost hand), and for a human that worth already moves with the same things: strength,
 // speed, stamina (now derived from the v2 body), the weapon skill and the gear.
 //
 // What the old worth lacked is the body itself: a giant was worth 37 like a man. So each fighter gets the v2 difference

@@ -14,8 +14,8 @@ The scale fits a seasoned adult: a human of 38 to 50 wins 47% of checks in bot l
 | **The skill asked** | 39% of checks ask a skill the person has under 20, and they win 15–20%. 78% of the checks under 15% (965 of 1,233) ask a skill under 20. |
 | **Difficulty** | Not the cause: d 35–44 wins 41%, 45–49 wins 34%, 50–54 wins 38%. The scenes ask ordinary difficulties of people who have not trained yet. |
 | **The bot** | Reckless takes 50% of all checks. In 94% of those, a choice with no roll was on offer and it took the worst odds. Random takes 26%, greedy 19% (44%), careful only 5% (52%), because careful prefers a sure choice (odds 100). The bot was not changed. |
-| **Fights** (48-fight-ladder, on fighting worth) | 598 checks, 59% won. Not the problem, and left alone. |
-| **By source** | Release events win 34–63% by family. 21-npc-initiative 24% (332 checks). 69-live-numbers' own scenes 22% (210). The 19 events 69 retagged win 25.5% (137), because they ask a skill most bots never learn. 74-old-age: 133 checks, median 49%, and 6 (4.5%) at the 4% floor. 57-world-chronicle 23%, 52/53 arcs 22–23%. |
+| **Fights** (48-event-fight-rules, on fighting worth) | 598 checks, 59% won. Not the problem, and left alone. |
+| **By source** | Release events win 34–63% by family. 21-npc-initiative 24% (332 checks). 69-every-number-counts' own scenes 22% (210). The 19 events 69 retagged win 25.5% (137), because they ask a skill most bots never learn. 74-old-age: 133 checks, median 49%, and 6 (4.5%) at the 4% floor. 57-world-chronicle 23%, 52/53 arcs 22–23%. |
 
 ## What it does
 
@@ -31,8 +31,8 @@ d'  = max(min(d, tv), d − max(0, ref − tv))
 - **Never below typical.** It never drops below what a typical person of your stage brings, so a scene already written for children is not made easier than even.
 - **Seasoned adults are untouched.** So are the old where they have kept what they learned. Their strength and speed fade, so checks on those ease by the measured fade.
 - **Your own place against the typical stays.** A skill you never trained, a wound, or weak stats still give long odds. An untrained young adult with stats of 16 meets a d 55 medicine check at 4%.
-- **Fights are left alone.** A check with `check.fight` (48-fight-ladder) rolls on fighting worth.
-- **The number shown is the number rolled.** `A.eventChoose` rolls `A.checkOdds`, and the `fcRolled` test checks the first draw. The wrapper sets the difficulty on the same check object for the length of the call and puts the written one back: 67-memory-weave finds its choice by that object, and 30-get-to-know adds its scene shift to it.
+- **Fights are left alone.** A check with `check.fight` (48-event-fight-rules) rolls on fighting worth.
+- **The number shown is the number rolled.** `A.eventChoose` rolls `A.checkOdds`, and the `fcRolled` test checks the first draw. The wrapper sets the difficulty on the same check object for the length of the call and puts the written one back: 67-choice-memories finds its choice by that object, and 30-get-to-know adds its scene shift to it.
 
 **Bands** (`FC.band`) are the stage (`A.stage`: child, teen, old), with adulthood cut in thirds of the race's years from adult to old. That is 16–27, 27–39 and 39–50 for humans, and 50–150, 150–250 and 250–350 for elves.
 
@@ -47,7 +47,7 @@ d'  = max(min(d, tv), d − max(0, ref − tv))
 | adult3 (seasoned, the reference) | 36 | 30 | 38 | 31 | 33 | 56 | 37 | 793 |
 | old | 28 | 20 | 36 | 23 | 32 | 65 | 49 | 1,109 |
 
-**The odds popover** (`tips.core.js`, 59-tooltips) names the rule in a row of its own: "Your stage of life: a typical young adult brings 25 to this, a seasoned adult 45, so the scene asks 25 of you, not 45" (persuasion and will, `fcRolled`). The rows still add up to the number on the button, and 59's `ttSums2` (no "Other things in play") passes.
+**The odds popover** (`tips.core.js`, 59-descriptions) names the rule in a row of its own: "Your stage of life: a typical young adult brings 25 to this, a seasoned adult 45, so the scene asks 25 of you, not 45" (persuasion and will, `fcRolled`). The rows still add up to the number on the button, and 59's `ttSums2` (no "Other things in play") passes.
 
 ## Measured by
 
@@ -79,7 +79,7 @@ Tests (`node tests/run.mjs <build> --features=fair-checks`):
 
 ## Rules kept
 
-- No patches, no events, no new state. One wrapper on `A.checkOdds` that calls the original, and one on `UI.TT.checkParts` (59-tooltips).
+- No patches, no events, no new state. One wrapper on `A.checkOdds` that calls the original, and one on `UI.TT.checkParts` (59-descriptions).
 - Pure and deterministic: no random draws, and `A.S` is untouched (tested). The bot is unchanged.
 - The popover's words go through `UI.esc`.
 

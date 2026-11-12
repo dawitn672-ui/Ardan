@@ -3,8 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
-// the tooltip suite's battle kit (59-tooltips) builds a 3,000-a-side battle with a crowded centre
-const src = fs.readFileSync(path.join(here, '../../ui/59-tooltips/test.mjs'), 'utf8');
+// the tooltip suite's battle kit (59-descriptions) builds a 3,000-a-side battle with a crowded centre
+const src = fs.readFileSync(path.join(here, '../../ui/59-descriptions/test.mjs'), 'utf8');
 const KIT = src.slice(src.indexOf('const KIT2 = () => {') + 'const KIT2 = '.length, src.indexOf('\nconst PCT')).trim().replace(/;$/, '');
 
 export default {

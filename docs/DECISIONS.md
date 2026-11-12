@@ -112,7 +112,7 @@ kingdom in war but, forced to choose, side with their duchy. **Why:** the owner'
 **Chosen:** most countries speak the same English language, so most realms draw on one large pool of plain English
 names; cultures differ in customs, dress, faith and ways. Only a few far or non-human peoples sound different.
 **Replaces:** the earlier "names modelled on real-world cultures" order (OWNER_ORDERS rule 8, superseded) and the
-24 separately-flavoured pools of `docs/research/c7-names.json` as the default. **Why:** the owner's answer. Steers C7.
+24 separately-flavoured pools of `docs/research/c7-name-data.json` as the default. **Why:** the owner's answer. Steers C7.
 
 ### D-014 · The open critique decisions the owner left to the plan (map look superseded by D-016; X1, X5 and the year by D-018 and D-019, 2026-11-12 10:46 ET) (2026-11-12 06:49 ET)
 **Chosen (the critique's recommendations, until the owner says otherwise):** map look (decision 2): keep the

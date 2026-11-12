@@ -133,7 +133,7 @@
     if (typeof ADV.counselFor === 'function') {
       const counsel0 = ADV.counselFor;
       ADV.counselFor = function (pc, q) {
-        // one extra line a card: a memory woven into the scene's text (67-memory-weave, set in the scene's setup,
+        // one extra line a card: a memory woven into the scene's text (67-choice-memories, set in the scene's setup,
         // before the view) speaks, and counsel keeps its peace (CI run 88: a memory and counsel together on a muster)
         if (woven(q)) return null;
         const out = counsel0.apply(this, arguments);
@@ -180,7 +180,7 @@
   //   - the deed must read as a past deed of its own (MW.deedReads: no "is", no "she sleeps", no "title: deed"), from
   //     the age of 7 on, and must not name the person it is said to.
   const MW = A.MW, BD = A.BONDS, NI = A.NPCI;
-  // (a life with no record of cards, pc.mw, from a build or a save without 67-memory-weave, is not spaced)
+  // (a life with no record of cards, pc.mw, from a build or a save without 67-choice-memories, is not spaced)
   const gapOk = pc => !!pc && !(pc.mw && typeof pc.mw === 'object' && typeof pc.mw.lw === 'number' && (+pc.mw.n || 0) - pc.mw.lw < ((MW && MW.GAP) || 10));
   const spend = pc => { if (pc.mw && typeof pc.mw === 'object') pc.mw.lw = +pc.mw.n || 0; };
   C2.deedFor = function (pc, t, y, d) {

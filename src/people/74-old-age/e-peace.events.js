@@ -1,6 +1,6 @@
 // Old age, part 5: settling scores and making peace, faith and the fear of death, and the deathbed. The grudges and
 // debts are 55-bonds' weighed lines from eight or more years ago (fx.bonds settles or refreshes them); the wrongs are
-// 67-memory-weave's record of what this life did. The deathbed is queued by the core when the engine's own death odds
+// 67-choice-memories's record of what this life did. The deathbed is queued by the core when the engine's own death odds
 // pass 12% a year; what you say there is on the death screen.
 (function () {
 const OAp = {

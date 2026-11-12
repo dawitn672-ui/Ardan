@@ -211,7 +211,7 @@
   };
 })();
 
-// The title is one composition with no map in it (86-title-fold, cycle 2, visual F1: "Begin a new life" in sight on a
+// The title is one composition with no map in it (86-title-screen-in-view, cycle 2, visual F1: "Begin a new life" in sight on a
 // laptop). 86 took the strip out for the Great Continent only; with the Far Lands out of the build the release's strip
 // came back and pushed the button under the fold, so it goes here too. The continent is seen from the first day.
 (function () {

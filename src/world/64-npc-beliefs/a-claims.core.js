@@ -2,7 +2,7 @@
 // versus truth, everywhere: beasts, people, battles and events all have what people believe and what is true, and
 // your character's knowledge can be wrong").
 //
-// 26-belief-truth gave the player a knowledge state for beasts and secrets, far news that runs high, and a legend. The
+// 26-belief-versus-truth gave the player a knowledge state for beasts and secrets, far news that runs high, and a legend. The
 // people of the world believed nothing of their own. Here they do:
 //   - a claim is one thing someone might believe: that you did a deed (as it happened, as the taverns tell it, or
 //     twisted by someone who hates you), that someone killed someone, that someone hides a heresy or a crime, who won a
@@ -351,7 +351,7 @@
     for (const p of first) if (p && p.alive) for (const x of NB.contacts(p)) add(x);
     return out;
   };
-  // the people someone talks to: their close circle (41-circles), or their friends and kin (pure)
+  // the people someone talks to: their close circle (41-friend-circles), or their friends and kin (pure)
   NB.contacts = function (h, within) {
     if (!h || !h.rel) return [];
     let L = A.CIRCLES && A.CIRCLES.close ? A.CIRCLES.close(h) : [];

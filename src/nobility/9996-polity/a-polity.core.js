@@ -1,9 +1,9 @@
 // The Polity (9996-polity), part one: the data, the state, the estates, the laws beyond 56's three, legitimacy with
 // parts, the offices below the council, vassal contracts and the council's seat tasks. See README.md.
 //
-// It builds on 56-realm-inside (the court, RI.voices, RI.tally, RI.applyLaw, the custom r.riLaw0), 20-ai-personality
+// It builds on 56-court-and-treasury (the court, RI.voices, RI.tally, RI.applyLaw, the custom r.riLaw0), 20-ai-personality
 // (A.rulerPersona, A.personPersona), 66-markets (market towns as shires), 990-far-peoples (the powers' names) and
-// 68-casus-belli (csPlan, for the marches). Engine paths draw dice only with A.chance, A.ri, A.rf and A.pick; every
+// 68-reasons-for-war (csPlan, for the marches). Engine paths draw dice only with A.chance, A.ri, A.rf and A.pick; every
 // function named *Parts, *Of or read* is pure, and the views (e-view.core.js) only read.
 //
 // State, all optional (a save without it fills at the next New Year):
@@ -330,7 +330,7 @@ const OFF_TYPE = {
 POL.offName = function (k, rid) {
   const r = A.realm(rid), T = r && OFF_TYPE[r.type];
   if (T && T[k]) return T[k];
-  // a governor holds his shire as the crown's lord there: the realm's own word for a lord (54-voices), where it has one
+  // a governor holds his shire as the crown's lord there: the realm's own word for a lord (54-character-voices), where it has one
   try { const V = A.VOICE, c = V && V.realmCult && V.realmCult(rid), w = c && V.word && k === 'gov' ? V.word(c, 'lord') : null; if (w) return w.charAt(0).toUpperCase() + w.slice(1); } catch (e) {}
   return GD.POL_OFFICES[k].n;
 };

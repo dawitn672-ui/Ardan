@@ -7,14 +7,14 @@
 **No view of a war you are not in** (`a-gate.core.js`)
 
 - **A war is yours** when you fight in it. That means your realm as its ruler, the realm you serve in (enlisted, an officer, a general, an order's member), or a sell-sword's employer. Being born in a realm at war is not enough (`A.V2W.inWar`, `fightsIn`, `myWars`).
-  - 72-two-scales' levy counts while its scene runs: you stand in that fight.
+  - 72-one-battle-two-scales' levy counts while its scene runs: you stand in that fight.
 - **The War Room** belongs to those who serve or rule: a ruler, an enlisted man, an officer, a general, a sell-sword under contract (`A.V2W.canRoom`).
   - In peace it plans your own forces, as before.
   - In war it is drawn with only your wars in `A.S.wars`.
   - For a life outside the army it stays shut (`UI.warRoomOpen`, `A.warRoomView`, a queued `warroom`). The War tab loses its War Room button and reads "is at war, but you are not in it" in place of the release's "is at peace".
 - **The surfaces that stay shut** for any other war:
   - a queued battle that belongs to that war;
-  - 96-moments' victory and defeat cut-ins;
+  - 96-big-moments' victory and defeat cut-ins;
   - the War place (99992-v2-time's `V2T.atWar` now reads `inWar`).
 - **The war lists** in the War tab (the release's, 23's battle causes) and in the World's Wars view are drawn with only your wars. `A.S.wars` is filtered for the call and put back, so no state changes. "Elsewhere" is gone.
   - A subject of a realm at war who is not in it reads "Your realm is at war, but you are not in it…".
@@ -46,7 +46,7 @@
   - It is kept as `b.aar = { causes: [{ label, pct }], text }`, which is 23's shape. `pct` is the signed contribution × 40, for the bench; the player sees only the words.
   - It is also kept in the story, and on the war's battle record when 23 didn't already give one.
 - **Skipping the card** (a bot's `skipPrompt`) is the same as not taking part.
-- **The fight waits for your answer** (patch `V2W-HOLD-FIRST-DAY`; playtest 2, new 6: 5 of 16 "Rally your section" asks went straight to "After X"). The release asks on a fight's first day and fights that day at once, so a short fight was over before the answer (13 of 24 asks in a probe). When the ask is queued (`F.v2hold`, set by the `A.wsPCFightStart` wrapper), the fight skips that day's fighting: your scene is its first day, and the map fights it from the next tick (`F.days` back to 0, `F.v2asked` so the ask is made once). A key that is gone all the same (a save from before) goes to the classic layer, 72-two-scales' short scene, not to a log line.
+- **The fight waits for your answer** (patch `V2W-HOLD-FIRST-DAY`; playtest 2, new 6: 5 of 16 "Rally your section" asks went straight to "After X"). The release asks on a fight's first day and fights that day at once, so a short fight was over before the answer (13 of 24 asks in a probe). When the ask is queued (`F.v2hold`, set by the `A.wsPCFightStart` wrapper), the fight skips that day's fighting: your scene is its first day, and the map fights it from the next tick (`F.days` back to 0, `F.v2asked` so the ask is made once). A key that is gone all the same (a save from before) goes to the classic layer, 72-one-battle-two-scales' short scene, not to a log line.
 - **The scene's dead are the fight's dead** (`W.foldLosses`; playtest 2, new 17: "Ashmere: about 1,000 men", then "Dead: about 1,500 of theirs"). Each unit's losses come off its divisions (a grouped unit's in proportion) and go on `F.deadA`/`F.deadD`, so the battle report after it counts at least them, and the scene starts from the men the ask named.
 - **What you lead** (`W.leads`, `W.unitWord`, patch `V2W-RANK-WORDS`; playtest 2, new 16). A Commander (rank 6) is his division's commander (`d.cmd`), so the chain of command says he leads its men, the drill card that he drills all of them (`A.drillShare` 1), and his scene's unit is his division ("Your division:", "You fight as a Commander with your division"). A Senior Captain leads a battalion of 800, a Captain a company of 200. The arm-of-service card names the rank held ("You are a squad captain now"), not "a sergeant" for everyone.
 
@@ -96,7 +96,7 @@
 - `99992-v2-time` `v2tNoPlay`: the noble enlists before he opens the War Room (a life outside the army has none).
 - `99992-v2-time` `v2tPlaces`: the noble enlists when his realm declares war (the War place is for a war you fight in).
 - `58-event-cut` `warRoomByRank`: the peasant enlists before his War Room tabs are read.
-- `72-two-scales` (all its tests): the soldier's line and the captain's way into 72's scene now start v2's battle. 72's scene stays for the levy, and its tests and its lab (`lab.mjs`, used by `twoScalesMovesFront`) reach the old entry through `A.V2W.classic.wsLine` / `.wsPart`.
+- `72-one-battle-two-scales` (all its tests): the soldier's line and the captain's way into 72's scene now start v2's battle. 72's scene stays for the levy, and its tests and its lab (`lab.mjs`, used by `twoScalesMovesFront`) reach the old entry through `A.V2W.classic.wsLine` / `.wsPart`.
 
 ## Playtest round 1 (`e-words.core.js` and small changes)
 
@@ -107,7 +107,7 @@
   - a commander knows his own side exactly and the enemy's only as an estimate.
 - **An outsider's maps.**
   - The war map (`UI.drawWar`, `drawWarBasic`), `MAP.draw`, 62's march arrows and the War Room are drawn with only the divisions and fights you can see (`A.V2W.withSeen`). That means both sides of your wars, plus your own realm's forces when you serve or rule.
-  - 64's tavern tale "How the battle went" comes only for a battle of a war you fought in (`S.v2w.fought`). The gate wraps the setup that 67-memory-weave already wrapped, and reads as that setup's text and then its own, so the event's own source stays first and the record it asks stays readable (67's `mwSourcesIntact`).
+  - 64's tavern tale "How the battle went" comes only for a battle of a war you fought in (`S.v2w.fought`). The gate wraps the setup that 67-choice-memories already wrapped, and reads as that setup's text and then its own, so the event's own source stays first and the record it asks stays readable (67's `mwSourcesIntact`).
   - 57's folk memory of a battle is told as hearsay.
 - **An empty war list.** World > Wars says "Your realm is at war, but you are not in it" (or "No war of yours") in place of "Ardan is, for once, at peace."
 - **Captains' odds.**
@@ -130,12 +130,12 @@ What each rank may know, and what outsiders hear (playtest 2 findings 3, 4, 5 an
   - the hearsay dice are v2's `makeRng`, seeded from the game seed and the entry: pure, the same every draw.
   - cost: each entry's lag is kept in a cache outside `A.S` (dropped when `A.S` is replaced), and `tellOf`'s line is a getter made only when read, so the Annals and The Book draw about as fast as before (25 years, 1,412 entries: rows 4.3 ms against 3.8, The Book's legends 6.2 ms against 10.2).
 - **64-npc-beliefs:** a battle you had no part in and did not see is not one you know (`NB.pcKnows` returns null for it: a neighbour's war no longer counts), and "The record" where you do know it (`NB.recordLine`: the belief cards, the Tales, the Chronicle, the scene that puts you right) gives the counts at your rank's precision.
-- **72-two-scales' levy** reads `TS.told` (this feature's `W.levyCount`): the call to arms ("about 6,500 against about 30,000"), the front's words, the standards' slips ("~5.5k"), their titles and the day's tally are estimates.
-- **The commander's battle** (the release's modal, 9997-companies' panel, 60-drill's tags): his own side exactly, the enemy's as an estimate (the side line, the opening line, volleys and the wings' losses in the log, the result); morale in words ("steady", "eager"); drill in words ("drilled", "Drill: the charge (drilled)"), no 0–100 number. 59's tooltip on the two side lines goes with the numbers it explained. The release's closing log line ("X hold the field. Y are beaten. Dead: n of A, m of B.", and the drawn field's "n dead for A, m for B.") gives the enemy's dead as an estimate too, and 59's popovers on the same screen (`bSide`, `bMorale`, `bWing`, `bDead`) are redrawn in `f-told.core.js`: the enemy's counts as an estimate (their units not listed), morale in words. `v2wRankCounts` reads every screen of the battle (as it opens, a pulse in, fought out) and every tooltip on it.
+- **72-one-battle-two-scales' levy** reads `TS.told` (this feature's `W.levyCount`): the call to arms ("about 6,500 against about 30,000"), the front's words, the standards' slips ("~5.5k"), their titles and the day's tally are estimates.
+- **The commander's battle** (the release's modal, 9997-companies' panel, 60-unit-drill's tags): his own side exactly, the enemy's as an estimate (the side line, the opening line, volleys and the wings' losses in the log, the result); morale in words ("steady", "eager"); drill in words ("drilled", "Drill: the charge (drilled)"), no 0–100 number. 59's tooltip on the two side lines goes with the numbers it explained. The release's closing log line ("X hold the field. Y are beaten. Dead: n of A, m of B.", and the drawn field's "n dead for A, m for B.") gives the enemy's dead as an estimate too, and 59's popovers on the same screen (`bSide`, `bMorale`, `bWing`, `bDead`) are redrawn in `f-told.core.js`: the enemy's counts as an estimate (their units not listed), morale in words. `v2wRankCounts` reads every screen of the battle (as it opens, a pulse in, fought out) and every tooltip on it.
 - **Tests:** `v2wAnnalsHearsay`, `v2wBeliefRecord`, `v2wRankCounts`.
 
 ### Tests of other features changed (CI run 88)
 
-- `26-belief-truth` `btRumors`: v2 drops an outsider's far battle report, so 26's inflation is tested on `war` news, and the drop is asserted.
+- `26-belief-versus-truth` `btRumors`: v2 drops an outsider's far battle report, so 26's inflation is tested on `war` news, and the drop is asserted.
 - `64-npc-beliefs` (the `NBT.person` helper): the acquaintance is of the player's own people. Since the far peoples came onto the continent it could be an elf of 35, still a child (grown at 50), and every scene about him dropped (`nbRevenge`'s "undefined" outcome). Not the dice.
 - `99997-v2-war` `v2wPure`: the first frozen fight now routs after two phases, so the next frozen fights are drawn too, to the same bar of 10 draws.

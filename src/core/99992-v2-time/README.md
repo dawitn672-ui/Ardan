@@ -1,7 +1,7 @@
 # 99992-v2-time: one button moves time
 
 **Aspect:** the owner's v2 complaints 1, 2, 7 and 8 (`docs/V2_SPEC.md`, integration step 3) · **Kind:** one readable
-core file, tests; small edits in 9993-chapters. No patches, no events.
+core file, tests; small edits in 9993-life-chapters. No patches, no events.
 
 ## What it does
 
@@ -28,7 +28,7 @@ it is `A.rand`: the same seed and choices give the same months.
 - **A quiet month is a toast, never a card.** At the turn, a month in which nothing reached the player (no card of any
   kind first shown since the last turn, none waiting) writes one line to the story (`S.v2t.quiet`), and the step ends
   with that line as a 2-second toast. 84's "This month" summary card is gone.
-- **Filler removed:** 81-pacing's quiet-season floor (`PACE.FLOOR_OFF`), 96-moments' new-year cut-in, 84's step card,
+- **Filler removed:** 81-pacing's quiet-season floor (`PACE.FLOOR_OFF`), 96-big-moments' new-year cut-in, 84's step card,
   and 9993's chapter card (below).
 - Measured (two bot lives of 30 years): 0.49 cards a month (0.53 before); 65% of months quiet, 24% one card, 8% two,
   2% three, 0.6% four (a scheduled return landing on a busy month).
@@ -38,7 +38,7 @@ profile; Path, Holdings, and Arms while at peace), **Family** (People, Dynasty),
 Places, Codex) and **War** only while your realm (or your company's employer) is at war. `UI.GROUPS` is rebuilt
 before each draw (a read of the state), so pages other features add to a group keep a place.
 
-**No forced chapters, faith only for the devout** (complaint 7). 9993-chapters no longer queues `chp_card`: a chapter
+**No forced chapters, faith only for the devout** (complaint 7). 9993-life-chapters no longer queues `chp_card`: a chapter
 opens with a line in the story and stands on the Life tab, where the third aim is chosen with two buttons
 (`A.chpPick`, a journal command). The shrine aim and 97's "Serve the gods" ambition are offered only to the devout
 (`A.V2T.devout`: in holy orders, born to clergy, or piety taken up to 60).
@@ -59,5 +59,5 @@ than winter, same seed same world), `v2tSameWorld` (the button path with and wit
 **Playtest 2 (Nov 6).** `v2tWarPlace`: a tap on War opens the War page from any page, at 420 and 1366 px (new 15 was
 the playtest driver taking the War page's own "Path tab" link). `v2tChapterPanel`: the chapter is only an optional
 Life panel, folded on a phone, and a full chapter is no longer a deed (old 16). On a desktop it stands open, or, where
-the Life panel has no room for it (91-look's `LOOK.fitLife`, round 2), folded to its title line until the player opens
+the Life panel has no room for it (91-visual-style's `LOOK.fitLife`, round 2), folded to its title line until the player opens
 it; one click keeps it open. The War Room's campaign note is 14 px on a phone (71-phone's `phoneTargets`).

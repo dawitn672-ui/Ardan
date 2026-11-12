@@ -1,7 +1,7 @@
 // v2 stats, part 2: every event check is decided by A.V2.odds.attempt() (src/people/engine/odds.js), with blunders and surges.
 //
 // The old chain still works out the honest chance: A.checkOdds and its wrappers (75-fair-checks' life stage,
-// 48-fight-ladder's fighting worth, 30-get-to-know, 67-memory-weave, 81-pacing). attempt() then plays it out: the chance
+// 48-event-fight-rules's fighting worth, 30-get-to-know, 67-choice-memories, 81-pacing). attempt() then plays it out: the chance
 // becomes the edge (logit p, so with no blunder and no surge it wins exactly as often as before, and the first draw
 // decides as A.chance did), then judgment, fatigue and overconfidence can throw a won fight, and will, under real stakes,
 // can win a lost one. A surge that wins against long odds is a breakthrough: the body's ceiling rises for good.

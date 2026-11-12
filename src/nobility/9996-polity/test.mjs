@@ -336,7 +336,7 @@ export default {
   // was when that was the men or the scutage, with a line in the log; a lord who refused is asked again
   async poMusterAsBefore(pg) {
     const r = await pg.evaluate(() => {
-      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-life-fixes) is missing' };
+      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-first-life-fixes) is missing' };
       const POL = A.POL;
       for (let seed = 5201; seed < 5221; seed++) {
         A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });

@@ -55,9 +55,9 @@ Before this feature, `21-npc-initiative` kept a text log on each bond, `pc.rel[p
 - **You find them** in five ways:
   - by a glimpse: a moneylender's boy at their gate, a house left before dawn;
   - by a scheme: `39-schemes` gets a sixth plot, "Plot: dig into their past", with months of progress, an opening and a chance each month of being noticed, and a last move that is this feature's scene. Without `39-schemes`, "Dig into their past" is a single scene;
-  - through your circle: a friend close to them tells you. This is an NPC move that reads `41-circles`;
+  - through your circle: a friend close to them tells you. This is an NPC move that reads `41-friend-circles`;
   - by any release event that grants its +1 secret with someone in the scene;
-  - by knowing a lore secret (`26-belief-truth`) that names a realm, which is a hold on its ruler.
+  - by knowing a lore secret (`26-belief-versus-truth`) that names a realm, which is a hold on its ruler.
 - **You can use them.** "Use what you know" in the person view lets you ask for:
   - a favour (a check against their pride and courage, eased by fear of the gallows);
   - money;

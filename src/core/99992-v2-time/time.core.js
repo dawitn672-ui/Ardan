@@ -16,7 +16,7 @@
 //   and "Next week" instead, with the host's standing orders beside them. A battle stops the clock.
 // - A quiet month ends with a 2-second toast of its line, never a card. 84's "This month" card is gone.
 // - Five places at most: Life, You, Family, World, and War only while at war (complaint 2).
-// - 96-moments' new-year cut-in is gone (a card for nothing); births, deaths, crowns and the rest stay.
+// - 96-big-moments' new-year cut-in is gone (a card for nothing); births, deaths, crowns and the rest stay.
 (function () {
   if (typeof A === 'undefined') return;
   const V2T = A.V2T = A.V2T || {};
@@ -234,7 +234,7 @@
     v2Next() { start('month'); },
     v2Day() { start('day'); },
     v2Week() { start('week'); },
-    // What now's "live the next month" (97-life-fixes) names the month step
+    // What now's "live the next month" (97-first-life-fixes) names the month step
     stepMonth() { start('month'); },
   });
   Object.assign(UI.C, {
@@ -472,7 +472,7 @@
     return grp.call(this, v);
   };
 
-  // ---- the words that taught the old clock (97-life-fixes' clock hint and How to play) ----------------------------
+  // ---- the words that taught the old clock (97-first-life-fixes' clock hint and How to play) ----------------------------
   const coarse = () => { try { return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); } catch (e) { return false; } };
   V2T.hintWords = () => {
     const camp = V2T.campaign(), k = x => (coarse() ? '' : ` (${x})`);
@@ -494,7 +494,7 @@
     } catch (e) { return h; }
   };
 
-  // ---- 96-moments: no cut-in for the new year (a card that says only the date) ---------------------------------------
+  // ---- 96-big-moments: no cut-in for the new year (a card that says only the date) ---------------------------------------
   const MO = UI.MOMENTS;
   if (MO && typeof MO.found === 'function') { const found = MO.found; MO.found = function () { const r = found.apply(this, arguments); return Array.isArray(r) ? r.filter(x => x && x.k !== 'year') : r; }; }
 

@@ -1,4 +1,4 @@
-// 995-hall-of-lives: the three start stories the Hall opens (hall.core.js adds them to 29-starts' list). Each has its
+// 995-hall-of-lives: the three start stories the Hall opens (hall.core.js adds them to 29-starting-stories' list). Each has its
 // opening scene (st_<id>_open, forced at birth by 29) and a callback years later that reads what you chose.
 (function () {
 const since = (p, f) => (p.flags && p.flags[f] != null ? A.S.year - p.flags[f] : -1);

@@ -142,7 +142,7 @@ export const PROBE = () => {
     const cs = getComputedStyle(el);
     const inText = cs.display === 'inline' && el.parentElement && /\S/.test([...el.parentElement.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join(''));
     const lab = label(el) + ` ${Math.round(r.width)}x${Math.round(r.height)}`;
-    // a glossary word (59-tooltips) only explains; it is held to WCAG 2.5.8's 24 px, actions to 44
+    // a glossary word (59-descriptions) only explains; it is held to WCAG 2.5.8's 24 px, actions to 44
     const gloss = el.matches('[data-tt], .tipt') && !el.matches('[data-a], button, a[href], summary, select, input, label');
     if (inText) inline.push(lab); else if (gloss) { if (r.width < 23.5 || r.height < 23.5) small.push(lab); else glossary.push(lab); } else small.push(lab);
   }

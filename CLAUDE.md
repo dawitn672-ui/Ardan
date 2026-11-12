@@ -21,7 +21,7 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
 
 - **Descriptions open on click, never on hover.** A button or an info icon opens a description; nothing pops up on
   hover. (Round 2 order B4; replaces the older "never hide a description behind a click" rule. Until B4 lands the
-  hover tooltips of `src/ui/59-tooltips` are still in the build.)
+  hover tooltips of `src/ui/59-descriptions` are still in the build.)
 - **No percentages for the player.** Odds and amounts are words and a tipped scale. Percentages are fine in tests,
   tools and AI.
 - **One holder per post.** Every title, office and command has exactly one holder at a time. A promotion hands over
@@ -44,8 +44,8 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
 | `assets/` | Art, fonts, portrait and VFX source files |
 | `vendor/ardan-b593143.html` | The untouched release. **Never edit.** |
 | `tests/` | `run.mjs` (browser tests: `tests/suites/` and every feature's `test.mjs`), `v2/` (engine unit tests), `saves/` (sample saves of every version; they must keep loading) |
-| `tools/` | `build.mjs`, `build-v2.mjs`, `check.mjs`, linters, `show.mjs`, `version.mjs`, `lib/features.mjs` (where features live), `bench/` (measurement harnesses; reports in `tools/bench/reports/`), `v2/` (the v2 kit's playtest and map scripts) |
-| `docs/` | `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (v2 status, lanes, playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
+| `tools/` | `build.mjs`, `build-v2.mjs`, `check.mjs`, linters, `show.mjs`, `version.mjs`, `lib/features.mjs` (where features live), `rename-pass.mjs` + `rename-map.json` (the naming pass: renames and the references to them), `bench/` (measurement harnesses; reports in `tools/bench/reports/`), `v2/` (the v2 kit's playtest and map scripts) |
+| `docs/` | `README.md` (an index of every doc), `NAMES.md` (old name -> new name), `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (v2 status, lanes, playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
 | `archive/` | Retired features and code, each with a note on what it was and why it was replaced. Never built. |
 | `CHANGELOG.md` | Player-facing changes in plain words, one section per version |
 | `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop` (keep them true to the code) |
@@ -74,9 +74,9 @@ node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that f
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
 node tests/run.mjs                                        # everything against index.html (757 tests; CI shards it 8 ways)
 node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
-node tools/bench/press.mjs /tmp/me.html --state=save.json [--death]   # real Next month presses, in CPU time
+node tools/bench/next-month-speed.mjs /tmp/me.html --state=save.json [--death]   # real Next month presses, in CPU time
 node tools/bench/style-probe.mjs /tmp/me.html             # one <span> insert's style time after a hint and a death (< 1 ms)
-node tools/bench/life.mjs /tmp/me.html --seed=7 --years=60    # a long bot life with the one-holder audit and error counts
+node tools/bench/long-life-audit.mjs /tmp/me.html --seed=7 --years=60    # a long bot life with the one-holder audit and error counts
 node tools/check.mjs                                      # everything CI runs
 node tools/version.mjs get v2.0.0-beta.1                  # any version, playable: versions/ardan-<v>.html
 git gc --prune=now                                        # after every integration round (see below)
@@ -101,7 +101,7 @@ Every foundational or significant change is a version (`docs/VERSIONS.md`, `tool
 
 The owner's v2 spec is `docs/V2_SPEC.md`; lanes follow `docs/v2/LANES.md`; status is `docs/v2/STATUS.md`. The engine
 modules live with their systems (`src/people/engine/body.js`, `src/war/engine/war.js`, ...; entry
-`src/core/engine/index.js`), bundled by `node tools/build-v2.mjs` into `src/core/99990-v2/a-v2.core.js` (on the page
+`src/core/engine/index.js`), bundled by `node tools/build-v2.mjs` into `src/core/99990-v2-engine/a-v2.core.js` (on the page
 as `A.V2`; never edit the bundle). Their unit tests are `tests/v2/` (`tools/check.mjs` runs them).
 
 ## Rules that keep the build working

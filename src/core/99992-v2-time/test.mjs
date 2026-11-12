@@ -189,7 +189,7 @@ export default {
         UI.tab = 'life'; UI.render();
         const c = document.querySelector('#tabbody .chp-card');
         const o = { card: !!c, folded: !!(c && c.classList.contains('folded')), foldable: !!(c && c.querySelector(':scope > .fold-x')), head: c ? c.firstElementChild && (c.querySelector('.chp-t') || {}).textContent : null };
-        // folded only for want of room (91-look's LOOK.fitLife, round 2): one click opens it, and it stays open
+        // folded only for want of room (91-visual-style's LOOK.fitLife, round 2): one click opens it, and it stays open
         o.fit = !!(c && c.dataset.lkFit);
         if (o.folded && o.fit && innerWidth > 760) {
           c.querySelector(':scope > .fold-x').click(); UI.render();
@@ -206,9 +206,9 @@ export default {
       const n0 = (pc.deeds || []).length; CH.close(pc);
       return { full: pc.chap.past[pc.chap.past.length - 1].full, added: (pc.deeds || []).length - n0 };
     });
-    // Changed in round 2 (wf-round2): at 1366 x 768 the Life panel cannot hold every card above Activities (91-look's
+    // Changed in round 2 (wf-round2): at 1366 x 768 the Life panel cannot hold every card above Activities (91-visual-style's
     // fitsOneScreen: 723 px of a 615 px panel with Coming up, What now, the chapter, the ambition and the arcs open), so
-    // 91-look folds the cards the player has not touched, the ambition first and then the chapter, until it fits. The
+    // 91-visual-style folds the cards the player has not touched, the ambition first and then the chapter, until it fits. The
     // chapter on a desktop is open, or folded for want of room only, and then one click opens it for good (the owner's
     // complaint 7 wants no scripted chapters: this panel is the optional part that may give way)
     const desk = out[1366], deskOk = desk.card && desk.foldable && (!desk.folded || (desk.fit && desk.reopened));

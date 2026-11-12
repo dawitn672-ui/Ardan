@@ -200,7 +200,7 @@ export default {
         DV.WAR.p = 0; out.chance = once();
         DV.WAR.p = 100; out.go = once(); // a certain declaration whatever the court's reasons weigh (none of them nil)
       } finally { A[pk] = pv; Object.assign(DV.WAR, W0); }
-      // a want aimed at a neighbour (68-casus-belli's CS.WANT) is a named reason pulling the two apart
+      // a want aimed at a neighbour (68-reasons-for-war's CS.WANT) is a named reason pulling the two apart
       const wa = Object.keys((A.CASUS && A.CASUS.WANT) || {}).find(x => A.realm(x) && A.realm(x).alive && A.CASUS.WANT[x].t.some(y => A.realm(y) && A.realm(y).alive));
       const wb = wa && A.CASUS.WANT[wa].t.find(y => A.realm(y) && A.realm(y).alive), rel = wa ? DV.relation(wa, wb) : null;
       out.want = { pair: wa ? wa + ' on ' + wb : null, text: rel ? (rel.apart.find(x => /\bwants\b/.test(x.text)) || {}).text || null : null };

@@ -369,9 +369,9 @@ With 1 to 11 built and their tests green, I expect Pacing to reach about **7** a
 - Brysbaert (2019), reading rate meta-analysis (from memory, not re-checked): https://doi.org/10.1016/j.jml.2019.104047
 
 **Ardan**
-- `docs/plan/Ardan The Road to Ten.md` (Replayability steps and gate)
-- `docs/reviews/Ardan Road to 100.md` (scores; the Pacing aspect and its proposed gate)
-- `docs/reviews/Ardan Deep Analysis.md` (16 bot lives, speed)
+- `docs/plan/road-to-ten.md` (Replayability steps and gate)
+- `docs/reviews/road-to-100.md` (scores; the Pacing aspect and its proposed gate)
+- `docs/reviews/deep-analysis.md` (16 bot lives, speed)
 - `docs/benchmarks/events-story.md`, `power-balance.md`, `character-lifesim.md`, `world-lore-uniqueness.md` (sources reused above)
 - `tools/bench/reports/fixes.json` and `tools/bench/reports/scorecard.md` (bench league: 64 lives, promptsPerYear 4.9, p90 gap 153 days)
 

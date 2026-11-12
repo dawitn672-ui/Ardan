@@ -15,7 +15,7 @@ A tasteful, consistent "illuminated manuscript": one leather brown, one gold, on
 | Three scrolling regions side by side. The player cannot see the profile, the log and the panel's lower half together. | 🟡 Moderate | Each column fits without scrolling in the default state at 1366×768; scrolling becomes the exception, not the rule. |
 | At 1920×1080 the story log runs about 150 characters a line. | 🟡 Moderate | Cap the log's measure at about 72 characters; give the freed width to the right panel. |
 | The speed control is six buttons (1–5, Next) beside Play and Quiet. | 🟢 Minor | One segmented control; Next as an icon button with a label in the tooltip. |
-| Controls that do nothing when clicked (see `tools/deadclicks.mjs`). | 🔴 Critical | Each one either works, is shown disabled with the reason, or is not a button. |
+| Controls that do nothing when clicked (see `tools/dead-clicks.mjs`). | 🔴 Critical | Each one either works, is shown disabled with the reason, or is not a button. |
 
 ## Visual hierarchy
 

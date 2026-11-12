@@ -11,7 +11,7 @@ In the release, a life ended with a portrait, a cause of death and a score. Now 
   - The Crowned;
   - The Risen;
   - Died in Chains;
-  - Keeper of Secrets (4 or more found; see 26-belief-truth);
+  - Keeper of Secrets (4 or more found; see 26-belief-versus-truth);
   - The Commander;
   - The Old Soldier;
   - Master of the Craft;
@@ -36,7 +36,7 @@ In the release, a life ended with a portrait, a cause of death and a score. Now 
   - your closest friend and your worst enemy;
   - the secret you take into the ground, or the one your eldest keeps;
   - your realm, at war or at peace, or gone;
-  - with 26-belief-truth, the tale the taverns tell.
+  - with 26-belief-versus-truth, the tale the taverns tell.
 - **The collection.** The Legacy tab lists "Endings found (n/20, and m/9 ways to go)", like the achievements: found ones show their epitaph and year.
 - **The Chronicle.** The last line of a life names the ending.
 
@@ -51,7 +51,7 @@ In the release, a life ended with a portrait, a cause of death and a score. Now 
   - the story log has the line.
 - `endingsVariety`: six real 60-year lives (bot-played) must reach at least three endings, with at most three on the fallback. In the full build they give the Commander three times, and Master of the Craft, Died in Chains and the Wealthy once each. With this feature alone they give six different ones.
 
-An earlier draft put "Keeper of Secrets" at 3 secrets and fifth in line, and 4 of 6 full-build lives ended there. The secret scenes of 26-belief-truth are now rationed to one find in eight years, and the ending needs four.
+An earlier draft put "Keeper of Secrets" at 3 secrets and fifth in line, and 4 of 6 full-build lives ended there. The secret scenes of 26-belief-versus-truth are now rationed to one find in eight years, and the ending needs four.
 
 **Rules kept.**
 - The ending is engine state (`pc.ending`, `S.endings`, `S.manners`, and `ending` on `deadList` entries). All of it is optional, so old saves load.

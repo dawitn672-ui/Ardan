@@ -465,7 +465,7 @@ Ranked by score gained per week of work, dependencies first. "Code" means `*.cor
 - Production rates, upkeep, needs per resident: https://github.com/NiHoel/Anno1800Calculator/blob/master/js/params.js
 
 **Ardan**
-- `docs/plan/Ardan The Road to Ten.md`, `docs/reviews/Ardan Road to 100.md`, `docs/reviews/Ardan Deep Analysis.md`
+- `docs/plan/road-to-ten.md`, `docs/reviews/road-to-100.md`, `docs/reviews/deep-analysis.md`
 - `tools/bench/reports/fixes.json`, `tools/bench/reports/scorecard.md` (bench values quoted as such)
 - `src/diplomacy/20-ai-personality/` (work in progress, not measured here)
 

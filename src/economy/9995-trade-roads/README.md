@@ -62,7 +62,7 @@ The toll goes to the holder's treasury.
 
 **The League's secret.** The Nine Wells' Cross-Desert Track is a hand only for the League's own caravans, and for a player the League has taken in (event `tr_nine_wells`).
 
-**News with the goods.** A far line held by 09-scale waits as long as the brokers' letters take along the roads (`A.TRADE.newsDays`: 40 km a day and 20 days at each hand, at most 1,100 days). It says which way it came: "Word from the east, by way of Ozand: …". This is a wrap of `A.news` that re-dates 09's queued item; 09 is not edited.
+**News with the goods.** A far line held by 09-engine-at-scale waits as long as the brokers' letters take along the roads (`A.TRADE.newsDays`: 40 km a day and 20 days at each hand, at most 1,100 days). It says which way it came: "Word from the east, by way of Ozand: …". This is a wrap of `A.news` that re-dates 09's queued item; 09 is not edited.
 
 ### 3. Money (`a-goods.core.js`, `A.MONEY`)
 
@@ -128,7 +128,7 @@ Before means the build without this feature, on the same seed and day. These are
 **Treasuries (world review I3).** Far treasuries grow about ×10 over 20 years with and without this feature. **The cause is not in 45 or 66.**
 - **The release's ledger.** Every AI realm gets 92% of its income less 3.2 suns a soldier a year. Taulen's 470,000 men cost it 14% of its income, where the lore says two thirds.
 - **The starting treasuries.** The far realms start at about a quarter of a year's income.
-- **56-realm-inside's ladder** spends down to a reserve and lets the coffers settle at 1.5 to 4 years of income.
+- **56-court-and-treasury's ladder** spends down to a reserve and lets the coffers settle at 1.5 to 4 years of income.
 
 So the ×10 is the convergence from a quarter-year purse to 56's steady state. The economy pays no money into treasuries except the tolls to the chokepoints' holders.
 

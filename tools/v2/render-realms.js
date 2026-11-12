@@ -2,7 +2,7 @@ import { generateContinent, riverPaths } from '../../src/map/engine/continent.js
 import { renderMap, drawRivers } from '../../src/map/engine/render.js';
 import { makeRealms, buildHierarchy } from '../../src/nobility/engine/nobility.js';
 import { makeRng } from '../../src/core/engine/rng.js';
-import { writePng } from './png.js';
+import { writePng } from './png-encoder.js';
 const seed = process.argv[2] || 'ardan';
 const map = generateContinent({ seed });
 const { realms, realmOf } = makeRealms(map, makeRng(seed).fork('realms'), 8);

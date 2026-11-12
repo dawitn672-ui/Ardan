@@ -30,7 +30,7 @@ The hours a player spends in the game look like a well-made web app. The few sec
   - Shots: `S/1920-dark/09-chronicle.png`, `S/1366-dark/09-chronicle.png`, `S/390-dark/09-chronicle.png`.
   - Computed: `rgb(238,232,218)` on a `radial-gradient(… rgb(241,230,…))`.
 - **Why it matters.** The Chronicle is meant to be the one manuscript place, the game's "book". Its headings are blank gold smudges, so it looks broken.
-- **Fix.** In `91-look` (`look.b-base.core.js`), scope the vellum's own tokens under `[data-vellum="1"] .il-vellum`. Headings take ink `#2b1d10` and sub-heads ochre `#6b4410`, as brief §1.1 says. Add the vellum to `tokensContrast` as a surface.
+- **Fix.** In `91-visual-style` (`look.b-base.core.js`), scope the vellum's own tokens under `[data-vellum="1"] .il-vellum`. Headings take ink `#2b1d10` and sub-heads ochre `#6b4410`, as brief §1.1 says. Add the vellum to `tokensContrast` as a surface.
 - **Also seen.** On the phone, the "Save the chronicle as text" button overlaps the heading (`S/390-dark/09-chronicle.png`). Move it below the title, or make it an icon button.
 - **Size S · Impact 5.**
 
@@ -65,8 +65,8 @@ The hours a player spends in the game look like a well-made web app. The few sec
   - The creation summary reads "Realm: Kingdom of Busimo (**King** )", with an empty name.
   - A woman's post is "Herd-boy". The shots are `S/skin-create.png` and `S/skin-game.png`, and the band text came from the measure script.
 - **Fix.**
-  - In the Realm band in `91-look` (`look.e-rows` / realm band), use the same sexed title helper the court row uses.
-  - In `29-starts` (`UI.crSummary`), use the ruler's name and title, and print nothing when there is no name.
+  - In the Realm band in `91-visual-style` (`look.e-rows` / realm band), use the same sexed title helper the court row uses.
+  - In `29-starting-stories` (`UI.crSummary`), use the ruler's name and title, and print nothing when there is no name.
   - Release job names such as "Herd-boy" need a sex variant ("Herd-girl" or "Herder"), in the fix layer's job table.
 - **Size S · Impact 3.**
 
@@ -108,7 +108,7 @@ The hours a player spends in the game look like a well-made web app. The few sec
 - **Seen.**
   - "Playtest mode (for usability tests)" is a link on the title screen (`S/1920-dark/01-title.png`).
   - The ⚑ report flag floats bottom right on every screen, sits in the event title row on the phone, and overlaps the Activities grid at 1366 (`S/1366-dark/10-event-2.png`, `S/390-dark/10-event-1.png`).
-- **Fix.** Put Playtest behind the menu only. Show the flag as a small ghost icon in the menu and in the top bar's overflow, not floating (78-playtest-log, 98-feedback).
+- **Fix.** Put Playtest behind the menu only. Show the flag as a small ghost icon in the menu and in the top bar's overflow, not floating (78-playtest-log, 98-action-feedback).
 - **Size S · Impact 2.**
 
 ---
@@ -131,7 +131,7 @@ The hours a player spends in the game look like a well-made web app. The few sec
   - **(f) A stronger rim light** (2.5 units) and a coloured cast shadow.
 - **Size L · Impact 5.** This is the single largest gap against "anime-like".
 
-### I2. Interior vignettes are clip art (94-woodblock-skies, 61-illumination)
+### I2. Interior vignettes are clip art (94-woodblock-skies, 61-illuminated-chronicle)
 - **Seen.** Indoors, a picture is a brown floor, a beige wall, arched windows and props floating on a shelf: a loaf, a jug, a fish, a candle, an envelope with a seal, an empty throne between pillars. There is no figure, no light shaft, no depth and no framing (`S/1920-dark/10-event-3.png`, `S/1920-dark-run1/11-result-3.png`, `S/1366-light/10-event-1.png`). The outdoor skies are much better: the dusk church and the sunset hill with two glowing eyes (`S/390-dark/10-event-2.png`, `S/390-light/10-event-1.png`).
 - **The bar.** Pentiment's interiors: flat colour and pattern, but every scene has a person doing something, and its lines draw the eye to them. Ghost of Tsushima: light through a window as a solid shape.
 - **Proposal.** Give every interior composition four things:
@@ -154,7 +154,7 @@ The hours a player spends in the game look like a well-made web app. The few sec
   - The end goes to 96's VICTORY or DEFEAT cut-in instead of the strip.
 - **Size L · Impact 5.** Battles are the big moments the owner's "Persona energy" is meant for.
 
-### I4. The title screen is a landing page (86-title-fold)
+### I4. The title screen is a landing page (86-title-screen-in-view)
 - **Seen.**
   - A static map in a rounded box, a paragraph and five same-weight buttons (`S/1920-dark/01-title.png`, `S/1366-light/01-title.png`, `S/390-dark/01-title.png`).
   - **The map is the old 34-realm Known World**, and the text says "Thirty-four realms", while the default world is the Great Continent of 153 realms.
@@ -168,7 +168,7 @@ The hours a player spends in the game look like a well-made web app. The few sec
   - The map moves to the "How to play" or World section, and the text is rewritten for the Great Continent.
 - **Size M · Impact 5.** It is the first screen and the screenshot that gets shared.
 
-### I5. Death is a dialog, not a moment (28-endings, 96-moments)
+### I5. Death is a dialog, not a moment (28-endings, 96-big-moments)
 - **Seen.** The obituary is a centred modal over the dimmed game. The ingredients are strong: a desaturated figure, an epitaph in Literata italic, "What became of them", the life score in Dela Gothic (`S/1920-dark-run1/19-death.png`, `S/390-dark/19-death.png`). But there is no FAREWELL cut-in for your own death, though brief §5.10 lists "a death".
 - **Proposal.**
   - Your own death opens with a muted FAREWELL band.
@@ -177,7 +177,7 @@ The hours a player spends in the game look like a well-made web app. The few sec
   - The heir's bust slides in for "Go on as your heir".
 - **Size M · Impact 4.** Reflecting on a life lived is the emotional payoff of a life sim.
 
-### I6. The duel lacks a face-off (`UI.duelModal`, 48-fight-ladder, 96-moments)
+### I6. The duel lacks a face-off (`UI.duelModal`, 48-event-fight-rules, 96-big-moments)
 - **Seen.**
   - Two stiff figures in boxes and a 230 px empty log well. The five moves are small text cards, and Yield and Flee sit at the same weight as the moves (`S/1920-dark-run1/12-duel-live.png`, `S/1920-dark/12-duel-end.png`).
   - On the phone the moves fall below the fold (`S/390-dark/12-duel.png`).
@@ -201,7 +201,7 @@ The hours a player spends in the game look like a well-made web app. The few sec
   - creation's Female, locks and muscular all at once (`S/skin-create.png`);
   - the top bar's "Next month".
 - **Why it matters.** Brief §5.1 says at most one primary per view. When the selected state looks like the call to action, the eye has no place to land, and "what do I press" gets harder.
-- **Fix (91-look).** Selected chips and segments get `--raised`, `--accent` text and a 2 px accent underline (the segmented-control spec in §5.2). The gold fill and the cut corner are kept for the one action.
+- **Fix (91-visual-style).** Selected chips and segments get `--raised`, `--accent` text and a 2 px accent underline (the segmented-control spec in §5.2). The gold fill and the cut corner are kept for the one action.
 - **Size S · Impact 4.**
 
 ### I8. Decisions, Holdings and the market read as forms (97-small-multiples per brief §9, 66-markets)
@@ -214,7 +214,7 @@ The hours a player spends in the game look like a well-made web app. The few sec
   - Market rows get a 16 px good icon and the brief's 60×16 price sparkline. Buy and Sell become one stepper.
 - **Size M · Impact 3.**
 
-### I9. Cut-ins: strong, but thin on Day and missing for battle and duel openings (96-moments)
+### I9. Cut-ins: strong, but thin on Day and missing for battle and duel openings (96-big-moments)
 - **Seen.** The band, the Dela Gothic word and the framed bust land well, the best "anime" moment in the game (`S/1366-dark/18-cutin-year.png`, `S/1920-light/18-cutin-birth.png`).
   - On Day, the dim turns the page a flat grey, which reads as a disabled state, and the white focus lines vanish into it.
   - The sub-line ("Ama is born") is 16 px on a 120 px band.

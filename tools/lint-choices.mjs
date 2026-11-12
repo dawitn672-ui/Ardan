@@ -7,7 +7,7 @@
 // lives. Memory flags are not such a difference: the player does not see them, and a choice that pays better on every
 // count is the obvious one whatever it records.
 //   node tools/lint-choices.mjs --html=index.html                 every event; prints the share and the worst offenders
-//   node tools/lint-choices.mjs --html=x.html --feature=starts    one feature's events; fails if any is flagged
+//   node tools/lint-choices.mjs --html=x.html --feature=starting-stories    one feature's events; fails if any is flagged
 //   node tools/lint-choices.mjs --all-features                   every event the features add (tools/check.mjs runs this)
 //   node tools/lint-choices.mjs --html=x.html --json=out.json
 import fs from 'node:fs';

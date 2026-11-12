@@ -11,7 +11,7 @@ export const BOT = () => {
     const setters = {};
     // a flag set directly, or an arc's mark (fx.arc { mark: 'x' } sets the flag la_x; 46-life-arcs and the story arcs)
     const flagsIn = src => [...src.matchAll(/["']?flag["']?\s*:\s*["']([A-Za-z0-9_]+)["']|flags(?:\.|\[["'])([A-Za-z0-9_]+)["']?\]?\s*=(?!=)|["']?mark["']?\s*:\s*["']([A-Za-z0-9_]+)["']/g)].map(m => m[1] || m[2] || 'la_' + m[3]);
-    // the event's own setup: 67-memory-weave wraps every setup to weave in a memory, which says nothing about the event
+    // the event's own setup: 67-choice-memories wraps every setup to weave in a memory, which says nothing about the event
     const ownSetup = e => (e._mwWrapped ? e._mwOwnSetup : e.setup);
     for (const e of Object.values(A.EV)) {
       for (const fx of [ownSetup(e)]) if (fx) for (const f of flagsIn(fx.toString())) (setters[f] = setters[f] || new Set()).add(e.id);
@@ -120,7 +120,7 @@ export const BOT = () => {
           L.items[h.type] = (L.items[h.type] || 0) + 1;
           if (h.type === 'event') {
             const v = A.eventView(h), e = A.EV[h.ev];
-            // a memory event: one that reads a memory by its own words, or that 67-memory-weave changed with one (ctx.mw,
+            // a memory event: one that reads a memory by its own words, or that 67-choice-memories changed with one (ctx.mw,
             // not dropped for length: its text or odds differ because of a past choice)
             L.events++; L.distinct.add(h.ev); if (M.memory.has(h.ev) || (h.ctx && h.ctx.mw && !h.ctx.mw.off)) L.memEvents++;
             if (e && (e.npc || (h.ctx && h.ctx.npcMove))) L.npcMoves++;   // convention: NPC-started events carry npc: true

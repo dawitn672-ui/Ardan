@@ -4,7 +4,7 @@
 // key, scales, a broken chain; an ear of grain, a fish, an ingot, an amphora, a bolt of cloth.
 //
 // Registries other features can add to: UI.ICONS_ACT (activity key -> svg body) and UI.ICONS_GOOD (good key -> svg
-// body), read through UI.actIcon(k) and UI.goodIcon(k). The tiles (91-look) and the market's rows take them after each
+// body), read through UI.actIcon(k) and UI.goodIcon(k). The tiles (91-visual-style) and the market's rows take them after each
 // draw. Drawing only: no A.rand, no change to A.S.
 (function () {
   const A_ = (d, o = '') => `<path d="${d}" fill="currentColor" stroke="none"${o}/>`;
@@ -103,7 +103,7 @@
   UI.goodIcon = (k, cls = 's') => GOOD[k] ? `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${GOOD[k]}</svg>` : '';
   void reuse;
 
-  // ---- where they go: the activity tiles (91-look's .lk-gi) and the market's rows, after each draw ---------------------
+  // ---- where they go: the activity tiles (91-visual-style's .lk-gi) and the market's rows, after each draw ---------------------
   const place = function () {
     if (typeof document === 'undefined') return;
     for (const t of document.querySelectorAll('#tabbody .lk-acts > .act[data-v]')) {

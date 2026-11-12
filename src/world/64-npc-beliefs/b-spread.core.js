@@ -1,6 +1,6 @@
 // NPC beliefs, part 2 of 3: how beliefs travel, and what they make people do.
 //
-//   - Once a year, everyone around the player passes on what they believe to the people close to them (41-circles'
+//   - Once a year, everyone around the player passes on what they believe to the people close to them (41-friend-circles'
 //     circles, or friends and kin): the gregarious talk more, the trusting take anything, the cynical little, and
 //     people believe the worst of those they hate. Someone who has seen through a story passes that on too, so
 //     corrections travel the same roads as rumours. A false belief held near its subject is sometimes seen through.

@@ -55,7 +55,7 @@
     return p && p.ruler ? about(n) : `said to be ${x >= 6 ? 'a vast host' : x >= 3 ? 'a great host' : x >= 1.5 ? 'a strong host' : 'a modest strength'} between them`;
   };
 
-  // the realm tooltips (59-tooltips) give formulas and figures: only for the realm you rule
+  // the realm tooltips (59-descriptions) give formulas and figures: only for the realm you rule
   const T = UI.TIPS;
   if (T) for (const [k, title, fn] of [['realmGold', 'Treasury', r => DV.goldText(r)], ['realmStab', 'Stability', r => DV.stabText(r)],
     ['realmLegit', 'Legitimacy', () => 'what is said of the crown\'s right'], ['realmWeary', 'War weariness', r => (r.exhaustion > 30 ? 'said to be weary of war' : 'not known to be weary')]]) {

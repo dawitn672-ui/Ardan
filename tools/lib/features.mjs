@@ -13,7 +13,7 @@ export const SYSTEMS = ['core', 'map', 'world', 'people', 'family', 'nobility', 
 const isFeature = d => /^\d+-/.test(d);
 
 let cache = null;
-// every feature folder: [{ dir: '59-tooltips', name: 'tooltips', system: 'ui', path: '/abs/src/ui/59-tooltips', rel: 'src/ui/59-tooltips' }]
+// every feature folder: [{ dir: '59-descriptions', name: 'descriptions', system: 'ui', path: '/abs/src/ui/59-descriptions', rel: 'src/ui/59-descriptions' }]
 export function allFeatures() {
   if (cache) return cache;
   const out = [];
@@ -31,7 +31,7 @@ export function allFeatures() {
   return (cache = out);
 }
 export const featureDirs = () => allFeatures().map(f => f.dir);
-// the absolute path of a feature folder (by folder name '59-tooltips' or by name 'tooltips'), plus any parts after it
+// the absolute path of a feature folder (by folder name '59-descriptions' or by name 'descriptions'), plus any parts after it
 export function featurePath(dirOrName, ...parts) {
   const f = findFeature(dirOrName);
   if (!f) throw new Error(`no feature ${dirOrName}`);

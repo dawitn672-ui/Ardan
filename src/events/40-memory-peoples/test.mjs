@@ -309,7 +309,7 @@ export default {
                 const all = [v.title, v.text, ...v.choices.map(c => c.t)].join(' | ');
                 if (RAW.test(all)) problems.push(`${vtag}: raw token ${all.match(RAW)[0]}`);
                 if (BAD.test(all)) problems.push(`${vtag}: bad text ${all.match(BAD)[0]}`);
-                // the house tics are this pack's own prose rule: a local saying that 54-voices adds as a closing line
+                // the house tics are this pack's own prose rule: a local saying that 54-character-voices adds as a closing line
                 // ("Nobody is a thangrel until ...") is that feature's writing, not this event's
                 const voiced = A.VOICE && (A.VOICE.last || []).some(x => /^line:/.test(x));
                 const own = [v.title, voiced ? v.text.replace(/\n\n[^\n]*$/, '') : v.text, ...v.choices.map(c => c.t)].join(' | ');

@@ -23,7 +23,7 @@
     // its taxes follow its land from here, through the release's yearly pass (A.updateRealmPops)
     if (r.baseIncome == null && r.income) r.baseIncome = r.income;
     if (A.polInit && !r.pol) { try { A.polInit(r); } catch (e) { /* the polity sets itself up next year */ } }
-    // its council of named people (56-realm-inside), as any crown's
+    // its council of named people (56-court-and-treasury), as any crown's
     if (A.RI && typeof A.RI.fillCouncil === 'function') { try { A.RI.fillCouncil(r); } catch (e) { /* filled at its first session */ } }
     EF.stats.founded++;
     const P = r.foundedFrom && A.realm(r.foundedFrom);

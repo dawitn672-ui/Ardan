@@ -141,7 +141,7 @@ Commands:
 ```sh
 node tools/build.mjs --out=/tmp/ardan/ai-personality/x.html --only=ai-personality --unpack=/tmp/ardan/ai-personality/blobs
 node tools/bench/run.mjs /tmp/ardan/ai-personality/x.html --label=tmp-ai --only=ai      # then read and delete tools/bench/reports/tmp-ai.json
-node tests/run.mjs /tmp/ardan/ai-personality/x.html --features=security,replay,content-fixes,engine-fixes,world-fixes,saves-ui,ai-personality
+node tests/run.mjs /tmp/ardan/ai-personality/x.html --features=security,replay,content-fixes,engine-fixes,world-fixes,saves-and-keyboard,ai-personality
 ```
 
 ## Tests (`test.mjs`)

@@ -504,7 +504,7 @@
     for (let k = 0; k < L.length; k++) { const l = L[(h + k) % L.length]; if (!used || !used.includes(l)) return l; }
     return L[h % L.length];
   };
-  // the speaker's manner (54-voices): ", smiling", " quietly"
+  // the speaker's manner (54-character-voices): ", smiling", " quietly"
   ADV.manner = function (t, key) {
     try {
       if (!A.VOICE || !A.VOICE.npcLine) return '';

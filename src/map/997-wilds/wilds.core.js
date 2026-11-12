@@ -2,7 +2,7 @@
 //
 // Each province has zero to two wild places, the same in every game (seeded by the province's id, never by A.rand):
 // chosen from what the province is (its terrain and coast), what lives there (76-beast-habitats and 992-far-beasts,
-// A.beastsNear, with what folk say of it from 26-belief-truth), and, on the Great Continent, the atlas around it
+// A.beastsNear, with what folk say of it from 26-belief-versus-truth), and, on the Great Continent, the atlas around it
 // (99-far-lands' D.atlas: the rivers, ranges, passes and lakes near the province, and its region's name). The old wars
 // of the lore give a few lowland provinces an old battlefield.
 // Exploring takes you to the first place in your home province (then the provinces next to it) that you have not

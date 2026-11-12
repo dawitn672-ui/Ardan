@@ -2,7 +2,7 @@
 //
 // Playtest 2 found two cards that lied about risk:
 // - "Join the plot ... Nothing lost if it fails". The failure ran A.punish(p, "treason"), which queued the gallows scene,
-//   and the character hanged at 20. 9998-stakes reads a function effect for the families it touches, and a call to
+//   and the character hanged at 20. 9998-choice-stakes reads a function effect for the families it touches, and a call to
 //   A.punish, a queued scene or a scheduled one is none of them, so the card said nothing was lost.
 // - "If it fails: a wound, hurt" killed a soldier at 18. A lost fight had left him near death, and the 12 health the
 //   failure took brought him to nothing; A.mortalCheck did the rest. The card said "hurt" as it would to a hale man.

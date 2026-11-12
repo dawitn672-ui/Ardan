@@ -92,7 +92,7 @@ VS.badges = function (root) {
     if (!el || el.dataset.v2o === String(pct)) continue;
     el.dataset.v2o = String(pct);
     // a tap on a choice chooses (playtest round 1): the breakdown opens on hover, focus or the keyboard, not a tap.
-    // The tap mark becomes a key mark (data-tt-key), so 59-tooltips' Right arrow on the choice still opens it
+    // The tap mark becomes a key mark (data-tt-key), so 59-descriptions' Right arrow on the choice still opens it
     for (const t of [el, ...el.querySelectorAll('[data-tt-tap]')]) VS.untap(t);
     el.classList.add('v2-odds');
     if (el.classList.contains('fo-fight')) {
@@ -102,7 +102,7 @@ VS.badges = function (root) {
       if (prev && prev.classList.contains('v2-fo')) prev.remove();
       el.insertAdjacentHTML('beforebegin', `<span class="risk v2-odds v2-fo" title="${esc(VS.oddsOf(pct).line)}">${VS.oddsInner(pct)}</span>`);
     } else {
-      // 59-tooltips' tap target (data-tt="odds") may sit on a part 92 split out: keep that element as the wrapper
+      // 59-descriptions' tap target (data-tt="odds") may sit on a part 92 split out: keep that element as the wrapper
       const tap = el.querySelector('[data-tt],[data-tip]');
       if (tap) { const w = tap.cloneNode(false); w.innerHTML = VS.oddsInner(pct); el.replaceChildren(w); }
       else el.innerHTML = VS.oddsInner(pct);

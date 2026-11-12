@@ -1,4 +1,4 @@
-// Woodblock skies (docs/design/brief.md §7.2): 61-illumination's 25 event compositions, redrawn as colour woodblock
+// Woodblock skies (docs/design/brief.md §7.2): 61-illuminated-chronicle's 25 event compositions, redrawn as colour woodblock
 // prints lit like an anime background. Back to front, every picture is:
 //   1. a graded sky (bokashi) from the hour table, with the dark ichimonji band across the top, as in Hiroshige;
 //   2. the sun with a two-stop glow, or the moon, or seeded stars; flat two-tone clouds;
@@ -707,7 +707,7 @@
     `<path d="M0-2c-9 0-11-9-5-16 2 5 4 5 4 0 0-6 4-9 6-13 0 8 8 11 6 20-1 6-5 9-11 9z" fill="#ff9e3d"/><path d="M0-2c-4 0-5-5-2-9 1 3 2 3 3 0 1-3 2-4 3-6 0 5 3 7 2 11-1 3-3 4-6 4z" fill="#fff0b0"/></g>` + c.glow(x, y - 10, 18);
   P.table = (c, y = 150) => `<path d="M60 ${y}H540L556 ${y + 10}H44z" fill="${tone(c, M.wood, true)}"${st(c)}/><path d="M44 ${y + 10}H556V${y + 16}H44z" fill="${tone(c, M.wood, false)}"${st(c, 1)}/>`;
 
-  // ---- the 25 scenes, after 61-illumination's compositions; X() mirrors a scene's layout, never its light
+  // ---- the 25 scenes, after 61-illuminated-chronicle's compositions; X() mirrors a scene's layout, never its light
   const SC = SK.SCENE = {};
   const pos = (o, x) => o.flip ? 600 - x : x;
   SC.travel = (c, r, o) => o.sea

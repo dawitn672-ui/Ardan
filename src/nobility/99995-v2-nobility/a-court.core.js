@@ -68,7 +68,7 @@
       colors: [c1, rng.pick(palette.filter(x => x !== c1))], charge: rng.pick(charges), words: '', arms: '',
       notes: `Raised to hold ${q.name}.`, members: [], v2court: rid,
     };
-    // 09-scale keeps the houses of each realm in an index: a house raised in play (a regrant) must tell it, or
+    // 09-engine-at-scale keeps the houses of each realm in an index: a house raised in play (a regrant) must tell it, or
     // A.realmHouses misses the new house until the monthly check finds it (scaleSites reads this line as text)
     if (A.scaleHouse) A.scaleHouse();
     return S.houses[id];
@@ -188,7 +188,7 @@
   N.countyOf = function (rid, prov) { const c = N.court(rid); return c ? c.titles.find(t => t.rank === 'count' && t.seat === prov) || null : null; };
   N.total = c => c ? 1 + c.summary.dukes + c.summary.marquises + c.titles.filter(t => t.rank === 'count' && !t.crown && !t.heldWith).length + c.summary.viscounts + c.summary.barons + c.summary.lords : 0;
 
-  // the game's name makers, read purely: the game's stream is set aside (F.sandbox) and so is 97-life-fixes' list of
+  // the game's name makers, read purely: the game's stream is set aside (F.sandbox) and so is 97-first-life-fixes' list of
   // names lately used (A.S.lfNames), so a slot's name never depends on who was named before it
   N.pureNames = function (salt, f) {
     const S = A.S, keep = S.lfNames;
@@ -287,7 +287,7 @@
   // the release's A.houseHead(hid, true) (an elective realm choosing its ruler from a house) makes a new person head of
   // the house while the old head lives. A court lord stays head of his house, and so keeps his county's seat; the new
   // person is the house's candidate, not its head.
-  // And a house whose head was cleared while he lives (56-realm-inside's failed-rebellion purge sets headPid = null
+  // And a house whose head was cleared while he lives (56-court-and-treasury's failed-rebellion purge sets headPid = null
   // even when the beheading did not take) gets its court lord back as head, not a stranger.
   const houseHead = A.houseHead;
   A.houseHead = function (hid, fresh) {

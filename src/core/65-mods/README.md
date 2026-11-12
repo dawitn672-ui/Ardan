@@ -18,7 +18,7 @@ The game is one HTML page with a strict security policy: no `eval`, no `new Func
 - **Realms.** A mod adds local flavour to existing realms in three ways:
   - events whose condition names realms, cultures, faiths or terrain;
   - its own words for each culture;
-  - customs, in a build with the realm bible (47-realm-bible).
+  - customs, in a build with the realm bible (47-realm-customs).
 
   A custom uses the bible's own data model and is limited to the three kinds the bible runs from its month hook: `year`, `rite` and `ward`. It has the same first-meeting scene and log line as the bible's customs, and it shows on the Realm tab's card. The kinds tied to other moments (the wed, mourn, name, levy, law, market and grave customs) are left out. **New realms are out of scope.** A realm is more than data here: `A.initWorld` builds the provinces from the map's geometry, and rulers, houses, armies and borders all hang from them. A new realm would need new provinces on a map the game draws from fixed shapes, and the engine has no clean way in for that.
 - **The Mods panel** is on the title screen and in the Menu. It has these parts:
@@ -39,14 +39,14 @@ The game is one HTML page with a strict security policy: no `eval`, no `new Func
 
   `mods.events.js` holds the same data (the test checks that they match). There it compiles the example with the event packs, so `lint-events` and `lint-choices` play-test it like any feature's events.
 
-**Measured by** (`test.mjs`; every test passes on `--only=mods`, on `--only=mods,realm-bible,accessibility` and on the full build of 59 features):
+**Measured by** (`test.mjs`; every test passes on `--only=mods`, on `--only=mods,realm-customs,accessibility` and on the full build of 59 features):
 
 | Test | Result |
 | --- | --- |
 | `modsExample` | `example-mod.json` is the built-in mod; it checks with 0 errors and compiles to 5 events and 1 custom; it is off by default. A copy under another id loads as a player's mod, and its 5 events are registered once a life starts with it. All 15 choices play for a character who fits them, with no raw token and nothing over the word limits |
 | `modsBadMod` | A mod with 18 deliberate mistakes is refused whole. All 18 messages come back with their place (20 errors in all), 0 events are registered, and the library is unchanged. Broken JSON, a newer format, a chain loop (`mod_loop_a -> mod_loop_b -> mod_loop_a`), `__proto__` and `{constructor}` are each refused with their own message |
 | `modsXss` | Markup in 19 fields (name, author, about, a word, title, text, labels, results, win and lose, and every field of a custom): it loads with "44 angle brackets were removed". No element is injected in the panel, the event, either result, the custom's scene, the Realm card or any tab. Quotes and `&lt;` show as written. Markup put straight into a compiled event, as if the checker were bypassed, is drawn as text |
-| `modsFireInLives` | The firm signal is the monthly roll: a peasant of 25's draw, 1,500 times from the same state, takes a probe mod's event (any adult, weight 5) at least 1.5% of the time (it measures 3.1%, among some 140 events open to him). Then 6 bot lives each way (`tools/bench/bot.mjs`, from 16 for up to 35 years, same seeds): with the mods on, the probe's event comes up in at least half the lives with 10 or more years as an adult (3 of 6 in CI run 62, after 87-echoes moved the random stream; 5 of 6 before), and with them off no mod event, custom or flag appears. How often the example's own events come up is reported, not asserted. |
+| `modsFireInLives` | The firm signal is the monthly roll: a peasant of 25's draw, 1,500 times from the same state, takes a probe mod's event (any adult, weight 5) at least 1.5% of the time (it measures 3.1%, among some 140 events open to him). Then 6 bot lives each way (`tools/bench/bot.mjs`, from 16 for up to 35 years, same seeds): with the mods on, the probe's event comes up in at least half the lives with 10 or more years as an adult (3 of 6 in CI run 62, after 87-echo-scenes moved the random stream; 5 of 6 before), and with them off no mod event, custom or flag appears. How often the example's own events come up is reported, not asserted. |
 | `modsClassify` | 13 conditions, each beside the hand-written `(p, C) => ...` it stands for, give the same audience under `A.CX_RX` and `A.EV_RX`, the same `A.evFit` for 4 characters (a peasant, a noble, a royal and a child), and the same answer. Every class is met: ruler, high, low, job, mil and child |
 | `modsSaveLoad` | The same seed with the same mods gives the same world twice, with another mod loaded (and off) in between. The journal records the mods, and its replay reaches the same world with the mod since turned off in the library. A save records `example 1.0.0 <hash>` and brings it back. A removed mod is reported by name ("This life was begun with a mod not loaded here: Probe 1.0 ..."), and its events stay off. A quoted log line survives the save. An old save without the record loads with no mods |
 | `modsRenderPure` | With the example in play, drawing every tab, the Menu and the Mods panel moves neither the random stream, the state, nor the library |
@@ -71,4 +71,4 @@ The game is one HTML page with a strict security policy: no `eval`, no `new Func
 - **A problem report** (Menu, Report a problem) carries the save, and so the list of mods, but not the mod files. Whoever replays it needs the same files.
 - **Two mods cannot share an id.** Loading a mod whose id is already in the library replaces it, as an update. The new version's hash is recorded for new lives, and a save that began with the old version says that the version differs.
 - **Writing quality is the modder's.** The checker enforces length and shape, not voice. `lint-choices` is a developer tool and does not run on players' mods, so MODDING.md asks modders to give every choice a reason.
-- **The example's custom needs the realm bible.** In a build without 47-realm-bible, the panel notes that the customs stay unused, and the five events run as usual.
+- **The example's custom needs the realm bible.** In a build without 47-realm-customs, the panel notes that the customs stay unused, and the five events run as usual.

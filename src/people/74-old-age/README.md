@@ -88,7 +88,7 @@ The release-era baseline, on the build before this feature and before the ten we
 
 The rate holds under 25-variety-guard and the 58 cut. The old-age scenes met spread over 16 of the guard's shapes (14 of 94 have none), the largest being faith (20), death (12) and money (12), so the guard's "same shape twice" rule rarely bites. The cut's roll only drops retired draws. Each scene's cooldown is 5 to 30 years, with the default 10 for most.
 
-**Memory share.** The bot's static memory index (`B.memoryIndex`) counts 26 of the 119 scenes as memory events (a `C.flag` set by another event, an arc mark, or `p.flags.ev`). The build's share is 21.4% (738 of 3,441 events), against 21.4% (712 of 3,322) without this feature. So the feature does not lift the static share: its scenes are as memory-bound as the average event by that count. Most of them read memory the index cannot see: 67's record, 55's lines, `pc.deeds`, the dead among your people, 57's record. 67-memory-weave's runtime measure is the one that counts those.
+**Memory share.** The bot's static memory index (`B.memoryIndex`) counts 26 of the 119 scenes as memory events (a `C.flag` set by another event, an arc mark, or `p.flags.ev`). The build's share is 21.4% (738 of 3,441 events), against 21.4% (712 of 3,322) without this feature. So the feature does not lift the static share: its scenes are as memory-bound as the average event by that count. Most of them read memory the index cannot see: 67's record, 55's lines, `pc.deeds`, the dead among your people, 57's record. 67-choice-memories's runtime measure is the one that counts those.
 
 ## Rules kept
 
@@ -116,6 +116,6 @@ Old age began with `C.old` (50 for a human, 45 for an orc) and filled 16 to 42% 
 
 - The rolled old-age scenes (`oa_*`, not their follow-ups or the deathbed) wait for 55 in human years (`C.ageAdj`). They come at most three a year (`OA.START`, `OA.YEAR_CAP`, through the `A.evVariety` weight, so the scenes' conds and A.evAudience's reading of them are unchanged).
 - The corrody costs 300 suns (180 haggled), and is offered to neither a noble nor a councillor.
-- The kin, well, thief and cheat scenes and the bounds walk are held from the top of the ladder by 97-life-fixes' tier gate.
+- The kin, well, thief and cheat scenes and the bounds walk are held from the top of the ladder by 97-first-life-fixes' tier gate.
 
 **Measured by** `oaStartsLater`: of 114 rolled scenes, 0 are open at 51 and 114 at 56; none after three in a year; the corrody is open to a peasant, not to the Chancellor, at 300 suns.

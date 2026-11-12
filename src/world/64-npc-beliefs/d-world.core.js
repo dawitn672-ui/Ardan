@@ -7,7 +7,7 @@
 //      losers say they held the field, the victims of a sack say the town was burned, the far hear it inflated or
 //      garbled. Tellings drift with the years towards what flatters the realm, faster under a ruler with legitimacy and
 //      fame and a skilled chancellor (56's court), and are now and then set right (after a peace, more often).
-//      A realm's believed history weighs on its grudges (55-bonds' ledger as 68-casus-belli reads it: FE.sum) and, for
+//      A realm's believed history weighs on its grudges (55-bonds' ledger as 68-reasons-for-war reads it: FE.sum) and, for
 //      tales of a ruler's cruelty, on its wariness in diplomacy (A.interest), both small and capped.
 //   2. People act on beliefs. Someone who believes X killed their kin turns on X: X becomes their enemy, they may go to
 //      X's door (alone, or asking the player: 21-npc-initiative's move `nb_avenge`), and if X is the player they may

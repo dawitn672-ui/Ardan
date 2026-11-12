@@ -82,7 +82,7 @@ export default {
       const v = A.eventView(q); if (v.skip) return { skip: true, id: e.id };
       const vi = v.choices.findIndex(c => c.i === i), shown = v.choices[vi].odds;
       A.FC.OFF = true; const off = A.checkOdds(pc, e.choices[i].check); A.FC.OFF = false;
-      // the odds popover (59-tooltips) adds up to the number shown, with the rule as a row of its own
+      // the odds popover (59-descriptions) adds up to the number shown, with the rule as a row of its own
       let tip = null;
       if (UI.TT && UI.TT.checkParts) { const S = UI.TT.checkParts(pc, e.choices[i].check, q.ctx, shown, q.ev);
         tip = { sum: S.parts.reduce((a, x) => a + Math.round(x[1]), 0), row: (S.parts.find(x => /^Your stage of life/.test(x[0])) || [''])[0], other: S.parts.some(x => /Other things in play/.test(x[0])) }; }

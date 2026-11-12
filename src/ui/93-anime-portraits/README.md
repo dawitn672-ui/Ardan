@@ -2,7 +2,7 @@
 
 **Aspect:** Visual art (design brief §7.1, "Portraits: cel-shaded anime busts"; §8 item 9) · **Kind:** a new portrait renderer in readable `anime.core.js`, one patch (the menu setting), no events
 
-The brief asks for the portraits to be the game's strongest "anime" signal: cel-shaded busts with layered eyes, hair masses, a rim light and a realm ground, on every screen that shows a person. Until now every person went through 63-miniatures' woodcut miniature (ink line, two-tone wash, gold or lapis ground), or the release's paper doll.
+The brief asks for the portraits to be the game's strongest "anime" signal: cel-shaded busts with layered eyes, hair masses, a rim light and a realm ground, on every screen that shows a person. Until now every person went through 63-miniature-portraits' woodcut miniature (ink line, two-tone wash, gold or lapis ground), or the release's paper doll.
 
 **What it does.** `PORTRAIT.svg` is wrapped once more. While the setting is on (the default), every portrait in the game is drawn by `PORTRAIT2.svg(person, size, opts)` (also `UI.ANIME.svg`). That covers the side panel, the profile, people lists, events, duels, the obituary, the naming of a child, the family tree, the chain of command and the squad chips. When the setting is off, the woodcut miniatures come back (and the release's paper dolls when 63's own setting is off too). If drawing ever throws, the earlier portrait is drawn instead and `UI.ANIME.errors` counts it.
 
@@ -21,7 +21,7 @@ The brief asks for the portraits to be the game's strongest "anime" signal: cel-
 - **Shading** puts the light at the upper left. Every part gets one hard-edged shadow (the base multiplied by `--shade` at 35%), with no gradients on skin or cloth. The terminators are the outsides of ellipses, so they curve round the form. Occlusion adds a second shadow under the bangs (their own shape cast onto the forehead), under the chin, and inside a hood.
 - **Line.** Lines are `--line-ink` `#1b1730`, never black. The outer silhouette is grown from the figure's own shape, so it is about twice the inner line. Lines inside skin are the skin darkened 55% (iro-trace), and hair lines are the hair darkened. Line weights are set in pixels, so small pictures get heavier lines. There is no wobble at bust sizes. The full figure keeps a fixed-seed wobble.
 - **Rim light.** The right edge of the silhouette gets a band of the ground's light colour: warm `#ffe7b0` by day (the light theme), and cool `#a8c8ff` at night (the dark theme) and in sacred and royal frames. A faint glow of that light sits behind the head.
-- **Frame and ground.** The frame is square with the cut corner (top left and bottom right) and `--r-s` on the other two. The ground is a bokashi from the realm's tint (`UI.realmInk`'s, from 91-look, when it is built) down to `--surface`, with the house charge large and faint (12%) behind the head. The frame line depends on who is drawn:
+- **Frame and ground.** The frame is square with the cut corner (top left and bottom right) and `--r-s` on the other two. The ground is a bokashi from the realm's tint (`UI.realmInk`'s, from 91-visual-style, when it is built) down to `--surface`, with the house charge large and faint (12%) behind the head. The frame line depends on who is drawn:
   - most people: 1.5 px `--line-strong`;
   - rulers: 2 px `--r-legendary`, with a crown badge at the top right;
   - nobles: 2 px `--accent`;
@@ -81,7 +81,7 @@ The release's `A.genAppearance` knows only the Known World's peoples, so it gave
 - No random draw is added, so the random stream is the release's.
 - A Known World game is untouched, because its cultures have no far table.
 - The Great Continent's state differs from before only in its far people's looks.
-- `UI.ANIME.drawnApp(p)` gives the look as drawn. 91-look uses it for an old save's profile words.
+- `UI.ANIME.drawnApp(p)` gives the look as drawn. 91-visual-style uses it for an old save's profile words.
 
 **Young and 'bald'.** The release gives `hstyle: 'bald'` to men of any age. A man of 21 (the love interest of "A love philtre") drew as an old, balding man. Before 30 'bald' is now drawn as a crop. From 30 to 40 it is a crop or a shave, by hash. From 40 on it stays bald.
 
@@ -98,7 +98,7 @@ The release's `A.genAppearance` knows only the Known World's peoples, so it gave
 | `apFarPeoples` | 106 far human cultures in 10 lands, M and F, the palest and darkest stored skin, bust and full figure: 0 invalid, 0 fallbacks, 0 skins out of their land's range; a Known World person untouched; 0 of 1,102 far people in a new Great Continent world outside their land's range in the state; 'bald' drawn as a crop at 18, 21 and 26, bald at 52 and 70 |
 | `apAxe` | 0 axe violations (WCAG 2.1 AA) on the people tab, the profile and a person's page, with 11 anime portraits on them |
 
-63-miniatures' own tests also run against this renderer and pass: `miniEveryRace`, `miniDeterministic`, `miniAgeWoundsChildren` (7 of 7 wounds show; figure heights newborn 141, 6 years 178, 14 years 245, grown 261, dwarf 195, giant 272), `miniPure`, `miniToggle` and `miniAxe`. So do the replay suites (`renderRng`, `replayWithRender`, `journalReplay`), 27-accessibility and 71-phone, except `phoneTasks`, which fails the same way without this feature ("check the market" at ×1.65). `lint-events` and `lint-choices` report nothing; the feature has no events.
+63-miniature-portraits' own tests also run against this renderer and pass: `miniEveryRace`, `miniDeterministic`, `miniAgeWoundsChildren` (7 of 7 wounds show; figure heights newborn 141, 6 years 178, 14 years 245, grown 261, dwarf 195, giant 272), `miniPure`, `miniToggle` and `miniAxe`. So do the replay suites (`renderRng`, `replayWithRender`, `journalReplay`), 27-accessibility and 71-phone, except `phoneTasks`, which fails the same way without this feature ("check the market" at ×1.65). `lint-events` and `lint-choices` report nothing; the feature has no events.
 
 **Rules kept.**
 - Pure: no `A.rand`, no `Math.random`, no state change. Every choice is an FNV hash of the id and a key. The expression reads the state (mood, opinion, the event in view) and never writes it. 35-moods' `mood()` only reads.

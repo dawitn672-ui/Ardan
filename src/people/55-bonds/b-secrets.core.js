@@ -8,8 +8,8 @@
 //     What someone hides is a pure function of who they are (a hash of their id and traits): nothing is stored until it
 //     is found, so drawing the person view never rolls a die;
 //   - you uncover them by events (a glimpse of something), by a scheme (39-schemes' plot "dig into their past"), through
-//     your circle (41-circles: a friend close to them tells you), and by events that grant the release's secret
-//     with someone in them. A lore secret you know (26-belief-truth) is a hold on the ruler of the realm it shames;
+//     your circle (41-friend-circles: a friend close to them tells you), and by events that grant the release's secret
+//     with someone in them. A lore secret you know (26-belief-versus-truth) is a hold on the ruler of the realm it shames;
 //   - you can use one: a favour, money, their silence or their good word, each at a cost to your honour; a criminal
 //     secret is a strong hold (it also stops their hostile moves for ten years), a shunned one a weak hold (five).
 //     They may refuse, and then you expose them or back down;
@@ -71,7 +71,7 @@
     if (k === 'desert') return HP([`${He} ran from a fight ${he} swears ${he} stood in, and others died for ${his} lie.`, `${He} left ${his} post the night before a battle and walked home, and has told it otherwise since.`], id, 'ds');
     return `${He} has something to hide.`;
   };
-  // a lore secret you know that shames the realm this person rules (26-belief-truth): a hold on a crown (pure)
+  // a lore secret you know that shames the realm this person rules (26-belief-versus-truth): a hold on a crown (pure)
   SEC.lore = function (pc, t) {
     if (!pc || !t || !t.ruler || typeof LORE === 'undefined' || !Array.isArray(LORE.secrets) || !A.BT || !A.BT.secretKnown) return null;
     const r = A.realm(t.ruler); if (!r || r.ruler !== t.id) return null;

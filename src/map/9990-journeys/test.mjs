@@ -103,7 +103,7 @@ export default {
   async journeysSpaced(pg) {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
-      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-life-fixes) is missing' };
+      if (!A.lfSpaced) return { err: 'A.lfSpaced (97-first-life-fixes) is missing' };
       A.newGame({ seed: 33, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 24 });
       const pc = A.pc(), y = A.S.year, out = {};
       pc.coin = 900; pc.evN = pc.evN || {}; pc.flags.ev = pc.flags.ev || {};

@@ -264,7 +264,7 @@ Ranked by score moved per unit of work. "Code" means `*.core.js` plus the smalle
 
 - Build: `node tools/build.mjs --only=__none__` (fix layer only), run in headless Chromium through Playwright.
 - Code read with `tools/show.mjs`: `A.fightDay`, `A.tacDay`, `A.WTAC`, `A.WIDTH`, `A.divCombat`, `A.wsPCFightStart`, `A.wsNudge`, `A.wsLeadBattle`, `A.BATTLE_END.wsBattle`, `A.newBattleForPC`, `A.newLineBattle`, `A.lineBattleResult`, `A.battleClose`, `A.battlePersonalCombat`, `A.aiDeploy`, `A.aiPulse`, `A.wsSiegeDay`, `A.wsScore`, `A.applyLosses`, `A.makeSquad`, `A.comradeDies`, `A.missionOdds`, `A.fightEnd`, `UI.wrFightPanel`, `UI.battleModalBasic`.
-- Reviews: `docs/reviews/Ardan Road to 100.md`, `docs/reviews/Ardan Deep Analysis.md`. Bench: `tools/bench/reports/fixes.json` (`afterActionShare` 0 of 46 battles).
+- Reviews: `docs/reviews/road-to-100.md`, `docs/reviews/deep-analysis.md`. Bench: `tools/bench/reports/fixes.json` (`afterActionShare` 0 of 46 battles).
 
 ## Appendix: how this was measured
 

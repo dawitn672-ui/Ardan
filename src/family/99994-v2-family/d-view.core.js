@@ -51,7 +51,7 @@
   };
   F.kinCard = function (pc) {
     const ks = F.notable(pc, 10); if (!ks.length) return '';
-    // one small card each (90-fold folds a tall card to its first row)
+    // one small card each (90-collapsible-sections folds a tall card to its first row)
     const row = k => `<div class="card v2f-kin click" data-a="ov" data-v="person:${esc(k.p.id)}"><div><b>${esc(A.fullName(k.p))}</b> <span class="muted">${esc(k.relation)} · ${k.alive ? esc(k.age) : '† ' + esc(k.p.died)}</span></div>${k.why.length ? `<div class="small">${esc(k.why.join(' · '))}</div>` : ''}</div>`;
     return `<div class="group-h">Kin of note</div>${ks.map(row).join('')}`;
   };

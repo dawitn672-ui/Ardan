@@ -29,7 +29,7 @@
   };
 
   // ---- no picker: the birth position comes from the family -----------------------------------------------------
-  // A hand-made story (29-starts) whose premise is a birth (a younger son, a bastard) keeps it: the story is chosen as a
+  // A hand-made story (29-starting-stories) whose premise is a birth (a younger son, a bastard) keeps it: the story is chosen as a
   // whole, its scenes read it, and the creation screen no longer offers the choice on its own.
   F.storyOrder = function (o) {
     const s = o && o.story && A.STARTS && A.STARTS.find(x => x.id === o.story);

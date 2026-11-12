@@ -60,7 +60,7 @@
       }
       rows.push(`<div><b>Your county: ${esc(home.name)}</b><div class="small">${hold} Under ${home.crown ? 'the crown' : hp ? (hp.sex === 'F' ? 'her' : 'him') : 'the county'}: ${vs.join(', ')}; ${esc(many(home.barons, 'baron'))} and ${esc(many(home.lords, 'lord'))} with a village each.</div></div>`);
     }
-    // one small card a row (90-fold folds a tall card to its first row, and nothing here is hidden behind a click)
+    // one small card a row (90-collapsible-sections folds a tall card to its first row, and nothing here is hidden behind a click)
     return `<div class="group-h">The great lords of ${esc(r.short || r.name)}</div><div class="v2n-court">${rows.map(x => `<div class="card v2n-row">${x}</div>`).join('')}</div>`;
   };
 

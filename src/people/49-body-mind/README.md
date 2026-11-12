@@ -23,7 +23,7 @@ In the release a wound was a chip in a list (380 events write one, 1 reads one),
 - **Stats fade one by one.** The release's aging curve, started at each person's own age for each stat (within about 6 years of the usual age for a human, from their id: no draw). The log says when each one turns ("You are slower off the mark than you were. Speed has begun to go, at 47."). The month notes each stat's best and the age it was reached.
 - **The profile shows the body:** a small figure shaded by part (mending, marked, sound), each part's marks and what they cost, the illness and its treatment, and each stat's best, when it turns and how much is left at old age. The stat tooltip carries the same curve.
 - **Ten scenes a lasting wound brings** (`C.wound(p, part | wound)`): the bad hand at the bench, the long march on a limp, a winter in the lungs, one eye at the butts, reaping with a bad back, what the children stare at, the old wound that knows the weather, a hook for the hand, and the two splints.
-- **A hurt body is sent home** (the coordinator's addition, from `tools/bench/dominance.mjs`). The release let you spar at 3 health; each bout cost up to 18 and a life that sparred every month lived at single digits until a cold killed it. Now spar, the yard, a tournament, a hunt, a beast hunt, exploring, a duel, a fighting school and the young bloods are refused below health 50, with the reason on the button ("The yard master sends you home: health 20, come back at 50"), and a practice bout or a tourney never takes you below 45. A first try at 35 and 35 left a sparring life hovering at 35 all year (health heals at the new year), and a fever or a fall still finished it: 8 of 12 dead by 28.
+- **A hurt body is sent home** (the coordinator's addition, from `tools/bench/dominant-strategies.mjs`). The release let you spar at 3 health; each bout cost up to 18 and a life that sparred every month lived at single digits until a cold killed it. Now spar, the yard, a tournament, a hunt, a beast hunt, exploring, a duel, a fighting school and the young bloods are refused below health 50, with the reason on the button ("The yard master sends you home: health 20, come back at 50"), and a practice bout or a tourney never takes you below 45. A first try at 35 and 35 left a sparring life hovering at 35 all year (health heals at the new year), and a fever or a fall still finished it: 8 of 12 dead by 28.
 - **One crisis per illness.** Once an illness has brought you to 0 and you lived, the rest of it can weaken you but not bring you there again, as the release's one blow could only once.
 
 **The mind** (`mind.core.js`)
@@ -76,9 +76,9 @@ What was done with them:
 | `bodyMindRenderPure` | drawing the Life tab, the profile and the stat tooltip changes neither `A.S` nor the random stream |
 | `bodyMindOldSave` | a save without the new fields and with unplaced wounds loads, draws and plays two years |
 
-All 17 tests (the four core suites and these 13) pass on the full world (`--features=body-mind`, 56 features); the numbers above are from that build. On one run `bodyMindRenderPure` failed its trait-chip check while 59-tooltips was being written; it passes on the current tree.
+All 17 tests (the four core suites and these 13) pass on the full world (`--features=body-mind`, 56 features); the numbers above are from that build. On one run `bodyMindRenderPure` failed its trait-chip check while 59-descriptions was being written; it passes on the current tree.
 
-**The spar fix** (`node tools/bench/dominance.mjs <build> --lives=12 --only=none,spar,practice,run --workers=1`, the same tree with and without this feature):
+**The spar fix** (`node tools/bench/dominant-strategies.mjs <build> --lives=12 --only=none,spar,practice,run --workers=1`, the same tree with and without this feature):
 
 | Strategy | Without (died, median age at the end) | With, line 35 | With, line 50 and floor 45 |
 | --- | --- | --- | --- |

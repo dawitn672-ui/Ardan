@@ -201,7 +201,7 @@ export default {
   },
 
   // no bare 0-100 number in the views g-bands did not reach (complaint 11, playtest 1 #7, playtest 2 old 7): 35-moods'
-  // needs (card, 91-look's box, popovers), the training pickers and log, the profile's age line and wound costs, the
+  // needs (card, 91-visual-style's box, popovers), the training pickers and log, the profile's age line and wound costs, the
   // perks, the War Room's division grid and order of battle (an enemy's when scouted, and your own), infamy under
   // World > Diplomacy. Each view is drawn and swept as the page does; drawing none of it draws a die or changes the state.
   async v2sNumbers(pg) {
@@ -214,7 +214,7 @@ export default {
       const plain = l => l.replace(/\b1[01]\d\d\b/g, '').replace(/^\s*\d{1,2} [A-Z][a-z]{2}/, '').replace(/\d+ friends?|\(up to \d+\)|at its best at \d+|until about \d+|fading since about \d+|\bHold \d+ provinces\b/g, '');
       const check = (where, t) => { for (const line of String(t).split('\n')) if (BARE.test(plain(line))) bad.push(`${where}: ${line.trim().slice(0, 90)}`); };
       // verifier, round 5: titles and aria-labels went only through the ruler pass's scanR, which reads a line only when it
-      // names a realm measure, so a skill row's aria-label ("Melee: 24", 59-tooltips' profile hook) was never read. Every
+      // names a realm measure, so a skill row's aria-label ("Melee: 24", 59-descriptions' profile hook) was never read. Every
       // title and aria-label of each scanned tab is checked now, in both passes. Not scales: a portrait's age ("Portrait
       // of X, 28"), the clock's "age 19", "Initiative 3.0 of 5"; dates ("18 March", "December 3"); counts with their unit
       // (loads, times, galleys, "3 carted in", "caravans brought 2"), a fold's count of entries ("Activities, 32",
@@ -379,7 +379,7 @@ export default {
       const bars = [...document.querySelectorAll('#app .barrow')].map(b => b.innerText.replace(/\s+/g, ' ').trim()).join(' | ');
       const barWords = /Stability shaky/.test(bars) && /Legitimacy doubted/.test(bars) && /War weariness tiring/.test(bars) && /Infamy feared/.test(bars);
       const tipWeary = swept(UI.TIPS.realmWeary(rr.id)); scanR('war weariness popover', tipWeary.split('\n'));
-      // 97-life-fixes' golden age step (a ruler's ambition, the Life tab and the log)
+      // 97-first-life-fixes' golden age step (a ruler's ambition, the Life tab and the log)
       const golden = VS.deNum('Bring a golden age: Stability 29 of 85 and 1,008,000 suns of 4,896,000 suns in the treasury.');
       check('golden age step', golden);
       // the peace table's line on the foe

@@ -1,5 +1,5 @@
 // Old age, part 1: the body failing, and how you meet it. Sight, hearing, hands, teeth, the stair, the cold, the
-// horse you cannot mount, the old hurt that comes back (67-memory-weave's record of when you were hurt).
+// horse you cannot mount, the old hurt that comes back (67-choice-memories's record of when you were hurt).
 // Helpers: A.OA (old-age.core.js). Every cond requires C.old, so the scorecard counts these as old-age scenes.
 (function () {
 A.defEvents([

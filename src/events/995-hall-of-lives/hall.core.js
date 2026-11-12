@@ -1,6 +1,6 @@
 // 995-hall-of-lives: every life you finish, kept in this browser (design review cycle 1, #1).
 //
-// The store is a browser record next to the settings (UI.store, the way 97-life-fixes keeps UI.set.lfLives). It never
+// The store is a browser record next to the settings (UI.store, the way 97-first-life-fixes keeps UI.set.lfLives). It never
 // goes into A.S, a save or the journal, and the engine never reads it. It holds:
 //   lives     the last HALL.KEEP lives: name, people, realm, years, ending and manner, epitaph, score, the
 //             achievements that life earned, the world seed, the start story and the lands
@@ -10,7 +10,7 @@
 // whoever owns the title, see README), a "New for the Hall" line on the death screen, and the Hall's counts on the
 // Dynasty tab next to 28-endings' collection.
 // Unlocks: three new start stories (hall.events.js) open on the creation screen when the whole Hall has enough
-// lives, endings or achievements. The choice travels in the newGame options as any 29-starts story does (o.story), so a
+// lives, endings or achievements. The choice travels in the newGame options as any 29-starting-stories story does (o.story), so a
 // journal replays it without reading the Hall.
 // Writing: once, when a life ends (a wrap of A.pcDeath, outside A.replay, keyed so a life is never counted twice).
 // Rendering only reads the store. Every string drawn from it is escaped.
@@ -299,7 +299,7 @@
     } catch (e) { return h; }
   };
 
-  // ---- the look (91-look's tokens) -------------------------------------------------------------------------------------
+  // ---- the look (91-visual-style's tokens) -------------------------------------------------------------------------------------
   const CSS = `.hl-shelf{max-width:900px;margin:var(--s-5,20px) auto 0;text-align:left}
 .hl-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;border-bottom:1px solid var(--line);padding-bottom:6px}
 .hl-h{font-family:var(--f-name,serif);font-size:var(--t-h3,16px);letter-spacing:.06em;margin:0;color:var(--accent-strong,inherit)}

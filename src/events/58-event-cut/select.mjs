@@ -25,7 +25,7 @@ const THIN = args.includes('--with-thin');
 const KEEP_PCT = 0.6, KEEP_MIN = 30, LOCAL_MIN = 5;
 
 const rel = audit.rows.filter(r => r.release);
-// an event another feature has patched (02-content-fixes mended its tokens, 33-choices rebalanced its choices) is work
+// an event another feature has patched (02-content-fixes mended its tokens, 33-no-obvious-choices rebalanced its choices) is work
 // someone chose to keep: it stays in the roll
 const patched = new Set();
 for (const d of featureDirs().filter(d => !/event-cut$/.test(d))) {

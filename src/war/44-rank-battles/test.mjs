@@ -1,7 +1,7 @@
 // Every rank's battle moves the war: the soldier's line battle and the officer's tactical battle turn their result into
-// order on both sides of the war-map fight, and that changes who wins it. The calibration is tools/bench/rankfx.mjs; this
+// order on both sides of the war-map fight, and that changes who wins it. The calibration is tools/bench/rank-battle-effect.mjs; this
 // test replays 100 real fights frozen at their start (the bench's 60 among them), for four results and none.
-import { RANKFX_LAB } from '../../../tools/bench/rankfx-lab.mjs';
+import { RANKFX_LAB } from '../../../tools/bench/rank-battle-effect-lab.mjs';
 
 export default {
   async rankPerformance(pg) {
@@ -45,7 +45,7 @@ export default {
     // by fight: a good result never loses a fight that no result would have won, a bad one never wins one it would have
     // lost, and each layer's best against its worst changes at least 10 points of them (the plan's band is 10-20).
     // Sixteen fights were too few: a swing of 2 or 3 fights read as a tie when the world changed under it. Which layer
-    // moves more is the bench's to show (tools/bench/rankfx.mjs, pooled over 300): on 100 the two differ by 3 fights.
+    // moves more is the bench's to show (tools/bench/rank-battle-effect.mjs, pooled over 300): on 100 the two differ by 3 fights.
     await pg.evaluate(RANKFX_LAB);
     const r = await pg.evaluate(() => {
       const fights = RANKFX_FIGHTS(100, 5000);

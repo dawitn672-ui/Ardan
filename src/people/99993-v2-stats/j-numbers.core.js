@@ -8,7 +8,7 @@
 // de-percented lines ("countered their frontal assault about a fifth more", "Moves about a quarter more faster",
 // "+2.3. all of it from doing").
 //
-// Most of these survived because 59-tooltips wraps the number in an element of its own ("Master fighter (<span
+// Most of these survived because 59-descriptions wraps the number in an element of its own ("Master fighter (<span
 // data-tt="worth">101</span>)"), so a rule on one text node never saw the label beside it. Here:
 //   - an element whose tooltip key says what its number measures (data-tt="perf", "merit", "board", "coMo", "worth",
 //     "fame", "opinion", "loyalty" …) has the number put in words for that measure (VS.keyWords);
@@ -31,7 +31,7 @@
     perf: [[80, 'excellent'], [60, 'good'], [40, 'adequate'], [20, 'poor'], [-1e9, 'failing']],
     rep: [[80, 'famed in the trade'], [60, 'well regarded'], [40, 'known'], [20, 'little known'], [-1e9, 'unknown']],
     morale: [[80, 'eager'], [60, 'steady'], [40, 'grumbling'], [20, 'shaken'], [-1e9, 'near breaking']],
-    // -100..100, the same words as 59-tooltips' glossary ("Yours of them … warm")
+    // -100..100, the same words as 59-descriptions' glossary ("Yours of them … warm")
     opinion: [[70, 'devoted'], [40, 'warm'], [10, 'friendly'], [-9, 'indifferent'], [-39, 'cool'], [-69, 'hostile'], [-1e9, 'hateful']],
     loyalty: [[80, 'devoted'], [60, 'loyal'], [40, 'dutiful'], [25, 'restless'], [-1e9, 'disloyal']],
     discontent: [[75, 'near revolt'], [50, 'angry'], [25, 'grumbling'], [-1e9, 'quiet']],

@@ -1,7 +1,7 @@
 // The fight audit (Road to Ten, Power 1-3 and 5). For each build it reports:
 //   audit    every event choice that is a fight or a beast encounter, the scale it assumes (one person, a party, an
 //            army; an animal, a great beast, a titan), what decides it, what it can cost, and every clash with the
-//            ladder (src/people/48-fight-ladder/audit.core.js; loaded into builds that lack it, so any build can be read);
+//            ladder (src/people/48-event-fight-rules/audit.core.js; loaded into builds that lack it, so any build can be read);
 //   duels    the duel screen's chance against what duels do (pairs of fighters of tiers 1-6, some foes unarmed until the
 //            duel arms them, the player's seat at health 40-100, event duels and plain lethal ones by turns), and the
 //            profile's odds (A.shownDuelOdds) against the plain lethal ones it was fitted on;
@@ -10,7 +10,7 @@
 //   group    the group resolver against the tier texts of GD.TIERS and the plan's "3 Trained beat 1 Elite";
 //   tiers    the beast tier texts of GD.TIER_INFO against duels.
 //   node tools/bench/fights-audit.mjs [built.html ...] [--json=tools/bench/reports/fights-audit.json] [--quick]
-// FIGHTS_LAB is the in-page half; src/people/48-fight-ladder/test.mjs uses it too.
+// FIGHTS_LAB is the in-page half; src/people/48-event-fight-rules/test.mjs uses it too.
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -185,7 +185,7 @@ export const FIGHTS_LAB = () => {
 
 // ---- the runner ------------------------------------------------------------------------------------------------------
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const AUDIT_SRC = path.join(root, 'src/people/48-fight-ladder/audit.core.js');
+const AUDIT_SRC = path.join(root, 'src/people/48-event-fight-rules/audit.core.js');
 async function main() {
   const require = createRequire(import.meta.url);
   let pw; try { pw = require('playwright'); } catch { pw = require('/opt/node-tools/node_modules/playwright'); }

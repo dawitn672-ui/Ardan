@@ -80,7 +80,7 @@
       const nx = A.neighbors(x), near = nx.includes(y) || A.neighbors(y).some(n => nx.includes(n));
       if (near) add('fear-' + x, -Math.min(25, (inf - 30) / 2), `fear of ${short(x)}'s conquests`);
     }
-    // a realm's old want aimed at the other (47-realm-bible's want, as 68-casus-belli reads it) pulls them apart
+    // a realm's old want aimed at the other (47-realm-customs's want, as 68-reasons-for-war reads it) pulls them apart
     const CSW = A.CASUS && A.CASUS.wantOf;
     if (CSW && DV.WAR.want) for (const [x, y] of [[a, b], [b, a]]) { let W = null; try { W = CSW(x, y); } catch (e) { W = null; } if (W && W.s) add('want-' + x, -DV.WAR.want, `${short(x)} wants ${W.s}`); }
     const R = (A.S.v2dip && A.S.v2dip.ruler) || {};
@@ -164,7 +164,7 @@
   const why = (W, i, j) => D.reasons(W.d, i, j).slice(0, 3).map(x => [x.text, x.toward ? 0.5 : -0.5]);
   const logAi = (k, a, b, t, w) => { try { A.aiLogAdd && A.aiLogAdd(k, a, b, t, w); } catch (e) {} };
 
-  // the court's own reasons for a war on b, as the release's war roll weighs them: 68-casus-belli's A.cbWarMul (a
+  // the court's own reasons for a war on b, as the release's war roll weighs them: 68-reasons-for-war's A.cbWarMul (a
   // plan's target at the right moment, an old wrong or a want; nil against a benefactor) and 55-bonds' A.feudWarMul
   function courtMul(a, b, P) {
     let m = 1;

@@ -147,7 +147,7 @@ PACE.winterMul = function (pc) {
 const mul0 = A.initiativeMul;
 A.initiativeMul = function (pc) { return (typeof mul0 === 'function' ? mul0.apply(this, arguments) : 1) * PACE.winterMul(pc); };
 
-// The initiative popover (59-tooltips) shows a bare "Rate ×" row when the rate is not 1: say why. Pure.
+// The initiative popover (59-descriptions) shows a bare "Rate ×" row when the rate is not 1: say why. Pure.
 if (UI.TIPS && typeof UI.TIPS.initiative === 'function') {
   const tip0 = UI.TIPS.initiative;
   UI.TIPS.initiative = function () {

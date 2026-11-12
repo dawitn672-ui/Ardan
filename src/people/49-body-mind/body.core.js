@@ -217,7 +217,7 @@
 
   // ---- a hurt body is sent home from the yard
   // The release let you spar at 3 health: each bout cost up to 18, the floor was 3, and a life that sparred every month
-  // lived at single-digit health until the next cold killed it (tools/bench/dominance.mjs: 6 of 6 dead by a median 24).
+  // lived at single-digit health until the next cold killed it (tools/bench/dominant-strategies.mjs: 6 of 6 dead by a median 24).
   // Now the activities that risk a hurt are refused below a health line, with the reason shown, and a practice bout
   // never takes you below a floor.
   BM.HURT_LINE = 50;   // at 35 a sparring life hovered at the line all year, and a fever or a fall finished it

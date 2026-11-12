@@ -27,7 +27,7 @@
     'family', 'familySeat', 'familyHead', 'liege', 'weapon', 'rank', 'boss', 'bossFull', 'bossTitle'];
   // tokens for the person an event is about ("with")
   MC.WITH_TOKENS = ['them', 'themFull', 'theyHe', 'theirHis', 'themHim', 'themAge', 'themRace', 'themOcc', 'khe', 'khim', 'khis'];
-  MC.BIBLE_TOKENS = ['cw1', 'cw2', 'cw3'];            // the realm bible's culture words (47-realm-bible)
+  MC.BIBLE_TOKENS = ['cw1', 'cw2', 'cw3'];            // the realm bible's culture words (47-realm-customs)
   MC.CUSTOM_TOKENS = ['w1', 'w2', 'w3', 'realm'];     // what a custom's own words may use, besides MC.TOKENS
   // a token's usual length in words, for the 80-word limit before rendering
   MC.TOKEN_WORDS = { realm: 4, ruler: 4, faith: 4, full: 3, themFull: 3, familyHead: 4, liege: 3, themOcc: 3, home: 2,
@@ -338,7 +338,7 @@
       for (const ev of mod.events) if (ev.trigger && ev.id && !chains.some(c => c[1] === ev.id)) W(`events (${ev.id})`, 'is trigger-only and no event in this mod leads to it');
     }
 
-    // customs: the realm bible's own data model (47-realm-bible), for the three kinds its month hook runs
+    // customs: the realm bible's own data model (47-realm-customs), for the three kinds its month hook runs
     if (raw.customs != null) {
       if (env && !env.bible) W('customs', 'this build has no realm bible (47-realm-bible), so the customs stay unused');
       if (!isObj(raw.customs)) E('customs', 'must be an object of realm id to a list of customs');

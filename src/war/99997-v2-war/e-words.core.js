@@ -1,5 +1,5 @@
 // 99997-v2-war, part 5: what each rank is told, and what an outsider hears (playtest round 1).
-//   - the call to battle (A.wsPCFightStart) and 34-both-scales' reckoning give the numbers as your rank would know
+//   - the call to battle (A.wsPCFightStart) and 34-squad-and-front-panels' reckoning give the numbers as your rank would know
 //     them: estimates for a soldier or a sergeant ("about 60,000"), "some 16,500" for a captain; a commander knows his
 //     own side exactly and the enemy's only as an estimate;
 //   - 64-npc-beliefs' tavern tale of a battle ("You know how it went") comes only for a battle of a war you fought in;
@@ -56,7 +56,7 @@
       } catch (er) { ctx.skip = 1; }
       return r;
     };
-    // Tools and tests read a setup as text, and every wrapper keeps the event's own source first (67-memory-weave's
+    // Tools and tests read a setup as text, and every wrapper keeps the event's own source first (67-choice-memories's
     // wrap does; its mwSourcesIntact counts the setups that pick a person and ask the record). This gate wraps 67's
     // wrapper, so it reads as that wrapper's text (String() keeps its toString: the event's own setup, then the record
     // it asks) and then its own. A plain function here read as the gate alone, and the tale lost both.

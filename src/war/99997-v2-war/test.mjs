@@ -1,7 +1,7 @@
 // 99997-v2-war: no view of a war you are not in (only rumours); your rank sets the screen; your choices move the result
 // at every rank; the after-action report names three causes; elite orders are worth their numbers; no percentages.
-// Real fights are frozen the moment an enlisted soldier's division goes in (tools/bench/rankfx-lab.mjs).
-import { RANKFX_LAB } from '../../../tools/bench/rankfx-lab.mjs';
+// Real fights are frozen the moment an enlisted soldier's division goes in (tools/bench/rank-battle-effect-lab.mjs).
+import { RANKFX_LAB } from '../../../tools/bench/rank-battle-effect-lab.mjs';
 
 const SETUP = () => {
   window.VWX = {
@@ -430,7 +430,7 @@ export default {
         const t = html.replace(/<[^>]+>/g, ' ');
         out.cmd = { enemyExact: t.includes(A.fmt(en.men0)), ownExact: t.includes(A.fmt(me.men0)), morale: /morale \d+/.test(t), drill: /drilled \d+|Drill: [^.]*\d/.test(t) };
         // then every screen of the battle: as it opens, after one pulse, and fought out to its end (the "Fight it
-        // out" button). The text and every tooltip on it (59-tooltips' bSide, bMorale, bWing, bDead) must give no exact
+        // out" button). The text and every tooltip on it (59-descriptions' bSide, bMorale, bWing, bDead) must give no exact
         // count of the enemy's, living or dead, and no 0-100 morale; his own dead stay exact. (The verifier's catch:
         // the release's closing "Dead: 540 of Varenna, 2,241 of Qadir.", bDead's "Theirs 2,241" and bWing's
         // "morale 96" were left as numbers, and the first-render check alone could not see them.)

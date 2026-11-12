@@ -13,7 +13,7 @@ const kindOf = p => { try { return A.C && A.C.famKind ? A.C.famKind(p, 'clergy')
 const holy = q => !!(q && ((q.flags && q.flags.priest) || (q.job && q.job.c === 'clergy')));
 VS.clergyBorn = function (p) {
   if (!p) return false;
-  // 29-starts' "The Temple's Child" is raised by the priests
+  // 29-starting-stories' "The Temple's Child" is raised by the priests
   if (p.flags && (p.flags.clergyBorn || p.flags.st_foundling)) return true;
   for (const id of p.parents || []) if (holy(A.P ? A.P(id) : A.S.people[id])) return true;
   return !!kindOf(p);
@@ -45,7 +45,7 @@ A.applyFx = function (pc, fx) {
   }
   return applyFx.apply(this, arguments);
 };
-// no piety aims for the faithless: 9993-chapters' "Be known at the shrine", 97-life-fixes' devout ambition
+// no piety aims for the faithless: 9993-life-chapters' "Be known at the shrine", 97-first-life-fixes' devout ambition
 const noAim = (list, k) => { const a = (list || []).find(x => x && x.k === k); if (!a || a.v2) return; const fit = a.fit; a.fit = p => (VS.hasFaith(p) ? fit(p) : 0); a.v2 = true; };
 if (A.CH && A.CH.AIMS) noAim(A.CH.AIMS, 'pious');
 if (A.LF && A.LF.AMB && A.LF.AMB.faith && !A.LF.AMB.faith.v2) { const a = A.LF.AMB.faith, fit = a.fit; a.fit = p => (VS.hasFaith(p) ? fit(p) : 0); a.v2 = true; }

@@ -195,7 +195,7 @@ A shape the men never drilled is not offered, and the menu says why ("never dril
 
 ## Cost (the Great Continent)
 
-`src/core/09-scale/great-bench.mjs`, seed 1234, a peasant of Aldmark (POL-01) and of Taulen (POL-36), 14 months, main-thread CPU, median month. The machine was shared and heavily loaded (load 17–28 on 4 cores), so wall clock ran 3–6× CPU and single readings move ±25%. All three builds hold every other feature, with work in progress, as of 17:53; the last also holds one feature folder that appeared later.
+`src/core/09-engine-at-scale/great-bench.mjs`, seed 1234, a peasant of Aldmark (POL-01) and of Taulen (POL-36), 14 months, main-thread CPU, median month. The machine was shared and heavily loaded (load 17–28 on 4 cores), so wall clock ran 3–6× CPU and single readings move ±25%. All three builds hold every other feature, with work in progress, as of 17:53; the last also holds one feature folder that appeared later.
 
 | Build | Month, POL-01 / POL-36 | Year-turn month | State at start → after 14 months |
 | --- | --- | --- | --- |
@@ -244,7 +244,7 @@ The test is red without this feature too. The final build puts both layers insid
 
 The artisan lives fight in no war. Their numbers move because the world they live in takes another course: other wars, other fights, other markets. The median of 12 sits in a gap of the spread (159 to 300). Every other path, and every death, fame and arc band, holds. I did not widen the band in `tools/bench/targets.mjs`.
 
-**Changed outside this folder:** 72-two-scales' `twoScalesChronicle` now skips a fight in which your division was pulled out of the line. That fight's panels come when the fight it left is over, which `twoScalesOtherLives` holds. In this world the first finished fight of the test happened to be one of those.
+**Changed outside this folder:** 72-one-battle-two-scales' `twoScalesChronicle` now skips a fight in which your division was pulled out of the line. That fight's panels come when the fight it left is over, which `twoScalesOtherLives` holds. In this world the first finished fight of the test happened to be one of those.
 
 ## Cycle 2 (Oct 29): one name, sane churn, bread and pay that bite, scenes that come, a readable battle
 

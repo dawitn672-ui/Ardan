@@ -28,7 +28,7 @@ export default {
     await pg.evaluate(WAR);
     const out = await pg.evaluate(() => {
       const T = window.__T, res = {}, errs = [];
-      // the style is read with the whole map shown: 9991-atlas veils land and sea the player does not know
+      // the style is read with the whole map shown: 9991-atlas-of-known-places veils land and sea the player does not know
       const fog0 = UI.set.atlasFog; UI.set.atlasFog = false;
       for (const on of [true, false]) {
         T.set(on); UI.ov = null; UI.render();

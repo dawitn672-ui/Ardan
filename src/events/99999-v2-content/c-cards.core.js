@@ -463,7 +463,7 @@
 
   try {
     const st = document.createElement('style');
-    // the who line; and the creation screen's story blurbs in full (29-starts clamped them to two lines on a phone:
+    // the who line; and the creation screen's story blurbs in full (29-starting-stories clamped them to two lines on a phone:
     // "Something took your father on the fells last winter. Nobody agree...")
     st.textContent = '.ev-who{margin-top:6px;color:var(--ink-2,inherit);font-family:var(--f-ui,inherit)}' +
       '.crq .crq-story .small{display:block!important;-webkit-line-clamp:unset!important;line-clamp:unset!important;overflow:visible!important}';

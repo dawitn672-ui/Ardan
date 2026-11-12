@@ -2,7 +2,7 @@
 // prices form gradients away from where a good is made, how a siege and a famine show in one town, the player's trip
 // to another town, the cost of a month, the save, old saves, determinism and render purity; and whether a greedy
 // trader who uses the towns can out-earn land.
-import { EXPLOIT } from '../../../tools/bench/exploit.mjs';
+import { EXPLOIT } from '../../../tools/bench/trade-exploit.mjs';
 const SETUP = () => {
   window.MTT = {
     world(seed, realm, status) { A.newGame({ seed, race: 'human', realm: realm || 'POL-01', status: status || 'merchant', sex: 'M', startAge: 25 }); return A.pc(); },

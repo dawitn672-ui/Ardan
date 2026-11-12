@@ -469,8 +469,8 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 - Kenshi wiki, Dexterity: https://kenshi.fandom.com/wiki/Dexterity
 
 **Ardan (this repo)**
-- `docs/plan/Ardan The Road to Ten.md`, Character and life sim section
-- `docs/reviews/Ardan Road to 100.md` and `docs/reviews/Ardan Deep Analysis.md`
+- `docs/plan/road-to-ten.md`, Character and life sim section
+- `docs/reviews/road-to-100.md` and `docs/reviews/deep-analysis.md`
 - Functions read: `A.planDay`, `A.trainSkill`, `A.train`, `A.willGrow`, `A.sessionQ`, `A.growthYear`, `A.yearGrowth`, `A.ageFactor`, `A.bodyYear`, `A.checkOdds`, `A.checkVal`, `A.applyFx` (`trait` case), `A.duelConsequences`, `A.recapMake`, `GD.ACTIVITIES`, `GD.TRAITS`, `A.LIFESTYLE`
 
 ## Appendix: how to reproduce

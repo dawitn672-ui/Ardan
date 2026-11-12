@@ -367,7 +367,7 @@
     return d == null ? null : Math.min(TR.NEWS_CAP, Math.round(d));
   };
 
-  // ---- word comes with the caravans (09-scale holds far news for its distance): a line from beyond the brokers'
+  // ---- word comes with the caravans (09-engine-at-scale holds far news for its distance): a line from beyond the brokers'
   // roads waits as long as their letters take, and says which way it came
   const news = A.news;
   let names = null;
@@ -396,7 +396,7 @@
   };
 
   // ---- the treasury (world review I3). The far treasuries' growth is not the economy's: the release's ledger gives
-  // every AI realm 92% of its income less 3.2 suns a soldier, and 56-realm-inside's ladder lets the coffers fill to
+  // every AI realm 92% of its income less 3.2 suns a soldier, and 56-court-and-treasury's ladder lets the coffers fill to
   // 1.5 to 4 years of income; the far realms start the game at a quarter of a year. Taulen's army costs it 14% of its
   // income where the lore says two thirds. TR.LEDGER is the lore's far ledger, and TR.ledgerYear(r) what it would take
   // from a crown in a year: the army at its lore share of revenue, and the half-notes' fall on a treasury that holds

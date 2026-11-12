@@ -70,7 +70,7 @@
       const ps = S.prov.filter(p => { const x = (p.sx - vx) * sx, y = (p.sy - vy) * sy; return x >= 0 && y >= 0 && x <= W && y <= H; })
         .sort((a, b) => (b.pop || 0) - (a.pop || 0) || a.id - b.id);
       for (const p of ps) {
-        if (MAP.unnamed && MAP.unnamed(p, ctx)) continue;      // 9991-atlas: a place the player does not know is not named
+        if (MAP.unnamed && MAP.unnamed(p, ctx)) continue;      // 9991-atlas-of-known-places: a place the player does not know is not named
         write(p.name, (p.sx - vx) * sx, (p.sy - vy) * sy + px * 1.3, px, f, p.occ ? '#ffab8a' : '#efe6cf', false, 'prov');
       }
     }
@@ -121,7 +121,7 @@
     MAP.overlayCache = cv; MAP.ownerKey = key;
     return cv;
   };
-  // 9991-atlas's veil over the satellite ground: the land you do not know lies under cloud, not under vellum (a
+  // 9991-atlas-of-known-places's veil over the satellite ground: the land you do not know lies under cloud, not under vellum (a
   // parchment sheet over a satellite picture read as a drawn map). Its own key gains the style, so the two never mix.
   VM.VEIL = [206, 213, 221]; VM.VEIL_ALPHA = [0.82, 0.45, 0];
   const AT = A.ATLAS;

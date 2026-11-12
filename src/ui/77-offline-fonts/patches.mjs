@@ -1,6 +1,6 @@
 // The page's typefaces ship inside it, so the game looks the same with no network: a playtester who opens the file
 // offline, or behind a filter that blocks Google, no longer gets the fallback serif and a console of failed font loads.
-// Since the redesign (docs/design/brief.md §2, 91-look) they are four: Literata for prose, Atkinson Hyperlegible Next
+// Since the redesign (docs/design/brief.md §2, 91-visual-style) they are four: Literata for prose, Atkinson Hyperlegible Next
 // for the interface, Cinzel for names and titles, Dela Gothic One for the big moments. The release's Alegreya and
 // Cinzel Decorative are no longer used and are not shipped. The fonts are the Latin and Latin Extended subsets Google
 // Fonts serves (assets/fonts/faces.json lists each file, weight range and unicode-range), under the SIL Open Font License 1.1,

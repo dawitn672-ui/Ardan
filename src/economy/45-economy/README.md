@@ -1,6 +1,6 @@
 # Goods that come from somewhere and go somewhere
 
-**Aspect:** Economy (Road to Ten, Economy 1–5 and 7) · **Kind:** system and 2 patches, plus an exploit bench (`tools/bench/exploit.mjs`)
+**Aspect:** Economy (Road to Ten, Economy 1–5 and 7) · **Kind:** system and 2 patches, plus an exploit bench (`tools/bench/trade-exploit.mjs`)
 
 The plan says the economy "hits 10 when goods come from somewhere, go somewhere, and other people trade too, so a price tells a story." In the release each realm's capital has one market. Its prices drift toward a target set once from the lore's export and import lists, with a fixed seasonal swing for grain and a war markup. Nothing is produced, nothing is eaten, and nobody but the player moves goods.
 
@@ -12,7 +12,7 @@ The plan says the economy "hits 10 when goods come from somewhere, go somewhere,
 4. **Local prices** (Economy 4). Away from the capital, what your own province makes is 15% cheaper, and other goods are 2.5% dearer for each step from the capital (up to eight steps).
 5. **Chains** (Economy 5). Towns turn wool into fine cloth, iron and charcoal into steel, and steel into arms, whenever the output is worth more than its inputs. Workshops sit where their main input is made (forges by the ore, weavers by the sheep), more of them where the towns are big. The player can own a **forge**, an **armory** or a **weaving shed**. Their income is the spread between their goods at the home market, so it can go negative when inputs get dear.
 6. **The world stays solvent.** The world makes each good at 1.06 times what it uses, counted down the chains (arms need steel, steel needs iron), after spoilage and the harvest's average, and allowing for an ordinary year's wars. So exporters make more than they eat, importers less, and the caravans carry the difference.
-7. **The exploit test** (Economy 7, `tools/bench/exploit.mjs`). A greedy trader takes the best run it can find every trip for ten years. An estate buys farms with the same 1,000 suns. Building this found two holes, both fixed:
+7. **The exploit test** (Economy 7, `tools/bench/trade-exploit.mjs`). A greedy trader takes the best run it can find every trip for ten years. An estate buys farms with the same 1,000 suns. Building this found two holes, both fixed:
    - **The player's trade runs paid no haulage.** Only tolls and risk, so every gap the caravans left was free. A run now pays carts, fodder and inns per load and by distance, both ways, the same as the caravans, and the trip planner shows it.
    - **Each extra load moved the price by the market's size, not by the market for that good.** Fourteen loads of pearls sold as freely as grain into a realm whose rich buy a third of a load a month. Patch `ECON-GOOD-DEPTH` makes the slide depend on the good's own market.
 8. **Why it costs what it costs.** The market table adds the stock in words (famine, scarce, short, ample, glut). Hovering shows why: months of need in store, what was made and used last month, the harvest, armies at war, and caravans in and out. A line under the table lists this month's caravans (patch `ECON-MARKET-WHY`).
@@ -31,7 +31,7 @@ The plan says the economy "hits 10 when goods come from somewhere, go somewhere,
 | `marketTableSaysWhy` | The table shows the stock word and the reason, and drawing it is pure. |
 | `noTradeLoop` | A greedy trader against farms over five years on two seeds: 701 against 1,160, and 1,151 against 1,508. |
 
-`tools/bench/exploit.mjs`, ten years on four seeds:
+`tools/bench/trade-exploit.mjs`, ten years on four seeds:
 
 | Economy | The trader's wealth, as a multiple of the estate's |
 | --- | --- |

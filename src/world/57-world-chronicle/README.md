@@ -29,7 +29,7 @@ In the release the world remembers two kinds of thing (`S.history`: war ends and
    - famine (45-economy's failed harvest);
    - an epidemic;
    - a royal marriage; an alliance; tribute bound or thrown off;
-   - an elite order destroyed; the death of a Legend (32-ladder's top tier).
+   - an elite order destroyed; the death of a Legend (32-legend-and-master-caps's top tier).
 
    Each entry is `[kind, year, day, province, realm, other realm, [people], number, extra]`. People are ids, and their names go into a table when the entry is made, because the release prunes the dead from `S.people` after 30 years. Nothing is ever removed. Wars already being fought when the world opens are entered with their real start (the Tessarian Civil War, 1061).
 2. **It observes; it does not act.** Every hook calls the original first. It draws no random numbers, and it changes no realm, person or province. The exception is the **epidemic**, because the release simulates no sickness in the world. Each month each realm rolls for one: 3.5% a year, plus 5 points after a failed harvest, 2 points under siege and 1 point for a large realm, capped at 10%. A sickness takes 4 stability, adds unrest where it strikes, spreads to up to three neighbouring provinces, and makes the news. If it reaches the player's town it brings a scene, "Chalk on the doors". `A.WC.EPIDEMIC = false` turns it off for a later world-events feature that brings its own.
@@ -91,7 +91,7 @@ In the release the world remembers two kinds of thing (`S.history`: war ends and
 
 **Limits.**
 - **Size.** Battles are about half the record (1,379 of 2,825 entries in the busiest 60-year world). The record grows by 2 to 3.3 KB of JSON a year (under 1 KB gzipped) and is never trimmed. A 300-year dynasty would carry up to about 1 MB of JSON, about 190 KB gzipped. If that is too much, raise `WC.BATTLE_MEN`.
-- **One record, one truth.** The Annals show what happened. The far news is still hearsay (26-belief-truth), but the record does not keep conflicting accounts (W10). The monk's scene gestures at it, nothing more.
+- **One record, one truth.** The Annals show what happened. The far news is still hearsay (26-belief-versus-truth), but the record does not keep conflicting accounts (W10). The monk's scene gestures at it, nothing more.
 - **Lines are templates.** 1 to 4 lines a kind (35 in all) and 13 scenes, so a long life hears the same frame with different places and years. More lines per kind, and per culture, is writing work.
 - **Subjects are guessed from words.** A recalled line is matched to a scene by regex on its id, title and text. A scene about a lady's wedding can get the old ruler's death, which fits but is not chosen with care.
 - **Kinds that seldom happen.** Realm foundings, falls and Legend deaths are rare in this simulation (1 to 3, 0 to 2 and 0 in the 60-year test worlds). The record keeps them when they happen. It does not make them happen.

@@ -14,7 +14,7 @@
   - the season of each step as you reach it: snow on the passes (mountains and tundra 1.8, elsewhere 1.3), the spring thaw on the fords (1.15), the summer on the sands (1.25), rough winter seas (1.35).
 
   A province with no road to it on the map gets a ship's passage straight across. Vuuka to Seuvan on the Great Continent is 2,700 km and 94 days; set out in winter, the same road takes 85 days where autumn takes 65.
-- **Stops.** About one every `JR.STOP_KM` (220 km) along the path. Each province you pass is seen (9991-atlas), and up to `JR.MAX_SCENES` (5) stops have a scene. The scene is drawn by `A.wpick` from what the land there offers:
+- **Stops.** About one every `JR.STOP_KM` (220 km) along the path. Each province you pass is seen (9991-atlas-of-known-places), and up to `JR.MAX_SCENES` (5) stops have a scene. The scene is drawn by `A.wpick` from what the land there offers:
 
   | Scene | When |
   | --- | --- |
@@ -22,7 +22,7 @@
   | `jr_sea` | the road went by sea |
   | `jr_route` | the step is on a great route, by its lore name (the Silk Road, …) |
   | `jr_site` | a wild place of 997-wilds there that you have not found; going to look queues 997's own scene, and finding it is recorded there |
-  | `jr_custom` | one of the stop realm's customs (47-realm-bible, 990-far-peoples), in its own words |
+  | `jr_custom` | one of the stop realm's customs (47-realm-customs, 990-far-peoples), in its own words |
   | `jr_folk` | the stop realm's people, and one of their words (`A.BIBLE.words`) |
   | `jr_beast` | a beast that lives there (76, 992 `A.beastsNear`), with what folk say of it; watching it teaches 26's level 2 |
   | `jr_caravan` | one of this month's caravans (45's `S.eco.car`) through that realm |

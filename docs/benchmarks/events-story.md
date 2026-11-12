@@ -394,8 +394,8 @@ All read through search-engine results that quote or summarise the page (see the
 
 **Ardan**
 
-- `docs/plan/Ardan The Road to Ten.md` (Events and story section, plan targets)
-- `docs/reviews/Ardan Road to 100.md` and `docs/reviews/Ardan Deep Analysis.md` (95 memory events, 287 of 450 orphan flags by their count, tics, old age)
+- `docs/plan/road-to-ten.md` (Events and story section, plan targets)
+- `docs/reviews/road-to-100.md` and `docs/reviews/deep-analysis.md` (95 memory events, 287 of 450 orphan flags by their count, tics, old age)
 - `tools/bench/reports/release.json`, `tools/bench/reports/fixes.json` (bench league: memory share of fired events 1.8% release and 1.3% fixes; p90 days between prompts 181 and 153)
 
 ## Appendix: how to reproduce

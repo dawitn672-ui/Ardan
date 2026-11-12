@@ -22,7 +22,7 @@ The plan asks to "design mobile on its own: a bottom tab bar and cards sized for
   - The tab bar keeps the release's six sections, icons over short captions. It is set in leather, with a gold rule and a lit ground on the page you are on, and clears the home indicator (safe-area insets).
 - **Cards sized for thumbs.**
   - Every control is at least 44 × 44 px: buttons, sub-tabs, selects, fields, summaries, checkbox rows, the tooltip's close button, and the names and avatars that open a person (a 44 px reach without moving the line).
-  - A glossary word (59-tooltips) is at least 24 px, WCAG 2.5.8's size. Making every glossary word 44 px would open every sentence.
+  - A glossary word (59-descriptions) is at least 24 px, WCAG 2.5.8's size. Making every glossary word 44 px would open every sentence.
   - Text is 14 px or more. The one exception is the tab bar's captions, at 13 px.
   - The frame inside a frame is gone, so the cards run to 8 px gutters.
   - On a touch screen the duel's keyboard numbers are hidden.
@@ -83,7 +83,7 @@ The two worst were fixed by name. Health is on the Now page now, not a sub-tab a
 - **The war room** is usable but dense at 375 px. Its own panels (Command, Forces, Wars) stack under a map that fills the screen. A phone-first war room would be its own design.
 - **The battle field pans sideways,** but its canvas is the release's: labels at 640 px are readable, not comfortable.
 - **13 px tab captions** are the one size under 14. "Chronicle" does not fit a 62 px column at 14.
-- **The tests need the full build.** They open screens from 59-tooltips, 61-illumination, 63-miniatures, 65-mods and 66-markets, so `--only=phone` boots but its phone tests fail on the missing screens.
+- **The tests need the full build.** They open screens from 59-descriptions, 61-illuminated-chronicle, 63-miniature-portraits, 65-mods and 66-markets, so `--only=phone` boots but its phone tests fail on the missing screens.
 - **Found on the way, outside this folder:**
   - The first draw of Holdings sets `pc.cargo = {}` at any width (66-markets), a one-time state change from rendering.
   - The release's coarse-pointer rule `.click{display:inline-flex}` laid the new-life option cards out sideways on touch screens; fixed here, on phones.

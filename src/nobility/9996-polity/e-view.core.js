@@ -17,7 +17,7 @@ const realmOf = rid => { const r = A.realm(rid); return r && r.pol ? r : null; }
 const dateOf = day => { try { const y = Math.floor(day / 365), d = day - y * 365, m = A.monthOf(d); return `${m.d || ''} ${(GD.MONTHS || [])[m.m] || ''} ${y}`.trim(); } catch (e) { return String(day); } };
 POL.dateOf = dateOf;
 
-// ---------------------------------------------------------------- tooltips (59-tooltips' engine)
+// ---------------------------------------------------------------- tooltips (59-descriptions' engine)
 
 UI.TIPS = UI.TIPS || {};
 Object.assign(UI.TIPS, {
@@ -80,7 +80,7 @@ POL.facName = f => (A.FARP_POWERS_NAME && A.FARP_POWERS_NAME(f)) || ((A.FACTIONS
 // ---------------------------------------------------------------- the panels (pure)
 
 // a folding section: its header is one button (aria-expanded), with a one-line summary that informs while closed. What
-// the player opens or closes is remembered in the browser through 90-fold's store, never in the save.
+// the player opens or closes is remembered in the browser through 90-collapsible-sections's store, never in the save.
 const FOLDK = 'realm';
 const isOpen = (key, dflt) => { try { const F = UI.FOLD; if (F && F.isOpen) return F.isOpen(FOLDK, 'po-' + key, dflt); } catch (e) {} return UI.poFold && key in UI.poFold ? UI.poFold[key] : dflt; };
 POL.OPEN = { crown: true, bill: true, elect: true, fief: true, council: false, estates: false, laws: false, factions: false, lords: false, offices: false, place: true, props: false };
@@ -296,7 +296,7 @@ if (CU && typeof CU.items === 'function') {
   };
 }
 
-// ---------------------------------------------------------------- the look (91-look's tokens, phone first)
+// ---------------------------------------------------------------- the look (91-visual-style's tokens, phone first)
 
 const CSS = `.po-wrap{display:flex;flex-direction:column;gap:6px;margin-top:8px;min-width:0;max-width:100%}
 .po-wrap [hidden]{display:none!important}

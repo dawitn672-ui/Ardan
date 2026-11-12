@@ -7,7 +7,7 @@ Reviewer: **lives**. Angle: what a whole life feels like after the first ten yea
 - **Ten bot lives** on `index.html` (Great Continent, `A.newGame({ lands: 'great' })`), 37 to 57 years each, through the engine's own queue (`A.advance`, `A.eventView` / `eventChoose`, `duelAuto`, `battleAuto`, `missionAuto`).
   - The bot picks the safest choice: the best check odds, or the fight badge's odds (`c.fight.pct`).
   - It spends initiative on a plan that suits the path (train and spar for a soldier, lending and ventures for a merchant, prayer and study for a priest).
-  - The runner is `/tmp/ardan/cycle1/lives/life.mjs`, the per-life numbers are `an.cjs`, and the raw logs are `/tmp/ardan/cycle1/lives/<life>.json`.
+  - The runner is `/tmp/ardan/cycle1/lives/long-life-audit.mjs`, the per-life numbers are `an.cjs`, and the raw logs are `/tmp/ardan/cycle1/lives/<life>.json`.
 - **One life through the real menu**: New life, Taulen, Grown, start, then fast-forwarded 32 years. Its screenshots are `/tmp/ardan/cycle1/lives/ui-taulen-*.png` (the runner is `ui.cjs`).
 
 | Life | Born in | Start | Years | End | Ending |
@@ -53,7 +53,7 @@ A caveat on method: the bot never opens the War Room, the Decisions list or a pe
 - When a claimant war ends with the claimant crushed (the war-end path that logs "crushes the claimant") and the claimant is the PC, run a fate scene: flight abroad, the block, prison or a pardon with conditions. Use `punish: 'treason'` or an exile, strip `pc.mil`, set infamy, and give an ending hook.
 - Award "Usurper" only when `pc.ruler` is actually set.
 - In `ri_taken`'s setup, skip the scene when the captors' cause is the PC's own.
-- Owner: the release's claimant war, patched in a new war or fix feature. `68-casus-belli` is the nearest home.
+- Owner: the release's claimant war, patched in a new war or fix feature. `68-reasons-for-war` is the nearest home.
 
 ### B2. The "Raise a hunt with the village" choice kills young merchants: the hunt scene's fight carries no odds badge (impact 5, size S)
 
@@ -107,7 +107,7 @@ A caveat on method: the bot never opens the War Room, the Decisions list or a pe
 
 **What I saw.** K2 got `bd_boss_test`: "Master your master hands you a task nobody wants". `{bossTitle}` and `{boss}` both fall back to the same word.
 
-**Fix.** In the fallback where `{boss}` becomes "your master", set `bossTitle` to an empty string, or skip the scene when there is no superior (97-life-fixes `LF-BOSS-PICK`).
+**Fix.** In the fallback where `{boss}` becomes "your master", set `bossTitle` to an empty string, or skip the scene when there is no superior (97-first-life-fixes `LF-BOSS-PICK`).
 
 ### B7. Absurd battle and patrol numbers in the log (impact 3, size S–M)
 
@@ -161,14 +161,14 @@ After the top rung:
 **Why it matters.** BitLife's late game is thin too, but there the life is short. Here 40 years at the top is the main body of a 70-year life. Mount & Blade turns a famous captain into a vassal with a fief, and that is the hook into the second half.
 
 **Fix.**
-- **Promotion pace.** Slow it in 32-ladder: months at rank ×1.5 above Captain, and General needs a won battle as commander. Rank 7 should be rare before 40.
+- **Promotion pace.** Slow it in 32-legend-and-master-caps: months at rank ×1.5 above Captain, and General needs a won battle as commander. Rank 7 should be rare before 40.
 - **A second ladder after the top.**
   - Soldier: a knighthood (sets the "knighted" requirement, opens `or_invite`), then a fief (`pc.noble.rung` 0 to 1), then the council's Marshal seat.
   - Merchant: a guild mastership, then the treasury seat (F2b got "treasurer" only at 70).
   - Priest: Patriarch is in `GD.CAREERS`, but no life reached it.
   - Lives the bot played (F1, K2, K3) all met the bars for "Found a house of your own" and "Build a family seat" on Decisions. Nothing nudged them there.
-- **A new ambition.** When an ambition is met, `97-life-fixes/c-ambition` should offer a new one ("What now, at the top").
-- Home: `32-ladder` plus a new feature, "after the top".
+- **A new ambition.** When an ambition is met, `97-first-life-fixes/c-ambition` should offer a new one ("What now, at the top").
+- Home: `32-legend-and-master-caps` plus a new feature, "after the top".
 
 ### I2. Rulers see the same eight gathering scenes about 15 times each (impact 5, size M)
 
@@ -180,7 +180,7 @@ After the top rung:
   - `sg_walls` 12.
 - K4: `gs_bargain` "Behind closed doors" 26, `ri_court_push` 21 and `ruler_petition` 8.
 - Non-ruler lives ran 82 to 92% distinct.
-- 97-life-fixes says hosts and rulers at congresses "always ask", and its gathering cap doesn't cover them.
+- 97-first-life-fixes says hosts and rulers at congresses "always ask", and its gathering cap doesn't cover them.
 
 **Why it matters.** The ruler is the aspirational path, and it is the one that feels most like a loop.
 
@@ -188,7 +188,7 @@ After the top rung:
 - Let `LF.weight` cover gathering scenes for hosts too: once a life has seen a `gs_*` scene three times, it gives way to an unseen one or to nothing. The gathering then shows a log line.
 - Write a second telling for the six most common (`npc-variants` style).
 - Give `ri_court_push` the "council business twice a life, 12 years apart" rule.
-- Home: `97-life-fixes` (a-memory), patch `LF-GATH-WANT`.
+- Home: `97-first-life-fixes` (a-memory), patch `LF-GATH-WANT`.
 
 ### I3. Far Lands lives speak English-medieval in the generic pool, most of all in old age (impact 4, size M)
 
@@ -200,12 +200,12 @@ After the top rung:
   - `la_elder_2` ("The lord means to fence the common… the church porch");
   - `av_runaway_serf` ("a year and a day in a free town"), though Taulen keeps corvée, not serfs (tools/bench/targets.mjs note).
 - F4 (Birch March, bear-feast people) built "The cathedral" for the ruler's monument (`la_monument_1`). The Decisions card offers "A manor house with a hall, a chapel". See `/tmp/ardan/cycle1/lives/ui-taulen-y32-path.png`.
-- 54-voices already swaps "lord" to the local word ("The wazen's wood"), but not church, priest, abbey, reeve or ale.
+- 54-character-voices already swaps "lord" to the local word ("The wazen's wood"), but not church, priest, abbey, reeve or ale.
 
 **On content share.** By count, the Far Lands are *not* thinner. Events tied to land or region (`C.land/region/fbFar` or `C.realm/terr/cult`) were 14–23% of a far life, against 6–12% of a Known World one (`classify.cjs`). Rulers were 4% in both. The thinness is in the voice of the other 80%.
 
 **Fix.**
-- Extend 54-voices' `swap` banks for the far cultures (990-far-peoples `voices.*.data.core.js`) with a faith-place set: church, priest, abbey, parish, bishop and ale, mapped to each culture's own words.
+- Extend 54-character-voices' `swap` banks for the far cultures (990-far-peoples `voices.*.data.core.js`) with a faith-place set: church, priest, abbey, parish, bishop and ale, mapped to each culture's own words.
 - Add `!C.farLand(p)` to the half-dozen events that can't be re-voiced: corrody, enclosure of the common, the runaway serf in a realm with no serfs.
 - In `46-life-arcs`, the monument choices should read the realm bible (cathedral, or temple, stupa, ancestral hall).
 
@@ -247,12 +247,12 @@ The ambition "Build a purse of 5,000 suns" is met in the twenties. Nothing in th
 **Why it matters.** A player of 13 to 23 plays from "What now". A system it never points to doesn't exist for them. KoDP surfaces every big lever as an advisor's line.
 
 **Fix.**
-- Add `A.whatNow` entries (a patch in `97-life-fixes/c-ambition` or a new tiny feature):
+- Add `A.whatNow` entries (a patch in `97-first-life-fixes/c-ambition` or a new tiny feature):
   - "You can afford a great work" (worth ≥ 10× its price);
   - "Found your house" (bars met);
   - "An order would have you, if you were knighted";
   - "Someone you hate is within reach" (a scheme);
-  - "You are the best blade in X": when `A.fightWorth(pc)` passes the Legend line (118), make the PC a Legend, with a fame boost and challengers (48-fight-ladder).
+  - "You are the best blade in X": when `A.fightWorth(pc)` passes the Legend line (118), make the PC a Legend, with a fame boost and challengers (48-event-fight-rules).
 
 ### I6. Far Lands own-scene families repeat on a three-year cooldown (impact 3, size S)
 
@@ -325,7 +325,7 @@ The ambition "Build a purse of 5,000 suns" is met in the twenties. Nothing in th
 4. **B2**: "Raise a hunt with the village" leads to an unbadged solo charge; a merchant of 18 dies to a crocodile in her first months. (S, 5)
 5. **B8**: wars of 12–25 provinces begin and end within a year; rulers get no war scene in 37–53 years; your home changes realm silently. (M, 4)
 6. **B4**: tier leaks: a queen flees to the woods, writes love letters "as a job"; a General is asked "You. Name?" at 62. (S each, 4)
-7. **I3**: Far Lands old age and arcs speak of abbeys, tonsures, the parish, the church porch and cathedrals; 54-voices swaps "lord" only. (M, 4)
+7. **I3**: Far Lands old age and arcs speak of abbeys, tonsures, the parish, the church porch and cathedrals; 54-character-voices swaps "lord" only. (M, 4)
 8. **I4**: coin explodes (132k by 30 for a merchant, 73k for a novice-turned-banker) with no late sinks; the purse ambition is met in the twenties. (M, 4)
 9. **I5**: orders, Legends, player schemes, great works and founding a house never come into play; `A.whatNow` points at none of them. (M, 4)
 10. **B3**: given-name collisions make the dead seem to act (Suilan, Roland, Kaosen); the memory system needs a name that tells people apart. (M, 4)
