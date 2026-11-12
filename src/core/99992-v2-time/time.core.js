@@ -198,6 +198,9 @@
   UI.stepTarget = function (kind) {
     if (kind === 'day') return A.absDay() + 1;
     if (kind === 'month') return V2T.nextTurn();
+    // the turn of the next year (the tick that runs January's hooks): B6's Next year, month turns one after another in
+    // the same slices, drawn once at the end (999999-one-redraw); no control offers it yet (round 2 A1, CRITIQUE T3)
+    if (kind === 'year') return (A.S.year + 1) * 365 + MS()[0] + 1;
     return target0.apply(this, arguments);
   };
   // the toast, not a card, says what a quiet step brought

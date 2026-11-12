@@ -113,17 +113,21 @@
   // a name whose longest word is wider than its column ("Mogash of Clan Kozrak, Hoofbreaker" in the rail's capitals
   // broke as "HOOFBREAKE / R", playtest 2 new 14) is set smaller until that word fits; it reads the layout only
   LOOK.nameFit = function (n) {
-    if (!n || !n.offsetWidth) return;
+    if (!n) return;
+    const words = (n.textContent || '').trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return;
+    // writes first, then every width in one read (round 2 A1: a word at a time forced a layout a word)
     n.style.fontSize = '';
-    const W = n.clientWidth, words = (n.textContent || '').trim().split(/\s+/).filter(Boolean);
-    if (!W || !words.length) return;
     const probe = document.createElement('span');
     probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:inherit;letter-spacing:inherit;text-transform:inherit;font-variant:inherit';
+    for (const w of words) { const s = document.createElement('span'); s.style.cssText = 'display:block;width:max-content'; s.textContent = w; probe.appendChild(s); }
     n.appendChild(probe);
+    const W = n.offsetWidth ? n.clientWidth : 0;
     let widest = 0;
-    for (const w of words) { probe.textContent = w; widest = Math.max(widest, probe.getBoundingClientRect().width); }
+    if (W) for (const s of probe.children) widest = Math.max(widest, s.getBoundingClientRect().width);
+    const fs = widest > W && W ? parseFloat(getComputedStyle(n).fontSize) : 0;
     probe.remove();
-    if (widest > W) n.style.fontSize = Math.max(11, Math.floor(parseFloat(getComputedStyle(n).fontSize) * W / widest * 0.97)) + 'px';
+    if (fs) n.style.fontSize = Math.max(11, Math.floor(fs * W / widest * 0.97)) + 'px';
   };
   // the four needs of 35-moods with the mood: 2 x 2 rows, each a tooltip (59-descriptions' need and needs entries)
   LOOK.needsBox = function (pc) {
@@ -155,7 +159,16 @@
     const chips = [...row.children].filter(c => c.classList.contains('chip'));
     const W = row.clientWidth, MORE = 40;
     let cut = 0;
-    for (const c of chips) { if (c.offsetLeft - row.offsetLeft + c.offsetWidth > W - (cut || c !== chips[chips.length - 1] ? MORE : 0)) { c.classList.add('lk-cut'); cut++; } }
+    // every position read once, then the cut chips marked (round 2 A1: marking one and reading the next forced a layout a
+    // chip). In one row a cut chip's room goes to the next, as display:none gives it; an open (wrapped) row keeps its places.
+    const open = row.classList.contains('lk-open'), r0 = row.offsetLeft, L = chips.map(c => c.offsetLeft), Wd = chips.map(c => c.offsetWidth);
+    const gap = chips.length > 1 ? Math.max(0, L[1] - L[0] - Wd[0]) : 0, cuts = [];
+    let x = chips.length ? L[0] - r0 : 0;
+    chips.forEach((c, i) => {
+      const right = (open ? L[i] - r0 : x) + Wd[i];
+      if (right > W - (cut || i !== chips.length - 1 ? MORE : 0)) { cuts.push(c); cut++; } else x = right + gap;
+    });
+    for (const c of cuts) c.classList.add('lk-cut');
     if (!cut) return;
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'chip lk-more'; b.dataset.a = 'lookChips';

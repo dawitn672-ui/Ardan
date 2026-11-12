@@ -119,7 +119,7 @@
   for (const k of ['render', 'refresh', 'refreshTab']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;
-    UI[k] = function () { const r = f.apply(this, arguments); try { place(); } catch (e) { console.error('icons', e); } return r; };
+    UI[k] = function () { const r = f.apply(this, arguments); if ((UI.REDRAW && UI.REDRAW.depth > 1)) return r; try { place(); } catch (e) { console.error('icons', e); } return r; };   // once per draw (round 2 A1)
   }
   // the activity's tooltip opens with its own icon
   const TT = UI.TT;

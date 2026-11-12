@@ -60,3 +60,25 @@ jobs:
       - run: node tools/build.mjs
       - run: git diff --exit-code index.html
       - run: node tools/bench/balance.mjs index.html --workers=4
+  # Round 2 A1 (CRITIQUE Q2): the press gate. Real Next month presses on the committed saves of year 0 and year 50
+  # (tests/saves/press/), on a fresh page and after a death, at 1366 px and at four-times CPU throttle, held to the
+  # budgets in tools/bench/press-gate.mjs (CPU time, full redraws and layouts a press).
+  press:
+    runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # --report until the engine's own share of a month (80 to 170 ms on a loaded 4-core box, all of the 150 ms budget)
+      # is cut: the table is in the log and the artifact; drop --report to hold the budgets
+      - run: node tools/bench/press-gate.mjs index.html --out=press-gate --report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: press-gate
+          path: press-gate/

@@ -34,7 +34,15 @@
   for (const k of ['render', 'refresh', 'refreshTab', 'renderModal']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;
-    UI[k] = function () { const r = f.apply(this, arguments); LOOK.apply(); try { LOOK.modalFlags(); } catch (e) {} return r; };
+    // once per draw, by the outermost one (round 2 A1); while a step runs the page behind a card is not redrawn, so only
+    // the dialog's own passes run
+    UI[k] = function () {
+      const r = f.apply(this, arguments);
+      if ((UI.REDRAW && UI.REDRAW.depth > 1)) return r;
+      if (UI.REDRAW && UI.REDRAW.frozen()) { try { LOOK.keepLast(); if (LOOK.duelPass) LOOK.duelPass(); } catch (e) {} } else LOOK.apply();
+      try { LOOK.modalFlags(); } catch (e) {}
+      return r;
+    };
   }
   if (typeof UI.modalClosed === 'function') {
     const mc = UI.modalClosed;

@@ -56,7 +56,7 @@ body, stats, skills, moods, relationships, advisors, renown), `family` (kin, hou
 (titles, courts, offices, the polity), `diplomacy` (relations between realms, reasons for war), `war` (armies,
 battles, sieges, orders, companies), `economy` (goods, markets, trade), `events` (event packs, arcs, memory,
 chronicle, endings), `ui` (look, layout, portraits, icons, motion, phone). Features apply in folder-name order across
-all systems (`00-security` first, `99999-v2-renown` last), as `tools/lib/features.mjs` lists them.
+all systems (`00-security` first, `999999-one-redraw` last: its redraw wrappers are the outermost), as `tools/lib/features.mjs` lists them.
 
 ## Build, test, play
 
@@ -74,7 +74,8 @@ node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that f
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
 node tests/run.mjs                                        # everything against index.html (759 tests; CI shards it 8 ways)
 node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
-node tools/bench/next-month-speed.mjs /tmp/me.html --state=save.json [--death]   # real Next month presses, in CPU time
+node tools/bench/next-month-speed.mjs /tmp/me.html --save=tests/saves/press/y50-noble.ardan [--death] [--throttle=4]   # real Next month presses, in CPU time
+node tools/bench/press-gate.mjs /tmp/me.html [--report]   # the A1 gate (CI): year 0 and 50, fresh and after a death, held to budgets
 node tools/bench/style-probe.mjs /tmp/me.html             # one <span> insert's style time after a hint and a death (< 1 ms)
 node tools/bench/long-life-audit.mjs /tmp/me.html --seed=7 --years=60    # a long bot life with the one-holder audit and error counts
 node tools/check.mjs                                      # everything CI runs
@@ -142,6 +143,9 @@ Then add the smallest patch needed to call your code from the existing flow.
 - Engine code uses only `A.rand`, `A.ri`, `A.rf`, `A.chance`, `A.pick`, `A.wpick` and `A.gauss`. Never `Math.random` or `Date.now`.
 - **Rendering must be pure.** UI code must not consume `A.rand` or change `A.S`. The `renderRng` and `replayWithRender` tests enforce this.
 - If a view needs a random-looking pick, seed it from ids, the way `A.npcStyles` does.
+- **One redraw a press** (`src/ui/999999-one-redraw`). While a step runs, `UI.refresh` draws only the card and the clock
+  and the page waits for the step's end. A new post-draw pass wraps the draws like 91's do and returns early when
+  `UI.REDRAW.depth > 1` (a draw inside a draw); it reads all the layout it needs before it writes.
 
 **Security.**
 

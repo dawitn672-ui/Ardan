@@ -251,7 +251,7 @@
   for (const k of ['render', 'refresh', 'refreshTab', 'renderModal', 'clkLight']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;
-    UI[k] = function () { const r = f.apply(this, arguments); try { MOT.after(); } catch (e) { console.error('motion', e); } return r; };
+    UI[k] = function () { const r = f.apply(this, arguments); if ((UI.REDRAW && UI.REDRAW.depth > 1)) return r; try { MOT.after(); } catch (e) { console.error('motion', e); } return r; };   // once per draw (round 2 A1)
   }
 
   // ---- toasts ---------------------------------------------------------------------------------------------------------
