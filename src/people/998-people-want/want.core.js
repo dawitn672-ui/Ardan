@@ -14,7 +14,9 @@
   const NI = () => A.NPCI;
   const low = s => String(s || '').charAt(0).toLowerCase() + String(s || '').slice(1);
   const clip = (s, n) => { s = String(s || '').replace(/[{}<>"]/g, '').replace(/\s+/g, ' ').trim().replace(/[.;,]$/, ''); if (s.length <= n) return s; const c = s.slice(0, n); return c.slice(0, Math.max(c.lastIndexOf(' '), n - 12)).replace(/[,;:]$/, '') + '…'; };
-  const skName = k => (GD.SKILLS && GD.SKILLS[k] ? low(GD.SKILLS[k].name || GD.SKILLS[k][0] || k) : k);
+  // GD.SKILLS[k] is the skill's name as a string ("Fencing"); [0] of it was its first letter ("would teach you f",
+  // round 2 A0, docs/CRITIQUE.md E10). An object or an array form is still read.
+  const skName = k => { const s = GD.SKILLS && GD.SKILLS[k]; return s ? low(typeof s === 'string' ? s : (s.name || (Array.isArray(s) ? s[0] : '') || k)) : k; };
   const nameOf = t => (t ? (A.fullName ? A.fullName(t, false) : t.given) : '');
   const FOES = new Set(['rival', 'enemy', 'nemesis']);
 

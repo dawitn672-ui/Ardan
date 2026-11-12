@@ -13,6 +13,7 @@ Raw {tokens} in 39 events, two events that never fired, text-diet misses, a stal
 | `EVT-SERV-SECRET` | wk_serv_secret: one of its four secrets contains {enemy}, which this pack never filled, so the event was dropped 1 time in 4. |
 | `EVT-TEXT-DIET` | The text diet (event text <= 80 words, choices <= 12) had three misses: two 13-word choices, and rl_sec_calf, whose 59-word intro plus the public story it pulls from the lore rendered at about 83 words. |
 | `TXT-MENTOR-LEGACY` | The "The teacher" mastery still promised "+1 legacy", a system that was removed. |
+| `TXT-WAR-PLURALS` | The war room counted "1 armies in the field · 1 battles raging" (round 2 A0, E10). Both counts go through `A.plural` (`plural.core.js`, a count and its noun, singular for one); 59-tooltips reads the line as "army" or "armies". |
 
 ## Tests
 

@@ -344,24 +344,45 @@
     if (vs[0]) return { p: vs[0], why: 'vassal' };
     return null;
   };
+  // Decide first, create last (round 2 A0, docs/CRITIQUE.md R5). The old code raised the new house and its people, then
+  // read the old house's head, which a headless house does not have (ohd null): it threw with the new house made and
+  // nobody seated, the month's pass stopped there, and from then on the new house and the old one both sat in the
+  // county (seed 7, 1159-60: two lords of Rushzag Oasis for good). Now every read and check comes first, nothing is
+  // made until they pass, and a failure while making the new holder takes back what it made.
   N.regrant = function (t) {
     const S = A.S, rid = t.k.split(':')[0], r = A.realm(rid);
     if (!r || r.alive === false || N.holderOf(t)) return null;
+    if (!S.prov[t.seat]) return null;
+    // the plan: who takes it, and where the old house's seat goes
     let c = N.candidateFor(t);
-    if (!c) F.sandbox('regrant|' + t.k + '|' + S.year, () => {
-      const rng = F.rng('regrant|' + t.k + '|' + S.year);
-      const h = newHouse(r, rid, t.rank, t.seat, rng);
-      c = { p: newHolder(r, rid, h, t.rank, rng), why: 'new' };
-    });
-    if (!c) return null;
-    const p = c.p;
-    // the old house (even headless now: the release may give it a head later) no longer sits in this county: its seat follows its head's own
-    // holding, or it has none (one holder per county: F.audit counts a living head's seat as a holding)
-    const oh = t.house && S.houses[t.house], ohd = oh && A.P(oh.headPid);
-    if (oh && oh.id !== p.house && F.seatProv && F.seatProv(oh) === t.seat) {
-      const q = ohd.noble && ohd.noble.holding != null ? S.prov[ohd.noble.holding] : null;
-      oh.v2seatLost = oh.seat; oh.seat = q ? q.name : null; oh.seatId = q ? q.pid : null;
+    // the old house (even headless now: the release may give it a head later) no longer sits in this county: its seat
+    // follows its head's own holding, or it has none (one holder per county: F.audit counts a living head's seat as a
+    // holding). A house with no head has no holding to follow.
+    const oh = t.house && S.houses[t.house], ohd = oh && oh.headPid ? A.P(oh.headPid) : null;
+    const ohSeat = !!(oh && F.seatProv && F.seatProv(oh) === t.seat);
+    const ohTo = ohSeat && ohd && ohd.noble && ohd.noble.holding != null ? S.prov[ohd.noble.holding] || null : null;
+    // only now is anything made: a new house and its head, when no one can take the title. If making them throws, the
+    // people and the house made so far are taken back, and the title waits for next month.
+    if (!c) {
+      const keepPeople = new Set(Object.keys(S.people)), keepHouses = new Set(Object.keys(S.houses)), keepId = S.nextId;
+      try {
+        F.sandbox('regrant|' + t.k + '|' + S.year, () => {
+          const rng = F.rng('regrant|' + t.k + '|' + S.year);
+          const h = newHouse(r, rid, t.rank, t.seat, rng);
+          c = { p: newHolder(r, rid, h, t.rank, rng), why: 'new' };
+        });
+        if (!c || !c.p) throw new Error('no holder made for ' + t.k);
+      } catch (e) {
+        for (const id of Object.keys(S.people)) if (!keepPeople.has(id)) delete S.people[id];
+        for (const id of Object.keys(S.houses)) if (!keepHouses.has(id)) delete S.houses[id];
+        if (keepId !== undefined) S.nextId = keepId;
+        if (A.scaleHouse) try { A.scaleHouse(); } catch (e2) { /* the index is rebuilt by the monthly check */ }
+        throw e;
+      }
     }
+    const p = c.p;
+    // the commit: plain writes from here on
+    if (oh && oh.id !== p.house && ohSeat) { oh.v2seatLost = oh.seat; oh.seat = ohTo ? ohTo.name : null; oh.seatId = ohTo ? ohTo.pid : null; }
     // a lesser noble gives up his slot under a count; the slot is generated again
     if (p.noble && p.noble.fief) { const f = p.noble.fief, k = N.slotKey(p.noble.realm || rid, f.county, f.rank, f.i); if (S.court.met[k] === p.id) delete S.court.met[k]; }
     seatHolder(p, rid, t.rank, t.seat, t.k);
@@ -380,6 +401,8 @@
     if (pc && pc.realm === rid && (t.rank !== 'count' || pc.home === t.seat) && A.news) A.news(`${ru ? A.fullName(ru, false) : 'The crown'} gives the ${t.name}, vacant since ${was}, to ${A.fullName(p, false)}.`, 'crown');
     return { t: t.k, to: p.id, why: c.why };
   };
+  // one title's failure never stops the pass: each regrant is tried on its own (round 2 A0, R5: one throw used to skip
+  // every title after it, 164 in seed 7's 1159), and the failure is logged
   N.regrantMonth = function () {
     const S = A.S; if (!S.court) return [];
     const out = [];
@@ -388,7 +411,9 @@
       if (N.holderOf(t)) { if (t.vacant) { delete t.vacant; delete t.vacN; } continue; }
       if (!t.vacant) { t.vacant = S.year; t.vacN = 0; continue; }
       t.vacN = (t.vacN || 0) + 1;
-      if (t.vacN >= F.rng('wait|' + t.k + '|' + t.vacant).int(3, 12)) { const g = N.regrant(t); if (g) out.push(g); }
+      if (t.vacN >= F.rng('wait|' + t.k + '|' + t.vacant).int(3, 12)) {
+        try { const g = N.regrant(t); if (g) out.push(g); } catch (e) { console.error('v2-nobility regrant', t.k, e); }
+      }
     }
     return out;
   };

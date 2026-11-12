@@ -122,9 +122,10 @@ ${D} #profile .profs .prow{grid-template-columns:minmax(0,1fr) 28px 64px;min-hei
 ${D} #profile .profs .prow .tier{font-size:var(--t-cap);color:var(--ink-3);opacity:1}
 /* v2 (99993-v2-stats): a skill row is a tier word and its hours, not a number, so the 28 px number column let
    "Journeyman" run over "1,262 hours". The name and its tier on one line, the bar and the hours under them; the name
-   wraps rather than cut */
+   wraps rather than cut. The name is the row's one plain <span>: "> span:first-child" after a :has() made every DOM
+   insert restyle the whole page (round 2 A0, docs/CRITIQUE.md P1) */
 ${D} #profile .profs .prow:has(.v2-tier){grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'n t' 'b h';column-gap:8px;row-gap:0;min-height:0;padding:0 0 2px;line-height:1.15}
-${D} #profile .profs .prow:has(.v2-tier) > span:first-child{grid-area:n;white-space:normal;overflow:visible;text-overflow:clip}
+${D} #profile .profs .prow:has(.v2-tier) > span:not([class]){grid-area:n;white-space:normal;overflow:visible;text-overflow:clip}
 ${D} #profile .profs .prow:has(.v2-tier) > .v2-tier{grid-area:t;text-align:right}
 ${D} #profile .profs .prow:has(.v2-tier) > .v2-hrs{grid-area:h;text-align:right;line-height:1}
 ${D} #profile .profs .prow:has(.v2-tier) > .bar{grid-area:b;align-self:center}

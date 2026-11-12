@@ -267,7 +267,7 @@
   W.warTabClock = function (h, p) {
     const pc = p || A.pc(); if (!pc) return h;
     const myR = pc.ruler || (pc.mil && !pc.mil.merc ? pc.mil.realm : pc.mil && pc.mil.contract ? pc.mil.contract : pc.realm);
-    h = h.replace(/(<div class="small muted">)(\d+ armies in the field · [^<]*?)(<b>[^<]*<\/b>)?(<\/div>)/, (m, a, t, b, c) => `${a}${N('warFront', myR, t + (b || ''), { focus: true })}${c}`);
+    h = h.replace(/(<div class="small muted">)(\d+ arm(?:y|ies) in the field · [^<]*?)(<b>[^<]*<\/b>)?(<\/div>)/, (m, a, t, b, c) => `${a}${N('warFront', myR, t + (b || ''), { focus: true })}${c}`);
     if (pc.mil && pc.mil.div) {
       const d = A.divById(pc.mil.div);
       if (d) h = h.replace(/(— )([^<]*?\. [^<]*?, \d+% strength\.)(<\/div>)/, (m, a, t, c) => `${a}${N('divStr', d.id, t, { focus: true })}${c}`);

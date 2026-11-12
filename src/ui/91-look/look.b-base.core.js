@@ -62,10 +62,12 @@ ${X('.score')}{font-family:var(--f-impact);font-weight:400;color:var(--accent-st
 ${X('.mbox h2, .wr-top h2')}{font-family:var(--f-name)}
 ${X('.mbox:not(.obit) .mtext:first-letter')}{font-family:var(--f-name);font-weight:700;color:var(--accent);text-shadow:none}
 ${X('[data-vellum="1"] .il-vellum p:first-of-type::first-letter, .ts .ts-see::first-letter')}{font-family:var(--f-name);font-weight:700}
-/* a first-run hint never floats over a screen that covers the game (the full map, the War Room, a duel, a death) */
-body:has(#modal > .mbox:not(.sc-card)) #clk .hint, body:has(#modal > .mbox:not(.sc-card)) #topbar .hint{display:none!important}
+/* a first-run hint never floats over a screen that covers the game (the full map, the War Room, a duel, a death).
+   The classes on <body> are LOOK.modalFlags' (look.z-wire.core.js): a :has(#modal ...) rule on <body> made every DOM insert
+   restyle the whole page once a hint had been drawn (round 2 A0, docs/CRITIQUE.md P1) */
+body.lk-mbox #clk .hint, body.lk-mbox #topbar .hint{display:none!important}
 /* one hint at a time, whoever drew it: while an event's odds hint is up, the panel's hint waits */
-body:has(#modal > .hint) #tabbody .hint, body:has(#modal > .hint) #clk .hint{display:none!important}
+body.lk-mhint #tabbody .hint, body.lk-mhint #clk .hint{display:none!important}
 /* no test affordances in the player's face unless a playtest is under way (B11); both stay in the Menu */
 :root:not([data-pt="1"]) #title [data-a="playtest"], :root:not([data-pt="1"]) .mreport{display:none!important}
 /* the vellum page keeps its own ink in both themes (brief §1.1): the Night tokens are re-pointed inside it, so every

@@ -31,4 +31,16 @@ export default {
     const ok = r.pure && r.stranger && r.stranger.src === 'unknown' && (!r.cast || r.cast.src === 'cast') && r.rivalTier && r.n > 0 && !r.untrainedLeft && !r.raw && r.esc !== false;
     return { ok, detail: `${r.n} wants drawn (${r.kinds.join(', ')}); a stranger: "${r.stranger && r.stranger.text}"; a cast member: "${r.cast && r.cast.full}"; a rival keeps the tier ${r.rivalTier}; tier chips left on non-fighters ${r.untrainedLeft}; render pure ${r.pure}; escaped ${r.esc}` };
   },
+
+  // round 2 A0 (docs/CRITIQUE.md E10): a teacher "would teach you f", the first letter of the skill's name
+  async peopleWantTeach(pg) {
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 18 });
+      const pc = A.pc(), t = Object.values(A.S.people).find(p => p.alive && p.id !== pc.id), NI = A.NPCI, keep = NI.teachSkill, out = [];
+      try { for (const k of ['sword', 'persuasion']) { NI.teachSkill = () => k; out.push(UI.PEOPLE_WANT.MOVE.apprentice(pc, t)); } } finally { NI.teachSkill = keep; }
+      return { out, names: [GD.SKILLS.sword, GD.SKILLS.persuasion] };
+    });
+    const ok = r.out.every((s, i) => s === 'would teach you ' + String(r.names[i]).charAt(0).toLowerCase() + String(r.names[i]).slice(1));
+    return { ok, detail: r.out.map(s => `"${s}"`).join(', ') };
+  },
 };
