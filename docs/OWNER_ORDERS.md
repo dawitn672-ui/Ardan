@@ -23,6 +23,7 @@ order is replaced, strike it through and say by what.
 16. **Auto-resume after limits, even when the owner is away:** a scheduled task ("Ardan auto-resume after limits", id `trig_01Brt9jMjwCyjDebRAxoZpfc`, hourly at :12 into this session) resumes agents stopped by a usage limit or restart, pushes stray work and checks PR #2's CI; it never starts new steps while a pause is in force and stays silent when nothing changed. If the session is replaced, recreate it. · recorded 2026-11-12 06:12 ET
 17. **Continue with the structure according to plan:** the owner reviewed the critique and answered its decisions (DECISIONS D-011 to D-014); work follows docs/CRITIQUE.md §2 in order. · recorded 2026-11-12 06:49 ET
 18. **Many more names:** the name pools must be large enough to name whole kingdoms, and then noticeably larger again. · recorded 2026-11-12 06:49 ET
+19. **Model versions:** whenever Fable is used it must be **Fable 5.2** (`claude-fable-5-2`); whenever Opus is used it must be **Opus 5.5** (`claude-opus-5-5`). The Agent tool's `fable` and `opus` choices map to exactly these (the API errors of Nov 12 name `claude-fable-5-2` and `claude-opus-5-5`); check the model named in any agent's error or report, and stop and tell the owner if it ever differs. · recorded 2026-11-12 10:53 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
