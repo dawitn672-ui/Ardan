@@ -97,12 +97,12 @@ necessary" with the game's goals in mind. D-009's table stays as the default gui
 - Browser AI is allowed (owner, Nov 12). This session has web search and a web-reading agent (used for research and references, on a small model); no other browser-AI tool is connected.
 **Why:** the owner's order; it also keeps the 5-hour usage window from stopping the work.
 
-### D-011 · Art register: detailed anime, a designer's hand, deep customisation (2026-11-12 06:49 ET, owner's answer to CRITIQUE decision 1)
+### D-011 · ~~Art register: detailed anime~~ (superseded by D-015, 2026-11-12 10:46 ET), a designer's hand, deep customisation (2026-11-12 06:49 ET, owner's answer to CRITIQUE decision 1)
 **Chosen:** keep the anime look, but far more detailed, as if drawn by a real character designer: grown-up proportions,
 real noses, age and scars that show, and many more options for hair, height, facial features and build.
 **Why:** the owner's answer. Steers C8a (the plan) and C8b/C8c (the build).
 
-### D-012 · The crown picks the Marshal; feudal armies (2026-11-12 06:49 ET, owner's answer to CRITIQUE decision 3)
+### D-012 · The crown picks the Marshal; feudal armies (Marshal part superseded by D-017, 2026-11-12 10:46 ET; the feudal armies stand) (2026-11-12 06:49 ET, owner's answer to CRITIQUE decision 3)
 **Chosen:** the king may make anyone Marshal of the army, over the generals' heads (with real command handed over and
 their resentment). Armies are feudal: each noble holds troops in proportion to his rank; the crown has royal knights;
 the elite orders are under the crown but recruit from the whole kingdom by prowess; a duchy's knights fight for the
@@ -114,11 +114,41 @@ names; cultures differ in customs, dress, faith and ways. Only a few far or non-
 **Replaces:** the earlier "names modelled on real-world cultures" order (OWNER_ORDERS rule 8, superseded) and the
 24 separately-flavoured pools of `docs/research/c7-names.json` as the default. **Why:** the owner's answer. Steers C7.
 
-### D-014 · The open critique decisions the owner left to the plan (2026-11-12 06:49 ET)
+### D-014 · The open critique decisions the owner left to the plan (map look superseded by D-016; X1, X5 and the year by D-018 and D-019, 2026-11-12 10:46 ET) (2026-11-12 06:49 ET)
 **Chosen (the critique's recommendations, until the owner says otherwise):** map look (decision 2): keep the
 satellite ground and lay roads, rivers and names over it as crisp lines; X1 (decision 4): turn the patched release
 into readable source as one step before A2; the built game (decision 5): keep committing `index.html` for now (the
 playable file in every commit is how versions are restored), revisit in X5; a year for an adult (decision 6): a year
 stops at any card that needs a choice, a war call, an illness, a birth or death in the family, or when the initiative
 pool is full. **Why:** the owner said "continue with structure according to plan" without answering these.
+
+### D-015 · Characters: as realistic as possible; anime optional (2026-11-12 10:46 ET, owner's answer to C8a; supersedes D-011)
+**Chosen:** leave anime if a realistic hand suits better (the plan's call). People grow up accurately from infant to
+elder, with age shown truly in face and body; scars are real and lasting and change the face and body's structure;
+armour and clothing are drawn in full detail down to the smallest features, using real art-design skill. The plan's
+other defaults stand: veterans' scars are real (rare, with small lasting costs), creation may redraw the player's
+family to keep the resemblance, and the two older portrait renderers retire to `archive/` at C8c.
+
+### D-016 · The map: inked, rich in detail; war as a creeping burn, not tiles (2026-11-12 10:46 ET, owner's answer to D9; supersedes D-014's map look)
+**Chosen:** an inked map, detailed enough to read rivers, valleys, mountains, trade routes, terrains and notable
+habitats. No hexagonal tiles in war: control spreads and recedes like a burn across the land, soft-edged, creeping
+with each skirmish, so the map shows momentum and change; small border skirmishes move it a little.
+
+### D-017 · The Marshal: usually vacant; a General leads day to day (2026-11-12 10:46 ET, owner's answer to A2; supersedes D-012's Marshal part)
+**Chosen:** the Marshal's seat stays empty until it is truly needed (a great war, more armies than the generals can
+hold together). Then it goes to a General, or someone who has proved more capable than the generals, chosen by the
+crown. Day to day, General is the highest rank in the army. Feudal armies (D-012) stand.
+
+### D-018 · X1 and X5, the long-term call (2026-11-12 10:46 ET, the owner left them to the session)
+**Chosen:** X1 runs before A2: the patched release becomes readable source (one step, nothing to see), because A2
+must route ~70 write sites, many inside minified code. X5: after X1, stop committing `index.html` every round; CI
+builds it, release branches carry the built file, and `tools/version.mjs get` rebuilds any older version from its
+commit (the build is deterministic). Removes the 104 MB of built files from git's growth.
+
+### D-019 · Time: no initiative cap; only notable things stop time (2026-11-12 10:46 ET, owner's answer to B6; refines D-008)
+**Chosen:** the initiative pool is removed: the player may do as much as they like in a month or a year when it is
+fitting; overtraining has its own consequences (fatigue, injury), and that is on the player. Ordinary conversations
+and day-to-day happenings never stop a month or a year; only notable events or problems do (a real decision, a
+war call, an illness or wound, a death or birth in the family, coming of age, a deadline).
+**C7:** the owner confirmed one common English language (D-013).
 
