@@ -81,3 +81,18 @@ are updated when it is built.
 **How:** work is delegated to agents with that model and effort; the orchestrating session integrates, tests and
 records. The first critique round of Nov 12 ran on the session's own model (Opus) before this plan arrived: its
 reports are kept as evidence, and Fable at max effort writes the critique and the work order from them and its own play.
+
+### D-010 · Token efficiency first; model and effort at the session's discretion (2026-11-12, owner's order)
+**Chosen:** the owner gave full discretion over model and effort and asked for token efficiency "by any means
+necessary" with the game's goals in mind. D-009's table stays as the default guide. Practice:
+- **Match the model to the work:** Haiku for searches and mechanical edits, Sonnet for interface, data and
+  playtesting, Opus for systems, Fable only for judgment that steers many steps (the critique's final merge, the C8
+  and D12 designs). Max effort only for those judgments.
+- **No duplicate rounds.** The critique's first round (Opus) is evidence; one Fable lead merges it (the two Fable lens
+  critics already started finish; the other three lenses go straight to the lead).
+- **Tight briefs:** point agents at files and evidence instead of pasting; cap report length; reuse scripts in
+  `tools/` and earlier evidence; grep with context instead of reading big files or minified blobs.
+- **Few, targeted test runs:** run the tests a change touches locally; one full CI run per finished step.
+- **Don't overload the 4-core machine:** at most 3 browser-driving agents at once.
+- No browser-based AI tools are available to this session beyond Playwright; none are used.
+**Why:** the owner's order; it also keeps the 5-hour usage window from stopping the work.

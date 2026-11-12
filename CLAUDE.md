@@ -8,12 +8,12 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
 
 ## Every session, first
 
-1. Read this file, the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
+1. Read this file, `docs/OWNER_ORDERS.md` (every standing order of the owner's), the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
    undo a recorded decision without a new record), `docs/V2_SPEC.md` (the owner's design rules) and the skills in
    `.claude/skills/`.
 2. Work on a branch, one step per commit. After each step: tests, the coherency checks, a playtest pass
    (`.claude/skills/game-ux-playtest-loop`), then a `docs/HISTORY.md` entry, `CHANGELOG.md` and this file if they change.
-3. Use the owner's model plan for each part of round 2 (`docs/DECISIONS.md`, D-009): for example Fable at max effort
+3. Token efficiency first, model and effort at your discretion (`docs/DECISIONS.md` D-010), using the owner's model plan (D-009) as the default: for example Fable at max effort
    for the critique and the big designs, Opus at high effort for systems, Sonnet at high effort for interface and
    data work, Sonnet at default effort for playtester agents.
 
