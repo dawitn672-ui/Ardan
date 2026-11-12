@@ -1,0 +1,26 @@
+{
+  "id": "braid_side",
+  "_note": "Long hair parted in the middle, drawn back smooth over the skull and bound in one plait brought forward over the near shoulder. The outline first; then long locks from the parting, the far ones down over the far temple, the near ones back over the ear to the nape; two loose wisps break the frame of the face. The plait is one lobe repeated along its guide, tied with linen.",
+  "layers": [
+    {"id": "mass", "role": "hair.shadow", "d": "M 372 384 S 366 322 392 268 446 228 522 208 602 220 666 256 706 320 718 400 712 480 696 560 680 610 L 640 620 S 640 560 628 520 L 620 470 S 610 430 596 390 576 350 548 322 506 304 462 300 420 312 390 338 Z"},
+    {"id": "far", "ramp": "hair", "locks": [
+      {"g": "M 504 244 S 452 248 412 274 382 318 370 364 368 396", "w": [24, 26, 18, 8], "edge": -1},
+      {"g": "M 474 270 S 432 282 400 312 380 356 374 398", "w": [22, 24, 16, 6]},
+      {"g": "M 448 298 S 418 314 396 344 384 384 380 416", "w": [16, 18, 12, 4]}
+    ]},
+    {"id": "near", "ramp": "hair", "locks": [
+      {"g": "M 524 228 S 592 220 652 244 696 298 716 378 716 440", "w": [24, 28, 26, 14], "edge": 1},
+      {"g": "M 510 244 S 582 238 642 266 684 322 704 396 706 470", "w": [28, 32, 30, 16], "t": "half"},
+      {"g": "M 492 262 S 558 262 618 290 662 344 686 412 690 484", "w": [28, 32, 30, 16]},
+      {"g": "M 472 282 S 530 290 588 318 632 366 658 424 666 486", "w": [26, 30, 28, 14]},
+      {"g": "M 454 300 S 502 314 552 336 596 374 624 422 638 474", "w": [22, 26, 24, 12]},
+      {"g": "M 700 430 S 708 500 696 560 672 612", "w": [40, 42, 30], "t": "half", "edge": 1}
+    ]},
+    {"id": "part", "role": "skin.half", "lod": 1, "line": "M 448 300 S 470 280 494 258 522 232", "w": [3, 2.4, 1.6, 0.6], "k": "tone"},
+    {"id": "wisps", "z": "front", "ramp": "hair", "cast": [5, 7], "locks": [
+      {"g": "M 452 304 S 428 330 412 370 408 414 416 452", "w": [6, 7, 5, 3, 1], "hl": false, "strands": 0, "edge": -1},
+      {"g": "M 598 378 S 608 420 604 462 612 504", "w": [6, 7, 5, 1], "hl": false, "strands": 0, "edge": 1}
+    ]},
+    {"id": "plait", "braid": {"g": "M 674 604 S 704 666 720 736 724 816 712 904 700 990 694 1060", "w": 38, "n": 11, "tie": "linen", "tuft": 6}}
+  ]
+}

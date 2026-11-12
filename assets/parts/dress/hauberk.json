@@ -1,0 +1,25 @@
+{
+  "id": "hauberk",
+  "z": "dress2",
+  "mats": {"metal": "steel", "trim": "brass"},
+  "_note": "A mail shirt over the quilted coat: rows of linked rings that follow the shoulders (full size), dashes with a sparkle (cards), grey with a few glints (46 px). A border of brass rings at the neck. The form's shadows are laid over the rings: the near side turning away, the sag between the shoulders, soft folds on the chest.",
+  "layers": [
+    {"id": "body", "role": "metal.half", "d": "M 400 876 S 330 890 212 929 132 989 96 1092 84 1516 L 982 1516 S 970 1081 938 971 852 905 764 850 S 700 864 620 881 540 892 470 894 Z"},
+    {"id": "under", "role": "metal.deep", "clip": "body", "lod": 1, "d": "M 0 -28 L 1000 -28 L 1000 1600 L 0 1600 Z", "alpha": 0.55},
+    {"id": "rings", "clip": "body", "pat": {"type": "mail", "metal": "metal", "top": "M 70 1070 S 140 978 262 914 402 879 540 894 680 876 792 874 902 934 972 1037", "bot": "M 70 1522 S 300 1532 520 1536 760 1532 990 1522", "rows": 38, "ring": 15}},
+    {"id": "lod0_glint", "role": "metal.light", "clip": "body", "lod": 0, "d": "M 140 993 S 220 938 320 909 300 938 210 978 Z", "alpha": 0.7},
+    {"id": "sh_far", "role": "metal.hl", "clip": "body", "lod": 1, "d": "M 120 1015 S 200 945 320 907 400 890 380 920 280 949 180 1004 Z", "alpha": 0.35},
+    {"id": "sh_near", "role": "metal.hl", "clip": "body", "lod": 1, "d": "M 700 872 S 780 876 860 916 900 960 840 945 760 905 Z", "alpha": 0.3},
+    {"id": "fold1", "role": "metal.deep", "clip": "body", "d": "M 300 960 S 330 1048 336 1136 330 1516 L 360 1516 S 362 1114 340 1026 Z", "alpha": 0.29},
+    {"id": "fold2", "role": "metal.deep", "clip": "body", "d": "M 520 905 S 540 1004 560 1103 570 1516 L 600 1516 S 590 1092 560 982 Z", "alpha": 0.27},
+    {"id": "fold_hl", "role": "metal.hl", "clip": "body", "lod": 1, "d": "M 250 971 S 270 1070 280 1516 L 296 1516 S 292 1081 270 971 Z", "alpha": 0.22},
+    {"id": "near_side", "role": "metal.deep", "clip": "body", "d": "M 660 872 S 700 960 740 1070 770 1516 L 1000 1516 L 1000 852 Z", "alpha": 0.5},
+    {"id": "near_deep", "role": "metal.deep", "clip": "body", "d": "M 800 894 S 840 982 870 1092 880 1516 L 1000 1516 L 1000 872 Z", "alpha": 0.36},
+    {"id": "neck_sag", "role": "metal.deep", "clip": "body", "d": "M 400 876 S 470 916 560 920 660 898 760 856 L 764 850 S 680 872 560 890 470 892 Z", "alpha": 0.54},
+    {"id": "trim", "role": "trim.half", "line": "M 402 881 S 470 898 540 896 620 885 700 868 762 854", "w": [12, 14, 14, 14, 13, 12], "k": "tone"},
+    {"id": "trim_rings", "clip": "trim", "pat": {"type": "mail", "metal": "trim", "top": "M 398 872 S 470 890 540 887 620 876 700 860 764 846", "bot": "M 404 890 S 470 907 540 905 620 894 700 876 760 862", "rows": 2, "ring": 13}},
+    {"id": "trim_edge", "role": "trim.line", "lod": 1, "line": "M 404 890 S 470 907 540 905 620 894 700 876 762 862", "w": [1.5, 2, 2, 2, 1.5], "k": "form"},
+    {"id": "line", "role": "metal.line", "line": "M 400 876 S 330 890 212 929 132 989 96 1092 84 1516", "w": [2, 3, 4, 4, 4, 4], "k": "contour"},
+    {"id": "line_n", "role": "metal.line", "line": "M 764 850 S 852 905 938 971 970 1081 982 1516", "w": [3, 4, 5, 5, 5], "k": "contour"}
+  ]
+}
