@@ -1,16 +1,16 @@
 # Ardan character design: faces, bodies and dress (C8a)
 
-*Stamped 2026-11-12 11:45 ET · work item C8a (CRITIQUE §2, item 6) · written by Fable at maximum effort · for the owner's approval; the look itself is approved by eye on the demo of §14 · supersedes the version of 2026-11-12 10:04 ET (the anime model sheet) and the portrait table of `docs/design/brief.md` §7.1 · follows D-015 and D-020 (game rule 14) · C8b and C8c build from it · plans V1 to V22*
+*Stamped 2026-11-12 11:48 ET · work item C8a (CRITIQUE §2, item 6) · written by Fable at maximum effort · for the owner's approval; the look itself is approved by eye on the demo of §14 · supersedes the version of 2026-11-12 10:04 ET (the anime model sheet) and the portrait table of `docs/design/brief.md` §7.1 · follows D-015 and D-020 (game rule 14) and order 23 · C8b and C8c build from it · plans V1 to V22*
 
 The owner's order (D-015): "You can leave the anime idea if you think it's more appropriate. It should grow up accurately, with lasting scars that change structure and face, and age should be accurate. As realistic as possible, representing their full armor or clothing in detail down to the smallest features, using art design skills." With it (D-020): weigh anime against realistic again and choose; every feature of the player's face set by hand, customisation before genes; clothing the player can change; and demos to look at before anything is built. All of it is recorded in §15.
 
 **The plan in short.**
 - **The look:** realistic. Each person is a true anatomy in millimetres under one window's light, finished as a painting: not anime, and not a photograph (§1).
-- **Your face is yours:** 39 features set by hand, with colours, hair and body. A face is a code of 23 characters. Children inherit it; parents and siblings are drawn to fit it (§3, §4, §10).
+- **Your face is yours:** 39 features set by hand, with colours, hair and body. A face is a short code you can copy and keep. Children inherit it; parents and siblings are drawn to fit it (§3, §4, §10).
 - **Lives show:** people grow from newborn to elder on real proportions, age line by line, and carry wounds that change the form for good (§5, §7).
 - **Dress is real:** layers of cloth, mail and plate over the body, down to buckles and stitches; right for station, culture, wealth, role and era, and yours to change in a wardrobe (§9).
-- **The cost:** a portrait is painted once, in 2 to 60 ms by its size, then kept as an image. The same person always gives the same picture (§11).
-- **First, a demo:** nine sheets and a live face maker for the owner to look at, before anything is built into the game (§14).
+- **The cost:** a portrait is painted once, in 3 to 105 ms by its size, then kept as an image. The same person always gives the same picture (§11).
+- **First, a demo:** eight sheets and a live face maker for the owner to look at, before anything is built into the game (§14).
 
 ## 0. What was measured
 
@@ -31,7 +31,7 @@ The owner's order (D-015): "You can leave the anime idea if you think it's more 
 - **Bytes.** 33 KB raw at 92 px and 225 KB at 240; about half that as PNG, because grain does not compress.
 - **Identity.** Twenty random men with one skin, crop and tunic were plainly twenty men at 150 px once the features ran over the real human range of §3. At 46 px the face alone did not carry them.
 - **Small things vanish at true size.** A sword scar 1.5 mm wide is half a pixel on a 120 px bust, and changed none of it.
-- **The honest look.** The heads read as lit clay busts. Structure, age and wounds are right; skin, hair and cloth are not yet paint. Closing that gap is the demo's work (§14, gate zero), before anything is built into the game.
+- **The honest look.** The heads read as lit clay busts. Structure, age and wounds are right; skin, hair and cloth are not yet paint. Closing that gap is the demo's work (§14, the first gate), before anything is built into the game.
 
 ## 1. The register, weighed again: a painted likeness
 
@@ -46,7 +46,7 @@ The first version's "anime" had already given up anime's own marks to answer the
 | Dress to the smallest feature | Materials differ by pattern and colour only; under 100 px fine pattern is noise | Materials differ by how they take light: mail glints ring by ring, plate mirrors the room, wool drinks light, fur has a soft edge |
 | A face in a list at 46 px | Its strength: a line holds at any size | Its weakness: it needs a closer crop, grouped tones and one restated edge (§11) |
 | The subject: a chronicle of serfs, soldiers and lords | The critique's V11: child-like and festive | The genre's own register (*Crusader Kings III*, *Kingdom Come: Deliverance*) |
-| Cost of a portrait | 0.3 to 2 ms, sharp at any size | 2 to 60 ms by size, drawn once and kept as an image (§11) |
+| Cost of a portrait | 0.3 to 2 ms, sharp at any size | 3 to 105 ms by size, painted once and kept as an image (§11) |
 | Where it can fail | Clean and generic: two rounds of procedural anime are in the build already | A wax doll, if skin and hair are weak |
 
 **Measured.** The prototype drew one model in both finishes. The share of a 120 px bust that visibly changed (by more than three steps in a colour channel): from 45 to 60 years, 3.9% in paint and 1.6% in flat tone; from 60 to 75, 12.9% and 7.4%; a burn, 3.1% and 0.5%; pox scars, 0.9% and 0.5%. Bone showed about alike in both (a broken nose 0.6% and 0.3%, a cheekbone stove in 0.7% and 0.5%). Skin and soft flesh are where this brief lives, and they show roughly two to six times more in paint. Two cautions: the flat finish was a quick pass, so these numbers say what each finish can carry, not how good it looks; and from 30 to 45 neither finish showed the change (0.2%), because the prototype's first lines are too faint. The `ages` sheet holds the real thing to that.
@@ -97,7 +97,7 @@ The first version's "anime" had already given up anime's own marks to answer the
 Every person is one model in real units. A grown human's base is the average man and woman of published body measurements (`data/looks.json` holds each people's means and spreads): a head about 152 mm wide, 195 long and 225 tall; pupils 63 apart, on the head's half-way line; a nose 51 long and 35 wide; a mouth 52 wide; an ear 63 long; a neck 380 round; shoulders 400 across the bone. A woman's are about a twentieth smaller, with a shape of her own (§5). "A man of 172 cm" and "a head 225 mm tall" are true statements about the picture.
 
 - **Named points.** About 60 points carry the head and 40 the body. The people, the features (§3), sex, age, build, wounds and expression each add offsets to them, in millimetres.
-- **The surface.** Each part is a radius round an upright axis: big volumes joined smoothly, then features pushed out or in along the radius. So a jaw or a cheekbone moves the outline as well as the light. The head is one such surface, the neck and trunk another, each limb its own. Ears and eyeballs are added as solids.
+- **The surface.** Each part is a radius round its own axis: big volumes joined smoothly, then features pushed out or in along the radius. So a jaw or a cheekbone moves the outline as well as the light. The head is one such surface, the neck and trunk another, each limb its own. Ears, eyeballs and carried things (a shield, a blade) are added as solids.
 - **Sharp cuts.** The opening between the lids, a hairline, a neckline and a hem are cut pixel by pixel, so they stay sharp at every size.
 - **Fine relief.** Lines, pores, the lips of a scar, a weave and the rings of mail are too fine for the surface. They bend the light pixel by pixel (§11).
 - **Layers.** Hair, cloth and armour are the surface under them pushed out by their own thickness (§6, §9), so they fit every height, build and age without being redrawn.
@@ -109,7 +109,9 @@ Every person is one model in real units. A grown human's base is the average man
 - Front and profile come free for the creation screen. A feature written once works in every view.
 - Growing up is the same model at a younger age. There are no separate drawings of infants.
 
-**If the surface cannot carry a face.** The demo judges it. The painter does not care where a surface comes from, so the fallback is a sculpted human in the same slot: MakeHuman's base mesh and shape targets are CC0 since 2020 (its code is AGPL and is not used), cut down by a `tools/` script to the head and the features of §3. It is taken only at gate zero, with a DECISIONS record naming the source and its licence.
+**Why not layers of painted vector shapes.** That was the other way to a realistic look. Every shadow would be a hand-written rule for every feature, age, weight and wound, where a lit model casts them for nothing. And a painted look in SVG needs gradients, blurs and textures on hundreds of shapes: 60 of today's plain busts already took 120 to 780 ms to mount. A painted model lands as one image.
+
+**If the surface cannot carry a face.** The demo judges it. The painter does not care where a surface comes from, so the fallback is a sculpted human in the same slot: MakeHuman's base mesh and shape targets are CC0 by its makers' statement of 2020 (its code is AGPL and is not used), cut down by a `tools/` script to the head and the features of §3. It is taken only at the demo gate, with a DECISIONS record naming the source and its licence.
 
 ## 3. Features: set by hand first, inherited second
 
@@ -159,11 +161,11 @@ Twelve more, of 4 to 16 steps: hair texture, thickness, hairline, balding, grey 
 - **Looks.** At birth `p.looks` decides where signatures fall: on the flattering set (eyes, cheekbones, lips) from 70 up, on the hard set (nose, ears, chin) at 30 and under. Quirks that describe looks set their features.
 - **Asymmetry.** No face is even. A lower eye, a leaning nose or a higher brow, by 1 to 2 mm, is hashed from the id and never stored.
 - **The words win.** `A.LOOKS.fromWords(p)` reads a written description and sets height, build, hair, beard and scars to match.
-- **By hand.** For the player the string is exactly what the controls wrote. A face is its code: 23 characters that can be copied, kept and pasted back.
+- **By hand.** For the player the string is exactly what the controls wrote. A face is its code: the 23 characters, with a short tail for colours, hair, height and build, can be copied, kept and pasted back.
 
 ## 4. Inheritance
 
-- **By feature group.** Seven groups: skull, eyes, brows, nose, mouth, ears, hair and body. Each group on its own is the father's four times in ten (0.8 his, 0.2 hers), the mother's four in ten, an even blend otherwise; then a little noise and a 10% pull to the people's mean.
+- **By feature group.** Seven groups: skull, eyes, brows, nose, mouth, ears, and hair with body. Each group on its own is the father's four times in ten (0.8 his, 0.2 hers), the mother's four in ten, an even blend otherwise; then a little noise and a 10% pull to the people's mean.
 - **Carried, not shown.** Mothers carry balding and beard growth, so a son can get his mother's father's hairline.
 - **Height, skin, colour.** Height takes 0.65 of the parents' mean (today `A.genAppearance` draws it fresh). Skin is the mean of the parents' places in the row, give or take a step (today three children in ten get any tone of the people). Hair and eye colour are a parent's or between.
 - **Never inherited.** A scar, a broken nose, weathering, weight, or anything else a life did (V21).
@@ -241,7 +243,7 @@ Stored: style (`hstyle`), fringe (`fr`), colour and facial hair. Features: textu
 **Realistic, and drawn well.**
 - **A mass first, strands second.** A style is 12 to 40 locks. Each lock is a ribbon laid over the skull along a guide curve (a root on the scalp, a path, a tip, a width), so a style is data, not code. The mass takes the window's light and casts its shadow on the forehead and neck. Strands are fine relief along each lock, and the light runs across them in a band: the sheen every head of hair has. At full size loose hairs break the outline.
 - **Texture** (straight, wavy, curly, coily) bends every lock's path, so the same cut is a different outline on coily hair.
-- **It hangs.** Long hair falls by its length and weight, and lies on the shoulders and over a collar.
+- **It hangs.** Long hair falls by its length and weight, lies on the shoulders and over a collar, and never passes through what is under it.
 - **The hairline** is cut pixel by pixel from its feature (low, straight, peaked, high) and moves with balding.
 
 **The catalogue.**
@@ -320,9 +322,9 @@ Six axes: **station** (the cut), **culture** (a family of cut, plus one mark), *
 | Embroidery, braid, woven bands | stitches in relief along collar, cuff and hem, in the people's own motifs | a band of colour | a line |
 | Metalwork | a buckle is a frame, a tongue, a plate and its rivets; brooches, pins, chains, buttons, lace ends | a glint with a shape | a glint |
 
-- **Small parts are objects.** A belt has a buckle, a strap end and holes. Laces run through eyelets, buttons sit in loops, a brooch has its pin. What hangs from a belt tells the life: a knife, a purse, keys, an ink horn.
+- **Small parts are objects.** A belt has a buckle, a strap end and holes. Laces run through eyelets, buttons sit in loops, a brooch has its pin. What hangs from a belt tells the life: a knife, a purse, keys, an ink horn. Jewellery (`jewel`) is metalwork; war paint and tattoos (`paint`) are colour in the skin.
 - **Heraldry.** The house's arms (`PORTRAIT.coat` and `PORTRAIT.charges`, the release's own shapes) are painted onto the cloth as cloth: on a surcoat, a shield, a retainer's badge. The charge follows the folds.
-- **Quality and wear.** Fine and masterwork gear (`A.qualOf`) is chased or gilded. Lifestyle wears cloth (patches, frayed hems, faded dye), the road muddies it, and a soldier back from the field carries its dents and dirt until the season turns.
+- **Quality and wear.** Crude gear is rough and uneven; fine and masterwork gear (`A.qualOf`) is chased or gilded. Lifestyle wears cloth (patches, frayed hems, faded dye), the road muddies it, and a soldier back from the field carries its dents and dirt until the season turns.
 
 **Station** (the North's items; each family supplies its own):
 
@@ -397,7 +399,7 @@ It replaces `UI.crStepBody`, under one line: "This is the face you will grow int
 - **Nose and mouth:** length, bridge, tip, width, tip shape · mouth width, lips, upper lip, bite.
 - **Hair:** style (38), fringe (5), texture (4), thickness, hairline, colour (18) · facial hair (14), growth, balding to come, grey from.
 - **Body and skin:** height in cm, build (8, effects unchanged), frame, bulk, legs, neck · skin (12), freckles, moles.
-- **Dress:** the first everyday outfit, from your station's wardrobe (§9).
+- **Dress:** the first everyday outfit, from your station's wardrobe (§9); face paint where your people wear it; an earring, a nose ring or a torc.
 
 **How it handles.**
 - **Pick on the face.** Click the nose and the nose's page opens.
@@ -405,7 +407,7 @@ It replaces `UI.crStepBody`, under one line: "This is the face you will grow int
 - **While you drag** the bust repaints at list detail, and sharpens when you let go.
 - **After creation** the bone is yours for life. Hair and beard change at any time, dress in the wardrobe; the years and your wounds do the rest.
 
-**Rules.** A description opens on click from an info icon. Controls use `data-a` and `data-c`, values go through `UI.esc`, and the preview is pure.
+**Rules.** A description opens on click from an info icon. Controls use `data-a` and `data-c`, values go through `UI.esc`, a pasted code is checked character by character before it is used, and the preview is pure.
 
 ## 11. Rendering
 
@@ -414,13 +416,13 @@ It replaces `UI.crStepBody`, under one line: "This is the face you will grow int
 | Tier | Shown at | Drawn at (device px) | Crop | What is in it | Draw budget | Kept as |
 |---|---|---|---|---|---|---|
 | Stand-in | any | not painted | bust | a flat shape in the skin, hair and dress colours, as a 0.4 KB inline picture | 0.05 ms | not kept |
-| S | to 40 px | 64 | head and collar (the head 54% of the width) | three tones, the hair's mass, the skin, the dress colour, the station's cue, one thin edge | 2 ms | 2 KB |
-| M | 41 to 100 | 96, 144 or 192 | head and shoulders (46%) | every feature, cast shadows, each material's middle look, marks no thinner than 1.2 px | 3.5, 6 or 10 ms | 4 to 12 KB |
-| L | over 100 | 256, 384 or 480 | bust to the upper chest (38%) | everything, at its true size | 17, 38 or 59 ms | 20 to 90 KB |
-| Figure | full | 400 × 600 | the whole body | the L head on the body | 50 ms | 60 KB |
+| S | to 40 px | 64 | head and collar (the head 54% of the width) | three tones, the hair's mass, the skin, the dress colour, the station's cue, one thin edge | 3 ms | 2 KB |
+| M | 41 to 100 | 96, 144 or 192 | head and shoulders (46%) | every feature, cast shadows, each material's middle look, marks no thinner than 1.2 px | 5, 10 or 18 ms | 4 to 12 KB |
+| L | over 100 | 256, 384 or 480 | bust to the upper chest (38%) | everything, at its true size | 30, 67 or 105 ms | 20 to 90 KB |
+| Figure | full | 400 × 600 | the whole body | the L head on the body | 80 ms | 60 KB |
 
-- **The budget** is a quarter of a millionth of a second a pixel plus 1 ms, on the CI machine: about half the prototype's cost, which drew its mesh one small triangle at a time and called `Math.pow` for every pixel. Kept sizes are estimates for JPEG at high quality, a fifth of the PNG measured in §0; sprint one measures both and picks. Grain is laid by CSS over the frame, not baked into the kept picture.
-- **Against today.** A bust is 7.3 KB and 0.2 to 0.4 ms today, and the first version planned 18 KB and 2 ms for its largest. Paint costs ten to thirty times more to draw, once, and is then one image.
+- **The budget** is the prototype's measured cost, 0.45 millionths of a second a pixel plus 1 ms, on the CI machine. The full painter does more for each pixel (locks of hair, folds, small parts) and must win that back: the prototype drew its mesh one small triangle at a time and called `Math.pow` for every pixel. Kept sizes are estimates for JPEG at high quality, a fifth of the PNG measured in §0; sprint one measures both and picks. Grain is laid by CSS over the frame, not baked into the kept picture.
+- **Against today.** A bust is 7.3 KB and 0.2 to 0.4 ms today, and the first version planned 18 KB and 2 ms for its largest. Paint costs some twenty times more to draw, once, and is then one image.
 - **Screens.** Drawn sizes assume two device pixels to a CSS pixel and stop there. On a plain screen they halve, and the cost falls to a quarter.
 - **Edges** are softened from coverage at the outline, never by painting four times the pixels.
 
@@ -432,7 +434,7 @@ It replaces `UI.crStepBody`, under one line: "This is the face you will grow int
 
 **Delivery.**
 - `PORTRAIT.tag(p, size, opts)` returns one `<img>` with a blob URL from the cache (the CSP already allows `img-src blob:`): one node a portrait, not 115 (P15). An unpainted one returns its stand-in with `data-pt="<key>"`, and gets its picture when painted.
-- `PORTRAIT.svg` keeps its name and returns the same tag. Its 29 call sites put the string straight into the page, so none changes. `UI.ANIME.svg` stays as an alias until its four callers (91-look, 28-endings, 9996-polity, 9994-share) are moved; the share card takes its bitmap from `UI.PT.bitmap`.
+- `PORTRAIT.svg` keeps its name and returns the same tag. Its 29 call sites put the string straight into the page, so they need no change beyond their styles and tests. `UI.ANIME.svg` stays as an alias until its four callers (91-look, 28-endings, 9996-polity, 9994-share) are moved; the share card takes its bitmap from `UI.PT.bitmap`.
 - The frame is CSS round the image: the brief's cut corner, its metal by station (§9). The dead are greyed by CSS until C8c's memorial plate.
 
 **Cache.**
@@ -442,8 +444,8 @@ It replaces `UI.crStepBody`, under one line: "This is the face you will grow int
 - **Shared work.** A person's model at an age step and the material tiles are cached apart, so the three tiers of one person share them.
 
 **Gates** (C8b measures on CI at four times CPU throttle).
-- If a page of 60 list portraits takes more than two seconds to fill, or any task runs over 50 ms while it does, painting moves to a worker. The engine modules touch nothing of the page for that reason; `worker-src blob:` then joins the CSP in `src/core/00-security`, with a DECISIONS record.
-- If the same faces are repainted visit after visit, kept pictures are also stored in IndexedDB beside the saves, capped at 20 MB.
+- **A worker.** A page of 60 list portraits is 0.3 s of painting on a desktop and over a second on a slow phone. If CI shows it taking more than two seconds to fill, or any task over 50 ms while it does, painting moves to a worker, which is likely on phones. The engine modules touch nothing of the page for that reason. The bundle is then also carried as text for the worker, and `worker-src blob:` joins the CSP in `src/core/00-security`, with a DECISIONS record.
+- **Kept between visits.** If the same faces are repainted visit after visit, kept pictures are also stored in IndexedDB beside the saves, capped at 20 MB.
 
 **Determinism.**
 - **From the id.** Every choice that looks random (pores, moles, a strand's path, a crease's place, a scar's ragged edge, wear on a hem) is a hash of the id and a named channel: never `A.rand`, `Math.random` or the clock. A wound's detail hashes from the id, its kind and its number.
@@ -502,7 +504,7 @@ X1 and X6 (the naming pass) may move paths: `docs/NAMES.md` gives the new name f
 
 ## 14. Acceptance
 
-**Gate zero: the demo, before anything is built into the game** (the owner: demos first; it takes the place of the first version's gate one). `node tools/sheets/demo.mjs` writes one page that opens in any browser, `docs/design/demo/characters.html`, and its sheets as PNG, from the engine modules alone. The game is not touched: nothing in `src/ui`, no state, no saves, and the modules stay out of the game's bundle. It needs neither X1 nor A1, so it can start at once.
+**The first gate: the demo, before anything is built into the game** (the owner: demos first; it takes the place of the first version's gate one). `node tools/sheets/demo.mjs` writes one page that opens in any browser, `docs/design/demo/characters.html`, and its sheets as PNG, from the engine modules alone. The game is not touched: nothing in `src/ui`, no state, no saves, and the modules stay out of the game's bundle. It needs neither X1 nor A1, so it can start at once.
 
 | Sheet | Shows |
 |---|---|
@@ -516,7 +518,7 @@ X1 and X6 (the naming pass) may move paths: `docs/NAMES.md` gives the new name f
 | `registers` | six of the cast in paint, and in ink and flat tone, side by side, each drawn with care so the comparison is fair |
 | The face maker | live controls for every feature of §3, with the age strip |
 
-The owner looks and says yes, no or what to change. The answer is recorded in DECISIONS, and work in the game starts only then. Playtester agents score `faces`, `ages` and `sizes` against C8b's pass marks as a first reading. If the faces fail, §15's fallbacks apply.
+The owner looks and says yes, no or what to change. Until then no new work starts (order 23). The answer is recorded in DECISIONS, and work in the game starts only then. Playtester agents score `faces`, `ages` and `sizes` against C8b's pass marks as a first reading. If the faces fail, §15's fallbacks apply.
 
 **C8b: faces and bodies.** `node tools/sheets/portraits.mjs <built.html>` writes each sheet as a PNG. Three playtester agents judge the sheets; the tests run in `tools/check.mjs`.
 
@@ -525,7 +527,7 @@ The owner looks and says yes, no or what to change. The answer is recorded in DE
 | Sheet `faces`: 20 adults of one people and sex at 150 px, and the same 20 cropped and beardless in one shirt; match them | 90% | near chance |
 | Sheet `list`: 20 people of one culture at 46 px, as a list shows them; find each among the same 20 at 150 px | 85% | walls of clones |
 | Sheet `sex`: 12 beardless men and 12 women at 88 px | 95% | not sortable |
-| Sheet `ages`: 32 people in eight bands; name the band | 85% | one drawing from 13 to 40 |
+| Sheet `ages`: 32 people in eight bands (to 2, 10, 17, 29, 44, 59, 74, and over); name the band | 85% | one drawing from 13 to 40 |
 | Sheet `grow`: one person at twelve ages, shuffled; put them in order | 9 neighbours in 10 right | |
 | Sheet `temper`: 12 busts, six opposed trait pairs; pick the trait | 70% | random |
 | `looksLadder`: each feature's two ends change this share of a 150 px head | 0.25% | nose 0.03% |
@@ -581,9 +583,9 @@ Today only the nobility can be named, a soldier is a striped top, and a house sh
 | Height and build that show? | Yes | §5 |
 | 38 hair styles? | Yes, realistic and drawn well | §6 |
 | Clothing | Right for class, culture and role by default, and the player can change it | §9, your wardrobe |
-| When does building start? | After the owner has seen demo sheets (faces, ages, scars, builds, hair, outfits) and approved them | §14, gate zero |
+| When does building start? | After the owner has seen demo sheets (faces, ages, scars, builds, hair, outfits) and approved them; all new work waits for that review (order 23) | §14, the first gate |
 
-**Still for the owner, by eye, at gate zero:** the look itself, and paint against ink on the `registers` sheet.
+**Still for the owner, by eye, at the demo gate:** the look itself, and paint against ink on the `registers` sheet.
 
 **Records to add when approved** (DECISIONS):
 - this document, as the plan under D-015 and D-020, and the register with its reasons;
@@ -598,10 +600,10 @@ Today only the nobility can be named, a soldier is a striped top, and a house sh
 - to `docs/IDEAS.md`: what a court makes of your dress; mounted figures; beasts in the same hand.
 
 **Risks.**
-- **The wax doll.** Procedural realism has a floor as well as a ceiling, and the prototype's heads are still lit clay. Gate zero exists to prove skin, hair and cloth before anything else is built. The fallbacks, in order: a sculpted CC0 base under the same painter (§2); then the inked finish on the same model. Sections 2 to 10 stand either way.
+- **The wax doll.** Procedural realism has a floor as well as a ceiling, and the prototype's heads are still lit clay. The demo gate exists to prove skin, hair and cloth before anything else is built. The fallbacks, in order: a sculpted CC0 base under the same painter (§2); then the inked finish on the same model. Sections 2 to 10 stand either way.
 - **Small sizes.** Paint is weak at 46 px. The S tier's crop, grouped tones and edge answer it, and the `list` sheet tests it.
 - **A phone's first look at a long list.** The slice, the stand-in and painting ahead answer it; the worker gate decides.
 - **Hair** is the largest single piece of art: 38 styles in four textures. A style is data, so styles land in lots, each passing its sheet. One that cannot be drawn well is redrawn, not shipped.
-- **Size of the work.** This plan is larger than the first version. Gate zero is the place to stop, cut or change course cheaply.
+- **Size of the work.** This plan is larger than the first version. The demo gate is the place to stop, cut or change course cheaply.
 - **Balance.** Seeded scars shift a few veterans' fighting worth; the balance run must pass.
 - **Dependencies.** C8c needs C6's commoners and C7's cultures. The demo needs nothing.

@@ -1,0 +1,12 @@
+import { render } from './relief.mjs';
+import { buildHead } from './head2.mjs';
+import { writePNG, sheet } from './png.mjs';
+const [out, size = '360', ss = '2', ...rest] = process.argv.slice(2);
+const S = +size, sc = S / 400;
+const mk = (o) => { const m = buildHead(Object.assign({ sex: 'M', age: 32, id: 'p1', pxmm: sc * +ss }, o)); return render(m, S, S, { ss: +ss, scale: sc, finish: o.finish }); };
+const views = [{ yaw: 0, bodyYaw: 0 }, { yaw: -0.44 }, { yaw: -1.35, bodyYaw: -1.2 }];
+const extra = rest.length ? JSON.parse(rest[0]) : {};
+const tiles = views.map(v => mk(Object.assign({}, v, extra)));
+const sh = sheet(tiles.map(t => t.rgba), 3, S, S);
+writePNG(out, sh.rgba, sh.W, sh.H);
+console.log(tiles.map(t => JSON.stringify(Object.fromEntries(Object.entries(t.ms).map(([k, v]) => [k, +v.toFixed(1)]))) + ' tris ' + t.tris).join('\n'));
