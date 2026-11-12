@@ -21,7 +21,8 @@
   .ink-in{animation:ilInk .7s ease-out both}
   @keyframes ilInk{from{opacity:0;filter:blur(3px) contrast(1.6)}60%{opacity:1;filter:blur(.6px)}to{opacity:1;filter:none}}
   .il-new{animation:ilLine .9s ease-out both}
-  @keyframes ilLine{from{opacity:0;letter-spacing:.02em;filter:blur(1.5px)}to{opacity:1;letter-spacing:normal;filter:none}}
+  /* no letter-spacing in the fade: it laid the whole page out every frame for .9 s (round 2 A1) */
+  @keyframes ilLine{from{opacity:0;filter:blur(1.5px)}to{opacity:1;filter:none}}
   [data-vellum="1"] .il-vellum{background:radial-gradient(ellipse at 50% 40%,#f1e6cc 55%,#e2d0a8 100%);color:#2b1d10;border-radius:3px;padding:14px 18px;box-shadow:inset 0 0 40px rgba(120,90,40,.25),0 4px 14px rgba(0,0,0,.4)}
   [data-vellum="1"] .il-vellum h1,[data-vellum="1"] .il-vellum h2,[data-vellum="1"] .il-vellum h3{color:#8e2414}
   [data-vellum="1"] .il-vellum h4,[data-vellum="1"] .il-vellum h5,[data-vellum="1"] .il-vellum .gold,[data-vellum="1"] .il-vellum [class*="chap"]{color:#6b4410}

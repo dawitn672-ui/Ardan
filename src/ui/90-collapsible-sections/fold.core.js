@@ -196,9 +196,12 @@ FOLD.sections = function (root, tab) {
 // a tall card folds to its first row; the button sits in the corner so a first row with its own controls keeps them
 FOLD.cards = function (root, tab) {
   if (!root) return;
-  for (const c of root.querySelectorAll(':scope > .card, :scope > section.card, .fold-b > .card')) {
-    if (c.dataset.fc || c.tagName === 'DETAILS' || c.classList.contains('person') || c.children.length < 2) continue;
-    if (c.offsetHeight < FOLD.TALL && !FOLD.ALWAYS.some(k => c.classList.contains(k)) && !FOLD.CARDS_CLOSED[tab]) continue;
+  // every height read first, then the folds made (round 2 A1: a fold made between two reads forced a layout a card)
+  const tall = [...root.querySelectorAll(':scope > .card, :scope > section.card, .fold-b > .card')]
+    .filter(c => !(c.dataset.fc || c.dataset.fshort || c.tagName === 'DETAILS' || c.classList.contains('person') || c.children.length < 2))
+    // a card measured short stays so for this draw (its node is new with each draw): the next pass need not measure it
+    .filter(c => FOLD.CARDS_CLOSED[tab] || FOLD.ALWAYS.some(k => c.classList.contains(k)) || c.offsetHeight >= FOLD.TALL || (c.dataset.fshort = '1', false));
+  for (const c of tall) {
     const first = c.firstElementChild, label = (first.textContent || '').trim().split('\n')[0];
     const key = 'card ' + slug((c.className.toString().split(/\s+/).filter(x => x !== 'card' && x !== 'small')[0] || '') + ' ' + label.slice(0, 24));
     const open = FOLD.isOpen(tab, key, FOLD.CARDS_CLOSED[tab] ? false : FOLD.defaultOpen(tab, slug(label)));
@@ -266,6 +269,8 @@ FOLD.apply = function () {
   try {
     const tb = document.getElementById('tabbody'), pr = document.getElementById('profile'), tab = UI.tab || '';
     const t = tab === 'goals' ? 'life' : tab === 'war' ? 'path' : tab;
+    // while a step runs the page behind a card is not redrawn (999999-one-redraw): only the card's own road is new
+    if (UI.REDRAW && UI.REDRAW.frozen()) { const road = document.querySelector('#modal .mbox.jr-road'); if (road) FOLD.sections(road, 'road'); return; }
     if (tb && t === 'life' && tab === 'life') FOLD.mergeActs(tb);
     if (tb) { tb.dataset.ftab = t; FOLD.sections(tb, t); FOLD.cards(tb, t); FOLD.tools(tb); FOLD.find(tb, t); }
     if (pr) { FOLD.profile(pr); FOLD.v2Head(pr); FOLD.sections(pr, 'profile'); }
@@ -383,6 +388,9 @@ if (typeof document !== 'undefined') document.addEventListener('click', e => {
 for (const k of ['render', 'refresh', 'refreshTab', 'renderModal']) {
   const f = UI[k];
   if (typeof f !== 'function') continue;
+  // FOLD runs after every draw, nested ones too (round 2 A1 tried once per outermost draw: 71-phone's page index and
+  // others read the page as already folded inside UI.render). A second pass in one draw is cheap: folded cards and cards
+  // measured short (data-fshort) are not measured again.
   UI[k] = function () { const r = f.apply(this, arguments); FOLD.apply(); return r; };
 }
 

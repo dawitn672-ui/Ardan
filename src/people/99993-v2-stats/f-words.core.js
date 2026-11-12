@@ -120,6 +120,9 @@ VS.sweep = function (root) {
   const doText = n => {
     const v = n.nodeValue;
     if (!v || !(/\d/.test(v) || /piety/i.test(v))) return;
+    // a setting's own value (Text size: an option reading 100%, 120%) is the interface, not odds: the sweep read it as
+    // "all" and "more than all" (round 2 A1, docs/CRITIQUE.md U7, the A1 part)
+    if (n.parentNode && n.parentNode.nodeName === 'OPTION' && /^\s*\d+%\s*$/.test(v)) return;
     let t = v.indexOf('%') >= 0 ? VS.dePct(v) : v;
     if (VS.deNum) t = VS.deNum(t, n);
     if (t !== v) n.nodeValue = t;

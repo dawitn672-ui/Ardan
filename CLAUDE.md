@@ -8,7 +8,7 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
 
 ## Every session, first
 
-1. Read this file, `docs/OWNER_ORDERS.md` (every standing order of the owner's), the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
+1. Read this file, `docs/OWNER_ORDERS.md` (every standing order of the owner's), `docs/PROGRESS.md` (the checklist of what is done and what is next), the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
    undo a recorded decision without a new record), `docs/V2_SPEC.md` (the owner's design rules) and the skills in
    `.claude/skills/`.
 2. Work on a branch, one step per commit. After each step: tests, the coherency checks, a playtest pass
@@ -46,8 +46,8 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
 | `assets/` | Art, fonts, portrait and VFX source files |
 | `vendor/ardan-b593143.html` | The untouched release. **Never edit.** |
 | `tests/` | `run.mjs` (browser tests: `tests/suites/` and every feature's `test.mjs`), `v2/` (engine unit tests), `saves/` (sample saves of every version; they must keep loading) |
-| `tools/` | `build.mjs`, `build-v2.mjs`, `check.mjs`, linters, `show.mjs`, `version.mjs`, `lib/features.mjs` (where features live), `bench/` (measurement harnesses; reports in `tools/bench/reports/`), `v2/` (the v2 kit's playtest and map scripts) |
-| `docs/` | `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (v2 status, lanes, playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
+| `tools/` | `build.mjs`, `build-v2.mjs`, `check.mjs`, linters, `show.mjs`, `version.mjs`, `lib/features.mjs` (where features live), `rename-pass.mjs` + `rename-map.json` (the naming pass: renames and the references to them), `bench/` (measurement harnesses; reports in `tools/bench/reports/`), `v2/` (the v2 kit's playtest and map scripts) |
+| `docs/` | `README.md` (an index of every doc), `NAMES.md` (old name -> new name), `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (v2 status, lanes, playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
 | `archive/` | Retired features and code, each with a note on what it was and why it was replaced. Never built. |
 | `CHANGELOG.md` | Player-facing changes in plain words, one section per version |
 | `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop` (keep them true to the code) |
@@ -58,7 +58,7 @@ body, stats, skills, moods, relationships, advisors, renown), `family` (kin, hou
 (titles, courts, offices, the polity), `diplomacy` (relations between realms, reasons for war), `war` (armies,
 battles, sieges, orders, companies), `economy` (goods, markets, trade), `events` (event packs, arcs, memory,
 chronicle, endings), `ui` (look, layout, portraits, icons, motion, phone). Features apply in folder-name order across
-all systems (`00-security` first, `99999-v2-renown` last), as `tools/lib/features.mjs` lists them.
+all systems (`00-security` first, `999999-one-redraw` last: its redraw wrappers are the outermost), as `tools/lib/features.mjs` lists them.
 
 ## Build, test, play
 
@@ -74,12 +74,25 @@ node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
-node tests/run.mjs                                        # everything against index.html (751 tests; CI shards it 8 ways)
+node tests/run.mjs                                        # everything against index.html (759 tests; CI shards it 8 ways)
 node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
+node tools/bench/next-month-speed.mjs /tmp/me.html --save=tests/saves/press/y50-noble.ardan [--death] [--throttle=4]   # real Next month presses, in CPU time
+node tools/bench/press-gate.mjs /tmp/me.html [--report]   # the A1 gate (CI): year 0 and 50, fresh and after a death, held to budgets
+node tools/bench/style-probe.mjs /tmp/me.html             # one <span> insert's style time after a hint and a death (< 1 ms)
+node tools/bench/long-life-audit.mjs /tmp/me.html --seed=7 --years=60    # a long bot life with the one-holder audit and error counts
 node tools/check.mjs                                      # everything CI runs
+node tools/coherency.mjs --quick                          # the coherency checks over a few lives (src/core/08-coherency-checks)
+node tools/coherency.mjs --baseline=quick                 # the same run CI holds to tests/coherency-baseline.json
 node tools/version.mjs get v2.0.0-beta.1                  # any version, playable: versions/ardan-<v>.html
 git gc --prune=now                                        # after every integration round (see below)
 ```
+
+**The net (round 2 A3a).** A test, bench, soak or coherency run fails on any uncaught error *and any `console.error`*
+(the few messages that are not the game's faults are listed with reasons in `tools/lib/page-errors.mjs`; a test that
+provokes an error on purpose calls `expectError(/.../)`). A test that cannot run in a build returns `{ ok: true, skip:
+'why' }` and shows as SKIP. Each test has a time limit (`--limit=`, default 1800 s) and the runner relaunches a crashed
+browser. Time with the runner's `cpu()` (main-thread CPU), never the wall clock. Known contradictions are counted in
+`tests/coherency-baseline.json`, which may only shrink.
 
 The browser tests use the container's Playwright (`/opt/node-tools/node_modules/playwright`): if `npm ci` installs
 the pinned one, delete `node_modules/playwright*` or point `PLAYWRIGHT_PATH` at the container's copy.
@@ -132,6 +145,9 @@ Then add the smallest patch needed to call your code from the existing flow.
 - Engine code uses only `A.rand`, `A.ri`, `A.rf`, `A.chance`, `A.pick`, `A.wpick` and `A.gauss`. Never `Math.random` or `Date.now`.
 - **Rendering must be pure.** UI code must not consume `A.rand` or change `A.S`. The `renderRng` and `replayWithRender` tests enforce this.
 - If a view needs a random-looking pick, seed it from ids, the way `A.npcStyles` does.
+- **One redraw a press** (`src/ui/999999-one-redraw`). While a step runs, `UI.refresh` draws only the card and the clock
+  and the page waits for the step's end. A new post-draw pass wraps the draws like 91's do and returns early when
+  `UI.REDRAW.depth > 1` (a draw inside a draw); it reads all the layout it needs before it writes.
 
 **Security.**
 

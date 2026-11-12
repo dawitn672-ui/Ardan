@@ -259,7 +259,7 @@
   for (const k of ['render', 'refresh', 'renderModal', 'clkLight']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;
-    UI[k] = function () { const r = f.apply(this, arguments); try { MO.check(); } catch (e) { console.error('moments', e); } return r; };
+    UI[k] = function () { const r = f.apply(this, arguments); if ((UI.REDRAW && UI.REDRAW.depth > 1)) return r; try { MO.check(); } catch (e) { console.error('moments', e); } return r; };   // once per draw (round 2 A1)
   }
   // a new life or a loaded one starts from a fresh reading
   const newGame = A.newGame;

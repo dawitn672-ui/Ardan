@@ -2,8 +2,8 @@
 // month" presses through the page's own click router, measured in main-thread CPU time (CDP Performance metrics,
 // timeDomain threadTicks), never wall time.
 //
-//   node tools/bench/next-month-speed.mjs [built.html] [--state=save.json | --new=seed:status:sex:age] [--n=30] [--w=1366]
-//        [--tag=x] [--out=dir] [--hints=on|off] [--death] [--notimed] [--settle=250] [--ablate=has,hasbody,log2,passes,sweep]
+//   node tools/bench/next-month-speed.mjs [built.html] [--save=file.ardan | --state=save.json | --new=seed:status:sex:age] [--n=30] [--w=1366]
+//        [--tag=x] [--out=dir] [--hints=on|off] [--death] [--notimed] [--throttle=4] [--settle=250] [--ablate=has,hasbody,log2,passes,sweep]
 //        [--dump=state.json] [--shot=shot.png]
 //
 // Each press: click the visible Next month (or Next week on campaign) button; answer every card by clicking its first
@@ -29,17 +29,20 @@ const args = process.argv.slice(2);
 const arg = (k, d) => { const a = args.find(x => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : d; };
 const flag = k => args.includes(`--${k}`) || arg(k, '0') === '1';
 const HTML = path.resolve(args.find(a => !a.startsWith('--')) || path.join(root, 'index.html'));
-const TAG = arg('tag', 'press'), W = +arg('w', 1366), N = +arg('n', 30), STATE = arg('state', null), NEW = arg('new', null), NOTIMED = flag('notimed');
+const TAG = arg('tag', 'press'), W = +arg('w', 1366), N = +arg('n', 30), STATE = arg('state', null), SAVE = arg('save', null), NEW = arg('new', null), NOTIMED = flag('notimed');
 const SETTLE = +arg('settle', 250), DUMP = arg('dump', null), SHOT = arg('shot', null), DEATH = flag('death');
 const ABL = (arg('ablate', '') || '').split(',').filter(Boolean), HINTS = arg('hints', 'on');
 const OUT = path.resolve(arg('out', '/tmp/ardan/press'));
+const THROTTLE = +arg('throttle', 1);   // CPU slowdown (CDP Emulation.setCPUThrottlingRate): 4 is a slow laptop or a phone
 const log = (...a) => { fs.mkdirSync(OUT, { recursive: true }); const s = `[${new Date().toISOString().slice(11, 19)}] ${TAG}: ` + a.join(' '); console.log(s); fs.appendFileSync(`${OUT}/press-${TAG}.log`, s + '\n'); };
 
 // installed in the page: counters on the redraw functions, and __P.press(), one real press
 export const INSTALL = (NOTIMED) => {
-  const P = window.__P = { c: {}, timed: 0, changed: 0 };
+  const P = window.__P = { c: {}, timed: 0, changed: 0, eng: 0 };
   const cnt = (o, k, name) => { const f = o[k]; if (typeof f !== 'function') return; o[k] = function () { P.c[name] = (P.c[name] || 0) + 1; return f.apply(this, arguments); }; };
-  cnt(UI, 'render', 'render'); cnt(UI, 'refresh', 'refresh'); cnt(UI, 'refreshTab', 'refreshTab'); cnt(UI, 'renderModal', 'renderModal'); cnt(UI, 'clkPaint', 'clkPaint'); cnt(A, 'dayTick', 'dayTick'); cnt(UI, 'toast', 'toast');
+  cnt(UI, 'render', 'render'); cnt(UI, 'refresh', 'refresh'); cnt(UI, 'refreshTab', 'refreshTab'); cnt(UI, 'renderModal', 'renderModal'); cnt(UI, 'clkPaint', 'clkPaint'); cnt(A, 'dayTick', 'dayTick');
+  // the engine's share of a press: the time inside A.dayTick (cards answered inside it are the engine's too)
+  { const dt = A.dayTick; A.dayTick = function () { const t = performance.now(); try { return dt.apply(this, arguments); } finally { P.eng += performance.now() - t; } }; } cnt(UI, 'toast', 'toast');
   const cl = UI.clkLight;
   if (typeof cl === 'function') UI.clkLight = function () {
     P.c.clkLight = (P.c.clkLight || 0) + 1;
@@ -52,8 +55,9 @@ export const INSTALL = (NOTIMED) => {
   P.nextBtn = () => [...document.querySelectorAll('[data-a="v2Next"],[data-a="v2Week"],[data-a="v2Day"],[data-a="stepGo"]')].filter(b => b.getClientRects().length && b.getAttribute('aria-disabled') !== 'true').sort((a, b) => ['v2Next', 'v2Week', 'stepGo', 'v2Day'].indexOf(a.dataset.a) - ['v2Next', 'v2Week', 'stepGo', 'v2Day'].indexOf(b.dataset.a))[0];
   P.press = async () => {
     const ST = UI.stepper, sleep = ms => new Promise(r => setTimeout(r, ms)), t0 = performance.now(), day0 = A.absDay();
+    const RD = UI.REDRAW, full0 = RD ? RD.full : 0;   // 999999-one-redraw counts the page's full redraws
     let cards = 0, prompts = 0, guard = 0, fallback = 0, why = 'ok';
-    P.c = {}; P.timed = 0; P.changed = 0;
+    P.c = {}; P.timed = 0; P.changed = 0; P.eng = 0;
     const btn = P.nextBtn(), kind = btn ? btn.dataset.a : null;
     if (btn) btn.click();
     for (; ;) {
@@ -75,7 +79,7 @@ export const INSTALL = (NOTIMED) => {
       if (!btn) { why = 'no button'; }
       break;
     }
-    return { why, kind, cards, prompts, fallback, days: A.absDay() - day0, wall: Math.round(performance.now() - t0), c: P.c, timed: P.timed, changed: P.changed, year: A.S.year, age: A.pc() ? A.age(A.pc()) : null,
+    return { why, kind, cards, prompts, fallback, days: A.absDay() - day0, wall: Math.round(performance.now() - t0), c: P.c, engine: Math.round(P.eng), full: RD ? RD.full - full0 : (P.c.refresh || 0) + (P.c.render || 0), timed: P.timed, changed: P.changed, year: A.S.year, age: A.pc() ? A.age(A.pc()) : null,
       logLines: A.S.log.reduce((a, e) => a + e.lines.length, 0), doc: document.getElementsByTagName('*').length };
   };
 };
@@ -93,7 +97,15 @@ async function main() {
   const metrics = async () => Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(x => [x.name, x.value]));
   await page.goto(pathToFileURL(HTML).href);
   await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 1800000 });
-  if (STATE) { const s = fs.readFileSync(STATE, 'utf8'); await page.evaluate(s => { A.deserialize(JSON.parse(s)); UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.render(); }, s); }
+  if (SAVE) {
+    // a committed sample save (tests/saves/press/), opened through the game's own load path
+    const b64 = fs.readFileSync(SAVE).toString('base64');
+    const r = await page.evaluate(async b64 => {
+      const bin = atob(b64), bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const d = await SAVES.decode(bytes); const ok = UI.enterSaveSafe(d); UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.render(); return ok;
+    }, b64);
+    if (r === false) throw new Error('save did not load: ' + SAVE);
+  } else if (STATE) { const s = fs.readFileSync(STATE, 'utf8'); await page.evaluate(s => { A.deserialize(JSON.parse(s)); UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.render(); }, s); }
   else { const [seed, status, sex, age] = (NEW || '42:noble:M:16').split(':'); await page.evaluate(o => { A.newGame(o); UI.screen = 'game'; UI.tab = 'life'; UI.ov = null; UI.render(); }, { seed: +seed, race: 'human', realm: 'POL-01', status, sex, startAge: +age }); }
   await page.evaluate(INSTALL, NOTIMED);
   if (HINTS === 'off') await page.evaluate(() => { UI.set.hints = false; UI.render(); });
@@ -129,6 +141,7 @@ async function main() {
     fs.writeFileSync(`${OUT}/press-${TAG}-ablation.json`, JSON.stringify(ab, null, 1));
   }
   const st = await page.evaluate(() => ({ hints: document.querySelectorAll('.hint').length, year: A.S.year, name: A.pc().given, age: A.age(A.pc()), phone: !!(document.querySelector('#game') && document.querySelector('#game').classList.contains('phone')), q: A.S.queue.length, autosave: !!(UI.set && UI.set.autosave), motion: document.documentElement.dataset.motion || '' }));
+  if (THROTTLE > 1) await cdp.send('Emulation.setCPUThrottlingRate', { rate: THROTTLE });
   log('start', JSON.stringify(st), 'html', path.relative(root, HTML) || HTML, 'W', W, 'notimed', NOTIMED, 'death', DEATH);
   const presses = [];
   const D = (a, b, k) => b[k] - a[k];
@@ -139,9 +152,9 @@ async function main() {
     if (SETTLE) await page.evaluate(ms => new Promise(r => setTimeout(r, ms)), SETTLE);
     const c = await metrics();
     const row = Object.assign(r, { i, cpu: Math.round(D(a, b, 'ThreadTime') * 1000), cpuSettled: Math.round(D(a, c, 'ThreadTime') * 1000), script: Math.round(D(a, c, 'ScriptDuration') * 1000), layoutMs: Math.round(D(a, c, 'LayoutDuration') * 1000), styleMs: Math.round(D(a, c, 'RecalcStyleDuration') * 1000),
-      layouts: D(a, c, 'LayoutCount'), recalcs: D(a, c, 'RecalcStyleCount'), nodes: c.Nodes, heapMB: +(c.JSHeapUsedSize / 1e6).toFixed(1), listeners: c.JSEventListeners });
+      layouts: D(a, c, 'LayoutCount'), layoutsPress: D(a, b, 'LayoutCount'), recalcs: D(a, c, 'RecalcStyleCount'), nodes: c.Nodes, heapMB: +(c.JSHeapUsedSize / 1e6).toFixed(1), listeners: c.JSEventListeners });
     presses.push(row);
-    log(`#${i} ${r.kind} ${r.why} y${r.year} age ${r.age} days ${r.days} cards ${r.cards} prompts ${r.prompts}${r.fallback ? ' fallback ' + r.fallback : ''} | cpu ${row.cpu} (+settle ${row.cpuSettled}) script ${row.script} layout ${row.layoutMs} style ${row.styleMs} | layouts ${row.layouts} recalcs ${row.recalcs} | refresh ${r.c.refresh || 0} refreshTab ${r.c.refreshTab || 0} render ${r.c.render || 0} modal ${r.c.renderModal || 0} clkLight ${r.c.clkLight || 0} (changed ${r.changed} timed ${r.timed}) clkPaint ${r.c.clkPaint || 0} ticks ${r.c.dayTick || 0} | nodes ${row.nodes} heap ${row.heapMB}`);
+    log(`#${i} ${r.kind} ${r.why} y${r.year} age ${r.age} days ${r.days} cards ${r.cards} prompts ${r.prompts}${r.fallback ? ' fallback ' + r.fallback : ''} | cpu ${row.cpu} (+settle ${row.cpuSettled}, engine ${r.engine}) script ${row.script} layout ${row.layoutMs} style ${row.styleMs} | layouts ${row.layouts} (in the press ${row.layoutsPress}) recalcs ${row.recalcs} | full ${r.full} refresh ${r.c.refresh || 0} refreshTab ${r.c.refreshTab || 0} render ${r.c.render || 0} modal ${r.c.renderModal || 0} clkLight ${r.c.clkLight || 0} (changed ${r.changed} timed ${r.timed}) clkPaint ${r.c.clkPaint || 0} ticks ${r.c.dayTick || 0} | nodes ${row.nodes} heap ${row.heapMB}`);
     if (r.why !== 'ok') { log('stopping:', r.why); break; }
   }
   if (SHOT) await page.screenshot({ path: SHOT });
@@ -150,9 +163,13 @@ async function main() {
   const ok = presses.filter(p => p.kind === 'v2Next' && p.days >= 25);
   const quiet = ok.filter(p => p.cards === 0 && p.prompts === 0), busy = ok.filter(p => p.cards > 0);
   const summary = { months: ok.length, cpuMedian: med(ok.map(p => p.cpuSettled)), cpuMean: Math.round(ok.reduce((a, p) => a + p.cpuSettled, 0) / Math.max(1, ok.length)), quiet: quiet.length, quietMedian: med(quiet.map(p => p.cpuSettled)),
-    withCards: busy.length, withCardsMedian: med(busy.map(p => p.cpuSettled)), cardsPerMonth: +(ok.reduce((a, p) => a + p.cards, 0) / Math.max(1, ok.length)).toFixed(2), styleMedian: med(ok.map(p => p.styleMs)), layoutsMedian: med(ok.map(p => p.layouts)), errors: errs.length };
+    withCards: busy.length, withCardsMedian: med(busy.map(p => p.cpuSettled)), cardsPerMonth: +(ok.reduce((a, p) => a + p.cards, 0) / Math.max(1, ok.length)).toFixed(2), styleMedian: med(ok.map(p => p.styleMs)), layoutsMedian: med(ok.map(p => p.layouts)), errors: errs.length,
+    // the A1 gate's measures (tools/bench/press-gate.mjs): a quiet press's own layouts and wall time, the CPU a card adds
+    // over a quiet month, the most full redraws in any press, the engine's share
+    quietLayouts: med(quiet.map(p => p.layoutsPress)), quietWall: med(quiet.map(p => p.wall)), quietEngine: med(quiet.map(p => p.engine)),
+    perCard: med(busy.map(p => (p.cpuSettled - (med(quiet.map(q => q.cpuSettled)) || 0)) / p.cards)), fullMax: Math.max(0, ...ok.map(p => p.full)), throttle: THROTTLE };
   fs.writeFileSync(`${OUT}/press-${TAG}.json`, JSON.stringify({ tag: TAG, html: HTML, W, NOTIMED, DEATH, st, summary, presses, errs }, null, 0));
-  log(`SUMMARY months ${summary.months}: cpu median ${summary.cpuMedian} mean ${summary.cpuMean}; quiet ${summary.quiet}: median ${summary.quietMedian}; with cards ${summary.withCards}: median ${summary.withCardsMedian}, cards/mo ${summary.cardsPerMonth}; style median ${summary.styleMedian}; layouts/mo median ${summary.layoutsMedian}; errors ${errs.length}`);
+  log(`SUMMARY months ${summary.months}: cpu median ${summary.cpuMedian} mean ${summary.cpuMean}; quiet ${summary.quiet}: median ${summary.quietMedian}; with cards ${summary.withCards}: median ${summary.withCardsMedian}, cards/mo ${summary.cardsPerMonth}; style median ${summary.styleMedian}; layouts/mo median ${summary.layoutsMedian}; quiet layouts ${summary.quietLayouts}, wall ${summary.quietWall}, engine ${summary.quietEngine}; per card ${summary.perCard}; full redraws at most ${summary.fullMax}; errors ${errs.length}`);
   if (errs.length) { log('errors:', errs.slice(0, 5).join(' | ')); process.exitCode = 1; }
   if (warns.length) log('warnings:', warns.length, warns[0]);
   await browser.close();
