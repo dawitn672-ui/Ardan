@@ -1,7 +1,7 @@
-import { generateContinent, riverPaths } from '../../src/v2/map/continent.js';
-import { renderMap, drawRivers } from '../../src/v2/map/render.js';
-import { makeRealms, buildHierarchy } from '../../src/v2/nobility.js';
-import { makeRng } from '../../src/v2/rng.js';
+import { generateContinent, riverPaths } from '../../src/map/engine/continent.js';
+import { renderMap, drawRivers } from '../../src/map/engine/render.js';
+import { makeRealms, buildHierarchy } from '../../src/nobility/engine/nobility.js';
+import { makeRng } from '../../src/core/engine/rng.js';
 import { writePng } from './png.js';
 const seed = process.argv[2] || 'ardan';
 const map = generateContinent({ seed });

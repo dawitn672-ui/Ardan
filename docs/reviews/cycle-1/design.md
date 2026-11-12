@@ -61,7 +61,7 @@ The bugs I met on the way are in their own section after the improvements.
 ### 1. The Hall of Lives (M, impact 5)
 
 **What I saw.**
-- `A.newState` builds a fresh `A.S` with `ach: {}`, and 28-endings keeps its collection in `A.S.endings` and `A.S.manners` (`features/28-endings/endings.core.js:88`). A new life from the death screen therefore starts at "Endings found (0/20, and 0/9 ways to go)", and so does every achievement.
+- `A.newState` builds a fresh `A.S` with `ach: {}`, and 28-endings keeps its collection in `A.S.endings` and `A.S.manners` (`src/events/28-endings/endings.core.js:88`). A new life from the death screen therefore starts at "Endings found (0/20, and 0/9 ways to go)", and so does every achievement.
 - The collection survives only within one dynasty, through heirs. The Dynasty tab at 14 shows 0/20 (`g1-tab-legacy.png`).
 - The death screen's only exits are "A new life" and "Title screen" (`death.png`). Nothing says what this life added to anything.
 
@@ -88,7 +88,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 **Why it works.** Persona's calendar is its engine of anticipation. You can see the exam, the festival and the friend who is free on Thursdays, and you plan around them. Scarce time with a known future makes every evening a choice. Players build spreadsheets of it.
 
-**How to build it.** Add it to `features/84-top-bar/` or a small new feature.
+**How to build it.** Add it to `src/ui/84-top-bar/` or a small new feature.
 - **The strip:** under the clock, or as the first line of What now: the next 3 to 5 known things, with their week. "Week 2: tithe due (Marast). Spring: the guild judges your masterpiece. 1108: Hruza promised to repay 7 suns."
 - **Sources:**
   - `S.sched` items that carry a public label (add an optional `label` to `A.schedule` calls; unlabelled ones stay hidden);
@@ -105,7 +105,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 **Why it works.** Stellaris shows its origins as the first, illustrated choice, and each one changes how the game plays. King of Dragon Pass credits its replay to pre-game choices. A 14-year-old picks "the plague orphan" in two seconds. Picking among 152 realms in a dropdown, they freeze.
 
-**How to build it.** In `features/29-starts/starts.core.js`:
+**How to build it.** In `src/events/29-starts/starts.core.js`:
 - Open the details by default for the first three lives (`UI.set.lfLives`).
 - Show three story cards, with picture and one line each, picked by hashing the date. "Show all 20" opens the rest, and "Build your own" stays one click away.
 - Unlocked stories from #1 carry a "New" tag.
@@ -192,7 +192,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 **Why it works.** BitLife's "Age +1" moves a year a tap, and childhood is a minute. Reigns never shows an empty card. Pressing an empty month 42 times is where a 13-year-old closes the tab.
 
-**How to build it.** In `features/84-top-bar/step.core.js`:
+**How to build it.** In `src/ui/84-top-bar/step.core.js`:
 - Below the age when an activity first opens (`A.isAdult`, or 49-body-mind's stage), the primary step becomes "Next season" (three months).
 - After two empty steps in a row, offer "Until something happens" as the primary step.
 - Same world, same seed: a step is only a span of days.
@@ -240,7 +240,7 @@ The bugs I met on the way are in their own section after the improvements.
 
 **Why it works.** Pentiment's acts jump years, and each act has its own question. Reigns gives a few objectives per reign that unlock new cards. BitLife's challenges are 4 or 5 short aims. Short aims fit a session of 20 to 40 minutes. A lifelong ambition doesn't.
 
-**How to build it.** Extend `features/97-life-fixes/c-ambition.core.js`, or add `features/NN-chapters/`.
+**How to build it.** Extend `src/events/97-life-fixes/c-ambition.core.js`, or add `features/NN-chapters/`.
 - **The card.** At each life stage (49-body-mind's stages) and on big turns (a marriage, a move, a war), show a title card: "Chapter Three: The Hungry Years". The name comes from the situation, by id hash.
 - **Three aims for about five years**, from the situation and the realm, such as "Get your own plough", "Win Vijaena's trust", "See the sea".
 - **On screen.** The aims go under Ambition, with ticks. A finished one writes a deed and gives a small reward.
@@ -358,8 +358,8 @@ The bugs I met on the way are in their own section after the improvements.
 | Bug | Where seen | Fix | Size | Impact |
 |---|---|---|---|---|
 | Endings and achievements reset on every new game. A.S.ach and S.endings live in the state `A.newState` rebuilds. | Code; `g1-tab-legacy.png` | #1 above. At least, carry `S.endings`, `S.manners` and `S.ach` through `UI.A.newLife` as a browser record. | M | 5 |
-| A memory citation pastes the choice label and loses its object: "The last time you were at market, in 1106, you tried to cut it, and failed". It came two scenes running ("Strangers in the market", "A tooth on a cord"). | `g3-live.txt`, 1107 | `features/67-memory-weave/a-record.core.js:97-98` builds `d` from the label's first words. Skip labels whose verb takes a pronoun object ("it", "them", "him", "her") unless the scene supplies a noun. Don't cite the same memory in two scenes within a year. | S | 3 |
-| A festival line repeats its name: "The Long Night of Lamps. The Long Night of Lamps. Every Lamp monastery…" | `g3-live.txt`, Dec 1105 | `features/990-far-peoples/faiths.data.core.js:28`: the description begins with the name, and the scene adds the name again. Strip a leading copy of the name in the scene's setup. | S | 2 |
+| A memory citation pastes the choice label and loses its object: "The last time you were at market, in 1106, you tried to cut it, and failed". It came two scenes running ("Strangers in the market", "A tooth on a cord"). | `g3-live.txt`, 1107 | `src/events/67-memory-weave/a-record.core.js:97-98` builds `d` from the label's first words. Skip labels whose verb takes a pronoun object ("it", "them", "him", "her") unless the scene supplies a noun. Don't cite the same memory in two scenes within a year. | S | 3 |
+| A festival line repeats its name: "The Long Night of Lamps. The Long Night of Lamps. Every Lamp monastery…" | `g3-live.txt`, Dec 1105 | `archive/990-far-peoples/faiths.data.core.js:28`: the description begins with the name, and the scene adds the name again. Strip a leading copy of the name in the scene's setup. | S | 2 |
 | A bestiary line ends with two full stops: "Guards the Tea Mother trees..". | `n1-tab-life.png` | The "So that is what they call it" line (26-belief-truth) appends "." to a lore line that has one. Trim the trailing punctuation before adding. | S | 1 |
 | The newborn Kyipa's mother is also named Kyipa. | `n1-tab-people.png` | The naming for single-name cultures (Skyfolk) doesn't exclude the parents' names. Re-pick when it matches a parent or sibling. | S | 2 |
 | The title screen still pitches the old world: "Thirty-four realms, a hundred million souls", over the Known World map. The default is the Great Continent (152 realms, 1,992 provinces). | `g2-title.png`, `g2-create4.png` | 86-title-fold or 99-far-lands: the text and map should follow the default lands. | S | 2 |

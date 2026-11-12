@@ -98,9 +98,9 @@ A 10 in this genre means **your past keeps coming back, at the right moment, thr
 
 The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scratch>` (fix layer only, 29 patches). The scripts lived in a private scratch folder; nothing in the repo changed except this file. Five studies:
 
-1. **Static audit of all 3,199 events and 9,635 choices**, read in the page. It reuses `bench/bot.mjs`'s `memoryIndex()` for flag setters and readers, then adds: the event link graph (flag setter to flag reader, plus `fx.event` follow-ups) and its depth, cooldowns, what each choice leaves behind, casting, tics and a strict dominant-choice test.
+1. **Static audit of all 3,199 events and 9,635 choices**, read in the page. It reuses `tools/bench/bot.mjs`'s `memoryIndex()` for flag setters and readers, then adds: the event link graph (flag setter to flag reader, plus `fx.event` follow-ups) and its depth, cooldowns, what each choice leaves behind, casting, tics and a strict dominant-choice test.
 2. **Engine read.** `A.monthEvents`, `A.rollEventsN`, `A.evFit`, `A.headReady`, `A.eventChoose`, `A.log` and `UI.deathModal`, through `tools/show.mjs`.
-3. **48 bot lives with story logging.** 8 starts × 4 choice styles, up to 90 years each. Careful bots take the best odds and reckless bots the worst; the other two slots chose at random (my script had no greedy rule, so read them as two random players). Seeds are `4242 + i × 7919`. For every event the player saw, the bot logged: who it cast, whether that person was already known, which flags it read, whether **this life** had set those flags (a real callback), the flags it set, and what the chosen branch left behind. Driving the queue is the same as `bench/bot.mjs`'s passive bot.
+3. **48 bot lives with story logging.** 8 starts × 4 choice styles, up to 90 years each. Careful bots take the best odds and reckless bots the worst; the other two slots chose at random (my script had no greedy rule, so read them as two random players). Seeds are `4242 + i × 7919`. For every event the player saw, the bot logged: who it cast, whether that person was already known, which flags it read, whether **this life** had set those flags (a real callback), the flags it set, and what the chosen branch left behind. Driving the queue is the same as `tools/bench/bot.mjs`'s passive bot.
 4. **A salience experiment.** The same 48 seeds, with one change: an eligible event whose conditions read a flag the player holds gets 5 times its weight (a wrapper on `A.evFit`). No new content.
 5. **A flag census.** The first 24 seeds again, logging every flag each life set, to rank which unread flags players actually reach.
 
@@ -233,7 +233,7 @@ Bespoke callbacks for the 287 to 369 orphan flags are still worth writing, but t
 
 ### The backtest table
 
-"New" in the last column means `bench/` doesn't measure it yet; section 5, item 12 adds it.
+"New" in the last column means `tools/bench/` doesn't measure it yet; section 5, item 12 adds it.
 
 | Metric | Reference game value or practice | Ardan today | Target for a 10 | How to measure in Ardan |
 | --- | --- | --- | --- | --- |
@@ -316,7 +316,7 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 | 9 | **A pacing director, with warnings before harm.** Replace the fixed monthly chance with a tension budget: quiet months raise the chance; a death in the family or a bad wound lowers harm weights for 6 months, like RimWorld's adaptation. Any outcome that kills or maims needs a foreboding flag set by an earlier warning event, as CK3 1.9.1 does. | M | Yes: code + about 40 warning events | +0.6 | Bot: p90 gap between prompts ≤ 120 days (153 today); no adult life has a calendar year with no event; harm events in the 6 months after a family death fall ≥ 50%; events a year within ±15% |
 | 10 | **Casting from your circle.** A setup helper picks the known person who fits a role, with the strongest bond, the way Wildermyth gives the line to the highest stat. Retrofit the 100 most-shown events that cast strangers. | M | Yes: both | +0.6 | Bot: ≥ 40% of shown events cast someone the player knew (19.3% today); median ≥ 3 people who appear in 3 or more **different** events |
 | 11 | **Old age.** 150 events, half of them callbacks: settling scores, teaching, confessions, the heir's question, decline. | L | Yes: content | +0.4 | `events.oldAgeEvents` ≥ 150 (41 today); bot: ≥ 50% of events after 55 require old age or read a memory |
-| 12 | **Measure it in `bench/`.** Add to the league: real callback share, callback rate, arc completion, repeats within 10 years, same pack back to back, known-person casting. Add to `events`: dominant choices, events with no possible mark, arc events. Score them in `bench/rubric.mjs`. | S | Yes: code (`bench/` owner) | +0 directly; it keeps 1 to 11 honest | On today's build the new lines read within ±10% of this doc's numbers and fail their targets |
+| 12 | **Measure it in `tools/bench/`.** Add to the league: real callback share, callback rate, arc completion, repeats within 10 years, same pack back to back, known-person casting. Add to `events`: dominant choices, events with no possible mark, arc events. Score them in `tools/bench/rubric.mjs`. | S | Yes: code (`tools/bench/` owner) | +0 directly; it keeps 1 to 11 honest | On today's build the new lines read within ±10% of this doc's numbers and fail their targets |
 | 13 | **Cut or mark the no-mark events.** 690 events can't leave any mark. Cut the 300 least shown; give the rest a flag that a callback reads. | L | Yes: content | +0.4 | `eventsLeavingNoMark` ≤ 5% (21.6% today); `events.strictRecipePct` ≤ 10% (25.7% today) |
 | 14 | **Menace stretches.** Wanted, disgraced, deep in debt and exiled become stretches of life with their own deck of events, the way Fallen London's menaces send you to a place. | L | Yes: both | +0.4 | Bot: entering a stretch moves ≥ 50% of the next 12 months' events into its deck; leaving takes a choice, not a timer |
 | 15 | **The retell test.** 10 new players, 45 minutes each, then "tell me what happened to your character". | S | Needs people | +0.5 (and it is the plan's gate) | 7 of 10 retell a 3-step story unprompted. Unmeasured today |
@@ -396,19 +396,19 @@ All read through search-engine results that quote or summarise the page (see the
 
 - `docs/plan/Ardan The Road to Ten.md` (Events and story section, plan targets)
 - `docs/reviews/Ardan Road to 100.md` and `docs/reviews/Ardan Deep Analysis.md` (95 memory events, 287 of 450 orphan flags by their count, tics, old age)
-- `reports/release.json`, `reports/fixes.json` (bench league: memory share of fired events 1.8% release and 1.3% fixes; p90 days between prompts 181 and 153)
+- `tools/bench/reports/release.json`, `tools/bench/reports/fixes.json` (bench league: memory share of fired events 1.8% release and 1.3% fixes; p90 days between prompts 181 and 153)
 
 ## Appendix: how to reproduce
 
-The scripts stayed in a scratch folder, so `bench/` can port them (section 5, item 12). Each piece is plain page code run through Playwright on a built file, after `window.ARDAN_CONTENT_READY` and `bench/bot.mjs`'s `BOT` are loaded.
+The scripts stayed in a scratch folder, so `tools/bench/` can port them (section 5, item 12). Each piece is plain page code run through Playwright on a built file, after `window.ARDAN_CONTENT_READY` and `tools/bench/bot.mjs`'s `BOT` are loaded.
 
 1. **Reads of an event:** the flag names matched by `C\.flag\(p,\s*["']([A-Za-z0-9_]+)["']|flags(?:\.|\[["'])([A-Za-z0-9_]+)` in `cond` and `setup`, minus `ev`, `unfree`, `patron` and `chain` (the bench's own rule).
-2. **The life loop:** `A.newGame(o)`, then `A.advance(400)` and drain `A.headReady()`. For an event: `A.eventView(h)`, copy `pc.flags`, pick a choice by personality, `A.eventChoose(i)`, diff `pc.flags` for new keys, then `A.eventClose()`. Other prompts go to the game's auto functions, as in `bench/bot.mjs`.
+2. **The life loop:** `A.newGame(o)`, then `A.advance(400)` and drain `A.headReady()`. For an event: `A.eventView(h)`, copy `pc.flags`, pick a choice by personality, `A.eventChoose(i)`, diff `pc.flags` for new keys, then `A.eventClose()`. Other prompts go to the game's auto functions, as in `tools/bench/bot.mjs`.
 3. **A real callback:** a shown event whose reads include a flag first set earlier in the same life by a different shown event.
 4. **Realised chain depth:** depth(event) = 1 + the largest depth of the events that set the flags it read.
 5. **Repeat:** the same event id shown twice in one life. **Same pack:** the same id prefix before the first `_` as the previous shown event.
 6. **Known person:** `ctx.pid` is set and `pc.rel[ctx.pid]` existed before the event.
 7. **Lasting mark:** the chosen branch's `fx` uses any of `flag trait untrait wound newRel lover die prison free secret epithet deed ach job promote lang literate gear asset duel beast event claim pact ally warOn letter sworn owed oweThem mission cause favor`. **Opinion only:** `rel them patronOp rulerOp bossOp houseOp`.
 8. **Dominant choice:** only events where every choice has plain numeric effects and no `req`. A choice is dominant if it has no check, no negative number, a positive total gain, and no other choice sets a flag or can gain more in its best branch. Coin counts as `sign × min(5, |coin| / 20)`.
-9. **Seeds:** `4242 + i × 7919`, `sex = i odd ? F : M`; the 8 starts are `bench/run.mjs`'s; the choice style changes every 8 lives (careful, reckless, random, random).
+9. **Seeds:** `4242 + i × 7919`, `sex = i odd ? F : M`; the 8 starts are `tools/bench/run.mjs`'s; the choice style changes every 8 lives (careful, reckless, random, random).
 

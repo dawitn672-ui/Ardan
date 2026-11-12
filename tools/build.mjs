@@ -1,4 +1,4 @@
-// Build the game from the vendored release plus every feature in features/.
+// Build the game from the vendored release plus every feature in src/<system>/NN-name/ (tools/lib/features.mjs).
 //
 //   node tools/build.mjs                         all features -> index.html
 //   node tools/build.mjs --out=/tmp/x.html       write somewhere else (parallel work must use this)
@@ -10,20 +10,23 @@
 // A folder holding a file named .wip is work in progress: left out of the default build (and of tests/check)
 // until the marker is removed, but built whenever --only names it.
 //
-// A feature is a folder features/NN-name/ that may hold:
+// A feature is a folder src/<system>/NN-name/ that may hold:
 //   patches.mjs   export default [{ id, blob, why, edits: [[find, replace, count = 1], ...] }]
 //                 exact edits on the minified code; blob is 'ardan-core' | 'ardan-content' | 'ardan-lore' | 'html'
 //   *.core.js     readable code appended to the core blob (runs after the engine and UI are defined, before UI.init)
 //   *.events.js   readable event packs appended to the content blob (each must call A.defEvents([...]))
 //   test.mjs      browser tests, see tests/run.mjs
 //   README.md     what it does, which aspect it serves, how it is measured
-// Features apply in folder order. A patch must match exactly as many times as it says, so a patch that no
+// data/**/*.json   content kept as data: each file is put on the page as A.DATA[<path without .json>] before any
+//                 feature code runs (data/cultures/names.json -> A.DATA['cultures/names'])
+// Features apply in folder-name order across all systems. A patch must match exactly as many times as it says, so a patch that no
 // longer fits fails the build instead of silently doing nothing.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { unpack, repack, BLOBS } from './pack.mjs';
+import { allFeatures, findFeature, isWip as isWipFeature } from './lib/features.mjs';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const arg = k => { const a = process.argv.find(x => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : null; };
@@ -32,9 +35,9 @@ const OUT = path.resolve(root, arg('out') || 'index.html');
 const SEP = '\u0001ARDAN-PACK\u0001';
 
 export const featureName = dir => dir.replace(/^\d+-/, '');
-export const isWip = d => fs.existsSync(path.join(root, 'features', d, '.wip'));
+export const isWip = d => isWipFeature(d);
 export function listFeatures({ only, without, includeWip } = {}) {
-  const dirs = fs.readdirSync(path.join(root, 'features')).filter(d => /^\d+-/.test(d) && fs.statSync(path.join(root, 'features', d)).isDirectory()).sort();
+  const dirs = allFeatures().map(f => f.dir);
   return dirs.filter(d => {
     const n = featureName(d), fix = /^0\d-/.test(d);
     if (without && without.includes(n)) return false;
@@ -42,19 +45,29 @@ export function listFeatures({ only, without, includeWip } = {}) {
     return includeWip || !isWip(d);
   });
 }
+// content kept as data (data/**/*.json), in path order, as one statement that runs before the first feature's code
+function dataBlock() {
+  const base = path.join(root, 'data'), out = [];
+  const walk = d => { for (const f of fs.readdirSync(d).sort()) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) walk(p); else if (f.endsWith('.json')) out.push(p); } };
+  if (fs.existsSync(base)) walk(base);
+  if (!out.length) return '';
+  const body = out.map(p => `${JSON.stringify(path.relative(base, p).replace(/\\/g, '/').replace(/\.json$/, ''))}: ${JSON.stringify(JSON.parse(fs.readFileSync(p, 'utf8')))}`).join(',\n');
+  return `\n;(function(){ // data/**/*.json\nA.DATA = Object.assign(A.DATA || {}, {\n${body}\n});\n})();\n`;
+}
 
 const count = (s, f) => { let n = 0, i = -1; while ((i = s.indexOf(f, i + 1)) >= 0) n++; return n; };
 
 async function build() {
   const only = arg('only') ? arg('only').split(',') : null, without = arg('without') ? arg('without').split(',') : null;
   const feats = listFeatures({ only, without, includeWip: process.argv.includes('--include-wip') });
-  const skipped = fs.readdirSync(path.join(root, 'features')).filter(d => /^\d+-/.test(d) && !feats.includes(d) && isWip(d));
+  const skipped = allFeatures().map(f => f.dir).filter(d => !feats.includes(d) && isWip(d));
   if (skipped.length && !only) console.log(`left out (work in progress): ${skipped.join(', ')}`);
   let html = fs.readFileSync(SRC, 'utf8');
   const parts = unpack(html);
   const ids = new Set(), stats = [];
+  parts['ardan-core'] += dataBlock();
   for (const dir of feats) {
-    const fdir = path.join(root, 'features', dir), files = fs.readdirSync(fdir).sort();
+    const feat = findFeature(dir), fdir = feat.path, files = fs.readdirSync(fdir).sort();
     let patches = [], nCore = 0, nPacks = 0;
     if (files.includes('patches.mjs')) patches = (await import(pathToFileURL(path.join(fdir, 'patches.mjs')).href + `?t=${Date.now()}`)).default;
     for (const p of patches) {
@@ -70,11 +83,11 @@ async function build() {
       }
     }
     for (const f of files.filter(f => f.endsWith('.core.js'))) {
-      parts['ardan-core'] += `\n;(function(){ // features/${dir}/${f}\n${fs.readFileSync(path.join(fdir, f), 'utf8')}\n})();\n`;
+      parts['ardan-core'] += `\n;(function(){ // ${feat.rel}/${f}\n${fs.readFileSync(path.join(fdir, f), 'utf8')}\n})();\n`;
       nCore++;
     }
     for (const f of files.filter(f => f.endsWith('.events.js'))) {
-      parts['ardan-content'] += SEP + `// features/${dir}/${f}\n` + fs.readFileSync(path.join(fdir, f), 'utf8') + '\n';
+      parts['ardan-content'] += SEP + `// ${feat.rel}/${f}\n` + fs.readFileSync(path.join(fdir, f), 'utf8') + '\n';
       nPacks++;
     }
     stats.push({ feature: dir, patches: patches.length, core: nCore, packs: nPacks });

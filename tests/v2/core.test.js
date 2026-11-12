@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { makeRng } from '../../src/v2/rng.js';
-import { makeGenes, newBody, stats, fightingWorth, describe, breakthrough, practise, train, mindWords, typicalStats } from '../../src/v2/body.js';
-import { attempt, oddsWords } from '../../src/v2/odds.js';
-import { People, bloodTerm, relationLabel, canCallMutualFriend, notableKin } from '../../src/v2/kin.js';
-import { lineOfSuccession } from '../../src/v2/succession.js';
-import { recordDeed, renown, promotionCheck } from '../../src/v2/renown.js';
-import { makeDiplomacy, setFactor, statusOf, houseBond, houseStatus } from '../../src/v2/diplomacy.js';
+import { makeRng } from '../../src/core/engine/rng.js';
+import { makeGenes, newBody, stats, fightingWorth, describe, breakthrough, practise, train, mindWords, typicalStats } from '../../src/people/engine/body.js';
+import { attempt, oddsWords } from '../../src/people/engine/odds.js';
+import { People, bloodTerm, relationLabel, canCallMutualFriend, notableKin } from '../../src/family/engine/kin.js';
+import { lineOfSuccession } from '../../src/family/engine/succession.js';
+import { recordDeed, renown, promotionCheck } from '../../src/people/engine/renown.js';
+import { makeDiplomacy, setFactor, statusOf, houseBond, houseStatus } from '../../src/diplomacy/engine/diplomacy.js';
 
 const mk = (rng, race, sex, opts = {}) => ({ id: opts.id ?? 1, race, sex, age: opts.age ?? 25, genes: { ...makeGenes(rng, race, sex), ...(opts.avg ? avgGenes(race, sex) : {}) }, body: newBody(), gear: opts.gear ?? 'none' });
 function avgGenes(race, sex) { const g = { lift: 1, sprint: 1, march: 1, reaction: 1, toughness: 1, liftCeil: 1, sprintCeil: 1, marchCeil: 1, reactionCeil: 1, toughnessCeil: 1, heightZ: 0, build: 1, wits: 100, learning: 100, judgment: 100, will: 100, presence: 100, cunning: 100 }; return g; }

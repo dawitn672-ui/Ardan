@@ -4,7 +4,7 @@
 
 **How to use it.** Read it top-down. Each layer ends with **rules** (what drives the next layer down) and **targets** (how many of each thing, and why). The last two sections are a gap analysis of Ardan today and a step-by-step recipe for the implementers.
 
-**Sources.** Web research is cited inline and listed at the end. Ardan's numbers come from the game's own data (`LORE` in the core blob, the lore blob, `features/47-realm-bible`, `features/76-beast-habitats`) and from the private world bible in `canon/`, which is summarized here and never quoted.
+**Sources.** Web research is cited inline and listed at the end. Ardan's numbers come from the game's own data (`LORE` in the core blob, the lore blob, `src/world/47-realm-bible`, `src/map/76-beast-habitats`) and from the private world bible in `canon/`, which is summarized here and never quoted.
 
 **Hard limits this framework keeps** (they come from the world bible's house rules and the game):
 
@@ -637,7 +637,7 @@ This step decides whether the expansion ships.
   - every polity has a want and a fear;
   - every entity has at least three links;
   - `tools/lint-events.mjs` and `tools/lint-choices.mjs` pass;
-  - `bench/balance.mjs` holds the new starts in bands added with reasons to `bench/targets.mjs`.
+  - `tools/bench/balance.mjs` holds the new starts in bands added with reasons to `tools/bench/targets.mjs`.
 
 ### Step 10: Reveal in stages (Isayama, Oda)
 

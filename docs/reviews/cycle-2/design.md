@@ -121,7 +121,7 @@ Then the backtests' remaining list, ranked for this game now (section C), and fo
 - On 27 February came "They come over the walls", with "Stand in your doorway and stare them down".
 - The baby failed "Hide" and lost 15 suns of the family purse.
 
-**Cause.** Cycle 1 changed `cond` in `features/36-sieges/sieges.events.js` to `C.teen(p) || C.adult(p)`. But `sieges.core.js:74` and `:90` queue `sg_walls`, `sg_sacked` and `sg_terms` with `forced: true`, and `A.stillValid` skips `cond` for a forced item (`if(e.cond&&!q.forced)`). So the cycle 1 fix (first-hour B2) never applies to these three.
+**Cause.** Cycle 1 changed `cond` in `src/war/36-sieges/sieges.events.js` to `C.teen(p) || C.adult(p)`. But `sieges.core.js:74` and `:90` queue `sg_walls`, `sg_sacked` and `sg_terms` with `forced: true`, and `A.stillValid` skips `cond` for a forced item (`if(e.cond&&!q.forced)`). So the cycle 1 fix (first-hour B2) never applies to these three.
 
 **Fix (36-sieges).**
 - Gate the queue itself: `if (A.stage(pc) !== 'infant' && A.stage(pc) !== 'child')`.
@@ -166,7 +166,7 @@ Then the backtests' remaining list, ranked for this game now (section C), and fo
 
 The Book then says "He writes your name twice. In spring his men take a pig for it" (`ru-log.txt`, `s/ru-99-end.png`).
 
-**Cause.** `features/47-realm-bible/bible.core.js:43`: `free: pc => A.isAdult(pc) && !unfree(pc)`. Nobles and rulers count as "free".
+**Cause.** `src/world/47-realm-bible/bible.core.js:43`: `free: pc => A.isAdult(pc) && !unfree(pc)`. Nobles and rulers count as "free".
 
 **Fix (47-realm-bible).**
 - Add a `commons` audience (free, not noble, not ruler), and move hearth, tithe and levy customs to it.

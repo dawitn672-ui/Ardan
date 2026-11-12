@@ -1,10 +1,10 @@
 // Browser tests for a built game (Playwright + Chromium).
 //
-//   node tests/run.mjs                               test index.html: tests/suites/* and every features/*/test.mjs
+//   node tests/run.mjs                               test index.html: tests/suites/* and every src/<system>/NN-name/test.mjs
 //   node tests/run.mjs vendor/ardan-b593143.html     the same tests against another build (the untouched release)
 //   node tests/run.mjs --only=xssSave,tokens         run some tests by name
 //   node tests/run.mjs --features=chronicle          core suites plus the named features' tests
-//   node tests/run.mjs --lives=12 --json=reports/tests.json
+//   node tests/run.mjs --lives=12 --json=tools/bench/reports/tests.json
 //
 // A test is `async name(page, pageErrors, { browser, file, lives })` returning { ok, detail }. Each test gets a fresh
 // browser context (its own storage), the page already booted with window.T helpers (tests/helpers.mjs). Any page error
@@ -14,6 +14,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { HELPERS } from './helpers.mjs';
+import { featureDirs, featurePath } from '../tools/lib/features.mjs';
 
 const require = createRequire(import.meta.url);
 let pw;
@@ -33,12 +34,12 @@ async function load(p, owner) {
 }
 const tests = [];
 for (const f of fs.readdirSync(path.join(root, 'tests/suites')).filter(f => f.endsWith('.test.mjs')).sort()) tests.push(...await load(path.join(root, 'tests/suites', f), 'suites/' + f));
-for (const d of fs.readdirSync(path.join(root, 'features')).sort()) {
-  const t = path.join(root, 'features', d, 'test.mjs');
+for (const d of featureDirs().sort()) {
+  const t = featurePath(d, 'test.mjs');
   if (!fs.existsSync(t)) continue;
   if (featFilter && !featFilter.includes(d.replace(/^\d+-/, ''))) continue;
-  if (!featFilter && fs.existsSync(path.join(root, 'features', d, '.wip'))) continue; // work in progress: only when named
-  tests.push(...await load(t, 'features/' + d));
+  if (!featFilter && fs.existsSync(featurePath(d, '.wip'))) continue; // work in progress: only when named
+  tests.push(...await load(t, path.relative(root, featurePath(d))));
 }
 const seen = new Set();
 for (const t of tests) { if (seen.has(t.name)) throw new Error(`duplicate test name ${t.name} (${t.owner})`); seen.add(t.name); }

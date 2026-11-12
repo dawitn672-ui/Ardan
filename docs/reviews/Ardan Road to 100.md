@@ -80,7 +80,7 @@ Round 3 worked through the Road to Ten's buildable steps, one feature folder at 
 | `35-moods` | Four needs settle toward where a life puts them, and moods come with causes and 14 scenes. A neglected year ends at happiness 37, a tended one at 64. |
 | `32-ladder` | A census of Legends and Masters and a Master cap per realm. The ladder is sparse (2 Legends alive), not crowded. |
 | `33-choices` and `tools/lint-choices.mjs` | Events with an obviously best choice: **19 → 0**, and CI blocks new ones. |
-| `bench/balance.mjs` and `bench/targets.mjs` | Target bands per starting path, held in CI. On its first real run the balance check caught a drift (see below). |
+| `tools/bench/balance.mjs` and `tools/bench/targets.mjs` | Target bands per starting path, held in CI. On its first real run the balance check caught a drift (see below). |
 | Bench `perf.warTick` | The war-map tick with 212 divisions: **9.4 ms at the 95th percentile** (target 50). |
 
 **Corrections to Round 2.**
@@ -88,7 +88,7 @@ Round 3 worked through the Road to Ten's buildable steps, one feature folder at 
 - **The war ratio.** Round 2 reported warlike rulers starting **5.3×** as many wars as peaceful ones, from 3 worlds × 60 years. One world's ratio swings from 1.5× to 6× with the random stream: a later feature that draws one more number a month moved it from 5.3 to 1.45 on the same seeds. Pooled over 12 worlds it is **2.4×**, and two builds on a fresh seed set agree (1.98 and 2.06). The effect is real and about two to three times.
 - **Risk costs.** The bench's "careful bots outlive reckless ones" read 2 years after this round, from a 16-life median that mixed in elves and dwarves. Deaths are bimodal, and a small median jumps between the two humps. The metric now uses the mean death age of humans and orcs: **5.2 years**. Forty human lives each read 52 against 24 (medians) and 49 against 30 (means), with or without learn-by-doing.
 
-**What the balance check found** (the notes are in `bench/targets.mjs`):
+**What the balance check found** (the notes are in `tools/bench/targets.mjs`):
 
 - **Freedom was close to automatic.** Every serf was free by 33, most by buying freedom at 21–22 for 40 suns, because the event that sold it had no way to say no. With "Not this year" (33-choices), half stay bound.
 - **Peasants get nearly as rich as merchants.**
@@ -114,7 +114,7 @@ Round 3 worked through the Road to Ten's buildable steps, one feature folder at 
 | Uniqueness | 7.5 | **8.5** | All three signature systems exist, though belief-vs-truth doesn't reach NPCs and both-scales is after the fight, not in it. |
 | **Overall** | **56** | **65** | |
 
-The measured scorecard (bots and tests only) reads **34.5** for the release, **35.8** for the fix layer, and **66.5** at this review. After round 7 it reads **69.4** (`reports/scorecard.md`), of about 75 that bots and tests can award.
+The measured scorecard (bots and tests only) reads **34.5** for the release, **35.8** for the fix layer, and **66.5** at this review. After round 7 it reads **69.4** (`tools/bench/reports/scorecard.md`), of about 75 that bots and tests can award.
 
 **What is left is mostly not code.**
 
@@ -133,7 +133,7 @@ The measured scorecard (bots and tests only) reads **34.5** for the release, **3
 
 Round 2 tried to get as close to 100 as code and content can get without people or art. It built a measurement system first, then the features with the most measured leverage, each in its own folder with its own tests. A usage limit stopped the multi-agent work part-way, so this section says plainly what landed and what did not.
 
-**What landed** (all in `index.html`; 41 browser tests pass; the numbers are in `reports/scorecard.md`):
+**What landed** (all in `index.html`; 41 browser tests pass; the numbers are in `tools/bench/reports/scorecard.md`):
 
 | Change | Measured effect |
 | --- | --- |

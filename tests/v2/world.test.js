@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { makeRng } from '../../src/v2/rng.js';
-import { generateContinent, components } from '../../src/v2/map/continent.js';
-import { makeRealms, buildHierarchy, CAPS, dukesFor } from '../../src/v2/nobility.js';
-import { makeUnit, makeArmy, startBattle, battlePhase, afterAction, rumourOfBattle } from '../../src/v2/war.js';
-import { makeDiplomacy, monthTick, setFactor } from '../../src/v2/diplomacy.js';
-import { createGame, nextMonth, choose, sheet } from '../../src/v2/game.js';
-import * as game from '../../src/v2/game.js';
-import { stats } from '../../src/v2/body.js';
+import { makeRng } from '../../src/core/engine/rng.js';
+import { generateContinent, components } from '../../src/map/engine/continent.js';
+import { makeRealms, buildHierarchy, CAPS, dukesFor } from '../../src/nobility/engine/nobility.js';
+import { makeUnit, makeArmy, startBattle, battlePhase, afterAction, rumourOfBattle } from '../../src/war/engine/war.js';
+import { makeDiplomacy, monthTick, setFactor } from '../../src/diplomacy/engine/diplomacy.js';
+import { createGame, nextMonth, choose, sheet } from '../../src/core/engine/game.js';
+import * as game from '../../src/core/engine/game.js';
+import { stats } from '../../src/people/engine/body.js';
 
 const maps = ['ardan', 'tamar', 'velgrad', 'hesh'].map((seed) => generateContinent({ seed, width: 400, height: 280, provinces: 70 }));
 

@@ -38,8 +38,8 @@ Ranked by impact over size (S = 1, M = 2, L = 4, XL = 6). The owner's three asks
 
 | # | Transplant | From | Size | Folder |
 |---|---|---|---|---|
-| 1 | **The Polity:** offices, laws as bills, councils with tasks, estates, factions with thresholds, elections, vassal contracts, legitimacy with parts | CK3, EU4, Vic3, Bannerlord | XL | `features/9996-polity/` |
-| 2 | **Companies:** battalions and companies with names, captains, persistent morale, food and pay, formations, orders by courier, the line battle built from the real division | Bannerlord, TW3K, HoI4 | XL | `features/9997-companies/` |
+| 1 | **The Polity:** offices, laws as bills, councils with tasks, estates, factions with thresholds, elections, vassal contracts, legitimacy with parts | CK3, EU4, Vic3, Bannerlord | XL | `src/nobility/9996-polity/` |
+| 2 | **Companies:** battalions and companies with names, captains, persistent morale, food and pay, formations, orders by courier, the line battle built from the real division | Bannerlord, TW3K, HoI4 | XL | `src/war/9997-companies/` |
 | 3 | **Motion:** one choreography runtime, scene-card beats, the seal stamp on a roll, the battle in motion, the war map's fronts and arrows, ticking numbers | Persona 5, Hades, StS, HoI4, Genshin | L | `features/9998-motion/` |
 | 4 | **The ring speaks:** two or three named councillors or kin advise on every big decision, in their own bias | King of Dragon Pass | S–M | `features/9999-ring/` |
 | 5 | **Readable stakes:** Reigns dots on every choice (what it touches, how much); Slay the Spire intents on foes | Reigns, Slay the Spire | S | extends `92-scene-card` and the duel in `48-fight-ladder` |
@@ -1239,7 +1239,7 @@ Each item gives what it is, its size and folder, what it compounds with, and two
 ### 1. The Polity
 
 - **Size:** XL.
-- **Folder:** `features/9996-polity/` (lane P).
+- **Folder:** `src/nobility/9996-polity/` (lane P).
 - **Compounds with:** 56, 20, 68, 990, 54, 994, 55, 39, 21, 996, 59, 62. It feeds #2 (the host estate, officers' houses), #4 (the council speaks), #9 (houses earn renown from offices), and 9994 share cards ("elected by four votes to three").
 - **Spec:** [Priority design 1](#priority-design-1-the-polity-9996-polity).
 - **Tests:**
@@ -1250,7 +1250,7 @@ Each item gives what it is, its size and folder, what it compounds with, and two
 ### 2. Companies
 
 - **Size:** XL.
-- **Folder:** `features/9997-companies/` (lane WD).
+- **Folder:** `src/war/9997-companies/` (lane WD).
 - **Compounds with:** the release's war map and line battle; 23, 34, 37, 38, 44, 60, 72, 85, 991; 45 and 66 (grain); 56 (pay); #1 (estates and defection); #3 (arrows, couriers). It gives 57 honours, 21 a pool of people with history (old captains), and 74 old soldiers to visit.
 - **Spec:** [Priority design 2](#priority-design-2-companies-9997-companies).
 - **Tests:**

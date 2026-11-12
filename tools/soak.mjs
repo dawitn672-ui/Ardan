@@ -1,6 +1,6 @@
 // A monkey that plays the built game through its own screens and records every error a player could meet.
 //
-//   node tools/soak.mjs [index.html] [--runs=8] [--steps=600] [--seed=1] [--json=reports/soak.json] [--workers=2]
+//   node tools/soak.mjs [index.html] [--runs=8] [--steps=600] [--seed=1] [--json=tools/bench/reports/soak.json] [--workers=2]
 //
 // Each run opens a fresh page, starts a life from the title screen and then, step by step, either clicks a visible
 // button or link at random (the way a curious new player would), or lets time pass (A.advance, as the clock would).

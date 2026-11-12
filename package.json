@@ -10,8 +10,8 @@
     "test:original": "node tests/run.mjs vendor/ardan-b593143.html",
     "lint:events": "node tools/lint-events.mjs",
     "check": "node tools/check.mjs",
-    "bench": "node bench/run.mjs",
-    "scorecard": "node bench/compare.mjs release fixes current"
+    "bench": "node tools/bench/run.mjs",
+    "scorecard": "node tools/bench/compare.mjs release fixes current"
   },
   "devDependencies": {
     "acorn": "8.18.0",

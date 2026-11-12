@@ -15,7 +15,7 @@ git push                                            # publish the row (and git p
 
 | Part | When it changes | Examples |
 |---|---|---|
-| Major | A new design the owner set | v1 is the shipped release and the rounds built on it; v2 is the owner's v2 spec (`docs/v2/V2_SPEC.md`) |
+| Major | A new design the owner set | v1 is the shipped release and the rounds built on it; v2 is the owner's v2 spec (`docs/V2_SPEC.md`) |
 | Minor | A round, cycle or step that adds or replaces a system | |
 | Patch | Fixes only | |
 | Pre-release (`-alpha.N`, `-beta.N`, `-rc.N`) | While a major is being built | One alpha for each v2 step; a beta once the playtest loop finds nothing structural |
@@ -45,4 +45,4 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 <!-- versions:end -->
 
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's
-`features/` by `tools/build.mjs` (CI checks the committed file matches its build).
+features (`features/` until beta.1, `src/<system>/` from round 2) by `tools/build.mjs` (CI checks the committed file matches its build).

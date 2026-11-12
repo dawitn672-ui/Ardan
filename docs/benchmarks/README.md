@@ -30,10 +30,10 @@ Each document here takes one or two aspects from the Road to Ten. It shows how t
 - **Two research tracks did not finish.**
   - *UI, art and accessibility* (CK3 tooltips, Into the Breach, Pentiment, the Game Accessibility and Xbox guidelines, Hodent).
   - *How great studios test games.*
-  Accessibility is measured anyway: `bench/run.mjs` runs axe-core with WCAG 2.2 AA and best-practice rules over 24 screens.
+  Accessibility is measured anyway: `tools/bench/run.mjs` runs axe-core with WCAG 2.2 AA and best-practice rules over 24 screens.
 
 ## Where the numbers about Ardan come from
 
-The "Ardan today" columns come from code reading and bot lives on the build of the day. The scorecard in `reports/scorecard.md` measures the same things repeatably for three builds: the original release, the fix layer, and the current build (`node bench/run.mjs`, `node bench/compare.mjs`).
+The "Ardan today" columns come from code reading and bot lives on the build of the day. The scorecard in `tools/bench/reports/scorecard.md` measures the same things repeatably for three builds: the original release, the fix layer, and the current build (`node tools/bench/run.mjs`, `node tools/bench/compare.mjs`).
 
 The north-star sections of these eight documents are gathered into one picture in [docs/north-star](../north-star/README.md).

@@ -13,7 +13,7 @@ Oct 26, 2026 · checked against a fresh build of `main` (`/tmp/ardan/complaints/
 - **Six bot lives from birth** (seeds 101 to 606, peasant, noble and merchant, Hard). They ran headless with `T.play` (random choices) and recorded 2,240 scenes, 336 game years in all, plus time per game year, the cost of drawing each tab, the save size and the time to encode a save.
 - **Screens.** 22 screens at 1366×768 and 390×844 (a peasant of 20 and a noble of 30, every tab, an open event). For each one the probe recorded the height of each scrolling region against its view, the visible controls, the disabled controls with and without a stated reason, the words on screen and the tooltip targets.
 - **A dead-click scan.** `tools/deadclicks.mjs` on eight screens, plus its static check for any `data-a` action that has no handler.
-- **The code**, read from the unpacked build, and the repo's own reports: `reports/scorecard.md`, `reports/balance.json`, `reports/dominance.json`, `docs/plan/*`, and `docs/design/critique.md` (Oct 26).
+- **The code**, read from the unpacked build, and the repo's own reports: `tools/bench/reports/scorecard.md`, `tools/bench/reports/balance.json`, `tools/bench/reports/dominance.json`, `docs/plan/*`, and `docs/design/critique.md` (Oct 26).
 
 The probe scripts are not in the repo. They are small, and the numbers can be reproduced from the description above.
 
@@ -102,7 +102,7 @@ The probe scripts are not in the repo. They are small, and the numbers can be re
 1. Give scenes that tell a specific story about one person `once: true` or a lifetime cap of 2, starting with `fl_st_master` and `du_ch_confession`.
 2. Turn the best duty scenes into templates whose parts vary (the village, the sum, who is asking, what they want), so a returning duty is a new case.
 3. Make `A.evRecency` remember the whole life, not 10 years, for pool events with a fixed story. Let the pool refill from new writing rather than from repeats.
-4. Add a scorecard metric, the share of shown scenes already seen this life, with a target of 15% or less. Measure it in `bench/bot.mjs` over the whole sequence the player sees.
+4. Add a scorecard metric, the share of shown scenes already seen this life, with a target of 15% or less. Measure it in `tools/bench/bot.mjs` over the whole sequence the player sees.
 
 ## 3. Late-game boredom: **High**
 
@@ -116,7 +116,7 @@ The probe scripts are not in the repo. They are small, and the numbers can be re
 - **But the late years are where repetition peaks:** 52 to 53% of the scenes after 35 are repeats (see 2).
 - **Money stops mattering.**
   - In probe life 505 (a noble) coin went 33,540 → 69,862 → 258,972 over its last three decades.
-  - In the balance league, peak coin reaches 505,525 for a peasant and 614,099 for a serf (`reports/balance.json`).
+  - In the balance league, peak coin reaches 505,525 for a peasant and 614,099 for a serf (`tools/bench/reports/balance.json`).
   - The largest purchases on the Decisions tab cost 3,500 (a family seat) and 2,500 (a great work).
   - This is CK3's "too much gold" complaint (section 18), and it arrives in the same part of a life.
 - A life arc starts with a chance of 1 in 24 a month, so it often comes years after a life levels off. 46-life-arcs' own README says that before it, an established life got "more of the same until you die".
@@ -443,11 +443,11 @@ The probe scripts are not in the repo. They are small, and the numbers can be re
 - **Time does most of the work.** A training plan grows every day. 31-learn-by-doing teaches more by use than by drilling. What now offers the next action.
 - **Possible spots:**
   - The market's "+1 / +5" buttons make cart trading click-heavy, at one good at a time.
-  - `reports/dominance.json` (Oct 15, 6 lives × 30 years) flagged `learn_lang` as a dominant whole-life strategy. It also put "run" at 135,099 coin against a median of 19,377.
+  - `tools/bench/reports/dominance.json` (Oct 15, 6 lives × 30 years) flagged `learn_lang` as a dominant whole-life strategy. It also put "run" at 135,099 coin against a median of 19,377.
   - That report predates about 20 features, and its own flag says it should be re-checked.
 
 **Fix.**
-1. Re-run `bench/dominance.mjs` on the current build. Its nightly run already exists; read its artifact.
+1. Re-run `tools/bench/dominance.mjs` on the current build. Its nightly run already exists; read its artifact.
 2. A "fill the cart" control.
 
 ## 18. Economy exploits: **Low**

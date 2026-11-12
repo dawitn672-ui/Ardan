@@ -1,64 +1,112 @@
-# Ardan: working rules
+# Ardan: start here
 
-Ardan is a single-page life sim and grand strategy game. This repo holds the **shipped release build** (`vendor/ardan-b593143.html`), plus **features** that patch it, add code and add events. `tools/build.mjs` turns those into `index.html`. The game's original source isn't here, so everything is built on top of the release.
+Ardan is a single-page medieval life sim and grand strategy game: you live one person's life inside a simulated
+continent of realms, courts, families and wars. This repo holds the **shipped release build**
+(`vendor/ardan-b593143.html`, minified, never edited) and everything built on top of it: **features** that patch it,
+add code and add events, the **v2 engine** (plain ES modules), content kept as **data**, and the tools that build,
+test and play it. `node tools/build.mjs` turns it all into one playable file, `index.html`.
+
+## Every session, first
+
+1. Read this file, the end of `docs/HISTORY.md` (what was done last and how to undo it), `docs/DECISIONS.md` (do not
+   undo a recorded decision without a new record), `docs/V2_SPEC.md` (the owner's design rules) and the skills in
+   `.claude/skills/`.
+2. Work on a branch, one step per commit. After each step: tests, the coherency checks, a playtest pass
+   (`.claude/skills/game-ux-playtest-loop`), then a `docs/HISTORY.md` entry, `CHANGELOG.md` and this file if they change.
+
+## Standing rules (the owner's)
+
+- **Descriptions open on click, never on hover.** A button or an info icon opens a description; nothing pops up on
+  hover. (Round 2 order B4; replaces the older "never hide a description behind a click" rule. Until B4 lands the
+  hover tooltips of `src/ui/59-tooltips` are still in the build.)
+- **No percentages for the player.** Odds and amounts are words and a tipped scale. Percentages are fine in tests,
+  tools and AI.
+- **One holder per post.** Every title, office and command has exactly one holder at a time. A promotion hands over
+  the real command, men and powers and takes the old post away; leaving a post has consequences.
+- **Deterministic from the seed.** The same seed and the same choices give the same world, always.
+- **No war screens unless you are in the war,** at your rank, on a mission or deployed.
+- **Never throw work away.** Retired code goes to `archive/` with a note (and the last commit that had it is recorded
+  in `docs/HISTORY.md`), never deleted.
+- If an order conflicts with how the code works, record the conflict and the fix chosen in `docs/DECISIONS.md`.
 
 ## Layout
 
 | Path | What |
 | --- | --- |
+| `src/<system>/NN-name/` | A **feature**: one unit of change (`patches.mjs`, `*.core.js`, `*.events.js`, `test.mjs`, `README.md`) |
+| `src/<system>/engine/` | The **v2 engine** modules of that system (plain ES modules, unit-tested by `tests/v2/`) |
+| `src/core/00-..09-` | The fix layer, always built |
+| `src/*/*/.wip` | Work in progress: left out of the default build, tests and check; built by `--only=name` |
+| `data/` | Content kept as data (`*.json`), put on the page as `A.DATA[...]` before any feature code |
+| `assets/` | Art, fonts, portrait and VFX source files |
 | `vendor/ardan-b593143.html` | The untouched release. **Never edit.** |
-| `features/NN-name/` | One unit of change: `patches.mjs`, `*.core.js`, `*.events.js`, `test.mjs`, `README.md` (see `tools/build.mjs`) |
-| `features/00-..09-` | The fix layer, always built |
-| `features/*/.wip` | Marks a feature as work in progress: left out of the default build, tests and check, still built by `--only=name` |
-| `tools/build.mjs` | Builds the game (`--out=`, `--only=`, `--without=`, `--unpack`) |
-| `tools/show.mjs` | Prints minified source of named functions from `.build/` (run `node tools/build.mjs --unpack` first) |
-| `tools/lint-events.mjs` | Lints and play-tests a feature's events: `--feature=name --html=built.html` |
-| `tests/run.mjs` | Browser tests: `tests/suites/*.test.mjs` and every `features/*/test.mjs` |
-| `bench/` | Measurement harnesses that write `reports/` |
-| `docs/` | `plan/` (the Road to Ten), `reviews/`, `benchmarks/`, `north-star/` |
+| `tests/` | `run.mjs` (browser tests: `tests/suites/` and every feature's `test.mjs`), `v2/` (engine unit tests), `saves/` (sample saves of every version; they must keep loading) |
+| `tools/` | `build.mjs`, `build-v2.mjs`, `check.mjs`, linters, `show.mjs`, `version.mjs`, `lib/features.mjs` (where features live), `bench/` (measurement harnesses; reports in `tools/bench/reports/`), `v2/` (the v2 kit's playtest and map scripts) |
+| `docs/` | `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (v2 status, lanes, playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
+| `archive/` | Retired features and code, each with a note on what it was and why it was replaced. Never built. |
+| `CHANGELOG.md` | Player-facing changes in plain words, one section per version |
+| `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop` (keep them true to the code) |
 
-## Commands
+**Systems** (`src/<system>/`): `core` (engine fixes, saves, time, scale, replay, mods, pacing), `map` (the continent,
+terrain, journeys, the map view), `world` (realms, cultures, names, lore, the world record, beliefs), `people` (the
+body, stats, skills, moods, relationships, advisors, renown), `family` (kin, households, succession), `nobility`
+(titles, courts, offices, the polity), `diplomacy` (relations between realms, reasons for war), `war` (armies,
+battles, sieges, orders, companies), `economy` (goods, markets, trade), `events` (event packs, arcs, memory,
+chronicle, endings), `ui` (look, layout, portraits, icons, motion, phone). Features apply in folder-name order across
+all systems (`00-security` first, `99999-v2-renown` last), as `tools/lib/features.mjs` lists them.
+
+## Build, test, play
 
 ```sh
-node tools/build.mjs                                      # everything -> index.html
+node tools/build.mjs                                      # everything -> index.html (open it in a browser to play)
 node tools/build.mjs --out=/tmp/me.html --only=my-feature # fix layer + one feature, somewhere private
-node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth UI.refresh       # the shared .build/ (fix layer)
+node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth UI.refresh       # the shared .build/ (read only)
 node tools/build.mjs --out=/tmp/ardan/me/x.html --only=me --unpack=/tmp/ardan/me/blobs
 node tools/show.mjs --dir=/tmp/ardan/me/blobs A.fightWorth                         # your own build, privately
+node tools/build-v2.mjs                                   # rebundle the v2 engine (src/*/engine) after editing it
+node --test tests/v2/*.test.js                            # the engine's unit tests
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
-node bench/balance.mjs /tmp/me.html                       # each path's numbers within bench/targets.mjs
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
-node tests/run.mjs                                        # everything against index.html
+node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
+node tests/run.mjs                                        # everything against index.html (751 tests; CI shards it 8 ways)
+node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
+node tools/check.mjs                                      # everything CI runs
+node tools/version.mjs get v2.0.0-beta.1                  # any version, playable: versions/ardan-<v>.html
 git gc --prune=now                                        # after every integration round (see below)
 ```
 
-## Versions
+The browser tests use the container's Playwright (`/opt/node-tools/node_modules/playwright`): if `npm ci` installs
+the pinned one, delete `node_modules/playwright*` or point `PLAYWRIGHT_PATH` at the container's copy.
+
+## Versions and milestones
 
 Every foundational or significant change is a version (`docs/VERSIONS.md`, `tools/version.mjs`):
 
-- **Major:** a new design the owner set (v1 = the shipped release and its rounds; v2 = `docs/v2/V2_SPEC.md`).
+- **Major:** a new design the owner set (v1 = the shipped release and its rounds; v2 = `docs/V2_SPEC.md`).
 - **Minor:** a round, cycle or step that adds or replaces a system. **Patch:** fixes only.
 - **Pre-release** (`-alpha.N`, `-beta.N`, `-rc.N`) while a major is being built.
-- Tag a clean commit whose CI is green, or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, `git push` (tags too where the remote allows them).
+- Tag a clean commit whose CI is green, or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, push.
+- **Milestones** also get a release branch, `release/<name>` (for example `release/v2.1-foundations`): this
+  session's git proxy refuses tag pushes, so the branch is the restorable record on GitHub. Save a sample game of the
+  milestone in `tests/saves/`.
 
-## v2
+## The v2 engine
 
-The owner's v2 spec is `docs/v2/V2_SPEC.md`; lanes follow `docs/v2/LANES.md`. The v2 engine is `src/v2/` (bundled by
-`node tools/build-v2.mjs` into `features/99990-v2/a-v2.core.js`, on the page as `A.V2`; never edit the bundle), its
-tests are `tests/v2/` (`tools/check.mjs` runs them). The owner's v2 rules: no description hidden behind a click; no
-percentage the player sees (words and a tipped scale); every system deterministic from the seed; report a conflict
-with how the code works before doing it.
+The owner's v2 spec is `docs/V2_SPEC.md`; lanes follow `docs/v2/LANES.md`; status is `docs/v2/STATUS.md`. The engine
+modules live with their systems (`src/people/engine/body.js`, `src/war/engine/war.js`, ...; entry
+`src/core/engine/index.js`), bundled by `node tools/build-v2.mjs` into `src/core/99990-v2/a-v2.core.js` (on the page
+as `A.V2`; never edit the bundle). Their unit tests are `tests/v2/` (`tools/check.mjs` runs them).
 
 ## Rules that keep the build working
 
 **Repack after each round.** The last step of an integration round, after the push, is `git gc --prune=now`. Every round commits a rebuilt `index.html` of about 3.7 MB, and git keeps each one as a loose object: twenty of them had `.git` at 74 MB with no packfile at all, which repacked to 18 MB. Repacking is cheap, it is safe on a pushed branch (it touches only local object storage, never history), and skipping it makes every later clone slower.
 
-**Parallel safety.** When several agents work at once, each owns **only its own `features/NN-name/` folder**.
+**Parallel safety.** When several agents work at once, each owns **only its own `src/<system>/NN-name/` folder** (or its own `data/` files).
 
 - Build to `--out=` a private scratch path such as `/tmp/ardan/<name>/`, never to `index.html`.
 - Unpack only to a private `--unpack=` folder. The shared `.build/` is the fix layer, for reading.
-- Don't edit another feature, `tools/`, `tests/`, `bench/` or `vendor/` unless that is your task.
+- Don't edit another feature, `tools/`, `tests/`, `tools/bench/` or `vendor/` unless that is your task.
 
 **Patches edit minified code.** A `find` must be an exact substring of the current blob, and it must match exactly the count given (default 1).
 
@@ -142,11 +190,11 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 - `tools/lint-events.mjs` must pass.
 - `tools/lint-choices.mjs --feature=<name>` must find no obviously best choice. It flags a choice that beats the others on every count and is no riskier, so give the other side a reason or the favourite a cost.
 - `tests/run.mjs` must pass for your feature.
-- CI also runs `bench/balance.mjs`, which holds each starting path to the bands in `bench/targets.mjs`. Widen a band only with a reason in the file.
+- CI also runs `tools/bench/balance.mjs`, which holds each starting path to the bands in `tools/bench/targets.mjs`. Widen a band only with a reason in the file.
 
-## Measurement conventions (`bench/`)
+## Measurement conventions (`tools/bench/`)
 
-`node bench/run.mjs <built.html> --label=x` writes `reports/x.json`. `node bench/compare.mjs release fixes x` writes `reports/scorecard.md` using `bench/rubric.mjs`. Features make themselves measurable by following these conventions:
+`node tools/bench/run.mjs <built.html> --label=x` writes `tools/bench/reports/x.json`. `node tools/bench/compare.mjs release fixes x` writes `tools/bench/reports/scorecard.md` using `tools/bench/rubric.mjs`. Features make themselves measurable by following these conventions:
 
 - **NPC-started events** carry `npc: true` on the event, or `ctx.npcMove = true` on the queued item. The bot counts them as `npcMovesPerDecade`.
 - **After-action reports.** A battle object that got one carries it in `b.aar` (`{ causes: [{ label, pct }], text }`). The bot counts `afterActionShare`.

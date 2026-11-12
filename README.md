@@ -7,27 +7,32 @@
 ## How this repo works
 
 The game's original source is not here. What is here is the shipped release (`vendor/`), and on top of it a set of
-**features**: each one a folder that patches the release, adds readable code or events, and tests itself.
+**features**: each one a folder (under `src/<system>/`) that patches the release, adds readable code or events, and tests itself.
 `tools/build.mjs` turns the release plus every feature into `index.html`.
 
 ```
 index.html                  the game: release + every feature (built; CI checks it matches)
+CLAUDE.md                   start here: layout, rules, commands, pointers (for humans and agents alike)
+CHANGELOG.md                what changed for the player, version by version
 vendor/                     the untouched release build b593143 (never edited)
-features/NN-name/           one unit of change each; 00-09 are the fix layer, 99990-99999 are v2
-  patches.mjs               exact edits to the minified code, each with a "why"
-  *.core.js                 new engine/UI code, appended to the core
-  *.events.js               new events, appended as content packs
-  test.mjs                  browser tests for this feature
-  README.md                 what it does, why, how it is measured
-  .wip                      out of the build (work in progress, or retired like the Far Lands 99, 990-993, 9995)
-src/v2/                     the v2 engine as plain ES modules (body, odds, kin, nobility, diplomacy, war, map...)
-tests/v2/                   its node tests (node --test tests/v2); tests/run.mjs runs the browser tests
-tools/                      build, build-v2 (bundles src/v2), version, pack/unpack, show, linters, check
-tools/v2/                   the v2 kit's demo build and map renders
-bench/                      measurement harnesses (bot league, balance bands) -> reports/
-docs/                       plans, reviews, research, the v2 spec: see docs/README.md
+src/<system>/               core, map, world, people, family, nobility, diplomacy, war, economy, events, ui
+  NN-name/                  a feature: one unit of change each; 00-09 are the fix layer, 99990-99999 are v2
+    patches.mjs             exact edits to the minified code, each with a "why"
+    *.core.js               new engine/UI code, appended to the core
+    *.events.js             new events, appended as content packs
+    test.mjs                browser tests for this feature
+    README.md               what it does, why, how it is measured
+    .wip                    out of the build (work in progress)
+  engine/                   that system's v2 engine modules (plain ES modules; tests in tests/v2)
+data/                       content kept as data (JSON), on the page as A.DATA
+assets/                     fonts and art sources, embedded at build time
+archive/                    retired features (the Far Lands, the v2 kit demo), each with a NOTE.md
+tests/                      run.mjs (browser tests), suites/, v2/ (engine tests), saves/ (sample saves)
+tools/                      build, build-v2, check, version, pack/unpack, show, linters, lib/features.mjs
+tools/bench/                measurement harnesses (bot league, balance bands) -> tools/bench/reports/
+tools/v2/                   the v2 kit's demo build, playtest scripts and map renders
+docs/                       HISTORY, DECISIONS, IDEAS, CRITIQUE, V2_SPEC, VERSIONS; plans, reviews, research
 .claude/skills/             the project's skills (playtest loop, life-sim systems, continent maps)
-CLAUDE.md                   working rules for anyone (human or agent) changing the game
 ```
 
 ## Versions
@@ -115,7 +120,7 @@ Finished lane branches are deleted once they are merged; their work lives in the
 | `75-fair-checks` | Character | A scene's odds fit your stage of life, so the young are not set up to fail; untrained or hurt still means long odds |
 | `40-memory-*` (8 chunks) | Events | 471 callbacks that bring back 269 memories the release recorded and never used |
 
-How far each moved the game is measured in `reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.
+How far each moved the game is measured in `tools/bench/reports/scorecard.md`; the plan for the rest is in `docs/north-star/`.
 
 ## Commands
 
@@ -129,7 +134,7 @@ npm run test:original                            # the same tests against the un
 node tools/build.mjs --out=/tmp/x.html --only=chronicle   # fixes + one feature, elsewhere
 node tools/lint-events.mjs --feature=chronicle --html=/tmp/x.html
 node tools/lint-choices.mjs --all-features                 # no event a feature adds may have an obviously best choice
-node bench/balance.mjs                                    # each starting path's numbers held to bench/targets.mjs
+node tools/bench/balance.mjs                                    # each starting path's numbers held to tools/bench/targets.mjs
 node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth
 ```
 

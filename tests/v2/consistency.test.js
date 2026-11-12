@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createGame, nextMonth, choose, sheet } from '../../src/v2/game.js';
+import { createGame, nextMonth, choose, sheet } from '../../src/core/engine/game.js';
 
 test('one holder per title; the inheritance box and the tree agree (30 seeds, 10 years each)', () => {
   for (let i = 0; i < 30; i++) {
@@ -23,8 +23,8 @@ test('one holder per title; the inheritance box and the tree agree (30 seeds, 10
 // v2 lane "family" (integration step 5): the game's people have no v2 genes, so the host may judge wits itself
 // (judgedSimple) and give the elders' measure (ability). Without them nothing changes.
 test('succession takes a host judgement of the unfit and of ability', async () => {
-  const { People } = await import('../../src/v2/kin.js');
-  const { lineOfSuccession } = await import('../../src/v2/succession.js');
+  const { People } = await import('../../src/family/engine/kin.js');
+  const { lineOfSuccession } = await import('../../src/family/engine/succession.js');
   const P = new People();
   const mk = (id, sex, by, extra = {}) => P.add({ id, sex, birthYear: by, house: 'H', name: 'p' + id, ...extra });
   const dad = mk(1, 'male', 1050), a = mk(2, 'male', 1075, { judgedSimple: true, ability: 50 }), b = mk(3, 'male', 1078, { ability: 300 }), c = mk(4, 'female', 1080, { ability: 200 });

@@ -1,4 +1,4 @@
-// The in-page analysis behind tools/lint-choices.mjs, shared with bench/run.mjs and features/33-choices/test.mjs.
+// The in-page analysis behind tools/lint-choices.mjs, shared with tools/bench/run.mjs and src/events/33-choices/test.mjs.
 // Pass it to page.evaluate with a list of event ids, or null for every event.
 export function analyzeChoices(only) {
   // what a player wants more of (+) and less of (-); each skill counts on its own

@@ -1,5 +1,5 @@
-import { generateContinent, components, riverPaths } from '../../src/v2/map/continent.js';
-import { renderMap, drawRivers } from '../../src/v2/map/render.js';
+import { generateContinent, components, riverPaths } from '../../src/map/engine/continent.js';
+import { renderMap, drawRivers } from '../../src/map/engine/render.js';
 import { writePng } from './png.js';
 const seed = process.argv[2] || 'ardan';
 const t0 = Date.now();

@@ -62,7 +62,7 @@ A caveat on method: the bot never opens the War Room, the Decisions list or a pe
 **Why it matters.** It's a death in the first session with no warning shown, the exact thing 89-fight-odds was built to stop. "A hunting party" that then fights alone is also a broken promise.
 
 **Fix.**
-- In `features/89-fight-odds`, also detect `startDuelFront(`/`startDuel(` with `beastId:ctx.beast` and badge those choices, the trap and arrow ones too, at their `mod`.
+- In `src/people/89-fight-odds`, also detect `startDuelFront(`/`startDuel(` with `beastId:ctx.beast` and badge those choices, the trap and arrow ones too, at their `mod`.
 - In `fb_at_the_herds`, "Raise a hunt" should go straight to the party option (`party: { n }`) rather than to a scene whose first button is a solo charge.
 
 ### B3. Seen-dead and same-name NPCs: one "Suilan" dies and "Suilan" keeps acting for 30 years (impact 4, size M)
@@ -94,12 +94,12 @@ A caveat on method: the bot never opens the War Room, the Decisions list or a pe
 - Add `!C.ruler(p)` to `homeFront`, `lf_harvest_dance` and `ak_sibling_2`, and `C.job(p,'scribe')` to the `ln_d_scr_*` duties.
 - Add `p.mil.rank <= 3` to `camp_officer`, `camp_letter` and the other rank-and-file camp scenes.
 - Add an age cap of about 55 to the `av_merc_*` and `av_road_*` adventure offers.
-- A sweep in `features/02-content-fixes` (cond patches) would do it.
+- A sweep in `src/core/02-content-fixes` (cond patches) would do it.
 - A cheaper broad fix is in `A.evAudience` (`A.CX_RX`): treat rank ≥ 6 soldiers like nobles for "subordinate" scenes.
 
 ### B5. Death manner misread (impact 2, size S)
 
-**What I saw.** F3 died of "a kick from a horse" and the chronicler wrote "The Commander, as all things end". `A.MANNERS` in `features/28-endings/endings.core.js` matches `kicked` but not "kick from". Under 60, "a wound gone bad", "a bad tooth that poisoned the blood", "a failing heart" and "a stroke" also fall to "as all things end".
+**What I saw.** F3 died of "a kick from a horse" and the chronicler wrote "The Commander, as all things end". `A.MANNERS` in `src/events/28-endings/endings.core.js` matches `kicked` but not "kick from". Under 60, "a wound gone bad", "a bad tooth that poisoned the blood", "a failing heart" and "a stroke" also fall to "as all things end".
 
 **Fix.** Widen the regexes: accident `kick`; sickness `wound gone bad|tooth|poisoned the blood`; age-or-body `heart|stroke` at any age. This is a test case for `endingsNamed`.
 
@@ -198,7 +198,7 @@ After the top rung:
   - `oa_faith_young_priest` ("a boy with a fresh tonsure");
   - `oa_faith_shroud` ("In this parish … with lavender");
   - `la_elder_2` ("The lord means to fence the common… the church porch");
-  - `av_runaway_serf` ("a year and a day in a free town"), though Taulen keeps corvée, not serfs (bench/targets.mjs note).
+  - `av_runaway_serf` ("a year and a day in a free town"), though Taulen keeps corvée, not serfs (tools/bench/targets.mjs note).
 - F4 (Birch March, bear-feast people) built "The cathedral" for the ruler's monument (`la_monument_1`). The Decisions card offers "A manor house with a hall, a chapel". See `/tmp/ardan/cycle1/lives/ui-taulen-y32-path.png`.
 - 54-voices already swaps "lord" to the local word ("The wazen's wood"), but not church, priest, abbey, reeve or ale.
 
@@ -228,7 +228,7 @@ The ambition "Build a purse of 5,000 suns" is met in the twenties. Nothing in th
 - Rescale the top ranks' wages (Banker 9,000, Merchant prince 3,000, Master of the yard 1,800 in `GD.CAREERS`), or tax them through 45-economy.
 - Add late-game sinks priced in the tens of thousands: great works that appear on the map, buying a title, ransoms, bribing a council, endowing a school (the 46 scholar legacy).
 - Add a yearly line "Your income this year: …, from …".
-- Keep `bench/targets.mjs` honest: merchant `medianPeakCoin` [20k, 900k] allows this.
+- Keep `tools/bench/targets.mjs` honest: merchant `medianPeakCoin` [20k, 900k] allows this.
 
 ### I5. The systems the game never brings to you (impact 4, size M)
 
@@ -332,4 +332,4 @@ The ambition "Build a purse of 5,000 suns" is met in the twenties. Nothing in th
 
 Smaller fixes: B5 (death manners), B6 ("Master your master"), B7 (5,141 bandits dead and none of yours), I6 (beast scenes every three years), I7 (the same reckoning 13 times), I8 (endings favour wealth), I9 (first-year flood), I10 (log noise).
 
-**Harness note for whoever fixes bots.** The bench bot (`bench/bot.mjs`) does `eventView` and counts an event again when the event returns to the head of the queue after a fight it started (`startDuelFront` puts the duel ahead of the event and `eventClose` returns early). `A.eventChoose` guards against a second effect, so the game is fine, but `L.events` and `distinct` double-count fight scenes. Skip heads that already have `h.result`.
+**Harness note for whoever fixes bots.** The bench bot (`tools/bench/bot.mjs`) does `eventView` and counts an event again when the event returns to the head of the queue after a fight it started (`startDuelFront` puts the duel ahead of the event and `eventClose` returns early). `A.eventChoose` guards against a second effect, so the game is fine, but `L.events` and `distinct` double-count fight scenes. Skip heads that already have `h.result`.

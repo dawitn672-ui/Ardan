@@ -28,7 +28,7 @@
 | Slow checks | pass: one holder per title (30 seeds), court titles (10 seeds), a century of diplomacy, 6 bot lives |
 | Page errors in the playtest | none |
 | **Full browser suite (626 tests) on a v2 build** | **not yet run.** CI on PR #2 is the first full run |
-| **Balance bands (`bench/balance.mjs`) on a v2 build** | **not yet run.** The step 2 map lane passed them, but no run includes steps 4–8 |
+| **Balance bands (`tools/bench/balance.mjs`) on a v2 build** | **not yet run.** The step 2 map lane passed them, but no run includes steps 4–8 |
 
 ## Round 2 of fixes (Nov 5)
 
@@ -60,7 +60,7 @@ CI run 88 (the first full run of a v2 build) failed 50 of about 690 tests; the b
 | warbattles | Army routine scenes spaced over a life; a choice moves the fight at every rank |
 
 | repeats | Gatherings, jousts, debates, shrines and other routine scenes spaced over a life (lfRepeats 11.3%, bar 15%); an invitation of another kind asks again |
-| CI 90-91 fixes | Companies refit after a template recut (exact saves), the 10-year world test across an heir, the map timing test re-timed under load, words for a chapter label and the body line's tooltips, a dead mover's bill passed on, a dwarf rite now reachable, 'Lend money' greyed out with its reason when the purse is empty; serf and artisan wealth bands widened for the re-rolled sample (reason in bench/targets.mjs) |
+| CI 90-91 fixes | Companies refit after a template recut (exact saves), the 10-year world test across an heir, the map timing test re-timed under load, words for a chapter label and the body line's tooltips, a dead mover's bill passed on, a dwarf rite now reachable, 'Lend money' greyed out with its reason when the purse is empty; serf and artisan wealth bands widened for the re-rolled sample (reason in tools/bench/targets.mjs) |
 
 CI went from 50 failures (run 88) to 31 (89), 8 (90), 3 (91) and 1 (92). Run 92's one failure was a real bug: an advisor's follow-up scene that 81-pacing's first-adult-year cap dropped still spent the NPC budget and started its 8-year cooldown, so the advisor's turn was lost on a scene never shown. It now spends them only when the scene lands.
 

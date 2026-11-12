@@ -171,7 +171,7 @@ edge keys; the Int16 grid.
 - `S.prov` is indexed by id. So new provinces **must be appended (ids 306 and up)**, never inserted.
 - `MAP.overlay` and `MAP.front` build arrays indexed by province (`S.prov.map(...)`) for every pixel.
 - 76-beast-habitats' `BH.REGION` matches all 306 provinces by name, and its tests assert `=== 306`
-  (`features/76-beast-habitats/test.mjs:54,76`).
+  (`src/map/76-beast-habitats/test.mjs:54,76`).
 
 **Realm ids written into the code.**
 
@@ -225,7 +225,7 @@ The harness is in Appendix A. A real generated continent would differ in shape, 
 | Full build, 10× | 3,060 / 341 | 2,083 | 1.8–2.6 s | **1.12–1.25 s** / 1.87–2.12 | **16.8–18.4 s** | 8.3 / 11.6 MB |
 | Full build, 10×, three exact rewrites (2.4) | 3,060 / 341 | 2,083 | 1.8 s | 1.05 s / 1.66 | **3.25 s** | same |
 
-For scale, on CI's quieter machine `bench/run.mjs perf` reads 0.89 ms a day (about 27 ms a month) on the full build
+For scale, on CI's quieter machine `tools/bench/run.mjs perf` reads 0.89 ms a day (about 27 ms a month) on the full build
 at 1×, with a war-tick p95 of 4.9 ms.
 
 **What the numbers show.**
@@ -413,7 +413,7 @@ so the Tiger of Ranpur was near 244 of 306 provinces. Now:
 3. **Opt-in per game, like 43 and 70.**
    - The world is extended in a wrapper of `A.initWorld`, only when `o.world` asks for it (say `o.lands: ['far']`, or
      `o.world: 'greater'`).
-   - Games started by code stay as written, so `tests/`, the feature tests and `bench/balance.mjs` are untouched until
+   - Games started by code stay as written, so `tests/`, the feature tests and `tools/bench/balance.mjs` are untouched until
      the switch is deliberately made the default.
 4. **Level of detail in the simulation.**
    - The continent the player lives on, and every realm in contact with it (at war, allied, trading, or within N hops),
@@ -425,7 +425,7 @@ so the Tiger of Ranpur was near 244 of 306 provinces. Now:
 
 ### 4.3 Stages
 
-Folder numbers are left as `NN`: take the next free numbers when the work starts (`features/90-fold/` is already taken). Stage 0 must build before the other stages, since they rely on its indexes.
+Folder numbers are left as `NN`: take the next free numbers when the work starts (`src/ui/90-fold/` is already taken). Stage 0 must build before the other stages, since they rely on its indexes.
 
 **Stage 0. Make the engine scale. No visible change.** Folder: `features/NN-world-scale/`.
 
@@ -544,8 +544,8 @@ doctrines) and `NN-far-events`.
 
 **Stage 4. Make it the default for menu games.**
 
-- Re-baseline `bench/targets.mjs`, with a reason written in the file.
-- Add a `perf` scale case to `bench/run.mjs` and a rubric line ("year turn on the greater world ≤ 1.5 s").
+- Re-baseline `tools/bench/targets.mjs`, with a reason written in the file.
+- Add a `perf` scale case to `tools/bench/run.mjs` and a rubric line ("year turn on the greater world ≤ 1.5 s").
 - Keep games started by code as written.
 
 **Stage 5, optional. A denser old world.**
@@ -587,8 +587,8 @@ that turn the option on.
   - 55-bonds' pooled grudges;
   - 64-npc-beliefs;
   - 70's classifier;
-  - `bench/balance.mjs`, whose 6 paths start in `POL-05`, `POL-01`, `POL-03`, `POL-04` and `POL-02`;
-  - the scorecard's measured numbers in `bench/run.mjs`.
+  - `tools/bench/balance.mjs`, whose 6 paths start in `POL-05`, `POL-01`, `POL-03`, `POL-04` and `POL-02`;
+  - the scorecard's measured numbers in `tools/bench/run.mjs`.
 - **Tests that count the world:**
   - 76-beast-habitats: `provinces === 306`, `places === 306`, 25 beasts;
   - 43: 3 to 6 provinces moved, and between 2 and 6 of the 40 alliances broken;
@@ -596,7 +596,7 @@ that turn the option on.
   - 62: views at `7000 / z`, tile counts, `inkTiming`.
 - **Timing bands:**
   - 62's `inkTiming` and the cold geometry time;
-  - `bench/run.mjs perf`: `msPerDay` and the war-tick target "p95 ≤ 50 ms" with six wars between neighbours;
+  - `tools/bench/run.mjs perf`: `msPerDay` and the war-tick target "p95 ≤ 50 ms" with six wars between neighbours;
   - **CI time.** `tests/run.mjs` already takes about 80 minutes over three shards against a 120-minute timeout, so a
     sim 5× slower overruns it. This is a second reason to keep tests on the world as written, and to do stage 0 first.
 - **`tests/suites/core.test.mjs`** starts lives in fixed realms (`POL-01`, `-03`, `-20`, `-11`, `-05`, `-07`, `-02`).

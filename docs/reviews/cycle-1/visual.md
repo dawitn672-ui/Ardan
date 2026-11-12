@@ -48,7 +48,7 @@ The hours a player spends in the game look like a well-made web app. The few sec
 
 ### B3. Snow falls on the tropics
 - **Seen.** "The priest in the cell" in Tidoha, on the Scent Isles, a tropical island. The palms are drawn by the far-lands jungle dress, and snow falls on them: `S/390-dark/10-event-2.png`.
-- **The cause.** `SK.palette` in `features/94-woodblock-skies/skies.core.js` sets `winter = season === 0 && terr !== 'desert' || T.winter`. Every January is winter everywhere except deserts, and 99-far-lands' jungle, savanna and scrub are not excluded.
+- **The cause.** `SK.palette` in `src/ui/94-woodblock-skies/skies.core.js` sets `winter = season === 0 && terr !== 'desert' || T.winter`. Every January is winter everywhere except deserts, and 99-far-lands' jungle, savanna and scrub are not excluded.
 - **Why it matters.** It is the kind of error a 15-year-old screenshots and posts. It also breaks the "one coherent world" ruling.
 - **Fix.** Have `winter` read the province's climate. Only the temperate, boreal and alpine biomes get snow. The tropics get a rain or dry-season variant.
 - **Size S · Impact 4.**

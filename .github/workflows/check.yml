@@ -45,4 +45,4 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node tools/build.mjs
       - run: git diff --exit-code index.html
-      - run: node bench/balance.mjs index.html --workers=4
+      - run: node tools/bench/balance.mjs index.html --workers=4

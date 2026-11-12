@@ -1,7 +1,7 @@
 // Dead clicks: every visible control on every screen, clicked one at a time from the same starting state. A control is
 // dead when its click changes nothing: not the page, not the game, no dialog, no download, no new popover. A static pass
 // also lists every data-a in the page that has no handler in UI.A.
-//   node tools/deadclicks.mjs [built.html] [--screens=life,people] [--json=reports/deadclicks.json] [--max=400] [--phone]
+//   node tools/deadclicks.mjs [built.html] [--screens=life,people] [--json=tools/bench/reports/deadclicks.json] [--max=400] [--phone]
 // Exit code 1 if anything is dead or a click raised an error.
 import fs from 'node:fs';
 import path from 'node:path';

@@ -11,7 +11,7 @@ Reviewer: **lives**. Angle: what a whole life feels like to a player of 13 to 23
   - It spends initiative on a plan for its path. Every fourth month it takes the game's own top What-now action.
   - Like an engaged player, some lives seek an office once a year from the Politics view (`POL.seek`). Rulers and councillors bring and argue bills (`UI.A.poPropose`, `poVoice`). Three lives take a long journey (`A.travelTo(..., 'visit')`).
 - **One menu pass.** `ui.cjs` played a Great Continent merchant through the real screens. It took screenshots of every tab, a scene and the *Keep this* card: `/tmp/ardan/cycle2/lives/ui/`.
-- **World bench.** `features/9996-polity/bench.mjs`, 8 Known World worlds × 40 years, with and without the Polity.
+- **World bench.** `src/nobility/9996-polity/bench.mjs`, 8 Known World worlds × 40 years, with and without the Polity.
 
 | Life | World, realm | Start | Years | End | Ending |
 | --- | --- | --- | --- | --- | --- |
@@ -97,7 +97,7 @@ The cycle 1 status table is at the end, after the findings.
 
 The odds are 0.9 almost every year once the life has some renown. The log reads like a list: "You are named Magistrate of Varenna… of Vitia… of Vitina… of Calena… of Venina" (1105–1111). G1's coin went from 151,002 to 498,619 in seven years once the offices stacked.
 
-The cause is `POL.seekable` in `features/9996-polity/d-player.core.js`. It skips only the office the player already holds (`if (o.pid === pc.id) continue;`). Nothing counts the offices the player holds elsewhere. The README says "a person may hold two offices of one realm", which is not what happens.
+The cause is `POL.seekable` in `src/nobility/9996-polity/d-player.core.js`. It skips only the office the player already holds (`if (o.pid === pc.id) continue;`). Nothing counts the offices the player holds elsewhere. The README says "a person may hold two offices of one realm", which is not what happens.
 
 **Why it matters.** The Politics view is where a curious player goes first. With a 90% button that pays every year, the political game is solved on the first visit. It also empties the realm's offices of the named people the feature exists to show.
 

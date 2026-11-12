@@ -1,9 +1,9 @@
 .build/
 node_modules/
 test-results/
-reports/*.log
-reports/tmp-*.json
-reports/debug.json
+tools/bench/reports/*.log
+tools/bench/reports/tmp-*.json
+tools/bench/reports/debug.json
 canon/
 .claude/worktrees/
 versions/

@@ -1,8 +1,8 @@
 import { build } from 'esbuild';
 import fs from 'node:fs';
-const r = await build({ entryPoints: ['src/v2/ui/app.js'], bundle: true, minify: true, format: 'iife', write: false, target: 'es2020' });
+const r = await build({ entryPoints: ['archive/v2-kit-demo-ui/app.js'], bundle: true, minify: true, format: 'iife', write: false, target: 'es2020' });
 const js = r.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
-const html = fs.readFileSync('src/v2/ui/template.html', 'utf8').replace('/*APP*/', () => js);
+const html = fs.readFileSync('archive/v2-kit-demo-ui/template.html', 'utf8').replace('/*APP*/', () => js);
 fs.mkdirSync('docs/v2', { recursive: true });
 fs.writeFileSync('docs/v2/demo-embed.html', html);
 // a standalone copy with a document skeleton for local testing

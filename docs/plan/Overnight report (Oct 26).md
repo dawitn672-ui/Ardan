@@ -42,7 +42,7 @@ The owner can read all five in the private **Ardan Codex**, with links between e
 
 The integrated build has all 94 features, 147 patches and 68 event packs, and weighs 4.7 MB.
 
-- **Balance:** every starting path is within its band in `bench/targets.mjs`. Check win rate 48.9%, 9 arc types, 0 page errors.
+- **Balance:** every starting path is within its band in `tools/bench/targets.mjs`. Check win rate 48.9%, 9 arc types, 0 page errors.
 - **Tests:** the full suite (477 tests) passed 472 at first. The five failures were cross-lane, and each is fixed:
   - `stagesHaveTheirOwnPlay`: the single activity grid had dropped the "Only now" header. The Activities header now names the stage's own tiles.
   - `wcTokens`: an outlaw exiled to unclaimed land had no near realms, so the chronicle could cite no war. The realms bordering the home now count as near.
@@ -60,7 +60,7 @@ The integrated build has all 94 features, 147 patches and 68 event packs, and we
 ## What did not ship, and why
 
 - **The 0.25 s month on the Great Continent.** It takes about 0.56 s with 09-scale. The cost left is spread over the war day, caravans, diplomacy and about 30 monthly hooks. Closing the gap needs a coarse tick for lands far from the player, which changes results, so it is the next stage rather than tonight's.
-- **Far Lands content in play.** The realms, rulers, houses, faiths and ties are in the game. The lore's events, troop doctrines, beasts and realm bibles for the Far Lands are not yet: that is stage 3 of `features/99-far-lands/README.md`.
+- **Far Lands content in play.** The realms, rulers, houses, faiths and ties are in the game. The lore's events, troop doctrines, beasts and realm bibles for the Far Lands are not yet: that is stage 3 of `archive/99-far-lands/README.md`.
 - **Province names from each culture's place-name list.** Capitals use the lore's names; other far provinces use a sound palette per land.
 - **Time.** About six hours were lost when every agent stopped at a usage limit (08:30 UTC) and nobody resumed them when it reset at 13:10. They resumed at 19:45.
 

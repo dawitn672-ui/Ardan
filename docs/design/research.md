@@ -6,7 +6,7 @@ The owner asked for "some of the greatest visual productions possible", anime-li
 
 **How the sources were gathered.** Web search only. This environment's network policy blocked direct page fetches from most sites (nngroup.com, gamespot.com, paradoxinteractive.com, wikipedia.org and others), so the points below rest on search-result summaries of those pages. Where a claim comes from my own knowledge rather than a cited page, it says **(general knowledge)**. Before quoting any source in public, open the page and check the wording.
 
-**What I measured first** (the current `index.html`, Playwright at 1366×768 and 390×844, the screens from `features/71-phone/screens.mjs`):
+**What I measured first** (the current `index.html`, Playwright at 1366×768 and 390×844, the screens from `src/ui/71-phone/screens.mjs`):
 
 | Screen | 1366×768: scrolling pane | 390×844: page |
 | --- | --- | --- |
@@ -491,7 +491,7 @@ The brief gives exact proportions.
 | Dela Gothic One | 0.55 | 25.4 | yes | 14 + 9 KB | Heavy Japanese poster gothic; the Persona punch |
 | Mochiy Pop One / Potta One | 0.57 / 0.58 | 25 / 24 | partly | 18 / 25 KB | Too cartoonish for prose |
 
-All are under the SIL Open Font License 1.1, as are today's three fonts (see `features/77-offline-fonts/README.md`).
+All are under the SIL Open Font License 1.1, as are today's three fonts (see `src/ui/77-offline-fonts/README.md`).
 
 **What it means for Ardan.**
 

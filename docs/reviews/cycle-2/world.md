@@ -13,7 +13,7 @@ All scripts and outputs are in `/tmp/ardan/cycle2/world/` (written `W/` below).
   - **Known World without the Polity:** the same four seeds and homes, 110 years (`W/kwnopol-*.json`).
   - 12 worlds, 1,300 world-years. **No page error in any of them.**
 - **Lore check.** The 118 far rulers at the start against cycle 1's `lore-rulers.json` (taken from `far-lands.json`).
-- **Turn time.** Each soak's median month and year-turn month by decade, as `performance.now()` inside the page. The machine was shared with three other reviewers (load 8 to 10 on 4 cores), so treat single readings as ±30%. Plus `features/09-scale/great-bench.mjs --profile` for 13 months from Taulen.
+- **Turn time.** Each soak's median month and year-turn month by decade, as `performance.now()` inside the page. The machine was shared with three other reviewers (load 8 to 10 on 4 cores), so treat single readings as ±30%. Plus `src/core/09-scale/great-bench.mjs --profile` for 13 months from Taulen.
 - **Caveats.**
   - The harness swaps the player by setting `S.pc`, so a realm the player once ruled stays `playerRun` and spends nothing (56's ladder skips the player's realm). Taulen's 476 M hoard in seed 606 is that, and it is left out below.
   - The atlas (9991) and journeys (9990) are player-only by design, and an auto-played peasant never takes a road. I judged them by their code and tests, not by the soaks.
