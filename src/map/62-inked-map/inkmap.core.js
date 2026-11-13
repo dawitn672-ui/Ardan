@@ -503,7 +503,9 @@
     try {
       // the towns are kept with the view; they change only when a capital moves or the display is resized
       const K = iconK(ctx, W, !v || !!v.whole), tk = K.toFixed(2) + ':' + Object.values(A.S.realms).map(r => r.alive ? r.capitalProv : '').join(',');
-      drawTiles(ctx, W, H, wholeView(W, H, v), 'b', (c, d) => IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K), tk);
+      // (X1 baked patch map/9991-atlas-of-known-places AT-VEIL) after the towns, MAP.veil lays the fog of the unknown over the
+      // kept picture, under the names; MAP.veilKey(canvas) joins the key so it is laid again when what the player knows changes
+      drawTiles(ctx, W, H, wholeView(W, H, v), 'b', (c, d) => { IM.towns(c, d.W, d.H, d.vx, d.vy, d.sx, d.sy, d.zoom, K); if (MAP.veil) MAP.veil(c, d.W, d.H, { x0: d.vx, y0: d.vy, w: d.W / d.sx, h: d.H / d.sy }, ctx.canvas); }, tk + (MAP.veilKey ? MAP.veilKey(ctx.canvas) : ''));
       try { IM.selGlow(ctx, W, H, wholeView(W, H, v)); } catch (e) {}
       try { IM.moveArrows(ctx, W, H, wholeView(W, H, v)); } catch (e) {}
       return true;
@@ -640,7 +642,8 @@
         for (const p of S.prov) {
           const x = (p.sx - vx) * sx, y = (p.sy - vy) * sy;
           if (x < -40 || y < -20 || x > W + 40 || y > H + 20) continue;
-          label(ctx, p.name, x, y + s0 * 0.35 + 11 * Math.min(K, 1.4), f, p.occ ? VERM : '#3b2a17');
+          // (X1 baked patch map/9991-atlas-of-known-places AT-UNNAMED) no name for a province the player does not know
+          if (!(MAP.unnamed && MAP.unnamed(p, ctx))) label(ctx, p.name, x, y + s0 * 0.35 + 11 * Math.min(K, 1.4), f, p.occ ? VERM : '#3b2a17');
         }
       }
       if (opts.labels !== false) {

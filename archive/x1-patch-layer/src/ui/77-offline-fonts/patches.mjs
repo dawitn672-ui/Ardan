@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../../assets/fonts');
+const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../../../../assets/fonts'); // X1: path from archive/x1-patch-layer/ (was '../../../assets/fonts');
 const faces = JSON.parse(fs.readFileSync(path.join(dir, 'faces.json'), 'utf8'));
 const css = faces.map(f => `@font-face{font-family:'${f.family}';font-style:${f.style};font-weight:${f.weight};font-display:swap;` +
   `src:url(data:font/woff2;base64,${fs.readFileSync(path.join(dir, f.file)).toString('base64')}) format('woff2');unicode-range:${f.unicodeRange}}`).join('\n');
