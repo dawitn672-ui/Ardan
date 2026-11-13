@@ -352,3 +352,23 @@ realistic but fun for a user at all times." Each answer, and how the build reads
    kings want it, and a lost treasure is a reason for quests and wars.
 **Changes to the design doc:** recorded in its new section "Part 4 · The owner's answers"; the builders follow Part 4
 where it differs from Parts 1-3.
+
+### D-034 · Growth in depth: more stats, thousands of skills, hundreds of styles (owner order 32, 2026-11-13 07:18 ET)
+**Owner:** "Add more stats and clearly define what they do, how to increase them, clear constraints and limitations.
+Skills should be passive and active, that change how your character grows or give a stat boost or negative; there
+should be 100s-1000s of skills. Fighting styles are great ways to differ between people. Each nation's military has
+their own standard training for each of their regiments as well as tactics, whilst certain great families or knight
+families might have their own taught fighting style; there should be hundreds of these as well, some styles weaker
+than standard military and others far exceeding it. Elite orders should have their own style. There should be skills
+for every route a player might go in extreme depth. Merge proficiencies into skills with different levels that can
+then evolve and merge where necessary. Legendaries should also have their own unique design, far more visually
+appealing than other weapons."
+**Replaces:** my advice of 2026-11-13 to keep six stats (the owner chose more). Builds on what exists: the six stats,
+about 40 skills, proficiencies, fighting styles with ranks (Novice..Grandmaster) and techniques (07-duels), realm and
+house styles, 31-learn-by-doing, 32-legend-and-master-caps, 99993-v2-stats.
+**How:** a design first (work item G, Fable 5.2 at max effort): the stat set with definitions, growth, caps and decay;
+one skill system (proficiencies merged in) with levels, passive and active skills, evolutions and merges, generated
+from rules plus hand-written entries so there are thousands without filler; styles by nation and regiment, house,
+knightly family and elite order, ranked against each nation's standard; weapon arts; legendaries' signature arts and
+their own drawn designs (C8 and E2). The owner sees it before it is built.
+**Also settles:** weapon arts and legendaries' signature arts (asked on 2026-11-13): yes.
