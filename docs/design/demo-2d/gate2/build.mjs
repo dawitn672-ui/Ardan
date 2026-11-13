@@ -31,7 +31,8 @@ h2::after{content:"";flex:1;height:1px;background:var(--rule)}
 .sub{color:var(--muted);font-style:italic;font-size:14px;margin:0 0 16px;max-width:980px}
 svg{display:block}
 /* the lineup */
-#stage .row{display:grid;grid-template-columns:repeat(5,1fr);align-items:end;background:radial-gradient(90% 70% at 50% 100%,#dedae6 0%,#eeecf3 55%,#f5f3f8 100%);border-radius:8px;margin-bottom:14px;padding:8px 10px 12px;box-shadow:inset 0 0 0 1px #d9d2c2}
+#stage .row{position:relative;overflow:hidden;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;background:linear-gradient(180deg,#f6f4f9 0%,#eceaf2 70%);border-radius:8px;margin-bottom:14px;padding:8px 10px 12px;box-shadow:inset 0 0 0 1px #d9d2c2}
+#stage .bk{position:absolute;left:0;top:0;width:100%;height:calc(100% - 46px)}.fig{position:relative}
 .fig{margin:0;text-align:center}.fig svg{width:100%;height:auto}
 .fig figcaption b{font:700 13.5px Cinzel,serif;letter-spacing:.04em;display:block;margin-top:2px}
 .fig figcaption span{font-size:12px;color:var(--muted);font-style:italic}
@@ -75,7 +76,8 @@ svg{display:block}
 .chip{font:13px Atkinson,system-ui,sans-serif;background:var(--chip);border:1px solid var(--rule);border-radius:999px;padding:5px 11px;min-height:32px;cursor:pointer;color:var(--ink)}
 .chip.on{background:var(--ink);color:#fff8e8;border-color:var(--ink)}
 .chip.gold{border-color:var(--gold);color:#6b5217;font-weight:700}
-.sl{display:grid;grid-template-columns:128px 1fr 128px;gap:10px;align-items:center;font:12.5px Atkinson,system-ui,sans-serif;color:var(--muted);margin:1px 0;min-height:26px}
+.sl{display:grid;grid-template-columns:96px 104px 1fr 104px;gap:10px;align-items:center;font:12.5px Atkinson,system-ui,sans-serif;color:var(--muted);margin:1px 0;min-height:26px}
+.sl .nm{color:var(--ink);font-weight:700}
 .sl .lo{text-align:right}.sl.age .hi b{color:var(--ink)}
 input[type=range]{accent-color:var(--verm);width:100%;margin:0}
 .sw{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
@@ -126,22 +128,28 @@ if (!process.argv.includes('--no-shots')) {
   const { chromium } = await import(process.env.PLAYWRIGHT_PATH ? path.join(process.env.PLAYWRIGHT_PATH, 'index.mjs') : '/opt/node-tools/node_modules/playwright/index.mjs');
   const browser = await chromium.launch();
   try {
-    const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, deviceScaleFactor: 2, colorScheme: 'light' });
-    const pg = await ctx.newPage(), errs = [];
-    pg.on('pageerror', e => errs.push(e.message)); pg.on('console', m => m.type() === 'error' && errs.push(m.text()));
-    await pg.goto('file://' + path.join(out, 'gate2.html'));
-    await pg.waitForFunction(() => window.DONE === true, null, { timeout: 120000 });
-    if (errs.length) { console.error('PAGE ERRORS\n' + errs.join('\n')); process.exitCode = 1; }
-    const shot = async (sel, file, tab) => {
+    // the three sheets the owner asked for at twice the pixels; the further views at once the pixels, to keep the repo light
+    const open = async dsf => {
+      const pg = await (await browser.newContext({ viewport: { width: 1366, height: 900 }, deviceScaleFactor: dsf, colorScheme: 'light' })).newPage(), errs = [];
+      pg.on('pageerror', e => errs.push(e.message)); pg.on('console', m => m.type() === 'error' && errs.push(m.text()));
+      await pg.goto('file://' + path.join(out, 'gate2.html'));
+      await pg.waitForFunction(() => window.DONE === true, null, { timeout: 120000 });
+      if (errs.length) { console.error('PAGE ERRORS\n' + errs.join('\n')); process.exitCode = 1; }
+      return pg;
+    };
+    const shot = async (pg, sel, file, tab) => {
       if (tab) { await pg.click(`#tabs [data-v="${tab}"]`); await pg.waitForTimeout(400); }
-      let png = await pg.locator(sel).screenshot();
-      png = recompress(png); if (png.length > 1.6 * 1048576) png = quantize(png, 256);
+      let png = recompress(await pg.locator(sel).screenshot());
+      if (png.length > 1.7 * 1048576) png = quantize(png, 256);
       fs.writeFileSync(path.join(out, file), png); console.log(file, (png.length / 1024).toFixed(0), 'KB');
     };
-    await shot('#sec-lineup', 'gate2-lineup.png');
-    await shot('#sec-cards', 'gate2-cards.png');
-    await shot('#sec-maker', 'gate2-customiser.png', process.argv.find(a => a.startsWith('--tab='))?.slice(6) || 'Hair');
-    if (process.argv.includes('--more')) { await shot('#sec-ages', 'gate2-ages.png'); await shot('#sec-gear', 'gate2-gear.png'); }
-    console.log('TIMING', JSON.stringify(await pg.evaluate(() => window.TIMING)));
+    const big = await open(2);
+    await shot(big, '#sec-lineup', 'gate2-lineup.png');
+    await shot(big, '#sec-cards', 'gate2-cards.png');
+    await shot(big, '#sec-maker', 'gate2-customiser.png', 'Face');
+    console.log('TIMING', JSON.stringify(await big.evaluate(() => window.TIMING)));
+    const small = await open(1);
+    await shot(small, '#sec-maker', 'gate2-customiser-hair.png', 'Hair'); await shot(small, '#sec-maker', 'gate2-customiser-body.png', 'Body'); await shot(small, '#sec-maker', 'gate2-customiser-dress.png', 'Dress');
+    await shot(small, '#sec-ages', 'gate2-ages.png'); await shot(small, '#sec-gear', 'gate2-gear.png');
   } finally { await browser.close(); }
 }

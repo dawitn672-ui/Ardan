@@ -51,7 +51,7 @@ export function makeRig(look) {
 
   // half widths
   const wide = 1 + .09 * sw + .035 * mu + .02 * wt - .05 * old - .03 * stoop;
-  F.shHalf = H * m(.122, .104, .107) * wide;
+  F.shHalf = H * m(.113, .098, .104) * wide;
   F.chestHalf = H * m(.091, .079, .084) * (1 + .08 * mu + .1 * Math.max(wt, 0) + .04 * Math.min(wt, 0) + .04 * sw);
   F.waistHalf = H * m(.073, .06, .078) * (1 + .34 * Math.max(wt, 0) + .1 * Math.min(wt, 0) + .04 * mu);
   F.hipHalf = H * m(.083, .092, .082) * (1 + .12 * hw + .16 * Math.max(wt, 0) + .05 * Math.min(wt, 0));
@@ -63,7 +63,7 @@ export function makeRig(look) {
 
   // the weight: the pelvis slides over the standing leg and tips, the shoulders tip back the other way
   const P = F.pose = POSES[look.pose] || POSES.ease, sway = P.sway * (1 - .5 * kid);
-  const cx = F.cx = sway * H * .014, cxS = F.cxS = -sway * H * .004, tiltP = sway * H * .006, tiltS = -sway * H * .0045;
+  const cx = F.cx = sway * H * .02, cxS = F.cxS = -sway * H * .006, tiltP = sway * H * .0105, tiltS = -sway * H * .008;
   F.sway = sway;
   const side = [-1, 1];
   F.hipJ = side.map(s => [cx + s * F.hipHalf * .5, y.hip + B * .012 - s * tiltP]);
@@ -85,7 +85,7 @@ export function makeRig(look) {
   F.leg = side.map((s, i) => {
     const free = (sway >= 0 ? -1 : 1) === s ? Math.abs(sway) : 0;              // the leg that carries no weight
     const an = [s * wideA / 2 + cx * .35 + s * free * H * .012, y.ankle], hip = F.hipJ[i];
-    const kn = add(mix(hip, an, .5), [s * H * (.004 + .008 * free), -B * .012 + free * H * .004]);
+    const kn = add(mix(hip, an, .5), [s * H * (.004 + .015 * free), -B * .012 + free * H * .005]);
     const toe = rad(s * (16 + 16 * free + (male ? 4 : -4)));
     return { hip, kn, an, toe, free, s };
   });

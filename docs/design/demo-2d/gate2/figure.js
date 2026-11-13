@@ -17,14 +17,15 @@ export const CROPS = {
   figure: { lod: 0 },
 };
 // light as one pass over the finished figure: the silhouette's lit edge gains a rim, its far edge a soft core shadow
-function lightPass(id, vb, mm) {
+function lightPass(id, vb, mm, line) {
   const [x, y, w, h] = vb, f = v => (Math.round(v * 10) / 10);
   return `<filter id="${id}" filterUnits="userSpaceOnUse" x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" color-interpolation-filters="sRGB">`
     + `<feOffset in="SourceAlpha" dx="${f(mm * 1.1)}" dy="${f(mm * .7)}" result="o"/><feComposite in="SourceAlpha" in2="o" operator="out"/><feGaussianBlur stdDeviation="${f(mm * .45)}"/><feComposite in2="SourceAlpha" operator="in" result="rim"/>`
     + `<feFlood flood-color="#fff7e6" flood-opacity=".5"/><feComposite in2="rim" operator="in" result="rimc"/>`
     + `<feOffset in="SourceAlpha" dx="${f(-mm * 2.2)}" dy="${f(-mm * 1)}" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out"/><feGaussianBlur stdDeviation="${f(mm * 1.2)}"/><feComposite in2="SourceAlpha" operator="in" result="sh"/>`
     + `<feFlood flood-color="#1d1533" flood-opacity=".3"/><feComposite in2="sh" operator="in" result="shc"/>`
-    + `<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="shc"/><feMergeNode in="rimc"/></feMerge></filter>`;
+    + `<feMorphology in="SourceAlpha" operator="dilate" radius="${(Math.round(line * 100) / 100)}" result="fat"/><feFlood flood-color="#1c1420" flood-opacity=".9"/><feComposite in2="fat" operator="in" result="line"/>`
+    + `<feMerge><feMergeNode in="line"/><feMergeNode in="SourceGraphic"/><feMergeNode in="shc"/><feMergeNode in="rimc"/></feMerge></filter>`;
 }
 
 export function compose(look, o = {}) {
@@ -48,7 +49,7 @@ export function compose(look, o = {}) {
   if (crop === 'figure') S.layer('ground').fill(`M${-F.H * .17} ${F.H * .012}a${F.H * .17} ${F.H * .018} 0 1 0 ${F.H * .34} 0a${F.H * .17} ${F.H * .018} 0 1 0 ${-F.H * .34} 0`, '#2a2433', { op: .16, filter: S.blur(F.H * .006) });
   const order = ORDER.filter(k => k !== 'ground'), fx = o.fx !== false, fid = S.id + 'fx';
   const inner = (S.layers.ground || []).join('') + (fx ? `<g filter="url(#${fid})">` : '<g>') + S.body(order) + '</g>';
-  if (fx) S.defs.push(lightPass(fid, vb, F.H * .0045));
+  if (fx) S.defs.push(lightPass(fid, vb, F.H * .0045, S.lw(.5)));
   const svg = S.svg(vb, { cls: o.cls, label: look.name, order: [], post: inner });
   return { svg, vb, F, shapes: S.shapes, px };
 }

@@ -84,7 +84,7 @@ function shoulderBall(S, F, i, m, e = 0) {
   const A = F.arm[i], R = F.armR[0] + e, u = norm(sub(A.el, A.sh)), n0 = perp(u), n = (n0[0] * A.s > -n0[0] * A.s) ? n0 : mul(n0, -1);
   const a0 = Math.atan2(-.9, -A.s * .5), a1 = Math.atan2(n[1], n[0]); let da = a1 - a0; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
   const arc = []; for (let k = 0; k <= 8; k++) { const a = a0 + da * k / 8; arc.push([A.sh[0] + Math.cos(a) * R, A.sh[1] + Math.sin(a) * R]); }
-  S.fill(ell(A.sh, R, R), m.b); return arc;
+  const bd = ell(A.sh, R, R); S.fill(bd, m.b); tone(S, bd, m, [A.sh[0] - R, A.sh[1]], [A.sh[0] + R, A.sh[1]]); return arc;
 }
 function legTube(F, i, e = 0, from = 0, to = 1) {
   const G = F.leg[i], R = F.legR, calf = mix(G.kn, G.an, .3), pts = [G.hip, G.kn, calf, G.an], rr = [R[0] + e, R[1] + e * .8, R[2] + e * .8, R[3] + e * .6];
@@ -105,7 +105,7 @@ const HAND = {
   relaxed: { main: [[0, -.2], [.3, -.26], [.55, -.25], [.8, -.19], [.97, -.08], [1, .04], [.9, .1], [.72, .08], [.55, .1], [.45, .18], [.3, .2], [0, .2]], thumb: [[.14, .1], [.34, .17], [.5, .22], [.6, .3], [.57, .37], [.44, .33], [.28, .28], [.12, .22]], lines: [[[.58, -.17], [.97, -.05]], [[.6, -.09], [.99, .01]], [[.6, -.01], [.93, .07]]] },
   fist: { main: [[0, -.2], [.28, -.28], [.52, -.27], [.63, -.14], [.64, .06], [.56, .24], [.3, .3], [0, .2]], thumb: [[.2, .14], [.44, .1], [.6, .16], [.62, .27], [.46, .3], [.24, .27]], lines: [[[.5, -.2], [.64, -.12]], [[.54, -.08], [.66, -.02]], [[.55, .04], [.65, .1]]] },
 };
-function hand(S, F, i, m, kind) {
+function hand(S, F, i, m, kind, plate) {
   const A = F.arm[i], L = F.handL, x = A.dirF, y = mul(perp(x), A.s), base = add(A.wr, mul(x, -L * .04));
   const shape = HAND[kind === 'relaxed' || kind === 'flat' ? 'relaxed' : 'fist'], k = x, ky = mul(perp(k), A.s);
   const W = p => add(base, add(mul(k, p[0] * L), mul(ky, p[1] * L * .86)));
@@ -113,6 +113,7 @@ function hand(S, F, i, m, kind) {
   const dm = poly(shape.main.map(W), .75), dt = poly(shape.thumb.map(W), .8);
   S.both(dm, m.b, m.k, 1.05); S.within(dm, () => S.fill(dm, S.lin(W([.2, -.2]), W([.8, .25]), [[0, m.s, 0], [1, m.s, .8]])));
   for (const ln of shape.lines) S.stroke(polyline(ln.map(W)), m.k, .9, { op: .8 });
+  if (plate) for (const u of [.2, .36, .5]) S.stroke(spl([W([u, -.25]), W([u + .05, 0]), W([u, .2])]), m.k, .9, { op: .75 });
   S.both(dt, m.b, m.k, 1.05);
 }
 // a shoe seen three-quarters on: the heel under the ankle, the toe out and a little down; +y is the sole's side
@@ -309,7 +310,7 @@ export const ITEMS = {
     S.within(d, () => { tone(S, d, m, pts[1], pts[7]); S.fill(ell([F.cxS + F.Hh * .06, F.pit[1] + F.Hh * .14], F.neckHalf * 2.6, F.Hh * .2), m.s, { op: .6, filter: S.blur(6) }); });
     for (const i of [0, 1]) S.fill(ink(splPts([onSh(F, i, .5), add(F.sh[i], [-SG[i] * F.armR[0] * .2, dn * .4]), add(F.sh[i], [-SG[i] * F.armR[0] * .7, dn * .78])], false, 1, 5), fade(S.lw(1.1))), m.k, { op: .7 });
     S.layer('collar'); const roll = poly([add(F.nb[0], [-F.neckHalf * .7, F.Hh * .02]), add(F.nb[0], [-F.neckHalf * .1, -F.Hh * .1]), [F.cxS, F.pit[1] - F.Hh * .03], add(F.nb[1], [F.neckHalf * .1, -F.Hh * .1]), add(F.nb[1], [F.neckHalf * .7, F.Hh * .02]), [F.cxS + F.neckHalf * .6, F.pit[1] + F.Hh * .13], [F.cxS, F.pit[1] + F.Hh * .17], [F.cxS - F.neckHalf * .6, F.pit[1] + F.Hh * .13]], .9);
-    S.both(roll, m.b, m.k, 1.1); S.within(roll, () => { tone(S, roll, m, F.nb[0], F.nb[1]); S.fill(ell([F.cxS, F.pit[1] - F.Hh * .02], F.neckHalf * 1.1, F.Hh * .06), m.d, { op: .7 }); });
+    S.both(roll, m.b, m.k, 1.1); S.within(roll, () => { tone(S, roll, m, F.nb[0], F.nb[1]); });
     S.fill(ink(splPts([add(F.nb[0], [-F.neckHalf * .3, F.Hh * .02]), [F.cxS - F.neckHalf * .2, F.pit[1] + F.Hh * .09], [F.cxS + F.neckHalf * .5, F.pit[1] + F.Hh * .1]], false, 1, 5), fade(S.lw(1.1))), m.k, { op: .7 });
   },
   cloak(C, o) {
@@ -351,12 +352,12 @@ export const ITEMS = {
     const { S, F } = C, q = o.q || 1, st = metal(o.metal || STEELQ[q - 1]), fit = metal(FITQ[q - 1]);
     for (const i of C.armOrder) {
       const A = F.arm[i]; if (A.back) continue; S.layer('arms');
-      const up = tube([mix(A.sh, A.el, .32), mix(A.sh, A.el, .9)], [F.armR[0] * 1.12 + 3, F.armR[1] * 1.25 + 3]); if (!o.noUpper) { limbFill(S, up, st, { metal: 1 }); if (q > 1) { S.stroke(polyline([up.A[up.A.length - 1], up.B[up.B.length - 1]]), fit.b, 3); } }
+      const up = tube([mix(A.sh, A.el, .32), mix(A.sh, A.el, .9)], [F.armR[0] * 1.12 + 3, F.armR[1] * 1.25 + 3]); if (!o.noUpper) { limbFill(S, up, st, { metal: 1 }); for (const t of [.3, .55]) S.stroke(polyline([along(up.A, t), along(up.B, t + .06)]), st.k, .9, { op: .7 }); if (q > 1) { S.stroke(polyline([up.A[up.A.length - 1], up.B[up.B.length - 1]]), fit.b, 3); } }
       const lo = tube([mix(A.el, A.wr, .12), mix(A.el, A.wr, .45), mix(A.el, A.wr, .98)], [F.armR[2] * 1.22 + 3, F.armR[2] * 1.2 + 3, F.armR[3] * 1.35 + 3]); limbFill(S, lo, st, { metal: 1 });
       S.fill(ink(part(lo.c, .05, .95), S.lw(1)), st.k, { op: .5 });
       if (q > 1) { for (const t of [0, .97]) S.stroke(polyline([along(lo.A, t), along(lo.B, t)]), fit.b, 3.2); } if (q > 2) scrolls(S, part(offset(lo.c, F.armR[2] * .5), .15, .85), 5, fit.b, .85);
       if (q === 1) for (const t of [.25, .7]) { S.stroke(polyline([along(lo.A, t), along(lo.B, t)]), cloth('dark').b, 4); }
-      const ec = A.el, R = F.armR[1] * 1.55 + 3, cop = poly(ellPts(ec, R, R * 1.15, 0, 8), .9); S.both(cop, st.b, st.k, 1.1); S.within(cop, () => steel(S, cop, st, add(ec, [-R, -R * .4]), add(ec, [R, R * .4])));
+      const ec = A.el, R = F.armR[1] * 1.22 + 2, cop = poly(ellPts(ec, R, R * 1.18, 0, 8), .9); S.both(cop, st.b, st.k, 1.1); S.within(cop, () => steel(S, cop, st, add(ec, [-R, -R * .4]), add(ec, [R, R * .4])));
       const fan = poly([add(ec, [SG[i] * R * .7, -R * .7]), add(ec, [SG[i] * R * 1.7, 0]), add(ec, [SG[i] * R * .7, R * .7])], .7); S.layer('arms'); S.both(fan, st.s, st.k, 1); if (q > 1) S.stroke(cop, fit.b, 2.2); S.stroke(cop, st.k, 1.1);
       // the gauntlet's cuff
       const x = A.dirF, y = perp(x), w0 = F.armR[3] * 1.5 + 3, w1 = F.armR[2] * 1.45 + 4, c0 = add(A.wr, mul(x, 6)), c1 = add(A.wr, mul(x, -F.armL[1] * .3));
@@ -462,6 +463,6 @@ export function dress(S, F, Hd, look, sk, H) {
   const hw = HEADWEAR[look.headwear]; if (hw && hw.draw) hw.draw(C, look.headwearOpts || {});
   // hands last: bare, gloved or in plate
   const hm = C.st.handMat || sk;
-  for (const i of C.armOrder) { const A = F.arm[i]; if (A.back || A.hand === 'hidden' || A.hand === 'tucked') continue; hand(S, F, i, hm, A.hand); }
+  for (const i of C.armOrder) { const A = F.arm[i]; if (A.back || A.hand === 'hidden' || A.hand === 'tucked') continue; hand(S, F, i, hm, A.hand, C.st.handMetal); }
   if (F.pose.planted) { /* both hands rest on the pommel: drawn above by hand() */ }
 }

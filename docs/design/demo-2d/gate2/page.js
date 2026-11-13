@@ -16,10 +16,21 @@ const clone = o => JSON.parse(JSON.stringify(o));
 let uid = 0; const nid = () => 'g' + (uid++).toString(36) + '_';
 
 // ------------------------------------------------------------------ the lineup --------------------------------------
+// a pale keep, a curtain wall and two banners behind each row: place, kept quiet so the people lead
+function backdrop(k) {
+  const r = stream('backdrop', String(k)), far = '#dcd7e6', near = '#d0cadd', cloth = '#c2b8d8', gold = '#d8c69a';
+  const cren = (x0, x1, y, c) => { let d = `M${x0} 720V${y}`; for (let x = x0; x < x1 - .1; x += c * 2) d += `h${c}v${-c * .8}h${c}v${c * .8}`; return d + 'V720Z'; };
+  const roofed = (x, w, y) => `M${x} 720V${y}h${w}V720ZM${x - w * .14} ${y}L${x + w / 2} ${y - w * 1.7}L${x + w * 1.14} ${y}Z`;
+  let d1 = cren(0, 1300, 372, 13) + cren(520 + k * 40, 760 + k * 40, 200, 12), d2 = cren(0, 1300, 452, 16);
+  for (const [x, w, y] of [[150 + r() * 60, 64, 250], [400 + r() * 50, 46, 300], [900 + r() * 60, 70, 232], [1120 + r() * 40, 50, 290]]) d1 += roofed(x, w, y);
+  for (const x of [300 + r() * 40, 1010 + r() * 40]) d2 += cren(x, x + 96, 388, 12);
+  const banner = x => `<rect x="${x - 2.5}" y="96" width="5" height="470" fill="${near}"/><path d="M${x + 4} 112h78v236l-39 -34l-39 34Z" fill="${cloth}"/><path d="M${x + 4} 112h78v14h-78Z" fill="${gold}"/><circle cx="${x + 43}" cy="206" r="17" fill="${gold}"/><path d="${[...Array(8)].map((_, i) => { const a = i * Math.PI / 4, c = Math.cos(a), s2 = Math.sin(a); return `M${(x + 43 + c * 22).toFixed(1)} ${(206 + s2 * 22).toFixed(1)}L${(x + 43 + c * 31).toFixed(1)} ${(206 + s2 * 31).toFixed(1)}`; }).join('')}" stroke="${gold}" stroke-width="5" stroke-linecap="round"/>`;
+  return `<svg class="bk" viewBox="0 0 1300 720" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="bkg${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfc8dc"/><stop offset="1" stop-color="#e8e5ee"/></linearGradient></defs><path d="${d1}" fill="${far}"/><path d="${d2}" fill="${near}"/>${banner(58)}${banner(1160)}<rect y="540" width="1300" height="180" fill="url(#bkg${k})"/><path d="M0 540h1300" stroke="#bfb7cf" stroke-width="1.5"/></svg>`;
+}
 function lineup() {
   const rows = [SITTERS.slice(0, 5), SITTERS.slice(5, 10)];
-  $('#stage').innerHTML = rows.map(r => { const top = Math.max(...r.map(s => (s.height || (s.sex === 'F' ? 165 : 178)) * 10 * (s.staff === 'spear' ? 1.13 : 1.05))) + 30;
-    return `<div class="row">${r.map(s => `<figure class="fig">${compose(s, { crop: 'figure', w: 880, top, below: 110, px: .29, id: nid() }).svg}<figcaption><b>${esc(s.name)}</b><span>${esc(s.estate)} · ${esc(POSES[s.pose].name.toLowerCase())}</span></figcaption></figure>`).join('')}</div>`; }).join('');
+  $('#stage').innerHTML = rows.map((r, k) => { const top = Math.max(...r.map(s => (s.height || (s.sex === 'F' ? 165 : 178)) * 10 * (s.staff === 'spear' ? 1.13 : 1.05))) + 30;
+    return `<div class="row">${backdrop(k)}${r.map(s => `<figure class="fig">${compose(s, { crop: 'figure', w: 880, top, below: 110, px: .29, id: nid() }).svg}<figcaption><b>${esc(s.name)}</b><span>${esc(s.estate)} · ${esc(POSES[s.pose].name.toLowerCase())}</span></figcaption></figure>`).join('')}</div>`; }).join('');
 }
 // ------------------------------------------------------------------ the cards ---------------------------------------
 const SIGIL = { Serf: 'M0 -6L6 0L0 6L-6 0Z', Peasant: 'M0 -6L6 0L0 6L-6 0Z', Artisan: 'M-5 -5H5V5H-5Z', Merchant: 'M-5 -5H5V5H-5Z', Priest: 'M0 -6.5A6.5 6.5 0 1 0 .01 -6.5Z', Soldier: 'M0 -7L6 -3V3L0 7L-6 3V-3Z', Noble: 'M0 -7L6 -3V3L0 7L-6 3V-3Z', Royal: 'M-7 5L-7 -4L-3.5 0L0 -6L3.5 0L7 -4L7 5Z' };
@@ -45,7 +56,8 @@ const HEIGHTS = [[150, 'very short'], [160, 'short'], [170, 'middling'], [180, '
 const TABS = ['Face', 'Eyes', 'Nose & mouth', 'Hair', 'Skin & marks', 'Body', 'Dress'];
 const M = { look: null, tab: 'Face', n: 0, thumbs: {} };
 
-const slider = (key, lo, hi, v, path = 'g') => `<label class="sl"><span class="lo">${esc(lo)}</span><input type="range" min="-1" max="1" step="0.05" value="${v}" data-p="${path}" data-k="${key}" aria-label="${esc(lo + ' to ' + hi)}"><span class="hi">${esc(hi)}</span></label>`;
+const NAMES = { faceLen: 'Face length', jawW: 'Jaw width', jawShape: 'Jaw line', chin: 'Chin', chinW: 'Chin width', cheekbones: 'Cheekbones', cheeks: 'Cheeks', forehead: 'Forehead', foreheadW: 'Temples', cleft: 'Chin cleft', eyeSize: 'Eye size', eyeGap: 'Eye spacing', eyeTilt: 'Eye slant', lids: 'Lids', eyeDepth: 'Eye depth', irisSize: 'Iris', lashes: 'Lashes', browRidge: 'Brow ridge', browShape: 'Brow shape', browWeight: 'Brow weight', browTilt: 'Brow set', browGap: 'Brow gap', noseLen: 'Nose length', noseBridge: 'Bridge', noseTip: 'Tip', noseW: 'Nose width', tipShape: 'Tip shape', noseProj: 'Projection', mouthW: 'Mouth width', lips: 'Lips', lowerLip: 'Lower lip', upperLip: 'Upper lip', bite: 'Bite', mouthCurve: 'Corners', earSize: 'Ear size', earSet: 'Ear set', earPoint: 'Ear tip', lobes: 'Lobes', weight: 'Weight', muscle: 'Muscle', shoulders: 'Shoulders', hips: 'Hips', legs: 'Legs', neck: 'Neck', posture: 'Posture', smile: 'Expression', grey: 'Grey', hairThick: 'Thickness', hairline: 'Hairline', freckles: 'Freckles', moles: 'Moles', yaw: 'Head' };
+const slider = (key, lo, hi, v, path = 'g') => `<label class="sl"><span class="nm">${esc(NAMES[key] || key)}</span><span class="lo">${esc(lo)}</span><input type="range" min="-1" max="1" step="0.05" value="${v}" data-p="${path}" data-k="${key}" aria-label="${esc(lo + ' to ' + hi)}"><span class="hi">${esc(hi)}</span></label>`;
 const chips = (kind, items, cur) => `<div class="chips">${items.map(([id, label, on]) => `<button type="button" class="chip${(on ?? id === cur) ? ' on' : ''}" data-c="${kind}" data-v="${esc(id)}">${esc(label)}</button>`).join('')}</div>`;
 const swatches = (kind, pal, cur, col) => `<div class="sw">${Object.entries(pal).map(([id, v]) => `<button type="button" class="s${id === cur ? ' on' : ''}" data-c="${kind}" data-v="${id}" style="background:${col(v)}" aria-label="${esc(v.name || id)}"></button>`).join('')}</div>`;
 const group = k => FACE.filter(f => f[3] === k).map(f => slider(f[0], f[1], f[2], M.look.g[f[0]] || 0)).join('');
@@ -64,7 +76,7 @@ function panel() {
   }
   if (t === 'Skin & marks') { H3('Skin'); h.push(swatches('skin', SKIN, L.skin, v => `linear-gradient(135deg, ${v.l}, ${v.b} 50%, ${v.s})`), slider('freckles', 'no freckles', 'freckled', L.g.freckles ?? -1), slider('moles', 'no moles', 'several', L.g.moles ?? -1)); H3('Scars (press to add, again to move to the other side, again to remove)'); h.push(chips('scar', SCARS.map(([k, n]) => { const sc = (L.scars || []).find(x => x.k === k); return [k, n + (sc ? (sc.side < 0 ? ' · left' : ' · right') : ''), !!sc]; }))); h.push(chips('fresh', [['1', 'Fresh wounds', !!(L.scars || []).some(x => x.fresh)]])); }
   if (t === 'Body') {
-    H3('Sex and age'); h.push(chips('sex', [['M', 'Man'], ['F', 'Woman']], L.sex), `<label class="sl age"><span class="lo">child</span><input type="range" min="4" max="90" step="1" value="${L.age}" data-p="" data-k="age" aria-label="age"><span class="hi">old · <b id="ageN">${L.age}</b> years</span></label>`);
+    H3('Sex and age'); h.push(chips('sex', [['M', 'Man'], ['F', 'Woman']], L.sex), `<label class="sl age"><span class="nm">Age</span><span class="lo">child</span><input type="range" min="4" max="90" step="1" value="${L.age}" data-p="" data-k="age" aria-label="age"><span class="hi">old · <b id="ageN">${L.age}</b> years</span></label>`);
     H3('Height'); h.push(chips('height', HEIGHTS.map(([cm, w]) => [String(cm), w]), String(HEIGHTS.reduce((a, b) => Math.abs(b[0] - (L.height || 175)) < Math.abs(a[0] - (L.height || 175)) ? b : a)[0])));
     H3('Build'); h.push(`<div class="chips pre">${BUILDS.map(([n]) => `<button type="button" class="chip" data-c="build" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>`, BUILD_KEYS.map(b => slider(b[0], b[1], b[2], (L.build || {})[b[0]] || 0, 'build')).join(''));
     H3('Stance'); h.push(chips('pose', Object.entries(POSES).map(([id, v]) => [id, v.name]), L.pose), slider('yaw', 'head turned left', 'turned right', -(L.yaw ?? 12) / 18, 'yaw'));

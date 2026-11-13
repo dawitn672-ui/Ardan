@@ -61,7 +61,7 @@ export function buildHair(Hd, F, look, hc) {
   H.capPts = pp; H.top = hp(0, D.crown - vol, -8);
   if (c.bare) { // a bare crown: only the band round the sides and back is left
     const top = c.ring ? D.crown + 34 : cyc - 6;
-    H.cap = null; H.sideCaps = [1, -1].map(sg => spl([[sg * (D.cran * .78 + sd), top, -20], [sg * Rx, cyc + 4, -12], [sg * (D.zyg + 3.5 + sd * .9), -22, 20], [sg * (D.zyg + 2.5 + sd * .75), c.sideV, 18], [sg * (D.zyg - 4), c.sideV - 1, 34], [sg * (D.zyg - 9), -28, 42], [sg * (D.cran * .74), top + 10, 20]].map(p => hp(p[0], p[1], p[2])), true));
+    H.cap = null; H.sideCaps = [1, -1].map(sg => spl([[sg * D.cran * .8, top - 22, -16], [sg * (Rx - .5), cyc + 2, -12], [sg * (D.zyg + 3.5 + sd * .9), -22, 20], [sg * (D.zyg + 2.5 + sd * .75), c.sideV, 18], [sg * (D.zyg - 4), c.sideV - 1, 34], [sg * (D.zyg - 9), -27, 42], [sg * (D.cran * .84), top + 2, 16]].map(p => hp(p[0], p[1], p[2])), true, [.5, 1, 1, .6, .6, 1, 1]));
     if (c.ring) H.ringBand = splPts([[-(D.cran * .8 + sd), top + 2, -16], [-D.cran * .5, hv + 4, 60], [0, hv + 8, 82], [D.cran * .5, hv + 4, 60], [D.cran * .8 + sd, top + 2, -16]].map(p => hp(p[0], p[1], p[2])), false, 1, 6);
   }
   // one lock, root and tip given in head space; dw lifts it off the skull

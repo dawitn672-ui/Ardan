@@ -27,10 +27,10 @@ export function headDims(look) {
   const B = (M, W, K) => lerp(male ? M : W, K, kid);
   const D = {
     male, age, kid, old, wt,
-    crown: B(-113, -112, -118), cran: B(75, 73, 72), zyg: B(67, 64, 62), gon: B(50, 44, 45), gonV: B(69, 61, 47), chinW: B(11, 7, 8.5), chinV: B(106, 96, 74),
-    eyeU: B(31.5, 31.5, 29.5), eyeW: B(36, 38, 37), eyeH: B(11.4, 15.5, 18.5), irisR: B(7.7, 8.8, 9.4), browV: B(-14.5, -19.5, -23), browT: B(4.6, 3.1, 2.7), browDrop: B(2.6, .4, 0),
+    crown: B(-113, -112, -118), cran: B(75, 73, 72), zyg: B(67, 64, 62), gon: B(49, 43.5, 45), gonV: B(69, 61, 47), chinW: B(9.5, 6.5, 8.5), chinV: B(106, 96, 74),
+    eyeU: B(31.5, 31.5, 29.5), eyeW: B(38, 38.5, 37), eyeH: B(9.4, 13.8, 18.5), irisR: B(7.3, 8.4, 9.4), browV: B(-12.5, -18.5, -23), browT: B(3.9, 2.9, 2.7), browDrop: B(3.2, .6, 0),
     noseV: B(45, 41, 28), noseW: B(15, 12.5, 11), noseP: B(27, 23, 14), mouthV: B(66, 60, 44.5), mouthW: B(22.5, 20, 16), lipU: B(2.8, 4, 3.4), lipL: B(4.4, 6, 4.8),
-    earT: B(-12, -11, -6), earB: B(42, 37, 34), hairV: B(-72, -74, -70), lash: B(3.1, 3.9, 2.8), lipTint: B(.3, .95, .55), jawK: B(.5, .8, .95),
+    earT: B(-12, -11, -6), earB: B(42, 37, 34), hairV: B(-72, -74, -70), lash: B(3.4, 3.9, 2.8), lipTint: B(.3, .95, .55), jawK: B(.45, .8, .95), tilt0: B(.38, .32, 0),
   };
   const fl = 1 + .07 * gs('faceLen');
   D.chinV = D.chinV * fl + 4.5 * gs('chin') + 2 * old; D.noseV = D.noseV * (1 + .045 * gs('faceLen')) + 5 * gs('noseLen') + 3 * old;
@@ -40,7 +40,7 @@ export function headDims(look) {
   D.cheekB = 4.2 * gs('cheeks') + 5 * wt - 3 * old * (1 - Math.max(wt, 0)) + 2.5 * kid; D.jowl = clamp(old * .7 + Math.max(wt, 0) * .7 - .1, 0, 1.3);
   D.hairV += -8 * g('forehead'); D.templeW = 2.5 * g('foreheadW'); D.cleft = Math.max(0, g('cleft')) * (1 - kid);
   D.eyeW *= 1 + .09 * g('eyeSize'); D.eyeH *= (1 + .1 * g('eyeSize')) * (1 + .3 * g('lids')) * (1 - .2 * old); D.irisR *= 1 + .04 * g('eyeSize') + .08 * g('irisSize');
-  D.eyeU += 3.2 * g('eyeGap'); D.tilt = g('eyeTilt') - .5 * old; D.depth = -g('eyeDepth') + .5 * old; D.lash *= 1 + .35 * g('lashes');
+  D.eyeU += 3.2 * g('eyeGap'); D.tilt = D.tilt0 + g('eyeTilt') - .5 * old; D.depth = -g('eyeDepth') + .5 * old; D.lash *= 1 + .35 * g('lashes');
   D.browV += 2.2 * g('browRidge') + 1.5 * old - 1.2 * g('eyeDepth'); D.arch = g('browShape') + (male ? 0 : .45); D.browT *= 1 + .45 * g('browWeight') + (male ? .25 * old : 0);
   D.browDrop += 2.4 * g('browTilt'); D.browGap = -2.5 * g('browGap'); D.ridge = g('browRidge');
   D.bridge = gs('noseBridge'); D.tipV = 3 * gs('noseTip') + 1.5 * old; D.noseW += 3 * gs('noseW') + 1 * old; D.tipR = 1 + .32 * g('tipShape'); D.noseP *= 1 + .22 * gs('noseProj');
@@ -82,8 +82,9 @@ export function makeHead(F, look) {
 // neck, shoulders and upper chest in skin (dress is drawn over them)
 export function drawNeck(S, Hd, F, sk) {
   const { D, hp, s } = Hd, [TL, TR] = Hd.neckTop, yb = F.y.chest + F.B * .05;
-  const pts = [TL, F.nb[0], F.trap[0], F.sh[0], F.del[0], F.ax[0], [F.ax[0][0], yb], [F.ax[1][0], yb], F.ax[1], F.del[1], F.sh[1], F.trap[1], F.nb[1], TR];
-  const d = poly(pts, [0, .6, .9, .85, .8, .3, 0, 0, .3, .8, .85, .9, .6, 0]);
+  const in0 = [F.sh[0][0] + F.armR[0] * .55, F.sh[0][1] + 4], in1 = [F.sh[1][0] - F.armR[0] * .55, F.sh[1][1] + 4];
+  const pts = [TL, F.nb[0], F.trap[0], in0, [in0[0], yb], [in1[0], yb], in1, F.trap[1], F.nb[1], TR];
+  const d = poly(pts, [0, .6, .9, .6, 0, 0, .6, .9, .6, 0]);
   S.layer('skin').both(d, sk.b, sk.k, 1.1);
   S.within(d, () => {
     // the jaw's shadow on the neck: the head's own outline, dropped and filled (the hard-edged neck shadow of the style)
@@ -169,7 +170,7 @@ export function drawFace(S, Hd, F, look, sk, hair, iris) {
   for (const sg of [-1, 1]) {
     const G = eyeGeom(Hd, sg), { E, ew, hU, hL, upPts, loPts } = G;
     const white = polyline([...upPts, ...loPts.slice(1, -1)], true), isBlind = blind.includes(sg), ir = isBlind ? { ring: '#8b9099', b: '#c8ccd1', l: '#e6e8ea' } : iris;
-    S.fill(white, D.old > .5 ? '#ece4d8' : '#f6f1ee');
+    S.fill(white, D.old > .5 ? '#e9e1d5' : '#f3eeeb');
     S.within(white, () => {
       const r = D.irisR, c = [(look.gaze || 0) * 2.5 - .6, (hL - hU) * .28 - .1], ip = ellPts(c, r, r, 0, 14).map(p => E(p[0], p[1])), id = spl(ip, true);
       const cc = E(c[0], c[1]), lo = E(c[0], c[1] + r * .55), top = E(c[0], c[1] - r), bot = E(c[0], c[1] + r * .3);
