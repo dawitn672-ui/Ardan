@@ -60,6 +60,8 @@ export const METAL = {
   black:  { b: '#3b3d46', s: '#24252d', d: '#111218', l: '#757986', hi: '#b9bdc9', k: '#07080b' },
   bronze: { b: '#a8763a', s: '#74491f', d: '#452811', l: '#dcae68', hi: '#f8e2ae', k: '#28150a' },
   gold:   { b: '#d0a23a', s: '#99691f', d: '#5c3d10', l: '#f3d67c', hi: '#fff6cf', k: '#372207' },
+  blued:  { b: '#52678c', s: '#32425f', d: '#19233a', l: '#97adcf', hi: '#deE8f8', k: '#0b1120' },
+  sunsteel: { b: '#e8dcb6', s: '#b89d5c', d: '#70592a', l: '#fbf4da', hi: '#ffffff', k: '#3a2c10' },
   silver: { b: '#cfd3d8', s: '#8d939d', d: '#4e545f', l: '#f4f6f8', hi: '#ffffff', k: '#23262d' },
 };
 const memo = new Map();

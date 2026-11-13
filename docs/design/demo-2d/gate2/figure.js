@@ -47,7 +47,8 @@ export function compose(look, o = {}) {
   drawHair(S, Hd, F, look, H);
   dress(S, F, Hd, look, sk, H);
   if (crop === 'figure') S.layer('ground').fill(`M${-F.H * .17} ${F.H * .012}a${F.H * .17} ${F.H * .018} 0 1 0 ${F.H * .34} 0a${F.H * .17} ${F.H * .018} 0 1 0 ${-F.H * .34} 0`, '#2a2433', { op: .16, filter: S.blur(F.H * .006) });
-  const order = ORDER.filter(k => k !== 'ground'), fx = o.fx !== false, fid = S.id + 'fx';
+  const drop = { face: ['legs', 'skirt'], portrait: ['legs', 'skirt'], bust: ['legs', 'skirt'], card: ['legs'] }[crop] || [];
+  const order = ORDER.filter(k => k !== 'ground' && !drop.includes(k)), fx = o.fx !== false, fid = S.id + 'fx';
   const inner = (S.layers.ground || []).join('') + (fx ? `<g filter="url(#${fid})">` : '<g>') + S.body(order) + '</g>';
   if (fx) S.defs.push(lightPass(fid, vb, F.H * .0045, S.lw(.5)));
   const svg = S.svg(vb, { cls: o.cls, label: look.name, order: [], post: inner });

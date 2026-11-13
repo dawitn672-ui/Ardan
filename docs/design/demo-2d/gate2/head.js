@@ -28,7 +28,7 @@ export function headDims(look) {
   const D = {
     male, age, kid, old, wt,
     crown: B(-113, -112, -118), cran: B(75, 73, 72), zyg: B(67, 64, 62), gon: B(49, 43.5, 45), gonV: B(69, 61, 47), chinW: B(9.5, 6.5, 8.5), chinV: B(106, 96, 74),
-    eyeU: B(31.5, 31.5, 29.5), eyeW: B(38, 38.5, 37), eyeH: B(9.4, 13.8, 18.5), irisR: B(7.3, 8.4, 9.4), browV: B(-12.5, -18.5, -23), browT: B(3.9, 2.9, 2.7), browDrop: B(3.2, .6, 0),
+    eyeU: B(31.5, 31.5, 29.5), eyeW: B(38, 38.5, 37), eyeH: B(9.4, 13.8, 18.5), irisR: B(7.3, 8.4, 9.4), browV: B(-12.5, -18.5, -23), browT: B(3.9, 3.2, 2.7), browDrop: B(3.2, .6, 0),
     noseV: B(45, 41, 28), noseW: B(15, 12.5, 11), noseP: B(27, 23, 14), mouthV: B(66, 60, 44.5), mouthW: B(22.5, 20, 16), lipU: B(2.8, 4, 3.4), lipL: B(4.4, 6, 4.8),
     earT: B(-12, -11, -6), earB: B(42, 37, 34), hairV: B(-72, -74, -70), lash: B(3.4, 3.9, 2.8), lipTint: B(.3, .95, .55), jawK: B(.45, .8, .95), tilt0: B(.38, .32, 0),
   };
@@ -81,10 +81,10 @@ export function makeHead(F, look) {
 
 // neck, shoulders and upper chest in skin (dress is drawn over them)
 export function drawNeck(S, Hd, F, sk) {
-  const { D, hp, s } = Hd, [TL, TR] = Hd.neckTop, yb = F.y.chest + F.B * .05;
+  const { D, hp, s } = Hd, [TL, TR] = Hd.neckTop, yb = F.y.chest - F.B * .005, bw = F.chestHalf * .55;
   const in0 = [F.sh[0][0] + F.armR[0] * .55, F.sh[0][1] + 4], in1 = [F.sh[1][0] - F.armR[0] * .55, F.sh[1][1] + 4];
-  const pts = [TL, F.nb[0], F.trap[0], in0, [in0[0], yb], [in1[0], yb], in1, F.trap[1], F.nb[1], TR];
-  const d = poly(pts, [0, .6, .9, .6, 0, 0, .6, .9, .6, 0]);
+  const pts = [TL, F.nb[0], F.trap[0], in0, [F.cxS - bw, yb], [F.cxS + bw, yb], in1, F.trap[1], F.nb[1], TR];
+  const d = poly(pts, [0, .6, .9, .6, .3, .3, .6, .9, .6, 0]);
   S.layer('skin').both(d, sk.b, sk.k, 1.1);
   S.within(d, () => {
     // the jaw's shadow on the neck: the head's own outline, dropped and filled (the hard-edged neck shadow of the style)
@@ -136,6 +136,7 @@ export function drawHead(S, Hd, F, look, sk, hairShadow = []) {
     // sockets
     for (const sg of [-1, 1]) {
       S.fill(ell(P(sg * (D.eyeU - D.eyeW * .42), -6 - D.depth), 7.5 * s, 6 * s), sk.s, { op: .42 + .16 * D.depth + (sg > 0 ? .1 : 0), filter: bs });
+      S.fill(ell(P(sg * (D.eyeU + 1), D.eyeH * .42 + 4.5), 13 * s, 3.4 * s), sk.s, { op: .3, filter: bs });
       if (D.depth > .3 || D.old > .3) S.fill(ell(P(sg * D.eyeU, 9), 13 * s, 5 * s), sk.s, { op: .22 * Math.max(D.depth, D.old), filter: bs });
     }
     S.fill(ell(P(5, D.chinV - 2), 30 * s, 9 * s), sk.s, { op: .5, filter: bl });
@@ -176,6 +177,7 @@ export function drawFace(S, Hd, F, look, sk, hair, iris) {
       const cc = E(c[0], c[1]), lo = E(c[0], c[1] + r * .55), top = E(c[0], c[1] - r), bot = E(c[0], c[1] + r * .3);
       S.fill(id, S.radial(lo, r * 1.5 * s, [[0, ir.l], [.5, ir.b], [.9, ir.ring]]));
       S.fill(id, S.lin(top, bot, [[0, ir.ring, .92], [.55, ir.ring, .45], [1, ir.ring, 0]]));
+      if (lod > 1 && !isBlind) S.stroke(spl(ellPts(c, r * .7, r * .7, 0, 12).map(p => E(p[0], p[1])), true), ir.ring, r * .46 * s, { units: 1, cap: 'butt', dash: `${n1(.45 * s)} ${n1(1.05 * s)}`, op: .32 });
       S.stroke(id, ir.ring, lod > 1 ? 1.4 : 1);
       if (!isBlind) S.fill(spl(ellPts(c, r * .4, r * .4, 0, 10).map(p => E(p[0], p[1])), true), '#0e0b10');
       // the lid's shadow on the ball, then the catch-lights
@@ -196,7 +198,7 @@ export function drawFace(S, Hd, F, look, sk, hair, iris) {
     }
   }
   // --- brows: a blade from the heavy inner end to a point ---
-  const brow = mixc(hair.s, hair.k, .45);
+  const brow = D.male ? mixc(hair.s, hair.k, .45) : mixc(mixc(hair.s, hair.k, .3), sk.d, .22);
   for (const sg of [-1, 1]) {
     const ew = D.eyeW, E = (x, y) => P(sg * (D.eyeU + x), y, D.ridge * 1.5);
     const cut = (look.scars || []).find(x => x.k === 'brow' && (x.side ?? 1) === sg);

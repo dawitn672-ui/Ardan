@@ -19,7 +19,7 @@ export const POSES = {
   ease:    { name: 'At ease',           sway: 0.7,  wide: .115, arm: [{ hang: [9, 9] }, { hang: [11, 12] }], hand: ['relaxed', 'relaxed'] },
   hip:     { name: 'Hand on hip',       sway: -0.9, wide: .125, arm: [{ hang: [8, 8] }, { to: F => [F.wa[1][0] + F.H * .012, F.y.waist + F.B * .03], fs: [.95, .8] }], hand: ['relaxed', 'fist'] },
   belt:    { name: 'Thumbs in belt',    sway: 0.5,  wide: .14,  arm: [{ to: F => [F.cx - F.waistHalf * .62, F.y.belt + F.H * .006], fs: [.97, .86] }, { to: F => [F.cx + F.waistHalf * .62, F.y.belt + F.H * .006], fs: [.97, .86] }], hand: ['fist', 'fist'] },
-  folded:  { name: 'Arms folded',       sway: 0.35, wide: .15,  arm: [{ to: F => [F.cxS + F.chestHalf * .5, F.y.chest + F.B * .075], fs: [.98, .9] }, { to: F => [F.cxS - F.chestHalf * .62, F.y.chest + F.B * .1], fs: [.98, .9] }], hand: ['flat', 'tucked'], folded: true },
+  folded:  { name: 'Arms folded',       sway: 0.35, wide: .15,  arm: [{ to: F => [F.cxS + F.chestHalf * .66, F.y.chest + F.B * .064], el: (F, i, s) => [F.sh[i][0] + s * F.armR[0] * .35, F.y.chest + F.B * .1] }, { to: F => [F.cxS - F.chestHalf * .98, F.y.chest + F.B * .098], el: (F, i, s) => [F.sh[i][0] + s * F.armR[0] * .35, F.y.chest + F.B * .105] }], hand: ['flat', 'tucked'], folded: true },
   pommel:  { name: 'Hand on the pommel', sway: -0.5, wide: .14, arm: [{ hang: [10, 10] }, { to: F => [F.hi[1][0] + F.H * .02, F.y.belt + F.H * .012], fs: [.96, .84] }], hand: ['relaxed', 'rest'] },
   sleeves: { name: 'Hands in sleeves',  sway: 0.2,  wide: .1,   arm: [{ to: F => [F.cx - F.H * .012, F.y.waist + F.B * .012], fs: [.97, .86] }, { to: F => [F.cx + F.H * .012, F.y.waist + F.B * .02], fs: [.97, .86] }], hand: ['hidden', 'hidden'], muff: true },
   staff:   { name: 'Leaning on a staff', sway: 0.8, wide: .13,  arm: [{ to: F => [F.sh[0][0] - F.H * .045, F.y.chest + F.B * .02], fs: [.9, .82], staff: true }, { hang: [10, 10] }], hand: ['grip', 'relaxed'] },
@@ -41,7 +41,7 @@ export function makeRig(look) {
   const F = { male, age, H, Hh, B, heads, kid, old, grown, wt, mu, po, stoop, look };
 
   // heights, as fractions of the body below the chin
-  const crotchF = m(.418, .424, .47) - lg * .022, neckF = m(.062, .068, .06) * (1 - .3 * stoop + .1 * Math.max(0, po)) * (1 - .08 * Math.max(0, wt));
+  const crotchF = m(.408, .414, .47) - lg * .022, neckF = m(.062, .068, .06) * (1 - .3 * stoop + .1 * Math.max(0, po)) * (1 - .08 * Math.max(0, wt));
   const y = F.y = {
     chin: chinY, sh: chinY + B * neckF, chest: chinY + B * m(.152, .156, .165), waist: chinY + B * m(.272, .262, .292),
     hip: chinY + B * (crotchF - m(.04, .046, .05)), crotch: chinY + B * crotchF, ankle: -H * m(.052, .05, .05), sole: 0,
@@ -100,8 +100,9 @@ export function makeRig(look) {
       const e1 = add(S, add(mul(u, a), mul(n, h))), e2 = add(S, add(mul(u, a), mul(n, -h)));
       const sc = e => e[1] + .6 * (e[0] - S[0]) * s; el = sc(e1) > sc(e2) ? e1 : e2;   // the elbow hangs low, and outward when in doubt
       wr = add(S, mul(u, d));
+      if (A.el) { el = A.el(F, i, s); wr = T; }                               // a stance may set the elbow itself
     }
-    return { sh: S, el, wr, s, back: !!A.back, staff: !!A.staff, hand: P.hand[i], dirF: norm(sub(wr, el)) };
+    return { sh: S, el, wr, s, back: !!A.back, staff: !!A.staff, hang: !!A.hang, hand: P.hand[i], dirF: norm(sub(wr, el)) };
   });
   // the head: crown at -H before the tilt; the head model's own units are scaled to Hh in head.js
   F.headX = cxS + sway * H * .003;

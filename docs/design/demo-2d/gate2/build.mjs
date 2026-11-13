@@ -33,6 +33,7 @@ svg{display:block}
 /* the lineup */
 #stage .row{position:relative;overflow:hidden;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;background:linear-gradient(180deg,#f6f4f9 0%,#eceaf2 70%);border-radius:8px;margin-bottom:14px;padding:8px 10px 12px;box-shadow:inset 0 0 0 1px #d9d2c2}
 #stage .bk{position:absolute;left:0;top:0;width:100%;height:calc(100% - 46px)}.fig{position:relative}
+#stage .row>.rank{position:absolute;left:16px;top:10px;margin:0;font:600 11px Cinzel,serif;letter-spacing:.22em;text-transform:uppercase;color:#7d7396;font-style:normal}
 .fig{margin:0;text-align:center}.fig svg{width:100%;height:auto}
 .fig figcaption b{font:700 13.5px Cinzel,serif;letter-spacing:.04em;display:block;margin-top:2px}
 .fig figcaption span{font-size:12px;color:var(--muted);font-style:italic}
@@ -92,7 +93,16 @@ input[type=range]{accent-color:var(--verm);width:100%;margin:0}
 .agerow .who{margin:0 0 30px}.agerow .who b{font:700 18px Cinzel,serif;display:block}.agerow .who span{font-size:12.5px;color:var(--muted);font-style:italic}
 .agerow figure,.kits figure{margin:0;text-align:center;font-size:12.5px;color:var(--muted);font-style:italic}
 .agerow svg,.kits svg{width:100%;height:auto;border-radius:4px;background:radial-gradient(120% 90% at 26% 16%,#bdb6a6,#6a6457);margin-bottom:3px}
-#gear{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+#gear h4{font:600 11px Cinzel,serif;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:18px 0 8px}
+.mx{display:grid;grid-template-columns:104px repeat(4,1fr);gap:6px;align-items:center}
+.mx>b{font:600 11px Cinzel,serif;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center}.mx>b.rn{text-align:left;color:var(--ink)}
+.mx .cell{background:radial-gradient(120% 120% at 50% 40%,#f6f3f8,#e2deea);border-radius:5px;box-shadow:inset 0 0 0 1px #d9d2c2}.mx .cell svg{width:100%;height:auto}
+.mx .cell.r1{background:radial-gradient(120% 120% at 50% 40%,#f1f4fa,#d9e0ee)}.mx .cell.r2{background:radial-gradient(120% 120% at 50% 40%,#f4f0f8,#dfd6ea)}.mx .cell.r3{background:radial-gradient(120% 120% at 50% 40%,#fbf6e6,#ecdfb9)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.pds{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.pds figure,.stages figure{margin:0;text-align:center;font-size:11.5px;line-height:1.3;color:var(--muted);font-style:italic}
+.pds svg{width:100%;height:auto;background:radial-gradient(120% 120% at 50% 40%,#f6f3f8,#e2deea);border-radius:5px;margin-bottom:3px}
+.stages{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;background:radial-gradient(90% 70% at 50% 100%,#dedae6 0%,#eeecf3 55%,#f5f3f8 100%);border-radius:8px;padding:8px 6px 10px;box-shadow:inset 0 0 0 1px #d9d2c2}
+.stages svg{width:100%;height:auto}.stages figcaption b{display:block;font:700 11px Cinzel,serif;letter-spacing:.04em;color:var(--ink);font-style:normal}
 .gart{background:radial-gradient(120% 80% at 50% 40%,#f4f1f6,#dedae6);border-radius:6px;box-shadow:inset 0 0 0 1px #d9d2c2}.gart svg{width:100%;height:auto}
 .glist{margin:8px 0 0;padding-left:20px;font-size:13.5px}.glist b{font-family:Cinzel,serif;letter-spacing:.04em;margin-right:6px}
 .gnote{font-size:12.5px;color:var(--muted);font-style:italic;margin:8px 0 0}
@@ -100,12 +110,12 @@ input[type=range]{accent-color:var(--verm);width:100%;margin:0}
 #cost table{border-collapse:collapse;font:13px Atkinson,system-ui,sans-serif;width:100%;max-width:980px}
 #cost th,#cost td{text-align:left;padding:6px 12px 6px 0;border-bottom:1px solid var(--rule)}#cost th{font:600 10.5px Cinzel,serif;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
 .foot{color:var(--muted);font-size:13px;max-width:980px}.foot p{margin:8px 0}
-@media (max-width:1100px){#cards,#stage .row{grid-template-columns:repeat(2,1fr)}#maker,#gear{grid-template-columns:1fr}.view{grid-template-columns:1fr}.agerow{grid-template-columns:repeat(2,1fr)}.thumbs{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:1100px){#cards,#stage .row{grid-template-columns:repeat(2,1fr)}#maker,.g2{grid-template-columns:1fr}.stages,.pds{grid-template-columns:repeat(4,1fr)}.mx{grid-template-columns:70px repeat(4,1fr)}.view{grid-template-columns:1fr}.agerow{grid-template-columns:repeat(2,1fr)}.thumbs{grid-template-columns:repeat(4,1fr)}}
 `;
 const body = `<main>
 <header><p class="kick">Gate 2 · character art · for the owner's eye</p><h1>Ardan · the people</h1>
 <p class="lede">Clean line with soft tone, after the owner's two reference sheets: full figures with their own stance and build, every piece of dress and armour its own drawn layer, and faces set by hand. Nothing here is a picture file. Each person is a short list of numbers and items, drawn by the parts library when the page opens.</p></header>
-<section id="sec-lineup"><h2>The lineup</h2><p class="sub">Ten people across the estates, drawn to one scale: a bondman, a cottar's child, a tenant's wife, a smith, a wool factor, a priest, a man-at-arms, a knight, an earl's daughter and the king.</p><div id="stage"></div></section>
+<section id="sec-lineup"><h2>The lineup</h2><p class="sub">Fifteen people, drawn to one scale. The commons: a bondman, a cottar's child, a tenant's wife, a smith, a wool factor. Cloister, levy and court: a priest, a man-at-arms, a knight, an earl's daughter, the king. Under arms: an outrider, a lady knight, a serjeant, a sellsword and a northern housecarl, each in a harness of their own.</p><div id="stage"></div></section>
 <section id="sec-cards"><h2>Profile cards</h2><p class="sub">The same drawings, closer, on the card the game would show: name, estate and rank, a line about the person, and plain measures in words.</p><div id="cards"></div></section>
 <section id="sec-maker"><h2>The face and build maker</h2><p class="sub">Every feature is set by hand and the picture redraws as you drag. Start from anyone in the lineup, or roll a stranger. Sliders carry words at their ends, never numbers.</p>
 <div id="maker"><div class="view"><div id="mBust"></div><div id="mFig"></div>
@@ -113,8 +123,8 @@ const body = `<main>
 <div id="mAges"></div></div>
 <div class="ctl"><div id="who"></div><div id="tabs" role="tablist"></div><div id="panel"></div></div></div></section>
 <section id="sec-ages"><h2>One face, four ages</h2><p class="sub">Growth and age are part of the drawing, not a filter: a child's large skull and short face, the jaw and brow that come in with the years, then lines, hollows, thinner lips, grey, and a little lost height.</p><div id="ages"></div></section>
-<section id="sec-gear"><h2>Gear as layers, by make</h2><p class="sub">Dress, armour and arms are separate items put on in order, each keyed by what it is and how well it is made. A library of hundreds of weapons would be more rows of the same data.</p><div id="gear"></div></section>
-<section id="sec-cost"><h2>What it costs to draw</h2><p class="sub">Measured in this browser when the page opened, across the ten people of the lineup.</p><div id="cost"></div>
+<section id="sec-gear"><h2>Gear as layers: make and rarity</h2><p class="sub">Dress, armour and arms are separate items put on in order: every piece of a harness is its own layer. Each piece of arms carries two measures, its make and its rarity. A library of hundreds of weapons would be more rows of the same data.</p><div id="gear"></div></section>
+<section id="sec-cost"><h2>What it costs to draw</h2><p class="sub">Measured in this browser when the page opened, across the fifteen people of the lineup.</p><div id="cost"></div>
 <div class="foot"><p>Compose is the parts library turning a look into SVG. Paint is the browser turning that SVG into pixels, timed by drawing it to a canvas at twice the size shown. In the game a portrait would be painted once and kept as an image.</p>
 <p>Source: <code>docs/design/demo-2d/gate2/</code>. The same look always gives the same drawing: the parts take their dice from a seeded stream named by the person's id, never from the clock.</p></div></section>
 </main>`;
@@ -140,7 +150,7 @@ if (!process.argv.includes('--no-shots')) {
     const shot = async (pg, sel, file, tab) => {
       if (tab) { await pg.click(`#tabs [data-v="${tab}"]`); await pg.waitForTimeout(400); }
       let png = recompress(await pg.locator(sel).screenshot());
-      if (png.length > 1.7 * 1048576) png = quantize(png, 256);
+      if (png.length > 3 * 1048576) png = quantize(png, 256);   // lossless unless a sheet is very large (then 256 colours, dithered)
       fs.writeFileSync(path.join(out, file), png); console.log(file, (png.length / 1024).toFixed(0), 'KB');
     };
     const big = await open(2);

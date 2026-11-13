@@ -5,7 +5,7 @@ import { SITTERS } from './sitters.js';
 import { SKIN, HAIR, EYES, DYES } from './palette.js';
 import { FACE } from './head.js';
 import { HAIRS, BEARDS } from './hair.js';
-import { OUTFITS, HEADWEAR, swordArt, pauldronArt } from './gear.js';
+import { OUTFITS, HEADWEAR, MAKES, RARITIES, swordArt, pauldronArt } from './gear.js';
 import { POSES, BUILD_KEYS } from './rig.js';
 import { Scene } from './scene.js';
 import { stream } from './g.js';
@@ -28,9 +28,9 @@ function backdrop(k) {
   return `<svg class="bk" viewBox="0 0 1300 720" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="bkg${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfc8dc"/><stop offset="1" stop-color="#e8e5ee"/></linearGradient></defs><path d="${d1}" fill="${far}"/><path d="${d2}" fill="${near}"/>${banner(58)}${banner(1160)}<rect y="540" width="1300" height="180" fill="url(#bkg${k})"/><path d="M0 540h1300" stroke="#bfb7cf" stroke-width="1.5"/></svg>`;
 }
 function lineup() {
-  const rows = [SITTERS.slice(0, 5), SITTERS.slice(5, 10)];
+  const rows = [SITTERS.slice(0, 5), SITTERS.slice(5, 10), SITTERS.slice(10, 15)];
   $('#stage').innerHTML = rows.map((r, k) => { const top = Math.max(...r.map(s => (s.height || (s.sex === 'F' ? 165 : 178)) * 10 * (s.staff === 'spear' ? 1.13 : 1.05))) + 30;
-    return `<div class="row">${backdrop(k)}${r.map(s => `<figure class="fig">${compose(s, { crop: 'figure', w: 880, top, below: 110, px: .29, id: nid() }).svg}<figcaption><b>${esc(s.name)}</b><span>${esc(s.estate)} · ${esc(POSES[s.pose].name.toLowerCase())}</span></figcaption></figure>`).join('')}</div>`; }).join('');
+    return `<div class="row">${backdrop(k)}<p class="rank">${['The commons', 'Cloister, levy and court', 'Under arms'][k]}</p>${r.map(s => `<figure class="fig">${compose(s, { crop: 'figure', w: 880, top, below: 110, px: .29, id: nid() }).svg}<figcaption><b>${esc(s.name)}</b><span>${esc(s.estate)} · ${esc(POSES[s.pose].name.toLowerCase())}</span></figcaption></figure>`).join('')}</div>`; }).join('');
 }
 // ------------------------------------------------------------------ the cards ---------------------------------------
 const SIGIL = { Serf: 'M0 -6L6 0L0 6L-6 0Z', Peasant: 'M0 -6L6 0L0 6L-6 0Z', Artisan: 'M-5 -5H5V5H-5Z', Merchant: 'M-5 -5H5V5H-5Z', Priest: 'M0 -6.5A6.5 6.5 0 1 0 .01 -6.5Z', Soldier: 'M0 -7L6 -3V3L0 7L-6 3V-3Z', Noble: 'M0 -7L6 -3V3L0 7L-6 3V-3Z', Royal: 'M-7 5L-7 -4L-3.5 0L0 -6L3.5 0L7 -4L7 5Z' };
@@ -86,7 +86,9 @@ function panel() {
     H3('Dye of the main garment'); h.push(swatches('dye', Object.fromEntries(Object.entries(DYES).map(([k, v]) => [k, { name: k, b: v }])), L.dye, v => v.b));
     H3('On the head'); h.push(chips('headwear', Object.entries(HEADWEAR).map(([id, v]) => [id, v.name]), L.headwear || 'none'));
     H3('Cloak'); h.push(chips('cloak', [['', 'As the outfit'], ['none', 'None'], ['navy', 'Navy'], ['crimson', 'Crimson'], ['forest', 'Forest'], ['charcoal', 'Charcoal'], ['murrey', 'Murrey']], L.cloak || ''));
-    H3('Make of arms and armour'); h.push(chips('quality', [['', 'As the outfit'], ['1', 'Plain'], ['2', 'Fine'], ['3', 'Masterwork']], String(L.quality || '')), chips('weapon', [['', 'As the outfit'], ['sword', 'Wear a sword'], ['none', 'Unarmed']], L.weapon || ''));
+    H3('Make of arms and armour'); h.push(chips('quality', [['', 'As the outfit'], ...MAKES.map((m, i) => [String(i), m])], String(L.quality ?? '')));
+    H3('Rarity of arms and armour'); h.push(chips('rarity', [['', 'As the outfit'], ...RARITIES.map((m, i) => [String(i), m])], String(L.rarity ?? '')));
+    H3('Sword and shield'); h.push(chips('weapon', [['', 'As the outfit'], ['sword', 'Wear a sword'], ['none', 'No sword']], L.weapon || ''), chips('shield', [['', 'As the outfit'], ['shield', 'Carry a shield'], ['none', 'No shield']], L.shield || ''));
   }
   $('#panel').innerHTML = h.join('');
   if (t === 'Hair') thumbs();
@@ -140,7 +142,7 @@ function maker() {
     else if (c === 'build') L.build = { ...BUILDS.find(x => x[0] === v)[1] };
     else if (c === 'scar') { const sc = (L.scars = L.scars || []).find(x => x.k === v); if (!sc) L.scars.push({ k: v, side: 1 }); else if (sc.side > 0) sc.side = -1; else L.scars = L.scars.filter(x => x !== sc); }
     else if (c === 'fresh') { const on = !(L.scars || []).some(x => x.fresh); for (const sc of L.scars || []) sc.fresh = on; }
-    else if (c === 'height') L.height = +v; else if (c === 'quality') L.quality = v ? +v : null;
+    else if (c === 'height') L.height = +v; else if (c === 'quality' || c === 'rarity') L[c] = v === '' ? null : +v;
     else if (c === 'outfit') { L.outfit = v; L.dye = null; L.gear = null; }
     else L[c] = v || null;
     if (c === 'sex' && v === 'F') L.beard = 'none';
@@ -154,18 +156,30 @@ function fourAges() {
   $('#ages').innerHTML = ['alys', 'wat'].map(id => { const s = SITTERS.find(x => x.id === id); return `<div class="agerow"><p class="who"><b>${esc(s.name.split(' ')[0])}</b><span>the same face code at four ages; only the years differ</span></p>${[[8, 'eight'], [17, 'seventeen'], [34, 'thirty-four'], [68, 'sixty-eight']].map(([a, n]) => `<figure>${compose({ ...atAge({ ...s, scars: a < 30 ? [] : s.scars, beard: a < 25 ? 'none' : a > 60 ? 'short' : s.beard }, a), outfit: a < 12 ? 'smock' : s.outfit === 'soldier' && a < 20 ? 'squire' : s.outfit, hair: a < 12 ? (s.sex === 'F' ? 'pigtails' : 'bowl') : s.hair, pose: 'ease', headwear: a > 60 && s.sex === 'F' ? 'veil' : 'none' }, { crop: 'bust', width: 190, id: nid() }).svg}<figcaption>At ${n}</figcaption></figure>`).join('')}</div>`; }).join('');
 }
 // ------------------------------------------------------------------ gear by quality ---------------------------------
+const set = (o, ...ids) => ids.map(id => ({ id, ...o }));
+// the knight's harness in the order it is put on: each stage adds its pieces to the ones before
+const STAGES = [
+  ['Arming clothes', 'hose, shoes, a padded coat', [{ id: 'hose', dye: 'charcoal' }, { id: 'shoes', kind: 'turn', leather: 'dark' }, { id: 'padding', dye: 'cream' }]],
+  ['Mail', 'a mail shirt, a mail collar', [{ id: 'mail' }, { id: 'mailcollar' }]],
+  ['Legs', 'cuisses, greaves, poleyns, sabatons', set({ q: 3 }, 'cuisses', 'greaves', 'poleyns', 'sabatons')],
+  ['Body', 'breastplate, fauld, tassets', set({ q: 3 }, 'breastplate', 'fauld', 'tassets')],
+  ['Arms', 'rerebraces, vambraces, couters, gauntlets', set({ q: 3 }, 'rerebraces', 'vambraces', 'couters', 'gauntlets')],
+  ['Shoulders, throat', 'pauldrons, gorget', set({ q: 3 }, 'pauldrons', 'gorget')],
+  ['Belt, sword, shield', 'a plaqued belt, a sword, a heater shield', [{ id: 'belt', leather: 'brown', w: 34, metal: 'gold', plaques: 1 }, { id: 'sword', q: 3 }, { id: 'shield', q: 3, field: 'white', pale: 'blue', device: 'sun' }]],
+  ['Over all', 'tabard, cloak, fur collar, bascinet', [{ id: 'cloak', dye: 'blue', lining: 'navy', trim: 'gold', len: .86, q: 3, mantle: false }, { id: 'tabard', field: 'white', pale: 'blue', trim: 'gold', len: .62, device: 'sun' }, { id: 'furcollar', fur: 'ermine', z: .18 }]],
+];
 function gearSheet() {
-  const names = [['Plain', 'the levy\'s issue: iron fittings, a leather grip'], ['Fine', 'a knight\'s own: bronze mounts, a wired grip'], ['Masterwork', 'one of a kind: gilt, engraved, a garnet in the pommel']];
-  const S = new Scene('sw_', { px: .62, lod: 2 }); S.layer('weapon');
-  for (const q of [1, 2, 3]) swordArt(S, [q * 340 - 340, -330], 0, 620, q, { sheathed: false });
-  for (const q of [1, 2, 3]) swordArt(S, [q * 340 - 170, -330], 0, 620, q, { sheathed: true });
-  const sw = S.svg([-110, -470, 1130, 860], { order: ['weapon'] });
-  const P = new Scene('pd_', { px: 1.5, lod: 2 }); P.layer('shoulder');
-  for (const q of [1, 2, 3]) pauldronArt(P, [-200 + q * 200, 0], 62, 1, q);
-  const pd = P.svg([-90, -60, 620, 190], { order: ['shoulder'] });
-  const wat = SITTERS.find(s => s.id === 'wat'), kits = [['soldier', 'Levy kit'], ['cuirassier', 'A sergeant\'s harness'], ['knight', 'A knight\'s harness']];
-  $('#gear').innerHTML = `<div class="gcol"><h4>One sword, three makes</h4><div class="gart">${sw}</div><ol class="glist">${names.map(n => `<li><b>${n[0]}</b> ${esc(n[1])}</li>`).join('')}</ol><p class="gnote">Each drawn bare and in its scabbard. The item is one function of its make; the hand, belt and body it hangs from never change.</p></div>
-  <div class="gcol"><h4>One shoulder piece, three makes</h4><div class="gart">${pd}</div><h4>One man, three kits</h4><div class="kits">${kits.map(([o, n]) => `<figure>${compose({ ...wat, outfit: o, pose: 'pommel', staff: null }, { crop: 'half', width: 190, id: nid() }).svg}<figcaption>${esc(n)}</figcaption></figure>`).join('')}</div><p class="gnote">The same Wat Hollin; only the list of items on him differs.</p></div>`;
+  // one sword in every make and every rarity
+  const sw = (q, r) => { const S = new Scene(nid(), { px: .92, lod: 2 }); S.layer('weapon'); swordArt(S, [80, 0], Math.PI / 2, 250, q, { r }); return S.svg([0, -52, 345, 104], { order: ['weapon'] }); };
+  const pd = (q, r) => { const S = new Scene(nid(), { px: 1.3, lod: 2 }); S.layer('shoulder'); pauldronArt(S, [0, 0], 62, 1, q, { r }); return S.svg([-74, -52, 160, 170], { order: ['shoulder'] }); };
+  const matrix = `<div class="mx"><span></span>${MAKES.map(m => `<b>${m}</b>`).join('')}${RARITIES.map((rn, r) => `<b class="rn r${r}">${rn}</b>${MAKES.map((_, q) => `<div class="cell r${r}">${sw(q, r)}</div>`).join('')}`).join('')}</div>`;
+  const pieces = `<div class="pds">${[[0, 0], [1, 0], [2, 0], [3, 0], [1, 1], [2, 2], [3, 3]].map(([q, r]) => `<figure>${pd(q, r)}<figcaption>${RARITIES[r]}, ${MAKES[q].toLowerCase()}</figcaption></figure>`).join('')}</div>`;
+  const edric = SITTERS.find(s => s.id === 'edric'); let gear = [];
+  const stages = STAGES.map(([name, what, add], k) => { gear = [...gear, ...add]; return `<figure>${compose({ ...edric, gear, pose: 'ease', headwear: k === STAGES.length - 1 ? 'bascinet' : 'none', headwearOpts: { q: 3 } }, { crop: 'figure', w: 800, top: 2030, below: 110, px: .19, id: nid() }).svg}<figcaption><b>${k + 1} · ${esc(name)}</b>${esc(what)}</figcaption></figure>`; }).join('');
+  const wat = SITTERS.find(s => s.id === 'wat'), kits = [['soldier', 'Levy kit: crude and plain'], ['cuirassier', 'A serjeant\'s harness: fine'], ['knight', 'A knight\'s harness: masterwork']];
+  $('#gear').innerHTML = `<h4>One sword: how well it is made, across; how rare it is, down</h4>${matrix}<p class="gnote">Make is the smith's care: a crude blade is dull and nicked, a masterwork is polished, gilt and engraved. Rarity is what the thing is: common steel, a rare pattern-welded blade, an epic black one cut with runes, a legendary blade of sun-steel inlaid with gold. The two never depend on each other, so a rare blade can be badly made and a common one a masterpiece.</p>
+  <div class="g2"><div><h4>One shoulder piece on both measures</h4>${pieces}</div><div><h4>One man, three kits</h4><div class="kits">${kits.map(([o, n]) => `<figure>${compose({ ...wat, outfit: o, pose: 'pommel', staff: null }, { crop: 'half', width: 190, id: nid() }).svg}<figcaption>${esc(n)}</figcaption></figure>`).join('')}</div></div></div>
+  <h4>A harness, piece by piece</h4><div class="stages">${stages}</div><p class="gnote">Ser Edric armed in eight steps. Every piece named is its own item on his list, drawn as its own layer in the order a squire would put it on: nothing is painted onto the body, so any piece can be left off, swapped or regraded alone.</p>`;
 }
 // ------------------------------------------------------------------ what it costs -----------------------------------
 async function measure() {
