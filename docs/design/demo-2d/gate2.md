@@ -72,6 +72,23 @@ node docs/design/demo-2d/gate2/sweep.mjs                # every outfit, stance, 
 
 **Tone is four things.** Each form carries one soft gradient (light on the left edge, shadow on the right). The face has its own soft shapes (the side plane, sockets, under the lip) and a hard jaw shadow on the neck, as the style has. What lies over the body (arms, shoulder pieces, the head, what the hands hold) casts a soft shadow on the body under it. And one pass of light over the finished figure adds a rim on the lit edge, a core shadow on the far edge and a slightly heavier outer line.
 
+## The answer on armour: what is in, and what is left
+
+The owner's answer (relayed as D-032 item 7): "As detailed as possible. Every single element of it", with two measures on every item, rarity and make.
+
+**In this gate.**
+- Every piece of a harness is its own item and its own drawn layer: padding, mail, mail collar, breastplate (with its plackart line), fauld, tassets, cuisses, poleyns, greaves, sabatons, spurs, rerebraces, couters, vambraces, gauntlets, besagews, pauldrons, gorget, three helms, a heater shield, sword and dagger; and over them belt, baldric, bracers, tabard, cloak, fur collar and jewellery. The page arms a knight in eight steps to show it.
+- Plate shows its working parts: lames, hinges, rivets, strap bands, a medial ridge, edging.
+- Make and rarity are two independent measures read by every plate piece, the shield, the helms, the sword and the dagger (`mats({ q, r })`). The sword sheet shows all sixteen pairings.
+- The maker can regrade a whole harness on either measure, and add or drop the sword and the shield.
+
+**Left for after the gate.**
+- Each piece drawn further: articulated gauntlet fingers, visors, crests and plumes, buckles as buckles, roped and fluted edges, a library of engraving motifs by culture, dents and wear by make.
+- More kinds: axes, maces, polearms, bows and quivers (only swords, a dagger, a hand axe, staves and a spear are drawn); round and kite shields; great helm, sallet, barbute; brigandine and coat of plates; horse and barding.
+- Rarity that names a thing: unique one-of-a-kind items need their own drawn silhouettes, which is more data rows and a few new shape functions per kind.
+- Make and rarity on cloth and jewellery (today only arms and armour read them).
+- Mail as true rings at large sizes; it is a pattern fill now.
+
 ## What it costs
 
 Measured by the page itself in headless Chromium (software drawing) on the shared four-core container, across the fifteen people; several runs, so the paint figures are ranges.
