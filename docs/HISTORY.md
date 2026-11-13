@@ -276,3 +276,21 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Tests:** 11 new (`ny*`); after the merge 15 of 15 pass (ny*, rdOnePerPress, clickOpens, fitsOneScreen,
   savesStillLoad, coherencyDay0, comingUpShows, phoneTargets, boot).
 - **Undo:** `git revert -m 1 bacd0a2`, rebuild.
+
+### H-014 · 2026-11-12 22:02 ET · CI 98's last three failures fixed (both regressions came with B4)
+- **Commits:** `68fa5a4` (by an Opus 5.5 agent), merged on top of `ee37f46`.
+- **foldFits:** B4's ⓘ after a block trigger was an extra box, so a new cell and row in grid/flex rows (every v2 stat row,
+  advisers' rows). `TT.markHost` now puts the glyph on the block's own words or its first child with words; a marker
+  never adds a row or cell. **endingsMoment:** the death screen was 39 px narrow (the dialogs' report button got an ⓘ that
+  fell into the modal's flex row); a description that only repeats an action's name is now a label (`TT.sameAsName`).
+  **npcInitiativeDeterminism (a real determinism bug):** looking at a merchant's Holdings tab created `pc.staff`, which
+  turns on the monthly staff step; 97's disabled reasons priced the market outside the draw guard once B4 lifted
+  `data-note` at once. The outermost draw wrappers (999999-one-redraw) now run under `A.asDrawing`, and 97 reads its
+  reasons as a draw. **renderRng** now fails on any state change (it measured but did not fail) and covers a merchant.
+  New test `ttMarkNoCell`.
+- **Open (to B5 declutter):** an info button beside an action still adds a cell in grid and column-flex parents
+  (`.plan-grid`, `.card.dec`).
+- **Tests:** under CI's Chromium foldFits, endingsMoment, renderRng, replayWithRender, fitsOneScreen, clickOpens,
+  clickNoHover, rdOnePerPress, nyYearSameWorld, tbStepSameWorld, journalReplay, lookRows, ttMarkNoCell; suites 9/9; the
+  tests of 59, 97 and 999999 40/40; npcInitiativeDeterminism passes. This push runs the full CI.
+- **Undo:** `git revert -m 1` the merge, rebuild.
