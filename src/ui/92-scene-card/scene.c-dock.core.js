@@ -21,7 +21,9 @@
     if (!m || !m.classList.contains('sc-dock')) return;
     // B5: from 1100 px the open page is the wide column (the story a drawer or a column beside it): the card owns the page's column
     const drawer = !!(typeof window !== 'undefined' && window.innerWidth >= 1100);
-    const lw = doc.getElementById(drawer ? 'side' : 'logwrap'), r = lw && lw.getBoundingClientRect();
+    const lw = doc.getElementById(drawer ? 'side' : 'logwrap'); let r = lw && lw.getBoundingClientRect();
+    // a first-run hint rides above the card: below the page's tab bar, so it covers no control (the card scrolls inside if it must)
+    if (drawer && r && m.querySelector(':scope > .hint-float')) { const t = doc.getElementById('tabbody'), tr = t && t.getBoundingClientRect(); if (tr && tr.top > r.top) r = { left: r.left, top: tr.top - 4, width: r.width, height: r.bottom - tr.top + 4 }; }
     if (!r || r.width < 240 || r.height < 240) { m.classList.add('sc-free'); return; }
     m.classList.remove('sc-free');
     const W = Math.min(720, Math.round(r.width - 16)), x = Math.round(r.left + (r.width - W) / 2);

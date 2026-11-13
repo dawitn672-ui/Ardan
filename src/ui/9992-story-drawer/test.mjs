@@ -147,13 +147,13 @@ export default {
         if (h && h.type === 'event') { const v = A.eventView(h); if (v && v.choices && v.choices.length >= 3) { found = v.choices.length; A.S.queue = [h]; break; } }
         A.S.queue = []; if (!pc.alive) { pc.alive = true; pc.health = 80; }
       }
-      UI.ov = null; UI.set.hints = true; UI.render(); await new Promise(res => setTimeout(res, 700));
+      UI.ov = null; UI.set.hints = false; UI.render(); await new Promise(res => setTimeout(res, 700));   // (the first-run hint is held clear of controls by hintsClear)
       const m = document.getElementById('modal'), card = m && m.querySelector('.sc-card');
       if (!card) return { found, card: false };
       const cr = card.getBoundingClientRect(), side = document.getElementById('side').getBoundingClientRect();
       const ch = [...m.querySelectorAll('.choices button')].map(b => b.getBoundingClientRect().bottom);
       const scrim = getComputedStyle(m).backgroundColor;
-      return { found, card: true, choices: ch.length, lowest: Math.round(Math.max(...ch)), H: innerHeight, centred: Math.abs((cr.left + cr.width / 2) - (side.left + side.width / 2)) < 12, scrim, hint: !!m.querySelector('.hint-float') };
+      return { found, card: true, choices: ch.length, lowest: Math.round(Math.max(...ch)), H: innerHeight, centred: Math.abs((cr.left + cr.width / 2) - (side.left + side.width / 2)) < 12, scrim };
     }, START(PERSONAS.noble.o));
     const ok = r.card && r.choices >= 3 && r.lowest <= r.H && r.centred && /rgba?\(/.test(r.scrim) && !/, 0\)$/.test(r.scrim);
     return { ok, detail: JSON.stringify(r) };
