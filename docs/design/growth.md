@@ -632,3 +632,10 @@ The first draft (commit `f1a556d`, 2026-11-13 11:55 ET) is kept whole in git. In
 | §3.6 footing: rank × (0.6 + 0.4 × grade) | §3.9 the step model | Needed to carry application |
 | §4 signature art usable at Adept after a year; "skill still decides most fights" | §4 command of the piece, a bound art, far beyond any other weapon, under guard | D-039 §9, replacing D-032 §8's discretion |
 | §6.5 eight decisions | §6.5 what is settled, and six still open | D-039 |
+
+
+## 8 · Owner order 35 (2026-11-13 18:54 ET, D-042): baselines, then any build
+Where this section differs from §1.5 and elsewhere, it wins. A skill's governing stats set a modest **baseline** for each
+word: below it the skill stalls at that word and performs as if lower in use ("only for show"). Above it, nothing is
+forced: stats beyond the baseline add only through application, every build is valid, and the game must hold thousands
+of different builds and ways to play. "Each word needs a body to match" (§1.5) is replaced by this baseline rule.

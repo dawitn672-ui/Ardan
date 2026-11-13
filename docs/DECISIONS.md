@@ -526,3 +526,13 @@ The owner's answers replace the G design's open choices (`docs/design/growth.md`
     design is D12a.
 **Branches:** the 35 merged branches could not be deleted from this session (its git connection refuses ref deletions);
 the owner can delete them on GitHub, and `docs/BRANCHES.md` keeps every tip.
+
+### D-042 · Baselines, then any build (owner order 35, 2026-11-13 18:54 ET)
+**Replaces** D-039 item 12's "masters have the body or mind their mastery needs" and growth.md's "each word needs a
+body to match": a skill's governing stats set a **baseline** for each skill word. Below it the skill cannot rise past
+that word and, in use, performs as if lower ("only for show"). The baselines are modest (enough "to keep up to a small
+extent"), so most grown, healthy people clear the lower words. Above the baseline nothing is forced: which stats and
+skills matter is the player's choice, and every build is valid; stats past the baseline add only through how they are
+applied (growth.md's "application"). The game is to hold thousands of different builds and ways to play. NPCs: a master
+clears his skill's baseline, and beyond it the world keeps wide variety. Training a skill may train its governing stats
+a little, never forced up to match. C9 builds the baseline for today's skills; G carries it for the new ones.
