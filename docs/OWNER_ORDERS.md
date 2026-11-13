@@ -38,6 +38,22 @@ order is replaced, strike it through and say by what.
 31. **The economy and armoury, the owner's answers** (D-032): markets as realistic as possible; 40+ goods, real goods a person would use, not only materials; merchants are met by standing (a duke summons one in days, a baron waits longer, a nameless commoner cannot seek them); income follows the economy only through what you actually make and sell; money as deep as realism needs; items have a rarity (common, rare, epic, legendary) and, separately, a quality of make; armour drawn in every piece; legendary pieces are heirlooms and national treasures of very high durability that overpower ordinary gear. "Keep in mind what would be more realistic but fun for a user at all times." · recorded 2026-11-13 06:21 ET
 32. **Growth in depth: stats, skills, fighting styles** (D-034): more stats, each clearly defined (what it does, how it rises and falls, its limits); skills both passive and active that change how a character grows or give a stat boost or a penalty, in their hundreds to thousands, for every route a player may take, in extreme depth; proficiencies merged into skills with levels that evolve and merge; fighting styles in their hundreds: each nation's standard military training per regiment, with its tactics; great and knightly families' own taught styles; elite orders' own styles; some weaker than the standard, some far beyond it. Legendary weapons each get a unique design, far finer to look at than other weapons. · recorded 2026-11-13 07:18 ET
 33. **Gate 2 approved; a Profile tab** (D-035): "I am extremely impressed with the profile cards… this looks amazing, especially the blonde knight in the middle" (Ser Edric Vale is the benchmark). There should be **a whole tab for a game-like profile: stats, titles, etc.** Keep refining the character designs. · recorded 2026-11-13 07:19 ET
+34. **Arts, talent, real bodies, a cleaner profile, war as a board** (D-039; recorded 2026-11-13 18:36 ET). In the owner's words, in parts:
+    - **Sword arts, murim-like:** fighting styles become *arts* (sword arts and the like), in the spirit of the murim martial world; every other weapon has its own properly named equivalent.
+    - **Delete the 35 merged branches;** from now on no need to ask to delete when the reason is known and trouble can be handled.
+    - **Skill words:** Beginner, Intermediate, Advanced, Expert, Master, Grandmaster, Legend, Myth. The world holds perhaps 1-10 grandmasters and maybe 1 legend.
+    - **No skill trees:** skills come by experience. A first try either goes so badly nothing is learned, or gives a level-one skill. Skills grow and, at higher levels, merge.
+    - **Talent:** talents in different areas give different growth rates; a physically gifted person grows everything physical, stats included, much faster; one can be gifted in a single attribute (speed, senses). Many talent levels, from no aptitude to one of a kind (not worded so): letter grades with a number, or kept a mystery for the player to find out.
+    - **Arts in a fight:** same skill, a top art wins 7-3 or 8-2, and can be much more or less; top arts are harder to learn but worth it; no two people identical; the same stats applied differently can let a standard art overpower a great one.
+    - **House arts can be separate:** a high-ranking military house may teach its knights one art and keep another for the direct line; some have both, one or neither.
+    - **Disuse:** an unused skill fades, but rarely, slowly to begin, and comes back easily.
+    - **Longer lives:** a well-fed, healthy merchant who avoids conflict should easily live to 50-70 without outside causes.
+    - **Legendary weapons:** any wielder can use one, but they are far more complex to use than a regular weapon, tightly kept safe, and far superior to any other weapon.
+    - **The Profile page is too cluttered:** too much writing. Keep the past (prior posts, deeds, the record) reachable in a separate area one visits only to retrace one's steps; keep the main page clean and focused on what matters most. Too many buttons stacked together: show them when opened, or use the space so they are not crowded. Keep improving the character designs; game-like profiles with stats and titles.
+    - **Phone:** the game takes very long to load and process on a phone.
+    - **Bodies that make sense:** a trained man who lifts twice his weight must not read as weak; if he is "poor" at speed and endurance, what is a child? Extremes exist (a giant is off the chart for strength, and off the other end for speed). Average strength needs no years of training; upbringing and genes put many far above or below. Remove the real-unit readouts entirely ("66 kg, lifts 120 kg", "reactions 170 ms"). Everyone is too weak; masters with abysmal stats make no sense: a master swordsman trained his body, a master trader or diplomat has wits.
+    - **War:** remove the war score and the army templates (not the HOI4 style); redesign war as a game-board representation with simulation and tactics down to small details, still part of the game.
+    - "Integrate all of this into the update system and report back."
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
@@ -49,7 +65,8 @@ order is replaced, strike it through and say by what.
 - Spend tokens and time where the game's goals need it, efficiently (D-010).
 
 **Ask the owner first:**
-- Merging any pull request, deleting any branch, pushing to `main` or another person's branch, rewriting pushed
+- *(Updated 2026-11-13 18:36 ET, order 34: a branch may be deleted without asking when its reason is known and its work is safe elsewhere; record its tip in `docs/BRANCHES.md`.)*
+- Merging any pull request, deleting any branch (see the update above), pushing to `main` or another person's branch, rewriting pushed
   history (no force-push, rebase or amend on pushed commits).
 - Opening a new pull request, or anything else outward-facing beyond PR #2's normal CI work.
 - Starting new work while a pause the owner ordered is in force (order 11).

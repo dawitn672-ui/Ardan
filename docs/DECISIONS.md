@@ -488,3 +488,41 @@ for the Marshal's seat), so every seed's world differs from alpha.2's; the balan
 heads and land titles in the registry; army commands that outlive a war (`army:<realm>:<n>`); routing 9996's office
 writers, `A.wsNewArmy`/`A.wsDay`, staff slots and the content events that write seats; consequences of leaving beyond
 resignation at war and desertion; peace service and the posts of jobs (R12, R17).
+### D-039 · Owner order 34: arts, talent, real bodies, a cleaner profile, war as a board (2026-11-13 18:37 ET)
+The owner's answers replace the G design's open choices (`docs/design/growth.md` §6.5) where they differ, and add work:
+1. **Arts, not styles.** "Fighting styles" become **arts**, in the murim martial world's spirit: a weapon family's arts
+   (sword arts, spear arts, axe arts, bow arts, fist arts, lance arts, shield arts, dagger arts, mace and hammer arts,
+   crossbow arts, polearm arts) each with a proper name, numbered forms, masters and lineages, manuals kept secret,
+   orders, houses and schools that guard them. The *structure* of the genre, in Ardan's own English and medieval dress:
+   no names, sects or texts of any existing work.
+2. **Skill words (8):** Beginner, Intermediate, Advanced, Expert, Master, Grandmaster, Legend, Myth. The living world
+   holds about 1-10 Grandmasters and at most 1 Legend at a time; Myth is for the dead and the songs.
+3. **No trees; learning by doing.** A skill is born the first time it is tried: the try either teaches nothing (too bad
+   to learn from) or gives Beginner. Skills rise with use, teaching and study, and at high levels merge with others.
+4. **Talent:** a grade per area and per single attribute (a body gifted all over grows every physical skill and stat
+   fast; one may be gifted only in speed or senses), many steps from no aptitude to one of a kind. **Chosen:** hidden at
+   birth; the player learns it through what happens (a first try, a teacher's judgement, a feat) and then sees it as a
+   letter grade with a number beneath, so finding your talents is part of the game.
+5. **Arts in a fight:** at equal skill a top art wins about 7-3 or 8-2, and can be far more or less; top arts are harder
+   to learn and worth it; nobody fights exactly alike: the same numbers, applied differently, let a standard art beat a
+   great one now and then (stats stay equal; how they are used differs).
+6. **House arts:** a high military house may teach its knights one art and keep another for its direct line; houses may
+   have both, one or neither.
+7. **Disuse:** an unused skill or art fades, rarely, slowly at first, and comes back quickly with use.
+8. **Longer lives (v2, now):** a well-fed, healthy person who avoids conflict lives easily to 50-70 barring outside causes.
+9. **Legendary weapons:** any wielder can use one, but they are far harder to master than ordinary arms; they are kept
+   under guard; and they are far beyond any other weapon. **Replaces** D-032 §8's discretion ("skill still decides most
+   fights"): the gap is large, and mastering the piece is the price.
+10. **Profile page (v2, now, P2):** clean and focused. The past (posts held before, deeds, the record of a life) moves to a
+    separate Records area for retracing one's steps; the sections are fewer, not crowded, opened when wanted.
+11. **Phone speed (v2, now, X7):** first load and each press on a phone measured and cut.
+12. **Bodies that make sense (v2, now, C9):** stat words read against the whole population of one's people (an untrained
+    grown man is about average; a labourer or soldier who lifts twice his weight reads strong; a child reads as a child;
+    a giant is off the chart for strength and off the other end for speed). The real-unit readouts ("66 kg, lifts
+    120 kg", "reactions 170 ms") are removed (**replaces** that part of V2_SPEC's stats rule). Masters have the body or
+    mind their mastery needs: NPCs are generated coherent, and training a skill trains its governing stats.
+13. **War (v2):** the war score and the army templates are removed (D10/D12); war becomes a **game board**: a readable
+    board of the map with pieces, fronts that burn (D-016) and tactics down to small detail, still simulated. The board's
+    design is D12a.
+**Branches:** the 35 merged branches could not be deleted from this session (its git connection refuses ref deletions);
+the owner can delete them on GitHub, and `docs/BRANCHES.md` keeps every tip.

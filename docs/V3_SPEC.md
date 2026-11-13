@@ -25,7 +25,8 @@ hundreds of fighting styles. Realistic, but fun for the player at all times (ord
     evolve and merge (D-034).
 11. **Fighting styles in the hundreds:** each nation's standard training per regiment with its tactics, great and
     knightly families' styles, elite orders' styles, some weaker than the standard and some far beyond (D-034).
-12. **The character art** is the approved gate 2 direction (D-035), and the Profile tab shows the person as a
+12. **Order 34 (D-039) refines 8-11:** arts not styles (sword arts and every weapon's own, murim-like); skill words Beginner, Intermediate, Advanced, Expert, Master, Grandmaster, Legend, Myth (1-10 Grandmasters, at most 1 Legend alive); no trees, skills born by trying and grown by use, merging at high levels; hidden talents by area and attribute, found in play, then shown as a letter and number; a top art wins about 7-3 or 8-2 at equal skill; house arts for knights and for the direct line; slow, rare decay; legendaries far beyond other arms, hard to master, kept under guard.
+13. **The character art** is the approved gate 2 direction (D-035), and the Profile tab shows the person as a
     game-like page (order 33; built in v2 as work item P, grown in v3).
 
 ## The plans

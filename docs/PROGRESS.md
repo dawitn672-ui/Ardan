@@ -36,6 +36,10 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [ ] **B5 part 2** · UI.scope, the six-life draw test, one goal stack, tablet shell
 - [x] **C8b** · The gate 2 figure library draws every portrait; face and build maker at creation; face codes · `9a2cbeb` · 2026-11-13 13:02 ET
 - [x] **P** · Profile tab (D-038, `src/ui/999996-profile-tab`): a game-like page of your character, card and figure, titles, stats, skills, styles, renown, gear (owner order 33; after B5)
+- [ ] **C9** · Bodies that make sense: stat words against the population, real-unit readouts gone, masters with the body or mind for it, longer healthy lives (order 34, D-039)
+- [ ] **P2** · A clean Profile page; the past moved to a Records area (order 34)
+- [ ] **X7** · Phone speed: first load and each press (order 34)
+- [ ] **W0** · Remove the war score and the army templates (order 34)
 - [ ] **X2** · Named stages
 - [ ] **D10** · War screens only when deployed
 - [ ] **C6** · Relationships and households
@@ -43,7 +47,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [ ] **C7** · Names and cultures in the game (one common language, D-013)
 - [ ] **C8c** · Dress, class and regalia (changeable outfits)
 - [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
-- [ ] **D12a** · Branches and command: one design (Fable 5.2)
+- [ ] **D12a** · War as a game board: one design (branches, command, the board, tactics; order 34)
 - [ ] **D11** · Military branches (feudal armies, D-012)
 - [ ] **D12b** · War and command depth
 - [ ] **X4** · Balance pass
@@ -58,7 +62,7 @@ Designed now, built after v2's last item on its own integration branch (D-037).
 
 ### Next, in order
 - [x] **G design** · `docs/design/growth.md`: 17 stats, 4,599 skills, ~550 styles, ~2,300 arts, legendary arts; stages G1-G6 · `f1a556d` · 2026-11-13 11:56 ET · **8 owner decisions pending**
-- [ ] **G** · Growth in depth: more stats, thousands of skills (proficiencies merged in), hundreds of fighting styles by nation, regiment, house and order; weapon arts (owner order 32, D-034; design first, Fable 5.2)
+- [ ] **G** · Growth in depth: more stats, skills learned by doing (8 words, Beginner to Myth), hidden talents, hundreds of arts (sword arts and every weapon's, murim-like) by nation, regiment, house, line and order (orders 32, 34; D-034, D-039)
 - [ ] **E1** · A much bigger economy: bigger markets that simulate themselves over time (owner order 28; stages E1a, E1b, E1c, E1d)
 - [ ] **E2** · Hundreds of weapons and armour pieces by quality; items unique to one person (owner order 29; stages E2a, E2b, E2c, E2d, interleaved with E1 as the design says)
 - [ ] **V3-X** · v3 balance pass and state diet
