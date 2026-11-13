@@ -167,10 +167,10 @@ export default {
         const s = SCREENS.find(x => x.name === name);
         await p.evaluate(() => { const st = document.getElementById('ph-css'); if (st) st.disabled = false; UI.PHONE.off = false; });
         // both sides measured after the same call (a redraw), so a transition started by the first draw is not a difference
-        await p.evaluate(s.js); await p.evaluate(() => { UI.render(); window.scrollTo(0, 0); }); await p.evaluate(SETTLE); await calm();
+        await p.evaluate(s.js); await p.evaluate(() => { UI.render(); window.scrollTo(0, 0); }); await p.evaluate(SETTLE); await calm(); await p.evaluate(() => (UI.FIG && UI.FIG.idle ? UI.FIG.idle() : null));   // C8b: portraits are baked off the press; wait for them on both sides
         const a = await p.evaluate(SIG); const ia = await still(); const bufA = lastBuf;
         await p.evaluate(() => { document.getElementById('ph-css').disabled = true; UI.PHONE.off = true; UI.render(); window.scrollTo(0, 0); });
-        await p.evaluate(SETTLE); await calm();
+        await p.evaluate(SETTLE); await calm(); await p.evaluate(() => (UI.FIG && UI.FIG.idle ? UI.FIG.idle() : null));   // C8b: portraits are baked off the press; wait for them on both sides
         const b = await p.evaluate(SIG); const ib = await still();
         n++; els += a.length;
         // with the layout the same, a few dozen pixels at one control's edge are anti-aliasing of a sub-pixel position
