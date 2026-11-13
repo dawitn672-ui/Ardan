@@ -192,8 +192,11 @@ export default {
       __nyAnswer();
       // more than the year keeps: the rest pass, and say so
       __nyEnter(Object.assign({}, base, { seed: 9532 }));
+      // a quiet year: since A2 re-rolled the world, an enemy reaches this seed's home in December and the levy is called
+      // (72's call to the spear, truly notable, stops the year); the levy is held back so the test sees only its nine cards
+      const levyOk = A.TS && A.TS.levyOk; if (levyOk) A.TS.levyOk = () => false;
       for (let i = 0; i < 9; i++) { const id = __nyEv('ny_many' + i, { happy: 1 }); A.schedule({ type: 'event', ev: id }, 20 + i * 30); }
-      const m = await __nyPress('v2Year', { hold: true });
+      let m; try { m = await __nyPress('v2Year', { hold: true }); } finally { if (levyOk) A.TS.levyOk = levyOk; }
       out.many = { waiting: m.waiting.length, why: m.why, text: (document.querySelector('.year-sum') || {}).textContent || '', sumPassed: m.sum && m.sum.passed, story: JSON.stringify(A.S.log.slice(-2)) };
       __nyAnswer();
       // a month: the card that falls inside it waits for its end, and the step never waits at it
@@ -206,7 +209,7 @@ export default {
     const y = r.year, m = r.many, mo = r.month;
     const ok = !y.why && !y.waited && y.waiting.length === 2 && y.d > 360 && y.digest && /2 small matters wait/.test(y.text) && y.modal &&
       m.waiting === 6 && /3 more passed/.test(m.text) && !m.why && !mo.waited && mo.waiting.length === 1 && mo.d > 25;
-    return { ok, detail: `year: stopped "${y.why}", ${y.waiting.length} wait at its end after ${y.d} days, digest ${y.digest} ("${y.text.slice(0, 90)}"); nine small cards: ${m.waiting} kept, ${m.sumPassed} passed; month: step waited at it ${mo.waited}, ${mo.waiting.length} waits at the end` };
+    return { ok, detail: `year: stopped "${y.why}", ${y.waiting.length} wait at its end after ${y.d} days, digest ${y.digest} ("${y.text.slice(0, 90)}"); nine small cards: ${m.waiting} kept, ${m.sumPassed} passed; month: step waited at it ${mo.waited}, ${mo.waiting.length} waits at the end after ${mo.d} days; modal ${y.modal}, nine: "${m.why || ""}" "${m.text.slice(0, 160)}"` };
   },
 
   // Esc ends a year at the end of its month; a letter key never stops anything

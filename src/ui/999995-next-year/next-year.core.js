@@ -60,25 +60,37 @@
     if (!why) {
       try { const c = e.cond && e.cond.toString(); if (c && /C\.(ruler|office)\(/.test(c)) why = 'ruler'; } catch (x) {}
     }
-    if (!why) {
-      const rx = grown ? RX_ALL : RX_CORE, keys = grown ? Y.NOTABLE_FX : Y.CORE_FX;
-      outer: for (const c of e.choices || []) for (const f of fxOf(c)) {
-        if (typeof f === 'function') { let src = ''; try { src = f.toString(); } catch (x) {} if (rx.test(src)) { why = 'weight'; break outer; } continue; }
-        for (const k of Object.keys(f)) {
-          if (keys.includes(k)) { why = 'weight'; break outer; }
-          if (grown && k === 'coin' && Math.abs(+f.coin || 0) >= Y.COIN) { why = 'money'; break outer; }
-          if (grown && k === 'coinPct' && Math.abs(+f.coinPct || 0) >= 20) { why = 'money'; break outer; }
-        }
-      }
-    }
+    if (!why) why = Y.fxWeight(e, grown);
     return (memo[key] = { notable: !!why, why });
   };
+  // what an event's choices may do that is never small: 'weight', 'money' or '' (pure)
+  Y.fxWeight = function (e, grown) {
+    const rx = grown ? RX_ALL : RX_CORE, keys = grown ? Y.NOTABLE_FX : Y.CORE_FX;
+    for (const c of (e && e.choices) || []) for (const f of fxOf(c)) {
+      if (typeof f === 'function') { let src = ''; try { src = f.toString(); } catch (x) {} if (rx.test(src)) return 'weight'; continue; }
+      for (const k of Object.keys(f)) {
+        if (keys.includes(k)) return 'weight';
+        if (grown && k === 'coin' && Math.abs(+f.coin || 0) >= Y.COIN) return 'money';
+        if (grown && k === 'coinPct' && Math.abs(+f.coinPct || 0) >= 20) return 'money';
+      }
+    }
+    return '';
+  };
+  // A2 merge (D-031): a commoner's work holds no office. The release queues a trade's duty scenes as forced (A.dutyEvent),
+  // so "A new tax" read out to a labourer stopped a year as "Something that cannot wait". The duties of a trade wait for
+  // the step's end unless their choices carry real weight; a seat, a command, a crown or a title keeps its duties notable.
+  Y.holdsOffice = pc => !!(pc && (pc.ruler || pc.office || pc.noble || (pc.mil && !pc.mil.merc && pc.mil.rank >= 4) ||
+    (A.POSTS && A.POSTS.held && A.POSTS.held(pc.id).length)));
   // a queue item: notable (stops a year) or routine (waits for the step's end). A card the player asked for, a
   // consequence of a choice, a forced card, a gathering, a scheduled promise and every non-event (a battle, a duel, a
   // campaign, the war room) is notable.
   Y.classify = function (q) {
     if (!q) return { notable: false, why: '' };
     if (q.type !== 'event') return { notable: true, why: q.type || 'prompt' };
+    if (q.forced && !q.now) {
+      const e = A.EV && A.EV[q.ev], pc = A.pc && A.pc();
+      if (e && e.duty && !e.council && pc && !Y.holdsOffice(pc)) { const w = Y.fxWeight(e, !!(A.isAdult && A.isAdult(pc))); return { notable: !!w, why: w }; }
+    }
     if (q.forced || q.now) return { notable: true, why: 'forced' };
     if (q.lfFrom === 'chain' || q.lfFrom === 'ask') return { notable: true, why: q.lfFrom };
     if (q.ctx && (q.ctx.gid || q.ctx.lfFixed)) return { notable: true, why: 'gathering' };
