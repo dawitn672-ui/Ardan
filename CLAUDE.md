@@ -96,6 +96,9 @@ browser. Time with the runner's `cpu()` (main-thread CPU), never the wall clock.
 
 The browser tests use the container's Playwright (`/opt/node-tools/node_modules/playwright`): if `npm ci` installs
 the pinned one, delete `node_modules/playwright*` or point `PLAYWRIGHT_PATH` at the container's copy.
+**A failure only CI sees** (layout off by a few px, a font metric): CI runs Playwright 1.56.1's Chromium 141, the
+container a newer one. Reproduce with CI's browser: `cd /tmp/x && npm i playwright@1.56.1 && PLAYWRIGHT_BROWSERS_PATH=/tmp/x/b
+npx playwright install chromium`, then `PLAYWRIGHT_BROWSERS_PATH=/tmp/x/b NODE_PATH=/tmp/x/node_modules node tests/run.mjs ...`.
 
 ## Versions and milestones
 

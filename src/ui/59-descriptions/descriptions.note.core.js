@@ -195,6 +195,8 @@
   .tt-note{cursor:pointer}
   .tt-note-i{border-bottom:1px dotted var(--accent-line)}
   .tt-note-b::after{content:" \\24D8";color:var(--accent-2);font-size:.95em;opacity:.85}
+  .prow.tt-note-b::after{content:none}
+  .prow.tt-note-b>span:first-child::after{content:" \\24D8";color:var(--accent-2);font-size:.95em;opacity:.85}
   .tt-note.tt-on{color:var(--accent-2)}
   .tt-i{cursor:pointer;color:var(--accent-2)}
   :root button.tt-i{display:inline-flex;align-items:center;justify-content:center;min-width:24px;min-height:24px;width:auto;height:auto;margin:0 0 0 2px;padding:0 3px;border:0;border-radius:50%;background:none;box-shadow:none;color:var(--accent-2);font:inherit;font-size:16px;line-height:1;vertical-align:middle}
