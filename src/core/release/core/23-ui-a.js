@@ -1292,7 +1292,8 @@ UI.renderProfile = function () {
   s +=
     '<div class="tiny muted" style="margin:2px 0 6px">Tick = potential. Willpower rises through adversity and lets you adapt mid-fight to stronger foes.</div>';
   s += `<div class="group-h">Best proficiencies</div>${UI.topProfs(pc, 5)}`;
-  s += `<div class="row"><button class="small grow" data-a="ov" data-v="profile">Full profile</button><button class="small grow" data-a="ov" data-v="tree">Family</button></div>`;
+  // [P] "Full profile" opens the Profile page (999996-profile-tab) when it is in the build; the old overlay remains for a build without it
+  s += `<div class="row"><button class="small grow" ${UI.TAB.profile ? 'data-a="tab" data-v="profile"' : 'data-a="ov" data-v="profile"'}>Full profile</button><button class="small grow" data-a="ov" data-v="tree">Family</button></div>`;
   // B5: the rail's second row of buttons (Proficiencies, your house) repeated the Full profile (which holds the proficiencies) and the
   // house chip beside the name; it is gone, and nothing is lost.
   return s;

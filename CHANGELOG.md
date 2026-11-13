@@ -15,6 +15,11 @@ What changed for the player, in plain words, one section per version (newest fir
 - No more made-up Marshals: above a General stands the real Marshal or the crown. A councillor who loses his seat is
   "once Chancellor", not a second Chancellor; dead lords no longer hold offices for months; new realms get a council.
 - Older saves are set straight when they load, with a line for each thing fixed.
+- **A Profile page for your character.** The first page of You: your whole standing figure, a card with your name, estate
+  and rank, a line about you, and what you are worth in words (body, purse, name, honour); your strength, speed and mind on
+  a scale of seven words; and folded sections for your titles, posts and offices (and the ones you have left), your skills
+  and fighting style, renown and deeds, house and household, gear and heirlooms, years, health and scars. Press any word to
+  see what it means. The rail's Full profile button opens it.
 
 ## v2.1.0-alpha.4 (2026-11-13 15:01 ET) · New faces and a calmer screen
 

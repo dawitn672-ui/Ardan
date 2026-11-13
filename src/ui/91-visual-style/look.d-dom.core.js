@@ -94,7 +94,8 @@
       if (nb && !pr.querySelector('.lk-needs')) bars[1].after(nb);
     }
     // the profile's buttons in one row at the foot of the rail
-    const btns = [...pr.querySelectorAll('.row > button[data-a="ov"]')];
+    // [P] "Full profile" is a tab button (999996-profile-tab) when the Profile page is in the build
+    const btns = [...pr.querySelectorAll('.row > button[data-a="ov"], .row > button[data-a="tab"][data-v="profile"]')];
     if (btns.length) {
       const row = document.createElement('div'); row.className = 'lk-railrow';
       for (const b of btns) { const p = b.parentElement; row.appendChild(b); if (p && !p.children.length) p.remove(); }
