@@ -762,4 +762,30 @@ export default {
     });
     return { ok: !r.n && r.seen.moved > 0, detail: `${r.seen.marks} glyphs (${r.seen.moved} on a child's words), ${r.n} on a grid or flex row or repeating a name${r.n ? ': ' + r.bad.join('; ') : ''}` };
   },
+  // B5 (H-014's open follow-up): an info button beside an action never adds a cell or a row. In a grid or a column of
+  // flex it must be out of the flow (position absolute); everywhere else it is an inline item of a row.
+  async ttInfoNoCell(pg) {
+    const run = async (w, h) => {
+      await pg.setViewportSize({ width: w, height: h });
+      return pg.evaluate(async () => {
+        const bad = [], seen = { buttons: 0, inGrid: 0 };
+        for (const [status, age] of [['peasant', 22], ['noble', 32]]) {
+          T.enter({ seed: 77, race: 'human', realm: 'POL-01', status, sex: 'M', startAge: age });
+          UI.set.hints = false; A.S.queue = []; UI.ov = null;
+          for (const t of ['life', 'goals', 'you', 'path', 'holdings', 'war', 'people', 'legacy', 'realm', 'world', 'book']) {
+            UI.ov = null; UI.setTab(t); UI.render(); await new Promise(res => setTimeout(res, 30));
+            for (const b of document.querySelectorAll('#tabbody button.tt-i, #profile button.tt-i')) {
+              seen.buttons++;
+              const p = b.parentElement, cs = getComputedStyle(p), pos = getComputedStyle(b).position;
+              const flowless = pos === 'absolute' || pos === 'fixed';
+              if (/grid/.test(cs.display) || (/flex/.test(cs.display) && /column/.test(cs.flexDirection))) { seen.inGrid++; if (!flowless) bad.push(`${status} ${t}: ${p.tagName}.${String(p.className).split(' ').slice(0, 2).join('.')} (${cs.display})`); }
+            }
+          }
+        }
+        return { bad: [...new Set(bad)].slice(0, 8), n: bad.length, seen };
+      });
+    };
+    const a = await run(1366, 768), b = await run(420, 900);
+    return { ok: !a.n && !b.n && a.seen.buttons > 5, detail: `${a.seen.buttons} info buttons at 1366 (${a.seen.inGrid} in a grid or column), ${b.seen.buttons} at 420 (${b.seen.inGrid}); in the flow: ${a.n + b.n}${a.n + b.n ? ': ' + [...a.bad, ...b.bad].join('; ') : ''}` };
+  },
 };
