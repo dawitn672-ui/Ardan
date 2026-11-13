@@ -1289,7 +1289,9 @@ UI.renderProfile = function () {
   s +=
     '<div class="tiny muted" style="margin:2px 0 6px">Tick = potential. Willpower rises through adversity and lets you adapt mid-fight to stronger foes.</div>';
   s += `<div class="group-h">Best proficiencies</div>${UI.topProfs(pc, 5)}`;
-  s += `<div class="row"><button class="small grow" data-a="ov" data-v="profile">Full profile</button><button class="small grow" data-a="ov" data-v="tree">Family</button></div><div class="row" style="margin-top:4px"><button class="small grow" data-a="ov" data-v="profs">Proficiencies</button>${h ? `<button class="small grow" data-a="ov" data-v="house:${h.id}">${UI.esc(h.name.length > 18 ? "Your house" : h.name)}</button>` : ""}</div>`;
+  s += `<div class="row"><button class="small grow" data-a="ov" data-v="profile">Full profile</button><button class="small grow" data-a="ov" data-v="tree">Family</button></div>`;
+  // B5: the rail's second row of buttons (Proficiencies, your house) repeated the Full profile (which holds the proficiencies) and the
+  // house chip beside the name; it is gone, and nothing is lost.
   return s;
 };
 
@@ -1387,7 +1389,7 @@ UI.renderGroupBar = function (bottom) {
       badge = UI.subsOf(g)
         .map(s => UI.tabBadge(s[0], pc))
         .filter(Boolean)[0];
-    return `<button role="tab" id="tab-${g.k}" class="${on ? "on" : ""}" data-a="group" data-v="${g.k}" aria-selected="${on}" aria-controls="tabbody" tabindex="${on ? 0 : -1}"${badge ? ` aria-description="${badge}"` : ""}>${UI.icon(g.icon, "s")}<span class="tl">${bottom && g.short ? g.short : g.name}</span>${badge ? '<span class="badge" aria-hidden="true">!</span>' : ""}</button>`;
+    return `<button role="tab" id="tab-${g.k}" class="${on ? "on" : ""}" data-a="group" data-v="${g.k}" aria-selected="${on}" aria-controls="tabbody" tabindex="${on ? 0 : -1}"${badge ? ` aria-description="${badge}"` : ""}>${UI.icon(g.icon, "s")}<span class="tl">${bottom && g.short ? g.short : g.name}</span>${badge ? `<span class="badge${badge === "at war" ? "" : " badge-new"}" aria-hidden="true">${badge === "at war" ? "!" : ""}</span>` : ""}</button>`;
   }).join("")}</div>`;
 };
 
@@ -1401,7 +1403,7 @@ UI.renderSubBar = function () {
         .map(([k, n]) => {
           const on = k === UI.tab,
             badge = UI.tabBadge(k, pc);
-          return `<button role="tab" id="sub-${k}" class="${on ? "on" : ""}" data-a="tab" data-v="${k}" aria-selected="${on}" aria-controls="tabbody" tabindex="${on ? 0 : -1}">${UI.esc(UI.subName(k, n))}${badge ? '<span class="badge" aria-hidden="true">!</span>' : ""}</button>`;
+          return `<button role="tab" id="sub-${k}" class="${on ? "on" : ""}" data-a="tab" data-v="${k}" aria-selected="${on}" aria-controls="tabbody" tabindex="${on ? 0 : -1}">${UI.esc(UI.subName(k, n))}${badge ? `<span class="badge${badge === "at war" ? "" : " badge-new"}" aria-hidden="true">${badge === "at war" ? "!" : ""}</span>` : ""}</button>`;
         })
         .join("")}</div>`;
 };

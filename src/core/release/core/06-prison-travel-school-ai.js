@@ -787,7 +787,7 @@ A.careerYear2 = function (pc) {
   j.offers = A.rollOffers(pc);
   if (j.offers.length && A.chance(0.6))
     A.log(
-      `Work: ${j.offers.length} offer${j.offers.length > 1 ? "s" : ""} came your way this year. (Work tab)`,
+      `Work: ${j.offers.length} offer${j.offers.length > 1 ? "s" : ""} came your way this year. (Path page)`,
       "muted",
     );
 };

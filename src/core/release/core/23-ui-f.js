@@ -652,7 +652,7 @@ UI.helpModal = function () {
   const P = t => `<p>${t}</p>`,
     add =
       P(
-        "<b>People you choose.</b> You do not know everyone you serve with. The People tab shows who is <i>around you</i> — above you, under you, beside you — by name and post. Getting to know someone costs an evening (1⧗) and is your choice; bonds you never tend fade back to acquaintances, and nobody keeps more close friends than they have evenings for. Every face has a full profile: who they are, what they do, what they can do, and whether they would beat you in a fight.",
+        "<b>People you choose.</b> You do not know everyone you serve with. The People page (under Family) shows who is <i>around you</i> — above you, under you, beside you — by name and post. Getting to know someone costs an evening (1⧗) and is your choice; bonds you never tend fade back to acquaintances, and nobody keeps more close friends than they have evenings for. Every face has a full profile: who they are, what they do, what they can do, and whether they would beat you in a fight.",
       ) +
       P(
         "<b>Strength you can read.</b> Every fighter has a tier — Untrained, Brawler, Trained, Veteran, Elite, Master, Legend — from body, skill and steel. A tier up wins about three fights in four. An Elite can take 7–10 regular soldiers at once, a Master 20–30, a Legend 50–100 — if the body keeps up. Beasts come in scales: animals one person can fight, great beasts that need a hunting party, titans that need an expedition, and legends that are only stories. The Codex page <i>Power &amp; scale</i> explains it all.",
@@ -661,13 +661,13 @@ UI.helpModal = function () {
         "<b>Your staff and your drill.</b> Lead men and you choose who stands under you — sergeants, a lieutenant, a sergeant-major, a chief of staff, the commander of every division — or delegate the choice to the officer above that post. Their skill is what the post does. The drill yard sets what your men practice and how hard; the edge you build shows in battle.",
       ) +
       P(
-        "<b>The orders.</b> Eight realms keep an elite order: the Knights of the Iron Wolf, the Knights of the Sun, the Greyfeathers, the Shadow Guard, the Last Door, the Stormriders, the Tenth Wind and the Gold Masks. Each is only 200 to 300 strong, because no kingdom has more people good enough, and each fights best on its own ground. Their stories are in the War tab and the Codex. Prove yourself and you may be asked to join. On the map they carry a gold star.",
+        "<b>The orders.</b> Eight realms keep an elite order: the Knights of the Iron Wolf, the Knights of the Sun, the Greyfeathers, the Shadow Guard, the Last Door, the Stormriders, the Tenth Wind and the Gold Masks. Each is only 200 to 300 strong, because no kingdom has more people good enough, and each fights best on its own ground. Their stories are in the Arms page and the Codex. Prove yourself and you may be asked to join. On the map they carry a gold star.",
       ) +
       P(
         "<b>Markets.</b> Every realm's capital has a market. Goods are cheap where they are made and dear where they are bought in; war, seasons, embargoes and trade pacts move prices. Buy a cart or a wagon, plan a run, hire guards. The armorer sells crude, common, fine and (where a master works) masterwork arms and armor.",
       ) +
       P(
-        "<b>Your family.</b> No points pass between lives. An heir gets what a real heir gets: a share of the purse and land by custom, your arms and armor, titles where the law allows, the name you made, your friends and enemies — and whatever you took the time to teach them (Dynasty tab).",
+        "<b>Your family.</b> No points pass between lives. An heir gets what a real heir gets: a share of the purse and land by custom, your arms and armor, titles where the law allows, the name you made, your friends and enemies — and whatever you took the time to teach them (the Dynasty page, under Family).",
       );
   return UI.helpModalBasic().replace(/<\/div><\/div>\s*$/, add + "</div></div>");
 };

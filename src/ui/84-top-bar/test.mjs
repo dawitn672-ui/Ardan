@@ -236,8 +236,8 @@ Object.assign(tests, {
       UI.set.lfLives = 4; UI.actsAll = false; UI.render(); const later = vis();
       return { six, moreText, noteText, near, all, later, sheet };
     });
-    const ok = r.sheet && r.six === 6 && /More activities/.test(r.moreText) && /Make a friend/.test(r.noteText) && r.near && r.all > 20 && r.later > 20;
-    return { ok, detail: `first life: ${r.six} activities shown, "${r.moreText}"; after Make a friend: "${r.noteText.slice(0, 100)}" above the tiles ${r.near}; More shows ${r.all}; a later life ${r.later}` };
+    const ok = r.sheet && r.six === 6 && /More activities/.test(r.moreText) && /Make a friend/.test(r.noteText) && r.near && r.all > 20 && r.later === 6;   // B5: every life starts with six, not only the first
+    return { ok, detail: `first life: ${r.six} activities shown, "${r.moreText}"; after Make a friend: "${r.noteText.slice(0, 100)}" above the tiles ${r.near}; More shows ${r.all}; a later life ${r.later} (six as well)` };
   },
 
   // cycle 2 (design A5): on a 390 and a 360 px phone with a large purse and a debt, the date, the initiative and the

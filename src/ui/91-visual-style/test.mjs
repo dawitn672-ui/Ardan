@@ -127,7 +127,7 @@ export default {
       await p.evaluate(LIFE());
       await p.evaluate(SETTLE);
       r = await p.evaluate(() => ({ hint: Math.round(((document.querySelector('#tabbody > .hint') || { getBoundingClientRect: () => ({ height: -10 }) }).getBoundingClientRect().height) + 10), h: document.scrollingElement.scrollHeight - Math.round(((document.querySelector('#tabbody > .hint') || { getBoundingClientRect: () => ({ height: -10 }) }).getBoundingClientRect().height) + 10), vh: innerHeight, w: document.scrollingElement.scrollWidth, tiles: document.querySelectorAll('#tabbody .lk-acts > .act').length,
-        small: [...document.querySelectorAll('#tabbody .lk-acts > .act')].filter(t => t.getBoundingClientRect().height < 43.5).length }));
+        small: [...document.querySelectorAll('#tabbody .lk-acts > .act:not([hidden])')].filter(t => t.getBoundingClientRect().height < 43.5).length }));
     } finally { await ctx.close(); }
     const screens = +(r.h / r.vh).toFixed(2);
     // v2 (99992-v2-time): 1.5, not 1.3. A new chapter's open choice of aim now stands on the page (about 170 px) instead of
@@ -177,7 +177,8 @@ export default {
         const tiles = [...document.querySelectorAll('#tabbody .lk-acts > .act')], sheet = document.querySelector('#modal .act-sheet');
         const D = GD.ACTIVITIES[key];
         return { n: tiles.length, grids: document.querySelectorAll('#tabbody .lk-acts').length, icons: tiles.filter(t => t.querySelector('.lk-gi svg')).length, tips: tiles.filter(t => t.dataset.a === 'act' || t.dataset.a !== 'act').length,
-          h: Math.max(...tiles.map(t => Math.round(t.getBoundingClientRect().height))), cols: new Set(tiles.map(t => Math.round(t.getBoundingClientRect().left))).size,
+          h: Math.max(...tiles.map(t => Math.round(t.getBoundingClientRect().height))), cols: new Set(tiles.filter(t => !t.hidden).map(t => Math.round(t.getBoundingClientRect().left))).size,   // (B5: the tiles past the six suggested are hidden)
+         
           open: !!sheet && sheet.textContent.includes(D.desc) && sheet.textContent.includes(D.name) };
       }, key);
       r.hov = hov;

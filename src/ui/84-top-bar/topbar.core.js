@@ -12,6 +12,8 @@
     '@media (min-width:761px) and (max-width:1439px){#topbar{flex-wrap:wrap}#topbar .top-right{flex:1 0 360px}#topbar .top-right>button .bt{display:none}}',
     // two-column widths: the slimmer clock of the step rhythm would leave the place 45 px on one line; the group wraps
     '@media (min-width:761px) and (max-width:1099px){#topbar .top-right{flex-basis:440px}}',
+    // B5 (U13): a tablet (a touch screen from 761 to 1100 px) keeps the desktop layout, but its top bar's buttons are touch targets
+    '@media (pointer:coarse) and (min-width:761px) and (max-width:1100px){:root #game:not(.phone) #topbar button,:root #game:not(.phone) #topbar .v2-step{min-height:44px;height:auto}}',
     '#game.phone #topbar .top-right{display:contents}',
     '#game.phone #topbar .top-right>button{min-width:44px;min-height:44px;padding:0 8px}',
   ].join('');

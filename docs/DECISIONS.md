@@ -398,3 +398,23 @@ C8, and P is a page over what exists), grown in v3. v3 is designed now and built
 are fully inside `v2-integration`; deleting them waits for the owner's yes (the permissions rule), with each tip
 recorded so any can be restored. The 9 branches with unmerged commits (`v2-lane-*`, `v2-wf-repeats`) stay until
 looked through. PR #2's title and text are brought up to date.
+### D-033 · B5 part 1: the open page gets the width; budgets are a ratchet (2026-11-13 ET, B5 declutter)
+- **Context.** The owner's clutter complaint; CRITIQUE U2 and U3 asked for 120 words and 12 controls on a phone, 250 and 25 on a
+  desktop, and for the open page to have 60% of a 1366 px screen (it had 36% after the 91 grid, 28% before).
+- **Decisions.**
+  1. **The story is a drawer at 1100 to 1599 px** (`src/ui/9992-story-drawer`): the grid is the rail (232 px) and the page
+     (about 81%); a Story button in the top bar opens the story over the page's right edge; the Life page carries the newest two
+     lines. At 1600 px and up the story is a column after the page (the page about half the window; before, the page was the
+     narrow third column, 24% at 1920). 761 to 1099 px keeps 91's strip over the story. The scene card docks over the page's
+     column from 1100 px.
+  2. **Budgets are held by a test, as a ratchet, not as the critique's targets.** The fixed bars, rail and tab bars alone are
+     about 13 controls on a phone and 27 on a desktop, so 12 and 25 for a whole screen cannot be met without removing
+     navigation. The test (`b5Budget`) holds the numbers reached: desktop 270 words and 50 controls in view (230 words and 40
+     controls in the page's own zone), phone 200 and 40 (150 and 30 in the page), no page over three screens. They may only
+     fall.
+  3. **One mechanism for "six and More".** 97's six suggested activities and "More activities" (first lives only) now serve every
+     life; no second mechanism was added.
+  4. **Tablet shell not done.** The 760 px phone shell is written into about 35 stylesheet blocks; moving it to coarse pointers
+     up to 1024 px is its own step. A tablet keeps the desktop layout with 44 px top-bar buttons.
+- **Conflicts with orders:** none. Descriptions still open on click only; no percentages; rendering stays pure.
+- **Undo:** delete `src/ui/9992-story-drawer` and the "B5 (U3)" block of `look.c-layout.core.js`, then `git revert` the folds.

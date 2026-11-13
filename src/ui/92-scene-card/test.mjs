@@ -38,7 +38,7 @@ const SETUP = () => {
       const cr = card.getBoundingClientRect(), W = innerWidth, H = innerHeight;
       let place;
       if (phone) place = m.classList.contains('sc-sheet') && cr.left <= 1 && cr.right >= W - 1 && cr.bottom >= H - 1;
-      else { const lw = document.getElementById('logwrap').getBoundingClientRect(); place = m.classList.contains('sc-dock') && cr.left >= lw.left - 1 && cr.right <= lw.right + 1 && cr.top >= lw.top - 1 && cr.bottom <= lw.bottom + 1; }
+      else { const lw = document.getElementById(innerWidth >= 1100 ? 'side' : 'logwrap').getBoundingClientRect(); place = m.classList.contains('sc-dock') && cr.left >= lw.left - 1 && cr.right <= lw.right + 1 && cr.top >= lw.top - 1 && cr.bottom <= lw.bottom + 1; }
       const inView = cr.left >= -1 && cr.top >= -1 && cr.right <= W + 1 && cr.bottom <= H + 1;
       const btns = [...card.querySelectorAll('.choices > button')];
       let unreachable = 0, rowOver = 0, order = 0, tagOut = 0, small = 0;
