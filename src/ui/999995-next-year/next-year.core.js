@@ -76,10 +76,10 @@
     }
     return '';
   };
-  // A2 merge (D-031): a commoner's work holds no office. The release queues a trade's duty scenes as forced (A.dutyEvent),
+  // A2 merge (D-031): a commoner's work holds no office (a noble, royal or gentry life's duties are its station's). The release queues a trade's duty scenes as forced (A.dutyEvent),
   // so "A new tax" read out to a labourer stopped a year as "Something that cannot wait". The duties of a trade wait for
   // the step's end unless their choices carry real weight; a seat, a command, a crown or a title keeps its duties notable.
-  Y.holdsOffice = pc => !!(pc && (pc.ruler || pc.office || pc.noble || (pc.mil && !pc.mil.merc && pc.mil.rank >= 4) ||
+  Y.holdsOffice = pc => !!(pc && (pc.ruler || pc.office || pc.noble || ['noble', 'royal', 'gentry'].includes(pc.status) || (pc.mil && !pc.mil.merc && pc.mil.rank >= 4) ||
     (A.POSTS && A.POSTS.held && A.POSTS.held(pc.id).length)));
   // a queue item: notable (stops a year) or routine (waits for the step's end). A card the player asked for, a
   // consequence of a choice, a forced card, a gathering, a scheduled promise and every non-event (a battle, a duel, a

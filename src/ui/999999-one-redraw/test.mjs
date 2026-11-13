@@ -4,9 +4,12 @@ const PRESS = () => {
   // a Next month press as a player makes it: the button, each card's first choice and its Close, until the step ends
   window.__rdPress = async () => {
     const R = UI.REDRAW, f0 = R.full, l0 = R.lite, sleep = ms => new Promise(r => setTimeout(r, ms));
-    let cards = 0, g = 0;
+    let cards = 0, g = 0, ran = false;
     UI.A.v2Next();
     for (; g < 4000; g++) {
+      // the press ends with its step: small cards that waited for the step's end (B6) are read afterwards, each its own
+      // click with its own draw, and are not this press's (a world where one waits met two full draws here, A2 merge)
+      if (UI.stepper.run) ran = true; else if (ran) break;
       const q = A.S.queue[0], m = document.querySelector('#modal');
       if (q && m && q.type === 'event') {
         const b = q.result ? m.querySelector('[data-a="evClose"]') : m.querySelector('button[data-a="evChoose"]:not([disabled]):not([aria-disabled="true"])');
@@ -16,7 +19,11 @@ const PRESS = () => {
       else if (!UI.stepper.run) break;
       await sleep(q ? 0 : 4);
     }
-    return { cards, full: R.full - f0, lite: R.lite - l0 };
+    const out = { cards, full: R.full - f0, lite: R.lite - l0 };
+    // then the cards left waiting are answered, outside the press's count
+    for (let k = 0; k < 200 && A.S.queue.length; k++) { const q = A.S.queue[0]; if (q.type === 'event') { if (!q.result) A.eventAuto(); A.eventClose(); } else A.skipPrompt(); }
+    UI.refresh();
+    return out;
   };
 };
 
