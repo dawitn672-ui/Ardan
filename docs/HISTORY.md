@@ -294,3 +294,18 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   clickNoHover, rdOnePerPress, nyYearSameWorld, tbStepSameWorld, journalReplay, lookRows, ttMarkNoCell; suites 9/9; the
   tests of 59, 97 and 999999 40/40; npcInitiativeDeterminism passes. This push runs the full CI.
 - **Undo:** `git revert -m 1` the merge, rebuild.
+
+### H-015 · 2026-11-13 00:55 ET · CI 100's five failures fixed (one real slowdown from B6, four tests)
+- **Commits:** `eaaf92c`, `24f7121`, `57180f4` (all on v2-integration).
+- **A real slowdown:** B6's cost-mark pass (`A.V2Y.strip`) read `document.body.textContent` after every draw, and the body
+  holds the game's script blobs (about 5 MB of text): a load-and-draw went from about 53 ms to 330 ms.
+  `childrenSeeOnlyWhatTheyCan` (1,800 presses) and `npcInitiativeDeterminism` ran out of time. The pass now walks the
+  body's drawn children only; draws are back to about 58 ms. New test `nyStripSkipsScripts` (fails on the old build).
+- **iconsWired:** B6 took the initiative hourglass off the top bar on purpose; the test expects it only while drawn.
+- **bondsInRealLives, kinBotLives (D-027):** with no pool the engaged bots act about twice as often; two share-based bars
+  moved on the same seeds and follow the no-pool game (10% → 7%; half → 40%). Kin arcs and the one-arc-at-a-time rule
+  go to C6.
+- **Tests:** locally the 12 ny* tests, renderRng, iconsWired, npcInitiativeDeterminism and childrenSeeOnlyWhatTheyCan
+  pass; the two bot-life tests were not re-run locally (each needs ~30 minutes of a free machine; CI's numbers are the
+  same seeds). This push runs the full CI.
+- **Undo:** `git revert 57180f4 24f7121 eaaf92c`, rebuild.
