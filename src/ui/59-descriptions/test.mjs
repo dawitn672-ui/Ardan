@@ -20,7 +20,8 @@ function countIn(sel) {
   const root = document.querySelector(sel); if (!root) return { n: 0, covered: 0, miss: [] };
   const out = { n: 0, covered: 0, miss: [] };
   for (const el of root.querySelectorAll('*')) {
-    if (el.closest('svg') || el.closest('[hidden]')) continue;
+    // (B5: a closed fold's one-line summary is aria-hidden: a preview of rows that each carry their own description)
+    if (el.closest('svg') || el.closest('[hidden]') || el.closest('[aria-hidden="true"]')) continue;
     const own = [...el.childNodes].filter(x => x.nodeType === 3).map(x => x.textContent).join('');
     if (!/\d/.test(own)) continue;
     out.n++;
@@ -136,8 +137,11 @@ export default {
       const res = {};
       for (const on of [false, true]) {
         UI.TT.wired = on; UI.render();
+        // B5 folds parts of the profile by default: open them, so every number on it is counted
+        if (UI.FOLD) UI.FOLD.allOpen = true; UI.render();
         res[on ? 'after' : 'before'] = { profile: count('#profile'), top: count('#topbar') };
       }
+      if (UI.FOLD) UI.FOLD.allOpen = false; UI.render();
       return res; })()`);
     const b = r.before, a = r.after, all = x => x.covered === x.n;
     // v2 (99993-v2-stats, playtest round 1): the vitals and stats are words now, so fewer numbers are left and each
@@ -764,5 +768,31 @@ export default {
       return { bad: bad.slice(0, 8), n: bad.length, seen };
     });
     return { ok: !r.n && r.seen.moved > 0, detail: `${r.seen.marks} glyphs (${r.seen.moved} on a child's words), ${r.n} on a grid or flex row or repeating a name${r.n ? ': ' + r.bad.join('; ') : ''}` };
+  },
+  // B5 (H-014's open follow-up): an info button beside an action never adds a cell or a row. In a grid or a column of
+  // flex it must be out of the flow (position absolute); everywhere else it is an inline item of a row.
+  async ttInfoNoCell(pg) {
+    const run = async (w, h) => {
+      await pg.setViewportSize({ width: w, height: h });
+      return pg.evaluate(async () => {
+        const bad = [], seen = { buttons: 0, inGrid: 0 };
+        for (const [status, age] of [['peasant', 22], ['noble', 32]]) {
+          T.enter({ seed: 77, race: 'human', realm: 'POL-01', status, sex: 'M', startAge: age });
+          UI.set.hints = false; A.S.queue = []; UI.ov = null;
+          for (const t of ['life', 'goals', 'you', 'path', 'holdings', 'war', 'people', 'legacy', 'realm', 'world', 'book']) {
+            UI.ov = null; UI.setTab(t); UI.render(); await new Promise(res => setTimeout(res, 30));
+            for (const b of document.querySelectorAll('#tabbody button.tt-i, #profile button.tt-i')) {
+              seen.buttons++;
+              const p = b.parentElement, cs = getComputedStyle(p), pos = getComputedStyle(b).position;
+              const flowless = pos === 'absolute' || pos === 'fixed';
+              if (/grid/.test(cs.display) || (/flex/.test(cs.display) && /column/.test(cs.flexDirection))) { seen.inGrid++; if (!flowless) bad.push(`${status} ${t}: ${p.tagName}.${String(p.className).split(' ').slice(0, 2).join('.')} (${cs.display})`); }
+            }
+          }
+        }
+        return { bad: [...new Set(bad)].slice(0, 8), n: bad.length, seen };
+      });
+    };
+    const a = await run(1366, 768), b = await run(420, 900);
+    return { ok: !a.n && !b.n && a.seen.buttons > 5, detail: `${a.seen.buttons} info buttons at 1366 (${a.seen.inGrid} in a grid or column), ${b.seen.buttons} at 420 (${b.seen.inGrid}); in the flow: ${a.n + b.n}${a.n + b.n ? ': ' + [...a.bad, ...b.bad].join('; ') : ''}` };
   },
 };

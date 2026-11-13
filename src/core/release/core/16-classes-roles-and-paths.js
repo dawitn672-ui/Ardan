@@ -311,7 +311,7 @@ A.roleBlock = function (pc, want) {
         crime: "Beneath a crown.",
       }[want] || ""
     : want === "job" && pc.mil && !pc.mil.merc
-      ? "You are under arms. Resign your commission first (War tab)."
+      ? "You are under arms. Resign your commission first (the War or Arms page)."
       : want === "job" && pc.company
         ? "You lead a free company."
         : want === "army" && pc.office && pc.office !== "marshal"

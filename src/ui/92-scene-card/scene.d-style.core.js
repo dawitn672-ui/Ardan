@@ -51,6 +51,8 @@ ${C} .sc-vig{position:relative;line-height:0}
 ${C} .sc-vig > .woodcut-wrap{margin:0}
 ${C} .sc-vig svg.woodcut{width:100%;height:auto;max-height:none;border-radius:0;box-shadow:none;aspect-ratio:16/5}
 ${C} .sc-vig .sky-cart{z-index:2}
+/* B5 (U8): on a short desktop window the picture is a band of 132 px, so four choices are in view at 768 px */
+@media (min-width:761px) and (max-height:820px){${R}.sc-dock .sc-card .sc-vig svg.woodcut{aspect-ratio:auto;height:132px;max-height:132px}}
 
 /* the bust over the picture's edge, then the title */
 ${C} .sc-head{position:relative;z-index:2;display:flex;align-items:flex-end;gap:14px;padding:14px 18px 0}

@@ -292,6 +292,163 @@ and reviewable. X5 (stop committing `index.html`) can follow.
 **Not done here (later, small):** the page's `<style>` is still one minified line; event functions in `content/` stay
 minified one-liners; names inside functions stay the release's short ones.
 
+### D-029 · Character art: tone-led, after the look of Pick Me Up's profile cards (2026-11-13 02:00 ET, the owner's verdict on 2D gate 1)
+**Owner:** "Tone led. A perfect example of how I want this to look is the character profile cards from the manhwa Pick
+Me Up." And on an outside image AI for reference sheets: "yes you can if you think it's necessary."
+**Chosen:** gate 1's tone-led finish (form by soft painted shading and light, lines quiet), aimed at a semi-realistic
+Korean-webtoon portrait as on that series' character profile cards: a half-body portrait with clean, confident
+rendering, rim light and a card that carries the name, rank and words about the person.
+**Limits:** the look only. No character, image, logo or card layout of that series is copied or traced; Ardan's people,
+cards and frames are its own. Realism rules stay (D-015, D-020): full face customisation first, ageing, scars, clothing.
+**Image AI:** used only for reference sheets that the layered parts are then drawn from; its outputs go into the repo
+under `docs/design/` with the prompt and the service named. The key comes only through the secure form.
+**Refines:** D-024 (2D illustrated) and D-025 (the 2D plan): gate 2 is a tone-led demo in this direction.
+**Added 2026-11-13 02:10 ET (owner's reference image):** the owner sent `docs/design/reference/owner-ref-1-lineup.png`
+(made with OpenAI's image model): "This holds the core concept of what I'm looking for but should obviously be tailored
+to the game." So: full-body figures as well as the card; Korean-webtoon proportions and stylised faces (tall, narrow
+faces, sharp jaws, half-lidded eyes); clean thin line work under soft tonal shading; restrained palette with one accent.
+This supersedes "as realistic as possible" (D-015) **for the drawing style**; realism still governs ageing, scars,
+builds and full face customisation. The modern dress in the image is not wanted: Ardan's dress is medieval.
+
+### D-030 · Where the owner's new orders 27-30 go in the work order (2026-11-13 02:25 ET)
+- **27 (the medieval reference)** steers C8 gate 2 now (with D-029).
+- **30 (far more face and build options)** is part of C8: gate 2 shows the wider ranges; C8b/C8c build them.
+- **28 (E1, the economy) and 29 (E2, weapons and unique items)** are new work items, placed before X4 (the balance pass
+  must come after them). Their **design** starts now, in parallel (one design doc, Fable 5.2 at max effort, D-009), so
+  the owner can see and steer it before anything is built; building waits its turn. E2 ties into C8 (each item is drawn
+  on the figure), D11 (feudal armies arm their men) and E1 (smiths, markets and prices make and sell them).
+
+### D-032 · E1/E2: the owner's answers to the design's eight choices (2026-11-13 06:21 ET)
+The owner: "If you need to modify or question anything do so at your own discretion. Keep in mind what would be more
+realistic but fun for a user at all times." Each answer, and how the build reads it:
+1. **Markets:** "whatever most realistic" → one per settled province (281), in three sizes (city, town, village market).
+2. **Goods:** "40+ and not just materials, real goods that would benefit a user" → at least 40: raw stuff (grain, wool,
+   ore, timber, salt…) **and** finished goods a person buys and uses (bread, ale, cloth and clothes, boots, tools,
+   candles, soap, medicine and herbs, horses and tack, carts, books and parchment, spices, wine, jewellery, arms and
+   armour, …), each with a use in play (eating, health, work, standing, travel, war).
+3. **Merchants:** "not just anybody can meet them and get treated the same" → access by standing. A great house answers a
+   duke's summons in days, a baron's in weeks, a knight or rich burgher must go to them; a nameless commoner cannot seek
+   one out (meets traffic only by chance at a market). Fame, rank, wealth, past dealings and debts move it.
+4. **Income:** "only in direct correlation" → no realm-wide multiplier on pay. Your income moves only through what you
+   actually make, buy and sell (your crop's price at your market, your shop's custom, your estate's rents and tolls,
+   your lord's ability to pay). A bad year elsewhere reaches you only through those links, so it may or may not.
+5. **Money:** "as deep as necessary to bring out realism" → the deepest option: loans with pledges, crowns that borrow
+   and default and break lenders, coin a crown can thin; built last so a stage can stop if it adds no play.
+6. **Grades:** "common, rare, epic, legendary, each with their own quality level" → **two separate measures**: *rarity*
+   (common, rare, epic, legendary: how exceptional the piece is: its material, design, features and story) and
+   *quality of make* (crude, plain, good, fine, masterwork: the smith's skill on the day). Rare material in plain hands
+   can still make an epic that is not masterwork; a master smith can make a masterwork from common steel. A smith's
+   skill, the material, the forge, time and the dice decide the result (the idea of craft results the owner cites
+   from the manhwa *Overgeared*; the idea only, nothing of its content).
+7. **Armour on the figure:** "as detailed as possible, every single element" → separate pieces: helm, gorget, pauldrons,
+   rerebraces, couters, vambraces, gauntlets, breastplate and backplate or coat, faulds and tassets, cuisses, poleyns,
+   greaves, sabatons, mail, padding, plus clothing layers, belts, cloak, jewellery and shield; each a layer keyed by item
+   and quality (C8 draws them).
+8. **Named things:** "can be destroyed but shouldn't be because of their high durability; all legendary blades of good
+   quality; family heirlooms and national treasures; they overpower any form of equipment" → legendaries are always fine
+   or masterwork, near-indestructible (destroyed only by extraordinary events), held as heirlooms and crown treasures.
+   **Discretion used (realistic but fun):** they outclass all other gear, but skill still decides most fights (a
+   legendary sword in an untrained hand loses to a veteran), and owning one draws attention: thieves, claimants and
+   kings want it, and a lost treasure is a reason for quests and wars.
+**Changes to the design doc:** recorded in its new section "Part 4 · The owner's answers"; the builders follow Part 4
+where it differs from Parts 1-3.
+
+### D-034 · Growth in depth: more stats, thousands of skills, hundreds of styles (owner order 32, 2026-11-13 07:18 ET)
+**Owner:** "Add more stats and clearly define what they do, how to increase them, clear constraints and limitations.
+Skills should be passive and active, that change how your character grows or give a stat boost or negative; there
+should be 100s-1000s of skills. Fighting styles are great ways to differ between people. Each nation's military has
+their own standard training for each of their regiments as well as tactics, whilst certain great families or knight
+families might have their own taught fighting style; there should be hundreds of these as well, some styles weaker
+than standard military and others far exceeding it. Elite orders should have their own style. There should be skills
+for every route a player might go in extreme depth. Merge proficiencies into skills with different levels that can
+then evolve and merge where necessary. Legendaries should also have their own unique design, far more visually
+appealing than other weapons."
+**Replaces:** my advice of 2026-11-13 to keep six stats (the owner chose more). Builds on what exists: the six stats,
+about 40 skills, proficiencies, fighting styles with ranks (Novice..Grandmaster) and techniques (07-duels), realm and
+house styles, 31-learn-by-doing, 32-legend-and-master-caps, 99993-v2-stats.
+**How:** a design first (work item G, Fable 5.2 at max effort): the stat set with definitions, growth, caps and decay;
+one skill system (proficiencies merged in) with levels, passive and active skills, evolutions and merges, generated
+from rules plus hand-written entries so there are thousands without filler; styles by nation and regiment, house,
+knightly family and elite order, ranked against each nation's standard; weapon arts; legendaries' signature arts and
+their own drawn designs (C8 and E2). The owner sees it before it is built.
+**Also settles:** weapon arts and legendaries' signature arts (asked on 2026-11-13): yes.
+
+### D-035 · Gate 2 approved: code-drawn characters, refined; a Profile tab (owner order 33, 2026-11-13 07:19 ET)
+**Owner:** "I am extremely impressed with the profile cards and such; there should be a whole tab for a game-like
+profile and stats, titles etc. Keep on refining the character designs, but this looks amazing, especially the blonde
+knight in the middle."
+**Chosen:** the gate 2 library (code-drawn, `docs/design/demo-2d/gate2/`) is the way forward (option A of 2026-11-13; the
+image-AI hybrid stays possible later if the owner adds a key). Ser Edric Vale's card is the bar for every figure.
+**Next:** C8b moves the library into the game (portraits and figures wherever people are shown, the face and build
+maker at character creation, deterministic looks for every NPC from the seed) and keeps refining (faces at full size,
+hands, cloth folds, metal, line weight, a slight turn), within the draw budget (light and depth passes on large
+portraits only). **Profile tab (work item P):** a game-like page of your character: the full card and figure, titles
+and posts, stats, skills and styles, renown, gear and heirlooms, in words, folded detail on click. Built after B5's
+declutter (same screens) with today's stats, and grown when G lands.
+
+### D-037 · v3 is the living world; the repo's order on GitHub (owner, 2026-11-13 07:21 ET)
+**Owner:** "You can reorganize the GitHub ordering of this project where you think necessary, and the big project I
+just added would probably fall under a v3, right?"
+**Chosen:** yes. By the version rules (CLAUDE.md: a major is a new design the owner set), orders 28-33 (the economy,
+the armoury, growth in depth) are **v3**, written up in `docs/V3_SPEC.md`. **v2** stays the Nov 12 complaint list and
+closes with X4 and X5 (`release/v2.5`). The character art (C8b, C8c) and the Profile tab (P) are v2 work (round 2 item
+C8, and P is a page over what exists), grown in v3. v3 is designed now and built after v2's last item on a
+`v3-integration` branch, versions `v3.0.0-alpha.N`. `docs/PROGRESS.md` is split into a v2 and a v3 section.
+**GitHub:** `docs/BRANCHES.md` lists every branch and what it is for. 35 old working branches (`v2-fix-*`, `v2-wf-*`)
+are fully inside `v2-integration`; deleting them waits for the owner's yes (the permissions rule), with each tip
+recorded so any can be restored. The 9 branches with unmerged commits (`v2-lane-*`, `v2-wf-repeats`) stay until
+looked through. PR #2's title and text are brought up to date.
+### D-033 · B5 part 1: the open page gets the width; budgets are a ratchet (2026-11-13 ET, B5 declutter)
+- **Context.** The owner's clutter complaint; CRITIQUE U2 and U3 asked for 120 words and 12 controls on a phone, 250 and 25 on a
+  desktop, and for the open page to have 60% of a 1366 px screen (it had 36% after the 91 grid, 28% before).
+- **Decisions.**
+  1. **The story is a drawer at 1100 to 1599 px** (`src/ui/9992-story-drawer`): the grid is the rail (232 px) and the page
+     (about 81%); a Story button in the top bar opens the story over the page's right edge; the Life page carries the newest two
+     lines. At 1600 px and up the story is a column after the page (the page about half the window; before, the page was the
+     narrow third column, 24% at 1920). 761 to 1099 px keeps 91's strip over the story. The scene card docks over the page's
+     column from 1100 px.
+  2. **Budgets are held by a test, as a ratchet, not as the critique's targets.** The fixed bars, rail and tab bars alone are
+     about 13 controls on a phone and 27 on a desktop, so 12 and 25 for a whole screen cannot be met without removing
+     navigation. The test (`b5Budget`) holds the numbers reached: desktop 270 words and 50 controls in view (230 words and 40
+     controls in the page's own zone), phone 200 and 40 (150 and 30 in the page), no page over three screens. They may only
+     fall.
+  3. **One mechanism for "six and More".** 97's six suggested activities and "More activities" (first lives only) now serve every
+     life; no second mechanism was added.
+  4. **Tablet shell not done.** The 760 px phone shell is written into about 35 stylesheet blocks; moving it to coarse pointers
+     up to 1024 px is its own step. A tablet keeps the desktop layout with 44 px top-bar buttons.
+- **Conflicts with orders:** none. Descriptions still open on click only; no percentages; rendering stays pure.
+- **Undo:** delete `src/ui/9992-story-drawer` and the "B5 (U3)" block of `look.c-layout.core.js`, then `git revert` the folds.
+### D-036 · C8b: how the figure library lives in the game (2026-11-13 11:45 ET, the builder's calls where gate 2 left questions open)
+**Chosen:**
+1. **Place.** The gate 2 library is a v2 engine module, `src/ui/engine/figure/` (on the page as `A.V2.figure`), pure
+   functions from a look to one SVG; the game's side is the feature `src/ui/93-figures`. `PORTRAIT.svg` keeps its
+   name and its callers; the release source hands it over in place (D-028).
+2. **The face code does not grow; a second code is added.** `p.app.g` stays the game's 23-character code (39
+   features, `face.js`, D-024 "kept"). The eleven features the drawn head added and the seven measures of the build
+   go in a second code of 11 characters, `p.app.g2` (gate 2's question 6). Only a face made by hand stores `g2`;
+   everyone else's comes from their id, so the state grows by 23 characters a person and no more.
+3. **Faces are stored at birth, not derived at draw.** A child takes after its parents' codes, and parents leave the
+   state; a derived face would change the day they did. `A.genAppearance` asks `A.LOOKS.born`; older saves are filled
+   on load in birth order, leaning by the appearance fields they hold. No save version is bumped (a bump would drop a
+   loaded life's journal); a face has its own seeded stream, so the world's dice and every seed's world are unchanged.
+   This is the exception to "engine code uses only A.rand" that the plan foresaw (characters.md §4, §12).
+4. **The page holds a frame, not a figure.** Portraits are made off the press by a queue (compose, a canvas, one PNG
+   kept by look) and shown through a small frame with a stand-in until ready. Reason, measured: sixty inline figures
+   cost about a third of a second of the page's time at every redraw, a frame costs nothing. This is characters.md
+   §12's delivery ("one image, a queue, a stand-in"), with the SVG as the drawing step in place of a canvas display
+   list.
+5. **Sizes.** Under 120 px a square; from 120 px two by three, cut like a profile card (to the hands and the belt)
+   rather than the whole small figure, because the owner's praise was for the cards. The whole standing figure is
+   `opts.figure`, for the Profile tab (P). Light and depth passes on large pictures only (gate 2's question 10).
+6. **Gear by item.** One table row per item id (`GEAR_ART`): the drawn piece, its make and its rarity; an item that
+   carries its own measures is drawn with them; `registerGear` adds one (E2). D-032 items 6 to 8 stand.
+7. **Retired to `archive/`:** `93-anime-portraits` and `63-miniature-portraits` (D-015, D-020: "retire the two older
+   renderers: yes"), last built at `f574229`. The release's paper doll stays as what a build without the feature
+   draws. Gate 1's engine (`src/ui/engine/draw`, `assets/parts/`) and the 3D path (D-024) were never in the game and
+   are left for a clean-up of their own, since the demo build scripts still read them.
+**Refines:** D-025 (budgets: compose under 6 ms and paint within 16 ms hold for list portraits; a large portrait is
+measured, made once and kept).
+
 ### D-031 · A2 stage 1: one registry of posts; the Marshal's seat in peace (2026-11-13 ET, A2; carries out D-017)
 **Chosen:**
 1. **One registry, `A.S.posts`** (`src/nobility/999990-posts`): council seats, the polity's shire offices, army and

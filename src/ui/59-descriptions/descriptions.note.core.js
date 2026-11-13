@@ -235,6 +235,11 @@
   span.tt-i{display:inline-block;min-width:24px;height:20px;line-height:20px;text-align:center;font-size:16px;vertical-align:middle}
   .tt-i:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
   @media (pointer:coarse){:root button.tt-i{min-width:44px;min-height:44px;display:inline-flex}span.tt-i{min-width:44px;padding:12px 0;margin:-12px 0}}
+  /* B5 (H-014's open follow-up): an info button beside an action in a grid or a column of flex is out of the flow, at the
+     parent's foot, so it is never one more cell or row (a decision card, a phone table cell, the plan grid). The
+     test ttInfoNoCell holds every info button to this. */
+  .card.dec,.plan-grid,td.ph-act{position:relative}
+  :root :is(.card.dec,.plan-grid,td.ph-act) > button.tt-i{position:absolute;right:2px;bottom:2px;margin:0}
   `;
   const css = TT.css;
   TT.css = function () {

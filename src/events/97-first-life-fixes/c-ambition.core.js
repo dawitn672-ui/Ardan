@@ -8,7 +8,7 @@
 //   you first rule, a scene (lfx_amb_young, _mid, _reign: ambition.events.js) offers up to three ambitions that fit your life now,
 //   and "Take life as it comes". At 35 your old one is offered first: hold to it, change it, or let it go.
 // - The choice is kept as p.amb = { k, y } (the shape C.ambition reads), so the pa_* scenes come back to life.
-// - The Life tab shows it under What now (UI.whatNowCard): its name, the next step and how far along you are.
+// - The Life page shows it under What now (UI.whatNowCard): its name, the next step and how far along you are.
 // - Each month the engine checks whether it is done; if so it says so, writes a deed, and the ambition is marked
 //   done (p.amb.done = year) until the next time you are asked.
 (function () {
@@ -42,7 +42,7 @@
     trade: { name: 'Master your trade', t: 'Become a master of your trade',
       fit: p => (p.job && ['guild', 'common', 'sea', 'learning'].includes(path(p)) ? 5 : p.status === 'artisan' ? 4 : 0),
       done: p => { const J = job(p); return !!(J && p.job.r >= Math.min(3, J.ranks.length - 1)); },
-      step: p => { const J = job(p); return J ? `Rise in ${J.name.toLowerCase()}: rank ${p.job.r + 1} of ${Math.min(4, J.ranks.length)}. Good work, and the guild's eye.` : 'Take up a trade (Path tab).'; },
+      step: p => { const J = job(p); return J ? `Rise in ${J.name.toLowerCase()}: rank ${p.job.r + 1} of ${Math.min(4, J.ranks.length)}. Good work, and the guild's eye.` : 'Take up a trade (Path page).'; },
       prog: p => { const J = job(p); return J ? ratio(p.job.r, Math.min(3, J.ranks.length - 1)) : 0; } },
     family: { name: 'Raise a full house', t: 'A home, a spouse, and children at the table',
       fit: p => 3 + (C().married(p) ? 0 : 1), done: p => C().married(p) && kids(p) >= 3,
@@ -60,7 +60,7 @@
       step: p => `Learning ${Math.round(sk(p, 'learning'))} of 60: study, a teacher, the College.`, prog: p => ratio(sk(p, 'learning'), 60) },
     teacher: { name: 'Teach the young', t: 'Teach the young what you know',
       fit: p => (p.job && p.job.c === 'teacher' ? 5 : sk(p, 'learning') >= 25 ? 3 : 0), done: p => !!(p.job && p.job.c === 'teacher' && p.job.r >= 1),
-      step: p => (p.job && p.job.c === 'teacher' ? 'Prove yourself as a teacher: a pupil who goes far, a school that keeps you.' : 'Take a teaching post (Path tab): letters first, then a school.'),
+      step: p => (p.job && p.job.c === 'teacher' ? 'Prove yourself as a teacher: a pupil who goes far, a school that keeps you.' : 'Take a teaching post (Path page): letters first, then a school.'),
       prog: p => (p.job && p.job.c === 'teacher' ? 0.5 + 0.5 * ratio(p.job.r, 1) : ratio(sk(p, 'learning'), 40) * 0.5) },
     blade: { name: 'Master the sword', t: 'Become a sword nobody wants to face',
       fit: p => (sk(p, 'melee') >= 20 || p.mil ? 4 : 0) + (p.styles && Object.keys(p.styles).length ? 2 : 0),
@@ -108,12 +108,12 @@
     work: { name: 'Leave something that lasts', t: 'Build something that outlasts you',
       fit: p => ((p.coin || 0) >= 20000 && !(Array.isArray(p.lfWorks) && p.lfWorks.length) ? 6 : (p.coin || 0) >= 8000 ? 2 : 0),
       done: p => Array.isArray(p.lfWorks) && p.lfWorks.some(w => w && w.k !== 'ransom'),
-      step: p => `A great work (Decisions tab): a college, a ship, an almshouse, a patron's gift. You have ${coin(p.coin)}.`,
+      step: p => `A great work (Decisions page): a college, a ship, an almshouse, a patron's gift. You have ${coin(p.coin)}.`,
       prog: p => ratio(p.coin || 0, 30000) },
     house: { name: 'Found a house', t: 'Found a house your grandchildren will carry',
       fit: p => (p.ruler || (p.house && !(p.flags && p.flags.bastard)) ? 0 : (p.fame || 0) >= 20 && (p.coin || 0) >= 1000 ? 5 : 0),
       done: p => !!(p.house && A.S.houses && A.S.houses[p.house] && A.S.houses[p.house].founder === p.id),
-      step: () => 'Found a house of your own (Decisions tab): renown 25 and 1,500 suns for the heralds.',
+      step: () => 'Found a house of your own (Decisions page): renown 25 and 1,500 suns for the heralds.',
       prog: p => (ratio(p.fame || 0, 25) + ratio(p.coin || 0, 1500)) / 2 },
   };
   LF.ambOf = p => (p && p.amb && typeof p.amb === 'object' && LF.AMB[p.amb.k] ? p.amb : null);
@@ -175,7 +175,7 @@
   };
   A.onMonth.push(pc => { try { LF.ambMonth(pc); LF.ambCheck(pc); } catch (e) { console.error('ambition', e); } });
 
-  // ---- the Life tab: the ambition under What now (pure: reads the person, draws nothing) -------------------------
+  // ---- the Life page: the ambition under What now (pure: reads the person, draws nothing) -------------------------
   UI.lfAmbCard = function (pc) {
     if (LF.OFF || !pc || !pc.alive || !A.isAdult(pc)) return '';
     const a = LF.ambOf(pc);
@@ -190,7 +190,7 @@
       `<div class="lf-amb-bar" role="progressbar" aria-label="How far along" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></section>`;
   };
   // ---- What now points at the second half of a life (pure: reads the person, draws nothing) ------------------------
-  // The release's list ended at "Look for love" and "Let time run": nothing pointed at the Decisions tab, the orders, a
+  // The release's list ended at "Look for love" and "Let time run": nothing pointed at the Decisions page, the orders, a
   // scheme or a house, so a man with 254,000 suns never saw them (cycle 1, lives I5).
   LF.whatMore = function (pc) {
     const out = [], add = (score, t, why, go, act) => out.push({ score, t, why, go, act, cls: '' });
@@ -207,7 +207,7 @@
         if (d.k === 'found_house') break;
       }
       if (best) add(best.d.k === 'found_house' ? 52 : 46, best.d.k === 'found_house' ? 'Found your house' : `You can afford it: ${best.d.name.toLowerCase()}`,
-        best.d.k === 'found_house' ? 'You have the renown and the silver. Your children would be born into a house of your making.' : `${coin(pc.coin)} in hand. The Decisions tab has what a fortune is for.`, 'goals', ['tab', 'goals']);
+        best.d.k === 'found_house' ? 'You have the renown and the silver. Your children would be born into a house of your making.' : `${coin(pc.coin)} in hand. The Decisions page has what a fortune is for.`, 'goals', ['tab', 'goals']);
     }
     // an order that would have you, or would if you were knighted
     if (pc.mil && !pc.mil.merc && !pc.order && GD.ORDERS && A.orderReqs) {
@@ -224,7 +224,7 @@
       for (const id in pc.rel) {
         const r = pc.rel[id], o = A.P(id);
         if (!r || !o || !o.alive || !['enemy', 'rival'].includes(r.type) || o.realm !== pc.realm || !(r.op <= -50)) continue;
-        add(40, `${o.given} is within reach`, 'An enemy close at hand: a scheme can ruin them (their card on the People tab).', 'people', ['tab', 'people']);
+        add(40, `${o.given} is within reach`, 'An enemy close at hand: a scheme can ruin them (their card on the People page).', 'people', ['tab', 'people']);
         break;
       }
     }
@@ -278,7 +278,7 @@
     const r = pc && pc.ruler && A.realm(pc.ruler);
     if (!r || LF.OFF) return out;
     const inc = Math.max(1, r.income || 0), debt = r.debt || 0;
-    if (debt > 0 && (debt > inc / 2 || debt > (r.treasury || 0))) add(89, `The crown owes ${coin(debt)}`, `${Math.round(10 * debt / inc) / 10} years of the realm's income. The Realm tab has the ledger and the council's remedies.`, 'realm', ['tab', 'realm'], 'bad');
+    if (debt > 0 && (debt > inc / 2 || debt > (r.treasury || 0))) add(89, `The crown owes ${coin(debt)}`, `${Math.round(10 * debt / inc) / 10} years of the realm's income. The Realm page has the ledger and the council's remedies.`, 'realm', ['tab', 'realm'], 'bad');
     try {
       const POL = A.POL, pol = r.pol;
       if (POL && pol && POL.canPropose && POL.canPropose(pc, r)) {

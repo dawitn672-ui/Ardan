@@ -264,7 +264,9 @@ export default {
       const r = await p.evaluate(() => {
         const VM = A.V2MAP, res = { seeds: 0, under: 0, underHidden: 0, rose: 0, pure: true };
         const inside = (l, b) => l.x < b[0] + b[2] && l.x + l.w > b[0] && l.y < b[1] + b[3] && l.y + l.h > b[1];
-        for (const seed of [11, 12, 13, 14, 15, 16]) {
+        // seed 17: since the B5 and C8b round, 11-16 no longer place a name where the rose stands
+        // even with the rose hidden, so the control (underHidden > 0) needs a world that does (17 at 420 px)
+        for (const seed of [11, 12, 13, 14, 15, 16, 17]) {
           A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 20 });
           UI.screen = 'game'; UI.set.hints = false; UI.tab = 'world'; UI.worldView = 'map'; UI.set.atlasFog = false; UI.render();
           const wm = document.querySelector('#worldmap'), rose = wm && wm.parentElement.querySelector(':scope > .il-compass');

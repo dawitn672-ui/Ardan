@@ -953,6 +953,9 @@ UI.crStepBody = function () {
     R2 = GD.RACES[c.race];
   let h = `<div class="field"><label>Sex</label><div class="row"><button class="${c.sex === "M" ? "primary" : ""}" data-a="crSet" data-v="sex:M">Male</button><button class="${c.sex === "F" ? "primary" : ""}" data-a="crSet" data-v="sex:F">Female</button></div></div>`;
   h += `<div class="field"><label>Given name</label><div class="row"><input data-c="crName" value="${UI.esc(c.given)}" placeholder="Type a name, or pick one" maxlength="24" style="flex:1" aria-label="Given name"><select data-c="crNamePick" aria-label="Pick a name"><option value="">Names of the ${UI.esc(cult.name)}…</option>${names.map(n => `<option>${UI.esc(n)}</option>`).join("")}</select><button data-a="crRandName">Random</button></div><div class="small muted" style="margin-top:4px">Your family name is not yours to choose. ${UI.esc((GD.NAMING[UI.crCult()] || {}).note || "")}</div></div>`;
+  // [C8b] The face and build maker (src/ui/93-figures: every feature set by hand, the face code, hair as drawn, the
+  // build by eye) takes the rest of this step when it is built. The rows below are what a build without it shows.
+  if (UI.FIG && UI.FIG.maker) return h + UI.FIG.maker(c);
   // [X1 baked patch ui/93-anime-portraits AP-SKINS] Character creation offers only the skin tones the chosen people
   // are drawn in (cycle 1 visual B4). A far people's portraits press the stored tone into their land's range, so a
   // pale swatch picked for a lake-folk woman was drawn dark in the game while the preview showed her pale.
@@ -1289,7 +1292,9 @@ UI.renderProfile = function () {
   s +=
     '<div class="tiny muted" style="margin:2px 0 6px">Tick = potential. Willpower rises through adversity and lets you adapt mid-fight to stronger foes.</div>';
   s += `<div class="group-h">Best proficiencies</div>${UI.topProfs(pc, 5)}`;
-  s += `<div class="row"><button class="small grow" data-a="ov" data-v="profile">Full profile</button><button class="small grow" data-a="ov" data-v="tree">Family</button></div><div class="row" style="margin-top:4px"><button class="small grow" data-a="ov" data-v="profs">Proficiencies</button>${h ? `<button class="small grow" data-a="ov" data-v="house:${h.id}">${UI.esc(h.name.length > 18 ? "Your house" : h.name)}</button>` : ""}</div>`;
+  s += `<div class="row"><button class="small grow" data-a="ov" data-v="profile">Full profile</button><button class="small grow" data-a="ov" data-v="tree">Family</button></div>`;
+  // B5: the rail's second row of buttons (Proficiencies, your house) repeated the Full profile (which holds the proficiencies) and the
+  // house chip beside the name; it is gone, and nothing is lost.
   return s;
 };
 
@@ -1387,7 +1392,7 @@ UI.renderGroupBar = function (bottom) {
       badge = UI.subsOf(g)
         .map(s => UI.tabBadge(s[0], pc))
         .filter(Boolean)[0];
-    return `<button role="tab" id="tab-${g.k}" class="${on ? "on" : ""}" data-a="group" data-v="${g.k}" aria-selected="${on}" aria-controls="tabbody" tabindex="${on ? 0 : -1}"${badge ? ` aria-description="${badge}"` : ""}>${UI.icon(g.icon, "s")}<span class="tl">${bottom && g.short ? g.short : g.name}</span>${badge ? '<span class="badge" aria-hidden="true">!</span>' : ""}</button>`;
+    return `<button role="tab" id="tab-${g.k}" class="${on ? "on" : ""}" data-a="group" data-v="${g.k}" aria-selected="${on}" aria-controls="tabbody" tabindex="${on ? 0 : -1}"${badge ? ` aria-description="${badge}"` : ""}>${UI.icon(g.icon, "s")}<span class="tl">${bottom && g.short ? g.short : g.name}</span>${badge ? `<span class="badge${badge === "at war" ? "" : " badge-new"}" aria-hidden="true">${badge === "at war" ? "!" : ""}</span>` : ""}</button>`;
   }).join("")}</div>`;
 };
 
@@ -1401,7 +1406,7 @@ UI.renderSubBar = function () {
         .map(([k, n]) => {
           const on = k === UI.tab,
             badge = UI.tabBadge(k, pc);
-          return `<button role="tab" id="sub-${k}" class="${on ? "on" : ""}" data-a="tab" data-v="${k}" aria-selected="${on}" aria-controls="tabbody" tabindex="${on ? 0 : -1}">${UI.esc(UI.subName(k, n))}${badge ? '<span class="badge" aria-hidden="true">!</span>' : ""}</button>`;
+          return `<button role="tab" id="sub-${k}" class="${on ? "on" : ""}" data-a="tab" data-v="${k}" aria-selected="${on}" aria-controls="tabbody" tabindex="${on ? 0 : -1}">${UI.esc(UI.subName(k, n))}${badge ? `<span class="badge${badge === "at war" ? "" : " badge-new"}" aria-hidden="true">${badge === "at war" ? "!" : ""}</span>` : ""}</button>`;
         })
         .join("")}</div>`;
 };

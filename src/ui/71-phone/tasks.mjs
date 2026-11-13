@@ -30,7 +30,7 @@ export const TASKS = [
     done: `true` },
   { name: 'save', setup: ON('life'), steps: [{ tap: '[data-a=save]' }], done: `true` },
   { name: 'check the market', setup: ON('life'),
-    steps: [{ tap: '[data-a=group][data-v=you]' }, { tap: '#sub-holdings' }, { tap: '.ph-jump [data-a=phJump]', text: 'Market', only: 'phone', optional: true }, { see: '#tabbody .mkt-t' }],
+    steps: [{ tap: '[data-a=group][data-v=you]' }, { tap: '#sub-holdings' }, { tap: '.ph-jump [data-a=phJump]', text: 'Market', only: 'phone', optional: true }, { tap: '#tabbody .fold[data-fk^="the market of"] > .fold-head > .fold-h', optional: true }, { see: '#tabbody .mkt-t' }],
     done: `!!document.querySelector('.mkt-t')` },
   { name: 'find your realm\'s ruler', setup: ON('life'),
     steps: [{ tap: '[data-a=group][data-v=world]' }, { see: '#tabbody .card.person' }],

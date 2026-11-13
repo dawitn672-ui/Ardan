@@ -12,6 +12,8 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [HISTORY.md](HISTORY.md) | What was done, step by step, and how to undo each step (append only) |
 | [DECISIONS.md](DECISIONS.md) | Every decision with what was chosen, what was considered and why (do not undo one without a new record) |
 | [V2_SPEC.md](V2_SPEC.md) | The owner's v2 design rules: each complaint and its fix |
+| [V3_SPEC.md](V3_SPEC.md) | The owner's v3 design: the living world (economy, armoury, growth in depth) |
+| [BRANCHES.md](BRANCHES.md) | Every branch on GitHub and what it is for |
 | [CRITIQUE.md](CRITIQUE.md) | The round 2 critique of v2.0.0-beta.1 and the order of work that follows from it |
 | [VERSIONS.md](VERSIONS.md) | Every version of the game, its commit, and how to play any of them |
 | [NAMES.md](NAMES.md) | Old names and new names from the naming pass, so old notes can be followed |
@@ -37,6 +39,9 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [design/brief.md](design/brief.md) | The design system brief, "Woodblock & Light" |
 | [design/brief-audit.md](design/brief-audit.md) | The brief checked against the built game |
 | [design/characters.md](design/characters.md) | Character design: faces, bodies and dress (C8a) |
+| [design/growth.md](design/growth.md) | G design: 17 stats, thousands of skills, hundreds of fighting styles, legendary arts |
+| [design/economy-and-items.md](design/economy-and-items.md) | E1 and E2 design: markets that run themselves, hundreds of weapons, unique items |
+| [design/reference/](design/reference/README.md) | The owner's reference pictures for character art (D-029) |
 | [design/critique.md](design/critique.md) | Design critique of the game screen (Oct 26) |
 | [design/pacing.md](design/pacing.md) | Pacing: a life lived a week or a month at a time |
 | [design/research.md](design/research.md) | Design research behind the redesign |

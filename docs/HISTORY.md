@@ -330,3 +330,102 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Tests:** `check.mjs --skip-tests --skip-balance` passes; boot, savesStillLoad, renderRng, journalReplay, scaleSites,
   aiPersonalityWhy, startsDeterministic, iconsWired, nyStripSkipsScripts pass after the merge. This push runs the full CI.
 - **Undo:** `git revert -m 1 5056e98`, rebuild (the patch files come back from the archive).
+
+### H-017 · 2026-11-13 02:45 ET · E1/E2 design written (owner orders 28, 29)
+- **Commit:** `39e3164` (by a Fable 5.2 agent), cherry-picked from its worktree.
+- **What:** `docs/design/economy-and-items.md`. E1: one market model in place of today's three layers; a market in each
+  of 281 settled provinces, 28 goods, prices as readings of how full a store is (every price has a nameable cause);
+  weather, seasons, war, raids, plague and guilds move them; nameless carters spread prices, about 100 named trading
+  houses run about 240 caravans on one route graph (trade with, ride with, guard, rob or toll them); loans with pledges,
+  crowns that borrow and default, coin that can be thinned; per-rank money in words, at most three money decisions a
+  year; budget 6 ms a month (today 11). E2: 845 item kinds from 110 drawn forms (132 swords) in five grades with makers,
+  wear and repair; about 100 unique named pieces, never copied; lords' armouries arm their levies (D11). Eight stages:
+  E1a, E1b, E2a, E1c, E2b, E1d, E2c, E2d. Two trial scripts in `docs/design/trials/` back its measured claims.
+- **To record when approved:** the economy and items get their own seeded streams (a DECISIONS exception to "only
+  A.rand"); retiring the release's market noise changes every seed's world once.
+- **Owner decisions pending:** markets, goods, merchants, income, money depth, grades, armour on the figure, named things.
+- **Undo:** `git revert 39e3164`.
+
+### H-018 · 2026-11-13 06:49 ET · C8 2D gate 2 built (tone-led, after the owner's two references)
+- **Commits:** `1a8df5f`…`56d92aa` (by a Fable 5.2 agent), merged as `9d68308`. Demo only: `src/` and `tests/` untouched.
+- **What:** `docs/design/demo-2d/gate2.html` (offline, 347 KB) with source in `demo-2d/gate2/` (~2,100 lines): fifteen
+  full figures to one scale (all eight estates, ages 8-68, ten skin tones, nine stances, builds from a stooped serf to a
+  198 cm housecarl, six scars, five in harness); profile cards with words, no percentages; a maker with 38 face sliders,
+  49 named variants, 29 hair styles, 11 beards, 10 builds plus 7 build sliders, 10 stances, 18 outfits; four ages;
+  armour as 42 separate pieces; one sword in all 16 pairings of make and rarity. A 23-character face code.
+- **Timings:** compose 3-6 ms; paint about 55 ms a card, 150 ms a large portrait (over D-025's 16 ms; the light and
+  depth passes are about three quarters of it and can be switched off).
+- **Honest standing:** past gate 1 and reads as one hand, but clean vector art (closest to a visual-novel sprite set):
+  even lines, few folds, one gradient a form, plain faces at full size, mitten hands, front view only. Not yet the
+  painted richness of the owner's second reference. **Owner verdict pending**, with ten questions in `gate2.md`.
+- **Undo:** `git revert -m 1 9d68308`.
+
+### H-019 · 2026-11-13 11:56 ET · G design written (owner order 32); Fable's weekly limit reached
+- **Commit:** `f1a556d` (by a Fable 5.2 agent), cherry-picked from its worktree.
+- **What:** `docs/design/growth.md` (7,235 words). Stats: 17 in four groups (body, mind, spirit, standing), each with
+  what it does, how it rises and falls, and seven limits (birth ceiling, people's limit, age, the month's load, use,
+  wounds and gear, skills). Skills: one system with proficiencies merged in, 4,599 skills (1,698 passive, 2,901
+  active: 1,553 re-housed, 784 by rule, 541 by template, 1,721 written whole), levels, evolutions and merges, a tree
+  for every route; limits by talent, time, age and rust. Styles: about 550 (225 realm standards by regiment with their
+  tactics, 180 house and family styles, 8 order styles, 80 company and folk ways, 61 masters' lineages) with about
+  2,300 arts, graded weaker → beyond compare against the realm's standard; skill outweighs style. Legendary arms with
+  signature arts and hand-designed drawings. Six stages G1-G6 (G6 inside E2). **8 owner decisions pending.**
+- **Fable 5.2's weekly limit** was reached at 11:40 ET (resets 2026-11-18 01:00 ET). Work that D-009 gives Fable runs
+  on Opus 5.5 until then (D-010: model at the session's discretion); C8b is finished by an Opus 5.5 agent in the same
+  worktree.
+- **Undo:** `git revert f1a556d`.
+
+### H-020 · 2026-11-13 12:13 ET · B5 declutter, part 1 (the shell)
+- **Commits:** `d8c1ad9`…`2101e45` (8, by a Sonnet 5.5 agent), merged as `66291b1` (DECISIONS: both sides kept). D-033.
+- **What:** at 1100-1599 px the story is a drawer behind a top-bar Story button (new `src/ui/9992-story-drawer`), the
+  Life page shows its newest two lines, and the open page gets 81% of a 1366 screen (was 36%); from 1600 px the story
+  is a column after the page. Every life starts with six suggested activities and "More activities". Decisions shows what
+  can be done now ("Not yet possible" folded). Folded: the market, the second People list, a ruler's roster, the elite
+  orders, Laws; the rail's duplicate buttons are gone. The scene card docks over the page from 1100 px. Help names the
+  places from `UI.GROUPS`. Info buttons in grid or column-flex parents are out of the flow (H-014's follow-up). Unread
+  story dots are neutral. Tablet top-bar buttons are 44 px.
+- **Numbers** (1366×768 / 420×900, medians over a peasant, a noble, a ruler): desktop first view 479 → 171 words, 49 → 40
+  controls, 2.02 → 1.0 screens; phone 119 → 108 words, 2.21 → 1.36 screens; worst page 4.7 → 2.3 (desktop), 6.1 → 2.7
+  (phone). The critique's 120/12 and 250/25 are out of reach without removing navigation; `b5Budget` holds the reached
+  numbers as a ratchet (D-033).
+- **Tests:** 10 new (ttInfoNoCell, sdPageWidth, sdWidths, b5Budget, b5NoSideways, b5NoHoverOnly, b5HelpNames, b5CardFits,
+  b5Activities, b5Decisions); about 55 UI tests pass; 7 adjusted to the new layout (phoneTargets, phoneDesktopSame,
+  tbActsSix, scEvery, phoneLife, lookTiles, phoneTasks, foldToggles). The full suite runs in CI with A2.
+- **Open (part 2 and after):** UI.scope, the six-life draw test, one goal stack; the tablet phone shell; 200% text; U10,
+  U12, U17, U21; lazy closed folds. **Found while merging (for X3):** "initiative" still shows after B6 removed the pool:
+  the Activities line ("60.0 initiative"), What now's "Train in an extra session" / "Spend your initiative"
+  (15-specialisms), the plan's session button title (23-ui-e), market trips (66-markets, 18-event-view-b), "Not enough
+  initiative" in 56-court and 9996 f-fief, the step summary (84-top-bar), the clock's glossary and aria (59-descriptions).
+- **Undo:** `git revert -m 1 66291b1`.
+
+### H-021 · 2026-11-13 13:02 ET · C8b: the gate 2 figure library draws every portrait (owner order 33, D-035, D-036)
+- **Commits:** `56e2307`, `2f24e3f` (Fable 5.2), `6bd6d37`, `7f6a04e`, `89d03d1` (Opus 5.5, after Fable's weekly limit),
+  branch `c8b-figures`, merged as `9a2cbeb` (DECISIONS both sides kept; index.html rebuilt).
+- **What:** every portrait is drawn by the figure library (`src/ui/engine/figure`, `A.V2.figure`; game side
+  `src/ui/93-figures`): a square under 120 px, a 2:3 card crop from 120 px, the whole figure on request; pictures are
+  baked off the press (one PNG per look, up to 600 kept) with a flat stand-in until ready. Everyone gets a 23-character
+  face code at birth from their parents' (old saves get theirs on load, deterministically). The face and build maker is
+  on the creation screen (52 sliders in words, 49 shapes, 29 hair styles, 11 beards, ten frames, the face code). Gear is
+  drawn by item with make and rarity (`GEAR_ART`, `registerGear` for E2). Large faces gained eye, brow, nose and lip
+  detail and a mood; hair sits under headwear; the dead are drawn grey with eyes shut. `93-anime-portraits` and
+  `63-miniature-portraits` retired to `archive/` (last built `f574229`).
+- **Timings:** compose 2.7-3.7 ms; paint 4.9 ms (46 px), 7.4 ms (88 px); a 176 px picture about 41 ms once, off the press.
+- **Tests:** 10 `fg*`, 41 portrait-related, core suites 9/9, `tests/v2` 71/71; identity probe: same dice, journal and
+  events (state differs only by the face codes). After the merge `fgAxe` failed once under load (a modal's text read
+  mid fade-in): it now waits for animations to finish. This push runs the full CI on B5 and C8b.
+- **Open:** a duel guard pose; pre-baking the player's large picture (half a second of stand-in on first open); a
+  tighter 2:3 crop; fur and arms still crude; war paint, jewellery, bows, mounts, infants; gate 1's engine to archive.
+- **Undo:** `git revert -m 1 9a2cbeb` (the archive notes say how to restore the old renderers).
+
+### H-022 · 2026-11-13 14:18 ET · CI 103's four failures fixed (all tests that followed the old layout)
+- **Commits:** `0d7cf45`, `5ec399c`, `049e533` on v2-integration.
+- **ttCoverage:** B5 folds the profile's best proficiencies by default, so the test saw 4 numbers (needs 8) and counted a
+  closed fold's aria-hidden one-line preview. It now counts with every fold open and skips aria-hidden previews: 13 of
+  13 numbers carry a description.
+- **v2mapRoseClear:** its control (a world that would place a name where the rose stands, with the rose hidden) found
+  none in seeds 11-16 after the layout change; seed 17 restores it. No name sits under the rose.
+- **v2sNumbers:** the season's training line lives in the story drawer from 1100 px; the test reads the drawer's lines.
+- **phoneDesktopSame:** a portrait is a stand-in until its picture is baked off the press; both sides wait for the
+  figure queue to be idle.
+- **Tests:** the four pass locally; this push runs the full CI on B5, C8b and these fixes.
+- **Undo:** `git revert 049e533 5ec399c 0d7cf45`.

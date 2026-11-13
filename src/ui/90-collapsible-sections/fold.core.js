@@ -17,17 +17,19 @@ const slug = t => String(t || '').toLowerCase().replace(/\(\d+\)|\d+/g, '').repl
 // default open or closed for a section, before the player chooses: sections the player needs every visit stay open
 FOLD.DEFAULT_CLOSED = {
   // Your days folds to its own summary line ("Push for advancement · training is fair") except on a tall screen
-  life: ['how you are', 'your days'],
+  life: ['how you are', 'your days', 'not yet possible'],
   // v2 (99993-v2-stats): the body and mind in real units and words are 13 rows, 730 px of a 700 px rail at 1366 x 768.
   // On the desktop rail they fold under one header, "Body and mind", to a line of their own words ("175 cm, 73 kg;
   // lifts 111 kg; a man-at-arms. Quick, retentive, ..."), which FOLD.SUMMARY writes whole, never cut ('body' covers
   // it). On a phone the profile is its own page and stays open. The Full profile shows every row.
-  profile: ['body'],
-  holdings: ['the armorer', 'property', 'the trade roads'],
+  profile: ['body', 'best proficiencies'],
+  // B5: the market (385 elements, 960 px) waits behind its header and its summary; so does the second list of people on the
+  // People page (the same people as Kin of note, with a mood and a want each) and the elite orders of Arms
+  holdings: ['the armorer', 'property', 'the trade roads', 'the market of'],
   // v2 (99995-v2-nobility): the great lords' list is 650 px; it folds to its count ("852 nobles hold land ...")
-  realm: ['the great lords', 'the council', 'the ladder', 'the ways of', 'how the', 'why wars begin', 'factions of'],
-  path: ['how you live', 'schools & academies'],
-  people: [],
+  realm: ['the great lords', 'the council', 'the ladder', 'the ways of', 'how the', 'why wars begin', 'factions of', 'laws'],
+  path: ['how you live', 'schools & academies', 'the elite'],   // (the Arms page of a life at peace is folded under "path")
+  people: ['family', 'around you'],
   // cycle 2 (visual F4, design B8): the long reference sections of the Chronicle start folded to their summaries
   legacy: ['endings found', 'achievements'],
   // the road (9990-journeys): every capital of the continent waits behind its header
@@ -148,6 +150,23 @@ FOLD.mergeActs = function (tb) {
     }
     h.remove(); a.remove();
   }
+};
+// B5 (U26): Decisions shows what can be decided now; what cannot (a requirement unmet) waits under "Not yet possible", closed,
+// each card keeping its own requirement chips. The paragraph that explained the interface goes.
+FOLD.later = function (tb) {
+  if (!tb || tb.querySelector(':scope > .fd-later')) return;
+  const grid = tb.querySelector(':scope > .gridcards');
+  if (!grid || !grid.querySelector('.card.dec')) return;
+  const cards = [...grid.querySelectorAll(':scope > .card.dec')];
+  const no = cards.filter(c => { const b = c.querySelector('button[data-a="decide"]'); return b && b.disabled; });
+  const intro = tb.querySelector(':scope > p.small.muted');
+  if (intro && /^There are no quest lists/.test(intro.textContent.trim())) intro.remove();
+  if (!no.length) return;
+  const h = document.createElement('div'); h.className = 'group-h fd-later'; h.textContent = 'Not yet possible';
+  const g = document.createElement('div'); g.className = 'gridcards';
+  for (const c of no) g.appendChild(c);
+  grid.after(h); h.after(g);
+  if (no.length === cards.length) { const p = document.createElement('p'); p.className = 'small muted'; p.textContent = 'Nothing can be decided yet.'; grid.replaceWith(p); }
 };
 const isActs = el => el && el.classList && (el.classList.contains('acts'));
 
@@ -272,6 +291,7 @@ FOLD.apply = function () {
     // while a step runs the page behind a card is not redrawn (999999-one-redraw): only the card's own road is new
     if (UI.REDRAW && UI.REDRAW.frozen()) { const road = document.querySelector('#modal .mbox.jr-road'); if (road) FOLD.sections(road, 'road'); return; }
     if (tb && t === 'life' && tab === 'life') FOLD.mergeActs(tb);
+    if (tb && tab === 'goals') FOLD.later(tb);
     if (tb) { tb.dataset.ftab = t; FOLD.sections(tb, t); FOLD.cards(tb, t); FOLD.tools(tb); FOLD.find(tb, t); }
     if (pr) { FOLD.profile(pr); FOLD.v2Head(pr); FOLD.sections(pr, 'profile'); }
     const road = document.querySelector('#modal .mbox.jr-road'); if (road) FOLD.sections(road, 'road');
@@ -349,6 +369,7 @@ FOLD.reveal = function (el) {
   for (let s = el.closest('.fold'); s; s = s.parentElement && s.parentElement.closest('.fold')) {
     const h = s.querySelector(':scope > .fold-head > .fold-h'); if (h && h.getAttribute('aria-expanded') !== 'true') h.click();
   }
+  { const hid = el.closest('.act-more[hidden]'); if (hid) { const mb = document.querySelector('#tabbody [data-a="actsMore"]'); if (mb) mb.click(); } }   // a hidden tile asked for: show the rest (97's "More activities")
   const card = el.closest('.fold-card.folded'); if (card) { const x = card.querySelector(':scope > .fold-x'); if (x) x.click(); }
   try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { el.scrollIntoView(); }
   const f = el.matches('button,select,input,a,[tabindex]') ? el : el.querySelector('button:not([disabled]),select,input,[tabindex]');

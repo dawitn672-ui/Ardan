@@ -263,7 +263,8 @@ export default {
       UI.ov = null; UI.tab = 'life'; UI.render(); await tick();
       // the training pickers and the season's log
       check('training picker', [...document.querySelectorAll('select[data-c="planTrain"] option')].map(o => o.textContent).join('\n'));
-      const log = document.getElementById('app').innerText.split('\n').filter(l => /got better at/.test(l));
+      // (B5: from 1100 px the story is a drawer, so read its lines as well as the page's)
+      const log = [...document.getElementById('app').innerText.split('\n'), ...[...document.querySelectorAll('#logwrap .ll, #log .ll')].map(e => e.textContent)].filter(l => /got better at/.test(l));
       check('training log', log.join('\n'));
       UI.tab = 'goals'; UI.render(); await tick();
       check('mentor picker', [...document.querySelectorAll('select[data-c="decArg"] option')].map(o => o.textContent).join('\n'));

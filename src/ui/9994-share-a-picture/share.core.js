@@ -49,7 +49,8 @@
     return `Ardan · seed ${S && S.seed != null ? S.seed : '?'}${where ? ' · ' + where : ''} · ${S ? S.year : ''} AR`;
   };
   SH.bust = function (p) {
-    try { if (UI.ANIME && UI.ANIME.svg && UI.set.anime !== false) return UI.ANIME.svg(p, 200, { bust: true }); } catch (e) {}
+    // the whole drawing as one SVG: the card is painted on a canvas, which cannot follow the page's picture frames (93-figures)
+    try { if (UI.FIG && UI.FIG.inline) return UI.FIG.inline(p, 200, { bust: true }); } catch (e) {}
     try { return PORTRAIT.svg(p, 200, { bust: true }); } catch (e) { return ''; }
   };
   SH.arms = function (p) {

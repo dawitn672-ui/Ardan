@@ -44,6 +44,8 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.0.0-beta.1 | 2026-11-06 | `86d8cc2` | Playtest 2 and CI round 2 fixed: 21 groups (cards tell the stakes, war by rank, kingdom names, bodies by age, family and clans, numbers in words, map, layout, war pace) |
 | v2.1.0-alpha.1 | 2026-11-12 | `af27000` | Round 2 begins: repo by system with a memory, the critique and work order, A0 (the lag's main cause and the two-lords crash fixed), name and military prep |
 | v2.1.0-alpha.2 | 2026-11-13 | `f37c62f` | Foundations: X6 naming pass, A3a coherency net, B4 click-to-open, A1 one redraw a press, B6 Next month or Next year, CI fixes |
+| v2.1.0-alpha.3 | 2026-11-13 | `2f9a031` | X1: the release is readable source; all 203 patches baked in; proven the same program |
+| v2.1.0-alpha.4 | 2026-11-13 | `f9c349f` | C8b: the approved character art in the game, face and build maker; B5 part 1: a calmer screen |
 <!-- versions:end -->
 
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's

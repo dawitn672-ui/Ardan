@@ -16,6 +16,19 @@ What changed for the player, in plain words, one section per version (newest fir
   "once Chancellor", not a second Chancellor; dead lords no longer hold offices for months; new realms get a council.
 - Older saves are set straight when they load, with a line for each thing fixed.
 
+## v2.1.0-alpha.4 (2026-11-13 15:01 ET) · New faces and a calmer screen
+
+- **New character art everywhere.** Every person in the world is drawn in the new illustrated style, from the
+  bondman to the king, with a face of their own that children inherit from their parents. A face and body maker at the
+  start of a life: shape every feature, pick hair, beard and build, or let it surprise you.
+- **A calmer screen.** The page you are on gets most of the width; the story waits behind a Story button; six
+  activities to start with and the rest one click away; the market, laws and rosters fold until you open them.
+
+## v2.1.0-alpha.3 (2026-11-13 02:40 ET) · The game's own code made readable
+
+- Nothing changes in play: the game is now built from readable source instead of the packed release file, proven to
+  run exactly the same. Every later fix and feature is easier and safer because of it.
+
 ## v2.1.0-alpha.2 (2026-11-13 01:35 ET) · Foundations: lighter steps, click-to-open, Next month or Next year
 
 - Descriptions open when you click or tap, never on hover; long explanations sit behind a small ⓘ. An activity
