@@ -291,3 +291,15 @@ while an initiative readout is drawn.
 and reviewable. X5 (stop committing `index.html`) can follow.
 **Not done here (later, small):** the page's `<style>` is still one minified line; event functions in `content/` stay
 minified one-liners; names inside functions stay the release's short ones.
+
+### D-029 · Character art: tone-led, after the look of Pick Me Up's profile cards (2026-11-13 02:00 ET, the owner's verdict on 2D gate 1)
+**Owner:** "Tone led. A perfect example of how I want this to look is the character profile cards from the manhwa Pick
+Me Up." And on an outside image AI for reference sheets: "yes you can if you think it's necessary."
+**Chosen:** gate 1's tone-led finish (form by soft painted shading and light, lines quiet), aimed at a semi-realistic
+Korean-webtoon portrait as on that series' character profile cards: a half-body portrait with clean, confident
+rendering, rim light and a card that carries the name, rank and words about the person.
+**Limits:** the look only. No character, image, logo or card layout of that series is copied or traced; Ardan's people,
+cards and frames are its own. Realism rules stay (D-015, D-020): full face customisation first, ageing, scars, clothing.
+**Image AI:** used only for reference sheets that the layered parts are then drawn from; its outputs go into the repo
+under `docs/design/` with the prompt and the service named. The key comes only through the secure form.
+**Refines:** D-024 (2D illustrated) and D-025 (the 2D plan): gate 2 is a tone-led demo in this direction.
