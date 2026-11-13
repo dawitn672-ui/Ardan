@@ -19,7 +19,9 @@
   SC.place = function () {
     const m = doc && doc.getElementById('modal');
     if (!m || !m.classList.contains('sc-dock')) return;
-    const lw = doc.getElementById('logwrap'), r = lw && lw.getBoundingClientRect();
+    // B5: from 1100 px the open page is the wide column (the story a drawer or a column beside it): the card owns the page's column
+    const drawer = !!(typeof window !== 'undefined' && window.innerWidth >= 1100);
+    const lw = doc.getElementById(drawer ? 'side' : 'logwrap'), r = lw && lw.getBoundingClientRect();
     if (!r || r.width < 240 || r.height < 240) { m.classList.add('sc-free'); return; }
     m.classList.remove('sc-free');
     const W = Math.min(720, Math.round(r.width - 16)), x = Math.round(r.left + (r.width - W) / 2);
@@ -74,7 +76,7 @@
     if (typeof ResizeObserver === 'function') {
       const ro = new ResizeObserver(again);
       let watched = null;
-      const watch = () => { const lw = doc.getElementById('logwrap'); if (lw && lw !== watched) { if (watched) ro.unobserve(watched); ro.observe(lw); watched = lw; } };
+      const watch = () => { const lw = doc.getElementById(window.innerWidth >= 1100 ? 'side' : 'logwrap'); if (lw && lw !== watched) { if (watched) ro.unobserve(watched); ro.observe(lw); watched = lw; } };
       const render = UI.render;
       if (typeof render === 'function') UI.render = function () { const r = render.apply(this, arguments); try { watch(); } catch (e) {} return r; };
     }

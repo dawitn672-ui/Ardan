@@ -51,8 +51,11 @@
 .lk-railbtn{display:none}
 /* >= 1600: roomy */
 @media (min-width:1600px){
-  ${D}{grid-template-columns:280px minmax(560px,1fr) 460px;grid-template-rows:52px minmax(0,1fr);gap:12px;padding:16px;max-width:1760px;margin:0 auto}
-  ${D} #topbar{height:52px;min-height:52px}
+  ${D}{grid-template-columns:280px minmax(560px,1fr) 420px;grid-template-rows:52px minmax(0,1fr);gap:12px;padding:16px;max-width:1760px;margin:0 auto}
+  ${D} #topbar{height:52px;min-height:52px;grid-column:1 / -1}
+  ${D} #profile{grid-column:1;grid-row:2}
+  ${D} #side{grid-column:2;grid-row:2}
+  ${D} #logwrap{grid-column:3;grid-row:2}   /* B5: the page is the wide column, the story the one after it */
   ${D} #profile{padding:16px}
   ${D} #side > #tabbody{padding:12px 16px}
   ${D} #log{padding:20px 24px 16px}

@@ -150,25 +150,7 @@ FOLD.mergeActs = function (tb) {
     }
     h.remove(); a.remove();
   }
-  // B5 (U2, U13 of the UX critic): six suggested tiles, the rest behind "More activities". The suggestions are the stage's
-  // own gold-edged tiles first, then the groups' order. The count in the header still counts them all; a closed tile is
-  // `hidden`, so it is out of the page and the tab order, and FOLD.reveal opens the rest for a tile that is asked for.
-  const tiles = [...grid.children];
-  if (tiles.length > FOLD.ACTS_SHOWN + 2) {
-    const open = FOLD.isOpen('life', 'more-acts', false);
-    const order = tiles.filter(t => t.classList.contains('lk-now')).concat(tiles.filter(t => !t.classList.contains('lk-now')));
-    const keep = new Set(order.slice(0, FOLD.ACTS_SHOWN));
-    for (const t of tiles) if (!keep.has(t)) { t.classList.add('lk-more'); if (!open) t.hidden = true; }
-    for (const t of order.slice(0, FOLD.ACTS_SHOWN)) grid.appendChild(t);   // the suggestions lead, in the order they were found
-    for (const t of tiles.filter(t => !keep.has(t))) grid.appendChild(t);
-    const more = document.createElement('button');
-    more.type = 'button'; more.className = 'lk-morebtn small ghost'; more.dataset.a = 'actsMore'; more.dataset.n = String(tiles.length - FOLD.ACTS_SHOWN);
-    more.setAttribute('aria-expanded', String(open));
-    more.textContent = open ? 'Fewer activities' : `More activities (${tiles.length - FOLD.ACTS_SHOWN})`;
-    grid.after(more);
-  }
 };
-FOLD.ACTS_SHOWN = 6;
 // B5 (U26): Decisions shows what can be decided now; what cannot (a requirement unmet) waits under "Not yet possible", closed,
 // each card keeping its own requirement chips. The paragraph that explained the interface goes.
 FOLD.later = function (tb) {
@@ -380,15 +362,6 @@ Object.assign(UI.A, {
     FOLD.save();
   },
   foldAll(v) { FOLD.allOpen = v === 'open'; if (UI.refreshTab) UI.refreshTab(); else UI.render(); },
-  // B5: "More activities" shows or hides the tiles past the six suggested; the choice is remembered like a fold
-  actsMore(v, el) {
-    const b = el || document.querySelector('#tabbody .lk-morebtn'); if (!b) return;
-    const open = b.getAttribute('aria-expanded') !== 'true';
-    for (const t of document.querySelectorAll('#tabbody .lk-acts > .lk-more')) t.hidden = !open;
-    b.setAttribute('aria-expanded', String(open));
-    b.textContent = open ? 'Fewer activities' : `More activities (${b.dataset.n})`;
-    FOLD.state['life|more-acts'] = open; FOLD.save();
-  },
 });
 // Reveal: open the folds around an element, bring it to the middle of its panel, focus it and flash it
 FOLD.reveal = function (el) {
@@ -396,7 +369,7 @@ FOLD.reveal = function (el) {
   for (let s = el.closest('.fold'); s; s = s.parentElement && s.parentElement.closest('.fold')) {
     const h = s.querySelector(':scope > .fold-head > .fold-h'); if (h && h.getAttribute('aria-expanded') !== 'true') h.click();
   }
-  { const hid = el.closest('.lk-acts > .lk-more[hidden]'); if (hid) { const mb = document.querySelector('#tabbody .lk-morebtn'); if (mb) mb.click(); } }
+  { const hid = el.closest('.act-more[hidden]'); if (hid) { const mb = document.querySelector('#tabbody [data-a="actsMore"]'); if (mb) mb.click(); } }   // a hidden tile asked for: show the rest (97's "More activities")
   const card = el.closest('.fold-card.folded'); if (card) { const x = card.querySelector(':scope > .fold-x'); if (x) x.click(); }
   try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { el.scrollIntoView(); }
   const f = el.matches('button,select,input,a,[tabindex]') ? el : el.querySelector('button:not([disabled]),select,input,[tabindex]');

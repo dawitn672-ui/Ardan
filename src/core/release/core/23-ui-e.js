@@ -656,6 +656,20 @@ UI.TAB.world = function (pc) {
   return h;
 };
 
+// B5 (U6): the help names the places that exist, written from UI.GROUPS (the help said "Six tabs. Life... People. Path & War"
+// long after the game had five places). A place with no blurb here is described by its pages' names.
+UI.helpPlaces = function () {
+  const BLURB = {
+      life: "what to do now, your decisions, and (on a phone) your story",
+      you: "yourself, your path, your holdings and, in peace, your arms",
+      family: "the people around you, and your dynasty",
+      world: "your realm or its court, the world map, the Book of your life and the Codex",
+      war: "your army and the War Room, while your realm is at war",
+    },
+    gs = UI.GROUPS.map(g => `<i>${UI.esc(g.name)}</i>: ${BLURB[g.k] || UI.subsOf(g).map(s => UI.esc(s[1])).join(", ")}`);
+  return `<b>${["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven"][gs.length] || gs.length} places.</b> ${gs.join(". ")}. On a phone they sit at the bottom of the screen; with a keyboard, the arrow keys move along them.`;
+};
+
 UI.helpModalBasic = function () {
   const close = `<button class="ghost closex" data-a="closeOv" aria-label="Close">${UI.icon("x", "m")}</button>`,
     P = t => `<p>${t}</p>`;
@@ -663,15 +677,15 @@ UI.helpModalBasic = function () {
   // (the map caption, the "Underlined words" hint, the help page). Nothing opens on hover any more, so they say
   // press.
   return `<div class="panel mbox wide">${close}<h2>How to play ARDAN</h2><div class="lore-text" style="font-size:calc(16px * var(--tx, 1))">
-    ${P("<b>Six tabs.</b> <i>Life</i>: what to do now, your plan, what you can do, and your Decisions (on a phone, also your story and yourself). <i>People</i>. <i>Path &amp; War</i>: your career and your realm's wars. <i>Holdings</i>: coin, gear, land, markets. <i>Realm</i>: the court, or the realm you rule. <i>Chronicle</i>: your dynasty, the world map and the Codex. On a phone the six tabs sit at the bottom of the screen; with a keyboard, the arrow keys move along them.")}
+    ${P(UI.helpPlaces())}
     ${P("<b>What now.</b> The top of Life lists the three things most worth doing, one click each. <b>Underlined words</b> explain themselves: tap, click or press Enter on them (your fighting worth opens into body, skill and gear). The Menu has text size, map colors for color-blind players, hints for new players, Export, and Report a problem.")}
-    ${P("<b>Time runs.</b> Press <i>Play</i> (or Space) and the days pass; speeds 1–5 (keys 1–5). Anything that needs you — an event, a battle, a letter, a gathering — stops the clock. <i>Next</i> runs until something needs you. <i>Quiet</i> settles ordinary events with the safest choice.")}
-    ${P("<b>Your days.</b> On the Life tab, set a <i>training</i> focus, how <i>hard</i> you train, and what your <i>free hours</i> go to (advancement, a patron, coin, renown, faith, love, study, scheming, freedom…). Every day moves them. When a pursuit has built up, something opens — what depends on who you are. <i>Initiative</i> (⧗) refills over time and pays for actions.")}
+    ${P("<b>Time runs.</b> Press <i>Next month</i> or <i>Next year</i>. Anything that needs you — an event, a battle, a letter, a gathering — stops a year early.")}
+    ${P("<b>Your days.</b> On the Life page, set a <i>training</i> focus, how <i>hard</i> you train, and what your <i>free hours</i> go to (advancement, a patron, coin, renown, faith, love, study, scheming, freedom…). Every day moves them. When a pursuit has built up, something opens — what depends on who you are. <i>Initiative</i> (⧗) refills over time and pays for actions.")}
     ${P("<b>Your path.</b> Every post is a ladder with plain requirements: merit earned month by month, skill, reputation, time — sometimes letters, birth or a patron. Duties throw up problems and chances. Ladders connect through <i>doors</i>: the clerk can become an envoy, the envoy a chancellor; a sergeant can become a thief-taker. The top of the government ladders is a seat on the council, and the council steers the realm.")}
     ${P("<b>Who you are decides what happens.</b> A king is not mugged in a tavern; a peasant is not asked favors by dukes until something puts them in a great one's sight. Your position also decides what you may do: a ruler does not enlist, a marshal does not dig ditches.")}
-    ${P("<b>War.</b> Divisions march across the map day by day. Each day of a battle, each commander picks a tactic — charge, flank, feign a retreat, ambush, dig in, hold a reserve — and some beat others. Scouts, ground, walls, supply, experience and the general matter as much as numbers: a smaller army on good ground with the right tactic can break a bigger one. Supply flows along roads from your capital and depots; enemy armies choke it and raiders cut it. Open the War Room from the War tab.")}
+    ${P("<b>War.</b> Divisions march across the map day by day. Each day of a battle, each commander picks a tactic — charge, flank, feign a retreat, ambush, dig in, hold a reserve — and some beat others. Scouts, ground, walls, supply, experience and the general matter as much as numbers: a smaller army on good ground with the right tactic can break a bigger one. Supply flows along roads from your capital and depots; enemy armies choke it and raiders cut it. Open the War Room from the War page (Arms, in peace).")}
     ${P("<b>Crowns remember.</b> Opinions between realms are built from memories — gifts, insults, broken pacts, shared battles, stolen land — and each crown weighs alliances by its interests. Treaties: alliance, defensive pact, guarantee, military access, non-aggression, trade, subsidy, embargo, royal marriage, tribute, rivalry. Incidents at the border give reasons for war; a war without a reason costs dearly. Crowns meet at summits, weddings, coronations, congresses and tournaments — and if you are there, you live it.")}
-    ${P("<b>Rule.</b> Inherit a crown, marry into one, seize one, or found one. The Realm tab holds the state, the chancery, the court and building. When you die, go on as your heir — if they can hold the throne.")}
+    ${P("<b>Rule.</b> Inherit a crown, marry into one, seize one, or found one. The Realm page (under World) holds the state, the chancery, the court and building. When you die, go on as your heir — if they can hold the throne.")}
   </div></div>`;
 };
 

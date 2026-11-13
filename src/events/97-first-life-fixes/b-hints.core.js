@@ -27,7 +27,7 @@
 // activities, not thirty-one, and an activity answers where it was pressed.
 //
 // What the review saw: the hint "What now lists the three things..." was drawn over the What now list (91-visual-style floats
-// it at the top of the Life tab), hid its first two items, and stayed eleven months because only Skip dismissed it.
+// it at the top of the Life page), hid its first two items, and stayed eleven months because only Skip dismissed it.
 // The next one taught "Press Play (or Space)... Next jumps ahead", the clock the step rhythm demoted, and it caught
 // the clicks meant for the activity under it. How to play ran to 998 words and never named Week or Month.
 //
@@ -64,7 +64,7 @@
   const clockDue = () => !!clk && UI.hintsOn() && !UI.hintSeen('clock') && !UI.hintUsed.clock;
   const hintFor = UI.hintFor;
   // on a phone the clock is a dock at the foot of the screen, and a box floating over the page there would sit over
-  // whatever the page scrolls under it: the clock's hint leads the Life tab instead, in the flow of the page
+  // whatever the page scrolls under it: the clock's hint leads the Life page instead, in the flow of the page
   const phone = () => !!(UI.isPhone && UI.isPhone());
   UI.hintFor = function (where, pc) {
     if (where === 'clock' && phone()) return null;
@@ -92,7 +92,7 @@
     return stepStart.apply(this, arguments);
   };
 
-  // where each hint of the Life tab goes: just after the thing it explains (or before it, for the activities), in the
+  // where each hint of the Life page goes: just after the thing it explains (or before it, for the activities), in the
   // flow of the page, so it pushes the page down instead of lying over it
   const ANCHOR = { whatnow: ['.whatnow', 'after'], plan: ['.plan-card', 'after'], initiative: ['.fold-acts, .group-h, .acts', 'before'], tips: ['.lk-ini, .moods', 'after'] };
   const box = (Hh, cls) => {
@@ -191,7 +191,7 @@
         `<li>Press <b>Month</b>${key('M')} to live the next month, or <b>Week</b>${key('W')} for seven days.</li>` +
         '<li>When something happens, read it and pick a choice. Each one shows its odds.</li>' +
         '<li>Press <b>Continue</b>, then step on.</li>' +
-        '<li>Try an activity on the Life tab: make a friend, train, look for love. Do too much too fast and you tire.</li>' +
+        '<li>Try an activity on the Life page: make a friend, train, look for love. Do too much too fast and you tire.</li>' +
         '<li>Not sure? <b>What now</b>, at the top of Life, lists the three things most worth doing.</li>' +
         '<li>When you die, you go on as your heir.</li></ol></section>';
       body.innerHTML = first + '<h3 class="help-more-h">More, by subject</h3>' + fold;
@@ -237,7 +237,9 @@
       // a first life: the creation screen counts lives begun in this browser (UI.set.lfLives, 97's f-shield)
       const firstLife = UI.set && +UI.set.lfLives <= 1;
       const tiles = grids.flatMap(g => [...g.querySelectorAll(':scope > [data-a="act"]')]);
-      if (!firstLife || UI.actsAll || tiles.length <= UI.ACT_SHOW + 2) return t.innerHTML;
+      // B5 (U2): every life, not only the first, starts with six suggested tiles and "More activities" (the header's count still counts all)
+      void firstLife;
+      if (UI.actsAll || tiles.length <= UI.ACT_SHOW + 2) return t.innerHTML;
       const six = new Set(pickSix(pc, tiles));
       for (const b of tiles) if (!six.has(b)) { b.hidden = true; b.classList.add('act-more'); }
       // a group with nothing left to show loses its heading too (91-visual-style gathers the groups into one grid)
