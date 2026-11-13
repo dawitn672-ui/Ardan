@@ -161,11 +161,11 @@ const set = (o, ...ids) => ids.map(id => ({ id, ...o }));
 const STAGES = [
   ['Arming clothes', 'hose, shoes, a padded coat', [{ id: 'hose', dye: 'charcoal' }, { id: 'shoes', kind: 'turn', leather: 'dark' }, { id: 'padding', dye: 'cream' }]],
   ['Mail', 'a mail shirt, a mail collar', [{ id: 'mail' }, { id: 'mailcollar' }]],
-  ['Legs', 'cuisses, greaves, poleyns, sabatons', set({ q: 3 }, 'cuisses', 'greaves', 'poleyns', 'sabatons')],
+  ['Legs', 'cuisses, greaves, poleyns, sabatons, spurs', set({ q: 3 }, 'cuisses', 'greaves', 'poleyns', 'sabatons', 'spurs')],
   ['Body', 'breastplate, fauld, tassets', set({ q: 3 }, 'breastplate', 'fauld', 'tassets')],
   ['Arms', 'rerebraces, vambraces, couters, gauntlets', set({ q: 3 }, 'rerebraces', 'vambraces', 'couters', 'gauntlets')],
-  ['Shoulders, throat', 'pauldrons, gorget', set({ q: 3 }, 'pauldrons', 'gorget')],
-  ['Belt, sword, shield', 'a plaqued belt, a sword, a heater shield', [{ id: 'belt', leather: 'brown', w: 34, metal: 'gold', plaques: 1 }, { id: 'sword', q: 3 }, { id: 'shield', q: 3, field: 'white', pale: 'blue', device: 'sun' }]],
+  ['Shoulders, throat', 'besagews, pauldrons, gorget', set({ q: 3 }, 'besagews', 'pauldrons', 'gorget')],
+  ['Belt and arms', 'a plaqued belt, sword, dagger, heater shield', [{ id: 'belt', leather: 'brown', w: 34, metal: 'gold', plaques: 1 }, { id: 'sword', q: 3 }, { id: 'dagger', q: 3 }, { id: 'shield', q: 3, field: 'white', pale: 'blue', device: 'sun' }]],
   ['Over all', 'tabard, cloak, fur collar, bascinet', [{ id: 'cloak', dye: 'blue', lining: 'navy', trim: 'gold', len: .86, q: 3, mantle: false }, { id: 'tabard', field: 'white', pale: 'blue', trim: 'gold', len: .62, device: 'sun' }, { id: 'furcollar', fur: 'ermine', z: .18 }]],
 ];
 function gearSheet() {
