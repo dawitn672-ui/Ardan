@@ -541,7 +541,7 @@ A.genAppearance = function (p, parents) {
     if (p.quirks.includes("lithe")) build = 1;
     else build = A.ri(0, 4);
   }
-  return {
+  const app = {
     skin,
     hair,
     eye,
@@ -580,7 +580,16 @@ A.genAppearance = function (p, parents) {
           : "none",
     jewel: A.chance(0.12) ? A.pick(["earring", "nosering", "torc"]) : "none",
   };
+  // [C8b] Everyone is born with a face: the 23-character code of src/people/engine/face.js, taken after the parents'
+  // codes or made round the people's mean, from a stream seeded by the person's id (never the world's dice, so the
+  // random stream is the release's). src/ui/93-figures draws it; a build without that feature stores none.
+  if (A.LOOKS && A.LOOKS.born) {
+    const g = A.LOOKS.born(p, parents, app);
+    if (g) app.g = g;
+  }
+  return app;
 };
+
 
 A.bloodInherit = function (bid, father, mother, sex) {
   const B = GD.BLOOD[bid];
