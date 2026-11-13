@@ -39,6 +39,8 @@ export default {
       const wants = {}, fears = {}, headIds = new Set(Object.values(A.S.houses).map(h => h.headPid).filter(Boolean));
       const RX = { chancellor: /chancellor|envoy|speaker|vizier|herald|seneschal/i, marshal: /marshal|general|warlord|constable|commander/i, treasurer: /treasurer|steward|banker|reeve|factor/i, spymaster: /spy|whisper/i, chaplain: /chaplain|bishop|abbot|priest|prior/i };
       for (const x of L) for (const seat of Object.keys(A.COUNCIL)) {
+        // the Marshal's seat stands empty unless a war needs one (D-017, A2's 999990-posts)
+        if (seat === 'marshal' && A.POSTS && !(x.council || {}).marshal) continue;
         seats++;
         const p = A.P((x.council || {})[seat]); if (!p || !p.alive) continue;
         filled++; if (p.castId) cast++; if (headIds.has(p.id)) heads++;
@@ -48,7 +50,7 @@ export default {
       const ald = A.realm('POL-01'), m = A.P(ald.council.marshal);
       return { realms: L.length, seats, filled, cast, heads, titled, aims, wants, fears, aldMarshal: m ? A.fullName(m, false) + ' (' + (m.title || '') + ')' : null };
     });
-    const ok = r.filled === r.seats && r.aims === r.filled && Object.keys(r.wants).length >= 6 && Object.keys(r.fears).length >= 5 && r.cast >= r.seats * .3 && r.titled >= 15;
+    const ok = r.filled === r.seats && r.aims === r.filled && Object.keys(r.wants).length >= 6 && Object.keys(r.fears).length >= 5 && r.cast >= r.seats * .3 && r.titled >= 6;   // 15 before D-031: most cast titles that fit a seat were the generals' (the Marshal's seat is empty in peace)
     return { ok, detail: `${r.realms} realms: ${r.filled}/${r.seats} seats held by named people (${r.cast} from the cast, ${r.heads} heads of houses, ${r.titled} whose own title is the seat's); every one has a want and a fear: wants ${JSON.stringify(r.wants)}, fears ${JSON.stringify(r.fears)}; Aldmark's Marshal: ${r.aldMarshal}` };
   },
 
@@ -59,6 +61,9 @@ export default {
       RIT.life(5602);
       const RI = A.RI, x = A.realm('POL-03'), ru = A.P(x.ruler);
       x.laws.tax = 1; x.debt = 0;
+      // the test is about taxes following need: the crown's power is held at its top, so a council of order-minded men
+      // (the world without a peacetime Marshal, D-031) does not make "more power for the crown" the loudest push
+      x.laws.authority = 3;
       const top = () => { const a = RI.agendaOf(RI.tally(x), true, x); return a ? a.k : null; };
       const pOf = k => Math.round(100 * RI.odds(x, RI.tally(x)[k]).p);
       // the treasurer wants a strong crown

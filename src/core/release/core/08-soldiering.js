@@ -100,6 +100,19 @@ A.comradeDies = function (pc, c, how) {
   return line;
 };
 
+// [A2 posts] what resigning a commission costs: every field post and the Marshal's seat are left; at war, someone who
+// held a command (a division or more, or the seat) loses fame and the crown's goodwill
+const resignPosts = function (pc) {
+  const left = A.POSTS.leaveAll(pc.id, "resigned", { cls: ["FIELD"], marshal: true });
+  if (left.length && A.atWar(pc.mil.realm).length) {
+    A.fame(pc, -2);
+    const ru = A.P((A.realm(pc.mil.realm) || {}).ruler);
+    if (ru && ru.id !== pc.id) A.addOp(pc, ru, -10);
+    A.log("Leaving a command in wartime is not forgotten at court.", "warn");
+  }
+  return left;
+};
+
 A.resign = function () {
   const pc = A.pc();
   return pc.mil
@@ -109,6 +122,9 @@ A.resign = function () {
           msg: 'In wartime, leaving is desertion. (Use "Desert" if you mean it.)',
         }
       : (A.log(`You leave ${pc.mil.unit} after ${pc.mil.years} years as ${A.milTitle(pc)}.`),
+        // [A2 posts] leaving the army leaves every field post and the Marshal's seat (which needs the commission);
+        // at war a commander who walks away costs fame and the crown's goodwill
+        A.POSTS && resignPosts(pc),
         (pc.mil.retired = true),
         (pc.veteran = {
           rank: pc.mil.rank,
@@ -128,6 +144,9 @@ A.desert = function () {
   const pc = A.pc();
   return pc.mil
     ? (A.log(`You slip away from ${pc.mil.unit} in the night. You are a deserter now.`, "bad"),
+      // [A2 posts] a deserter loses every post of the realm (seats and offices too), and the man above him does not
+      // forgive it
+      A.POSTS && (A.POSTS.leaveAll(pc.id, "deserted"), A.superior(pc) && A.addOp(pc, A.superior(pc), -40)),
       (pc.mil = null),
       (pc.flags.deserter = true),
       (pc.honor = A.clamp(pc.honor - 20, 0, 100)),

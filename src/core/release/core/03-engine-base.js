@@ -1823,6 +1823,8 @@ A.makeRuler = function (p, rid, silent) {
   if (!r || !p) return;
   const old = A.P(r.ruler);
   if (old && old.ruler === rid) old.ruler = null;
+  // [A2 posts] a crowned head leaves his seats, offices and divisions (he may still lead an army in person)
+  if (A.POSTS && A.S.posts) A.POSTS.leaveAll(p.id, "crowned", { keepArmy: true });
   r.ruler = p.id;
   p.ruler = rid;
   p.realm = rid;

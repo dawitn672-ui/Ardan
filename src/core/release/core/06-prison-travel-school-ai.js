@@ -17,6 +17,8 @@ A.imprison = function (pc, years, why) {
     why,
     since: A.S.year,
   };
+  // [A2 posts] a prisoner holds no post: seats, offices and commands are left
+  if (A.POSTS) A.POSTS.leaveAll(pc.id, "imprisoned");
   if (pc.mil) {
     A.log("Your company strikes your name from the rolls.", "bad");
     pc.mil = null;

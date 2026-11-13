@@ -42,8 +42,8 @@
 
   // offices an uncle or aunt may hold, by the family's estate
   F.OFFICES = {
-    royal: ['Marshal of the host', 'Steward of the royal demesne', 'Castellan of the river fort', 'Master of the horse', 'Admiral of the coast fleet', 'Envoy to the courts abroad'],
-    noble: ['Castellan of the river fort', 'Captain of the city watch', 'Marshal of the levies', 'Royal huntsman', 'Steward of the demesne', 'Warden of the north road'],
+    royal: ['Captain of the royal host', 'Steward of the royal demesne', 'Castellan of the river fort', 'Master of the horse', 'Admiral of the coast fleet', 'Envoy to the courts abroad'],
+    noble: ['Castellan of the river fort', 'Captain of the city watch', 'Captain of the levies', 'Royal huntsman', 'Steward of the demesne', 'Warden of the north road'],
     gentry: ['Captain of the town watch', 'Alderman of the town', 'Collector of the bridge toll', 'Keeper of the castle stores'],
     merchant: ['Master of the merchant guild', 'Alderman of the town', 'Collector of the harbour dues', 'Warden of the market'],
     artisan: ['Master of the guild', 'Warden of the market', 'Keeper of the town gate'],
@@ -118,8 +118,10 @@
     if (!gm) { gm = mk('F', Math.max(gf.born - 6, par.born - r.int(f0, Math.min(f1, f0 + 10)))); const fn = famName(gm, 'F'); gm.sur = fn.sur; gm.surMode = fn.mode; }
     // a clan reckoned through the mother (playtest 2, new #9): the parent's clan is the grandmother's, and the
     // grandfather is of the clan she married into (the same names, swapped: no draw is added)
-    if (newGf && newGm && par.surMode === 'deed' && gm.surMode === 'deed' && F.clanThroughMother({ realm: par.realm, house: par.house })) {
-      const other = gm.sur; gm.sur = par.sur; gf.sur = other;
+    // (A2 run, seeds 4243/4250/4255/4258: the swap also holds when only the grandmother is new; the grandfather the
+    // release made keeps his own clan)
+    if (newGm && par.surMode === 'deed' && gm.surMode === 'deed' && F.clanThroughMother({ realm: par.realm, house: par.house })) {
+      const other = gm.sur; gm.sur = par.sur; if (newGf) gf.sur = other;
     }
     if (!gf.spouse && !gm.spouse) marry(gf, gm);
     par.parents = [gf.id, gm.id];

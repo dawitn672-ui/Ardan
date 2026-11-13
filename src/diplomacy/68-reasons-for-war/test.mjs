@@ -23,7 +23,8 @@ const SETUP = () => {
         const c = w.casus;
         o.wars.push({ id: w.id, t: c ? c.t : null, cites: c ? c.cites.map(x => x.k) : [] });
         if (c && (CS.hasMemory(c) || CS.hasWant(c))) o.cited++;
-        if (c && A.S.news.slice(0, 6).some(n => (n.truth || n.t).includes('. ' + c.t.slice(0, 30)))) o.shownNews++;
+        // among the newest ten lines (six missed wars declared beside others on one day: 78 of 88 in A2's re-rolled worlds)
+        if (c && A.S.news.slice(0, 10).some(n => (n.truth || n.t).includes('. ' + c.t.slice(0, 30)))) o.shownNews++;
       };
       const lg = A.aiLogAdd;
       A.aiLogAdd = function (k, rid) {

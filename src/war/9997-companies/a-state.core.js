@@ -678,6 +678,7 @@
     if (rec && rec.p) { for (const s in rec.p) if (rec.p[s] === pc.id) delete rec.p[s]; if (!Object.keys(rec.p).length) delete rec.p; }
     if (pc.mil) delete pc.mil.co;
   }
+  CO.clearMe = clearMe;   // A2: the post registry (999990-posts) clears the player's slot when he leaves the army
   // how the player's company stands (pure): fit, wounded, dead, deserted since he joined
   CO.myCompany = function (pc) {
     const M = CO.mine(pc);

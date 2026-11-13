@@ -644,6 +644,9 @@ export default {
     await pg.evaluate(KIT2);
     const found = [], opened = [], evOne = [];
     const run = async (label) => {
+      // a line still fading in (61's .il-new, .9 s) reads as low contrast half way: finish the page's animations first
+      // (A2 run: a "bad" line of the last step's log was caught mid-fade in light Holdings)
+      await pg.evaluate(() => { for (const a of document.getAnimations()) { try { a.finish(); } catch (e) { /* an endless one */ } } });
       const v = await pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })).violations.map(v => `${v.id}(${v.nodes.length}: ${v.nodes.slice(0, 2).map(n => n.target.join(' ')).join(', ')})`));
       found.push(...v.map(x => label + ':' + x)); opened.push(label + ' ' + (await pg.evaluate(() => UI.TT.depth())));
     };

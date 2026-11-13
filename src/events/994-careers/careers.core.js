@@ -34,6 +34,7 @@
     const lost = [];
     if (pc.mil && !pc.mil.merc) { lost.push(GD.MIL[pc.mil.rank] ? GD.MIL[pc.mil.rank].title.toLowerCase() + "'s commission" : 'commission'); A.leaveRolesFor ? A.leaveRolesFor(pc, 'claimant', true) : null; pc.mil = null; }
     if (pc.office) {
+      if (A.POSTS) A.POSTS.leaveAll(pc.id, 'dismissed', { cls: ['SEAT'] });
       for (const r of Object.values(A.S.realms || {})) if (r && r.council) for (const k in r.council) if (r.council[k] === pc.id) delete r.council[k];
       lost.push('seat on the council'); pc.office = null;
     }

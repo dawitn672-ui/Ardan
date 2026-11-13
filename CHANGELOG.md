@@ -5,6 +5,16 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **One holder per post.** Every council seat, shire office and army or division command has exactly one holder. A
+  promotion hands over a real command: a new General takes an army (its old general moves to the division you left),
+  and nobody keeps two seats. Death, prison, deserting or resigning leave every post at once; walking away from a
+  command in wartime costs you at court.
+- **The Marshal.** In peace the Marshal's seat stands empty and a General leads. When a war needs one (two armies in
+  the field, or two enemies at once) the crown names its best General, who takes the main host; at peace he stands
+  down. You can be named Marshal only as a General, and then you command every army.
+- No more made-up Marshals: above a General stands the real Marshal or the crown. A councillor who loses his seat is
+  "once Chancellor", not a second Chancellor; dead lords no longer hold offices for months; new realms get a council.
+- Older saves are set straight when they load, with a line for each thing fixed.
 - **A Profile page for your character.** The first page of You: your whole standing figure, a card with your name, estate
   and rank, a line about you, and what you are worth in words (body, purse, name, honour); your strength, speed and mind on
   a scale of seven words; and folded sections for your titles, posts and offices (and the ones you have left), your skills

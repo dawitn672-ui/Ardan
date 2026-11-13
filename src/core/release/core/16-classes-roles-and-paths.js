@@ -211,8 +211,17 @@ A.leaveRolesFor = function (pc, newRole, quiet) {
   const say = (t, c) => {
     if (!quiet && pc.id === A.S.pc) A.log(t, c || "warn");
   };
-  if (newRole !== "army" && pc.mil && !pc.mil.merc) {
+  // [A2 posts] "army-marshal" (the Marshal's seat, taken by the council's offer) keeps the commission: the seat needs
+  // a General's (D-017). Before, accepting the seat resigned the commission and left the Marshal with no command.
+  if (newRole !== "army" && newRole !== "army-marshal" && pc.mil && !pc.mil.merc) {
     const t = GD.MIL[pc.mil.rank].title;
+    // [A2 posts] every field post goes with the commission, and the Marshal's seat with it (it needs one)
+    if (A.POSTS)
+      A.POSTS.leaveAll(pc.id, newRole === "ruler" ? "crowned" : "resigned", {
+        cls: ["FIELD"],
+        marshal: true,
+        keepArmy: newRole === "ruler",
+      });
     if (
       ((pc.veteran = {
         rank: pc.mil.rank,
@@ -251,7 +260,9 @@ A.leaveRolesFor = function (pc, newRole, quiet) {
   }
   if (pc.office && newRole !== "council" && newRole !== "army-marshal") {
     const r = A.realm(pc.realm);
-    if (r && r.council && r.council[pc.office] === pc.id) delete r.council[pc.office];
+    // [A2 posts] the seat is left through the registry
+    if (A.POSTS && r) A.POSTS.vacate(A.POSTS.seatKey(r.id, pc.office), newRole === "ruler" ? "crowned" : "resigned");
+    else if (r && r.council && r.council[pc.office] === pc.id) delete r.council[pc.office];
     if (newRole !== "ruler") say(`You give up your seat as ${(A.COUNCIL[pc.office] || {}).name || "councillor"}.`);
     pc.office = null;
   }

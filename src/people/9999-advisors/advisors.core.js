@@ -732,7 +732,7 @@
           bump(who, pc, -8);
           // a ruler sends a councillor from the council itself; 56 fills the seat at the next court
           const rr = pc.ruler && A.realm(pc.ruler);
-          if (a.unseat && rr && rr.council) for (const k in rr.council) if (rr.council[k] === who.id) { delete rr.council[k]; A.log(`${A.fullName(who, false)} gives up the seat of ${A.COUNCIL[k] ? A.COUNCIL[k].name : k}.`, 'warn'); }
+          if (a.unseat && rr && rr.council) for (const k in rr.council) if (rr.council[k] === who.id) { if (A.POSTS) A.POSTS.vacate(A.POSTS.seatKey(rr.id, k), 'dismissed'); else delete rr.council[k]; A.log(`${A.fullName(who, false)} gives up the seat of ${A.COUNCIL[k] ? A.COUNCIL[k].name : k}.`, 'warn'); }
           ADV.refresh(pc, true);
         }
       }

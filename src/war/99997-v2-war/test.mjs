@@ -488,7 +488,8 @@ export default {
     const r = await pg.evaluate(() => {
       const drain = () => { let h, n = 0; while ((h = A.S.queue[0]) && n++ < 200) { if (h.type === 'event') { try { A.eventAuto(); } catch (e) { A.S.queue.shift(); } } else A.S.queue.shift(); } };
       const out = { asked: 0, live: 0, played: 0, held: 0, twice: 0, ranks: {} };
-      for (let seed = 1; seed <= 9; seed++) {
+      // 12 lives (9 gave 8 to 11 asks by the world's draw, against a bar of 10; most wars here end in 3 to 7 months)
+      for (let seed = 1; seed <= 12; seed++) {
         A.newGame({ seed: 7300 + seed, race: 'human', realm: ['POL-01', 'POL-02', 'POL-03'][seed % 3], status: 'peasant', sex: 'M', startAge: 22 });
         const pc = A.pc(), me = pc.realm, en = A.neighbors(me)[seed % 2];
         if (!en) continue;

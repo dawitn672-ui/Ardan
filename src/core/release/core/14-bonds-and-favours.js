@@ -322,6 +322,18 @@ A.superiorTitle = function (pc) {
 };
 
 A.makeSuperior = function (pc) {
+  // [A2 posts] above a General stands a real person: the Marshal while the seat is held, else the crown. Before, a
+  // "Marshal of <realm>" was made up for every High General, a second Marshal beside the seated one.
+  if (A.POSTS && pc.mil && !pc.mil.merc && pc.mil.rank >= 7) {
+    const r = A.realm(pc.mil.realm),
+      m = r && A.P(A.POSTS.holder(A.POSTS.seatKey(r.id, "marshal"))),
+      b = m && m.alive && m.id !== pc.id ? m : r && A.P(r.ruler);
+    if (b && b.alive && b.id !== pc.id) {
+      pc.mil.cmdr = b.id;
+      if (!pc.rel[b.id]) A.link(pc, b, "superior", 10, "subordinate");
+      return b;
+    }
+  }
   const was = A.superior(pc),
     old = A.P((pc.mil && pc.mil.cmdr) || (pc.job && pc.job.boss)),
     b = A.makeAcquaintance(pc, "acquaint"),
@@ -369,6 +381,12 @@ A.makeSuperior = function (pc) {
 A.needsNewSuperior = function (pc) {
   if (pc.mil) {
     const b = A.P(pc.mil.cmdr);
+    // [A2 posts] a General's superior is whoever holds the Marshal's seat now, else the crown
+    if (A.POSTS && !pc.mil.merc && pc.mil.rank >= 7 && pc.mil.rank < 9) {
+      const r = A.realm(pc.mil.realm),
+        m = r && A.POSTS.holder(A.POSTS.seatKey(r.id, "marshal"));
+      return !b || !b.alive || b.id !== (m && m !== pc.id ? m : r && r.ruler);
+    }
     return pc.mil.rank >= 9 || (pc.mil.merc && pc.mil.rank >= 7)
       ? false
       : !b || !b.alive || (b.milRank != null && b.milRank <= pc.mil.rank);
@@ -565,7 +583,8 @@ A.obligationsYear = function (pc) {
   if (A.needsNewSuperior(pc)) {
     const had = !!A.P((pc.mil && pc.mil.cmdr) || (pc.job && pc.job.boss)),
       b2 = A.makeSuperior(pc);
-    if (had || A.isAdult(pc)) A.log(`You now answer to ${A.fullName(b2)}, ${b2.occ}.`, "");
+    // [A2 posts] the superior may be the Marshal or the crown: name the post he holds
+    if (had || A.isAdult(pc)) A.log(`You now answer to ${A.fullName(b2)}, ${(A.POSTS && A.POSTS.title(b2)) || A.mainRole(b2) || b2.occ}.`, "");
   }
   const b = A.superior(pc);
   if (b) {

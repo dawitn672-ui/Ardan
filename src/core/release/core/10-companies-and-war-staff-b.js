@@ -1165,13 +1165,23 @@ A.wsGeneralFor = function (rid) {
   if (hs.length && A.chance(0.7)) {
     const h = A.pick(hs),
       p2 = A.houseHead(h.id);
-    if (p2 && p2.alive && p2.id !== A.S.pc && !busy.has(p2.id)) {
+    // [A2 posts] a councillor (other than the Marshal) or a child leads no army: one post a person, of age
+    if (
+      p2 &&
+      p2.alive &&
+      p2.id !== A.S.pc &&
+      !busy.has(p2.id) &&
+      A.isAdult(p2) &&
+      !(A.POSTS && A.POSTS.holds(p2.id, "seat").some(k => !k.endsWith(":marshal")))
+    ) {
       p2.skills.command = Math.max(p2.skills.command || 0, A.ri(25, 65));
       p2.skills.tactics = Math.max(p2.skills.tactics || 0, A.ri(20, 60));
       return p2.id;
     }
   }
   const p = A.genNoble(rid, "noble", null, A.ri(30, 55));
+  // [A2 posts] ages 30-55 are a human's: a long-lived people's general is as far into his adult years
+  if (!A.isAdult(p)) p.born = A.S.year - Math.round(((A.S.year - p.born) * GD.RACES[p.race].adult) / 16);
   p.skills.command = A.ri(25, 70);
   p.skills.tactics = A.ri(20, 65);
   p.skills.logistics = A.ri(10, 60);
