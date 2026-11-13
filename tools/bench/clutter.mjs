@@ -2,7 +2,7 @@
 // (touch): the words and controls in view without scrolling, the elements of the whole page, the chips, the screens of
 // scroll, the share of the width the open page gets, and any sideways scroll.
 //
-//   node tools/bench/clutter.mjs /tmp/me.html [--out=/tmp/ardan/b5/before.json] [--shots=/tmp/ardan/b5/shots/before] [--only=life,you]
+//   node tools/bench/clutter.mjs /tmp/me.html [--out=/tmp/ardan/b5/before.json] [--shots=/tmp/ardan/b5/shots/before] [--only=life,you] [--persona=noble]
 //
 // The page is drawn the way the game draws it (UI.tab then UI.render); nothing here touches game state beyond the start of
 // each life. A word counts when its text is inside the viewport and the element under its centre is the text's own.
@@ -26,7 +26,7 @@ const browser = await pw.chromium.launch();
 const report = {};
 for (const [vn, vopt] of Object.entries(VIEWS)) {
   for (const [pn, P] of Object.entries(PERSONAS)) {
-    if (only && !only.includes(pn) && !only.includes(vn)) { /* filter by page below */ }
+    if (opt('persona') && !opt('persona').split(',').includes(pn)) continue;
     const ctx = await browser.newContext({ ...vopt, reducedMotion: 'reduce' });
     const pg = await ctx.newPage(); const errs = [];
     pg.on('pageerror', e => errs.push(String(e.message || e).slice(0, 200)));
@@ -38,7 +38,7 @@ for (const [vn, vopt] of Object.entries(VIEWS)) {
       if (only && !only.includes(name)) continue;
       const key = `${vn}/${pn}/${name}`;
       try {
-        await pg.evaluate(`(() => { UI.ov = null; A.S.queue = []; UI.tab = ${JSON.stringify(tab)}; ${extra} UI.render(); window.scrollTo(0, 0); })()`);
+        await pg.evaluate(`(() => { UI.ov = null; A.S.queue = []; UI.tab = ${JSON.stringify(tab)}; ${extra} UI.render(); window.scrollTo(0, 0); const tb = document.getElementById('tabbody'); if (tb) tb.scrollTop = 0; })()`);
         await pg.evaluate(SETTLE);
         const m = await pg.evaluate(PROBE);
         m.tab = await pg.evaluate(() => UI.tab);

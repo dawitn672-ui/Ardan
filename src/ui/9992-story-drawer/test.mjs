@@ -20,7 +20,7 @@ const measure = async (pg, w, h, persona, pages) => {
   await pg.evaluate(() => { UI.render(); });
   for (const [name, tab, extra] of PAGES) {
     if (pages && !pages.includes(name)) continue;
-    await pg.evaluate(`(() => { UI.ov = null; A.S.queue = []; UI.tab = ${JSON.stringify(tab)}; ${extra} UI.render(); window.scrollTo(0, 0); })()`);
+    await pg.evaluate(`(() => { UI.ov = null; A.S.queue = []; UI.tab = ${JSON.stringify(tab)}; ${extra} UI.render(); window.scrollTo(0, 0); const tb = document.getElementById('tabbody'); if (tb) tb.scrollTop = 0; })()`);
     await pg.evaluate(SETTLE);
     out[name] = await pg.evaluate(PROBE);
   }
