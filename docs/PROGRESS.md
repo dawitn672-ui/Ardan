@@ -25,7 +25,7 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 
 ## Next, in order
 - [x] **A1** · Lag, drawing side: one redraw per press, log in place, year 50 = year 0; engine share left to X5/D12b (D-023) · `b9a656c` · 2026-11-12 16:27 ET
-- [ ] **B6** · Next month or Next year; no initiative cap; only notable events stop time (D-019)
+- [ ] **B6** · Next month or Next year; no initiative cap; only notable events stop time (D-019, D-025; built in `src/ui/999995-next-year`, tick when merged and green)
 - [ ] **X1** · Own the release: the patched release becomes readable source
 - [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017)
 - [ ] **B5** · Declutter (two parts)

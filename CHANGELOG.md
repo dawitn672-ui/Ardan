@@ -5,7 +5,13 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
-- Nothing yet.
+- **Next month or Next year.** Two buttons sit in fixed places, on a phone and on a desktop, and neither ever turns into
+  a stop button. Next year is the main button while you are a child. A year runs month by month and stops early, saying
+  why in one line, only for what matters: a choice with real weight, a battle or a call to war, an illness or a wound, a
+  death or a birth in your household, coming of age, a deadline. Talk and the day's small happenings never stop it: they
+  wait for the end and come one at a time. A year ends with one note of what it held. Esc ends a year at the end of its month.
+- **No more initiative.** Do as much as you like; do too much and you grow weary, then hurt.
+- A phone's clock now shows your age ("Age 9 · March 1105").
 
 ## v2.1.0-alpha.1 (2026-11-12 11:20 ET) · Round 2 begins
 

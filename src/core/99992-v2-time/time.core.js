@@ -1,4 +1,4 @@
-// 99992-v2-time: v2 step 3 (docs/V2_SPEC.md complaints 1, 2, 7 and 8). One button moves time.
+// 99992-v2-time: v2 step 3 (docs/V2_SPEC.md complaints 1, 2, 7 and 8), and round 2 B6 (Next month or Next year).
 //
 // Engine (deterministic, A.rand only):
 // - The month's director (A.monthEvents) draws 0 to 3 scenes with season weights, scaled by the stage of life, from
@@ -10,8 +10,10 @@
 // - 81-pacing's quiet-season floor is off: it drew a scene after a quiet stretch, which is the filler v2 removes.
 //
 // Interface (pure: reads A.S, never A.rand):
-// - The clock is the date, initiative and one big "Next month" (84-top-bar's month step, run in slices). Play, the
-//   speeds, the release's Next, Quiet living, Week / Season / Until and the war room's own clock are gone.
+// - The clock is the date and two buttons in fixed places, "Next month" and "Next year" (84-top-bar's stepper, run in
+//   slices; 999995-next-year decides what stops a year). Neither ever becomes a stop control: while time passes a button
+//   keeps its label, disabled, with its progress; Esc ends a year at the end of its month. Play, the speeds, the
+//   release's Next, Quiet living, Week / Season / Until and the war room's own clock are gone.
 // - On campaign (your own army on the march or at a siege while at war, or on the road) the clock offers "Next day"
 //   and "Next week" instead, with the host's standing orders beside them. A battle stops the clock.
 // - A quiet month ends with a 2-second toast of its line, never a card. 84's "This month" card is gone.
@@ -193,13 +195,15 @@
 
   // the steps: a month, or (on campaign) a day or a week
   if (UI.STEP_NAME) Object.assign(UI.STEP_NAME, { day: 'Next day', week: 'Next week', month: 'Next month' });
-  UI.stepPlan = function () { return V2T.campaign() ? ['day', 'week'] : ['month', 'month']; };
+  UI.stepPlan = function () { return V2T.campaign() ? ['day', 'week'] : ['month', 'year']; };
+  // childhood is lived a year at a time (D-008): the year is the main button until you are grown, the month after
+  V2T.primary = function (pc) { pc = pc || (A.S && A.pc && A.pc()); return pc && A.isAdult && !A.isAdult(pc) ? 'year' : 'month'; };
   const target0 = UI.stepTarget;
   UI.stepTarget = function (kind) {
     if (kind === 'day') return A.absDay() + 1;
     if (kind === 'month') return V2T.nextTurn();
-    // the turn of the next year (the tick that runs January's hooks): B6's Next year, month turns one after another in
-    // the same slices, drawn once at the end (999999-one-redraw); no control offers it yet (round 2 A1, CRITIQUE T3)
+    // the turn of the next year (the tick that runs January's hooks): Next year, month turns one after another in the
+    // same slices, drawn once at the end (999999-one-redraw)
     if (kind === 'year') return (A.S.year + 1) * 365 + MS()[0] + 1;
     return target0.apply(this, arguments);
   };
@@ -226,19 +230,22 @@
       ui.stopAfter = false; UI.stepStop();                   // a battle ended it: start afresh
     }
     const camp = V2T.campaign();
-    if (kind === 'month' && camp) return UI.toast('You are on campaign: go a day or a week at a time.');
-    if (kind !== 'month' && !camp) kind = 'month';
+    if ((kind === 'month' || kind === 'year') && camp) return UI.toast('You are on campaign: go a day or a week at a time.');
+    if ((kind === 'day' || kind === 'week') && !camp) kind = 'month';
     Object.assign(ui, { on: true, kind, from: A.absDay(), stopAfter: false });
     UI.stepStart(kind);
   };
   V2T.next = () => start('month');
+  V2T.nextYear = () => start('year');
   for (const k of ['clkPlay', 'clkSpeed', 'clkSkip', 'clkQuiet', 'stepWeek', 'stepSeason', 'stepUntil', 'stepSpeed', 'phSpeed', 'wrRun', 'wrClkSpeed', 'wrStep']) delete UI.A[k];
   Object.assign(UI.A, {
     v2Next() { start('month'); },
+    v2Year() { start('year'); },
     v2Day() { start('day'); },
     v2Week() { start('week'); },
     // What now's "live the next month" (97-first-life-fixes) names the month step
     stepMonth() { start('month'); },
+    stepYear() { start('year'); },
   });
   Object.assign(UI.C, {
     v2Tac(el) {
@@ -256,9 +263,10 @@
     try {
       if (Array.isArray(L)) for (const x of L) if (x && Array.isArray(x.act) && /^(step(Week|Month|Season|Until)|clkPlay|clkSkip)$/.test(x.act[0])) {
         const camp = V2T.campaign();
-        x.t = camp ? 'Go on a day' : 'Live the next month';
-        x.why = camp ? camp.text : 'Nothing presses. The month runs on and stops when something needs you.';
-        x.act = [camp ? 'v2Day' : 'v2Next', ''];
+        const yr = !camp && V2T.primary() === 'year';
+        x.t = camp ? 'Go on a day' : yr ? 'Live the next year' : 'Live the next month';
+        x.why = camp ? camp.text : `Nothing presses. The ${yr ? 'year' : 'month'} runs on and stops when something that matters comes up.`;
+        x.act = [camp ? 'v2Day' : yr ? 'v2Year' : 'v2Next', ''];
       }
     } catch (e) { console.error('v2 what now', e); }
     return L;
@@ -286,6 +294,7 @@
     const q = V2T.st() && V2T.st().quiet, now = A.absDay();
     let t;
     if (ui.kind === 'month') t = q && q.d > ui.from && q.d <= now ? q.t : 'The month passes.';
+    else if (ui.kind === 'year') t = V2T.yearLine ? V2T.yearLine() : 'The year passes.';
     else { const c = V2T.campaign(); t = `${ui.kind === 'day' ? 'A day' : 'A week'} passes.${c ? ' ' + c.text : ''}`; }
     V2T.quietToast(t);
   };
@@ -319,18 +328,25 @@
   };
 
   // ---- the clock: the date, initiative, and the one control that moves time --------------------------------------------
+  // two buttons in fixed places (the month on the left, the year beside it; on campaign the day and the week). Neither ever
+  // becomes a stop control (CRITIQUE T2): while time passes the running one keeps its label, disabled, and shows its
+  // progress; Esc ends a year at the end of its month. A card that waits keeps the label too: the step goes on when it is
+  // answered.
   V2T.controlsHtml = function () {
     const pc = A.pc && A.pc(); if (!pc) return '';
-    const camp = V2T.campaign(pc), dis = busy() && !(ST && ST.wait), running = ST && ST.run;
+    const camp = V2T.campaign(pc), running = !!(ST && ST.run), idle = running && ST.wait && !busy();
+    const dis = (busy() && !(ST && ST.wait)) || (running && !idle);
     const span = Math.max(1, (ST ? ST.to - ST.from : 1)), frac = running ? Math.min(1, Math.max(0, (A.absDay() - ST.from) / span)) : 0;
     const prog = `<span class="clk-prog" aria-hidden="true"><i style="transform:scaleX(${frac.toFixed(3)})"></i></span>`;
+    const first = V2T.primary(pc);
     const btn = (act, kind, label, key, primary) => {
       const mine = running && ST.kind === kind;
-      if (mine && ST.wait) return `<button class="v2-step${primary ? ' primary' : ''} run" data-a="${act}" aria-description="Go on when this is settled">${icon('play')}<span>Go on</span>${prog}</button>`;
-      if (mine) return `<button class="v2-step${primary ? ' primary' : ''} run" data-a="stepStop" aria-label="Stop here">${icon('pause')}<span>${esc(kind === 'month' ? 'The month passes' : kind === 'week' ? 'A week passes' : 'A day passes')}</span>${prog}</button>`;
-      return `<button class="v2-step${primary ? ' primary' : ''}" data-a="${act}"${dis ? ' aria-disabled="true"' : ''} aria-keyshortcuts="${key}" aria-description="${esc(dis ? why() : label + ' (key ' + key + ')')}">${icon(kind === 'month' ? 'step-moon' : kind === 'week' ? 'calendar' : 'sun')}<span>${esc(label)}</span>${running ? prog : ''}</button>`;
+      const tip = mine ? (kind === 'year' ? 'The year is passing. Esc ends it at the end of the month.' : `${label} is passing.`) : dis ? (running ? 'Time is passing.' : why()) : `${label} (key ${key})`;
+      const words = /^Next /.test(label) ? `<span class="v2-nx">Next </span>${esc(label.slice(5))}` : esc(label);
+      const ic = kind === 'month' ? 'step-moon' : kind === 'week' ? 'calendar' : kind === 'year' ? 'sprout' : 'sun';
+      return `<button class="v2-step${primary ? ' primary' : ''}${mine ? ' run' : ''}" data-a="${act}"${dis ? ' aria-disabled="true"' : ''} aria-label="${esc(label)}" aria-keyshortcuts="${key}" aria-description="${esc(tip)}">${icon(ic)}<span>${words}</span>${mine ? prog : ''}</button>`;
     };
-    if (!camp) return `<span class="v2-time" role="group" aria-label="Time">${btn('v2Next', 'month', 'Next month', 'N', true)}</span>`;
+    if (!camp) return `<span class="v2-time" role="group" aria-label="Time">${btn('v2Next', 'month', 'Next month', 'N', first === 'month')}${btn('v2Year', 'year', 'Next year', 'Y', first === 'year')}</span>`;
     const steps = `${btn('v2Day', 'day', 'Next day', 'D', false)}${btn('v2Week', 'week', 'Next week', 'W', true)}`;
     // a desktop's top bar holds the two steps only; the road or the host and its standing orders are on the Life and War
     // pages (V2T.campCard), so the bar fits at 1366 (playtest 1: 1648 px). A phone's dock has the room.
@@ -362,9 +378,12 @@
   // the date by month: time is lived a month at a time (on campaign, by the day)
   V2T.dateHtml = function () {
     const S = A.S, m = V2T.monthOf(S.warClock || 0);
-    return V2T.campaign() ? A.dateStr() : `${V2T.MONTHS[m]} ${S.year}`;
+    if (V2T.campaign()) return A.dateStr();
+    // a phone has no profile beside the clock: "Age 9 · March 1105" (CRITIQUE U18)
+    const pc = A.pc && A.pc(), age = pc && pc.alive && UI.isPhone && UI.isPhone() ? `Age ${A.age(pc)} · ` : '';
+    return `${age}${V2T.MONTHS[m]} ${S.year}`;
   };
-  const KEEP = ['clk-date', 'clk-ini', 'ph-stat', 'ph-dock', 'v2-time'];
+  const KEEP = ['clk-date', 'ph-stat', 'ph-dock', 'v2-time'];
   const clkHtml = UI.clkHtml;
   UI.clkHtml = function () {
     const h = clkHtml.apply(this, arguments);
@@ -388,6 +407,8 @@
       const dt = clk.querySelector(':scope > .clk-date');
       if (mine) { if (dock) dock.appendChild(mine); else if (dt) dt.after(mine); else clk.appendChild(mine); }
       const d = clk.querySelector('.clk-date b'); if (d) d.textContent = V2T.dateHtml();
+      // the initiative pool is gone (D-019): nothing of it stays in the clock, in a phone's stat row either
+      for (const n of clk.querySelectorAll('.clk-ini')) n.remove();
       clk.classList.add('v2-clk');
       clk.setAttribute('aria-label', 'Time');
       if (ST && ST.run) clk.setAttribute('aria-busy', ST.wait ? 'false' : 'true'); else clk.removeAttribute('aria-busy');
@@ -408,11 +429,18 @@
     } catch (e) { console.error('v2 war room time', e); return h; }
   };
 
-  // ---- keys: N or M is Next month; on campaign D a day and W a week. Space and 1 to 5 no longer run a clock. -----------
+  // ---- keys: N or M is Next month, Y is Next year; on campaign D a day and W a week. Esc ends a year at the end of its
+  // month. Space and 1 to 5 no longer run a clock. A key never stops time (the buttons never do either); pressed while time
+  // passes it only says so. -------------------------------------------------------------------------------------------------
   if (typeof window !== 'undefined') window.addEventListener('keydown', e => {
     if (UI.screen !== 'game' || e.ctrlKey || e.metaKey || e.altKey) return;
     const k = (e.key || '').toLowerCase();
-    if (!['n', 'm', 'w', 'd', ' ', '1', '2', '3', '4', '5'].includes(k)) return;
+    if (k === 'escape') {
+      // a year in the middle of its months: it ends where the month does (nothing else is open to take the key)
+      if (ST && ST.run && !ST.wait && ST.kind === 'year' && !UI.$('#modal') && !ST.esc) { ST.esc = true; UI.toast('The year will end with this month.'); e.stopImmediatePropagation(); }
+      return;
+    }
+    if (!['n', 'm', 'y', 'w', 'd', ' ', '1', '2', '3', '4', '5'].includes(k)) return;
     const tg = e.target, tag = tg && tg.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (tg && tg.isContentEditable)) return;
     const modal = !!UI.$('#modal'), room = UI.ov && UI.ov.type === 'warroom' && !(A.S && A.S.queue.length);
@@ -421,7 +449,8 @@
     e.preventDefault(); e.stopImmediatePropagation();
     if (e.repeat) return;
     const camp = V2T.campaign();
-    if (k === 'n' || k === 'm') { if (ST && ST.run && !ST.wait) UI.stepStop(); else if (camp) start('week'); else start('month'); }
+    if (k === 'n' || k === 'm') { if (ST && ST.run && !ST.wait) UI.toast('Time is passing.'); else if (camp) start('week'); else start('month'); }
+    else if (k === 'y' && !camp) { if (ST && ST.run && !ST.wait) UI.toast('Time is passing.'); else start('year'); }
     else if (k === 'w' && camp) start('week');
     else if (k === 'd' && camp) start('day');
   }, true);
@@ -480,7 +509,7 @@
   V2T.hintWords = () => {
     const camp = V2T.campaign(), k = x => (coarse() ? '' : ` (${x})`);
     return camp ? `You are on campaign: <b>Next day</b>${k('D')} and <b>Next week</b>${k('W')} step through it. A battle stops the clock.`
-      : `Press <b>Next month</b>${k('N')}${UI.isPhone && UI.isPhone() ? ', at the foot of the screen,' : ''} to live the next month. Whatever it brings comes one card at a time; a quiet month just passes.`;
+      : `Press <b>Next month</b>${k('N')} or <b>Next year</b>${k('Y')}${UI.isPhone && UI.isPhone() ? ', at the foot of the screen,' : ''} to let time pass. A year stops by itself for anything that matters; small matters wait for its end.`;
   };
   const hint = (UI.HINTS || []).find(h => h && h.id === 'clock');
   if (hint) { hint.textFn = V2T.hintWords; hint.text = ''; }
@@ -491,9 +520,11 @@
       if (typeof h !== 'string') return h;
       const k = x => (coarse() ? '' : ` (${x})`);
       return h.replace(/<details class="help-more"><summary>Time<\/summary>[\s\S]*?<\/details>/,
-        `<details class="help-more"><summary>Time</summary><p><b>A month at a time.</b> <i>Next month</i>${k('N')} lives the next month. Its happenings come as cards, one at a time; a quiet month passes with a short note and a line in your story. ` +
-        `On campaign (your host on the march or at a siege, or a long road) the month opens into <i>Next day</i>${k('D')} and <i>Next week</i>${k('W')}, with your standing orders beside them. A battle stops the clock. Between steps the world is still and the time is yours.</p></details>`)
-        .replace(/<li>Press <b>Month<\/b>[\s\S]*?<\/li>/, `<li>Press <b>Next month</b>${k('N')} to live the next month.</li>`);
+        `<details class="help-more"><summary>Time</summary><p><b>A month or a year.</b> <i>Next month</i>${k('N')} lives the next month; <i>Next year</i>${k('Y')} lives the next twelve, month by month, and is the main button while you are a child. Neither ever turns into a stop button: the one that is running keeps its name and a thin bar shows how far it has gone${coarse() ? '' : '; Esc ends a year at the end of its month'}. ` +
+        `A year stops by itself, and says why in one line, for what matters: a choice with real weight, a battle or a call to war, an illness or a wound, a birth or a death in your household, coming of age, a deadline. Talk, errands and the small happenings of the day never stop it: they wait for the end of the step and come one at a time, and the quiet months are gathered into one note. ` +
+        `There is no pool of initiative to spend: do as much as you like, but a body driven too hard grows weary, and then hurt. ` +
+        `On campaign (your host on the march or at a siege, or a long road) time opens into <i>Next day</i>${k('D')} and <i>Next week</i>${k('W')}, with your standing orders beside them. A battle stops the clock. Between steps the world is still and the time is yours.</p></details>`)
+        .replace(/<li>Press <b>Month<\/b>[\s\S]*?<\/li>/, `<li>Press <b>Next month</b>${k('N')} or <b>Next year</b>${k('Y')} to let time pass.</li>`);
     } catch (e) { return h; }
   };
 
@@ -507,8 +538,11 @@
     '#clk.v2-clk{align-items:center}',
     '#clk .v2-time{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}',
     '#clk .v2-step{position:relative;min-height:44px;padding:0 18px;font-weight:700;font-size:calc(15px * var(--tx,1));white-space:nowrap;display:inline-flex;align-items:center;gap:6px}',
-    '#clk .v2-step.primary{min-width:150px;justify-content:center}',
+    '#clk .v2-step{min-width:140px;justify-content:center}',   // the same width whichever is the main one, so neither moves when the main one changes
     '#clk .v2-step[aria-disabled=true]{opacity:.55;cursor:not-allowed}',
+    // the one that is running keeps its look (and its bar): it is not a stop button, only a button that is busy
+    '#clk .v2-step.run[aria-disabled=true]{opacity:1;cursor:progress}',
+    '@media (min-width:761px) and (max-width:1439px){#clk .v2-nx{display:none}#clk .v2-step{padding:0 12px;min-width:84px}#clk .v2-step .ic{display:none}}',
     '#clk .v2-camp-note{font-size:var(--t-small,13px);color:var(--ink-2);max-width:260px;white-space:normal;line-height:1.25}',
     '#clk .v2-orders{display:inline-flex;gap:6px}',
     '#clk .v2-ord{display:inline-flex;flex-direction:column;font-size:11px;color:var(--ink-3)}',

@@ -58,7 +58,7 @@ export default {
       await new Promise(r => setTimeout(r, 600));
       return { moved: A.absDay() - d0, run: !!(UI.clk && UI.clk.run) };
     });
-    const ok = out.every(o => !o.bad.length && !o.words.length && o.next === 1 && o.roomTime.length && !o.roomTime.some(a => a !== 'v2Next' && a !== 'v2Day' && a !== 'v2Week')) && !keys.moved && !keys.run;
+    const ok = out.every(o => !o.bad.length && !o.words.length && o.next === 1 && o.roomTime.length && !o.roomTime.some(a => a !== 'v2Next' && a !== 'v2Year' && a !== 'v2Day' && a !== 'v2Week')) && !keys.moved && !keys.run;
     return { ok, detail: out.map(o => `${o.w}px: ${o.bad.length ? 'still there: ' + o.bad.join(', ') : 'no clock controls'}, ${o.words.length ? 'words: ' + o.words.join(', ') : 'no Play words'}, ${o.next} Next month, war room: ${o.roomTime.join(', ')}`).join('; ') + `; keys moved ${keys.moved} days` };
   },
 

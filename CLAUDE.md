@@ -28,6 +28,10 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
   tools and AI.
 - **One holder per post.** Every title, office and command has exactly one holder at a time. A promotion hands over
   the real command, men and powers and takes the old post away; leaving a post has consequences.
+- **Time moves by Next month or Next year** (D-008, D-019, D-025), two buttons in fixed places that never become a stop
+  control. Only notable things stop a year (a card that needs a real answer, a battle or call to war, an illness or wound, a
+  death or birth in the household, coming of age, a deadline); talk and the day's small happenings wait for the step's end.
+  No initiative pool: overtraining has its own consequences. See `src/ui/999995-next-year/README.md`.
 - **Deterministic from the seed.** The same seed and the same choices give the same world, always.
 - **No war screens unless you are in the war,** at your rank, on a mission or deployed.
 - **Never throw work away.** Retired code goes to `archive/` with a note (and the last commit that had it is recorded

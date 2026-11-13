@@ -109,16 +109,13 @@
       } catch (e) {}
     }
     out.sort((a, b) => a.at - b.at);
-    // standing things, not dated: the ambition's next step, initiative going to waste
+    // standing things, not dated: the ambition's next step
     const LF = A.LF;
     try {
       const a = LF && LF.ambOf && LF.ambOf(pc), D = a && LF.AMB[a.k];
       if (D && !a.done && A.isAdult(pc)) out.push({ at: Infinity, kind: 'ambition', text: `${D.name}: ${D.step(pc)}`, icon: 'target', when: 'Ambition' });
     } catch (e) {}
-    try {
-      const cap = A.initiativeCap(pc), t = +S.time || 0;
-      if (A.isAdult(pc) && cap > 0 && t >= cap - 0.5) out.push({ at: -1, kind: 'initiative', text: t >= cap ? `Initiative is full: it stops filling until you spend some` : `Initiative is nearly full (${t.toFixed(1)} of ${cap})`, icon: 'hourglass', when: 'Now' });
-    } catch (e) {}
+    // (the pool of initiative is gone, D-019: no "initiative is full" line)
     out.sort((a, b) => a.at - b.at);
     return out.slice(0, CU.MAX).map(x => Object.assign(x, { when: x.when || CU.when(x.at) }));
   };

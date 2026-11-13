@@ -52,8 +52,8 @@
     }
     const [ok, why] = A.canAct(k);
     const used = (A.S.yearActs && A.S.yearActs[k]) || 0;
-    const have = Math.round((A.S.time || 0) * 10) / 10;
-    const cost = `${D.cost} initiative (⧗); you have ${have}.`;
+    // no pool of initiative (D-019): it takes days, and doing a great deal in a short while wears you out (999995-next-year)
+    const cost = `${D.cost >= 2 ? 'A good part of a month' : 'A few days'}. Do too much in too short a time and you tire, then take harm.`;
     const times = used ? ` You have done this ${used === 1 ? 'once' : used + ' times'} this year, and it teaches ${ACT.worthWords(k)} now.` : '';
     const row = (h, t, cls) => `<div class="act-row${cls ? ' ' + cls : ''}"><b>${esc(h)}</b><span>${esc(t)}</span></div>`;
     return `<div class="panel mbox act-sheet" data-act="${esc(k)}">${close}<h2>${esc(D.name)}</h2>` +

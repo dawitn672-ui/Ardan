@@ -11,11 +11,11 @@
 (function () {
   if (typeof UI === 'undefined' || !UI.A) return;
   // UI.stepper, not UI.step: the release keeps the creation screen's page number in UI.step
-  const ST = UI.stepper = { run: false, wait: false, kind: null, from: 0, to: 0, note: '', timer: null, hit: false, empty: 0, snap: null, sum: null };
+  const ST = UI.stepper = { run: false, wait: false, kind: null, from: 0, to: 0, note: '', timer: null, hit: false, empty: 0, snap: null, sum: null, why: '', esc: false };
   UI.STEP_SLICE = 20;   // ms of work between two draws
   UI.CLK_BUDGET = 35;   // ms of days per tick of the running clock (TOP-CLOCK-BUDGET), so input and paint keep up
   const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
-  const NAME = { week: 'Next week', month: 'Next month', season: 'Next season', until: 'Until something happens' };
+  const NAME = { week: 'Next week', month: 'Next month', season: 'Next season', year: 'Next year', until: 'Until something happens' };
   UI.STEP_NAME = NAME;
 
   // ---- which two steps the clock offers (cycle 1, first-hour I1 and design #9). A newborn waited up to sixteen empty
@@ -50,7 +50,12 @@
 
   const schedule = () => { if (!ST.timer) ST.timer = setTimeout(slice, 0); };
   const clear = () => { if (ST.timer) { clearTimeout(ST.timer); ST.timer = null; } };
-  const end = (refresh) => { if (ST.run) summarise(); ST.run = false; ST.wait = false; ST.note = ''; clear(); if (refresh) UI.refresh(); else UI.clkPaint(); };
+  // B6 (999995-next-year): UI.stepEnding runs as a step ends, before its one redraw (it hands back the small cards a month or a
+  // year held, and writes the year's digest); UI.stepHead is the card a step meets; UI.stepTick may end a year early
+  const end = (refresh) => { if (ST.run) { summarise(); try { UI.stepEnding(); } catch (e) { console.error('step end', e); } } ST.run = false; ST.wait = false; ST.note = ''; clear(); if (refresh) UI.refresh(); else UI.clkPaint(); };
+  UI.stepEnding = function () {};
+  UI.stepHead = function () { UI.quietSettle(); return A.headReady(); };
+  UI.stepTick = function () { return ''; };
   const waitEvent = () => { ST.wait = true; ST.hit = true; ST.note = 'event'; clear(); UI.refresh(); };
 
   // ---- what a step brought (cycle 1, first-hour I2): a week rarely holds an event, so a step ends with a short note of
@@ -97,16 +102,19 @@
     if (A.S.queue.length) { if (A.headReady()) { UI.refresh(); return; } }
     if (ST.run) end(false);
     if (UI.clk.run) { UI.clk.wasRun = false; stopClock(); }
-    Object.assign(ST, { run: true, wait: false, kind, from: A.absDay(), to: UI.stepTarget(kind), note: '', hit: false, long: false, snap: snapshot(), sum: null });
+    Object.assign(ST, { run: true, wait: false, kind, from: A.absDay(), to: UI.stepTarget(kind), note: '', hit: false, long: false, snap: snapshot(), sum: null, why: '', esc: false });
+    try { UI.stepBegin(kind); } catch (e) { console.error('step begin', e); }
     UI.clkPaint();
     schedule();
   };
+  UI.stepBegin = function () {};
   UI.stepStop = function () { if (ST.run) end(true); };
   UI.stepGo = function () {
     if (!ST.run) return;
     if (busy()) { if (A.S && A.S.queue.length && A.headReady()) UI.refresh(); return; }
     // "until something happens" has found its something: it ends once that is settled
-    if (ST.kind === 'until' && ST.hit) { ST.empty = 0; return end(true); }
+    // a year (999995-next-year) ends the same way: the card that stopped it is settled, and the time is the player's
+    if ((ST.kind === 'until' || ST.kind === 'year') && ST.hit) { ST.empty = 0; return end(true); }
     ST.wait = false; ST.note = ''; UI.clkPaint(); schedule();
   };
 
@@ -117,7 +125,7 @@
     if (UI.screen !== 'game' || !S || !pc) return end(false);
     if (!pc.alive) return end(true);
     if (UI.quietSettle()) { UI.clk.dirty = true; ST.hit = true; }
-    if (A.headReady()) return waitEvent();
+    if (UI.stepHead()) return waitEvent();
     const t0 = now();
     for (let n = 0; ST.run; n++) {
       if (A.absDay() >= ST.to) { ST.empty = ST.kind === 'until' || ST.hit || A.S.queue.length ? 0 : ST.empty + 1; return end(true); }
@@ -130,7 +138,8 @@
       if (turn) ST.note = '';
       if (r === 'year') { if (UI.set && UI.set.autosave) UI.save(!0); if (ST.kind === 'until' && !ST.long) { ST.empty = 0; return end(true); } }
       if (r === 'dead' || !A.pc() || !A.pc().alive) return end(true);
-      if (A.S.queue.length && (UI.quietSettle(), A.headReady())) return waitEvent();
+      if (A.S.queue.length && UI.stepHead()) return waitEvent();
+      { const why = UI.stepTick(r); if (why) { ST.why = why; ST.hit = true; return end(true); } }
       if (r === 'queue') break;
     }
     UI.clkLight();

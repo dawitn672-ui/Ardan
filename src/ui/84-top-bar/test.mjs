@@ -47,6 +47,9 @@ Object.assign(tests, {
     await pg.evaluate(STEPS);
     const r = await pg.evaluate(async () => {
       const o = { seed: 8402, race: 'human', realm: 'POL-05', status: 'artisan', sex: 'M', startAge: 19 };
+      // B6: a step sets small cards aside until it ends (999995-next-year), which an advance that answers them as they fall
+      // cannot do; with that off, the steps and the one advance are the same days in the same order
+      A.V2Y.PARK = false;
       T.enter(o);
       // v2: the Week step is gone; four months
       for (const k of ['stepMonth', 'stepMonth', 'stepMonth', 'stepMonth']) await __step(k);
@@ -250,15 +253,17 @@ Object.assign(tests, {
         A.newGame({ seed: 5, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 }); UI.screen = 'game';
         const pc = A.pc(); pc.coin = 7023; pc.debt = 38; UI.render();
         const t = document.querySelector('#topbar'), box = s => { const e = t.querySelector(s); return e ? e.getBoundingClientRect() : null; };
-        const els = ['.clk-date', '.clk-ini', '.top-coin'].map(box).filter(Boolean);
+        const els = ['.clk-date', '.clk-ini', '.top-coin'].map(box).filter(Boolean);   // B6: the initiative is gone, so two boxes
         let overlap = 0; for (let i = 0; i < els.length; i++) for (let j = i + 1; j < els.length; j++) { const a = els[i], b = els[j]; if (a.right > b.left + 1 && b.right > a.left + 1 && a.bottom > b.top && b.bottom > a.top) overlap++; }
         const coin = t.querySelector('.top-coin > b'), whole = coin && coin.scrollWidth <= coin.clientWidth + 1;
-        return { overlap, whole, n: els.length };
+        const date = (t.querySelector('.clk-date b') || {}).textContent || '';
+        return { overlap, whole, n: els.length, date };
       })));
       await ctx.close();
     }
-    const ok = out.every(o => o.n === 3 && !o.overlap && o.whole);
-    return { ok, detail: out.map(o => `${o.w} px: ${o.overlap} overlaps, purse whole ${o.whole}`).join('; ') };
+    // B6 (U18): the phone's clock reads "Age 25 · January 1105", and the initiative pool is gone
+    const ok = out.every(o => o.n === 2 && !o.overlap && o.whole && /^Age 25 · \w+ \d{4}$/.test(o.date));
+    return { ok, detail: out.map(o => `${o.w} px: ${o.overlap} overlaps, purse whole ${o.whole}, clock "${o.date}"`).join('; ') };
   },
 });
 export default tests;

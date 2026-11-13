@@ -6,8 +6,11 @@ description: "Simplify and judge a game's UI/UX for immersion (life-sims, strate
 # Game UX for immersion, plus the playtest loop
 
 ## The core loop (taken from BitLife and adapted)
-- **One button moves time.** It is the largest control, in the thumb zone above the tab bar. There is no play/pause/speed and no "sim a week".
-- Each press brings that month's happenings back as **cards shown one at a time**. A busy month brings several cards, and a quiet month brings none.
+- **Two buttons move time: Next month and Next year** (owner's order, `docs/DECISIONS.md` D-008 and D-019; round 2 B6). They sit in fixed places, the largest controls, in the thumb zone above the tab bar (month on the left, year beside it; the year is the main button while the player is a child). There is no play/pause/speed and no "sim a week".
+  - **Neither ever becomes a stop control.** While time passes the running button keeps its label, disabled, with a thin progress bar; Esc ends a year at the end of its month. A control that changes meaning mid-press gets mis-pressed.
+  - **A year runs month by month and ends with one redraw and one digest** of its quiet happenings. It stops early, and says why in one line, only for what is notable: a card that needs a real answer, a battle or a call to war, an illness or a wound, a death or a birth in the household, coming of age, a deadline. Talk, errands and the day's small happenings never stop it; they wait for the end of the step and come one at a time.
+  - **No initiative pool or cap** (D-019): let the player do as much as fits; overtraining has its own consequences (weariness, health, a strain), and that is on the player.
+- Each press brings the happenings back as **cards shown one at a time**: a notable card when it falls, small ones at the end of the step. A quiet month brings none.
   - Quiet months pass with a 2-second toast and a feed line, never a card you must dismiss. In Ardan's first playtest, 70% of cards were filler and players hated it.
 - Vary the busyness: 0, 1, 2 or 3 events with season weights, plus family births and deaths, news that reached you, and promotions.
 - When the player's own action makes time richer (a campaign, a journey), open the month into **days and weeks the player steps through**, with standing orders. A battle stops the clock and runs phase by phase.

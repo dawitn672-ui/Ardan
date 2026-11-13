@@ -51,7 +51,7 @@
     clock: stepWords,
     whatnow: () => '<b>What now</b>, just above, lists the three things most worth doing. One click does each.',
     plan: () => 'Your <b>plan</b>, just above, decides what your free hours build. Pick a training focus: it grows a little every day.',
-    initiative: () => 'Each activity below costs <b>initiative ⧗</b>, which builds up week by week. Try one.',
+    initiative: () => 'Each activity below takes some of your days. Do as many as you like, but do not wear yourself out. Try one.',
     tips: () => `Underlined words explain themselves. ${coarse() ? 'Tap' : 'Click'} your <b>fighting worth</b> (on a phone: Life → You) to see where it comes from.`,
     event: () => `Each choice shows your <b>odds</b>, set by your stats and skills.${coarse() ? '' : ' Keys 1 to 6 choose too.'}`,
     save: () => 'The game saves itself every year. <b>Menu → Export</b> keeps a copy as a file; <b>Menu → Report a problem</b> if something breaks.',
@@ -191,7 +191,7 @@
         `<li>Press <b>Month</b>${key('M')} to live the next month, or <b>Week</b>${key('W')} for seven days.</li>` +
         '<li>When something happens, read it and pick a choice. Each one shows its odds.</li>' +
         '<li>Press <b>Continue</b>, then step on.</li>' +
-        '<li>Spend your <b>initiative ⧗</b> on an activity on the Life tab: make a friend, train, look for love.</li>' +
+        '<li>Try an activity on the Life tab: make a friend, train, look for love. Do too much too fast and you tire.</li>' +
         '<li>Not sure? <b>What now</b>, at the top of Life, lists the three things most worth doing.</li>' +
         '<li>When you die, you go on as your heir.</li></ol></section>';
       body.innerHTML = first + '<h3 class="help-more-h">More, by subject</h3>' + fold;

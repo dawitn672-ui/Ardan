@@ -211,3 +211,29 @@ before building).
 **Kept:** `src/people/engine/face.js` (the 39-feature face code, inheritance, distance), reused by the 2D path.
 **Superseded:** the 3D render path (`anatomy.js`, `basemesh*.js`, `src/ui/engine/paint/*`, `docs/design/demo/`) moves
 to `archive/c8-3d-render/` when the 2D demo replaces it; the MakeHuman base (D-022) leaves with it.
+
+### D-025 · B6: how Next month and Next year work (2026-11-12 ET, the plan's reading of D-008 and D-019; refines D-014 decision 6)
+**Chosen:**
+1. **Two buttons, fixed places, never a stop control.** Next month (N or M) on the left, Next year (Y) beside it, on the
+   top bar and in a phone's dock. The year is the main button while the player is a child, the month after. A running
+   button keeps its label, disabled, with a progress bar; Esc ends a year at the end of its month. On campaign the pair
+   stays Next day and Next week.
+2. **Notable or routine** (`A.V2Y.classify`, from an event's definition, never from state): notable = a card that needs
+   a real answer (forced, a consequence of the player's own choice, a duty or council or letter of state, a gathering, a
+   deadline, a topic id such as marriage, birth, death, sickness, war, the law or an exam, a ruler's or an office's
+   business, a choice that can wound, kill, jail, duel or start a war, and for a grown person a post, an oath, a holding,
+   a debt or 120 suns and more), plus every battle, duel, campaign and the war room. Routine = talk, errands, play and
+   the day's small happenings.
+3. **Routine cards never stop a month or a year; they wait for its end** and come one at a time (a year hands back 6 at
+   most and a month 3; the rest pass, counted in the digest). **D-019 says "never stop a month or a year"**; the owner's
+   earlier V2_SPEC row 1 wants cards shown one at a time; waiting for the step's end keeps both. (The alternative, the
+   release's "Quiet living" settling them with the safest choice, was removed in v2 and is not brought back.)
+4. **A year ends early** (it does not go on after the card), with a one-line reason, for a notable card, a battle or a
+   call to war, an illness or a wound, a death or a birth in the household (parents, brothers and sisters, spouse,
+   children), coming of age, or Esc. A month waits at a notable card and goes on, as before.
+5. **Initiative removed (D-019), implemented by lifting the pool, not by rewriting forty spend sites:**
+   `A.initiativeCap` is 60, the pool is topped up each day, and what was spent becomes *load*. Load drains 4 a month;
+   above 6 a body is driven too hard: weariness (35-moods' rest need, which already existed), then health, then a
+   "strain" wound that mends in a year. The cost marks (⧗) and the clock's initiative are gone from the page.
+   `A.freeTime`, `A.initiativeRate` and the per-activity costs stay (they are the measure of load, and old tests read them).
+**Replaces:** D-014 decision 6's "or when the initiative pool is full" (D-019 already removed it); V2_SPEC row 8.
