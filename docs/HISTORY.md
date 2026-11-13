@@ -416,3 +416,16 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Open:** a duel guard pose; pre-baking the player's large picture (half a second of stand-in on first open); a
   tighter 2:3 crop; fur and arms still crude; war paint, jewellery, bows, mounts, infants; gate 1's engine to archive.
 - **Undo:** `git revert -m 1 9a2cbeb` (the archive notes say how to restore the old renderers).
+
+### H-022 · 2026-11-13 14:18 ET · CI 103's four failures fixed (all tests that followed the old layout)
+- **Commits:** `0d7cf45`, `5ec399c`, `049e533` on v2-integration.
+- **ttCoverage:** B5 folds the profile's best proficiencies by default, so the test saw 4 numbers (needs 8) and counted a
+  closed fold's aria-hidden one-line preview. It now counts with every fold open and skips aria-hidden previews: 13 of
+  13 numbers carry a description.
+- **v2mapRoseClear:** its control (a world that would place a name where the rose stands, with the rose hidden) found
+  none in seeds 11-16 after the layout change; seed 17 restores it. No name sits under the rose.
+- **v2sNumbers:** the season's training line lives in the story drawer from 1100 px; the test reads the drawer's lines.
+- **phoneDesktopSame:** a portrait is a stand-in until its picture is baked off the press; both sides wait for the
+  figure queue to be idle.
+- **Tests:** the four pass locally; this push runs the full CI on B5, C8b and these fixes.
+- **Undo:** `git revert 049e533 5ec399c 0d7cf45`.
