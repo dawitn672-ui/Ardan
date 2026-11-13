@@ -309,3 +309,24 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   pass; the two bot-life tests were not re-run locally (each needs ~30 minutes of a free machine; CI's numbers are the
   same seeds). This push runs the full CI.
 - **Undo:** `git revert 57180f4 24f7121 eaaf92c`, rebuild.
+
+### H-016 · 2026-11-13 01:44 ET · v2.1.0-alpha.2 cut; X1 merged: the release is readable source
+- **v2.1.0-alpha.2:** CI 101 green on `3769630`; version at `f37c62f`, branch `release/v2.1.0-alpha.2`, save
+  `tests/saves/v2.1.0-alpha.2-noble.ardan`.
+- **X1 commits:** `755467d`, `d6e0206`, `a4f82ec`, `f632d54` (by an Opus 5.5 agent), merged as `5056e98`.
+- **What:** the build's input is `src/core/release/` instead of the minified vendor file (untouched): `core/` (35 files by
+  section, de-minified by rule then prettier), `core/00-lore.json`, `content/` (the 30 release event packs, laid out on
+  lines with every function's text unchanged, because `A.evAudience`/`A.CX_RX`/`A.EV_RX` read it), `lore/` (five JSON
+  tables), `page.html`. All 203 patches (393 edits) are written in, each marked `[X1 baked patch <feature> <id>] <why>`;
+  `PATCHES.md` lists where. The `patches.mjs` files are in `archive/x1-patch-layer/` (last built with them: `88b671f`).
+  9991's two edits are baked into `62-inked-map/inkmap.core.js`; WIP `82-early-years` keeps its two patches, refitted.
+- **Tools:** `tools/release/` (bake, format, transform, verify, identity-probe); `build.mjs --release=`; `--only=x` now
+  means the default build plus x (the baked release calls feature code); `show.mjs --where`. Rule (CLAUDE.md, D-028):
+  change the release by editing its source; no new patches.
+- **Identity:** the agent's bake gave byte-identical blobs; `verify` says SAME PROGRAM (1,824 core statements, 13,132
+  event function texts unchanged, lore byte-identical, page the same); the probe: 5,004 events, 0 class changes; 9
+  fixed-seed 10-year lives identical in fingerprint, state hash, rng and journal. After the merge, `verify` against the
+  alpha.2 build again says SAME PROGRAM.
+- **Tests:** `check.mjs --skip-tests --skip-balance` passes; boot, savesStillLoad, renderRng, journalReplay, scaleSites,
+  aiPersonalityWhy, startsDeterministic, iconsWired, nyStripSkipsScripts pass after the merge. This push runs the full CI.
+- **Undo:** `git revert -m 1 5056e98`, rebuild (the patch files come back from the archive).

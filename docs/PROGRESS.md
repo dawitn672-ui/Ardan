@@ -23,11 +23,13 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 - [x] **C8 2D plan** · The 2D illustrated part system (`docs/design/characters.md`) · `389041f` · 2026-11-12 17:27 ET
 - [x] **C8 2D gate 1** · Style frame: four sitters in two finishes (`docs/design/demo-2d/gate1.*`) · `655fe2c` · 2026-11-12 18:16 ET · **with the owner for review**
 - [x] **CI fix** · The 22 tests CI 97 failed after A3a: 5 game bugs fixed, 17 tests made robust · `d5f42ab` · 2026-11-12 18:29 ET
+- [x] **CI fix 2** · CI 100: B6 draws 6x slower (fixed), iconsWired, two bot-life bars (D-027) · `57180f4` · 2026-11-13 00:55 ET
+- [x] **v2.1.0-alpha.2** · cut on green CI 101, `release/v2.1.0-alpha.2` pushed, sample save · `f37c62f` · 2026-11-13 01:35 ET
 
 ## Next, in order
 - [x] **A1** · Lag, drawing side: one redraw per press, log in place, year 50 = year 0; engine share left to X5/D12b (D-023) · `b9a656c` · 2026-11-12 16:27 ET
-- [ ] **B6** · Next month or Next year; no initiative cap; only notable events stop time (D-019, D-025; built in `src/ui/999995-next-year`, tick when merged and green)
-- [ ] **X1** · Own the release: the patched release becomes readable source
+- [x] **B6** · Next month or Next year; no initiative cap; only notable events stop time (D-019, D-026; `src/ui/999995-next-year`) · `bacd0a2` · 2026-11-12 19:26 ET
+- [x] **X1** · Own the release: the build reads readable source in `src/core/release/`, all 203 patches baked in, proven the same program · `5056e98` · 2026-11-13 01:44 ET
 - [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017)
 - [ ] **B5** · Declutter (two parts)
 - [ ] **C8b** · Faces and bodies (after the owner approves the demo sheets)
