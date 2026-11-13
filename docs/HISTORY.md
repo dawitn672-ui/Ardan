@@ -466,3 +466,12 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Open (stage 2):** battalion and company slots, order masters, staff, free companies, house heads and land titles as
   posts; armies that outlive a war; routing the writers the month's sync still adopts; more costs of leaving a post.
 - **Undo:** `git revert -m 1 1e914c0`; old saves made with the registry keep an unused `A.S.posts`.
+
+### H-025 · 2026-11-13 18:40 ET · After the A2 merge: checks pass; full CI on A2 and P; order 34 recorded
+- **Merged build:** boot, coherencyBaseline (no check above its baseline), postsMarshalRepro, nyEsc, pfPure and pcLives
+  (on 8.4 vs off 8.7 actions a year, inside the relaxed bar) pass. This push runs the full CI on A2 and P.
+- **Order 34** recorded (D-039): new v2 items C9 (bodies that make sense, longer lives), P2 (a clean profile, a Records
+  area), X7 (phone speed), W0 (no war score or army templates); D12a becomes war as a board; G revised (arts, 8 skill
+  words, learning by doing, hidden talent). C9, P2 and the G revision are running.
+- **Branches:** the 35 merged branches could not be deleted from this session (its git connection refuses ref
+  deletions); the owner was told how to delete them on GitHub; their tips are in `docs/BRANCHES.md`.
