@@ -313,3 +313,25 @@ If items matter more to you than markets, say so: E2a can come straight after E1
 
 - **DECISIONS:** this plan with the owner's answers; the economy's and the items' own dice; the world's dice moving once; 45, 66 and 9995 to `archive/` at E1a.
 - **CLAUDE.md** (`data/economy/`, `data/items/`, `fx.item`, the bench), **the `life-sim-systems` skill** (markets and items, once the numbers are proven) and **PROGRESS** (the eight stages).
+
+
+## Part 4 · The owner's answers (2026-11-13 06:21 ET, D-032)
+Where this part differs from Parts 1-3, this part wins.
+- **Markets:** 281 (choice 1a).
+- **Goods:** at least **40**, raw and finished, every one with a use a player feels (food and drink, clothes, tools,
+  light and soap, medicine, horses and carts, books, luxuries, arms and armour). Part 1's list of 28 grows by finished
+  goods; the budget holds because goods are data and the month's work grows with markets × goods (re-measure at E1a).
+- **Merchants by standing:** a house's answer to a summons depends on the asker: duke (days), count or baron (weeks),
+  knight or rich burgher (go to them), commoner (cannot seek them; chance meetings at markets only). Rank, fame, wealth,
+  past dealings and debts move the wait and the terms. Words, never numbers ("The Vell house will send a factor before
+  the month is out").
+- **Income in direct correlation only:** no realm-wide pay multiplier; income moves through the player's own goods,
+  custom, rents, tolls and the purse of whoever pays them.
+- **Money:** all of it (5c), built last.
+- **Rarity and make:** two measures on every item: rarity (common, rare, epic, legendary) and make (crude, plain, good,
+  fine, masterwork). A forging takes the smith's skill, the material's grade, the forge and time, and rolls both:
+  material and design mostly set rarity, skill mostly sets make, and either can surprise. Legendaries are only fine or
+  masterwork. The item library keeps both on each item; prices, fights and the figure read both.
+- **Armour:** every piece separate (D-032 item 7); C8's figure draws each as its own layer.
+- **Legendaries:** near-indestructible, heirlooms and national treasures; they outclass all ordinary gear, but skill
+  still decides most fights, and owning one draws thieves, claimants and kings.

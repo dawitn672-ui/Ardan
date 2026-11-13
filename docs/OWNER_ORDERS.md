@@ -35,6 +35,7 @@ order is replaced, strike it through and say by what.
 28. **A much bigger economy:** "a significant increase in the economic system, bigger markets simulating themselves as time goes on" (work item E1). · recorded 2026-11-13 02:25 ET
 29. **Hundreds of weapons and unique items:** "100s of new swords and other weapons of different qualities; items unique to only one person" (work item E2). · recorded 2026-11-13 02:25 ET
 30. **Far more face and build options:** "face and build design should have significantly more options too" (C8). · recorded 2026-11-13 02:25 ET
+31. **The economy and armoury, the owner's answers** (D-032): markets as realistic as possible; 40+ goods, real goods a person would use, not only materials; merchants are met by standing (a duke summons one in days, a baron waits longer, a nameless commoner cannot seek them); income follows the economy only through what you actually make and sell; money as deep as realism needs; items have a rarity (common, rare, epic, legendary) and, separately, a quality of make; armour drawn in every piece; legendary pieces are heirlooms and national treasures of very high durability that overpower ordinary gear. "Keep in mind what would be more realistic but fun for a user at all times." · recorded 2026-11-13 06:21 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**

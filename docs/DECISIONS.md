@@ -317,3 +317,38 @@ builds and full face customisation. The modern dress in the image is not wanted:
   must come after them). Their **design** starts now, in parallel (one design doc, Fable 5.2 at max effort, D-009), so
   the owner can see and steer it before anything is built; building waits its turn. E2 ties into C8 (each item is drawn
   on the figure), D11 (feudal armies arm their men) and E1 (smiths, markets and prices make and sell them).
+
+### D-032 · E1/E2: the owner's answers to the design's eight choices (2026-11-13 06:21 ET)
+The owner: "If you need to modify or question anything do so at your own discretion. Keep in mind what would be more
+realistic but fun for a user at all times." Each answer, and how the build reads it:
+1. **Markets:** "whatever most realistic" → one per settled province (281), in three sizes (city, town, village market).
+2. **Goods:** "40+ and not just materials, real goods that would benefit a user" → at least 40: raw stuff (grain, wool,
+   ore, timber, salt…) **and** finished goods a person buys and uses (bread, ale, cloth and clothes, boots, tools,
+   candles, soap, medicine and herbs, horses and tack, carts, books and parchment, spices, wine, jewellery, arms and
+   armour, …), each with a use in play (eating, health, work, standing, travel, war).
+3. **Merchants:** "not just anybody can meet them and get treated the same" → access by standing. A great house answers a
+   duke's summons in days, a baron's in weeks, a knight or rich burgher must go to them; a nameless commoner cannot seek
+   one out (meets traffic only by chance at a market). Fame, rank, wealth, past dealings and debts move it.
+4. **Income:** "only in direct correlation" → no realm-wide multiplier on pay. Your income moves only through what you
+   actually make, buy and sell (your crop's price at your market, your shop's custom, your estate's rents and tolls,
+   your lord's ability to pay). A bad year elsewhere reaches you only through those links, so it may or may not.
+5. **Money:** "as deep as necessary to bring out realism" → the deepest option: loans with pledges, crowns that borrow
+   and default and break lenders, coin a crown can thin; built last so a stage can stop if it adds no play.
+6. **Grades:** "common, rare, epic, legendary, each with their own quality level" → **two separate measures**: *rarity*
+   (common, rare, epic, legendary: how exceptional the piece is: its material, design, features and story) and
+   *quality of make* (crude, plain, good, fine, masterwork: the smith's skill on the day). Rare material in plain hands
+   can still make an epic that is not masterwork; a master smith can make a masterwork from common steel. A smith's
+   skill, the material, the forge, time and the dice decide the result (the idea of craft results the owner cites
+   from the manhwa *Overgeared*; the idea only, nothing of its content).
+7. **Armour on the figure:** "as detailed as possible, every single element" → separate pieces: helm, gorget, pauldrons,
+   rerebraces, couters, vambraces, gauntlets, breastplate and backplate or coat, faulds and tassets, cuisses, poleyns,
+   greaves, sabatons, mail, padding, plus clothing layers, belts, cloak, jewellery and shield; each a layer keyed by item
+   and quality (C8 draws them).
+8. **Named things:** "can be destroyed but shouldn't be because of their high durability; all legendary blades of good
+   quality; family heirlooms and national treasures; they overpower any form of equipment" → legendaries are always fine
+   or masterwork, near-indestructible (destroyed only by extraordinary events), held as heirlooms and crown treasures.
+   **Discretion used (realistic but fun):** they outclass all other gear, but skill still decides most fights (a
+   legendary sword in an untrained hand loses to a veteran), and owning one draws attention: thieves, claimants and
+   kings want it, and a lost treasure is a reason for quests and wars.
+**Changes to the design doc:** recorded in its new section "Part 4 · The owner's answers"; the builders follow Part 4
+where it differs from Parts 1-3.
