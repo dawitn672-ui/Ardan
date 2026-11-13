@@ -4,7 +4,7 @@ The checklist of every work item, in the order they are being done. Tick an item
 green, with the stamp and the commit; never delete a line. Details live in `docs/HISTORY.md`; the plan and the
 reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 
-*Last updated 2026-11-12 18:29 ET*
+*Last updated 2026-11-12 19:26 ET*
 
 ## Done
 - [x] **Step 0** · Repo restructured by system, with a memory (CLAUDE.md, HISTORY, DECISIONS, IDEAS, CHANGELOG, OWNER_ORDERS) · `d906efc`, CI 95 green · 2026-11-11 23:43 ET

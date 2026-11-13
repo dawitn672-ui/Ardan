@@ -258,3 +258,21 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   B4 and the demos: boot, saveSafety, lookRows, flDuelFace, phoneTargets, coScreens, rdOnePerPress, clickOpens,
   v2sNoBareNumbers pass. This push runs the full CI on X6 + A3a + B4 + A1 + these fixes.
 - **Undo:** `git revert -m 1 d5f42ab`, rebuild.
+
+### H-013 · 2026-11-12 19:26 ET · B6: Next month or Next year (D-008, D-019, D-026)
+- **Commits:** `7cae0f7` (by a Sonnet 5.5 agent), merged as `bacd0a2`. Its decision record arrived as D-025, taken by
+  the 2D plan's calls, and is **D-026**. Also in this stretch: CI 98 on `909f492` failed 5 tests; stRegistry (`14d05aa`)
+  and fitsOneScreen (`cb6ff55`, B4's ⓘ marker wrapping grid rows; reproduced with CI's Chromium 141) are fixed, and an
+  agent works on foldFits, endingsMoment and npcInitiativeDeterminism (looking at people changed later NPC moves).
+- **What and why:** two buttons in fixed places, Next month (N, M) and Next year (Y); neither becomes a stop control
+  (Esc ends a year at its month's end). A year runs month by month under A1's one redraw and ends with one digest. It
+  stops early, saying why, for a notable card (`A.V2Y.classify`, from the event's definition), a battle or call to war,
+  an illness or wound, a death or birth at home, coming of age, a deadline. Routine cards wait for the step's end (at
+  most 6 after a year, 3 after a month; kept in `S.v2t.parked`). Initiative is lifted (cap 60, topped up daily); what
+  is spent becomes load: weariness, then health, then a strain wound. Childhood leads with Next year. A phone's clock
+  reads "Age 9 · March 1105".
+- **Numbers:** newborn to 12 in 18–21 Next year presses (was about 155 month presses); a quiet year costs a median
+  1.3–1.55 s of CPU with 1 full redraw; twelve month presses and one year press reach the same world; balance in bands.
+- **Tests:** 11 new (`ny*`); after the merge 15 of 15 pass (ny*, rdOnePerPress, clickOpens, fitsOneScreen,
+  savesStillLoad, coherencyDay0, comingUpShows, phoneTargets, boot).
+- **Undo:** `git revert -m 1 bacd0a2`, rebuild.
