@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.2 (2026-11-13 01:35 ET) · Foundations: lighter steps, click-to-open, Next month or Next year
+
 - Descriptions open when you click or tap, never on hover; long explanations sit behind a small ⓘ. An activity
   shows what it is, what it costs and how it may go before you commit, and its result is never cut short.
 - Next month is much lighter: the page redraws once per press, the story log updates in place, and a long life no
@@ -17,6 +19,7 @@ What changed for the player, in plain words, one section per version (newest fir
   step. Childhood moves by the year.
 - **No more initiative.** Do as much as you like; do too much and you grow weary, then hurt.
 - A phone's clock now shows your age ("Age 9 · March 1105").
+- Every screen draws faster again (a slowdown that came with Next year is gone).
 
 ## v2.1.0-alpha.1 (2026-11-12 11:20 ET) · Round 2 begins
 
