@@ -1,6 +1,6 @@
 // The retired events (Road to Ten, Events 1): written by select.mjs from tools/bench/event-audit.mjs. Do not edit by hand;
 // veto an event in RETIRED.md, then drop its line here (or re-run select.mjs). Reason codes: EC.REASONS in cut.core.js.
-// 826 of the release's 3199 events (10 old-age scenes put back by 74-old-age are in KEEP.json).
+// 825 of the release's 3199 events (10 old-age scenes put back by 74-old-age, and rl_y_evenwood by A2 to keep POL-06's local floor, are in KEEP.json).
 A.EC.retire({
   // B: 334
   av_broken_axle: 'B',
@@ -334,7 +334,7 @@ A.EC.retire({
   ww_va_terrace: 'B',
   ww_vg_fourthday: 'B',
   ww_vg_icon: 'B',
-  // N: 227
+  // N: 226
   av_merc_forage: 'N',
   av_pedlar_wonders: 'N',
   av_sea_drakes: 'N',
@@ -474,7 +474,6 @@ A.EC.retire({
   rl_f_convert: 'N',
   rl_ts_road: 'N',
   rl_y_blackdragon: 'N',
-  rl_y_evenwood: 'N',
   rl_y_neck: 'N',
   rl_y_sabra: 'N',
   rl_y_things: 'N',
