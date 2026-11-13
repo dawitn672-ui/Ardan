@@ -454,7 +454,7 @@
 .pf-h2{margin:8px 0 2px;font:600 var(--t-small,13px)/1.3 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
 .pf-empty,.pf-fine{margin:2px 0;color:var(--ink-3);font-size:var(--t-small,13px)}
 .pf-fight .pf-row{grid-template-columns:6.6em auto minmax(0,1fr);border-bottom:0}
-.pf .tt.pf-sk{text-decoration:none;border-bottom:1px solid var(--line);padding:0 4px;margin:0 -4px;border-radius:5px}.pf .tt.pf-sk:hover{background:var(--accent-tint)}
+#game .pf .tt.pf-sk{display:grid;grid-template-columns:minmax(0,1fr) 7.4em 64px;gap:8px;align-items:center;text-decoration:none;border:0;border-bottom:1px solid var(--line);padding:0 4px;margin:0 -4px;border-radius:5px}.pf .tt.pf-sk:hover{background:var(--accent-tint)}
 .pf-sk{display:grid;grid-template-columns:minmax(0,1fr) 7.4em 64px;gap:8px;align-items:center;font-size:var(--t-ui,14px);min-height:26px}
 .pf-tier{font-weight:600;color:var(--ink)}
 .pf-prog{display:block;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
@@ -477,7 +477,7 @@
 @container pf (min-width:920px){.pf-hero{grid-template-columns:auto minmax(0,1.1fr) minmax(0,.9fr)}}
 @container pf (min-width:600px) and (max-width:919px){.pf-hero{grid-template-columns:auto minmax(0,1fr)}.pf-sheet{grid-column:1 / -1}}
 @container pf (max-width:599px){.pf-hero{grid-template-columns:124px minmax(0,1fr);gap:10px}.pf-sheet{grid-column:1 / -1}.pf-fig{width:124px}.pf-name{font-size:var(--t-h3,17px)}
- .pf-row{grid-template-columns:6.6em 64px minmax(0,1fr);min-height:44px}.pf-li{grid-template-columns:5.6em minmax(0,1fr)}.pf-sk{grid-template-columns:minmax(0,1fr) 6.6em 44px;min-height:40px}.pf-tab{flex:1 1 auto;justify-content:center;padding:0 8px}.pf-reclink{flex:1 0 100%;margin-left:0;justify-content:flex-end;min-height:44px}.pf-m{grid-template-columns:4.6em minmax(0,1fr)}}
+ .pf-row{grid-template-columns:6.6em 64px minmax(0,1fr);min-height:44px}.pf-li{grid-template-columns:5.6em minmax(0,1fr)}.pf-sk,#game .pf .tt.pf-sk{grid-template-columns:minmax(0,1fr) 6.6em 44px;min-height:40px}.pf-tab{flex:1 1 auto;justify-content:center;padding:0 8px}.pf-reclink{flex:1 0 100%;margin-left:0;justify-content:flex-end;min-height:44px}.pf-m{grid-template-columns:4.6em minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){.pf-chev{transition:none}}
 `;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('pf-style')) return; const s = document.createElement('style'); s.id = 'pf-style'; s.textContent = CSS; (document.head || document.documentElement).appendChild(s); };
