@@ -1,7 +1,15 @@
-# 99992-v2-time: one button moves time
+# 99992-v2-time: the clock, its buttons, five places, no forced chapters
 
 **Aspect:** the owner's v2 complaints 1, 2, 7 and 8 (`docs/V2_SPEC.md`, integration step 3) · **Kind:** one readable
 core file, tests; small edits in 9993-life-chapters. No patches, no events.
+
+## Round 2 B6: Next month or Next year (supersedes the one-button rule below)
+
+The clock has **two buttons in fixed places, Next month (N, M) and Next year (Y)**; the year leads while the player is a
+child (`V2T.primary`). Neither ever becomes a stop control: the running one keeps its label, disabled, with its bar; Esc
+ends a year at its month's end. What a year stops for, the small cards that wait, the digest and the end of the
+initiative pool are in `src/ui/999995-next-year/README.md` and `docs/DECISIONS.md` D-025. A phone's clock reads
+"Age 9 · March 1105". The text below is the v2 step-3 record, with "one button" read as "the month button".
 
 ## What it does
 

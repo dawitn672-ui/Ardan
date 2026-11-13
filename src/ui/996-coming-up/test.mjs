@@ -24,7 +24,7 @@ export default {
       return { items, shown: !!el, repay: txt.includes('is due to repay 12 suns'), own: txt.includes('The guild judges your masterpiece'),
         secret: /secret|betray/i.test(txt), custom: c ? items.some(x => x.startsWith('Next month') && x.includes(A.BIBLE.fill(pc, c.name))) : null, ini: txt.includes('Initiative is full') };
     });
-    return { ok: r.shown && r.repay && r.own && !r.secret && r.custom !== false && r.ini, detail: r.items.join(' / ') };
+    return { ok: r.shown && r.repay && r.own && !r.secret && r.custom !== false && !r.ini, detail: r.items.join(' / ') };   // B6: no pool of initiative, so no "initiative is full" line
   },
 
   async comingUpPure(pg) {

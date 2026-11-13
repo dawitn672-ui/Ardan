@@ -11,6 +11,12 @@ What changed for the player, in plain words, one section per version (newest fir
   longer gets slower. Starting a life shows a progress line.
 - Fixes: the duel's hint about your foe's move is right; the Adapting bar uses words; a passed-over heir is told why;
   phone buttons and person rows are the right size; no two-year-old sits on a royal council.
+- **Next month or Next year.** Two buttons sit in fixed places, on a phone and on a desktop, and neither ever turns into
+  a stop button. A year runs month by month and stops early only for something that matters (a real decision, a call
+  to war, an illness, a birth or death at home, coming of age), saying why; everyday chatter waits for the end of the
+  step. Childhood moves by the year.
+- **No more initiative.** Do as much as you like; do too much and you grow weary, then hurt.
+- A phone's clock now shows your age ("Age 9 · March 1105").
 
 ## v2.1.0-alpha.1 (2026-11-12 11:20 ET) · Round 2 begins
 
