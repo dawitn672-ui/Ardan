@@ -1121,7 +1121,7 @@
             check: {s:"lance",s2:"command",d:52},
             win: {
               r: "You hit them at the ford and hold it until the sun goes down. Your pennon is cut square on the field: you are a banneret.",
-              fx: p=>(p.noble.rung=3,A.fame(p,5),p.deeds.push({y:A.S.year,t:"Led the charge at the ford and was made banneret on the field"}),""),
+              fx: p=>(p.noble&&(p.noble.rung=3),A.fame(p,5),p.deeds.push({y:A.S.year,t:"Led the charge at the ford and was made banneret on the field"}),""),
             },
             lose: {
               r: "The charge breaks on their spears. You are carried off the field.",
