@@ -303,3 +303,9 @@ cards and frames are its own. Realism rules stay (D-015, D-020): full face custo
 **Image AI:** used only for reference sheets that the layered parts are then drawn from; its outputs go into the repo
 under `docs/design/` with the prompt and the service named. The key comes only through the secure form.
 **Refines:** D-024 (2D illustrated) and D-025 (the 2D plan): gate 2 is a tone-led demo in this direction.
+**Added 2026-11-13 02:10 ET (owner's reference image):** the owner sent `docs/design/reference/owner-ref-1-lineup.png`
+(made with OpenAI's image model): "This holds the core concept of what I'm looking for but should obviously be tailored
+to the game." So: full-body figures as well as the card; Korean-webtoon proportions and stylised faces (tall, narrow
+faces, sharp jaws, half-lidded eyes); clean thin line work under soft tonal shading; restrained palette with one accent.
+This supersedes "as realistic as possible" (D-015) **for the drawing style**; realism still governs ageing, scars,
+builds and full face customisation. The modern dress in the image is not wanted: Ardan's dress is medieval.
