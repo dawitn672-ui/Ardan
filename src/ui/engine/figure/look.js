@@ -138,7 +138,7 @@ export function lookOf(sh) {
   if (P.ear > 0) gx.earSize = Math.max(gx.earSize || 0, P.ear * .5);
   // hair, beard, grey
   const dark = typeof app.skin === 'string' && HEXOK.test(app.skin) && parseInt(app.skin.slice(1, 3), 16) < 150;
-  let hair = HAIRS[app.hs] ? app.hs : null;
+  let hair = Object.prototype.hasOwnProperty.call(HAIRS, app.hs) ? app.hs : null;
   if (!hair) {
     const row = HSTYLE[app.hstyle] || HSTYLE.short; let opts = row[male ? 0 : 1];
     if (app.hstyle === 'curly' && !dark) opts = male ? ['messy', 'curtain'] : ['curls', 'wavy'];
@@ -152,7 +152,7 @@ export function lookOf(sh) {
   if (age < 1.5) hair = 'stubble'; else if (age < 3 && !['bald', 'stubble', 'cropped'].includes(hair)) hair = 'cropped';
   let beard = 'none';
   if (male && age >= 17 && (sh.race !== 'elf')) {
-    beard = BEARDS[app.bd] ? app.bd : pickBy(id, 'beard', BEARD_OF[app.beard] || ['none']);
+    beard = typeof app.bd === 'string' && Object.prototype.hasOwnProperty.call(BEARDS, app.bd) ? app.bd : pickBy(id, 'beard', BEARD_OF[app.beard] || ['none']);
     if (age < 20 && !['none', 'stubble', 'moustache'].includes(beard)) beard = 'stubble';
   }
   const hairColor = typeof app.hair === 'number' ? HAIR_OF[app.hair] || 'darkbrown' : 'darkbrown';
@@ -180,6 +180,13 @@ export function lookOf(sh) {
   }
   // dress, arms and stance
   const K = kit(sh, { male, age, id });
+  // hair under what is worn on the head: a veil, a coif or a closed helm covers it (long hair is bound up under them),
+  // and a hat or an open helm sits on a head, not on a topknot
+  if (K.headwear && K.headwear !== 'none' && K.headwear !== 'circlet' && K.headwear !== 'crown') {
+    const st = HAIRS[hair] || {}, covers = ['veil', 'coif', 'bascinet'].includes(K.headwear);
+    const long = st.mass || st.braid || st.tail || st.tails || st.knot || st.earBuns || (st.curtain && st.curtain.to > 40), tall = ['topknot', 'spiky', 'crest', 'coilyfull', 'buns', 'ponytail', 'pigtails', 'messy'].includes(hair);
+    if (covers ? long || tall : tall) hair = male ? 'cropped' : covers ? 'bun' : 'bob';
+  }
   // bearing: the head turned a little from the light or toward it, and tipped; the face at rest follows the mood
   const r = stream(id, 'bearing'), yaw = Math.round((r() < .7 ? 1 : -1) * (9 + r() * 7)), roll = Math.round(r.s() * 3);
   const mood = clamp(sh.mood ?? 0, -1, 1);

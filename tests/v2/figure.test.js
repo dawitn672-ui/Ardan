@@ -84,10 +84,15 @@ test('a face is made the same way every time, differs between people, and leans 
 
 test('a stored face is drawn as stored; a bad code falls back to the made face', () => {
   const g = face.snap({ jawW: 1, noseBridge: 1, eyeTilt: -1 }), x = extraFor('zz'); x.cleft = 1; x.muscle = 1;
-  const L = lookOf(sheet(4, { app: { ...sheet(4).app, g: face.pack(g), g2: pack2(x), hs: 'crest', bd: 'forked' } }));
+  // a royal sitter wears a circlet or a crown, which leaves the hair as it is (a hat or a veil would not; see below)
+  const s4 = app => sheet(4, { estate: 'royal', app: { ...sheet(4).app, ...app } });
+  const L = lookOf(s4({ g: face.pack(g), g2: pack2(x), hs: 'crest', bd: 'forked' }));
   assert.equal(L.g.jawW, 1); assert.equal(L.g.noseBridge, 1); assert.equal(L.g.eyeTilt, -1); assert.equal(L.g.cleft, 1); assert.equal(L.hair, 'crest'); assert.equal(L.beard, 'forked');
-  const bad = lookOf(sheet(4, { app: { ...sheet(4).app, g: '<script>alert(1)</script>!!', g2: 5, hs: '"><b>', bd: {} } }));
-  assert.equal(lookKey(bad), lookKey(lookOf(sheet(4))));
+  const bad = lookOf(s4({ g: '<script>alert(1)</script>!!', g2: 5, hs: '"><b>', bd: {} }));
+  assert.equal(lookKey(bad), lookKey(lookOf(s4({}))));
+  // under a hat a tall style is cropped, and under a veil long hair is bound up
+  const hat = lookOf(sheet(4, { app: { ...sheet(4).app, hs: 'crest' } }));
+  if (hat.headwear === 'strawhat') assert.equal(hat.hair, 'cropped');
 });
 
 test('gear is drawn by item, with its make and its rarity; a new item is one registration', () => {

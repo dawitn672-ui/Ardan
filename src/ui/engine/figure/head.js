@@ -46,6 +46,10 @@ export function headDims(look) {
   D.bridge = gs('noseBridge'); D.tipV = 3 * gs('noseTip') + 1.5 * old; D.noseW += 3 * gs('noseW') + 1 * old; D.tipR = 1 + .32 * g('tipShape'); D.noseP *= 1 + .22 * gs('noseProj');
   D.mouthW += 3.5 * g('mouthW'); const lp = (1 + .42 * g('lips')) * (1 - .38 * old); D.lipU *= lp; D.lipL *= lp * (1 + .3 * g('lowerLip')); D.under = g('bite'); D.curve = g('mouthCurve');
   D.earS = 1 + .16 * g('earSize') + .1 * old; D.earOut = 1 + .5 * g('earSet'); D.earPoint = Math.max(0, g('earPoint')); D.lobe = g('lobes') + .5 * old;
+  // the face at rest follows the mood (-1 grim .. +1 glad): glad lifts the brows and the cheeks (the lower lids rise),
+  // grim lowers and knits the brows and narrows the eyes a little
+  const md = clamp(look.mood ?? 0, -1, 1), glad = Math.max(md, 0), grim = Math.max(-md, 0);
+  D.mood = md; D.browV += -1.3 * glad + .9 * grim; D.browDrop += 1.5 * grim - .5 * glad; D.browGap -= 1.1 * grim; D.squint = glad * .34 + grim * .14;
   D.nosebreak = 0;
   for (const sc of look.scars || []) if (sc.k === 'nosebreak') D.nosebreak = (sc.side ?? 1) * 1;
   return D;
@@ -152,7 +156,7 @@ export function drawHead(S, Hd, F, look, sk, hairShadow = []) {
 }
 
 const eyeGeom = (Hd, sg) => {
-  const { D, P } = Hd, ew = D.eyeW, hU = D.eyeH * (D.male ? .64 : .6), hL = D.eyeH * (D.male ? .36 : .4), t = D.tilt;
+  const { D, P } = Hd, ew = D.eyeW, hU = D.eyeH * (D.male ? .64 : .6) * (1 - .22 * D.squint), hL = D.eyeH * (D.male ? .36 : .4) * (1 - D.squint), t = D.tilt;
   const E = (x, y, dw = 0) => P(sg * (D.eyeU + x), y, dw - 5);
   const I = [-ew / 2, 2 + t * .6], O = [ew / 2, -1.6 - t * 2.4];
   const up = [I, [-ew * .34, -hU * .52], [-ew * .08, -hU * .97], [ew * .22, -hU], [ew * .41, -hU * .6 + O[1] * .4], O];
@@ -180,6 +184,10 @@ export function drawFace(S, Hd, F, look, sk, hair, iris) {
     }
     S.fill(white, D.old > .5 ? '#e9e1d5' : '#f3eeeb');
     S.within(white, () => {
+      if (lod > 1) {                                   // the ball turns away at its corners; the pink of the inner corner
+        S.fill(ell(E(-ew * .52, .4), ew * .2 * s, hU * 1.2 * s), '#8d829c', { op: .3 }); S.fill(ell(E(ew * .52, -1), ew * .17 * s, hU * 1.1 * s), '#8d829c', { op: .24 });
+        S.fill(ell(E(-ew / 2 + 1.5, 1.7 + D.tilt * .5), 1.7 * s, 1.2 * s), mixc(sk.blush, '#c2606a', .55), { op: .75 });
+      }
       const r = D.irisR, c = [(look.gaze || 0) * 2.5 - .6, (hL - hU) * .28 - .1], ip = ellPts(c, r, r, 0, 14).map(p => E(p[0], p[1])), id = spl(ip, true);
       const cc = E(c[0], c[1]), lo = E(c[0], c[1] + r * .55), top = E(c[0], c[1] - r), bot = E(c[0], c[1] + r * .3);
       S.fill(id, S.radial(lo, r * 1.5 * s, [[0, ir.l], [.5, ir.b], [.9, ir.ring]]));
@@ -191,13 +199,19 @@ export function drawFace(S, Hd, F, look, sk, hair, iris) {
       S.fill(polyline([...upPts, ...offset(upPts, -2.6 * s).reverse()], true), '#7b6d86', { op: .5 });
       S.fill(spl(ellPts([c[0] - sg * 0 - r * .36, c[1] - r * .34], r * .25, r * .2, -.5, 8).map(p => E(p[0], p[1])), true), '#ffffff', { op: .95 });
       if (lod > 0) S.fill(spl(ellPts([c[0] + r * .4, c[1] + r * .42], r * .11, r * .11, 0, 6).map(p => E(p[0], p[1])), true), '#ffffff', { op: .7 });
+      if (lod > 1 && !isBlind) S.stroke(spl(ellPts([c[0], c[1] + r * .5], r * .62, r * .34, 0, 8).slice(0, 5).map(p => E(p[0], p[1]))), ir.l, 1, { op: .55 });     // the lit lower arc of the iris
     });
+    if (lod > 1) {                                     // the wet edge of the lower lid, and the lit plane of the upper one
+      S.fill(ink(part(loPts, .1, .9, 10), S.lw(1.7)), mixc(sk.b, sk.blush, .65), { op: .75 });
+      S.fill(ink(offset(part(upPts, .22, .82, 10), (.9 + D.eyeH * .06) * s), S.lw(1.5)), sk.l, { op: .4 });
+    }
     // lashes: one swelling stroke along the upper lid, out to a wing
     const wing = E(ew / 2 + 2.6 + D.lash * .5, G.O[1] + (D.male ? .5 : -1.1) - D.tilt * .6);
     const T = D.lash * s, lp = [...upPts, wing];
     S.fill(ink(offset(lp, t => T * .32 * Math.min(1, t * 3)), swell(T * .3, T, .8)), lash);
     if (!D.male && lod > 0) for (const k of [0, 1, 2]) { const a = along(upPts, .8 + k * .08), b = add(a, mul(norm([sg * (1.2 + k * .5), -1.3 + k * .3]), (3 + D.lash * .7) * s)); S.fill(ink([a, mix(a, b, .5), b], fade(T * .5)), lash); }
     S.fill(ink(part(loPts, .02, .42), S.lw(D.male ? .95 : .85)), sk.k, { op: .8 });
+    if (lod > 1 && !D.male) for (const k of [0, 1, 2]) { const a = along(loPts, .1 + k * .07), b = add(a, mul(norm([sg * (1 + k * .2), 1.1]), (1.5 + D.lash * .3) * s)); S.fill(ink([a, mix(a, b, .5), b], fade(T * .32)), lash, { op: .8 }); }
     if (lod > 0) {
       const cr = offset(part(upPts, .1, .9, 12), (1.6 + D.eyeH * .13 + (D.male ? 0 : .5)) * s * (1 - .3 * D.old));
       S.fill(ink(cr, S.lw(.8)), sk.k, { op: D.male ? .5 : .62 });
@@ -212,6 +226,11 @@ export function drawFace(S, Hd, F, look, sk, hair, iris) {
     const c = splPts([E(-ew / 2 - 1.5 + D.browGap, D.browV + D.browDrop), E(-ew * .1, D.browV - .8 - D.arch * 1.2), E(ew * .2, D.browV - 1.6 - D.arch * 2.4), E(ew / 2 + 5.5, D.browV + .4 + D.arch * 1.2 - D.browDrop * .25)], false, 1, 8);
     const w = t => D.browT * s * (t < .1 ? lerp(.6, 1, t / .1) : 1 - .93 * ((t - .1) / .9) ** 1.5);
     S.fill(ink(c, w), brow);
+    if (lod > 1) {                                     // the brow is hairs: fine strokes combed up and out along it, a few strays at its heavy end
+      const lt = mixc(brow, sk.b, .3);
+      for (let k = 0; k < 11; k++) { const t = .04 + k * .085, a = add(along(c, t), [0, w(t) * .32]), b = add(along(c, Math.min(1, t + .09)), [sg * .6 * s, -w(t) * (.62 - .3 * t)]); S.fill(ink([a, mix(a, b, .5), b], fade(S.lw(.75))), k % 2 ? lt : mixc(brow, '#000000', .25), { op: .8 }); }
+      for (const k of [0, 1]) { const a = along(c, .02 + k * .04), b = add(a, [-sg * (1.2 + k) * s, -(2.2 + k * .6) * s]); S.fill(ink([a, mix(a, b, .5), b], fade(S.lw(.7))), brow, { op: .7 }); }
+    }
     if (D.old > .4 && D.male && lod > 0) for (let k = 0; k < 7; k++) { const a = along(c, .1 + k * .1), b = add(a, [sg * 2.4 * s, (-2.6 + (k % 2)) * s]); S.fill(ink([a, mix(a, b, .5), b], fade(S.lw(1))), brow); }
     if (cut) S.fill(ink([along(c, .5), add(along(c, .5), [s * 1, s * 5])].map((p, i) => add(p, [0, i ? 0 : -5 * s])), [2.6 * s, 2.6 * s, 2.6 * s]), sk.b);
   }
@@ -224,6 +243,10 @@ export function drawFace(S, Hd, F, look, sk, hair, iris) {
   S.fill(ink(splPts([hp(NW * .2, NV - 2.2, 99), hp(NW * .5, NV - 3.4, 95), hp(NW * .8, NV - 3.2, 89)]), 1.7 * s * D.tipR), sk.k);
   S.fill(ink(splPts([hp(-NW * .22, NV - 2.2, 99), hp(-NW * .5, NV - 3.2, 95), hp(-NW * .72, NV - 2.8, 90)]), 1.4 * s), sk.k, { op: .85 });
   S.fill(ink(splPts([hp(NW * .93, NV - 9.5, 86), hp(NW + 1.4, NV - 5, 84), hp(NW * .8, NV - 1, 87)]), S.lw(1)), sk.k, { op: .75 });
+  if (lod > 1) {                                       // the nostrils, and the soft shadow where the wing meets the cheek
+    for (const sg of [-1, 1]) S.fill(ell(hp(sg * NW * .5, NV - 1.5, 93), NW * .2 * s, 1.15 * s, sg * .25), mixc(sk.d, sk.k, .55), { op: .8 });
+    S.fill(ell(hp(NW + 2.5, NV - 5, 82), 3.2 * s, 5 * s, .3), sk.s, { op: .4 });
+  }
   const yk = clamp(Math.abs(Hd.yawD) / 10);
   if (yk > .1) S.fill(ink(splPts([rdg(NV * .22), rdg(NV * .5), rdg(NV - 15), tip, rdg(NV - 2.5 + D.tipV * .5)], false, 1, 6), swell(0, S.lw(1.25), .8)), sk.k, { op: .35 + .5 * yk });
   S.fill(ell(add(tip, [-2 * s, -2.5 * s]), 2.3 * s * D.tipR, 1.7 * s * D.tipR), sk.l, { op: .6 });
@@ -240,7 +263,15 @@ export function drawFace(S, Hd, F, look, sk, hair, iris) {
   S.fill(polyline([...uP, ...mP.slice().reverse()], true), mixc(sk.s, sk.lip, D.lipTint * .8));
   S.fill(polyline([...mP, ...lP.slice().reverse()], true), mixc(sk.b, sk.lip, D.lipTint * .78));
   S.fill(ell(M(-mw * .14, lL * .46), mw * .24 * s, lL * .2 * s), sk.l, { op: .25 + .3 * D.lipTint });
+  if (lod > 1) {                                       // the upper lip darkens toward the mouth's line; the groove above it; the corners sit in shadow
+    S.fill(ink(offset(part(mP, .06, .94, 12), .9 * s), taper(lU * .55 * s, .5)), mixc(sk.lip, sk.d, .55), { op: .45 * (.4 + D.lipTint) });
+    for (const sg of [-1, 1]) { S.fill(ink([M(sg * mw * .15, -lU - 6.5), M(sg * mw * .17, -lU - 3), M(sg * mw * .16, -lU - .5)], S.lw(.85)), sk.s, { op: .55 }); S.fill(ell(M(sg * (mw + 1.2), .5 - sm * 2.2), 2.6 * s, 2.1 * s), sk.s, { op: .4 }); }
+    S.fill(ell(M(0, -lU - 3.4), mw * .1 * s, 2.4 * s), sk.l, { op: .35 });
+  }
   S.fill(ink(mP, taper((D.male ? 1.55 : 1.35) * s, .45)), mixc(sk.k, '#3a1418', .4));
+  // a smile lifts the cheeks: a light crease from the nose's wing round the mouth's corner; a grim face knits the brow
+  if (lod > 0 && sm > .28) for (const sg of [-1, 1]) S.fill(ink(splPts([P(sg * (NW + 3), NV - 3), P(sg * (mw + 5.5), MV - 6), P(sg * (mw + 6), MV + 1.5)], false, 1, 5), S.lw(.9)), sk.k, { op: Math.min(.4, .35 * sm) });
+  if (lod > 0 && D.mood < -.4) for (const sg of [-1, 1]) S.fill(ink([P(sg * 3.3, D.browV - 6), P(sg * 3.9, D.browV - 1), P(sg * 3.6, D.browV + 2.5)], S.lw(.9)), sk.k, { op: .5 * -D.mood });
   for (const sg of [-1, 1]) S.fill(ink([M(sg * mw, .6 - sm * 2.2), M(sg * (mw + 1.6), 1.2 - sm * 3.2)], [1.2 * s, .9 * s, 0]), sk.k, { op: .8 });
   if (D.cleft > .1) S.fill(ink([P(0, D.chinV - 13), P(.4, D.chinV - 9), P(0, D.chinV - 5)], S.lw(1)), sk.k, { op: .6 * D.cleft });
   // an orc's tusks rise from the lower jaw at the corners of the mouth

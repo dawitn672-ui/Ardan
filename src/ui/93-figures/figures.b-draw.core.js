@@ -142,7 +142,7 @@
       size = SIZES(size); const kind = kindOf(size, opts), sh = FG.sheet(p), look = L.lookOf(sh), G = FG.ground(sh);
       const o = FG.composeOpts(look, sh, size, kind, G, 'i' + hash(L.lookKey(look) + size + kind).toString(36) + '_');
       if (opts.plain) o.fx = false;
-      o.label = sh.name; o.cls = 'portrait fig ' + (kind === 'tall' || kind === 'figure' ? 'full' : 'bust') + (sh.alive ? '' : ' dead');
+      o.label = sh.name || 'A portrait'; o.cls = 'portrait fig ' + (kind === 'tall' || kind === 'figure' ? 'full' : 'bust') + (sh.alive ? '' : ' dead');
       return L.compose(look, o).svg;
     } catch (e) { fail(e); return ''; }
   };
@@ -157,7 +157,7 @@
     const y = tall ? 38 : 46, bald = look.hair === 'bald';
     return `<rect width="100" height="${tall ? 150 : 100}" fill="${G.b}"/><path d="M${tall ? 14 : 4} ${tall ? 150 : 100}C${tall ? 14 : 4} ${y + 30} 30 ${y + 22} 50 ${y + 22}S${tall ? 86 : 96} ${y + 30} ${tall ? 86 : 96} ${tall ? 150 : 100}Z" fill="${cloth}"/><ellipse cx="50" cy="${y}" rx="${tall ? 12 : 17}" ry="${tall ? 15 : 21}" fill="${skin}"/>${bald ? '' : `<path d="M${tall ? 37 : 32} ${y - 2}C${tall ? 36 : 30} ${y - (tall ? 22 : 30)} ${tall ? 64 : 70} ${y - (tall ? 22 : 30)} ${tall ? 63 : 68} ${y - 2}C${tall ? 58 : 60} ${y - (tall ? 12 : 16)} ${tall ? 42 : 40} ${y - (tall ? 12 : 16)} ${tall ? 37 : 32} ${y - 2}Z" fill="${hair}"/>`}`;
   };
-  const frameOf = (e, label, cls) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 ${e.tall ? 150 : 100}" width="${e.w}" height="${e.h}" class="${cls}" role="img" aria-label="${UI.esc(label)}" data-fg="${e.id}">${e.url ? '' : e.stand}<image${e.url || e.prev ? ` href="${e.url || e.prev}"` : ''} width="100" height="${e.tall ? 150 : 100}" preserveAspectRatio="none"/></svg>`;
+  const frameOf = (e, label, cls) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 ${e.tall ? 150 : 100}" width="${e.w}" height="${e.h}" class="${cls}" role="img" aria-label="${UI.esc(label || 'A portrait')}" data-fg="${e.id}">${e.url ? '' : e.stand}<image${e.url || e.prev ? ` href="${e.url || e.prev}"` : ''} width="100" height="${e.tall ? 150 : 100}" preserveAspectRatio="none"/></svg>`;
 
   // ---- the queue: one picture per turn
   const QUEUE = [];
@@ -260,7 +260,7 @@
       } else FG.stats.hits++;
       const e = hit.e;
       if (!e.url && !e.queued && !e.failed && e.look) enqueue(e);
-      if (kind === 'figure') return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="${e.w}" height="${e.h}" class="${hit.cls}" role="img" aria-label="${UI.esc(hit.label)}" data-fg="${e.id}"><image${e.url || e.prev ? ` href="${e.url || e.prev}"` : ''} width="100" height="200" preserveAspectRatio="none"/></svg>`;
+      if (kind === 'figure') return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="${e.w}" height="${e.h}" class="${hit.cls}" role="img" aria-label="${UI.esc(hit.label || 'A portrait')}" data-fg="${e.id}"><image${e.url || e.prev ? ` href="${e.url || e.prev}"` : ''} width="100" height="200" preserveAspectRatio="none"/></svg>`;
       return frameOf(e, hit.label, hit.cls);
     } catch (x) { fail(x); return ''; }
   };

@@ -7,6 +7,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OLD_SAVE = path.join(root, 'tests/saves/v2-cycle2-1106.ardan');
 
@@ -260,5 +262,35 @@ export default {
     }));
     const ok = r.a && r.b && r.a.q === 1 && r.b.q === 3 && r.b.r === 3 && r.drawnApart && r.c && r.c.q === 2 && r.c.r === 1 && r.pieces === 14 && r.shield && r.unknown && !r.noRow.length && r.errors === 0;
     return { ok, detail: `a plain sword is drawn plain (make ${r.a && r.a.q}), the same item carrying make 3 and rarity 3 is drawn so (${r.b && r.b.q}, ${r.b && r.b.r}) and the two pictures differ ${r.drawnApart}; an item registered at run time is drawn (${r.c ? 'sword, make ' + r.c.q + ', rarity ' + r.c.r : 'missing'}); a masterwork epic harness is ${r.pieces} of 14 pieces, each with its measures, and its shield ${r.shield}; an unknown item draws the person without it ${r.unknown}; ${r.ids} item ids of the game, ${r.noRow.length ? 'without a row: ' + r.noRow.join(', ') : 'each with a row'}; faults ${r.errors}` };
+  },
+
+  // carried over from the retired 93-anime-portraits (apAxe): no accessibility fault on the screens that show people,
+  // with their finished pictures in place (each frame is an image with its sitter's name)
+  async fgAxe(pg, errs) {
+    let axePath; try { axePath = require.resolve('axe-core/axe.min.js'); } catch (e) { return { ok: true, skip: 'axe-core is not installed' }; }
+    await pg.evaluate(fs.readFileSync(axePath, 'utf8'));
+    const scan = () => pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(v => `${v.id}(${v.nodes.map(n => n.target.join(' ')).slice(0, 2).join(';')})`));
+    const found = []; let shown = 0, named = 0;
+    const count = () => pg.evaluate(() => { const f = [...document.querySelectorAll('svg.portrait.fig')]; return [f.length, f.filter(s => s.getAttribute('role') === 'img' && (s.getAttribute('aria-label') || '').trim()).length]; });
+    const screen = async (name, fn) => { await pg.evaluate(fn); await pg.evaluate(() => UI.FIG.idle()); const [n, k] = await count(); shown += n; named += k; found.push(...(await scan()).map(v => name + ':' + v)); };
+    await screen('life', () => { A.newGame({ seed: 939, race: 'orc', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 22 }); UI.screen = 'game'; UI.set.hints = false; A.S.queue = []; UI.tab = 'life'; UI.ov = null; UI.render(); });
+    await screen('profile', () => { UI.ov = { type: 'profile' }; UI.render(); });
+    await screen('person', () => { const p = Object.values(A.S.people).find(x => x.alive && x.id !== A.S.pc); UI.ov = { type: 'person', id: p.id }; UI.render(); });
+    await screen('creation', () => { UI.ov = null; UI.A.newLife(); UI.A.crStep(1); });
+    for (let i = errs.length - 1; i >= 0; i--) if (/Refused to connect to 'https:\/\/fonts\.googleapis\.com/.test(errs[i])) errs.splice(i, 1);
+    return { ok: !found.length && shown >= 4 && named === shown, detail: `${found.length} axe violations on the life screen, the profile, a person's page and the face maker, with ${shown} portraits on them (${named} named images)${found.length ? ': ' + found.slice(0, 5).join(', ') : ''}` };
+  },
+
+  // carried over from 93-anime-portraits (apCreateSkin): the skin picked in the maker is the skin stored and drawn,
+  // for the palest and the darkest swatch offered
+  async fgCreateSkin(pg) {
+    const r = await pg.evaluate(() => {
+      UI.A.newLife(); UI.A.crStep(1); UI.A.fgTab('Skin');
+      const sw = [...document.querySelectorAll('.fg-panel [data-v^="skin:"]')].map(e => e.dataset.v.slice(5)), got = [];
+      for (const s of [sw[0], sw[sw.length - 1]]) { UI.A.crApp('skin:' + s); const pv = UI.crPreviewPerson(); got.push({ want: s, stored: UI.cr.app.skin, drawn: UI.FIG.look(pv).skin }); }
+      return { n: sw.length, got, errors: UI.FIG.errors };
+    });
+    const ok = r.n >= 6 && r.got.every(g => g.want && g.stored === g.want && g.drawn === g.want.toLowerCase()) && r.errors === 0;
+    return { ok, detail: `${r.n} skin swatches in the maker; ${r.got.map(g => `picked ${g.want}, stored ${g.stored}, drawn ${g.drawn}`).join('; ')}; faults ${r.errors}` };
   },
 };

@@ -4469,6 +4469,12 @@ var __ARDAN_V2 = (() => {
     D.earOut = 1 + 0.5 * g2("earSet");
     D.earPoint = Math.max(0, g2("earPoint"));
     D.lobe = g2("lobes") + 0.5 * old;
+    const md = clamp2(look.mood ?? 0, -1, 1), glad = Math.max(md, 0), grim = Math.max(-md, 0);
+    D.mood = md;
+    D.browV += -1.3 * glad + 0.9 * grim;
+    D.browDrop += 1.5 * grim - 0.5 * glad;
+    D.browGap -= 1.1 * grim;
+    D.squint = glad * 0.34 + grim * 0.14;
     D.nosebreak = 0;
     for (const sc of look.scars || []) if (sc.k === "nosebreak") D.nosebreak = (sc.side ?? 1) * 1;
     return D;
@@ -4570,7 +4576,7 @@ var __ARDAN_V2 = (() => {
     });
   }
   var eyeGeom = (Hd, sg) => {
-    const { D, P } = Hd, ew = D.eyeW, hU = D.eyeH * (D.male ? 0.64 : 0.6), hL = D.eyeH * (D.male ? 0.36 : 0.4), t = D.tilt;
+    const { D, P } = Hd, ew = D.eyeW, hU = D.eyeH * (D.male ? 0.64 : 0.6) * (1 - 0.22 * D.squint), hL = D.eyeH * (D.male ? 0.36 : 0.4) * (1 - D.squint), t = D.tilt;
     const E = (x, y, dw = 0) => P(sg * (D.eyeU + x), y, dw - 5);
     const I = [-ew / 2, 2 + t * 0.6], O = [ew / 2, -1.6 - t * 2.4];
     const up = [I, [-ew * 0.34, -hU * 0.52], [-ew * 0.08, -hU * 0.97], [ew * 0.22, -hU], [ew * 0.41, -hU * 0.6 + O[1] * 0.4], O];
@@ -4594,6 +4600,11 @@ var __ARDAN_V2 = (() => {
       }
       S.fill(white, D.old > 0.5 ? "#e9e1d5" : "#f3eeeb");
       S.within(white, () => {
+        if (lod > 1) {
+          S.fill(ell(E(-ew * 0.52, 0.4), ew * 0.2 * s, hU * 1.2 * s), "#8d829c", { op: 0.3 });
+          S.fill(ell(E(ew * 0.52, -1), ew * 0.17 * s, hU * 1.1 * s), "#8d829c", { op: 0.24 });
+          S.fill(ell(E(-ew / 2 + 1.5, 1.7 + D.tilt * 0.5), 1.7 * s, 1.2 * s), mixc(sk.blush, "#c2606a", 0.55), { op: 0.75 });
+        }
         const r = D.irisR, c = [(look.gaze || 0) * 2.5 - 0.6, (hL - hU) * 0.28 - 0.1], ip = ellPts(c, r, r, 0, 14).map((p) => E(p[0], p[1])), id = spl(ip, true);
         const cc = E(c[0], c[1]), lo = E(c[0], c[1] + r * 0.55), top = E(c[0], c[1] - r), bot = E(c[0], c[1] + r * 0.3);
         S.fill(id, S.radial(lo, r * 1.5 * s, [[0, ir.l], [0.5, ir.b], [0.9, ir.ring]]));
@@ -4604,7 +4615,12 @@ var __ARDAN_V2 = (() => {
         S.fill(polyline([...upPts, ...offset(upPts, -2.6 * s).reverse()], true), "#7b6d86", { op: 0.5 });
         S.fill(spl(ellPts([c[0] - sg * 0 - r * 0.36, c[1] - r * 0.34], r * 0.25, r * 0.2, -0.5, 8).map((p) => E(p[0], p[1])), true), "#ffffff", { op: 0.95 });
         if (lod > 0) S.fill(spl(ellPts([c[0] + r * 0.4, c[1] + r * 0.42], r * 0.11, r * 0.11, 0, 6).map((p) => E(p[0], p[1])), true), "#ffffff", { op: 0.7 });
+        if (lod > 1 && !isBlind) S.stroke(spl(ellPts([c[0], c[1] + r * 0.5], r * 0.62, r * 0.34, 0, 8).slice(0, 5).map((p) => E(p[0], p[1]))), ir.l, 1, { op: 0.55 });
       });
+      if (lod > 1) {
+        S.fill(ink(part(loPts, 0.1, 0.9, 10), S.lw(1.7)), mixc(sk.b, sk.blush, 0.65), { op: 0.75 });
+        S.fill(ink(offset(part(upPts, 0.22, 0.82, 10), (0.9 + D.eyeH * 0.06) * s), S.lw(1.5)), sk.l, { op: 0.4 });
+      }
       const wing = E(ew / 2 + 2.6 + D.lash * 0.5, G.O[1] + (D.male ? 0.5 : -1.1) - D.tilt * 0.6);
       const T = D.lash * s, lp = [...upPts, wing];
       S.fill(ink(offset(lp, (t) => T * 0.32 * Math.min(1, t * 3)), swell(T * 0.3, T, 0.8)), lash);
@@ -4613,6 +4629,10 @@ var __ARDAN_V2 = (() => {
         S.fill(ink([a, mix2(a, b, 0.5), b], fade(T * 0.5)), lash);
       }
       S.fill(ink(part(loPts, 0.02, 0.42), S.lw(D.male ? 0.95 : 0.85)), sk.k, { op: 0.8 });
+      if (lod > 1 && !D.male) for (const k of [0, 1, 2]) {
+        const a = along(loPts, 0.1 + k * 0.07), b = add(a, mul(norm([sg * (1 + k * 0.2), 1.1]), (1.5 + D.lash * 0.3) * s));
+        S.fill(ink([a, mix2(a, b, 0.5), b], fade(T * 0.32)), lash, { op: 0.8 });
+      }
       if (lod > 0) {
         const cr = offset(part(upPts, 0.1, 0.9, 12), (1.6 + D.eyeH * 0.13 + (D.male ? 0 : 0.5)) * s * (1 - 0.3 * D.old));
         S.fill(ink(cr, S.lw(0.8)), sk.k, { op: D.male ? 0.5 : 0.62 });
@@ -4626,6 +4646,17 @@ var __ARDAN_V2 = (() => {
       const c = splPts([E(-ew / 2 - 1.5 + D.browGap, D.browV + D.browDrop), E(-ew * 0.1, D.browV - 0.8 - D.arch * 1.2), E(ew * 0.2, D.browV - 1.6 - D.arch * 2.4), E(ew / 2 + 5.5, D.browV + 0.4 + D.arch * 1.2 - D.browDrop * 0.25)], false, 1, 8);
       const w = (t) => D.browT * s * (t < 0.1 ? lerp2(0.6, 1, t / 0.1) : 1 - 0.93 * ((t - 0.1) / 0.9) ** 1.5);
       S.fill(ink(c, w), brow);
+      if (lod > 1) {
+        const lt = mixc(brow, sk.b, 0.3);
+        for (let k = 0; k < 11; k++) {
+          const t = 0.04 + k * 0.085, a = add(along(c, t), [0, w(t) * 0.32]), b = add(along(c, Math.min(1, t + 0.09)), [sg * 0.6 * s, -w(t) * (0.62 - 0.3 * t)]);
+          S.fill(ink([a, mix2(a, b, 0.5), b], fade(S.lw(0.75))), k % 2 ? lt : mixc(brow, "#000000", 0.25), { op: 0.8 });
+        }
+        for (const k of [0, 1]) {
+          const a = along(c, 0.02 + k * 0.04), b = add(a, [-sg * (1.2 + k) * s, -(2.2 + k * 0.6) * s]);
+          S.fill(ink([a, mix2(a, b, 0.5), b], fade(S.lw(0.7))), brow, { op: 0.7 });
+        }
+      }
       if (D.old > 0.4 && D.male && lod > 0) for (let k = 0; k < 7; k++) {
         const a = along(c, 0.1 + k * 0.1), b = add(a, [sg * 2.4 * s, (-2.6 + k % 2) * s]);
         S.fill(ink([a, mix2(a, b, 0.5), b], fade(S.lw(1))), brow);
@@ -4640,6 +4671,10 @@ var __ARDAN_V2 = (() => {
     S.fill(ink(splPts([hp(NW * 0.2, NV - 2.2, 99), hp(NW * 0.5, NV - 3.4, 95), hp(NW * 0.8, NV - 3.2, 89)]), 1.7 * s * D.tipR), sk.k);
     S.fill(ink(splPts([hp(-NW * 0.22, NV - 2.2, 99), hp(-NW * 0.5, NV - 3.2, 95), hp(-NW * 0.72, NV - 2.8, 90)]), 1.4 * s), sk.k, { op: 0.85 });
     S.fill(ink(splPts([hp(NW * 0.93, NV - 9.5, 86), hp(NW + 1.4, NV - 5, 84), hp(NW * 0.8, NV - 1, 87)]), S.lw(1)), sk.k, { op: 0.75 });
+    if (lod > 1) {
+      for (const sg of [-1, 1]) S.fill(ell(hp(sg * NW * 0.5, NV - 1.5, 93), NW * 0.2 * s, 1.15 * s, sg * 0.25), mixc(sk.d, sk.k, 0.55), { op: 0.8 });
+      S.fill(ell(hp(NW + 2.5, NV - 5, 82), 3.2 * s, 5 * s, 0.3), sk.s, { op: 0.4 });
+    }
     const yk = clamp2(Math.abs(Hd.yawD) / 10);
     if (yk > 0.1) S.fill(ink(splPts([rdg(NV * 0.22), rdg(NV * 0.5), rdg(NV - 15), tip, rdg(NV - 2.5 + D.tipV * 0.5)], false, 1, 6), swell(0, S.lw(1.25), 0.8)), sk.k, { op: 0.35 + 0.5 * yk });
     S.fill(ell(add(tip, [-2 * s, -2.5 * s]), 2.3 * s * D.tipR, 1.7 * s * D.tipR), sk.l, { op: 0.6 });
@@ -4654,7 +4689,17 @@ var __ARDAN_V2 = (() => {
     S.fill(polyline([...uP, ...mP.slice().reverse()], true), mixc(sk.s, sk.lip, D.lipTint * 0.8));
     S.fill(polyline([...mP, ...lP.slice().reverse()], true), mixc(sk.b, sk.lip, D.lipTint * 0.78));
     S.fill(ell(M(-mw * 0.14, lL * 0.46), mw * 0.24 * s, lL * 0.2 * s), sk.l, { op: 0.25 + 0.3 * D.lipTint });
+    if (lod > 1) {
+      S.fill(ink(offset(part(mP, 0.06, 0.94, 12), 0.9 * s), taper(lU * 0.55 * s, 0.5)), mixc(sk.lip, sk.d, 0.55), { op: 0.45 * (0.4 + D.lipTint) });
+      for (const sg of [-1, 1]) {
+        S.fill(ink([M(sg * mw * 0.15, -lU - 6.5), M(sg * mw * 0.17, -lU - 3), M(sg * mw * 0.16, -lU - 0.5)], S.lw(0.85)), sk.s, { op: 0.55 });
+        S.fill(ell(M(sg * (mw + 1.2), 0.5 - sm * 2.2), 2.6 * s, 2.1 * s), sk.s, { op: 0.4 });
+      }
+      S.fill(ell(M(0, -lU - 3.4), mw * 0.1 * s, 2.4 * s), sk.l, { op: 0.35 });
+    }
     S.fill(ink(mP, taper((D.male ? 1.55 : 1.35) * s, 0.45)), mixc(sk.k, "#3a1418", 0.4));
+    if (lod > 0 && sm > 0.28) for (const sg of [-1, 1]) S.fill(ink(splPts([P(sg * (NW + 3), NV - 3), P(sg * (mw + 5.5), MV - 6), P(sg * (mw + 6), MV + 1.5)], false, 1, 5), S.lw(0.9)), sk.k, { op: Math.min(0.4, 0.35 * sm) });
+    if (lod > 0 && D.mood < -0.4) for (const sg of [-1, 1]) S.fill(ink([P(sg * 3.3, D.browV - 6), P(sg * 3.9, D.browV - 1), P(sg * 3.6, D.browV + 2.5)], S.lw(0.9)), sk.k, { op: 0.5 * -D.mood });
     for (const sg of [-1, 1]) S.fill(ink([M(sg * mw, 0.6 - sm * 2.2), M(sg * (mw + 1.6), 1.2 - sm * 3.2)], [1.2 * s, 0.9 * s, 0]), sk.k, { op: 0.8 });
     if (D.cleft > 0.1) S.fill(ink([P(0, D.chinV - 13), P(0.4, D.chinV - 9), P(0, D.chinV - 5)], S.lw(1)), sk.k, { op: 0.6 * D.cleft });
     if (look.tusks > 0 && !D.kid) for (const sg of [-1, 1]) {
@@ -7051,7 +7096,7 @@ var __ARDAN_V2 = (() => {
     gx.earPoint = Math.max(gx.earPoint ?? -1, P.ear);
     if (P.ear > 0) gx.earSize = Math.max(gx.earSize || 0, P.ear * 0.5);
     const dark = typeof app.skin === "string" && HEXOK2.test(app.skin) && parseInt(app.skin.slice(1, 3), 16) < 150;
-    let hair = HAIRS[app.hs] ? app.hs : null;
+    let hair = Object.prototype.hasOwnProperty.call(HAIRS, app.hs) ? app.hs : null;
     if (!hair) {
       const row = HSTYLE[app.hstyle] || HSTYLE.short;
       let opts = row[male ? 0 : 1];
@@ -7066,7 +7111,7 @@ var __ARDAN_V2 = (() => {
     else if (age < 3 && !["bald", "stubble", "cropped"].includes(hair)) hair = "cropped";
     let beard = "none";
     if (male && age >= 17 && sh.race !== "elf") {
-      beard = BEARDS[app.bd] ? app.bd : pickBy(id, "beard", BEARD_OF[app.beard] || ["none"]);
+      beard = typeof app.bd === "string" && Object.prototype.hasOwnProperty.call(BEARDS, app.bd) ? app.bd : pickBy(id, "beard", BEARD_OF[app.beard] || ["none"]);
       if (age < 20 && !["none", "stubble", "moustache"].includes(beard)) beard = "stubble";
     }
     const hairColor = typeof app.hair === "number" ? HAIR_OF[app.hair] || "darkbrown" : "darkbrown";
@@ -7117,6 +7162,11 @@ var __ARDAN_V2 = (() => {
       scars.push({ k, side: stream(id, "side|" + w.k)() < 0.5 ? -1 : 1, fresh: !!w.fresh });
     }
     const K2 = kit(sh, { male, age, id });
+    if (K2.headwear && K2.headwear !== "none" && K2.headwear !== "circlet" && K2.headwear !== "crown") {
+      const st = HAIRS[hair] || {}, covers = ["veil", "coif", "bascinet"].includes(K2.headwear);
+      const long = st.mass || st.braid || st.tail || st.tails || st.knot || st.earBuns || st.curtain && st.curtain.to > 40, tall = ["topknot", "spiky", "crest", "coilyfull", "buns", "ponytail", "pigtails", "messy"].includes(hair);
+      if (covers ? long || tall : tall) hair = male ? "cropped" : covers ? "bun" : "bob";
+    }
     const r = stream(id, "bearing"), yaw = Math.round((r() < 0.7 ? 1 : -1) * (9 + r() * 7)), roll = Math.round(r.s() * 3);
     const mood = clamp2(sh.mood ?? 0, -1, 1);
     return {
