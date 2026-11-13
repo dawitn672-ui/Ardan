@@ -19,3 +19,5 @@ export * as game from './game.js';
 export * as continent from '../../map/engine/continent.js';
 export * as noise from '../../map/engine/noise.js';
 export * as render from '../../map/engine/render.js';
+export * as face from '../../people/engine/face.js';
+export * as figure from '../../ui/engine/figure/index.js';

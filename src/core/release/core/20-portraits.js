@@ -371,8 +371,16 @@ PORTRAIT.beast = function (cid, size = 200) {
 
 PORTRAIT.H = 340;
 
+// [C8b] Every portrait in the game is drawn by the figure library (src/ui/93-figures, the art the owner approved at
+// gate 2, D-035): a square for lists and chips, two by three for size >= 120. The release's paper doll below is what a
+// build without that feature draws, and what is drawn if the library ever fails (UI.FIG.errors counts it).
 PORTRAIT.svg = function (p, size = 200, opts = {}) {
-  return !p || !p.app ? "" : size < 120 || opts.bust ? PORTRAIT.bust(p, size, opts) : PORTRAIT.full(p, size, opts);
+  if (!p || !p.app) return "";
+  if (typeof UI !== "undefined" && UI.FIG && UI.FIG.svg) {
+    const s = UI.FIG.svg(p, size, opts || {});
+    if (s) return s;
+  }
+  return size < 120 || (opts && opts.bust) ? PORTRAIT.bust(p, size, opts) : PORTRAIT.full(p, size, opts);
 };
 
 PORTRAIT.charges = {

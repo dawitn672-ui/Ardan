@@ -418,3 +418,33 @@ looked through. PR #2's title and text are brought up to date.
      up to 1024 px is its own step. A tablet keeps the desktop layout with 44 px top-bar buttons.
 - **Conflicts with orders:** none. Descriptions still open on click only; no percentages; rendering stays pure.
 - **Undo:** delete `src/ui/9992-story-drawer` and the "B5 (U3)" block of `look.c-layout.core.js`, then `git revert` the folds.
+### D-036 · C8b: how the figure library lives in the game (2026-11-13 11:45 ET, the builder's calls where gate 2 left questions open)
+**Chosen:**
+1. **Place.** The gate 2 library is a v2 engine module, `src/ui/engine/figure/` (on the page as `A.V2.figure`), pure
+   functions from a look to one SVG; the game's side is the feature `src/ui/93-figures`. `PORTRAIT.svg` keeps its
+   name and its callers; the release source hands it over in place (D-028).
+2. **The face code does not grow; a second code is added.** `p.app.g` stays the game's 23-character code (39
+   features, `face.js`, D-024 "kept"). The eleven features the drawn head added and the seven measures of the build
+   go in a second code of 11 characters, `p.app.g2` (gate 2's question 6). Only a face made by hand stores `g2`;
+   everyone else's comes from their id, so the state grows by 23 characters a person and no more.
+3. **Faces are stored at birth, not derived at draw.** A child takes after its parents' codes, and parents leave the
+   state; a derived face would change the day they did. `A.genAppearance` asks `A.LOOKS.born`; older saves are filled
+   on load in birth order, leaning by the appearance fields they hold. No save version is bumped (a bump would drop a
+   loaded life's journal); a face has its own seeded stream, so the world's dice and every seed's world are unchanged.
+   This is the exception to "engine code uses only A.rand" that the plan foresaw (characters.md §4, §12).
+4. **The page holds a frame, not a figure.** Portraits are made off the press by a queue (compose, a canvas, one PNG
+   kept by look) and shown through a small frame with a stand-in until ready. Reason, measured: sixty inline figures
+   cost about a third of a second of the page's time at every redraw, a frame costs nothing. This is characters.md
+   §12's delivery ("one image, a queue, a stand-in"), with the SVG as the drawing step in place of a canvas display
+   list.
+5. **Sizes.** Under 120 px a square; from 120 px two by three, cut like a profile card (to the hands and the belt)
+   rather than the whole small figure, because the owner's praise was for the cards. The whole standing figure is
+   `opts.figure`, for the Profile tab (P). Light and depth passes on large pictures only (gate 2's question 10).
+6. **Gear by item.** One table row per item id (`GEAR_ART`): the drawn piece, its make and its rarity; an item that
+   carries its own measures is drawn with them; `registerGear` adds one (E2). D-032 items 6 to 8 stand.
+7. **Retired to `archive/`:** `93-anime-portraits` and `63-miniature-portraits` (D-015, D-020: "retire the two older
+   renderers: yes"), last built at `f574229`. The release's paper doll stays as what a build without the feature
+   draws. Gate 1's engine (`src/ui/engine/draw`, `assets/parts/`) and the 3D path (D-024) were never in the game and
+   are left for a clean-up of their own, since the demo build scripts still read them.
+**Refines:** D-025 (budgets: compose under 6 ms and paint within 16 ms hold for list portraits; a large portrait is
+measured, made once and kept).
