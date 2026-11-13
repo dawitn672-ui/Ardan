@@ -359,8 +359,7 @@
 .pf-m2{color:var(--ink-3);font-size:var(--t-small,13px);font-weight:400}
 .pf-h2{margin:8px 0 2px;font:600 var(--t-small,13px)/1.3 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
 .pf-empty,.pf-fine{margin:2px 0;color:var(--ink-3);font-size:var(--t-small,13px)}
-.pf-fight .pf-row{grid-template-columns:6.6em minmax(0,1fr)}
-.pf-fight .pf-row .pf-k{grid-column:1}
+.pf-fight .pf-row{grid-template-columns:6.6em auto minmax(0,1fr);border-bottom:0}
 .pf-sk{display:grid;grid-template-columns:minmax(0,1fr) 7.4em 64px;gap:8px;align-items:center;font-size:var(--t-ui,14px);min-height:26px}
 .pf-tier{font-weight:600;color:var(--ink)}
 .pf-prog{display:block;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
