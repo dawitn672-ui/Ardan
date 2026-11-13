@@ -1,5 +1,5 @@
 // The release's core, event view (part 1 of 2): Showing an event, its tokens, checks and choices; the queue and the journal's helpers.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: viewSkip, A.eventView, A.ctxTokens, A.checkVal, A.checkOdds, A.eventChoose, A.eventClose, A.eventAuto,
 // A.applyFx, A.inheritance, A.inherit, A.teachChild, A.migrateV10, GD.TIERS, A.tierOf, A.fightWorth, A.worthParts,
 // A.cmdWorth, A.specialties, A.mainRole, A.styleParts, A.fullStyle, A.ensureMates, A.roster, A.knowCost,

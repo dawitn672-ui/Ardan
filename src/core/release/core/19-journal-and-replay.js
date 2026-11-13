@@ -1,5 +1,5 @@
 // The release's core, journal and replay: The journal: recording, resuming and replaying a life, and its fingerprint.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: jLastArgs, A.jEnc, A.jDec, A.jRecord, A.jWrap, A.journalStart, A.journalResume, A.replay, A.fingerprint.
 
 let jLastArgs = null;

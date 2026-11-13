@@ -1,5 +1,5 @@
 // The release's event pack 26 of 30 (85 events, mostly du_). Readable source of
-// vendor/ardan-b593143.html with the patch layer baked in (X1, D-027). Every function is kept exactly as the release
+// vendor/ardan-b593143.html with the patch layer baked in (X1, D-028). Every function is kept exactly as the release
 // wrote it: the game reads event functions as text (A.evAudience), so reformat a function only with that in mind.
 (function(){
   const J = (p,...k)=>!!p.job&&k.includes(p.job.c),

@@ -1,5 +1,5 @@
 // The release's core, bonds and favours: Relationship labels, bonds, favours owed, superiors and obligations.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.REL_LABEL (+), A.BOND, A.bondTier, A.favorsOf, A.owesTo, A.addFavor, A.addOwe, A.standing,
 // A.letterPower, A.useLetter, A.giveLetter, A.FAVORS, A.favorOptions, A.callFavor, A.INTERACT.help,
 // A.INTERACT.swear, A.INT_FN.help, A.INT_FN.swear, A.superior, A.superiorTitle, A.makeSuperior, A.needsNewSuperior,

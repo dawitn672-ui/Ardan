@@ -1,5 +1,5 @@
 // The release's core, engine base: A: the random numbers, the state, people, realms and the small helpers everything uses; starting and ending wars.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A, A.VERSION, A.rngState, A.rand, A.seed, A.ri, A.rf, A.chance, A.pick, A.gauss, A.wpick, A.shuffle,
 // A.clamp, A.round, A.fmt, A.coin, A.cap, A.ordinal, A.uid, A.HOOKS, A.on, A.emit, A.filter, A.S, A.newState,
 // A.serialize, A.deserialize, A.P, A.pc, A.age, A.realm, A.realmName, A.realmShort, A.culture, A.faith, A.house,

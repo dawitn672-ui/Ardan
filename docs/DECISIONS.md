@@ -244,7 +244,7 @@ Gates: gate 1 a four-portrait style frame in two finishes for the owner, gate 2 
    `A.freeTime`, `A.initiativeRate` and the per-activity costs stay (they are the measure of load, and old tests read them).
 **Replaces:** D-014 decision 6's "or when the initiative pool is full" (D-019 already removed it); V2_SPEC row 8.
 
-### D-027 · X1: the release is readable source; the patch layer is baked in (2026-11-12 22:25 ET, X1; carries out D-018)
+### D-028 · X1: the release is readable source; the patch layer is baked in (2026-11-12 22:25 ET, X1; carries out D-018)
 **Chosen:**
 1. **The build's input is `src/core/release/`**, not `vendor/ardan-b593143.html` (which stays untouched, the original).
    The core is one file per section of the release's own order (`core/01-lore-tables.js` ... `core/23-ui-f.js`), the

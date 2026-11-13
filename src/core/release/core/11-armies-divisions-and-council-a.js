@@ -1,5 +1,5 @@
 // The release's core, armies divisions and council (part 1 of 2): Demobilising, divisions, the army day, the order of battle, the council and the noble's year.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.wsDemobilize, A.wsDisband, A.pcDivAttach, A.wsAttachPC, A.wsDay, A.wsRunDays, A.wsSeparate,
 // A.frontProvs, A.wsFrontProvs, A.provDefPow, A.armyEnemy, A.armyThink, A.wsOrderDiv, A.divSpeed, A.divMove,
 // A.occupy, A.wsWinter, A.WTAC, A.WTAC_KEYS, A.sideMake, A.sideRecon, A.pcTacFor, A.tacDay, A.TAC_NOTE, A.fightDay,

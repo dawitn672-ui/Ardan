@@ -2,7 +2,7 @@
 
 Ardan is a single-page medieval life sim and grand strategy game: you live one person's life inside a simulated
 continent of realms, courts, families and wars. This repo holds the **shipped release** as readable source
-(`src/core/release/`, made by X1 from the untouched minified original `vendor/ardan-b593143.html`, D-027) and everything
+(`src/core/release/`, made by X1 from the untouched minified original `vendor/ardan-b593143.html`, D-028) and everything
 built on top of it: **features** that add code and events, the **v2 engine** (plain ES modules), content kept as
 **data**, and the tools that build, test and play it. `node tools/build.mjs` turns it all into one playable file, `index.html`.
 
@@ -42,7 +42,7 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 
 | Path | What |
 | --- | --- |
-| `src/core/release/` | **The release's own source** (X1, D-027): `core/*.js` (engine and interface by section), `content/*.js` (its 30 event packs), `lore/*.json`, `page.html`; `PATCHES.md` lists the 203 baked patches. The build's input. Edit it here. See its `README.md` |
+| `src/core/release/` | **The release's own source** (X1, D-028): `core/*.js` (engine and interface by section), `content/*.js` (its 30 event packs), `lore/*.json`, `page.html`; `PATCHES.md` lists the 203 baked patches. The build's input. Edit it here. See its `README.md` |
 | `src/<system>/NN-name/` | A **feature**: one unit of change (`*.core.js`, `*.events.js`, `test.mjs`, `README.md`; a `patches.mjs` only for work in flight) |
 | `src/<system>/engine/` | The **v2 engine** modules of that system (plain ES modules, unit-tested by `tests/v2/`) |
 | `src/core/00-..09-` | The fix layer, always built |
@@ -138,7 +138,7 @@ as `A.V2`; never edit the bundle). Their unit tests are `tests/v2/` (`tools/chec
 - Don't edit another feature, `src/core/release/`, `tools/`, `tests/`, `tools/bench/` or `vendor/` unless that is your
   task (two agents editing one release file is a merge, not a conflict, but say so in your report).
 
-**Change the release in its source** (X1, D-027). The release is `src/core/release/`, readable and maintained: to change
+**Change the release in its source** (X1, D-028). The release is `src/core/release/`, readable and maintained: to change
 a release function, edit it there, in place, with a comment when the reason is not obvious. There are no patches in the
 default build any more and there should be no new ones (the build still applies a feature's `patches.mjs`, matched
 against the built text, for work already in flight such as `82-early-years`).

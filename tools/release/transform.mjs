@@ -1,4 +1,4 @@
-// X1 (D-027): the de-minifying rewrites applied to the release's core, and the AST normaliser that proves them.
+// X1 (D-028): the de-minifying rewrites applied to the release's core, and the AST normaliser that proves them.
 //
 // T (rewrite) only ever replaces a statement with statements that do the same thing in the same order:
 //   a, b, c;              ->  a; b; c;                    (a statement made of a comma list)

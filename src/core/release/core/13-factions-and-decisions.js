@@ -1,5 +1,5 @@
 // The release's core, factions and decisions: Houses, factions, net worth, the decisions (A.DEC) and the progress year.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.polOnTransfer, A.pickCB, A.FACTIONS, A.houseStrength, A.realmHouses, A.factionsOf, A.factionPower,
 // A.factionsYear, A.factionDemand, A.factionConcede, A.factionRevolt, A.canJoinFaction, A.joinFaction,
 // A.leaveFaction, A.LEVY, A.setLaw, A.peaceTerms, A.peaceOdds, A.peaceOffer, A.aiOffers, A.aiDiploYear,

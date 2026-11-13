@@ -1,5 +1,5 @@
 // The release's core, ui (part 3 of 6): UI: the interface.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: UI.realmTabBasic, UI.courtTab, UI.mapMode, UI.mapFocus, UI.mapLegend, UI.worldTabPolitics, UI.A (+), UI.C
 // (+), UI.unitSym, UI.symLegend, UI.oobOpen, UI.oobRow, UI.oobTree, UI.oobBreadcrumb, UI.ovModalOob, MAP.front,
 // UI.wrClampView, UI.canvasCounter, UI.specCard, UI.peacePicks, UI.peacePanel, UI.ovModalV4, UI.TAB.realm, UI.bview,

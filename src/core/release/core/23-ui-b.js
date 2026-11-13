@@ -1,5 +1,5 @@
 // The release's core, ui (part 2 of 6): UI: the interface.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: UI.tipsInit, UI.TIPS.worth, UI.TIPS.worthBody, UI.TIPS.worthSkill, UI.TIPS.worthGear, UI.TIPS.stat,
 // UI.HINTS, UI.hintUsed, UI.HINT_YEARS, UI.hintsOn, UI.hintSeen, UI.hintMark, UI.hintFor, UI.hintBox, UI.A (+),
 // UI.hintNote, UI.TASKS, UI.pt, UI.ptAnswered, UI.ptStart, UI.ptSnap, UI.ptPaint, UI.ptFinish, UI.ptTick, UI.ICONS,

@@ -1,5 +1,5 @@
 // The release's core, map: MAP: the map view.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: MAP, MAP.init, MAP.hex, MAP.ownerColor, MAP.cb, MAP.CB_PAL, MAP.cbAssign, MAP.realmColor, MAP.DIPL,
 // MAP.FAITH_COL, MAP.MODES, MAP.modeInfo, MAP.rgb, MAP.overlay, MAP.provAt, MAP.toCanvas, MAP.draw, MAP.attach.
 

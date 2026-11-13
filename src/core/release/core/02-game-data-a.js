@@ -1,5 +1,5 @@
 // The release's core, game data (part 1 of 2): GD: the fixed game data (stats, races, skills, perks, gear, looks).
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: GD, GD.STATS, GD.STAT_NAMES, GD.STAT_SHORT, GD.RACES, GD.RACE_LIST, GD.RACE_POPKEY, GD.REALM_CULTURE,
 // GD.REALM_HUMAN_CULTURE, GD.RACE_CULTURE, GD.REALM_FAITH, GD.RACE_FAITH, GD.NAMING, GD.WIND_TRIBES, GD.GIANT_HALLS,
 // GD.TRADE_NAMES, GD.STATUS, GD.STATUS_LIST, GD.UNFREE, GD.TRAITS, GD.QUIRKS, GD.BLOOD, GD.GEAR, GD.SHOP,

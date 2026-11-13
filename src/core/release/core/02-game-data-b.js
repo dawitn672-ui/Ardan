@@ -1,5 +1,5 @@
 // The release's core, game data (part 2 of 2): GD: the fixed game data (stats, races, skills, perks, gear, looks).
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: GD.GEAR (+), GD.SHOP, GD.TRAITS (+), GD.QUIRKS (+), GD.HAIRSTYLES, GD.BEARDS, GD.BUILDS, GD.BUILD_FX,
 // GD.PAINTS, GD.PAINT_NAMES, GD.JEWELS, GD.EYE_SHAPES, GD.NOSES.
 

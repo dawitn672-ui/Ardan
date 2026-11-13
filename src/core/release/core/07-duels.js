@@ -1,5 +1,5 @@
 // The release's core, duels: Duels: reads, hits, the end of a fight; enlisting.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.weighText, A.makeRead, A.duelAct, A.applyHit, A.duelCheckEnd, A.duelFinish, A.duelConsequences,
 // A.duelClose, A.duelAuto, A.DUEL_END, A.makeOpponent, A.makeFoe, A.gcPeople, A.startTournament, A.tourneyRound,
 // A.DUEL_END.tourney, A.beastsNear, A.startHunt, GD.TECH_FX, GD.TECH_FX_DESC, GD.STYLE_RANKS, GD.STYLE_XP,

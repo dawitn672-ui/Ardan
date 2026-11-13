@@ -1,5 +1,5 @@
 // The release's core, ui (part 6 of 6): UI: the interface.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: UI.TAB.holdings, UI.A (+), UI.C (+), UI.TAB.codex, UI.powerPage, UI.COMP_COL, UI.COMP_NAME, UI.realmCode,
 // UI.divCats, UI.wrComp, UI.compStrip, UI.lumOf, UI.wrCounter, UI.wrLegend, UI.wrBars, UI.bnGrid, UI.wrDivPanel,
 // UI.duelModal, UI.helpModal, UI.errLog, UI.noteError, UI.reportBundle, UI.downloadReport, UI.reportModal.

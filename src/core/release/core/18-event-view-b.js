@@ -1,5 +1,5 @@
 // The release's core, event view (part 2 of 2): Showing an event, its tokens, checks and choices; the queue and the journal's helpers.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.orderReqs, A.orderJoin, A.orderMonth, A.orderLeave, A.orderSummary, A.orderTraits, A.migrateOrders,
 // A.orderWithdraw, A.onDay, GD.GOODS, GD.TRANSPORT, A.mktInit, A.mkt, A.priceTarget, A.mktMonth, A.onMonth,
 // A.tradeSkill, A.spread, A.buyPrice, A.sellPrice, A.mktDepth, A.homeMkt, A.cargo, A.cargoLoad, A.carryCap,

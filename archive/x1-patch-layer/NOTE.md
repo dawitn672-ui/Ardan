@@ -1,4 +1,4 @@
-# The patch layer (retired by X1, D-027)
+# The patch layer (retired by X1, D-028)
 
 What it was: 58 `patches.mjs` files, 203 patches and 393 exact find-and-replace edits that `tools/build.mjs` applied
 to the minified blobs of `vendor/ardan-b593143.html` on every build, each with a `why`. They sat in the feature

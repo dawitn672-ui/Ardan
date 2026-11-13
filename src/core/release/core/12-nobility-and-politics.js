@@ -1,5 +1,5 @@
 // The release's core, nobility and politics: Noble actions, authority, reasons for war, the politics year and calls to arms.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.CHOICE_FN (+), A.nobleAction, A.AUTH, A.CB, A.polInit, A.polSeed, A.polAll, A.hasNap, A.hasTrade,
 // A.isTributary, A.tributariesOf, A.claimsOn, A.ally, A.unally, A.tradeMul, A.politicsYear, politicsYearNow,
 // A.callToArms, callToArmsNow.

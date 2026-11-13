@@ -1,5 +1,5 @@
 // The release's core, prison travel school ai: Prison, exile, travel, schools, the AI people act by, and starting a duel.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.imprison, A.exile, A.prisonYear, A.travelOptions, A.travelTo, A.schoolOptions, A.schoolSkill,
 // A.joinSchool, A.schoolYear, A.choiceChoose, A.simpleClose, A.gearAvailable, A.buyGear, A.sellGear, A.buyProperty,
 // A.sellProperty, A.setLifestyle, A.quietYears, GD.CAREERS (+), GD.CAREER_OFFICE, A.jobRep, A.repWord, A.addRep,

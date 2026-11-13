@@ -1,5 +1,5 @@
 // The release's core, missions and line battles: Missions and their stages, line battles.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.MISSION_TYPES, A.TERR_TXT, A.newMission, A.missionMates, A.STAGES, A.milOrder, A.missionView,
 // A.statOrSkill, A.checkStatVal, A.missionOdds, A.missionChoose, A.startDuelFront, A.DUEL_END.mission,
 // A.stageOutcome, missionStageOutcome, A.missionFinish, missionFinishNow, A.missionClose, A.missionAuto,

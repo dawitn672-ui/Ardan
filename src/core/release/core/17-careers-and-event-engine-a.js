@@ -1,5 +1,5 @@
 // The release's core, careers and event engine (part 1 of 2): Careers, doors, the job board, A.defEvents, the condition helpers (A.C) and rolling events.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.pathOfCareer, GD.CAREER_SEAT, GD.DOORS, A.JOB_MERIT, A.jobBoard, A.jobRankUp, A.pathMonth, A.onMonth,
 // A.dutyEvent, A.doorsFor, A.takeDoor, A.SEAT_LINK, A.seatEligible, A.seatOffers, A.CHOICE_FN, A.CHOICE_FN (+),
 // A.councilMonth, A.COUNCIL_ACTS, A.councilAct, A.councilPropose, A.DMEM, A.dInit, A.dAll, A.remember, A.memSum,

@@ -1,5 +1,5 @@
 // The release's core, companies and war staff (part 2 of 2): Free companies, seizing land, battle ends, armies and the war staff's raising and mobilising.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.emergencyLevy, A.disbandDiv, A.TPL_XP, A.tplEdit, A.provLocalSupply, A.supplyNeighbours, A.supplyBase,
 // A.sameArr, A.supScratch, A.supplyMap, A.supplyRoute, A.supplyInfo, A.divSupUse, A.forcesYear, A.forcesAI,
 // A.cmdRole, A.lineSet, A.fxAct, A.setStance, A.WS, A.armyDivs, A.armyMen, A.armiesOf, A.army, A.armiesAt, A.divsAt,

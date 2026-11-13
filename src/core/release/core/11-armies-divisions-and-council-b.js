@@ -1,5 +1,5 @@
 // The release's core, armies divisions and council (part 2 of 2): Demobilising, divisions, the army day, the order of battle, the council and the noble's year.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.rulerAction, A.councilSkill, A.councilCandidates, A.nobleYear, nobleYearNow.
 
 A.rulerAction = function (key, arg) {

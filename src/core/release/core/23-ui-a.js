@@ -1,5 +1,5 @@
 // The release's core, ui (part 1 of 6): UI: the interface.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: UI, UI.SET_KEY, UI.esc, UI.$, UI.store, UI.toast, UI.bar, UI.barRow, UI.portrait, UI.titleLineBasic,
 // UI.loadSettings, UI.applySettings, UI.saveSettings, UI.saving, UI.savePending, UI.save, SAVES.clean,
 // UI.enterSaveSafe, UI.enterSave, UI.loadGame, UI.continueGame, UI.download, UI.exportSave, UI.importSave,

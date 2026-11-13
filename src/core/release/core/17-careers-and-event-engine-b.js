@@ -1,5 +1,5 @@
 // The release's core, careers and event engine (part 2 of 2): Careers, doors, the job board, A.defEvents, the condition helpers (A.C) and rolling events.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.diplOptions, A.diplDo, A.GATHER, A.gathById, A.gathName, A.gathGuests, A.callGathering,
 // A.gathAttendees, A.gathRole, A.ROLE_NAME, A.gathAims, A.gathDay, A.holdGathering, A.gatherMonth, A.onDay,
 // A.gathClose, A.EV, A.defEvents, A.C, A.rollEvents.

@@ -1,5 +1,5 @@
 // The release's core, ui (part 5 of 6): UI: the interface.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: UI.A (+), UI.tacName, UI.wrTacOrders, UI.C (+), UI.wrFightPanel, UI.wrCommand, UI.drawWar, UI.planCard,
 // UI.wnItems, UI.whatNowCard, UI.TAB.life, UI.ladderHtml, UI.boardHtml, UI.TAB.path, UI.pathBlurb, UI.jobPathCard,
 // UI.armyPathCard, UI.councilCard, UI.pathsList, UI.TAB.work, UI.diplCard, UI.relStatus, UI.gathList, UI.TAB.world,

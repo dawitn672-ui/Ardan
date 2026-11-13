@@ -1,4 +1,4 @@
-// X1 (D-027): bake the patch layer into the release. One-time conversion, kept so it can be re-run and audited.
+// X1 (D-028): bake the patch layer into the release. One-time conversion, kept so it can be re-run and audited.
 //
 //   node tools/release/bake.mjs --patches=archive/x1-patch-layer --out=/tmp/ardan/x1/baked
 //

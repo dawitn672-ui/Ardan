@@ -1,5 +1,5 @@
 // The release's event pack 27 of 30 (23 events, mostly gs_). Readable source of
-// vendor/ardan-b593143.html with the patch layer baked in (X1, D-027). Every function is kept exactly as the release
+// vendor/ardan-b593143.html with the patch layer baked in (X1, D-028). Every function is kept exactly as the release
 // wrote it: the game reads event functions as text (A.evAudience), so reformat a function only with that in mind.
 (function(){
   const G = ctx=>A.gathById(ctx.gid),

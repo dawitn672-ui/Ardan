@@ -1,5 +1,5 @@
 // The release's core, soldiering: The squad, comrades, resigning, deserting, the soldier's year.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.makeSquad, A.squad, A.comradeDies, A.resign, A.desert, A.milYear, milYearNow.
 
 A.makeSquad = function (pc) {

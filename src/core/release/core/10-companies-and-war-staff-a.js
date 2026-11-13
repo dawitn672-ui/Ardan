@@ -1,5 +1,5 @@
 // The release's core, companies and war staff (part 1 of 2): Free companies, seizing land, battle ends, armies and the war staff's raising and mobilising.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.foundCompany, A.companyYear, A.recruitCompany, A.seizeLand, A.BATTLE_END, A.BATTLE_END.seize,
 // A.foundRealm, A.plotThrone, A.compShares, A.buildUnits, A.newBattle, A.newBattleForPC, A.tacticsFor, A.aiDeploy,
 // A.tacFitsUnit, A.sideStrength, A.battleSetTactic, A.battleCommitReserve, A.battleStep, A.avgMorale, A.aiPulse,

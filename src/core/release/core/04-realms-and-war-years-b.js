@@ -1,5 +1,5 @@
 // The release's core, realms and war years (part 2 of 2): Provinces changing hands, realms falling, the war year, losses and fronts; talking to people (A.interact).
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.inheritFrom, A.rungIndex, A.nobleTitle, A.moneyYear, A.careerYear, A.milestones, A.queue, A.willGrow,
 // A.breakthrough, A.mortalCheck, A.pcDeath, A.score, A.assetValue, A.checkAch, A.canAct, A.spend, A.DIM,
 // A.doActivity, A.weaponSkillOf, A.ACT, A.makeAcquaintance, A.makeLoveInterest, A.INTERACT, A.interactOptions,

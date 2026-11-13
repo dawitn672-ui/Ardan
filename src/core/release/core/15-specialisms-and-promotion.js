@@ -1,5 +1,5 @@
 // The release's core, specialisms and promotion: Specialisms, mastery, arms, doctrines, growth and the promotion board.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: SP, GD.SPECS, GD.MASTERY, GD.ARMS, GD.DOCTRINES, A.specOf, A.masteryOf, A.masteryRank, A.specMul,
 // A.specPay, A.specOfferWeight, A.armBonus, A.doctrineOf, A.specChoices, A.pickSpec, A.CHOICE_FN (+), A.specYear,
 // A.recapSnap, A.recapMake, A.whatNow, A.teacherFor, A.SESSION_ACTS, A.sessionQ, A.sessionNote, A.trainingSession,

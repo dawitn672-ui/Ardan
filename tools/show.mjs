@@ -2,7 +2,7 @@
 //   node tools/show.mjs A.npcStyles UI.enterSave        (run `node tools/build.mjs --unpack` first)
 //   node tools/show.mjs --dir=/tmp/me/blobs A.foo        read another unpack folder
 //   node tools/show.mjs --where A.foo                    only say where the release source defines it (no build needed)
-// Since X1 the release's own code is readable source in src/core/release/ (D-027): each name found there is printed
+// Since X1 the release's own code is readable source in src/core/release/ (D-028): each name found there is printed
 // with its file and line, which is where to change it.
 import fs from 'node:fs';
 import { createRequire } from 'node:module';

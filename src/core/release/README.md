@@ -2,7 +2,7 @@
 
 This folder is the shipped game, `vendor/ardan-b593143.html`, as readable source, with all 203 patches of the old
 patch layer written in. `node tools/build.mjs` reads it as its input; it no longer reads `vendor/` (which stays
-untouched, the original this was made from). Decision: `docs/DECISIONS.md` D-027.
+untouched, the original this was made from). Decision: `docs/DECISIONS.md` D-028.
 
 | Path | What | Becomes |
 | --- | --- | --- |

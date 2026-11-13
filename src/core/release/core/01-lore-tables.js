@@ -1,5 +1,5 @@
 // The release's core, lore tables: The lazy lore tables (cast, families, house lore, styles, academies), read from the ardan-lore payload on first use.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: .
 
 (function (L) {

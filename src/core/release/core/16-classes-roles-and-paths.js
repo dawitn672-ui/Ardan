@@ -1,5 +1,5 @@
 // The release's core, classes roles and paths: Training, classes, roles, the plan and the career paths.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: A.exercise, A.volunteer, A.classOf, A.CLASS_NAME, A.role, A.leaveRolesFor, A.roleCheck, A.onDay,
 // A.roleBlock, GD.ACT_GATE, A.EV_RX, A.CX_RX, A.evAudience, A.evFit, GD.INTENSITY, GD.TRAIN_STATS, GD.AIMS, A.plan,
 // A.trainTargets, A.setPlan, A.defaultPlan, A.planMonth, A.planDay, A.onMonth, A.defaultPlanIfAuto, A.findPatron,

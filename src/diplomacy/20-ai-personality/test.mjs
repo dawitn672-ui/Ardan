@@ -120,7 +120,7 @@ export default {
       UI.screen = 'game'; UI.tab = 'realm'; UI.realmView = 'dipl'; UI.diplSel = o.id; UI.render();
       const html = document.body.innerHTML;
       // the fiction is looked for in the page as drawn, without the scripts the bootloader puts into the body: since X1
-      // the release's source there carries comments that quote the text a patch removed (D-027). (The other checks
+      // the release's source there carries comments that quote the text a patch removed (D-028). (The other checks
       // still read the whole body, as before X1; 'Pulling them each year' is found only in the scripts' text, X1 report.)
       const drawn = [...document.body.children].filter(e => e.tagName !== 'SCRIPT').map(e => e.outerHTML).join('');
       return { n, bad: bad.slice(0, 4), calls, live: live.length, fiction: drawn.includes('Slowly pulling them'), real: html.includes('Pulling them each year'),

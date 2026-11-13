@@ -1,6 +1,6 @@
 // Build the game from the release's own source (src/core/release/, see its README.md) plus every feature in
 // src/<system>/NN-name/ (tools/lib/features.mjs). vendor/ardan-b593143.html is the untouched original that source was
-// made from (X1, docs/DECISIONS.md D-027); the build no longer reads it.
+// made from (X1, docs/DECISIONS.md D-028); the build no longer reads it.
 //
 //   node tools/build.mjs                         all features -> index.html
 //   node tools/build.mjs --out=/tmp/x.html       write somewhere else (parallel work must use this)
@@ -8,9 +8,9 @@
 //                                                one is built only when named). Before X1 this built the fix layer alone
 //                                                plus the named features; since the 203 patches are baked into the release
 //                                                source, the release calls into many features' code, so a build without
-//                                                them does not run (D-027).
+//                                                them does not run (D-028).
 //   node tools/build.mjs --without=chronicle     everything except the named features (the release source may call
-//                                                their code: check the page boots, D-027)
+//                                                their code: check the page boots, D-028)
 //   node tools/build.mjs --unpack                also write the built blobs to .build/ for reading
 //   node tools/build.mjs --unpack=/tmp/me/blobs  ...or to a private folder (parallel work must use this)
 //   node tools/build.mjs --include-wip           also build folders marked work-in-progress

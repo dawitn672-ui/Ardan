@@ -1,5 +1,5 @@
 // The release's core, ui (part 4 of 6): UI: the interface.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: UI.wrFightPanelBasic, UI.wrProvPanel, A.wrAdvice, UI.wrForces, UI.wrDivStatusText, UI.wrTemplates,
 // UI.wrBnChip, UI.wrTplSummary, UI.wrTplEditor, UI.wrIndustry, UI.wrManpower, UI.wrWars, UI.wrView, UI.wrClamp,
 // UI.wrZoom, UI.wrFitCanvas, UI.wrOverlay, UI.wrArrow, UI.drawWarBasic, UI.wrProvAt, UI.wrHitAt, UI.wrTip,

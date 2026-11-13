@@ -1,4 +1,4 @@
-// X1 (D-027): prove two builds run the same program.
+// X1 (D-028): prove two builds run the same program.
 //
 //   node tools/release/verify.mjs <reference.html> <candidate.html>
 //

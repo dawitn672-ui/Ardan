@@ -1,5 +1,5 @@
 // The release's core, portraits: PORTRAIT: the drawn portraits.
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: PORTRAIT, PORTRAIT.shade, PORTRAIT.mix, PORTRAIT.outfit, PORTRAIT.bust, PORTRAIT.beast, PORTRAIT.H,
 // PORTRAIT.svg, PORTRAIT.charges, PORTRAIT.arms, PORTRAIT.device, PORTRAIT.coat, PORTRAIT.full, PORTRAIT.head,
 // PORTRAIT.weapon, PORTRAIT.shieldArt, PORTRAIT.rangedArt.

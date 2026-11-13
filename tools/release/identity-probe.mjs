@@ -1,4 +1,4 @@
-// X1 (D-027): run two builds side by side and compare what the game itself sees.
+// X1 (D-028): run two builds side by side and compare what the game itself sees.
 //
 //   node tools/release/identity-probe.mjs <reference.html> <candidate.html> [--years=10] [--seeds=7,11,2024]
 //

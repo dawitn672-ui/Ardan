@@ -1,5 +1,5 @@
 // The release's core, realms and war years (part 1 of 2): Provinces changing hands, realms falling, the war year, losses and fronts; talking to people (A.interact).
-// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-027). Edit it here.
+// Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
 // Defines: endWarNow, A.transferProv, A.realmGone, A.realmFalls, A.warYear, A.applyLosses, A.warFront, A.checkPeace,
 // A.settleWar, A.rulerDies, A.pickHeirFrom, A.findClaimant, A.successionWar, A.electRuler, A.electable, A.houseHead,
 // A.kill, A.rollBranches, A.branchYear, A.worldYear, A.diplomacyYear, A.deathChance, A.ageNpc, A.FAM_STATUS_KINDS,
