@@ -345,3 +345,17 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   A.rand"); retiring the release's market noise changes every seed's world once.
 - **Owner decisions pending:** markets, goods, merchants, income, money depth, grades, armour on the figure, named things.
 - **Undo:** `git revert 39e3164`.
+
+### H-018 · 2026-11-13 06:49 ET · C8 2D gate 2 built (tone-led, after the owner's two references)
+- **Commits:** `1a8df5f`…`56d92aa` (by a Fable 5.2 agent), merged as `9d68308`. Demo only: `src/` and `tests/` untouched.
+- **What:** `docs/design/demo-2d/gate2.html` (offline, 347 KB) with source in `demo-2d/gate2/` (~2,100 lines): fifteen
+  full figures to one scale (all eight estates, ages 8-68, ten skin tones, nine stances, builds from a stooped serf to a
+  198 cm housecarl, six scars, five in harness); profile cards with words, no percentages; a maker with 38 face sliders,
+  49 named variants, 29 hair styles, 11 beards, 10 builds plus 7 build sliders, 10 stances, 18 outfits; four ages;
+  armour as 42 separate pieces; one sword in all 16 pairings of make and rarity. A 23-character face code.
+- **Timings:** compose 3-6 ms; paint about 55 ms a card, 150 ms a large portrait (over D-025's 16 ms; the light and
+  depth passes are about three quarters of it and can be switched off).
+- **Honest standing:** past gate 1 and reads as one hand, but clean vector art (closest to a visual-novel sprite set):
+  even lines, few folds, one gradient a form, plain faces at full size, mitten hands, front view only. Not yet the
+  painted richness of the owner's second reference. **Owner verdict pending**, with ten questions in `gate2.md`.
+- **Undo:** `git revert -m 1 9d68308`.

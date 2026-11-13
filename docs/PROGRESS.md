@@ -22,6 +22,7 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 
 - [x] **C8 2D plan** · The 2D illustrated part system (`docs/design/characters.md`) · `389041f` · 2026-11-12 17:27 ET
 - [x] **C8 2D gate 1** · Style frame: four sitters in two finishes (`docs/design/demo-2d/gate1.*`) · `655fe2c` · 2026-11-12 18:16 ET · **with the owner for review**
+- [x] **C8 2D gate 2** · Tone-led demo: 15 full figures, cards, face and build maker, armour by piece, make × rarity (`docs/design/demo-2d/gate2.*`) · `9d68308` · 2026-11-13 06:49 ET · **owner verdict pending**
 - [x] **CI fix** · The 22 tests CI 97 failed after A3a: 5 game bugs fixed, 17 tests made robust · `d5f42ab` · 2026-11-12 18:29 ET
 - [x] **CI fix 2** · CI 100: B6 draws 6x slower (fixed), iconsWired, two bot-life bars (D-027) · `57180f4` · 2026-11-13 00:55 ET
 - [x] **v2.1.0-alpha.2** · cut on green CI 101, `release/v2.1.0-alpha.2` pushed, sample save · `f37c62f` · 2026-11-13 01:35 ET
