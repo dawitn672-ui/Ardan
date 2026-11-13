@@ -30,12 +30,18 @@
   // how deep in draws we are: the post-draw passes (90, 91, 95, 96, 97, 9998) run once, after the outermost draw, not
   // after each refreshTab and renderModal that UI.refresh calls inside itself
   R.depth = 0;
+  // Every draw runs as a draw for the engine's readers (A.asDrawing, 21-npc-initiative's draw-pure): these wrappers are
+  // the outermost, so the post-draw passes of the features that wrap the draws after 21 does (97's disabled reasons,
+  // which price the market through A.staffHolder; 90's folds; 91's fitting) run inside the guard too. Outside it, a
+  // merchant's Holdings tab created pc.staff, which turns on the monthly staff step (CI 98: npcInitiativeDeterminism,
+  // "same while looking at people: false").
+  const asDraw = (f, self, args) => (A.asDrawing ? A.asDrawing(f, self, args) : f.apply(self, args));
   const counted = (k, full) => {
     const f = UI[k];
     if (typeof f !== 'function') return;
     UI[k] = function () {
       R.depth++; if (full) R.inFull++;
-      try { return f.apply(this, arguments); } finally { R.depth--; if (full) R.inFull--; }
+      try { return asDraw(f, this, arguments); } finally { R.depth--; if (full) R.inFull--; }
     };
   };
   counted('refreshTab', false); counted('renderModal', false);
@@ -51,13 +57,13 @@
       return;
     }
     R.dirty = false; R.full++; R.inFull++; R.depth++;
-    try { return refresh0.apply(this, arguments); } finally { R.inFull--; R.depth--; }
+    try { return asDraw(refresh0, this, arguments); } finally { R.inFull--; R.depth--; }
   };
   // UI.render (the whole screen) leaves nothing dirty
   const render0 = UI.render;
   UI.render = function () {
     R.dirty = false; R.inFull++; R.depth++;
-    try { return render0.apply(this, arguments); } finally {
+    try { return asDraw(render0, this, arguments); } finally {
       R.inFull--; R.depth--;
       // the whole screen drew the story itself: the log is adopted as it stands, so the next refresh adds to it in place
       try { const lw = document.getElementById('logwrap'); R.log = lw && lw.firstChild ? { el: lw, html: null, shell: shell(lw), first: lw.firstChild } : null; } catch (e) { R.log = null; }

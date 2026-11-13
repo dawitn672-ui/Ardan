@@ -57,12 +57,19 @@
     if (LF.OFF || typeof document === 'undefined') return 0;
     const pc = A.S ? A.pc() : null;
     let n = 0;
-    for (const el of (root || document).querySelectorAll('button[disabled],select[disabled],input[disabled]')) {
-      if ((el.getAttribute('title') || '').trim() || (el.getAttribute('data-note') || '').trim() || el.getAttribute('data-tip') || el.getAttribute('data-tt')) continue;
-      const why = LF.reasonFor(el, pc);
-      el.setAttribute('data-note', why);   // B4: the reason opens on a press (an info button beside the control), not on hover
-      n++;
-    }
+    // (data-why marks a control already given its reason: B4's sweep lifts data-note away at once, and without the mark
+    // the outermost draw's pass worked every reason out again, outside the draw guard, where pricing the market through
+    // A.staffHolder created pc.staff: CI 98, npcInitiativeDeterminism. The reasons are read as a draw, A.asDrawing.)
+    const work = () => {
+      for (const el of (root || document).querySelectorAll('button[disabled],select[disabled],input[disabled]')) {
+        if (el.hasAttribute('data-why') || (el.getAttribute('title') || '').trim() || (el.getAttribute('data-note') || '').trim() || el.getAttribute('data-tip') || el.getAttribute('data-tt')) continue;
+        const why = LF.reasonFor(el, pc);
+        el.setAttribute('data-why', '');
+        el.setAttribute('data-note', why);   // B4: the reason opens on a press (an info button beside the control), not on hover
+        n++;
+      }
+    };
+    if (A.asDrawing) A.asDrawing(work); else work();
     return n;
   };
   for (const name of ['render', 'refreshTab', 'refresh', 'renderModal']) {

@@ -736,4 +736,30 @@ export default {
       return { ok, detail: `${phone ? '71-phone in the build' : 'no 71-phone in this build'}; Holdings: taps open ${b1.length}, ${b2.length}, inside 375 × 740: ${fits} (${JSON.stringify(b2)}); × leaves ${b3.length}; a tap outside leaves ${b4.length}; page width ${w1}. Event: a tap on the odds opens ${e1.length}, inside: ${eFits}, the choice not taken: ${kept}; ${ev.note}. War tab: ${war.length} open, inside: ${fit(war)}; page width ${w2}` };
     } catch (e) { await ctx.close(); throw e; }
   },
+
+  // CI 98: a block trigger's glyph (::after) on a grid or flex row was one more cell, and so a whole new row (every v2
+  // stat row of the profile; foldFits), and the dialogs' report button got an info button that only said its name
+  // again, which fell into the dialog's flex row (the death screen 39 px narrow; endingsMoment). No glyph may sit on a
+  // grid or flex container, and no info button may follow an action whose description is its own name.
+  async ttMarkNoCell(pg) {
+    await pg.setViewportSize({ width: 1366, height: 768 });
+    const r = await pg.evaluate(async () => {
+      const bad = [], seen = { marks: 0, moved: 0 };
+      const look = () => {
+        for (const e of document.querySelectorAll('.tt-note-b:not(.tt-note-c), .tt-note-m')) {
+          seen.marks++; if (e.classList.contains('tt-note-m')) seen.moved++;
+          const d = getComputedStyle(e).display, a = getComputedStyle(e, '::after').content;
+          if (/flex|grid/.test(d) && a && a !== 'none' && a !== 'normal') bad.push(`${UI.tab}: ${e.tagName}.${[...e.classList].join('.')} (${d})`);
+        }
+        for (const b of document.querySelectorAll('button.tt-i')) { const p = b.previousElementSibling; if (p && (p.classList.contains('mreport') || (UI.TT.sameAsName && UI.TT.sameAsName(b.dataset.v || '', p)))) bad.push(`${UI.tab}: an info button repeats ${p.className}`); }
+      };
+      T.enter({ seed: 77, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+      UI.set.hints = false; A.S.queue = []; UI.ov = null;
+      for (const t of ['life', 'path', 'holdings', 'realm', 'people']) { UI.setTab(t); UI.render(); await new Promise(res => setTimeout(res, 30)); look(); }
+      try { UI.A.ov('profile'); await new Promise(res => setTimeout(res, 30)); look(); } catch (e) {}
+      UI.ov = null; UI.renderModal();
+      return { bad: bad.slice(0, 8), n: bad.length, seen };
+    });
+    return { ok: !r.n && r.seen.moved > 0, detail: `${r.seen.marks} glyphs (${r.seen.moved} on a child's words), ${r.n} on a grid or flex row or repeating a name${r.n ? ': ' + r.bad.join('; ') : ''}` };
+  },
 };

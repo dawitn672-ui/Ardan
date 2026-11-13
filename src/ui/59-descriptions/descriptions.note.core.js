@@ -11,11 +11,13 @@
 // What the sweeper does with an element that carries a description (the first rule that fits):
 //   1. it is, or sits in, a trigger already: the popover explains it, the title goes;
 //   2. it is an activity tile: the sheet that opens on a press explains it (src/ui/99998-click-open), the title goes;
-//   3. it is an action itself (a button, a link, a select): an info button is put beside it, and the action stays one;
+//   3. it is an action itself (a button, a link, a select): an info button is put beside it, and the action stays one
+//      (unless the description only says the action's name again: then it is a label, TT.sameAsName);
 //   4. it is a part of an action: it explains itself when pressed, and the rest of the action still acts;
 //   5. it is a table part or holds controls: an info button goes inside it (a row's goes in its last cell);
 //   6. otherwise it becomes the trigger: a button by role, focusable, underlined when inline and followed by the glyph
-//      when it is a block.
+//      when it is a block (the glyph follows the block's own words, TT.markHost: on its first child that holds words
+//      when it has none of its own, so it never adds a cell or a row to a grid or flex layout).
 // A short title (three words or fewer) is a label and stays. The sweeper only changes the page, never the game: it
 // does not touch A.S and draws no random number, so it may run while a view is drawn.
 (function () {
@@ -38,6 +40,13 @@
     if (n != null) return n.trim();
     const t = el.getAttribute('title');
     return t != null && TT.words(t) > 3 ? t.trim() : null;
+  };
+  const FILLER = new Set(['a', 'an', 'the', 'this', 'that', 'it', 'here', 'now', 'with', 'for', 'of', 'to', 'on', 'in']);
+  const wordsOf = s => String(s || '').toLowerCase().match(/[a-z0-9']+/g) || [];
+  TT.sameAsName = (text, el) => {
+    const name = new Set(wordsOf(el.getAttribute('aria-label') || el.textContent));
+    if (!name.size) return false;
+    return wordsOf(text).every(w => name.has(w) || FILLER.has(w));
   };
   const nameOf = el => (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40);
 
@@ -73,6 +82,10 @@
         if (lines.length && !(nx && nx.classList.contains('tt-i'))) seg.insertAdjacentHTML('afterend', UI.noteBtn(lines.join('\n'), 'these choices'));
         return true;
       }
+      // a description that only says the action's name again ("Report a problem with this" on the button named "Report a
+      // problem") is a label: no info button (CI 98: the dialogs' report button is absolutely placed, so its info button
+      // fell into the dialog's flex row and pushed the death screen 39 px off the edge)
+      if (TT.sameAsName(text, el)) return true;
       if (el.parentNode && !(el.nextElementSibling && el.nextElementSibling.classList.contains('tt-i') && el.nextElementSibling.dataset.v === text)) el.insertAdjacentHTML('afterend', UI.noteBtn(text, nameOf(el)));
       return true;
     }
@@ -99,7 +112,27 @@
     if (!el.closest('[aria-hidden="true"]')) { el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); el.setAttribute('aria-haspopup', 'dialog'); el.setAttribute('aria-expanded', 'false'); }
     if (el.getAttribute('role') === 'button' && !el.textContent.trim() && !el.getAttribute('aria-label')) el.setAttribute('aria-label', text.slice(0, 80));
     el.classList.add('tt-note', INLINE.has(tag) ? 'tt-note-i' : 'tt-note-b');
+    if (!INLINE.has(tag)) { const m = TT.markHost(el); if (m !== el) { el.classList.add('tt-note-c'); m.classList.add('tt-note-m'); } }
     return true;
+  };
+  // where a block trigger's glyph goes. A ::after on the element itself is one more box in it: a cell (and so a whole
+  // new row) when the element is a grid or a flex container, a line of its own when it holds only blocks (CI 98: every
+  // v2 stat row of the profile grew a row and the page scrolled). The page is not asked how it is laid out (that would
+  // be a style read in the middle of the sweep's writes); instead the glyph goes where the words are: on the element
+  // when it holds text of its own, else on its first child that holds words, and down again, so it always follows text
+  // inside an inline run and never adds a box to a grid or flex layout.
+  const NOMARK = /^(IMG|SVG|svg|CANVAS|VIDEO|AUDIO|INPUT|SELECT|TEXTAREA|BUTTON|IFRAME|OBJECT|PROGRESS|METER|BR|HR|TEMPLATE)$/;
+  const ownText = el => { for (const n of el.childNodes) if (n.nodeType === 3 && /\S/.test(n.nodeValue)) return true; return false; };
+  const wordy = c => !NOMARK.test(c.tagName) && !c.hidden && c.getAttribute('aria-hidden') !== 'true' && !/\b(sr-only|visually-hidden|tt-i)\b/.test(c.className && c.className.baseVal == null ? c.className : '') && /\S/.test(c.textContent);
+  TT.markHost = function (el) {
+    let h = el;
+    for (let d = 0; d < 6 && !ownText(h); d++) {
+      let next = null;
+      for (const c of h.children) if (wordy(c)) { next = c; break; }
+      if (!next) break;
+      h = next;
+    }
+    return h;
   };
   TT.sweepTitles = function (root) {
     root = root || (typeof document !== 'undefined' ? document.body : null);
@@ -194,9 +227,7 @@
   .lk-acts > .act[aria-disabled=true]{color:var(--ink-3);background:var(--surface);box-shadow:none;cursor:pointer}
   .tt-note{cursor:pointer}
   .tt-note-i{border-bottom:1px dotted var(--accent-line)}
-  .tt-note-b::after{content:" \\24D8";color:var(--accent-2);font-size:.95em;opacity:.85}
-  .prow.tt-note-b::after{content:none}
-  .prow.tt-note-b>span:first-child::after{content:" \\24D8";color:var(--accent-2);font-size:.95em;opacity:.85}
+  .tt-note-b:not(.tt-note-c)::after,.tt-note-m::after{content:" \\24D8";color:var(--accent-2);font-size:.95em;opacity:.85}
   .tt-note.tt-on{color:var(--accent-2)}
   .tt-i{cursor:pointer;color:var(--accent-2)}
   :root button.tt-i{display:inline-flex;align-items:center;justify-content:center;min-width:24px;min-height:24px;width:auto;height:auto;margin:0 0 0 2px;padding:0 3px;border:0;border-radius:50%;background:none;box-shadow:none;color:var(--accent-2);font:inherit;font-size:16px;line-height:1;vertical-align:middle}
