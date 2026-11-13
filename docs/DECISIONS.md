@@ -385,3 +385,16 @@ hands, cloth folds, metal, line weight, a slight turn), within the draw budget (
 portraits only). **Profile tab (work item P):** a game-like page of your character: the full card and figure, titles
 and posts, stats, skills and styles, renown, gear and heirlooms, in words, folded detail on click. Built after B5's
 declutter (same screens) with today's stats, and grown when G lands.
+
+### D-037 · v3 is the living world; the repo's order on GitHub (owner, 2026-11-13 07:21 ET)
+**Owner:** "You can reorganize the GitHub ordering of this project where you think necessary, and the big project I
+just added would probably fall under a v3, right?"
+**Chosen:** yes. By the version rules (CLAUDE.md: a major is a new design the owner set), orders 28-33 (the economy,
+the armoury, growth in depth) are **v3**, written up in `docs/V3_SPEC.md`. **v2** stays the Nov 12 complaint list and
+closes with X4 and X5 (`release/v2.5`). The character art (C8b, C8c) and the Profile tab (P) are v2 work (round 2 item
+C8, and P is a page over what exists), grown in v3. v3 is designed now and built after v2's last item on a
+`v3-integration` branch, versions `v3.0.0-alpha.N`. `docs/PROGRESS.md` is split into a v2 and a v3 section.
+**GitHub:** `docs/BRANCHES.md` lists every branch and what it is for. 35 old working branches (`v2-fix-*`, `v2-wf-*`)
+are fully inside `v2-integration`; deleting them waits for the owner's yes (the permissions rule), with each tip
+recorded so any can be restored. The 9 branches with unmerged commits (`v2-lane-*`, `v2-wf-repeats`) stay until
+looked through. PR #2's title and text are brought up to date.

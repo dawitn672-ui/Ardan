@@ -112,7 +112,8 @@ npx playwright install chromium`, then `PLAYWRIGHT_BROWSERS_PATH=/tmp/x/b NODE_P
 
 Every foundational or significant change is a version (`docs/VERSIONS.md`, `tools/version.mjs`):
 
-- **Major:** a new design the owner set (v1 = the shipped release and its rounds; v2 = `docs/V2_SPEC.md`).
+- **Major:** a new design the owner set (v1 = the shipped release and its rounds; v2 = `docs/V2_SPEC.md`, the Nov 12
+  complaint list; v3 = `docs/V3_SPEC.md`, the living world: economy, armoury, growth in depth, D-037).
 - **Minor:** a round, cycle or step that adds or replaces a system. **Patch:** fixes only.
 - **Pre-release** (`-alpha.N`, `-beta.N`, `-rc.N`) while a major is being built.
 - Tag a clean commit whose CI is green, or the end of a step the owner asked for: `node tools/version.mjs new vX.Y.Z "what changed"`, commit `docs/VERSIONS.md`, push.
