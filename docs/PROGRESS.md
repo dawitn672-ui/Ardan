@@ -43,8 +43,9 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 - [ ] **D12a** · Branches and command: one design (Fable 5.2)
 - [ ] **D11** · Military branches (feudal armies, D-012)
 - [ ] **D12b** · War and command depth
-- [ ] **E1** · A much bigger economy: bigger markets that simulate themselves over time (owner order 28; design first, Fable 5.2)
-- [ ] **E2** · Hundreds of weapons and armour pieces by quality; items unique to one person (owner order 29; design first, with E1)
+- [x] **E1/E2 design** · `docs/design/economy-and-items.md`: one market model, 281 markets, 28 goods, named trading houses and caravans; 845 item kinds in five grades; ~100 unique named pieces; eight build stages · `39e3164` · 2026-11-13 02:45 ET · **8 owner decisions pending**
+- [ ] **E1** · A much bigger economy: bigger markets that simulate themselves over time (owner order 28; stages E1a, E1b, E1c, E1d)
+- [ ] **E2** · Hundreds of weapons and armour pieces by quality; items unique to one person (owner order 29; stages E2a, E2b, E2c, E2d, interleaved with E1 as the design says)
 - [ ] **X4** · Balance pass
 - [ ] **X5** · State diet; stop committing index.html every round (D-018)
 

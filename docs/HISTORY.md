@@ -330,3 +330,18 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Tests:** `check.mjs --skip-tests --skip-balance` passes; boot, savesStillLoad, renderRng, journalReplay, scaleSites,
   aiPersonalityWhy, startsDeterministic, iconsWired, nyStripSkipsScripts pass after the merge. This push runs the full CI.
 - **Undo:** `git revert -m 1 5056e98`, rebuild (the patch files come back from the archive).
+
+### H-017 · 2026-11-13 02:45 ET · E1/E2 design written (owner orders 28, 29)
+- **Commit:** `39e3164` (by a Fable 5.2 agent), cherry-picked from its worktree.
+- **What:** `docs/design/economy-and-items.md`. E1: one market model in place of today's three layers; a market in each
+  of 281 settled provinces, 28 goods, prices as readings of how full a store is (every price has a nameable cause);
+  weather, seasons, war, raids, plague and guilds move them; nameless carters spread prices, about 100 named trading
+  houses run about 240 caravans on one route graph (trade with, ride with, guard, rob or toll them); loans with pledges,
+  crowns that borrow and default, coin that can be thinned; per-rank money in words, at most three money decisions a
+  year; budget 6 ms a month (today 11). E2: 845 item kinds from 110 drawn forms (132 swords) in five grades with makers,
+  wear and repair; about 100 unique named pieces, never copied; lords' armouries arm their levies (D11). Eight stages:
+  E1a, E1b, E2a, E1c, E2b, E1d, E2c, E2d. Two trial scripts in `docs/design/trials/` back its measured claims.
+- **To record when approved:** the economy and items get their own seeded streams (a DECISIONS exception to "only
+  A.rand"); retiring the release's market noise changes every seed's world once.
+- **Owner decisions pending:** markets, goods, merchants, income, money depth, grades, armour on the figure, named things.
+- **Undo:** `git revert 39e3164`.

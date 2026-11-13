@@ -37,6 +37,8 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [design/brief.md](design/brief.md) | The design system brief, "Woodblock & Light" |
 | [design/brief-audit.md](design/brief-audit.md) | The brief checked against the built game |
 | [design/characters.md](design/characters.md) | Character design: faces, bodies and dress (C8a) |
+| [design/economy-and-items.md](design/economy-and-items.md) | E1 and E2 design: markets that run themselves, hundreds of weapons, unique items |
+| [design/reference/](design/reference/README.md) | The owner's reference pictures for character art (D-029) |
 | [design/critique.md](design/critique.md) | Design critique of the game screen (Oct 26) |
 | [design/pacing.md](design/pacing.md) | Pacing: a life lived a week or a month at a time |
 | [design/research.md](design/research.md) | Design research behind the redesign |
