@@ -48,6 +48,8 @@ On "Body & face": six pages (face, eyes and brows, nose and mouth, hair, skin, b
 
 Compose a list portrait: under 6 ms. Paint a list portrait: within 16 ms. A large portrait with its light and depth passes is measured and made once, off the press.
 
+Measured 2026-11-13 on the shared four-core container under load (CPU ms a portrait, 40 people of a fresh world): compose 2.7 at 30 px, 3.1 at 46 px, 3.0 at 88 px, 3.7 for the 176 px two by three; paint at twice the density 4.9 at 46 px and 7.4 at 88 px; the 176 px picture with its light and depth passes about 41 ms, made once. SVG 81 KB at 46 px, 141 KB at 176 px; the page's frame at most 479 bytes; a redrawn portrait is a lookup of about 4 microseconds. The press gate (`tools/bench/press-gate.mjs`) reads the same with and without this feature on the same machine (the redraw counts are identical; both builds are over the gate's CPU budgets under that load).
+
 ## Not done here
 
 A fighter in a duel no longer stands on guard (the retired renderer's `guard` pose; the library has ten stances, none with a raised blade). War paint and jewellery (`app.paint`, `app.jewel`) are not drawn yet. Bows, quivers and mounts have no art. Cultures change headwear and dye, not yet the cut. Infants are small children, not yet their own drawing. The Profile tab (work item P) will show the standing figure.
