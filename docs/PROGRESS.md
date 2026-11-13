@@ -55,6 +55,7 @@ Designed now, built after v2's last item on its own integration branch (D-037).
 - [x] **E1/E2 design** · `docs/design/economy-and-items.md`: one market model, 281 markets, 28 goods, named trading houses and caravans; 845 item kinds in five grades; ~100 unique named pieces; eight build stages · `39e3164` · 2026-11-13 02:45 ET · owner answered (D-032)
 
 ### Next, in order
+- [x] **G design** · `docs/design/growth.md`: 17 stats, 4,599 skills, ~550 styles, ~2,300 arts, legendary arts; stages G1-G6 · `f1a556d` · 2026-11-13 11:56 ET · **8 owner decisions pending**
 - [ ] **G** · Growth in depth: more stats, thousands of skills (proficiencies merged in), hundreds of fighting styles by nation, regiment, house and order; weapon arts (owner order 32, D-034; design first, Fable 5.2)
 - [ ] **E1** · A much bigger economy: bigger markets that simulate themselves over time (owner order 28; stages E1a, E1b, E1c, E1d)
 - [ ] **E2** · Hundreds of weapons and armour pieces by quality; items unique to one person (owner order 29; stages E2a, E2b, E2c, E2d, interleaved with E1 as the design says)

@@ -359,3 +359,18 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   even lines, few folds, one gradient a form, plain faces at full size, mitten hands, front view only. Not yet the
   painted richness of the owner's second reference. **Owner verdict pending**, with ten questions in `gate2.md`.
 - **Undo:** `git revert -m 1 9d68308`.
+
+### H-019 · 2026-11-13 11:56 ET · G design written (owner order 32); Fable's weekly limit reached
+- **Commit:** `f1a556d` (by a Fable 5.2 agent), cherry-picked from its worktree.
+- **What:** `docs/design/growth.md` (7,235 words). Stats: 17 in four groups (body, mind, spirit, standing), each with
+  what it does, how it rises and falls, and seven limits (birth ceiling, people's limit, age, the month's load, use,
+  wounds and gear, skills). Skills: one system with proficiencies merged in, 4,599 skills (1,698 passive, 2,901
+  active: 1,553 re-housed, 784 by rule, 541 by template, 1,721 written whole), levels, evolutions and merges, a tree
+  for every route; limits by talent, time, age and rust. Styles: about 550 (225 realm standards by regiment with their
+  tactics, 180 house and family styles, 8 order styles, 80 company and folk ways, 61 masters' lineages) with about
+  2,300 arts, graded weaker → beyond compare against the realm's standard; skill outweighs style. Legendary arms with
+  signature arts and hand-designed drawings. Six stages G1-G6 (G6 inside E2). **8 owner decisions pending.**
+- **Fable 5.2's weekly limit** was reached at 11:40 ET (resets 2026-11-18 01:00 ET). Work that D-009 gives Fable runs
+  on Opus 5.5 until then (D-010: model at the session's discretion); C8b is finished by an Opus 5.5 agent in the same
+  worktree.
+- **Undo:** `git revert f1a556d`.
