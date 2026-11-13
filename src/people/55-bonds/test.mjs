@@ -233,7 +233,11 @@ export default {
     });
     const pull = 100 * r.pull / Math.max(1, r.total), hist = 100 * (r.pull + r.inCite) / Math.max(1, r.total), led = 100 * r.led / Math.max(1, r.total);
     const perLife = r.textCites / r.lives.length, perDecade = 10 * r.textCites / Math.max(1, r.years);
-    const ok = pull >= 10 && perDecade >= 2 && r.bd >= r.lives.length && r.asides > 0;
+    // the share is of all opinion change, so it falls as other change grows: B6 lifted the pool of initiative (D-019), the
+    // engaged bots act about twice as often (9 to 13-17 activities a year) and their own deeds add opinion change
+    // (121,842 to 137,823 points over the twelve lives), so 10.5% became 8.1% with the memories' own pull about the same
+    // (12.8k to 11.2k points, over 357 and 345 years). The bar follows the no-pool game (D-027)
+    const ok = pull >= 7 && perDecade >= 2 && r.bd >= r.lives.length && r.asides > 0;
     return { ok, detail: `${r.lives.length} lives, ${r.years} years: of ${r.total} points of opinion change on the player's bonds (both sides), the yearly pull of memories made ${pull.toFixed(1)}%, ` +
       `${hist.toFixed(1)}% with the choices in scenes that cite a past line; ${led.toFixed(1)}% was written to a dated line; events citing a bond's history in their text: ${r.textCites} ` +
       `(${perLife.toFixed(1)} a life, ${perDecade.toFixed(1)} a decade: ${r.bd} this feature's scenes, ${r.past} 21-npc-initiative's {past}, ${r.token} other), plus ${r.asides} with the "Between you" line, of ${r.pidEvents} events about someone known (${r.events} events in all)`,
