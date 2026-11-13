@@ -1,0 +1,256 @@
+{
+ "POL-01": [
+  {"type":"war","name":"The Marshal's School of Oath Hill","seat":"Kingsmere","note":"Marshal Stane's officers learn to march two hosts of 20,000 a day apart on the river roads, to build the Hartgate Box, and to count a Hide's men, horses and fodder before they count glory."},
+  {"type":"letters","name":"The Oath Hall Scriptorium","seat":"Kingsmere","note":"Scribes learn Old Solen for law and treaties and copy the Oath Hall rolls, the same rolls that let the Oath Moot refuse the Emperor a war tax."},
+  {"type":"faith","name":"The High Hall-Keeper's Seminary","seat":"Kingsmere","note":"Hall-priests are ordained here under the Emperor's headship of the Seven Halls and learn the oath-lays chanted at dawn on Oath Hill."},
+  {"type":"trade","name":"The Iron Road Counting House","seat":"Eagleburg","note":"At the end of the Iron Road clerks learn to price Irondeep iron, grain barges and Millrun horses, and to read a dwarf's contract twice."},
+  {"type":"crafts","name":"The Bargewrights' Hall of Yewmarch","seat":"Yewmarch","note":"Barge-builders, coopers and rope-makers of the Fairrush train their apprentices on the river whose tolls have kept the Fairrushes rich since 927."},
+  {"type":"sea","name":"The Cold Bay Squadron Yard","seat":"Easterham","note":"The crown's 16 cogs and 24 galleys winter at Easterham, where mates learn the Cold Bay coast, its ice and its amber smugglers under the Greymanes' eye."}
+ ],
+ "POL-02": [
+  {"type":"faith","name":"The Seminary of the Shadow Needle","seat":"Solenne","note":"The Temple's great seminary on Needle Hill teaches Old Solen, rite and preaching to every priest of the faith, and the Needle-Keepers' astronomy and water clocks to the chosen few who swear to keep the count."},
+  {"type":"letters","name":"The Scriveners' Steps","seat":"Solenne","note":"The Scriveners of the Needle Court teach Old Solen letters, canon law and contract to the clerks who write for every court of the Sunlands, on Qadiri paper below the archive they may not enter."},
+  {"type":"medicine","name":"The Sun-Sisters' Hospital of the Saltings","seat":"Solenne","note":"Sun-sisters teach fevers, wounds and childbed in the poorest ward of the city, where the salt marshes bring malaria every summer."},
+  {"type":"arts","name":"The Choir School of the Noon Bell","seat":"Solenne","note":"Boys learn plainsong in Old Solen for the dawn and noon offices beneath the great bell the Campanari ring for the whole city."},
+  {"type":"war","name":"The Captains' School of the Valerian Wall","seat":"Solenne","note":"The See's officers learn to keep walls, gates, engines and stores rather than to march, and the first lesson is the only time the Wall fell: by treachery, on Ash Night 759."},
+  {"type":"sea","name":"The Lorina Oar Hall","seat":"Lorina","note":"The captains of the See's eastern galleys teach oar, sail and the Bay of Lanterns from Lorina, where House Brennus children learn to row before they learn Old Solen."}
+ ],
+ "POL-03": [
+  {"type":"war","name":"The Marshal's School of Vitia","seat":"Vitia","note":"Montaro captains teach command, supply and siege in the citadel that Galen the Bold starved out in 747 and that has been stocked for two years ever since."},
+  {"type":"letters","name":"The College of the Lion Laws","seat":"Varenna","note":"Below Lion Hill, barons' sons and clever clerks learn Old Solen, the Solen Code as the Lion Laws amended it, and the forms of the Great Council."},
+  {"type":"medicine","name":"The Physicians of the Lion Stair","seat":"Varenna","note":"The Cardane physicians teach pulse, wounds and fevers from a book of royal deaths their house began the night the Lionheart died on the palace stair in 902."},
+  {"type":"faith","name":"The Cathedral School of the Temple Ward","seat":"Varenna","note":"The Temple trains Varenna's priests beside the cathedral that crowns its kings, and teaches the Luminary's clerks to count the Temple's sixth of the land."},
+  {"type":"trade","name":"The Bluewater Counting Rooms","seat":"Varenna","note":"Cloth merchants' sons learn the counting board, bills of exchange and what a bolt of Palella blue fetches in Lucerna, Ostra and Solenne."},
+  {"type":"crafts","name":"The Wheel Hall of Camia","seat":"Camia","note":"Wheelwrights, spinners and weavers of the Palella learn their trades here, and the spinning wheel is taught only to the valley's own: teaching it to a foreigner is a hanging crime."},
+  {"type":"sea","name":"The Galley School of Tarium","seat":"Tarium","note":"Remigi captains have commanded galleys of the royal yards since 785 and teach the Lion Fleet's mates oar, sail and the Strait of Hael."}
+ ],
+ "POL-04": [
+  {"type":"trade","name":"The Counting Schools of the Staple","seat":"Lavium","note":"Merchants' sons and daughters learn place-value numbers with zero, weights, bills and sea insurance within earshot of the weigh-house that has weighed the Middle Sea's grain since 358."},
+  {"type":"sea","name":"The Pilots' Hall","seat":"Lavium","note":"Stars, shoals and the lagoon in fog for every mate; the floating lodestone needle only for those who swear on their lives, and a pilot who sells it is hanged."},
+  {"type":"crafts","name":"The Arsenal Shipwrights","seat":"Lavium","note":"The guild that can build a galley in twenty days teaches keel, plank, oar and pitch inside the Arsenal wall, and asks no questions about the jars in the cellar."},
+  {"type":"letters","name":"The Notaries of the Harbor Court","seat":"Lavium","note":"Pandetti notaries teach the sea-partnership law of 726, contracts and the Harbor Court's forms; in Lucerna a contract is not real until one of them has read it."},
+  {"type":"medicine","name":"The Tasters' Table","seat":"Lavium","note":"The city that fears the cup above all teaches its physicians and food-tasters herbs, fevers and what a dish or a jug of wine can hide."}
+ ],
+ "POL-05": [
+  {"type":"war","name":"The Lord Wardens' School of Stagley","seat":"Stagley","note":"Officers of the arrays learn the beacon call-up, the hillside stand behind stakes and the road the Varennans took in 1013, on the very walls they are meant to hold."},
+  {"type":"letters","name":"The College on the Rock","seat":"Ashmere","note":"Clerks of the Privy Council learn Old Solen, the Ashwater Charter and the Butts Law, and that a king's seal wants his Chancellor's counter-seal beside it."},
+  {"type":"faith","name":"The Seminary of Aldminster","seat":"Sun Temple of Aldminster","note":"The court's priests of the Returning Sun are ordained here by the sea, while the villages keep their own free halls and choose their own keepers."},
+  {"type":"arts","name":"The Common Hall Singers","seat":"Ashmere","note":"Hall-singers of the Seven Halls learn the old songs on Moot Green beside the Common Hall, and the yeomen trust their voices more than any herald's."},
+  {"type":"crafts","name":"The Bowyers' Hall of Brightkeep","seat":"Brightkeep","note":"Where the elven yew carts arrive, bowyers and fletchers learn to split a stave of heartwood and sapwood and to fill the arrow tax of 24 arrows a hearth."},
+  {"type":"trade","name":"The Copper Exchange of Saltmoor","seat":"Saltmoor","note":"Copper, sulfur and wool are priced and contracted here, and every factor learns first that the crown takes its fifth of the copper before anyone else is paid."}
+ ],
+ "POL-06": [
+  {"type":"war","name":"The Wood-Captains' Hall of Fenali","seat":"Fenali","note":"The Edge Wardens teach rangers to command a line of tree stands, give the three warnings and hold the 212 stones of the Oak Line without ever fighting a pitched battle."},
+  {"type":"letters","name":"The Leaf Records of Syleron","seat":"Syleron","note":"The second copy of the Leaf Records lies in the dry limestone caves of Syleron, and the Elmwhisper scribes teach the law of the Moot, the Grove Count and the old tongue from it."},
+  {"type":"faith","name":"The Keepers' Grove of Evenglade","seat":"Evenglade","note":"Keepers of the Green Covenant are made under the First Oak itself, learning the marks, the seed-store rites and the veto over every cutting."},
+  {"type":"trade","name":"The Wax Circle of Evenglade","seat":"Evenglade","note":"The only body in Sylvaran that trades abroad in bulk teaches its young to weigh honey and wax against salt, iron and dwarf crowns at the forest edge."},
+  {"type":"crafts","name":"The Bowyers' Yard of Lirith","seat":"Lirith","note":"The yew-cutters and bowyers of Lirith, Sethril's own trade, teach stave, glue, horn and string, and no bow leaves the yard without a Keeper's mark on its wood."}
+ ],
+ "POL-07": [
+  {"type":"war","name":"The Fleet-Warden's Hall at Nimthil","seat":"Silverbough","note":"Captains of the forty longships learn the dusk approach, the mist landing and the harbor chain under the Fleet-Warden, in the ship-houses Tarael Greywave built."},
+  {"type":"letters","name":"The Silverbough Archive","seat":"Silverbough","note":"The realm's records and the elven Grove Count are kept and copied here under the Archivist's keys, and the Council of the Grey Veil takes its clerks from the copyists."},
+  {"type":"sea","name":"The Pilots' Hall of Nimion","seat":"Nimion","note":"The Swiftsail pilots teach the Elder Coast by its smell, its birds and its stars, from the North Fjords to the Strait of Hael."},
+  {"type":"faith","name":"The Sea Keepers' Hills of Fenandor","seat":"Fenandor","note":"Keepers of the sea-going Covenant learn to mark the firs whose wood may become a keel and keep the rolls of the captains buried under them."},
+  {"type":"crafts","name":"The Rope-Walk of Ithira","seat":"Ithira","note":"Three hundred meters of rope-walk and the sail lofts rebuilt after the noon raid of 611; ropemakers, sailmakers and shipwrights learn the trade here."},
+  {"type":"trade","name":"The Ship-Share Hall of Ithira","seat":"Ithira","note":"Merchants of the ship-houses learn mast and yew contracts, the grain run and the ship-shares, and argue each year whether humans may hold them."}
+ ],
+ "POL-08": [
+  {"type":"war","name":"The Ring's Winter Bench at Flintwall","seat":"Flintwall Tower","note":"Jarls' sons and hird captains learn the winter campaign: crossing ice in file five metres apart, striking a column in fog, and feeding a levy on stockfish when the harbors freeze."},
+  {"type":"sea","name":"The Ebb School of Coldhaven","seat":"Coldhaven","note":"Steersmen learn the fog, tides and stars of the Cold Coast, and how to bring a longship out and home on the night ebb with muffled oars."},
+  {"type":"trade","name":"The Amber Hall of Coldhaven","seat":"Coldhaven","note":"The Coldhaven Amber and Fish Guild trains its sorters and factors to grade amber by the storm that brought it in and to sell it south through Kingsmere."},
+  {"type":"crafts","name":"The Shipwrights' Strand","seat":"Coldhaven","note":"Since Bjorn the Shipwright's Ship Levy of 856, the longships every district owes the king are built by men who learned the clinker strake and the oak keel on this strand."},
+  {"type":"letters","name":"The Law-Rock School of Saltbridge","seat":"Saltbridge","note":"Pupils learn the unwritten law of the Ring and the Thing by heart, as the Lawspeakers recite it, and lately argue whether it ought to stay unwritten."},
+  {"type":"faith","name":"The Free Hall of Saltbridge","seat":"Saltbridge","note":"Hall-keepers whom their own villages have chosen learn the lays of the Seven Halls in the Free Hall form, with no emperor above them."}
+ ],
+ "POL-09": [
+  {"type":"faith","name":"The Ice Shrine of Dagberg","seat":"Skarfell","note":"The Skalholm giants keep the cave of blue ice in the hills above Skarfell where the Mother Under the Ice hears her children, and they lead the Whale Thanking."},
+  {"type":"arts","name":"The Mothers' Chant of Helstad","seat":"Helstad","note":"Keepers of the Mothers' Chant learn every mother of every hall a hundred generations deep; the chant judges each marriage at the Thing."},
+  {"type":"trade","name":"The Skarfell Tin Fair","seat":"Skarfell","note":"Each summer the chieftain sets the tin price with the Northreach Tin Reeves, and the Tinwash counters teach the weights, tallies and Northfolk letters of the Tin Compact."},
+  {"type":"crafts","name":"The Whale Coves of Helstad","seat":"Helstad","note":"When a whale strands the giants thank the Mother and the Oilcrofts boil it; tribute-folk learn rendering, ivory work and the timber craft of the halls here."}
+ ],
+ "POL-10": [
+  {"type":"war","name":"The Hold Guard's Hall","seat":"Irondeep","note":"Every dwarf of Irondeep serves thirty years in the Hold Guard; its sergeants teach gate drill, the night trains and the Iron Road forts, and the best sit at the Gate-Warden's council."},
+  {"type":"crafts","name":"The Forges of the Deep Halls","seat":"Irondeep","note":"Brightanvil master-smiths teach the forge and Mallethand wire-drawers the drawn rings that make Irondeep mail famous; the fire of the blast furnaces is taught to four smiths only."},
+  {"type":"trade","name":"The Iron Road Counting-Room","seat":"Irondeep","note":"Deepeye factors and Copperbraid weighers teach the Iron Road Contract, the honey-for-iron trade with Sylvaran and tallies no carter may ever see."},
+  {"type":"faith","name":"The Law-Carvers' Hall","seat":"Irondeep","note":"Carvers of the Deep Law learn the carved law, the genealogies and the exile rolls, and that no ruler may overrule what they cut."}
+ ],
+ "POL-11": [
+  {"type":"war","name":"The War-Captains' Fire of Urgol","seat":"Urgol","note":"Chiefs' sons and daughters sit at the Hearth Guard's fire to learn how to count a relay line, time six waves to the drum, feed a host from the herds and finish a war in ten minutes or not start it."},
+  {"type":"letters","name":"The Braid-Tents of the Grey Mothers","seat":"Urgol","note":"Braid-girls of every kin learn the Law of the Grass, the Law of the Fire and the blood-prices among the 1,400 winter-count hides, though only women of the line may ever take the grey braid."},
+  {"type":"faith","name":"The Shamans' Ring at the Drum Stones","seat":"Ughdur Ring","note":"Young shamans of the Storm and the Mare learn the drum, the sweat lodge and the funeral platforms under the Drum Council, at the stones where war-chiefs have been named since 1024."},
+  {"type":"arts","name":"The Winter Count Singers of the Grakzag Springs","seat":"Grakzag Oasis","note":"At the Wolftails' summer camps the long spoken epics are learned by heart, the Long Flight in three summers of verses and the forty winters of Sunland bread, so that no clan forgets a grievance or a gift."},
+  {"type":"trade","name":"The Horse-Fair Ring of Skartar","seat":"Skartar Caravanserai","note":"Herd-masters' children learn to price a mare in Sunland silver, drive a string over the Gordush or down to the coast markets, and come home with grain, as Gorm the Trader does."},
+  {"type":"crafts","name":"The Felt-Frames of the Urgol Clans","seat":"Urgol","note":"The felt-mothers teach the knots that only elders may pass on: tents, horse-blankets and the boiled-leather coats the war-bands fight in, each marked with the kin-band that rolled it."}
+ ],
+ "POL-12": [
+  {"type":"war","name":"The Tablet Tent of Kharsa","seat":"Kharsa","note":"Chiefs' sons ride a year with the Silver Tablet Guard and learn the khan's war: the hundred and the thousand, the led horses, the yam roads and the retreat that is not a retreat."},
+  {"type":"letters","name":"The Knot-Keepers' Tent of Kyztai","seat":"Sartobe Yam","note":"The Grey Wind's tally-keepers, counters since the Solen princess Galla, teach the knotted cords of herds, marriages, tribute and the yam riders, which is all the writing the steppe trusts."},
+  {"type":"faith","name":"The Sky Cairn of Sibtu","seat":"Kharsa","note":"The Cairn-Binders teach young shamans of the Eternal Blue to tie the blue cloth, pour milk to the sky, read the omen bones at the Horse Feast and speak to the spirits of springs and hills."},
+  {"type":"trade","name":"The Caviar Cellars of Kultau","seat":"Kultau","note":"In the second city of the steppe the Reed Wind's salters and the horse-dealers of the channel fairs teach the prices of sturgeon, salt and horses, and how to sell twenty thousand horses a year without selling the herd."},
+  {"type":"sea","name":"The Boat-Shore of Ozlun","seat":"Ozlun","note":"The Morning Wind's boatwrights and the Kularyk boatmen teach the oared boats of the Salt Sea and the channel tides, the only seamanship a nation of riders keeps."},
+  {"type":"crafts","name":"The Horn-Bow Camp of Otbash","seat":"Otbash Yam","note":"Bowyers teach the short composite bow of horn, wood and sinew that takes a winter to glue and a lifetime to draw well, and the felt and saddle work every rider sits on."}
+ ],
+ "POL-13": [
+  {"type":"war","name":"The Captain-General's Hall","seat":"Highcastle","note":"Hire-captains and valley officers learn pass holding, mule supply and the reading of a contract, because a company that misreads its terms fights for nothing."},
+  {"type":"letters","name":"The Charter School of Highcastle","seat":"Highcastle","note":"Speakers' clerks learn Old Solen for the Charter of 336 and the hire contracts, and the first line of both: no one may be king."},
+  {"type":"faith","name":"The Free Hall of Highcastle","seat":"Highcastle","note":"Keepers of the Free Halls are trained here, where the Hunter and the Smith are honored above the other five."},
+  {"type":"crafts","name":"The Crossbow-Makers' Guild School","seat":"Whitfield","note":"Apprentices of Master Ivo Stringer's Crossbow-Makers of Roseham learn the 150 kg prod, the nut and the lever-span that every hiring realm pays for."},
+  {"type":"trade","name":"The Mule-Road Hall of Highwold","seat":"Highwold","note":"Muleteers and toll-keepers learn the high roads, 100 kg to a mule at 25–30 km a day, and the Silver Chest's tenth on every load."}
+ ],
+ "POL-14": [
+  {"type":"sea","name":"The Pilots' Guild Hall","seat":"Greyhaven","note":"Seven years under oath on the Galley Strand: the only school in the north that teaches the lodestone needle, and the guild drowns any pilot who shows it to an outsider."},
+  {"type":"war","name":"The Watch School of Deepwatch","seat":"Deepwatch Castle","note":"Galley captains, castellans and Rift wardens learn tides, fire codes and the victualling of a fleet, and nobody is commissioned before he has stood a winter on one of the 72 channel towers."},
+  {"type":"faith","name":"The Sea King's Hall","seat":"Greyhaven","note":"The kingdom's Oath Hall and the seminary of the Seven Halls under the Sea King; its hall-priests may marry, and every novice copies the hall-roll and learns the Dragon rite."},
+  {"type":"trade","name":"The Toll-House Counting Room","seat":"Greyhaven","note":"Clerks learn cargoes, weights, Old Solen manifests and the one part in thirty; the best stay on in the Toll-House, which is almost a second government."},
+  {"type":"crafts","name":"The Timber Guild of Wrendale","seat":"Wrendale","note":"The richest guild after the Toll-House: sawyers, joiners and shipwrights' boys learn to choose a keel oak standing and season it for years, and the guild's mark sells Wrendale oak to three crowns."}
+ ],
+ "POL-15": [
+  {"type":"war","name":"The Marshal's School of the Steppe March","seat":"Castel Ascino","note":"Officers learn the fort chain, the tower codes, the Horse Road and the siege of 895 to 897 from the men who keep Castel Ascino, the inland anchor of the steppe watch."},
+  {"type":"letters","name":"The Chancery School of Morhaven","seat":"Morhaven","note":"Clerks learn Old Solen, the Solen Code with the Falcone Edicts, and the chancery hand from the Clarenzi notaries, who have copied the kingdom's rolls since 760."},
+  {"type":"faith","name":"The Lucina Chapter School","seat":"Lucina","note":"The Temple trains its priests and the clerks of its debt courts among its own Lucina farms, bought with the Schism Tax and never given back."},
+  {"type":"trade","name":"The Salt Quay Hall of Felano","seat":"Lucina","note":"Felano's merchants teach bills of lading, Lunetti bills of exchange and the grain trade to both Tessarian camps, in a port bigger and richer than the capital."},
+  {"type":"crafts","name":"The Anvil of the Short Master","seat":"Lucina","note":"Felano's smiths teach the bloomery beside a stone anvil cut with dwarf marks, and forge the anchors, nails and harbor chains of the whole coast."},
+  {"type":"sea","name":"The Coast Galley School of Morhaven","seat":"Morhaven","note":"Galley captains teach oar, sail and the harbor chain, and every boy learns how Aurelio Falcone followed the sea drakes and saw 42 sails at 30 km."}
+ ],
+ "POL-16": [
+  {"type":"trade","name":"The Ledger School of House Lunetti","seat":"Ostra","note":"Bookkeeping with zero, bills of exchange and Old Solen contract law, taught in House Lunetti's own school; its graduates keep the books of half the Middle Sea."},
+  {"type":"letters","name":"The Register of the Exchange","seat":"Ostra","note":"Libranti notaries teach the Charter of the Exchange of 849, the register of bills and bankruptcies, and the reading of fled debtors' names in the churches on New Year's Day."},
+  {"type":"war","name":"The Captains' Hall of Buckler Lane","seat":"Ostra","note":"Hired captains teach the sons of the Twelve how a Free Company is paid, fed and kept loyal, and how a wall is held for a month's good silver."},
+  {"type":"crafts","name":"The Murex Vats of Felena","seat":"Miressa","note":"The Murex Dyers' Guild teaches its apprentices shell, vat and alum, and the one recipe Ubaldo Pell set for every vat on the shore; the dyers' hands stay purple for life."},
+  {"type":"sea","name":"The Galley School of Novice","seat":"Novice","note":"Venn admirals teach oar and sail to the marines of their own Novice coast, for a fleet the city would rather pay than use."}
+ ],
+ "POL-17": [
+  {"type":"faith","name":"The House of Water","seat":"Qarifa","note":"The well-schools on Water Hill in Qadira train Well-Keepers and the forty judges of the House, who may declare even a sultan's order against the Book."},
+  {"type":"crafts","name":"The Mill Halls of Saman","seat":"Qarifa","note":"Millwrights, rag-sorters and stamper-smiths learn their trades in the outer halls; the vat and the wire screen are taught only to the 32 mill families, who are watched for life."},
+  {"type":"sea","name":"The Pilots' House of Miruma","seat":"Miruma","note":"Pilots and captains of the merchant ships and the new galleys learn the Qadiri coast, the harbor lamps and the Bone Coast run toward Sabra."},
+  {"type":"trade","name":"The Caravan Exchange of Ashah","seat":"Ashah","note":"Date, copper and paper merchants teach reckoning, the duty of one part in ten and the Zanari gold trade of the Scale Pact."},
+  {"type":"war","name":"The Cistern Road School of Nahin","seat":"Nahin","note":"Officers learn to reckon water before men: cisterns, water camels and days of march, so that no Qadiri column dies of thirst again as the Sabun column did in 1022."},
+  {"type":"medicine","name":"The Endowment Hospital of Hazifa","seat":"Hazifa","note":"Physicians paid by the Water Endowment learn the stone, the flux of bad water and heat-stroke, the three killers of the Sunwall coast."}
+ ],
+ "POL-18": [
+  {"type":"war","name":"The Kadah Wall School","seat":"Rashira","note":"Officers of the River learn on the rift shoulder to march 40,000 men down the Monuti on barges, feed them on bread, and campaign only between the harvest and the flood."},
+  {"type":"letters","name":"The Scribes' Schools of the Palace Bank","seat":"Tamar","note":"Scribes, judges and corvée clerks of the Vizier of the Two Banks learn the temple script, the survey of the fields after each flood and the law of the boundary stones."},
+  {"type":"faith","name":"The Stair Precinct","seat":"Tamar","note":"The seminary of the Flood Temple beneath the Flood Stairs, where flood-priests learn to read the crest, keep the tax rolls and serve the Flood Mother."},
+  {"type":"medicine","name":"The Embalmers' House of the Night Bank","seat":"Tamar","note":"The embalmers of the west bank know the body from the inside, and the fever-doctors they train know the delta fever better than anyone in the Southland."},
+  {"type":"trade","name":"The Grain Hall of Marira","seat":"Akayn","note":"Delta Wells brokers and Lucernan factors in the harbor town of Marira teach the grain tally, the contracts of the Grain Staple and the rag trade with Qadir."},
+  {"type":"crafts","name":"The Papyrus Yards of the Delta","seat":"Fort Halifa","note":"The delta guild teaches papyrus, linen, rope-twisting and the binding of reed boats to apprentices from every nome."},
+  {"type":"sea","name":"The River Pilots' Stair of Talim","seat":"Talim","note":"Helmsmen of the river galleys, the barges and the Crocodile Boats learn every channel, sandbar and night landing of the Monuti from Talim to the delta mouths."}
+ ],
+ "POL-19": [
+  {"type":"faith","name":"The Well-Court of Samar","seat":"Marabad Oasis","note":"At the holiest well of the faith the Keeper of the First Well and the clan elders teach the Riders' form of the Book: elders judge, and no Well-Keeper court sits in the desert."},
+  {"type":"war","name":"The Brotherhood of Guides","seat":"Badayn Oasis","note":"Clan Adib's guides teach captains the stars, the wells and the night march from well to well; a guide earns a star name only after bringing a caravan through a sandstorm without loss."},
+  {"type":"letters","name":"The Knot-Tent of the Well-Mother","seat":"Zarak","note":"The Well-Mother's knotted register of which clan waters when is read and kept here, with the clan law the chiefs swear to at council."},
+  {"type":"trade","name":"The Salt Fort","seat":"Zarak","note":"Fee clerks and salt-masters teach the camel-load fee, the tally cord and the Treaty of the Salt Road with Zanara inside the walled salt market."},
+  {"type":"arts","name":"The Poets' Ground of Mirah","seat":"Mirah","note":"At the Mirah market feuds are fought with poetry before blades, and the singers of 'The Thirst of Mirah' teach verse to the children of every clan."},
+  {"type":"crafts","name":"The Water-Skin Tents of Nahuma","seat":"Januma Caravanserai","note":"Nahuma leatherworkers teach saddles and water-skins of camel and goat hide sealed with gulf pitch, the best in the Waste."}
+ ],
+ "POL-20": [
+  {"type":"war","name":"The Marshal's College of the Horn Camps","seat":"Zanara","note":"Officers learn the bull's horns, the herd march and the drum orders that steer 60,000 spears on the grass, and why no Zanari army has marched beyond the grass since Mirah."},
+  {"type":"faith","name":"The Rememberers' Hall of the Ancestor Hill","seat":"Zanara","note":"Rememberers learn every emperor's line by heart, in Zanari and Old Tedani, beside the High Rememberer who can refuse to sing an emperor."},
+  {"type":"letters","name":"The Tembo Writing House","seat":"Zanara","note":"The Tembo, scribes to the Rememberers since letters came with the Well Quarter's charter of 988, teach clerks to write tribute rolls, road surveys and treaties."},
+  {"type":"trade","name":"The Scale Street Hall","seat":"Zanara","note":"The five Gold Houses teach weighing, assaying and the gold weight of 4.2 g whose standard sets the price of gold from Sabra to Qadira."},
+  {"type":"medicine","name":"The Nduma Fever House","seat":"Zanara","note":"The Nduma physicians, who have sat beside every Kanemba deathbed since 959, teach bone-setting, river fevers, thirst-sickness and the stroke."},
+  {"type":"crafts","name":"The Furnace Yards of Jitamo","seat":"Jitamo","note":"Smith clans who marry only among their own teach smelting and spear-iron at the hill furnaces that arm the Horn Regiments."},
+  {"type":"arts","name":"The Talking-Drum House of Tefude","seat":"Tefude","note":"Drummers learn the drum speech that carries a full sentence 5 to 8 km, on the tower road the Mabundi drum-masters built in 989."}
+ ],
+ "POL-21": [
+  {"type":"sea","name":"The Pilots' House of Monuro","seat":"Monuro","note":"The Bahariya pilots, who brought Nuru's boats into Amberport by night in 1069, teach stars, charts, tides and night sailing to the League's mates, though the reef marks they keep for their own blood."},
+  {"type":"trade","name":"The Weighing Floor of the Pepper Hall","seat":"Kesh","note":"The weighers of the Pepper Hall teach the honest weight, the tax of one part in ten and the price of pepper from Kesh to Amberport."},
+  {"type":"crafts","name":"The Shipwrights' Yards of Monuro","seat":"Monuro","note":"The shipwrights teach hull, oar and mast inside the walled yards where Chande Monuri built the League's first war galleys."},
+  {"type":"faith","name":"The Kisiwani Shrine House","seat":"Kesh","note":"The Kisiwani, who sang the League's oath in 880, teach the rites of the Thousand Ancestors and the sung lines of the spice houses."},
+  {"type":"letters","name":"The Pembari Clerks' Hall","seat":"Kesh","note":"The clerks who have written the council's minutes since 884 teach letters, contracts and treaty papers, and every merchant house hires their pupils."}
+ ],
+ "POL-22": [
+  {"type":"war","name":"The Crown Yard War School","seat":"Abara","note":"Officers of both hosts learn the pike hedge, the terrace defense, the ford and the starvation siege, and since 1053 how to serve one king at a time."},
+  {"type":"faith","name":"The Rememberers' Hall of Abara","seat":"Abara","note":"Rememberers learn the genealogies, the knot-records and the songs of four dynasties beside the chest of House Asfari, and which dead kings may not be named."},
+  {"type":"letters","name":"The Second Court's House of Letters","seat":"Nusalo","note":"At the court of the king who is not reigning, clerks learn Tamari letters on river-gift papyrus, the knotted tallies and the Keeper's two sets of books."},
+  {"type":"trade","name":"The Salt Carriers' Hall of Koyako","seat":"Koyako","note":"The salt carriers teach the salt bar, the mule trains over the Highveld and the river trade with Tamar where Keshi pepper meets the Monuti boats."},
+  {"type":"crafts","name":"The Smith Clans' Forge of Balona","seat":"Balona","note":"The landless smith clans, whom no lord may touch, teach iron, spearheads and the pike-heads the Great Arming of 1104 has doubled."},
+  {"type":"medicine","name":"The Birth-House of Nusalo","seat":"Nusalo","note":"The Lemmari midwives, who have delivered Nusalo's women since Lady Tsehay's first twins in 921, teach birthing, bone-setting and how to keep both twins and the mother alive."}
+ ],
+ "POL-23": [
+  {"type":"faith","name":"The Ice Shrine of Jorhamar","seat":"Valdhall","note":"The Vidheim giants keep the cave of old ice where the halls bring the first whale tooth of each spring, and lead the Whale Thanking for the White Coast."},
+  {"type":"arts","name":"The Mothers' Chant of Jotunhall","seat":"Jotunhall","note":"Under the 52nd Mother the chant-keepers learn the Mothers of every line; Grani the Rememberer still sings an older order that some would rather forget."},
+  {"type":"trade","name":"The Ivory Weighing of Valdhall","seat":"Valdhall","note":"Since the Ivory Peace of 821 walrus ivory has been weighed here against grain, ale and iron under one set of weights, and the hall's clerks learn the southern trade in unicorn horn."},
+  {"type":"crafts","name":"The Tusk Workshop of Jotunhall","seat":"Jotunhall","note":"King Orm set human carvers to work on walrus tusk in 1062; the Scrimmer family teaches combs, game pieces and cups for the southern trade."}
+ ],
+ "POL-24": [
+  {"type":"war","name":"The Harbor Towers College","seat":"Sabra","note":"Officers learn Sabra's one war: let the enemy fleet come into the harbor, hold the towers, and time the fire-boats on the ebb."},
+  {"type":"faith","name":"The Well-house of Sabra","seat":"Sabra","note":"The Well-Keepers who broke from the House of Water in 1025 train their judges by the harbor, where Mahmud the Just frees the divers who become believers."},
+  {"type":"trade","name":"The Gold Yards","seat":"Sabra","note":"Caravan brokers teach the Gold Road from Zanara, the reckoning of camel-loads and dinars, and how gold is sold north without questions."},
+  {"type":"sea","name":"The Pearl Masters' Boats of Azara","seat":"Zariya","note":"Pearl masters and gulf pilots teach the banks, the shallows and the winds of the gulf; in war the 400 pearling boats are Sabra's scouts."}
+ ],
+ "POL-25": [
+  {"type":"faith","name":"The Monastery School of Lamp Street","seat":"Velgrad","note":"The great seminary of the Dawn Church below the cathedral: the liturgy in Eastfolk, not Old Solen, priests who may marry, and the Dark Weeks fasted in full before a deacon is given his lamp."},
+  {"type":"war","name":"The Marshal's School at Yarec","seat":"Yarec","note":"House Koren's march school: officers learn pass walls, the road stations of the Neck and the Ostmir Gate, and the first lesson of every course is why Velgrad has not wintered in the Lakeland since Brodava."},
+  {"type":"letters","name":"The Bench Hall","seat":"Velgrad","note":"Bench lords' sons learn the Code of Radoslav on Bear Hill: to judge with a priest present, to price a free man's life at 60 sables, and how the Bench names a regent when it must."},
+  {"type":"trade","name":"The Fur Staple of Velgrad","seat":"Velgrad","note":"Every pelt sold abroad is graded and taxed in its walled yard; clerks learn to grade a sable by touch, to reckon blood-silver in pelts and to read the old Fur Road tally-rolls."},
+  {"type":"crafts","name":"The Redcrown Pit and Forge Guild","seat":"Belansk","note":"Sulfur-diggers, pitch-boilers and smiths of Redcrown iron learn their trades under the Belak pits, and the guild's pitch-pots go to every galley at Sevany."},
+  {"type":"sea","name":"The Channel School of Sevina","seat":"Sevina","note":"Mates and helmsmen of the channel squadron learn the tide race off Beaconstone and the creeks of the east shore; Greyhaven's lodestone needle is the one thing it cannot teach."}
+ ],
+ "POL-26": [
+  {"type":"faith","name":"The Monastery Isles","seat":"Drevna","note":"The oldest houses of the Dawn faith, on the islands of the Crown Lakes: novices learn the liturgy, the hives and the copying of books, and under Stefan the Grey a long resentment of the Patriarch at Velgrad."},
+  {"type":"war","name":"The Sled Masters' School of Brodava","seat":"Brodava","note":"Officers learn the Ice Crossing, the winter sled roads, the burned-ground retreat and the long wait that won the Lakeland War; the Master of the Sleds still teaches ice by its sound."},
+  {"type":"letters","name":"The Law Rolls of the Lake Council","seat":"Drevna","note":"Lords' sons and clerks learn Ludmila's Code, the reckoning of debts in bears, furs and wax, and the copying of law rolls, and the keeper of the rolls guards the older copy of the Code."},
+  {"type":"trade","name":"The Silk Scales","seat":"Darsky","note":"House Lubec's clerks teach the silk tenth, the tallies of the Tusk toll camps and lending to river towns; its graduates keep the scales of the silk staple from Lubany to Korov."},
+  {"type":"crafts","name":"The Boat and Sled Sheds of Kraina","seat":"Kraina","note":"Lake boats, river barges and war sleds are built in the long sheds of the Western Lakes, and apprentices learn ice-runners and spiked horseshoes as well as the hull."}
+ ],
+ "POL-27": [
+  {"type":"faith","name":"The Seminary of the White Stair","seat":"Skyhold","note":"Monks and nuns learn scripture, stillness and the rites of rebirth and sky burial on the seven flights below the Abbot's hall, where a poor herder's son can rise to abbot."},
+  {"type":"letters","name":"The Copying Tables of Stonespire","seat":"Stonespire Monastery","note":"The Prayerstone copyists teach the Old Sky script, scripture copying and the fair copies of the search records that every monastery keeps."},
+  {"type":"medicine","name":"The Herb Hall of Drumhaven","seat":"Drumhaven Monastery","note":"Monks teach the high herbs, the sickness of thin air and the setting of bones, beside the sky-burial platforms where the dead show how they died."},
+  {"type":"trade","name":"The Salt Caravan Hall of Eaglespire","seat":"Eaglespire","note":"The Salt Caravan Brotherhood teaches yak trains, salt and borax by weight, silver by the gram and the Salt Letters trade with the Drevnan buyers each summer."},
+  {"type":"crafts","name":"The Wool Looms of Starspire","seat":"Starspire","note":"The weavers of the Bluespire circuit teach sky wool, yak-hair tents and the ropes the Stair Guard binds with."}
+ ],
+ "POL-28": [
+  {"type":"faith","name":"The First Hall of the Deep Law","seat":"Stonehold","note":"Where Halla the Carver finished the carved Law; Carvers of all three holds learn it under the Eldest Carver, with the exile rolls and the genealogies."},
+  {"type":"letters","name":"The Law Halls of Kelfast","seat":"Morhall","note":"The Grimstone carvers teach contract, treaty and the clauses that are carved and never read aloud; five Eldest Carvers have come out of these halls."},
+  {"type":"trade","name":"The Hold Bank of Dramhall","seat":"Dramhall","note":"Goldvein clerks teach the Bank's carved rules: lend only against metal or land, never forgive a debt, and cut the names of those who do not pay on the Debtors' Wall."},
+  {"type":"crafts","name":"The Twelve Furnaces of the First Hall","seat":"Stonehold","note":"The crucible guild teaches iron and charcoal melted in sealed clay at the falls above the First Hall; no outsider has ever watched a furnace lit."},
+  {"type":"war","name":"The War Hall of Garbek Gate","seat":"Garbek Gate","note":"Thanes and gate sergeants learn the pass war that won Tiravi: a week to dig, pits and caltrops, a valley no wider than it needs to be, and the order of a gate's doors."}
+ ],
+ "POL-29": [
+  {"type":"crafts","name":"The Breath Forges","seat":"Emberdeep","note":"Emberhand forge-masters teach crucible steel in forges heated by the springs the dwarves call the Smith-Father's breath; the secret is taught under oath and never written."},
+  {"type":"faith","name":"The Carvers' Halls of Balmund","seat":"Emberdeep","note":"Thyri Ashgrave copied the Law of the First Hall from memory in 401; her clan teaches it, the founding chant and the confirming of heirs at Dagna's anvil."},
+  {"type":"trade","name":"The Copper Gate of Tharmund","seat":"Gorhall","note":"Coppertooth factors teach Ranpuri speech, the gate fee and the steel-for-rice trade on the one road down to the Gundgard valleys."},
+  {"type":"war","name":"The Hammer Guard's Hall","seat":"Emberdeep","note":"Officers learn the war of one road and many tunnels: gate turns, hot-water pours, drop-stones, and the Dragon Watch's sky."}
+ ],
+ "POL-30": [
+  {"type":"war","name":"The Nagora War College","seat":"Tiravi","note":"Officers of the dry-season host learn roads, road forts, mines and supply, and walk the Girvan terraces where the staked pits broke the Raja's elephants in 1083."},
+  {"type":"faith","name":"The Hymn School of the Great Temple","seat":"Ranpur","note":"Bhaskar and Purohan priests teach the Thousand Names, the hymn of the white elephant and the law of the temple courts, and the temple banks pay for every novice's rice."},
+  {"type":"letters","name":"The Palm-Leaf College of the Royal Courts","seat":"Ranpur","note":"Clerks learn the Raja's law of land and war, the Rain Compact and the old palm-leaf rolls, and how to argue a case before a court the temples do not own."},
+  {"type":"medicine","name":"The House of Poppy and Willow","seat":"Madora","note":"Physicians learn poppy for pain, willow bark for fever, bone-setting, and the milk-and-charcoal cure that saved Raja Vikram after the feast of 1001."},
+  {"type":"trade","name":"The Cotton Brokers' Hall","seat":"Ranpur","note":"Brokers' sons learn weights, bills and the sea freight to Kesh and Amberport, and since 1098 half of them also hear the One Face preached in the yard."},
+  {"type":"crafts","name":"The Outer Forges of Chanari","seat":"Chanari","note":"Iron, bronze, mail and lacquer are taught to any boy who pays; the crucible is not, and the Smiths' Wall stands between the two schools."},
+  {"type":"sea","name":"The Monsoon Coast Galley School","seat":"Ekapur","note":"Navik captains teach oar, sail, the river bars and the laying-up of galleys before the June rains, and still steer by the stars while laughing at the Amber needle."}
+ ],
+ "POL-31": [
+  {"type":"war","name":"The Prince's War School at Calossa","seat":"Calossa","note":"Northern captains learn the road war: winter camps, siege towers, and how to buy a garrison instead of storming it, as Prince Andros bought Doria in 1103."},
+  {"type":"letters","name":"The Archive School of Tessar","seat":"Tessar","note":"Clerks learn Old Solen, Leo's law of succession in both its readings, and the Toll Book of 845, in the royal archive that still keeps the legion day-book of 393."},
+  {"type":"faith","name":"The Monastery Schools of Calossa","seat":"Calossa","note":"Dawn priests, who may marry, teach scripture and reading in Eastfolk as the Ordane monasteries have since 734; Temple novices of the south go to the Luminary at Tessar instead."},
+  {"type":"medicine","name":"The Surgeons' House of Feleria","seat":"Feleria","note":"Doctor Lucia Medrano and her kin teach bone-setting and the cutting-out of crossbow bolts to anyone, north or south, who will work in the tents after a battle."},
+  {"type":"trade","name":"The Toll Book Hall of Tessar","seat":"Tessar","note":"Carters and clerks learn every toll of the Neck road line by line, bills on Ostra, and how to pay the same toll twice since the pledge ran out in 1077."},
+  {"type":"crafts","name":"The Cedar Wrights of Feleria","seat":"Feleria","note":"Joiners learn to work Feleria cedar into roof beams, ship frames and the throwing arms of the queen's engines, for whichever side pays this year."},
+  {"type":"sea","name":"The Harbor Mole School of Tessar","seat":"Tessar","note":"Salvane captains teach oar and sail behind King Marcian's harbor mole, and every pupil rows a winter of grain runs to Morhaven and Ostra."}
+ ],
+ "POL-32": [
+  {"type":"war","name":"The Admiral's School of the Tekook Yard","seat":"Amberport","note":"Officers of the galleys and marines learn fleet signals, beach landings, the cyclone months and the terms of the Treaty of Madamo by heart, as Sultan Iskandar did at eight."},
+  {"type":"faith","name":"The Well-House of Amberport","seat":"Amberport","note":"Well-Keepers teach the Book of Wells in Qadiri, the law of the Well courts and the audit of the market roll; the commoners' Thousand Names are taught at the beach shrines, not here."},
+  {"type":"trade","name":"The House of the Scales","seat":"Amberport","note":"Brokers learn to weigh every clove and nutmeg on the sultan's scales under the Law of 945, to take the fifth, and to tell an honest market roll from a cut one."},
+  {"type":"crafts","name":"The Kris-Smiths' Forge","seat":"Amberport","note":"The Pulau teach the folding of island iron with meteor nickel into the wavy blades of the sultans and the marines, and since 1102 quietly take apart smuggled Chanari steel."},
+  {"type":"sea","name":"The Reef Pilots of Ruhu Bay","seat":"Ruhu","note":"Teluk and Siput captains teach oar, sail, the reef channels and the diving banks by heart; the floating needle stays in Karang hands at Amberport and is never shown."}
+ ],
+ "POL-33": [
+  {"type":"sea","name":"The Shoal Pilots' Loft of Ratrock","seat":"Ratrock","note":"The Ninefathoms and the other pilot families teach every reef and shoal of the Strait by heart and by night, the one craft that lets light galleys flee where a navy's ships run aground."},
+  {"type":"trade","name":"The Share-Book Table","seat":"Blackreef","note":"Under the Quartermaster's eye, crew children learn the share-book, the tenth to the Table, the dragon toll of one ship in forty and the price of a prize in every coin of the Middle Sea."},
+  {"type":"faith","name":"The Shrine of the Dice","seat":"Blackreef","note":"In the painted sea cave where the Articles were sworn in 990, the Bonedice teach the luck-gods' rites: the dice thrown before every raid, the vows of a crew, and how to read a throw."},
+  {"type":"crafts","name":"The Caulkers' Slip of Ratrock","seat":"Ratrock","note":"Caulkers and shipwrights teach oakum and pitch, the patching of galleys and captured cogs on a beach with no proper yard, and the raft-building every isle needs."}
+ ],
+ "POL-34": [
+  {"type":"war","name":"The War-Mother's Hearth at Grakmar","seat":"Grakmar","note":"Captains of the 31 clans learn at Clan Ironhide's winter camp to drum a relay, hold a hay store through a blizzard, fight in the season nobody fights and keep a war short enough for orc lungs."},
+  {"type":"letters","name":"The Clan-Mothers' Council Fire","seat":"Grakmar","note":"Girls and boys who will speak for their clans learn the Law of the Grass, the grazing lines, the Treaty of Thardush and the winter-counts, under the council that can overrule a War-Mother."},
+  {"type":"faith","name":"The Mare Shrines of the Milkstones","seat":"Vashuk Oasis","note":"Shamans of the Storm and the Mare learn the milk-bowl at dawn, the drum, the blessing of the spears before every rhino trial and the eastern creed that no living chief is holy."},
+  {"type":"trade","name":"The Tally Fire of the Kraoth Clans","seat":"Roktuk Oasis","note":"Toll children learn to count at six on knotted cords, one knot for a bolt and a bead for a horse; here they learn the caravans, the trade-speech of the silk road and the one-part-in-ten."},
+  {"type":"crafts","name":"The Turquoise Cutters of Oggoth","seat":"Oggoth Oasis","note":"The hill clans teach the cutting of Throkbad turquoise for tusk-caps, the setting of iron plates in rhino hide and the heavy ash spear-shaft that will not break in a charge."}
+ ]
+}

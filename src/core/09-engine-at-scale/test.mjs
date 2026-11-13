@@ -172,12 +172,13 @@ export default {
     const BUILD_TIME = [
       [/T\.owner = win; T\.occ = null;/, '43 W.vary, inside A.initWorld'],
       [/P\.owner = nid; P\.occ = null;/, '70 FR.make, inside A.initWorld'],
-      [/S\.houses\[id\]=Object\.assign\(\{op:A\.ri\(30,70\)/, 'A.initWorld'],
-      [/S\.houses\[id\]=\{id,name:F\.name/, 'A.initFamilies, inside A.initWorld'],
-      [/S\.houses\[id\]=r\}else S\.houses\[id\]=o\}return delete S\.packed/, 'A.unpackState, on load'],
-      [/S\.houses\[id\]=o\}return delete S\.packed/, 'A.unpackState, on load'],
+      // (the release's own sites are matched in its readable source, src/core/release/, since X1)
+      [/S\.houses\[id\] = Object\.assign\(\s*\{\s*op: A\.ri\(30, 70\)/, 'A.initWorld'],
+      [/S\.houses\[id\] = \{\s*id,\s*name: F\.name/, 'A.initFamilies, inside A.initWorld'],
+      [/S\.houses\[id\] = r;\s*\} else S\.houses\[id\] = o;\s*\}\s*delete S\.packed/, 'A.unpackState, on load'],
+      [/S\.houses\[id\] = o;\s*\}\s*delete S\.packed/, 'A.unpackState, on load'],
       [/S\.houses\[hid\] = \{ id: hid, name: \/\^\(of /, '70 FR.make (a new house for a fresh realm), inside A.initWorld'],
-      [/A\.S\.houses\[hid\]=\{id:hid,name:houseName,realm:null,kind:"royal"/, 'the player founds a realm: a royal house never counts in A.realmHouses, and its realm is set (and told) two statements on'],
+      [/A\.S\.houses\[hid\] = \{\s*id: hid,\s*name: houseName,\s*realm: null,\s*kind: "royal"/, 'the player founds a realm: a royal house never counts in A.realmHouses, and its realm is set (and told) two statements on'],
       // v2 map lane: the generated continent's adjacency is written into the new provinces inside A.initWorld, before
       // any index is built (99991-v2-map, patch V2MAP-PROV)
       [/p\.adj = q\.adj\.slice\(\); p\.sea = q\.sea\.slice\(\);/, '99991 A.V2MAP.onProv, inside A.initWorld'],
@@ -194,10 +195,11 @@ export default {
       }
     };
     for (const src of [core, content]) {
-      scan(src, /\.owner\s*=(?![=>])/g, 'owner', /^[^;{}]*?A\.scaleLand\(\)|^\.owner=to,A\.scaleLand/);
+      // told: on the same statement, or (in the release's readable source) on the next one, `if (A.scaleLand) A.scaleLand();`
+      scan(src, /\.owner\s*=(?![=>])/g, 'owner', /^[^;{}]*?A\.scaleLand\(\)|^\.owner = [^;{}]*;\s*(?:\/\/[^\n]*\n\s*)*if \(A\.scaleLand\) A\.scaleLand\(\);/);
       // v2: 99995-v2-nobility's newHouse (a court house, raised at the world's start and again when a vacant title
       // finds no heir in play) writes one object literal and tells the index on the next statement
-      scan(src, /houses\[[^\]]+\]\s*=(?![=>])/g, 'house', /^houses\[hid\]=\{id:hid,name:"House "\+sur,[^;]*?members:\[pc\.id\]\},A\.scaleHouse|^houses\[id\] = \{[^;]*?v2court: rid,\s*\};\s*(?:\/\/[^\n]*\n\s*)*if \(A\.scaleHouse\) A\.scaleHouse\(\);/);
+      scan(src, /houses\[[^\]]+\]\s*=(?![=>])/g, 'house', /^houses\[hid\] = \{\s*id: hid,\s*name: "House " \+ sur,[^;]*?members: \[pc\.id\],?\s*\};\s*if \(A\.scaleHouse\) A\.scaleHouse\(\);|^houses\[id\] = \{[^;]*?v2court: rid,\s*\};\s*(?:\/\/[^\n]*\n\s*)*if \(A\.scaleHouse\) A\.scaleHouse\(\);/);
       scan(src, /\.adj\s*=(?![=>])|\.(adj|sea)\.(push|splice|unshift)\(/g, 'adj', null);
     }
     // ctx.owner in events is a token, not a province; AK.adj is a helper

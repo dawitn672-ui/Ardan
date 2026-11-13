@@ -243,3 +243,36 @@ Gates: gate 1 a four-portrait style frame in two finishes for the owner, gate 2 
    "strain" wound that mends in a year. The cost marks (⧗) and the clock's initiative are gone from the page.
    `A.freeTime`, `A.initiativeRate` and the per-activity costs stay (they are the measure of load, and old tests read them).
 **Replaces:** D-014 decision 6's "or when the initiative pool is full" (D-019 already removed it); V2_SPEC row 8.
+
+### D-027 · X1: the release is readable source; the patch layer is baked in (2026-11-12 22:25 ET, X1; carries out D-018)
+**Chosen:**
+1. **The build's input is `src/core/release/`**, not `vendor/ardan-b593143.html` (which stays untouched, the original).
+   The core is one file per section of the release's own order (`core/01-lore-tables.js` ... `core/23-ui-f.js`), the
+   `LORE` table is `core/00-lore.json`, the 30 event packs are `content/NN-xx.js`, the lazy lore tables
+   `lore/NN-key.json`, and the page (fonts, style, bootloader) `page.html`. `tools/build.mjs` joins them into the same
+   three blobs the page always ran; features apply after them exactly as before.
+2. **All 203 patches (393 edits) are baked in**, each marked where it landed by a comment
+   `[X1 baked patch <feature> <id>] <why>` (`src/core/release/PATCHES.md` lists them all); the 58 `patches.mjs` files
+   went to `archive/x1-patch-layer/`. The two edits that landed in another feature's file
+   (`9991` into `62-inked-map/inkmap.core.js`) are written and commented there. The WIP `82-early-years` keeps its two
+   patches, refitted to the new text.
+3. **The core is de-minified by rule, the content is not.** Core: comma lists become statements, `a && b;` an `if`,
+   `a ? b : c;` an if/else, `!0`/`!1` `true`/`false` (`tools/release/transform.mjs`), then prettier. Content: only the
+   structure is laid out (statements, event objects, properties, one per line); **every function keeps its exact text**,
+   because the game classes events by reading their functions as text (`A.evAudience`, `A.CX_RX`, `A.EV_RX`) and the
+   bot and several tests do too. Reformatting an event function is allowed only with the identity probe run.
+4. **Identity is proved, not assumed.** `tools/release/verify.mjs` parses the pre-X1 build and the new one and finds
+   the same syntax tree (core after the rewrite rules, content as is) with all 13,132 event-pack function texts
+   unchanged and the lore byte-identical; `tools/release/identity-probe.mjs` finds the same audience class for all
+   5,004 events and the same fingerprint, state hash, random-stream position and journal for nine fixed-seed lives of
+   ten years. Both stay as tools for any later change meant to change nothing.
+5. **The rule from now on:** change the release by editing `src/core/release/` (with a comment when the reason is not
+   obvious). A new system is still a feature folder. No new `patches.mjs` in the default build (the build still applies
+   one, for work in flight). `--only=<feature>` now builds every default feature plus the named ones (a WIP feature
+   only when named): the baked release calls into about 60 features' code (`UI.paintLog` and others, not all behind a
+   guard, as the patches never needed to be), so the old "fix layer plus one feature" build no longer runs. Isolating a
+   feature's effect is done by comparing two full builds instead (`--without=`, then check the page boots).
+**Why:** D-018: A2 must route about 70 write sites, many inside minified code; every large step after it gets cheaper
+and reviewable. X5 (stop committing `index.html`) can follow.
+**Not done here (later, small):** the page's `<style>` is still one minified line; event functions in `content/` stay
+minified one-liners; names inside functions stay the release's short ones.

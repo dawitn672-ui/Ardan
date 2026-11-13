@@ -1,5 +1,5 @@
 // Everything a change must pass, in one command (CI runs this):
-//   1. build index.html from vendor/ + src/<system>/NN-name/ features and confirm the committed index.html is current
+//   1. build index.html from src/core/release/ (the release's own source, X1) + src/<system>/NN-name/ features and confirm the committed index.html is current
 //   2. lint and play-test every feature's event packs
 //   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs)
 //   4. run every browser test

@@ -1,10 +1,10 @@
 # Ardan: start here
 
 Ardan is a single-page medieval life sim and grand strategy game: you live one person's life inside a simulated
-continent of realms, courts, families and wars. This repo holds the **shipped release build**
-(`vendor/ardan-b593143.html`, minified, never edited) and everything built on top of it: **features** that patch it,
-add code and add events, the **v2 engine** (plain ES modules), content kept as **data**, and the tools that build,
-test and play it. `node tools/build.mjs` turns it all into one playable file, `index.html`.
+continent of realms, courts, families and wars. This repo holds the **shipped release** as readable source
+(`src/core/release/`, made by X1 from the untouched minified original `vendor/ardan-b593143.html`, D-027) and everything
+built on top of it: **features** that add code and events, the **v2 engine** (plain ES modules), content kept as
+**data**, and the tools that build, test and play it. `node tools/build.mjs` turns it all into one playable file, `index.html`.
 
 ## Every session, first
 
@@ -42,17 +42,18 @@ test and play it. `node tools/build.mjs` turns it all into one playable file, `i
 
 | Path | What |
 | --- | --- |
-| `src/<system>/NN-name/` | A **feature**: one unit of change (`patches.mjs`, `*.core.js`, `*.events.js`, `test.mjs`, `README.md`) |
+| `src/core/release/` | **The release's own source** (X1, D-027): `core/*.js` (engine and interface by section), `content/*.js` (its 30 event packs), `lore/*.json`, `page.html`; `PATCHES.md` lists the 203 baked patches. The build's input. Edit it here. See its `README.md` |
+| `src/<system>/NN-name/` | A **feature**: one unit of change (`*.core.js`, `*.events.js`, `test.mjs`, `README.md`; a `patches.mjs` only for work in flight) |
 | `src/<system>/engine/` | The **v2 engine** modules of that system (plain ES modules, unit-tested by `tests/v2/`) |
 | `src/core/00-..09-` | The fix layer, always built |
 | `src/*/*/.wip` | Work in progress: left out of the default build, tests and check; built by `--only=name` |
 | `data/` | Content kept as data (`*.json`), put on the page as `A.DATA[...]` before any feature code |
 | `assets/` | Art, fonts, portrait and VFX source files |
-| `vendor/ardan-b593143.html` | The untouched release. **Never edit.** |
+| `vendor/ardan-b593143.html` | The untouched original release, minified. **Never edit.** The build no longer reads it |
 | `tests/` | `run.mjs` (browser tests: `tests/suites/` and every feature's `test.mjs`), `v2/` (engine unit tests), `saves/` (sample saves of every version; they must keep loading) |
 | `tools/` | `build.mjs`, `build-v2.mjs`, `check.mjs`, linters, `show.mjs`, `version.mjs`, `lib/features.mjs` (where features live), `rename-pass.mjs` + `rename-map.json` (the naming pass: renames and the references to them), `bench/` (measurement harnesses; reports in `tools/bench/reports/`), `v2/` (the v2 kit's playtest and map scripts) |
 | `docs/` | `README.md` (an index of every doc), `NAMES.md` (old name -> new name), `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (v2 status, lanes, playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
-| `archive/` | Retired features and code, each with a note on what it was and why it was replaced. Never built. |
+| `archive/` | Retired features and code (`x1-patch-layer/`: the old patches.mjs files), each with a note on what it was and why it was replaced. Never built. |
 | `CHANGELOG.md` | Player-facing changes in plain words, one section per version |
 | `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop` (keep them true to the code) |
 
@@ -68,7 +69,10 @@ all systems (`00-security` first, `999999-one-redraw` last: its redraw wrappers 
 
 ```sh
 node tools/build.mjs                                      # everything -> index.html (open it in a browser to play)
-node tools/build.mjs --out=/tmp/me.html --only=my-feature # fix layer + one feature, somewhere private
+node tools/build.mjs --out=/tmp/me.html --only=my-feature # the default build plus a work-in-progress feature, somewhere private
+node tools/show.mjs --where A.fightWorth                  # which src/core/release/ file and line defines a release function
+node --stack-size=65500 tools/release/verify.mjs a.html b.html   # two builds are the same program (for a neutral refactor)
+node tools/release/identity-probe.mjs a.html b.html       # ...and give the same event classes and fixed-seed lives
 node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth UI.refresh       # the shared .build/ (read only)
 node tools/build.mjs --out=/tmp/ardan/me/x.html --only=me --unpack=/tmp/ardan/me/blobs
 node tools/show.mjs --dir=/tmp/ardan/me/blobs A.fightWorth                         # your own build, privately
@@ -131,13 +135,20 @@ as `A.V2`; never edit the bundle). Their unit tests are `tests/v2/` (`tools/chec
 
 - Build to `--out=` a private scratch path such as `/tmp/ardan/<name>/`, never to `index.html`.
 - Unpack only to a private `--unpack=` folder. The shared `.build/` is the fix layer, for reading.
-- Don't edit another feature, `tools/`, `tests/`, `tools/bench/` or `vendor/` unless that is your task.
+- Don't edit another feature, `src/core/release/`, `tools/`, `tests/`, `tools/bench/` or `vendor/` unless that is your
+  task (two agents editing one release file is a merge, not a conflict, but say so in your report).
 
-**Patches edit minified code.** A `find` must be an exact substring of the current blob, and it must match exactly the count given (default 1).
+**Change the release in its source** (X1, D-027). The release is `src/core/release/`, readable and maintained: to change
+a release function, edit it there, in place, with a comment when the reason is not obvious. There are no patches in the
+default build any more and there should be no new ones (the build still applies a feature's `patches.mjs`, matched
+against the built text, for work already in flight such as `82-early-years`).
 
-- Read the code with `tools/show.mjs` or grep `.build/*.js`.
-- Never reformat a blob. The game reads some of its own functions as text: `A.evAudience` runs regexes over `e.cond.toString()` and `e.text.toString()`.
-- Keep patches small and give each one a `why` that would let someone port it to the real source.
+- Find a function with `tools/show.mjs --where A.name`, or grep `src/core/release/`.
+- **Event functions are read as text.** `A.evAudience` runs `A.CX_RX` over `e.cond.toString()` and `A.EV_RX` over
+  `e.text.toString()`, and the bot and tests read `cond`, `setup` and `fx` too. In `src/core/release/content/` every
+  function keeps the release's exact text (one minified line); reformat or edit one only with
+  `tools/release/identity-probe.mjs` run before and after.
+- A change meant to change nothing (a refactor, a rename): build before and after, then `tools/release/verify.mjs`.
 
 **Prefer readable `*.core.js` for new systems.** It is appended to the core blob, wrapped in an IIFE, and runs after `A`, `GD`, `UI`, `MAP` and `SAVES` exist, but before `UI.init`. Use it to define new functions and to register hooks:
 
@@ -145,7 +156,8 @@ as `A.V2`; never edit the bundle). Their unit tests are `tests/v2/` (`tools/chec
 - `Object.assign(UI.A, {...})` adds actions for `data-a`.
 - `Object.assign(UI.C, {...})` adds change handlers.
 
-Then add the smallest patch needed to call your code from the existing flow.
+Then call your code from the existing flow by editing the release source (`if (A.myHook) A.myHook(pc);`, guarded so a
+build without your feature still runs).
 
 **Determinism.**
 
