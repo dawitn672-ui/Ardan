@@ -31,13 +31,14 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 
 ### Next, in order
 - [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017)
-- [ ] **B5** · Declutter (two parts)
+- [x] **B5 part 1** · Declutter the shell: story drawer, folds, six activities, info buttons out of the flow; first view 479 → 171 words · `66291b1` · 2026-11-13 12:13 ET (CI with A2)
+- [ ] **B5 part 2** · UI.scope, the six-life draw test, one goal stack, tablet shell
 - [ ] **C8b** · Faces and bodies: the gate 2 library into the game, refined (approved, D-035)
 - [ ] **P** · Profile tab: a game-like page of your character, card and figure, titles, stats, skills, styles, renown, gear (owner order 33; after B5)
 - [ ] **X2** · Named stages
 - [ ] **D10** · War screens only when deployed
 - [ ] **C6** · Relationships and households
-- [ ] **X3** · Honest cards and clocks
+- [ ] **X3** · Honest cards and clocks (incl. the "initiative" leftovers listed in H-020)
 - [ ] **C7** · Names and cultures in the game (one common language, D-013)
 - [ ] **C8c** · Dress, class and regalia (changeable outfits)
 - [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)

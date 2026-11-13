@@ -374,3 +374,26 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   on Opus 5.5 until then (D-010: model at the session's discretion); C8b is finished by an Opus 5.5 agent in the same
   worktree.
 - **Undo:** `git revert f1a556d`.
+
+### H-020 · 2026-11-13 12:13 ET · B5 declutter, part 1 (the shell)
+- **Commits:** `d8c1ad9`…`2101e45` (8, by a Sonnet 5.5 agent), merged as `66291b1` (DECISIONS: both sides kept). D-033.
+- **What:** at 1100-1599 px the story is a drawer behind a top-bar Story button (new `src/ui/9992-story-drawer`), the
+  Life page shows its newest two lines, and the open page gets 81% of a 1366 screen (was 36%); from 1600 px the story
+  is a column after the page. Every life starts with six suggested activities and "More activities". Decisions shows what
+  can be done now ("Not yet possible" folded). Folded: the market, the second People list, a ruler's roster, the elite
+  orders, Laws; the rail's duplicate buttons are gone. The scene card docks over the page from 1100 px. Help names the
+  places from `UI.GROUPS`. Info buttons in grid or column-flex parents are out of the flow (H-014's follow-up). Unread
+  story dots are neutral. Tablet top-bar buttons are 44 px.
+- **Numbers** (1366×768 / 420×900, medians over a peasant, a noble, a ruler): desktop first view 479 → 171 words, 49 → 40
+  controls, 2.02 → 1.0 screens; phone 119 → 108 words, 2.21 → 1.36 screens; worst page 4.7 → 2.3 (desktop), 6.1 → 2.7
+  (phone). The critique's 120/12 and 250/25 are out of reach without removing navigation; `b5Budget` holds the reached
+  numbers as a ratchet (D-033).
+- **Tests:** 10 new (ttInfoNoCell, sdPageWidth, sdWidths, b5Budget, b5NoSideways, b5NoHoverOnly, b5HelpNames, b5CardFits,
+  b5Activities, b5Decisions); about 55 UI tests pass; 7 adjusted to the new layout (phoneTargets, phoneDesktopSame,
+  tbActsSix, scEvery, phoneLife, lookTiles, phoneTasks, foldToggles). The full suite runs in CI with A2.
+- **Open (part 2 and after):** UI.scope, the six-life draw test, one goal stack; the tablet phone shell; 200% text; U10,
+  U12, U17, U21; lazy closed folds. **Found while merging (for X3):** "initiative" still shows after B6 removed the pool:
+  the Activities line ("60.0 initiative"), What now's "Train in an extra session" / "Spend your initiative"
+  (15-specialisms), the plan's session button title (23-ui-e), market trips (66-markets, 18-event-view-b), "Not enough
+  initiative" in 56-court and 9996 f-fief, the step summary (84-top-bar), the clock's glossary and aria (59-descriptions).
+- **Undo:** `git revert -m 1 66291b1`.
