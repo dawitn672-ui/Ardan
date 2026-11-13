@@ -731,7 +731,9 @@ A.ageFactor = function (p, s) {
 
 A.stat = function (p, s) {
   if (!p || !p.st) return 0;
-  let v = (p.st[s] || 0) * A.ageFactor(p, s);
+  // C9 (D-040): a trained skill has trained the body or mind it uses (src/people/999997-bodies, A.statFloor), so a
+  // master swordsman is never feeble and a master trader never dull. A floor under the base, before age and wounds.
+  let v = (A.statFloor ? Math.max(p.st[s] || 0, A.statFloor(p, s)) : p.st[s] || 0) * A.ageFactor(p, s);
   for (const t of p.traits) {
     const T = GD.TRAITS[t];
     if (T && T.fx && T.fx[s]) v += T.fx[s];
@@ -758,6 +760,9 @@ A.skill = function (p, k) {
     const W = GD.WOUNDS[w.k];
     if (W && W.skillPen && W.skillPen[k]) v += W.skillPen[k];
   }
+  // C9 (D-040): a skill past what its body or mind can carry is for show; it works at the level they hold up
+  // (src/people/999997-bodies, A.skillCap). Guarded, so a build without the feature reads the raw skill.
+  if (A.skillCap && v > 29) v = Math.min(v, A.skillCap(p, k));
   return A.clamp(Math.round(v), 0, 100);
 };
 
