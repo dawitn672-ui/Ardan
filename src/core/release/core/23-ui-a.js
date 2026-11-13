@@ -953,6 +953,9 @@ UI.crStepBody = function () {
     R2 = GD.RACES[c.race];
   let h = `<div class="field"><label>Sex</label><div class="row"><button class="${c.sex === "M" ? "primary" : ""}" data-a="crSet" data-v="sex:M">Male</button><button class="${c.sex === "F" ? "primary" : ""}" data-a="crSet" data-v="sex:F">Female</button></div></div>`;
   h += `<div class="field"><label>Given name</label><div class="row"><input data-c="crName" value="${UI.esc(c.given)}" placeholder="Type a name, or pick one" maxlength="24" style="flex:1" aria-label="Given name"><select data-c="crNamePick" aria-label="Pick a name"><option value="">Names of the ${UI.esc(cult.name)}…</option>${names.map(n => `<option>${UI.esc(n)}</option>`).join("")}</select><button data-a="crRandName">Random</button></div><div class="small muted" style="margin-top:4px">Your family name is not yours to choose. ${UI.esc((GD.NAMING[UI.crCult()] || {}).note || "")}</div></div>`;
+  // [C8b] The face and build maker (src/ui/93-figures: every feature set by hand, the face code, hair as drawn, the
+  // build by eye) takes the rest of this step when it is built. The rows below are what a build without it shows.
+  if (UI.FIG && UI.FIG.maker) return h + UI.FIG.maker(c);
   // [X1 baked patch ui/93-anime-portraits AP-SKINS] Character creation offers only the skin tones the chosen people
   // are drawn in (cycle 1 visual B4). A far people's portraits press the stored tone into their land's range, so a
   // pale swatch picked for a lake-folk woman was drawn dark in the game while the preview showed her pale.

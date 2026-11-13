@@ -13,4 +13,6 @@ first; it will need its patches refitted to the release source (`src/core/releas
 | `992-far-beasts/` | The Far Lands' beasts and their duel curves | with the Far Lands | `437efa6` |
 | `993-far-life/` | Life events in the Far Lands | with the Far Lands | `437efa6` |
 | `x1-patch-layer/` | The patch layer: 203 find-and-replace patches on the minified release, in 58 `patches.mjs` files | X1: baked into the readable source `src/core/release/` (D-028) | `88b671f` |
+| `93-anime-portraits/` | The cel-shaded "anime" portrait renderer (busts, full figure, expressions, far lands' looks) | C8b: every portrait is drawn by the figure library, `src/ui/93-figures` (D-035) | `f574229` |
+| `63-miniature-portraits/` | The woodcut miniature portraits and the culture dress table | C8b, with 93-anime-portraits (the culture table lives on in 93-figures) | `f574229` |
 | `v2-kit-demo-ui/` | The v2 kit's standalone demo interface (`ui/app.js`), which built `docs/v2/demo.html` | never shipped: the v2 engine was wired into the game by features instead (V2_SPEC integration plan) | not built into the game |

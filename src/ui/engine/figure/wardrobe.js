@@ -14,16 +14,20 @@ export const GEAR_ART = {
   longsword: { art: 'sword', q: 2, long: 1 }, elfblade: { art: 'sword', q: 3, r: 1 }, dwarfblade: { art: 'sword', q: 2, r: 1 }, chanari: { art: 'sword', q: 2, r: 1 },
   greataxe: { art: 'axe', q: 1 }, cleaver: { art: 'axe', q: 0 }, warhammer: { art: 'hammer', q: 1 }, maul: { art: 'hammer', q: 0 }, flail: { art: 'hammer' }, morningstar: { art: 'hammer', q: 1 },
   pike: { art: 'spear' }, lance: { art: 'spear', q: 1 }, glaive: { art: 'spear', q: 1 }, halberd: { art: 'spear', q: 1 },
+  arming: { art: 'sword', q: 2 }, estoc: { art: 'sword', q: 2, long: 1 }, greatsword: { art: 'sword', q: 2, long: 1 }, scimitar: { art: 'sword', q: 2 },
+  poleaxe: { art: 'spear', q: 2 }, boarspear: { art: 'spear', q: 1 }, partisan: { art: 'spear', q: 2 }, bill: { art: 'spear', q: 0 }, warpick: { art: 'hammer', q: 1 }, horsemace: { art: 'hammer', q: 2 },
   // armour
   none: null, robes: { harness: 'robes' }, padded: { harness: 'padded', q: 0 }, leather: { harness: 'leather', q: 1 }, hide: { harness: 'leather', q: 0 },
   mail: { harness: 'mail', q: 1 }, dwarfmail: { harness: 'mail', q: 2 }, elfmail: { harness: 'mail', q: 3, r: 1 }, orcmail: { harness: 'mail', q: 0 },
   brigandine: { harness: 'plates', q: 1 }, scale: { harness: 'plates', q: 1 }, lamellar: { harness: 'plates', q: 1 },
   mailplate: { harness: 'cuirass', q: 2 }, plate: { harness: 'plate', q: 2 }, dwarfplate: { harness: 'plate', q: 3, r: 1 },
+  gambeson: { harness: 'padded', q: 1 }, jack: { harness: 'padded', q: 1 }, haubergeon: { harness: 'mail', q: 1 }, coatplates: { harness: 'plates', q: 2 }, splinted: { harness: 'plates', q: 1 }, gothic: { harness: 'plate', q: 3 },
   // shields, helms, cloaks
   shield: { art: 'shield', q: 1 }, kite: { art: 'shield', q: 1 }, heater: { art: 'shield', q: 2 }, targe: { art: 'shield', q: 1 }, tower: { art: 'shield', q: 1 }, buckler: { art: 'shield', q: 1 },
   parrydagger: { art: 'dagger', q: 2 }, handaxe: { art: 'axe' }, offsword: { art: 'dagger', q: 1 },
   helm: { helm: 'nasal', q: 1 }, spangen: { helm: 'nasal', q: 1 }, horned: { helm: 'nasal', q: 1 }, kettle: { helm: 'kettle', q: 1 }, coif: { helm: 'coif' }, greathelm: { helm: 'bascinet', q: 2 }, bascinet: { helm: 'bascinet', q: 2 },
   elfhelm: { helm: 'nasal', q: 3, r: 1 }, dwarfhelm: { helm: 'kettle', q: 2, r: 1 }, turban: { helm: 'chaperon' },
+  sallet: { helm: 'kettle', q: 2 }, barbute: { helm: 'nasal', q: 2 }, armet: { helm: 'bascinet', q: 3 },
   cloak: { cloak: 'plain' }, furcloak: { cloak: 'fur' }, finecloak: { cloak: 'fine' }, tabard: { cloak: 'tabard' },
 };
 // a weapon the table does not know is drawn by its kind (GD.GEAR[id].kind)

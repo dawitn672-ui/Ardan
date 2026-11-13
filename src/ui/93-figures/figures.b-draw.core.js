@@ -141,6 +141,7 @@
     try {
       size = SIZES(size); const kind = kindOf(size, opts), sh = FG.sheet(p), look = L.lookOf(sh), G = FG.ground(sh);
       const o = FG.composeOpts(look, sh, size, kind, G, 'i' + hash(L.lookKey(look) + size + kind).toString(36) + '_');
+      if (opts.plain) o.fx = false;
       o.label = sh.name; o.cls = 'portrait fig ' + (kind === 'tall' || kind === 'figure' ? 'full' : 'bust') + (sh.alive ? '' : ' dead');
       return L.compose(look, o).svg;
     } catch (e) { fail(e); return ''; }
@@ -212,6 +213,35 @@
   FG.idle = () => new Promise(r => { if (!busy && !QUEUE.length) r(); else waiters.push(r); });
   FG.pending = () => QUEUE.length + (busy ? 1 : 0);
 
+  // the picture of one look at one size: found among those kept, or begun
+  function entryFor(look, sh, G, size, kind, who) {
+    const L = LIB(), tall = kind === 'tall' || kind === 'figure', key = L.lookKey(look) + '|' + size + kind + G.a + G.b + G.frame + dpr();
+    let e = ENT.get(key);
+    if (e) return e;
+    const id = 'f' + hash(key).toString(36);
+    e = { key, id, w: size, h: kind === 'tall' ? Math.round(size * 1.5) : kind === 'figure' ? size * 2 : size, tall, url: '', prev: '', stand: standIn(look, G, tall), look, opts: FG.composeOpts(look, sh, size, kind, G, id + '_'), who, queued: false, batch: 0 };
+    if (kind === 'figure') e.tall = false, e.stand = `<rect width="100" height="100" fill="${G.b}"/>`;
+    e.prev = LAST.get(who) || '';
+    if (ENT.size >= MAX) {                         // the oldest pictures go; their PNGs are freed a little later
+      const urls = []; let n = 0;
+      for (const [k, v] of ENT) { if (n++ >= MAX / 3) break; if (!v.queued) { ENT.delete(k); if (v.url) urls.push(v.url); } }
+      BY_PERSON.clear(); for (const [k, v] of LAST) if (urls.includes(v)) LAST.delete(k);
+      revokeLater(urls);
+    }
+    ENT.set(key, e);
+    return e;
+  }
+  // a look that is no one in the world (the creation screen's hair thumbnails and ages): the same frames and queue
+  FG.lookSvg = function (look, size, o = {}) {
+    const L = LIB(); if (!L || !look) return '';
+    try {
+      size = SIZES(size); const kind = o.kind || (size <= 40 ? 'chip' : size < 120 ? 'list' : 'square');
+      const sh = { alive: true, name: o.label || '', colors: { realm: '#56618a' }, ruler: false, estate: 'peasant' }, G = FG.ground(sh);
+      const e = entryFor(look, sh, G, size, kind, 'look|' + (o.who || look.id) + '|' + size + kind);
+      if (!e.url && !e.queued && !e.failed && e.look) enqueue(e);
+      return frameOf(e, o.label || '', 'portrait fig bust');
+    } catch (x) { fail(x); return ''; }
+  };
   FG.svg = function (p, size = 200, opts = {}) {
     const L = LIB(); if (!L || !p || !p.app) return '';
     opts = opts || {};
@@ -222,22 +252,8 @@
       const pk = FG.personKey(p, size, kind);
       let hit = BY_PERSON.get(pk);
       if (hit === undefined) {
-        const sh = FG.sheet(p), look = L.lookOf(sh), G = FG.ground(sh), tall = kind === 'tall' || kind === 'figure';
-        const key = L.lookKey(look) + '|' + size + kind + G.a + G.b + G.frame + dpr();
-        let e = ENT.get(key);
-        if (!e) {
-          const id = 'f' + hash(key).toString(36);
-          e = { key, id, w: size, h: kind === 'tall' ? Math.round(size * 1.5) : kind === 'figure' ? size * 2 : size, tall, url: '', prev: '', stand: standIn(look, G, tall), look, opts: FG.composeOpts(look, sh, size, kind, G, id + '_'), who: p.id + '|' + size + kind, queued: false, batch: 0 };
-          if (kind === 'figure') e.tall = false, e.stand = `<rect width="100" height="100" fill="${G.b}"/>`;
-          e.prev = LAST.get(e.who) || '';
-          if (ENT.size >= MAX) {                         // the oldest pictures go; their PNGs are freed a little later
-            const urls = []; let n = 0;
-            for (const [k, v] of ENT) { if (n++ >= MAX / 3) break; if (!v.queued) { ENT.delete(k); if (v.url) urls.push(v.url); } }
-            BY_PERSON.clear(); for (const [k, v] of LAST) if (urls.includes(v)) LAST.delete(k);
-            revokeLater(urls);
-          }
-          ENT.set(key, e);
-        }
+        const sh = FG.sheet(p), look = L.lookOf(sh), G = FG.ground(sh);
+        const e = entryFor(look, sh, G, size, kind, p.id + '|' + size + kind);
         hit = { e, label: sh.name, cls: 'portrait fig ' + (kind === 'tall' || kind === 'figure' ? 'full' : 'bust') + (sh.alive ? '' : ' dead') };
         if (BY_PERSON.size > MAX * 3) BY_PERSON.clear();
         BY_PERSON.set(pk, hit);
