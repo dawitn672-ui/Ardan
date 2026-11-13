@@ -18,7 +18,9 @@ holder, since when, why, who appointed him and the last three holders. The old f
   shire office or a field command except the Marshal's with one army, one field command), moves the man replaced (a
   field command swaps into the one the appointee freed; a seat holder is dismissed with a grudge and loses his style),
   then writes the record and the mirror.
-- `A.POSTS.vacate(key, why)` and `A.POSTS.leaveAll(pid, why)`: death, resigning, deserting, prison, the crown.
+- `A.POSTS.vacate(key, why)` and `A.POSTS.leaveAll(pid, why)`: death, resigning, deserting, prison, the crown. An
+  army in the field left without a general gets one from the crown at once (`A.wsGeneralFor`, what `A.wsDay` did the
+  next day), unless it is the player's own command.
 - `A.POSTS.sync(mode)` runs at the end of every month and after the New Year: it adopts any mirror written by code not
   yet routed through the registry (counted in `A.POSTS.stats.adopted`), applies the rules (a dead, under-age, crowned,
   imprisoned or departed holder leaves; two clashing posts: the higher class, else the newer, is kept), keeps the
@@ -49,7 +51,8 @@ the real Marshal, else the crown; no made-up Marshal). Features: 56 `RI.fillCoun
 Still adopted by the month's sync rather than routed (stage 2): 9996 `POL.fillOffices` / `POL.audit` / the player's
 office effects, the release's `A.wsNewArmy` / `A.wsDay` / `A.pcDivAttach` / staff slots, content events that write
 `r.council` (`pa_court_scandal`, `ct_corrupt`). Not yet posts: 9997's battalion and company slots (only the player's
-slot is cleared on leaving), order masters, staff, free companies, house heads and land titles (99994/99995 keep their
+slot is cleared on leaving), order masters (an elite order's division, led by its Grand Master, is left out of the
+`div:` posts), staff, free companies, house heads and land titles (99994/99995 keep their
 own audit).
 
 ## Measured by
