@@ -70,7 +70,7 @@ node docs/design/demo-2d/gate2/sweep.mjs                # every outfit, stance, 
 
 **Make and rarity are two measures on every piece.** Make (crude, plain, fine, masterwork) is the smith's care: dull and nicked, clean, edged in bronze, gilt and engraved. Rarity (common, rare, epic, legendary) is what the thing is: its metal (steel, blued, black, sun-steel) and its own shape (the blade's profile, the guard, the pommel, fluting). One function, `mats({ q, r })`, turns the pair into metal, fittings, edging, engraving and rivets, so a new piece gets both measures for nothing.
 
-**Tone is three things.** Each form carries one soft gradient (light on the left edge, shadow on the right); the face has its own soft shapes (the side plane, sockets, under the lip) and a hard jaw shadow on the neck, as the style has; and one pass of light over the finished figure adds a rim on the lit edge, a core shadow on the far edge and a slightly heavier outer line.
+**Tone is four things.** Each form carries one soft gradient (light on the left edge, shadow on the right). The face has its own soft shapes (the side plane, sockets, under the lip) and a hard jaw shadow on the neck, as the style has. What lies over the body (arms, shoulder pieces, the head, what the hands hold) casts a soft shadow on the body under it. And one pass of light over the finished figure adds a rim on the lit edge, a core shadow on the far edge and a slightly heavier outer line.
 
 ## What it costs
 
@@ -78,14 +78,14 @@ Measured by the page itself in headless Chromium (software drawing) on the share
 
 | Drawn as | Pixels (at 2×) | Compose: look to SVG | Paint: SVG to pixels | SVG, median (largest) | Shapes |
 |---|---|---|---|---|---|
-| Lineup figure | 510 × 1310 | 3 to 5 ms | 67 to 120 ms | 152 KB (359) | 390 |
-| Card | 500 × 612 | 3 to 6 ms | 40 to 68 ms | 148 KB (340) | 440 |
-| Card, without the light pass | 500 × 612 | 3 to 4 ms | 15 to 19 ms | 147 KB (339) | 440 |
-| Maker portrait | 860 × 1064 | 3 to 4 ms | 108 to 167 ms | 140 KB (316) | 442 |
-| List portrait, plain | 128 × 158 | 3 to 6 ms | 4 to 8 ms | 129 KB (302) | 389 |
+| Lineup figure | 510 × 1310 | 3 to 5 ms | about 90 ms (70 to 120 across runs) | 153 KB (360) | 390 |
+| Card | 500 × 612 | 3 to 6 ms | about 55 ms (40 to 68) | 149 KB (341) | 440 |
+| Card, plain (no light, no depth) | 500 × 612 | 3 to 4 ms | about 15 ms (15 to 19) | 147 KB (339) | 440 |
+| Maker portrait | 860 × 1064 | 3 to 4 ms | about 150 ms (110 to 167) | 141 KB (317) | 442 |
+| List portrait, plain | 128 × 158 | 3 to 6 ms | about 5 ms (4 to 8) | 129 KB (302) | 389 |
 
 - **Compose is cheap** and well inside the plan's budget. The maker redraws a portrait and a full figure on every step of a drag.
-- **Paint is over the plan's budget** (D-025: 16 ms for a large portrait). A card paints in about 17 ms plain and about 50 ms with the light pass, which is two thirds of the cost. A portrait would be painted once and kept as an image, as the plan says, so this is a one-time cost per person and size; but it is real, and it is the first thing to cut.
+- **Paint is over the plan's budget** (D-025: 16 ms for a large portrait). A card paints in about 15 ms plain. The light pass (rim, core shadow, heavier outer line) adds about 26 ms and the depth shadows between layers about 13 ms: some 55 ms in all, so tone is nearly three quarters of the cost. A portrait would be painted once and kept as an image, as the plan says, so this is a one-time cost per person and size; but it is real, and it is the first thing to cut. `compose(look, { fx: false })` draws plain; `{ depth: false }` keeps the light pass and drops the depth.
 - **The SVG is heavier than it need be.** A close crop still carries the whole figure's cloak, shield and sword. Only the legs (and, closer in, the skirt) are left out today.
 - The largest is the knight: 1,134 shapes, 359 KB.
 
@@ -149,4 +149,4 @@ None of this is started. Nothing in `src/` or `tests/` was touched.
 7. **Make and rarity.** Four steps of each, and these names? Should rarity change a piece's shape as much as it does here, or mostly its metal?
 8. **The card.** A parchment card on the day theme. Is a night version wanted, and are three word-measures the right ones?
 9. **Other peoples and the very young** (elves, dwarves, orcs; infants): in this gate's style, and when?
-10. **The light pass.** It gives the rim and the core shadow and costs two thirds of the paint time. Keep it on large portraits only?
+10. **The light and depth passes.** They give the rim, the core shadow and the shadows between layers, and cost nearly three quarters of the paint time. Keep them on large portraits only?

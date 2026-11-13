@@ -190,7 +190,7 @@ export function drawBeard(S, Hd, look, hc, sk) {
   if (bd.shade) {
     const reg = spl([P(-D.zyg + 3, 20), P(-mw - 10, MV - 12), P(-D.noseW - 1, D.noseV + 4), P(0, D.noseV + 5), P(D.noseW + 1, D.noseV + 4), P(mw + 10, MV - 12), P(D.zyg - 3, 20), ...jaw(1).slice(1).map(p => P(p[0], p[1])), P(0, D.chinV + 1), ...jaw(-1).slice(1).reverse().map(p => P(p[0], p[1]))], true);
     S.within(Hd.out, () => S.fill(reg, hc.b, { op: bd.shade, filter: S.blur(2 * s) }));
-    if (S.lod > 0) { let d = ''; for (let i = 0; i < 170; i++) { const u = r.s() * (D.gon - 3), v = lerp(D.noseV + 6, D.chinV - 1, r() ** .7); if (Math.abs(u) < mw * .8 && v > MV - 3 && v < MV + D.lipL + 2) continue; const lim = lerp(D.gon - 4, D.chinW + 4, clamp((v - D.gonV) / (D.chinV - D.gonV))); if (Math.abs(u) > lim) continue; const p = P(u, v); d += `M${n1(p[0])} ${n1(p[1])}l${n1(.5 * s)} ${n1(1.3 * s)}`; } S.stroke(d, hc.k, .75, { op: .5 }); }
+    if (S.lod > 0) { let d = ''; for (let i = 0; i < 170; i++) { const u = r.s() * (D.gon - 3), v = lerp(D.noseV + 6, D.chinV - 1, r() ** .7); if (Math.abs(u) < mw * .8 && v > MV - 3 && v < MV + D.lipL + 2) continue; const lim = lerp(D.gon - 4, D.chinW + 4, clamp((v - D.gonV) / (D.chinV - D.gonV))); if (Math.abs(u) > lim) continue; const p = P(u, v); d += `M${n1(p[0])} ${n1(p[1])}l${n1(.5 * s)} ${n1(1.3 * s)}`; } S.within(Hd.out, () => S.stroke(d, hc.k, .75, { op: .5 })); }
     return;
   }
   if (bd.band) {

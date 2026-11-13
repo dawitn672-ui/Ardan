@@ -49,8 +49,20 @@ export function compose(look, o = {}) {
   if (crop === 'figure') S.layer('ground').fill(`M${-F.H * .17} ${F.H * .012}a${F.H * .17} ${F.H * .018} 0 1 0 ${F.H * .34} 0a${F.H * .17} ${F.H * .018} 0 1 0 ${-F.H * .34} 0`, '#2a2433', { op: .16, filter: S.blur(F.H * .006) });
   const drop = { face: ['legs', 'skirt'], portrait: ['legs', 'skirt'], bust: ['legs', 'skirt'], card: ['legs'] }[crop] || [];
   const order = ORDER.filter(k => k !== 'ground' && !drop.includes(k)), fx = o.fx !== false, fid = S.id + 'fx';
-  const inner = (S.layers.ground || []).join('') + (fx ? `<g filter="url(#${fid})">` : '<g>') + S.body(order) + '</g>';
-  if (fx) S.defs.push(lightPass(fid, vb, F.H * .0045, S.lw(.5)));
+  // depth between the layers: what lies over the body (arms, shoulder pieces, the head, what the hands hold) casts a
+  // soft shadow on the body under it. The shadow is the group drawn again as a blurred shade, kept inside the body's column.
+  const depth = fx && o.depth !== false, did = S.id + 'ds', cid = S.id + 'dc', mm = F.H * .0045, f1 = v => Math.round(v * 10) / 10;
+  const GROUPS = [['arms'], ['shoulder', 'collar'], ['head', 'face', 'hair', 'headwear'], ['propFront', 'hands']], lifted = new Set(GROUPS.flat());
+  let body = S.body(order.filter(k => !lifted.has(k) || !depth));
+  if (depth) {
+    GROUPS.forEach((g, k) => { const b = S.body(g.filter(x => order.includes(x))); if (b) body += `<g clip-path="url(#${cid})"><use href="#${did}${k}" filter="url(#${did})"/></g><g id="${did}${k}">${b}</g>`; });
+    const nh = F.neckHalf * 1.05, sh = F.shHalf + F.armR[0] * .3, pt = p => f1(p[0]) + ' ' + f1(p[1]);
+    const half = sg => [[F.cxS + sg * nh, F.y.chin - F.Hh * .2], [F.cxS + sg * nh, F.y.sh - F.Hh * .14], [F.cxS + sg * sh, F.y.sh - F.Hh * .02], [F.cxS + sg * (F.chestHalf + 4), F.y.chest], [F.cx + sg * (F.waistHalf + 4), F.y.waist], [F.cx + sg * (F.hipHalf + 4), F.y.hip], [F.cx + sg * F.hipHalf * 1.05, 40]];
+    const col = [...half(-1), ...half(1).reverse()];
+    S.defs.push(`<clipPath id="${cid}"><path d="M${col.map(pt).join('L')}Z"/></clipPath><filter id="${did}" filterUnits="userSpaceOnUse" x="${f1(vb[0])}" y="${f1(vb[1])}" width="${f1(vb[2])}" height="${f1(vb[3])}" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="${f1(mm * 1.1)}"/><feOffset dx="${f1(mm * .8)}" dy="${f1(mm * 1.6)}" result="o"/><feFlood flood-color="#1b1430" flood-opacity=".4"/><feComposite in2="o" operator="in"/></filter>`);
+  }
+  const inner = (S.layers.ground || []).join('') + (fx ? `<g filter="url(#${fid})">` : '<g>') + body + '</g>';
+  if (fx) S.defs.push(lightPass(fid, vb, mm, S.lw(.5)));
   const svg = S.svg(vb, { cls: o.cls, label: look.name, order: [], post: inner });
   return { svg, vb, F, shapes: S.shapes, px };
 }
