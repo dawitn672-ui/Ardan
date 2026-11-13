@@ -30,7 +30,7 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 - [x] **A1** · Lag, drawing side: one redraw per press, log in place, year 50 = year 0; engine share left to X5/D12b (D-023) · `b9a656c` · 2026-11-12 16:27 ET
 - [x] **B6** · Next month or Next year; no initiative cap; only notable events stop time (D-019, D-026; `src/ui/999995-next-year`) · `bacd0a2` · 2026-11-12 19:26 ET
 - [x] **X1** · Own the release: the build reads readable source in `src/core/release/`, all 203 patches baked in, proven the same program · `5056e98` · 2026-11-13 01:44 ET
-- [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017)
+- [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017). Stage 1 (registry, the Marshal, exits, migration; D-031) on branch `worktree-agent-a8e422903f5938378`; stage 2 (9997 slots, orders, staff, houses, titles, army commands that outlive a war) next
 - [ ] **B5** · Declutter (two parts)
 - [ ] **C8b** · Faces and bodies (after the owner approves the demo sheets)
 - [ ] **X2** · Named stages
