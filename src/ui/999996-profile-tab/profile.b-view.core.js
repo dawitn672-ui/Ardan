@@ -57,9 +57,6 @@
       measure('Name', PF.renownWord(p), ['fame', '']) +
       measure('Honour', PF.honorWord(p), ['honor', '']) +
       (PF.hasFaith(p) ? measure('Faith', PF.pietyWord(p), ['piety', '']) : '') + `</dl>`;
-    const tr = (p.traits || []).filter(t => GD.TRAITS[t]).map(t => trig(['trait', t], esc(GD.TRAITS[t].name), 'pf-chip'))
-      .concat((p.quirks || []).filter(q => GD.QUIRKS[q]).map(q => trig(['quirk', q], esc(GD.QUIRKS[q].name), 'pf-chip')));
-    if (tr.length) s += `<div class="pf-chips" aria-label="Character">${tr.join('')}</div>`;
     return s + '</article>';
   };
   PF.figure = function (p, phone) {
@@ -215,11 +212,14 @@
   });
 
   PF.addSection({
-    k: 'origins', title: 'Birth, people and faith',
-    sum: p => { const R = GD.RACES[p.race] || {}, f = A.faith(p.faith); return `${R.name || ''}${f ? ', ' + f.name : ''}`; },
+    k: 'origins', title: 'Character, birth and faith',
+    sum: p => { const R = GD.RACES[p.race] || {}, f = A.faith(p.faith); const tr = (p.traits || []).filter(t => GD.TRAITS[t]).slice(0, 3).map(t => GD.TRAITS[t].name.toLowerCase()); return tr.length ? cap(tr.join(', ')) : `${R.name || ''}${f ? ', ' + f.name : ''}`; },
     body: p => {
       const R = GD.RACES[p.race] || {}, c = A.culture(p.cult), f = A.faith(p.faith), app = p.app || {};
-      let s = '<ul class="pf-list">';
+      const tr = (p.traits || []).filter(t => GD.TRAITS[t]).map(t => trig(['trait', t], esc(GD.TRAITS[t].name), 'pf-chip'))
+        .concat((p.quirks || []).filter(q => GD.QUIRKS[q]).map(q => trig(['quirk', q], esc(GD.QUIRKS[q].name), 'pf-chip')));
+      let s = tr.length ? `<div class="pf-chips" aria-label="Character">${tr.join('')}</div>` : '';
+      s += '<ul class="pf-list">';
       s += li('People', trig(['race', p.race], esc(R.name || ''), 'pf-w') + (c ? ` <span class="pf-m2">${esc(c.name)}</span>` : ''));
       if (f) s += li('Faith', trig(['faith', f.id], esc(f.name), 'pf-w'));
       s += li('Realm', esc(A.realmName ? A.realmName(p.realm) : ''));
