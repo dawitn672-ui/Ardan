@@ -1,5 +1,5 @@
 // 999990-posts: one registry of posts (round 2 A2, the owner's rule "one holder per post"; design: docs/DECISIONS.md
-// D-030 and docs/reviews/round-2/posts-map.md section 5).
+// D-031 and docs/reviews/round-2/posts-map.md section 5).
 //
 // A post is a named place that one person holds or that stands vacant: a council seat (seat:<rid>:<seat>), a shire
 // office of the polity (office:<rid>:<office id>), the command of an army in the field (army:<army id>) or of a
@@ -477,9 +477,8 @@
   // ---- when it runs ------------------------------------------------------------------------------------------------
   const runSync = mode => { try { if (A.S && A.S.people && A.S.realms) P.sync(mode); } catch (e) { console.error('[posts] sync', e); } };
   // the end of every month (after the other features' month work), and after the New Year's passes
-  A.onMonth.push(function () {
-    runSync('month');
-    // a realm born in play gets a council (round 2 A3a: 8 of 42 had none at year 60)
+  // a realm born in play gets a council (round 2 A3a: 8 of 42 had none at year 60)
+  const councils = function () {
     try {
       if (A.RI && A.RI.fillCouncil) for (const r of realmsAlive()) {
         if (r.landless || (r.isRebel && !r.isNew) || !A.COUNCIL) continue;
@@ -488,8 +487,9 @@
         if (!r.council || !Object.values(r.council).some(Boolean)) P.raiseCouncil(r);
       }
     } catch (e) { console.error('[posts] councils', e); }
-  });
-  (A.onYear = A.onYear || []).push(function () { runSync('month'); try { P.restyle(); } catch (e) { console.error('[posts] restyle', e); } });
+  };
+  A.onMonth.push(function () { runSync('month'); councils(); });
+  (A.onYear = A.onYear || []).push(function () { runSync('month'); councils(); try { P.restyle(); } catch (e) { console.error('[posts] restyle', e); } });
   // a new world: the registry is built from the first councils, offices and armies
   A.on && A.on('worldInit', function () { P.store(); IX = null; runSync('load'); try { P.restyle(); } catch (e) { console.error('[posts] restyle', e); } });
   // an older save: build the registry and repair it, one line in the log for each repair the player would notice

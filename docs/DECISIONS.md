@@ -291,3 +291,32 @@ while an initiative readout is drawn.
 and reviewable. X5 (stop committing `index.html`) can follow.
 **Not done here (later, small):** the page's `<style>` is still one minified line; event functions in `content/` stay
 minified one-liners; names inside functions stay the release's short ones.
+
+### D-031 · A2 stage 1: one registry of posts; the Marshal's seat in peace (2026-11-13 ET, A2; carries out D-017)
+**Chosen:**
+1. **One registry, `A.S.posts`** (`src/nobility/999990-posts`): council seats, the polity's shire offices, army and
+   division commands. Its record is the source of truth; `r.council`, `pc.office`, `o.pid`, `a.gen` and `d.cmd` are
+   mirrors written by `A.POSTS.appoint` / `vacate` / `leaveAll`. The roads to a seat, every exit from the army, death,
+   prison and the crown go through it (README lists them). Code not yet routed may still write a mirror; the month's
+   `A.POSTS.sync` adopts the write (counted) and holds it to the same rules, so the rules hold at every month's end
+   while the routing finishes (stage 2).
+2. **The rules:** one holder; alive, of age for his people, free, of the realm, not a ruler (a ruler may lead an army);
+   one seat a person; no seat with a shire office or a field command, except the Marshal with one army in person; one
+   field command a person. On a clash found by the sync, the higher class (seat, office, command) is kept, else the
+   newer post (on load: the first in a fixed order). No dice anywhere in the registry.
+3. **The Marshal (D-017):** the seat is empty in peace; it is filled when the realm's war needs one (two armies in the
+   field, or two enemies at once), by the crown's best General (command, renown, size of his host; no dice), who takes
+   the main host in person while its general takes his old army; at peace he stands down. The player can be named
+   Marshal only as a General and only for such a war, by the court, the council's offer, the ruler or the board; he
+   then holds the seat, grade 9, every army and the main host; resigning the commission gives up the seat. A grade 9
+   without the seat (older saves) becomes the seat when the war needs one, else High General. A General answers to the
+   real Marshal, else the crown (no made-up superior above a General).
+4. **Titles follow posts:** others' title line is the post they hold; a stored style naming a council seat its owner
+   lacks becomes "once ..."; the coherency check `one office, one styled holder` no longer counts a past style or a
+   kinsman's ("sister of Chancellor Edmund Hale"), which name no post held.
+**Why:** the owner's rule and report (CRITIQUE A2, posts-map.md). The world's random stream moves (56 no longer draws
+for the Marshal's seat), so every seed's world differs from alpha.2's; the balance league holds its bands.
+**Not done here (stage 2+):** 9997's battalion and company slots as posts, order masters, staff, free companies, house
+heads and land titles in the registry; army commands that outlive a war (`army:<realm>:<n>`); routing 9996's office
+writers, `A.wsNewArmy`/`A.wsDay`, staff slots and the content events that write seats; consequences of leaving beyond
+resignation at war and desertion; peace service and the posts of jobs (R12, R17).
