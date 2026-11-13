@@ -20,7 +20,8 @@ function countIn(sel) {
   const root = document.querySelector(sel); if (!root) return { n: 0, covered: 0, miss: [] };
   const out = { n: 0, covered: 0, miss: [] };
   for (const el of root.querySelectorAll('*')) {
-    if (el.closest('svg') || el.closest('[hidden]')) continue;
+    // (B5: a closed fold's one-line summary is aria-hidden: a preview of rows that each carry their own description)
+    if (el.closest('svg') || el.closest('[hidden]') || el.closest('[aria-hidden="true"]')) continue;
     const own = [...el.childNodes].filter(x => x.nodeType === 3).map(x => x.textContent).join('');
     if (!/\d/.test(own)) continue;
     out.n++;
@@ -136,8 +137,11 @@ export default {
       const res = {};
       for (const on of [false, true]) {
         UI.TT.wired = on; UI.render();
+        // B5 folds parts of the profile by default: open them, so every number on it is counted
+        if (UI.FOLD) UI.FOLD.allOpen = true; UI.render();
         res[on ? 'after' : 'before'] = { profile: count('#profile'), top: count('#topbar') };
       }
+      if (UI.FOLD) UI.FOLD.allOpen = false; UI.render();
       return res; })()`);
     const b = r.before, a = r.after, all = x => x.covered === x.n;
     // v2 (99993-v2-stats, playtest round 1): the vitals and stats are words now, so fewer numbers are left and each
