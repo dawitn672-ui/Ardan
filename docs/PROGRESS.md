@@ -43,6 +43,8 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 - [ ] **D12a** · Branches and command: one design (Fable 5.2)
 - [ ] **D11** · Military branches (feudal armies, D-012)
 - [ ] **D12b** · War and command depth
+- [ ] **E1** · A much bigger economy: bigger markets that simulate themselves over time (owner order 28; design first, Fable 5.2)
+- [ ] **E2** · Hundreds of weapons and armour pieces by quality; items unique to one person (owner order 29; design first, with E1)
 - [ ] **X4** · Balance pass
 - [ ] **X5** · State diet; stop committing index.html every round (D-018)
 

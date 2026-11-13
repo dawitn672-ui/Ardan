@@ -31,6 +31,10 @@ order is replaced, strike it through and say by what.
 24. **Characters in a detailed 2D illustrated style** (D-024): a layered library of designer-drawn parts; show the owner a new demo before building it into the game. · recorded 2026-11-12 17:05 ET
 25. **Tone-led finish; the look of Pick Me Up's character profile cards** (D-029): painted, semi-realistic webtoon portraits where soft shading carries the form (not ink outlines), shown on a profile card. Take the *look* only, never its characters, art or card design. An outside image AI may be used for reference sheets where it is needed (key through the secure form only). · recorded 2026-11-13 02:00 ET
 26. **The reference picture** (`docs/design/reference/owner-ref-1-lineup.png`): "holds the core concept of what I'm looking for but should obviously be tailored to the game": full-body manhwa-style figures, clean lines under soft shading, in Ardan's medieval dress (D-029). · recorded 2026-11-13 02:10 ET
+27. **The medieval reference** (`docs/design/reference/owner-ref-2-medieval.png`): "fully representing each individual armor and clothing": every person's armour and dress drawn in full, distinct, reading their station (D-029). · recorded 2026-11-13 02:25 ET
+28. **A much bigger economy:** "a significant increase in the economic system, bigger markets simulating themselves as time goes on" (work item E1). · recorded 2026-11-13 02:25 ET
+29. **Hundreds of weapons and unique items:** "100s of new swords and other weapons of different qualities; items unique to only one person" (work item E2). · recorded 2026-11-13 02:25 ET
+30. **Far more face and build options:** "face and build design should have significantly more options too" (C8). · recorded 2026-11-13 02:25 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**

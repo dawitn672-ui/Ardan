@@ -309,3 +309,11 @@ to the game." So: full-body figures as well as the card; Korean-webtoon proporti
 faces, sharp jaws, half-lidded eyes); clean thin line work under soft tonal shading; restrained palette with one accent.
 This supersedes "as realistic as possible" (D-015) **for the drawing style**; realism still governs ageing, scars,
 builds and full face customisation. The modern dress in the image is not wanted: Ardan's dress is medieval.
+
+### D-030 · Where the owner's new orders 27-30 go in the work order (2026-11-13 02:25 ET)
+- **27 (the medieval reference)** steers C8 gate 2 now (with D-029).
+- **30 (far more face and build options)** is part of C8: gate 2 shows the wider ranges; C8b/C8c build them.
+- **28 (E1, the economy) and 29 (E2, weapons and unique items)** are new work items, placed before X4 (the balance pass
+  must come after them). Their **design** starts now, in parallel (one design doc, Fable 5.2 at max effort, D-009), so
+  the owner can see and steer it before anything is built; building waits its turn. E2 ties into C8 (each item is drawn
+  on the figure), D11 (feudal armies arm their men) and E1 (smiths, markets and prices make and sell them).
