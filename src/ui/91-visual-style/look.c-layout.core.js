@@ -36,14 +36,22 @@
   ${D} #profile{padding:8px 10px;gap:6px}
   ${D} #side > #tabbody{padding:4px 12px 4px}
 }
-/* 1100-1279: the same three columns, a little narrower at the sides (240 / flexible / 440) */
-@media (min-width:1100px) and (max-width:1279px){
-  ${D}{grid-template-columns:240px minmax(0,1fr) 440px}
+/* B5 (U3): 1100-1599 gives the open page the width. The story was a 598 px column and the page 488 (36% at 1366); now the
+   rail is 232 px, the page the rest (about 80%), and the story a drawer from the top bar's Story button
+   (9992-story-drawer), over the page's right edge, with the newest lines on the Life page itself */
+@media (min-width:1100px) and (max-width:1599px){
+  ${D}{grid-template-columns:232px minmax(0,1fr)}
+  ${D} #topbar{grid-column:1 / -1}
+  ${D} #profile{grid-column:1;grid-row:2}
+  ${D} #side{grid-column:2;grid-row:2}
+  :root[data-theme] #game:not(.phone) > #logwrap.panel{position:fixed;top:60px;right:8px;bottom:8px;width:min(440px,40vw);height:auto;z-index:35;box-shadow:var(--e-3);transform:translateX(calc(100% + 24px));visibility:hidden;transition:transform .2s ease,visibility 0s linear .2s}
+  :root[data-theme] #game.lk-story-open:not(.phone) > #logwrap.panel{transform:none;visibility:visible;transition:transform .2s ease}
+  @media (prefers-reduced-motion:reduce){:root[data-theme] #game:not(.phone) > #logwrap.panel{transition:none}}
 }
 .lk-railbtn{display:none}
 /* >= 1600: roomy */
 @media (min-width:1600px){
-  ${D}{grid-template-columns:300px minmax(560px,1fr) 600px;grid-template-rows:52px minmax(0,1fr);gap:12px;padding:16px;max-width:1760px;margin:0 auto}
+  ${D}{grid-template-columns:280px minmax(560px,1fr) 460px;grid-template-rows:52px minmax(0,1fr);gap:12px;padding:16px;max-width:1760px;margin:0 auto}
   ${D} #topbar{height:52px;min-height:52px}
   ${D} #profile{padding:16px}
   ${D} #side > #tabbody{padding:12px 16px}

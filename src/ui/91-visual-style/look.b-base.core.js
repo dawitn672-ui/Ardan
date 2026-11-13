@@ -210,6 +210,10 @@ ${X('#tabs .tabbar .badge, #bnav .tabbar .badge, .badge')}{background:var(--dang
 /* a tab with something waiting carries a 6 px dot, not a number (brief §5.2); the "!" stays for screen readers' sake */
 ${X('#tabs .tabbar .badge')}{top:6px;right:calc(50% - 16px);width:7px;height:7px;min-width:0;padding:0;border-radius:50%;overflow:hidden;color:transparent;background:var(--danger);box-shadow:0 0 0 2px var(--surface)}
 
+/* B5 U11: red is for danger only. New story lines are a small neutral dot (the accent), not the war "!" */
+${X('.badge.badge-new, #tabs .tabbar .badge.badge-new, #bnav .tabbar .badge.badge-new')}{background:var(--accent);color:transparent;width:8px;height:8px;min-width:0;padding:0;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px var(--surface)}
+${X('#tabs .subbar .badge.badge-new')}{display:inline-block;vertical-align:middle;margin-left:6px;position:static}
+
 /* ---- expanders (brief §5.3; 90-collapsible-sections's behaviour): one full-width header row, a chevron, a cap title, a count pill,
    a one-line summary on the right */
 ${X('.group-h')}{font-family:var(--f-ui);font-size:var(--t-cap);line-height:var(--lh-cap);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin:var(--sp-3) 0 var(--sp-2)}

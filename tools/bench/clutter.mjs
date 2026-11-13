@@ -68,7 +68,8 @@ export const PROBE = () => {
     controls++; add(zoneOf(el), 'controls');
   }
   const body = document.getElementById('tabbody') || document.getElementById('side') || document.body;
-  const elements = [...body.querySelectorAll('*')].filter(e => !/^(SCRIPT|STYLE|PATH|G|CIRCLE|RECT|LINE|POLYGON|POLYLINE|DEFS|USE|TEXT|TSPAN)$/i.test(e.tagName) && !e.closest('svg') ).length;
+  const real = [...body.querySelectorAll('*')].filter(e => !/^(SCRIPT|STYLE|PATH|G|CIRCLE|RECT|LINE|POLYGON|POLYLINE|DEFS|USE|TEXT|TSPAN)$/i.test(e.tagName) && !e.closest('svg'));
+  const dom = real.length, elements = real.filter(e => e.checkVisibility ? e.checkVisibility({ checkOpacity: false, checkVisibilityCSS: true }) : true).length;
   const chips = body.querySelectorAll('.chip, .pill, .tag, .badge, .lk-chip, .cost, .eff, [class*=chip]').length;
   const infos = body.querySelectorAll('[data-note], [data-tt], .info, .ib').length;
   const folds = body.querySelectorAll('.fold').length, foldsClosed = body.querySelectorAll('.fold > .fold-b[hidden]').length;
@@ -85,7 +86,7 @@ export const PROBE = () => {
     let held = false; for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) { if (/auto|scroll|hidden|clip/.test(getComputedStyle(a).overflowX) && a.getBoundingClientRect().right <= W + 1) { held = true; break; } }
     if (!held) out.push((el.id ? '#' + el.id : el.tagName.toLowerCase() + '.' + String(el.className).trim().split(/\s+/)[0]) + '+' + Math.round(r.right - W));
   }
-  return { words, controls, elements, chips, infos, folds, foldsClosed, screens, zones, pageShare: sr ? +(sr.width / W).toFixed(2) : 1, hscroll: Math.max(0, hs), sticksOut: out.slice(0, 4), nOut: out.length, hover };
+  return { words, controls, elements, dom, chips, infos, folds, foldsClosed, screens, zones, pageShare: sr ? +(sr.width / W).toFixed(2) : 1, hscroll: Math.max(0, hs), sticksOut: out.slice(0, 4), nOut: out.length, hover };
 };
 
 const SETTLE = () => (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => new Promise(r => setTimeout(r, 120))).then(() => new Promise(r => requestAnimationFrame(() => r())));
@@ -121,8 +122,8 @@ for (const [vn, vopt] of Object.entries(VIEWS)) {
 await browser.close();
 if (outFile) { fs.mkdirSync(path.dirname(outFile), { recursive: true }); fs.writeFileSync(outFile, JSON.stringify(report, null, 1)); }
 // a table: one row a screen
-console.log('view/persona/page'.padEnd(26) + 'words ctrl  elem chips fold screens  share hscroll');
+console.log('view/persona/page'.padEnd(26) + 'words ctrl  elem   dom chips fold screens  share hscroll');
 for (const [k, m] of Object.entries(report)) {
   if (m.error || Array.isArray(m)) { console.log(k.padEnd(26), m.error || JSON.stringify(m)); continue; }
-  console.log(k.padEnd(26) + String(m.words).padStart(5) + String(m.controls).padStart(5) + String(m.elements).padStart(6) + String(m.chips).padStart(6) + String(m.folds + '/' + m.foldsClosed).padStart(6) + String(m.screens).padStart(8) + String(m.pageShare).padStart(7) + String(m.hscroll || 0).padStart(7) + (m.nOut ? '  out:' + m.nOut + ' ' + m.sticksOut.join(' ') : ''));
+  console.log(k.padEnd(26) + String(m.words).padStart(5) + String(m.controls).padStart(5) + String(m.elements).padStart(6) + String(m.dom).padStart(6) + String(m.chips).padStart(6) + String(m.folds + '/' + m.foldsClosed).padStart(6) + String(m.screens).padStart(8) + String(m.pageShare).padStart(7) + String(m.hscroll || 0).padStart(7) + (m.nOut ? '  out:' + m.nOut + ' ' + m.sticksOut.join(' ') : ''));
 }
