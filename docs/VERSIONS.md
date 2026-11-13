@@ -43,6 +43,7 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.0.0-alpha.10 | 2026-11-05 | `2ccd001` | v2 playtest 1, fixes round 1: soft-locks, spectating leaks, words for numbers, labels, regrants, blocs, map labels |
 | v2.0.0-beta.1 | 2026-11-06 | `86d8cc2` | Playtest 2 and CI round 2 fixed: 21 groups (cards tell the stakes, war by rank, kingdom names, bodies by age, family and clans, numbers in words, map, layout, war pace) |
 | v2.1.0-alpha.1 | 2026-11-12 | `af27000` | Round 2 begins: repo by system with a memory, the critique and work order, A0 (the lag's main cause and the two-lords crash fixed), name and military prep |
+| v2.1.0-alpha.2 | 2026-11-13 | `f37c62f` | Foundations: X6 naming pass, A3a coherency net, B4 click-to-open, A1 one redraw a press, B6 Next month or Next year, CI fixes |
 <!-- versions:end -->
 
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's
