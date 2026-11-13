@@ -36,7 +36,7 @@ Every icon is a stroke drawing in `currentColor`. The release's `.ic` class sets
 | --- | --- |
 | `iconSet` | 44 icons cover the brief's list (stats 6, vitals 6, purse and clock 3, groups 13, tabs 6, controls 12); each parses, stays inside the 24 grid, uses only `currentColor` and has at most one fill; 8.9 KB in all; drawn with 1.75 stroke, round caps and joins |
 | `iconLegible` | Rasterized at 16 px, every icon inks between 8% and 40% of its box (one-stroke controls from 3%), and no two differ by fewer than 14 of 256 pixels. The one exception is the sun of Life and Happiness, which the brief gives one subject |
-| `iconsWired` | On the Life screen: 6 tabs, 8 top-bar icons, 6 vitals, 6 stats, 12 groups and the debt's broken coin; tooltips open with the icon; every icon has its word |
+| `iconsWired` | On the Life screen: 6 tabs, the top-bar icons (the hourglass only while an initiative readout is drawn; B6 removed the pool, D-019), 6 vitals, 6 stats, 12 groups and the debt's broken coin; tooltips open with the icon; every icon has its word |
 | `iconsPure` | Drawing every tab and the menu twice leaves `A.S` and `A.rngState` unchanged and gives the same markup |
 | `iconsAxe` | 0 axe violations (WCAG 2.2 AA) on the Life screen, dark and light |
 
