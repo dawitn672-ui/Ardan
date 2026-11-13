@@ -1,11 +1,11 @@
 // 999996-profile-tab, part 2: the Profile page (work item P, owner order 33, D-035, D-038).
 //
-// A game-like character sheet for the player: the whole standing figure, the card (name, estate and rank, a line about
-// the person, measures in words, the house's arms), the body and mind in words on a scale of seven, and folded sections
-// (posts and titles, skills and fighting style, renown, house and household, gear and heirlooms, years and marks, the
-// measures in real units, birth and faith). It is the first page of the You place. Everything is drawn from
-// profile.a-data.core.js's readers: pure, no dice, no writes. A section's body is drawn when it is opened (a closed one
-// holds nothing), so a redraw of the page costs the hero and the closed headers only.
+// A game-like character sheet for the player, kept clean (P2, owner order 34, D-041): the whole standing figure, the card
+// on parchment (name, estate and rank, the posts held now, a line about the person, four measures in words), the body and
+// mind in words on a scale of seven, and one small panel at a time (Skills, Gear, Family, Traits) chosen by tabs. The past
+// and the long reads (posts held before, deeds, the record of the body, birth and faith) are on the Records view of the same
+// page, one small link away, for retracing one's steps. Everything is drawn from profile.a-data.core.js's readers: pure,
+// no dice, no writes. A Records section's body is drawn when it is opened.
 //
 // Descriptions open on click: each measure, each scale row and each number sits in a trigger of 59-descriptions
 // (data-tt or UI.note). No percentages are written for the player.
@@ -42,26 +42,28 @@
   PF.card = function (p) {
     const k = PF.kicker(p), h = p.house ? A.house(p.house) : null, r = p.realm ? A.realm(p.realm) : null;
     const place = [h ? h.name : '', A.provName ? A.provName(p.home) : '', r ? r.short : ''].filter(Boolean).join(' · ');
-    const coat = PF.arms(p, 52);
+    const coat = PF.arms(p, 52), line = UI.titleLine(p);
     const age = A.age(p), old = age >= 6;
+    // the posts held now, as small rows (the title line already says the first, so it is not said twice); the rest is in Records
+    const held = PF.heldNow(p).filter(x => !line || !line.includes(x.label)).slice(0, 3);
     let s = `<article class="pf-card" aria-label="${esc(A.fullName(p))}, profile card">`;
     s += `<div class="pf-top"><div class="pf-kick"><i class="pf-glyph g${k.glyph}" aria-hidden="true"></i>${esc(k.word)}</div>${coat ? `<div class="pf-arms" aria-hidden="true">${coat}</div>` : ''}</div>`;
     s += `<h2 class="pf-name">${esc(A.fullName(p, false))}</h2>`;
     if (p.epithet) s += `<div class="pf-epi">${esc(p.epithet)}</div>`;
-    s += `<div class="pf-estate">${esc(UI.titleLine(p))}</div>`;
+    s += `<div class="pf-estate">${esc(line)}</div>`;
     if (place) s += `<div class="pf-place">${esc(place)}</div>`;
+    if (held.length) s += `<ul class="pf-held" aria-label="Posts held">` + held.map(x => `<li>${trig(x.tip, esc(x.label), 'pf-w')}</li>`).join('') + '</ul>';
     s += `<p class="pf-about">${esc(PF.about(p))}</p>`;
     s += `<dl class="pf-measures">` +
       measure('Body', PF.bodyWord(p), old ? ['worth', p.id] : ['age', p.id]) +
       measure('Purse', PF.purseWord(p), ['coin', '']) +
       measure('Name', PF.renownWord(p), ['fame', '']) +
-      measure('Honour', PF.honorWord(p), ['honor', '']) +
-      (PF.hasFaith(p) ? measure('Faith', PF.pietyWord(p), ['piety', '']) : '') + `</dl>`;
+      measure('Honour', PF.honorWord(p), ['honor', '']) + `</dl>`;
     return s + '</article>';
   };
   PF.figure = function (p, phone) {
     const P = FIG(); if (!P) return '';
-    return `<div class="pf-fig">${P.svg(p, phone ? 112 : 168, { figure: true })}</div>`;
+    return `<div class="pf-fig">${P.svg(p, phone ? 124 : 172, { figure: true })}</div>`;
   };
 
   // ---- the sheet: body and mind in words, on a scale of seven ------------------------------------------------------------------
@@ -76,14 +78,17 @@
     let s = '<section class="pf-sheet" aria-label="Body and mind">';
     const groups = [];
     for (const row of PF.STATS) { let g = groups.find(x => x[0] === row.group); if (!g) groups.push(g = [row.group, []]); g[1].push(row); }
-    for (const [name, rows] of groups) s += `<h3 class="pf-h">${esc(name)}</h3>` + rows.map(r => PF.statRow(p, r)).join('');
-    s += '<h3 class="pf-h">How you are</h3>';
+    groups.forEach(([name, rows], i) => {
+      const head = i === 0 ? note('The lit marks are where you stand; the open mark is what you may grow to.', esc(name), 'pf-hn2') : esc(name);
+      s += `<h3 class="pf-h">${head}</h3>` + rows.map(r => PF.statRow(p, r)).join('');
+    });
+    // health, mood and looks: one line of three words
+    s += '<div class="pf-vits" aria-label="How you are">';
     for (const [k, label] of [['health', 'Health'], ['happy', 'Mood'], ['looks', 'Looks']]) {
       const v = PF.vital(k, p);
-      s += trig([k, ''], `<span class="pf-l">${label}</span><span class="pf-bar" aria-hidden="true"><i style="width:${v.v}%"></i></span><span class="pf-v">${esc(v.word)}</span>`, `pf-row pf-vital v-${k}`, 'div');
+      s += trig([k, ''], `<span class="pf-k">${label}</span> <span class="pf-v">${esc(v.word)}</span>`, `pf-vital v-${k}`);
     }
-    s += '<div class="pf-key">The lit marks are where you stand; the open mark is what you may grow to.</div>';
-    return s + '</section>';
+    return s + '</div></section>';
   };
 
   // ---- the folded sections ---------------------------------------------------------------------------------------------------
@@ -99,7 +104,7 @@
   };
 
   PF.addSection({
-    k: 'posts', title: 'Titles, posts and offices',
+    k: 'posts', title: 'Titles, posts and offices', open: true,
     sum: p => { const n = PF.heldNow(p); return n.length ? n[0].label + (n.length > 1 ? ' and more' : '') : PF.kicker(p).word + ', no post held'; },
     body: p => {
       const now = PF.heldNow(p), past = PF.pastPosts(p);
@@ -122,7 +127,7 @@
     k: 'skills', title: 'Skills and fighting style',
     sum: p => { const t = PF.skills(p, false)[0]; return t ? `${t.name}, ${t.tier.toLowerCase()}` : 'Nothing practised yet'; },
     body: p => {
-      const all = !!PF.allSkills, rows = PF.skills(p, all), total = PF.skillCount(p);
+      const rows = PF.skills(p, true); // Records holds all of them
       let s = '';
       if (VS && VS.levyWords && A.age(p) >= 6) {
         try { const lv = VS.shownLevies(p); s += `<div class="pf-fight">${trig(['worth', p.id], '<span class="pf-k">In a fight</span> <span class="pf-w">' + esc(VS.levyRank(lv)) + '</span> <span class="pf-m2">' + esc(VS.levyWords(lv)) + '</span>', 'pf-row', 'div')}</div>`; } catch (e) {}
@@ -132,13 +137,12 @@
       s += st.length ? '<ul class="pf-list">' + st.map(x => li(x.main ? 'Main style' : 'Style', `${note('A way of fighting taught by a school or a house. Each rank unlocks techniques you can use in a duel.', esc(x.name), 'pf-w')} <span class="pf-m2">${esc(x.rankWord)}</span>`)).join('') + '</ul>' : empty('You follow no style yet. A master may teach one.');
       s += '<h4 class="pf-h2">Proficiencies</h4>';
       s += rows.length ? '<ul class="pf-skills">' + rows.map(r => `<li class="pf-sk">${trig(['skill', r.k], esc(r.name) + (r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''), 'pf-l')}${trig(['profTier', r.tier], esc(r.tier), 'pf-tier')}<span class="pf-prog" aria-hidden="true"><i style="width:${Math.round(r.frac * 100)}%"></i></span></li>`).join('') + '</ul>' : empty('No proficiencies yet. Practise something.');
-      if (total > 8) s += `<button type="button" class="small pf-more" data-a="pfSkills" aria-pressed="${all}">${all ? 'Only the best' : 'All of them'}</button>`;
       return s;
     },
   });
 
   PF.addSection({
-    k: 'renown', title: 'Renown, honour and deeds',
+    k: 'renown', title: 'Renown, honour and deeds', open: true,
     sum: p => PF.renownWord(p),
     body: p => {
       let s = '<ul class="pf-list">';
@@ -146,10 +150,10 @@
       s += li('Honour', trig(['honor', ''], esc(PF.honorWord(p)), 'pf-w'));
       if (PF.hasFaith(p)) s += li('Piety', trig(['piety', ''], esc(PF.pietyWord(p)), 'pf-w'));
       s += '</ul>';
-      let best = []; try { if (A.RN && A.RN.best) best = A.RN.best(p, 3); } catch (e) {}
+      let best = []; try { if (A.RN && A.RN.best) best = A.RN.best(p, 6); } catch (e) {}
       const now = A.S.year, when = y => (A.RN && A.RN.whenWord ? A.RN.whenWord(y, now) : '');
       if (best.length) s += '<h4 class="pf-h2">What made the name</h4><ul class="pf-list">' + best.map(x => li(cap(when(x.year)), note('A deed your name is made of. The odds it beat and who saw it set its weight; deeds fade, and a name keeps half of its best.', esc(x.text), 'pf-w'))).join('') + '</ul>';
-      const deeds = (p.deeds || []).slice(-4).reverse();
+      const deeds = (p.deeds || []).slice(-12).reverse();
       if (deeds.length) s += '<h4 class="pf-h2">Set down</h4><ul class="pf-list">' + deeds.map(d => li(cap(when(d.y)), note('A line of your life, kept in the book of your days.', esc(d.t), 'pf-w'))).join('') + '</ul>';
       if (!best.length && !deeds.length) s += empty('No deed of yours is talked about yet.');
       return s;
@@ -231,14 +235,70 @@
   });
 
   PF.sectionHtml = function (def, p) {
-    const open = !!PF.open[def.k] || !!PF.forceOpen;
+    const open = !!PF.forceOpen || (PF.open[def.k] !== undefined ? !!PF.open[def.k] : !!def.open); // Records: the posts and the deeds start open, the rest folded
     let sum = ''; try { sum = def.sum ? def.sum(p) : ''; } catch (e) {}
     let body = ''; if (open) { try { body = def.body(p); } catch (e) { console.error('profile section ' + def.k, e); body = empty('This part could not be drawn.'); } }
     return `<section class="pf-sec${open ? ' open' : ''}" data-k="${esc(def.k)}"><h3 class="pf-sech"><button type="button" class="pf-fold" data-a="pfFold" data-v="${esc(def.k)}" aria-expanded="${open}" aria-controls="pf-b-${esc(def.k)}"><span class="pf-chev" aria-hidden="true"></span><span class="pf-st">${esc(def.title)}</span><span class="pf-sum">${esc(sum)}</span></button></h3><div class="pf-body" id="pf-b-${esc(def.k)}"${open ? '' : ' hidden'}>${body}</div></section>`;
   };
+
+  // ---- the small panels under the card: one at a time, chosen by tabs ---------------------------------------------------------
+  PF.PANELS = [];
+  PF.addPanel = function (def, before) {
+    if (!def || !def.k || PF.PANELS.some(x => x.k === def.k)) return false;
+    const i = before ? PF.PANELS.findIndex(x => x.k === before) : -1;
+    if (i >= 0) PF.PANELS.splice(i, 0, def); else PF.PANELS.push(def);
+    return true;
+  };
+  const skillRow = r => `<li class="pf-sk">${trig(['skill', r.k], esc(r.name) + (r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''), 'pf-l')}${trig(['profTier', r.tier], esc(r.tier), 'pf-tier')}<span class="pf-prog" aria-hidden="true"><i style="width:${Math.round(r.frac * 100)}%"></i></span></li>`;
+  PF.addPanel({ k: 'skills', label: 'Skills', body: p => {
+    const arts = PF.styles(p).filter(x => x.rank > 0).slice(0, 2), rows = PF.skills(p, false).slice(0, 5);
+    let s = '';
+    if (arts.length) s += '<ul class="pf-list">' + arts.map(x => li(x.main ? 'Main style' : 'Style', `${note('A way of fighting taught by a school or a house. Each rank unlocks techniques you can use in a duel.', esc(x.name), 'pf-w')} <span class="pf-m2">${esc(x.rankWord)}</span>`)).join('') + '</ul>';
+    s += rows.length ? '<ul class="pf-skills">' + rows.map(skillRow).join('') + '</ul>' : empty('Nothing practised yet. Practise something.');
+    return s;
+  } });
+  PF.addPanel({ k: 'gear', label: 'Gear', body: p => {
+    const g = PF.gear(p).filter(x => !x.empty);
+    return g.length ? '<ul class="pf-slots">' + g.map(x => `<li>${trig(['gearSlot', x.slot], `<span class="pf-k">${esc(x.label)}</span><span class="pf-w">${esc(x.name)}</span>`, 'pf-slot', 'div')}</li>`).join('') + '</ul>' : empty('Nothing but your clothes.');
+  } });
+  PF.addPanel({ k: 'house', label: 'Family', body: p => {
+    const h = p.house ? A.house(p.house) : null, P = FIG(), folk = PF.household(p).slice(0, 6);
+    let s = '';
+    if (h) {
+      const ar = (A.ID && A.ID.arms && A.ID.arms(p)) || null, words = (ar && ar.words) || h.words || '';
+      s += `<div class="pf-house"><div class="pf-coat" aria-hidden="true">${PF.arms(p, 44)}</div><div class="pf-hn">${trig(['house', h.id], esc(h.name), 'pf-w')}${words ? `<div class="pf-motto">“${esc(words)}”</div>` : ''}</div></div>`;
+    } else s += empty('You belong to no house.');
+    if (folk.length) s += '<ul class="pf-folk">' + folk.map(f => `<li><button type="button" class="pf-person" data-a="ov" data-v="person:${esc(f.p.id)}"><span class="pf-pp">${P ? P.svg(f.p, 40) : ''}</span><span class="pf-pn"><b>${esc(A.fullName(f.p, false))}</b><span class="pf-m2">${esc(f.rel)}${f.p.alive ? '' : ', dead'}</span></span></button></li>`).join('') + '</ul>';
+    else s += empty('No close kin are living.');
+    return s;
+  } });
+  PF.addPanel({ k: 'traits', label: 'Traits', body: p => {
+    const tr = (p.traits || []).filter(t => GD.TRAITS[t]).map(t => trig(['trait', t], esc(GD.TRAITS[t].name), 'pf-chip'))
+      .concat((p.quirks || []).filter(q => GD.QUIRKS[q]).map(q => trig(['quirk', q], esc(GD.QUIRKS[q].name), 'pf-chip')));
+    return tr.length ? `<div class="pf-chips" aria-label="Character">${tr.join('')}</div>` : empty('No marked trait yet. Your deeds will show one.');
+  } });
+  PF.tab = 'skills';
+  try { const t = window.localStorage && window.localStorage.getItem('ardan_pf_tab'); if (t) PF.tab = t; } catch (e) {}
+  PF.panelOf = k => PF.PANELS.find(x => x.k === k) || PF.PANELS[0];
+  PF.panelBody = (def, p) => { try { return def.body(p); } catch (e) { console.error('profile panel ' + def.k, e); return empty('This part could not be drawn.'); } };
+  PF.tabs = function (p) {
+    const cur = PF.panelOf(PF.tab);
+    return `<div class="pf-lower"><div class="pf-tabs" role="tablist" aria-label="More about you">` +
+      PF.PANELS.map(d => `<button type="button" role="tab" class="pf-tab" id="pf-t-${esc(d.k)}" data-a="pfTab" data-v="${esc(d.k)}" aria-selected="${d === cur}" aria-controls="pf-panel" tabindex="${d === cur ? 0 : -1}">${esc(d.label)}</button>`).join('') +
+      `<button type="button" class="pf-reclink" data-a="pfView" data-v="records">Records <span aria-hidden="true">›</span></button></div>` +
+      `<div class="pf-panel" id="pf-panel" role="tabpanel" aria-labelledby="pf-t-${esc(cur.k)}">${PF.panelBody(cur, p)}</div></div>`;
+  };
+
+  // ---- the two views of the page ------------------------------------------------------------------------------------------------
+  // 'profile' (the default): the card, the sheet and one panel. 'records': the past and the long reads, reached from the link.
+  PF.view = 'profile';
   PF.page = function (p) {
     const phone = !!(UI.isPhone && UI.isPhone());
-    return `<div class="pf" data-pf="1"><div class="pf-hero">${PF.figure(p, phone)}${PF.card(p)}${PF.sheet(p)}</div><div class="pf-secs">${PF.SECTIONS.map(d => PF.sectionHtml(d, p)).join('')}</div></div>`;
+    if (PF.view === 'records') return PF.records(p);
+    return `<div class="pf" data-pf="1"><div class="pf-hero">${PF.figure(p, phone)}${PF.card(p)}${PF.sheet(p)}</div>${PF.tabs(p)}</div>`;
+  };
+  PF.records = function (p) {
+    return `<div class="pf pf-rec" data-pf="1" data-view="records"><header class="pf-rech"><button type="button" class="small" data-a="pfView" data-v="profile">‹ Back to profile</button><h2 class="pf-rect">Records of ${esc(A.fullName(p, false))}</h2><p class="pf-fine">The past and the long reads: posts held before, deeds, the body, birth and faith. Nothing here is needed to play.</p></header><div class="pf-secs">${PF.SECTIONS.map(d => PF.sectionHtml(d, p)).join('')}</div></div>`;
   };
 
   UI.TAB = UI.TAB || {};
@@ -263,9 +323,19 @@
       const body = sec.querySelector(':scope > .pf-body');
       if (open) { fill(sec); body.hidden = false; } else { body.hidden = true; body.innerHTML = ''; }
     },
-    pfSkills() {
-      PF.allSkills = !PF.allSkills;
-      const sec = document.querySelector('.pf-sec[data-k="skills"]'); if (sec) fill(sec);
+    pfTab(v, el) {
+      const d = PF.panelOf(v), bar = el && el.closest('.pf-tabs'), panel = document.getElementById('pf-panel'); if (!bar || !panel) return;
+      PF.tab = d.k; try { window.localStorage.setItem('ardan_pf_tab', d.k); } catch (e) {}
+      for (const b of bar.querySelectorAll('.pf-tab')) { const on = b.dataset.v === d.k; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; }
+      panel.setAttribute('aria-labelledby', 'pf-t-' + d.k);
+      panel.innerHTML = PF.panelBody(d, A.pc());
+      try { if (UI.TT && UI.TT.sweepTitles) UI.TT.sweepTitles(panel); } catch (e) {}
+    },
+    pfView(v) {
+      PF.view = v === 'records' ? 'records' : 'profile';
+      UI.render();
+      const tb = document.getElementById('tabbody'); if (tb) tb.scrollTop = 0;
+      try { if (UI.isPhone()) window.scrollTo(0, 0); } catch (e) {}
     },
   });
 
@@ -286,14 +356,37 @@
     A.V2T.groups();
   }
   UI.TAB_ALIAS = UI.TAB_ALIAS || {};
+  // the Records view belongs to the page: opening the page from a tab or leaving it puts it back on the profile
+  if (typeof UI.A.tab === 'function') { const tab = UI.A.tab; UI.A.tab = function (v) { if (v === 'profile') PF.view = 'profile'; return tab.apply(this, arguments); }; }
+  { const setTab = UI.setTab; UI.setTab = function (v) { const r = setTab.apply(this, arguments); if (UI.tab !== 'profile') PF.view = 'profile'; return r; }; }
 
   // ---- the look ---------------------------------------------------------------------------------------------------------------
   const CSS = `
 .pf{container:pf/inline-size;display:grid;gap:14px;padding:2px 0 12px}
 .pf-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
-.pf-fig{position:relative;border:1px solid var(--accent-rule);border-radius:8px;box-shadow:var(--e-2);overflow:hidden;background:var(--sunken);line-height:0;width:max-content;max-width:100%}
+.pf-fig{position:relative;border:1px solid #b79b5e;border-radius:8px;box-shadow:var(--e-2),inset 0 0 0 3px rgba(183,155,94,.3);overflow:hidden;background:var(--sunken);line-height:0;width:max-content;max-width:100%}
 .pf-fig svg{display:block;max-width:100%;height:auto}
-.pf-card{min-width:0;background:var(--raised);border:1px solid var(--line);border-radius:8px;padding:12px 14px 12px;box-shadow:var(--e-1)}
+.pf-card{--pc-ink:#2b2118;--pc-ink2:#4d4030;--pc-ink3:#6f624d;--pc-red:#8c2f22;--pc-gold:#8a6a2a;min-width:0;color:var(--pc-ink);background:radial-gradient(120% 90% at 20% 0,#fbf5e4 0,#f3e9cf 60%,#ebdfc0 100%);border:1px solid #b79b5e;border-radius:8px;padding:14px 18px 14px;box-shadow:var(--e-2),inset 0 0 0 3px rgba(255,255,255,.35),inset 0 0 0 4px rgba(183,155,94,.35)}
+.pf-card .pf-kick{color:var(--pc-red)}.pf-card .pf-name{color:var(--pc-ink)}.pf-card .pf-epi{color:var(--pc-gold)}.pf-card .pf-estate{color:var(--pc-ink2)}.pf-card .pf-place{color:var(--pc-ink3)}
+.pf-card .pf-about{border-top-color:rgba(138,106,42,.35);color:var(--pc-ink)}
+.pf-card .pf-m dt{color:var(--pc-gold)}.pf-card .pf-m dd,.pf-card .pf-w{color:var(--pc-ink)}
+.pf-card .tt{text-decoration-color:rgba(43,33,24,.5)}.pf-card .tt:hover,.pf-card .tt:focus-visible{color:var(--pc-red)}
+.pf-held{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:var(--t-ui,14px)}
+.pf-vits{display:flex;flex-wrap:wrap;gap:2px 16px;margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+.pf-vits .tt{display:inline-flex;gap:6px;align-items:baseline;font-size:var(--t-ui,14px)}
+.pf-hn2{text-decoration:underline dotted var(--ink-3);text-underline-offset:3px;cursor:pointer}
+.pf-lower{display:grid;gap:8px}
+.pf-tabs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;border-bottom:1px solid var(--line)}
+.pf-tab{all:unset;box-sizing:border-box;min-height:40px;padding:0 16px;display:inline-flex;align-items:center;cursor:pointer;font:600 var(--t-cap,12px)/1 var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);border-bottom:2px solid transparent;margin-bottom:-1px}
+.pf-tab:hover{color:var(--ink)}.pf-tab:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.pf-tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.pf-reclink{all:unset;box-sizing:border-box;margin-left:auto;min-height:40px;padding:0 4px;display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:var(--t-small,13px);color:var(--ink-2);text-decoration:underline dotted var(--ink-3);text-underline-offset:4px}
+.pf-reclink:hover,.pf-reclink:focus-visible{color:var(--accent-strong)}.pf-reclink:focus-visible{outline:2px solid var(--focus)}
+.pf-panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px 12px;display:grid;gap:6px;min-height:96px}
+.pf-rec{max-width:880px}
+.pf-rech{display:grid;gap:4px;justify-items:start}
+.pf-rect{margin:2px 0 0;font:600 var(--t-h3,17px)/1.2 var(--f-name);letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+.pf-rec .pf-secs{grid-template-columns:minmax(0,1fr)}
 .pf-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .pf-kick{font:600 var(--t-cap,12px)/1.2 var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--rubric-ink,var(--danger));display:flex;align-items:center;gap:7px}
 .pf-glyph{display:inline-block;width:10px;height:10px;background:currentColor}
@@ -381,8 +474,8 @@
 .pf-body .v2-row{grid-template-columns:6em minmax(0,1fr)}
 @container pf (min-width:920px){.pf-hero{grid-template-columns:auto minmax(0,1.1fr) minmax(0,.9fr)}}
 @container pf (min-width:600px) and (max-width:919px){.pf-hero{grid-template-columns:auto minmax(0,1fr)}.pf-sheet{grid-column:1 / -1}}
-@container pf (max-width:599px){.pf-hero{grid-template-columns:112px minmax(0,1fr);gap:10px}.pf-sheet{grid-column:1 / -1}.pf-fig{width:112px}.pf-name{font-size:var(--t-h3,17px)}
- .pf-row{grid-template-columns:6.6em 64px minmax(0,1fr);min-height:44px}.pf-li{grid-template-columns:5.6em minmax(0,1fr)}.pf-sk{grid-template-columns:minmax(0,1fr) 6.6em 44px;min-height:40px}.pf-m{grid-template-columns:4.6em minmax(0,1fr)}}
+@container pf (max-width:599px){.pf-hero{grid-template-columns:124px minmax(0,1fr);gap:10px}.pf-sheet{grid-column:1 / -1}.pf-fig{width:124px}.pf-name{font-size:var(--t-h3,17px)}
+ .pf-row{grid-template-columns:6.6em 64px minmax(0,1fr);min-height:44px}.pf-li{grid-template-columns:5.6em minmax(0,1fr)}.pf-sk{grid-template-columns:minmax(0,1fr) 6.6em 44px;min-height:40px}.pf-tab{flex:1 1 auto;justify-content:center;padding:0 8px}.pf-reclink{flex:1 0 100%;margin-left:0;justify-content:flex-end;min-height:44px}.pf-m{grid-template-columns:4.6em minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){.pf-chev{transition:none}}
 `;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('pf-style')) return; const s = document.createElement('style'); s.id = 'pf-style'; s.textContent = CSS; (document.head || document.documentElement).appendChild(s); };
