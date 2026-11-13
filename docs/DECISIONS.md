@@ -244,6 +244,21 @@ Gates: gate 1 a four-portrait style frame in two finishes for the owner, gate 2 
    `A.freeTime`, `A.initiativeRate` and the per-activity costs stay (they are the measure of load, and old tests read them).
 **Replaces:** D-014 decision 6's "or when the initiative pool is full" (D-019 already removed it); V2_SPEC row 8.
 
+### D-027 · Two bot-life test bars follow the no-pool game (2026-11-13 00:40 ET, CI run 100 after B6)
+**Why:** B6 lifted the pool of initiative (owner order D-019). The engaged test bots (`tools/bench/bot.mjs`) used to be
+refused when the pool ran dry; now nothing is refused, so they act about twice as often (a 25-year bot life: 9 activities a
+year before, 13-17 after). Two tests measure shares that this moves, and CI run 100 failed them on the same seeds:
+- `bondsInRealLives` (55-bonds): the yearly pull of memories as a share of *all* opinion change. The bots' own deeds add
+  change (121,842 to 137,823 points), so the share fell from 10.5% to 8.1% while the memories' pull itself stayed about
+  the same (12.8k to 11.2k points). Bar 10% → 7%.
+- `kinBotLives` (50-arcs-kin): long lives that met a kin arc fell from 7 of 12 to 5 of 12. One story arc runs at a time;
+  most likely the busier bots now reach other paths' arcs first (not yet measured). Bar half → 40%.
+**Not changed:** the bots themselves (the balance league holds with them as they are) and every other bar of both tests.
+**Follow-up:** C6 (households and kin) looks at whether kin arcs need their own place beside the path arcs.
+**Same push:** B6's cost-mark pass read `document.body.textContent` (the page's 5 MB of script text) after every draw, about
+6 times slower a draw; it now walks the drawn parts only (`nyStripSkipsScripts`), and `iconsWired` expects the hourglass only
+while an initiative readout is drawn.
+
 ### D-028 · X1: the release is readable source; the patch layer is baked in (2026-11-12 22:25 ET, X1; carries out D-018)
 **Chosen:**
 1. **The build's input is `src/core/release/`**, not `vendor/ardan-b593143.html` (which stays untouched, the original).

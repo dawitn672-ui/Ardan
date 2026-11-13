@@ -104,15 +104,17 @@ export default {
       const uniq = a => [...new Set(a)];
       // v2: the places in the bar (99992-v2-time: Life, You, Family, World, and War only at war) and piety's vital
       // only for the devout (99993-v2-stats, complaint 7)
+      // B6 (999995-next-year, D-019): no pool of initiative, so the bar shows no hourglass readout unless one is drawn
+      const ini = !!document.querySelector('#topbar .clk-ini');
       const places = UI.GROUPS.length, piety = !!document.querySelector('#profile .barrow [data-tt="piety"]');
-      return { tab: uniq(found.tab), top: uniq(found.top), vital: uniq(found.vital), stat: uniq(found.stat), group: uniq(found.group), actsOwn, unlabelled: uniq(unlabelled), debt, tips, look: !!UI.LOOK, places, piety };
+      return { tab: uniq(found.tab), top: uniq(found.top), vital: uniq(found.vital), stat: uniq(found.stat), group: uniq(found.group), actsOwn, unlabelled: uniq(unlabelled), debt, tips, look: !!UI.LOOK, places, piety, ini };
     });
     const tipsOk = !r.tips.length || r.tips.every(x => x[1]);
     // v2: the owner's five places at most (docs/V2_SPEC.md complaint 2) replace the six tabs, so every place has its
     // icon (4 at peace); the piety vital shows only for the devout (complaint 7), so 5 vitals for everyone else. The top
     // bar's play, next and quiet icons went with Play, Next and Quiet living (complaint 8, 99992-v2-time): the five
     // icons left must all be there (initiative, place, purse, save, menu)
-    const ok = r.tab.length === r.places && r.places >= 4 && r.places <= 5 && ['hourglass', 'pin', 'sun-coin', 'seal', 'menu'].every(k => r.top.includes(k)) && r.vital.length === (r.piety ? 6 : 5) && r.stat.length === 6 && (r.group.length >= 9 || r.actsOwn >= 9) && !r.unlabelled.length && r.debt && tipsOk;
+    const ok = r.tab.length === r.places && r.places >= 4 && r.places <= 5 && [...(r.ini ? ['hourglass'] : []), 'pin', 'sun-coin', 'seal', 'menu'].every(k => r.top.includes(k)) && r.vital.length === (r.piety ? 6 : 5) && r.stat.length === 6 && (r.group.length >= 9 || r.actsOwn >= 9) && !r.unlabelled.length && r.debt && tipsOk;
     return { ok, detail: `tabs ${r.tab.join(' ')}; top bar ${r.top.join(' ')}; vitals ${r.vital.join(' ')}; stats ${r.stat.join(' ')}${r.look ? ' (91-visual-style\'s tiles)' : ''}; groups ${r.group.length} (${r.group.join(' ')}), actions with their own icon ${r.actsOwn}; debt shows the broken coin ${r.debt}; ` +
       `tooltips open with the icon ${r.tips.filter(x => x[1]).length}/${r.tips.length}${r.unlabelled.length ? '; WITHOUT A WORD ' + r.unlabelled.slice(0, 5).join(', ') : '; every icon has its word'}` };
   },
