@@ -1,17 +1,23 @@
 // Browser tests for deterministic replay. Each test gets (page, pageErrors, {browser, file}).
 export default {
   async renderRng(pg) {
-    // drawing the screen must never touch the game's random stream
+    // drawing the screen must never touch the game's random stream, nor the game: a noble, and a merchant whose
+    // Holdings tab prices the market (CI 98: a post-draw pass that ran outside the draw guard created pc.staff there,
+    // which turns on the monthly staff step; this test measured the change but did not fail on it)
     const r = await pg.evaluate(() => {
-      T.enter({ seed: 4242, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 });
-      T.play(3);
-      const before = A.rngState, h0 = T.hash(A.S);
-      T.renderAll();
-      const ppl = Object.values(A.S.people).filter(p => p.alive && p.id !== A.S.pc);
-      for (const p of ppl.slice(0, 60)) { A.fightWorth(p); UI.tierChip && UI.tierChip(p); }
-      return { rngMoved: A.rngState !== before, stateChanged: T.hash(A.S) !== h0 };
+      const out = [];
+      for (const o of [{ seed: 4242, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 20 }, { seed: 4711, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 24 }]) {
+        T.enter(o);
+        T.play(3);
+        const before = A.rngState, h0 = T.hash(A.S);
+        T.renderAll();
+        const ppl = Object.values(A.S.people).filter(p => p.alive && p.id !== A.S.pc);
+        for (const p of ppl.slice(0, 60)) { A.fightWorth(p); UI.tierChip && UI.tierChip(p); }
+        out.push({ who: o.status, rngMoved: A.rngState !== before, stateChanged: T.hash(A.S) !== h0 });
+      }
+      return out;
     });
-    return { ok: !r.rngMoved, detail: `random stream moved by rendering: ${r.rngMoved}; state changed by rendering: ${r.stateChanged}` };
+    return { ok: r.every(x => !x.rngMoved && !x.stateChanged), detail: r.map(x => `${x.who}: random stream moved by rendering: ${x.rngMoved}; state changed by rendering: ${x.stateChanged}`).join('; ') };
   },
 
   async replayWithRender(pg) {
