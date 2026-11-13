@@ -267,8 +267,13 @@
   // ---- the page: the ⧗ cost marks go (a pure pass over the page after it is drawn) ------------------------------------------
   if (typeof document !== 'undefined' && typeof UI !== 'undefined') {
     const RX = /\s*\(\d+(?:\.\d+)?\s*⧗\)/g;
+    // Never read document.body.textContent: the body holds the game's own <script> blobs (about 5 MB of text), and
+    // reading them after every draw made each draw about 6 times slower (CI run 100: two tests ran out of time).
+    // So the pass walks each of the body's drawn children (the app, the modal, the tooltip, the toasts), never a script.
+    const SKIP = { SCRIPT: 1, STYLE: 1, TEMPLATE: 1, NOSCRIPT: 1 };
     Y.strip = function (root) {
-      root = root || document.body; if (!root || !root.textContent || root.textContent.indexOf('⧗') < 0) return 0;
+      if (!root) { let n = 0; for (const el of document.body ? [...document.body.children] : []) if (!SKIP[el.tagName]) n += Y.strip(el); return n; }
+      if (!root.textContent || root.textContent.indexOf('⧗') < 0) return 0;
       let n = 0;
       for (const el of [...root.querySelectorAll('.cost, .tag')]) if (/^\s*\d+(?:\.\d+)?\s*⧗\s*$/.test(el.textContent)) { el.remove(); n++; }
       const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), hits = [];

@@ -324,4 +324,21 @@ export default {
     const ok = r.help && r.noPool && r.hint;
     return { ok, detail: `help names both buttons ${r.help}, says there is no pool ${r.noPool}, Esc ${r.esc}; the clock's hint names both ${r.hint}; What now: ${r.whatNow.join(', ') || 'none offered'}` };
   },
+
+  async nyStripSkipsScripts(pg) {
+    // the cost-mark pass after each draw must never read the page's <script> text (about 5 MB): CI run 100 found it
+    // read document.body.textContent on every draw, which made each draw about 6 times slower
+    const r = await pg.evaluate(() => {
+      T.enter({ seed: 9592, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 8 });
+      const d = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent');
+      let script = 0, body = 0;
+      Object.defineProperty(Node.prototype, 'textContent', { configurable: true, get() { if (this.tagName === 'SCRIPT') script++; if (this === document.body) body++; return d.get.call(this); }, set(v) { d.set.call(this, v); } });
+      try { UI.tab = 'life'; UI.render(); UI.refresh(); A.V2Y.strip(); } finally { Object.defineProperty(Node.prototype, 'textContent', d); }
+      const app = document.getElementById('app'); app.insertAdjacentHTML('beforeend', '<span id="ny-probe">Rest (2 ⧗) here</span>');
+      const n = A.V2Y.strip(), left = document.getElementById('ny-probe').textContent; document.getElementById('ny-probe').remove();
+      return { script, body, n, left };
+    });
+    const ok = r.script === 0 && r.body === 0 && r.n >= 1 && r.left === 'Rest here';
+    return { ok, detail: `script text read ${r.script} times, the body's ${r.body}; a planted mark stripped: ${r.n} ("${r.left}")` };
+  },
 };
