@@ -23,6 +23,8 @@ export default {
       T.enter({ seed: 515, race: 'human', realm: 'POL-01', status: 'royal', startAge: 34 });
       pc = A.pc(); A.makeRuler(pc, pc.realm, true); ADV.refresh(pc);
       const ruler = look(pc);
+      // the seats held (the Marshal's stands empty in peace: D-017, A2)
+      const want = Object.keys(A.COUNCIL).filter(s => (A.realm(pc.realm).council || {})[s]).length;
       const seats = Object.keys(A.COUNCIL).filter(s => ruler.some(x => x.role === s)).length;
       // wants change over a life: the same mother wants you safe at 17 and wants grandchildren at 30
       T.enter({ seed: 515, race: 'human', realm: 'POL-01', status: 'peasant', startAge: 17 });
@@ -30,11 +32,11 @@ export default {
       const momId = Object.keys(pc.rel).find(id => pc.rel[id].type === 'mother' && A.P(id).alive);
       const mom = A.P(momId), w17 = ADV.wantOf(mom, 'mother', pc);
       pc.born -= 13; const w30 = ADV.wantOf(mom, 'mother', pc); pc.born += 13;
-      return { young, ruler, seats, w17, w30, tip: ADV.whoTip(pc, momId) };
+      return { young, ruler, seats, want, w17, w30, tip: ADV.whoTip(pc, momId) };
     });
     const ok = r.young.length >= 2 && r.young.length <= 3 && r.young.every(x => x.real && x.knows) && r.young.some(x => /father|mother/.test(x.role)) &&
-      r.seats === 5 && r.ruler.length <= 6 && r.ruler.every(x => x.real && x.knows) && r.w17 === 'safety' && r.w30 === 'kin';
-    return { ok, detail: `a peasant of 17 hears ${r.young.map(x => x.role + ' (' + x.w + ')').join(', ')}; a ruler hears ${r.ruler.map(x => x.role + ' (' + x.w + ')').join(', ')} (${r.seats}/5 seats); a mother wants ${r.w17} at 17 and ${r.w30} at 30; "${r.tip.slice(0, 120)}"` };
+      r.seats === r.want && r.want >= 4 && r.ruler.length <= 6 && r.ruler.every(x => x.real && x.knows) && r.w17 === 'safety' && r.w30 === 'kin';
+    return { ok, detail: `a peasant of 17 hears ${r.young.map(x => x.role + ' (' + x.w + ')').join(', ')}; a ruler hears ${r.ruler.map(x => x.role + ' (' + x.w + ')').join(', ')} (${r.seats}/${r.want} seats); a mother wants ${r.w17} at 17 and ${r.w30} at 30; "${r.tip.slice(0, 120)}"` };
   },
 
   // honest counsel: on 200 real scenes, one who knows the matter favours what is best for you by the engine's odds and

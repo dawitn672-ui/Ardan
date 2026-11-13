@@ -118,8 +118,10 @@
     if (!gm) { gm = mk('F', Math.max(gf.born - 6, par.born - r.int(f0, Math.min(f1, f0 + 10)))); const fn = famName(gm, 'F'); gm.sur = fn.sur; gm.surMode = fn.mode; }
     // a clan reckoned through the mother (playtest 2, new #9): the parent's clan is the grandmother's, and the
     // grandfather is of the clan she married into (the same names, swapped: no draw is added)
-    if (newGf && newGm && par.surMode === 'deed' && gm.surMode === 'deed' && F.clanThroughMother({ realm: par.realm, house: par.house })) {
-      const other = gm.sur; gm.sur = par.sur; gf.sur = other;
+    // (A2 run, seeds 4243/4250/4255/4258: the swap also holds when only the grandmother is new; the grandfather the
+    // release made keeps his own clan)
+    if (newGm && par.surMode === 'deed' && gm.surMode === 'deed' && F.clanThroughMother({ realm: par.realm, house: par.house })) {
+      const other = gm.sur; gm.sur = par.sur; if (newGf) gf.sur = other;
     }
     if (!gf.spouse && !gm.spouse) marry(gf, gm);
     par.parents = [gf.id, gm.id];
