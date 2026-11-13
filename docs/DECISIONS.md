@@ -372,3 +372,16 @@ from rules plus hand-written entries so there are thousands without filler; styl
 knightly family and elite order, ranked against each nation's standard; weapon arts; legendaries' signature arts and
 their own drawn designs (C8 and E2). The owner sees it before it is built.
 **Also settles:** weapon arts and legendaries' signature arts (asked on 2026-11-13): yes.
+
+### D-035 · Gate 2 approved: code-drawn characters, refined; a Profile tab (owner order 33, 2026-11-13 07:19 ET)
+**Owner:** "I am extremely impressed with the profile cards and such; there should be a whole tab for a game-like
+profile and stats, titles etc. Keep on refining the character designs, but this looks amazing, especially the blonde
+knight in the middle."
+**Chosen:** the gate 2 library (code-drawn, `docs/design/demo-2d/gate2/`) is the way forward (option A of 2026-11-13; the
+image-AI hybrid stays possible later if the owner adds a key). Ser Edric Vale's card is the bar for every figure.
+**Next:** C8b moves the library into the game (portraits and figures wherever people are shown, the face and build
+maker at character creation, deterministic looks for every NPC from the seed) and keeps refining (faces at full size,
+hands, cloth folds, metal, line weight, a slight turn), within the draw budget (light and depth passes on large
+portraits only). **Profile tab (work item P):** a game-like page of your character: the full card and figure, titles
+and posts, stats, skills and styles, renown, gear and heirlooms, in words, folded detail on click. Built after B5's
+declutter (same screens) with today's stats, and grown when G lands.

@@ -22,7 +22,7 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 
 - [x] **C8 2D plan** · The 2D illustrated part system (`docs/design/characters.md`) · `389041f` · 2026-11-12 17:27 ET
 - [x] **C8 2D gate 1** · Style frame: four sitters in two finishes (`docs/design/demo-2d/gate1.*`) · `655fe2c` · 2026-11-12 18:16 ET · **with the owner for review**
-- [x] **C8 2D gate 2** · Tone-led demo: 15 full figures, cards, face and build maker, armour by piece, make × rarity (`docs/design/demo-2d/gate2.*`) · `9d68308` · 2026-11-13 06:49 ET · **owner verdict pending**
+- [x] **C8 2D gate 2** · Tone-led demo: 15 full figures, cards, face and build maker, armour by piece, make × rarity (`docs/design/demo-2d/gate2.*`) · `9d68308` · 2026-11-13 06:49 ET · **approved by the owner (D-035)**
 - [x] **CI fix** · The 22 tests CI 97 failed after A3a: 5 game bugs fixed, 17 tests made robust · `d5f42ab` · 2026-11-12 18:29 ET
 - [x] **CI fix 2** · CI 100: B6 draws 6x slower (fixed), iconsWired, two bot-life bars (D-027) · `57180f4` · 2026-11-13 00:55 ET
 - [x] **v2.1.0-alpha.2** · cut on green CI 101, `release/v2.1.0-alpha.2` pushed, sample save · `f37c62f` · 2026-11-13 01:35 ET
@@ -33,7 +33,8 @@ reasons in `docs/CRITIQUE.md` §2 and `docs/DECISIONS.md`.
 - [x] **X1** · Own the release: the build reads readable source in `src/core/release/`, all 203 patches baked in, proven the same program · `5056e98` · 2026-11-13 01:44 ET
 - [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017)
 - [ ] **B5** · Declutter (two parts)
-- [ ] **C8b** · Faces and bodies (after the owner approves the demo sheets)
+- [ ] **C8b** · Faces and bodies: the gate 2 library into the game, refined (approved, D-035)
+- [ ] **P** · Profile tab: a game-like page of your character, card and figure, titles, stats, skills, styles, renown, gear (owner order 33; after B5)
 - [ ] **X2** · Named stages
 - [ ] **D10** · War screens only when deployed
 - [ ] **C6** · Relationships and households
