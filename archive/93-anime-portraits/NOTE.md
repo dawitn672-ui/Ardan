@@ -11,7 +11,7 @@ call site of `PORTRAIT.svg`; D-015 and D-020 had already settled that the older 
 **Carried over:** the mapping of a people's years onto a human life, the face-at-rest rule (mood from happiness,
 opinion, health, traits and the scene of an event) and the profile's 88 px bust in the 1366 layout, all rewritten in
 `src/ui/93-figures/figures.b-draw.core.js`. **Not carried:** the far lands' looks (`FAR_LAND`, `FAR_CULT`,
-`drawnApp`, the creation screen's trimmed swatches): they belong with the far lands, which are in this archive too.
+`drawnApp`, the creation screen's trimmed swatches): they belong with the far lands, which are in this archive too. Nor the duel's `guard` pose (its test `apGuardObit`): the library has no stance with a raised blade yet. Its tests `apAxe` and `apCreateSkin` live on as `fgAxe` and `fgCreateSkin`; `apDeterministic`, `apPure`, `apBudget`, `apEscaped` and `apEveryPeople` as their `fg` counterparts.
 The menu setting `UI.set.anime` is gone (the release's menu line is guarded and simply no longer shows).
 
 **Last commit that built it:** `f574229`. Its one patch (`AP-SKINS`) was baked into `UI.crStepBody` at X1 and is

@@ -50,4 +50,10 @@ Compose a list portrait: under 6 ms. Paint a list portrait: within 16 ms. A larg
 
 ## Not done here
 
-War paint and jewellery (`app.paint`, `app.jewel`) are not drawn yet. Bows, quivers and mounts have no art. Cultures change headwear and dye, not yet the cut. Infants are small children, not yet their own drawing. The Profile tab (work item P) will show the standing figure.
+A fighter in a duel no longer stands on guard (the retired renderer's `guard` pose; the library has ten stances, none with a raised blade). War paint and jewellery (`app.paint`, `app.jewel`) are not drawn yet. Bows, quivers and mounts have no art. Cultures change headwear and dye, not yet the cut. Infants are small children, not yet their own drawing. The Profile tab (work item P) will show the standing figure.
+
+## Tests and pictures
+
+`test.mjs`: `fgDeterministic`, `fgPure`, `fgEveryPeople`, `fgEscaped`, `fgBudget`, `fgOldSave`, `fgMaker`, `fgGearByItem`, and two carried over from the retired renderer's tests, `fgAxe` (no accessibility fault on the life screen, the profile, a person's page and the maker, every frame a named image) and `fgCreateSkin` (the skin picked in the maker is the skin stored and drawn). `tests/v2/figure.test.js`: ten unit tests of the library (one look one drawing, a sweep of some 400 people at four sizes, the second code, the old-save lean, gear by item, escaping, the dead).
+
+Before and after, at 1366 and 420 wide (creation, the life screen, the profile, a person's page), and a cast of the game's own people at twice the pixels: `docs/design/demo-2d/c8b/`.
