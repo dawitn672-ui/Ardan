@@ -429,3 +429,18 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   figure queue to be idle.
 - **Tests:** the four pass locally; this push runs the full CI on B5, C8b and these fixes.
 - **Undo:** `git revert 049e533 5ec399c 0d7cf45`.
+
+### H-023 · 2026-11-13 18:00 ET · P: the Profile page, first page of the You place (owner order 33, D-035, D-038)
+- **Commits:** `7e29156`, `4e7511f`, `5c1a66e`, `f707cbe`, `63b0b37` (by a Sonnet 5.5 agent), merged as `50b02b5`.
+- **What:** `src/ui/999996-profile-tab`: a game-like character sheet. The whole standing figure, the gate 2 card (estate
+  kicker, name, epithet, title, house and place, arms, a line about the person, Body / Purse / Name / Honour in words),
+  the six stats as words on a seven-pip scale with the potential as an open pip, health, mood and looks, and eight
+  folded sections (titles, posts and offices with past posts; skills and fighting style; renown, honour and deeds; house
+  and household; gear and heirlooms; years, health and marks; measured in the world's units; character, birth and faith).
+  It is the first page of You (D-038: five places is the cap); on a phone the old You page stays as "Glance". The
+  rail's Full profile opens it; the old overlay still draws. A month hook records posts held and left (`pc.pf`). It
+  grows through `UI.PF.addStat` and `UI.PF.addSection` (for G and E2).
+- **Tests:** 12 new `pf*`; 98 existing UI tests; after the merge 17 of 17 (pf*, boot, renderRng, b5Budget, fgPure,
+  savesStillLoad). Budgets at 1366×768: about 186 words, 50 controls (B5's ratchet), 1.02 screens.
+- **Open:** a parchment ground for the card, equipment tiles by the figure, make and rarity badges (E2), a pre-baked figure.
+- **Undo:** `git revert -m 1 50b02b5`.
