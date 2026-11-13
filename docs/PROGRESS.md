@@ -31,9 +31,9 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 
 ### Next, in order
 - [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017)
-- [x] **B5 part 1** · Declutter the shell: story drawer, folds, six activities, info buttons out of the flow; first view 479 → 171 words · `66291b1` · 2026-11-13 12:13 ET (CI with A2)
+- [x] **B5 part 1** · Declutter the shell: story drawer, folds, six activities, info buttons out of the flow; first view 479 → 171 words · `66291b1` · 2026-11-13 12:13 ET
 - [ ] **B5 part 2** · UI.scope, the six-life draw test, one goal stack, tablet shell
-- [x] **C8b** · The gate 2 figure library draws every portrait; face and build maker at creation; face codes · `9a2cbeb` · 2026-11-13 13:02 ET (CI pending)
+- [x] **C8b** · The gate 2 figure library draws every portrait; face and build maker at creation; face codes · `9a2cbeb` · 2026-11-13 13:02 ET
 - [ ] **P** · Profile tab: a game-like page of your character, card and figure, titles, stats, skills, styles, renown, gear (owner order 33; after B5)
 - [ ] **X2** · Named stages
 - [ ] **D10** · War screens only when deployed
@@ -72,6 +72,7 @@ branch on GitHub, and a sample save in `tests/saves/`.
 | v2.1.0-alpha.1 | 2026-11-12 11:20 ET | Round 2 begins: repo by system with a memory, the critique and work order, A0 (lag's main cause and the two-lords crash fixed), name and military prep |
 | v2.1.0-alpha.2 | 2026-11-13 01:35 ET | X6 naming pass, A3a coherency net, B4 click-to-open, A1 one redraw a press, B6 Next month or Next year, CI 97-101 fixes |
 | v2.1.0-alpha.3 | 2026-11-13 02:40 ET | X1: the release is readable source (`src/core/release/`), all 203 patches baked in, same program |
+| v2.1.0-alpha.4 | 2026-11-13 15:01 ET | C8b: the approved character art draws every portrait, face and build maker; B5 part 1: a calmer screen |
 
 ## Milestones
 - [ ] `release/v2.1-foundations` (after A1, A3a, B6, A2)

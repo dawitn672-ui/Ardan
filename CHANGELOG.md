@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.4 (2026-11-13 15:01 ET) · New faces and a calmer screen
+
 - **New character art everywhere.** Every person in the world is drawn in the new illustrated style, from the
   bondman to the king, with a face of their own that children inherit from their parents. A face and body maker at the
   start of a life: shape every feature, pick hair, beard and build, or let it surprise you.
