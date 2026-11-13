@@ -5,6 +5,11 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.3 (2026-11-13 02:40 ET) · The game's own code made readable
+
+- Nothing changes in play: the game is now built from readable source instead of the packed release file, proven to
+  run exactly the same. Every later fix and feature is easier and safer because of it.
+
 ## v2.1.0-alpha.2 (2026-11-13 01:35 ET) · Foundations: lighter steps, click-to-open, Next month or Next year
 
 - Descriptions open when you click or tap, never on hover; long explanations sit behind a small ⓘ. An activity
