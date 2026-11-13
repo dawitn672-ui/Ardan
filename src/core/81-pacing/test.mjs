@@ -158,7 +158,9 @@ export default {
     const se = Math.sqrt(r.on.rate * (100 - r.on.rate) / Math.max(1, r.on.checks) + r.off.rate * (100 - r.off.rate) / Math.max(1, r.off.checks));
     // v2 (99992-v2-time): with the floor off, 81 no longer adds prompts (the month's director sets them), so prompts
     // need only not fall; the winter rule's actions and the check scale still must rise
-    const ok = r.on.n >= 8 && r.on.whole >= r.off.whole - 0.3 && r.on.acts > r.off.acts && r.on.rate >= r.off.rate - 2 * se && r.on.rate <= 70;
+    // acts: since B6 lifted the pool of initiative (D-019) nothing rations actions, so pacing no longer has to add any;
+    // it must not cut them (A2's re-rolled world: 8.4 on, 8.7 off; before A2 9.0 and 8.5)
+    const ok = r.on.n >= 8 && r.on.whole >= r.off.whole - 0.3 && r.on.acts >= r.off.acts - 0.5 && r.on.rate >= r.off.rate - 2 * se && r.on.rate <= 70;
     return { ok, detail: `16 lives, birth to 30. Off: ${r.off.prompts} prompts a year (${r.off.whole} over the ${r.off.n} lives whole in both sets), ${r.off.acts} actions a year (engaged), ${r.off.rate}% of ${r.off.checks} checks; on: ${r.on.prompts} (${r.on.whole}), ${r.on.acts}, ${r.on.rate}% of ${r.on.checks}` };
   },
   // cycle 1 (lives I9): 23 scenes in a noble's first adult year at 17. The world's own scenes stop at 8 in the first

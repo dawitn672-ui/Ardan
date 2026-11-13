@@ -30,7 +30,8 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **X1** · Own the release: the build reads readable source in `src/core/release/`, all 203 patches baked in, proven the same program · `5056e98` · 2026-11-13 01:44 ET
 
 ### Next, in order
-- [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017). Stage 1 (registry, the Marshal, exits, migration; D-031) on branch `worktree-agent-a8e422903f5938378`; stage 2 (9997 slots, orders, staff, houses, titles, army commands that outlive a war) next
+- [x] **A2 stage 1** · One registry of posts; one holder per post; Marshal empty in peace (D-017, D-031); coherency to 0 · `1e914c0` · 2026-11-13 18:25 ET
+- [ ] **A2 stage 2** · Battalion and company slots, order masters, staff, companies, house heads and land titles as posts; route the adopted writers
 - [x] **B5 part 1** · Declutter the shell: story drawer, folds, six activities, info buttons out of the flow; first view 479 → 171 words · `66291b1` · 2026-11-13 12:13 ET
 - [ ] **B5 part 2** · UI.scope, the six-life draw test, one goal stack, tablet shell
 - [x] **C8b** · The gate 2 figure library draws every portrait; face and build maker at creation; face codes · `9a2cbeb` · 2026-11-13 13:02 ET

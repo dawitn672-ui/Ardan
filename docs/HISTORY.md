@@ -444,3 +444,25 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   savesStillLoad). Budgets at 1366×768: about 186 words, 50 controls (B5's ratchet), 1.02 screens.
 - **Open:** a parchment ground for the card, equipment tiles by the figure, make and rarity badges (E2), a pre-baked figure.
 - **Undo:** `git revert -m 1 50b02b5`.
+
+### H-024 · 2026-11-13 18:25 ET · A2 stage 1: one registry of posts; the Marshal's seat empty in peace (D-017, D-031)
+- **Commits:** `695c065`, `69e1f7d`, `df2d027`, `9725baa`, `8fb2a56`, `a11578f`, `3307b9e`, `48e89db`, `6e43403`,
+  `c83d76f`, `4a1fecc`, `8f1f72a` and two merges (by an Opus 5.5 agent), merged as `1e914c0`.
+- **What:** `src/nobility/999990-posts`: the registry `A.POSTS` (`A.S.posts.h`: council seats, shire offices, army and
+  division commands, each with holder, since, why, appointer and the last three holders; `can`, `appoint`, `vacate`,
+  `leaveAll`, `sync`, `audit`, `title`). The old fields are mirrors written only by the registry. No one holds two
+  clashing posts; the dead, children, prisoners, foreigners and rulers are refused; a promotion hands over the real
+  command and moves the man replaced. The Marshal's seat is empty in peace and goes to the best General when a war needs
+  one, who leads the main host; at peace he stands down. Every exit (death, resign, desert, prison, the crown) vacates;
+  resigning at war and deserting cost. Old saves are rebuilt and repaired on load, without a draw. No dice in the registry.
+- **Coherency:** quick baseline all 0 (was 5/8/30/2/123); nightly 0 except one family-links count (C6's).
+- **Fixes it exposed (the world re-rolled):** B6's classifier: a commoner's forced trade-duty card (`du_cm_tax`) now waits
+  for the step's end (a ruler's or noble's duties stay notable); the Wars pages' bare war score is now in words; a
+  latent throw in `ct_banneret`; 99994's grandmother's clan; 99994's invented "Marshal of the host/levies" are Captains.
+  Tests made robust to the new world (reasons in each file); `pcLives`' "pacing adds actions" bar relaxed to "pacing
+  does not cut them", since D-019 lifted the pool that rationed actions.
+- **Tests:** 5 new posts tests; core suites, renderRng, replayWithRender, journalReplay, the B5/C8b/P quick tests pass;
+  balance in bands (before the merges). This push runs the full CI.
+- **Open (stage 2):** battalion and company slots, order masters, staff, free companies, house heads and land titles as
+  posts; armies that outlive a war; routing the writers the month's sync still adopts; more costs of leaving a post.
+- **Undo:** `git revert -m 1 1e914c0`; old saves made with the registry keep an unused `A.S.posts`.
