@@ -203,7 +203,16 @@
     if (isMarshalKey(key)) pcMarshal(pid, false, why);
     // a post whose object is gone keeps no record
     if (M && !M.exists(k)) delete st.h[key];
+    // an army in the field is never without a general: the crown names one at once (what A.wsDay did the next day),
+    // unless it is the player's own command, or the appointment that emptied it is under way (o.keep)
+    else if (k.kind === 'army' && !o.keep && why !== 'replaced' && why !== 'promoted') deputyArmy(k.id);
     return p || null;
+  };
+  const deputyArmy = function (aid) {
+    const a = armyOf(aid), pc = A.pc();
+    if (!a || a.gen || !A.wsGeneralFor || (pc && pc.mil && pc.mil.army === a.id && pc.mil.rank >= 7)) return;
+    const g = A.wsGeneralFor(a.realm);
+    if (g && !P.can(P.armyKey(aid), g, { force: true })) P.appoint(P.armyKey(aid), g, { why: 'deputy', force: true });
   };
 
   // appoint pid to key: his posts that cannot go with it are handed over first, the holder he replaces is moved (a field
@@ -276,7 +285,8 @@
       if (r.pol && Array.isArray(r.pol.off)) for (const o of r.pol.off) if (o && o.id && o.pid) out.push([P.offKey(r.id, o.id), o.pid]);
     }
     for (const a of (A.S.armies || [])) if (a && a.id && a.gen) out.push([P.armyKey(a.id), a.gen]);
-    for (const r of realmsAlive()) if (r.forces && Array.isArray(r.forces.divs)) for (const d of r.forces.divs) if (d && d.id && d.cmd) out.push([P.divKey(d.id), d.cmd]);
+    // an elite order's division is led by its Grand Master, a post of the order (stage 2): left out until orders are posts
+    for (const r of realmsAlive()) if (r.forces && Array.isArray(r.forces.divs)) for (const d of r.forces.divs) if (d && d.id && d.cmd && !d.elite) out.push([P.divKey(d.id), d.cmd]);
     return out;
   };
   // why the holder of key may not keep it ('' if he may): the parts of can() that hold for a sitting holder
@@ -318,7 +328,7 @@
         if (keepNew) { P.vacate(k2, 'moved'); repair('two posts', `${nm(A.P(pid))} gives up ${P.style(k2)} for ${P.style(key)}`); }
         else { drop = true; break; }
       }
-      if (drop) { const [M, k] = mir(key); M.set(k, null); R.p = null; R.vac = day(); R.w = 'two posts'; repair('two posts', `${nm(A.P(pid))} cannot also hold ${P.style(key)}`); continue; }
+      if (drop) { const [M, k] = mir(key); M.set(k, null); R.p = null; R.vac = day(); R.w = 'two posts'; repair('two posts', `${nm(A.P(pid))} cannot also hold ${P.style(key)}`); if (k.kind === 'army') deputyArmy(k.id); continue; }
       R.p = pid; R.s = R.s && mode === 'load' ? R.s : day(); R.w = mode === 'load' ? 'found' : 'adopted'; delete R.vac;
       ixAdd(pid, key); fresh.add(key);
     }

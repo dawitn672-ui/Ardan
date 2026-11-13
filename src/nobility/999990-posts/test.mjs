@@ -150,15 +150,15 @@ export default {
       const out = {
         n: victims.length,
         seat: r.council[seatK] || null, seatRec: A.S.posts.h[A.POSTS.seatKey('POL-01', seatK)],
-        off: off ? off.pid : 'none', army: army ? army.gen : 'none',
+        off: off ? off.pid : 'none', army: army ? army.gen : 'none', armyOk: !!army && army.gen !== victims[2] && !!A.P(army.gen) && A.P(army.gen).alive,
         held: victims.map(id => A.POSTS.held(id).length),
       };
       out.audit = A.POSTS.audit();
       return out;
     }).toString() + ')()');
     const prev = r.seatRec && r.seatRec.prev && r.seatRec.prev[r.seatRec.prev.length - 1];
-    const ok = r.n === 3 && !r.seat && prev && prev[3] === 'died' && r.off === null && r.army === null && r.held.every(n => n === 0) && !r.audit.length;
-    return { ok, detail: `${r.n} killed: seat now ${r.seat}, last holder left for "${prev && prev[3]}"; office ${r.off}; army general ${r.army}; posts left ${r.held.join('/')}${r.audit.length ? '; ' + r.audit.slice(0, 3).join('; ') : ''}` };
+    const ok = r.n === 3 && !r.seat && prev && prev[3] === 'died' && r.off === null && r.armyOk && r.held.every(n => n === 0) && !r.audit.length;
+    return { ok, detail: `${r.n} killed: seat now ${r.seat}, last holder left for "${prev && prev[3]}"; office ${r.off}; army general now ${r.army} (a living deputy: ${r.armyOk}); posts left ${r.held.join('/')}${r.audit.length ? '; ' + r.audit.slice(0, 3).join('; ') : ''}` };
   },
 
   // an older save: a real alpha.2 save (made before the registry) loads with the registry built and no rule broken,

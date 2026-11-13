@@ -52,11 +52,14 @@ export default {
       for (const how of ['', 'physician', 'herbs', 'herbs_bad', 'prayer', 'rest']) out[how || 'none'] = run(how, 'marsh');
       out.fluxPhysician = run('physician', 'flux'); out.fluxNone = run('', 'flux');
       // every onset in a life of 4 years asks for a treatment
-      A.newGame({ seed: 4903, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 20 });
+      // (two lives since A2: one gave 2 to 7 onsets by the world's draw, against a floor of 3)
       let onsets = 0, asked = 0;
       const f = A.bmFallIll;
       A.bmFallIll = function (pc) { const was = !!(pc.ill && pc.ill.m > 0); const q0 = A.S.queue.length; const res = f.apply(this, arguments); if (!was) { onsets++; if (A.S.queue.slice(q0).some(q => q.ev === 'bm_ill')) asked++; } return res; };
-      for (let i = 0; i < 40; i++) { const pc = A.pc(); if (!pc.alive) break; pc.health = 100; pc.ill = null; A.bodyYear(pc); A.S.queue = []; }
+      for (const seed of [4903, 4904]) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'M', startAge: 20 });
+        for (let i = 0; i < 40; i++) { const pc = A.pc(); if (!pc.alive) break; pc.health = 100; pc.ill = null; A.bodyYear(pc); A.S.queue = []; }
+      }
       A.bmFallIll = f;
       return { out, onsets, asked };
     });
