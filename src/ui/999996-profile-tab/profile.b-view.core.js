@@ -86,7 +86,7 @@
     s += '<div class="pf-vits" aria-label="How you are">';
     for (const [k, label] of [['health', 'Health'], ['happy', 'Mood'], ['looks', 'Looks']]) {
       const v = PF.vital(k, p);
-      s += trig([k, ''], `<span class="pf-k">${label}</span> <span class="pf-v">${esc(v.word)}</span>`, `pf-vital v-${k}`);
+      s += `<span class="pf-vital v-${k}"><span class="pf-k">${label}</span> <span class="pf-v">${esc(v.word)}</span></span>`;
     }
     return s + '</div></section>';
   };
@@ -249,7 +249,8 @@
     if (i >= 0) PF.PANELS.splice(i, 0, def); else PF.PANELS.push(def);
     return true;
   };
-  const skillRow = r => `<li class="pf-sk">${trig(['skill', r.k], esc(r.name) + (r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''), 'pf-l')}${trig(['profTier', r.tier], esc(r.tier), 'pf-tier')}<span class="pf-prog" aria-hidden="true"><i style="width:${Math.round(r.frac * 100)}%"></i></span></li>`;
+  // on the page a skill is one control (the whole row opens its description); Records keeps the tier as its own
+  const skillRow = r => trig(['skill', r.k], `<span class="pf-l">${esc(r.name)}${r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''}</span><span class="pf-tier">${esc(r.tier)}</span><span class="pf-prog" aria-hidden="true"><i style="width:${Math.round(r.frac * 100)}%"></i></span>`, 'pf-sk', 'li');
   PF.addPanel({ k: 'skills', label: 'Skills', body: p => {
     const arts = PF.styles(p).filter(x => x.rank > 0).slice(0, 2), rows = PF.skills(p, false).slice(0, 5);
     let s = '';
@@ -373,7 +374,7 @@
 .pf-card .tt{text-decoration-color:rgba(43,33,24,.5)}.pf-card .tt:hover,.pf-card .tt:focus-visible{color:var(--pc-red)}
 .pf-held{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:2px 14px;font-size:var(--t-ui,14px)}
 .pf-vits{display:flex;flex-wrap:wrap;gap:2px 16px;margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
-.pf-vits .tt{display:inline-flex;gap:6px;align-items:baseline;font-size:var(--t-ui,14px)}
+.pf-vital{display:inline-flex;gap:6px;align-items:baseline;font-size:var(--t-ui,14px)}
 .pf-hn2{text-decoration:underline dotted var(--ink-3);text-underline-offset:3px;cursor:pointer}
 .pf-lower{display:grid;gap:8px}
 .pf-tabs{display:flex;flex-wrap:wrap;gap:4px;align-items:center;border-bottom:1px solid var(--line)}
@@ -453,6 +454,7 @@
 .pf-h2{margin:8px 0 2px;font:600 var(--t-small,13px)/1.3 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
 .pf-empty,.pf-fine{margin:2px 0;color:var(--ink-3);font-size:var(--t-small,13px)}
 .pf-fight .pf-row{grid-template-columns:6.6em auto minmax(0,1fr);border-bottom:0}
+.pf .tt.pf-sk{text-decoration:none;border-bottom:1px solid var(--line);padding:0 4px;margin:0 -4px;border-radius:5px}.pf .tt.pf-sk:hover{background:var(--accent-tint)}
 .pf-sk{display:grid;grid-template-columns:minmax(0,1fr) 7.4em 64px;gap:8px;align-items:center;font-size:var(--t-ui,14px);min-height:26px}
 .pf-tier{font-weight:600;color:var(--ink)}
 .pf-prog{display:block;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
