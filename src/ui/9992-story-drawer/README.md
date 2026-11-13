@@ -12,10 +12,10 @@
 - The story is a drawer fixed over the page's right edge (40% of the window, at most 440 px). A **Story** button in the top bar
   (before Save) opens and closes it (`UI.A.storyDrawer`; `aria-expanded`, `aria-controls="logwrap"`). While shut it is
   `visibility:hidden`, out of the tab order and the first view.
-- The Life page starts with a card of the newest three story lines and a "The whole story" button.
+- The Life page starts with a card of the newest two story lines and a "The whole story" button.
 - A neutral dot on the button (and on the phone's Story page tab, `badge-new`) says new lines have come in since the drawer was
   open. Red is for danger only (U11): the war badge keeps its "!".
-- 1600 px and up keeps the story as a column (460 px, the rail 280); 761 to 1099 keeps 91's strip over the story.
+- 1600 px and up keeps the story as a column after the page (420 px; the rail 280, the page about half the window); 761 to 1099 keeps 91's strip over the story.
 
 **State.** Whether the drawer is open is `UI.STORY.open`, the player's, not in the save. The class `lk-story-open` is put on
 `#game` by `UI.renderGame` so every full draw keeps it. Nothing here reads or writes the game state or the random stream.

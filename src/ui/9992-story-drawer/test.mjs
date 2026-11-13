@@ -8,8 +8,8 @@ import { PERSONAS, PAGES, START, PROBE, SETTLE } from '../../../tools/lib/clutte
 // first view; `all` the whole first view, bars and rail included. A page that is a map or a long text (World, Book) is held to
 // the screens only.
 export const BUDGET = {
-  desk: { all: { words: 300, controls: 50 }, page: { words: 190, controls: 30 }, screens: 3 },
-  phone: { all: { words: 230, controls: 40 }, page: { words: 180, controls: 26 }, screens: 3 },
+  desk: { all: { words: 270, controls: 50 }, page: { words: 230, controls: 40 }, screens: 3 },
+  phone: { all: { words: 200, controls: 40 }, page: { words: 150, controls: 30 }, screens: 3 },
 };
 const PROSE = new Set(['world', 'book', 'story']);
 

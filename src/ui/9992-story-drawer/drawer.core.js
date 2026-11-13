@@ -1,6 +1,6 @@
 // 9992-story-drawer (B5, U3): from 1100 to 1599 px the story is a drawer, not a third column, so the open page gets the
 // width (at 1366 the page had 36% of it; now about 80%). A "Story" button in the top bar opens the drawer over the page's
-// right edge; the Life page carries the newest three lines itself, with a button that opens the rest. A neutral dot on the
+// right edge; the Life page carries the newest two lines itself, with a button that opens the rest. A neutral dot on the
 // button says new lines have come in since the drawer was last open (red stays for danger). At 1600 px and up the story
 // stays a column (460 px); at 761 to 1099 px it stays the strip-and-column of 91-visual-style.
 // This layer reads the window and the story log and writes only to the page; it never touches the game or the random
@@ -50,7 +50,7 @@
     const h = tab.apply(this, arguments);
     try {
       if (UI.tab !== 'life' || !SD.on() || typeof h !== 'string') return h;
-      const ls = SD.latest(3);
+      const ls = SD.latest(2);
       if (!ls.length) return h;
       return `<section class="card sd-feed" aria-label="The newest lines of your story">${ls.map(l => `<div class="ll ${UI.esc(l[1])}">${UI.esc(l[0])}</div>`).join('')}<button type="button" class="small ghost" data-a="storyDrawer">The whole story</button></section>` + h;
     } catch (e) { console.error('story drawer feed', e); return h; }
@@ -76,6 +76,8 @@
   .sd-feed{display:none;padding:8px 12px;margin:0 0 8px}
   .sd-feed .ll{font-size:var(--t-small,13px);line-height:1.4;margin:0 0 4px}
   .sd-feed button{margin-top:2px}
+  /* B5: what now keeps the reason for its first step only; the others are one line each */
+  #game:not(.phone) .whatnow .wn-list > li:not(:first-child) .wn-why{display:none}
   @media (min-width:1100px) and (max-width:1599px){#game:not(.phone) .sd-feed{display:block}}
   `;
   if (typeof document !== 'undefined') {

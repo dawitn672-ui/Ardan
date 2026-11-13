@@ -27,9 +27,9 @@ FOLD.DEFAULT_CLOSED = {
   // People page (the same people as Kin of note, with a mood and a want each) and the elite orders of Arms
   holdings: ['the armorer', 'property', 'the trade roads', 'the market of'],
   // v2 (99995-v2-nobility): the great lords' list is 650 px; it folds to its count ("852 nobles hold land ...")
-  realm: ['the great lords', 'the council', 'the ladder', 'the ways of', 'how the', 'why wars begin', 'factions of'],
+  realm: ['the great lords', 'the council', 'the ladder', 'the ways of', 'how the', 'why wars begin', 'factions of', 'laws'],
   path: ['how you live', 'schools & academies', 'the elite'],   // (the Arms page of a life at peace is folded under "path")
-  people: ['family'],
+  people: ['family', 'around you'],
   // cycle 2 (visual F4, design B8): the long reference sections of the Chronicle start folded to their summaries
   legacy: ['endings found', 'achievements'],
   // the road (9990-journeys): every capital of the continent waits behind its header
