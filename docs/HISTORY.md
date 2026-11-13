@@ -475,3 +475,17 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   words, learning by doing, hidden talent). C9, P2 and the G revision are running.
 - **Branches:** the 35 merged branches could not be deleted from this session (its git connection refuses ref
   deletions); the owner was told how to delete them on GitHub; their tips are in `docs/BRANCHES.md`.
+
+### H-026 · 2026-11-13 18:50 ET · G design revised for order 34 (D-039)
+- **Commit:** `aefc2d5` (by an Opus 5.5 agent), cherry-picked as `e7812cf`.
+- **What:** `docs/design/growth.md` now carries order 34: arts in place of styles (every weapon family's arts with
+  numbered forms, lines of holders, secret manuals, keepers; 20 example arts; grades Lesser, Standard, Strong, Great,
+  Peerless); eight skill words on today's 0-100 scale (no check's odds move; 1-10 Grandmasters, at most one Legend, kept by
+  proofs and surpassing; `GD.LEGEND_CAP` 5 → 1); no trees (a first try teaches nothing or gives Beginner; merges at the
+  top); disuse (safe for 5-12 idle years, then slow, at most one word, back five times as fast); hidden talent (16 areas
+  and 14 single attributes, F to SS with a number, found in play; NPCs by hash); application in a fight (fit, match,
+  one's own hand, read; a top art wins about 7-3 or 8-2 at equal skill, and a standard spear art can beat a peerless
+  sword art); house arts (knights', line, both, neither); legendaries with their own command skill and bound art, about
+  one word of skill at full command; training a skill trains its governing stats. Stages G1-G6 renewed; §7 records every
+  replaced part. **Six owner decisions still open** (§6.5).
+- **Undo:** `git revert e7812cf`.
