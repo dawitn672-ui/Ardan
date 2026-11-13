@@ -72,9 +72,13 @@ export default {
       // with them
       pc = MWT.adult(6702); t = MWT.stranger(pc);
       const y0 = A.S.year;
+      // the skill a check trains (31-learn-by-doing) is put back, so the odds measure the rules alone: a player born
+      // with some persuasion gains a point here that shows as +2 (A2's re-rolled world, seed 6702: 23 -> 24)
+      const sk0 = Object.assign({}, pc.skills);
       MWT.scene('mwt_river', { pid: t.id }, 0);           // a kindness to t
       MWT.scene('mwt_toll', {}, 0, 0.001);                 // won a persuasion check on the road
       MWT.scene('mwt_mark', {}, 0, 0.999);                 // lost a trade check at market, the same year
+      for (const k of ['persuasion', 'trade']) pc.skills[k] = sk0[k];
       A.S.year++;
       const person = MWT.peek('mwt_ask', { pid: t.id });  // person rule: +6 on the check
       const again = MWT.peek('mwt_toll', {});              // again rule: label (as in y0), +6 on the won check

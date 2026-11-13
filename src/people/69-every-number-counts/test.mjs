@@ -186,6 +186,9 @@ export default {
         A.newGame({ seed: 6906, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 25 });
         const pc = A.pc(); A.S.queue = []; pc.coin = 200;
         if (id === 'ln_crossing') { const P = A.S.prov.find(x => x.coast && x.owner === pc.realm) || A.S.prov.find(x => x.coast); pc.home = P.id; pc.realm = P.owner; }
+        // lambing is a country scene: a peasant the world's draw put in a town moves out to the country for it (A2's
+        // re-rolled world, seed 6906)
+        if (id === 'ln_lambing' && A.C.town(pc)) { const h0 = pc.home; const P = A.S.prov.find(x => x.owner === pc.realm && ((pc.home = x.id), !A.C.town(pc))); pc.home = P ? P.id : h0; }
         if (A.EV[id].cond(pc, A.C)) elig++;
         for (let i = 0; i < A.EV[id].choices.length; i++) {
           A.S.queue = [{ type: 'event', ev: id, ctx: {} }];
