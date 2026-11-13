@@ -23,7 +23,7 @@ No outside image AI was used (no key is saved). The two reference sheets set the
 
 In `docs/design/demo-2d/`:
 
-- `gate2.html`: the page (345 KB: 149 KB of script, the rest the four fonts).
+- `gate2.html`: the page (347 KB: 152 KB of script, the rest the four fonts).
 - `gate2-lineup.png`, `gate2-cards.png`, `gate2-customiser.png`: 1366 wide at twice the pixels. The first two are over 3 MB lossless, so they are stored at 256 colours, dithered; the page itself is the true picture.
 - `gate2-customiser-hair.png`, `-body.png`, `-dress.png`, `gate2-ages.png`, `gate2-gear.png`: further views at once the pixels.
 - `gate2.md`: this note.
@@ -37,8 +37,8 @@ In `docs/design/demo-2d/`:
 | `rig.js` | 110 | Age, sex, height and build to joints and widths; the ten stances |
 | `head.js` | 295 | The 38 features; the head in its own space; ears, eyes, brows, nose, mouth; the years' lines; scars, freckles |
 | `hair.js` | 209 | 29 styles and 11 beards as data; one renderer |
-| `gear.js` | 599 | 42 items, 12 kinds of headwear, 18 outfits (lists of items); make and rarity; charges |
-| `figure.js` | 56 | `compose(look, { crop })`: one look to one SVG; the crops; the light pass |
+| `gear.js` | 604 | 42 items, 12 kinds of headwear, 18 outfits (lists of items); make and rarity; charges |
+| `figure.js` | 68 | `compose(look, { crop })`: one look to one SVG; the crops; the depth shadows and the light pass |
 | `sitters.js` | 65 | The fifteen people, and their cards' words, as data |
 | `page.js` | 206 | The page: lineup, cards, maker, ages, gear sheet, the measuring |
 | `build.mjs`, `preview.mjs`, `sweep.mjs` | 247 | Build and screenshots; a look at any sitter while drawing; a sweep of 1,900 drawings |
@@ -78,16 +78,16 @@ Measured by the page itself in headless Chromium (software drawing) on the share
 
 | Drawn as | Pixels (at 2×) | Compose: look to SVG | Paint: SVG to pixels | SVG, median (largest) | Shapes |
 |---|---|---|---|---|---|
-| Lineup figure | 510 × 1310 | 3 to 5 ms | about 90 ms (70 to 120 across runs) | 153 KB (360) | 390 |
-| Card | 500 × 612 | 3 to 6 ms | about 55 ms (40 to 68) | 149 KB (341) | 440 |
-| Card, plain (no light, no depth) | 500 × 612 | 3 to 4 ms | about 15 ms (15 to 19) | 147 KB (339) | 440 |
-| Maker portrait | 860 × 1064 | 3 to 4 ms | about 150 ms (110 to 167) | 141 KB (317) | 442 |
-| List portrait, plain | 128 × 158 | 3 to 6 ms | about 5 ms (4 to 8) | 129 KB (302) | 389 |
+| Lineup figure | 510 × 1310 | 3 to 5 ms | about 90 ms (70 to 120 across runs) | 154 KB (366) | 398 |
+| Card | 500 × 612 | 3 to 6 ms | about 55 ms (40 to 68) | 149 KB (344) | 440 |
+| Card, plain (no light, no depth) | 500 × 612 | 3 to 4 ms | about 16 ms (15 to 19) | 147 KB (342) | 440 |
+| Maker portrait | 860 × 1064 | 3 to 4 ms | about 150 ms (110 to 167) | 141 KB (320) | 442 |
+| List portrait, plain | 128 × 158 | 3 to 6 ms | about 5 ms (4 to 8) | 129 KB (305) | 397 |
 
 - **Compose is cheap** and well inside the plan's budget. The maker redraws a portrait and a full figure on every step of a drag.
-- **Paint is over the plan's budget** (D-025: 16 ms for a large portrait). A card paints in about 15 ms plain. The light pass (rim, core shadow, heavier outer line) adds about 26 ms and the depth shadows between layers about 13 ms: some 55 ms in all, so tone is nearly three quarters of the cost. A portrait would be painted once and kept as an image, as the plan says, so this is a one-time cost per person and size; but it is real, and it is the first thing to cut. `compose(look, { fx: false })` draws plain; `{ depth: false }` keeps the light pass and drops the depth.
+- **Paint is over the plan's budget** (D-025: 16 ms for a large portrait). A card paints in about 16 ms plain. The light pass (rim, core shadow, heavier outer line) adds about 26 ms and the depth shadows between layers about 13 ms: some 55 ms in all, so tone is nearly three quarters of the cost. A portrait would be painted once and kept as an image, as the plan says, so this is a one-time cost per person and size; but it is real, and it is the first thing to cut. `compose(look, { fx: false })` draws plain; `{ depth: false }` keeps the light pass and drops the depth.
 - **The SVG is heavier than it need be.** A close crop still carries the whole figure's cloak, shield and sword. Only the legs (and, closer in, the skirt) are left out today.
-- The largest is the knight: 1,134 shapes, 359 KB.
+- The largest is the knight in full harness with cloak, shield, sword and dagger: 1,167 shapes, 365 KB.
 
 ## Checks made
 

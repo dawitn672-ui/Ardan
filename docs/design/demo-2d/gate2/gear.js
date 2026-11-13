@@ -69,6 +69,9 @@ function drape(S, r, a, b, c, d, m, o = {}) {
 function creases(S, r, T, at, m, n = 3) {
   for (let i = 0; i < n; i++) { const t = at + (i - (n - 1) / 2) * .055 + r.s() * .012, a = along(T.A, t), b = along(T.B, t + r.s() * .05), sw = r() < .5; const p0 = sw ? a : b, p1 = mix(sw ? a : b, sw ? b : a, .5 + r() * .3); S.fill(ink(splPts([p0, add(mix(p0, p1, .5), [0, 3]), p1], false, 1, 4), fade(S.lw(1.15))), m.k, { op: .8 }); }
 }
+// the working parts of plate: the edge of a lame across a limb's piece, and a pair of hinges down one of its sides
+function lame(S, T, t, m) { const a = along(T.A, t), b = along(T.B, t), c = add(mix(a, b, .5), mul(norm(sub(along(T.c, Math.min(1, t + .05)), along(T.c, Math.max(0, t - .05)))), len(sub(a, b)) * .12)); S.stroke(spl([a, c, b]), m.k, 1, { op: .8 }); S.stroke(spl([add(a, [0, 2.4]), add(c, [0, 2.4]), add(b, [0, 2.4])]), m.hi, .8, { op: .5 }); }
+function hinges(S, T, m, fit, ts = [.3, .7]) { const E = T.A[0][0] > T.B[0][0] ? T.A : T.B; for (const t of ts) { const p = along(E, t), q = along(E, Math.min(1, t + .07)), n = mul(norm(perp(sub(q, p))), 5.5), d = polyline([sub(p, n), add(p, n), add(q, n), sub(q, n)], true); S.both(d, fit.b, m.k, .7); } }
 // a point along the shoulder from the root of the neck (0) to the shoulder's tip (1)
 const onSh = (F, i, t) => (t < .4 ? mix(F.nb[i], F.trap[i], t / .4) : mix(F.trap[i], F.sh[i], (t - .4) / .6));
 const SG = [-1, 1];
@@ -409,6 +412,8 @@ export const ITEMS = {
     const d = poly([onSh(F, 0, .28), ...L, [F.cx, F.y.waist + F.B * .02], ...R.slice().reverse(), onSh(F, 1, .28), NB], [.3, .5, .9, .9, .4, .5, .4, .9, .9, .5, .3, .8]); S.both(d, st.b, st.k, 1.1);
     S.within(d, () => { steel(S, d, st, L[2], R[2], { sky: [NB, [F.cx, F.y.waist]] }); S.fill(ell([F.cxS - F.chestHalf * .35, F.y.chest - F.B * .01], F.chestHalf * .3, F.B * .05), st.hi, { op: M.q ? .6 : .2, filter: S.blur(5) }); if (M.edge) { S.stroke(d, fit.k, 8); S.stroke(d, fit.b, 6); } }); S.stroke(d, st.k, 1.1);
     S.stroke(polyline([NB, [F.cx, F.y.waist + F.B * .015]]), st.k, 1, { op: .7 }); S.stroke(polyline([add(NB, [-3, 6]), [F.cx - 3, F.y.waist]]), st.hi, 1, { op: .7 });
+    const pk = [add(L[3], [10, -F.B * .035]), [lerp(L[3][0], F.cx, .55), F.y.waist - F.B * .06], [F.cx, F.y.waist - F.B * .1], [lerp(R[3][0], F.cx, .55), F.y.waist - F.B * .06], add(R[3], [-10, -F.B * .035])]; S.stroke(spl(pk, false, [1, 1, .2, 1, 1]), st.k, 1.1, { op: .85 }); S.stroke(spl(pk.map(p => [p[0], p[1] + 3]), false, [1, 1, .2, 1, 1]), st.hi, .9, { op: .55 });
+    rivets(S, polyPts([onSh(F, 0, .34), add(NB, [0, 9]), onSh(F, 1, .34)], .7, false, 6), 7, 1.9, M.edge ? fit : st);
     if (M.r > 1) for (const sg of SG) for (const k of [.3, .55]) S.stroke(spl([[F.cxS + sg * F.chestHalf * k, F.pit[1] + F.Hh * .2], [F.cx + sg * F.waistHalf * k * .8, F.y.chest + F.B * .04], [F.cx + sg * F.waistHalf * k * .5, F.y.waist - 4]]), st.k, .8, { op: .4 });
     if (M.scroll) for (const sg of SG) scrolls(S, [[F.cxS + sg * F.chestHalf * .2, F.y.chest - F.B * .03], [F.cxS + sg * F.chestHalf * .7, F.y.chest + F.B * .01]], 7, fit.b);
     if (M.rivet) for (const X of [L, R]) rivets(S, [add(X[1], [X === L ? 10 : -10, 0]), add(X[3], [X === L ? 8 : -8, 0])], 4, 2.6, st);
@@ -425,10 +430,10 @@ export const ITEMS = {
       for (const k of [.3, .7]) { const p = [lerp(x0, x1, k), y0 - 2]; S.stroke(polyline([p, add(p, [0, 12])]), cloth('dark').k, 4.4); S.stroke(polyline([p, add(p, [0, 12])]), cloth('dark').b, 2.8); }
       if (M.scroll) scrolls(S, [[lerp(x0, x1, .3), y0 + F.B * .035], [lerp(x0, x1, .75), y0 + F.B * .045]], 5, fit.b, .85); }
   },
-  cuisses(C, o) { const { S, F } = C, M = mats(o), { st, fit } = M; S.layer('legs'); for (const i of [0, 1]) { const T = legTube(F, i, 8, .2, .46); limbFill(S, T, st, { metal: 1 }); S.stroke(polyline(offset(part(T.c, .1, .9), 3)), st.hi, .9, { op: .5 }); if (M.edge) S.stroke(polyline([T.A[T.A.length - 1], T.B[T.B.length - 1]]), fit.b, 3); if (M.rivet) S.stroke(polyline([along(T.A, .4), along(T.B, .4)]), cloth('dark').b, 4.4); if (M.scroll) scrolls(S, part(offset(T.c, F.legR[0] * .5), .2, .85), 6, fit.b, .8); } },
+  cuisses(C, o) { const { S, F } = C, M = mats(o), { st, fit } = M; S.layer('legs'); for (const i of [0, 1]) { const T = legTube(F, i, 8, .2, .46); limbFill(S, T, st, { metal: 1 }); S.stroke(polyline(offset(part(T.c, .1, .9), 3)), st.hi, .9, { op: .5 }); lame(S, T, .2, st); lame(S, T, .82, st); hinges(S, T, st, M.edge ? fit : st, [.4]); if (M.edge) S.stroke(polyline([T.A[T.A.length - 1], T.B[T.B.length - 1]]), fit.b, 3); if (M.rivet) S.stroke(polyline([along(T.A, .4), along(T.B, .4)]), cloth('dark').b, 4.4); if (M.scroll) scrolls(S, part(offset(T.c, F.legR[0] * .5), .2, .85), 6, fit.b, .8); } },
   greaves(C, o) {
     const { S, F } = C, M = mats(o), { st, fit } = M; S.layer('legs');
-    for (const i of [0, 1]) { const T2 = legTube(F, i, 8, .56, .97); limbFill(S, T2, st, { metal: 1 }); S.fill(ink(part(T2.c, .02, .98), S.lw(1.1)), st.k, { op: .55 }); S.stroke(polyline(offset(part(T2.c, .05, .95), 3)), st.hi, .9, { op: .6 });
+    for (const i of [0, 1]) { const T2 = legTube(F, i, 8, .56, .97); limbFill(S, T2, st, { metal: 1 }); S.fill(ink(part(T2.c, .02, .98), S.lw(1.1)), st.k, { op: .55 }); S.stroke(polyline(offset(part(T2.c, .05, .95), 3)), st.hi, .9, { op: .6 }); lame(S, T2, .9, st); hinges(S, T2, st, M.edge ? fit : st);
       if (M.edge) for (const t of [.02, .98]) S.stroke(polyline([along(T2.A, t), along(T2.B, t)]), fit.b, 3.2); if (M.scroll) scrolls(S, part(offset(T2.c, F.legR[2] * .55), .1, .9), 6, fit.b, .85);
       if (M.rivet) for (const t of [.2, .75]) S.stroke(polyline([along(T2.A, t), along(T2.B, t)]), cloth('dark').b, 4.5); }
   },
@@ -445,7 +450,7 @@ export const ITEMS = {
   vambraces(C, o) {
     const { S, F } = C, M = mats(o), { st, fit } = M;
     for (const i of C.armOrder) { const A = F.arm[i]; if (A.back) continue; S.layer('arms');
-      const lo = tube([mix(A.el, A.wr, .12), mix(A.el, A.wr, .45), mix(A.el, A.wr, .98)], [F.armR[2] * 1.22 + 3, F.armR[2] * 1.2 + 3, F.armR[3] * 1.35 + 3]); limbFill(S, lo, st, { metal: 1 }); S.fill(ink(part(lo.c, .05, .95), S.lw(1)), st.k, { op: .5 });
+      const lo = tube([mix(A.el, A.wr, .12), mix(A.el, A.wr, .45), mix(A.el, A.wr, .98)], [F.armR[2] * 1.22 + 3, F.armR[2] * 1.2 + 3, F.armR[3] * 1.35 + 3]); limbFill(S, lo, st, { metal: 1 }); S.fill(ink(part(lo.c, .05, .95), S.lw(1)), st.k, { op: .5 }); lame(S, lo, .86, st); hinges(S, lo, st, M.edge ? fit : st, [.3, .62]);
       if (M.edge) for (const t of [0, .97]) S.stroke(polyline([along(lo.A, t), along(lo.B, t)]), fit.b, 3.2); if (M.scroll) scrolls(S, part(offset(lo.c, F.armR[2] * .5), .15, .85), 5, fit.b, .85);
       if (M.rivet) for (const t of [.25, .7]) S.stroke(polyline([along(lo.A, t), along(lo.B, t)]), cloth('dark').b, 4); }
   },
@@ -460,7 +465,7 @@ export const ITEMS = {
   },
   gloves(C, o) { C.st.handMat = cloth(o.leather || 'dark'); C.st.handMetal = false; },
   pauldrons(C, o) { const { S, F } = C; S.layer('shoulder'); for (const i of [0, 1]) pauldronArt(S, add(F.sh[i], [-SG[i] * F.armR[0] * .1, F.armR[0] * .1]), F.armR[0] * (o.z ?? 1.75), SG[i], o.q ?? 1, o); },
-  gorget(C, o) { const { S, F } = C, M = mats(o), { st, fit } = M; S.layer('collar'); const d = poly([add(F.nb[0], [-F.neckHalf * .9, F.Hh * .06]), add(F.nb[0], [F.neckHalf * .02, -F.Hh * .15]), [F.cxS, F.pit[1] - F.Hh * .14], add(F.nb[1], [-F.neckHalf * .02, -F.Hh * .15]), add(F.nb[1], [F.neckHalf * .9, F.Hh * .06]), [F.cxS + F.neckHalf, F.pit[1] + F.Hh * .14], [F.cxS, F.pit[1] + F.Hh * .2], [F.cxS - F.neckHalf, F.pit[1] + F.Hh * .14]], .8); S.both(d, st.b, st.k, 1.1); S.within(d, () => { steel(S, d, st, F.nb[0], F.nb[1]); if (M.edge) { S.stroke(d, fit.k, 6.5); S.stroke(d, fit.b, 5); } }); S.stroke(d, st.k, 1.1); if (M.rivet) rivets(S, [[F.cxS - F.neckHalf * .8, F.pit[1] + F.Hh * .08], [F.cxS + F.neckHalf * .8, F.pit[1] + F.Hh * .08]], 5, 2, st); },
+  gorget(C, o) { const { S, F } = C, M = mats(o), { st, fit } = M; S.layer('collar'); const d = poly([add(F.nb[0], [-F.neckHalf * .9, F.Hh * .06]), add(F.nb[0], [F.neckHalf * .02, -F.Hh * .15]), [F.cxS, F.pit[1] - F.Hh * .14], add(F.nb[1], [-F.neckHalf * .02, -F.Hh * .15]), add(F.nb[1], [F.neckHalf * .9, F.Hh * .06]), [F.cxS + F.neckHalf, F.pit[1] + F.Hh * .14], [F.cxS, F.pit[1] + F.Hh * .2], [F.cxS - F.neckHalf, F.pit[1] + F.Hh * .14]], .8); S.both(d, st.b, st.k, 1.1); S.within(d, () => { steel(S, d, st, F.nb[0], F.nb[1]); if (M.edge) { S.stroke(d, fit.k, 6.5); S.stroke(d, fit.b, 5); } S.stroke(spl([add(F.nb[0], [-F.neckHalf * .7, F.Hh * .0]), [F.cxS, F.pit[1] + F.Hh * .04], add(F.nb[1], [F.neckHalf * .7, F.Hh * .0])]), st.k, 1, { op: .75 }); }); S.stroke(d, st.k, 1.1); if (M.rivet) rivets(S, [[F.cxS - F.neckHalf * .8, F.pit[1] + F.Hh * .08], [F.cxS + F.neckHalf * .8, F.pit[1] + F.Hh * .08]], 5, 2, st); },
   besagews(C, o) { // the round plates that guard the arm pits
     const { S, F } = C, M = mats(o), { st, fit } = M; S.layer('shoulder');
     for (const i of [0, 1]) { const c = add(F.ax[i], [-SG[i] * F.armR[0] * .1, -F.B * .012]), R = F.armR[0] * .62, d = ell(c, R, R); S.both(d, st.b, st.k, 1.1); S.within(d, () => { steel(S, d, st, add(c, [-R, -R * .3]), add(c, [R, R * .3])); if (M.edge) { S.stroke(d, fit.k, 5); S.stroke(d, fit.b, 3.4); } }); S.stroke(d, st.k, 1.1); S.both(ell(c, R * .2, R * .2), M.edge ? fit.b : st.l, st.k, .8); if (M.scroll) S.stroke(ell(c, R * .58, R * .58), fit.b, .9, { dash: '2 2.4', op: .9 }); }
