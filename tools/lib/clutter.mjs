@@ -11,7 +11,7 @@ export const PERSONAS = {
 // the pages: [name, tab, extra js]
 export const PAGES = [
   ['life', 'life', ''], ['story', 'story', ''], ['decisions', 'goals', ''],
-  ['you', 'you', ''], ['path', 'path', ''], ['holdings', 'holdings', ''], ['arms', 'war', ''],
+  ['you', 'you', ''], ['profile', 'profile', ''], ['path', 'path', ''], ['holdings', 'holdings', ''], ['arms', 'war', ''],
   ['people', 'people', ''], ['dynasty', 'legacy', ''],
   ['realm', 'realm', ''], ['world', 'world', "UI.worldView='map';"], ['book', 'book', ''],
 ];
