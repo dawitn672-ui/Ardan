@@ -1692,6 +1692,11 @@ A.promoBoard = function (pc) {
       holder && holder.alive && holder.id !== pc.id
         ? `Marshal ${A.fullName(holder, false)} holds the seat (command ${A.skill(holder, "command")})`
         : "the seat is open";
+    // [A2 posts] D-017: the seat is filled only when a war needs a Marshal (two armies in the field, or two enemies)
+    if (A.POSTS && !A.POSTS.marshalNeeded(r, holder && holder.id === pc.id)) {
+      ok = false;
+      txt = "the realm needs no Marshal now: in peace, and in a war one general can hold, a General leads";
+    }
   }
   const i = b.findIndex(x => x.k === "slot"),
     row = {
@@ -1789,6 +1794,11 @@ const promoBoardNow = function (pc) {
         holder && holder.alive && holder.id !== pc.id
           ? `Marshal ${A.fullName(holder, false)} holds the seat (command ${A.skill(holder, "command")})`
           : "The seat is open";
+      // [A2 posts] D-017: no Marshal unless a war needs one
+      if (A.POSTS && r && !A.POSTS.marshalNeeded(r, holder && holder.id === pc.id)) {
+        open = false;
+        txt = "The realm needs no Marshal now";
+      }
     }
     out.push({
       k: "slot",
@@ -1866,7 +1876,12 @@ const promoCheckNow = function (pc) {
       m.rank === 9 && !m.merc)
     ) {
       const r = A.realm(m.realm);
-      if (r) {
+      // [A2 posts] the board's Marshal takes the seat through the registry (before, he had the grade without the
+      // seat's business, the old Marshal lost it without a word, and a second seat could follow)
+      if (r && A.POSTS) {
+        m.preMarshal = 8;
+        A.POSTS.appoint(A.POSTS.seatKey(r.id, "marshal"), pc.id, { why: "board", by: r.ruler, force: true });
+      } else if (r) {
         r.council = r.council || {};
         r.council.marshal = pc.id;
       }

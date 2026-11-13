@@ -174,12 +174,26 @@ A.nobleAction = function (key) {
         return {
           ok: false,
         };
-      const seat = A.pick(Object.keys(A.COUNCIL)),
+      // [A2 posts] the court names you only to a seat you may hold: no Marshal in peace, and the Marshal's seat only
+      // for a General (D-017; the owner's report: a Captain named Marshal kept his company and got no army). The seat
+      // is given through the registry, so the seat you held before is given up and the man you replace is moved.
+      const open = A.POSTS
+        ? Object.keys(A.COUNCIL).filter(s => !A.POSTS.can(A.POSTS.seatKey(r.id, s), pc.id, { by: "court" }))
+        : Object.keys(A.COUNCIL);
+      if (!open.length)
+        return {
+          ok: false,
+          msg: "The crown has no seat on the council to give you now.",
+        };
+      const seat = A.pick(open),
         sk = A.skill(pc, A.COUNCIL[seat].skill);
       return A.chance(A.clamp((sk + A.opinion(pc, ru) + pc.fame / 2 - 60) / 100, 0.03, 0.7))
         ? ((r.council = r.council || {}),
-          (r.council[seat] = pc.id),
+          A.POSTS
+            ? A.POSTS.appoint(A.POSTS.seatKey(r.id, seat), pc.id, { why: "court", by: ru.id, force: true })
+            : (r.council[seat] = pc.id),
           (pc.office = seat),
+          seat === "marshal" && A.wsAttachPC && A.wsAttachPC(),
           A.log(`${A.rulerStyle(ru, r)} names you ${A.COUNCIL[seat].name}!`, "big"),
           A.fame(pc, 6),
           {

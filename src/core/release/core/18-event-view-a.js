@@ -1059,6 +1059,12 @@ A.mainRole = function (p) {
     return A.rulerStyle(p, r).replace(" " + A.fullName(p, false), "") + " of " + (r ? r.short : "");
   }
   if (p.office && A.COUNCIL[p.office]) return A.COUNCIL[p.office].name + " of " + A.realmShort(p.realm);
+  // [A2 posts] someone else's title line is the post he holds in the registry (a seat, a command, an office), not a
+  // style written once and never cleared
+  if (A.POSTS && A.S && p.id !== A.S.pc) {
+    const t = A.POSTS.title(p);
+    if (t) return t;
+  }
   if (p.order && A.orderRankName) return A.orderRankName(p);
   if (p.mil) {
     const d = p.mil.div && A.divById ? A.divById(p.mil.div) : null,

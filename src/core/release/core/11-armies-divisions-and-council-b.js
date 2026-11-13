@@ -126,12 +126,22 @@ A.rulerAction = function (key, arg) {
     case "appoint": {
       const { seat, pid } = arg,
         p = A.P(pid);
+      // [A2 posts] the ruler appoints through the registry: no child, no foreigner, no Marshal in peace (D-017); the
+      // appointee gives up his other seat or office, the one replaced is moved with a grudge
+      const no = A.POSTS && p && A.COUNCIL[seat] ? A.POSTS.can(A.POSTS.seatKey(r.id, seat), pid, { by: pc.id }) : "";
+      if (no)
+        return {
+          ok: false,
+          msg: `You cannot name ${A.fullName(p, false)} ${A.COUNCIL[seat].name}: ${no}.`,
+        };
       return !p || !p.alive || !A.COUNCIL[seat]
         ? {
             ok: false,
           }
         : ((r.council = r.council || {}),
-          (r.council[seat] = pid),
+          A.POSTS
+            ? A.POSTS.appoint(A.POSTS.seatKey(r.id, seat), pid, { why: "ruler", by: pc.id, force: true })
+            : (r.council[seat] = pid),
           pc.rel[pid] ? A.addOp(pc, p, 10) : A.link(pc, p, "councillor", 30, "lord"),
           A.log(`You name ${A.fullName(p)} your ${A.COUNCIL[seat].name}.`),
           {

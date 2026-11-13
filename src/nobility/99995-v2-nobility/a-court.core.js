@@ -444,6 +444,11 @@
         if (pc && (t.rank === 'duke' || t.rank === 'marquis') && t.k.startsWith((pc.realm || '') + ':') && A.news) A.news(`${A.fullName(p, false)}, ${N.title(t.rank, p.sex)} of ${A.provName(t.seat)}, is dead (${cause}).${nx ? ` ${A.fullName(nx, false)} holds the ${t.rank === 'duke' ? 'duchy' : 'march'} now.` : ' The title stands empty.'}`, 'crown');
       }
     }
+    // A2 (R6): a title left with no heir by these deaths stands vacant from the death, not from the next month's pass
+    if (out.length) for (const c of Object.values(S.court.realms)) for (const t of c.titles) {
+      if (t.crown || t.heldWith || t.rank === 'king' || t.vacant) continue;
+      if (!N.holderOf(t)) { t.vacant = S.year; t.vacN = 0; }
+    }
     return out;
   };
   (A.onYear = A.onYear || []).push(function () { try { N.yearOfDeaths(); } catch (e) { console.error('v2-nobility deaths', e); } });

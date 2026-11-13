@@ -393,6 +393,8 @@ RI.fillCouncil = function (r) {
   const fresh = r.riRulerSeen != null && r.riRulerSeen !== r.ruler;
   r.riRulerSeen = r.ruler;
   for (const seat of SEATS()) {
+    // the Marshal's seat is the registry's (999990-posts, D-017): empty in peace, filled for a war that needs one
+    if (seat === 'marshal' && A.POSTS) continue;
     const cur = A.P(r.council[seat]);
     if (cur && cur.id === A.S.pc) continue;      // the player's seat is the release's business
     const vacant = !live(cur) || cur.ruler || cur.realm !== r.id;
@@ -409,8 +411,10 @@ RI.fillCouncil = function (r) {
     const sk = A.COUNCIL[seat].skill;
     p.skills = p.skills || {};
     p.skills[sk] = Math.max(p.skills[sk] || 0, A.ri(25, 55));   // nobody is made Marshal without knowing the trade
-    if (!p.occ || /^(a lord of the realm|a general)$/.test(p.occ)) p.occ = `${A.COUNCIL[seat].name} of ${r.short}`;
-    r.council[seat] = p.id;
+    if (!p.occ || /^(a lord of the realm|a general)$/.test(p.occ) || /^once /.test(p.occ)) p.occ = `${A.COUNCIL[seat].name} of ${r.short}`;
+    // through the registry (A2): the one appointed gives up a shire office or a command, the one replaced loses his style
+    if (A.POSTS) A.POSTS.appoint(A.POSTS.seatKey(r.id, seat), p.id, { why: 'crown', by: r.ruler, force: true });
+    else r.council[seat] = p.id;
     named.push([seat, p]);
     // the first filling of a council is not news; a seat changing hands is
     if (r.riSeated) logCourt(r, { k: 'seat', who: p.id, seat, out: cur && cur.id !== p.id ? cur.id : null, yes: true, why: [[vacant ? (cur && !cur.alive ? 'The last holder died' : 'The seat stood empty') : 'A new ruler names favourites', 1]] });
@@ -439,7 +443,7 @@ RI.deal = function (r) {
     return 'refuse';
   }
   const Y = years(r), cost = Math.round(clamp((f.power || .3) * .3, .05, .2) * Math.max(1, r.income));
-  const seatFor = SEATS().find(s => { const c = A.P((r.council || {})[s]); return !live(c) || (c.id !== A.S.pc && !(houseOf(c) && f.members.includes(houseOf(c).id))); });
+  const seatFor = SEATS().filter(s => s !== 'marshal' || !A.POSTS).find(s => { const c = A.P((r.council || {})[s]); return !live(c) || (c.id !== A.S.pc && !(houseOf(c) && f.members.includes(houseOf(c).id))); });
   const inCouncil = Object.values(r.council || {}).includes(head.id);
   // greedy crowns prefer a seat to gold; a crown short of gold has no choice
   const usePension = Y > .8 && r.treasury > cost * 1.5 && !(P.greed > .3 && seatFor && !inCouncil);
@@ -452,9 +456,10 @@ RI.deal = function (r) {
     aiLog('court', r, `pays a pension of ${A.fmt ? A.fmt(cost) : cost} to ${lead.name} to quiet the ${F.name || 'faction'}.`, why);
     return 'pension';
   }
-  if (seatFor && !inCouncil) {
+  if (seatFor && !inCouncil && !(A.POSTS && A.POSTS.can(A.POSTS.seatKey(r.id, seatFor), head.id))) {
     const out = A.P(r.council[seatFor]);
-    r.council[seatFor] = head.id;
+    if (A.POSTS) A.POSTS.appoint(A.POSTS.seatKey(r.id, seatFor), head.id, { why: 'deal', by: r.ruler, force: true });
+    else r.council[seatFor] = head.id;
     const sk = A.COUNCIL[seatFor].skill; head.skills = head.skills || {}; head.skills[sk] = Math.max(head.skills[sk] || 0, A.ri(20, 45));
     f.discontent = clamp((f.discontent || 0) - 25, 0, 100);
     lead.op = clamp((lead.op || 40) + 15, 0, 100);

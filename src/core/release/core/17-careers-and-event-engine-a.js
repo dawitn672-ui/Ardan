@@ -581,6 +581,8 @@ A.seatOffers = function (pc) {
     r.council = r.council || {};
     for (const seat of A.shuffle(Object.keys(A.COUNCIL))) {
       if (!A.seatEligible(pc, seat)) continue;
+      // [A2 posts] the registry's rules: no Marshal in peace (D-017), no seat the player may not hold
+      if (A.POSTS && A.POSTS.can(A.POSTS.seatKey(r.id, seat), pc.id, { by: "offer" })) continue;
       const cur = A.P(r.council[seat]);
       if (!cur || !cur.alive || A.skill(cur, A.COUNCIL[seat].skill) + 8 < A.skill(pc, A.COUNCIL[seat].skill)) {
         A.queue({
@@ -613,11 +615,22 @@ Object.assign(A.CHOICE_FN, {
       r = A.realm(pc.realm);
     if (!r) return;
     const cur = A.P(r.council && r.council[seat]);
+    // [A2 posts] the seat is taken through the registry: the seat he held before is given up (two seats at once was
+    // possible), the man dismissed is moved with a grudge; the Marshal keeps his commission and takes the main army
+    if (A.POSTS) {
+      const no = A.POSTS.can(A.POSTS.seatKey(r.id, seat), pc.id, { by: "offer" });
+      if (no) {
+        A.log(`The seat of ${A.COUNCIL[seat].name} is no longer yours to take: ${no}.`, "warn");
+        return;
+      }
+    }
     A.leaveRolesFor(pc, seat === "marshal" ? "army-marshal" : "council");
     r.council = r.council || {};
-    r.council[seat] = pc.id;
+    if (A.POSTS) A.POSTS.appoint(A.POSTS.seatKey(r.id, seat), pc.id, { why: "offer", by: r.ruler, force: true });
+    else r.council[seat] = pc.id;
     pc.office = seat;
     pc.officeSince = A.S.year;
+    if (seat === "marshal" && A.wsAttachPC) A.wsAttachPC();
     if (cur && cur.alive && cur.id !== pc.id) {
       if (pc.rel[cur.id]) A.addOp(pc, cur, -30);
       else A.link(pc, cur, "rival", -30, "rival");
@@ -681,7 +694,9 @@ A.councilMonth = function (pc) {
   const ru = A.P(r.ruler);
   if (ru && A.opinion(ru, pc) < -40 && A.chance(0.15)) {
     A.log(`${A.rulerStyle ? A.rulerStyle(ru, r) : "The ruler"} dismisses you from the council.`, "bad");
-    delete r.council[pc.office];
+    // [A2 posts] dismissed through the registry
+    if (A.POSTS) A.POSTS.vacate(A.POSTS.seatKey(r.id, pc.office), "dismissed");
+    else delete r.council[pc.office];
     pc.office = null;
     A.fame(pc, -3);
   }

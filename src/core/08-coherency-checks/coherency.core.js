@@ -157,7 +157,13 @@ CO.add('no child in an adult office', () => {
 // by whoever appointed them and never cleared; p.title, frozen lore). "Marshal of the Crown knights", "of the host" or
 // "of the Wolves" is another post (an order's, an army's), and "cousin of the Lord Marshal" names a kinsman, not a style.
 const SEATW = { marshal: 'Marshal', chancellor: 'Chancellor', treasurer: 'Treasurer', spymaster: 'Spymaster', chaplain: 'Chaplain' };
-const styledAs = (s, w) => String(s).split(/;\s*/).some(part => { const m = new RegExp(`(^|.*\\b(of the|to the)\\s+(?:\\w+\\s+)?)?\\b${w}\\b(\\s+of the\\b)?`).exec(part); return !!m && !m[2] && !m[3]; });
+// A past style ("once Chancellor of Varenna", written by the post registry when a seat changes hands) and a kinsman's
+// ("sister of Chancellor Edmund Hale") name no post the person holds (A2, D-030).
+const styledAs = (s, w) => String(s).split(/;\s*/).some(part => {
+  if (/^\s*once\b/i.test(part) || new RegExp(`\\b(of|to)\\s+${w}\\b`).test(part)) return false;
+  const m = new RegExp(`(^|.*\\b(of the|to the)\\s+(?:\\w+\\s+)?)?\\b${w}\\b(\\s+of the\\b)?`).exec(part); return !!m && !m[2] && !m[3];
+});
+CO.styledAs = styledAs;
 CO.add('one office, one styled holder', () => {
   const bad = [], by = {};
   for (const id in A.S.people) {

@@ -647,6 +647,8 @@ A.kill = function (p, cause, silent) {
   p.alive = false;
   p.died = A.S.year;
   p.cause = cause;
+  // [A2 posts] death vacates every post at once (before, dead councillors sat until the yearly sweep)
+  if (A.POSTS) A.POSTS.leaveAll(p.id, "died");
   const sp = A.P(p.spouse);
   if (
     (sp &&

@@ -65,6 +65,9 @@ A.pcDivAttach = function (pc) {
 A.wsAttachPC = function () {
   const pc = A.pc();
   if (!pc || !pc.alive || !pc.mil || pc.mil.merc) return;
+  // [A2 posts] the division the player commanded before this call (a Commander made General hands it over)
+  const wasDiv = pc.mil.rank >= 7 && pc.mil.div && A.divById(pc.mil.div),
+    hadDiv = wasDiv && wasDiv.cmd === pc.id ? wasDiv : null;
   A.pcDivAttach(pc);
   const rid = pc.mil.realm,
     mine = A.armiesOf(rid),
@@ -75,6 +78,44 @@ A.wsAttachPC = function () {
   }
   if (pc.mil.rank >= 7) {
     let a = mine.find(x => x.gen === pc.id);
+    // [A2 posts] a promotion hands over a real command. A Marshal leads the main host (most divisions) in person; a
+    // General takes an army without a living general, else the one whose general is the weakest commander (before:
+    // always the second-largest). The general replaced takes the division the new General left, else waits for a
+    // command; the log names him. Before, he was overwritten without a word.
+    const main = mine.slice().sort((x, y) => y.divs.length - x.divs.length)[0];
+    const want = A.POSTS
+      ? pc.mil.rank >= 9
+        ? main
+        : a ||
+          mine.find(x => !x.gen || !A.P(x.gen) || !A.P(x.gen).alive) ||
+          mine
+            .slice()
+            .sort(
+              (x, y) =>
+                A.skill(A.P(x.gen), "command") - A.skill(A.P(y.gen), "command") ||
+                y.divs.length - x.divs.length,
+            )[0]
+      : null;
+    if (want && want !== a) {
+      const out = A.P(want.gen),
+        res = A.POSTS.appoint(A.POSTS.armyKey(want.id), pc.id, { why: "board", by: A.realm(rid).ruler, force: true });
+      a = want;
+      let moved = "";
+      if (out && out.alive && out.id !== pc.id) {
+        if (!A.POSTS.held(out.id).length && hadDiv && !hadDiv.cmd && !A.POSTS.can(A.POSTS.divKey(hadDiv.id), out.id))
+          A.POSTS.appoint(A.POSTS.divKey(hadDiv.id), out.id, { why: "swap", force: true });
+        const now = A.POSTS.held(out.id).find(k => k.startsWith("army:") || k.startsWith("div:")),
+          unit = now && (now.startsWith("army:") ? A.army(now.slice(5)) : A.divById(now.slice(4)));
+        moved = unit
+          ? ` ${A.fullName(out, false)} hands it over and takes ${unit === hadDiv ? "your old division, " : ""}the ${String(unit.name).replace(/^the /i, "")}.`
+          : ` ${A.fullName(out, false)} hands it over and waits for another command.`;
+      }
+      A.log(
+        `You are given command of the ${a.name}: ${a.divs.length} divisions, ${A.fmt(A.armyMen(a))} men.${moved}`,
+        "war",
+      );
+      void res;
+    }
     if (
       (a ||
         ((a =
