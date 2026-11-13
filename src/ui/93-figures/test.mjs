@@ -272,7 +272,10 @@ export default {
     const scan = () => pg.evaluate(async () => (await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } })).violations.map(v => `${v.id}(${v.nodes.map(n => n.target.join(' ')).slice(0, 2).join(';')})`));
     const found = []; let shown = 0, named = 0;
     const count = () => pg.evaluate(() => { const f = [...document.querySelectorAll('svg.portrait.fig')]; return [f.length, f.filter(s => s.getAttribute('role') === 'img' && (s.getAttribute('aria-label') || '').trim()).length]; });
-    const screen = async (name, fn) => { await pg.evaluate(fn); await pg.evaluate(() => UI.FIG.idle()); const [n, k] = await count(); shown += n; named += k; found.push(...(await scan()).map(v => name + ':' + v)); };
+    const screen = async (name, fn) => { await pg.evaluate(fn); await pg.evaluate(() => UI.FIG.idle());
+      // let fades finish first: under load axe could read a modal's text mid fade-in and call its contrast low
+      await pg.evaluate(() => Promise.all(document.getAnimations().map(x => x.finished.catch(() => null))));
+      const [n, k] = await count(); shown += n; named += k; found.push(...(await scan()).map(v => name + ':' + v)); };
     await screen('life', () => { A.newGame({ seed: 939, race: 'orc', realm: 'POL-01', status: 'peasant', sex: 'F', startAge: 22 }); UI.screen = 'game'; UI.set.hints = false; A.S.queue = []; UI.tab = 'life'; UI.ov = null; UI.render(); });
     await screen('profile', () => { UI.ov = { type: 'profile' }; UI.render(); });
     await screen('person', () => { const p = Object.values(A.S.people).find(x => x.alive && x.id !== A.S.pc); UI.ov = { type: 'person', id: p.id }; UI.render(); });

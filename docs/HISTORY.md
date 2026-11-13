@@ -397,3 +397,22 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   (15-specialisms), the plan's session button title (23-ui-e), market trips (66-markets, 18-event-view-b), "Not enough
   initiative" in 56-court and 9996 f-fief, the step summary (84-top-bar), the clock's glossary and aria (59-descriptions).
 - **Undo:** `git revert -m 1 66291b1`.
+
+### H-021 · 2026-11-13 13:02 ET · C8b: the gate 2 figure library draws every portrait (owner order 33, D-035, D-036)
+- **Commits:** `56e2307`, `2f24e3f` (Fable 5.2), `6bd6d37`, `7f6a04e`, `89d03d1` (Opus 5.5, after Fable's weekly limit),
+  branch `c8b-figures`, merged as `9a2cbeb` (DECISIONS both sides kept; index.html rebuilt).
+- **What:** every portrait is drawn by the figure library (`src/ui/engine/figure`, `A.V2.figure`; game side
+  `src/ui/93-figures`): a square under 120 px, a 2:3 card crop from 120 px, the whole figure on request; pictures are
+  baked off the press (one PNG per look, up to 600 kept) with a flat stand-in until ready. Everyone gets a 23-character
+  face code at birth from their parents' (old saves get theirs on load, deterministically). The face and build maker is
+  on the creation screen (52 sliders in words, 49 shapes, 29 hair styles, 11 beards, ten frames, the face code). Gear is
+  drawn by item with make and rarity (`GEAR_ART`, `registerGear` for E2). Large faces gained eye, brow, nose and lip
+  detail and a mood; hair sits under headwear; the dead are drawn grey with eyes shut. `93-anime-portraits` and
+  `63-miniature-portraits` retired to `archive/` (last built `f574229`).
+- **Timings:** compose 2.7-3.7 ms; paint 4.9 ms (46 px), 7.4 ms (88 px); a 176 px picture about 41 ms once, off the press.
+- **Tests:** 10 `fg*`, 41 portrait-related, core suites 9/9, `tests/v2` 71/71; identity probe: same dice, journal and
+  events (state differs only by the face codes). After the merge `fgAxe` failed once under load (a modal's text read
+  mid fade-in): it now waits for animations to finish. This push runs the full CI on B5 and C8b.
+- **Open:** a duel guard pose; pre-baking the player's large picture (half a second of stand-in on first open); a
+  tighter 2:3 crop; fur and arms still crude; war paint, jewellery, bows, mounts, infants; gate 1's engine to archive.
+- **Undo:** `git revert -m 1 9a2cbeb` (the archive notes say how to restore the old renderers).

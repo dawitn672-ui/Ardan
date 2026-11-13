@@ -33,7 +33,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [ ] **A2** · One holder per post; Marshal vacant until needed, General the highest everyday rank (D-017)
 - [x] **B5 part 1** · Declutter the shell: story drawer, folds, six activities, info buttons out of the flow; first view 479 → 171 words · `66291b1` · 2026-11-13 12:13 ET (CI with A2)
 - [ ] **B5 part 2** · UI.scope, the six-life draw test, one goal stack, tablet shell
-- [ ] **C8b** · Faces and bodies: the gate 2 library into the game, refined (approved, D-035)
+- [x] **C8b** · The gate 2 figure library draws every portrait; face and build maker at creation; face codes · `9a2cbeb` · 2026-11-13 13:02 ET (CI pending)
 - [ ] **P** · Profile tab: a game-like page of your character, card and figure, titles, stats, skills, styles, renown, gear (owner order 33; after B5)
 - [ ] **X2** · Named stages
 - [ ] **D10** · War screens only when deployed
