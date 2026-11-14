@@ -12,7 +12,7 @@ let html = '<!doctype html><meta charset="utf-8"><style>body{margin:0;background
 for (const id of ids) {
   const mod = await import(path.join(here, id + '.mjs')), def = mod.default;
   for (const v of views) {
-    const plain = v === 'plain', d = plain ? def.plain : def, full = v === 'full' || plain, box = full ? d.box : def.details[+v].box;
+    const plain = v === 'plain', d = plain ? def.plain : def, full = v === 'full' || plain, box = v === 'full' ? (d.hero || d.box) : plain ? d.box : def.details[+v].box;
     const w = full ? +(arg('w') || 300) : +(arg('dw') || 420);
     const t0 = performance.now(), R = render(d, box, { width: plain ? +(arg("pw") || 520) : w, tag: v, flat: plain || !!arg("flat"), deg: v === "full" ? undefined : (def.upright ?? -90) }), t1 = performance.now();
     console.log(id, v, 'shapes', R.shapes, 'svg', (R.svg.length / 1024).toFixed(0) + ' KB', 'compose', (t1 - t0).toFixed(1) + ' ms');

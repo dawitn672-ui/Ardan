@@ -80,5 +80,56 @@ export function watering(F, r, u0, u1, hw, o = {}) {
   for (const ur of (o.rungs || [])) for (let k = -1; k <= 1; k++) { const pts = [], w = hw(ur); for (let t = -1; t <= 1.001; t += .25) pts.push([ur + k * 2.2 + Math.sin(t * 5 + ur) * 1.6, c(ur) + t * w]); rung += spl(F.P(pts)); }
   return { light: light.join(''), dark: dark.join(''), rung };
 }
+// A FRAME BENT ALONG AN ARC (a sabre's blade, a bow's limb): s runs along the curve, t across it. The curve leaves the
+// origin along +u and bends toward −v (o.side −1: toward +v); t > 0 is its outer, convex side. Everything that draws
+// through a frame (lines, inlay, watering, lettering) follows the bend.
+export function arcFrame(F, R, o = {}) {
+  const sd = o.side ?? 1, u0 = o.u0 || 0, v0 = o.v0 || 0;
+  const W = (s, t = 0) => { const a = s / R, sa = Math.sin(a), ca = Math.cos(a); return F.W(u0 + (R + t) * sa, v0 + sd * (-R * (1 - ca) + t * ca)); };
+  return { ...F, W, P: pts => pts.map(p => W(p[0], p[1])), arc: R };
+}
+// A ONE-EDGED BLADE through any frame. o.st: stations [s, back, belly] (the spine lies at t = −back, the edge at
+// t = +belly); o.tip: [s, t]; o.mat. Painted in bands from spine to edge: the narrow flat of the spine, the long
+// face, the bright honed bevel. o.inside({ F, back, belly }): more paint (watering, inlay), clipped to the blade.
+export function backblade(D, F, o) {
+  const { S } = D, m = o.mat, st = o.st, n = o.n || 40, s0 = st[0][0], s1 = st[st.length - 1][0];
+  const at = (s, k) => { for (let i = 0; i < st.length - 1; i++) if (st[i + 1][0] >= s) return lerp(st[i][k], st[i + 1][k], (s - st[i][0]) / ((st[i + 1][0] - st[i][0]) || 1)); return st[st.length - 1][k]; };
+  const back = s => at(s, 1), belly = s => at(s, 2), A = [], B = [];
+  for (let i = 0; i <= n; i++) { const s = lerp(s0, s1, i / n); A.push([s, -back(s)]); B.push([s, belly(s)]); }
+  const tip = o.tip, out = [...A, tip, ...B.slice().reverse()], d = line(F, out, true);
+  D.sil.push(d); S.layer(o.layer || 'main'); S.fill(d, m.b);
+  const strip = (f0, f1) => { const p = [], q = []; for (let i = 0; i <= n; i++) { p.push([A[i][0], lerp(A[i][1], B[i][1], f0)]); q.push([A[i][0], lerp(A[i][1], B[i][1], f1)]); } return line(F, [...p, tip, ...q.reverse()], true); };
+  S.within(d, () => {
+    const a = F.W(s0, 0), b = F.W(tip[0], tip[1]);
+    for (const [f0, f1, c, op] of (o.strips || [[0, .09, m.hi, .9], [.09, .16, m.s, .7], [.16, .5, m.l, .5], [.5, .78, m.b, 1], [.78, .9, m.s, .55]])) S.fill(strip(f0, f1), c, { op });
+    S.fill(d, S.lin(a, b, [[0, m.k, .5], [.1, m.d, .1], [.34, m.hi, 0], [.42, m.hi, .4], [.5, m.hi, 0], [.72, m.d, .22], [.9, m.hi, .3], [1, m.hi, .1]]));
+    if (o.inside) o.inside({ F, back, belly });
+    // the honed bevel and its line
+    const ev = o.bevel ?? .88; S.fill(strip(ev, 1), m.hi, { op: o.hone ?? .92 }); S.stroke(strip(ev, ev).replace(/Z$/, ''), m.k, .6, { op: .45 });
+    S.stroke(strip(.09, .09).replace(/Z$/, ''), m.k, .6, { op: .4 });
+    if (o.seat !== false) S.fill(line(F, [[s0 - 1, -back(s0) - 2], [s0 + 12, -back(s0) - 2], [s0 + 12, belly(s0) + 2], [s0 - 1, belly(s0) + 2]], true), S.lin(F.W(s0, 0), F.W(s0 + 12, 0), [[0, m.k, .7], [1, m.k, 0]]));
+  });
+  S.stroke(d, m.k, 1.1);
+  return { d, back, belly };
+}
+// a tassel that hangs as the page hangs it, whichever way the piece is turned. p: (u, v) where its cord is tied
+export function tassel(D, p, len, col, o = {}) {
+  const { S, F } = D, r = D.r('tassel' + p[0]), m = stuff2(col), dn = [F.ux[1], F.vx[1]], sd = [dn[1], -dn[0]], g = o.metal || MET.gold;
+  const at = (a, b) => [p[0] + dn[0] * a + sd[0] * b, p[1] + dn[1] * a + sd[1] * b], sw = o.swing ?? 10;
+  S.layer(o.layer || 'main');
+  const cord = spl(F.P([at(0, 0), at(len * .3, sw), at(len * .7, sw * .6), at(len, 0)])); D.sil.push(cord);
+  S.stroke(cord, m.k, 2.6, { units: 1 }); S.stroke(cord, m.b, 1.7, { units: 1 }); S.stroke(cord, m.hi, .5, { units: 1, op: .7, dash: '1.4 2' });
+  const L = o.skirt || 46, hw = o.w || 7, sk = [at(len + 6, -hw * .55), at(len + L * .5, -hw), at(len + L, -hw * .8), at(len + L + 3, 0), at(len + L, hw * .8), at(len + L * .5, hw), at(len + 6, hw * .55)], sd2 = spl(F.P(sk), true, [.5, 1, .6, .3, .6, 1, .5]);
+  D.sil.push(sd2); S.fill(sd2, m.b);
+  S.within(sd2, () => {
+    S.fill(sd2, S.lin(F.W(...at(len, -hw)), F.W(...at(len, hw)), [[0, m.l, .7], [.4, m.b, 0], [1, m.d, .8]]));
+    let th = ''; for (let i = 0; i < 13; i++) { const x = lerp(-hw, hw, (i + .5) / 13) * .95; th += spl(F.P([at(len + 5, x * .5), at(len + L * .5, x + (r() - .5) * 1.2), at(len + L + 2, x * .8 + (r() - .5) * 2)])); }
+    S.stroke(th, m.k, .5, { units: 1, op: .55 }); S.stroke(th, m.hi, .35, { units: 1, op: .4, tf: 'translate(-.5 -.3)' });
+  });
+  S.stroke(sd2, m.k, .9);
+  const hd = spl(F.P([at(len - 3, -hw * .5), at(len + 3, -hw * .7), at(len + 8, -hw * .5), at(len + 8, hw * .5), at(len + 3, hw * .7), at(len - 3, hw * .5)]), true, .7);
+  S.fill(hd, g.b); S.fill(hd, S.lin(F.W(...at(len, -hw)), F.W(...at(len, hw)), [[0, g.hi], [.4, g.b], [1, g.d]])); S.stroke(hd, g.k, .8);
+}
+function stuff2(hex) { return { b: hex, s: mixc(hex, '#12081a', .35), d: mixc(hex, '#0a0410', .6), l: mixc(hex, '#fff0d8', .3), hi: mixc(hex, '#ffffff', .55), k: mixc(hex, '#050208', .8) }; }
 // a binding that crosses itself (straps or cord laid both ways round a grip): the two sets of turns
 export function xwrap(F, T, pitch, slant) { return { a: winding(F, T, pitch, slant), b: winding(F, T, pitch, -slant, { phase: pitch / 2 }) }; }
