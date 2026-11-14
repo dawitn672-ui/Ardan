@@ -654,3 +654,22 @@ but stay minor.
 
 **Order 37 (2026-11-13 19:37 ET, D-044):** no limit on how many talents are picked; a point budget only. Each talent is priced by how much
 it can change a life; lowering one below the default refunds points; prices stay moderate.
+
+## 10 · The talent budget, first scope (owner order 38, 2026-11-13 19:40 ET; numbers to be tuned in G1 against bot lives)
+**Letters, growth and ceiling.** F ×0.5 (a low ceiling) · E ×0.7 · D ×0.85 · **C ×1.0 (average, the default)** · B ×1.15
+· A ×1.35 · S ×1.6 · SSS ×2.0 (and a ceiling past the people's usual limit). Long training creeps past any ceiling, slowly.
+**Cost to raise a talent from C** (cumulative): B 2 · A 5 · S 10 · SSS 20 points. **Refund to lower it from C:** D +1 ·
+E +2 · F +3 (a refund is always smaller than the matching cost, so tanking one thing never pays for a free top talent).
+**Weight by reach** (multiplies both cost and refund): narrow ×1 (one attribute, one weapon family, one craft) ·
+group ×2 (a few attributes together, or a whole calling) · broad ×3 (all of body, all of mind, all of presence).
+**Budget:** 20 points. So: Physique A costs 15; Senses S costs 10; Speed SSS costs the whole 20; a broad SSS (60) cannot
+be bought even by lowering everything else; lowering Intellect to E gives back 6.
+**The picker** (categories, then subcategories; each opens on click, so the list never sprawls):
+- **Body:** Physique (broad) › Might (strength and toughness, group) · Agility (speed and reflexes, group) · single:
+  Strength, Speed, Reflexes, Toughness, Endurance, Senses, Hands.
+- **Mind:** Intellect (broad) › Learning (memory and wits, group) · single: Wits, Memory, Judgement, Cunning.
+- **Spirit and presence:** Presence (broad) › single: Will, Nerve, Bearing, Looks.
+- **Arms** (each a group): Blades, Polearms and spears, Axes and maces, Bows and crossbows, Bare hands, Riding and the
+  lance, Command.
+- **Callings** (each a group): Trade, Court and diplomacy, Crafts, Faith, Healing, Stealth and intrigue, The land.
+Talents left untouched are rolled hidden at birth (mostly C, sometimes higher or lower) and found in play.

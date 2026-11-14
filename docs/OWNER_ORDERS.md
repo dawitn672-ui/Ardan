@@ -69,6 +69,7 @@ order is replaced, strike it through and say by what.
     - **Branches:** the owner asks whether deleting the v2-fix/v2-wf branches is safe and how to let the session do it.
     - **"Show me ten legendary weapon designs from different weapon categories and then pause the system."**
 37. **Talents by budget, no count limit** (D-044): "Remove a limiter on how many talents one can have and simply give them a budget and cost for selecting a talent. Lowering the talent of one area can give back points, and all talents are priced differently based on how great an effect they can have, nothing too insane though." · recorded 2026-11-13 19:37 ET
+38. **A first scope of the talent budget now, full build later:** "Give me a scope of talent budget and prices right now and fully integrate it later on." Scope: `docs/design/growth.md` §10. · recorded 2026-11-13 19:40 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
