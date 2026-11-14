@@ -657,7 +657,7 @@ it can change a life; lowering one below the default refunds points; prices stay
 
 ## 10 · The talent budget, first scope (owner order 38, 2026-11-13 19:40 ET; numbers to be tuned in G1 against bot lives)
 **Letters, growth and ceiling.** F ×0.5 (a low ceiling) · E ×0.7 · D ×0.85 · **C ×1.0 (average, the default)** · B ×1.15
-· A ×1.35 · S ×1.6 · SSS ×2.0 (and a ceiling past the people's usual limit). Long training creeps past any ceiling, slowly.
+· A ×1.35 · **S ×1.8 · SSS ×3.0** (abnormal growth, and a ceiling past the people's usual limit; owner, 2026-11-13 19:43 ET). Long training creeps past any ceiling, slowly.
 **Cost to raise a talent from C** (cumulative): B 2 · A 5 · S 10 · SSS 20 points. **Refund to lower it from C:** D +1 ·
 E +2 · F +3 (a refund is always smaller than the matching cost, so tanking one thing never pays for a free top talent).
 **Weight by reach** (multiplies both cost and refund): narrow ×1 (one attribute, one weapon family, one craft) ·
