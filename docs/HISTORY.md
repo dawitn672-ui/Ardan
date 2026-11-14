@@ -629,7 +629,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   `phoneDesktopSame` waits for the farewell cut-in to leave (`f50316f`). Five slow bot-life tests are with an agent.
 - **Undo:** `git revert -m 1 9f78825`.
 
-### H-037 · 2026-11-14 21:00 ET · CI 108's bot-life tests: two test fixes; three pass on f50316f as they stand
+### H-037 · 2026-11-14 15:54 ET · CI 108's bot-life tests: two test fixes; three pass on f50316f as they stand
 - **Commits:** `20ac136`, `dffa374` (by an Opus 5.5 agent, branch `ci108-botlives`). Tests only; no game code changed.
 - **csWorlds (fixed, test):** the test matched the first 30 letters of a casus belli in the news, but 99999-v2-names
   writes a realm's name for a lore name in every line ("to push the Horde back" is told "to push Gorath back"). On
