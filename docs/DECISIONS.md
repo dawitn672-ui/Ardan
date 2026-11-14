@@ -595,3 +595,17 @@ Ardan's own (the example's names are not used).
 name, maker, age, keeping place, history and art. Every other legendary comes from a different realm or people of Ardan
 with its own visible craft tradition (metals, motifs, shapes, ornament, construction) and its own history and keeper,
 rooted in that realm's lore; no two share a look.
+
+### D-046 · Stats, "Swordsmanship", one art at a time (owner order 48, 2026-11-13 20:52 ET); growth.md §6.5 closed
+1. **17 stats or more, sorted into what can be trained and what cannot.** Trainable (by work, practice, study,
+   hardship): Strength, Speed, Endurance, Reflexes, Toughness, Hands, Wits, Memory, Judgment, Cunning, Will, Nerve,
+   Presence. **Not trained** (born, earned or lost, never drilled): Senses (born; age and wounds dull them), Looks
+   (born; health, dress, age and scars move it), Renown (earned by deeds), Honour (kept or broken by deeds). The sheet
+   shows the two kinds apart, and the training plan offers only the trainable ones.
+2. **"Blades" is renamed "Swordsmanship"** wherever a player reads it (skill, talent, arts, sheet).
+3. **One art at a time.** Besides the basic moves of your weapon, you fight with the one art you hold, using the forms of
+   it you have learned (no loadout to pick). Replacing it is a choice (D-043 item 5). This closes growth.md §6.5's
+   "ready forms" question.
+4. **Arts change in a lifetime** as already ordered: an unused art fades rarely and slowly and comes back easily (order 34);
+   arts are founded, kept secret, stolen and lost (orders 32, 34, 36). This closes §6.5's last question.
+All of growth.md §6.5's decisions are now settled (stats here; the rest by orders 34-36 and 45-47).

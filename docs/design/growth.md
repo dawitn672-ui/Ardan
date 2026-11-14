@@ -685,9 +685,16 @@ outcomes by more than a set margin).
   Strength, Speed, Reflexes, Toughness, Endurance, Senses, Hands.
 - **Mind:** Intellect (broad) › Learning (memory and wits, group) · single: Wits, Memory, Judgement, Cunning.
 - **Spirit and presence:** Presence (broad) › single: Will, Nerve, Bearing, Looks.
-- **Arms** (each a group): Blades, Polearms and spears, Axes and maces, Bows and crossbows, Bare hands, Riding and the
+- **Arms** (each a group): Swordsmanship, Polearms and spears, Axes and maces, Bows and crossbows, Bare hands, Riding and the
   lance, Command.
 - **Callings** (each a group): Trade, Court and diplomacy, Crafts, Faith, Healing, Stealth and intrigue, The land.
 Talents left untouched are rolled hidden at birth (mostly C, sometimes higher or lower) and found in play.
 
 ~~**Master key (owner order 43)**~~ withdrawn by order 44 (2026-11-13 20:00 ET): no master key is built.
+
+
+## 11 · Owner order 48 (2026-11-13 20:52 ET, D-046): §6.5 is settled
+Stats: 17 or more, split into **trainable** (Strength, Speed, Endurance, Reflexes, Toughness, Hands, Wits, Memory,
+Judgment, Cunning, Will, Nerve, Presence) and **not trained** (Senses, Looks, Renown, Honour). "Blades" reads
+**Swordsmanship**. One art at a time besides the weapon's basic moves, with every form of it you have learned (no
+loadout). Arts fade rarely and slowly and come back easily; they are founded, kept, stolen and lost.
