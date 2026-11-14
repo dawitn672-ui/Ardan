@@ -33,6 +33,12 @@ measured place among one's whole grown people. The units below are kept in the e
 
 **Every check through `attempt()`** (`b-odds.core.js`, patch `V2S-ROLL`)
 
+- **C9 (D-040): the chance shown is the chance that happens.** `A.checkOdds` now returns `VS.trueChance`: attempt()'s
+  own chance of success for this person and these stakes, blunders and surges counted, worked out exactly (no draw).
+  `VS.roll` draws `A.chance` of that number first, then plays attempt() from the old chain's chance that gives it
+  (`VS.baseFor`) until it agrees with the draw, to tell why. The popover names the share ("Blunders and surges"). What
+  follows describes the old chain beneath it.
+
 - The old chain still works out the honest chance. That is `A.checkOdds` with 75-fair-checks, 48-event-fight-rules's fighting worth, 30, 67 and 81.
 - `A.eventChoose` then rolls it with `A.V2.odds.attempt()`.
   - The edge is `logit p`. The first draw is the release's own `A.chance(p)`, and a second places attempt()'s logistic noise inside the half it chose. So with no blunder and no surge the result is the same as before, and the noise is distributed exactly as attempt() draws it.

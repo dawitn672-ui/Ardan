@@ -16,6 +16,9 @@ What changed for the player, in plain words, one section per version (newest fir
   stats (a Master about an average body or mind for that skill, never a great one). Below it the skill stalls and works
   as the lower step: a sword master with feeble reflexes fights as an Expert. Past it, build your character as you like.
   The world's masters all clear their baselines.
+- **The odds you see are the odds that happen.** A check's odds now count the days your will carries a lost cause and the
+  days a lapse throws a sure thing, so a long shot shown as a long shot comes up as often as it says.
+- "Blades" is called **Swordsmanship** again (it still covers knives and a blade in each hand).
 - **Longer lives.** A healthy grown person at peace now dies of nothing much far more rarely, gets over a fever or the
   flux more often, and mostly lives into the sixties or seventies; serfs and slaves a little less, the well fed a little
   more. Plague, wounds, beasts and war still kill.

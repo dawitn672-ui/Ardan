@@ -70,11 +70,16 @@ VS.statOfCheck = function (check) {
   return VS.STAT_OF_SKILL[check.s] || null;
 };
 // roll a chance (0..1) for p through attempt(); returns the attempt's result (success, tier, reasons, ...)
-VS.attempt = function (p, chance, opts = {}) {
+VS.attemptRaw = function (p, chance, opts = {}) {
   const m = VS.minds(p), q = clamp(+chance || 0, 0.004, 0.996), D = VS.dice(q);
   const r = OD.attempt(D.rng, Object.assign({ capability: VS.capOf(q * 100), difficulty: 1, stakes: opts.stakes != null ? opts.stakes : 0.5, label: opts.label || '' }, m));
   // a test that replaces A.chance to force an outcome gets exactly that outcome
   if (A.chance !== VS.realChance) Object.assign(r, { success: D.won, blundered: false, surged: false, breakthrough: 0, reasons: [] });
+  return r;
+};
+VS.attempt = (p, chance, opts = {}) => VS.book(p, VS.attemptRaw(p, chance, opts), opts);
+// the attempt's bookkeeping: the counts, a breakthrough, VS.last
+VS.book = function (p, r, opts = {}) {
   VS.N.attempts++;
   if (r.blundered) VS.N.blunders++;
   if (r.surged) VS.N.surges++;
@@ -86,10 +91,101 @@ VS.attempt = function (p, chance, opts = {}) {
   return r;
 };
 VS.rollP = (p, chance, opts) => VS.attempt(p, chance, opts).success;
-// an event check, as A.eventChoose rolls it (patch V2S-ROLL): the chance the old chain gives, played out by attempt()
+
+// ---- honest odds: the chance shown is the chance that happens (C9, D-040) -------------------------------------------
+// attempt() wins a lost check by a surge of will and throws a won one by a blunder, so the old chain's chance q is not
+// how often the check comes up: at the long end a fighter shown 3.6 in 100 won 7.5 (48's flHonest). VS.trueChance(q)
+// is attempt()'s own chance of success for this person (judgment, will, fatigue, mood) and these stakes, worked out
+// exactly over the noise, the blunder's depth and the surge's lift (no draw). A.checkOdds now returns it, so the card,
+// the badge, the bot and the roll all read the chance that happens; VS.roll turns it back into the old chain's q
+// (VS.baseFor, by bisection: trueChance rises with q) and plays attempt() on that, so the roll comes up as often as shown.
+const NQ = 160, ND = 8;
+VS.trueChance = function (q, m, stakes) {
+  q = clamp(q, 0.004, 0.996); m = m || {};
+  const e = logit(q), judgment = m.judgment != null ? m.judgment : 100, will = m.will != null ? m.will : 100;
+  const fatigue = m.fatigue || 0, mood = m.mood || 0;
+  const jz = (judgment - 100) / 15, overconf = e > 1 ? Math.min(1.5, (e - 1) * 0.5) : 0;
+  const pB = clamp(0.025 * Math.exp(-0.7 * jz) * (1 + 1.6 * fatigue) * (1 + overconf), 0.002, 0.35);
+  const wz = (will - 100) / 15, desp = clamp(-e / 3, 0, 1.5);
+  const pS = stakes > 0.3 ? clamp(0.022 * Math.exp(0.7 * wz) * (0.5 + stakes) * (0.6 + desp) * (1 + mood * 0.3), 0, 0.6) : 0;
+  const a = 1.5 + Math.max(0, wz) * 0.5;   // the surge's lift is uniform on [a, a + 2.5]
+  const win = perf => (perf >= 0 ? 1 : pS * clamp((a + 2.5 + perf) / 2.5, 0, 1));
+  let s = 0;
+  for (let i = 0; i < NQ; i++) {
+    const u = (i + 0.5) / NQ, perf = e + Math.log(u / (1 - u));
+    let b = 0; for (let j = 0; j < ND; j++) b += win(perf - (2.5 + 2.5 * (j + 0.5) / ND));
+    s += (1 - pB) * win(perf) + pB * b / ND;
+  }
+  return s / NQ;
+};
+VS.baseFor = function (p, m, stakes) {
+  let lo = 0.004, hi = 0.996;
+  if (VS.trueChance(lo, m, stakes) >= p) return lo;
+  if (VS.trueChance(hi, m, stakes) <= p) return hi;
+  for (let i = 0; i < 30; i++) { const mid = (lo + hi) / 2; if (VS.trueChance(mid, m, stakes) < p) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+};
+// the choice a check belongs to (its stakes read the loss), found once over every event's choices
+VS.chOf = new WeakMap();
+VS.choiceOf = function (check) {
+  if (!check || typeof check !== 'object') return null;
+  if (!VS.chOfBuilt) { VS.chOfBuilt = true; for (const id in A.EV) for (const c of (A.EV[id].choices || [])) if (c && c.check && typeof c.check === 'object') VS.chOf.set(c.check, c); }
+  return VS.chOf.get(check) || null;
+};
+VS.HONEST = true;
+const checkOdds0 = A.checkOdds;
+VS.oldOdds = checkOdds0;
+A.checkOdds = function (pc, check) {
+  const pct = checkOdds0.apply(this, arguments);
+  if (!VS.HONEST || !pc || typeof pct !== 'number' || !isFinite(pct)) return pct;
+  try {
+    const t = VS.trueChance(pct / 100, VS.minds(pc), VS.stakesOf(check, VS.choiceOf(check), pc));
+    return clamp(Math.round(t * 100), 1, 99);
+  } catch (e) { return pct; }
+};
+// the odds popover (59-descriptions) names the honest share in a row of its own, so its rows still add up to the number
+// on the button and no "Other things in play" is left for it (75's and 81's rows are read the same way). Pure.
+VS.HONEST_ROW = 'Blunders and surges: your judgment, will and weariness on the day';
+// checkParts(p, check, ...) and fightParts(p, spec, ctx, check, ...): the check is the 2nd or the 4th argument
+for (const [name, at] of [['checkParts', 1], ['fightParts', 3]]) {
+  if (!UI.TT || typeof UI.TT[name] !== 'function') continue;
+  const parts0 = UI.TT[name];
+  UI.TT[name] = function (p) {
+    const ck = arguments[at];
+    // the rows beneath (59's sums, 75's and 81's rules) are read on the old chain, so they add up to it, and the rest
+    // up to the number shown is this row exactly
+    const h = VS.HONEST;
+    let S; VS.HONEST = false; try { S = parts0.apply(this, arguments); } finally { VS.HONEST = h; }
+    try {
+      if (!S || !Array.isArray(S.parts) || !p || !ck || !VS.HONEST) return S;
+      const on = A.checkOdds(p, ck);
+      VS.HONEST = false; let off; try { off = A.checkOdds(p, ck); } finally { VS.HONEST = true; }
+      const mine = on - off; if (!mine) return S;
+      const i = S.parts.findIndex(x => /^Other things in play$/.test(x[0]));
+      if (i >= 0) {
+        const rest = S.parts[i][1] - mine;
+        S.parts.splice(i, 1, [VS.HONEST_ROW, mine]);
+        if (Math.abs(rest) >= 0.5) S.parts.push(['Other things in play', rest]);
+      }   // no "Other things in play" left: the rows already add up (75 and 81 took the share with this on)
+    } catch (e) { console.error('honest odds tip', e); }
+    return S;
+  };
+}
+// an event check, as A.eventChoose rolls it (patch V2S-ROLL). The first draw is A.chance of the number shown, so the
+// check comes up exactly as often as the card says (75's and 81's "the roll is the number shown" hold). Then the story:
+// attempt() is played from the old chain's q that gives that chance (VS.baseFor) until it agrees with the draw (the
+// game's own dice, at most 40 tries, almost always one or two), so a blunder or a surge is told as often as attempt()
+// makes one among the checks that went that way.
 VS.roll = function (pc, check, ch) {
-  const pct = A.checkOdds(pc, check);
-  const r = VS.attempt(pc, pct / 100, { stakes: VS.stakesOf(check, ch, pc), stat: VS.statOfCheck(check), label: check && check.s });
+  // the stakes the card's odds were read with (the choice the check belongs to)
+  const pct = A.checkOdds(pc, check), stakes = VS.stakesOf(check, VS.choiceOf(check) || ch, pc);
+  const opts = { stakes, stat: VS.statOfCheck(check), label: check && check.s };
+  if (!VS.HONEST) { const r0 = VS.attempt(pc, pct / 100, opts); r0.pct = pct; return r0.success; }
+  const won = A.chance(clamp(pct / 100, 0, 1)), q = VS.baseFor(pct / 100, VS.minds(pc), stakes);
+  let r = null;
+  for (let k = 0; k < 40 && !r; k++) { const t = VS.attemptRaw(pc, q, opts); if (t.success === won) r = t; }
+  if (!r) r = { success: won, tier: won ? 'success' : 'failure', blundered: false, surged: false, breakthrough: 0, reasons: [won ? 'the better hand won' : 'outmatched'], label: opts.label };
+  VS.book(pc, r, opts);
   r.pct = pct;
   return r.success;
 };

@@ -552,6 +552,11 @@ you get past a certain baseline it's cleanly up to you"). `src/people/999997-bod
    five passes 80 (test `bodiesLifespan`). Peasants a little earlier (×1.1, serfs ×1.2, slaves ×1.35; the well fed ×0.9),
    the prime years at 0.6 of the release's odds, and an ordinary fever or flux far less often fatal to a grown body not
    yet old (+0.25 on the survival roll). Children's odds, plague, wounds, beasts and war are unchanged.
+6. **Honest odds include blunders and surges.** `A.checkOdds` returns attempt()'s own chance of success for this person
+   and stakes (`A.V2S.trueChance`, exact over the noise, a blunder's depth and a surge's lift); the roll's first draw is
+   `A.chance` of that number and attempt() then tells the story from the old chain's chance that gives it. What is shown
+   is what happens (48's flHonest: a 3.6 shown had come up 7.5 in 100). The odds popover names the share ("Blunders and
+   surges"). 75's and 81's rule tests read the old chain beneath it.
 ### D-042 · Baselines, then any build (owner order 35, 2026-11-13 18:54 ET)
 **Replaces** D-039 item 12's "masters have the body or mind their mastery needs" and growth.md's "each word needs a
 body to match": a skill's governing stats set a **baseline** for each skill word. Below it the skill cannot rise past

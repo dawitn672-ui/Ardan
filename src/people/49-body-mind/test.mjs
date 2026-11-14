@@ -279,13 +279,13 @@ export default {
       const npcRead = [A.skill(npc, 'dagger'), A.skill(npc, 'sword')];
       UI.ov = null; T.enter({ seed: 4961, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 25 });
       const p3 = A.pc(); p3.skills.dagger = 20; p3.skills.sword = 20; p3.skills.xbow = 15; p3.skills.bow = 15;
-      const block = UI.profBlock(p3), shows = { dagger: block.includes('>' + GD.SKILLS.dagger + ' ') || block.includes(GD.SKILLS.dagger + '</span>'), blades: block.includes('Blades') };
+      const block = UI.profBlock(p3), shows = { dagger: block.includes('>' + GD.SKILLS.dagger + ' ') || block.includes(GD.SKILLS.dagger + '</span>'), blades: block.includes('Swordsmanship') };
       const picker = (A.trainTargets(p3) || []).map(x => x.k);
       return { g, read, fold, npcRead, shows, pickerHasAlias: picker.some(k => A.BM.MERGE[k]), merged: Object.keys(A.BM.MERGE).length };
     });
     const ok = r.g > 0 && r.read[0] === r.read[1] && r.read[1] > 10 && r.fold[0] === 44 && r.fold[1] === 44 && r.npcRead[0] === 33 && r.npcRead[1] === 5 && !r.shows.dagger && r.shows.blades && !r.pickerHasAlias;
     return { ok, detail: `${r.merged} skills merged; training crossbow raised bow to ${r.read[1]} (crossbow reads ${r.read[0]}); an old save's lance 44 over riding 12 folds to riding ${r.fold[0]}; an NPC's dagger stays ${r.npcRead[0]} beside sword ${r.npcRead[1]}; ` +
-      `the sheet shows Blades ${r.shows.blades} and no dagger row ${!r.shows.dagger}; merged skills in the training picker ${r.pickerHasAlias}` };
+      `the sheet shows Swordsmanship ${r.shows.blades} and no dagger row ${!r.shows.dagger}; merged skills in the training picker ${r.pickerHasAlias}` };
   },
 
   async bodyMindRenderPure(pg) {

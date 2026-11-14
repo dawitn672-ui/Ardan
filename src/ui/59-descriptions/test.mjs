@@ -147,7 +147,8 @@ export default {
     // v2 (99993-v2-stats, playtest round 1): the vitals and stats are words now, so fewer numbers are left and each
     // explains itself even without the wiring; all of them must still be covered
     const v2 = await pg.evaluate(() => !!A.V2S);
-    const ok = all(a.profile) && all(a.top) && (v2 ? a.profile.n >= 8 : a.profile.n >= 15 && b.profile.covered < a.profile.covered);
+    // C9 (D-040): the body sheet lost its kg, m/s, km and ms, so the v2 profile has fewer numbers left to cover (7, was 8+)
+    const ok = all(a.profile) && all(a.top) && (v2 ? a.profile.n >= 6 : a.profile.n >= 15 && b.profile.covered < a.profile.covered);
     return { ok, detail: `profile numbers with a tooltip: before ${b.profile.covered} of ${b.profile.n}, after ${a.profile.covered} of ${a.profile.n}; top bar: before ${b.top.covered} of ${b.top.n}, after ${a.top.covered} of ${a.top.n}${a.profile.miss.length || a.top.miss.length ? '; missing: ' + a.profile.miss.concat(a.top.miss).join(' | ') : ''}`, data: r };
   },
 
