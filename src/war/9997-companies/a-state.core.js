@@ -690,7 +690,12 @@
     if (A.POSTS && A.POSTS.appoint) {
       // A2 stage 2: through the registry (999990-posts). The slot he held is handed over inside the appointment, and the
       // captain he replaces takes it (a promotion hands over the real command); any other slot of his is left
-      if (want >= 0) A.POSTS.appoint(A.POSTS.coyKey(d.id, m.b, want), pc.id, { why: 'board', force: true });
+      const res = want >= 0 ? A.POSTS.appoint(A.POSTS.coyKey(d.id, m.b, want), pc.id, { why: 'board', force: true }) : null;
+      // a Commander's division took his company from him first (one field command a person): the senior captain he
+      // replaces takes that company, if it stands without a captain of flesh
+      const out = res && res.out && A.P(res.out), ck = A.POSTS.coyKey(d.id, m.b, m.i);
+      if (want === 4 && out && out.alive && !A.POSTS.held(out.id).some(k => A.POSTS.cls(k) === 'FIELD') && !A.POSTS.holder(ck) && !A.POSTS.can(ck, out.id))
+        A.POSTS.appoint(ck, out.id, { why: 'swap', force: true });
       for (const k of A.POSTS.held(pc.id)) if ((k.startsWith('coy:') || k.startsWith('bn:')) && k !== A.POSTS.coyKey(d.id, m.b, want)) A.POSTS.vacate(k, 'moved');
     } else {
       for (let s = 0; s < 5; s++) if (rec.p && rec.p[s] === pc.id && !((rank === 4 || rank === 5) && s === m.i) && !(rank === 6 && s === 4)) delete rec.p[s];
