@@ -667,3 +667,11 @@ All of growth.md §6.5's decisions are now settled (stats here; the rest by orde
 4. **Models (refines D-047 item 3):** Fable 5.2 only where it raises design quality (art, the core designs, feel);
    otherwise the efficient plan of D-009/D-010 (Opus 5.5 for systems, Sonnet 5.5 for interface and data, Sonnet for
    playtesters).
+
+### D-049 · The Marshal's seat is optional (owner order 51, 2026-11-13 21:19 ET; refines D-017 and A2's D-031)
+The seat never has to be filled, and nothing forces it empty: a ruler may name a Marshal at any time, in war or peace
+(peacetime Marshals are rare and a ruler's own choice), and may leave it empty for life. The crown's own pick in a war
+that needs one (A2) stays. Aldmark's sitting Marshal in the lore (Leofric Stane) is valid, and Winter Wheat is borne by
+him. **To change (A2 stage 2, after the pause):** \`A.POSTS.can\` refuses the Marshal's seat in peace today; it should allow
+a ruler's appointment then (still only to a General or a proven better commander, D-017), and the world should seed
+Marshals where the lore names them.
