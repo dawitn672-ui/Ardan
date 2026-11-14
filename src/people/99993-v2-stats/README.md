@@ -4,6 +4,10 @@
 
 The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md`, "Stats"). The events and the systems that read `p.st`, `C.stat`, `A.stat` and `fx: { str: 1 }` keep working; the v2 engine (`A.V2`, `src/people/engine/body.js`, `races.js`, `odds.js`) sits under them.
 
+**C9 (D-040, `src/people/999997-bodies`) replaces this feature's body words:** the sheet's real units (height and weight,
+lift in kg, sprint in m/s, march in km a day, reaction in ms) are gone, and `VS.statWord` and the sheet read a stat's
+measured place among one's whole grown people. The units below are kept in the engine and the tests, never on the page.
+
 ## What it does
 
 **The body** (`a-body.core.js`)
@@ -101,7 +105,7 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 | `v2sOddsShape` | `attempt()` keeps the chance (50, 80, 20); a tired fool loses more at 85, an iron will wins more at 10 |
 | `v2sMigrate` | An old save (no body) migrates once through a save round trip, and the stats checks read don't move |
 | `v2sFaith` | Faithless by default, piety pinned and the pull kept, no piety on the sheet; taking up the faith brings it |
-| `v2sSheet` | The profile shows kg, m/s, km a day, ms, minds and tiers with hours, and no "Strength 35" |
+| `v2sSheet` | The profile shows the body as words on the measured scale (C9, D-040: no kg, m/s, km a day or ms), minds and tiers with hours, and no "Strength 35" |
 | `v2sNoPct` | No percentage on screen across 12 played years (scenes, results, every tab, the profile and skills) |
 | `v2sBadge` | A check choice's badge is odds words with the balance icon, no digits |
 | `v2sWorthFit` | v2's levies agree with the release's worth for humans, a human's worth is unchanged, and other races carry their shift (giant over +25, orc over +4, dwarf over 0, elf at most +1) |

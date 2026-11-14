@@ -907,6 +907,13 @@ A.deathChance = function (p) {
   if (age > R2.maxLife) q = 0.6;
   q = A.clamp(q, 0, 0.95);
   if (age >= R2.adult && age < R2.old && p.health >= 60) q *= 0.75;
+  // C9 (D-040, owner order 34 "longer lives"): a grown life not yet old dies of nothing much more rarely (0.004 a year
+  // was one in nine dead of "natural causes" between 16 and 50), and the estate counts: the well fed live longer than
+  // the field and the mine (bread, roof, rest). Children's odds and old age's curve are the release's.
+  if (age >= R2.adult) {
+    if (age < old) q *= 0.6;
+    q *= { serf: 1.2, slave: 1.35, peasant: 1.1, noble: 0.9, royal: 0.9, gentry: 0.9, merchant: 0.9 }[p.status] || 1;
+  }
   return q;
 };
 

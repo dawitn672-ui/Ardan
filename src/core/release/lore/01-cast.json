@@ -2697,7 +2697,7 @@
   "ruler": false,
   "title": "",
   "rung": "R02",
-  "looks": "A tall, thin boy of 12 with long arms and fingers, who grew 12 cm last year and squints at anything beyond 20 paces.",
+  "looks": "A tall, thin boy of 12 with long arms and fingers, who grew a hand's breadth last year and squints at anything beyond 20 paces.",
   "manner": "Quiet and careful, he moves through the palace by memory and covers his poor sight with polite silence.",
   "wants": "He wants to be good enough with lance and sword that no one ever guesses he cannot see a banner.",
   "fears": "He fears his father dying and being fought over like a prize by his mother and the Lord Marshal."
@@ -4924,7 +4924,7 @@
   "ruler": false,
   "title": "First War-Captain; chief of the Magak clans",
   "rung": "N03",
-  "looks": "A long-armed orc of 38, 192 cm and 118 kg, grey at the jaw, with a puckered Goroth arrow scar through his right palm.",
+  "looks": "A long-armed orc of 38, grey at the jaw, with a puckered Goroth arrow scar through his right palm.",
   "manner": "Cool and patient for an orc, he studies the horses in a camp before he looks at the riders.",
   "wants": "Wants enough clans counted by the Great Ride on 21 June to take the war-chief's staff the day Vrag's heart fails.",
   "fears": "Fears a long summer war that would starve the Magak herds and hand the staff to Tarn Halfblood's cause…"
@@ -5128,7 +5128,7 @@
   "ruler": false,
   "title": "Second-wave captain, Hearth Guard",
   "rung": "M06",
-  "looks": "A huge orc of 33, 198 cm and 130 kg, with thick wrestler's arms and crooked fingers that Mother Ossa has reset five times.",
+  "looks": "A huge orc of 33, with thick wrestler's arms and crooked fingers that Mother Ossa has reset five times.",
   "manner": "Slow-spoken and good-natured until a fight starts, then wild; he apologizes afterward to the friends he struck.",
   "wants": "Wants to win back the Great Ride wrestling at the Drum Stones this June and wipe out the shame of 1102.",
   "fears": "Fears the blood fury taking him again near his own riders, as it did at the Coldbarrow Bridge in October 1102."
@@ -5417,7 +5417,7 @@
   "ruler": true,
   "title": "Khan of the Nine Winds",
   "rung": "S02",
-  "looks": "A short, heavy man of 59, once lean and now about 105 kg, with clouded eyes, numb feet in soft boots, and a felt coat.",
+  "looks": "A short, heavy man of 59, once lean and now heavy, with clouded eyes, numb feet in soft boots, and a felt coat.",
   "manner": "Speaks quietly and knows men by their voices; he hides his blindness by letting others talk first and turning toward sounds.",
   "wants": "Wants Queen Livia's 30 jars of fire-oil sent through Bekar and Morhaven this spring, and Serik safely chosen khan after him.",
   "fears": "Fears dying blind and helpless while the western tribes call his house's khanship stolen and pull the Nine…"
@@ -5485,7 +5485,7 @@
   "ruler": false,
   "title": "Captain of the Keepers of the Seeps",
   "rung": "M07",
-  "looks": "A small woman of 36, 160 cm and 55 kg, with fire-scarred forearms, no mail, and clay fire-pots hung at her saddle.",
+  "looks": "A small woman of 36, with fire-scarred forearms, no mail, and clay fire-pots hung at her saddle.",
   "manner": "Calm, watchful and short-spoken, she keeps every flame at arm's length and checks the wind before she speaks.",
   "wants": "Wants to catch her two deserters, who carry the death oath, before they sell the place of the seeps.",
   "fears": "Fears fire in her own jars more than any enemy, ever since she dragged her father from the burning store at…"
@@ -5519,7 +5519,7 @@
   "ruler": false,
   "title": "Red Wind champion",
   "rung": "M05",
-  "looks": "A thick-necked man of 44, 178 cm and 92 kg, with a red cord in his braids and a lance scar from collarbone to hip.",
+  "looks": "A thick-necked man of 44, with a red cord in his braids and a lance scar from collarbone to hip.",
   "manner": "Loud, angry and quick to laugh, he steps close to talk, and his hands are never far from another man's sleeve.",
   "wants": "Wants to show the grave of Temur's guard captain at the kurultai and win the Red Wind its revenge on the Kharsan house.",
   "fears": "Fears his knees failing before the Horse Feast, and being knifed by Khatun Sorga's men before he can speak."
@@ -5536,7 +5536,7 @@
   "ruler": false,
   "title": "War-Captain; chief of the Whitehorn clans",
   "rung": "N03",
-  "looks": "A big orc of 36, 195 cm and 120 kg, in iron-plated hide armor, with a rhino-torn left thigh that stops him running far.",
+  "looks": "A big orc of 36, in iron-plated hide armor, with a rhino-torn left thigh that stops him running far.",
   "manner": "Proud, loud and quick to anger, he speaks in boasts and challenges and never admits that a fight went badly.",
   "wants": "Wants the 2,000 bushels of withheld rye paid, or an excuse to raid past the Thardush cairns before spring.",
   "fears": "Fears the witness Kira Ferryhand hides, who can prove his Whitehorn riders burned the Sevmir farms in…"
@@ -5791,7 +5791,7 @@
   "ruler": false,
   "title": "",
   "rung": "",
-  "looks": "A big man of 41, 188 cm and 95 kg, in a tarred sailor's coat, with two stiff fingers on his right hand.",
+  "looks": "A big man of 41, in a tarred sailor's coat, with two stiff fingers on his right hand.",
   "manner": "His voice carries over fifty oar-benches; ashore he is blunt, cheerful and impatient with anyone who cannot row.",
   "wants": "Wants his galley crews ready for Radek Volan's July dusk and a chance to board Rolf Brightwater's flagship himself.",
   "fears": "Fears a real fleet action, which he has never seen, and drowning in mail like the men he warns his crews…"
@@ -5808,7 +5808,7 @@
   "ruler": false,
   "title": "",
   "rung": "",
-  "looks": "A hard man of 48, 185 cm and 90 kg, in a mail hauberk, with a ridge of healed bone across his right knuckles.",
+  "looks": "A hard man of 48, in a mail hauberk, with a ridge of healed bone across his right knuckles.",
   "manner": "Quiet and dutiful, he speaks rarely and simply, and teaches the great-axe with his hands more than with words.",
   "wants": "Wants the king alive through 1105 and the Bear Guard loyal to the king, not to Lord Marshal Zoran Koren.",
   "fears": "Fears the king's bear-blood failing him, as it fails all the tallest Sevrins, and the Bear Guard falling to…"
@@ -5995,7 +5995,7 @@
   "ruler": true,
   "title": "King of Velgrad",
   "rung": "S02",
-  "looks": "A giant man of 33, 210 cm and very broad, with a heavy brow, a dark beard, and eyes that sometimes stare at nothing.",
+  "looks": "A giant man of 33 and very broad, with a heavy brow, a dark beard, and eyes that sometimes stare at nothing.",
   "manner": "Grim and decisive, he speaks bluntly and in a hurry, like a man who knows he has little time.",
   "wants": "Wants to fake the Black Dragon's rising with fire rafts on a July dusk and seize the Grey Channel tolls.",
   "fears": "Fears dying young like the tallest Sevrins before him, leaving a five-year-old heir and House Koren as…"
@@ -6131,7 +6131,7 @@
   "ruler": false,
   "title": "Master of the Still Hall",
   "rung": "M07",
-  "looks": "A grey, wiry man of 53, 176 cm and 70 kg, with a face nobody remembers and two toes lost to frostbite.",
+  "looks": "A grey, wiry man of 53, with a face nobody remembers and two toes lost to frostbite.",
   "manner": "Cold, dry and quiet, he speaks in a near whisper and holds that a fair fight is a failure of planning.",
   "wants": "Wants to obey the queen's order of silence about the Harvest Home drum, unless she sends him after her husband's drummer.",
   "fears": "Fears his own failing night sight, dimmed since 1102, being discovered by the men he leads in the dark."
@@ -6488,7 +6488,7 @@
   "ruler": false,
   "title": "Master of the Hall of Still Hands",
   "rung": "F03",
-  "looks": "A lean man of 55, 172 cm and 66 kg, in dark red monk's wool, whose left hand no longer closes.",
+  "looks": "A lean man of 55, in dark red monk's wool, whose left hand no longer closes.",
   "manner": "Calm past the point of strangeness, he speaks gently, smiles often, and is the only one in any room who is not afraid.",
   "wants": "Wants the Stair Guard to keep its vow never to kill, even as the Stairs drift toward blood when Tashen dies.",
   "fears": "Fears that the White Stair will arm itself to kill, and that his life's teaching will end with him."
@@ -6760,7 +6760,7 @@
   "ruler": false,
   "title": "Master of the Hall of Counter-Mines",
   "rung": "M07",
-  "looks": "A broad, short dwarf of 129, 135 cm and 80 kg, with hands like shovels, a hooded lamp, and his left ear missing.",
+  "looks": "A broad, short dwarf of 129, with hands like shovels, a hooded lamp, and his left ear missing.",
   "manner": "Quiet and patient, he speaks softly out of habit and tilts his head to listen even in open air.",
   "wants": "Wants the three walled galleries under the Nagora Gate kept secret and ready, in case the Old Toll marches.",
   "fears": "Fears another race under the stone against Rohan Nagar's miners, who beat him and took his ear in 1084."
@@ -6777,7 +6777,7 @@
   "ruler": false,
   "title": "Thane and Mine-Master; war leader",
   "rung": "N05",
-  "looks": "A stout dwarf of 142, 140 cm and 90 kg, grey-bearded, limping on his left hip, with a caged finch on his pack.",
+  "looks": "A stout dwarf of 142, grey-bearded, limping on his left hip, with a caged finch on his pack.",
   "manner": "Commanding and short-tempered, he talks about ground and digging and thinks most commanders are too slow to attack.",
   "wants": "Wants a Stonehold expedition of his own to the upper Tirana gold and the gold gravels east of Moonstair.",
   "fears": "Fears the gas he cannot smell, which has killed 31 of his kin since 812."
@@ -6913,7 +6913,7 @@
   "ruler": false,
   "title": "Shield Elder of the Gate Wardens",
   "rung": "M08",
-  "looks": "A bald dwarf of 169, 142 cm and 94 kg, with a white beard, a dragging left leg, and a battered round shield.",
+  "looks": "A bald dwarf of 169, with a white beard, a dragging left leg, and a battered round shield.",
   "manner": "Slow-spoken and patient, he says little, without pride, and repeats himself only when he means no.",
   "wants": "Wants the Gate Wardens kept home this spring, and says to Torvald's face that they will not march for the Old Toll.",
   "fears": "Fears having to shut another door on his own men, as he did at the Dwarf's Gate in 1084."
@@ -6930,7 +6930,7 @@
   "ruler": false,
   "title": "Master of the Axe Hall of Mormund",
   "rung": "M07",
-  "looks": "A broad dwarf of 114, 147 cm and 92 kg, with a grey-shot black beard and a bearded axe of Stonehold crucible steel.",
+  "looks": "A broad dwarf of 114, with a grey-shot black beard and a bearded axe of Stonehold crucible steel.",
   "manner": "Hot, proud and loud, he argues for war at every table and slams his fist when someone says wait.",
   "wants": "Wants to march on the Nagora Gate with Kettil Ironbrow's Old Toll in spring and drive the Ranpuri out.",
   "fears": "Fears Thora Grimstone finding the Chanari blade he hides, and what Stonehold would do to Emberdeep then."
@@ -7219,7 +7219,7 @@
   "ruler": false,
   "title": "",
   "rung": "",
-  "looks": "A small, quick man of 44, 168 cm and 66 kg, with a smith's forearms and a Chanari crucible-steel blade at his hip.",
+  "looks": "A small, quick man of 44, with a smith's forearms and a Chanari crucible-steel blade at his hip.",
   "manner": "Cold and calm, he calls himself a smith who cuts, and speaks more fondly of steel than of any person.",
   "wants": "Wants a Raja who will keep the Chanari Compact, and has promised Kiran Ranavir the Steel Guard if Prince Vikram fails.",
   "fears": "Fears what Stonehold will do to Chanari once Thora Grimstone proves that dwarves taught it crucible steel."
@@ -8103,7 +8103,7 @@
   "ruler": false,
   "title": "Master of the House of the Shield; captain of the Sons of the Mother",
   "rung": "M07",
-  "looks": "A lean, dark, shaven-headed man of 48, 172 cm and 78 kg, with a shaking left forearm and a 1.4 m ox-hide tall shield.",
+  "looks": "A lean, dark, shaven-headed man of 48, with a shaking left forearm and a 1.4 m ox-hide tall shield.",
   "manner": "Even, slow to speak and steady, his voice carries over a fight, and he never raises it in peace.",
   "wants": "Wants the Flood Stairs and the palace held through 1105 for the Flood Mother's son, whatever the mason confesses.",
   "fears": "Fears his bad knees and failing forearm letting the wall break when the king needs it most."
@@ -8460,7 +8460,7 @@
   "ruler": false,
   "title": "",
   "rung": "",
-  "looks": "A lean man of 57, 178 cm and 65 kg, stiff at dawn, with a javelin scar in his right calf and a tamarisk lance.",
+  "looks": "A lean man of 57, stiff at dawn, with a javelin scar in his right calf and a tamarisk lance.",
   "manner": "Proud and reserved, he speaks of honor and the Long Ride, and avoids any talk of Zanara.",
   "wants": "Wants to keep his school's good name and his student Mansur's trust while the clans argue over the Salt Road.",
   "fears": "Fears that the Desert Night March he sold will be used against the clans by Marshal Juma's riders."
@@ -8902,7 +8902,7 @@
   "ruler": false,
   "title": "Master of the House of Runners",
   "rung": "M08",
-  "looks": "A long-legged, lean man of 56, 175 cm and 62 kg, with a face that reddens in heat, bare feet in sandals, and three javelins.",
+  "looks": "A long-legged, lean man of 56, with a face that reddens in heat, bare feet in sandals, and three javelins.",
   "manner": "Dry, patient and measured, he lives by a clock and speaks as if counting every breath.",
   "wants": "Wants to decide whom his runners serve first if the emperor falls, and to keep Crown Prince Tano safe.",
   "fears": "Fears the stroke of the Runner's blood, which killed five emperors of his house before 50."
@@ -9191,7 +9191,7 @@
   "ruler": false,
   "title": "Master of the Rope Hall",
   "rung": "M06",
-  "looks": "A small, wiry man of 48, 165 cm and 58 kg, with long fingers, leather-hard palms, and a coil of rope over one shoulder.",
+  "looks": "A small, wiry man of 48, with long fingers, leather-hard palms, and a coil of rope over one shoulder.",
   "manner": "Quiet and grinning, he says little, loves House Keshari, and still hates the Amber Isles from 1068.",
   "wants": "Wants his 400 boarding climbers kept home this spring, not sent with the Amber fleet to the Isle of Pearls.",
   "fears": "Fears his weakening grip and clicking left knee, remembering that Kombo Keshari died when a knee gave way on…"
@@ -9361,7 +9361,7 @@
   "ruler": false,
   "title": "Captain of the Night Swimmers",
   "rung": "M06",
-  "looks": "A small, strong woman of 36, 165 cm and 60 kg, with a blackened knife, a scarred palm, and no armor ever.",
+  "looks": "A small, strong woman of 36, with a blackened knife, a scarred palm, and no armor ever.",
   "manner": "Calm and fierce, she speaks little and refuses to take orders from any Amber captain.",
   "wants": "Wants her 400 Night Swimmers kept under Keshi command and never placed under the Amber fleet.",
   "fears": "Fears dying in a harbor under Amber command, for a war that is not Kesh's."
@@ -9429,7 +9429,7 @@
   "ruler": false,
   "title": "Master of the Spear Yard of Zutati",
   "rung": "M09",
-  "looks": "A lean, tall man of 51, 183 cm, with creaking knees, a left forearm that never closed fully, and a 5 m cedar pike.",
+  "looks": "A lean, tall man of 51, with creaking knees, a left forearm that never closed fully, and a 5 m cedar pike.",
   "manner": "Steady and quiet, he speaks little and builds a line that does not move, standing in its first line himself.",
   "wants": "Wants the 12,000 Tsega Pikes drilled to meet a Zanari column before the May rains.",
   "fears": "Fears that a Zanari army fed on Abari beef and mounted on Abari horses will meet his pikes on open ground."
@@ -9480,7 +9480,7 @@
   "ruler": false,
   "title": "Captain of the queen's hired companies",
   "rung": "M09",
-  "looks": "A long-armed man of 42, 183 cm and 84 kg, with heavy shield shoulders and a bolt scar in his right calf.",
+  "looks": "A long-armed man of 42, with heavy shield shoulders and a bolt scar in his right calf.",
   "manner": "Patient and controlled, he speaks courteously and lets his anger show only in his eyes.",
   "wants": "Wants his release from Queen Livia before she marches after 1 May, to ride home to the Monundi horsemen.",
   "fears": "Fears that Livia will not let him go cheaply, and that his road home is already watched."
@@ -9667,7 +9667,7 @@
   "ruler": false,
   "title": "Captain of the Blue Twin Guard",
   "rung": "M07",
-  "looks": "A tall woman of 34, 175 cm and 70 kg, with a spear-point scar along her jaw and a tall hide shield.",
+  "looks": "A tall woman of 34, with a spear-point scar along her jaw and a tall hide shield.",
   "manner": "Steady and loyal, she speaks little, guards her king closely, and carries her twin's secret heavily.",
   "wants": "Wants King Yonas safe and her twin's secret kept, while the courts edge toward war.",
   "fears": "Fears that the birth-cord will come out and break the Compact of 1053, setting the whole realm at war."

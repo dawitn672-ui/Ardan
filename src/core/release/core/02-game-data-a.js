@@ -144,9 +144,9 @@ GD.RACES = {
     adj: "giant",
     mods: {
       str: 45,
-      // C9 (D-040): -24, was -14. A giant is off the chart against men for strength and at the other end for speed
+      // C9 (D-040): -27, was -14. A giant is off the chart against men for strength and at the other end for speed
       // (owner order 34): the typical giant is slower than all but one man in fifty (src/people/999997-bodies).
-      spd: -24,
+      spd: -27,
       ins: 0,
       sta: 4,
       int: 0,
