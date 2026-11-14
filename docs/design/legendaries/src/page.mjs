@@ -9,6 +9,9 @@ import { portrait, closer } from './figure.mjs';
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sheet = document.getElementById('sheet'), small = document.getElementById('small'), cost = document.getElementById('cost');
 const rows = [], now = () => performance.now();
+// a portrait whose sitter stands off the middle is drawn wider than it is shown: the page cuts the window
+const win = p => (p.win && +(/width="(\d+)"/.exec(p.svg) || [])[1] !== p.win ? `<div class="win" style="width:${p.win}px"><div style="margin-left:${-p.dx}px">${p.svg}</div></div>` : p.svg);
+const ORD = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
 
 LEGENDS.forEach((def, i) => {
   const c = CARRY[def.id], id = 'lg-' + String(i + 1).padStart(2, '0'), T = {};
@@ -40,11 +43,12 @@ LEGENDS.forEach((def, i) => {
     <h4>Why</h4><p>${esc(def.why)}</p>
     <h4>In the hand</h4><p>${esc(def.hand)}</p>
     <h4>Its art</h4><p><b>${esc(def.art)}</b>, a Legendary art: ${esc(def.artNote)}.</p>
+    <p class="forms">${def.forms.map((f, k2) => `${k2 ? 'the ' : 'The '}${ORD[k2]} Form, <i>${esc(f[0])}</i>`).join(' · ')}</p>
     <p class="finish">${esc(def.finish)}. ${esc(String(def.len))} mm.</p>
   </aside>
 </div>
 <div class="under">
-  <figure class="pf"><div class="frame">${pf.svg}</div><figcaption><b>${esc(c.who)}</b>${esc(c.note)}</figcaption></figure>
+  <figure class="pf"><div class="frame">${win(pf)}</div><figcaption><b>${esc(c.who)}</b>${esc(c.note)}</figcaption></figure>
   <figure class="zm"><div class="frame"><div class="win" style="width:${zm.size}px;height:${zm.size}px"><div style="margin-left:${-zm.dx}px">${zm.svg}</div></div></div><figcaption>The same drawing, closer. The piece is one more item on the figure’s list of gear, drawn by the same hand and under the same light as the person.</figcaption></figure>
   <div class="cmp">
     <p class="cap">To one scale</p>
@@ -57,7 +61,7 @@ LEGENDS.forEach((def, i) => {
 // the same ten at the size of a list: outline, metal, one accent
 for (const { def } of rows) {
   const c = CARRY[def.id], p = portrait(def, { width: 124, tier: 1, id: 'sm' });
-  const f = document.createElement('figure'); f.innerHTML = `<div class="frame">${p.svg}</div><figcaption><b>${esc(def.name)}</b>${esc(c.who.split(',')[0])}</figcaption>`; small.appendChild(f);
+  const f = document.createElement('figure'); f.innerHTML = `<div class="frame">${win(p)}</div><figcaption><b>${esc(def.name)}</b>${esc(c.who.split(',')[0])}</figcaption>`; small.appendChild(f);
 }
 
 // what it costs: compose is the record turned into SVG; paint is the browser turning that SVG into pixels (a canvas, twice the size shown)

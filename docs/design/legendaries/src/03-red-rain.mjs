@@ -1,4 +1,4 @@
-// III · LAST WELL · sabre · the sword on the arms of Clan Sayf of Mirah (Confederacy of the Sand Clans).
+// III · RED RAIN · sabre · the sword on the arms of Clan Sayf of Mirah (Confederacy of the Sand Clans).
 // Desert work: a deep-curved blade of watered crucible steel with a ladder of rungs, gold laid on in lines and in
 // ornament shaped like writing, old ivory, a red stone, a silk tassel.
 import { MET, IVORY, piece, sym, disc, curve, line, inlay, engrave, ridge, beads, dots, puff, glint, cabochon, gem, trim, watering, arcFrame, backblade, tassel, plait, mixc, lerp, spl, LIGHT, add, mul } from './fine.mjs';
@@ -24,16 +24,18 @@ function script(F, r, s0, s1, t, h) {
 }
 
 export default {
-  id: 'last-well', no: 'III', name: 'Last Well', cat: 'Sabre', form: 'sword.sabre', deg: 150, upright: 90,
+  id: 'red-rain', seed: 'last-well', no: 'III', name: 'Red Rain', cat: 'Sabre', form: 'sword.sabre', deg: 150, upright: 90,
   realm: 'Confederacy of the Sand Clans', people: 'The Riders of the southern desert; Clan Sayf of Mirah',
   owner: 'Clan Sayf, the chief’s line at Mirah. It is the curved sword on the clan’s own arms.',
   wielder: 'Zayd Blackveil, outlaw, a cousin of the chief’s blood. He has no right to it.',
   why: 'In 1098 Harith Sayf sent Zayd into the desert without water, and the sword went with him. Harith calls it stolen and has sent no one after it. Since 1104 it has been seen at Zanara’s burned road camps: a chief who can call the hand a thief’s can call the war not his.',
   made: 'The blade is Chanari crucible steel, forged about 960 by one of the first twelve smiths of the Compact; hilted at Mirah. About 145 years old.',
-  legend: ['Twenty-three rungs cross its watered steel, one for each clan of the Confederacy. The last, by the hilt, is filled with gold for Mirah: the last well on the Salt Road.',
-    'In 1060 Muhsin Sayf carried it on the wall for five months while eighteen thousand Zanarans sat outside. Mirah stands.'],
+  legend: ['Once in some years it rains on the Red Waste, and the rain falls red with the dust. The Riders call that the Giver’s judgment and named the sword for it: it comes seldom, and nobody who saw it forgets.',
+    'Twenty-three rungs cross its watered steel, one for each clan; the last, by the hilt, is filled with gold for Mirah, the last well on the Salt Road. In 1060 Muhsin Sayf carried it on the wall for five months while eighteen thousand Zanarans sat outside. Mirah stands.'],
   hand: 'Light, and so curved that it cuts where a straight sword must be drawn back. It parts a mail collar and takes the edge off plain steel. It has little point and a small guard: against a patient man behind a shield it must work for every opening.',
-  art: 'False Water', artNote: 'the cut is never where the eye puts it, as water in the waste is never where it shines',
+  art: 'Mirage', artNote: 'the cut is never where the eye puts it, as water in the waste is never where it shines',
+  // its forms, in order; the last is its signature. [name, what it is]
+  forms: [['Shimmer', 'the blade kept moving in the light, so that its length cannot be judged'], ['False Water', 'the cut that is shown and not delivered'], ['The Lake Walks', 'ground given, so that he always arrives where the blade was'], ['True Water', 'the one cut that is where it looks; by then he does not believe it']],
   finish: 'Watered crucible steel, gold overlay, old ivory, carnelian, red silk', ground: ['#6a4a34', '#1c110c'], accent: RED,
   len: 950,
   box: [-150, 606, -486, 64],

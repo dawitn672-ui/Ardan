@@ -1,4 +1,4 @@
-// VI · THE LATCH · war hammer · the hammer of the Keeper of the Last Door (Kingdom of Irondeep).
+// VI · DEEP FIRE · war hammer · the hammer of the Keeper of the Last Door (Kingdom of Irondeep).
 // Dwarf work: everything square. Dark hold-steel carved in key patterns and filled with bronze, a garnet over foil
 // for the coal-eye, a ball of black stone in a bronze claw, and a ring on the haft for every Keeper.
 import { MET, WOOD, stuff, piece, tube, haft, disc, curve, line, inlay, engrave, ridge, beads, dots, puff, glint, seat, fret, cabochon, xwrap, facet, mixc, lerp, LIGHT, add, mul } from './fine.mjs';
@@ -10,16 +10,18 @@ const RED = '#a3202a', GARNET = '#b0101e';
 function names(F, r, u, v0, v1) { let d = ''; for (let v = v0; v < v1; v += 3.4) { const k = Math.floor(r() * 4); d += line(F, [[u - 2.4, v], [u + 2.4, v]]); if (k === 0) d += line(F, [[u - 2.4, v], [u - 2.4, v + 2.2]]); else if (k === 1) d += line(F, [[u + 2.4, v], [u + 2.4, v + 2.2], [u, v + 2.2]]); else if (k === 2) d += line(F, [[u, v], [u, v + 2.2]]); } return d; }
 
 export default {
-  id: 'latch', no: 'VI', name: 'The Latch', cat: 'War hammer', form: 'hammer.war', deg: -62, upright: -90,
+  id: 'deep-fire', seed: 'latch', no: 'VI', name: 'Deep Fire', cat: 'War hammer', form: 'hammer.war', deg: -62, upright: -90,
   realm: 'Kingdom of Irondeep', people: 'The dwarves of the Deep Halls',
   owner: 'The Last Door, the sworn two hundred and twenty. It is not the queen’s and it is no clan’s.',
   wielder: 'The Keeper of the Last Door, for life. The head passes from the dead Keeper to the newly sworn, as every hammer of the order does.',
   why: 'By the oath of 612: “Not past me.” The Keeper stands in the Narrow with it and answers to the wall of names, not to the crown. Prince Korrin means to set his mother aside; whichever of them the Keeper stands behind has the hold.',
   made: 'The head was forged by Sigmund Brightanvil in 612, the year the first forge was lit. The haft has been remade six times. 493 years old.',
-  legend: ['Irondeep has three doors. The first is iron, the second is stone and steel, and the last is made of dwarves. This is its latch.',
+  legend: ['Irondeep has three doors. The first is iron, the second is stone and steel, and the last is made of dwarves. This stands in it. Its head came out of the first fire the hold ever lit, and the Deep Law says the world was forged on such a fire: so the name, and the garnet in its face, foiled to look like a coal that has never gone out.',
     'A ring is set on the haft for every Keeper and filled with red on the day they die. Eighteen are red. One is bare.'],
   hand: 'Short, with all its weight in the head. It needs no edge: it folds plate and breaks the arm inside a shield. It is slow to lift after a blow and reaches no further than a short sword. On open ground a long spear keeps it out all day.',
-  art: 'Not Past Me', artNote: 'made for a gallery two paces wide: three blows, the third always the same, and never a step back',
+  art: 'Stone Oath', artNote: 'the oath of 612, a word to a blow: three blows, the third always the same, and never a step back. It was made for a gallery two paces wide',
+  // its forms, in order; the last is its signature. [name, what it is]
+  forms: [['Hold Fast', 'the stance in the Narrow and the first blow: the greeting at every dwarf gate'], ['What Is Carved', 'the second blow, on the same line: what is carved is law'], ['Not Past Me', 'the third blow, always the same']],
   finish: 'Dark hold-steel, bronze inlay, a foiled garnet, oxblood leather, black basalt', ground: ['#4a3434', '#140c0d'], accent: GARNET,
   len: 1000,
   box: [-50, 968, -100, 124],

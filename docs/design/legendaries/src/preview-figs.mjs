@@ -1,5 +1,5 @@
 // A look at the portraits while drawing them.
-//   node docs/design/legendaries/src/preview-figs.mjs [--only=winter-wheat,thaw] [--w=300] [--out=/tmp/x.png]
+//   node docs/design/legendaries/src/preview-figs.mjs [--only=winter-storm,killing-frost] [--w=300] [--out=/tmp/x.png]
 import fs from 'node:fs';
 import path from 'node:path';
 import { LEGENDS } from './index.mjs';
@@ -12,7 +12,7 @@ for (const def of LEGENDS) {
   if (only && !only.includes(def.id)) continue;
   const R = portrait(def, { width: w });
   console.log(def.id, 'shapes', R.shapes, 'svg', (R.svg.length / 1024).toFixed(0) + ' KB', 'compose', R.ms.toFixed(1) + ' ms');
-  html += `<div>${R.svg}</div>`;
+  html += R.dx != null && R.win ? `<div style="width:${R.win}px;overflow:hidden"><div style="margin-left:${-R.dx}px">${R.svg}</div></div>` : `<div>${R.svg}</div>`;
 }
 const page = out.replace(/\.png$/, '.html'); fs.writeFileSync(page, html);
 const { chromium } = await import(process.env.PLAYWRIGHT_PATH ? path.join(process.env.PLAYWRIGHT_PATH, 'index.mjs') : '/opt/node-tools/node_modules/playwright/index.mjs');

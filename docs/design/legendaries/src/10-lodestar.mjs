@@ -1,4 +1,4 @@
-// X · PAYMASTER · crossbow · the Captain-General's crossbow (Highland League, the Greycloak Companies).
+// X · LODESTAR · crossbow · the Captain-General's crossbow (Highland League, the Greycloak Companies).
 // Highland work, from the shops of Roseham: plain and exact. Dark walnut, plates of stag-horn scored with a tally, a
 // steel bow from Irondeep, a bridle of sky-blue and white cord, pewter-grey silver. Seen from above, a bolt in the groove.
 import { MET, WOOD, BONE, stuff, piece, tube, haft, sym, disc, curve, line, inlay, engrave, ridge, beads, dots, row, puff, glint, cabochon, winding, tufts, facet, mixc, lerp, spl, polyline, LIGHT, add, mul } from './fine.mjs';
@@ -7,16 +7,18 @@ import { plainCrossbow } from './plain.mjs';
 const SKY = '#4f86c4', STL = MET.dwarf;
 
 export default {
-  id: 'paymaster', no: 'X', name: 'Paymaster', cat: 'Crossbow', form: 'crossbow.heavy', deg: -72, upright: -90,
+  id: 'lodestar', seed: 'paymaster', no: 'X', name: 'Lodestar', cat: 'Crossbow', form: 'crossbow.heavy', deg: -72, upright: -90,
   realm: 'Highland League', people: 'The highlanders of the Crown Range; the Greycloak Companies',
   owner: 'The Silver Chest of the League. It belongs to the valleys in common, as the Chest does.',
   wielder: 'The Captain-General of the Greycloak Companies: in 1105, Ulric Greycloak. The Council of the League gives it, and can take it back.',
   why: 'Since Asa Greycloak’s law of 952 a hire is sealed when the Captain-General shoots its bolt into the hirer’s gatepost, and ended when the pay is counted and the bolt drawn out. Ulric took Aldmark’s silver before the Council voted. The valleys are asking where the bolt is.',
   made: 'Built at Roseham in 952 for the first Captain-General. The steel bow is its second, of Irondeep steel, fitted in 1052; the first, of horn, split in the cold at Hartgate. 153 years old.',
-  legend: ['It held the stakes at Hartgate in 1051 with its last bolt, and its horn bow cracked to the nock.',
-    'The horn plates on its tiller carry a tally: one cut for every contract paid in full. There are two hundred and six cuts, and three plates still blank.'],
+  legend: ['The valleys named it for the one star that does not move. Where its bolt stands in a gatepost the companies will be found, and the silver is owed: a fixed sum, the Highlanders say, cannot be cheated.',
+    'It held the stakes at Hartgate in 1051 with its last bolt, and its horn bow cracked to the nock. The horn plates on its tiller carry a tally, one cut for every contract paid in full: two hundred and six cuts, and three plates still blank.'],
   hand: 'A heavy steel bow, spanned with a windlass: three shots while a bowman looses twelve. Each of the three goes through plate at a hundred paces, and the fortieth flies as true as the first. Between shots its bearer is a man holding eight pounds of wood.',
-  art: 'The Gorge Shot', artNote: 'the steep shot, down from a height or up at a wall, that other crossbows cannot judge',
+  art: 'Falling Star', artNote: 'the steep shot, down from a height or up over a wall, that other crossbows cannot judge',
+  // its forms, in order; the last is its signature. [name, what it is]
+  forms: [['The Climbing Bolt', 'shot steeply up, to fall behind a parapet'], ['Fixed Mark', 'the wait on the aim, through wind and the count'], ['Star Down', 'the plunging shot from a height, seen only as it lands']],
   finish: 'Walnut, stag-horn, Irondeep steel, sky-blue and white cord, silver', ground: ['#3d5878', '#0d1622'], accent: SKY,
   len: 815,
   box: [-18, 818, -398, 398],

@@ -38,7 +38,7 @@ ITEMS.legend = (C, o) => {
   else if (o.mode === 'stand') { deg = o.deg ?? -90; G = [F.cx + o.dx * F.H, o.dySh != null ? F.y.sh + o.dySh * F.H : -(o.lift || 0)]; layer = 'back'; }
   else { deg = o.deg; G = sub([F.cxS + o.dx * F.H, F.y.sh + o.dy * F.H], mul(dirOf(deg), o.at || 700)); layer = 'propBack'; }
   const sc = new Scene(S.id + 'lg', { px: S.px, lod: 1 }); sc.view = S.view; sc.minPx = S.minPx; sc.coarse = 1;
-  const D = { S: sc, F: frame(G, deg), id: def.id, lod: 1, sil: [], r: ch => stream(def.id, ch), unstrung: !!o.unstrung };
+  const D = { S: sc, F: frame(G, deg), id: def.id, lod: 1, sil: [], r: ch => stream(def.seed || def.id, ch), unstrung: !!o.unstrung };
   // what it hangs on, when nobody holds it: iron brackets in a strongroom wall, or two pegs of wood
   for (const u of (o.brackets || [])) { piece(D, [[u - 9, -34], [u + 9, -34], [u + 9, 34], [u - 9, 34]], MET.iron, { poly: .2, shade: 'cross', layer: 'under' }); sc.layer('under'); beads(D, [[u, -27], [u, 27]], 3, MET.iron); }
   for (const u of (o.pegs || [])) piece(D, [[u - 7, -4], [u + 7, -4], [u + 9, 26], [u - 9, 26]], WOOD.oak, { poly: .3, shade: 'cross', turn: 'round', layer: 'under' });
@@ -48,17 +48,19 @@ ITEMS.legend = (C, o) => {
 
 // the look of the person who has it, with the piece on its list of gear
 function lookOf(def) {
-  const c = CARRY[def.id], { look: lk, ground, who, note, zoom, ...carry } = c, look = { id: 'lg-' + def.id, name: who, ...lk };
+  const c = CARRY[def.id], { look: lk, ground, who, note, zoom, shift, ...carry } = c, look = { id: 'lg-' + def.id, name: who, ...lk };
   if (POSE_OF[c.mode]) look.pose = POSE_OF[c.mode];
   look.lg = { y: c.mode === 'plant' ? 12 - c.tip - c.top : 0, deg: c.deg, span: c.span, py: c.py, px: c.px };
   look.gear = [...lk.gear, { id: 'legend', u: def.id, ...carry }];
   return look;
 }
 // one piece, carried: a profile-card crop of the person who has it (or stands beside it)
+// c.shift (in head heights): the person stands that far to the right of the middle, to leave room for a piece that
+// hangs beside them. The library frames a picture on the head, so a wider one is drawn and the page cuts the window.
 export function portrait(def, o = {}) {
-  const c = CARRY[def.id], look = lookOf(def), t0 = performance.now();
-  const R = compose(look, { crop: o.crop || { w: 3.7, h: 6.1, top: .5, lod: 2 }, width: o.width || 300, tier: o.tier ?? 2, ground: { a: c.ground[0], b: c.ground[1] }, id: (o.id || 'pf') + def.no, label: c.who + ', with ' + def.name });
-  return { ...R, ms: performance.now() - t0 };
+  const c = CARRY[def.id], look = lookOf(def), t0 = performance.now(), sh = c.shift || 0, w0 = o.width || 300, W = 3.7 + 2 * Math.abs(sh);
+  const R = compose(look, { crop: o.crop || { w: W, h: 6.1, top: .5, lod: 2 }, width: Math.round(w0 * W / 3.7), tier: o.tier ?? 2, ground: { a: c.ground[0], b: c.ground[1] }, id: (o.id || 'pf') + def.no, label: c.who + ', with ' + def.name });
+  return { ...R, ms: performance.now() - t0, win: w0, dx: sh < 0 ? Math.round(w0 * W / 3.7) - w0 : 0 };
 }
 // the same drawing, closer: a square of the portrait where the piece is. c.zoom: [x, y, size] of that square, in
 // heights of the figure (x from the body's middle, y up from the ground is negative). The library frames a picture

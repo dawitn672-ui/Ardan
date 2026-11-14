@@ -46,6 +46,7 @@ h1{font:700 36px/1.08 Cinzel,serif;letter-spacing:.05em;margin:0}
 .plate h4{font:600 10.5px Cinzel,serif;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:11px 0 2px}
 .plate p{margin:0 0 5px;font-size:13.6px;line-height:1.48}
 .plate .legend{font-style:italic}
+.plate .forms{font-size:12.6px;line-height:1.5;color:var(--muted);margin-top:-2px}.plate .forms i{color:var(--ink)}
 .plate .finish{margin-top:12px;padding-top:9px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--muted)}
 .under{display:grid;grid-template-columns:310px 410px 1fr;gap:16px;margin-top:14px;align-items:start}.zm{margin:0}.win{overflow:hidden}.zm figcaption{font-size:13px;line-height:1.45;color:var(--muted);font-style:italic;margin:9px 6px 0}
 .pf{margin:0}.frame{border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px #b89a55,0 0 0 4px #f8f1e0,0 0 0 5px #cdb77f;margin:5px}
