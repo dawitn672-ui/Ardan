@@ -39,8 +39,11 @@ export default {
           const c = cells[gap + seat] = cells[gap + seat] || { n: 0, w: 0, shown: 0 };
           for (let i = 0; i < 600; i++) {
             const t = 1 + (i % (6 - gap)), lo = A.makeFoe({ tier: t, realm: 'POL-01' }), hi = A.makeFoe({ tier: t + gap, realm: 'POL-01' });
-            const [a, b] = seat === 'P' ? [hi, lo] : [lo, hi], pA = A.shownDuelOdds(a, b);
+            // the seat is taken before the odds are read: C9's floor (A.statFloor) lifts the world's people, never the
+            // player, so a fighter's numbers change when it becomes the player, and the screen reads the player's own
+            const [a, b] = seat === 'P' ? [hi, lo] : [lo, hi];
             A.S.pc = a.id; A.S.queue = [];
+            const pA = A.shownDuelOdds(a, b);
             A.startDuel(a, b, { kind: 'duel', lethal: true });
             const q = A.S.queue.find(x => x.type === 'duel'); if (!q) continue;
             A.S.queue = [q]; A.duelAuto(q.d); A.S.queue = [];

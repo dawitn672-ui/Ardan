@@ -131,8 +131,9 @@ export default {
   async phoneDesktopSame(pg, errs, { browser, file }) {
     const { ctx, pg: p } = await openPage(browser, file, 'desk', errs);
     const crypto = await import('node:crypto');
-    // 91's vital bars glow with a ▲/▼ chip for 1.6 s after a value changes (a timer, not a CSS animation)
-    const calm = () => p.waitForFunction(() => !document.querySelector('.lk-flashing, .lk-dlt'), null, { timeout: 4000 }).catch(() => {});
+    // 91's vital bars glow with a ▲/▼ chip for 1.6 s after a value changes (a timer, not a CSS animation); 96's big-moment
+    // cut-in (the farewell on the death screen) leaves on a timer too, so a shot waits for both
+    const calm = () => p.waitForFunction(() => !document.querySelector('.lk-flashing, .lk-dlt, #mo-cut'), null, { timeout: 4000 }).catch(() => {});
     const names = ['title', 'create', 'life', 'people', 'path', 'holdings', 'realm', 'world-map', 'chronicle', 'person', 'event', 'duel', 'battle', 'menu', 'death'];
     const diff = [], noise = []; let n = 0, els = 0;
     // every element's box, and the markup's length
@@ -146,7 +147,7 @@ export default {
     // (CI run 66: holdings differed in pixels only, and never reproduced locally).
     let lastBuf = null;
     // 91's vital bars glow and show a ▲/▼ chip for 1.6 s after a value changes (a timer, not a CSS animation): wait it out
-    const shot = async () => { await p.mouse.move(1, 1); await p.evaluate(() => (UI.FIG && UI.FIG.idle ? UI.FIG.idle() : null));   /* a portrait baked between two shots on a loaded runner */ await p.waitForFunction(() => !document.querySelector('.lk-flashing, .lk-dlt'), null, { timeout: 4000 }).catch(() => {}); lastBuf = await p.screenshot({ animations: 'disabled', mask: [p.locator('svg.portrait')], maskColor: '#808080' });   /* portraits (C8b) are compared by layout here and tested on their own (fg*): their pixels shift as a picture decodes on a loaded runner */ return crypto.createHash('sha1').update(lastBuf).digest('hex'); };
+    const shot = async () => { await p.mouse.move(1, 1); await p.evaluate(() => (UI.FIG && UI.FIG.idle ? UI.FIG.idle() : null));   /* a portrait baked between two shots on a loaded runner */ await p.waitForFunction(() => !document.querySelector('.lk-flashing, .lk-dlt, #mo-cut'), null, { timeout: 4000 }).catch(() => {}); lastBuf = await p.screenshot({ animations: 'disabled', mask: [p.locator('svg.portrait')], maskColor: '#808080' });   /* portraits (C8b) are compared by layout here and tested on their own (fg*): their pixels shift as a picture decodes on a loaded runner */ return crypto.createHash('sha1').update(lastBuf).digest('hex'); };
     const still = async () => { let h = await shot();
       for (let i = 0; i < 4; i++) { await p.evaluate(SETTLE); const h2 = await shot(); if (h2 === h) break; h = h2; }
       return h; };
