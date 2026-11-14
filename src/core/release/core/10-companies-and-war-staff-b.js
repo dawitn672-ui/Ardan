@@ -1042,6 +1042,26 @@ A.ARMY_NAMES = [
   "Iron",
 ];
 
+// [A2 stage 2] every write of an army's general or a division's commander goes through the post registry
+// (999990-posts) when it is on the page: the appointee hands over what cannot go with it, the man replaced is moved,
+// the record is kept. why: 'crown', 'board', 'staff', 'died', 'moved'...
+A.setGen = function (a, pid, why) {
+  if (!a) return;
+  if (A.POSTS && A.POSTS.appoint) {
+    const k = A.POSTS.armyKey(a.id);
+    if (pid) A.POSTS.place(k, pid, { why: why || "crown", by: (A.realm(a.realm) || {}).ruler });
+    else A.POSTS.vacate(k, why || "moved", { keep: true });
+  } else a.gen = pid || null;
+};
+A.setCmd = function (d, pid, why) {
+  if (!d) return;
+  if (A.POSTS && A.POSTS.appoint && !d.elite) {
+    const k = A.POSTS.divKey(d.id);
+    if (pid) A.POSTS.place(k, pid, { why: why || "crown" });
+    else A.POSTS.vacate(k, why || "moved", { keep: true });
+  } else if (!d.elite || !A.POSTS) d.cmd = pid || null;
+};
+
 A.wsNewArmy = function (rid, divIds, gen, name) {
   const S = A.S;
   S.nextArmy = (S.nextArmy || 0) + 1;
@@ -1054,7 +1074,7 @@ A.wsNewArmy = function (rid, divIds, gen, name) {
       realm: rid,
       name: nm,
       divs: [],
-      gen: gen || null,
+      gen: A.POSTS ? null : gen || null,
       sub: null,
       order: {
         k: "free",
@@ -1066,6 +1086,8 @@ A.wsNewArmy = function (rid, divIds, gen, name) {
       mode: "ai",
     };
   S.armies.push(a);
+  // [A2 stage 2] the general is appointed through the registry
+  if (gen && A.POSTS) A.setGen(a, gen, "crown");
   for (const id of divIds || []) {
     const d = A.divById(id);
     if (d) {

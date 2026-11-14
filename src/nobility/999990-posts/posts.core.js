@@ -427,6 +427,16 @@
     return { ok: true, out: out ? out.id : null, freed };
   };
 
+  // the write path of code that names a holder by its own lights (the crown's generals, 9996's offices, the staff's
+  // commanders): appoint, unless the appointee holds a post of a higher class that cannot go with this one (a councillor
+  // is not made a shire officer or a general behind the council's back); then nothing is written. The same rule the
+  // month's sync applied to such writes in stage 1 (the higher class is kept), now at the moment of the write.
+  P.place = function (key, pid, o) {
+    const c = RANK[P.cls(key)];
+    for (const k2 of P.held(pid)) if (!P.compatible(key, k2) && RANK[P.cls(k2)] > c) return { ok: false, why: `${nm(A.P(pid))} holds ${P.style(k2)}` };
+    return P.appoint(key, pid, Object.assign({ force: true }, o));
+  };
+
   // everything pid holds is left for why. o.cls: only these classes ('SEAT', 'OFFICE', 'FIELD'); o.marshal: with FIELD,
   // the Marshal's seat too (it needs the commission); o.keepArmy: a new ruler keeps one army he leads in person.
   P.leaveAll = function (pid, why, o) {

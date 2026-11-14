@@ -1486,7 +1486,7 @@
           {
             t: "Arrest, try and seize their estates",
             r: "The trial is short and the estates are rich. The court learns that your eyes are open.",
-            fx: rf((r,p,ctx)=>{r.treasury+=inc(p,.03),st(r,2),ctx.seatKey&&r.council&&r.council[ctx.seatKey]===ctx.qid&&delete r.council[ctx.seatKey],allOp(p,-2)}),
+            fx: rf((r,p,ctx)=>{r.treasury+=inc(p,.03),st(r,2),ctx.seatKey&&r.council&&r.council[ctx.seatKey]===ctx.qid&&(A.POSTS?A.POSTS.vacate(A.POSTS.seatKey(r.id,ctx.seatKey),"dismissed"):delete r.council[ctx.seatKey]),allOp(p,-2)}),
           },
           {
             t: "Make them pay it back quietly and keep them",

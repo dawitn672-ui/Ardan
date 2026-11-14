@@ -382,6 +382,8 @@ const fit = (seat, x, ru) => {
   if (x.kind === 'kin') v += ru && (ru.traits || []).includes('paranoid') ? 30 : 6;
   return v;
 };
+// a seat whose holder may not keep it (dead, crowned, of another realm) is left through the registry (A2 stage 2)
+const unseat = (r, seat) => { if (A.POSTS) A.POSTS.vacate(A.POSTS.seatKey(r.id, seat), 'vacant'); else delete r.council[seat]; };
 RI.fillCouncil = function (r) {
   if (!r || !r.alive || r.landless || !A.COUNCIL) return [];
   const pc = A.pc();
@@ -401,11 +403,11 @@ RI.fillCouncil = function (r) {
     const vacant = !live(cur) || cur.ruler || cur.realm !== r.id;
     if (!vacant && !(fresh && A.chance(.35))) continue;
     const C = candidates(r);
-    if (!C.length) { if (vacant) delete r.council[seat]; continue; }
+    if (!C.length) { if (vacant) unseat(r, seat); continue; }
     // nobody under age takes a seat (round 2 A3a: the heir of Kesh was Chancellor at 2 on day 0). The young stay in the
     // list for their draw, so the stream moves as it did and only the choice changes
     const ranked = C.map(x => [x, fit(seat, x, ru) + A.rf(0, 15)]).filter(y => !y[0].young).sort((a, b) => b[1] - a[1]);
-    if (!ranked.length) { if (vacant) delete r.council[seat]; continue; }
+    if (!ranked.length) { if (vacant) unseat(r, seat); continue; }
     const best = ranked[0][0];
     const p = best.p || A.personFromCast(best.cid);
     if (!live(p)) continue;

@@ -264,6 +264,29 @@ export default {
     return { ok, detail: `${Object.entries(checks).filter(x => !x[1]).map(x => 'FAILED ' + x[0]).join(', ') || 'all held'} | the old captain: "${r.captain.oldStyle}"; Commander holds ${r.commander.field} field posts; order ${JSON.stringify(r.order)}; staff refused a councillor: "${r.staffNo && r.staffNo.msg}"; house ${JSON.stringify(r.house)}; title ${JSON.stringify(r.title)}; adopted ${JSON.stringify(ad)}${r.strict.length ? ' | ' + r.strict.slice(0, 3).join('; ') : ''}` };
   },
 
+  // A2 stage 2 (step 3): every writer goes through the registry, so the month's sync adopts nothing and the strict
+  // audit (every old field equal to its record) holds at any moment, not only at the month's end: a soldier's life and
+  // a noble's, at war, checked at every stop of the clock
+  async postsNothingAdopted(pg) {
+    const r = await pg.evaluate(() => {
+      const out = [];
+      for (const [seed, status] of [[5, 'peasant'], [9, 'noble']]) {
+        T.enter({ seed, race: 'human', realm: 'POL-01', status, sex: 'M', startAge: 19 });
+        const pc = A.pc();
+        if (status === 'peasant') A.enlist(pc, false);
+        const foe = A.neighbors('POL-01').map(A.realm).filter(x => x && x.alive && !x.isRebel)[0];
+        if (foe && !A.atWar('POL-01').length) A.startWar('POL-01', foe.id);
+        A.POSTS.stats.adopted = {};
+        const bad = []; let stops = 0;
+        T.play(6, { each: () => { stops++; if (bad.length < 4) for (const b of A.POSTS.audit({ strict: true }).slice(0, 2)) bad.push(A.S.year + ': ' + b); } });
+        out.push({ seed, status, stops, adopted: Object.assign({}, A.POSTS.stats.adopted), bad, records: Object.keys(A.S.posts.h).length });
+      }
+      return out;
+    });
+    const ok = r.every(x => !Object.keys(x.adopted).length && !x.bad.length);
+    return { ok, detail: r.map(x => `${x.status} ${x.seed}: ${x.records} posts, ${x.stops} stops checked, adopted ${JSON.stringify(x.adopted)}${x.bad.length ? ', ' + x.bad.join('; ') : ''}`).join(' | ') };
+  },
+
   // a Commander made General hands his division over: he takes an army without a living general or the one whose
   // general is the weakest, that general takes the Commander's old division (posts-map.md 5.5), and nobody holds two
   // field commands

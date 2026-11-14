@@ -1797,13 +1797,18 @@ A.staffResolveDelegates = function (pc) {
 A.staffApply = function (pc) {
   for (const slot of A.staffSlots(pc)) {
     const h = A.staffHolder(pc, slot.key);
+    // [A2 stage 2] the staff's commanders and generals are appointed through the registry (A.setCmd, A.setGen); an
+    // elite order's division stays its Grand Master's
     if (slot.type === "div") {
       const d = A.divById(slot.divId);
-      if (d) d.cmd = h ? h.id : d.cmd === pc.id ? null : d.cmd;
+      if (d && !d.elite) {
+        if (h) A.setCmd(d, h.id, "staff");
+        else if (d.cmd === pc.id) A.setCmd(d, null, "moved");
+      }
     }
     if (slot.type === "army") {
       const a = A.army(slot.armyId);
-      if (a && h) a.gen = h.id;
+      if (a && h) A.setGen(a, h.id, "staff");
     }
   }
 };

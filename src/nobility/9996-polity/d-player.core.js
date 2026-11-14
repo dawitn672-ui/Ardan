@@ -110,7 +110,8 @@ POL.seek = function (pc, oid) {
   const yes = A.chance(x.p);
   if (!yes) { A.log(`${x.ap ? A.fullName(x.ap, false) : 'The crown'} gives the ${POL.offName(x.o.k, r.id).toLowerCase()}ship to another.${x.price ? ' Your money is returned, less the clerk\'s fee.' : ''}`, 'warn'); if (x.price) { const back = Math.round(x.price * .9); pc.coin += back; r.treasury -= back; } refresh(); return false; }
   const was = A.P(x.o.pid);
-  x.o.pid = pc.id; x.o.since = A.S.year; x.o.pay = POL.pay(r, x.o); x.o.g = 0;
+  POL.setHolder(r, x.o, pc.id, 'sought', x.ap ? x.ap.id : r.ruler);
+  x.o.since = A.S.year; x.o.pay = POL.pay(r, x.o); x.o.g = 0;
   if (x.o.term) x.o.term = A.S.year + GD.POL_OFFICES[x.o.k].term;
   POL.offLog(r, { k: 'office', off: x.o.id, who: pc.id, out: was ? was.id : null });
   if (live(was) && was.id !== pc.id) { if (pc.rel[was.id]) A.addOp(pc, was, -15); else A.link(pc, was, 'acquaint', -15, 'acquaint'); }
@@ -128,7 +129,7 @@ POL.pcYear = function (pc) {
   const held = POL.officesOf(pc);
   for (const [r, o] of held) {
     // a new ruler sweeps out a third of the officers
-    if (r.pol.ru && o.ruSeen && o.ruSeen !== r.ruler && A.chance(.35)) { o.pid = null; A.log(`The new ruler of ${r.short} names another ${POL.offName(o.k, r.id).toLowerCase()} in your place.`, 'bad'); continue; }
+    if (r.pol.ru && o.ruSeen && o.ruSeen !== r.ruler && A.chance(.35)) { POL.setHolder(r, o, null, 'dismissed'); A.log(`The new ruler of ${r.short} names another ${POL.offName(o.k, r.id).toLowerCase()} in your place.`, 'bad'); continue; }
     o.ruSeen = r.ruler;
     // two offices cost a deputy: the lesser one pays half
     const pay = Math.round((o.pay || 0) * (held.length > 1 && !POL.MAJOR.includes(o.k) ? .5 : 1));
@@ -361,9 +362,9 @@ A.applyFx = function (pc, fx, ctx) {
     if (fx.poMarch && r) { if (fx.poMarch === 'raid') { r.stability = clamp(r.stability - 1, 0, 100); estMod('army', 1); } if (fx.poMarch === 'hold') r.stability = clamp(r.stability + 1, 0, 100); }
     if (fx.poOff === 'take' && ctx && ctx.offId && r && r.pol) {
       const o = r.pol.off.find(x => x.id === ctx.offId);
-      if (o && o.pid !== pc.id) { const was = o.pid; o.pid = pc.id; o.since = A.S.year; o.pay = POL.pay(r, o); o.g = 0; if (o.term) o.term = A.S.year + GD.POL_OFFICES[o.k].term; POL.offLog(r, { k: 'office', off: o.id, who: pc.id, out: was }); say(`(${POL.offName(o.k, r.id)}, ${A.coin(o.pay)} a year)`); }
+      if (o && o.pid !== pc.id) { const was = o.pid; POL.setHolder(r, o, pc.id, 'offered', r.ruler); o.since = A.S.year; o.pay = POL.pay(r, o); o.g = 0; if (o.term) o.term = A.S.year + GD.POL_OFFICES[o.k].term; POL.offLog(r, { k: 'office', off: o.id, who: pc.id, out: was }); say(`(${POL.offName(o.k, r.id)}, ${A.coin(o.pay)} a year)`); }
     }
-    if (fx.poOff === 'lose' && ctx && ctx.poOff && r && r.pol) { const o = r.pol.off.find(x => x.id === ctx.poOff); if (o && o.pid === pc.id) { o.pid = null; say('(you lose the office)'); } }
+    if (fx.poOff === 'lose' && ctx && ctx.poOff && r && r.pol) { const o = r.pol.off.find(x => x.id === ctx.poOff); if (o && o.pid === pc.id) { POL.setHolder(r, o, null, 'dismissed'); say('(you lose the office)'); } }
     if (fx.poVote && ctx && r && r.pol && r.pol.elect && ctx.pid) r.pol.elect.pcVote = ctx.pid;
   } catch (e) { console.error('[po] fx', e); }
   return out;

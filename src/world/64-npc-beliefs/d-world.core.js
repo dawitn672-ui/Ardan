@@ -530,7 +530,8 @@
         if (!A.chance(ru && has(ru, 'paranoid') ? 0.7 : 0.4)) continue;
         const p = A.P(pid), cid = Object.keys(NB.st().ct[rid]).find(id => { const e = NB.st().c[id]; return e && e[0] === 'S' && e[2] === 'treason' && e[1] === pid; });
         const c = NB.claim(cid);
-        delete r.council[seat];
+        // A2 stage 2: put out through the post registry (999990-posts)
+        if (A.POSTS) A.POSTS.vacate(A.POSTS.seatKey(rid, seat), 'dismissed'); else delete r.council[seat];
         try { A.RI.fillCouncil(r); } catch (e) { console.error('npc-beliefs council', e); }
         const L = Array.isArray(r.riCourt) ? r.riCourt[0] : null;
         if (L && L.k === 'seat' && L.seat === seat && L.y === A.S.year) { L.out = pid; L.why = [[`The court believes ${NB.name(pid)} ${NB.secText('treason', p, false)}`, 1]]; L.nbT = c && c.t ? 1 : 0; }
