@@ -508,3 +508,12 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   restarted on Fable 5.2 at max effort (the Opus draft notes kept for it).
 - **lfRepeats** (CI 105 shard 3): with the feature on, prompts a year held steady (10.1 → 10.2) while the "off" world
   grew busier after A2's re-roll (11.9 → 13.1); the bar is 75% of "off" (was 80%), and at least 6 a year.
+
+### H-029 · 2026-11-13 20:13 ET · CI 105: one failure (lfRepeats, fixed in 9bf37ee); orders 36-47 recorded
+- **CI 105** on A2 and P: 10 of 11 jobs green; shard 3's lfRepeats failed and was fixed (H-028). This push runs the
+  full CI on A2, P, P2 and the fix.
+- **Orders 36-47** (talents at birth by a 45-point budget with one SSS at most, growth S ×1.8 and SSS ×3.0, prices by
+  reach; art grades; combat ranks without caps; fusion by choice; careers without ladders L1; noble life N1; legendaries
+  without levels, each from its own realm and craft, with an owner, a wielder and a reason; the owner's legendary blade
+  example as Aldmark's signature; the master key withdrawn) are in OWNER_ORDERS, DECISIONS D-043 to D-045 and growth.md
+  §§9-10. The ten legendary designs are being drawn (Fable 5.2); then the owner's pause (order 36).
