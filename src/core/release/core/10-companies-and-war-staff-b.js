@@ -574,7 +574,7 @@ A.cmdRole = function (pc) {
     for (const d of A.divsOf(pc.ruler)) out.divs.add(d.id);
     out.templates = out.production = out.recruit = out.peace = true;
     out.desc =
-      "You command every army and division, design templates, run the forges and the builders, raise new divisions and make peace.";
+      "You command every army and division, run the forges and the builders, raise new divisions and make peace.";
     return out;
   }
   if (!pc.mil || pc.mil.merc) {
@@ -593,7 +593,7 @@ A.cmdRole = function (pc) {
     out.templates = true;
     out.recruit = true;
     out.desc =
-      "As Marshal you command every army, design division templates and ask the crown for new divisions. Only the ruler runs the forges and makes peace.";
+      "As Marshal you command every army and ask the crown for new divisions. Only the ruler runs the forges and makes peace.";
     out.next = "Next: only a crown is higher.";
   } else if (rank >= 7) {
     out.key = rank >= 8 ? "highgeneral" : "general";
@@ -606,7 +606,7 @@ A.cmdRole = function (pc) {
         : "As General you lead one army (up to 24 divisions). Give it a front and a battle plan, or move its divisions by hand.";
     out.next =
       rank >= 8
-        ? "Next: Marshal — all armies, and the templates."
+        ? "Next: Marshal — all armies."
         : "Next: High General — an army group of three armies.";
   } else if (rank >= 6) {
     out.key = "commander";
@@ -702,17 +702,12 @@ A.fxAct = function (key, arg) {
   const need = {
     train: "recruit",
     disband: "production",
-    tplEdit: "templates",
-    tplNew: "templates",
-    tplDel: "templates",
-    divTpl: "templates",
     line: "production",
     build: "production",
     unbuild: "production",
     law: "production",
     auto: "production",
     cancelTrain: "recruit",
-    doc: "templates",
   }[key];
   if (need && !R2[need])
     return {
@@ -757,45 +752,8 @@ A.fxAct = function (key, arg) {
               msg: `${d.name} is disbanded. Its men return to the manpower pool.`,
             });
     }
-    case "tplEdit":
-      return A.tplEdit(r, arg.tid, arg.bns, arg.sup, arg.name);
-    case "tplNew":
-      return A.tplEdit(r, null, arg.bns, arg.sup, arg.name);
-    case "tplDel": {
-      const t = r.forces.tpl[arg];
-      return t
-        ? r.forces.divs.some(d => d.tpl === arg) || r.forces.queue.some(q => q.tpl === arg)
-          ? {
-              ok: false,
-              msg: "Divisions still use this template.",
-            }
-          : Object.keys(r.forces.tpl).length <= 1
-            ? {
-                ok: false,
-                msg: "Keep at least one template.",
-              }
-            : (delete r.forces.tpl[arg],
-              {
-                ok: true,
-                msg: `Template "${t.name}" retired.`,
-              })
-        : {
-            ok: false,
-          };
-    }
-    case "divTpl": {
-      const d = A.divById(arg.div);
-      return !d || d.r !== r.id || !r.forces.tpl[arg.tpl]
-        ? {
-            ok: false,
-          }
-        : ((d.tpl = arg.tpl),
-          (d.org = Math.min(d.org, A.divMaxOrg(d))),
-          {
-            ok: true,
-            msg: `${d.name} reorganizes as a ${r.forces.tpl[arg.tpl].name}. It refits from the depots.`,
-          });
-    }
+    // W0 (D-052): the player's template actions (tplEdit, tplNew, tplDel, divTpl) and doctrine choice (doc) are gone;
+    // archive/w0-war-score-and-templates/. A.tplEdit stays for the engine's own recutting.
     case "line": {
       const res = A.lineSet(r, arg.eq, arg.d);
       r.forces.auto = false;
@@ -830,29 +788,6 @@ A.fxAct = function (key, arg) {
               {
                 ok: true,
                 msg: `${L.name}.`,
-              })
-        : {
-            ok: false,
-          };
-    }
-    case "doc": {
-      const Dc = GD.RDOC[arg];
-      return Dc
-        ? r.forces.doc === arg
-          ? {
-              ok: false,
-              msg: "Already your doctrine.",
-            }
-          : r.forces.xp < Dc.cost
-            ? {
-                ok: false,
-                msg: `Needs ${Dc.cost} army experience.`,
-              }
-            : ((r.forces.xp -= Dc.cost),
-              (r.forces.doc = arg),
-              {
-                ok: true,
-                msg: `${r.short} adopts ${Dc.name}.`,
               })
         : {
             ok: false,

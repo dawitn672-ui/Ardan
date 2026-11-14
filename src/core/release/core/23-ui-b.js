@@ -1045,7 +1045,7 @@ UI.battleModalBasic = function (B) {
 UI.campModal = function (C) {
   const w = A.S.wars.find(x => x.id === C.war),
     pl = C.armies.find(a => a.player);
-  let h = `<div class="panel mbox full"><div class="row"><h2 style="margin:0">${UI.esc(w ? w.name : "Campaign")}</h2><span class="small muted">${GD.MONTHS[Math.min(11, C.month - 1)]} ${A.S.year} · war score ${w ? Math.round(C.side === "att" ? w.score : -w.score) : 0} in your favor</span></div>`;
+  let h = `<div class="panel mbox full"><div class="row"><h2 style="margin:0">${UI.esc(w ? w.name : "Campaign")}</h2><span class="small muted">${GD.MONTHS[Math.min(11, C.month - 1)]} ${A.S.year} ${w ? ` · ${UI.esc(A.warFactsText(w, UI.wrMyR ? UI.wrMyR() : null))}` : ""}</span></div>`;
   if (
     ((h +=
       '<div class="camp"><div class="mapwrap"><canvas id="campmap" width="1050" height="675"></canvas></div><div class="side">'),

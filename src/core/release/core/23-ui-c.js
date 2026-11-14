@@ -276,7 +276,7 @@ UI.worldTabPolitics = function (pc) {
     )),
     v === "map")
   ) {
-    const modes = `<div class="row maptools">${Object.entries(MAP.MODES)
+    const modes = `<div class="row maptools">${UI.mapModes()
       .map(
         ([k, n]) =>
           `<button class="small ${UI.mapMode === k ? "primary" : ""}" data-a="mapMode" data-v="${k}">${n}</button>`,
@@ -595,6 +595,8 @@ UI.specCard = function (pc) {
 
 UI.peacePicks = UI.peacePicks || {};
 
+// W0 (D-052): the terms no longer show a war score chip; the land held and the battles won stand in its place. The
+// score still decides the foe's willingness inside A.peaceTerms.
 UI.peacePanel = function (wid) {
   const pc = A.pc(),
     w = A.S.wars.find(x => x.id === wid);
@@ -604,7 +606,7 @@ UI.peacePanel = function (wid) {
   const picks = UI.peacePicks[wid] || (UI.peacePicks[wid] = []),
     odds = A.peaceOdds(T, picks),
     lead = w.leadA === pc.ruler || w.leadD === pc.ruler;
-  let h = `<div class="peace"><div class="row"><b>Terms for ${UI.esc(w.name)}</b><span class="right"></span><span class="chip">war score ${T.sc > 0 ? "+" : ""}${T.sc}</span></div><div class="tiny muted">${UI.esc(A.realmName(T.eid))} is ${T.e.exhaustion > 60 ? "exhausted" : T.e.exhaustion > 30 ? "tiring" : "still fresh"} (war weariness ${Math.round(T.e.exhaustion)}). What they will accept depends on the war score, their weariness and what you ask.</div>`;
+  let h = `<div class="peace"><div class="row"><b>Terms for ${UI.esc(w.name)}</b></div><div class="small">${UI.esc(A.warFactsText(w, pc.ruler))}</div><div class="tiny muted">${UI.esc(A.realmName(T.eid))} is ${T.e.exhaustion > 60 ? "exhausted" : T.e.exhaustion > 30 ? "tiring" : "still fresh"} (war weariness ${Math.round(T.e.exhaustion)}). What they will accept depends on the land each side holds, the battles won, their weariness and what you ask.</div>`;
   const grps = {};
   for (const t of T.terms) (grps[t.grp] = grps[t.grp] || []).push(t);
   for (const g in grps) {
@@ -1026,13 +1028,17 @@ UI.drawBattle = function (cv, B) {
   }
 };
 
+// the map modes offered as buttons: MAP.MODES less any a feature hides (UI.mapModeHidden; D10 hides Wars from a life
+// that is in no war)
+UI.mapModes = () => Object.entries(MAP.MODES).filter(([k]) => !(UI.mapModeHidden && UI.mapModeHidden(k)));
+
 UI.gm = UI.gm || {
   view: null,
   sel: null,
 };
 
 UI.greatMapModal = function () {
-  const modes = Object.entries(MAP.MODES)
+  const modes = UI.mapModes()
     .map(
       ([k, n]) =>
         `<button class="small ${UI.mapMode === k ? "primary" : ""}" data-a="gmMode" data-v="${k}">${n}</button>`,
@@ -1479,7 +1485,6 @@ UI.wr = {
   view: null,
   msg: "",
   mode: "sides",
-  tplEdit: null,
   seen: {},
   help: false,
 };
@@ -1510,10 +1515,10 @@ UI.kfmt = n => {
   return a >= 1e5 ? Math.round(n / 1e3) + "k" : a >= 1e4 ? (n / 1e3).toFixed(1).replace(/\.0$/, "") + "k" : A.fmt(n);
 };
 
+// W0 (D-052): no Templates tab (the player no longer designs divisions; archive/w0-war-score-and-templates/).
 UI.wrTabs = function (R2) {
   const pc = A.pc(),
     ruler = R2.key === "ruler",
-    lockT = R2.templates ? null : "Marshal or ruler",
     lockP = ruler ? null : "Ruler only",
     lockM = R2.recruit ? null : "Marshal or ruler";
   return [
@@ -1526,12 +1531,6 @@ UI.wrTabs = function (R2) {
       k: "forces",
       n: "Forces",
       ic: "layers",
-    },
-    {
-      k: "tpl",
-      n: "Templates",
-      ic: "pencil",
-      lock: lockT && !(pc.mil && pc.mil.rank >= 6) ? lockT : null,
     },
     {
       k: "ind",
@@ -1587,15 +1586,12 @@ UI.wrSide = function () {
   let h = UI.wr.msg ? `<div class="card wr-msg small" role="status">${UI.esc(UI.wr.msg)}</div>` : "";
   if (t === "forces") h += UI.wrForces();
   else {
-    if (t === "tpl") h += UI.wrTemplates();
+    if (t === "ind") h += UI.wrIndustry();
     else {
-      if (t === "ind") h += UI.wrIndustry();
+      if (t === "mp") h += UI.wrManpower();
       else {
-        if (t === "mp") h += UI.wrManpower();
-        else {
-          if (t === "wars") h += UI.wrWars();
-          else h += UI.wrCommand();
-        }
+        if (t === "wars") h += UI.wrWars();
+        else h += UI.wrCommand();
       }
     }
   }
@@ -1609,9 +1605,9 @@ UI.wrHelpPanel = function () {
   ${sec("Attacking", "<p>March a division onto an enemy-held province with enemy troops in it and it <b>attacks from where it stands</b>. Each side puts divisions into the line up to the <b>combat width</b> of the terrain (plains 70, forest 50, mountains 35; +35 for each extra direction you attack from).</p><p>Every day both sides fire their <b>attacks</b> (soft attack against men, hard attack against armor and beasts). A defender blocks attacks with <b>defense</b>, an attacker with <b>breakthrough</b>. Attacks that get through cost organization and men. When organization runs out, attackers stop and defenders <b>retreat</b> — or, with nowhere to go, are <b>destroyed</b>.</p>")}
   ${sec("Ground, walls and digging in", "<p>Hills, forests, marsh and mountains cut the attacker's strength. <b>Walls</b> cut it further, and walled provinces must be <b>besieged</b>. Divisions that sit still <b>dig in</b> (+2.5% defense a day up to a cap) and build up <b>planning</b> (up to +25% attack for the first strike).</p>")}
   ${sec("Supply", "<p>Supply flows from your capital and <b>depots</b>, weakening with every province. Too many divisions in one place, enemy land, desert and winter mean <b>hunger</b>: slower recovery, weaker attacks and men lost every day. Switch the map to <b>Supply</b> to see it.</p>")}
-  ${sec("Templates, equipment and men", "<p>A <b>template</b> is the recipe for a division: battalions (they fill combat width) and support companies (free). Divisions need <b>men</b> from the manpower pool and <b>equipment</b> from the forges. Short of either, they fight at reduced strength. New designs cost <b>army experience</b>, earned in battle and drills.</p>")}
+  ${sec("Equipment and men", "<p>Each kind of division (line, horse, bow) is made of battalions (they fill combat width) and support companies (free). Divisions need <b>men</b> from the manpower pool and <b>equipment</b> from the forges. Short of either, they fight at reduced strength.</p>")}
   ${sec("Industry", "<p><b>Forges</b> make equipment on production lines that get more efficient the longer they run (switching a line resets it). Idle forges sell arms abroad for coin. <b>Workshops</b> earn coin and build new forges, workshops, walls, depots and roads. The <b>economy law</b> trades the people's contentment for output.</p>")}
-  ${sec("Who commands what", "<p><b>Soldiers</b> follow their division. <b>Captains</b> choose how hard their men push. <b>Commanders</b> move a division. <b>Generals</b> run an army: give it a front, a battle plan, or move divisions by hand. <b>High Generals</b> run three armies. The <b>Marshal</b> runs all armies and designs templates. The <b>ruler</b> also runs industry, manpower and peace.</p>")}`;
+  ${sec("Who commands what", "<p><b>Soldiers</b> follow their division. <b>Captains</b> choose how hard their men push. <b>Commanders</b> move a division. <b>Generals</b> run an army: give it a front, a battle plan, or move divisions by hand. <b>High Generals</b> run three armies. The <b>Marshal</b> runs all armies. The <b>ruler</b> also runs industry, manpower and peace.</p>")}`;
 };
 
 UI.wrRoleCard = function (pc, R2) {
@@ -1800,19 +1796,9 @@ UI.wrDivButtons = function (can, R2) {
     ${anyManual ? `<button class="small" data-a="wrDivRejoin" data-v="${ids}" title="Hand them back to the army's plan">${UI.wrIcon("rotate-ccw")}Back to the plan</button>` : ""}
     ${can.length === 1 && can[0].atk != null ? `<button class="small" data-a="wrDivHold" data-v="${ids}">${UI.wrIcon("x")}Call off the attack</button>` : ""}`;
   const arms = A.armiesOf(can[0].r).filter(a => R2.armies.has(a.id));
-  if (
-    (arms.length > 1 &&
-      (h += `<select data-c="wrDivArmy" data-v="${ids}" aria-label="Move to army"><option value="">Move to army…</option>${arms.map(a => `<option value="${a.id}">${UI.esc(a.name)} (${a.divs.length})</option>`).join("")}</select>`),
-    R2.templates && can.length === 1)
-  ) {
-    const r = A.realm(can[0].r);
-    h += `<select data-c="wrDivTpl" data-v="${can[0].id}" aria-label="Reorganize"><option value="">Reorganize as…</option>${Object.values(
-      r.forces.tpl,
-    )
-      .filter(t => t.id !== can[0].tpl)
-      .map(t => `<option value="${t.id}">${UI.esc(t.name)}</option>`)
-      .join("")}</select>`;
-  }
+  // W0 (D-052): no "Reorganize as…" (no templates for the player to choose between)
+  if (arms.length > 1)
+    h += `<select data-c="wrDivArmy" data-v="${ids}" aria-label="Move to army"><option value="">Move to army…</option>${arms.map(a => `<option value="${a.id}">${UI.esc(a.name)} (${a.divs.length})</option>`).join("")}</select>`;
   const f = (A.S.fights || {})[can[0].loc] || (can[0].atk != null && (A.S.fights || {})[can[0].atk]);
   if (
     f &&

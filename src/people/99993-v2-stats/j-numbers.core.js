@@ -152,12 +152,7 @@
         if (l === 'Wind') return barRow.call(this, label, v, max, cls, pot, VS.band('wind', 100 * v / max));
         if (/^(Their )?[Oo]pinion( of you)?$/.test(l) && typeof valTxt === 'number') return barRow.call(this, label, v, max, cls, pot, band('opinion', valTxt));
         if (/^Morale$/.test(l)) return barRow.call(this, label, v, max, cls, pot, band('morale', 100 * v / max));
-        // a war's score (-100..100, the release's Wars and World wars pages) in words (A2 merge: a re-rolled world put a
-        // war on the page and its bare "51" broke the no-numbers rule)
-        if (/^(War score|Attacker's score)$/.test(l)) {
-          const s = 2 * v - 100, w = s >= 60 ? 'winning outright' : s >= 25 ? 'winning' : s >= 8 ? 'ahead' : s > -8 ? 'even' : s > -25 ? 'behind' : s > -60 ? 'losing' : 'losing badly';
-          return barRow.call(this, label, v, max, cls, pot, w);
-        }
+        // (a war's score bar was worded here; W0, D-052, took the bar away: archive/w0-war-score-and-templates/)
       }
     } catch (e) {}
     return barRow0.apply(this, arguments);

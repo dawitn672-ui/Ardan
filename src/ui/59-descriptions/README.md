@@ -123,7 +123,7 @@ A number is a numeric token in a screen's text. Not counted: prose (a block of 1
 | War tab, an enlisted soldier at war | 47 | 0 | **47 (100%)** |
 | War tab, a ruler at war | 34 | 0 | **34 (100%)** |
 | War Room, Command / Forces / Wars (soldier) | 5 / 15 / 1 | 0 | **100%** each |
-| War Room, Command / Forces / Templates / Industry / Manpower / Wars (ruler) | 6 / 8 / 41 / 42 / 13 / 5 | 0 | **100%** each |
+| War Room, Command / Forces / Templates / Industry / Manpower / Wars (ruler) | 6 / 8 / 41 / 42 / 13 / 5 | 0 | **100%** each (Templates retired by W0, D-052) |
 | War Room panels: your division, a division, an army, a province | 31, 32, 13, 16 | 0 | **100%** each |
 | War Room: a fight on the map (fix-layer build, where one was raging) | 35 | 0 | **34 (97%)** |
 | Holdings: a peasant, a noble, a merchant, a trade run planned | 277, 278, 281, 290 | 0 | **100%** each |
@@ -155,7 +155,7 @@ Lore pages of the Codex (faiths, bloodlines, songs, secrets, families) and the W
 - **Some numbers are counted as prose and still wired.** The duel's measure ("…about 30 times in 100") and your instincts' read sit in sentences, so the count leaves them out, but they open their breakdowns.
 - **A number inside an action explains itself when pressed** (an army row, a division row, a person card, a cost in a button), and the rest of the action still acts (round 2: it was hover only). A choice and an activity tile keep their tap for the action; the choice's odds open through the info glyph kept inside the button (`TT.sweepChoices`), and a tile opens its sheet.
 - **Some breakdowns are products or steps, not sums.** A price and a division's figure are products, each factor a row; a fight's chance is a curve, split into steps from even odds, each row what it moved the chance. The steps add up to the number shown; their order is fixed (worth first), and another order would split the same total differently.
-- **A fight against many, a group check and the war score have no parts.** The first two are side against side; the war score is a running tally the engine keeps without its history. Their popovers name what they rest on.
+- **A fight against many and a group check have no parts.** Both are side against side. Their popovers name what they rest on. (The war score is no longer shown, W0, D-052: its note became "How the war stands", the land held and the battles won.)
 - **A faction's power on its card is last new year's.** The popover reckons it today and says so when the two differ.
 - **Body is weighed, not simulated.** Each stat's share is what the release's rating gives for it at round 5 of a fight, fresh and unhurt. In a real fight, wind, wounds and situation move it.
 - **Some forecasts leave the dice out.** Happiness (±4), stability (±3), loyalty (±2) and illness are shown before their random part, and the popover says so.

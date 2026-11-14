@@ -134,8 +134,8 @@ if (typeof UI.startLife === 'function') {
 // The release listed Templates (division design), Industry (forges, production lines, economy law) and Manpower
 // (training new divisions) for everyone, greyed out with "Marshal or ruler" / "Ruler only". A farmhand, a squire or a
 // sergeant now sees Command, Forces and Wars: the fronts and the host, which are the living history around them.
-// The release's own unlock rules stand: Templates for the ruler, the Marshal and commanders of rank 6 and up (who
-// read their divisions' designs), Industry and Manpower for the ruler, the Marshal (Manpower) and Generals (rank 7) and up.
+// The release's own unlock rules stand (Templates went with W0, D-052: the player no longer designs divisions):
+// Industry and Manpower for the ruler, the Marshal (Manpower) and Generals (rank 7) and up.
 if (typeof UI.wrTabs === 'function') {
   const wrTabs = UI.wrTabs;
   UI.wrTabs = function () { return wrTabs.apply(this, arguments).filter(t => !t.lock); };
