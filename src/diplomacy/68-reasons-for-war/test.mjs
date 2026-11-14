@@ -23,8 +23,12 @@ const SETUP = () => {
         const c = w.casus;
         o.wars.push({ id: w.id, t: c ? c.t : null, cites: c ? c.cites.map(x => x.k) : [] });
         if (c && (CS.hasMemory(c) || CS.hasWant(c))) o.cited++;
-        // among the newest ten lines (six missed wars declared beside others on one day: 78 of 88 in A2's re-rolled worlds)
-        if (c && A.S.news.slice(0, 10).some(n => (n.truth || n.t).includes('. ' + c.t.slice(0, 30)))) o.shownNews++;
+        // among the newest ten lines (six missed wars declared beside others on one day: 78 of 88 in A2's re-rolled worlds).
+        // The line is matched as the names layer (99999-v2-names) writes it: it puts the realm's name for a lore name in
+        // every line shown ("to push the Horde back" is told as "to push Gorath back"), so a casus whose first 30
+        // letters held one was counted missing while it led the news (CI 108: 74 of 83; all nine were Aldmark's want)
+        const fix = A.V2NAMES && typeof A.V2NAMES.fix === 'function' ? A.V2NAMES.fix : (s => s);
+        if (c && A.S.news.slice(0, 10).some(n => (n.truth || n.t).includes('. ' + fix(c.t).slice(0, 30)))) o.shownNews++;
       };
       const lg = A.aiLogAdd;
       A.aiLogAdd = function (k, rid) {
