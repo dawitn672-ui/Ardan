@@ -37,7 +37,11 @@
 
   // ---- the six stats: what makes each one, and what it feeds ------------------------------------------------------
   TT.statParts = function (p, k) {
-    const base = (p.st && p.st[k]) || 0, af = A.ageFactor ? A.ageFactor(p, k) : 1, parts = [['Trained so far', base]];
+    // C9 (D-040): a person's trained skills hold their governing stats at a floor (A.statFloor, read by A.stat), so the
+    // stat starts from the higher of what is trained and that floor, and says so
+    const own = (p.st && p.st[k]) || 0, floor = A.statFloor ? A.statFloor(p, k) : 0, base = Math.max(own, floor);
+    const af = A.ageFactor ? A.ageFactor(p, k) : 1, parts = [['Trained so far', own]];
+    if (base > own) parts.push(['Kept up by the skills they practise', base - own]);
     if (af !== 1) parts.push([`${L('age', p.id, 'Age')} ×${r1(af * 100) / 100}`, base * af - base]);
     let v = base * af;
     for (const t of p.traits || []) { const T = GD.TRAITS[t]; if (T && T.fx && T.fx[k]) { parts.push([traitL(t), T.fx[k]]); v += T.fx[k]; } }
