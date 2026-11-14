@@ -464,7 +464,7 @@ A.canAct = function (key) {
     scale = R2.adult / 16;
   if (age < D.minAge * scale) return [false, "Too young"];
   if (D.maxAge && age > D.maxAge * scale) return [false, "Too old"];
-  if (A.S.time < D.cost) return [false, "Not enough initiative (⧗) yet"];
+  if (A.S.time < D.cost) return [false, "You cannot spare the time for that today."];
   if (pc.prison && !["meditate", "pray", "study", "rest", "lift", "run"].includes(key))
     return [false, "You are in prison"];
   const used = A.S.yearActs[key] || 0;
@@ -1255,7 +1255,7 @@ const interactNow = function (tid, key, arg) {
   if (I.cost && A.S.time < I.cost)
     return {
       ok: false,
-      msg: "Not enough initiative (⧗) yet.",
+      msg: "You cannot spare the time for that today.",
     };
   if (!pc.rel[tid]) A.link(pc, t, "acquaint", 0, "acquaint");
   const r = pc.rel[tid],

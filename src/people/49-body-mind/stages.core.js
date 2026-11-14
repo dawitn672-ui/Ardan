@@ -294,7 +294,7 @@
     const items = L.map(k => {
       const D = GD.ACTIVITIES[k], [ok, why] = A.canAct(k);
       if (!ok && /Too young|Too old/.test(why || '')) return '';
-      return `<button class="act" data-a="act" data-v="${k}" ${ok ? '' : 'disabled'} title="${UI.esc(ok ? D.desc : why)}"><span class="cost">${D.cost}⧗</span><div class="an">${UI.esc(D.name)}</div><div class="ad">${UI.esc(ok ? D.desc : why)}</div></button>`;
+      return `<button class="act" data-a="act" data-v="${k}" ${ok ? '' : 'disabled'} title="${UI.esc(ok ? D.desc : why)}"><div class="an">${UI.esc(D.name)}</div><div class="ad">${UI.esc(ok ? D.desc : why)}</div></button>`;
     }).filter(Boolean);
     return items.length ? `<div class="group-h">Only now: ${UI.esc(BM.STAGE_NAME[s])}</div><div class="acts bm-stage">${items.join('')}</div>` : '';
   };

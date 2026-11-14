@@ -134,9 +134,9 @@ POL.billCard = function (r, pc) {
       const T = RI.tally(r), opts = Object.keys(RI.PUSH).filter(k => RI.PUSH[k].law && RI.PUSH[k].ok(r));
       n = opts.length;
       const open = isOpen('props', false);
-      h += `<button class="po-subhead" data-a="poFold" data-v="props" aria-expanded="${open}"><span class="po-chev" aria-hidden="true">${open ? '▾' : '▸'}</span> Bring a bill (1⧗): ${opts.length} laws you could change, each with what it does and its chance to pass</button><div class="po-props"${open ? '' : ' hidden'}>${opts.map(k => { const B = POL.billTarget(r, k, T), e = POL.billEffect(r, k); return `<div class="po-prop"><div class="po-small">${effLine(e)}</div><span class="po-num">${tt('poPropOdds', r.id + '|' + k, Math.round(B.P * 100) + '%')}</span><button class="small" data-a="poPropose" data-v="${esc(k)}">Bring it</button></div>`; }).join('')}</div>`;
+      h += `<button class="po-subhead" data-a="poFold" data-v="props" aria-expanded="${open}"><span class="po-chev" aria-hidden="true">${open ? '▾' : '▸'}</span> Bring a bill: ${opts.length} laws you could change, each with what it does and its chance to pass</button><div class="po-props"${open ? '' : ' hidden'}>${opts.map(k => { const B = POL.billTarget(r, k, T), e = POL.billEffect(r, k); return `<div class="po-prop"><div class="po-small">${effLine(e)}</div><span class="po-num">${tt('poPropOdds', r.id + '|' + k, Math.round(B.P * 100) + '%')}</span><button class="small" data-a="poPropose" data-v="${esc(k)}">Bring it</button></div>`; }).join('')}</div>`;
     }
-    return card('bill', 'The bill', h, '', n ? `none before the realm · ${n} you could bring (1⧗)` : 'none before the realm');
+    return card('bill', 'The bill', h, '', n ? `none before the realm · ${n} you could bring` : 'none before the realm');
   }
   const o = POL.billOdds(r), sd = POL.sides(r, b.k), P = RI.PUSH[b.k] || { t: b.k }, e = POL.billEffect(r, b.k);
   const nodes = [];
@@ -151,7 +151,7 @@ POL.billCard = function (r, pc) {
 <div class="po-cap">For and against</div><div class="po-stack" aria-label="Support against opposition">${seg(sd.est.filter(x => x.g > 0), 'po-s-for')}${court ? `<span class="po-s-for po-s-court" style="width:${Math.round(100 * court / tot)}%" title="the court's voices">court</span>` : ''}${seg(sd.est.filter(x => x.g < 0), 'po-s-against')}${courtO ? `<span class="po-s-against po-s-court" style="width:${Math.round(100 * courtO / tot)}%" title="the court's voices">court</span>` : ''}</div>
 <div class="po-cap">The next count</div><div class="po-stack po-odds">${odds.map(([l, v, c]) => v > .005 ? `<span class="${c}" style="width:${Math.round(v * 100)}%">${v >= .12 ? esc(l) : ''}</span>` : '').join('')}</div>
 <div class="po-small">${V2W_() ? V2W_().scaleSvg(V2W_().oddsOf(o.eventual * 100).tilt) + ' ' : ''}${tt('poBill', r.id, V2W_() ? `In the end, its chances: ${V2W_().oddsText(o.eventual * 100)}` : `In the end it passes ${Math.round(o.eventual * 100)}% of the time`)}</div>`;
-  if (pc && pc.alive && (POL.canPropose(pc, r) || (RI.canSpeak && RI.canSpeak(pc, r)[0])) && b.spoke !== pc.id) h += `<div class="po-btns"><button class="small" data-a="poVoice" data-v="for">Speak for it (1⧗)</button><button class="small" data-a="poVoice" data-v="against">Speak against it (1⧗)</button></div>`;
+  if (pc && pc.alive && (POL.canPropose(pc, r) || (RI.canSpeak && RI.canSpeak(pc, r)[0])) && b.spoke !== pc.id) h += `<div class="po-btns"><button class="small" data-a="poVoice" data-v="for">Speak for it</button><button class="small" data-a="poVoice" data-v="against">Speak against it</button></div>`;
   return card('bill', `The bill: ${esc(P.t)}`, h, '', `count ${b.n + 1} of 6 on ${esc(dateOf(b.next))} · ${V2W_() ? 'in the end: ' + esc(V2W_().oddsText(o.eventual * 100)) : `passes ${Math.round(o.eventual * 100)}% in the end`}`);
 };
 POL.councilCard = function (r, pc) {
@@ -190,7 +190,7 @@ POL.factionsCard = function (r, pc) {
     return `<div class="po-fac"><div class="po-row po-small"><b>${esc(POL.facName(f))}</b><span class="po-num">${tt('poFac', f.id, pct(pw))}</span></div>
 <div class="po-meter" aria-label="${esc(pct(pw))} of the swords, against 40%"><i style="width:${Math.min(100, Math.round(pw * 100 / .6))}%"></i><s style="left:${Math.round(40 / .6)}%"></s></div>
 <div class="po-small muted">Demands ${esc(F.demand || '?')} at 40% and discontent 60. ${months == null ? 'Discontent does not grow.' : months === 0 ? 'Demands are due.' : `At this pace, in about ${months} month${months === 1 ? '' : 's'}.`}</div>
-<div class="po-small">Led by ${head ? who(head) : esc(lead ? lead.name : '?')}${mem ? `; ${mem}` : ''}.${can ? ` <button class="small ghost" data-a="poJoin" data-v="${esc(f.id)}">Join (${POL.officesOf(pc).length ? 2 : 1}⧗)</button>` : ''}</div></div>`;
+<div class="po-small">Led by ${head ? who(head) : esc(lead ? lead.name : '?')}${mem ? `; ${mem}` : ''}.${can ? ` <button class="small ghost" data-a="poJoin" data-v="${esc(f.id)}">Join</button>` : ''}</div></div>`;
   }).join('');
   return card('factions', 'Factions', rows, '', `${fs.length}, ${esc(POL.facName(top[0]))} at ${Math.round(100 * top[1] / .4)}% of its demand`);
 };
@@ -218,7 +218,7 @@ POL.placeCard = function (r, pc) {
   const pr = (pc.pol && pc.pol.promises || []).filter(x => !x.kept && !x.broken);
   if (pr.length) h += `<div class="po-small">Promises: ${pr.map(x => `${esc(A.P(x.to) ? A.fullName(A.P(x.to), false) : '?')}${x.due ? ' (due ' + esc(x.due) + ')' : ''}`).join(', ')}.</div>`;
   const all = POL.seekable(pc), S = all.filter(x => !x.bar.length).slice(0, 5), why = all.length && !S.length ? all[0].bar[0] : null;
-  if (S.length) h += `<div class="po-cap">Offices you could seek (1⧗)</div>` + S.map(x => `<div class="po-row po-small"><span>${esc(POL.offName(x.o.k, r.id))} of ${esc((A.S.prov[x.o.at] || {}).name || '')}</span><span>${x.holder ? 'held by ' + who(x.holder) : '<span class="muted">vacant</span>'}</span><span class="po-num">${tt('poSeek', x.o.id, pct(x.p))}</span><button class="small" data-a="poSeek" data-v="${esc(x.o.id)}"${x.cool ? ' disabled aria-disabled="true" title="Asked this year"' : ''}>Seek${x.price ? ' (' + esc(A.coin(x.price)) + ')' : ''}</button></div>`).join('');
+  if (S.length) h += `<div class="po-cap">Offices you could seek</div>` + S.map(x => `<div class="po-row po-small"><span>${esc(POL.offName(x.o.k, r.id))} of ${esc((A.S.prov[x.o.at] || {}).name || '')}</span><span>${x.holder ? 'held by ' + who(x.holder) : '<span class="muted">vacant</span>'}</span><span class="po-num">${tt('poSeek', x.o.id, pct(x.p))}</span><button class="small" data-a="poSeek" data-v="${esc(x.o.id)}"${x.cool ? ' disabled aria-disabled="true" title="Asked this year"' : ''}>Seek${x.price ? ' (' + esc(A.coin(x.price)) + ')' : ''}</button></div>`).join('');
   else if (why) h += `<div class="po-small muted">No office is open to you: you must be ${esc(why)}.</div>`;
   return card('place', 'Your place', h, '', `${esc(POL.EST_SHORT[mine])}${offs.length ? ` · ${offs.length} office${offs.length === 1 ? '' : 's'}` : ''}`);
 };

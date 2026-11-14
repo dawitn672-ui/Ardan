@@ -59,12 +59,12 @@
   const waitEvent = () => { ST.wait = true; ST.hit = true; ST.note = 'event'; clear(); UI.refresh(); };
 
   // ---- what a step brought (cycle 1, first-hour I2): a week rarely holds an event, so a step ends with a short note of
-  // what passed in it: the story's new lines, coin, health and initiative. It is read from the state at the start and
+  // what passed in it: the story's new lines, coin and health. It is read from the state at the start and
   // the end of the step and kept on UI.stepper, never in the world, so the world and its random stream are untouched.
   const logLines = () => { const L = A.S && A.S.log; if (!Array.isArray(L)) return []; const out = []; for (const e of L) if (e && Array.isArray(e.lines)) for (const l of e.lines) out.push(l); return out; };
   const snapshot = () => {
     const pc = A.pc(); if (!pc) return null;
-    return { day: A.absDay(), coin: +pc.coin || 0, debt: +pc.debt || 0, health: +pc.health || 0, time: +(A.S.time || 0), lines: logLines().length, pc: pc.id };
+    return { day: A.absDay(), coin: +pc.coin || 0, debt: +pc.debt || 0, health: +pc.health || 0, lines: logLines().length, pc: pc.id };
   };
   function summarise() {
     try {
@@ -72,7 +72,7 @@
       if (!a || !pc || a.pc !== pc.id || A.absDay() <= a.day) return;
       const lines = logLines().slice(a.lines).filter(l => Array.isArray(l) && l[1] !== 'lore').map(l => String(l[0] || '').replace(/<[^>]*>/g, '').trim()).filter(Boolean);
       ST.sum = { kind: ST.kind, from: a.day, to: A.absDay(), coin: Math.round((+pc.coin || 0) - a.coin), debt: Math.round((+pc.debt || 0) - a.debt),
-        health: Math.round((+pc.health || 0) - a.health), time: Math.round(((+(A.S.time || 0)) - a.time) * 10) / 10, lines: lines.slice(-3), n: lines.length, alive: !!pc.alive };
+        health: Math.round((+pc.health || 0) - a.health), lines: lines.slice(-3), n: lines.length, alive: !!pc.alive };
     } catch (e) { console.error('step summary', e); }
   }
   UI.stepSumHtml = function () {
@@ -84,7 +84,6 @@
     if (m.coin || m.debt) bits.push(`coin ${sign(m.coin, m.coin === 1 || m.coin === -1 ? ' sun' : ' suns')}${m.debt ? `, debt ${sign(m.debt, '')}` : ''}`);
     else bits.push('coin unchanged');
     bits.push(m.health ? `health ${sign(m.health, '')}` : 'health unchanged');
-    if (m.time) bits.push(`initiative ${sign(m.time, '⧗')}`);
     const days = m.to - m.from, news = m.lines.length ? m.lines.map(t => `<li>${UI.esc(t.length > 160 ? t.slice(0, 157) + '…' : t)}</li>`).join('') : '';
     return `<div class="card step-sum" role="status" aria-label="${UI.esc(word)}"><div class="row"><b class="step-sum-h">${UI.esc(word)}</b><span class="tiny muted">${days} day${days === 1 ? '' : 's'} · ${UI.esc(bits.join(' · '))}</span><span class="grow"></span>` +
       `<button class="small ghost" data-a="stepSumX" aria-label="Dismiss this note">${UI.icon ? UI.icon('x', 's') : '×'}</button></div>` +

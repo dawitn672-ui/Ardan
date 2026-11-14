@@ -813,7 +813,7 @@ A.tradeRun = function (dest, opts) {
   if (A.S.time < P.ini)
     return {
       ok: false,
-      msg: `A trip of ${P.days} days needs ${P.ini} initiative.`,
+      msg: `A trip of ${P.days} days is more than you can spare just now.`,
     };
   if (pc.coin < P.guardCost)
     return {

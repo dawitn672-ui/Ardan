@@ -495,7 +495,7 @@ A.workHard = function () {
   if (!pc.job || A.S.time < 1)
     return {
       ok: false,
-      msg: "Not enough initiative (⧗) yet.",
+      msg: "You cannot spare the time for that today.",
     };
   if (pc.flags.workHard === A.S.year)
     return {

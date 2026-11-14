@@ -35,11 +35,11 @@
     if (!D) return '';
     let ok = true, why = '';
     try { const r = A.canAct(k); ok = !!r[0]; why = r[1] || ''; } catch (e) {}
-    const cost = D.cost ? `${D.cost} initiative` : 'free';
+    const cost = D.cost >= 2 ? 'A good part of a month' : D.cost ? 'A few days' : 'No time at all';   // X3: time, not initiative (D-019); the words of the activity sheet
     const meets = A.MOODS && A.MOODS.ACT && A.MOODS.ACT[k] ? Object.entries(A.MOODS.ACT[k]).map(([n, v]) => `${n} ${v > 0 ? '+' : '−'}${Math.abs(v)}`).join(', ') : '';
     const group = String(D.cat || '').replace(/^Only now$/, 'Only now' + (D.stage ? ', in ' + D.stage : ''));
     return `<div class="tip-h">${esc(D.name)}</div><p class="tip-d">${esc(D.desc || '')}</p>` +
-      `<div class="tip-row"><span>Costs</span><b>${esc(cost)}</b></div>` +
+      `<div class="tip-row"><span>Takes</span><b>${esc(cost)}</b></div>` +
       (meets ? `<div class="tip-row"><span>Meets</span><b>${esc(meets)}</b></div>` : '') +
       `<div class="tip-row"><span>Group</span><b>${esc(group)}</b></div>` +
       (!ok && why ? `<p class="tip-f">Not now: ${esc(why)}</p>` : '');
@@ -194,13 +194,13 @@
       const c = t.querySelector('.cost'); if (c && /free/i.test(c.textContent)) c.classList.add('lk-free');
       if (t.dataset.a === 'act' && t.dataset.v && !t.dataset.tt) t.dataset.tt = 'act';
     }
-    // the initiative line, as the Activities header's summary
-    const ini = [...tb.children].find(e => e.matches && e.matches('.row.small.muted') && /Initiative/.test(e.textContent));
+    // the role line (and how weary you are), as the Activities header's summary
+    const ini = [...tb.children].find(e => e.matches && e.matches('.row.small.muted.act-role'));
     const head = tb.querySelector(':scope > .fold-acts > .fold-head');
     if (ini) {
       ini.classList.add('lk-ini');
       if (head && !phone) {
-        const txt = ini.textContent.replace(/\s+/g, ' ').trim().replace(/^Initiative ([\d.]+)/, '$1 initiative');
+        const txt = ini.textContent.replace(/\s+/g, ' ').trim();
         let s = head.querySelector(':scope > .fold-sum');
         if (!s) { s = document.createElement('span'); s.className = 'fold-sum lk-keep'; s.setAttribute('aria-hidden', 'true'); head.appendChild(s); }
         s.classList.add('lk-keep'); s.textContent = txt;

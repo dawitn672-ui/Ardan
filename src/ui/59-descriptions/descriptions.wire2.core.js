@@ -69,10 +69,9 @@
     return TT.wireCosts(h);
   };
   TT.wireLater(() => UI.TAB, 'holdings', 'holdings');
-  // ---- costs anywhere: initiative (⧗) on an action, and a price in a button's words; hover (the tap is the action's)
+  // ---- costs anywhere: a price in a button's words; hover (the tap is the action's)
   TT.wireCosts = function (h) {
-    return h.replace(/<span class="cost">(\d+)⧗<\/span>/g, (m, n) => `<span class="cost"${A_('initiative', '')}>${n}⧗</span>`)
-      .replace(/(<button\b[^>]*>)([^<]*?)\((\d+)⧗\)/g, (m, b, t, n) => /data-tt=/.test(b) ? m : `${b}${t}(${N('initiative', '', n + '⧗')})`)
+    return h
       .replace(/(<button\b[^>]*>)([^<]*?)\(([\d,]+) suns?\)/g, (m, b, t, n) => /data-tt=/.test(b) ? m : `${b}${t}(${N('cost', n.replace(/,/g, ''), n + ' suns')})`)
       .replace(/(<button\b[^>]*>)([^<]*?)\(([\d,]+)\)<\/button>/g, (m, b, t, n) => /data-tt=/.test(b) ? m : `${b}${t}(${N('cost', n.replace(/,/g, ''), n)})</button>`);
   };
@@ -88,7 +87,7 @@
     h = h.replace(/<div class="small muted">([\d,.]+ suns?\/yr)/, (m, v) => `<div class="small muted">${N('pay', '', v, { focus: true })}`);
     h = TT.wireBars(h, lbl => lbl === 'Performance' ? ['perf', ''] : lbl === 'Reputation' ? ['rep', ''] : null);
     h = h.replace(/<div class="wr-board"><div class="small"><b>To become ([^<]*?) \(([^)]*)\)<\/b>/, (m, t, pay) => `<div class="wr-board"><div class="small"><b>To become ${t} (${N('career', pc.job.c, pay)})</b>`);
-    return TT.wireCosts(h.replace(/<span class="right tag">(\d+)⧗<\/span>/g, (m, n) => `<span class="right tag"${A_('initiative', '')}>${n}⧗</span>`));
+    return TT.wireCosts(h);
   };
   // a board's rows, in the order the board gives them
   const boardRows = (h, b, kind) => {
@@ -315,9 +314,7 @@
     h = h.replace(/<div class="dr-b( ?on| )?" title="([^"]*)">/g, (m, on, t) => { const k = fams[i++]; if (!k) return m; const own = (D0.own || {})[k] || 0, dv = d ? (d.dr || {})[k] || 0 : 0, v = share >= 0.99 ? dv : own; return `<div class="dr-b${on || ''}" title="${t}"${UI.ttAttrs('drill', k + '|' + v)}>`; });
     h = h.replace(/(The tick on each bar is as far as your officers can teach )\((\d+)\)/, (m, a, n) => `${a}(${N('drillCap', '', n)})`)
       .replace(/(your drill counts for )(\d+%)/, (m, a, n) => `${a}${N('drillShare', '', n)}`)
-      .replace(/<span class="tiny muted">(next review in \d+ days)<\/span>/, (m, t) => `<span class="tiny muted"${A_('initiative', '')}>${t}</span>`)
-      // the review's cost: the button starts with an icon, which TT.wireCosts' button pattern ([^<]*) does not cross
-      .replace(/(<button class="small" data-a="drillReview"[^>]*>)((?:<svg\b[\s\S]*?<\/svg>)?)([^<]*?)\((\d+)⧗\)/, (m, b, ic, t, n) => `${b}${ic}${t}(${N('initiative', '', n + '⧗')})`);
+;
     // 60-unit-drill's unlocks: each drill and what it opens (as the bars: one that is not muted is "dr-unl " with a space)
     if (A.DRILL) {
       const byShort = {}; for (const f in GD.DRILLS) byShort[UI.esc(GD.DRILLS[f].short || GD.DRILLS[f].name)] = f;

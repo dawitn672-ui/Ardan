@@ -881,7 +881,7 @@ A.teachChild = function (cid) {
   if (A.S.time < 1)
     return {
       ok: false,
-      msg: "Not enough initiative (⧗) yet.",
+      msg: "You cannot spare the time for that today.",
     };
   A.S.time -= 1;
   pc.flags.taught = pc.flags.taught || {};
@@ -1243,7 +1243,7 @@ A.getToKnow = function (pid) {
   if (A.S.time < A.knowCost)
     return {
       ok: false,
-      msg: "Not enough initiative (⧗) yet.",
+      msg: "You cannot spare the time for that today.",
     };
   A.S.time -= A.knowCost;
   const ro = A.roster(pc).find(x => x.p.id === pid),
@@ -2024,7 +2024,7 @@ A.drillReview = function () {
   if (A.S.time < 1)
     return {
       ok: false,
-      msg: "Not enough initiative (⧗) yet.",
+      msg: "You cannot spare the time for that today.",
     };
   if (((A.S.dcool = A.S.dcool || {}), A.S.dcool.review != null && A.absDay() - A.S.dcool.review < 90))
     return {

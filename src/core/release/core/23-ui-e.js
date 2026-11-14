@@ -218,7 +218,7 @@ UI.planCard = function (pc) {
       <label class="plan-l">Free hours</label><div><select data-c="planAim" aria-label="Pursuit"><option value="">Nothing in particular</option>${aims}</select></div>
     </div>
     ${D ? `<div class="small ink2" style="margin-top:4px">${UI.esc(D.desc)}</div>${UI.barRow("Breakthrough", prog, need, "", null, `${Math.round(prog)}/${Math.round(need)}`)}${eta != null ? `<div class="tiny muted">About ${eta < 60 ? eta + " days" : Math.round(eta / 30) + " months"} at this pace.</div>` : ""}` : '<div class="tiny muted">Choose what your free hours go to. When enough has built up, something opens up — what depends on who you are.</div>'}
-    <div class="row" style="margin-top:6px"><button class="small" data-a="planSession" ${P.train && A.S.time >= 1 ? "" : "disabled"} title="Spend initiative on an intense session of your training focus">${UI.icon("flame", "s") || ""}Extra session (1⧗)</button><span class="tiny muted grow">${UI.esc((GD.INTENSITY[P.intensity] || {}).desc || "")}${parts ? " Last month: " + UI.esc(parts) + "." : ""}</span></div></div>`;
+    <div class="row" style="margin-top:6px"><button class="small" data-a="planSession" ${P.train ? "" : "disabled"} title="An intense session of your training focus. It takes days, and too many in a short while wear you out.">${UI.icon("flame", "s") || ""}Extra session</button><span class="tiny muted grow">${UI.esc((GD.INTENSITY[P.intensity] || {}).desc || "")}${parts ? " Last month: " + UI.esc(parts) + "." : ""}</span></div></div>`;
 };
 
 Object.assign(UI.C, {
@@ -290,7 +290,7 @@ UI.TAB.life = function (pc) {
     ],
     role = A.role(pc);
   let h = UI.whatNowCard(pc) + (UI.recapCard ? UI.recapCard(pc) : "") + UI.planCard(pc);
-  h += `<div class="row small muted" style="margin:6px 0 4px">${UI.icon("hourglass", "s")} Initiative <b class="ink2">${(A.S.time || 0).toFixed(1)}</b> · ${UI.esc(role.name)}${pc.prison ? ' · <span class="bad">In prison until ' + pc.prison.until + "</span>" : ""}</div>`;
+  h += `<div class="row small muted act-role" style="margin:6px 0 4px"><b class="ink2">${UI.esc(role.name)}</b>${A.weariness && A.weariness(pc) ? " · " + UI.esc(A.weariness(pc)) : ""}${pc.prison ? ' · <span class="bad">In prison until ' + pc.prison.until + "</span>" : ""}</div>`;
   const hidden =
     /Too young|Too old|You are free|Already serving|You already rule|You need a company|You already lead|station|Not in your position|Not with a crown|Kings have|The crown|You command masters|Your duties keep|cannot spare|A sovereign|Others do the chores|Hauling stones/;
   for (const cat of order) {
@@ -302,7 +302,7 @@ UI.TAB.life = function (pc) {
         return (!ok && hidden.test(why || "")) ||
           ["practice", "train_yard", "run", "lift", "meditate", "study"].includes(k)
           ? ""
-          : `<button class="act" data-a="act" data-v="${k}" ${ok ? "" : "disabled"} title="${UI.esc(ok ? D.desc : why)}"><span class="cost">${D.cost ? D.cost + "⧗" : "free"}</span><div class="an">${D.name}</div><div class="ad">${UI.esc(ok ? D.desc : why)}</div></button>`;
+          : `<button class="act" data-a="act" data-v="${k}" ${ok ? "" : "disabled"} title="${UI.esc(ok ? D.desc : why)}">${D.cost ? "" : '<span class="cost">free</span>'}<div class="an">${D.name}</div><div class="ad">${UI.esc(ok ? D.desc : why)}</div></button>`;
       })
       .filter(Boolean);
     if (items.length) h += `<div class="group-h">${cat}</div><div class="acts">${items.join("")}</div>`;
@@ -354,7 +354,7 @@ UI.TAB.path = function (pc) {
     pc.school)
   ) {
     const st = pc.school.style ? A.style(pc.school.style) : null;
-    h += `<div class="card small"><b>${UI.esc(pc.school.name)}</b>${pc.school.master ? " under " + UI.esc(pc.school.master) : ""} — year ${pc.school.years}${st && pc.styles && pc.styles[st.id] ? ` · ${UI.esc(st.name)}: ${UI.esc(A.styleRankName(st, pc.styles[st.id].rank))}` : ""}${pc.school.fee ? ` · ${A.coin(pc.school.fee)}/yr` : ""}<div class="row" style="margin-top:4px"><button class="small" data-a="studyHard" ${A.S.time >= 1 && pc.flags.studyHard !== A.S.year ? "" : "disabled"}>Study hard (1⧗)</button><button class="small" data-a="openSchools">Schools</button><button class="small danger" data-a="leaveSchool">Leave</button></div></div>`;
+    h += `<div class="card small"><b>${UI.esc(pc.school.name)}</b>${pc.school.master ? " under " + UI.esc(pc.school.master) : ""} — year ${pc.school.years}${st && pc.styles && pc.styles[st.id] ? ` · ${UI.esc(st.name)}: ${UI.esc(A.styleRankName(st, pc.styles[st.id].rank))}` : ""}${pc.school.fee ? ` · ${A.coin(pc.school.fee)}/yr` : ""}<div class="row" style="margin-top:4px"><button class="small" data-a="studyHard" ${A.S.time >= 1 && pc.flags.studyHard !== A.S.year ? "" : "disabled"}>Study hard</button><button class="small" data-a="openSchools">Schools</button><button class="small danger" data-a="leaveSchool">Leave</button></div></div>`;
   } else
     h += `<div class="row"><button class="small" data-a="openSchools" ${A.canAct("school")[0] || !GD.ACT_GATE.school ? "" : "disabled"}>Browse schools & academies</button></div>`;
   if (A.isAdult(pc)) {
@@ -406,12 +406,12 @@ UI.jobPathCard = function (pc) {
     h += `<div class="group-h">Offers on the table</div><div class="offers">${offers
       .map(e => {
         const t = typeof e.title == "function" ? e.title(pc, {}) : e.title;
-        return `<div class="card offer"><div class="row"><b>${UI.esc(A.T(t || "An offer", {}))}</b><span class="right tag">${e.time != null ? e.time : 1}⧗</span></div><div class="row" style="margin-top:4px"><button class="small primary" data-a="takeOffer" data-v="${e.id}" ${A.S.time >= (e.time != null ? e.time : 1) ? "" : "disabled"}>Look into it</button><button class="small ghost" data-a="declineOffer" data-v="${e.id}">Turn it down</button></div></div>`;
+        return `<div class="card offer"><div class="row"><b>${UI.esc(A.T(t || "An offer", {}))}</b></div><div class="row" style="margin-top:4px"><button class="small primary" data-a="takeOffer" data-v="${e.id}" ${A.S.time >= (e.time != null ? e.time : 1) ? "" : "disabled"}>Look into it</button><button class="small ghost" data-a="declineOffer" data-v="${e.id}">Turn it down</button></div></div>`;
       })
       .join("")}</div>`;
   const acts = A.workActions(pc);
   if (acts.length)
-    h += `<div class="group-h">At work</div><div class="acts">${acts.map(({ k, W }) => `<button class="act" data-a="doWork" data-v="${k}" ${A.S.time >= W.cost && !(A.S.yearActs["work_" + k] && k !== "hard") && !(k === "hard" && pc.flags.workHard === A.S.year) ? "" : "disabled"}><span class="cost">${W.cost}⧗</span><div class="an">${UI.esc(W.name)}</div><div class="ad">${UI.esc(W.desc)}</div></button>`).join("")}</div>`;
+    h += `<div class="group-h">At work</div><div class="acts">${acts.map(({ k, W }) => `<button class="act" data-a="doWork" data-v="${k}" ${A.S.time >= W.cost && !(A.S.yearActs["work_" + k] && k !== "hard") && !(k === "hard" && pc.flags.workHard === A.S.year) ? "" : "disabled"}><div class="an">${UI.esc(W.name)}</div><div class="ad">${UI.esc(W.desc)}</div></button>`).join("")}</div>`;
   h +=
     '<div class="row" style="margin-top:6px"><span class="right"></span><button class="small danger" data-a="quitJob">Leave this post</button></div></div>';
   return h;
@@ -448,7 +448,7 @@ UI.councilCard = function (pc) {
   h += `<div class="acts">${acts
     .map(a => {
       const cd = A.S.dcool && A.S.dcool["cn_" + a.k] != null && A.absDay() - A.S.dcool["cn_" + a.k] < 120;
-      return `<button class="act" data-a="cnAct" data-v="${a.k}" ${A.S.time >= a.cost && !cd ? "" : "disabled"}><span class="cost">${a.cost}⧗</span><div class="an">${UI.esc(a.name)}</div><div class="ad">${UI.esc(cd ? "Done recently." : a.desc)}</div></button>`;
+      return `<button class="act" data-a="cnAct" data-v="${a.k}" ${A.S.time >= a.cost && !cd ? "" : "disabled"}><div class="an">${UI.esc(a.name)}</div><div class="ad">${UI.esc(cd ? "Done recently." : a.desc)}</div></button>`;
     })
     .join("")}</div>`;
   h += `<div class="group-h">Advise the crown</div><div class="row wrap small"><select id="cnRealm" aria-label="Realm">${others.map(o => `<option value="${o.id}">${UI.esc(o.short)}${A.hostile(r.id, o.id) ? " (at war)" : r.allies.includes(o.id) ? " (ally)" : ""}</option>`).join("")}</select>${[
@@ -459,7 +459,7 @@ UI.councilCard = function (pc) {
   ]
     .map(
       ([k, n]) =>
-        `<button class="small" data-a="cnProp" data-v="${k}" ${A.S.time >= 2 ? "" : "disabled"}>${n} (2⧗)</button>`,
+        `<button class="small" data-a="cnProp" data-v="${k}" ${A.S.time >= 2 ? "" : "disabled"}>${n}</button>`,
     )
     .join(
       "",
@@ -680,7 +680,7 @@ UI.helpModalBasic = function () {
     ${P(UI.helpPlaces())}
     ${P("<b>What now.</b> The top of Life lists the three things most worth doing, one click each. <b>Underlined words</b> explain themselves: tap, click or press Enter on them (your fighting worth opens into body, skill and gear). The Menu has text size, map colors for color-blind players, hints for new players, Export, and Report a problem.")}
     ${P("<b>Time runs.</b> Press <i>Next month</i> or <i>Next year</i>. Anything that needs you — an event, a battle, a letter, a gathering — stops a year early.")}
-    ${P("<b>Your days.</b> On the Life page, set a <i>training</i> focus, how <i>hard</i> you train, and what your <i>free hours</i> go to (advancement, a patron, coin, renown, faith, love, study, scheming, freedom…). Every day moves them. When a pursuit has built up, something opens — what depends on who you are. <i>Initiative</i> (⧗) refills over time and pays for actions.")}
+    ${P("<b>Your days.</b> On the Life page, set a <i>training</i> focus, how <i>hard</i> you train, and what your <i>free hours</i> go to (advancement, a patron, coin, renown, faith, love, study, scheming, freedom…). Every day moves them. When a pursuit has built up, something opens — what depends on who you are. Every action takes some days; do a great deal in a short while and you grow weary, then take harm.")}
     ${P("<b>Your path.</b> Every post is a ladder with plain requirements: merit earned month by month, skill, reputation, time — sometimes letters, birth or a patron. Duties throw up problems and chances. Ladders connect through <i>doors</i>: the clerk can become an envoy, the envoy a chancellor; a sergeant can become a thief-taker. The top of the government ladders is a seat on the council, and the council steers the realm.")}
     ${P("<b>Who you are decides what happens.</b> A king is not mugged in a tavern; a peasant is not asked favors by dukes until something puts them in a great one's sight. Your position also decides what you may do: a ruler does not enlist, a marshal does not dig ditches.")}
     ${P("<b>War.</b> Divisions march across the map day by day. Each day of a battle, each commander picks a tactic — charge, flank, feign a retreat, ambush, dig in, hold a reserve — and some beat others. Scouts, ground, walls, supply, experience and the general matter as much as numbers: a smaller army on good ground with the right tactic can break a bigger one. Supply flows along roads from your capital and depots; enemy armies choke it and raiders cut it. Open the War Room from the War page (Arms, in peace).")}
@@ -755,7 +755,7 @@ UI.warTabClock = function (pc) {
   } else if (pc.company) {
     const c = pc.company;
     h += `<div class="card"><h3>${UI.esc(c.name)}</h3><div class="kv"><div>Men</div><div>${A.fmt(c.men)}</div><div>Quality</div><div>${Math.round(c.quality * 100)}%</div><div>War chest</div><div>${A.coin(c.chest)}</div><div>Contract</div><div>${c.contract ? UI.esc(A.realmName(c.contract)) : "none — the men eat your silver"}</div><div>Battles</div><div>${c.battles}</div></div>
-      <div class="row wrap" style="margin-top:8px"><button data-a="recruit" data-v="20">Hire 20 (120)</button><button data-a="recruit" data-v="100">Hire 100 (600)</button><button data-a="act" data-v="seize_land" ${A.canAct("seize_land")[0] ? "" : "disabled"}>Carve out a realm (3⧗)</button></div><p class="small muted">With 250+ men you can take unclaimed land and found your own realm and house.</p></div>`;
+      <div class="row wrap" style="margin-top:8px"><button data-a="recruit" data-v="20">Hire 20 (120)</button><button data-a="recruit" data-v="100">Hire 100 (600)</button><button data-a="act" data-v="seize_land" ${A.canAct("seize_land")[0] ? "" : "disabled"}>Carve out a realm</button></div><p class="small muted">With 250+ men you can take unclaimed land and found your own realm and house.</p></div>`;
   } else if (pc.mil && pc.mil.merc)
     h += `<div class="card small"><b>${UI.esc(GD.MIL[pc.mil.rank].title)}, ${UI.esc(pc.mil.company || "a free company")}</b> — ${pc.mil.contract ? "under contract to " + UI.esc(A.realmName(pc.mil.contract)) : "between contracts"}.</div>`;
   else {
@@ -955,7 +955,7 @@ UI.TAB.legacy = function (pc) {
         : kids.slice().sort((a, b) => a.born - b.born)[0].id;
     for (const c of kids.sort((a, b) => a.born - b.born)) {
       const taught = (pc.flags.taught || {})[c.id] || 0;
-      h += `<div class="card person ${c.id === cur ? "sel" : ""}"><div class="pp click" data-a="ov" data-v="person:${c.id}">${PORTRAIT.svg(c, 46)}</div><div><div class="nm">${UI.esc(A.fullName(c, false))}</div><div class="sub">${A.age(c)} · ${UI.esc(UI.titleLine(c) || "")}${taught ? ` · taught by you ${taught}×` : ""}</div></div><div class="row" style="gap:4px"><button class="small" data-a="teach" data-v="${c.id}" ${A.S.time >= 1 ? "" : "disabled"} title="Spend days teaching them your two best proficiencies. What you teach is what they inherit.">Teach (1⧗)</button><button class="small ${c.id === cur ? "on" : ""}" data-a="dynHeir" data-v="${c.id}" aria-pressed="${c.id === cur}">If heir…</button></div></div>`;
+      h += `<div class="card person ${c.id === cur ? "sel" : ""}"><div class="pp click" data-a="ov" data-v="person:${c.id}">${PORTRAIT.svg(c, 46)}</div><div><div class="nm">${UI.esc(A.fullName(c, false))}</div><div class="sub">${A.age(c)} · ${UI.esc(UI.titleLine(c) || "")}${taught ? ` · taught by you ${taught}×` : ""}</div></div><div class="row" style="gap:4px"><button class="small" data-a="teach" data-v="${c.id}" ${A.S.time >= 1 ? "" : "disabled"} title="Spend days teaching them your two best proficiencies. What you teach is what they inherit.">Teach</button><button class="small ${c.id === cur ? "on" : ""}" data-a="dynHeir" data-v="${c.id}" aria-pressed="${c.id === cur}">If heir…</button></div></div>`;
     }
     const heir = A.P(cur),
       inh = A.inheritance(pc, heir);
@@ -1008,7 +1008,7 @@ UI.rosterCard = function (pc) {
     (groups[gk] = groups[gk] || []).push(x);
   }
   let h =
-    '<div class="card roster"><div class="row"><span class="tag">Around you</span><span class="tiny muted grow">You know their names and posts — not them. Getting to know someone takes an evening (1⧗) and is your choice.</span></div>';
+    '<div class="card roster"><div class="row"><span class="tag">Around you</span><span class="tiny muted grow">You know their names and posts — not them. Getting to know someone takes an evening and is your choice.</span></div>';
   for (const g of [
     "Above you",
     "Your staff",
@@ -1142,7 +1142,7 @@ UI.personModal = function (t, close) {
         t.alive && pc.alive)
       ) {
         const opts = A.interactOptions(pc, t);
-        h += `<div class="row" style="margin-top:6px">${opts.map(k => (k === "gift" ? `<span class="row" style="gap:3px"><input id="giftAmt" type="number" min="1" value="${Math.max(1, Math.round(Math.min(pc.coin, Math.max(2, pc.coin * 0.05))))}" style="width:80px" aria-label="Gift amount"><button class="small" data-a="int" data-v="${t.id}|gift">Give gift</button></span>` : k === "name_child" ? `<span class="row" style="gap:3px"><input id="childName" value="${UI.esc(t.given)}" style="width:120px" aria-label="Name"><button class="small" data-a="int" data-v="${t.id}|name_child">Rename</button></span>` : `<button class="small ${["murder", "duel", "insult", "divorce", "breakup"].includes(k) ? "danger" : ""}" data-a="int" data-v="${t.id}|${k}">${UI.esc(A.INTERACT[k].name)}${A.INTERACT[k].cost ? " (" + A.INTERACT[k].cost + "⧗)" : ""}</button>`)).join("")}</div>`;
+        h += `<div class="row" style="margin-top:6px">${opts.map(k => (k === "gift" ? `<span class="row" style="gap:3px"><input id="giftAmt" type="number" min="1" value="${Math.max(1, Math.round(Math.min(pc.coin, Math.max(2, pc.coin * 0.05))))}" style="width:80px" aria-label="Gift amount"><button class="small" data-a="int" data-v="${t.id}|gift">Give gift</button></span>` : k === "name_child" ? `<span class="row" style="gap:3px"><input id="childName" value="${UI.esc(t.given)}" style="width:120px" aria-label="Name"><button class="small" data-a="int" data-v="${t.id}|name_child">Rename</button></span>` : `<button class="small ${["murder", "duel", "insult", "divorce", "breakup"].includes(k) ? "danger" : ""}" data-a="int" data-v="${t.id}|${k}">${UI.esc(A.INTERACT[k].name)}</button>`)).join("")}</div>`;
         const fo = A.favorOptions(pc, t);
         if (A.favorsOf(pc, t.id) && fo.length)
           h += `<div class="small" style="margin-top:6px"><b>Call in a favor:</b></div><div class="row" style="margin-top:4px">${fo.map(k => `<button class="small" data-a="favor" data-v="${t.id}|${k}" title="${UI.esc(A.FAVORS[k].desc)}">${UI.esc(A.FAVORS[k].name)}</button>`).join("")}</div>`;
@@ -1150,7 +1150,7 @@ UI.personModal = function (t, close) {
           h += `<div class="small" style="margin-top:8px"><b>Your superior.</b> ${UI.bossButtons()}</div>`;
       }
     } else if (t.alive && pc.alive)
-      h += `<div class="row"><span class="small ink2 grow">You know who ${A.he(t)} is, but you do not know ${A.him(t)}. Whether you ever will is up to you.</span><button class="primary small" data-a="know" data-v="${t.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know ${UI.esc(A.him(t))} (1⧗)</button></div>`;
+      h += `<div class="row"><span class="small ink2 grow">You know who ${A.he(t)} is, but you do not know ${A.him(t)}. Whether you ever will is up to you.</span><button class="primary small" data-a="know" data-v="${t.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know ${UI.esc(A.him(t))}</button></div>`;
   return h + "</div>";
 };
 
@@ -1237,7 +1237,7 @@ UI.drillCard = function (pc) {
     <div class="dr-exp"><span>Unit experience</span>${UI.bar(d.exp, 100, "", 35)}<b>${UI.esc(A.xpLevel(d.exp)[1])}</b></div>
     ${share < 0.99 ? `<div class="tiny muted">Bars show your own men. Across the whole ${UI.esc(d.name)} your drill counts for ${Math.round(share * 100)}% — commanders above you drill the rest.</div>` : ""}
     <div class="tiny muted">The tick on each bar is as far as your officers can teach (${Math.round(cap * 100)}): better sergeants and a sergeant-major raise it. Drill only takes the men to <i>Trained</i>; only war makes veterans. Edges you stop drilling slowly fade.${fight ? ' <b class="warn">The unit is marching or fighting — no drill today.</b>' : ""}</div>
-    <div class="row" style="margin-top:6px"><button class="small" data-a="drillReview" ${A.S.time >= 1 && rv <= 0 ? "" : "disabled"} title="Show the men off to your superior: merit if it goes well">${UI.icon("eye", "s")}Hold a review (1⧗)</button>${rv > 0 ? `<span class="tiny muted">next review in ${rv} days</span>` : ""}</div></div>`;
+    <div class="row" style="margin-top:6px"><button class="small" data-a="drillReview" ${A.S.time >= 1 && rv <= 0 ? "" : "disabled"} title="Show the men off to your superior: merit if it goes well">${UI.icon("eye", "s")}Hold a review</button>${rv > 0 ? `<span class="tiny muted">next review in ${rv} days</span>` : ""}</div></div>`;
 };
 
 Object.assign(UI.A, {

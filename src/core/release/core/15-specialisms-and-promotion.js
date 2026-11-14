@@ -1371,14 +1371,15 @@ A.whatNow = function (pc) {
       "tab",
       "life",
     ]);
-  if (adult && S.time >= 1) {
+  // X3: no pool of initiative (D-019). Time is spent by doing; a body driven too hard grows weary (999995-next-year).
+  if (adult) {
     if (P && P.train && A.planSession && can("train_yard"))
-      add(50, "Train in an extra session", `${Math.floor(S.time)} initiative to spend. Push your training.`, "life", [
+      add(50, "Train in an extra session", "Push your training today. It takes days, and too many in a short while wear you out.", "life", [
         "planSession",
         "",
       ]);
     else
-      add(48, "Spend your initiative", `${Math.floor(S.time)} initiative waiting. Choose something below.`, "life", [
+      add(48, "Choose something to do", "Pick an activity below. It takes days; do as much as you like, but do not wear yourself out.", "life", [
         "tab",
         "life",
       ]);

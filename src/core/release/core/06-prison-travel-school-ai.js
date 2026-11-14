@@ -874,7 +874,7 @@ A.takeOffer = function (id) {
   return A.S.time < cost
     ? {
         ok: false,
-        msg: "Not enough initiative (⧗) yet.",
+        msg: "You cannot spare the time for that today.",
       }
     : ((A.S.time -= cost),
       (j.offers = j.offers.filter(x => x !== id)),
@@ -1117,7 +1117,7 @@ A.doWork = function (k) {
   if (A.S.time < W.cost)
     return {
       ok: false,
-      msg: "Not enough initiative (⧗) yet.",
+      msg: "You cannot spare the time for that today.",
     };
   if (A.S.yearActs["work_" + k] && k !== "hard")
     return {

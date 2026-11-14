@@ -378,11 +378,11 @@ FOLD.reveal = function (el) {
   setTimeout(() => el.classList.remove('fold-flash'), 1400);
   return true;
 };
-// What now: two of its three usual steps ("Choose what to train", "Spend your initiative") sent the player to the tab
+// What now: two of its three usual steps ("Choose what to train", "Choose something to do") sent the player to the tab
 // they were already on, so the click did nothing. Each step now also brings its own control into view.
 FOLD.WN_TARGET = [
   [/train/i, () => document.querySelector('#tabbody .plan-card select') || document.querySelector('#tabbody .plan-card')],
-  [/initiative|spend/i, () => document.querySelector('#tabbody .fold-acts') || document.querySelector('#tabbody .acts')],
+  [/choose something|spend/i, () => document.querySelector('#tabbody .fold-acts') || document.querySelector('#tabbody .acts')],
   [/path|post|job|work/i, () => document.querySelector('#tabbody .spec.pending, #tabbody .jobcard, #tabbody .path-role')],
 ];
 if (UI.A.wn) {

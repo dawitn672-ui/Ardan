@@ -1534,11 +1534,11 @@ UI.courtTabBasic = function (pc) {
     h += `<div class="card person click" data-a="ov" data-v="person:${ru.id}"><div class="pp">${PORTRAIT.svg(ru, 46)}</div><div><div class="nm">${UI.esc(A.rulerStyle(ru, r))}</div><div class="sub">${A.age(ru)} · their opinion of you: ${Math.round(A.opinion(ru, pc))}</div></div></div>`;
   h += `<div class="kv small" style="margin-top:8px"><div>Your rung</div><div>${pc.noble ? UI.esc(A.nobleTitle(pc)) : "none (yet)"}</div>${pc.office ? `<div>Office</div><div>${UI.esc(A.COUNCIL[pc.office].name)}</div>` : ""}</div>`;
   h += `<div class="acts" style="margin-top:8px">
-    <button class="act" data-a="nAct" data-v="court"><span class="cost">1⧗</span><div class="an">Attend court</div><div class="ad">Be seen. Make friends and enemies.</div></button>
-    <button class="act" data-a="nAct" data-v="petition"><span class="cost">1⧗</span><div class="an">Petition for advancement</div><div class="ad">Ask the crown to raise your rung.</div></button>
-    <button class="act" data-a="nAct" data-v="office"><span class="cost">1⧗</span><div class="an">Seek a council seat</div><div class="ad">Chancellor, Marshal, Treasurer, Spymaster or Chaplain.</div></button>
-    <button class="act" data-a="nAct" data-v="estate"><span class="cost">1⧗</span><div class="an">Manage your estate</div><div class="ad">Reeves, mills and rents.</div></button>
-    <button class="act" data-a="act" data-v="plot_throne" ${A.canAct("plot_throne")[0] ? "" : "disabled"}><span class="cost">3⧗</span><div class="an">Plot for the throne</div><div class="ad">Treason, if it fails.</div></button></div>`;
+    <button class="act" data-a="nAct" data-v="court"><div class="an">Attend court</div><div class="ad">Be seen. Make friends and enemies.</div></button>
+    <button class="act" data-a="nAct" data-v="petition"><div class="an">Petition for advancement</div><div class="ad">Ask the crown to raise your rung.</div></button>
+    <button class="act" data-a="nAct" data-v="office"><div class="an">Seek a council seat</div><div class="ad">Chancellor, Marshal, Treasurer, Spymaster or Chaplain.</div></button>
+    <button class="act" data-a="nAct" data-v="estate"><div class="an">Manage your estate</div><div class="ad">Reeves, mills and rents.</div></button>
+    <button class="act" data-a="act" data-v="plot_throne" ${A.canAct("plot_throne")[0] ? "" : "disabled"}><div class="an">Plot for the throne</div><div class="ad">Treason, if it fails.</div></button></div>`;
   h += `<div class="group-h">The ladder (Part 12)</div><table class="t small"><tr><th>Rung</th><th>Holds</th></tr>${GD.NOBLE_RUNGS.slice()
     .reverse()
     .map(x => `<tr><td>${x.title}</td><td>${A.fmt(x.income)} suns/yr, levy ${A.fmt(x.levy)}</td></tr>`)

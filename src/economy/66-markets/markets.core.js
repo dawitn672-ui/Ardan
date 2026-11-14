@@ -547,7 +547,7 @@
     if (P.hostile) return { ok: false, msg: 'You are at war with them. Nobody there will buy.' };
     if (P.shut) return { ok: false, msg: `${P.name} is cut off. No carts go in or out.` };
     if (!A.cargoLoad(pc) && !opts.buyBack) return { ok: false, msg: 'You carry nothing to sell.' };
-    if (A.S.time < P.ini) return { ok: false, msg: `A trip of ${P.R.days} days needs ${P.ini} initiative.` };
+    if (A.S.time < P.ini) return { ok: false, msg: `A trip of ${P.R.days} days is more than you can spare just now.` };
     A.S.time -= P.ini;
     const log = [], before = Object.assign({}, A.cargo(pc));
     if (A.chance(P.risk)) {
@@ -637,7 +637,7 @@
     for (const x of near) {
       const P = MT.tripPlan(x.pid), [b, s] = MT.at(x.pid, () => [A.buyPrice(x.rid, k), A.sellPrice(x.rid, k)]);
       const go = load > 0 || !!UI.mtBack, ok = P && !P.hostile && !P.shut && go && A.S.time >= P.ini;
-      const why = !P ? '' : P.hostile ? 'At war with you' : P.shut ? 'Cut off by war' : !go ? 'You carry nothing' : A.S.time < P.ini ? `Needs ${P.ini} initiative` : load ? `Sell all you carry there: about ${A.coin(P.net)} after ${P.foreign ? 'tolls' : 'dues'} and carting` : 'Go and buy there';
+      const why = !P ? '' : P.hostile ? 'At war with you' : P.shut ? 'Cut off by war' : !go ? 'You carry nothing' : A.S.time < P.ini ? `Too long a trip just now` : load ? `Sell all you carry there: about ${A.coin(P.net)} after ${P.foreign ? 'tolls' : 'dues'} and carting` : 'Go and buy there';
       h += `<tr><td>${esc(MT.name(x.pid))}${x.rid !== A.homeMkt(pc) ? ` <span class="chip">${esc(A.realmShort(x.rid))}</span>` : ''}${P && P.shut ? ' <span class="chip red">cut off</span>' : ''}</td><td>${esc(`${x.R.steps} steps, ${x.R.days} days${x.R.sea ? ' by sea' : ''}`)}</td><td>${A.coin(Math.round(MT.cartCost(k, P ? P.R : x.R)))}</td><td>${A.coin(Math.round(b))}</td><td>${A.coin(Math.round(s))}</td><td><button class="small" data-a="mtTrip" data-v="${esc(String(x.pid))}" ${ok ? '' : 'disabled'} title="${esc(why)}">Go</button></td></tr>`;
     }
     h += `</table></div><div class="row wrap"><label class="tiny muted">Bring back <select data-c="mtBack" aria-label="Goods to bring back">${opt(UI.mtBack, ks, 'nothing')}</select></label></div>`;

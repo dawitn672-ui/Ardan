@@ -104,7 +104,7 @@ POL.seek = function (pc, oid) {
   if (x.bar.length) return warn(`You must be ${x.bar.join(', ')}.`);
   if (x.cool) return warn('You asked for it this year already.');
   if (x.price && pc.coin < x.price) return warn(`The crown sells the collectorship for ${A.coin(x.price)}.`);
-  if (!spend(1)) return warn('Not enough initiative.');
+  if (!spend(1)) return warn('You cannot spare the time for that today.');
   POL.pcPol(pc).sought[oid] = A.S.year;
   if (x.price) { pc.coin -= x.price; r.treasury += x.price; if (RI.purse) RI.purse(pc, 'office', -x.price, 'Offices bought'); }
   const yes = A.chance(x.p);
@@ -196,7 +196,7 @@ Object.assign(UI.A, {
     if (!POL.canPropose(pc, r)) return warn('Only the crown and its council bring bills.');
     if (r.pol && r.pol.bill) return warn('A bill is already before the realm.');
     const P = RI.PUSH[v]; if (!P || !P.law || !P.ok(r)) return warn('That law cannot be brought now.');
-    if (!spend(1)) return warn('Not enough initiative.');
+    if (!spend(1)) return warn('You cannot spare the time for that today.');
     const b = POL.openBill(r, v, pc, 'player');
     if (b) { b.pc = { side: 'for', w: pc.ruler === r.id ? 1 : RI.pcWeight ? RI.pcWeight(pc) : .5 }; A.log(`You bring a bill for ${P.t}. The first count is in sixty days.`, 'crown'); }
     refresh();
@@ -207,7 +207,7 @@ Object.assign(UI.A, {
     if (!b) return warn('There is no bill before the realm.');
     if (!(POL.canPropose(pc, r) || (RI.canSpeak && RI.canSpeak(pc, r)[0]))) return warn('You are not heard at court.');
     if (b.spoke === pc.id) return warn('You have spoken on this bill already.');
-    if (!spend(1)) return warn('Not enough initiative.');
+    if (!spend(1)) return warn('You cannot spare the time for that today.');
     b.spoke = pc.id;
     const side = v === 'against' ? -1 : 1, o = POL.billOdds(r), d = Math.round(45 + 20 * Math.abs(o.m));
     const p = A.checkOdds ? A.checkOdds(pc, { s: 'persuasion', s2: 'wil', d }) / 100 : clamp(.5 + (A.skill(pc, 'persuasion') - d) / 62, .05, .95);
@@ -249,7 +249,7 @@ Object.assign(UI.A, {
     if (!live(t)) return;
     if (k === 'vote') { if (!el.electors.includes(pc.id)) return warn('You have no vote.'); el.pcVote = t.id; A.log(`You will give your vote to ${A.fullName(t, false)}.`, 'good'); return refresh(); }
     if (!el.cands.includes(pc.id)) return warn('You are not a candidate.');
-    if (!spend(1)) return warn('Not enough initiative.');
+    if (!spend(1)) return warn('You cannot spare the time for that today.');
     if (k === 'visit') {
       const p = clamp(.35 + A.skill(pc, 'persuasion') / 120 + (pc.fame || 0) / 400, .1, .9), ok = A.chance(p);
       if (pc.rel[t.id]) A.addOp(pc, t, ok ? 10 : 2); else A.link(pc, t, 'acquaint', ok ? 15 : 5, 'acquaint');
@@ -288,7 +288,7 @@ Object.assign(UI.A, {
     const n = POL.officesOf(pc).length ? 2 : 1;
     const ok = A.canJoinFaction ? A.canJoinFaction(pc, f) : [true];
     if (!ok[0]) return warn(ok[1] || 'They will not have you.');
-    if (!spend(n)) return warn(`Not enough initiative (${n}).`);
+    if (!spend(n)) return warn(`You cannot spare the time for that today.`);
     const res = A.joinFaction ? A.joinFaction(f.id) : null;
     if (res && res.msg) A.log(res.msg, res.ok ? 'good' : 'warn');
     refresh();

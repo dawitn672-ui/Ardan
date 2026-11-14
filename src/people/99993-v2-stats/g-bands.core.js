@@ -138,7 +138,7 @@ VS.deNum = function (t, node) {
     if (m && pc) { const sk = statKeyOf(m[2]), kk = sk ? null : skillKeyOf(m[2]) || Object.keys(GD.SKILLS || {}).find(k => String(GD.SKILLS[k]).split(/[:&,(]/)[0].trim() === m[2]);
       if (sk || kk) return `${m[1]}${m[2]} ${sk ? VS.statWord(pc, sk, +m[3]) : VS.tierOf(+m[3]).name}${m[4]}`; } }
   // a number in an element of its own beside its label ("Health <b>97</b>")
-  if (par && /^\s*\d{1,3}\s*$/.test(t) && par.nodeType === 1 && par.childNodes.length === 1 && !par.closest('[data-tt="initiative"]')) {
+  if (par && /^\s*\d{1,3}\s*$/.test(t) && par.nodeType === 1 && par.childNodes.length === 1) {
     const prev = par.previousSibling, m = prev ? LABELS.exec(prev.textContent || '') : null;
     if (m) return VS.band(m[1], +t);
   }

@@ -74,7 +74,7 @@ UI.riCourtCard = function (r, pc) {
     const [ok, why] = RI.canSpeak(pc, r);
     if (ok) {
       const spoke = ag.pc ? `You have spoken ${ag.pc.side === 'for' ? 'for' : 'against'} it.` : '';
-      h += `<div class="row" style="margin-top:4px">${spoke ? `<span class="tiny">${esc(spoke)}</span>` : `<button class="small" data-a="riVoice" data-v="for" ${A.S.time >= 1 && !A.S.yearActs.riVoice ? '' : 'disabled'}>Speak for it (1⧗)</button><button class="small" data-a="riVoice" data-v="against" ${A.S.time >= 1 && !A.S.yearActs.riVoice ? '' : 'disabled'}>Speak against it (1⧗)</button>`}${p && p.alive ? `<button class="small ghost" data-a="riGift" data-v="${esc(p.id)}" ${pc.coin >= RI.giftCost(pc, p) ? '' : 'disabled'}>Send ${esc(p.given)} a gift (${A.coin(RI.giftCost(pc, p))})</button>` : ''}</div>`;
+      h += `<div class="row" style="margin-top:4px">${spoke ? `<span class="tiny">${esc(spoke)}</span>` : `<button class="small" data-a="riVoice" data-v="for" ${A.S.time >= 1 && !A.S.yearActs.riVoice ? '' : 'disabled'}>Speak for it</button><button class="small" data-a="riVoice" data-v="against" ${A.S.time >= 1 && !A.S.yearActs.riVoice ? '' : 'disabled'}>Speak against it</button>`}${p && p.alive ? `<button class="small ghost" data-a="riGift" data-v="${esc(p.id)}" ${pc.coin >= RI.giftCost(pc, p) ? '' : 'disabled'}>Send ${esc(p.given)} a gift (${A.coin(RI.giftCost(pc, p))})</button>` : ''}</div>`;
     } else if (!mine && pc) h += `<div class="tiny muted">${esc(why)}</div>`;
   }
   // lately at court

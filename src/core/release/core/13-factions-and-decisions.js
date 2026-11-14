@@ -1644,7 +1644,6 @@ DEC("pilgrimage", {
   desc: "Walk to the holy places of your faith. Hard roads, holy ground, a changed heart.",
   show: pc => A.age(pc) >= 14 && !pc.flags.unfree && !pc.prison,
   reqs: pc => [
-    R("2 initiative", A.S.time >= 2),
     R("60 suns for the road", pc.coin >= 60),
     R("Once every 8 years", !pc.flags.pilgrim || A.S.year - pc.flags.pilgrim >= 8),
   ],
@@ -1684,7 +1683,6 @@ DEC("treatise", {
     const best = A.bestSkillOf(pc);
     return [
       R(`A proficiency at 50 (best: ${GD.SKILLS[best.k]} ${best.v})`, best.v >= 50),
-      R("2 initiative", A.S.time >= 2),
       R("Once every 6 years", !pc.flags.author || A.S.year - pc.flags.author >= 6),
     ];
   },
@@ -1915,7 +1913,6 @@ DEC("mentor", {
   show: pc => A.age(pc) >= 12 && !A.relsOf(pc, ["mentor"]).some(x => x.p.alive),
   reqs: pc => [
     R("120 suns a year up front", pc.coin >= 120 || (!A.isAdult(pc) && A.S.family && A.S.family.wealth >= 120)),
-    R("1 initiative", A.S.time >= 1),
   ],
   pick: pc => Object.entries(GD.SKILLS).map(([k, n]) => [k, `${n} (${A.skill(pc, k)})`]),
   run(pc, sk) {
@@ -1939,7 +1936,7 @@ DEC("memoirs", {
   name: "Write your memoirs",
   desc: "Old enough to look back. Tell your story your way.",
   show: pc => A.stage(pc) === "old" && pc.literate && !pc.flags.memoirs,
-  reqs: pc => [R("Renown 30", pc.fame >= 30), R("1 initiative", A.S.time >= 1)],
+  reqs: pc => [R("Renown 30", pc.fame >= 30)],
   run(pc) {
     A.S.time -= 1;
     pc.flags.memoirs = A.S.year;
@@ -1996,7 +1993,6 @@ DEC("progress", {
   reqs: pc => {
     const r = A.myRealm();
     return [
-      R("2 initiative", A.S.time >= 2),
       R("1,500 from the treasury", r && r.treasury >= 1500),
       R("Once every 3 years", !pc.flags.progress || A.S.year - pc.flags.progress >= 3),
     ];

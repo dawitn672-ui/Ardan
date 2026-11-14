@@ -5,7 +5,7 @@
 // The profile (desktop side panel and the phone's You page): health, happiness, looks, renown, honor, piety and their
 // numbers; each stat's number (its name already opened the release's stat tip); the trait, quirk, faith, people and
 // blood chips (they keep their titles, which the engine lifts while a popover is open); the best proficiencies.
-// The top bar: the date and age, initiative, coin. The Realm tab (as ruler): treasury, stability, legitimacy, war
+// The top bar: the date and age, coin. The Realm tab (as ruler): treasury, stability, legitimacy, war
 // weariness, infamy. People: each opinion bar. The Life tab: the needs card of 35-moods, when it is in the build.
 (function () {
   const TT = UI.TT;
@@ -61,8 +61,7 @@
   };
   TT.wire.clkHtml = function (h) {
     if (!A.pc()) return h;
-    return h.replace('<span class="clk-date" title="Today">', `<span class="clk-date"${UI.ttAttrs('date', '')} aria-label="Today: ${UI.esc(A.dateStr())}, age ${A.age(A.pc())}">`)
-      .replace(/<span class="clk-ini" title="[^"]*">/, `<span class="clk-ini"${UI.ttAttrs('initiative', '')} aria-label="Initiative ${(A.S.time || 0).toFixed(1)} of ${A.initiativeCap(A.pc())}">`);
+    return h.replace('<span class="clk-date" title="Today">', `<span class="clk-date"${UI.ttAttrs('date', '')} aria-label="Today: ${UI.esc(A.dateStr())}, age ${A.age(A.pc())}">`);
   };
   TT.wire.renderTop = function (h) {
     const pc = A.pc(); if (!pc) return h;

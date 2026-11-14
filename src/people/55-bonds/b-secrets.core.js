@@ -332,7 +332,7 @@
     }
     if (key === 'bd_dig') {
       if (!pc || !t || !t.alive) return { ok: false, msg: 'They are not here.' };
-      if (A.S.time < 1) return { ok: false, msg: 'Not enough initiative (⧗) yet.' };
+      if (A.S.time < 1) return { ok: false, msg: 'You cannot spare the time for that today.' };
       A.S.time -= 1;
       A.queue({ type: 'event', ev: 'bd_dig_try', forced: true, ctx: { pid: t.id } });
       return { ok: true, msg: '' };

@@ -522,7 +522,7 @@
       return h.replace(/<details class="help-more"><summary>Time<\/summary>[\s\S]*?<\/details>/,
         `<details class="help-more"><summary>Time</summary><p><b>A month or a year.</b> <i>Next month</i>${k('N')} lives the next month; <i>Next year</i>${k('Y')} lives the next twelve, month by month, and is the main button while you are a child. Neither ever turns into a stop button: the one that is running keeps its name and a thin bar shows how far it has gone${coarse() ? '' : '; Esc ends a year at the end of its month'}. ` +
         `A year stops by itself, and says why in one line, for what matters: a choice with real weight, a battle or a call to war, an illness or a wound, a birth or a death in your household, coming of age, a deadline. Talk, errands and the small happenings of the day never stop it: they wait for the end of the step and come one at a time, and the quiet months are gathered into one note. ` +
-        `There is no pool of initiative to spend: do as much as you like, but a body driven too hard grows weary, and then hurt. ` +
+        `Your days are not rationed: do as much as you like, but a body driven too hard grows weary, and then hurt. ` +
         `On campaign (your host on the march or at a siege, or a long road) time opens into <i>Next day</i>${k('D')} and <i>Next week</i>${k('W')}, with your standing orders beside them. A battle stops the clock. Between steps the world is still and the time is yours.</p></details>`)
         .replace(/<li>Press <b>Month<\/b>[\s\S]*?<\/li>/, `<li>Press <b>Next month</b>${k('N')} or <b>Next year</b>${k('Y')} to let time pass.</li>`);
     } catch (e) { return h; }
