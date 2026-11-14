@@ -595,3 +595,20 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Open (part 2):** station words and gates, card place vs deployment, counsel from the absent, pronoun lint, the
   400-scene preview replay, the full fatal-illness arc.
 - **Undo:** `git revert -m 1 839d0c6`.
+
+### H-035 · 2026-11-14 11:22 ET · Order 52: names worth saying, ordinary arms as made things, Sickle Moon (D-050)
+- **Commits:** `7345e0c`, `95fbe90`, `5a5a5ef`, `98457a3` (by a Fable 5.2 agent), merged as `334f81e`.
+- **Names:** a piece is named for the sky, season, sea or hour of its country; its art for what that weather does to a
+  man; its forms read as the fight in order. Winter Storm (Snowfall), White Noon (Sunwise), Dry Rain (Mirage), Undertow
+  (Slack Water), Killing Frost (Black Ice), Deep Fire (Stone Oath), Long Shadow (Slow Drum), Summer Thunder (Cloudburst),
+  Sickle Moon (Owl-Light), Lodestar (Falling Star). The twenty example arts renamed (Briar, Two Waves, Kingfisher, Iron
+  Under Silk, Vigil, The Long Hunt…). Guides: growth.md §12 (arts) and economy-and-items.md Part 6 (weapons). 137 new
+  names checked against 1,620 lore names and 613 mottoes: no clash ("Red Rain" dropped: a name from another work).
+- **Ordinary arms:** `src/ui/engine/figure/arms.js` draws 45 forms (nine swords, five knives, 21 hafted arms, bows with a
+  quiver, a crossbow, six shields): make changes the work (crude to masterwork), rarity the steel (nothing glows), six
+  peoples' makes. `GEAR_ART` and `registerGear` kept; the old rule-drawn arms archived (`archive/figure-rule-drawn-arms/`).
+  Draw cost unchanged within noise. Sheet: `docs/design/legendaries/ordinary.png`.
+- **Sickle Moon:** the bow redrawn from scratch: yew with horn ears, a carved heart-oak riser with a moonstone, seven
+  silver moons on each limb, its own string, arrow and quiver.
+- **Tests:** tests/v2 74/74; the fg tests and boot, renderRng pass after the merge.
+- **Undo:** `git revert -m 1 334f81e`.

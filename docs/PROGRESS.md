@@ -46,6 +46,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **X3 part 1** · No initiative left; feasts on their dates; fight stakes; illness shown; kilometres (D-051) · `839d0c6` · 2026-11-14 11:19 ET
 - [ ] **X3 part 2** · Station words, card place, counsel from the absent, pronoun lint, the preview replay
 - [ ] **C7** · Names and cultures in the game (one common language, D-013)
+- [x] **Order 52** · Legendaries and arts renamed; ordinary arms as made things (45 forms); Sickle Moon (D-050) · `334f81e` · 2026-11-14 11:22 ET
 - [ ] **C8c** · Dress, class and regalia (changeable outfits)
 - [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
 - [x] **D12a** · War design: theatre, field, press; sight by rank; one engine with a cause ledger; nine stages (`docs/design/war.md`) · `0378b9e` · 2026-11-14 05:43 ET · **10 owner decisions pending**
