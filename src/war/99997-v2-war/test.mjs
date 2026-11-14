@@ -656,7 +656,7 @@ export default {
       look('captain, left behind', { room: false, place: true, wars: true, btn: false, arms: false });
       life({}, pc => { enlist(7)(pc); toWar(pc); }); look('general, at war', { room: true, place: true, wars: true, btn: true, arms: false });
       life({ status: 'noble', startAge: 30 }, pc => { crown(pc); toWar(pc); }); look('ruler, at war', { room: true, place: true, wars: true, btn: true, arms: false });
-      const est = [W.estimate('7.3k'), W.estimate('12k'), W.estimate('752'), W.estimate('3')];
+      const est = [W.counterEstimate('7.3k'), W.counterEstimate('12k'), W.counterEstimate('752'), W.counterEstimate('3')];
       UI.ov = null; UI.tab = 'life'; UI.render();
       return { rows, est };
     });

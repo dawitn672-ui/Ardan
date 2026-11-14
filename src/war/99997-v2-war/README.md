@@ -29,7 +29,7 @@
 
 - **The War Room** (`W.canRoom`): the crown, and the Marshal who raises the host, in peace and war. In a war of yours, a commander (rank 7 and up, an army's general), or a captain (ranks 4-6, a sell-sword captain) while deployed (`W.deployed`: his division marches with an army, his company is under contract). Never a soldier or a sergeant: his war is the War tab (his company, his orders, rumour) and the battle at his rank. The War tab's War Room button, the army's Path card button and the "Open the War Room" hint follow the same rule.
 - **What the map shows** (`W.scope`, inside `W.withSeen`): a commander the theatre; a captain two provinces round his division; a soldier or a sergeant his province and the next. His own division always shows.
-- **Enemy numbers below a commander** are estimates: a War Room counter reads "~7k" (`W.estimate`), not "7.3k".
+- **Enemy numbers below a commander** are estimates: a War Room counter reads "~7k" (`W.counterEstimate`), not "7.3k".
 - **The map's Wars mode** is offered only to a life in a war (`UI.mapModeHidden`, read by the release's `UI.mapModes`).
 - **Arms** (the War tab in peace) appears at 14 or on enlisting (`V2T.armsShown`, 99992-v2-time).
 - **The elite orders on the War tab** are those you have heard of (`A.orderHeard`): your realm's, your own, those of the realms in your wars, and the strongest. The Codex lists all eight.

@@ -28,13 +28,13 @@
   UI.mapModeHidden = k => k === 'wars' && !W.inWar();
 
   // enemy strength below a commander is an estimate: "~7k" for a counter the release labels "7.3k"
-  W.estimate = label => {
+  W.counterEstimate = label => {
     const m = /^(\d+(?:\.\d)?)k$/.exec(String(label || ''));
     return m ? '~' + Math.max(1, Math.round(+m[1])) + 'k' : label;
   };
   const wc = UI.wrCounter;
   if (typeof wc === 'function') UI.wrCounter = function (ctx, x, y, K, o) {
-    if (o && o.side === 'foe' && W.rank() !== 'commander') o = Object.assign({}, o, { label: W.estimate(o.label) });
+    if (o && o.side === 'foe' && W.rank() !== 'commander') o = Object.assign({}, o, { label: W.counterEstimate(o.label) });
     return wc.call(this, ctx, x, y, K, o);
   };
 })();
