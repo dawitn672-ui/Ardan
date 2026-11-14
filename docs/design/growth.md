@@ -658,17 +658,28 @@ it can change a life; lowering one below the default refunds points; prices stay
 ## 10 · The talent budget, first scope (owner order 38, 2026-11-13 19:40 ET; numbers to be tuned in G1 against bot lives)
 **Letters, growth and ceiling.** F ×0.5 (a low ceiling) · E ×0.7 · D ×0.85 · **C ×1.0 (average, the default)** · B ×1.15
 · A ×1.35 · **S ×1.8 · SSS ×3.0** (abnormal growth, and a ceiling past the people's usual limit; owner, 2026-11-13 19:43 ET). Long training creeps past any ceiling, slowly.
-**Prices (owner order 40, 2026-11-13 19:45 ET: cheaper, bigger budget; replaces the first prices).** Cost to raise from C,
-cumulative, and refund to lower from C:
+**Prices (owner order 41, 2026-11-13 19:49 ET; replaces orders 38 and 40's tables).** Two rules make every build fair: (1) a talent's
+weight follows how much it covers, so a broad talent costs close to the sum of its parts (a small discount for
+convenience, never a bargain); (2) each letter costs about in step with the growth it gives, so spreading out and
+focusing earn about the same per point. Cost to raise from C, cumulative, and refund to lower from C (narrow prices):
 
-| Reach | B | A | S | SSS | D | E | F |
+| Letter | B | A | S | SSS | D | E | F |
 |---|---|---|---|---|---|---|---|
-| Narrow (one attribute, one weapon family, one craft) | 1 | 3 | 6 | 14 | +1 | +2 | +3 |
-| Group (a few attributes, or a whole calling) | 2 | 4 | 9 | 21 | +1 | +3 | +4 |
-| Broad (all of body, mind or presence) | 2 | 6 | 12 | 28 | +2 | +4 | +6 |
+| Growth | ×1.15 | ×1.35 | ×1.8 | ×3.0 | ×0.85 | ×0.7 | ×0.5 |
+| Narrow, ×1 (one attribute, one weapon family, one craft) | 1 | 2 | 5 | 12 | +1 | +2 | +3 |
+| Group, ×2 (two or three attributes, or a whole calling) | 2 | 4 | 10 | 24 | +2 | +4 | +6 |
+| Broad, ×5 (all of body, all of mind, all of presence) | 5 | 10 | 25 | 60 | +5 | +10 | +15 |
 
-**Budget: 40 points.** So: Physique A costs 6, Physique S 12, Physique SSS 28 (affordable, at the price of most else);
-Speed SSS 14; Blades S 9; lowering Intellect to E gives back 4. A refund is always smaller than the matching cost.
+**Budget: 40 points.** Points per unit of growth stay near 6 at every letter (B 6.7, A 5.7, S 6.3, SSS 6.0), so no letter
+is the obvious buy. Builds this allows:
+- **Spread:** Physique A 10 · Blades S 10 · Speed S 5 · Senses A 2 · Command A 4 · Looks B 1 = 32, eight left.
+- **Focused:** Speed SSS 12 · Blades SSS 24 = 36: a duellist with two abnormal gifts and nothing else above average.
+- **Many small gifts:** ten narrow talents at A (20) and two groups at S (20) = 40.
+- **Body above all:** Physique S 25 and Blades A 4, with 11 left; Physique SSS (60) only by lowering both mind and
+  presence to F (+30): a legal, extreme brute who learns arts slowly and leads no one.
+A refund is always smaller than the matching cost; arms and callings are separate from the body, so Physique never
+grants weapon skill. G1 tunes these against bot lives (a sweep of random builds: no build may dominate the others' life
+outcomes by more than a set margin).
 **The picker** (categories, then subcategories; each opens on click, so the list never sprawls):
 - **Body:** Physique (broad) › Might (strength and toughness, group) · Agility (speed and reflexes, group) · single:
   Strength, Speed, Reflexes, Toughness, Endurance, Senses, Hands.
