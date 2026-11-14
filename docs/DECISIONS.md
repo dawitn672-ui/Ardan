@@ -620,3 +620,20 @@ All of growth.md §6.5's decisions are now settled (stats here; the rest by orde
 3. **Models:** Fable 5.2 may be used wherever it makes the game better (design, art, the hardest systems, critique and
    playtests of feel), not only for "the big designs" (refines D-009/D-010); Opus 5.5 and Sonnet 5.5 where they serve as
    well.
+
+### D-048 · Markets where players are, 100+ goods, balance with care, Fable for design quality (owner order 50, 2026-11-13 21:05 ET)
+1. **Markets (replaces D-032 item 1's 281).** Players live in a few places at a time: their home town, their lord's seat,
+   the capital, a road between, a campaign. So the economy keeps **full markets in the cities and great ports, about
+   60-90** (one per city of any size, read from the map's settlements at world build), each with its stores, prices and
+   merchants; **towns and villages are fed by their nearest market** and show a small stall view (a few goods, prices
+   from the hub plus distance and local harvest); **fairs** add a short-lived full market in a town in season. Detail
+   follows the player: the markets near them run every month in full; the far ones tick lighter. The exact count is set
+   at E1a from the map and the speed budget.
+2. **Goods: more than a hundred** (replaces "40 or more"), raw and finished, each with a use a person feels. Not all at
+   all times: by season (fresh fish, fruit, wool after shearing), by region (salt, amber, silk, spice only where made or
+   brought), by event (war raises arms and horses, famine strips grain), and rare goods by caravan or fair only.
+3. **Balance with care.** Every stage is tuned against many bot lives and long world runs before it ships (the balance
+   league, the coherency checks, and new economy and growth gates); a stage waits until its numbers hold.
+4. **Models (refines D-047 item 3):** Fable 5.2 only where it raises design quality (art, the core designs, feel);
+   otherwise the efficient plan of D-009/D-010 (Opus 5.5 for systems, Sonnet 5.5 for interface and data, Sonnet for
+   playtesters).

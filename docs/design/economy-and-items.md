@@ -337,3 +337,11 @@ Where this part differs from Parts 1-3, this part wins.
   still decides most fights, and owning one draws thieves, claimants and kings.
 
 **Owner order 47 (2026-11-13 20:07 ET): owner and wielder.** A legendary has an owner (crown, house, order, temple, pledge-holder, or none if lost) and a wielder who may differ; a bearer by office changes when the post changes hands (one holder per post). Why it sits in those hands (custom, oath, law, office, bargain, theft, loss) is part of its record and its politics (legitimacy, claims, pride, grudges).
+
+
+## Part 5 · Owner order 50 (2026-11-13 21:05 ET, D-048)
+Where this part differs from Parts 1-4, it wins. **Markets:** full markets in the cities and great ports (about 60-90,
+from the map at world build); towns and villages are fed by their nearest market and show a small stall view; seasonal
+fairs add short-lived full markets; markets near the player run in full each month, far ones lighter. **Goods: more than
+a hundred**, raw and finished, each with a use; availability by season, region, event and caravan, so not all are on
+sale at once. **Balance:** each stage is tuned against bot lives and long world runs before it ships.
