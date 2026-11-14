@@ -566,3 +566,18 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   the trial ran a 9,000-man battle in about 1 ms. Nine build stages (W0, D9's pieces, D11a, D12b-1..5, D11b).
   **Ten owner decisions pending.**
 - **Undo:** `git revert -m 1 0378b9e`.
+
+### H-033 · 2026-11-14 10:42 ET · CI 107's failures after C9: 13 of 17 fixed; the slowdown was the skill cap, not longer lives
+- **Commits:** `8d13cca`, `0596169`, `bef511d`, `a1b2edc` (by an Opus 5.5 agent, branch `c9-ci107`), merged as `5b5d528`.
+- **Speed:** longer lives did not grow the world (living people in a 60-year life about the same, a little fewer). The
+  cost was C9's skill cap: 9996-polity reads `A.skill` about 100,000 times a year and each read made two `A.stat`
+  calls (2.79 million in a 20-year bot life). Memoised per person on everything it reads: `A.stat` calls 148,000; that
+  life 20 s of CPU against 25 s before C9. Next month on y50-noble: median 220 ms before and after.
+- **Fixed:** wcRecordWhole (the test compared entries not yet written), pfLean / pfFits (a child's age said once, in
+  the heading), pfNumbers (ordinals in names), famineTriplesGrain (the test's month is thirty days), ttCov2Realm (the
+  court's "Because" line is a click-to-open note), mwOddsAreTheOddsPlayed (follows honest odds), v2sDerive and
+  v2sPlaytest2Body (on Story difficulty, so the child lives to grow), ttWorthSums (1ad1adc), phoneDesktopSame (masked).
+- **Open:** rankMovesTheFight (the officer layer moves 9 points against a bar of 10: the new world gives fewer close
+  fights), csWorlds (74 of 83 AI wars in the news against 74.7), kinBotLives, and the two long tests not re-timed here.
+  This push runs the full CI to measure them.
+- **Undo:** `git revert -m 1 5b5d528`.
