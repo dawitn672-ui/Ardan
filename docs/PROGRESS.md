@@ -4,8 +4,6 @@ The checklist of every work item, in the order they are being done, split by maj
 moment it is merged and CI is green, with the stamp and the commit; never delete a line. Details live in
 `docs/HISTORY.md`; the plans and reasons in `docs/CRITIQUE.md` §2, `docs/V3_SPEC.md` and `docs/DECISIONS.md`.
 
-**PAUSE IN FORCE (order 36):** after the ten legendary weapon designs, no new step until the owner says go.
-
 *Last updated 2026-11-13 07:21 ET*
 
 ## v2 · Round 2: the owner's complaint list (`docs/V2_SPEC.md`, `docs/CRITIQUE.md`)
