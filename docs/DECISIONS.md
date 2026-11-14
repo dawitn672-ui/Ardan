@@ -546,3 +546,33 @@ a little, never forced up to match. C9 builds the baseline for today's skills; G
   5. **Not touched:** how stats are computed or worded (C9 owns `99993-v2-stats`; the page shows what `A.V2S` gives, including the "Measured" section, which C9 may empty or remove with the real-unit readouts).
 - **Conflicts with orders:** none. Descriptions open on click; no percentages; rendering is pure; the state is the player's, not the save's.
 - **Undo:** `git revert` the P2 commits; `src/ui/999996-profile-tab` returns to D-038's eight folded sections.
+
+### D-043 · Owner order 36: combat ranks, talents at birth, arts that stay, lives without ladders, legendaries (2026-11-13 19:23 ET)
+**Replaces** where they differ: D-039 items 2-4, 7 and 9; D-042's baseline sizes; growth.md §§1.4, 2.2, 2.4, 3.2, 4.
+1. **Combat ranks without caps.** Beginner … Myth stay the combat words; no count limit; today no one alive stands
+   above Grandmaster except the rare Legend, and none is Myth. A Legend can face four Grandmasters and live, if the body
+   keeps up. `GD.LEGEND_CAP` and the "proofs and room" rules of growth.md §2.2 are dropped.
+2. **Fusion by choice.** Skills never merge on their own. At high levels the player may fuse two or more into a stronger,
+   tidier skill; the screen shows in plain words what is gained and lost, and warns that it cannot be undone.
+3. **Talents at birth.** At creation the player picks up to seven talents and their grades; the rest are rolled hidden
+   as before (D-039 item 4 for everything not picked). Talents are broad or narrow: **Physique** (all physical stats),
+   or one attribute (speed, senses), or a calling (trade, command, a weapon family…), sorted into a few categories with
+   subcategories so the picker stays short. Letters **F, E, D, C, B, A, S, SSS** with a number under each; SSS is near
+   impossible by birth roll and only certain by the player's pick. Letters set the ceiling and the growth rate; long
+   training creeps slowly past a ceiling. Balance at creation: a point budget so seven SSS talents are not free (cost
+   rises steeply with the letter; worked out in G1).
+4. **Art grades:** Lesser, Basic, Great, Renowned, Legendary (growth.md's Lesser/Standard/Strong/Great/Peerless and the
+   "Myth" art are replaced; the lost twelfth art becomes a Legendary art).
+5. **Arts stay.** A fighter uses the art he learned until he chooses to replace it; only the basic moves (slash, thrust,
+   block, shove) are common to all. Higher arts are coveted; houses with secret arts hold a military edge.
+6. **Combat only.** The combat ranks and arts belong to fighting. Other walks of life progress their own way, with less
+   detail and no grade ladder: a merchant is measured by fame, influence and deeds (wealth above all). **No step-like
+   job ladders:** rank in a career comes from performance and relations, not from a fixed rung list. The game keeps the
+   paths worth playing (soldier, knight, commander, merchant, noble, ruler, priest, scholar, spy, outlaw and the like)
+   and drops dull ones as goals. **Nobility in full:** gatherings, feasts and balls, courtship and romance, disputes,
+   succession fights. New v3 work items L1 (lives without ladders) and N1 (noble life), designed before built.
+7. **Legendaries without levels.** A mastered legendary outclasses ordinary arms outright: in a clash the lesser blade
+   suffers. It must still land: speed and strength enough to slip it and close the gap make its quality irrelevant, and
+   higher skill parries and deflects any blade far more easily. Replaces "about one word of skill".
+8. **Baselines** rise with the skill's or art's difficulty but stay minor (D-042 stands).
+9. **Pause:** after the ten legendary designs are shown, no new step starts until the owner says go (order 11 note).

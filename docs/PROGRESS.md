@@ -4,6 +4,8 @@ The checklist of every work item, in the order they are being done, split by maj
 moment it is merged and CI is green, with the stamp and the commit; never delete a line. Details live in
 `docs/HISTORY.md`; the plans and reasons in `docs/CRITIQUE.md` §2, `docs/V3_SPEC.md` and `docs/DECISIONS.md`.
 
+**PAUSE IN FORCE (order 36):** after the ten legendary weapon designs, no new step until the owner says go.
+
 *Last updated 2026-11-13 07:21 ET*
 
 ## v2 · Round 2: the owner's complaint list (`docs/V2_SPEC.md`, `docs/CRITIQUE.md`)
@@ -65,6 +67,8 @@ Designed now, built after v2's last item on its own integration branch (D-037).
 - [ ] **G** · Growth in depth: more stats, skills learned by doing (8 words, Beginner to Myth), hidden talents, hundreds of arts (sword arts and every weapon's, murim-like) by nation, regiment, house, line and order (orders 32, 34; D-034, D-039)
 - [ ] **E1** · A much bigger economy: bigger markets that simulate themselves over time (owner order 28; stages E1a, E1b, E1c, E1d)
 - [ ] **E2** · Hundreds of weapons and armour pieces by quality; items unique to one person (owner order 29; stages E2a, E2b, E2c, E2d, interleaved with E1 as the design says)
+- [ ] **L1** · Lives without ladders: careers by performance and relations, merchants by fame, influence and wealth; paths worth playing (order 36; design first)
+- [ ] **N1** · Noble life in full: gatherings, balls, courtship, disputes, succession fights (order 36; design first)
 - [ ] **V3-X** · v3 balance pass and state diet
 
 ## Versions

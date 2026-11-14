@@ -639,3 +639,15 @@ Where this section differs from §1.5 and elsewhere, it wins. A skill's governin
 word: below it the skill stalls at that word and performs as if lower in use ("only for show"). Above it, nothing is
 forced: stats beyond the baseline add only through application, every build is valid, and the game must hold thousands
 of different builds and ways to play. "Each word needs a body to match" (§1.5) is replaced by this baseline rule.
+
+
+## 9 · Owner order 36 (2026-11-13 19:23 ET, D-043)
+Where this section differs from anything above, it wins: no caps on Grandmasters or Legends (drop §2.2's caps and
+`GD.LEGEND_CAP`); fusion only when the player chooses, never automatic, explained in plain words; up to seven talents
+picked at birth with their grades (F, E, D, C, B, A, S, SSS; SSS near impossible unpicked; a point budget at creation),
+talents broad (Physique) or narrow (Speed) in a short categorised picker; letters set ceiling and growth, long training
+creeps past; art grades Lesser, Basic, Great, Renowned, Legendary (no Myth art); arts stay with their holder until
+replaced, only basic moves are shared; the combat ladder is for combat only, other callings progress by fame,
+influence, deeds and relations without grades or rung lists (L1), nobility lived in full (N1); legendaries outclass
+ordinary arms outright but must land, and speed, strength and skill can make them miss; baselines rise with difficulty
+but stay minor.
