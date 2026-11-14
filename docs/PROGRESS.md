@@ -43,7 +43,8 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [ ] **X2** · Named stages
 - [ ] **D10** · War screens only when deployed
 - [ ] **C6** · Relationships and households
-- [ ] **X3** · Honest cards and clocks (incl. the "initiative" leftovers listed in H-020)
+- [x] **X3 part 1** · No initiative left; feasts on their dates; fight stakes; illness shown; kilometres (D-051) · `839d0c6` · 2026-11-14 11:19 ET
+- [ ] **X3 part 2** · Station words, card place, counsel from the absent, pronoun lint, the preview replay
 - [ ] **C7** · Names and cultures in the game (one common language, D-013)
 - [ ] **C8c** · Dress, class and regalia (changeable outfits)
 - [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)

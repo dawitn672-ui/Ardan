@@ -581,3 +581,17 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   fights), csWorlds (74 of 83 AI wars in the news against 74.7), kinBotLives, and the two long tests not re-timed here.
   This push runs the full CI to measure them.
 - **Undo:** `git revert -m 1 5b5d528`.
+
+### H-034 · 2026-11-14 11:19 ET · X3 part 1: honest cards and clocks (D-051)
+- **Commits:** `d89097c`, `7b7b278`, `41159f3`, `3513e2c`, `2af63aa`, `ecc3132`, `77d3c2d` (by a Sonnet 5.5 agent), merged as `839d0c6`.
+- **What:** every initiative word the pool's removal left (the Activities line, What now, the plan button, market trips,
+  13 refusals now "You cannot spare the time for that today", the step summary, the clock, help, ⧗ marks) is gone; the
+  Activities line says weariness in words (`A.weariness`, read-only). New feature `src/events/99999-x3-honest-cards`: a
+  feast comes on its date and a dated scene only in its month; a fight's chip says whether it can end in death (396
+  fight choices checked, 98 lethal); a sick body reads "ill with …" not "hale"; endings' titles only when earned;
+  kilometres replace miles; no quiet line twice in a year; the love-philtre drugging choice is cut.
+- **Tests:** 10 new (x3 suite); nyWords, pcWinter updated; mtDrawingPure caught a draw that wrote state (fixed).
+  Identity probe: 0 audience differences over 5,004 events. After the merge 8 of 8 smoke tests pass.
+- **Open (part 2):** station words and gates, card place vs deployment, counsel from the absent, pronoun lint, the
+  400-scene preview replay, the full fatal-illness arc.
+- **Undo:** `git revert -m 1 839d0c6`.
