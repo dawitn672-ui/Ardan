@@ -25,7 +25,9 @@ The checks:
 | every realm has a council | a realm with land has someone in its council (a rebel faction still at war is left out) | A2 |
 | no child in an adult office | council seats, shire offices and armies go to people of age for their race (`GD.RACES[race].adult`); land titles may pass to a ward | A2 |
 | one office, one styled holder | no two living people of a realm styled with one of its council offices (`p.occ`, `p.title`); a past style ("once Chancellor of ...") or a kinsman's ("sister of Chancellor ...") names no post held (D-031) | A2, C6 |
-| one holder per post | the post registry's rules (`A.POSTS.audit()`, `src/nobility/999990-posts`): no unfit holder, no two posts that cannot go together (the Marshal's seat is optional in peace and war, D-049), the player's grade and seat agree | A2 |
+| one captain per company | 9997's battalion and company places (`d.bs[i].p[slot]`): a living captain of the division's realm, nobody in two places, a division's commander only in his own battalion's senior captain's place (A2 stage 2) | A2 |
+| one master per order | an elite order's Grand Master (`r.orders[oid]`) lives, leads the order's division, and leads no other order (A2 stage 2) | A2 |
+| one holder per post | the post registry's rules (`A.POSTS.audit()`, `src/nobility/999990-posts`): no unfit holder, no two posts that cannot go together (the Marshal's seat is optional in peace and war, D-049), the player's grade and seat agree; since stage 2 also the captains of battalions and companies, the orders' Grand Masters, the player's staff and free company, the heads of houses and the court titles (one holder each, no title on two living people) | A2 |
 
 ## Running them
 

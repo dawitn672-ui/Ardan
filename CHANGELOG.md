@@ -5,6 +5,13 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **The Marshal's seat is optional.** A ruler may keep a Marshal in peace: Aldmark starts with Leofric Stane in the
+  seat. A Marshal named for a war still stands down when it ends. As ruler you may name a General or a proven commander
+  Marshal at any time, but not just anyone.
+- **Every command has one holder.** Captains of companies and battalions, the Grand Masters of the orders, your staff,
+  your free company, the heads of houses and the court titles each have exactly one. A captain you replace is "once
+  Captain" and no longer shares his company's name with the next man; the senior captain you displace takes your old
+  company; a councillor cannot serve on your staff; an order whose Grand Master dies names another at once.
 - **No war score.** A war now reads as the land each side holds and the great battles won, not a number. The army
   templates are gone from the War Room.
 - **War at your rank.** A soldier sees his own corner of the war, a captain his front, a general the whole theatre. Only

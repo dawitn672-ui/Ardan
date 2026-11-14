@@ -65,6 +65,52 @@ CO.add('one general per army', () => {
   return bad;
 }, { owner: ME });
 
+// A2 stage 2: a company's or a battalion's captain (9997's d.bs[i].p[slot]) is a living person of the division's realm,
+// and nobody captains two of them (a division's commander may lead one battalion of his own division in person)
+CO.add('one captain per company', () => {
+  const bad = [], at = {};
+  for (const r of Object.values(A.S.realms || {})) {
+    if (!r || r.alive === false || !r.forces || !Array.isArray(r.forces.divs)) continue;
+    for (const d of r.forces.divs) {
+      if (!d || !Array.isArray(d.bs)) continue;
+      for (let i = 0; i < d.bs.length; i++) {
+        const b = d.bs[i]; if (!b || !b.p) continue;
+        for (const s in b.p) {
+          const id = b.p[s]; if (!id) continue;
+          const p = A.P(id), where = `${d.name || d.id}, battalion ${i + 1}, ${s === '4' ? "the senior captain's place" : 'company ' + (+s + 1)}`;
+          if (!live(p)) bad.push(`${where}: held by ${who(id)}`);
+          else if (id !== A.S.pc && p.realm !== d.r) bad.push(`${where}: held by ${who(id)}, of another realm`);
+          (at[id] = at[id] || []).push([d.id, s, where]);
+        }
+      }
+    }
+  }
+  for (const id in at) {
+    const L = at[id];
+    if (L.length > 1) bad.push(`${who(id)} captains ${L.length} places: ${L.map(x => x[2]).join('; ')}`);
+    const d = L.length && A.divById && A.divById(L[0][0]);
+    if (d && d.cmd === id && L.some(x => x[0] !== d.id || x[1] !== '4')) bad.push(`${who(id)} commands ${d.name || d.id} and captains a company`);
+  }
+  return bad;
+}, { owner: ME });
+
+// A2 stage 2: an elite order has one living Grand Master, who leads the order's division and no other order
+CO.add('one master per order', () => {
+  const bad = [], of = {};
+  for (const r of Object.values(A.S.realms || {})) {
+    if (!r || r.alive === false || !r.orders) continue;
+    for (const oid in r.orders) {
+      const id = r.orders[oid]; if (!id) continue;
+      const nmO = (GD.ORDERS && GD.ORDERS[oid] && GD.ORDERS[oid].name) || oid, d = A.orderDiv && A.orderDiv(oid);
+      if (!live(A.P(id))) bad.push(`${nmO}: led by ${who(id)}`);
+      if (d && d.r === r.id && d.cmd !== id) bad.push(`${nmO}: its division is led by ${d.cmd ? who(d.cmd) : 'nobody'}, its Grand Master is ${who(id)}`);
+      (of[id] = of[id] || []).push(nmO);
+    }
+  }
+  for (const id in of) if (of[id].length > 1) bad.push(`${who(id)} is Grand Master of ${of[id].join(' and ')}`);
+  return bad;
+}, { owner: ME });
+
 // marriages go both ways; parents and children point at each other; links point at someone who exists
 CO.add('family links agree', () => {
   const bad = [];

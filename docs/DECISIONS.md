@@ -737,3 +737,39 @@ the situation allows.** 99997-v2-war already shut every war that is not yours; D
   draw to the month's turn changes the random stream of every officer's and ruler's life (a balance-league change),
   so it is left to its own step.
 - Engine behaviour is unchanged (no draw moved, no AI rule changed), so the balance league was not re-run.
+
+### D-053 · A2 stage 2: an optional Marshal; eleven kinds of post; every writer through the registry (2026-11-14 ET; carries out D-049, finishes D-031's "not done")
+**Chosen:**
+1. **The Marshal's seat is optional (D-049, owner order 51).** Nothing forces it filled or empty, and the audit no
+   longer counts a Marshal in peace. The crown's own pick for a war that needs one (two armies or two enemies, D-031)
+   stays, and that Marshal, named for the war, stands down at peace (the crown's choice, not a law). A ruler may name a
+   Marshal by his own choice in peace or war (`A.rulerAction('appoint')`, record `own`), but only a General or a proven
+   commander (D-017): an NPC who leads an army, holds a General's grade, or commands at least as well as the realm's
+   best general (as well as a seasoned one, 45, when no army is raised); that Marshal keeps the seat in peace. The
+   court's roll, the council's offer and the board still open the seat only for a war that needs one: they serve the
+   war, and a peacetime Marshal stays the ruler's own, rare choice. The lore's sitting Marshals (Aldmark's Leofric
+   Stane; Varenna, Zanara, Velgrad, Drevna) start in their seats at the first council filling, made on a stream of
+   their own so the world's stream does not move. A General no longer takes the army a sitting Marshal leads in person.
+2. **Seven more kinds of post** (999990-posts README has the table): a battalion's senior captain and a company's
+   captain when a person holds the place (9997's slots), an elite order's Grand Master (with its division), a place on
+   the player's staff, the captain of the player's free company, the head of a house, a court title. Rules: a house and
+   a court title go with any post, pass by the house's or the realm's law (never left by `leaveAll`) and may be held by
+   a child; one place on the staff a person and none for a councillor, a ruler or a prisoner; the staff goes with a
+   field command and an office (posts-map 5.4 forbade STAFF with FIELD; not taken, because the staff's company and
+   battalion captains are the very men 9997 seats); one field command a person, except that a division's commander
+   leads one battalion of his own division (9997's line puts a Commander at the head of his battalion). A 9997 seed is
+   not a person and holds nothing; a person leaving a slot spends its seed, so he and the slot's next captain never
+   share a name (R15). A free company waits for its captain in prison. An order whose Grand Master dies gets another
+   at once. Rank 5 stays a company's captain, as 9997's battle has it (R2's "Senior Captain leads 800" is D11's).
+3. **Every writer goes through the registry** (README "Routed writers"). Writers that pick their own man (the crown's
+   generals, 9996's offices, the staff's commanders) use `A.POSTS.place`: it refuses a man who holds a post of a higher
+   class that cannot go with it, the rule the stage-1 sync applied a month later (a councillor is not made a shire
+   officer or a general behind the council's back). Houses and court titles keep their own law's code
+   (`A.setHead`, `A.POSTS.note`). Measured on the seed-7 60-year bot life (`long-life-audit`): the month's sync adopted
+   1,626 writes before (office 1,427, army 198, division 1) and none after; the audit was empty every month.
+4. **Coherency:** `one holder per post` covers the new kinds (no court title on two living people, an order's division
+   led by its Grand Master); two new checks read the stores directly, `one captain per company` and `one master per
+   order`.
+**Why:** the owner's rule (one holder per post) and orders 5 and 51; CRITIQUE A2 (R1-R4, R6, R9, R15).
+**Not done:** army commands that outlive a war (`army:<realm>:<n>`); a county's lordship without a court title stays
+with 99994's audit; the posts of jobs (R12, R17); rank 5 as a battalion's captain (D11).
