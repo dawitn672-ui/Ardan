@@ -166,7 +166,7 @@ export default {
       await p.evaluate(FRESH);
       await p.evaluate(LIFE());
       await p.evaluate(SETTLE);
-      const t = await p.$('#tabbody .lk-acts > .act[data-a="act"]:not(:disabled):not([aria-disabled="true"])');
+      const t = await p.$('#tabbody .lk-acts > .act[data-a="act"]:not([hidden]):not(:disabled):not([aria-disabled="true"])');   // B5 hides the tiles past the six suggested, wherever they sit
       await t.hover();
       await p.waitForTimeout(400);
       const hov = await p.evaluate(() => !!document.querySelector('.tt-pop:not([hidden]), #modal .act-sheet'));
