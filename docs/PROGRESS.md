@@ -47,7 +47,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [ ] **C7** · Names and cultures in the game (one common language, D-013)
 - [ ] **C8c** · Dress, class and regalia (changeable outfits)
 - [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
-- [ ] **D12a** · War as a visual simulation with a close tactical view: one design (branches, command, fronts on the inked map, engagements up close; orders 34, 49)
+- [x] **D12a** · War design: theatre, field, press; sight by rank; one engine with a cause ledger; nine stages (`docs/design/war.md`) · `0378b9e` · 2026-11-14 05:43 ET · **10 owner decisions pending**
 - [ ] **D11** · Military branches (feudal armies, D-012)
 - [ ] **D12b** · War and command depth
 - [ ] **X4** · Balance pass

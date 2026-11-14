@@ -553,3 +553,16 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   pixels shift as a picture decodes on a loaded runner; layout is still compared; portraits have fg* tests). The balance
   league runs in this push's CI.
 - **Undo:** `git revert -m 1 cd2e54d`; old saves need nothing.
+
+### H-032 · 2026-11-14 05:43 ET · D12a: the war design (order 49, D-047)
+- **Commits:** `a65ce92`, `16d5909`, `cd3ce26`, `3f9c76a` (by a Fable 5.2 agent), merged as `0378b9e`. Design only.
+- **What:** `docs/design/war.md` and four sketches in `docs/design/war/`. One war, one simulation, three distances: the
+  **theatre** (the war on the inked map: standards on roads, a front that burns, carts, siege rings, raids, weather), the
+  **field** (one engagement seen from a hill behind your line; companies as small figures; Pause / Orders / Watch; orders
+  by courier; 1-12 minutes; "Fight it out" always offered), the **press** (your place in the line; your art's forms as
+  choices; a legendary breaks a front but must land). Sight by rank: what your post could know. One deterministic
+  engagement engine in beats for every battle, with a cause ledger read back as the after-action report. War score →
+  "How the war stands" in named reasons; templates → who came, by rank and oath. Budgets: all wars about 12 ms a month;
+  the trial ran a 9,000-man battle in about 1 ms. Nine build stages (W0, D9's pieces, D11a, D12b-1..5, D11b).
+  **Ten owner decisions pending.**
+- **Undo:** `git revert -m 1 0378b9e`.

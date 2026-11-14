@@ -39,6 +39,7 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [design/brief.md](design/brief.md) | The design system brief, "Woodblock & Light" |
 | [design/brief-audit.md](design/brief-audit.md) | The brief checked against the built game |
 | [design/characters.md](design/characters.md) | Character design: faces, bodies and dress (C8a) |
+| [design/war.md](design/war.md) | D12a: war as a visual simulation (theatre, field, press) |
 | [design/growth.md](design/growth.md) | G design: 17 stats, thousands of skills, hundreds of fighting styles, legendary arts |
 | [design/economy-and-items.md](design/economy-and-items.md) | E1 and E2 design: markets that run themselves, hundreds of weapons, unique items |
 | [design/reference/](design/reference/README.md) | The owner's reference pictures for character art (D-029) |
