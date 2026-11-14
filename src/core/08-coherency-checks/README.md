@@ -25,7 +25,7 @@ The checks:
 | every realm has a council | a realm with land has someone in its council (a rebel faction still at war is left out) | A2 |
 | no child in an adult office | council seats, shire offices and armies go to people of age for their race (`GD.RACES[race].adult`); land titles may pass to a ward | A2 |
 | one office, one styled holder | no two living people of a realm styled with one of its council offices (`p.occ`, `p.title`); a past style ("once Chancellor of ...") or a kinsman's ("sister of Chancellor ...") names no post held (D-031) | A2, C6 |
-| one holder per post | the post registry's rules (`A.POSTS.audit()`, `src/nobility/999990-posts`): no unfit holder, no two posts that cannot go together, no Marshal in peace, the player's grade and seat agree | A2 |
+| one holder per post | the post registry's rules (`A.POSTS.audit()`, `src/nobility/999990-posts`): no unfit holder, no two posts that cannot go together (the Marshal's seat is optional in peace and war, D-049), the player's grade and seat agree | A2 |
 
 ## Running them
 

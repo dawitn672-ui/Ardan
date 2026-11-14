@@ -11,9 +11,11 @@
 //
 // The rules (A.POSTS.audit): one holder per post; the holder alive, of age for his people, free, of the post's realm
 // and not a ruler (a ruler may lead an army); one council seat a person, no seat with a shire office or with a field
-// command (the Marshal may lead one army in person), one field command a person; the Marshal's seat (D-017) is filled
-// only when a war needs one (two armies or two enemies) and stands empty again at peace; the player is Marshal (grade
-// 9) exactly when he holds that seat, and it needs a General's commission.
+// command (the Marshal may lead one army in person), one field command a person. The Marshal's seat (D-017, D-049) is
+// optional: the crown fills it for a war that needs one (two armies or two enemies) and that Marshal stands down at
+// peace; a ruler may also name one by his own choice at any time (and the lore's sitting Marshals are seeded so), and
+// that Marshal stays. Nothing requires the seat filled or empty. The player is Marshal (grade 9) exactly when he holds
+// that seat, and it needs a General's commission.
 (function () {
   const P = A.POSTS = A.POSTS || {};
   P.V = 1;
@@ -128,6 +130,17 @@
     if (keep) return true;
     return (A.armiesOf ? A.armiesOf(r.id).length : 0) >= 2 || (A.enemiesOf ? A.enemiesOf(r.id).length : 0) >= 2;
   };
+  // may p take the Marshal's seat of realm rid (D-017: a General, or someone proved more capable than the generals)?
+  // An NPC: he leads an army of the realm, or holds a General's grade, or commands at least as well as its best general
+  // (with no army raised, as well as a seasoned one). The player's commission is checked in can().
+  P.marshalFit = function (p, rid) {
+    if (!p) return false;
+    if (P.holds(p.id, 'army').length || (p.milRank || 0) >= 7) return true;
+    const best = (A.armiesOf ? A.armiesOf(rid) : []).reduce((m, a) => { const g = A.P(a.gen); return live(g) ? Math.max(m, A.skill(g, 'command')) : m; }, 0);
+    return A.skill(p, 'command') >= (best || 45);
+  };
+  // the ruler's own choice of a Marshal (D-049): by the ruler himself, or seeded from the lore
+  const ownChoice = o => !!(o.ruler || o.why === 'ruler' || o.why === 'lore');
   // why pid may not hold key ('' when he may). Pure.
   P.can = function (key, pid, o) {
     o = o || {};
@@ -145,8 +158,11 @@
     if (kind === 'div' && p.ruler) return 'a ruler commands no single division';
     if (isMarshalKey(key)) {
       const r = A.S.realms[k.rid];
-      if (!o.force && !P.marshalNeeded(r, P.holder(key) === pid)) return 'the realm needs no Marshal: in peace a General leads';
+      // D-049: the seat is optional. A war that needs a Marshal opens it to every road (the crown's pick, the board, the
+      // court, the council's offer); otherwise only the ruler's own choice fills it
+      if (!o.force && !ownChoice(o) && !P.marshalNeeded(r, P.holder(key) === pid)) return 'the realm needs no Marshal now: a General leads, and only the crown may name one by its own choice';
       if (isPC(pid) && !(p.mil && !p.mil.merc && p.mil.rank >= 7 && p.mil.realm === k.rid)) return 'the seat of Marshal goes to a General';
+      if (!isPC(pid) && !o.force && !P.marshalFit(p, k.rid)) return `the seat of Marshal goes to a General or a proven commander, and ${nm(p)} is neither`;
     }
     return '';
   };
@@ -250,6 +266,8 @@
     pushPrev(r, null);
     r.p = pid; r.s = day(); r.w = o.why || ''; delete r.vac;
     if (o.by) r.by = o.by;
+    // a Marshal named by the ruler's own choice (D-049) keeps the seat in peace; one named for a war stands down with it
+    if (isMarshalKey(key)) { if (ownChoice(o)) r.own = 1; else delete r.own; }
     M.set(k, pid);
     ixAdd(pid, key);
     P.stats.appointed++;
@@ -371,11 +389,12 @@
     if (commissioned && pc.mil.rank >= 9 && !pc.ruler && !P.holds(pc.id, 'seat').some(isMarshalKey)) {
       const r = A.realm(pc.mil.realm), key = r ? P.seatKey(r.id, 'marshal') : null;
       if (key && !P.holder(key) && !P.can(key, pc.id)) P.appoint(key, pc.id, { why: 'grade', force: true });
-      else { pc.mil.rank = 8; pc.mil.rankSince = day(); repair('marshal grade', 'There is no Marshal in peace: you serve as High General.'); }
+      else { pc.mil.rank = 8; pc.mil.rankSince = day(); repair('marshal grade', 'The crown has named no Marshal: you serve as High General.'); }
     }
   };
 
-  // D-017: the Marshal's seat is filled by the crown only when a war needs one, and stands empty again at peace
+  // D-017, D-049: the crown fills the Marshal's seat when a war needs one; that Marshal stands down at peace. A Marshal of
+  // the ruler's own choice (r.own) stays in peace and war alike: nothing forces the seat filled or empty
   P.pickMarshal = function (r) {
     const pcId = A.S.pc, key = P.seatKey(r.id, 'marshal'), C = [];
     for (const a of (A.armiesOf ? A.armiesOf(r.id) : [])) {
@@ -391,8 +410,8 @@
     const pc = A.pc();
     for (const r of realmsAlive()) {
       if (!r.council && !A.COUNCIL) continue;
-      const key = P.seatKey(r.id, 'marshal'), cur = P.holder(key);
-      if (cur && !P.marshalNeeded(r, true)) { P.vacate(key, 'peace'); continue; }
+      const key = P.seatKey(r.id, 'marshal'), cur = P.holder(key), R = cur && A.S.posts.h[key];
+      if (cur && !(R && R.own) && !P.marshalNeeded(r, true)) { P.vacate(key, 'peace'); continue; }
       if (cur || !P.marshalNeeded(r) || (pc && pc.ruler === r.id) || r.landless) continue;
       const m = P.pickMarshal(r);
       if (!m) continue;
@@ -474,10 +493,6 @@
     if (strict) for (const key in st.h) { const r = st.h[key]; if (r.p && P.mirror(key) !== r.p) bad.push(`${P.style(key)}: held by ${nm(A.P(r.p))} in the registry, not in the old field`); }
     for (const [pid, ks] of by) for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++)
       if (!P.compatible(ks[i], ks[j])) bad.push(`${nm(A.P(pid))} holds ${P.style(ks[i])} and ${P.style(ks[j])}`);
-    for (const r of realmsAlive()) {
-      const m = r.council && r.council.marshal;
-      if (m && !P.marshalNeeded(r, true)) bad.push(`${r.short || r.id}: a Marshal (${nm(A.P(m))}) in peace`);
-    }
     const pc = A.pc && A.pc();
     if (pc && pc.alive && pc.mil && !pc.mil.merc && !pc.ruler) {
       const r = A.realm(pc.mil.realm), seated = !!(r && r.council && r.council.marshal === pc.id);

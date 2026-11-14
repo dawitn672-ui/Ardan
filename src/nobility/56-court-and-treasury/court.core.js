@@ -393,7 +393,8 @@ RI.fillCouncil = function (r) {
   const fresh = r.riRulerSeen != null && r.riRulerSeen !== r.ruler;
   r.riRulerSeen = r.ruler;
   for (const seat of SEATS()) {
-    // the Marshal's seat is the registry's (999990-posts, D-017): empty in peace, filled for a war that needs one
+    // the Marshal's seat is the registry's (999990-posts, D-017, D-049): optional; the crown fills it for a war that
+    // needs one, and the lore's sitting Marshals are seeded below
     if (seat === 'marshal' && A.POSTS) continue;
     const cur = A.P(r.council[seat]);
     if (cur && cur.id === A.S.pc) continue;      // the player's seat is the release's business
@@ -419,8 +420,44 @@ RI.fillCouncil = function (r) {
     // the first filling of a council is not news; a seat changing hands is
     if (r.riSeated) logCourt(r, { k: 'seat', who: p.id, seat, out: cur && cur.id !== p.id ? cur.id : null, yes: true, why: [[vacant ? (cur && !cur.alive ? 'The last holder died' : 'The seat stood empty') : 'A new ruler names favourites', 1]] });
   }
+  // D-049: the Marshal's seat is optional, and where the lore names a sitting Marshal (Aldmark's Leofric Stane) the
+  // world starts with him: the ruler's own choice, kept in peace. Only at the first filling, after the other seats; the
+  // person is made on a stream of his own (seeded from the world's seed and his cast id, as A.npcStyles does), so
+  // the world's stream does not move
+  if (!r.riSeated && A.POSTS && A.COUNCIL.marshal) {
+    const c = loreMarshal(r);
+    if (c) {
+      const rs = A.rngState; let h = 2166136261;
+      for (const ch of ((A.S && A.S.seed) || 0) + '|marshal|' + c.id) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+      A.rngState = h >>> 0 || 1;
+      let p = null;
+      try { p = A.personFromCast(c.id); } finally { A.rngState = rs; }
+      const key = A.POSTS.seatKey(r.id, 'marshal');
+      if (live(p) && !p.ruler && p.realm === r.id && !A.POSTS.holder(key) && !A.POSTS.held(p.id).length && !A.POSTS.can(key, p.id, { why: 'lore', force: true })) {
+        A.POSTS.appoint(key, p.id, { why: 'lore', by: r.ruler, force: true });
+        named.push(['marshal', p]);
+      }
+    }
+  }
   r.riSeated = true;
   return named;
+};
+// the realm's sitting Marshal in the lore: a cast member of the realm, of age, not yet a person elsewhere, whose title
+// names the realm's Marshal ("Marshal", "Lord Marshal; War Party", "Marshal of the Empire"), not another post called
+// so ("Marshal of the Rift", "Marshal of the Crown knights", "Marshal of the Northern Host")
+const LORE_MARSHAL = /^(lord )?marshal( of the (empire|realm|kingdom))?$/i;
+const loreMarshal = function (r) {
+  const taken = new Set(Object.values(r.council || {}));
+  for (const c of Object.values(LORE.cast || {}).sort((a, b) => (a.id < b.id ? -1 : 1))) {
+    if (c.realm !== r.id || c.ruler || c.role === 'ruler') continue;
+    if (!LORE_MARSHAL.test(String(c.title || '').split(/[;,]/)[0].trim())) continue;
+    const pid = A.S.castMap && A.S.castMap[c.id], p = pid ? A.P(pid) : null;
+    // a sitting Marshal is an old soldier: the lore's is 57 at the start (a seat's usual age cap is old + 8)
+    const R = GD.RACES[A.CAST_RACE ? A.CAST_RACE[c.race] || 'human' : 'human'] || GD.RACES.human, age = A.S.year - (c.born || A.S.year - 40);
+    if (p ? (!p.alive || p.ruler || taken.has(p.id) || p.id === A.S.pc) : !(age >= R.adult + 2 && age < R.old + 15)) continue;
+    return c;
+  }
+  return null;
 };
 // make sure the heads of the strongest houses exist as people (A.houseHead creates one when the lore has none)
 RI.ensureHeads = r => { for (const h of RI.topHouses(r.id)) A.houseHead(h.id); };

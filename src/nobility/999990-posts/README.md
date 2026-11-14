@@ -26,10 +26,14 @@ holder, since when, why, who appointed him and the last three holders. The old f
   imprisoned or departed holder leaves; two clashing posts: the higher class, else the newer, is kept), keeps the
   player's grade and the Marshal's seat together, and runs the Marshal rule below. On load (`mode 'load'`) it builds
   the registry of an older save and repairs it the same way, with a line in the log for each repair. No dice.
-- **The Marshal (D-017).** The seat is empty in peace. When a realm's war needs one (two armies in the field or two
-  enemies at once) the crown names its best General (command, renown, the size of his host); he takes the main host in
-  person and its general takes his old army. At peace the Marshal stands down; the player returns to his General's
-  grade. The court, the council's offer, the ruler and the promotion board all go through `appoint`, so the player can
+- **The Marshal (D-017, D-049, D-053).** The seat is optional: nothing forces it filled or empty. When a realm's war
+  needs one (two armies in the field or two enemies at once) the crown names its best General (command, renown, the
+  size of his host); he takes the main host in person and its general takes his old army, and at peace he stands down
+  (the player returns to his General's grade). A ruler may also name a Marshal by his own choice, in peace or war, but
+  only a General or a proven commander (`A.POSTS.marshalFit`; `appoint(..., { why: 'ruler' })` marks the record
+  `own`), and that Marshal stays in peace. The lore's sitting Marshals (Aldmark's Leofric Stane and four more) start in
+  their seats so (56's first filling, on a stream of its own). A General does not take the army a sitting Marshal leads
+  in person. The court, the council's offer, the ruler and the promotion board all go through `appoint`, so the player can
   be named Marshal only as a General, only for such a war, and then holds the seat, grade 9, every army and the main
   host. Resigning the commission gives up the seat.
 - **Titles follow posts.** `A.mainRole` of anyone but the player is the post he holds (`A.POSTS.title`). A style that

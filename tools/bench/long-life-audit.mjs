@@ -6,7 +6,8 @@
 // From a new game, A.advance with every card answered by A.eventAuto (as tests/helpers.mjs T.play does); when the
 // player dies, play goes on as the eldest living child (else someone of the realm aged 16 to 30). Every month it runs
 // A.V2F.audit() (one holder per title and seat) off the game's stream, and it counts every console.error and page
-// error, every throw of A.V2N.regrant and every month whose regrant pass threw. --dump writes the state and the journal
+// error, every throw of A.V2N.regrant and every month whose regrant pass threw, and A.POSTS.audit() (one holder per post,
+// A2) every month, with the registry's adopted and repaired counts at the end. --dump writes the state and the journal
 // every --every years (<dir>/<tag>-y<n>-state.json), the saves A1's press gate is built on.
 // Exit code 1 when anything threw, logged an error, or the audit was not empty at the end.
 //
@@ -32,7 +33,7 @@ const log = (...a) => console.log(`[${new Date().toISOString().slice(11, 19)}] l
 
 // installed in the page: the monthly audit and the regrant watch (drawing nothing, touching no game stream)
 const WATCH = () => {
-  const N = A.V2N, F = A.V2F, W = window.__L = { throws: [], passThrows: 0, audits: [], auditImpure: false };
+  const N = A.V2N, F = A.V2F, W = window.__L = { throws: [], passThrows: 0, audits: [], auditImpure: false, posts: [] };
   if (N && N.regrant) {
     const rg = N.regrant;
     N.regrant = function (t) {
@@ -51,6 +52,13 @@ const WATCH = () => {
     if (A.rngState !== k0) { W.auditImpure = true; A.rngState = k0; }
     if (au.length) { const key = au.map(b => b.k + ' ' + (b.id == null ? '' : b.id) + ' ' + (b.holders || []).join('/')).join('; '); const last = W.audits[W.audits.length - 1]; if (!last || last.key !== key) W.audits.push({ y: A.S.year, key }); }
     else if (W.audits.length && W.audits[W.audits.length - 1].key !== '') W.audits.push({ y: A.S.year, key: '' });
+  });
+  // the post registry's own audit (999990-posts, A2): one holder per post, every holder able, no forbidden pair
+  if (A.POSTS && A.POSTS.audit) A.onMonth.push(function () {
+    const k0 = A.rngState; let au = [];
+    try { au = A.POSTS.audit(); } catch (e) { au = ['posts audit threw ' + e]; }
+    if (A.rngState !== k0) { W.auditImpure = true; A.rngState = k0; }
+    if (au.length && W.posts.length < 60) W.posts.push({ y: A.S.year, m: A.S.month, bad: au.slice(0, 4) });
   });
 };
 
@@ -96,16 +104,18 @@ async function main() {
     }, Math.min(EVERY, YEARS - off + EVERY));
     const t1 = await cpu();
     for (const n of r.notes) { notes.push(n); log('note', n); }
-    const w = await page.evaluate(() => ({ throws: __L.throws.length, pass: __L.passThrows, audit: (__L.audits[__L.audits.length - 1] || { key: '' }).key }));
-    log(`+${off}: year ${r.year}, ${(t1 - t0).toFixed(1)} s CPU, ${r.cards} cards; errors ${errs.length}, regrant throws ${w.throws}, passes that threw ${w.pass}, audit ${w.audit ? '"' + w.audit.slice(0, 160) + '"' : 'empty'}`);
+    const w = await page.evaluate(() => ({ throws: __L.throws.length, pass: __L.passThrows, audit: (__L.audits[__L.audits.length - 1] || { key: '' }).key, posts: __L.posts.length }));
+    log(`+${off}: year ${r.year}, ${(t1 - t0).toFixed(1)} s CPU, ${r.cards} cards; errors ${errs.length}, regrant throws ${w.throws}, passes that threw ${w.pass}, audit ${w.audit ? '"' + w.audit.slice(0, 160) + '"' : 'empty'}, months with a broken post rule ${w.posts}`);
     if (DUMP && off % EVERY === 0) await dump(off);
     if (r.dead) break;
   }
-  const end = await page.evaluate(() => ({ L: __L, audit: A.V2F && A.V2F.audit ? A.V2F.audit() : null, year: A.S.year, fp: A.fingerprint(), check: A.V2SAVE && A.V2SAVE.check ? A.V2SAVE.check() : null }));
-  const bad = errs.length || end.L.throws.length || end.L.passThrows || (end.audit && end.audit.length) || end.L.audits.some(a => a.key);
-  const out = { html: HTML, o: O, years: YEARS, year: end.year, fp: end.fp, errors: errs, notes, regrantThrows: end.L.throws, passThrows: end.L.passThrows, auditHistory: end.L.audits, auditAtEnd: end.audit, auditImpure: end.L.auditImpure, saveCheck: end.check };
+  const end = await page.evaluate(() => ({ L: __L, audit: A.V2F && A.V2F.audit ? A.V2F.audit() : null, year: A.S.year, fp: A.fingerprint(), check: A.V2SAVE && A.V2SAVE.check ? A.V2SAVE.check() : null,
+    posts: A.POSTS ? { audit: A.POSTS.audit({ strict: true }), held: Object.keys((A.S.posts && A.S.posts.h) || {}).length, kinds: Object.keys((A.S.posts && A.S.posts.h) || {}).reduce((m, k) => (m[k.slice(0, k.indexOf(':'))] = (m[k.slice(0, k.indexOf(':'))] || 0) + 1, m), {}), stats: A.POSTS.stats } : null }));
+  const bad = errs.length || end.L.throws.length || end.L.passThrows || (end.audit && end.audit.length) || end.L.audits.some(a => a.key) || end.L.posts.length || (end.posts && end.posts.audit.length);
+  const out = { html: HTML, o: O, years: YEARS, year: end.year, fp: end.fp, errors: errs, notes, regrantThrows: end.L.throws, passThrows: end.L.passThrows, auditHistory: end.L.audits, auditAtEnd: end.audit, auditImpure: end.L.auditImpure, saveCheck: end.check, posts: end.posts, postsHistory: end.L.posts };
   if (JSONOUT) fs.writeFileSync(JSONOUT, JSON.stringify(out, null, 1));
   log(`done: year ${end.year}, fp ${end.fp}; console errors ${errs.length}${errs.length ? ' (' + errs[0].slice(0, 160) + ')' : ''}; regrant throws ${end.L.throws.length}; audit ever non-empty ${end.L.audits.filter(a => a.key).length ? 'yes: ' + end.L.audits.filter(a => a.key).map(a => a.y + ' ' + a.key).join(' | ').slice(0, 400) : 'no'}; audit at end ${end.audit ? end.audit.length : 'n/a'}; audit pure ${!end.L.auditImpure}`);
+  if (end.posts) log(`posts: ${end.posts.held} records ${JSON.stringify(end.posts.kinds)}; months with a broken rule ${end.L.posts.length}${end.L.posts.length ? ' (first ' + end.L.posts[0].y + ': ' + end.L.posts[0].bad.join('; ').slice(0, 300) + ')' : ''}; strict audit at end ${end.posts.audit.length}${end.posts.audit.length ? ' (' + end.posts.audit.slice(0, 3).join('; ') + ')' : ''}; adopted ${JSON.stringify(end.posts.stats.adopted)}; repaired ${JSON.stringify(end.posts.stats.repaired)}`);
   await browser.close();
   process.exitCode = bad ? 1 : 0;
 }

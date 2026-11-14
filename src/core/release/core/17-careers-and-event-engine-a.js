@@ -581,7 +581,8 @@ A.seatOffers = function (pc) {
     r.council = r.council || {};
     for (const seat of A.shuffle(Object.keys(A.COUNCIL))) {
       if (!A.seatEligible(pc, seat)) continue;
-      // [A2 posts] the registry's rules: no Marshal in peace (D-017), no seat the player may not hold
+      // [A2 posts] the registry's rules: the Marshal's seat only for a war that needs one (D-017; a peacetime Marshal is
+      // the ruler's own appointment, D-049), no seat the player may not hold
       if (A.POSTS && A.POSTS.can(A.POSTS.seatKey(r.id, seat), pc.id, { by: "offer" })) continue;
       const cur = A.P(r.council[seat]);
       if (!cur || !cur.alive || A.skill(cur, A.COUNCIL[seat].skill) + 8 < A.skill(pc, A.COUNCIL[seat].skill)) {

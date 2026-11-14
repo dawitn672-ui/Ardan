@@ -82,13 +82,18 @@ A.wsAttachPC = function () {
     // General takes an army without a living general, else the one whose general is the weakest commander (before:
     // always the second-largest). The general replaced takes the division the new General left, else waits for a
     // command; the log names him. Before, he was overwritten without a word.
-    const main = mine.slice().sort((x, y) => y.divs.length - x.divs.length)[0];
+    // The army a sitting Marshal leads in person is not a General's to take (D-049: a peacetime or lore Marshal may
+    // lead one when the host is raised), unless it is the only one.
+    const main = mine.slice().sort((x, y) => y.divs.length - x.divs.length)[0],
+      ms = A.POSTS && A.POSTS.holder(A.POSTS.seatKey(rid, "marshal")),
+      free = mine.filter(x => !ms || x.gen !== ms || x.gen === pc.id),
+      pool = free.length ? free : mine;
     const want = A.POSTS
       ? pc.mil.rank >= 9
         ? main
         : a ||
-          mine.find(x => !x.gen || !A.P(x.gen) || !A.P(x.gen).alive) ||
-          mine
+          pool.find(x => !x.gen || !A.P(x.gen) || !A.P(x.gen).alive) ||
+          pool
             .slice()
             .sort(
               (x, y) =>
