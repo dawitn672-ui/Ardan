@@ -591,3 +591,7 @@ patterned dark steel with bright edges, gold inlay, a sculpted guard around a ge
 not glow. Every legendary is drawn twice from one design: large, for its plate, and at portrait scale on the figure (held,
 sheathed or slung), in the same hand and light as the character art, so it reads as part of the person. Names are
 Ardan's own (the example's names are not used).
+**Added 2026-11-13 20:06 ET (owner order 46):** the example blade becomes **Aldmark's signature legendary sword**, with an Aldmark
+name, maker, age, keeping place, history and art. Every other legendary comes from a different realm or people of Ardan
+with its own visible craft tradition (metals, motifs, shapes, ornament, construction) and its own history and keeper,
+rooted in that realm's lore; no two share a look.
