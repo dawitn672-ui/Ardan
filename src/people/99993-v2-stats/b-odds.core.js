@@ -154,12 +154,23 @@ for (const [name, at] of [['checkParts', 1], ['fightParts', 3]]) {
     const ck = arguments[at];
     // the rows beneath (59's sums, 75's and 81's rules) are read on the old chain, so they add up to it, and the rest
     // up to the number shown is this row exactly
-    const h = VS.HONEST;
-    let S; VS.HONEST = false; try { S = parts0.apply(this, arguments); } finally { VS.HONEST = h; }
+    // They are also given the old chain's number in place of the number shown when the two differ only by this rule
+    // (CI 110: a giant's chant at 96 on the old chain, 94 shown; given 94, 59's sum found nothing to explain and 81's
+    // row of +2 left the rows at 97 against 94)
+    const h = VS.HONEST, args = Array.prototype.slice.call(arguments), sAt = at + 2;
+    let on0 = null, off0 = null;
+    try { if (h && ck && args[sAt] != null) { on0 = A.checkOdds(p, ck); VS.HONEST = false; try { off0 = A.checkOdds(p, ck); } finally { VS.HONEST = h; } if (args[sAt] === on0) args[sAt] = off0; } } catch (e) { on0 = off0 = null; }
+    let S; VS.HONEST = false; try { S = parts0.apply(this, args); } finally { VS.HONEST = h; }
     try {
       if (!S || !Array.isArray(S.parts) || !p || !ck || !VS.HONEST) return S;
-      const on = A.checkOdds(p, ck);
-      VS.HONEST = false; let off; try { off = A.checkOdds(p, ck); } finally { VS.HONEST = true; }
+      const on = on0 != null ? on0 : A.checkOdds(p, ck);
+      let off = off0; if (off == null) { VS.HONEST = false; try { off = A.checkOdds(p, ck); } finally { VS.HONEST = true; } }
+      if (args[sAt] !== arguments[sAt]) {
+        // the rows beneath add up to the old chain's number: this row is the rest, and the total is the number shown
+        if (on !== off) S.parts.push([VS.HONEST_ROW, on - off]);
+        S.total = arguments[sAt];
+        return S;
+      }
       const mine = on - off; if (!mine) return S;
       const i = S.parts.findIndex(x => /^Other things in play$/.test(x[0]));
       if (i >= 0) {
