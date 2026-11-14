@@ -14,7 +14,7 @@ export default {
   realm: 'Kingdom of Greyhaven', people: 'The Northfolk of the Channel coast; House Tidewell, divers before they were kings',
   owner: 'House Tidewell, as an heirloom of the blood. It was the family’s before the family was royal, and has never been counted among the crown’s jewels.',
   wielder: 'The heir. In 1105 Prince Tristan Tidewell, 21, wears it at his belt; on the day of a ring dive it is carried in the teeth.',
-  why: 'By the Ring Law of 916 every heir dives at seven for a silver ring, before the whole harbor, and comes up owning the knife; a king hands it on the day he is crowned. Tristan’s dive was helped, and three people know it. The knife is the proof of a right he may not have.',
+  why: 'By the Ring Law of 916 every heir dives at seven for a silver ring, before the whole harbor, and comes up owning the knife; a king hands it on the day he is crowned. Tristan’s dive was helped, and a few people know it. The knife is the proof of a right he may not have.',
   made: 'Cast in fleet bronze at the Solen station of Greyhaven before 719: a chain-diver’s work knife. Hilted in silver and pearl for King Cedric in 761. Close on 400 years old.',
   legend: ['In 719 Wenna Tidewell went down eleven times in one day to free the sunk harbor chain, with this in her teeth. Her teeth are still in the grip, under the marks of every heir since.',
     'Osric the Diver had it at Yarbek in 882 when he cut the Khan’s chain. Deep water keeps what it is given; this it gave back.'],
@@ -36,6 +36,8 @@ export default {
         // the rib: a narrow ridge, light on one flank and dark on the other
         const rib = (sg, c, op) => S.fill(line(F, [[6, 0], [6, sg * 3.2], [120, sg * 2.4], [206, sg * .7], [214, 0]], true), c, { op });
         rib(lit, BRZ.hi, .75); rib(-lit, BRZ.d, .8); S.stroke(line(F, [[6, 0], [214, 0]]), BRZ.k, .6, { op: .5 });
+        // two lines cut along each edge and a running wave beside the rib: the royal engraver's work of 761, half worn away
+        if (fine) { let bd = '', wv = ''; for (const sg of [-1, 1]) { const a = [], b = []; for (let u = 14; u <= 206; u += 12) { const h = half(u); a.push([u, sg * (h - 4.2)]); b.push([u, sg * (h - 5.6)]); } bd += spl(F.P(a)) + spl(F.P(b)); const w = []; for (let u = 16; u <= 150; u += 3) w.push([u, sg * (6.4 + Math.sin(u * .42) * 1.5)]); wv += spl(F.P(w)); } engrave(S, bd, BRZ, .4, { op: .55 }); engrave(S, wv, BRZ, .45, { op: .5 }); }
         // the house's words down one flank, worn nearly through
         if (fine) engrave(S, lettering(F, 'DEEP WATER KEEPS', 30, -lit * 9.5, 5, { gap: .3, flip: lit > 0 }).d, BRZ, .55, { op: .5 });
         // salt: green in the hollows, pits, a darker bloom toward the hilt
@@ -49,7 +51,7 @@ export default {
     // ---- the guard: a wave in silver, one crest breaking toward the blade and one toward the hand
     const wave = ribbon([[15, -45], [3, -41], [-5, -27], [-2, -9], [0, 0], [2, 9], [5, 27], [-3, 41], [-15, 45]], t => 2 + 5.4 * Math.sin(Math.PI * Math.min(1, Math.max(0, t * 1.04))) ** .7);
     piece(D, wave, sv, { t: .9, shade: 'cross', inside: () => {
-      if (fine) for (const k of [-1.6, 1.6]) engrave(S, curve(F, [[13, -43 + k * .2], [3 + k * .3, -39], [-5 + k, -27], [-2 + k, -9], [k, 0], [2 + k, 9], [5 + k, 27], [-3 + k * .3, 39], [-13, 43]], 1, false), sv, .35);
+      if (fine) { for (const k of [-1.9, 1.9]) engrave(S, curve(F, [[13, -43 + k * .2], [3 + k * .3, -39], [-5 + k, -27], [-2 + k, -9], [k, 0], [2 + k, 9], [5 + k, 27], [-3 + k * .3, 39], [-13, 43]], 1, false), sv, .5); beads(D, [[-4.6, -24], [-3.4, -16], [3.4, 16], [4.6, 24]], .9, sv); }
     } });
     gem(D, [0, 0], 'oval', 4.6, SEA, { set: sv, collet: 1.35, table: .5, rot: Math.PI / 2 });
     // ---- the grip: ray-skin, grey and pebbled, bound with twisted silver wire; and the marks of teeth

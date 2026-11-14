@@ -10,7 +10,7 @@ const RG = MET.redgold, RED = '#a8261c';
 export default {
   id: 'grandfather', no: 'VII', name: 'Grandfather', cat: 'Spear', form: 'spear.war', deg: -62, upright: -90,
   realm: 'Empire of Zanara', people: 'The peoples of the Golden Plains; the Gold Masks',
-  owner: 'The throne of Zanara, by the Law of the Sung Line. Since 1062 House Sorondo, the bankers, have held it in pledge.',
+  owner: 'The throne of Zanara, as all the empire’s gold is by law. Since 1062 House Sorondo, the bankers, have held it in pledge.',
   wielder: 'No one carries it. It stands in the Sorondo strongroom at Zanara, and Kwame Sorondo is the only living man who has had it in his hands. The First Face of the Gold Masks parades a copy.',
   why: 'The Salt War was paid for with the Gold Masks’ gold: the masks were melted and the spear pawned, both in secret. If the bankers ever show it, the empire learns what the Masks are made of now. So the crown pays, and keeps paying.',
   made: 'Made at Zanara in 930 for Mosi the Runner’s three hundred: the blade by the smiths of Kabale, the gold from the Ancestor Hill. 175 years old.',

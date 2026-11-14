@@ -15,7 +15,7 @@ export default {
   why: 'The clans swear to a War-Mother over the rhino she has killed. Urza fainted in the heat at the Great Ride of 1104, and her heir Shara froze at her own trial: another hand made the kill. If the clans learn of it, the glaive goes to whoever takes the next rhino.',
   made: 'Hammered at Grakmar in 1062 by the smiths of Clan Ironhide from the spearheads of thirty-one clans. The horn is that year’s rhino’s. 43 years old: the youngest thing here.',
   legend: ['On midsummer’s day in 1062 Grakka Ironhide killed the year’s rhino alone, and thirty-one clans swore to her over the carcass. Its horn was painted red and bound to the blade that killed it.',
-    'Two War-Mothers have died of the sun with it in their hands. The clans do not call that ill luck. They call it the price.'],
+    'Grakka carried it for eighteen years and died of the sun at the Great Ride of 1080 with it in her hand. The clans do not call that ill luck. They call it the price.'],
   hand: 'Brutally heavy in the head: made to stop a ton of rhino, not to fence. What it hits is opened or broken, armour or no. It wants both hands and a wide swing, and it is slow coming back. A rider who gets past the blade has only the haft to fear.',
   art: 'The Year’s Rhino', artNote: 'one set stroke, taken standing, against anything that charges',
   finish: 'Black forge-iron ground bright at the edge, a red-painted horn, teeth, turquoise, rhino hide, horsehair', ground: ['#5a5140', '#16130d'], accent: TURQ,
@@ -60,7 +60,7 @@ export default {
       S.fill(d, S.lin(F.W(2080, 0), F.W(1600, 0), [[0, BLK.hi, .3], [.3, BLK.hi, 0], [.7, '#000000', 0], [1, '#000000', .45]]));
       // the hammer's dimples
       const rr = D.r('hammer'), dk = [], lt = []; for (let i = 0; i < (fine ? 70 : 24); i++) { const u = 1620 + rr() * 420, v = -70 + rr() * 90; dk.push([u, v]); lt.push([u + 1.6, v + 2]); }
-      S.fill(dots(F, dk, 4.6), '#000000', { op: .3 }); S.fill(dots(F, lt, 3.4), BLK.l, { op: .28 });
+      S.fill(dots(F, dk, 4.2), '#000000', { op: .22 }); S.fill(dots(F, lt, 3), BLK.l, { op: .16 }); S.fill(dots(F, dk.filter((p, i) => i % 3 === 0).map(p => [p[0] + 9, p[1] - 6]), 6.5), '#000000', { op: .14 });
       // the ground edge: wide, bright, its inner line wandering where the stone went
       const inner = []; for (let i = 0; i <= 18; i++) { const t = i / 18, e = [[1620, -30], [1642, -42], [1762, -76], [1902, -82], [2002, -57], [2078, -5]], k = t * 5, j = Math.min(4, Math.floor(k)), p = [lerp(e[j][0], e[j + 1][0], k - j), lerp(e[j][1], e[j + 1][1], k - j)]; inner.push([p[0] - 3, p[1] + 15 + Math.sin(i * 2.3) * 2.6 - t * 5]); }
       const edge = line(F, [[1600, -60], [1640, -90], [1900, -110], [2100, -40], [2090, 0], ...inner.reverse()], true);

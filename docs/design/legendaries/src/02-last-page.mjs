@@ -22,7 +22,7 @@ export default {
   finish: 'White steel, fire-gilding, white leather, rock crystal, a drop of red', ground: ['#34436b', '#0d1226'], accent: '#e7c14e',
   len: 1670,
   box: [-420, 1272, -196, 196],
-  details: [{ t: 'The sun at the cross', box: [-420, 250, -196, 196] }, { t: 'The page of names', box: [228, 420, -44, 44] }],
+  details: [{ t: 'The sun at the cross', box: [-420, 250, -196, 196] }, { t: 'The page of names', box: [236, 336, -30, 30], deg: 0 }],
   plain: plainSword({ blade: 1240, grip: 360, w: 27, cross: 185, pommel: 25, ricasso: true }), plainName: 'An ordinary greatsword',
   draw(D) {
     const { S, F } = D, g = MET.gold, fine = D.lod >= 2, r = D.r('hilt'), lea = stuff('#e9e2d2', { s: '#c9bfa8', d: '#9c917a', l: '#f8f4ea', hi: '#ffffff', k: '#3d3526' });

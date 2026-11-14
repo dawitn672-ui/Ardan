@@ -11,7 +11,7 @@ export default {
   realm: 'Kingdom of Sylvaran', people: 'The elves of the Evenwood; the Oakborn line',
   owner: 'The Oakborn, the ruling blood of Sylvaran. It is an heirloom of the queens and not of the crown.',
   wielder: 'No one. It hangs unstrung in the queen’s grove at Evenglade. Queen Ithrien’s left hand is still, and cannot hold a bow.',
-  why: 'It goes to the Oakborn heir, and the only other of the blood is Thalion Halfleaf: an archer, and barred from the crown by law because his father was a man. To hand him the bow is to name him. The Moot of Leaves has voted on it four times.',
+  why: 'It goes to the Oakborn heir, and the only other of the blood is Thalion Halfleaf: an archer, and barred from the crown by law because he is half-elven. To hand him the bow is to name him. The Moot of Leaves has voted on it four times.',
   made: 'Cut on the Yew Ridges and worked at Evenglade about 250 BR for Maerith, then a queen’s daughter of fourteen. Some 1,350 years old.',
   legend: ['In 291 Queen Maerith loosed the first arrow of the War of the Forest Edge with it, and said of the Solen army: let them bring their sun; we will be its shadow.',
     'They called her the Unbending, and the bow has her name. In seven hundred years three archers have strung it. None was let keep it.'],
@@ -23,10 +23,10 @@ export default {
   details: [{ t: 'The grip and the first leaves', box: [-112, 250, -100, 60] }, { t: 'A bud of horn: the upper nock', box: [892, 1010, -218, -136] }],
   plain: plainBow(), plainName: 'An ordinary longbow',
   draw(D) {
-    const { S, F } = D, sv = MET.silver, fine = D.lod >= 2, r = D.r('bow'), A = arcFrame(F, 2700), DA = { ...D, F: A };
+    const { S, F } = D, sv = MET.silver, fine = D.lod >= 2, r = D.r('bow'), A = arcFrame(F, D.unstrung ? 16000 : 2700), DA = { ...D, F: A };
     const hw = s => { const a = Math.abs(s); return a < 80 ? 15.6 : lerp(15, 6.4, Math.min(1, (a - 80) / 880) ** 1.25); };
     // ---- the string: grey silk, served in green where the arrow sits and where it loops the nocks
-    { const a = A.W(-962, -3), b = A.W(982, -3), d = `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`; S.layer('under'); D.sil.push(d);
+    if (!D.unstrung) { const a = A.W(-962, -3), b = A.W(982, -3), d = `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`; S.layer('under'); D.sil.push(d);
       S.stroke(d, '#2b2f33', 2.6, { units: 1 }); S.stroke(d, '#c9cfd2', 1.7, { units: 1 }); S.stroke(d, '#ffffff', .5, { units: 1, op: .6, dash: '2 3' });
       const m = [lerp(a[0], b[0], .492), lerp(a[1], b[1], .492)], n = [lerp(a[0], b[0], .53), lerp(a[1], b[1], .53)], sd = `M${m[0].toFixed(1)} ${m[1].toFixed(1)}L${n[0].toFixed(1)} ${n[1].toFixed(1)}`; S.stroke(sd, '#12301f', 3.4, { units: 1 }); S.stroke(sd, GREEN, 2.4, { units: 1 }); }
     // ---- the stave: heartwood to the belly, a hand of pale sapwood down the back

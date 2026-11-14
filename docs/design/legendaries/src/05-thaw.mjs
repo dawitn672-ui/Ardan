@@ -22,7 +22,7 @@ export default {
   why: 'It did not come home with the body. Aldmark says it was never in the hall; Northreach has asked for it eleven times. King Eirik III signed away ten years of silence over his father’s death, and the ten years are up. Whoever shows the axe names the murderer’s house.',
   made: 'Forged at Kingsmere about 810 for the exile Eirik Winterborn by a smith of the Fairrush court, which Northreach does not care to say. The haft was its fourth. 295 years old.',
   legend: ['In January 812 Eirik the Ice-Walker led 340 men across the frozen bay and broke the sea gate of Wolfhaven with it. They named it for the one thing an ice road fears.',
-    'Ten kings were raised on the shields with it in their hand. The eleventh will have to find it first.'],
+    'Nine kings were raised on the shields with it in their hand. The tenth was raised without it, and has not forgotten.'],
   hand: 'A long two-handed axe with a thin, wide blade: light for its reach and quick to turn. It splits a shield and the arm behind it, and its beard hooks a rim or an ankle. Past the head it is a staff: get inside the swing and it is no better than its bearer’s knife.',
   art: 'Ice Underfoot', artNote: 'short sliding steps, the axe swung from the hips; it is the other man who loses his feet',
   finish: 'Dark iron, a welded steel edge, silver and copper wire, blue enamel, ash, sealskin, walrus ivory', ground: ['#2c4468', '#0a1322'], accent: '#7fb0e8',
