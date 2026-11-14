@@ -100,7 +100,7 @@ export default {
       const pc = A.pc(); pc.debt = 120; UI.render();
       const debt = [...document.querySelectorAll('#topbar svg')].some(s => which(s) === 'broken-coin');
       pc.debt = 0; UI.render();
-      const tips = ['stat:str', 'stat:wil', 'health:', 'piety:', 'coin:', 'initiative:'].map(k => { const [a, b] = k.split(':'); const h = UI.TT ? UI.TT.html(a, b) : ''; return [k, /<div class="tip-h"><svg class="ic s ico-tip"/.test(h)]; });
+      const tips = ['stat:str', 'stat:wil', 'health:', 'piety:', 'coin:', ...(document.querySelector('#topbar .clk-ini') ? ['initiative:'] : [])].map(   /* X3 (D-051): no initiative tip once the pool's words are gone */k => { const [a, b] = k.split(':'); const h = UI.TT ? UI.TT.html(a, b) : ''; return [k, /<div class="tip-h"><svg class="ic s ico-tip"/.test(h)]; });
       const uniq = a => [...new Set(a)];
       // v2: the places in the bar (99992-v2-time: Life, You, Family, World, and War only at war) and piety's vital
       // only for the devout (99993-v2-stats, complaint 7)
