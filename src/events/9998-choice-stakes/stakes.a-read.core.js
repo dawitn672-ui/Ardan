@@ -86,6 +86,17 @@
     ['armyXp', /\.army\s*[-+]=|\barmyXp\s*:/], ['realmRel', /\baddRel\(|\brealmRel\s*:/], ['merit', /\.merit\s*[-+]=|\bmerit\s*:/],
     ['regard', /\baddOp\(|\bbump\(\s*p\b/], ['wil', /\bwillGrow\(/], ['fight', /\bstartDuel(?:Front)?\(|\bbeast\s*:\s*\{|\bduel\s*:/],
   ];
+  // X3 (E1): what a fight the choice opens can end in. startDuel's own rule (06): a brawl, a spar and a tourney are never lethal,
+  // `lethal: false` says so, and every other duel, and every beast, may end in death. Read from the effect's text.
+  ST.fightKindOf = function (s) {
+    s = String(s || '');
+    if (/\bbeast\s*:|beastId|fighterBeast|startBeast/.test(s)) return 'beast';
+    const k = (s.match(/\bkind\s*:\s*["'](\w+)["']/) || [])[1];
+    if (/\blethal\s*:\s*false/.test(s) || ['brawl', 'spar', 'tourney'].includes(k)) return 'blows';
+    return 'death';
+  };
+  // the words of a fight in a chip or a list
+  ST.fightWord = function (kind) { return kind === 'beast' ? 'a hunt the beast may end in your death' : kind === 'blows' ? 'a fight, not to the death' : 'a fight to the death'; };
   const fnCache = new WeakMap();
   ST.fnFamilies = function (fx) {
     if (typeof fx !== 'function') return [];
@@ -113,7 +124,7 @@
       for (const k of ST.fnFamilies(fx)) {
         const d = KEY[k] || { w: k === 'coin' ? 'coin' : k === 'regard' ? 'regard' : k === 'wil' ? 'willpower' : k, o: k === 'regard' ? 14 : k === 'wil' ? 36 : 11 };
         if (k === 'coin' && c) continue;
-        if (k === 'fight') { R.fight = true; continue; }
+        if (k === 'fight') { R.fight = true; R.fightKind = ST.fightKindOf(src(fx)); continue; }
         if (k === 'die' || k === 'prison' || k === 'wound') put(R.touch, k, 'risk of ' + d.w, false, d.o);
         else put(R.touch, k, d.w, false, d.o);
       }
@@ -121,7 +132,7 @@
       const v = num(fx, 'coin');
       if (v < 0) R.coin = -v;
       else if (v > 0) R.gainCoin = v;
-      if (fx.duel || fx.beast) R.fight = true;
+      if (fx.duel || fx.beast) { R.fight = true; R.fightKind = fx.beast ? 'beast' : ST.fightKindOf('kind:"' + String(fx.duel && fx.duel.opts && fx.duel.opts.kind || 'duel') + '"' + (fx.duel && fx.duel.opts && fx.duel.opts.lethal === false ? ' lethal:false' : '')); }
       // 35-moods' four needs, as the profile names them ("How you are")
       if (fx.need && typeof fx.need === 'object') for (const k of ['rest', 'company', 'purpose', 'comfort']) { const n = num(fx.need, k); if (n) put(n > 0 ? R.up : R.down, 'need', k, Math.abs(n) >= 15, 41); }
       for (const k in fx) {
@@ -157,13 +168,13 @@
       // 97's own words where they apply ("hurt", "−5 suns", "their regard"): one grammar with the line players know
       for (const p of R.down) out.push(p.k === 'health' ? 'hurt' : p.k === 'happy' && (R.down.length > 1 || R.coin) ? null : p.k === 'coinPct' ? (R.coin ? null : 'some coin') : p.k === 'happy' ? 'your spirits' : p.w);
       if (R.coin) out.splice(Math.min(out.length, R.down.filter(p => p.o <= 10).length), 0, '−' + coin(R.coin));
-      if (R.fight) out.unshift('a fight');
+      if (R.fight) out.unshift(ST.fightWord(R.fightKind));
       for (const p of R.touch) out.push('• ' + p.w);
       return out.filter(Boolean);
     }
     for (const p of R.up) out.push(mark(p, true) + ' ' + p.w);
     if (R.gainCoin) out.unshift('+' + coin(R.gainCoin));
-    if (R.fight) out.push('a fight');
+    if (R.fight) out.push(ST.fightWord(R.fightKind));
     for (const p of R.touch) out.push('• ' + p.w);
     return out;
   };
@@ -206,6 +217,7 @@
     const label = vc && typeof vc.t === 'string' ? vc.t : typeof c.t === 'string' ? c.t : '';
     const priced = /\bsuns?\b|\d/.test(label);
     if (c.check || c.group) {
+      if (c.check && c.check.fight && typeof c.check.fight === 'object') chips.push({ k: 'risk', t: 'Opens ' + ST.fightWord(c.check.fight.lethal ? 'death' : 'blows'), fight: true });   // X3 (E1)
       const W = ST.read(c.win && c.win.fx), L = ST.read(c.lose && c.lose.fx);
       const ww = ST.words(W, 'win').slice(0, 2);
       if (ww.length) chips.push({ k: 'win', t: 'If it works: ' + ww.join(', ') });
@@ -217,7 +229,7 @@
       if (R.coin && !priced) chips.push({ k: 'cost', t: 'Costs ' + coin(R.coin), n: R.coin, coin: true });
       if (c.fx && typeof c.fx === 'object' && num(c.fx, 'treasury') < 0 && !/\btreasury\b/i.test(label)) chips.push({ k: 'cost', t: 'Treasury ' + coin(-c.fx.treasury), treasury: true });
       let room = 3;
-      if (R.fight) { chips.push({ k: 'risk', t: 'Starts a fight', fight: true }); room--; }
+      if (R.fight) { chips.push({ k: 'risk', t: 'Starts ' + ST.fightWord(R.fightKind), fight: true, kind: R.fightKind || 'death' }); room--; }
       for (const p of R.down) { if (room <= 0) break; if (p.k === 'treasury' || (p.k === 'coinPct' && R.coin)) continue; chips.push({ k: 'cost', t: mark(p, false) + ' ' + p.w, part: p }); room--; }
       if (R.gainCoin && room > 0 && !priced) { chips.push({ k: 'gain', t: '+' + coin(R.gainCoin), n: R.gainCoin }); room--; }
       for (const p of R.up) { if (room <= 0) break; chips.push({ k: 'gain', t: mark(p, true) + ' ' + p.w, part: p }); room--; }
