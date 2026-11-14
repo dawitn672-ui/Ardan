@@ -358,7 +358,7 @@ export default {
       const bk = document.querySelector('#tabbody').textContent, wy = bk.slice(Math.max(0, bk.indexOf('The world in your time')));
       const text = A.chronicleText ? A.chronicleText() : '';
       const out = { rows: rows.length, exact: exact.slice(0, 2), old: oldT && oldT.t, oldMine: oldT && oldT.mine, fresh: freshT, mine: mineT && mineT.t,
-        bookExact: (wy.match(/\b\d{1,3},\d{3} (men in the field|dead)/g) || []).length, textExact: /31,234|6,789|41,234/.test(text),
+        bookExact: (wy.replace(/(about|some) [\d,]+/g, '').match(/\b\d{1,3},\d{3} (men in the field|dead)/g) || []).length,   /* "about 30,000 men in the field" is a rounded count, as on the Annals rows */ textExact: /31,234|6,789|41,234/.test(text),
         names: document.querySelectorAll('.wc-heard').length, pure: A.rngState === rng0 && T.hash(A.S) === h0 };
       UI.tab = 'life'; UI.worldView = 'map'; UI.render();
       return out;
