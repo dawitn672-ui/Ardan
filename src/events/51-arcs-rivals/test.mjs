@@ -314,12 +314,16 @@ export default {
 
   // whole bot lives: these arcs come up in real play, and run to their end. Lives are dealt round the six starts, from
   // twenty (past the youth in which many royal and merchant lives end), until ten have lasted forty years (at most six
-  // rounds); the first round engaged, the rest passive (faster)
+  // rounds); the first round engaged, the rest passive (faster). Dealing stops at the life that makes the tenth long one,
+  // not at the end of its round: C9's worlds (longer lives, other paths) needed a fourth round of six (CI 107: 24 lives,
+  // 910 years played, 1,588 s), and CI's own speed varies by a quarter (one build ran in 1,207 s and 1,526 s), so the
+  // whole rounds ran past the 1,800 s limit (CI 108). Those 24 lives would stop at the 19th: 689 years
   async rivalsBotLives(pg) {
     await pg.evaluate(BOT);
     const paths = Object.entries(TARGETS.paths);
-    const lives = [];
-    for (let i = 0; i < 6 && lives.filter(l => l.years >= 40).length < 10; i++) for (const [name, P] of paths) {
+    const lives = [], enough = () => lives.filter(l => l.years >= 40).length >= 10;
+    for (let i = 0; i < 6 && !enough(); i++) for (const [name, P] of paths) {
+      if (enough()) break;
       const o = Object.assign({ seed: 7301 + i * 7919 + name.length * 17, sex: i % 2 ? 'F' : 'M' }, P.start, { startAge: 20 });
       lives.push(await pg.evaluate(([o, i]) => {
         const L = B.life(o, ['careful', 'greedy'][i % 2], i === 0, 64);
