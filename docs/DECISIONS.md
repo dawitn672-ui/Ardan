@@ -675,3 +675,13 @@ that needs one (A2) stays. Aldmark's sitting Marshal in the lore (Leofric Stane)
 him. **To change (A2 stage 2, after the pause):** `A.POSTS.can` refuses the Marshal's seat in peace today; it should allow
 a ruler's appointment then (still only to a General or a proven better commander, D-017), and the world should seed
 Marshals where the lore names them.
+
+### D-050 · Names worth saying; ordinary arms with craft; a new bow (owner order 52, 2026-11-14 00:13 ET)
+**Names.** Every legendary, every legendary art, every example art (growth.md §3.3) and the naming rules for arts and
+weapons are redone so they sound like legends: evocative, short (one to three words), rooted in the realm's culture and
+the weapon's character, never mundane or comic ("Winter Wheat", "The Latch", "Grandfather", "Paymaster" go), never taken
+from an existing work. The owner's example sets the register: **Winter Wheat → Winter Storm, its art → Snowfall.**
+Arts are named for what they do in a fight (a motion, a weather, a beast, an oath), their forms numbered and named.
+**Ordinary arms** (the non-legendary weapons of every class, drawn by the figure library) get real design: proper
+proportions, fittings, fullers, guards, grips and wear by make and region, so a plain sword is still a made thing.
+**The bow legendary** is redesigned and much improved (a long, thin piece must still read as a legend).
