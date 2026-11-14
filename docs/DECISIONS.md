@@ -685,3 +685,42 @@ Arts are named for what they do in a fight (a motion, a weather, a beast, an oat
 **Ordinary arms** (the non-legendary weapons of every class, drawn by the figure library) get real design: proper
 proportions, fittings, fullers, guards, grips and wear by make and region, so a plain sword is still a made thing.
 **The bow legendary** is redesigned and much improved (a long, thin piece must still read as a legend).
+
+### D-052 · W0 and D10: no war score, no army templates; war screens by post (owner orders 5, 34, 49; 2026-11-14 ET)
+**W0 (owner order 34, D-039 item 13, D-047: "remove war score and army templates; I no longer am a fan of the HOI4 war
+system within this game").** Nothing the player sees or does shows a war score or a template any more; the new war
+(D12a's visual simulation) is designed separately and is not built here.
+- **The war score leaves the screen, not the engine.** `w.score` still moves with battles and occupation and still
+  decides the AI's peace (`A.checkPeace`), the terms a foe accepts (`A.peaceTerms`, `A.peaceOdds`), whether "Demand
+  what you hold" is offered (25), the crushing peace (90), events that move it, 09-engine-at-scale's far-war cap and 68's
+  forced-surrender mark. Every place that showed it (the World's Wars view, the War tab, the War Room's Wars tab, the
+  peace table, the diplomacy card, the release's campaign header, 20-ai-personality's reasons, the click-open note) now
+  shows **facts** instead (`A.warFactsText`: the provinces each side holds of the other's, the great battles each won)
+  or names a reason by what moves the score ("the land each side holds and the battles won"). Facts are counts of
+  things, not a score in disguise.
+- **Templates stay the engine's recipe for a division** (`r.forces.tpl`, `A.tplDefaults`, 56's yearly recut,
+  `A.tplEdit`, 9997-companies' battalions). The player no longer designs, edits, retires or reorganises by template, and
+  no longer picks an army doctrine (it sat in the Templates tab; `r.forces.doc` stays readable for old saves). The
+  Manpower tab still trains a division by the realm's own kinds (Line Division, Horse Division...). The word
+  "template" is gone from every player-facing text.
+- Retired code: `archive/w0-war-score-and-templates/` (last commit with it: `39ee589`).
+
+**D10 (owner order 5, docs/CRITIQUE.md D10 and W4): war screens only at your rank, when deployed, on a mission, or when
+the situation allows.** 99997-v2-war already shut every war that is not yours; D10 narrows your own war to your post:
+- **The War Room by post** (`A.V2W.canRoom`): the crown and the Marshal (who run the host) in peace and war; in a war
+  of yours a commander (rank 7 and up, an army's general) or a captain in the field (ranks 4-6 whose division marches
+  with an army, a free company under contract); never a soldier or a sergeant, whose war is his company, his orders, the
+  battle at his rank and rumour. Before, any enlisted man opened it, in garrison and in peace.
+- **The map within reach** (`A.V2W.scope`): a commander sees the theatre; a captain two provinces round his division; a
+  soldier or sergeant the province he stands in and the next. His own division always shows.
+- **Enemy numbers below a commander are estimates**: a War Room counter reads "~7k", not "7.3k".
+- **No Wars mode on the map** for a life in no war; **Arms** (the War tab in peace) from 14 or on enlisting; the War
+  tab lists only the elite orders the character has heard of (his realm's, his own, those of the realms in his wars,
+  and the strongest, talked of everywhere); no War Room button or "Open the War Room" hint for a rank without one.
+- **Held by** `v2wByPost` (14 lives: child, peasant, noble, soldier, sergeant, captain in the field and left behind,
+  general, ruler, in peace and in a war of theirs).
+- **Found, not fixed here:** the release's staff card (`UI.staffCard` -> `A.staffCands`) draws a year's candidates with
+  `A.rand` the first time it is drawn for an officer or a ruler, so the War tab's first draw is not pure. Moving the
+  draw to the month's turn changes the random stream of every officer's and ruler's life (a balance-league change),
+  so it is left to its own step.
+- Engine behaviour is unchanged (no draw moved, no AI rule changed), so the balance league was not re-run.
