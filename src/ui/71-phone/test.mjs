@@ -146,7 +146,7 @@ export default {
     // (CI run 66: holdings differed in pixels only, and never reproduced locally).
     let lastBuf = null;
     // 91's vital bars glow and show a ▲/▼ chip for 1.6 s after a value changes (a timer, not a CSS animation): wait it out
-    const shot = async () => { await p.mouse.move(1, 1); await p.waitForFunction(() => !document.querySelector('.lk-flashing, .lk-dlt'), null, { timeout: 4000 }).catch(() => {}); lastBuf = await p.screenshot({ animations: 'disabled' }); return crypto.createHash('sha1').update(lastBuf).digest('hex'); };
+    const shot = async () => { await p.mouse.move(1, 1); await p.evaluate(() => (UI.FIG && UI.FIG.idle ? UI.FIG.idle() : null));   /* a portrait baked between two shots on a loaded runner */ await p.waitForFunction(() => !document.querySelector('.lk-flashing, .lk-dlt'), null, { timeout: 4000 }).catch(() => {}); lastBuf = await p.screenshot({ animations: 'disabled', mask: [p.locator('svg.portrait')], maskColor: '#808080' });   /* portraits (C8b) are compared by layout here and tested on their own (fg*): their pixels shift as a picture decodes on a loaded runner */ return crypto.createHash('sha1').update(lastBuf).digest('hex'); };
     const still = async () => { let h = await shot();
       for (let i = 0; i < 4; i++) { await p.evaluate(SETTLE); const h2 = await shot(); if (h2 === h) break; h = h2; }
       return h; };

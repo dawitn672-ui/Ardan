@@ -534,3 +534,22 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Pause:** shown to the owner now; per order 36 no new step starts until the owner says go. Work already running (C9)
   finishes and is kept.
 - **Undo:** `git revert -m 1 1cc5e31`.
+
+### H-031 · 2026-11-13 21:17 ET · C9: bodies that make sense, skill baselines, longer lives, honest odds, Swordsmanship (D-040, D-042, D-046)
+- **Commits:** `582691b`, `7e60872`, `9f802d5`, `b714b92`, `6c677dc`, `a1b6abb`, `703b57b`, `8cf245c` (by an Opus 5.5
+  agent, branch `c9-bodies`), merged as `cd2e54d`. Begun before the pause, finished and kept under it.
+- **What:** `src/people/999997-bodies`. Stat words are a measured centile among one's whole grown people (6,064 people
+  from 8 worlds; 30-70 average; past the 99.9th "off the chart"); children and youths are read against their age, in
+  words; other peoples against men too; the giant's speed potential 28 → 18. No real units for a body on any page or in
+  about 45 lore lines. Skill baselines per level (0.65-1.15 of the people's middle in the first governing stat; the
+  second 0.9 of that): below one the skill stalls and works at the lower level; NPCs are held at their skills'
+  baselines; the player is never lifted; training a skill trains its stats a little. Lifespans: prime adults ×0.6 death
+  odds, estate factors, a better chance against an ordinary illness. Honest odds: `A.checkOdds` counts blunders and
+  surges exactly and the roll uses the shown number; the popover names that share. "Blades" reads Swordsmanship.
+- **Measured:** NPC masters under their baseline 27% → 0; careful bot lives' non-violent deaths under 50: 3 of 13 → 0 of
+  9 (median 65 → 73); a healthy merchant reaches 50 at 0.94. flHonest's worst bin 3.6/7.5 → 4.7/5.6 (shown/real).
+- **Tests:** 6 bodies tests; v2-stats, profile, body-mind, old age, learn-by-doing, fair checks, honest odds and the core
+  suites pass; after the merge 10 of 10 smoke tests. phoneDesktopSame now masks portraits in its screenshots (their
+  pixels shift as a picture decodes on a loaded runner; layout is still compared; portraits have fg* tests). The balance
+  league runs in this push's CI.
+- **Undo:** `git revert -m 1 cd2e54d`; old saves need nothing.
