@@ -629,3 +629,19 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   `phoneDesktopSame` waits for the farewell cut-in to leave (`f50316f`). Five slow bot-life tests are with an agent.
 - **Undo:** `git revert -m 1 9f78825`.
 
+### H-037 · 2026-11-14 21:00 ET · CI 108's bot-life tests: two test fixes; three pass on f50316f as they stand
+- **Commits:** `20ac136`, `dffa374` (by an Opus 5.5 agent, branch `ci108-botlives`). Tests only; no game code changed.
+- **csWorlds (fixed, test):** the test matched the first 30 letters of a casus belli in the news, but 99999-v2-names
+  writes a realm's name for a lore name in every line ("to push the Horde back" is told "to push Gorath back"). On
+  786a52d all nine wars counted missing were Aldmark's want, each the top line of the news (74 of 83, CI 108). Matched
+  through `A.V2NAMES.fix`: 89 of 89 on f50316f.
+- **rivalsBotLives (fixed, test):** timed out in CI 108. The game's cost a bot-year did not rise with C9 (CI: 2.1 s
+  before, 1.75 s after; a profile puts C9's floor and cap at about 5% of a war-heavy year); C9's worlds needed a fourth
+  round of six lives (CI 107: 24 lives, 910 years, 1,588 s) and CI's speed varies by a quarter. Dealing now stops at the
+  tenth long life: 16 lives, 670 years on f50316f (was 18, 750); passes.
+- **Pass on f50316f with no change** (CI 108 ran on 786a52d; X3 and W0+D10 changed the worlds since):
+  kinBotLives (12 long, 9 met a kin arc, 19 began, 17 finished, 11 of 13 kinds; CI 108: 6, 4, 4 kinds),
+  temperMovesTheWar (cunning 15.5 taken per 100k men down against cautious 14.7; CI 108: 13.5 against 14.3),
+  rankMovesTheFight (13 and 12 points against a bar of 10; CI 108: 10 and 9), ttCov2Realm (91.2% and 91.2%).
+  Their margins are thin and C9-era: the pre-C9 build (391813a) read 19 and 17 points, cunning 16.5 against 14.8.
+- **Undo:** `git revert 20ac136 dffa374`.
