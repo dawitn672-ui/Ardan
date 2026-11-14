@@ -29,7 +29,7 @@ Technical detail is under **For the builders**. A busy reader can keep to §1.1 
 | Templates | "Line Division" of nine battalions, designed with army experience | A recipe, not people. `GD.NOBLE_RUNGS` says a baron owes 300 men and a count 4,000; no army is built from it |
 | The War Room | 59 `UI.wr*` functions; tabs Command, Forces, Templates, Industry, Manpower, Wars | A modern staff's desk (W8) |
 
-Much is kept (§4): seeded captains, drill that gates formations, generals with tempers, "What decided it", named men, siege choices, rumour. In all, about 9,700 lines of war in the release and 7,000 in eleven features.
+Much of it is kept (§4). In all, about 9,700 lines of war in the release and 7,000 in eleven features.
 
 ## 1 · The theatre: the war on the map
 
@@ -110,7 +110,7 @@ A battle is fought where the armies met. `fieldAt(site)` cuts a patch from D9's 
 
 ![The field](war/3-field.svg)
 
-You look from a hill behind your own side: your men from behind, theirs facing you (6: their line on the ridge you must climb). A man is the same size near and far, so a block reads as a count.
+You look down from a hill behind your own side, at a slant: your men from behind, theirs facing you (6: their line on the ridge you must climb). A man is the same size near and far, so a block reads as a count.
 
 - **A company is its men:** about two hundred, as small figures in the figure library's colours, under its standard (one figure for about six men here; your own company man for man up close). Its shape is its formation: a tight block is a wall, a narrow one a column (at the bridge), a scatter is loose order (the bowmen, 2).
 - **State is posture, then words.** A company whose ranks are ragged looks it (1: yours, coming out of the water); a wavering one sheds men backwards and its standard dips (7). A press gives the words: *ranks* firm, ragged or lost; *nerve* steady, shaken, wavering or broken; *wind* fresh, winded or blown.
@@ -185,10 +185,10 @@ A siege is a place you can open: the walls on a field of their own, the ring, th
 
 ### 2.9 For the builders: how it is drawn
 
-- **One canvas, layers.** The ground (D9's map continued close) is painted once per field into a bitmap. Men are sprites cut once from the figure library's palette into an atlas per side: 12 arms × 3 facings (the fourth mirrored) × 6 frames, 24 × 32 px. A frame is one ground copy and at most 1,500 `drawImage` calls; beyond that, far companies become a block under their standard.
+- **One canvas, layers.** The ground (D9's map continued close) is painted once per field into a bitmap. Men are sprites cut once from the figure library's palette into an atlas per side: 12 arms × 3 facings (the fourth mirrored) × 6 frames, 24 × 32 px. A frame is one ground copy and the sprites (§5). The motion is the canvas's own: the page still draws once a press (999999-one-redraw).
 - **Animation is interpolation.** The engine gives the state at each beat; the picture moves companies between two beats over about 1.2 seconds. The same beats with no picture is "Fight it out". Drawing reads the state and writes nothing (`renderRng`, `replayWithRender`).
 - **The press** is at most nine library figures at card size, prepared once through 93's picture queue, and code-drawn backs for your own rank. The library has ten stances and none with a raised blade: five fighting stances are an art lot of stage 6.
-- **Phone first.** Upright, the field shows your wing and scrolls sideways; the controls sit in the thumb row; a company's words open on a press, never on hover.
+- **Phone first.** Upright, the field shows your wing and scrolls sideways; the controls sit in the thumb row; a company's words open on a press, never on hover; nothing of war loads before a war is opened (X7).
 
 ## 3 · The simulation underneath
 
@@ -209,7 +209,7 @@ Every engagement in the world runs on one engine, in beats of about a minute. Ea
 
 Each time a named cause changes a blow, a volley or a test of nerve, the engine adds what it was worth to a ledger: the dead it added to their side or spared on ours (23-after-action's measure). Causes have places and moments: *the stream*, *their bowmen behind stakes*, *the Moving Wall against the levy drill*, *plain kit against fine*, *taken in flank at the village*, *winded by the morning's march*, *the order to the left wing never arrived*, *Leofric Stane and Winter Storm*, *fortune*.
 
-The report is that ledger read back. A verdict in words (a field held, a rout, a slaughter, a draw at dusk). **What decided it:** the three to five heaviest causes, each with a weight in words (decisive, heavy, telling, slight) and a press that replays its moment on the field. The roll: the named dead, hurt and taken, and honours won. What changed on the map: "the front leapt to the Vite." And, as now, what each side says happened beside what did.
+The report is that ledger read back. A verdict in words. **What decided it:** the three to five heaviest causes, each with a weight in words (decisive, heavy, telling, slight) and a press that replays its moment on the field. The roll: the named dead, hurt and taken, and honours won. What changed on the map: "the front leapt to the Vite." And, as now, what each side says happened beside what did.
 
 ### 3.3 One engine for everyone
 
@@ -220,7 +220,9 @@ A battle nobody watches is the same loop without a picture: about a millisecond 
 - `src/war/engine/engage.js`, a plain module beside `war.js`, unit-tested in node; typed arrays, one row a company (side, arm, men, place, facing, formation, ranks, nerve, wind, arrows, state, order). `engage.start(...)`; `engage.beat(E, orders)` returns the next thing to ask, or nothing; `engage.report(E)`. The trial is its sketch.
 - **A man's worth** = the arm's worth in levies (as calibrated today: levy 1, knight 5 to 7, order 12 to 32) × kit word (E2c) × art grade and its switched strengths (G4; until then `LORE.styles` and 60's drill record, through one `artOf(company)` seam) × experience. The tables of §2.5 are data (`data/military/`).
 - **The player** enters as orders, or as an act resolved by `attempt()` and the duel engine against `facing()`; an act may move only what his post owns (his section, his company, his orders).
+- **For the bench,** `b.aar = { causes: [{ label, pct }], text }` and `A.SIGNATURE.bothScales` keep their shapes (the player sees words, never `pct`).
 - **Held by tests:** the same seed and orders give the same battle to the bit, in the page and in node, watched or not; each pairing of §2.5 wins at least 8 in 10 on its own ground and loses on the wrong ground; equal hosts on open ground are a coin; a host one grade of art better wins about 2 in 3 (man to man, a top art wins about 7 in 10, growth.md); 250 order knights beat 3,000 levies in the open; a rank's best play against its worst moves its own stake (section, company, battle) by 15 points or more, `rankfx`'s bar; the report's top cause is within a factor of two of a counterfactual (23's `aarCalibrated`).
+- **The trial already has this shape** on guessed constants, over 200 seeds each: knights ride down bowmen in the open every time and are stopped by standing spears every time; a ridge behind a stream is held 9 times in 10; equal hosts split 98 to 102; one grade of art wins 131.
 
 ## 4 · What goes, and what does its work
 
@@ -233,13 +235,13 @@ A battle nobody watches is the same loop without a picture: about a millisecond 
 | The War Room, counters, the supply map mode | The command screen | The theatre at your rank; **The camp**, one page for your own men (a soldier's section by name; a captain's roll, pay and drill; a general's contingents and their days of service) |
 | Five battle resolvers and `rankfx`'s nudges | Each rank's battle | One engine at three distances. 72's "squad and front on one screen" is the press and the field; 23's report is the ledger; 37's named men, 36's siege choices and 99997's rumours stay |
 
-Everything retired goes to `archive/` with a note (owner order 4).
+Also kept, on the one engine: seeded captains (9997), drill that gates formations (60) and generals' tempers (38). What is retired goes to `archive/` with a note (owner order 4).
 
 ## 5 · Budgets
 
 | | Budget | Evidence |
 |---|---|---|
-| Battles in the world a year, with about six wars | Up to 60 battles, 400 skirmishes and raids, 40 assaults | Today about 160 province fights; hosts are fewer than divisions |
+| Battles in the world a year, with about six wars | Up to 60 battles, 400 skirmishes and raids, 40 assaults | Today about 160 province fights |
 | All the world's wars, a month | 12 ms median; 30 in a month with a great battle | Today 40 to 85 (`A.wsDay` at 48.7% of 80 to 170 ms). The trial, under a load of 14 to 26 on four cores: a battle of 9,000 men 0.8 to 1.2 ms; of 22,700 men 3 to 7; a skirmish 0.04 to 0.07; the burn 0.15 ms a week for six wars; what a host can reach in fifteen days 0.003 ms |
 | The battle you watch | A beat 2 ms; opening a field 300 ms, off the press | The trial's beat: 0.02 to 0.2 ms |
 | A frame, on a phone | 30 a second; 8 ms of script and drawing at the gate's four-times throttle; at most 1,500 sprites; frames only while something moves | Not yet measured: stage 4 begins with a sprite probe on a real phone. If it fails, far companies become blocks sooner |
@@ -250,7 +252,7 @@ Everything retired goes to `archive/` with a note (owner order 4).
 
 **War needs six things of D9:** a route graph (roads in two ranks, fords, bridges, passes, sea lanes, with lengths and seasons); ground the game can read for every 10 km cell (height, slope, cover, river edges and crossings); places as things (towns, castles, walls, the country each holds, stores); names for features; `fieldAt(site)`; and one map component with cached layers, so the burn, weather, the veil and the standards are layers, not redraws.
 
-Each stage is a version (`v2.4.0-alpha.N`) and ends as every step does: tests, the coherency run, a scripted pass and a playtester agent, the records, a sample save. The milestone is `release/v2.4-war`. Engines: Opus 5.5. Views and data: Sonnet 5.5. Fable 5.2 for the look of the field and the press.
+Each stage is a version (`v2.4.0-alpha.N`) and ends as every step does (tests, the coherency run, a playtest pass, the records, a sample save). The milestone is `release/v2.4-war`. Engines: Opus 5.5. Views and data: Sonnet 5.5. Fable 5.2 for the look of the field and the press.
 
 | Stage | The player gets | Needs | New tests | New coherency checks |
 |---|---|---|---|---|
@@ -260,7 +262,7 @@ Each stage is a version (`v2.4.0-alpha.N`) and ends as every step does: tests, t
 | **4 · D12b-1** One engine, the field (XL) | Every battle on the engagement engine; the field with Pause, Orders, Watch at every rank; the report from the ledger | stage 3 | §3.4's list; 12 different decision sheets in 20 battles (W1); a beat and a frame within §5 | a battle's dead are its companies' losses; every battle has a report |
 | **5 · D12b-2** The theatre and the burn (L) | The living map at your rank; Next day and Next week play it | D9, D10, stage 3 | D10's personas (a civilian nothing, a levy-man the road, a general his riders' reach); the front never crosses an unbridged river; ungarrisoned land drifts home; drawing is pure | no cell held by a realm outside the war |
 | **6 · D12b-3** The press; arts in battle (L) | Your place in the line; forms as choices; named men; legendaries that must land | stage 4; fighting stances; G4 and G5 when they come | a master with a legendary breaks a levy company's front 9 times in 10, and is stopped by arrows or his wind at least 2 in 10; no three campaign weeks without a decision or a skip (W3) | every company has a standard art |
-| **7 · D11b** Branches as careers (L) | The critique's D11: each arm's ranks, drills, missions and pay; the muster fixes your arm | stage 3 | the critique's list for D11 | every soldier has an arm and a post |
+| **7 · D11b** Branches as careers (L) | The critique's D11: each arm's ranks, drills, missions and pay; the muster fixes your arm | stage 3 (may run beside 4 to 6) | the critique's list for D11 | every soldier has an arm and a post |
 | **8 · D12b-4** Sieges, raids, the verbs (L) | Sieges as places, assaults, raids, cut roads, ambush, blockade, encirclement, winter | stage 5; E1 for stores | each verb of §1.4 moves its own measure by 15 points in a lab; a cut road starves a host in the days its slip said | one besieger a place; no host fed through a cut road |
 | **9 · D12b-5** Balance, retire, records (M) | War lengths, deaths and careers in their bands; the old war code in `archive/` | all | the balance league; the press gate without `--report`; state size; every sample save loads | the old fields are gone, or mirrors |
 
