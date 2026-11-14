@@ -501,3 +501,10 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Tests:** 15 pf* tests (pfLean, pfRecords new); after the merge 17 of 17 with boot, renderRng, b5Budget.
 - **Open:** fewer controls; the Measured section when C9 removes real units; "styles" to "arts"; equipment tiles.
 - **Undo:** `git revert -m 1 c56f9d4`.
+
+### H-028 · 2026-11-13 19:33 ET · Fable 5.2 is available again; the legendary designs move to it
+- H-019's "Fable's weekly limit until Nov 18" no longer holds: the owner said Fable is not out, and a test call answered.
+  Work that D-009 gives Fable goes back to Fable 5.2. The ten legendary weapon designs (order 36), begun on Opus 5.5, were
+  restarted on Fable 5.2 at max effort (the Opus draft notes kept for it).
+- **lfRepeats** (CI 105 shard 3): with the feature on, prompts a year held steady (10.1 → 10.2) while the "off" world
+  grew busier after A2's re-roll (11.9 → 13.1); the bar is 75% of "off" (was 80%), and at least 6 a year.
