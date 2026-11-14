@@ -11,7 +11,7 @@ const RUN = () => {
         const q = A.S.queue[0], id = q && q.ev, e = A.EV[id];
         if (!e || done.has(q)) return;   // an event with a result screen is viewed twice
         done.add(q);
-        all.push({ s: A.evShape(e), trig: !!e.trigger });   // everything the player sees, duties and NPC moves too
+        all.push({ s: A.evShape(e), trig: !!e.trigger, from: !!q.lfFrom });   // everything the player sees, duties and NPC moves too
         if (e.trigger) { if (e.npc) { npc++; if (last[id] != null && A.S.year - last[id] < 10) npcRep++; last[id] = A.S.year; } return; }
         views++;
         const cool = e.cool || 10;
@@ -24,7 +24,10 @@ const RUN = () => {
       // a duty scene between two road scenes breaks the run, and two queued scenes after a rolled one are not its doing
       for (let i = 1; i < all.length; i++) {
         const x = all[i]; if (x.trig || !x.s) continue;
-        pairs++; if (x.s === all[i - 1].s) { same++; if (i > 1 && x.s === all[i - 2].s) triples++; }
+        pairs++; if (x.s === all[i - 1].s) { same++; if (i > 1 && x.s === all[i - 2].s && !(all[i - 1].from && all[i - 2].from)) triples++; }
+        // (CI 110: a gathering put two court scenes, gs_spy and gs_whisper, ahead of a court scene the month had already
+        // rolled; the guard could not see them when it rolled, so a run made by scenes another system set in front of a
+        // rolled one is not a triple of the guard's)
       }
     }
     A.EV_COOL = keep.cool; A.evVariety = keep.v; A.evRecency = keep.r;
