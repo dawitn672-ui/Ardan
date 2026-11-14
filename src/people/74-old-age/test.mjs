@@ -16,9 +16,17 @@ const SETUP = () => {
     },
     // an old life with a history: a life played from 26, then aged 32 years, its memories made old with it
     base(o, years) {
-      A.newGame(Object.assign({ seed: 7400, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 26 }, o));
-      T.play(years == null ? 12 : years);
-      const pc = A.pc(); if (!pc.alive) return null;
+      // a life that dies in its played years is dealt again on the next seed (the world shifts as features land, and a
+      // fixture should not vanish because one seed's man drowned at 31)
+      let pc = null;
+      for (let k = 0; k < 6 && !(pc && pc.alive); k++) {
+        const g = Object.assign({ seed: 7400, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 26 }, o);
+        g.seed += k * 1000;
+        A.newGame(g);
+        T.play(years == null ? 12 : years);
+        pc = A.pc();
+      }
+      if (!pc.alive) return null;
       const R = GD.RACES[pc.race], shift = Math.max(0, R.old + 20 - A.age(pc));
       pc.born -= shift;
       for (const id in pc.rel) { const t = A.P(id); if (t && t.alive && t.id !== pc.id && !['child', 'grandchild'].includes(pc.rel[id].type)) t.born -= shift; }
