@@ -283,7 +283,7 @@
   W.ordersCard = function (h, p, compact) {
     const pc = p || A.pc(); if (!pc || !GD.ORDERS) return h;
     const list = Object.keys(GD.ORDERS).map(id => A.orderSummary(id)).filter(s => s.r && s.r.alive).sort((a, b) => b.pow - a.pow);
-    const myR = pc.mil && !pc.mil.merc ? pc.mil.realm : pc.realm, shown = list.filter((s, i) => !compact || i < 4 || (pc.order && pc.order.id === s.id) || s.o.realm === myR);
+    const myR = pc.mil && !pc.mil.merc ? pc.mil.realm : pc.realm, shown = list.filter((s, i) => !compact || (A.orderHeard ? A.orderHeard(pc, s, i) : i < 4 || (pc.order && pc.order.id === s.id) || s.o.realm === myR));  // the release's own filter (D10: the orders heard of)
     const parts = h.split('<div class="ord ');
     for (let i = 1; i < parts.length && i - 1 < shown.length; i++) {
       const id = shown[i - 1].id; let j = 0;
