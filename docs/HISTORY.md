@@ -661,3 +661,12 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
     (81 has no rule that can cut an activity; five lives' noise is about a point). The reasons are in the test.
 - **Undo:** revert the CI 109 commits (`git log --grep "CI 109"`).
 
+### H-040 · 2026-11-14 18:05 ET · CI 110: six reds fixed (two in the game)
+- **Game:** the odds popover's rows under the honest-odds row now add up to the old chain's number, and that row is the rest
+  (`ttSums2`: a near-certain check read 97 against 94; the odds rolled were always right). "The Wealthy" is read after the
+  saint, the learned, the keeper, the famous, the root and the wanderer: with longer lives most long lives passed 20,000
+  suns and the purse took five of six endings (`endingsVariety`).
+- **Tests:** `v2wAnnalsHearsay` reads "about 30,000" in The Book as rounded; `phoneDesktopSame` closes the farewell cut-in
+  right before each shot; `varietyGuard` does not count a run made by scenes another system set in front of a rolled one.
+- **Undo:** revert the CI 110 commits (`git log --grep "CI 110"`).
+
