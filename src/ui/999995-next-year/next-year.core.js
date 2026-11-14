@@ -277,7 +277,7 @@
   A.onMonth.push(pc => { try { Y.weigh(pc); } catch (e) { console.error('overtraining', e); } });
   // X3: what the player is told in place of "7.0 initiative": how hard they have been driving themselves, in words. Pure.
   A.weariness = function (pc) {
-    const y = Y.state(); if (!y || !pc) return '';
+    const y = A.S && A.S.v2y; if (!y || !pc) return '';   // read only: a draw must not create state
     const l = +y.load || 0;
     return l > Y.CAP ? 'Driven too hard' : l > Y.CAP * 0.6 ? 'Weary' : l > Y.CAP * 0.3 ? 'A little tired' : '';
   };
