@@ -73,6 +73,7 @@ order is replaced, strike it through and say by what.
 39. **S and SSS grow abnormally fast:** "SSS growth speed should be abnormal, so make S 1.8 and SSS 3." · recorded 2026-11-13 19:43 ET
 40. **Cheaper talents, a bigger budget:** "Don't make talents so expensive and increase the budget." Now 40 points and lower prices (growth.md §10). · recorded 2026-11-13 19:45 ET
 41. **No build should be the obvious buy:** "with this it makes it illogical not to spend on a broad SSS; fix and troubleshoot, find the best middle to make things work as a game and give room for players to spread out their build or focus on a couple main abilities." Prices by reach and growth (growth.md §10). · recorded 2026-11-13 19:49 ET
+42. **A slightly bigger budget; one SSS at most:** "Increase the budget slightly and limit the number of SSS to 1 no matter the combination." Budget 45; one SSS talent, of any reach. · recorded 2026-11-13 19:51 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**

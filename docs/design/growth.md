@@ -670,13 +670,13 @@ focusing earn about the same per point. Cost to raise from C, cumulative, and re
 | Group, ×2 (two or three attributes, or a whole calling) | 2 | 4 | 10 | 24 | +2 | +4 | +6 |
 | Broad, ×5 (all of body, all of mind, all of presence) | 5 | 10 | 25 | 60 | +5 | +10 | +15 |
 
-**Budget: 40 points.** Points per unit of growth stay near 6 at every letter (B 6.7, A 5.7, S 6.3, SSS 6.0), so no letter
+**Budget: 45 points; at most one SSS talent of any kind** (owner order 42, 2026-11-13 19:51 ET). Points per unit of growth stay near 6 at every letter (B 6.7, A 5.7, S 6.3, SSS 6.0), so no letter
 is the obvious buy. Builds this allows:
 - **Spread:** Physique A 10 · Blades S 10 · Speed S 5 · Senses A 2 · Command A 4 · Looks B 1 = 32, eight left.
-- **Focused:** Speed SSS 12 · Blades SSS 24 = 36: a duellist with two abnormal gifts and nothing else above average.
+- **Focused:** Speed SSS 12 · Blades S 10 · Senses S 5 · Reflexes S 5 = 32: one abnormal gift, a few sharp ones.
 - **Many small gifts:** ten narrow talents at A (20) and two groups at S (20) = 40.
-- **Body above all:** Physique S 25 and Blades A 4, with 11 left; Physique SSS (60) only by lowering both mind and
-  presence to F (+30): a legal, extreme brute who learns arts slowly and leads no one.
+- **Body above all:** Physique S 25 and Blades A 4, with 11 left; Physique SSS (60) only by lowering mind and presence
+  far down (+15 needed): a legal, extreme brute who learns arts slowly and leads no one; then no other SSS.
 A refund is always smaller than the matching cost; arms and callings are separate from the body, so Physique never
 grants weapon skill. G1 tunes these against bot lives (a sweep of random builds: no build may dominate the others' life
 outcomes by more than a set margin).
