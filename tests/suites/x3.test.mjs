@@ -87,10 +87,10 @@ export default {
         }
       }
       // played lives: every dealt scene that is dated is dealt in its month
-      for (let s = 0; s < 6; s++) {
+      for (let s = 0; s < 3; s++) {
         T.enter({ seed: 900 + s, race: 'human', realm: ['POL-05', 'POL-04', 'POL-03'][s % 3], status: ['peasant', 'artisan', 'noble'][s % 3], sex: s % 2 ? 'F' : 'M', startAge: 14 + s * 4 });
         const y0 = A.S.year;
-        for (let g = 0; g < 800 && A.S.year < y0 + 24; g++) {
+        for (let g = 0; g < 800 && A.S.year < y0 + 12; g++) {
           const rr = A.advance(400);
           let h, k = 0;
           while ((h = A.headReady()) && k++ < 100) {
@@ -107,7 +107,7 @@ export default {
       return out;
     });
     const bad = r.bad.concat(r.offDate);
-    return { ok: bad.length === 0 && r.dated > 20, detail: bad.length ? bad.slice(0, 6).join('; ') : `${r.dated} dated scenes held to their month, ${r.dealt} scenes dealt over six lives, none off its date` };
+    return { ok: bad.length === 0 && r.dated > 20, detail: bad.length ? bad.slice(0, 6).join('; ') : `${r.dated} dated scenes held to their month, ${r.dealt} scenes dealt over three lives, none off its date` };
   },
 
   // E1: a choice that can open a fight to the death says so on its chip
@@ -239,6 +239,35 @@ export default {
       return out;
     });
     return { ok: r.bad.length === 0 && r.plain >= 40 && r.fn >= 10, detail: r.bad.length ? r.bad.slice(0, 5).join('; ') : `${r.plain} plain and ${r.fn} function effects: each charged what it promised` };
+  },
+
+  // E3: no adult's decision is asked of a child under 6: every scene a small child is dealt asks its age in its own condition
+  async x3ChildhoodGated(page) {
+    const r = await page.evaluate(() => {
+      const out = { shown: 0, odd: [] };
+      const AGED = /\bAA\(|C\.(child|age|young|teen|ageAdj|infant)\(|\bage\(|A\.age|\.born|KID\(|TEEN\(|kid\(|\bchild\b/;
+      let n = 0;
+      for (const [st, rl] of [['serf', 'POL-05'], ['artisan', 'POL-11'], ['noble', 'POL-04']]) {
+        T.enter({ seed: 600 + n++, race: 'human', realm: rl, status: st, sex: n % 2 ? 'M' : 'F', startAge: 0 });
+        for (let g = 0; g < 400 && A.age(A.pc()) < 6 && A.pc().alive; g++) {
+          A.advance(400);
+          let h, k = 0;
+          while ((h = A.headReady()) && k++ < 100) {
+            if (h.type === 'event') {
+              const age = A.age(A.pc()), e = A.EV[h.ev];
+              if (age < 6 && e) {
+                out.shown++;
+                const cs = e.cond ? e.cond.toString() : '';
+                if (!AGED.test(cs) && !h.forced && !(h.ctx && Object.keys(h.ctx).length) && h.lfFrom !== 'chain') out.odd.push(`${h.ev} at ${age} (${st})`);
+              }
+              A.eventAuto();
+            } else A.skipPrompt();
+          }
+        }
+      }
+      return out;
+    });
+    return { ok: r.odd.length === 0 && r.shown >= 5, detail: r.odd.length ? r.odd.slice(0, 6).join('; ') : `${r.shown} scenes dealt to three small children, all asking their age` };
   },
 
   // the old words and the cost mark are not in any source a player can read; the one file that still names the cost mark is

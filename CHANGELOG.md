@@ -5,6 +5,18 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **No more "initiative".** The pool of free days went with the new Next month and Next year buttons, but its words stayed:
+  "60.0 initiative" on the Activities line, "Spend your initiative", "needs 2 initiative" on a market trip, a ⧗ on every
+  tile. They are gone. An activity takes days; the Activities line says how tired you are (a little tired, weary, driven
+  too hard), and a market trip that is too long says so in days.
+- **A feast comes on its day.** The Spring Equinox no longer falls in August, and a scene that opens on "1 May" or on a fair
+  is dealt only in that month. "Go to a feast" is shut in a month with none.
+- **A fight says what it can end in.** A choice that opens a duel says "a fight to the death" or "a fight, not to the death",
+  and a hunt says the beast may kill you.
+- **A sick body does not read "hale".** While a fever is on you the health word is "ill with marsh fever".
+- **The ending fits the life.** "Master of the Craft" is for a craft; "Survivor" only for a life that began in childhood.
+- **One unit.** The stories speak kilometres, as the map and the roads do. No quiet month says the same thing twice in a
+  year. The love philtre you could slip into someone's cup is gone.
 - **Bodies that make sense.** Strength, speed, endurance, reflexes, wits and will are now a word for where you stand
   among every grown man and woman of your people, measured across the world: most people are "average", a labourer or
   soldier is above it, one in fifty is at either extreme and one in a thousand is off the chart. A child reads as a child

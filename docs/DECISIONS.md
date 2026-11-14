@@ -685,3 +685,17 @@ Arts are named for what they do in a fight (a motion, a weather, a beast, an oat
 **Ordinary arms** (the non-legendary weapons of every class, drawn by the figure library) get real design: proper
 proportions, fittings, fullers, guards, grips and wear by make and region, so a plain sword is still a made thing.
 **The bow legendary** is redesigned and much improved (a long, thin piece must still read as a legend).
+
+### D-051 · X3: how the initiative words, the calendar and the units were settled (2026-11-14)
+1. **Initiative.** D-019 lifted the pool; X3 removes what a player could still read of it. Where a cost mark stood, nothing stands
+   (an activity's cost is told in time: "a few days", "a good part of a month", as the activity sheet already said); a refusal that
+   named the pool says "You cannot spare the time for that today" (it cannot fire while the pool is lifted, and says something true if
+   it ever does); the Activities line says weariness in words (`A.weariness`, from B6's load). `A.initiativeCap` and `S.time` stay as
+   the engine's lifted pool (B6); the test `x3NoInitiativeOnPage` and `x3NoInitiativeInSource` fail if a word or a ⧗ comes back.
+2. **The calendar is read from the scene, not re-authored.** GD.FESTIVALS already says each feast's month. A scene whose title or first
+   words name a date or a feast gets no weight in another month (`A.X3.datedMonths`, via `A.evFit`); a pick of a feast gives this
+   month's, with the dice drawn as before. Scenes queued by name (chains, scheduled promises) are not held back.
+3. **Kilometres in prose.** The map, the journeys and the UI use km; the stories said miles. The stories now say kilometres
+   (numbers in words scaled by 1.6, "a mile" -> "a kilometre"); `x3OneUnit` fails on a mile.
+4. **Left for later in X3** (honestly open): E3/E4/E5/E7/E8 as lints over every pool, and the full 400-scene replay.
+
