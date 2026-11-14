@@ -71,6 +71,7 @@ order is replaced, strike it through and say by what.
 37. **Talents by budget, no count limit** (D-044): "Remove a limiter on how many talents one can have and simply give them a budget and cost for selecting a talent. Lowering the talent of one area can give back points, and all talents are priced differently based on how great an effect they can have, nothing too insane though." · recorded 2026-11-13 19:37 ET
 38. **A first scope of the talent budget now, full build later:** "Give me a scope of talent budget and prices right now and fully integrate it later on." Scope: `docs/design/growth.md` §10. · recorded 2026-11-13 19:40 ET
 39. **S and SSS grow abnormally fast:** "SSS growth speed should be abnormal, so make S 1.8 and SSS 3." · recorded 2026-11-13 19:43 ET
+40. **Cheaper talents, a bigger budget:** "Don't make talents so expensive and increase the budget." Now 40 points and lower prices (growth.md §10). · recorded 2026-11-13 19:45 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
