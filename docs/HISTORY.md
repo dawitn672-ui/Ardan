@@ -645,3 +645,19 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   rankMovesTheFight (13 and 12 points against a bar of 10; CI 108: 10 and 9), ttCov2Realm (91.2% and 91.2%).
   Their margins are thin and C9-era: the pre-C9 build (391813a) read 19 and 17 points, cunning 16.5 against 14.8.
 - **Undo:** `git revert 20ac136 dffa374`.
+
+### H-039 · 2026-11-14 17:02 ET · CI 109: nine reds, all fixed (eight tests that had not followed the game, one calendar rule)
+- **What:** CI 109 (`632ba73`) failed 13 tests in seven shards. Fixed:
+  - `oaDeathbed`, `oaRenderPure`, `oaPlayEverything`, `oaChains`, `oaOldSave` (74-old-age): the fixture life of seed 7401 drowned in its
+    played years, so the "family" and "priest" fixtures vanished; a dead fixture life is now dealt again on the next seed.
+  - `iconsWired`: asks for the initiative tip only while the clock shows the pool (X3 removed it).
+  - `scPhoneFit`: the philtre has two choices since X3 cut the drugging one.
+  - `lookTiles`: hovers a shown tile (B5 hides the tiles past the six suggested).
+  - `phoneDesktopSame`: closes the farewell cut-in before a shot (it outlived the 4 s wait on CI's runner).
+  - `mpeMemory` -> **a game fix**: X3's calendar dated a scene by any month in its first 260 characters, so "she means to
+    cross the passes in June" held a dwarf's confession to June. Only a scene's opening sentence dates it now: 11 scenes
+    freed (loans "by Harvest Home", a sailing season, a famine "by March"), 113 still dated; `x3Calendar` passes.
+  - `pcLives`: actions are compared over the engaged lives whole in both sets, as prompts are, and held within 1.5 a year
+    (81 has no rule that can cut an activity; five lives' noise is about a point). The reasons are in the test.
+- **Undo:** revert the CI 109 commits (`git log --grep "CI 109"`).
+
