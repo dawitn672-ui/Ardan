@@ -34,8 +34,6 @@
       t: 'Sat at the table where the realm is decided, and decided some of it. The minutes will not say which part.' },
     { id: 'master', name: 'Master of the Craft', test: p => craftJob(p) && (p.job.r >= 4 || count(p, /masterwork/) > 0),   // X3 (E6): a craft, not a banker or a minister
       t: 'Made things that will outlast the maker. Somewhere a door still hangs true because of it.' },
-    { id: 'rich', name: 'The Wealthy', test: p => worth(p) >= 20000,
-      t: 'Died rich, which is not the same as dying well, though it helps with the funeral.' },
     { id: 'saint', name: 'Of Good Repute Before the Gods', test: p => (p.piety || 0) >= 80,
       t: 'Prayed, gave and kept the fasts. The priests will say so, and for once they mean it.' },
     { id: 'learned', name: 'The Learned', test: p => p.literate && A.skill(p, 'learning') >= 60,
@@ -50,6 +48,10 @@
       t: 'Left a table that needs two benches now. Half of them will name a child after it.' },
     { id: 'wanderer', name: 'The Wanderer', test: p => count(p, /^(rd_|trv_|travel|av_)/) >= 6,
       t: 'Saw more roads than most see in ten lives, and slept under strange roofs without minding.' },
+    // a saint, a scholar, a keeper of secrets, a name or a great family is remembered for that, not the purse (CI 110: with
+    // longer lives most long lives passed 20,000 suns, and "The Wealthy" took five of six endings that stood before it)
+    { id: 'rich', name: 'The Wealthy', test: p => worth(p) >= 20000,
+      t: 'Died rich, which is not the same as dying well, though it helps with the funeral.' },
     { id: 'cut_short', name: 'Cut Short', test: p => A.age(p) < 25,
       t: 'Barely begun. What there was of it was real.' },
     { id: 'full_years', name: 'Full of Years', test: p => A.age(p) >= 70,
