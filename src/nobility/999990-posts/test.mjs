@@ -175,6 +175,95 @@ export default {
     return { ok, detail: `${Object.entries(checks).filter(x => !x[1]).map(x => 'FAILED ' + x[0]).join(', ') || 'all held'} | Aldmark's Marshal at the start: ${r.lore ? r.lore.name + ' (' + r.lore.role + ')' : 'none'}; ${r.seeded} lore Marshals, ${r.kept} alive in their seats two years on; in ${r.realm} at peace: a man of command ${r.weakCmd} "${r.weakRuler}", the court "${r.strongCourt}", the ruler's choice "${r.strongRuler}"; his own Marshal kept ${r.ownKept}, a war's Marshal stood down ${r.warStoodDown}${r.audit1.length || r.audit2.length ? ' | ' + r.audit1.concat(r.audit2).slice(0, 3).join('; ') : ''}` };
   },
 
+  // A2 stage 2: the new posts, each with one holder, handed over and left with consequences, with nothing adopted
+  // behind the registry's back: a company and a battalion (9997), an order's Grand Master, a place on the staff, a free
+  // company, the head of a house and a court title
+  async postsStage2Kinds(pg) {
+    const r = await pg.evaluate('(' + SETUP.toString() + ')();(' + (() => {
+      T.enter({ seed: 31, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
+      const P = A.POSTS, pc = A.pc(), r = A.realm('POL-01'), out = {};
+      P.stats.adopted = {};
+      A.enlist(pc, false);
+      pc.mil.rank = 2; A.pcDivAttach(pc); A.CO.place(pc);
+      const m = pc.mil.co, d = A.divById(m.div), capKey = P.coyKey(m.div, m.b, m.i), bnKey = P.coyKey(m.div, m.b, 4);
+      const capId = P.holder(capKey), senId = P.holder(bnKey);
+      out.made = !!capId && !!senId;
+      // Captain: he takes the company; the man he replaces leaves it with a past style, and no seed in the battalion
+      // bears his name (a seed is spent when it becomes a person)
+      pc.mil.rank = 4; A.CO.place(pc);
+      const old = A.P(capId);
+      out.captain = { pc: P.holder(capKey) === pc.id, oldStyle: old && old.occ, oldHolds: old ? P.held(old.id) : [] };
+      out.twin = [0, 1, 2, 3, 4].some(s => { const c = A.CO.cap(d, m.b, s); return c && !c.pid && old && c.name === `${old.given} ${old.sur}`; });
+      // Commander: the division and his own battalion; the senior captain he replaces takes his old company
+      pc.mil.rank = 6; A.pcDivAttach(pc); P.sync('month'); A.CO.place(pc);
+      out.commander = { div: P.holder(P.divKey(m.div)) === pc.id, bn: P.holder(bnKey) === pc.id, senTook: P.holder(capKey) === senId, field: PT.fieldOf(pc.id).length };
+      // a Grand Master dies: the chapter names another at once, who leads the order's division
+      const oid = Object.keys(r.orders || {}).find(k => A.P(r.orders[k]) && A.P(r.orders[k]).alive && A.orderDiv(k));
+      if (oid) {
+        const gm = r.orders[oid];
+        A.kill(A.P(gm), 'a test', true);
+        const now = A.P(r.orders[oid]);
+        out.order = { replaced: !!now && now.alive && now.id !== gm, leads: A.orderDiv(oid).cmd === (now && now.id), rec: P.holder(P.orderKey('POL-01', oid)) === (now && now.id) };
+      }
+      // the staff: no councillor; a pick holds the place; his death leaves it
+      const slot = A.staffSlots(pc).find(x => x.type === 'qm');
+      const councillor = A.P(Object.values(r.council).find(id => A.P(id) && A.P(id).alive && id !== pc.id));
+      const man = Object.values(A.S.people).find(p => p.alive && p.realm === 'POL-01' && A.isAdult(p) && !p.ruler && !p.prison && !P.held(p.id).length && p.id !== pc.id);
+      if (slot && man) {
+        out.staffNo = councillor ? A.staffAppoint(slot.key, councillor.id) : { ok: false, msg: 'no councillor' };
+        out.staffYes = A.staffAppoint(slot.key, man.id).ok && P.holder(P.staffKey(pc.id, slot.key)) === man.id;
+        A.kill(man, 'a test', true);
+        out.staffLeft = !P.holder(P.staffKey(pc.id, slot.key)) && !(pc.staff || {})[slot.key];
+      }
+      // a house head dies: his heir heads the house, the record says why the last one left
+      const h = Object.values(A.S.houses).find(x => !x.extinct && x.great !== false && A.P(x.headPid) && A.P(x.headPid).alive && x.headPid !== pc.id && !A.P(x.headPid).ruler && (A.P(x.headPid).children || []).some(c => A.P(c) && A.P(c).alive && !A.P(c).flags.bastard));
+      if (h) {
+        const head = h.headPid;
+        A.kill(A.P(head), 'a test', false);
+        const rec = A.S.posts.h[P.houseKey(h.id)], last = rec && rec.prev && rec.prev[rec.prev.length - 1];
+        out.house = { heir: !!h.headPid && h.headPid !== head && A.P(h.headPid).alive, rec: rec && rec.p === h.headPid, why: last && last[3] };
+      }
+      // a count dies: his title passes by the law and the registry hears of it
+      const count = Object.values(A.S.people).find(p => p.alive && p.realm === 'POL-01' && p.noble && p.noble.court && !p.ruler && p.id !== pc.id && (p.children || []).some(c => A.P(c) && A.P(c).alive));
+      if (count) {
+        const ck = count.noble.court;
+        A.kill(count, 'a test', false);
+        const to = P.holder(P.titleKey(ck));
+        out.title = { moved: !!to && to !== count.id, carries: !!to && A.P(to).noble && (A.P(to).noble.court === ck || (A.P(to).noble.more || []).includes(ck)) };
+      }
+      // a free company: resigning the commission leaves every field post; the company's captaincy is a post kept in prison
+      if (A.atWar('POL-01').length) for (const w of A.atWar('POL-01').slice()) A.S.wars = A.S.wars.filter(x => x !== w);
+      out.resign = A.resign().ok;
+      out.afterResign = P.held(pc.id).filter(k => P.cls(k) === 'FIELD');
+      pc.coin = 5000; pc.fame = Math.max(pc.fame, 30);
+      out.found = A.foundCompany(pc).ok && P.holder(P.freeKey(pc.id)) === pc.id;
+      A.imprison(pc, 1, 'a test');
+      out.freeInPrison = P.holder(P.freeKey(pc.id)) === pc.id && !!pc.company;
+      P.sync('month');
+      out.strict = P.audit({ strict: true });
+      out.adopted = Object.assign({}, P.stats.adopted);
+      return out;
+    }).toString() + ')()');
+    const ad = r.adopted || {}, stage2 = ['coy', 'bn', 'order', 'staff', 'free', 'house', 'title'].filter(k => ad[k]);
+    const checks = {
+      madeCaptains: r.made,
+      captainTakesCompany: r.captain.pc && !r.captain.oldHolds.length && /^once Captain/.test(r.captain.oldStyle || ''),
+      noTwin: !r.twin,
+      commanderBoth: r.commander.div && r.commander.bn && r.commander.field === 2,
+      seniorSwaps: r.commander.senTook,
+      grandMaster: !r.order || (r.order.replaced && r.order.leads && r.order.rec),
+      staff: r.staffYes && r.staffLeft && !(r.staffNo && r.staffNo.ok),
+      house: !r.house || (r.house.heir && r.house.rec && r.house.why === 'died'),
+      title: !r.title || (r.title.moved && r.title.carries),
+      resignLeaves: r.resign && !r.afterResign.length,
+      freeCompany: r.found && r.freeInPrison,
+      strict: !r.strict.length,
+      nothingAdopted: !stage2.length,
+    };
+    const ok = Object.values(checks).every(Boolean);
+    return { ok, detail: `${Object.entries(checks).filter(x => !x[1]).map(x => 'FAILED ' + x[0]).join(', ') || 'all held'} | the old captain: "${r.captain.oldStyle}"; Commander holds ${r.commander.field} field posts; order ${JSON.stringify(r.order)}; staff refused a councillor: "${r.staffNo && r.staffNo.msg}"; house ${JSON.stringify(r.house)}; title ${JSON.stringify(r.title)}; adopted ${JSON.stringify(ad)}${r.strict.length ? ' | ' + r.strict.slice(0, 3).join('; ') : ''}` };
+  },
+
   // a Commander made General hands his division over: he takes an army without a living general or the one whose
   // general is the weakest, that general takes the Commander's old division (posts-map.md 5.5), and nobody holds two
   // field commands

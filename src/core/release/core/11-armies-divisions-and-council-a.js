@@ -107,7 +107,7 @@ A.wsAttachPC = function () {
       a = want;
       let moved = "";
       if (out && out.alive && out.id !== pc.id) {
-        if (!A.POSTS.held(out.id).length && hadDiv && !hadDiv.cmd && !A.POSTS.can(A.POSTS.divKey(hadDiv.id), out.id))
+        if (!A.POSTS.held(out.id).some(k => A.POSTS.cls(k) === "FIELD" || A.POSTS.cls(k) === "SEAT") && hadDiv && !hadDiv.cmd && !A.POSTS.can(A.POSTS.divKey(hadDiv.id), out.id))
           A.POSTS.appoint(A.POSTS.divKey(hadDiv.id), out.id, { why: "swap", force: true });
         const now = A.POSTS.held(out.id).find(k => k.startsWith("army:") || k.startsWith("div:")),
           unit = now && (now.startsWith("army:") ? A.army(now.slice(5)) : A.divById(now.slice(4)));

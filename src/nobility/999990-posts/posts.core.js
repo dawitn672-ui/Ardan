@@ -31,19 +31,71 @@
   P.offKey = (rid, oid) => `office:${rid}:${oid}`;
   P.armyKey = aid => `army:${aid}`;
   P.divKey = did => `div:${did}`;
+  // stage 2: a battalion's senior captain (9997's slot 4) and a company's captain (slots 0-3), an elite order's Grand
+  // Master, a place on the player's staff, the captain of the player's free company, the head of a house, a court title
+  P.coyKey = (did, b, s) => (s === 4 ? `bn:${did}:${b}` : `coy:${did}:${b}:${s}`);
+  P.orderKey = (rid, oid) => `order:${rid}:${oid}`;
+  P.staffKey = (pcid, slot) => `staff:${pcid}:${slot}`;
+  P.freeKey = pcid => `free:${pcid}`;
+  P.houseKey = hid => `house:${hid}`;
+  P.titleKey = ck => `title:${ck}`;
+  const PK = new Map();          // parsed keys (a key is parsed many times a month)
   P.parse = key => {
+    let k = PK.get(key);
+    if (k) return k;
     const i = key.indexOf(':'), kind = key.slice(0, i), rest = key.slice(i + 1);
-    if (kind === 'seat' || kind === 'office') { const j = rest.indexOf(':'); return { kind, rid: rest.slice(0, j), id: rest.slice(j + 1) }; }
-    return { kind, id: rest };
+    if (kind === 'seat' || kind === 'office' || kind === 'order' || kind === 'staff' || kind === 'title') { const j = rest.indexOf(':'); k = { kind, rid: rest.slice(0, j), id: rest.slice(j + 1) }; }
+    else if (kind === 'coy' || kind === 'bn') {
+      const a = rest.split(':'), s = kind === 'bn' ? 4 : +a.pop(), b = +a.pop();
+      k = { kind, did: a.join(':'), b, s, id: rest };
+    } else k = { kind, id: rest };
+    if (PK.size > 20000) PK.clear();
+    PK.set(key, k);
+    return k;
   };
-  const CLS = { seat: 'SEAT', office: 'OFFICE', army: 'FIELD', div: 'FIELD' };
-  const RANK = { SEAT: 3, OFFICE: 2, FIELD: 1 };
+  // SEAT, OFFICE and FIELD as in stage 1; STAFF a place on the player's staff; HOUSE and TITLE pass by law (the house's
+  // and the realm's), go with every other post and are never left by leaveAll (death hands them to the heir)
+  const CLS = { seat: 'SEAT', office: 'OFFICE', army: 'FIELD', div: 'FIELD', bn: 'FIELD', coy: 'FIELD', order: 'FIELD', free: 'FIELD', staff: 'STAFF', house: 'HOUSE', title: 'TITLE' };
+  const RANK = { SEAT: 3, OFFICE: 2, FIELD: 1, STAFF: 0, HOUSE: 0, TITLE: 0 };
+  const LAW = { HOUSE: 1, TITLE: 1 };
   P.cls = key => CLS[P.parse(key).kind];
   const isMarshalKey = key => key.startsWith('seat:') && key.endsWith(':marshal');
 
   // ---- the mirrors: where each kind of post was kept before the registry ----------------------------------------------
   const offOf = (rid, oid) => { const r = A.S.realms[rid]; return r && r.pol && Array.isArray(r.pol.off) ? r.pol.off.find(o => o && o.id === oid) || null : null; };
   const armyOf = id => (A.S.armies || []).find(a => a && a.id === id) || null;
+  const slotOf = k => { const d = A.divById && A.divById(k.did), b = d && Array.isArray(d.bs) ? d.bs[k.b] : null; return { d, b }; };
+  const isSup = b => !!(b && A.CO && A.CO.isSup && A.CO.isSup(b.c));
+  // the player's staff places (not the "Commander, <division>" and "General, <army>" places, which name the field
+  // command itself): A.staffSlots, kept for as long as what decides them stands
+  let SSET = null;
+  const staffSet = function (pc) {
+    if (!pc || !A.staffSlots) return new Set();
+    const m = pc.mil, sig = `${pc.id}|${m ? m.rank + '|' + !!m.merc : '-'}|${pc.ruler || ''}|${pc.noble ? pc.noble.rung + '|' + (pc.noble.holding != null) : '-'}|${pc.job ? pc.job.c + pc.job.r : '-'}`;
+    if (SSET && SSET.sig === sig && SSET.S === A.S) return SSET.set;
+    let set;
+    try { set = new Set(A.staffSlots(pc).filter(x => x.type !== 'div' && x.type !== 'army').map(x => x.key)); } catch (e) { set = new Set(); }
+    SSET = { sig, S: A.S, set };
+    return set;
+  };
+  // the court titles (99995-v2-nobility) ride on their holders (p.noble.court, p.noble.more): an index of the living,
+  // rebuilt once a day (and when the law moves one, P.note)
+  let TIX = null;
+  const titleIx = function () {
+    const S = A.S, key = (A.absDay ? A.absDay() : 0) + '|' + Object.keys(S.people).length;
+    if (TIX && TIX.S === S && TIX.key === key) return TIX;
+    const m = new Map(), dup = [], keys = new Set();
+    for (const id in S.people) {
+      const p = S.people[id];
+      if (!p || !p.alive || !p.noble || !p.noble.court) continue;
+      for (const ck of [p.noble.court].concat(p.noble.more || [])) { if (m.has(ck)) dup.push([ck, p.id]); else m.set(ck, p.id); }
+    }
+    const C = S.court && S.court.realms;
+    if (C) for (const rid in C) for (const t of (C[rid] && C[rid].titles) || []) if (t && t.k && !t.crown) keys.add(t.k);
+    TIX = { S, key, m, dup, keys };
+    return TIX;
+  };
+  P.dirtyTitles = () => { TIX = null; };
   const MIR = {
     seat: {
       get: k => { const r = A.S.realms[k.rid]; return (r && r.council && r.council[k.id]) || null; },
@@ -81,7 +133,82 @@
       exists: k => !!(A.divById && A.divById(k.id)),
       style: k => { const d = A.divById && A.divById(k.id); return d ? `Commander of the ${String(d.name || 'division').replace(/^the /i, '')}` : 'Commander'; },
     },
+    // 9997-companies: a battalion's slot 4 (its senior captain) and its companies' slots 0-3, held by a person only when
+    // one is recorded (b.p[slot]); a seed (a name the slot gives itself) holds no post. A person who leaves spends the
+    // slot's seed (CO.slotClear), so the same man is never in the slot and out of it at once (CRITIQUE R15)
+    coy: {
+      get: k => { const { b } = slotOf(k); return (b && b.p && b.p[k.s]) || null; },
+      set(k, pid) {
+        const { d, b } = slotOf(k); if (!b) return;
+        if (pid) { (b.p = b.p || {})[k.s] = pid; if (k.s === 4) delete b.vac; if (A.CO && A.CO.touch) A.CO.touch(b); }
+        else if (A.CO && A.CO.slotClear) A.CO.slotClear(d, k.b, k.s);
+        else if (b.p) { delete b.p[k.s]; if (!Object.keys(b.p).length) delete b.p; }
+      },
+      realm: k => { const { d } = slotOf(k); return d ? d.r : null; },
+      exists: k => { const { b } = slotOf(k); return !!b && (k.s === 0 || !isSup(b)); },
+      style: k => {
+        const { d } = slotOf(k), C = A.CO;
+        if (!d || !C || !C.bnName) return k.s === 4 ? 'Senior Captain' : 'Captain';
+        return k.s === 4 ? 'Senior Captain of the ' + C.bnName(d, k.b) : 'Captain of the ' + C.coName(d, k.b, k.s);
+      },
+    },
+    // an elite order's Grand Master, who also leads the order's division (r.orders[oid] and the division's d.cmd)
+    order: {
+      get: k => { const r = A.S.realms[k.rid]; return (r && r.orders && r.orders[k.id]) || null; },
+      set(k, pid) {
+        const r = A.S.realms[k.rid]; if (!r) return;
+        r.orders = r.orders || {};
+        if (pid) r.orders[k.id] = pid; else delete r.orders[k.id];
+        const d = A.orderDiv && A.orderDiv(k.id);
+        if (d && d.r === k.rid) d.cmd = pid || null;
+      },
+      realm: k => k.rid,
+      exists: k => { const r = A.S.realms[k.rid]; return !!(r && r.alive !== false && GD.ORDERS && GD.ORDERS[k.id]); },
+      style: k => { const o = GD.ORDERS && GD.ORDERS[k.id]; return o && A.orderLeadTitle ? A.orderLeadTitle(o) : 'Grand Master'; },
+    },
+    // a place on the player's staff (A.staffSlots): his own pick, or the one his officer picked for him ('deleg')
+    staff: {
+      get: k => { const pc = A.S.people[k.rid]; if (!pc || !pc.staff) return null; const v = pc.staff[k.id]; return (v === 'deleg' ? (pc.staffD || {})[k.id] : v) || null; },
+      set(k, pid) {
+        const pc = A.S.people[k.rid]; if (!pc) return;
+        pc.staff = pc.staff || {};
+        if (pc.staff[k.id] === 'deleg') { pc.staffD = pc.staffD || {}; if (pid) pc.staffD[k.id] = pid; else delete pc.staffD[k.id]; }
+        else if (pid) pc.staff[k.id] = pid; else delete pc.staff[k.id];
+      },
+      realm: k => { const pc = A.S.people[k.rid]; return pc ? (pc.ruler || (pc.mil && pc.mil.realm) || pc.realm) : null; },
+      exists: k => isPC(k.rid) && staffSet(A.pc()).has(k.id),
+      style: k => { const pc = A.S.people[k.rid]; let l = 'Staff'; try { l = A.staffLabel ? A.staffLabel(pc, k.id) : l; } catch (e) { l = 'Staff'; } return `${l} to ${nm(pc)}`; },
+    },
+    // the player's free company: its captain is its founder; without him it breaks up
+    free: {
+      get: k => { const p = A.S.people[k.id]; return p && p.company ? p.id : null; },
+      set(k, pid) { const p = A.S.people[k.id]; if (p && !pid) p.company = null; },
+      realm: () => null,
+      exists: k => { const p = A.S.people[k.id]; return !!(p && p.company); },
+      style: k => { const p = A.S.people[k.id]; return p && p.company ? `Captain of ${p.company.name}` : 'Captain of a free company'; },
+    },
+    // the head of a house (h.headPid): passes by the house's law (A.kill, 99994's succession), never left otherwise
+    house: {
+      get: k => { const h = A.S.houses && A.S.houses[k.id]; return (h && h.headPid) || null; },
+      set(k, pid) { const h = A.S.houses && A.S.houses[k.id]; if (h) h.headPid = pid || null; },
+      realm: k => { const h = A.S.houses && A.S.houses[k.id]; return h ? h.realm : null; },
+      exists: k => { const h = A.S.houses && A.S.houses[k.id]; return !!(h && !h.extinct); },
+      style: k => { const h = A.S.houses && A.S.houses[k.id]; return h ? `Head of ${h.name}` : 'Head of a house'; },
+    },
+    // a court title (99995): its holder carries its key; titles move only by the realm's law (A.V2F.inherit), which
+    // tells the registry (P.note). The registry never writes one
+    title: {
+      get: k => titleIx().m.get(k.rid + ':' + k.id) || null,
+      set() { TIX = null; },
+      realm: k => k.rid,
+      exists: k => titleIx().keys.has(k.rid + ':' + k.id),
+      style: k => {
+        const C = A.S.court && A.S.court.realms && A.S.court.realms[k.rid], t = C && (C.titles || []).find(x => x.k === k.rid + ':' + k.id);
+        return t && t.name ? `holder of the ${t.name}` : 'a lord of the court';
+      },
+    },
   };
+  MIR.bn = MIR.coy;
   const mir = key => { const k = P.parse(key); return [MIR[k.kind], k]; };
   P.mirror = key => { const [M, k] = mir(key); return M ? M.get(k) : null; };
   P.style = key => { const [M, k] = mir(key); return M ? M.style(k) : key; };
@@ -114,13 +241,19 @@
   P.compatible = function (a, b) {
     if (a === b) return true;
     const ca = P.cls(a), cb = P.cls(b);
+    if (LAW[ca] || LAW[cb]) return true;       // a house or a court title goes with any post
+    // one place on the staff a person, and no councillor on it
+    if (ca === 'STAFF' || cb === 'STAFF') return !(ca === cb || ca === 'SEAT' || cb === 'SEAT');
     if (ca === 'SEAT' && cb === 'SEAT') return false;
     if ((ca === 'SEAT' && cb === 'OFFICE') || (ca === 'OFFICE' && cb === 'SEAT')) return false;
-    if (ca === 'FIELD' && cb === 'FIELD') return false;
+    // one field command a person; a division's commander may lead one battalion of his own division in person (9997
+    // puts a Commander at the head of his battalion in the line)
+    if (ca === 'FIELD' && cb === 'FIELD') return ownBattalion(a, b) || ownBattalion(b, a);
     if (ca === 'SEAT' && cb === 'FIELD') return isMarshalKey(a) && b.startsWith('army:');
     if (ca === 'FIELD' && cb === 'SEAT') return isMarshalKey(b) && a.startsWith('army:');
     return true;      // a shire office beside a field command or another office (9996 holds its own two-office rule)
   };
+  const ownBattalion = (a, b) => a.startsWith('div:') && b.startsWith('bn:') && P.parse(b).did === P.parse(a).id;
   // does realm r need a Marshal (D-017: a war more than one general can hold together: two armies in the field, or
   // two enemies at once)? keep: the seat already held stays filled while the realm is at war at all.
   P.marshalNeeded = function (r, keep) {
@@ -155,7 +288,17 @@
       if (p.prison) return `${nm(p)} is in prison`;
       if (p.realm !== k.rid) return `${nm(p)} is not of the realm`;
     }
-    if (kind === 'div' && p.ruler) return 'a ruler commands no single division';
+    if ((kind === 'div' || kind === 'bn' || kind === 'coy' || kind === 'order') && p.ruler) return 'a ruler commands no single division';
+    if (kind === 'bn' || kind === 'coy' || kind === 'order') {
+      if (p.prison) return `${nm(p)} is in prison`;
+      if (p.realm !== M.realm(k)) return `${nm(p)} is not of the realm`;
+    }
+    if (kind === 'staff') {
+      if (p.ruler) return "a ruler serves on no one's staff";
+      if (p.prison) return 'a prisoner serves on no staff';
+      if (P.holds(p.id, 'seat').length) return "a councillor serves on no one's staff";
+      if (p.id === k.rid) return "one does not serve on one's own staff";
+    }
     if (isMarshalKey(key)) {
       const r = A.S.realms[k.rid];
       // D-049: the seat is optional. A war that needs a Marshal opens it to every road (the crown's pick, the board, the
@@ -225,7 +368,14 @@
     // an army in the field is never without a general: the crown names one at once (what A.wsDay did the next day),
     // unless it is the player's own command, or the appointment that emptied it is under way (o.keep)
     else if (k.kind === 'army' && !o.keep && why !== 'replaced' && why !== 'promoted') deputyArmy(k.id);
+    // an order is never without a Grand Master while its division stands: the chapter names one at once
+    else if (k.kind === 'order' && !o.keep && why !== 'replaced' && why !== 'promoted') deputyOrder(k);
     return p || null;
+  };
+  const deputyOrder = function (k) {
+    const r = A.S.realms[k.rid], d = A.orderDiv && A.orderDiv(k.id);
+    if (!r || !d || d.r !== k.rid || !A.orderMaster || P.holder(P.orderKey(k.rid, k.id))) return;
+    A.orderMaster(r, k.id);
   };
   const deputyArmy = function (aid) {
     const a = armyOf(aid), pc = A.pc();
@@ -234,6 +384,7 @@
     if (g && !P.can(P.armyKey(aid), g, { force: true })) P.appoint(P.armyKey(aid), g, { why: 'deputy', force: true });
   };
 
+  const ECHELON = ['army', 'order', 'div', 'bn', 'coy'];
   // appoint pid to key: his posts that cannot go with it are handed over first, the holder he replaces is moved (a field
   // command swaps into the one the appointee freed) or dismissed with a grudge, then the record and the mirror are written.
   // o: { why, by (pid of who appoints), force (skip can(): the caller has decided), quiet }
@@ -250,14 +401,15 @@
     // 2. the one replaced
     let out = null;
     if (curId) {
-      out = P.vacate(key, 'replaced');
+      const cur = A.P(curId);
+      out = P.vacate(key, live(cur) ? 'replaced' : 'died', { keep: true });   // keep: no deputy, the appointee comes
       const by = A.P(o.by);
       if (live(out)) {
         grudge(out, A.P(pid), P.cls(key) === 'SEAT' ? -30 : -15);
         if (by && by.id !== out.id) grudge(out, by, -10);
         // a field command swaps into the command the appointee freed (the nearest echelon), else the man waits for one
         if (P.cls(key) === 'FIELD') {
-          const kind = P.parse(key).kind, swap = freed.find(f => f.startsWith(kind + ':')) || freed.find(f => P.cls(f) === 'FIELD');
+          const kind = P.parse(key).kind, swap = freed.find(f => f.startsWith(kind + ':')) || ECHELON.map(e => freed.find(f => f.startsWith(e + ':'))).find(Boolean);
           if (swap && !P.can(swap, out.id, { force: true })) P.appoint(swap, out.id, { why: 'swap', force: true, quiet: true });
         }
       }
@@ -284,15 +436,71 @@
     const out = [];
     for (const key of P.held(id)) {
       const c = P.cls(key);
+      if (LAW[c]) continue;                       // a house or a title passes by law (A.kill names the heir)
       const pick = !o.cls || o.cls.includes(c) || (o.marshal && isMarshalKey(key));
       if (!pick) continue;
       if (o.keepArmy && key.startsWith('army:')) continue;
+      if (why === 'imprisoned' && key.startsWith('free:')) continue;   // a free company waits for its captain's ransom
       P.vacate(key, why); out.push(key);
     }
-    // the player's place in a company or battalion (9997) is a field post kept by its own store
+    // the player's place in a company or battalion (9997): his slot is a post above; his place in the ranks goes too
     const pc = A.pc();
     if (pc && pc.id === id && (!o.cls || o.cls.includes('FIELD')) && pc.mil && A.CO && A.CO.clearMe) A.CO.clearMe(pc);
     return out;
+  };
+
+  // ---- the write paths of the stores that keep their own law (stage 2) ---------------------------------------------------
+  // the head of a house: every writer of h.headPid comes here (A.kill's heir, A.houseHead, 99994's succession, 99995's
+  // court, 70's split, 56's purge, the release's decisions). Before the registry exists (an old build) it writes the field.
+  P.setHead = function (h, pid, why) {
+    if (!h) return;
+    const key = P.houseKey(h.id);
+    if (pid) P.appoint(key, pid, { why: why || 'law', force: true });
+    else P.vacate(key, why || 'law');
+  };
+  // a court title moved by the law on its holder (99994's A.V2F.inherit, 99995's court): the record follows at once
+  P.note = function (key, pid, why) {
+    if (!A.S || !A.S.people) return;
+    if (key.startsWith('title:')) TIX = null;
+    const r = rec(key);
+    if (r.p === pid) return;
+    if (r.p) { ixDel(r.p, key); pushPrev(r, r.p, why || 'law'); }
+    if (pid) { r.p = pid; r.s = day(); r.w = why || 'law'; delete r.vac; ixAdd(pid, key); }
+    else { r.p = null; r.vac = day(); }
+  };
+  // 9997 rebuilt a division's battalions (a recut template): a battalion kept moves its captains' posts with it, one
+  // struck off takes them away
+  P.rekeyDiv = function (d, old) {
+    const st = A.S && A.S.posts;
+    if (!st || !st.h || !d || !Array.isArray(old) || !Array.isArray(d.bs)) return;
+    const moves = [];
+    for (let j = 0; j < old.length; j++) { const ni = d.bs.indexOf(old[j]); if (ni !== j) moves.push([j, ni]); }
+    if (!moves.length) return;
+    const held = {};
+    for (const [j] of moves) for (let sl = 0; sl <= 4; sl++) { const k = P.coyKey(d.id, j, sl), r = st.h[k]; if (r) { held[k] = r; delete st.h[k]; if (r.p) ixDel(r.p, k); } }
+    for (const [j, ni] of moves) for (let sl = 0; sl <= 4; sl++) {
+      const r = held[P.coyKey(d.id, j, sl)];
+      if (!r || ni < 0) continue;
+      const k2 = P.coyKey(d.id, ni, sl);
+      st.h[k2] = r; if (r.p) ixAdd(r.p, k2);
+    }
+  };
+  // a division or an army taken off the rolls: its posts are left ('disbanded'), the men who held them are named so
+  const offRolls = function (keys) { for (const k of keys) if (P.holder(k) || P.mirror(k)) P.vacate(k, 'disbanded', { keep: true }); };
+  P.divKeys = function (d) {
+    const out = [P.divKey(d.id)];
+    if (Array.isArray(d.bs)) for (let i = 0; i < d.bs.length; i++) { const b = d.bs[i]; if (b && b.p) for (const sl of Object.keys(b.p)) out.push(P.coyKey(d.id, i, +sl)); }
+    return out;
+  };
+  const divRemove = A.divRemove;
+  if (divRemove) A.divRemove = function (d) {
+    try { if (d && d.id && A.S && A.S.posts && !d.elite) offRolls(P.divKeys(d)); } catch (e) { console.error('[posts] divRemove', e); }
+    return divRemove.apply(this, arguments);
+  };
+  const demob = A.wsDemobilize;
+  if (demob) A.wsDemobilize = A.wsDisband = function (a) {
+    try { if (a && a.id && A.S && A.S.posts) offRolls([P.armyKey(a.id)]); } catch (e) { console.error('[posts] demobilize', e); }
+    return demob.apply(this, arguments);
   };
 
   // ---- the month's reconciliation: adopt what other code wrote, then hold everything to the rules ---------------------
@@ -306,8 +514,24 @@
       if (r.pol && Array.isArray(r.pol.off)) for (const o of r.pol.off) if (o && o.id && o.pid) out.push([P.offKey(r.id, o.id), o.pid]);
     }
     for (const a of (A.S.armies || [])) if (a && a.id && a.gen) out.push([P.armyKey(a.id), a.gen]);
-    // an elite order's division is led by its Grand Master, a post of the order (stage 2): left out until orders are posts
+    // an elite order's division is led by its Grand Master: the order's post (below), not a division's
     for (const r of realmsAlive()) if (r.forces && Array.isArray(r.forces.divs)) for (const d of r.forces.divs) if (d && d.id && d.cmd && !d.elite) out.push([P.divKey(d.id), d.cmd]);
+    // stage 2: the battalions' and companies' captains who are persons, the orders' Grand Masters, the player's staff
+    // and free company, the heads of houses, the court titles
+    for (const r of realmsAlive()) if (r.forces && Array.isArray(r.forces.divs)) for (const d of r.forces.divs) {
+      if (!d || !d.id || !Array.isArray(d.bs)) continue;
+      for (let i = 0; i < d.bs.length; i++) { const b = d.bs[i]; if (b && b.p) for (const sl of Object.keys(b.p)) if (b.p[sl]) out.push([P.coyKey(d.id, i, +sl), b.p[sl]]); }
+    }
+    for (const r of realmsAlive()) if (r.orders && GD.ORDERS) for (const oid of Object.keys(r.orders)) if (r.orders[oid] && GD.ORDERS[oid]) out.push([P.orderKey(r.id, oid), r.orders[oid]]);
+    const pc = A.pc();
+    if (pc && pc.alive) {
+      if (pc.staff) { const set = staffSet(pc); for (const sl of Object.keys(pc.staff)) { if (!set.has(sl)) continue; const v = pc.staff[sl], id = v === 'deleg' ? (pc.staffD || {})[sl] : v; if (id) out.push([P.staffKey(pc.id, sl), id]); } }
+      if (pc.company) out.push([P.freeKey(pc.id), pc.id]);
+    }
+    const H = A.S.houses || {};
+    for (const hid of Object.keys(H)) { const h = H[hid]; if (h && !h.extinct && h.headPid) out.push([P.houseKey(hid), h.headPid]); }
+    const T = titleIx();
+    for (const [ck, pid] of T.m) if (T.keys.has(ck)) out.push([P.titleKey(ck), pid]);
     return out;
   };
   // why the holder of key may not keep it ('' if he may): the parts of can() that hold for a sitting holder
@@ -315,6 +539,8 @@
     const p = A.P(pid), k = P.parse(key);
     if (!p) return 'missing';
     if (!p.alive) return 'died';
+    // a child may head his house or hold his father's title (a regent acts); a free company is its founder's
+    if (k.kind === 'house' || k.kind === 'title' || k.kind === 'free') return '';
     if (!adultOk(p)) return 'under age';
     if (k.kind === 'seat' || k.kind === 'office') {
       if (p.ruler) return 'crowned';
@@ -322,6 +548,16 @@
       if (p.realm !== k.rid) return 'left the realm';
     }
     if (k.kind === 'div' && p.ruler) return 'crowned';
+    if (k.kind === 'bn' || k.kind === 'coy' || k.kind === 'order') {
+      if (p.ruler) return 'crowned';
+      if (p.prison && !isPC(p.id)) return 'imprisoned';
+      const rr = MIR[k.kind].realm(k);
+      if (rr && p.realm !== rr && !isPC(p.id)) return 'left the realm';
+    }
+    if (k.kind === 'staff') {
+      if (p.ruler) return 'crowned';
+      if (p.prison) return 'imprisoned';
+    }
     return '';
   };
 
@@ -367,6 +603,11 @@
       const why = unfit(key, r.p);
       if (why) { const p = A.P(r.p); P.vacate(key, why); repair(why, `${P.style(key)}: ${nm(p)} (${why}) leaves it`); }
     }
+    // an order's division follows its Grand Master
+    for (const r of realmsAlive()) if (r.orders && GD.ORDERS) for (const oid of Object.keys(r.orders)) {
+      const d = r.orders[oid] && A.orderDiv && A.orderDiv(oid);
+      if (d && d.r === r.id && d.cmd !== r.orders[oid]) { d.cmd = r.orders[oid]; repair('order division'); }
+    }
     syncPC(mode);
     marshals(mode);
     const lines = P._lines; P._lines = null;
@@ -378,7 +619,7 @@
     const pc = A.pc(); if (!pc || !pc.alive) return;
     const commissioned = !!(pc.mil && !pc.mil.merc);
     for (const key of P.held(pc.id)) {
-      if (P.cls(key) === 'FIELD' && !commissioned && !(pc.ruler && key.startsWith('army:'))) { P.vacate(key, 'resigned'); repair('no commission', `You no longer command ${P.style(key).replace(/^\w+ of /, '')}.`); }
+      if (P.cls(key) === 'FIELD' && !commissioned && !(pc.ruler && key.startsWith('army:')) && !key.startsWith('free:')) { P.vacate(key, 'resigned'); repair('no commission', `You no longer command ${P.style(key).replace(/^\w+ of /, '')}.`); }
       else if (isMarshalKey(key) && !(commissioned && pc.mil.rank >= 7)) { P.vacate(key, 'no commission'); repair('no commission', 'The seat of Marshal goes to a General: you give it up.'); }
     }
     // pc.office mirrors his seat
@@ -446,8 +687,9 @@
     if (!p) return '';
     const ks = P.held(p.id);
     if (!ks.length) return '';
-    const by = c => ks.find(k => P.cls(k) === c);
-    const k = by('SEAT') || ks.find(k2 => k2.startsWith('army:')) || ks.find(k2 => k2.startsWith('div:')) || by('OFFICE');
+    const by = c => ks.find(k => P.cls(k) === c), kind = x => ks.find(k2 => k2.startsWith(x + ':'));
+    // a house or a court title is a rank, not a post's title line (the person view shows it beside the name)
+    const k = by('SEAT') || kind('army') || kind('order') || kind('div') || kind('bn') || kind('coy') || by('OFFICE') || by('STAFF');
     return k ? P.style(k) : '';
   };
   // a stored style that names a council seat of the person's realm he does not hold becomes a past one. On load and at
@@ -483,14 +725,24 @@
     const bad = [], st = A.S && A.S.posts;
     if (!st || !st.h) return bad;
     const strict = o && o.strict, by = new Map();
+    const once = new Map();
     for (const [key, pid] of P.mirrors()) {
       const r = st.h[key];
+      if (once.has(key) && once.get(key) !== pid) bad.push(`${P.style(key)}: two holders, ${nm(A.P(once.get(key)))} and ${nm(A.P(pid))}`);
+      once.set(key, pid);
       if (strict && (!r || r.p !== pid)) bad.push(`${P.style(key)}: the old field names ${nm(A.P(pid))}, the registry ${r && r.p ? nm(A.P(r.p)) : 'nobody'}`);
       const why = unfit(key, pid);
       if (why) bad.push(`${P.style(key)}: held by ${nm(A.P(pid))} (${why})`);
       (by.get(pid) || by.set(pid, []).get(pid)).push(key);
     }
     if (strict) for (const key in st.h) { const r = st.h[key]; if (r.p && P.mirror(key) !== r.p) bad.push(`${P.style(key)}: held by ${nm(A.P(r.p))} in the registry, not in the old field`); }
+    // a court title carried by two living people (99995 keeps the key on its holder)
+    for (const [ck, pid] of titleIx().dup) bad.push(`${P.style(P.titleKey(ck))}: two holders, ${nm(A.P(titleIx().m.get(ck)))} and ${nm(A.P(pid))}`);
+    // an order's division is led by its Grand Master
+    for (const r of realmsAlive()) if (r.orders && GD.ORDERS) for (const oid of Object.keys(r.orders)) {
+      const d = r.orders[oid] && A.orderDiv && A.orderDiv(oid);
+      if (d && d.r === r.id && d.cmd !== r.orders[oid]) bad.push(`${P.style(P.orderKey(r.id, oid))}: the order's division is led by ${nm(A.P(d.cmd))}, not its Grand Master`);
+    }
     for (const [pid, ks] of by) for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++)
       if (!P.compatible(ks[i], ks[j])) bad.push(`${nm(A.P(pid))} holds ${P.style(ks[i])} and ${P.style(ks[j])}`);
     const pc = A.pc && A.pc();

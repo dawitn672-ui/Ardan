@@ -1596,7 +1596,7 @@
       choices: [
         { t: "Put yourself forward as head", check: { s: "persuasion", s2: "diplomacy", d: 58 },
           win: { r: "The family votes by hands in the long hall at {seat}. Yours are the most hands, by two. {Head} gives you the house seal from the sickbed, and the letters with it.",
-            fx: (p, ctx) => { const f = A.family(p); if (f) f.headPid = p.id; return more(p, ctx, { honor: 3, fame: 2, deed: "Chosen head of the family by a show of hands" }); } },
+            fx: (p, ctx) => { const f = A.family(p); if (f) { if (A.setHead) A.setHead(f, p.id, 'chosen'); else f.headPid = p.id; } return more(p, ctx, { honor: 3, fame: 2, deed: "Chosen head of the family by a show of hands" }); } },
           lose: { r: "The family votes by hands in the long hall. You lose by four. The new head is polite to you, in the careful way of a winner.",
             fx: { happy: -5, wil: 1, honor: 1 } } },
         { t: "Back a cousin who will keep the verse",

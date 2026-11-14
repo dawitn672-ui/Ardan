@@ -613,6 +613,14 @@ A.electable = function (p, r) {
           : p.fame >= 35 || (p.noble && p.noble.rung >= 4) || (p.mil && p.mil.rank >= 6);
 };
 
+// [A2 stage 2] every write of a house's head goes through the post registry (999990-posts: the head of a house is a
+// post, passed by the house's law); without the registry it is the field itself
+A.setHead = function (h, pid, why) {
+  if (!h) return;
+  if (A.POSTS && A.POSTS.setHead) A.POSTS.setHead(h, pid, why);
+  else h.headPid = pid || null;
+};
+
 A.houseHead = function (hid, fresh) {
   const S = A.S,
     h = S.houses[hid];
@@ -621,7 +629,7 @@ A.houseHead = function (hid, fresh) {
   if (h.great === false) {
     const ms = A.famMembers(hid).filter(x => x.alive);
     if (ms.length && !fresh) {
-      h.headPid = ms[0].id;
+      A.setHead(h, ms[0].id, "law");
       return ms[0];
     }
   }
@@ -638,7 +646,7 @@ A.houseHead = function (hid, fresh) {
     p = A.genNoble(h.realm || "unclaimed", status, hid, A.ri(28, 60));
   }
   p.house = hid;
-  h.headPid = p.id;
+  A.setHead(h, p.id, fresh ? "chosen" : "law");
   return p;
 };
 
@@ -667,7 +675,7 @@ A.kill = function (p, cause, silent) {
         },
         p.children.map(A.P).filter(k => k && k.alive && !k.flags.bastard),
       );
-    h.headPid = kids.length ? kids[0].id : null;
+    A.setHead(h, kids.length ? kids[0].id : null, "died");
   }
 };
 
@@ -1179,7 +1187,7 @@ A.famMembers = function (hid) {
   });
   const ms = h.members.map(A.P);
   for (let i = 1; i < ms.length; i++) A.link(ms[0], ms[i], "cousin", A.ri(20, 70), "cousin");
-  h.headPid = h.members[0];
+  A.setHead(h, h.members[0], "law");
   return ms;
 };
 

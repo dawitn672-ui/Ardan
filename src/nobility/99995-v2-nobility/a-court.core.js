@@ -77,7 +77,8 @@
     const S = A.S, sex = rng.chance(rank === 'count' ? 0.84 : 0.9) ? 'M' : 'F';
     const age = rng.int(24, 62);
     const p = A.genNoble(rid, 'noble', h.id, age, sex);
-    h.headPid = p.id; h.members = [p.id];
+    if (A.setHead) A.setHead(h, p.id, 'raised'); else h.headPid = p.id;   // A2 stage 2: through the post registry
+    h.members = [p.id];
     const kids = rng.int(rank === 'count' ? 0 : 1, 3);
     for (let i = 0; i < kids; i++) {
       const born = p.born + rng.int(19, 30) + 3 * i;
@@ -91,6 +92,8 @@
   }
   function seatHolder(p, rid, rank, county, key) {
     p.noble = { rung: RUNG[rank], realm: rid, holding: county, court: key };
+    // A2 stage 2: a court title is a post of the registry (999990-posts), moved only by the law, which tells it
+    if (A.POSTS && A.POSTS.note) A.POSTS.note(A.POSTS.titleKey(key), p.id, 'raised');
   }
 
   // the court of one realm (inside F.sandbox: the game's stream is set aside)
@@ -279,6 +282,7 @@
         if (to && to.noble && !hasKey(to, k)) { if (!to.noble.court) to.noble.court = k; else (to.noble.more = to.noble.more || []).push(k); }
         // the title remembers its holder (the dead are pruned from A.S.people, so a chain through them would break)
         const t = N.titleOf(k); if (t && to && hasKey(to, k)) t.pid = to.id;
+        if (to && hasKey(to, k) && A.POSTS && A.POSTS.note) A.POSTS.note(A.POSTS.titleKey(k), to.id, 'law');
       }
     } catch (e) { console.error('v2-nobility inherit', e); }
     return moved;
@@ -294,11 +298,11 @@
     const h = A.S.houses[hid];
     if (h && !fresh && !live(h.headPid && A.P(h.headPid))) {
       const lord = Object.values(A.S.people).find(q => q.alive && q.house === hid && q.noble && q.noble.court);
-      if (lord) { h.headPid = lord.id; return lord; }
+      if (lord) { if (A.setHead) A.setHead(h, lord.id, 'law'); else h.headPid = lord.id; return lord; }
     }
     const old = h && h.headPid && A.P(h.headPid);
     const p = houseHead.apply(this, arguments);
-    if (fresh && h && live(old) && old !== p && old.noble && old.noble.court) h.headPid = old.id;
+    if (fresh && h && live(old) && old !== p && old.noble && old.noble.court) { if (A.setHead) A.setHead(h, old.id, 'law'); else h.headPid = old.id; }
     return p;
   };
 

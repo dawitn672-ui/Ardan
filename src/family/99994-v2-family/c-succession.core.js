@@ -136,7 +136,8 @@
   const greatLanded = h => h && h.great !== false && h.rung && (A.S && A.S.court ? /^N0[123]$/ : /^N/).test(h.rung) && seatProv(h) != null;
 
   function giveHeadship(h, to, from) {
-    h.headPid = to ? to.id : null;
+    // A2 stage 2: through the post registry (999990-posts) when it is on the page
+    if (A.setHead) A.setHead(h, to ? to.id : null, 'law'); else h.headPid = to ? to.id : null;
     const pc = A.pc();
     if (to && pc && to.id === pc.id && pc.alive) {
       A.log(`You are now head of ${h.name}${from ? `, after ${from.given}` : ''}, by ${(SU.LAWS[F.houseLaw(h.id).law] || {}).name || 'the law of the house'}.`, 'big');

@@ -49,7 +49,7 @@ A.inheritFrom = function (pc, dead) {
       dead.children.map(A.P).filter(k => k && k.alive && !k.flags.bastard),
     );
     if (kids[0] && kids[0].id === pc.id) {
-      A.S.houses[dead.house].headPid = pc.id;
+      A.setHead(A.S.houses[dead.house], pc.id, "heir");
       const h = A.S.houses[dead.house];
       A.log(`You are now head of ${h.name}.`, "big");
       if (h.rung && h.rung[0] === "N" && (!pc.noble || pc.noble.rung < A.rungIndex(h.rung))) {

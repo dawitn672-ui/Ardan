@@ -256,7 +256,7 @@
       const h = S.houses[H.hid];
       ru = H.old ? A.houseHead(H.hid) : null;
       if (!ru || !ru.alive || ru.ruler) { ru = A.genNoble(r.id, 'noble', H.hid, A.ri(28, 56)); if (h) { ru.sur = A.houseSurname ? A.houseSurname(h) : ru.sur; ru.surMode = 'house'; } }
-      if (h) { h.headPid = ru.id; h.kind = 'royal'; }
+      if (h) { if (A.setHead) A.setHead(h, ru.id, 'crowned'); else h.headPid = ru.id; h.kind = 'royal'; }
     }
     const st = FR.style(kind, r, cult, capP.name, H.sur || (S.houses[H.hid] && String(S.houses[H.hid].name).replace(/^(the )?House /, '')), ru);
     // a name already in use gets its kind's longer form

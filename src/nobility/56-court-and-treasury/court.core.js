@@ -433,7 +433,7 @@ RI.fillCouncil = function (r) {
       let p = null;
       try { p = A.personFromCast(c.id); } finally { A.rngState = rs; }
       const key = A.POSTS.seatKey(r.id, 'marshal');
-      if (live(p) && !p.ruler && p.realm === r.id && !A.POSTS.holder(key) && !A.POSTS.held(p.id).length && !A.POSTS.can(key, p.id, { why: 'lore', force: true })) {
+      if (live(p) && !p.ruler && p.realm === r.id && !A.POSTS.holder(key) && !A.POSTS.held(p.id).some(k => !A.POSTS.compatible(key, k)) && !A.POSTS.can(key, p.id, { why: 'lore', force: true })) {
         A.POSTS.appoint(key, p.id, { why: 'lore', by: r.ruler, force: true });
         named.push(['marshal', p]);
       }
@@ -703,7 +703,7 @@ A.on && A.on('warEnd', function (w, result, text, live0) {
       else if (result === 'def') {
         h.op = clamp((h.op || 40) - 20, 0, 100);
         const head = h.headPid ? A.P(h.headPid) : null;
-        if (live(head) && head.id !== A.S.pc && !head.ruler && A.chance(.35)) { A.kill(head, 'beheaded for treason', true); h.headPid = null; hunted.push(h.name); }
+        if (live(head) && head.id !== A.S.pc && !head.ruler && A.chance(.35)) { A.kill(head, 'beheaded for treason', true); if (A.setHead) A.setHead(h, null, 'purged'); else h.headPid = null; hunted.push(h.name); }
       } else h.op = clamp((h.op || 40) - 8, 0, 100);
     }
     if (won) for (const h of A.realmHouses(r.id)) if (!w.riBack.includes(h.id)) h.op = clamp((h.op || 50) - 10, 0, 100);
