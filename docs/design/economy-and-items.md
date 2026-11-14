@@ -335,3 +335,5 @@ Where this part differs from Parts 1-3, this part wins.
 - **Armour:** every piece separate (D-032 item 7); C8's figure draws each as its own layer.
 - **Legendaries:** near-indestructible, heirlooms and national treasures; they outclass all ordinary gear, but skill
   still decides most fights, and owning one draws thieves, claimants and kings.
+
+**Owner order 47 (2026-11-13 20:07 ET): owner and wielder.** A legendary has an owner (crown, house, order, temple, pledge-holder, or none if lost) and a wielder who may differ; a bearer by office changes when the post changes hands (one holder per post). Why it sits in those hands (custom, oath, law, office, bargain, theft, loss) is part of its record and its politics (legitimacy, claims, pride, grudges).

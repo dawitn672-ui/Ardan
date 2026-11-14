@@ -466,3 +466,54 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Open (stage 2):** battalion and company slots, order masters, staff, free companies, house heads and land titles as
   posts; armies that outlive a war; routing the writers the month's sync still adopts; more costs of leaving a post.
 - **Undo:** `git revert -m 1 1e914c0`; old saves made with the registry keep an unused `A.S.posts`.
+
+### H-025 · 2026-11-13 18:40 ET · After the A2 merge: checks pass; full CI on A2 and P; order 34 recorded
+- **Merged build:** boot, coherencyBaseline (no check above its baseline), postsMarshalRepro, nyEsc, pfPure and pcLives
+  (on 8.4 vs off 8.7 actions a year, inside the relaxed bar) pass. This push runs the full CI on A2 and P.
+- **Order 34** recorded (D-039): new v2 items C9 (bodies that make sense, longer lives), P2 (a clean profile, a Records
+  area), X7 (phone speed), W0 (no war score or army templates); D12a becomes war as a board; G revised (arts, 8 skill
+  words, learning by doing, hidden talent). C9, P2 and the G revision are running.
+- **Branches:** the 35 merged branches could not be deleted from this session (its git connection refuses ref
+  deletions); the owner was told how to delete them on GitHub; their tips are in `docs/BRANCHES.md`.
+
+### H-026 · 2026-11-13 18:50 ET · G design revised for order 34 (D-039)
+- **Commit:** `aefc2d5` (by an Opus 5.5 agent), cherry-picked as `e7812cf`.
+- **What:** `docs/design/growth.md` now carries order 34: arts in place of styles (every weapon family's arts with
+  numbered forms, lines of holders, secret manuals, keepers; 20 example arts; grades Lesser, Standard, Strong, Great,
+  Peerless); eight skill words on today's 0-100 scale (no check's odds move; 1-10 Grandmasters, at most one Legend, kept by
+  proofs and surpassing; `GD.LEGEND_CAP` 5 → 1); no trees (a first try teaches nothing or gives Beginner; merges at the
+  top); disuse (safe for 5-12 idle years, then slow, at most one word, back five times as fast); hidden talent (16 areas
+  and 14 single attributes, F to SS with a number, found in play; NPCs by hash); application in a fight (fit, match,
+  one's own hand, read; a top art wins about 7-3 or 8-2 at equal skill, and a standard spear art can beat a peerless
+  sword art); house arts (knights', line, both, neither); legendaries with their own command skill and bound art, about
+  one word of skill at full command; training a skill trains its governing stats. Stages G1-G6 renewed; §7 records every
+  replaced part. **Six owner decisions still open** (§6.5).
+- **Undo:** `git revert e7812cf`.
+
+### H-027 · 2026-11-13 19:21 ET · P2: a clean Profile page; the past in Records (owner order 34, D-041)
+- **Commits:** `6f10137`, `ca74101`, `37d9342` (by a Sonnet 5.5 agent, branch `p2-profile`), merged as `c56f9d4`.
+- **What:** the main Profile page is the figure, the card (parchment ground and gilt frame, posts held now, one line
+  about the person, Body / Purse / Name / Honour in words), the stat sheet and one panel chosen by four tabs (Skills,
+  Gear, Family, Traits; `UI.PF.addPanel`). The eight stacked section buttons are gone. The past and the long reads
+  (posts held before, deeds, all skills, house and kin, gear and heirlooms, years and marks, the measured sheet, birth
+  and faith) live on a Records view of the same page, behind one small "Records" link (`UI.PF.addSection` feeds it).
+- **Numbers:** page-zone words at 1366 about 140 → 83; phone 1.7 → 1.35 screens; controls unchanged (reshaped, not cut).
+- **Tests:** 15 pf* tests (pfLean, pfRecords new); after the merge 17 of 17 with boot, renderRng, b5Budget.
+- **Open:** fewer controls; the Measured section when C9 removes real units; "styles" to "arts"; equipment tiles.
+- **Undo:** `git revert -m 1 c56f9d4`.
+
+### H-028 · 2026-11-13 19:33 ET · Fable 5.2 is available again; the legendary designs move to it
+- H-019's "Fable's weekly limit until Nov 18" no longer holds: the owner said Fable is not out, and a test call answered.
+  Work that D-009 gives Fable goes back to Fable 5.2. The ten legendary weapon designs (order 36), begun on Opus 5.5, were
+  restarted on Fable 5.2 at max effort (the Opus draft notes kept for it).
+- **lfRepeats** (CI 105 shard 3): with the feature on, prompts a year held steady (10.1 → 10.2) while the "off" world
+  grew busier after A2's re-roll (11.9 → 13.1); the bar is 75% of "off" (was 80%), and at least 6 a year.
+
+### H-029 · 2026-11-13 20:13 ET · CI 105: one failure (lfRepeats, fixed in 9bf37ee); orders 36-47 recorded
+- **CI 105** on A2 and P: 10 of 11 jobs green; shard 3's lfRepeats failed and was fixed (H-028). This push runs the
+  full CI on A2, P, P2 and the fix.
+- **Orders 36-47** (talents at birth by a 45-point budget with one SSS at most, growth S ×1.8 and SSS ×3.0, prices by
+  reach; art grades; combat ranks without caps; fusion by choice; careers without ladders L1; noble life N1; legendaries
+  without levels, each from its own realm and craft, with an owner, a wielder and a reason; the owner's legendary blade
+  example as Aldmark's signature; the master key withdrawn) are in OWNER_ORDERS, DECISIONS D-043 to D-045 and growth.md
+  §§9-10. The ten legendary designs are being drawn (Fable 5.2); then the owner's pause (order 36).

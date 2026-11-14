@@ -4,6 +4,8 @@ The checklist of every work item, in the order they are being done, split by maj
 moment it is merged and CI is green, with the stamp and the commit; never delete a line. Details live in
 `docs/HISTORY.md`; the plans and reasons in `docs/CRITIQUE.md` §2, `docs/V3_SPEC.md` and `docs/DECISIONS.md`.
 
+**PAUSE IN FORCE (order 36):** after the ten legendary weapon designs, no new step until the owner says go.
+
 *Last updated 2026-11-13 07:21 ET*
 
 ## v2 · Round 2: the owner's complaint list (`docs/V2_SPEC.md`, `docs/CRITIQUE.md`)
@@ -37,7 +39,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **C8b** · The gate 2 figure library draws every portrait; face and build maker at creation; face codes · `9a2cbeb` · 2026-11-13 13:02 ET
 - [x] **P** · Profile tab (D-038, `src/ui/999996-profile-tab`): a game-like page of your character, card and figure, titles, stats, skills, styles, renown, gear (owner order 33; after B5)
 - [ ] **C9** · Bodies that make sense: stat words against the population, real-unit readouts gone, masters with the body or mind for it, longer healthy lives (order 34, D-039)
-- [ ] **P2** · A clean Profile page; the past moved to a Records area (order 34)
+- [x] **P2** · A clean Profile page (card, sheet, four tabs); the past in Records (D-041) · `c56f9d4` · 2026-11-13 19:21 ET
 - [ ] **X7** · Phone speed: first load and each press (order 34)
 - [ ] **W0** · Remove the war score and the army templates (order 34)
 - [ ] **X2** · Named stages
@@ -61,10 +63,12 @@ Designed now, built after v2's last item on its own integration branch (D-037).
 - [x] **E1/E2 design** · `docs/design/economy-and-items.md`: one market model, 281 markets, 28 goods, named trading houses and caravans; 845 item kinds in five grades; ~100 unique named pieces; eight build stages · `39e3164` · 2026-11-13 02:45 ET · owner answered (D-032)
 
 ### Next, in order
-- [x] **G design** · `docs/design/growth.md`: 17 stats, 4,599 skills, ~550 styles, ~2,300 arts, legendary arts; stages G1-G6 · `f1a556d` · 2026-11-13 11:56 ET · **8 owner decisions pending**
+- [x] **G design** · `docs/design/growth.md`: 17 stats, 4,599 skills, ~550 styles, ~2,300 arts, legendary arts; stages G1-G6 · `f1a556d` · 2026-11-13 11:56 ET · revised for order 34 (`e7812cf`) · **6 owner decisions pending**
 - [ ] **G** · Growth in depth: more stats, skills learned by doing (8 words, Beginner to Myth), hidden talents, hundreds of arts (sword arts and every weapon's, murim-like) by nation, regiment, house, line and order (orders 32, 34; D-034, D-039)
 - [ ] **E1** · A much bigger economy: bigger markets that simulate themselves over time (owner order 28; stages E1a, E1b, E1c, E1d)
 - [ ] **E2** · Hundreds of weapons and armour pieces by quality; items unique to one person (owner order 29; stages E2a, E2b, E2c, E2d, interleaved with E1 as the design says)
+- [ ] **L1** · Lives without ladders: careers by performance and relations, merchants by fame, influence and wealth; paths worth playing (order 36; design first)
+- [ ] **N1** · Noble life in full: gatherings, balls, courtship, disputes, succession fights (order 36; design first)
 - [ ] **V3-X** · v3 balance pass and state diet
 
 ## Versions
