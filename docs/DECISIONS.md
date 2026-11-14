@@ -584,3 +584,10 @@ each letter above the default costs more, steeply but not wildly. Lowering a tal
 (a weakness chosen on purpose). No limit on how many talents are taken; the budget is the only limit. SSS stays costly
 and near impossible by birth roll. Talents not touched are rolled hidden as before. Prices are set in G1 against bot
 lives so no build is free power ("nothing too insane").
+
+### D-045 · Legendaries look like the owner's example and live in the portrait (owner order 45, 2026-11-13 20:04 ET)
+The owner's example (`docs/design/reference/owner-ref-3-legendary-blade.png`) sets the bar for a legendary's look:
+patterned dark steel with bright edges, gold inlay, a sculpted guard around a gem, a fine grip and pommel; legend by craft,
+not glow. Every legendary is drawn twice from one design: large, for its plate, and at portrait scale on the figure (held,
+sheathed or slung), in the same hand and light as the character art, so it reads as part of the person. Names are
+Ardan's own (the example's names are not used).

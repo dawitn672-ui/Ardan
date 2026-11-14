@@ -76,6 +76,7 @@ order is replaced, strike it through and say by what.
 42. **A slightly bigger budget; one SSS at most:** "Increase the budget slightly and limit the number of SSS to 1 no matter the combination." Budget 45; one SSS talent, of any reach. · recorded 2026-11-13 19:51 ET
 43. ~~**A master key on the talent page:** "input a master key at the bottom of the talent page for me so I can override this and change whatever I want." Built with the talent picker (G1): a key field at the page's foot; the right key lifts the budget and the one-SSS limit and opens every talent and grade; lives made with it are marked custom and kept out of balance runs; only a hash of the owner's phrase is stored (a client-side game cannot keep a real secret; the owner was told). The owner gives the phrase when G1 is built. · recorded 2026-11-13 19:57 ET~~ **Withdrawn by order 44.**
 44. **No master key:** "Scratch the cheat code idea; I don't need something unnecessary that could become a negative variable later on." Order 43 is withdrawn; nothing is built. · recorded 2026-11-13 20:00 ET
+45. **A legendary blade example** (`docs/design/reference/owner-ref-3-legendary-blade.png`, D-045): "How's this for an example of a legendary blade. Make sure it sits well with the character design though, as it should be a part of the portrait." · recorded 2026-11-13 20:04 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
