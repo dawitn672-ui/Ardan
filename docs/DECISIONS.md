@@ -526,3 +526,29 @@ The owner's answers replace the G design's open choices (`docs/design/growth.md`
     design is D12a.
 **Branches:** the 35 merged branches could not be deleted from this session (its git connection refuses ref deletions);
 the owner can delete them on GitHub, and `docs/BRANCHES.md` keeps every tip.
+
+### D-040 · C9: bodies that make sense, a skill's baseline, longer lives (2026-11-14 ET; carries out D-039 items 8 and 12)
+Owner order 34 and the owner's later word on masters ("if they don't it'll hold them back from becoming masters ... once
+you get past a certain baseline it's cleanly up to you"). `src/people/999997-bodies`.
+1. **The word scale is measured, not fixed.** A stat reads by its centile among the whole grown population of one's own
+   people (old age included), measured at the start of eight worlds before any skill floor (6,064 people; table
+   `VS.STAT_CENTILES`, re-measured by `measure.mjs`): under 2, 2-10, 10-30, **30-70 average**, 70-90, 90-98, 98-99.9,
+   beyond 99.9 off the chart. A child is held to its own age and says so ("for a child of 9"). The body's four stats of
+   another people are also read against men; past men's 2nd or 98th centile that is off the chart. **Replaces** the old
+   ratio words (poor ... legendary) and V2_SPEC's real-unit body rows.
+2. **No real units for a body** on any page or in any person's description (kg, cm, m/s, km a day, ms): words only. The
+   engine (`A.V2.body`) and the tests keep their units. Lore keeps the measures of things and beasts.
+3. **A skill's baseline, not a match.** Each word of a skill from Journeyman asks its first governing stat (`GD.SKILL_STAT`)
+   for 0.65, 0.78, 0.88, 1.00, 1.08, 1.15 of an untrained grown body of one's people (Journeyman ... Legend; 1.00 is the
+   people's middle) and its second for 0.9 of that. Below it a skill stalls and works at the top of the word the stats
+   carry ("for show"); past it nothing more is asked, so any build is fair. The world's NPCs are held at least at their
+   skills' baselines (and a soldier's drill and a labourer's work above the middle in Strength and Stamina); the player
+   is never lifted, and training a skill trains its stats a little (5% and 3% of the gain, `A.train`'s own limits).
+   **Replaces** the first C9 brief's "governing stats follow mastery".
+4. **The giant's speed** potential is 18 (was 28): the typical giant is off the chart against men for strength, and at
+   the other end for speed, as D-039 item 12 asks.
+5. **Lifespan targets.** A healthy, fed, peaceful grown person (merchant, artisan, noble) dies of age mostly between 50
+   and 75: on `A.deathChance` alone at least nine in ten reach 50, at least six in ten of those die by 75, under one in
+   five passes 80 (test `bodiesLifespan`). Peasants a little earlier (×1.1, serfs ×1.2, slaves ×1.35; the well fed ×0.9),
+   the prime years at 0.6 of the release's odds, and an ordinary fever or flux far less often fatal to a grown body not
+   yet old (+0.25 on the survival roll). Children's odds, plague, wounds, beasts and war are unchanged.

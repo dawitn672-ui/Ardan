@@ -5,6 +5,20 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Bodies that make sense.** Strength, speed, endurance, reflexes, wits and will are now a word for where you stand
+  among every grown man and woman of your people, measured across the world: most people are "average", a labourer or
+  soldier is above it, one in fifty is at either extreme and one in a thousand is off the chart. A child reads as a child
+  ("strong for a child of 9"). Another people is also measured against men: a giant's strength is off the chart, and so is
+  a giant's slowness. Click a row to see what it is measured against.
+- **No more kilograms and milliseconds.** The body is described in words: no "lifts 120 kg", "7.2 m/s", "28 km a day"
+  or "reactions 170 ms", and your height is "tall" or "a little short", not centimetres.
+- **A skill needs a body (or a mind) to carry it.** Each step of a skill from Journeyman asks a modest baseline of its two
+  stats (a Master about an average body or mind for that skill, never a great one). Below it the skill stalls and works
+  as the lower step: a sword master with feeble reflexes fights as an Expert. Past it, build your character as you like.
+  The world's masters all clear their baselines.
+- **Longer lives.** A healthy grown person at peace now dies of nothing much far more rarely, gets over a fever or the
+  flux more often, and mostly lives into the sixties or seventies; serfs and slaves a little less, the well fed a little
+  more. Plague, wounds, beasts and war still kill.
 - **One holder per post.** Every council seat, shire office and army or division command has exactly one holder. A
   promotion hands over a real command: a new General takes an army (its old general moves to the division you left),
   and nobody keeps two seats. Death, prison, deserting or resigning leave every post at once; walking away from a
