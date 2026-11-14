@@ -114,11 +114,16 @@ export default {
       const bare = MWT.peek('mwt_ask', { pid: t.id }).v.choices[0].odds;
       MWT.scene('mwt_river', { pid: t.id }, 0); A.S.year++;
       const shown = MWT.peek('mwt_ask', { pid: t.id }).v.choices[0].odds;
+      // 99993-v2-stats shows the honest chance (surges and blunders counted, C9 D-040), so the memory's six points are
+      // read on the old chain beneath it; on the card they are a little less or more, and still what is rolled
+      const VS = A.V2S, h = VS && VS.HONEST; let oldShown = shown;
+      if (VS && h) { VS.HONEST = false; try { oldShown = MWT.peek('mwt_ask', { pid: t.id }).v.choices[0].odds; } finally { VS.HONEST = h; } }
       const draw = (bare + 1) / 100;   // loses at the bare odds, wins at the shown ones
       const { q } = MWT.scene('mwt_ask', { pid: t.id }, 0, draw - 1e-9);
-      return { bare, shown, won: q.result.success };
+      return { bare, shown, oldShown, won: q.result.success, honest: !!h };
     });
-    return { ok: r.shown === r.bare + 6 && r.won === true, detail: `bare ${r.bare}%, shown ${r.shown}%, a draw just past the bare odds wins: ${r.won}` };
+    const six = r.honest ? r.shown > r.bare && r.shown - r.bare <= 7 && r.oldShown != null : r.shown === r.bare + 6;
+    return { ok: six && r.won === true, detail: `bare ${r.bare}%, shown ${r.shown}% (the old chain ${r.oldShown}%), a draw just past the bare odds wins: ${r.won}` };
   },
 
   async mwReleaseEventsChange(pg) {

@@ -129,7 +129,21 @@
         // what the potential would read: the old engine's cap (1.02 x potential) with today's age
         const pv = p.pot && p.pot[k] ? p.pot[k] * 1.02 * (A.ageFactor ? A.ageFactor(p, k) : 1) : 0;
         const pb = pv > A.stat(p, k) ? VS.statBand(p, k, pv).band : b.band;
-        return { word: b.word, at: Math.min(6, b.band), pot: Math.min(6, Math.max(b.band, pb)), tip: ['stat', k], young: false, off: b.band >= 7 };
+        // a minor's rows say the plain word; the heading says once whom it is read against (pfLean: six "for a child of
+        // twelve" cost 24 words on a card held to 100)
+        const word = b.child ? VS.BAND_WORDS[k][b.band] : b.word;
+        return { word, at: Math.min(6, b.band), pot: Math.min(6, Math.max(b.band, pb)), tip: ['stat', k], young: false, off: b.band >= 7 };
+      };
+    }
+    if (typeof PF.sheet === 'function') {
+      const sheet = PF.sheet;
+      PF.sheet = function (p) {
+        const h = sheet.apply(this, arguments);
+        try {
+          const R = GD.RACES[p.race] || GD.RACES.human, age = A.age(p);
+          if (typeof h !== 'string' || age < 4 || age >= (R.grown || 20)) return h;
+          return h.replace('</h3>', ` <span class="pf-young">for ${esc(VS.youngOf(p, age))}</span></h3>`);
+        } catch (e) { return h; }
       };
     }
   }

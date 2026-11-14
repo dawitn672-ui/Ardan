@@ -98,7 +98,29 @@
     const r2 = ss[1] && ss[1] !== ss[0] ? A.stat(p, ss[1]) / BD.typ(p, ss[1]) / BD.SECOND : Infinity;
     return BD.carries(Math.min(r1, r2));
   };
-  A.skillCap = function (p, k) { return BD.carry(p, k); };
+  // Memoised per person (CI 107: 9996-polity's candidate scoring reads A.skill about 100,000 times a year, and each read
+  // past Journeyman took two A.stat calls). The key is everything the answer reads: the day, the six stored stats, the
+  // skills (their count and sum), traits, wounds, weariness and build, so a cached answer is the fresh one and drawing a
+  // page never changes what the engine reads.
+  BD.capMemo = new WeakMap();
+  BD.capKey = function (p) {
+    const st = p.st, sk = p.skills;
+    let n = 0, sum = 0; if (sk) for (const k in sk) { n++; sum += (+sk[k] || 0) * (n + 7); }
+    // a number, not a string (a string per read cost as much as the reads it saved); the parts are mixed so that no
+    // two different persons-at-a-moment meet on one key in practice
+    let h = A.S ? A.S.year * 400 + (A.S.warClock || 0) : 0;
+    h = h * 1.000003 + st.str * 1.7 + st.spd * 2.9 + st.ins * 4.3 + st.sta * 6.1 + st.int * 8.9 + st.wil * 12.7;
+    h = h * 1.0000071 + n * 1000.3 + sum * 0.0137 + (p.traits ? p.traits.length * 131.1 + (p.traits[0] ? p.traits[0].length * 3.7 : 0) : 0);
+    return h + (p.wounds ? p.wounds.length * 977.7 : 0) + (p.flags && p.flags.weary ? 5003.9 : 0) + (p.app && p.app.build ? p.app.build.length * 41.3 : 0) + p.born * 0.123 + (p.mil ? 77.7 : 0) + (BD.LABOUR.has(p.status) ? 33.3 : 0);
+  };
+  A.skillCap = function (p, k) {
+    if (!p || !p.st) return Infinity;
+    const key = BD.capKey(p);
+    let c = BD.capMemo.get(p);
+    if (!c || c.key !== key) { c = { key, m: {} }; BD.capMemo.set(p, c); }
+    const v = c.m[k];
+    return v !== undefined ? v : (c.m[k] = BD.carry(p, k));
+  };
 
   // ---- it stalls; and training a skill trains its stats a little --------------------------------------------------------
   BD.TRAIN_STAT = [0.05, 0.03];

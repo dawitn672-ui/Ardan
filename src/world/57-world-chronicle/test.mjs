@@ -46,8 +46,12 @@ export default {
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 4242, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 16 });
       const R0 = A.S.wrec, first = JSON.stringify(R0.e[0]);
+      // an entry as it was written: kind, date, place, realms, people. A siege's end (its days and "fell" or "lifted")
+      // is added to its entry when it ends, by design (a-record), and the first 200 may not all exist yet in 1115 (CI 107:
+      // 170 in a re-rolled world), so the entries kept are those that stood then, as written
+      const head = L => L.map(e => JSON.stringify(e.slice(0, 7)));
       let shrank = 0, n = 0, snap10 = null;
-      WCT.years(60, { each: () => { const m = A.S.wrec.e.length; if (m < n) shrank++; n = m; if (!snap10 && A.S.year >= 1115) snap10 = JSON.stringify(A.S.wrec.e.slice(0, 200)); } });
+      WCT.years(60, { each: () => { const m = A.S.wrec.e.length; if (m < n) shrank++; n = m; if (!snap10 && A.S.year >= 1115) snap10 = JSON.stringify(head(A.S.wrec.e.slice(0, 200))); } });
       const R = A.S.wrec, by = {};
       for (const e of R.e) by[e[0]] = (by[e[0]] || 0) + 1;
       const bad = R.e.filter(e => e[3] == null && !e[4]).length, nobody = R.e.filter(e => !(e[6] || []).some(id => A.WC.name(id))).length;
@@ -55,7 +59,7 @@ export default {
       const broken = lines.filter(l => /undefined|NaN|\{|null/.test(l) || !/^In \w+ \d{3,4}, /.test(l));
       const dated = R.e.filter(e => !(e[1] >= 1000) || !(e[2] >= 0 && e[2] <= 364)).length;
       return { year: A.S.year, n: R.e.length, by, kinds: Object.keys(by).length, firstKept: JSON.stringify(R.e[0]) === first, first: lines[0],
-        tenKept: snap10 === JSON.stringify(R.e.slice(0, 200)), shrank, bad, nobody, dated, broken: broken.slice(0, 3), nBroken: broken.length,
+        tenKept: !!snap10 && (() => { const a = JSON.parse(snap10), b = head(R.e.slice(0, a.length)); return a.length > 50 && a.every((x, i) => x === b[i]); })(), shrank, bad, nobody, dated, broken: broken.slice(0, 3), nBroken: broken.length,
         kb: Math.round(JSON.stringify(R).length / 1024), stateKb: Math.round(JSON.stringify(A.S).length / 1024), names: Object.keys(R.nm).length, json: JSON.stringify(R),
         news: A.S.news.length, oldestNews: A.S.news.length ? A.S.news[A.S.news.length - 1].y : null, history: A.S.history.length };
     });
