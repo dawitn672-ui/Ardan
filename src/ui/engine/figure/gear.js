@@ -5,7 +5,8 @@
 import { lerp, clamp, sstep, add, sub, mul, mix, norm, perp, len, rad, dir, rot, spl, splPts, poly, polyPts, polyline, ell, ellPts, offset, ink, taper, fade, swell, part, along, blade, stream, mixc, n1 } from './g.js';
 import { cloth, metal } from './palette.js';
 import { leftRight, tone, steel, edging, scrolls, rivets, mats, GEM, MAKES, RARITIES } from './make.js';
-export { MAKES, RARITIES, mats };
+import { swordArt, daggerArt, haftArt, bowArt, quiverArt, crossbowArt, shieldArt, swordLen, swordHilt, HAFT_LEN } from './arms.js';
+export { MAKES, RARITIES, mats, swordArt };
 
 // ---------------------------------------------------------------- helpers -------------------------------------------
 // a limb's covering: a centre line through joints and a radius at each
@@ -136,49 +137,6 @@ export function charge(S, kind, c, z, m) {
   S.fill(d, m.b); S.stroke(d, m.k, .8);
 }
 
-// G: where the guard crosses the blade; a: the blade's direction (radians, 0 = down); L: blade length; q: make; o.r: rarity
-export function swordArt(S, G, a, L, q = 1, o = {}) {
-  const M = mats({ q, r: o.r }), { st, fit, r } = M, x = dir(a), y = perp(x), W = (u, v) => add(G, add(mul(x, u), mul(y, v)));
-  const lea = cloth(o.leather || [['hemp', 'brown', 'dark', 'crimson'], ['brown', 'navy', 'navy', 'blue'], ['dark', 'black', 'black', 'murrey'], ['linen', 'white', 'white', 'white']][r][M.q]);
-  const bw = L * (.034 + .003 * r), gl = L * (.1 + .012 * M.q + .008 * r), grip = L * .125, pr = L * (.026 + .003 * M.q + .002 * r);
-  const prof = [[1, .93, .83, .7], [1, .95, .87, .72], [1, .84, .99, .8], [1.08, .9, 1.13, .86]][r], ts = [0, .33, .66, .88];
-  if (o.sheathed) {
-    const d = poly([W(L * .012, -bw * 1.25), W(L * .9, -bw * .95), W(L * 1.02, 0), W(L * .9, bw * .95), W(L * .012, bw * 1.25)], [0, .3, .7, .3, 0]);
-    S.both(d, lea.b, lea.k, 1.05); S.within(d, () => { const lr = leftRight(W(L * .5, -bw), W(L * .5, bw)); tone(S, d, lea, lr[0], lr[1]); if (M.q === 0) for (const u of [.3, .55, .75]) S.stroke(polyline([W(L * u, -bw), W(L * (u + .02), bw)]), lea.k, .8, { op: .5 }); });
-    const band = (u0, u1, m) => { const b = polyline([W(u0, -bw * 1.3), W(u1, -bw * lerp(1.3, .95, u1 / (L * .9))), W(u1, bw * lerp(1.3, .95, u1 / (L * .9))), W(u0, bw * 1.3)], true); S.both(b, m.b, m.k, .9); S.within(b, () => { const lr = leftRight(W(u0, -bw), W(u0, bw)); steel(S, b, m, lr[0], lr[1]); }); };
-    if (M.q > 0) { band(L * .012, L * .1, fit); band(L * .86, L * 1.0, fit); } if (M.q > 1) band(L * .3, L * .345, fit); if (r > 1) band(L * .58, L * .62, fit);
-    if (M.scroll) { scrolls(S, [W(L * .12, 0), W(L * .28, 0)], bw * .5, fit.l); scrolls(S, [W(L * .37, 0), W(L * .56, 0)], bw * .5, fit.b, .8); scrolls(S, [W(L * .64, 0), W(L * .84, 0)], bw * .5, fit.b, .8); }
-  } else {
-    if (r === 3) S.fill(ell(W(L * .5, 0), L * .56, bw * 4.5, Math.atan2(x[1], x[0])), '#fff1b8', { op: .55, filter: S.blur(bw * 1.7) });
-    const up = ts.map((t, i) => W(L * t, -bw * prof[i])), dn = ts.map((t, i) => W(L * t, bw * prof[i])).reverse(), kk = [0, .7, .7, .5];
-    const d = poly([...up, W(L, 0), ...dn], [...kk, .15, ...kk.slice().reverse()]);
-    S.both(d, st.b, st.k, 1.05);
-    S.within(d, () => {
-      S.fill(polyline([W(0, -bw * 1.3), W(L, -bw * 1.3), W(L, 0), W(0, 0)], true), st.l); S.fill(polyline([W(0, 0), W(L, 0), W(L, bw * 1.3), W(0, bw * 1.3)], true), st.s);
-      const fl = r === 1 ? .78 : .6;
-      if (r === 2) for (const v of [-.36, .36]) S.fill(polyline([W(L * .03, bw * (v - .12)), W(L * .56, bw * (v - .08)), W(L * .6, bw * v), W(L * .56, bw * (v + .08)), W(L * .03, bw * (v + .12))], true), st.d, { op: .7 });
-      else S.fill(polyline([W(L * .02, -bw * .3), W(L * fl, -bw * .2), W(L * (fl + .04), 0), W(L * fl, bw * .2), W(L * .02, bw * .3)], true), r === 3 ? fit.b : st.d, { op: r === 3 ? .9 : .55 });
-      if (M.q > 0) S.fill(polyline([W(L * .3, -bw * 1.3), W(L * .42, -bw * 1.3), W(L * .36, bw * 1.3), W(L * .24, bw * 1.3)], true), st.hi, { op: M.q > 1 ? .75 : .45 });
-      if (r === 1) for (const v of [-.62, .62]) S.stroke(spl([0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => W(L * (.06 + i * .1), bw * (v + (i % 2 ? .12 : -.12))))), st.hi, .8, { op: .55 });        // the pattern-welded edge
-      if (r === 2 && M.q > 0) { let rn = ''; for (let i = 0; i < 9; i++) { const p = W(L * (.1 + i * .05), 0), z = bw * .2; rn += `M${n1(p[0] - z)} ${n1(p[1] - z)}l${n1(z)} ${n1(2 * z)}l${n1(z)} ${n1(-2 * z)}`; } S.stroke(rn, fit.l, .9, { op: .9 }); }
-      if (M.q === 0) for (const [u, v] of [[.22, -1], [.47, 1], [.63, -1], [.8, 1]]) S.fill(polyline([W(L * u, v * bw * 1.2), W(L * (u + .012), v * bw * .62), W(L * (u + .03), v * bw * 1.2)], true), st.k, { op: .8 });   // nicks in a crude edge
-    });
-    if (r === 3) scrolls(S, [W(L * .05, 0), W(L * .56, 0)], bw * .26, fit.k, .8); else if (M.q > 2) scrolls(S, [W(L * .05, 0), W(L * .32, 0)], bw * .3, fit.b);
-  }
-  // guard, grip, pommel
-  const curve = [0, 0, .12, .26][M.q] * gl + (r > 0 ? gl * .1 : 0), gw = L * (.016 + .003 * M.q), fl2 = r > 0 ? 1.5 : 1, wing = r === 3 ? [W(gw * 3.4, gl * .7), W(gw * 3.4, -gl * .7)] : null;
-  const gpts = [W(-gw * fl2, -gl), W(-gw * 1.2, 0), W(-gw * fl2, gl), W(gw * fl2 + curve, gl * 1.04), ...(wing ? [wing[0]] : []), W(gw * .9, gl * .4), W(gw * 1.3, 0), W(gw * .9, -gl * .4), ...(wing ? [wing[1]] : []), W(gw * fl2 + curve, -gl * 1.04)];
-  const gd = poly(gpts, r === 2 ? .2 : M.q < 2 ? .25 : .6), gp = polyline([W(-gw, -bw * .72), W(-grip, -bw * .56), W(-grip, bw * .56), W(-gw, bw * .72)], true), nw = [3, 5, 9, 11][M.q];
-  S.both(gp, lea.b, lea.k, 1); S.within(gp, () => { const lr = leftRight(W(-grip * .5, -bw), W(-grip * .5, bw)); tone(S, gp, lea, lr[0], lr[1]); for (let i = 1; i < nw; i++) { const u = -gw - (grip - gw) * i / nw; S.stroke(polyline([W(u, -bw), W(u - bw * .5, bw)]), M.q > 1 ? fit.l : lea.k, .8, { op: .8 }); } });
-  S.both(gd, fit.b, fit.k, 1.05); S.within(gd, () => { const lr = leftRight(W(0, -gl), W(0, gl)); steel(S, gd, fit, lr[0], lr[1]); });
-  if (M.scroll) { scrolls(S, [W(0, -gl * .85), W(0, -gl * .2)], gw * .5, fit.k, .7); scrolls(S, [W(0, gl * .2), W(0, gl * .85)], gw * .5, fit.k, .7); }
-  const pc = W(-grip - pr * .8, 0), pn = [12, 10, 6, 8][r], pd = M.q === 0 ? poly(ellPts(pc, pr * .95, pr * .8, a, 7), .5) : poly(ellPts(pc, pr * (r === 1 ? .9 : 1.08), pr * (r === 1 ? 1.25 : 1.08), a, pn), r === 2 ? .35 : .85);
-  if (r === 3) { const ring = ell(pc, pr * 1.5, pr * 1.5); S.stroke(ring, fit.k, 5.4); S.stroke(ring, fit.b, 3.6); }
-  S.both(pd, fit.b, fit.k, 1.05); S.within(pd, () => steel(S, pd, fit, add(pc, [-pr, -pr]), add(pc, [pr, pr])));
-  if (M.q > 1) S.stroke(ell(pc, pr * .55, pr * .55), fit.k, .8);
-  if (M.q > 2 || r > 1) { const gem = ell(pc, pr * .4, pr * .4); S.both(gem, GEM[r], '#1b0b10', .8); S.fill(ell(add(pc, [-pr * .12, -pr * .14]), pr * .13, pr * .1), '#ffffff', { op: .85 }); }
-  return { pommel: pc, W };
-}
 // one layered shoulder piece (three lames); c: the shoulder's top, R: its size, sg: which side, q: make, o.r: rarity
 export function pauldronArt(S, c, R, sg, q = 1, o = {}) {
   const M = mats({ ...o, q }), { st, fit } = M, W = p => [c[0] + sg * p[0] * R, c[1] + p[1] * R];
@@ -449,39 +407,77 @@ export const ITEMS = {
     const { S, F } = C, M = mats(o), g = M.q > 1 || M.r > 1 ? metal('gold') : M.st; S.layer('legs');
     for (const i of [0, 1]) { const G = F.leg[i], sg = SG[i], a = add(G.an, [-sg * F.legR[3] * 1.2, F.footL * .1]), b = add(a, [-sg * F.footL * .13, F.footL * .03]); S.stroke(polyline([add(G.an, [sg * F.legR[3] * .8, F.footL * .12]), a, b]), g.k, 3.4); S.stroke(polyline([add(G.an, [sg * F.legR[3] * .8, F.footL * .12]), a, b]), g.b, 2); let d = ''; for (let k = 0; k < 6; k++) { const an = k * Math.PI / 3, q = F.footL * .05; d += `M${n1(b[0])} ${n1(b[1])}l${n1(Math.cos(an) * q)} ${n1(Math.sin(an) * q)}`; } S.stroke(d, g.k, 1.6); S.stroke(d, g.l, .8); }
   },
-  dagger(C, o) { // a dagger on the hip opposite the sword
-    const { S, F } = C, by = C.st.beltY || F.y.belt, G = [F.cx - F.waistHalf * .82, by + F.H * .018]; S.layer('weapon'); swordArt(S, G, rad(-9), F.H * .15, o.q ?? 1, { sheathed: true, r: o.r, leather: o.leather });
+  dagger(C, o) { // a dagger or a knife on the hip opposite the sword
+    const { S, F } = C, by = C.st.beltY || F.y.belt, G = [F.cx - F.waistHalf * .82, by + F.H * .018]; S.layer('weapon');
+    daggerArt(S, G, rad(-9), F.H * .15, o.q ?? 1, { sheathed: true, r: o.r, leather: o.leather, form: o.form, st: o.st || C.arms });
   },
   helm(C, o) { const h = HEADWEAR[o.kind || 'kettle']; if (h && h.draw) h.draw(C, o); },
-  shield(C, o) { // a heater shield stood on its point by the leg, the hanging hand on its rim
-    const { S, F } = C, M = mats(o), { st, fit } = M, i = [o.arm ?? 0, 1 - (o.arm ?? 0)].find(k => F.arm[k].hang && F.arm[k].hand === 'relaxed'); if (i == null) return;
-    const A = F.arm[i], sg = SG[i], m = cloth(o.field || 'white'), m2 = cloth(o.pale || 'blue'), top = A.wr[1] + F.handL * .42, h = 22 - top, w = h * .46, cx0 = A.wr[0] - sg * w * .1, W = (u, v) => [cx0 + u * w / 2, top + v * h];
-    const d = poly([W(-1, 0), W(1, 0), W(1, .4), W(.62, .74), W(0, 1), W(-.62, .74), W(-1, .4)], [.15, .15, .8, .9, .25, .9, .8]);
-    S.layer('propFront'); S.both(d, m.b, st.k, 1.2);
-    S.within(d, () => { S.fill(polyline([W(0, -.1), W(1.2, -.1), W(1.2, 1.1), W(0, 1.1)], true), m2.b); S.fill(d, S.lin(W(-1, .3), W(1, .3), [[0, '#ffffff', .28], [.35, '#ffffff', 0], [.55, '#1d1533', 0], [1, '#1d1533', .42]])); S.stroke(d, st.k, 13); S.stroke(d, M.edge ? fit.b : st.b, 10.4); S.stroke(d, M.edge ? fit.hi : st.hi, 1.2, { op: .8 }); if (M.q === 0) for (const p of [[-.4, .3], [.5, .55], [.1, .72]]) S.stroke(polyline([W(p[0], p[1]), W(p[0] + .16, p[1] + .05)]), '#2a2420', 1.4, { op: .6 }); });
-    S.stroke(d, st.k, 1.2); if (o.device) charge(S, o.device, W(0, .36), w * .2, metal(M.q > 1 ? 'gold' : 'bronze'));
-    if (M.rivet) rivets(S, [W(-.84, .06), W(.84, .06)], 5, 2.4, st); if (M.scroll) scrolls(S, [W(-.6, .12), W(.6, .12)], w * .028, fit.k, .7);
+  // a shield by its form: a heater, a kite or a pavise stood on its point by the leg, the hanging hand on its rim; a round
+  // shield or a targe held at the side by its grip; a buckler hung at the belt
+  shield(C, o) {
+    const { S, F } = C, q = o.q ?? 1, form = o.form || 'heater', paint = { form, r: o.r, field: o.field, pale: o.pale, device: o.device ? (S2, c, z, m) => charge(S2, o.device, c, z, m) : null };
+    if (form === 'buckler') { S.layer('weapon'); shieldArt(S, [F.hi[0][0] + F.hipHalf * .3, (C.st.beltY || F.y.belt) + F.H * .014], F.H * .185, q, paint); return; }
+    const i = [o.arm ?? 0, 1 - (o.arm ?? 0)].find(k => F.arm[k].hang && F.arm[k].hand === 'relaxed'); if (i == null) return;
+    const A = F.arm[i], sg = SG[i]; S.layer('propFront');
+    if (form === 'round' || form === 'targe') { const d = F.H * (form === 'round' ? .37 : .29); shieldArt(S, [A.wr[0] - sg * d * .12, A.wr[1] + F.handL * .5 - d / 2], d, q, paint); C.st.noHand = i; return; }
+    const top = A.wr[1] + F.handL * .42, h = 22 - top, wr = form === 'kite' ? .42 : .5;
+    shieldArt(S, [A.wr[0] - sg * h * wr * .1, top], h, q, { ...paint, wr });
   },
-  // --- sword at the hip, or planted before the feet; and staves ---
+  // --- a sword at the hip, or planted before the feet ---
   sword(C, o) {
-    const { S, F } = C, q = o.q ?? 1, P = F.pose;
-    if (P.planted) { const hy = (F.arm[0].wr[1] + F.arm[1].wr[1]) / 2 + F.handL * .42, L = (16 - hy) / 1.19; S.layer('propFront'); swordArt(S, [F.cx, 16 - L], 0, L, q, { sheathed: false, r: o.r }); return; }
-    const L = F.H * (o.long ? .5 : .41), A = F.arm[1], rest = A.hand === 'rest', a = rad(rest ? 7 : 13), by = C.st.beltY || F.y.belt; let G;
-    if (rest) { const pm = add(A.wr, mul(A.dirF, F.handL * .5)); G = add(pm, mul(dir(a), L * (.125 + .03 + .026))); } else G = [F.hi[1][0] - F.hipHalf * .1, by + F.H * .035];
+    const { S, F } = C, q = o.q ?? 1, P = F.pose, sw = { r: o.r, st: o.st || C.arms, form: o.form, long: o.long, leather: o.leather }, hl = swordHilt(sw);
+    if (P.planted) { const hy = (F.arm[0].wr[1] + F.arm[1].wr[1]) / 2 + F.handL * .42, L = (16 - hy) / (1 + hl); S.layer('propFront'); swordArt(S, [F.cx, 16 - L], 0, L, q, sw); return; }
+    const L = F.H * swordLen(sw), A = F.arm[1], rest = A.hand === 'rest', a = rad(rest ? 7 : 13), by = C.st.beltY || F.y.belt; let G;
+    if (rest) { const pm = add(A.wr, mul(A.dirF, F.handL * .5)); G = add(pm, mul(dir(a), L * hl)); } else G = [F.hi[1][0] - F.hipHalf * .1, by + F.H * .035];
     S.layer('weapon'); const lea = cloth('dark'), hang = [[F.belt[1][0] - F.waistHalf * .5, by], add(G, mul(dir(a), L * .06))];
     S.stroke(polyline(hang), lea.k, 6.4); S.stroke(polyline(hang), lea.b, 4.6);
-    swordArt(S, G, a, L, q, { sheathed: true, leather: o.leather, r: o.r });
+    swordArt(S, G, a, L, q, { ...sw, sheathed: true });
   },
+  // --- an axe, a mace or a hammer hung at the belt: its head up in a loop of leather, its haft down along the thigh ---
+  sidearm(C, o) {
+    const { S, F } = C, sd = o.side ?? -1, by = C.st.beltY || F.y.belt, form = o.form || 'axe', L = Math.min(HAFT_LEN[form] || 700, F.H * .44), a = Math.PI + rad(sd * 7);
+    const top = [F.cx + sd * F.waistHalf * .92, by - (form === 'flail' ? 10 : F.H * .07)], G = sub(top, mul(dir(a), L)); S.layer('weapon');
+    haftArt(S, G, a, L, o.q ?? 1, { form, r: o.r, st: o.st || C.arms, flip: sd < 0 });
+    const lea = cloth('dark'), lp = poly([[top[0] - 26, by - 9], [top[0] + 26, by - 9], [top[0] + 22, by + 26], [top[0] - 22, by + 26]], .3); S.both(lp, lea.b, lea.k, 1); S.stroke(polyline([[top[0] - 24, by + 8], [top[0] + 24, by + 8]]), lea.l, .7, { op: .6, dash: '2.6 2.4' });
+  },
+  // --- what is held upright in the hand: a staff, a crook, a crozier, a hoe; a spear or a pole arm by its form ---
   staff(C, o) {
     const { S, F } = C, i = F.arm[0].staff ? 0 : 1, A = F.arm[i], kind = o.kind || 'staff', wd = cloth(o.wood || 'walnut'), ir = metal(o.metal || 'iron');
-    const x = A.wr[0] + A.dirF[0] * F.handL * .35, yh = A.wr[1] + A.dirF[1] * F.handL * .35, top = kind === 'spear' ? -F.H * 1.1 : kind === 'crook' ? -F.H * 1.08 : kind === 'hoe' ? yh - F.H * .09 : -F.H * 1.02, lean = (o.lean ?? .02) * F.H, w = kind === 'spear' ? 13 : 16;
-    S.layer('weapon'); const a = [x + lean, 0], b = [x - lean * (top / -F.H), top], d = polyline([add(a, [-w / 2, 0]), add(a, [w / 2, 0]), add(b, [w / 2 * .85, 0]), add(b, [-w / 2 * .85, 0])], true);
+    const x = A.wr[0] + A.dirF[0] * F.handL * .35, yh = A.wr[1] + A.dirF[1] * F.handL * .35, lean = (o.lean ?? .02) * F.H;
+    S.layer('weapon'); C.st.staffX = x;
+    if (kind === 'pole' || kind === 'spear') {
+      const form = o.form || 'spear', top = -F.H * ({ spear: .97, boar: .93, pike: 1.46, lance: 1.46, glaive: .84, halberd: .88, bill: .86, poleaxe: .86, partisan: .9, great: .84, maul: .78 }[form] || 1.02);
+      const a = [x + lean, 0], b = [x - lean * (top / -F.H), top];
+      haftArt(S, a, Math.atan2(b[0] - a[0], b[1] - a[1]), Math.hypot(b[0] - a[0], b[1] - a[1]), o.q ?? 1, { form, r: o.r, st: o.st || C.arms, flip: i === 0, pennon: o.pennon });
+      return;
+    }
+    const top = kind === 'crook' ? -F.H * 1.08 : kind === 'hoe' ? yh - F.H * .09 : -F.H * 1.02, w = 16;
+    const a = [x + lean, 0], b = [x - lean * (top / -F.H), top], d = polyline([add(a, [-w / 2, 0]), add(a, [w / 2, 0]), add(b, [w / 2 * .85, 0]), add(b, [-w / 2 * .85, 0])], true);
     S.both(d, wd.b, wd.k, 1.05); S.within(d, () => tone(S, d, wd, add(a, [-w / 2, 0]), add(a, [w / 2, 0])));
-    if (kind === 'spear') { const h = F.H * .15, hd = poly([add(b, [-w * .6, 6]), add(b, [-w * 1.5, -h * .35]), add(b, [0, -h]), add(b, [w * 1.5, -h * .35]), add(b, [w * .6, 6])], [.2, .6, .1, .6, .2]); S.both(hd, ir.b, ir.k, 1.05); S.within(hd, () => { S.fill(polyline([add(b, [0, 6]), add(b, [0, -h]), add(b, [-w * 1.6, -h * .35])], true), ir.l); S.fill(polyline([add(b, [0, 6]), add(b, [0, -h]), add(b, [w * 1.6, -h * .35])], true), ir.s); }); S.stroke(polyline([add(b, [0, 4]), add(b, [0, -h * .96])]), ir.k, .8); const sk = polyline([add(b, [-w * .7, 6]), add(b, [w * .7, 6]), add(b, [w * .6, 50]), add(b, [-w * .6, 50])], true); S.both(sk, ir.s, ir.k, 1); if (o.pennon) { const pm = cloth(o.pennon), p0 = add(b, [w * .5, 56]); const pd = poly([p0, add(p0, [150, 22]), add(p0, [96, 52]), add(p0, [156, 90]), add(p0, [0, 76])], [0, .2, .4, .2, 0]); S.both(pd, pm.b, pm.k, 1.05); S.within(pd, () => { S.fill(polyline([add(p0, [60, 0]), add(p0, [84, 100]), add(p0, [110, 100]), add(p0, [86, 0])], true), pm.s, { op: .6 }); }); } }
     if (kind === 'hoe') { const bl = poly([add(a, [-8, -26]), add(a, [-74, -42]), add(a, [-92, -6]), add(a, [-10, -4])], .25); S.both(bl, ir.b, ir.k, 1.05); S.within(bl, () => steel(S, bl, ir, add(a, [-90, -40]), add(a, [-10, 0]))); }
     if (kind === 'crook') { const hk = spl([b, add(b, [0, -70]), add(b, [-40, -118]), add(b, [-92, -84]), add(b, [-84, -30])]); S.stroke(hk, wd.k, 17, { cap: 'round' }); S.stroke(hk, wd.b, 14.4, { cap: 'round' }); }
     if (kind === 'crozier') { const g = metal('gold'); const hk = spl([b, add(b, [0, -60]), add(b, [44, -112]), add(b, [96, -72]), add(b, [66, -24]), add(b, [38, -52])]); S.stroke(hk, g.k, 15, { cap: 'round' }); S.stroke(hk, g.b, 12.4, { cap: 'round' }); S.stroke(hk, g.hi, 2, { op: .8 }); S.both(ell(add(b, [0, 4]), 14, 10), g.b, g.k, 1); }
-    C.st.staffX = x;
+  },
+  // --- a bow slung on the back: the stave behind the shoulder, the string across the chest ---
+  bow(C, o) {
+    const { S, F } = C, form = o.form || 'long', L = F.H * ({ long: 1.04, self: .84, recurve: .72 }[form] || .9), p0 = onSh(F, 0, .5), p1 = [F.hi[1][0] + F.H * .012, F.y.hip], d = norm(sub(p0, p1));
+    const G = add(mix(p1, p0, .56), mul(perp(d), -F.H * .02)), a = Math.atan2(d[0], d[1]), bo = { form, r: o.r, st: o.st || C.arms, flip: true };
+    S.layer('propBack'); bowArt(S, G, a, L, o.q ?? 1, { ...bo, only: 'stave' });
+    S.layer('belt'); bowArt(S, G, a, L, o.q ?? 1, { ...bo, only: 'string' });
+  },
+  // --- a quiver on the back, its arrows over the shoulder; or a case of bolts at the belt ---
+  quiver(C, o) {
+    const { S, F } = C, q = o.q ?? 1;
+    if (o.bolts) { const by = C.st.beltY || F.y.belt, L = F.H * .13; S.layer('weapon'); quiverArt(S, [F.cx + F.waistHalf * .5, by + L * 1.5], Math.PI + rad(-10), L, q, { r: o.r, bolts: 1 }); return; }
+    const m = add(onSh(F, 1, .62), [F.H * .012, -F.Hh * .06]), d = norm([.36, -.93]), L = F.H * .3;
+    ITEMS.baldric(C, { from: 1, leather: 'brown', w: 18, metal: q > 1 ? 'bronze' : 'iron', at: .3 });
+    S.layer('propBack'); quiverArt(S, sub(m, mul(d, L)), Math.atan2(d[0], d[1]), L, q, { r: o.r });
+  },
+  // --- a crossbow slung on the back: its bow behind the shoulders, its tiller down to the hip ---
+  crossbow(C, o) {
+    const { S, F } = C, q = o.q ?? 1, L = F.H * .43, d = norm([.34, -.94]), pc = [F.cxS + F.shHalf * .16, F.y.sh - F.Hh * .02];
+    ITEMS.baldric(C, { from: 1, leather: 'brown', w: 20, metal: q > 1 ? 'bronze' : 'iron', at: .34 });
+    S.layer('propBack'); crossbowArt(S, sub(pc, mul(d, L * .86)), Math.atan2(d[0], d[1]), L, q, { r: o.r });
   },
   book(C, o) { const { S, F } = C, m = cloth(o.leather || 'red'), c = [F.cx + 6, F.y.waist + F.B * .03], g = metal('bronze'); S.layer('propFront'); const d = poly([add(c, [-62, -84]), add(c, [58, -92]), add(c, [66, 70]), add(c, [-56, 78])], .12); S.both(d, m.b, m.k, 1.1); S.within(d, () => tone(S, d, m, add(c, [-60, 0]), add(c, [60, 0]))); S.stroke(polyline([add(c, [-46, -78]), add(c, [-42, 72])]), m.k, 1); for (const p of [[-40, -66], [42, -72], [48, 54], [-36, 60]]) S.both(ell(add(c, p), 6, 6), g.b, g.k, .8); charge(S, 'sun', add(c, [6, -8]), 22, g); },
   amulet(C, o) { const { S, F } = C, g = metal(o.metal || 'bronze'), c = [F.cxS, F.pit[1] + F.Hh * (o.drop ?? .62)]; S.layer('belt'); S.stroke(spl([onSh(F, 0, .16), mix(onSh(F, 0, .16), c, .6), c, mix(onSh(F, 1, .16), c, .6), onSh(F, 1, .16)]), g.k, 1.6); S.both(ell(c, 15, 15), g.b, g.k, 1); charge(S, o.device || 'sun', c, 11, { b: g.l, k: g.k }); },
@@ -550,21 +546,21 @@ export const OUTFITS = {
   cuirassier: { name: 'Serjeant: breastplate over mail', gear: [{ id: 'hose', dye: 'walnut' }, { id: 'shoes', kind: 'boot', leather: 'dark' }, ...set({ q: 2 }, 'cuisses', 'greaves', 'poleyns'), { id: 'mail', sleeves: 'long', len: .3 }, { id: 'mailcollar' }, ...set({ q: 2 }, 'breastplate', 'fauld'), { id: 'belt', leather: 'dark', w: 30, metal: 'bronze' }, ...set({ q: 2 }, 'rerebraces', 'vambraces', 'couters', 'gauntlets', 'besagews', 'pauldrons', 'gorget'), { id: 'sword', q: 2 }, { id: 'dagger', q: 1 }] },
 };
 
-const HARNESS = new Set(['breastplate', 'fauld', 'tassets', 'cuisses', 'greaves', 'poleyns', 'sabatons', 'spurs', 'rerebraces', 'vambraces', 'couters', 'gauntlets', 'besagews', 'pauldrons', 'gorget', 'helm', 'shield', 'sword', 'dagger']);
+const HARNESS = new Set(['breastplate', 'fauld', 'tassets', 'cuisses', 'greaves', 'poleyns', 'sabatons', 'spurs', 'rerebraces', 'vambraces', 'couters', 'gauntlets', 'besagews', 'pauldrons', 'gorget', 'helm', 'shield', 'sword', 'dagger', 'sidearm', 'bow', 'quiver', 'crossbow']);
 export function dress(S, F, Hd, look, sk, H) {
-  const C = { S, F, Hd, sk, look, r: stream(look.id || 'x', 'dress'), st: {}, armOrder: F.pose.folded ? [1, 0] : [0, 1] };
+  const C = { S, F, Hd, sk, look, r: stream(look.id || 'x', 'dress'), st: {}, armOrder: F.pose.folded ? [1, 0] : [0, 1], arms: typeof look.arms === 'string' ? look.arms : 'north' };
   const base = OUTFITS[look.outfit] || OUTFITS.peasant;
   let gear = (look.gear || base.gear).map(g => ({ ...g }));
   // the look may re-dye the main garment, regrade the arms, or swap one item for another, without touching the rest
   if (look.dye) { const main = [...gear].reverse().find(g => g.id === 'tunic' && !g.mail && !g.quilt) || gear.find(g => g.id === 'tabard'); if (main) main.id === 'tabard' ? (main.pale = look.dye) : (main.dye = look.dye); }
   const PIECE = g => 'q' in g || HARNESS.has(g.id);
-  if (look.quality != null) for (const g of gear) if (PIECE(g)) g.q = look.quality;
-  if (look.rarity != null) for (const g of gear) if (PIECE(g)) g.r = look.rarity;
+  if (look.quality != null) for (const g of gear) if (PIECE(g) || (g.id === 'staff' && g.kind === 'pole')) g.q = look.quality;
+  if (look.rarity != null) for (const g of gear) if (PIECE(g) || (g.id === 'staff' && g.kind === 'pole')) g.r = look.rarity;
   if (look.shield === 'none') gear = gear.filter(g => g.id !== 'shield'); else if (look.shield && !gear.find(g => g.id === 'shield')) gear.push({ id: 'shield', q: look.quality ?? 1, r: look.rarity || 0, field: look.dye || 'crimson', pale: 'ochre', device: 'tower' });
   if (look.cloak) gear = [...gear.filter(g => g.id !== 'cloak'), ...(look.cloak === 'none' ? [] : [{ id: 'cloak', dye: look.cloak, mantle: .46, clasp: 'bronze' }])];
   if (look.weapon === 'none') gear = gear.filter(g => g.id !== 'sword');
   else if (look.weapon && !gear.find(g => g.id === 'sword')) gear.push({ id: 'sword', q: look.quality ?? 1, r: look.rarity || 0 });
-  if (F.pose.arm.some(a => a.staff) && !gear.find(g => g.id === 'staff')) gear.push({ id: 'staff', kind: look.staff || 'staff' });
+  if (F.pose.arm.some(a => a.staff) && !gear.find(g => g.id === 'staff')) gear.push(look.staff && typeof look.staff === 'object' ? { id: 'staff', ...look.staff } : { id: 'staff', kind: look.staff || 'staff' });
   if (!gear.some(g => g.id === 'tunic' && (g.sleeves || 'long') !== 'none')) for (const i of C.armOrder) {
     const A = F.arm[i]; S.layer(A.back ? 'armsBack' : 'arms'); const arc = shoulderBall(S, F, i, sk, 0), T = armTube(F, i, 0);
     limbFill(S, T, sk, { cap: false }); S.stroke(polyline(arc), sk.k, 1.1);
@@ -574,6 +570,6 @@ export function dress(S, F, Hd, look, sk, H) {
   const hw = HEADWEAR[look.headwear]; if (hw && hw.draw) hw.draw(C, { ...(look.headwearOpts || {}), ...(look.quality != null ? { q: look.quality } : {}), ...(look.rarity != null ? { r: look.rarity } : {}) });
   // hands last: bare, gloved or in plate
   const hm = C.st.handMat || sk;
-  for (const i of C.armOrder) { const A = F.arm[i]; if (A.back || A.hand === 'hidden' || A.hand === 'tucked') continue; hand(S, F, i, hm, A.hand, C.st.handMetal); }
+  for (const i of C.armOrder) { const A = F.arm[i]; if (A.back || A.hand === 'hidden' || A.hand === 'tucked' || C.st.noHand === i) continue; hand(S, F, i, hm, A.hand, C.st.handMetal); }
   if (F.pose.planted) { /* both hands rest on the pommel: drawn above by hand() */ }
 }

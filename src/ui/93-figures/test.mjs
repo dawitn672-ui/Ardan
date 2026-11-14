@@ -257,11 +257,26 @@ export default {
       const plate = look(FGT.mk({ tag: 'g3', status: 'noble', gear: { armor: { id: 'plate', make: 3, rarity: 2 }, weapon: 'longsword', shield: 'heater' } })).gear;
       const pieces = ['cuisses', 'greaves', 'poleyns', 'sabatons', 'breastplate', 'fauld', 'tassets', 'rerebraces', 'vambraces', 'couters', 'gauntlets', 'besagews', 'pauldrons', 'gorget'].filter(id => plate.some(g => g.id === id && g.q === 3 && g.r === 2));
       const unknown = look(FGT.mk({ tag: 'g4', gear: { weapon: 'no_such_thing', armor: 'nor_this' } })).gear.length > 0;
-      const everyId = Object.keys(GD.GEAR).filter(k => ['weapon', 'armor', 'shield', 'helm', 'cloak'].includes(GD.GEAR[k].slot)), noRow = everyId.filter(k => !Object.prototype.hasOwnProperty.call(L.GEAR_ART, k));
-      return { a, b, drawnApart, c, pieces: pieces.length, shield: plate.some(g => g.id === 'shield'), unknown, ids: everyId.length, noRow, errors: UI.FIG.errors };
+      const everyId = Object.keys(GD.GEAR).filter(k => ['weapon', 'ranged', 'armor', 'shield', 'helm', 'cloak'].includes(GD.GEAR[k].slot)), noRow = everyId.filter(k => !Object.prototype.hasOwnProperty.call(L.GEAR_ART, k));
+      // every class of arms is drawn by its own form: a bow and its quiver, a crossbow and its bolts, an axe at the belt, a pole arm in the hand, a shield by its shape
+      const archer = look(FGT.mk({ tag: 'g5', gear: { weapon: 'dagger', ranged: 'longbow' } })).gear, xb = look(FGT.mk({ tag: 'g6', gear: { weapon: 'dagger', ranged: 'xbow' } })).gear;
+      const axe = item(FGT.mk({ tag: 'g7', gear: { weapon: 'axe' } }), 'sidearm'), pole = look(FGT.mk({ tag: 'g8', gear: { weapon: 'halberd' } })).staff, round = item(FGT.mk({ tag: 'g9', gear: { weapon: 'sword', shield: 'shield' } }), 'shield');
+      const forms = { bow: archer.some(g => g.id === 'bow' && g.form === 'long') && archer.some(g => g.id === 'quiver'), xbow: xb.some(g => g.id === 'crossbow') && xb.some(g => g.id === 'quiver' && g.bolts), axe: !!axe && axe.form === 'axe', pole: !!pole && pole.kind === 'pole' && pole.form === 'halberd', round: !!round && round.form === 'round' };
+      // each form at each make and rarity draws, the same way twice, and no two makes of one form draw alike
+      let arms = 0, same = 0; const bad = [];
+      for (const [fn, list] of [['swordArt', ['arming', 'long', 'great', 'short', 'estoc', 'falchion', 'sabre', 'leaf', 'cleaver']], ['daggerArt', ['dagger', 'parry', 'rondel', 'knife', 'seax']], ['haftArt', Object.keys(L.HAFT_LEN)], ['bowArt', Object.keys(L.BOW_LEN)], ['crossbowArt', ['']], ['quiverArt', ['']], ['shieldArt', Object.keys(L.SHIELD_H)]]) for (const form of list) {
+        const seen = new Set();
+        for (const q of [0, 1, 2, 3]) for (const r of [0, 3]) for (const st of ['north', 'orc']) {
+          const draw = () => { const S = new (L.Scene)('t_', { px: .5 }); S.layer('weapon'); if (fn === 'shieldArt') L[fn](S, [0, 0], 700, q, { form, r, field: '#7a2a24', pale: '#c9a13a' }); else L[fn](S, [0, 0], Math.PI / 2, fn === 'haftArt' ? L.HAFT_LEN[form] : fn === 'bowArt' ? L.BOW_LEN[form] : 700, q, { form, r, st, sheathed: st === 'orc' }); return S.svg([-900, -500, 3200, 1000], { order: ['weapon'] }); };
+          const x = draw(); arms++;
+          if (x !== draw()) bad.push(fn + ' ' + form + ' differs on a second drawing'); else if (/NaN|undefined|Infinity/.test(x) || !FGT.parse(x) || (x.match(/<path/g) || []).length < 2) bad.push(fn + ' ' + form + ' q' + q + ' r' + r + ' is not sound');
+          if (r === 0 && st === 'north') { if (seen.has(x)) same++; seen.add(x); }
+        }
+      }
+      return { a, b, drawnApart, c, pieces: pieces.length, shield: plate.some(g => g.id === 'shield'), unknown, ids: everyId.length, noRow, forms, arms, bad, same, errors: UI.FIG.errors };
     }));
-    const ok = r.a && r.b && r.a.q === 1 && r.b.q === 3 && r.b.r === 3 && r.drawnApart && r.c && r.c.q === 2 && r.c.r === 1 && r.pieces === 14 && r.shield && r.unknown && !r.noRow.length && r.errors === 0;
-    return { ok, detail: `a plain sword is drawn plain (make ${r.a && r.a.q}), the same item carrying make 3 and rarity 3 is drawn so (${r.b && r.b.q}, ${r.b && r.b.r}) and the two pictures differ ${r.drawnApart}; an item registered at run time is drawn (${r.c ? 'sword, make ' + r.c.q + ', rarity ' + r.c.r : 'missing'}); a masterwork epic harness is ${r.pieces} of 14 pieces, each with its measures, and its shield ${r.shield}; an unknown item draws the person without it ${r.unknown}; ${r.ids} item ids of the game, ${r.noRow.length ? 'without a row: ' + r.noRow.join(', ') : 'each with a row'}; faults ${r.errors}` };
+    const ok = r.a && r.b && r.a.q === 1 && r.b.q === 3 && r.b.r === 3 && r.drawnApart && r.c && r.c.q === 2 && r.c.r === 1 && r.pieces === 14 && r.shield && r.unknown && !r.noRow.length && Object.values(r.forms).every(Boolean) && !r.bad.length && r.same === 0 && r.errors === 0;
+    return { ok, detail: `a plain sword is drawn plain (make ${r.a && r.a.q}), the same item carrying make 3 and rarity 3 is drawn so (${r.b && r.b.q}, ${r.b && r.b.r}) and the two pictures differ ${r.drawnApart}; an item registered at run time is drawn (${r.c ? 'sword, make ' + r.c.q + ', rarity ' + r.c.r : 'missing'}); a masterwork epic harness is ${r.pieces} of 14 pieces, each with its measures, and its shield ${r.shield}; an unknown item draws the person without it ${r.unknown}; ${r.ids} item ids of the game (hand weapons, bows and crossbows, armour, shields, helms, cloaks), ${r.noRow.length ? 'without a row: ' + r.noRow.join(', ') : 'each with a row'}; by form: ${Object.entries(r.forms).map(([k, v]) => k + ' ' + v).join(', ')}; ${r.arms} drawings of every form of arms at four makes, two rarities and two styles: ${r.bad.length ? 'FAILED ' + r.bad.slice(0, 4).join('; ') : 'all sound, each the same twice'}, ${r.same} makes drawn alike; faults ${r.errors}` };
   },
 
   // carried over from the retired 93-anime-portraits (apAxe): no accessibility fault on the screens that show people,

@@ -1,6 +1,6 @@
 # Figures: every person drawn by the figure library
 
-**Aspect:** character art (work item C8b; owner orders 24 to 27, 30, 33; D-024, D-029, D-035, D-036) · **Kind:** readable core code, no events, no patches. The library itself is a v2 engine module.
+**Aspect:** character art (work item C8b; owner orders 24 to 27, 30, 33, 52; D-024, D-029, D-035, D-036, D-050) · **Kind:** readable core code, no events, no patches. The library itself is a v2 engine module.
 
 The owner approved gate 2 of the 2D character art ("this looks amazing, especially the blonde knight in the middle"; Ser Edric Vale is the bar) and asked for it to go into the game and keep being refined. This feature is the game's side of that: every place that shows a person now shows a figure from the library, every person has a face of their own, and the creation screen has a face and build maker.
 
@@ -8,8 +8,8 @@ The owner approved gate 2 of the 2D character art ("this looks amazing, especial
 
 | Path | What |
 |---|---|
-| `src/ui/engine/figure/` | **The library** (on the page as `A.V2.figure`): `g.js` geometry and seeded streams, `scene.js` layers and SVG output, `palette.js`, `rig.js` (body), `head.js` (face), `hair.js`, `gear.js` (dress, armour, arms), `figure.js` (`compose(look, opts)`), `look.js` (a person's sheet to a look, the face codes), `wardrobe.js` (dress by estate; gear by item) |
-| `figures.a-peoples.core.js` | What each culture wears on the head and dyes its cloth (`UI.FIG.cultOf`) |
+| `src/ui/engine/figure/` | **The library** (on the page as `A.V2.figure`): `g.js` geometry and seeded streams, `scene.js` layers and SVG output, `palette.js`, `rig.js` (body), `head.js` (face), `hair.js`, `gear.js` (dress, armour, and where each arm is carried), `make.js` (make and rarity and their paint), `arms.js` (every weapon and shield as a made thing, order 52), `figure.js` (`compose(look, opts)`), `look.js` (a person's sheet to a look, the face codes), `wardrobe.js` (dress by estate; gear by item) |
+| `figures.a-peoples.core.js` | What each culture wears on the head and dyes its cloth, and whose smiths arm it (`arms`; `UI.FIG.cultOf`) |
 | `figures.b-draw.core.js` | `UI.FIG.sheet(p)`, `UI.FIG.look(p)`, `UI.FIG.svg(p, size, opts)`, `UI.FIG.inline(...)`, the picture queue |
 | `figures.c-looks.core.js` | `A.LOOKS`: a face code for everyone born, and for everyone in an older save |
 | `figures.d-maker.core.js` | The face and build maker on the creation screen (`UI.FIG.maker`) |
@@ -44,18 +44,35 @@ On "Body & face": six pages (face, eyes and brows, nose and mouth, hair, skin, b
 
 `wardrobe.js` holds one row per item id of the game (`GEAR_ART`): the drawn piece and its two measures, **make** (0 crude to 3 masterwork) and **rarity** (0 common to 3 legendary). The sheet passes each carried thing as `{ id, kind, make, rarity }`; a stored item that carries its own make and rarity is drawn with them. A new item (E2) is one call: `A.V2.figure.registerGear('id', { art: 'sword', q: 2, r: 1 })`. An armour is drawn piece by piece (a full harness is 14 plates, each its own item and layer). Legendaries' own designs come with E2.
 
+### Arms (owner order 52, D-050)
+
+Every weapon and shield is drawn by `arms.js` as a made thing, from four things:
+
+- **its form** (a row's `form`): nine swords (arming, long, great, short, estoc, falchion, sabre, leaf, cleaver), five daggers and knives (dagger, parry, rondel, knife, seax), twenty-one hafted arms (axe, hand, great, cleaver, mace, star, flail, hammer, pick, maul, club, spear, boar, pike, lance, glaive, halberd, bill, poleaxe, partisan, staff), three bows (self, long, recurve) with a quiver, a crossbow with its bolt case, six shields (heater, kite, round, targe, buckler, pavise);
+- **its make:** crude keeps the fire's scale, a nicked edge, a cord grip, a rawhide scabbard, a haft with its bend and knots, lashing where a socket should be; plain has a honed bevel, a leather grip over cord, iron fittings, a shod butt; fine has bronze, a wire grip, the maker's mark, a locket and chape, langets, a wrist loop, horn nocks; masterwork has gilt, chasing, a line of letters after the mark, a stone, a rain-guard, a tassel, a pierced or four-pointed head;
+- **its rarity,** in the work and not only the tint: rare is pattern-welded and blued, epic is black steel cut with marks on twin fullers, a legendary with no drawing of its own is sun-steel let in with gold. Nothing glows (D-045);
+- **whose smiths made it** (`st`, from the person's people or their culture's `arms`): north, solen, desert, dwarf, elf, orc. It sets the guard, the pommel and the grip, and the blade a people makes when the item names none (a sabre in the desert, a leaf blade among elves, a broad short blade under the mountain, a cleaver on the eastern grass).
+
+Sizes are true (millimetres on a person's own height). A sword hangs at the hip in its scabbard; a dagger at the belt; an axe, mace or hammer hangs head up from the belt; a pole arm stands in the hand (the staff stance); a bow is slung on the back with its string across the chest and a quiver over the shoulder; a crossbow is slung with a bolt case at the belt; a heater, kite or pavise stands by the leg, a round shield or targe is held at the side, a buckler hangs at the belt. The sheet now carries the **ranged** slot too.
+
+`swordArt(S, G, a, L, q, o)`, `daggerArt`, `haftArt`, `bowArt`, `quiverArt`, `crossbowArt` and `shieldArt(S, T, h, q, o)` are exported from `A.V2.figure` for anything else that wants to draw an arm (the legendaries' page does: `docs/design/legendaries/`). A detail is drawn only where the picture can show it (`see()`), and an arm that lies outside the picture costs nothing (`gone()`): a list portrait's sword is under a dozen shapes, the same sword drawn large more than twenty. Every form at three makes, before and after: `docs/design/legendaries/ordinary.png` (`node docs/design/legendaries/ordinary.mjs`).
+
+The rule-drawn arms this replaced (one sword, one spearhead on a staff, one belt axe and hammer, one heater; no bow) are kept in `archive/figure-rule-drawn-arms/` (the library's `gear.js` as it stood at commit `bcfd0d5`, with a note); the gate 2 demo has its own copy (`docs/design/demo-2d/gate2/gear.js`).
+
 ## Budgets (measured by `fgBudget`; see the test's detail line)
 
 Compose a list portrait: under 6 ms. Paint a list portrait: within 16 ms. A large portrait with its light and depth passes is measured and made once, off the press.
 
 Measured 2026-11-13 on the shared four-core container under load (CPU ms a portrait, 40 people of a fresh world): compose 2.7 at 30 px, 3.1 at 46 px, 3.0 at 88 px, 3.7 for the 176 px two by three; paint at twice the density 4.9 at 46 px and 7.4 at 88 px; the 176 px picture with its light and depth passes about 41 ms, made once. SVG 81 KB at 46 px, 141 KB at 176 px; the page's frame at most 479 bytes; a redrawn portrait is a lookup of about 4 microseconds. The press gate (`tools/bench/press-gate.mjs`) reads the same with and without this feature on the same machine (the redraw counts are identical; both builds are over the gate's CPU budgets under that load).
 
+Measured again 2026-11-14 with the arms of order 52, three times, on the same container under heavier load (other sessions' browsers): compose 2.3 to 2.5 at 30 px, 2.6 to 2.8 at 46 px, 2.7 to 3.9 at 88 px, 3.0 to 3.4 for the 176 px two by three; paint 4.4 to 4.8 at 46 px and 5.5 to 7.7 at 88 px; the 176 px picture 35 to 36 ms; SVG 81 KB at 46 px and 141 KB at 176 px, as before. Nine armed people composed in node by the library before and after, turn and turn about, the middle of nine batches: 3.7 against 3.9 ms at 46 px, 3.7 against 3.7 at 88 px, 4.4 against 5.1 at 176 px, 4.8 against 4.7 for the standing figure, each inside the other's spread; 2 to 4 shapes in a hundred more and 1 to 5 KB in a hundred more SVG (`docs/design/legendaries/ordinary-timing.json`). One arm alone at full detail is 11 to 33 shapes and about a fifth of a millisecond.
+
 ## Not done here
 
-A fighter in a duel no longer stands on guard (the retired renderer's `guard` pose; the library has ten stances, none with a raised blade). War paint and jewellery (`app.paint`, `app.jewel`) are not drawn yet. Bows, quivers and mounts have no art. Cultures change headwear and dye, not yet the cut. Infants are small children, not yet their own drawing. The Profile tab (work item P) will show the standing figure.
+A fighter in a duel no longer stands on guard (the retired renderer's `guard` pose; the library has ten stances, none with a raised blade). War paint and jewellery (`app.paint`, `app.jewel`) are not drawn yet. Mounts have no art. Thrown arms (javelins, throwing axes, slings) are carried and not drawn. A shield is not shown in a stance with no hanging arm, and a pole arm's head is small on a standing figure and out of the frame of a list portrait. Wear (nicks, rust) is drawn only as a crude make's, not yet as a state of the piece. Cultures change headwear and dye, not yet the cut. Infants are small children, not yet their own drawing. The Profile tab (work item P) will show the standing figure.
 
 ## Tests and pictures
 
-`test.mjs`: `fgDeterministic`, `fgPure`, `fgEveryPeople`, `fgEscaped`, `fgBudget`, `fgOldSave`, `fgMaker`, `fgGearByItem`, and two carried over from the retired renderer's tests, `fgAxe` (no accessibility fault on the life screen, the profile, a person's page and the maker, every frame a named image) and `fgCreateSkin` (the skin picked in the maker is the skin stored and drawn). `tests/v2/figure.test.js`: ten unit tests of the library (one look one drawing, a sweep of some 400 people at four sizes, the second code, the old-save lean, gear by item, escaping, the dead).
+`test.mjs`: `fgDeterministic`, `fgPure`, `fgEveryPeople`, `fgEscaped`, `fgBudget`, `fgOldSave`, `fgMaker`, `fgGearByItem` (every item id has a row; a bow, a crossbow, an axe, a pole arm and a round shield are drawn by form; 736 drawings of every form at four makes, two rarities and two styles are sound, the same twice, and no two makes alike), and two carried over from the retired renderer's tests, `fgAxe` (no accessibility fault on the life screen, the profile, a person's page and the maker, every frame a named image) and `fgCreateSkin` (the skin picked in the maker is the skin stored and drawn). `tests/v2/figure.test.js`: thirteen unit tests of the library (one look one drawing, a sweep of some 400 people at four sizes, the second code, the old-save lean, gear by item, escaping, the dead; and for arms: every form at every make, rarity and style draws soundly and the same twice and a better make shows more; no glow on a legendary, nothing drawn outside the picture, detail left out of a small one; arms on the person by item, form and people).
 
 Before and after, at 1366 and 420 wide (creation, the life screen, the profile, a person's page), and a cast of the game's own people at twice the pixels: `docs/design/demo-2d/c8b/`.

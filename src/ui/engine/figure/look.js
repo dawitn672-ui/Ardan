@@ -193,7 +193,7 @@ export function lookOf(sh) {
   return {
     id, name: sh.name || '', sex: male ? 'M' : 'F', age, height: clamp(+app.height || (male ? 172 : 160), 40, 560), build, stock: P.stock, tusks: P.tusks || 0,
     skin: typeof app.skin === 'string' && HEXOK.test(app.skin) ? app.skin.toLowerCase() : 'warm', eyes: EYES_OF[app.eye] || 'brown', hair, hairColor, grey, beard, g: gx, scars,
-    pose: K.pose, gear: K.gear, headwear: K.headwear, headwearOpts: K.headwearOpts, staff: K.staff,
+    pose: K.pose, gear: K.gear, headwear: K.headwear, headwearOpts: K.headwearOpts, staff: K.staff, arms: K.arms,
     yaw, roll, smile: mood * .55, mood, closed: sh.alive === false || (age < .5 && mood >= 0 && r() < .5),
   };
 }
