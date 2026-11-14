@@ -38,12 +38,12 @@
     {
       id: "mch_vow_cart", title: "The same cart", w: 3, once: true,
       cond: (p, C) => C.flag(p, "ch_vow_freedom") && A.S.year - p.flags.ch_vow_freedom >= 5 && C.adult(p) && C.unfree(p) && p.status === "slave",
-      text: "When you were small, a cart left the yard with someone you loved roped in the back, and you swore under your breath that you would be free. Today you are put on the driver's bench of a cart like it. Behind you sits a girl of nine with rope on her wrists, sold to the mines. The road runs beside the marsh for six miles.",
+      text: "When you were small, a cart left the yard with someone you loved roped in the back, and you swore under your breath that you would be free. Today you are put on the driver's bench of a cart like it. Behind you sits a girl of nine with rope on her wrists, sold to the mines. The road runs beside the marsh for ten kilometres.",
       choices: [
         { t: "Cut her rope at the marsh and run", check: { s: "survival", s2: "stealth", d: 50 },
           win: { r: "You leave the cart in the reeds with the mule still grazing. Three nights of black water, then a charcoal-burner's hut where no one asks names. She holds your sleeve the whole way.",
             fx: p => { freeNow(p); p.flags.outlaw = A.S.year; p.flags.mch_cart_girl = A.S.year; return "(You are free, and hunted.)"; } },
-          lose: { r: "The dogs find you both before the second mile. She goes to the mines as planned. You are flogged in the yard where you made your vow, and the whip is hung on a nail by your door.",
+          lose: { r: "The dogs find you both before the second kilometre. She goes to the mines as planned. You are flogged in the yard where you made your vow, and the whip is hung on a nail by your door.",
             fx: { health: -14, cause: "a flogging", wil: 2, trait: "vengeful" } } },
         { t: "Deliver her, and keep the household's trust", r: "You hand the rope to the mine factor and take his mark on a tally. Back at the house you are given the storeroom key. It is a step toward the gate, of a kind.",
           fx: { coin: 12, honor: -6, happy: -6, trait: "cynical" } },

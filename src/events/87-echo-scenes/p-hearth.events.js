@@ -124,7 +124,7 @@
       id: "ec_deep_well", title: "Your well, again", ecSrc: "wk_farm_drought",
       cond: (p, C) => free(p, C) && saw(p.flags.ev, "wk_farm_drought", 2) && took(p, "wk_farm_drought", 0) && won(p, "wk_farm_drought"),
       w: 1, once: true,
-      text: "Another dry year. The well you dug twenty feet deeper, which kept you and three neighbours alive the last time, is the only sweet water for a mile. Now the whole lane comes with buckets, and the lord's steward has noticed, and says a well on the lord's ground pays the lord a penny a bucket.",
+      text: "Another dry year. The well you dug twenty feet deeper, which kept you and three neighbours alive the last time, is the only sweet water for a kilometre. Now the whole lane comes with buckets, and the lord's steward has noticed, and says a well on the lord's ground pays the lord a penny a bucket.",
       choices: [
         { t: "Let the lane draw for nothing, and argue with the steward",
           r: "You argue that you dug it. The steward argues that the ground is the lord's. The lane draws while you argue, all summer.",

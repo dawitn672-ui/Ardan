@@ -30,7 +30,7 @@
     ['candle', 'Piety', 'vital', P('M9.4 21V10.4h5.2V21') + P('M5.5 21h13') + P('M12 10.4V8.8') + P('M14.6 13.2c-1.1 0-1.2 1.6-2.1 1.6') + A_('M12 7.9c-1.8-1.2-1.9-3.4 0-6 1.9 2.6 1.8 4.8 0 6z')],
     // ---- the purse and the clock
     ['sun-coin', 'Coin (suns)', 'resource', P('M11.4 5.2A7.4 7.4 0 0 1 21 14.6') + C(10, 14, 7.4) + A_('M10 10.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4z', ' opacity=".55"')],
-    ['hourglass', 'Initiative', 'resource', P('M6 2.8h12M6 21.2h12') + P('M7.4 2.8v2.6c0 2.6 4.6 4.3 4.6 6.6s-4.6 4-4.6 6.6v2.6M16.6 2.8v2.6c0 2.6-4.6 4.3-4.6 6.6s4.6 4 4.6 6.6v2.6') + A_('M8.6 20.2c.4-1.8 2.2-2.9 3.4-3.3 1.2.4 3 1.5 3.4 3.3z')],
+    ['hourglass', 'Time', 'resource', P('M6 2.8h12M6 21.2h12') + P('M7.4 2.8v2.6c0 2.6 4.6 4.3 4.6 6.6s-4.6 4-4.6 6.6v2.6M16.6 2.8v2.6c0 2.6-4.6 4.3-4.6 6.6s4.6 4 4.6 6.6v2.6') + A_('M8.6 20.2c.4-1.8 2.2-2.9 3.4-3.3 1.2.4 3 1.5 3.4 3.3z')],
     ['broken-coin', 'Debt', 'resource', P('M10.2 3.5a8.5 8.5 0 0 0 0 17l1.6-4.6-2.6-4.2 2-4z') + P('M14 4.6a8.5 8.5 0 0 1 0 17l1.6-4.6-2.6-4.2 2-4z') + A_('M6 12.2a1.9 1.9 0 1 0 3.8 0 1.9 1.9 0 0 0-3.8 0z', ' opacity=".5"')],
     // ---- the 13 groups of the Life tab
     ['sprout', 'Only now', 'group', P('M12 21v-7.5') + P('M12 13.5C12 10 9.6 7.4 5.5 7.4c0 3.6 2.5 6.1 6.5 6.1z') + P('M12 15.5c0-3.2 2.1-5.6 6-5.6 0 3.2-2.2 5.6-6 5.6z') + P('M6.5 21h11') + A_('M12 13.5C12 10 9.6 7.4 5.5 7.4c1.2 1.6 3.3 4.4 6.5 6.1z', ' opacity=".4"')],
@@ -166,7 +166,7 @@
   const TT = UI.TT;
   if (TT && typeof TT.html === 'function') {
     const html = TT.html;
-    const TIP = { coin: 'sun-coin', initiative: 'hourglass', debt: 'broken-coin' };
+    const TIP = { coin: 'sun-coin', debt: 'broken-coin' };
     TT.html = function (key, arg) {
       let h = html.apply(this, arguments);
       try {

@@ -165,7 +165,7 @@ UI.HINTS = [
     id: "initiative",
     where: "life",
     when: pc => A.isAdult(pc) && A.S.time >= 1,
-    text: "You have <b>initiative ⧗</b> to spend. It builds up over time; each action below costs some. Try one.",
+    text: "Each activity below takes some of your days. Do as many as you like, but do not wear yourself out. Try one.",
     done: () => UI.hintUsed.act,
   },
   {
@@ -1703,7 +1703,7 @@ UI.bossButtons = function () {
   return `<span class="row" style="gap:4px;display:inline-flex">${Object.entries(A.BOSS_ACTS)
     .map(
       ([k, B]) =>
-        `<button class="small" data-a="bossAct" data-v="${k}" title="${UI.esc(B.desc)}" ${A.S.yearActs["boss_" + k] || (B.cost && A.S.time < B.cost) ? "disabled" : ""}>${UI.esc(B.name)}${B.cost ? " (" + B.cost + "⧗)" : ""}</button>`,
+        `<button class="small" data-a="bossAct" data-v="${k}" title="${UI.esc(B.desc)}" ${A.S.yearActs["boss_" + k] || (B.cost && A.S.time < B.cost) ? "disabled" : ""}>${UI.esc(B.name)}</button>`,
     )
     .join("")}</span>`;
 };

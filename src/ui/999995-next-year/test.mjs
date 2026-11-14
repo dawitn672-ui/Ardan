@@ -322,10 +322,10 @@ export default {
       UI.A.help();
       const m = document.getElementById('modal'), t = m ? m.textContent : '';
       const hint = A.V2T.hintWords();
-      return { help: /Next year/.test(t) && /Next month/.test(t), noPool: !/initiative ⧗/.test(t) && /no pool of initiative/i.test(t), esc: /Esc/.test(t), hint: /Next year/.test(hint) && /Next month/.test(hint), whatNow: (A.whatNow ? A.whatNow() : []).map(x => x.t).filter(t => /Live the next/.test(t)) };
+      return { help: /Next year/.test(t) && /Next month/.test(t), noPool: !/initiative ⧗/.test(t) && /days are not rationed/i.test(t), esc: /Esc/.test(t), hint: /Next year/.test(hint) && /Next month/.test(hint), whatNow: (A.whatNow ? A.whatNow() : []).map(x => x.t).filter(t => /Live the next/.test(t)) };
     });
     const ok = r.help && r.noPool && r.hint;
-    return { ok, detail: `help names both buttons ${r.help}, says there is no pool ${r.noPool}, Esc ${r.esc}; the clock's hint names both ${r.hint}; What now: ${r.whatNow.join(', ') || 'none offered'}` };
+    return { ok, detail: `help names both buttons ${r.help}, says days are not rationed ${r.noPool}, Esc ${r.esc}; the clock's hint names both ${r.hint}; What now: ${r.whatNow.join(', ') || 'none offered'}` };
   },
 
   async nyStripSkipsScripts(pg) {

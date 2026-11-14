@@ -138,7 +138,7 @@
   D['POL-31'] = {
     want: 'Two wants that cannot both be met: the queen would have the Neck whole under the Temple, the prince would have it whole under the Dawn Church.',
     fear: 'That the war ends with Ostra\'s bankers, Velgrad or Tamar holding the Neck road, while both claimants still deny the other exists.',
-    place: { name: 'The Neck road', text: 'The only land road between the Southland and the Eastland. Both claimants keep toll posts on it, sometimes a mile apart, and each calls the other\'s post a robbers\' camp.' },
+    place: { name: 'The Neck road', text: 'The only land road between the Southland and the Eastland. Both claimants keep toll posts on it, sometimes a kilometre apart, and each calls the other\'s post a robbers\' camp.' },
     customs: [
       { id: 'tes_two_receipts', name: 'Two crowns, two receipts', kind: 'year', m: 8, who: 'adult',
         rule: 'After harvest the queen\'s men and the prince\'s men both take grain from every house, and neither honours the other\'s receipt.',

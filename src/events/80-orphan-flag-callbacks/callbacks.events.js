@@ -805,7 +805,7 @@
           r: "You sign below the priest. The bride kisses your hand, which you were not ready for.",
           fx: { coin: -8, honor: 2, them: { op: 15 }, fame: 1 } },
         { t: "Ask, as witness, for a right of way across it",
-          r: "{Nm} gives it, a little shortly. The cart-track to {home} is a mile shorter now.",
+          r: "{Nm} gives it, a little shortly. The cart-track to {home} is a kilometre shorter now.",
           fx: { coin: 5, them: { op: -5 } } },
         { t: "Decline: it is not your field",
           r: "{Nm} asks the miller instead. The miller makes a speech about it.",

@@ -449,7 +449,7 @@ A.bossAct = function (k) {
   if (A_.cost && A.S.time < A_.cost)
     return {
       ok: false,
-      msg: "Not enough initiative (⧗) yet.",
+      msg: "You cannot spare the time for that today.",
     };
   if (!pc.rel[b.id]) A.link(pc, b, "superior", 0, "subordinate");
   const op = A.opinion(b, pc),

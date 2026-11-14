@@ -89,7 +89,7 @@ Object.assign(UI.A, {
   poLobby(pid) {
     const pc = A.pc(), r = POL.myRealm(pc), F = r && r.pol && r.pol.fief, b = A.P(pid);
     if (!F || !live(b) || !F.cands.includes(pc.id)) return;
-    if ((A.S.time || 0) < 1) { A.log('Not enough initiative.', 'warn'); return; }
+    if ((A.S.time || 0) < 1) { A.log('You cannot spare the time for that today.', 'warn'); return; }
     A.S.time -= 1;
     const fav = A.favorsOf && A.favorsOf(pc, b.id) > 0;
     const ok = fav || A.chance(clamp(.3 + A.skill(pc, 'persuasion') / 110, .1, .85));
@@ -106,7 +106,7 @@ POL.fiefCard = function (r, pc) {
   const esc = s => UI.esc(String(s == null ? '' : s)), t = POL.fiefTally(r), h = A.S.houses[F.h];
   const who = p => p ? `<span class="click u" data-a="ov" data-v="person:${esc(p.id)}">${esc(A.fullName(p, false))}</span>` : '?';
   const rows = F.cands.map(id => { const c = A.P(id); return `<div class="po-row po-small"><span>${who(c)}${pc && id === pc.id ? ' <span class="muted">(you)</span>' : ''}</span><span class="po-num" title="${esc('Councillors weigh 1, house heads 0.5 + their opinion / 200')}">${esc((t[id] || 0).toFixed(2))}</span>${pc && pc.ruler === r.id ? `<button class="small${F.pcPick === id ? ' primary' : ''}" data-a="poFiefPick" data-v="${esc(id)}">Grant</button>` : ''}</div>`; }).join('');
-  const lob = pc && F.cands.includes(pc.id) ? `<div class="po-cap">Lobby a backer (1⧗)</div><div class="po-btns">${POL.fiefBackers(r).filter(b => POL.fiefPick(r, b) !== pc.id).slice(0, 6).map(b => `<button class="small ghost" data-a="poLobby" data-v="${esc(b.p.id)}">${esc(A.fullName(b.p, false))}</button>`).join('')}</div>` : '';
+  const lob = pc && F.cands.includes(pc.id) ? `<div class="po-cap">Lobby a backer</div><div class="po-btns">${POL.fiefBackers(r).filter(b => POL.fiefPick(r, b) !== pc.id).slice(0, 6).map(b => `<button class="small ghost" data-a="poLobby" data-v="${esc(b.p.id)}">${esc(A.fullName(b.p, false))}</button>`).join('')}</div>` : '';
   const body = `<div class="po-small">The crown grants them on ${esc(POL.dateOf ? POL.dateOf(F.due) : F.due)}. Overriding the council's choice costs the crown its backers' goodwill.</div>${rows}${lob}`;
   return POL.card ? POL.card('fief', `Forfeit lands: ${esc(h ? h.name : 'a traitor house')}`, body, '', `${F.cands.length} candidates`) : body;
 };

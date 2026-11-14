@@ -15,7 +15,7 @@
         trigger: !0,
         needsPid: !0,
         title: "A test",
-        text: p=>p.mil?`{bossTitle} {boss} hands you a task nobody wants: ${A.pick(["take ten men and hold the ford until dawn","find out who is stealing from the stores","march the new recruits forty miles in two days","deliver a message through country full of enemy scouts"])}. "Let us see what you are," {theyHe} says.`:`{bossTitle} {boss} gives you a job ${A.pick(["the best journeyman failed at last year","for the most demanding client in town","with half the time it needs","with materials you have never worked"])}. "Do this well and we will talk about your future."`,
+        text: p=>p.mil?`{bossTitle} {boss} hands you a task nobody wants: ${A.pick(["take ten men and hold the ford until dawn","find out who is stealing from the stores","march the new recruits sixty-five kilometres in two days","deliver a message through country full of enemy scouts"])}. "Let us see what you are," {theyHe} says.`:`{bossTitle} {boss} gives you a job ${A.pick(["the best journeyman failed at last year","for the most demanding client in town","with half the time it needs","with materials you have never worked"])}. "Do this well and we will talk about your future."`,
         choices: [
           {
             t: "Throw everything you have at it",

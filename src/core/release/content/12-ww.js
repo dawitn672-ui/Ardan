@@ -6018,7 +6018,7 @@
           },
           {
             t: "Laugh. A headache is a headache",
-            r: "The cyclone comes at midnight. Your boat is found three days later in a mangrove a mile inland.",
+            r: "The cyclone comes at midnight. Your boat is found three days later in a mangrove a kilometre inland.",
             fx: {coin:-12,wil:1.5,happy:-5},
           },
           {

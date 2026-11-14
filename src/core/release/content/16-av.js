@@ -130,7 +130,7 @@
         w: 1,
         cool: 7,
         title: "The chain across the road",
-        text: p=>`A chain hangs across the road between two posts. A knight with a muddy shield sits on a stool beside it. The lawful toll is a penny a cart for ten miles. He wants ${A.ri(3,6)} suns. "My road, my bridge, my price."`,
+        text: p=>`A chain hangs across the road between two posts. A knight with a muddy shield sits on a stool beside it. The lawful toll is a penny a cart for sixteen kilometres. He wants ${A.ri(3,6)} suns. "My road, my bridge, my price."`,
         choices: [
           {
             t: "Pay and swallow it",
@@ -177,13 +177,13 @@
         w: 1,
         cool: 7,
         title: "A broken axle",
-        text: p=>`A crack like a bone breaking. The cart drops on one side, ${A.ri(12,25)} miles from the next town. Rain is coming, and your goods are getting wet.`,
+        text: p=>`A crack like a bone breaking. The cart drops on one side, ${A.ri(19,40)} kilometres from the next town. Rain is coming, and your goods are getting wet.`,
         choices: [
           {
             t: "Cut a new axle from a tree",
             check: {s:"craft",s2:"str",d:45},
             win: {r:"Green ash, a hatchet and four hours. It holds to town.",fx:{skill:{craft:4},str:.4}},
-            lose: {r:"The new axle splits at the first rut. You walk the last miles.",fx:{coin:-12,happy:-4,wil:.5}},
+            lose: {r:"The new axle splits at the first rut. You walk the last kilometres.",fx:{coin:-12,happy:-4,wil:.5}},
           },
           {
             t: "Wait for the next cart and pay for help",
@@ -789,7 +789,7 @@
         w: .8,
         cool: 8,
         title: "A stone in the hoof",
-        text: "Your mount goes lame on a stony road, head bobbing on every step. Thirty kilometres to anywhere.",
+        text: "Your mount goes lame on a stony road, head bobbing on every step. Fifty kilometres to anywhere.",
         choices: [
           {
             t: "Dig out the stone and poultice the hoof",
@@ -993,7 +993,7 @@
               fx: {skill:{athletics:4},fame:2},
             },
             lose: {
-              r: "The current takes you a mile down. You crawl out half-drowned.",
+              r: "The current takes you a kilometre down. You crawl out half-drowned.",
               fx: {health:-18,cause:"drowning",wil:1},
             },
           },
@@ -3321,7 +3321,7 @@
         choices: [
           {
             t: "Bring {themHim} in",
-            r: "The children cry the whole first mile. You are paid 30 suns. The Debtors' Tower is not a kind place.",
+            r: "The children cry the whole first kilometre. You are paid 30 suns. The Debtors' Tower is not a kind place.",
             fx: {coin:30,honor:-2,happy:-4,them:{type:"enemy",op:-50}},
           },
           {
@@ -4446,7 +4446,7 @@
             t: "Put the boats out and tow",
             check: {s:"command",s2:"sta",d:45},
             win: {
-              r: "Rowing in turns, a mile an hour, until a breeze finds you on the twelfth day.",
+              r: "Rowing in turns, two kilometres an hour, until a breeze finds you on the twelfth day.",
               fx: {skill:{command:3},sta:1,wil:1},
             },
             lose: {
@@ -4709,7 +4709,7 @@
         w: .9,
         cool: 9,
         title: "Ice in the fjord",
-        text: "Late in the year the ice comes down the fjord faster than anyone thought. The boat is caught: plates grinding against the hull, the shore a long white mile away.",
+        text: "Late in the year the ice comes down the fjord faster than anyone thought. The boat is caught: plates grinding against the hull, the shore a long white kilometre away.",
         choices: [
           {
             t: "Haul the boat across the ice",
@@ -4794,7 +4794,7 @@
             r: "Two hundred souls is a fortune in any market. You will be rich, and you will be the kind of person who did this.",
             fx: {coin:300,honor:-10,trait:"cruel",piety:-5},
           },
-          {t:"Sail on",r:"You sail on. The wind carries the smell for a mile.",fx:{happy:-4}},
+          {t:"Sail on",r:"You sail on. The wind carries the smell for a kilometre.",fx:{happy:-4}},
         ],
       },
       {

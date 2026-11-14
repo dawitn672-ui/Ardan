@@ -149,7 +149,7 @@
           r: "The barber swears at you and does it well. You hold the boy's other hand until he stops shaking.",
           fx: { honor: 1, need: { purpose: 4 } } },
         { t: "Send them on to the next village",
-          r: "It is six miles. The boy screams at every rut, and you hear it long after the cart is gone.",
+          r: "It is ten kilometres. The boy screams at every rut, and you hear it long after the cart is gone.",
           fx: { happy: -3, wil: 1 } },
       ],
     },

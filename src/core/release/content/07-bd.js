@@ -191,7 +191,7 @@
               fx: {fame:3,honor:3,wil:2,str:.5},
             },
             lose: {
-              r: "Your legs go from under you a mile short. Other men find you all at dawn.",
+              r: "Your legs go from under you a kilometre short. Other men find you all at dawn.",
               fx: {health:-18,cause:"hunger and cold",wil:2},
             },
           },
@@ -505,7 +505,7 @@
             check: {s:"sta",s2:"wil",d:45},
             win: {r:"The flutter fades on the road.",fx:{sta:.3}},
             lose: {
-              r: "A mile on, the world greys out and you slide from the saddle. You wake with a farmer fanning your face.",
+              r: "A kilometre on, the world greys out and you slide from the saddle. You wake with a farmer fanning your face.",
               fx: {health:-15,cause:"the Tessaran heart",wil:1.5},
             },
           },

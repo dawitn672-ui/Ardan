@@ -234,13 +234,13 @@
         trigger: !0,
         drill: ["march"],
         cool: 3,
-        title: "Thirty miles in the heat",
+        title: "Thirty kilometres in the heat",
         setup: (p,ctx)=>ranker(p,ctx,"fallen"),
         text: "Third day of forced marching under a white sun. Men are dropping out of the column. {fallen} collapses at your feet and does not get up.",
         choices: [
           {
             t: "Push on. The enemy will not wait for the weak.",
-            r: "You make the thirty miles. Six men do not; two of them never will. The rest are harder than they were.",
+            r: "You make the fifty kilometres. Six men do not; two of them never will. The rest are harder than they were.",
             fx: p=>(edge(p,"march",.03),lose(p,2),org(p,-3),p.honor=cl(p.honor-1),""),
           },
           {
@@ -252,11 +252,11 @@
             t: "Carry {fallen}'s pack yourself",
             check: {s:"sta",s2:"wil",d:48},
             win: {
-              r: "You carry two packs for eleven miles. Nobody else falls out that day. They will follow you a long way after this.",
+              r: "You carry two packs for eighteen kilometres. Nobody else falls out that day. They will follow you a long way after this.",
               fx: p=>(edge(p,"march",.025),org(p,4),A.fame(p,1),p.mil&&(p.mil.merit+=3),""),
             },
             lose: {
-              r: "You make four miles and fall on your face. Somebody carries both packs — and you.",
+              r: "You make six kilometres and fall on your face. Somebody carries both packs — and you.",
               fx: p=>(hurt(p,8,"heat and exhaustion"),edge(p,"march",.01),""),
             },
           },
@@ -453,7 +453,7 @@
         choices: [
           {
             t: "Let them sing",
-            r: "They march two miles further that day without noticing. The song becomes the unit's own. Other units envy it.",
+            r: "They march three kilometres further that day without noticing. The song becomes the unit's own. Other units envy it.",
             fx: p=>(edge(p,"march",.015),org(p,3),""),
           },
           {

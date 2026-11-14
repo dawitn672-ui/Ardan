@@ -146,7 +146,7 @@ UI.TAB.holdings = function (pc) {
           .join(
             "",
           )}</select></div><div>Net, if all goes well</div><div><b class="${P.net > P.value ? "good" : "bad"}">${A.coin(P.net)}</b></div></div>
-        <div class="row" style="margin-top:6px"><button class="primary small" data-a="runGo" ${A.S.time >= P.ini && !P.hostile ? "" : "disabled"}>Set out (${P.ini}⧗)</button>${P.hostile ? '<span class="bad small">At war with them.</span>' : ""}<button class="small ghost" data-a="runDest" data-v="">Close</button></div></div>`;
+        <div class="row" style="margin-top:6px"><button class="primary small" data-a="runGo" ${A.S.time >= P.ini && !P.hostile ? "" : "disabled"}>Set out</button>${P.hostile ? '<span class="bad small">At war with them.</span>' : ""}<button class="small ghost" data-a="runDest" data-v="">Close</button></div></div>`;
     h += "</div>";
     if (A.staffSlots(pc).some(s => s.type === "factor" || s.type === "steward" || s.type === "castellan"))
       h += UI.staffCard(pc, ["factor", "steward", "castellan"]);
@@ -652,7 +652,7 @@ UI.helpModal = function () {
   const P = t => `<p>${t}</p>`,
     add =
       P(
-        "<b>People you choose.</b> You do not know everyone you serve with. The People page (under Family) shows who is <i>around you</i> — above you, under you, beside you — by name and post. Getting to know someone costs an evening (1⧗) and is your choice; bonds you never tend fade back to acquaintances, and nobody keeps more close friends than they have evenings for. Every face has a full profile: who they are, what they do, what they can do, and whether they would beat you in a fight.",
+        "<b>People you choose.</b> You do not know everyone you serve with. The People page (under Family) shows who is <i>around you</i> — above you, under you, beside you — by name and post. Getting to know someone costs an evening and is your choice; bonds you never tend fade back to acquaintances, and nobody keeps more close friends than they have evenings for. Every face has a full profile: who they are, what they do, what they can do, and whether they would beat you in a fight.",
       ) +
       P(
         "<b>Strength you can read.</b> Every fighter has a tier — Untrained, Brawler, Trained, Veteran, Elite, Master, Legend — from body, skill and steel. A tier up wins about three fights in four. An Elite can take 7–10 regular soldiers at once, a Master 20–30, a Legend 50–100 — if the body keeps up. Beasts come in scales: animals one person can fight, great beasts that need a hunting party, titans that need an expedition, and legends that are only stories. The Codex page <i>Power &amp; scale</i> explains it all.",

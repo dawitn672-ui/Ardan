@@ -289,8 +289,11 @@ A.milestones = function (pc) {
     if (pc.status === "slave") pc.flags.unfree = "slave";
     if (pc.status === "serf") pc.flags.unfree = "serf";
     if (pc.gear.weapon === "fists") pc.gear.weapon = pc.race === "giant" ? "maul" : "dagger";
-    if (A.chance(0.1)) A.ach("survivor");
-    if ((pc.race === "human" || pc.race === "halforc") && !A.S.ach.survivor) A.ach("survivor");
+    // X3 (E6): "Survivor" is for a life that lived its childhood, not one that began at 17
+    if (!(A.S.startAge > 6)) {
+      if (A.chance(0.1)) A.ach("survivor");
+      if ((pc.race === "human" || pc.race === "halforc") && !A.S.ach.survivor) A.ach("survivor");
+    }
   }
   if (pc.surMode === "deed" && age >= R2.adult && !pc.epithet && !pc.flags.deedAsked) {
     pc.flags.deedAsked = true;
@@ -464,7 +467,7 @@ A.canAct = function (key) {
     scale = R2.adult / 16;
   if (age < D.minAge * scale) return [false, "Too young"];
   if (D.maxAge && age > D.maxAge * scale) return [false, "Too old"];
-  if (A.S.time < D.cost) return [false, "Not enough initiative (⧗) yet"];
+  if (A.S.time < D.cost) return [false, "You cannot spare the time for that today."];
   if (pc.prison && !["meditate", "pray", "study", "rest", "lift", "run"].includes(key))
     return [false, "You are in prison"];
   const used = A.S.yearActs[key] || 0;
@@ -1255,7 +1258,7 @@ const interactNow = function (tid, key, arg) {
   if (I.cost && A.S.time < I.cost)
     return {
       ok: false,
-      msg: "Not enough initiative (⧗) yet.",
+      msg: "You cannot spare the time for that today.",
     };
   if (!pc.rel[tid]) A.link(pc, t, "acquaint", 0, "acquaint");
   const r = pc.rel[tid],

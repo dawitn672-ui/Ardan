@@ -292,12 +292,6 @@
         text: 'The old woman at the edge of {home} sells "a philtre to turn any heart", {price} suns a vial. You know exactly whose heart: {themFull}, who has never looked at you twice. The vial smells of honey and cheap wine.',
         choices: [
           {
-            t: "Buy it and slip it in {theirHis} cup",
-            req: (p,C2,ctx)=>p.coin>=ctx.price,
-            r: (p,ctx)=>A.chance(.35)?"{them} drinks, coughs, and then, by pure chance, actually talks to you. You will believe in that philtre forever.":"{them} drinks it, says the wine is off, and goes home. Honey and cheap wine, exactly as it smelled.",
-            fx: (p,ctx)=>{pay(p,ctx.price),A.chance(.35)?bump(p,T(ctx),20,"friend","friend"):hp(p,-2)},
-          },
-          {
             t: "Laugh at her and talk to {them} instead",
             check: {s:"persuasion",s2:"int",d:41,bonus:p=>p.looks/5-10},
             win: {
@@ -305,7 +299,7 @@
               fx: {them:{type:"lover",op:30,back:"lover"},happy:7},
             },
             lose: {
-              r: "{them} is polite, and nothing more. Perhaps you should have bought the philtre. (You should not.)",
+              r: "{them} is polite, and nothing more. The old woman would have sold you a vial for that, too.",
               fx: {them:{type:"acquaint",op:5},happy:-3},
             },
           },
@@ -5343,7 +5337,7 @@
         cool: 5,
         title: "Parish against parish",
         setup: (p,ctx)=>{ctx.rival=A.T("{town}")},
-        text: "On the Plough-Wife's Day the whole parish plays the ball game against {rival}: a pig's bladder, two miles of fields between the churches, and no rules anyone can remember. Last year two boys broke legs. You are picked.",
+        text: "On the Plough-Wife's Day the whole parish plays the ball game against {rival}: a pig's bladder, three kilometres of fields between the churches, and no rules anyone can remember. Last year two boys broke legs. You are picked.",
         choices: [
           {
             t: "Charge into the scrum",

@@ -323,7 +323,7 @@
       cond: (p, C) => C.adult(p) && !C.old(p) && C.flag(p, "pf_backward_shot") && A.S.year - p.flags.pf_backward_shot >= 2 && C.mounted(p),
       w: 3, once: true,
       setup: (p, ctx) => yrs(p, ctx, "pf_backward_shot"),
-      text: "Three riders come out of the birches on the {home} road and fall in behind you. They do not hurry to pass. Your horse is faster than theirs, but not by much, and the ford is a mile off. {yrs} years ago you learned to turn in the saddle and loose back over the tail. The target was straw.",
+      text: "Three riders come out of the birches on the {home} road and fall in behind you. They do not hurry to pass. Your horse is faster than theirs, but not by much, and the ford is a kilometre off. {yrs} years ago you learned to turn in the saddle and loose back over the tail. The target was straw.",
       choices: [
         { t: "Turn and shoot the lead horse", check: { s: "bow", s2: "mounted", d: 55 },
           win: { r: "The lead horse goes down, and the other two pull up around it. You ride on to the ford. By market day {home} tells it as three riders, then five.",
@@ -1025,7 +1025,7 @@
           r: "At dusk an arrow goes over the wall with a message. The houses empty before midnight. {them} learns who sent it, and does not send for you again.",
           fx: { honor: 6, happy: 2, coin: 30, them: { type: "enemy", op: -40 } } },
         { t: "Refuse, and leave the siege",
-          r: "{them} fires the props without you, and the wall comes down. You hear it from five miles off.",
+          r: "{them} fires the props without you, and the wall comes down. You hear it from eight kilometres off.",
           fx: { happy: -3, them: { op: -25 } } },
       ],
     },

@@ -1997,11 +1997,7 @@ UI.clkHtml = function () {
   const S = A.S,
     pc = A.pc();
   if (!S || !pc) return '<div id="clk"></div>';
-  const cap = A.initiativeCap(pc),
-    t = S.time || 0,
-    rate = A.initiativeRate(pc),
-    next = t >= cap ? "full" : rate > 0 ? `next in ${Math.ceil((Math.floor(t) + 1 - t) / rate)}d` : "",
-    run = UI.clk.run,
+  const run = UI.clk.run,
     busy = !pc.alive || !!S.queue.length;
   return `<div id="clk" class="clk" role="group" aria-label="Time">
     <span class="clk-date" title="Today">${UI.icon("calendar", "s")}<b>${UI.esc(A.dateStr())}</b><span class="muted"> · age ${A.age(pc)}</span></span>
@@ -2009,7 +2005,6 @@ UI.clkHtml = function () {
     <span class="seg clk-spd" role="group" aria-label="Speed">${[1, 2, 3, 4, 5].map(s => `<button class="small ${UI.clk.speed === s ? "on" : ""}" data-a="clkSpeed" data-v="${s}" title="Speed ${s}: about ${UI.CLK_SPEEDS[s]} days a second (key ${s})" aria-pressed="${UI.clk.speed === s}" aria-label="Speed ${s}">${s}</button>`).join("")}</span>
     <button class="small" data-a="clkSkip" ${busy ? "disabled" : ""} title="Run until something needs you">${UI.icon("skip-forward", "s")}<span>Next</span></button>
     <button class="small ${UI.clk.quiet ? "on" : ""}" data-a="clkQuiet" aria-pressed="${UI.clk.quiet}" title="Quiet living: ordinary events are settled with the safest choice. Anything about your post, your realm, a gathering or danger still stops the clock.">${UI.icon("moon", "s")}<span>Quiet</span></button>
-    <span class="clk-ini" title="Initiative: free days you can spend on actions. It refills as time passes (${(rate * 30).toFixed(1)} a month).">${UI.icon("hourglass", "s")}<b>${t.toFixed(1)}</b><span class="muted">/${cap}</span><span class="clk-bar"><i style="width:${Math.round(Math.min(1, t / cap) * 100)}%"></i></span><span class="tiny muted">${next}</span></span>
   </div>`;
 };
 

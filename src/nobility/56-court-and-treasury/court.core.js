@@ -709,7 +709,7 @@ Object.assign(UI.A, {
     const ag = r && r.riAgenda;
     const [ok, why] = RI.canSpeak(pc, r);
     if (!ok || !ag || ag.y !== A.S.year + 1) { if (!ok) A.log(why, 'warn'); return; }
-    if (A.S.time < 1) { A.log('Not enough initiative.', 'warn'); return; }
+    if (A.S.time < 1) { A.log('You cannot spare the time for that today.', 'warn'); return; }
     if (A.S.yearActs.riVoice) { A.log('You have already spoken at court this year.', 'warn'); return; }
     A.S.time -= 1; A.S.yearActs.riVoice = 1;
     const side = v === 'against' ? 'against' : 'for';

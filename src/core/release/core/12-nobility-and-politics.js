@@ -104,7 +104,7 @@ A.nobleAction = function (key) {
   if (A.S.time < 1)
     return {
       ok: false,
-      msg: "Not enough initiative (⧗) yet.",
+      msg: "You cannot spare the time for that today.",
     };
   switch (
     ((A.S.yearActs["n_" + key] = 1),

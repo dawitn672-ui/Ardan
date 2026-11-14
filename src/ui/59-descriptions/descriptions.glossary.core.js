@@ -248,11 +248,9 @@
   G.stage = function (k) {
     const R2 = GD.RACES[k || (pc() || {}).race]; if (!R2) return '';
     const cur = pc() && pc().race === (k || pc().race) ? A.stage(pc()) : null, mark = (s, t) => s === cur ? `<span class="tt-on-row">${t}</span>` : t;
-    const free = { infant: 0, child: 4, teen: 6, adult: 7, old: 6 };
     return H('Stages of life', null, esc(R2.name)) +
       R(mark('infant', 'Infant'), 'to ' + r0(Math.max(1, R2.adult * 0.2))) + R(mark('child', 'Child'), 'to ' + r0(R2.adult * 0.8)) + R(mark('teen', 'Youth'), 'to ' + R2.adult) +
-      R(mark('adult', 'Adult'), 'to ' + R2.old) + R(mark('old', 'Old'), R2.old + '+') +
-      F(`${L('initiative', '', 'Free days')} a week by stage: child ${free.child}, youth ${free.teen}, adult ${free.adult}, old ${free.old}.`);
+      R(mark('adult', 'Adult'), 'to ' + R2.old) + R(mark('old', 'Old'), R2.old + '+');
   };
   G.age = function (pid) {
     const p = person(pid); if (!p) return '';
@@ -268,19 +266,6 @@
   };
 
   // ---- time and money ------------------------------------------------------------------------------------------------
-  G.initiative = function () {
-    const p = pc(); if (!p) return '';
-    const st = A.stage(p), cap = A.initiativeCap(p), rate = A.initiativeRate(p), t = A.S.time || 0;
-    const parts = [[L('stage', p.race, 'Your stage of life') + ` (${esc(st)})`, { infant: 0, child: 4, teen: 6, adult: 7, old: 6 }[st] || 0]];
-    if (A.age(p) < 3) parts[0][1] = 0;
-    const B = A.bloodDef(p);
-    if (B && B.extraTime && p.blood.show) parts.push(['Blood', B.extraTime]);
-    if (p.mil && A.atWar(p.mil.realm).length) parts.push(['At war', -1]);
-    const free = A.freeTime(p);
-    return H('Initiative', r1(t), 'of ' + cap) + D('Free days to spend on actions. It refills as time passes and stops when full.') +
-      (p.prison ? R('In prison: free days', 2, 'tt-sum') : TT.sumRows(parts, free, 'Free days a week')) +
-      R('Refills each month', r1(rate * 30)) + (A.initiativeMul && A.initiativeMul(p) !== 1 ? R('Rate ×', r1(A.initiativeMul(p)), 'tt-sub') : '');
-  };
   G.lifestyle = function () {
     const p = pc(), cur = p ? p.lifestyle || A.lifestyleDefault(p) : null;
     return H('Living') + D('What you spend on bread, beds and show each year. Set it in Holdings.') +

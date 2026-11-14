@@ -147,15 +147,3 @@ PACE.winterMul = function (pc) {
 const mul0 = A.initiativeMul;
 A.initiativeMul = function (pc) { return (typeof mul0 === 'function' ? mul0.apply(this, arguments) : 1) * PACE.winterMul(pc); };
 
-// The initiative popover (59-descriptions) shows a bare "Rate ×" row when the rate is not 1: say why. Pure.
-if (UI.TIPS && typeof UI.TIPS.initiative === 'function') {
-  const tip0 = UI.TIPS.initiative;
-  UI.TIPS.initiative = function () {
-    const h = tip0.apply(this, arguments);
-    try {
-      const p = A.pc();
-      if (!p || PACE.winterMul(p) === 1 || typeof h !== 'string') return h;
-      return h.replace(/Rate ×/, UI.esc('Winter: the fields sleep, free days come twice as fast. Rate ×'));
-    } catch (e) { return h; }
-  };
-}

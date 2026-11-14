@@ -162,7 +162,7 @@
       text: "A column of soldiers goes past on the road, and they are singing the filthy marching song with the verse you added, the one they used to call your song. None of them knows whose it is. One of them has added another verse, worse than yours.",
       choices: [
         { t: "Fall in beside them and sing your verse",
-          r: "They roar it with you for a mile, then the sergeant looks round. You fall out at the crossroads, hoarse and young again.",
+          r: "They roar it with you for a kilometre, then the sergeant looks round. You fall out at the crossroads, hoarse and young again.",
           fx: { happy: 5, fame: 1 } },
         { t: "Tell the sergeant whose verse it is",
           r: "He does not believe you, and then he does, and buys you a drink at the next inn. The column is late.",

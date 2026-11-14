@@ -138,7 +138,7 @@
     return H('To ' + esc(P.name), null, esc(A.realmShort(P.rid))) +
       R('Steps on the road', r1(R0.steps)) + R('Distance', `${R0.km} km${R0.sea ? ' by sea' : ''}`, 'tt-sub') + R('Days', `${R0.days} (${R0.sea ? '100' : '30'} km a day)`, 'tt-sub') +
       R(P.foreign ? 'Tolls abroad' : 'Market dues', pct(P.toll), 'tt-sub') + R('Danger on the road', pct(P.risk), 'tt-sub') +
-      R(L('initiative', '', 'Initiative'), P.ini + '⧗', 'tt-sub') + F('A day of the road is about 30 km; by sea, 100.');
+      F('A day of the road is about 30 km; by sea, 100.');
   };
   G.mtCart = function (arg) {
     const M = MT(); const [pid0, k] = String(arg).split('|'), pid = +pid0; if (!M || !GD.GOODS[k]) return '';
@@ -160,7 +160,6 @@
       R('Margin: (sell − buy) ÷ buy', pct(x.m), 'tt-sum') +
       R('Tolls', pct(x.toll) + (x.embargo ? ' (an embargo: ×3)' : ''), 'tt-sub') +
       R('Danger', pct(x.risk), 'tt-sub') + (P ? R('Road', `${P.km} km · ${P.days} days${P.sea ? ' by sea' : ''}`, 'tt-sub') : '') +
-      R(L('initiative', '', 'Initiative'), (P ? P.ini : Math.max(1, Math.ceil(x.days / 25))) + '⧗', 'tt-sub') +
       F('Ranked by margin less tolls less half the danger. Each load sold there pushes its price down.');
   };
   G.runRisk = function (dest) {
@@ -185,7 +184,7 @@
     const P = S.P;
     return H('A run to ' + esc(A.realmShort(dest)), coin(P.net), 'net, if all goes well') + TT.sumRows(S.parts, S.total, 'Net', v => esc(A.fmt(v))) +
       R('Your cargo, worth here', coin(P.value), 'tt-sub') + R('Road', `${P.km} km · ${P.days} days${P.sea ? ' by sea' : ''}`, 'tt-sub') +
-      R(L('runRisk', dest, 'Danger on the road'), pct(P.risk), 'tt-sub') + R(L('initiative', '', 'Initiative'), P.ini + '⧗', 'tt-sub') +
+      R(L('runRisk', dest, 'Danger on the road'), pct(P.risk), 'tt-sub') +
       F('Each load sold there fetches a little less than the one before.');
   };
 

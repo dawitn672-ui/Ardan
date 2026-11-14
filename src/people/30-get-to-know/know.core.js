@@ -90,7 +90,7 @@
     const pc = A.pc(), t = A.P(pid);
     if (!t || !t.alive) return { ok: false, msg: 'They are gone.' };
     if (pc.rel[pid]) return { ok: false, msg: 'You already know them.' };
-    if (A.S.time < A.knowCost) return { ok: false, msg: 'Not enough initiative (⧗) yet.' };
+    if (A.S.time < A.knowCost) return { ok: false, msg: 'You cannot spare the time for that today.' };
     if (!A.EV.gk_meet) return base.apply(this, arguments);
     A.S.time -= A.knowCost;
     A.queue({ type: 'event', ev: 'gk_meet', ctx: { pid } });

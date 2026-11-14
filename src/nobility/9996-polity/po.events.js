@@ -330,7 +330,7 @@ A.defEvents([
     setup: (p, ctx) => { const r = myR(p); if (!r || !r.pol || !(r.riGreatY && A.S.year - r.riGreatY < 3)) { ctx.skip = true; return; } ctx.rid = r.id; },
     text: 'The crown\'s masons have raised a great work, and the clergy of {realm} are asked to bless it. The high priest wants it blessed in the old form, which takes three days. The crown wants it done by noon.',
     choices: [
-      { t: 'Keep the old form', r: 'Three days of chanting. The crown waits, and is not pleased, and the faithful come from miles to see it.', fx: { piety: 2, poEst: { cler: 1 } } },
+      { t: 'Keep the old form', r: 'Three days of chanting. The crown waits, and is not pleased, and the faithful come from far and wide to see it.', fx: { piety: 2, poEst: { cler: 1 } } },
       { t: 'Bless it by noon', r: 'It is done by noon. The crown thanks you. The high priest does not.', fx: { piety: -1, fame: 1 } },
       { t: 'Bless it by noon, then keep the vigil alone', r: 'You do both, and are tired for a week. Each side thinks you are on its side.', fx: { sta: -1, piety: 1 } },
     ] },

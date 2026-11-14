@@ -892,7 +892,7 @@ A.councilAct = function (k) {
   if (A.S.time < act.cost)
     return {
       ok: false,
-      msg: "Not enough initiative.",
+      msg: "You cannot spare the time for that today.",
     };
   if (((A.S.dcool = A.S.dcool || {}), A.S.dcool["cn_" + k] != null && A.absDay() - A.S.dcool["cn_" + k] < 120))
     return {
@@ -920,7 +920,7 @@ A.councilPropose = function (kind, tid) {
   if (A.S.time < 2)
     return {
       ok: false,
-      msg: "Not enough initiative (2).",
+      msg: "You cannot spare the time for that today.",
     };
   const key = "prop_" + kind + tid;
   if (A.S.yearActs[key])

@@ -29,7 +29,7 @@ A.defEvents([
       { t: 'Ask the master about the coasts ahead', r: 'He talks once he has had his wine: harbours, dues, which lords hang wreckers and which ones are wreckers. You remember most of it.', fx: { jr: { heard: 'coast' }, coin: -1 } },
     ] },
   { id: 'jr_route', title: 'On {routeName}', trigger: true, setup: fill('jr_route'), cond: onRoad,
-    text: 'This is {routeName}, and it shows. The road is wide enough for two carts, with a stone at every mile and a well at every day\'s end. The yard of the inn at {stop} is full of beasts and drivers, some of them out of {farRealm}. Everyone has an opinion on the road ahead.',
+    text: 'This is {routeName}, and it shows. The road is wide enough for two carts, with a stone at every kilometre and a well at every day\'s end. The yard of the inn at {stop} is full of beasts and drivers, some of them out of {farRealm}. Everyone has an opinion on the road ahead.',
     choices: [
       { t: 'Hire on as a guard for a stretch', check: { s: 'str', s2: 'melee', d: 46 },
         win: { r: 'Nothing comes for the train while you walk with it. The master pays you off at the next well.', fx: { coin: 6 } },

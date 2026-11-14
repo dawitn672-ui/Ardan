@@ -53,8 +53,8 @@ export default {
     });
     const close = (a, b) => Math.abs(a - b) < 1e-9;
     const ok = close(r.jan, 2 * r.jul) && close(r.dec, r.jan) && close(r.nov, r.jul) && r.year > r.free * 1.25 && r.year < r.free * 1.32 &&
-      close(r.prisonJan, 2 / 365) && r.tipWinter && !r.tipSummer && r.babyJan === 0;
-    return { ok, detail: `free days a year ${r.free}, accrued over a year ${r.year.toFixed(2)}; a day in January ${(r.jan * 365).toFixed(2)}/365, July ${(r.jul * 365).toFixed(2)}/365; prison January ${(r.prisonJan * 365).toFixed(2)}/365; popover winter ${r.tipWinter}, summer ${r.tipSummer}; infant ${r.babyJan}` };
+      close(r.prisonJan, 2 / 365) && r.babyJan === 0;   // X3: the popover is gone with the pool (D-019); the engine's rate stays
+    return { ok, detail: `free days a year ${r.free}, accrued over a year ${r.year.toFixed(2)}; a day in January ${(r.jan * 365).toFixed(2)}/365, July ${(r.jul * 365).toFixed(2)}/365; prison January ${(r.prisonJan * 365).toFixed(2)}/365; infant ${r.babyJan}` };
   },
 
   async pcScale(pg) {
