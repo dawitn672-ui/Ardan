@@ -612,3 +612,20 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   silver moons on each limb, its own string, arrow and quiver.
 - **Tests:** tests/v2 74/74; the fg tests and boot, renderRng pass after the merge.
 - **Undo:** `git revert -m 1 334f81e`.
+
+### H-036 · 2026-11-14 12:20 ET · W0 and D10: no war score, no army templates; war screens by post (D-052)
+- **Commits:** `6979e99`, `2d02ee1`, `0657db4`, `dabb8f0`, `86ad183`, `12b76d4` (by an Opus 5.5 agent), merged as `9f78825`.
+- **W0 (owner order 34):** the war score is off every screen. `A.warFactsText` states the land each side holds and the
+  great battles won instead; `w.score` still drives the AI's peace and terms. The Templates tab, the editor,
+  "Reorganize as…", the doctrine choice and the player's template and doctrine actions are retired to
+  `archive/w0-war-score-and-templates/` (last commit with them: `39ee589`). Templates stay the engine's recipe for divisions.
+- **D10 (owner order 5):** the War Room by post (crown and Marshal; in your war a commander, or a captain in the field;
+  never a soldier or sergeant). The map is drawn within your rank's reach; enemy counters are estimates below a
+  commander; no Wars map mode outside a war; Arms from 14 or on enlisting; the War tab lists only the orders you have heard
+  of. Rules in 99997-v2-war (`a-gate`, new `g-post`), release hooks `UI.mapModes` and `A.orderHeard`.
+- **Found, left to its own step:** the release's staff card draws candidates with `A.rand` on first draw (impure render).
+- **Tests:** new `v2wByPost` (14 lives); war, 59, 58, 62, 71, 99992, 20, 68 and the core render/replay suites pass.
+- **Also (CI 108):** `honestOddsCells` reads the odds after the seat is taken (C9 lifts NPCs, never the player), and
+  `phoneDesktopSame` waits for the farewell cut-in to leave (`f50316f`). Five slow bot-life tests are with an agent.
+- **Undo:** `git revert -m 1 9f78825`.
+

@@ -5,6 +5,11 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **No war score.** A war now reads as the land each side holds and the great battles won, not a number. The army
+  templates are gone from the War Room.
+- **War at your rank.** A soldier sees his own corner of the war, a captain his front, a general the whole theatre. Only
+  the crown, the Marshal, a commander or a captain in the field opens the War Room. Enemy numbers are guesses below a
+  commander. A child has no Arms page, and you hear only of the elite orders news would bring you.
 - **No more "initiative".** The pool of free days went with the new Next month and Next year buttons, but its words stayed:
   "60.0 initiative" on the Activities line, "Spend your initiative", "needs 2 initiative" on a market trip, a ⧗ on every
   tile. They are gone. An activity takes days; the Activities line says how tired you are (a little tired, weary, driven

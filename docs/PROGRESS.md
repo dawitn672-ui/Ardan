@@ -39,9 +39,9 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **C9** · Bodies that make sense: measured stat words, no body units, skill baselines, longer lives, honest odds, Swordsmanship · `cd2e54d` · 2026-11-13 21:17 ET
 - [x] **P2** · A clean Profile page (card, sheet, four tabs); the past in Records (D-041) · `c56f9d4` · 2026-11-13 19:21 ET
 - [ ] **X7** · Phone speed: first load and each press (order 34)
-- [ ] **W0** · Remove the war score and the army templates (order 34)
+- [x] **W0** · Remove the war score and the army templates (order 34) (H-036)
 - [ ] **X2** · Named stages
-- [ ] **D10** · War screens only when deployed
+- [x] **D10** · War screens only when deployed (H-036)
 - [ ] **C6** · Relationships and households
 - [x] **X3 part 1** · No initiative left; feasts on their dates; fight stakes; illness shown; kilometres (D-051) · `839d0c6` · 2026-11-14 11:19 ET
 - [ ] **X3 part 2** · Station words, card place, counsel from the absent, pronoun lint, the preview replay
