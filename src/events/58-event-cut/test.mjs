@@ -153,7 +153,8 @@ export default {
       UI.ov = null; UI.render();
       return { peasant, forced, ruler, line: /templates and forges/.test(line) };
     });
-    const ok = r.peasant.join() === 'cmd,forces,wars' && r.forced === 'cmd' && ['tpl', 'ind', 'mp'].every(k => r.ruler.includes(k)) && !r.line;
+    // W0 (D-052): no Templates tab for anyone, the ruler included
+    const ok = r.peasant.join() === 'cmd,forces,wars' && r.forced === 'cmd' && ['ind', 'mp'].every(k => r.ruler.includes(k)) && !r.ruler.includes('tpl') && !r.line;
     return { ok, detail: `peasant sees ${r.peasant.join(', ')} (asking for industry gives ${r.forced}); ruler sees ${r.ruler.join(', ')}; war card names templates to a peasant: ${r.line}` };
   },
 };

@@ -1490,6 +1490,46 @@ A.atWar = function (rid) {
 
 A.warSide = (w, rid) => (w.att.includes(rid) ? "att" : w.def.includes(rid) ? "def" : null);
 
+// W0 (D-052): the war score is no longer shown (owner order 34: no war score, no army templates). w.score stays the
+// engine's own reckoning (AI peace, the terms a foe accepts); the player reads how a war stands as facts instead: the
+// provinces each side holds of the other's, and the great battles each side won. Reads state only.
+A.warFacts = function (w, rid) {
+  const S = A.S,
+    side = A.warSide(w, rid) || "att",
+    mine = side === "att" ? w.att : w.def,
+    theirs = side === "att" ? w.def : w.att;
+  let won = 0,
+    lost = 0;
+  for (const b of w.battles || []) {
+    if (b.win === side) won++;
+    else lost++;
+  }
+  return {
+    side,
+    held: S.prov.filter(p => theirs.includes(p.owner) && mine.includes(p.occ)).length,
+    lost: S.prov.filter(p => mine.includes(p.owner) && theirs.includes(p.occ)).length,
+    won,
+    beaten: lost,
+  };
+};
+
+// "You hold 3 of their provinces; they hold 1 of yours · great battles: 2 won, 1 lost" (for a side you are not on, the
+// attackers' view in the third person)
+A.warFactsText = function (w, rid) {
+  const ours = !!A.warSide(w, rid),
+    f = A.warFacts(w, ours ? rid : w.att[0]),
+    prov = n => A.plural(n, "province"),
+    land = ours
+      ? f.held || f.lost
+        ? `You hold ${prov(f.held)} of theirs; they hold ${prov(f.lost)} of yours`
+        : "Neither side holds the other's land"
+      : f.held || f.lost
+        ? `The attackers hold ${prov(f.held)} of the defenders'; the defenders hold ${prov(f.lost)} of theirs`
+        : "Neither side holds the other's land",
+    fights = f.won + f.beaten ? `great battles: ${f.won} won, ${f.beaten} lost${ours ? "" : " by the attackers"}` : "no great battle yet";
+  return `${land} · ${fights}`;
+};
+
 A.enemiesOf = function (rid) {
   const out = new Set();
   for (const w of A.atWar(rid)) {

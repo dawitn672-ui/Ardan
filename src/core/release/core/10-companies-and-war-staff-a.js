@@ -3447,7 +3447,7 @@ A.trainDiv = function (r, tid) {
   if (!s)
     return {
       ok: false,
-      msg: "No such template.",
+      msg: "No such kind of division.",
     };
   if (r.forces.queue.length >= 8)
     return {

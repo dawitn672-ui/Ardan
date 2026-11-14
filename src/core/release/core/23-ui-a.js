@@ -268,7 +268,6 @@ UI.enterSave = function (d) {
   if (UI.wr) {
     UI.wr.sel = null;
     UI.wr.view = null;
-    UI.wr.tplEdit = null;
     UI.wr.help = false;
     UI.wr.msg = "";
   }
@@ -1586,8 +1585,9 @@ UI.worldTabBasic = function (pc) {
     if (!A.S.wars.length) h += '<p class="muted">Ardan is, for once, at peace.</p>';
     // [X1 baked patch war/23-after-action AAR-WAR-VIEWS] The two war views listed recent battles by name and year
     // only. Each now adds what decided it (A.aarWhy), as plain escaped text.
+    // W0 (D-052): no war score bar; the land held and the battles won, as facts (A.warFactsText).
     for (const w of A.S.wars)
-      h += `<div class="card"><b>${UI.esc(w.name)}</b> <span class="small muted">since ${w.start}</span><div class="small">${w.att.map(x => UI.esc(A.realmShort(x))).join(", ")} <i>against</i> ${w.def.map(x => UI.esc(A.realmShort(x))).join(", ")}</div>${UI.barRow("Attacker's score", (w.score + 100) / 2, 100, "", 50, Math.round(w.score))}<div class="tiny muted">${w.battles
+      h += `<div class="card"><b>${UI.esc(w.name)}</b> <span class="small muted">since ${w.start}</span><div class="small">${w.att.map(x => UI.esc(A.realmShort(x))).join(", ")} <i>against</i> ${w.def.map(x => UI.esc(A.realmShort(x))).join(", ")}</div><div class="small">${UI.esc(A.warFactsText(w, UI.wrMyR ? UI.wrMyR() : null))}</div><div class="tiny muted">${w.battles
         .slice(-4)
         .map(b => UI.esc(b.name + " " + b.y + (A.aarWhy ? A.aarWhy(b) : "")))
         .join(" · ")}</div></div>`;

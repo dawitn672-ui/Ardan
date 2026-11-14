@@ -559,7 +559,7 @@ export default {
     await pg.click('#tt-pop-1 [data-tt="skill"]'); out.h2 = await depth();
     await pg.click('#tt-pop-2 [data-tt="profTier"]'); out.h3 = await depth();
     await pg.click('#tabbody .card.purse', { position: { x: 4, y: 4 } }); out.h0 = await depth();
-    await pg.evaluate(() => { TT2.soldier(5966); UI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); });
+    await pg.evaluate(() => { TT2.soldier(5966); TUI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); });
     await pg.click('#modal .wr-div .barrow [data-tt="divOrg"]'); out.w1 = await depth();
     out.wHasGen = !!(await pg.$('#tt-pop-1 [data-tt="genSkills"]'));
     if (out.wHasGen) { await pg.click('#tt-pop-1 [data-tt="genSkills"]'); out.w2 = await depth(); }
@@ -631,7 +631,8 @@ export default {
       for (const t of UI.wrTabs(A.cmdRole(pc))) probe('war room ' + t.k, () => { UI.wr.tab = t.k; UI.wr.sel = null; });
       probe('war room division', () => { UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [pc.mil.div] }; });
       UI.ov = null; T2.ruler(5969); UI.warRoomOpen();
-      for (const t of ['tpl', 'ind', 'mp']) probe('war room ' + t + ' (ruler)', () => { UI.wr.tab = t; UI.wr.sel = null; });
+      // W0 (D-052): no Templates tab
+      for (const t of ['ind', 'mp']) probe('war room ' + t + ' (ruler)', () => { UI.wr.tab = t; UI.wr.sel = null; });
       UI.ov = null; UI.render();
       return res;
     });
@@ -652,7 +653,7 @@ export default {
       found.push(...v.map(x => label + ':' + x)); opened.push(label + ' ' + (await pg.evaluate(() => UI.TT.depth())));
     };
     for (const theme of ['dark', 'light']) {
-      await pg.evaluate(t => { document.documentElement.dataset.theme = t; UI.TT.closeAll(); TT2.soldier(5970); UI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); }, theme);
+      await pg.evaluate(t => { document.documentElement.dataset.theme = t; UI.TT.closeAll(); TT2.soldier(5970); TUI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); }, theme);
       await pg.click('#modal .wr-stats [data-tt="divStat"]'); const g = await pg.$('#tt-pop-1 [data-tt]'); if (g) await g.click();
       await run(theme + ' war room');
       await pg.evaluate(() => { UI.TT.closeAll(); UI.ov = null; TT2.life(5971, { years: 2 }); UI.tab = 'holdings'; UI.render(); });

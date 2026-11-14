@@ -176,15 +176,6 @@ A.wrAdvice = function (pc, R2) {
             v: "mp",
             b: "Train",
           })),
-    R2.templates &&
-      r.forces.xp >= 25 &&
-      out.push({
-        ic: "pencil",
-        t: `You have ${Math.floor(r.forces.xp)} army experience to spend on better division templates.`,
-        a: "wrTab",
-        v: "tpl",
-        b: "Templates",
-      }),
     pc.mil && !pc.ruler)
   ) {
     const b = A.promoBoard(pc);
@@ -249,114 +240,6 @@ UI.wrDivStatusText = function (d) {
           : d.path && d.path.length
             ? `${A.provName(d.loc)} → ${A.provName(d.path[d.path.length - 1])}`
             : `${A.provName(d.loc)}${d.dig >= 1 ? ", dug in" : ""}${d.sr != null && d.sr < 0.7 ? ", hungry" : ""}`;
-};
-
-UI.wrTemplates = function () {
-  const pc = A.pc(),
-    R2 = A.cmdRole(pc),
-    r = A.realm(UI.wrMyR(pc));
-  if (!r) return "";
-  A.F(r);
-  const E = UI.wr.tplEdit;
-  if (E) return UI.wrTplEditor(r, E, R2);
-  let h = `<div class="card small"><div class="row"><b>Division templates</b><span class="right chip gold" title="Earned in battle and drills; spent on new designs">${UI.wrIcon("star")} ${Math.floor(r.forces.xp)} army experience</span></div><div class="tiny muted">A template is the recipe for a division. Battalions fill combat width and bring the punch; support companies are free of width. Redesigning costs army experience; divisions refit to the new design as men and kit arrive.</div>${R2.templates ? `<button class="small primary" style="margin-top:6px" data-a="wrTplNew">${UI.wrIcon("plus")}New template</button>` : '<div class="tiny warn-t">You can study the templates; only the Marshal or the ruler changes them.</div>'}</div>`;
-  h += `<div class="group-h">Army doctrine <span class="tiny muted">— the realm's way of war</span></div><div class="wr-laws">${Object.entries(
-    GD.RDOC,
-  )
-    .map(
-      ([k, Dc]) =>
-        `<button class="small ${r.forces.doc === k ? "on" : ""}" data-a="wrDoc" data-v="${k}" ${R2.templates && r.forces.doc !== k ? "" : "disabled"} aria-pressed="${r.forces.doc === k}"><b>${UI.esc(Dc.name)}</b><small>${UI.esc(Dc.desc)}${r.forces.doc === k ? " · adopted" : ` · ${Dc.cost} exp`}</small></button>`,
-    )
-    .join("")}</div><div class="group-h">Templates</div>`;
-  for (const t of Object.values(r.forces.tpl)) {
-    const s = A.tplS(r.id, t.id),
-      n = r.forces.divs.filter(d => d.tpl === t.id).length;
-    h += `<div class="card wr-tpl"><div class="row">${UI.unitSym(s.main === "missile" ? "missile" : s.main, 1, MAP.realmColor(r), 26)}<b class="grow">${UI.esc(t.name)}</b><span class="tiny muted">${n} division${n === 1 ? "" : "s"}</span></div>
-      <div class="wr-slots">${t.bns.map(b => UI.wrBnChip(b)).join("")}${t.sup.map(sp => `<span class="wr-chip sup" title="${UI.esc(GD.SUP[sp].desc)}">${UI.esc(GD.SUP[sp].name)}</span>`).join("")}</div>
-      ${UI.wrTplSummary(s)}
-      <div class="row wrap">${R2.templates ? `<button class="small" data-a="wrTplEdit" data-v="${t.id}">${UI.wrIcon("pencil")}Edit</button>` : ""}${R2.recruit ? `<button class="small" data-a="wrTrain" data-v="${t.id}">${UI.wrIcon("users")}Train one</button>` : ""}${R2.templates && !n ? `<button class="small ghost" data-a="wrTplDel" data-v="${t.id}">${UI.wrIcon("trash")}Retire</button>` : ""}</div></div>`;
-  }
-  return h;
-};
-
-UI.wrBnChip = function (b, act, idx) {
-  const B = GD.BN[b],
-    T = GD.TROOPS[b],
-    tip = `${T ? T.name : b}: ${B.role} Soft ${B.soft}, hard ${B.hard}, def ${B.def}, brk ${B.brk}, org ${B.org}, hp ${B.hp}, width ${B.w}, ${B.men} men.`;
-  return `<span class="wr-chip ${B.cat}" title="${UI.esc(tip)}"${act ? ` data-a="${act}" data-v="${idx ?? b}" role="button" tabindex="0"` : ""}>${UI.esc(T ? T.name : b)}${act === "wrTplRm" ? " ×" : ""}</span>`;
-};
-
-UI.wrTplSummary = function (s, base) {
-  const f = (k, v, dp = 0, rev) => {
-      const b = base ? base[k] : null,
-        dv = b == null ? 0 : v - b,
-        cls = !b || Math.abs(dv) < 0.05 ? "" : dv > 0 != !!rev ? "good" : "bad";
-      return `<div title="${k}"><span>${
-        {
-          soft: "Soft atk",
-          hard: "Hard atk",
-          def: "Defense",
-          brk: "Breakthr.",
-          org: "Org",
-          hp: "HP",
-          w: "Width",
-          sup: "Supply",
-          spd: "Speed",
-          men: "Men",
-          cost: "Gear cost",
-          arm: "Armor",
-          prc: "Piercing",
-        }[k]
-      }</span><b class="${cls}">${v.toFixed(dp)}${b != null && Math.abs(dv) >= 0.05 ? ` <small>(${dv > 0 ? "+" : ""}${dv.toFixed(dp)})</small>` : ""}</b></div>`;
-    },
-    fits = Math.floor(70 / Math.max(1, s.w));
-  return `<div class="wr-stats">${f("soft", s.soft)}${f("hard", s.hard, 1)}${f("def", s.def)}${f("brk", s.brk)}${f("org", s.org)}${f("hp", s.hp)}${f("w", s.w, 0, true)}${f("sup", s.sup, 2, true)}${f("spd", s.spd * 22, 0)}${f("men", s.men, 0, true)}${f("arm", s.arm, 1)}${f("prc", s.prc, 1)}</div><div class="tiny muted">Equipment: ${Object.entries(
-    s.eq,
-  )
-    .map(([k, v]) => `${v} ${GD.EQ[k].short.toLowerCase()}`)
-    .join(
-      ", ",
-    )}. ${fits} fit a plains front (width 70), ${Math.floor(50 / Math.max(1, s.w))} a forest, ${Math.floor(35 / Math.max(1, s.w))} a mountain pass.</div>`;
-};
-
-UI.wrTplEditor = function (r, E, R2) {
-  const base = E.tid ? A.tplS(r.id, E.tid) : null,
-    s = A.tplStats(
-      {
-        bns: E.bns,
-        sup: E.sup,
-      },
-      r.id,
-    ),
-    old = E.tid ? r.forces.tpl[E.tid] : null,
-    changes = old
-      ? Math.abs(E.bns.length - old.bns.length) +
-        E.bns.filter((c, i) => old.bns[i] !== c).length +
-        E.sup.filter(x => !old.sup.includes(x)).length +
-        old.sup.filter(x => !E.sup.includes(x)).length
-      : 4,
-    cost = Math.max(old ? 2 : 10, Math.round(changes * 2.5)),
-    troops = A.wsTroopsFor(r.id).filter(c => GD.BN[c]);
-  return `<div class="card wr-tpled"><div class="row"><b>${old ? "Redesign" : "New template"}</b><span class="right chip gold">${UI.wrIcon("star")} costs ${cost} of ${Math.floor(r.forces.xp)}</span></div>
-    <label class="small">Name <input type="text" maxlength="28" value="${UI.esc(E.name || "")}" data-c="wrTplName" aria-label="Template name"></label>
-    <div class="group-h">Battalions ${E.bns.length}/${GD.TPL_MAX_BN} <span class="tiny muted">— click one to remove it</span></div>
-    <div class="wr-slots big">${E.bns.map((b, i) => UI.wrBnChip(b, "wrTplRm", i)).join("")}${Array(
-      Math.max(0, GD.TPL_MAX_BN - E.bns.length),
-    )
-      .fill('<span class="wr-chip empty">+</span>')
-      .join("")}</div>
-    <div class="group-h">Add a battalion <span class="tiny muted">(what ${UI.esc(r.short)} can raise)</span></div>
-    <div class="wr-slots">${troops.map(c => `<button class="small wr-add ${GD.BN[c].cat}" data-a="wrTplAdd" data-v="${c}" ${E.bns.length >= GD.TPL_MAX_BN ? "disabled" : ""} title="${UI.esc(GD.BN[c].role)}">${UI.wrIcon("plus")}${UI.esc(GD.TROOPS[c].name)}</button>`).join("")}</div>
-    <div class="group-h">Support companies ${E.sup.length}/${GD.TPL_MAX_SUP}</div>
-    <div class="wr-sup">${Object.entries(GD.SUP)
-      .map(
-        ([k, U]) =>
-          `<button class="small ${E.sup.includes(k) ? "on" : ""}" data-a="wrTplSup" data-v="${k}" aria-pressed="${E.sup.includes(k)}" title="${UI.esc(U.desc)}"><b>${UI.esc(U.name)}</b><small>${UI.esc(U.desc)}</small></button>`,
-      )
-      .join("")}</div>
-    <div class="group-h">Result ${base ? '<span class="tiny muted">(change from the current design)</span>' : ""}</div>${UI.wrTplSummary(s, base)}
-    <div class="row" style="margin-top:8px"><button class="primary" data-a="wrTplSave" ${!E.bns.length || r.forces.xp < cost ? "disabled" : ""}>${UI.wrIcon("check")}Save design</button><button data-a="wrTplCancel">Cancel</button></div>
-    ${r.forces.xp < cost ? '<div class="tiny bad">Not enough army experience. Battles, sieges, war games and time earn more.</div>' : ""}</div>`;
 };
 
 UI.wrIndustry = function () {
@@ -511,15 +394,15 @@ UI.wrWars = function () {
     const side = A.warSide(w, myR),
       sc = side === "att" ? w.score : -w.score,
       mine = side === "att" ? w.att : w.def,
-      theirs = side === "att" ? w.def : w.att,
-      held = S.prov.filter(p => theirs.includes(p.owner) && mine.includes(p.occ)).length,
-      lost = S.prov.filter(p => mine.includes(p.owner) && theirs.includes(p.occ)).length;
+      theirs = side === "att" ? w.def : w.att;
+    // W0 (D-052): no war score bar or number; the facts of the war (A.warFactsText). The score still decides, inside the
+    // engine, whether "Demand what you hold" is offered (sc >= 25), but it is not shown.
     // [X1 baked patch diplomacy/68-reasons-for-war CB-WAR-ROOM] UI.wrWars: each war in the war room shows why it
     // began, the casus belli recorded when it was declared (UI.csWarLine, w.casus). In the source: one line under the
     // sides of each war.
     h += `<div class="card"><div class="row"><b>${UI.esc(w.name)}</b><span class="right tiny muted">since ${w.start}</span></div><div class="tiny muted">${mine.map(A.realmShort).join(", ")} <b>vs</b> ${theirs.map(A.realmShort).join(", ")}</div>${UI.csWarLine ? UI.csWarLine(w) : ""}
-      <div class="wrscore"><i style="left:${50 + sc / 2}%"></i></div><div class="small">War score <b class="${sc > 0 ? "good" : sc < 0 ? "bad" : ""}-t">${sc > 0 ? "+" : ""}${sc}</b> · you hold ${held} of their provinces, they hold ${lost} of yours · ${w.nb || w.battles.length} battles</div>
-      <div class="tiny muted">The score comes from enemy land you occupy (capitals count double) and battles won. At +25 you can demand what you hold.</div>
+      <div class="small">${UI.esc(A.warFactsText(w, myR))}</div>
+      <div class="tiny muted">A foe gives up land when the war has gone against him: the land you hold (his capital most of all) and the battles you win.</div>
       ${
         w.battles.length
           ? `<div class="group-h">Great battles</div>${w.battles
@@ -1514,7 +1397,6 @@ Object.assign(UI.A, {
     UI.wr.tab = v;
     UI.wr.help = false;
     UI.wr.msg = "";
-    if (v !== "tpl") UI.wr.tplEdit = null;
     UI.wrRefresh();
     const sd = UI.$("#wrSide");
     if (sd) sd.scrollTop = 0;
@@ -1654,77 +1536,6 @@ Object.assign(UI.A, {
     if (r.ok && !A.atWar(UI.wrMyR()).length) UI.wrStop();
     UI.renderModal();
   },
-  wrTplNew() {
-    const r = A.realm(UI.wrMyR()),
-      t = Object.values(r.forces.tpl)[0];
-    UI.wr.tplEdit = {
-      tid: null,
-      bns: t ? t.bns.slice() : ["SP"],
-      sup: t ? t.sup.slice() : [],
-      name: "New Division",
-    };
-    UI.wrRedrawSide();
-  },
-  wrTplEdit(v) {
-    const t = A.realm(UI.wrMyR()).forces.tpl[v];
-    if (t)
-      UI.wr.tplEdit = {
-        tid: t.id,
-        bns: t.bns.slice(),
-        sup: t.sup.slice(),
-        name: t.name,
-      };
-    UI.wrRedrawSide();
-  },
-  wrTplAdd(v) {
-    const E = UI.wr.tplEdit;
-    if (E && E.bns.length < GD.TPL_MAX_BN) {
-      E.bns.push(v);
-      E.bns.sort(
-        (a, b) =>
-          ["foot", "missile", "horse", "beast"].indexOf(GD.BN[a].cat) -
-          ["foot", "missile", "horse", "beast"].indexOf(GD.BN[b].cat),
-      );
-    }
-    UI.wrRedrawSide();
-  },
-  wrTplRm(v) {
-    const E = UI.wr.tplEdit;
-    if (E) E.bns.splice(+v, 1);
-    UI.wrRedrawSide();
-  },
-  wrTplSup(v) {
-    const E = UI.wr.tplEdit;
-    if (E) {
-      if (E.sup.includes(v)) E.sup = E.sup.filter(x => x !== v);
-      else {
-        if (E.sup.length < GD.TPL_MAX_SUP) E.sup.push(v);
-      }
-      UI.wrRedrawSide();
-    }
-  },
-  wrTplSave() {
-    const E = UI.wr.tplEdit;
-    if (!E) return;
-    const r = A.fxAct(E.tid ? "tplEdit" : "tplNew", {
-      tid: E.tid,
-      bns: E.bns,
-      sup: E.sup,
-      name: E.name,
-    });
-    UI.wr.msg = r.msg || "";
-    if (r.ok) UI.wr.tplEdit = null;
-    UI.wrRedrawSide();
-  },
-  wrTplCancel() {
-    UI.wr.tplEdit = null;
-    UI.wrRedrawSide();
-  },
-  wrTplDel(v) {
-    const r = A.fxAct("tplDel", v);
-    UI.wr.msg = r.msg || "";
-    UI.wrRedrawSide();
-  },
   wrTrain(v) {
     const r = A.fxAct("train", v);
     UI.wr.msg = r.msg || "";
@@ -1748,11 +1559,6 @@ Object.assign(UI.A, {
       });
     if (r.msg) UI.wr.msg = r.msg;
     else UI.wr.msg = "";
-    UI.wrRedrawSide();
-  },
-  wrDoc(v) {
-    const r = A.fxAct("doc", v);
-    UI.wr.msg = r.msg || "";
     UI.wrRedrawSide();
   },
   wrLaw(v) {
@@ -1785,22 +1591,10 @@ Object.assign(UI.C, {
       : "That army is full (24 divisions).";
     UI.wrRefresh();
   },
-  wrDivTpl(el) {
-    if (!el.value) return;
-    const r = A.fxAct("divTpl", {
-      div: el.dataset.v,
-      tpl: el.value,
-    });
-    UI.wr.msg = r.msg || "";
-    UI.wrRefresh();
-  },
   wrEnemy(el) {
     const r = A.wsSetOrder(el.dataset.v, "enemy", el.value || null);
     UI.wr.msg = r.msg;
     UI.wrRefresh();
-  },
-  wrTplName(el) {
-    if (UI.wr.tplEdit) UI.wr.tplEdit.name = el.value.slice(0, 28);
   },
   wrAuto(el) {
     const r = A.fxAct("auto", el.checked);
@@ -1826,7 +1620,7 @@ UI.forcesSummary = function (r) {
   A.indCount(r);
   const ds = r.forces.divs,
     men = ds.reduce((x, d) => x + d.men, 0);
-  return `<div class="card small wr-sum" style="margin-top:6px"><div class="row">${UI.wrIcon("shield")}<b>The host</b><span class="right muted">${ds.length} divisions · ${A.fmt(men)} men</span></div><div class="tiny muted">Manpower ${A.fmt(r.levy)} · ${r.forces.queue.length} in training · ${r.ind.mil} forges · ${r.ind.civ} workshops · ${GD.ECON[r.ind.law].name}${r.forces.auto ? " · quartermasters in charge" : ""}</div><button class="small primary" style="margin-top:6px" data-a="warRoomView">${UI.wrIcon("target")}Open the War Room — forces, templates, industry</button></div>`;
+  return `<div class="card small wr-sum" style="margin-top:6px"><div class="row">${UI.wrIcon("shield")}<b>The host</b><span class="right muted">${ds.length} divisions · ${A.fmt(men)} men</span></div><div class="tiny muted">Manpower ${A.fmt(r.levy)} · ${r.forces.queue.length} in training · ${r.ind.mil} forges · ${r.ind.civ} workshops · ${GD.ECON[r.ind.law].name}${r.forces.auto ? " · quartermasters in charge" : ""}</div><button class="small primary" style="margin-top:6px" data-a="warRoomView">${UI.wrIcon("target")}Open the War Room — forces, industry</button></div>`;
 };
 
 UI.promoBoardHtml = function (pc) {
@@ -2349,7 +2143,6 @@ UI.warRoomOpen = function () {
     };
     UI.wr.msg = "";
     UI.wr.sel = null;
-    UI.wr.tplEdit = null;
     UI.wr.help = false;
     UI.wr.peace = null;
     UI.renderModal();
@@ -2365,7 +2158,7 @@ UI.warRoomModal = function () {
     wars = A.atWar(myR),
     tabs = UI.wrTabs(R2);
   if (!tabs.some(t => t.k === UI.wr.tab && !t.lock)) UI.wr.tab = "cmd";
-  const wide = ["tpl", "ind", "mp"].includes(UI.wr.tab),
+  const wide = ["ind", "mp"].includes(UI.wr.tab),
     run = UI.clk.run,
     time = `<div class="wr-time" role="group" aria-label="Time"><button class="${run ? "" : "primary"} wr-play" data-a="clkPlay" aria-label="${run ? "Pause" : "Play"}">${UI.wrIcon(run ? "pause" : "play")}<span>${run ? "Pause" : "Play"}</span></button>
       <div class="seg">${[1, 2, 3, 4, 5].map(s => `<button class="small ${UI.clk.speed === s ? "on" : ""}" data-a="wrClkSpeed" data-v="${s}" title="Speed ${s}">${s}</button>`).join("")}</div>

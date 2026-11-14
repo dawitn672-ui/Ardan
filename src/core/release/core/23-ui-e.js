@@ -14,7 +14,6 @@ Object.assign(UI.A, {
   wrLeave() {
     UI.ov = null;
     UI.wr.view = null;
-    UI.wr.tplEdit = null;
     UI.wr.help = false;
     UI.refresh();
   },
@@ -608,7 +607,7 @@ UI.diplCard = function (r, o) {
     w => (w.att.includes(r.id) && w.def.includes(o.id)) || (w.def.includes(r.id) && w.att.includes(o.id)),
   );
   if (war)
-    h += `<div class="dopt"><button class="small" data-a="ov" data-v="peace:${war.id}">Negotiate peace…</button><div class="tiny muted">${UI.esc(war.name)} · war score ${Math.round(A.warSide(war, r.id) === "att" ? war.score : -war.score)}</div></div>`;
+    h += `<div class="dopt"><button class="small" data-a="ov" data-v="peace:${war.id}">Negotiate peace…</button><div class="tiny muted">${UI.esc(war.name)} · ${UI.esc(A.warFactsText(war, r.id))}</div></div>`;
   return h + "</div>";
 };
 
@@ -702,7 +701,7 @@ UI.warTabClock = function (pc) {
   // "shows the host, its templates and forges". Templates and forges are now shown only to the ranks that run them,
   // so the line names them only for those ranks.
   let h = `<div class="card wr-warcard"><div class="row">${UI.icon(wars.length ? "swords" : "shield", "s")}<b class="grow">${wars.length ? UI.esc(wars.map(w => w.name).join(", ")) : `${UI.esc(A.realmShort(myR))} is at peace`}</b><button class="small ${wars.length || cmd ? "primary" : ""}" data-a="warRoomView">${UI.icon("target", "s")}War Room</button></div>
-    <div class="small muted">${wars.length ? `${A.plural(A.armiesOf(myR).length, "army", "armies")} in the field · ${A.plural(Object.values(S.fights || {}).filter(F => A.friendly(F.a, myR) || A.friendly(F.b, myR)).length, "battle")} raging${cmd ? ` · <b>${cmd} under your command</b>` : ""}` : R2.templates || R2.production ? "The War Room shows the host, its templates and forges, even in peace." : "The War Room shows the fronts and the host, even in peace."}</div>`;
+    <div class="small muted">${wars.length ? `${A.plural(A.armiesOf(myR).length, "army", "armies")} in the field · ${A.plural(Object.values(S.fights || {}).filter(F => A.friendly(F.a, myR) || A.friendly(F.b, myR)).length, "battle")} raging${cmd ? ` · <b>${cmd} under your command</b>` : ""}` : R2.production ? "The War Room shows the host and its forges, even in peace." : "The War Room shows the fronts and the host, even in peace."}</div>`;
   if (pc.ruler) {
     const ws = wars.filter(w => w.leadA === pc.ruler || w.leadD === pc.ruler);
     if (ws.length)
@@ -768,10 +767,10 @@ UI.warTabClock = function (pc) {
   h += '<div class="group-h">Wars of your realm</div>';
   if (!mine.length) h += '<p class="small muted">None. For now.</p>';
   for (const w of mine) {
-    const sc = (A.warSide(w, myR) || "att") === "att" ? w.score : -w.score;
+    // W0 (D-052): no war score bar; the land held and the battles won, as facts (A.warFactsText).
     // [X1 baked patch war/23-after-action AAR-WAR-VIEWS] The two war views listed recent battles by name and year
     // only. Each now adds what decided it (A.aarWhy), as plain escaped text.
-    h += `<div class="card"><b>${UI.esc(w.name)}</b> <span class="small muted">since ${w.start} · ${UI.esc(A.CB[w.cbReal || w.cb] || "")}</span><div class="small">${w.att.map(A.realmShort).join(", ")} <i>against</i> ${w.def.map(A.realmShort).join(", ")}</div>${UI.barRow("War score", (sc + 100) / 2, 100, sc < 0 ? "hpbar" : "", 50, Math.round(sc))}<div class="tiny muted">${w.battles
+    h += `<div class="card"><b>${UI.esc(w.name)}</b> <span class="small muted">since ${w.start} · ${UI.esc(A.CB[w.cbReal || w.cb] || "")}</span><div class="small">${w.att.map(A.realmShort).join(", ")} <i>against</i> ${w.def.map(A.realmShort).join(", ")}</div><div class="small">${UI.esc(A.warFactsText(w, myR))}</div><div class="tiny muted">${w.battles
       .slice(-3)
       .map(b => UI.esc(b.name + " (" + b.y + ")" + (A.aarWhy ? A.aarWhy(b) : "")))
       .join(" · ")}</div></div>`;

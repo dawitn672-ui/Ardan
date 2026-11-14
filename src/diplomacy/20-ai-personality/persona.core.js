@@ -373,7 +373,7 @@ A.aiNotePeace = function (w, res) {
   const why = [], sc = w.score || 0;
   if (loser) {
     const P = A.rulerPersona(loser), L = A.realm(loser);
-    why.push([`Losing the war (score ${Math.round(Math.abs(sc))})`, Math.abs(sc) >= 80 ? 2 : Math.abs(sc) / 60]);
+    why.push([Math.abs(sc) >= 80 ? "The war is lost: the land taken, the battles lost" : "Losing the war", Math.abs(sc) >= 80 ? 2 : Math.abs(sc) / 60]);
     if (L && L.exhaustion > 60) why.push([`Exhausted (${Math.round(L.exhaustion)})`, L.exhaustion / 80]);
     const forced = Math.abs(sc) >= 80;
     why.push(...wWhy('trib', P).map(x => forced ? [x[0], x[1]] : x));
@@ -506,10 +506,11 @@ A.diplDo = function (k, tid) {
   }
   return res;
 };
-// the player's peace offer: log the answer with the willingness parts
+// the player's peace offer: log the answer with the willingness parts (W0, D-052: the war score's part is named by what
+// makes it, the land held and the battles won, never as a score)
 A.aiWillParts = function (T) {
   if (!T || !T.e) return [];
-  const P = A.rulerPersona(T.eid), out = [[`War score ${Math.round(T.sc)}`, Math.round(T.sc * 1.3)], ['Base', 18]];
+  const P = A.rulerPersona(T.eid), out = [[T.sc >= 0 ? 'The land you hold and the battles you won' : 'The land they hold and the battles they won', Math.round(T.sc * 1.3)], ['Base', 18]];
   if (T.e.exhaustion) out.push([`Their war-weariness (${Math.round(T.e.exhaustion)})`, Math.round(T.e.exhaustion * .35)]);
   if (T.r && T.r.exhaustion) out.push([`Your war-weariness (${Math.round(T.r.exhaustion)})`, -Math.round(T.r.exhaustion * .15)]);
   if (A.atWar(T.eid).length > 1) out.push(['Fighting on another front', 10]);
@@ -537,7 +538,7 @@ A.aiOfferWhy = function (o, pr) {
   if (o.kind === 'claimdemand') return [['An old claim', 1]].concat(traitWhy(P, 'wrath', .6), traitWhy(P, 'pride', .4));
   if (['sue', 'demand', 'whitepeace'].includes(o.kind)) {
     const w = A.S.wars.find(x => x.id === o.war), why = traitWhy(P, 'caution', .6).concat(traitWhy(P, 'pride', -.7), traitWhy(P, 'wrath', -.4));
-    if (w) why.push([`War score ${Math.round(A.warSide(w, t.id) === 'att' ? w.score : -w.score)}`, .8]);
+    if (w) why.push(['The land each side holds and the battles won', .8]);
     if (t.exhaustion > 30) why.push([`War-weariness ${Math.round(t.exhaustion)}`, t.exhaustion / 80]);
     return why;
   }

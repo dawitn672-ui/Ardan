@@ -1,8 +1,8 @@
 // Nested tooltips: the War tab and the War Room. A division's strength, organisation (and the most it can hold),
-// equipment, experience and each figure of its stat grid (the template's battalions, then each multiplier: kit,
+// equipment, experience and each figure of its stat grid (its battalions, then each multiplier: kit,
 // experience, the realm's army, the general, doctrine, drill, an order's own edge); an army's organisation, planning
-// and supply, and its general's temper (38-orders); a template's figures, battalion by battalion; the host, the pool
-// and the drill yards; the forges; a province; a fight on the map; the war score; the order of battle; the elite
+// and supply, and its general's temper (38-orders); a kind of division's figures, battalion by battalion; the host, the pool
+// and the drill yards; the forges; a province; a fight on the map; how a war stands; the order of battle; the elite
 // orders and what it takes to join one; the drill yard (60-unit-drill). All of it only reads.
 (function () {
   const G = UI.TIPS = UI.TIPS || {}, TT = UI.TT, K = TT.K;
@@ -20,8 +20,8 @@
     return H(esc(d.name), pct(Math.min(1, A.divStr(d))), 'strength') +
       R(L('divMen', id, 'Men'), `${fmt(d.men)} of ${fmt(s.men)}`) + R(L('divOrg', id, 'Organization'), `${r0(d.org)} of ${r0(mo)}`) +
       R(L('divEq', id, 'Equipment'), pct(A.divEqf(d))) + R(L('divExp', id, 'Experience'), `${r0(d.exp)} · ${esc(lv[1])}`) +
-      (d.sr != null ? R(L('divSup', id, 'Supply'), pct(d.sr)) : '') + (t ? F(`Built to ${L('tplStat', d.r + '|' + t.id + '|soft', esc(t.name))}.`) : '') +
-      D('Strength is the men in the ranks against the men the template wants. Organization is how long it keeps fighting before it breaks off.');
+      (d.sr != null ? R(L('divSup', id, 'Supply'), pct(d.sr)) : '') + (t ? F(`Raised as a ${L('tplStat', d.r + '|' + t.id + '|soft', esc(t.name))}.`) : '') +
+      D('Strength is the men in the ranks against the men it has at full strength. Organization is how long it keeps fighting before it breaks off.');
   };
   G.divMen = function (id) {
     const d = div(id); if (!d) return '';
@@ -29,7 +29,7 @@
     for (const c of (t && t.bns) || []) if (GD.BN[c]) by[c] = (by[c] || 0) + 1;
     const parts = Object.entries(by).map(([c, n]) => [`${n} × ${bnName(c)} (${GD.BN[c].men})`, n * GD.BN[c].men]);
     for (const sp of (t && t.sup) || []) if (GD.SUP[sp] && GD.SUP[sp].men) parts.push([esc(GD.SUP[sp].name), GD.SUP[sp].men]);
-    return H('Men', `${fmt(d.men)} of ${fmt(s.men)}`, esc(d.name)) + `<div class="tip-row tt-sum"><span>The template wants</span><b></b></div>` + TT.sumRows(parts, s.men, 'Full strength', v => esc(A.fmt(v))) +
+    return H('Men', `${fmt(d.men)} of ${fmt(s.men)}`, esc(d.name)) + `<div class="tip-row tt-sum"><span>At full strength</span><b></b></div>` + TT.sumRows(parts, s.men, 'Full strength', v => esc(A.fmt(v))) +
       F('The dead and the sick are replaced from the realm\'s manpower pool as fast as it allows.');
   };
   TT.maxOrgParts = function (d) {
@@ -46,14 +46,14 @@
     return H('Organization', `${r0(d.org)} of ${r0(S.total)}`, esc(d.name)) +
       D('How long it keeps fighting. Each day of battle wears it down; rest in supply builds it back. At none, it breaks off.') +
       `<div class="tip-row tt-sum"><span>The most it can hold</span><b></b></div>` +
-      K.mul(['The template\'s battalions, on average', S.start, 'From its men'], S.f, S.base, r1, r1) +
+      K.mul(['Its battalions, on average', S.start, 'From its men'], S.f, S.base, r1, r1) +
       (S.cmd ? R(`${L('genSkills', S.g.id, 'Its general')}'s command ${A.skill(S.g, 'command')} ÷ 12`, '+' + r1(S.cmd), 'tt-sub') : '') +
       (S.ord !== 1 ? R('An elite order', '×' + r2(S.ord), 'tt-sub') : '') + R('Most', r0(S.total), 'tt-sum');
   };
   G.divEq = function (id) {
     const d = div(id); if (!d) return '';
     const s = A.divS(d), rows = Object.entries(s.eq).map(([k, v]) => R(esc(GD.EQ[k].name), `${fmt(Math.min(v, (d.eq || {})[k] || 0))} of ${fmt(v)}`, 'tt-sub'));
-    return H('Equipment', pct(A.divEqf(d)), esc(d.name)) + D('What it has of the kit its template wants, weighed by what each costs. Attack and defense fall with it: 30% of either needs no kit at all.') + rows.join('') +
+    return H('Equipment', pct(A.divEqf(d)), esc(d.name)) + D('What it has of the kit it should carry, weighed by what each costs. Attack and defense fall with it: 30% of either needs no kit at all.') + rows.join('') +
       F('The forges fill the depots; a division refits from them.');
   };
   G.divExp = function (id) {
@@ -102,7 +102,7 @@
   };
   const STAT = { soft: ['Soft attack', 'Attacks a day against men.'], hard: ['Hard attack', 'Attacks a day against armor and beasts.'], def: ['Defense', 'Attacks it can turn aside when it is attacked.'], brk: ['Breakthrough', 'Attacks it can turn aside when it attacks.'],
     org: ['Organization', ''], hp: ['Hit points', 'How much damage it can take: the men, at their strength.'], w: ['Width', 'How much of a front it fills. Each ground has its width: plains 70, forest 50, a mountain pass 35.'],
-    sup: ['Supply', 'What it eats a day: the template\'s, at 40% plus 60% of its strength.'], spd: ['Speed', 'Kilometres a day on open ground.'], arm: ['Armor', 'An enemy with less piercing does half its attacks.'],
+    sup: ['Supply', 'What it eats a day: its full ranks\' share, at 40% plus 60% of its strength.'], spd: ['Speed', 'Kilometres a day on open ground.'], arm: ['Armor', 'An enemy with less piercing does half its attacks.'],
     prc: ['Piercing', 'Beat the enemy\'s armor or lose half your attacks.'], exp: ['Experience', ''], men: ['Men', ''], cost: ['Gear cost', 'What its kit costs the forges.'] };
   G.divStat = function (arg) {
     const [id, k] = String(arg).split('|'), d = div(id); if (!d || !STAT[k]) return '';
@@ -111,14 +111,14 @@
     const c = A.divCombat(d), P = TT.divStatParts(d, k), s = A.divS(d), t = A.tplOf(d);
     const shown = k === 'sup' ? A.divSupUse(d) : k === 'spd' ? A.divSpeed(d) : k === 'w' ? s.w : k === 'arm' ? s.arm : k === 'prc' ? s.prc : c[k];
     let body = '';
-    if (P) body = K.mul([`${L('tplStat', d.r + '|' + (t ? t.id : '') + '|' + k, 'The template\'s battalions')}`, P.start, STAT[k][0]], P.f, shown, v => r1(v), r2);
-    else if (k === 'sup') body = R(L('tplStat', d.r + '|' + (t ? t.id : '') + '|sup', 'The template'), r2(s.sup)) + R(`× (0.4 + 0.6 × strength ${pct(Math.min(1, A.divStr(d)))})`, r2(0.4 + 0.6 * Math.min(1, A.divStr(d))), 'tt-sub') + R('A day', r2(shown), 'tt-sum');
+    if (P) body = K.mul([`${L('tplStat', d.r + '|' + (t ? t.id : '') + '|' + k, 'Its battalions')}`, P.start, STAT[k][0]], P.f, shown, v => r1(v), r2);
+    else if (k === 'sup') body = R(L('tplStat', d.r + '|' + (t ? t.id : '') + '|sup', 'At full strength'), r2(s.sup)) + R(`× (0.4 + 0.6 × strength ${pct(Math.min(1, A.divStr(d)))})`, r2(0.4 + 0.6 * Math.min(1, A.divStr(d))), 'tt-sub') + R('A day', r2(shown), 'tt-sum');
     else if (k === 'spd') { const g = A.divGen(d); body = R(`22 km × the slowest battalion (${r2(s.spd)})`, r1(22 * s.spd)) + (g ? R(`${L('genSkills', g.id, 'The general')}'s logistics`, '×' + r2(1 + A.perkOf(g, 'logistics', 'supply') * 0.3 + A.skill(g, 'logistics') / 600), 'tt-sub') : '') + ((d.dr || {}).march ? R(L('drill', 'march|' + d.dr.march, 'March drill'), '×' + r2(1 + d.dr.march * 0.16), 'tt-sub') : '') + R('A day', r0(shown) + ' km', 'tt-sum'); }
     else if (k === 'arm' || k === 'prc') body = R('The best battalion, 30%', '', 'tt-sub') + R('The average of all, 70%', '', 'tt-sub') + R(STAT[k][0], r1(shown), 'tt-sum');
     else body = R(STAT[k][0], r1(shown), 'tt-sum');
     return H(STAT[k][0], r1(shown), esc(d.name)) + D(STAT[k][1]) + body;
   };
-  // a template's figure, battalion by battalion
+  // a kind of division's figure, battalion by battalion (read only: W0, D-052, took away the designing of them)
   G.tplStat = function (arg) {
     const [rid, tid, k] = String(arg).split('|'), r = A.realm(rid), t = r && r.forces && r.forces.tpl[tid]; if (!t || !STAT[k]) return '';
     const s = A.tplS(rid, tid), by = {};
@@ -137,7 +137,7 @@
         R(k === 'sup' ? 'All of them' + ((s.fx || {}).supMul ? ', less the quartermasters\' share' : '') : k === 'spd' ? 'The slowest, × 22 km' : k === 'cost' ? 'Kit, at the forges\' prices' : '30% the best, 70% the average', k === 'spd' ? r0(s.spd * 22) : r2(s[k] != null ? s[k] : 0), 'tt-sum');
     }
     return H(STAT[k][0], k === 'spd' ? r0(s.spd * 22) : r1(s[k] || 0), esc(t.name)) + (STAT[k][1] ? D(STAT[k][1]) : '') + body +
-      F('A division of this template multiplies the battalions\' attack and defense by its kit, experience, general and drill.');
+      F('A division of this kind multiplies the battalions\' attack and defense by its kit, experience, general and drill.');
   };
 
   // ---- an army ---------------------------------------------------------------------------------------------------------
@@ -193,7 +193,7 @@
     const all = r.forces.divs, men = all.reduce((x, d) => x + d.men, 0), full = all.reduce((x, d) => x + A.divS(d).men, 0);
     return H('The host of ' + esc(r.short), `${fmt(men)} of ${fmt(full)}`) + R('Divisions', all.length) + R(L('manpower', r.id, 'Manpower pool'), fmt(r.levy)) +
       R('In training', r.forces.queue.length) + R('Army experience', Math.floor(r.forces.xp), 'tt-sub') +
-      D('Army experience is earned in battle and drill, and spent on new templates and doctrines.');
+      D('Army experience is earned in battle and drill.');
   };
   G.manpower = function (rid) {
     const r = A.realm(rid || myR()); if (!r) return '';
@@ -248,13 +248,6 @@
     const B = GD.BUILD[k]; if (!B) return '';
     return H(esc(B.name), null, 'to build') + D(esc(B.desc || '')) + R('Work', `${B.cost} workshop-days`) + F('At most 15 workshops on one project; stability speeds the work.');
   };
-  G.doctrine = function (k) {
-    const Dc = GD.RDOC[k], r = A.realm(myR()); if (!Dc) return '';
-    const W = { planMax: 'most planning', dig: 'digging in', horseAtk: 'horse attack', brk: 'breakthrough', bowSoft: 'archers\' killing power', soft: 'killing power', mp: 'manpower pool', levyOrg: 'levies\' organization', org: 'organization', orgReg: 'rallying', def: 'defense' };
-    return H(esc(Dc.name), null, r && r.forces && r.forces.doc === k ? 'adopted' : `${Dc.cost} army experience`) + D(esc(Dc.desc || '')) +
-      Object.entries(Dc.fx || {}).map(([x, v]) => R(esc(W[x] || x), x === 'dig' ? '+' + v : '+' + pct(v), 'tt-sub')).join('') + F('One doctrine at a time; changing it costs army experience.');
-  };
-
   // ---- a province, a fight, a war ---------------------------------------------------------------------------------------------
   G.prov = function (pid) {
     const P = A.S.prov[+pid]; if (!P) return '';
@@ -274,15 +267,16 @@
       R('Organization left: the attackers\' share', pct(st.share), 'tt-sum') + R('Dead so far', `${fmt(F0.deadA || 0)} and ${fmt(F0.deadD || 0)}`, 'tt-sub') +
       F('A fight ends when one side\'s organization is gone.');
   };
-  G.warScore = function (wid) {
+  // how a war stands (W0, D-052: no war score; the facts it was made of, with no number standing for them)
+  G.warFacts = function (wid) {
     const w = A.S.wars.find(x => String(x.id) === String(wid)); if (!w) return '';
-    const me = myR(), side = A.warSide(w, me) || 'att', sc = side === 'att' ? w.score : -w.score, mine = side === 'att' ? w.att : w.def, theirs = side === 'att' ? w.def : w.att;
+    const me = myR(), side = A.warSide(w, me) || 'att', mine = side === 'att' ? w.att : w.def, theirs = side === 'att' ? w.def : w.att;
     const held = A.S.prov.filter(p => theirs.includes(p.owner) && mine.includes(p.occ)), lost = A.S.prov.filter(p => mine.includes(p.owner) && theirs.includes(p.occ));
     const cap = ps => ps.filter(p => (A.realm(p.owner) || {}).capitalProv === p.id).length;
     const won = w.battles.filter(b => b.win === side).length, lostB = w.battles.length - won;
-    return H('War score', sg(sc), esc(w.name)) + D('It moves each month with the land each side holds of the other (a capital counts double), and with each battle won or lost: 6 to 13 points a battle.') +
+    return H('How the war stands', null, esc(w.name)) + D('A foe makes peace when the war has gone against him: the land each side holds of the other (a capital most of all), and the great battles won and lost.') +
       R('Their provinces you hold', `${held.length}${cap(held) ? ` (${cap(held)} a capital)` : ''}`) + R('Yours they hold', `${lost.length}${cap(lost) ? ` (${cap(lost)} a capital)` : ''}`) +
-      R('Great battles won', won, 'tt-sub') + R('Lost', lostB, 'tt-sub') + R('At +25', 'you can demand what you hold', 'tt-sum') + F('From −100 to +100.');
+      R('Great battles won', won, 'tt-sub') + R('Lost', lostB, 'tt-sub');
   };
   G.warFront = function (rid) {
     const r = rid || myR(), as = A.armiesOf(r), fights = Object.values(A.S.fights || {}).filter(F0 => A.friendly(F0.a, r) || A.friendly(F0.b, r));

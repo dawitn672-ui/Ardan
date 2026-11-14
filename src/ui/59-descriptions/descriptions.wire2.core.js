@@ -182,11 +182,12 @@
     const myR = UI.wrMyR(A.pc());
     for (const w of A.atWar(myR)) {
       const at = h.indexOf(`<b>${UI.esc(w.name)}</b>`); if (at < 0) continue;
-      h = h.slice(0, at) + h.slice(at).replace(/War score <b class="([^"]*)">([^<]*)<\/b> · ([^<]*)<\/div>/, (m, c, sc, rest) => `${UI.tt('warScore', w.id, 'War score')} <b class="${c}"${A_('warScore', w.id)}>${sc}</b> · <span${A_('warScore', w.id)}>${rest}</span></div>`)
-        .replace(/(<div class="tiny">)(<span class="(?:good|bad)-t">(?:Won|Lost)<\/span> · [^<]*)(<\/div>)/g, (m, x, t, y) => `<div class="tiny"${A_('warScore', w.id)}>${t}${y}`);
+      const t = UI.esc(A.warFactsText(w, myR));
+      h = h.slice(0, at) + h.slice(at).replace(`<div class="small">${t}</div>`, `<div class="small"${A_('warFacts', w.id)}>${t}</div>`)
+        .replace(/(<div class="tiny">)(<span class="(?:good|bad)-t">(?:Won|Lost)<\/span> · [^<]*)(<\/div>)/g, (m, x, t, y) => `<div class="tiny"${A_('warFacts', w.id)}>${t}${y}`);
     }
     const w0 = A.atWar(myR)[0];
-    if (w0) h = TT.within(h, '<div class="group-h">Dispatches</div>', null, seg => seg.replace(/<div class="tiny">/g, `<div class="tiny"${A_('warScore', w0.id)}>`));
+    if (w0) h = TT.within(h, '<div class="group-h">Dispatches</div>', null, seg => seg.replace(/<div class="tiny">/g, `<div class="tiny"${A_('warFacts', w0.id)}>`));
     return h;
   };
   W.wrFightRow = function (h, F0) {
@@ -216,19 +217,7 @@
     const r = UI.wrMyR(A.pc());
     return h.replace(/<span class="muted small">(of [^<]*· [^<]*)<\/span>/, (m, t) => `<span class="muted small">${N('warFront', r, t)}</span>`);
   };
-  W.wrTemplates = function (h) {
-    const r = A.realm(UI.wrMyR(A.pc())); if (!r || !r.forces) return h;
-    h = h.replace(/<span class="right chip gold" title="([^"]*)">/, (m, t) => `<span class="right chip gold" title="${t}"${UI.ttAttrs('host', r.id)}>`)
-      .replace(/<button class="small ?(?:on)?" data-a="wrDoc" data-v="(\w+)"/g, (m, k) => m + A_('doctrine', k));
-    const tpls = Object.values(r.forces.tpl), parts = h.split('<div class="card wr-tpl">');
-    for (let i = 1; i < parts.length && i - 1 < tpls.length; i++) {
-      const t = tpls[i - 1], arg = k => r.id + '|' + t.id + '|' + k;
-      parts[i] = parts[i].replace(/<span class="tiny muted">(\d+ divisions?)<\/span>/, (m, x) => `<span class="tiny muted"${A_('host', r.id)}>${x}</span>`)
-        .replace(/<div title="(\w+)"><span>/g, (m, k) => `<div title="${k}"${UI.ttAttrs('tplStat', arg(k))}><span>`)
-        .replace(/<div class="tiny muted">(Equipment: [^<]*)<\/div>/, (m, x) => `<div class="tiny muted"${A_('tplStat', arg('w'))}>${x}</div>`);
-    }
-    return parts.join('<div class="card wr-tpl">');
-  };
+
   W.wrIndustry = function (h) {
     const r = A.realm(UI.wrMyR(A.pc())); if (!r || !r.ind) return h;
     let i = 0;
@@ -275,10 +264,12 @@
     if (pc.mil && !pc.mil.merc) h = h.replace(/(<div class="tiny muted" style="margin-top:4px">)([^<]*· merit )(\d+)/, (m, a, t, n) => `${a}${t}${N('merit', '', n, { focus: true })}`);
     // the squad: each one's age
     h = h.replace(/<div class="card person click" data-a="ov" data-v="person:([^"]+)">([\s\S]*?)<div class="sub">(\d+),/g, (m, id, mid, age) => `<div class="card person click" data-a="ov" data-v="person:${id}">${mid}<div class="sub"><span${A_('age', id)}>${age}</span>,`);
-    // the wars of your realm: each war score bar, in the order they are drawn
+    // the wars of your realm: each war's facts line (W0: in place of the war score bar)
     const mine = A.S.wars.filter(w => w.att.includes(myR) || w.def.includes(myR));
-    let k = 0;
-    h = TT.within(h, '<div class="group-h">Wars of your realm</div>', null, seg => TT.wireBars(seg, lbl => lbl === 'War score' ? (mine[k] ? ['warScore', mine[k++].id] : null) : null));
+    h = TT.within(h, '<div class="group-h">Wars of your realm</div>', null, seg => {
+      for (const w of mine) { const t = UI.esc(A.warFactsText(w, myR)); seg = seg.replace(`<div class="small">${t}</div>`, `<div class="small"${A_('warFacts', w.id)}>${t}</div>`); }
+      return seg;
+    });
     return TT.wireCosts(h);
   };
   W.oobBreadcrumb = function (h) {
@@ -335,7 +326,7 @@
       return `<div class="st-slot"><div class="st-head"><b>${lab}</b>${mid}fit for the post: <b${UI.ttAttrs('staffFit', s.key + '|' + cur.id)}>${n}</b>`;
     });
   };
-  for (const k of ['wrBars', 'wrDivStatus', 'wrStatGrid', 'wrArmyRow', 'wrArmyPanel', 'wrDivPanel', 'wrCommandBasic', 'wrForces', 'wrWars', 'wrFightRow', 'wrFightPanelBasic', 'wrFightPanel', 'wrProvPanel', 'wrRoleCard', 'wrTemplates', 'wrIndustry', 'wrManpower', 'wrHint', 'warRoomModal', 'warTabClock', 'oobBreadcrumb', 'chainOfCommand', 'ordersCard', 'drillCard', 'staffCard']) TT.wireLater(() => UI, k, k);
+  for (const k of ['wrBars', 'wrDivStatus', 'wrStatGrid', 'wrArmyRow', 'wrArmyPanel', 'wrDivPanel', 'wrCommandBasic', 'wrForces', 'wrWars', 'wrFightRow', 'wrFightPanelBasic', 'wrFightPanel', 'wrProvPanel', 'wrRoleCard', 'wrIndustry', 'wrManpower', 'wrHint', 'warRoomModal', 'warTabClock', 'oobBreadcrumb', 'chainOfCommand', 'ordersCard', 'drillCard', 'staffCard']) TT.wireLater(() => UI, k, k);
 
   // ---- the Realm tab, as one who does not rule -----------------------------------------------------------------------
   W.factionCard = function (h, f) {

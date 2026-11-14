@@ -1,0 +1,2 @@
+/* From src/core/release/page.html (the War Room's war score bar), retired by W0 (D-052). */
+.wrscore{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,#8a2a2a,#555 50%,#2a6a3a);margin:4px 0}.wrscore i{position:absolute;top:-3px;width:4px;height:14px;background:#fff;border-radius:2px;transform:translate(-2px)}
