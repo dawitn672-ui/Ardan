@@ -672,6 +672,6 @@ All of growth.md §6.5's decisions are now settled (stats here; the rest by orde
 The seat never has to be filled, and nothing forces it empty: a ruler may name a Marshal at any time, in war or peace
 (peacetime Marshals are rare and a ruler's own choice), and may leave it empty for life. The crown's own pick in a war
 that needs one (A2) stays. Aldmark's sitting Marshal in the lore (Leofric Stane) is valid, and Winter Wheat is borne by
-him. **To change (A2 stage 2, after the pause):** \`A.POSTS.can\` refuses the Marshal's seat in peace today; it should allow
+him. **To change (A2 stage 2, after the pause):** `A.POSTS.can` refuses the Marshal's seat in peace today; it should allow
 a ruler's appointment then (still only to a General or a proven better commander, D-017), and the world should seed
 Marshals where the lore names them.
