@@ -3,7 +3,7 @@
 // for the player: reading one reads the family's number, training one trains it, the sheet shows one row, and an old
 // save's points are folded in (the higher of the two). NPCs keep their separate numbers, so the war layer and the
 // duels of other people are as they were.
-//   dagger, dual wield -> Blades (sword)            crossbow, throwing -> Bows and throwing (bow)
+//   dagger, dual wield -> Swordsmanship (sword)          crossbow, throwing -> Bows and throwing (bow)
 //   lance, mounted combat -> Riding and the lance  siegecraft -> Tactics and siegecraft
 //   logistics -> Stewardship and supply            deception -> Intrigue and deceit
 // See README for the table before and after, and for the numbers still under the line.
@@ -11,7 +11,7 @@
   const BM = A.BM = A.BM || {};
   const isPC = p => p && A.S && p.id === A.S.pc;
   BM.MERGE = { dagger: 'sword', dualwield: 'sword', xbow: 'bow', throwing: 'bow', lance: 'riding', mounted: 'riding', siegecraft: 'tactics', logistics: 'stewardship', deception: 'intrigue' };
-  BM.MERGED_NAME = { sword: 'Blades', bow: 'Bows & throwing', riding: 'Riding & the lance', tactics: 'Tactics & siegecraft', stewardship: 'Stewardship & supply', intrigue: 'Intrigue & deceit' };
+  BM.MERGED_NAME = { sword: 'Swordsmanship', bow: 'Bows & throwing', riding: 'Riding & the lance', tactics: 'Tactics & siegecraft', stewardship: 'Stewardship & supply', intrigue: 'Intrigue & deceit' };
   BM.MERGED_DESC = {
     sword: 'Swords, knives, a blade in each hand. Cuts, thrusts, binds.',
     bow: 'Bow, crossbow, javelin and sling: anything you loose at a distance.',

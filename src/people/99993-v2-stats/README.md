@@ -4,6 +4,10 @@
 
 The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md`, "Stats"). The events and the systems that read `p.st`, `C.stat`, `A.stat` and `fx: { str: 1 }` keep working; the v2 engine (`A.V2`, `src/people/engine/body.js`, `races.js`, `odds.js`) sits under them.
 
+**C9 (D-040, `src/people/999997-bodies`) replaces this feature's body words:** the sheet's real units (height and weight,
+lift in kg, sprint in m/s, march in km a day, reaction in ms) are gone, and `VS.statWord` and the sheet read a stat's
+measured place among one's whole grown people. The units below are kept in the engine and the tests, never on the page.
+
 ## What it does
 
 **The body** (`a-body.core.js`)
@@ -28,6 +32,12 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
   - The view is cached by everything it reads (the six `A.stat` values, the potentials, age, race, sex, looks, height, `p.v2`), so a cached view is never stale and drawing a page can't change what the engine reads.
 
 **Every check through `attempt()`** (`b-odds.core.js`, patch `V2S-ROLL`)
+
+- **C9 (D-040): the chance shown is the chance that happens.** `A.checkOdds` now returns `VS.trueChance`: attempt()'s
+  own chance of success for this person and these stakes, blunders and surges counted, worked out exactly (no draw).
+  `VS.roll` draws `A.chance` of that number first, then plays attempt() from the old chain's chance that gives it
+  (`VS.baseFor`) until it agrees with the draw, to tell why. The popover names the share ("Blunders and surges"). What
+  follows describes the old chain beneath it.
 
 - The old chain still works out the honest chance. That is `A.checkOdds` with 75-fair-checks, 48-event-fight-rules's fighting worth, 30, 67 and 81.
 - `A.eventChoose` then rolls it with `A.V2.odds.attempt()`.
@@ -101,7 +111,7 @@ The owner chose an adapter, not a rewrite of the 5,487 events (`docs/v2/LANES.md
 | `v2sOddsShape` | `attempt()` keeps the chance (50, 80, 20); a tired fool loses more at 85, an iron will wins more at 10 |
 | `v2sMigrate` | An old save (no body) migrates once through a save round trip, and the stats checks read don't move |
 | `v2sFaith` | Faithless by default, piety pinned and the pull kept, no piety on the sheet; taking up the faith brings it |
-| `v2sSheet` | The profile shows kg, m/s, km a day, ms, minds and tiers with hours, and no "Strength 35" |
+| `v2sSheet` | The profile shows the body as words on the measured scale (C9, D-040: no kg, m/s, km a day or ms), minds and tiers with hours, and no "Strength 35" |
 | `v2sNoPct` | No percentage on screen across 12 played years (scenes, results, every tab, the profile and skills) |
 | `v2sBadge` | A check choice's badge is odds words with the balance icon, no digits |
 | `v2sWorthFit` | v2's levies agree with the release's worth for humans, a human's worth is unchanged, and other races carry their shift (giant over +25, orc over +4, dwarf over 0, elf at most +1) |

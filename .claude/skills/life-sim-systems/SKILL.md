@@ -7,9 +7,12 @@ description: "Design or fix systems for a deep life-sim or medieval/fantasy RPG:
 
 Use this when building or reviewing character, family, politics or war systems for a life simulation (BitLife × Crusader Kings × Mount & Blade style). Every rule below came from real player complaints and was proven with tests in the Ardan v2 modules (`src/body.js, odds.js, kin.js, succession.js, nobility.js, renown.js, diplomacy.js, war.js`).
 
-## 1. Stats: real units, not "22/100"
-- Measure the body in units people already understand: **height cm, weight kg, lift kg (heaviest dead weight raised once), sprint m/s, march km/day, reaction ms, toughness as "blows that would fell an ordinary man"**.
-- Always pair the number with a comparison: "Lifts 180 kg: about a big hog. Better than most soldiers." Keep the comparison and the rank phrase from separate scales so they can't contradict each other. For speed and reflexes show only the comparison, because people vary less there.
+## 1. Stats: words measured against the people, not "22/100" and not kilograms
+- Players hated both bare numbers and real-unit readouts ("66 kg, lifts 120 kg", "reactions 170 ms"). Show each stat as a word for its **measured centile among the whole grown population of the person's own people** (Ardan, D-040: under 2, 2-10, 10-30, 30-70 average, 70-90, 90-98, 98-99.9, beyond: off the chart). Measure the table from generated worlds, not from fixed thresholds, and say on click what it is read against.
+- A child is held to bodies of its own age and says so ("strong for a child of nine"). Another people is also read against the yardstick people (a giant's strength off the chart against men, its speed off the other end).
+- Keep real units inside the engine and tests only; the page and every person's description use words.
+- **Skill baselines, not matching stats:** each skill word from Journeyman asks a modest baseline of its two governing stats (a Master about an average body or mind for that skill). Below it the skill stalls and works as the lower word ("for show"); past it, any build is fair. Generate NPC masters to clear their baselines; never force the player's stats up.
+- **Lifespans:** a healthy, fed, peaceful adult should die of age mostly between 50 and 75; let estate tilt it a little and let violence, plague and war still kill. Test it on the death-odds function alone.
 - Minds: score like IQ (mean 100, sd 15), shown as words plus rarity: "sharp: better than all but 1 in 40". Cap the rarity text at "ten thousand". Show "too young to tell" under age 6.
 - Current value = race base × sex factor × genes × **maturity(age)** × conditioning × wounds.
   - Height follows WHO/CDC growth curves as a fraction of adult height. A newborn is about 29% of adult height and a 1-year-old about 43%.

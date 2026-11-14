@@ -1367,7 +1367,7 @@
    "comp": {"standing":50000,"heavyHorse":9600,"lightHorse":0,"elephants":0,"heavyFoot":11067,"spear":9800,"missile":9533,"other":10000},
    "fleet": {"ships":"38 galleys","field":"About 20,000 for one summer"},
    "coin": {"coin":"crown-penny","worth":0.71},
-   "primer": {"intro":"The feudal kingdom of the Eastland, seat of the Patriarch of Dawn: sable furs, Redcrown sulfur, Sevany galleys, half the Grey Channel tolls, and a war fought by proxy in the Neck.","ruler":"King Stanislav Sevrin, crowned by the Patriarch on 2 July 1098 as his father's son, 210 cm tall; no king of Velgrad has ever ruled uncrowned. Capital Velgrad.","people and land":"4,500,000 people on 730,050 km², nearly all human, with 27,000 half-orcs and 18,000 dwarves. State faith: the Dawn Church, whose Patriarch sits at Velgrad.","strength":"50,000 standing, 220,000 at full levy; built around passes, galleys and proxies, with 4,400 men already in Prince Andros's camp. Fleet: 38 galleys and 22 armed cogs at Sevany.","three people to know":"Stanislav Sevrin, the tall king who plans a dragon. Radek Volan, the Channel-Master buying pitch and old hulls. Kirill the Lamp-Bearer, the Patriarch who could unlight Andros.","ties":"Backs Prince Andros, who married Vesna Sevrin in 1075; rivalry with Greyhaven since 1010, Drevna since the Lakeland War, Ostra and Solenne; buys Hrimfell pelts at Ostmir; pays the Tusk Clans' silk toll at Kraoth."}
+   "primer": {"intro":"The feudal kingdom of the Eastland, seat of the Patriarch of Dawn: sable furs, Redcrown sulfur, Sevany galleys, half the Grey Channel tolls, and a war fought by proxy in the Neck.","ruler":"King Stanislav Sevrin, crowned by the Patriarch on 2 July 1098 as his father's son, a head taller than other men; no king of Velgrad has ever ruled uncrowned. Capital Velgrad.","people and land":"4,500,000 people on 730,050 km², nearly all human, with 27,000 half-orcs and 18,000 dwarves. State faith: the Dawn Church, whose Patriarch sits at Velgrad.","strength":"50,000 standing, 220,000 at full levy; built around passes, galleys and proxies, with 4,400 men already in Prince Andros's camp. Fleet: 38 galleys and 22 armed cogs at Sevany.","three people to know":"Stanislav Sevrin, the tall king who plans a dragon. Radek Volan, the Channel-Master buying pitch and old hulls. Kirill the Lamp-Bearer, the Patriarch who could unlight Andros.","ties":"Backs Prince Andros, who married Vesna Sevrin in 1075; rivalry with Greyhaven since 1010, Drevna since the Lakeland War, Ostra and Solenne; buys Hrimfell pelts at Ostmir; pays the Tusk Clans' silk toll at Kraoth."}
   },
   "POL-26": {
    "id": "POL-26",
@@ -5579,7 +5579,7 @@
    "fam": "FAM-110",
    "race": "human",
    "realm": "POL-03",
-   "trait": "Lionblood: very tall with long arms and fingers; reach 10-15 cm beyond other men of the same height",
+   "trait": "Lionblood: very tall with long arms and fingers; reach a hand beyond other men of the same height",
    "how": "A change in the gene for a connective-tissue protein (fibrillin, as in Earth's Marfan syndrome) lets the long bones grow longer and makes the tissue that holds the joints, the lenses of the eyes, the heart valves and the wall of the main artery looser and weaker.",
    "inherit": "Dominant: one copy is enough, and each child of a carrier has an even chance of getting it. It shows in about half of each carrier's children.",
    "cost": "Weak heart valves and a weak main artery: many carriers die suddenly in their 40s, and hard riding or war can burst the artery. The lenses of the eyes slip, so most carriers are short-sighted young and half-blind in later life. Loose joints dislocate.",
@@ -5906,7 +5906,7 @@
    "exclusive": "Only Sevrins carry it. The house keeps a roll of every measuring at the doorpost and of every Sevrin child, and sons of Sevrin daughters married abroad are watched;",
    "ancestor": "King Radoslav Sevrin the Bear, 211 cm",
    "origin": "700",
-   "story": "The first Sevrin giant on record is Borislav, born at Sevina in 700 to an Eastfolk officer of the Solen legions. His father was of middle height. Borislav was an ordinary boy until 12, when he began to grow a hand's breadth a year, and by 18 he stood 203 cm. The legion of the Eastern March made him its standard-bearer, because men could see the black bear standard over his head from anywhere on a field. He learned early that men follow what they can see. His headaches began at 25, and he hid them.",
+   "story": "The first Sevrin giant on record is Borislav, born at Sevina in 700 to an Eastfolk officer of the Solen legions. His father was of middle height. Borislav was an ordinary boy until 12, when he began to grow a hand's breadth a year, and by 18 he stood a head over other men. The legion of the Eastern March made him its standard-bearer, because men could see the black bear standard over his head from anywhere on a field. He learned early that men follow what they can see. His headaches began at 25, and he hid them.",
    "significance": "In 1105 the bear-blood decides the timetable of the north-east. Stanislav, 33, has the headaches and blind moments that killed the giants before him, and he is pushing the staged rising and the Neck war to finish what he can before he dies."
   },
   "BLD-23": {
@@ -6107,14 +6107,14 @@
    "fam": "FAM-402",
    "race": "elf",
    "realm": "POL-06",
-   "trait": "Reactions of about 110 ms, faster than other elves (140) and humans (230)",
-   "how": "Nerve fibres carry signals faster and the brain's movement centres fire with less delay, so a carrier moves about 30 ms sooner than another elf. The same easily fired nerves can fire out of control: flicker at a few flashes a second, such as torchlight through a crowd or lightning through leaves,…",
+   "trait": "Reactions quicker than any other elf's, and far quicker than any man's",
+   "how": "Nerve fibres carry signals faster and the brain's movement centres fire with less delay, so a carrier moves a blink sooner than another elf. The same easily fired nerves can fire out of control: flicker at a few flashes a second, such as torchlight through a crowd or lightning through leaves,…",
    "inherit": "About one child in three of a carrier carries it. It seems to need more than one inherited factor, so it can skip a generation and return; children of two carriers carry it about one time in two.",
    "cost": "Fits and seizures, often set off by flickering light such as torches, burning buildings or lightning through leaves. A fit in battle is death: Sethril died of one, and Serin was killed during one in 1079.",
    "exclusive": "Carried only by descendants of Sethril. The School of the Quickened tests every child of the line with the dropped rod at 30 and teaches its deepest drills only to carriers;",
    "ancestor": "Sethril the Unwounded, duelist unbeaten for 400 years",
    "origin": "460",
-   "story": "Sethril was born in 460 to a family of yew-cutters at Lirith. His mother noticed that he caught falling acorns before they reached the forest floor. At 40 he could pluck a thrown pebble out of the air, and the Keepers tested him with a dropped rod: he caught it about 30 ms sooner than any elf they had ever timed. He trained under the old sword masters of Evenglade, and within a century he was the best blade in the Evenwood. In June 527 he killed the Solen knight Sir Marcus Ravel in four passes at the Oak Line, cutting his sword hand and then his throat.",
+   "story": "Sethril was born in 460 to a family of yew-cutters at Lirith. His mother noticed that he caught falling acorns before they reached the forest floor. At 40 he could pluck a thrown pebble out of the air, and the Keepers tested him with a dropped rod: he caught it a blink sooner than any elf they had ever timed. He trained under the old sword masters of Evenglade, and within a century he was the best blade in the Evenwood. In June 527 he killed the Solen knight Sir Marcus Ravel in four passes at the Oak Line, cutting his sword hand and then his throat.",
    "significance": "The Quickened are the queen's last line of steel. The Queen's Quickened guard Ithrien's door at Evenglade, and two of the finest blades alive, Vaelor at tier 7 and Veyla at tier 6, are carriers."
   },
   "BLD-37": {
@@ -6210,7 +6210,7 @@
    "exclusive": "Only giants can carry it, because giants cannot breed with humans. It shows only when it comes from a father, so the visible line runs through its men;",
    "ancestor": "Skarvi the Small",
    "origin": "870",
-   "story": "Skarvi was born at Skarfell Hall in 870 to Hogni of Skarfell, a giant of ordinary size, and Aslaug of Torvik. At a year old he was half the weight of other giant babies, and the hall thought he would die. He did not. At five he could run, which no giant child can, and at ten he could turn on his heel and climb the fair-ground fences. He grew to 310 cm and stopped. The halls mocked him, but the tin traders took to him: he could stoop through a warehouse door, sit on a trader's bench without breaking it and stand on a ship's deck without sinking the boat.",
+   "story": "Skarvi was born at Skarfell Hall in 870 to Hogni of Skarfell, a giant of ordinary size, and Aslaug of Torvik. At a year old he was half the weight of other giant babies, and the hall thought he would die. He did not. At five he could run, which no giant child can, and at ten he could turn on his heel and climb the fair-ground fences. He grew to a small giant's height and stopped. The halls mocked him, but the tin traders took to him: he could stoop through a warehouse door, sit on a trader's bench without breaking it and stand on a ship's deck without sinking the boat.",
    "significance": "Frostholm holds the only large tin deposits in the western lands, and bronze for bells, mirrors, pots and fittings across the Westland depends on it. The Skarfell trait is what lets the giant halls sell that tin as one people: only a Skarfell can enter a trader's house, board a ship or sit at a…"
   },
   "BLD-43": {
@@ -6226,7 +6226,7 @@
    "exclusive": "Giants cannot breed with humans, so only giants can carry it, and every carrier alive descends from Grom. The Mothers of Jotunhall arrange every marriage of the line's women at the Thing;",
    "ancestor": "Grom the Mountain, 460 cm",
    "origin": "950",
-   "story": "Grom was born at Jotunhall in 950 to Alfhild, a woman of an ordinary household, and a hunter of the hall. Nothing in either family's chant explained him. By ten he was the size of a grown giant woman; by 25 he stood 430 cm, and he kept growing until he was 30 and 460 cm, taller than any giant in any chant. His hands could close around a walrus's skull, and he ate like three giants. The halls first took him for a sign of the Mother's favor, then for a burden, because in the hungry years his hall could hardly feed him. That changed in the Famine Winter of 991.",
+   "story": "Grom was born at Jotunhall in 950 to Alfhild, a woman of an ordinary household, and a hunter of the hall. Nothing in either family's chant explained him. By ten he was the size of a grown giant woman; by 25 he stood a head over the tallest giant, and he kept growing until he was 30, taller than any giant in any chant. His hands could close around a walrus's skull, and he ate like three giants. The halls first took him for a sign of the Mother's favor, then for a burden, because in the hungry years his hall could hardly feed him. That changed in the Famine Winter of 991.",
    "significance": "The Jotunhall size is the crown of Hrimfell, and in 1105 it is the crown's problem. The Thing of Midsummer 1105 must choose between Ulfar, the only man of the size, who cannot walk to the shore, and a giant who can still fight;"
   }
  },
@@ -9326,7 +9326,7 @@
    "giant",
    "950",
    "1035",
-   "giant King of Hrimfell, 460 cm tall"
+   "giant King of Hrimfell, the tallest giant alive"
   ],
   [
    "FIG-053",
@@ -13114,7 +13114,7 @@
   [
    1098,
    "Coronation of King Stanislav Sevrin",
-   "King Dobrin Sevrin of Velgrad dies. His son Stanislav, 27 and 210 cm tall, is crowned by the Patriarch of Dawn."
+   "King Dobrin Sevrin of Velgrad dies. His son Stanislav, 27 and a head taller than other men, is crowned by the Patriarch of Dawn."
   ],
   [
    1098,

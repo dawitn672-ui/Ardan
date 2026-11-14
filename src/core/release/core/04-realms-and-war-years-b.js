@@ -372,6 +372,15 @@ A.mortalCheck = function (pc, cause, pen) {
       realism: -0.08,
     }[diff] || 0) -
     (pen || 0);
+  // C9 (D-040, owner order 34 "longer lives"): a grown body not yet old pulls through a common fever or flux far more
+  // often than a child or an old one (bot lives: 6 of 19 careful lives died of a fever or the flux between 23 and 47).
+  // Plague (the Harbor Pox) is not softened; wounds, beasts and battles are not illnesses.
+  {
+    const R0 = GD.RACES[pc.race] || GD.RACES.human,
+      a0 = A.age(pc);
+    if (a0 >= R0.adult && a0 < R0.old && cause && !/pox/i.test(cause) && Object.values(GD.DISEASES || {}).some(D => D.name === cause))
+      surv += 0.25;
+  }
   if ((A.hasBlood(pc, "laughing") && (surv += 0.08), A.chance(A.clamp(surv, 0.05, 0.95)))) {
     if (
       ((pc.health = A.ri(4, 12)),

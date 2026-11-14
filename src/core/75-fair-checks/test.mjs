@@ -28,6 +28,10 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const out = [], FC = A.FC;
+      // the rule is on the old chain's chance; 99993-v2-stats then turns every chance into the honest one (blunders and
+      // surges counted, C9 D-040), a different turn for each person's mind, so the rule is read beneath it
+      const VS = A.V2S, honest = VS && VS.HONEST; if (VS) VS.HONEST = false;
+      try {
       for (const b of FC.BANDS) for (const ck of [{ s: 'persuasion', s2: 'wil', d: 45 }, { s: 'str', s2: 'sta', d: 50 }, { s: 'trade', s2: 'int', d: 40 }]) {
         const pc = FCT.typical(b, { skill: ck.s });
         const band = FC.band(pc), on = A.checkOdds(pc, ck);
@@ -35,6 +39,7 @@ export default {
         const ref = FCT.typical(FC.REF, { skill: ck.s }), refOdds = A.checkOdds(ref, ck);
         out.push({ b, band, s: ck.s, d: ck.d, on, off, refOdds, ex: FC.explain(FCT.typical(b, { skill: ck.s }), ck) });
       }
+      } finally { if (VS) VS.HONEST = honest; }
       return out;
     });
     // each band reads as its own. By the rule, a typical person of the band meets the check as a typical seasoned
@@ -108,7 +113,10 @@ export default {
       const run = off => {
         A.FC.OFF = off; let c = 0, w = 0, hard = 0;
         const ch0 = A.eventChoose;
-        A.eventChoose = function (idx) { try { const q = A.S.queue[0], v = q && q.type === 'event' && !q.result ? A.eventView(q) : null, vc = v && v.choices[idx]; if (vc && vc.odds != null && vc.odds < 15) hard++; } catch (e) {} return ch0.apply(this, arguments); };
+        // a hard check is read on the old chain's chance, beneath 99993's honest odds (which count surges of will, and so
+        // lift the long end a few points: C9, D-040)
+        A.eventChoose = function (idx) { try { const VS = A.V2S, q = A.S.queue[0], v = q && q.type === 'event' && !q.result ? A.eventView(q) : null, vc = v && v.choices[idx], ck = vc && vc.i >= 0 && A.EV[q.ev] && A.EV[q.ev].choices[vc.i] && A.EV[q.ev].choices[vc.i].check;
+          const odds = vc && vc.odds != null ? (VS && VS.oldOdds && ck ? VS.oldOdds(A.pc(), ck) : vc.odds) : null; if (odds != null && odds < 15) hard++; } catch (e) {} return ch0.apply(this, arguments); };
         try {
           for (let i = 0; i < 8; i++) {
             const [race, realm, status] = STARTS[i % 4];
