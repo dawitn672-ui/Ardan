@@ -1,7 +1,7 @@
 // The ordinary arms, Plain make: what a journeyman turns out and a man-at-arms carries. Drawn with the same kit and in
 // the same light as the legendaries, so the contrast is the thing itself and not the drawing: sound steel, an iron
 // cross, a leather grip, ash and oak. No inlay, no stone, no name.
-import { MET, WOOD, stuff, piece, tube, blade, haft, sym, disc, curve, line, winding, seat, arcFrame, backblade, spl, lerp } from './fine.mjs';
+import { MET, WOOD, stuff, piece, tube, blade, haft, sym, disc, curve, line, winding, seat, arcFrame, backblade, spl, lerp, polyline } from './fine.mjs';
 
 const LEATHER = stuff('#5d4028', { k: '#1b1009' });
 const IRON = MET.iron, STEEL = MET.steel;
@@ -99,7 +99,7 @@ export function plainBow() {
     id: 'plain-bow', box: [-980, 980, -200, 40],
     draw(D) {
       const { S, F } = D, A = arcFrame(F, 2760), T = tube(A, [[-950, 6], [-500, 12], [0, 15], [500, 12], [950, 6]]);
-      S.layer('under'); S.stroke(line(F, [A.W(-942, -2), A.W(942, -2)].map(p => p), false).replace(/^/, ''), '#d8cfb8', 1.6, { units: 1 });
+      S.layer('under'); S.stroke(polyline([A.W(-942, -2), A.W(942, -2)]), '#d8cfb8', 1.6, { units: 1 });
       piece({ ...D, F: A }, T.pts, WOOD.yewHeart, { t: 0, shade: 'round', inside: (d) => { S.fill(line(A, [...T.B, ...T.B.slice().reverse().map(p => [p[0], p[1] - 4])], true), WOOD.yewSap.b, { op: .9 }); } });
       const Tg = tube(A, [[-55, 16], [55, 16]]); piece({ ...D, F: A }, Tg.pts, LEATHER, { t: 0, shade: 'round' });
     },
@@ -111,7 +111,7 @@ export function plainCrossbow() {
     draw(D) {
       const { S, F } = D, wd = WOOD.oak;
       // the bow of ash across the head, its cord, the tiller, the iron stirrup
-      const Ab = arcFrame({ ...F, W: (s, t = 0) => F.W(660 + t, s), P: pts => pts.map(p => F.W(660 + p[1], p[0])) }, 1e6);
+
       const prod = []; for (let i = 0; i <= 20; i++) { const v = lerp(-350, 350, i / 20); prod.push([660 - (v * v) / 1900, v]); }
       const pb = [...prod.map(p => [p[0] + 9 - Math.abs(p[1]) * .012, p[1]]), ...prod.slice().reverse().map(p => [p[0] - 9 + Math.abs(p[1]) * .012, p[1]])];
       S.layer('under'); S.stroke(line(F, [prod[0], [470, 0], prod[20]]), '#d8cfb8', 2, { units: 1 });
