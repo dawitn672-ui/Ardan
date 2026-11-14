@@ -32,7 +32,7 @@ export default {
       bands: [[.1, .22, 'dk2', .2], [.3, .42, 'lt', .5], [.58, .7, 'dk2', .18], [.76, .88, 'lt2', .34]], slashes: [[.46, .03, .5], [.5, .008, .65]],
       nicks: [[512, 1, 1.8], [690, -1, 1.1]],
       core: { mat: bk, hw: coreHw, u0: 20, u1: 770, point: 34, wall: 4.4, inside: () => {
-        if (fine) { const w = watering(F, D.r('water'), 20, 806, coreHw, { lines: 7, amp: 1.3 }); S.stroke(w.light, bk.l, .5, { units: 1, op: .5 }); S.stroke(w.dark, '#000000', .6, { units: 1, op: .6 }); }
+        if (fine) { const w = watering(F, D.r('water'), 20, 806, coreHw, { lines: 7, amp: 1.3 }); S.stroke(w.light, bk.l, .6, { units: 1, op: .75 }); S.stroke(w.dark, '#000000', .6, { units: 1, op: .7 }); }
         const v = roots(F, D.r('roots'), 22, 790, coreHw, { trunks: 3, fork: .055, wander: .34, fill: .7, step: 9 });
         inlay(S, v[0], g, 1.25, { cap: 'round' }); inlay(S, v[1], g, .85, { cap: 'round' }); if (fine) inlay(S, v[2], g, .55, { cap: 'round' });
       } },
@@ -50,7 +50,11 @@ export default {
       steelArm(claw, [.3, .9, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, .9, .8, .3], { inside: () => {
         // its spine: a bright ridge, a vein of gold beside it, a thorn half way
         S.stroke(curve(F, [[-22, -22], [-22, -52], [-16, -80], [0, -103], [22, -118], [50, -127]].map(m), 1, false), dk.hi, 1, { op: .7 });
-        if (fine) inlay(S, curve(F, [[-27, -24], [-28, -50], [-23, -76], [-8, -99], [14, -114]].map(m), 1, false), g, .8);
+        if (fine) { inlay(S, curve(F, [[-27, -24], [-28, -50], [-23, -76], [-8, -99], [14, -114]].map(m), 1, false), g, .8);
+          // small leaves of gold thrown off the vein, and the claw's point sheathed in gold
+          let lf = ''; for (const [a, b, c2] of [[[-28, -40], [-33, -46], [-30, -52]], [[-25, -66], [-31, -72], [-26, -78]], [[-13, -93], [-18, -100], [-10, -104]], [[6, -110], [2, -118], [10, -119]]]) lf += curve(F, [a, b, c2].map(m), [.2, 1, .2]);
+          S.fill(lf, g.b); S.stroke(lf, g.k, .4, { op: .8 }); }
+        S.fill(curve(F, [[48, -127.6], [64, -127], [50, -121.6]].map(m), [.3, 0, .3]), g.l); S.stroke(curve(F, [[48, -127.6], [64, -127], [50, -121.6]].map(m), [.3, 0, .3]), g.k, .6);
       } });
       steelArm([[-27, -82], [-41, -101], [-22, -96], [-18, -90]].map(m), [.4, 0, .6, .4]);
     }
@@ -81,7 +85,7 @@ export default {
         face([[-174, -lit * 8], [-203, -lit * 25], mid, top], -.55); face([[-203, -lit * 25], tip, mid, [-203, -lit * 25]], -.95);
         const edges = line(F, [top, mid, tip]) + line(F, [L, mid, R]);
         inlay(S, edges, g, 1.3); trim(S, d, g, 1.5);
-        if (fine) { engrave(S, line(F, [[-186, -6.5], [-198, -15], [-200, -5.5]], true) + line(F, [[-186, 6.5], [-198, 15], [-200, 5.5]], true), dk, .5); }
+        if (fine) { inlay(S, line(F, [[-186, -6.5], [-198, -15], [-200, -5.5]], true) + line(F, [[-186, 6.5], [-198, 15], [-200, 5.5]], true) + line(F, [[-212, -8], [-230, -3.4]]) + line(F, [[-212, 8], [-230, 3.4]]), g, .5); beads(D, [[-203, 0]], 2, g); }
       } });
       piece(D, [[-250, -3.2], [-256, -2.4], [-259, 0], [-256, 2.4], [-250, 3.2]], g, { t: .6 });
     }
