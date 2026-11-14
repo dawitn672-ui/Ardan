@@ -1,28 +1,30 @@
-// VIII · MIDSUMMER · glaive · the War-Mother's rhino glaive (League of the Tusk Clans).
+// VIII · SUMMER THUNDER · glaive · the War-Mother's rhino glaive (League of the Tusk Clans).
 // Orc work of the eastern grass: nothing polished but the edge. Iron left black from the fire with the hammer's marks
 // in it, the year's rhino horn painted red and lashed on with rawhide, teeth and turquoise on a thong, hide, horsehair.
 import { MET, WOOD, BONE, stuff, piece, tube, haft, disc, curve, line, inlay, engrave, beads, dots, puff, glint, cabochon, winding, tufts, mixc, lerp, spl, LIGHT, add, mul } from './fine.mjs';
-import { plainGlaive } from './plain.mjs';
+import { gameGlaive } from './plain.mjs';
 
 const BLK = { k: '#050506', d: '#101114', s: '#1d1f24', b: '#2d3037', l: '#555a65', hi: '#9aa2b0', r: '#23272f' };
 const RED = '#a3261f', TURQ = '#3fb7a9', RAW = stuff('#c8b184', { k: '#3a2c14' });
 
 export default {
-  id: 'midsummer', no: 'VIII', name: 'Midsummer', cat: 'Glaive', form: 'pole.glaive', deg: -62, upright: -90,
+  id: 'summer-thunder', seed: 'midsummer', no: 'VIII', name: 'Summer Thunder', cat: 'Glaive', form: 'pole.glaive', deg: -62, upright: -90,
   realm: 'League of the Tusk Clans', people: 'The orcs of the eastern grass; Clan Ironhide of Grakmar',
   owner: 'The War-Mother’s hearth at Grakmar. By eastern custom the hearth, and what hangs over it, go to the youngest daughter.',
   wielder: 'Urza Ironhide, War-Mother of the thirty-one clans. She rides with it at the Great Ride each midsummer and kills the year’s rhino with it.',
   why: 'The clans swear to a War-Mother over the rhino she has killed. Urza fainted in the heat at the Great Ride of 1104, and her heir Shara froze at her own trial: another hand made the kill. If the clans learn of it, the glaive goes to whoever takes the next rhino.',
   made: 'Hammered at Grakmar in 1062 by the smiths of Clan Ironhide from the spearheads of thirty-one clans. The horn is that year’s rhino’s. 43 years old: the youngest thing here.',
-  legend: ['On midsummer’s day in 1062 Grakka Ironhide killed the year’s rhino alone, and thirty-one clans swore to her over the carcass. Its horn was painted red and bound to the blade that killed it.',
+  legend: ['On midsummer’s day in 1062 Grakka Ironhide killed the year’s rhino alone, under a sky that thundered all day and gave no rain, and thirty-one clans swore to her over the carcass. Its horn was painted red and bound to the blade that killed it.',
     'Grakka carried it for eighteen years and died of the sun at the Great Ride of 1080 with it in her hand. The clans do not call that ill luck. They call it the price.'],
   hand: 'Brutally heavy in the head: made to stop a ton of rhino, not to fence. What it hits is opened or broken, armour or no. It wants both hands and a wide swing, and it is slow coming back. A rider who gets past the blade has only the haft to fear.',
-  art: 'The Year’s Rhino', artNote: 'one set stroke, taken standing, against anything that charges',
+  art: 'Cloudburst', artNote: 'one set stroke, taken standing, against anything that charges: everything the sky was holding, at once',
+  // its forms, in order; the last is its signature. [name, what it is]
+  forms: [['Still Air', 'the stand: butt set, blade low, and nothing moves'], ['Thunderhead', 'the shout and the stamp that bring the charge on, as the cloud stands up before it breaks'], ['The Price', 'the stroke, with everything in it; there is no second']],
   finish: 'Black forge-iron ground bright at the edge, a red-painted horn, teeth, turquoise, rhino hide, horsehair', ground: ['#5a5140', '#16130d'], accent: TURQ,
   len: 2080,
   box: [-12, 2088, -96, 182], hero: [1010, 2088, -120, 200],
   details: [{ t: 'The blade and the year’s horn', box: [1440, 2088, -100, 184] }, { t: 'Hide, rawhide and bone', box: [640, 960, -60, 60] }],
-  plain: plainGlaive(), plainName: 'An ordinary bill',
+  plain: gameGlaive(), plainName: 'An ordinary glaive',
   draw(D) {
     const { S, F } = D, fine = D.lod >= 2, r = D.r('glaive'), st = MET.bright, dn = [F.ux[1], F.vx[1]];
     // ---- the haft: dark wood, an iron spike at its foot

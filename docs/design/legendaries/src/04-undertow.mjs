@@ -1,8 +1,8 @@
-// IV · HELD BREATH · dagger · the diver's knife of House Tidewell (Kingdom of Greyhaven).
+// IV · UNDERTOW · dagger · the diver's knife of House Tidewell (Kingdom of Greyhaven).
 // Sea work: a bronze blade worn and pitted by four hundred years of salt, a guard like a breaking wave in silver,
 // ray-skin bound with silver wire and marked by teeth, a grey pearl in a silver claw.
 import { MET, stuff, piece, tube, blade, disc, curve, line, inlay, engrave, ridge, beads, dots, puff, glint, seat, gem, cabochon, winding, lettering, pearl, mixc, lerp, spl, splPts, norm, perp, sub, add, mul, LIGHT } from './fine.mjs';
-import { plainDagger } from './plain.mjs';
+import { gameDagger } from './plain.mjs';
 
 const BRZ = { k: '#1c1206', d: '#3c2910', s: '#6b4c22', b: '#9d7838', l: '#d0a962', hi: '#f6e2ac', r: '#7d6a3c' };
 const SEA = '#2e8f86', VERD = '#4d9482';
@@ -10,21 +10,23 @@ const SEA = '#2e8f86', VERD = '#4d9482';
 const ribbon = (pts, wf) => { const c = splPts(pts, false, 1, 8), n = c.length, A = [], B = []; for (let i = 0; i < n; i++) { const a = c[Math.max(0, i - 1)], b = c[Math.min(n - 1, i + 1)], nn = perp(norm(sub(b, a))), w = wf(i / (n - 1)); A.push(add(c[i], mul(nn, w))); B.push(add(c[i], mul(nn, -w))); } return [...A, ...B.reverse()]; };
 
 export default {
-  id: 'held-breath', no: 'IV', name: 'Held Breath', cat: 'Dagger', form: 'dagger.diver', deg: 118, upright: 90,
+  id: 'undertow', seed: 'held-breath', no: 'IV', name: 'Undertow', cat: 'Dagger', form: 'dagger.diver', deg: 118, upright: 90,
   realm: 'Kingdom of Greyhaven', people: 'The Northfolk of the Channel coast; House Tidewell, divers before they were kings',
   owner: 'House Tidewell, as an heirloom of the blood. It was the family’s before the family was royal, and has never been counted among the crown’s jewels.',
   wielder: 'The heir. In 1105 Prince Tristan Tidewell, 21, wears it at his belt; on the day of a ring dive it is carried in the teeth.',
   why: 'By the Ring Law of 916 every heir dives at seven for a silver ring, before the whole harbor, and comes up owning the knife; a king hands it on the day he is crowned. Tristan’s dive was helped, and a few people know it. The knife is the proof of a right he may not have.',
   made: 'Cast in fleet bronze at the Solen station of Greyhaven before 719: a chain-diver’s work knife. Hilted in silver and pearl for King Cedric in 761. Close on 400 years old.',
   legend: ['In 719 Wenna Tidewell went down eleven times in one day to free the sunk harbor chain, with this in her teeth. Her teeth are still in the grip, under the marks of every heir since.',
-    'Osric the Diver had it at Yarbek in 882 when he cut the Khan’s chain. Deep water keeps what it is given; this it gave back.'],
+    'Osric the Diver had it at Yarbek in 882 when he cut the Khan’s chain. The divers named it for the pull under a quiet sea, which takes a swimmer down without a sound. Deep water keeps what it is given; this it gave back.'],
   hand: 'Short, broad, and heavier than steel. It will not rust, bend or snap, and in a clinch or under water there is nothing better made. It is a knife. Against a sword on open ground its legend does not lengthen it by an inch.',
-  art: 'The Long Breath', artNote: 'close, hold and wait: the other man tires first, or drowns',
+  art: 'Slack Water', artNote: 'close, hold, and wait as still as the turn of the tide: the other man tires first, or drowns',
+  // its forms, in order; the last is its signature. [name, what it is]
+  forms: [['Under the Chain', 'the dive inside his guard, low, as a diver goes under a harbor chain'], ['Count to Ten', 'the hold: his sword arm kept and nothing given, for as long as a breath lasts'], ['First Breath', 'the knife, once; only one of them comes up to draw it']],
   finish: 'Salt-worn fleet bronze, silver, ray-skin, a grey pearl, sea-green silk', ground: ['#2f5f63', '#0b1c1f'], accent: SEA,
   len: 390,
   box: [-166, 248, -66, 66],
   details: [{ t: 'The pearl and the bitten grip', box: [-166, 26, -64, 64] }, { t: 'Salt in the bronze', box: [44, 150, -36, 36] }],
-  plain: plainDagger(), plainName: 'An ordinary dagger',
+  plain: gameDagger(), plainName: 'An ordinary dagger',
   draw(D) {
     const { S, F } = D, sv = MET.silver, fine = D.lod >= 2, r = D.r('hilt'), lit = F.vx[0] * LIGHT[0] + F.vx[1] * LIGHT[1] < 0 ? -1 : 1;
     // ---- the blade: a broad leaf of bronze with a raised rib. Green has settled in every hollow; the edges are rubbed bright

@@ -1,9 +1,10 @@
 // The figure library (src/ui/engine/figure): one look, one drawing; the parts are sane across a sweep of people; the
 // second code survives; a face is made the same way every time and leans the way old appearance fields say; gear is
-// drawn by item; a small picture leaves out what cannot be seen; text from the state never reaches the SVG raw.
+// drawn by item; a small picture leaves out what cannot be seen; text from the state never reaches the SVG raw; every
+// form of arms draws at every make, rarity and style (owner order 52).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compose, lookOf, lookKey, faceFor, codeFor, extraFor, pack2, unpack2, EXTRA, CODE2_LEN, artOf, registerGear, GEAR_ART, HAIRS, BEARDS, POSES, OUTFITS, HEADWEAR, SKIN, face, stream } from '../../src/ui/engine/figure/index.js';
+import { compose, lookOf, lookKey, faceFor, codeFor, extraFor, pack2, unpack2, EXTRA, CODE2_LEN, artOf, registerGear, GEAR_ART, HAIRS, BEARDS, POSES, OUTFITS, HEADWEAR, SKIN, face, stream, Scene, swordArt, daggerArt, haftArt, bowArt, quiverArt, crossbowArt, shieldArt, STYLES, HAFT_LEN, BOW_LEN, SHIELD_H } from '../../src/ui/engine/figure/index.js';
 
 const SK = ['#f3d6c1', '#e8c0a0', '#d9a77f', '#c08a5e', '#a06c45', '#7e5132', '#5c3a23', '#3f2817', '#748a5c', '#c4b8ac'];
 const sheet = (i, o = {}) => ({
@@ -134,4 +135,61 @@ test('the dead are drawn with their eyes shut and their colour drained', () => {
   const a = compose(L, { crop: 'list', width: 88, tier: 1, id: 'x_', tint: 'dead' }).svg, b = compose({ ...L, closed: false }, { crop: 'list', width: 88, tier: 1, id: 'x_' }).svg;
   const sat = s => { let t = 0, n = 0; for (const m of s.matchAll(/fill="#([0-9a-f]{6})"/g)) { const v = parseInt(m[1], 16), r = v >> 16, g = (v >> 8) & 255, bl = v & 255; t += Math.max(r, g, bl) - Math.min(r, g, bl); n++; } return t / n; };
   assert.ok(sat(a) < sat(b) * .5, `${sat(a)} against ${sat(b)}`);
+});
+
+// ---- arms (owner order 52): every weapon and shield is a made thing, drawn by form, make, rarity and style
+const armsOf = (S, fn, form, q, r, st, sheathed) => { S.layer('weapon'); if (fn === shieldArt) fn(S, [0, 0], 700, q, { form, r, field: '#7a2a24', pale: '#c9a13a' }); else fn(S, [0, 0], Math.PI / 2, fn === haftArt ? HAFT_LEN[form] : fn === bowArt ? BOW_LEN[form] : 700, q, { form, r, st, sheathed }); return S; };
+const ARMS = [[swordArt, ['arming', 'long', 'great', 'short', 'estoc', 'falchion', 'sabre', 'leaf', 'cleaver']], [daggerArt, ['dagger', 'parry', 'rondel', 'knife', 'seax']], [haftArt, Object.keys(HAFT_LEN)], [bowArt, Object.keys(BOW_LEN)], [crossbowArt, ['']], [quiverArt, ['']], [shieldArt, Object.keys(SHIELD_H)]];
+
+test('arms: every form at every make, rarity and style draws soundly, the same way twice; a better make shows more', () => {
+  let n = 0;
+  for (const [fn, forms] of ARMS) for (const form of forms) {
+    const shapes = [];
+    for (const q of [0, 1, 2, 3]) for (const r of [0, 1, 2, 3]) for (const st of STYLES) for (const sh of fn === swordArt || fn === daggerArt ? [false, true] : [false]) {
+      if (r && st !== 'north' && st !== 'desert') continue;
+      const draw = () => armsOf(new Scene('t_', { px: .5 }), fn, form, q, r, st, sh), S = draw(), svg = S.svg([-900, -600, 4200, 1200], { order: ['weapon'] }); n++;
+      assert.equal(svg, draw().svg([-900, -600, 4200, 1200], { order: ['weapon'] }), `${fn.name} ${form}: two drawings differ`);
+      assert.ok(!/NaN|undefined|Infinity/.test(svg), `${fn.name} ${form} q${q} r${r} ${st}: a bad number`);
+      assert.ok(S.shapes >= 2, `${fn.name} ${form} q${q}: nearly nothing drawn`);
+      for (const m of svg.matchAll(/(?:fill|stroke|stop-color)="([^"]*)"/g)) assert.ok(/^(#[0-9a-fA-F]{3,6}|none|url\(#[A-Za-z0-9_]+\))$/.test(m[1]), `${fn.name} ${form}: paint ${m[1]}`);
+      if (!r && st === 'north' && !sh) shapes[q] = S.shapes;
+    }
+    // a masterwork is never plainer than a plain piece (a staff is a staff; a self bow gains little)
+    assert.ok(shapes[3] >= shapes[1], `${fn.name} ${form}: masterwork ${shapes[3]} shapes, plain ${shapes[1]}`);
+  }
+  assert.ok(n > 2000, String(n));
+});
+
+test('arms: no glow on a legendary; a piece outside the picture costs nothing; a small picture leaves the detail out', () => {
+  const S = armsOf(new Scene('t_', { px: 1 }), swordArt, 'arming', 3, 3, 'north', false), svg = S.svg([-300, -200, 1200, 400], { order: ['weapon'] });
+  assert.ok(!/<filter|feGaussianBlur/.test(svg), 'a legendary blade is drawn by its craft, never by a blur of light (D-045)');
+  // outside the frame: not one shape, for every class
+  for (const [fn, forms] of ARMS) { const T = new Scene('t_', { px: .1 }); T.view = [5000, 5000, 400, 400]; T.minPx = 1; T.coarse = 2.4; armsOf(T, fn, forms[0], 3, 0, 'north', false); assert.equal(T.shapes, 0, fn.name + ' drew outside the picture'); }
+  // at a list portrait's scale a sword is a few shapes; at a plate's scale it is many
+  const at = (px, minPx, coarse) => { const T = new Scene('t_', { px }); T.view = [-400, -300, 1400, 600]; T.minPx = minPx; T.coarse = coarse; return armsOf(T, swordArt, 'arming', 3, 0, 'north', false).shapes; };
+  const small = at(.08, 1, 2.4), big = at(1, 0, 1);
+  assert.ok(small < 12 && big > 22, `${small} shapes small, ${big} large`);
+});
+
+test('arms on the person: by item, by form, by the people who made them', () => {
+  const gearOf = (o, sh2 = {}) => lookOf(sheet(20, { estate: 'gentry', sex: 'M', gear: o, ...sh2 }));
+  // a bow is slung with its quiver; a crossbow with its bolts; an axe hangs at the belt; a pole arm stands in the hand
+  const bow = gearOf({ weapon: { id: 'dagger' }, ranged: { id: 'longbow' } }).gear;
+  assert.ok(bow.some(g => g.id === 'bow' && g.form === 'long') && bow.some(g => g.id === 'quiver' && !g.bolts));
+  const xb = gearOf({ ranged: { id: 'xbow' } }).gear; assert.ok(xb.some(g => g.id === 'crossbow') && xb.some(g => g.id === 'quiver' && g.bolts));
+  assert.deepEqual(gearOf({ weapon: { id: 'axe', make: 2 } }).gear.find(g => g.id === 'sidearm'), { id: 'sidearm', q: 2, r: 0, form: 'axe' });
+  assert.equal(gearOf({ weapon: { id: 'warhammer' } }).gear.find(g => g.id === 'sidearm').form, 'hammer');
+  const pole = gearOf({ weapon: { id: 'halberd' } }); assert.equal(pole.pose, 'staff'); assert.deepEqual(pole.staff, { kind: 'pole', form: 'halberd', q: 1, r: 0 });
+  assert.equal(gearOf({ weapon: { id: 'greataxe' } }).staff.form, 'great');
+  assert.equal(gearOf({ weapon: { id: 'sword' }, shield: { id: 'shield' } }).gear.find(g => g.id === 'shield').form, 'round');
+  assert.equal(gearOf({ weapon: { id: 'chanari' } }).gear.find(g => g.id === 'sword').st, 'desert');
+  // the people: an elf's, a dwarf's and an orc's arms are their own smiths'; a culture may name its make; the rest is northern
+  assert.equal(gearOf({}, { race: 'elf' }).arms, 'elf'); assert.equal(gearOf({}, { race: 'dwarf' }).arms, 'dwarf'); assert.equal(gearOf({}, { race: 'orc' }).arms, 'orc');
+  assert.equal(gearOf({}, { cult: { arms: 'desert' } }).arms, 'desert'); assert.equal(gearOf({}, { cult: { arms: '"><b>' } }).arms, 'north'); assert.equal(gearOf({}).arms, 'north');
+  // and each draws, at a list's size and whole
+  for (const o of [{ weapon: { id: 'dagger' }, ranged: { id: 'longbow', make: 3 } }, { ranged: { id: 'xbow' } }, { weapon: { id: 'axe' } }, { weapon: { id: 'halberd', make: 3 } }, { weapon: { id: 'sword' }, shield: { id: 'shield' } }, { weapon: { id: 'mace' }, shield: { id: 'buckler' } }, { weapon: { id: 'lance' }, shield: { id: 'kite' } }, { weapon: { id: 'pike' }, shield: { id: 'tower' } }])
+    for (const race of ['human', 'elf', 'dwarf', 'orc']) for (const [crop, width, tier] of [['list', 46, 1], ['tall', 176, 2], ['figure', 200, 2]]) {
+      const L = gearOf(o, { race }), a = compose(L, { crop, width, tier, id: 'x_' }).svg;
+      assert.ok(!/NaN|undefined|Infinity/.test(a), JSON.stringify(o) + ' ' + race + ' ' + crop); assert.equal(a, compose(L, { crop, width, tier, id: 'x_' }).svg);
+    }
 });

@@ -46,6 +46,7 @@ h1{font:700 36px/1.08 Cinzel,serif;letter-spacing:.05em;margin:0}
 .plate h4{font:600 10.5px Cinzel,serif;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:11px 0 2px}
 .plate p{margin:0 0 5px;font-size:13.6px;line-height:1.48}
 .plate .legend{font-style:italic}
+.plate .forms{font-size:12.6px;line-height:1.5;color:var(--muted);margin-top:-2px}.plate .forms i{color:var(--ink)}
 .plate .finish{margin-top:12px;padding-top:9px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--muted)}
 .under{display:grid;grid-template-columns:310px 410px 1fr;gap:16px;margin-top:14px;align-items:start}.zm{margin:0}.win{overflow:hidden}.zm figcaption{font-size:13px;line-height:1.45;color:var(--muted);font-style:italic;margin:9px 6px 0}
 .pf{margin:0}.frame{border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px #b89a55,0 0 0 4px #f8f1e0,0 0 0 5px #cdb77f;margin:5px}
@@ -64,7 +65,7 @@ h2.sec{font:700 19px Cinzel,serif;letter-spacing:.1em;text-transform:uppercase;m
 `;
 const body = `<main>
 <header id="head"><p class="kick">Legendary arms · ten designs · for the owner’s eye</p><h1>Ardan · ten legendary arms</h1>
-<p class="lede">Ten pieces from ten realms and peoples, each in its own people’s craft and no two alike. The first is drawn after the owner’s example of a legendary blade and is Aldmark’s. None of them glows: what marks a legend is its metal, its making and what has happened to it. For each, the piece itself with two closer looks; who made it and what it has done; who owns it, who bears it and why; the person who has it, drawn by the game’s figure library with the piece on the figure; and, to one scale, the ordinary arm of its kind. Nothing on this page is a picture file. Every piece is a record of parts, drawn when the page opens.</p></header>
+<p class="lede">Ten pieces from ten realms and peoples, each in its own people’s craft and no two alike. Each is named for the sky, the season, the sea or the hour of its own country, and its art for what that weather does to a man. The first is drawn after the owner’s example of a legendary blade and is Aldmark’s. None of them glows: what marks a legend is its metal, its making and what has happened to it. For each, the piece itself with two closer looks; who made it and what it has done; who owns it, who bears it and why; the person who has it, drawn by the game’s figure library with the piece on the figure; and, to one scale, the ordinary arm of its kind as the game itself now draws it. Nothing on this page is a picture file. Every piece is a record of parts, drawn when the page opens.</p></header>
 <div id="sheet"></div>
 <section id="sec-small"><h2 class="sec">The same ten at the size of a list</h2><p class="sub">The figure and the piece on it, drawn small and without the light pass, as a list of people would show them: outline, metal, one accent, enough to know the piece.</p><div id="small"></div></section>
 <section id="sec-cost"><h2 class="sec">What they cost to draw</h2><p class="sub">Measured in this browser when the page opened. Compose is a record turned into SVG. Paint is the browser turning that SVG into pixels, timed by drawing it to a canvas at twice the size shown.</p><div id="cost"></div>

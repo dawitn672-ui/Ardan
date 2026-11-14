@@ -123,3 +123,32 @@ export function plainCrossbow() {
     },
   };
 }
+
+// ---------------------------------------------------------------- the game's own ordinary arms (owner order 52) --------
+// Since order 52 the figure library draws every ordinary weapon as a made thing (src/ui/engine/figure/arms.js), so the
+// strip under each legendary shows that drawing itself, at Plain make: the arm a person in the game really carries.
+// The kit-drawn ones above were the first strips'; the sketches still use them.
+import { swordArt, daggerArt, haftArt, bowArt, crossbowArt } from '../../../../src/ui/engine/figure/arms.js';
+
+// one of the game's arms as a record: box in its own millimetres, fn(S, G, a) draws it from G along a
+function game(id, box, fn) {
+  return { id, box, draw(D) {
+    const { S, F } = D, a = Math.PI / 2 - F.deg * Math.PI / 180;
+    S.layer('main'); const L = S.cur, at = L.length;
+    fn(S, F.W(0, 0), a);
+    // its outline, for the one ground shadow: every filled shape it drew that is not inside a clip
+    let depth = 0;
+    for (let i = at; i < L.length; i++) { const s = L[i]; if (s.startsWith('<g')) depth++; else if (s === '</g>') depth--; else if (!depth && !s.includes('fill="none"')) { const m = /^<path d="([^"]+)"/.exec(s); if (m) D.sil.push(m[1]); } }
+  } };
+}
+const Q = 1;                                      // Plain make
+export const gameLongsword = () => game('game-longsword', [-262, 926, -124, 124], (S, G, a) => swordArt(S, G, a, 900, Q, { form: 'long' }));
+export const gameGreatsword = () => game('game-greatsword', [-452, 1272, -212, 212], (S, G, a) => swordArt(S, G, a, 1240, Q, { form: 'great' }));
+export const gameSabre = () => game('game-sabre', [-186, 836, -150, 62], (S, G, a) => swordArt(S, G, a, 800, Q, { form: 'sabre', st: 'desert' }));
+export const gameDagger = () => game('game-dagger', [-136, 264, -64, 64], (S, G, a) => daggerArt(S, G, a, 250, Q, { form: 'dagger' }));
+export const gameAxe = () => game('game-axe', [-16, 1384, -52, 206], (S, G, a) => haftArt(S, G, a, 1250, Q, { form: 'great' }));
+export const gameHammer = () => game('game-hammer', [-16, 862, -146, 82], (S, G, a) => haftArt(S, G, a, 800, Q, { form: 'hammer' }));
+export const gameSpear = () => game('game-spear', [-16, 2204, -52, 52], (S, G, a) => haftArt(S, G, a, 1900, Q, { form: 'spear' }));
+export const gameGlaive = () => game('game-glaive', [-16, 2190, -78, 74], (S, G, a) => haftArt(S, G, a, 1700, Q, { form: 'glaive' }));
+export const gameBow = () => game('game-bow', [-962, 962, -184, 32], (S, G, a) => bowArt(S, G, a, 1880, Q, { form: 'long' }));
+export const gameCrossbow = () => game('game-crossbow', [-24, 792, -362, 362], (S, G, a) => crossbowArt(S, G, a, 760, Q, {}));

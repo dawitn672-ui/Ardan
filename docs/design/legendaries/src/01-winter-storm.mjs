@@ -1,27 +1,29 @@
-// I · WINTER WHEAT · longsword · the Marshal's sword of Aldmark. Drawn after the owner's example of a legendary blade
+// I · WINTER STORM · longsword · the Marshal's sword of Aldmark. Drawn after the owner's example of a legendary blade
 // (docs/design/reference/owner-ref-3-legendary-blade.png): dark patterned steel between bright edges, veins of gold down
-// the middle like roots, a clawed guard of dark steel and gold round a cut stone, a black bound grip, a cut pommel.
+// the middle like lightning in a black sky, a clawed guard of dark steel and gold round a cut stone, a black bound grip, a cut pommel.
 import { MET, stuff, piece, tube, blade, sym, curve, line, inlay, engrave, ridge, beads, row, puff, glint, seat, gem, trim, roots, watering, xwrap, mixc, lerp, LIGHT, add, mul } from './fine.mjs';
-import { plainSword } from './plain.mjs';
+import { gameLongsword } from './plain.mjs';
 
 const STONE = '#5a6f9c';
 
 export default {
-  id: 'winter-wheat', no: 'I', name: 'Winter Wheat', cat: 'Longsword', form: 'sword.long', deg: 118, upright: 90,
+  id: 'winter-storm', seed: 'winter-wheat', no: 'I', name: 'Winter Storm', cat: 'Longsword', form: 'sword.long', deg: 118, upright: 90,
   realm: 'Empire of Aldmark', people: 'Northfolk; forged for them by the dwarves of Irondeep',
   owner: 'The imperial crown of Aldmark, as a treasure of the realm. It is House Ironside’s to keep and not to carry.',
   wielder: 'The Marshal of Aldmark, while the seat is filled: in 1105, Leofric Stane. When no Marshal is named it hangs over the iron ring in the Oath Hall at Kingsmere.',
   why: 'By the Oath Moot’s law. The Moot takes it down for a Marshal and hangs it up the day the war ends, so an emperor who wants a great war must first ask for the sword.',
   made: 'Forged at Irondeep by Clan Brightanvil in 951, the dwarves’ seal on the Iron Road Contract. 154 years old.',
-  legend: ['King Arnulf of Irondeep and Harald Ironside sealed the Iron Road Contract by torchlight: iron for wheat. The sword is the contract. Its heart is black hold-iron, and the roots of Aldmark’s wheat are let into it in gold.',
-    'It went out in both Horde Wars and came home with the army both times. The Ironsides say of it what they say of themselves: it lies under the snow and it does not break.'],
+  legend: ['King Arnulf of Irondeep and Harald Ironside sealed the Iron Road Contract by torchlight: iron for wheat. The dwarves made the seal a sword, and put in it the weather a plainsman fears most: a black sky down the heart of the blade, and the lightning in it in gold.',
+    'It went out in both Horde Wars and came home with the army both times. In Kingsmere they do not say that a Marshal has been named. They say the storm is down from the wall.'],
   hand: 'Broad, and heavier toward the point than a hand expects; the first month it wears out the wrist. Learned, it shears a common blade at the bind and goes through mail. It is still one sword: a man quick enough to be gone when it falls has nothing to fear from the steel.',
-  art: 'Under the Snow', artNote: 'a patient art: give ground like wheat under snow, then stand up through the other man’s last stroke',
+  art: 'Snowfall', artNote: 'light strokes laid one on another, none of them hard, until the other man’s guard gives under the weight, as a roof does under snow',
+  // its forms, in order; the last is its signature. [name, what it is]
+  forms: [['Grey Sky', 'the waiting guard, point low: nothing is given away'], ['First Snow', 'light cuts that only touch his blade, to learn its weight'], ['Drift', 'the bind: every parry is left lying on his blade, heavier each time'], ['White Hush', 'the one full stroke, through the guard that has given']],
   finish: 'Black dwarf-steel between bright bevels, gold, a grey sapphire, black leather', ground: ['#3b4150', '#0e0f15'], accent: '#d0a23a',
   len: 1155,
   box: [-262, 916, -142, 142],
-  details: [{ t: 'The guard and the stone', box: [-262, 150, -146, 146] }, { t: 'Roots of gold in the black', box: [120, 300, -52, 52] }],
-  plain: plainSword({ blade: 900, grip: 190, w: 25, cross: 100, pommel: 23 }), plainName: 'An ordinary longsword',
+  details: [{ t: 'The guard and the stone', box: [-262, 150, -146, 146] }, { t: 'Gold lightning in the black', box: [120, 300, -52, 52] }],
+  plain: gameLongsword(), plainName: 'An ordinary longsword',
   draw(D) {
     const { S, F } = D, st = MET.bright, dk = { k: '#040508', d: '#0c0e13', s: '#191c24', b: '#2b303b', l: '#5a6578', hi: '#b4c0d2', r: '#252d3c' }, bk = MET.black, g = MET.gold, r = D.r('hilt'), fine = D.lod >= 2;
     const coreHw = u => lerp(16.5, 5, Math.min(1, Math.max(0, (u - 20) / 750)));

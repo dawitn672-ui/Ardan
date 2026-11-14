@@ -42,6 +42,7 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [design/war.md](design/war.md) | D12a: war as a visual simulation (theatre, field, press) |
 | [design/growth.md](design/growth.md) | G design: 17 stats, thousands of skills, hundreds of fighting styles, legendary arts |
 | [design/economy-and-items.md](design/economy-and-items.md) | E1 and E2 design: markets that run themselves, hundreds of weapons, unique items |
+| [design/legendaries/legendaries.md](design/legendaries/legendaries.md) | Ten legendary arms, one from each of ten realms (orders 36 and 52): the page and its plates, how pieces, arts and forms are named, the redrawn bow; and `ordinary.png`, the game's ordinary arms before and after order 52 |
 | [design/reference/](design/reference/README.md) | The owner's reference pictures for character art (D-029) |
 | [design/critique.md](design/critique.md) | Design critique of the game screen (Oct 26) |
 | [design/pacing.md](design/pacing.md) | Pacing: a life lived a week or a month at a time |

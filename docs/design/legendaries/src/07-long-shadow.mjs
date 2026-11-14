@@ -1,28 +1,30 @@
-// VII · GRANDFATHER · spear · the spear of the First Face of the Gold Masks (Empire of Zanara).
+// VII · LONG SHADOW · spear · the spear of the First Face of the Gold Masks (Empire of Zanara).
 // Golden Plains work: a blade as long as a forearm in dark iron, ground bright at the edges; a socket of red gold
 // beaten into an ancestor's face; ebony bound with gold wire and ringed with ivory; a ruff of red-dyed hair.
 import { MET, WOOD, IVORY, stuff, piece, tube, haft, blade, sym, disc, curve, line, inlay, engrave, ridge, beads, dots, row, puff, glint, seat, winding, tufts, mixc, lerp, spl, LIGHT, add, mul } from './fine.mjs';
-import { plainSpear } from './plain.mjs';
+import { gameSpear } from './plain.mjs';
 
 const FE = { k: '#07080a', d: '#15171c', s: '#272a31', b: '#3f434c', l: '#70767f', hi: '#bcc2ca', r: '#2e333d' };
 const RG = MET.redgold, RED = '#a8261c';
 
 export default {
-  id: 'grandfather', no: 'VII', name: 'Grandfather', cat: 'Spear', form: 'spear.war', deg: -62, upright: -90,
+  id: 'long-shadow', seed: 'grandfather', no: 'VII', name: 'Long Shadow', cat: 'Spear', form: 'spear.war', deg: -62, upright: -90,
   realm: 'Empire of Zanara', people: 'The peoples of the Golden Plains; the Gold Masks',
   owner: 'The throne of Zanara, as all the empire’s gold is by law. Since 1062 House Sorondo, the bankers, have held it in pledge.',
   wielder: 'No one carries it. It stands in the Sorondo strongroom at Zanara, and Kwame Sorondo is the only living man who has had it in his hands. The First Face of the Gold Masks parades a copy.',
   why: 'The Salt War was paid for with the Gold Masks’ gold: the masks were melted and the spear pawned, both in secret. If the bankers ever show it, the empire learns what the Masks are made of now. So the crown pays, and keeps paying.',
   made: 'Made at Zanara in 930 for Mosi the Runner’s three hundred: the blade by the smiths of Kabale, the gold from the Ancestor Hill. 175 years old.',
-  legend: ['The small face on its socket is the first ancestor of the Kanemba line. The Gold Masks do not say they carry a spear. They say Grandfather goes first.',
+  legend: ['The Gold Masks attack late in the day with the sun behind them, so that their shadows reach a line before their points do. The longest is this one’s, and the small gold face on its socket is the first ancestor of the Kanemba line: the Masks say he arrives first.',
     'When the Masks lower their spears, the line in front of them breaks before the points arrive. His is the only face among them that is still solid gold.'],
   hand: 'A stabbing spear with a blade as long as a forearm, and a heavy butt that brings the point up fast. It goes through a hide shield and the man behind it. It is still a spear: beat the point aside and step in, and all that gold is a stick.',
-  art: 'Before the Point Arrives', artNote: 'the walk forward that breaks a line’s nerve before it breaks its spears',
+  art: 'Slow Drum', artNote: 'the walk forward to a slow drum that breaks a line’s nerve before it breaks its spears',
+  // its forms, in order; the last is its signature. [name, what it is]
+  forms: [['Are You There', 'the lowered point and the first step: the words said to the ancestors when the milk is poured, asked of a whole line'], ['No Faster', 'the pace that does not change, whatever is thrown at it'], ['I Am Here', 'the thrust on arrival: the answer the rite gives']],
   finish: 'Dark iron ground bright, red gold, ebony, ivory, red-dyed hair', ground: ['#5c4a22', '#17120a'], accent: '#cf8848',
   len: 2076,
   box: [-12, 2084, -54, 54], hero: [900, 2084, -90, 90],
-  details: [{ t: 'Grandfather', box: [1410, 1800, -74, 74] }, { t: 'The foot: iron, gold and ebony', box: [-12, 460, -50, 50] }],
-  plain: plainSpear(), plainName: 'An ordinary spear',
+  details: [{ t: 'The first ancestor', box: [1410, 1800, -74, 74] }, { t: 'The foot: iron, gold and ebony', box: [-12, 460, -50, 50] }],
+  plain: gameSpear(), plainName: 'An ordinary spear',
   draw(D) {
     const { S, F } = D, fine = D.lod >= 2, r = D.r('spear'), lit = F.vx[0] * LIGHT[0] + F.vx[1] * LIGHT[1] < 0 ? -1 : 1;
     // ---- the haft: ebony, bound at four places with gold wire, ringed twice with ivory

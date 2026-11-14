@@ -49,6 +49,13 @@ What changed for the player, in plain words, one section per version (newest fir
   a scale of seven words; and folded sections for your titles, posts and offices (and the ones you have left), your skills
   and fighting style, renown and deeds, house and household, gear and heirlooms, years, health and scars. Press any word to
   see what it means. The rail's Full profile button opens it.
+- **Arms that look made.** Every weapon and shield a person carries is drawn as the thing it is: an arming sword, a
+  longsword, a falchion or a sabre; a bearded axe, a flanged mace, a war hammer; a spear, a halberd, a bill, a pike; a
+  round shield, a kite, a targe or a buckler. A crude blade keeps its hammer marks and a cord grip, a fine one has a
+  wire grip and its maker's mark, a master's is chased and gilt. Elves, dwarves, orcs and the desert peoples carry their
+  own smiths' work.
+- **Bows and crossbows are on the figure.** An archer's bow is slung on the back with its quiver, a crossbow with its case
+  of bolts; an axe, mace or hammer hangs from the belt; a pole arm stands in the hand.
 
 ## v2.1.0-alpha.4 (2026-11-13 15:01 ET) · New faces and a calmer screen
 

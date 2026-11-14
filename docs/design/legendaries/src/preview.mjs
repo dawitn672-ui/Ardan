@@ -1,5 +1,5 @@
 // A look at one piece while drawing it.
-//   node docs/design/legendaries/src/preview.mjs --id=01-free-hand [--view=full,0,1,plain] [--w=300] [--zoom=1.6] [--out=/tmp/x.png] [--dsf=2]
+//   node docs/design/legendaries/src/preview.mjs --id=01-winter-storm [--view=full,0,1,plain] [--w=300] [--zoom=1.6] [--out=/tmp/x.png] [--dsf=2]
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

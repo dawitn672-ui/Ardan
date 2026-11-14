@@ -1,8 +1,8 @@
-// V · THAW · war axe · the lost axe of the kings of Northreach.
+// V · KILLING FROST · war axe · the lost axe of the kings of Northreach.
 // Cold Coast work: a thin wide blade of dark iron with a welded steel edge, knotwork and runes in silver and copper
 // wire, a collar of night-blue enamel, ash, sealskin, a butt of walrus ivory.
 import { MET, WOOD, IVORY, stuff, piece, tube, haft, disc, curve, line, inlay, engrave, ridge, beads, dots, puff, glint, seat, plait, winding, xwrap, enamel, mixc, lerp, spl, LIGHT, add, mul } from './fine.mjs';
-import { plainAxe } from './plain.mjs';
+import { gameAxe } from './plain.mjs';
 
 const DARK = { k: '#07080b', d: '#14171d', s: '#262b34', b: '#3e4551', l: '#6d7786', hi: '#b3bfcf', r: '#2c3646' };
 const NIGHT = '#1d3a78';
@@ -15,21 +15,23 @@ function runes(F, r, pts, h) {
 }
 
 export default {
-  id: 'thaw', no: 'V', name: 'Thaw', cat: 'War axe', form: 'axe.long', deg: -62, upright: -90,
+  id: 'killing-frost', seed: 'thaw', no: 'V', name: 'Killing Frost', cat: 'War axe', form: 'axe.long', deg: -62, upright: -90,
   realm: 'Kingdom of Northreach', people: 'The Northfolk of the Cold Coast',
   owner: 'The crown of Northreach claims it, and nobody has it. It is lost.',
   wielder: 'No one since King Bjorn III, the Frost-Handed, who had it beside his chair at Kingsmere on the night he was poisoned, in 1090. It is drawn here as the hall carving at Wolfhaven gives it.',
   why: 'It did not come home with the body. Aldmark says it was never in the hall; Northreach has asked for it eleven times. King Eirik III signed away ten years of silence over his father’s death, and the ten years are up. Whoever shows the axe names the murderer’s house.',
   made: 'Forged at Kingsmere about 810 for the exile Eirik Winterborn by a smith of the Fairrush court, which Northreach does not care to say. The haft was its fourth. 295 years old.',
-  legend: ['In January 812 Eirik the Ice-Walker led 340 men across the frozen bay and broke the sea gate of Wolfhaven with it. They named it for the one thing an ice road fears.',
+  legend: ['In January 812 Eirik the Ice-Walker led 340 men across the frozen bay and broke the sea gate of Wolfhaven with it. The frost that made his road had killed cattle in the byre all that winter. Then it took a city, and the axe has its name.',
     'Nine kings were raised on the shields with it in their hand. The tenth was raised without it, and has not forgotten.'],
   hand: 'A long two-handed axe with a thin, wide blade: light for its reach and quick to turn. It splits a shield and the arm behind it, and its beard hooks a rim or an ankle. Past the head it is a staff: get inside the swing and it is no better than its bearer’s knife.',
-  art: 'Ice Underfoot', artNote: 'short sliding steps, the axe swung from the hips; it is the other man who loses his feet',
+  art: 'Black Ice', artNote: 'short sliding steps, the axe swung from the hips; it is the other man who loses his feet',
+  // its forms, in order; the last is its signature. [name, what it is]
+  forms: [['Thin Ice', 'a guard that looks open: he steps onto ground he should not'], ['Glaze', 'the sliding step and the hooking beard: a rim, a wrist or an ankle goes'], ['Open Water', 'the stroke that falls while he does']],
   finish: 'Dark iron, a welded steel edge, silver and copper wire, blue enamel, ash, sealskin, walrus ivory', ground: ['#2c4468', '#0a1322'], accent: '#7fb0e8',
   len: 1460,
   box: [-44, 1440, -222, 44],
   details: [{ t: 'The head', box: [1150, 1440, -222, 44] }, { t: 'Sealskin and walrus ivory', box: [-52, 200, -64, 64] }],
-  plain: plainAxe(), plainName: 'An ordinary war axe',
+  plain: gameAxe(), plainName: 'An ordinary great axe',
   draw(D) {
     const { S, F } = D, sv = MET.silver, cu = MET.copper, st = MET.bright, fine = D.lod >= 2, r = D.r('axe');
     // ---- the haft: ash, gone dark where ten kings held it

@@ -8,7 +8,7 @@ export function render(def, box, o = {}) {
   const b = bbox([F.W(u0, v0), F.W(u0, v1), F.W(u1, v0), F.W(u1, v1)]), pad = o.pad ?? 0, vb = [b[0] - pad, b[1] - pad, b[2] - b[0] + 2 * pad, b[3] - b[1] + 2 * pad];
   const px = o.px || (o.fit ? Math.min(o.fit[0] / vb[2], o.fit[1] / vb[3]) : o.width ? o.width / vb[2] : 1);
   setPrec(px > 1.4 ? 100 : 10);
-  const D = begin((o.id || def.id) + (o.tag || ''), F, { px, view: vb, lod: o.lod ?? 2, seed: def.id });
+  const D = begin((o.id || def.id) + (o.tag || ''), F, { px, view: vb, lod: o.lod ?? 2, seed: def.seed || def.id });
   D.flat = !!o.flat; D.pxmm = px;
   def.draw(D);
   const sh = def.shadow || [5, 5, 8];

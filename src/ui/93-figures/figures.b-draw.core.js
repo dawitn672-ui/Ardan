@@ -73,7 +73,7 @@
     const estate = p.ruler ? 'royal' : p.prison ? 'prisoner' : job && job.c === 'clergy' ? 'priest' : p.status === 'royal' ? 'royal'
       : p.status === 'noble' || (nb && nb.rung >= 4) ? 'noble' : p.status === 'gentry' || (nb && nb.rung >= 2) ? 'gentry'
       : p.status === 'merchant' || (job && job.c === 'merchant') ? 'merchant' : p.status === 'slave' ? 'slave' : p.status === 'serf' || fl.unfree ? 'serf' : p.status === 'artisan' ? 'artisan' : 'peasant';
-    const g0 = p.gear || {}, gear = { weapon: item(g0.weapon), armor: item(g0.armor), shield: item(g0.shield), helm: item(g0.helm), cloak: item(g0.cloak) };
+    const g0 = p.gear || {}, gear = { weapon: item(g0.weapon), ranged: item(g0.ranged), armor: item(g0.armor), shield: item(g0.shield), helm: item(g0.helm), cloak: item(g0.cloak) };
     const officer = !!(mil && mil.rank >= 6);
     // a soldier with no arms of their own stands in what their company is issued
     if (mil && !gear.armor) gear.armor = item(officer ? 'mailplate' : ['HI', 'HC', 'MC'].includes(mil.troop) ? 'mail' : 'padded');

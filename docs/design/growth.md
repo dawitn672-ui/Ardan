@@ -4,6 +4,8 @@
 
 *Revised 2026-11-13 18:44 ET for owner order 34 (D-039) · by Opus 5.5 · supersedes the 11:55 draft's skill ladder and grades (§2.2), Ways and higher forms (§2.4), trees (§2.6), talent words and rust (§2.7), style grades and footing (§3.2, §3.6), "skill still decides most fights" (§4) and the eight open choices (§6.5). Each replaced part is marked where it stood and summed up in §7; the full first draft is at commit `f1a556d`.*
 
+*Revised 2026-11-14 10:50 ET for owner order 52 (D-050) · by Fable 5.2 at maximum effort · the twenty example arts of §3.3 renamed in place, and their names with them wherever the text uses one (§2.4, §2.6, §3.1, §3.4, §3.6, §3.8, §4); §12 added: how arts, forms and legendary pieces are named. The first names are listed in §12.5 and stand whole at commit `bcfd0d5`.*
+
 The owner's order 32, in short: more stats, each clearly defined; skills passive and active, "100s-1000s", for every route "in extreme depth"; proficiencies merged into "skills with different levels that can then evolve and merge"; each nation's "standard training for each of their regiments as well as tactics"; family styles, "some styles weaker than standard military and others far exceeding it"; a style for each elite order; legendaries with "their own unique design", "far more visually appealing than other weapons".
 
 Order 34 (D-039) sharpens it: fighting styles become **arts**, in the spirit of the murim martial world, for every weapon; eight skill words from **Beginner** to **Myth**, with only a handful of Grandmasters and at most one Legend alive; **no skill trees**, skills born by trying and grown by doing; **hidden talent** by area and by attribute; a top art wins about **7 in 10 or 8 in 10** at equal skill, and the same body applied differently can turn that over; **house arts** for knights and for the blood; **slow, rare decay**; legendaries **far beyond** any other weapon and hard to master.
@@ -20,6 +22,7 @@ Order 34 (D-039) sharpens it: fighting styles become **arts**, in the spirit of 
 - **Legendary arms** each have their own art and their own drawing; they are kept under guard, and in a hand that has mastered one they outclass anything else made.
 - **Cheap:** other people's talents and skills are worked out when asked for, never saved.
 - **Six stages, six choices still open** (§6.5).
+- **Names worth saying** (order 52, §12): one to three plain words, an art named for what it does in a fight, a legendary piece for the sky of its own country and its art for what that weather does to a man.
 
 Technical detail is under **For the builders**; a busy reader can keep to §1.4, §2.2, §2.6, §3.3, §3.5, §3.6 and §6.5. Counts and timings come from the code and `docs/design/trials/growth-skills.mjs`; counts this revision changed are marked as recounted and are re-run at G3.
 
@@ -213,7 +216,7 @@ At the top, skills stop growing apart and grow together. Two skills merge when:
 The merged skill starts at the lower of the two, takes their places on your page, keeps everything they did, adds its own effect, and grows and fades as one. It can merge again. Only a merged skill can pass Master, so every Grandmaster is someone whose skills have become one thing.
 
 Three kinds:
-- **The art made one's own:** a weapon skill and an art, both at Master, after you have won with it against an Expert or better. *Swordsmanship* and *the Hours of the Sword* become *the Sword of the Hours*, yours alone, the only road to a Grandmaster of the sword. One for every art, by rule.
+- **The art made one's own:** a weapon skill and an art, both at Master, after you have won with it against an Expert or better. *Swordsmanship* and *Vigil* become *the Sword of the Vigil*, yours alone, the only road to a Grandmaster of the sword. One for every art, by rule.
 - **Kindred skills,** written by hand: *Riding the courser* + *the horse bow* = *Horse archery*; *Tempering* + *judging steel* = *the Smith's Eye*; *Bonesetting* + *horse-doctoring* = *Farrier-surgeon*; *cipher* + *forgery* = *the False Seal*.
 - **A life's work,** written by hand for each calling's summit: *Smithing* + *the Smith's Eye* + *Armouring* = *the Whole Forge*; *Command* + *Tactics* + *Logistics* = *the Marshal's Art*. These absorb what the first draft called Ways and higher forms.
 
@@ -255,9 +258,9 @@ What tips the odds: your talent in its area and its stats; a kindred skill you a
 
 | Route | Own skills | One thread of depth |
 |---|---|---|
-| Soldier | 103 | the billhook, first tried in a levy → *the Marcher's Bill* → bill + the art = *the Bill Made One's Own* |
-| Archer | 38 | the war bow → *the Lark's Ascent* → + far sight = *the Far Hand* |
-| Knight | 109, and a house's or order's art | the destrier → *the Two-Wave Lance* → + *Saddle Without Hands* = *the Couched Charge* |
+| Soldier | 103 | the billhook, first tried in a levy → *Long Reap* → bill + the art = *the Bill Made One's Own* |
+| Archer | 38 | the war bow → *Skein* → + far sight = *the Far Hand* |
+| Knight | 109, and a house's or order's art | the destrier → *Two Waves* → + *Empty Saddle* = *the Couched Charge* |
 | Commander | 231 | *Shield wall* as an order → + Command + Tactics = *the Unbroken Wall* |
 | Smith and every craft | 354 | first heat at the forge → *Tempering* → + judging steel = *the Smith's Eye* |
 | Merchant | 156 | *Knows wool* + the Aldmark markets = *Wool factor* |
@@ -319,8 +322,8 @@ A slot limit would be a menu to tend, and would break the owner's rule of no cap
 
 An **art** is a way of fighting with one kind of weapon, taught as a set of **numbered forms**, kept by a **line of masters**, written (sometimes) in a **manual**, and guarded by a **school, regiment, house or order**. The structure is the murim martial world's; the dress and the words are Ardan's own medieval English. Nothing in it is magic: no inner force, no glowing blade. An art is drill, timing, a body shaped by years and a mind that has seen every answer before.
 
-- **Forms.** Each art has from three forms (a levy drill) to twelve (a peerless art). They are learned in order and called by number and name: "the Fifth Form, Iron Under Silk". The last forms of a great art are rarely seen outside its hall.
-- **Lines.** Every art has a holder, the head of its line (a post, one holder at a time, A2), with a named heir. "Sir Ranulf Swanley, ninth holder of the Two-Wave Lance."
+- **Forms.** Each art has from three forms (a levy drill) to twelve (a peerless art). They are learned in order and called by number and name: "the Fifth Form, the Heavy Hand". The last forms of a great art are rarely seen outside its hall.
+- **Lines.** Every art has a holder, the head of its line (a post, one holder at a time, A2), with a named heir. "Sir Ranulf Swanley, ninth holder of Two Waves."
 - **Manuals.** Some arts are written down, some never. A manual may be whole, may stop short of the last forms, or may hold a copyist's error. Houses keep theirs locked; orders burn theirs rather than see them taken.
 - **Keepers.** Who may be taught: a realm's men (the standard), a house's sworn knights (a knights' art), a house's own blood (a line art), an order's brothers (an outer art) or its masters (an inner art), a school's paying pupils, or a master's chosen few.
 - **Titles.** A school's or house's own rank names stay as titles of standing within it ("Iron Knight", "Captain of the Second Wave"); the art's mechanics use the eight words.
@@ -346,32 +349,34 @@ An **art** is a way of fighting with one kind of weapon, taught as a set of **nu
 
 Some arts serve two families (a sword-and-buckler art is a sword art and a shield art; a horse art carries a lance or a bow). Stealth, siegecraft and command keep the few "styles" they have today as **ways** of their own (the night way, the siege way); they are not weapon arts and use the same rules.
 
-### 3.3 Some arts, to show the voice
+### 3.3 Some arts, to show the voice *(renamed for order 52, D-050; the naming guide is §12)*
 
-Examples, not yet lore. Grades are §3.5's.
+Examples, not yet lore. Grades are D-043's words (§9): Lesser, Basic, Great, Renowned, Legendary, which stand where §3.5's table says Lesser, Standard, Strong, Great, Peerless. Every name follows §12: one to three plain words, named for what the art does in a fight, with no weapon and no keeper in it. A form is called by its number and its name ("the Fifth Form, the Heavy Hand"), and an art is often named for its last.
 
 | Art | Family · keepers | Grade | Forms |
 |---|---|---|---|
-| **The Hedge Drill** | Spear · every realm's levy standard | Lesser | Three: *Plant*, *Lean*, *Push*. Taught in a fortnight; enough to stand. |
-| **Seven Strokes of the Felling Axe** | Axe · a folk art of woodsmen and the forest roads | Lesser | Seven, named as a woodsman fells: the First Stroke, *the Notch*, to the Seventh, *Timber*. Brutal, slow to recover. |
-| **Millstone Hands** | Fist · millers' and porters' folk art | Lesser | Three: *the Upper Stone*, *the Nether Stone*, *the Grind*. A hold that ends a tavern brawl. |
-| **The Two-Wave Lance** | Lance · Aldmark's standard for its heavy horse (exists) | Standard | Six: *Knee to Knee*, *Knight Afoot*, *Walk, Trot, Canter*, *the First Wave*, *Through the Gap*, *Two Waves*. |
-| **The Marcher's Bill** | Polearm · standard of the march billmen | Standard | Five: *Hook the Rein*, *Pull Down*, *the Ditch Thrust*, *Beat the Point*, *the Long Reap*. |
-| **The Moving Wall** | Shield · a realm's standard for shield infantry | Standard | Four: *Lock Rims*, *Turn the Point*, *the Rim Blow*, *the Wall Walks*. |
-| **Hail of the Fells** | Throwing · the hill-folk's skirmishers' standard | Standard | Four casts: *the High Cast*, *the Flat Cast*, *Two in the Air*, *the Cast at the Horse*. |
-| **The Ironside Anvil** | Sword · House Ironside's **knights' art**, taught to its Iron Knights (exists) | Strong | Five, from *Ring-Bearer's Guard* to *the Emperor's Anvil*; heavy, armoured, patient. |
-| **The Patient Bolt** | Crossbow · the Crossbow Yard of Dorata | Strong | Five: *Span Behind the Pavise*, *Count Three*, *the Window Shot*, *the Low Bolt*, *the Last Bolt*. |
-| **The Lark's Ascent** | Bow · an elvish school of the far shot | Strong | Six, from *Nock in the Wind* to *the Second Arrow Before the First Lands*. |
-| **The Two Brothers** | Dual blades · a masters' lineage of sword and long knife | Strong | Six; the Sixth, *the Younger Brother Speaks*, is the knife arriving after the sword is parried. |
-| **Saddle Without Hands** | Horse · a steppe riders' school | Strong | Five: *Knees Only*, *the Low Lean*, *Turn on the Hock*, *the Empty Saddle*, *the Rider Beneath*. |
-| **The Wolf's Winter** | Lance and sword · the Knights of the Iron Wolf's **outer art**, for every sworn brother | Strong | Seven, from *Snowed In* to *Out on Foot*, after the order's founding night on the Glenwash. |
-| **The Closed Ring** | Sword · House Ironside's **line art**, for the blood only | Great | Nine. *The Ring Laid Down* opens it; the Fifth, *Iron Under Silk*, hides a heavy blow in a light one; the Ninth, *the Ring Closes*, has not been shown outside the hall in living memory. |
-| **The Bell-Founder's Hammer** | Mace and hammer · an order's **inner art** | Great | Nine tolls, the First Toll to the Ninth; the Ninth, they say, was struck once, at a king's death. |
-| **The Mercy-Knife's Five Doors** | Dagger · a masters' lineage of men-at-arms | Great | Five doors into armour: *the Visor's Slit*, *the Arm's Pit*, *the Palm*, *the Knee's Back*, *the Door No One Guards*. |
-| **Eleven Wolves** | Lance and sword · the Iron Wolf's **inner art**, for its grand master and his chosen | Peerless | Eleven, the First Wolf to the Eleventh, one for each wolf of the founding night. The Eleventh needs a Grandmaster. |
-| **The Hours of the Sword** | Sword · a masters' lineage begun by a hermit-knight; one holder, two pupils at most | Peerless | Eight, by the hours of the office: *Matins* (the cut before the light), *Lauds*, *Prime*, *Terce*, *Sext*, *None*, *Vespers*, and *Compline*, which ends it and needs a Grandmaster. |
-| **The Ninth Night** | Sword · the art of the Iron Wolf's grand masters' sword, bound to the piece (§4) | Bound to a legendary | Three: *the Snow*, *the Pack*, and *the Ninth Night*: once a fight, when you are losing, you strike as if you were not, and the men behind you do not waver. |
-| **The Unwritten Twelfth** | Sword · a Myth art; its last holder was a Legend, two hundred years dead | Peerless, lost | Eleven forms survive in a half-burned manual. The Twelfth was never written; the songs say what it did. |
+| **Briar** | Spear · every realm's levy standard | Lesser | Three: *Root*, *Thorn*, *Push*. Taught in a fortnight; enough to stand. |
+| **Seven Strokes** | Axe · a folk art of woodsmen and the forest roads | Lesser | Seven, as a tree is felled: the First Stroke, *the Notch*, to the Seventh, *Heartwood*. Brutal, slow to recover. |
+| **Grist** | Fist · millers' and porters' folk art | Lesser | Three: *the Runner*, *the Bedstone*, *the Grind*. A hold that ends a tavern brawl. |
+| **Two Waves** | Lance · Aldmark's standard for its heavy horse (in the lore today as *The Two-Wave Lance*) | Basic | Six: *Knee to Knee*, *Knight Afoot*, *Walk, Trot, Canter*, *the First Wave*, *Through the Gap*, and the Sixth, *Two Waves*. |
+| **Long Reap** | Polearm · standard of the march billmen | Basic | Five: *Hook the Rein*, *Pull Down*, *the Ditch Thrust*, *Beat the Point*, and the Fifth, *the Long Reap*. |
+| **The Wall Walks** | Shield · a realm's standard for shield infantry | Basic | Four: *Close Up*, *Turn the Point*, *the Rim Blow*, and the Fourth, *the Wall Walks*. |
+| **Sleet** | Throwing · the hill-folk's skirmishers' standard | Basic | Four casts: *the High Cast*, *the Flat Cast*, *Two Aloft*, and the Fourth, *Sleet*: every man's last javelin, flat, at the horses. |
+| **Anvil** | Sword · House Ironside's **knights' art**, taught to its Iron Knights (in the lore today as *The Ironside Anvil*) | Great | Five, from *Take It on the Ribs* to *Oath on the Iron Ring* (the lore's forms, to be renamed with it); heavy, armoured, patient. |
+| **Kingfisher** | Crossbow · the Crossbow Yard of Dorata | Great | Five: *the Perch* (spanned, behind the pavise), *Count Three*, *the Window*, *the Low Mark*, and the Fifth, *the Dive*: the bolt kept back for the man who thinks you are spent. |
+| **Skein** | Bow · an elvish school of the far shot | Great | Six, from *Leaf and Feather* (the air read before the draw) to the Sixth, *Skein*: a second arrow in the air before the first has come down. |
+| **Echo** | Dual blades · a masters' lineage of sword and long knife | Great | Six. The sword is the voice and the knife its echo; the Sixth, *the Last Word*, is the knife arriving after the sword is parried. |
+| **Empty Saddle** | Horse · a steppe riders' school | Great | Five: *Knees Only*, *the Low Lean*, *the Hock Turn*, *Under the Neck*, and the Fifth, *the Empty Saddle*: the horse comes on with nobody to be seen on it. |
+| **Wolf Winter** | Lance and sword · the Knights of the Iron Wolf's **outer art**, for every sworn brother | Great | Seven, from *Snowed In* to *Out on Foot*, after the order's founding on the Glenwash. |
+| **Iron Under Silk** | Sword · House Ironside's **line art**, for the blood only | Renowned | Nine. *Courtesy* opens it; the Fifth, *the Heavy Hand*, hides a heavy blow in a light one; the Ninth, *Iron Does Not Lie*, has not been shown outside the hall in living memory. |
+| **Passing Bell** | Mace and hammer · an order's **inner art** | Renowned | Nine tolls, the First Toll to the Ninth; the Ninth, they say, was struck once, at a king's death. |
+| **Mercy** | Dagger · a masters' lineage of men-at-arms | Renowned | Five doors into armour: *the Eye*, *the Wing*, *the Open Hand*, *the Hinge*, and the Fifth, *the Unguarded Door*. |
+| **The Long Hunt** | Lance and sword · the Iron Wolf's **inner art**, for its grand master and his chosen | Legendary | Eleven, the First Wolf to the Eleventh, one for each wolf of the founding night. The Eleventh needs a Grandmaster. |
+| **Vigil** | Sword · a masters' lineage begun by a hermit-knight; one holder, two pupils at most | Legendary | Eight, by the watches of a night kept awake: *Lamp-Lighting* (the cut before the dark), *First Watch*, *Midnight*, *the Small Hours*, *Cockcrow*, *False Dawn*, *Grey Light*, and *Sunrise*, which ends it and needs a Grandmaster. |
+| **Midwinter** | Sword · the art of **Wolf Moon**, the Iron Wolf's grand masters' sword, bound to the piece (§4) | Legendary, bound to its piece | Three: *the Snow*, *the Pack*, and *the Ninth Night*: once a fight, when you are losing, you strike as if you were not, and the men behind you do not waver. |
+| **Twelvemonth** | Sword · its last holder was a Legend, two hundred years dead | Legendary, lost | Eleven forms survive in a half-burned manual, a month of the year to each. The Twelfth was never written; the songs say what it did. |
+
+> *Replaced (order 52, D-050):* the first names of these twenty. Old against new, and why each went, is §12.5.
 
 ### 3.4 Who keeps the arts
 
@@ -387,14 +392,14 @@ Examples, not yet lore. Grades are §3.5's.
 About 600 arts in the world and 100 bound to legendary pieces, with about 2,600 forms.
 
 **House arts split (order 34).** A house may keep both arts, one, or neither:
-- **Both** (about 40 great martial houses): the knights' art makes its men a match for any realm's knights; the line art makes its blood something more. Ironside: *the Ironside Anvil* for the Iron Knights, *the Closed Ring* for the blood.
+- **Both** (about 40 great martial houses): the knights' art makes its men a match for any realm's knights; the line art makes its blood something more. Ironside: *Anvil* for the Iron Knights, *Iron Under Silk* for the blood.
 - **A knights' art only** (about 60): blood and sworn men learn the same; the house's pride is its men.
 - **A line art only** (about 30): a family secret; its knights learn the realm's standard.
 - **Neither** (the rest): the realm's standard for everyone.
 
 "The direct blood" is the head's children and grandchildren and the heir's line; a cadet branch keeps the line art one generation, then teaches it only if the head allows. A bastard, a ward or a son-in-law is taught the line art only by a choice of the head's, which is itself a card (and a thing other houses notice).
 
-**Each standard carries its tactics:** three to five battle formations its men are drilled in, its own manoeuvre, and a floor its drills never fall below. Aldmark's heavy horse learn the Two-Wave Lance: the couched lance, the flanking charge, the rally and the Two-Wave Charge itself; weak in forest and against stakes.
+**Each standard carries its tactics:** three to five battle formations its men are drilled in, its own manoeuvre, and a floor its drills never fall below. Aldmark's heavy horse learn Two Waves: the couched lance, the flanking charge, the rally and the charge in two waves itself; weak in forest and against stakes.
 
 ### 3.5 Grades, and what an art is worth *(replaces the first draft's §3.2 table and its "skill outweighs style" rule)*
 
@@ -421,14 +426,14 @@ Each art also has two **strengths** and one or two **weaknesses**, from fourteen
 Two men with the same numbers do not fight the same. **Application** is how a fighter's body and habits meet his art's demands, and how his art meets the other man's. It is worth as much as an art's grade, and it is what lets a standard art overpower a great one.
 
 It has four parts:
-1. **Fit: what the art asks of the body, and what this body has.** Every art asks for some stats more than others. *The Hours of the Sword* asks for Speed and Reflexes, then Wits. *The Bell-Founder's Hammer* asks for Strength and Toughness, then Nerve. *The Marcher's Bill* asks for Strength and Senses. Fit is not how strong you are, but whether your strengths are where your art asks for them. The same body fits one art well and another badly.
+1. **Fit: what the art asks of the body, and what this body has.** Every art asks for some stats more than others. *Vigil* asks for Speed and Reflexes, then Wits. *Passing Bell* asks for Strength and Toughness, then Nerve. *Long Reap* asks for Strength and Senses. Fit is not how strong you are, but whether your strengths are where your art asks for them. The same body fits one art well and another badly.
 2. **The match: your art against his.** Reach against close work, patience against haste, the press against the guard, and the fourteen situations. A spear art that keeps a sword art out on open ground; a dagger art that lives inside a lance's reach.
 3. **Your hand: how you have made the art your own.** Everyone favours two forms and leans one way (quick or patient, high or low, the strike or the counter). The player's hand comes from what he drills and what he uses in real fights; an NPC's is drawn from the seed. When your favourite forms answer the other man's lean, you have an edge; when they play into it, he does.
 4. **The read: having seen it before.** Having fought an art, or studied it, you read its forms sooner (as two pupils of one school already do), more with good Senses and Wits.
 
-**An example, the owner's case.** Two knights, the same numbers: strong, sturdy, ordinary speed. One fights in *the Hours of the Sword* (peerless), which wants speed he lacks and close work; the other in his realm's standard spear art, which wants strength and keeps men at reach. The first knight's art sits ill on him and is answered by the reach; the second's fits him and counters the first. On open ground the standard art wins most of their bouts. Put them in a narrow stair, give the first knight two years of drilling the Hours' patient forms, and it turns back.
+**An example, the owner's case.** Two knights, the same numbers: strong, sturdy, ordinary speed. One fights in *Vigil* (a Legendary art, the top grade), which wants speed he lacks and close work; the other in his realm's standard spear art, which wants strength and keeps men at reach. The first knight's art sits ill on him and is answered by the reach; the second's fits him and counters the first. On open ground the standard art wins most of their bouts. Put them in a narrow stair, give the first knight two years of drilling Vigil's patient forms, and it turns back.
 
-**In words, never numbers.** Before a duel the scale tips and the reasons are named: "Your art wants a quick hand; yours is a strong one. It sits ill." "Their spears keep you out; the Hours want close work." "You have fought the Moving Wall before." Choosing an art that suits your body becomes a real choice, and a teacher may tell you that the art you want is not the art for you.
+**In words, never numbers.** Before a duel the scale tips and the reasons are named: "Your art wants a quick hand; yours is a strong one. It sits ill." "Their spears keep you out; Vigil wants close work." "You have fought the Wall Walks before." Choosing an art that suits your body becomes a real choice, and a teacher may tell you that the art you want is not the art for you.
 
 ### 3.7 Learned, taught, written, stolen, lost, founded
 
@@ -444,7 +449,7 @@ It has four parts:
 
 - **A duel** offers your six ready forms beside the five base moves (strike, guard, feint, press, grapple); strengths and weaknesses apply when the situation holds; application tips the scale from the first exchange.
 - **A battle** gives you, at your rank, the choices of your regiment's standard for this ground, enemy and phase, on the war board (D12a, D12b). The report says what drill was worth: "Their lances were Hide-Knights; yours had the levy drill."
-- **On a person's card:** "Fights in the Two-Wave Lance, Aldmark's standard for its heavy horse (Knight of the First Wave). Also taught the Ironside Anvil. Favours the First Wave; patient." An art's page gives its grade, what it asks of the body, where it is strong and where it fails, its holder and his line, who teaches it, whether a manual is known, and the forms you hold.
+- **On a person's card:** "Fights in Two Waves, Aldmark's standard for its heavy horse (Knight of the First Wave). Also taught Anvil. Favours the First Wave; patient." An art's page gives its grade, what it asks of the body, where it is strong and where it fails, its holder and his line, who teaches it, whether a manual is known, and the forms you hold.
 
 ### 3.9 For the builders
 
@@ -468,7 +473,7 @@ E2 plans about 100 pieces that exist once: by the owner's answer (D-032), of leg
 
 > *Replaced (order 34, D-039 §9):* "An unpractised holder has the blade's numbers and not its art, so skill still decides most fights" (from D-032 §8). The gap is now large; mastering the piece is the price. Also replaced: "a holder can use its art at Adept after carrying the piece a year"; the bound art is learned like any art, through command.
 
-> An example, not yet lore: the sword of the Iron Wolf's grand masters. Black steel with a pale edge, a wolf's head in black iron for a pommel, grey pelt at the scabbard's throat. Its bound art, *the Ninth Night* (§3.3): *the Snow*, *the Pack*, and *the Ninth Night* itself, once a fight, when you are losing, you strike as if you were not, and the men behind you do not waver.
+> An example, not yet lore: **Wolf Moon**, the sword of the Iron Wolf's grand masters, named for the moon of the dead of winter under which the order was made. Black steel with a pale edge, a wolf's head in black iron for a pommel, grey pelt at the scabbard's throat. Its bound art, *Midwinter* (§3.3): *the Snow*, *the Pack*, and *the Ninth Night*: once a fight, when you are losing, you strike as if you were not, and the men behind you do not waver.
 
 **Each has its own drawing.** The demo draws a legendary sword by rule: one sun-steel blade for all. Instead every legendary is designed as itself:
 - **its own outline:** blade or head, guard, grip, pommel, and its own scabbard, quiver or strap;
@@ -698,3 +703,131 @@ Stats: 17 or more, split into **trainable** (Strength, Speed, Endurance, Reflexe
 Judgment, Cunning, Will, Nerve, Presence) and **not trained** (Senses, Looks, Renown, Honour). "Blades" reads
 **Swordsmanship**. One art at a time besides the weapon's basic moves, with every form of it you have learned (no
 loadout). Arts fade rarely and slowly and come back easily; they are founded, kept, stolen and lost.
+
+
+## 12 · Owner order 52 (2026-11-14 00:13 ET, D-050): names worth saying
+
+Where this section differs from anything above, it wins. The owner: "They shouldn't have some horrible naming. Winter Wheat could be called Winter Storm and its art be Snowfall… Naming and design for the legendary weapon arts and the weapons should be well thought out." The twenty example arts of §3.3 are renamed in place, and the ten legendaries of `docs/design/legendaries/` with them. Every art, form and legendary piece written from now on follows this guide. Weapons that are not legendary are named by `economy-and-items.md` Part 6.
+
+### 12.1 What a name must do
+
+1. **Be short.** One to three words, the article counted. A form may run to four only when it is a people's saying or an oath said whole (*Iron Does Not Lie*).
+2. **Be plain English that can be shouted.** Words a marcher knows: no coined words, no foreign words, no run-together compounds. A herald says it without stumbling; a serjeant shouts it across a yard.
+3. **Say what the art does in a fight,** from one of four sources: **a motion** (*Two Waves*, *The Wall Walks*, *Long Reap*, *Sunwise*), **a weather** (*Sleet*, *Snowfall*, *Black Ice*, *Cloudburst*), **a beast** (*Kingfisher*, *Skein*, *Wolf Winter*) or **an oath or saying** (*Stone Oath*, *Mercy*, *Iron Under Silk*). A name from none of the four is a label, and labels are what the first names were.
+4. **Leave the weapon and the keeper out.** The line beneath already says "a polearm art of the march billmen". So no *Lance*, *Bill*, *Bolt*, *Axe*, *Hammer*, *Knife* or *Sword* in the name, and no house, order, trade or master in the possessive (*the Marcher's*, *the Bell-Founder's*, *the Ironside*).
+5. **Never be mundane, comic or awkward.** A trade's word is welcome when it has weight or menace (*Anvil*, *Grist*, *Passing Bell*) and unwelcome when it is furniture or bookkeeping (a latch, a paymaster, a drill, an armpit). If a name can raise a smile, it is wrong.
+6. **Never be taken from an existing work.** No blade, art or form of any book, game, film or song, and no real rite or office of this world (the first draft's *Matins* to *Compline* went for that). A plain word that happens to be a title somewhere is not a theft (*Snowfall*, *Mercy*, *Vigil*); a name a reader would know as another world's sword is. The first new name for the Sand Clans' sabre was dropped for exactly that.
+7. **Be checked against the game's own names.** No art or form repeats one of the lore's 265 arts and 1,284 forms. Nothing is "*something* Wind": the Nine Winds are the Khanate's tribes, and only their own arts carry the word. A realm's emblem stays with its realm (the lion is Varenna's).
+8. **Use a head word once.** Among the arts of one keeper, and among the legendary pieces of one realm, no head word twice; across the hundred legendaries, none more than three times.
+
+### 12.2 By grade: how high the word stands
+
+| Grade (D-043) | The register | Examples |
+|---|---|---|
+| **Lesser** | The working word of the people who use it: a farmer's, a woodsman's, a miller's | *Briar*, *Seven Strokes*, *Grist* |
+| **Basic** | What the regiment shouts: its manoeuvre, usually its last form | *Two Waves*, *Long Reap*, *The Wall Walks*, *Sleet* |
+| **Great** | One image: a single noun, or a noun with one word to turn it | *Anvil*, *Kingfisher*, *Skein*, *Echo*, *Empty Saddle*, *Wolf Winter* |
+| **Renowned** | A phrase with a second meaning, which its house or order would rather not explain | *Iron Under Silk*, *Passing Bell*, *Mercy* |
+| **Legendary** | A length of time: a hunt, a night's watch, a year. For an art bound to a piece, what the piece's weather does to a man (§12.6) | *The Long Hunt*, *Vigil*, *Twelvemonth*; *Snowfall*, *Midwinter* |
+
+### 12.3 Forms
+
+- **Numbered, and named:** "the Third Form, *Drift*". The number is the order they are learned in and, in a great art, the order they are fought in.
+- **Together they tell one story,** the art's fight from its first move to its last, so that the names alone can be followed: *Grey Sky*, *First Snow*, *Drift*, *White Hush*.
+- **The last form is the signature.** A Basic art is usually named for it (*Two Waves*, *The Wall Walks*). Where a people have a saying or an oath, the last form of their greatest art is that saying: *Not Past Me* (the Last Door's oath of 612), *I Am Here* (the answer in the ancestors' rite), *Iron Does Not Lie* (what the north says over the iron ring), *The Sun's Shadow* (Queen Maerith's words).
+- **A form may be homelier than its art** (*Count Three*, *Knees Only*, *Pull Down*): it is a thing said in the yard. It still carries no weapon word.
+- **A counted set keeps its count and names only its ends:** the First Toll to the Ninth; the First Wolf to the Eleventh.
+
+### 12.4 By weapon family, by keeper and by people
+
+| Family | Its names come from | Examples |
+|---|---|---|
+| Sword | hours, light and weather: a sword art is a long conversation, and is named for a span of time or a sky | *Vigil*, *Twelvemonth*, *Snowfall*, *Sunwise*, *Mirage* |
+| Spear and polearm | the field: what stands, what is reaped, what walks forward in a line | *Briar*, *Long Reap*, *Slow Drum*, *Cloudburst* |
+| Axe | the wood and the cold: felling, splitting, ice | *Seven Strokes*, *Black Ice* |
+| Mace and hammer | the bell and the stone: weight that needs no edge | *Passing Bell*, *Stone Oath* |
+| Dagger | closeness: breath, doors, still water | *Mercy*, *Slack Water* |
+| Fist | the mill and the load | *Grist* |
+| Shield | walls, and what is waited out | *The Wall Walks* |
+| Dual blades | pairs: a voice and its answer | *Echo* |
+| Lance and horse | what comes in waves and what runs | *Two Waves*, *Empty Saddle*, *The Long Hunt* |
+| Bow | birds, the high air and dusk | *Skein*, *Owl-Light* |
+| Crossbow | the still hunter, and the fall from a height | *Kingfisher*, *Falling Star* |
+| Throwing | weather that comes down slantwise | *Sleet* |
+
+**By keeper.** A house's or an order's art may take its word from the keeper's own story instead of the weapon, without naming the keeper: Ironside's are iron (*Anvil*, *Iron Under Silk*), the Iron Wolf's are the winter night that made the order (*Wolf Winter*, *The Long Hunt*, *Midwinter*). A folk art takes the trade's word (*Grist*, *Seven Strokes*). A realm's standard takes the manoeuvre.
+
+**By people.** Each people's names stay inside its own sky, so that a name tells the realm before the card does.
+
+| People | Their words | Seen in |
+|---|---|---|
+| Aldmark and the northern plains | weather over open land, iron, oaths; blunt and short | *Winter Storm*, *Snowfall*, *Anvil*, *Two Waves* |
+| Solenne and the Temple | the sun's day: daybreak, noon, westering, the return | *White Noon*, *Sunwise* |
+| The Sand Clans | water, and its absence | *Dry Rain*, *Mirage* |
+| Greyhaven and the coasts | the sea's own words | *Undertow*, *Slack Water* |
+| Northreach | frost, ice and the dark half of the year | *Killing Frost*, *Black Ice*, *Wolf Winter* |
+| Irondeep | stone, fire and law: short, carved, said three times | *Deep Fire*, *Stone Oath* |
+| Zanara | the late sun, the drum, the ancestors | *Long Shadow*, *Slow Drum* |
+| The Tusk Clans | the summer sky over the grass, and what it costs | *Summer Thunder*, *Cloudburst* |
+| Sylvaran | leaf, moon and owl: what is not seen | *Sickle Moon*, *Owl-Light*, *Skein* |
+| The Highland League | stars, fixed marks and things owed | *Lodestar*, *Falling Star* |
+| The Khanate | the Winds, which are theirs alone | the lore's own |
+
+### 12.5 The twenty examples, old against new
+
+| Was | Is | Why the first name went |
+|---|---|---|
+| The Hedge Drill | **Briar** | "Drill" is a timetable's word. A hedge that pricks is a briar |
+| Seven Strokes of the Felling Axe | **Seven Strokes** | Six words, and the weapon in the name |
+| Millstone Hands | **Grist** | A label for the hands. Grist is what goes between the stones |
+| The Two-Wave Lance | **Two Waves** | The weapon in the name |
+| The Marcher's Bill | **Long Reap** | A keeper and a weapon. Named now for its last form |
+| The Moving Wall | **The Wall Walks** | A description. Now it is what the men say when it happens |
+| Hail of the Fells | **Sleet** | A place in the name. Sleet comes flat and all at once, as the casts do |
+| The Ironside Anvil | **Anvil** | The house in the name |
+| The Patient Bolt | **Kingfisher** | The weapon in the name. The bird waits on its perch, then dives once |
+| The Lark's Ascent | **Skein** | The title of a well-known piece of music. A skein is wild geese in the air together |
+| The Two Brothers | **Echo** | A label. The knife is the sword's echo |
+| Saddle Without Hands | **Empty Saddle** | Awkward to say. Named now for its last form |
+| The Wolf's Winter | **Wolf Winter** | The possessive. A wolf winter is what the north calls the worst kind |
+| The Closed Ring | **Iron Under Silk** | The lore already has *The Closing Ring* and *The Ring Closes* (the Khanate's hunt). Its own fifth form was the better name |
+| The Bell-Founder's Hammer | **Passing Bell** | A trade and a weapon. The passing bell is the one rung for the dying |
+| The Mercy-Knife's Five Doors | **Mercy** | Five words, a weapon and a count. One of its forms was "the Arm's Pit" |
+| Eleven Wolves | **The Long Hunt** | A count. The hunt is what the eleven forms are |
+| The Hours of the Sword | **Vigil** | The weapon in the name, and its forms were a real church's hours. They are the watches of a night now |
+| The Ninth Night | **Midwinter** | Kept, as the art's last form. The art takes the season |
+| The Unwritten Twelfth | **Twelvemonth** | It told its ending in its name. A twelvemonth is the old word for a year |
+
+Names that would also fail, and why: *Shadowfang* (coined, run together), *Doombringer* (the "-bringer" and "-bane" family belongs to other worlds), *The Dance of Seven Deaths* (long, and it boasts), *Red Wind* (a tribe of the Khanate), *The Lion's Walk* (Varenna's emblem, and a keeper), *Red Rain* (another world's sword).
+
+### 12.6 Legendary pieces and their arts
+
+- **A legendary piece is named for the sky, the season, the sea or the hour of its own country:** the weather its people fear or wait for. Two words, or one. Never its maker, its owner or its first deed (a deed name is for a famous piece that is not a legendary: `economy-and-items.md` Part 6), and never the kind of thing it is.
+- **Its bound art is named for what that weather does to a man.** A winter storm buries him (*Snowfall*); a killing frost takes his feet (*Black Ice*); summer thunder lets go all at once (*Cloudburst*).
+- **Its forms** follow §12.3; three to five, the last its signature.
+
+| Was | Is | Its art was | Its art is | Forms, in order |
+|---|---|---|---|---|
+| Winter Wheat | **Winter Storm** | Under the Snow | **Snowfall** | *Grey Sky*, *First Snow*, *Drift*, *White Hush* |
+| The Last Page | **White Noon** | The Sun Does Not Turn Back | **Sunwise** | *Daybreak*, *Noon*, *Westering*, *The Return* |
+| Last Well | **Dry Rain** | False Water | **Mirage** | *Shimmer*, *False Water*, *The Lake Walks*, *True Water* |
+| Held Breath | **Undertow** | The Long Breath | **Slack Water** | *Under the Chain*, *Count to Ten*, *First Breath* |
+| Thaw | **Killing Frost** | Ice Underfoot | **Black Ice** | *Thin Ice*, *Glaze*, *Open Water* |
+| The Latch | **Deep Fire** | Not Past Me | **Stone Oath** | *Hold Fast*, *What Is Carved*, *Not Past Me* |
+| Grandfather | **Long Shadow** | Before the Point Arrives | **Slow Drum** | *Are You There*, *No Faster*, *I Am Here* |
+| Midsummer | **Summer Thunder** | The Year's Rhino | **Cloudburst** | *Still Air*, *Thunderhead*, *The Price* |
+| The Unbending | **Sickle Moon** | The Sun's Shadow | **Owl-Light** | *No Leaf Moves*, *Soft Wing*, *Elsewhere*, *The Sun's Shadow* |
+| Paymaster | **Lodestar** | The Gorge Shot | **Falling Star** | *The Climb*, *Fixed Mark*, *Star Down* |
+
+Who has each piece, and its history rewritten to fit its name, is in `docs/design/legendaries/legendaries.md`. §4's example, the Iron Wolf's sword, is **Wolf Moon**, and its art **Midwinter**.
+
+### 12.7 What the guide would change in the lore (counted, not done)
+
+This order renames the examples and sets the rule. The lore's own arts keep their names until G3 rewrites their rows. Counted against the three rules a script can check (longer than three words, a hyphened word counting as one; a weapon word; a possessive). `node docs/design/legendaries/src/names.mjs` counts them, and checks every new name against the lore's:
+
+| | Names | Break at least one | Longer than three words | A weapon word | A possessive |
+|---|---|---|---|---|---|
+| Arts (`LORE.styles`) | 265 | 135 | 69 | 91 | 18 |
+| Forms (their techniques) | 1,284 | 550 | 422 | 173 | 52 |
+
+Forty form names are used by more than one art, and one form, *The Falling Leaf*, has the name of a sword form in a well-known series of novels. A rename is words only: people hold arts and forms by id (`p.styles[id]`, a technique's `id`), so no save changes.

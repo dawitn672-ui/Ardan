@@ -1,8 +1,10 @@
+// RETIRED 2026-11-14 (owner order 52, D-050): the first legendary bow. The owner found it thin and plain; Sickle Moon
+// (../09-sickle-moon.mjs) replaces it. Kept as it was drawn at bcfd0d5, with its first name and words.
 // IX · THE UNBENDING · longbow · Queen Maerith's bow (Kingdom of Sylvaran).
 // Elf work of the Evenwood: one stave of ridge yew, its pale sapwood left on the back; silver let into the limbs as fine
 // as leaf-veins; tips of horn carved like buds; green silk on the grip. Nothing on it is straight or square.
-import { MET, WOOD, HORN, stuff, piece, tube, disc, curve, line, inlay, engrave, ridge, beads, dots, puff, glint, cabochon, winding, xwrap, vineOn, arcFrame, mixc, lerp, spl, LIGHT, add, mul } from './fine.mjs';
-import { plainBow } from './plain.mjs';
+import { MET, WOOD, HORN, stuff, piece, tube, disc, curve, line, inlay, engrave, ridge, beads, dots, puff, glint, cabochon, winding, xwrap, vineOn, arcFrame, mixc, lerp, spl, LIGHT, add, mul } from '../fine.mjs';
+import { plainBow } from '../plain.mjs';
 
 const GREEN = '#2f6b47', YEW = stuff('#9c5a2c', { k: '#2a1206' }), SAP = WOOD.yewSap;
 

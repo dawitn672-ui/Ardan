@@ -1,7 +1,7 @@
-// II · THE LAST PAGE · greatsword · the bearing sword of the Temple of the Returning Sun (Holy See of Solenne).
+// II · WHITE NOON · greatsword · the bearing sword of the Temple of the Returning Sun (Holy See of Solenne).
 // Solen temple work: white steel polished like glass, a page of fire-gilding written with names, the twelve-rayed sun.
 import { MET, stuff, piece, tube, blade, sym, disc, curve, line, inlay, engrave, ridge, beads, row, dots, puff, glint, seat, gem, trim, winding, lettering, enamel, mixc, lerp, LIGHT, add, mul } from './fine.mjs';
-import { plainSword } from './plain.mjs';
+import { gameGreatsword } from './plain.mjs';
 
 const WHITE = { k: '#2a2e38', d: '#6f7887', s: '#a9b1bd', b: '#dfe4ea', l: '#f5f7fa', hi: '#ffffff', r: '#c6d1de' };
 const NAMES = 'MARCUS.CASSIAN.DORIAN.GALEN.LOTHAR.AURELIO.SEVERAN.LUCAN.TANCRED.OTTONE.PIERO.UGO.LEONE.RODERIC.TEODOR.ALDO.SILVAN.VALERIAN.OCTAVIAN.MAXIMIAN.CORVAN.ETTORE.BRUNO'.split('.');
@@ -9,21 +9,23 @@ const NAMES = 'MARCUS.CASSIAN.DORIAN.GALEN.LOTHAR.AURELIO.SEVERAN.LUCAN.TANCRED.
 const rays = (c, r0, r1, n, w, a0 = 0, skip = []) => { const out = []; for (let i = 0; i < n; i++) { if (skip.includes(i)) continue; const a = a0 + i / n * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a); out.push([[c[0] + ca * r0 - sa * w, c[1] + sa * r0 + ca * w], [c[0] + ca * r1, c[1] + sa * r1], [c[0] + ca * r0 + sa * w, c[1] + sa * r0 - ca * w]]); } return out; };
 
 export default {
-  id: 'last-page', no: 'II', name: 'The Last Page', cat: 'Greatsword', form: 'sword.great', deg: 118, upright: 90,
+  id: 'white-noon', seed: 'last-page', no: 'II', name: 'White Noon', cat: 'Greatsword', form: 'sword.great', deg: 118, upright: 90,
   realm: 'Holy See of Solenne', people: 'The Solen; the Temple of the Returning Sun',
   owner: 'The Temple of the Returning Sun. It lies on the high altar at Solenne beside the Book of Noon. No crown and no house has a claim on it.',
   wielder: 'The Grand Master of the Knights of the Sun (in 1105, Bruno Castell) carries it before the High Luminary on Return Day, and into the field when the order rides.',
   why: 'By vow. A Knight of the Sun gives up house and arms, so the order keeps no heirlooms: its one treasure is the Temple’s, lent to the office. Every Valdane king is crowned kneeling under it, and that is the Temple’s hold on Varenna.',
   made: 'Forged at Solenne in 760 from the swords the last imperial guards laid down when they chose vows over the axe; gilded by the women of House Corvane. 345 years old.',
-  legend: ['Every knight’s name is written in the Book of Noon as if he were already dead. The Grand Masters’ names are written here instead, in gold down the blade, and the order calls the sword the book’s last page.',
-    'There is room left for eleven names. The Temple has never said what happens when the page is full.'],
+  legend: ['Every knight’s name is written in the Book of Noon as if he were already dead. The Grand Masters’ names are written here instead, in gold down the blade. Twenty-three are written and there is room for eleven more; the Temple has never said what happens when the blade is full.',
+    'It leaves the altar once a year, at the stroke of noon on Return Day, and while it crosses the square nobody can look straight at it. That is all the name means. The Solen say: do not lie at noon.'],
   hand: 'Made to be carried upright before a procession, and as long as a man. Few can fight with it at all. One who can clears a ring two paces wide and breaks pikes like kindling. It cannot be hurried: a man who gets inside the ring is safe from it.',
-  art: 'The Sun Does Not Turn Back', artNote: 'every stroke goes on into the next; there is no guard in it, and no step back',
+  art: 'Sunwise', artNote: 'every stroke goes on into the next, always the same way round, as the sun goes; there is no guard in it, and no step back',
+  // its forms, in order; the last is its signature. [name, what it is]
+  forms: [['Daybreak', 'the rising cut from the low guard that sets the wheel turning'], ['Noon', 'the stroke straight down from the top of the wheel'], ['Westering', 'the long falling cut that clears the ring to two paces'], ['The Return', 'when the wheel looks spent, it comes round again']],
   finish: 'White steel, fire-gilding, white leather, rock crystal, a drop of red', ground: ['#34436b', '#0d1226'], accent: '#e7c14e',
   len: 1670,
   box: [-420, 1272, -196, 196],
   details: [{ t: 'The sun at the cross', box: [-420, 250, -196, 196] }, { t: 'The page of names', box: [236, 336, -30, 30], deg: 0 }],
-  plain: plainSword({ blade: 1240, grip: 360, w: 27, cross: 185, pommel: 25, ricasso: true }), plainName: 'An ordinary greatsword',
+  plain: gameGreatsword(), plainName: 'An ordinary greatsword',
   draw(D) {
     const { S, F } = D, g = MET.gold, fine = D.lod >= 2, r = D.r('hilt'), lea = stuff('#e9e2d2', { s: '#c9bfa8', d: '#9c917a', l: '#f8f4ea', hi: '#ffffff', k: '#3d3526' });
     const pageHw = u => lerp(21.5, 18.5, Math.min(1, Math.max(0, (u - 238) / 330)));

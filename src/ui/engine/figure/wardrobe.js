@@ -7,15 +7,21 @@
 import { stream, clamp } from './g.js';
 
 // ---- items by id -----------------------------------------------------------------------------------------------------
-// weapons: art is the drawn piece (sword, dagger, axe, hammer, spear, staff); armour: harness is the set of pieces
+// weapons: art is the class of drawn piece (sword, dagger, axe, hammer, spear, staff, bow, crossbow, shield) and form the
+// piece itself within it (arms.js: an arming sword, a falchion, a halberd, a targe); st is the people whose smiths made it,
+// when the item says so. armour: harness is the set of pieces
 export const GEAR_ART = {
-  fists: null, staff: { art: 'staff' }, dagger: { art: 'dagger' }, club: { art: 'hammer', q: 0 }, spear: { art: 'spear' }, axe: { art: 'axe' }, mace: { art: 'hammer' },
-  sword: { art: 'sword', q: 1 }, goodsword: { art: 'sword', q: 2 }, shortsword: { art: 'sword', q: 1 }, falchion: { art: 'sword', q: 1 }, saber: { art: 'sword', q: 1 },
-  longsword: { art: 'sword', q: 2, long: 1 }, elfblade: { art: 'sword', q: 3, r: 1 }, dwarfblade: { art: 'sword', q: 2, r: 1 }, chanari: { art: 'sword', q: 2, r: 1 },
-  greataxe: { art: 'axe', q: 1 }, cleaver: { art: 'axe', q: 0 }, warhammer: { art: 'hammer', q: 1 }, maul: { art: 'hammer', q: 0 }, flail: { art: 'hammer' }, morningstar: { art: 'hammer', q: 1 },
-  pike: { art: 'spear' }, lance: { art: 'spear', q: 1 }, glaive: { art: 'spear', q: 1 }, halberd: { art: 'spear', q: 1 },
-  arming: { art: 'sword', q: 2 }, estoc: { art: 'sword', q: 2, long: 1 }, greatsword: { art: 'sword', q: 2, long: 1 }, scimitar: { art: 'sword', q: 2 },
-  poleaxe: { art: 'spear', q: 2 }, boarspear: { art: 'spear', q: 1 }, partisan: { art: 'spear', q: 2 }, bill: { art: 'spear', q: 0 }, warpick: { art: 'hammer', q: 1 }, horsemace: { art: 'hammer', q: 2 },
+  fists: null, staff: { art: 'staff' }, dagger: { art: 'dagger' }, club: { art: 'hammer', form: 'club', q: 0 }, spear: { art: 'spear' }, axe: { art: 'axe' }, mace: { art: 'hammer', form: 'mace' },
+  sword: { art: 'sword', q: 1 }, goodsword: { art: 'sword', q: 2 }, shortsword: { art: 'sword', form: 'short', q: 1 }, falchion: { art: 'sword', form: 'falchion', q: 1 }, saber: { art: 'sword', form: 'sabre', q: 1 },
+  longsword: { art: 'sword', form: 'long', q: 2, long: 1 }, elfblade: { art: 'sword', form: 'leaf', st: 'elf', q: 3, r: 1 }, dwarfblade: { art: 'sword', form: 'short', st: 'dwarf', q: 2, r: 1 }, chanari: { art: 'sword', form: 'sabre', st: 'desert', q: 2, r: 1 },
+  greataxe: { art: 'axe', form: 'great', q: 1 }, cleaver: { art: 'axe', form: 'cleaver', q: 0 }, warhammer: { art: 'hammer', form: 'hammer', q: 1 }, maul: { art: 'hammer', form: 'maul', q: 0 }, flail: { art: 'hammer', form: 'flail' }, morningstar: { art: 'hammer', form: 'star', q: 1 },
+  pike: { art: 'spear', form: 'pike' }, lance: { art: 'spear', form: 'lance', q: 1 }, glaive: { art: 'spear', form: 'glaive', q: 1 }, halberd: { art: 'spear', form: 'halberd', q: 1 },
+  arming: { art: 'sword', q: 2 }, estoc: { art: 'sword', form: 'estoc', q: 2, long: 1 }, greatsword: { art: 'sword', form: 'great', q: 2, long: 1 }, scimitar: { art: 'sword', form: 'sabre', st: 'desert', q: 2 },
+  poleaxe: { art: 'spear', form: 'poleaxe', q: 2 }, boarspear: { art: 'spear', form: 'boar', q: 1 }, partisan: { art: 'spear', form: 'partisan', q: 2 }, bill: { art: 'spear', form: 'bill', q: 0 }, warpick: { art: 'hammer', form: 'pick', q: 1 }, horsemace: { art: 'hammer', form: 'mace', q: 2 },
+  // bows and crossbows (the ranged slot)
+  selfbow: { art: 'bow', form: 'self', q: 1 }, longbow: { art: 'bow', form: 'long', q: 1 }, compbow: { art: 'bow', form: 'recurve', q: 2 }, elfbow: { art: 'bow', form: 'long', st: 'elf', q: 3, r: 1 }, xbow: { art: 'crossbow', q: 1 },
+  horsebow: { art: 'bow', form: 'recurve', q: 2 }, warbow: { art: 'bow', form: 'long', q: 2 }, arbalest: { art: 'crossbow', q: 2 },
+  javelins: null, throwaxes: null, knives: null, sling: null,                    // thrown arms: carried in a bag or the belt, not drawn yet
   // armour
   none: null, robes: { harness: 'robes' }, padded: { harness: 'padded', q: 0 }, leather: { harness: 'leather', q: 1 }, hide: { harness: 'leather', q: 0 },
   mail: { harness: 'mail', q: 1 }, dwarfmail: { harness: 'mail', q: 2 }, elfmail: { harness: 'mail', q: 3, r: 1 }, orcmail: { harness: 'mail', q: 0 },
@@ -23,17 +29,19 @@ export const GEAR_ART = {
   mailplate: { harness: 'cuirass', q: 2 }, plate: { harness: 'plate', q: 2 }, dwarfplate: { harness: 'plate', q: 3, r: 1 },
   gambeson: { harness: 'padded', q: 1 }, jack: { harness: 'padded', q: 1 }, haubergeon: { harness: 'mail', q: 1 }, coatplates: { harness: 'plates', q: 2 }, splinted: { harness: 'plates', q: 1 }, gothic: { harness: 'plate', q: 3 },
   // shields, helms, cloaks
-  shield: { art: 'shield', q: 1 }, kite: { art: 'shield', q: 1 }, heater: { art: 'shield', q: 2 }, targe: { art: 'shield', q: 1 }, tower: { art: 'shield', q: 1 }, buckler: { art: 'shield', q: 1 },
-  parrydagger: { art: 'dagger', q: 2 }, handaxe: { art: 'axe' }, offsword: { art: 'dagger', q: 1 },
+  shield: { art: 'shield', form: 'round', q: 1 }, kite: { art: 'shield', form: 'kite', q: 1 }, heater: { art: 'shield', form: 'heater', q: 2 }, targe: { art: 'shield', form: 'targe', q: 1 }, tower: { art: 'shield', form: 'pavise', q: 1 }, buckler: { art: 'shield', form: 'buckler', q: 1 },
+  parrydagger: { art: 'dagger', form: 'parry', q: 2 }, handaxe: { art: 'axe', form: 'hand' }, offsword: { art: 'dagger', q: 1 },
   helm: { helm: 'nasal', q: 1 }, spangen: { helm: 'nasal', q: 1 }, horned: { helm: 'nasal', q: 1 }, kettle: { helm: 'kettle', q: 1 }, coif: { helm: 'coif' }, greathelm: { helm: 'bascinet', q: 2 }, bascinet: { helm: 'bascinet', q: 2 },
   elfhelm: { helm: 'nasal', q: 3, r: 1 }, dwarfhelm: { helm: 'kettle', q: 2, r: 1 }, turban: { helm: 'chaperon' },
   sallet: { helm: 'kettle', q: 2 }, barbute: { helm: 'nasal', q: 2 }, armet: { helm: 'bascinet', q: 3 },
   cloak: { cloak: 'plain' }, furcloak: { cloak: 'fur' }, finecloak: { cloak: 'fine' }, tabard: { cloak: 'tabard' },
 };
 // a weapon the table does not know is drawn by its kind (GD.GEAR[id].kind)
-const KIND_ART = { sword: 'sword', blade: 'sword', dagger: 'dagger', knife: 'dagger', axe: 'axe', mace: 'hammer', hammer: 'hammer', club: 'hammer', flail: 'hammer', spear: 'spear', polearm: 'spear', pike: 'spear', lance: 'spear', staff: 'staff' };
+const KIND_ART = { sword: 'sword', blade: 'sword', dagger: 'dagger', knife: 'dagger', axe: 'axe', mace: 'hammer', hammer: 'hammer', club: 'hammer', flail: 'hammer', spear: 'spear', polearm: 'spear', pike: 'spear', lance: 'spear', staff: 'staff', bow: 'bow', xbow: 'crossbow', crossbow: 'crossbow' };
+// whose smiths arm a person: a people's own make, else the culture's (cult.arms), else the common northern one
+const RACE_ARMS = { elf: 'elf', dwarf: 'dwarf', orc: 'orc' }, ARMS = new Set(['north', 'solen', 'desert', 'dwarf', 'elf', 'orc']);
 export function registerGear(id, art) { if (typeof id === 'string' && id) GEAR_ART[id] = art || null; }
-// one carried thing (the sheet gives { id, kind, make, rarity } or null) to { art | harness | helm | cloak, q, r, long }
+// one carried thing (the sheet gives { id, kind, make, rarity } or null) to { art | harness | helm | cloak, form, st, q, r, long }
 export function artOf(it, q0 = 1) {
   if (!it || !it.id) return null;
   const row = Object.prototype.hasOwnProperty.call(GEAR_ART, it.id) ? GEAR_ART[it.id] : KIND_ART[it.kind] ? { art: KIND_ART[it.kind] } : null;
@@ -65,7 +73,8 @@ export function kit(sh, o) {
   const dye = k => cultDye || pick(DYE[k] || DYE.peasant);
   const station = sh.ruler ? 3 : est === 'royal' ? 3 : est === 'noble' ? 3 : sh.officer ? 2 : est === 'gentry' ? 2 : 1;       // the make a person of this standing would own
   const armour = grown ? artOf(G.armor, station) : null, weapon = grown ? artOf(G.weapon, station) : null, shield = grown ? artOf(G.shield, station) : null;
-  const helm = grown ? artOf(G.helm, station) : null, cloak = age >= 12 ? artOf(G.cloak, station) : null;
+  const helm = grown ? artOf(G.helm, station) : null, cloak = age >= 12 ? artOf(G.cloak, station) : null, ranged = grown ? artOf(G.ranged, station) : null;
+  const arms = RACE_ARMS[sh.race] || (ARMS.has(cult.arms) ? cult.arms : 'north');
   let gear = [], headwear = 'none', headwearOpts = {}, poses, staff = null;
   const sword = weapon && weapon.art === 'sword';
   const harness = armour && armour.harness && armour.harness !== 'robes' ? armour.harness : null;
@@ -142,17 +151,20 @@ export function kit(sh, o) {
   // the old lean on a staff
   if (age > 68 && !harness && est !== 'royal' && !sh.ruler && ch(.45)) { poses = ['staff']; staff = staff || 'staff'; }
 
-  // what is carried, by item
+  // what is carried, by item: only what an item says of itself is written on it (its form, and whose make it is)
+  const own = it => ({ ...(it.form ? { form: it.form } : {}), ...(it.st ? { st: it.st } : {}) });
   if (weapon && grown) {
-    if (weapon.art === 'sword') gear.push({ id: 'sword', q: weapon.q, r: weapon.r, long: weapon.long });
-    else if (weapon.art === 'dagger') gear.push({ id: 'dagger', q: weapon.q, r: weapon.r });
-    else if (weapon.art === 'axe') gear.push({ id: 'tool', kind: 'axe', side: -1 });
-    else if (weapon.art === 'hammer') gear.push({ id: 'tool', kind: 'hammer', side: -1 });
-    else if (weapon.art === 'spear') { poses = ['staff']; staff = 'spear'; }
+    const two = weapon.form === 'great' || weapon.form === 'maul';
+    if (weapon.art === 'sword') gear.push({ id: 'sword', q: weapon.q, r: weapon.r, long: weapon.long, ...own(weapon) });
+    else if (weapon.art === 'dagger') gear.push({ id: 'dagger', q: weapon.q, r: weapon.r, ...own(weapon) });
+    else if ((weapon.art === 'axe' || weapon.art === 'hammer') && !two) gear.push({ id: 'sidearm', q: weapon.q, r: weapon.r, form: weapon.form || (weapon.art === 'axe' ? 'axe' : 'mace'), ...(weapon.st ? { st: weapon.st } : {}) });
+    else if (weapon.art === 'spear' || two) { poses = ['staff']; staff = { kind: 'pole', form: weapon.form || 'spear', q: weapon.q, r: weapon.r, ...(weapon.st ? { st: weapon.st } : {}), ...(weapon.form === 'lance' ? { pennon: realm } : {}) }; }
     else if (weapon.art === 'staff') { poses = ['staff']; staff = 'staff'; }
   }
-  if (shield && shield.art === 'shield') gear.push({ id: 'shield', q: shield.q, r: shield.r, field: device ? field : realm, pale: device ? chargeC : 'ochre', device: device || null });
-  else if (shield && shield.art === 'dagger') gear.push({ id: 'dagger', q: shield.q, r: shield.r });
+  if (ranged && ranged.art === 'bow') gear.push({ id: 'bow', q: ranged.q, r: ranged.r, form: ranged.form || 'long', ...(ranged.st ? { st: ranged.st } : {}) }, { id: 'quiver', q: ranged.q, r: ranged.r });
+  else if (ranged && ranged.art === 'crossbow') gear.push({ id: 'crossbow', q: ranged.q, r: ranged.r }, { id: 'quiver', q: ranged.q, r: ranged.r, bolts: 1 });
+  if (shield && shield.art === 'shield') gear.push({ id: 'shield', q: shield.q, r: shield.r, ...own(shield), field: device ? field : realm, pale: device ? chargeC : 'ochre', device: device || null });
+  else if (shield && shield.art === 'dagger') gear.push({ id: 'dagger', q: shield.q, r: shield.r, ...own(shield) });
   if (cloak && cloak.cloak) {
     gear = gear.filter(g => g.id !== 'cloak');
     const at = Math.max(0, gear.findIndex(g => g.id === 'tabard' || g.id === 'belt'));
@@ -171,5 +183,5 @@ export function kit(sh, o) {
   }
   let pose = poses[Math.floor(stream(id, 'pose')() * poses.length) % poses.length];
   if ((pose === 'pommel' || pose === 'sword') && !gear.some(g => g.id === 'sword')) pose = 'belt';
-  return { gear, headwear, headwearOpts, pose, staff };
+  return { gear, headwear, headwearOpts, pose, staff, arms };
 }
