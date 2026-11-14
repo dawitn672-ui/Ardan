@@ -166,7 +166,10 @@
   P.unstyle = function (p, key) {
     if (!p) return;
     const style = P.style(key);
-    if (typeof p.occ === 'string' && p.occ === style) p.occ = 'once ' + style;
+    // a bare seat name ("Chancellor", as some starting councils were written) is the same post: C9's re-rolled world
+    // (seed 7101) kept a "Chancellor" beside the new "Chancellor of Morhaven" (coherency, one office, one styled holder)
+    if (typeof p.occ === 'string' && (p.occ === style || style.startsWith(p.occ + ' of '))) p.occ = 'once ' + style;
+    if (typeof p.title === 'string' && p.title && (p.title === style || style.startsWith(p.title + ' of '))) p.title = 'once ' + p.title;
   };
   const say = (t, c) => { if (A.log) A.log(t, c || 'warn'); };
   // the player's grade follows the Marshal's seat: 9 while he holds it, his General's grade again when he leaves it
