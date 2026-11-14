@@ -82,6 +82,7 @@ branch on GitHub, and a sample save in `tests/saves/`.
 | v2.1.0-alpha.2 | 2026-11-13 01:35 ET | X6 naming pass, A3a coherency net, B4 click-to-open, A1 one redraw a press, B6 Next month or Next year, CI 97-101 fixes |
 | v2.1.0-alpha.3 | 2026-11-13 02:40 ET | X1: the release is readable source (`src/core/release/`), all 203 patches baked in, same program |
 | v2.1.0-alpha.4 | 2026-11-13 15:01 ET | C8b: the approved character art draws every portrait, face and build maker; B5 part 1: a calmer screen |
+| v2.1.0-alpha.5 | 2026-11-14 18:49 ET | v2.1 foundations milestone (`release/v2.1-foundations`): A2 stage 1, P and P2 profile, C9 bodies, X3 part 1, order 52 names, W0 and D10; CI 111 green on `3801932` |
 
 ## Milestones
 - [ ] `release/v2.1-foundations` (after A1, A3a, B6, A2)

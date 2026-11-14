@@ -5,6 +5,14 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.5 (2026-11-14 18:49 ET) · v2.1 foundations: posts, bodies, honest cards, war at your rank
+
+- **Fairer endings.** A long life that was really a saint's, a scholar's or a keeper of secrets' is remembered for that,
+  not just its purse: "The Wealthy" now comes after them.
+- **Odds that add up.** Every line in the odds popover adds up to the number on the choice, even for a near-sure thing.
+- **Scenes on their dates, fixed.** A scene that only mentions a month as a plan ("she means to cross the passes in June")
+  is no longer held back until that month.
+
 - **No war score.** A war now reads as the land each side holds and the great battles won, not a number. The army
   templates are gone from the War Room.
 - **War at your rank.** A soldier sees his own corner of the war, a captain his front, a general the whole theatre. Only
