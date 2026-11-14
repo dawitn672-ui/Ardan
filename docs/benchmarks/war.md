@@ -2,7 +2,7 @@
 
 Oct 13, 2026 · build `b593143` plus the 29 fix patches (`features/00-05`), measured in headless Chromium. Strict score going in (from "Ardan Road to 100"): **5.5**. The plan's own score: 6.
 
-Every number about Ardan below was measured for this doc unless it names a review. The scripts lived in a private scratch folder. The method is in the appendix so `bench/` can adopt it. This file is the only thing this work added to the repo.
+Every number about Ardan below was measured for this doc unless it names a review. The scripts lived in a private scratch folder. The method is in the appendix so `tools/bench/` can adopt it. This file is the only thing this work added to the repo.
 
 **About the sources.** The web tools failed for this doc. Every page fetch failed at DNS, the proxy refused the wiki, store and studio hosts, and the shared search budget was already spent. So claims about other games come from two places:
 
@@ -220,7 +220,7 @@ Ranked by score moved per unit of work. "Code" means `*.core.js` plus the smalle
 
 | Rank | Feature | Effort | Buildable here | Acceptance test (fails if not met) |
 | --- | --- | --- | --- | --- |
-| 1 | **War bench module.** Port this doc's harness to `bench/run.mjs` as a `war` module: leverage by rank (best−worst, best−stay out), share decided before asked, phantom dead, war-score reversion, AI gap, lead effect, war-day p95 | S | Code (bench/) | `reports/scorecard.md` War section shows ≥6 metrics for `release` and `fixes`; the module runs in ≤10 minutes; two runs on the same build agree within the CI |
+| 1 | **War bench module.** Port this doc's harness to `tools/bench/run.mjs` as a `war` module: leverage by rank (best−worst, best−stay out), share decided before asked, phantom dead, war-score reversion, AI gap, lead effect, war-day p95 | S | Code (tools/bench/) | `tools/bench/reports/scorecard.md` War section shows ≥6 metrics for `release` and `fixes`; the module runs in ≤10 minutes; two runs on the same build agree within the CI |
 | 2 | **After-action report from causes the sim already computes.** Wrap `A.fightDay` to collect each day's modifiers per side. Attribute shares by switching each factor off in the closed-form damage formula (no RNG). Store `{causes:[{label,pct}],text}` in `b.aar` and in the `w.battles` entry. Show it in the battle modal's end screen and the War tab | M | Code | Bench `afterActionShare` = 100% of player battles. Every report has ≥3 causes with \|pct\| ≥ 1. The causes explain ≥70% of the organisation-loss ratio in a 200-fight check. `renderRng` and `replayWithRender` tests pass |
 | 3 | **Stop the phantom war.** For fights joined from a prompt (`wsKey`), the line battle applies no `A.applyLosses` and pushes no separate battle. Mission and line war-score effects go into `bscore` at a size that scales with the men involved, or aren't shown | S | Code (patch) | Phantom dead per line battle = 0. In the 12-seed control test, `w.score` 8 days after a won line battle is ≥ control in 12 of 12 seeds, or no score change is shown |
 | 4 | **One battle, one result: sectors.** Build `wsPart` and `wsLine` battles from the real fight's divisions in the player's sector, the way `wsLeadBattle` does for generals, and apply their dead and organisation to those divisions, the way `BATTLE_END.wsBattle` does | L | Code | A/B harness: best−worst on the player's sector ≥15 points at ranks 0–6. On the whole fight ≥2 at ranks 0–3, ≥8 at 4–6, ≥15 at 7–9. Every CI lower bound > 0 |
@@ -264,7 +264,7 @@ Ranked by score moved per unit of work. "Code" means `*.core.js` plus the smalle
 
 - Build: `node tools/build.mjs --only=__none__` (fix layer only), run in headless Chromium through Playwright.
 - Code read with `tools/show.mjs`: `A.fightDay`, `A.tacDay`, `A.WTAC`, `A.WIDTH`, `A.divCombat`, `A.wsPCFightStart`, `A.wsNudge`, `A.wsLeadBattle`, `A.BATTLE_END.wsBattle`, `A.newBattleForPC`, `A.newLineBattle`, `A.lineBattleResult`, `A.battleClose`, `A.battlePersonalCombat`, `A.aiDeploy`, `A.aiPulse`, `A.wsSiegeDay`, `A.wsScore`, `A.applyLosses`, `A.makeSquad`, `A.comradeDies`, `A.missionOdds`, `A.fightEnd`, `UI.wrFightPanel`, `UI.battleModalBasic`.
-- Reviews: `docs/reviews/Ardan Road to 100.md`, `docs/reviews/Ardan Deep Analysis.md`. Bench: `reports/fixes.json` (`afterActionShare` 0 of 46 battles).
+- Reviews: `docs/reviews/road-to-100.md`, `docs/reviews/deep-analysis.md`. Bench: `tools/bench/reports/fixes.json` (`afterActionShare` 0 of 46 battles).
 
 ## Appendix: how this was measured
 

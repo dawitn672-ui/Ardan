@@ -1,0 +1,33 @@
+{
+  "id": "mouth",
+  "_note": "Mouth and the skin round it, hung at the centre of the lips' parting (0,0). The far half is foreshortened. The upper lip faces down and is darker; the lower lip catches the light; the hollow under it is a shadow; the philtrum is two columns, the far one lit.",
+  "layers": [
+    {"id": "philtrum", "role": "skin.half", "lod": 1, "d": "M -4 -36 S -2 -26 0 -17 L 9 -17 S 5 -26 2 -36 Z", "alpha": 0.7},
+    {"id": "philtrum_hl", "role": "skin.hl", "lod": 1, "line": "M -9 -34 S -7 -26 -4 -19", "w": [0.4, 2.2, 0.8], "k": "tone"},
+    {"id": "bow_hl", "role": "skin.hl", "lod": 1, "line": "M -24 -9 S -12 -15 -2 -18 8 -18 22 -15", "w": [0.4, 2, 1, 1.6, 0.4], "k": "tone"},
+    {"id": "under", "role": "skin.half", "d": "M -22 19 S -4 25 18 23 34 17 S 22 32 0 35 -16 29 Z"},
+    {"id": "under_deep", "role": "skin.shadow", "lod": 1, "d": "M -12 20 S 4 24 22 21 S 14 28 0 29 Z"},
+    {"id": "corner_n", "role": "skin.half", "lod": 1, "d": "M 52 -12 S 64 -6 64 6 56 10 54 0 Z", "alpha": 0.8},
+    {"id": "upper", "role": "lip.shadow", "d": "M -31 -1 S -21 -8 -9 -14 -1 -16 3 -13 8 -16 21 -14 39 -10 58 -4 S 40 -2 20 0 6 0 -4 1 -18 0 Z"},
+    {"id": "upper_lit", "role": "lip.half", "clip": "upper", "lod": 1, "d": "M -34 -20 L 6 -20 S 4 -10 0 -6 -14 -4 -34 -2 Z"},
+    {"id": "lower", "role": "lip.light", "d": "M -29 1 S -14 2 6 2 30 0 56 -3 S 42 8 22 15 0 17 -17 12 Z"},
+    {"id": "lower_n", "role": "lip.half", "clip": "lower", "d": "M 26 -10 S 32 4 26 24 L 70 24 L 70 -10 Z"},
+    {"id": "lower_under", "role": "lip.shadow", "clip": "lower", "lod": 1, "d": "M -30 12 S -10 12 10 14 34 6 L 40 24 L -30 24 Z", "alpha": 0.5},
+    {"id": "lower_hl", "role": "lip.hl", "lod": 1, "e": [-4, 8, 11, 3.2, -4]},
+    {"id": "lower_edge", "role": "skin.shadow", "lod": 1, "line": "M -16 13 S 0 18 22 15 40 7", "w": [0.4, 1.2, 1.2, 0.4], "k": "form"},
+    {"id": "lines", "role": "lip.shadow", "age": [52, 80], "line": "M -10 -18 S -9 -22 -8 -27", "w": [0.3, 1, 0.3], "k": "form", "lod": 2},
+    {"id": "lines2", "role": "lip.shadow", "age": [58, 84], "line": "M 14 -17 S 15 -22 16 -27", "w": [0.3, 1, 0.3], "k": "form", "lod": 2},
+    {"id": "part", "role": "ink", "line": "M -33 -1 S -18 0 -6 1 6 0 24 -1 42 -3 59 -5", "w": [1.2, 2, 2.6, 2.4, 2.2, 1.8, 2.6], "k": "form", "alpha": 0.9},
+    {"id": "corner_far", "role": "skin.line", "line": "M -34 -5 S -34 0 -30 4", "w": [0.4, 1.6, 0.4], "k": "form"},
+    {"id": "corner_near", "role": "skin.line", "line": "M 54 -9 S 60 -5 62 1", "w": [0.4, 2, 0.4], "k": "form"},
+    {"id": "mentolabial", "role": "skin.shadow", "lod": 2, "line": "M -12 38 S 4 41 18 37", "w": [0.3, 1.2, 0.3], "k": "form"}
+  ],
+  "masters": {
+    "lips+": {"warp": [[0, -16, 0, -3, 30], [0, 17, 0, 4, 30]]},
+    "lips-": {"warp": [[0, -16, 0, 3, 30], [0, 17, 0, -5, 30]]},
+    "female": {"warp": [[0, -16, 0, -2, 30], [0, 17, 0, 3, 30], [58, -4, -6, 0, 20], [-31, -1, 2, 0, 16]]},
+    "child": {"warp": [[58, -4, -14, -1, 28], [-31, -1, 6, 0, 20], [0, 17, 0, 2, 26], [0, -16, 0, 1, 20]]},
+    "elder": {"warp": [[0, -16, 0, 3, 28], [0, 17, 0, -4, 26], [58, -4, 0, 4, 18], [-31, -1, 0, 3, 14]]},
+    "x:smile": {"warp": [[58, -4, 4, -6, 20], [-31, -1, -2, -4, 16]]}
+  }
+}

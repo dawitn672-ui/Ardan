@@ -1,7 +1,7 @@
 # Pacing: a life lived a week or a month at a time
 
 The owner's direction (Oct 27): one world, simulated in full everywhere, and a life lived "a month or a week at a time,
-with events and actions within that". This page is the design. It is built in `features/84-top-bar/step.core.js`.
+with events and actions within that". This page is the design. It is built in `src/ui/84-top-bar/step.core.js`.
 
 ## How time runs today
 
@@ -55,7 +55,7 @@ the player the time to act.
 
 ## Measured by
 
-`features/84-top-bar/test.mjs`: `tbStepWeekMonth` (a week is 7 days, a month ends on the month turn, an event inside a
+`src/ui/84-top-bar/test.mjs`: `tbStepWeekMonth` (a week is 7 days, a month ends on the month turn, an event inside a
 step waits and the step goes on after it), `tbStepSameWorld` (a month in slices reaches the same state and random stream
 as `A.advance` over the same days), `tbStepResponsive` (on the Great Continent no slice blocks the page for long: the
 longest task while a month runs).

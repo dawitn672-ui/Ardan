@@ -1,0 +1,31 @@
+{
+  "id": "kirtle",
+  "z": "dress2",
+  "mats": {"cloth": "russet", "cord": "leather", "lining": "linen"},
+  "_note": "A woman's wool kirtle, the working gown of a tenant's household: a wide scoop neck over the shift, laced up the front through stitched eyelets with a leather cord, a seam over the shoulder. Wool folds are few and broad. The cue at 46 px is the earth colour and the white of the shift at the neck.",
+  "layers": [
+    {"id": "body", "role": "cloth.light", "d": "M 286 904 S 360 956 420 990 478 1004 540 990 600 956 650 908 690 860 L 762 846 S 856 908 936 984 966 1090 976 1516 L 88 1516 S 98 1090 132 984 206 918 Z"},
+    {"id": "gap", "role": "lining.light", "d": "M 470 1004 L 492 1004 L 496 1216 L 466 1216 Z"},
+    {"id": "gap_sh", "role": "lining.shadow", "clip": "gap", "d": "M 470 1000 L 480 1000 L 482 1216 L 466 1216 Z"},
+    {"id": "half", "role": "cloth.half", "clip": "body", "d": "M 620 900 S 660 980 700 1080 730 1516 L 1000 1516 L 1000 840 Z"},
+    {"id": "shadow", "role": "cloth.shadow", "clip": "body", "d": "M 740 870 S 790 960 820 1080 830 1516 L 1000 1516 L 1000 840 Z"},
+    {"id": "fold1", "role": "cloth.half", "clip": "body", "d": "M 330 990 S 350 1070 356 1150 352 1516 L 384 1516 S 384 1120 364 1030 Z"},
+    {"id": "fold2", "role": "cloth.half", "clip": "body", "d": "M 560 1000 S 584 1080 596 1150 600 1516 L 628 1516 S 616 1130 590 1040 Z"},
+    {"id": "under_bust", "role": "cloth.half", "clip": "body", "lod": 1, "d": "M 250 1150 S 330 1176 420 1184 470 1180 L 470 1200 S 400 1206 320 1196 250 1180 Z", "alpha": 0.7},
+    {"id": "sh_far", "role": "cloth.hl", "clip": "body", "lod": 1, "d": "M 150 990 S 210 940 290 912 340 940 270 960 190 1000 Z", "alpha": 0.6},
+    {"id": "hatch", "pat": {"type": "hatch", "role": "cloth.line", "clip": "body", "box": [640, 900, 900, 1516], "ang": -1.2, "gap": 9, "len": [20, 40], "w": 2}, "alpha": 0.45},
+    {"id": "seam", "pat": {"type": "stitch", "role": "cloth.shadow", "along": "M 700 870 S 790 900 880 940", "gap": 9, "w": 1.6}},
+    {"id": "seam_line", "role": "cloth.shadow", "lod": 1, "line": "M 696 864 S 790 894 882 934", "w": [0.5, 2, 2, 0.5], "k": "tone"},
+    {"id": "hem_edge", "role": "cloth.shadow", "lod": 1, "line": "M 290 912 S 362 962 422 996 478 1010 538 996 598 962 646 916 686 870", "w": [3, 3, 3, 3, 3, 3, 3, 2], "k": "tone"},
+    {"id": "edge_l", "role": "cloth.line", "line": "M 470 1006 L 466 1216", "w": [2, 2], "k": "contour"},
+    {"id": "edge_r", "role": "cloth.line", "line": "M 492 1006 L 496 1216", "w": [2, 2], "k": "contour"},
+    {"id": "eyelets_l", "pat": {"type": "motif", "along": "M 456 1016 L 452 1210", "gap": 32, "lod": 1, "m": [{"role": "cloth.deep", "d": "M -4 0 S 0 -3.5 4 0 0 3.5 Z"}, {"role": "cloth.hl", "d": "M -5 -1 S 0 -5 5 -1 S 0 -3 -5 -1 Z"}]}},
+    {"id": "eyelets_r", "pat": {"type": "motif", "along": "M 506 1016 L 510 1210", "gap": 32, "lod": 1, "m": [{"role": "cloth.deep", "d": "M -4 0 S 0 -3.5 4 0 0 3.5 Z"}, {"role": "cloth.hl", "d": "M -5 -1 S 0 -5 5 -1 S 0 -3 -5 -1 Z"}]}},
+    {"id": "cord1", "role": "cord.light", "line": "M 456 1016 L 506 1048 L 455 1080 L 507 1112 L 454 1144 L 508 1176 L 453 1208", "w": [3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4], "k": "tone"},
+    {"id": "cord2", "role": "cord.half", "line": "M 506 1016 L 456 1048 L 507 1080 L 455 1112 L 508 1144 L 454 1176 L 509 1208", "w": [3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4], "k": "tone"},
+    {"id": "cord_bow", "role": "cord.light", "line": "M 456 1016 S 470 1004 488 1002 506 1016", "w": [3, 3, 3, 3], "k": "tone"},
+    {"id": "line", "role": "cloth.line", "line": "M 286 904 S 360 956 420 990 478 1004 540 990 600 956 650 908 690 860", "w": [2, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2], "k": "contour"},
+    {"id": "line_f", "role": "cloth.line", "line": "M 286 904 S 206 918 132 984 98 1090 88 1516", "w": [2, 3, 4, 4, 4], "k": "contour"},
+    {"id": "line_n", "role": "cloth.line", "line": "M 762 846 S 856 908 936 984 966 1090 976 1516", "w": [3, 4, 5, 5, 5], "k": "contour"}
+  ]
+}

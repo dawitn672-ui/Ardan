@@ -1,0 +1,30 @@
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import { head, GENE_KEYS } from './rig.mjs';
+const require = createRequire(import.meta.url);
+const pw = require('/opt/node-tools/node_modules/playwright');
+const out = process.argv[2];
+function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rng = mulberry(+(process.argv[3] || 5));
+const gauss = () => { let u = 0, v = 0; while (!u) u = rng(); v = rng(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const person = () => { const g = {}; for (const k of GENE_KEYS) g[k] = clamp(gauss() * .4, -1, 1); const n = 3 + Math.floor(rng() * 3), ks = GENE_KEYS.slice().sort(() => rng() - .5).slice(0, n); for (const k of ks) g[k] = (rng() < .5 ? -1 : 1) * (.7 + rng() * .3); g.browThick = clamp(gauss() * .5, -1, 1); g.ears = clamp(gauss() * .5, -1, 1); return g; };
+const sheets = {};
+const P20 = []; for (let i = 0; i < 20; i++) P20.push(person());
+const t0 = performance.now(); let bytes = 0;
+for (let r = 0; r < 50; r++) for (const g of P20) bytes += head({ genes: g, size: 120 }).length;
+const ms = (performance.now() - t0) / 1000;
+sheets.twenty = P20.map((g, i) => ({ svg: head({ genes: g, size: 150 }), label: '#' + (i + 1) }));
+sheets.twentyFront = P20.map((g, i) => ({ svg: head({ genes: g, size: 150, yaw: 0 }), label: '#' + (i + 1) + ' front' }));
+sheets.twenty64 = P20.map((g, i) => ({ svg: head({ genes: g, size: 64 }), label: '#' + (i + 1) }));
+const zero = {}; for (const k of GENE_KEYS) zero[k] = 0;
+sheets.ladder = [];
+for (const k of GENE_KEYS) for (const v of [-1, 1]) sheets.ladder.push({ svg: head({ genes: Object.assign({}, zero, { [k]: v }), size: 130 }), label: `${k} ${v > 0 ? '+1' : '-1'}` });
+sheets.turn = [-0.7, -0.47, -0.25, 0, 0.25, 0.47].map(y => ({ svg: head({ genes: P20[2], size: 150, yaw: y }), label: 'yaw ' + y }));
+const html = Object.entries(sheets).map(([k, L]) => `<div id="${k}" style="display:inline-grid;grid-template-columns:repeat(${k === 'ladder' ? 12 : k === 'turn' ? 6 : 10},auto);gap:6px;padding:10px;background:#0d1120;color:#eee8da;font:11px sans-serif;margin-bottom:20px">${L.map(x => `<div style="text-align:center">${x.svg}<div>${x.label}</div></div>`).join('')}</div>`).join('<br>');
+fs.writeFileSync(out + '.html', `<!doctype html><meta charset="utf-8"><body style="margin:0;background:#0d1120">${html}</body>`);
+const b = await pw.chromium.launch(); const pg = await b.newPage({ viewport: { width: 2000, height: 1400 }, deviceScaleFactor: 1 });
+await pg.goto('file://' + out + '.html');
+for (const k of Object.keys(sheets)) { const el = await pg.$('#' + k); await el.screenshot({ path: `${out}-${k}.png` }); }
+await b.close();
+console.log(JSON.stringify({ msPerHead: +ms.toFixed(3), kbPerHead: +(bytes / 1000 / 1024).toFixed(2) }));

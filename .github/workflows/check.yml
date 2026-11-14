@@ -9,19 +9,18 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-# Five jobs side by side: the build, linters and a third of the browser tests in each of three (tools/check.mjs
+# Nine jobs side by side: eight test shards and the balance league (v2: 8 shards instead of 3, so a full run takes
+# about 25 minutes, not an hour; the Great Continent league left with the Far Lands in v2 step 2): the build, linters and a third of the browser tests in each of three (tools/check.mjs
 # --skip-balance --shard=k/3), the balance league in the fourth, and the Great Continent's league in the fifth (every path
 # born in the Known World and in the Far Lands of one 2,033-province world: 6 lives a group for 25 years, about half an
 # hour on four workers). As one job the whole check took 80 minutes, and the
 # tests alone up to 104. Two shards ran 81 minutes each against a 120-minute timeout; three leave room for more tests.
+# Round 2 A3a (CRITIQUE Q5): the build, the v2 engine's tests and every linter run once, in `build`; the eight shards
+# only run browser tests, on the committed index.html that `build` proves current (each shard used to rebuild and relint).
 jobs:
-  check:
+  build:
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
-    timeout-minutes: 120
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [0, 1, 2]
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,7 +29,23 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node tools/check.mjs --skip-balance --shard=${{ matrix.shard }}/3
+      - run: node tools/check.mjs --skip-tests --skip-balance
+  check:
+    runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/run.mjs index.html --workers=4 --shard=${{ matrix.shard }}/8
   balance:
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
     timeout-minutes: 120
@@ -44,10 +59,13 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node tools/build.mjs
       - run: git diff --exit-code index.html
-      - run: node bench/balance.mjs index.html --workers=4
-  balance-great:
+      - run: node tools/bench/balance.mjs index.html --workers=4
+  # Round 2 A1 (CRITIQUE Q2): the press gate. Real Next month presses on the committed saves of year 0 and year 50
+  # (tests/saves/press/), on a fresh page and after a death, at 1366 px and at four-times CPU throttle, held to the
+  # budgets in tools/bench/press-gate.mjs (CPU time, full redraws and layouts a press).
+  press:
     runs-on: ubuntu-24.04   # Playwright 1.56 has no Chromium for ubuntu-latest (26.04) yet
-    timeout-minutes: 120
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -56,5 +74,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node tools/build.mjs
-      - run: node bench/balance.mjs index.html --lands=great --workers=4
+      # --report until the engine's own share of a month (80 to 170 ms on a loaded 4-core box, all of the 150 ms budget)
+      # is cut: the table is in the log and the artifact; drop --report to hold the budgets
+      - run: node tools/bench/press-gate.mjs index.html --out=press-gate --report
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: press-gate
+          path: press-gate/

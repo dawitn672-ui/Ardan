@@ -1,0 +1,183 @@
+# The world record
+
+**Aspect:** World and lore (Road to Ten, World 5), Replayability (Replayability 5), Uniqueness (signature 1, the Chronicle) · **Kind:** system, 13 events, no patches
+
+The plan asks for two things here:
+
+- **World 5:** "Keep a living world chronicle: wars, deaths, foundings and famines, with dates. NPCs and events refer back to it ('since the burning of Tessaria…')."
+- **Replayability 5:** "When a dynasty ends, export a readable history of the family and the world, like Dwarf Fortress legends." The Chronicle (22) already exports every life. It had no world legends.
+
+The benchmark bars (`docs/benchmarks/world-lore-uniqueness.md`):
+
+- **W5:** "A dated record of the whole run, ≥10 kinds, nothing dropped, with place and people on each entry."
+- **W6:** "≥15% of a life's events cite a dated entry from this run or canon, and the entry is possible in that place and time."
+
+In the release the world remembers two kinds of thing (`S.history`: war ends and realm falls, about 30 lines in 60 years) and 220 lines of news. At year 60 that news reaches back only three years. No event reads `S.history`.
+
+**What it does.**
+
+1. **The record** (`a-record.core.js`, `S.wrec`). It keeps a dated entry for each of **18 kinds**:
+   - war begun; war ended, with the victor and the provinces ceded;
+   - a field battle of 24,000 men, or of 9,000 fighting five days or more;
+   - a siege laid to a walled town, and how it ended (fell or lifted, after so many days);
+   - a walled town taken: on terms, by storm, sacked (a capital, or a town of 150,000), or burned (sacked by another race, or by another faith in a holy war);
+   - a province changing hands;
+   - a ruler's death, with the cause, the age and the successor;
+   - a throne taken without a death;
+   - a realm fallen; a realm founded (by grant, out of the free lands, or by a rising that won its war);
+   - a rebellion (a claimant or a league of lords);
+   - famine (45-economy's failed harvest);
+   - an epidemic;
+   - a royal marriage; an alliance; tribute bound or thrown off;
+   - an elite order destroyed; the death of a Legend (32-legend-and-master-caps's top tier).
+
+   Each entry is `[kind, year, day, province, realm, other realm, [people], number, extra]`. People are ids, and their names go into a table when the entry is made, because the release prunes the dead from `S.people` after 30 years. Nothing is ever removed. Wars already being fought when the world opens are entered with their real start (the Tessarian Civil War, 1061).
+2. **It observes; it does not act.** Every hook calls the original first. It draws no random numbers, and it changes no realm, person or province. The exception is the **epidemic**, because the release simulates no sickness in the world. Each month each realm rolls for one: 3.5% a year, plus 5 points after a failed harvest, 2 points under siege and 1 point for a large realm, capped at 10%. A sickness takes 4 stability, adds unrest where it strikes, spreads to up to three neighbouring provinces, and makes the news. If it reaches the player's town it brings a scene, "Chalk on the doors". `A.WC.EPIDEMIC = false` turns it off for a later world-events feature that brings its own.
+3. **Events cite it** (`b-cite.core.js`) in three ways:
+   - **Recalled lines.** About one scene in three whose subject touches the record, and where an entry bears on the scene (v2: see below), gets one line, under its text. Bread, prices and markets recall a famine. Soldiers and camps recall a battle or a siege. A court recalls a dead ruler. A temple recalls the plague. Taverns recall Legends and sacks. Examples:
+     - *"Bread has not been cheap in the Horde since the harvest failed there in 1114."*
+     - *"They still talk about the siege of Stagley in 1105: 23 days, and the dogs eaten by the end."*
+     - *"An old servant compares everything to the days of Queen Ithrien, dead since 1107."*
+
+     The line is chosen when the scene is first drawn up (`A.eventView` builds it once). The scene, the choice and the saved game therefore all see the same line. The same entry is not recalled again within two years. The kinds recalled lately count for less, and each kind's lines come round in turn.
+   - **Tokens any event can use.** `{since_event}` ("since the sack of Northmoor in 1105"), `{last_war}`, `{last_peace}`, `{last_battle}`, `{last_siege}`, `{last_fall}`, `{last_famine}`, `{last_plague}`, `{last_ruler}`, `{last_revolt}`, `{last_wedding}`, `{last_legend}`, `{last_founding}`, `{last_realm_fall}`, each with a `_year` twin. A token is a lazy getter on the event's tokens, so nothing is looked up unless the text uses it. The chosen entry is kept on the event's context, so its text and its result name the same one. With nothing to cite, the token stays unfilled and the engine drops the scene.
+   - **13 scenes** (`chronicle.events.js`), written around entries: an old soldier at the well, the price of a loaf since the famine, bells for a dead ruler, children playing at a siege, refugees of a sacked town, a song about a battle, a sergeant's war, a Legend's grave, a coin of a fallen realm, a lord's table, a monk writing the annals, the burnt end of a town, and the sickness at the door. Each one's `cond` and `setup` share `C.chron(p, kinds, mode)`, so a scene that is eligible always finds its entry.
+
+   An entry is citable only where and when the character could know it: in their realm, the realm that holds their home, the realm they serve, or a neighbour of these; dated after their birth; and at least 60 days old. Before the run has anything to cite, the realm's **canon** stands in (174 entries):
+   - rulers who died in office (`LORE.rulerHistory`);
+   - wars since 950 (`LORE.wars`);
+   - chronicle entries since 1000 whose title names a thing, such as "the burning at Fenny Ford" (not "The Gashmar ferry burned").
+
+   Canon entries are tied to realms by the names they contain. A recalled line takes canon only within 40 years of the character's birth.
+4. **On the page** (`c-view.core.js`):
+   - **The Annals.** A new view in the World tab lists every entry in prose, newest first, 40 to a page. It can filter by kind (wars, battles and sieges, lands, thrones, hunger and sickness, marriages and alliances) and by place ("near you").
+   - **"The world in your time"** closes the Chronicle, on the Book page and in its text export. It wraps 22-chronicle's `A.chronicleText` and `UI.TAB.book`, so 22 is unchanged. The run's great entries are written in prose by decade:
+     - every war, with how it ended and what passed;
+     - every realm fallen or founded, every rising, and every Legend's death;
+     - the rulers, famines, plagues, marriages and treaties of the realms the lives lived among;
+     - the two largest battles of each decade, and any the lives were part of;
+     - the sacked towns;
+     - each decade's sums ("the harvest failed eleven times across Ardan").
+
+**Measured by** (`test.mjs`; the numbers are from the full build of 52 features unless marked "fix layer", which is `--only=world-chronicle`).
+
+| Test | Result |
+| --- | --- |
+| `wcRecordWhole` (W5) | A 60-year world (1105 to 1165): **2,825 entries of 15 kinds**. By kind: battle 1,379, siege 535, fall 238, cede 148, plague 104, famine 103, wedding 74, ruler 68, alliance 47, war 37, peace 37, trib 36, order 12, revolt 6, founded 1. The first entry (the Tessarian Civil War, 1061) and the first 200 entries as they stood in 1115 are unchanged at the end, and the count never shrank. 0 entries without a place, 0 without a named person, 0 undated, 0 lines that do not read. **199 KB of JSON, 38 KB gzipped**, in a 3,002 KB state. Beside it, the news reaches back only to 1162 and the release's history has 37 lines. The same seed varies with the world's churn: an earlier run of the same test (epidemic base 2.5%) had 1,580 entries of 16 kinds and 113 KB; the fix layer alone, 2,261 entries of 15 kinds and 161 KB (31 KB gzipped). A Legend's death and a throne taken without a death occurred in none of the three |
+| `wcObservesOnly` | 12 years from the same seed with the record (540 entries) and without it, with the epidemic and the pack held back in both: the same realms, people, provinces and random stream |
+| `wcCitesShare` (W6) | 8 lives from age 16 (human, elf, dwarf, orc; peasant, merchant, noble, serf, artisan), up to 60 years each: **495 of 2,368 scenes (20.9%) cite a dated entry**. Lives range from 16.7% to 23.5%, median 20.5%. By source: a recalled line 440, a scene of the pack 55, canon 6. **0** citations fall outside the character's realms, home or lifetime; each was checked at the moment it was shown. Fix layer alone: 556 of 2,229 (24.9%), median 23.8%, 0 outside |
+| `wcTokens` | With nothing to cite (an empty world, no canon), a scene using `{since_event}` is dropped. After 25 years: "Nothing has been the same since the storming of Vaelion in 1129. The old men talk of the end of the War of Eagleburg in 1126". Both entries are near the character, and the text and the result name the same war |
+| `wcAnnalsPage` | The World tab has an Annals button; 568 entries at 40 a page; page 2 differs from page 1; the hunger-and-sickness filter shows only those kinds; "near you" works; a hostile name is escaped; drawing changes neither the state nor the random stream |
+| `wcExportLegends` (Replayability 5) | A life of 50 years exports the book (1,450 words) plus **"The world in your time": 3,678 words**, under "Before 1105" and 5 decades. No raw tokens, no broken words. The section is on the Book page, and drawing it is pure |
+| `wcExportDownload` | The export action downloads a file that contains the section |
+| `wcOldSave` | A save with the record removed loads and plays on, with 16 entries in the next 4 years. A save with the record round-trips exactly |
+| `wcEpidemic` | 40 years: 56 epidemics (0.82 per realm per 20 years; World 7's bar is 1) and 66 famines (0.97) across 34 realms. Struck at home, the scene comes |
+| `wcScenesRender` | 11 of the 13 scenes, drawn from lives 30 years into a run: no raw token, none over 80 words, labels of 12 words or fewer, and every choice resolves. `wc_legend_grave` needs a Legend's death; `wc_sergeant_war` needs a soldier, and was drawn twice in an earlier run. Fix layer alone: 8 of 13 (no famine without 45-economy). On a build without 22-chronicle the two export tests skip |
+
+**Before and after.** Measured with the same bot loop: 3 lives of up to 40 years on the build without this feature, and 8 lives on the build with it.
+
+| | Release plus every other feature | With the world record |
+| --- | --- | --- |
+| Scenes that cite an entry of the world's record | **0** of 792 (there is no record; no scene quotes `S.history`) | **20.9%** |
+| Scenes whose text holds any past year | 13.8% (10.1 to 16.5%). Almost all are 21-npc-initiative's "You both remember 1105" between two people, plus a few canon secrets. None is a world event | (adds the recalled lines) |
+| How far back the world is kept at year 60 | news: 3 years; history: 30 to 49 lines of 2 kinds | 1,580 to 2,825 entries of 15 or 16 kinds, all of them |
+
+**Rules kept.**
+- The record observes. `wcObservesOnly` shows it does not change the world. The epidemic is the one new piece of simulation, and it draws from `A.rand` like any engine code.
+- Citations pick by hashing ids and dates, never `A.rand`. They are made when a scene's view is first built; the modal only draws them. The Annals, the Book section and the export only read.
+- All text goes through `UI.esc`, and the stored names carry no `<`, `>` or `"`. There are no inline handlers: the Annals use `data-a` actions.
+- `S.wrec` is new. A save without it starts a record where it is. 22-chronicle's files are untouched (its functions are wrapped), and no other feature's files were edited.
+- New fields on game objects: `P.burnt` (the year a town burned) and `P.plague` on provinces, and `w.wcCede` on a war while it lasts.
+
+**Limits.**
+- **Size.** Battles are about half the record (1,379 of 2,825 entries in the busiest 60-year world). The record grows by 2 to 3.3 KB of JSON a year (under 1 KB gzipped) and is never trimmed. A 300-year dynasty would carry up to about 1 MB of JSON, about 190 KB gzipped. If that is too much, raise `WC.BATTLE_MEN`.
+- **One record, one truth.** The Annals show what happened. The far news is still hearsay (26-belief-versus-truth), but the record does not keep conflicting accounts (W10). The monk's scene gestures at it, nothing more.
+- **Lines are templates.** 1 to 4 lines a kind (35 in all) and 13 scenes, so a long life hears the same frame with different places and years. More lines per kind, and per culture, is writing work.
+- **Subjects are guessed from words.** A recalled line is matched to a scene by regex on its id, title and text. A scene about a lady's wedding can get the old ruler's death, which fits but is not chosen with care.
+- **Kinds that seldom happen.** Realm foundings, falls and Legend deaths are rare in this simulation (1 to 3, 0 to 2 and 0 in the 60-year test worlds). The record keeps them when they happen. It does not make them happen.
+- **The epidemic is light.** It takes stability and adds unrest. It kills nobody in the world simulation and does not reduce population, so as not to move the economy.
+- **The first W6 run** flagged 9 citations as out of time. The only citation that can carry the scene's own date is the sickness at the door, which cites an epidemic as it happens; every other one waits 60 days. The check now accepts the same day, and that scene now names the player's town rather than the province where the sickness began. Since then: 0.
+- **Not run here: the balance bench.** By the coordinator's instruction it runs once on the integrated build. This feature touches money and health only lightly: 13 scenes with coin from -8 to +8 and health from -1 to -12 on a failed check, plus the epidemic's scene.
+
+## Writer's pass (round 7)
+
+The recalled lines go from 35 to 69 (every kind has two or more; famine 7, battle 7, plague 6, fall 5, war 5, ruler 5).
+Place names inside a sentence read "the Bleakfold", not "The Bleakfold" (`WC.ref`, `WC.line`, the recalled lines). The
+export counts on from the year before ("The next year, in April, ..."), as it already did within a year. One event line
+lost its "a Ashmere voice".
+
+| Measured, 12 bot lives of 50 years, the same seeds before and after (`/tmp/ardan/prose/harvest.mjs`, 8.4k generated lines a run) | Before | After |
+| --- | --- | --- |
+| recalled lines: distinct frames | 40 | 78 |
+| share of the ten commonest frames | 57.7% | 34.1% |
+| the same frame again within three years | 47 | 27 |
+| export sentences: distinct frames; top-ten share | 135; 41.5% | 195; 35.3% |
+
+Test `wcRecallLinesRead` draws every template in every branch and requires a whole sentence each time.
+
+## Cycle 2: no two wars under one name (`d-names.core.js`; world review B5)
+
+**Why.** 991-far-war numbered repeated war names only in far games, and only for names made by `A.warName`. A succession war is named by its caller. One Known World century so read "The Long War" five times, and another "The War of the Tessaria Succession" seven times.
+
+**What changed.** Every war's name is now unique as it starts, in both lands. The namer is wrapped, and so is any name given to `A.startWar`. The second war of a name is "The Second Long War", then "The Third …".
+
+**Test.** `warNamesUnique`.
+
+## v2: what you know of a war (99997-v2-war)
+
+The Annals and The Book's "The world in your time" read each entry through `WC.tellOf(e, pc)`: null while it has not reached the player, else `{ t, mine }`. Here it is every entry as it happened; 99997-v2-war sets it so that a war you were not in reaches you late, as hearsay, and your own at your rank's precision (V2_SPEC complaint 10, playtest 2 findings 3 and 4). `WC.line` itself is unchanged.
+
+## v2: the recalled line only where it bears on the scene (complaint 1, playtest 1 #10, playtest 2 #9)
+
+**Why.** Playtest 2 counted 12% of cards with this feature's recalled line on top of 18% with a personal memory; a bot
+life measured 12 to 20% (17% typical). Most lines were filler: "The hearth mark" with the Winter Crossing of 1092, "A new
+tax" with a coronation of 1081, a tavern sign for a royal wedding on "The old soldier's story". A subject in common
+(market, war, court ...) was all it took. The owner's complaint 1 (everything on one card, no filler) and playtest 1 #10
+ask for extra lines to be rare, to fit the scene, and one at most on a card.
+
+**What changed** (`b-cite.core.js`, `WC.scene` and `WC.bears`). An entry may be recalled only when it shares something
+the scene is about:
+- **a person**: someone in the scene's context (`ctx.pid` or another person id) or named in its words is in the entry;
+  or the player was there (fought the battle, was in the town taken) and the scene is a soldier's, or at that place;
+- **a place**: a battle, siege, sack, sickness, cession, order's fall or Legend's death in the player's home province, or
+  in a province the scene names (a war, a peace, a throne or a famine is set down at a capital, so its province is not
+  where a scene in that town is);
+- **a realm**: the scene names a realm (or carries one in its context) that the entry is about;
+- **a war**: the scene carries the war in its context, or is a soldier's scene while the player serves in that war.
+
+Canon stands in only when the scene names one of its realms or its ruler. 99999-v2-content still drops the line on a
+card with counsel or a memory, so a card has one extra line at most. The view keeps `recallId`, the entry recalled.
+`WC.realmWord` gives a noun-named realm its article: a short name that stands after "of the" in the full name ("League
+of the Salt Marches") reads "goes to the Salt Marches", any other reads bare ("goes to Sahrim"). 991's Far Lands helper
+did this only for far realms. **In v2 the rule does not fire on the continent as built:** 99999-v2-names gives every
+realm a proper name (the Sand Clans are Sahrim, the Nine Winds Ulun, the Amber Isles Ambrel), so no full name holds
+"of the <short>". It stays for a realm a mod, a save or a later naming lane gives a noun name.
+
+**Tests.** `wcCitesShare` now holds the recalled line under 1 card in 10 (overall and the median life, no life above
+12%), checks each one against the scene's own words and context, and checks none sits beside counsel or a memory; it
+keeps its place-and-time and raw-token checks. `wcEchoWords` no longer plays the dropped Far Lands' Khaganate, nor any
+realm by name: it gives POL-19 a noun name inside the test ("League of the Salt Marches"), restores it, and holds both
+that draw ("the Salt Marches") and POL-19's own proper name ("Sahrim", no article) to `WC.realmWord`'s rule.
+One bot life (human peasant of Aldmark, 40 years): 44 lines on 316 cards (13.9%) before, 18 (5.7%) after.
+`wcCitesShare` on the full v2 build with 99999-v2-names (8 lives, up to 60 years): a recalled line on **109 of 2,932
+cards (3.7%)**, median life 3.35%, most 7.4%; 220 scenes (7.5%) cite an entry by line, token or pack; 0 lines off their
+scene, 0 citations out of place or time. (The old W6 bar of 15% citations no longer holds, by design.)
+
+## v2: the recalled line gives way to the inner voice (CI run 88, `wcObservesOnly`)
+
+**What broke.** After 99993-v2-stats' dice fix, `wcObservesOnly` found the same seed ending with a different person
+with the record on and off. Realms, provinces and the random stream were the same; only the player differed, in
+`pc.idv`, the inner-voice lines a life has heard (9992-identity writes them at the choice). A card carries one extra
+line (99999-v2-content), and the voice gave way to a recalled line. Whether the record had an entry to recall (or, with
+the record off, only the canon) so decided which voice lines the character had heard: on seed 9090 the dying soldier's
+"A deathbed whisper" in 1108 carried a canon line with the record off and the Ledger's voice with it on. The dice did
+not cause it; they moved this seed's life onto such a card.
+
+**Fix.** `WC.recall` asks the voice first (`A.ID.voiceCore`, pure) and sets no line where the voice would speak, so the
+voice is always the one it would be with no record. The record only observes again. `wcCitesShare` on the build: a
+recalled line on 103 of 2,932 cards (3.5%), 214 scenes (7.3%) cite an entry, 0 out of place or time.
+
+**Test.** `wcRecallYieldsToVoice` offers a recalled line on every scene with a subject (`WC.RECALL` 100) over four
+8-year lives, one of them `wcObservesOnly`'s with the record off, and fails if any card's voice would speak without
+its recalled line. It fails before the fix (1105, "rl_sec_archive": the Ledger silenced by a canon line) and passes
+after.

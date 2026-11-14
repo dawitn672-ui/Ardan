@@ -160,9 +160,9 @@ Ardan's daily plan can't be ground today because it runs on its own. Once use dr
 
 ### What I measured, and how
 
-The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scratch>`, using the fix layer only. All scripts lived in a private scratch folder. Nothing in the repo changed except this file. The appendix has the procedure so it can be ported into `bench/`.
+The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scratch>`, using the fix layer only. All scripts lived in a private scratch folder. Nothing in the repo changed except this file. The appendix has the procedure so it can be ported into `tools/bench/`.
 
-1. **Instrumented bot lives.** 48 lives: 8 starts (peasant, noble, merchant, serf, orc peasant, dwarf artisan, royal, artisan) × 4 personalities (careful, reckless, greedy, random) × engaged or passive. The pick rules are the same as `bench/bot.mjs`. Every life starts at birth and runs to death or 90 years. I wrapped five functions:
+1. **Instrumented bot lives.** 48 lives: 8 starts (peasant, noble, merchant, serf, orc peasant, dwarf artisan, royal, artisan) × 4 personalities (careful, reckless, greedy, random) × engaged or passive. The pick rules are the same as `tools/bench/bot.mjs`. Every life starts at birth and runs to death or 90 years. I wrapped five functions:
    - `A.trainSkill`, `A.train` and `A.willGrow`, logging each point the player gained and which function called it;
    - `A.addTrait` and `A.addWound`.
 
@@ -204,7 +204,7 @@ The test build was made with `node tools/build.mjs --out=<scratch> --unpack=<scr
 
 - **A cliff on the 16th birthday.** Child events use child difficulties (median `d` 30), but at 16 the adult events arrive at 45 and the odds halve overnight. The player meets adult difficulty with a teenager's skills, and it takes until the mid-40s to climb back to the odds of age 15.
 - **Comparison with the reviews.** The Deep Analysis reported a 4 to 8% median for 16-year-olds on the release build, counting a different set of checks. Both are far below the Road to 100 gate of 35 to 65%.
-- **Checks the bots chose.** They won 34.2% of them. The bench league measures 40.3% on the same build (`reports/scorecard.md`). The rubric wants 45 to 65%.
+- **Checks the bots chose.** They won 34.2% of them. The bench league measures 40.3% on the same build (`tools/bench/reports/scorecard.md`). The rubric wants 45 to 65%.
 
 **Mood, will and personality (48 lives, 24,647 monthly samples)**
 
@@ -385,7 +385,7 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 | 10 | **Illness and wounds you can treat.** Disease onset queues an event with physician, herbs, prayer and rest choices, with different odds by disease. 30 events read specific wounds (a lost hand at the forge, a limp on the march, bad lungs in winter) | M | Yes: patch in `A.bodyYear` + `*.events.js` | +0.4 | Bot: ≥ 80% of disease onsets offer a treatment choice. Static: ≥ 30 events read a wound. Bot: treatment choice moves recovery time by ≥ 20% |
 | 11 | **Merge to 4 systems.** Body, skills, abilities and condition, as the plan says. Fold plan, intensity, aims and activities into one "your days"; fold perks, specs, masteries and styles into one tree per skill family; cut 38 skills to 24 | XL | **Needs source**: deleting systems by patching minified code is unsafe | +1.0 | Browser: the Life tab shows ≤ 40 numbers (today 114). Bot: every stat and skill decides ≥ 5 outcomes per 40-year life (today 20 of 44 fail) |
 | 12 | **The one-sentence test.** 10 new players play 45 minutes, then answer "how does your character get better?" and "why did your mood change last?" | S per round | **Needs people** | +0.5 (and gates the 10) | 8 of 10 answer the first correctly; 7 of 10 the second. The answers are checked against the gain ledger from row 1 |
-| 13 | **Bench and rubric lines for this aspect.** Add to `bench/run.mjs` a `character` module (this doc's method): use share, top-3 overlap, odds by age, months under 30 without a break, silent trait changes, dead numbers. Add them to `bench/rubric.mjs` | S | Yes: code (needs the `bench/` owner) | keeps 1 to 10 honest | On today's build the new rubric lines fail: use 32%, 16-year-old odds 17%, 30 of 48 lives with unbroken misery, 4.7 silent trait changes per life |
+| 13 | **Bench and rubric lines for this aspect.** Add to `tools/bench/run.mjs` a `character` module (this doc's method): use share, top-3 overlap, odds by age, months under 30 without a break, silent trait changes, dead numbers. Add them to `tools/bench/rubric.mjs` | S | Yes: code (needs the `tools/bench/` owner) | keeps 1 to 10 honest | On today's build the new rubric lines fail: use 32%, 16-year-old odds 17%, 30 of 48 lives with unbroken misery, 4.7 silent trait changes per life |
 
 ## 6. Sources
 
@@ -469,14 +469,14 @@ Ranked by score gain per unit of effort. "Here" means it can be built in this re
 - Kenshi wiki, Dexterity: https://kenshi.fandom.com/wiki/Dexterity
 
 **Ardan (this repo)**
-- `docs/plan/Ardan The Road to Ten.md`, Character and life sim section
-- `docs/reviews/Ardan Road to 100.md` and `docs/reviews/Ardan Deep Analysis.md`
+- `docs/plan/road-to-ten.md`, Character and life sim section
+- `docs/reviews/road-to-100.md` and `docs/reviews/deep-analysis.md`
 - Functions read: `A.planDay`, `A.trainSkill`, `A.train`, `A.willGrow`, `A.sessionQ`, `A.growthYear`, `A.yearGrowth`, `A.ageFactor`, `A.bodyYear`, `A.checkOdds`, `A.checkVal`, `A.applyFx` (`trait` case), `A.duelConsequences`, `A.recapMake`, `GD.ACTIVITIES`, `GD.TRAITS`, `A.LIFESTYLE`
 
 ## Appendix: how to reproduce
 
 1. **Build privately.** `node tools/build.mjs --out=/tmp/ardan/char/x.html --unpack=/tmp/ardan/char/blobs`
-2. **Load the page.** Use Playwright with `bench/bot.mjs` installed, as `bench/run.mjs` does.
+2. **Load the page.** Use Playwright with `tools/bench/bot.mjs` installed, as `tools/bench/run.mjs` does.
 3. **Install the wrappers before `A.newGame`.**
    - **Gains.** Wrap `A.trainSkill(p,k,amt)` and `A.train(p,s,amt)`. Compare `p.skills[k]` (or `p.st[s]`) before and after, and key the difference by the first three frames of `new Error().stack` above the wrapper. Stack frames carry V8's inferred names, such as `A.planDay` and `A.eventChoose`. None of this draws a random number.
    - **Will and traits.** Wrap `A.willGrow` and key its gain by the `why` argument. Wrap `A.addTrait` and `A.addWound`.

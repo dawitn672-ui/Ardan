@@ -1,0 +1,190 @@
+# 99999-v2-content: text that fits the scene and the character
+
+**Aspect:** v2 playtest 1 (`docs/v2/playtest-1.md`), findings 9, 10, 11, 18 and 19, plus the War Room's numbers and two percentages left in World › Diplomacy and the realm tab · **Kind:** system (6 core files), 7 patches, small edits to `97-first-life-fixes`, `50-arcs-kin` and `87-echo-scenes`, tests. No new events.
+
+## What it does
+
+### The memory insert is rare and true (`a-weave.core.js`, #9)
+
+67-choice-memories put a memory on about half of all cards, often a wrong one: "In 1106 you tried to walk, and failed. You have not forgotten it, and it makes you slow." on a knife fight at 12. Now a memory is cited only when it bears on the scene:
+
+- **The same person** (67's person rule): only a memory that weighed. That means a change of regard of 8 or more, or something that lasted (hurt, the law, a loss or a gain, shame, a name).
+- **The same scene** (the again rule), as before.
+- **The same kind of act:** a check of the same skill in the same kind of scene. 67's skill rule allowed any scene.
+- **The same kind of place** (the place rule), as before.
+
+Some memories are never cited:
+
+- anything from before 7, so no infancy milestone;
+- a deed that does not read as a past deed (`MW.pastDeed`: "you tried to spy while you are there", "before you pay", "every name she says");
+- a deed that needed the scene's title in brackets to say what "it" was;
+- a deed that names its own person twice;
+- a coin sum that cannot be the scene's own (over 2,000 suns).
+
+**At most one memory in 10 cards.** The record counts the cards: `pc.mw.n` is the number of choices made, and `pc.mw.lw` is the card of the last memory. Both are written in `A.eventChoose` and in the event's setup, the engine's own steps, so a replay does the same. An old save has neither field and starts at zero.
+
+Measured in two played lives (`v2cMemoryRare`): about 5% of cards carry a memory, against 45% before.
+
+### Voices and counsel only where they fit (`b-lines.core.js`, #10)
+
+**An inner voice** (9992-identity) speaks only when all of these hold:
+
+- the scene has a check, and you are 14 or older;
+- it is the voice of the skill the check tests. A thought you hold speaks only when the check tests what the thought changes. A trait voice speaks only in a fight or a talk.
+- a line that names a thing speaks only where the scene has that thing: a fever, a baby, the law, the dice, the grain, his hands (`A.V2C.REF`). A line about "him" needs a him.
+
+The filter wraps `ID.voiceCore`, which the card and `A.eventChoose` both ask, so the line a life "has heard" is the line it was shown.
+
+**Counsel** (9999-advisors) comes only on the big choices that 9999's README promised:
+
+- the scene's condition reads a ruler, a war, an office, a holding, a claim, an oath or a faction (not `!C.ruler(p)`);
+- its effects touch war, a claim, a pact, death, prison, a marriage, an asset, a promotion or a post, the treasury, legitimacy, stability, authority, or 9996's bills and offices;
+- it costs 100 suns or more, a wound of 20 or more, or a lethal fight;
+- or it is a `po_`, `ri_`, `co_` or `cb_` scene.
+
+A once-a-life scene, an ordinary duty (`du_`), or a spar no longer counts as big on that alone. There is no counsel under 15.
+
+**At most one extra line on a card:**
+
+- one counsellor, not two or three;
+- no inner voice on a card that has counsel, a memory or 57-world-chronicle's recalled line;
+- no recalled line on a card that has counsel or a memory.
+
+### Class gates (`d-gates.core.js`, patches, #11)
+
+- `lfx_du_gd_apprentice` ("Your apprentice has ruined a week's work") needs a master (`minR: 2`), and so do `du_gd_undercut` ("Someone is undercutting you") and `du_gd_caravan` (your own caravan). The first is an edit in 97; the other two are patches `V2C-UNDERCUT-MASTER` and `V2C-CARAVAN-MASTER`.
+- **A new audience class, `shop`** (`A.EV_RX.shop`, `A.CX_RX.shop`): a scene whose words say "your shop", "your apprentice", "your customers" or "your caravan" reaches only a life with a shop or a master's rank, unless its condition already asks for one.
+  - It does not read a clerk (a general's, a ruler's and a reeve's clerks hid their scenes), words the scene shows only under its own test (`${hasAsset(p,"workshop")?" of your own workshop":""}`), a shop still to come ("you may open your own shop"), or a scene whose condition reads a flag: that scene follows one that put the life there (the dwarf partner's workshop, the smith's apprentice, the royal bowyer). CI run 88 found these hidden from the lives they were written for (`mpeMemory`, `mpfMemory`).
+  - `A.evAudience(e).txt.shop` reports the gate's reading, so a lint of the classes an event's text trips sees what the gate does.
+- **97's five study scenes have an age, and letters where they read:** the disputation needs 15 and letters (it came at 8, "at the cathedral school"), the chained library 13, the sum in beer at the inn 14, and the map and the window 12.
+- **No Latin in Ardan.** The examination (`V2C-NO-LATIN`), 50-arcs-kin's contract and 87-echo-scenes' two scholars say Old Solen, Ardan's learned tongue (`GD.LANG_LIST`).
+- **"Laugh, and buy the whole tavern a drink (5 suns)"** needs 16 years as well as the coin (`V2C-TAVERN-ROUND-ADULT`). 9998-choice-stakes draws a locked row only for a requirement it can read, so a penniless 14-year-old no longer sees it.
+
+### Playtest 2, old #11 (patches, `f-roles.core.js`)
+
+- **The runaway** (`lf_teen_runaway`, patch `V2C-RUNAWAY-BETROTHAL`): a boy of 14 ran from "a betrothal to a man twice your age". A boy runs from a betrothal to a widow; the list keeps its length, so the pick draws the same.
+- **The tournament's opening line** (`ga_open`, patch `V2C-TOURNEY-LANCE`): the "knight" role goes to any soldier of rank 2 or more, so an orc crossbowman heard "Your horse is groomed and your lance is new". The line is for one who rides with a lance (a knight's post, lance and riding 30, a lord's rung); a soldier comes "in your company's colours, with the weapons you know".
+- **A soldier's officer is his captain** (`f-roles.core.js`): 9999-advisors seated a 'superior' as "your master", so a commander's captain said "Your name in the trade is your fortune" on a siege, and one captain read both "YOUR CAPTAIN" and "YOUR MASTER". For a life under arms, a 'master' candidate who is a soldier or a superior becomes the captain (or is not seated twice). The master at work stays a master.
+- **Left for the owner:** "Plot for the throne" stays on the court tab for a grown commoner. 49-body-mind keeps it there on purpose (it removes only the court's noble acts), and the release has a commoner's ending, "From the Dust to the Throne", that goes through it.
+
+### What a card says (`c-cards.core.js`, #18 and #19)
+
+- **Who.** 21-npc-initiative's "Why Edith: …" line stood behind "Read more" on about 30 cards a life. It is on the card now, without its number: "Why Edith: thinks well of you; your aunt by marriage; trusting." A cast scene's description keeps its first sentence on the card; the rest stays behind "Read more" as lore.
+- **Whose regard, and which way.**
+  - "• their regard" names the person: "▼ Edith's regard".
+  - "standing" says where: in the ranks, at work, or "your master's regard".
+  - An effect written as code shows its direction when the code's numbers all agree: regard, health, honour, renown, piety, spirits, stability, the treasury, standing, coin.
+  - What a failed check costs in regard reads ▼. A failure that still raises something ("Fails: ▲ regard", in red) is not listed as a loss; if nothing is lost, the chip says "Nothing lost if it fails".
+- **Every choice shows something.** The drill scenes' code effects are read: "▲ the unit's order", "▼ the unit's seasoning", "▲ the unit's marching". A choice with no effect says "Nothing changes". One whose effect stays hidden (a flag, a later scene) says "It will be remembered".
+- **No scene with one live choice.** If a scene written with two or more choices has fewer than two the player can take, the engine drops it where it builds the view (`A.headReady`). This is the same way it drops a scene whose tokens cannot be filled. "An old scholar" with no coin was the case the playtest found. That scene now has a second choice for a poor student, working off the rent (patch `V2C-SCHOLAR-WORK`).
+- **The creation screen's story blurbs are whole** at phone width. 29-starting-stories clamped them to two lines.
+
+### A card tells the truth about risk (`f-risk.core.js`, playtest 2: new 1, new 2, old 18 and 19)
+
+- **The stake, in words.** `A.V2S.lossOf` (99993-v2-stats) reads what a choice can cost for good, and the chip says it
+  first:
+  - "Join the plot … If it fails: a treason trial: the gallows or a deep cell", where it said "Nothing lost if it fails";
+  - "If it fails: what follows can kill you", for a failure that queues or schedules a scene whose failures kill;
+  - "If it fails: hurt that could kill you, near death as you are", where it said "a wound, hurt" to a man near death.
+    The health word is the profile's own band.
+  - A sure effect says it too: "Death", "Perhaps the gallows", "What follows can bring the law on you".
+- **The red/white mark is 9998's.** "Join the plot" still says "can be tried again": 9998-choice-stakes' rule and its test (`stRedMarked`) read only a written death, cell, wound or exile. A failure there ends in a cell or on the gallows, so there is no retry anyway. Making such a check red is left to 9998's owner.
+- **A failure's losses read as losses.** "If it fails: honour" said nothing about which way; now it reads "▼ honour".
+  A function's "risk of a wound" says what it is: "▼ a wound, perhaps".
+- **The content's helpers have a direction** (`c-cards.core.js`):
+  - `pay`, `spend` and `hurt` go down; `gain` and `earn` go up;
+  - `hp(p, v)` is spirits (9998 had read it as health); `willGrow` is willpower; `bump`, `addOp` and `op2` are regard;
+  - `p.honor = cl(p.honor - 3)` is honour down; `coin: -sum(…)` is a cost; `coin: ctx.bribe` is a gain.
+
+  Over every scene staged for a soldier, 28 of 26,017 chips still give no way (0.1%; 1.8% before). Those are effects
+  whose code goes both ways.
+- **Effects built from parts.** 227 soldier-pack choices are `both({ … }, op2(-30))`: closures whose source shows only
+  `applyFx(p, obj, ctx)`. Patch `V2C-FX-PARTS` keeps their parts on the closure (`A.V2C.parts`), and the chips read the
+  parts as written. Nothing they do changes.
+- **Whose regard, and which way: the target the code moves** (`C2.regardTargets`, third round). Each `addOp` and
+  `bump` is read for the person it is given, and that person's way: `T(ctx)` (the scene's person), `A.P(ctx.k)`,
+  `A.P(p.parents[i])` ("your mother's regard"), the spouse, the ruler ("the crown's regard"), `A.superior`, the mess
+  (`A.squad`), kin in a loop (`live`/`relsOf`), or a name the code gives one of these (`const t = T(ctx)`). A
+  `both(obj, op2(d))` is read part by part: obj's `them: { op }` is the scene's person, `op2`'s `d` the second messmate.
+  So "Leave your faith for {them}" reads "▲▲ Gerda's regard, ▼ your mother's regard" (it read "▲ your mother's
+  regard"), "Name {mate}" reads "▲ Maren's regard, ▼ Aldred's regard" (it read Aldred both ways), and "Fight him"
+  names the lover whose regard falls, not the rival it links. What a failure costs lists only those whose regard goes
+  down. A regard that reaches nobody here (no such kin, no one in the context) is not shown.
+  `C2.regardWho` is the fallback, for code whose target cannot be read (four choices over every scene): another context
+  key, kin, the crown, someone new the choice brings in, then the scene's person. `v2cChipsDirection` checks the cards
+  against the written effect: code that moves only `T(ctx)` names `ctx.pid` the way its numbers go, and every
+  `both(obj, op2(d))` names both people, each their own way (12 wrong on the round-two build, 0 now).
+- **Kin regard as data.** `rel: { who: "father", op: -4 }` showed nothing on 255 choices ("If it fails: hurt" for a
+  dare that also costs your father's regard). It is shown by name and way where that kin exists.
+- **Two people, or a chance** (`C2.regardParts`, the same reading as parts). Two people moved opposite ways read as
+  two parts ("▲ Svala's regard, ▼▼ Hesketh's regard"); a chance either way reads "▲ or ▼ Svala's regard"; a
+  `bump(p, t, 0)` that only names a bond shows no regard.
+- **Every choice shows a true effect** (old 19):
+  - 47's custom scene ("The hearth mark") shows the custom's own effect, "Costs 3 suns", and the defiance's, "Costs 6
+    suns · ▲ willpower";
+  - 97's ambition scenes ("What you want") show "Your aim: master learning · When it is done: ▲ spirits, ▲ renown", and
+    "No aim: you take what comes";
+  - the gathering's close ("The last night") shows what you carry home from your role and aim there: "▲ renown,
+    ▲ Etiquette", or "Alliance with Varenna: decided tonight".
+
+### Playtest 2: extra lines, counsel and token grammar (`a-weave`, `b-lines`, `g-ends.core.js`, a patch)
+
+Playtest 2 found 32% of cards with an extra line (18% personal, 12% the world's record), garbled or wrong-side lines, counsel that did not fit, and token grammar slips. Over three played lives (416 cards) the share of cards with any extra line is now 21.6%, against 30.5% before; the personal lines are 6.7%, against 17% (`v2cPersonalLinesRare`: 7.2% over two more lives).
+
+- **One extra line a card, counsel included.** CI run 88 found a memory and counsel together on the muster. Counsel now keeps its peace when a memory is woven into the scene (it is set in the scene's setup, before counsel is drawn).
+- **The personal lines share the memory's spacing** (`MW.GAP` cards between two, `pc.mw.lw`):
+  - 55-bonds' "Between you" line is chosen once, when the scene is drawn up, and kept on the view (`v.bdAside`). It is not shown on a card with counsel, a woven memory or a scene that already quotes the past. The world's recalled line and the inner voice give way to it.
+  - 21-npc-initiative's "You both remember" (`{past}`, in the scene's setup) is the scene's own text, so it is not spaced (55's `bondsInRealLives` holds those scenes to two a decade), but it spends the spacing and is left out on a card that already has a woven memory.
+- **A quoted deed reads as a past deed** (`MW.deedReads`): three words or more, no title before a colon, from the age of 7, and not naming the person it is said to. `MW.pastDeed` also rejects a third person in the present ("you tried to wait until she sleeps"). 55-bonds' deed maker puts a second verb it does not know into the past when a pronoun follows it ("you applied and dazzled them").
+- **A memory of a place needs the place in the scene's words** (`MW.PLACE_WORDS`): "You were last at market in 1108" no longer comes on the muster, whose scutage is only a price.
+- **Counsel's words fit the matter** (`C2.counselFits`, `C2.counselWords`). Who speaks and which way they lean stay as 9999 chose. A trade saying ("Your name in the trade is your fortune") is for a matter of work, a builder's saying for work, money or the court, and a line that names a thing needs that thing in the scene. A line that doesn't fit gives way to the domain's own words.
+- **57's recalled line is said from the right side.** "Mothers here still frighten children with the men of Aldmark" and "People here bar their doors" are not said where the taker is the player's realm or the place's.
+- **Token grammar.** `A.T` drops a token's own article after "the", "your", "his" and the like ("Keep the slingshot", "of the Greyfeathers"). It reads the template, so a sentence the writer wrote is never touched. Patch `V2C-TOY-ARTICLE` names the small grave's toy bare ("Edda's wooden horse"). 41-friend-circles' title names the foe, not their id ("A friend of Harald"). A captain's count of none or a few reads "none" or "a few", not "some 0". The battle view reads "of the Lantern Company".
+- **The death screen.**
+  - "The Old Soldier" needs 40 years as well as 10 battles.
+  - A hanging is "by another's hand", and a blow on the night watch is "fell in the field".
+  - The tavern's tale says "Set out to rise in the army, and did, the story goes", not "and did, and in the rain".
+- **No piety offered to the faithless.** 99993-v2-stats turns a faithless player's piety into a quiet pull toward the faith. The card's chips now leave piety out for such a life. A choice left with nothing else shows "It will be remembered".
+- **Already fixed elsewhere:** "with a bare hands" (48-event-fight-rules reads "bare-handed" since the body lane's 3ddf09c).
+- **Left to other lanes:** the soldier filler repeats ("Orders: hold and wait", "Pay day") belong to the warbattles group (lfRepeats). Counsel's labels and the pronoun paths belong to the family group. 57's recall rate belongs to the chronicle group.
+
+### Numbers (`e-numbers.core.js`)
+
+- **The War Room's division panel,** for an enemy division a scout can see, gives estimates in 99997-v2-war's commander words ("some 7,500"). That covers:
+  - its men;
+  - the men of several enemy divisions together;
+  - its kills;
+  - 9997-companies' battalion and company counts;
+  - the other side's men in a fight's row;
+  - an enemy army's row.
+- **No bar reads above full** (`UI.barRow`): "7,470/7,470", not "7,471/7,470".
+- **Restless lords** reads "about half of the swords, angry", not "45% of the swords, discontent 70".
+- **The realm tab's army** reads "good quality", not "quality 114%", which the generic pass had turned into "quality more than all".
+
+## Tests (`test.mjs`)
+
+| Test | Checks |
+| --- | --- |
+| `v2cMemoryRare` | Two played lives: memories on under 1 card in 8, none from before 7, none citing a deed that is not in the past tense. The complaint's lines are rejected. |
+| `v2cExtraLinesFit` | Two played lives: never two extra lines on a card (55-bonds' "Between you" counted too); counsel's words fit the matter; a voice only on a check scene at 14 or older; counsel only on a big scene at 15 or older. The playtest's lines don't fit their scenes ("Mend the roof" on First arrows, "quotes the law" on the bully), and the broken jug and first arrows are not big. |
+| `v2cClassGates` | A 13-year-old apprentice smith never draws the apprentice, undercut, commission or election scenes, and the shop scene doesn't fit him. No study scene of the disputation or inn kind comes at 8. No round is offered at 14 with 0 suns. No Latin anywhere. |
+| `v2cShopGateReadsRight` | A clerk, a line under the scene's own test, a shop still to come and a scene that follows a flag don't need a shop; the dwarf partner, the smith's apprentice, the royal bowyer, the general's and the ruler's clerks are not hidden. A plain "your customers" still needs one. | Round 2: only a positive `C.flag(` makes a sequel; a condition with only `!C.flag(...)` asks that something has not happened, and its shop words still need a shop (two made scenes check it)
+| `v2cPlaytest2Class` | The runaway boy is not betrothed to a man; a soldier with no lance hears no lance at the tournament, a knight does; a soldier's officer sits in the ring as a captain, a smith's master as a master. |
+| `v2cWhoOnCard` | The "Why" line is on the card, in words. The story blurbs are whole at 420 px. |
+| `v2cEveryChoiceShows` | Over 200 played scenes, every choice has a chip row and no scene is shown with one live choice. "Their regard" always names the person. The fresh levy and the song read the unit's effects. The old scholar with no coin is dropped. |
+| `v2cRiskChain` | "Join the plot" says the treason trial. Planted failures that queue or schedule a deadly scene say "what follows can kill you", prison says prison, and a free failure says nothing is lost. Played and failed, the plot sends you to the gallows or a cell. |
+| `v2cRiskLethal` | The night watch's failure reads "a wound, hurt" for a hale man. At health 3 it reads "hurt that could kill you, near death as you are", in the profile's word. Played, it leaves him at 0 health. |
+| `v2cChipsDirection` | Staged: "Under the ice", "The grand melee", the gift, the mess brawl and the loaded dice give a direction and a name. The dice name the second messmate. Over every scene for a soldier, under 0.4% of chips give no way. The verifier's cases (wk_gen_parent's parent, the windfall's family, sc_ss_family's father, the envoy's and the scandal's crown, the saddle's wife, the first steps' father, a dare's father on failure, a feud's two sides, a quarrel either way) are named. Over every scene, staged with a friend in `ctx.pid` and again each with its own context, no chip reads a bare "regard" or "their regard" and none shows a regard without its way (336 and 68 before). |
+| `v2cEveryChoiceTrue` | "The hearth mark", "What you want" and "The last night" show a real effect on every choice. None shows only "It will be remembered" or "Nothing changes". |
+| `v2cPersonalLinesRare` | Two played lives: a woven memory, "Between you" and "You both remember" together on at most 1 card in 9; every deed they quote reads as a past deed, from 7 on, without the person's own name. The playtest's lines are not quoted. |
+| `v2cCounselWordsFit` | A trade saying does not fit raiders or hiring a killer, and does fit a matter of work. On a staged raid the father's trade saying becomes the war's own words; the speaker and the choice stay. |
+| `v2cTokenGrammar` | "Keep the slingshot", "of the Greyfeathers", "Edda has a slingshot" (an article the writer wrote stays). The small grave names the toy bare. "A friend of" names the foe. A captain's count of 0, 3, 12 is none, a few, some 10. |
+| `v2cEndsFit` | 32 battles at 18 are not "The Old Soldier"; at 45 they are. A hanging is by another's hand; a blow on the night watch fell in the field. No "and did, and in the rain". |
+| `v2cNoPietyFaithless` | The feast day for a faithless child of 6 shows no piety; with the faith taken up it does. |
+| `v2cWarRoomNumbers` | With a scout beside it, an enemy division and three of them read as estimates. Your own division never reads above full. Restless lords and the army's quality are in words. |
+
+## Changed elsewhere
+
+- `97-first-life-fixes/scenes.events.js`: the study scenes' conditions, and the apprentice scene's `minR`.
+- `50-arcs-kin`, `87-echo-scenes`: Latin becomes Old Solen.
+- The tests of `67-choice-memories`, `9992-identity`, `9998-choice-stakes`, `9999-advisors` and `97-first-life-fixes` read the old rates or the old chip words. Each change is commented in place and listed in the lane report.

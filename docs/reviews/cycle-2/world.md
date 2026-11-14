@@ -13,7 +13,7 @@ All scripts and outputs are in `/tmp/ardan/cycle2/world/` (written `W/` below).
   - **Known World without the Polity:** the same four seeds and homes, 110 years (`W/kwnopol-*.json`).
   - 12 worlds, 1,300 world-years. **No page error in any of them.**
 - **Lore check.** The 118 far rulers at the start against cycle 1's `lore-rulers.json` (taken from `far-lands.json`).
-- **Turn time.** Each soak's median month and year-turn month by decade, as `performance.now()` inside the page. The machine was shared with three other reviewers (load 8 to 10 on 4 cores), so treat single readings as ±30%. Plus `features/09-scale/great-bench.mjs --profile` for 13 months from Taulen.
+- **Turn time.** Each soak's median month and year-turn month by decade, as `performance.now()` inside the page. The machine was shared with three other reviewers (load 8 to 10 on 4 cores), so treat single readings as ±30%. Plus `src/core/09-engine-at-scale/great-bench.mjs --profile` for 13 months from Taulen.
 - **Caveats.**
   - The harness swaps the player by setting `S.pc`, so a realm the player once ruled stays `playerRun` and spends nothing (56's ladder skips the player's realm). Taulen's 476 M hoard in seed 606 is that, and it is left out below.
   - The atlas (9991) and journeys (9990) are player-only by design, and an auto-played peasant never takes a road. I judged them by their code and tests, not by the soaks.
@@ -35,20 +35,20 @@ The machinery is all there. What is missing is the pressure that makes it move.
 
 | # | Finding | Impact | Size | Owner |
 | --- | --- | --- | --- | --- |
-| B1 | A bankrupt realm raises armies without limit (the Nine Wells: 1.47 M men, 309 divisions, debt 33.6 M) | 5 | M | 04-world-fixes, 56-realm-inside |
+| B1 | A bankrupt realm raises armies without limit (the Nine Wells: 1.47 M men, 309 divisions, debt 33.6 M) | 5 | M | 04-world-fixes, 56-court-and-treasury |
 | B2 | A revolt that wins leaves a realm marked rebel forever: frozen income, no diplomacy (8 to 10 such realms in 4 worlds) | 4 | S | 03-engine-fixes |
 | F1 | Legitimacy sits at about 89 in every realm, so claimant factions cannot form; civil wars −12% with the Polity, not −35% | 4 | S | 9996-polity |
-| F3 | The same history every seed: Zanara falls (22 → 0–6) in 7 of 8 worlds, Kethra halves in 4 of 4 | 4 | M | 20-ai-personality, 68-casus-belli |
+| F3 | The same history every seed: Zanara falls (22 → 0–6) in 7 of 8 worlds, Kethra halves in 4 of 4 | 4 | M | 20-ai-personality, 68-reasons-for-war |
 | B3 | 9997 turns permanent arrears into endless churn (up to 706,000 captains leave and 3.5 M men desert a century) | 3 | S | 9997-companies |
 | F2 | Estates are almost never angry (0–2 of 170 in the Known World), so petitions and anger in factions barely fire | 3 | S | 9996-polity |
-| F5 | The Silk Road's brokers are broke for most of a century (Lake Steppe, Felt Keepers, Ushivar, Navesht) | 3 | M | 9995-trade-roads, 56-realm-inside |
-| F4 | Twin Rivers peaces still move 16 to 21 provinces; 11 to 16 peaces of 10 or more a world | 3 | S | 09-scale |
+| F5 | The Silk Road's brokers are broke for most of a century (Lake Steppe, Felt Keepers, Ushivar, Navesht) | 3 | M | 9995-trade-roads, 56-court-and-treasury |
+| F4 | Twin Rivers peaces still move 16 to 21 provinces; 11 to 16 peaces of 10 or more a world | 3 | S | 09-engine-at-scale |
 | F7 | Prices that only climb: Known World ivory ×3.8 in every world; far silver ×3.8, jade and paper ×3 | 3 | M | 45-economy, 9995-trade-roads |
 | F8 | 9997's bread, pay and promotion sleep in a healthy realm; up to 25% of battalions lack a senior captain | 3 | M | 9997-companies |
-| F9 | Turn time: Great Continent month 0.33–0.92 s, year turn 1.0–2.7 s, worst 8.5 s; people ×2.7 | 3 | M | 09-scale |
-| F6 | Treasuries ×13–20 is convergence, not runaway; the far ledger is still off; taxes at an extreme for 62–67% of realms | 2 | S | 56-realm-inside, 9995-trade-roads |
+| F9 | Turn time: Great Continent month 0.33–0.92 s, year turn 1.0–2.7 s, worst 8.5 s; people ×2.7 | 3 | M | 09-engine-at-scale |
+| F6 | Treasuries ×13–20 is convergence, not runaway; the far ledger is still off; taxes at an extreme for 62–67% of realms | 2 | S | 56-court-and-treasury, 9995-trade-roads |
 | B4 | 9997's companies drift from `d.men` 400 to 2,400 times a century (README: 0) | 2 | S | 9997-companies |
-| B5 | Words: "Sand Clans wins", "The The Chain Keepers", "of Ridges"; Known World war names repeat | 2 | S | 991-far-war, 09-scale |
+| B5 | Words: "Sand Clans wins", "The The Chain Keepers", "of Ridges"; Known World war names repeat | 2 | S | 991-far-war, 09-engine-at-scale |
 | F10 | 10 to 19 far realms never fight or change a border in 105 years | 2 | S | 20-ai-personality |
 
 ---
@@ -158,7 +158,7 @@ The machinery is all there. What is missing is the pressure that makes it move.
     Succession wars are named by `A.startWar` directly and skip the namer in both lands: "The War of the Tessaria Succession" appears 7 times in seed 606 (Great Continent) and 5 times in seed 1212 (Known World).
 - **Fix.**
   - In `991-far-war` `e-words.core.js`, run `uniqueWarName` and the plural verbs in both lands, and apply the ordinal in `A.startWar` too.
-  - Use `A.realmRef` in the division-destroyed line, and in 09-scale's death and war-declared news lines.
+  - Use `A.realmRef` in the division-destroyed line, and in 09-engine-at-scale's death and war-declared news lines.
 - **Size S · Impact 2.**
 
 ---
@@ -234,9 +234,9 @@ The machinery is all there. What is missing is the pressure that makes it move.
 - **What I saw.**
   - **Peaces that move 10 or more provinces** (from "takes … from" lines in `S.history`): 13, 16, 11 and 13 in the four Great Continent worlds, against 1 to 3 in each Known World. The largest moves 16 to 21.
   - **Seed 606, Hesh against Taulen:** "Hesh takes … 21 … from Taulen" (1115), "Taulen takes … 15 … from Hesh" (1116), "Hesh takes … 20 … from Taulen" (1119). The same districts (Morylo, Tirutok, Siokiat, Yuren) go back and forth.
-  - **Why the cap allows it.** 09-scale's `W.capTreaty` holds a peace to 15% of the loser's people and land, and Twin Rivers districts are small, so 15% of Taulen is about 20 provinces. Wars in the first year: 3 to 5, and fair.
+  - **Why the cap allows it.** 09-engine-at-scale's `W.capTreaty` holds a peace to 15% of the loser's people and land, and Twin Rivers districts are small, so 15% of Taulen is about 20 provinces. Wars in the first year: 3 to 5, and fair.
 - **Why it matters.** Cycle 1's B3 complaint is softened, not gone. A Venshai player still sees a fifth of his empire change hands in a war of under a year, and back again the next.
-- **Fix.** In `09-scale` (`W.capTreaty`): add a cap of about 6 provinces (or 8% of the loser's provinces) for a war of under two years, rising with the war's length. Count a province taken back within 10 years toward a truce (68's `reconquest` weighed down for 10 years after a peace).
+- **Fix.** In `09-engine-at-scale` (`W.capTreaty`): add a cap of about 6 provinces (or 8% of the loser's provinces) for a war of under two years, rising with the war's length. Count a province taken back within 10 years toward a truce (68's `reconquest` weighed down for 10 years after a peace).
 - **Size S · Impact 3.**
 
 ### F5. The Silk Road's brokers are broke for most of a century
@@ -255,7 +255,7 @@ The machinery is all there. What is missing is the pressure that makes it move.
 - **Why it matters.** The lore's richest middlemen (the brokers of `TR-09`, the Weighing, the Wells' secret track) are the poorest crowns in the game. They are also where B1's runaway armies start.
 - **Fix.**
   - In `9995-trade-roads`: book a broker's tenth at each relay, as well as the tolls, to the relay realm's treasury, not only to the price.
-  - In `56-realm-inside`: start these realms at the reserve (1.5 years). Read their income with the relay cut.
+  - In `56-court-and-treasury`: start these realms at the reserve (1.5 years). Read their income with the relay cut.
   - Measure: no realm broke for more than 10 years running.
 - **Size M · Impact 3.**
 
@@ -275,7 +275,7 @@ The machinery is all there. What is missing is the pressure that makes it move.
   - the far ledger (`A.TRADE.ledgerYear`, armies at the lore's share of revenue) is still off, so Taulen's "failing money" never fails;
   - the light-tax drift that 56's README called "a design call" is past its bar in the Known World.
 - **Fix.**
-  - In `56-realm-inside` `treasury.core.js`, add the line lane E wrote (`up += lore.army + lore.notes`) and start every realm at its reserve.
+  - In `56-court-and-treasury` `treasury.core.js`, add the line lane E wrote (`up += lore.army + lore.notes`) and start every realm at its reserve.
   - Read the court's treasury against spending, not income (56's own note), which stops the drift to Light.
 - **Size S · Impact 2.**
 
@@ -328,7 +328,7 @@ The machinery is all there. What is missing is the pressure that makes it move.
   - **Profile** (13 months from Taulen, `W/prof-POL-36-on.json`): 9995's `TR.month`, `TR.trips` and `TR.cost` are about 12% of the samples, and 9997's `CO.day`, `restNow`, `drillsNow`, `CO.month` and `A.divLose` about 7%.
   - **9996** adds about 70 to 90 ms to each Known World year turn (152–224 against 87–129 ms), as its README says.
 - **Why it matters.** The world-foundations target is "the month tick stays within 10% of today's". On the Great Continent a month near a second, and a year turn near 2 s, is what the stepper's Month and Season wait on. People nearly triple in a century, and the cost grows with them.
-- **Fix.** In `09-scale`, the README's own next step: a coarse tick for lands far from the player, where 9995's trips and 9997's day are worked a season at a time. Cap the named people of a realm's lesser offices (9996 made 1,751 people in one world). Watch seed 1212's growth with `great-bench --months=1200`.
+- **Fix.** In `09-engine-at-scale`, the README's own next step: a coarse tick for lands far from the player, where 9995's trips and 9997's day are worked a season at a time. Cap the named people of a realm's lesser offices (9996 made 1,751 people in one world). Watch seed 1212's growth with `great-bench --months=1200`.
 - **Size M · Impact 3.**
 
 ### F10. Realms that never change

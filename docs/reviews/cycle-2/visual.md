@@ -77,28 +77,28 @@ Two questions:
 
 | # | Item | Impact | Size | Owner |
 | --- | --- | --- | --- | --- |
-| B1 | Day theme: the title's text is about 1.4:1 on the night vista | 5 | S | 91-look (`look.g-title`) |
-| B2 | An eased map zoom redraws the whole map each frame: 50 ms median, 233 ms p95 frames | 4 | M | 96-moments (`MOT.easeMap`), 62-inked-map |
+| B1 | Day theme: the title's text is about 1.4:1 on the night vista | 5 | S | 91-visual-style (`look.g-title`) |
+| B2 | An eased map zoom redraws the whole map each frame: 50 ms median, 233 ms p95 frames | 4 | M | 96-big-moments (`MOT.easeMap`), 62-inked-map |
 | B3 | Politics opens under the Build list and runs 4.4 screens (5.4 on a phone) | 5 | M | 9996-polity (`e-view`) |
-| B4 | The map's view is not held to the world: a flat navy block on the story map, a blank band on the full map | 4 | S | 9991-atlas, 62-inked-map |
+| B4 | The map's view is not held to the world: a flat navy block on the story map, a blank band on the full map | 4 | S | 9991-atlas-of-known-places, 62-inked-map |
 | B5 | Company battle: your company is unmarked, and the side colours disagree (legend, flags, units, intents) | 4 | M | 85-battle-labels, 9997-companies |
 | B6 | The battle camera crops the side labels; at 1920 the company battle's Next pulse is cut off | 3 | S | 85-battle-labels, 9997-companies |
-| B7 | The career ladder breaks rank names mid-word ("Sergean / t", "Comma / nder") | 3 | S | 91-look (`look.e-rows`, ladder) |
-| B8 | Share overlay: Save is not the primary button, and Back carries a key badge "2" | 3 | S | 9994-share |
-| B9 | The rail's delta flash sits on the number and squeezes the label ("ST.", "WI…") | 3 | S | 91-look (`look.e-rows`, `LOOK.flash`) |
-| B10 | Phone: a tap on a choice can open the odds tooltip, which covers every choice | 3 | S | 92-scene-card, 59-tooltips |
-| B11 | People rows clip their chips with no ellipsis ("Would teach y") | 2 | S | 91-look (`look.e-rows`) |
-| B12 | The chapter card's art does not fit the chapter (wedding rings for a childhood) | 2 | S | 9993-chapters, 94-woodblock-skies |
-| B13 | Small type and spacing slips: the drop cap reads "Y ou", the first hint covers Story/Map, "( 1⧗ )" | 2 | S | 92-scene-card, 91-look, 9996-polity |
-| F1 | The title as one composition: the map out of the box, a vista on the phone | 5 | M | 91-look, 86-title-fold |
+| B7 | The career ladder breaks rank names mid-word ("Sergean / t", "Comma / nder") | 3 | S | 91-visual-style (`look.e-rows`, ladder) |
+| B8 | Share overlay: Save is not the primary button, and Back carries a key badge "2" | 3 | S | 9994-share-a-picture |
+| B9 | The rail's delta flash sits on the number and squeezes the label ("ST.", "WI…") | 3 | S | 91-visual-style (`look.e-rows`, `LOOK.flash`) |
+| B10 | Phone: a tap on a choice can open the odds tooltip, which covers every choice | 3 | S | 92-scene-card, 59-descriptions |
+| B11 | People rows clip their chips with no ellipsis ("Would teach y") | 2 | S | 91-visual-style (`look.e-rows`) |
+| B12 | The chapter card's art does not fit the chapter (wedding rings for a childhood) | 2 | S | 9993-life-chapters, 94-woodblock-skies |
+| B13 | Small type and spacing slips: the drop cap reads "Y ou", the first hint covers Story/Map, "( 1⧗ )" | 2 | S | 92-scene-card, 91-visual-style, 9996-polity |
+| F1 | The title as one composition: the map out of the box, a vista on the phone | 5 | M | 91-visual-style, 86-title-screen-in-view |
 | F2 | The battle field as a woodblock print, with top-down clarity | 5 | L | 85-battle-labels |
 | F3 | The Politics view as a designed screen | 4 | M | 9996-polity |
-| F4 | Less scrolling: Codex 24 screens, Dynasty 5, Path 3.9, Holdings 3.8 (8.1 on a phone) | 4 | M | 91-look, 66-markets, 994-careers, 9996 |
+| F4 | Less scrolling: Codex 24 screens, Dynasty 5, Path 3.9, Holdings 3.8 (8.1 on a phone) | 4 | M | 91-visual-style, 66-markets, 994-careers, 9996 |
 | F5 | The full map from above: the realm wash too pale to read | 4 | S | 62-inked-map |
 | F6 | Portrait finish: the sticker rim, a stray strand, no fighting stance | 3 | M | 93-anime-portraits |
 | F7 | Battle and War Room motion cost (p95 50 ms per pulse with motion, 16.8 reduced) | 3 | S | 85-battle-labels |
-| F8 | Screens still release-era next to the new ones: profile, Decisions, War Room on a phone | 3 | M | 91-look, 71-phone |
-| F9 | Share cards: the lower half is empty; no arms, no numbers | 2 | S | 9994-share |
+| F8 | Screens still release-era next to the new ones: profile, Decisions, War Room on a phone | 3 | M | 91-visual-style, 71-phone |
+| F9 | Share cards: the lower half is empty; no arms, no numbers | 2 | S | 9994-share-a-picture |
 | F10 | Icons at 14 px: some read as letters | 2 | S | 95-icons |
 
 ---
@@ -110,7 +110,7 @@ Two questions:
   - Shots: `S/1366-light/01-title.png`, `S/1920-light/01-title.png`, `S/390-light/01-title.png`, crop `V/crop-title-light.png`. In Night it reads (`rgb(189,184,204)`).
   - axe reports nothing, because it cannot measure text over a background image.
 - **Why it matters.** It is the first screen, and the share-worthy one. In Day it looks broken.
-- **Fix (91-look, `look.g-title.core.js`).** The vista is always a night or dawn picture, so scope Night's ink tokens to it in both themes: `#title.tl-vista{--ink:#eee8da;--ink-2:#bdb8cc;--ink-3:#9c97ad;color-scheme:dark}`. Add the title to `tokensContrast` with the vista's darkest band as the surface.
+- **Fix (91-visual-style, `look.g-title.core.js`).** The vista is always a night or dawn picture, so scope Night's ink tokens to it in both themes: `#title.tl-vista{--ink:#eee8da;--ink-2:#bdb8cc;--ink-3:#9c97ad;color-scheme:dark}`. Add the title to `tokensContrast` with the vista's darkest band as the surface.
 
 ### B2. An eased map zoom stutters: each frame redraws the whole inked map
 - **What I saw.** The full map and the War Room on the Great Continent at 1366, motion Full. Four wheel steps in and out, then the zoom buttons (`V/perf-1366-full.json`, `V/perf2-1366-full.json`):
@@ -122,9 +122,9 @@ Two questions:
   | War Room, wheel zoom | 33 ms | 117 ms | 283 ms | 241 ms |
   | Tab switch ×6, cut-in, clock, story map | 16.7 ms | 16.8–33 ms | 17–50 ms | ≤52 ms |
 
-  `MOT.easeMap` (96-moments, `motion.core.js`) calls `UI.gmDraw` or `UI.drawWar` with an interpolated view on every animation frame. Each call costs 120–240 ms here. So a 260 ms ease shows as one or two frames, and it costs two or three full redraws where an un-eased zoom costs one. Under reduced motion the redraw itself is still 140–290 ms.
+  `MOT.easeMap` (96-big-moments, `motion.core.js`) calls `UI.gmDraw` or `UI.drawWar` with an interpolated view on every animation frame. Each call costs 120–240 ms here. So a 260 ms ease shows as one or two frames, and it costs two or three full redraws where an un-eased zoom costs one. Under reduced motion the redraw itself is still 140–290 ms.
 - **Why it matters.** The map is the strategy half's main surface, and a zoom that hitches reads as a slow game. The ease adds the cost without the smoothness.
-- **Fix (96-moments with 62-inked-map).**
+- **Fix (96-big-moments with 62-inked-map).**
   - During the tween, draw the last finished frame as a bitmap with `drawImage` and the tween's scale and offset, as 85's battle camera does.
   - Do one real `gmDraw` at the end.
   - Cap the tween at 200 ms, and skip it when the last real draw took more than 60 ms.
@@ -138,7 +138,7 @@ Two questions:
 - **Why it matters.** The player pressed Politics and sees buildings. The owner asked for less scrolling, and this is the longest new screen.
 - **Fix (9996-polity, `e-view`).**
   - When `UI.realmView === 'pol'`, render the Realm band, the view switch and the polity view only.
-  - Fold the cards: the bill and the crown open, and the council, estates, laws, factions, lords and offices as 90-fold expanders with one-line summaries.
+  - Fold the cards: the bill and the crown open, and the council, estates, laws, factions, lords and offices as 90-collapsible-sections expanders with one-line summaries.
   - Target: 1.3 screens at 1366 with the defaults. See F3 for the layout.
 
 ### B4. The map's view is not held to the world's edges
@@ -148,7 +148,7 @@ Two questions:
   - **The full map at 1366** (`S/1366-dark/15-map.png`). A 16 px strip at the left.
 - **Why it matters.** A hard rectangle of nothing reads as a rendering failure, on the map that is meant to be the first-class surface.
 - **Fix.**
-  - In 9991-atlas (`atView` and the story map's view) and 62's full-map view, clamp `x0, y0` so the view never shows past the world's bounds at zoom ≥ 1. When the view is wider than the world, centre it.
+  - In 9991-atlas-of-known-places (`atView` and the story map's view) and 62's full-map view, clamp `x0, y0` so the view never shows past the world's bounds at zoom ≥ 1. When the view is wider than the world, centre it.
   - Paint everything outside the world with `IM.SEA_DEEP` plus the open-sea ruling, so even an unclamped edge is sea.
 
 ### B5. Company battle: which block is you, and whose colour is whose
@@ -179,7 +179,7 @@ Two questions:
 
 ### B7. The career ladder breaks its rank names
 - **What I saw.** Path tab, a captain: "Sergean / t", "Comma / nder", "High Genera" clipped at the right, and passed ranks struck through. At 1366 (`S/1366-dark/34-path-company.png`) and worse on a phone: "Captai / n" (`S/390-dark/34-path-company.png`).
-- **Fix (91-look, `look.e-rows`, the ladder).**
+- **Fix (91-visual-style, `look.e-rows`, the ladder).**
   - `word-break: keep-all; hyphens: none`.
   - Labels at `--t-cap` with ranks abbreviated past eight: Squad Capt., Sr Captain, Cmdr.
   - Or show only the names of your rank and the next two, with the other dots unlabelled and the name in a tooltip.
@@ -190,40 +190,40 @@ Two questions:
   - "Save the picture (PNG)", the one action, is not gold, and a dark cut-corner notch shows at its top left.
   - "Back" carries a "2" key badge.
   - The cause: `share.core.js` line 194 wraps the buttons in `class="choices"`, the scene card's choice-row style.
-- **Fix (9994-share).** Use a plain flex row `.sh-acts{display:flex;gap:8px;justify-content:center}` without `.choices`. Save is `.primary`, and Back is `.ghost`.
+- **Fix (9994-share-a-picture).** Use a plain flex row `.sh-acts{display:flex;gap:8px;justify-content:center}` without `.choices`. Save is `.primary`, and Back is `.ghost`.
 
 ### B9. The rail's delta flash hides the number it reports
 - **What I saw.** After a change, the "▲ +1" chip is drawn over the vital's number (Renown 0→1, `V/crop-rail-delta.png`). On a stat tile it squeezes the label to "ST." or "WI…" (`S/1366-dark/18-cutin-victory.png`).
-- **Fix (91-look, `LOOK.flash`).** Place the chip outside the number's box: absolutely positioned above the tile's top-right corner, offset −8 px, with `pointer-events:none` and its own `--overlay` plate. Never shrink the label's box.
+- **Fix (91-visual-style, `LOOK.flash`).** Place the chip outside the number's box: absolutely positioned above the tile's top-right corner, offset −8 px, with `pointer-events:none` and its own `--overlay` plate. Never shrink the label's box.
 
 ### B10. Phone: the odds tooltip covers the choices
 - **What I saw.** 390 Day, "An apprentice's mistake". A tap landed on the odds badge and pinned the full odds breakdown over all three choices. Until it is closed, every tap hits the tooltip (`S/390-light/10-event-41-full.png`; my script stuck there for 40 rounds).
-- **Fix (92-scene-card, 59-tooltips).**
+- **Fix (92-scene-card, 59-descriptions).**
   - On touch, open the odds breakdown as a bottom sheet (71-phone's sheet) with a close bar, not a popover.
   - Give the badge its own 44 px target separate from the row, so a tap on the row chooses and a tap on the badge explains.
 
 ### B11. People rows clip their chips
 - **What I saw.** People at 1366: "Would teach y", "Wants compan", and "B…", "F" cut with no ellipsis (`S/1366-dark/04-people.png`).
-- **Fix (91-look, `look.e-rows`).**
+- **Fix (91-visual-style, `look.e-rows`).**
   - Give the want chip `max-width: 14ch; text-overflow: ellipsis`, with its text in a tooltip.
   - Drop the relation letter when the row is narrower than 420 px.
 
 ### B12. The chapter card's picture does not fit the chapter
 - **What I saw.** "Chapter One: The Hungry Years", a childhood, is drawn with two wedding rings and a rose (`S/1920-dark/10-event-1.png`). Elsewhere a youth chapter gets an open book (`S/390-dark/33-chapter-card.png`), which fits.
-- **Fix (9993-chapters).**
+- **Fix (9993-life-chapters).**
   - Give `chp_card` a scene key by stage: childhood a toy and a hearth, youth a book and a road, prime the post's tools, age a chair by a window, a reign a throne.
   - 94's `SK` already has the parts; add the five to `SK.SCENES`.
 
 ### B13. Small slips
 - **The drop cap** is set apart from its word: "Y ou come ashore", "C hildhood begins", in every event at every size (`S/390-dark/10-event-1.png`). In 92-scene-card, use `::first-letter` with `float:left; margin-right:.04em`, or wrap the rest of the word with the cap.
-- **The stepper's first hint** ("Press Month (M)…") hangs over the Story/Map toggle and the first log line (`S/1366-dark/30-polity-ruler.png`). In 91-look, anchor it below the top bar's right edge, or in flow above the log.
+- **The stepper's first hint** ("Press Month (M)…") hangs over the Story/Map toggle and the first log line (`S/1366-dark/30-polity-ruler.png`). In 91-visual-style, anchor it below the top bar's right edge, or in flow above the log.
 - **"Speak for it ( 1⧗ )"** has stray spaces inside the brackets (`S/1366-dark/30-polity-ruler-p3.png`, 9996-polity).
 
 ---
 
 ## Findings and the next upgrades (ranked by impact for effort)
 
-### F1. The title as one composition (91-look `look.g-title`, 86-title-fold)
+### F1. The title as one composition (91-visual-style `look.g-title`, 86-title-screen-in-view)
 - **Seen.**
   - At 1920 the old political map in a rounded box fills the middle, and the busts sit in the bottom corners under a 300 px empty band (`S/1920-dark/01-title.png`).
   - The left bust's bangs are drawn as loose lines.
@@ -270,7 +270,7 @@ Two questions:
   - Every number keeps its 59 tooltip.
   - With B3, target 1.3 screens.
 
-### F4. Less scrolling on the long tabs (91-look, 66-markets, 994-careers)
+### F4. Less scrolling on the long tabs (91-visual-style, 66-markets, 994-careers)
 - **Measured** (`V/measure-1366-dark.json`, `V/measure-390-dark.json`; a noble of 25 played one year):
 
   | Tab | 1366 panel screens | Phone page screens |
@@ -331,7 +331,7 @@ Two questions:
   - Spec: one row (Play, a speed popover, close), the hatch at half alpha, and aggregated counters below zoom 2.
 - **The empty well under the docked event at 1920** (`S/1920-dark/10-event-1.png`): keep three log lines faded under the card.
 
-### F9. Share cards (9994-share)
+### F9. Share cards (9994-share-a-picture)
 - **Seen.** Good top half (`S/1366-dark/20-card-scene.png`, `S/1366-dark/20-card-life.png`). Below the result line there are about 150 px of empty cream. The arms the README promises were not drawn for a life with none.
 - **Spec.** A strip of four numbers in Atkinson tabular figures (age, renown, coin, children, or the scene's check and odds), and the house arms at 96 px on the right of the name line. When there are no arms, use a 9992 placeholder seal, not nothing.
 

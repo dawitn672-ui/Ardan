@@ -1,0 +1,28 @@
+{
+  "id": "braids_two",
+  "_note": "A child's hair in two plaits: parted in the middle, drawn back over the skull, a soft wisp at each temple, one plait behind each ear brought forward. The far plait shows below the far jaw against the neck; the near one lies over the near shoulder. Fine hair: locks narrower and with fewer strands.",
+  "layers": [
+    {"id": "mass", "role": "hair.shadow", "d": "M 370 390 S 364 322 390 266 446 226 522 206 604 218 668 256 708 322 718 402 710 482 690 552 L 646 572 S 640 530 628 500 L 620 470 S 610 430 596 390 576 350 548 322 506 304 462 300 420 312 390 338 Z"},
+    {"id": "plait_far", "z": "dress3", "braid": {"g": "M 396 650 S 386 710 378 780 372 860 370 930", "w": 30, "n": 9, "tie": "madder", "tuft": 5}},
+    {"id": "far", "ramp": "hair", "locks": [
+      {"g": "M 504 242 S 452 246 412 272 382 318 370 366 368 400", "w": [22, 24, 16, 8], "edge": -1},
+      {"g": "M 474 270 S 432 282 400 314 382 360 378 404", "w": [20, 22, 14, 6]},
+      {"g": "M 448 298 S 418 316 398 350 388 392 386 428", "w": [14, 16, 10, 4]}
+    ]},
+    {"id": "near", "ramp": "hair", "locks": [
+      {"g": "M 524 226 S 594 220 654 246 698 302 716 382 712 446", "w": [22, 26, 24, 12], "edge": 1},
+      {"g": "M 510 242 S 582 238 642 268 684 326 702 400 700 470", "w": [26, 30, 28, 14], "t": "half"},
+      {"g": "M 492 262 S 558 262 618 292 660 348 682 416 684 486", "w": [26, 30, 28, 14]},
+      {"g": "M 472 282 S 530 290 588 320 630 370 654 430 660 492", "w": [24, 28, 26, 12]},
+      {"g": "M 454 300 S 502 316 552 338 596 378 622 428 636 480", "w": [20, 24, 22, 10]},
+      {"g": "M 688 440 S 690 500 676 552 656 590", "w": [34, 36, 24], "t": "half", "edge": 1}
+    ]},
+    {"id": "part", "role": "skin.half", "lod": 1, "line": "M 448 300 S 470 280 494 258 522 232", "w": [3, 2.4, 1.6, 0.6], "k": "tone"},
+    {"id": "wisps", "z": "front", "ramp": "hair", "cast": [5, 6], "locks": [
+      {"g": "M 454 302 S 430 324 414 360 410 398", "w": [8, 9, 6, 1], "hl": false, "strands": 0, "edge": -1},
+      {"g": "M 470 296 S 452 318 444 350", "w": [7, 7, 1], "hl": false, "strands": 0},
+      {"g": "M 598 380 S 610 420 606 460 612 496", "w": [6, 7, 5, 1], "hl": false, "strands": 0, "edge": 1}
+    ]},
+    {"id": "plait_near", "braid": {"g": "M 664 586 S 690 650 704 720 708 800 700 880 692 950", "w": 32, "n": 10, "tie": "madder", "tuft": 5}}
+  ]
+}

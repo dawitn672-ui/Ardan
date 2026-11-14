@@ -4,7 +4,7 @@
 
 **How to use it.** Read it top-down. Each layer ends with **rules** (what drives the next layer down) and **targets** (how many of each thing, and why). The last two sections are a gap analysis of Ardan today and a step-by-step recipe for the implementers.
 
-**Sources.** Web research is cited inline and listed at the end. Ardan's numbers come from the game's own data (`LORE` in the core blob, the lore blob, `features/47-realm-bible`, `features/76-beast-habitats`) and from the private world bible in `canon/`, which is summarized here and never quoted.
+**Sources.** Web research is cited inline and listed at the end. Ardan's numbers come from the game's own data (`LORE` in the core blob, the lore blob, `src/world/47-realm-customs`, `src/map/76-beast-habitats`) and from the private world bible in `canon/`, which is summarized here and never quoted.
 
 **Hard limits this framework keeps** (they come from the world bible's house rules and the game):
 
@@ -628,7 +628,7 @@ This step decides whether the expansion ships.
   3. **Far lands:** the chronicle only. History advances on a yearly clock from the step 5 engines. News reaches the player late, through caravans, pilgrims and envoys, as rumour (feature 26's knowledge states).
 - **Lazy loading.** Far Land lore and map tiles load on first contact, in packs per land. That keeps the plan's first-download target under 3 MB.
 - **Province budget:** about 800 new provinces at most, coarse in empty lands. Benchmark `A.armyThink` and the month tick against the 9.4 ms war tick before and after.
-- **New starts,** two or three per phase: a caravan child of the Sand Basins, a clan rider of the Long Grass, a deck-hand of the Thousand Isles. Each is a hand-made start in the manner of 29-starts.
+- **New starts,** two or three per phase: a caravan child of the Sand Basins, a clan rider of the Long Grass, a deck-hand of the Thousand Isles. Each is a hand-made start in the manner of 29-starting-stories.
 - **A road west to east:** the Silk Road becomes a playable journey. It is the observer's way in (Le Guin) and the hero's road (Miura).
 - **Tests and lints for every Far Land feature:**
   - every beast in range (76's test, extended);
@@ -637,7 +637,7 @@ This step decides whether the expansion ships.
   - every polity has a want and a fear;
   - every entity has at least three links;
   - `tools/lint-events.mjs` and `tools/lint-choices.mjs` pass;
-  - `bench/balance.mjs` holds the new starts in bands added with reasons to `bench/targets.mjs`.
+  - `tools/bench/balance.mjs` holds the new starts in bands added with reasons to `tools/bench/targets.mjs`.
 
 ### Step 10: Reveal in stages (Isayama, Oda)
 
