@@ -32,7 +32,8 @@ RI.courtLine = function (r, e) {
   if (e.k === 'secede') return `${who(e.who)} of ${house(e.house)} led the ${esc(facName(e.fac))} out of the realm, with the crown's leave.`;
   return esc(e.k);
 };
-const whyLine = e => (e.why || []).length ? `<div class="tiny muted">Because: ${(e.why || []).slice(0, 4).map(x => esc(x[0])).join('; ')}</div>` : '';
+// the reasons explain themselves on a click (59-descriptions: a count in them, "6 houses", carries a description; CI 107)
+const whyLine = e => (e.why || []).length ? `<div class="tiny muted tt" data-tt="note" data-v="${esc('What the court weighed: each voice that pushed the crown, strongest first.')}" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false">Because: ${(e.why || []).slice(0, 4).map(x => esc(x[0])).join('; ')}</div>` : '';
 const aimCell = p => { const a = RI.aims(p); return a ? `<td class="small">${esc(RI.wantText(a.want))}</td><td class="small muted">${esc(RI.fearText(a.fear))}</td>` : '<td></td><td></td>'; };
 const aimTitle = p => { const a = RI.aims(p); if (!a) return ''; const w = a.words; return w ? ` title="${esc(w.wants + ' ' + w.fears)}"` : a.wantWhy.length ? ` title="${esc('From: ' + a.wantWhy.concat(a.fearWhy).join(', '))}"` : ''; };
 

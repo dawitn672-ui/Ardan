@@ -7,7 +7,10 @@ const SETUP = () => {
     world(seed, realm) { A.newGame({ seed, race: 'human', realm: realm || 'POL-01', status: 'merchant', sex: 'M', startAge: 25 }); return A.pc(); },
     drain() { let h, n = 0; while ((h = A.S.queue[0]) && n++ < 300) { if (h.type === 'event') { try { A.eventAuto(); } catch (e) { A.S.queue.shift(); } } else A.S.queue.shift(); } },
     // run months on the real calendar; the player cannot die of it
-    months(n) { for (let i = 0; i < n; i++) { A.advance(30); ECT.drain(); const pc = A.pc(); if (!pc.alive) { pc.alive = true; pc.health = 80; } } },
+    // a month is thirty days of the calendar: a step that stops early for a prompt (a birth, an illness, a scene that
+    // needs an answer) is carried on until they have passed (CI 107: two "months" that were one put a famine's peak
+    // past the year read, 1.49 where the calendar's year gives 2 and more)
+    months(n) { for (let i = 0; i < n; i++) { const d0 = A.absDay(); for (let g = 0; g < 12 && A.absDay() - d0 < 30; g++) { A.advance(Math.max(1, 30 - (A.absDay() - d0))); ECT.drain(); } const pc = A.pc(); if (!pc.alive) { pc.alive = true; pc.health = 80; } } },
     ratio(rid, k) { const M = A.mkt(rid); return M.s[k] / A.ECON.normal(M, k); },
     rel(rid, k) { return A.mkt(rid).p[k] / GD.GOODS[k].base; },
     live() { return Object.values(A.S.realms).filter(r => r.alive && !r.isRebel); },
