@@ -651,3 +651,6 @@ replaced, only basic moves are shared; the combat ladder is for combat only, oth
 influence, deeds and relations without grades or rung lists (L1), nobility lived in full (N1); legendaries outclass
 ordinary arms outright but must land, and speed, strength and skill can make them miss; baselines rise with difficulty
 but stay minor.
+
+**Order 37 (2026-11-13 19:37 ET, D-044):** no limit on how many talents are picked; a point budget only. Each talent is priced by how much
+it can change a life; lowering one below the default refunds points; prices stay moderate.

@@ -576,3 +576,11 @@ a little, never forced up to match. C9 builds the baseline for today's skills; G
    higher skill parries and deflects any blade far more easily. Replaces "about one word of skill".
 8. **Baselines** rise with the skill's or art's difficulty but stay minor (D-042 stands).
 9. **Pause:** after the ten legendary designs are shown, no new step starts until the owner says go (order 11 note).
+
+### D-044 · Talents by budget, no count limit (owner order 37, 2026-11-13 19:37 ET)
+**Replaces** D-043 item 3's "up to seven talents". At creation the player has a point budget. Every talent has its own
+price by how much it can change a life (a broad talent such as Physique costs more than a narrow one such as Senses);
+each letter above the default costs more, steeply but not wildly. Lowering a talent below the default gives points back
+(a weakness chosen on purpose). No limit on how many talents are taken; the budget is the only limit. SSS stays costly
+and near impossible by birth roll. Talents not touched are rolled hidden as before. Prices are set in G1 against bot
+lives so no build is free power ("nothing too insane").
