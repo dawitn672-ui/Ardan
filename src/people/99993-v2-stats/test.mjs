@@ -19,6 +19,9 @@ export default {
   async v2sDerive(pg) {
     const r = await pg.evaluate(() => {
       T.enter({ seed: 32, race: 'human', sex: 'M', startAge: 0 });
+      // the body's growth is measured, not the child's luck: on Story no year's death roll takes a child (CI 107: the world
+      // re-rolled by later steps took seed 32's boy at six)
+      A.S.settings.diff = 'story';
       const pc = A.pc(), byAge = [];
       for (let y = 0; y < 30; y++) { T.play(1); if (!pc.alive) break; if ([5, 12, 18, 25].includes(A.age(pc))) byAge.push([A.age(pc), Math.round(A.stat(pc, 'str')), Math.round(A.V2S.stats(pc).lift)]); }
       // headroom under the old engine's cap (1.02 x potential), which fx and training both stop at
@@ -623,6 +626,7 @@ export default {
       const BAD = [/grown m[ae]n/, /ordinary man/, /fells any man/, /toddler/, /as fast as a child/];
       for (const [seed, race] of [[32, 'human'], [42, 'orc']]) {
         T.enter({ seed, race, sex: 'M', startAge: 0 });
+        A.S.settings.diff = 'story';   // growth, not the child's luck (CI 107: seed 32's boy died at six in a re-rolled world)
         const pc = A.pc();
         for (let y = 0; y < 26 && pc.alive; y++) {
           const a = A.age(pc), t = txt(V.sheetHtml(pc)), adult = a >= (GD.RACES[pc.race].grown || 20);
