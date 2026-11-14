@@ -690,4 +690,4 @@ outcomes by more than a set margin).
 - **Callings** (each a group): Trade, Court and diplomacy, Crafts, Faith, Healing, Stealth and intrigue, The land.
 Talents left untouched are rolled hidden at birth (mostly C, sometimes higher or lower) and found in play.
 
-**Master key (owner order 43, 2026-11-13 19:57 ET):** at the foot of the talent picker, a key field; the owner's phrase (stored only as a SHA-256 hash) lifts the budget and the one-SSS limit and opens every talent and grade. Lives made with it carry a "custom" mark and are left out of balance runs and comparisons. Not real security (the game runs in the browser); a personal override.
+~~**Master key (owner order 43)**~~ withdrawn by order 44 (2026-11-13 20:00 ET): no master key is built.
