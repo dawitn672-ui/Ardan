@@ -367,7 +367,7 @@ export default {
         return { sheet: m.classList.contains('sc-sheet'), hint: !!hint, top: Math.round(card.top), over: inn.scrollHeight - inn.clientHeight, rows, ev: (m.querySelector('h2') || {}).textContent };
       });
     } finally { await ctx.close(); }
-    const ok = r.sheet && r.top <= 1 && r.over <= 1 && r.rows.length >= 3 && r.rows.every(h => h >= 52);
+    const ok = r.sheet && r.top <= 1 && r.over <= 1 && r.rows.length >= 2 && r.rows.every(h => h >= 52)   /* X3 (D-051) cut the philtre's drugging choice: two rows now */;
     return { ok, detail: `"${r.ev}" at 375 x 667, hint showing ${r.hint}: sheet top ${r.top} px, ${Math.max(0, r.over)} px to scroll; rows ${r.rows.join('/')} px` };
   },
   // a scene about a beast of rank wears its tier (brief §1.5): a titan legendary, a great beast rare, an animal none
