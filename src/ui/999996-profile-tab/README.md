@@ -8,30 +8,29 @@ The owner, on the gate 2 cards: "there should be a whole tab for a game-like pro
 
 The **first page of the You place** (D-038): You is now Profile, Path, Holdings, Arms. The rail's "Full profile" button opens it. On a phone the old You page stays as "Glance". The old overlay (`UI.ov = { type: 'profile' }`) still draws.
 
-## What is on it
+## What is on it (P2: clean, D-041)
+
+The main page is the figure, the card, the sheet and one small panel; the past and the long reads are on **Records**, a second view of the same page.
 
 | Part | Content |
 |---|---|
-| Figure | The whole standing person (`PORTRAIT.svg(p, size, { figure: true })`), the picture the library draws, on its painted ground |
-| Card | Estate kicker with its glyph (lowly, town, arms, crown), name, epithet, title line, house and place, the house's arms, **a line about the person** (`PF.about`: build, temper, dress or arms, a lasting mark), four measures in words (Body, Purse, Name, Honour; Faith for the devout), each opening its description |
-| Sheet | Body and mind: six rows, each a word on a scale of seven with the potential as an open mark; "How you are": health, mood, looks |
-| Titles, posts and offices | Estate, crown or succession, noble title, headship of a house, council seat, polity offices, command, trade, each with its years; **posts held before** |
-| Skills and fighting style | The best eight proficiencies as named tiers with the way to the next, "All of them", styles with their rank word, fighting worth in levies |
-| Renown, honour and deeds | The words, what made the name (99999-v2-renown), what the book of days holds |
-| House and household | Arms, motto, blazon, rank and seat; parents, spouse, children as buttons that open the person |
-| Gear and heirlooms | One tile a slot (weapon, ranged, armour, shield, helm, mount, cloak); things named (blade, horse, dog, ship); `p.heirlooms` when E2 fills it |
-| Years, health and marks | Age and stage, health, wounds with a heal word, lasting scars |
-| Measured | 99993's sheet in the world's units (cm, kg, m/s, ms), every row with its description |
-| Character, birth and faith | Traits and quirks, people, culture, faith, realm, tongues, looks, bloodline |
+| Figure | The whole standing person (`PORTRAIT.svg(p, size, { figure: true })`) in a gilt frame |
+| Card | On a parchment ground (as gate 2's card): estate kicker with its glyph, name, epithet, title line, house and place, the house's arms, up to three further posts held now, **a line about the person** (`PF.about`), four measures in words (Body, Purse, Name, Honour), each opening its description |
+| Sheet | Body and mind: six rows, each a word on a scale of seven with the potential as an open mark (`PF.addStat`); one line of health, mood and looks |
+| Panels (tabs) | One at a time, chosen by tabs (state kept in the browser): **Skills** (arts and the best five proficiencies), **Gear** (what is carried), **Family** (house, arms, motto, up to six kin who open the person), **Traits** (chips). `PF.addPanel({ k, label, body })` adds one |
+| Records link | One small link at the end of the tab row opens Records; "Back to profile" returns |
 
-Every number is inside a trigger of 59-descriptions (opens on click); there are no percentages. A section's body is drawn when it is opened (`UI.A.pfFold`), so closed sections hold nothing. Which are open is kept in the browser (`ardan_pf_v1`), not the save.
+**Records** (`PF.view = 'records'`, UI.tab stays `profile`): a single column of folded sections, the posts and the deeds open, the rest folded (open state kept in the browser). Titles, posts and offices with **held before**; skills and fighting style (all of them, in a fight); renown, honour and deeds (what made the name, set down); house and household (blazon, rank, seat, kin, the tree); gear and heirlooms (named things); years, health and marks; measured (99993's sheet, as given); character, birth and faith. `PF.addSection(def, before)` adds one. Leaving the page, or pressing Profile, puts the page back on the profile view.
+
+Every number is inside a trigger of 59-descriptions (opens on click); there are no percentages. A Records section's body is drawn when it is opened (`UI.A.pfFold`). Which are open is kept in the browser (`ardan_pf_v1`, `ardan_pf_tab`), not the save.
 
 ## Growing it (G, E2, others)
 
 ```js
 UI.PF.addStat({ k: 'cha', label: 'Charm', group: 'Mind',
   read: p => ({ word: 'fine', at: 4, pot: 5, tip: ['stat', 'cha'] }) });   // at/pot: 0 to 6 on the seven words
-UI.PF.addSection({ k: 'mounts', title: 'Mounts and hounds', sum: p => 'two horses', body: p => '<ul>...</ul>' }, 'years');  // before 'years'
+UI.PF.addPanel({ k: 'arts', label: 'Arts', body: p => '<ul>...</ul>' });   // a tab on the profile: keep it short
+UI.PF.addSection({ k: 'mounts', title: 'Mounts and hounds', sum: p => 'two horses', body: p => '<ul>...</ul>', open: false }, 'years');  // into Records, before 'years'
 ```
 
 A body must escape what it writes (`UI.esc`) and keep any number inside a trigger (`UI.note(text, label)` or `data-tt`). `PF.heirlooms` reads `p.heirlooms = [{ n, from, y }]`.
@@ -46,4 +45,4 @@ A body must escape what it writes (`UI.esc`) and keep any number inside a trigge
 
 ## Tests (`test.mjs`)
 
-`pfPlace`, `pfPhone`, `pfPure`, `pfEscaped`, `pfNumbers`, `pfClicks`, `pfFits` (1366 x 768, 420 and 360, B5's budgets), `pfFigureSame`, `pfOldSave`, `pfPosts`, `pfGrows`, `pfEveryAge`.
+`pfPlace`, `pfPhone`, `pfPure`, `pfEscaped`, `pfNumbers`, `pfClicks` (tabs, the Records link, a fold, back), `pfFits` (1366 x 768, 420 and 360: P2's own budgets, one screen on a laptop; Records held to six), `pfLean` (words, controls, no long line, one panel), `pfRecords` (everything moved is reachable there), `pfFigureSame`, `pfOldSave`, `pfPosts`, `pfGrows` (a stat, a panel, a section), `pfEveryAge`.
