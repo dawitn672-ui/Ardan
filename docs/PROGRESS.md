@@ -49,7 +49,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [ ] **C7** · Names and cultures in the game (one common language, D-013)
 - [ ] **C8c** · Dress, class and regalia (changeable outfits)
 - [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
-- [ ] **D12a** · War as a game board: one design (branches, command, the board, tactics; order 34)
+- [ ] **D12a** · War as a visual simulation with a close tactical view: one design (branches, command, fronts on the inked map, engagements up close; orders 34, 49)
 - [ ] **D11** · Military branches (feudal armies, D-012)
 - [ ] **D12b** · War and command depth
 - [ ] **X4** · Balance pass

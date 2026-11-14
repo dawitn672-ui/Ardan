@@ -609,3 +609,14 @@ rooted in that realm's lore; no two share a look.
 4. **Arts change in a lifetime** as already ordered: an unused art fades rarely and slowly and comes back easily (order 34);
    arts are founded, kept secret, stolen and lost (orders 32, 34, 36). This closes §6.5's last question.
 All of growth.md §6.5's decisions are now settled (stats here; the rest by orders 34-36 and 45-47).
+
+### D-047 · War is a visual simulation with a close tactical view; quality over speed; Fable freely (owner order 49, 2026-11-13 21:01 ET)
+1. **War** (replaces D-039 item 13's "game board"): a well-built **visual simulation** of the war, seen from above as
+   fronts and armies moving on the inked map (D-016's burn), with the player able to **zoom into an engagement for a
+   close, tactical view** (formations, terrain, the clash, the arts of the men in it, down to small details). Still
+   no war score and no army templates; still only at the player's rank when deployed (D-010's rule). D12a designs it.
+2. **Quality over speed.** No item is rushed for a date; each is finished cleanly (tests, coherency, a playtest pass)
+   before the next, and the plan adjusts where needed. Small changes that also speed the work are made without asking.
+3. **Models:** Fable 5.2 may be used wherever it makes the game better (design, art, the hardest systems, critique and
+   playtests of feel), not only for "the big designs" (refines D-009/D-010); Opus 5.5 and Sonnet 5.5 where they serve as
+   well.
