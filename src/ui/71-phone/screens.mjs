@@ -54,6 +54,8 @@ const world = v => tab('world', `UI.worldView = ${JSON.stringify(v)};`);
 // a war with the player enlisted (for the war room, missions and battles)
 const WAR = `(() => { const pc = A.pc(); if (!pc.mil || !A.S.wars.some(w => w.active !== false && (w.a === pc.realm || w.b === pc.realm || w.att === pc.realm || w.def === pc.realm))) {
   const en = A.neighbors(pc.realm)[0]; A.startWar(pc.realm, en, null, 'conquest'); A.enlist(pc); A._idIdx = null; A.advance(2); A._idIdx = null; }
+  /* D10 (D-052): a private has no War Room; the soldier is made a General (rank 7), who sees the theatre */
+  if (pc.mil && !pc.mil.merc) pc.mil.rank = Math.max(pc.mil.rank || 0, 7);
   A.S.queue = []; UI.ov = null; })()`;
 
 // an event the player can see, queued and shown (the first ready one the world offers, else a known one)

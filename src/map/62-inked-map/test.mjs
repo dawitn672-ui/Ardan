@@ -9,6 +9,8 @@ const WAR = () => {
   A.newGame({ seed: 621, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 22 });
   const pc = A.pc(), enemy = A.neighbors('POL-01')[0];
   A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(pc); A._idIdx = null; A.advance(2); A._idIdx = null;
+  // D10 (D-052): a private has no War Room; the enlisted man is made a General (rank 7), who sees the theatre
+  pc.mil.rank = 7;
   A.S.queue = []; UI.screen = 'game'; UI.set.hints = false; UI.tab = 'world'; UI.worldView = 'map';
   UI.INKMAP.budgetMs = 1e9; UI.render();
   window.__T = {

@@ -1352,7 +1352,8 @@ A.whatNow = function (pc) {
       ["tab", pc.mil ? "war" : "path"],
       "bad",
     );
-  if (pc.mil && A.atWar(pc.mil.realm || pc.realm).length)
+  // D10 (D-052): only for a rank that has a War Room (99997-v2-war's A.V2W.canRoom)
+  if (pc.mil && A.atWar(pc.mil.realm || pc.realm).length && (!A.V2W || A.V2W.canRoom(pc)))
     add(62, "Open the War Room", "Your realm is at war. See the front and your orders.", "war", ["warRoomView", ""]);
   if (
     adult &&

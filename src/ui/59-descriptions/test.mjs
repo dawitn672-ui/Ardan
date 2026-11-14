@@ -96,6 +96,15 @@ const KIT2 = () => {
       }
       return A.pc();
     },
+    // D10 (D-052): a private has no War Room; for the War Room's screens the soldier is made a captain whose division
+    // marches with an army
+    fieldCaptain() {
+      const pc = A.pc(); if (!pc || !pc.mil) return pc;
+      pc.mil.rank = Math.max(pc.mil.rank || 0, 4);
+      const d = A.divById(pc.mil.div);
+      if (!(d && d.army && A.army(d.army))) { const d2 = A.divsOf(pc.mil.realm).find(x => x.army && A.army(x.army)); if (d2) pc.mil.div = d2.id; }
+      return pc;
+    },
     ruler(seed) {
       A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
       const pc = A.pc(), r = A.realm('POL-01'); r.ruler = pc.id; pc.ruler = r.id; r.playerRun = true;
@@ -341,7 +350,7 @@ export default {
       const T2 = window.TT2, out = [];
       let pc = T2.soldier(5951);
       out.push(T2.screen('War tab (soldier)', '#tabbody', () => { UI.ov = null; UI.tab = 'war'; }));
-      UI.warRoomOpen();
+      T2.fieldCaptain(); UI.warRoomOpen();
       for (const t of UI.wrTabs(A.cmdRole(pc))) out.push(T2.screen(`War Room ${t.k} (soldier)`, '#modal', () => { UI.wr.tab = t.k; UI.wr.sel = null; }));
       const d = A.divById(pc.mil.div);
       out.push(T2.screen('War Room: your division', '#modal', () => { UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [d.id] }; }));
@@ -559,7 +568,7 @@ export default {
     await pg.click('#tt-pop-1 [data-tt="skill"]'); out.h2 = await depth();
     await pg.click('#tt-pop-2 [data-tt="profTier"]'); out.h3 = await depth();
     await pg.click('#tabbody .card.purse', { position: { x: 4, y: 4 } }); out.h0 = await depth();
-    await pg.evaluate(() => { TT2.soldier(5966); TUI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); });
+    await pg.evaluate(() => { TT2.soldier(5966); TT2.fieldCaptain(); UI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); });
     await pg.click('#modal .wr-div .barrow [data-tt="divOrg"]'); out.w1 = await depth();
     out.wHasGen = !!(await pg.$('#tt-pop-1 [data-tt="genSkills"]'));
     if (out.wHasGen) { await pg.click('#tt-pop-1 [data-tt="genSkills"]'); out.w2 = await depth(); }
@@ -627,7 +636,7 @@ export default {
       A.S.queue = [];
       const pc = T2.soldier(5968);
       probe('war tab', () => { UI.ov = null; UI.tab = 'war'; });
-      UI.warRoomOpen();
+      T2.fieldCaptain(); UI.warRoomOpen();
       for (const t of UI.wrTabs(A.cmdRole(pc))) probe('war room ' + t.k, () => { UI.wr.tab = t.k; UI.wr.sel = null; });
       probe('war room division', () => { UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [pc.mil.div] }; });
       UI.ov = null; T2.ruler(5969); UI.warRoomOpen();
@@ -653,7 +662,7 @@ export default {
       found.push(...v.map(x => label + ':' + x)); opened.push(label + ' ' + (await pg.evaluate(() => UI.TT.depth())));
     };
     for (const theme of ['dark', 'light']) {
-      await pg.evaluate(t => { document.documentElement.dataset.theme = t; UI.TT.closeAll(); TT2.soldier(5970); TUI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); }, theme);
+      await pg.evaluate(t => { document.documentElement.dataset.theme = t; UI.TT.closeAll(); TT2.soldier(5970); TT2.fieldCaptain(); UI.warRoomOpen(); UI.wr.tab = 'cmd'; UI.wr.sel = { k: 'divs', ids: [A.pc().mil.div] }; UI.render(); }, theme);
       await pg.click('#modal .wr-stats [data-tt="divStat"]'); const g = await pg.$('#tt-pop-1 [data-tt]'); if (g) await g.click();
       await run(theme + ' war room');
       await pg.evaluate(() => { UI.TT.closeAll(); UI.ov = null; TT2.life(5971, { years: 2 }); UI.tab = 'holdings'; UI.render(); });

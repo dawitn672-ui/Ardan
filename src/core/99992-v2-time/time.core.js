@@ -467,11 +467,13 @@
   const keys = [...new Set(ORDER.filter(k => known.has(k) || k === 'story' || k === 'you').concat([...known.keys()]))];
   const NAME = { life: 'Now', story: 'Story', goals: 'Decisions', you: 'You', people: 'People', legacy: 'Dynasty', war: 'War' };
   const nm = k => NAME[k] || known.get(k) || k;
+  // Arms appears at 14, or on enlisting (D10, D-052): a child of 9 has no page of armies and elite orders
+  V2T.armsShown = pc => !!pc && !!(pc.mil || pc.ruler || pc.company || pc.veteran || pc.order || !A.age || A.age(pc) >= 14);
   V2T.groups = function () {
     const pc = A.S && A.pc ? A.pc() : null, war = !!(pc && V2T.atWar(pc));
     const of = (place, phone) => keys.filter(k => (V2T.PLACE[k] || 'world') === place && (phone || (k !== 'story' && k !== 'you'))).map(k => [k, nm(k)]);
     const you = of('you', false), youP = of('you', true);
-    if (!war) { you.push(['war', 'Arms']); youP.push(['war', 'Arms']); }
+    if (!war && V2T.armsShown(pc)) { you.push(['war', 'Arms']); youP.push(['war', 'Arms']); }
     const G = [
       { k: 'life', name: 'Life', icon: 'sun', subs: of('life', false) },
       { k: 'you', name: 'You', icon: 'mirror', subs: you },

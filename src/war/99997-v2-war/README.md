@@ -1,6 +1,6 @@
 # 99997-v2-war: only your war, at your rank, and elite orders worth their numbers
 
-**Aspect:** the owner's v2 complaints 9 (few elite orders, as strong as forces tens of times larger), 10 (you can see wars you're not in) and 16 (combat detail, words not percentages), `docs/V2_SPEC.md` integration step 8 · **Kind:** system (6 core files), 2 patches (`V2W-HOLD-FIRST-DAY`, `V2W-RANK-WORDS`), tests. No events.
+**Aspect:** the owner's v2 complaints 9 (few elite orders, as strong as forces tens of times larger), 10 (you can see wars you're not in) and 16 (combat detail, words not percentages), `docs/V2_SPEC.md` integration step 8 · **Kind:** system (7 core files), 2 patches (`V2W-HOLD-FIRST-DAY`, `V2W-RANK-WORDS`), tests. No events.
 
 ## What it does
 
@@ -8,8 +8,7 @@
 
 - **A war is yours** when you fight in it. That means your realm as its ruler, the realm you serve in (enlisted, an officer, a general, an order's member), or a sell-sword's employer. Being born in a realm at war is not enough (`A.V2W.inWar`, `fightsIn`, `myWars`).
   - 72-one-battle-two-scales' levy counts while its scene runs: you stand in that fight.
-- **The War Room** belongs to those who serve or rule: a ruler, an enlisted man, an officer, a general, a sell-sword under contract (`A.V2W.canRoom`).
-  - In peace it plans your own forces, as before.
+- **The War Room** belongs to your post (`A.V2W.canRoom`, D10 below): the crown and the Marshal in peace and war; in your war a commander, or a captain in the field.
   - In war it is drawn with only your wars in `A.S.wars`.
   - For a life outside the army it stays shut (`UI.warRoomOpen`, `A.warRoomView`, a queued `warroom`). The War tab loses its War Room button and reads "is at war, but you are not in it" in place of the release's "is at peace".
 - **The surfaces that stay shut** for any other war:
@@ -25,6 +24,15 @@
   - `A.fightEnd` keeps a rumour instead, using `A.V2.war.rumourOfBattle`. It arrives 18–80 days later (`A.onMonth`). It is wrong about the winner at v2's rate (25% + 5% a month late), the place is half heard, and the dead are a guess (×0.4–3).
   - The dice are v2's `makeRng`, seeded from the game seed and the fight. Nothing is drawn from `A.rand`.
 - **New state:** `S.v2w = { rum, heard }`. It tolerates being missing.
+
+**War screens by post** (D10, D-052; `a-gate.core.js` and `g-post.core.js`)
+
+- **The War Room** (`W.canRoom`): the crown, and the Marshal who raises the host, in peace and war. In a war of yours, a commander (rank 7 and up, an army's general), or a captain (ranks 4-6, a sell-sword captain) while deployed (`W.deployed`: his division marches with an army, his company is under contract). Never a soldier or a sergeant: his war is the War tab (his company, his orders, rumour) and the battle at his rank. The War tab's War Room button, the army's Path card button and the "Open the War Room" hint follow the same rule.
+- **What the map shows** (`W.scope`, inside `W.withSeen`): a commander the theatre; a captain two provinces round his division; a soldier or a sergeant his province and the next. His own division always shows.
+- **Enemy numbers below a commander** are estimates: a War Room counter reads "~7k" (`W.estimate`), not "7.3k".
+- **The map's Wars mode** is offered only to a life in a war (`UI.mapModeHidden`, read by the release's `UI.mapModes`).
+- **Arms** (the War tab in peace) appears at 14 or on enlisting (`V2T.armsShown`, 99992-v2-time).
+- **The elite orders on the War tab** are those you have heard of (`A.orderHeard`): your realm's, your own, those of the realms in your wars, and the strongest. The Codex lists all eight.
 
 **In your war you play your rank** (`b-battle.core.js`, `d-view.core.js`)
 
@@ -77,6 +85,7 @@
 | `v2wChoicesMove` | Paired seeds on 6 frozen fights: the bold choice gives a higher grade and a better order balance in the real fight at soldier, sergeant and captain; the commander's reserve changes his battle |
 | `v2wShirkCosts` | At every rank, a working choice that takes from the army (keeping the company back, drifting to the rear) grades below zero and below every other working choice; a failure costs the same whatever was tried |
 | `v2wAfterAction` | Three distinct causes in 23's shape, in the story |
+| `v2wByPost` | D10: 14 lives (child, peasant, noble, soldier, sergeant, captain in the field and left behind, general, ruler; in peace and in a war of theirs) get the War Room, the War place, Arms, the map's Wars mode and the War Room button by post; the map draws only what the rank may reach; drawing is pure; the War tab lists only orders heard of; enemy counters are estimates |
 | `v2wOrders` | 150–350 members × 14–26 levies, 10× their numbers or more; in the division simulator 21–44 a member against an ordinary division of the realm (the simulator adds the orders' own bonuses: the Shadow's +35% soft attack, the Last Door's +45% defence); 250 knights beat 3,000 levies; three trials |
 | `v2wPure` | Drawing the scene changes neither the state nor the dice; no percentage |
 | `v2wSeenRestores` | Round 2: `W.withSeen` puts back exactly what was there: the same `S.wars` and `S.fights`, and no key at all where there was none (it put back `S.wars = undefined`, as it once did `S.fights`, commit 0451bd1) |

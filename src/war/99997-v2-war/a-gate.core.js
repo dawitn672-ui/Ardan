@@ -37,9 +37,57 @@
   // a levy called out at home (72-one-battle-two-scales) stands in the fight while the scene runs
   W.inLevy = () => !!(A.S && ((A.S.tsq && A.S.tsq.m && A.S.tsq.m.ts && A.S.tsq.m.ts.levy) || (A.S.queue || []).some(q => q && q.type === 'mission' && q.m && q.m.ts && q.m.ts.levy)));
   W.inWar = function (pc) { return W.myWars(pc).length > 0 || W.inLevy(); };
-  // the War Room is the room of those who command or serve: a ruler, an enlisted man, an officer, a general, a
-  // sell-sword under contract. In peace it plans your own forces; in war it shows only your wars (W.withMyWars).
-  W.canRoom = function (pc) { pc = pc || (A.S && A.pc && A.pc()); return !!W.side(pc) || W.inLevy(); };
+  // the War Room by post (D10, D-052; owner order 5, "war screens only when deployed, on a mission, or the situation
+  // allows"). It was the room of anyone who served (a private in garrison, in peace, read the whole theatre). Now:
+  //  - the crown, and the Marshal who raises the host, keep it in peace and war: the host is theirs to run;
+  //  - in a war of yours, a commander (rank 7 and up, an army's general) sees the theatre;
+  //  - a captain (ranks 4-6, a sell-sword captain) only while deployed (his division with an army in the field, his
+  //    company under contract), and then only his division's front (W.scope);
+  //  - a soldier or a sergeant never: his war is his company, his orders and rumour (the War tab, the battle at his rank).
+  W.canRoom = function (pc) {
+    pc = pc || (A.S && A.pc && A.pc());
+    if (!pc || !pc.alive || !W.side(pc)) return false;
+    if (pc.ruler) return true;
+    const R2 = A.cmdRole ? A.cmdRole(pc) : null;
+    if (R2 && (R2.recruit || R2.production)) return true;
+    if (!W.myWars(pc).length) return false;
+    const rk = W.rank(pc);
+    return rk === 'commander' || (rk === 'captain' && W.deployed(pc));
+  };
+  // in the field: an army's general, a division that marches with an army, a free company under contract
+  W.deployed = function (pc) {
+    pc = pc || (A.S && A.pc && A.pc());
+    if (!pc || !A.S) return false;
+    if (pc.ruler || (A.S.armies || []).some(a => a && a.gen === pc.id)) return true;
+    if (pc.company && pc.company.contract) return true;
+    if (pc.mil && pc.mil.merc) return !!pc.mil.contract;
+    const d = pc.mil && pc.mil.div && A.divById ? A.divById(pc.mil.div) : null;
+    return !!(d && d.army && A.army && A.army(d.army));
+  };
+  // your own divisions: the one you serve in, the armies you lead (a ruler's are all of his realm's)
+  W.ownDivs = function (pc) {
+    const out = new Set();
+    if (!pc || !A.divById) return out;
+    if (pc.mil && pc.mil.div) out.add(pc.mil.div);
+    for (const a of (A.S && A.S.armies) || []) if (a && a.gen === pc.id) for (const id of a.divs || []) out.add(id);
+    return out;
+  };
+  // how far you see in your war: a commander, the theatre (null: no bound); a captain, two provinces round his division;
+  // a soldier or a sergeant, the province he stands in and the next. Out of every war, no bound (what you see then is
+  // only your own realm's host, and only if you run it: W.seen)
+  W.scope = function (pc) {
+    pc = pc || (A.S && A.pc && A.pc());
+    if (!pc || !A.S || !W.myWars(pc).length || W.rank(pc) === 'commander') return null;
+    const steps = W.rank(pc) === 'captain' ? 2 : 1, S = A.S, out = new Set();
+    let edge = [];
+    for (const id of W.ownDivs(pc)) { const d = A.divById(id); if (d && S.prov[d.loc]) { out.add(d.loc); edge.push(d.loc); } }
+    for (let k = 0; k < steps; k++) {
+      const next = [];
+      for (const j of edge) for (const n of (S.prov[j] && S.prov[j].adj) || []) if (!out.has(n)) { out.add(n); next.push(n); }
+      edge = next;
+    }
+    return out;
+  };
   W.fightsIn = function (war, pc) {
     if (war == null) return true;  // a fight that belongs to no war (a brawl, a raid, a duel) is not spectating
     const id = typeof war === 'object' ? war.id : war;
@@ -191,13 +239,14 @@
     if (W.canRoom(pc) && W.side(pc)) out.add(W.side(pc));
     return out;
   };
-  // draw with only the divisions and fights you can see in A.allDivs and A.S.fights (both put back at once)
+  // draw with only the divisions and fights you can see in A.allDivs and A.S.fights (both put back at once): the realms
+  // you may see, within your rank's reach (W.scope, D10), and always your own division
   W.withSeen = function (fn) {
     const S = A.S; if (!S || !A.allDivs) return fn();
-    const seen = W.seen(), all = A.allDivs, fights = S.fights, wars = S.wars, mine = W.myWars();
-    A.allDivs = function () { return all.apply(this, arguments).filter(d => d && seen.has(d.r)); };
+    const pc = A.pc && A.pc(), seen = W.seen(pc), near = W.scope(pc), own = W.ownDivs(pc), all = A.allDivs, fights = S.fights, wars = S.wars, mine = W.myWars(pc);
+    A.allDivs = function () { return all.apply(this, arguments).filter(d => d && (own.has(d.id) || (seen.has(d.r) && (!near || near.has(d.loc))))); };
     const f2 = {};
-    for (const k in fights || {}) { const F = fights[k]; if (F && seen.has(F.a) && seen.has(F.b) && (F.war == null || mine.some(w => w.id === F.war))) f2[k] = F; }
+    for (const k in fights || {}) { const F = fights[k]; if (F && seen.has(F.a) && seen.has(F.b) && (F.war == null || mine.some(w => w.id === F.war)) && (!near || near.has(F.loc != null ? F.loc : +k))) f2[k] = F; }
     // a world with no fight yet has no S.fights key: put back exactly that (no key, not an undefined one), or the
     // key's place in the save moves and the drawn world's fingerprint parts from the plain one (v2tSameWorld)
     // S.wars the same way: a save without the key gets none back (the filter below only writes it over an array)

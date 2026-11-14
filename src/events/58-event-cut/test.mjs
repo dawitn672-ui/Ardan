@@ -141,9 +141,13 @@ export default {
     const r = await pg.evaluate(() => {
       const tabsFor = () => { UI.warRoomOpen(); const t = [...document.querySelectorAll('[data-a="wrTab"]')].map(b => b.dataset.v); return t; };
       T.enter({ seed: 61, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
-      // 99997-v2-war: a peasant who neither serves nor rules has no War Room (no view of a war you are not in): his
-      // view is the enlisted man's, so he enlists first
-      if (A.V2W && !A.V2W.canRoom()) A.enlist(A.pc());
+      // 99997-v2-war: a peasant who neither serves nor rules has no War Room (no view of a war you are not in), and a
+      // private none at all (D10, D-052): his view is a captain's in the field, so he enlists, goes to war and is made
+      // a captain whose division marches with an army
+      if (A.V2W && !A.V2W.canRoom()) {
+        const p0 = A.pc(); A.enlist(p0); A.startWar(p0.realm, A.neighbors(p0.realm)[0], null, 'conquest'); A._idIdx = null; A.advance(12); A._idIdx = null; A.S.queue = [];
+        p0.mil.rank = 4; const d = A.divsOf(p0.mil.realm).find(x => x.army && A.army(x.army)); if (d) p0.mil.div = d.id;
+      }
       const peasant = tabsFor();
       UI.A.wrTab('ind'); const forced = UI.wr.tab;
       UI.ov = null; UI.tab = 'war'; UI.render();

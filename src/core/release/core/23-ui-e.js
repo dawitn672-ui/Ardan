@@ -429,7 +429,7 @@ UI.armyPathCard = function (pc) {
       m.rank,
     )}
     ${UI.promoBoardHtml ? UI.promoBoardHtml(pc) : ""}
-    <div class="row" style="margin-top:6px"><button class="small" data-a="warRoomView">${UI.icon("target", "s")}War Room</button><span class="right"></span><button class="small" data-a="resign">Leave the army</button><button class="small danger" data-a="desert">Desert</button></div></div>`;
+    <div class="row" style="margin-top:6px">${!A.V2W || A.V2W.canRoom(pc) ? `<button class="small" data-a="warRoomView">${UI.icon("target", "s")}War Room</button>` : ""}<span class="right"></span><button class="small" data-a="resign">Leave the army</button><button class="small danger" data-a="desert">Desert</button></div></div>`;
 };
 
 UI.councilCard = function (pc) {
@@ -1264,8 +1264,12 @@ UI.ordersCard = function (pc, compact) {
   if (!list.length) return "";
   const maxP = Math.max(1, ...list.map(s => s.pow)),
     myR = pc.mil && !pc.mil.merc ? pc.mil.realm : pc.realm,
-    shown = list.filter((s, i) => !compact || i < 4 || (pc.order && pc.order.id === s.id) || s.o.realm === myR);
-  let h = `<div class="card orders"><div class="row">${UI.icon("award", "s")}<span class="tag">The elite of Ardan</span><span class="tiny muted grow">Eight in all of Ardan, strongest first. Each is 200 to 300 strong, because no kingdom has more people good enough. Most realms have none.</span></div>`;
+    // D10 (D-052): on the War tab, only the orders the character has heard of (A.orderHeard, 99997-v2-war); the Codex
+    // lists all eight
+    shown = list.filter((s, i) =>
+      !compact ? true : A.orderHeard ? A.orderHeard(pc, s, i) : i < 4 || (pc.order && pc.order.id === s.id) || s.o.realm === myR,
+    );
+  let h = `<div class="card orders"><div class="row">${UI.icon("award", "s")}<span class="tag">The elite of Ardan</span><span class="tiny muted grow">Eight in all of Ardan${compact && A.orderHeard ? "; here, those you have heard of" : ""}, strongest first. Each is 200 to 300 strong, because no kingdom has more people good enough. Most realms have none.</span></div>`;
   for (const s of shown) {
     const mine = pc.order && pc.order.id === s.id,
       reqs = s.o.realm === myR && !pc.order ? A.orderReqs(pc, s.id) : null,

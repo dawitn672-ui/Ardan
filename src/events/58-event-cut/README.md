@@ -99,7 +99,7 @@ The share of memory events rises because the events that remember are not lost: 
 | `cutClassicSetting` | off by default; the menu box restores the events, is remembered, travels with the save, is a journaled command; an old save without the field loads with the cut |
 | `cutPoolsKeepFloor` | 46 probes: the least kept 61% of its pool; the fewest local events left in a realm 7 |
 | `renderRng`, `replayWithRender`, `journalReplay` (01-replay, run with this feature) | pass: rendering moves no random number, a replay with rendering gives the same world, 128 journal entries replay identically |
-| `warRoomByRank` | a peasant sees Command, Forces, Wars (asking for Industry gives Command); a ruler sees five (no Templates since W0, D-052); the War tab no longer names templates to a peasant. |
+| `warRoomByRank` | a captain in the field sees Command, Forces, Wars (asking for Industry gives Command); a ruler sees five (no Templates since W0, D-052); the War tab no longer names templates to a peasant. Since D10 (D-052) a private has no War Room, so the peasant enlists, goes to war and is made a captain in the field |
 
 ## Rules kept
 

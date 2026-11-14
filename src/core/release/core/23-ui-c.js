@@ -276,7 +276,7 @@ UI.worldTabPolitics = function (pc) {
     )),
     v === "map")
   ) {
-    const modes = `<div class="row maptools">${Object.entries(MAP.MODES)
+    const modes = `<div class="row maptools">${UI.mapModes()
       .map(
         ([k, n]) =>
           `<button class="small ${UI.mapMode === k ? "primary" : ""}" data-a="mapMode" data-v="${k}">${n}</button>`,
@@ -1028,13 +1028,17 @@ UI.drawBattle = function (cv, B) {
   }
 };
 
+// the map modes offered as buttons: MAP.MODES less any a feature hides (UI.mapModeHidden; D10 hides Wars from a life
+// that is in no war)
+UI.mapModes = () => Object.entries(MAP.MODES).filter(([k]) => !(UI.mapModeHidden && UI.mapModeHidden(k)));
+
 UI.gm = UI.gm || {
   view: null,
   sel: null,
 };
 
 UI.greatMapModal = function () {
-  const modes = Object.entries(MAP.MODES)
+  const modes = UI.mapModes()
     .map(
       ([k, n]) =>
         `<button class="small ${UI.mapMode === k ? "primary" : ""}" data-a="gmMode" data-v="${k}">${n}</button>`,

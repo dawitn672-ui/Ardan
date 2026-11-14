@@ -77,7 +77,8 @@ export default {
       return out;
     });
     const ok = !r.inWar && !r.places.includes('war') && !r.room && r.queued === 0 && !r.warCards && !r.peaceLie && !r.roomBtn && r.worldWars === 0 && r.outside >= 6 && r.battleNews === 0 && r.rumours + r.pending > 0 &&
-      /pedlar|swears/i.test(r.sample || 'pedlar') && (r.enlisted === undefined || (r.enlisted && r.room2 && r.places2.includes('war')));
+      // D10 (D-052): enlisted, the war is his (the War place), but a private has no War Room (v2wByPost sweeps the ranks)
+      /pedlar|swears/i.test(r.sample || 'pedlar') && (r.enlisted === undefined || (r.enlisted && !r.room2 && r.places2.includes('war')));
     return { ok, detail: `outside: in war ${r.inWar}, places ${r.places.join('/')}, war room ${r.room}, battle/war room queued ${r.queued}, war cards ${r.warCards}, 'at peace' ${r.peaceLie}, War Room button ${r.roomBtn}, world wars listed ${r.worldWars}; 3 years (${r.outside} months outside every war): battle news while outside ${r.battleNews}${r.bn ? ' (' + r.bn + ')' : ''}, rumours ${r.rumours} (+${r.pending} on the road), e.g. "${r.sample.slice(0, 90)}"; enlisted: in war ${r.enlisted}, war room ${r.room2}` };
   },
 
@@ -593,5 +594,79 @@ export default {
     });
     const ok = r.length >= 4 && r.every(x => x.fresh && Math.abs(x.start[0] - x.ask[0]) <= 2 && Math.abs(x.start[1] - x.ask[1]) <= 2 && x.dead && x.dead[0] - x.dead0[0] >= x.lost[0] - 2 && x.dead[1] - x.dead0[1] >= x.lost[1] - 2) && r.some(x => x.lost[1] > 0);
     return { ok, detail: r.map(x => `asked ${x.ask.join(' v ')}, the scene began with ${x.start.join(' v ')} and lost ${x.lost.join(' / ')}; the fight's dead ${x.dead0.join('/')} -> ${x.dead && x.dead.join('/')}`).join('; ') };
+  },
+
+  // D10 (D-052): war screens by post. Lives of each class, outside and inside a war of theirs: who gets the War Room,
+  // the War place, Arms, the map's Wars mode and the War Room button; that the map draws only what the rank may see
+  // (a soldier the next province, a captain his front, a commander the theatre); that drawing changes nothing; that the
+  // War tab lists only the orders heard of; and that enemy numbers below a commander are estimates.
+  async v2wByPost(pg) {
+    const r = await pg.evaluate(() => {
+      const W = A.V2W, rows = [];
+      const realmOf = pc => pc.ruler || (pc.mil && !pc.mil.merc && pc.mil.realm) || pc.realm;
+      const peace = pc => { const me = realmOf(pc); A.S.wars = A.S.wars.filter(w => !w.att.includes(me) && !w.def.includes(me)); };
+      const toWar = pc => {
+        const me = realmOf(pc);
+        if (!A.atWar(me).length) A.startWar(me, A.neighbors(me)[0], null, 'conquest');
+        A._idIdx = null; A.advance(12); A._idIdx = null; A.S.queue = [];
+      };
+      const look = (name, want) => {
+        const pc = A.pc(); if (!pc || !pc.alive) { rows.push({ name, dead: true }); return; }
+        UI.ov = null; UI.warRoomOpen(); const room = !!(UI.ov && UI.ov.type === 'warroom'); UI.ov = null; A.S.queue = [];
+        // (the release's staff card draws a year's candidates for each post the first time it is drawn: a known impurity
+        // outside D10, recorded in D-052; it is drawn once before the measure)
+        UI.TAB.war(pc);
+        const h0 = T.hash(A.S), r0 = A.rngState;
+        const G = A.V2T.groups(), place = G.some(g => g.k === 'war'), arms = G.some(g => (g.subs || []).some(x => x[0] === 'war' && x[1] === 'Arms'));
+        const modes = UI.mapModes().map(m => m[0]);
+        UI.tab = 'war'; const tab = String(UI.TAB.war(pc) || ''); UI.tab = 'life';
+        const btn = /data-a="warRoomView"/.test(tab);
+        const near = W.scope(pc), own = W.ownDivs(pc), mine = W.side(pc);
+        const drawn = W.withSeen(() => A.allDivs().map(d => [d.id, d.loc, d.r]));
+        const reach = !near || drawn.every(([id, loc]) => own.has(id) || near.has(loc));
+        const others = drawn.filter(([id, , rr]) => !own.has(id) && rr !== mine).length;
+        // the elite orders on the War tab: every one shown is one heard of
+        const list = Object.keys(GD.ORDERS || {}).map(id => A.orderSummary(id)).filter(x => x.r && x.r.alive).sort((a, b) => b.pow - a.pow);
+        const heard = list.filter((x, i) => A.orderHeard(pc, x, i)).length, shownOrd = (tab.match(/class="ord-name"/g) || []).length;
+        const pure = T.hash(A.S) === h0 && A.rngState === r0;
+        const got = { room, place, arms, wars: modes.includes('wars'), btn };
+        const bad = Object.keys(want).filter(k => got[k] !== want[k]);
+        rows.push({ name, rank: W.rank(pc), dep: W.deployed(pc), inWar: W.inWar(pc), ...got, reach, near: near ? near.size : null, drawn: drawn.length, others, heard, shownOrd, pure, bad });
+      };
+      const life = (o, f) => { T.enter(Object.assign({ seed: 7400, race: 'human', realm: 'POL-01', sex: 'M', status: 'peasant', startAge: 25 }, o)); const pc = A.pc(); peace(pc); if (f) f(pc); A._idIdx = null; return A.pc(); };
+      const enlist = rank => pc => { A.enlist(pc); pc.mil.rank = rank; };
+      const crown = pc => { A.makeRuler(pc, pc.realm, true); };
+      const N = { room: false, place: false, wars: false, btn: false };
+      // in peace
+      life({ startAge: 9 }); look('child, peace', { ...N, arms: false });
+      life({}); look('peasant, peace', { ...N, arms: true });
+      life({ status: 'noble' }); look('noble, peace', { ...N, arms: true });
+      life({}, enlist(0)); look('soldier, peace', { ...N, arms: true });
+      life({}, enlist(4)); look('captain, peace', { ...N, arms: true });
+      life({ status: 'noble', startAge: 30 }, crown); look('ruler, peace', { room: true, place: false, wars: false, btn: true, arms: true });
+      // in a war of their realm
+      life({ startAge: 9 }, toWar); look('child, realm at war', { ...N, arms: false });
+      life({}, toWar); look('peasant, realm at war', { ...N, arms: true });
+      life({}, pc => { enlist(0)(pc); toWar(pc); }); look('soldier, at war', { room: false, place: true, wars: true, btn: false, arms: false });
+      life({}, pc => { enlist(2)(pc); toWar(pc); }); look('sergeant, at war', { room: false, place: true, wars: true, btn: false, arms: false });
+      // a captain whose division marches with an army, and one whose division stays behind
+      life({}, pc => { enlist(4)(pc); toWar(pc); const d = A.divsOf(pc.mil.realm).find(x => x.army && A.army(x.army)); if (d) pc.mil.div = d.id; });
+      look('captain, in the field', { room: true, place: true, wars: true, btn: true, arms: false });
+      life({}, pc => { enlist(4)(pc); toWar(pc); const d = A.divsOf(pc.mil.realm).find(x => !x.army || !A.army(x.army)); if (d) pc.mil.div = d.id; else { const d2 = A.divById(pc.mil.div); if (d2) d2.army = null; } });
+      look('captain, left behind', { room: false, place: true, wars: true, btn: false, arms: false });
+      life({}, pc => { enlist(7)(pc); toWar(pc); }); look('general, at war', { room: true, place: true, wars: true, btn: true, arms: false });
+      life({ status: 'noble', startAge: 30 }, pc => { crown(pc); toWar(pc); }); look('ruler, at war', { room: true, place: true, wars: true, btn: true, arms: false });
+      const est = [W.estimate('7.3k'), W.estimate('12k'), W.estimate('752'), W.estimate('3')];
+      UI.ov = null; UI.tab = 'life'; UI.render();
+      return { rows, est };
+    });
+    const live = r.rows.filter(x => !x.dead);
+    const fails = live.filter(x => x.bad.length || !x.reach || !x.pure || x.shownOrd > x.heard);
+    const soldier = live.find(x => x.name === 'soldier, at war'), general = live.find(x => x.name === 'general, at war');
+    const scoped = (!soldier || (soldier.near != null && soldier.near <= 12)) && (!general || general.near === null);
+    const estOk = r.est.join() === '~7k,~12k,752,3';
+    const ok = live.length >= 12 && !fails.length && scoped && estOk;
+    return { ok, detail: `${live.length} lives (${r.rows.length - live.length} died in the setup)` + (fails.length ? `; wrong: ${fails.map(x => `${x.name} [${x.bad.join(',')}${x.reach ? '' : ' reach'}${x.pure ? '' : ' impure'}${x.shownOrd > x.heard ? ' orders' : ''}] (rank ${x.rank}, deployed ${x.dep})`).join('; ')}` : '; every rule holds') +
+      `; soldier sees ${soldier ? soldier.drawn + ' divisions within ' + soldier.near + ' provinces' : '-'}; general ${general ? general.drawn + ' divisions, theatre ' + (general.near === null) : '-'}; estimates ${r.est.join(' ')}` };
   },
 };
