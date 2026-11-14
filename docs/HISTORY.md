@@ -489,3 +489,15 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   one word of skill at full command; training a skill trains its governing stats. Stages G1-G6 renewed; §7 records every
   replaced part. **Six owner decisions still open** (§6.5).
 - **Undo:** `git revert e7812cf`.
+
+### H-027 · 2026-11-13 19:21 ET · P2: a clean Profile page; the past in Records (owner order 34, D-041)
+- **Commits:** `6f10137`, `ca74101`, `37d9342` (by a Sonnet 5.5 agent, branch `p2-profile`), merged as `c56f9d4`.
+- **What:** the main Profile page is the figure, the card (parchment ground and gilt frame, posts held now, one line
+  about the person, Body / Purse / Name / Honour in words), the stat sheet and one panel chosen by four tabs (Skills,
+  Gear, Family, Traits; `UI.PF.addPanel`). The eight stacked section buttons are gone. The past and the long reads
+  (posts held before, deeds, all skills, house and kin, gear and heirlooms, years and marks, the measured sheet, birth
+  and faith) live on a Records view of the same page, behind one small "Records" link (`UI.PF.addSection` feeds it).
+- **Numbers:** page-zone words at 1366 about 140 → 83; phone 1.7 → 1.35 screens; controls unchanged (reshaped, not cut).
+- **Tests:** 15 pf* tests (pfLean, pfRecords new); after the merge 17 of 17 with boot, renderRng, b5Budget.
+- **Open:** fewer controls; the Measured section when C9 removes real units; "styles" to "arts"; equipment tiles.
+- **Undo:** `git revert -m 1 c56f9d4`.

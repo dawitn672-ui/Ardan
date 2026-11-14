@@ -37,7 +37,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **C8b** · The gate 2 figure library draws every portrait; face and build maker at creation; face codes · `9a2cbeb` · 2026-11-13 13:02 ET
 - [x] **P** · Profile tab (D-038, `src/ui/999996-profile-tab`): a game-like page of your character, card and figure, titles, stats, skills, styles, renown, gear (owner order 33; after B5)
 - [ ] **C9** · Bodies that make sense: stat words against the population, real-unit readouts gone, masters with the body or mind for it, longer healthy lives (order 34, D-039)
-- [ ] **P2** · A clean Profile page; the past moved to a Records area (order 34)
+- [x] **P2** · A clean Profile page (card, sheet, four tabs); the past in Records (D-041) · `c56f9d4` · 2026-11-13 19:21 ET
 - [ ] **X7** · Phone speed: first load and each press (order 34)
 - [ ] **W0** · Remove the war score and the army templates (order 34)
 - [ ] **X2** · Named stages
