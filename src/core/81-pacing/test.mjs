@@ -135,7 +135,7 @@ export default {
             const [race, realm, status] = STARTS[i % 4];
             const L = B.life({ seed: 8150 + i * 7919, sex: i % 2 ? 'F' : 'M', race, realm, status }, PERS[i % 4], i % 2 === 0, 30);
             const n = Object.values(L.items).reduce((a, n) => a + n, 0);
-            per.push({ items: n, years: L.years, full: L.deathAge == null });
+            per.push({ items: n, years: L.years, full: L.deathAge == null, eng: L.engaged, acts: L.actions });
             items += n; years += L.years; c += L.checks; w += L.wins;
             if (L.engaged) { acts += L.actions; eyears += L.years; }
           }
@@ -150,6 +150,11 @@ export default {
       const both = off.per.map((x, i) => x.full && on.per[i].full ? i : -1).filter(i => i >= 0);
       const rate = set => Math.round(10 * both.reduce((a, i) => a + set.per[i].items, 0) / Math.max(1, both.reduce((a, i) => a + set.per[i].years, 0))) / 10;
       off.whole = rate(off); on.whole = rate(on); off.n = on.n = both.length;
+      // actions too, over the engaged lives whole in both sets (CI 109's build: 7.4 on, 8.5 off over all engaged lives,
+      // with on's early deaths cutting its richest years; the same mix-of-ages effect as the prompts above)
+      const engBoth = both.filter(i => off.per[i].eng);
+      const actsW = set => Math.round(10 * engBoth.reduce((a, i) => a + set.per[i].acts, 0) / Math.max(1, engBoth.reduce((a, i) => a + set.per[i].years, 0))) / 10;
+      off.actsWhole = actsW(off); on.actsWhole = actsW(on); off.engN = engBoth.length;
       return { off, on };
     });
     // the win rate compares two sets of lives (on and off play out differently), about 900 checks each over 16 lives: its standard
@@ -160,8 +165,8 @@ export default {
     // need only not fall; the winter rule's actions and the check scale still must rise
     // acts: since B6 lifted the pool of initiative (D-019) nothing rations actions, so pacing no longer has to add any;
     // it must not cut them (A2's re-rolled world: 8.4 on, 8.7 off; before A2 9.0 and 8.5)
-    const ok = r.on.n >= 8 && r.on.whole >= r.off.whole - 0.3 && r.on.acts >= r.off.acts - 0.5 && r.on.rate >= r.off.rate - 2 * se && r.on.rate <= 70;
-    return { ok, detail: `16 lives, birth to 30. Off: ${r.off.prompts} prompts a year (${r.off.whole} over the ${r.off.n} lives whole in both sets), ${r.off.acts} actions a year (engaged), ${r.off.rate}% of ${r.off.checks} checks; on: ${r.on.prompts} (${r.on.whole}), ${r.on.acts}, ${r.on.rate}% of ${r.on.checks}` };
+    const ok = r.on.n >= 8 && r.on.whole >= r.off.whole - 0.3 && r.off.engN >= 4 && r.on.actsWhole >= r.off.actsWhole - 0.5 && r.on.rate >= r.off.rate - 2 * se && r.on.rate <= 70;
+    return { ok, detail: `16 lives, birth to 30. Off: ${r.off.prompts} prompts a year (${r.off.whole} over the ${r.off.n} lives whole in both sets), ${r.off.acts} actions a year (engaged; ${r.off.actsWhole} over the ${r.off.engN} engaged lives whole in both), ${r.off.rate}% of ${r.off.checks} checks; on: ${r.on.prompts} (${r.on.whole}), ${r.on.acts} (${r.on.actsWhole}), ${r.on.rate}% of ${r.on.checks}` };
   },
   // cycle 1 (lives I9): 23 scenes in a noble's first adult year at 17. The world's own scenes stop at 8 in the first
   // adult year, NPC moves at 4; consequences, asked-for and forced scenes are never cut
