@@ -51,7 +51,11 @@
     try {
       const title = typeof e.title === 'string' ? e.title : '';
       const text = textOf(e.text), setup = textOf(e.setup);
-      const lead = (title + ' ' + (typeof e.text === 'string' ? text.slice(0, 140) : text.slice(0, 260))).trim();
+      // only the opening sentence dates a scene: "She means to cross the passes in June" later on is a plan, not the
+      // day the scene happens (CI 109: mpe_dw_rune_aud was held to June)
+      const body = typeof e.text === 'string' ? text.slice(0, 140) : text.slice(0, 260);
+      const first = body.replace(/^[^`'"]*=>\s*[`'"]/, '').split(/[.!?](?:\s|$)/)[0];
+      const lead = (title + ' ' + first).trim();
       const set = new Set();
       for (const [name, m] of FEST) if (new RegExp('\\b' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i').test(lead)) set.add(m);
       for (const mm of lead.matchAll(MONTH_RX)) { const i = GD.MONTHS.indexOf(mm[1] || mm[2]); if (i >= 0) set.add(i); }
