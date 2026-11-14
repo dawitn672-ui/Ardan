@@ -404,7 +404,7 @@ A.defEvents([
   // ================================================================ the long winter
   { id: 'aw_winter_1', title: 'Snow before Martinmas', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
-    text: p => `The snow comes early and does not stop. By Advent the lanes around {home} are shoulder-deep and your woodpile is half what it should be. The lord's wood is a mile off and full of deadfall, and the forester is snowed in like everyone else.${A.C.flag(p, 'aw_famine_hoard') ? ' At least the grain under the hearth is dry.' : ''}`,
+    text: p => `The snow comes early and does not stop. By Advent the lanes around {home} are shoulder-deep and your woodpile is half what it should be. The lord's wood is a kilometre off and full of deadfall, and the forester is snowed in like everyone else.${A.C.flag(p, 'aw_famine_hoard') ? ' At least the grain under the hearth is dry.' : ''}`,
     choices: [
       { t: 'Cut the lord\'s deadfall by night', check: { s: 'stealth', s2: 'str', d: 45 },
         win: { r: 'You drag it home on a hurdle under a new moon. The fire is good, and the smoke tells no tales.', fx: { health: 4, happy: 2, arc: { mark: 'aw_winter_wood' } } },

@@ -2297,7 +2297,7 @@
               fx: {fame:3,coin:20,skill:{riding:3},happy:6,them:{type:"rival",op:-10}},
             },
             lose: {
-              r: "Your horse goes down at the brook. You both get up, but you are last by a mile.",
+              r: "Your horse goes down at the brook. You both get up, but you are last by a kilometre.",
               fx: {health:-8,skill:{riding:1},wil:1,cause:"a fall in a horse race"},
             },
           },

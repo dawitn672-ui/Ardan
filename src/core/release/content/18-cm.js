@@ -1295,7 +1295,7 @@
             t: "Put the helm hard over and run downwind",
             check: {s:"sea",s2:"ins",d:55},
             win: {
-              r: "He follows for a mile, then sounds and is gone. Nobody aboard speaks until land.",
+              r: "He follows for a kilometre, then sounds and is gone. Nobody aboard speaks until land.",
               fx: {rep:6,fame:3,skill:{sea:3}},
             },
             lose: {
@@ -4501,7 +4501,7 @@
             t: "Make {themHim} ride her first, at the gallop",
             check: {s:"riding",s2:"int",d:45},
             win: {
-              r: "She blows like a bellows after half a mile. Broken wind. The price drops by half, and you still do not buy.",
+              r: "She blows like a bellows after half a kilometre. Broken wind. The price drops by half, and you still do not buy.",
               fx: {rep:4,skill:{riding:2}},
             },
             lose: {r:"{They} rides her well enough to fool you.",fx:{coin:-15,rep:-3}},
@@ -6193,7 +6193,7 @@
             fx: {coinPct:-.2,wil:.5},
           },
           {
-            t: "Bluff: tell them twenty riders are a mile behind you",
+            t: "Bluff: tell them twenty riders are a kilometre behind you",
             check: {s:"deception",s2:"wil",d:50},
             win: {
               r: "They look down the road, then at each other, and decide not to wait to find out.",

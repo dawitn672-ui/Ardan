@@ -1865,7 +1865,7 @@ GD.DRILLS = {
     short: "Marches",
     name: "Forced marches",
     ic: "route",
-    d: "Thirty miles a day with full kit. Faster on the road, quicker to recover.",
+    d: "Thirty kilometres a day with full kit. Faster on the road, quicker to recover.",
     fx: {
       spd: 0.08,
       orgReg: 0.15,
@@ -2219,10 +2219,10 @@ GD.ORDERS = {
         "291–302, the War of the Forest Edge: eleven years of night raids. The Solen army never once found their camp.",
         "1078: Aldmark's loggers ignored three warnings at the Oak Line. In one September night the Shadow Guard burned three camps, and 140 loggers did not come home. Aldmark paid twenty thousand marks and handed over the lord who sent them.",
       ],
-      join: "An elf or half-elf, quick, at home in the trees, deadly with knife and bow. The trial is the Long Walk: crossing the Evenwood from the Edge to Evenglade, three hundred miles, without being seen by the rangers sent to hunt you. Half fail. Those who are seen may try again in ten years. Elves have time.",
-      rumor: "They can run the canopy for a hundred miles without touching the ground.",
+      join: "An elf or half-elf, quick, at home in the trees, deadly with knife and bow. The trial is the Long Walk: crossing the Evenwood from the Edge to Evenglade, five hundred kilometres, without being seen by the rangers sent to hunt you. Half fail. Those who are seen may try again in ten years. Elves have time.",
+      rumor: "They can run the canopy for a hundred and sixty kilometres without touching the ground.",
       truth:
-        "Thirty miles is their record, and they wrote it down. They never correct anyone, because the rumor kills more of their enemies than they do.",
+        "Thirty kilometres is their record, and they wrote it down. They never correct anyone, because the rumor kills more of their enemies than they do.",
     },
   },
   last_door: {

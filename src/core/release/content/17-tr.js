@@ -464,7 +464,7 @@
               fx: p=>{const weak=!!p.flags.tr_mason_bridge_timber;return delete p.flags.tr_mason_bridge_timber,delete p.flags.tr_mason_bridge_stone,p.honor=A.clamp(p.honor+5,0,100),A.fame(p,2),weak?(A.addRep(p,-10),"You drag the last child off by the collar. Behind you the middle arch goes into the river with a sound like the world ending. Everyone lives. Nobody forgets whose bridge it was."):(A.addRep(p,6),"You drag the last child off by the collar. The bridge shudders, groans and holds. You stood on it when it mattered.")},
             },
             lose: {
-              r: "A tree trunk sweeps the parapet as you run. You are pulled from the water a mile downstream.",
+              r: "A tree trunk sweeps the parapet as you run. You are pulled from the water a kilometre downstream.",
               fx: {health:-18,cause:"the flood",wound:"concussion",honor:3,wil:1.5},
             },
           },

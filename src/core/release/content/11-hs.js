@@ -4826,7 +4826,7 @@
               r: "You find the doe at a spring and watch her drink, so close you could touch her.",
               fx: {skill:{stealth:2,tracking:1},happy:5},
             },
-            lose: {r:"You crash through the bracken and scare everything for a mile.",fx:{skill:{stealth:1}}},
+            lose: {r:"You crash through the bracken and scare everything for a kilometre.",fx:{skill:{stealth:1}}},
           },
           {
             t: "Ask about the beasts of the deep wood",
@@ -5484,10 +5484,10 @@
             t: "Ride the long race",
             check: {s:"riding",s2:"sta",d:50},
             win: {
-              r: "Thirty miles of steppe, and your horse is the first to the post. A horse that wins the long race is worth a herd.",
+              r: "Thirty kilometres of steppe, and your horse is the first to the post. A horse that wins the long race is worth a herd.",
               fx: X(p=>gain(p,sc(p,10)),{fame:3,skill:{riding:3}}),
             },
-            lose: {r:"Your horse tires at the twentieth mile. You walk him home.",fx:{skill:{riding:1},wil:.5}},
+            lose: {r:"Your horse tires at the thirtieth kilometre. You walk him home.",fx:{skill:{riding:1},wil:.5}},
           },
         ],
       },

@@ -10,6 +10,7 @@
   const kidsOf = p => (p.children || []).map(A.P).filter(Boolean);
   const grandkids = p => kidsOf(p).reduce((a, k) => a + kidsOf(k).length, 0);
   const count = (p, rx) => Object.keys(p.flags || {}).filter(k => rx.test(k)).length;
+  const craftJob = p => { const c = p.job && GD.CAREERS && GD.CAREERS[p.job.c]; return !!c && c.cat === 'craft'; };
   const worth = p => (p.coin || 0) + (A.assetValue ? A.assetValue(p) : 0);
 
   // What you were. The first that fits is the ending. `t` is the epitaph.
@@ -31,7 +32,7 @@
       t: 'Wore the ring and kept the flock, and the flock kept most of its faith. The lamps will be lit for it a while.' },
     { id: 'council', name: 'Of the Council', test: p => !!p.office,
       t: 'Sat at the table where the realm is decided, and decided some of it. The minutes will not say which part.' },
-    { id: 'master', name: 'Master of the Craft', test: p => (p.job && p.job.r >= 4) || count(p, /masterwork/) > 0,
+    { id: 'master', name: 'Master of the Craft', test: p => craftJob(p) && (p.job.r >= 4 || count(p, /masterwork/) > 0),   // X3 (E6): a craft, not a banker or a minister
       t: 'Made things that will outlast the maker. Somewhere a door still hangs true because of it.' },
     { id: 'rich', name: 'The Wealthy', test: p => worth(p) >= 20000,
       t: 'Died rich, which is not the same as dying well, though it helps with the funeral.' },

@@ -765,7 +765,7 @@
           },
           {
             t: "Carry water from the river every dawn",
-            r: "Two yokes of buckets, a mile each way, all summer. You save half the crop.",
+            r: "Two yokes of buckets, a kilometre each way, all summer. You save half the crop.",
             fx: {sta:1.2,health:-4,coin:3},
           },
           {

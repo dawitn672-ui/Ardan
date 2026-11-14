@@ -2413,7 +2413,7 @@
             t: "Grab a floating barrel",
             check: {s:"ins",s2:"spd",d:38},
             win: {
-              r: "You ride it a mile downstream, swearing in Holdspeech the whole way, and wash up on a gravel bar.",
+              r: "You ride it a kilometre downstream, swearing in Holdspeech the whole way, and wash up on a gravel bar.",
               fx: {happy:2,wil:1},
             },
             lose: {
@@ -3441,7 +3441,7 @@
               fx: {sta:.5,skill:{riding:1}},
             },
             lose: {
-              r: "You fall from the saddle a mile short. The human trader drags you to the well and saves your life.",
+              r: "You fall from the saddle a kilometre short. The human trader drags you to the well and saves your life.",
               fx: {health:-18,wil:2,newRel:{type:"friend",op:30},cause:"heat sickness"},
             },
           },

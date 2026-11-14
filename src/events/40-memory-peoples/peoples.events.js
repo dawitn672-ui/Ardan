@@ -1774,7 +1774,7 @@
       text: p => `You rode east with a Nine Winds horse-trader ${ago(p, "pp_ho_east")} ago and learned to ride properly in a country that looked at your horse, not your tusks. Then you came back west. Now {themFull}, the trader's grandson, rides into {home} with three steppe horses and an offer: the Khan's yam wants riders who speak the western tongues. In the Khanate, people still look at the horse.`,
       choices: [
         { t: "Ride east with him for a season on the yam",
-          r: "A season on the Salt Wind stages: a hundred miles a day, a silver tablet on a cord, and keepers who know your name by the third week. You come back west browner and slower to sit still.",
+          r: "A season on the Salt Wind stages: a hundred and sixty kilometres a day, a silver tablet on a cord, and keepers who know your name by the third week. You come back west browner and slower to sit still.",
           fx: { coin: 40, skill: { riding: 3 }, them: { type: "friend", op: 25 }, deed: "Rode a season on the Nine Winds yam" } },
         { t: "Buy his three horses and stay", req: p => p.coin >= 40,
           r: "Three steppe horses, ugly and tireless, in a stable in {home}. Riding them, you remember a country where people look at the horse.",

@@ -209,7 +209,7 @@
           r: "\"It was,\" {he} says. \"The finger was yours.\" {He} finishes your ale and goes.",
           fx: { wil: 1, them: { op: -10 } } },
         { t: "Leave by the back door", check: { s: "stealth", s2: "spd", d: 40 },
-          win: { r: "You are three miles down the road before {he} looks round. It is not the end of it. It is the end of tonight.", fx: { need: { rest: -4 } } },
+          win: { r: "You are five kilometres down the road before {he} looks round. It is not the end of it. It is the end of tonight.", fx: { need: { rest: -4 } } },
           lose: { r: "{He} is at the stable door before you. {He} does not hit you. {He} only laughs.", fx: { fame: -1, happy: -3 } } },
       ],
     },

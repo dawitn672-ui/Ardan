@@ -211,7 +211,7 @@
           r: "The old men watch you do it and nudge each other. Your parish wins. It is not the same, but it is something.",
           fx: { coin: 1, fame: 1, happy: 2 } },
         { t: "Stay away from the game",
-          r: "You hear the shouting from two miles off. Your boy comes home muddy and does not mention it.",
+          r: "You hear the shouting from three kilometres off. Your boy comes home muddy and does not mention it.",
           fx: { happy: -2, wil: 1 } },
       ],
     },

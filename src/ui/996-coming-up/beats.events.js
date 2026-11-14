@@ -133,7 +133,7 @@
       ] }),
     beat('river', { title: 'A second letter',
       cond: (p, C) => C.flag(p, 'st_river'),
-      text: 'Another letter from your brother, carried by a goose-girl who does not know what she carries. He is wounded, he writes, and in a farmhouse a mile on the wrong side of the river. He asks for nothing. That is how you know.',
+      text: 'Another letter from your brother, carried by a goose-girl who does not know what she carries. He is wounded, he writes, and in a farmhouse a kilometre on the wrong side of the river. He asks for nothing. That is how you know.',
       choices: [
         { t: 'Cross the river at night', check: { s: 'stealth', s2: 'wil', d: 52 },
           win: { r: 'You find him feverish and grinning. You sit with him till dawn and cross back with his ring.', fx: { happy: 5, flag: 'cu_river_crossed' } },

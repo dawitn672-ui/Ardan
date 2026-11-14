@@ -14,7 +14,7 @@
       text: "A grey-haired man with a farm and a cart stops beside you on the road and will not let you walk. Six days of forced march in the cold rain, years ago, and you carried his pack as well as yours for the whole last stretch, while he could barely carry himself. The company saw. He saw.",
       choices: [
         { t: "Ride with him, and talk of the march",
-          r: "Ten miles of it: the rain, the sergeant, the raw feet. At his gate he gives you a cheese and a sack of apples, and will not hear no.",
+          r: "Ten kilometres of it: the rain, the sergeant, the raw feet. At his gate he gives you a cheese and a sack of apples, and will not hear no.",
           fx: { happy: 4, need: { company: 6 } } },
         { t: "Tell him anyone would have done it",
           r: "\"Nobody else did,\" he says, and drives you to your door anyway.",
@@ -132,7 +132,7 @@
           r: "The woman at the door does not remember your face, only the coat. She takes the money, and does not thank you.",
           fx: { coin: -15, honor: 3 } },
         { t: "Leave a sack of seed corn at the gate",
-          r: "You leave it in the night. In the morning you are three miles off. You do not know who finds it.",
+          r: "You leave it in the night. In the morning you are five kilometres off. You do not know who finds it.",
           fx: { coin: -6, piety: 2 } },
         { t: "Ride past",
           r: "The child stops scaring crows to watch you go by. You do not look back.",

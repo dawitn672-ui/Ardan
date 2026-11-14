@@ -78,17 +78,27 @@
   };
   // the line a quiet month leaves in the story (A.pick: the engine's own stream, so a replay writes the same words)
   V2T.QUIET = {
-    infant: ['You sleep, eat and grow.', 'A month of milk and sleep.'],
-    child: ['A month of chores and games.', 'Nothing much happens. You grow a little.', 'You run errands and get under feet. A quiet month.'],
-    winter: ['Snow on the thatch, and little else. A quiet month.', 'A cold month. You keep near the fire.', 'The roads are shut, and nothing comes up them.'],
-    spring: ['Mud, then green. A quiet month.', 'The ploughing month passes without news.', 'Rain and work. Nothing of note.'],
-    summer: ['Long days, and nothing out of the common way.', 'Dust and work. The month goes by.', 'A hot, quiet month.'],
-    autumn: ['The harvest month passes without a word worth telling.', 'Leaves down, stores up. A quiet month.', 'Short days and long evenings. Nothing of note.'],
+    infant: ['You sleep, eat and grow.', 'A month of milk and sleep.', 'Someone carries you about all month. You are warm and fed.', 'You laugh at the dog, and the dog bears it.', 'A month of hands and faces, and the roof overhead.', 'You find your own feet, and are pleased with them.'],
+    child: ['A month of chores and games.', 'Nothing much happens. You grow a little.', 'You run errands and get under feet. A quiet month.', 'You are sent for water, and come back wet.', 'A month of small quarrels, soon mended.', 'You learn which stair creaks, and which grown-up can be coaxed.'],
+    winter: ['Snow on the thatch, and little else. A quiet month.', 'A cold month. You keep near the fire.', 'The roads are shut, and nothing comes up them.', 'Frost on the inside of the shutters. Nobody goes far.', 'Short rations, long stories, and the fire never let out.', 'The wells freeze and are broken open. Little else happens.', 'A grey month, counted by candle ends.'],
+    spring: ['Mud, then green. A quiet month.', 'The ploughing month passes without news.', 'Rain and work. Nothing of note.', 'The lambs come, and the days lengthen.', 'The ditches run full, and everyone is behind with the sowing.', 'A first warm week, and then a cold one.', 'Birdsong at the dawn, and mud to the knee by noon.'],
+    summer: ['Long days, and nothing out of the common way.', 'Dust and work. The month goes by.', 'A hot, quiet month.', 'The hay is cut and turned, and the evenings are long.', 'Flies, thunder at a distance, and a stream worth sitting beside.', 'The light lasts until you are too tired to use it.', 'A dry month. Everyone watches the sky and says little.'],
+    autumn: ['The harvest month passes without a word worth telling.', 'Leaves down, stores up. A quiet month.', 'Short days and long evenings. Nothing of note.', 'Apples, smoke and the first frost.', 'The last sheaves come in, and the barns are full.', 'Geese overhead, and the roads turning to mud.', 'Wet fields, wood stacked, and the dark coming early.'],
   };
+  // a quiet line is not said twice in a year (X3, E9): the stage's own lines and the season's make a pool of thirteen or more for a
+  // child, and the same draw is made as before (A.pick, the engine's stream), so a replay writes the same words
   V2T.quietLine = function (pc, m) {
     const st = A.stage ? A.stage(pc) : 'adult';
-    const L = st === 'infant' ? V2T.QUIET.infant : st === 'child' ? V2T.QUIET.child : V2T.QUIET[V2T.SEASON(m)];
-    return A.pick(L);
+    const season = V2T.QUIET[V2T.SEASON(m)];
+    const L = st === 'infant' ? V2T.QUIET.infant.concat(season) : st === 'child' ? V2T.QUIET.child.concat(season) : season;
+    let t = A.pick(L);
+    try {
+      const s = V2T.st(), now = A.absDay();
+      const used = s.qUsed = (Array.isArray(s.qUsed) ? s.qUsed : []).filter(u => u && now - u.d < 365);
+      if (used.some(u => u.t === t)) { const alt = L.find(x => !used.some(u => u.t === x)); if (alt) t = alt; }
+      used.push({ d: now, t });
+    } catch (e) {}
+    return t;
   };
   A.monthEvents = function (pc) {
     const S = A.S, st = V2T.st();

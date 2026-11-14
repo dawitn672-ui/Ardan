@@ -115,7 +115,7 @@
           r: "He takes it, and tells you. The child got home. The priest says it is good that you asked, even late.",
           fx: { coin: -2, piety: 2, happy: 2 } },
         { t: "Change your mind, and ride on without asking",
-          r: "Some things are better not known. Or so you tell yourself, for the next mile.",
+          r: "Some things are better not known. Or so you tell yourself, for the next kilometre.",
           fx: { happy: -2, wil: 1 } },
       ],
     },

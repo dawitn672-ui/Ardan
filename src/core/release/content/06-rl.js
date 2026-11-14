@@ -3692,7 +3692,7 @@
               fx: {coin:25,them:{type:"rival",op:-15}},
             },
             lose: {
-              r: "{them} sees you coming a mile off and ruins you in the market for a month.",
+              r: "{them} sees you coming a kilometre off and ruins you in the market for a month.",
               fx: {coin:-10,them:{type:"rival",op:-20}},
             },
           },

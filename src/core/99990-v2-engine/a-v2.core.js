@@ -459,8 +459,8 @@ var __ARDAN_V2 = (() => {
     return stats({ ...person, genes, body: newBody(), mentalXp: {} }, age);
   }
   var PEER = {
-    lift: ["much weaker than others your age", "weaker than most your age", "as strong as most your age", "stronger than most your age", "stronger than anyone your age for miles"],
-    sprint: ["much slower than others your age", "slower than most your age", "as fast as most your age", "faster than most your age", "faster than anyone your age for miles"],
+    lift: ["much weaker than others your age", "weaker than most your age", "as strong as most your age", "stronger than most your age", "stronger than anyone your age for kilometres"],
+    sprint: ["much slower than others your age", "slower than most your age", "as fast as most your age", "faster than most your age", "faster than anyone your age for kilometres"],
     march: ["tires long before others your age", "tires sooner than most your age", "walks as far as most your age", "walks farther than most your age", "outwalks anyone your age"],
     reaction: ["much slower to react than others your age", "slower to react than most your age", "reacts like most your age", "quicker than most your age", "quicker than anyone your age"],
     toughness: ["far frailer than others your age", "frailer than most your age", "as hardy as most your age", "hardier than most your age", "hardier than anyone your age"]

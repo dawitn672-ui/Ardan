@@ -1819,6 +1819,7 @@ A.newGame = function (o) {
       realism: 1.35,
     }[o.diff] || 1;
   S.startStatus = o.status;
+  S.startAge = startAge;   // X3 (E6): where the life began, so "Survivor" is given only to one that lived its childhood
   A.birthStory(pc, father, mother, dead, o);
   if (A.afterCreate) A.afterCreate(pc);
   return pc;

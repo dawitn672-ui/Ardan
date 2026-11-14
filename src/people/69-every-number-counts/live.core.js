@@ -83,7 +83,7 @@ LN.RETAG = [
   ['lf_harvest_dance', 2, /dance/i, { s: 'music' }, 'two dances to the pipes, one after the other: the measure and quick feet (was athletics/spd)'],
   ['av_framed', 2, /run/i, { s2: 'athletics' }, 'out the back and over the wall before they hang it on you: quick feet and the climb (was spd/stealth)'],
   ['bd_wild_crowneagle', 0, /run/i, { s2: 'athletics' }, 'a sprint across open ground to scoop the child up (was spd/ins)'],
-  ['lf_teen_ballgame', 1, /run/i, { s2: 'athletics' }, 'waiting for a clear run across two miles of fields (was spd/ins)'],
+  ['lf_teen_ballgame', 1, /run/i, { s2: 'athletics' }, 'waiting for a clear run across three kilometres of fields (was spd/ins)'],
   ['rl_giant_chant', 0, /chant/i, { s2: 'music' }, 'chanting a line back in the deep voice: memory, and the voice (was int/wil)'],
 ];
 LN.RETAGGED = [];   // { ev, i, before, after, why }

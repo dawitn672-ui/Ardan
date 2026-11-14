@@ -159,7 +159,7 @@ A.defEvents([
     ] },
   { id: 'ix_th_nobody', title: 'Nobody came', w: 1, once: true,
     cond: (p, C) => C.age(p) >= 9 && C.age(p) <= 30 && (C.poor(p) || !C.parentsAlive(p)) && thOpen(p, 'nobody'),
-    text: 'You waited at the crossroads until dark for the cart that was meant to come. It did not come. You walked the eleven miles home on your own, and nothing ate you.',
+    text: 'You waited at the crossroads until dark for the cart that was meant to come. It did not come. You walked the eighteen kilometres home on your own, and nothing ate you.',
     choices: [
       { t: 'Hold the thought: no one is coming to save you', r: 'It is a cold thought, and it keeps you warm in its way. You stop waiting at crossroads.', fx: { thought: 'nobody', skill: { survival: 1 } } },
       { t: 'Let it pass. Next time they will come', r: 'The next time, they do. You decide to remember that one instead.', fx: { happy: 2 } },

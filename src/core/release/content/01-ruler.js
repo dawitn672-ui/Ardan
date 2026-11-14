@@ -666,7 +666,7 @@
       choices: [
         {
           t: "Travel together",
-          r: "The miles go quicker. You part as friends.",
+          r: "The kilometres go quicker. You part as friends.",
           fx: {newRel:{type:"friend",op:30},happy:4},
         },
         {t:"Keep your distance",r:"You walk on alone.",fx:{}},
@@ -676,7 +676,7 @@
       id: "road_storm",
       trigger: !0,
       title: "Caught in the storm",
-      text: "The sky goes black. Rain like thrown gravel, then hail. No shelter for miles.",
+      text: "The sky goes black. Rain like thrown gravel, then hail. No shelter for kilometres.",
       choices: [
         {
           t: "Push on through",

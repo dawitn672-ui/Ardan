@@ -189,10 +189,10 @@
       ],
     },
     {
-      id: "mat_courier_relay", title: "Fresh horses every twenty miles", w: 3, once: true,
+      id: "mat_courier_relay", title: "Fresh horses every thirty kilometres", w: 3, once: true,
       cond: (p, C) => C.flag(p, "mat_courier_trusted") && A.S.year - p.flags.mat_courier_trusted >= 4 && C.adult(p) && !p.prison,
       setup: (p, ctx) => { const k = who(p, "mat_courier_who"); if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; },
-      text: "{them} has grown fat on the wool trade and wants a chain of riders: fresh horses every twenty miles from {home} to {capital}, letters in two days, and a share for whoever runs it. {theyHe} puts up the horses. You would put up a hundred suns and your name. Other houses will try to buy your riders, as they once tried to buy you.",
+      text: "{them} has grown fat on the wool trade and wants a chain of riders: fresh horses every thirty kilometres from {home} to {capital}, letters in two days, and a share for whoever runs it. {theyHe} puts up the horses. You would put up a hundred suns and your name. Other houses will try to buy your riders, as they once tried to buy you.",
       choices: [
         { t: "Put in a hundred suns, and run it", req: p => p.coin >= 100, check: { s: "logistics", s2: "riding", d: 50 },
           win: { r: "Six stages, twelve horses and riders who know your temper. By the second winter the relay has paid your hundred back and more, and the merchants of {capital} have a name for you.",

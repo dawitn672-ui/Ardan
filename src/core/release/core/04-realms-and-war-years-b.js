@@ -289,8 +289,11 @@ A.milestones = function (pc) {
     if (pc.status === "slave") pc.flags.unfree = "slave";
     if (pc.status === "serf") pc.flags.unfree = "serf";
     if (pc.gear.weapon === "fists") pc.gear.weapon = pc.race === "giant" ? "maul" : "dagger";
-    if (A.chance(0.1)) A.ach("survivor");
-    if ((pc.race === "human" || pc.race === "halforc") && !A.S.ach.survivor) A.ach("survivor");
+    // X3 (E6): "Survivor" is for a life that lived its childhood, not one that began at 17
+    if (!(A.S.startAge > 6)) {
+      if (A.chance(0.1)) A.ach("survivor");
+      if ((pc.race === "human" || pc.race === "halforc") && !A.S.ach.survivor) A.ach("survivor");
+    }
   }
   if (pc.surMode === "deed" && age >= R2.adult && !pc.epithet && !pc.flags.deedAsked) {
     pc.flags.deedAsked = true;

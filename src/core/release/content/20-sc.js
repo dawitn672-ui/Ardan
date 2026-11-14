@@ -5284,7 +5284,7 @@
             t: "Shame {themHim} into stopping",
             check: {s:"persuasion",s2:"faith",d:50},
             win: {
-              r: "You talk for an hour about what pilgrims walk a thousand miles for. {They} stops, and gives the money to the poor box.",
+              r: "You talk for an hour about what pilgrims walk sixteen hundred kilometres for. {They} stops, and gives the money to the poor box.",
               fx: {piety:4,honor:2,them:{type:"friend",op:25},skill:{persuasion:2}},
             },
             lose: {

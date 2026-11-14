@@ -57,7 +57,7 @@ A.defEvents([
   {
     id: 'bm_wb_march_leg', title: 'The long road', w: 2, cool: 10,
     cond: (p, C) => C.adult(p) && C.soldier(p) && (C.wound(p, 'limp') || C.wound(p, 'bad_knee') || C.wound(p, 'broken_leg')),
-    text: 'Twenty miles a day on a leg that does not bend right. By the third day you are at the back of the column with the carts and the wives. The sergeant has noticed.',
+    text: 'Twenty kilometres a day on a leg that does not bend right. By the third day you are at the back of the column with the carts and the wives. The sergeant has noticed.',
     choices: [
       { t: 'March with the column, whatever it costs', check: { s: 'sta', s2: 'wil', d: 50 },
         win: { r: 'You keep your place. Every night the knee swells like rising bread.', fx: { merit: 8, health: -6, wil: 1 } },

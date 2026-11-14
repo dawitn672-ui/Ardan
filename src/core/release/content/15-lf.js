@@ -5337,7 +5337,7 @@
         cool: 5,
         title: "Parish against parish",
         setup: (p,ctx)=>{ctx.rival=A.T("{town}")},
-        text: "On the Plough-Wife's Day the whole parish plays the ball game against {rival}: a pig's bladder, two miles of fields between the churches, and no rules anyone can remember. Last year two boys broke legs. You are picked.",
+        text: "On the Plough-Wife's Day the whole parish plays the ball game against {rival}: a pig's bladder, three kilometres of fields between the churches, and no rules anyone can remember. Last year two boys broke legs. You are picked.",
         choices: [
           {
             t: "Charge into the scrum",

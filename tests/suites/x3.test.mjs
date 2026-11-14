@@ -6,10 +6,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const walk = (d, out = []) => {
+const walk = (d, out = [], rx = /\.js$/) => {
+  if (!fs.existsSync(d)) return out;
   for (const e of fs.readdirSync(d, { withFileTypes: true })) {
     const p = path.join(d, e.name);
-    if (e.isDirectory()) walk(p, out); else if (/\.js$/.test(e.name)) out.push(p);
+    if (e.isDirectory()) walk(p, out, rx); else if (rx.test(e.name)) out.push(p);
   }
   return out;
 };
@@ -130,6 +131,114 @@ export default {
       return out;
     });
     return { ok: r.bad.length === 0 && r.n > 20, detail: r.bad.length ? r.bad.slice(0, 5).join('; ') : `${r.n} fight choices (${r.lethal} to the death, ${r.blows} not): each says which` };
+  },
+
+  // E6: the ending is the life lived. A merchant or a scribe of high rank is not a "Master of the Craft"; a smith is. A life that
+  // began at 17 did not "live through a childhood".
+  async x3Endings(page) {
+    const r = await page.evaluate(() => {
+      const end = (job, rank, flags) => {
+        T.enter({ seed: 70, race: 'human', realm: 'POL-05', status: 'artisan', sex: 'M', startAge: 40 });
+        const pc = A.pc(); pc.fame = 20; pc.coin = 100; pc.children = [{}].slice(1); pc.job = { c: job, r: rank, perf: 50 };
+        for (const f of flags || []) pc.flags[f] = A.S.year;
+        pc.cause = 'a fever'; return A.endingOf(pc).id;
+      };
+      const out = { smith: end('smith', 4), merchant: end('merchant', 4), scribe: end('scribe', 5), smithWork: end('smith', 2, ['masterwork_door']), merchantWork: end('merchant', 2, ['masterwork_ledger']) };
+      const surv = age => { T.enter({ seed: 71, race: 'human', realm: 'POL-05', status: 'peasant', sex: 'M', startAge: age }); A.S.ach = {}; const pc = A.pc(); pc.born = A.S.year - GD.RACES[pc.race].adult + 0; A.S.ach = {}; A.milestones(pc); return !!A.S.ach.survivor; };
+      out.lateSurvivor = surv(17); out.birthSurvivor = surv(0);
+      return out;
+    });
+    const ok = r.smith === 'master' && r.smithWork === 'master' && r.merchant !== 'master' && r.scribe !== 'master' && r.merchantWork !== 'master' && !r.lateSurvivor && r.birthSurvivor;
+    return { ok, detail: JSON.stringify(r) };
+  },
+
+  // E12: one system of units. The map and the journeys speak kilometres, so the prose does not speak miles.
+  async x3OneUnit() {
+    const bad = [];
+    const files = [...walk(path.join(root, 'src')), ...walk(path.join(root, 'data'), [], /\.(js|json)$/)];
+    for (const f of files) {
+      const rel = path.relative(root, f);
+      if (/99990-v2-engine\/a-v2\.core\.js$/.test(rel)) continue;
+      fs.readFileSync(f, 'utf8').split('\n').forEach((ln, i) => { if (/\bmiles?\b/i.test(ln) && !/^\s*(\/\/|\*)/.test(ln)) bad.push(`${rel}:${i + 1}`); });
+    }
+    for (const f of walk(path.join(root, 'src/core/release/lore'), [], /\.json$/)) {
+      fs.readFileSync(f, 'utf8').split('\n').forEach((ln, i) => { if (/\bmiles?\b/i.test(ln)) bad.push(`${path.relative(root, f)}:${i + 1}`); });
+    }
+    return { ok: bad.length === 0, detail: bad.length ? bad.slice(0, 8).join(', ') : 'no mile in any text a player reads: kilometres throughout' };
+  },
+
+  // E9: no quiet line twice in a year, for an infant, a child or an adult
+  async x3QuietLines(page) {
+    const r = await page.evaluate(() => {
+      const out = [];
+      for (const age of [1, 8, 30]) {
+        T.enter({ seed: 80 + age, race: 'human', realm: 'POL-05', status: 'peasant', sex: 'M', startAge: age });
+        const pc = A.pc(); let dup = 0, n = 0; const seen = [];
+        for (let m = 0; m < 36; m++) {
+          A.S.year = 1100 + Math.floor(m / 12); A.S.warClock = (m % 12) * 30;
+          const t = A.V2T.quietLine(pc, m % 12);
+          if (seen.slice(-11).includes(t)) dup++;
+          seen.push(t); n++;
+        }
+        out.push({ age, dup, n });
+      }
+      return out;
+    });
+    return { ok: r.every(x => x.dup === 0), detail: r.map(x => `age ${x.age}: ${x.dup} repeats in ${x.n} quiet months`).join('; ') };
+  },
+
+  // T4: a sick body does not read "hale"
+  async x3IllShows(page) {
+    const r = await page.evaluate(() => {
+      T.enter({ seed: 91, race: 'human', realm: 'POL-05', status: 'artisan', sex: 'M', startAge: 41 });
+      const pc = A.pc(); pc.health = 95;
+      const read = () => { UI.tab = 'life'; UI.render(); return [...document.querySelectorAll('.barrow')].filter(e => /Health/.test(e.textContent)).map(e => e.textContent.replace(/\s+/g, ' ').trim()).join(' | '); };
+      const well = read();
+      pc.ill = { k: 'marsh', name: 'marsh fever', m: 3, tot: 3, dmg: 20, t: '', y: A.S.year, crisis: 0 };
+      const sick = read();
+      pc.health = 40; const worn = read();
+      pc.ill = null; pc.health = 95;
+      return { well, sick, worn };
+    });
+    return { ok: /hale/.test(r.well) && /ill with marsh fever/.test(r.sick) && !/hale/.test(r.sick) && !/ill with/.test(r.worn), detail: JSON.stringify(r) };
+  },
+
+  // E2: the card's promise is what happens. A choice that names or chips a price charges that price, for a plain effect and for a
+  // function effect, over a sample of the scenes (applied to a rich merchant, read from the coin before and after)
+  async x3PreviewEqualsEffect(page) {
+    const r = await page.evaluate(() => {
+      T.enter({ seed: 301, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 35 });
+      const out = { plain: 0, fn: 0, bad: [] };
+      for (const id of Object.keys(A.EV)) {
+        const e = A.EV[id];
+        (e.choices || []).forEach((c, i) => {
+          if (c.check || c.group || out.plain >= 80 && out.fn >= 40) return;
+          const isPlain = c.fx && typeof c.fx === 'object' && typeof c.fx.coin === 'number' && c.fx.coin < 0 && !c.fx.coinPct;
+          const isFn = typeof c.fx === 'function' && A.STAKES.read(c.fx).coin > 0;
+          if (!(isPlain && out.plain < 80) && !(isFn && out.fn < 40)) return;
+          const pc = A.pc(); pc.coin = 100000; pc.alive = true;
+          const q = { type: 'event', ev: id, ctx: {}, forced: true }; A.S.queue = [q];
+          let v; try { v = A.eventView(q); } catch (x) { return; }
+          if (!v || v.skip) return;
+          const vi = v.choices.findIndex(x => x.i === i); if (vi < 0) return;
+          const chip = A.STAKES.choiceChips(c, e, q, pc, v.choices[vi]).find(x => x.coin && x.n);
+          const label = String(v.choices[vi].t || '').replace(/,/g, '');
+          const named = (/(\d+) suns?/.exec(label) || [])[1];
+          const before = pc.coin;
+          try { A.eventChoose(vi); } catch (x) { A.S.queue = []; return; }
+          const spent = before - pc.coin;
+          if (isPlain) { out.plain++; if (Math.abs(spent + c.fx.coin) > 0.5) out.bad.push(`${id}:${i} fx ${c.fx.coin}, charged ${spent}`); }
+          else {
+            out.fn++;
+            const want = chip ? chip.n : named ? +named : null;
+            if (want != null && spent > 0 && Math.abs(spent - want) > 0.5) out.bad.push(`${id}:${i} promised ${want}, charged ${spent}`);
+          }
+          A.S.queue = []; if (!A.pc().alive) T.enter({ seed: 301 + out.plain + out.fn, race: 'human', realm: 'POL-05', status: 'merchant', sex: 'M', startAge: 35 });
+        });
+      }
+      return out;
+    });
+    return { ok: r.bad.length === 0 && r.plain >= 40 && r.fn >= 10, detail: r.bad.length ? r.bad.slice(0, 5).join('; ') : `${r.plain} plain and ${r.fn} function effects: each charged what it promised` };
   },
 
   // the old words and the cost mark are not in any source a player can read; the one file that still names the cost mark is
