@@ -18,7 +18,7 @@
   const RC = A.V2.races;
 
   // ---- height in words ----------------------------------------------------------------------------------------------
-  VS.HEIGHT_WORDS = ['very short', 'short', 'a little short', 'of middle height', 'a little tall', 'tall', 'very tall'];
+  VS.HEIGHT_WORDS = ['very short', 'short', 'a little short', 'middle height', 'a little tall', 'tall', 'very tall'];
   VS.heightBand = function (race, sex, cm) {
     const R = RC && RC.RACES[VS.raceKey ? VS.raceKey(race) : race];
     const hs = R && R.height ? R.height[sex === 'F' || sex === 'female' ? 'female' : 'male'] : [170, 7];
@@ -31,7 +31,7 @@
     const v = VS.view(p); if (!v) return '';
     const R = GD.RACES[p.race] || GD.RACES.human, age = A.age(p);
     const w = VS.HEIGHT_WORDS[VS.heightBand(p.race, p.sex, v.genes.adultHeight)];
-    if (age < (R.grown || 20)) return w === 'of middle height' ? `of middle height for a child of ${age}` : `${w} for a child of ${age}`;
+    if (age < (R.grown || 20)) return `${w} for ${VS.youngOf(p, age)}`;
     return w;
   };
   VS.heightNote = function (p) {
@@ -72,7 +72,8 @@
       h += row(VS.MIND_NAME[k], cap(m.words), m.rarity || '', `${VS.MIND_NAME[k]}: against your people${age < (R.grown || 20) ? ' of your age' : ''}.`);
     }
     const bt = (v.body.breakthroughs || []);
-    if (bt.length) h += `<div class="tiny muted v2-bt">Broke through: ${esc(bt.slice(-3).map(b => `${b.attr === 'lift' ? 'strength' : b.attr} at ${b.age}${b.note ? ' (' + b.note + ')' : ''}`).join('; '))}.</div>`;
+    // a click says what a breakthrough is (every number on the Profile page carries a description: pfNumbers)
+    if (bt.length) h += `<div class="tiny muted v2-bt tt" data-tt="note" data-v="${esc('A breakthrough: a surge of will against long odds, with something real at stake, raised how far this body or mind can go. The number is the age it came.')}" tabindex="0" role="button" aria-haspopup="dialog" aria-expanded="false">Broke through: ${esc(bt.slice(-3).map(b => `${b.attr === 'lift' ? 'strength' : b.attr} at ${b.age}${b.note ? ' (' + b.note + ')' : ''}`).join('; '))}.</div>`;
     if (!opts.noLegend && fights) h += `<div class="tiny muted v2-legend">A levy: an untrained spearman in a padded coat.</div>`;
     return h + '</div>';
   };
@@ -85,7 +86,7 @@
       const h = pm.apply(this, arguments);
       try {
         if (typeof h !== 'string' || !p) return h;
-        return h.replace(/<div>Height<\/div><div>\d+ cm( and growing)?, /, (m, g) => `<div>Height</div><div>${esc(VS.heightWord(p))}${g && !/child/.test(VS.heightWord(p)) ? ' and growing' : ''}, `);
+        return h.replace(/<div>Height<\/div><div>\d+ cm( and growing)?, /, (m, g) => `<div>Height</div><div>${esc(VS.heightWord(p))}${g && !/ for a (child|youth)/.test(VS.heightWord(p)) ? ' and growing' : ''}, `);
       } catch (e) { console.error('bodies height', e); return h; }
     };
   }

@@ -274,6 +274,8 @@ export default {
       const p2 = A.pc(), fold = [p2.skills.riding, A.skill(p2, 'lance')];
       // an NPC keeps its own numbers
       const npc = Object.values(A.S.people).find(p => p.id !== A.S.pc && p.skills); npc.skills.dagger = 33; npc.skills.sword = 5;
+      // C9 (D-040): a skill past what its body carries works lower (A.skillCap); give this NPC a body that carries it
+      npc.st.spd = Math.max(npc.st.spd, 60); npc.st.ins = Math.max(npc.st.ins, 60); npc.born = A.S.year - 30; npc.flags = Object.assign({}, npc.flags, { weary: false });
       const npcRead = [A.skill(npc, 'dagger'), A.skill(npc, 'sword')];
       UI.ov = null; T.enter({ seed: 4961, race: 'human', realm: 'POL-01', status: 'noble', sex: 'F', startAge: 25 });
       const p3 = A.pc(); p3.skills.dagger = 20; p3.skills.sword = 20; p3.skills.xbow = 15; p3.skills.bow = 15;

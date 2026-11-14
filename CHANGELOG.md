@@ -8,7 +8,7 @@ What changed for the player, in plain words, one section per version (newest fir
 - **Bodies that make sense.** Strength, speed, endurance, reflexes, wits and will are now a word for where you stand
   among every grown man and woman of your people, measured across the world: most people are "average", a labourer or
   soldier is above it, one in fifty is at either extreme and one in a thousand is off the chart. A child reads as a child
-  ("strong for a child of 9"). Another people is also measured against men: a giant's strength is off the chart, and so is
+  ("strong for a child of nine"). Another people is also measured against men: a giant's strength is off the chart, and so is
   a giant's slowness. Click a row to see what it is measured against.
 - **No more kilograms and milliseconds.** The body is described in words: no "lifts 120 kg", "7.2 m/s", "28 km a day"
   or "reactions 170 ms", and your height is "tall" or "a little short", not centimetres.

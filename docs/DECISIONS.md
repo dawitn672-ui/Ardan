@@ -533,7 +533,7 @@ you get past a certain baseline it's cleanly up to you"). `src/people/999997-bod
 1. **The word scale is measured, not fixed.** A stat reads by its centile among the whole grown population of one's own
    people (old age included), measured at the start of eight worlds before any skill floor (6,064 people; table
    `VS.STAT_CENTILES`, re-measured by `measure.mjs`): under 2, 2-10, 10-30, **30-70 average**, 70-90, 90-98, 98-99.9,
-   beyond 99.9 off the chart. A child is held to its own age and says so ("for a child of 9"). The body's four stats of
+   beyond 99.9 off the chart. A child is held to its own age and says so ("for a child of nine"). The body's four stats of
    another people are also read against men; past men's 2nd or 98th centile that is off the chart. **Replaces** the old
    ratio words (poor ... legendary) and V2_SPEC's real-unit body rows.
 2. **No real units for a body** on any page or in any person's description (kg, cm, m/s, km a day, ms): words only. The

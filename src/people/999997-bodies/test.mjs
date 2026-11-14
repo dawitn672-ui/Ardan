@@ -30,7 +30,7 @@ export default {
       return { avg: share(3), lowEnd: share(0), highEnd: share(6) + share(7), off: share(7), mid, kidW, gs: gs.men, gp: gp.men, n: n.all };
     });
     const ok = r.n > 1000 && r.avg > 0.3 && r.avg < 0.55 && r.lowEnd > 0.005 && r.lowEnd < 0.06 && r.highEnd > 0.002 && r.highEnd < 0.06 && r.off < 0.01
-      && Object.values(r.mid).every(w => w === 'average') && /^average for a child of 9$/.test(r.kidW)
+      && Object.values(r.mid).every(w => w === 'average') && /^average for a child of nine$/.test(r.kidW)
       && /off the chart, stronger/.test(r.gs) && /off the chart at the other end, slower/.test(r.gp);
     return { ok, detail: JSON.stringify(r) };
   },

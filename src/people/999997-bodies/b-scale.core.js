@@ -15,7 +15,7 @@
 //   under 2 | 2-10 | 10-30 | 30-70 (average) | 70-90 | 90-98 | 98-99.9 | beyond 99.9: off the chart
 //
 // so four people in ten are average, one in fifty is at either extreme, and one in a thousand off the chart. A child is
-// held to a body of its own age (the people's untrained body grown to that age) and says so: "strong for a child of 9".
+// held to a body of its own age (the people's untrained body grown to that age) and says so: "strong for a child of nine"; a youth (past coming of age, not yet grown) "for a youth of eighteen".
 // A person of another people is also read against men (humans are the yardstick the world uses), and beyond the 2nd or
 // the 98th centile of men that is off the chart: a giant's strength, and a giant's speed at the other end.
 // Rendering only: pure, reads A.stat, draws nothing.
@@ -59,6 +59,12 @@
     const k = Math.max(0, Math.min(1, age / (R.grown || 20)));
     return m * Math.max(0.78 * (BD.grow ? BD.grow(p, age) : k), 0.08 + 0.62 * Math.pow(k, 1.1));
   };
+  // an age in words (no digits beside a stat word: v2sNumbers and v2sNoBareNumbers hold the page to that)
+  const ONES = ['nought', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+  VS.numWord = n => { n = Math.max(0, Math.round(+n || 0)); if (n < 20) return ONES[n]; if (n < 100) return TENS[Math.floor(n / 10)] + (n % 10 ? '-' + ONES[n % 10] : ''); return String(n); };
+  // "a child of nine" below the people's coming of age, "a youth of eighteen" until grown
+  VS.youngOf = function (p, age) { const R = GD.RACES[p.race] || GD.RACES.human; return `${age < (R.adult || 16) ? 'a child' : 'a youth'} of ${VS.numWord(age)}`; };
   const oneIn = c => { const n = 100 / Math.max(0.01, c); return n >= 700 ? 'a thousand' : n >= 70 ? 'a hundred' : n >= 35 ? 'fifty' : n >= 15 ? 'twenty' : n >= 7 ? 'ten' : 'five'; };
   // where v stands: { band, word, centile, child, note, men }
   VS.statBand = function (p, s, v) {
@@ -69,11 +75,11 @@
     const r = (+v || 0) / Math.max(0.5, VS.typicalStat(p, s, age)), c = VS.centileOf(s, r), band = VS.bandOfCentile(c);
     const child = age < (R.grown || 20);
     const W = VS.BAND_WORDS[s], C = VS.COMP[s];
-    const grp = child ? `children of ${age} among your people` : 'of your people';
+    const yo = child ? VS.youngOf(p, age) : '', grp = child ? `${yo.startsWith('a child') ? 'children' : 'youths'} of ${VS.numWord(age)} among your people` : 'of your people';
     const where = band === 7 ? `beyond all but one in a thousand ${grp}` : c >= 90 ? `${C[1]} than all but one in ${oneIn(100 - c)} ${grp}`
       : c >= 70 ? `${C[1]} than most ${grp}` : c >= 30 ? `like most ${grp}` : c >= 10 ? `${C[0]} than most ${grp}` : `${C[0]} than all but one in ${oneIn(c)} ${grp}`;
     let word = W[band];
-    if (child) word = band === 7 ? `off the chart for a child of ${age}` : `${word} for a child of ${age}`;
+    if (child) word = band === 7 ? `off the chart for ${yo}` : `${word} for ${yo}`;
     // another people against men: the same table, the stat against an untrained grown man
     let men = '';
     if (!child && p.race !== 'human' && GD.RACES.human && VS.BODY_STATS.includes(s)) {

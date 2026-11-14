@@ -24,7 +24,7 @@ healthy merchant who avoids conflict should easily be able to live until 50-70 w
   tireless; Reflexes: dull ... lightning-quick; Wits: simple ... brilliant; Will: weak-willed ... iron-willed).
 - A click on a row says where it stands and what it is read against ("Stronger than all but one in twenty of your
   people. Read against every grown man and woman of your people, young and old ...").
-- **A child is a child:** held to an untrained body of its own age, "strong for a child of 9".
+- **A child is a child:** held to an untrained body of its own age, "strong for a child of nine"; a youth (past coming of age, not yet grown) "for a youth of eighteen".
 - **Another people against men:** the body's four rows also read against men, and past the 2nd or the 98th centile of
   men that is off the chart: a giant's strength, and (the giant's speed potential is now 18, was 28) a giant's speed at
   the other end.
@@ -34,7 +34,7 @@ healthy merchant who avoids conflict should easily be able to live until 50-70 w
 **2. No real units for a body** (`c-sheet.core.js`, lore)
 
 - The sheet (side profile, phone's You page, full profile, the Profile page's Body fold): height is a word for one's
-  place among one's own people and sex ("tall", "a little short", "of middle height for a child of 9"), weight is gone,
+  place among one's own people and sex ("tall", "a little short", "middle height for a child of nine"), weight is gone,
   and strength, speed, endurance and reflexes are the words above. No kg, cm, m/s, km a day or ms.
 - The full profile's "178 cm, sturdy" reads "tall, sturdy"; the character maker's height slider says the word.
 - People's descriptions in the lore no longer give heights, weights or reaction times ("A lean man of 55, 172 cm and 66 kg"
@@ -75,7 +75,7 @@ See D-040 and `docs/HISTORY.md` for the numbers before and after (word bands, ma
 
 | Test | What it checks |
 | --- | --- |
-| `bodiesBands` | Over two generated worlds: about four in ten words average, under 6% at each end, under 1% off the chart; an untrained man of 35 at his people's mean reads average in all six; a typical child of 9 "average for a child of 9"; a typical giant off the chart against men for strength, and at the other end for speed |
+| `bodiesBands` | Over two generated worlds: about four in ten words average, under 6% at each end, under 1% off the chart; an untrained man of 35 at his people's mean reads average in all six; a typical child of nine "average for a child of nine"; a typical giant off the chart against men for strength, and at the other end for speed |
 | `bodiesNoUnits` | Three played lives (a child, a man, a dwarf): the side profile, the sheet, the full profile, the Profile page, every stat popover, six other people's pages and sheets, and the maker's height: no kg, cm, ms, m/s, km a day or "lifts N" |
 | `bodiesBaseline` | Every NPC master (skill 75+, grown, not old) clears the Master baseline; a feeble player with sword 80 fights as an Expert and training does not raise it; with the baseline met, the full 80; a skill below its cap rises and trains its first stat a little; the player has no floor |
 | `bodiesLifespan` | A healthy merchant at peace, on `A.deathChance`: nine in ten reach 50, most of those die between 50 and 75, under one in five passes 80, a serf a little earlier |

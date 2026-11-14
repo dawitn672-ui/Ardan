@@ -9,7 +9,7 @@ Use this when building or reviewing character, family, politics or war systems f
 
 ## 1. Stats: words measured against the people, not "22/100" and not kilograms
 - Players hated both bare numbers and real-unit readouts ("66 kg, lifts 120 kg", "reactions 170 ms"). Show each stat as a word for its **measured centile among the whole grown population of the person's own people** (Ardan, D-040: under 2, 2-10, 10-30, 30-70 average, 70-90, 90-98, 98-99.9, beyond: off the chart). Measure the table from generated worlds, not from fixed thresholds, and say on click what it is read against.
-- A child is held to bodies of its own age and says so ("strong for a child of 9"). Another people is also read against the yardstick people (a giant's strength off the chart against men, its speed off the other end).
+- A child is held to bodies of its own age and says so ("strong for a child of nine"). Another people is also read against the yardstick people (a giant's strength off the chart against men, its speed off the other end).
 - Keep real units inside the engine and tests only; the page and every person's description use words.
 - **Skill baselines, not matching stats:** each skill word from Journeyman asks a modest baseline of its two governing stats (a Master about an average body or mind for that skill). Below it the skill stalls and works as the lower word ("for show"); past it, any build is fair. Generate NPC masters to clear their baselines; never force the player's stats up.
 - **Lifespans:** a healthy, fed, peaceful adult should die of age mostly between 50 and 75; let estate tilt it a little and let violence, plague and war still kill. Test it on the death-odds function alone.
