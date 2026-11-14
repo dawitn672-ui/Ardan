@@ -100,6 +100,8 @@ const KIT2 = () => {
     // marches with an army
     fieldCaptain() {
       const pc = A.pc(); if (!pc || !pc.mil) return pc;
+      // his year in the war may have ended it: a captain's War Room is for a war of his, so a new one starts
+      if (A.V2W && !A.V2W.myWars(pc).length) { A.startWar(pc.mil.realm, A.neighbors(pc.mil.realm)[0], null, 'conquest'); A._idIdx = null; A.advance(12); A._idIdx = null; A.S.queue = []; UI.ov = null; }
       pc.mil.rank = Math.max(pc.mil.rank || 0, 4);
       const d = A.divById(pc.mil.div);
       if (!(d && d.army && A.army(d.army))) { const d2 = A.divsOf(pc.mil.realm).find(x => x.army && A.army(x.army)); if (d2) pc.mil.div = d2.id; }
