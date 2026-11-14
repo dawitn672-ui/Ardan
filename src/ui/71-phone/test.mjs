@@ -163,6 +163,9 @@ export default {
       return { n, text: `${n} px in ${x0},${y0}-${x1},${y1}; at its centre ${el ? el.tagName.toLowerCase() + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\s+/).join('.') : '') + ' "' + (el.textContent || '').trim().slice(0, 40) + '"' : 'nothing'}` };
     }, [A.toString('base64'), B.toString('base64')]);
     try {
+      // 91's fit folds the Life page's ambition and chapter cards when the page overflows by a few px; after A2 the test's
+      // life sits on that edge, so two identical draws could fold differently. The fit has its own tests; here it is held off
+      await p.evaluate(() => { if (UI.LOOK) UI.LOOK.FIT = []; });   // (its own browser context, closed at the end)
       for (const name of names) {
         const s = SCREENS.find(x => x.name === name);
         await p.evaluate(() => { const st = document.getElementById('ph-css'); if (st) st.disabled = false; UI.PHONE.off = false; });
