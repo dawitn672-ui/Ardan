@@ -14,8 +14,14 @@
 //    armies' reach and the ground's damp; only the cells along the fronts are visited.
 // 3. The roads: a route graph of about 1,200 places, and an army's search for what it can reach in a march.
 //
-// The header of docs/design/war.md §5 quotes a run of this file. The figures move with the machine's load (it is a
-// shared 4-core container): run it for today's.
+// Measured 2026-11-14 on the shared 4-core container (load average 14 to 26), node 22, medians of 200 or 300 seeds:
+//   a skirmish, 3 companies a side            0.04 to 0.07 ms   20 beats
+//   a battle, 24 a side, 9,000 men            0.8 to 1.2 ms     36 beats   (0.02 to 0.03 ms a beat)
+//   a great battle, 60 a side, 22,700 men     3 to 7 ms         30 beats   (the targets are found by a plain scan)
+//   the same seed twice is the same battle to the bit, watched beat by beat or not; one order changed is another
+//   the burn: 0.15 ms a week for six wars (about 3,000 front cells of 147,000); about 0.5 KB a war gzipped
+//   the roads: every place from one 0.12 to 0.18 ms; what a host can reach in fifteen days 0.001 to 0.003 ms
+// docs/design/war.md §5 quotes these. They move with the machine's load: run the file for today's.
 import zlib from 'node:zlib';
 import { performance } from 'node:perf_hooks';
 
@@ -45,7 +51,7 @@ const MATCH = [
   /* knight */ [1.5, 0.55, 1.0, 1.6, 1.5, 1.3, 1, 0.8],
   /* order  */ [1.3, 1.2, 1.1, 1.3, 1.3, 1.1, 1.0, 1],
 ];
-const CAUSES = ['the ground', 'arms against arms', 'art and drill', 'arrows', 'the charge', 'taken in flank', 'wind', 'order lost', 'nerve', 'fortune'];
+const CAUSES = ['the ground', 'arms against arms', 'art and drill', 'arrows', 'the charge', 'taken in flank', 'wind', 'ranks lost', 'nerve', 'fortune'];
 const C_GROUND = 0, C_MATCH = 1, C_ART = 2, C_ARROWS = 3, C_SHOCK = 4, C_FLANK = 5, C_WIND = 6, C_ORDER = 7, C_NERVE = 8, C_LUCK = 9;
 // the guesses: blows a beat; men an archer drops a beat at point-blank on bare men; what one grade of art is worth
 // to a company's blows; how far the day's fortune swings a side

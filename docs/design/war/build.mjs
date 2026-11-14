@@ -485,7 +485,7 @@ ${figureSymbols(id)}</defs>`;
   // a courier with the order for the horse, on his way from the standard
   { const a = pr(res.X + 20, res.Y + 10), b = pr(kn.X - 40, kn.Y - 30), m = [lerp(a[0], b[0], 0.62), lerp(a[1], b[1], 0.62)]; s += `<path d="M${f(a[0])} ${f(a[1])}L${f(b[0])} ${f(b[1])}" stroke="${GOLD_D}" stroke-width="1.4" stroke-dasharray="2 5" stroke-linecap="round"/><use href="#${id}oh" x="${f(m[0])}" y="${f(m[1])}"/>` + slip(m[0] - 8, m[1] + 16, 'the order rides: two minutes', { size: 11.5, italic: true, edge: GOLD_D }); }
   // a few words on the field itself, as the game would write them on a press of a company
-  { const [x, y] = pr(you.X, you.Y); s += slip(x - 6, y + 34, 'YOUR COMPANY · in the ford, order lost', { size: 11.5, bold: true, edge: GOLD_D, sw: 1.5 }); }
+  { const [x, y] = pr(you.X, you.Y); s += slip(x - 6, y + 34, 'YOUR COMPANY · in the ford, ranks ragged', { size: 11.5, bold: true, edge: GOLD_D, sw: 1.5 }); }
   { const [x, y] = pr(330, 452); s += slip(x - 96, y - 26, 'their levy: wavering', { size: 11.5, italic: true, edge: VERM }); }
   { const [x, y] = pr(150, 700); s += slip(x + 6, y - 44, 'horse behind the wood?', { size: 11.5, italic: true, edge: VERM }); }
   { const [x, y] = pr(res.X, res.Y); s += label(x + 70, y + 8, 'the General, and the reserve', { size: 11.5, italic: true, anchor: 'start' }); }
