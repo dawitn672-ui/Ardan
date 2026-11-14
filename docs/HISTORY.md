@@ -517,3 +517,20 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   without levels, each from its own realm and craft, with an owner, a wielder and a reason; the owner's legendary blade
   example as Aldmark's signature; the master key withdrawn) are in OWNER_ORDERS, DECISIONS D-043 to D-045 and growth.md
   §§9-10. The ten legendary designs are being drawn (Fable 5.2); then the owner's pause (order 36).
+
+### H-030 · 2026-11-13 21:08 ET · Ten legendary arms drawn; the owner's pause begins (order 36)
+- **Commits:** `57dc996`, `f17e4f5`, `fe04c34`, `f8b9c15`, `9339711` (by a Fable 5.2 agent), merged as `1cc5e31`. Demo only.
+- **What:** `docs/design/legendaries/`: ten legendaries, each from its own realm and craft, each with its making,
+  history, owner, bearer and why, feel in the hand, Legendary art, drawn large, at portrait scale on its bearer, and to
+  scale beside an ordinary arm of its kind. I Winter Wheat (longsword, Aldmark; after the owner's example; the crown's,
+  borne by the Marshal by office), II The Last Page (greatsword, Solenne), III Last Well (sabre, the Sand Clans; held by
+  an outlaw with no right), IV Held Breath (dagger, Greyhaven; the direct heir), V Thaw (war axe, Northreach; lost since
+  1090), VI The Latch (war hammer, Irondeep; the Keeper, for life), VII Grandfather (spear, Zanara; in pawn), VIII
+  Midsummer (glaive, the Tusk Clans; by the kill), IX The Unbending (longbow, Sylvaran; unstrung), X Paymaster (crossbow,
+  the Highland League).
+- **Honest standing:** ten different things at a glance, each clearly finer than its ordinary cousin, seamless on the
+  figures; clean vector, not paint; few sculpted forms; long thin arms read thin; no scabbards yet. Lore note: the lore
+  seats a Marshal (Leofric Stane) while D-017 keeps the seat empty until needed; the plate holds either way.
+- **Pause:** shown to the owner now; per order 36 no new step starts until the owner says go. Work already running (C9)
+  finishes and is kept.
+- **Undo:** `git revert -m 1 1cc5e31`.
