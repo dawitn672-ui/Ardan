@@ -670,3 +670,26 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   right before each shot; `varietyGuard` does not count a run made by scenes another system set in front of a rolled one.
 - **Undo:** revert the CI 110 commits (`git log --grep "CI 110"`).
 
+
+### H-041 · 2026-11-14 18:50 ET · A2 stage 2: an optional Marshal; seven more kinds of post; every writer through the registry (D-053)
+- **Commits** (branch `a2-stage2`, by an Opus 5.5 agent): `9ee9311` (2.1, the optional Marshal), `c2dad50` (2.2, the new
+  posts), `717d766` and `43aecd3` (2.3, the routed writers), and the coherency/docs commit after them.
+- **2.1 (D-049, owner order 51):** the Marshal's seat is optional. The crown's pick for a war that needs one stays and
+  stands down at peace; a ruler may name a General or a proven commander in peace or war, who stays (record `own`); the
+  court, the council's offer and the board still need such a war. The lore's sitting Marshals (Aldmark's Leofric Stane
+  and four more) start in their seats, made on a stream of their own. The audit's "a Marshal in peace" rule is gone; a
+  General does not take the army a sitting Marshal leads.
+- **2.2:** `999990-posts` also holds 9997's battalion and company captains (when persons), the orders' Grand Masters with
+  their divisions, the player's staff and free company, the heads of houses and the court titles (README table). A
+  person leaving a 9997 slot spends its seed (R15) and keeps a past style; a dead Grand Master's order gets another at
+  once (`A.orderMaster`); a division or army taken off the rolls leaves its posts; rebuilt battalions move their
+  captains' posts. Houses go through `A.setHead`, titles through `A.POSTS.note`.
+- **2.3:** every writer the month's sync adopted now writes through the registry (`A.setGen`, `A.setCmd`,
+  `POL.setHolder`, `A.POSTS.place`; content `pa_court_scandal`, `ct_corrupt`). Seed-7 60-year bot life: adopted 1,626
+  writes before (office 1,427, army 198, division 1), none after; audit empty every month.
+- **Coherency:** new checks `one captain per company` and `one master per order`; `one holder per post` covers the new
+  kinds. Quick baseline: no check rose (all 0).
+- **Tests:** new `postsMarshalOptional`, `postsStage2Kinds`, `postsNothingAdopted`; made robust to the re-rolled world:
+  `postsHandover` (the lore Marshal moved aside), `coSaveLoad`, `nySmallMattersWait` (first quiet seed of a few).
+- **Undo:** `git revert` the branch's commits, newest first; saves made with them keep extra records in `A.S.posts`,
+  which an older build drops on load (their objects are not its posts).

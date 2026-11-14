@@ -436,6 +436,17 @@ POL.makeFor = function (r, k) {
   return p;
 };
 const offId = (r, k, at) => `${k}:${at}`;
+// A2 stage 2: every write of an office's holder goes through the post registry (999990-posts) when it is on the page:
+// the appointee gives up a council seat it cannot go with, the man replaced loses his style, the record is kept
+POL.setHolder = function (r, o, pid, why, by) {
+  if (!r || !o) return { ok: false };
+  if (A.POSTS && A.POSTS.place) {
+    const k = A.POSTS.offKey(r.id, o.id);
+    if (pid) return A.POSTS.place(k, pid, { why: why || 'crown', by });
+    A.POSTS.vacate(k, why || 'dismissed');
+  } else o.pid = pid || null;
+  return { ok: true };
+};
 POL.pay = function (r, o) {
   const D = GD.POL_OFFICES[o.k], n = Math.max(1, POL.towns(r.id).length);
   return Math.round(D.pay < 1 ? Math.min(D.cap || 1e9, Math.max(40, D.pay * (r.income || 0) / n)) : D.pay);
@@ -466,7 +477,8 @@ POL.fillOffices = function (r) {
     if (!best) { best = POL.makeFor(r, o.k); pool.push(best); }
     if (!live(best)) continue;
     const was = o.pid;
-    o.pid = best.id; o.since = A.S.year; o.by = GD.POL_OFFICES[o.k].by; o.pay = POL.pay(r, o); o.g = 0;
+    if (!POL.setHolder(r, o, best.id, due ? 'term' : 'crown', r.ruler).ok) continue;   // a councillor is not made an officer
+    o.since = A.S.year; o.by = GD.POL_OFFICES[o.k].by; o.pay = POL.pay(r, o); o.g = 0;
     if (o.term) o.term = A.S.year + GD.POL_OFFICES[o.k].term;
     if (!best.occ || /^(a lord of the realm|a general|a lord)$/.test(best.occ)) best.occ = `${POL.offName(o.k, r.id)} of ${(A.S.prov[o.at] || {}).name || r.short}`;
     n++; POL.stats.filled++;
@@ -608,7 +620,7 @@ POL.audit = function (r, by) {
     if (!A.chance(.3)) continue;
     found.push([o, p]);
     if (p.id === A.S.pc) { if (A.EV.po_audit && !A.S.queue.some(q => q.ev === 'po_audit')) A.queue({ type: 'event', ev: 'po_audit', ctx: { pid: by ? by.id : null, shire: (A.S.prov[o.at] || {}).name || r.short } }); continue; }
-    o.pid = null;                     // dismissed; the next New Year fills it
+    POL.setHolder(r, o, null, 'dismissed');   // dismissed; the next New Year fills it
     POL.offLog(r, { k: 'graft', off: o.id, who: p.id, by: by ? by.id : null });
     if (A.chance(.25)) A.news(`${r.short}: ${A.fullName(p, false)}, ${POL.offName('gov', r.id).toLowerCase()} of ${(A.S.prov[o.at] || {}).name || 'a shire'}, is dismissed for keeping the crown's taxes.`, 'crown');
   }

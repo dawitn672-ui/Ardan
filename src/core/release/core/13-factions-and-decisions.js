@@ -1975,7 +1975,7 @@ DEC("pass_torch", {
       r.playerRun = true;
       pc.ruler = null;
     }
-    if (pc.house && A.S.houses[pc.house] && A.S.houses[pc.house].headPid === pc.id) A.S.houses[pc.house].headPid = h.id;
+    if (pc.house && A.S.houses[pc.house] && A.S.houses[pc.house].headPid === pc.id) A.setHead(A.S.houses[pc.house], h.id, "passed");
     const gift = Math.round(pc.coin * 0.7);
     pc.coin -= gift;
     h.coin += gift;

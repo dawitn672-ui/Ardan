@@ -1723,9 +1723,21 @@ A.staffAppoint = function (key, pid) {
       msg: "Not possible.",
     };
   pc.staff = pc.staff || {};
-  for (const k in pc.staff) if (pc.staff[k] === pid && k !== key) delete pc.staff[k];
+  // [A2 stage 2] a place on the staff is a post (999990-posts): a councillor, a ruler or a prisoner is refused, and the
+  // appointee leaves his other place on the staff
+  const sk = A.POSTS && A.POSTS.staffKey && slot.type !== "div" && slot.type !== "army" ? A.POSTS.staffKey(pc.id, key) : null,
+    no = sk ? A.POSTS.can(sk, pid) : "";
+  if (no)
+    return {
+      ok: false,
+      msg: `You cannot take ${A.fullName(p, false)} onto your staff: ${no}.`,
+    };
+  for (const k in pc.staff) if (pc.staff[k] === pid && k !== key) sk ? A.POSTS.vacate(A.POSTS.staffKey(pc.id, k), "moved") : delete pc.staff[k];
   const old = A.staffHolder(pc, key);
-  pc.staff[key] = pid;
+  if (sk) {
+    if (pc.staff[key] === "deleg") delete pc.staff[key];
+    A.POSTS.appoint(sk, pid, { why: "staff", by: pc.id, force: true });
+  } else pc.staff[key] = pid;
   if (old && old.id !== pid && pc.rel[old.id]) A.addOp(pc, old, -12);
   p.npcTemp = false;
   if (pc.rel[pid]) A.addOp(pc, p, 10);
@@ -1774,7 +1786,10 @@ A.staffResolveDelegates = function (pc) {
     const pick = c
       .map(x => [x, x.score + (by && by.rel[x.p.id] ? by.rel[x.p.id].op * 0.3 : 0) + A.rf(-8, 8)])
       .sort((a, b) => b[1] - a[1])[0][0];
-    pc.staffD[slot.key] = pick.p.id;
+    // [A2 stage 2] the officer's pick holds the place as a post (999990-posts)
+    if (A.POSTS && A.POSTS.appoint && slot.type !== "div" && slot.type !== "army")
+      A.POSTS.appoint(A.POSTS.staffKey(pc.id, slot.key), pick.p.id, { why: "staff", by: pc.id, force: true });
+    else pc.staffD[slot.key] = pick.p.id;
     pick.p.npcTemp = false;
   }
 };
@@ -1782,13 +1797,18 @@ A.staffResolveDelegates = function (pc) {
 A.staffApply = function (pc) {
   for (const slot of A.staffSlots(pc)) {
     const h = A.staffHolder(pc, slot.key);
+    // [A2 stage 2] the staff's commanders and generals are appointed through the registry (A.setCmd, A.setGen); an
+    // elite order's division stays its Grand Master's
     if (slot.type === "div") {
       const d = A.divById(slot.divId);
-      if (d) d.cmd = h ? h.id : d.cmd === pc.id ? null : d.cmd;
+      if (d && !d.elite) {
+        if (h) A.setCmd(d, h.id, "staff");
+        else if (d.cmd === pc.id) A.setCmd(d, null, "moved");
+      }
     }
     if (slot.type === "army") {
       const a = A.army(slot.armyId);
-      if (a && h) a.gen = h.id;
+      if (a && h) A.setGen(a, h.id, "staff");
     }
   }
 };
@@ -2662,7 +2682,22 @@ A.orderRaise = function (r, id) {
   d.elite = id;
   r.orders = r.orders || {};
   let L = A.P(r.orders[id]);
-  if (!L || !L.alive) {
+  if (!L || !L.alive) L = A.orderMaster(r, id);
+  // [A2 stage 2] the Grand Master holds the order's post (999990-posts), whose mirror is r.orders[id] and the order's
+  // division's commander: a division raised again is his at once
+  if (A.POSTS && A.POSTS.appoint) A.POSTS.appoint(A.POSTS.orderKey(r.id, id), L.id, { why: "chapter", force: true });
+  d.cmd = L.id;
+  A.forcesSync(r);
+  return d;
+};
+
+// [A2 stage 2] a new Grand Master for order id of realm r (what A.orderRaise did inline): when the order is raised with
+// none living, and when the one leading it dies (the registry's deputy, 999990-posts). The same draws, in the same order.
+A.orderMaster = function (r, id) {
+  const o = GD.ORDERS[id];
+  r.orders = r.orders || {};
+  let L;
+  {
     const R2 = GD.RACES[r.race] || GD.RACES.human;
     L = A.genNoble(
       r.id,
@@ -2720,13 +2755,12 @@ A.orderRaise = function (r, id) {
     if (r.capitalProv != null) L.home = r.capitalProv;
     L.occ = A.orderLeadTitle(o);
     L.fame = A.ri(45, 75);
-    r.orders[id] = L.id;
+    if (A.POSTS && A.POSTS.appoint) A.POSTS.appoint(A.POSTS.orderKey(r.id, id), L.id, { why: "chapter", force: true });
+    else r.orders[id] = L.id;
     const ru = A.P(r.ruler);
     if (ru && o.kind === "guard") A.link(ru, L, "friend", 70, "lord");
   }
-  d.cmd = L.id;
-  A.forcesSync(r);
-  return d;
+  return L;
 };
 
 A.ordersEnsure = function () {

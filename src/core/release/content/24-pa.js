@@ -686,7 +686,7 @@
             check: {s:"intrigue",s2:"persuasion",d:50},
             win: {
               r: "The crown is grateful. A seat opens. Your name is mentioned.",
-              fx: p=>{const r=A.realm(p.realm),ru=r&&A.P(r.ruler);if(ru&&(p.rel[ru.id]||A.link(p,ru,"lord",0,"acquaint"),A.addOp(ru,p,15)),A.chance(.4)&&r){const seat=A.pick(Object.keys(A.COUNCIL));return r.council=r.council||{},r.council[seat]=p.id,p.office=seat,A.fame(p,5),`You are named ${A.COUNCIL[seat].name}!`}return""},
+              fx: p=>{const r=A.realm(p.realm),ru=r&&A.P(r.ruler);if(ru&&(p.rel[ru.id]||A.link(p,ru,"lord",0,"acquaint"),A.addOp(ru,p,15)),A.chance(.4)&&r){const seat=A.pick(Object.keys(A.COUNCIL).filter(s=>!A.POSTS||!A.POSTS.can(A.POSTS.seatKey(r.id,s),p.id,{by:"court"})));if(!seat)return"";return r.council=r.council||{},A.POSTS?A.POSTS.appoint(A.POSTS.seatKey(r.id,seat),p.id,{why:"court",by:ru&&ru.id,force:!0}):r.council[seat]=p.id,p.office=seat,A.fame(p,5),`You are named ${A.COUNCIL[seat].name}!`}return""},
             },
             lose: {r:"The minister finds out who talked. A powerful enemy.",fx:{newRel:{type:"enemy",op:-50}}},
           },

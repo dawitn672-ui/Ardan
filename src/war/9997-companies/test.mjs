@@ -369,22 +369,27 @@ export default {
 
   async coSaveLoad(pg) {
     const r = await pg.evaluate(() => {
-      A.newGame({ seed: 9709, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
-      A.enlist(A.pc()); T.play(1);
-      const s = A.serialize(), h = T.hash(JSON.parse(s).S ? JSON.parse(s).S : JSON.parse(s));
-      A.deserialize(JSON.parse(s));
-      const same = A.allDivs().every(d => A.CO.ok(d) && A.CO.sum(d) === Math.round(d.men));
-      // an old save: no battalions, no bread, no pay, no company
-      const o = JSON.parse(s), S = o.S || o;
-      for (const id in S.realms) for (const d of (S.realms[id].forces || {}).divs || []) { delete d.bs; delete d.food; delete d.pay; delete d.mo; }
-      delete S.coOn; if (S.people && S.pc && S.people[S.pc].mil) delete S.people[S.pc].mil.co;
-      A.deserialize(o);
-      const h0 = T.hash(A.S), rng0 = A.rngState;
-      T.renderAll();
-      const pure = T.hash(A.S) === h0 && A.rngState === rng0;
-      T.play(1);
-      const rebuilt = A.allDivs().every(d => A.CO.ok(d) && A.CO.sum(d) === Math.round(d.men));
-      return { same, pure, rebuilt, co: !!(A.pc().mil && A.pc().mil.co) || !A.pc().mil };
+      // the first of a few seeds whose soldier lives through the year after the load (the world changes with the
+      // engine: after A2 stage 2's lore Marshals, seed 9709's soldier deserts and hangs in the first weeks, so no
+      // month passes to build the battalions)
+      for (const seed of [9709, 9711, 9713, 9717]) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+        A.enlist(A.pc()); T.play(1);
+        const s = A.serialize(), h = T.hash(JSON.parse(s).S ? JSON.parse(s).S : JSON.parse(s));
+        A.deserialize(JSON.parse(s));
+        const same = A.allDivs().every(d => A.CO.ok(d) && A.CO.sum(d) === Math.round(d.men));
+        // an old save: no battalions, no bread, no pay, no company
+        const o = JSON.parse(s), S = o.S || o;
+        for (const id in S.realms) for (const d of (S.realms[id].forces || {}).divs || []) { delete d.bs; delete d.food; delete d.pay; delete d.mo; }
+        delete S.coOn; if (S.people && S.pc && S.people[S.pc].mil) delete S.people[S.pc].mil.co;
+        A.deserialize(o);
+        const h0 = T.hash(A.S), rng0 = A.rngState;
+        T.renderAll();
+        const pure = T.hash(A.S) === h0 && A.rngState === rng0;
+        if (T.play(1) === 'dead' && seed !== 9717) continue;
+        const rebuilt = A.allDivs().every(d => A.CO.ok(d) && A.CO.sum(d) === Math.round(d.men));
+        return { same, pure, rebuilt, co: !!(A.pc().mil && A.pc().mil.co) || !A.pc().mil };
+      }
     });
     return { ok: r.same && r.pure && r.rebuilt && r.co, detail: `round trip in step ${r.same}; an old save draws purely ${r.pure} and builds its battalions at the month ${r.rebuilt}; the soldier has a company again ${r.co}` };
   },

@@ -174,8 +174,8 @@ A.nobleAction = function (key) {
         return {
           ok: false,
         };
-      // [A2 posts] the court names you only to a seat you may hold: no Marshal in peace, and the Marshal's seat only
-      // for a General (D-017; the owner's report: a Captain named Marshal kept his company and got no army). The seat
+      // [A2 posts] the court names you only to a seat you may hold: the Marshal's seat only for a war that needs one
+      // (in peace it is the ruler's own choice, D-049), and only for a General (D-017; the owner's report: a Captain named Marshal kept his company and got no army). The seat
       // is given through the registry, so the seat you held before is given up and the man you replace is moved.
       const open = A.POSTS
         ? Object.keys(A.COUNCIL).filter(s => !A.POSTS.can(A.POSTS.seatKey(r.id, s), pc.id, { by: "court" }))

@@ -37,6 +37,8 @@ A.foundCompany = function (pc) {
     A.pick(["Company", "Lances", "Spears", "Banner", "Hand", "Swords", "Wolves", "Crows", "Shields"]);
   if (pc.mil) {
     A.log(`You leave ${pc.mil.unit}.`);
+    // [A2 stage 2] the commission's posts are left with it (before: only the grade went)
+    if (A.POSTS && !pc.mil.merc) A.POSTS.leaveAll(pc.id, "resigned", { cls: ["FIELD"], marshal: true });
     pc.mil = null;
   }
   pc.company = {
@@ -49,6 +51,8 @@ A.foundCompany = function (pc) {
     founded: A.S.year,
     battles: 0,
   };
+  // [A2 stage 2] its captaincy is a post (999990-posts)
+  if (A.POSTS) A.POSTS.appoint(A.POSTS.freeKey(pc.id), pc.id, { why: "founded", force: true });
   A.log(`You raise your own banner: ${nm}, ${pc.company.men} hired swords who answer to you.`, "big");
   return {
     ok: true,
@@ -101,6 +105,7 @@ A.companyYear = function (pc) {
   }
   if (((c.men = Math.round(c.men * (1 + (pc.fame - 20) / 600) + (c.chest > 500 ? A.ri(5, 25) : 0))), c.men < 15)) {
     A.log(`${c.name} melts away.`, "bad");
+    if (A.POSTS) A.POSTS.vacate(A.POSTS.freeKey(pc.id), "melted");
     pc.company = null;
     return;
   }

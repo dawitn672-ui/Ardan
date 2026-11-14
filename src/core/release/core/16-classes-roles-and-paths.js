@@ -251,6 +251,7 @@ A.leaveRolesFor = function (pc, newRole, quiet) {
     const r = A.realm(pc.ruler);
     if (r) r.army += pc.company.men || 0;
     say(`Your company, ${pc.company.name}, becomes the royal guard.`, "good");
+    if (A.POSTS) A.POSTS.vacate(A.POSTS.freeKey(pc.id), "crowned");
     pc.company = null;
   }
   if (pc.job && newRole !== "job") {

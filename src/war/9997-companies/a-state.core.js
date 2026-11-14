@@ -181,17 +181,36 @@
     p.flags.coCap = A.S.year;
     p.coAt = { d: d.id, b: i, s: slot };
     CO.touch(b);
-    (b.p = b.p || {})[slot] = p.id;
+    // A2 stage 2: a captain made a person holds his slot as a post of the registry (999990-posts)
+    if (A.POSTS && A.POSTS.appoint) A.POSTS.appoint(A.POSTS.coyKey(d.id, i, slot), p.id, { why: 'raised', force: true });
+    else (b.p = b.p || {})[slot] = p.id;
     return p;
+  };
+  // A2 stage 2: a person leaves a slot (the registry's mirror write, 999990-posts). A seed is spent when it becomes a
+  // person (CRITIQUE R15): the man who leaves takes the slot's name with him, so the slot's next captain is the better of
+  // its sergeants (slot 4: vacant until the New Year's promotion). The player was never a seed: his slot's own seed acts.
+  CO.slotClear = function (d, i, slot) {
+    const b = d && Array.isArray(d.bs) ? d.bs[i] : null;
+    if (!b) return;
+    CO.touch(b);
+    const pid = b.p && b.p[slot];
+    if (b.p && b.p[slot] != null) { delete b.p[slot]; if (!Object.keys(b.p).length) delete b.p; }
+    if (!pid || pid === A.S.pc) return;
+    if (b.st) b.st[slot] = 0;
+    if (slot === 4) { b.vac = 1; return; }
+    const sj = CO.sergeants(d, i, slot).sort((x, y) => y.cmd - x.cmd || x.seed - y.seed)[0];
+    (b.cs = b.cs || {})[slot] = sj.seed;
   };
   // a new captain in a slot: the better of the company's sergeants (or, for slot 4, a vacancy until promotion)
   CO.replaceCap = function (d, i, slot, why) {
     const b = d.bs[i];
     if (!b) return null;
     CO.touch(b);
-    const old = CO.cap(d, i, slot);
+    const old = CO.cap(d, i, slot), pid = b.p && b.p[slot];
     if (b.p && b.p[slot] != null) { delete b.p[slot]; if (!Object.keys(b.p).length) delete b.p; }
     if (b.st) b.st[slot] = 0;
+    // A2 stage 2: the person who held the slot leaves it through the registry (his record, his style "once Captain")
+    if (pid && A.POSTS && A.POSTS.vacate && A.S.posts) A.POSTS.vacate(A.POSTS.coyKey(d.id, i, slot), why === 'died' ? 'died' : why || 'left', { keep: true });
     if (slot === 4) { b.vac = 1; return { old, by: null }; }
     const sj = CO.sergeants(d, i, slot).sort((x, y) => y.cmd - x.cmd || x.seed - y.seed)[0];
     (b.cs = b.cs || {})[slot] = sj.seed;
@@ -223,6 +242,8 @@
       if (old) { old.k = split(share[i], old.k.length === nComp(c) ? old.k.map(x => Math.max(1, x)) : Array(nComp(c)).fill(1)); if (!Array.isArray(old.q) || old.q.length !== old.k.length) old.q = old.k.map(() => 50); return old; }
       return newRec(d, c, r, share[i], h);
     });
+    // A2 stage 2: the captains' posts (999990-posts) move with their battalion; a battalion struck off takes them away
+    if (keep && A.POSTS && A.POSTS.rekeyDiv) A.POSTS.rekeyDiv(d, keep);
     const drs = keep ? null : CO.drills(d);
     for (let i = 0; i < d.bs.length; i++) d.bs[i].q = d.bs[i].k.map((_, ci) => keep ? d.bs[i].q[ci] : r1(CO.restVal(d, i, ci, drs[i])));
     if (d.food == null) d.food = K.FOOD0;
@@ -472,6 +493,8 @@
   CO.reraise = function (d) {   // a struck-off battalion that has its men again takes "the new", with new captains
     for (const b of d.bs || []) {
       if (!b.ret || CO.bm(b) < nominal(b.c) * 0.5) continue;
+      // A2 stage 2: the old captains leave their posts with the old name
+      if (b.p && A.POSTS && A.POSTS.vacate && A.S.posts) { const i = d.bs.indexOf(b); for (const sl of Object.keys(b.p)) if (b.p[sl]) A.POSTS.vacate(A.POSTS.coyKey(d.id, i, +sl), 'struck off', { keep: true }); }
       delete b.ret; delete b.hon; delete b.p; delete b.st; delete b.vac; CO.touch(b);
       b.nw = 1;
       b.cs = {};
@@ -663,9 +686,22 @@
     const rec = d.bs[m.b], rank = pc.mil.rank || 0;
     CO.touch(rec);
     // who leads whom: a captain is his company's captain, a senior captain his battalion's
-    for (let s = 0; s < 5; s++) if (rec.p && rec.p[s] === pc.id && !((rank === 4 || rank === 5) && s === m.i) && !(rank === 6 && s === 4)) delete rec.p[s];
-    if (rank === 4 || rank === 5) (rec.p = rec.p || {})[m.i] = pc.id;
-    else if (rank === 6) { (rec.p = rec.p || {})[4] = pc.id; delete rec.vac; }
+    const want = rank === 4 || rank === 5 ? m.i : rank === 6 ? 4 : -1;
+    if (A.POSTS && A.POSTS.appoint) {
+      // A2 stage 2: through the registry (999990-posts). The slot he held is handed over inside the appointment, and the
+      // captain he replaces takes it (a promotion hands over the real command); any other slot of his is left
+      const res = want >= 0 ? A.POSTS.appoint(A.POSTS.coyKey(d.id, m.b, want), pc.id, { why: 'board', force: true }) : null;
+      // a Commander's division took his company from him first (one field command a person): the senior captain he
+      // replaces takes that company, if it stands without a captain of flesh
+      const out = res && res.out && A.P(res.out), ck = A.POSTS.coyKey(d.id, m.b, m.i);
+      if (want === 4 && out && out.alive && !A.POSTS.held(out.id).some(k => A.POSTS.cls(k) === 'FIELD') && !A.POSTS.holder(ck) && !A.POSTS.can(ck, out.id))
+        A.POSTS.appoint(ck, out.id, { why: 'swap', force: true });
+      for (const k of A.POSTS.held(pc.id)) if ((k.startsWith('coy:') || k.startsWith('bn:')) && k !== A.POSTS.coyKey(d.id, m.b, want)) A.POSTS.vacate(k, 'moved');
+    } else {
+      for (let s = 0; s < 5; s++) if (rec.p && rec.p[s] === pc.id && !((rank === 4 || rank === 5) && s === m.i) && !(rank === 6 && s === 4)) delete rec.p[s];
+      if (rank === 4 || rank === 5) (rec.p = rec.p || {})[m.i] = pc.id;
+      else if (rank === 6) { (rec.p = rec.p || {})[4] = pc.id; delete rec.vac; }
+    }
     // the man above you is a person you can know
     // one name for the unit everywhere: the release's own unit name (the oath, the Path card) is the battalion's
     pc.mil.unit = CO.bnName(d, m.b);
@@ -675,6 +711,8 @@
   };
   function clearMe(pc) {
     const m = pc.mil && pc.mil.co, d = m && A.divById(m.div), rec = d && d.bs && d.bs[m.b];
+    // A2 stage 2: his slot is left through the registry (999990-posts)
+    if (A.POSTS && A.POSTS.vacate && A.S.posts) { for (const k of A.POSTS.held(pc.id)) if (k.startsWith('coy:') || k.startsWith('bn:')) A.POSTS.vacate(k, 'moved'); }
     if (rec && rec.p) { for (const s in rec.p) if (rec.p[s] === pc.id) delete rec.p[s]; if (!Object.keys(rec.p).length) delete rec.p; }
     if (pc.mil) delete pc.mil.co;
   }
@@ -812,11 +850,15 @@
         const [j, ci, c] = cand[0];
         (b.cs = b.cs || {})[4] = c.seed;
         CO.touch(b);
-        if (c.pid) { (b.p = b.p || {})[4] = c.pid; if (c.person) { c.person.milRank = 5; c.person.occ = 'Senior Captain of the ' + CO.bnName(d, i); } }
+        // A2 stage 2: a captain who is a person is appointed through the registry (999990-posts); his company is handed
+        // over inside the appointment (to the better of its sergeants, CO.slotClear)
+        if (c.pid && A.POSTS && A.POSTS.appoint) A.POSTS.appoint(A.POSTS.coyKey(d.id, i, 4), c.pid, { why: 'promoted', force: true });
+        else if (c.pid) (b.p = b.p || {})[4] = c.pid;
+        if (c.pid && c.person) { c.person.milRank = 5; c.person.occ = 'Senior Captain of the ' + CO.bnName(d, i); }
         delete b.vac;
         CO.sat(d, i, 4, 15);
         for (const [jj, cc, o] of cand.slice(1)) if (o.cmd > c.cmd) CO.sat(d, jj, cc, -20);
-        CO.replaceCap(d, j, ci, 'promoted');
+        if (!(c.pid && A.POSTS && A.POSTS.appoint)) CO.replaceCap(d, j, ci, 'promoted');
         CO.stats.promoted++;
         const pc = A.pc();
         if (pc && pc.alive && pc.mil && pc.mil.co && pc.mil.co.div === d.id && (pc.mil.rank || 0) >= 4 && (pc.mil.rank || 0) <= 5 && c.cmd < A.skill(pc, 'command') && !(pc.flags.co_passed_over && A.S.year - pc.flags.co_passed_over < 3))

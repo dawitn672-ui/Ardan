@@ -55,10 +55,11 @@ A.pcDivAttach = function (pc) {
     d = pool.slice().sort((x, y) => (home ? A.wsDist(x.loc, home.id) - A.wsDist(y.loc, home.id) : 0))[0];
     pc.mil.div = d.id;
   }
-  for (const x of divs) if (x.cmd === pc.id && x !== d) x.cmd = null;
-  if (pc.mil.rank === 6) d.cmd = pc.id;
+  // [A2 stage 2] through the registry (A.setCmd); an elite order's division is its Grand Master's, never a member's
+  for (const x of divs) if (x.cmd === pc.id && x !== d) A.setCmd(x, null, "moved");
+  if (pc.mil.rank === 6 && !d.elite) A.setCmd(d, pc.id, "board");
   else {
-    if (d.cmd === pc.id) d.cmd = null;
+    if (d.cmd === pc.id) A.setCmd(d, null, "moved");
   }
 };
 
@@ -82,13 +83,18 @@ A.wsAttachPC = function () {
     // General takes an army without a living general, else the one whose general is the weakest commander (before:
     // always the second-largest). The general replaced takes the division the new General left, else waits for a
     // command; the log names him. Before, he was overwritten without a word.
-    const main = mine.slice().sort((x, y) => y.divs.length - x.divs.length)[0];
+    // The army a sitting Marshal leads in person is not a General's to take (D-049: a peacetime or lore Marshal may
+    // lead one when the host is raised), unless it is the only one.
+    const main = mine.slice().sort((x, y) => y.divs.length - x.divs.length)[0],
+      ms = A.POSTS && A.POSTS.holder(A.POSTS.seatKey(rid, "marshal")),
+      free = mine.filter(x => !ms || x.gen !== ms || x.gen === pc.id),
+      pool = free.length ? free : mine;
     const want = A.POSTS
       ? pc.mil.rank >= 9
         ? main
         : a ||
-          mine.find(x => !x.gen || !A.P(x.gen) || !A.P(x.gen).alive) ||
-          mine
+          pool.find(x => !x.gen || !A.P(x.gen) || !A.P(x.gen).alive) ||
+          pool
             .slice()
             .sort(
               (x, y) =>
@@ -102,7 +108,7 @@ A.wsAttachPC = function () {
       a = want;
       let moved = "";
       if (out && out.alive && out.id !== pc.id) {
-        if (!A.POSTS.held(out.id).length && hadDiv && !hadDiv.cmd && !A.POSTS.can(A.POSTS.divKey(hadDiv.id), out.id))
+        if (!A.POSTS.held(out.id).some(k => A.POSTS.cls(k) === "FIELD" || A.POSTS.cls(k) === "SEAT") && hadDiv && !hadDiv.cmd && !A.POSTS.can(A.POSTS.divKey(hadDiv.id), out.id))
           A.POSTS.appoint(A.POSTS.divKey(hadDiv.id), out.id, { why: "swap", force: true });
         const now = A.POSTS.held(out.id).find(k => k.startsWith("army:") || k.startsWith("div:")),
           unit = now && (now.startsWith("army:") ? A.army(now.slice(5)) : A.divById(now.slice(4)));
@@ -122,7 +128,7 @@ A.wsAttachPC = function () {
           mine.find(x => !x.gen || !A.P(x.gen) || !A.P(x.gen).alive) ||
           mine.slice().sort((x, y) => y.divs.length - x.divs.length)[Math.min(mine.length - 1, 1)] ||
           mine[0]),
-        (a.gen = pc.id),
+        A.setGen(a, pc.id, "board"),
         A.log(
           `You are given command of the ${a.name}: ${a.divs.length} divisions, ${A.fmt(A.armyMen(a))} men.`,
           "war",
@@ -150,7 +156,7 @@ A.wsAttachPC = function () {
     }
   } else {
     pc.mil.army = d && d.army ? d.army : mine[0].id;
-    for (const a of mine) if (a.gen === pc.id) a.gen = A.wsGeneralFor(rid);
+    for (const a of mine) if (a.gen === pc.id) A.setGen(a, A.wsGeneralFor(rid), "replaced");
   }
   if (pc.mil.rank < 8) for (const a of mine) if (a.sub === pc.id) a.sub = null;
 };
@@ -186,11 +192,11 @@ A.wsDay = function () {
       A.wsDemobilize(a);
       continue;
     }
-    if (
-      (a.gen && (!A.P(a.gen) || !A.P(a.gen).alive) && (a.gen = a.gen === S.pc ? null : A.wsGeneralFor(a.realm)), !a.gen)
-    ) {
+    // [A2 stage 2] a dead general's army gets the crown's man through the registry (the same draws as before)
+    if (a.gen && (!A.P(a.gen) || !A.P(a.gen).alive)) A.setGen(a, a.gen === S.pc ? null : A.wsGeneralFor(a.realm), "died");
+    if (!a.gen) {
       const pc = A.pc();
-      if (!(pc && pc.mil && pc.mil.army === a.id && pc.mil.rank >= 7)) a.gen = A.wsGeneralFor(a.realm);
+      if (!(pc && pc.mil && pc.mil.army === a.id && pc.mil.rank >= 7)) A.setGen(a, A.wsGeneralFor(a.realm), "crown");
     }
   }
   const divs = A.allDivs().filter(d => d.army);
@@ -2729,7 +2735,9 @@ A.rulerYear = function (pc) {
   for (const k in r.council) {
     const p = A.P(r.council[k]);
     if (!p || !p.alive) {
-      delete r.council[k];
+      // [A2 stage 2] through the registry
+      if (A.POSTS) A.POSTS.vacate(A.POSTS.seatKey(r.id, k), "died");
+      else delete r.council[k];
       A.log(`Your ${A.COUNCIL[k].name.toLowerCase()} is dead. The seat is empty.`, "warn");
     }
   }
