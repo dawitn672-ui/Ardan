@@ -2,7 +2,7 @@
 // (src/ui/engine/figure): the same fields the game's own people are drawn from.
 import ww from './01-winter-storm.mjs';
 import lp from './02-white-noon.mjs';
-import lw from './03-red-rain.mjs';
+import lw from './03-dry-rain.mjs';
 import hb from './04-undertow.mjs';
 import th from './05-killing-frost.mjs';
 import la from './06-deep-fire.mjs';
@@ -25,7 +25,7 @@ export const CARRY = {
   'white-noon': { who: 'Bruno Castell, Grand Master of the Knights of the Sun', note: 'In the Temple’s keeping, lent to the office. Carried upright at the shoulder, as it goes before the High Luminary on Return Day.', zoom: [-0.05, -0.66, 0.46], mode: 'bear', above: 118, ground: ['#5a6690', '#1c2140'],
     look: { sex: 'M', age: 55, height: 184, skin: 'warm', eyes: 'brown', hair: 'cropped', hairColor: 'grey', beard: 'short', grey: .8, yaw: -9, roll: 1, build: { weight: .55, muscle: .6, shoulders: .5, posture: .5 }, scars: [{ k: 'cheek', side: 1 }], g: { jawW: .5, browWeight: .5, noseW: .2, cheeks: .2 },
       gear: [{ id: 'hose', dye: 'charcoal' }, { id: 'shoes', kind: 'turn', leather: 'dark' }, { id: 'padding', dye: 'white', trim: 'ochre' }, { id: 'mail' }, ...set({ q: 3, r: 3 }, 'cuisses', 'greaves', 'poleyns', 'sabatons', 'breastplate', 'fauld', 'tassets', 'rerebraces', 'vambraces', 'couters', 'gauntlets'), { id: 'cloak', dye: 'white', lining: 'cream', trim: 'gold', len: .86, q: 3, clasp: 'gold', mantle: .46 }, { id: 'tabard', field: 'white', pale: 'white', trim: 'gold', len: .6, device: 'sun' }, { id: 'belt', leather: 'white', w: 32, metal: 'gold', plaques: 1 }, ...set({ q: 3, r: 3 }, 'besagews', 'pauldrons', 'gorget')] } },
-  'red-rain': { who: 'Zayd Blackveil, outlaw of Clan Sayf', note: 'Held by a man with no right to it. Drawn, and laid across the body to the far shoulder, as the Riders carry a blade they mean to use.', zoom: [0.01, -0.68, 0.48], mode: 'across', deg: -15, grip: 56, ground: ['#7a5a40', '#2a1a12'],
+  'dry-rain': { who: 'Zayd Blackveil, outlaw of Clan Sayf', note: 'Held by a man with no right to it. Drawn, and laid across the body to the far shoulder, as the Riders carry a blade they mean to use.', zoom: [0.01, -0.68, 0.48], mode: 'across', deg: -15, grip: 56, ground: ['#7a5a40', '#2a1a12'],
     look: { sex: 'M', age: 32, height: 179, skin: 'bronze', eyes: 'darkbrown', hair: 'cropped', hairColor: 'black', beard: 'stubble', yaw: 10, roll: 2, build: { weight: -.5, muscle: .3, posture: .2 }, scars: [{ k: 'brow', side: -1 }], g: { cheeks: -.7, cheekbones: .6, jawW: .1, noseBridge: .5, noseLen: .3, lids: -.5, browTilt: .5 },
       headwear: 'hood', headwearOpts: { dye: '#17161b' },
       gear: [{ id: 'hose', dye: 'charcoal', loose: 1 }, { id: 'shoes', kind: 'boot', leather: 'black', high: 1 }, { id: 'tunic', dye: '#2a2530', len: .62, ease: 12, neck: 'high', sleeves: 'long', flare: 26, folds: 6 }, { id: 'tunic', dye: 'black', len: .2, ease: 12, neck: 'v', sleeves: 'none', trim: '#8b2a22' }, { id: 'cloak', dye: '#1d1b22', lining: 'black', len: .82, mantle: false, spread: .05 }, { id: 'belt', leather: 'red', w: 34, metal: 'bronze' }, { id: 'baldric', leather: 'dark', from: 1, studs: 1 }, { id: 'bracers', leather: 'black', studs: 1 }] } },

@@ -2,7 +2,7 @@
 // Sea work: a bronze blade worn and pitted by four hundred years of salt, a guard like a breaking wave in silver,
 // ray-skin bound with silver wire and marked by teeth, a grey pearl in a silver claw.
 import { MET, stuff, piece, tube, blade, disc, curve, line, inlay, engrave, ridge, beads, dots, puff, glint, seat, gem, cabochon, winding, lettering, pearl, mixc, lerp, spl, splPts, norm, perp, sub, add, mul, LIGHT } from './fine.mjs';
-import { plainDagger } from './plain.mjs';
+import { gameDagger } from './plain.mjs';
 
 const BRZ = { k: '#1c1206', d: '#3c2910', s: '#6b4c22', b: '#9d7838', l: '#d0a962', hi: '#f6e2ac', r: '#7d6a3c' };
 const SEA = '#2e8f86', VERD = '#4d9482';
@@ -21,12 +21,12 @@ export default {
   hand: 'Short, broad, and heavier than steel. It will not rust, bend or snap, and in a clinch or under water there is nothing better made. It is a knife. Against a sword on open ground its legend does not lengthen it by an inch.',
   art: 'Slack Water', artNote: 'close, hold, and wait as still as the turn of the tide: the other man tires first, or drowns',
   // its forms, in order; the last is its signature. [name, what it is]
-  forms: [['Under the Chain', 'the dive inside his guard, low, as a diver goes under a harbor chain'], ['Count to Ten', 'the hold: his sword arm kept and nothing given, for as long as a breath lasts'], ['Deep Water', 'the knife, once; deep water keeps what it is given']],
+  forms: [['Under the Chain', 'the dive inside his guard, low, as a diver goes under a harbor chain'], ['Count to Ten', 'the hold: his sword arm kept and nothing given, for as long as a breath lasts'], ['First Breath', 'the knife, once; only one of them comes up to draw it']],
   finish: 'Salt-worn fleet bronze, silver, ray-skin, a grey pearl, sea-green silk', ground: ['#2f5f63', '#0b1c1f'], accent: SEA,
   len: 390,
   box: [-166, 248, -66, 66],
   details: [{ t: 'The pearl and the bitten grip', box: [-166, 26, -64, 64] }, { t: 'Salt in the bronze', box: [44, 150, -36, 36] }],
-  plain: plainDagger(), plainName: 'An ordinary dagger',
+  plain: gameDagger(), plainName: 'An ordinary dagger',
   draw(D) {
     const { S, F } = D, sv = MET.silver, fine = D.lod >= 2, r = D.r('hilt'), lit = F.vx[0] * LIGHT[0] + F.vx[1] * LIGHT[1] < 0 ? -1 : 1;
     // ---- the blade: a broad leaf of bronze with a raised rib. Green has settled in every hollow; the edges are rubbed bright

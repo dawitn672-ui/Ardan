@@ -2,7 +2,7 @@
 // Dwarf work: everything square. Dark hold-steel carved in key patterns and filled with bronze, a garnet over foil
 // for the coal-eye, a ball of black stone in a bronze claw, and a ring on the haft for every Keeper.
 import { MET, WOOD, stuff, piece, tube, haft, disc, curve, line, inlay, engrave, ridge, beads, dots, puff, glint, seat, fret, cabochon, xwrap, facet, mixc, lerp, LIGHT, add, mul } from './fine.mjs';
-import { plainHammer } from './plain.mjs';
+import { gameHammer } from './plain.mjs';
 
 const HOLD = { k: '#06080c', d: '#141922', s: '#252d3a', b: '#3d4858', l: '#6f7e93', hi: '#c2cfe0', r: '#2a3850' };
 const RED = '#a3202a', GARNET = '#b0101e';
@@ -19,14 +19,14 @@ export default {
   legend: ['Irondeep has three doors. The first is iron, the second is stone and steel, and the last is made of dwarves. This stands in it. Its head came out of the first fire the hold ever lit, and the Deep Law says the world was forged on such a fire: so the name, and the garnet in its face, foiled to look like a coal that has never gone out.',
     'A ring is set on the haft for every Keeper and filled with red on the day they die. Eighteen are red. One is bare.'],
   hand: 'Short, with all its weight in the head. It needs no edge: it folds plate and breaks the arm inside a shield. It is slow to lift after a blow and reaches no further than a short sword. On open ground a long spear keeps it out all day.',
-  art: 'Stone Oath', artNote: 'the oath of 612, a word to a blow: three blows, the third always the same, and never a step back. It was made for a gallery two paces wide',
+  art: 'Stone Oath', artNote: 'three blows on one line and never a step back: the oath of 612 made into a way of standing. It was made for a gallery two paces wide',
   // its forms, in order; the last is its signature. [name, what it is]
-  forms: [['Hold Fast', 'the stance in the Narrow and the first blow: the greeting at every dwarf gate'], ['What Is Carved', 'the second blow, on the same line: what is carved is law'], ['Not Past Me', 'the third blow, always the same']],
+  forms: [['Hold Fast', 'the stance in the Narrow and the first blow: the greeting at every dwarf gate'], ['What Is Carved', 'the second blow, on the same line: what is carved is kept'], ['Not Past Me', 'the third blow, always the same: the oath itself']],
   finish: 'Dark hold-steel, bronze inlay, a foiled garnet, oxblood leather, black basalt', ground: ['#4a3434', '#140c0d'], accent: GARNET,
   len: 1000,
   box: [-50, 968, -100, 124],
   details: [{ t: 'The head and the coal-eye', box: [770, 968, -100, 124] }, { t: 'A ring for every Keeper: the last is bare', box: [668, 812, -50, 50] }],
-  plain: plainHammer(), plainName: 'An ordinary war hammer',
+  plain: gameHammer(), plainName: 'An ordinary war hammer',
   draw(D) {
     const { S, F } = D, bz = MET.bronze, fine = D.lod >= 2, r = D.r('latch'), st = MET.bright;
     // ---- the haft: black oak between two straps of steel

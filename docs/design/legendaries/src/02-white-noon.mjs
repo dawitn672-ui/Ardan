@@ -1,7 +1,7 @@
 // II · WHITE NOON · greatsword · the bearing sword of the Temple of the Returning Sun (Holy See of Solenne).
 // Solen temple work: white steel polished like glass, a page of fire-gilding written with names, the twelve-rayed sun.
 import { MET, stuff, piece, tube, blade, sym, disc, curve, line, inlay, engrave, ridge, beads, row, dots, puff, glint, seat, gem, trim, winding, lettering, enamel, mixc, lerp, LIGHT, add, mul } from './fine.mjs';
-import { plainSword } from './plain.mjs';
+import { gameGreatsword } from './plain.mjs';
 
 const WHITE = { k: '#2a2e38', d: '#6f7887', s: '#a9b1bd', b: '#dfe4ea', l: '#f5f7fa', hi: '#ffffff', r: '#c6d1de' };
 const NAMES = 'MARCUS.CASSIAN.DORIAN.GALEN.LOTHAR.AURELIO.SEVERAN.LUCAN.TANCRED.OTTONE.PIERO.UGO.LEONE.RODERIC.TEODOR.ALDO.SILVAN.VALERIAN.OCTAVIAN.MAXIMIAN.CORVAN.ETTORE.BRUNO'.split('.');
@@ -25,7 +25,7 @@ export default {
   len: 1670,
   box: [-420, 1272, -196, 196],
   details: [{ t: 'The sun at the cross', box: [-420, 250, -196, 196] }, { t: 'The page of names', box: [236, 336, -30, 30], deg: 0 }],
-  plain: plainSword({ blade: 1240, grip: 360, w: 27, cross: 185, pommel: 25, ricasso: true }), plainName: 'An ordinary greatsword',
+  plain: gameGreatsword(), plainName: 'An ordinary greatsword',
   draw(D) {
     const { S, F } = D, g = MET.gold, fine = D.lod >= 2, r = D.r('hilt'), lea = stuff('#e9e2d2', { s: '#c9bfa8', d: '#9c917a', l: '#f8f4ea', hi: '#ffffff', k: '#3d3526' });
     const pageHw = u => lerp(21.5, 18.5, Math.min(1, Math.max(0, (u - 238) / 330)));

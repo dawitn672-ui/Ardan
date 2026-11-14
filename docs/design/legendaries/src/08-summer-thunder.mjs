@@ -2,7 +2,7 @@
 // Orc work of the eastern grass: nothing polished but the edge. Iron left black from the fire with the hammer's marks
 // in it, the year's rhino horn painted red and lashed on with rawhide, teeth and turquoise on a thong, hide, horsehair.
 import { MET, WOOD, BONE, stuff, piece, tube, haft, disc, curve, line, inlay, engrave, beads, dots, puff, glint, cabochon, winding, tufts, mixc, lerp, spl, LIGHT, add, mul } from './fine.mjs';
-import { plainGlaive } from './plain.mjs';
+import { gameGlaive } from './plain.mjs';
 
 const BLK = { k: '#050506', d: '#101114', s: '#1d1f24', b: '#2d3037', l: '#555a65', hi: '#9aa2b0', r: '#23272f' };
 const RED = '#a3261f', TURQ = '#3fb7a9', RAW = stuff('#c8b184', { k: '#3a2c14' });
@@ -19,12 +19,12 @@ export default {
   hand: 'Brutally heavy in the head: made to stop a ton of rhino, not to fence. What it hits is opened or broken, armour or no. It wants both hands and a wide swing, and it is slow coming back. A rider who gets past the blade has only the haft to fear.',
   art: 'Cloudburst', artNote: 'one set stroke, taken standing, against anything that charges: everything the sky was holding, at once',
   // its forms, in order; the last is its signature. [name, what it is]
-  forms: [['Still Air', 'the stand: butt set, blade low, and nothing moves'], ['Dry Thunder', 'the shout and the stamp that commit the charge'], ['The Price', 'the stroke, with everything in it; there is no second']],
+  forms: [['Still Air', 'the stand: butt set, blade low, and nothing moves'], ['Thunderhead', 'the shout and the stamp that bring the charge on, as the cloud stands up before it breaks'], ['The Price', 'the stroke, with everything in it; there is no second']],
   finish: 'Black forge-iron ground bright at the edge, a red-painted horn, teeth, turquoise, rhino hide, horsehair', ground: ['#5a5140', '#16130d'], accent: TURQ,
   len: 2080,
   box: [-12, 2088, -96, 182], hero: [1010, 2088, -120, 200],
   details: [{ t: 'The blade and the year’s horn', box: [1440, 2088, -100, 184] }, { t: 'Hide, rawhide and bone', box: [640, 960, -60, 60] }],
-  plain: plainGlaive(), plainName: 'An ordinary bill',
+  plain: gameGlaive(), plainName: 'An ordinary glaive',
   draw(D) {
     const { S, F } = D, fine = D.lod >= 2, r = D.r('glaive'), st = MET.bright, dn = [F.ux[1], F.vx[1]];
     // ---- the haft: dark wood, an iron spike at its foot

@@ -2,6 +2,8 @@
 
 *Stamped 2026-11-13 02:45 ET · work items E1 and E2 (owner orders 28 and 29; placed by D-030) · by Fable 5.2 at maximum effort · a design for the owner to steer; nothing is built · supersedes nothing*
 
+*Part 6 added 2026-11-14 10:55 ET for owner order 52 (D-050) · by Fable 5.2 at maximum effort · what an ordinary weapon is called (most have no name), and how the figure library draws them now. Parts 1 to 5 are unchanged.*
+
 The owner's words: "The game needs a significant increase in the economic system: bigger markets simulating themselves as time goes on. 100s of new swords and other weapons of different qualities, items unique to only one person."
 
 **The plan in short.**
@@ -345,3 +347,48 @@ from the map at world build); towns and villages are fed by their nearest market
 fairs add short-lived full markets; markets near the player run in full each month, far ones lighter. **Goods: more than
 a hundred**, raw and finished, each with a use; availability by season, region, event and caravan, so not all are on
 sale at once. **Balance:** each stage is tuned against bot lives and long world runs before it ships.
+
+
+## Part 6 · Owner order 52 (2026-11-14 00:13 ET, D-050): what an ordinary weapon is called, and how it is drawn
+Where this part differs from Parts 1-5, it wins. The owner: "Rename all the legendary items and their moves, and whilst you're at it do the same for other arts and weapons… Redesign the non-legendary class weapons to be more intricate and designed." Arts, forms and legendary pieces are named by `growth.md` §12. This part is the other half: the 845 kinds of §2.2 and the pieces made from them.
+
+### 6.1 Four kinds of name, and most things have none
+
+**An ordinary weapon has no name. It has a description.** A name is earned, in one of four ways, and each way has a register of its own, so that a name tells a player what kind of thing he is looking at before he opens its card.
+
+| What it is | How it is called | The register | Examples |
+|---|---|---|---|
+| **An ordinary piece:** crude, plain and good work, and most fine work | Not named. Described from what it is (§6.2) | plain nouns | "a plain Northern arming sword" · "a crude bill" · "a good Chanari sabre" |
+| **A region's make** | The town whose smiths made the pattern known, used as an adjective. Only towns the lore gives a craft, and only on good work or better: nobody boasts where a crude blade was made | a place | Chanari · Irondeep · Roseham |
+| **A smith's work:** fine or better | Its maker and its year, and the maker's mark cut into it. In speech it is "Halvard's work"; it is never a title | a person and a year | "a fine longsword, Halvard's work, 1088" |
+| **A master's best:** masterwork, a handful a year | A **shop name**, given at the forge: one word, a bird, a beast, a tree or a tool of the trade, and that thing is worked into the piece (the kestrel's head on Kestrel's pommel, §2.5) | a living thing or a tool | Kestrel · Rowan · Gannet · Burin |
+| **A famous piece:** any make, named in play | A **deed name**, given by those who saw: the place or the day of the deed, one or two words | a place or a day | Hartgate · Gashmar · Return Day |
+| **A legendary** | Its own name: the sky, the season, the sea or the hour of its country (`growth.md` §12.6) | weather and hours | Winter Storm · Sickle Moon |
+
+So a bird or a tool is a master's piece, a place or a day is a blade with a deed, and a weather is a legendary. The registers do not cross: no ordinary or famous piece takes a weather or an hour, and no legendary is named for a bird or a battle.
+
+### 6.2 The description
+
+Make, then whose make, then the form, then the material if it is not plain steel or ash, then its state: "a fine Northern longsword" · "a plain Chanari sabre of crucible steel" · "a masterwork Irondeep war hammer, worn". In a list the word *plain* is dropped ("a Northern arming sword").
+
+- **The form is the word a soldier uses:** arming sword, longsword, falchion, bill, boar spear, war hammer, horn bow. Never a catalogue word ("sword, one-handed") and never a grander one than the thing deserves.
+- **Whose make is the people's word** (Northern, Solen, Desert, Dwarf, Elf, Orc; §2.2's ten when they are all drawn), or a region's make where there is one.
+- **Rarity is on the card, not in the name** (D-032 keeps both measures). A rare sword is called by what makes it rare, which is something the eye can check on the figure: "a pattern-welded arming sword", "a black-steel longsword cut with marks". "A rare sword" tells a player nothing he can see.
+
+### 6.3 Shop names and deed names: the rules
+
+1. **One word for a shop name, one or two for a deed name.** Never "of" anything, never a sentence.
+2. **A shop name comes from the maker's own country.** A northern master's are northern birds, beasts and trees (Kestrel, Rowan, Otter); a coast's are sea birds (Gannet, Petrel); the desert's are the desert's (Oryx, Tamarisk); a dwarf master, who sees few birds, names by the tools of the trade (Burin, Swage, Fuller). `names.json` (§2.2) holds a list for each people, and no name is given twice in one world.
+3. **A deed name is offered, never typed.** When a deed many saw earns a plain blade a name (§2.5), the game offers two or three made from where and when it happened (the battle's or the province's name, the feast day, the season), and the player takes one or declines. Other people's blades are named the same way, from the items' own dice.
+4. **Words that are never used:** the "-bane", "-bringer", "-slayer", "-render" and "-fang" family; *Doom*, *Death*, *Blood*, *Soul* and *Shadow* as head words; kin and trade words (a grandfather, a paymaster, a widow); anything that can raise a smile; any blade of another world.
+5. **A copy has no name** (§2.5), and a reforged blade keeps the one it had (§2.3).
+
+### 6.4 How it is drawn now (built by order 52; E2 builds on it)
+
+Order 52's second half is built: the figure library draws every ordinary weapon and shield as a made thing (`src/ui/engine/figure/arms.js`; the sheet is `docs/design/legendaries/ordinary.png`; the cost and the tests are in `src/ui/93-figures/README.md`). What E2 should know:
+
+- **By form.** Nine swords (arming, long, great, short, estoc, falchion, sabre, leaf blade, cleaver), five daggers and knives, twenty-one hafted arms (axes, maces, a flail, hammers, a pick, a maul, a cudgel, spears, pike, lance, glaive, halberd, bill, poleaxe, partisan, staff), three bows with a quiver, a crossbow with its bolt case, six shields. That is 45 drawn forms against §2.2's 110. An item id names its form in `GEAR_ART`; an item with no row is drawn as the common form of its kind, and one with no kind is not drawn.
+- **By make.** Four today (crude, plain, fine, masterwork), as the game's grades are four. The make changes the work, not the tint: a crude blade keeps the fire's scale, a nicked edge, a cord grip and a rawhide scabbard; plain has a honed bevel, a leather grip and iron fittings; fine has bronze, a wire grip, the maker's mark, a locket and chape; masterwork has gilt, chasing, a line of letters after the mark, a stone, a rain-guard. When E2 brings the fifth, **good** is plain's blade with fine's fittings in iron and no mark: a change to one table.
+- **By rarity,** in the work and not only the tint: rare is pattern-welded and blued, epic is black steel cut with marks on twin fullers, and a legendary without a drawing of its own is sun-steel let in with gold. None glows (D-045).
+- **By people.** Six hilts, hafts and rims (north, solen, desert, dwarf, elf, orc), and a people's own blade when the item names none: a sabre in the desert, a leaf blade among elves, a broad short blade under the mountain, a cleaver on the eastern grass. §2.2's Court is today's solen; Highland, Coast, Savanna and the giants have no make of their own yet and draw as northern.
+- **Not drawn yet:** thrown arms (javelins, throwing axes, slings), wear (§2.4's `w0` to `w3`), and a region's make as a mark on the piece.

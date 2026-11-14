@@ -1,7 +1,7 @@
 // The sheet: ten legendary arms, each drawn when the page opens from its record (nothing on the page is a picture
 // file). For each: the piece on a dark ground with two closer looks; its plate; the person who has it, drawn by the
 // game's figure library with the piece on the figure; who owns it, who bears it and why; and, to one scale, the
-// ordinary arm of its kind.
+// ordinary arm of its kind, drawn by the game's own arms code.
 import { LEGENDS, CARRY } from './index.mjs';
 import { render } from './compose.mjs';
 import { portrait, closer } from './figure.mjs';
@@ -52,7 +52,7 @@ LEGENDS.forEach((def, i) => {
   <figure class="zm"><div class="frame"><div class="win" style="width:${zm.size}px;height:${zm.size}px"><div style="margin-left:${-zm.dx}px">${zm.svg}</div></div></div><figcaption>The same drawing, closer. The piece is one more item on the figure’s list of gear, drawn by the same hand and under the same light as the person.</figcaption></figure>
   <div class="cmp">
     <p class="cap">To one scale</p>
-    <div class="pair"><figure>${flatP.svg}<figcaption><b>${esc(def.plainName)}</b>, Plain make. Sound work and nothing more: what a journeyman makes and a man-at-arms is issued.</figcaption></figure><figure>${flatL.svg}<figcaption><b>${esc(def.name)}</b>. ${esc(def.finish)}.</figcaption></figure></div>
+    <div class="pair"><figure>${flatP.svg}<figcaption><b>${esc(def.plainName)}</b>, Plain make, as the game draws it on a person (<code>figure/arms.js</code>). Sound work: what a journeyman makes and a man-at-arms is issued.</figcaption></figure><figure>${flatL.svg}<figcaption><b>${esc(def.name)}</b>. ${esc(def.finish)}.</figcaption></figure></div>
   </div>
 </div>`;
   sheet.appendChild(sec);

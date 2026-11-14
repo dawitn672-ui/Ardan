@@ -2,7 +2,7 @@
 // Highland work, from the shops of Roseham: plain and exact. Dark walnut, plates of stag-horn scored with a tally, a
 // steel bow from Irondeep, a bridle of sky-blue and white cord, pewter-grey silver. Seen from above, a bolt in the groove.
 import { MET, WOOD, BONE, stuff, piece, tube, haft, sym, disc, curve, line, inlay, engrave, ridge, beads, dots, row, puff, glint, cabochon, winding, tufts, facet, mixc, lerp, spl, polyline, LIGHT, add, mul } from './fine.mjs';
-import { plainCrossbow } from './plain.mjs';
+import { gameCrossbow } from './plain.mjs';
 
 const SKY = '#4f86c4', STL = MET.dwarf;
 
@@ -18,12 +18,12 @@ export default {
   hand: 'A heavy steel bow, spanned with a windlass: three shots while a bowman looses twelve. Each of the three goes through plate at a hundred paces, and the fortieth flies as true as the first. Between shots its bearer is a man holding eight pounds of wood.',
   art: 'Falling Star', artNote: 'the steep shot, down from a height or up over a wall, that other crossbows cannot judge',
   // its forms, in order; the last is its signature. [name, what it is]
-  forms: [['The Climbing Bolt', 'shot steeply up, to fall behind a parapet'], ['Fixed Mark', 'the wait on the aim, through wind and the count'], ['Star Down', 'the plunging shot from a height, seen only as it lands']],
+  forms: [['The Climb', 'the bolt sent steeply up, to come down behind a parapet'], ['Fixed Mark', 'the wait on the aim, through wind and the count'], ['Star Down', 'the plunging shot from a height, seen only as it lands']],
   finish: 'Walnut, stag-horn, Irondeep steel, sky-blue and white cord, silver', ground: ['#3d5878', '#0d1622'], accent: SKY,
   len: 815,
   box: [-18, 818, -398, 398],
   details: [{ t: 'The nut and the tally of contracts', box: [44, 436, -150, 150] }, { t: 'The steel bow and its bridle', box: [590, 818, -150, 150] }],
-  plain: plainCrossbow(), plainName: 'An ordinary crossbow',
+  plain: gameCrossbow(), plainName: 'An ordinary crossbow',
   draw(D) {
     const { S, F } = D, sv = MET.silver, fine = D.lod >= 2, r = D.r('xbow'), st = MET.bright;
     const prodU = v => 706 - (v * v) / 2300, lit = F.ux[0] * LIGHT[0] + F.ux[1] * LIGHT[1] > 0 ? 1 : -1;

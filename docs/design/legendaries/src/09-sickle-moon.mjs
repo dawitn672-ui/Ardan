@@ -6,7 +6,7 @@
 // nock; a grey silk string served in green, with owl-down to hush it; and its own arrows and quiver. Elf work: nothing on
 // it is straight or square, and nothing on it shines but silver and horn.
 import { MET, WOOD, IVORY, HORN, stuff, piece, tube, disc, curve, line, inlay, engrave, beads, dots, glint, cabochon, winding, xwrap, vineOn, trim, tufts, offset, splPts, mixc, lerp, clamp, LIGHT, add, sub, mul, norm } from './fine.mjs';
-import { plainBow } from './plain.mjs';
+import { gameBow } from './plain.mjs';
 
 const GREEN = '#2f6b47', YEW = stuff('#a65f30', { k: '#2a1206' }), SAP = WOOD.yewSap, OAK = stuff('#31261f', { s: '#1d1612', d: '#0e0a08', l: '#66513f', hi: '#b39a80', k: '#070403' });
 const SILK = stuff(GREEN, { k: '#0b1d12' }), QUIV = stuff('#1f4534', { k: '#07130d', l: '#3f7458', hi: '#86b79a' }), DOWN = '#efe8d8', BAR = '#8b7a64', MOON = '#cfe1ea';
@@ -37,7 +37,7 @@ export default {
   len: 1740,
   box: [-884, 884, -212, 60], hero: [-884, 884, -272, 330],
   details: [{ t: 'The riser: heart-oak, silver, a moonstone', box: [-168, 202, -204, 62] }, { t: 'A horn ear: bridge, nock and sickle', box: [596, 884, -206, -8] }],
-  plain: plainBow(), plainName: 'An ordinary longbow',
+  plain: gameBow(), plainName: 'An ordinary longbow',
   draw(D) {
     const { S, F } = D, fine = D.lod >= 2, hung = !!D.unstrung, rr = D.r('bow');
     const lit = (F.vx[0] * LIGHT[0] + F.vx[1] * LIGHT[1]) <= 0 ? -1 : 1;             // which side of the bow the light falls on (−1: the belly)

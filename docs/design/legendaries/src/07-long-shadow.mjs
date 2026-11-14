@@ -2,7 +2,7 @@
 // Golden Plains work: a blade as long as a forearm in dark iron, ground bright at the edges; a socket of red gold
 // beaten into an ancestor's face; ebony bound with gold wire and ringed with ivory; a ruff of red-dyed hair.
 import { MET, WOOD, IVORY, stuff, piece, tube, haft, blade, sym, disc, curve, line, inlay, engrave, ridge, beads, dots, row, puff, glint, seat, winding, tufts, mixc, lerp, spl, LIGHT, add, mul } from './fine.mjs';
-import { plainSpear } from './plain.mjs';
+import { gameSpear } from './plain.mjs';
 
 const FE = { k: '#07080a', d: '#15171c', s: '#272a31', b: '#3f434c', l: '#70767f', hi: '#bcc2ca', r: '#2e333d' };
 const RG = MET.redgold, RED = '#a8261c';
@@ -19,12 +19,12 @@ export default {
   hand: 'A stabbing spear with a blade as long as a forearm, and a heavy butt that brings the point up fast. It goes through a hide shield and the man behind it. It is still a spear: beat the point aside and step in, and all that gold is a stick.',
   art: 'Slow Drum', artNote: 'the walk forward to a slow drum that breaks a line’s nerve before it breaks its spears',
   // its forms, in order; the last is its signature. [name, what it is]
-  forms: [['Are You There', 'the lowered point and the first step: the Zanari greeting, asked of a whole line'], ['No Faster', 'the pace that does not change, whatever is thrown at it'], ['I Am Here', 'the thrust on arrival: the greeting’s answer']],
+  forms: [['Are You There', 'the lowered point and the first step: the words said to the ancestors when the milk is poured, asked of a whole line'], ['No Faster', 'the pace that does not change, whatever is thrown at it'], ['I Am Here', 'the thrust on arrival: the answer the rite gives']],
   finish: 'Dark iron ground bright, red gold, ebony, ivory, red-dyed hair', ground: ['#5c4a22', '#17120a'], accent: '#cf8848',
   len: 2076,
   box: [-12, 2084, -54, 54], hero: [900, 2084, -90, 90],
   details: [{ t: 'The first ancestor', box: [1410, 1800, -74, 74] }, { t: 'The foot: iron, gold and ebony', box: [-12, 460, -50, 50] }],
-  plain: plainSpear(), plainName: 'An ordinary spear',
+  plain: gameSpear(), plainName: 'An ordinary spear',
   draw(D) {
     const { S, F } = D, fine = D.lod >= 2, r = D.r('spear'), lit = F.vx[0] * LIGHT[0] + F.vx[1] * LIGHT[1] < 0 ? -1 : 1;
     // ---- the haft: ebony, bound at four places with gold wire, ringed twice with ivory

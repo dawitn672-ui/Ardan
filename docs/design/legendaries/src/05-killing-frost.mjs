@@ -2,7 +2,7 @@
 // Cold Coast work: a thin wide blade of dark iron with a welded steel edge, knotwork and runes in silver and copper
 // wire, a collar of night-blue enamel, ash, sealskin, a butt of walrus ivory.
 import { MET, WOOD, IVORY, stuff, piece, tube, haft, disc, curve, line, inlay, engrave, ridge, beads, dots, puff, glint, seat, plait, winding, xwrap, enamel, mixc, lerp, spl, LIGHT, add, mul } from './fine.mjs';
-import { plainAxe } from './plain.mjs';
+import { gameAxe } from './plain.mjs';
 
 const DARK = { k: '#07080b', d: '#14171d', s: '#262b34', b: '#3e4551', l: '#6d7786', hi: '#b3bfcf', r: '#2c3646' };
 const NIGHT = '#1d3a78';
@@ -31,7 +31,7 @@ export default {
   len: 1460,
   box: [-44, 1440, -222, 44],
   details: [{ t: 'The head', box: [1150, 1440, -222, 44] }, { t: 'Sealskin and walrus ivory', box: [-52, 200, -64, 64] }],
-  plain: plainAxe(), plainName: 'An ordinary war axe',
+  plain: gameAxe(), plainName: 'An ordinary great axe',
   draw(D) {
     const { S, F } = D, sv = MET.silver, cu = MET.copper, st = MET.bright, fine = D.lod >= 2, r = D.r('axe');
     // ---- the haft: ash, gone dark where ten kings held it

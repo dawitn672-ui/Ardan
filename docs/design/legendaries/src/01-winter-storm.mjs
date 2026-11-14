@@ -2,7 +2,7 @@
 // (docs/design/reference/owner-ref-3-legendary-blade.png): dark patterned steel between bright edges, veins of gold down
 // the middle like lightning in a black sky, a clawed guard of dark steel and gold round a cut stone, a black bound grip, a cut pommel.
 import { MET, stuff, piece, tube, blade, sym, curve, line, inlay, engrave, ridge, beads, row, puff, glint, seat, gem, trim, roots, watering, xwrap, mixc, lerp, LIGHT, add, mul } from './fine.mjs';
-import { plainSword } from './plain.mjs';
+import { gameLongsword } from './plain.mjs';
 
 const STONE = '#5a6f9c';
 
@@ -23,7 +23,7 @@ export default {
   len: 1155,
   box: [-262, 916, -142, 142],
   details: [{ t: 'The guard and the stone', box: [-262, 150, -146, 146] }, { t: 'Gold lightning in the black', box: [120, 300, -52, 52] }],
-  plain: plainSword({ blade: 900, grip: 190, w: 25, cross: 100, pommel: 23 }), plainName: 'An ordinary longsword',
+  plain: gameLongsword(), plainName: 'An ordinary longsword',
   draw(D) {
     const { S, F } = D, st = MET.bright, dk = { k: '#040508', d: '#0c0e13', s: '#191c24', b: '#2b303b', l: '#5a6578', hi: '#b4c0d2', r: '#252d3c' }, bk = MET.black, g = MET.gold, r = D.r('hilt'), fine = D.lod >= 2;
     const coreHw = u => lerp(16.5, 5, Math.min(1, Math.max(0, (u - 20) / 750)));
