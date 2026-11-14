@@ -78,6 +78,7 @@ order is replaced, strike it through and say by what.
 44. **No master key:** "Scratch the cheat code idea; I don't need something unnecessary that could become a negative variable later on." Order 43 is withdrawn; nothing is built. · recorded 2026-11-13 20:00 ET
 45. **A legendary blade example** (`docs/design/reference/owner-ref-3-legendary-blade.png`, D-045): "How's this for an example of a legendary blade. Make sure it sits well with the character design though, as it should be a part of the portrait." · recorded 2026-11-13 20:04 ET
 46. **Every legendary its own place and craft:** "Don't make them all look the same. They're all legendary but come from different places with different styles and designs. Make this blade the signature of Aldmark and create a history and place for it, then do the same for any others you produce." · recorded 2026-11-13 20:06 ET
+47. **Who owns a legendary, who uses it, and why:** each legendary names its owner (a crown, a house, an order, a temple, a pledge-holder, or no one if lost), its wielder (who carries it now, often not the owner: a champion, the holder of a post, the house head, an heir, no one), and why (custom, oath, law, office, bargain, theft, loss) and what it means politically. · recorded 2026-11-13 20:07 ET
 
 ## Permissions (what a session may do on its own, and what needs the owner)
 **Free to do without asking:**
