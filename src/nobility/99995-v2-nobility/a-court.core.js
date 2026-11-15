@@ -386,7 +386,10 @@
     }
     const p = c.p;
     // the commit: plain writes from here on
-    if (oh && oh.id !== p.house && ohSeat) { oh.v2seatLost = oh.seat; oh.seat = ohTo ? ohTo.name : null; oh.seatId = ohTo ? ohTo.pid : null; }
+    // the same holds when the county goes to a kinsman who is not the house's head: a head whose land was forfeit (the
+    // release's punishNow) stays head, and a house seated in the county would make him its second holder (CI 112,
+    // v2fOneHolder seed 9005: the player's county regranted to his cousin, the house still seated there)
+    if (oh && ohSeat && (oh.id !== p.house || (oh.headPid && oh.headPid !== p.id))) { oh.v2seatLost = oh.seat; oh.seat = ohTo ? ohTo.name : null; oh.seatId = ohTo ? ohTo.pid : null; }
     // a lesser noble gives up his slot under a count; the slot is generated again
     if (p.noble && p.noble.fief) { const f = p.noble.fief, k = N.slotKey(p.noble.realm || rid, f.county, f.rank, f.i); if (S.court.met[k] === p.id) delete S.court.met[k]; }
     seatHolder(p, rid, t.rank, t.seat, t.k);

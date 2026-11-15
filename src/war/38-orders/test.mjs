@@ -60,6 +60,10 @@ export default {
         try { for (let s = 0; s < 12; s++) {
           A.newGame({ seed: 71 + s, race: 'human', realm: 'POL-05', status: 'peasant', sex: 'M', startAge: 30 });
           const me = ['POL-01', 'POL-02', 'POL-03'][s % 3], en = A.neighbors(me)[s % 2];
+          // the tempers are compared under generals the crown deals alike: since D-049 Aldmark and Varenna start with the
+          // lore's sitting Marshal, a seasoned commander who takes the main host himself, and two wars in three would be
+          // his (steady read 29% field fights with him, 20% without; CI 112). He is set aside for this count
+          for (const rid of [me, en]) if (A.POSTS && A.realm(rid) && A.realm(rid).council && A.realm(rid).council.marshal) A.POSTS.vacate(A.POSTS.seatKey(rid, 'marshal'), 'test');
           if (!en) continue;
           A.startWar(me, en, null, 'conquest');
           const think = A.armyThink, fend = A.fightEnd, occ = A.occupy, seen = new Map();
