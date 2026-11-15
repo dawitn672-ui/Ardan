@@ -803,7 +803,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Undo:** revert the branch's commits, newest first; saves are untouched (no state field added; `A.V2DIP.muted` is not
   saved).
 
-### H-048 · 2026-11-15 11:20 ET · C6: households, how you met, no kin minted, one resolver for a house, the parish, nine months (D-057)
+### H-048 · 2026-11-15 06:41 ET · C6: households, how you met, no kin minted, one resolver for a house, the parish, nine months (D-057)
 - **Commits** (branch `c6-households`, from `v2-integration` at `5ae6a28`, by an Opus 5.5 agent): `d5aaed1` (design note
   `docs/design/households.md`, D-057), `cdd1327` (step 1: the household at birth, gatherings, `met` on every new entry),
   `48c38f5` (step 2: kin helpers take from the tree, the guard, `tools/lint-kin.mjs`), `df967e7` (steps 3-4: `A.HOUSE`,
