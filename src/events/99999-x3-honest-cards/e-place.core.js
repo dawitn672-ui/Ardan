@@ -22,6 +22,12 @@
       if (p.journey && p.journey.at != null && prov(p.journey.at)) return p.journey.at;
       const d = p.mil && p.mil.div && A.divById ? A.divById(p.mil.div) : null;
       if (d && d.loc != null && prov(d.loc)) return d.loc;
+      // a ruler and his council sit at the capital
+      const home = A.realm(p.ruler || p.realm);
+      if (home && home.capitalProv != null && prov(home.capitalProv)) {
+        if (p.ruler) return home.capitalProv;
+        if (home.council && Object.values(home.council).includes(p.id)) return home.capitalProv;
+      }
     } catch (e) {}
     return p ? p.home : null;
   };
