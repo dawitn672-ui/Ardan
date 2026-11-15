@@ -318,13 +318,12 @@
     if (w.lab && w.ci != null) for (const vc of v.choices || []) if (vc.i === w.ci && words(vc.t) <= 9) vc.t = vc.t + w.lab;
     MW.stats.woven++; MW.stats.byRule[w.r] = (MW.stats.byRule[w.r] || 0) + 1;
   };
-  const view = A.eventView;
-  A.eventView = function (q) {
+  A.addStage('A.eventView', 'choice-memories', view => function (q) {
     const fresh = !!q && !q.view && q.type === 'event';
     const was = MW.curQ; MW.curQ = q;
     let v;
     try { v = view.apply(this, arguments); } finally { MW.curQ = was; }
     try { if (fresh && v && !v.skip && q.view === v) MW.apply(q, v); } catch (err) { console.error('memory weave view', err); }
     return v;
-  };
+  });
 })();

@@ -52,10 +52,9 @@ if (typeof UI.A.menu === 'function') {
 }
 // the map's mode buttons say which one is on (the release showed it by colour only)
 if (typeof UI.renderModal === 'function') {
-  const rm = UI.renderModal;
-  UI.renderModal = function () {
+  A.addStage('UI.renderModal', 'action-feedback', rm => function () {
     const r = rm.apply(this, arguments);
     try { for (const b of document.querySelectorAll('[data-a="gmMode"]')) b.setAttribute('aria-pressed', String(b.dataset.v === UI.mapMode)); } catch (e) {}
     return r;
-  };
+  });
 }

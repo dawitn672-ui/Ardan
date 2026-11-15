@@ -310,7 +310,7 @@
   };
   const watch = name => {
     const f = UI[name];
-    if (typeof f === 'function') UI[name] = function () {
+    if (typeof f === 'function') A.addStage('UI.' + name, 'v2-time.watch', f => function () {
       try {
         if (ui.on && ST && ST.run && ST.wait) { const h = A.S && A.S.queue[0]; if (h && STOPS.includes(h.type)) ui.stopAfter = true; }
       } catch (e) {}
@@ -322,7 +322,7 @@
         }
       } catch (e) {}
       return r;
-    };
+    });
   };
   watch('refresh'); watch('clkPaint');
   V2T.clearToasts = function () {
@@ -331,11 +331,11 @@
     const s = document.getElementById('toast-stack'); if (s) s.innerHTML = '';
   };
   const rm = UI.renderModal;
-  if (typeof rm === 'function') UI.renderModal = function () {
+  if (typeof rm === 'function') A.addStage('UI.renderModal', 'v2-time', rm => function () {
     const r = rm.apply(this, arguments);
     try { if (document.querySelector('#modal') && A.S && A.S.queue.length) V2T.clearToasts(); } catch (e) {}
     return r;
-  };
+  });
 
   // ---- the clock: the date, initiative, and the one control that moves time --------------------------------------------
   // two buttons in fixed places (the month on the left, the year beside it; on campaign the day and the week). Neither ever
@@ -498,7 +498,7 @@
   V2T.groups();
   for (const name of ['render', 'refresh', 'refreshTab', 'setTab', 'renderTabBar', 'renderGroupBar']) {
     const f = UI[name];
-    if (typeof f === 'function') UI[name] = function () { try { V2T.groups(); } catch (e) { console.error('v2 places', e); } return f.apply(this, arguments); };
+    if (typeof f === 'function') A.addStage('UI.' + name, 'v2-time.draw', f => function () { try { V2T.groups(); } catch (e) { console.error('v2 places', e); } return f.apply(this, arguments); });
   }
   // a tap on a group opens its first page if the last one seen there has moved away (War at peace goes under You)
   // the six old groups' keys still open their pages (a link or a key written for the old bar)

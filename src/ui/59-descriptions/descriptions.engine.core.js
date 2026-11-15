@@ -315,14 +315,13 @@
   // a new sheet or dialog (UI.ov) closes the popovers left open under it: a tip opened on the screen behind stayed open,
   // out of sight, and took the first Escape, so Escape seemed not to close the person view (CI run 66, uiSmoke)
   if (typeof UI.renderModal === 'function') {
-    const renderModal = UI.renderModal;
     let ovKey = '';
-    UI.renderModal = function () {
+    A.addStage('UI.renderModal', 'descriptions', renderModal => function () {
       const now = UI.ov ? String(UI.ov.type) + ':' + String(UI.ov.id == null ? '' : UI.ov.id) : '';
       if (now !== ovKey && TT.stack.length && TT.closeAll) TT.closeAll();
       ovKey = now;
       return renderModal.apply(this, arguments);
-    };
+    });
   }
   UI.tipHide = lvl => TT.close(lvl || 1);
 
@@ -330,7 +329,7 @@
   for (const k of ['render', 'refresh']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;
-    UI[k] = function () {
+    A.addStage('UI.' + k, 'descriptions.relink', f => function () {
       const fe = document.activeElement, fsel = fe && fe.matches && fe.matches(SEL) && !popOf(fe) ? TT.selOf(fe) : null;
       const r = f.apply(this, arguments);
       try {
@@ -339,6 +338,6 @@
         if (fsel && !fe.isConnected) { const n = document.querySelector(fsel); n && n.focus(); }
       } catch (e) { console.error('tooltips relink', e); }
       return r;
-    };
+    });
   }
 })();

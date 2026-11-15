@@ -161,7 +161,7 @@
   W.LINE = { barrow: 'a barrow', tower: 'a ruin', grove: 'a grove', causeway: 'a causeway in the marsh', well: 'an old well', cairn: 'a cairn',
     wreck: 'a place on the shore', river: 'a place on the river', pass: 'a way into the hills', lake: 'a landing on the lake', field: 'an old battlefield', lair: 'a lair' };
   const choose = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'wilds', choose => function (idx) {
     const q = A.S.queue[0], pc = A.pc();
     const site = q && q.type === 'event' && !q.result && q.ctx && q.ctx.wlSite && /^wl_/.test(q.ev) ? q.ctx : null;
     let orig = -1;
@@ -180,7 +180,7 @@
       }
     } catch (e) { console.error('wilds', e); }
     return r;
-  };
+  });
   if (choose.variety) A.eventChoose.variety = true;
   W.count = pc => (pc && pc.sites && typeof pc.sites === 'object' ? Object.keys(pc.sites).length : 0);
 })();

@@ -449,8 +449,7 @@
     const live = v.choices.filter(x => x && x.i >= 0);
     return live.length === 0 || (live.length === 1 && C2.isWayOut(e.choices[live[0].i]));
   };
-  const view0 = A.eventView;
-  A.eventView = function (q) {
+  A.addStage('A.eventView', 'v2-content.cards', view0 => function (q) {
     const fresh = !!q && q.type === 'event' && !q.view;
     const v = view0.apply(this, arguments);
     try {
@@ -459,7 +458,7 @@
       if (fresh && v && !v.skip && v.recall && ((v.adv && v.adv.length) || (q.ctx && q.ctx.mw && !q.ctx.mw.off && q.ctx.mw.ev === q.ev))) delete v.recall;
     } catch (err) { console.error('v2 content view', err); }
     return v;
-  };
+  });
 
   try {
     const st = document.createElement('style');

@@ -133,8 +133,7 @@
   // effect key for circle scenes: { circle: 'join' | 'lead' } ties the clique (ctx.ids) together and to you; 'apart'
   // cools them a little; 'soothe' warms ctx.ids; 'mend' carries a peace offer to your foe ctx.foe
   (A.FX_EXTRA = A.FX_EXTRA || []).push('circle');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'friend-circles', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     try {
       const v = fx && typeof fx === 'object' ? fx.circle : null;
@@ -152,7 +151,7 @@
       }
     } catch (e) { console.error('circles fx', e); }
     return r;
-  };
+  });
 
   // the clique a scene is about: three of your comrades, or three of the grown people of your street (deterministic)
   CI.cliqueFor = function (pc) {

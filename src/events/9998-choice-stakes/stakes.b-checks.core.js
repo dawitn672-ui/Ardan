@@ -21,8 +21,7 @@
     return /\{\w+\}/.test(t) ? '' : t;
   };
 
-  const view = A.eventView;
-  A.eventView = function (q) {
+  A.addStage('A.eventView', 'choice-stakes', view => function (q) {
     const fresh = !!q && !q.view;
     const v = view.apply(this, arguments);
     if (!fresh || !v || v.skip || ST.OFF || q.view !== v) return v;
@@ -52,11 +51,10 @@
       if (locked.length) v.locked = locked.sort((a, b) => a.i - b.i);
     } catch (err) { console.error('stakes view', err); }
     return v;
-  };
+  });
 
   // remember a failed check, forget a passed one
-  const choose = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'choice-stakes', choose => function (idx) {
     const q = A.S && A.S.queue[0], pc = A.pc();
     let pre = null;
     try {
@@ -80,5 +78,5 @@
       }
     } catch (err) { console.error('stakes retry', err); }
     return r;
-  };
+  });
 })();

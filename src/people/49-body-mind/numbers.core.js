@@ -36,8 +36,7 @@
       if (p.apt && (p.apt[a] || 1) > (p.apt[c] || 1)) p.apt[c] = p.apt[a];
     }
   };
-  const ng = A.newGame;
-  A.newGame = function () { const r = ng.apply(this, arguments); try { BM.fold(A.pc()); } catch (e) { console.error('fold', e); } return r; };
+  A.addStage('A.newGame', 'body-mind', ng => function () { const r = ng.apply(this, arguments); try { BM.fold(A.pc()); } catch (e) { console.error('fold', e); } return r; });
   const de = A.deserialize;
   A.deserialize = function () { const r = de.apply(this, arguments); try { BM.fold(A.pc()); } catch (e) { console.error('fold', e); } return r; };
   // the player's sheet and training picker show one row per family

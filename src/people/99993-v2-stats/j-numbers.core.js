@@ -137,8 +137,7 @@
   const CSS = '.barrow.v2-wb{grid-template-columns:minmax(0,96px) minmax(24px,1fr) auto}.barrow.v2-wb>.val{width:auto;min-width:0;max-width:none;overflow:visible;white-space:nowrap}' +
     '.skrow.v2-skw{grid-template-columns:minmax(0,1fr) minmax(24px,90px) auto}.skrow.v2-skw b{white-space:nowrap}';
   const style = () => { if (typeof document === 'undefined' || !document.head || document.getElementById('v2s-num-style')) return; const el = document.createElement('style'); el.id = 'v2s-num-style'; el.textContent = CSS; document.head.appendChild(el); };
-  const render = UI.render;
-  UI.render = function () { try { style(); } catch (e) {} return render.apply(this, arguments); };
+  A.addStage('UI.render', 'v2-stats.numbers', render => function () { try { style(); } catch (e) {} return render.apply(this, arguments); });
 
   // ---- the bars the release draws with a number --------------------------------------------------------------------------
   const barRow0 = UI.barRow, wb = h => (typeof h === 'string' ? h.replace('<div class="barrow">', '<div class="barrow v2-wb">') : h);

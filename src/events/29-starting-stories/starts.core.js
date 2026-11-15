@@ -63,8 +63,7 @@
     return s.id;
   };
   // engine: after the world and the person exist
-  const newGame = A.newGame;
-  A.newGame = function (o) {
+  A.addStage('A.newGame', 'starting-stories', newGame => function (o) {
     const r = newGame.apply(this, arguments);
     const s = o && o.story && byId(o.story), pc = A.pc();
     if (s && pc) {
@@ -74,7 +73,7 @@
       A.queue({ type: 'event', ev: 'st_' + s.id + '_open', forced: true });
     }
     return r;
-  };
+  });
 
   // the creation screen: pick a story on the first step
   const hash = s => { let h = 2166136261; for (const ch of String(s)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; };

@@ -126,11 +126,11 @@
   };
   // the count of cards: one each time a scene's choice is made (an engine command; replays make the same choices)
   const choose0 = A.eventChoose;
-  A.eventChoose = function () {
+  A.addStage('A.eventChoose', 'v2-content', choose0 => function () {
     const q = A.S && A.S.queue[0], pc = A.pc(), fresh = !!(q && q.type === 'event' && !q.result && pc);
     const r = choose0.apply(this, arguments);
     try { if (fresh && q.result && pc.mw && typeof pc.mw === 'object') pc.mw.n = (+pc.mw.n || 0) + 1; } catch (err) {}
     return r;
-  };
+  });
   for (const k of Object.keys(choose0)) A.eventChoose[k] = choose0[k];
 })();

@@ -120,7 +120,7 @@
 
   // what you do: the choice taken (its words), its effects (an event's own trait mark, piety, coin and honour)
   const choose = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'body-mind', choose => function (idx) {
     const q = A.S.queue[0], pc = A.pc();
     let cur = null;
     try {
@@ -140,7 +140,7 @@
       }
     } catch (err) { console.error('deeds', err); }
     return r;
-  };
+  });
   for (const k of Object.keys(choose)) A.eventChoose[k] = choose[k];
   BM.costs = ch => { const fx = ch && (ch.fx || (ch.win && ch.win.fx)); return !!(fx && typeof fx === 'object' && (fx.coin < 0 || fx.coinPct < 0 || fx.family < 0)); };
   // The receipt is stored (pc.deedLog, pc.traitWhy, pc.traitLog), and those are not prose fields, so SAVES.clean strips
@@ -148,8 +148,7 @@
   // differed (v2svRoundTrip). The label's own quotes become single ones inside the receipt's, and markup goes.
   BM.plain = s => String(s == null ? '' : s).replace(/[<>]/g, '').replace(/"([^"]*)"/g, '‘$1’').replace(/"/g, '’');
   BM.receipt = cur => `“${BM.plain(cur.label).replace(/[.!]+$/, '')}” (${cur.title ? BM.plain(cur.title) + ', ' : ''}${yearOf()})`;
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'body-mind.mind', apply => function (pc, fx, ctx) {
     if (!isPC(pc) || !fx || typeof fx !== 'object' || Array.isArray(fx)) return apply.apply(this, arguments);
     const cur = BM.cur, why = cur ? BM.receipt(cur) : `in ${yearOf()}`;
     let rest = fx, mark = null;
@@ -171,7 +170,7 @@
       }
     } catch (err) { console.error('deeds fx', err); }
     return r;
-  };
+  });
   const act = A.doActivity;
   A.doActivity = function (key) {
     const pc = A.pc(), D = GD.ACTIVITIES[key];

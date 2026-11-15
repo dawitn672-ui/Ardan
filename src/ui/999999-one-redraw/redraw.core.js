@@ -39,16 +39,15 @@
   const counted = (k, full) => {
     const f = UI[k];
     if (typeof f !== 'function') return;
-    UI[k] = function () {
+    A.addStage('UI.' + k, 'one-redraw.counted', f => function () {
       R.depth++; if (full) R.inFull++;
       try { return asDraw(f, this, arguments); } finally { R.depth--; if (full) R.inFull--; }
-    };
+    });
   };
   counted('refreshTab', false); counted('renderModal', false);
 
   // ---- the page: one full refresh, at the end -----------------------------------------------------------------------
-  const refresh0 = UI.refresh;
-  UI.refresh = function () {
+  A.addStage('UI.refresh', 'one-redraw', refresh0 => function () {
     if (live() && !R.depth && sameLayout() && !(UI.ov && UI.ov.type === 'warroom')) {
       // a card opens or closes while the step runs: the card and the clock, nothing else
       R.dirty = true; R.lite++;
@@ -58,17 +57,16 @@
     }
     R.dirty = false; R.full++; R.inFull++; R.depth++;
     try { return asDraw(refresh0, this, arguments); } finally { R.inFull--; R.depth--; }
-  };
+  });
   // UI.render (the whole screen) leaves nothing dirty
-  const render0 = UI.render;
-  UI.render = function () {
+  A.addStage('UI.render', 'one-redraw', render0 => function () {
     R.dirty = false; R.inFull++; R.depth++;
     try { return asDraw(render0, this, arguments); } finally {
       R.inFull--; R.depth--;
       // the whole screen drew the story itself: the log is adopted as it stands, so the next refresh adds to it in place
       try { const lw = document.getElementById('logwrap'); R.log = lw && lw.firstChild ? { el: lw, html: null, shell: shell(lw), first: lw.firstChild } : null; } catch (e) { R.log = null; }
     }
-  };
+  });
 
   // ---- the clock: its progress bar while the step runs ----------------------------------------------------------------
   // The clock's markup without its progress (the only part that moves every slice): when that is unchanged, the bars
@@ -201,6 +199,6 @@
   // ---- a new life or a loaded save starts with nothing dirty ----------------------------------------------------------
   for (const k of ['newGame', 'deserialize']) {
     const f = A[k];
-    if (typeof f === 'function') A[k] = function () { R.dirty = false; R.clkKey = null; R.log = null; UI.logAll = false; return f.apply(this, arguments); };
+    if (typeof f === 'function') A.addStage('A.' + k, 'one-redraw.fresh', f => function () { R.dirty = false; R.clkKey = null; R.log = null; UI.logAll = false; return f.apply(this, arguments); });
   }
 })();

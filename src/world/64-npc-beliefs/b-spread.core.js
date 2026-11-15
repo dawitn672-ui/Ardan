@@ -206,7 +206,7 @@
   };
   // the slander move of 21-npc-initiative: the lie becomes a claim the slanderer and their friends hold
   const choose = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'npc-beliefs', choose => function (idx) {
     const q = A.S && A.S.queue[0];
     try {
       if (q && q.type === 'event' && !q.result && q.ev === 'ni_slander' && q.ctx && q.ctx.lie && q.ctx.pid && !q.ctx.nbSeeded) {
@@ -219,7 +219,7 @@
     const res = choose.apply(this, arguments);
     try { if (live && vc && pc.alive && q.result) NB.sceneDeed(pc, v.title, vc.t, (pc.fame || 0) - f0, (pc.honor || 0) - h0); } catch (e) { console.error('npc-beliefs deed', e); }
     return res;
-  };
+  });
   for (const k of Object.keys(choose)) A.eventChoose[k] = choose[k];
 
   // ---------------------------------------------------------------- the player's own telling
@@ -363,8 +363,7 @@
     if (how === 'forbid') { delete m[c.id]; return ''; }
     return '';
   };
-  const apply0 = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'npc-beliefs', apply0 => function (pc, fx, ctx) {
     const r = apply0.apply(this, arguments);
     let out = '';
     try {
@@ -372,7 +371,7 @@
       if (v && typeof v === 'object' && pc && pc.id === A.S.pc) for (const k of Object.keys(v)) if (FX[k]) { const s = FX[k](pc, v[k], ctx || {}); if (typeof s === 'string' && s) out += (out ? ' ' : '') + s; }
     } catch (e) { console.error('npc-beliefs fx', e); }
     return out ? [r, out].filter(Boolean).join(' ') : r;
-  };
+  });
 
   // ---------------------------------------------------------------- condition helpers (pure)
 

@@ -199,8 +199,7 @@
     };
     // the card shows the line the view kept, and only that
     BD.aside = (pc, t, v) => (v && typeof v.bdAside === 'string' ? v.bdAside : '');
-    const view1 = A.eventView;
-    A.eventView = function (q) {
+    A.addStage('A.eventView', 'v2-content.lines', view1 => function (q) {
       const fresh = !!q && q.type === 'event' && !q.view;
       const v = view1.apply(this, arguments);
       try {
@@ -216,7 +215,7 @@
         }
       } catch (err) { console.error('v2 content aside', err); }
       return v;
-    };
+    });
   }
   if (NI && typeof NI.pastLine === 'function' && typeof NI.histOf === 'function') {
     const TRIVIAL = /^(you spent a day together|a long talk|you trained together|you sparred|you asked (his|her) advice)$/i;

@@ -326,8 +326,7 @@
   };
 
   // the windows
-  const evChoose = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'bonds', evChoose => function (idx) {
     const q = A.S && A.S.queue[0];
     if (!q || q.type !== 'event' || q.result) return evChoose.apply(this, arguments);
     const v = q.view || A.eventView(q), vc = v && v.choices ? v.choices[idx] : null;
@@ -354,7 +353,7 @@
       if (BD.win) BD.win.success = q.result ? q.result.success : null;
       return r;
     } finally { BD.blameCtx = was; BD.close(); }
-  };
+  });
   // who a death right now would be blamed on: { pid, how } while the player acts on that person (part 3 reads it)
   BD.blameCtx = null;
   BD.blaming = (pid, how, fn) => { const was = BD.blameCtx; BD.blameCtx = pid != null ? { pid: String(pid), how } : null; try { return fn(); } finally { BD.blameCtx = was; } };
@@ -576,8 +575,7 @@
   // fx.bonds = { settle: 0.3 } etc.; each part registers its handlers in BD.FX (handler(pc, value, ctx, fx) -> text)
   (A.FX_EXTRA = A.FX_EXTRA || []).push('bonds');
   BD.FX = BD.FX || {};
-  const apply0 = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'bonds', apply0 => function (pc, fx, ctx) {
     const r = apply0.apply(this, arguments);
     let out = '';
     try {
@@ -586,7 +584,7 @@
       if (fx && typeof fx === 'object' && BD.onFx) for (const f of BD.onFx) f(pc, fx, ctx || {});
     } catch (e) { console.error('bonds fx', e); }
     return out ? [r, out].filter(Boolean).join(' ') : r;
-  };
+  });
   BD.onFx = BD.onFx || [];
 
   // the line an event is about (ctx.hy, ctx.ht set by its setup)

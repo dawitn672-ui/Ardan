@@ -412,7 +412,7 @@ for (const k of ['render', 'refresh', 'refreshTab', 'renderModal']) {
   // FOLD runs after every draw, nested ones too (round 2 A1 tried once per outermost draw: 71-phone's page index and
   // others read the page as already folded inside UI.render). A second pass in one draw is cheap: folded cards and cards
   // measured short (data-fshort) are not measured again.
-  UI[k] = function () { const r = f.apply(this, arguments); FOLD.apply(); return r; };
+  A.addStage('UI.' + k, 'collapsible-sections', f => function () { const r = f.apply(this, arguments); FOLD.apply(); return r; });
 }
 
 FOLD.CSS = `

@@ -79,8 +79,7 @@
 
   // ---- effects
   (A.FX_EXTRA = A.FX_EXTRA || []).push('aoQual', 'aoAsset', 'aoKill', 'aoEpithet', 'aoMount');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'arcs-things', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     if (!fx || typeof fx !== 'object' || !pc) return r;
     const out = [];
@@ -107,5 +106,5 @@
       }
     } catch (e) { console.error('arcs-things fx', e); }
     return [r, ...out].filter(x => typeof x === 'string' && x).join(' ');
-  };
+  });
 })();

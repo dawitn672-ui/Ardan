@@ -109,12 +109,11 @@
     UI[k] = function () { return VS.crHeightText(f.apply(this, arguments)); };
   }
   if (typeof document !== 'undefined') {
-    const render = UI.render;
-    UI.render = function () {
+    A.addStage('UI.render', 'bodies', render => function () {
       const r = render.apply(this, arguments);
       try { const hv = document.getElementById('hval'); if (hv && /\d\s*cm/.test(hv.textContent)) hv.textContent = crWord(); const inp = hv && hv.closest('label') && hv.closest('label').nextElementSibling; if (inp && inp.getAttribute('aria-label') === 'Height in centimetres') inp.setAttribute('aria-label', 'Height when grown'); } catch (e) {}
       return r;
-    };
+    });
   }
 
   // ---- the Profile page's six rows: the measured word, its place on seven pips -----------------------------------------

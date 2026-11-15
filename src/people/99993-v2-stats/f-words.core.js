@@ -137,12 +137,11 @@ VS.sweep = function (root) {
     if (v && v.indexOf('%') >= 0) el.setAttribute(a, VS.dePct(v));
   }
 };
-const render = UI.render;
-UI.render = function () {
+A.addStage('UI.render', 'v2-stats.words', render => function () {
   const r = render.apply(this, arguments);
   try { VS.style && VS.style(); if (typeof document !== 'undefined' && document.body) { VS.sweep(document.body); if (VS.mo) VS.mo.takeRecords(); } } catch (e) { console.error('v2 words', e); }
   return r;
-};
+});
 // anything put on the page later (popovers, tooltips, toasts, the duel screen's rounds)
 if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined') {
   VS.mo = new MutationObserver(list => {

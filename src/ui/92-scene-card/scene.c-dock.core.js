@@ -63,11 +63,11 @@
   };
   const rm = UI.renderModal;
   if (typeof rm === 'function') {
-    UI.renderModal = function () {
+    A.addStage('UI.renderModal', 'scene-card', rm => function () {
       const r = rm.apply(this, arguments);
       try { SC.after(); } catch (e) { console.error('scene card dock', e); }
       return r;
-    };
+    });
   }
 
   if (doc) {
@@ -80,7 +80,7 @@
       let watched = null;
       const watch = () => { const lw = doc.getElementById(window.innerWidth >= 1100 ? 'side' : 'logwrap'); if (lw && lw !== watched) { if (watched) ro.unobserve(watched); ro.observe(lw); watched = lw; } };
       const render = UI.render;
-      if (typeof render === 'function') UI.render = function () { const r = render.apply(this, arguments); try { watch(); } catch (e) {} return r; };
+      if (typeof render === 'function') A.addStage('UI.render', 'scene-card', render => function () { const r = render.apply(this, arguments); try { watch(); } catch (e) {} return r; });
     }
     // keys, in the capture phase so they run before the release's own handler
     doc.addEventListener('keydown', e => {

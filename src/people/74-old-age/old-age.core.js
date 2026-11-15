@@ -215,14 +215,13 @@
     if (o.later) { const [ev, lo, hi] = Array.isArray(o.later) ? o.later : [o.later, 2, 5]; OA.later(pc, ev, lo, hi, ctx); }
     return out.join(' ');
   };
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'old-age', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     if (!fx || typeof fx !== 'object' || !pc || !fx.oa) return r;
     let extra = '';
     try { extra = OA.fx(pc, fx.oa, ctx || {}); } catch (e) { console.error('old age fx', e); }
     return [r, extra].filter(x => typeof x === 'string' && x).join(' ');
-  };
+  });
 
   // ---------------------------------------------------------------- the deathbed: when the end is near, the family is sent for
   OA.DEATHBED_ODDS = 0.12;   // the engine's yearly death odds at which the priest is sent for (a human near 68)

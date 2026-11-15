@@ -123,8 +123,7 @@
     return bits.join(' ');
   };
 
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'arcs-world', apply => function (pc, fx, ctx) {
     if (!fx || typeof fx !== 'object' || !pc || pc.id !== A.S.pc) return apply.apply(this, arguments);
     const out = [];
     let a = null, before = null;
@@ -150,7 +149,7 @@
       }
     } catch (e) { console.error('arcs-world gap', e); }
     return [r, ...out].filter(Boolean).join(' ');
-  };
+  });
 
   // ---- who can meet which arc
   const free = (pc, C) => C.adult(pc) && !C.ruler(pc) && !C.prison(pc) && !C.soldier(pc);

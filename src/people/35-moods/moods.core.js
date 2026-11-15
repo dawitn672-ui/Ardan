@@ -103,22 +103,21 @@
   if (typeof A.doWork === 'function') { const f = A.doWork; A.doWork = function () { const r = f.apply(this, arguments); try { if (r && r.ok !== false) touch(A.pc(), { purpose: 14, rest: -4 }); } catch (e) {} return r; }; }
   // an event choice that makes you happier, or brings you in company, meets a little of the matching need
   const choose = A.eventChoose;
-  A.eventChoose = function () {
+  A.addStage('A.eventChoose', 'moods', choose => function () {
     const q = A.S.queue[0], pc = A.pc(), h0 = pc && pc.happy;
     const r = choose.apply(this, arguments);
     try { if (pc && q && q.type === 'event' && q.ctx && q.ctx.pid) touch(pc, { company: 6 }); if (pc && pc.happy > h0) touch(pc, { comfort: 2 }); } catch (e) {}
     return r;
-  };
+  });
   for (const k of ['variety']) if (choose[k]) A.eventChoose[k] = choose[k];
 
   // fx.need: { rest, company, purpose, comfort } in any event's effects (declared for tools/lint-events.mjs)
   (A.FX_EXTRA = A.FX_EXTRA || []).push('need');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx) {
+  A.addStage('A.applyFx', 'moods', apply => function (pc, fx) {
     const r = apply.apply(this, arguments);
     try { if (fx && typeof fx === 'object' && fx.need && typeof fx.need === 'object') touch(pc, fx.need); } catch (e) { console.error('moods fx', e); }
     return r;
-  };
+  });
 
   // the Life tab: how you are
   const life = UI.TAB.life;

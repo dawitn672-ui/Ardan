@@ -183,7 +183,7 @@
   UI.stepHalt = halt;
   for (const k of ['newGame', 'deserialize']) {
     const f = A[k];
-    if (typeof f === 'function') A[k] = function () { halt(); return f.apply(this, arguments); };
+    if (typeof f === 'function') A.addStage('A.' + k, 'top-bar', f => function () { halt(); return f.apply(this, arguments); });
   }
 
   // ---- the controls

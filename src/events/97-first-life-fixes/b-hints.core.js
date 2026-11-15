@@ -12,12 +12,11 @@
 (function () {
   const LF = A.LF = A.LF || {};
   UI.hintsOn = () => UI.set.hints !== false && !!A.S;
-  const newGame = A.newGame;
-  A.newGame = function () {
+  A.addStage('A.newGame', 'first-life-fixes.hints', newGame => function () {
     const r = newGame.apply(this, arguments);
     try { const S = A.S; if (!S.lf || typeof S.lf !== 'object') S.lf = {}; S.lf.start = S.year; } catch (e) { console.error('hints start', e); }
     return r;
-  };
+  });
   LF.lifeYears = () => { const S = A.S; return S && S.lf && typeof S.lf.start === 'number' ? S.year - S.lf.start : S ? S.year - 1105 : 0; };
   for (const H of UI.HINTS || []) if (H.id === 'save') H.when = () => LF.lifeYears() >= 2;
 })();
@@ -271,8 +270,7 @@
     actResX() { UI.actLast = null; UI.refreshTab ? UI.refreshTab() : UI.refresh(); },
     actsMore() { UI.actsAll = true; UI.refreshTab ? UI.refreshTab() : UI.refresh(); },
   });
-  const ng = A.newGame;
-  A.newGame = function () { UI.actsAll = false; UI.actLast = null; return ng.apply(this, arguments); };
+  A.addStage('A.newGame', 'first-life-fixes.acts', ng => function () { UI.actsAll = false; UI.actLast = null; return ng.apply(this, arguments); });
   const acss = '.act.act-more[hidden],.acts[hidden],.group-h[hidden]{display:none !important}.act-res{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin:0 0 8px;padding:8px 10px;border-left:3px solid var(--accent,#e8b04a)}.act-res .act-res-t{flex:1 1 220px;color:var(--ink-2)}' +
     '.act-more-row{margin-top:6px;gap:8px;align-items:center;flex-wrap:wrap}#game.phone .act-res,#game.phone .act-more-row .tiny{font-size:var(--t-body,14px)}#game.phone .act-res button{min-width:44px;min-height:44px}';
   if (typeof document !== 'undefined') { const s = document.createElement('style'); s.id = 'lf-acts-style'; s.textContent = acss; (document.head || document.documentElement).appendChild(s); }

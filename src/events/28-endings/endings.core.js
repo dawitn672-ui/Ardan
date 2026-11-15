@@ -201,8 +201,7 @@
   }
   // the life score counts up when the screen opens (the number only; under reduced motion it is simply there)
   if (typeof UI.renderModal === 'function') {
-    const rm = UI.renderModal;
-    UI.renderModal = function () {
+    A.addStage('UI.renderModal', 'endings', rm => function () {
       const r = rm.apply(this, arguments);
       try { UI.endObitFlag(); } catch (e) {}
       try {
@@ -219,7 +218,7 @@
         }
       } catch (e) {}
       return r;
-    };
+    });
   }
   // the release's gold "Your life is over…" bar (#agebar) reopens this screen; while the screen is open it said the
   // same thing twice, under the obituary. Hidden only while the death screen is up (a class UI.endObitFlag sets on <body>, nothing in the state).

@@ -230,8 +230,7 @@
 
   // fx: chapter: 'alt' swaps the third aim for the other one offered
   (A.FX_EXTRA = A.FX_EXTRA || []).push('chapter');
-  const ap = A.applyFx;
-  A.applyFx = function (p, fx) {
+  A.addStage('A.applyFx', 'life-chapters.chapter', ap => function (p, fx) {
     const r = ap.apply(this, arguments);
     try {
       if (fx && typeof fx === 'object' && fx.chapter === 'alt' && p && p.chap && p.chap.cur && p.chap.cur.alt) {
@@ -240,7 +239,7 @@
       }
     } catch (e) { console.error('chapter fx', e); }
     return r;
-  };
+  });
 
   // the card's words (chp_card reads these): what the last chapter came to, then the new one's aims
   CH.recap = function (p) {
@@ -378,8 +377,7 @@
     return ks.map((k, i) => ({ k, s: (h >> (i * 3)) & 7 })).sort((a, b) => a.s - b.s).slice(0, 3).map(x => x.k);
   };
   (A.FX_EXTRA = A.FX_EXTRA || []).push('legacy');
-  const ap2 = A.applyFx;
-  A.applyFx = function (p, fx, ctx) {
+  A.addStage('A.applyFx', 'life-chapters.legacy', ap2 => function (p, fx, ctx) {
     const r = ap2.apply(this, arguments);
     try {
       if (fx && typeof fx === 'object' && fx.legacy != null && A.S.dynasty) {
@@ -392,7 +390,7 @@
       }
     } catch (e) { console.error('legacy fx', e); }
     return r;
-  };
+  });
   const cont = A.continueAs;
   if (typeof cont === 'function') A.continueAs = function (pid) {
     const r = cont.apply(this, arguments);

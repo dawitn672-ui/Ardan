@@ -353,8 +353,7 @@
   // a new life starts the armourer and the market on their first page (UI state, kept between lives before, so a page
   // chosen in one life opened the next one on Bows or on Fine goods)
   if (typeof A.newGame === 'function') {
-    const ng = A.newGame;
-    A.newGame = function () { const r = ng.apply(this, arguments); try { UI.shopSlot = 'weapon'; UI.shopQ = 'common'; } catch (e) {} return r; };
+    A.addStage('A.newGame', 'visual-style', ng => function () { const r = ng.apply(this, arguments); try { UI.shopSlot = 'weapon'; UI.shopQ = 'common'; } catch (e) {} return r; });
   }
 
   // ---- a pinned tooltip shows it is pinned (§5.8): a 2 px gold top edge and a pin glyph. 59-descriptions pins a popover

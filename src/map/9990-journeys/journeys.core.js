@@ -429,12 +429,11 @@
   };
 
   // ---- the scenes' effects: fx.jr = { slow, fast, pay, heard, site, beast, home, settle, wage } ---------------------------
-  const applyFx = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'journeys', applyFx => function (pc, fx, ctx) {
     const r = applyFx.apply(this, arguments);
     try { if (fx && typeof fx === 'object' && fx.jr && pc) JR.fx(pc, fx.jr, ctx || {}); } catch (e) { console.error('journey fx', e); }
     return r;
-  };
+  });
   JR.fx = function (pc, o, ctx) {
     const j = JR.on(pc) ? pc.journey : null;
     if (o.slow && j) j.t0 += o.slow;

@@ -204,8 +204,7 @@
     return out;
   };
 
-  const ng = A.newGame;
-  A.newGame = function (o) {
+  A.addStage('A.newGame', 'v2-family', ng => function (o) {
     o = Object.assign({}, o || {});
     // the release's "Place in the family" is gone: only a story's premise survives (and the release's own rule that a
     // half-elf or half-orc of a noble house is born on the wrong side of the blanket)
@@ -213,5 +212,5 @@
     const pc = ng.call(this, o);
     try { const p = A.pc(); if (p && p.alive) F.extendFamily(p); } catch (e) { console.error('v2-family: family', e); }
     return pc;
-  };
+  });
 })();
