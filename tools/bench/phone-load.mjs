@@ -4,7 +4,12 @@
 // 0 and year 50 (the committed saves in tests/saves/press/).
 //
 //   node tools/bench/phone-load.mjs [built.html] [--rates=1,4,6] [--runs=1] [--presses=6] [--device="Pixel 7"]
-//        [--profile] [--top=40] [--tag=x] [--out=tools/bench/reports] [--json-only]
+//        [--profile] [--top=40] [--tag=x] [--out=tools/bench/reports] [--no-worker]
+//
+// The new life is begun with no seed typed, as soon as the title's world is made (and, in a build that builds the
+// continent ahead in a Web Worker, 99991-v2-map/e-ahead.core.js, once the worker has answered). CDP cannot slow a
+// worker, so the worker's build time is scaled by the rate ("continent ready"), and the first Life screen counts from
+// the later of that and the title's world. --no-worker runs the page with no Worker (the page builds every world).
 //
 // Two kinds of number, both per throttle rate:
 //   wait: in-page performance.now() from navigation (the boot marks of the page's own loader, window.ARDAN_BOOT, plus
@@ -32,6 +37,7 @@ const DEVICE = arg('device', 'Pixel 7'), PROFILE = args.includes('--profile'), T
 const OUT = path.resolve(arg('out', path.join(root, 'tools/bench/reports')));
 const SAVES = path.join(root, 'tests/saves/press');
 const TMP = '/tmp/ardan/phone-load';
+const NOWORKER = args.includes('--no-worker');   // the page without Web Workers (the page builds every world itself)
 const med = a => { const b = a.filter(x => x != null).sort((x, y) => x - y); return b.length ? b[b.length >> 1] : null; };
 const log = (...a) => console.log(`[${new Date().toISOString().slice(11, 19)}] ${TAG}:`, ...a);
 
@@ -39,12 +45,13 @@ const log = (...a) => console.log(`[${new Date().toISOString().slice(11, 19)}] $
 const STAGES = [
   ['core ran', 'the core blob unpacked and run'],
   ['title shown', 'UI.init: the title screen drawn'],
-  ['title painted', 'the first frame after it'],
+  ['title painted', 'the frame that first shows it'],
   ['content ran', 'the event packs run (ARDAN_CONTENT_READY)'],
   ['title world', 'the title\'s world made and its map drawn'],
   ['lore unpacked', 'the lore tables unpacked in the background'],
   ['idle', 'the main thread quiet (no task over 50 ms for 500 ms)'],
-  ['continent ready', 'the new life\'s continent built ahead in a worker (X7; worker time scaled by the rate)'],
+  ['continent ready (as run)', 'the new life\'s continent built ahead in a worker (X7), which CDP does not slow'],
+  ['continent ready', 'the same, the worker\'s build time scaled by the rate (a phone\'s other cores are slow too)'],
 ];
 
 async function openPage(browser, rate, errs, profile) {
@@ -58,10 +65,19 @@ async function openPage(browser, rate, errs, profile) {
   await cdp.send('Performance.enable', { timeDomain: 'threadTicks' });
   if (rate > 1) await cdp.send('Emulation.setCPUThrottlingRate', { rate });
   if (profile) { await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await cdp.send('Profiler.start'); }
+  if (NOWORKER) await page.addInitScript(() => { window.Worker = undefined; });
   await page.addInitScript(() => {
     // long tasks and the bench's own marks; the loader's marks are in window.ARDAN_BOOT
     const L = window.__LT = [];
     try { new PerformanceObserver(l => { for (const e of l.getEntries()) L.push([Math.round(e.startTime), Math.round(e.duration)]); }).observe({ type: 'longtask', buffered: true }); } catch (e) {}
+    // the frame that first shows the title: a requestAnimationFrame callback asked for the moment #title is in the page
+    // runs at the start of that frame (the bench's own polling would only see a later one)
+    const mo = new MutationObserver(() => {
+      if (!document.getElementById('title')) return;
+      mo.disconnect();
+      requestAnimationFrame(() => { (window.ARDAN_BOOT = window.ARDAN_BOOT || {})['title painted'] = Math.round(performance.now()); });
+    });
+    document.addEventListener('DOMContentLoaded', () => mo.observe(document.body, { childList: true, subtree: true }));
   });
   const metrics = async () => Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(x => [x.name, x.value]));
   return { ctx, page, cdp, metrics };
@@ -75,8 +91,7 @@ async function boot(browser, rate, errs, profile) {
   const m0 = await metrics();
   await page.goto(pathToFileURL(HTML).href);
   // the first frame after the title is drawn (the loader sets ARDAN_READY right after UI.init)
-  await page.waitForFunction(() => window.ARDAN_READY === true, null, { polling: 'raf' });
-  await page.evaluate(() => new Promise(r => requestAnimationFrame(() => { window.ARDAN_BOOT['title painted'] = Math.round(performance.now()); r(); })));
+  await page.waitForFunction(() => window.ARDAN_READY === true && window.ARDAN_BOOT && window.ARDAN_BOOT['title painted'] != null, null, { polling: 50 });
   await page.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { polling: 50 });
   await page.waitForFunction(() => typeof A !== "undefined" && A.S && A.S.prov && A.S.prov.length > 0, null, { polling: 50 });
   await page.evaluate(() => new Promise(r => requestAnimationFrame(() => { window.ARDAN_BOOT['title world'] = Math.round(performance.now()); r(); })));
@@ -92,13 +107,15 @@ async function boot(browser, rate, errs, profile) {
   // the continent built ahead in a worker (99991-v2-map/e-ahead.core.js), when the build has one: when it was ready
   const ahead = await page.evaluate(async () => {
     const H = typeof A !== 'undefined' && A.V2MAP && A.V2MAP.AHEAD; if (!H) return null;
-    const t0 = performance.now(); while (!(H.built || H.failed || H.err) && performance.now() - t0 < 180000) await new Promise(r => setTimeout(r, 50));
+    const t0 = performance.now(); while (!(H.built || H.failed || H.err || (!H.worker && !H.wait.size)) && performance.now() - t0 < 180000) await new Promise(r => setTimeout(r, 50));
     return { sent: H.sent || null, at: H.at || null, built: H.built, ms: H.ms[0] || null, failed: H.failed, err: H.err };
   });
   // CDP cannot throttle a worker ("only supported for pages"), and a phone's other cores are about as slow as its first:
-  // the worker's time from the request to the world's arrival is scaled by the rate, as if it had run throttled
-  if (ahead && ahead.at && ahead.sent != null) ahead.atPhone = Math.round(ahead.sent + (ahead.at - ahead.sent) * rate);
+  // the worker's own build time is scaled by the rate, as if it had run throttled, from the moment it was asked (or
+  // the world's real arrival, if later). On a loaded machine the build time itself is inflated, so this errs late.
+  if (ahead && ahead.at && ahead.sent != null && ahead.ms) ahead.atPhone = Math.max(ahead.at, Math.round(ahead.sent + ahead.ms * rate));
   marks['continent ready'] = ahead && (ahead.atPhone || ahead.at);
+  marks['continent ready (as run)'] = ahead && ahead.at;
   const lt = await page.evaluate(() => window.__LT.slice());
   return Object.assign(P, { marks, bootCpu: Math.round((m1.ThreadTime - m0.ThreadTime) * 1000), bootScript: Math.round((m1.ScriptDuration - m0.ScriptDuration) * 1000),
     bootStyle: Math.round((m1.RecalcStyleDuration - m0.RecalcStyleDuration) * 1000), bootLayout: Math.round((m1.LayoutDuration - m0.LayoutDuration) * 1000), longTasks: lt, ahead });

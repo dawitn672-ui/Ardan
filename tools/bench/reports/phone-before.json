@@ -1,0 +1,672 @@
+{
+ "tag": "before",
+ "html": "../../../../../../tmp/ardan/x7/base.html",
+ "device": "Pixel 7",
+ "rates": {
+  "1": {
+   "marks": {
+    "core ran": 582,
+    "title shown": 632,
+    "title painted": 635,
+    "content ran": 2518,
+    "title world": 4501,
+    "lore unpacked": 2575,
+    "idle": 4506,
+    "continent ready (as run)": null,
+    "continent ready": null
+   },
+   "bootCpu": 3040,
+   "bootScript": 2772,
+   "longest": 1957,
+   "newLife": {
+    "create": 19,
+    "life": 1674,
+    "cpu": 1333
+   },
+   "toFirstLife": 6048,
+   "builtOnBegin": 1,
+   "y0": {
+    "wall": 307,
+    "quietWall": 295,
+    "cpu": 251,
+    "engine": 194,
+    "months": 6,
+    "loadCpu": 210
+   },
+   "y50": {
+    "wall": 309,
+    "quietWall": 175,
+    "cpu": 263,
+    "engine": 104,
+    "months": 6,
+    "loadCpu": 399
+   },
+   "runs": [
+    {
+     "marks": {
+      "ardan-core decoded": 238,
+      "ardan-core unpacked": 363,
+      "core ran": 652,
+      "title shown": 696,
+      "title painted": 700,
+      "ardan-content decoded": 736,
+      "ardan-content unpacked": 874,
+      "content ran": 2741,
+      "ardan-lore decoded": 2774,
+      "ardan-lore unpacked": 2807,
+      "title world": 4899,
+      "lore unpacked": 2807,
+      "idle": 4909,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 3336,
+     "bootScript": 3028,
+     "bootStyle": 29,
+     "bootLayout": 8,
+     "longest": 2135,
+     "newLife": {
+      "built": 1,
+      "create": 50,
+      "life": 1674,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 1413,
+      "script": 30,
+      "style": 18,
+      "layout": 14
+     },
+     "profile": {
+      "total": 7172,
+      "byFunction": [
+       [
+        "(idle) (idle):0",
+        862
+       ],
+       [
+        "erode core:107824",
+        603
+       ],
+       [
+        "(program) (program):0",
+        469
+       ],
+       [
+        "run page:38914",
+        396
+       ],
+       [
+        "VM.build core:114000",
+        347
+       ],
+       [
+        "hg core:107840",
+        263
+       ],
+       [
+        "generateContinent core:107587",
+        250
+       ],
+       [
+        "noise core:107528",
+        241
+       ],
+       [
+        "F page:38888",
+        189
+       ],
+       [
+        "(garbage collector) (garbage collector):0",
+        184
+       ],
+       [
+        "FL.beastIn core:63793",
+        165
+       ],
+       [
+        "grow core:113884",
+        161
+       ],
+       [
+        "appendChild native:0",
+        148
+       ],
+       [
+        "unpack page:38897",
+        109
+       ],
+       [
+        "(anonymous) core:114082",
+        108
+       ],
+       [
+        "EC.sync core:71888",
+        108
+       ],
+       [
+        "FL.tag core:63829",
+        106
+       ],
+       [
+        "fbm core:107539",
+        103
+       ],
+       [
+        "A.allStyles core:16027",
+        78
+       ],
+       [
+        "VM.world core:114186",
+        75
+       ],
+       [
+        "Heap.pop core:113865",
+        75
+       ],
+       [
+        "LOOK.statSparks core:89651",
+        59
+       ],
+       [
+        "A.realmHouses core:27552",
+        51
+       ],
+       [
+        "(anonymous) core:114093",
+        51
+       ],
+       [
+        "pop core:107995",
+        41
+       ],
+       [
+        "NM.fixDeep core:122755",
+        37
+       ],
+       [
+        "blur core:107792",
+        34
+       ],
+       [
+        "candidates core:69367",
+        34
+       ],
+       [
+        "rivers core:108028",
+        32
+       ],
+       [
+        "RegExp: (?:\\b(\\d{1,2})|\\b(two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|several|few|handful|pair|dozen|score)\\b|\\$\\{ctx\\.n\\}|\\{n\\})(?: (?:of )?(?:[\\w-]+ ){0,2})(men|of them|robbers|bandits|brigands|raiders|outlaws|thugs|toughs|soldiers|guards|riders|deserters|pirates|attackers|boys|lads|brothers|knights|veterans|spearmen|cutthroats|killers|footpads|drunks|sailors|orcs|archers|horsemen|reavers|marauders|warriors|cousins|in-laws|mockers|pursuers|wolves|hounds|dogs|hyenas|boars)\\b native:0",
+        30
+       ],
+       [
+        "RegExp: \\b(?:(?:a|the|mad|black|yak|wild|old) bulls?|bull (?:elephant|rhino)|aurochs|bison)\\b native:0",
+        29
+       ],
+       [
+        "components core:107892",
+        29
+       ],
+       [
+        "FL.convertEvent core:64196",
+        28
+       ],
+       [
+        "pushNb core:113887",
+        28
+       ],
+       [
+        "makeProvinces core:108062",
+        26
+       ],
+       [
+        "quantile core:107788",
+        26
+       ],
+       [
+        "ridged core:107549",
+        25
+       ],
+       [
+        "st core:114097",
+        25
+       ],
+       [
+        "RegExp: \\b(?:(?:a|the|an old|old|she-|great|brown|black|white|young|wounded|hungry|dancing|baited|chained|mad) bears?|bears? (?:cub|cubs|growls|rears|charges|attacks|comes|stands|is)|the bear\\b(?! guard| hall)) native:0",
+        24
+       ],
+       [
+        "(anonymous) packs:5",
+        23
+       ]
+      ],
+      "bySource": [
+       [
+        "core",
+        4229
+       ],
+       [
+        "(idle)",
+        862
+       ],
+       [
+        "page",
+        752
+       ],
+       [
+        "native",
+        612
+       ],
+       [
+        "(program)",
+        469
+       ],
+       [
+        "(garbage collector)",
+        184
+       ],
+       [
+        "packs",
+        64
+       ],
+       [
+        "loader",
+        1
+       ]
+      ]
+     }
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 215,
+      "ardan-core unpacked": 323,
+      "core ran": 582,
+      "title shown": 632,
+      "title painted": 635,
+      "ardan-content decoded": 676,
+      "ardan-content unpacked": 795,
+      "content ran": 2518,
+      "ardan-lore decoded": 2546,
+      "ardan-lore unpacked": 2575,
+      "title world": 4501,
+      "lore unpacked": 2575,
+      "idle": 4506,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 3040,
+     "bootScript": 2772,
+     "bootStyle": 39,
+     "bootLayout": 7,
+     "longest": 1957,
+     "newLife": {
+      "built": 1,
+      "create": 13,
+      "life": 1534,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 1322,
+      "script": 20,
+      "style": 15,
+      "layout": 6
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 177,
+      "ardan-core unpacked": 271,
+      "core ran": 525,
+      "title shown": 577,
+      "title painted": 580,
+      "ardan-content decoded": 612,
+      "ardan-content unpacked": 722,
+      "content ran": 2319,
+      "ardan-lore decoded": 2340,
+      "ardan-lore unpacked": 2366,
+      "title world": 3863,
+      "lore unpacked": 2366,
+      "idle": 3866,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 2856,
+     "bootScript": 2620,
+     "bootStyle": 35,
+     "bootLayout": 6,
+     "longest": 1521,
+     "newLife": {
+      "built": 1,
+      "create": 19,
+      "life": 1715,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 1333,
+      "script": 24,
+      "style": 16,
+      "layout": 9
+     },
+     "profile": null
+    }
+   ]
+  },
+  "4": {
+   "marks": {
+    "core ran": 2356,
+    "title shown": 2550,
+    "title painted": 2565,
+    "content ran": 9302,
+    "title world": 16125,
+    "lore unpacked": 9475,
+    "idle": 16131,
+    "continent ready (as run)": null,
+    "continent ready": null
+   },
+   "bootCpu": 14600,
+   "bootScript": 13046,
+   "longest": 7176,
+   "newLife": {
+    "create": 70,
+    "life": 5866,
+    "cpu": 5759
+   },
+   "toFirstLife": 21605,
+   "builtOnBegin": 1,
+   "y0": {
+    "wall": 1247,
+    "quietWall": 1188,
+    "cpu": 1315,
+    "engine": 733,
+    "months": 6,
+    "loadCpu": 222
+   },
+   "y50": {
+    "wall": 1319,
+    "quietWall": 999,
+    "cpu": 1485,
+    "engine": 546,
+    "months": 6,
+    "loadCpu": 413
+   },
+   "runs": [
+    {
+     "marks": {
+      "ardan-core decoded": 674,
+      "ardan-core unpacked": 1079,
+      "core ran": 2308,
+      "title shown": 2506,
+      "title painted": 2522,
+      "ardan-content decoded": 2668,
+      "ardan-content unpacked": 3007,
+      "content ran": 9302,
+      "ardan-lore decoded": 9358,
+      "ardan-lore unpacked": 9475,
+      "title world": 15596,
+      "lore unpacked": 9475,
+      "idle": 15616,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 14349,
+     "bootScript": 12737,
+     "bootStyle": 194,
+     "bootLayout": 42,
+     "longest": 6243,
+     "newLife": {
+      "built": 1,
+      "create": 143,
+      "life": 5866,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 5801,
+      "script": 115,
+      "style": 69,
+      "layout": 64
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 726,
+      "ardan-core unpacked": 1162,
+      "core ran": 2452,
+      "title shown": 2724,
+      "ardan-content decoded": 2863,
+      "ardan-content unpacked": 3288,
+      "title painted": 3450,
+      "content ran": 9308,
+      "ardan-lore decoded": 9369,
+      "ardan-lore unpacked": 9503,
+      "title world": 16542,
+      "lore unpacked": 9503,
+      "idle": 16572,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 14887,
+     "bootScript": 13157,
+     "bootStyle": 202,
+     "bootLayout": 54,
+     "longest": 7176,
+     "newLife": {
+      "built": 1,
+      "create": 68,
+      "life": 6118,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 5759,
+      "script": 130,
+      "style": 92,
+      "layout": 50
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 628,
+      "ardan-core unpacked": 1019,
+      "core ran": 2356,
+      "title shown": 2550,
+      "title painted": 2565,
+      "ardan-content decoded": 2702,
+      "ardan-content unpacked": 3081,
+      "content ran": 8336,
+      "ardan-lore decoded": 8407,
+      "ardan-lore unpacked": 8594,
+      "title world": 16125,
+      "lore unpacked": 8594,
+      "idle": 16131,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 14600,
+     "bootScript": 13046,
+     "bootStyle": 165,
+     "bootLayout": 39,
+     "longest": 7743,
+     "newLife": {
+      "built": 1,
+      "create": 70,
+      "life": 5397,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 5185,
+      "script": 103,
+      "style": 73,
+      "layout": 41
+     },
+     "profile": null
+    }
+   ]
+  },
+  "6": {
+   "marks": {
+    "core ran": 3263,
+    "title shown": 3543,
+    "title painted": 3563,
+    "content ran": 12848,
+    "title world": 21203,
+    "lore unpacked": 13106,
+    "idle": 21233,
+    "continent ready (as run)": null,
+    "continent ready": null
+   },
+   "bootCpu": 19698,
+   "bootScript": 17475,
+   "longest": 8547,
+   "newLife": {
+    "create": 98,
+    "life": 8625,
+    "cpu": 8281
+   },
+   "toFirstLife": 29986,
+   "builtOnBegin": 1,
+   "y0": {
+    "wall": 2139,
+    "quietWall": 1694,
+    "cpu": 2182,
+    "engine": 1030,
+    "months": 6,
+    "loadCpu": 237
+   },
+   "y50": {
+    "wall": 1797,
+    "quietWall": 1075,
+    "cpu": 1960,
+    "engine": 613,
+    "months": 6,
+    "loadCpu": 420
+   },
+   "runs": [
+    {
+     "marks": {
+      "ardan-core decoded": 935,
+      "ardan-core unpacked": 1475,
+      "core ran": 3095,
+      "title shown": 3468,
+      "title painted": 3496,
+      "ardan-content decoded": 3755,
+      "ardan-content unpacked": 4346,
+      "content ran": 12848,
+      "ardan-lore decoded": 12934,
+      "ardan-lore unpacked": 13106,
+      "title world": 21459,
+      "lore unpacked": 13106,
+      "idle": 21471,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 19919,
+     "bootScript": 17758,
+     "bootStyle": 269,
+     "bootLayout": 85,
+     "longest": 8547,
+     "newLife": {
+      "built": 1,
+      "create": 98,
+      "life": 8429,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 8120,
+      "script": 185,
+      "style": 109,
+      "layout": 58
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 1003,
+      "ardan-core unpacked": 1591,
+      "core ran": 3263,
+      "title shown": 3589,
+      "title painted": 3612,
+      "ardan-content decoded": 3831,
+      "ardan-content unpacked": 4234,
+      "content ran": 12850,
+      "ardan-lore decoded": 12929,
+      "ardan-lore unpacked": 13131,
+      "title world": 21203,
+      "lore unpacked": 13131,
+      "idle": 21233,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 19698,
+     "bootScript": 17475,
+     "bootStyle": 275,
+     "bootLayout": 80,
+     "longest": 8283,
+     "newLife": {
+      "built": 1,
+      "create": 164,
+      "life": 8625,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 8281,
+      "script": 132,
+      "style": 104,
+      "layout": 69
+     },
+     "profile": null
+    },
+    {
+     "marks": {
+      "ardan-core decoded": 1107,
+      "ardan-core unpacked": 1650,
+      "core ran": 3272,
+      "title shown": 3543,
+      "title painted": 3563,
+      "ardan-content decoded": 3821,
+      "ardan-content unpacked": 4241,
+      "content ran": 11780,
+      "ardan-lore decoded": 11875,
+      "ardan-lore unpacked": 12053,
+      "title world": 20438,
+      "lore unpacked": 12053,
+      "idle": 20454,
+      "continent ready": null,
+      "continent ready (as run)": null
+     },
+     "bootCpu": 19402,
+     "bootScript": 17151,
+     "bootStyle": 237,
+     "bootLayout": 65,
+     "longest": 8592,
+     "newLife": {
+      "built": 1,
+      "create": 96,
+      "life": 8893,
+      "screen": "game",
+      "tab": "story",
+      "modal": false,
+      "year": 1105,
+      "cpu": 8579,
+      "script": 218,
+      "style": 151,
+      "layout": 76
+     },
+     "profile": null
+    }
+   ]
+  }
+ },
+ "when": "2026-11-15T01:16:47.580Z",
+ "errors": []
+}

@@ -5,6 +5,9 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **A faster start, on a phone most of all.** The title is ready for "Begin a new life" in about half the time, and the
+  new world is made while you choose who to be, so Begin opens your first year at once instead of after several seconds.
+
 - **The Marshal's seat is optional.** A ruler may keep a Marshal in peace: Aldmark starts with Leofric Stane in the
   seat. A Marshal named for a war still stands down when it ends. As ruler you may name a General or a proven commander
   Marshal at any time, but not just anyone.

@@ -76,6 +76,18 @@
     } catch (e) { stop(String(e && e.message || e)); return false; }
   };
 
+  // the page about to build a world the worker is still building (Begin pressed early): the worker is let go, so the two
+  // do not share the phone's cores for the same result
+  const world = VM.world;
+  VM.world = function (seed, v = VM.VERSION) {
+    const key = seed + '#' + v;
+    if (H.wait.has(key) && !VM.cache.has(key) && H.worker) {
+      try { H.worker.terminate(); } catch (e) {}
+      H.worker = null; H.wait.clear(); H.next = null; H.cancelled = (H.cancelled || 0) + 1;
+    }
+    return world.apply(this, arguments);
+  };
+
   if (typeof UI === 'undefined' || typeof UI.lifeSeed !== 'function') return;
   // the life Begin (or Random life) would start now: its seed is drawn ahead and kept until a life takes it
   UI.aheadLife = function () {
