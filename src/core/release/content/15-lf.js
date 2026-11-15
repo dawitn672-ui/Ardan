@@ -4036,7 +4036,7 @@
             check: {s:"wil",s2:"sta",d:35},
             win: {
               r: "Near dawn, a furious, healthy cry. Mother and child both live. {mw} says she has seen worse, which is a lie.",
-              fx: p=>{p.sex==="M"&&pay(p,5);const x=mk(p,{ageAdj:0,minAge:0});x.sur=p.sur||x.sur,p.children.push(x.id),A.link(p,x,"child",50,p.sex==="M"?"father":"mother");const s=spouseOf(p);return s&&(s.children.push(x.id),A.link(s,x,"child",50,s.sex==="M"?"father":"mother")),hp(p,10),A.willGrow(p,1.5,"ordeal"),`(A ${x.sex==="M"?"son":"daughter"}: ${x.given}.)`},
+              fx: p=>{p.sex==="M"&&pay(p,5);const x=mk(p,{ageAdj:0,minAge:0});x.sur=p.sur||x.sur,x.parents=[p,spouseOf(p)].filter(Boolean).sort((a,b)=>a.sex==="F"?1:b.sex==="F"?-1:0).map(q=>q.id),p.children.push(x.id),A.link(p,x,"child",50,p.sex==="M"?"father":"mother");const s=spouseOf(p);return s&&(s.children.push(x.id),A.link(s,x,"child",50,s.sex==="M"?"father":"mother")),hp(p,10),A.willGrow(p,1.5,"ordeal"),`(A ${x.sex==="M"?"son":"daughter"}: ${x.given}.)`},
             },
             lose: {
               r: (p,ctx)=>ctx.lost?"The child does not live. {mw} wraps the little body in linen while you hold on to each other.":"Mother and child live, but it was very close, and the mother is a long time recovering.",
@@ -4046,7 +4046,7 @@
           {
             t: "Trust old {mw} and pray",
             r: (p,ctx)=>ctx.ok?"{mw} turns the child with her own hands. A long night, and then a cry. You will never forget her face by the candle.":"The child comes still and silent. The mother lives. {mw} stays all night.",
-            fx: (p,ctx)=>{if(ctx.ok=A.chance(.6),pie(p,2),ctx.ok){const x=mk(p,{ageAdj:0,minAge:0});x.sur=p.sur||x.sur,p.children.push(x.id),A.link(p,x,"child",50,p.sex==="M"?"father":"mother");const s=spouseOf(p);return s&&(s.children.push(x.id),A.link(s,x,"child",50,s.sex==="M"?"father":"mother")),hp(p,8),`(A ${x.sex==="M"?"son":"daughter"}: ${x.given}.)`}return hp(p,-18),A.willGrow(p,2.5,"grief"),""},
+            fx: (p,ctx)=>{if(ctx.ok=A.chance(.6),pie(p,2),ctx.ok){const x=mk(p,{ageAdj:0,minAge:0});x.sur=p.sur||x.sur,x.parents=[p,spouseOf(p)].filter(Boolean).sort((a,b)=>a.sex==="F"?1:b.sex==="F"?-1:0).map(q=>q.id),p.children.push(x.id),A.link(p,x,"child",50,p.sex==="M"?"father":"mother");const s=spouseOf(p);return s&&(s.children.push(x.id),A.link(s,x,"child",50,s.sex==="M"?"father":"mother")),hp(p,8),`(A ${x.sex==="M"?"son":"daughter"}: ${x.given}.)`}return hp(p,-18),A.willGrow(p,2.5,"grief"),""},
           },
         ],
       },
