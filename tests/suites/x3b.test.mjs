@@ -66,8 +66,10 @@ const LIFE = ([w, years]) => {
     const pc = A.pc(), h = A.S.queue[0], e = A.EV[h.ev], text = X3.cardText(v), tag = `${h.ev} age ${A.age(pc)}`;
     out.cards++;
     if (X3.stationUses(pc, text).length) out.words++;
-    const st = X3.stationBreach(pc, text); if (st.length) out.station.push(`${tag}: ${st[0].id} "${st[0].word}"`);
-    if (X3.away(pc)) { out.away++; const hb = X3.homeBreach(pc, text); if (hb) out.place.push(`${tag}: names ${hb}`); }
+    // a story's own step (forced, an arc's or a chain's, or one that follows a flag the story set) is not held to the gates (D-059 note)
+    const story = !!(h.forced || (h.ctx && (h.ctx.arc || h.ctx.lfFrom)) || (e && X3.followsStory(e)));
+    const st = story ? [] : X3.stationBreach(pc, text); if (st.length) out.station.push(`${tag}: ${st[0].id} "${st[0].word}"`);
+    if (X3.away(pc)) { out.away++; const hb = story ? null : X3.homeBreach(pc, text); if (hb) out.place.push(`${tag}: names ${hb}`); }
     if (A.age(pc) < 6) {
       out.kids++;
       let ok = true; try { ok = !e || !e.cond || !!e.cond(pc, A.C); } catch (x) {}
