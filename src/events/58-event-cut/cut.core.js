@@ -43,8 +43,22 @@ EC.ids = () => (EC.classic() ? [] : Object.keys(EC.R).filter(id => A.EV[id]));
 Object.defineProperty(A, 'EV_RETIRED', { get: () => new Set(EC.ids()), configurable: true });
 
 // marked as soon as each event pack registers (content loads after the engine), and checked again at every roll
+// Step X7 (phone speed): a pack marks only its own events when the pool is already marked (EC.sync walked the whole
+// list and counted A.EV for each of the 80 packs); the result is the same as a full EC.sync, which still runs whenever
+// the mode changes and once more at the first roll.
+EC.syncList = function (list) {
+  const classic = EC.classic(), want = classic ? 'classic' : 'cut';
+  if (EC.applied !== want || !Array.isArray(list)) return EC.sync(classic);
+  for (const e of list) {
+    const id = e && e.id;
+    if (!id || !(id in EC.R) || A.EV[id] !== e) continue;
+    if (!(id in EC.base)) EC.base[id] = !!e.trigger;
+    e.trigger = classic ? EC.base[id] : true;
+  }
+  EC.n = null;   // counting A.EV's 5,000 keys after each pack cost more than the marking: the next EC.sync makes one full pass
+};
 const defEvents = A.defEvents;
-A.defEvents = function () { const r = defEvents.apply(this, arguments); try { EC.sync(); } catch (err) { console.error('event-cut', err); } return r; };
+A.defEvents = function (list) { const r = defEvents.apply(this, arguments); try { EC.syncList(list); } catch (err) { console.error('event-cut', err); } return r; };
 // The roll is where the cut applies. Fewer events, not the same number from a smaller pool: the roll draws as the
 // classic pool would, and a draw that lands on a retired event is let fall (nothing is queued, its cooldown is not
 // stamped). Every surviving event keeps the odds it had, so a life meets fewer events, the share that remember

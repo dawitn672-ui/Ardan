@@ -515,8 +515,7 @@ UI.renderTitle = function () {
   if (!A.S || !A.S.prov || !A.S.prov.length) {
     const make = () => {
       if (!(A.S && A.S.prov && A.S.prov.length)) {
-        A.newState(7);
-        A.initWorld();
+        UI.makeTitleWorld();
         A.seed((Date.now() ^ (Math.random() * 1e9)) >>> 0);
       }
     };
@@ -589,10 +588,24 @@ UI.crDefaults = function () {
   };
 };
 
-UI.ensureWorld = function () {
-  if (!A.S || !A.S.prov || !A.S.prov.length || (UI.screen === "create" && !UI.worldReady)) {
+// [X7 phone speed] The title's world (seed 7) is a stand-in until a life begins: the title draws no map and the creation
+// screen reads only LORE. It is made without the generated continent (A.V2MAP.build, two thirds of its cost and seconds
+// on a phone); the life begun from it makes its own world, map and all, from its own seed (A.newGame -> A.newState).
+UI.makeTitleWorld = function () {
+  const VM = A.V2MAP,
+    off = VM ? VM.OFF : false;
+  if (VM) VM.OFF = true;
+  try {
     A.newState(7);
     A.initWorld();
+  } finally {
+    if (VM) VM.OFF = off;
+  }
+};
+
+UI.ensureWorld = function () {
+  if (!A.S || !A.S.prov || !A.S.prov.length || (UI.screen === "create" && !UI.worldReady)) {
+    UI.makeTitleWorld();
     UI.worldReady = true;
     A.seed((Date.now() ^ (Math.random() * 1e9)) >>> 0);
   }
