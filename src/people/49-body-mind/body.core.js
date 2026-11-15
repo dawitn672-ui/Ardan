@@ -171,6 +171,7 @@
   // a month of illness: its toll, less what you know of medicine yourself; it costs free time and rest
   A.bmIllMonth = function (pc) {
     const I = pc.ill; if (!I) return;
+    const had = I.crisis;
     if (!(I.m > 0)) { delete pc.ill; return; }
     // the course waits on the choice of treatment, up to three months (the scene comes at once: `now` keeps A.yearTurn from spreading it over the year)
     if (I.ask && !I.t && (I.wait || 0) < 3) { I.wait = (I.wait || 0) + 1; return; }
@@ -192,6 +193,8 @@
         if (D.wound && A.chance(0.25 * T.mark)) { const w = A.addWound(pc, D.wound); w && A.log(`It leaves its mark: ${w}.`, 'bad'); }
       }
     }
+    // X3 (T4, D-059): a month that brought the body to nothing, or took it under a third, is a scene (99999-x3-honest-cards, g-illness)
+    if (A.X3 && A.X3.illAfter) A.X3.illAfter(pc, I, had);
   };
   A.onMonth.push(pc => { if (pc && pc.alive && pc.ill) A.bmIllMonth(pc); });
   // the release's own physician and rest work on an illness too
