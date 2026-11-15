@@ -77,3 +77,26 @@
 - **Tests:**
   - `v2mapPhoneFills`: at 420 x 860 the map is at least half the screen and ends on it; canvas, picture and view keep one shape after a zoom, a pan and a fit; home in view; pure. At 1366 px the canvas is 1100 x 720.
   - `v2mapRoseClear`: 6 worlds at 420 and 1366 px. No name sits under the rose, names do sit there with the rose hidden, and drawing is pure.
+
+## X7: the continent built ahead (`e-ahead.core.js`; owner order 34, the phone)
+
+- **The title's world has no continent.** The title draws no map, and the creation screen reads only `LORE`, so the
+  release's seed-7 world is made with the map switched off (`UI.makeTitleWorld`, in the release's `23-ui-a.js`). The
+  line above ("every page load costs one world build") no longer holds.
+- **A new life's continent is built in a Web Worker** while the title and the creation screen are shown. The build is
+  pure, so the worker runs the same code: `A.V2MAP.define` (this feature's `a-world.core.js`, now one function) and the
+  v2 engine (`A.V2_MAKE`, the bundle kept as a function by `tools/build-v2.mjs`), from their own source in a Blob, with
+  the page's current settings (`GW`, `OPTS` and the rest) posted along. The finished world goes into `A.V2MAP.cache`
+  under the key `A.V2MAP.world` looks for (`A.V2MAP.adopt`), so `A.initWorld` finds it and builds nothing.
+- **Which seed:** a life begun with no seed typed takes the clock's seed drawn ahead (`UI.lifeSeed`, kept in
+  `UI.autoSeed` until a life takes it), not the clock at the moment Begin is pressed; a typed seed starts its own build
+  (the latest one typed waits while the worker is busy). The creation screen's Begin a new life starts one too.
+- **Nothing else changes.** The page builds any world it does not find (Begin pressed before the worker is done, a
+  browser that refuses the worker, `A.V2MAP.AHEAD_OFF`). A failed worker switches itself off quietly; an idle one is let
+  go. The page's policy allows Blob workers (`worker-src blob:`).
+- **Measured** (`tools/bench/phone-load.mjs`, a Pixel 7 profile): the worker takes the 0.9 to 1.5 s of a build off the
+  page's thread; Begin to the first Life screen went from about 1.5 s to 0.5 s at full speed (6.1 s to 1.8 s at four
+  times slower).
+- **Test** `v2mapAhead`: the worker's world is the page's own build to the bit (every field and typed array hashed);
+  Begin with no seed typed builds nothing; `A.newGame` with the same options gives the same state on the worker's
+  continent as on the page's.

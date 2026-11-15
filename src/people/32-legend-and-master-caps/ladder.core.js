@@ -6,13 +6,15 @@
 (function () {
   GD.MASTER_CAP = GD.MASTER_CAP || 5;
   const tierK = p => A.tierOf(A.fightWorth(p)).k;
-  // every living named fighter at Master or Legend, by realm; pure
-  A.ladderCensus = function () {
+  // every living named fighter at Master or Legend, by realm; pure. With a realm id, only that realm's people are
+  // weighed (step X7: A.ladderRoom asks about one realm, and weighing the whole world for each order raised was a
+  // tenth of making a world)
+  A.ladderCensus = function (rid) {
     const S = A.S, out = { legends: [], masters: {}, elites: 0 };
     if (!S) return out;
     for (const id in S.people) {
       const p = S.people[id];
-      if (!p || !p.alive || !p.st || id === S.pc) continue;
+      if (!p || !p.alive || !p.st || id === S.pc || (rid != null && p.realm !== rid)) continue;
       const k = tierK(p);
       if (k === 't6') out.legends.push(id);
       else if (k === 't5') (out.masters[p.realm] = out.masters[p.realm] || []).push(id);
@@ -20,7 +22,7 @@
     }
     return out;
   };
-  A.ladderRoom = rid => ((A.ladderCensus().masters[rid] || []).length < GD.MASTER_CAP);
+  A.ladderRoom = rid => ((A.ladderCensus(rid).masters[rid] || []).length < GD.MASTER_CAP);
   // A.orderRaise makes every new order leader a Master (worth 96-106). In a full realm, the new leader is brought down
   // to Elite by trimming weapon skills and quickness a step at a time (no dice), as a lesser captain would be.
   const raise = A.orderRaise;

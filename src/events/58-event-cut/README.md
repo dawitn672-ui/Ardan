@@ -118,3 +118,7 @@ The share of memory events rises because the events that remember are not lost: 
 - **The audit reads effects statically.** A function effect counts as lasting if its source writes memory, people, the queue, the body or the realm, so a few weak events written as functions survive. A few events that only look weak may matter to a reader for their words. That is what `RETIRED.md` is for.
 - **The bench's static counts include retired events.** `tools/bench/run.mjs`'s `events` module counts every event in `A.EV` (memory share of all events, strict-recipe share). Skipping the ids in `A.EV_RETIRED` there would show the cut in those numbers. That is a one-line change to a file this feature does not own.
 - **Built against today's features.** A feature added later that reads a retired event's flag or queues it does not break anything: a queued event still shows. But the event then deserves to be back in the roll. `--mode=measure` prints a warning listing any retired event the current build protects. On the 56-feature build there are none.
+
+**X7 (phone speed).** Each pack used to run `EC.sync`, which counted all 5,000 events and walked the whole retired list:
+80 times at load. A pack now marks only its own retired events (`EC.syncList`) when the pool is already marked, and
+leaves the count stale, so the first roll's `EC.sync` makes one full pass. Same triggers and the same `EC.base` after load.

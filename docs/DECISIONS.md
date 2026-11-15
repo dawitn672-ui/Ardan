@@ -773,3 +773,27 @@ the situation allows.** 99997-v2-war already shut every war that is not yours; D
 **Why:** the owner's rule (one holder per post) and orders 5 and 51; CRITIQUE A2 (R1-R4, R6, R9, R15).
 **Not done:** army commands that outlive a war (`army:<realm>:<n>`); a county's lordship without a court title stays
 with 99994's audit; the posts of jobs (R12, R17); rank 5 as a battalion's captain (D11).
+
+### D-054 · X7 part 1: phone speed at load; a worker builds the new life's continent; the clock's seed drawn ahead (2026-11-15 ET; owner order 34)
+**Measured first** (`tools/bench/phone-load.mjs`, a Pixel 7 profile, CPU slowed 4x and 6x for a mid-range phone; the
+reports are `tools/bench/reports/phone-before.md` and `phone-after.md`). Of the 5.6 s (full speed) to a first Life
+screen, the generated continent was built twice (1.9 s: the title's seed-7 world and the new life's), the event packs'
+setup took 0.8 s (0.6 s of it the fight ladder tagging every choice), the scripts' compile and unpacking about 1 s.
+**Chosen:**
+1. **The title's world is made without the continent** (`UI.makeTitleWorld`): the title draws no map and the creation
+   screen reads only `LORE`; the life begun from it makes its own world from its own seed. Nothing a life sees changes.
+2. **A Web Worker builds the new life's continent ahead** (99991-v2-map `e-ahead.core.js`). The build is pure, so the
+   worker runs the game's own code from its source (`A.V2_MAKE`, `A.V2MAP.define`) and the world it returns is the
+   page's to the bit (`v2mapAhead`). The page's policy gains `worker-src blob:` (a Blob made by the page's own code;
+   scripts stay hash-only). The page builds whatever it does not find, as before: a refused or failed worker changes
+   nothing but the wait.
+3. **The clock's seed is drawn ahead.** A life begun with no seed typed takes a seed drawn from the clock when the title
+   is shown (`UI.lifeSeed`, `UI.autoSeed`), not at the press of Begin: both are arbitrary moments, and only the earlier
+   one lets the worker know which world to build. A typed seed is unchanged (hashed the same way) and starts its own build.
+4. **Same answers, less work:** the fight ladder's beast lookup tries each list as one alternation first; the event cut
+   marks each pack's own events; the ladder census weighs one realm. `tools/release/identity-probe.mjs`: IDENTICAL
+   (9 lives, 10 years); the same event pool, and the same life for a given seed through the creation screen.
+5. **The loader paints the title before the event packs start** (the next frame, or 100 ms on a hidden page).
+**Not done:** each Next month press on a phone (1.2 to 1.5 s at 4x) is half the engine's month (the war sim's
+`A.wsDay` at year 0), left to D12b/X5 as D-023 says; no CI budget for phone load (CDP throttling is wall time on a
+shared runner that varies by a quarter, and a worker cannot be throttled: `phone-load.mjs` scales its time instead).

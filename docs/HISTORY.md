@@ -710,3 +710,28 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   `worldArcsInBotLives` near the 1800 s limit locally.
 - **Undo:** `git revert -m 1` the merge of `a2-stage2-fix`.
 
+### H-043 · 2026-11-14 21:10 ET · X7 part 1: phone speed at load (D-054, owner order 34)
+- **Commits** (branch `x7-phone-speed`, by an Opus 5.5 agent): `1ac4241` (the bench), `b5be226` (the title's world
+  without the continent; cheaper pack setup), `77c65c7` (the continent built ahead in a worker), `a30272c` (the title
+  painted before the packs), then the docs, reports and rebuild commits after them.
+- **The bench:** `tools/bench/phone-load.mjs`, the built page as a Pixel 7 at 1x, 4x and 6x CPU: the loader's marks,
+  the title's world, a new life (no seed typed) to its first Life screen, Next month on the year 0 and year 50 saves,
+  and a V8 profile of the boot. Reports: `tools/bench/reports/phone-before.md`, `phone-after.md` (3 runs each, medians,
+  on a shared 4-core machine at load 9 to 10, so read them as ±15%).
+- **Before → after** (ms from navigation; 1x / 4x / 6x): the title painted 635 / 2,565 / 3,563 → 557 / 2,561 / 3,456;
+  the event packs in 2,518 / 9,302 / 12,848 → 2,186 / 8,153 / 11,320; the title ready for a life (its world made)
+  4,501 / 16,125 / 21,203 → 2,741 / 9,551 / 13,688; Begin to the first Life screen 1,674 / 5,866 / 8,625 → 395 / 1,863
+  / 2,942; **load to the first Life screen 6,048 / 21,605 / 29,986 → 3,169 / 11,834 / 18,420**. Boot CPU (1x) 3,040 →
+  1,723 ms. Next month: unchanged within the noise (year 0 about 0.3 / 1.3 / 2.1 to 2.7 s; year 50 quiet 0.2 / 0.8 to
+  1.0 / 1.1 to 1.4 s); half of it is the engine's month (the war sim), left to D12b/X5.
+- **What changed:** see D-054 (the title's world without the continent; the worker; the seed drawn ahead; the beast
+  lookup, the event cut and the ladder census; the loader's frame). The worker on this loaded 4-core machine slows the
+  packs' loading by up to 2 s at 4x (`--no-worker`: packs in 6.1 s, first Life 13.2 s); a phone's spare cores should
+  not, and a worker still building when Begin is pressed is let go so the page builds alone.
+- **Proof of sameness:** `tools/release/identity-probe.mjs` IDENTICAL (9 lives, 10 years); the event pool after load and
+  a new life through the creation screen identical for a fixed clock (seed 42 typed, and no seed: the worker's world);
+  `v2mapAhead`: the worker's world is the page's own build to the bit.
+- **Tests run:** the core suites, 71-phone, 93-figures, 999999-one-redraw, 99991-v2-map (with the new `v2mapAhead`),
+  29-starting-stories, 32-legend-and-master-caps, 48-event-fight-rules, 58-event-cut, 84-top-bar, 86-title-screen-in-view,
+  00-security, 77-offline-fonts: all pass; `node --test tests/v2`, `tools/build-v2.mjs --check`.
+- **Undo:** revert the branch's commits, newest first. Saves are untouched (no state field added).

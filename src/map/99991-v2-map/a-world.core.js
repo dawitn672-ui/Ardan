@@ -13,7 +13,11 @@
 //   4. fields: centroids, the seat as the town site, land adjacency, coast, height in metres, the release's biome and
 //      terrain words read from v2's biomes (terrain by quotas, so the world keeps the release's mix of hills).
 // Pure: no DOM, no A.S, no A.rand (the generator has its own seeded stream; ties break by cell index).
-const VM = A.V2MAP = A.V2MAP || {};
+// Step X7 (phone speed): the file is one function, A.V2MAP.define(A), run here on the page and, from its own source, in
+// a Web Worker (e-ahead.core.js), which builds a new life's continent ahead with exactly this code. It reads only
+// A.V2MAP and A.V2.continent.
+(A.V2MAP = A.V2MAP || {}).define = function (A) {
+const VM = A.V2MAP;
 VM.VERSION = 2;                                 // 2: sea realms on the shore (playtest 1, #21); a v1 save rebuilds as v1
 VM.GW = 467; VM.GH = 300;                       // the generator's grid: 15 km cells over the release's 7,000 x 4,500 km
 // erosion at 0.5 droplets a cell (v2's default is 0.9): the same look at this grid, a third less time
@@ -326,3 +330,5 @@ VM.build = function (seed, base, v = VM.VERSION) {
   const rivers = C.riverPaths(gen, VM.RIVER_T).map(pts => { const a = new Float32Array(pts.length * 3); pts.forEach(([u, v, f], i) => { a[3 * i] = (u + 0.5) / fx * 10; a[3 * i + 1] = (v + 0.5) / fy * 10; a[3 * i + 2] = f; }); return a; });
   return { seed, v, gw, gh, grid, prov, gen, rivers, land: nLand, units: units.map((u, i) => ({ key: u.key, seat: u.seat, target: targetsU[i] })), T };
 };
+};
+A.V2MAP.define(A);

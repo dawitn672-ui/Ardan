@@ -88,11 +88,24 @@ FL.creatures = function () {
 };
 FL.tierOfBeast = id => (A.beastTier ? A.beastTier(id) : (GD.BEAST_TIER || {})[id]) || 'animal';
 // which beast a text means: a named creature, then a common word (lower case, so proper names do not count)
+// Step X7 (phone speed): each list is tried first as one regular expression, an alternation of all its entries, which
+// matches if and only if one of them does; only a text that names a beast walks the list in order for the first one.
+// It is asked 30,000 times at start-up (twice per choice) and 98% of the texts name none: a third of the tagging time.
+FL._anyBeast = null;
+FL.beastRx = function () {
+  const cre = FL.creatures();
+  if (!FL._anyBeast || FL._anyBeast.cre !== cre || FL._anyBeast.gen !== FL.GENERIC) {
+    const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    FL._anyBeast = { cre, gen: FL.GENERIC, named: cre.length ? new RegExp(cre.map(c => esc(c.key)).join('|')) : null,
+      generic: new RegExp(FL.GENERIC.map(g => '(?:' + g[0].source + ')').join('|')) };
+  }
+  return FL._anyBeast;
+};
 FL.beastIn = function (text) {
   text = text.replace(/\blike (?:a|an|the) [\w-]+/gi, ' ');   // "you fight like a bull" is not a bull
-  const t = text.toLowerCase();
-  for (const c of FL.creatures()) if (t.includes(c.key)) return { id: c.id, named: true, plural: false };
-  for (const [rx, id, pl] of FL.GENERIC) { const m = text.match(rx); if (m) return { id, named: false, plural: !!(pl && pl.test(m[0])) }; }
+  const t = text.toLowerCase(), any = FL.beastRx();
+  if (any.named && any.named.test(t)) for (const c of any.cre) if (t.includes(c.key)) return { id: c.id, named: true, plural: false };
+  if (any.generic.test(text)) for (const [rx, id, pl] of FL.GENERIC) { const m = text.match(rx); if (m) return { id, named: false, plural: !!(pl && pl.test(m[0])) }; }
   return null;
 };
 
