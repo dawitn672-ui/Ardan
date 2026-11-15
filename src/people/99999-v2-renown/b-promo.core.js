@@ -111,7 +111,7 @@
       const P = RN.pend; RN.pend = null;
       const m = pc && pc.mil;
       if (P && m && m.rank === r0 + 1) {
-        if (P.why && /^for /.test(P.why)) A.log(`The board's reason: ${P.why}.`, 'good');
+        if (P.why && /^for /.test(P.why) && !/\{/.test(P.why)) A.log(`The board's reason: ${P.why}.`, 'good');
         if (P.jump === 2 && GD.MIL[m.rank + 1] && m.rank + 1 < 7) {
           const skipped = GD.MIL[m.rank].title;
           m.rank++; m.rankSince = A.absDay();
@@ -162,7 +162,8 @@
     const ok = rankUp.apply(this, arguments);
     try {
       if (ok && P && pc.job && pc.job.c === P.c && P.from === r0) {
-        if (P.why && /^for /.test(P.why)) A.log(`They say it was ${P.why}.`, 'good');
+        // CI 119: a deed named by an event title with an unfilled token ("What {them} believes") gives no reason line
+        if (P.why && /^for /.test(P.why) && !/\{/.test(P.why)) A.log(`They say it was ${P.why}.`, 'good');
         if (P.jump === 2) rankUp.call(this, pc, 'Raised past a rank');
       }
     } catch (e) { console.error('v2 renown job', e); }

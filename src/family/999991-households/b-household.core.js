@@ -19,6 +19,9 @@
   const NOBLE = p => !!(p && (p.status === 'noble' || p.status === 'royal') && p.house && !(p.flags && p.flags.bastard));
   H.NOBLE = NOBLE;
   H.TUTOR_AGE = 6;
+  // who serves a child of which age: a nurse until seven, a tutor from six to sixteen, the maid and the guard knight always
+  H.SPAN = { nurse: [0, 7], tutor: [6, 16], maid: [0, 999], guard: [0, 999] };
+  H.serves = (role, age) => { const s = H.SPAN[role]; return !!s && age >= s[0] && age < s[1]; };
 
   // ---- the release's word for a relative the tree places (rel.type) ------------------------------------------------------
   H.typeOf = function (pc, q, P) {
@@ -155,8 +158,8 @@
       else if (r && r.met && r.met.by !== why && (why === 'birth' || why === 'household')) r.met.by = why;
     }
     if (NOBLE(pc)) {
-      for (const role of ['nurse', 'maid', 'guard']) H.makeStaff(pc, role);
-      if (A.age(pc) >= H.TUTOR_AGE) H.makeStaff(pc, 'tutor');
+      // the household as it is on the first day: an older start has outgrown its nurse and tutor
+      for (const role of ['nurse', 'maid', 'guard', 'tutor']) if (H.serves(role, A.age(pc))) H.makeStaff(pc, role);
     }
     // anyone else known on the first day (a story's people, an older start's master) was met before the story begins
     for (const id of Object.keys(pc.rel)) { const r = pc.rel[id]; if (r && !r.met) r.met = { y: S.year, at: pc.home, by: 'before' }; }
@@ -203,9 +206,19 @@
       hh.y = S.year;
       H.gather(pc);
     }
-    if (NOBLE(pc) && A.age(pc) >= H.TUTOR_AGE && A.age(pc) < 18 && !hh.staff.tutor) {
+    const age = A.age(pc);
+    if (NOBLE(pc) && H.serves('tutor', age) && !hh.staff.tutor && !(hh.left && hh.left.tutor)) {
       const t = H.makeStaff(pc, 'tutor');
       if (t && A.log) A.log(`A tutor comes to the house: ${A.fullName(t, false)}, to teach you letters and figures.`, 'muted');
+    }
+    // the nurse and the tutor leave service when the child outgrows them; they stay people you know ("your old nurse")
+    for (const role of ['nurse', 'tutor']) {
+      const id = hh.staff[role];
+      if (!id || H.serves(role, age)) continue;
+      const r = pc.rel[id];
+      if (r && r.hh === role) { delete r.hh; r.type = 'acquaint'; r.why = r.why || (role === 'nurse' ? 'your old nurse' : 'your old tutor'); }
+      delete hh.staff[role];
+      (hh.left = hh.left || {})[role] = S.year;
     }
   };
   A.onMonth = A.onMonth || [];

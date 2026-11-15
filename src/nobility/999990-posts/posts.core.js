@@ -383,6 +383,10 @@
     else if (k.kind === 'army' && !o.keep && why !== 'replaced' && why !== 'promoted') deputyArmy(k.id);
     // an order is never without a Grand Master while its division stands: the chapter names one at once
     else if (k.kind === 'order' && !o.keep && why !== 'replaced' && why !== 'promoted') deputyOrder(k);
+    // a shire office whose holder died is filled the next day (9996-polity, POL.refillSoon), not at the year's fill months
+    // later; one left for a higher post is filled when that appointment is done (P.appoint; CI 119, poOfficesFilled: a
+    // reeve promoted in the second month left the office empty)
+    else if (k.kind === 'office' && why === 'died' && A.POL && A.POL.refillSoon) A.POL.refillSoon(k.rid);
     return p || null;
   };
   const deputyOrder = function (k) {
@@ -437,6 +441,8 @@
     ixAdd(pid, key);
     P.stats.appointed++;
     if (isMarshalKey(key)) pcMarshal(pid, true);
+    // a shire office the appointee gave up is filled now, the appointment done (9996-polity; CI 119)
+    if (A.POL && A.POL.refillNow) for (const f of freed) if (f.startsWith('office:')) A.POL.refillNow(P.parse(f).rid);
     return { ok: true, out: out ? out.id : null, freed };
   };
 
