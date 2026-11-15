@@ -1303,7 +1303,8 @@ UI.renderProfile = function () {
     <div class="center" style="margin-bottom:6px">${chips}</div>`;
   s += UI.barRow("Health", pc.health, 100, "hpbar", mh, Math.round(pc.health));
   s += UI.barRow("Happiness", pc.happy, 100);
-  s += UI.barRow("Looks", pc.looks, 100);
+  // B5 part 2 (D-055): an infant is not told how he looks (UI.scope, 999997-scope)
+  if (!UI.scope || UI.scope(pc).sees("looks")) s += UI.barRow("Looks", pc.looks, 100);
   s += UI.barRow("Renown", pc.fame, 100);
   s += UI.barRow("Honor", pc.honor, 100);
   s += UI.barRow("Piety", pc.piety, 100);

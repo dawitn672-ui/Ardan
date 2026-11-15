@@ -1363,7 +1363,9 @@ A.whatNow = function (pc) {
     !pc.company &&
     !pc.prison &&
     age < 60 &&
-    !(pc.school && pc.school.kind)
+    !(pc.school && pc.school.kind) &&
+    // B5 part 2 (D-055): not to a squire, a councillor or a lord, who each have a place (UI.scope.sees)
+    (typeof UI === "undefined" || !UI.scope || UI.scope(pc).sees("findWork"))
   )
     add(55, "Find work", "No trade, no wage. The Path tab shows every door open to you.", "path", ["tab", "path"]);
   const P = A.plan ? A.plan(pc) : null;
