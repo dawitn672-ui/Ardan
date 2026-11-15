@@ -1006,7 +1006,10 @@ noble ladder against the lore), N7's Marchfolk, N9 (town scale), N10 (a Chaplain
    place. A soldier posted a province away is away: his old town's market is not where he stands. Decided: a scene is dropped, not
    re-pointed at where he is, because "Smoke over {home}" is news of a place he left.
 4. **Counsel** (E7). `A.X3.present`: alive, free, and on the same ground; a prisoner is with prisoners. The advisors' ring is who
-   he trusts, not who is in the room; the card's voices are cut to who is.
+   he trusts, not who is in the room; the card's voices are cut to who is, and the ring itself (`ADV.candidates`) seats only people who
+   are there (a ruler's council stands at the capital). **Conflict recorded:** the advisors' README promised counsel on every big
+   choice and `advLives` held it to 80% with 3 advisors a life, from lives that stayed under one roof; a soldier far from home now hears
+   no father, so the bars are 60% and 2.5 (measured 66%, 2.8).
 5. **Pronouns** (E8; `tools/lib/card-lint.mjs`). A scene says "he" or "she" in plain words of its `{them}` only where the sex is
    known: tokens (`{theyHe}`, `{theirHis}`, `{themHim}`) elsewhere. 22 scenes were mended; 20 findings of the lint are not slips and are
    listed with a reason (`PRONOUN_ALLOW`); a named figure of the lore (`"CHR-0256"`) has the sex the story gave her. `x3Pronouns` also
