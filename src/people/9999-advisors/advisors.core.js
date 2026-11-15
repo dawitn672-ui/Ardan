@@ -212,7 +212,10 @@
         next.push({ id: c.id, role: c.role, w, y, wy: y });
         // a person in your ring knows you, and you them (a seat or a captain may not have met you yet)
         if (!t.rel[pc.id]) t.rel[pc.id] = { type: c.role === 'captain' ? 'subordinate' : 'councillor', op: 10, since: y };
-        if (!pc.rel[t.id]) pc.rel[t.id] = { type: c.role === 'captain' ? 'superior' : 'councillor', op: 10, since: y, seen: y };
+        if (!pc.rel[t.id]) {
+          pc.rel[t.id] = { type: c.role === 'captain' ? 'superior' : 'councillor', op: 10, since: y, seen: y };
+          if (A.metNote) pc.rel[t.id].met = A.metNote(t, 'court');   // C6 (D-057): how you met
+        }
         if (!quiet && !firstFill && adult(pc)) A.log(`${A.fullName(t, false)} (${ADV.roleName(c.role, t)}) now has your ear.`, 'muted');
       }
     }

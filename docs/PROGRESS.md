@@ -43,7 +43,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **W0** · Remove the war score and the army templates (order 34) (H-036)
 - [x] **X2** · Named stages: seven hot functions run named stages from a manifest (`src/core/01-stages`), `tools/lint-stages.mjs` holds them and the count of names defined twice (364 → 357), the muted diplomacy path held by `v2DipMutedPath` (D-056)
 - [x] **D10** · War screens only when deployed (H-036)
-- [ ] **C6** · Relationships and households
+- [x] **C6** · Relationships and households: the household at birth (commoner ≤ 8, noble ≤ 12 with nurse, maid, guard knight, tutor at 6), how you met on every entry, no kin minted (`tools/lint-kin.mjs`, `c6NoKinMinted`), one resolver for a house (`A.HOUSE`), a parish as seeds, nine months (D-057, H-048)
 - [x] **X3 part 1** · No initiative left; feasts on their dates; fight stakes; illness shown; kilometres (D-051) · `839d0c6` · 2026-11-14 11:19 ET
 - [ ] **X3 part 2** · Station words, card place, counsel from the absent, pronoun lint, the preview replay
 - [ ] **C7** · Names and cultures in the game (one common language, D-013)

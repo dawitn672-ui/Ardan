@@ -1,7 +1,8 @@
 // Everything a change must pass, in one command (CI runs this):
 //   1. build index.html from src/core/release/ (the release's own source, X1) + src/<system>/NN-name/ features and confirm the committed index.html is current
 //   2. lint and play-test every feature's event packs
-//   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs), and the named stages (tools/lint-stages.mjs)
+//   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs), the named stages (tools/lint-stages.mjs)
+//      and that no event names kin who are not in the tree (tools/lint-kin.mjs)
 //   4. run every browser test
 //   5. play the balance league and hold each path's numbers to their bands (tools/bench/balance.mjs, tools/bench/targets.mjs)
 //   6. (retired in v2 step 2 with the Far Lands: the Great Continent league)
@@ -35,6 +36,9 @@ catch (e) { lintFailed++; console.error(`choices FAIL\n${String(e.stdout || '').
 // the named stages (X2, D-056): the hot functions are only added to by A.addStage, and fewer names are defined twice
 try { execFileSync(process.execPath, ['tools/lint-stages.mjs'], { cwd: root, stdio: 'pipe' }); console.log('stages ok (tools/lint-stages.mjs)'); }
 catch (e) { lintFailed++; console.error(`stages FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 4000)}`); }
+// no event names kin who are not in the tree (C6, D-057)
+try { execFileSync(process.execPath, ['tools/lint-kin.mjs'], { cwd: root, stdio: 'pipe' }); console.log('kin ok (tools/lint-kin.mjs)'); }
+catch (e) { lintFailed++; console.error(`kin FAIL\n${String(e.stdout || '').slice(0, 4000)}`); }
 if (lintFailed) process.exitCode = 1;
 if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs', `--workers=${process.env.CI ? 4 : 1}`].concat(process.argv.filter(a => a.startsWith('--shard=')))); } catch { process.exitCode = 1; } }
 // balance: target numbers per path, held by a fixed-seed league (tools/bench/targets.mjs)

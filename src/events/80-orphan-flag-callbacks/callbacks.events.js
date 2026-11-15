@@ -315,7 +315,7 @@
           r: "He drops it, and sings a new one about a family that paid twice. The second purse was smaller, at least.",
           fx: { coin: -15, happy: -2 } },
         { t: "Find {nm} and make it right", check: { s: "diplomacy", s2: "persuasion", d: 55 },
-          win: { r: "You find {nm} at a horse fair and offer the name, late. {Nm} takes it, and sings a new last verse at the next inn.", fx: { honor: 4, family: -1, them: { op: 30, type: "cousin" } } },
+          win: { r: "You find {nm} at a horse fair and offer the name, late. {Nm} takes it, and sings a new last verse at the next inn.", fx: { honor: 4, family: -1, them: { op: 30 }, akin: "recognize" } },
           lose: { r: "{Nm} hears you out, laughs, and asks for another purse. You leave the fair with the story worse.", fx: { honor: -2, happy: -4 } } },
       ],
     },

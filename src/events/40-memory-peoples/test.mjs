@@ -303,7 +303,7 @@ export default {
               const q = { type: 'event', ev: e.id }; A.S.queue.unshift(q);
               let v;
               try { v = A.eventView(q); } catch (err) { problems.push(`${vtag}: view throws ${err.message}`); break; }
-              if (v.skip) { problems.push(`${vtag}: skipped by the engine`); break; }
+              if (v.skip) { if (!(q.ctx && q.ctx.noKin)) problems.push(`${vtag}: skipped by the engine`); break; }   // C6: no relative in the tree drops the scene by design
               if (!viewed) {
                 viewed = true;
                 const all = [v.title, v.text, ...v.choices.map(c => c.t)].join(' | ');

@@ -568,8 +568,10 @@
       w: 3, once: true,
       setup: (p, ctx) => {
         if (!fresh(p, "mrb_va_aunt_will")) { ctx.skip = 1; return; }
-        const q = make(p, ctx, { sex: "F", age: Math.min(80, A.age(p) * 16 / GD.RACES[p.race].adult + 28), occ: "a spinner of Palella" });
-        A.link(p, q, "acquaint", 20, "acquaint");
+        // C6 (D-057): the aunt is a real one from the tree (met now if need be), or the scene does not happen
+        const q = A.KIN ? A.KIN.take(p, ["uncle"], { sex: "F", op: 20 }) : make(p, ctx, { sex: "F", age: Math.min(80, A.age(p) * 16 / GD.RACES[p.race].adult + 28), occ: "a spinner of Palella" });
+        ctx.pid = q.id;
+        if (!p.rel[q.id]) A.link(p, q, "acquaint", 20, "acquaint");
       },
       text: "Your aunt {them} is dying in the room where her wheel stood until the guild took it. She sends the others out. \"I know who showed it,\" she says. \"I have always known.\" She wants a promise: after the burial you will go to the guild and buy the wheel back for her granddaughter. The guild does not sell wheels back.",
       choices: [
@@ -1529,7 +1531,8 @@
       title: "Asleep on the watch",
       cond: (p, C) => (C.famMil(p) || C.famKind(p, "gentry_mil")) && C.adult(p) && C.flag(p, "rk_fm_proved") && A.S.year - p.flags.rk_fm_proved >= 3,
       w: 2, once: true,
-      setup: (p, ctx) => { prepF(p, ctx); const f = A.family(p); make(p, ctx, { sex: "M", age: 15, sur: f && f.sur ? f.sur : p.sur, occ: "your cousin" }); },
+      // C6 (D-057): the cousin is a real one of about fifteen (met now), or no scene
+      setup: (p, ctx) => { prepF(p, ctx); const f = A.family(p); if (A.KIN) { ctx.pid = A.KIN.take(p, ["cousin"], { sex: "M", adj: 15, span: 3 }).id; return; } make(p, ctx, { sex: "M", age: 15, sur: f && f.sur ? f.sur : p.sur, occ: "your cousin" }); },
       text: "You passed the proving, and your father handed you the family badge at dawn. This year it was your cousin {them}'s turn. He marched the day and fought the bout well, and at midnight you found him asleep on the watch at the edge of the family's land. Only you found him. The household is waiting at breakfast to hear how his night went.",
       choices: [
         { t: "Tell the household the truth",

@@ -802,3 +802,36 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   loaded machine for the build before X2 too. `index.html` is not rebuilt on this branch.
 - **Undo:** revert the branch's commits, newest first; saves are untouched (no state field added; `A.V2DIP.muted` is not
   saved).
+
+### H-048 · 2026-11-15 11:20 ET · C6: households, how you met, no kin minted, one resolver for a house, the parish, nine months (D-057)
+- **Commits** (branch `c6-households`, from `v2-integration` at `5ae6a28`, by an Opus 5.5 agent): `d5aaed1` (design note
+  `docs/design/households.md`, D-057), `cdd1327` (step 1: the household at birth, gatherings, `met` on every new entry),
+  `48c38f5` (step 2: kin helpers take from the tree, the guard, `tools/lint-kin.mjs`), `df967e7` (steps 3-4: `A.HOUSE`,
+  `A.conceive`), `07ff129` (step 5: the parish), `4726731` (the people sweep keeps the player's tree), `1de2ad2` (`ctx.noKin`;
+  the kin arcs' fixtures), `a5be0d9` (step 6: tests, README, skill, CLAUDE.md, CHANGELOG), `b2cbade` (`newRel` with a kin
+  word; claimants recognised into the tree), and this record.
+- **What changed:** see D-057 and `src/family/999991-households/README.md`. New state: `A.S.household`, `A.S.parish`,
+  `A.S.pregs`, `rel.met`, `rel.hh`; all optional (an old save without them loads and plays on: `c6OldSave`).
+- **Edits outside the new folder:** the release's core (`A.link`, `applyFx` `them`/`newRel`, `A.eventView`'s setup catch,
+  `A.makeAcquaintance`, `A.familyYear`, `A.kill`, `A.houseHead`, `A.marry`, `A.gcPeople`, the person view's "Known") and
+  packs 04, 07, 08, 10, 11, 13, 14, 15; 99994-v2-family (household label; `A.HOUSE` in `c-succession.core.js`),
+  99995-v2-nobility (the court lord's case to the resolver), 999990-posts and 9999-advisors (`met`), 50-arcs-kin (no kin
+  made; `recognize`; fixtures in its test), 53-arcs-things, 80-orphan-flag-callbacks, 40-memory-peoples, -realm-blood,
+  -regional-a (and their tests read a `noKin` drop as by design), the stage manifest, `tools/check.mjs`.
+- **Measured:** 42 births: commoners knew at most 5 people, nobles at most 8 (before: 13 to 32 for every rank, with 4
+  grandparents dead or alive, 3-9 uncles, up to 13 cousins). 12 worlds × 30 years: no kin word given outside the tree, no
+  relative made (before: 13 links to people the tree did not place, and the minting helpers wrote uncles and cousins into
+  it). Event classes: 5004, 0 differ (`identity-probe` against `v2-integration`).
+- **Tests:** on the build of step 5 (`07ff129`), 127 by name (the core suites, `renderRng`, `replayWithRender`, `journalReplay`,
+  `savesStillLoad`, the families, kin, bonds, circles, posts, old age, echo scenes, memory packs, advisors, saves, the
+  new `c6*`): 121 passed; the 6 that failed (`coherencyBaseline`, `mpeMemory`, `mrbMemory`, `kinArcsPlayThrough`,
+  `kinRealTree`, `c6NoKinMinted`) were fixed and pass on the final build with 18 more (kin, things and callback arcs, their
+  bot lives: `kinBotLives` 6 of 12 long lives met a kin arc, bar 40%), and on the final build 76 by name again (the core
+  suites, the replay tests, the households, v2-family, bonds, posts, circles, get-to-know, echo scenes, v2-saves): all
+  passed. Coherency quick: no check above its baseline.
+  `tools/lint-kin.mjs`, `tools/lint-stages.mjs` (357 names defined more than once, unchanged), `lint-events` for the four
+  event features edited: clean. `tools/bench/balance.mjs`: all within their bands (no band changed).
+- **Not done:** F8-F10 (the People page's Household block, the tree centred on you, the person card's order), F6 beyond
+  the parish, P9's per-realm target. `index.html` is not rebuilt on this branch.
+- **Undo:** revert the branch's commits, newest first. Saves made with it keep `household`, `parish`, `pregs` and `met`
+  fields the build before ignores.

@@ -3536,7 +3536,7 @@
         cond: (p,C)=>(orcGrass(p)||C.race(p,"orc"))&&C.adult(p),
         w: .8,
         cool: 10,
-        setup: (p,ctx)=>{setPid(p,ctx,"orc",{occ:"your cousin"})},
+        setup: (p,ctx)=>{const q=A.KIN?A.KIN.take(p,["cousin"],{}):null;q?(ctx.pid=q.id):setPid(p,ctx,"orc",{occ:"your cousin"})},
         text: 'Your cousin {them} has stopped sleeping, talks to the wind and rode a horse into the river at night. "The storm has entered the head," the shaman says. Orcs treat the mad gently. But the human traders at the post want {themHim} chained, after {theyHe} broke a stall.',
         choices: [
           {
@@ -5990,7 +5990,7 @@
         cond: (p,C)=>C.realm(p,"POL-06")&&C.race(p,"halfelf")&&C.age(p)>=50,
         w: 1,
         once: !0,
-        setup: (p,ctx)=>{ctx.cousin=nm(p)},
+        setup: (p,ctx)=>{ctx.cousin=A.KIN?A.KIN.take(p,["cousin"],{}).given:nm(p)},
         text: "For forty years you have tended the hazel and bramble gardens below your elven mother's grove-house. In Sylvaran a half-elf may live in the forest but may not own land or sit in the Moot. Your mother has gone to her tree, and the Keepers say the garden passes to your elven cousin {cousin}, who has never pruned a hazel in a hundred years of life.",
         choices: [
           {

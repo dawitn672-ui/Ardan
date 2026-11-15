@@ -328,7 +328,10 @@
     if (!live(a) || !live(b) || a.id === b.id) return;
     a.rel = a.rel || {};
     if (a.rel[b.id]) a.rel[b.id].op = A.clamp(a.rel[b.id].op + d, -100, 100);
-    else if (isPC(a.id) || isPC(b.id)) a.rel[b.id] = { type: 'acquaint', op: A.clamp(d, -100, 100), since: A.S.year };
+    else if (isPC(a.id) || isPC(b.id)) {
+      a.rel[b.id] = { type: 'acquaint', op: A.clamp(d, -100, 100), since: A.S.year };
+      if (isPC(a.id) && A.metNote) a.rel[b.id].met = A.metNote(b, 'court');   // C6 (D-057): how you met
+    }
   };
   // a stored title that names a post its owner lost becomes a past one ("once Chancellor of Varenna")
   const STYLE_RX = /Marshal|Chancellor|Treasurer|Spymaster|Chaplain|General|Commander|Governor|Magistrate|Reeve|Warden|Collector|Sheriff/;

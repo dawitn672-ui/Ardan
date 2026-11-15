@@ -626,6 +626,11 @@ A.houseHead = function (hid, fresh) {
     h = S.houses[hid];
   if (!h) return null;
   if (!fresh && h.headPid && A.P(h.headPid) && A.P(h.headPid).alive) return A.P(h.headPid);
+  // [C6, D-057] a dead head's successor by the house's law, or its court lord (A.HOUSE.settle, the one resolver)
+  if (!fresh && A.HOUSE) {
+    const nx = A.HOUSE.settle(hid);
+    if (nx) return nx;
+  }
   if (h.great === false) {
     const ms = A.famMembers(hid).filter(x => x.alive);
     if (ms.length && !fresh) {
@@ -667,7 +672,9 @@ A.kill = function (p, cause, silent) {
     const r = A.realm(p.ruler);
     if (r && r.ruler === p.id) A.rulerDies(r, cause);
   }
-  if (p.house && A.S.houses[p.house] && A.S.houses[p.house].headPid === p.id) {
+  // [C6, D-057] with the house resolver on the page (A.HOUSE, 99994-v2-family) the head passes by the house's law in
+  // A.V2F.inherit, its one writer; this eldest-son rule is the fallback of a build without it
+  if (!A.HOUSE && p.house && A.S.houses[p.house] && A.S.houses[p.house].headPid === p.id) {
     const h = A.S.houses[p.house],
       kids = A.lawSort(
         {
@@ -2471,7 +2478,8 @@ A.familyYear = function (pc) {
       mage < (m.race === "elf" ? 300 : m.race === "dwarf" ? 120 : R2.adult + 27) &&
       A.chance(0.22 * R2.fert)
     )
-      A.birth(m, f, true);
+      // [C6, D-057] a conception now, the birth nine months on (A.conceive, 999991-households/d-births.core.js)
+      A.conceive ? A.conceive(m, f, "sib") : A.birth(m, f, true);
   }
   const sp = A.P(pc.spouse);
   if (sp && sp.alive) {
@@ -2479,7 +2487,7 @@ A.familyYear = function (pc) {
       man = pc.sex === "M" ? pc : sp.sex === "M" ? sp : null;
     if (woman && man && A.fertilePair(man, woman)) {
       const want = pc.flags.tryChild === S.year ? 0.6 : pc.flags.noChildren ? 0.03 : 0.2;
-      if (A.chance(want * A.pairFert(man, woman))) A.birth(woman, man, false);
+      if (A.chance(want * A.pairFert(man, woman))) A.conceive ? A.conceive(woman, man, "own") : A.birth(woman, man, false);
     }
     if (pc.flags.tryChild === S.year) delete pc.flags.tryChild;
   }
@@ -2522,7 +2530,7 @@ A.familyYear = function (pc) {
       const wo = c.sex === "F" ? c : csp,
         ma = c.sex === "M" ? c : csp;
       if (A.fertilePair(ma, wo) && A.chance(0.2 * A.pairFert(ma, wo))) {
-        const g = A.birth(wo, ma, false, true);
+        const g = A.conceive ? (A.conceive(wo, ma, "grand", c.id), null) : A.birth(wo, ma, false, true);
         if (g) {
           A.link(pc, g, "grandchild", 40, "grandparent");
           A.log(`A grandchild is born: ${g.given}, to ${c.given}.`, "good");

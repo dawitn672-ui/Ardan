@@ -109,6 +109,8 @@
       return Object.assign({}, lab, { primary: old.toLowerCase(), text: cap(text), loose: true });
     }
     if (!lab.kin && !bondKind && t === 'acquaint') text = 'acquaintance';
+    // C6: one of a noble child's household (999991-households): "Your nurse", "Your guard knight"
+    if (!lab.kin && r && r.hh && A.HH && A.HH.word(r.hh)) text = A.HH.word(r.hh);
     text = text.replace(/\bbestFriend\b/g, 'best friend');
     return Object.assign({}, lab, { text: cap(text) });
   };

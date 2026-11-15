@@ -44,6 +44,8 @@ A.eventView = function (q) {
       e.setup(pc, q.ctx);
     } catch (err) {
       q.ctx.skip = 1;
+      // [C6, D-057] a scene that wanted a relative the tree does not have (A.KIN.take) drops by design
+      if (err && err.noKin) q.ctx.noKin = 1;
       if (A.S.debug) console.error("setup", e.id, err);
     }
   // [X1 baked patch core/03-engine-fixes ENG-EVENT-TEXT-GUARD] eventView caught a throwing setup (the event is
@@ -401,13 +403,23 @@ A.applyFx = function (pc, fx, ctx) {
           if (pc.rel[t.id]) {
             if (v.op) A.addOp(pc, t, v.op);
             if (v.type) {
-              pc.rel[t.id].type = v.type;
-              if (t.rel[pc.id]) t.rel[pc.id].type = v.back || v.type;
+              // [C6, D-057] a kin word only for kin the tree places (A.KIN.guard)
+              const kg = A.KIN && A.KIN.guard ? A.KIN.guard(pc, t, v.type, v.back || v.type) : null;
+              pc.rel[t.id].type = kg ? kg[0] : v.type;
+              if (t.rel[pc.id]) t.rel[pc.id].type = kg ? kg[1] : v.back || v.type;
             }
           } else A.link(pc, t, v.type || "acquaint", v.op || 0, v.back || v.type || "acquaint");
         }
         break;
       case "newRel": {
+        // [C6, D-057] a "new relative" is one of the tree not met before, met now; with none, nobody (no kin is minted)
+        if (A.KIN && A.KIN.WORDS.includes(v.type)) {
+          const k = A.KIN.list(pc, [v.type]).filter(x => !pc.rel[x.id]);
+          if (!k.length) break;
+          const q = A.KIN.take(pc, [v.type], { ok: x => k.includes(x), op: v.op || 20 });
+          out.push(`(${q.given} is your ${A.relLabel(q, pc.rel[q.id]).toLowerCase()})`);
+          break;
+        }
         const p = A.makeAcquaintance(pc, v.type || "friend");
         A.link(pc, p, v.type || "friend", v.op || 30, v.back || v.type || "friend");
         out.push(

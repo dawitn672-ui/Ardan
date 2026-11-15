@@ -345,6 +345,8 @@ A.marry = function (pc, t) {
     since: A.S.year,
   });
   pc.rel[t.id].op = Math.max(pc.rel[t.id].op || 0, 40);
+  // [C6, D-057] how you met: a match made by others is met at the wedding
+  if (!pc.rel[t.id].met && A.metNote) pc.rel[t.id].met = A.metNote(t, "spouse");
   t.rel[pc.id] = Object.assign(t.rel[pc.id] || {}, {
     type: "spouse",
     op: 50,

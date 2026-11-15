@@ -784,6 +784,9 @@ A.gcPeople = function () {
     for (const id of Object.keys(pc.rel)) keep.add(id);
     for (const id of pc.parents.concat(pc.children)) if (id) keep.add(id);
     if (pc.spouse) keep.add(pc.spouse);
+    // [C6, D-057] the player's family tree is kept whole (grandparents, uncles and aunts, cousins, nephews), met or not:
+    // the relationships no longer hold every relative, and the tree is where they are met from
+    if (A.HH && A.HH.kinAround) for (const q of A.HH.kinAround(pc, 4)) keep.add(q.id);
   }
   for (const id in S.realms) {
     const r = S.realms[id];
@@ -822,6 +825,8 @@ A.gcPeople = function () {
   for (const id in S.people) {
     const p = S.people[id];
     for (const rid of Object.keys(p.rel)) if (!S.people[rid]) delete p.rel[rid];
+    // [C6] a child who is gone from the record is gone from the parent's list too (no link to nobody)
+    if (p.children && p.children.some(c => !S.people[c])) p.children = p.children.filter(c => S.people[c]);
   }
   return removed;
 };

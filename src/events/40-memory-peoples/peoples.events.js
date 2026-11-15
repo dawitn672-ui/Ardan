@@ -470,9 +470,12 @@
       setup: (p, ctx) => {
         const k = kin(p, ctx, ["child"], q => hAge(q) >= 10);
         if (k) { ctx.who = k.sex === "M" ? "your son" : "your daughter"; return; }
-        const q = make(p, ctx, { age: 15, sur: p.sur, occ: "a forge apprentice" });
-        A.link(p, q, "nephew", 30, "uncle");
-        ctx.who = "your sister's child";
+        // C6 (D-057): a real nephew or niece from the tree, met now if need be, or no scene: no kin is made
+        const q = A.KIN ? A.KIN.take(p, ["nephew"], { op: 30, ok: x => hAge(x) >= 10 && hAge(x) <= 22 }) : null;
+        if (!q) { ctx.skip = true; return; }
+        ctx.pid = q.id;
+        const par = (q.parents || []).map(id => A.P(id)).find(x => x && (p.parents || []).some(id => x.parents && x.parents.includes(id)));
+        ctx.who = `your ${par && par.sex === "M" ? "brother" : "sister"}'s child`;
       },
       text: (p, ctx) => `Your name has been cut low on the Debtors' Wall of the Hold Bank for ${ago(p, "pp_dw_wall")}, near the floor of the First Hall. Every forge-master in every hold reads that Wall. Today one of them sends {them}, ${ctx.who}, home from the forge door. A Wall name passes to heirs for three hundred years, and the master will not take a debt into his forge.`,
       choices: [

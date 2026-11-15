@@ -16,18 +16,18 @@ A.FN_STAGE_ORDER = {
   ],
   'A.eventView': [
     'character-voices', 'world-chronicle', 'choice-memories', 'fight-odds', 'first-life-fixes', 'choice-stakes',
-    'advisors', 'v2-stats', 'v2-family', 'v2-content.lines', 'v2-content.cards', 'journal'
+    'advisors', 'v2-stats', 'v2-family', 'v2-content.lines', 'v2-content.cards', 'households', 'journal'
   ],
   'A.eventChoose': [
     'variety-guard', 'belief-versus-truth', 'learn-by-doing', 'moods', 'body-mind', 'bonds', 'npc-beliefs',
     'choice-memories', 'every-number-counts', 'echo-scenes', 'first-life-fixes.origin', 'first-life-fixes', 'wilds',
-    'confidants', 'identity', 'choice-stakes', 'advisors', 'v2-stats', 'v2-content', 'journal'
+    'confidants', 'identity', 'choice-stakes', 'advisors', 'v2-stats', 'v2-content', 'households', 'journal'
   ],
   'A.newGame': [
     'starting-stories', 'varied-worlds', 'body-mind', 'event-cut', 'mods', 'markets', 'fresh-realms-and-tensions',
     'top-bar', 'visual-style', 'big-moments', 'first-life-fixes.hints', 'first-life-fixes.acts',
     'first-life-fixes.shield', 'hall-of-lives', 'identity.mark', 'companies', 'v2-stats', 'v2-family',
-    'v2-nobility', 'v2-saves', 'one-redraw.fresh', 'journal'
+    'v2-nobility', 'households', 'households.guard', 'v2-saves', 'one-redraw.fresh', 'journal'
   ],
   'UI.render': [
     'npc-initiative', 'accessibility', 'descriptions.relink', 'illuminated-chronicle', 'phone',

@@ -1083,6 +1083,9 @@ UI.personModal = function (t, close) {
   who.push(["Born", `${t.born} AR${t.home != null && A.prov(t.home) ? " in " + A.provName(t.home) : ""}`]);
   who.push(["Realm", A.realmName(t.realm) || "—"]);
   if (t.spouse && A.P(t.spouse)) who.push(["Married to", A.fullName(A.P(t.spouse), false)]);
+  // [C6, D-057] how you met (rel.met, 999991-households); an older entry says since when
+  if (pc.rel[t.id] && A.MEET)
+    who.push(["Known", r.met ? A.MEET.words(r.met) : r.since != null ? "Known since " + r.since + "." : ""]);
   if (t.fame)
     who.push([
       "Renown",

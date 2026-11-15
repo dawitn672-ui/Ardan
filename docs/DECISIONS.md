@@ -882,3 +882,57 @@ add more, and a function did whatever the folder order added up to (P14).
 `UI.eventModal` 10, ...) are still wrappers; staging one is adding it to the manifest and converting its wrappers the same
 way, and the baseline then falls. Load order for everything else is still folder order (P14 is done for the seven only);
 features still find each other through optional globals.
+
+### D-057 · C6: the tree knows your kin, relationships know whom you have met; one resolver for a house; nine months (2026-11-15 ET; owner order 7; CRITIQUE F1-F7, P9)
+**Chosen** (design: `docs/design/households.md`; code `src/family/999991-households`, README there):
+1. **Two stores.** The family tree (`parents`, `children`, `spouse`) keeps every relative the world knows of; `pc.rel` keeps
+   the people the player has met. 99994's three generations stay in the tree (its tests and the kin arcs read the tree), but
+   are not linked at birth: the `A.newGame` stage `households` (after 99994 and 99995) keeps the household and removes the
+   other kin entries with their back links. At birth the player knows the parents, the living siblings and a grandparent only
+   under the same roof (from the family's seed: the father's widowed parent 6 in 10, both his parents 3 in 10, else the
+   mother's widowed parent 4 in 10; at most two); a noble or royal child of a house adds a wet nurse, a maid and a knight of
+   the household guard, and a tutor at six (commoners and a gentry knight, `rel.type` "servant" with `rel.hh` for the word).
+   Measured over 42 births: commoners at most 5, nobles at most 8 (caps 8 and 12); no uncle, aunt, cousin or in-law. The
+   release's linking of a lesser house's members as "uncle" and "cousin" outside the graph (F4) goes with it. The people
+   sweep (`A.gcPeople`) keeps the player's tree to four steps, met or not (the relationships no longer protect it), and drops a
+   child who is gone from its parents' lists (the coherency check "family links agree" rose to 27 in the quick run without it).
+2. **How you met** is on every new entry: `met: { y, at, by }`, written by `A.link` itself (the one place nearly every link
+   goes through), from `A.MEET.as(why)`, the event being played (stages on `A.eventView`/`A.eventChoose`), or the link's
+   type; the three direct writers (`A.marry`, 9999's ring, 999990's grudge) stamp it too. Old entries keep no `met` (gentle:
+   the person view reads "Known since"). Kin not yet met come by a yearly family gathering (a log line, never a card: owner
+   order 17), and by scenes; an older start has had its years of gatherings.
+3. **No kin minted.** `A.KIN.take` gives a relative from the tree (met then) or throws an error marked `noKin`, which drops
+   the card (A.eventView already skips a throwing setup; it now marks `ctx.noKin`, and the event tests read that drop as by
+   design). Edited: pack 15 `known` (and the twin, the grandchild, the knifed cousin, the in-laws through `A.KIN.spouseKin`,
+   the grandmother's name, the poor cousin), pack 11 `kinPid` (with `strangerPid` for the claimants), pack 10's `prepF`
+   (uncle, aunt and cousin by `A.KIN.nameOf`: none leaves the token unfilled and only scenes that name them drop), packs 4,
+   7, 8, 13, 14, the `newRel` effect with a kin word (one of the tree not yet met, or nobody), 50-arcs-kin (no uncle, aunt,
+   cousin or son made: `AK.sibOf` answers null), 40-memory-peoples, -realm-blood, -regional-a. A **story's secret** (the
+   deathbed's half-brother, the brother sold to the galleys, the child you never knew, your father's other family) is
+   written into the tree and flagged `c6revealed`; a **claimant the player recognises** joins the tree as the bastard of a
+   real man of the family (`A.KIN.recognize`, flagged `c6recognized`); an impostor accepted is a friend. A last guard in
+   `A.link` and `applyFx`'s `them.type` turns a kin word for someone outside the tree into "acquaint" and counts it
+   (`A.KIN.strays`). Held by `tools/lint-kin.mjs` (in `tools/check.mjs`) and `c6NoKinMinted`: 12 worlds × 30 years, no stray,
+   no blood relative created after the start but by a birth (one secret a story told). Every event keeps its audience
+   class (`identity-probe`: 5004 events, 0 differ; lives differ, as every C6 change moves the stream).
+4. **One resolver** `A.HOUSE` (in 99994's `c-succession.core.js`, where the law lives): `resolve(hid)` gives head, heir and
+   law; `settle(hid)` gives a house whose head died its court lord, else the dead head's successor by law, through
+   `A.setHead`, so the `house:` posts of `A.POSTS` stay the one record (A2). The release's `A.kill` no longer picks an
+   eldest son when it is on the page (99994's `F.inherit`, the one mover, asks `A.HOUSE.successor`); `A.houseHead`,
+   99995's court and `F.headOf` read it. `c6HouseResolver`: record, registry and resolver agree on every head over five
+   years in three worlds; nine deaths passed to the named heir.
+5. **A parish of seeds.** Each province has 31 seeds (priest, reeve, miller, smith, alewife, midwife, shepherd, twelve
+   neighbours, twelve children born every other year around the world's first) derived from the world's seed and the
+   province; only the ids of those met are stored (`A.S.parish.met`). The person is made on a stream of its own, the same
+   in every world from the seed. `A.makeAcquaintance` asks the parish first for a commoner at home.
+6. **Nine months.** `A.familyYear` keeps its draws for whether a child comes and calls `A.conceive` where it gave birth: a
+   conception on a day of the year, the birth 262 to 280 days later (`A.S.pregs`), drawn on the family's own stream; "Your
+   wife is with child" on the day. lf_childbed ("The birth") fires only in a pregnancy's last weeks and is then the birth (its
+   child now has parents). Measured: births in six different months in four marriages over 12 years.
+**Considered:** not linking the extended kin at all in 99994 and the release (the release's own links in `A.newGame` sit
+inside its definition; a stage that prunes after is one place and leaves 99994's tree tests as they were); cards for a kin
+meeting (owner order 17 says talk waits); full people for the parish (P9: named people only pile up); dropping the
+secret-kin stories (a revealed half-brother is a story's premise, not a contradiction; they are flagged and counted apart).
+**Not done:** the People page's Household block with faces, the tree centred on you with connectors and the person card's
+new order (F8 to F10, interface work); "Make a friend" as "Spend time with" (F6) beyond the parish's faces; a target of
+named people per realm (P9's other half, X5).
