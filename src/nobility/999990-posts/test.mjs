@@ -362,8 +362,12 @@ export default {
       }
       // every old fault at once, in a state with no registry
       const make = () => {
-        T.enter({ seed: 41, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
-        T.play(1);
+        // a living player: the repairs of his grade and seat are for the living (C6/C7's world: seed 41's noble dies in
+        // his first year, and a dead player's grade is nobody's to repair)
+        for (const seed of [41, 43, 47, 53]) {
+          T.enter({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 });
+          if (T.play(1) !== 'dead' && A.pc().alive) break;
+        }
         const pc = A.pc(), r = A.realm('POL-01');
         A.enlist(pc, false); pc.mil.rank = 9;                     // a Marshal's grade in peace, without the seat
         const seats = Object.keys(A.COUNCIL).filter(k => k !== 'marshal');
