@@ -985,3 +985,44 @@ different people than before C7 (the draws changed): worlds are deterministic, n
 **Not done:** the lore's authored people keep their names (the cast, the houses' members, e.g. "Teodoro Lantieri"); N6 (the
 noble ladder against the lore), N7's Marchfolk, N9 (town scale), N10 (a Chaplain of the Horde), the realm pairs that share a word
 (-haven, -deep, -hold), M4's climate bands; the player-facing mixing of dress and faith by origin (C8c).
+
+### D-059 · X3 part 2: a card is held to the life it is dealt to; a fatal illness has a scene (2026-11-15 ET; D-051's "left for later"; CRITIQUE E2, E3, E4, E5, E7, E8, T4)
+**Chosen** (code `src/events/99999-x3-honest-cards` c to g, `tests/suites/x3b.test.mjs`, `tools/lint-cards.mjs`, `tools/lib/card-lint.mjs`):
+1. **One last look at the card** (`f-guard.core.js`, an `A.eventView` stage named `x3-honest-cards`, outermost but for the journal): the finished
+   card is skipped, as a card with an unfilled token is (`viewSkip`), when it breaks a station rule, names the home town while the player
+   stands elsewhere, or is dealt to a child under six whose scene's own condition says no (a `trigger: true` world event skips its condition
+   when queued: "Tend the neighbours yourself" at three). It also takes an absent voice off the counsel. The guard is the net; the
+   weight (`A.evFit`) keeps most of these scenes from being dealt at all (12 worlds x 30 years: of ~2,800 cards the guard dropped
+   a handful), so the draw is not wasted.
+2. **Station words** (E4; `d-station.core.js`). Only words that *address the player* by a station are gated ("your men", "my lord," as
+   an address, "Master <you>", "Captain <you>", "your journeyman", "you are a journeyman"); other people's titles are not. Each rule has a
+   gate over what the code already knows (a noble's rung as 08-ct reads it, `pc.mil.rank`, the company, a post from `UI.scope`, the
+   job's rank). A scene whose own text uses a rule gets no weight for a life that fails it. **Conflict recorded:** a noble of rung 2 or
+   more commands men and holds land in the release's own conditions (`ct_boundary`), so those words are held for him, not only for a
+   knight; the lint (`tools/lint-cards.mjs`) counts the scenes whose condition still admits a life without the station, against
+   `tests/cards-baseline.json` (may only fall).
+3. **Place** (E5; `e-place.core.js`). `A.X3.whereIs`: the road, else the division's ground, else the home. A scene set in the home town
+   ({home}, or the code reads `p.home`, and not news from home) is not dealt while he is away; "Isabella of Aurora" is a name, not a
+   place. A soldier posted a province away is away: his old town's market is not where he stands. Decided: a scene is dropped, not
+   re-pointed at where he is, because "Smoke over {home}" is news of a place he left.
+4. **Counsel** (E7). `A.X3.present`: alive, free, and on the same ground; a prisoner is with prisoners. The advisors' ring is who
+   he trusts, not who is in the room; the card's voices are cut to who is.
+5. **Pronouns** (E8; `tools/lib/card-lint.mjs`). A scene says "he" or "she" in plain words of its `{them}` only where the sex is
+   known: tokens (`{theyHe}`, `{theirHis}`, `{themHim}`) elsewhere. 22 scenes were mended; 20 findings of the lint are not slips and are
+   listed with a reason (`PRONOUN_ALLOW`); a named figure of the lore (`"CHR-0256"`) has the sex the story gave her. `x3Pronouns` also
+   checks the mended scenes are given their person when drawn.
+6. **The preview replay** (E2). Over 400 replayed scenes (eight lives, scene k takes choice k mod n), each choice's preview, as
+   `A.STAKES.read` reads it, is what the choice did. It found three lies: "▲ piety" for a man with no faith (the engine gives him a
+   pull, not piety), "Costs 4 suns" when a physician also took three in a hundred of the purse (2,380 suns from a rich man), and
+   "+150 suns" for "Give it all up and go", which also took the house (`arLose`). Each is said or left off now. **Not previewed, and the
+   replay does not claim them:** what a story's own next step pays (`fx.arc`), a marriage written into the register (`fx.akin`), a
+   skill's knack (`every-number-counts` rides), a treatment's course; a child's purse is the family's.
+7. **A fatal illness is an arc** (T4; `g-illness`). onset (`bm_ill`, as before) -> worsening (once, when the body is under a third:
+   `x3_ill_worse`: physician now, priest, or tell no one) -> the turn of the fever (once, when a month's toll would take the body to
+   nothing: `x3_ill_crisis`: the physician, the priest or the family at the bed, each a check on body and will with a different
+   price) -> the fever breaks or he dies of it, named. The engine's silent mortal roll no longer decides it. Adults only: a child's
+   sickness is the house's, as before. The hook is one call at the end of `A.bmIllMonth` (`A.X3.illAfter`), not a wrapper.
+**Not done:** the place of a *mission* abroad (a mission is not a card; the road and the division are); station words in the
+text a feature builds at run time are caught only by the last look; counsel written into a scene's own text ("your steward
+advises"); the E9 line of filler beyond part 1's quiet lines.
+
