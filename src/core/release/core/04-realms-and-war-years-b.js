@@ -1002,6 +1002,10 @@ A.ACT = {
 };
 
 A.makeAcquaintance = function (pc, kind, child) {
+  // [C6, D-057] a commoner at home meets the parish first (A.PARISH, 999991-households/e-parish.core.js): the same
+  // named neighbours, a child the children of the village; a stranger only when the parish is all met
+  const fromParish = A.PARISH && A.PARISH.acquaint ? A.PARISH.acquaint(pc, kind, child) : null;
+  if (fromParish) return fromParish;
   const age = A.age(pc),
     R2 = GD.RACES[pc.race],
     raceOpts = GD.RACE_LIST.filter(r => A.raceAllowed(r, pc.realm)),
