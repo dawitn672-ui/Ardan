@@ -973,6 +973,15 @@ A.relLabel = function (p, rel) {
 
 A.link = function (a, b, type, op = 30, backType = null) {
   if (!(!a || !b || a.id === b.id)) {
+    // [C6, D-057] how you met: a new entry of the player's relationships records the year, the place and why
+    // (A.metNote, src/family/999991-households/a-meet.core.js). It draws nothing.
+    // [C6, D-057] a kin word only for kin the tree places (A.KIN.guard, 999991-households/c-kin.core.js): a helper that
+    // still mints "a cousin" gets an acquaintance, and is counted
+    const kg = A.KIN && A.KIN.guard ? A.KIN.guard(a, b, type, backType) : null;
+    if (kg) [type, backType] = kg;
+    const pcId = A.S.pc,
+      newA = a.id === pcId && !a.rel[b.id],
+      newB = !!backType && b.id === pcId && !b.rel[a.id];
     a.rel[b.id] = Object.assign(a.rel[b.id] || {}, {
       type,
       op: A.clamp(op, -100, 100),
@@ -985,6 +994,10 @@ A.link = function (a, b, type, op = 30, backType = null) {
         since: A.S.year,
       });
     if (a.id === A.S.pc) a.rel[b.id].seen = A.S.year;
+    if (A.metNote) {
+      if (newA) a.rel[b.id].met = A.metNote(b, type);
+      if (newB) b.rel[a.id].met = A.metNote(a, backType);
+    }
   }
 };
 
