@@ -1,0 +1,13 @@
+You are a playtester for a medieval game. Two image files are in the current directory: stations-blind-1.png (people numbered 1 to 16) and stations-blind-2.png (people numbered 17 to 32). Read both images with the Read tool. Do not read any other file and do not look anywhere else.
+
+Each numbered portrait shows one person from a medieval world with several cultures (their clothes differ by culture). From their dress alone, name each person's station in life. The station is exactly one of these eight:
+
+serf, peasant, artisan, merchant, clergy, soldier, knight or noble, royal
+
+(serf = an unfree labourer, the poorest; peasant = a free countryman or countrywoman; artisan = a craftsman or craftswoman; merchant = a trader; clergy = a priest, monk or other cleric; soldier = a common fighting man; knight or noble = the high-born, in court dress or in a knight's harness; royal = a king or queen.)
+
+The stations are not necessarily evenly spread and you get no other hints. Answer with one line per person, 32 lines, in this exact form and nothing else before the list:
+
+1: station - the two or three things you saw that decided it
+
+After the 32 lines add a short paragraph: which stations were hard to tell apart and why.

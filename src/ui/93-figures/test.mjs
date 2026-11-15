@@ -310,5 +310,170 @@ export default {
     });
     const ok = r.n >= 6 && r.got.every(g => g.want && g.stored === g.want && g.drawn === g.want.toLowerCase()) && r.errors === 0;
     return { ok, detail: `${r.n} skin swatches in the maker; ${r.got.map(g => `picked ${g.want}, stored ${g.stored}, drawn ${g.drawn}`).join('; ')}; faults ${r.errors}` };
+  },  // ---- C8c: dress, class and regalia (D-060) ----------------------------------------------------------------------
+  // station shows in dress: 8 stations in the four cuts, six people of each; a reader that knows only the garments (no
+  // sheet, no label) names the station of at least 85 in 100 (the blind reading by an agent is docs/design/demo-2d/c8c)
+  async fgDressStations(pg) {
+    const r = await pg.evaluate(MAKE).then(() => pg.evaluate(() => {
+      A.newGame({ seed: 9320, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const realm = Object.keys(A.S.realms)[0], house = Object.values(A.S.houses || {}).find(h => h.colors && h.charge);
+      const ST = { serf: { status: 'serf' }, peasant: { status: 'peasant', job: { c: 'farm', r: 0 } }, artisan: { status: 'artisan', job: { c: 'smith', r: 1 } }, merchant: { status: 'merchant', job: { c: 'merchant', r: 1 } }, clergy: { status: 'peasant', job: { c: 'clergy', r: 1 } },
+        soldier: { status: 'peasant', mil: { rank: 0, troop: 'SP', realm }, gear: { armor: 'padded', weapon: 'spear', helm: 'kettle' } }, noble: { status: 'noble', house: house && house.id }, royal: { status: 'royal', ruler: realm } };
+      // the reader: what the garments alone say
+      const read = L => {
+        const has = k => L.gear.some(g => g.id === k), t = L.gear.filter(g => g.id === 'tunic'), main = t[0] || {}, hw = L.headwear;
+        if (hw === 'crown') return 'royal';
+        if (has('amulet') && L.gear.some(g => g.id === 'belt' && g.rope)) return 'clergy';
+        if (has('padding') || has('mail') || has('breastplate') || has('pauldrons') || ['kettle', 'nasal', 'mailcoif', 'armingcap'].includes(hw)) return has('breastplate') && has('tabard') && L.gear.find(g => g.id === 'tabard').device ? 'noble' : 'soldier';
+        const gold = L.gear.some(g => g.metal === 'gold' || g.trim === 'gold' || g.knot === 'gold' || g.clasp === 'gold') || main.trim === 'mustard';
+        if (gold) return 'noble';
+        if (L.gear.some(g => g.id === 'pouch' && g.keys)) return 'merchant';
+        if (has('apron') && has('tool') || has('tool') && !has('brooch')) return 'artisan';
+        if (L.gear.some(g => g.id === 'belt' && g.rope) && (main.patch || main.wave)) return 'serf';
+        return has('apron') ? 'artisan' : 'peasant';
+      };
+      const rows = {}; let right = 0, n = 0; const wrong = [];
+      for (const cult of ['CUL-02', 'CUL-04', 'CUL-03', 'CUL-08']) for (const st of Object.keys(ST)) for (let k = 0; k < 6; k++) {
+        const p = FGT.mk(Object.assign({ tag: 'st' + cult + st + k, cult, sex: st === 'soldier' || k % 2 === 0 ? 'M' : 'F', age: 24 + k * 5 }, ST[st])), L = UI.FIG.look(p, 'tall'), got = read(L);
+        n++; rows[st] = rows[st] || [0, 0]; rows[st][1]++;
+        if (got === st) { right++; rows[st][0]++; } else if (wrong.length < 8) wrong.push(`${cult} ${st} ${k} read as ${got}`);
+        if (!UI.FIG.inline(p, 176)) wrong.push('no picture ' + p.id);
+      }
+      const cuts = ['CUL-02', 'CUL-04', 'CUL-03', 'CUL-08'].map(c => UI.FIG.look(FGT.mk({ tag: 'cut' + c, cult: c }), 'tall').cut);
+      return { right, n, rows, wrong, cuts, errors: UI.FIG.errors };
+    }));
+    const share = r.right / r.n, ok = share >= .85 && Object.values(r.rows).every(x => x[0] / x[1] >= .6) && r.cuts.join() === 'tunic,robe,kaftan,drape' && r.errors === 0;
+    return { ok, detail: `${r.right} of ${r.n} people named by their garments alone (${Math.round(share * 100)} in 100; floor 85): ${Object.entries(r.rows).map(([k, v]) => k + ' ' + v[0] + '/' + v[1]).join(', ')}; the four cuts ${r.cuts.join(', ')}; ${r.wrong.length ? 'misread: ' + r.wrong.join('; ') : 'none misread'}; faults ${r.errors}` };
+  },
+
+  // a soldier's bust shows that he is one, at every rank, at list size, the player included (whose helm is off); the
+  // rank and file of one realm share its coat; a captain wears the sash of command
+  async fgSoldierBust(pg) {
+    const r = await pg.evaluate(MAKE).then(() => pg.evaluate(() => {
+      A.newGame({ seed: 9321, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const realm = Object.keys(A.S.realms)[0], bad = [], coats = new Set(); let n = 0, helms = 0, sash = 0;
+      // what shows above the breast in a bust: a helm, a coif of mail or an arming cap; a mail collar; plate at the throat and shoulders; a quilted collar
+      const marks = L => ['kettle', 'nasal', 'bascinet', 'mailcoif', 'armingcap'].includes(L.headwear) || L.gear.some(g => ['mailcollar', 'gorget', 'pauldrons'].includes(g.id) || (g.id === 'padding' && g.quilt > 1));
+      const troops = Object.keys(GD.TROOP_GEAR);
+      for (let rank = 0; rank <= 9; rank++) for (let k = 0; k < troops.length; k++) {
+        const troop = troops[k], tg = GD.TROOP_GEAR[troop];
+        for (const issued of [true, false]) {
+          const p = FGT.mk({ tag: 'sol' + rank + troop + issued, age: 22 + k, mil: { rank, troop, realm }, gear: issued ? { weapon: tg[0] || 'fists', armor: tg[1] || 'none', shield: tg[2] || null, helm: tg[3] || null, ranged: tg[4] || null } : {} });
+          const L = UI.FIG.look(p, 'list'); n++;
+          if (!marks(L)) bad.push(`rank ${rank} ${troop}${issued ? '' : ' (no gear of his own)'}`);
+          if (['kettle', 'nasal', 'mailcoif', 'armingcap'].includes(L.headwear)) helms++;
+          const tab = L.gear.find(g => g.id === 'tabard'); if (tab && rank < 4) coats.add([tab.field, tab.pale, tab.plain || 0, tab.party || 0].join());
+          if (rank >= 4 && L.gear.some(g => g.id === 'sash')) sash++;
+          const s = UI.FIG.inline(p, 88, { bust: true }); if (!s || /NaN|undefined/.test(s)) bad.push('picture ' + p.id);
+        }
+      }
+      // the player as a soldier: bare-headed, still a soldier
+      A.pc().mil = { rank: 0, troop: 'SP', realm }; A.pc().gear = Object.assign(A.pc().gear || {}, { armor: 'padded', weapon: 'spear', helm: 'kettle' });
+      const me = UI.FIG.look(A.pc(), 'list');
+      return { n, bad, helms, coats: coats.size, sash, pcBare: me.headwear === 'none', pcMarks: marks(me), errors: UI.FIG.errors };
+    }));
+    const ok = !r.bad.length && r.coats === 1 && r.sash > 0 && r.helms > r.n * .25 && r.pcBare && r.pcMarks && r.errors === 0;
+    return { ok, detail: `${r.n} soldiers of ten ranks and every troop, in their issue and with nothing of their own: ${r.bad.length ? 'NOT SHOWN ' + r.bad.slice(0, 6).join('; ') : 'every bust shows the soldier'}; ${r.helms} in a helm, coif or arming cap; the rank and file of one realm wear ${r.coats} coat; ${r.sash} captains and above in the sash of command; the player bare-headed ${r.pcBare} and still marked ${r.pcMarks}; faults ${r.errors}` };
+  },
+
+  // only liveried retainers share a garment: in three worlds no two people outside a livery wear the same clothes, the
+  // members of one noble house are not in one colour, and a lord's guard knight and maid do wear his colours
+  async fgLivery(pg) {
+    const r = await pg.evaluate(() => {
+      const out = { worlds: [], errors: 0 };
+      for (const seed of [9322, 9323, 9324]) {
+        A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 12 });
+        const ppl = Object.values(A.S.people).filter(p => p.app && p.alive && A.age(p) >= 15).slice(0, 400), seen = new Map(); let dup = 0, liv = 0; const ex = [];
+        for (const p of ppl) {
+          const L = UI.FIG.look(p, 'list');
+          if (L.livery) { liv++; continue; }
+          const k = JSON.stringify(L.gear.filter(g => !['sword', 'dagger', 'shield', 'bow', 'quiver', 'crossbow', 'sidearm', 'staff'].includes(g.id)));
+          if (seen.has(k)) { dup++; if (ex.length < 3) ex.push(A.fullName(p) + ' = ' + seen.get(k)); } else seen.set(k, A.fullName(p));
+        }
+        // a house in one colour was a row of clones (CRITIQUE V9): the main garments of a house's adults
+        let houseSame = 0, houses = 0;
+        const byHouse = {}; for (const p of ppl) if (p.house) (byHouse[p.house] = byHouse[p.house] || []).push(p);
+        for (const h in byHouse) { const m = byHouse[h]; if (m.length < 3) continue; houses++; const dyes = new Set(m.map(p => { const L = UI.FIG.look(p, 'list'), t = L.gear.filter(g => g.id === 'tunic' || g.id === 'wrapcloth').pop(); return t ? t.dye : ''; })); if (dyes.size === 1) houseSame++; }
+        // the household's retainers
+        const st = (A.S.household && A.S.household.staff) || {}, guard = st.guard && A.P(st.guard), maid = st.maid && A.P(st.maid), arms = PORTRAIT.arms(A.pc());
+        const gl = guard ? UI.FIG.look(guard, 'tall') : null, ml = maid ? UI.FIG.look(maid, 'tall') : null;
+        const tab = gl && gl.gear.find(g => g.id === 'tabard'), mt = ml && ml.gear.find(g => g.id === 'tunic');
+        out.worlds.push({ seed, n: ppl.length, dup, ex, liv, houses, houseSame, guard: !!guard, maid: !!maid, guardCoat: !!(tab && arms.h && tab.field === arms.f.toLowerCase()), maidCoat: !!(mt && arms.h && mt.dye === arms.f.toLowerCase() && ml.gear.some(g => g.id === 'badge')), guardLivery: !!(gl && gl.livery) });
+      }
+      out.errors = UI.FIG.errors;
+      return out;
+    });
+    const ok = r.worlds.every(w => w.dup === 0 && w.houseSame === 0 && (!w.guard || (w.guardCoat && w.guardLivery)) && (!w.maid || w.maidCoat)) && r.worlds.some(w => w.guard && w.maid) && r.errors === 0;
+    return { ok, detail: r.worlds.map(w => `seed ${w.seed}: ${w.n} adults, ${w.dup} outside a livery dressed alike${w.ex.length ? ' (' + w.ex.join('; ') + ')' : ''}, ${w.liv} in a livery; ${w.houseSame} of ${w.houses} houses all in one colour; the guard knight in the house's coat ${w.guardCoat}, the maid ${w.maidCoat}`).join(' | ') + `; faults ${r.errors}` };
+  },
+
+  // hoods: never raised in a list, on at most 10 in 100 of indoor portraits (none: a hood is for the road), and the rule
+  // is alive (out of doors on the road some northern commoners do raise one)
+  async fgHoods(pg) {
+    const r = await pg.evaluate(MAKE).then(() => pg.evaluate(() => {
+      A.newGame({ seed: 9325, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
+      const ppl = Object.values(A.S.people).filter(p => p.app && p.alive && A.age(p) >= 12).slice(0, 500);
+      const count = kind => ppl.filter(p => UI.FIG.look(p, kind).headwear === 'hood').length;
+      const list = count('list') + count('chip'), indoor = count('tall') + count('square'), back = ppl.filter(p => UI.FIG.look(p, 'tall').gear.some(g => g.id === 'hood') && !(p.job && p.job.c === 'clergy')).length;
+      const hidden = ppl.filter(p => ['hood', 'bascinet'].includes(UI.FIG.look(p, 'list').headwear)).length;
+      // on the road, out of doors
+      const keep = UI.FIG.ev; UI.FIG.ev = { type: 'event', ev: '__none', ctx: { scene: 'road' } };
+      let road = 0, roadWear = 0;
+      try { for (const p of ppl) { const L = UI.FIG.look(p, 'list'); if (L.headwear === 'hood') road++; if (L.wear === 'travel') roadWear++; } } finally { UI.FIG.ev = keep; }
+      // a markup check on a person in a hood, and the picture itself
+      const pic = (() => { UI.FIG.ev = { type: 'event', ev: '__none', ctx: { scene: 'road' } }; try { const p = ppl.find(q => UI.FIG.look(q, 'list').headwear === 'hood'); return p ? UI.FIG.inline(p, 88, { bust: true }).length : 0; } finally { UI.FIG.ev = keep; } })();
+      return { n: ppl.length, list, indoor, back, hidden, road, roadWear, pic, errors: UI.FIG.errors };
+    }));
+    const ok = r.list === 0 && r.indoor <= r.n * 2 * .1 && r.back <= r.n * .1 && r.road > 0 && r.road < r.n * .5 && r.roadWear === r.n && r.pic > 1000 && r.errors === 0;
+    return { ok, detail: `${r.n} people of a world: ${r.list} raised hoods at list and chip size (must be 0); ${r.indoor} in ${r.n * 2} indoor portraits (at most 10 in 100); ${r.back} wear a hood thrown back on the shoulders (it hides nothing; at most 10 in 100, the clergy's cowl apart); ${r.hidden} faces in a list under a hood or a closed helm; on the road out of doors ${r.road} raise one (the rule is alive) and all ${r.roadWear} dress for the road; faults ${r.errors}` };
+  },
+
+  // changeable outfits: the player picks an occasion and a dye on the Profile; the choice is kept on the person, drawn,
+  // journalled and replayed; a save without it loads and dresses "as the day asks"; nothing but the picture changes
+  async fgOutfits(pg) {
+    const r = await pg.evaluate(() => {
+      A.newGame({ seed: 9326, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 25 });
+      UI.screen = 'game'; UI.set.hints = false; A.S.queue = []; UI.ov = null; UI.tab = 'profile'; if (UI.PF) UI.PF.tab = 'gear'; UI.render();
+      const pc = A.pc(), FG = UI.FIG, out = { errors: 0 };
+      out.bar = !!document.querySelector('.fg-dress button[data-a=fgDressOpen]'); out.absent = pc.dress === undefined;
+      const gearOf = () => JSON.stringify(FG.look(pc, 'tall').gear), base = gearOf(), baseWear = FG.look(pc, 'tall').wear;
+      const stateBefore = JSON.stringify(Object.assign({}, pc, { dress: null })), rng = A.rngState;
+      document.querySelector('.fg-dress button[data-a=fgDressOpen]').click();
+      out.choices = [...document.querySelectorAll('.fg-dress button[data-a=fgWear]')].map(b => b.dataset.v); out.dyes = document.querySelectorAll('.fg-dress button[data-a=fgDye]').length;
+      const looks = {};
+      for (const w of FG.wearChoices(pc).filter(Boolean)) { document.querySelector(`.fg-dress button[data-a=fgWear][data-v="${w}"]`).click(); looks[w] = gearOf(); if (pc.dress.w !== w || FG.look(pc, 'tall').wear !== w) out.errors++; }
+      out.distinct = new Set(Object.values(looks)).size; out.wears = Object.keys(looks).length;
+      // a dye
+      const dye = FG.dyeChoices(pc)[2]; document.querySelector(`.fg-dress button[data-a=fgDye][data-v="${dye}"]`).click();
+      A.setDress('best', undefined);
+      const L = FG.look(pc, 'tall'); out.dyed = L.gear.some(g => g.id === 'tunic' && g.dye === dye); out.stored = JSON.stringify(pc.dress) === JSON.stringify({ w: 'best', d: dye });
+      out.pressed = document.querySelectorAll('.fg-dress button[aria-pressed=true]').length;
+      // nothing else moved: the person but for dress, and the dice
+      out.pure = JSON.stringify(Object.assign({}, pc, { dress: null })) === stateBefore && A.rngState === rng;
+      // bad values are refused; clearing removes the field
+      A.setDress('<b>', '"><i>'); out.refused = JSON.stringify(pc.dress) === JSON.stringify({ w: 'best', d: dye });
+      pc.gear.armor = 'none'; pc.mil = null; out.noArms = !FG.wearChoices(pc).includes('arms'); A.setDress('arms'); out.noArms = out.noArms && pc.dress.w === 'best';
+      // a save keeps it; a save without it loads
+      const txt = A.serialize(), sv = typeof txt === 'string' ? JSON.parse(txt) : txt; A.setDress('', ''); out.cleared = pc.dress === undefined; out.back = gearOf() !== looks.best;
+      const kept = Object.values((sv.S || sv).people || {}).find(p => p && p.id === pc.id); out.loaded = !!kept && JSON.stringify(kept.dress) === JSON.stringify({ w: 'best', d: dye });
+      // a stored value a save could carry that the game never wrote
+      A.pc().dress = { w: 'crown"><script>', d: 7 }; UI.render(); const s = FG.inline(A.pc(), 176); out.hostile = !!s && !/script/.test(s) && FG.look(A.pc(), 'tall').wear === 'day' && !/script/.test(document.querySelector('.fg-dress').innerHTML);
+      delete A.pc().dress;
+      out.journal = Array.isArray(A.COMMANDS) && A.COMMANDS.includes('setDress') && !!(A.J && A.J.e.some(e => e[0] === 'setDress'));
+      out.errors += FG.errors;
+      return out;
+    });
+    if (!fs.existsSync(OLD_SAVE)) return { ok: true, skip: 'tests/saves/v2-cycle2-1106.ardan is not here' };
+    const old = await pg.evaluate(async b64 => {
+      try {
+        const bin = atob(b64), bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const d = await SAVES.decode(bytes); UI.enterSaveSafe(d);
+      } catch (e) { return { err: String(e) }; }
+      const pc = A.pc(); UI.screen = 'game'; A.S.queue = []; UI.ov = null; UI.tab = 'profile'; if (UI.PF) UI.PF.tab = 'gear'; UI.render();
+      return { loaded: !!pc, dress: pc.dress === undefined, wear: UI.FIG.look(pc, 'tall').wear, pic: UI.FIG.inline(pc, 176).length, bar: !!document.querySelector('.fg-dress'), errors: UI.FIG.errors };
+    }, fs.readFileSync(OLD_SAVE).toString('base64'));
+    const ok = r.bar && r.absent && r.wears >= 5 && r.distinct >= 4 && r.dyes >= 4 && r.dyed && r.stored && r.pure && r.refused && r.noArms && r.cleared && r.back && r.loaded && r.hostile && r.journal && r.pressed === 2 && r.errors === 0
+      && old.loaded && old.dress && old.wear === 'day' && old.pic > 2000 && old.errors === 0;
+    return { ok, detail: `the Dress control is on the Profile's Gear panel ${r.bar}; a new life stores no dress ${r.absent}; ${r.wears} occasions offered (${r.choices.join(', ') || 'none'}), ${r.distinct} of them drawn differently; ${r.dyes - 1} dyes of the station; the dye is worn ${r.dyed} and kept ${r.stored}; nothing else on the person and no dice moved ${r.pure}; bad values refused ${r.refused}; "under arms" needs armour ${r.noArms}; cleared ${r.cleared}; kept by a save ${r.loaded}; a hostile stored value is drawn as everyday dress ${r.hostile}; journalled ${r.journal}; an older save (${path.basename(OLD_SAVE)}) loads with no dress ${old.dress}, dressed for the "${old.wear}", drawn (${old.pic} bytes), faults ${old.errors}${old.err ? ' ' + old.err : ''}` };
   },
 };

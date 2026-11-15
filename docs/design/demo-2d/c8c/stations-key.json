@@ -1,194 +1,194 @@
 [
  {
   "n": 1,
-  "station": "royal",
-  "people": "Wind Riders",
+  "station": "knight or noble",
+  "people": "Zanari",
   "sex": "M"
  },
  {
   "n": 2,
-  "station": "royal",
-  "people": "Qadiri",
+  "station": "clergy",
+  "people": "Wind Riders",
   "sex": "M"
  },
  {
   "n": 3,
-  "station": "merchant",
-  "people": "Northfolk",
+  "station": "clergy",
+  "people": "Qadiri",
   "sex": "M"
  },
  {
   "n": 4,
-  "station": "knight or noble",
-  "people": "Northfolk",
-  "sex": "M"
- },
- {
-  "n": 5,
-  "station": "royal",
-  "people": "Northfolk",
-  "sex": "F"
- },
- {
-  "n": 6,
-  "station": "knight or noble",
-  "people": "Zanari",
-  "sex": "M"
- },
- {
-  "n": 7,
-  "station": "soldier",
-  "people": "Zanari",
-  "sex": "M"
- },
- {
-  "n": 8,
-  "station": "peasant",
-  "people": "Qadiri",
-  "sex": "M"
- },
- {
-  "n": 9,
-  "station": "soldier",
-  "people": "Qadiri",
-  "sex": "M"
- },
- {
-  "n": 10,
-  "station": "peasant",
-  "people": "Zanari",
-  "sex": "F"
- },
- {
-  "n": 11,
-  "station": "knight or noble",
-  "people": "Wind Riders",
-  "sex": "F"
- },
- {
-  "n": 12,
-  "station": "knight or noble",
-  "people": "Qadiri",
-  "sex": "F"
- },
- {
-  "n": 13,
-  "station": "peasant",
-  "people": "Wind Riders",
-  "sex": "F"
- },
- {
-  "n": 14,
-  "station": "soldier",
-  "people": "Northfolk",
-  "sex": "M"
- },
- {
-  "n": 15,
-  "station": "artisan",
-  "people": "Wind Riders",
-  "sex": "F"
- },
- {
-  "n": 16,
   "station": "merchant",
   "people": "Wind Riders",
   "sex": "F"
  },
  {
+  "n": 5,
+  "station": "peasant",
+  "people": "Zanari",
+  "sex": "F"
+ },
+ {
+  "n": 6,
+  "station": "merchant",
+  "people": "Northfolk",
+  "sex": "M"
+ },
+ {
+  "n": 7,
+  "station": "artisan",
+  "people": "Northfolk",
+  "sex": "M"
+ },
+ {
+  "n": 8,
+  "station": "soldier",
+  "people": "Northfolk",
+  "sex": "M"
+ },
+ {
+  "n": 9,
+  "station": "peasant",
+  "people": "Wind Riders",
+  "sex": "M"
+ },
+ {
+  "n": 10,
+  "station": "serf",
+  "people": "Wind Riders",
+  "sex": "F"
+ },
+ {
+  "n": 11,
+  "station": "merchant",
+  "people": "Qadiri",
+  "sex": "M"
+ },
+ {
+  "n": 12,
+  "station": "soldier",
+  "people": "Wind Riders",
+  "sex": "M"
+ },
+ {
+  "n": 13,
+  "station": "soldier",
+  "people": "Zanari",
+  "sex": "M"
+ },
+ {
+  "n": 14,
+  "station": "knight or noble",
+  "people": "Qadiri",
+  "sex": "M"
+ },
+ {
+  "n": 15,
+  "station": "royal",
+  "people": "Northfolk",
+  "sex": "M"
+ },
+ {
+  "n": 16,
+  "station": "royal",
+  "people": "Zanari",
+  "sex": "M"
+ },
+ {
   "n": 17,
+  "station": "royal",
+  "people": "Wind Riders",
+  "sex": "M"
+ },
+ {
+  "n": 18,
   "station": "serf",
   "people": "Zanari",
   "sex": "F"
  },
  {
-  "n": 18,
-  "station": "clergy",
-  "people": "Wind Riders",
-  "sex": "M"
- },
- {
   "n": 19,
-  "station": "clergy",
-  "people": "Zanari",
+  "station": "serf",
+  "people": "Qadiri",
   "sex": "F"
  },
  {
   "n": 20,
-  "station": "soldier",
-  "people": "Wind Riders",
-  "sex": "M"
+  "station": "clergy",
+  "people": "Northfolk",
+  "sex": "F"
  },
  {
   "n": 21,
   "station": "serf",
   "people": "Northfolk",
-  "sex": "M"
+  "sex": "F"
  },
  {
   "n": 22,
-  "station": "artisan",
-  "people": "Northfolk",
-  "sex": "F"
+  "station": "royal",
+  "people": "Qadiri",
+  "sex": "M"
  },
  {
   "n": 23,
-  "station": "serf",
+  "station": "artisan",
   "people": "Wind Riders",
-  "sex": "F"
+  "sex": "M"
  },
  {
   "n": 24,
-  "station": "merchant",
+  "station": "peasant",
   "people": "Qadiri",
   "sex": "M"
  },
  {
   "n": 25,
-  "station": "serf",
-  "people": "Qadiri",
-  "sex": "F"
+  "station": "knight or noble",
+  "people": "Wind Riders",
+  "sex": "M"
  },
  {
   "n": 26,
-  "station": "clergy",
-  "people": "Northfolk",
+  "station": "artisan",
+  "people": "Qadiri",
   "sex": "M"
  },
  {
   "n": 27,
-  "station": "royal",
-  "people": "Zanari",
-  "sex": "M"
+  "station": "knight or noble",
+  "people": "Northfolk",
+  "sex": "F"
  },
  {
   "n": 28,
   "station": "artisan",
   "people": "Zanari",
-  "sex": "M"
+  "sex": "F"
  },
  {
   "n": 29,
   "station": "peasant",
   "people": "Northfolk",
-  "sex": "M"
+  "sex": "F"
  },
  {
   "n": 30,
-  "station": "artisan",
-  "people": "Qadiri",
+  "station": "merchant",
+  "people": "Zanari",
   "sex": "M"
  },
  {
   "n": 31,
-  "station": "clergy",
+  "station": "soldier",
   "people": "Qadiri",
   "sex": "M"
  },
  {
   "n": 32,
-  "station": "merchant",
+  "station": "clergy",
   "people": "Zanari",
-  "sex": "F"
+  "sex": "M"
  }
 ]

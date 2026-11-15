@@ -4,7 +4,7 @@
 //   node docs/design/demo-2d/c8c/sheet.mjs --seed=k   another cast (the default cast is the one the blind test read)
 // Sheets:
 //   stations.png        8 stations x 4 peoples, labelled (the class sheet of CRITIQUE V2)
-//   stations-blind.png  the same 32 people, shuffled, numbered, no labels: what the blind reader is shown
+//   stations-blind-1.png, -2.png  the same 32 people, shuffled, numbered, no labels, in two halves: what the blind reader was handed
 //   stations-key.json   the answer key of the blind sheet
 //   soldiers.png        the ranks of an army, as busts at list size and as profile cards (V7)
 //   occasions.png       one person of each station in each outfit (day, best, work, travel, arms, mourning)
@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url)), root = path.resolve(here, '../../../..');
 const L = await import(path.join(root, 'src/ui/engine/figure/index.js'));
 const arg = k => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : null; };
-const SEED = arg('seed') || 'c8c', KEEP = process.argv.includes('--keep');
+const SEED = arg('seed') || 'c8c-3', KEEP = process.argv.includes('--keep');
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 export const STATIONS = ['serf', 'peasant', 'artisan', 'merchant', 'clergy', 'soldier', 'knight or noble', 'royal'];
@@ -61,6 +61,8 @@ const out = {};
   // the blind sheet: the same people in a shuffled order, numbered
   const r = rnd('shuffle'), order = cast.map((c, i) => [r(), i]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
   out['stations-blind'] = page('Thirty-two people', order.map((i, n) => `<div class="c">${draw(cast[i].sh)}<i>${n + 1}</i></div>`).join(''), 8, 200);
+  // the same sheet in two halves at a larger size, so a reader that is handed a reduced image still sees the garments
+  for (const h of [0, 1]) out['stations-blind-' + (h + 1)] = page('People ' + (h * 16 + 1) + ' to ' + (h * 16 + 16), order.slice(h * 16, h * 16 + 16).map((i, n) => `<div class="c">${draw(cast[i].sh, 300)}<i>${h * 16 + n + 1}</i></div>`).join(''), 8, 300);
   out.key = order.map((i, n) => ({ n: n + 1, station: cast[i].st, people: L.cultureOf(cast[i].cid).name, sex: cast[i].sh.sex }));
 }
 // ---- the ranks of an army: busts at list size (88 px), then cards
@@ -103,9 +105,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const { chromium } = require('playwright');
   const browser = await chromium.launch();
   fs.writeFileSync(path.join(here, 'stations-key.json'), JSON.stringify(out.key, null, 1) + '\n');
-  for (const name of ['stations', 'stations-blind', 'soldiers', 'occasions', 'peoples']) {
+  for (const name of ['stations', 'stations-blind-1', 'stations-blind-2', 'soldiers', 'occasions', 'peoples']) {
     const html = path.join(here, name + '.html'); fs.writeFileSync(html, out[name]);
-    const pg = await browser.newPage({ viewport: { width: name === 'occasions' ? 1280 : name === 'peoples' ? 1300 : 1700, height: 900 }, deviceScaleFactor: name === 'peoples' ? 1 : 1.5 });
+    const pg = await browser.newPage({ viewport: { width: name === 'occasions' ? 1280 : name === 'peoples' ? 1300 : name.startsWith('stations-blind-') ? 2500 : 1700, height: 900 }, deviceScaleFactor: 1 });
     await pg.goto('file://' + html); await pg.waitForTimeout(200);
     await pg.screenshot({ path: path.join(here, name + '.png'), fullPage: true }); await pg.close();
     if (!KEEP) fs.unlinkSync(html);

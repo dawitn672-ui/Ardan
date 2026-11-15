@@ -6447,6 +6447,16 @@ var __ARDAN_V2_MAKE = (() => {
       S.within(body, () => {
         tone(S, body, m, [F.ax[0][0] - e, F.y.chest], [F.ax[1][0] + e, F.y.chest]);
         if (o.mail) S.fill(body, mailPat(S));
+        if (o.patch) {
+          const p = [F.cxS + F.chestHalf * 0.28, lerp2(F.pit[1], F.y.chest, 0.7)], pm = cloth(o.patch), z = F.chestHalf * 0.3;
+          S.both(polyline([p, add(p, [z, z * 0.1]), add(p, [z * 0.92, z * 1.1]), add(p, [-z * 0.08, z])], true), pm.b, m.k, 0.8);
+          S.stroke(polyline([add(p, [z * 0.1, z * 0.14]), add(p, [z * 0.86, z * 0.22]), add(p, [z * 0.8, z * 0.96]), add(p, [z * 0.04, z * 0.86])], true), pm.k, 0.7, { dash: "3 3", op: 0.7 });
+        }
+        if (o.patch2) {
+          const p = add(onSh(F, 0, 0.7), [F.chestHalf * 0.1, F.Hh * 0.16]), pm = cloth(o.patch2), z = F.chestHalf * 0.24;
+          S.both(polyline([p, add(p, [z, -z * 0.12]), add(p, [z * 1.06, z * 0.8]), add(p, [z * 0.1, z * 0.9])], true), pm.b, m.k, 0.8);
+          S.stroke(polyline([add(p, [z * 0.12, z * 0.1]), add(p, [z * 0.9, 0]), add(p, [z * 0.94, z * 0.7]), add(p, [z * 0.2, z * 0.78])], true), pm.k, 0.7, { dash: "3 3", op: 0.7 });
+        }
         if (o.stripes) {
           const sm = cloth(o.stripes), w = F.chestHalf * 2.7;
           for (let k = 0; k < 7; k++) {
@@ -8140,7 +8150,7 @@ var __ARDAN_V2_MAKE = (() => {
     black: 3,
     purple: 4
   };
-  var PLAIN = /* @__PURE__ */ new Set(["undyed", "hemp", "linen", "white", "cream", "black", "charcoal"]);
+  var PLAIN = /* @__PURE__ */ new Set(["linen", "white", "black", "charcoal"]);
   var GRADE = { slave: 0, prisoner: 0, serf: 0, peasant: 1, artisan: 2, merchant: 3, gentry: 4, noble: 5, royal: 6, priest: 2 };
   var CLASS = ["poor", "peasant", "artisan", "merchant", "gentry", "noble", "noble"];
   var HEXOK = /^#[0-9a-fA-F]{6}$/;
@@ -8155,6 +8165,12 @@ var __ARDAN_V2_MAKE = (() => {
     return h >>> 0;
   };
   var T = (o) => ({ id: "tunic", ...o });
+  var hash2 = (s) => {
+    let h = 5381;
+    s = String(s);
+    for (let i = 0; i < s.length; i++) h = Math.imul(h, 33) + s.charCodeAt(i) * (i + 7) | 0;
+    return (h >>> 0).toString(36);
+  };
   var WEARS = ["day", "best", "work", "travel", "arms", "mourning"];
   function dyesFor(estate, cult) {
     const g2 = GRADE[estate] ?? 1, tier = [0, 1, 2, 3, 3, 4, 4][g2], seen = /* @__PURE__ */ new Set(), out = [];
@@ -8169,7 +8185,7 @@ var __ARDAN_V2_MAKE = (() => {
     return { style: ["pale", "plain", "party"][h % 3], pale: ["ochre", "cream", "white", "charcoal"][(h >>> 3) % 4] };
   }
   function kit(sh, o) {
-    const { male, age, id } = o, r = stream(id, "kit"), pick = (a) => a[Math.floor(r() * a.length) % a.length], ch = (p) => r() < p;
+    const { male, age } = o, id = o.id + "~" + hash2(o.id), r = stream(id, "kit"), pick = (a) => a[Math.floor(r() * a.length) % a.length], ch = (p) => r() < p;
     const est = sh.estate || "peasant", C = sh.colors || {}, cult = sh.cult || {}, G = sh.gear || {};
     const cut = CUTS.includes(cult.cut) ? cult.cut : "tunic";
     const wear = WEARS.includes(sh.wear) ? sh.wear : "day", where = sh.where === "list" || sh.where === "out" ? sh.where : "in";
@@ -8196,7 +8212,7 @@ var __ARDAN_V2_MAKE = (() => {
     const second = mourn ? main === "charcoal" ? "walnut" : "charcoal" : s0 === main ? s1 : s0;
     const rh = stream(id, "kit-hat"), hch = (p) => rh() < p, clean = fine || mourn;
     const station = sh.ruler ? 3 : est === "royal" ? 3 : est === "noble" ? 3 : sh.officer ? 2 : est === "gentry" ? 2 : 1;
-    const armour = grown ? artOf(G.armor, station) : null, weapon0 = grown ? artOf(G.weapon, station) : null, shield0 = grown ? artOf(G.shield, station) : null;
+    const worn = grown ? artOf(G.armor, station) : null, armour = worn && worn.harness && worn.harness !== "robes" ? worn : sh.mil && grown ? { harness: "padded", q: 0, r: 0 } : worn, weapon0 = grown ? artOf(G.weapon, station) : null, shield0 = grown ? artOf(G.shield, station) : null;
     const helm = grown ? artOf(G.helm, station) : null, cloak = age >= 12 ? artOf(G.cloak, station) : null, ranged0 = grown ? artOf(G.ranged, station) : null;
     const arms = RACE_ARMS[sh.race] || (ARMS.has(cult.arms) ? cult.arms : "north");
     let gear = [], headwear = "none", headwearOpts = {}, poses, staff = null;
@@ -8216,8 +8232,8 @@ var __ARDAN_V2_MAKE = (() => {
       const legs = [{ id: "hose", dye: pick(["charcoal", "walnut", "brown"]) }, { id: "shoes", kind: "boot", leather: "dark", high: 1 }];
       const pad = { id: "padding", dye: pick(["cream", "undyed", "hemp"]), quilt: 2 };
       if (harness === "padded") gear = [...legs, { ...pad, len: 0.4 }, ...rank >= 1 ? [{ id: "mailcollar" }] : [], { ...tab3, len: 0.3, point: 0 }, { id: "belt", leather: "dark", w: 28, metal: "iron" }, ...rank >= 2 ? [{ id: "baldric", leather: "brown", from: 0, metal: "iron" }] : []];
-      else if (harness === "leather") gear = [{ id: "hose", dye: pick(["forest", "walnut", "brown"]), loose: 1 }, { id: "shoes", kind: "boot", leather: "brown", high: 1 }, T({ dye: sh.mil || liv ? liv ? liv.field : realm : dyeOf("peasant"), len: 0.22, ease: 9, neck: "slit", sleeves: "long" }), T({ dye: pick(["brown", "dark", "tan"]), len: 0.16, ease: 11, neck: "v", sleeves: "none" }), { id: "belt", leather: "dark", w: 30, metal: "bronze" }, { id: "baldric", leather: "dark", from: 0, metal: "bronze", studs: 1 }, { id: "bracers", leather: "dark", studs: q > 0 ? 1 : 0 }];
-      else if (harness === "mail") gear = [...legs, ...set2({ q: Math.min(q, 1) }, "greaves", "poleyns"), pad, { id: "mail" }, { id: "mailcollar" }, { ...tab3, len: 0.32, point: 0 }, { id: "belt", leather: "dark", w: 30, metal: q > 1 ? "bronze" : "iron" }, ...set2({ q, r: rr }, "vambraces", "couters"), { id: "gloves", leather: "dark" }];
+      else if (harness === "leather") gear = [{ id: "hose", dye: pick(["forest", "walnut", "brown"]), loose: 1 }, { id: "shoes", kind: "boot", leather: "brown", high: 1 }, sh.mil || liv ? { id: "padding", dye: liv ? liv.field : realm, quilt: 2, len: 0.22, ease: 9 } : T({ dye: dyeOf("peasant"), len: 0.22, ease: 9, neck: "slit", sleeves: "long" }), T({ dye: pick(["brown", "dark", "tan"]), len: 0.16, ease: 11, neck: "v", sleeves: "none" }), { id: "belt", leather: "dark", w: 30, metal: "bronze" }, { id: "baldric", leather: "dark", from: 0, metal: "bronze", studs: 1 }, { id: "bracers", leather: "dark", studs: q > 0 ? 1 : 0 }];
+      else if (harness === "mail") gear = [...legs, ...set2({ q: Math.min(q, 1) }, "greaves", "poleyns"), pad, { id: "mail" }, { id: "mailcollar" }, { ...tab3, len: 0.32, point: 0 }, { id: "belt", leather: "dark", w: 30, metal: q > 1 ? "bronze" : "iron" }, ...rank !== null && rank < 3 && !liv ? [{ id: "bracers", leather: "dark" }] : set2({ q, r: rr }, "vambraces", "couters"), { id: "gloves", leather: "dark" }];
       else if (harness === "plates") gear = [...legs, ...set2({ q, r: rr }, "greaves", "poleyns"), T({ dye: own2 ? field : liv ? liv.field : realm, len: 0.3, ease: 9, fitted: 1, neck: "high", sleeves: "long", quilt: 1, trimHem: "dark", trim: "dark" }), T({ dye: "dark", len: 0.12, ease: 11, neck: "v", sleeves: "none" }), { id: "mailcollar" }, { id: "belt", leather: "dark", w: 30, metal: "bronze" }, { id: "baldric", leather: "brown", from: 0, metal: "bronze" }, { id: "bracers", leather: "brown", studs: 1, metal: "bronze" }, { id: "pauldrons", q, r: rr, z: 1.35 }];
       else if (harness === "cuirass") gear = [...legs, ...set2({ q, r: rr }, "cuisses", "greaves", "poleyns"), { id: "mail", sleeves: "long", len: 0.3 }, { id: "mailcollar" }, ...set2({ q, r: rr }, "breastplate", "fauld"), { id: "belt", leather: "dark", w: 30, metal: "bronze" }, ...set2({ q, r: rr }, "rerebraces", "vambraces", "couters", "gauntlets", "besagews", "pauldrons", "gorget")];
       else {
@@ -8238,7 +8254,7 @@ var __ARDAN_V2_MAKE = (() => {
       }
       if ((sh.officer || own2 || rank >= 5 || liv && role === "guard") && !cloak && harness !== "padded" && harness !== "leather") gear.splice(gear.findIndex((x) => x.id === "tabard" || x.id === "belt" || x.id === "sash"), 0, { id: "cloak", dye: own2 ? field : liv ? liv.field : realm, lining: "navy", trim: q > 1 ? "gold" : null, len: 0.84, q, clasp: q > 1 ? "gold" : "bronze", mantle: 0.46 });
       if (royal) gear.push({ id: "furcollar", fur: "ermine", z: 0.2 });
-      poses = sword ? ["pommel", "pommel", "belt", "ease", "folded"] : ["ease", "belt", "folded", "hip"];
+      poses = shield0 && rank !== null && rank < 4 ? ["ease"] : sword ? ["pommel", "pommel", "belt", "ease", "folded"] : ["ease", "belt", "folded", "hip"];
     } else if (kid) {
       const rich = g2 >= 3 && est !== "priest", kc = cut === "kaftan" ? { wrap: 1, neck: "v", trim: second } : cut === "drape" ? { sleeves: "short" } : {};
       if (rich && male) gear = [{ id: "hose", dye: pick(["navy", "charcoal", "walnut"]) }, { id: "shoes", kind: "ankle", leather: "brown" }, T({ dye: main, len: cut === "robe" ? 0.7 : 0.22, ease: 8, neck: "high", sleeves: "long", trim: "cream", buttons: "bronze", fitted: 1, ...kc }), cut === "tunic" ? { id: "belt", leather: "dark", w: 20, metal: "bronze" } : { id: "sash", dye: second, w: 30, hang: 0.6 }];
@@ -8251,11 +8267,15 @@ var __ARDAN_V2_MAKE = (() => {
         { id: "shoes", kind: "turn", leather: "tan" },
         T({ dye: d, len: 0.96, ease: 18, neck: "round", sleeves: "wide", flare: 30, folds: 6, trimHem: high ? "mustard" : null }),
         { id: "belt", rope: 1, leather: "linen", w: 15 },
-        ...high || mid ? [{ id: "stole", dye: high ? pick(["crimson", "purple", "mustard"]) : pick(["white", "cream", "sage"]), trim: high ? "mustard" : "ochre", len: high ? 0.34 : 0.2 }] : [],
+        ...high || mid ? [{ id: "stole", dye: high ? pick(["crimson", "purple", "mustard"]) : pick(["white", "cream", "sage"]), trim: high ? "mustard" : "walnut", len: high ? 0.34 : 0.2 }] : [],
         ...cut === "tunic" || !high ? [{ id: "hood", dye: d, cape: high ? 0.4 : 0.5 }] : [],
         { id: "amulet", metal: high ? "gold" : "bronze", device: "sun" }
       ];
       if (high) headwear = "mitre";
+      else if (!male) {
+        headwear = "veil";
+        headwearOpts = { dye: "white" };
+      }
       poses = ["sleeves", "sleeves", "clasped", ...age > 60 ? ["staff"] : []];
       staff = high ? "crozier" : "staff";
     } else if (role === "tutor" || (job === "scribe" || job === "healer") && g2 <= 4 && !work) {
@@ -8268,8 +8288,8 @@ var __ARDAN_V2_MAKE = (() => {
       const len2 = g2 === 0 ? male ? 0.62 : 0.9 : 0.95, sashD = liv ? liv.charge : second;
       const base = T({ dye: liv ? liv.field : main, len: len2, ease: g2 >= 5 ? 12 : 14, neck: g2 >= 4 ? "round" : "slit", sleeves: g2 >= 3 ? "wide" : g2 === 2 && !fine ? "rolled" : "long", flare: 34, folds: 7 });
       const feet = { id: "shoes", kind: g2 === 0 ? "bare" : "turn", leather: g2 >= 5 ? "red" : "tan" };
-      if (g2 === 0) gear = [feet, { ...base, dye: dyeOf("poor"), wave: 15, patch: "hemp" }, { id: "belt", rope: 1, leather: "hemp", w: 15 }];
-      else if (g2 === 1) gear = [feet, { ...base, trim: fine || ch(0.4) ? second : null }, { id: "sash", dye: sashD, w: 38, hang: 0.8 }, ...work || ch(0.3) ? [] : [{ id: "neckcloth", dye: shade(pick(DYE.peasant)) }], ...ch(0.4) ? [{ id: "pouch", side: 1 }] : []];
+      if (g2 === 0) gear = [feet, { ...base, dye: dyeOf("poor"), wave: 15, patch: "walnut", patch2: "brown", sleeves: ch(0.6) ? "short" : "rolled" }, { id: "belt", rope: 1, leather: "hemp", w: 15 }];
+      else if (g2 === 1) gear = [feet, { ...base, trim: fine || ch(0.4) ? second : null }, { id: "sash", dye: liv ? sashD : pick(["hemp", "undyed", second]), w: 26, hang: 0.45 }, ...work || ch(0.3) ? [] : [{ id: "neckcloth", dye: shade(pick(DYE.peasant)) }], ...ch(0.4) ? [{ id: "pouch", side: 1 }] : []];
       else if (g2 === 2) gear = [feet, { ...base, len: male ? 0.8 : 0.95 }, ...clean ? [] : [{ id: "apron", leather: ["smith", "mason", "carpenter", "bowyer", "miner"].includes(job) ? pick(["brown", "dark"]) : pick(["linen", "tan", "brown"]), len: 0.55 }], { id: "sash", dye: sashD, w: 36, hang: 0.5 }, { id: "tool", kind: ["smith", "mason", "carpenter"].includes(job) || ch(0.5) ? "hammer" : "knife", side: 1 }];
       else if (g2 === 3) gear = [feet, { ...base, open: ch(0.5) ? "cream" : "linen", stripes: ch(0.6) ? shade(pick(["cream", "ochre", "mustard"])) : null, trim: "ochre", trimHem: "ochre" }, { id: "sash", dye: sashD, w: 44, stripe: "ochre", fringe: "ochre" }, { id: "pouch", side: 1, z: 1.25, keys: 1, leather: "red" }, ...fine ? [{ id: "chain", metal: "silver" }] : []];
       else if (g2 === 4) gear = [feet, { ...base, yoke: pick(["ochre", "cream", "mustard"]), trimHem: second, hemPat: fine ? "cream" : null }, { id: "sash", dye: sashD, w: 42, fringe: "cream" }, ...sword ? [] : [{ id: "tool", kind: "knife", side: 1 }], { id: "brooch", metal: "silver", throat: 1 }];
@@ -8284,10 +8304,10 @@ var __ARDAN_V2_MAKE = (() => {
       const long = g2 >= 3 || !male, len2 = long ? g2 >= 3 ? 0.84 : 0.88 : g2 === 0 ? 0.4 : 0.52, tr = g2 === 0 ? null : g2 >= 5 ? "mustard" : g2 >= 3 ? "ochre" : liv ? liv.charge : second;
       const base = T({ dye: liv ? liv.field : g2 === 0 ? dyeOf("poor") : main, len: len2, ease: 11, neck: "v", wrap: 1, sleeves: g2 === 2 && !fine ? "rolled" : "long", flare: 30, folds: long ? 7 : 5, trim: tr });
       const legs = g2 === 0 ? [{ id: "barelegs", from: 0.12 }, { id: "wraps", dye: "hemp" }, { id: "shoes", kind: "turn", leather: "dark" }] : [{ id: "hose", dye: pick(["walnut", "brown", "charcoal", "hemp"]), loose: 1 }, { id: "shoes", kind: "boot", leather: g2 >= 4 ? "red" : "brown", high: 1, ...g2 >= 3 ? { cuff: "bear" } : {} }];
-      if (g2 === 0) gear = [...legs, { ...base, wave: 15, patch: "hemp" }, { id: "belt", rope: 1, leather: "hemp", w: 15 }];
-      else if (g2 === 1) gear = [...legs, base, ch(0.6) ? { id: "sash", dye: liv ? liv.charge : second, w: 38, hang: 0.6 } : { id: "belt", leather: "brown", w: 26 }, ...ch(0.4) ? [{ id: "pouch", side: 1 }] : []];
+      if (g2 === 0) gear = [...legs, { ...base, wave: 15, patch: "walnut", patch2: "brown", sleeves: ch(0.6) ? "short" : "rolled" }, { id: "belt", rope: 1, leather: "hemp", w: 15 }];
+      else if (g2 === 1) gear = [...legs, base, ch(0.6) ? { id: "sash", dye: liv ? liv.charge : second, w: 28, hang: 0.45 } : { id: "belt", leather: "brown", w: 26 }, ...ch(0.4) ? [{ id: "pouch", side: 1 }] : []];
       else if (g2 === 2) gear = [...legs, base, ...clean ? [] : [{ id: "apron", leather: pick(["brown", "tan", "dark"]), len: 0.5 }], { id: "belt", leather: "dark", w: 30, metal: "iron" }, { id: "tool", kind: ch(0.5) ? "hammer" : "knife", side: 1 }];
-      else if (g2 === 3) gear = [...legs, { ...base, trimHem: pick(["fox", "bear", "hare"]), trimW: 28 }, { id: "belt", leather: "red", w: 28, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.25, keys: 1, leather: "red" }, { id: "furcollar", fur: pick(["fox", "hare", "bear"]), z: 0.16 }];
+      else if (g2 === 3) gear = [...legs, { ...base, trimHem: pick(["fox", "bear", "hare"]), trimW: 28 }, { id: "belt", leather: "red", w: 28, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.4, keys: 1, leather: "red" }, ...fine ? [{ id: "furcollar", fur: pick(["fox", "hare", "bear"]), z: 0.16 }] : []];
       else if (g2 === 4) gear = [...legs, { ...base, trimHem: second, hemPat: "cream" }, { id: "belt", leather: "dark", w: 28, metal: "bronze", plaques: 1 }, ...sword ? [] : [{ id: "tool", kind: "knife", side: 1 }], { id: "brooch", metal: "silver", at: 1 }];
       else gear = [
         ...legs,
@@ -8312,9 +8332,9 @@ var __ARDAN_V2_MAKE = (() => {
       });
       const wrap = { id: "wrapcloth", dye: liv ? liv.field : main, from: ch(0.5) ? 0 : 1, edge: g2 >= 2 || liv ? edge : ch(0.5) ? second : null, edgeW: g2 >= 5 ? 40 : 30, pat: g2 >= 3 ? cult.pat === "stripe" ? "stripe" : "zig" : g2 === 1 && cult.pat ? "dots" : null, patDye: g2 >= 5 ? "crimson" : "cream", knot: g2 >= 5 ? "gold" : g2 >= 4 ? "bronze" : null };
       const legs = long ? [{ id: "shoes", kind: g2 === 0 ? "bare" : "turn", leather: g2 >= 5 ? "red" : "tan" }] : [{ id: "barelegs", from: 0.12 }, { id: "shoes", kind: g2 <= 1 && ch(0.6) ? "bare" : "turn", leather: "tan" }];
-      const bd = (n) => ({ id: "beads", rows: n, dyes: [pick(["ochre", "madder", "white"]), pick(["teal", "cream", "scarlet"]), "white"] });
-      if (g2 === 0) gear = [...legs, { ...shift, wave: 15, patch: male ? null : "hemp" }, { id: "belt", rope: 1, leather: "hemp", w: 15 }];
-      else if (g2 === 1) gear = [...legs, shift, ...work ? [] : [wrap], ch(0.5) ? { id: "sash", dye: second, w: 34, hang: 0.5 } : { id: "belt", rope: 1, leather: "hemp", w: 15 }, ...ch(0.5) ? [bd(1)] : []];
+      const bd = (n) => ({ id: "beads", rows: n, dyes: g2 <= 2 ? [pick(["cream", "walnut", "madder"]), pick(["walnut", "cream", "brown"]), "cream"] : [pick(["ochre", "madder", "white"]), pick(["teal", "cream", "scarlet"]), "white"] });
+      if (g2 === 0) gear = [...legs, { ...shift, wave: 15, patch: "walnut", patch2: "brown" }, { id: "belt", rope: 1, leather: "hemp", w: 15 }];
+      else if (g2 === 1) gear = [...legs, shift, ...work ? [] : [wrap], { id: "belt", leather: pick(["tan", "brown"]), w: 20 }, ...ch(0.3) ? [bd(1)] : []];
       else if (g2 === 2) gear = [...legs, shift, ...clean ? [wrap] : [{ id: "apron", leather: pick(["brown", "tan", "linen"]), len: 0.5 }], { id: "belt", leather: "dark", w: 28, metal: "iron" }, { id: "tool", kind: ch(0.5) ? "hammer" : "knife", side: 1 }, bd(1)];
       else if (g2 === 3) gear = [...legs, shift, wrap, { id: "sash", dye: second, w: 42, stripe: "ochre", fringe: "ochre" }, { id: "pouch", side: wrap.from ? -1 : 1, z: 1.25, keys: 1, leather: "red" }, bd(3)];
       else if (g2 === 4) gear = [...legs, shift, wrap, { id: "sash", dye: second, w: 40, fringe: "cream" }, ...sword ? [] : [{ id: "tool", kind: "knife", side: wrap.from ? -1 : 1 }], bd(2)];
@@ -8322,8 +8342,8 @@ var __ARDAN_V2_MAKE = (() => {
       poses = g2 <= 1 ? male ? ["ease", "hip", "behind", "folded"] : ["clasped", "hip", "ease"] : g2 === 2 ? ["folded", "hip", "ease", "belt"] : male ? ["clasped", "belt", "hip", "ease"] : ["clasped", "ease", "hip"];
     } else if (g2 === 0) {
       const bare = est !== "serf";
-      if (male) gear = [{ id: "barelegs", from: 0.12 }, ...bare ? [] : [{ id: "wraps", dye: "hemp" }], { id: "shoes", kind: bare ? "bare" : "turn", leather: "dark" }, T({ dye: dyeOf("poor"), len: 0.34, ease: 14, neck: "slit", sleeves: ch(0.35) ? "rolled" : "long", patch: "hemp", wave: 15 }), ...est === "prisoner" ? [] : [{ id: "belt", rope: 1, leather: "hemp", w: 16 }]];
-      else gear = [{ id: "shoes", kind: bare ? "bare" : "turn", leather: "dark" }, T({ dye: dyeOf("poor"), len: 0.9, ease: 10, neck: "round", sleeves: "long", patch: "hemp", flare: 40, folds: 6, wave: 14 }), { id: "belt", rope: 1, leather: "hemp", w: 14 }, ...est === "serf" && ch(0.4) ? [{ id: "apron", leather: "undyed", len: 0.6 }] : []];
+      if (male) gear = [{ id: "barelegs", from: 0.12 }, ...bare ? [] : [{ id: "wraps", dye: "hemp" }], { id: "shoes", kind: bare ? "bare" : "turn", leather: "dark" }, T({ dye: dyeOf("poor"), len: 0.34, ease: 14, neck: "slit", sleeves: ch(0.7) ? "short" : "rolled", patch: "walnut", patch2: "brown", wave: 15 }), ...est === "prisoner" ? [] : [{ id: "belt", rope: 1, leather: "hemp", w: 16 }]];
+      else gear = [{ id: "shoes", kind: bare ? "bare" : "turn", leather: "dark" }, T({ dye: dyeOf("poor"), len: 0.9, ease: 10, neck: "round", sleeves: ch(0.6) ? "short" : "rolled", patch: "walnut", patch2: "brown", flare: 40, folds: 6, wave: 14 }), { id: "belt", rope: 1, leather: "hemp", w: 14 }, ...est === "serf" && ch(0.4) ? [{ id: "apron", leather: "undyed", len: 0.6 }] : []];
       if (est === "serf" && (work || where === "out" ? ch(0.6) : ch(0.25))) headwear = male ? pick(["strawhat", "coif"]) : "kerchief";
       headwearOpts = { dye: "undyed" };
       poses = male ? ["ease", "behind", "belt", "hip"] : ["clasped", "ease", "hip"];
@@ -8349,9 +8369,10 @@ var __ARDAN_V2_MAKE = (() => {
         ...v === 1 ? [T({ dye: main, len: 0.98, ease: 9, neck: "v", sleeves: "none", trim: "mustard", trimHem: pick(["ermine", "sable", "mustard"]), flare: 66, folds: 8 })] : [],
         { id: "belt", leather: "red", w: 20, metal: "gold", plaques: 1, hang: 240, at: 0.5 },
         jewel,
+        ...!mourn && !work ? [{ id: "furcollar", fur: pick(["ermine", "sable", "fox"]), z: 0.17 }] : [],
         ...fine && v !== 1 ? [{ id: "cloak", dye: hc, lining: "charcoal", trim: "gold", len: 0.9, q: 2, clasp: "gold", mantle: 0.44 }] : []
       ];
-      headwear = work ? "none" : !male ? ch(0.5) ? "circlet" : sh.married && ch(0.5) ? "veil" : "none" : sh.rung >= 5 && ch(0.5) ? "circlet" : v === 1 && ch(0.5) ? "cap" : "none";
+      headwear = work ? "none" : !male ? ch(0.7) ? "circlet" : "veil" : sh.rung >= 5 && ch(0.5) ? "circlet" : v === 1 && ch(0.5) ? "cap" : "none";
       headwearOpts = headwear === "veil" ? { fillet: 1, dye: mourn ? "black" : "white" } : headwear === "cap" ? { dye: second, badge: "gold", feather: ch(0.5) ? "white" : null } : {};
       poses = male ? sword ? ["pommel", "pommel", "belt", "hip"] : ["belt", "hip", "behind", "ease"] : ["clasped", "ease", "hip", "sleeves"];
     } else if (g2 === 4) {
@@ -8371,9 +8392,9 @@ var __ARDAN_V2_MAKE = (() => {
       poses = male ? sword ? ["pommel", "belt", "hip"] : ["belt", "hip", "ease", "behind"] : ["clasped", "ease", "hip"];
     } else if (g2 === 3) {
       const d = main;
-      if (male) gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T({ dye: d, len: 0.93, ease: 16, neck: "v", sleeves: "bell", trim: "ochre", trimHem: pick(["bear", "fox", "sable"]), trimW: 30, flare: 44, folds: 7, buttons: "bronze" }), { id: "belt", leather: "red", w: 26, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.25, keys: 1, leather: "red" }, { id: "furcollar", fur: pick(["bear", "fox", "wolf"]), z: 0.2 }, ...fine ? [{ id: "chain", metal: "silver" }] : []];
-      else gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T({ dye: d, len: 0.97, ease: 8, fitted: 1, neck: "round", sleeves: "bell", trim: "ochre", trimHem: "ochre", flare: 56, folds: 8 }), { id: "belt", leather: "red", w: 20, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.1, keys: 1, leather: "red" }, { id: "furcollar", fur: pick(["bear", "fox"]), z: 0.16 }, ...fine ? [{ id: "chain", metal: "silver" }] : []];
-      headwear = male ? ch(0.7) ? pick(["chaperon", "chaperon", "cap"]) : "none" : ch(0.6) ? "veil" : "none";
+      if (male) gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T({ dye: d, len: 0.93, ease: 16, neck: "v", sleeves: "bell", trim: "ochre", trimHem: pick(["bear", "fox", "sable"]), trimW: 30, flare: 44, folds: 7, buttons: "bronze" }), { id: "belt", leather: "red", w: 26, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.4, keys: 1, leather: "red" }, ...fine ? [{ id: "furcollar", fur: pick(["bear", "fox", "wolf"]), z: 0.2 }, { id: "chain", metal: "silver" }] : []];
+      else gear = [{ id: "shoes", kind: "turn", leather: "dark" }, T({ dye: d, len: 0.97, ease: 8, fitted: 1, neck: "round", sleeves: "bell", trim: "ochre", trimHem: "ochre", flare: 56, folds: 8 }), { id: "belt", leather: "red", w: 20, metal: "bronze", plaques: 1 }, { id: "pouch", side: -1, z: 1.3, keys: 1, leather: "red" }, ...fine ? [{ id: "furcollar", fur: pick(["bear", "fox"]), z: 0.16 }, { id: "chain", metal: "silver" }] : []];
+      headwear = male ? pick(["chaperon", "chaperon", "cap"]) : ch(0.6) ? "veil" : "none";
       headwearOpts = male ? { dye: shade(pick(DYE.merchant)), badge: headwear === "cap" ? "bronze" : 1 } : { dye: mourn ? "black" : "white" };
       poses = male ? ["clasped", "belt", "folded", "ease"] : ["clasped", "ease", "sleeves"];
     } else if (g2 === 2) {
@@ -8381,7 +8402,7 @@ var __ARDAN_V2_MAKE = (() => {
       if (male) gear = [
         { id: "hose", dye: pick(["walnut", "brown", "charcoal"]) },
         { id: "shoes", kind: "boot", leather: "dark" },
-        T({ dye: !liv && !fine && ch(0.4) ? "cream" : lc, len: 0.28, ease: 9, neck: "slit", sleeves: fine ? "long" : ch(0.6) ? "rolled" : "long", trim: fine ? second : null }),
+        T({ dye: !liv && !fine && ch(0.4) && !chosen ? shade("cream") : lc, len: 0.28, ease: 9, neck: "slit", sleeves: fine ? "long" : ch(0.6) ? "rolled" : "long", trim: fine ? second : null }),
         ...clean ? [] : heavy || ch(0.75) ? [{ id: "apron", leather: heavy ? pick(["brown", "dark"]) : pick(["brown", "tan", "dark", "linen"]), len: 0.5 }] : [],
         { id: "belt", leather: "dark", w: 32, metal: "iron" },
         { id: "tool", kind: heavy || ch(0.5) ? "hammer" : "knife", side: 1 },
@@ -8418,10 +8439,10 @@ var __ARDAN_V2_MAKE = (() => {
     const civilDress = age >= 3 && !harness && !kid && est !== "priest";
     if (civilDress && !royal && grown) {
       const has = (k) => gear.some((x) => x.id === k), mainT = gear.find((x) => x.id === "tunic");
-      if ((cult.collar === "beads" || cult.collar === "bones") && !has("beads") && !has("chain") && g2 >= 1 && ch(cult.collar === "bones" ? 0.7 : 0.5)) gear.push({ id: "beads", rows: g2 >= 3 ? 2 : 1, fangs: cult.collar === "bones" ? 1 : 0, dyes: cult.collar === "bones" ? ["walnut", "cream"] : [pick(["ochre", "madder", "white"]), "teal"] });
+      if ((cult.collar === "beads" || cult.collar === "bones") && !has("beads") && !has("chain") && g2 >= 1 && ch(cult.collar === "bones" ? 0.7 : 0.5)) gear.push({ id: "beads", rows: g2 >= 3 ? 2 : 1, fangs: cult.collar === "bones" ? 1 : 0, dyes: cult.collar === "bones" ? ["walnut", "cream"] : g2 <= 2 ? [pick(["cream", "walnut", "madder"]), "walnut"] : [pick(["ochre", "madder", "white"]), "teal"] });
       if (cult.torc && g2 >= 2 && !has("torc") && !has("chain") && !has("beads") && ch(0.6)) gear.push({ id: "torc", metal: g2 >= 5 ? "gold" : g2 >= 4 ? "silver" : "bronze" });
       if (cult.collar === "embroidered" && mainT && !mainT.yoke && g2 >= 1 && g2 <= 4 && ch(0.7)) mainT.yoke = pick(["madder", "cream", "woad"]);
-      if ((cult.collar === "fur" || cult.fur) && !has("furcollar") && !has("cloak") && !has("shawl") && !has("hood") && g2 >= 1 && g2 <= 4 && ch(cult.collar === "fur" ? 0.5 : 0.25)) gear.push({ id: "furcollar", fur: pick(["wolf", "bear", "hare"]), z: 0.15 });
+      if ((cult.collar === "fur" || cult.fur) && !has("furcollar") && !has("cloak") && !has("shawl") && !has("hood") && g2 === 4 && ch(cult.collar === "fur" ? 0.5 : 0.25)) gear.push({ id: "furcollar", fur: pick(["wolf", "bear", "hare"]), z: 0.15 });
       if (cult.sash && cut === "tunic" && g2 >= 1 && g2 <= 4 && ch(0.7)) {
         const at = gear.findIndex((x) => x.id === "belt" && !x.rope);
         if (at >= 0 && !gear.some((x) => x.id === "tool" || x.id === "pouch")) gear.splice(at, 1, { id: "sash", dye: second, w: 36, hang: 0.6 });
@@ -8487,7 +8508,7 @@ var __ARDAN_V2_MAKE = (() => {
     }
     const hatWord = Array.isArray(cult.hat) ? cult.hat[male ? 0 : 1] : null;
     if (headwear === "none" && civilDress && grown && !royal && hatWord && !(role === "tutor")) {
-      const rich = g2 >= 5, p = hatWord === "hood" ? where === "out" && g2 <= 2 ? road ? 0.5 : 0.3 : 0 : hatWord === "turban" || hatWord === "wrap" ? 0.62 : hatWord === "veil" ? sh.married || age > 34 ? 0.6 : 0.3 : hatWord === "fillet" || hatWord === "leaves" || hatWord === "feathers" ? 0.5 : g2 === 0 ? 0.2 : 0.45;
+      const rich = g2 >= 5, p = g2 === 0 ? !male && (hatWord === "kerchief" || hatWord === "veil") ? 0.35 : 0 : hatWord === "hood" ? where === "out" && g2 <= 2 ? road ? 0.5 : 0.3 : 0 : hatWord === "turban" || hatWord === "wrap" ? 0.62 : hatWord === "veil" ? sh.married || age > 34 ? 0.6 : 0.3 : hatWord === "fillet" || hatWord === "leaves" || hatWord === "feathers" ? 0.5 : g2 === 0 ? 0.2 : 0.45;
       const hd = mourn ? "charcoal" : null;
       if (hch(p)) {
         if (hatWord === "hood") {
@@ -8495,13 +8516,16 @@ var __ARDAN_V2_MAKE = (() => {
           headwearOpts = { dye: (gear.find((x) => x.id === "cloak") || {}).dye || shade(hpick(DYE.hood)) };
         } else if (hatWord === "turban") {
           headwear = "turban";
-          headwearOpts = { dye: hd || (g2 === 0 ? "undyed" : rich ? hpick(["white", "cream", second]) : hpick(["white", "cream", "linen", second])), big: g2 >= 3 ? 1 : 0, tail: g2 <= 2 && hch(0.5) ? 1 : 0, band: g2 === 3 || g2 === 4 ? "ochre" : null, jewel: rich ? gem() : null };
+          headwearOpts = { dye: hd || (g2 <= 2 ? hpick(["undyed", "hemp", "cream", second]) : rich ? hpick(["white", "cream", second]) : hpick(["white", "cream", "linen", second])), big: g2 >= 3 ? 1 : 0, tail: g2 <= 2 ? 1 : 0, band: g2 === 3 || g2 === 4 ? "ochre" : null, jewel: rich ? gem() : null };
         } else if (hatWord === "wrap") {
           headwear = "headwrap";
-          headwearOpts = { dye: hd || (g2 === 0 ? "undyed" : second), tall: g2 >= 3 || !male ? 1 : 0, band: g2 >= 3 ? rich ? "mustard" : "ochre" : null };
+          headwearOpts = { dye: hd || (g2 <= 1 ? hpick(["undyed", "hemp", second]) : second), tall: g2 >= 3 ? 1 : 0, band: g2 >= 3 ? rich ? "mustard" : "ochre" : null };
         } else if (hatWord === "kerchief") {
           headwear = "kerchief";
           headwearOpts = { dye: hd || (g2 === 0 ? "undyed" : hpick(["linen", "white", "cream", second])), band: g2 >= 2 ? second : null };
+        } else if (hatWord === "veil" && g2 === 0) {
+          headwear = "kerchief";
+          headwearOpts = { dye: "undyed" };
         } else if (hatWord === "veil") {
           headwear = "veil";
           headwearOpts = { dye: hd || (g2 >= 3 ? "white" : hpick(["linen", "cream", "undyed"])), fillet: g2 >= 5 ? 1 : 0 };
@@ -8533,7 +8557,15 @@ var __ARDAN_V2_MAKE = (() => {
       headwearOpts = {};
     }
     if (mourn && headwear === "veil") headwearOpts = { ...headwearOpts, dye: "black" };
-    let pose = poses[Math.floor(stream(id, "pose")() * poses.length) % poses.length];
+    if (!liv) {
+      const rf = stream(id, "kit-fit"), t = gear.find((x) => x.id === "tunic" || x.id === "padding");
+      if (t && typeof (t.len ?? 0.36) === "number") {
+        t.len = Math.round(((t.len ?? 0.36) + (Math.floor(rf() * 9) - 4) * 6e-3) * 1e3) / 1e3;
+        t.ease = (t.ease ?? 10) + Math.floor(rf() * 5) - 2;
+        t.flare = (t.flare ?? 26) + Math.floor(rf() * 7) * 2 - 6;
+      }
+    }
+    let pose = poses[Math.floor(stream(o.id, "pose")() * poses.length) % poses.length];
     if ((pose === "pommel" || pose === "sword") && !gear.some((x) => x.id === "sword")) pose = "belt";
     if (pose === "belt" && gear.some((x) => x.id === "sash") && !gear.some((x) => x.id === "belt")) pose = "hip";
     return { gear: gear.filter(Boolean), headwear, headwearOpts, pose, staff, arms, wear, cut, grade: g2, livery: !!liv || !!harness && !(device && (est === "noble" || royal)) };

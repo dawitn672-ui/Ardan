@@ -9,10 +9,12 @@ The owner approved gate 2 of the 2D character art ("this looks amazing, especial
 | Path | What |
 |---|---|
 | `src/ui/engine/figure/` | **The library** (on the page as `A.V2.figure`): `g.js` geometry and seeded streams, `scene.js` layers and SVG output, `palette.js`, `rig.js` (body), `head.js` (face), `hair.js`, `gear.js` (dress, armour, and where each arm is carried), `make.js` (make and rarity and their paint), `arms.js` (every weapon and shield as a made thing, order 52), `figure.js` (`compose(look, opts)`), `look.js` (a person's sheet to a look, the face codes), `wardrobe.js` (dress by estate; gear by item) |
-| `figures.a-peoples.core.js` | What each culture wears on the head and dyes its cloth, and whose smiths arm it (`arms`; `UI.FIG.cultOf`) |
+| `src/ui/engine/figure/cultures.js` | **The peoples' dress** (C8c): one row per culture: its cut (tunic, robe, kaftan, drape), headwear for men and women, its dyes, its habits (a sash, beads, a torc, fur, a hem border) and whose smiths arm it |
+| `figures.a-peoples.core.js` | The game's way to that table (`UI.FIG.cultOf`) |
 | `figures.b-draw.core.js` | `UI.FIG.sheet(p)`, `UI.FIG.look(p)`, `UI.FIG.svg(p, size, opts)`, `UI.FIG.inline(...)`, the picture queue |
 | `figures.c-looks.core.js` | `A.LOOKS`: a face code for everyone born, and for everyone in an older save |
 | `figures.d-maker.core.js` | The face and build maker on the creation screen (`UI.FIG.maker`) |
+| `figures.e-dress.core.js` | **Changeable outfits** (C8c): `A.setDress(w, d)` and the Dress control in the Gear panel of the Profile (`UI.FIG.dressBar`) |
 | `tests/v2/figure.test.js` | The library's unit tests (node) · `test.mjs` here: the browser tests (`fg*`) |
 
 Release source edited in place (D-028), each marked `[C8b]`: `PORTRAIT.svg` (20-portraits.js) hands every portrait to `UI.FIG.svg`; `A.genAppearance` (03-engine-base.js) gives everyone a face code; `UI.crStepBody` (23-ui-a.js) hands the step to the maker. A build without this feature draws the release's paper doll and its old rows.
@@ -28,6 +30,45 @@ Release source edited in place (D-028), each marked `[C8b]`: `PORTRAIT.svg` (20-
 **The page never holds a figure.** A figure is hundreds of shapes; sixty of them as inline SVG cost a third of a second at every redraw (measured). `PORTRAIT.svg` returns a small frame (one `<svg>` with one `<image>`, about 500 bytes), and the picture behind it is made once, off the press: look, compose, the SVG drawn on a canvas at the screen's density, one PNG kept. A queue makes one picture per turn of the event loop, newest request first. Until its picture is ready a frame shows a stand-in in the sitter's own colours (or the picture that person had a moment ago), and takes the finished picture the moment it is done. `UI.FIG.idle()` resolves when the queue is empty (tests and screenshots wait on it); `UI.FIG.inline(p, size, opts)` gives the whole SVG at once (the share card, sheets, tests). Pictures are kept by look (600 of them, the oldest freed first), so a redrawn list is a lookup and two redraws never draw twice.
 
 **The dead** are drawn with their eyes shut and their colour drained, on a grey ground.
+
+## Dress, class and regalia (C8c, D-060)
+
+The wardrobe (`wardrobe.js`, `kit(sheet)`) dresses a person from seven things the sheet now carries: the **estate**, the
+**people** (`cult`, a row of `cultures.js`), the **occasion** (`wear`), the **place** (`where`), their **trade** (`job`),
+their **post** (`role`, `mil`) and whose **livery** they wear. The sheets are in `docs/design/demo-2d/c8c/`
+(`node docs/design/demo-2d/c8c/sheet.mjs` draws them from the library).
+
+- **Station shows.** Eight stations, each with its own marks in every cut: the serf's undyed, patched, ragged-hemmed
+  cloth and rope belt; the countryman's dyed wool, leather belt and apron, shawl or neckcloth; the craftsman's apron and
+  the tool of the trade, sleeves rolled; the merchant's long gown, fur, purse and keys; the clergy's habit, cord and sun
+  (a stole from the second rank, white and a skullcap for the high); the soldier's padded coat, mail and helm under the
+  realm's coat; the high-born in gold trim, a jewel by rank (a brooch, a chain, a chain with a stone from the fifth rung)
+  and a cloak, or a harness under their own arms; the crown.
+- **Four cuts** (`cult.cut`): the northern **tunic** and kirtle; the long **robe** girt with a sash (the desert, the
+  elves), striped and open over a pale robe for a merchant, a worked yoke for the gentry; the steppe's **kaftan**
+  crossing over the breast, over loose breeches and boots, fur at the hem as the purse allows; the south's **drape**, a
+  length of dyed cloth from one shoulder to the far hip over a pale shift, with beads. Ten new things for the head:
+  turban, head wrap, kerchief, fur-brimmed cap, felt cone, round cap, fillet (with leaves or feathers), mail coif,
+  arming cap. A dye costs what it costs (`COST`): nobody wears above their purse.
+- **A soldier's bust shows that he is one** (V7). Rank and file: a quilted coat (`padding`, `quilt: 2`), a mail collar
+  from file-leader, mail for the heavy troops, the helm their company is issued (an arming cap or a mail coif for the
+  rest); a captain puts the helm off and wears the sash of command; a commander a cloak. The player's face is never
+  under a helm, and the collar and coat still mark him. Every soldier of a realm wears the same coat (`liveryOf(realm)`:
+  plain, parted or with a pale, from the realm's colour).
+- **Only liveried retainers share a garment** (V9). A lord's guard knight and maid (C6's household) wear his house's
+  colours and device (`sheet.livery`, from `PORTRAIT.arms` of the player); soldiers wear their realm's. Everyone else's
+  cloth is their own: two dyes of their station and people a little off the vat's (`shade`), a variant of the cut, a fit
+  of their own. A noble house is no longer all in the house's colour: that is in the lining, the cloak or the trim.
+- **Hoods** (V13). A raised hood is for the road and the weather: only out of doors (`where: 'out'`, an event tagged
+  for the road, the wild, the sea or the fields), never in a list and never under a roof. The hood thrown back on the
+  shoulders is on about one countryman in ten.
+- **Occasions** (`WEARS`: day, best, work, travel, arms, mourning). On an event's card everyone is dressed for the
+  scene (`26-scene-tags`). A harness is put off for a feast, for mourning and for work that is not war; out of harness
+  only a sword or dagger stays, and only at the belt of those who may wear one.
+- **Changeable outfits.** The Gear panel of the Profile has a line, "Dress", that opens the choices: "As the day asks" (the
+  default: everyday dress, and what each scene calls for), the six occasions ("Under arms" only with armour to wear) and
+  the dyes of the player's station. `A.setDress(w, d)` stores `dress: { w, d }` on the player (journalled, so a replay
+  dresses the same); absent in an older save, which loads and dresses as the day asks. It changes the picture only.
 
 ## Faces (`A.LOOKS`)
 
@@ -69,10 +110,10 @@ Measured again 2026-11-14 with the arms of order 52, three times, on the same co
 
 ## Not done here
 
-A fighter in a duel no longer stands on guard (the retired renderer's `guard` pose; the library has ten stances, none with a raised blade). War paint and jewellery (`app.paint`, `app.jewel`) are not drawn yet. Mounts have no art. Thrown arms (javelins, throwing axes, slings) are carried and not drawn. A shield is not shown in a stance with no hanging arm, and a pole arm's head is small on a standing figure and out of the frame of a list portrait. Wear (nicks, rust) is drawn only as a crude make's, not yet as a state of the piece. Cultures change headwear and dye, not yet the cut. Infants are small children, not yet their own drawing. The Profile tab (work item P) will show the standing figure.
+A fighter in a duel no longer stands on guard (the retired renderer's `guard` pose; the library has ten stances, none with a raised blade). War paint and the jewellery a person stores (`app.paint`, `app.jewel`) are not drawn yet (C8c draws a jewel by rank). Mounts have no art. Thrown arms (javelins, throwing axes, slings) are carried and not drawn. A shield is not shown in a stance with no hanging arm, and a pole arm's head is small on a standing figure and out of the frame of a list portrait. Wear (nicks, rust) is drawn only as a crude make's, not yet as a state of the piece. Infants are small children, not yet their own drawing. The Profile tab (work item P) will show the standing figure.
 
 ## Tests and pictures
 
-`test.mjs`: `fgDeterministic`, `fgPure`, `fgEveryPeople`, `fgEscaped`, `fgBudget`, `fgOldSave`, `fgMaker`, `fgGearByItem` (every item id has a row; a bow, a crossbow, an axe, a pole arm and a round shield are drawn by form; 736 drawings of every form at four makes, two rarities and two styles are sound, the same twice, and no two makes alike), and two carried over from the retired renderer's tests, `fgAxe` (no accessibility fault on the life screen, the profile, a person's page and the maker, every frame a named image) and `fgCreateSkin` (the skin picked in the maker is the skin stored and drawn). `tests/v2/figure.test.js`: thirteen unit tests of the library (one look one drawing, a sweep of some 400 people at four sizes, the second code, the old-save lean, gear by item, escaping, the dead; and for arms: every form at every make, rarity and style draws soundly and the same twice and a better make shows more; no glow on a legendary, nothing drawn outside the picture, detail left out of a small one; arms on the person by item, form and people).
+`test.mjs` (C8c): `fgDressStations` (8 stations x the four cuts x 6 people: a reader that knows only the garments names 98 in 100; floor 85), `fgSoldierBust` (420 soldiers of ten ranks and every troop: every bust is marked, one coat a realm, the player bare-headed and still marked), `fgLivery` (three worlds of 400 adults: no two outside a livery dressed alike, no house all in one colour, the guard knight and the maid in the house's coat), `fgHoods` (none raised in a list or indoors; some on the road), `fgOutfits` (the Dress control, the six occasions, the dye, refusal of bad values, the journal, an older save). And: `fgDeterministic`, `fgPure`, `fgEveryPeople`, `fgEscaped`, `fgBudget`, `fgOldSave`, `fgMaker`, `fgGearByItem` (every item id has a row; a bow, a crossbow, an axe, a pole arm and a round shield are drawn by form; 736 drawings of every form at four makes, two rarities and two styles are sound, the same twice, and no two makes alike), and two carried over from the retired renderer's tests, `fgAxe` (no accessibility fault on the life screen, the profile, a person's page and the maker, every frame a named image) and `fgCreateSkin` (the skin picked in the maker is the skin stored and drawn). `tests/v2/figure.test.js`: thirteen unit tests of the library (one look one drawing, a sweep of some 400 people at four sizes, the second code, the old-save lean, gear by item, escaping, the dead; and for arms: every form at every make, rarity and style draws soundly and the same twice and a better make shows more; no glow on a legendary, nothing drawn outside the picture, detail left out of a small one; arms on the person by item, form and people).
 
 Before and after, at 1366 and 420 wide (creation, the life screen, the profile, a person's page), and a cast of the game's own people at twice the pixels: `docs/design/demo-2d/c8b/`.

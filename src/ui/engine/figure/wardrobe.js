@@ -65,13 +65,14 @@ const DYE = {
 };
 const COST = { undyed: 0, hemp: 0, linen: 0, cream: 0, brown: 1, walnut: 1, russet: 1, grey: 1, sage: 1, ochre: 1, woad: 1, madder: 1, forest: 1, charcoal: 1, green: 2, mustard: 2, teal: 2, blue: 2, rose: 2, white: 2,
   navy: 3, murrey: 3, crimson: 3, scarlet: 3, black: 3, purple: 4 };
-const PLAIN = new Set(['undyed', 'hemp', 'linen', 'white', 'cream', 'black', 'charcoal']);
+const PLAIN = new Set(['linen', 'white', 'black', 'charcoal']);       // the ramps set by hand (palette.js): worn as they are
 const GRADE = { slave: 0, prisoner: 0, serf: 0, peasant: 1, artisan: 2, merchant: 3, gentry: 4, noble: 5, royal: 6, priest: 2 };
 const CLASS = ['poor', 'peasant', 'artisan', 'merchant', 'gentry', 'noble', 'noble'];
 const HEXOK = /^#[0-9a-fA-F]{6}$/;
 const set = (o, ...ids) => ids.map(id => ({ id, ...o }));
 const hashOf = s => { let h = 2166136261; s = String(s); for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 const T = o => ({ id: 'tunic', ...o });
+const hash2 = s => { let h = 5381; s = String(s); for (let i = 0; i < s.length; i++) h = (Math.imul(h, 33) + s.charCodeAt(i) * (i + 7)) | 0; return (h >>> 0).toString(36); };
 
 // the occasions a person dresses for (C8c: the player picks one, an event's scene picks one for everybody in it)
 export const WEARS = ['day', 'best', 'work', 'travel', 'arms', 'mourning'];
@@ -88,7 +89,9 @@ export function liveryOf(realm) { const h = hashOf(realm); return { style: ['pal
 // sh adds for C8c: wear (an occasion of WEARS), where ('list', 'in', 'out'), dye (the person's chosen dye), job (a career
 // key), role (a household post), mil ({ rank, troop }), livery ({ field, charge, device }: a lord's colours on a retainer)
 export function kit(sh, o) {
-  const { male, age, id } = o, r = stream(id, 'kit'), pick = a => a[Math.floor(r() * a.length) % a.length], ch = p => r() < p;
+  // the dress has dice of its own, keyed by the id and a second hash of it: two ids the streams' own hash takes for one
+  // (FNV-1a does, for some pairs that differ in their last two characters) would else be dressed as twins
+  const { male, age } = o, id = o.id + '~' + hash2(o.id), r = stream(id, 'kit'), pick = a => a[Math.floor(r() * a.length) % a.length], ch = p => r() < p;
   const est = sh.estate || 'peasant', C = sh.colors || {}, cult = sh.cult || {}, G = sh.gear || {};
   const cut = CUTS.includes(cult.cut) ? cult.cut : 'tunic';
   const wear = WEARS.includes(sh.wear) ? sh.wear : 'day', where = sh.where === 'list' || sh.where === 'out' ? sh.where : 'in';
@@ -109,7 +112,8 @@ export function kit(sh, o) {
   const second = mourn ? (main === 'charcoal' ? 'walnut' : 'charcoal') : s0 === main ? s1 : s0;
   const rh = stream(id, 'kit-hat'), hch = p => rh() < p, clean = fine || mourn;                       // the head has its own dice, for the same reason
   const station = sh.ruler ? 3 : est === 'royal' ? 3 : est === 'noble' ? 3 : sh.officer ? 2 : est === 'gentry' ? 2 : 1;       // the make a person of this standing would own
-  const armour = grown ? artOf(G.armor, station) : null, weapon0 = grown ? artOf(G.weapon, station) : null, shield0 = grown ? artOf(G.shield, station) : null;
+  // a serving soldier with no armour of his own (or a robe for one) stands in a padded coat
+  const worn = grown ? artOf(G.armor, station) : null, armour = worn && worn.harness && worn.harness !== 'robes' ? worn : sh.mil && grown ? { harness: 'padded', q: 0, r: 0 } : worn, weapon0 = grown ? artOf(G.weapon, station) : null, shield0 = grown ? artOf(G.shield, station) : null;
   const helm = grown ? artOf(G.helm, station) : null, cloak = age >= 12 ? artOf(G.cloak, station) : null, ranged0 = grown ? artOf(G.ranged, station) : null;
   const arms = RACE_ARMS[sh.race] || (ARMS.has(cult.arms) ? cult.arms : 'north');
   let gear = [], headwear = 'none', headwearOpts = {}, poses, staff = null;
@@ -138,8 +142,8 @@ export function kit(sh, o) {
     const legs = [{ id: 'hose', dye: pick(['charcoal', 'walnut', 'brown']) }, { id: 'shoes', kind: 'boot', leather: 'dark', high: 1 }];
     const pad = { id: 'padding', dye: pick(['cream', 'undyed', 'hemp']), quilt: 2 };
     if (harness === 'padded') gear = [...legs, { ...pad, len: .4 }, ...(rank >= 1 ? [{ id: 'mailcollar' }] : []), { ...tab, len: .3, point: 0 }, { id: 'belt', leather: 'dark', w: 28, metal: 'iron' }, ...(rank >= 2 ? [{ id: 'baldric', leather: 'brown', from: 0, metal: 'iron' }] : [])];
-    else if (harness === 'leather') gear = [{ id: 'hose', dye: pick(['forest', 'walnut', 'brown']), loose: 1 }, { id: 'shoes', kind: 'boot', leather: 'brown', high: 1 }, T({ dye: sh.mil || liv ? (liv ? liv.field : realm) : dyeOf('peasant'), len: .22, ease: 9, neck: 'slit', sleeves: 'long' }), T({ dye: pick(['brown', 'dark', 'tan']), len: .16, ease: 11, neck: 'v', sleeves: 'none' }), { id: 'belt', leather: 'dark', w: 30, metal: 'bronze' }, { id: 'baldric', leather: 'dark', from: 0, metal: 'bronze', studs: 1 }, { id: 'bracers', leather: 'dark', studs: q > 0 ? 1 : 0 }];
-    else if (harness === 'mail') gear = [...legs, ...set({ q: Math.min(q, 1) }, 'greaves', 'poleyns'), pad, { id: 'mail' }, { id: 'mailcollar' }, { ...tab, len: .32, point: 0 }, { id: 'belt', leather: 'dark', w: 30, metal: q > 1 ? 'bronze' : 'iron' }, ...set({ q, r: rr }, 'vambraces', 'couters'), { id: 'gloves', leather: 'dark' }];
+    else if (harness === 'leather') gear = [{ id: 'hose', dye: pick(['forest', 'walnut', 'brown']), loose: 1 }, { id: 'shoes', kind: 'boot', leather: 'brown', high: 1 }, sh.mil || liv ? { id: 'padding', dye: liv ? liv.field : realm, quilt: 2, len: .22, ease: 9 } : T({ dye: dyeOf('peasant'), len: .22, ease: 9, neck: 'slit', sleeves: 'long' }), T({ dye: pick(['brown', 'dark', 'tan']), len: .16, ease: 11, neck: 'v', sleeves: 'none' }), { id: 'belt', leather: 'dark', w: 30, metal: 'bronze' }, { id: 'baldric', leather: 'dark', from: 0, metal: 'bronze', studs: 1 }, { id: 'bracers', leather: 'dark', studs: q > 0 ? 1 : 0 }];
+    else if (harness === 'mail') gear = [...legs, ...set({ q: Math.min(q, 1) }, 'greaves', 'poleyns'), pad, { id: 'mail' }, { id: 'mailcollar' }, { ...tab, len: .32, point: 0 }, { id: 'belt', leather: 'dark', w: 30, metal: q > 1 ? 'bronze' : 'iron' }, ...(rank !== null && rank < 3 && !liv ? [{ id: 'bracers', leather: 'dark' }] : set({ q, r: rr }, 'vambraces', 'couters')), { id: 'gloves', leather: 'dark' }];        // plate on the arm is a sergeant's and a knight's, not the file's (the blind reading took it for a knight)
     else if (harness === 'plates') gear = [...legs, ...set({ q, r: rr }, 'greaves', 'poleyns'), T({ dye: own ? field : liv ? liv.field : realm, len: .3, ease: 9, fitted: 1, neck: 'high', sleeves: 'long', quilt: 1, trimHem: 'dark', trim: 'dark' }), T({ dye: 'dark', len: .12, ease: 11, neck: 'v', sleeves: 'none' }), { id: 'mailcollar' }, { id: 'belt', leather: 'dark', w: 30, metal: 'bronze' }, { id: 'baldric', leather: 'brown', from: 0, metal: 'bronze' }, { id: 'bracers', leather: 'brown', studs: 1, metal: 'bronze' }, { id: 'pauldrons', q, r: rr, z: 1.35 }];
     else if (harness === 'cuirass') gear = [...legs, ...set({ q, r: rr }, 'cuisses', 'greaves', 'poleyns'), { id: 'mail', sleeves: 'long', len: .3 }, { id: 'mailcollar' }, ...set({ q, r: rr }, 'breastplate', 'fauld'), { id: 'belt', leather: 'dark', w: 30, metal: 'bronze' }, ...set({ q, r: rr }, 'rerebraces', 'vambraces', 'couters', 'gauntlets', 'besagews', 'pauldrons', 'gorget')];
     else {                                          // full plate: every piece of the harness
@@ -151,7 +155,8 @@ export function kit(sh, o) {
     if (rank >= 4 && !own && harness !== 'padded') { const at = gear.findIndex(x => x.id === 'belt'); if (at >= 0) gear.splice(at, 1, { id: 'sash', dye: lv.pale === 'charcoal' ? 'crimson' : lv.pale, w: 40, fringe: rank >= 6 ? 'mustard' : null }); }
     if ((sh.officer || own || rank >= 5 || (liv && role === 'guard')) && !cloak && harness !== 'padded' && harness !== 'leather') gear.splice(gear.findIndex(x => x.id === 'tabard' || x.id === 'belt' || x.id === 'sash'), 0, { id: 'cloak', dye: own ? field : liv ? liv.field : realm, lining: 'navy', trim: q > 1 ? 'gold' : null, len: .84, q, clasp: q > 1 ? 'gold' : 'bronze', mantle: .46 });
     if (royal) gear.push({ id: 'furcollar', fur: 'ermine', z: .2 });
-    poses = sword ? ['pommel', 'pommel', 'belt', 'ease', 'folded'] : ['ease', 'belt', 'folded', 'hip'];
+    // the rank and file stand with the shield and the spear shown (a man-at-arms with a hand on his sword read as a knight)
+    poses = shield0 && rank !== null && rank < 4 ? ['ease'] : sword ? ['pommel', 'pommel', 'belt', 'ease', 'folded'] : ['ease', 'belt', 'folded', 'hip'];
   } else if (kid) {
     const rich = g >= 3 && est !== 'priest', kc = cut === 'kaftan' ? { wrap: 1, neck: 'v', trim: second } : cut === 'drape' ? { sleeves: 'short' } : {};
     if (rich && male) gear = [{ id: 'hose', dye: pick(['navy', 'charcoal', 'walnut']) }, { id: 'shoes', kind: 'ankle', leather: 'brown' }, T({ dye: main, len: cut === 'robe' ? .7 : .22, ease: 8, neck: 'high', sleeves: 'long', trim: 'cream', buttons: 'bronze', fitted: 1, ...kc }), cut === 'tunic' ? { id: 'belt', leather: 'dark', w: 20, metal: 'bronze' } : { id: 'sash', dye: second, w: 30, hang: .6 }];
@@ -162,9 +167,9 @@ export function kit(sh, o) {
     // the clergy: the habit, the cord and the sun are the same in every land; rank is in the white, the stole and the cap
     const high = sh.rung >= 3, mid = sh.rung === 2 || (!high && fine), d = high ? pick(['white', 'cream']) : mourn ? 'charcoal' : pick(['walnut', 'charcoal', 'brown', 'undyed', 'grey']);
     gear = [{ id: 'shoes', kind: 'turn', leather: 'tan' }, T({ dye: d, len: .96, ease: 18, neck: 'round', sleeves: 'wide', flare: 30, folds: 6, trimHem: high ? 'mustard' : null }), { id: 'belt', rope: 1, leather: 'linen', w: 15 },
-      ...(high || mid ? [{ id: 'stole', dye: high ? pick(['crimson', 'purple', 'mustard']) : pick(['white', 'cream', 'sage']), trim: high ? 'mustard' : 'ochre', len: high ? .34 : .2 }] : []),
+      ...(high || mid ? [{ id: 'stole', dye: high ? pick(['crimson', 'purple', 'mustard']) : pick(['white', 'cream', 'sage']), trim: high ? 'mustard' : 'walnut', len: high ? .34 : .2 }] : []),
       ...(cut === 'tunic' || !high ? [{ id: 'hood', dye: d, cape: high ? .4 : .5 }] : []), { id: 'amulet', metal: high ? 'gold' : 'bronze', device: 'sun' }];
-    if (high) headwear = 'mitre';
+    if (high) headwear = 'mitre'; else if (!male) { headwear = 'veil'; headwearOpts = { dye: 'white' }; }       // a woman of the cloth is veiled
     poses = ['sleeves', 'sleeves', 'clasped', ...(age > 60 ? ['staff'] : [])]; staff = high ? 'crozier' : 'staff';
   } else if (role === 'tutor' || ((job === 'scribe' || job === 'healer') && g <= 4 && !work)) {
     // the learned: a long dark gown and a round cap, whatever the land
@@ -177,8 +182,8 @@ export function kit(sh, o) {
     const len = g === 0 ? (male ? .62 : .9) : .95, sashD = liv ? liv.charge : second;
     const base = T({ dye: liv ? liv.field : main, len, ease: g >= 5 ? 12 : 14, neck: g >= 4 ? 'round' : 'slit', sleeves: g >= 3 ? 'wide' : g === 2 && !fine ? 'rolled' : 'long', flare: 34, folds: 7 });
     const feet = { id: 'shoes', kind: g === 0 ? 'bare' : 'turn', leather: g >= 5 ? 'red' : 'tan' };
-    if (g === 0) gear = [feet, { ...base, dye: dyeOf('poor'), wave: 15, patch: 'hemp' }, { id: 'belt', rope: 1, leather: 'hemp', w: 15 }];
-    else if (g === 1) gear = [feet, { ...base, trim: fine || ch(.4) ? second : null }, { id: 'sash', dye: sashD, w: 38, hang: .8 }, ...(work || ch(.3) ? [] : [{ id: 'neckcloth', dye: shade(pick(DYE.peasant)) }]), ...(ch(.4) ? [{ id: 'pouch', side: 1 }] : [])];
+    if (g === 0) gear = [feet, { ...base, dye: dyeOf('poor'), wave: 15, patch: 'walnut', patch2: 'brown', sleeves: ch(.6) ? 'short' : 'rolled' }, { id: 'belt', rope: 1, leather: 'hemp', w: 15 }];
+    else if (g === 1) gear = [feet, { ...base, trim: fine || ch(.4) ? second : null }, { id: 'sash', dye: liv ? sashD : pick(['hemp', 'undyed', second]), w: 26, hang: .45 }, ...(work || ch(.3) ? [] : [{ id: 'neckcloth', dye: shade(pick(DYE.peasant)) }]), ...(ch(.4) ? [{ id: 'pouch', side: 1 }] : [])];
     else if (g === 2) gear = [feet, { ...base, len: male ? .8 : .95 }, ...(clean ? [] : [{ id: 'apron', leather: ['smith', 'mason', 'carpenter', 'bowyer', 'miner'].includes(job) ? pick(['brown', 'dark']) : pick(['linen', 'tan', 'brown']), len: .55 }]), { id: 'sash', dye: sashD, w: 36, hang: .5 }, { id: 'tool', kind: ['smith', 'mason', 'carpenter'].includes(job) || ch(.5) ? 'hammer' : 'knife', side: 1 }];
     else if (g === 3) gear = [feet, { ...base, open: ch(.5) ? 'cream' : 'linen', stripes: ch(.6) ? shade(pick(['cream', 'ochre', 'mustard'])) : null, trim: 'ochre', trimHem: 'ochre' }, { id: 'sash', dye: sashD, w: 44, stripe: 'ochre', fringe: 'ochre' }, { id: 'pouch', side: 1, z: 1.25, keys: 1, leather: 'red' }, ...(fine ? [{ id: 'chain', metal: 'silver' }] : [])];
     else if (g === 4) gear = [feet, { ...base, yoke: pick(['ochre', 'cream', 'mustard']), trimHem: second, hemPat: fine ? 'cream' : null }, { id: 'sash', dye: sashD, w: 42, fringe: 'cream' }, ...(sword ? [] : [{ id: 'tool', kind: 'knife', side: 1 }]), { id: 'brooch', metal: 'silver', throat: 1 }];
@@ -190,10 +195,10 @@ export function kit(sh, o) {
     const long = g >= 3 || !male, len = long ? (g >= 3 ? .84 : .88) : g === 0 ? .4 : .52, tr = g === 0 ? null : g >= 5 ? 'mustard' : g >= 3 ? 'ochre' : liv ? liv.charge : second;
     const base = T({ dye: liv ? liv.field : g === 0 ? dyeOf('poor') : main, len, ease: 11, neck: 'v', wrap: 1, sleeves: g === 2 && !fine ? 'rolled' : 'long', flare: 30, folds: long ? 7 : 5, trim: tr });
     const legs = g === 0 ? [{ id: 'barelegs', from: .12 }, { id: 'wraps', dye: 'hemp' }, { id: 'shoes', kind: 'turn', leather: 'dark' }] : [{ id: 'hose', dye: pick(['walnut', 'brown', 'charcoal', 'hemp']), loose: 1 }, { id: 'shoes', kind: 'boot', leather: g >= 4 ? 'red' : 'brown', high: 1, ...(g >= 3 ? { cuff: 'bear' } : {}) }];
-    if (g === 0) gear = [...legs, { ...base, wave: 15, patch: 'hemp' }, { id: 'belt', rope: 1, leather: 'hemp', w: 15 }];
-    else if (g === 1) gear = [...legs, base, ch(.6) ? { id: 'sash', dye: liv ? liv.charge : second, w: 38, hang: .6 } : { id: 'belt', leather: 'brown', w: 26 }, ...(ch(.4) ? [{ id: 'pouch', side: 1 }] : [])];
+    if (g === 0) gear = [...legs, { ...base, wave: 15, patch: 'walnut', patch2: 'brown', sleeves: ch(.6) ? 'short' : 'rolled' }, { id: 'belt', rope: 1, leather: 'hemp', w: 15 }];
+    else if (g === 1) gear = [...legs, base, ch(.6) ? { id: 'sash', dye: liv ? liv.charge : second, w: 28, hang: .45 } : { id: 'belt', leather: 'brown', w: 26 }, ...(ch(.4) ? [{ id: 'pouch', side: 1 }] : [])];
     else if (g === 2) gear = [...legs, base, ...(clean ? [] : [{ id: 'apron', leather: pick(['brown', 'tan', 'dark']), len: .5 }]), { id: 'belt', leather: 'dark', w: 30, metal: 'iron' }, { id: 'tool', kind: ch(.5) ? 'hammer' : 'knife', side: 1 }];
-    else if (g === 3) gear = [...legs, { ...base, trimHem: pick(['fox', 'bear', 'hare']), trimW: 28 }, { id: 'belt', leather: 'red', w: 28, metal: 'bronze', plaques: 1 }, { id: 'pouch', side: -1, z: 1.25, keys: 1, leather: 'red' }, { id: 'furcollar', fur: pick(['fox', 'hare', 'bear']), z: .16 }];
+    else if (g === 3) gear = [...legs, { ...base, trimHem: pick(['fox', 'bear', 'hare']), trimW: 28 }, { id: 'belt', leather: 'red', w: 28, metal: 'bronze', plaques: 1 }, { id: 'pouch', side: -1, z: 1.4, keys: 1, leather: 'red' }, ...(fine ? [{ id: 'furcollar', fur: pick(['fox', 'hare', 'bear']), z: .16 }] : [])];
     else if (g === 4) gear = [...legs, { ...base, trimHem: second, hemPat: 'cream' }, { id: 'belt', leather: 'dark', w: 28, metal: 'bronze', plaques: 1 }, ...(sword ? [] : [{ id: 'tool', kind: 'knife', side: 1 }]), { id: 'brooch', metal: 'silver', at: 1 }];
     else gear = [...legs, { ...base, trimHem: 'mustard', hemPat: 'mustard', trimW: 20, yoke: null }, { id: 'belt', leather: 'red', w: 30, metal: 'gold', plaques: 1 },
       ...(royal ? [{ id: 'cloak', dye: realm, lining: 'sable', trim: 'gold', len: 1.0, q: 3, clasp: 'gold', mantle: .5, spread: .07 }] : []), { id: 'furcollar', fur: royal ? 'ermine' : pick(['sable', 'fox', 'wolf']), z: royal ? .3 : .2 }, male && !royal ? { id: 'torc', metal: 'gold' } : { id: 'chain', metal: 'gold', gem: royal || sh.rung >= 5 || fine ? gem() : null }];
@@ -205,9 +210,10 @@ export function kit(sh, o) {
       ...(g >= 3 ? { trimHem: edge, hemPat: g >= 4 ? 'cream' : null, hemKind: cult.pat === 'stripe' ? 'stripe' : 'zig' } : {}) });
     const wrap = { id: 'wrapcloth', dye: liv ? liv.field : main, from: ch(.5) ? 0 : 1, edge: g >= 2 || liv ? edge : ch(.5) ? second : null, edgeW: g >= 5 ? 40 : 30, pat: g >= 3 ? (cult.pat === 'stripe' ? 'stripe' : 'zig') : g === 1 && cult.pat ? 'dots' : null, patDye: g >= 5 ? 'crimson' : 'cream', knot: g >= 5 ? 'gold' : g >= 4 ? 'bronze' : null };
     const legs = long ? [{ id: 'shoes', kind: g === 0 ? 'bare' : 'turn', leather: g >= 5 ? 'red' : 'tan' }] : [{ id: 'barelegs', from: .12 }, { id: 'shoes', kind: g <= 1 && ch(.6) ? 'bare' : 'turn', leather: 'tan' }];
-    const bd = n => ({ id: 'beads', rows: n, dyes: [pick(['ochre', 'madder', 'white']), pick(['teal', 'cream', 'scarlet']), 'white'] });
-    if (g === 0) gear = [...legs, { ...shift, wave: 15, patch: male ? null : 'hemp' }, { id: 'belt', rope: 1, leather: 'hemp', w: 15 }];
-    else if (g === 1) gear = [...legs, shift, ...(work ? [] : [wrap]), ch(.5) ? { id: 'sash', dye: second, w: 34, hang: .5 } : { id: 'belt', rope: 1, leather: 'hemp', w: 15 }, ...(ch(.5) ? [bd(1)] : [])];
+    // beads of clay, bone and wood for the commons (ochre beads on a countryman read as gold), glass and coral for the rich
+    const bd = n => ({ id: 'beads', rows: n, dyes: g <= 2 ? [pick(['cream', 'walnut', 'madder']), pick(['walnut', 'cream', 'brown']), 'cream'] : [pick(['ochre', 'madder', 'white']), pick(['teal', 'cream', 'scarlet']), 'white'] });
+    if (g === 0) gear = [...legs, { ...shift, wave: 15, patch: 'walnut', patch2: 'brown' }, { id: 'belt', rope: 1, leather: 'hemp', w: 15 }];
+    else if (g === 1) gear = [...legs, shift, ...(work ? [] : [wrap]), { id: 'belt', leather: pick(['tan', 'brown']), w: 20 }, ...(ch(.3) ? [bd(1)] : [])];
     else if (g === 2) gear = [...legs, shift, ...(clean ? [wrap] : [{ id: 'apron', leather: pick(['brown', 'tan', 'linen']), len: .5 }]), { id: 'belt', leather: 'dark', w: 28, metal: 'iron' }, { id: 'tool', kind: ch(.5) ? 'hammer' : 'knife', side: 1 }, bd(1)];
     else if (g === 3) gear = [...legs, shift, wrap, { id: 'sash', dye: second, w: 42, stripe: 'ochre', fringe: 'ochre' }, { id: 'pouch', side: wrap.from ? -1 : 1, z: 1.25, keys: 1, leather: 'red' }, bd(3)];
     else if (g === 4) gear = [...legs, shift, wrap, { id: 'sash', dye: second, w: 40, fringe: 'cream' }, ...(sword ? [] : [{ id: 'tool', kind: 'knife', side: wrap.from ? -1 : 1 }]), bd(2)];
@@ -215,8 +221,8 @@ export function kit(sh, o) {
     poses = g <= 1 ? (male ? ['ease', 'hip', 'behind', 'folded'] : ['clasped', 'hip', 'ease']) : g === 2 ? ['folded', 'hip', 'ease', 'belt'] : male ? ['clasped', 'belt', 'hip', 'ease'] : ['clasped', 'ease', 'hip'];
   } else if (g === 0) {
     const bare = est !== 'serf';
-    if (male) gear = [{ id: 'barelegs', from: .12 }, ...(bare ? [] : [{ id: 'wraps', dye: 'hemp' }]), { id: 'shoes', kind: bare ? 'bare' : 'turn', leather: 'dark' }, T({ dye: dyeOf('poor'), len: .34, ease: 14, neck: 'slit', sleeves: ch(.35) ? 'rolled' : 'long', patch: 'hemp', wave: 15 }), ...(est === 'prisoner' ? [] : [{ id: 'belt', rope: 1, leather: 'hemp', w: 16 }])];
-    else gear = [{ id: 'shoes', kind: bare ? 'bare' : 'turn', leather: 'dark' }, T({ dye: dyeOf('poor'), len: .9, ease: 10, neck: 'round', sleeves: 'long', patch: 'hemp', flare: 40, folds: 6, wave: 14 }), { id: 'belt', rope: 1, leather: 'hemp', w: 14 }, ...(est === 'serf' && ch(.4) ? [{ id: 'apron', leather: 'undyed', len: .6 }] : [])];
+    if (male) gear = [{ id: 'barelegs', from: .12 }, ...(bare ? [] : [{ id: 'wraps', dye: 'hemp' }]), { id: 'shoes', kind: bare ? 'bare' : 'turn', leather: 'dark' }, T({ dye: dyeOf('poor'), len: .34, ease: 14, neck: 'slit', sleeves: ch(.7) ? 'short' : 'rolled', patch: 'walnut', patch2: 'brown', wave: 15 }), ...(est === 'prisoner' ? [] : [{ id: 'belt', rope: 1, leather: 'hemp', w: 16 }])];
+    else gear = [{ id: 'shoes', kind: bare ? 'bare' : 'turn', leather: 'dark' }, T({ dye: dyeOf('poor'), len: .9, ease: 10, neck: 'round', sleeves: ch(.6) ? 'short' : 'rolled', patch: 'walnut', patch2: 'brown', flare: 40, folds: 6, wave: 14 }), { id: 'belt', rope: 1, leather: 'hemp', w: 14 }, ...(est === 'serf' && ch(.4) ? [{ id: 'apron', leather: 'undyed', len: .6 }] : [])];
     if (est === 'serf' && (work || where === 'out' ? ch(.6) : ch(.25))) headwear = male ? pick(['strawhat', 'coif']) : 'kerchief'; headwearOpts = { dye: 'undyed' };
     poses = male ? ['ease', 'behind', 'belt', 'hip'] : ['clasped', 'ease', 'hip'];
   } else if (royal) {
@@ -233,9 +239,9 @@ export function kit(sh, o) {
     else if (male) gear = [{ id: 'hose', dye: v ? hc : pick(['charcoal', 'navy', 'walnut']) }, { id: 'shoes', kind: 'boot', leather: 'dark', high: 1 }, T({ dye: main, len: .34, ease: 8, fitted: 1, neck: 'high', sleeves: 'long', trim: 'mustard', trimHem: 'mustard', trimW: 14, buttons: 'gold', flare: 30 }), { id: 'belt', leather: 'dark', w: 30, metal: 'gold', plaques: 1 },
       ...(fine || road || ch(.6) ? [{ id: 'cloak', dye: v ? shade(pick(DYE.noble)) : hc, lining: v ? hc : 'charcoal', trim: 'gold', len: v ? .5 : .78, q: 2, clasp: 'gold', mantle: .46 }, ...(v ? [] : [{ id: 'furcollar', fur: pick(['sable', 'wolf', 'fox']), z: .22 }]), ...(fine ? [jewel] : [])] : [jewel])];
     else gear = [{ id: 'shoes', kind: 'poulaine', leather: 'red' }, T({ dye: v === 1 ? second : main, len: 1.0, ease: 4, fitted: 1, neck: 'wide', sleeves: v === 2 ? 'bell' : 'wide', trim: 'mustard', trimHem: 'mustard', flare: 70, folds: 9 }),
-      ...(v === 1 ? [T({ dye: main, len: .98, ease: 9, neck: 'v', sleeves: 'none', trim: 'mustard', trimHem: pick(['ermine', 'sable', 'mustard']), flare: 66, folds: 8 })] : []), { id: 'belt', leather: 'red', w: 20, metal: 'gold', plaques: 1, hang: 240, at: .5 }, jewel,
+      ...(v === 1 ? [T({ dye: main, len: .98, ease: 9, neck: 'v', sleeves: 'none', trim: 'mustard', trimHem: pick(['ermine', 'sable', 'mustard']), flare: 66, folds: 8 })] : []), { id: 'belt', leather: 'red', w: 20, metal: 'gold', plaques: 1, hang: 240, at: .5 }, jewel, ...(!mourn && !work ? [{ id: 'furcollar', fur: pick(['ermine', 'sable', 'fox']), z: .17 }] : []),
       ...(fine && v !== 1 ? [{ id: 'cloak', dye: hc, lining: 'charcoal', trim: 'gold', len: .9, q: 2, clasp: 'gold', mantle: .44 }] : [])];
-    headwear = work ? 'none' : !male ? (ch(.5) ? 'circlet' : sh.married && ch(.5) ? 'veil' : 'none') : sh.rung >= 5 && ch(.5) ? 'circlet' : v === 1 && ch(.5) ? 'cap' : 'none';
+    headwear = work ? 'none' : !male ? (ch(.7) ? 'circlet' : 'veil') : sh.rung >= 5 && ch(.5) ? 'circlet' : v === 1 && ch(.5) ? 'cap' : 'none';
     headwearOpts = headwear === 'veil' ? { fillet: 1, dye: mourn ? 'black' : 'white' } : headwear === 'cap' ? { dye: second, badge: 'gold', feather: ch(.5) ? 'white' : null } : {};
     poses = male ? (sword ? ['pommel', 'pommel', 'belt', 'hip'] : ['belt', 'hip', 'behind', 'ease']) : ['clasped', 'ease', 'hip', 'sleeves'];
   } else if (g === 4) {
@@ -248,14 +254,14 @@ export function kit(sh, o) {
     poses = male ? (sword ? ['pommel', 'belt', 'hip'] : ['belt', 'hip', 'ease', 'behind']) : ['clasped', 'ease', 'hip'];
   } else if (g === 3) {
     const d = main;
-    if (male) gear = [{ id: 'shoes', kind: 'turn', leather: 'dark' }, T({ dye: d, len: .93, ease: 16, neck: 'v', sleeves: 'bell', trim: 'ochre', trimHem: pick(['bear', 'fox', 'sable']), trimW: 30, flare: 44, folds: 7, buttons: 'bronze' }), { id: 'belt', leather: 'red', w: 26, metal: 'bronze', plaques: 1 }, { id: 'pouch', side: -1, z: 1.25, keys: 1, leather: 'red' }, { id: 'furcollar', fur: pick(['bear', 'fox', 'wolf']), z: .2 }, ...(fine ? [{ id: 'chain', metal: 'silver' }] : [])];
-    else gear = [{ id: 'shoes', kind: 'turn', leather: 'dark' }, T({ dye: d, len: .97, ease: 8, fitted: 1, neck: 'round', sleeves: 'bell', trim: 'ochre', trimHem: 'ochre', flare: 56, folds: 8 }), { id: 'belt', leather: 'red', w: 20, metal: 'bronze', plaques: 1 }, { id: 'pouch', side: -1, z: 1.1, keys: 1, leather: 'red' }, { id: 'furcollar', fur: pick(['bear', 'fox']), z: .16 }, ...(fine ? [{ id: 'chain', metal: 'silver' }] : [])];
-    headwear = male ? (ch(.7) ? pick(['chaperon', 'chaperon', 'cap']) : 'none') : ch(.6) ? 'veil' : 'none'; headwearOpts = male ? { dye: shade(pick(DYE.merchant)), badge: headwear === 'cap' ? 'bronze' : 1 } : { dye: mourn ? 'black' : 'white' };
+    if (male) gear = [{ id: 'shoes', kind: 'turn', leather: 'dark' }, T({ dye: d, len: .93, ease: 16, neck: 'v', sleeves: 'bell', trim: 'ochre', trimHem: pick(['bear', 'fox', 'sable']), trimW: 30, flare: 44, folds: 7, buttons: 'bronze' }), { id: 'belt', leather: 'red', w: 26, metal: 'bronze', plaques: 1 }, { id: 'pouch', side: -1, z: 1.4, keys: 1, leather: 'red' }, ...(fine ? [{ id: 'furcollar', fur: pick(['bear', 'fox', 'wolf']), z: .2 }, { id: 'chain', metal: 'silver' }] : [])];
+    else gear = [{ id: 'shoes', kind: 'turn', leather: 'dark' }, T({ dye: d, len: .97, ease: 8, fitted: 1, neck: 'round', sleeves: 'bell', trim: 'ochre', trimHem: 'ochre', flare: 56, folds: 8 }), { id: 'belt', leather: 'red', w: 20, metal: 'bronze', plaques: 1 }, { id: 'pouch', side: -1, z: 1.3, keys: 1, leather: 'red' }, ...(fine ? [{ id: 'furcollar', fur: pick(['bear', 'fox']), z: .16 }, { id: 'chain', metal: 'silver' }] : [])];
+    headwear = male ? pick(['chaperon', 'chaperon', 'cap']) : ch(.6) ? 'veil' : 'none'; headwearOpts = male ? { dye: shade(pick(DYE.merchant)), badge: headwear === 'cap' ? 'bronze' : 1 } : { dye: mourn ? 'black' : 'white' };
     poses = male ? ['clasped', 'belt', 'folded', 'ease'] : ['clasped', 'ease', 'sleeves'];
   } else if (g === 2) {
     // the crafts: the apron and the tool of the trade, sleeves rolled; on a feast day a clean coat and a cap
     const heavy = ['smith', 'mason', 'carpenter', 'bowyer', 'miner'].includes(job), lc = liv ? liv.field : main;
-    if (male) gear = [{ id: 'hose', dye: pick(['walnut', 'brown', 'charcoal']) }, { id: 'shoes', kind: 'boot', leather: 'dark' }, T({ dye: !liv && !fine && ch(.4) ? 'cream' : lc, len: .28, ease: 9, neck: 'slit', sleeves: fine ? 'long' : ch(.6) ? 'rolled' : 'long', trim: fine ? second : null }),
+    if (male) gear = [{ id: 'hose', dye: pick(['walnut', 'brown', 'charcoal']) }, { id: 'shoes', kind: 'boot', leather: 'dark' }, T({ dye: !liv && !fine && ch(.4) && !chosen ? shade('cream') : lc, len: .28, ease: 9, neck: 'slit', sleeves: fine ? 'long' : ch(.6) ? 'rolled' : 'long', trim: fine ? second : null }),
       ...(clean ? [] : heavy || ch(.75) ? [{ id: 'apron', leather: heavy ? pick(['brown', 'dark']) : pick(['brown', 'tan', 'dark', 'linen']), len: .5 }] : []), { id: 'belt', leather: 'dark', w: 32, metal: 'iron' }, { id: 'tool', kind: heavy || ch(.5) ? 'hammer' : 'knife', side: 1 }, ...(ch(.5) ? [{ id: 'pouch', side: -1 }] : [])];
     else gear = [{ id: 'shoes', kind: 'turn', leather: 'brown' }, T({ dye: lc, len: .97, ease: 5, fitted: 1, neck: 'laced', sleeves: fine ? 'long' : ch(.4) ? 'rolled' : 'long', flare: 60, folds: 8, trimHem: fine ? second : null }), ...(clean ? [] : [{ id: 'apron', leather: pick(['linen', 'linen', 'cream', 'tan']), len: .7 }]), { id: 'belt', leather: 'tan', w: 18 }, { id: 'pouch', side: -1 }, ...(ch(.4) ? [{ id: 'tool', kind: 'knife', side: 1 }] : [])];
     if (badge) gear.push(badge);
@@ -277,10 +283,10 @@ export function kit(sh, o) {
   // a people's habits, on any cut: beads or bones at the neck, a torc, a worked yoke, fur, a border on the hem
   if (civilDress && !royal && grown) {
     const has = k => gear.some(x => x.id === k), mainT = gear.find(x => x.id === 'tunic');
-    if ((cult.collar === 'beads' || cult.collar === 'bones') && !has('beads') && !has('chain') && g >= 1 && ch(cult.collar === 'bones' ? .7 : .5)) gear.push({ id: 'beads', rows: g >= 3 ? 2 : 1, fangs: cult.collar === 'bones' ? 1 : 0, dyes: cult.collar === 'bones' ? ['walnut', 'cream'] : [pick(['ochre', 'madder', 'white']), 'teal'] });
+    if ((cult.collar === 'beads' || cult.collar === 'bones') && !has('beads') && !has('chain') && g >= 1 && ch(cult.collar === 'bones' ? .7 : .5)) gear.push({ id: 'beads', rows: g >= 3 ? 2 : 1, fangs: cult.collar === 'bones' ? 1 : 0, dyes: cult.collar === 'bones' ? ['walnut', 'cream'] : g <= 2 ? [pick(['cream', 'walnut', 'madder']), 'walnut'] : [pick(['ochre', 'madder', 'white']), 'teal'] });
     if (cult.torc && g >= 2 && !has('torc') && !has('chain') && !has('beads') && ch(.6)) gear.push({ id: 'torc', metal: g >= 5 ? 'gold' : g >= 4 ? 'silver' : 'bronze' });
     if (cult.collar === 'embroidered' && mainT && !mainT.yoke && g >= 1 && g <= 4 && ch(.7)) mainT.yoke = pick(['madder', 'cream', 'woad']);
-    if ((cult.collar === 'fur' || cult.fur) && !has('furcollar') && !has('cloak') && !has('shawl') && !has('hood') && g >= 1 && g <= 4 && ch(cult.collar === 'fur' ? .5 : .25)) gear.push({ id: 'furcollar', fur: pick(['wolf', 'bear', 'hare']), z: .15 });
+    if ((cult.collar === 'fur' || cult.fur) && !has('furcollar') && !has('cloak') && !has('shawl') && !has('hood') && g === 4 && ch(cult.collar === 'fur' ? .5 : .25)) gear.push({ id: 'furcollar', fur: pick(['wolf', 'bear', 'hare']), z: .15 });
     if (cult.sash && cut === 'tunic' && g >= 1 && g <= 4 && ch(.7)) { const at = gear.findIndex(x => x.id === 'belt' && !x.rope); if (at >= 0 && !gear.some(x => x.id === 'tool' || x.id === 'pouch')) gear.splice(at, 1, { id: 'sash', dye: second, w: 36, hang: .6 }); }
     if (cult.pat && cut === 'tunic' && mainT && g >= 1 && !mainT.hemPat && mainT.len > .2 && ch(.5)) { mainT.hemPat = pick(['cream', 'ochre']); mainT.hemKind = cult.pat === 'stripe' ? 'stripe' : 'zig'; }
     if (cult.band && mainT && !mainT.trim && g >= 1 && ch(.6)) mainT.trim = second;
@@ -327,13 +333,14 @@ export function kit(sh, o) {
   // a people's own headwear. A raised hood is for the road and the weather: never in a list, never under a roof
   const hatWord = Array.isArray(cult.hat) ? cult.hat[male ? 0 : 1] : null;
   if (headwear === 'none' && civilDress && grown && !royal && hatWord && !(role === 'tutor')) {
-    const rich = g >= 5, p = hatWord === 'hood' ? (where === 'out' && g <= 2 ? (road ? .5 : .3) : 0) : hatWord === 'turban' || hatWord === 'wrap' ? .62 : hatWord === 'veil' ? (sh.married || age > 34 ? .6 : .3) : hatWord === 'fillet' || hatWord === 'leaves' || hatWord === 'feathers' ? .5 : g === 0 ? .2 : .45;
+    const rich = g >= 5, p = g === 0 ? (!male && (hatWord === 'kerchief' || hatWord === 'veil') ? .35 : 0) : hatWord === 'hood' ? (where === 'out' && g <= 2 ? (road ? .5 : .3) : 0) : hatWord === 'turban' || hatWord === 'wrap' ? .62 : hatWord === 'veil' ? (sh.married || age > 34 ? .6 : .3) : hatWord === 'fillet' || hatWord === 'leaves' || hatWord === 'feathers' ? .5 : g === 0 ? .2 : .45;
     const hd = mourn ? 'charcoal' : null;
     if (hch(p)) {
       if (hatWord === 'hood') { headwear = 'hood'; headwearOpts = { dye: (gear.find(x => x.id === 'cloak') || {}).dye || shade(hpick(DYE.hood)) }; }
-      else if (hatWord === 'turban') { headwear = 'turban'; headwearOpts = { dye: hd || (g === 0 ? 'undyed' : rich ? hpick(['white', 'cream', second]) : hpick(['white', 'cream', 'linen', second])), big: g >= 3 ? 1 : 0, tail: g <= 2 && hch(.5) ? 1 : 0, band: g === 3 || g === 4 ? 'ochre' : null, jewel: rich ? gem() : null }; }
-      else if (hatWord === 'wrap') { headwear = 'headwrap'; headwearOpts = { dye: hd || (g === 0 ? 'undyed' : second), tall: g >= 3 || !male ? 1 : 0, band: g >= 3 ? (rich ? 'mustard' : 'ochre') : null }; }
+      else if (hatWord === 'turban') { headwear = 'turban'; headwearOpts = { dye: hd || (g <= 2 ? hpick(['undyed', 'hemp', 'cream', second]) : rich ? hpick(['white', 'cream', second]) : hpick(['white', 'cream', 'linen', second])), big: g >= 3 ? 1 : 0, tail: g <= 2 ? 1 : 0, band: g === 3 || g === 4 ? 'ochre' : null, jewel: rich ? gem() : null }; }
+      else if (hatWord === 'wrap') { headwear = 'headwrap'; headwearOpts = { dye: hd || (g <= 1 ? hpick(['undyed', 'hemp', second]) : second), tall: g >= 3 ? 1 : 0, band: g >= 3 ? (rich ? 'mustard' : 'ochre') : null }; }
       else if (hatWord === 'kerchief') { headwear = 'kerchief'; headwearOpts = { dye: hd || (g === 0 ? 'undyed' : hpick(['linen', 'white', 'cream', second])), band: g >= 2 ? second : null }; }
+      else if (hatWord === 'veil' && g === 0) { headwear = 'kerchief'; headwearOpts = { dye: 'undyed' }; }
       else if (hatWord === 'veil') { headwear = 'veil'; headwearOpts = { dye: hd || (g >= 3 ? 'white' : hpick(['linen', 'cream', 'undyed'])), fillet: g >= 5 ? 1 : 0 }; }
       else if (hatWord === 'cone') { headwear = 'conehat'; headwearOpts = { dye: hd || (g === 0 ? 'hemp' : hpick(['walnut', 'grey', 'brown', second])), fur: g >= 3 ? hpick(['fox', 'bear', 'sable']) : null, band: g >= 1 ? second : null }; }
       else if (hatWord === 'furhat') { headwear = 'furhat'; headwearOpts = { dye: hd || (g === 0 ? 'hemp' : g >= 3 ? main : second), fur: g >= 5 ? 'sable' : g >= 3 ? 'fox' : hpick(['bear', 'wolf', 'hare']) }; }
@@ -346,7 +353,9 @@ export function kit(sh, o) {
   if (where !== 'out' && headwear === 'hood') { headwear = 'none'; headwearOpts = {}; }
   if (where === 'list' && headwear === 'strawhat' && !work) { headwear = 'none'; headwearOpts = {}; }
   if (mourn && headwear === 'veil') headwearOpts = { ...headwearOpts, dye: 'black' };
-  let pose = poses[Math.floor(stream(id, 'pose')() * poses.length) % poses.length];
+  // the fit: no two coats hang quite alike (a hand's breadth in the hem, a finger in the ease). A livery is cut to one pattern.
+  if (!liv) { const rf = stream(id, 'kit-fit'), t = gear.find(x => x.id === 'tunic' || x.id === 'padding'); if (t && typeof (t.len ?? .36) === 'number') { t.len = Math.round(((t.len ?? .36) + (Math.floor(rf() * 9) - 4) * .006) * 1000) / 1000; t.ease = (t.ease ?? 10) + Math.floor(rf() * 5) - 2; t.flare = (t.flare ?? 26) + Math.floor(rf() * 7) * 2 - 6; } }
+  let pose = poses[Math.floor(stream(o.id, 'pose')() * poses.length) % poses.length];
   if ((pose === 'pommel' || pose === 'sword') && !gear.some(x => x.id === 'sword')) pose = 'belt';
   if ((pose === 'belt') && gear.some(x => x.id === 'sash') && !gear.some(x => x.id === 'belt')) pose = 'hip';
   return { gear: gear.filter(Boolean), headwear, headwearOpts, pose, staff, arms, wear, cut, grade: g, livery: !!liv || (!!harness && !(device && (est === 'noble' || royal))) };
