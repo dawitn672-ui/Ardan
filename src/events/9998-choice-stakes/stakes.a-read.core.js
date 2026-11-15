@@ -54,10 +54,11 @@
 
   // ---- the families: what a key of fx changes, in a word, and when the change is large ----------------------------
   // [key, word, large at, sense (+1: more is better; -1: more is worse), order (lower shows first)]
+  // X3: coinPct is a fraction of the purse (-0.03 is three in a hundred), so its large size is an eighth, not 20
   ST.KEYS = [
     ['die', 'death', 1, -1, 0], ['prison', 'prison', 1, -1, 1], ['wound', 'a wound', 1, -1, 2], ['punish', 'punishment', 1, -1, 3],
     ['free', 'freedom', 1, 1, 4],
-    ['health', 'health', 10, 1, 10], ['coinPct', 'coin', 20, 1, 12],
+    ['health', 'health', 10, 1, 10], ['coinPct', 'a share of your coin', 0.12, 1, 12],
     ['them', 'their regard', 20, 1, 14], ['newRel', 'a new bond', 1, 1, 15], ['lover', 'a lover', 1, 1, 15],
     ['honor', 'honour', 5, 1, 20], ['fame', 'renown', 5, 1, 21], ['infamy', 'infamy', 5, -1, 22], ['piety', 'piety', 5, 1, 23],
     ['rep', 'your name', 5, 1, 24],
@@ -166,7 +167,7 @@
     const out = [];
     if (side === 'fail') {
       // 97's own words where they apply ("hurt", "−5 suns", "their regard"): one grammar with the line players know
-      for (const p of R.down) out.push(p.k === 'health' ? 'hurt' : p.k === 'happy' && (R.down.length > 1 || R.coin) ? null : p.k === 'coinPct' ? (R.coin ? null : 'some coin') : p.k === 'happy' ? 'your spirits' : p.w);
+      for (const p of R.down) out.push(p.k === 'health' ? 'hurt' : p.k === 'happy' && (R.down.length > 1 || R.coin) ? null : p.k === 'coinPct' ? 'a share of your coin' : p.k === 'happy' ? 'your spirits' : p.w);
       if (R.coin) out.splice(Math.min(out.length, R.down.filter(p => p.o <= 10).length), 0, '−' + coin(R.coin));
       if (R.fight) out.unshift(ST.fightWord(R.fightKind));
       for (const p of R.touch) out.push('• ' + p.w);
@@ -230,7 +231,8 @@
       if (c.fx && typeof c.fx === 'object' && num(c.fx, 'treasury') < 0 && !/\btreasury\b/i.test(label)) chips.push({ k: 'cost', t: 'Treasury ' + coin(-c.fx.treasury), treasury: true });
       let room = 3;
       if (R.fight) { chips.push({ k: 'risk', t: 'Starts ' + ST.fightWord(R.fightKind), fight: true, kind: R.fightKind || 'death' }); room--; }
-      for (const p of R.down) { if (room <= 0) break; if (p.k === 'treasury' || (p.k === 'coinPct' && R.coin)) continue; chips.push({ k: 'cost', t: mark(p, false) + ' ' + p.w, part: p }); room--; }
+      // X3 (E2): a price and a share of the purse are both said ('Costs 4 suns', '▼ a share of your coin')
+      for (const p of R.down) { if (room <= 0) break; if (p.k === 'treasury') continue; chips.push({ k: 'cost', t: mark(p, false) + ' ' + p.w, part: p }); room--; }
       if (R.gainCoin && room > 0 && !priced) { chips.push({ k: 'gain', t: '+' + coin(R.gainCoin), n: R.gainCoin }); room--; }
       for (const p of R.up) { if (room <= 0) break; chips.push({ k: 'gain', t: mark(p, true) + ' ' + p.w, part: p }); room--; }
       for (const p of R.touch) { if (room <= 0) break; chips.push({ k: 'touch', t: '• ' + p.w, part: p }); room--; }
