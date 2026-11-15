@@ -249,6 +249,13 @@
       if (!pc.rel[y.id]) A.link(pc, y, 'inlaw', 10, 'inlaw');
       return `(${x.given} and ${y.given} are married.)`;
     },
+    // C6 (D-057): a claimant named kin goes into the tree, as a bastard of a real man of the family (A.KIN.recognize)
+    recognize: (pc, ctx) => {
+      const q = A.P(ctx.pid); if (!q || !A.KIN) return '';
+      const s = A.KIN.sireFor(pc, ['uncle', 'grandparent']);
+      A.KIN.recognize(pc, q, s && s.id, 40);
+      return pc.rel[q.id] ? `(${q.given} is written in the register as your ${A.relLabel(q, pc.rel[q.id]).toLowerCase()}.)` : '';
+    },
     unwedKin: (pc, ctx) => { const a = AK.st(pc, ctx.arc), x = A.P(a.who.kin), y = A.P(a.who.mate); return part(x, y) ? `(${x.given} is free of ${y.given}.)` : ''; },
     // the house in a will: a town house for people of standing, a cottage for the rest
     house: (pc, ctx) => grant(pc, C.rich(pc) || AK.hi(pc) ? 'townhouse' : 'cottage', ctx.arc),

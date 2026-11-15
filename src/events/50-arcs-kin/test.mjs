@@ -5,7 +5,7 @@ import { TARGETS } from '../../../tools/bench/targets.mjs';
 
 // keys that leave something lasting (the brief's list), and the fx.akin effects that do
 const STRONG = ['trait', 'untrait', 'epithet', 'wound', 'newRel', 'rel', 'asset', 'claim', 'sworn', 'deed'];
-const OPS = ['acknowledge', 'adopt', 'wed', 'unwed', 'wedKin', 'unwedKin', 'house', 'farm', 'mill', 'cottage', 'sell', 'wedMatch', 'fate'];
+const OPS = ['acknowledge', 'adopt', 'wed', 'unwed', 'wedKin', 'unwedKin', 'recognize', 'house', 'farm', 'mill', 'cottage', 'sell', 'wedMatch', 'fate'];
 
 const SETUP = () => {
   window.AKT = {

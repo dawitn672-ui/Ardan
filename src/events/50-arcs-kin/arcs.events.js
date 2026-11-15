@@ -292,6 +292,7 @@
     const hs = H.get(p, SF, 'hs', () => {
       const q = H.mk(p, { age: Math.max(14, Math.min(40, H.adj(p) - A.ri(4, 10))), parents: [fa.id, ow.id], sur: ow.sur, surMode: ow.surMode, status: ow.status });
       q.flags.bastard = true;
+      q.flags.c6revealed = A.S.year;   // C6 (D-057): your father's other family is a secret the story tells, flagged
       if (!fa.children.includes(q.id)) fa.children.push(q.id);
       if (!ow.children.includes(q.id)) ow.children.push(q.id);
       return q;
@@ -659,7 +660,7 @@
       text: p => `${M(p, 'akx_truth') ? "The bishop's court has Father {pr}'s word on the bride's first husband, and the contract is worth nothing. {bas} is a bastard twice over." : M(p, 'akx_cut') || M(p, 'akx_against') ? 'Without the register, or the family, the court has only a contract and a story.' : M(p, 'akx_for') ? 'You spoke for {basHim} in your own hall, and the court has heard of it.' : M(p, 'akx_terms') ? '{bas} has had your terms: the name, and none of the land.' : M(p, 'akx_split') ? 'The family said two things at once, and the court heard both.' : "The court has the contract, the register and the family's word."} {bas} comes to you one last time, older than when {basHe} came, with {basHis} spears paid off.`,
       choices: [
         { t: 'Name {basHim} kin, and seat {basHim} high', r: '{bas} goes into the register, onto the family tomb and to the top of your table. {basHe} swears to the family in turn, and means it.',
-          fx: { honor: 2, them: { op: 40, type: 'cousin' }, sworn: true, flag: 'ak_bas_named', arc: { go: 'end' } } },
+          fx: { akin: 'recognize', honor: 2, them: { op: 40 }, sworn: true, flag: 'ak_bas_named', arc: { go: 'end' } } },
         { t: "Let the court's word stand, whatever it is", r: "You let the court have the last word. It is written down, and the matter is closed, and so is {bas}'s face.",
           fx: { honor: 3, them: { op: -15 }, deed: 'Let the court settle the family name', flag: 'ak_bas_judged', arc: { go: 'end' } } },
         { t: 'Pay {basHim} to ride away', r: '{bas} weighs your purse, laughs, and rides away with it. {basHe} will tell the story in every inn on the road.',

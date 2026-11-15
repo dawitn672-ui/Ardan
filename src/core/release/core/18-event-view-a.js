@@ -412,6 +412,14 @@ A.applyFx = function (pc, fx, ctx) {
         }
         break;
       case "newRel": {
+        // [C6, D-057] a "new relative" is one of the tree not met before, met now; with none, nobody (no kin is minted)
+        if (A.KIN && A.KIN.WORDS.includes(v.type)) {
+          const k = A.KIN.list(pc, [v.type]).filter(x => !pc.rel[x.id]);
+          if (!k.length) break;
+          const q = A.KIN.take(pc, [v.type], { ok: x => k.includes(x), op: v.op || 20 });
+          out.push(`(${q.given} is your ${A.relLabel(q, pc.rel[q.id]).toLowerCase()})`);
+          break;
+        }
         const p = A.makeAcquaintance(pc, v.type || "friend");
         A.link(pc, p, v.type || "friend", v.op || 30, v.back || v.type || "friend");
         out.push(
