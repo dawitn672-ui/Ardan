@@ -1032,59 +1032,105 @@ var __ARDAN_V2_MAKE = (() => {
   // src/world/engine/names.js
   var names_exports = {};
   __export(names_exports, {
-    CULTURES: () => CULTURES,
-    makeNamer: () => makeNamer
+    LEGACY: () => LEGACY,
+    familyName: () => familyName,
+    givenName: () => givenName,
+    hasNameData: () => hasNameData,
+    hash32: () => hash32,
+    makeNamer: () => makeNamer,
+    placeName: () => placeName,
+    poolKey: () => poolKey,
+    sees: () => sees,
+    setNameData: () => setNameData,
+    stockOf: () => stockOf
   });
-  var CULTURES = {
-    aldic: {
-      male: ["Al", "Ber", "Cor", "Ed", "Gar", "Har", "Os", "Ro", "Wil", "Ty", "Ald", "Bran"],
-      maleEnd: ["ric", "win", "mund", "ard", "bert", "old", "an", "wen", "red"],
-      female: ["Ae", "Bea", "Ce", "El", "Gwen", "Is", "Mar", "Ro", "Wyn", "Ad", "Ma"],
-      femaleEnd: ["wen", "da", "lyn", "ith", "ra", "gyth", "ela", "ris"],
-      house: ["Ash", "Black", "Hollin", "Stone", "Wyr", "Bram", "Thorn", "Gale", "Marl", "Hart"],
-      houseEnd: ["ford", "mere", "wick", "dale", "hold", "ley", "brook", "ham"]
-    },
-    solenne: {
-      male: ["Am", "Ber", "Cel", "Gas", "Lu", "Ma", "Re", "Thi", "Ga", "Jeh"],
-      maleEnd: ["aury", "trand", "estin", "ton", "cien", "rin", "naud", "baut", "llard"],
-      female: ["A", "Bé", "Cla", "É", "Is", "Lis", "Mar", "Sé", "Yo"],
-      femaleEnd: ["line", "atrix", "rette", "lise", "eut", "onne", "gaude", "rine"],
-      house: ["Val", "Mont", "Beau", "Roche", "Lan", "Cler", "Fon"],
-      houseEnd: ["mont", "fort", "court", "lieu", "val", "cieux", "teine"]
-    },
-    khuul: {
-      male: ["Bat", "Tem", "Ar", "Jeb", "Ogh", "Sub", "Tol", "Chag", "Mun"],
-      maleEnd: ["ur", "gen", "dai", "ke", "tai", "lun", "jin", "khar"],
-      female: ["Bor", "Kha", "Ol", "Sor", "Al", "Ech", "Tur"],
-      femaleEnd: ["te", "lun", "gana", "ke", "ai", "jin"],
-      house: ["Borg", "Tai", "Ong", "Mer", "Kere"],
-      houseEnd: ["hen", "chut", "git", "kit", "id"]
-    },
-    orcish: {
-      male: ["Gro", "Ush", "Mak", "Thra", "Gor", "Dur", "Kra", "Rug"],
-      maleEnd: ["ath", "nak", "gul", "tar", "mok", "uk", "gash"],
-      female: ["Sha", "Gru", "Ura", "Mog", "Yaz", "Bor"],
-      femaleEnd: ["ka", "zha", "gra", "mira", "lok"],
-      house: ["Tusk", "Red Hide", "Old Mare", "Iron Jaw", "Ash Hoof"],
-      houseEnd: [""],
-      place: ["Kra", "Gor", "Ush", "Thar", "Mok", "Dra"],
-      placeEnd: ["oth", "gash", "rak", "mul", "dun", "zar"]
-    }
+  var DATA = null;
+  var CACHE = /* @__PURE__ */ new Map();
+  function setNameData(d) {
+    DATA = d && d.common ? d : null;
+    CACHE.clear();
+  }
+  var hasNameData = () => !!DATA;
+  var LEGACY = { aldic: "CUL-02", solenne: "CUL-01", khuul: "CUL-03", orcish: "CUL-22" };
+  var MINI = {
+    male: ["John", "Thomas", "Walter", "Hugh", "Edmund", "Roger", "Simon", "Peter"],
+    female: ["Alice", "Agnes", "Maud", "Joan", "Edith", "Emma", "Anne", "Ruth"],
+    family: ["Miller", "Fletcher", "Ashford", "Hill", "Fox", "Baker", "Marsh", "Wood"],
+    places: ["Ashford", "Kingsbridge", "Thornbury", "Elmstead", "Brookfield", "Oakham", "Hartley", "Stanton"]
   };
+  function hash32(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+  function stockOf(culture) {
+    if (!DATA) return { id: String(culture), uses: "mini", common: true, pool: MINI, accent: null };
+    const id = LEGACY[culture] || culture;
+    const c = DATA.cultures[id] || DATA.cultures["CUL-02"];
+    const common = c.uses === "common";
+    return { id: DATA.cultures[id] ? id : "CUL-02", uses: c.uses, common, pool: common ? DATA.common : DATA.pools[c.uses], accent: c.accent || null };
+  }
+  var sexKey = (sex) => sex === "F" || sex === "female" ? "female" : "male";
+  function view(st, field, realm) {
+    const k = `${st.uses}|${field}|${st.id}|${realm || ""}`;
+    let v = CACHE.get(k);
+    if (!v) {
+      const all = st.pool[field] || [];
+      const cPct = st.common ? 60 : 100, rPct = st.common ? 80 : 85;
+      v = all.filter((n) => hash32(`${n}|${st.id}`) % 100 < cPct && (!realm || hash32(`${n}|${realm}`) % 100 < rPct));
+      if (v.length < 40) v = all;
+      CACHE.set(k, v);
+    }
+    return v;
+  }
+  function draw(rng, list, avoid, tries = 6) {
+    let n = rng.pick(list);
+    for (let t = 0; t < tries && avoid && avoid.has(n); t++) n = rng.pick(list);
+    return n;
+  }
+  var LEAN_P = 0.28;
+  var ACCENT_P = 0.12;
+  function lists(st, field, sexOrNull, realm) {
+    const lean2 = DATA && realm && DATA.lean && DATA.lean[realm], f = sexOrNull || field;
+    return { lean: lean2 ? lean2[f] : null, accent: st.accent ? st.accent[f] : null, base: view(st, field, realm) };
+  }
+  function pickFrom(rng, L, avoid, leanP = LEAN_P, accentP = ACCENT_P) {
+    const u = rng.next();
+    let list = L.base;
+    if (L.lean && L.lean.length && u < leanP) list = L.lean;
+    else if (L.accent && L.accent.length && u < (L.lean ? leanP : 0) + accentP) list = L.accent;
+    return draw(rng, list, avoid);
+  }
+  function givenName(rng, culture, sex, opts = {}) {
+    const st = stockOf(culture), sx = sexKey(sex);
+    return pickFrom(rng, lists(st, sx, null, opts.realm), opts.avoid);
+  }
+  function familyName(rng, culture, opts = {}) {
+    const st = stockOf(culture);
+    return pickFrom(rng, lists(st, "family", null, opts.realm), opts.avoid, 0.15, ACCENT_P);
+  }
+  function placeName(rng, culture, opts = {}) {
+    const st = stockOf(culture);
+    return draw(rng, view(st, "places", opts.realm), opts.avoid);
+  }
+  function sees(culture, realm) {
+    const st = stockOf(culture);
+    return { id: st.id, uses: st.uses, male: view(st, "male", realm), female: view(st, "female", realm), family: view(st, "family", realm), places: view(st, "places", realm) };
+  }
+  var poolKey = (culture) => stockOf(culture).uses;
   function makeNamer(rng) {
-    const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
     return {
-      given(culture, sex) {
-        const c = CULTURES[culture] ?? CULTURES.aldic;
-        return cap(rng.pick(sex === "female" ? c.female : c.male) + rng.pick(sex === "female" ? c.femaleEnd : c.maleEnd));
+      given(culture, sex, opts) {
+        return givenName(rng, culture, sex, opts);
       },
-      house(culture) {
-        const c = CULTURES[culture] ?? CULTURES.aldic;
-        return cap(rng.pick(c.house) + rng.pick(c.houseEnd));
+      house(culture, opts) {
+        return familyName(rng, culture, opts);
       },
-      place(culture) {
-        const c = CULTURES[culture] ?? CULTURES.aldic;
-        return cap(rng.pick(c.place ?? c.house) + rng.pick(c.placeEnd ?? c.houseEnd));
+      place(culture, opts) {
+        return placeName(rng, culture, opts);
       }
     };
   }
@@ -1238,7 +1284,7 @@ var __ARDAN_V2_MAKE = (() => {
     const rng = makeRng(`${seed}:${realm.id}:${county}:${rank}:${index}`);
     const namer = makeNamer(rng);
     const sex = rng.chance(0.88) ? "male" : "female";
-    return { rank, title: `${RANK_TITLE[rank][sex === "female" ? 1 : 0]} of ${namer.place(realm.culture)}`, given: namer.given(realm.culture, sex), house: namer.house(realm.culture), sex };
+    return { rank, title: `${RANK_TITLE[rank][sex === "female" ? 1 : 0]} of ${namer.place(realm.culture, { realm: realm.id })}`, given: namer.given(realm.culture, sex, { realm: realm.id }), house: namer.house(realm.culture, { realm: realm.id }), sex };
   }
 
   // src/diplomacy/engine/diplomacy.js

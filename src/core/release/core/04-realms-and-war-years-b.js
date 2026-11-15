@@ -1018,7 +1018,7 @@ A.makeAcquaintance = function (pc, kind, child) {
     cult = race === pc.race ? pc.cult : A.cultureFor(race, pc.realm),
     status = A.pick([pc.status, pc.status, "peasant", "artisan", "merchant"]),
     p = A.newPerson({
-      given: A.givenName(cult, sex),
+      given: A.givenName(cult, sex, { realm: pc.realm }),
       sex,
       race,
       realm: pc.realm,
@@ -1066,7 +1066,7 @@ A.makeLoveInterest = function (pc) {
         ? A.pick(["noble", "gentry", "merchant", "artisan"])
         : A.pick([pc.status, "peasant", "artisan", "merchant"]),
     p = A.newPerson({
-      given: A.givenName(cult, sexWant),
+      given: A.givenName(cult, sexWant, { realm: pc.realm }),
       sex: sexWant,
       race,
       realm: pc.realm,

@@ -1420,7 +1420,7 @@ A.newGame = function (o) {
               : cult
             : A.cultureFor(race, realm.id),
         p = A.newPerson({
-          given: A.givenName(pcult, sex2),
+          given: A.givenName(pcult, sex2, { realm: realm.id }),
           sex: sex2,
           race,
           realm: realm.id,
@@ -1622,7 +1622,7 @@ A.newGame = function (o) {
         custom: 0,
       }[o.potMode] || 0,
     pc = A.newPerson({
-      given: o.given || A.givenName(cult, sex),
+      given: o.given || A.givenName(cult, sex, { realm: realm.id, parents: [father, mother] }),
       sex,
       race: o.race,
       realm: realm.id,
@@ -1721,7 +1721,7 @@ A.newGame = function (o) {
       continue;
     const sx = A.chance(0.5) ? "M" : "F",
       sib = A.newPerson({
-        given: A.givenName(cult, sx),
+        given: A.givenName(cult, sx, { realm: realm.id, parents: [father, mother] }),
         sex: sx,
         race: o.race,
         realm: realm.id,
@@ -1765,7 +1765,7 @@ A.newGame = function (o) {
       if (S.year - gb < GD.RACES[par.race].life + 8) {
         const sx = A.chance(0.5) ? "M" : "F",
           g = A.newPerson({
-            given: A.givenName(par.cult, sx),
+            given: A.givenName(par.cult, sx, { realm: realm.id }),
             sex: sx,
             race: par.race,
             realm: realm.id,
@@ -2499,7 +2499,7 @@ A.familyYear = function (pc) {
     if (!c.spouse && ca >= R2.adult + 3 && A.chance(0.15)) {
       const sx = c.sex === "M" ? "F" : "M",
         s2 = A.newPerson({
-          given: A.givenName(c.cult, sx),
+          given: A.givenName(c.cult, sx, { realm: c.realm }),
           sex: sx,
           race: c.race,
           realm: c.realm,
@@ -2633,7 +2633,7 @@ A.birth = function (mother, father, siblingOfPc, quiet) {
     const cult = father.cult,
       status = father.status === "royal" || mother.status === "royal" ? "royal" : father.status,
       c = A.newPerson({
-        given: A.givenName(cult, sex),
+        given: A.givenName(cult, sex, { realm: father.realm, parents: [father, mother] }),
         sex,
         race,
         realm: father.realm,

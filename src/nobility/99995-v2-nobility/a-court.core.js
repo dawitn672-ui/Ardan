@@ -34,8 +34,9 @@
   const live = p => !!(p && p.alive);
   const GREAT = h => h && !h.extinct && h.kind !== 'royal' && h.great !== false;
 
-  // v2's namer has four cultures; the game's realms map onto them by race
-  N.v2culture = r => ({ elf: 'solenne', dwarf: 'khuul', orc: 'orcish', halforc: 'orcish' })[(r && r.race) || 'human'] || 'aldic';
+  // C7 (D-058): v2's namer names by the game's own culture ids; a fief of a realm takes its name from that people's own list
+  // (it was a pick of four syllable sets by race: a Qadiri realm held "Bramham", a dwarf hold a Mongol-sounding one)
+  N.v2culture = r => (r && r.id && A.cultureFor ? A.cultureFor(r.race || 'human', r.id) : null) || 'CUL-02';
   N.title = (rank, sex) => {
     const g = GD.NOBLE_RUNGS[RUNG[rank]];
     if (rank === 'lord') return sex === 'F' ? 'Lady' : 'Lord';

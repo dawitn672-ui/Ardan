@@ -27,7 +27,7 @@ A.FN_STAGE_ORDER = {
     'starting-stories', 'varied-worlds', 'body-mind', 'event-cut', 'mods', 'markets', 'fresh-realms-and-tensions',
     'top-bar', 'visual-style', 'big-moments', 'first-life-fixes.hints', 'first-life-fixes.acts',
     'first-life-fixes.shield', 'hall-of-lives', 'identity.mark', 'companies', 'v2-stats', 'v2-family',
-    'v2-nobility', 'households', 'households.guard', 'v2-saves', 'one-redraw.fresh', 'journal'
+    'v2-nobility', 'households', 'households.guard', 'names-and-cultures', 'v2-saves', 'one-redraw.fresh', 'journal'
   ],
   'UI.render': [
     'npc-initiative', 'accessibility', 'descriptions.relink', 'illuminated-chronicle', 'phone',

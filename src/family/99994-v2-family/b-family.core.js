@@ -102,8 +102,8 @@
     const S = A.S, race = par.race, R2 = GD.RACES[race] || GD.RACES.human;
     const [m0, m1] = A.parentAgeRange(race, 'M'), [f0, f1] = A.parentAgeRange(race, 'F');
     const base = { race, realm: par.realm, cult: par.cult, faith: par.faith, status: par.status, home: par.home };
-    const mk = (sex, born, extra) => { const p = A.newPerson(Object.assign({ given: A.givenName(par.cult, sex), sex, born: Math.min(born, S.year - 1) }, base, extra || {})); out.push(p); return p; };
-    const surOf = (sex, father) => (par.surMode === 'patron' ? (sex === 'F' ? 'daughter of ' : 'son of ') + (father ? father.given : A.givenName(par.cult, 'M')) : par.sur);
+    const mk = (sex, born, extra) => { const p = A.newPerson(Object.assign({ given: A.givenName(par.cult, sex, { realm: par.realm, parents: [par] }), sex, born: Math.min(born, S.year - 1) }, base, extra || {})); out.push(p); return p; };
+    const surOf = (sex, father) => (par.surMode === 'patron' ? (sex === 'F' ? 'daughter of ' : 'son of ') + (father ? father.given : A.givenName(par.cult, 'M', { realm: par.realm })) : par.sur);
     const oldDeath = (p, after) => {
       const age = S.year - p.born, span = Math.max(8, R2.life - R2.old + 2 * (R2.lifeSd || 10));
       const pDead = Math.max(0.04, Math.min(0.97, (age - R2.old) / span));

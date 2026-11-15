@@ -22,8 +22,8 @@ A.makeSquad = function (pc) {
             .map(x => x.given),
         ),
       );
-    let given = A.givenName(cult, sex);
-    for (let t = 0; t < 12 && taken.has(given); t++) given = A.givenName(cult, sex);
+    let given = A.givenName(cult, sex, { realm });
+    for (let t = 0; t < 12 && taken.has(given); t++) given = A.givenName(cult, sex, { realm });
     const c = A.newPerson({
         given,
         sex,

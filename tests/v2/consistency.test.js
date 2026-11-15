@@ -1,3 +1,4 @@
+import './names-data.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createGame, nextMonth, choose, sheet } from '../../src/core/engine/game.js';

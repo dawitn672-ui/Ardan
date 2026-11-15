@@ -659,7 +659,7 @@ A.makeOpponent = function (pc, kind, tier) {
               ? (tier - 2) * 9
               : A.ri(-8, 14),
     p = A.newPerson({
-      given: A.givenName(cult, sex),
+      given: A.givenName(cult, sex, { realm: pc.realm }),
       sex,
       race,
       realm: pc.realm,
@@ -712,7 +712,7 @@ A.makeFoe = function (spec) {
     age = R2.adult + A.ri(2, Math.round((R2.primeEnd - R2.adult) * 0.9)),
     tier = spec.tier || 2,
     p = A.newPerson({
-      given: A.givenName(cult, sex),
+      given: A.givenName(cult, sex, { realm }),
       sex,
       race,
       realm,

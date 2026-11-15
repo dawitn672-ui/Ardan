@@ -212,13 +212,24 @@ A.provName = i => (A.S.prov[i] ? A.S.prov[i].name : "the road");
 
 A.raceName = r => (GD.RACES[r] ? GD.RACES[r].name : r);
 
-A.givenName = function (cult, sex) {
+// C7 (D-058): names come from data/names.json through A.NAMES (999905-names-and-cultures): the common English pool and the
+// pools of the far and non-human peoples, leaned to the realm. o = { realm, parents, avoid }. The lists of LORE.cultures
+// below stay as the fallback of a build without that feature, and keep the epithets.
+A.givenName = function (cult, sex, o) {
+  if (A.NAMES && A.NAMES.ok()) {
+    const n = A.NAMES.given(cult, sex, o);
+    if (n) return n;
+  }
   const c = LORE.cultures[cult] || LORE.cultures["CUL-02"],
     list = sex === "F" ? c.f : c.m;
   return A.pick(list.length ? list : c.m);
 };
 
-A.cultHouse = cult => {
+A.cultHouse = (cult, realm) => {
+  if (A.NAMES && A.NAMES.ok()) {
+    const n = A.NAMES.house(cult, { realm });
+    if (n) return n;
+  }
   const c = LORE.cultures[cult];
   return c && c.house.length ? A.pick(c.house) : "Marsh";
 };
@@ -258,7 +269,7 @@ A.familyName = function (opts) {
     case "band":
     case "line":
       return {
-        sur: A.cultHouse(opts.cult),
+        sur: A.cultHouse(opts.cult, opts.realm),
         mode,
       };
     case "trade": {
@@ -288,7 +299,7 @@ A.familyName = function (opts) {
       };
     }
     case "deed": {
-      const c = A.cultHouse(opts.cult);
+      const c = A.cultHouse(opts.cult, opts.realm);
       return {
         sur: "of Clan " + c,
         mode: "deed",
@@ -1911,7 +1922,7 @@ A.genNoble = function (rid, status, house, age, sex) {
   sex = sex || (A.chance(0.6) ? "M" : "F");
   const h = house ? A.house(house) : null,
     p = A.newPerson({
-      given: A.givenName(cult, sex),
+      given: A.givenName(cult, sex, { realm: rid }),
       sex,
       race,
       realm: rid,

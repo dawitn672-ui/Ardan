@@ -99,7 +99,7 @@
       const r = F.rng('household|' + pc.id + '|' + role);
       const sex = R.sex(r), race = pc.race, RR = GD.RACES[race] || GD.RACES.human;
       const yrs = Math.round(r.int(R.age[0], R.age[1]) * RR.adult / 16);
-      const p = A.newPerson({ given: A.givenName(pc.cult, sex), sex, race, realm: pc.realm, cult: pc.cult, faith: pc.faith,
+      const p = A.newPerson({ given: A.givenName(pc.cult, sex, { realm: pc.realm }), sex, race, realm: pc.realm, cult: pc.cult, faith: pc.faith,
         born: A.S.year - yrs, status: R.status, home: pc.home });
       const fn = A.familyName({ cult: pc.cult, realm: pc.realm, status: R.status, home: pc.home, sex });
       if (fn) { p.sur = fn.sur; p.surMode = fn.mode; }
