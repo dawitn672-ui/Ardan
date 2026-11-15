@@ -85,6 +85,7 @@ branch on GitHub, and a sample save in `tests/saves/`.
 | v2.1.0-alpha.4 | 2026-11-13 15:01 ET | C8b: the approved character art draws every portrait, face and build maker; B5 part 1: a calmer screen |
 | v2.1.0-alpha.5 | 2026-11-14 18:49 ET | v2.1 foundations milestone (`release/v2.1-foundations`): A2 stage 1, P and P2 profile, C9 bodies, X3 part 1, order 52 names, W0 and D10; CI 111 green on `3801932` |
 | v2.1.0-alpha.6 | 2026-11-15 04:20 ET | A2 stage 2, X7 part 1, B5 part 2, X2; CI 118 green on `f87617d` |
+| v2.1.0-alpha.7 | 2026-11-15 10:33 ET | C6 households and its fixes; CI 121 green on `0e0996a` |
 
 ## Milestones
 - [ ] `release/v2.1-foundations` (after A1, A3a, B6, A2)

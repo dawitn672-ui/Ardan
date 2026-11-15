@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.7 (2026-11-15 10:33 ET) · Born into a household, not a clan
+
 - **You are born knowing your household, not the whole clan.** A child knows its parents, its brothers and sisters, and a
   grandparent who lives under the same roof; a noble child also has a nurse, a maid, a guard knight and, from six, a tutor.
   Uncles, aunts and cousins come to a feast or a burial and you meet them then, and every person you know says how and
