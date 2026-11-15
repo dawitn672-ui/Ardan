@@ -401,8 +401,10 @@ A.applyFx = function (pc, fx, ctx) {
           if (pc.rel[t.id]) {
             if (v.op) A.addOp(pc, t, v.op);
             if (v.type) {
-              pc.rel[t.id].type = v.type;
-              if (t.rel[pc.id]) t.rel[pc.id].type = v.back || v.type;
+              // [C6, D-057] a kin word only for kin the tree places (A.KIN.guard)
+              const kg = A.KIN && A.KIN.guard ? A.KIN.guard(pc, t, v.type, v.back || v.type) : null;
+              pc.rel[t.id].type = kg ? kg[0] : v.type;
+              if (t.rel[pc.id]) t.rel[pc.id].type = kg ? kg[1] : v.back || v.type;
             }
           } else A.link(pc, t, v.type || "acquaint", v.op || 0, v.back || v.type || "acquaint");
         }

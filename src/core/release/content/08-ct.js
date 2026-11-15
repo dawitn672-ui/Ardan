@@ -2583,14 +2583,14 @@
         id: "ct_bastard_claim",
         cool: 15,
         cond: (p,C)=>(RUA(p,C)||BL(p,C))&&C.ageAdj(p)>=30,
-        setup: (p,ctx)=>{const q=A.makeAcquaintance(p,"acquaint");q.flags.bastard=!0,ctx.pid=q.id,ctx.par=A.pick(["your late father","your grandfather","your elder brother, who died young"])},
+        setup: (p,ctx)=>{const q=A.makeAcquaintance(p,"acquaint");q.flags.bastard=!0,ctx.pid=q.id;const s=A.KIN&&A.KIN.sireFor(p,["father","grandparent"]);ctx.sire=s?s.id:"",ctx.par=s?(p.parents||[]).includes(s.id)?s.alive?"your father":"your late father":s.alive?"your grandfather":"your late grandfather":A.pick(["your late father","your grandfather","your elder brother, who died young"])},
         title: "A bastard's claim",
         text: ()=>"{themFull}, {themAge}, {themOcc}, stands in your hall with a ring and a letter. {theyHe} is the child of {par} by a serving woman, and now asks for recognition, a name and a share of the inheritance. The ring is genuine.",
         choices: [
           {
             t: "Recognize {them} as kin and give a small estate",
             r: "A new cousin at the family table. Some relatives are scandalized.",
-            fx: (p,ctx)=>{pay(p,cost(p,15)),A.applyFx(p,{them:{type:"sibling",op:40,back:"sibling"}},ctx),p.honor=cl(p.honor+3)},
+            fx: (p,ctx)=>{pay(p,cost(p,15)),A.KIN?(A.KIN.recognize(p,A.P(ctx.pid),ctx.sire,40),A.applyFx(p,{them:{op:0}},ctx)):A.applyFx(p,{them:{type:"sibling",op:40,back:"sibling"}},ctx),p.honor=cl(p.honor+3)},
           },
           {
             t: "Pay {them} to go away and keep quiet",

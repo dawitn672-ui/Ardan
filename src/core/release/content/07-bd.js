@@ -914,7 +914,7 @@
         w: 1.4,
         cool: 9,
         title: "Two cords",
-        setup: (p,ctx)=>{ctx.cousin=A.givenName(p.cult,"F")},
+        setup: (p,ctx)=>{ctx.cousin=A.KIN?A.KIN.take(p,["cousin"],{sex:"F"}).given:A.givenName(p.cult,"F")},
         text: "Your cousin {cousin} of House Asfari is in childbed with twins, as so many women of your line are. The labour has gone on a day and a night. Five of the last nine royal Asfari mothers died this way. The Rememberers wait outside with two cords to tie the babies onto the royal line.",
         choices: [
           {

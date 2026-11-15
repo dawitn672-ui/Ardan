@@ -18,7 +18,11 @@
       mk = (p,o)=>{o=o||{};const race=o.race||p.race,R2=GD.RACES[race]||GD.RACES.human,sex=o.sex||(A.chance(.5)?"M":"F"),cult=race===p.race?p.cult:A.cultureFor(race,p.realm)||p.cult,faith=o.faith||(race===p.race?p.faith:A.faithFor(race,p.realm)||p.faith),adj=o.ageAdj!=null?o.ageAdj:C.ageAdj(p)+A.ri(-4,4),age=Math.max(o.minAge!=null?o.minAge:1,Math.round(adj*R2.adult/16)),status=o.status||p.status,x=A.newPerson({given:A.givenName(cult,sex),sex,race,realm:p.realm,cult,faith,born:A.S.year-age,status,home:p.home}),fn=A.familyName({cult,realm:p.realm,status,home:p.home,sex});return x.sur=fn.sur,x.surMode=fn.mode,x.occ=o.occ||(A.isAdult(x)?A.pick(A.OCC[status]||A.OCC.peasant):"a child of "+A.provName(p.home)),x},
       setPid = (p,ctx,t)=>{const x=t||mk(p);return ctx.pid=x.id,words(ctx,x),x},
       linkNew = (p,x,type,op,back)=>(x&&!p.rel[x.id]&&A.link(p,x,type,op??20,back||type),x),
-      known = (p,types,type,op,o)=>relP(p,types)||linkNew(p,mk(p,o),type,op),
+      // [C6, D-057] a kin word never mints: a relative of the kind is taken from the tree (A.KIN, 999991-households) and
+      // met then, or the setup throws and the card drops. Other words still make a stranger.
+      known = (p,types,type,op,o)=>relP(p,types)||(A.KIN&&A.KIN.WORDS.includes(type)?A.KIN.take(p,types,Object.assign({op},o&&o.twin?{twin:1}:{})):linkNew(p,mk(p,o),type,op)),
+      // [C6, D-057] a spouse's parent comes from the tree, or is written into it as the spouse's parent (A.KIN.spouseKin)
+      inlawOf = (p,o)=>A.KIN?A.KIN.spouseKin(p,o,()=>mk(p,o)):mk(p,o),
       bump = (p,t,op,type,back)=>{if(t){if(!p.rel[t.id]){A.link(p,t,type||"acquaint",op||0,back||type||"acquaint");return}op&&A.addOp(p,t,op),type&&(p.rel[t.id].type=type,t.rel[p.id]&&(t.rel[p.id].type=back||type))}},
       loveSex = p=>p.flags.likes||(p.sex==="M"?"F":"M"),
       recentDead = (p,types,yrs)=>A.relsOf(p,types).some(x=>x.p&&!x.p.alive&&x.p.died!=null&&A.S.year-x.p.died<=(yrs||1)),
@@ -1728,7 +1732,7 @@
         cool: 15,
         w: .6,
         title: "Blood-price",
-        setup: (p,ctx)=>{const v=mk(p);A.kill(v,"a knife in a quarrel"),A.link(p,v,"cousin",30,"cousin"),ctx.vic=v.given;const k=setPid(p,ctx,mk(p,{sex:"M"}));ctx.price=law(p)==="orc"?"fifty horses":p.realm==="POL-25"?"sixty sables":p.realm==="POL-01"?"the price the law sets for a free man":p.realm==="POL-19"?"a price in camels set by the elders":"the price set at the Thing"},
+        setup: (p,ctx)=>{const v=A.KIN?A.KIN.take(p,["cousin"],{op:30}):mk(p);A.kill(v,"a knife in a quarrel"),A.KIN||A.link(p,v,"cousin",30,"cousin"),ctx.vic=v.given;const k=setPid(p,ctx,mk(p,{sex:"M"}));ctx.price=law(p)==="orc"?"fifty horses":p.realm==="POL-25"?"sixty sables":p.realm==="POL-01"?"the price the law sets for a free man":p.realm==="POL-19"?"a price in camels set by the elders":"the price set at the Thing"},
         text: "Your cousin {vic} has been killed in a quarrel by {themFull}, {themOcc}. By the law of your people, {them}'s kin may pay the blood-price, {price}, or the feud is open. Your family looks to you.",
         choices: [
           {
@@ -2759,7 +2763,7 @@
         cond: p=>C.adult(p)&&C.married(p),
         cool: 8,
         title: "Supper with the in-laws",
-        setup: (p,ctx)=>{const s=spouseOf(p),f=mk(p,{sex:A.chance(.5)?"M":"F",ageAdj:C.ageAdj(p)+22,status:s?s.status:p.status});A.link(p,f,"inlaw",0,"inlaw"),setPid(p,ctx,f)},
+        setup: (p,ctx)=>{const s=spouseOf(p),f=inlawOf(p,{sex:A.chance(.5)?"M":"F",ageAdj:C.ageAdj(p)+22,status:s?s.status:p.status});A.link(p,f,"inlaw",0,"inlaw"),setPid(p,ctx,f)},
         text: "Supper at the house of {spouse}'s {mfa}, {them}, who has never thought you good enough. {them} asks, in front of the whole table, what exactly you have done with your life.",
         choices: [
           {
@@ -2795,7 +2799,7 @@
         cond: p=>C.adult(p)&&C.married(p)&&!slave(p),
         cool: 12,
         title: "For a few weeks",
-        setup: (p,ctx)=>{const f=mk(p,{sex:A.chance(.6)?"F":"M",ageAdj:C.ageAdj(p)+25});A.link(p,f,"inlaw",5,"inlaw"),setPid(p,ctx,f),ctx.food=food(p)},
+        setup: (p,ctx)=>{const f=inlawOf(p,{sex:A.chance(.6)?"F":"M",ageAdj:C.ageAdj(p)+25});A.link(p,f,"inlaw",5,"inlaw"),setPid(p,ctx,f),ctx.food=food(p)},
         text: `{spouse}'s {mfa}, {them}, can no longer manage alone, and has moved in "for a few weeks" with a chest, a cat and many opinions about how you cook {food}.`,
         choices: [
           {
@@ -2834,7 +2838,7 @@
         cond: p=>C.adult(p)&&C.married(p)&&free(p)&&!high(p),
         cool: 12,
         title: "A place in the family business",
-        setup: (p,ctx)=>{const f=mk(p,{sex:"M",ageAdj:C.ageAdj(p)+25,status:"merchant"});f.occ=A.pick(["a wine merchant","a salt merchant","a cloth trader","a miller with three mills"]),A.link(p,f,"inlaw",10,"inlaw"),setPid(p,ctx,f)},
+        setup: (p,ctx)=>{const f=inlawOf(p,{sex:"M",ageAdj:C.ageAdj(p)+25,status:"merchant"});f.occ=A.pick(["a wine merchant","a salt merchant","a cloth trader","a miller with three mills"]),A.link(p,f,"inlaw",10,"inlaw"),setPid(p,ctx,f)},
         text: "{spouse}'s kinsman {them}, {themOcc}, offers you a place in the business: steady pay, a share in time. All you have to give up is your own way of doing things, and to be grateful at every feast.",
         choices: [
           {
@@ -3289,7 +3293,7 @@
         cond: p=>C.adult(p)&&C.faith(p,"REL-09"),
         cool: 5,
         title: "A name not spoken fades",
-        setup: (p,ctx)=>{ctx.n1=A.givenName(p.cult,"F"),ctx.n2=A.givenName(p.cult,"F"),ctx.n3=A.givenName(p.cult,"M")},
+        setup: (p,ctx)=>{const g=A.KIN?A.KIN.find(p,["grandparent"],{sex:"F",dead:!0})||A.KIN.ancestor(p,"F"):null;if(A.KIN&&!g)throw Error("no grandmother");ctx.n1=g?g.given:A.givenName(p.cult,"F"),ctx.n2=A.givenName(p.cult,"F"),ctx.n3=A.givenName(p.cult,"M")},
         text: 'Before the market, you pour a little milk on the floor of the house and speak the names: your grandmother {n1}, her mother {n2}, and {n3} before them. "Are you there? I am here." Today you cannot remember the fourth name.',
         choices: [
           {
@@ -4019,11 +4023,11 @@
       },
       {
         id: "lf_childbed",
-        cond: p=>C.adult(p)&&C.married(p)&&!C.old(p)&&frac(p)<.6&&["human","halfelf","halforc","orc"].includes(p.race)&&spouseOf(p)&&spouseOf(p).sex!==p.sex,
+        cond: p=>C.adult(p)&&C.married(p)&&!C.old(p)&&frac(p)<.6&&["human","halfelf","halforc","orc"].includes(p.race)&&spouseOf(p)&&spouseOf(p).sex!==p.sex&&(!A.PREG||A.PREG.near(p)),
         cool: 6,
         w: .8,
         title: "The birth",
-        setup: (p,ctx)=>{const s=spouseOf(p),mom=p.sex==="F"?p:s;setPid(p,ctx,s),ctx.me=p.sex==="F",ctx.mw=A.givenName(p.cult,"F")},
+        setup: (p,ctx)=>{const s=spouseOf(p),mom=p.sex==="F"?p:s;A.PREG&&A.PREG.attend(mom),setPid(p,ctx,s),ctx.me=p.sex==="F",ctx.mw=A.givenName(p.cult,"F")},
         text: p=>p.sex==="F"?"Your time has come, early and hard. Old {mw} the midwife, who has brought half of {home} into the world, has her sleeves rolled up. One birth in sixty kills the mother, and this one is going badly.":"Your wife {them} has been in labor since dawn. Old {mw} the midwife comes out, wipes her hands, and says it is going badly. One birth in sixty kills the mother.",
         choices: [
           {
@@ -5431,7 +5435,7 @@
         cond: p=>teenish(p)&&C.race(p,"orc","halforc")&&C.realm(p,"POL-11","POL-34"),
         cool: 6,
         title: "Not too young to ride",
-        setup: (p,ctx)=>{const x=setPid(p,ctx,known(p,["sibling"],"sibling",30,{ageAdj:C.ageAdj(p)}))},
+        setup: (p,ctx)=>{const x=setPid(p,ctx,known(p,["sibling"],"sibling",30,{ageAdj:C.ageAdj(p),twin:1}))},
         text: "Your twin {them} has ridden off with the young men to watch the river, without you. The clan-mother says you are needed with the mares. You are, in the eyes of the law, an adult since the first snow.",
         choices: [
           {
@@ -6100,7 +6104,7 @@
         cond: p=>C.old(p),
         cool: 8,
         title: "A grandchild's secret",
-        setup: (p,ctx)=>{const x=setPid(p,ctx,relP(p,["grandchild"])||linkNew(p,mk(p,{ageAdj:14}),"grandchild",40,(p.sex==="M","grandparent")));ctx.sec=A.pick(["is in love with someone the family will hate","wants to run away to sea","broke the family's best jug and hid the pieces","has stopped believing in the gods","owes money at the dice"])},
+        setup: (p,ctx)=>{const x=setPid(p,ctx,relP(p,["grandchild"])||(A.KIN?A.KIN.take(p,["grandchild"],{op:40}):linkNew(p,mk(p,{ageAdj:14}),"grandchild",40,(p.sex==="M","grandparent"))));ctx.sec=A.pick(["is in love with someone the family will hate","wants to run away to sea","broke the family's best jug and hid the pieces","has stopped believing in the gods","owes money at the dice"])},
         text: `{them} comes to you, not to {theirHis} parents, and confesses that {theyHe} {sec}. "Please don't tell."`,
         choices: [
           {
@@ -6598,7 +6602,7 @@
         cond: p=>C.adult(p)&&C.noble(p),
         cool: 10,
         title: "The poor relation",
-        setup: (p,ctx)=>{const x=setPid(p,ctx,mk(p,{status:"gentry",ageAdj:C.ageAdj(p)+A.ri(-10,10)}));x.occ="a cousin of a poorer branch"},
+        setup: (p,ctx)=>{const k=A.KIN?A.KIN.take(p,["cousin"],{ok:q=>!q.noble||q.noble.rung<2}):null,x=setPid(p,ctx,k||mk(p,{status:"gentry",ageAdj:C.ageAdj(p)+A.ri(-10,10)}));k||(x.occ="a cousin of a poorer branch")},
         text: "Your cousin {themFull} has arrived with two thin horses, a patched cloak and a great deal of family pride. {theyHe} needs a place in your household, and cannot quite bring {themHim}self to ask.",
         choices: [
           {

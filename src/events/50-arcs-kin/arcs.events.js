@@ -33,18 +33,14 @@
           const fa = s.sex === 'F' ? H.spouse(s) : s;
           if (!unc && fa && fa.alive && A.isAdult(fa) && H.adj(fa) >= 34) unc = fa;
         }
-        if (!unc && sides.length) unc = H.sibOf(p, sides[0], { sex: 'M', age: H.adj(sides[0]) + A.ri(-4, 4) });
-        if (!unc) return null;
-        const mo = unc.sex === 'F' ? unc : H.spouse(unc);
-        const k = H.childOfPair(p, unc, mo && mo.sex === 'F' ? mo : null, { sex: 'M', age: Math.max(17, Math.min(H.adj(unc) - 20, H.adj(p) + A.ri(-5, 3))) });
-        A.link(p, k, 'cousin', A.ri(20, 60), 'cousin');
-        return k;
+        // C6 (D-057): no cousin or uncle is made for the scene; without a real one the arc does not start
+        return null;
       });
       if (cuz) {
         H.keep(p, FEUD, 'unc', H.KIN.fatherOf(cuz));
         H.bury(cuz, 'a broken skull in the mill-race');
         ctx.cuz = cuz.given;
-      } else ctx.cuz = H.given(p, FEUD, 'cuz', 'M', p.cult);
+      } else { ctx.cuz = ''; ctx.skip = 1; }   // C6: no made-up cousin
     }
     ctx.foeRole = hi ? 'lord of ' + town : 'the miller'; ctx.foeSeat = hi ? 'hall' : 'mill';
     // the old man dead before the end: his son has the quarrel now, and says the old man's lines
@@ -67,7 +63,8 @@
       A.kill(q, 'fever', true);
       return q;
     });
-    const kid = H.get(p, SEC, 'kid', () => H.mk(p, { age: Math.max(9, Math.min(19, H.adj(p) - 19)), parents: p.sex === 'F' ? [ol.id, p.id] : [p.id, ol.id], sur: ol.sur, surMode: ol.surMode, status: ol.status }));
+    // C6 (D-057): a child you did not know is a secret the story tells: in the tree (by its parents), flagged
+    const kid = H.get(p, SEC, 'kid', () => { const q = H.mk(p, { age: Math.max(9, Math.min(19, H.adj(p) - 19)), parents: p.sex === 'F' ? [ol.id, p.id] : [p.id, ol.id], sur: ol.sur, surMode: ol.surMode, status: ol.status }); q.flags.c6revealed = A.S.year; return q; });
     ctx.town = town; H.tok(ctx, 'kid', kid); H.tok(ctx, 'ol', ol);
     ctx.craft = H.name(p, SEC, 'craft', () => A.pick(['cooper', 'saddler', 'chandler', 'wheelwright', 'glover']));
     ctx.young = H.num(Math.max(15, Math.round(H.adj(p) - H.adj(kid))));
@@ -86,23 +83,18 @@
     // made up
     const madeUp = H.st(p, INH).nm.u != null;
     const u = madeUp ? null : H.get(p, INH, 'u', () => H.KIN.unwedUncle(p));
-    if (u) H.bury(u, 'a winter fever');
+    // C6 (D-057): without a real uncle (and, below, a real cousin) the arc does not start; nobody is made up
+    if (!u && !madeUp) { ctx.skip = 1; return { cz: null }; }
     const by = u && H.sideOf(p, u);
     const grown = q => q.alive && A.isAdult(q);
     const cz = H.get(p, INH, 'cz', () => {
       // a cousin on the uncle's side first (a child of his brothers and sisters), then any cousin, then one made as the
       // child of his married brother or sister
       const c = (u && H.KIN.cousinBy(p, u, grown)) || H.KIN.cousins(p).find(grown) || A.relsOf(p, ['cousin']).map(x => x.p).find(grown);
-      if (c) return c;
-      const sib = u && H.sibs(u).find(s => s !== by && H.spouse(s));
-      if (sib) {
-        const sp = H.spouse(sib), [fa, mo] = sib.sex === 'F' ? [sp, sib] : [sib, sp];
-        const k = H.childOfPair(p, fa, mo, { age: H.adj(p) + A.ri(-6, 6) });
-        A.link(p, k, 'cousin', A.ri(10, 40), 'cousin');
-        return k;
-      }
-      return H.mk(p, { age: H.adj(p) + A.ri(-6, 6), occ: 'a cousin of yours' });
+      return c || null;
     });
+    if (!cz) { ctx.skip = 1; return { cz: null }; }
+    if (u && u.alive) H.bury(u, 'a winter fever');
     ctx.town = town; H.tok(ctx, 'cz', cz);
     ctx.u = u ? u.given : H.given(p, INH, 'u', 'M', p.cult);
     ctx.side = by ? (by.sex === 'F' ? "mother's" : "father's") : H.name(p, INH, 'side', () => (A.chance(0.5) ? "father's" : "mother's"));
@@ -120,6 +112,8 @@
     const sib = H.get(p, SIB, 'sib', () => {
       const q = H.mk(p, { age: H.adj(p) + A.ri(6, 11), parents: (p.parents || []).slice(0, 2), sur: p.sur, surMode: p.surMode, occ: 'a galley-hand, lately' });
       for (const par of (p.parents || []).map(A.P)) if (par && !par.children.includes(q.id)) par.children.push(q.id);
+      // C6 (D-057): a brother or sister sold before you could remember is a secret the story tells: in the tree, flagged
+      if (A.KIN) A.KIN.reveal(p, q, (p.parents || []).slice(0, 2));
       return q;
     });
     H.tok(ctx, 'sib', sib);
@@ -139,8 +133,9 @@
       const k = H.kidsOf(p).filter(q => H.adj(q) >= 15 && H.adj(q) <= 30 && !H.spouse(q)).sort((a, b) => a.born - b.born)[0];
       if (k) return k;
       const s = A.relsOf(p, ['sibling']).map(x => x.p).filter(q => q.alive && H.adj(q) >= 15 && H.adj(q) <= 30 && !H.spouse(q) && q.born > p.born)[0];
-      return s || H.mk(p, { age: 18, parents: [p.sex === 'M' ? p.id : null, p.sex === 'F' ? p.id : null], sur: p.sur, surMode: p.surMode });
+      return s || null;   // C6 (D-057): no son or daughter is made for the scene
     });
+    if (!kin) { ctx.skip = 1; return {}; }
     const fh = H.get(p, MATCH, 'fh', () => H.mk(p, { age: H.adj(p) + A.ri(-2, 8), status: hi ? 'noble' : 'merchant', occ: hi ? 'a lord of three manors' : 'a wool-merchant with two warehouses' }));
     const mate = H.get(p, MATCH, 'mate', () => H.mk(p, { age: H.adj(kin) + A.ri(0, 5), sex: opp(kin.sex), parents: fh.sex === 'F' ? [null, fh.id] : [fh.id], sur: fh.sur, surMode: fh.surMode, status: fh.status }));
     ctx.town = town; H.tok(ctx, 'kin', kin); H.tok(ctx, 'fh', fh); H.tok(ctx, 'mate', mate);
@@ -176,9 +171,11 @@
     const mo = H.parent(p, 'F');
     const au = H.st(p, BLOOD).nm.au != null || !mo ? null : H.get(p, BLOOD, 'au', () =>
       H.sibs(mo).find(s => s.sex === 'F' && A.isAdult(s) && H.adj(s) >= 40 && (s.alive || (s.died != null && A.S.year - s.died <= 1)))
-      || H.sibOf(p, mo, { sex: 'F', age: H.adj(mo) + A.ri(-4, 4) }));
+      || null);
+    // C6 (D-057): no aunt is made up; without a real one (and no name saved by an older arc) the scene does not happen
     if (au) { H.bury(au, 'the shaking sickness'); ctx.au = au.given; }
-    else ctx.au = H.given(p, BLOOD, 'au', 'F', p.cult);
+    else if (H.st(p, BLOOD).nm.au != null) ctx.au = H.given(p, BLOOD, 'au', 'F', p.cult);
+    else { ctx.au = ''; ctx.skip = 1; }
     ctx.oc = H.given(p, BLOOD, 'oc', 'F', p.cult);
     ctx.doc = H.given(p, BLOOD, 'doc', 'M', p.cult);
     const s = H.spouse(p); if (s) { H.tok(ctx, 'sp', s); ctx.pid = s.id; }

@@ -957,6 +957,8 @@
       setup: (p, ctx) => {
         const u = uncleOf(p);
         if (u) ctx.pid = u.id;
+        // C6 (D-057): an uncle from the tree (met now), or no scene: no uncle is made up
+        else if (A.KIN) ctx.pid = A.KIN.take(p, ["uncle"], { sex: "M" }).id;
         else make(p, ctx, { sex: "M", age: Math.min(80, A.age(p) * 16 / GD.RACES[p.race].adult + 25), occ: "a dancer of the mask society" });
       },
       text: "Your uncle {them} can no longer dance. The limp you knew under the horned mask, the night you asked to join his society, has become a crutch. The society's elders come to his house after dark, masked. They want you to take his mask and his seat among them. An elder of a mask society may never hold office at court, or speak against the ancestors' judgment.",

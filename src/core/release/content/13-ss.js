@@ -2654,7 +2654,7 @@
         cond: (p,C)=>C.realm(p,"POL-20")&&C.adult(p),
         w: .8,
         cool: 12,
-        setup: (p,ctx)=>{ctx.n=loc(p,"M")},
+        setup: (p,ctx)=>{ctx.n=A.KIN?A.KIN.take(p,["cousin"],{sex:"M"}).given:loc(p,"M")},
         text: "Your cousin {n} has killed a man in a fight over a heifer at the market. In Zanara a murderer pays blood-price in cattle, set by the governor, or dies. The dead man's family wants twenty head. Your family has eleven.",
         choices: [
           {

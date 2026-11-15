@@ -204,7 +204,10 @@
       mkKin = (p,o)=>{o=o||{};const R=GD.RACES[p.race]||GD.RACES.human,sex=o.sex||(A.chance(.5)?"M":"F"),adj=Math.max(1,o.adj!=null?o.adj:C.ageAdj(p)+A.ri(-4,6)),age=Math.max(1,Math.round(adj*R.adult/16)),status=p.status==="royal"?"noble":p.status,x=A.newPerson({given:A.givenName(p.cult,sex),sex,race:p.race,realm:p.realm,cult:p.cult,faith:p.faith,born:A.S.year-age,status,home:p.home,house:p.house||null});return x.sur=p.sur,x.surMode=p.surMode,x.occ=o.occ||(A.isAdult(x)?A.pick(A.OCC[status]||A.OCC.peasant):"a child of the family"),x},
       mkOther = (p,house,o)=>{o=o||{};const R=GD.RACES[p.race]||GD.RACES.human,sex=o.sex||(A.chance(.5)?"M":"F"),adj=Math.max(1,o.adj!=null?o.adj:C.ageAdj(p)+A.ri(-4,6)),age=Math.max(1,Math.round(adj*R.adult/16)),status=o.status||(p.status==="royal"?"noble":p.status),x=A.newPerson({given:A.givenName(p.cult,sex),sex,race:p.race,realm:p.realm,cult:p.cult,faith:p.faith,born:A.S.year-age,status,home:p.home}),sur=house?surFrom(house):"";if(sur)x.sur=sur,x.surMode="house";else{const fn=A.familyName({cult:p.cult,realm:p.realm,status,home:p.home,sex});x.sur=fn.sur,x.surMode=fn.mode}return x.occ=o.occ||(A.isAdult(x)?A.pick(A.OCC[status]||A.OCC.peasant):"a child"),x},
       sexWords = (ctx,x)=>{if(!x)return;const m=x.sex==="M";ctx.cz="cousin",ctx.ua=m?"uncle":"aunt",ctx.bs=m?"brother":"sister",ctx.sd=m?"son":"daughter",ctx.mw=m?"man":"woman",ctx.ln=m?"nephew":"niece",ctx.He=m?"He":"She",ctx.His=m?"His":"Her"},
-      kinPid = (p,ctx,o)=>{const x=mkKin(p,o);return ctx.pid=x.id,sexWords(ctx,x),x},
+      // [C6, D-057] "your cousin" is a real one: a cousin of the tree (A.KIN.cousinLike, met then), or the setup throws and
+      // the card drops. A claimant who is not of the blood (strangerPid) is still made.
+      kinPid = (p,ctx,o)=>{const x=A.KIN?A.KIN.cousinLike(p,o):mkKin(p,o);return ctx.pid=x.id,sexWords(ctx,x),x},
+      strangerPid = (p,ctx,o)=>{const x=mkKin(p,o);return ctx.pid=x.id,sexWords(ctx,x),x},
       headPid = (p,ctx)=>{const h=headP(p);return h?(ctx.pid=h.id,sexWords(ctx,h),h):kinPid(p,ctx,{adj:Math.max(C.ageAdj(p)+20,45),occ:"head of the family"})},
       sibElder = p=>A.relsOf(p,["sibling"]).some(x=>x.p&&x.p.alive&&x.p.born<p.born),
       kidsOf = p=>(p.children||[]).map(A.P).filter(c=>c&&c.alive),
@@ -703,7 +706,7 @@
         w: .6,
         cool: 18,
         title: "A cousin killed",
-        setup: (p,ctx)=>{fill(p,ctx),ctx.rv=rivalOf(p),ctx.Rv=A.cap(ctx.rv),ctx.dead=A.givenName(p.cult,"M");const x=mkOther(p,ctx.rv,{sex:"M",adj:C.ageAdj(p)+A.ri(-2,6)});ctx.pid=x.id,sexWords(ctx,x)},
+        setup: (p,ctx)=>{fill(p,ctx),ctx.rv=rivalOf(p),ctx.Rv=A.cap(ctx.rv);const dc=A.KIN?A.KIN.take(p,["cousin"],{sex:"M"}):null;dc&&A.kill(dc,"a knife at a crossroads"),ctx.dead=dc?dc.given:A.givenName(p.cult,"M");const x=mkOther(p,ctx.rv,{sex:"M",adj:C.ageAdj(p)+A.ri(-2,6)});ctx.pid=x.id,sexWords(ctx,x)},
         text: "Your cousin {dead} is dead, knifed at a crossroads in a quarrel nobody can quite explain. The killer is {themFull} of {rv}. At the burial the young men of {fam} look at you. The old women look at you harder.",
         choices: [
           {
@@ -746,7 +749,7 @@
         cond: p=>AD(p)&&C.ageAdj(p)<45,
         cool: 12,
         title: "Summoned by the old one",
-        setup: (p,ctx)=>{fill(p,ctx);const x=kinPid(p,ctx,{sex:"F",adj:72,occ:"the family's eldest"});ctx.gran=x.given},
+        setup: (p,ctx)=>{fill(p,ctx);const x=kinPid(p,ctx,{sex:"F",adj:72,occ:"the family's eldest",types:["uncle"],minDegree:3});ctx.gran=x.given},
         text: 'Great-aunt {gran} is the oldest of {fam} and frightens everyone, including {head}. She has sent for you. She sits by the fire at {seat}, looks you up and down for a long time, and says: "Well. Tell me what you have done with our name."',
         choices: [
           {
@@ -923,7 +926,7 @@
         w: .6,
         cool: 20,
         title: "The long-lost cousin",
-        setup: (p,ctx)=>{fill(p,ctx),kinPid(p,ctx,{adj:C.ageAdj(p)+A.ri(-2,8)}),ctx.story=rs(p,ctx,A.pick(["taken by pirates as a baby","raised in a foreign temple","the child of a {sur} who went to the wars and never came back","carried off by a wet-nurse who fled the plague"]))},
+        setup: (p,ctx)=>{fill(p,ctx),strangerPid(p,ctx,{adj:C.ageAdj(p)+A.ri(-2,8)}),ctx.story=rs(p,ctx,A.pick(["taken by pirates as a baby","raised in a foreign temple","the child of a {sur} who went to the wars and never came back","carried off by a wet-nurse who fled the plague"]))},
         text: "A stranger arrives at {seat} calling {themHim}self {themFull}: a lost child of the family, {story}. {He} knows the names of dead aunts and the shape of the old well. {He} also wants a share of the land.",
         choices: [
           {
@@ -931,7 +934,7 @@
             check: {s:"int",s2:"intrigue",d:48},
             win: {
               r: p=>A.chance(.5)?"One detail is wrong, the one only family would know. The impostor is gone by morning.":"Every answer is right, even the ones nobody else would know. Whoever {them} is, {theyHe} is family.",
-              fx: (p,ctx)=>{const t=T(ctx);t&&A.link(p,t,A.chance(.5)?"cousin":"acquaint",15,"cousin"),A.trainSkill(p,"intrigue",2)},
+              fx: (p,ctx)=>{const t=T(ctx);t&&A.link(p,t,A.chance(.5)?"friend":"acquaint",15,"acquaint"),A.trainSkill(p,"intrigue",2)},
             },
             lose: {
               r: "You cannot decide. Neither can anyone else. The family splits over it.",
@@ -941,7 +944,7 @@
           {
             t: "Welcome {themHim} home",
             r: "A feast, tears, a room at the seat. Some cousins never stop counting the spoons.",
-            fx: {them:{type:"cousin",op:35},honor:1,happy:3},
+            fx: {them:{type:"friend",op:35},honor:1,happy:3},
           },
           {
             t: "Run {themHim} off as a fraud",
@@ -1146,7 +1149,7 @@
         w: .7,
         cool: 15,
         title: "A bastard of the blood",
-        setup: (p,ctx)=>{fill(p,ctx);const x=kinPid(p,ctx,{adj:C.ageAdj(p)+A.ri(-6,4)});x.flags.bastard=1,x.sur=A.familyName({cult:p.cult,realm:p.realm,status:"peasant",home:p.home,sex:x.sex}).sur},
+        setup: (p,ctx)=>{fill(p,ctx);const x=strangerPid(p,ctx,{adj:C.ageAdj(p)+A.ri(-6,4)});ctx.sire=A.KIN&&(A.KIN.sireFor(p,["uncle","grandparent"])||{}).id||"",x.flags.bastard=1,x.sur=A.familyName({cult:p.cult,realm:p.realm,status:"peasant",home:p.home,sex:x.sex}).sur},
         text: "{themFull}, {themAge}, {themOcc}, has the {sur} nose and the {sur} temper. Everybody knows whose child {theyHe} is, and nobody says it. Now {theyHe} asks you, plainly, to speak for {themHim} to the family.",
         choices: [
           {
@@ -1154,7 +1157,7 @@
             check: {s:"persuasion",s2:"diplomacy",d:50},
             win: {
               r: "{them} is given a place at the foot of the family table. Small, but {theyHe} weeps. You have a friend for life.",
-              fx: {them:{type:"cousin",op:40},honor:3},
+              fx: X((p,ctx)=>A.KIN?A.KIN.recognize(p,T(ctx),ctx.sire,40):"",{them:{op:40},honor:3}),
             },
             lose: {
               r: "The family will not hear it. {them} thanks you anyway, which is somehow worse.",
@@ -2287,7 +2290,7 @@
         w: .6,
         cool: 18,
         title: "An orphaned heir",
-        setup: (p,ctx)=>{fill(p,ctx),kinPid(p,ctx,{adj:8}),ctx.fee=sc(p,25)},
+        setup: (p,ctx)=>{fill(p,ctx),kinPid(p,ctx,{adj:8,ok:q=>(q.parents||[]).length>0&&(q.parents||[]).every(id=>{const z=A.P(id);return!z||!z.alive})}),ctx.fee=sc(p,25)},
         text: "Your {cz} and his wife died of the same fever, leaving a child of eight, {them}, heir to a small manor. By law the child is now a ward of {lg}, who may sell the wardship and the child's marriage to whoever pays. A stranger is bidding.",
         choices: [
           {
@@ -6427,7 +6430,7 @@
         cond: p=>C.famHead(p)&&C.ageAdj(p)>=40&&(kidsOf(p).filter(c=>A.isAdult(c)).length>=2||kidsOf(p).length===0&&C.ageAdj(p)>=50),
         cool: 15,
         title: "Who comes after",
-        setup: (p,ctx)=>{fill(p,ctx);const k=kidsOf(p).filter(c=>A.isAdult(c));if(k.length){const c=A.pick(k);ctx.pid=c.id,sexWords(ctx,c),ctx.who="your "+ctx.sd+" "+c.given}else kinPid(p,ctx,{adj:28}),ctx.who="your "+ctx.ln+" "+T(ctx).given},
+        setup: (p,ctx)=>{fill(p,ctx);const k=kidsOf(p).filter(c=>A.isAdult(c));if(k.length){const c=A.pick(k);ctx.pid=c.id,sexWords(ctx,c),ctx.who="your "+ctx.sd+" "+c.given}else kinPid(p,ctx,{adj:28,types:["nephew"]}),ctx.who="your "+ctx.ln+" "+T(ctx).given},
         text: "You will not be head of {fam} forever. By law and custom, the next head should be the eldest. But {who} is the one you trust. Choosing openly will split the family. Not choosing may split it worse.",
         choices: [
           {

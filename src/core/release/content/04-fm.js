@@ -1981,7 +1981,7 @@
             {
               t: "Acknowledge {themHim} as kin",
               r: "You give {themHim} a seat at the low end of the table. The family is scandalized. {them} will never forget it.",
-              fx: {them:{type:"sibling",op:35,back:"sibling"},honor:2,rel:{who:"mother",op:-10},fame:1},
+              fx: (p,ctx)=>{const f=(p.parents||[]).map(A.P).find(q=>q&&q.sex!=="F");return A.KIN?(A.KIN.recognize(p,T(ctx),f&&f.id,35),A.applyFx(p,{honor:2,rel:{who:"mother",op:-10},fame:1},ctx)):A.applyFx(p,{them:{type:"sibling",op:35,back:"sibling"},honor:2,rel:{who:"mother",op:-10},fame:1},ctx)},
             },
             {
               t: "Give {themHim} silver to go away (10 suns)",
@@ -2607,6 +2607,7 @@
       ];
     for(const e of EVENTS){if(!e.setup)continue;const s0=e.setup;e.setup=(p,ctx)=>{s0(p,ctx);const tok=A.ctxTokens(p,ctx);for(const k in ctx)typeof ctx[k]=="string"&&ctx[k].indexOf("{")>=0&&(ctx[k]=A.T(ctx[k],tok))}}
     A.defEvents(EVENTS);
-    function deathbedFx(p,ctx){switch(ctx.ck){case"sib":{const s=mk(p,{ageAdj:C.ageAdj(p)+A.ri(-6,6)});return s.flags.bastard=1,A.link(p,s,"sibling",0,"sibling"),`(You have a half-${s.sex==="M"?"brother":"sister"}: ${s.given}, living in {town}.)`}case"coin":{const v=8*purse(p);return p.coin+=v,`(Under the hearthstone: ${v} suns.)`}case"name":return A.willGrow(p,.5,"truth"),"(Your family name is a borrowed one. You keep it anyway.)";case"sis":{const s=mk(p,{sex:"F",ageAdj:Math.max(16,C.ageAdj(p)-A.ri(2,8))});return A.link(p,s,"sibling",-5,"sibling"),`(Your lost sister is ${s.given}, ${s.occ||"living somewhere"}. She does not know you.)`}default:return hp(p,6),"(Those words will warm you for the rest of your life.)"}}
+    // [C6, D-057] a deathbed's secret brother or sister is written into the tree under the parent who tells it (A.KIN.reveal)
+    function deathbedFx(p,ctx){switch(ctx.ck){case"sib":{const s=mk(p,{ageAdj:C.ageAdj(p)+A.ri(-6,6)});return s.flags.bastard=1,A.KIN&&A.KIN.reveal(p,s,[ctx.pid]),A.link(p,s,"sibling",0,"sibling"),`(You have a half-${s.sex==="M"?"brother":"sister"}: ${s.given}, living in {town}.)`}case"coin":{const v=8*purse(p);return p.coin+=v,`(Under the hearthstone: ${v} suns.)`}case"name":return A.willGrow(p,.5,"truth"),"(Your family name is a borrowed one. You keep it anyway.)";case"sis":{const s=mk(p,{sex:"F",ageAdj:Math.max(16,C.ageAdj(p)-A.ri(2,8))});return A.KIN&&A.KIN.reveal(p,s,(p.parents||[]).slice(0,2)),A.link(p,s,"sibling",-5,"sibling"),`(Your lost sister is ${s.given}, ${s.occ||"living somewhere"}. She does not know you.)`}default:return hp(p,6),"(Those words will warm you for the rest of your life.)"}}
   })();
 })();

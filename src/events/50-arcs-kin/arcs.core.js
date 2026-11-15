@@ -78,19 +78,10 @@
     if (sp && sp.spouse === q.id) { sp.spouse = null; sp.widowed = A.S.year; }
   };
   const holdsNothing = q => !q.ruler && !(q.noble && q.noble.rung >= 2) && !(q.house && A.S.houses && A.S.houses[q.house] && A.S.houses[q.house].headPid === q.id);
-  // a brother or sister of the parent `par`, made now and written into the tree under par's parents
-  AK.sibOf = (p, par, o = {}) => {
-    const gp = (par.parents || []).map(A.P).filter(Boolean), gf = gp.find(g => g.sex !== 'F');
-    const sex = o.sex || (A.chance(0.5) ? 'M' : 'F');
-    const sur = par.surMode === 'patron' ? (sex === 'F' ? 'daughter of ' : 'son of ') + (gf ? gf.given : A.givenName(par.cult, 'M')) : par.sur;
-    const q = AK.mk(p, Object.assign({ race: par.race, cult: par.cult, faith: par.faith, status: par.status === 'royal' ? 'noble' : par.status, sur, surMode: par.surMode, parents: gp.map(g => g.id) }, o, { sex }));
-    q.born = Math.min(A.S.year - 1, par.born + (A.chance(0.5) ? -1 : 1) * A.ri(1, 6));
-    for (const g of gp) if (!g.children.includes(q.id)) g.children.push(q.id);
-    AK.uniqueName(p, q);
-    A.link(p, q, 'uncle', A.ri(15, 50), 'nephew');
-    if (!par.rel[q.id]) A.link(par, q, 'sibling', A.ri(15, 60), 'sibling');
-    return q;
-  };
+  // C6 (D-057): no event makes a relative. AK.sibOf made a brother or sister of the parent `par` and wrote them into the
+  // tree under par's parents; it now answers null, and a scene without a real uncle or aunt does not happen. (Its body is
+  // in the commit before C6, recorded in docs/HISTORY.md.)
+  AK.sibOf = () => null;
   // a child of `fa` and `mo` (either may be null), made now and written into the tree
   AK.childOfPair = (p, fa, mo, o = {}) => {
     const by = fa || mo, sex = o.sex || (A.chance(0.5) ? 'M' : 'F');
