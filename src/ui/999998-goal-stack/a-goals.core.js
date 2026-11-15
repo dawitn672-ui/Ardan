@@ -100,7 +100,7 @@
   UI.whatNowCard = G.card;
 
   // a stack row that is not a button (a thing dated, an ambition, an aim) is told, not offered
-  const CSS = `.wn-item.wn-static{cursor:default}.wn-item.wn-static:hover{background:none}`;
+  const CSS = `:root .wn-item.wn-static{display:flex;align-items:center;cursor:default;color:var(--ink)}.wn-item.wn-static:hover{background:none}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('gl-style')) return; const s = document.createElement('style'); s.id = 'gl-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();
