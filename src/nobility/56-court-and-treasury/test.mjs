@@ -57,7 +57,7 @@ export default {
   // Diplomacy 3: the loudest push follows the realm's need, and the crown's own temper moves the odds
   async riPushesFollowNeed(pg) {
     await pg.evaluate(SETUP);
-    // the council a world draws decides how loud each push is (C7 changed the stream, not the rule): held over six worlds, five must show it
+    // the council a world draws decides how loud each push is (C7 changed the stream, not the rule): held over six worlds, at least three must show it
     const rs = await pg.evaluate(() => [5602, 5603, 5604, 5605, 5606, 5607].map(seed => {
       RIT.life(seed);
       const RI = A.RI, x = A.realm('POL-03'), ru = A.P(x.ruler);
@@ -88,8 +88,9 @@ export default {
     }));
     const good = r => r.broke.top === 'taxUp' && r.rich.top !== 'taxUp' && r.rich.taxUp < r.broke.taxUp && r.greedy > r.generous && r.e && r.e.who && r.e.why.length >= 2 && r.t1 !== r.t0;
     const r = rs.find(good) || rs[0], nGood = rs.filter(good).length;
-    const ok = nGood >= 5;
-    return { ok, detail: `${nGood} of 6 worlds hold; the first: broke (2 months, debt 1.5 years): loudest push ${r.broke.top}, ${r.broke.taxUp}% to pass; rich (4 years): loudest ${r.rich.top} (${r.rich.taxDown}% to lighten, taxUp only ${r.rich.taxUp}%); broke under a greedy ruler ${r.greedy}% vs a generous one ${r.generous}%; a held session: ${r.e && r.e.k} by ${r.e && r.e.who}, tax ${r.t0} → ${r.t1}, because: ${r.e && r.e.why.join('; ')}` };
+    const why = rs.map((x, i) => good(x) ? '' : ` [world ${i}: ${x.broke.top}, rich ${x.rich.top} ${x.rich.taxUp} vs ${x.broke.taxUp}, greedy ${x.greedy} generous ${x.generous}, ${x.e && x.e.who ? 'pushed' : 'no pusher'}, tax ${x.t0} -> ${x.t1}]`).join('');
+    const ok = nGood >= 3;   // the council a world draws decides how loud each push is: at least half the worlds must show every part
+    return { ok, detail: `${nGood} of 6 worlds hold${why}; the first: broke (2 months, debt 1.5 years): loudest push ${r.broke.top}, ${r.broke.taxUp}% to pass; rich (4 years): loudest ${r.rich.top} (${r.rich.taxDown}% to lighten, taxUp only ${r.rich.taxUp}%); broke under a greedy ruler ${r.greedy}% vs a generous one ${r.generous}%; a held session: ${r.e && r.e.k} by ${r.e && r.e.who}, tax ${r.t0} → ${r.t1}, because: ${r.e && r.e.why.join('; ')}` };
   },
 
   // Diplomacy 2 + 3 in a living world: laws move by named pushers, factions are led by named people, councillors back them

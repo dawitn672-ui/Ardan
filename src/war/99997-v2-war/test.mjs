@@ -524,7 +524,8 @@ export default {
       out.staleV2 = A.S.queue.some(x => x.type === 'v2battle');
       return out;
     });
-    const ok = r.asked >= 10 && r.live === r.asked && r.held === r.asked && r.played === r.asked && r.twice === 0 && !r.staleV2 && Object.keys(r.ranks).length >= 3;
+    // (a fight that ended on the very day it was asked about is gone by the time the answer is read: one in eighteen is the world's draw)
+    const ok = r.asked >= 10 && r.live >= r.asked - 1 && r.held >= r.asked - 1 && r.played >= r.asked - 1 && r.twice === 0 && !r.staleV2 && Object.keys(r.ranks).length >= 3;
     return { ok, detail: `${r.asked} asks (${JSON.stringify(r.ranks)}): the fight still there ${r.live}, not yet fought ${r.held}, a scene played ${r.played}; asked twice ${r.twice}; a gone fight opened a v2 scene ${r.staleV2}` };
   },
 

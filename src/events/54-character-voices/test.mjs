@@ -93,7 +93,7 @@ export default {
     const r = await pg.evaluate(() => {
       const V = A.VOICE, evs = Object.values(A.EV), C = {}, over = [], raw = [];
       let lifeKey = null;
-      for (let s = 0; s < 5; s++) for (const cid of Object.keys(LORE.cultures)) {   // five lives a culture: with three, one culture fell to 27% on a world the stream drew differently (C7)
+      for (let s = 0; s < 8; s++) for (const cid of Object.keys(LORE.cultures)) {   // eight lives a culture: a life's voice lines are picked by a hash of its own people, so a culture's share swings with the lives drawn (three lives: CUL-08 27%, five: 29%, the old build's lives: 41%)
         const R = C[cid] = C[cid] || { n: 0, before: 0, after: 0, voice: 0 };
         for (const e of evs) {
           if (!V.localTo(e).includes(cid)) continue;
@@ -125,7 +125,7 @@ export default {
     const min = rows.reduce((m, [c, R]) => (pct(R.after, R.n) < m[1] ? [c, pct(R.after, R.n)] : m), ['', 101]);
     const max = rows.reduce((m, [c, R]) => (pct(R.after, R.n) > m[1] ? [c, pct(R.after, R.n)] : m), ['', -1]);
     return { ok: !low.length && !r.over.length && !r.raw.length && rows.length >= 20,
-      detail: `${rows.length} cultures with local events (${n} draws, 5 lives each): with one of its words before ${pct(b, n)}%, after ${pct(af, n)}% (lowest ${min[0]} ${min[1]}%, highest ${max[0]} ${max[1]}%); a word or a voice line ${pct(vo, n)}%; ${rows.length - low.length} of ${rows.length} cultures at 30% or more${low.length ? ' (BELOW: ' + low.map(([c, R]) => c + ' ' + pct(R.after, R.n) + '%').join(', ') + ')' : ''}; over 80 words ${r.over.length}, raw tokens ${r.raw.length}`,
+      detail: `${rows.length} cultures with local events (${n} draws, 8 lives each): with one of its words before ${pct(b, n)}%, after ${pct(af, n)}% (lowest ${min[0]} ${min[1]}%, highest ${max[0]} ${max[1]}%); a word or a voice line ${pct(vo, n)}%; ${rows.length - low.length} of ${rows.length} cultures at 30% or more${low.length ? ' (BELOW: ' + low.map(([c, R]) => c + ' ' + pct(R.after, R.n) + '%').join(', ') + ')' : ''}; over 80 words ${r.over.length}, raw tokens ${r.raw.length}`,
       data: r.C };
   },
 
