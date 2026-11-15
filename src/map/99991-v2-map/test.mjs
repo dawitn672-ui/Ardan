@@ -289,4 +289,42 @@ export default {
     const ok = out.every(o => !o.errs.length && o.r.seeds >= 4 && o.r.rose === o.r.seeds && o.r.under === 0 && o.r.pure) && out.some(o => o.r.underHidden > 0);
     return { ok, detail: out.map(o => `${o.W}px: ${o.r.seeds} worlds, the rose's box read in ${o.r.rose}; names under the rose ${o.r.under} (with the rose hidden ${o.r.underHidden}); pure ${o.r.pure}${o.errs.length ? ', ERR ' + o.errs[0] : ''}`).join(' | ') };
   },
+
+  // X7: the continent built ahead in a worker (e-ahead.core.js) is the page's own build to the bit, and a life begun
+  // with no seed typed takes it (no build after Begin) and is the life A.newGame makes from that seed on the page
+  async v2mapAhead(pg) {
+    const r = await pg.evaluate(async () => {
+      const VM = A.V2MAP, H = VM.AHEAD;
+      if (!H || typeof VM.ahead !== 'function') return { skip: 'no worker in this build' };
+      const t0 = performance.now();
+      while (!(H.built || H.failed) && performance.now() - t0 < 120000) await new Promise(r => setTimeout(r, 50));
+      if (H.failed) return { failed: H.err };
+      const seed = UI.lifeSeed(UI.cr, false), key = VM.seedOf(seed) + '#' + VM.VERSION, w1 = VM.cache.get(key);
+      // every field of the two worlds, typed arrays included, hashed in order (the cache key and the timings aside)
+      const hw = w => { let h = 2166136261; const mix = s => { for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } };
+        const walk = (v, top) => { if (ArrayBuffer.isView(v)) { mix(v.constructor.name + v.length); for (let i = 0; i < v.length; i++) mix(String(v[i])); return; }
+          if (v instanceof Set || v instanceof Map) return walk([...v]);
+          if (v && typeof v === 'object') { for (const k of Object.keys(v)) { if (top && (k === 'T' || k === 'key')) continue; mix(k); walk(v[k]); } return; }
+          mix(typeof v + String(v)); };
+        walk(w, true); return (h >>> 0).toString(16); };
+      const w0 = VM.build(VM.seedOf(seed), VM.release());
+      const same = !!w1 && hw(w0) === hw(w1);
+      // Begin with no seed typed
+      UI.A.newLife(); UI.cr.seed = '';
+      const b0 = VM.stats.builds, ng = A.newGame; let o = null;
+      A.newGame = function (x) { o = JSON.parse(JSON.stringify(x)); return ng.apply(this, arguments); };
+      UI._newLifeOk = true; try { UI.startLife(); } finally { UI._newLifeOk = false; A.newGame = ng; }
+      const builds = VM.stats.builds - b0, s1 = A.S.seed;
+      // the same options to A.newGame twice: on the worker's world (still cached), then on the page's own build
+      A.newGame(JSON.parse(JSON.stringify(o)));
+      const h1 = T.hash(A.S), b1 = VM.stats.builds;
+      VM.AHEAD_OFF = true; VM.cache.clear();
+      try { A.newGame(JSON.parse(JSON.stringify(o))); } finally { VM.AHEAD_OFF = false; }
+      const again = !!o && o.seed === seed && s1 === seed && b1 === b0 && VM.stats.builds === b0 + 1 && T.hash(A.S) === h1;
+      return { same, builds, again, seed: s1, ms: H.ms[0] };
+    });
+    if (r.skip) return { ok: true, skip: r.skip };
+    if (r.failed) return { ok: false, detail: 'the worker failed: ' + r.failed };
+    return { ok: r.same && r.builds === 0 && r.again, detail: `the worker's world is the page's to the bit ${r.same} (built in ${r.ms} ms off the page); continents built after Begin ${r.builds}; seed ${r.seed}: the same world state on the worker's continent as on the page's ${r.again}` };
+  },
 };
