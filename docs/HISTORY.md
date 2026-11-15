@@ -885,3 +885,10 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   player's id), `riPushesFollowNeed` (6 worlds, 3 must show every part; greedy 90% against generous 3% in all six),
   `v2wFightWaits` (30 lives; one fight that ended the day it was asked is allowed).
 
+### H-053 · 2026-11-15 15:02 ET · CI 123 on C7: two tests on new worlds
+- CI 123 (`5061948`) failed two tests, both a test's few seeds meeting the new world:
+  - `postsSaveMigration`: seed 41's noble dies in the year before the save loads, and the repair skips a dead player by
+    design; the test takes the first of seeds 41, 43, 47, 53 whose noble lives (`1bc4508`).
+  - `idVoiceOnce`: seeds 555-557 drew no voice. Voices still come (53 in 36 lives against 72 on alpha.7); fewer because
+    more counsel and recall cards take the card's voice slot (`A.V2C.voiceFits`). The test plays twelve lives (`3c5d29d`).
+
