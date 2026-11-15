@@ -140,7 +140,8 @@ export default {
     // (cycle 2: "Look at his hands" five times in 20 months), and the name and line read apart to a screen reader
     const r = await pg.evaluate(() => {
       const out = [];
-      for (const [seed, status] of [[555, 'peasant'], [556, 'gentry'], [557, 'artisan']]) {
+      // twelve lives (three gave 0 to 3 voices each by the world's draw: about 1.5 a life in a five-year life, 2 before C6 and C7)
+      for (const [seed, status] of Array.from({ length: 12 }, (_, i) => [555 + i, ['peasant', 'gentry', 'artisan'][i % 3]])) {
         T.enter({ seed, race: 'human', realm: 'POL-01', status, sex: seed % 2 ? 'F' : 'M', startAge: 18 });
         const lines = []; let ev = 0, sr = 0;
         const end = A.S.year + 5;
