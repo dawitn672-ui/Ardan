@@ -1,0 +1,34 @@
+1: knight or noble - plate armour with a tabard and a castle emblem, sword at the hip
+2: clergy - cream robe with a gold stole and a pendant
+3: clergy - hooded cowl, white stole, rosary or cross at the belt
+4: knight or noble - purple dress with a fur collar and a fine belt
+5: merchant - sash with beaded trim, turban and a pale skirt (a guess, since the cut is plain)
+6: knight or noble - green tunic with a fur collar, a pouch and a decorated belt
+7: artisan - leather apron, tool at the belt, fur-trimmed cloak
+8: soldier - kettle helm, red and tan tunic with a mail collar, round shield
+9: merchant - brown fur-collared coat with a sash (a guess, since the garb is plain)
+10: peasant - plain beige tunic with a rope belt and a square patch
+11: knight or noble - teal striped coat with a turban and gold trim
+12: soldier - helmet, bow and arrows, sword, mail collar
+13: soldier - kettle helm, green tunic, mail collar, round shield
+14: knight or noble - orange coat with gold trim, a turban with a brooch, a sword
+15: royal - crown, ermine collar, red robe
+16: royal - crown, gold mantle, white robe
+17: royal - crown, ermine collar, purple robe, green cloak
+18: serf - drab sleeveless smock with a patch and a rope belt
+19: peasant - pale tunic with a rope belt and a patch (barely above the serf)
+20: clergy - white wimple, stole with crosses
+21: serf - drab brown smock with a patch and a rope belt
+22: royal - crown, purple mantle, white and gold robes
+23: artisan - leather apron, hammer at the belt, fur collar
+24: merchant - grey tunic with a turban and a coin purse or cup (uncertain)
+25: knight or noble - teal robe with a fur collar, a decorated belt and a gold chain
+26: artisan - apron and a hammer at the belt
+27: merchant - blue dress with gold chains and a pendant, a headscarf, a decorated belt
+28: artisan - apron over a yellow dress, hammer
+29: peasant - blue dress with a green shawl and a plain pouch
+30: merchant - red sash, beaded necklaces, a key and a purse, a tall hat
+31: soldier - mail collar, a round shield and a sword
+32: clergy - hooded cowl with a pendant, plain robe
+
+Hard to tell apart: serf versus peasant (18, 19, 21, 10). All four wear the same drab smock and rope belt, and I could only separate them by how drab the colour was and how fine the cloth looked. Merchant versus knight or noble was the next hardest. Both wear fur, gold chains and turbans, so I leaned on pouches, keys and chains for merchants and on swords and fine belts for nobles (5, 9, 24, 11, 14). Soldier versus knight was easier, because the helmet and shield stand out. Royals were easy because of the crowns. 22 could pass for a priest, but the crown settles it.

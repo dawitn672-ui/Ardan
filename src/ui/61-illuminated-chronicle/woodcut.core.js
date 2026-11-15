@@ -217,7 +217,7 @@
   W.LABEL = { travel: 'a road', tavern: 'a tavern', court: 'a hall of state', war: 'a camp of war', fight: 'crossed swords', money: 'scales and coin',
     kin: 'a family house', work: 'an anvil', faith: 'a church', food: 'a laid table', sickness: 'a sickbed', letter: 'a sealed letter', learning: 'an open book',
     subordinate: 'a lord\'s keep', beast: 'eyes in the forest', death: 'a grave', play: 'a game board and dice', love: 'a rose and two rings',
-    weather: 'a storm', menace: 'a dark archway', errand: 'a lantern on the road', favor: 'a signet ring offered', crime: 'a cut purse', street: 'a street', none: 'an ornament' };
+    weather: 'a storm', field: 'the fields', market: 'a market', menace: 'a dark archway', errand: 'a lantern on the road', favor: 'a signet ring offered', crime: 'a cut purse', street: 'a street', none: 'an ornament' };
 
   // the woodcut for an event. key: a string the variations are seeded from (the event id and year); month 0-11
   W.svg = function (shape, key, month) {
@@ -267,6 +267,9 @@
   W.shapeOf = function (q, view) {
     const e = q && A.EV[q.ev];
     if (!e) return 'none';
+    // [C8c] the picture follows the event's scene tag (26-scene-tags): the event's own shape where that shape can stand
+    // in the scene, else the scene's own print (a farming offer no longer shows a forge)
+    if (A.SCENE && A.SCENE.shapeFor) { try { return A.SCENE.shapeFor(e, A.SCENE.of(q)); } catch (err) {} }
     let s = null;
     try { s = A.evShape ? A.evShape(e) : null; } catch (err) { s = null; }
     if (s && SC[s]) return s;

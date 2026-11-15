@@ -985,3 +985,43 @@ different people than before C7 (the draws changed): worlds are deterministic, n
 **Not done:** the lore's authored people keep their names (the cast, the houses' members, e.g. "Teodoro Lantieri"); N6 (the
 noble ladder against the lore), N7's Marchfolk, N9 (town scale), N10 (a Chaplain of the Horde), the realm pairs that share a word
 (-haven, -deep, -hold), M4's climate bands; the player-facing mixing of dress and faith by origin (C8c).
+
+### D-060 · C8c: dress is by station, people, occasion and place; only a livery is shared; every event has a scene tag; the player changes outfits (2026-11-15 16:30 ET; D-029, D-035, D-045, D-050, D-058; CRITIQUE V2, V7, V9, V13, V16, V17)
+**Chosen** (code `src/ui/engine/figure/wardrobe.js`, `cultures.js`, `gear.js`; `src/ui/93-figures`; `src/events/26-scene-tags`; sheets and the
+blind readings `docs/design/demo-2d/c8c/`):
+1. **One wardrobe, seven inputs.** A person is dressed from their estate, their people (C7's cultures, D-058), the occasion, the
+   place, their trade, their post and whose colours they wear. Each estate keeps its own marks in every cut: rope, patches and torn
+   sleeves (serf); dyed wool and a leather belt (countryman); the apron and the tool (craft); a long gown, a hat, purse and keys
+   (merchant); habit, cord and sun, a stole by rank (clergy); a quilted coat, mail, the realm's coat and a helm (soldier); gold
+   trim, a jewel by rank, fur and a cloak, or a harness under their own arms (the high-born); the crown.
+2. **Four cuts by people** (`cultures.js`, the table that was 93-figures' and drew only a hat and a dye): tunic, robe, kaftan,
+   drape, with each people's headwear, dyes and habits. A dye costs what it costs: nobody wears above their purse.
+3. **Only a livery is shared** (V9). Soldiers wear their realm's coat (one pattern a realm); a lord's guard knight and maid wear
+   his house's colours and device. Everyone else's clothes are their own (their own two dyes a little off the vat's, a variant
+   of the cut, a fit of their own), and a noble house is no longer all in the house's colour (it is in the lining, the cloak
+   or the trim). A knight in harness still wears his own arms: the gate 2 figure (D-035) is unchanged.
+4. **A soldier's bust shows that he is one** (V7): the quilted collar, the mail collar and the issued helm are above the breast;
+   the player's face is never under a helm; a captain is bare-headed in the sash of command.
+5. **Hoods are for the road** (V13): raised only out of doors, never in a list, never under a roof.
+6. **Occasions and scene tags** (V16, V17). Six occasions (day, best, work, travel, arms, mourning). Every event has a scene tag
+   (18 scenes; its own `scene:` line, else read from its words, shape and audience); the print follows the tag and the people
+   on the card are dressed for it. The tag is for pictures only: `A.evShape` still guards the roll.
+7. **Changeable outfits.** The player picks an occasion and a dye of their station in the Profile's Gear panel; `dress: { w, d }`
+   on the person, absent in older saves ("as the day asks"); journalled (`A.setDress`). It changes the picture and nothing else.
+**Measured.** Blind reading of the 8 x 4 sheet by fresh Sonnet readers, six readings: 94, 81, 88, 72, 78, 84 in 100 (83 over
+all; 81 on the final wardrobe). **The critique's 85 is not held on the final sheet.** Royal, clergy, artisan, noble and soldier
+are read 116 times in 120; serf, peasant and merchant 43 in 72, and two readers of one image differ by up to 16 points. By rule
+in CI (`fgDressStations`) 191 of 192. Scene tags against a hand-labelled held-out sample: 49 of 59 (83 in 100); the print matches
+its tag on every card of a 60-card sample (`stPictures`). No two of 400 adults outside a livery dressed alike in three worlds;
+0 raised hoods in lists and indoors; compose 2.3 to 2.9 ms a list portrait (budget 6), as before.
+**Conflicts recorded:** (a) The critique asks for about 60 compositions; there are 27 prints (two new: the fields, a market). (b)
+The Dress control sits in the Gear panel, not on the card: the card is at B5's count of controls (`pfFits`, 50). (c) The figure
+library's streams hash an id with FNV-1a, which takes some pairs of ids for one (two people then stood and dressed as twins); the
+wardrobe keys its dice by the id and a second hash, and the faces are untouched (they come from stored codes). (d) The same seed
+gives the same world and the same faces as before, and different clothes: dress is drawn, never rolled or stored (but for the
+player's choice). (e) Dress has no effect on play yet; whether court dress, mourning or livery should count is the owner's to say
+(`docs/IDEAS.md`).
+**Not done:** the serf, peasant and merchant boundary (above); interiors by class and framing by biome (V19); a tone per kind of
+cut-in (V11, V12, with C8a); the memorial plate, the book face and the four icons (V22); stored jewellery and war paint
+(`app.jewel`, `app.paint`); mounts; no event has its own `scene:` line yet; NPCs do not change their own dress but by scene;
+mourning is not put on by the game after a death.

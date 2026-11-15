@@ -5,6 +5,9 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Clothes tell you who someone is.** Serfs, countryfolk, craftsmen, merchants, clergy, soldiers, the high-born and kings each dress their own way, in the cut of their own people: the northern tunic, the desert robe, the steppe coat, the southern drape. A soldier looks like one, a lord's guard wears his colours, and no two other people share an outfit.
+- **Change what you wear.** In your Profile, under Gear, choose everyday clothes, your best, working clothes, a cloak for the road, your harness or mourning, and the colour of your cloth. Event pictures now show where the scene happens (the fields, a market), and people dress for it.
+
 ## v2.1.0-alpha.8 (2026-11-15 15:36 ET) · Plain names, and a flavour for every realm
 
 - **Plain names, a flavour for every realm.** People are named from one large pool of ordinary English names, and each realm leans

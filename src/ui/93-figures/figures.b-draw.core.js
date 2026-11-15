@@ -67,14 +67,44 @@
     return { id, kind: G && typeof G.kind === 'string' ? G.kind : null, make: o.make ?? (G && G.make), rarity: o.rarity ?? (G && G.rarity) };
   };
   // ---- what the picture needs to know about a person (read only)
-  FG.sheet = function (p) {
+  // ---- [C8c] the occasion and the place a picture is drawn for (read only). The player's own choice of dress
+  // (p.dress.w, absent in an older save: "as the day asks") comes first; on an event's card the scene's tag dresses
+  // everyone in it (26-scene-tags); elsewhere it is everyday dress. A list (the small squares) is never out of doors.
+  const WEARS = ['day', 'best', 'work', 'travel', 'arms', 'mourning'];
+  FG.sceneTag = function () { try { return FG.ev && A.SCENE && A.SCENE.of ? A.SCENE.of(FG.ev) : null; } catch (e) { return null; } };
+  FG.context = function (p, kind) {
+    const d = p && p.dress && typeof p.dress === 'object' ? p.dress : null, tag = FG.sceneTag();
+    return { wear: d && WEARS.includes(d.w) ? d.w : tag ? A.SCENE.wearFor(tag) : 'day', where: tag ? (A.SCENE.outdoors(tag) ? 'out' : 'in') : kind === 'chip' || kind === 'list' ? 'list' : 'in', dye: d && typeof d.d === 'string' ? d.d : null, tag };
+  };
+  // a post in the player's household (C6: nurse, maid, guard, tutor), read from the household's record or the person's
+  // own description; and the colours such a retainer wears: the house's, for the guard and the maid
+  FG.roleOf = function (p) {
+    try { const st = A.S && A.S.household && A.S.household.staff; if (st) for (const k of ['nurse', 'maid', 'guard', 'tutor']) if (st[k] === p.id) return k; } catch (e) {}
+    const occ = typeof p.occ === 'string' ? p.occ : '';
+    return /household guard/.test(occ) ? 'guard' : /maid of the household/.test(occ) ? 'maid' : /wet nurse/.test(occ) ? 'nurse' : /^tutor\b/.test(occ) ? 'tutor' : null;
+  };
+  FG.liveryFor = function (p, role) {
+    if (role !== 'guard' && role !== 'maid') return null;
+    try {
+      const pc = A.pc && A.pc(), a = pc && pc.id !== p.id ? PORTRAIT.arms(pc) : null;
+      if (!a || !a.h || !hexOk(a.f)) return null;
+      const ch = typeof a.ch === 'string' && Object.prototype.hasOwnProperty.call(PORTRAIT.charges, a.ch) ? PORTRAIT.charges[a.ch] : '';
+      return { field: hexOk(a.f), charge: hexOk(a.c) || '#d8c48a', device: ch && ch[0] === 'M' ? ch : null };
+    } catch (e) { return null; }
+  };
+  FG.sheet = function (p, kind) {
     const race = GD.RACES[p.race] ? p.race : 'human', R2 = GD.RACES[race], raw = Math.max(0, +A.age(p) || 0);
     const fl = p.flags || {}, nb = p.noble || null, job = p.job || null, mil = p.mil || null;
     const estate = p.ruler ? 'royal' : p.prison ? 'prisoner' : job && job.c === 'clergy' ? 'priest' : p.status === 'royal' ? 'royal'
       : p.status === 'noble' || (nb && nb.rung >= 4) ? 'noble' : p.status === 'gentry' || (nb && nb.rung >= 2) ? 'gentry'
       : p.status === 'merchant' || (job && job.c === 'merchant') ? 'merchant' : p.status === 'slave' ? 'slave' : p.status === 'serf' || fl.unfree ? 'serf' : p.status === 'artisan' ? 'artisan' : 'peasant';
     const g0 = p.gear || {}, gear = { weapon: item(g0.weapon), ranged: item(g0.ranged), armor: item(g0.armor), shield: item(g0.shield), helm: item(g0.helm), cloak: item(g0.cloak) };
-    const officer = !!(mil && mil.rank >= 6);
+    const milX = mil || (job && job.c === 'mercenary' ? { rank: Math.min(3, +job.r || 0), troop: 'HI' } : null);       // [C8c] a sellsword is a soldier too
+    const officer = !!(mil && mil.rank >= 6), role = FG.roleOf(p), cx = FG.context(p, kind);
+    if (role === 'guard') { if (!gear.armor || gear.armor.id === 'none') gear.armor = item('mail'); if (!gear.weapon || gear.weapon.id === 'fists') gear.weapon = item('sword'); }
+    if (milX && !mil) { if (!gear.armor || gear.armor.id === 'none') gear.armor = item('leather'); if (!gear.weapon || gear.weapon.id === 'fists') gear.weapon = item('sword'); }
+    // the rank and file wear the helm their company is issued
+    if (mil && !gear.helm && mil.rank < 4) { const tg = GD.TROOP_GEAR && GD.TROOP_GEAR[mil.troop]; gear.helm = item(tg ? tg[3] : 'helm'); }
     // a soldier with no arms of their own stands in what their company is issued
     if (mil && !gear.armor) gear.armor = item(officer ? 'mailplate' : ['HI', 'HC', 'MC'].includes(mil.troop) ? 'mail' : 'padded');
     if (mil && gear.armor && gear.armor.id === 'none') gear.armor = item(officer ? 'mailplate' : ['HI', 'HC', 'MC'].includes(mil.troop) ? 'mail' : 'padded');
@@ -92,9 +122,11 @@
       traits: p.traits || [], quirks: p.quirks || [], married: !!p.spouse, pc: !!(A.S && A.S.pc === p.id), strength: st,
       colors: { realm: rc, field: hexOk(arms && arms.f) || rc, charge: hexOk(arms && arms.c) || '#d8c48a', device: ch && ch[0] === 'M' ? ch : null },
       cult: FG.cultOf ? FG.cultOf(p.cult) : null, mood: FG.mood(p),
+      // [C8c] dress: the occasion, the place, the person's own dye, their trade, their post and whose colours they wear
+      wear: cx.wear, where: cx.where, dye: cx.dye, job: job && typeof job.c === 'string' ? job.c : null, role, mil: milX ? { rank: +milX.rank || 0, troop: String(milX.troop || '') } : null, livery: FG.liveryFor(p, role),
     };
   };
-  FG.look = function (p) { const L = LIB(); return L ? L.lookOf(FG.sheet(p)) : null; };
+  FG.look = function (p, kind) { const L = LIB(); return L ? L.lookOf(FG.sheet(p, kind)) : null; };
 
   // ---- the ground behind a sitter and the frame's line: the realm's colour, quiet; gold for a ruler, the accent for the
   // high-born; the dead on a grey wash
@@ -124,8 +156,11 @@
     return [p.id, p.given, p.sur, p.epithet || '', Math.floor(+A.age(p) || 0), p.alive ? 1 : 0, p.race, p.sex, p.cult, p.realm, p.status, p.ruler || '', p.house || '', p.prison ? 1 : 0, p.spouse ? 1 : 0,
       JSON.stringify(p.app || {}), JSON.stringify(p.gear || {}), (p.wounds || []).map(w => w && w.k + (w.until ? '!' : '')).join(','), (p.quirks || []).join(','),
       job ? job.c + ':' + job.k + ':' + (job.rank || 0) : '', mil ? mil.rank + ':' + mil.troop + ':' + mil.realm : '', nb ? nb.rung + ':' + nb.realm : '', p.flags && p.flags.unfree ? 1 : 0,
-      FG.mood(p), Math.round(((p.st && +p.st.str) || 45) / 9), A.S && A.S.pc === p.id ? 1 : 0, size, kind].join('|');
+      FG.mood(p), Math.round(((p.st && +p.st.str) || 45) / 9), A.S && A.S.pc === p.id ? 1 : 0, size, kind,
+      p.dress ? JSON.stringify(p.dress) : '', FG.sceneTag() || '', p.occ || '', job && job.c === 'mercenary' ? job.r || 0 : '', FG.liveryKey()].join('|');
   };
+  // the house whose colours a retainer wears (the player's): when it changes, the retainers' pictures are drawn anew
+  FG.liveryKey = () => { try { const pc = A.pc && A.pc(); return pc && pc.house ? String(pc.house) : ''; } catch (e) { return ''; } };
   const SIZES = n => clamp(Math.round(+n || 200), 12, 720);
   const kindOf = (size, opts) => (opts.figure ? 'figure' : size < 120 || opts.bust ? (size <= 40 ? 'chip' : size < 120 ? 'list' : 'square') : 'tall');
   // the options compose() is given for one look at one size
@@ -139,7 +174,7 @@
   FG.inline = function (p, size = 200, opts = {}) {
     const L = LIB(); if (!L || !p || !p.app) return '';
     try {
-      size = SIZES(size); const kind = kindOf(size, opts), sh = FG.sheet(p), look = L.lookOf(sh), G = FG.ground(sh);
+      size = SIZES(size); const kind = kindOf(size, opts), sh = FG.sheet(p, kind), look = L.lookOf(sh), G = FG.ground(sh);
       const o = FG.composeOpts(look, sh, size, kind, G, 'i' + hash(L.lookKey(look) + size + kind).toString(36) + '_');
       if (opts.plain) o.fx = false;
       o.label = sh.name || 'A portrait'; o.cls = 'portrait fig ' + (kind === 'tall' || kind === 'figure' ? 'full' : 'bust') + (sh.alive ? '' : ' dead');
@@ -252,7 +287,7 @@
       const pk = FG.personKey(p, size, kind);
       let hit = BY_PERSON.get(pk);
       if (hit === undefined) {
-        const sh = FG.sheet(p), look = L.lookOf(sh), G = FG.ground(sh);
+        const sh = FG.sheet(p, kind), look = L.lookOf(sh), G = FG.ground(sh);
         const e = entryFor(look, sh, G, size, kind, p.id + '|' + size + kind);
         hit = { e, label: sh.name, cls: 'portrait fig ' + (kind === 'tall' || kind === 'figure' ? 'full' : 'bust') + (sh.alive ? '' : ' dead') };
         if (BY_PERSON.size > MAX * 3) BY_PERSON.clear();

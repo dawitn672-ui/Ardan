@@ -77,13 +77,14 @@ node tools/build.mjs --unpack && node tools/show.mjs A.fightWorth UI.refresh    
 node tools/build.mjs --out=/tmp/ardan/me/x.html --only=me --unpack=/tmp/ardan/me/blobs
 node tools/show.mjs --dir=/tmp/ardan/me/blobs A.fightWorth                         # your own build, privately
 node tools/build-v2.mjs                                   # rebundle the v2 engine (src/*/engine) after editing it
+node docs/design/demo-2d/c8c/sheet.mjs                    # the dress sheets (stations x peoples, soldiers, occasions, the 24 cultures) from the figure library
 node --test tests/v2/*.test.js                            # the engine's unit tests
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
 node tools/lint-kin.mjs                                   # no event mints kin or names one it did not take from the tree (C6)
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
-node tests/run.mjs                                        # everything against index.html (759 tests; CI shards it 8 ways)
+node tests/run.mjs                                        # everything against index.html (766 tests; CI shards it 8 ways)
 node tools/bench/balance.mjs /tmp/me.html                 # each path's numbers within tools/bench/targets.mjs
 node tools/bench/next-month-speed.mjs /tmp/me.html --save=tests/saves/press/y50-noble.ardan [--death] [--throttle=4]   # real Next month presses, in CPU time
 node tools/bench/press-gate.mjs /tmp/me.html [--report]   # the A1 gate (CI): year 0 and 50, fresh and after a death, held to budgets
@@ -231,6 +232,8 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 - `p.flags[name]` holds the year a flag was set.
 - `p.flags.ev[eventId]` holds the year the player last saw each event.
 - Use `A.schedule({ type: "event", ev: "id", ctx: {...} }, days)` to bring something back years later.
+
+**Scene.** Every event has a scene tag (`src/events/26-scene-tags`: court, home, church, market, field, workshop, road, sea, wild, war, fight, tavern, street, sickbed, school, prison, grave, feast), read from its words, shape and audience; the event's print follows it and the people on the card dress for it. When the reader would get it wrong, say it: `scene: "field"` on the event.
 
 **Tokens.** `{name}` `{home}` `{realm}` `{realmShort}` `{capital}` `{ruler}` `{faith}` `{father}` `{mother}` `{spouse}` `{rival}` `{friend}` `{enemy}` `{year}` `{age}`, plus any `ctx` key. Digits are allowed (`{mate2}`). An unfilled token makes the engine drop the event.
 

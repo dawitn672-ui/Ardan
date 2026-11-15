@@ -797,6 +797,28 @@
     `<path d="M220 164q-20 0-16-26q4-18 24-22l-8-12h32l-8 12q20 4 24 22q4 26-16 26z" fill="${tone(c, M.wood, true)}"${st(c, 1.6)}/><path d="M220 116h24" stroke="${tone(c, M.red, true)}" stroke-width="3"/>` +
     `<path d="M248 128l60-40" stroke="${c.light}" stroke-width="1.4" stroke-dasharray="3 3" opacity=".7"/>` + P.sword(c, 320, 112, 60, 50).replace(/rect x="-14"/, 'rect x="-8"').replace(/width="28"/, 'width="16"');
   SC.street = (c, r, o) => [80, 170, 260, 350, 440, 520].map((x, i) => P.house(c, x, 178, 80, 54 + (i * 13) % 30, { lit: i % 2 === 1, chimney: i % 3 === 0, thatch: i % 4 === 2, small: true })).join('');
+  // [C8c] two scenes the tags asked for (26-scene-tags): the fields (stooks of corn, a plough and its ox by a barn) and a
+  // market (three stalls under striped awnings)
+  SC.field = (c, r, o) => {
+    let s = P.house(c, pos(o, 110), 166, 96, 54, { thatch: true }) + P.tree(c, pos(o, 520), 170, 1.05);
+    for (let i = 0; i < 7; i++) s += `<path d="M${f(150 + i * 50)} 186q${f(40 - i * 4)}-22 ${f(150 - i * 22)}-34" fill="none" stroke="${tone(c, M.dirt, false)}" stroke-width="2" opacity=".7"/>`;
+    for (const [x, y, k] of [[236, 150, 1], [274, 156, 1.15], [318, 148, .95], [432, 160, 1.2]]) s += `<g ${at(pos(o, x), y, k)}><path d="M-13 0l7-30-6-12 8 6 4-10 4 10 8-6-6 12 7 30z" fill="${tone(c, M.gold, true)}"${st(c, 1.2)}/><path d="M0-36l4-10 8 6-6 12 7 30H0z" fill="${tone(c, M.gold, false)}"/><path d="M-7-22h14" stroke="${tone(c, M.wood, false)}" stroke-width="2"/></g>`;
+    // the ox and the plough
+    const ox = pos(o, 372), d = o.flip ? -1 : 1;
+    s += `<g transform="translate(${f(ox)} 172) scale(${d} 1)"><path d="M-30-22q-6-10 6-12h34q14 0 16 12l8-2q4 6-2 10l-8 2v12h-6v-12h-28v12h-6v-12q-10-2-14-10z" fill="${tone(c, M.wood, true)}"${st(c, 1.3)}/><path d="M26-32q6-8 12-4M30-22l8-2" fill="none"${st(c, 1.3)}/><path d="M-30-22l-34 12 10 10M-64-10l-16-16" fill="none" stroke="${tone(c, M.timber, false)}" stroke-width="3"/><path d="M-58-2l10 2-6 6z" fill="${tone(c, M.iron, false)}"/></g>`;
+    return s;
+  };
+  SC.market = (c, r, o) => {
+    let s = P.house(c, pos(o, 70), 172, 90, 70, { small: true }) + P.house(c, pos(o, 540), 172, 90, 62, { small: true, lit: true });
+    [[170, M.red], [300, M.blue], [430, M.gold]].forEach(([x, col], i) => {
+      const X = pos(o, x), y = 176 - (i % 2) * 4;
+      s += `<g ${at(X, y)}><path d="M-44 0v-58M44 0v-58" stroke="${tone(c, M.wood, false)}" stroke-width="4"/><path d="M-50-30h100v30h-100z" fill="${tone(c, M.wood, true)}"${st(c, 1.3)}/><path d="M-56-58l10-22h92l10 22z" fill="${tone(c, M.cloth, true)}"${st(c, 1.4)}/>` +
+        [-46, -18, 10, 38].map(dx => `<path d="M${dx}-80h14l2 22h-18z" fill="${tone(c, col, true)}"/>`).join('') + `<path d="M-56-58q7 8 14 0t14 0 14 0 14 0 14 0 14 0 14 0 14 0" fill="none"${st(c, 1.2)}/>` +
+        (i === 0 ? `<circle cx="-24" cy="-36" r="7" fill="${tone(c, M.red, true)}"${st(c, 1)}/><circle cx="-8" cy="-36" r="7" fill="${tone(c, M.gold, true)}"${st(c, 1)}/><circle cx="-16" cy="-45" r="7" fill="${tone(c, M.green, true)}"${st(c, 1)}/>` : i === 1 ? `<path d="M-30-30v-16h20v16zM-4-30v-22h22v22z" fill="${tone(c, M.cloth, false)}"${st(c, 1)}/><path d="M22-30q0-18 12-18t12 18z" fill="${tone(c, M.red, false)}"${st(c, 1)}/>` : `<path d="M-30-30q-2-16 10-16t10 16zM4-30l6-20h12l6 20z" fill="${tone(c, M.paper, true)}"${st(c, 1)}/>`) + '</g>';
+    });
+    s += `<g ${at(pos(o, 236), 178)}><ellipse cx="0" cy="-12" rx="11" ry="13" fill="${tone(c, M.wood, true)}"${st(c, 1.2)}/><path d="M-11-16h22M-11-8h22" stroke="${tone(c, M.iron, false)}" stroke-width="1.6"/></g>`;
+    return s + c.glow(pos(o, 540), 150, 10);
+  };
   // no shape: an open view, a stream winding down from the hills and a lone pine on a rise
   SC.none = (c, r, o) => P.road(c, Object.assign({}, o, { side: !o.side }), pos(o, 250), 142, true) + P.pine(c, pos(o, 430), 176, 1.5) + P.tree(c, pos(o, 140), 178, 0.7) + `<path d="M${pos(o, 330)} 182q80-30 200 0z" fill="${c.near}"/>`;
 
@@ -808,7 +830,7 @@
     beast: [['dusk', 1], ['night', 1]], sickness: [['night', 2], ['dusk', 1]], learning: [['day', 2], ['night', 1], ['golden', 1]], letter: [['day', 2], ['golden', 1], ['night', 1]],
     faith: [['dawn', 1], ['day', 2], ['golden', 1]], court: [['day', 2], ['golden', 1]], travel: [['day', 3], ['dawn', 1], ['golden', 1]], street: [['day', 2], ['golden', 1], ['dusk', 1]],
     food: [['golden', 1], ['day', 1], ['dusk', 1]], play: [['day', 1], ['golden', 1], ['night', 1]], money: [['day', 2], ['golden', 1]], favor: [['day', 2], ['golden', 1]],
-    work: [['day', 2], ['golden', 1], ['dusk', 1]], subordinate: [['day', 2], ['golden', 1], ['dawn', 1]], none: [['day', 2], ['golden', 1], ['dawn', 1], ['dusk', 1]],
+    work: [['day', 2], ['golden', 1], ['dusk', 1]], field: [['day', 3], ['golden', 2], ['dawn', 1]], market: [['day', 3], ['golden', 1]], subordinate: [['day', 2], ['golden', 1], ['dawn', 1]], none: [['day', 2], ['golden', 1], ['dawn', 1], ['dusk', 1]],
   };
   // the words that set the hour whatever the shape: a birth or the new year at dawn, a wedding at golden hour, a death
   // at dusk, a battle in storm or golden light (the brief's mood mapping, by event shape and then by what it says)
@@ -826,7 +848,7 @@
     for (const [h, w] of L2) { v -= w; if (v < 0) return h; }
     return L2[0][0];
   };
-  SK.LABEL = Object.assign({}, UI.WOODCUT && UI.WOODCUT.LABEL, { none: 'an open view' });
+  SK.LABEL = Object.assign({}, UI.WOODCUT && UI.WOODCUT.LABEL, { none: 'an open view', field: 'the fields', market: 'a market' });
 
   // the print for an event. key: the event and the year (61's); month 0-11; o: { hour, terr, coast, place }
   SK.svg = function (shape, key, month, opt = {}) {
@@ -837,7 +859,7 @@
     const indoor = INDOOR.has(sc), c = SK.palette(hour, terr, season, indoor, opt.clim);
     c.arch = opt.arch && SK.ARCH.includes(opt.arch) ? opt.arch : null;
     const o = { hz: indoor ? 112 : 146, groundY: 176, floor: 176, indoor, defs: '', fig: opt.fig || null };
-    o.sea = sc === 'travel' && r() < 0.3;
+    o.sea = sc === 'travel' && (r() < 0.3 ? opt.sea !== false : opt.sea === true);       // [C8c] a scene tagged the sea is at sea, one tagged the road is not
     o.flip = r() < 0.5 && !['letter', 'learning', 'money', 'favor', 'court', 'subordinate', 'beast', 'weather'].includes(sc);
     o.side = r() < 0.5; o.thatch = r() < 0.5;
     o.sunX = 70 + r() * 250; o.moon = r() < 0.6; o.full = r() < 0.55;
@@ -868,7 +890,7 @@
     body += L.weather(p, c, r, o);
     body += `<rect x="1" y="1" width="${W - 2}" height="${H - 2}" fill="none" stroke="${INK}" stroke-width="2"/>`;
     const label = 'Colour print: ' + (SK.LABEL[sc] || 'a scene') + ', ' + HOURS[hour].name + (opt.place ? ', ' + opt.place : '');
-    return `<svg class="woodcut" data-print="sky" data-hour="${hour}" data-terr="${terr}"${c.snow && !indoor ? ' data-snow="1"' : ''}${c.arch ? ` data-arch="${c.arch}"` : ''} viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${UI.esc(label)}" xmlns="http://www.w3.org/2000/svg">${L.defs(p, c, o)}${body}</svg>`;
+    return `<svg class="woodcut" data-print="sky" data-hour="${hour}" data-terr="${terr}" data-shape="${sc}"${typeof opt.tag === 'string' && /^[a-z]+$/.test(opt.tag) ? ` data-scene="${opt.tag}"` : ''}${c.snow && !indoor ? ' data-snow="1"' : ''}${c.arch ? ` data-arch="${c.arch}"` : ''} viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${UI.esc(label)}" xmlns="http://www.w3.org/2000/svg">${L.defs(p, c, o)}${body}</svg>`;
   };
 
   // ---- the event's print: its shape (61), the hour from its shape and words, the land and place from the player's home
@@ -882,6 +904,7 @@
     const o = { shape, key, month: A.monthOf(A.today()).m, hour: SK.hourFor(SC[shape] ? shape : 'none', key, words), terr, coast: !!(pr && pr.coast), place: pr ? pr.name : '' };
     const clim = SK.climOf(pr);
     if (clim) o.clim = clim;
+    try { const tag = A.SCENE && A.SCENE.of ? A.SCENE.of(q) : null; if (tag === 'sea') o.sea = true; else if (tag === 'road') o.sea = false; if (tag) o.tag = tag; } catch (e) {}
     // the event's own person, for a figure in an interior (their stored look, checked as hex colours)
     try {
       const who = q && q.ctx && q.ctx.pid != null && A.P ? A.P(q.ctx.pid) : null, hx = v => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v) ? v : null;

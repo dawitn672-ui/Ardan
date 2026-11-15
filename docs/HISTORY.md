@@ -892,3 +892,19 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   - `idVoiceOnce`: seeds 555-557 drew no voice. Voices still come (53 in 36 lives against 72 on alpha.7); fewer because
     more counsel and recall cards take the card's voice slot (`A.V2C.voiceFits`). The test plays twelve lives (`3c5d29d`).
 
+
+### H-054 · 2026-11-15 16:30 ET · C8c: dress, class and regalia (D-060)
+- **Branch** `c8c-dress` from `38a4568`, not pushed. Steps: `e3484b6` the figure library (four cuts, livery, rank on a
+  soldier, jewels by rank, ten headwear; `cultures.js`; the dress sheets), `a628932` scene tags (`src/events/26-scene-tags`;
+  `UI.WOODCUT.shapeOf` asks it; two prints, a `data-shape` and `data-scene` on every print), `30cc3f6` the game's side
+  (the sheet's `wear`, `where`, `dye`, `job`, `role`, `mil`, `livery`; `A.setDress`; the Dress control; the blind readings),
+  then this record.
+- **Other features edited in place** (each marked `[C8c]`): `61-illuminated-chronicle/woodcut.core.js` (the shape from the
+  tag), `94-woodblock-skies/skies.core.js` (the fields, a market, the sea by tag) and its test (27 scenes),
+  `999996-profile-tab` (the Dress control in the Gear panel; the About line when the harness is off),
+  `93-figures/figures.a-peoples.core.js` (the table moved to the library).
+- **Tests added:** `fgDressStations`, `fgSoldierBust`, `fgLivery`, `fgHoods`, `fgOutfits` (93-figures), `stTags`,
+  `stPictures` (26-scene-tags), `tests/v2/figure-dress.test.js` (seven unit tests).
+- **Undo:** revert the four commits. Nothing in a save depends on it (`dress` on the player is ignored by an older build);
+  the journal's `setDress` entries would not replay on an older build.
+- **To integrate:** rebuild `index.html` (not committed here); the count of browser tests rises by seven.

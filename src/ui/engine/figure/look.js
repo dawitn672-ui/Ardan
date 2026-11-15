@@ -182,8 +182,8 @@ export function lookOf(sh) {
   const K = kit(sh, { male, age, id });
   // hair under what is worn on the head: a veil, a coif or a closed helm covers it (long hair is bound up under them),
   // and a hat or an open helm sits on a head, not on a topknot
-  if (K.headwear && K.headwear !== 'none' && K.headwear !== 'circlet' && K.headwear !== 'crown') {
-    const st = HAIRS[hair] || {}, covers = ['veil', 'coif', 'bascinet'].includes(K.headwear);
+  if (K.headwear && K.headwear !== 'none' && K.headwear !== 'circlet' && K.headwear !== 'crown' && K.headwear !== 'fillet') {
+    const st = HAIRS[hair] || {}, covers = ['veil', 'coif', 'bascinet', 'mailcoif', 'armingcap', 'kerchief', 'turban', 'headwrap'].includes(K.headwear);
     const long = st.mass || st.braid || st.tail || st.tails || st.knot || st.earBuns || (st.curtain && st.curtain.to > 40), tall = ['topknot', 'spiky', 'crest', 'coilyfull', 'buns', 'ponytail', 'pigtails', 'messy'].includes(hair);
     if (covers ? long || tall : tall) hair = male ? 'cropped' : covers ? 'bun' : 'bob';
   }
@@ -193,7 +193,7 @@ export function lookOf(sh) {
   return {
     id, name: sh.name || '', sex: male ? 'M' : 'F', age, height: clamp(+app.height || (male ? 172 : 160), 40, 560), build, stock: P.stock, tusks: P.tusks || 0,
     skin: typeof app.skin === 'string' && HEXOK.test(app.skin) ? app.skin.toLowerCase() : 'warm', eyes: EYES_OF[app.eye] || 'brown', hair, hairColor, grey, beard, g: gx, scars,
-    pose: K.pose, gear: K.gear, headwear: K.headwear, headwearOpts: K.headwearOpts, staff: K.staff, arms: K.arms,
+    pose: K.pose, gear: K.gear, headwear: K.headwear, headwearOpts: K.headwearOpts, staff: K.staff, arms: K.arms, wear: K.wear, cut: K.cut, grade: K.grade, livery: K.livery,
     yaw, roll, smile: mood * .55, mood, closed: sh.alive === false || (age < .5 && mood >= 0 && r() < .5),
   };
 }

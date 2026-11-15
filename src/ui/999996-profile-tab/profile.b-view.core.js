@@ -260,7 +260,9 @@
   } });
   PF.addPanel({ k: 'gear', label: 'Gear', body: p => {
     const g = PF.gear(p).filter(x => !x.empty);
-    return g.length ? '<ul class="pf-slots">' + g.map(x => `<li>${trig(['gearSlot', x.slot], `<span class="pf-k">${esc(x.label)}</span><span class="pf-w">${esc(x.name)}</span>`, 'pf-slot', 'div')}</li>`).join('') + '</ul>' : empty('Nothing but your clothes.');
+    // [C8c] what the figure wears, and the way to change it (93-figures): with the gear, so the card keeps its count of controls
+    let dress = ''; try { if (UI.FIG && UI.FIG.dressBar) dress = UI.FIG.dressBar(p); } catch (e) {}
+    return (g.length ? '<ul class="pf-slots">' + g.map(x => `<li>${trig(['gearSlot', x.slot], `<span class="pf-k">${esc(x.label)}</span><span class="pf-w">${esc(x.name)}</span>`, 'pf-slot', 'div')}</li>`).join('') + '</ul>' : empty('Nothing but your clothes.')) + dress;
   } });
   PF.addPanel({ k: 'house', label: 'Family', body: p => {
     const h = p.house ? A.house(p.house) : null, P = FIG(), folk = PF.household(p).slice(0, 6);

@@ -93,7 +93,9 @@ PF.about = function (p) {
   }
   // dress and arms: what the figure wears
   const g = p.gear || {}, armor = g.armor && g.armor !== 'none' && GD.GEAR[g.armor] ? GD.GEAR[g.armor] : null, wp = g.weapon && g.weapon !== 'fists' && GD.GEAR[g.weapon] ? GD.GEAR[g.weapon] : null;
-  if (armor && A.isAdult(p)) out.push(cap(low(armor.name)) + (wp ? ', ' + low(wp.name) + ' at the hip.' : '.'));
+  // [C8c] a harness put off for a feast, for mourning or for work is not what the figure wears
+  const off = p.dress && ['best', 'mourning', 'work'].includes(p.dress.w) && !(p.dress.w === 'work' && p.mil);
+  if (armor && A.isAdult(p) && !off) out.push(cap(low(armor.name)) + (wp ? ', ' + low(wp.name) + ' at the hip.' : '.'));
   else out.push('Dressed ' + (PF.DRESS[p.status] || 'in plain clothes') + '.');
   // a mark that stays
   const mark = (p.wounds || []).map(w => GD.WOUNDS[w.k]).find(w => w && w.perm);
