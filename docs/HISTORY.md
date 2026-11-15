@@ -777,3 +777,28 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Tablet:** `b5Tablet` holds part 1's 44 px touch targets and no sideways scroll at 768 and 1024 px. The phone shell on a
   tablet is not done (D-055).
 - **Undo:** revert the branch's commits, newest first; saves are untouched (no state field added).
+
+### H-047 · 2026-11-15 ET · X2: named stages for the seven hot functions; the muted diplomacy path held (D-056)
+- **Commits** (branch `x2-named-stages`, by an Opus 5.5 agent): `420ea98` (the stage runner `src/core/01-stages`, its
+  manifest, every wrapper of the seven converted, the journal's runtime wrap through `A.addStage`), `23f1220`
+  (`tools/lint-stages.mjs`, `tests/stages-baseline.json`, wired into `tools/check.mjs`), `40bdff6` (`A.V2DIP.MUTED` and the
+  test `v2DipMutedPath`), and this record (D-056, PROGRESS, CLAUDE.md).
+- **What changed:** `A.applyFx`, `A.eventView`, `A.eventChoose`, `A.newGame`, `UI.render`, `UI.refresh` and
+  `UI.renderModal` each have one definition, the release's, and run named stages in the order of
+  `src/core/01-stages/manifest.core.js`: 31, 12, 20, 22, 20, 14 and 18 stages. Definitions per function by the P3 census
+  before: 32, 12, 19, 22, 21, 14, 18 (it missed 97's `during` on A.eventChoose, 999999's `counted` on UI.renderModal and
+  99992's `watch` on UI.refresh, and the journal's wrap at `UI.init`); after: 1 each. Names defined more than once: 364
+  before, 357 after (definitions 2,487 to 2,358), held by the lint. Every wrapper is an around stage with its body
+  unchanged (75 feature files); the release's `A.journalStart` (`src/core/release/core/19-journal-and-replay.js`)
+  registers the journal as the stage `journal`.
+- **Proven:** `tools/release/identity-probe.mjs` before/after: IDENTICAL (5004 event classes, nine fixed-seed lives of ten
+  years), after step 1 and again on the final build. `tools/release/verify.mjs`: content, lore and page the same; it
+  cannot judge two built cores (it reports DIFFERENT for a build against itself).
+- **Tests run on the final build:** the full suite, every test of the default build, 830 by name, 0 failed (607 in one run
+  with three workers that its time limit cut off, the other 223 by name afterwards), including the core suites,
+  `stagesOneDefinition`, `stagesApi` and `v2DipMutedPath`. `tools/bench/balance.mjs`: all within their bands.
+  `tools/bench/press-gate.mjs --report`, before and after, twice each: the same full-redraw counts (2, 2, 2, 3), quiet
+  months within the run-to-run noise (before 147 to 180 ms, after 129 to 176 ms); the gate is over some budgets on this
+  loaded machine for the build before X2 too. `index.html` is not rebuilt on this branch.
+- **Undo:** revert the branch's commits, newest first; saves are untouched (no state field added; `A.V2DIP.muted` is not
+  saved).

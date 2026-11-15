@@ -91,6 +91,7 @@ node tools/bench/phone-load.mjs /tmp/me.html --runs=3 --profile --out=/tmp/ardan
 node tools/bench/clutter.mjs /tmp/me.html --out=/tmp/c.json --shots=/tmp/s   # B5: words, controls, elements, scroll and width share of every page, for three lives at 1366x768 and 420x900
 node tools/bench/long-life-audit.mjs /tmp/me.html --seed=7 --years=60    # a long bot life with the one-holder audit and error counts
 node tools/check.mjs                                      # everything CI runs
+node tools/lint-stages.mjs                                # the named stages and the count of names defined more than once (X2)
 node tools/coherency.mjs --quick                          # the coherency checks over a few lives (src/core/08-coherency-checks)
 node tools/coherency.mjs --baseline=quick                 # the same run CI holds to tests/coherency-baseline.json
 node tools/version.mjs get v2.0.0-beta.1                  # any version, playable: versions/ardan-<v>.html
@@ -158,6 +159,12 @@ against the built text, for work already in flight such as `82-early-years`).
 - `A.onMonth.push(pc => ...)` runs every month.
 - `Object.assign(UI.A, {...})` adds actions for `data-a`.
 - `Object.assign(UI.C, {...})` adds change handlers.
+- `A.addStage('A.applyFx', 'my-feature', next => function (pc, fx, ctx) { ...; return next.apply(this, arguments); })`
+  adds a named stage to one of the seven staged functions (`A.applyFx`, `A.eventView`, `A.eventChoose`, `A.newGame`,
+  `UI.render`, `UI.refresh`, `UI.renderModal`; X2, D-056). Never assign them: add the stage's name to
+  `src/core/01-stages/manifest.core.js` where it should run (the manifest orders them, not the folder names), or use
+  `{ before }` / `{ after }`. `tools/lint-stages.mjs` fails a reassignment, and fails when more names are defined more
+  than once than `tests/stages-baseline.json` allows (it may only fall): prefer a stage, or one definition, to a new wrapper.
 
 Then call your code from the existing flow by editing the release source (`if (A.myHook) A.myHook(pc);`, guarded so a
 build without your feature still runs).
