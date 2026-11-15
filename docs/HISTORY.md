@@ -928,3 +928,12 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   differ, as they must (weights changed, and 22 results read differently).
 - **Undo:** revert the branch's commits, newest first; `A.X3.illAfter` is one call in `body.core.js`.
 
+### H-056 · 2026-11-15 18:45 ET · CI 126 on C8c and X3 part 2: the gates spare story steps
+- **Game:** a scene that follows a story (its condition asks for a set flag; or forced, an arc's, a chain's) is exempt from
+  X3's station and place weights and the last-look guard (`A.X3.followsStory`): 19 tests had arcs, chains and memory
+  callbacks dropped mid-story. An ending is decided for any dead player without one (a death in childbed called `A.kill`
+  before `A.pcDeath`, an older bug). `fl_st_master` keeps its one-sex reading (a pronoun edit had hidden it).
+- **Bars moved (tests):** `fcLives` hard-check share 1.5% -> 0.7% (0.8% measured; about 3 checks in 340, so the bar reads
+  that a few hard checks remain); `v2wChoicesMove` order edge allows 3 points' fall (222 -> 220).
+- `f1be556`, `b4aabf3`.
+
