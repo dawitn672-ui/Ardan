@@ -756,13 +756,15 @@ A.stats = p => {
 
 A.skill = function (p, k) {
   let v = p.skills[k] || 0;
+  // C9 (D-040): a skill past what its body or mind can carry is for show; it works at the level they hold up
+  // (src/people/999997-bodies, A.skillCap). Guarded, so a build without the feature reads the raw skill.
+  if (A.skillCap && v > 29) v = Math.min(v, A.skillCap(p, k));
+  // a wound's penalty comes off what the body holds up, after the cap (CI 119, flWounds: with the penalty taken before
+  // the cap, a fighter whose sword skill sat above his cap lost nothing to two lost fingers)
   for (const w of p.wounds) {
     const W = GD.WOUNDS[w.k];
     if (W && W.skillPen && W.skillPen[k]) v += W.skillPen[k];
   }
-  // C9 (D-040): a skill past what its body or mind can carry is for show; it works at the level they hold up
-  // (src/people/999997-bodies, A.skillCap). Guarded, so a build without the feature reads the raw skill.
-  if (A.skillCap && v > 29) v = Math.min(v, A.skillCap(p, k));
   return A.clamp(Math.round(v), 0, 100);
 };
 

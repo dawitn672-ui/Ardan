@@ -254,7 +254,9 @@
       const V = A.V2W && typeof A.V2W.told === 'function' ? A.V2W : null, rk = V && V.rank ? V.rank(pc) : null;
       const tu = V ? V.told(us, rk, true) : big(us), tt = V ? V.told(them, rk, false) : big(them);
       c.classList.add('lk-war');
-      c.insertAdjacentHTML('beforeend', `<div class="lk-str" role="img" aria-label="${esc(`Strength: us ${tu} against them ${tt}`)}">` +
+      // CI 119: the two numbers open a description on click like every other number (59-descriptions lifts data-note)
+      const note = 'The men under arms on your side of this war, against the enemy\'s: your own side as your rank knows it, theirs as word of it reaches you. The bar is the share of all the men in the war that is yours.';
+      c.insertAdjacentHTML('beforeend', `<div class="lk-str" role="img" data-note="${esc(note)}" aria-label="${esc(`Strength: us ${tu} against them ${tt}`)}">` +
         `<span class="lk-str-n lk-us">${esc(tu)}</span><span class="lk-str-b"><i style="width:${pct}%"></i></span><span class="lk-str-n lk-them">${esc(tt)}</span></div>`);
     }
   };

@@ -145,6 +145,8 @@
   // the group a person falls under on the People tab: kin and spouse first, whatever their rel.type says
   F.groupType = function (me, other, r) {
     const t = r && r.type;
+    // C6: the household's people (a nurse, a maid, a guard knight, a tutor) are listed with the family
+    if (r && r.hh) return 'sibling';
     try {
       const k = F.kinOf(me, other);
       if (k) return k.line === 'spouse' ? 'spouse' : 'sibling';
