@@ -751,3 +751,29 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   because a peacetime Marshal musters and speaks for war on the council. Left as it is pending the owner's call on D-049
   (whether a Marshal in peace should push for war); the test is not loosened.
 
+### H-046 · 2026-11-14 23:45 ET · B5 part 2: one UI.scope, the six-life draw test, one goal stack (D-055)
+- **Commits** (branch `b5-part2`, by a Sonnet 5.5 agent): `254c2cd` (UI.scope and its routes, the six-life test), `69b5efc` (the goal
+  stack, the tablet test, D-055), `98a0f83`, `0d3b2ce` (the chapter's card stays a folded card after the goals card: nested, it
+  could not fold and the Life panel overflowed by 17 px), `0ff0458`, `2df86f5`.
+- **Tests run on the final build:** the core suites (boot, saveRoundTrip, savesStillLoad, uiSmoke, renderRng, replayWithRender,
+  journalReplay), every test of 9992-story-drawer (incl. b5Budget: 78 screens within budget), 59-descriptions, 71-phone,
+  999996-profile-tab, 996-coming-up, 99997-v2-war, 84-top-bar, 90, 91, 99992-v2-time, 97, 9993, 99998-click-open and the new
+  ones (131 + 94, 0 failed once fitsOneScreen was fixed); `tools/bench/balance.mjs`: all within their bands. Not run: the
+  full suite (CI shards it), the Great Continent league, `tools/check.mjs`; `index.html` is not rebuilt on this branch.
+- **UI.scope(pc)** (`src/ui/999997-scope`): one pure reader of age, class, posts (`A.POSTS`), war rank (`A.V2W`) and household.
+  `sees`, `page`, `act`, `social`. `A.canAct`, `A.interactOptions` and `A.whatNow` take it as their last wrapper; the bar's
+  places, the Life, Path and profile pages and the rail read it. What no life like his is offered is not listed, instead of a
+  disabled line with a reason. An infant has no activities, no looks line, no proficiency list and one action on a card; a
+  minor has no crime, dice, plots, duels or courting; a dependent does not pick a fight with, insult, duel, murder or plot
+  against a parent; nobody duels a child; "Find work" is not told to a squire, a lord or a councillor.
+- **The six-life test** (`scopeSixLives`): a newborn, a child of 9, a squire of 16, a File-Leader at war, a captain in garrison
+  and a councillor draw 14 pages at 1366 and 420 px, five overlays and three cards each; the forbidden strings are data per life
+  (`LIVES` in the test). On the build before this step: 41 leaks; after: none.
+- **One goal stack** (`src/ui/999998-goal-stack`): What now, the ambition, the chapter's next aim and Coming up's dated items,
+  by score, five at most, as the Life page's one card; the chapter's card, folded, after it; the Coming up strip and the ambition
+  card are no longer drawn on their own (their data and rules are unchanged). `UI.GOALS.source` adds a source.
+- **Edits outside the two folders:** the release's rail (Looks), Life page's hidden reasons, plan aims, Path rows, "Get to know"
+  and What now's "Find work"; the profile (looks, skills); `996-coming-up` (the strip yields to the stack) and its tests.
+- **Tablet:** `b5Tablet` holds part 1's 44 px touch targets and no sideways scroll at 768 and 1024 px. The phone shell on a
+  tablet is not done (D-055).
+- **Undo:** revert the branch's commits, newest first; saves are untouched (no state field added).

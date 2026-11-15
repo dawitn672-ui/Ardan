@@ -18,7 +18,8 @@ export default {
       S.time = A.initiativeCap(pc);
       const items = UI.COMING.items(pc).map(x => x.when + ' | ' + x.text);
       UI.tab = 'life'; UI.render();
-      const el = document.querySelector('#tabbody .cu-strip'), txt = el ? el.textContent : '';
+      // B5 part 2 (D-055): the dated things are rows of the one goal stack, the What now card
+      const el = document.querySelector('#tabbody .whatnow'), txt = el ? el.textContent : '';
       if (c) c.m = was;
       S.sched = keepSched;
       return { items, shown: !!el, repay: txt.includes('is due to repay 12 suns'), own: txt.includes('The guild judges your masterpiece'),
@@ -32,7 +33,7 @@ export default {
       const run = look => {
         T.enter({ seed: 4040, race: 'human', realm: 'POL-01', status: 'artisan', sex: 'F', startAge: 16 });
         let drawn = 0, moved = 0;
-        T.play(5, { each: () => { if (!look) return; const r0 = A.rngState, h0 = T.hash(A.S); UI.tab = 'life'; UI.render(); UI.COMING.items(A.pc()); if (A.rngState !== r0 || T.hash(A.S) !== h0) moved++; if (document.querySelector('.cu-strip')) drawn++; } });
+        T.play(5, { each: () => { if (!look) return; const r0 = A.rngState, h0 = T.hash(A.S); UI.tab = 'life'; UI.render(); UI.COMING.items(A.pc()); if (A.rngState !== r0 || T.hash(A.S) !== h0) moved++; if (document.querySelector('#tabbody .whatnow .gl-promise, #tabbody .whatnow .gl-custom, #tabbody .whatnow .gl-feast, #tabbody .whatnow .gl-holy')) drawn++; } });
         return { w: T.hash(A.S.people) + ':' + A.rngState, drawn, moved };
       };
       const a = run(false), b = run(true);

@@ -121,6 +121,8 @@
   };
 
   CU.strip = function (pc) {
+    // B5 part 2 (D-055): the dated things are rows of the one goal stack (999998-goal-stack); the strip is drawn only without it
+    if (UI.GOALS && UI.GOALS.on) return '';
     let items;
     try { items = CU.items(pc); } catch (e) { console.error('coming up', e); return ''; }
     if (!items.length) return '';

@@ -149,6 +149,7 @@ PF.sync = function (p) {
 
 // ---- skills: named tiers, best first ----------------------------------------------------------------------------------
 PF.skills = function (p, all) {
+  if (UI.scope && !UI.scope(p).sees('skills')) return [];   // B5 part 2 (D-055): a babe has no proficiencies to list
   const rows = Object.keys(GD.SKILLS || {}).map(k => [k, A.skill(p, k)]).filter(([k, v]) => v >= 1 || (p.apt && p.apt[k] && p.apt[k] !== 1)).sort((a, b) => b[1] - a[1]);
   return rows.slice(0, all ? rows.length : 8).map(([k, v]) => {
     const t = VS && VS.tierOf ? VS.tierOf(v) : { name: GD.profTier ? GD.profTier(v) : '', frac: 0, next: null };

@@ -84,7 +84,7 @@
     });
     // health, mood and looks: one line of three words
     s += '<div class="pf-vits" aria-label="How you are">';
-    for (const [k, label] of [['health', 'Health'], ['happy', 'Mood'], ['looks', 'Looks']]) {
+    for (const [k, label] of [['health', 'Health'], ['happy', 'Mood'], ['looks', 'Looks']].filter(x => x[0] !== 'looks' || !UI.scope || UI.scope(p).sees('looks'))) {   // B5 part 2: an infant is not told how he looks
       const v = PF.vital(k, p);
       s += `<span class="pf-vital v-${k}"><span class="pf-k">${label}</span> <span class="pf-v">${esc(v.word)}</span></span>`;
     }
@@ -255,7 +255,7 @@
     const arts = PF.styles(p).filter(x => x.rank > 0).slice(0, 2), rows = PF.skills(p, false).slice(0, 5);
     let s = '';
     if (arts.length) s += '<ul class="pf-list">' + arts.map(x => li(x.main ? 'Main style' : 'Style', `${note('A way of fighting taught by a school or a house. Each rank unlocks techniques you can use in a duel.', esc(x.name), 'pf-w')} <span class="pf-m2">${esc(x.rankWord)}</span>`)).join('') + '</ul>';
-    s += rows.length ? '<ul class="pf-skills">' + rows.map(skillRow).join('') + '</ul>' : empty('Nothing practised yet. Practise something.');
+    s += rows.length ? '<ul class="pf-skills">' + rows.map(skillRow).join('') + '</ul>' : empty(UI.scope && !UI.scope(p).sees('skills') ? 'A babe has learned nothing yet.' : 'Nothing practised yet. Practise something.');
     return s;
   } });
   PF.addPanel({ k: 'gear', label: 'Gear', body: p => {

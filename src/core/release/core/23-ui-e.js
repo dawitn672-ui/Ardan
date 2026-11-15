@@ -196,6 +196,8 @@ UI.planCard = function (pc) {
     aims = Object.entries(GD.AIMS)
       .map(([k, D2]) => {
         const why = D2.avail(pc);
+        // B5 part 2 (D-055): an aim he cannot take is not listed (it was a disabled line with a reason: "Only a ruler governs.")
+        if (why && P.aim !== k) return "";
         return `<option value="${k}" ${P.aim === k ? "selected" : ""} ${why && P.aim !== k ? "disabled" : ""}>${UI.esc(D2.name)}${why ? " — " + UI.esc(why) : ""}</option>`;
       })
       .join(""),
@@ -290,7 +292,9 @@ UI.TAB.life = function (pc) {
     role = A.role(pc);
   let h = UI.whatNowCard(pc) + (UI.recapCard ? UI.recapCard(pc) : "") + UI.planCard(pc);
   h += `<div class="row small muted act-role" style="margin:6px 0 4px"><b class="ink2">${UI.esc(role.name)}</b>${A.weariness && A.weariness(pc) ? " · " + UI.esc(A.weariness(pc)) : ""}${pc.prison ? ' · <span class="bad">In prison until ' + pc.prison.until + "</span>" : ""}</div>`;
+  // B5 part 2 (D-055): the reasons that mean "never for a life like his" are UI.SCOPE.HIDDEN (999997-scope); the Path page reads the same
   const hidden =
+    (UI.SCOPE && UI.SCOPE.HIDDEN) ||
     /Too young|Too old|You are free|Already serving|You already rule|You need a company|You already lead|station|Not in your position|Not with a crown|Kings have|The crown|You command masters|Your duties keep|cannot spare|A sovereign|Others do the chores|Hauling stones/;
   for (const cat of order) {
     if (!cats[cat]) continue;
@@ -354,7 +358,8 @@ UI.TAB.path = function (pc) {
   ) {
     const st = pc.school.style ? A.style(pc.school.style) : null;
     h += `<div class="card small"><b>${UI.esc(pc.school.name)}</b>${pc.school.master ? " under " + UI.esc(pc.school.master) : ""} — year ${pc.school.years}${st && pc.styles && pc.styles[st.id] ? ` · ${UI.esc(st.name)}: ${UI.esc(A.styleRankName(st, pc.styles[st.id].rank))}` : ""}${pc.school.fee ? ` · ${A.coin(pc.school.fee)}/yr` : ""}<div class="row" style="margin-top:4px"><button class="small" data-a="studyHard" ${A.S.time >= 1 && pc.flags.studyHard !== A.S.year ? "" : "disabled"}>Study hard</button><button class="small" data-a="openSchools">Schools</button><button class="small danger" data-a="leaveSchool">Leave</button></div></div>`;
-  } else
+  } else if (A.canAct("school")[0] || !UI.scope || (UI.scope(pc).act("school").show && UI.scope(pc).sees("schools")))
+    // B5 part 2: not listed for one whom no school will take (a councillor, a sworn soldier)
     h += `<div class="row"><button class="small" data-a="openSchools" ${A.canAct("school")[0] || !GD.ACT_GATE.school ? "" : "disabled"}>Browse schools & academies</button></div>`;
   if (A.isAdult(pc)) {
     const cur = pc.lifestyle || A.lifestyleDefault(pc);
@@ -467,6 +472,7 @@ UI.councilCard = function (pc) {
 };
 
 UI.pathsList = function (pc) {
+  const hiddenWhy = w => !!(UI.SCOPE && UI.SCOPE.HIDDEN && UI.SCOPE.HIDDEN.test(w || ""));
   const jo = A.jobOptions(pc),
     by = {};
   for (const o of jo) {
@@ -484,11 +490,13 @@ UI.pathsList = function (pc) {
       body =
         pc.mil && !pc.mil.merc
           ? '<div class="tiny muted">You serve.</div>'
-          : `<div class="row"><button class="small ${ok ? "primary" : ""}" data-a="act" data-v="enlist" ${ok ? "" : "disabled"} title="${UI.esc(why || "")}">Enlist in ${UI.esc(A.realmShort(pc.realm))}'s army</button><span class="tiny muted">${UI.esc(ok ? (pc.house && A.family(pc) && A.family(pc).kind === "gentry_mil" ? "Your family is a soldier dynasty: you start higher." : "Start in the ranks; officers come from merit, letters and blood.") : why || "")}</span></div>`;
+          : !ok && hiddenWhy(why)
+            ? '<div class="tiny muted">Not a road for you.</div>'
+            : `<div class="row"><button class="small ${ok ? "primary" : ""}" data-a="act" data-v="enlist" ${ok ? "" : "disabled"} title="${UI.esc(why || "")}">Enlist in ${UI.esc(A.realmShort(pc.realm))}'s army</button><span class="tiny muted">${UI.esc(ok ? (pc.house && A.family(pc) && A.family(pc).kind === "gentry_mil" ? "Your family is a soldier dynasty: you start higher." : "Start in the ranks; officers come from merit, letters and blood.") : why || "")}</span></div>`;
     } else if (k === "company") {
       const [ok1, w1] = A.canAct("merc"),
         [ok2, w2] = A.canAct("found_company");
-      body = `<div class="row wrap"><button class="small" data-a="act" data-v="merc" ${ok1 ? "" : "disabled"} title="${UI.esc(w1 || "")}">Join a free company</button><button class="small" data-a="act" data-v="found_company" ${ok2 ? "" : "disabled"} title="${UI.esc(w2 || "")}">Found your own (300)</button></div>`;
+      body = !ok1 && !ok2 && hiddenWhy(w1) && hiddenWhy(w2) ? '<div class="tiny muted">Not a road for you.</div>' : `<div class="row wrap"><button class="small" data-a="act" data-v="merc" ${ok1 ? "" : "disabled"} title="${UI.esc(w1 || "")}">Join a free company</button><button class="small" data-a="act" data-v="found_company" ${ok2 ? "" : "disabled"} title="${UI.esc(w2 || "")}">Found your own (300)</button></div>`;
     } else {
       if (!L.length) continue;
       body = L.map(o => {
@@ -1148,7 +1156,7 @@ UI.personModal = function (t, close) {
         if (A.superior(pc) && A.superior(pc).id === t.id)
           h += `<div class="small" style="margin-top:8px"><b>Your superior.</b> ${UI.bossButtons()}</div>`;
       }
-    } else if (t.alive && pc.alive)
+    } else if (t.alive && pc.alive && (!UI.scope || UI.scope(pc).sees("know")))
       h += `<div class="row"><span class="small ink2 grow">You know who ${A.he(t)} is, but you do not know ${A.him(t)}. Whether you ever will is up to you.</span><button class="primary small" data-a="know" data-v="${t.id}" ${A.S.time >= (A.knowCost || 1) ? "" : "disabled"}>Get to know ${UI.esc(A.him(t))}</button></div>`;
   return h + "</div>";
 };

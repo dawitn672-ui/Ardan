@@ -27,3 +27,7 @@
 - **A step that always says something** (design B4, D2). 84-top-bar's note ended 13 of 16 Week steps with "Nothing new in your story: the days went by as days do". When the story has no new line, the note now says what the step changed: the skills that moved, whose regard for you moved, who you met, and the nearest dated item in Coming up. If none of that moved, it says where and when you are (`CU.digest`). The view takes a snapshot when a step starts (`UI.stepStart`, kept on `UI.COMING`, not in the world) and draws nothing. **Measured by** `cuStepNote`: 16 Week steps, no stock line, drawing pure.
 - **A story start's second beat** (design B7, `beats.events.js`). Each of 29-starting-stories' 20 stories has a second scene, scheduled 2 to 5 months after the opening, which shows in Coming up under its own title first. Before, "What Took Your Father" had nothing for five years. **Measured by** `cuStoryBeats`: all 20 within 8 months, all 20 named in Coming up first.
 - Coming up's customs ask 47's commons rule.
+
+## B5 part 2 (D-055)
+
+The strip is no longer drawn on the Life page by itself: its dated items (a promise, a custom of the realm, a holy day, a feast) are rows of the one goal stack (`999998-goal-stack`), ordered with What now, the ambition and the chapter's aim. `CU.items` is unchanged (the step note, the stack and the tests read it); `CU.strip` returns nothing while `UI.GOALS.on`.
