@@ -742,3 +742,12 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   now reads a pixel as changed only past three levels (4 of 4 green on CI's browser, 3 of 3 on the container's). Cut-ins
   stay off for the comparison.
 
+### H-045 · 2026-11-14 23:41 ET · CI 115: the woodcut masked; the year's cost measured (no code change)
+- `phoneDesktopSame` masks the woodcut scenes as it masks portraits (their filtered texture repaints apart on CI's
+  Chromium 141); they are compared by layout.
+- `nyOneRedraw` read 2592 ms on CI 115 (limit 2000; CI 114 passed on the same code). Profiled by the A2 agent over 16
+  seeds: stage 2's own code costs about 1.6% of a quiet year (the registry about 0.7% of samples). The rest is the world:
+  with the five lore Marshals seated in peace (D-049) the scenario runs about 10% more war-days (more wars at once), likely
+  because a peacetime Marshal musters and speaks for war on the council. Left as it is pending the owner's call on D-049
+  (whether a Marshal in peace should push for war); the test is not loosened.
+
