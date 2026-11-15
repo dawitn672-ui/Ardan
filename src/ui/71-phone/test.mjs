@@ -131,6 +131,9 @@ export default {
   async phoneDesktopSame(pg, errs, { browser, file }) {
     const { ctx, pg: p } = await openPage(browser, file, 'desk', errs);
     const crypto = await import('node:crypto');
+    // cut-ins off for the whole comparison, as a player may set them (Settings): they come up on timers and in CI 110-112
+    // the death screen's farewell still beat every wait; they are tested on their own (96-big-moments)
+    await p.evaluate(() => { if (UI.set) UI.set.cutins = false; if (UI.MOMENTS) UI.MOMENTS.skip(); });
     // 91's vital bars glow with a ▲/▼ chip for 1.6 s after a value changes (a timer, not a CSS animation); 96's big-moment
     // cut-in (the farewell on the death screen) leaves on a timer too, so a shot waits for both
     const calm = () => p.waitForFunction(() => !document.querySelector('.lk-flashing, .lk-dlt, #mo-cut'), null, { timeout: 4000 }).catch(() => {});
