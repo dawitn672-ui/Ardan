@@ -302,25 +302,37 @@
   };
 
   // ---- the release's dice, switched off where v2 decides ----
+  DV.raw = {};   // the release's own diploAI, diploMonth and diplomacyYear, as v2 found them (read by the muted-path test)
   const wrapIn = (name, flag) => {
     const f = A[name]; if (typeof f !== 'function') return;
+    DV.raw[name] = f;
     A[name] = function () { const was = DV[flag]; DV[flag] = true; try { return f.apply(this, arguments); } finally { DV[flag] = was; } };
   };
+  // The muted path (CRITIQUE P10, X2): the release's A.diploAI still runs for the lesser pacts, and each of its dice that
+  // v2 decides in its place answers with a fixed value while v2 is on. DV.MUTED is that list and DV.muted counts how often
+  // each was asked and answered (not saved). 99996's test v2DipMutedPath holds it: every die listed is still called by the
+  // release's A.diploAI (a die it no longer calls leaves the list), and none decides (no alliance formed or broken, no betrayal war, no
+  // rivalry named or buried inside the release's AI; no war from A.aiWarCheck inside the turn).
+  DV.MUTED = [
+    ['aiBreakAlly', false],   // alliances end in monthTick
+    ['aiAllyBar', 1e9],       // and form there
+    ['aiBetrayP', 0],         // a betrayal is a war, and wars start there
+    ['aiRivalW', 0],          // rivals follow from the status (DV.tick)
+    ['aiMendRival', false],
+  ];
+  DV.muted = {};
+  const hit = name => { DV.muted[name] = (DV.muted[name] || 0) + 1; };
   const off = (name, val) => {
     const f = A[name]; if (typeof f !== 'function') return;
-    A[name] = function () { return DV.ON && DV.inAI ? val : f.apply(this, arguments); };
+    A[name] = function () { if (DV.ON && DV.inAI) { hit(name); return val; } return f.apply(this, arguments); };
   };
   wrapIn('diploAI', 'inAI');
   wrapIn('diploMonth', 'inFlow');
   wrapIn('diplomacyYear', 'inFlow');
-  off('aiBreakAlly', false);   // alliances end in monthTick
-  off('aiAllyBar', 1e9);       // and form there
-  off('aiBetrayP', 0);         // a betrayal is a war, and wars start there
-  off('aiRivalW', 0);          // rivals follow from the status (DV.tick)
-  off('aiMendRival', false);
+  for (const [name, val] of DV.MUTED) off(name, val);
   { // the AI's random war roll: only when the monthly or yearly turn calls it (tests may still call it directly)
     const wc = A.aiWarCheck;
-    if (typeof wc === 'function') A.aiWarCheck = function () { return DV.ON && DV.inFlow ? undefined : wc.apply(this, arguments); };
+    if (typeof wc === 'function') A.aiWarCheck = function () { if (DV.ON && DV.inFlow) { hit('aiWarCheck'); return undefined; } return wc.apply(this, arguments); };
   }
   { // the lesser pacts the AI still offers must agree with the status
     const sg = A.aiSign;
