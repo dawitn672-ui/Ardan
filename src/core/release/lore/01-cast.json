@@ -1628,7 +1628,7 @@
   "rung": "O04",
   "looks": "A lean, wind-burned man of 56 with a grey seaman's beard, a squint from years of watching water and an oiled wool cloak.",
   "manner": "Quiet and exact, he names every shoal and tide aloud and trusts no chart he has not checked himself.",
-  "wants": "He wants the Amber pilots' secret routes learned by his boy inside House Karang and brought home to Greyhaven.",
+  "wants": "He wants the Ambrel pilots' secret routes learned by his boy inside House Karang and brought home to Greyhaven.",
   "fears": "He fears House Karang discovering that the boy they call Kalu was sent by a Greyhaven pilot."
  },
  "CHR-0098": {
@@ -2156,7 +2156,7 @@
   "looks": "A lean, sharp-eyed man of 49 with a clipped grey beard, a crossbowman's thick thumbs and a dark blue coat over mail.",
   "manner": "Clever and cynical, he jokes about the Temple's piety and counts every bolt in the See's stores.",
   "wants": "He wants the profit from the See's surplus Dorata crossbows before anyone counts the Yard's stores again.",
-  "fears": "He fears the first Blackreef raider taken this spring turning out to carry Dorata bolts."
+  "fears": "He fears the first Corvasse raider taken this spring turning out to carry Dorata bolts."
  },
  "CHR-0129": {
   "id": "CHR-0129",
@@ -2461,7 +2461,7 @@
   "rung": "M07",
   "looks": "A tall, sunburnt woman of 33 with her father's heavy brows, salt-bleached hair tied back and a dark blue sea-cloak over mail.",
   "manner": "Bold and quick, she gives orders in a carrying voice and enjoys shocking the priests of Solenne.",
-  "wants": "She wants her 12 Lorina galleys at sea with Admiral Castellan's fleet against Blackreef after Sea Opening.",
+  "wants": "She wants her 12 Lorina galleys at sea with Admiral Castellan's fleet against Corvasse after Sea Opening.",
   "fears": "She fears the Temple learning she spent 3,000 suns of Lorina's tithe money on new oars."
  },
  "CHR-0147": {
@@ -2579,8 +2579,8 @@
   "title": "Admiral of the Lion Fleet",
   "rung": "M09",
   "looks": "A lean, weather-dark man of 49 with a close black beard, gold earrings from the Corsair War and a Palella-blue sea-coat.",
-  "manner": "Fierce and righteous, he speaks of Blackreef as a disease and of the dragon toll as plain theft.",
-  "wants": "He wants 20 Lucernan galleys at Sea Opening and 40 new ones of his own, to break Blackreef and end the dragon toll.",
+  "manner": "Fierce and righteous, he speaks of Corvasse as a disease and of the dragon toll as plain theft.",
+  "wants": "He wants 20 Lucernan galleys at Sea Opening and 40 new ones of his own, to break Corvasse and end the dragon toll.",
   "fears": "He fears Varenna's coming war with Ashmere swallowing the money for his new fleet."
  },
  "CHR-0154": {
@@ -2767,8 +2767,8 @@
   "rung": "",
   "looks": "A lean, sun-blackened river smuggler of 38 with a gold tooth, pole-callused hands and a sly grin.",
   "manner": "Easy-going and full of river talk, he trusts nobody and charges twice for every favor.",
-  "wants": "He wants the Dorata crossbow trade to Blackreef to keep running through the spring sailing season.",
-  "fears": "He fears the first Blackreef raider taken this spring with Dorata bolts aboard, which would lead straight…"
+  "wants": "He wants the Dorata crossbow trade to Corvasse to keep running through the spring sailing season.",
+  "fears": "He fears the first Corvasse raider taken this spring with Dorata bolts aboard, which would lead straight…"
  },
  "CHR-0165": {
   "id": "CHR-0165",
@@ -2801,7 +2801,7 @@
   "rung": "M09",
   "looks": "A tall, sun-browned woman of 29 with a boarding axe, salt-cracked lips and a long scar along her sword arm.",
   "manner": "Tough and dry-humored, she gives orders in short barks and keeps her own family out of every conversation.",
-  "wants": "She wants to sail against Blackreef with the admiral after Sea Opening and take a pirate raider whole.",
+  "wants": "She wants to sail against Corvasse with the admiral after Sea Opening and take a pirate raider whole.",
   "fears": "She fears meeting her brother across a deck with Ima Redsail's pirates behind him."
  },
  "CHR-0167": {
@@ -3277,7 +3277,7 @@
   "rung": "N05",
   "looks": "A tall, well-dressed horse-lord of 48 with a trimmed grey beard, fine riding boots and a heavy purse at his belt.",
   "manner": "Courteous and smooth, he speaks of the king's horses with pride and of the king's silver with great care.",
-  "wants": "He wants the Horse Road compact with the Nine Winds to keep paying, and the oil silver to keep passing through his hands.",
+  "wants": "He wants the Horse Road compact with Ulun to keep paying, and the oil silver to keep passing through his hands.",
   "fears": "He fears his sister Oriana catching the oil caravans and dragging the oil silver into the light."
  },
  "CHR-0195": {
@@ -3465,7 +3465,7 @@
   "looks": "A round, rosy lord of 54 with wine-red cheeks, a cheerful paunch and rings set with garnets.",
   "manner": "Warm and jovial, he pours wine for everyone and counts votes behind every smile.",
   "wants": "He wants to be on the winning side if Cosimo Lunetti falls, and his ships to keep passing the Strait unpaid.",
-  "fears": "He fears Blackreef learning that his ships slip past the dragon toll by a private deal with the Coyle kin."
+  "fears": "He fears Corvasse learning that his ships slip past the dragon toll by a private deal with the Coyle kin."
  },
  "CHR-0206": {
   "id": "CHR-0206",
@@ -3975,7 +3975,7 @@
   "looks": "A thin, sun-browned man of 46 with a scholar's face, a pirate's gold earring and a quartermaster's ledger chained to his wrist.",
   "manner": "Careful and wry, he talks like a clerk among wolves and counts every coin aloud.",
   "wants": "He wants his page of the share-book kept safe in Greyhaven, as insurance if the Brotherhood turns on him.",
-  "fears": "He fears Nell Brine or Ima Redsail learning that he sent a page of the share-book out of Blackreef."
+  "fears": "He fears Nell Brine or Ima Redsail learning that he sent a page of the share-book out of Corvasse."
  },
  "CHR-0236": {
   "id": "CHR-0236",
@@ -4042,7 +4042,7 @@
   "rung": "",
   "looks": "A wiry, rope-scarred man of 36 with a boarding hook at each hip, rope-burned palms and a short, heavy blade.",
   "manner": "Restless and cheerful, he climbs rigging for fun and teaches with shouts, slaps and laughter.",
-  "wants": "He wants the Dice Yard's boarders ready for Varenna's fleet, which will come for Blackreef after Sea Opening.",
+  "wants": "He wants the Dice Yard's boarders ready for Varenna's fleet, which will come for Corvasse after Sea Opening.",
   "fears": "He fears the Lion Fleet's marines catching his boarders in open water with no hull to climb."
  },
  "CHR-0240": {
@@ -4127,7 +4127,7 @@
   "rung": "",
   "looks": "A slight, quick young man of 28 with sun-bleached hair, sharp eyes for water and a knotted sounding line.",
   "manner": "Nervous and clever, he talks fast about tides and shoals and goes silent whenever anyone mentions his father.",
-  "wants": "He wants to sell the stamped Sabran jar to Qadir's Master of Doors at Sea Opening and leave Blackreef forever.",
+  "wants": "He wants to sell the stamped Sabran jar to Qadir's Master of Doors at Sea Opening and leave Corvasse forever.",
   "fears": "He fears Sten the Quiet, who may already know the jar is missing."
  },
  "CHR-0245": {
@@ -4944,7 +4944,7 @@
   "looks": "A thick-set half-orc of 44 with small tusks, a broken nose, a felt coat over Aldmark linen, and silver rings on every finger.",
   "manner": "Loud, friendly and quick with a joke in two tongues, he haggles hard and seals every deal by sharing food.",
   "wants": "Wants to move the next Magak herd to Edda Holt's breeders at Millrun before war closes the Skardush road in spring.",
-  "fears": "Fears Vrag learning that the Horde's best horses are carrying Aldmark lances, and the Hearth Guard riding to…"
+  "fears": "Fears Vrag learning that Gorath's best horses are carrying Aldmark lances, and the Hearth Guard riding to…"
  },
  "CHR-0297": {
   "id": "CHR-0297",
@@ -4994,8 +4994,8 @@
   "rung": "F04",
   "looks": "A heavy, deep-chested orc of 54 with drum-callused palms, a grey-streaked crest of hair, and a black hide cloak painted with white lightning.",
   "manner": "Speaks rarely and in rhythm, tapping time on his thigh, and lets a long silence fall before every judgment he gives.",
-  "wants": "Wants to judge at the Great Ride on 21 June whether Tarn Halfblood is the rider of two peoples without splitting the Horde.",
-  "fears": "Fears that the Horde's holy claim will crack if Ashka Drumtongue's copy of the Grey Mothers' hide reaches the…"
+  "wants": "Wants to judge at the Great Ride on 21 June whether Tarn Halfblood is the rider of two peoples without splitting Gorath.",
+  "fears": "Fears that Gorath's holy claim will crack if Ashka Drumtongue's copy of the Grey Mothers' hide reaches the…"
  },
  "CHR-0300": {
   "id": "CHR-0300",
@@ -5012,7 +5012,7 @@
   "looks": "A small, very upright orc of 62 with white braids, one cracked tusk, and fingers stained with paint from the winter-count hides.",
   "manner": "Speaks slowly, remembers every quarrel since her girlhood, and watches people as if she were already painting them onto a hide.",
   "wants": "Wants Maren of Hazelhollow to swear before the Drum Stones on 21 June that Tarn is Durgash's son, giving Gorath's line a second heir.",
-  "fears": "Fears Vrag dying young before the clans accept a successor, and the Horde breaking apart as every horde…"
+  "fears": "Fears Vrag dying young before the clans accept a successor, and Gorath breaking apart as every horde…"
  },
  "CHR-0301": {
   "id": "CHR-0301",
@@ -5041,12 +5041,12 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "War-Chief of the Horde",
+  "title": "War-Chief of Gorath",
   "rung": "S04",
   "looks": "A massive orc of 32 with silver-capped tusks, a black hide cloak painted with white lightning, and lips that grey after hard effort.",
   "manner": "Bold and generous at the clan fire, he laughs loudly, keeps the Law of the Fire to the letter, and never shows tiredness in public.",
-  "wants": "Wants the Gordush quiet until midsummer, Tusk clans won without a fight, and Tarn Halfblood kept safe as a guest of the fire.",
-  "fears": "Fears dying young like his father and grandfather, and the clans tearing the Horde apart before he can name a…"
+  "wants": "Wants the Gordush quiet until midsummer, Ughrak clans won without a fight, and Tarn Halfblood kept safe as a guest of the fire.",
+  "fears": "Fears dying young like his father and grandfather, and the clans tearing Gorath apart before he can name a…"
  },
  "CHR-0305": {
   "id": "CHR-0305",
@@ -5097,7 +5097,7 @@
   "looks": "A hard-faced Northfolk woman of 36 with a smuggler's weather-cracked hands, a river boatman's coat, and a knife scar under one eye.",
   "manner": "Dry, practical and short with words, she counts coin twice and trusts a promise only when it is paid in advance.",
   "wants": "Wants to get 200 Iron Road Company crossbows across the Gordush to Tarn's Halfbloods before May Fair and collect her fee.",
-  "fears": "Fears Aldmark's river patrols and the gallows at Crossmarch, where smugglers who arm the Horde are hanged."
+  "fears": "Fears Aldmark's river patrols and the gallows at Crossmarch, where smugglers who arm Gorath are hanged."
  },
  "CHR-0308": {
   "id": "CHR-0308",
@@ -5148,7 +5148,7 @@
   "looks": "A grizzled Northfolk man of 46 with a broad back, a sergeant's rope-burned hands, and a faded Aldmark thumb-ring he refuses to take off.",
   "manner": "Gruff, patient and exact, he teaches by doing it slowly once and makes his half-orc pupils repeat it a hundred times.",
   "wants": "Wants Tarn's Halfbloods able to rope down the stake lines he once built at Crossmarch before Aldmark crosses in spring.",
-  "fears": "Fears being taken alive by Aldmark, where an outlawed sergeant who trains the Horde would hang in front of…"
+  "fears": "Fears being taken alive by Aldmark, where an outlawed sergeant who trains Gorath would hang in front of…"
  },
  "CHR-0311": {
   "id": "CHR-0311",
@@ -5182,7 +5182,7 @@
   "looks": "A rangy orc woman of 34 with a wild mane of black hair, horse-bitten forearms, and a felt coat smelling of the herds.",
   "manner": "Short-tempered and stubborn, she talks to horses more gently than to people and refuses deals she does not like.",
   "wants": "Wants to stop the coughing sickness in the Goroth herds before the spring war, and before anyone learns of it.",
-  "fears": "Fears that a fifth of the Goroth herds will die, leaving the Horde without sound remounts in May."
+  "fears": "Fears that a fifth of the Goroth herds will die, leaving Gorath without sound remounts in May."
  },
  "CHR-0313": {
   "id": "CHR-0313",
@@ -5284,7 +5284,7 @@
   "looks": "A lean, bandy-legged man of 55, burned dark by the channel wind, with a horse breeder's scarred hands and a fine fox-fur hat.",
   "manner": "Courteous and shrewd, he speaks Northfolk well, flatters foreign buyers, and never names a price before seeing the buyer's coin.",
   "wants": "Wants the spring horse fairs on the channel shore held as usual, with Greyhaven and Morhaven buyers paying in silver.",
-  "fears": "Fears that a war between Aldmark and the Horde will close the western markets and leave thousands of horses…"
+  "fears": "Fears that a war between Aldmark and Gorath will close the western markets and leave thousands of horses…"
  },
  "CHR-0319": {
   "id": "CHR-0319",
@@ -5335,7 +5335,7 @@
   "looks": "A heavy, sleek man of 50 with a thin mustache, many gold rings, and a sable-trimmed coat bought with caviar money.",
   "manner": "Smooth and hospitable, he feasts his guests well and changes the subject whenever old cords or old grazing come up.",
   "wants": "Wants nobody searching old cords before the Horse Feast, and his secret grazing deal with Mother Shura kept quiet.",
-  "fears": "Fears his shaman's knotted cord of 1041 coming to light, which could throw the Nine Winds into blood feud."
+  "fears": "Fears his shaman's knotted cord of 1041 coming to light, which could throw Ulun into blood feud."
  },
  "CHR-0322": {
   "id": "CHR-0322",
@@ -5402,7 +5402,7 @@
   "rung": "R02",
   "looks": "A broad, heavy man of 34 already thickening at the waist, with a round face, a short beard, and the Silver Tablet Guard's blue coat.",
   "manner": "Confident and blunt, he speaks like a commander on the hunt and has little patience for chiefs who talk in riddles.",
-  "wants": "Wants to be chosen khan at the Horse Feast and to stop the fire-oil sales to Queen Livia before they shame the Khanate.",
+  "wants": "Wants to be chosen khan at the Horse Feast and to stop the fire-oil sales to Queen Livia before they shame Ulun.",
   "fears": "Fears the sugar sickness of the lean-blood, which is blinding his father at 59 and may come for him too."
  },
  "CHR-0326": {
@@ -5415,7 +5415,7 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "Khan of the Nine Winds",
+  "title": "Khan of Ulun",
   "rung": "S02",
   "looks": "A short, heavy man of 59, once lean and now heavy, with clouded eyes, numb feet in soft boots, and a felt coat.",
   "manner": "Speaks quietly and knows men by their voices; he hides his blindness by letting others talk first and turning toward sounds.",
@@ -5471,7 +5471,7 @@
   "looks": "A lean half-orc woman of 26 with small tusks, a long black braid, and archer's calluses on three fingers of her right hand.",
   "manner": "Quiet and dry-humored, she shoots more than she talks and gives orders to her archers with short hand signs.",
   "wants": "Wants Uzka Twoblood's riders to reach Tarn and back safely, and her own part in the yam horses kept quiet.",
-  "fears": "Fears the khan's people learning she gave the Tusk riders fresh yam horses, which could cost her command or…"
+  "fears": "Fears the khan's people learning she gave the Ughrak riders fresh yam horses, which could cost her command or…"
  },
  "CHR-0330": {
   "id": "CHR-0330",
@@ -5670,7 +5670,7 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "War-Mother of the Tusk Clans",
+  "title": "War-Mother of Ughrak",
   "rung": "S04",
   "looks": "A powerful orc woman of 38 with thick grey-green hide, silver-capped tusks, and a War-Mother's red rhino-horn on her spear.",
   "manner": "Steady, practical and blunt, she refuses all holy chiefs and talks of rye, horses and tolls instead of prophecy.",
@@ -5689,7 +5689,7 @@
   "ruler": false,
   "title": "",
   "rung": "",
-  "looks": "A lean half-orc of 34 with short tusks, his Drevnan mother's blue eyes, and Drevnan green linen under a Tusk felt coat.",
+  "looks": "A lean half-orc of 34 with short tusks, his Drevnan mother's blue eyes, and Drevnan green linen under an Ughrak felt coat.",
   "manner": "Patient, polite and careful in both tongues, he chooses every word and translates insults into something gentler.",
   "wants": "Wants the Lake Council to release the 2,000 bushels of withheld rye before Hrok Whitehorn's riders take it themselves.",
   "fears": "Fears being caught between two peoples if war returns, trusted by neither and blamed by both."
@@ -8548,7 +8548,7 @@
   "looks": "A small, very old-looking woman of 64 with bare, sharp eyes, deep sun-lines, and many knotted cords at her belt.",
   "manner": "Patient and exact, she speaks rarely and remembers every clan's water rights by knot and memory.",
   "wants": "Wants the missing children of the Marad camps found and brought home, and the Red Hollow well kept hidden.",
-  "fears": "Fears a blood feud between the Sand Clans and Sabra's pearl lords if the stolen children are proved."
+  "fears": "Fears a blood feud between Sahrim and Sabra's pearl lords if the stolen children are proved."
  },
  "CHR-0515": {
   "id": "CHR-0515",
@@ -8594,7 +8594,7 @@
   "group": "Rulers, heirs and royal family",
   "role": "ruler",
   "ruler": true,
-  "title": "Speaker of the Sand Clans",
+  "title": "Speaker of Sahrim",
   "rung": "S04",
   "looks": "A tall, stern man of 55 with sharp bare eyes that shun no glare, a rust-red robe, and a Speaker's black ring.",
   "manner": "Calm, proud and hard-bargaining, he speaks for 23 clans and threatens Qadir with polite words.",
@@ -8716,9 +8716,9 @@
   "title": "Lord of the South March",
   "rung": "N02",
   "looks": "A heavy, scarred man of 44 with a cruel mouth, a slave-raider's whip on his belt, and fine white robes.",
-  "manner": "Smooth and cold, he speaks of divers as goods and of the Sand Clans with contempt.",
+  "manner": "Smooth and cold, he speaks of divers as goods and of Sahrim with contempt.",
   "wants": "Wants the trade in divers kept going and the missing Marad children forgotten.",
-  "fears": "Fears the Sand Clans finding out that he sold their children as Veld-born divers."
+  "fears": "Fears Sahrim finding out that he sold their children as Veld-born divers."
  },
  "CHR-0525": {
   "id": "CHR-0525",
@@ -8735,7 +8735,7 @@
   "looks": "A sharp, thin man of 55 with oil-stained hands, a tally-stick bundle at his belt, and a burn mark on his neck.",
   "manner": "Cold and suspicious, he counts every jar and trusts nobody near the boiling-sheds.",
   "wants": "Wants the escaped boiler Salwa Ropecutter caught before she sells the secret of the seeps.",
-  "fears": "Fears Varenna linking the smoke of Zariya to Blackreef's dragon and bringing war."
+  "fears": "Fears Varenna linking the smoke of Zariya to Corvasse's dragon and bringing war."
  },
  "CHR-0526": {
   "id": "CHR-0526",
@@ -8803,7 +8803,7 @@
   "looks": "A heavy, sweating man of 50 with a trimmed black beard, gold rings, and a water jar always within reach.",
   "manner": "Cautious and calculating, he talks of silver and freedom and hides his fear of war behind smiles.",
   "wants": "Wants the oil secret kept, the silver coming, and Sabra free of Qadir without a battle.",
-  "fears": "Fears Varenna linking Sabra's smoke to Blackreef's dragon, and Nell Brine reselling his oil."
+  "fears": "Fears Varenna linking Sabra's smoke to Corvasse's dragon, and Nell Brine reselling his oil."
  },
  "CHR-0530": {
   "id": "CHR-0530",
@@ -8819,7 +8819,7 @@
   "rung": "",
   "looks": "A lean, deep-chested young man of 24 with a diver's turtle-shell nose clip on a cord and scars on his wrists.",
   "manner": "Quiet and watchful, he speaks little and holds his breath when nervous, out of habit.",
-  "wants": "Wants to guide Sand Clan riders to the pens at Zaran and free the children held there.",
+  "wants": "Wants to guide Sahrim riders to the pens at Zaran and free the children held there.",
   "fears": "Fears being caught and sent back to the diving boats, or killed for what he knows."
  },
  "CHR-0531": {
@@ -9058,7 +9058,7 @@
   "looks": "A sturdy, sun-darkened woman of 34 with a surveyor's measuring cords, ink-stained fingers, and dusty boots.",
   "manner": "Practical and determined, she speaks of distances and costs and has little patience for politics.",
   "wants": "Wants to cut the east road to Atani before the May rains, though Fikru's terraces sit on her line.",
-  "fears": "Fears war with Abara or the Sand Clans stopping her road before it is done."
+  "fears": "Fears war with Abara or Sahrim stopping her road before it is done."
  },
  "CHR-0545": {
   "id": "CHR-0545",
@@ -9108,7 +9108,7 @@
   "rung": "M10",
   "looks": "A tall, powerful man of 34 with long runner's legs, a First Spear's leopard-skin collar, and a heavy spear.",
   "manner": "Commanding and calm, he drills his men tirelessly and speaks of discipline above all.",
-  "wants": "Wants the 36,000 men of the Horn Regiments drilled and ready for war with Abara or the Sand Clans.",
+  "wants": "Wants the 36,000 men of the Horn Regiments drilled and ready for war with Abara or Sahrim.",
   "fears": "Fears the Marshal and the heir pulling the army apart if the emperor dies."
  },
  "CHR-0548": {
@@ -9192,8 +9192,8 @@
   "title": "Master of the Rope Hall",
   "rung": "M06",
   "looks": "A small, wiry man of 48, with long fingers, leather-hard palms, and a coil of rope over one shoulder.",
-  "manner": "Quiet and grinning, he says little, loves House Keshari, and still hates the Amber Isles from 1068.",
-  "wants": "Wants his 400 boarding climbers kept home this spring, not sent with the Amber fleet to the Isle of Pearls.",
+  "manner": "Quiet and grinning, he says little, loves House Keshari, and still hates Ambrel from 1068.",
+  "wants": "Wants his 400 boarding climbers kept home this spring, not sent with the Ambrel fleet to the Isle of Pearls.",
   "fears": "Fears his weakening grip and clicking left knee, remembering that Kombo Keshari died when a knee gave way on…"
  },
  "CHR-0554": {
@@ -9211,7 +9211,7 @@
   "looks": "A strong, sea-weathered man of 38 with a short beard, an admiral's green sash, and scars from boarding fights.",
   "manner": "Bold and practical, he speaks of ships and crews, and distrusts every promise from Amberport.",
   "wants": "Wants 8 Keshi ships kept home from the Isle of Pearls venture, though Jaya Rawang has secretly promised him a rich share.",
-  "fears": "Fears the Amber Sultan turning on the Keshi ships once the Isle of Pearls is taken."
+  "fears": "Fears the Ambrel Sultan turning on the Keshi ships once the Isle of Pearls is taken."
  },
  "CHR-0555": {
   "id": "CHR-0555",
@@ -9227,8 +9227,8 @@
   "rung": "",
   "looks": "A stout, proud man of 53 with grey hair, a merchant lord's silk robe, and a heavy gold harbor-lord's chain.",
   "manner": "Smooth and scheming, he speaks of the Old Houses' rights and of Keshari failures with careful scorn.",
-  "wants": "Wants the princedom back for House Monuri at the next election, with Amber ships behind him.",
-  "fears": "Fears his letter to the Amber Grand Vizier falling into Keshari hands."
+  "wants": "Wants the princedom back for House Monuri at the next election, with Ambrel ships behind him.",
+  "fears": "Fears his letter to the Ambrel Grand Vizier falling into Keshari hands."
  },
  "CHR-0556": {
   "id": "CHR-0556",
@@ -9260,9 +9260,9 @@
   "title": "",
   "rung": "",
   "looks": "A tall, sharp-featured woman of 41 with a pepper-seed necklace, imported silk, and a weigher's brass scale at her belt.",
-  "manner": "Proud and cold, she speaks of peace and pepper and hates the Amber Isles, where her father burned in 1068.",
+  "manner": "Proud and cold, she speaks of peace and pepper and hates Ambrel, where her father burned in 1068.",
   "wants": "Wants to stop the Isle of Pearls venture by withholding the Prince's weighing fees from the Pepper Hall.",
-  "fears": "Fears a new war with the Amber Isles ruining the pepper season and her house."
+  "fears": "Fears a new war with Ambrel ruining the pepper season and her house."
  },
  "CHR-0558": {
   "id": "CHR-0558",
@@ -9276,9 +9276,9 @@
   "ruler": false,
   "title": "",
   "rung": "R01",
-  "looks": "A slender, graceful woman of 24 with fine Amber features, gold and pearls, and a habit of touching her ears.",
+  "looks": "A slender, graceful woman of 24 with fine Ambrel features, gold and pearls, and a habit of touching her ears.",
   "manner": "Charming and determined, she pushes her brother's cause at her husband's court and smiles through every refusal.",
-  "wants": "Wants the 20 Keshi ships she promised her brother to sail with the Amber fleet on 1 April.",
+  "wants": "Wants the 20 Keshi ships she promised her brother to sail with the Ambrel fleet on 1 April.",
   "fears": "Fears having to choose between her brother the Sultan and her husband's house over her infant son."
  },
  "CHR-0559": {
@@ -9312,7 +9312,7 @@
   "rung": "S03",
   "looks": "A lean, flexible man of 44 with long fingers, a prince's green robe, and old scars on his loose wrists.",
   "manner": "Easygoing and hopeful, he promises much and pays late, and smiles even when his treasury is empty.",
-  "wants": "Wants the Isle of Pearls venture to succeed, so he can pay the Amber loans and keep the princedom.",
+  "wants": "Wants the Isle of Pearls venture to succeed, so he can pay the Ambrel loans and keep the princedom.",
   "fears": "Fears the Old Houses electing a Monuri prince if the venture goes wrong."
  },
  "CHR-0561": {
@@ -9346,7 +9346,7 @@
   "rung": "",
   "looks": "A small, wiry young man of 24 with impossibly loose joints, scraped knees, and a thief's dark, tight clothes.",
   "manner": "Cheeky and fearless, he grins at danger and boasts of roofs no one else can climb.",
-  "wants": "Wants to rob the Amber merchant house that holds Prince Amani's pawned harbor dues.",
+  "wants": "Wants to rob the Ambrel merchant house that holds Prince Amani's pawned harbor dues.",
   "fears": "Fears his loose joints failing on a roof, as they failed his father."
  },
  "CHR-0564": {
@@ -9362,9 +9362,9 @@
   "title": "Captain of the Night Swimmers",
   "rung": "M06",
   "looks": "A small, strong woman of 36, with a blackened knife, a scarred palm, and no armor ever.",
-  "manner": "Calm and fierce, she speaks little and refuses to take orders from any Amber captain.",
-  "wants": "Wants her 400 Night Swimmers kept under Keshi command and never placed under the Amber fleet.",
-  "fears": "Fears dying in a harbor under Amber command, for a war that is not Kesh's."
+  "manner": "Calm and fierce, she speaks little and refuses to take orders from any Ambrel captain.",
+  "wants": "Wants her 400 Night Swimmers kept under Keshi command and never placed under the Ambrel fleet.",
+  "fears": "Fears dying in a harbor under Ambrel command, for a war that is not Kesh's."
  },
  "CHR-0565": {
   "id": "CHR-0565",

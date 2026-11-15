@@ -5,7 +5,7 @@
   W['CUL-02'] = [['hald', 'a household, one roof under one tax'], ['ringsworn', 'sworn on the iron ring'], ['folkmoot', 'the gathering of free men']];
 
   D['POL-01'] = {
-    want: 'To push the Horde back over the Gordush for good and plough the steppe edge, so that the iron ring binds the whole plain.',
+    want: 'To push Gorath back over the Gordush for good and plough the steppe edge, so that the iron ring binds the whole plain.',
     fear: 'That Irondeep stops selling iron, and the heaviest cavalry in the Westland finds itself riding in leather.',
     place: { name: 'The Ring Hall at Kingsmere', text: 'Where the Emperor sits under a ring of black iron as wide as a cartwheel, and every lord swears on it at New Year.' },
     customs: [

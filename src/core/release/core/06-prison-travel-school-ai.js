@@ -134,8 +134,7 @@ A.schoolOptions = function (pc) {
       ok = true,
       why = "";
     // [X1 baked patch world/99999-v2-names NAMES-ORC-SCHOOL] A.schools tells the orc schools by their realm's name
-    // (/Horde|Tusk/ on s.realmName). The lore now names the Tusk Clans the Ughrak Dominion, so the test takes the new
-    // name too.
+    // (/Horde|Tusk/ on s.realmName). The lore now names the Tusk clans' realm Ughrak, so the test takes the new name too.
     const t = s.teaches.toLowerCase(),
       dwarf = /Irondeep|Stonehold|Emberdeep/.test(s.realmName),
       elfS = /Sylvaran|Eldergrove/.test(s.realmName),

@@ -1,5 +1,5 @@
 {
   "about": "Names defined more than once in the core script (the census of docs/CRITIQUE.md P3, counted by tools/lint-stages.mjs). The count may only fall: tools/check.mjs fails when it rises. Lower it with node tools/lint-stages.mjs --write when a step removes a definition; never raise it without a line in docs/DECISIONS.md. X2 (D-056) set it: 364 before, 357 once the seven hot functions had one definition each (2,487 definitions before, 2,358 after).",
-  "definedMoreThanOnce": 357,
-  "definitions": 2358
+  "definedMoreThanOnce": 356,
+  "definitions": 2356
 }

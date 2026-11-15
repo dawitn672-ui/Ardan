@@ -85,7 +85,7 @@
   };
 
   D['POL-11'] = {
-    want: 'To keep the clans riding behind the Line of Gorath after Vrag\'s weak heart gives out, and to take the grass back to the Salt Shore from the Nine Winds.',
+    want: 'To keep the clans riding behind the Line of Gorath after Vrag\'s weak heart gives out, and to take the grass back to the Salt Shore from Ulun.',
     fear: 'That Vrag dies without an heir the shamans will confirm, and the clans split as they were before Gorath, each selling horses to whoever pays.',
     place: { name: 'The Drum Ring at Urgol', text: 'A ring of standing drums on the open grass where the Drum Council of senior shamans meets. A war-chief is confirmed there, and the Grey Mothers have overruled one there.' },
     customs: [
@@ -117,7 +117,7 @@
     customs: [
       { id: 'tsk_mothers_hearth', name: 'The hearth goes to daughters', kind: 'mourn', share: 'daughters',
         rule: 'Tent and herd belong to the {w1}, and the {w1} passes to the daughters; sons take a horse and join their wives\' hearths.',
-        text: '{parent} is dead. Among the Tusk Clans the tent and the herd belong to the {w1}, and the {w1} goes to the daughters, as Urza Ironhide took Grakka\'s. The estate was {estate}. You get {got}.',
+        text: '{parent} is dead. In Ughrak the tent and the herd belong to the {w1}, and the {w1} goes to the daughters, as Urza Ironhide took Grakka\'s. The estate was {estate}. You get {got}.',
         fx: { happy: -2 }, keepT: 'Let the daughters take the tent', keep: 'The eldest sister ties the tent-flap with her own cord. The rest of you are guests in it now.',
         defy: { t: 'Take it to the {w3}', r: 'The clan-mothers hear you out in silence and send you away with one horse. The tale reaches the other camps before you do.', fx: { happy: -3, honor: -2, wil: 1 } },
         log: '{parent}\'s {w1} goes to the daughters, as the clan-mothers rule; you get {got}.' },
@@ -129,7 +129,7 @@
         log: 'You pay the {w2} at the mother\'s tent: {paid}.' },
       { id: 'tsk_mothers_judge', name: 'The mothers\' judgment', kind: 'law',
         rule: 'Wrongs are priced by the {w3}, not the War-Mother: after a sentence you owe the wronged hearth a horse.',
-        text: 'Your sentence stands, and then the {w3} adds its own. Among the Tusk Clans the clan-mothers, not the War-Mother, decide what a wrong costs: a horse to the hearth you wronged, led to its door by your own hand.',
+        text: 'Your sentence stands, and then the {w3} adds its own. In Ughrak the clan-mothers, not the War-Mother, decide what a wrong costs: a horse to the hearth you wronged, led to its door by your own hand.',
         fx: { coin: -10 }, keepT: 'Lead a horse to the hearth', keep: 'The horse goes. The wronged hearth\'s mother nods to you at the next drum, and that is the end of it.',
         defy: { t: 'Appeal to the War-Mother over them', r: 'Urza Ironhide sends word that she does not overrule the mothers on law. Now every camp knows you asked her to.', fx: { honor: -3, happy: -2, wil: 1 } },
         log: 'The {w3} rules that you owe a horse to the hearth you wronged.' },
@@ -137,7 +137,7 @@
   };
 
   D['POL-12'] = {
-    want: 'To keep nine tribes under one Compact while a nearly blind khan sells fire-oil to Queen Livia, and to hold the Salt Shore against the Horde.',
+    want: 'To keep nine tribes under one Compact while a nearly blind khan sells fire-oil to Queen Livia, and to hold the Salt Shore against Gorath.',
     fear: 'That the oil money, which goes to the khan alone, makes the other chiefs call a council and force him out, and the Compact of 925 ends with him.',
     place: { name: 'The Compact Stone at Kharsa', text: 'A grey stone by the khan\'s tents where the nine chiefs cut their marks in 925. Each spring every tribe sends a rider to touch its mark and carry the news home.' },
     customs: [

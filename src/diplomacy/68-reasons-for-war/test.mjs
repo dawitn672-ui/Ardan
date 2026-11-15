@@ -25,7 +25,7 @@ const SETUP = () => {
         if (c && (CS.hasMemory(c) || CS.hasWant(c))) o.cited++;
         // among the newest ten lines (six missed wars declared beside others on one day: 78 of 88 in A2's re-rolled worlds).
         // The line is matched as the names layer (99999-v2-names) writes it: it puts the realm's name for a lore name in
-        // every line shown ("to push the Horde back" is told as "to push Gorath back"), so a casus whose first 30
+        // every line shown ("to push Gorath back" is told as "to push Gorath back"), so a casus whose first 30
         // letters held one was counted missing while it led the news (CI 108: 74 of 83; all nine were Aldmark's want)
         const fix = A.V2NAMES && typeof A.V2NAMES.fix === 'function' ? A.V2NAMES.fix : (s => s);
         if (c && A.S.news.slice(0, 10).some(n => (n.truth || n.t).includes('. ' + fix(c.t).slice(0, 30)))) o.shownNews++;
@@ -185,7 +185,7 @@ export default {
       CBT.game(6803);
       const CS = A.CASUS, FE = A.BONDS.FEUD, { D, X, Y } = CBT.trio(), ry = A.realm(Y), rd = A.realm(D);
       ry.exhaustion = 0; ry.stability = 60;
-      const e = FE.add(Y, D, 'aid', { foe: 'the Horde' }); e.y = A.S.year - 25;
+      const e = FE.add(Y, D, 'aid', { foe: 'Gorath' }); e.y = A.S.year - 25;
       const ruler0 = A.P(ry.ruler).given;
       A.rulerDies(ry, 'old age');
       const succ = A.P(ry.ruler); succ.traits = ['loyal', 'brave'];

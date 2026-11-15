@@ -34,7 +34,7 @@ export default {
     const ok = r.goods && (r.tea.R || 0) > (r.tea.W || 0) * 5 && (r.silver.W || 0) > (r.silver.R || 0) && r.trip && r.trip.hands >= 3 && r.trip.months >= 12 &&
       r.road.landKmPerMonth >= 400 && r.road.landKmPerMonth <= 800 && r.road.n > 500 && r.maxKm <= r.MAX_KM && west > r.silk[0] * 3 && r.silverEast > r.silverWest &&
       !k.tea && !k.roads && !k.way && k.car > 0;
-    return { ok, detail: `far goods in: ${r.goods}; tea made by land ${JSON.stringify(r.tea)}; silver ${JSON.stringify(r.silver)}. Venshai to Ozand: ${JSON.stringify(r.trip)}. On the road: ${JSON.stringify(r.road)}, longest trip ${Math.round(r.maxKm)} km. Silk over the third year, west from Taulen (Phelkar, Varinj, Ushivar, Ozand, Tusk Clans, Velgrad, Ostra): ${r.silk.join(' ')} (the west ${Math.round(west)} against ${r.silk[0]}). Silver: Taulen ${r.silverEast}, Highland/Stonehold ${r.silverWest}. Known World: tea ${k.tea}, roads ${k.roads}, way ${k.way}, 45's caravans ${k.car}` };
+    return { ok, detail: `far goods in: ${r.goods}; tea made by land ${JSON.stringify(r.tea)}; silver ${JSON.stringify(r.silver)}. Venshai to Ozand: ${JSON.stringify(r.trip)}. On the road: ${JSON.stringify(r.road)}, longest trip ${Math.round(r.maxKm)} km. Silk over the third year, west from Taulen (Phelkar, Varinj, Ushivar, Ozand, Ughrak, Velgrad, Ostra): ${r.silk.join(' ')} (the west ${Math.round(west)} against ${r.silk[0]}). Silver: Taulen ${r.silverEast}, Brannoch/Stonehold ${r.silverWest}. Known World: tea ${k.tea}, roads ${k.roads}, way ${k.way}, 45's caravans ${k.car}` };
   },
 
   async trMoney(pg) {

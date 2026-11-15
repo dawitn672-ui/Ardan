@@ -4861,7 +4861,7 @@
         cond: p=>C.adult(p)&&(law(p)==="well"||C.realm(p,"POL-19","POL-18")),
         cool: 7,
         title: "Water for a stranger",
-        setup: (p,ctx)=>{const x=setPid(p,ctx,mk(p,{sex:"M",ageAdj:40}));ctx.who=A.pick(["a man of the clan your family has been at feud with","a Rider of the Sand Clans, armed and filthy","an old man in rags with a camel near death","a foreigner who speaks no word you know"])},
+        setup: (p,ctx)=>{const x=setPid(p,ctx,mk(p,{sex:"M",ageAdj:40}));ctx.who=A.pick(["a man of the clan your family has been at feud with","a Rider of Sahrim, armed and filthy","an old man in rags with a camel near death","a foreigner who speaks no word you know"])},
         text: 'At the hottest hour a traveler stops at your gate: {who}. "Is there water?" A household that refuses water to a traveler is cursed. A household that gives it to the wrong man may be something worse.',
         choices: [
           {

@@ -27,7 +27,7 @@ VM.RIVER_T = 120;                               // flow (v2's accumulated moistu
 VM.TERR_SHARE = { mountains: 0.065, hills: 0.41 };   // the release's mix: 20 and 126 of 306 provinces
 VM.ISLE_RX = /\b(isles?|islands?|archipelago)\b/i;            // a realm named for islands: a peninsula on the shore
 VM.COAST_RX = /\b(coast|shore|bay|strand|sea)\b|reef\b/i;       // a realm named for the sea: a seat on the shore
-// the realms renamed like kingdoms (99999-v2-names) keep the sea their old names promised, by id
+// the realms C7 renamed (D-058) keep the sea their old names promised, by id
 VM.SEA_ID = { 'POL-32': 'peninsula', 'POL-21': 'coast', 'POL-33': 'coast' };
 VM.seedOf = s => 'ardan-v2-map:' + String(s);
 const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);

@@ -108,7 +108,7 @@
         "POL-30": "Ranpur",
         "POL-31": "Tessar",
         "POL-32": "Amberport",
-        "POL-33": "Blackreef",
+        "POL-33": "Corvasse",
       },
       port = p=>PORT[p.realm]||(A.C.coast(p)?A.provName(p.home):"Lucerna"),
       FAR = ["Amberport","Kesh","Tamar","Wolfhaven","Qadira","Sabra","Lucerna","Ostra","Greyhaven","Felano"],
@@ -441,7 +441,7 @@
         maxRank: 3,
         cool: 4,
         title: "The toll of the road",
-        setup: (p,ctx)=>{ctx.toll=inR(p,"POL-26","POL-34","POL-25")?"The Tusk Clans take the Toll of Kraoth, one part in ten since 1103, and robbing a paying caravan is death among them":inR(p,"POL-19","POL-20","POL-24","POL-17","POL-22")?"The Brotherhood of Guides wants 2 suns a camel to cross the Red Waste, and swears the guide to you by water":inR(p,"POL-28","POL-29","POL-27","POL-30")?"Stonehold takes one part in ten at the Zardeep Pass, weighed on dwarven scales that never lie":inR(p,"POL-31")?"Both claimants tax the Neck road, and the road stations charge what they like":inR(p,"POL-12","POL-15","POL-11")?"Morhaven takes a toll on every horse and camel on the Horse Road":"Every lord with a bridge wants a penny a cart for each ten kilometres",ctx.route=route(p).n},
+        setup: (p,ctx)=>{ctx.toll=inR(p,"POL-26","POL-34","POL-25")?"Ughrak takes the Toll of Kraoth, one part in ten since 1103, and robbing a paying caravan is death among them":inR(p,"POL-19","POL-20","POL-24","POL-17","POL-22")?"The Brotherhood of Guides wants 2 suns a camel to cross the Red Waste, and swears the guide to you by water":inR(p,"POL-28","POL-29","POL-27","POL-30")?"Stonehold takes one part in ten at the Zardeep Pass, weighed on dwarven scales that never lie":inR(p,"POL-31")?"Both claimants tax the Neck road, and the road stations charge what they like":inR(p,"POL-12","POL-15","POL-11")?"Morhaven takes a toll on every horse and camel on the Horse Road":"Every lord with a bridge wants a penny a cart for each ten kilometres",ctx.route=route(p).n},
         text: "Your carts are on {route}. {toll}. Paid honestly, the road eats a tenth of your profit. There is a side track the toll-takers do not watch, the carters say.",
         choices: [
           {t:"Pay the toll in full",r:"Your goods arrive. So does the profit, smaller.",fx:{coin:20,rep:2}},
@@ -660,7 +660,7 @@
         maxRank: 4,
         cool: 10,
         title: "Seedlings",
-        text: "A Keshi boatman opens a wet sack in a back room: forty clove seedlings, smuggled off the Amber Isles, where carrying one off means death. Planted in the right soil, they would break the sultan's hold on cloves at 60 suns a kilogram. He wants 300 suns.",
+        text: "A Keshi boatman opens a wet sack in a back room: forty clove seedlings, smuggled off Ambrel, where carrying one off means death. Planted in the right soil, they would break the sultan's hold on cloves at 60 suns a kilogram. He wants 300 suns.",
         choices: [
           {
             t: "Buy them and find hot, wet soil to plant them",
@@ -785,7 +785,7 @@
         cool: 10,
         title: "Sealed jars",
         setup: (p,ctx)=>{who(p,ctx,"a dealer in jars","acquaint")},
-        text: "{them} wants forty jars carried from Sabra, sealed, unopened, no questions: Sabran fire-oil. Outside Sabra and the Nine Winds it is a hanging cargo. A jar sells for 200 suns on the black market, and {them} pays a carrier a tenth of that.",
+        text: "{them} wants forty jars carried from Sabra, sealed, unopened, no questions: Sabran fire-oil. Outside Sabra and Ulun it is a hanging cargo. A jar sells for 200 suns on the black market, and {them} pays a carrier a tenth of that.",
         choices: [
           {
             t: "Carry them",
@@ -990,7 +990,7 @@
         once: !0,
         w: 3,
         title: "The walled garden",
-        text: "The clove trees in your walled garden have flowered. Dried, the buds are worth 60 suns a kilogram, and you are the only grower in the Known World outside the Amber Isles. The sultan's agents have long ears.",
+        text: "The clove trees in your walled garden have flowered. Dried, the buds are worth 60 suns a kilogram, and you are the only grower in the Known World outside Ambrel. The sultan's agents have long ears.",
         choices: [
           {
             t: "Sell quietly, a little at a time",
@@ -1006,11 +1006,11 @@
           },
           {
             t: "Proclaim it, and be famous",
-            r: "The first clove garden outside the Amber Isles. Princes write to you. So, you suspect, does someone in Amberport.",
+            r: "The first clove garden outside Ambrel. Princes write to you. So, you suspect, does someone in Amberport.",
             fx: {
               coin: 800,
               rep: 12,
-              masterwork: "the first clove garden outside the Amber Isles",
+              masterwork: "the first clove garden outside Ambrel",
               unflag: "cm_cloves",
               newRel: {type:"enemy",op:-50},
             },
@@ -1182,7 +1182,7 @@
         maxRank: 4,
         cool: 3,
         title: "The pilot's fee",
-        setup: (p,ctx)=>{ctx.shoals=inR(p,"POL-18","POL-04")?"The Monuti mouths shift every flood, and the bars are never where last year's pilots left them":inR(p,"POL-14","POL-25")?"The Grey Channel sandbanks move every winter":inR(p,"POL-33")?"The reef channel at Blackreef has one way in, closed with a chain of anchor links":inR(p,"POL-32","POL-21")?"The reefs off the Amber Isles have eaten more ships than the sultans have built":inR(p,"POL-08","POL-23","POL-09")?"The skerries off the north coast hide under every tide":"The harbor bar has silted since spring"},
+        setup: (p,ctx)=>{ctx.shoals=inR(p,"POL-18","POL-04")?"The Monuti mouths shift every flood, and the bars are never where last year's pilots left them":inR(p,"POL-14","POL-25")?"The Grey Channel sandbanks move every winter":inR(p,"POL-33")?"The reef channel at Corvasse has one way in, closed with a chain of anchor links":inR(p,"POL-32","POL-21")?"The reefs off Ambrel has eaten more ships than the sultans have built":inR(p,"POL-08","POL-23","POL-09")?"The skerries off the north coast hide under every tide":"The harbor bar has silted since spring"},
         text: "{shoals}. A master who does not know this water offers you 60 suns to take his ship through tonight. Pilots get paid. Pilots who wreck ships get remembered.",
         choices: [
           {
@@ -2374,7 +2374,7 @@
           },
           {
             t: "Throw your vote to the other man",
-            r: "He owes you now. In Blackreef that is worth more than a ship.",
+            r: "He owes you now. In Corvasse that is worth more than a ship.",
             fx: {coin:20,newRel:{type:"friend",op:40}},
           },
         ],
@@ -2420,7 +2420,7 @@
         maxRank: 3,
         cool: 6,
         title: "Crossbows for the queen",
-        text: "Captain Brann Hollow's Reef Crossbows serve Queen Livia at Tessar for all of 1105, and she pays above the usual 35 suns a month. He needs men for dead men's places. If Prince Andros ever takes a Reef Crossbow alive, he learns who pays Blackreef, and why.",
+        text: "Captain Brann Hollow's Reef Crossbows serve Queen Livia at Tessar for all of 1105, and she pays above the usual 35 suns a month. He needs men for dead men's places. If Prince Andros ever takes a Reef Crossbow alive, he learns who pays Corvasse, and why.",
         choices: [
           {
             t: "Go to Tessar for a season",
@@ -2544,7 +2544,7 @@
         time: 2,
         cool: 12,
         title: "The contract of 1011",
-        text: "The Brotherhood's chest holds a sealed contract from 1011: Tessarian agents paid Blackreef 30,000 Leontines to sack Morhaven and never paid the rest. King Aurelio II of Morhaven would pay a fortune to see it. Nell Brine wants a captain she trusts to carry the offer to Felano. Someone else wants it stolen.",
+        text: "The Brotherhood's chest holds a sealed contract from 1011: Tessarian agents paid Corvasse 30,000 Leontines to sack Morhaven and never paid the rest. King Aurelio II of Morhaven would pay a fortune to see it. Nell Brine wants a captain she trusts to carry the offer to Felano. Someone else wants it stolen.",
         choices: [
           {
             t: "Carry Nell's offer to Morhaven",
@@ -2587,12 +2587,12 @@
             t: "Stand for Captain-General",
             check: {s:"persuasion",s2:"command",d:70},
             win: {
-              r: "The dice are thrown, and then the hands go up like a forest. Captain-General of the Brotherhood of Blackreef.",
+              r: "The dice are thrown, and then the hands go up like a forest. Captain-General of the Free Port of Corvasse.",
               fx: {
                 promote: !0,
                 fame: 10,
                 rep: 15,
-                deed: "Elected Captain-General of the Brotherhood of Blackreef",
+                deed: "Elected Captain-General of the Free Port of Corvasse",
                 newRel: {type:"enemy",op:-50},
               },
             },
@@ -4111,7 +4111,7 @@
           },
           {
             t: "Keep the secret, and tell the Stonefoot herders you know it",
-            r: "They give you salt, cheese and a promise. In Highland, a promise is worth more than either.",
+            r: "They give you salt, cheese and a promise. In Brannoch, a promise is worth more than either.",
             fx: {honor:4,rep:4,newRel:{type:"friend",op:40}},
           },
           {
@@ -4611,7 +4611,7 @@
         time: 2,
         cool: 4,
         title: "Remounts for the cavalry",
-        setup: (p,ctx)=>{ctx.cav=cavalry(p),ctx.Cav=A.cap(ctx.cav),ctx.mart=inR(p,"POL-12","POL-11","POL-34")?"your own herds and your neighbours'":inR(p,"POL-15","POL-14")?"the channel-shore fairs of the Nine Winds":"every fair from here to the steppe"},
+        setup: (p,ctx)=>{ctx.cav=cavalry(p),ctx.Cav=A.cap(ctx.cav),ctx.mart=inR(p,"POL-12","POL-11","POL-34")?"your own herds and your neighbours'":inR(p,"POL-15","POL-14")?"the channel-shore fairs of Ulun":"every fair from here to the steppe"},
         text: "{Cav} need three hundred remounts by May Fair, when the grass comes up for war horses. The marshal's clerk will pay 50 suns a head for sound horses. You can find them at {mart}, if you start now and nobody else has bought them first.",
         choices: [
           {
@@ -4684,7 +4684,7 @@
         minRank: 1,
         maxRank: 3,
         cool: 6,
-        title: "Horses from the Horde",
+        title: "Horses from Gorath",
         setup: (p,ctx)=>{who(p,ctx,"an orc horse-trader")},
         text: p=>`{them}, an orc of the Old Clans, has brought forty steppe horses to trade: tough, sure-footed, unshod, cheap. Among orcs a riding horse is coin, about 40 suns. ${inR(p,"POL-01")?"In Aldmark the License Law makes everyone nervous of anything that comes from across the Gordush.":"Your neighbours mutter that orc horses are stolen horses."}`,
         choices: [
@@ -4801,7 +4801,7 @@
         cond: (p,C)=>!C.flag(p,"cm_horseline"),
         title: "A bloodline",
         setup: (p,ctx)=>{ctx.cav=cavalry(p),ctx.line=A.pick(["Ironmane","Greywind","Starfoot","Long Dun","Red Morrow","Silverback"])},
-        text: "A grey mare of the Nine Winds, tough as a nail and tireless. A heavy destrier stallion bred for {cav}. Cross them, and cross the best of their foals again, for ten years, and you might have a war horse that runs all day and still breaks a line. Or a lot of very expensive mistakes.",
+        text: "A grey mare of Ulun, tough as a nail and tireless. A heavy destrier stallion bred for {cav}. Cross them, and cross the best of their foals again, for ten years, and you might have a war horse that runs all day and still breaks a line. Or a lot of very expensive mistakes.",
         choices: [
           {
             t: "Begin the line",
@@ -4893,7 +4893,7 @@
         cond: (p,C)=>C.adult(p)&&horseOwner(p),
         cool: 6,
         title: "Horse thieves",
-        text: p=>`Hoofbeats in the night, going the wrong way. The stable gate is open, the best horses are gone, and the tracks head for the hills. ${inR(p,"POL-15")?"In Morhaven they hang horse thieves at the town gate.":inR(p,"POL-12")?"Among the Nine Winds the price is nine horses for one, or a hand.":inR(p,"POL-11","POL-34")?"Among orcs, horse theft is half a sport, and settled in horses.":"Horse theft is the oldest crime there is."}`,
+        text: p=>`Hoofbeats in the night, going the wrong way. The stable gate is open, the best horses are gone, and the tracks head for the hills. ${inR(p,"POL-15")?"In Morhaven they hang horse thieves at the town gate.":inR(p,"POL-12")?"In Ulun the price is nine horses for one, or a hand.":inR(p,"POL-11","POL-34")?"Among orcs, horse theft is half a sport, and settled in horses.":"Horse theft is the oldest crime there is."}`,
         choices: [
           {
             t: "Ride after them now",
@@ -4931,7 +4931,7 @@
         ],
       },
     ]);
-    const passOf = p=>inR(p,"POL-01","POL-03")?["the Albora Pass","shut from November to April"]:inR(p,"POL-28","POL-29")?["the Zardeep Pass","open June to September, when Stonehold takes one part in ten"]:inR(p,"POL-30","POL-27")?["the Hazdeep Pass","at 3,758 metres, open only from June to September"]:inR(p,"POL-05","POL-06","POL-07")?["the Dunmere Pass","with only Thorncester Inn between you and the snow"]:inR(p,"POL-13")?["the high passes","where Highland mule men charge a sun a day and keep"]:["the pass above "+A.provName(p.home),"where the snow comes early"],
+    const passOf = p=>inR(p,"POL-01","POL-03")?["the Albora Pass","shut from November to April"]:inR(p,"POL-28","POL-29")?["the Zardeep Pass","open June to September, when Stonehold takes one part in ten"]:inR(p,"POL-30","POL-27")?["the Hazdeep Pass","at 3,758 metres, open only from June to September"]:inR(p,"POL-05","POL-06","POL-07")?["the Dunmere Pass","with only Thorncester Inn between you and the snow"]:inR(p,"POL-13")?["the high passes","where Brannoch mule men charge a sun a day and keep"]:["the pass above "+A.provName(p.home),"where the snow comes early"],
       DESERT = ["POL-17","POL-19","POL-20","POL-24","POL-22"];
     A.defEvents([
       OPP(["explorer"], {
@@ -5127,7 +5127,7 @@
         maxRank: 3,
         cool: 10,
         title: "The Isle of Pearls",
-        text: "The Amber Isles mean to land on the Isle of Pearls when the sea opens in April. Nobody knows the interior: reefs outside, fever on the shore, cloud forest inside, and a flightless bird as tall as a horse. A castaway named Corwin Saltmarsh claims to have mapped it, and is selling the same map to two courts at once.",
+        text: "Ambrel means to land on the Isle of Pearls when the sea opens in April. Nobody knows the interior: reefs outside, fever on the shore, cloud forest inside, and a flightless bird as tall as a horse. A castaway named Corwin Saltmarsh claims to have mapped it, and is selling the same map to two courts at once.",
         choices: [
           {
             t: "Go and map it yourself before April",
@@ -5347,7 +5347,7 @@
         time: 3,
         cool: 10,
         title: "The edge of the map",
-        setup: (p,ctx)=>{ctx.edge=inR(p,"POL-25","POL-26","POL-34","POL-12","POL-11")?"east along the Silk Road, past the Tusk Clans, to where the silk comes from":inR(p,"POL-21","POL-22","POL-20","POL-32")?"south off the edge of the map, beyond the Deep Green":"west across the Western Ocean, past the Strait of Hael, where no chart goes"},
+        setup: (p,ctx)=>{ctx.edge=inR(p,"POL-25","POL-26","POL-34","POL-12","POL-11")?"east along the Silk Road, past Ughrak, to where the silk comes from":inR(p,"POL-21","POL-22","POL-20","POL-32")?"south off the edge of the map, beyond the Deep Green":"west across the Western Ocean, past the Strait of Hael, where no chart goes"},
         text: "Every map of the Known World ends somewhere. The {rulerTitle} will pay for an expedition {edge}: three years, forty people, and very possibly no return. Your name would be on it either way.",
         choices: [
           {
@@ -5540,7 +5540,7 @@
         maxRank: 2,
         cool: 4,
         title: "The horse thief",
-        setup: (p,ctx)=>{who(p,ctx,"a horse thief"),ctx.law=inR(p,"POL-15")?"In Morhaven they hang horse thieves at the town gate.":inR(p,"POL-12")?"Among the Nine Winds it is nine horses for one, or a hand.":"Horse thieves hang in most realms, sooner or later."},
+        setup: (p,ctx)=>{who(p,ctx,"a horse thief"),ctx.law=inR(p,"POL-15")?"In Morhaven they hang horse thieves at the town gate.":inR(p,"POL-12")?"In Ulun it is nine horses for one, or a hand.":"Horse thieves hang in most realms, sooner or later."},
         text: "A lord's grey mare is gone, and the lord pays 20 suns for the thief. {law} You track the mare to a ravine. The thief is {them}, a hungry youth who is holding the mare's head and crying.",
         choices: [
           {

@@ -192,7 +192,7 @@
   {"type":"faith","name":"The Monastery Isles","seat":"Drevna","note":"The oldest houses of the Dawn faith, on the islands of the Crown Lakes: novices learn the liturgy, the hives and the copying of books, and under Stefan the Grey a long resentment of the Patriarch at Velgrad."},
   {"type":"war","name":"The Sled Masters' School of Brodava","seat":"Brodava","note":"Officers learn the Ice Crossing, the winter sled roads, the burned-ground retreat and the long wait that won the Lakeland War; the Master of the Sleds still teaches ice by its sound."},
   {"type":"letters","name":"The Law Rolls of the Lake Council","seat":"Drevna","note":"Lords' sons and clerks learn Ludmila's Code, the reckoning of debts in bears, furs and wax, and the copying of law rolls, and the keeper of the rolls guards the older copy of the Code."},
-  {"type":"trade","name":"The Silk Scales","seat":"Darsky","note":"House Lubec's clerks teach the silk tenth, the tallies of the Tusk toll camps and lending to river towns; its graduates keep the scales of the silk staple from Lubany to Korov."},
+  {"type":"trade","name":"The Silk Scales","seat":"Darsky","note":"House Lubec's clerks teach the silk tenth, the tallies of the Ughrak toll camps and lending to river towns; its graduates keep the scales of the silk staple from Lubany to Korov."},
   {"type":"crafts","name":"The Boat and Sled Sheds of Kraina","seat":"Kraina","note":"Lake boats, river barges and war sleds are built in the long sheds of the Western Lakes, and apprentices learn ice-runners and spiked horseshoes as well as the hull."}
  ],
  "POL-27": [
@@ -222,7 +222,7 @@
   {"type":"medicine","name":"The House of Poppy and Willow","seat":"Madora","note":"Physicians learn poppy for pain, willow bark for fever, bone-setting, and the milk-and-charcoal cure that saved Raja Vikram after the feast of 1001."},
   {"type":"trade","name":"The Cotton Brokers' Hall","seat":"Ranpur","note":"Brokers' sons learn weights, bills and the sea freight to Kesh and Amberport, and since 1098 half of them also hear the One Face preached in the yard."},
   {"type":"crafts","name":"The Outer Forges of Chanari","seat":"Chanari","note":"Iron, bronze, mail and lacquer are taught to any boy who pays; the crucible is not, and the Smiths' Wall stands between the two schools."},
-  {"type":"sea","name":"The Monsoon Coast Galley School","seat":"Ekapur","note":"Navik captains teach oar, sail, the river bars and the laying-up of galleys before the June rains, and still steer by the stars while laughing at the Amber needle."}
+  {"type":"sea","name":"The Monsoon Coast Galley School","seat":"Ekapur","note":"Navik captains teach oar, sail, the river bars and the laying-up of galleys before the June rains, and still steer by the stars while laughing at the Ambrel needle."}
  ],
  "POL-31": [
   {"type":"war","name":"The Prince's War School at Calossa","seat":"Calossa","note":"Northern captains learn the road war: winter camps, siege towers, and how to buy a garrison instead of storming it, as Prince Andros bought Doria in 1103."},
@@ -242,8 +242,8 @@
  ],
  "POL-33": [
   {"type":"sea","name":"The Shoal Pilots' Loft of Ratrock","seat":"Ratrock","note":"The Ninefathoms and the other pilot families teach every reef and shoal of the Strait by heart and by night, the one craft that lets light galleys flee where a navy's ships run aground."},
-  {"type":"trade","name":"The Share-Book Table","seat":"Blackreef","note":"Under the Quartermaster's eye, crew children learn the share-book, the tenth to the Table, the dragon toll of one ship in forty and the price of a prize in every coin of the Middle Sea."},
-  {"type":"faith","name":"The Shrine of the Dice","seat":"Blackreef","note":"In the painted sea cave where the Articles were sworn in 990, the Bonedice teach the luck-gods' rites: the dice thrown before every raid, the vows of a crew, and how to read a throw."},
+  {"type":"trade","name":"The Share-Book Table","seat":"Corvasse","note":"Under the Quartermaster's eye, crew children learn the share-book, the tenth to the Table, the dragon toll of one ship in forty and the price of a prize in every coin of the Middle Sea."},
+  {"type":"faith","name":"The Shrine of the Dice","seat":"Corvasse","note":"In the painted sea cave where the Articles were sworn in 990, the Bonedice teach the luck-gods' rites: the dice thrown before every raid, the vows of a crew, and how to read a throw."},
   {"type":"crafts","name":"The Caulkers' Slip of Ratrock","seat":"Ratrock","note":"Caulkers and shipwrights teach oakum and pitch, the patching of galleys and captured cogs on a beach with no proper yard, and the raft-building every isle needs."}
  ],
  "POL-34": [

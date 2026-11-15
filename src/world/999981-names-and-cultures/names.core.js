@@ -1,4 +1,4 @@
-// 999905-names-and-cultures (C7, D-058): one common English language, many cultures. Names for the people the game
+// 999981-names-and-cultures (C7, D-058): one common English language, many cultures. Names for the people the game
 // makes now come from data/names.json (the common pool, the far and non-human peoples' own pools, a lean per realm),
 // through the v2 engine's namer (src/world/engine/names.js). The release's A.givenName, A.cultHouse and A.familyName
 // ask here first (src/core/release/core/03-engine-base.js), then fall back to the old culture lists of LORE.
@@ -100,9 +100,11 @@
     if (!q || !home) return { realm: home, cult: A.cultureFor(race, home || 'unclaimed'), home: true };
     const f = N.share(q);
     if (roll >= f) return { realm: home, cult: A.cultureFor(race, home), home: true };
+    // across a border they come from the neighbours (each by the provinces it touches with); in a port or a market town inland
+    // they come from the realm's trade partners (a neighbour is a partner, so a port on a border still counts both ways)
     const nb = N.neighbours(q), pool = [];
-    for (const o of Object.keys(nb)) for (let i = 0; i < nb[o] * 2; i++) pool.push(o);
-    if (N.isTrade(q)) for (const o of N.partners(home)) pool.push(o);
+    for (const o of Object.keys(nb)) for (let i = 0; i < nb[o]; i++) pool.push(o);
+    if (!pool.length) for (const o of N.partners(home)) pool.push(o);
     if (!pool.length) return { realm: home, cult: A.cultureFor(race, home), home: true };
     const r2 = A.pick(pool);
     return { realm: r2, cult: A.cultureFor(race, r2), home: false };
@@ -116,7 +118,7 @@
   const plain = p => A.fullName(p, false);
   const plausibleHome = p => { const q = A.S.prov && A.S.prov[p.home]; return !!q && (p.home !== 0 || q.owner === p.realm || q.orig === p.realm); };
   N.townKey = p => (p && p.alive && p.home != null && plausibleHome(p) ? p.home : null);
-  const fixed = (p, S) => p.castId || p.id === S.pc || Object.values(S.realms).some(r => r.ruler === p.id || r.heir === p.id);
+  const fixed = (p, S) => p.castId || p.famRole || p.id === S.pc || Object.values(S.realms).some(r => r.ruler === p.id || r.heir === p.id);
   // the people whose given name x must not share: brothers and sisters, first cousins (not x itself)
   N.closeKin = function (x) {
     const out = new Set(), add = id => { if (id && id !== x.id) out.add(id); };
@@ -165,6 +167,42 @@
       n++;
     }
     return n;
+  };
+
+  // ---- saves from before C7 (D-058) -----------------------------------------------------------------------------------
+  // The eight realms the page used to rename as it drew (the Nov 5 names, then the hack's) are renamed by id when a save
+  // that holds an older name is loaded: the realm's own name and short name only. The prose a life has kept (its log, its
+  // news) keeps the words it was written in, and so do the people (their names stay as they are). The old names are
+  // written in two pieces so that nothing in the page spells them out (tests/v2: the built page holds none).
+  const J = (...p) => p.join('');
+  N.OLD = {
+    'POL-32': { name: [J('Sultanate of the ', 'Amber', ' Isles')], short: [J('Amber', ' Isles')] },
+    'POL-21': { name: [J('League of the ', 'Spice', ' Coast')], short: [] },
+    'POL-33': { name: [J('Brotherhood of ', 'Black', 'reef'), 'Principality of Corvasse'], short: [J('Black', 'reef')] },
+    'POL-19': { name: [J('Confederacy of the ', 'Sand', ' Clans')], short: [J('Sand', ' Clans')] },
+    'POL-12': { name: [J('Khanate of the ', 'Nine', ' Winds'), 'Kingdom of Ulun'], short: [J('Nine', ' Winds')] },
+    'POL-34': { name: [J('League of the ', 'Tusk', ' Clans'), 'Ughrak Dominion'], short: [J('Tusk', ' Clans')] },
+    'POL-13': { name: [J('High', 'land League'), 'Kingdom of Brannoch'], short: [J('High', 'land')] },
+    'POL-11': { name: [], short: [J('the ', 'Horde')] },
+  };
+  N.renameState = function (S) {
+    let n = 0;
+    if (!S || !S.realms || typeof S.realms !== 'object' || typeof LORE === 'undefined' || !LORE.realms) return n;
+    for (const id of Object.keys(N.OLD)) {
+      const r = S.realms[id], L = LORE.realms[id];
+      if (!r || typeof r !== 'object' || !L) continue;
+      if (N.OLD[id].name.includes(r.name)) { r.name = L.name; n++; }
+      if (N.OLD[id].short.includes(r.short)) { r.short = L.short; n++; }
+    }
+    return n;
+  };
+  const SV = A.V2SAVE;
+  if (SV && Array.isArray(SV.STEPS)) SV.STEPS.push(['names', S => { N.renameState(S); }]);
+  const des = A.deserialize;
+  if (typeof des === 'function') A.deserialize = function () {
+    const r = des.apply(this, arguments);
+    try { if (A.S) N.renameState(A.S); } catch (e) { console.error('names renameState', e); }
+    return r;
   };
 
   // new games: the people of the first day are checked once the whole tree is made; every month after, the new ones

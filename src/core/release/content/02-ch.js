@@ -2504,7 +2504,7 @@
         w: 2,
         cond: (p,C)=>AA(p,C,6,12)&&p.cult==="CUL-03",
         title: "From the saddle",
-        text: 'Children of the Nine Winds ride before they walk well and shoot from the saddle by ten. Your uncle sets up a felt target and gallops past it, loosing three arrows. "Now you."',
+        text: 'Children of Ulun ride before they walk well and shoot from the saddle by ten. Your uncle sets up a felt target and gallops past it, loosing three arrows. "Now you."',
         choices: [
           {
             t: "Shoot at a full gallop",

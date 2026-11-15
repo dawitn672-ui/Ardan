@@ -1,4 +1,4 @@
-// Memory callbacks for regional-b: Abara, Sabra, Skyhold, Ranpur, Blackreef and Kesh.
+// Memory callbacks for regional-b: Abara, Sabra, Skyhold, Ranpur, Corvasse and Kesh.
 // Each event reads a flag that a regional story event sets and nothing else used to read, and brings the
 // moment back years later as a new decision. Some set a flag of their own (mrx_*) that a second callback
 // in this file reads years after that: 16 two-step arcs. See README.md for the flag -> event table.
@@ -190,8 +190,8 @@
         { t: "Drop the tag off the Pearl Quay at night",
           r: "It makes a very small splash. You sleep better for a month, and worse after that, wondering who else had one.",
           fx: { happy: 3, wil: 0.5 } },
-        { t: "Sell it to a Blackreef captain", check: { s: "trade", s2: "deception", d: 44 },
-          win: { r: "The captain pays sixty suns and asks nothing. Blackreef buys Sabran oil by the jar. Someone there would like to stop paying for it.",
+        { t: "Sell it to a Corvasse captain", check: { s: "trade", s2: "deception", d: 44 },
+          win: { r: "The captain pays sixty suns and asks nothing. Corvasse buys Sabran oil by the jar. Someone there would like to stop paying for it.",
             fx: { coin: 60, honor: -3, skill: { trade: 1 } } },
           lose: { r: "The captain laughs, pockets the tag, and does not pay. There is no one in Sabra you could complain to.",
             fx: { happy: -3 } } },
@@ -364,7 +364,7 @@
       title: "One jar short",
       cond: (p, C) => C.realm(p, "POL-24") && C.adult(p) && ok(p) && C.flag(p, "mrx_sb_oilyard") && A.S.year - p.flags.mrx_sb_oilyard >= 2,
       w: 3, once: true,
-      text: p => `You have kept Saad's tally sticks for ${nyrs(p, "mrx_sb_oilyard")}. This season they say one more jar went out to the Blackreef ships than came back empty. One stamped jar of fire-oil is loose in the world, and the count is yours. Qasim Nafari tallies the returned empties himself in nine days. The Blackreef jar-boat captain swears he brought back every one.`,
+      text: p => `You have kept Saad's tally sticks for ${nyrs(p, "mrx_sb_oilyard")}. This season they say one more jar went out to the Corvasse ships than came back empty. One stamped jar of fire-oil is loose in the world, and the count is yours. Qasim Nafari tallies the returned empties himself in nine days. The Corvasse jar-boat captain swears he brought back every one.`,
       choices: [
         { t: "Report the missing jar to Qasim Nafari",
           r: "Qasim hears it without blinking and asks why you did not see it go. He docks your pay and keeps you on, which is mercy, from him.",
@@ -374,7 +374,7 @@
             fx: { honor: -4, trait: "deceitful", skill: { deception: 2 } } },
           lose: { r: "Qasim's thumb stops at the fresh cut. He says nothing. By noon you are out of the Oil Yard, with the Emir's flame burned into the back of your hand.",
             fx: { wound: "brand", health: -6, cause: "the oil-master's iron", favor: -5 } } },
-        { t: "Sail to Blackreef and find the jar", check: { s: "intrigue", s2: "sea", d: 52 },
+        { t: "Sail to Corvasse and find the jar", check: { s: "intrigue", s2: "sea", d: 52 },
           win: { r: "Four days on the Reef, and a shoal pilot's sweetheart tells you where it went: to a Qadiri buyer, by night. You bring back a name, not a jar. Qasim pays for the name.",
             fx: { coin: 30, favor: 3, fame: 1, secret: 1 } },
           lose: { r: "The Reef keeps its secrets better than you keep tallies. You come home with nothing, and late.",
@@ -727,7 +727,7 @@
       text: p => `The palace says Moon-Pearl, the Raja's white elephant, has stopped eating, and the old hymn is on every lip: when the white elephant dies without a calf, the dream will end. ${Ago(p, "ss_rp_calf")} a drunk catcher in the Elephant Hills told you of a pale young elephant hidden on a temple estate near Nagita. Now {them}, an agent of the One Face merchants, will pay to know where.`,
       choices: [
         { t: "Go over the estate wall and see her", check: { s: "stealth", s2: "survival", d: 48 },
-          win: { r: "In a clean stall, fed by temple boys, stands a young cow, pale as milk. On her hip, half hidden by paint, is a hunter's brand from the Amber highlands. She was bought, not born.",
+          win: { r: "In a clean stall, fed by temple boys, stands a young cow, pale as milk. On her hip, half hidden by paint, is a hunter's brand from the Ambrel highlands. She was bought, not born.",
             fx: { flag: "mrx_rp_calf_seen", secret: 1, int: 0.5 } },
           lose: { r: "Temple guards with bamboo staves catch you on the wall. You go home with a broken nose and nothing seen.",
             fx: { wound: "broken_nose", health: -8, cause: "temple guards" } } },
@@ -745,7 +745,7 @@
       cond: (p, C) => C.realm(p, "POL-30") && C.adult(p) && ok(p) && C.flag(p, "mrx_rp_calf_seen") && A.S.year - p.flags.mrx_rp_calf_seen >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { meet(p, ctx, "a palace secretary"); },
-      text: p => `At the great festival the temples lead out a young white elephant in gold cloth and proclaim her Moon-Pearl's daughter. The crowd weeps. You saw her ${ago(p, "mrx_rp_calf_seen")} in a temple stall near Nagita, with an Amber highland brand on her hip. A palace secretary, {them}, has heard you went over that wall. {Ohe} asks, very softly, what you saw.`,
+      text: p => `At the great festival the temples lead out a young white elephant in gold cloth and proclaim her Moon-Pearl's daughter. The crowd weeps. You saw her ${ago(p, "mrx_rp_calf_seen")} in a temple stall near Nagita, with an Ambrel highland brand on her hip. A palace secretary, {them}, has heard you went over that wall. {Ohe} asks, very softly, what you saw.`,
       choices: [
         { t: "Tell {them} about the brand",
           r: "{them} writes nothing down and thanks you. A month later two temple stewards are dismissed and temple land pays the rain tax. The temples ask who talked.",
@@ -905,7 +905,7 @@
       ],
     },
 
-    // ===================================================================== Blackreef (POL-33)
+    // ===================================================================== Corvasse (POL-33)
     {
       id: "mrx_br_told_page",
       title: "Your page is open",
@@ -1118,10 +1118,10 @@
     // ===================================================================== Kesh (POL-21)
     {
       id: "mrx_ks_kito_marines",
-      title: "Amber marines",
+      title: "Ambrel marines",
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && ok(p) && C.flag(p, "ss_ks_kito") && A.S.year - p.flags.ss_ks_kito >= 2,
       w: 2, once: true,
-      text: p => `${Ago(p, "ss_ks_kito")}, on a wet roof with Kito the Gecko, you helped take the pledge of the harbor dues of 1105 out of an Amber merchant's strongbox. "Never tell," Kito said. Now Amber marines are going door to door in the Rope Quarter. Their captain knows there were two climbers, and offers a hundred Amber gold pieces for the second.`,
+      text: p => `${Ago(p, "ss_ks_kito")}, on a wet roof with Kito the Gecko, you helped take the pledge of the harbor dues of 1105 out of an Ambrel merchant's strongbox. "Never tell," Kito said. Now Ambrel marines are going door to door in the Rope Quarter. Their captain knows there were two climbers, and offers a hundred Ambrel gold pieces for the second.`,
       choices: [
         { t: "Find Kito and warn him", check: { s: "stealth", s2: "athletics", d: 46 },
           win: { r: "You find him on a rooftop, eating figs. He listens, laughs and gives you one. \"Then we owe each other,\" he says, and is gone over the tiles.",
@@ -1129,7 +1129,7 @@
           lose: { r: "You cannot find him, but the marines see you looking. You sleep in a different house every night for a week.",
             fx: { happy: -4, wil: 0.5 } } },
         { t: "Give the marines Kito's name",
-          r: "The captain pays in Amber gold and thanks you in an accent like broken glass. Kito is not caught. Kito is never caught. But Kito hears.",
+          r: "The captain pays in Ambrel gold and thanks you in an accent like broken glass. Kito is not caught. Kito is never caught. But Kito hears.",
           fx: { coin: 100, honor: -6, newRel: { type: "enemy", op: -50 } } },
         { t: "Keep your head down and say nothing",
           r: "The marines knock, ask about climbers, and look at your hands. You have a laborer's calluses now, on purpose. They move on.",
@@ -1141,7 +1141,7 @@
       title: "What the paper bought",
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && ok(p) && C.flag(p, "mrx_ks_kito_warned") && A.S.year - p.flags.mrx_ks_kito_warned >= 3,
       w: 3, once: true,
-      text: p => `Kito the Gecko drops through your roof-hatch at midnight as if he lived there. ${Ago(p, "mrx_ks_kito_warned")} you warned him about the Amber marines, and he does not forget a debt. The pledge you two took went to a man in the Keeper's household, he says, and the harbor dues are Keshi again. He offers you the mooring fees of one pier, in another man's name. Or one more climb.`,
+      text: p => `Kito the Gecko drops through your roof-hatch at midnight as if he lived there. ${Ago(p, "mrx_ks_kito_warned")} you warned him about the Ambrel marines, and he does not forget a debt. The pledge you two took went to a man in the Keeper's household, he says, and the harbor dues are Keshi again. He offers you the mooring fees of one pier, in another man's name. Or one more climb.`,
       choices: [
         { t: "Take the pier's mooring fees",
           r: "Every month a boy brings a small bag of copper from Pier Seven. It is never much and never late. You do not ask whose name is on the pier.",
@@ -1162,13 +1162,13 @@
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && C.flag(p, "ss_ks_kito") && A.S.year - p.flags.ss_ks_kito >= 8,
       w: 2, once: true,
       setup: (p, ctx) => { meet(p, ctx, "a seller of silk"); },
-      text: p => `In the spice market a {omw} in a good Amber coat worn thin is selling a last bolt of silk. You know the house crest on the sleeve. ${Ago(p, "ss_ks_kito")} you went over that house's wet roof with Kito the Gecko and came down with a stolen paper. Without the harbor dues the house failed. The seller's name is {them}. {Ohe} does not know you.`,
+      text: p => `In the spice market a {omw} in a good Ambrel coat worn thin is selling a last bolt of silk. You know the house crest on the sleeve. ${Ago(p, "ss_ks_kito")} you went over that house's wet roof with Kito the Gecko and came down with a stolen paper. Without the harbor dues the house failed. The seller's name is {them}. {Ohe} does not know you.`,
       choices: [
         { t: "Buy the silk at twice the price", req: p => p.coin >= 40,
           r: "{them} takes the money without looking at you and wraps the silk in paper. You never wear it. It sits in your chest like the stolen paper did.",
           fx: { coin: -40, honor: 1, them: { type: "acquaint", op: 10 } } },
         { t: "Tell {ohim} what happened that night",
-          r: "{Ohe} listens to the end, white to the lips. Then {ohe} names you aloud, twice, so the market hears. The Amber house is ruined, but its friends are not.",
+          r: "{Ohe} listens to the end, white to the lips. Then {ohe} names you aloud, twice, so the market hears. The Ambrel house is ruined, but its friends are not.",
           fx: { honor: 3, trait: "honest", them: { type: "enemy", op: -60 }, newRel: { type: "enemy", op: -30 } } },
         { t: "Walk on past",
           r: "You buy pepper two stalls down and go home the long way. The house crest stays in your head longer than the pepper smell stays in your clothes.",

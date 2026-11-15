@@ -3168,7 +3168,7 @@
         cond: (p,C)=>(orcGrass(p)||C.race(p,"orc"))&&(C.teen(p)||C.adult(p)&&C.ageAdj(p)<24)&&!p.epithet&&!C.flag(p,"pp_orc_deed"),
         w: 1.8,
         once: !0,
-        setup: (p,ctx)=>{ctx.clan=orcClan(p),ctx.n1=p.realm==="POL-34"?"Horsethief":"Ravenhorse",ctx.n2=p.realm==="POL-34"?"Ironbit":"Hoofbreaker",ctx.n3=p.realm==="POL-34"?"Coldsteppe":"Dustrider",ctx.enemy=p.realm==="POL-34"?"Drevnan farm-forts":"Nine Winds camps"},
+        setup: (p,ctx)=>{ctx.clan=orcClan(p),ctx.n1=p.realm==="POL-34"?"Horsethief":"Ravenhorse",ctx.n2=p.realm==="POL-34"?"Ironbit":"Hoofbreaker",ctx.n3=p.realm==="POL-34"?"Coldsteppe":"Dustrider",ctx.enemy=p.realm==="POL-34"?"Drevnan farm-forts":"Ulun camps"},
         text: 'Among the clans you have no name of your own until you earn one. Until then you are "{name} of the {clan}", and the clan-mothers say it with a little smile. The Great Ride is coming. Every young one of your age is going out to earn a deed-name before it.',
         choices: [
           {
@@ -3754,7 +3754,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-11")&&C.race(p,"orc","halforc")&&C.adult(p),
         w: 1.2,
         once: !0,
-        text: "Every fire in the Horde talks of Tarn Halfblood, the half-orc who burned House Harrow's barns and fled across the Gordush with six hundred families. War-Chief Vrag will not hand him to Aldmark. The prophecy says a rider born of two peoples will unite all the grass. At the Great Ride, Harkun the Drum-Master must judge whether Tarn is that rider.",
+        text: "Every fire in Gorath talks of Tarn Halfblood, the half-orc who burned House Harrow's barns and fled across the Gordush with six hundred families. War-Chief Vrag will not hand him to Aldmark. The prophecy says a rider born of two peoples will unite all the grass. At the Great Ride, Harkun the Drum-Master must judge whether Tarn is that rider.",
         choices: [
           {
             t: "Ride to the Gashmar guest camp to see him yourself",
@@ -3783,7 +3783,7 @@
         cond: (p,C)=>C.realm(p,"POL-11")&&C.race(p,"orc","halforc")&&C.adult(p)&&C.ageAdj(p)>=22,
         w: .9,
         cool: 10,
-        text: 'A rider with a red hand painted on his shield comes to your fire with a gift: a three-year-old bay of the Magak herds, the best horses in the Horde. Skarn Redhand is counting clans for the staff of the war-chief. "When the councils speak," says the rider, "speak for the Redhand."',
+        text: 'A rider with a red hand painted on his shield comes to your fire with a gift: a three-year-old bay of the Magak herds, the best horses in Gorath. Skarn Redhand is counting clans for the staff of the war-chief. "When the councils speak," says the rider, "speak for the Redhand."',
         choices: [
           {
             t: "Take the horse and promise your voice",
@@ -3880,7 +3880,7 @@
           },
           {
             t: "Sing the felting songs with the old women",
-            r: "Each roll has a song, and each song has a story older than the Horde. You learn more about your clan in a day than in a year.",
+            r: "Each roll has a song, and each song has a story older than Gorath. You learn more about your clan in a day than in a year.",
             fx: {skill:{music:2,learning:1},happy:3},
           },
         ],
@@ -4073,7 +4073,7 @@
         cond: (p,C)=>C.realm(p,"POL-34")&&C.race(p,"orc","halforc")&&C.adult(p),
         w: 1,
         cool: 10,
-        text: "A Horde envoy sits at your clan's fire, eating your mutton, and talks of War-Chief Vrag, grandson of Gorath, Son of the Storm, whom the Mare-Mother herself chose. The Tusk Clans would not follow Gorath and call no living chief holy. Your clan-mother is watching to see who will answer him.",
+        text: "A Horde envoy sits at your clan's fire, eating your mutton, and talks of War-Chief Vrag, grandson of Gorath, Son of the Storm, whom the Mare-Mother herself chose. Ughrak would not follow Gorath and call no living chief holy. Your clan-mother is watching to see who will answer him.",
         choices: [
           {
             t: '"No chief is holy." Say it to his face',
@@ -6816,7 +6816,7 @@
         cond: (p,C)=>C.race(p,"halforc")&&C.adult(p)&&!inR(p,ORCR)&&p.realm!=="POL-12",
         w: .9,
         once: !0,
-        text: 'A Nine Winds horse-trader at the fair looks you over and laughs. "Come east. In the Khanate the steppe peoples have mixed for centuries. My grandmother had tusks. Nobody there looks twice at you; they look at your horse." He is going home after the fair.',
+        text: 'An Ulun horse-trader at the fair looks you over and laughs. "Come east. In Ulun the steppe peoples have mixed for centuries. My grandmother had tusks. Nobody there looks twice at you; they look at your horse." He is going home after the fair.',
         choices: [
           {
             t: "Go east with him",

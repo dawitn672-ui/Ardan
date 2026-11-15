@@ -74,7 +74,7 @@ BH.REGION = {
   'S-10': ["The Thornveld"],
   'S-11': ["Kesh", "Kioya", "Monuro", "Zetu", "Fort Zubanga"],
   'S-12': ["The Deep Green"],
-  'S-13': ["Blackreef", "Ratrock"],
+  'S-13': ["Corvasse", "Ratrock"],
   'W-01': ["Evenglade", "Fenali", "Falessa", "Loriel", "Eridor", "Vaelion", "Fenarin", "Calandor", "Lirith", "Aravel", "Thalandor", "Lirthil", "Aressa", "Silande", "Aerion", "Rinthil", "Rineron", "Syleron", "Mirlas", "Elwen", "Eriavel", "Erilas"],
   'W-02': ["Silverbough", "Ithira", "Mirandor", "Falavel", "Fenandor", "Aerdor", "Nimion"],
   'W-03': ["Ashmere", "Chasethwaite Tower", "Stagley", "Ashwell Tower", "Brightkeep", "Alderwick", "Heroncliff", "Sun Temple of Aldminster", "Saltmoor"],

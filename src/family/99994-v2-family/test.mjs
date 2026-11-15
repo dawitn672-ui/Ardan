@@ -237,7 +237,7 @@ export default {
 
   // playtest 2, new #9: orc full siblings were each "of Clan" something else ("Tarn of Clan Gholruk / Ozrak of Clan
   // Hrogul / Brak of Clan Mukhoth", parents Zardak and Ozhgar, you Kozrak). A child takes a parent's clan by the law:
-  // the father's where the crown goes to sons or to either, the mother's where it goes to daughters (the Tusk Clans);
+  // the father's where the crown goes to sons or to either, the mother's where it goes to daughters (the Ughrak);
   // you, your elder siblings, the brothers and sisters born later and the father's brothers all share one clan
   async v2fClanByLaw(pg) {
     const r = await pg.evaluate(() => {

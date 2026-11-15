@@ -412,7 +412,7 @@
         cool: 12,
         once: !0,
         title: "The tale at the fire",
-        text: ()=>'The Sand Clan guide tells the guards a story by the fire: the Sand Death-worm, red, two metres long, which "spits acid and kills with lightning" and takes men who sleep far from the camels.',
+        text: ()=>'The Sahrim guide tells the guards a story by the fire: the Sand Death-worm, red, two metres long, which "spits acid and kills with lightning" and takes men who sleep far from the camels.',
         choices: [
           {
             t: "Sleep close to the camels like everyone else",
@@ -2124,7 +2124,7 @@
         cool: 12,
         title: "The horned wool-beast",
         setup: (p,ctx)=>{ctx.beast="CRE-34"},
-        text: "Something shaggy and enormous sweeps the snow off the grass with a horn a metre long. Westerners say the horned wool-beast died out long ago. The Tusk Clans do not, and they hunt it with pits.",
+        text: "Something shaggy and enormous sweeps the snow off the grass with a horn a metre long. Westerners say the horned wool-beast died out long ago. Ughrak does not, and they hunt it with pits.",
         choices: [
           {
             t: "Dig a pit on its path",
@@ -3192,7 +3192,7 @@
             },
             lose: {
               r: "A searcher lifts the jar's false bottom.",
-              fx: {die:"executed for smuggling nutmeg seedlings off the Amber Isles"},
+              fx: {die:"executed for smuggling nutmeg seedlings off Ambrel"},
             },
           },
           {t:"Refuse",r:"The captain finds someone else. That someone is hanged in the spring.",fx:{wil:.5}},
@@ -3803,7 +3803,7 @@
         cool: 4,
         title: "At the bench",
         setup: (p,ctx)=>{ctx.pid=A.makeAcquaintance(p,"friend").id},
-        text: "Three men to an oar, chained at the ankle. The drum sets the stroke. {them}, chained beside you, whispers that on Share Day at Blackreef a galley slave named Tam Oarsman won his freedom with one throw of the dice, and now the Freed Oars sail their own ship.",
+        text: "Three men to an oar, chained at the ankle. The drum sets the stroke. {them}, chained beside you, whispers that on Share Day at Corvasse a galley slave named Tam Oarsman won his freedom with one throw of the dice, and now the Freed Oars sail their own ship.",
         choices: [
           {
             t: "Pull, and keep {them} alive",
@@ -3814,7 +3814,7 @@
             t: "Plan to take the ship with the others",
             check: {s:"command",s2:"intrigue",d:58},
             win: {
-              r: "One night the chains come off at once. By morning the galley is yours, and you steer for Blackreef, where nobody asks.",
+              r: "One night the chains come off at once. By morning the galley is yours, and you steer for Corvasse, where nobody asks.",
               fx: (p,ctx)=>(p.flags.unfree&&(delete p.flags.unfree,A.ach("freed")),A.applyFx(p,{unflag:"av_galley",flag:"av_freedoar",fame:5,job:"pirate",deed:"Led a galley-slave rising",epithet:"Oarbreaker"},ctx)),
             },
             lose: {
@@ -4179,8 +4179,8 @@
         cond: (p,C)=>C.adult(p)&&free(p)&&C.coast(p)&&!J(p,"pirate")&&(C.realm(p,"POL-33")||C.famKind(p,"sea","outlaw")||crook(p)&&salt(p)),
         w: 1,
         cool: 10,
-        title: "The Articles of Blackreef",
-        text: `A corsair captain is signing men at the harbor. The Articles of Blackreef: share and share alike, a vote on every captain, a cripple's share for a lost limb, and the dice thrown before every raid. "Make your mark."`,
+        title: "The Articles of Corvasse",
+        text: `A corsair captain is signing men at the harbor. The Articles of Corvasse: share and share alike, a vote on every captain, a cripple's share for a lost limb, and the dice thrown before every raid. "Make your mark."`,
         choices: [
           {
             t: "Make your mark",
@@ -4803,7 +4803,7 @@
         w: 1,
         cool: 6,
         title: "Harbor tavern",
-        text: p=>`The crew of a ${A.pick(["Greyhaven","Lucernan","Blackreef","Northreach","Qadiri"])} ship takes over the harbor tavern and starts singing insults about your ship and your mothers.`,
+        text: p=>`The crew of a ${A.pick(["Greyhaven","Lucernan","Corvasse","Northreach","Qadiri"])} ship takes over the harbor tavern and starts singing insults about your ship and your mothers.`,
         choices: [
           {
             t: "Start the fight",
@@ -5766,7 +5766,7 @@
         w: 1,
         cool: 8,
         title: "The Toll of Kraoth",
-        text: "On the Silk Road the Tusk Clans take one part in ten of everything since 1103: the Toll of Kraoth. The toll-chief counts your bales, slowly, and smiles at your silks.",
+        text: "On the Silk Road Ughrak takes one part in ten of everything since 1103: the Toll of Kraoth. The toll-chief counts your bales, slowly, and smiles at your silks.",
         choices: [
           {
             t: "Pay the tenth",

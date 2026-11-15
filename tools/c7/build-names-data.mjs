@@ -55,7 +55,9 @@ const LEAN = {
 };
 // first match wins: the earlier pool keeps a name the later one also holds
 const PRIORITY = ['steppe', 'desert', 'south', 'giant', 'dwarf', 'elf-wood', 'elf-sea', 'orc-horde', 'orc-tusk'];
-const ok = s => /^[A-Za-z][A-Za-z'-]{1,23}$/.test(s);
+// (a name that is also a realm's old name stays out of the pools, so the page holds none of them: tests nmOldNames)
+const BAN = /^(Highland|Blackreef|Horde|Tusk|Khanate)$/i;
+const ok = s => /^[A-Za-z][A-Za-z'-]{1,23}$/.test(s) && !BAN.test(s);
 const lc = s => s.toLowerCase();
 const words = s => s.split(/\s+/).filter(Boolean);
 

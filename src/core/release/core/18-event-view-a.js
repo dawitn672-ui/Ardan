@@ -2161,7 +2161,7 @@ GD.ORDERS = {
       war: "They charge at noon when they can, with the sun at their backs and in the enemy's eyes. They are few, so they wait while the Temple's crowned allies do most of the fighting, and they go in where the line is breaking.",
       deeds: [
         "760–762: they put down the last mutinous generals around Solenne and made the Holy See a state.",
-        "In the reign of Aurelius III (1033–1050) they rode into the Highland passes to collect the tribute the League never paid. They came home with their dead and without the silver; the Temple still reads out the debt every Return Day.",
+        "In the reign of Aurelius III (1033–1050) they rode into the Brannoch passes to collect the tribute the League never paid. They came home with their dead and without the silver; the Temple still reads out the debt every Return Day.",
         "They keep watch over the Shadow Needle, the great stone sundial that sets the Temple's calendar, and over the Needle-Keeper who tends it.",
       ],
       join: "The faith of the Returning Sun, a clean name, an honor nobody can question, and a fighting worth fit for the order. The aspirant keeps the Noon Vigil: kneeling in armor in the sun from dawn to dusk on Return Day, without water. Those who faint try again next year. Those who faint three times never may.",
@@ -2326,15 +2326,15 @@ GD.ORDERS = {
     lore: {
       name: "The orcs pray to the Storm and the Mare. When thunder rolls over the grass, most riders make for shelter. The Stormriders ride out into it, because the Storm is calling them by name.",
       founded:
-        "Founded in 1041 by Gorath the Great on the night of the Salt Shore. A storm broke over the field; the Nine Winds' archers could not see to shoot or keep their bowstrings dry, and Gorath's three hundred charged through the rain and broke them. Gorath kept the three hundred as his own.",
+        "Founded in 1041 by Gorath the Great on the night of the Salt Shore. A storm broke over the field; Ulun's archers could not see to shoot or keep their bowstrings dry, and Gorath's three hundred charged through the rain and broke them. Gorath kept the three hundred as his own.",
       oath: '"When the sky speaks, I answer."',
       marks:
         "Mail and horned helms, a white lightning stroke painted from brow to chin, and the biggest mares on the steppe, always mares, for the Mare. Every rider carries a thunder-drum on the saddle.",
-      war: "Orc riders fight in short relay charges and are spent in ten minutes. The Stormriders are chosen from the few who are not: they charge, wheel and charge again for an hour, and hit the flank of a tired line just as the rest of the Horde pulls back.",
+      war: "Orc riders fight in short relay charges and are spent in ten minutes. The Stormriders are chosen from the few who are not: they charge, wheel and charge again for an hour, and hit the flank of a tired line just as the rest of Gorath pulls back.",
       deeds: [
-        "1041, the Salt Shore: the charge in the storm that made the Horde.",
+        "1041, the Salt Shore: the charge in the storm that made the Horde of Gorath.",
         "1069, the Second Horde War: they crossed the Gordush at night in a storm and took the upper river in a week.",
-        "1102: at the Coldbarrow Bridge War-Chief Vrag led them in the blood-fury charge that broke the Nine Winds' raiders.",
+        "1102: at the Coldbarrow Bridge War-Chief Vrag led them in the blood-fury charge that broke Ulun's raiders.",
       ],
       join: "An orc or half-orc, a born rider, and the Ride of Wind: keeping pace with the war-chief's relay riders for a day and a night without changing horse. Then the Grey Mothers decide. They can refuse anyone, even a war-chief's son.",
       rumor: "Lightning never strikes a Stormrider.",
@@ -2420,7 +2420,7 @@ GD.ORDERS = {
       war: "They are the chest of the Bull's Horns: they meet the enemy head-on and do not move while the horns of young runners race around both flanks. When the Gold Masks lower their spears, the line in front of them tends to break before the points arrive.",
       deeds: [
         "930: the last battle of the Wars of Unification, where Mosi the Runner's three hundred stood as the chest of the Horns.",
-        "1060, the Salt War: they held the wells of the gold road against the Sand Clans for nine days without water.",
+        "1060, the Salt War: they held the wells of the gold road against Sahrim for nine days without water.",
       ],
       join: "An invitation from the crown, and the Rememberers' word that your deeds are worthy of an ancestor's face. The candidate stands through a whole Night of Masks while the Rememberers sing the ancestor's life, and must answer to the ancestor's name at dawn.",
       rumor: "There is no face under the masks: the ancestors themselves walk in them.",
@@ -2474,7 +2474,7 @@ GD.ORDER_GONE = {
   cloudwalkers: "the Cloudwalkers",
   tide: "the Tide Divers",
   drowned: "the Drowned Men",
-  blackreef: "the Blackreef crews",
+  blackreef: "the Corvasse crews",
   red_sails: "the Red Sails",
   lances: "the Lances",
   lion_lances: "the Lion Lances",

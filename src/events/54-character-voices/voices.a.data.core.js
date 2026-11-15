@@ -119,7 +119,7 @@
     swap: [['household', 'w1'], ['bride price', 'w3'], ['bride-price', 'w3']],
   };
 
-  V['CUL-15'] = { // Corsairs: Blackreef, the Table, share-books, dice
+  V['CUL-15'] = { // Corsairs: Corvasse, the Table, share-books, dice
     lord: ['bookman', 'a captain who keeps a share-book and sits at the Table'],
     ruler: ['Topman', 'the Captain-General, who has the chair at the Table'],
     council: ['Spread', 'the Captains\' Table, in the cant'],
@@ -290,7 +290,7 @@
     ],
     lines: [
       ['Here the tent and herd are the mother\'s, an {w1}, and a husband lives in it by leave.', 'kin money'],
-      ['A Tusk marriage is made with {w2}: horses from the groom\'s clan to the bride\'s mother.', 'kin money'],
+      ['An Ughrak marriage is made with {w2}: horses from the groom\'s clan to the bride\'s mother.', 'kin money'],
       ['On grazing and law the {w3} can overrule the {ruler}, and has.', 'power law land'],
       ['The clans here call no living chief holy, and say so to chiefs.', 'power faith'],
     ],

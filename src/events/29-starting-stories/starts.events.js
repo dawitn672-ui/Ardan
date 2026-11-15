@@ -70,7 +70,7 @@ A.defEvents([
       { t: 'Walk on without a word', r: 'Some stones you only pass.', fx: { wil: 1 } },
     ] },
 
-  // ---- 4. Clanless (Tusk Clans, orc)
+  // ---- 4. Clanless (Ughrak, orc)
   { id: 'st_clanless_open', title: 'Clanless', trigger: true,
     cond: (p, C) => C.flag(p, 'st_clanless'),
     text: 'At the river fight you had a Drevnan boy under your knee and let him run. The War-Mother saw it. This morning the clan broke your spear across the fire and said your name for the last time. The steppe is very wide.',
@@ -109,7 +109,7 @@ A.defEvents([
       { t: 'Write that you will come next year', r: 'You mean it when you write it. The season\'s work goes well without the journey.', fx: { happy: 1, coin: 20 } },
     ] },
 
-  // ---- 6. Born Under the Articles (Blackreef)
+  // ---- 6. Born Under the Articles (Corvasse)
   { id: 'st_articles_open', title: 'Born Under the Articles', trigger: true,
     cond: (p, C) => C.flag(p, 'st_articles'),
     text: 'Your mother sailed eleven years with the Black Gull and died with a full share owed her. The Articles say a share passes to blood. The quartermaster says the Articles say no such thing, and the ship sails at the turn of the tide.',
@@ -118,7 +118,7 @@ A.defEvents([
         win: { r: 'The crew listen. The quartermaster pays, in front of them all, and smiles at you in a way you will remember.', fx: { coin: 80 } },
         lose: { r: 'They laugh, and the ship sails. Someone throws you a copper from the rail.', fx: { happy: -3 } } },
       { t: 'Sign on to the same ship', r: 'If the share will not come to you, you will go to it. The quartermaster writes your name very carefully.', fx: { skill: { sea: 3 } } },
-      { t: 'Let it go and find honest work', r: 'There is not much honest work in Blackreef. There is some.', fx: { honor: 1 } },
+      { t: 'Let it go and find honest work', r: 'There is not much honest work in Corvasse. There is some.', fx: { honor: 1 } },
     ] },
   { id: 'st_articles_echo', title: 'The quartermaster', w: 4, once: true,
     cond: (p, C) => C.adult(p) && C.flag(p, 'st_articles') && story(p, 'articles', 6),
@@ -186,7 +186,7 @@ A.defEvents([
       { t: 'Tell her what they mean instead', r: 'She listens with her eyes closed. When you are done she says you should have been born larger, and that she is glad you were not.', fx: { happy: 4 } },
     ] },
 
-  // ---- 10. The Horse You Were Not Given (Nine Winds)
+  // ---- 10. The Horse You Were Not Given (Ulun)
   { id: 'st_horse_open', title: 'The Horse You Were Not Given', trigger: true,
     cond: (p, C) => C.flag(p, 'st_horse'),
     text: 'At the spring gathering every youth of sixteen was given a horse by the tribe. Your name was not called. Your uncle says it was a mistake. Your mother says it was not, and will not say why.',
@@ -301,7 +301,7 @@ A.defEvents([
       { t: 'Go to the tree afterwards, alone', r: 'You sit with her an hour. You find you have things to tell her.', fx: { happy: 2, piety: 2 } },
     ] },
 
-  // ---- 16. Salt and Silence (Spice Coast)
+  // ---- 16. Salt and Silence (Kesh)
   { id: 'st_salt_open', title: 'Salt and Silence', trigger: true,
     cond: (p, C) => C.flag(p, 'st_salt'),
     text: 'The smugglers of Kesh paid your father\'s debts when he died, and you owe them one voyage and no questions. Tonight a lantern swings twice at the end of your street. The cargo is small and heavy, and it does not smell of spice.',
@@ -387,7 +387,7 @@ A.defEvents([
       { t: 'Send your blessing and no more', r: 'Some things, once known, cannot be put down again.', fx: { wil: 1 } },
     ] },
 
-  // ---- 20. The Company That Did Not Pay (Highland League)
+  // ---- 20. The Company That Did Not Pay (League of Brannoch)
   { id: 'st_unpaid_open', title: 'The Company That Did Not Pay', trigger: true,
     cond: (p, C) => C.flag(p, 'st_unpaid'),
     text: 'The Red Valley company broke up at the end of the season owing every man a year\'s pay. Captain Orrin kept the chest, for safekeeping, and went home to his valley. Six of the lads are going after him. They want you to come.',

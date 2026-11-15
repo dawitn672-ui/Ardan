@@ -244,7 +244,7 @@
         w: 1.2,
         cool: 3,
         title: "A venture",
-        text: p=>`A ship's captain needs investors for a voyage to ${A.pick(["the Amber Isles for spice","Qadir for silk","the northern ports for furs","Tamar for linen"])}. Half come back rich. Half never come back.`,
+        text: p=>`A ship's captain needs investors for a voyage to ${A.pick(["Ambrel for spice","Qadir for silk","the northern ports for furs","Tamar for linen"])}. Half come back rich. Half never come back.`,
         choices: [
           {
             t: "Put in a third of what you have",

@@ -134,7 +134,7 @@
         cond: (p,C)=>C.realm(p,"POL-12")&&kid(p,C,7,13),
         w: 1.3,
         once: !0,
-        text: p=>`You rode before you walked well. Now ${SEX(p,"your uncle","your aunt")} gives you a little horn bow and points at a marmot standing by its hole. "From the saddle," ${SEX(p,"he","she")} says. "Every rider of the Nine Winds shoots from the saddle by ten. You are late."`,
+        text: p=>`You rode before you walked well. Now ${SEX(p,"your uncle","your aunt")} gives you a little horn bow and points at a marmot standing by its hole. "From the saddle," ${SEX(p,"he","she")} says. "Every rider of Ulun shoots from the saddle by ten. You are late."`,
         choices: [
           {
             t: "Kick the pony to a trot and shoot",
@@ -673,11 +673,11 @@
       },
       {
         id: "ss_nw_hordeguest",
-        title: "A rider from the Horde",
+        title: "A rider from Gorath",
         cond: (p,C)=>C.realm(p,"POL-12")&&C.adult(p)&&C.race(p,"orc","halforc","human")&&free(p),
         w: .7,
         cool: 10,
-        text: p=>`A wounded orc rider of the Horde stumbles into your camp at night, his horse dead behind him. The Horde has been the Nine Winds' enemy since the Salt Shore. ${p.race==="human"?"But your half-orc neighbors say":"Your own grandmother would have said"} that a man at your fire is a guest before he is an enemy.`,
+        text: p=>`A wounded orc rider of Gorath stumbles into your camp at night, his horse dead behind him. Gorath has been Ulun's enemy since the Salt Shore. ${p.race==="human"?"But your half-orc neighbors say":"Your own grandmother would have said"} that a man at your fire is a guest before he is an enemy.`,
         choices: [
           {
             t: "Bind his wound and feed him",
@@ -1892,7 +1892,7 @@
         cond: (p,C)=>C.realm(p,"POL-19")&&C.adult(p)&&C.married(p),
         w: .8,
         cool: 12,
-        text: p=>SEX(p,"You come back from a long guiding job to find your saddle sitting outside the tent in the sand. Among the Sand Clans a wife divorces her husband by putting his saddle outside, and the tent, the herds and the water shares are hers. {spouse} is inside, and not coming out.","Your husband {spouse} has come home from the salt road with a Zanari woman's bracelet in his pack, and a story about it that does not fit together. The tent is yours, and the water shares, and the herd. His saddle is right there by the door."),
+        text: p=>SEX(p,"You come back from a long guiding job to find your saddle sitting outside the tent in the sand. In Sahrim a wife divorces her husband by putting his saddle outside, and the tent, the herds and the water shares are hers. {spouse} is inside, and not coming out.","Your husband {spouse} has come home from the salt road with a Zanari woman's bracelet in his pack, and a story about it that does not fit together. The tent is yours, and the water shares, and the herd. His saddle is right there by the door."),
         choices: [
           {
             t: p=>SEX(p,"Sit by the saddle and plead until dawn","Put his saddle outside"),
@@ -2103,11 +2103,11 @@
       },
       {
         id: "ss_sc_unicorn",
-        title: "The Sand Clans' unicorns",
+        title: "Sahrim's unicorns",
         cond: (p,C)=>C.realm(p,"POL-19")&&C.adult(p),
         w: .8,
         cool: 10,
-        text: `A herd of white oryx crosses the dunes at dusk. Seen from the side, the two long horns line up as one: the Sand Clans' unicorns. In the camp a Zanari gold buyer is offering a fortune for a single "unicorn horn", because southern courts believe a horn cup sweats near poison.`,
+        text: `A herd of white oryx crosses the dunes at dusk. Seen from the side, the two long horns line up as one: Sahrim's unicorns. In the camp a Zanari gold buyer is offering a fortune for a single "unicorn horn", because southern courts believe a horn cup sweats near poison.`,
         choices: [
           {
             t: "Hunt an oryx and sell him one horn",
@@ -2261,7 +2261,7 @@
         cond: (p,C)=>C.realm(p,"POL-19")&&grown(p,C),
         w: 1,
         cool: 5,
-        text: ()=>`A wedding between two clans, and after the goat comes the poetry, which among the Sand Clans matters more than the goat. A poet of the ${A.pick(["Sayf","Yasiri","Hazari","Marad"])} has just mocked your clan in sixteen beautiful lines. Everybody is looking at you.`,
+        text: ()=>`A wedding between two clans, and after the goat comes the poetry, which in Sahrim matters more than the goat. A poet of the ${A.pick(["Sayf","Yasiri","Hazari","Marad"])} has just mocked your clan in sixteen beautiful lines. Everybody is looking at you.`,
         choices: [
           {
             t: "Answer him in verse, on the spot",
@@ -2294,7 +2294,7 @@
         cond: (p,C)=>C.realm(p,"POL-19")&&C.ageAdj(p)>=10,
         w: .7,
         cool: 12,
-        text: ()=>`${A.pick(["Your grandfather","Your uncle, the guide","An old woman of your tent who sang to you as a child"])} dies in the night. Among the Sand Clans the dead are buried in the sand the same day, unmarked, and a cup of water is poured on the grave. By tomorrow the wind will have smoothed the place away.`,
+        text: ()=>`${A.pick(["Your grandfather","Your uncle, the guide","An old woman of your tent who sang to you as a child"])} dies in the night. In Sahrim the dead are buried in the sand the same day, unmarked, and a cup of water is poured on the grave. By tomorrow the wind will have smoothed the place away.`,
         choices: [
           {
             t: "Pour the cup yourself",
@@ -2523,7 +2523,7 @@
         cond: (p,C)=>C.realm(p,"POL-20")&&C.adult(p),
         w: 1,
         cool: 6,
-        text: "Salt costs a sun a kilo in Zanara this year, twelve times the coast price, and the Sand Clans are threatening to close the Salt Road altogether. Ekon Saltfoot's Salt Cats, the gate porters of the East Gate, smuggle it in hidden in grain sacks. One of them is asking whether you have a cart.",
+        text: "Salt costs a sun a kilo in Zanara this year, twelve times the coast price, and Sahrim is threatening to close the Salt Road altogether. Ekon Saltfoot's Salt Cats, the gate porters of the East Gate, smuggle it in hidden in grain sacks. One of them is asking whether you have a cart.",
         choices: [
           {
             t: "Drive the cart for the Salt Cats",
@@ -2551,7 +2551,7 @@
               fx: {coin:12,skill:{trade:2}},
             },
             lose: {
-              r: "A Sand Clan caravan gets through the next week and the price falls back. You have a lot of salt.",
+              r: "A Sahrim caravan gets through the next week and the price falls back. You have a lot of salt.",
               fx: {coin:-6},
             },
           },
@@ -3116,7 +3116,7 @@
           },
           {
             t: "Ask what a Night Swimmer does in wartime",
-            r: '"The Amber fleet burned twenty-two of our ships at Kioya Water in 1068," the captain says. "We do not fight big fleets in daylight. We wait for the night." A cold answer for a warm sea.',
+            r: '"The Ambrel fleet burned twenty-two of our ships at Kioya Water in 1068," the captain says. "We do not fight big fleets in daylight. We wait for the night." A cold answer for a warm sea.',
             fx: {skill:{tactics:2},int:.3},
           },
           {
@@ -3168,7 +3168,7 @@
         cond: (p,C)=>C.realm(p,"POL-21")&&C.adult(p),
         w: .9,
         cool: 8,
-        text: "September, and the sky over the Spice Coast goes the color of a bruise. Cyclones strike from August to October. The harbor-master has hoisted the black basket. Your ship, or the ship you are owed wages on, is still riding at anchor outside the chain.",
+        text: "September, and the sky over Kesh goes the color of a bruise. Cyclones strike from August to October. The harbor-master has hoisted the black basket. Your ship, or the ship you are owed wages on, is still riding at anchor outside the chain.",
         choices: [
           {
             t: "Row out and bring her inside the chain",
@@ -3308,7 +3308,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-21")&&C.adult(p)&&(C.job(p,"carpenter","labor","sailor")||C.prof(p,"craft",25)),
         w: 1,
         once: !0,
-        text: "In Rehema the Shipwright's yards at Monuro the new ships promised to the Amber Isles are nearly done, though some say four hulls are green timber. Caulking below the waterline, you find an auger hole bored right through the planking and neatly plugged with a peg of soft wood. In a seaway that peg would pop out.",
+        text: "In Rehema the Shipwright's yards at Monuro the new ships promised to Ambrel are nearly done, though some say four hulls are green timber. Caulking below the waterline, you find an auger hole bored right through the planking and neatly plugged with a peg of soft wood. In a seaway that peg would pop out.",
         choices: [
           {
             t: "Show Rehema at once",
@@ -3344,7 +3344,7 @@
         cond: (p,C)=>C.realm(p,"POL-21")&&grown(p,C)&&!C.old(p)&&!C.noble(p),
         w: .9,
         cool: 8,
-        text: "Old Mwita of Stilt Town runs the Wet Hands, harbor thieves who swim out to moored ships at night and cut purses and cargo nets. He has watched you swim and offers you a place. Tonight's ship is an Amber cog full of cloves.",
+        text: "Old Mwita of Stilt Town runs the Wet Hands, harbor thieves who swim out to moored ships at night and cut purses and cargo nets. He has watched you swim and offers you a place. Tonight's ship is an Ambrel cog full of cloves.",
         choices: [
           {
             t: "Swim out with them",
@@ -3354,8 +3354,8 @@
               fx: {coin:15,skill:{stealth:2,sea:2},honor:-2,flag:"ss_ks_wethands"},
             },
             lose: {
-              r: "Amber marines with lanterns and boathooks. You get away with a gash and nothing else.",
-              fx: {health:-10,wound:"deep_cut",cause:"an Amber marine's boathook"},
+              r: "Ambrel marines with lanterns and boathooks. You get away with a gash and nothing else.",
+              fx: {health:-10,wound:"deep_cut",cause:"an Ambrel marine's boathook"},
             },
           },
           {
@@ -3380,13 +3380,13 @@
         cond: (p,C)=>C.realm(p,"POL-21")&&C.adult(p)&&free(p),
         w: 1,
         cool: 7,
-        text: "Pepper sells low this year, because Ranpur sends its pepper north by the Nagora road. The Pepper Hall still takes one part in ten at its scales. An Amber captain in the Tide-Table offers a better price for pepper that never touches the scales: carried out to his ship by night.",
+        text: "Pepper sells low this year, because Ranpur sends its pepper north by the Nagora road. The Pepper Hall still takes one part in ten at its scales. An Ambrel captain in the Tide-Table offers a better price for pepper that never touches the scales: carried out to his ship by night.",
         choices: [
           {
             t: "Row the pepper out",
             check: {s:"stealth",s2:"sea",d:44},
             win: {
-              r: "Ten sacks, two trips, no lights. The captain pays in Amber silver. The Pepper Hall's tenth stays in your pocket.",
+              r: "Ten sacks, two trips, no lights. The captain pays in Ambrel silver. The Pepper Hall's tenth stays in your pocket.",
               fx: {coin:30,skill:{stealth:2},honor:-2},
             },
             lose: {
@@ -3396,7 +3396,7 @@
           },
           {
             t: "Weigh it honestly and take the low price",
-            r: "Ranpuri pepper, Amber ships, low prices. The Pepper Hall takes its tenth. You take what is left and grumble with everyone else.",
+            r: "Ranpuri pepper, Ambrel ships, low prices. The Pepper Hall takes its tenth. You take what is left and grumble with everyone else.",
             fx: {coin:10,honor:1},
           },
           {
@@ -3416,7 +3416,7 @@
         cond: (p,C)=>C.realm(p,"POL-21")&&C.adult(p)&&!C.old(p),
         w: .8,
         cool: 9,
-        text: ()=>`A landing party has come ashore below the cinnamon forests: ${A.pick(["raiders from an Amber ship gone rogue","Ranpuri pepper smugglers who burned a drying shed","pirates from the Monsoon Coast"])}. The hill levies of spice gardeners fight only in defense, and they fight from the trees. Your headman hands out bows.`,
+        text: ()=>`A landing party has come ashore below the cinnamon forests: ${A.pick(["raiders from an Ambrel ship gone rogue","Ranpuri pepper smugglers who burned a drying shed","pirates from the Monsoon Coast"])}. The hill levies of spice gardeners fight only in defense, and they fight from the trees. Your headman hands out bows.`,
         choices: [
           {
             t: "Shoot from the trees",
@@ -3484,7 +3484,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-21")&&C.adult(p)&&(C.job(p,"servant")||C.town(p)||C.noble(p)),
         w: .8,
         once: !0,
-        text: "In Kesh they whisper that the infant prince Nuru screams the whole night before a storm, even one the harbor-master did not foresee. The Maruang of the Amber Isles have a storm-sense in the blood. A palace servant who heard it offers to sell you the story, and says two other people are already asking.",
+        text: "In Kesh they whisper that the infant prince Nuru screams the whole night before a storm, even one the harbor-master did not foresee. The Maruang of Ambrel have a storm-sense in the blood. A palace servant who heard it offers to sell you the story, and says two other people are already asking.",
         choices: [
           {
             t: "Buy the story and sell it to the Monuri",
@@ -4294,7 +4294,7 @@
             t: "Find her a berth on a ship, and refuse the token",
             check: {s:"persuasion",s2:"sea",d:38},
             win: {
-              r: "A Blackreef half-orc captain owes you a favor. Rima sails at dawn. She throws the token into the harbor from the deck.",
+              r: "A Corvasse half-orc captain owes you a favor. Rima sails at dawn. She throws the token into the harbor from the deck.",
               fx: {honor:3,newRel:{type:"friend",op:20}},
             },
             lose: {r:"No captain will take a woman the Emir's men might be looking for.",fx:{happy:-2}},
@@ -4348,7 +4348,7 @@
         cond: (p,C)=>C.realm(p,"POL-24")&&C.adult(p)&&!C.old(p)&&free(p),
         w: 1,
         cool: 7,
-        text: "Each spring the Gold Road caravan comes down the Bahesh from Zanara, and Faisal the Broker's caravan brokers buy the gold and sell it north. This year they want extra guards to meet the caravan upriver, because war may close the river and the Sand Clans are angry about something.",
+        text: "Each spring the Gold Road caravan comes down the Bahesh from Zanara, and Faisal the Broker's caravan brokers buy the gold and sell it north. This year they want extra guards to meet the caravan upriver, because war may close the river and Sahrim is angry about something.",
         choices: [
           {
             t: "Ride guard for the brokers",
@@ -4519,7 +4519,7 @@
         choices: [
           {
             t: "Learn the cant with them",
-            r: "Fish, lamp, dry, wet, uncle. By summer you can talk to any Blackreef sailor in the harbor, and they talk back.",
+            r: "Fish, lamp, dry, wet, uncle. By summer you can talk to any Corvasse sailor in the harbor, and they talk back.",
             fx: {lang:"Corsair cant",skill:{deception:1}},
           },
           {
@@ -4583,7 +4583,7 @@
         cond: (p,C)=>C.realm(p,"POL-24")&&C.adult(p)&&!C.old(p)&&C.coast(p),
         w: .8,
         cool: 8,
-        text: p=>`Half-orc sailors from Blackreef are common in Sabra's harbor and seen as useful, until they drink. Tonight three of them are tossing a Qadiri date-seller's baskets into the water${p.race==="halforc"?", and one of them calls you cousin and invites you to join in":""}.`,
+        text: p=>`Half-orc sailors from Corvasse are common in Sabra's harbor and seen as useful, until they drink. Tonight three of them are tossing a Qadiri date-seller's baskets into the water${p.race==="halforc"?", and one of them calls you cousin and invites you to join in":""}.`,
         choices: [
           {
             t: "Stop them with your fists",
@@ -5934,7 +5934,7 @@
         cond: (p,C)=>C.realm(p,"POL-33")&&C.adult(p),
         w: .9,
         cool: 8,
-        text: ()=>`In the Upturned Queen a ${A.pick(["Varennan sailor with clean hands","Qadiri merchant who drinks water","Lucernan factor's clerk"])} buys you rum and, very casually, asks where the dragon sleeps. Asking that question gets strangers killed in Blackreef. Anyone who tells the dragon's secret is drowned with a stone.`,
+        text: ()=>`In the Upturned Queen a ${A.pick(["Varennan sailor with clean hands","Qadiri merchant who drinks water","Lucernan factor's clerk"])} buys you rum and, very casually, asks where the dragon sleeps. Asking that question gets strangers killed in Corvasse. Anyone who tells the dragon's secret is drowned with a stone.`,
         choices: [
           {
             t: "Tell him the dragon sleeps under the Strait, and eats the curious",
@@ -5984,7 +5984,7 @@
                 tier: 2,
                 title: "a big oarsman",
                 troop: "MR",
-                opts: {kind:"brawl",place:"the beach at Blackreef",lethal:!1,toYield:!0,title:"Fists on the beach"},
+                opts: {kind:"brawl",place:"the beach at Corvasse",lethal:!1,toYield:!0,title:"Fists on the beach"},
               },
             },
           },
@@ -6341,7 +6341,7 @@
             check: {s:"sea",s2:"wil",d:50},
             win: {
               r: "You run a little galley right under the Lion Fleet's bows and into the shoals, with the warships chasing. Two of them strike rocks. The rafts come alight behind them. The dragon wakes.",
-              fx: {skill:{sea:4},fame:4,merit:3,coin:30,deed:"Lured the Lion Fleet into the shoals of Blackreef"},
+              fx: {skill:{sea:4},fame:4,merit:3,coin:30,deed:"Lured the Lion Fleet into the shoals of Corvasse"},
             },
             lose: {
               r: "A Varennan bolt takes your steersman. You run your own boat onto the rocks and swim for it.",
@@ -6470,13 +6470,13 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-21")&&grown(p,C)&&!C.old(p)&&(C.prof(p,"athletics",30)||C.prof(p,"stealth",30)||C.flag(p,"ss_ks_rope")),
         w: 1,
         once: !0,
-        text: "Kito the Gecko, the best climbing thief in Kesh, needs a second pair of hands on a wet roof for one night. The house is an Amber merchant's, guarded by Amber marines, and what he wants inside is not gold but a paper: the pledge of the harbor dues of 1105.",
+        text: "Kito the Gecko, the best climbing thief in Kesh, needs a second pair of hands on a wet roof for one night. The house is an Ambrel merchant's, guarded by Ambrel marines, and what he wants inside is not gold but a paper: the pledge of the harbor dues of 1105.",
         choices: [
           {
             t: "Climb with Kito",
             check: {s:"athletics",s2:"stealth",d:50},
             win: {
-              r: 'Wet tiles, a rope, a shuttered window, a strongbox. Kito takes the paper and gives you a handful of Amber gold. "Never tell," he says, and is gone over the roofs.',
+              r: 'Wet tiles, a rope, a shuttered window, a strongbox. Kito takes the paper and gives you a handful of Ambrel gold. "Never tell," he says, and is gone over the roofs.',
               fx: {coin:40,skill:{athletics:3,stealth:3},flag:"ss_ks_kito",honor:-2},
             },
             lose: {

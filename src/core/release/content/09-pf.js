@@ -688,7 +688,7 @@
         cool: 15,
         setup: (p,ctx)=>{ctx.beast="CRE-05",ctx.hunter=nm(p,"M")},
         title: "The wyrm hunt",
-        text: p=>`${p.realm==="POL-32"?"A wyrm has come out of the scrub and taken goats.":"A trader back from the Amber Isles is hiring spears for a hunt there."} {hunter}, who learned at the Spear Yard of Aming, is gathering a party: long spears, nets, a share of the hide for each. The Amber Wyrm is a real lizard, three times a man's length, and it does not die easily.`,
+        text: p=>`${p.realm==="POL-32"?"A wyrm has come out of the scrub and taken goats.":"A trader back from Ambrel is hiring spears for a hunt there."} {hunter}, who learned at the Spear Yard of Aming, is gathering a party: long spears, nets, a share of the hide for each. The Amber Wyrm is a real lizard, three times a man's length, and it does not die easily.`,
         choices: [
           {
             t: "Join the hunt and take the front",
@@ -1677,7 +1677,7 @@
         w: .7,
         once: !0,
         title: "The backward shot",
-        text: p=>`${p.realm==="POL-12"?"Every rider of the Nine Winds learns it at Kharsa Arrow Field, in memory of Toghan Swift-Arrow, who shot 27 of 27 in 431, nine of them backward.":"A horse-trader from the Nine Winds shows it off for coppers at the fair: galloping away, turning in the saddle, an arrow back over the horse's tail into a straw target."} You want to learn it.`,
+        text: p=>`${p.realm==="POL-12"?"Every rider of Ulun learns it at Kharsa Arrow Field, in memory of Toghan Swift-Arrow, who shot 27 of 27 in 431, nine of them backward.":"A horse-trader from Ulun shows it off for coppers at the fair: galloping away, turning in the saddle, an arrow back over the horse's tail into a straw target."} You want to learn it.`,
         choices: [
           {
             t: "Practise until you have it",
@@ -2479,7 +2479,7 @@
         cond: (p,C)=>pro(p,C,"athletics",40)&&!C.old(p),
         w: .9,
         cool: 5,
-        setup: (p,ctx)=>{who(p,ctx,"rival"),ctx.climb=p.realm==="POL-21"?"the Pepper Hall roof at Harvest Home, thirty meters, no ropes, as the young of Kesh have done for generations":inR(p,"POL-13")?"the race up the rock above the valley, as Highlanders do on feast days":"the guildhall tower for a wager, a purse hung on the weathervane"},
+        setup: (p,ctx)=>{who(p,ctx,"rival"),ctx.climb=p.realm==="POL-21"?"the Pepper Hall roof at Harvest Home, thirty meters, no ropes, as the young of Kesh have done for generations":inR(p,"POL-13")?"the race up the rock above the valley, as Brannoch folk do on feast days":"the guildhall tower for a wager, a purse hung on the weathervane"},
         title: "The climb",
         text: "{climb}. Your rival in it is {themFull}, who climbs like a lizard and has been bragging about it for weeks.",
         choices: [
@@ -2521,7 +2521,7 @@
         cool: 12,
         setup: (p,ctx)=>{ctx.client=nm(p),ctx.other=nm(p)},
         title: "The wall-run",
-        text: p=>`${p.realm==="POL-13"?"The old Highland custom: two champions race along the top of Highcastle's wall, and whoever falls loses the case.":"The valley still settles some quarrels the old Highland way: two champions race along the top of a high wall, and whoever falls loses the case."} {client} has a pasture dispute with {other}, and asks you to run.`,
+        text: p=>`${p.realm==="POL-13"?"The old Brannoch custom: two champions race along the top of Highcastle's wall, and whoever falls loses the case.":"The valley still settles some quarrels the old Brannoch way: two champions race along the top of a high wall, and whoever falls loses the case."} {client} has a pasture dispute with {other}, and asks you to run.`,
         choices: [
           {
             t: "Run the wall",
@@ -3761,7 +3761,7 @@
         cond: (p,C)=>pro(p,C,"etiquette",50),
         w: .7,
         cool: 10,
-        setup: (p,ctx)=>{ctx.guest=A.pick(["an elf envoy from the forest courts","a dwarf factor from the holds","a Sand Clan speaker","an envoy of the Abbot of Skyhold"])},
+        setup: (p,ctx)=>{ctx.guest=A.pick(["an elf envoy from the forest courts","a dwarf factor from the holds","a Sahrim speaker","an envoy of the Abbot of Skyhold"])},
         title: "The foreign guest",
         text: "Your host is entertaining {guest}, and nobody in the house knows what is proper. Bow or not? Offer meat or not? Speak first or wait? They look at you, the one who knows these things.",
         choices: [
@@ -6437,7 +6437,7 @@
         cool: 8,
         setup: (p,ctx)=>{ctx.capn=nm(p,"M")},
         title: "Dice before the raid",
-        text: p=>`${p.realm==="POL-33"?"In Blackreef every crew throws dice before a raid, for luck.":"A corsair crew is ashore, throwing dice for luck the way they do before every raid."} Their captain, {capn}, wants an outsider to throw against: "the luck of a stranger". The stake is a share of the raid.`,
+        text: p=>`${p.realm==="POL-33"?"In Corvasse every crew throws dice before a raid, for luck.":"A corsair crew is ashore, throwing dice for luck the way they do before every raid."} Their captain, {capn}, wants an outsider to throw against: "the luck of a stranger". The stake is a share of the raid.`,
         choices: [
           {
             t: "Throw against the captain",

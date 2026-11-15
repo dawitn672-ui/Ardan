@@ -1,4 +1,4 @@
-// Realm bibles, part C: the Sunlands, the elves and Blackreef (47-realm-customs). See bible.core.js for the kinds of custom and their fields.
+// Realm bibles, part C: the Sunlands, the elves and Corvasse (47-realm-customs). See bible.core.js for the kinds of custom and their fields.
 (function () {
   const D = A.BIBLE_DATA = A.BIBLE_DATA || {}, W = A.BIBLE_WORDS = A.BIBLE_WORDS || {};
 
@@ -84,7 +84,7 @@
   };
 
   D['POL-15'] = {
-    want: 'To sell to every side, the steppe, the Horde and both Tessarian claimants, and stay on terms with all of them while the Horse Road pays.',
+    want: 'To sell to every side, the steppe, Gorath and both Tessarian claimants, and stay on terms with all of them while the Horse Road pays.',
     fear: 'That one of its buyers wins outright, or that someone proves which road the oil jars came by.',
     place: { name: 'The towers of the Horse Road', text: 'A line of stone towers along the road from the steppe, each in sight of the next. A lamp lit at the border reaches the capital before the riders do.' },
     customs: [

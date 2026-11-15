@@ -1273,7 +1273,7 @@
       w: 3, once: true,
       setup: (p, ctx) => {
         yrs(p, ctx, "pf_corsair_favor");
-        ctx.dice = p.realm === "POL-33" ? "In Blackreef every crew throws dice before a raid." : "Every corsair crew throws dice before a raid.";
+        ctx.dice = p.realm === "POL-33" ? "In Corvasse every crew throws dice before a raid." : "Every corsair crew throws dice before a raid.";
         const t = byRole(p, "capn") || linked(p, "pf_corsair_favor", ["friend", "bestfriend"]) || mk(p, { occ: "a corsair captain", role: "capn" });
         ctx.pid = t.id;
       },

@@ -2069,7 +2069,7 @@
       id: "cb_ww_hl_chest", title: "The names in the chest",
       cond: (p, C) => free(p, C) && C.flag(p, "ww_hl_chest") && since(p, "ww_hl_chest") >= 3,
       w: 3, once: true,
-      text: "You opened the soft-handed Sunlander's chest at the first camp and remembered the names in it: a hire contract and a bribe. One of those names now sits in the Highland council, talking loudly about Sunland spies. Highland law throws traitors from the Traitor's Rock. You also carried the chest.",
+      text: "You opened the soft-handed Sunlander's chest at the first camp and remembered the names in it: a hire contract and a bribe. One of those names now sits in the Brannoch council, talking loudly about Sunland spies. Brannoch law throws traitors from the Traitor's Rock. You also carried the chest.",
       choices: [
         { t: "Tell the council what you saw", check: { s: "persuasion", s2: "wil", d: 55 },
           win: { r: "They believe the guide over the councillor. He goes from the Rock. You are not asked who carried the chest.", fx: { fame: 3, honor: 3, favor: 4 } },
@@ -2326,7 +2326,7 @@
       id: "cb_cm_traitor", title: "The Forty are asking",
       cond: (p, C) => free(p, C) && C.flag(p, "cm_traitor") && since(p, "cm_traitor") >= 2,
       w: 3, once: true,
-      text: "You sold what the Brotherhood keeps, and went somewhere far away with your gold. Today a quiet man with an oar-callus on each palm sits down at the next table and orders what you are drinking. He does not look at you. In Blackreef they say the Forty never forget a name, only a face.",
+      text: "You sold what the Brotherhood keeps, and went somewhere far away with your gold. Today a quiet man with an oar-callus on each palm sits down at the next table and orders what you are drinking. He does not look at you. In Corvasse they say the Forty never forget a name, only a face.",
       choices: [
         { t: "Leave by the back, tonight, for good",
           r: "Another town, another name, half your gold left behind. The quiet man drinks your cup.",

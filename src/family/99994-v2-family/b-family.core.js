@@ -71,7 +71,7 @@
   // passed a parent's name on only for the house, clan, trade ... modes, never for "deed". So full brothers and sisters
   // were "Tarn of Clan Gholruk", "Ozrak of Clan Hrogul", "Brak of Clan Mukhoth", and none of them their father's. Now a
   // child whose parents have a clan takes one of theirs by the law: the house's law (F.houseLaw) for a child of a house,
-  // else the realm's custom; a realm whose crown goes to daughters (law "female": the Tusk Clans' War-Mother) reckons
+  // else the realm's custom; a realm whose crown goes to daughters (law "female": the Ughrak' War-Mother) reckons
   // the clan through the mother, every other law through the father. The release's draw is still made (the stream does
   // not move); only the name changes.
   F.clanOfName = p => {

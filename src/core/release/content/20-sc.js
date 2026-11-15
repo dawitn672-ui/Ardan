@@ -761,7 +761,7 @@
         maxRank: 3,
         cool: 6,
         cond: (p,C)=>C.adult(p),
-        setup: (p,ctx)=>{ctx.beastie=R(p,...STEPPE)?"a white-footed mare":R(p,...WELL)?"a hunting falcon from the Sand Clans":A.pick(["a brindled wolfhound","a gyrfalcon","a lymer hound with a nose like a priest"]),ctx.lord=A.pick(["the baron","the count's steward","old Lord "+nm(p,"M")]),ctx.Lord=A.cap(ctx.lord)},
+        setup: (p,ctx)=>{ctx.beastie=R(p,...STEPPE)?"a white-footed mare":R(p,...WELL)?"a hunting falcon from Sahrim":A.pick(["a brindled wolfhound","a gyrfalcon","a lymer hound with a nose like a priest"]),ctx.lord=A.pick(["the baron","the count's steward","old Lord "+nm(p,"M")]),ctx.Lord=A.cap(ctx.lord)},
         title: "The lord's darling",
         text: "{Lord} loves {beastie} more than his wife, the servants say. When it goes missing, he pays well for its return. It has not gone missing yet.",
         choices: [
@@ -906,7 +906,7 @@
         cond: (p,C)=>C.adult(p)&&C.job(p,"thief")&&!C.prison(p),
         w: 1,
         cool: 6,
-        setup: (p,ctx)=>{ctx.refuge=R(p,...SUNLAND)?"the sun temple, where a fugitive who grips the bell-rope has forty days":R(p,...WELL)?"the house of a Sand Clan trader, where whoever accepts water is protected":R(p,...ORC)?"the nearest clan fire, where a guest may not be harmed":"the old chapel, though nobody honors sanctuary here"},
+        setup: (p,ctx)=>{ctx.refuge=R(p,...SUNLAND)?"the sun temple, where a fugitive who grips the bell-rope has forty days":R(p,...WELL)?"the house of a Sahrim trader, where whoever accepts water is protected":R(p,...ORC)?"the nearest clan fire, where a guest may not be harmed":"the old chapel, though nobody honors sanctuary here"},
         title: "The cry goes up",
         text: '"Thief!" The hue and cry goes up behind you, and every neighbor must answer it or pay a fine. Doors open. Someone is already running for a cudgel.',
         choices: [
@@ -2541,7 +2541,7 @@
         maxRank: 2,
         cool: 5,
         cond: (p,C)=>C.adult(p),
-        setup: (p,ctx)=>{ctx.pit=pit(p),["orc","halforc"].includes(p.race)?(ctx.foe="a Highland pikeman turned pit fighter, who has seen orcs fight before",ctx.plan="He means to make you fight for ten minutes. Every orc knows what happens at minute ten.",ctx.slow="Make it short"):(ctx.foe="an orc of the relay riders, a head taller than you",ctx.plan="For two minutes an orc is the most dangerous thing on Ardan. After ten he is nearly helpless.",ctx.slow="Make it long: give ground and keep him moving")},
+        setup: (p,ctx)=>{ctx.pit=pit(p),["orc","halforc"].includes(p.race)?(ctx.foe="a Brannoch pikeman turned pit fighter, who has seen orcs fight before",ctx.plan="He means to make you fight for ten minutes. Every orc knows what happens at minute ten.",ctx.slow="Make it short"):(ctx.foe="an orc of the relay riders, a head taller than you",ctx.plan="For two minutes an orc is the most dangerous thing on Ardan. After ten he is nearly helpless.",ctx.slow="Make it long: give ground and keep him moving")},
         title: "Two minutes",
         text: "Tonight at {pit} you fight {foe}. {plan}",
         choices: [
@@ -3678,7 +3678,7 @@
         cond: (p,C)=>fightSch(p,C)&&C.adult(p),
         w: .8,
         cool: 10,
-        setup: (p,ctx)=>{scx(p,ctx);const F2=[["an elf from the Sylvaran groves","Sylvari","the parry and the answer in one movement","POL-06","elf"],["a rider of the Nine Winds","Wind Rider","the backward shot from the saddle","POL-12","human"],["a Zanari runner","Zanari","how to run a horseman down over a day of heat","POL-20","human"],["a Keshi climber from the Rope Hall","Keshi","how to fall without breaking","POL-21","human"],["a half-orc from the Tusk Clans","Orcish","the rhino spear","POL-34","halforc"],["a pike-fighter from the Highland League","Northfolk","how to stand in a pike block","POL-13","human"],["a Ranpuri from Chanari","Ranpuri","the draw and the first cut","POL-30","human"],["a Sabran from the camel school","Sabran","the lance from a camel in the heat","POL-24","human"]].filter(x=>x[3]!==p.realm),f=A.pick(F2);ctx.from=f[0],ctx.lng=f[1],ctx.knows=f[2];const q=who(p,ctx,"acquaint","a foreign student at "+ctx.school);try{const r2=A.realm(f[3]);if(r2&&r2.cult){q.realm=f[3],q.race=f[4],q.cult=r2.cult,q.born=A.S.year-(GD.RACES[f[4]].adult+A.ri(1,4)),q.given=A.givenName(q.cult,q.sex)||q.given;const fn=A.familyName({cult:q.cult,realm:f[3],status:q.status,sex:q.sex});q.sur=fn.sur,q.surMode=fn.mode}}catch{}ctx.They=A.cap(A.he(q)),ctx.they=A.he(q)},
+        setup: (p,ctx)=>{scx(p,ctx);const F2=[["an elf from the Sylvaran groves","Sylvari","the parry and the answer in one movement","POL-06","elf"],["a rider of Ulun","Wind Rider","the backward shot from the saddle","POL-12","human"],["a Zanari runner","Zanari","how to run a horseman down over a day of heat","POL-20","human"],["a Keshi climber from the Rope Hall","Keshi","how to fall without breaking","POL-21","human"],["a half-orc from Ughrak","Orcish","the rhino spear","POL-34","halforc"],["a pike-fighter from the League of Brannoch","Northfolk","how to stand in a pike block","POL-13","human"],["a Ranpuri from Chanari","Ranpuri","the draw and the first cut","POL-30","human"],["a Sabran from the camel school","Sabran","the lance from a camel in the heat","POL-24","human"]].filter(x=>x[3]!==p.realm),f=A.pick(F2);ctx.from=f[0],ctx.lng=f[1],ctx.knows=f[2];const q=who(p,ctx,"acquaint","a foreign student at "+ctx.school);try{const r2=A.realm(f[3]);if(r2&&r2.cult){q.realm=f[3],q.race=f[4],q.cult=r2.cult,q.born=A.S.year-(GD.RACES[f[4]].adult+A.ri(1,4)),q.given=A.givenName(q.cult,q.sex)||q.given;const fn=A.familyName({cult:q.cult,realm:f[3],status:q.status,sex:q.sex});q.sur=fn.sur,q.surMode=fn.mode}}catch{}ctx.They=A.cap(A.he(q)),ctx.they=A.he(q)},
         title: "A stranger in the yard",
         text: "A new student has come from very far: {themFull}, {from}. {They} fights like nobody you have seen, and speaks your language badly. In the yard the others call {themHim} names behind {their} back. {They} knows {knows}.",
         choices: [
@@ -5512,7 +5512,7 @@
         cool: 5,
         setup: (p,ctx)=>{scx(p,ctx)},
         title: "The forms of address",
-        text: "The examination in forms: how to address a duke, a Well-Keeper, a War-Mother, an elf of the Moot, the Captain-General of Blackreef and the High Luminary, in writing and in person, without causing a war.",
+        text: "The examination in forms: how to address a duke, a Well-Keeper, a War-Mother, an elf of the Moot, the Captain-General of Corvasse and the High Luminary, in writing and in person, without causing a war.",
         choices: [
           {
             t: "Learn them all by heart",
