@@ -91,7 +91,8 @@
     const pc = A.pc(), was = pc && pc.alive;
     const r = pcDeath.apply(this, arguments);
     try {
-      if (pc && was && !pc.ending) {
+      // (a death in childbed marks the mother dead (A.kill) before it calls pcDeath: was is false, and the ending was never decided)
+      if (pc && !pc.alive && !pc.ending) {
         pc.ending = A.endingOf(pc);
         const S = A.S; S.endings = S.endings || {}; S.manners = S.manners || {};
         if (S.endings[pc.ending.id] == null) S.endings[pc.ending.id] = S.year;

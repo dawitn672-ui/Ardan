@@ -65,7 +65,7 @@
   const fit0 = A.evFit;
   A.evFit = function (e, pc) {
     const w = fit0.apply(this, arguments);
-    try { if (w > 0 && pc && !e.trigger && X3.away(pc) && X3.homeScene(e)) return 0; } catch (err) {}
+    try { if (w > 0 && pc && !e.trigger && !X3.followsStory(e) && X3.away(pc) && X3.homeScene(e)) return 0; } catch (err) {}
     return w;
   };
 

@@ -62,6 +62,7 @@ export const pronounLint = () => {
   for (const id of Object.keys(A.EV)) {
     const e = A.EV[id], pin = pinOf(e);
     if (fixedFigure(e)) continue;
+    if (A.V2F && A.V2F.sceneSex && A.V2F.sceneSex(e)) continue;      // a scene that speaks of one sex only makes its person of that sex (99994-v2-family)
     for (const s of strsOf(e.text)) check(id, 'text', s, pin);
     (e.choices || []).forEach((c, i) => {
       for (const s of strsOf(c.r)) check(id, `c${i}.r`, s, pin);
