@@ -23,10 +23,12 @@
         v._x3 = 1;
         X3.stats.seen++;
         const e = A.EV[q.ev], text = X3.cardText(v);
-        const st = X3.stationBreach(pc, text);
+        // a step of a story already begun (an arc's, a chain's, a forced scene) is that story's own consequence: station and place do not drop it
+        const story = !!(q.forced || (q.ctx && (q.ctx.arc || q.ctx.lfFrom)) || (e && X3.followsStory(e)));
+        const st = story ? [] : X3.stationBreach(pc, text);
         if (st.length) { v.skip = true; bump(X3.stats.station, st[0].id); v.x3Why = 'station ' + st[0].id + ': ' + st[0].word; }
-        else if (X3.homeBreach(pc, text)) { v.skip = true; X3.stats.place++; v.x3Why = 'home town while away'; }
-        else if (e && e.cond && A.age(pc) < 6 && !(function () { try { return !!e.cond(pc, A.C); } catch (err) { return true; } })()) { v.skip = true; X3.stats.child++; v.x3Why = 'a scene for older lives, dealt to a child'; }
+        else if (!story && X3.homeBreach(pc, text)) { v.skip = true; X3.stats.place++; v.x3Why = 'home town while away'; }
+        else if (e && e.cond && A.age(pc) < 6 && !(q.ctx && q.ctx.arc) && !(function () { try { return !!e.cond(pc, A.C); } catch (err) { return true; } })()) { v.skip = true; X3.stats.child++; v.x3Why = 'a scene for older lives, dealt to a child'; }
         if (v.skip) q.ctx = Object.assign(q.ctx || {}, { skip: 1 });
         else if (Array.isArray(v.adv) && v.adv.length) {
           const here = v.adv.filter(x => X3.present(pc, A.P(x.id)));

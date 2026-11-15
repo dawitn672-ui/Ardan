@@ -2242,7 +2242,7 @@
       title: "An old scholar",
       trigger: !0,
       setup: (p,ctx)=>stranger(p,ctx,"an old scholar"),
-      text: "{themFull}, an old scholar with a famous name and no money, offers to teach you for the price of {theirHis} rent.",
+      text: "{themFull}, an old scholar with a famous name and no money, offers to teach you for the price of his rent.",
       choices: [
         {
           t: "Pay his rent",

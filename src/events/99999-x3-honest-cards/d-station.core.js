@@ -103,7 +103,19 @@
     needs.set(e.id, out);
     return out;
   };
+  // a scene that follows a story the life has lived (its condition asks for a flag the story set: C.flag(p, "x"), not its negation) is
+  // that story's own consequence: the gates do not hide it (a master naming his apprentice, a rune carver's second visit)
+  const follows = new Map();
+  X3.followsStory = function (e) {
+    if (!e || !e.id) return false;
+    if (follows.has(e.id)) return follows.get(e.id);
+    let out = false;
+    try { const c = String(e.cond || ''); for (const m of c.matchAll(/(!?)\s*C\.flag\(/g)) if (!m[1]) out = true; } catch (err) {}
+    follows.set(e.id, out);
+    return out;
+  };
   X3.stationFits = function (e, pc) {
+    if (X3.followsStory(e)) return true;
     const ids = X3.stationNeeds(e);
     for (const id of ids) { const rule = X3.STATION.find(r => r[0] === id); if (rule && !holds(rule, pc)) return false; }
     return true;
