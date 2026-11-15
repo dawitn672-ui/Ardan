@@ -28,7 +28,7 @@
 
   // words for a reason (the person view): an event's title, or a plain phrase
   M.WORDS = {
-    birth: 'at your birth', household: 'of your household', 'kin-visit': 'when the family gathered', parish: 'in your parish',
+    birth: 'at your birth', household: 'as one of your household', 'kin-visit': 'when the family gathered', parish: 'in your parish',
     marriage: 'by marriage', betrothal: 'by a betrothal', work: 'through your work', court: 'at court', teaching: 'over lessons',
     courting: 'courting', meeting: 'by chance', before: 'before your story begins', gathering: 'when the family gathered',
   };
