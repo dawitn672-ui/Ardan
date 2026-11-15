@@ -50,8 +50,12 @@ export default {
     const r = await pg.evaluate(() => {
       const out = [];
       for (const S of (A.STARTS || []).filter(s => UI.COMING.BEATS.includes(s.id))) {
-        A.newGame(Object.assign({ seed: 9960 + out.length, sex: 'F' }, S.cr, { story: S.id }));
+        // a life that dies before its second beat (always the first choice: CI 112's second son went to the gallows in
+        // the second month) is dealt again on the next seed
         let shown = null, listed = false;
+        for (let k = 0; k < 4 && !shown; k++) {
+        A.newGame(Object.assign({ seed: 9960 + out.length + k * 100, sex: 'F' }, S.cr, { story: S.id }));
+        shown = null; listed = false;
         // v2 (99992-v2-time): the month's scenes now fall on its days, so A.advance stops more often inside a month;
         // eight months are counted in days, not in calls
         const d0 = A.absDay();
@@ -63,6 +67,8 @@ export default {
             if (q.type === 'event') { if (q.ev === 'cu_beat_' + S.id) shown = Math.round((A.absDay() - A.S.start0) / 30) || m + 1; A.eventView(q); A.eventChoose(0); A.eventClose(); }
             else A.skipPrompt();
           }
+        }
+        if (shown || A.pc().alive) break;
         }
         out.push({ id: S.id, shown, listed });
       }
