@@ -737,8 +737,14 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Undo:** revert the branch's commits, newest first. Saves are untouched (no state field added).
 
 ### H-044 · 2026-11-15 ET · B5 part 2: one UI.scope, the six-life draw test, one goal stack (D-055)
-- **Commits** (branch `b5-part2`, by a Sonnet 5.5 agent): `254c2cd` (UI.scope and its routes, the six-life test), then the goal
-  stack, the tablet test and the docs after it.
+- **Commits** (branch `b5-part2`, by a Sonnet 5.5 agent): `254c2cd` (UI.scope and its routes, the six-life test), `69b5efc` (the goal
+  stack, the tablet test, D-055), `98a0f83`, `0d3b2ce` (the chapter's card stays a folded card after the goals card: nested, it
+  could not fold and the Life panel overflowed by 17 px), `0ff0458`, `2df86f5`.
+- **Tests run on the final build:** the core suites (boot, saveRoundTrip, savesStillLoad, uiSmoke, renderRng, replayWithRender,
+  journalReplay), every test of 9992-story-drawer (incl. b5Budget: 78 screens within budget), 59-descriptions, 71-phone,
+  999996-profile-tab, 996-coming-up, 99997-v2-war, 84-top-bar, 90, 91, 99992-v2-time, 97, 9993, 99998-click-open and the new
+  ones (131 + 94, 0 failed once fitsOneScreen was fixed); `tools/bench/balance.mjs`: all within their bands. Not run: the
+  full suite (CI shards it), the Great Continent league, `tools/check.mjs`; `index.html` is not rebuilt on this branch.
 - **UI.scope(pc)** (`src/ui/999997-scope`): one pure reader of age, class, posts (`A.POSTS`), war rank (`A.V2W`) and household.
   `sees`, `page`, `act`, `social`. `A.canAct`, `A.interactOptions` and `A.whatNow` take it as their last wrapper; the bar's
   places, the Life, Path and profile pages and the rail read it. What no life like his is offered is not listed, instead of a
