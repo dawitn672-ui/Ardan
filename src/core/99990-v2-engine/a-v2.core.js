@@ -1114,6 +1114,7 @@ var __ARDAN_V2_MAKE = (() => {
   }
   function placeName(rng, culture, opts = {}) {
     const st = stockOf(culture);
+    rng.next();
     return draw(rng, view(st, "places", opts.realm), opts.avoid);
   }
   function sees(culture, realm) {

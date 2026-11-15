@@ -75,6 +75,8 @@ export function familyName(rng, culture, opts = {}) {
 // a place of this people: a village or fief name from their own list, never another people's
 export function placeName(rng, culture, opts = {}) {
   const st = stockOf(culture);
+  // two draws, like the given and family names and the old syllable namer: a court's structure shares this stream (nobility.js buildHierarchy), and a name that drew one fewer moved every title drawn after it
+  rng.next();
   return draw(rng, view(st, 'places', opts.realm), opts.avoid);
 }
 // the pool a culture draws from, for a test or a tool: { given: {male, female}, family, places } as the culture sees them

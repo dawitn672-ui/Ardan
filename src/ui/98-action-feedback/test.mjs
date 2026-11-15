@@ -19,6 +19,7 @@ export default {
         A.newGame({ seed: 77, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 25 });
         UI.screen = 'game'; UI.set.hints = false; A.S.queue = []; UI.ov = null; UI.tab = 'life'; UI.render();
         const t = document.getElementById('toast'); if (t) { t.textContent = ''; t.classList.remove('show'); }
+        if (k === 'tournament') A.pc().coin = 0;   // the fee message is for one who cannot pay: a peasant's purse depends on the world
         const f = on ? UI.A.act : (UI.A.act._orig || null);
         UI.A.act(k); UI.A.actDo(k);   // round 2 B4: a press opens the sheet, Do it commits, and the card says what happened
         await new Promise(res => setTimeout(res, 50));

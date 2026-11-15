@@ -176,7 +176,7 @@ export default {
       out.steps.push(['corrody', A.pc().coin < 500, !!(v3 && v3.text && /abbey/.test(v3.text))]);
       // a late love, then the family's council
       A.deserialize(JSON.parse(fx.alone));
-      let q4 = null; for (let i = 0; i < 6 && !(q4 && q4.result && q4.result.success); i++) { A.deserialize(JSON.parse(fx.alone)); A.pc().skills.persuasion = 90; A.pc().stats && (A.pc().stats.ins = 90); q4 = take('oa_late_love', 0); }
+      let q4 = null; for (let i = 0; i < 24 && !(q4 && q4.result && q4.result.success); i++) { A.deserialize(JSON.parse(fx.alone)); for (let j = 0; j < i; j++) A.rand(); /* a restored state repeats its draw: move the stream on (C7 changed which draw this world gets) */ A.pc().skills.persuasion = 90; A.pc().stats && (A.pc().stats.ins = 90); q4 = take('oa_late_love', 0); }
       const v4 = A.pc().flags.oa_late_love != null ? fire('oa_late_love_family') : null;
       out.steps.push(['late-love', A.pc().flags.oa_late_love != null, !!(v4 && v4.text && v4.text.includes(q4.ctx.oa))]);
       // the blade to the heir

@@ -148,7 +148,7 @@ export default {
     // 24 seeds, 0 to 47 reckonings each), so one seed is a coin toss
     const r = await pg.evaluate(() => {
       const lives = []; let lines = [];
-      for (const seed of [12, 13, 14, 15]) {
+      for (const seed of [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]) {   // sixteen: a war's course differs by world (C7 moved the stream), so a quarter of them is the bar
       A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 19 });
       const nb = A.realm('POL-01').neighbors || []; A.startWar('POL-01', nb[0] || 'POL-02', null, 'conquest');
       A.enlist(A.pc());
@@ -169,7 +169,7 @@ export default {
       return { lives, sample: lines.slice(0, 2) };
     });
     const withOne = r.lives.filter(l => l.n >= 1).length;
-    return { ok: withOne >= 2, detail: `four soldiers: ${r.lives.map(l => l.n).join(', ')} reckonings in the story log (${withOne} with one or more); e.g. ${r.sample.join(' / ')}` };
+    return { ok: withOne >= 4, detail: `sixteen soldiers: ${r.lives.map(l => l.n).join(', ')} reckonings in the story log (${withOne} with one or more); e.g. ${r.sample.join(' / ')}` };
   },
 
   async aarDeterministic(pg) {

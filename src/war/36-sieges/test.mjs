@@ -126,7 +126,7 @@ export default {
     // siege in about 1 war month in 7 (34 of 240 after cycle 1, 35 of 240 before), so three seeds alone could miss
     const r = await pg.evaluate(() => {
       let seen = null, months = 0;
-      for (const seed of [66, 67, 68, 69, 70, 71, 72, 73]) {
+      for (const seed of [66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85]) {   // (C7 moved the stream: the first eight no longer meet one)
         A.newGame({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 19 });
         A.startWar('POL-01', A.neighbors('POL-01')[0], null, 'conquest'); A.enlist(A.pc());
         for (let m = 0; m < 30 && A.pc().alive && !seen; m++) {
