@@ -829,7 +829,7 @@ shared runner that varies by a quarter, and a worker cannot be throttled: `phone
 forgot them; five goal systems competing for the top of one page.
 **Held by:** `scopeShape`, `scopeActs`, `scopeSixLives` (a newborn, a child of 9, a squire of 16, a File-Leader at war, a captain
 in garrison, a councillor draw every page at two widths, five overlays and three cards with none of the strings each life's
-data forbids; 41 leaks on the build before), `gsOneCard`, `gsSources`; `b5Budget` unchanged.
+data forbids; 41 leaks on the build before), `gsOneCard`, `gsSources`, `b5Tablet` (44 px time buttons, no sideways scroll at 768 and 1024 px); `b5Budget` unchanged (78 screens within budget).
 **Not done:** the tablet shell (CRITIQUE U13): at 768 to 1024 px on a coarse pointer the top-bar buttons are 44 px (part 1) but
 the page keeps the desktop layout, because 23 `min-width:761px` blocks and 40 `max-width:760px` blocks (and `UI.isPhone`) would all
 have to move together; `U6`/`U10`/`U12`/`U17`/`U21` and the 200% text test remain as listed in H-020. The scope reads the

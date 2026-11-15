@@ -27,7 +27,7 @@
 
 ## Tests (`test.mjs`)
 
-`scopeShape` (the shape, same object while nothing moves, pure), `scopeActs` (A.canAct for an infant, a child of 12, an adult and a councillor), `scopeSixLives`: a newborn, a child of 9, a squire of 16, a File-Leader at war, a captain in garrison and a councillor draw every page (at 1366 and 420 px), the overlays (house, proficiencies, profile, tree, war room) and three people's cards with no string their life forbids. The forbidden lists are data at the head of the test (`LIVES`), one per life, and each life has what it must still show (so a page is not hidden empty).
+`scopeShape` (the shape, same object while nothing moves, pure), `scopeActs` (A.canAct for an infant, a child of 12, an adult and a councillor), `scopeSixLives`: a newborn, a child of 9, a squire of 16, a File-Leader at war, a captain in garrison and a councillor draw every page (at 1366 and 420 px), the overlays (house, proficiencies, profile, tree, war room) and three people's cards with no string their life forbids. The forbidden lists are data at the head of the test (`LIVES`), one per life, and each life has what it must still show (so a page is not hidden empty). `b5Tablet` holds part 1's tablet claim: on a coarse pointer at 768 and 1024 px the time buttons are 44 px targets in view and no page scrolls sideways (the phone shell on a tablet is not done: D-055).
 
 ## Edits outside this folder
 
