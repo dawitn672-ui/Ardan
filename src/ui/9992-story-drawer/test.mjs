@@ -39,13 +39,16 @@ export default {
       const out = { share: +share().toFixed(2), closedHidden: !vis() };
       const btn = document.querySelector('#topbar [data-a="storyDrawer"]');
       out.btn = !!btn && getComputedStyle(btn).display !== 'none' && btn.getAttribute('aria-expanded') === 'false';
+      // waited for, not timed: the drawer slides in, and a loaded runner can take longer than 300 ms (CI 112)
+      const until = async f => { for (let i = 0; i < 40 && !f(); i++) await new Promise(res => setTimeout(res, 50)); return f(); };
+      const isOpen = () => vis() && document.getElementById('game').classList.contains('lk-story-open') && document.querySelector('#topbar [data-a="storyDrawer"]').getAttribute('aria-expanded') === 'true';
       btn.click(); await new Promise(res => setTimeout(res, 300));
-      out.open = vis() && document.getElementById('game').classList.contains('lk-story-open') && document.querySelector('#topbar [data-a="storyDrawer"]').getAttribute('aria-expanded') === 'true';
+      out.open = await until(isOpen);
       out.openShare = +share().toFixed(2);
       UI.render(); await new Promise(res => setTimeout(res, 60));
       out.keeps = vis();                           // a full draw keeps it open
       document.querySelector('#topbar [data-a="storyDrawer"]').click(); await new Promise(res => setTimeout(res, 300));
-      out.closedAgain = !vis();
+      out.closedAgain = await until(() => !vis());
       out.feed = document.querySelectorAll('#tabbody .sd-feed .ll').length;
       // new lines: a neutral dot on the button, never the red one
       A.log('A word in the street.'); UI.render(); await new Promise(res => setTimeout(res, 60));
