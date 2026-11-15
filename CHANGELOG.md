@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.8 (2026-11-15 15:36 ET) · Plain names, and a flavour for every realm
+
 - **Plain names, a flavour for every realm.** People are named from one large pool of ordinary English names, and each realm leans
   its own way (Aldmark English, Northreach Norse, Greyhaven German, Solenne French, Varenna Italian), while the far and
   non-human peoples keep names of their own. Ports and border towns hold people from the realm across the border, no town has
