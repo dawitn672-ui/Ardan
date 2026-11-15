@@ -57,7 +57,7 @@
   // ---- the activities no life like his is offered ---------------------------------------------------------------------
   // [keys, when, reason]. The reasons are words the Life page already hides (23-ui-e's list) so a hidden activity is never
   // shown as a refusal. A thing refused for today only (a thin purse, "once a year") is A.canAct's.
-  const MINOR_NO = ['crime_pick', 'crime_burgle', 'crime_rob', 'crime_smuggle', 'gamble', 'moneylend', 'trade_venture', 'plot_throne', 'seize_land', 'found_company', 'merc', 'duel', 'tournament'];
+  const MINOR_NO = ['crime_pick', 'crime_burgle', 'crime_rob', 'crime_smuggle', 'gamble', 'moneylend', 'trade_venture', 'plot_throne', 'seize_land', 'found_company', 'merc'];   // (a duel and a tournament are open from 15, as the activities say: a squire's)
   SC.ACT_RULES = [
     [null, s => s.stage === 'infant', 'Too young'],                                    // an infant does nothing: he is cared for
     [MINOR_NO, s => s.minor, 'Too young'],
