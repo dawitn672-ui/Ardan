@@ -611,6 +611,15 @@ UI.ensureWorld = function () {
   }
 };
 
+// C7 (D-058): the names the character screen offers (and "Random" draws from) are the realm's own: its lean and its people's
+// accent, then names spread across the rest of its view, in order. The old lists of LORE.cultures are the fallback of a build
+// without 999981-names-and-cultures.
+UI.crNameList = function (cult, sex, realm, n) {
+  if (A.NAMES && A.NAMES.ok()) return A.NAMES.suggest(cult, sex, realm, n || 60);
+  const c = LORE.cultures[cult];
+  return sex === "F" ? c.f : c.m;
+};
+
 UI.crCult = function () {
   const c = UI.cr;
   let cult = A.cultureFor(c.race, c.realm);
@@ -961,7 +970,7 @@ UI.crStepBirth = function () {
 UI.crStepBody = function () {
   const c = UI.cr,
     cult = LORE.cultures[UI.crCult()],
-    names = c.sex === "F" ? cult.f : cult.m,
+    names = UI.crNameList(UI.crCult(), c.sex, c.realm),
     R2 = GD.RACES[c.race];
   let h = `<div class="field"><label>Sex</label><div class="row"><button class="${c.sex === "M" ? "primary" : ""}" data-a="crSet" data-v="sex:M">Male</button><button class="${c.sex === "F" ? "primary" : ""}" data-a="crSet" data-v="sex:F">Female</button></div></div>`;
   h += `<div class="field"><label>Given name</label><div class="row"><input data-c="crName" value="${UI.esc(c.given)}" placeholder="Type a name, or pick one" maxlength="24" style="flex:1" aria-label="Given name"><select data-c="crNamePick" aria-label="Pick a name"><option value="">Names of the ${UI.esc(cult.name)}…</option>${names.map(n => `<option>${UI.esc(n)}</option>`).join("")}</select><button data-a="crRandName">Random</button></div><div class="small muted" style="margin-top:4px">Your family name is not yours to choose. ${UI.esc((GD.NAMING[UI.crCult()] || {}).note || "")}</div></div>`;
@@ -1152,7 +1161,7 @@ UI.crRandomize = function () {
   UI.cr = c;
   UI.crFix();
   const cult = LORE.cultures[UI.crCult()];
-  c.given = A.pick(c.sex === "F" ? cult.f : cult.m);
+  c.given = A.pick(UI.crNameList(UI.crCult(), c.sex, c.realm, 400));
   c.app.hair = A.ri(0, 8);
   c.app.eye = A.ri(0, 7);
   c.app.hstyle = A.pick(GD.HAIRSTYLES);
@@ -1861,7 +1870,7 @@ UI.A = {
   },
   crRandName() {
     const cult = LORE.cultures[UI.crCult()];
-    UI.cr.given = A.pick(UI.cr.sex === "F" ? cult.f : cult.m);
+    UI.cr.given = A.pick(UI.crNameList(UI.crCult(), UI.cr.sex, UI.cr.realm, 400));
     UI.render();
   },
   startLife() {

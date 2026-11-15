@@ -96,7 +96,7 @@ function walk(dir, f) {
 const log = [];
 walk(path.join(root, 'src'), p => {
   const rel = path.relative(root, p);
-  if (/^src\/world\/99999-v2-names\//.test(rel) || /99990-v2-engine/.test(rel)) return;
+  if (/^src\/world\/(99999-v2-names|999981-names-and-cultures)\//.test(rel) || /99990-v2-engine/.test(rel)) return; // (the names feature holds the old names on purpose: its migration table and its test)
   let n = 0;
   if (/\.json$/.test(p)) n = jsonFile(p);
   else if (/\.(js|mjs)$/.test(p)) n = jsFile(p);

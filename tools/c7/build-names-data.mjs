@@ -56,7 +56,7 @@ const LEAN = {
 // first match wins: the earlier pool keeps a name the later one also holds
 const PRIORITY = ['steppe', 'desert', 'south', 'giant', 'dwarf', 'elf-wood', 'elf-sea', 'orc-horde', 'orc-tusk'];
 // (a name that is also a realm's old name stays out of the pools, so the page holds none of them: tests nmOldNames)
-const BAN = /^(Highland|Blackreef|Horde|Tusk|Khanate)$/i;
+const BAN = /^(Highland|Blackreef|Horde|Tusk|Khanate|Miles?)$/i; // ("Miles": a test greps the data for the unit, tests/suites/x3.test.mjs x3OneUnit)
 const ok = s => /^[A-Za-z][A-Za-z'-]{1,23}$/.test(s) && !BAN.test(s);
 const lc = s => s.toLowerCase();
 const words = s => s.split(/\s+/).filter(Boolean);

@@ -49,6 +49,15 @@
   };
   // the lists a culture (and a realm of it) draws from, for a pure pick by hash
   N.sees = (cult, realm) => V.sees(cult, realm);
+  // names to offer (the character screen, naming a child): the realm's lean and its people's accent, then names spread evenly
+  // across the rest of its view, all in alphabetical order; pure
+  N.suggest = function (cult, sex, realm, n) {
+    const v = V.sees(cult, realm), L = sex === 'F' ? v.female : v.male, k = sex === 'F' ? 'female' : 'male';
+    const lean = (DATA.lean && DATA.lean[realm] && DATA.lean[realm][k]) || [], acc = ((DATA.cultures[v.id] || {}).accent || {})[k] || [];
+    const out = [...new Set([...lean, ...acc])].filter(x => x), step = Math.max(1, Math.floor(L.length / Math.max(1, n - out.length)));
+    for (let i = 0; i < L.length && out.length < n; i += step) if (!out.includes(L[i])) out.push(L[i]);
+    return out.slice(0, Math.max(n, lean.length + acc.length)).sort();
+  };
   N.place = function (cult, o) {
     if (!N.ok()) return null;
     return V.placeName(N.rng, cult, { realm: o && o.realm });
@@ -104,7 +113,7 @@
     // they come from the realm's trade partners (a neighbour is a partner, so a port on a border still counts both ways)
     const nb = N.neighbours(q), pool = [];
     for (const o of Object.keys(nb)) for (let i = 0; i < nb[o]; i++) pool.push(o);
-    if (!pool.length) for (const o of N.partners(home)) pool.push(o);
+    if (!pool.length) for (const o of N.partners(home)) if (alive(o)) pool.push(o);
     if (!pool.length) return { realm: home, cult: A.cultureFor(race, home), home: true };
     const r2 = A.pick(pool);
     return { realm: r2, cult: A.cultureFor(race, r2), home: false };

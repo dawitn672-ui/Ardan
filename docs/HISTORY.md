@@ -847,3 +847,19 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   worlds, 5 of 20 seeds).
 - **Undo:** revert the merge of `c6-ci119` and the `tensionsRun` commit.
 
+
+### H-050 · 2026-11-15 ET · C7: names are data, flavour is a weighting, people from the neighbour, no twins, realm names in the source (D-058)
+- **Game:** new people are named from one common English pool (a hashed subset per culture and realm, a lean per realm, an accent per
+  culture) or, for the far and non-human peoples, their own pools (`data/names.json`, `src/world/engine/names.js`, `A.NAMES` in
+  `src/world/999981-names-and-cultures`); the parish's people are of their realm, a port, a market town and a border province draw some
+  from a trade partner or the neighbour; a monthly pass leaves no full name twice in a town and no given name twice among siblings
+  and first cousins; fiefs are named from their realm's culture; the character screen offers the realm's names. Four realms are named
+  for their governments (Khanate of Ulun, League of Brannoch, Free Port of Corvasse, Ughrak Clans); the eight Nov 5 names are written
+  into the lore and 906 strings of the source (`tools/c7/rename-realms.mjs`) and the renaming hack (`99999-v2-names`) is deleted
+  into `archive/c7-realm-renaming-hack/` (last built at `b87c908`); the old syllable namer is in `archive/c7-syllable-names/`.
+- **Measured:** census of 35 realms (`nmCensus`): 69 ports and market towns draw 17-35% (mean 27%) from trade partners, 185 border
+  provinces 20-40% (mean 30%) from the neighbour. `nmTwins`: the build before had 21 twins in a town in 3 worlds; this one none in
+  12 worlds x 30 years (see the run below). `nmOldNames`: 19.6 MB of scripts, lore, events and a new game hold none of the old names.
+  `identity-probe` against the build before: 5004 events, 0 audience classes differ.
+- **Old saves:** keep every person's name and the prose of their log; the eight realms are renamed by id on load.
+- **Undo:** revert the branch's commits, newest first; `git show b87c908:src/world/99999-v2-names` has the hack.

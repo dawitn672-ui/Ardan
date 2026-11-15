@@ -5,6 +5,12 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Plain names, a flavour for every realm.** People are named from one large pool of ordinary English names, and each realm leans
+  its own way (Aldmark English, Northreach Norse, Greyhaven German, Solenne French, Varenna Italian), while the far and
+  non-human peoples keep names of their own. Ports and border towns hold people from the realm across the border, no town has
+  two of one name, and brothers, sisters and cousins no longer share a name.
+- **Four realms are named for what they are:** the Khanate of Ulun, the League of Brannoch, the Free Port of Corvasse and the
+  Ughrak Clans. Fiefs are named in their own people's language.
 - **You are born knowing your household, not the whole clan.** A child knows its parents, its brothers and sisters, and a
   grandparent who lives under the same roof; a noble child also has a nurse, a maid, a guard knight and, from six, a tutor.
   Uncles, aunts and cousins come to a feast or a burial and you meet them then, and every person you know says how and
