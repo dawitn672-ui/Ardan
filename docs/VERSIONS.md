@@ -47,6 +47,7 @@ Tag a commit whose CI is green, or the end of a step the owner asked for. Say in
 | v2.1.0-alpha.3 | 2026-11-13 | `2f9a031` | X1: the release is readable source; all 203 patches baked in; proven the same program |
 | v2.1.0-alpha.4 | 2026-11-13 | `f9c349f` | C8b: the approved character art in the game, face and build maker; B5 part 1: a calmer screen |
 | v2.1.0-alpha.5 | 2026-11-14 | `3801932` | v2.1 foundations: one holder per post (A2 stage 1), profile page, bodies that make sense (C9), honest cards (X3), no war score and war at your rank (W0, D10), renamed legendaries; CI 108-111 green |
+| v2.1.0-alpha.6 | 2026-11-15 | `f87617d` | A2 stage 2 (the optional Marshal, every command one holder), X7 part 1 (phone start about twice as fast), B5 part 2 (screens fit the life: UI.scope, one goal list), X2 (named stages); CI 118 green |
 <!-- versions:end -->
 
 v1.0.0 is the release file as uploaded; from v1.1.0 on, every version's `index.html` is built from that commit's

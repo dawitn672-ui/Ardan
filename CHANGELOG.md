@@ -5,6 +5,8 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+## v2.1.0-alpha.6 (2026-11-15 04:20 ET) · Screens that fit the life, a faster phone start, one holder for every command
+
 - **Screens know who you are.** A newborn is not offered a physician or told how he looks; a child of nine has no crimes, no
   plots, no Arms page and no quarrel to pick with his father; a squire is not told to find work or to rob travellers; a
   Chancellor is not offered the army or the dice; a captain in garrison has no War Room. What a life can never do is not
