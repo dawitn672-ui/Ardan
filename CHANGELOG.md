@@ -5,6 +5,13 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Screens know who you are.** A newborn is not offered a physician or told how he looks; a child of nine has no crimes, no
+  plots, no Arms page and no quarrel to pick with his father; a squire is not told to find work or to rob travellers; a
+  Chancellor is not offered the army or the dice; a captain in garrison has no War Room. What a life can never do is not
+  listed at all, instead of a button that says "Not in your position".
+- **One list of what to do next.** What now, your ambition, the chapter's aim and what is coming up (a loan due, a custom,
+  a feast) are one list in one order, five lines at most, instead of four cards that said the same thing.
+
 - **A faster start, on a phone most of all.** The title is ready for "Begin a new life" in about half the time, and the
   new world is made while you choose who to be, so Begin opens your first year at once instead of after several seconds.
 

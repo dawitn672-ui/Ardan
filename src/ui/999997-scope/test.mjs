@@ -139,6 +139,33 @@ export default {
     return { ok, detail: JSON.stringify(r) };
   },
 
+  // B5 part 1's tablet claim, held: on a coarse pointer at 768 and 1024 px the time buttons are 44 px targets in view and no page
+  // scrolls sideways (the page keeps the desktop layout there; the phone shell is D-055's "not done")
+  async b5Tablet(pg, errs, { browser, file }) {
+    const { pathToFileURL } = await import('node:url');
+    const out = [];
+    for (const [w, h] of [[768, 1024], [1024, 768]]) {
+      const ctx = await browser.newContext({ viewport: { width: w, height: h }, isMobile: true, hasTouch: true });
+      const p = await ctx.newPage();
+      try {
+        await p.goto(pathToFileURL(file).href);
+        await p.waitForFunction(() => window.ARDAN_CONTENT_READY === true, null, { timeout: 120000 });
+        out.push(await p.evaluate(async () => {
+          A.newGame({ seed: 8300, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 30 }); UI.screen = 'game'; UI.ov = null; A.S.queue = []; UI.set.hints = false;
+          const res = { w: innerWidth, btn: null, hs: 0, pages: [] };
+          for (const t of ['life', 'people', 'realm', 'holdings', 'profile']) {
+            UI.tab = t; UI.render(); await new Promise(r => setTimeout(r, 80));
+            res.hs = Math.max(res.hs, document.documentElement.scrollWidth - innerWidth);
+            if (!res.btn) { const b = [...document.querySelectorAll('button')].find(x => /Next month/i.test(x.textContent)); const r = b && b.getBoundingClientRect(); if (r) res.btn = [Math.round(r.width), Math.round(r.height), r.top >= 0 && r.bottom <= innerHeight]; }
+          }
+          return res;
+        }));
+      } finally { await ctx.close(); }
+    }
+    const bad = out.filter(r => !r.btn || r.btn[0] < 44 || r.btn[1] < 44 || !r.btn[2] || r.hs > 0);
+    return { ok: !bad.length, detail: out.map(r => `${r.w}px: Next month ${r.btn ? r.btn.slice(0, 2).join('x') : 'missing'}, sideways +${r.hs}`).join('; ') };
+  },
+
   // the six lives draw every page, overlay and card without a forbidden string, and show what they must
   async scopeSixLives(pg) {
     const bad = [], seen = [];

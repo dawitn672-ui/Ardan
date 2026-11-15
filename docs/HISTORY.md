@@ -735,3 +735,24 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   29-starting-stories, 32-legend-and-master-caps, 48-event-fight-rules, 58-event-cut, 84-top-bar, 86-title-screen-in-view,
   00-security, 77-offline-fonts: all pass; `node --test tests/v2`, `tools/build-v2.mjs --check`.
 - **Undo:** revert the branch's commits, newest first. Saves are untouched (no state field added).
+
+### H-044 · 2026-11-15 ET · B5 part 2: one UI.scope, the six-life draw test, one goal stack (D-055)
+- **Commits** (branch `b5-part2`, by a Sonnet 5.5 agent): `254c2cd` (UI.scope and its routes, the six-life test), then the goal
+  stack, the tablet test and the docs after it.
+- **UI.scope(pc)** (`src/ui/999997-scope`): one pure reader of age, class, posts (`A.POSTS`), war rank (`A.V2W`) and household.
+  `sees`, `page`, `act`, `social`. `A.canAct`, `A.interactOptions` and `A.whatNow` take it as their last wrapper; the bar's
+  places, the Life, Path and profile pages and the rail read it. What no life like his is offered is not listed, instead of a
+  disabled line with a reason. An infant has no activities, no looks line, no proficiency list and one action on a card; a
+  minor has no crime, dice, plots, duels or courting; a dependent does not pick a fight with, insult, duel, murder or plot
+  against a parent; nobody duels a child; "Find work" is not told to a squire, a lord or a councillor.
+- **The six-life test** (`scopeSixLives`): a newborn, a child of 9, a squire of 16, a File-Leader at war, a captain in garrison
+  and a councillor draw 14 pages at 1366 and 420 px, five overlays and three cards each; the forbidden strings are data per life
+  (`LIVES` in the test). On the build before this step: 41 leaks; after: none.
+- **One goal stack** (`src/ui/999998-goal-stack`): What now, the ambition, the chapter's next aim and Coming up's dated items,
+  by score, five at most, as the Life page's one card; the chapter's card folded under it; the Coming up strip and the ambition
+  card are no longer drawn on their own (their data and rules are unchanged). `UI.GOALS.source` adds a source.
+- **Edits outside the two folders:** the release's rail (Looks), Life page's hidden reasons, plan aims, Path rows, "Get to know"
+  and What now's "Find work"; the profile (looks, skills); `996-coming-up` (the strip yields to the stack) and its tests.
+- **Tablet:** `b5Tablet` holds part 1's 44 px touch targets and no sideways scroll at 768 and 1024 px. The phone shell on a
+  tablet is not done (D-055).
+- **Undo:** revert the branch's commits, newest first; saves are untouched (no state field added).

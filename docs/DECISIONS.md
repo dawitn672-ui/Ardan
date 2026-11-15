@@ -797,3 +797,40 @@ setup took 0.8 s (0.6 s of it the fight ladder tagging every choice), the script
 **Not done:** each Next month press on a phone (1.2 to 1.5 s at 4x) is half the engine's month (the war sim's
 `A.wsDay` at year 0), left to D12b/X5 as D-023 says; no CI budget for phone load (CDP throttling is wall time on a
 shared runner that varies by a quarter, and a worker cannot be throttled: `phone-load.mjs` scales its time instead).
+
+### D-055 · B5 part 2: one `UI.scope(pc)`, hidden is not refused; one goal stack (2026-11-15 ET; CRITIQUE U4, U20; carries out the owner's "one holder per post" into what a screen offers)
+**Chosen:**
+1. **One reader.** `UI.scope(pc)` (`src/ui/999997-scope`) is a pure function of state (age and stage, class, the posts from
+   `A.POSTS.held`, the war rank and deployment from `A.V2W`, Arms from `A.V2T.armsShown`, the household) that answers four
+   questions: `sees(thing)`, `page(key)`, `act(key)`, `social(target, options)`. D10's war rules stay in 99997-v2-war and
+   99992-v2-time; the scope calls them (`s.war`) and does not copy them. The class gates of `A.canAct` (`GD.ACT_GATE`) and
+   49-body-mind's stages stay where they are and are read through `A.canAct`; the scope adds what no gate said.
+2. **Hidden is not refused.** An activity, an aim, a road or a page that no life like his is ever offered is not listed (it
+   used to be a disabled line with a reason: "Enlist in Aldmark's army: Not in your position", "Govern the realm: Only a ruler
+   governs", "Plan your freedom: You are free."). What is refused only today (a thin purse, "once a year") stays `A.canAct`'s and
+   stays listed. The reasons that mean "never" are one list, `UI.SCOPE.HIDDEN` (it was the Life page's own).
+3. **What the scope decides** (`UI.SCOPE.SEES`, `PAGES`, `ACT_RULES`, all data):
+   - an infant (under three, scaled to his people) does nothing: no activities, no "See a physician", no looks line, no
+     proficiency list, no "Get to know", and his card offers "Spend time together" only;
+   - a minor has no crime, dice, lending, trade ventures, plots, duels or free companies; no courting, plotting or duel on a
+     card; Decisions, Path (before ten), Holdings (before twelve, with no purse), Realm and Arms (before fourteen) are not in his
+     places, and a page opened by hand says so in one line;
+   - a dependent (a minor, or a youth under his parents' roof: to adult plus 30%) does not pick a fight with, insult, duel,
+     murder or plot against a parent or grandparent; nobody picks a fight or duels with a child;
+   - "Find work" is not told to a squire, a lord, a councillor or anyone with a post; a squire (a youth of class four or more)
+     is no footpad; a councillor or a ruler does not throw dice; a sworn soldier or a councillor does not enrol in a school;
+     a soldier below captain does not plot for a throne; none funds a trade venture while the host is in the field.
+4. **One goal stack** (`src/ui/999998-goal-stack`): each system keeps its data; `UI.GOALS.stack(pc)` reads What now (its own
+   scores), the ambition (61), the chapter's next aim (52) and Coming up's dated items (a promise 72/88, a custom 68/80, a
+   holy day 60, a feast 20) and orders them by score, five at most. It is the Life page's one goals card (`UI.whatNowCard`,
+   class `whatnow` kept so the hints and folds find it); the chapter's own card, with its choice of a third aim, is folded
+   under it; the Coming up strip and the ambition card are no longer drawn on their own. `UI.GOALS.source` adds a source.
+**Why:** the owner's fourth complaint (clutter) and CRITIQUE U4, U20: gates written where each bug was found, so each new page
+forgot them; five goal systems competing for the top of one page.
+**Held by:** `scopeShape`, `scopeActs`, `scopeSixLives` (a newborn, a child of 9, a squire of 16, a File-Leader at war, a captain
+in garrison, a councillor draw every page at two widths, five overlays and three cards with none of the strings each life's
+data forbids; 41 leaks on the build before), `gsOneCard`, `gsSources`; `b5Budget` unchanged.
+**Not done:** the tablet shell (CRITIQUE U13): at 768 to 1024 px on a coarse pointer the top-bar buttons are 44 px (part 1) but
+the page keeps the desktop layout, because 23 `min-width:761px` blocks and 40 `max-width:760px` blocks (and `UI.isPhone`) would all
+have to move together; `U6`/`U10`/`U12`/`U17`/`U21` and the 200% text test remain as listed in H-020. The scope reads the
+card's Path next step only through What now and the chapter's aim.

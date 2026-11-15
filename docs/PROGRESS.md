@@ -33,7 +33,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **A2 stage 1** · One registry of posts; one holder per post; Marshal empty in peace (D-017, D-031); coherency to 0 · `1e914c0` · 2026-11-13 18:25 ET
 - [x] **A2 stage 2** · The Marshal's seat optional, a ruler may fill it in peace (D-049); battalion and company slots, order masters, staff, companies, house heads and land titles as posts; route the adopted writers
 - [x] **B5 part 1** · Declutter the shell: story drawer, folds, six activities, info buttons out of the flow; first view 479 → 171 words · `66291b1` · 2026-11-13 12:13 ET
-- [ ] **B5 part 2** · UI.scope, the six-life draw test, one goal stack, tablet shell
+- [x] **B5 part 2** · UI.scope (`src/ui/999997-scope`), the six-life draw test, one goal stack (`src/ui/999998-goal-stack`) (D-055); the tablet's phone shell is not done (D-055 "not done"), its 44 px touch targets are held by `b5Tablet`
 - [x] **C8b** · The gate 2 figure library draws every portrait; face and build maker at creation; face codes · `9a2cbeb` · 2026-11-13 13:02 ET
 - [x] **P** · Profile tab (D-038, `src/ui/999996-profile-tab`): a game-like page of your character, card and figure, titles, stats, skills, styles, renown, gear (owner order 33; after B5)
 - [x] **C9** · Bodies that make sense: measured stat words, no body units, skill baselines, longer lives, honest odds, Swordsmanship · `cd2e54d` · 2026-11-13 21:17 ET
