@@ -778,7 +778,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   tablet is not done (D-055).
 - **Undo:** revert the branch's commits, newest first; saves are untouched (no state field added).
 
-### H-047 · 2026-11-15 ET · X2: named stages for the seven hot functions; the muted diplomacy path held (D-056)
+### H-047 · 2026-11-15 03:46 ET · X2: named stages for the seven hot functions; the muted diplomacy path held (D-056)
 - **Commits** (branch `x2-named-stages`, by an Opus 5.5 agent): `420ea98` (the stage runner `src/core/01-stages`, its
   manifest, every wrapper of the seven converted, the journal's runtime wrap through `A.addStage`), `23f1220`
   (`tools/lint-stages.mjs`, `tests/stages-baseline.json`, wired into `tools/check.mjs`), `40bdff6` (`A.V2DIP.MUTED` and the
