@@ -287,7 +287,7 @@ export default {
           if (!ok) { problems.push(`${vtag} -> ${ev}: the second step is not eligible years later`); continue; }
           A.S.queue = []; const q = { type: 'event', ev }; A.S.queue.unshift(q);
           const v = A.eventView(q);
-          if (v.skip) problems.push(`${vtag} -> ${ev}: the second step skips itself (lost its person?)`);
+          if (v.skip) { if (!(q.ctx && q.ctx.noKin)) problems.push(`${vtag} -> ${ev}: the second step skips itself (lost its person?)`); }   // C6: no aunt in the tree, no scene
           else if (RAW.test(v.text)) problems.push(`${vtag} -> ${ev}: raw token`);
           else stats.chained++;
         }
@@ -336,7 +336,7 @@ export default {
           A.S.queue = []; const q0 = { type: 'event', ev: e.id }; A.S.queue.unshift(q0);
           let v0;
           try { v0 = A.eventView(q0); } catch (err) { problems.push(`${vtag}: view throws ${err.message}`); continue; }
-          if (v0.skip) { problems.push(`${vtag}: skipped by the engine`); continue; }
+          if (v0.skip) { if (!(q0.ctx && q0.ctx.noKin)) problems.push(`${vtag}: skipped by the engine`); continue; }   // C6: no relative in the tree drops the scene by design
           const all = [v0.title, v0.text, ...v0.choices.map(c => c.t)].join(' | ');
           if (RAW.test(all)) problems.push(`${vtag}: raw token ${all.match(RAW)[0]}`);
           if (BAD.test(all)) problems.push(`${vtag}: bad text ${all.match(BAD)[0]}`);

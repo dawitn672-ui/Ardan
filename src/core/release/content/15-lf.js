@@ -3293,7 +3293,7 @@
         cond: p=>C.adult(p)&&C.faith(p,"REL-09"),
         cool: 5,
         title: "A name not spoken fades",
-        setup: (p,ctx)=>{const g=A.KIN?A.KIN.find(p,["grandparent"],{sex:"F",dead:!0})||A.KIN.ancestor(p,"F"):null;if(A.KIN&&!g)throw Error("no grandmother");ctx.n1=g?g.given:A.givenName(p.cult,"F"),ctx.n2=A.givenName(p.cult,"F"),ctx.n3=A.givenName(p.cult,"M")},
+        setup: (p,ctx)=>{const g=A.KIN?A.KIN.find(p,["grandparent"],{sex:"F",dead:!0})||A.KIN.ancestor(p,"F"):null;if(A.KIN&&!g)throw A.KIN.none();ctx.n1=g?g.given:A.givenName(p.cult,"F"),ctx.n2=A.givenName(p.cult,"F"),ctx.n3=A.givenName(p.cult,"M")},
         text: 'Before the market, you pour a little milk on the floor of the house and speak the names: your grandmother {n1}, her mother {n2}, and {n3} before them. "Are you there? I am here." Today you cannot remember the fourth name.',
         choices: [
           {

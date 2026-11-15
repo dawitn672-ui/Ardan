@@ -73,10 +73,11 @@
     return A.pick(known.length ? known : l);
   };
   K.NONE = 'no such kin in the tree';
+  K.none = () => Object.assign(new Error(K.NONE), { noKin: true });   // A.eventView marks the card ctx.noKin: dropped by design
   // for a scene's setup: the relative, met now if need be; throws when the tree has none (the card drops)
   K.take = function (p, types, o) {
     const q = K.find(p, types, o);
-    if (!q) throw new Error(K.NONE);
+    if (!q) throw K.none();
     if (!p.rel[q.id]) H.meetKin(p, q, (A.MEET && (A.MEET.why || A.MEET.ev)) || 'scene', o && o.op);
     return q;
   };
@@ -107,7 +108,7 @@
     const same = alive.filter(q => !o.sex || q.sex === o.sex);
     if (same.length) return same[0];
     const slot = (o.sex || 'M') === 'F' ? 'F' : 'M';
-    if (par.length >= 2 || par.some(q => q.sex === slot)) { if (alive.length) return alive[0]; throw new Error(K.NONE); }
+    if (par.length >= 2 || par.some(q => q.sex === slot)) { if (alive.length) return alive[0]; throw K.none(); }
     const q = make();
     if (q.sex !== slot && F.setSex) F.setSex(q, slot);
     const RR = GD.RACES[sp.race] || GD.RACES.human;

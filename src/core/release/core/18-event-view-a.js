@@ -44,6 +44,8 @@ A.eventView = function (q) {
       e.setup(pc, q.ctx);
     } catch (err) {
       q.ctx.skip = 1;
+      // [C6, D-057] a scene that wanted a relative the tree does not have (A.KIN.take) drops by design
+      if (err && err.noKin) q.ctx.noKin = 1;
       if (A.S.debug) console.error("setup", e.id, err);
     }
   // [X1 baked patch core/03-engine-fixes ENG-EVENT-TEXT-GUARD] eventView caught a throwing setup (the event is
