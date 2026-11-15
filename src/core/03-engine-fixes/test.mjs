@@ -78,7 +78,11 @@ export default {
         ticked,
         fresh: causeOf({ lastHurt: 'the Hell Boar', _lh: 'lung fever', _lhDay: old, _hTick: 80 }),
         again: causeOf({ lastHurt: 'the Hell Boar', _lh: 'the Hell Boar', _lhDay: old, _hTick: 80 }),
-        stale: causeOf({ lastHurt: 'a wound gone bad', _lh: 'a wound gone bad', _lhDay: old, _hTick: 0 }),
+        // the stale case is settled by A.naturalCause too, whose adult list holds "a wound gone bad" itself (1 in 8): one draw
+        // landed on it when C6 moved the dice (CI 119). So it is drawn 40 times, like the nameless case below: the old
+        // wound must not be the cause every time, and the first other cause is shown.
+        stale: (() => { const out = []; for (let i = 0; i < 40; i++) out.push(causeOf({ lastHurt: 'a wound gone bad', _lh: 'a wound gone bad', _lhDay: old, _hTick: 0 }));
+          return out.filter(c => c === 'a wound gone bad').length < 20 ? out.find(c => c && c !== 'a wound gone bad') : 'a wound gone bad'; })(),
         // the nameless case is settled by A.naturalCause, a draw that can itself land on "lung fever" (1 in 5 for a
         // teen, 1 in 8 for an adult): one draw tipped over when 9996-polity shifted the dice (seed 21: "lung fever").
         // So it is drawn 40 times: the old fever must not be the cause every time, and the first draw is shown.

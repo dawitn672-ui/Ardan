@@ -452,22 +452,28 @@ POL.pay = function (r, o) {
   return Math.round(D.pay < 1 ? Math.min(D.cap || 1e9, Math.max(40, D.pay * (r.income || 0) / n)) : D.pay);
 };
 // fill the realm's offices: new seats are made, lost seats dropped, vacancies filled from the pool
-POL.fillOffices = function (r) {
+// (a fill under way: an office it empties by moving its holder is filled the next day, POL.refillNow; CI 119)
+POL.fillOffices = function (r, onlyVacant) {
+  POL._fillDepth = (POL._fillDepth || 0) + 1;
+  try { return fillOfficesOf(r, onlyVacant); } finally { POL._fillDepth--; }
+};
+// onlyVacant: the seats stay as they are (a seat lost or new waits for the year's fill); only an empty office is filled
+function fillOfficesOf(r, onlyVacant) {
   const pol = POL.init(r); if (!pol) return 0;
   const want = POL.seatsOf(r), keep = new Map(pol.off.map(o => [o.id, o])), next = [];
   let pool = null, n = 0;
   const pc = A.pc();
-  for (const [k, at] of want) {
+  if (!onlyVacant) for (const [k, at] of want) {
     const id = offId(r, k, at);
     let o = keep.get(id);
     if (!o) o = { id, k, at, pid: null, by: null, since: A.S.year, term: GD.POL_OFFICES[k].term ? A.S.year + GD.POL_OFFICES[k].term : 0, pay: 0 };
     next.push(o);
   }
-  pol.off = next;
+  if (!onlyVacant) pol.off = next;
   for (const o of pol.off) {
     const p = A.P(o.pid);
     const ok = live(p) && p.realm === r.id && !p.ruler && !p.prison && (p.id === A.S.pc || !Object.values(r.council || {}).includes(p.id));
-    const due = o.term && A.S.year >= o.term && p && p.id !== A.S.pc;
+    const due = !onlyVacant && o.term && A.S.year >= o.term && p && p.id !== A.S.pc;
     if (ok && !due) { o.pay = POL.pay(r, o); continue; }
     if (o.pid === A.S.pc && pc && ok) continue;
     pool = pool || POL.pool(r);
@@ -702,6 +708,26 @@ A.onMonth.push(function () {
     if (!POL.on || !A.MT || !A.MT.on || !A.MT.on()) return;
     for (const r of POL.realms()) if (r.pol && !r.pol.mt) { r.pol.mt = 1; POL.fillOffices(r); }
   } catch (e) { console.error('[po] towns', e); }
+});
+// an office left by a promotion or a death (999990-posts' vacate) is filled the next day, from the realm's own pool, not at
+// the next year's fill (CI 119). The realms are noted here and filled on the day's tick, outside the appointment that
+// emptied the office. Kept in the state (A.S.polRefill, a list of realm ids; an old save has none), so a save between the
+// two days loads to the same world.
+POL.refillSoon = rid => { const S = A.S; if (!S) return; S.polRefill = S.polRefill || []; if (!S.polRefill.includes(rid)) S.polRefill.push(rid); };
+// now: an office a promotion emptied (999990-posts calls it when the appointment is done)
+POL.refillNow = rid => {
+  if (POL._refilling || POL._fillDepth > 0) return POL.refillSoon(rid);   // a fill that empties another office: that one the next day
+  POL._refilling = true;
+  try { const r = A.realm(rid); if (POL.on && r && r.alive !== false && r.pol) POL.fillOffices(r, true); } catch (e) { console.error('[po] refill', e); }
+  finally { POL._refilling = false; }
+};
+A.onDay = A.onDay || [];
+A.onDay.push(function () {
+  const S = A.S;
+  if (!S || !S.polRefill || !S.polRefill.length) return;
+  const ids = S.polRefill; S.polRefill = [];
+  try { if (!POL.on) return; for (const id of ids) { const r = A.realm(id); if (r && r.alive !== false && r.pol) POL.fillOffices(r, true); } }
+  catch (e) { console.error('[po] refill', e); }
 });
 // a new world: every realm's Polity sits from the first day (offices named, contracts sworn)
 A.on && A.on('worldInit', function () {
