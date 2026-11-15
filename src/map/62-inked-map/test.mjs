@@ -206,7 +206,11 @@ export default {
       const pc = A.pc(), enemy = A.neighbors('POL-01')[0];
       A.startWar('POL-01', enemy, null, 'conquest'); A.enlist(pc); A._idIdx = null; A.advance(20); A._idIdx = null;
       // on until a division the player can see is on the march (at most three more months)
-      const seenMarch = () => { const sn = A.V2W && A.V2W.seen ? A.V2W.seen() : null; return A.allDivs().some(x => x.path && x.path.length && A.S.prov[x.loc] && (!sn || sn.has(x.r))); };
+      // (and within the reach of his rank, D10's A.V2W.scope: a soldier sees the province he stands in and the next. Since
+      // A2 stage 2 seeds Aldmark's Marshal, a cautious general, the host marches weeks later and only the enemy's far
+      // divisions march at first, out of his sight)
+      const inSight = x => { const sn = A.V2W && A.V2W.seen ? A.V2W.seen() : null, sc = A.V2W && A.V2W.scope ? A.V2W.scope() : null; return (!sn || sn.has(x.r)) && (!sc || sc.has(x.loc) || (x.path || []).slice(0, 3).some(id => sc.has(id))); };
+      const seenMarch = () => A.allDivs().some(x => x.path && x.path.length && A.S.prov[x.loc] && inSight(x));
       for (let i = 0; i < 90 && !seenMarch() && A.pc().alive; i++) { A.S.queue = []; A.advance(1); A._idIdx = null; }
       A.S.queue = []; UI.screen = 'game'; UI.set.hints = false; UI.tab = 'world'; UI.worldView = 'map'; UI.set.inkMap = true; UI.set.banners = true;
       const IM = UI.INKMAP; IM.budgetMs = 1e9; IM.reset(); UI.render();
@@ -221,7 +225,7 @@ export default {
       // the arrows are drawn only for the divisions the player can see (99997-v2-war's fog: both sides of his wars), so
       // those are the ones counted, and the near view is on one of them when one marches (seed 621's two marching
       // divisions after D-021's day-0 council fix were a far realm's, rightly unseen, and not near his own)
-      const seen = A.V2W && A.V2W.seen ? A.V2W.seen() : null, marching = A.allDivs().filter(x => x.path && x.path.length && A.S.prov[x.loc] && (!seen || seen.has(x.r)));
+      const marching = A.allDivs().filter(x => x.path && x.path.length && A.S.prov[x.loc] && inSight(x));
       const d = marching[0] || A.divById(A.pc().mil.div), L = A.S.prov[d.loc]; IM.arrows = 0; const w = 7000 / 4; UI.gm.view = UI.wrClampView({ x0: L.sx - w / 2, y0: L.sy - w / 3, w, h: 0 }); UI.gmDraw(); out.arrowsNear = IM.arrows;
       out.paths = marching.length;
       out.pure = JSON.stringify(A.S) === s0 && A.rngState === r0;

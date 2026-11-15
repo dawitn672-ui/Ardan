@@ -448,7 +448,8 @@ export default {
           const dead = k => (B.dead && B.dead[k]) || B.sides[k].units.reduce((a, u) => a + (u.killed || 0), 0);
           const ours = new Set([dead(meK), me.men0, liveMen(me)].map(n => A.fmt(n)));
           const theirs = [dead(enK), en.men0, liveMen(en)].filter(n => n >= 100).map(n => A.fmt(n)).filter(n => !ours.has(n));
-          const hit = n => new RegExp(`(^|[^\\d,])${n}($|[^\\d,])`).test(all);
+          // (an estimate that rounds to the exact number, "about 500" for 500 dead, gives nothing away: it is not a leak)
+          const hit = n => new RegExp(`(^|[^\\d,])${n}($|[^\\d,])`).test(all.replace(/\b(about|some) [\d,]+/gi, ''));
           // the morale word on a popover agrees with its side line's (both from the rounded average)
           const sideWords = ['A', 'B'].map(k => A.V2W.moWord(Math.round(A.avgMorale(B, k))));
           const moTips = tips.filter(x => x.k === 'bMorale' || x.k === 'bSide').map(x => (x.t.match(/Morale (eager|steady|sullen|shaken|near breaking)/) || [])[1]).filter(Boolean);
