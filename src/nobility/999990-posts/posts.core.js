@@ -78,22 +78,32 @@
     SSET = { sig, S: A.S, set };
     return set;
   };
-  // the court titles (99995-v2-nobility) ride on their holders (p.noble.court, p.noble.more): an index of the living,
-  // rebuilt once a day (and when the law moves one, P.note)
+  // the court titles (99995-v2-nobility) ride on their holders (p.noble.court, p.noble.more), and each title remembers
+  // its holder (t.pid, kept by 99995 at every move): an index read from the titles, never from all the people (a
+  // monthly scan of the people cost the year turn; CI 112), rebuilt once a day and when the law moves one (P.note)
   let TIX = null;
+  const carries = (p, ck) => !!(p && p.alive && p.noble && (p.noble.court === ck || (p.noble.more || []).includes(ck)));
   const titleIx = function () {
-    const S = A.S, key = (A.absDay ? A.absDay() : 0) + '|' + Object.keys(S.people).length;
+    const S = A.S, key = A.absDay ? A.absDay() : 0;
     if (TIX && TIX.S === S && TIX.key === key) return TIX;
-    const m = new Map(), dup = [], keys = new Set();
+    const m = new Map(), keys = new Set(), C = S.court && S.court.realms;
+    if (C) for (const rid of Object.keys(C)) for (const t of (C[rid] && C[rid].titles) || []) {
+      if (!t || !t.k || t.crown) continue;
+      keys.add(t.k);
+      if (t.pid && carries(S.people[t.pid], t.k)) m.set(t.k, t.pid);
+    }
+    TIX = { S, key, m, keys };
+    return TIX;
+  };
+  // a court title carried by two living people (the audit only: it reads every person)
+  const titleDups = function () {
+    const S = A.S, seen = new Map(), dup = [];
     for (const id in S.people) {
       const p = S.people[id];
       if (!p || !p.alive || !p.noble || !p.noble.court) continue;
-      for (const ck of [p.noble.court].concat(p.noble.more || [])) { if (m.has(ck)) dup.push([ck, p.id]); else m.set(ck, p.id); }
+      for (const ck of [p.noble.court].concat(p.noble.more || [])) { if (seen.has(ck)) dup.push([ck, seen.get(ck), p.id]); else seen.set(ck, p.id); }
     }
-    const C = S.court && S.court.realms;
-    if (C) for (const rid in C) for (const t of (C[rid] && C[rid].titles) || []) if (t && t.k && !t.crown) keys.add(t.k);
-    TIX = { S, key, m, dup, keys };
-    return TIX;
+    return dup;
   };
   P.dirtyTitles = () => { TIX = null; };
   const MIR = {
@@ -517,7 +527,10 @@
   const repair = (why, line) => { P.stats.repaired[why] = (P.stats.repaired[why] || 0) + 1; if (line && P._lines) P._lines.push(line); };
   const realmsAlive = () => Object.keys(A.S.realms || {}).map(id => A.S.realms[id]).filter(r => r && r.alive !== false);
   // every mirror in a fixed order: [key, pid]
-  P.mirrors = function () {
+  // law: also the houses and the court titles (every call but the month's: their writers all go through the registry, so
+  // the month's pass leaves their 1,000-odd records to the New Year's, which a bot year's turn could feel; CI 112)
+  P.mirrors = function (law) {
+    if (law === undefined) law = true;
     const out = [];
     for (const r of realmsAlive()) {
       if (r.council && A.COUNCIL) for (const s of Object.keys(A.COUNCIL)) if (r.council[s]) out.push([P.seatKey(r.id, s), r.council[s]]);
@@ -538,6 +551,7 @@
       if (pc.staff) { const set = staffSet(pc); for (const sl of Object.keys(pc.staff)) { if (!set.has(sl)) continue; const v = pc.staff[sl], id = v === 'deleg' ? (pc.staffD || {})[sl] : v; if (id) out.push([P.staffKey(pc.id, sl), id]); } }
       if (pc.company) out.push([P.freeKey(pc.id), pc.id]);
     }
+    if (!law) return out;
     const H = A.S.houses || {};
     for (const hid of Object.keys(H)) { const h = H[hid]; if (h && !h.extinct && h.headPid) out.push([P.houseKey(hid), h.headPid]); }
     const T = titleIx();
@@ -572,12 +586,15 @@
   };
 
   // sync(mode): mode 'load' builds the registry from an older state (the first seen of two clashing posts is kept);
-  // 'month' adopts the month's writes (a new write wins over an older post of its class or a lower one). No dice.
+  // 'month' adopts the month's writes (a new write wins over an older post of its class or a lower one), and leaves the
+  // houses and court titles to 'year' (the New Year's, otherwise the same as 'month'). No dice.
+  const isLaw = key => key.charCodeAt(0) === 104 || key.startsWith('title:');   // house: / title:
   P.sync = function (mode) {
     const st = P.store(); if (!st || !A.S.people) return [];
     P._lines = [];
+    const law = mode !== 'month';
     const fresh = new Set(), seen = new Set();
-    for (const [key, pid] of P.mirrors()) {
+    for (const [key, pid] of P.mirrors(law)) {
       seen.add(key);
       const r = st.h[key];
       if (r && r.p === pid) continue;
@@ -601,7 +618,7 @@
     }
     // records whose mirror was cleared (or whose object is gone) by code outside the registry
     for (const key of Object.keys(st.h)) {
-      if (seen.has(key)) continue;
+      if (seen.has(key) || (!law && isLaw(key))) continue;
       const r = st.h[key], [M, k] = mir(key);
       if (!M || !M.exists(k)) { if (r.p) ixDel(r.p, key); delete st.h[key]; continue; }
       if (r.p) { ixDel(r.p, key); pushPrev(r, r.p, 'cleared'); r.p = null; r.vac = day(); }
@@ -609,7 +626,7 @@
     }
     // every holder able to hold
     for (const key of Object.keys(st.h)) {
-      const r = st.h[key]; if (!r.p) continue;
+      const r = st.h[key]; if (!r.p || (!law && isLaw(key))) continue;
       const why = unfit(key, r.p);
       if (why) { const p = A.P(r.p); P.vacate(key, why); repair(why, `${P.style(key)}: ${nm(p)} (${why}) leaves it`); }
     }
@@ -747,7 +764,7 @@
     }
     if (strict) for (const key in st.h) { const r = st.h[key]; if (r.p && P.mirror(key) !== r.p) bad.push(`${P.style(key)}: held by ${nm(A.P(r.p))} in the registry, not in the old field`); }
     // a court title carried by two living people (99995 keeps the key on its holder)
-    for (const [ck, pid] of titleIx().dup) bad.push(`${P.style(P.titleKey(ck))}: two holders, ${nm(A.P(titleIx().m.get(ck)))} and ${nm(A.P(pid))}`);
+    for (const [ck, a1, a2] of titleDups()) bad.push(`${P.style(P.titleKey(ck))}: two holders, ${nm(A.P(a1))} and ${nm(A.P(a2))}`);
     // an order's division is led by its Grand Master
     for (const r of realmsAlive()) if (r.orders && GD.ORDERS) for (const oid of Object.keys(r.orders)) {
       const d = r.orders[oid] && A.orderDiv && A.orderDiv(oid);
@@ -779,7 +796,7 @@
     } catch (e) { console.error('[posts] councils', e); }
   };
   A.onMonth.push(function () { runSync('month'); councils(); });
-  (A.onYear = A.onYear || []).push(function () { runSync('month'); councils(); try { P.restyle(); } catch (e) { console.error('[posts] restyle', e); } });
+  (A.onYear = A.onYear || []).push(function () { runSync('year'); councils(); try { P.restyle(); } catch (e) { console.error('[posts] restyle', e); } });
   // a new world: the registry is built from the first councils, offices and armies
   A.on && A.on('worldInit', function () { P.store(); IX = null; runSync('load'); try { P.restyle(); } catch (e) { console.error('[posts] restyle', e); } });
   // an older save: build the registry and repair it, one line in the log for each repair the player would notice
