@@ -12,7 +12,7 @@ const EVENT = `(() => { A.S.queue = []; UI.ov = null; const pc = A.pc(); let q =
 
 
 export default {
-  // 25 scenes x 6 hours x 8 lands x 4 seasons: valid SVG, the same input gives the same string, other events and years
+  // 27 scenes (25, and C8c's fields and market) x 6 hours x 8 lands x 4 seasons: valid SVG, the same input gives the same string, other events and years
   // give other pictures, and each print is at most 15 KB (6 to 12 on average)
   async skyEveryShape(pg) {
     const r = await pg.evaluate(() => {
@@ -31,7 +31,7 @@ export default {
       const distinct = shapes.map(sh => new Set(keys.map(k => SK.svg(sh, k, 4, { hour: 'day', terr: 'hills' }))).size);
       return { shapes: shapes.length, n: sizes.length, bad, max: Math.max(...sizes), min: Math.min(...sizes), avg: Math.round(sizes.reduce((a, x) => a + x, 0) / sizes.length), minDistinct: Math.min(...distinct) };
     });
-    const ok = r.shapes === 25 && !r.bad.length && r.max <= 15 * 1024 && r.avg >= 6 * 1024 && r.avg <= 12 * 1024 && r.minDistinct >= 10;
+    const ok = r.shapes === 27 && !r.bad.length && r.max <= 15 * 1024 && r.avg >= 6 * 1024 && r.avg <= 12 * 1024 && r.minDistinct >= 10;
     return { ok, detail: `${r.shapes} scenes, ${r.n} prints (hours x lands x seasons): sizes ${(r.min / 1024).toFixed(1)} to ${(r.max / 1024).toFixed(1)} KB, average ${(r.avg / 1024).toFixed(1)} KB; at least ${r.minDistinct} distinct pictures of 12 events per scene${r.bad.length ? '; BAD ' + r.bad.slice(0, 6).join(', ') : ''}` };
   },
 
