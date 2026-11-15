@@ -41,3 +41,6 @@ A commoner General with fighting worth 108 failed the Iron Wolf on birth alone, 
 - "deeds ... worthy" with an invitation (the Gold Masks): renown 60 and three deeds in the life's record meet the invitation line.
 
 The other six orders ask no birth and no invitation. **Measured by** `ladderOrderMerit`.
+
+**X7 (phone speed).** `A.ladderCensus(rid)` weighs only realm `rid`'s people; `A.ladderRoom` asks it so. Weighing every
+living fighter for each order raised at world creation was a tenth of making a world. Same answers (identity probe).

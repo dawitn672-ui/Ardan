@@ -135,3 +135,8 @@ The deadly outcomes that stay behind plain checks in fight scenes are not fights
 - **Ranged shots stay skill checks.** A bow or crossbow choice is decided by that skill, which is what a shot is.
 
 **Start-up cost.** Tagging every choice of every event at load was the largest part of the game's start-up time. The profile showed 1.6 s of a 4.5 s load. `FL.convertEvent` tagged each choice twice, once to count its clashes and once to convert it. It now tags once and passes the tag to both. Each event's scene text and its scene-only tests (scene, army, allies, the tier words) are read once per event, not once per choice, and the cache is re-read if a feature rewrites the event's text. Start-up fell to 2.4 s in the same profile. The conversion is unchanged: the same 188 choices converted, the same clash counts (79 / 4 / 1 / 0), and the same hash over every choice's fight spec, check and results.
+
+**X7 (phone speed).** `FL.beastIn` was still a third of the tagging: asked twice per choice (30,180 times at load), it
+walked 45 creature names and 16 common-word patterns for texts of which 98% name no beast. Each list is now tried first
+as one alternation (`FL.beastRx`), which matches exactly when one of its entries does; only a text that names a beast
+walks the list for the first match. Same answers on all 30,180 inputs (249 ms to 87 ms there); the same pool after load.

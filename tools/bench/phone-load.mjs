@@ -44,6 +44,7 @@ const STAGES = [
   ['title world', 'the title\'s world made and its map drawn'],
   ['lore unpacked', 'the lore tables unpacked in the background'],
   ['idle', 'the main thread quiet (no task over 50 ms for 500 ms)'],
+  ['continent ready', 'the new life\'s continent built ahead in a worker (X7; worker time scaled by the rate)'],
 ];
 
 async function openPage(browser, rate, errs, profile) {
@@ -88,9 +89,19 @@ async function boot(browser, rate, errs, profile) {
   const marks = await page.evaluate(() => Object.assign({}, window.ARDAN_BOOT));
   marks['lore unpacked'] = marks['ardan-lore unpacked'];
   marks.idle = idle;
+  // the continent built ahead in a worker (99991-v2-map/e-ahead.core.js), when the build has one: when it was ready
+  const ahead = await page.evaluate(async () => {
+    const H = typeof A !== 'undefined' && A.V2MAP && A.V2MAP.AHEAD; if (!H) return null;
+    const t0 = performance.now(); while (!(H.built || H.failed || H.err) && performance.now() - t0 < 180000) await new Promise(r => setTimeout(r, 50));
+    return { sent: H.sent || null, at: H.at || null, built: H.built, ms: H.ms[0] || null, failed: H.failed, err: H.err };
+  });
+  // CDP cannot throttle a worker ("only supported for pages"), and a phone's other cores are about as slow as its first:
+  // the worker's time from the request to the world's arrival is scaled by the rate, as if it had run throttled
+  if (ahead && ahead.at && ahead.sent != null) ahead.atPhone = Math.round(ahead.sent + (ahead.at - ahead.sent) * rate);
+  marks['continent ready'] = ahead && (ahead.atPhone || ahead.at);
   const lt = await page.evaluate(() => window.__LT.slice());
   return Object.assign(P, { marks, bootCpu: Math.round((m1.ThreadTime - m0.ThreadTime) * 1000), bootScript: Math.round((m1.ScriptDuration - m0.ScriptDuration) * 1000),
-    bootStyle: Math.round((m1.RecalcStyleDuration - m0.RecalcStyleDuration) * 1000), bootLayout: Math.round((m1.LayoutDuration - m0.LayoutDuration) * 1000), longTasks: lt });
+    bootStyle: Math.round((m1.RecalcStyleDuration - m0.RecalcStyleDuration) * 1000), bootLayout: Math.round((m1.LayoutDuration - m0.LayoutDuration) * 1000), longTasks: lt, ahead });
 }
 
 // Begin a new life with the creation screen's defaults and a fixed seed, to the first Life screen
@@ -103,12 +114,13 @@ async function newLife(P) {
     document.querySelector('[data-a="newLife"]').click();
     await frame();
     const tCreate = performance.now();
-    UI.cr.seed = '42';
+    // no seed typed: the life's seed is the one drawn ahead (UI.lifeSeed), as for a player who leaves it blank
+    const builds0 = A.V2MAP && A.V2MAP.stats ? A.V2MAP.stats.builds : 0;
     const b = [...document.querySelectorAll('[data-a="startLife"]')].find(x => x.getClientRects().length);
     if (b) b.click(); else UI.A.startLife();
     for (let g = 0; g < 400 && UI.screen !== 'game'; g++) await frame();
     await frame();
-    return { create: Math.round(tCreate - t0), life: Math.round(performance.now() - tCreate), screen: UI.screen, tab: UI.tab, modal: !!document.querySelector('#modal'), year: A.S.year };
+    return { built: (A.V2MAP && A.V2MAP.stats ? A.V2MAP.stats.builds : 0) - builds0, create: Math.round(tCreate - t0), life: Math.round(performance.now() - tCreate), screen: UI.screen, tab: UI.tab, modal: !!document.querySelector('#modal'), year: A.S.year };
   });
   const b = await metrics();
   return Object.assign(r, { cpu: Math.round((b.ThreadTime - a.ThreadTime) * 1000), script: Math.round((b.ScriptDuration - a.ScriptDuration) * 1000), style: Math.round((b.RecalcStyleDuration - a.RecalcStyleDuration) * 1000), layout: Math.round((b.LayoutDuration - a.LayoutDuration) * 1000) });
@@ -194,7 +206,7 @@ async function main() {
       }
       await P.ctx.close();
       runs.push({ marks: P.marks, bootCpu: P.bootCpu, bootScript: P.bootScript, bootStyle: P.bootStyle, bootLayout: P.bootLayout, longest: P.longTasks.reduce((a, t) => Math.max(a, t[1]), 0), newLife: nl, profile });
-      log(`rate ${rate} run ${k}: title ${P.marks['title painted']} ms, content ${P.marks['content ran']}, title world ${P.marks['title world']}, idle ${P.marks.idle}; boot cpu ${P.bootCpu} (script ${P.bootScript}, style ${P.bootStyle}, layout ${P.bootLayout}); new life: create ${nl.create} + life ${nl.life} ms, cpu ${nl.cpu}`);
+      log(`rate ${rate} run ${k}: title ${P.marks['title painted']} ms, content ${P.marks['content ran']}, title world ${P.marks['title world']}, idle ${P.marks.idle}; boot cpu ${P.bootCpu} (script ${P.bootScript}, style ${P.bootStyle}, layout ${P.bootLayout}); new life: create ${nl.create} + life ${nl.life} ms, cpu ${nl.cpu}, built ${nl.built}${P.ahead ? '; continent ahead ' + JSON.stringify(P.ahead) : ''}`);
     }
     const y0 = await presses(browser, rate, 'y0-noble.ardan', PRESSES, errs);
     log(`rate ${rate} y0: press median wall ${y0.wall} ms (quiet ${y0.quietWall}), cpu ${y0.cpu}, engine ${y0.engine}; load cpu ${y0.loadCpu}`);
@@ -204,7 +216,8 @@ async function main() {
     res.rates[rate] = {
       marks: Object.fromEntries(STAGES.map(([k]) => [k, M(k)])), bootCpu: med(runs.map(r => r.bootCpu)), bootScript: med(runs.map(r => r.bootScript)), longest: med(runs.map(r => r.longest)),
       newLife: { create: med(runs.map(r => r.newLife.create)), life: med(runs.map(r => r.newLife.life)), cpu: med(runs.map(r => r.newLife.cpu)) },
-      toFirstLife: med(runs.map(r => r.marks['title world'] + r.newLife.create + r.newLife.life)),
+      toFirstLife: med(runs.map(r => Math.max(r.marks['title world'], r.marks['continent ready'] || 0) + r.newLife.create + r.newLife.life)),
+      builtOnBegin: med(runs.map(r => r.newLife.built)),
       y0: { wall: y0.wall, quietWall: y0.quietWall, cpu: y0.cpu, engine: y0.engine, months: y0.months, loadCpu: y0.loadCpu },
       y50: { wall: y50.wall, quietWall: y50.quietWall, cpu: y50.cpu, engine: y50.engine, months: y50.months, loadCpu: y50.loadCpu },
       runs,
@@ -224,7 +237,8 @@ async function main() {
   row('longest task in the boot', x => x.longest);
   row('new life: the creation screen', x => x.newLife.create);
   row('new life: Begin to the first Life screen', x => x.newLife.life);
-  row('**to the first Life screen** (title world + create + begin)', x => x.toFirstLife);
+  row('continents built on the page after Begin', x => x.builtOnBegin);
+  row('**to the first Life screen** (the later of title world and continent ready, + create + begin)', x => x.toFirstLife);
   row('Next month, year 0 (median wall)', x => x.y0.wall);
   row('Next month, year 0 (quiet, wall)', x => x.y0.quietWall);
   row('Next month, year 50 (median wall)', x => x.y50.wall);

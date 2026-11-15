@@ -57,12 +57,16 @@
   var loreText = null; window.ARDAN_LORE = function () { if (loreText === null) loreText = unpack('ardan-lore'); return loreText; };
   var run = function (code) { var sc = document.createElement('script'); sc.textContent = code; document.body.appendChild(sc); };
   var later = function (f) { setTimeout(function () { try { f(); } catch (e) { fail(e); } }, 0); };
+  // [X7 phone speed] after the next frame: the title is painted before the event packs start (a zero timer ran ahead of
+  // the first frame, and unpacking the content held the title back by its own length, a second on a phone). A hidden
+  // page gets no frames, so it starts them after 100 ms all the same.
+  var afterFrame = function (f) { var done = false, go = function () { if (!done) { done = true; later(f); } }; if (window.requestAnimationFrame) requestAnimationFrame(go); setTimeout(go, 100); };
   later(function () {
     // stage 1: the core, then the title screen
     run(unpack('ardan-core')); mark('core ran');
     UI.init(); window.ARDAN_READY = true; mark('title shown');
     // stage 2: the event packs, one per tick so the screen stays responsive
-    later(function () {
+    afterFrame(function () {
       var packs = unpack('ardan-content').split('ARDAN-PACK'), i = 0;
       var next = function () { if (i < packs.length) { run(packs[i++]); later(next); } else { mark('content ran'); window.ARDAN_CONTENT_READY = true; window.dispatchEvent(new Event('ardan-content')); later(window.ARDAN_LORE); } };
       next();
