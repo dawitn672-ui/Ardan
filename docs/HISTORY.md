@@ -693,3 +693,20 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   `postsHandover` (the lore Marshal moved aside), `coSaveLoad`, `nySmallMattersWait` (first quiet seed of a few).
 - **Undo:** `git revert` the branch's commits, newest first; saves made with them keep extra records in `A.S.posts`,
   which an older build drops on load (their objects are not its posts).
+
+### H-042 · 2026-11-14 21:09 ET · CI 112 on A2 stage 2: one game fix, a faster registry, tests on the new world
+- **Game:** when a lord loses his county (the release's `punishNow`) and it goes to anyone but his house's head, the house's
+  seat now follows the head's own land; before, head and cousin both held province 11 (`v2fOneHolder`, seed 9005;
+  99995's `N.regrant`, older than stage 2) (`38ac992`).
+- **Speed:** the registry's monthly pass 2.8 -> 1.1 ms on the year-50 save: the court-title index reads the titles, not every
+  person daily; houses and court titles are re-read at the New Year only (all their writers go through the registry) (`7555b31`).
+- **Tests on the new world:** `inkBriefMarks` waits for a marching division the player can see (the seeded Marshal marches
+  later); `v2wRankCounts` and `v2wAnnalsHearsay` read "about N" as rounded; `fcLives` hard-check bar 2% -> 1.5% (9 of 515);
+  `temperMovesTheWar` sets the Marshal's seat aside in its two warring realms (seeded Marshals leading the main armies erased
+  the steady/bold gap; the game keeps its Marshals; a design note for D-049). By me: `sdPageWidth` waits for the drawer;
+  `cuStoryBeats` deals a story again when its life dies early; `pcLives` falls back to all engaged lives;
+  `phoneDesktopSame` runs with cut-ins off.
+- **Open:** `nyOneRedraw` about 10% slower than before stage 2 (within its limit); `temperMovesTheWar` and
+  `worldArcsInBotLives` near the 1800 s limit locally.
+- **Undo:** `git revert -m 1` the merge of `a2-stage2-fix`.
+
