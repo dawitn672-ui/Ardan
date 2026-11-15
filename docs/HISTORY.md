@@ -835,3 +835,15 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   the parish, P9's per-realm target. `index.html` is not rebuilt on this branch.
 - **Undo:** revert the branch's commits, newest first. Saves made with it keep `household`, `parish`, `pregs` and `met`
   fields the build before ignores.
+
+### H-049 · 2026-11-15 08:24 ET · CI 119 on C6: five game fixes, two tests
+- **Game:** the household fits the age (a nurse until 7, a tutor 6-16, "your old nurse" after; household people under
+  Family), so the People page keeps its three-screen budget; `A.skill` takes a wound's penalty after C9's skill cap (a
+  capped fighter lost nothing to two lost fingers, a C9 bug C6's dice exposed); an office given up for a higher post is
+  refilled when the appointment completes and a dead holder's the next day (`A.S.polRefill`); the war-strength bar opens
+  a click-to-open note; a promotion reason built from a title with an unfilled token is skipped (`a77ac92`, `823de18`).
+- **Tests:** `deathNamesTheHurt` draws its stale case 40 times (one draw of `A.naturalCause` can be "a wound gone bad");
+  `tensionsRun` reads three famine worlds (caravans relieve a famine realm before grain is dear in about a quarter of
+  worlds, 5 of 20 seeds).
+- **Undo:** revert the merge of `c6-ci119` and the `tensionsRun` commit.
+
