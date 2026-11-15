@@ -2,7 +2,8 @@
 // See src/ui/93-figures/README.md for how the game uses it, and docs/design/demo-2d/gate2.md for how it is built.
 export { compose, CROPS, drained } from './figure.js';
 export { face, lookOf, lookKey, faceFor, codeFor, extraFor, greyOf, pack2, unpack2, EXTRA, FACE_EXTRA, BUILD, CODE2_LEN, PEOPLES, HSTYLE, BEARD_OF, BUILD_OF, HAIR_OF, EYES_OF } from './look.js';
-export { GEAR_ART, registerGear, artOf, kit } from './wardrobe.js';
+export { GEAR_ART, registerGear, artOf, kit, WEARS, dyesFor, liveryOf } from './wardrobe.js';
+export { CULTURES, CUTS, cultureOf } from './cultures.js';
 export { HAIRS, BEARDS } from './hair.js';
 export { FACE } from './head.js';
 export { POSES, BUILD_KEYS } from './rig.js';
