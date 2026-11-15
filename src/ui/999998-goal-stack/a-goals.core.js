@@ -6,7 +6,7 @@
 // Each system keeps its own data and its own rules; this reads them all and puts them in one order:
 //
 //   UI.GOALS.stack(pc)  -> [{ kind, score, t, why, when, cls, act, go }], highest first, at most UI.GOALS.MAX
-//   UI.GOALS.card(pc)   -> the card ("What now"): the stack as rows, the chapter folded under it
+//   UI.GOALS.card(pc)   -> the card ("What now"): the stack as rows; the chapter's own card, folded, follows it
 //
 // kinds: 'now' (A.whatNow, which carries its own scores: health 100, the crown's debt 89, a career's choice 78 ...),
 // 'promise' (a thing promised in the open: a loan due, a wedding agreed), 'custom' (a custom of the realm due), 'holy' (a
@@ -94,14 +94,13 @@
   G.card = function (pc) {
     const L = (UI.wnItems = G.stack(pc));
     if (!L.length) return '';
-    let chapter = '';
-    try { chapter = A.CH && A.CH.card ? A.CH.card(pc) || '' : ''; } catch (e) { console.error('goal chapter', e); }
-    return `<section class="card whatnow goal-stack" aria-labelledby="wn-h"><h3 id="wn-h" class="wn-h">${UI.icon('target', 's')} What now</h3><ol class="wn-list">${L.map(row).join('')}</ol>${chapter}</section>`;
+    // (the chapter's own card, folded, follows this one: 9993's Life wrapper puts it after What now)
+    return `<section class="card whatnow goal-stack" aria-labelledby="wn-h"><h3 id="wn-h" class="wn-h">${UI.icon('target', 's')} What now</h3><ol class="wn-list">${L.map(row).join('')}</ol></section>`;
   };
   UI.whatNowCard = G.card;
 
   // a stack row that is not a button (a thing dated, an ambition, an aim) is told, not offered
-  const CSS = `.wn-item.wn-static{cursor:default}.wn-item.wn-static:hover{background:none}.goal-stack .chp-card{margin:6px 0 0}`;
+  const CSS = `.wn-item.wn-static{cursor:default}.wn-item.wn-static:hover{background:none}`;
   const put = () => { if (typeof document === 'undefined' || document.getElementById('gl-style')) return; const s = document.createElement('style'); s.id = 'gl-style'; s.textContent = CSS; document.head.appendChild(s); };
   if (typeof document !== 'undefined') { if (document.head) put(); else document.addEventListener('DOMContentLoaded', put); }
 })();

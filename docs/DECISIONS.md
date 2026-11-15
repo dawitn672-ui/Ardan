@@ -823,8 +823,8 @@ shared runner that varies by a quarter, and a worker cannot be throttled: `phone
 4. **One goal stack** (`src/ui/999998-goal-stack`): each system keeps its data; `UI.GOALS.stack(pc)` reads What now (its own
    scores), the ambition (61), the chapter's next aim (52) and Coming up's dated items (a promise 72/88, a custom 68/80, a
    holy day 60, a feast 20) and orders them by score, five at most. It is the Life page's one goals card (`UI.whatNowCard`,
-   class `whatnow` kept so the hints and folds find it); the chapter's own card, with its choice of a third aim, is folded
-   under it; the Coming up strip and the ambition card are no longer drawn on their own. `UI.GOALS.source` adds a source.
+   class `whatnow` kept so the hints and folds find it); the chapter's own card, with its choice of a third aim, stays folded
+   and follows it; the Coming up strip and the ambition card are no longer drawn on their own. `UI.GOALS.source` adds a source.
 **Why:** the owner's fourth complaint (clutter) and CRITIQUE U4, U20: gates written where each bug was found, so each new page
 forgot them; five goal systems competing for the top of one page.
 **Held by:** `scopeShape`, `scopeActs`, `scopeSixLives` (a newborn, a child of 9, a squire of 16, a File-Leader at war, a captain

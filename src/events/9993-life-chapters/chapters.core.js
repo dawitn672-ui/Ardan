@@ -320,7 +320,9 @@
         if (end > at) return h.slice(0, end) + s.replace('<section class="card chp-card"', '<section class="chp-card chp-in-amb"') + h.slice(end);
       }
       if (at >= 0) return h.slice(0, at) + s + h.slice(at);
-      const w = h.indexOf('<section class="card whatnow"');
+      const w = h.indexOf('<section class="card whatnow');
+      // B5 part 2 (D-055): the goal stack is the one goals card; the chapter, folded, is its detail and follows it
+      if (w >= 0 && UI.GOALS && UI.GOALS.on) { const e = h.indexOf('</section>', w); if (e > w) return h.slice(0, e + 10) + s + h.slice(e + 10); }
       return w >= 0 ? h.slice(0, w) + s + h.slice(w) : s + h;
     } catch (e) { console.error('chapter card', e); return h; }
   };

@@ -749,7 +749,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   and a councillor draw 14 pages at 1366 and 420 px, five overlays and three cards each; the forbidden strings are data per life
   (`LIVES` in the test). On the build before this step: 41 leaks; after: none.
 - **One goal stack** (`src/ui/999998-goal-stack`): What now, the ambition, the chapter's next aim and Coming up's dated items,
-  by score, five at most, as the Life page's one card; the chapter's card folded under it; the Coming up strip and the ambition
+  by score, five at most, as the Life page's one card; the chapter's card, folded, after it; the Coming up strip and the ambition
   card are no longer drawn on their own (their data and rules are unchanged). `UI.GOALS.source` adds a source.
 - **Edits outside the two folders:** the release's rail (Looks), Life page's hidden reasons, plan aims, Path rows, "Get to know"
   and What now's "Find work"; the profile (looks, skills); `996-coming-up` (the strip yields to the stack) and its tests.

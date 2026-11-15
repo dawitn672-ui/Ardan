@@ -1,6 +1,6 @@
 // 999998-goal-stack (B5 part 2, D-055): one ordered stack of goals and one card the Life page reads it from.
 export default {
-  // the Life page has one goals card, in score order, at most five rows, the chapter folded under it; no Coming up strip and no
+  // the Life page has one goals card, in score order, at most five rows, the chapter's own card (folded) after it; no Coming up strip and no
   // ambition card of their own; drawing it changes nothing
   async gsOneCard(pg) {
     const r = await pg.evaluate(() => {
@@ -14,13 +14,13 @@ export default {
         UI.tab = 'life'; UI.render();
         const L = UI.GOALS.stack(pc), q = s => document.querySelectorAll('#tabbody ' + s).length;
         const sc = L.map(x => x.score);
-        out.push({ n, rows: L.length, cards: q('.whatnow'), li: q('.whatnow .wn-list > li'), strip: q('.cu-strip'), amb: q('.lf-amb'), chp: q('.chp-card'), chpIn: q('.whatnow .chp-card'),
+        out.push({ n, rows: L.length, cards: q('.whatnow'), li: q('.whatnow .wn-list > li'), strip: q('.cu-strip'), amb: q('.lf-amb'), chp: q('.chp-card'), chpAfter: q('.whatnow + .chp-card'),
           sorted: sc.every((v, i) => !i || sc[i - 1] >= v), pure: T.hash(A.S) === h0 && A.rngState === r0, kinds: L.map(x => x.kind).join(',') });
       }
       return out;
     });
-    const bad = r.filter(x => !x.dead && (x.cards !== 1 || x.rows < 1 || x.rows > 5 || x.li !== x.rows || x.strip || x.amb || x.chp !== x.chpIn || !x.sorted || !x.pure));
-    return { ok: !bad.length && r.some(x => x.chpIn), detail: bad.length ? JSON.stringify(bad) : r.map(x => x.dead ? x.n + ' dead' : `${x.n}: ${x.rows} rows (${x.kinds}), chapter ${x.chpIn ? 'under it' : 'none'}`).join('; ') };
+    const bad = r.filter(x => !x.dead && (x.cards !== 1 || x.rows < 1 || x.rows > 5 || x.li !== x.rows || x.strip || x.amb || x.chp !== x.chpAfter || !x.sorted || !x.pure));
+    return { ok: !bad.length && r.some(x => x.chpAfter), detail: bad.length ? JSON.stringify(bad) : r.map(x => x.dead ? x.n + ' dead' : `${x.n}: ${x.rows} rows (${x.kinds}), chapter ${x.chpAfter ? 'folded after it' : 'none'}`).join('; ') };
   },
 
   // each system keeps its data and speaks through the stack: a promise made in the open, the ambition, the chapter's next aim, a
