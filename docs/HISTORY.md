@@ -893,7 +893,7 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
     more counsel and recall cards take the card's voice slot (`A.V2C.voiceFits`). The test plays twelve lives (`3c5d29d`).
 
 
-### H-054 · 2026-11-15 16:30 ET · C8c: dress, class and regalia (D-060)
+### H-054 · 2026-11-15 16:56 ET · C8c: dress, class and regalia (D-060)
 - **Branch** `c8c-dress` from `38a4568`, not pushed. Steps: `e3484b6` the figure library (four cuts, livery, rank on a
   soldier, jewels by rank, ten headwear; `cultures.js`; the dress sheets), `a628932` scene tags (`src/events/26-scene-tags`;
   `UI.WOODCUT.shapeOf` asks it; two prints, a `data-shape` and `data-scene` on every print), `30cc3f6` the game's side
