@@ -33,7 +33,7 @@
     MIN_PROVS: 8,           // a realm must hold this many provinces to lose some
     SIZE: [2, 4],           // provinces in a breakaway
     SHARE_MAX: 0.3,         // and never more than this share of the parent's provinces
-    POP_MAX: 0.35,          // or of its people (the Sand Clans' oases hold four fifths of theirs)
+    POP_MAX: 0.35,          // or of its people (the Sahrim' oases hold four fifths of theirs)
     AGO: [6, 40],           // years since it broke away
     WAR_P: 0.25,            // the war of independence never ended
     TENSIONS: [1, 3],
@@ -174,7 +174,7 @@
     return { name: `Duchy of ${capName}`, short: capName, title: 'Duke', type: 'duchy' };
   };
   // a realm bible for it: what it wants and fears, and the place that matters; customs are its parent's (47)
-  // (worded so that {parent} needs no verb to agree with it and no 's: "the Tusk Clans" reads as well as "Velgrad")
+  // (worded so that {parent} needs no verb to agree with it and no 's: "the Ughrak" reads as well as "Velgrad")
   FR.BIBLE = {
     duchy: {
       want: ['To have its freedom from {parent} written down and sealed by a crown other than that of {parent}.', 'To hold {capital} for its own lords, and to owe {parent} nothing but a border.',

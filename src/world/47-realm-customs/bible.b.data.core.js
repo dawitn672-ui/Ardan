@@ -32,7 +32,7 @@
   };
 
   D['POL-08'] = {
-    want: 'To keep the Free Halls free and the Ring above the king, and to sell Frostholm\'s tin dear enough to repay the Highland League by 1111.',
+    want: 'To keep the Free Halls free and the Ring above the king, and to sell Frostholm\'s tin dear enough to repay the League of Brannoch by 1111.',
     fear: 'That Aldmark ends its ten years of silence early, or that the giants learn what the Tin Reeve\'s balance has been doing to them.',
     place: { name: 'The Ring at Wolfhaven', text: 'A circle of standing stones above the harbour where the jarls sit at the Thing, and the Lawspeaker says the law aloud from memory, a third of it each summer.' },
     customs: [
@@ -59,7 +59,7 @@
 
   D['POL-13'] = {
     want: 'To keep the Charter of Highcastle whole, sell crossbows to every side and silver to the rest, and see Northreach\'s forty thousand repaid by 1111.',
-    fear: 'That someone at last makes himself king in the valleys with Aldmark\'s silver in his purse, or that the Horde finds a glen nobody is watching.',
+    fear: 'That someone at last makes himself king in the valleys with Aldmark\'s silver in his purse, or that Gorath finds a glen nobody is watching.',
     place: { name: 'The Charter Stone at Highcastle', text: 'The Charter of 336 is cut into a slab in the council hall. Its first line says no one may be king. Valley children are lifted up to put their hands on it.' },
     customs: [
       { id: 'hil_charter', name: 'The Charter oath', kind: 'rite', age: 18, who: 'free',
@@ -189,7 +189,7 @@
 
   D['POL-26'] = {
     want: 'To keep the Treaty of Thardush holding, the rye in Vadim Zorac\'s barns, and Ludmila ready to lead an army that wins by waiting.',
-    fear: 'Drums: a Tusk war-band on the border, or a Patriarch in Velgrad who will not crown the next Dravic queen.',
+    fear: 'Drums: an Ughrak war-band on the border, or a Patriarch in Velgrad who will not crown the next Dravic queen.',
     place: { name: 'The lake monasteries', text: 'The Dawn Church\'s oldest houses stand on islands in the Lakeland, reached by boat in summer and over the ice in winter. They keep the bees, the wax and a tenth of every estate.' },
     customs: [
       { id: 'drv_tenth', name: 'The monastery\'s tenth', kind: 'mourn', share: 'temple',

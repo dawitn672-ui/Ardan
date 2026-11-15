@@ -489,7 +489,7 @@ export default {
       const lines = ['This season you got better at Farming & herding +2.3. 100% of it from doing, the rest from practice.',
         'This season you got better at Riding & the lance +4.7, Command +2.6, Tactics & siegecraft +2.3 and 2 more. 80% of it from doing, the rest from practice.',
         'After the battle, the captains reckon it: your counterattack countered their frontal assault +20%, drill, kit and experience −12%.',
-        // (the playtest's realms were Solenne, the Horde, Abara and Zanara; this world's own realms stand in for them)
+        // (the playtest's realms were Solenne, Gorath, Abara and Zanara; this world's own realms stand in for them)
         `${RS[0]} sends 881,788 suns to ${RS[1]} for its war: the siege, in 1110.`, `${RS[2]} owes ${RS[1]} 402,000 suns from a loan of 1104, and has paid none of it back.`,
         'You take a hit — 7 damage.', 'Your superiors notice the extra hours. (Merit +15)', 'For Senior Captain: merit 379/600, command skill 28/35, months at your present rank 1/16.',
         'In a fight: Crushed knee that never bends right: worth 45 to 43 (speed -7, stamina -3).', 'Captain Godric of Highwold (Cunning, command 56)'].map(w);

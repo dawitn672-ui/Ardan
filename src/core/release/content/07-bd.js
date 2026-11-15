@@ -1456,7 +1456,7 @@
         once: !0,
         w: 3,
         title: "The forty-kilometer run",
-        text: "You are twelve. The Runners' Camp takes only children of the Longwind line who can run forty kilometers in a day. The course is marked with cairns across the grass. The other children in the Horde are watching.",
+        text: "You are twelve. The Runners' Camp takes only children of the Longwind line who can run forty kilometers in a day. The course is marked with cairns across the grass. The other children in Gorath are watching.",
         choices: [
           {
             t: "Run steady from dawn",
@@ -3088,7 +3088,7 @@
               r: "A merchant from the coast pays fifteen suns for the skin of the dreaded worm.",
               fx: {coin:15,honor:-2},
             },
-            lose: {r:"The buyer is from the Sand Clans. He laughs so hard he has to sit down.",fx:{happy:-3}},
+            lose: {r:"The buyer is from Sahrim. He laughs so hard he has to sit down.",fx:{happy:-3}},
           },
         ],
       },

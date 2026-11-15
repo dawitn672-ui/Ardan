@@ -126,5 +126,5 @@ export function lowerNoble(seed, realm, county, rank, index) {
   const rng = makeRng(`${seed}:${realm.id}:${county}:${rank}:${index}`);
   const namer = makeNamer(rng);
   const sex = rng.chance(0.88) ? 'male' : 'female';
-  return { rank, title: `${RANK_TITLE[rank][sex === 'female' ? 1 : 0]} of ${namer.place(realm.culture)}`, given: namer.given(realm.culture, sex), house: namer.house(realm.culture), sex };
+  return { rank, title: `${RANK_TITLE[rank][sex === 'female' ? 1 : 0]} of ${namer.place(realm.culture, { realm: realm.id })}`, given: namer.given(realm.culture, sex, { realm: realm.id }), house: namer.house(realm.culture, { realm: realm.id }), sex };
 }

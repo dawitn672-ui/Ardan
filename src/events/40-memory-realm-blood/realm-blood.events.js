@@ -954,7 +954,7 @@
       ],
     },
 
-    // ================================================================== The Tusk Clans (POL-34)
+    // ================================================================== The Ughrak (POL-34)
 
     // rl_tk_faced: took the heavy spear and walked out onto the grass to face the woolly rhino
     {
@@ -963,7 +963,7 @@
       cond: (p, C) => C.realm(p, "POL-34") && C.adult(p) && C.flag(p, "rl_tk_faced") && A.S.year - p.flags.rl_tk_faced >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { ctx.killed = rhinoKilled(p) ? 1 : 0; },
-      text: (p, ctx) => `${ctx.killed ? "You killed the woolly rhino at the steppe edge with the heavy spear" : "You took the heavy spear and walked out to face the woolly rhino at the steppe edge"}, and so you may speak at clan council. Tonight is your first. The question is rye: Drevna has held back the rye it owes the Tusk Clans two harvests running. The war-leaders want to ride. The old women want to wait. Every face turns to see where the new voice goes.`,
+      text: (p, ctx) => `${ctx.killed ? "You killed the woolly rhino at the steppe edge with the heavy spear" : "You took the heavy spear and walked out to face the woolly rhino at the steppe edge"}, and so you may speak at clan council. Tonight is your first. The question is rye: Drevna has held back the rye it owes Ughrak two harvests running. The war-leaders want to ride. The old women want to wait. Every face turns to see where the new voice goes.`,
       choices: [
         { t: "Speak for riding on Drevna",
           r: "Your voice is young and loud, and the war-leaders like the sound of it. The clan rides in autumn. Some come back with rye, and some across their saddles.",

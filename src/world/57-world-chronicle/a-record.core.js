@@ -449,7 +449,7 @@
     }
     return '';
   };
-  // a whole sentence, dated: "In May 1110, at Crowbrook, Aldmark beat the Horde: 24,000 men in the field, 6,100 dead."
+  // a whole sentence, dated: "In May 1110, at Crowbrook, Aldmark beat Gorath: 24,000 men in the field, 6,100 dead."
   WC.line = function (e) {
     if (!e) return '';
     const when = `In ${WC.month(e)} ${e.y}`, P = pin(e.p), A1 = rs(e.a), B1 = rs(e.b), fmt = n => (A.fmt ? A.fmt(n) : String(n));

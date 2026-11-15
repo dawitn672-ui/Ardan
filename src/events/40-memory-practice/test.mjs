@@ -353,9 +353,9 @@ export default {
 
         // ---------- the setter's world: the same history in the wrong place, race, stage or station must not qualify
         const NEG = {
-          'mpf_shot_kharsa outside the Nine Winds': ['mpf_shot_kharsa', { realm: 'POL-01' }, pc => { sk(pc, { bow: 50, mounted: 50 }); ago(pc, 'pf_backward_shot', 5); }],
-          'mpf_corsair_sails in Blackreef itself': ['mpf_corsair_sails', { realm: 'POL-33' }, pc => { coastTown(pc); ago(pc, 'pf_corsair_favor', 5); }],
-          'mpf_corsair_reef for a landsman outside Blackreef': ['mpf_corsair_reef', {}, pc => ago(pc, 'pf_corsair_favor', 5)],
+          'mpf_shot_kharsa outside Ulun': ['mpf_shot_kharsa', { realm: 'POL-01' }, pc => { sk(pc, { bow: 50, mounted: 50 }); ago(pc, 'pf_backward_shot', 5); }],
+          'mpf_corsair_sails in Corvasse itself': ['mpf_corsair_sails', { realm: 'POL-33' }, pc => { coastTown(pc); ago(pc, 'pf_corsair_favor', 5); }],
+          'mpf_corsair_reef for a landsman outside Corvasse': ['mpf_corsair_reef', {}, pc => ago(pc, 'pf_corsair_favor', 5)],
           'mpf_steel_reckoners for a dwarf': ['mpf_steel_reckoners', { race: 'dwarf', realm: 'POL-29', startAge: 60 }, pc => { pc.gear.ranged = 'xbow'; ago(pc, 'pf_hold_steel', 5); }],
           'mpf_dwarf_fold for a dwarf': ['mpf_dwarf_fold', { race: 'dwarf', realm: 'POL-10', startAge: 60 }, pc => ago(pc, 'pf_dwarf_eye', 5)],
           'mpf_pilot_storm inland': ['mpf_pilot_storm', {}, pc => { inland(pc); ago(pc, 'pf_pilot', 5); }],

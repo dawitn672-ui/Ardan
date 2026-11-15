@@ -42,7 +42,7 @@
       lordOf = (p,ctx,occ)=>{const h=pickHouse(p,ctx);let t=h&&A.houseHead?A.houseHead(h.id):null;return(!t||!t.alive||t.id===p.id||t.ruler)&&(t=mk(p,occ||"a lord",{status:"noble"})),ctx.pid=t.id,ctx.lord=A.fullName(t),t},
       royalChild = (p,ctx)=>{const r=RM(p),ru=r?A.P(r.ruler):null,kids=ru?(ru.children||[]).map(A.P).filter(k2=>k2&&k2.alive&&!A.isAdult(k2)&&A.age(k2)>=6):[],k=kids.length?A.pick(kids):mk(p,"a child of the royal blood",{status:"royal",ageAdj:A.ri(8,13)});return ctx.pid=k.id,ctx.prince=k.sex==="F"?"princess":"prince",k},
       courts = p=>Object.values(A.S.realms).filter(r=>r.alive&&r.id!==p.realm&&!r.isRebel&&r.ruler&&A.P(r.ruler)),
-      setDest = (p,ctx,pref)=>{const l=courts(p),me=RM(p);if(!l.length)return ctx.destId="",ctx.dest="a far court",ctx.destFull="a far realm",ctx.destCap="a far capital",ctx.destRuler="a foreign sovereign",ctx.destLang="",null;let pool=l;const near=me?l.filter(r2=>me.rivals.includes(r2.id)||me.allies.includes(r2.id)):[];if(pref==="rival"){const rv=l.filter(r2=>me&&me.rivals.includes(r2.id)||A.relBetween(p.realm,r2.id)<-20);rv.length&&(pool=rv)}else if(pref==="friendly"){const fr=l.filter(r2=>A.relBetween(p.realm,r2.id)>-25&&!(me&&me.rivals.includes(r2.id)));fr.length&&(pool=fr)}else near.length&&A.chance(.7)&&(pool=near);const r=A.pick(pool);ctx.destId=r.id,ctx.dest=/^(Amber Isles|Sand Clans|Nine Winds|Tusk Clans|Spice Coast|Free Marches)$/.test(r.short)?"the "+r.short:r.short,ctx.destFull=r.name,ctx.destCap=r.capital||r.short;const ru=A.P(r.ruler);return ctx.destRuler=ru?A.rulerStyle(ru,r):"its sovereign",ctx.destLang=GD.LANG[GD.REALM_CULTURE[r.id]]||"",ctx.destLaw=A.lawOf?A.lawOf(r.id):"other",r},
+      setDest = (p,ctx,pref)=>{const l=courts(p),me=RM(p);if(!l.length)return ctx.destId="",ctx.dest="a far court",ctx.destFull="a far realm",ctx.destCap="a far capital",ctx.destRuler="a foreign sovereign",ctx.destLang="",null;let pool=l;const near=me?l.filter(r2=>me.rivals.includes(r2.id)||me.allies.includes(r2.id)):[];if(pref==="rival"){const rv=l.filter(r2=>me&&me.rivals.includes(r2.id)||A.relBetween(p.realm,r2.id)<-20);rv.length&&(pool=rv)}else if(pref==="friendly"){const fr=l.filter(r2=>A.relBetween(p.realm,r2.id)>-25&&!(me&&me.rivals.includes(r2.id)));fr.length&&(pool=fr)}else near.length&&A.chance(.7)&&(pool=near);const r=A.pick(pool);ctx.destId=r.id,ctx.dest=/^(Free Marches)$/.test(r.short)?"the "+r.short:r.short,ctx.destFull=r.name,ctx.destCap=r.capital||r.short;const ru=A.P(r.ruler);return ctx.destRuler=ru?A.rulerStyle(ru,r):"its sovereign",ctx.destLang=GD.LANG[GD.REALM_CULTURE[r.id]]||"",ctx.destLaw=A.lawOf?A.lawOf(r.id):"other",r},
       setForeignTongue = (p,ctx)=>{for(let i=0;i<8;i++)if(setDest(p,ctx),ctx.destLang&&GD.LANG_LIST.includes(ctx.destLang)&&!speaks(p,ctx.destLang))return;ctx.destLang=speaks(p,"Old Solen")&&GD.LANG_LIST.find(l=>!speaks(p,l))||"Old Solen"},
       leadWar = p=>A.atWar(p.realm).find(w=>(w.leadA===p.realm||w.leadD===p.realm)&&w.cb!=="throne"&&A.realm(w.leadA===p.realm?w.leadD:w.leadA)&&A.realm(w.leadA===p.realm?w.leadD:w.leadA).alive),
       LAWNAME = {
@@ -2523,7 +2523,7 @@
         cool: 3,
         title: "Terms of peace",
         cond: p=>!!leadWar(p),
-        setup: (p,ctx)=>{const w=leadWar(p),foe=w?w.leadA===p.realm?w.leadD:w.leadA:null;if(ctx.war=w?w.name:"the war",foe&&A.realm(foe)){const r=A.realm(foe);ctx.destId=r.id,ctx.dest=/^(Amber Isles|Sand Clans|Nine Winds|Tusk Clans)$/.test(r.short)?"the "+r.short:r.short,ctx.destCap=r.capital||r.short}else ctx.destId="",ctx.dest="the enemy",ctx.destCap="the enemy camp";setFee(p,ctx,.3)},
+        setup: (p,ctx)=>{const w=leadWar(p),foe=w?w.leadA===p.realm?w.leadD:w.leadA:null;if(ctx.war=w?w.name:"the war",foe&&A.realm(foe)){const r=A.realm(foe);ctx.destId=r.id,ctx.dest=r.short,ctx.destCap=r.capital||r.short}else ctx.destId="",ctx.dest="the enemy",ctx.destCap="the enemy camp";setFee(p,ctx,.3)},
         text: "{war} has cost {realmShort} a harvest and a generation of sons. {ruler} sends you under a white banner to {destCap} to end it, if it can be ended. Their ministers will meet you in a tent between the armies.",
         choices: [
           {
@@ -5576,7 +5576,7 @@
         cool: 10,
         title: "Failing eyes",
         cond: (p,C)=>C.ageAdj(p)>=35,
-        text: "The letters swim on the page after noon now, and by candlelight they are ants. A merchant from the Spice Coast sells polished reading-stones, clear as water, that make small letters large. He wants 25 suns.",
+        text: "The letters swim on the page after noon now, and by candlelight they are ants. A merchant from Kesh sells polished reading-stones, clear as water, that make small letters large. He wants 25 suns.",
         choices: [
           {
             t: "Buy the stone",

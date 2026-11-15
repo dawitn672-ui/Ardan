@@ -198,7 +198,7 @@
         w: 1.5,
         cool: 4,
         title: "The price of a body",
-        setup: (p,ctx)=>{ctx.law=p.realm==="POL-21"?"The law of the Spice Coast says a slave may buy freedom for two kilograms of pepper.":p.realm==="POL-30"?"In Ranpur a slave who serves twelve years goes free by law. You cannot wait twelve years.":p.realm==="POL-18"?"Flood law frees a debt-slave after seven years. Your master says that is a long time.":"Where slaves are sold, a grown one fetches about a hundred suns."},
+        setup: (p,ctx)=>{ctx.law=p.realm==="POL-21"?"The law of Kesh says a slave may buy freedom for two kilograms of pepper.":p.realm==="POL-30"?"In Ranpur a slave who serves twelve years goes free by law. You cannot wait twelve years.":p.realm==="POL-18"?"Flood law frees a debt-slave after seven years. Your master says that is a long time.":"Where slaves are sold, a grown one fetches about a hundred suns."},
         text: "You have saved. Copper by copper, under the floor stone. Your master knows, of course. Today he names a price: 100 suns. {law}",
         choices: [
           {
@@ -272,7 +272,7 @@
           {
             t: "Take the Path of the Well",
             req: (p,C)=>C.realm(p,"POL-32")&&p.faith!=="REL-07",
-            r: "In the Amber Isles the Path of the Well frees any slave who converts. You wash, you say the words, and you walk out free.",
+            r: "In Ambrel the Path of the Well frees any slave who converts. You wash, you say the words, and you walk out free.",
             fx: p=>(p.faith="REL-07",p.piety=A.clamp(p.piety+6,0,100),setFree(p)),
           },
         ],
@@ -942,7 +942,7 @@
         id: "wk_herd_horsefair",
         cond: (p,C)=>C.adult(p)&&free(p)&&(herder(p)||C.terr(p,"steppe")&&com(p)),
         title: "The horse fair",
-        text: 'Horses everywhere, dust, shouting. The Nine Winds sell twenty thousand horses a year to the west, and half of them seem to be here. A Wind Rider dealer offers you a dun colt for 40 suns. "Steppe price," he grins. "For a friend."',
+        text: 'Horses everywhere, dust, shouting. Ulun sells twenty thousand horses a year to the west, and half of them seem to be here. A Wind Rider dealer offers you a dun colt for 40 suns. "Steppe price," he grins. "For a friend."',
         choices: [
           {
             t: "Buy the colt (40 suns)",
@@ -974,7 +974,7 @@
         id: "wk_herd_raid",
         cond: (p,C)=>C.adult(p)&&free(p)&&(herder(p)||farmer(p))&&C.terr(p,"hills","mountains"),
         title: "Cattle gone",
-        text: p=>`${p.realm==="POL-13"?"In the Highland League wealth is counted in cattle and silver, and cattle walk.":"Cattle walk, and some men help them."} At dawn your byre is empty and the tracks lead up toward the next glen.`,
+        text: p=>`${p.realm==="POL-13"?"In the League of Brannoch wealth is counted in cattle and silver, and cattle walk.":"Cattle walk, and some men help them."} At dawn your byre is empty and the tracks lead up toward the next glen.`,
         choices: [
           {
             t: "Rouse the neighbors and follow the trail",
@@ -1591,7 +1591,7 @@
         id: "wk_trade_caravan",
         cond: (p,C)=>C.adult(p)&&trader(p)&&free(p),
         title: "A share in the caravan",
-        setup: (p,ctx)=>{ctx.route=["POL-17","POL-19","POL-20","POL-24","POL-22"].includes(p.realm)?"the Salt Road, by night, with eight hundred camels":["POL-25","POL-26","POL-34","POL-12"].includes(p.realm)?"the Silk Road east, through the Tusk Clans who tax every caravan":["POL-30","POL-29","POL-28"].includes(p.realm)?"the Nagora road with crucible steel and pepper":"the Sun Road, with wine, oil and cloth"},
+        setup: (p,ctx)=>{ctx.route=["POL-17","POL-19","POL-20","POL-24","POL-22"].includes(p.realm)?"the Salt Road, by night, with eight hundred camels":["POL-25","POL-26","POL-34","POL-12"].includes(p.realm)?"the Silk Road east, through Ughrak who tax every caravan":["POL-30","POL-29","POL-28"].includes(p.realm)?"the Nagora road with crucible steel and pepper":"the Sun Road, with wine, oil and cloth"},
         text: "A caravan master is selling shares in a venture along {route}. Fifty suns a share; he promises double if the road is kind. Roads are seldom kind.",
         choices: [
           {
@@ -1932,7 +1932,7 @@
         id: "wk_sea_corsairs",
         cond: (p,C)=>C.adult(p)&&J(p,"sailor","merchant","fish")&&C.coast(p),
         title: "Sails astern",
-        text: "Two low red sails come up fast from the south, oars flashing. Blackreef galleys, or someone who wants to be mistaken for them.",
+        text: "Two low red sails come up fast from the south, oars flashing. Corvasse galleys, or someone who wants to be mistaken for them.",
         choices: [
           {
             t: "Grab a pike and stand at the rail",
@@ -1965,7 +1965,7 @@
         id: "wk_sea_toll",
         cond: (p,C)=>C.adult(p)&&J(p,"sailor","merchant","pirate")&&C.coast(p),
         title: "The dragon toll",
-        text: p=>J(p,"pirate")?"You row out to a fat Lucernan cog to collect the dragon toll: twenty suns a ship, in Lucernan crowns. Her master swears he already paid at the Ostran house.":"Off the Strait of Hael, a Blackreef boat comes alongside for the dragon toll: twenty suns a ship, in Lucernan crowns. Your captain mutters about running the strait by night next time.",
+        text: p=>J(p,"pirate")?"You row out to a fat Lucernan cog to collect the dragon toll: twenty suns a ship, in Lucernan crowns. Her master swears he already paid at the Ostran house.":"Off the Strait of Hael, a Corvasse boat comes alongside for the dragon toll: twenty suns a ship, in Lucernan crowns. Your captain mutters about running the strait by night next time.",
         choices: [
           {
             t: "Keep your mouth shut and haul ropes",
@@ -1978,7 +1978,7 @@
             check: {s:"sea",s2:"ins",d:55},
             win: {r:"No lights, muffled oars, a lucky fog. You are through.",fx:{coin:12,fame:1,skill:{sea:3}}},
             lose: {
-              r: "Blackreef galleys catch you at dawn and take double for the insult.",
+              r: "Corvasse galleys catch you at dawn and take double for the insult.",
               fx: {coin:-10,health:-10,cause:"a corsair cudgel"},
             },
           },
@@ -2104,7 +2104,7 @@
         w: 1.5,
         cool: 3,
         title: "Share Day",
-        text: "Share Day at Blackreef: the crews meet under the Articles to share the year's take and vote. Ima Redsail wants to vote out Captain-General Nell Brine and go back to open raiding. Both sides are buying drinks.",
+        text: "Share Day at Corvasse: the crews meet under the Articles to share the year's take and vote. Ima Redsail wants to vote out Captain-General Nell Brine and go back to open raiding. Both sides are buying drinks.",
         choices: [
           {
             t: "Vote with Redsail",

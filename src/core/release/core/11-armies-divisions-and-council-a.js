@@ -2376,7 +2376,9 @@ A.oobLeader = function (rid, key, rank) {
         f: ["Ama"],
       },
     fem = A.hash(key + "sex") % 5 === 0,
-    given = A.hpick(fem ? cul.f : cul.m, key) || "Aren",
+    // C7 (D-058): from the realm's own names, picked by hash (a page draws nothing)
+    nv = A.NAMES && A.NAMES.ok() ? A.NAMES.sees(r.cult, rid) : null,
+    given = A.hpick(nv ? (fem ? nv.female : nv.male) : fem ? cul.f : cul.m, key) || "Aren",
     provs = A.S ? A.S.prov.filter(p => p.orig === rid) : [],
     from = provs.length ? A.hpick(provs, key + "p").name : r.capital || "the capital";
   return {

@@ -1820,7 +1820,7 @@ A.POWER_CODEX = [
   },
   {
     h: "Beasts: animals, great beasts, titans, legends",
-    t: "Animals (wolves, hyenas, wyverns, basilisks; up to about 100 kg) — one trained fighter can win. Great beasts (cave bears, tigers, hell boars, snow apes, the Great Ash Dragon; 200–700 kg) — a hunting party's work; alone, even a Master usually dies. Titans (mammoths, woolly rhinos, river horses, amber wyrms, great crocodiles; over a tonne) — never fought alone: expeditions with pits, ropes, fire and twenty spears. Leviathans (50–70 tonnes) are hunted only by fleets of harpoon boats. Legends (the hill-sized Black Dragon, the 60-metre Dragon of Blackreef) are stories — hoaxes and misunderstandings.",
+    t: "Animals (wolves, hyenas, wyverns, basilisks; up to about 100 kg) — one trained fighter can win. Great beasts (cave bears, tigers, hell boars, snow apes, the Great Ash Dragon; 200–700 kg) — a hunting party's work; alone, even a Master usually dies. Titans (mammoths, woolly rhinos, river horses, amber wyrms, great crocodiles; over a tonne) — never fought alone: expeditions with pits, ropes, fire and twenty spears. Leviathans (50–70 tonnes) are hunted only by fleets of harpoon boats. Legends (the hill-sized Black Dragon, the 60-metre Dragon of Corvasse) are stories — hoaxes and misunderstandings.",
   },
   {
     h: "Why a swordsman cannot kill a dragon",

@@ -5398,7 +5398,7 @@
         cool: 10,
         title: "The wall-run",
         setup: (p,ctx)=>{fill(p,ctx),ctx.rv=rivalOf(p),ctx.Rv=A.cap(ctx.rv)},
-        text: "A quarrel between {fam} and {rv} has gone to the valley court, and by old Highland custom it will be settled by the wall-run: two champions race along the top of Highcastle's wall, and whoever falls loses. The clan has chosen you.",
+        text: "A quarrel between {fam} and {rv} has gone to the valley court, and by old Brannoch custom it will be settled by the wall-run: two champions race along the top of Highcastle's wall, and whoever falls loses. The clan has chosen you.",
         choices: [
           {
             t: "Run for the clan",

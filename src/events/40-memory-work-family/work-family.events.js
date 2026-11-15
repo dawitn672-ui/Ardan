@@ -257,7 +257,7 @@
       ],
     },
 
-    // ===================== wk_good_horse: a sound dun colt from the Nine Winds horse fair
+    // ===================== wk_good_horse: a sound dun colt from the Ulun horse fair
     {
       id: "mwf_dun_offer",
       title: "The dun is grown",
@@ -453,7 +453,7 @@
         { t: "Refuse, and sign on with Redsail's own ship",
           r: "You carry your sea-chest up a red-sailed gangplank in daylight, so everyone sees. Raiding pays better than tolls. It also hangs more men.",
           fx: { fame: 2, coin: 15, skill: { sea: 2 }, trait: "reckless", perf: 5 } },
-        { t: "Leave Blackreef on the next honest hull",
+        { t: "Leave Corvasse on the next honest hull",
           r: "The master of a Morhaven cog takes you on without asking where you learned to reef in a blow. Honest pay, and less blood.",
           fx: { job: "sailor", honor: 3 } },
       ],
@@ -464,13 +464,13 @@
       title: "A page of the share-book",
       cond: (p, C) => C.adult(p) && !C.job(p, "pirate") && C.flag(p, "wk_redsail") && A.S.year - p.flags.wk_redsail >= 4,
       w: 3, once: true,
-      text: "You shouted for Ima Redsail at Share Day, and you have since left Blackreef behind. Blackreef has not left you. A page of its share-book, every Share Day vote in a purser's hand, sits in a strongbox in Greyhaven, and the Varennan admiralty is bidding for it. A clerk who has read the page offers to cut your line out of it.",
+      text: "You shouted for Ima Redsail at Share Day, and you have since left Corvasse behind. Corvasse has not left you. A page of its share-book, every Share Day vote in a purser's hand, sits in a strongbox in Greyhaven, and the Varennan admiralty is bidding for it. A clerk who has read the page offers to cut your line out of it.",
       choices: [
         { t: "Pay the clerk to cut your line (40 suns)", req: p => p.coin >= 40,
           r: "He brings you the strip of paper with your name on it, and you burn it in front of him. He has a good memory, he says, but a poor one for sale.",
           fx: { coin: -40, trait: "paranoid" } },
         { t: "Go to the admiralty first and turn evidence", check: { s: "persuasion", s2: "intrigue", d: 55 },
-          win: { r: "A Varennan lawyer writes down every captain you can name. You walk out with a pardon and twenty suns. Blackreef will hear of it.", fx: p => join(apply(p, null, { coin: 20, honor: -8, deed: "Turned evidence against Blackreef" }), mkFoe(p, "enemy", -50, "a captain of the Brotherhood")) },
+          win: { r: "A Varennan lawyer writes down every captain you can name. You walk out with a pardon and twenty suns. Corvasse will hear of it.", fx: p => join(apply(p, null, { coin: 20, honor: -8, deed: "Turned evidence against Corvasse" }), mkFoe(p, "enemy", -50, "a captain of the Brotherhood")) },
           lose: { r: "The admiralty is pleased to meet a pirate who walks in on his own feet. It keeps you.", fx: { prison: 2, why: "piracy", honor: -4 } } },
         { t: "Do nothing. Pages burn, and admirals die",
           r: "You go back to your work and sleep with your boots by the bed.",

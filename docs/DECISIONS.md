@@ -936,3 +936,52 @@ secret-kin stories (a revealed half-brother is a story's premise, not a contradi
 **Not done:** the People page's Household block with faces, the tree centred on you with connectors and the person card's
 new order (F8 to F10, interface work); "Make a friend" as "Spend time with" (F6) beyond the parish's faces; a target of
 named people per realm (P9's other half, X5).
+
+### D-058 · C7: names are data, flavour is a weighting, people come from the neighbour; the realm names are in the source (2026-11-15 ET; D-013; owner rules 9 and 11, order 18; CRITIQUE N1-N5, N11, N12, P6)
+**Chosen** (design: `docs/design/names-and-cultures.md`; code `src/world/999981-names-and-cultures`, `src/world/engine/names.js`, `data/names.json`):
+1. **One common English pool, nine others.** `data/names.json` (built by `tools/c7/build-names-data.mjs` from
+   `docs/research/c7-name-data.json`): 1,979 male and 1,841 female given names, 4,083 family names and 1,275 places in the common
+   pool, which names 13 cultures; the Wind Riders, the desert and southern peoples, the two elf, two orc, the dwarf and the giant
+   cultures draw from pools of their own. No given name is in two peoples' pools and a name keeps one sex (N11, N12; the two elf
+   pools and the two orc ones, one people each, may share). The names of the old realms that are also English words
+   ("Highland") stay out of the pools. **Replaces** the 24 culture lists of `LORE.cultures` as the source of new names (they stay
+   as the fallback of a build without the feature, and for epithets) and the v2 engine's four syllable sets
+   (`archive/c7-syllable-names/`).
+2. **Flavour is a weighting, not a language** (D-013). A culture sees a hashed 60% of the common pool, a realm 80% of that, a
+   *lean* of twelve plain names per sex (11 realms that share a pool: Aldmark English, Northreach Norse, Greyhaven German,
+   Ashmere Welsh, Brannoch Scots, Solenne French, Varenna Italian, Lucerna, Morhaven Spanish, Ostra Dutch, Tessaria Greek) is
+   tried first 28 times in 100 and a culture's *accent* 12 in 100. The hash is FNV-1a over `name|id`: no stored lists, the same on
+   every machine, the same from the seed. The engine's namer is pure; `A.NAMES` draws through `A.rand`.
+3. **People come from the neighbour and from trade** (N1). A person made for a province (the parish's people; households' staff
+   keep the player's own culture) is drawn with `A.NAMES.originOf`: in a border province 22 to 38 in 100 come from the neighbour
+   across it, in a port or market town inland 17 to 33 from the realm's trade partners (named in its lore's imports and exports,
+   allies, neighbours); a port on a border draws 22 to 33 from the neighbours, who are partners too. The person keeps `org` and
+   takes that realm's culture and names. A parish's people are of their realm, no longer "made like the player" (which made
+   76 of 76 named people in Aldmark Northfolk). Census (`nmCensus`, 35 realms, 1,000 draws a province): 69 ports and market
+   towns draw 17-35% (mean 27%) from trade partners, 185 border provinces 20-40% (mean 30%) from the neighbour.
+4. **No twins** (N4). `A.NAMES.settle` (every month, and once when a game begins, after the tree is made): no full name twice
+   among the living of a town; no given name twice among brothers, sisters and first cousins (the dead of the tree count). The
+   later one is renamed from their own view, avoiding the kin (a child's patronymic follows); never the player, a lore figure
+   or house member (`castId`, `famRole`), a ruler or an heir. A child is named avoiding its kin at birth, so the pass rarely
+   has work. 12 worlds × 30 years: none left (the build before: 21 twins in a town in 3 worlds).
+5. **Fiefs** (N3). `A.V2N.v2culture` hands the nobility engine the realm's culture id; a fief's place and its holder's name come
+   from that people's pool, never empty (a lore house with no head yet gives the head the lore wrote).
+6. **The realm names are in the source; the renaming hack is deleted** (P6). The eight Nov 5 names are written into the lore and
+   every string of the source by `tools/c7/rename-realms.mjs` (906 strings, 48 files; the hack's own rules, run once). Of the
+   eight, four now fit their governments (N5): **Khanate of Ulun**, **League of Brannoch**, **Free Port of Corvasse**, **Ughrak
+   Clans**; Sultanate of Ambrel, Kesh, Sahrim Confederacy and Horde of Gorath stay. The capital Blackreef is Corvasse. The
+   hack (`99999-v2-names`: the setters of `innerHTML`, `textContent`, `title`, `setAttribute`, the canvas's `fillText`, and about
+   twenty rules) is in `archive/c7-realm-renaming-hack/`, last built at `b87c908`. `nmOldNames` reads every script, the lore,
+   every event and a new game for any old name (the data's own "Highland" place and the migration's table, written in pieces,
+   included): none.
+7. **Old saves** (decided here): a save from before C7 loads and keeps every person's name and the prose of its log and news;
+   only the eight realms' own names (and shorts) are renamed by id on load (`A.NAMES.renameState`, a `V2SAVE` step and after
+   every `A.deserialize`), and only when they still hold an old name (a realm the life renamed is left). A save has no `nmv` flag, so the
+   twin pass marks everyone in it as settled and works only on people made after the load. No format bump.
+**Conflicts recorded:** (a) D-013 says one language; the owner's order 18 asks for far more names: the common pool is large, flavour
+is a weighting. (b) `A.givenName` is wrapped by 97-first-life-fixes (the player's kin); it still runs, in front of the new
+draw. (c) Rendering is pure: `A.NAMES.sees` gives the lists for a pick by hash (`A.oobLeader`). (d) The same seed now makes
+different people than before C7 (the draws changed): worlds are deterministic, not identical to earlier builds'.
+**Not done:** the lore's authored people keep their names (the cast, the houses' members, e.g. "Teodoro Lantieri"); N6 (the
+noble ladder against the lore), N7's Marchfolk, N9 (town scale), N10 (a Chaplain of the Horde), the realm pairs that share a word
+(-haven, -deep, -hold), M4's climate bands; the player-facing mixing of dress and faith by origin (C8c).

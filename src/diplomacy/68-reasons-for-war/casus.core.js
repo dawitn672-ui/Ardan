@@ -30,7 +30,7 @@
   const clean = s => String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/[<>"{}]/g, '').replace(/\s+/g, ' ').trim().slice(0, 260);
   const cap = s => { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1); };
   const short = id => (A.realm(id) ? A.realmShort(id) : String(id || ''));
-  // "Velgrad's", "the Nine Winds'"
+  // "Velgrad's", "the Ulun'"
   const poss = s => (/s$/.test(s) ? s + "'" : s + "'s");
   const persona = rid => (A.rulerPersona ? A.rulerPersona(rid) : { warLog: 0, wrath: 0, pride: 0, warmth: 0, greed: 0, honor: 0, patience: 0, caution: 0, parts: {}, traits: [] });
   const feudOn = () => !!(FE && FE.ON !== false);
@@ -57,8 +57,8 @@
   // Seven of the 34 wants name a neighbour to take something from. The rest want to keep, sell or survive: those
   // do not start wars. The words are the bible's own, shortened.
   CS.WANT = {
-    'POL-01': { t: ['POL-11'], s: 'to push the Horde back over the Gordush and plough the steppe edge' },
-    'POL-11': { t: ['POL-12'], s: 'to take the grass back to the Salt Shore from the Nine Winds' },
+    'POL-01': { t: ['POL-11'], s: 'to push Gorath back over the Gordush and plough the steppe edge' },
+    'POL-11': { t: ['POL-12'], s: 'to take the grass back to the Salt Shore from Ulun' },
     'POL-14': { t: ['POL-25'], s: 'to take the other half of the Grey Channel tolls from Velgrad' },
     'POL-25': { t: ['POL-14'], s: 'to take the whole Grey Channel toll from Greyhaven' },
     'POL-17': { t: ['POL-24'], s: "to bring Sabra's pearl coast back under the Sultan" },
@@ -147,7 +147,7 @@
   CS.moment = function (a, b, P) {
     const rb = A.realm(b); if (!rb) return null;
     const other = A.atWar(b).find(w => !w.att.includes(a) && !w.def.includes(a));
-    // (said so that a name like "the Nine Winds" needs no verb to agree with it)
+    // (said so that a name like "the Ulun" needs no verb to agree with it)
     if (other) return { k: 'away', t: `the host of ${short(b)} is away, at war with ${short(other.leadA === b || other.att.includes(b) ? other.leadD : other.leadA)}` };
     if ((rb.exhaustion || 0) >= 45) return { k: 'worn', t: `the war has worn ${short(b)} thin (weariness ${Math.round(rb.exhaustion)})` };
     if ((rb.stability || 50) < 30) return { k: 'weak', t: `there is turmoil in ${short(b)} (stability ${Math.round(rb.stability)})` };
@@ -215,7 +215,7 @@
   // ---------------------------------------------------------------- the casus belli of a war
   // the release's memories (A.DMEM): the lasting wrongs (half-lives of 14 to 30 years) count as memories; the
   // passing ones (an insult, an incident, a war fought) are cited as the war's recent cause, not as a memory
-  // past tenses, so a name of either number reads: "the Nine Winds took our land", "Velgrad took our land"
+  // past tenses, so a name of either number reads: "the Ulun took our land", "Velgrad took our land"
   const MEMK = { took_land: 'took our land', betrayal: 'betrayed us', broke_pact: 'broke a pact sworn with us', abandoned: 'left us alone in a war' };
   const RECK = { enemy_war: 'fought against us', insult: 'insulted our crown', hostage: 'kept one of ours as a hostage', embargo: 'shut its markets to our goods', justify: 'had its clerks forge claims on us', spies: 'had spies taken in our halls', incident: 'stirred up trouble on our border' };
   const CBT = { justified: 'a claim its clerks forged', reconquest: 'land of its own to take back', rivalry: 'an old rivalry', holy: 'a holy war', incident: 'a quarrel on the border',

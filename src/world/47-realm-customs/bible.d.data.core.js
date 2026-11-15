@@ -92,7 +92,7 @@
   };
 
   D['POL-24'] = {
-    want: 'To stay free of Qadir, keep the pearl banks and the Gold Road caravans, and sell lamp oil to Blackreef and Lucerna without ever naming it in council.',
+    want: 'To stay free of Qadir, keep the pearl banks and the Gold Road caravans, and sell lamp oil to Corvasse and Lucerna without ever naming it in council.',
     fear: 'That a Qadiri fleet comes down the gulf before the fire-boats are ready, or that someone counts the empties and learns where the oil goes.',
     place: { name: 'The oil shore', text: 'A stretch of black sand south of Sabra where the lamp oil is boiled in walled yards. The Emir\'s men guard it, and every empty jar that comes back is counted.' },
     customs: [
@@ -145,7 +145,7 @@
 
   D['POL-21'] = {
     want: 'To keep every grain of pepper passing through the Pepper Hall, undersell Ranpur on the Nagora road, and stop Zanara\'s eastern road reaching the sea anywhere but Kesh.',
-    fear: 'That the Amber merchants call in the 200,000 suns, and the harbour dues of 1105 turn out to be pawned already.',
+    fear: 'That the Ambrel merchants call in the 200,000 suns, and the harbour dues of 1105 turn out to be pawned already.',
     place: { name: 'The Pepper Hall at Kesh', text: 'A long shed of black hardwood on the harbour where every spice cargo is weighed. The council of houses meets in its loft, above the smell, and takes its tenth from the scales below.' },
     customs: [
       { id: 'kes_scales', name: 'The tenth at the scales', kind: 'market', cut: 0.1,

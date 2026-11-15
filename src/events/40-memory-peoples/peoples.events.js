@@ -1076,7 +1076,7 @@
             fx: { coinPct: -0.5, them: { op: -10 } } } },
       ],
     },
-    // ================================================================== Orcs (the Horde POL-11, the Tusk Clans POL-34, orcs abroad)
+    // ================================================================== Orcs (Gorath POL-11, the Ughrak POL-34, orcs abroad)
 
     // pp_orc_hyena: going out for a deed-name, you hunted the hyenas that take the foals, and came home without one
     {
@@ -1348,8 +1348,8 @@
         { t: "Confess before the council",
           r: "You say it: you crossed, you saw, you swore falsely. The council fines the Whitehorns two thousand bushels. Hrok's riders put your name to their fires.",
           fx: (p, ctx) => join(eff(p, ctx, { honor: 4, favor: -4, them: { op: 20 } }), castFx(p, "CHR-0333", { them: { type: "enemy", op: -50 } })) },
-        { t: "Ride for the Horde's fires before the council sits",
-          r: "You are across the Gordush by nightfall and a guest of the Horde's fires for a season. When you come back, the council has judged without you.",
+        { t: "Ride for Gorath's fires before the council sits",
+          r: "You are across the Gordush by nightfall and a guest of Gorath's fires for a season. When you come back, the council has judged without you.",
           fx: { honor: -6, happy: -8, deed: "Fled the League council at Grakmar" } },
       ],
     },
@@ -1694,9 +1694,9 @@
         { t: "Send them home: you are not the rider",
           r: "The riders go, muttering. One of the Seekers stays behind and asks to see if the drums were right about you, with a blade.",
           fx: { trait: "humble", duel: { tier: 2, title: "a Seeker of the Rider", opts: { kind: "duel", place: "the trampled ground by your fire", lethal: false, toYield: true, title: "False rider" } } } },
-        { t: "Lead them east to the Khanate instead",
-          r: "You take them east, out of everyone's prophecy. The Nine Winds khan hires three hundred half-orc riders gladly and asks no questions about cords.",
-          fx: { coin: 40, honor: 1, lang: "Wind Rider", deed: "Led three hundred half-orc riders east to the Nine Winds" } },
+        { t: "Lead them east to Ulun instead",
+          r: "You take them east, out of everyone's prophecy. The Ulun khan hires three hundred half-orc riders gladly and asks no questions about cords.",
+          fx: { coin: 40, honor: 1, lang: "Wind Rider", deed: "Led three hundred half-orc riders east to Ulun" } },
       ],
     },
     // pp_ho_seen, later: a herder brings a sick child to the rider with the red cord
@@ -1742,14 +1742,14 @@
           fx: { coin: -6, happy: 3, them: { op: 20 }, trait: "proud" } },
       ],
     },
-    // pp_ho_filed: an orc of the Horde names what you did in the horse market
+    // pp_ho_filed: an orc of Gorath names what you did in the horse market
     {
       id: "mpe_ho_filed_word",
       title: "Filed-tooth",
       cond: (p, C) => C.race(p, "halforc") && C.adult(p) && !C.realm(p, "POL-11", "POL-34") && C.flag(p, "pp_ho_filed") && A.S.year - p.flags.pp_ho_filed >= 4,
       w: 2, once: true,
-      setup: (p, ctx) => { make(p, ctx, { race: "orc", realm: "POL-11", sex: "M", age: 26, occ: "a horse-trader of the Horde" }); },
-      text: p => `{themFull}, a horse-trader of the Horde, sits his horse in the {home} horse lines and studies your mouth. Then he says a word in the orc tongue that the town does not understand and you do: filed-tooth. It means a half-blood who filed down for the humans. You did, ${ago(p, "pp_ho_filed")} ago. He says it loud enough for every orc at the lines.`,
+      setup: (p, ctx) => { make(p, ctx, { race: "orc", realm: "POL-11", sex: "M", age: 26, occ: "a horse-trader of Gorath" }); },
+      text: p => `{themFull}, a horse-trader of Gorath, sits his horse in the {home} horse lines and studies your mouth. Then he says a word in the orc tongue that the town does not understand and you do: filed-tooth. It means a half-blood who filed down for the humans. You did, ${ago(p, "pp_ho_filed")} ago. He says it loud enough for every orc at the lines.`,
       choices: [
         { t: "Pull him off his horse", check: { s: "unarmed", s2: "str", d: 52 },
           win: { r: "He is heavier, and you are angrier. He gets up with a bloody mouth and, to your surprise, a laugh. \"Not so small,\" he says, and buys you a drink.",
@@ -1757,7 +1757,7 @@
           lose: { r: "He is heavier, and orc-fast. You wake in the straw of the horse lines with a broken nose and the word still in your ears.",
             fx: { wound: "broken_nose", health: -8, them: { type: "enemy", op: -20 }, cause: "a Horde horse-trader's fists" } } },
         { t: "Answer him in the orc tongue", check: { s: "persuasion", s2: "wil", d: 48 },
-          win: { r: "You tell him about the barber, the staring, the two suns. He hears you out. \"In the Horde you would be a rider,\" he says. \"Here you are a mouth.\" He means it kindly.",
+          win: { r: "You tell him about the barber, the staring, the two suns. He hears you out. \"In Gorath you would be a rider,\" he says. \"Here you are a mouth.\" He means it kindly.",
             fx: { wil: 1, them: { op: 15 }, trait: "calm" } },
           lose: { r: "Your orc tongue is a child's. The horse lines laugh at your grammar, then at your teeth.",
             fx: { happy: -6, them: { op: -10 } } } },
@@ -1767,18 +1767,18 @@
       ],
     },
 
-    // pp_ho_east: you went east with a Nine Winds horse-trader, where nobody looked twice at your tusks
+    // pp_ho_east: you went east with a Ulun horse-trader, where nobody looked twice at your tusks
     {
       id: "mpe_ho_east_rider",
-      title: "A rider from the Nine Winds",
+      title: "A rider from Ulun",
       cond: (p, C) => C.race(p, "halforc") && C.adult(p) && !C.realm(p, "POL-11", "POL-34", "POL-12") && C.flag(p, "pp_ho_east") && A.S.year - p.flags.pp_ho_east >= 4,
       w: 3, once: true,
-      setup: (p, ctx) => { make(p, ctx, { race: "human", realm: "POL-12", sex: "M", age: 22, occ: "a horse-trader of the Nine Winds" }); },
-      text: p => `You rode east with a Nine Winds horse-trader ${ago(p, "pp_ho_east")} ago and learned to ride properly in a country that looked at your horse, not your tusks. Then you came back west. Now {themFull}, the trader's grandson, rides into {home} with three steppe horses and an offer: the Khan's yam wants riders who speak the western tongues. In the Khanate, people still look at the horse.`,
+      setup: (p, ctx) => { make(p, ctx, { race: "human", realm: "POL-12", sex: "M", age: 22, occ: "a horse-trader of Ulun" }); },
+      text: p => `You rode east with an Ulun horse-trader ${ago(p, "pp_ho_east")} ago and learned to ride properly in a country that looked at your horse, not your tusks. Then you came back west. Now {themFull}, the trader's grandson, rides into {home} with three steppe horses and an offer: the Khan's yam wants riders who speak the western tongues. In Ulun, people still look at the horse.`,
       choices: [
         { t: "Ride east with him for a season on the yam",
           r: "A season on the Salt Wind stages: a hundred and sixty kilometres a day, a silver tablet on a cord, and keepers who know your name by the third week. You come back west browner and slower to sit still.",
-          fx: { coin: 40, skill: { riding: 3 }, them: { type: "friend", op: 25 }, deed: "Rode a season on the Nine Winds yam" } },
+          fx: { coin: 40, skill: { riding: 3 }, them: { type: "friend", op: 25 }, deed: "Rode a season on the Ulun yam" } },
         { t: "Buy his three horses and stay", req: p => p.coin >= 40,
           r: "Three steppe horses, ugly and tireless, in a stable in {home}. Riding them, you remember a country where people look at the horse.",
           fx: { coin: -40, gear: { mount: "horse" }, skill: { riding: 2 }, them: { op: 10 } } },
@@ -1794,7 +1794,7 @@
       cond: (p, C) => C.race(p, "halforc") && C.adult(p) && !C.realm(p, "POL-11", "POL-34", "POL-12") && C.flag(p, "pp_ho_east") && A.S.year - p.flags.pp_ho_east >= 6,
       w: 2, once: true,
       setup: (p, ctx) => { make(p, ctx, { race: "human", age: 45, occ: "a steward" }); },
-      text: p => `A Nine Winds embassy has come to {home} to sell horse-archers for the lord's war, and the lord's interpreter is sick. You learned the Wind Rider tongue on the steppe ${ago(p, "pp_ho_east")} ago. {themFull}, the steward, offers twenty suns for a day standing between them. By mid-morning you understand that the horse-archers are wanted against the orc clans.`,
+      text: p => `An Ulun embassy has come to {home} to sell horse-archers for the lord's war, and the lord's interpreter is sick. You learned the Wind Rider tongue on the steppe ${ago(p, "pp_ho_east")} ago. {themFull}, the steward, offers twenty suns for a day standing between them. By mid-morning you understand that the horse-archers are wanted against the orc clans.`,
       choices: [
         { t: "Translate it faithfully, every word",
           r: "Every word, both ways. The lord buys six hundred horse-archers. The orcs of the border will meet them in spring, and you helped the bargain along.",
@@ -1802,7 +1802,7 @@
         { t: "Shade the price until the bargain fails", check: { s: "deception", s2: "int", d: 54 },
           win: { r: "A word here, a number there. By evening each side thinks the other insulting. The embassy rides home with its archers unsold.",
             fx: { coin: 20, honor: -3, skill: { deception: 3 }, deed: "Broke a horse-archer bargain in translation" } },
-          lose: { r: "The Nine Winds envoy speaks some of the western tongue after all. He tells the lord what you did with his numbers.",
+          lose: { r: "The Ulun envoy speaks some of the western tongue after all. He tells the lord what you did with his numbers.",
             fx: { honor: -6, them: { op: -20 }, prison: 1, why: "false interpreting before a lord" } } },
         { t: "Put down the cup and walk out at noon",
           r: "The steward finds a merchant who speaks some Wind Rider, badly. The bargain takes a week longer, and is made.",

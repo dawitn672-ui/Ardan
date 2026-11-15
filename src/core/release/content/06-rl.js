@@ -907,7 +907,7 @@
               fx: {coin:-30,gear:{mount:"horse"},skill:{riding:1},happy:4},
             },
             lose: {
-              r: "A Nine Winds rider recognizes his brand on her flank the next week.",
+              r: "An Ulun rider recognizes his brand on her flank the next week.",
               fx: {coin:-30,punish:"theft"},
             },
           },
@@ -1080,7 +1080,7 @@
         cond: (p,C)=>C.realm(p,"POL-03")&&C.adult(p),
         w: 1,
         cool: 8,
-        text: ()=>`In a Palella inn a well-dressed ${A.pick(["Ashmere wool merchant","man with a Highland accent","factor from Kingsmere"])} shows you a purse. He wants to see a Palella spinning wheel work, only once, only to look. Teaching the wheel to foreigners is a hanging crime, like clipping coin. No wheel may leave the valley, even in a coffin.`,
+        text: ()=>`In a Palella inn a well-dressed ${A.pick(["Ashmere wool merchant","man with a Brannoch accent","factor from Kingsmere"])} shows you a purse. He wants to see a Palella spinning wheel work, only once, only to look. Teaching the wheel to foreigners is a hanging crime, like clipping coin. No wheel may leave the valley, even in a coffin.`,
         choices: [
           {
             t: "Show him your aunt's wheel for 100 suns",
@@ -1359,7 +1359,7 @@
         cond: (p,C)=>C.realm(p,"POL-19")&&C.ageAdj(p)>=10,
         w: 1.2,
         cool: 7,
-        text: ()=>`A man of a clan your family has feuded with for three generations stumbles into camp at noon, lips cracked, ${A.pick(["his camel dead behind him","a wound in his side","a boy on his back"])}. Among the Sand Clans a traveler who accepts water is under clan protection, even a blood enemy. The cup is in your hand.`,
+        text: ()=>`A man of a clan your family has feuded with for three generations stumbles into camp at noon, lips cracked, ${A.pick(["his camel dead behind him","a wound in his side","a boy on his back"])}. In Sahrim a traveler who accepts water is under clan protection, even a blood enemy. The cup is in your hand.`,
         choices: [
           {
             t: "Offer him the cup",
@@ -1870,7 +1870,7 @@
         cond: (p,C)=>C.realm(p,"POL-26")&&C.adult(p),
         w: 1,
         cool: 8,
-        text: `Through the thin wall of your house you hear your neighbor and two strangers talking low: ${A.pick(["about holding back the rye owed to the Tusk Clans","about a forged clause and the heir","about selling wax past the crown's tolls"])}. In Drevna listening at a neighbor's wall is only fined, but spying on the crown is treason. Which is this?`,
+        text: `Through the thin wall of your house you hear your neighbor and two strangers talking low: ${A.pick(["about holding back the rye owed to Ughrak","about a forged clause and the heir","about selling wax past the crown's tolls"])}. In Drevna listening at a neighbor's wall is only fined, but spying on the crown is treason. Which is this?`,
         choices: [
           {
             t: "Take what you heard to the Still Hall",
@@ -2386,7 +2386,7 @@
         cond: (p,C)=>C.realm(p,"POL-34")&&(C.teen(p)||C.adult(p)&&C.ageAdj(p)<30),
         w: 1.3,
         once: !0,
-        text: "Spring. In the League of the Tusk Clans no one may speak at a clan council until they have faced a woolly rhino on foot with a spear. Many young ones die trying each spring. The Rhino Spear Lodge has found a bull grazing alone at the steppe edge. The heavy spear is yours if you take it.",
+        text: "Spring. In the Ughrak Clans no one may speak at a clan council until they have faced a woolly rhino on foot with a spear. Many young ones die trying each spring. The Rhino Spear Lodge has found a bull grazing alone at the steppe edge. The heavy spear is yours if you take it.",
         choices: [
           {
             t: "Take the spear and walk out onto the grass",
@@ -3324,7 +3324,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-01","POL-11","POL-13","POL-34")&&(C.adult(p)||C.teen(p)),
         w: 1.1,
         once: !0,
-        text: p=>p.realm==="POL-01"?"Sixteen thousand Aldmark men hold the Gordush between Crossmarch and the fords, because War-Chief Vrag will not hand over Tarn Halfblood. Lord Harrow's March Hawks want to cross after May Fair; the Emperor wants quiet until the wedding. Carts of stakes and bolts creak south every day.":p.realm==="POL-11"?"Riders come back from the Gordush with news: sixteen thousand iron men on the far bank, and the war-chief will not give them Tarn Halfblood. Grass comes after May Fair, and then the clans can ride. At the Great Ride, Harkun the Drum-Master must judge the half-orc rider.":`News from the Gordush: Aldmark's iron men face the Horde across the river over one half-orc raider, Tarn Halfblood. ${p.realm==="POL-13"?"The Council votes in March on Aldmark's contract for four thousand Highland crossbows.":"Three clans of the east have sent riders west to see this Tarn for themselves."}`,
+        text: p=>p.realm==="POL-01"?"Sixteen thousand Aldmark men hold the Gordush between Crossmarch and the fords, because War-Chief Vrag will not hand over Tarn Halfblood. Lord Harrow's March Hawks want to cross after May Fair; the Emperor wants quiet until the wedding. Carts of stakes and bolts creak south every day.":p.realm==="POL-11"?"Riders come back from the Gordush with news: sixteen thousand iron men on the far bank, and the war-chief will not give them Tarn Halfblood. Grass comes after May Fair, and then the clans can ride. At the Great Ride, Harkun the Drum-Master must judge the half-orc rider.":`News from the Gordush: Aldmark's iron men face Gorath across the river over one half-orc raider, Tarn Halfblood. ${p.realm==="POL-13"?"The Council votes in March on Aldmark's contract for four thousand Brannoch crossbows.":"Three clans of the east have sent riders west to see this Tarn for themselves."}`,
         choices: [
           {
             t: p=>p.realm==="POL-01"?"Hire on to carry stakes to Crossmarch":p.realm==="POL-13"?"Talk up the contract in the valley alehouse":"Ride west to see Tarn Halfblood for yourself",
@@ -3390,7 +3390,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-03","POL-04","POL-33","POL-15","POL-24","POL-17")&&(C.adult(p)||C.teen(p)),
         w: 1,
         once: !0,
-        text: p=>p.realm==="POL-33"?"On the Reef they say Ima Redsail wants to vote Nell Brine out at Share Day and go back to open raiding, and that Varenna's Lion Fleet sails after Sea Opening. Half the Reef Crossbows are owed pay. The toll, one ship in forty, still comes in every week.":`In the harbor they curse the dragon toll: Blackreef takes one ship's worth in forty from everything that passes the Strait of Hael, behind a fire-dragon nobody has seen up close. ${p.realm==="POL-03"?"Now the Lion Fleet means to sail on the pirates after Sea Opening, and is hiring oarsmen.":"Men say the Lion Fleet of Varenna will sail against the Reef this year."}`,
+        text: p=>p.realm==="POL-33"?"On the Reef they say Ima Redsail wants to vote Nell Brine out at Share Day and go back to open raiding, and that Varenna's Lion Fleet sails after Sea Opening. Half the Reef Crossbows are owed pay. The toll, one ship in forty, still comes in every week.":`In the harbor they curse the dragon toll: Corvasse takes one ship's worth in forty from everything that passes the Strait of Hael, behind a fire-dragon nobody has seen up close. ${p.realm==="POL-03"?"Now the Lion Fleet means to sail on the pirates after Sea Opening, and is hiring oarsmen.":"Men say the Lion Fleet of Varenna will sail against the Reef this year."}`,
         choices: [
           {
             t: "Sign on as an oarsman for the coming fight",
@@ -3493,7 +3493,7 @@
         cond: (p,C)=>early()&&C.realm(p,"POL-17","POL-24","POL-19","POL-32")&&(C.adult(p)||C.teen(p)),
         w: 1,
         once: !0,
-        text: p=>p.realm==="POL-24"?"In Sabra they whisper that Qadir's Grand Admiral Jalal will sail on the emirate after 1 April with a fleet that has never faced fire-oil. The Emir wants no battle; his son Tahir wants to burn the Qadiri fleet first. Fire-boats are being tarred in every cove.":`In the bazaars they say Grand Admiral Jalal of Qadir will sail on Sabra after 1 April, while the Sultan lies sick with stones. ${p.realm==="POL-19"?"The Speaker has his own quarrel with Sabra over missing children.":p.realm==="POL-32"?"Amber Isles pilots are asked which side their sultan favors.":"Twelve of the galleys leak, say the shipwrights, but quietly."}`,
+        text: p=>p.realm==="POL-24"?"In Sabra they whisper that Qadir's Grand Admiral Jalal will sail on the emirate after 1 April with a fleet that has never faced fire-oil. The Emir wants no battle; his son Tahir wants to burn the Qadiri fleet first. Fire-boats are being tarred in every cove.":`In the bazaars they say Grand Admiral Jalal of Qadir will sail on Sabra after 1 April, while the Sultan lies sick with stones. ${p.realm==="POL-19"?"The Speaker has his own quarrel with Sabra over missing children.":p.realm==="POL-32"?"Ambrel pilots are asked which side their sultan favors.":"Twelve of the galleys leak, say the shipwrights, but quietly."}`,
         choices: [
           {
             t: p=>p.realm==="POL-24"?"Help tar the fire-boats":"Sign on to row the galleys",

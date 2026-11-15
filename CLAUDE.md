@@ -47,7 +47,7 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 | `src/<system>/engine/` | The **v2 engine** modules of that system (plain ES modules, unit-tested by `tests/v2/`) |
 | `src/core/00-..09-` | The fix layer, always built |
 | `src/*/*/.wip` | Work in progress: left out of the default build, tests and check; built by `--only=name` |
-| `data/` | Content kept as data (`*.json`), put on the page as `A.DATA[...]` before any feature code |
+| `data/` | Content kept as data (`*.json`), put on the page as `A.DATA[...]` before any feature code (`names.json`: every name pool, built by `tools/c7/build-names-data.mjs`; new people are named by `A.NAMES`, D-058) |
 | `assets/` | Art, fonts, portrait and VFX source files |
 | `vendor/ardan-b593143.html` | The untouched original release, minified. **Never edit.** The build no longer reads it |
 | `tests/` | `run.mjs` (browser tests: `tests/suites/` and every feature's `test.mjs`), `v2/` (engine unit tests), `saves/` (sample saves of every version; they must keep loading) |

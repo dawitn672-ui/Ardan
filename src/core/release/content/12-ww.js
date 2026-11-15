@@ -1249,7 +1249,7 @@
         cond: (p,C)=>R(p,"POL-03")&&(C.adult(p)||C.teen(p))&&C.coast(p),
         w: 1,
         cool: 7,
-        text: "From the cliff path at dusk you see sails low on the water toward the Strait of Hael: three, then five. The watchtowers of the Strait March light fires when Blackreef sails appear. The nearest tower is dark. Its watchman is probably drunk.",
+        text: "From the cliff path at dusk you see sails low on the water toward the Strait of Hael: three, then five. The watchtowers of the Strait March light fires when Corvasse sails appear. The nearest tower is dark. Its watchman is probably drunk.",
         choices: [
           {
             t: "Run for the tower and light the beacon",
@@ -1684,7 +1684,7 @@
         cond: (p,C)=>R(p,"POL-04")&&C.adult(p)&&(is(p,"merchant","gentry","noble")||p.coin>=80),
         w: 1,
         cool: 6,
-        text: 'Your cargo of salt and wine sails west next month. Sea insurance costs a fortieth of the cargo, but the underwriters say Old Ironjaw, the Blackreef captain, has been seen on the western approach, and the price has doubled to a twentieth. "Every lamp has its oil," the underwriter says, and does not explain.',
+        text: 'Your cargo of salt and wine sails west next month. Sea insurance costs a fortieth of the cargo, but the underwriters say Old Ironjaw, the Corvasse captain, has been seen on the western approach, and the price has doubled to a twentieth. "Every lamp has its oil," the underwriter says, and does not explain.',
         choices: [
           {
             t: "Pay the double price",
@@ -2816,7 +2816,7 @@
         cond: (p,C)=>R(p,"POL-13")&&(kid(p,C)||C.teen(p)),
         w: 1,
         once: !0,
-        text: "Highland children are often named for a famous climb or deed. The older children dare you up the Raven's Chimney, a crack in the cliff above the summer huts, with the whole valley spread out below like a cloth. Nobody your age has done it this year.",
+        text: "Brannoch children are often named for a famous climb or deed. The older children dare you up the Raven's Chimney, a crack in the cliff above the summer huts, with the whole valley spread out below like a cloth. Nobody your age has done it this year.",
         choices: [
           {
             t: "Climb the Chimney to the top",
@@ -2951,7 +2951,7 @@
           },
           {
             t: "Let the older ones talk",
-            r: "The meeting goes on till dark. In the end the valley sends its Speaker with no instructions at all, which is very Highland.",
+            r: "The meeting goes on till dark. In the end the valley sends its Speaker with no instructions at all, which is very Brannoch.",
             fx: {},
           },
         ],
@@ -2962,7 +2962,7 @@
         cond: (p,C)=>R(p,"POL-13")&&C.adult(p),
         w: .9,
         cool: 7,
-        text: "Highland herb spirit is strong enough to strip paint, and it is sold in the lowlands as medicine. Your aunt's recipe uses gentian, juniper and something she will only tell you on her deathbed. A mule-man from Roseham wants twenty flasks to carry to the Sunland fairs.",
+        text: "Brannoch herb spirit is strong enough to strip paint, and it is sold in the lowlands as medicine. Your aunt's recipe uses gentian, juniper and something she will only tell you on her deathbed. A mule-man from Roseham wants twenty flasks to carry to the Sunland fairs.",
         choices: [
           {
             t: "Distill the twenty flasks",
@@ -3001,7 +3001,7 @@
         cond: (p,C)=>R(p,"POL-13")&&grown(p,C)&&!is(p,"noble","royal"),
         w: 1,
         cool: 6,
-        text: `At the Mule Gate Inn, pass smugglers will carry anything for a mule's fee. A soft-handed Sunlander offers you 10 silver to take a small locked chest over the high pass to the Sunland side. "No questions," he says. Highland law throws anyone who guides an enemy army from the Traitor's Rock. A chest is not an army.`,
+        text: `At the Mule Gate Inn, pass smugglers will carry anything for a mule's fee. A soft-handed Sunlander offers you 10 silver to take a small locked chest over the high pass to the Sunland side. "No questions," he says. Brannoch law throws anyone who guides an enemy army from the Traitor's Rock. A chest is not an army.`,
         choices: [
           {
             t: "Take it over the pass",
@@ -3458,7 +3458,7 @@
         cond: (p,C)=>R(p,"POL-14")&&grown(p,C),
         w: 1,
         cool: 6,
-        text: "Steppe horses from the Nine Winds come ashore at the Horse Quay, bought for grain and cloth under the old compact. They come off the ships wild-eyed after the voyage, and the half-orc grooms need help with a dun stallion who has already kicked one man into the harbor.",
+        text: "Steppe horses from Ulun come ashore at the Horse Quay, bought for grain and cloth under the old compact. They come off the ships wild-eyed after the voyage, and the half-orc grooms need help with a dun stallion who has already kicked one man into the harbor.",
         choices: [
           {
             t: "Ride him until he quits",
@@ -4014,7 +4014,7 @@
         cond: (p,C)=>R(p,"POL-15")&&C.adult(p)&&(is(p,"merchant","artisan")||C.prof(p,"trade",25)),
         w: 1,
         cool: 7,
-        text: "Morhaven sells oil, wine and grain to the Nagoth clans of the Horde, and three Nagoth orcs with copper-capped tusks are at the Horse Gate today with felt and hides to trade. Most of the market is pretending not to see them. Orcs are feared here. Their silver is as good as anyone's.",
+        text: "Morhaven sells oil, wine and grain to the Nagoth clans of Gorath, and three Nagoth orcs with copper-capped tusks are at the Horse Gate today with felt and hides to trade. Most of the market is pretending not to see them. Orcs are feared here. Their silver is as good as anyone's.",
         choices: [
           {
             t: "Trade with them fairly",
@@ -4970,7 +4970,7 @@
             t: "Add what you have heard",
             check: {s:"intrigue",s2:"int",d:40},
             win: {
-              r: "You trade rumor for rumor and come out knowing more than you went in with: the rye carts are at Sevmir, and the Tusk riders are gathering.",
+              r: "You trade rumor for rumor and come out knowing more than you went in with: the rye carts are at Sevmir, and the Ughrak riders are gathering.",
               fx: {skill:{intrigue:2},int:.3,happy:2},
             },
             lose: {
@@ -5066,7 +5066,7 @@
         cond: (p,C)=>R(p,"POL-26")&&grown(p,C)&&(C.terr(p,"steppe","plains")||C.prof(p,"xbow",30)),
         w: 1,
         cool: 6,
-        text: "On the Steppe March farmers keep crossbows at home by law, women too, since the Lakeland War. Tonight the dogs are barking at the edge of the rye, and you hear hooves on the frozen ground: Tusk riders, a raiding party, testing the grazing line.",
+        text: "On the Steppe March farmers keep crossbows at home by law, women too, since the Lakeland War. Tonight the dogs are barking at the edge of the rye, and you hear hooves on the frozen ground: Ughrak riders, a raiding party, testing the grazing line.",
         choices: [
           {
             t: "Shoot from the loft window",
@@ -5102,11 +5102,11 @@
         cond: (p,C)=>R(p,"POL-26")&&grown(p,C)&&early()&&!is(p,"noble","royal"),
         w: 1,
         once: !0,
-        text: `You are a carter on the rye carts: 2,000 bushels owed to the Tusk Clans each winter under the Treaty of Thardush. Drevna calls it a gift; the clan-mothers say, "Count the rye before you thank the Drevnan." The Lord Marshal's men have stopped the carts at Sevmir, saying the roads are unsafe. They are not unsafe.`,
+        text: `You are a carter on the rye carts: 2,000 bushels owed to Ughrak each winter under the Treaty of Thardush. Drevna calls it a gift; the clan-mothers say, "Count the rye before you thank the Drevnan." The Lord Marshal's men have stopped the carts at Sevmir, saying the roads are unsafe. They are not unsafe.`,
         choices: [
           {
             t: "Wait at Sevmir with the carts",
-            r: "Weeks of cold and boredom, and the Marshal's men drinking your mead. If the Tusk riders come for their rye, you will be the first to meet them.",
+            r: "Weeks of cold and boredom, and the Marshal's men drinking your mead. If the Ughrak riders come for their rye, you will be the first to meet them.",
             fx: {wil:1,coin:3},
           },
           {
@@ -6229,7 +6229,7 @@
         cond: (p,C)=>R(p,"POL-32")&&C.adult(p)&&C.poor(p),
         w: 1,
         cool: 10,
-        text: `In the Amber Isles a debtor can be bound to labor for up to seven years. Your debt to a clove lord's steward has grown with "fees", since the Book forbids interest and lenders call it something else. The steward offers terms: five years in the clove gardens of Luesa.`,
+        text: `In Ambrel a debtor can be bound to labor for up to seven years. Your debt to a clove lord's steward has grown with "fees", since the Book forbids interest and lenders call it something else. The steward offers terms: five years in the clove gardens of Luesa.`,
         choices: [
           {
             t: "Accept the five years",

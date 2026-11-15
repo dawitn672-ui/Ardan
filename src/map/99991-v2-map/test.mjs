@@ -251,7 +251,7 @@ export default {
       `canvas, picture and view one shape ${[r.first, r.zoomed, r.panned, r.fit].every(s => same(s, W))} (after a zoom, a pan and a fit), home in view ${r.homeIn}, pure ${r.pure}${errs.length ? ', ERR ' + errs[0] : ''}`).join(' | ') };
   },
   // playtest 2, old #21: 61's compass rose, over the world map's lower right corner, covered the name under it (the
-  // Amber Isles). No name is written under the rose now, at a phone's width and a laptop's; with the rose hidden the
+  // Ambrel). No name is written under the rose now, at a phone's width and a laptop's; with the rose hidden the
   // same views do put names there (so the test bites), and drawing is pure.
   async v2mapRoseClear(pg, errs, { browser, file }) {
     const out = [];

@@ -52,11 +52,16 @@
     if (PA.state().met[k]) return A.P(PA.state().met[k]);
     const pr = A.S.prov && A.S.prov[prov];
     const realm = (pr && pr.owner) || (like && like.realm) || 'POL-01';
-    const race = (like && like.race) || 'human', cult = (like && like.cult) || A.cultureFor(race, realm), faith = (like && like.faith) || A.faithFor(race, realm);
+    const race = (like && like.race) || 'human', faith = (like && like.faith) || A.faithFor(race, realm);
     const q = F.sandbox('parish|' + k, () => {
+      // C7 (D-058): a town's people are its realm's, and in a port, a market town or a border province some come from a
+      // trade partner or the neighbour across the border (A.NAMES.originOf); they were all made like the player before
+      const og = A.NAMES && A.NAMES.ok() ? A.NAMES.originOf(race, prov) : null;
+      const cult = og ? og.cult : (like && like.cult) || A.cultureFor(race, realm), nrealm = og && og.realm ? og.realm : realm;
       const RR = GD.RACES[race] || GD.RACES.human, born = PA.EPOCH - Math.round((PA.EPOCH - s.born) * RR.adult / 16);
-      const p = A.newPerson({ given: A.givenName(cult, s.sex), sex: s.sex, race, realm, cult, faith, born, status: s.status, home: prov });
-      const fn = A.familyName({ cult, realm, status: s.status, home: prov, sex: s.sex });
+      const p = A.newPerson({ given: A.givenName(cult, s.sex, { realm: nrealm }), sex: s.sex, race, realm, cult, faith, born, status: s.status, home: prov });
+      if (og && !og.home) p.org = og.realm;
+      const fn = A.familyName({ cult, realm: nrealm, status: s.status, home: prov, sex: s.sex });
       if (fn) { p.sur = fn.sur; p.surMode = fn.mode; }
       p.occ = s.occ || (A.isAdult(p) ? A.occPick(s.status, p.sex) : 'a child of ' + A.provName(prov));
       p.flags.parish = prov;

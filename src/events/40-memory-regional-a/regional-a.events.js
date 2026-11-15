@@ -1,7 +1,7 @@
 // Memory callbacks for the southern and steppe realms (chunk "regional-a").
 //
 // Each event reads a flag that an older event sets and nothing used to read: the yam token, the Arrow Field,
-// the fire-oil road, the Horde rider's knife, the pilots of Miruma, the copper on the Sabun Pass, the horn cup,
+// the fire-oil road, Gorath rider's knife, the pilots of Miruma, the copper on the Sabun Pass, the horn cup,
 // the temple roll of Tamar, the Granary Mice, the Ibis Archers, Faruq the Lamp, Zayd Blackveil, the Marad boy,
 // the emperor's hand, the Night of Masks, the House of Runners, the Atani letter, the Night Swimmers, the
 // auger holes at Monuro, the Wet Hands, the prince who hears storms, Desta the Pedlar and the Monundi horsemen.
@@ -78,7 +78,7 @@
   const addDebt = (p, n) => { p.debt = Math.max(0, Math.round((p.debt || 0) + n)); };
 
   A.defEvents([
-    // ------------------------------------------------------------------ Nine Winds (POL-12)
+    // ------------------------------------------------------------------ Ulun (POL-12)
 
     // ss_nw_yam: won the Yam Keepers' token on the 150-kilometer stage to Kharsa
     {
@@ -269,7 +269,7 @@
       cond: (p, C) => C.realm(p, "POL-12") && C.adult(p) && C.flag(p, "mra_nw_knifeshown") && A.S.year - p.flags.mra_nw_knifeshown >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { if (!fresh(p, "mra_nw_knife_accused")) ctx.skip = 1; },
-      text: "The hundred-leader comes with ten riders and a clerk. Since the night of the Horde raid, the camp says you deal with Vrag's men: your tent was spared for a bone knife carved with a running horse. A khan's man who treats with the Horde can lose his herd. The clerk wants to know where the knife came from, and who gave it.",
+      text: "The hundred-leader comes with ten riders and a clerk. Since the night of the Gorath raid, the camp says you deal with Vrag's men: your tent was spared for a bone knife carved with a running horse. A khan's man who treats with Gorath can lose his herd. The clerk wants to know where the knife came from, and who gave it.",
       choices: [
         { t: "Tell the truth: you bound a wounded man at your fire", check: { s: "persuasion", s2: "wil", d: 46 },
           win: { r: "The hundred-leader's own grandmother, it turns out, said the same thing about guests. He fines you one sheep, for the clerk's sake.",
@@ -782,7 +782,7 @@
       ],
     },
 
-    // ------------------------------------------------------------------ Sand Clans (POL-19)
+    // ------------------------------------------------------------------ Sahrim (POL-19)
 
     // ss_sc_blackveil: rode with Zayd Blackveil and burned a well-camp on the Zanari gold road
     {
@@ -1048,18 +1048,18 @@
       title: "The flagship's cable",
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && !C.old(p) && C.flag(p, "ss_ks_swimmer") && A.S.year - p.flags.ss_ks_swimmer >= 2,
       w: 3, once: true,
-      text: "An Amber squadron lies off Kesh for a week, and the League cannot decide whether it is a visit or a threat. The Night Swimmers, who took you on after you cut the marked rope with a knife in your teeth, have been told to be ready. Tonight the captain wants one swimmer to go out and cut the Amber flagship's anchor cable, so she drifts onto the bar.",
+      text: "An Ambrel squadron lies off Kesh for a week, and the League cannot decide whether it is a visit or a threat. The Night Swimmers, who took you on after you cut the marked rope with a knife in your teeth, have been told to be ready. Tonight the captain wants one swimmer to go out and cut the Ambrel flagship's anchor cable, so she drifts onto the bar.",
       choices: [
         { t: "Go yourself, knife in your teeth", check: { s: "sea", s2: "stealth", d: 54 },
-          win: { r: "The cable is as thick as your thigh. It takes an hour. At dawn the Amber flagship sits on the bar, and her admiral sails home without a word. The Swimmers drink to you.",
-            fx: (p, ctx) => { later("mra_ks_swim_price", 6); return more(p, ctx, { fame: 3, skill: { stealth: 2 }, flag: "mra_ks_cutcable", deed: "Cut an Amber flagship's cable by night" }); } },
+          win: { r: "The cable is as thick as your thigh. It takes an hour. At dawn the Ambrel flagship sits on the bar, and her admiral sails home without a word. The Swimmers drink to you.",
+            fx: (p, ctx) => { later("mra_ks_swim_price", 6); return more(p, ctx, { fame: 3, skill: { stealth: 2 }, flag: "mra_ks_cutcable", deed: "Cut an Ambrel flagship's cable by night" }); } },
           lose: { r: "A marine's boathook finds you in the black water. You get back with a gash across your back and nothing cut.",
-            fx: { wound: "deep_cut", health: -14, cause: "an Amber boathook" } } },
+            fx: { wound: "deep_cut", health: -14, cause: "an Ambrel boathook" } } },
         { t: "Say the League has not ordered it",
-          r: "The captain agrees, coldly, and sends no one. The Amber ships leave on the eighth day. The Swimmers stop asking you to drink with them.",
+          r: "The captain agrees, coldly, and sends no one. The Ambrel ships leave on the eighth day. The Swimmers stop asking you to drink with them.",
           fx: { honor: 2, happy: -3, trait: "cautious" } },
-        { t: "Sell the plan to an Amber purser", check: { s: "intrigue", s2: "deception", d: 50 },
-          win: { r: "The purser pays sixty kesh. That night the Amber ships double their boat-watch, and two Swimmers come back with nothing. No one suspects you, yet.",
+        { t: "Sell the plan to an Ambrel purser", check: { s: "intrigue", s2: "deception", d: 50 },
+          win: { r: "The purser pays sixty kesh. That night the Ambrel ships double their boat-watch, and two Swimmers come back with nothing. No one suspects you, yet.",
             fx: { coin: 60, honor: -10, trait: "deceitful" } },
           lose: { r: "The purser takes your plan to the League instead, for a better price. The Swimmers learn whose plan it was.",
             fx: { health: -10, honor: -6, newRel: { type: "enemy", op: -40 }, cause: "a beating on the quay" } } },
@@ -1072,7 +1072,7 @@
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && C.flag(p, "mra_ks_cutcable") && A.S.year - p.flags.mra_ks_cutcable >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { if (!fresh(p, "mra_ks_swim_price")) { ctx.skip = 1; return; } make(p, ctx, { occ: "a Night Swimmer" }); },
-      text: "The Amber Isles have not forgotten their flagship on the bar. An Amber factor in Kesh is offering forty silver kesh for the name of the swimmer who cut her cable. Your name is no secret among the Night Swimmers. One of them, {them}, owes money on the Pepper Hall dice, and has started counting you like coin.",
+      text: "Ambrel has not forgotten their flagship on the bar. An Ambrel factor in Kesh is offering forty silver kesh for the name of the swimmer who cut her cable. Your name is no secret among the Night Swimmers. One of them, {them}, owes money on the Pepper Hall dice, and has started counting you like coin.",
       choices: [
         { t: "Pay {them}'s dice debt first", req: p => p.coin >= 40,
           r: "Forty kesh to the dice-man. {them} weeps with relief and swears to keep your name. You have bought {themHim}, and you both know it.",
@@ -1095,7 +1095,7 @@
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && C.flag(p, "ss_ks_holes") && A.S.year - p.flags.ss_ks_holes >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { if (!cast(p, ctx, "CHR-0556")) ctx.skip = 1; },
-      text: "A League ship from {themFull}'s yards at Monuro has gone down off the Amber Isles with thirty men. A plank came open in a seaway, the survivors say. You caulked below that waterline. You plugged one auger hole and missed the second, three planks along. Now {them} is to be tried for green timber, and the yards are full of men who say nothing.",
+      text: "A League ship from {themFull}'s yards at Monuro has gone down off Ambrel with thirty men. A plank came open in a seaway, the survivors say. You caulked below that waterline. You plugged one auger hole and missed the second, three planks along. Now {them} is to be tried for green timber, and the yards are full of men who say nothing.",
       choices: [
         { t: "Tell the League council about the auger holes", check: { s: "persuasion", s2: "wil", d: 46 },
           win: { r: "You tell them about both holes. {them} is cleared of the green-wood charge. You are fined for keeping quiet, and the yards will remember you spoke.",
@@ -1118,7 +1118,7 @@
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && C.flag(p, "ss_ks_auger") && A.S.year - p.flags.ss_ks_auger >= 2,
       w: 3, once: true,
       setup: (p, ctx) => { cast(p, ctx, "CHR-0556"); },
-      text: "The night you watched Rehema's yards, you followed the auger-man in his Monuri sash to a house on Amber Row. You have kept that house in mind. Now the League is electing a prince, and House Monuri wants the throne back with Amber ships behind it. A hull bored in the yards would look very bad for the Monuri, if anyone could say who bored it.",
+      text: "The night you watched Rehema's yards, you followed the auger-man in his Monuri sash to a house on Amber Row. You have kept that house in mind. Now the League is electing a prince, and House Monuri wants the throne back with Ambrel ships behind it. A hull bored in the yards would look very bad for the Monuri, if anyone could say who bored it.",
       choices: [
         { t: "Take what you saw to House Keshari",
           r: "Faraji Keshari's man pays in silver and asks you to say it again before witnesses. You do. The Monuri lose votes, and gain an enemy.",
@@ -1162,7 +1162,7 @@
       title: "The letter in the cloves",
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && C.flag(p, "ss_ks_wethands") && A.S.year - p.flags.ss_ks_wethands >= 2,
       w: 3, once: true,
-      text: "Old Mwita of Stilt Town never throws anything away. The sealed letter that came up among the cloves, the night you swam out with the Wet Hands to the Amber cog, is still in his chest. He has found out the seal is Monuri, and the letter is addressed to the Amber Grand Vizier. Mwita cannot read. He wants it sold, and he wants you to sell it.",
+      text: "Old Mwita of Stilt Town never throws anything away. The sealed letter that came up among the cloves, the night you swam out with the Wet Hands to the Ambrel cog, is still in his chest. He has found out the seal is Monuri, and the letter is addressed to the Ambrel Grand Vizier. Mwita cannot read. He wants it sold, and he wants you to sell it.",
       choices: [
         { t: "Sell it to House Keshari", check: { s: "intrigue", s2: "trade", d: 46 },
           win: { r: "Faraji Keshari's man pays in good silver, and you split it fairly with Mwita. A month later two Monuri captains are dismissed from the League fleet.",
@@ -1182,7 +1182,7 @@
       title: "Mwita's floats",
       cond: (p, C) => C.realm(p, "POL-21") && C.adult(p) && !C.old(p) && C.flag(p, "ss_ks_wethands") && A.S.year - p.flags.ss_ks_wethands >= 6,
       w: 2, once: true,
-      text: "Old Mwita of Stilt Town is too old to swim. He sends for you, who swam out with his Wet Hands to the Amber cog, and offers you the Wet Hands: twenty thieves, three reed floats, a fence on the quay, and the harbor guards he pays. He offers it the way a father gives away a boat.",
+      text: "Old Mwita of Stilt Town is too old to swim. He sends for you, who swam out with his Wet Hands to the Ambrel cog, and offers you the Wet Hands: twenty thieves, three reed floats, a fence on the quay, and the harbor guards he pays. He offers it the way a father gives away a boat.",
       choices: [
         { t: "Take the Wet Hands",
           r: "The thieves swear on the tide. The floats, the fence and the guards' pay are yours now, and so is the rope, if it comes.",
@@ -1221,8 +1221,8 @@
         { t: "Hold your own cargo, and say nothing",
           r: "You unload, wait out the storm and sell pepper at storm prices after the fleet is lost. It is the best year your purse has had.",
           fx: { coin: 120, honor: -5, trait: "greedy" } },
-        { t: "Sell the secret of his ears to the Amber Isles",
-          r: "An Amber factor pays well to learn the boy has the Maruang storm-sense. What the Amber Isles will do with a prince who hears weather is not your affair, you tell yourself.",
+        { t: "Sell the secret of his ears to Ambrel",
+          r: "An Ambrel factor pays well to learn the boy has the Maruang storm-sense. What Ambrel will do with a prince who hears weather is not your affair, you tell yourself.",
           fx: { coin: 60, honor: -10, secret: 1 } },
       ],
     },

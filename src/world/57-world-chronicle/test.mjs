@@ -408,7 +408,7 @@ export default {
     // scene; every kind the record keeps has at least two lines, so a kind does not repeat itself every time
     const r = await pg.evaluate(() => {
       A.newGame({ seed: 5701, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 30 });
-      const x = { y: 1120, P: 'the Bleakfold', A: 'Aldmark', B: 'the Horde', who: 'King Roderic', war: 'the Red War', dead: '3,400', days: 40, fell: true, how: 2, free: false,
+      const x = { y: 1120, P: 'the Bleakfold', A: 'Aldmark', B: 'Gorath', who: 'King Roderic', war: 'the Red War', dead: '3,400', days: 40, fell: true, how: 2, free: false,
         sick: 'the spotted fever', Sick: 'The spotted fever', order: 'the Stormriders', ref: 'the death of King Roderic in 1092' };
       const bad = [], kinds = {};
       let n = 0;
@@ -454,7 +454,7 @@ export default {
   // Changed for v2: this test played a Far Lands realm (lands: 'great', POL-59 paying POL-58, "the Khaganate"). The
   // owner removed the Far Lands from the build (V2_SPEC complaint 3, LANES "The Far Lands"), so POL-58 no longer exists
   // and the line read "the share for a realm now gone". The bar is the same, but the realm is now made inside the test:
-  // 99999-v2-names gave every continent realm a proper name (POL-19 "Confederacy of the Sand Clans" is now "Sahrim
+  // C7 (D-058) gave every continent realm a proper name (POL-19 is "Sahrim
   // Confederacy"), so no realm in the v2 build is noun-named, and a hardcoded name breaks with the next rename. The test
   // gives POL-19 a noun name for one draw ("League of the Salt Marches" / "Salt Marches", a name no rename table
   // touches), restores it, then draws again on POL-19's own proper name. Both draws are held to WC.realmWord's rule,

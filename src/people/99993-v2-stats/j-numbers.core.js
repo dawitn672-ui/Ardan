@@ -297,7 +297,7 @@
   RULES.push([new RegExp(`(${skillNames()}) ([+−-])(\\d{1,2}(?:\\.\\d)?)(?!\\d|[.,/]\\d|\\s*(?:%|suns?|years?))`, 'g'), (m, k, s, n) => `${k} ${down(s, n)}`]);
   VS.NUMRULES.unshift(...RULES);
 
-  // ---- foreign sums are hearsay (old 22): "Solenne sends 881,788 suns to the Horde" ------------------------------------------
+  // ---- foreign sums are hearsay (old 22): "Solenne sends 881,788 suns to Gorath" ------------------------------------------
   // A realm's books are exact only to the one who keeps them: a sum that passes between crowns, told to someone who
   // rules neither and is no party to it, is what the road says ("some 900,000 suns"). The rule reads only the sentence
   // the sum is in, and only when that sentence names a realm (not the player's own), has a verb of payment, and does not

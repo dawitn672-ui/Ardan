@@ -244,11 +244,11 @@
   WC.GAP = 730;            // days before the same entry is recalled again
   WC.SINCE_MIN = 3;        // years before a line may say "since <year>" of an entry
   const fmt = n => (A.fmt ? A.fmt(n) : String(n));
-  // a realm whose short name is a noun takes its article: "goes to the Sand Clans" ("Confederacy of the Sand Clans"),
-  // "the Nine Winds", "the Amber Isles". 991's A.realmRef did this for the Far Lands only (the Khaganate); with the Far
+  // a realm whose short name is a noun takes its article: "goes to the Sahrim" ("Confederacy of the Sahrim"),
+  // "the Ulun", "the Ambrel". 991's A.realmRef did this for the Far Lands only (the Khaganate); with the Far
   // Lands out of the build (v2, complaint 3) it is not loaded, and the continent's own noun-named realms said "goes to
-  // Sand Clans". A short name that stands after "of the" in the full name is a noun. 99999-v2-names has since given
-  // every continent realm a proper name (Sahrim, Ulun, Ambrel), so in v2 this fires only for a noun name set later.
+  // Salt Marches". A short name that stands after "of the" in the full name is a noun. C7 (D-058) gave every continent
+  // realm a proper name (Sahrim, Ulun, Ambrel), so in v2 this fires only for a noun name set later.
   const reEsc = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   WC.realmWord = function (id) {
     const r = A.realm(id);

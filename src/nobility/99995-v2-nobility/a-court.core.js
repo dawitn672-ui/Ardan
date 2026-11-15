@@ -34,8 +34,9 @@
   const live = p => !!(p && p.alive);
   const GREAT = h => h && !h.extinct && h.kind !== 'royal' && h.great !== false;
 
-  // v2's namer has four cultures; the game's realms map onto them by race
-  N.v2culture = r => ({ elf: 'solenne', dwarf: 'khuul', orc: 'orcish', halforc: 'orcish' })[(r && r.race) || 'human'] || 'aldic';
+  // C7 (D-058): v2's namer names by the game's own culture ids; a fief of a realm takes its name from that people's own list
+  // (it was a pick of four syllable sets by race: a Qadiri realm held "Bramham", a dwarf hold a Mongol-sounding one)
+  N.v2culture = r => (r && r.id && A.cultureFor ? A.cultureFor(r.race || 'human', r.id) : null) || 'CUL-02';
   N.title = (rank, sex) => {
     const g = GD.NOBLE_RUNGS[RUNG[rank]];
     if (rank === 'lord') return sex === 'F' ? 'Lady' : 'Lord';
@@ -206,8 +207,11 @@
     const g = NB.lowerNoble(F.seedFor('low'), { id: rid, culture: N.v2culture(r) }, county, rank, i);
     const place = g.title.replace(/^\S+ of /, '');
     if (typeof m === 'string' && m.startsWith('h:')) {
-      const h = A.S.houses[m.slice(2)], hd = h && h.headPid && A.P(h.headPid), sx = hd ? hd.sex : 'M';
-      return { key: k, rank, title: `${N.title(rank, sx)} of ${place}`, place, given: hd ? hd.given : '', house: h ? A.houseSurname(h) : '', sex: sx, hid: h && h.id, pid: hd && hd.alive ? hd.id : null };
+      const h = A.S.houses[m.slice(2)], hd = h && h.headPid && A.P(h.headPid); let sx = hd ? hd.sex : 'M';
+      // a house whose head is not yet a person gives the head the lore wrote for it, never an empty name (N3)
+      const F0 = !hd && h && A.famData ? A.famData(h.id) : null, m0 = F0 && F0.members && F0.members[0];
+      if (m0 && m0.sex) sx = m0.sex === 'F' ? 'F' : 'M';
+      return { key: k, rank, title: `${N.title(rank, sx)} of ${place}`, place, given: hd ? hd.given : (m0 && m0.given) || g.given, house: h ? A.houseSurname(h) : '', sex: sx, hid: h && h.id, pid: hd && hd.alive ? hd.id : null };
     }
     const p = m && A.P(m);
     if (p) return { key: k, rank, title: `${N.title(rank, p.sex)} of ${place}`, place, given: p.given, house: p.sur, sex: p.sex, pid: p.id, alive: p.alive };

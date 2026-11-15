@@ -2681,7 +2681,7 @@
         cond: (p,C)=>C.adult(p)&&(C.realm(p,"POL-19")||C.terr(p,"desert")&&A.lawOf(p.realm)==="well"),
         setup: prepH,
         title: "Water",
-        text: "A rider comes out of the dunes, half dead of thirst. You know his face: a man of a clan in blood feud with your kin. If you give him water, the law of the Sand Clans puts him under your protection, even from your own brothers.",
+        text: "A rider comes out of the dunes, half dead of thirst. You know his face: a man of a clan in blood feud with your kin. If you give him water, the law of Sahrim puts him under your protection, even from your own brothers.",
         choices: [
           {
             t: "Give him water",

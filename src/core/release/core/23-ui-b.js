@@ -1199,7 +1199,7 @@ UI.namingModal = function () {
     return "";
   }
   const cult = A.culture(c.cult),
-    list = (c.sex === "F" ? cult.f : cult.m).slice(0, 30);
+    list = UI.crNameList(c.cult, c.sex, c.realm, 30);
   return `<div class="panel mbox"><div class="row" style="gap:14px">${PORTRAIT.svg(c, 90)}<div class="grow"><h2>A ${c.sex === "F" ? "daughter" : "son"} is born</h2><div class="small muted">${UI.esc(GD.RACES[c.race].adj)} · family name: ${UI.esc(c.sur || "(none)")}${c.blood && c.blood.show ? ' · <span style="color:var(--blood)">the blood shows</span>' : ""}</div></div></div>
     <div class="field"><label>Name the child</label><div class="row"><input id="childName" aria-label="Name the child" value="${UI.esc(c.given)}" maxlength="24" style="flex:1"><button class="primary" data-a="nameChild">Name</button></div><div class="row" style="margin-top:6px">${list.map(n => `<button class="small" data-a="pickChildName" data-v="${UI.esc(n)}">${UI.esc(n)}</button>`).join("")}</div></div></div>`;
 };
