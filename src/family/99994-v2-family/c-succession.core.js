@@ -73,14 +73,46 @@
     const L = SU.lineOfSuccession(P, h, law, A.S.year, limit || 6);
     return { law: L.law, fitness: L.fitness, line: L.line.map(e => ({ p: e.person.game, why: e.why })), skipped: L.skipped.map(e => ({ p: e.person.game, why: e.why })) };
   };
-  // the head of a house: its living head, or for a royal house its realm's ruler
-  F.headOf = function (hid) {
-    const h = A.S.houses[hid]; if (!h) return null;
+  // ---- THE resolver of a house's head and heir (C6, D-057) --------------------------------------------------------------
+  // Every reader and writer of a house's head asks here: the release's A.kill (its own eldest-son rule is off while this
+  // runs), A.houseHead (the dead head's case), 99995's court (the court lord's case), F.inherit, F.headOf and the views.
+  // Writes still go through A.setHead, so the house's post in A.POSTS (house:<id>) is the one record (A2, D-053).
+  const HO = A.HOUSE = A.HOUSE || {};
+  HO.law = hid => F.houseLaw(hid);
+  // the head: the living holder, or for a royal house its realm's ruler (pure)
+  HO.head = function (hid) {
+    const h = A.S.houses && A.S.houses[hid]; if (!h) return null;
     const hd = h.headPid && A.P(h.headPid);
     if (live(hd)) return hd;
     const r = F.royalRealmOf(hid), ru = r && A.P(r.ruler);
     return live(ru) ? ru : null;
   };
+  // who comes after `from` (the holder, living or dead) under the house's law: the first living person of the line
+  HO.successor = function (hid, from, limit) {
+    if (!from) return null;
+    const L = F.line(from, F.houseLaw(hid), limit || 4);
+    return (L.line.find(e => live(e.p) && e.p.id !== from.id) || {}).p || null;
+  };
+  // the heir: who would come after the head now (pure)
+  HO.heir = function (hid) {
+    const head = HO.head(hid);
+    return head ? HO.successor(hid, head, 3) : null;
+  };
+  HO.resolve = hid => ({ head: HO.head(hid), heir: HO.heir(hid), law: F.houseLaw(hid) });
+  // a house whose recorded head is dead or gone gets one: a living court lord of the house (99995-v2-nobility: he keeps
+  // his county's seat), else the dead head's successor by law; written through A.setHead. Returns the head, or null when
+  // the house has nobody (the release then raises one).
+  HO.settle = function (hid) {
+    const h = A.S.houses && A.S.houses[hid]; if (!h) return null;
+    const hd = h.headPid && A.P(h.headPid);
+    if (live(hd)) return hd;
+    let next = null;
+    next = Object.values(A.S.people).find(q => q.alive && q.house === hid && q.noble && q.noble.court) || null;
+    if (!next && hd) next = HO.successor(hid, hd);
+    if (next) { if (A.setHead) A.setHead(h, next.id, 'law'); else h.headPid = next.id; }
+    return next;
+  };
+  F.headOf = HO.head;
   F.houseLine = function (hid, limit) {
     const h = A.S.houses[hid], head = h && F.headOf(hid);
     if (!head) return { line: [], skipped: [], law: null, head: null };
@@ -169,7 +201,7 @@
     if (heir === undefined) {
       if (h && (h.headPid === from.id || h._v2head === from.id)) {
         delete h._v2head;
-        const L = F.line(from, lawOf(), 3), next = first(L);
+        const next = HO.successor(h.id, from, 3);
         giveHeadship(h, next, from);
         moved.push({ k: 'house', id: h.id, to: next ? next.id : null });
         if (next) giveLordship(from, next);

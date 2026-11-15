@@ -296,7 +296,9 @@
   const houseHead = A.houseHead;
   A.houseHead = function (hid, fresh) {
     const h = A.S.houses[hid];
-    if (h && !fresh && !live(h.headPid && A.P(h.headPid))) {
+    // C6 (D-057): the court lord's case is A.HOUSE.settle's, the one resolver, which the release's houseHead asks first;
+    // without it (a build with no 99994) the rule stays here
+    if (h && !fresh && !A.HOUSE && !live(h.headPid && A.P(h.headPid))) {
       const lord = Object.values(A.S.people).find(q => q.alive && q.house === hid && q.noble && q.noble.court);
       if (lord) { if (A.setHead) A.setHead(h, lord.id, 'law'); else h.headPid = lord.id; return lord; }
     }
