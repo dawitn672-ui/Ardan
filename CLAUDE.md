@@ -80,6 +80,7 @@ node tools/build-v2.mjs                                   # rebundle the v2 engi
 node --test tests/v2/*.test.js                            # the engine's unit tests
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
+node tools/lint-kin.mjs                                   # no event mints kin or names one it did not take from the tree (C6)
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
 node tests/run.mjs                                        # everything against index.html (759 tests; CI shards it 8 ways)
@@ -232,6 +233,11 @@ Using these helpers matters, because `A.CX_RX` classifies events by matching the
 - Use `A.schedule({ type: "event", ev: "id", ctx: {...} }, days)` to bring something back years later.
 
 **Tokens.** `{name}` `{home}` `{realm}` `{realmShort}` `{capital}` `{ruler}` `{faith}` `{father}` `{mother}` `{spouse}` `{rival}` `{friend}` `{enemy}` `{year}` `{age}`, plus any `ctx` key. Digits are allowed (`{mate2}`). An unfilled token makes the engine drop the event.
+
+**Kin come from the tree** (C6, D-057). The family tree holds every relative; `pc.rel` holds only the people met. Never make
+a relative for a scene: take one with `A.KIN.take(p, ["cousin"], { sex, adj })` (met then; it throws, dropping the card,
+when the tree has none), name one with `A.KIN.nameOf`, and write a story's secret into the tree with `A.KIN.reveal`.
+`tools/lint-kin.mjs` fails a scene that links a person it made under a blood word, or says "your cousin {x}" with no kin source.
 
 **Voice.** Dry, concrete, period. Second person, present tense. Short sentences. No modern idiom. Avoid the existing tics ("looks at you a long time", "for the rest of your life", a five-word punchline after every outcome).
 

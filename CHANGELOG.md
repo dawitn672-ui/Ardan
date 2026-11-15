@@ -5,6 +5,14 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **You are born knowing your household, not the whole clan.** A child knows its parents, its brothers and sisters, and a
+  grandparent who lives under the same roof; a noble child also has a nurse, a maid, a guard knight and, from six, a tutor.
+  Uncles, aunts and cousins come to a feast or a burial and you meet them then, and every person you know says how and
+  where you met. A scene never invents a sister you do not have.
+- **The village has faces.** Your parish has its priest, reeve, miller, smith and neighbours, the same people every time,
+  and a child of the village plays with the village's children. Children are born nine months after they are conceived,
+  in any month of the year.
+
 ## v2.1.0-alpha.6 (2026-11-15 04:20 ET) · Screens that fit the life, a faster phone start, one holder for every command
 
 - **Screens know who you are.** A newborn is not offered a physician or told how he looks; a child of nine has no crimes, no
