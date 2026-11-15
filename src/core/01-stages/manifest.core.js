@@ -16,7 +16,7 @@ A.FN_STAGE_ORDER = {
   ],
   'A.eventView': [
     'character-voices', 'world-chronicle', 'choice-memories', 'fight-odds', 'first-life-fixes', 'choice-stakes',
-    'advisors', 'v2-stats', 'v2-family', 'v2-content.lines', 'v2-content.cards', 'households', 'journal'
+    'advisors', 'v2-stats', 'v2-family', 'v2-content.lines', 'v2-content.cards', 'households', 'x3-honest-cards', 'journal'
   ],
   'A.eventChoose': [
     'variety-guard', 'belief-versus-truth', 'learn-by-doing', 'moods', 'body-mind', 'bonds', 'npc-beliefs',

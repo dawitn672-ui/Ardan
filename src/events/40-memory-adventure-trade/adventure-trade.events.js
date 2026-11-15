@@ -156,7 +156,7 @@
       id: "mat_forged_court", title: "Your own hand", w: 3, once: true,
       cond: (p, C) => C.flag(p, "mat_forged_freedom") && A.S.year - p.flags.mat_forged_freedom >= 3 && C.adult(p) && !p.prison,
       setup: (p, ctx) => { const k = who(p, "mat_forged_who"); if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; },
-      text: "The freedman's paper you forged for {them}'s son has come before a magistrate. The buyer's heir found the boy, a grown man now with a trade, and claims him. The magistrate wants the clerk who wrote the paper to come and swear to it. {them} stands at your door with her shawl over her head and says nothing.",
+      text: "The freedman's paper you forged for {them}'s son has come before a magistrate. The buyer's heir found the boy, a grown man now with a trade, and claims him. The magistrate wants the clerk who wrote the paper to come and swear to it. {them} stands at your door with {theirHis} shawl over {theirHis} head and says nothing.",
       choices: [
         { t: "Go, and swear to your own hand", check: { s: "deception", s2: "wil", d: 52 },
           win: { r: "You swear on the book that you wrote what the magistrate's office told you to write. The magistrate cannot remember whether it did. The son walks out free.",
@@ -250,7 +250,7 @@
       id: "mat_note_home", title: "The note", w: 3, once: true,
       cond: (p, C) => C.flag(p, "av_traveled") && A.S.year - p.flags.av_traveled >= 6 && C.adult(p) && !p.prison && (p.flags.ev || {}).av_teen_runaway_sea === p.flags.av_traveled,
       setup: (p, ctx) => { const mo = alive(p.parents && p.parents[1]); if (!mo) { ctx.skip = 1; return; } ctx.pid = mo.id; },
-      text: "You left for the sea on the night tide as a ship's boy, with a note for your mother that you could not really write. Word comes from her house now: {them} is failing, and asks whether you will come before the winter. She never answered the note. Perhaps she never could read it either.",
+      text: "You left for the sea on the night tide as a ship's boy, with a note for your mother that you could not really write. Word comes from her house now: {them} is failing, and asks whether you will come before the winter. {theyHe} never answered the note. Perhaps {theyHe} never could read it either.",
       choices: [
         { t: "Go to her, whatever it costs", r: "She has kept the note in her prayer-book all these years. It says GON TO SE and a word neither of you can read now. She laughs until she coughs.",
           fx: { coin: -15, perf: -5, happy: 4, them: { op: 40 } } },
@@ -407,7 +407,7 @@
           lose: { r: "The ironmonger wonders aloud why you need arrowheads, and the bailiff wonders with him.",
             fx: { prison: 1, why: "trading with outlaws", them: { op: 10 } } } },
         { t: "Ask him to leave the road instead", check: { s: "persuasion", s2: "diplomacy", d: 52 },
-          win: { r: "He takes a long time to answer. In the spring the band breaks up, and {them} goes north to burn charcoal where no one knows his face.",
+          win: { r: "He takes a long time to answer. In the spring the band breaks up, and {them} goes north to burn charcoal where no one knows {theirHis} face.",
             fx: { honor: 2, deed: "Talked an outlaw band off the forest road", them: { type: "friend", op: 10, back: "friend" } } },
           lose: { r: "'The road is the only thing that's mine,' he says. You ride home with your purse, at least.", fx: { them: { op: -5 } } } },
         { t: "Refuse, and ride on", r: "He lets you go. The debt stands, he says, both ways now. You do not ride that road after dark again.",

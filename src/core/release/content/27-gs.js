@@ -303,7 +303,7 @@
       gscene: {roles:["ruler","envoy","noble","knight"]},
       title: "A toast",
       setup: needG((p,ctx)=>{foreign(p,ctx),npc(p,ctx,"a prince with too much wine in him","noble")}),
-      text: '{them}, a prince of {other}, rises unsteadily with his cup. "To {realmShort}," {theyHe} says, "whose soldiers run so fast that nobody has ever seen their faces." Laughter. Then silence. Everyone looks at you.',
+      text: '{them}, a prince of {other}, rises unsteadily with {theirHis} cup. "To {realmShort}," {theyHe} says, "whose soldiers run so fast that nobody has ever seen their faces." Laughter. Then silence. Everyone looks at you.',
       choices: [
         {
           t: "Answer with wit",

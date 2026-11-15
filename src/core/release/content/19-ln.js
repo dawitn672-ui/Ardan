@@ -620,7 +620,7 @@
         cool: 5,
         title: "A guilty client",
         setup: (p,ctx)=>{who(p,ctx,"a wool-merchant",{sex:"M"}),ctx.crime=A.pick(["struck a carter dead in a quarrel over the road","sold rotten grain to the town granary in the hungry month","cheated a widow out of her land with a forged deed","set fire to his partner's warehouse"]),ctx.trial=trialOf(p),setFee(p,ctx,.25)},
-        text: "{them} hires you to defend him against a charge that he {crime}. On the second night, deep in his cups, he tells you he did it. {trial}",
+        text: "{them} hires you to defend {themHim} against a charge that {theyHe} {crime}. On the second night, deep in {theirHis} cups, {theyHe} tells you {theyHe} did it. {trial}",
         choices: [
           {
             t: "Defend him with everything you have",

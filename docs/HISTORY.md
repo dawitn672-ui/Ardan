@@ -908,3 +908,23 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
 - **Undo:** revert the four commits. Nothing in a save depends on it (`dress` on the player is ignored by an older build);
   the journal's `setDress` entries would not replay on an older build.
 - **To integrate:** rebuild `index.html` (not committed here); the count of browser tests rises by seven.
+
+### H-055 · 2026-11-15 17:25 ET · X3 part 2: cards held to the life they are dealt to (D-059)
+- **Branch** `x3-part2` from `v2-integration` (`38a4568`): `52399a3` (preview replay and three honest previews), `ddd45bd` (station
+  words, place, counsel, children), `15cb503` (pronoun lint and 22 mended scenes), `22a4de4` (the fatal illness arc), `40cb124` (tests and docs), `f3e967b` and `820b74a`: the advisors' ring seats only people who are there (`advLives` bars 80% -> 60%, 3 -> 2.5 advisors, D-059).
+  Not pushed.
+- **What:** `99999-x3-honest-cards` gains `c-preview` (no piety chip for a man with no faith), `d-station` (words that address the player
+  by a station, with gates), `e-place` (where you stand; home-town scenes; who is present), `f-guard` (the last look at the card, an
+  `A.eventView` stage `x3-honest-cards`), `g-illness` (worsening and the turn of the fever; `A.X3.illAfter` is called from the end of
+  `A.bmIllMonth`). `9998-choice-stakes`: a share of the purse is its own chip, and its large size is an eighth (it was 20, for a
+  fraction). `tools/lint-cards.mjs` and `tools/lib/card-lint.mjs`: the pronoun lint (0 slips; 20 reasoned exceptions) and the
+  station gaps against `tests/cards-baseline.json` (0).
+- **Tests (new, `tests/suites/x3b.test.mjs`):** `x3PreviewReplay400` (400 scenes, eight lives, 253 preview claims: it found three false
+  previews, now fixed), `x3HonestCards` (12 worlds x 30 years and six nurseries, 2,782 cards: 0 station, 0 place, 0 child, 0 counsel
+  breaches; the last look dropped 0 station, 16 place, 4 child, 3 counsel), `x3Pronouns`, `x3IllnessArc` (40 sick adults, 39 reach the
+  turn, 15 live, 24 die of it, named, none without the scene). Part 1's 10 x3 tests, the core suites and the body-mind, advisors and
+  choice-stakes tests pass.
+- **Identity probe** against the build before: 5,004 events, audience classes differ for the 2 new scenes only; fixed-seed lives
+  differ, as they must (weights changed, and 22 results read differently).
+- **Undo:** revert the branch's commits, newest first; `A.X3.illAfter` is one call in `body.core.js`.
+

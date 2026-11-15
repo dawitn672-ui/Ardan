@@ -308,7 +308,7 @@
         cond: (p,C)=>C.adult(p)&&serf(p),
         title: "The bailiff's bushel",
         setup: (p,ctx)=>{ctx.pid=npc(p,"the lord's bailiff")},
-        text: "{them}, the lord's bailiff, measures your rent-grain with a bushel that looks a fifth too big. He smiles while he does it.",
+        text: "{them}, the lord's bailiff, measures your rent-grain with a bushel that looks a fifth too big. {theyHe} smiles while {theyHe} does it.",
         choices: [
           {t:"Pay and say nothing",r:"You pay. He will do it again next year.",fx:{coin:-5,happy:-2}},
           {

@@ -1871,7 +1871,7 @@
         cond: (p,C)=>C.adult(p),
         setup: (p,ctx)=>{who(p,ctx,"acquaint","a lady of the court","F"),ctx.betrothed="Sir "+nm(p,"M")},
         title: "Her sleeve, his rage",
-        text: 'Lady {them} sends her maid with a green silk sleeve. "Wear it in the lists tomorrow." Her betrothed, {betrothed}, is riding too, and everyone at court knows she would rather marry a mule.',
+        text: 'Lady {them} sends {theirHis} maid with a green silk sleeve. "Wear it in the lists tomorrow." Her betrothed, {betrothed}, is riding too, and everyone at court knows she would rather marry a mule.',
         choices: [
           {
             t: "Wear it, and ride against {betrothed}",
@@ -2302,7 +2302,7 @@
         cool: 15,
         setup: (p,ctx)=>{who(p,ctx,"acquaint","an old hedge knight")},
         title: "The last of a hedge knight",
-        text: "On the road you find an old knight, {themFull}, sitting against a milestone with his horse grazing beside him. He has a fever and no squire, and he knows what that means.",
+        text: "On the road you find an old knight, {themFull}, sitting against a milestone with {theirHis} horse grazing beside {themHim}. {theyHe} has a fever and no squire, and {theyHe} knows what that means.",
         choices: [
           {
             t: "Stay with him to the end",

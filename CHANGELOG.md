@@ -5,6 +5,11 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Cards say what you are, and where.** No one calls you "my lord" or "your men" unless you are a lord or lead men, a home-town scene
+  does not find you on campaign, a child under six is not asked a grown man's question, and counsel comes only from someone in
+  the room. A card's price is the price: a physician's cut of your purse and a lost house are said before you choose.
+- **A fever you can die of has a story.** It worsens, then turns: you choose whether the physician, the priest or your family is sent
+  for, and the fever breaks or takes you, named, in that scene. Pronouns of the people in a scene follow their sex.
 - **Clothes tell you who someone is.** Serfs, countryfolk, craftsmen, merchants, clergy, soldiers, the high-born and kings each dress their own way, in the cut of their own people: the northern tunic, the desert robe, the steppe coat, the southern drape. A soldier looks like one, a lord's guard wears his colours, and no two other people share an outfit.
 - **Change what you wear.** In your Profile, under Gear, choose everyday clothes, your best, working clothes, a cloak for the road, your harness or mourning, and the colour of your cloth. Event pictures now show where the scene happens (the fields, a market), and people dress for it.
 

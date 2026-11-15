@@ -2235,7 +2235,7 @@
         cool: 9,
         title: "The charcoal burners",
         setup: (p,ctx)=>{ctx.pid=A.makeAcquaintance(p,"acquaint").id},
-        text: `Smoke rises from turf mounds in a clearing: charcoal burners, black from hair to heel, who live in the woods all summer. Their leader, {them}, says one of them is an outlaw with a price on his head. "Which one? We don't ask in the wood."`,
+        text: `Smoke rises from turf mounds in a clearing: charcoal burners, black from hair to heel, who live in the woods all summer. Their leader, {them}, says one of them is an outlaw with a price on {theirHis} head. "Which one? We don't ask in the wood."`,
         choices: [
           {
             t: "Work a season with them",
@@ -3588,7 +3588,7 @@
               r: "He is a guild clerk who found the wrong numbers in a ledger. He leaves town that night, and sends you 20 suns from far away.",
               fx: {coin:20,honor:3,them:{type:"enemy",op:-40}},
             },
-            lose: {r:"{them} learns that you warned him.",fx:{them:{type:"enemy",op:-50},flag:"av_bounty"}},
+            lose: {r:"{them} learns that you warned {themHim}.",fx:{them:{type:"enemy",op:-50},flag:"av_bounty"}},
           },
           {
             t: "Take the purse",
@@ -5507,7 +5507,7 @@
         cool: 10,
         title: "Through the war country",
         setup: (p,ctx)=>{ctx.pid=A.makeAcquaintance(p,"acquaint").id},
-        text: "{them}, a widow of good family, must cross the war country to her brother's castle. Burned villages, deserters, the enemy's outriders. She pays 60 suns for an escort who will not rob her himself.",
+        text: "{them}, a widow of good family, must cross the war country to {theirHis} brother's castle. Burned villages, deserters, the enemy's outriders. She pays 60 suns for an escort who will not rob her himself.",
         choices: [
           {
             t: "Take the back roads",

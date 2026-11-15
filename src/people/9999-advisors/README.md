@@ -4,6 +4,8 @@
 
 **Why.** Before this, every big choice was made alone. The people around you had opinions, wants and skills (56's court, 999's confidants, 9997's captains), but none of them spoke when it mattered. KoDP's clan ring does the opposite: seven voices comment on each decision, each from their own skill and pet interest, often wrong or self-serving, and the player learns whom to trust.
 
+**Who is in the room (X3 part 2, D-059).** A seat in the ring goes only to someone who is there (`A.X3.present`: alive, free, on the same ground; a ruler's council sits at the capital). A wife across the realm, a brother in prison and a father left at home advise no one; a soldier far from home hears his captain and his comrades.
+
 ## What it does
 
 **The ring is real people** (`ADV.candidates`, `ADV.refresh`, every quarter and whenever someone in it dies):

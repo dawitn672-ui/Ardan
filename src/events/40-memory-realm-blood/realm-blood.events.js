@@ -164,7 +164,7 @@
           lose: { r: "Two false oaths are a habit, not a slip. The Moot gives {them} to the river and you to the cells, and the iron ring goes back into the hall-priest's box.",
             fx: (p, ctx) => { kill(ctx, "drowned in the Fairrush for a broken oath"); return more(p, ctx, { unflag: "rl_ald_sworn", honor: -12, prison: 2, why: "two false oaths at the Oath Moot" }); } } },
         { t: "Stand up at the Moot and name him first",
-          r: "You speak before the priest can ask. {them} hears you out with his head down. The Moot fines you ten suns for the old lie and thanks you for the new truth. The river takes him at dusk.",
+          r: "You speak before the priest can ask. {them} hears you out with {theirHis} head down. The Moot fines you ten suns for the old lie and thanks you for the new truth. The river takes {themHim} at dusk.",
           fx: (p, ctx) => { kill(ctx, "drowned in the Fairrush for a broken oath"); return more(p, ctx, { coin: -10, honor: 1, favor: 3, newRel: { type: "enemy", op: -30 } }); } },
       ],
     },
@@ -1553,7 +1553,7 @@
       cond: (p, C) => (C.famMil(p) || C.famKind(p, "gentry_mil")) && C.adult(p) && C.flag(p, "mrb_fm_covered") && A.S.year - p.flags.mrb_fm_covered >= 4,
       w: 3, once: true,
       setup: (p, ctx) => { if (!fresh(p, "mrb_fm_cousin_war") || !marked(p, ctx, "fm_cousin")) { ctx.skip = 1; return; } prepF(p, ctx); },
-      text: "{them}, the cousin you swore had stood his proving watch, has fallen asleep on watch again: with {funit}, on campaign, the enemy two kilometers off. The camp was raided, and two men are dead. His captain wants to know whether this has happened before. {them} has given your name as one who can speak for him.",
+      text: "{them}, the cousin you swore had stood {theirHis} proving watch, has fallen asleep on watch again: with {funit}, on campaign, the enemy two kilometers off. The camp was raided, and two men are dead. His captain wants to know whether this has happened before. {them} has given your name as one who can speak for {themHim}.",
       choices: [
         { t: "Tell the captain about the proving",
           r: "You tell it. {them} is flogged before the company and broken to the ranks. The captain thanks you. Your family does not.",
