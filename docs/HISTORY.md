@@ -847,3 +847,9 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   worlds, 5 of 20 seeds).
 - **Undo:** revert the merge of `c6-ci119` and the `tensionsRun` commit.
 
+### H-050 · 2026-11-15 09:44 ET · CI 120: oaFireRate on twelve lives
+- CI 120 failed only `oaFireRate` (46 years past 55 over six lives, bar 50). Not a C6 regression: `A.deathChance` reads age,
+  race, health, blood and estate, none changed; over 40 seeds the mean life past 55 is 15.8 years before C6 and 15.3 after,
+  single lives 3 to 22 years in both, so six lives' sum swings by about 12. The test plays twelve lives (sex flipped), bar
+  100 years (`0e05066`).
+
