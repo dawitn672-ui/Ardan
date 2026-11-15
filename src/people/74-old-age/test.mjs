@@ -220,7 +220,8 @@ export default {
     await pg.evaluate(SETUP);
     const r = await pg.evaluate(() => {
       const RX = OAT.RX, lives = [];
-      for (const [seed, status, realm, sex] of [[7411, 'peasant', 'POL-01', 'M'], [7412, 'artisan', 'POL-05', 'F'], [7413, 'noble', 'POL-01', 'F'], [7414, 'serf', 'POL-07', 'M'], [7415, 'merchant', 'POL-14', 'M'], [7416, 'peasant', 'POL-25', 'F']]) {
+      for (const [seed, status, realm, sex] of [[7411, 'peasant', 'POL-01', 'M'], [7412, 'artisan', 'POL-05', 'F'], [7413, 'noble', 'POL-01', 'F'], [7414, 'serf', 'POL-07', 'M'], [7415, 'merchant', 'POL-14', 'M'], [7416, 'peasant', 'POL-25', 'F'],
+        [7417, 'peasant', 'POL-01', 'F'], [7418, 'artisan', 'POL-05', 'M'], [7419, 'noble', 'POL-01', 'M'], [7420, 'serf', 'POL-07', 'F'], [7421, 'merchant', 'POL-14', 'F'], [7422, 'peasant', 'POL-25', 'M']]) {
         A.newGame({ seed, race: 'human', realm, status, sex, startAge: 26 });
         T.play(4);
         const pc = A.pc(); if (!pc.alive) continue;
@@ -238,7 +239,10 @@ export default {
       return { lives: lives.length, years, old, ev, distinct, perDecade: Math.round(100 * old / Math.max(1, years)) / 10, per: lives.map(l => `${l.years}y:${l.old}`) };
     });
     // distinct events per decade from flags.ev (the last sighting of each), a floor under the true rate
-    const ok = r.years >= 50 && r.perDecade >= 5 && r.distinct >= 20;
+    // twelve lives, not six (CI 120): a life from 55 lasts about 15 years with a spread of about 5, so six lives' sum moved from
+    // 96 to 46-61 years when C6 moved the dice, while forty lives read the same before and after (15.8 and 15.3 years each).
+    // The bar is the old one per life (50 for six)
+    const ok = r.years >= 100 && r.perDecade >= 5 && r.distinct >= 20;
     return { ok, detail: `${r.lives} lives, ${r.years} years from 55: ${r.old} distinct old-age scenes met (${r.perDecade} a decade, of ${r.ev} distinct events), ${r.distinct} different ones; per life ${r.per.join(', ')}` };
   },
 
