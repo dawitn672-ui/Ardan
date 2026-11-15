@@ -82,8 +82,7 @@
   // first tick filled (empty lists, each ruler known as of old) and draw nothing, and the stream is put back, so a seed
   // plays the same world as before; only the order of keys in A.S (and so A.fingerprint) differs from the older build.
   SV.NEW_GAME_STEPS = ['diplomacy', 'war', 'time'];
-  const ng = A.newGame;
-  A.newGame = function () {
+  A.addStage('A.newGame', 'v2-saves', ng => function () {
     const r = ng.apply(this, arguments), S = A.S;
     if (S && S.people) {
       const keepR = A.rngState;
@@ -92,7 +91,7 @@
       finally { A.rngState = keepR; }
     }
     return r;
-  };
+  });
 
   // the release's A.migrate (and the features' wrappers) first, then the v2 step, once, for a state made before it
   let from = null;

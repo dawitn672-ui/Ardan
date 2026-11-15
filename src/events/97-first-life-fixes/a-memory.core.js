@@ -95,10 +95,12 @@
   // the story promised. None of those is ever held back at the head of the queue. The mark is a field of the queue item
   // (saved with it); an item from a save before this feature has none, and is treated as the world's.
   LF.origin = null;
+  // (A.eventChoose is a staged function: the same wrapper is its stage 'first-life-fixes.origin'; the others are wrapped
+  // in place, as before)
   const during = (name, mark) => {
     const f = A[name];
     if (typeof f !== 'function') return;
-    A[name] = function () {
+    A.addStage('A.' + name, 'first-life-fixes.origin', f => function () {
       const S = A.S, before = S && S.queue ? new Set(S.queue) : null, was = LF.origin;
       LF.origin = mark;
       try { return f.apply(this, arguments); }
@@ -106,7 +108,7 @@
         LF.origin = was;
         try { if (before) for (const q of S.queue) if (q && !before.has(q) && q.type === 'event' && !q.lfFrom) q.lfFrom = mark; } catch (e) {}
       }
-    };
+    });
   };
   for (const n of ['eventChoose', 'eventClose']) during(n, 'chain');
   for (const n of ['doActivity', 'decide', 'interact', 'getToKnow']) during(n, 'ask');
@@ -117,8 +119,7 @@
   A.schedule = function (item) { try { if (item && item.type === 'event' && !item.lfFrom) item.lfFrom = 'sched'; } catch (e) {} return schedule.apply(this, arguments); };
 
   // a scene is counted when the player answers it (eventAuto and the quiet settle go through eventChoose too)
-  const choose0 = A.eventChoose;
-  A.eventChoose = function () {
+  A.addStage('A.eventChoose', 'first-life-fixes', choose0 => function () {
     const q = A.S && A.S.queue && A.S.queue[0], pc = A.pc(), fresh = !!(q && q.type === 'event' && !q.result);
     const r = choose0.apply(this, arguments);
     try {
@@ -147,7 +148,7 @@
       }
     } catch (e) { console.error('life memory', e); }
     return r;
-  };
+  });
 
   // ---- policy -------------------------------------------------------------------------------------------------
   // Scenes that tell one fixed story: one person, one place, one case. The first two are the research's examples;

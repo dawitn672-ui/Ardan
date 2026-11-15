@@ -53,8 +53,7 @@
   // effect keys for siege events: siege (a share of the whole siege: + brings the fall nearer), sgSick (camp
   // sickness), sgTerms (you spoke for surrender, so the town falls on terms). The siege is ctx.loc.
   (A.FX_EXTRA = A.FX_EXTRA || []).push('siege', 'sgSick', 'sgTerms');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'sieges', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     try {
       if (fx && typeof fx === 'object' && (fx.siege || fx.sgSick || fx.sgTerms)) {
@@ -67,7 +66,7 @@
       }
     } catch (e) { console.error('siege fx', e); }
     return r;
-  };
+  });
 
   // the month: sickness in the camp, and the player's choice
   A.onMonth.push(pc => {

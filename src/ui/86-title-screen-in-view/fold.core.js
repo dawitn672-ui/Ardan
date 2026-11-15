@@ -129,7 +129,7 @@
   };
   const drawHelp = () => { const cv = document.getElementById('helpgc'); if (cv && !cv.dataset.drawn) { const src = TF.mapCanvas(); if (src) { cv.getContext('2d').drawImage(src, 0, 0, cv.width, cv.height); cv.dataset.drawn = '1'; } } };
   const rmod = UI.renderModal;
-  if (typeof rmod === 'function') UI.renderModal = function () { const r = rmod.apply(this, arguments); try { drawHelp(); } catch (e) {} return r; };
+  if (typeof rmod === 'function') A.addStage('UI.renderModal', 'title-screen-in-view', rmod => function () { const r = rmod.apply(this, arguments); try { drawHelp(); } catch (e) {} return r; });
   const after = UI.afterRender;
   UI.afterRender = function () {
     const r = after.apply(this, arguments);

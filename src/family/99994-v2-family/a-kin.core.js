@@ -260,14 +260,13 @@
     try { if (sceneSex && p && p.sex !== sceneSex) F.setSex(p, sceneSex); } catch (e) {}
     return p;
   };
-  const evView = A.eventView;
-  A.eventView = function (q) {
+  A.addStage('A.eventView', 'v2-family', evView => function (q) {
     const e = q && !q.view && A.EV && A.EV[q.ev];
     if (!e || !e.setup) return evView.apply(this, arguments);
     const was = sceneSex;
     sceneSex = F.sceneSex(e);
     try { return evView.apply(this, arguments); } finally { sceneSex = was; }
-  };
+  });
 
   // ---- circles and gossip (41-friend-circles, 55-bonds): "close to X (your friend)" never names your kin ----------------------
   const CI = A.CIRCLES;

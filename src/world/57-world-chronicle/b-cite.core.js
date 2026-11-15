@@ -439,8 +439,7 @@
   // line) and kept on the view, so a follow-up scene that inherits the context does not count as citing
   WC._cur = null;
   WC.mark = id => { if (WC._cur && id && !WC._cur.includes(id)) WC._cur.push(id); };
-  const view = A.eventView;
-  A.eventView = function (q) {
+  A.addStage('A.eventView', 'world-chronicle', view => function (q) {
     if (!q || q.view) return view.apply(this, arguments);
     const outer = WC._cur, cur = WC._cur = [];
     let v;
@@ -453,7 +452,7 @@
       }
     } catch (e) { console.error('world record recall', e); } finally { WC._cur = outer; }
     return v;
-  };
+  });
   // does this scene cite the record? (a token, a recalled line, or an event of the pack)
   WC.cites = q => !!(q && q.view && q.view.cites && q.view.cites.length);
   // the line, under the scene's text (pure)

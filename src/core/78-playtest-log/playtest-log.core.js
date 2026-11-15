@@ -82,5 +82,5 @@
   }
   // an event that appears is noticed when the modal draws it
   const rm = UI.renderModal;
-  if (typeof rm === 'function') UI.renderModal = function () { const r = rm.apply(this, arguments); if (L.on) watchEvent(); return r; };
+  if (typeof rm === 'function') A.addStage('UI.renderModal', 'playtest-log', rm => function () { const r = rm.apply(this, arguments); if (L.on) watchEvent(); return r; });
 })();

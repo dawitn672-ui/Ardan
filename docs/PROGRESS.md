@@ -41,7 +41,7 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **X7 part 1** · Phone speed, the first load: title world without the continent, the new life's continent built ahead in a worker, cheaper event-pack setup; `tools/bench/phone-load.mjs` (D-054, H-042)
 - [ ] **X7 part 2** · Phone speed, each press: the engine's month (A.wsDay and the war sim are half a press at year 0), with D12b/X5 (D-023)
 - [x] **W0** · Remove the war score and the army templates (order 34) (H-036)
-- [ ] **X2** · Named stages
+- [x] **X2** · Named stages: seven hot functions run named stages from a manifest (`src/core/01-stages`), `tools/lint-stages.mjs` holds them and the count of names defined twice (364 → 357), the muted diplomacy path held by `v2DipMutedPath` (D-056)
 - [x] **D10** · War screens only when deployed (H-036)
 - [ ] **C6** · Relationships and households
 - [x] **X3 part 1** · No initiative left; feasts on their dates; fight stakes; illness shown; kilometres (D-051) · `839d0c6` · 2026-11-14 11:19 ET

@@ -503,8 +503,7 @@
 
   // an order's effect key: obey (as ordered), letter (to the letter, no further), own (your own way), ignore
   (A.FX_EXTRA = A.FX_EXTRA || []).push('order');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'orders', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     try {
       if (fx && typeof fx === 'object' && fx.order && ctx && ctx.order && pc && pc.id === A.S.pc) {
@@ -517,7 +516,7 @@
       }
     } catch (e) { console.error('orders fx', e); }
     return r;
-  };
+  });
   // sixty days on, the map says whether the plan worked
   G.settle = function (pc, o) {
     const P = A.S.prov[o.prov];

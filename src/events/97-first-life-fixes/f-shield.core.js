@@ -18,8 +18,7 @@
     if (LF.OFF || !sh || !p || p.id !== sh.pid || p.id !== S.pc || !p.alive) return false;
     return A.age(p) < (sh.until || LF.SHIELD_AGE);
   };
-  const newGame = A.newGame;
-  A.newGame = function (o) {
+  A.addStage('A.newGame', 'first-life-fixes.shield', newGame => function (o) {
     const r = newGame.apply(this, arguments);
     try {
       const S = A.S, diff = (o && o.diff) || (S.settings && S.settings.diff) || 'hard';
@@ -29,7 +28,7 @@
       }
     } catch (e) { console.error('first life', e); }
     return r;
-  };
+  });
   const deathChance = A.deathChance;
   if (typeof deathChance === 'function') A.deathChance = function (p) { return LF.shielded(p) ? 0 : deathChance.apply(this, arguments); };
   const mortal = A.mortalCheck;
@@ -60,13 +59,12 @@
     LF.dying = true;
     try { return pcDeath.apply(this, arguments); } finally { LF.dying = false; }
   };
-  const applyFx = A.applyFx;
-  A.applyFx = function (pc, fx) {
+  A.addStage('A.applyFx', 'first-life-fixes', applyFx => function (pc, fx) {
     const die = fx && typeof fx === 'object' && fx.die;
     if (!die) return applyFx.apply(this, arguments);
     LF.dyingFx = true;
     try { return applyFx.apply(this, arguments); } finally { LF.dyingFx = false; }
-  };
+  });
 
   // ---- the creation screen -------------------------------------------------------------------------------------
   UI.lfFirst = () => !(UI.set && +UI.set.lfLives > 0);

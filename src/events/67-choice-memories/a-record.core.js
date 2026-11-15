@@ -167,8 +167,7 @@
     return line;
   };
 
-  const choose = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'choice-memories', choose => function (idx) {
     const q = A.S && A.S.queue[0], pc = A.pc();
     let pre = null;
     try {
@@ -189,5 +188,5 @@
       }
     } catch (err) { console.error('memory weave note', err); }
     return r;
-  };
+  });
 })();

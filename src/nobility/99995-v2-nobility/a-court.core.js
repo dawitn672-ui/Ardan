@@ -307,12 +307,11 @@
   };
 
   // ---- world start and old saves -----------------------------------------------------------------------
-  const ng = A.newGame;
-  A.newGame = function () {
+  A.addStage('A.newGame', 'v2-nobility', ng => function () {
     const out = ng.apply(this, arguments);
     try { A.S.court = null; N.build(); } catch (e) { console.error('v2-nobility build', e); }
     return out;
-  };
+  });
   A.onMonth.push(function () {
     const S = A.S; if (!S) return;
     // an old save has no court: it is built once, from the seed. A realm born later (a revolt, a split) keeps the

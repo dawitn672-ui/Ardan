@@ -168,8 +168,7 @@ MODS.apply = function () {
 MODS.isOn = id => MODS.active.some(r => r.id === id);
 
 // ---- a game starts with its mods, and a save brings them back
-const newGame = A.newGame;
-A.newGame = function (o) {
+A.addStage('A.newGame', 'mods', newGame => function (o) {
   const opts = o || {};
   const refs = Array.isArray(opts.mods) ? opts.mods : MODS.enabledRefs();
   const st = MODS.activate(refs);
@@ -180,7 +179,7 @@ A.newGame = function (o) {
   if (A.S) A.S.mods = clone(st.active);
   MODS.note = st.missing.length || st.changed.length ? st : null;
   return r;
-};
+});
 const deserialize = A.deserialize;
 A.deserialize = function () {
   const r = deserialize.apply(this, arguments);

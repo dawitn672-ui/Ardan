@@ -100,12 +100,11 @@ if (UI.TIPS && UI.TIPS.odds && UI.TT && UI.TT.choiceOf) {
   };
 }
 // the choice's risk word is the v2 odds word everywhere it is drawn (the badge, 59's popover header, 92's card)
-const view = A.eventView;
-A.eventView = function () {
+A.addStage('A.eventView', 'v2-stats', view => function () {
   const v = view.apply(this, arguments);
   try { if (v && v.choices) for (const c of v.choices) if (c && c.odds != null) c.risk = VS.oddsText(c.odds); } catch (e) {}
   return v;
-};
+});
 
 // ---- numbers in text: the 0-100 scales as bands, tier numbers dropped -------------------------------------------------
 const VITAL_RE = /\b(Health|Happiness|Looks|Renown|Honou?r|Piety|Stability|Legitimacy|Blood|Wind|Infamy|War weariness)(\s*[:·—–-]?\s*)(\d{1,3})\b(?!\s*(?:suns?|years?|days?|months?|men|km|kg|cm|ms|hours?|levies|[/,.]\d|→))/gi;

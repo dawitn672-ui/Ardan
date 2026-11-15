@@ -203,8 +203,7 @@
     return r;
   };
   (A.FX_EXTRA = A.FX_EXTRA || []).push('treat', 'care');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'body-mind.body', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     if (!fx || typeof fx !== 'object') return r;
     let extra = '';
@@ -213,7 +212,7 @@
       if (fx.care) extra += BM.care(pc, fx.care, ctx);
     } catch (e) { console.error('body fx', e); }
     return extra ? ((typeof r === 'string' ? r + ' ' : '') + extra).trim() : r;
-  };
+  });
 
   // ---- a hurt body is sent home from the yard
   // The release let you spar at 3 health: each bout cost up to 18, the floor was 3, and a life that sparred every month

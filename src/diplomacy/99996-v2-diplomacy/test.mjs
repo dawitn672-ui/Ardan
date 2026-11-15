@@ -114,6 +114,32 @@ export default {
     return { ok, detail: `seed 424 twice ${h1 === h2 ? 'the same' : 'DIFFERENT'}; seed 425 ${h1 !== h3 ? 'differs' : 'the same (?)'}; views pure ${pure}` };
   },
 
+  // CRITIQUE P10 (X2): the muted diplomacy path is held. The release's A.diploAI still runs (the lesser pacts), and the
+  // dice v2 decides in its place answer with fixed values (DV.MUTED). Each muted die must still be called by the release's
+  // AI (else it leaves the list) and none may decide: no alliance formed or broken, no rivalry named or buried and no war declared inside
+  // the release's AI, and A.aiWarCheck's roll is asked in the monthly and yearly turn and answered there.
+  async v2DipMutedPath(pg) {
+    await pg.evaluate(HELP);
+    const r = await pg.evaluate((seed) => {
+      T.enter({ seed, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 18 });
+      const DV = A.V2DIP, m0 = Object.assign({}, DV.muted), bad = [];
+      const sign = A.sign, cancel = A.cancelTr, war = A.declareWar;
+      A.sign = function (k, a, b) { if (DV.inAI && (k === 'ally' || k === 'rival')) bad.push(`${k} signed ${a}-${b}`); return sign.apply(this, arguments); };
+      A.cancelTr = function (k, a, b) { if (DV.inAI && (k === 'ally' || k === 'rival')) bad.push(`${k} ended ${a}-${b}`); return cancel.apply(this, arguments); };
+      A.declareWar = function (a, b) { if (DV.inAI) bad.push(`war ${a}-${b}`); return war.apply(this, arguments); };
+      try { DT.run(20); } finally { A.sign = sign; A.cancelTr = cancel; A.declareWar = war; }
+      const asked = {};
+      for (const n of DV.MUTED.map(x => x[0]).concat('aiWarCheck')) asked[n] = (DV.muted[n] || 0) - (m0[n] || 0);
+      // each muted die is still one the release's AI calls (its own text), and A.aiWarCheck is still called by the turn
+      const ai = String(DV.raw.diploAI || ''), turn = String(DV.raw.diploMonth || '') + String(DV.raw.diplomacyYear || '');
+      const dead = DV.MUTED.map(x => x[0]).filter(n => typeof A[n] !== 'function' || !ai.includes('A.' + n + '(')).concat(turn.includes('A.aiWarCheck(') ? [] : ['aiWarCheck']);
+      return { on: !!DV.ON, list: DV.MUTED.map(x => x[0]), dead, asked, bad: bad.slice(0, 4), nbad: bad.length };
+    }, 61);
+    const total = Object.values(r.asked).reduce((a, b) => a + b, 0);
+    const ok = r.on && r.list.length === 5 && !r.dead.length && total > 0 && r.asked.aiWarCheck > 0 && !r.nbad;
+    return { ok, detail: `v2 on ${r.on}; muted ${r.list.join(', ')}${r.dead.length ? ' (no longer called: ' + r.dead.join(', ') + ': drop it from DV.MUTED)' : ', each still called'}; asked and answered over 20 years: ${Object.entries(r.asked).map(([k, v]) => k + ' ' + v).join(', ')}; decided by the release's AI: ${r.nbad ? r.bad.join('; ') : 'nothing'}` };
+  },
+
   // no percentages in the diplomacy views
   async v2DipNoPercent(pg) {
     await pg.evaluate(HELP);

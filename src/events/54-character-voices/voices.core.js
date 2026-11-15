@@ -300,7 +300,7 @@
     return { title, text, added, cult: cid, line };
   };
   const view = V.raw = A.eventView;   // V.raw draws a view as it was before voices (for measuring)
-  A.eventView = function (q) {
+  A.addStage('A.eventView', 'character-voices', view => function (q) {
     const fresh = !!q && !q.view;
     const v = view.apply(this, arguments);
     try {
@@ -316,7 +316,7 @@
       }
     } catch (err) { if (A.S && A.S.debug) console.error('voices', err); }
     return v;
-  };
+  });
 
   // ---- the year, as the place names it
   const ORD = ['zeroth', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh',

@@ -173,8 +173,7 @@
 
   // fx keys: name: { kind, i } names a thing with the i-th offered name; named: { kind, deed } writes a deed; lose: { kind, how }
   (A.FX_EXTRA = A.FX_EXTRA || []).push('name', 'named', 'lose');
-  const apply0 = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'identity.name', apply0 => function (pc, fx, ctx) {
     const r = apply0.apply(this, arguments);
     try {
       if (fx && typeof fx === 'object' && pc) {
@@ -187,7 +186,7 @@
       }
     } catch (e) { console.error('identity fx', e); }
     return r;
-  };
+  });
 
   // tokens: {dog} {horse} {blade} {ship} while you have one by name (an event that uses one is dropped otherwise),
   // {dogYears} and kin, {arms} (the charge in words), {words} (your motto), {epithet}
@@ -241,7 +240,7 @@
   // the day a life begins (a new game, an heir taken up): the first two months hold the small scenes back
   for (const k of ['newGame', 'continueAs']) {
     const f = A[k];
-    if (typeof f === 'function') A[k] = function () { const r = f.apply(this, arguments); try { const pc = A.pc(); if (pc && r !== false) pc.idT0 = A.absDay(); } catch (e) {} return r; };
+    if (typeof f === 'function') A.addStage('A.' + k, 'identity.mark', f => function () { const r = f.apply(this, arguments); try { const pc = A.pc(); if (pc && r !== false) pc.idT0 = A.absDay(); } catch (e) {} return r; });
   }
   A.onMonth.push(pc => { try { ID.month(pc); } catch (e) { console.error('identity', e); } });
 

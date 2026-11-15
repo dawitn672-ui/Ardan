@@ -52,12 +52,12 @@
   };
   // remember which choice was taken, for the failure bonus above
   const choose2 = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'learn-by-doing', choose2 => function (idx) {
     const q = A.S.queue[0];
     const r = choose2.apply(this, arguments);
     try { if (q && q.view && q.view.choices && q.view.choices[idx]) Object.defineProperty(q, '_choice', { value: q.view.choices[idx].i, configurable: true }); } catch (err) {}
     return r;
-  };
+  });
   for (const k of ['variety']) if (choose2[k]) A.eventChoose[k] = choose2[k];
 
   // the season's summary: what you got better at, and how much came from doing it

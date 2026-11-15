@@ -245,8 +245,7 @@
     return s.id;
   };
   // engine: o.story is in the journal's options, so a replay starts the same way whatever the Hall holds
-  const newGame = A.newGame;
-  A.newGame = function (o) {
+  A.addStage('A.newGame', 'hall-of-lives', newGame => function (o) {
     const r = newGame.apply(this, arguments);
     const s = o && o.story && hallStory(o.story), pc = A.pc();
     if (s && pc) {
@@ -256,7 +255,7 @@
       A.queue({ type: 'event', ev: 'st_' + s.id + '_open', forced: true });
     }
     return r;
-  };
+  });
   // the creation screen: an open story is a card beside 29's, tagged New; a shut one is named with what opens it
   const crStory = UI.A && UI.A.crStory;
   if (typeof crStory === 'function') UI.A.crStory = function (v) {

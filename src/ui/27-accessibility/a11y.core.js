@@ -28,8 +28,7 @@
     const g = UI.groupOf ? UI.groupOf(UI.tab) : null, sub = g && UI.subsOf ? (UI.subsOf(g).find(x => x[0] === UI.tab) || [])[1] : null;
     h2.textContent = g ? (sub && sub !== g.name ? `${g.name}: ${sub}` : g.name) : String(UI.tab || '');
   };
-  const render0 = UI.render;
-  UI.render = function () { const r = render0.apply(this, arguments); UI.a11yLandmarks(); return r; };
+  A.addStage('UI.render', 'accessibility', render0 => function () { const r = render0.apply(this, arguments); UI.a11yLandmarks(); return r; });
   const refreshTab0 = UI.refreshTab;
   UI.refreshTab = function () { const r = refreshTab0.apply(this, arguments); UI.a11yTabHeading(); return r; };
 })();

@@ -92,7 +92,7 @@
 
   // ---- the choice: the rank is reached ----------------------------------------------------------------------------------
   const choose = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'confidants', choose => function (idx) {
     const q = A.S.queue[0], pc = A.pc();
     const c = q && q.type === 'event' && !q.result && /^cf_/.test(q.ev || '') && q.ctx && q.ctx.cfRank ? q.ctx : null;
     const res = choose.apply(this, arguments);
@@ -110,7 +110,7 @@
       }
     } catch (e) { console.error('confidants choose', e); }
     return res;
-  };
+  });
   if (choose.variety) A.eventChoose.variety = true;
   CF.GIFT = ['Their regard for you will not fade below a floor.', 'A gift from them each year.', 'They owe you a favour.', 'Their yearly gift doubles.', 'It goes into your chronicle.'];
 

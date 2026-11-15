@@ -36,15 +36,14 @@ A.onMonth.push(pc => {
   if (pc.piety !== VS.PIETY0) { VS.addPull(pc, (+pc.piety || 0) - VS.PIETY0); pc.piety = VS.PIETY0; }
 });
 // an effect on piety for a faithless player becomes pull
-const applyFx = A.applyFx;
-A.applyFx = function (pc, fx) {
+A.addStage('A.applyFx', 'v2-stats', applyFx => function (pc, fx) {
   if (pc && fx && typeof fx === 'object' && !Array.isArray(fx) && typeof fx.piety === 'number' && VS.isPC(pc) && !VS.hasFaith(pc)) {
     VS.addPull(pc, fx.piety);
     const o = Object.assign({}, fx); delete o.piety;
     arguments[1] = o;
   }
   return applyFx.apply(this, arguments);
-};
+});
 // no piety aims for the faithless: 9993-life-chapters' "Be known at the shrine", 97-first-life-fixes' devout ambition
 const noAim = (list, k) => { const a = (list || []).find(x => x && x.k === k); if (!a || a.v2) return; const fit = a.fit; a.fit = p => (VS.hasFaith(p) ? fit(p) : 0); a.v2 = true; };
 if (A.CH && A.CH.AIMS) noAim(A.CH.AIMS, 'pious');

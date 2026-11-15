@@ -175,8 +175,7 @@
   // fx.arc: 'next' moves to the next stage in one to three years; 'end' closes it; { next|end, mark } leaves a mark
   // that later stages read (C.flag works too: each mark is also a flag)
   (A.FX_EXTRA = A.FX_EXTRA || []).push('arc');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'life-arcs', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     try {
       const v = fx && typeof fx === 'object' ? fx.arc : null;
@@ -191,7 +190,7 @@
       }
     } catch (e) { console.error('arcs fx', e); }
     return r;
-  };
+  });
   A.C.arcMark = (p, m) => !!(p && p.flags && p.flags['la_' + m]);
 
   // the Life tab: the work of your life (pure)

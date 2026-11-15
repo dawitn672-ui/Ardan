@@ -112,8 +112,7 @@
   // you out; { end } closes it; { smear } and { kill } finish it; { guard } slows the plot against you; { unmask } names
   // who is behind it; { expose } costs ctx.pid fame; { drop } ends the plot against you
   (A.FX_EXTRA = A.FX_EXTRA || []).push('scheme');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'schemes', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     try {
       const v = fx && typeof fx === 'object' ? fx.scheme : null;
@@ -138,7 +137,7 @@
       }
     } catch (e) { console.error('schemes fx', e); }
     return r;
-  };
+  });
 
   // the people who hate you, and might act on it
   SC.enemies = function (pc) {

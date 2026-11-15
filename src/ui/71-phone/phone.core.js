@@ -446,12 +446,10 @@ UI.renderTab = function () {
 };
 
 // ---- wiring --------------------------------------------------------------------------------------------------
-const render = UI.render;
-UI.render = function () { const r = render.apply(this, arguments); try { PH.decoratePage(); PH.decorateModal(); } catch (e) { console.error(e); } return r; };
+A.addStage('UI.render', 'phone', render => function () { const r = render.apply(this, arguments); try { PH.decoratePage(); PH.decorateModal(); } catch (e) { console.error(e); } return r; });
 const refreshTab = UI.refreshTab;
 if (refreshTab) UI.refreshTab = function () { const r = refreshTab.apply(this, arguments); try { PH.decoratePage(); } catch (e) { console.error(e); } return r; };
-const renderModal = UI.renderModal;
-UI.renderModal = function () { const r = renderModal.apply(this, arguments); try { PH.decorateModal(); } catch (e) { console.error(e); } return r; };
+A.addStage('UI.renderModal', 'phone', renderModal => function () { const r = renderModal.apply(this, arguments); try { PH.decorateModal(); } catch (e) { console.error(e); } return r; });
 
 // ---- the opening view (cycle 1, first-hour I4): a life on a phone opens on its story ------------------------------
 // "Be born" landed on Life → Now, a near-empty page for a newborn, while the page that says who you are and where

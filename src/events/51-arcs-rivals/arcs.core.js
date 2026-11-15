@@ -141,8 +141,7 @@
     return loss > 0 ? `(It costs you ${A.coin(loss)}.)` : '';
   };
   (A.FX_EXTRA = A.FX_EXTRA || []).push('arDeed', 'arEpithet', 'arLose');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'arcs-rivals', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     if (!fx || typeof fx !== 'object' || !pc || !(fx.arDeed || fx.arEpithet || fx.arLose)) return r;
     const out = [];
@@ -153,7 +152,7 @@
       if (fx.arLose) out.push(R.lose(pc, ctx));
     } catch (e) { console.error('arcs-rivals fx', e); }
     return [r, ...out].filter(Boolean).join(' ');
-  };
+  });
 
   // ---- the thirteen arcs. Weights favour the arcs only some lives can meet (the apprentice and the secret need a trade,
   // the election a free commoner of thirty, the vendetta a court), so that a life that fits them meets them; the arcs

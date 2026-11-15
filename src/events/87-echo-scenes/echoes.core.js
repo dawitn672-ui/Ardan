@@ -94,7 +94,7 @@
   };
 
   const choose = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'echo-scenes', choose => function (idx) {
     const q = A.S && A.S.queue[0], pc = A.pc();
     const fresh = !!(q && q.type === 'event' && !q.result);
     const r = choose.apply(this, arguments);
@@ -105,6 +105,6 @@
       }
     } catch (err) { console.error('echoes note', err); }
     return r;
-  };
+  });
   for (const k of Object.keys(choose)) A.eventChoose[k] = choose[k];   // keep the markers earlier wrappers set (variety)
 })();

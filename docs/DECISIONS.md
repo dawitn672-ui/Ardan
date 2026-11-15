@@ -834,3 +834,51 @@ data forbids; 41 leaks on the build before), `gsOneCard`, `gsSources`, `b5Tablet
 the page keeps the desktop layout, because 23 `min-width:761px` blocks and 40 `max-width:760px` blocks (and `UI.isPhone`) would all
 have to move together; `U6`/`U10`/`U12`/`U17`/`U21` and the 200% text test remain as listed in H-020. The scope reads the
 card's Path next step only through What now and the chapter's aim.
+
+### D-056 · X2: named stages for the seven hot functions; a manifest orders them; the muted diplomacy path held (2026-11-15 ET; CRITIQUE P3, P10, P14)
+**Chosen:**
+1. **One definition, named stages.** `A.applyFx`, `A.eventView`, `A.eventChoose`, `A.newGame`, `UI.render`, `UI.refresh`
+   and `UI.renderModal` keep the release's definition as their base, and features add to them with
+   `A.addStage(key, name, spec)` (`src/core/01-stages`, a fix-layer feature, so it is in every build). A spec is an around
+   stage `next => function (...) {...}` (it may change the arguments, call `next` conditionally or return early), or
+   `{ before }` / `{ after }`. The API is `A.addStage`, `A.FN_STAGES`, `A.FN_STAGE_ORDER`: `A.stage` (49-body-mind's life
+   stage) and `A.STAGES` (the battle stages) were taken.
+2. **A manifest orders them** (`src/core/01-stages/manifest.core.js`, `A.FN_STAGE_ORDER`): per function, the stage names
+   innermost first. It was written from the order the folder names gave, read off a booted page, and it now decides: a stage
+   registered out of its place recomposes the function from the base. The names are the feature's folder name without its
+   number, plus `.part` when a feature has more than one stage on a function. The release has one, `journal`
+   (`A.journalStart` wraps the recorded commands at `UI.init`, outermost; it now does so through `A.addStage`).
+3. **Exactly the old program.** Every wrapper (137, counting the loops over several draws, the helpers such as 97's `during`,
+   999999's `counted` and 99992's `watch`, and the journal's) became an around stage with its body unchanged; where the
+   captured original was also used outside the wrapper, the capture stays and the stage's parameter shadows it (the same
+   function in the manifest's order). The composed function is assigned back to its owner, so `A.applyFx` stays a plain
+   function (no extra call), reading it mid-load gives the stages so far, and in the default build every stage registers
+   in manifest order and wraps the one before, each made once in load order. A stage on a function that is not staged
+   (`UI.refreshTab`, `A.deserialize`, ...) wraps it in place, in load order, as a wrapper did. Proven by
+   `tools/release/identity-probe.mjs` before/after: IDENTICAL (5004 event classes, nine fixed-seed lives). `verify.mjs`
+   cannot judge two built pages' cores (it reports DIFFERENT for a build against itself: its de-minifying rewrite is for
+   the vendor file); it finds the content, lore and page the same.
+4. **Held by** `tools/lint-stages.mjs` (in `tools/check.mjs`): a staged function assigned anywhere but its release
+   definition (direct, in a loop over a list naming it, in `Object.assign`), a stage name missing from the manifest, not
+   starting with its feature's name or used twice, a manifest name nobody registers; and the census of P3, names defined
+   more than once, held by `tests/stages-baseline.json` (may only fall): **364 before, 357 after**; definitions 2,487 to
+   2,358. At run time a missing name, a duplicate and a reassignment are `console.error` (the net fails them);
+   `stagesOneDefinition` and `stagesApi` test the runner.
+5. **The muted diplomacy path is held, not removed** (P10). The release's `A.diploAI` still runs for the lesser pacts; the
+   five dice v2 decides in its place (`aiBreakAlly`, `aiAllyBar`, `aiBetrayP`, `aiRivalW`, `aiMendRival`) and the turn's
+   `A.aiWarCheck` answer fixed values while v2 is on. They are one named list, `A.V2DIP.MUTED`, counted as asked
+   (`A.V2DIP.muted`, not saved), and `v2DipMutedPath` holds it: each muted die is still called by the release's AI (else it
+   leaves the list), the turn still asks `aiWarCheck`, and over 20 years nothing is decided inside the release's AI (no
+   alliance formed or broken, no rivalry named or buried, no war).
+**Considered:** before/after constraints on each stage instead of a manifest (the order would still be implicit wherever no
+constraint is written, and a constraint naming a feature left out by `--without` needs a rule of its own); a runner that
+composes on every call (an extra frame on the hottest functions, and captured references would change meaning); rewriting
+the simple wrappers as `before`/`after` stages now (more legible, but 137 rewrites of behaviour that is proven identical only
+as it stands; new stages should use them); removing the muted path (the muted `A.chance(0.08 * 0)` and `A.chance(0)` still
+draw from the random stream, so removing them changes every fixed-seed world: a step of its own, with a new baseline).
+**Why:** the owner's engineering complaint (P3): `A.applyFx` had 32 definitions and `A.newGame` 22, C6 and X3 were about to
+add more, and a function did whatever the folder order added up to (P14).
+**Not done:** the rest of the 357 names defined more than once (`A.deserialize` 13, `UI.refreshTab` 13, `UI.TAB.realm` 11,
+`UI.eventModal` 10, ...) are still wrappers; staging one is adding it to the manifest and converting its wrappers the same
+way, and the baseline then falls. Load order for everything else is still folder order (P14 is done for the seven only);
+features still find each other through optional globals.

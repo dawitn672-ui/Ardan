@@ -67,8 +67,7 @@
     }
     return t;
   };
-  const view0 = A.eventView;
-  A.eventView = function (q) {
+  A.addStage('A.eventView', 'first-life-fixes', view0 => function (q) {
     const v = view0.apply(this, arguments);
     try {
       if (LF.OFF || !v || v.skip || !q || q.type !== 'event' || q.result || v._lfNames) return v;
@@ -90,5 +89,5 @@
       }
     } catch (e) { console.error('scene names', e); }
     return v;
-  };
+  });
 })();

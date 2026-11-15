@@ -126,14 +126,13 @@
   };
   (A.FX_EXTRA = A.FX_EXTRA || []).push('custom');
   // fx.custom: 'keep' applies the custom's own effect (the scene's keep choice)
-  const applyFx = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'realm-customs', applyFx => function (pc, fx, ctx) {
     const r = applyFx.apply(this, arguments);
     try {
       if (fx && typeof fx === 'object' && fx.custom === 'keep' && ctx && ctx.cid) { const c = B.custom(ctx.cid); if (c && c.fx) applyFx.call(this, pc, c.fx, {}); }
     } catch (e) { console.error('custom keep', e); }
     return r;
-  };
+  });
 
   // ---- the moments
   B.month = function (pc) {

@@ -281,10 +281,9 @@ A.yearGrowth = function (p) {
 };
 // a new life starts with its body (and an old save's player gets one on its first month, VS.sync)
 if (A.newGame) {
-  const ng = A.newGame;
-  A.newGame = function () {
+  A.addStage('A.newGame', 'v2-stats', ng => function () {
     const r = ng.apply(this, arguments);
     try { const pc = A.pc(); if (pc) VS.sync(pc); } catch (e) { console.error('v2 body', e); }
     return r;
-  };
+  });
 }

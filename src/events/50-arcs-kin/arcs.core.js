@@ -281,8 +281,7 @@
     },
   };
   (A.FX_EXTRA = A.FX_EXTRA || []).push('akin');
-  const apply = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'arcs-kin', apply => function (pc, fx, ctx) {
     const r = apply.apply(this, arguments);
     let extra = '';
     try {
@@ -290,7 +289,7 @@
       if (v && pc && pc.id === A.S.pc) for (const op of [].concat(v)) if (AK.OPS[op]) extra += (extra ? ' ' : '') + (AK.OPS[op](pc, ctx || {}) || '');
     } catch (e) { console.error('arcs-kin fx', e); }
     return [r, extra].filter(s => typeof s === 'string' && s.trim()).join(' ');
-  };
+  });
 
   // the family sickness (ak_blood): it shows in the hands first, then the walk
   GD.WOUNDS.ak_shaking = { name: 'The shaking in the hands (it runs in the family)', fx: { spd: -4, ins: -2 }, perm: true,

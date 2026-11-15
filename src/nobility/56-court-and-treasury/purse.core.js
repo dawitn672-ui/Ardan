@@ -270,8 +270,7 @@ Object.assign(UI.A, {
 
 // ---------------------------------------------------------------- the effects the events use
 
-const baseApplyFx = A.applyFx;
-A.applyFx = function (pc, fx, ctx) {
+A.addStage('A.applyFx', 'court-and-treasury', baseApplyFx => function (pc, fx, ctx) {
   const out = baseApplyFx.apply(this, arguments);
   try {
     if (!fx || typeof fx !== 'object' || !pc || pc.id !== A.S.pc) return out;
@@ -298,7 +297,7 @@ A.applyFx = function (pc, fx, ctx) {
     if (fx.riVoice && RI.voiceFx) RI.voiceFx(pc, fx.riVoice);
   } catch (e) { console.error('[ri] fx', e); }
   return out;
-};
+});
 // the player-ruler's answer to a court push (event ri_court_push)
 RI.courtAnswer = function (pc, ctx, how) {
   const r = A.realm(pc.ruler); if (!r || !RI.PUSH) return;

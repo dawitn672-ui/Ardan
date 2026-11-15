@@ -29,7 +29,7 @@
   for (const k of ['render', 'refresh', 'refreshTab', 'renderModal']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;
-    UI[k] = function () { drawing++; try { return f.apply(this, arguments); } finally { drawing--; } };
+    A.addStage('UI.' + k, 'npc-initiative', f => function () { drawing++; try { return f.apply(this, arguments); } finally { drawing--; } });
   }
 
   if (typeof A.staffCands === 'function') {

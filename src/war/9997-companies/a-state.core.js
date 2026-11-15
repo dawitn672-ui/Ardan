@@ -1081,12 +1081,11 @@
     return r;
   };
   // a new game or a loaded save: every division gets its battalions at once
-  const newGame = A.newGame;
-  A.newGame = function () {
+  A.addStage('A.newGame', 'companies', newGame => function () {
     const r = newGame.apply(this, arguments);
     try { A.S.coOn = CO.V; CO.ensureAll(); const pc = A.pc(); if (pc && pc.mil) CO.place(pc); } catch (e) { console.error('companies new game', e); }
     return r;
-  };
+  });
   const enlist = A.enlist;
   A.enlist = function (pc) {
     const r = enlist.apply(this, arguments);
@@ -1119,8 +1118,7 @@
   // effect key coy: the player's own company. { mo: morale, sat: his captain's satisfaction, food: days, men: men
   // who come back (+) or slip away (-), wd: wounded who are brought in }
   (A.FX_EXTRA = A.FX_EXTRA || []).push('coy');
-  const applyFx = A.applyFx;
-  A.applyFx = function (pc, fx) {
+  A.addStage('A.applyFx', 'companies', applyFx => function (pc, fx) {
     const r = applyFx.apply(this, arguments);
     try {
       if (fx && typeof fx === 'object' && fx.coy && pc && pc.id === A.S.pc) {
@@ -1137,7 +1135,7 @@
       }
     } catch (e) { console.error('companies fx', e); }
     return r;
-  };
+  });
   // GD.SUP: the baggage train (bread for 40 days, not 30)
   if (GD.SUP && !GD.SUP.train) GD.SUP.train = { name: 'Baggage train', men: 60, eq: { horses: 20 }, fx: { spd: -0.1 }, desc: 'Wagons and mules: bread for 40 days, not 30. Slows the march a tenth.' };
   // 57's record learns three kinds

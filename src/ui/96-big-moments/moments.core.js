@@ -259,11 +259,11 @@
   for (const k of ['render', 'refresh', 'renderModal', 'clkLight']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;
-    UI[k] = function () { const r = f.apply(this, arguments); if ((UI.REDRAW && UI.REDRAW.depth > 1)) return r; try { MO.check(); } catch (e) { console.error('moments', e); } return r; };   // once per draw (round 2 A1)
+    A.addStage('UI.' + k, 'big-moments.moments', f => function () { const r = f.apply(this, arguments); if ((UI.REDRAW && UI.REDRAW.depth > 1)) return r; try { MO.check(); } catch (e) { console.error('moments', e); } return r; });   // once per draw (round 2 A1)
   }
   // a new life or a loaded one starts from a fresh reading
   const newGame = A.newGame;
-  if (typeof newGame === 'function') A.newGame = function () { MO.prev = null; MO.lastKey = null; MO.skip(); return newGame.apply(this, arguments); };
+  if (typeof newGame === 'function') A.addStage('A.newGame', 'big-moments', newGame => function () { MO.prev = null; MO.lastKey = null; MO.skip(); return newGame.apply(this, arguments); });
 
   // ---- the look --------------------------------------------------------------------------------------------------
   // the band's colours are fixed, the same in both themes (ink on the band is light by day and by night). The class on

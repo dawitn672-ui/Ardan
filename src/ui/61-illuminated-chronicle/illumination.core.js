@@ -176,8 +176,7 @@
   wrapAct('evChoose', 'quill'); wrapAct('evClose', 'page'); wrapAct('save', 'seal');
   // the new year's bell and a battle's steel: noticed when the screen is drawn, so the engine is not touched
   let lastYear = null, lastHead = null;
-  const render = UI.render;
-  UI.render = function () {
+  A.addStage('UI.render', 'illuminated-chronicle', render => function () {
     const r = render.apply(this, arguments);
     try { IL.applyVellum(); } catch (e) {}
     try {
@@ -190,7 +189,7 @@
       }
     } catch (e) {}
     return r;
-  };
+  });
 
   // ---- the settings: three toggles in the menu (patch IL-MENU)
   IL.menu = () => `<label class="row"><input type="checkbox" data-c="setWoodcuts" ${UI.set.woodcuts ? 'checked' : ''}> Woodcuts on events</label>` +

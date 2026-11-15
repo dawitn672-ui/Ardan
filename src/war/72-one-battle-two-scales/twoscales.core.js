@@ -479,12 +479,11 @@
   };
   // the effect key: { tsDraft: 1 } moves you to the division the draft is for (ctx.div)
   (A.FX_EXTRA = A.FX_EXTRA || []).push('tsDraft');
-  const applyFx = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'one-battle-two-scales', applyFx => function (pc, fx, ctx) {
     const r = applyFx.apply(this, arguments);
     try { if (fx && typeof fx === 'object' && fx.tsDraft && pc && pc.id === A.S.pc) TS.draft(pc, ctx); } catch (e) { console.error('two scales draft fx', e); }
     return r;
-  };
+  });
   TS.draftMonth = function (pc) {
     try {
       const S = A.S, now = A.absDay();

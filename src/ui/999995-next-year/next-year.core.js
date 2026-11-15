@@ -306,11 +306,11 @@
     for (const k of ['refresh', 'render', 'refreshTab', 'renderModal']) {
       const f = UI[k];
       if (typeof f !== 'function') continue;
-      UI[k] = function () {
+      A.addStage('UI.' + k, 'next-year', f => function () {
         const r = f.apply(this, arguments);
         try { if (UI.screen === 'game') Y.strip(k === 'renderModal' ? document.getElementById('modal') || undefined : undefined); } catch (e) { console.error('cost marks', e); }
         return r;
-      };
+      });
     }
   }
 })();

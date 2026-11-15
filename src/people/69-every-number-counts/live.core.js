@@ -45,8 +45,7 @@ LN.knack = function (pc, spec, ctx) {
   const toks = A.ctxTokens ? A.ctxTokens(pc, ctx || {}) : {};
   return ((b.r ? A.T(b.r, toks) : '') + (extra ? ' ' + extra : '')).trim();
 };
-const applyFx = A.applyFx;
-A.applyFx = function (pc, fx, ctx) {
+A.addStage('A.applyFx', 'every-number-counts', applyFx => function (pc, fx, ctx) {
   // a realm custom met for the first time, kept in its scene (47-realm-customs's fx.custom 'keep'), reads its skill too
   if (fx && typeof fx === 'object' && fx.custom === 'keep' && ctx && LN.CUSTOM && LN.CUSTOM[ctx.cid] && isPC(pc)) {
     const a = applyFx.apply(this, arguments), b = LN.knack(pc, LN.CUSTOM[ctx.cid], ctx);
@@ -57,7 +56,7 @@ A.applyFx = function (pc, fx, ctx) {
   const a = Object.keys(rest).length ? applyFx.call(this, pc, rest, ctx) : '';
   const b = LN.knack(pc, fx.knack, ctx);
   return [typeof a === 'string' ? a : '', b].filter(Boolean).join(' ');
-};
+});
 
 // ---- 1. checks whose words name the skill ------------------------------------------------------------------------------
 // [event, choice, word the label must hold, what to set, why]. Hand-checked against the label and the result text.
@@ -264,7 +263,7 @@ LN.gathHunt = function (pc, ctx) {
 
 // riders, the crossing and the hunt run after the release's choice, inside the same call
 const choose = A.eventChoose;
-A.eventChoose = function (idx) {
+A.addStage('A.eventChoose', 'every-number-counts', choose => function (idx) {
   const q = A.S && A.S.queue[0];
   let key = null, ga = false;
   try {
@@ -284,7 +283,7 @@ A.eventChoose = function (idx) {
     }
   } catch (err) { console.error('live-numbers ride', err); }
   return r;
-};
+});
 for (const k of Object.keys(choose)) A.eventChoose[k] = choose[k];
 
 // ---- 3b. a brawl is fought with fists ----------------------------------------------------------------------------------

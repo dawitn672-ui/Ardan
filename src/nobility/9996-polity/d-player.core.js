@@ -298,8 +298,7 @@ Object.assign(UI.A, {
 
 // ---------------------------------------------------------------- the fx keys of the po_ events
 
-const baseFx = A.applyFx;
-A.applyFx = function (pc, fx, ctx) {
+A.addStage('A.applyFx', 'polity.po', baseFx => function (pc, fx, ctx) {
   const out = baseFx.apply(this, arguments);
   try {
     if (!fx || typeof fx !== 'object' || !pc || pc.id !== A.S.pc) return out;
@@ -368,7 +367,7 @@ A.applyFx = function (pc, fx, ctx) {
     if (fx.poVote && ctx && r && r.pol && r.pol.elect && ctx.pid) r.pol.elect.pcVote = ctx.pid;
   } catch (e) { console.error('[po] fx', e); }
   return out;
-};
+});
 
 // the player's New Year: pay, the year's scene, promises falling due
 const baseAfter = POL.afterYear;
@@ -472,9 +471,8 @@ POL.fate = function (pc, k, ctx) {
   return '';
 };
 (A.FX_EXTRA = A.FX_EXTRA || []).push('poFate');
-const baseFx2 = A.applyFx;
-A.applyFx = function (pc, fx, ctx) {
+A.addStage('A.applyFx', 'polity.fate', baseFx2 => function (pc, fx, ctx) {
   const out = baseFx2.apply(this, arguments);
   try { if (fx && typeof fx === 'object' && fx.poFate && pc && pc.id === A.S.pc && ctx) { const s = POL.fate(pc, fx.poFate, ctx); if (s && Array.isArray(out)) out.push(s); } } catch (e) { console.error('[po] fate', e); }
   return out;
-};
+});

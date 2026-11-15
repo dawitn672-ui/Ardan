@@ -110,7 +110,7 @@
   wrapAct('explore', local);
   // an event that names a beast: you have heard of it now
   const choose = A.eventChoose;
-  A.eventChoose = function () {
+  A.addStage('A.eventChoose', 'belief-versus-truth', choose => function () {
     const q = A.S.queue[0], pc = A.pc();
     try {
       if (q && q.type === 'event' && !q.result && pc) {
@@ -119,7 +119,7 @@
       }
     } catch (e) { console.error('belief-truth event', e); }
     return choose.apply(this, arguments);
-  };
+  });
   if (choose.variety) A.eventChoose.variety = true;
   // tavern talk and travellers: about one new beast every three years; and the family's lore passes to an heir
   A.onMonth.push(pc => {

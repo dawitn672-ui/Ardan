@@ -110,12 +110,11 @@
   };
   // fx ripe: 'in' | 'keep' takes the ripening thought (ctx.th) one way or the other
   (A.FX_EXTRA = A.FX_EXTRA || []).push('ripe');
-  const apR = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'identity.ripe', apR => function (pc, fx, ctx) {
     const r = apR.apply(this, arguments);
     try { if (fx && typeof fx === 'object' && fx.ripe && ctx && ctx.th) ID.ripen(pc, ctx.th, fx.ripe === 'keep' ? 'keep' : 'in'); } catch (e) { console.error('ripe fx', e); }
     return r;
-  };
+  });
   A.onMonth.push(pc => { try { ID.thoughtMonth(pc); } catch (e) { console.error('thoughts', e); } });
 
   // what thoughts add to a check on a skill: the gain and cost of ripe ones, half the cost of held ones
@@ -135,12 +134,11 @@
   };
 
   (A.FX_EXTRA = A.FX_EXTRA || []).push('thought');
-  const ap = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'identity.thought', ap => function (pc, fx, ctx) {
     const r = ap.apply(this, arguments);
     try { if (fx && typeof fx === 'object' && fx.thought) ID.adopt(pc, fx.thought === 'ctx' ? ctx && ctx.th : fx.thought); } catch (e) { console.error('thought fx', e); }
     return r;
-  };
+  });
 
   // a held or ripe thought speaks one time in four, instead of a skill (part 2 calls this; pure)
   ID.thoughtVoice = function (pc, key, kind) {

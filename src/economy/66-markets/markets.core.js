@@ -669,7 +669,7 @@
   };
   for (const k of ['newGame', 'deserialize']) {
     const f = A[k];
-    if (typeof f === 'function') A[k] = function () { const r = f.apply(this, arguments); giveCargo(k === 'newGame'); return r; };
+    if (typeof f === 'function') A.addStage('A.' + k, 'markets', f => function () { const r = f.apply(this, arguments); giveCargo(k === 'newGame'); return r; });
   }
   A.onMonth.push(() => giveCargo(true));
 })();

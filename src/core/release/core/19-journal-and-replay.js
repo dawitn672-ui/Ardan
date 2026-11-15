@@ -141,9 +141,14 @@ A.journalStart = function () {
   if (!A.jInstalled) {
     A.jInstalled = true;
     A.jMissing = [];
+    // X2 (D-056): the journal is the outermost stage of every command; on a staged function (A.newGame, A.eventView,
+    // A.eventChoose) it is the stage 'journal', last in src/core/01-stages/manifest.core.js, and A.addStage wraps the
+    // others in place exactly as `A[k] = A.jWrap(k, A[k])` did
     for (const k of A.COMMANDS)
-      if (typeof A[k] == "function") A[k] = A.jWrap(k, A[k]);
-      else A.jMissing.push(k);
+      if (typeof A[k] == "function") {
+        if (A.addStage) A.addStage("A." + k, "journal", f => A.jWrap(k, f));
+        else A[k] = A.jWrap(k, A[k]);
+      } else A.jMissing.push(k);
   }
   if (!A.J) {
     A.jBase = A.S ? A.serialize() : null;

@@ -206,8 +206,7 @@ VS.WHY = {
   'overconfidence': 'Overconfidence undoes you.', 'exhaustion': 'You are too tired to do it right.', 'a lapse of judgment': 'A lapse of judgment costs you.',
   'a surge of will': 'Something in you refuses to lose.',
 };
-const choose = A.eventChoose;
-A.eventChoose = function () {
+A.addStage('A.eventChoose', 'v2-stats', choose => function () {
   VS.last = null;
   const q = choose.apply(this, arguments);
   try {
@@ -221,4 +220,4 @@ A.eventChoose = function () {
     }
   } catch (e) { console.error('v2 odds', e); }
   return q;
-};
+});

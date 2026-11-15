@@ -9,10 +9,10 @@
   for (const k of ['render', 'refresh', 'refreshTab', 'renderModal']) {
     const f = UI[k];
     if (typeof f !== 'function') continue;
-    UI[k] = function () {
+    A.addStage('UI.' + k, 'click-open', f => function () {
       const r = f.apply(this, arguments);
       try { if (typeof document !== 'undefined' && document.body) TT.sweepAll(document.body); } catch (e) { console.error('click-open sweep', e); }
       return r;
-    };
+    });
   }
 })();

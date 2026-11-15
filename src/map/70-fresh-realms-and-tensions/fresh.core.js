@@ -49,12 +49,11 @@
   const atWarWith = (a, b) => (A.S.wars || []).some(w => (w.att.includes(a) && w.def.includes(b)) || (w.att.includes(b) && w.def.includes(a)));
 
   // ---------------------------------------------------------------- the guard: a menu game asks for a varied world
-  const ng = A.newGame;
-  A.newGame = function (o) {
+  A.addStage('A.newGame', 'fresh-realms-and-tensions', ng => function (o) {
     FR.unregister();
     FR.pending = !!(o && o.world === 'varied' && o.fresh !== false);
     try { return ng.apply(this, arguments); } finally { FR.pending = false; }
-  };
+  });
   const init = A.initWorld;
   A.initWorld = function () {
     const r = init.apply(this, arguments);

@@ -85,8 +85,7 @@ FO.measure = function (pc, fx, ctx) {
 };
 
 // engine side: the event view is built once, when the event comes up (A.headReady), and kept in q.view
-const view = A.eventView;
-A.eventView = function (q) {
+A.addStage('A.eventView', 'fight-odds', view => function (q) {
   const v = view.apply(this, arguments);
   try {
     const FL = A.FL, e = q && q.type === 'event' && !q.result && A.EV[q.ev], pc = A.pc();
@@ -108,7 +107,7 @@ A.eventView = function (q) {
     }
   } catch (err) { console.error('fight odds', err); }
   return v;
-};
+});
 // the duel screen's opening measure reads the beast's mod too, so the number on the button and the number the duel
 // opens with agree (A.fighterBeast scales the beast's strength and blood by it; 48's measure read the unharmed beast).
 // The mod is taken from the call itself (foe.mod), never inferred from the beast's blood: a hunting party changes the

@@ -571,8 +571,7 @@
 
   // ---------------------------------------------------------------- the view: counsel kept with the event as it is drawn
 
-  const view = A.eventView;
-  A.eventView = function (q) {
+  A.addStage('A.eventView', 'advisors', view => function (q) {
     const fresh = !!q && q.type === 'event' && !q.view;
     const v = view.apply(this, arguments);
     try {
@@ -582,7 +581,7 @@
       }
     } catch (err) { console.error('advisors view', err); }
     return v;
-  };
+  });
 
   // ---------------------------------------------------------------- memory: did you listen, and did it go well
 
@@ -663,8 +662,7 @@
   };
 
   ADV.stats = { big: 0, adv: 0, lines: 0 };   // this page's tally (not saved), for the bench
-  const choose = A.eventChoose;
-  A.eventChoose = function (idx) {
+  A.addStage('A.eventChoose', 'advisors', choose => function (idx) {
     const q = A.S && A.S.queue[0], pc = A.pc();
     let pre = null;
     try {
@@ -686,7 +684,7 @@
       }
     } catch (err) { console.error('advisors after', err); }
     return r;
-  };
+  });
 
   // ---------------------------------------------------------------- the month: the ring, and an old voice's last word
 
@@ -716,8 +714,7 @@
 
   // ---------------------------------------------------------------- the fx key: adv: { trust, promise, drop, unseat, paid, side }
 
-  const baseFx = A.applyFx;
-  A.applyFx = function (pc, fx, ctx) {
+  A.addStage('A.applyFx', 'advisors', baseFx => function (pc, fx, ctx) {
     const out = baseFx.apply(this, arguments);
     try {
       if (!fx || typeof fx !== 'object' || !fx.adv || !pc || pc.id !== A.S.pc) return out;
@@ -739,7 +736,7 @@
       if (a.side && t && foe) { const k = a.side > 0 ? 1 : -1; bump(t, pc, 6 * k); bump(foe, pc, -6 * k); }
     } catch (e) { console.error('advisors fx', e); }
     return out;
-  };
+  });
 
   // a few words on how often you listened to someone (the scenes' {record})
   ADV.record = function (pc, id) {

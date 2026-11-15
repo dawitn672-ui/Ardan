@@ -1,7 +1,7 @@
 // Everything a change must pass, in one command (CI runs this):
 //   1. build index.html from src/core/release/ (the release's own source, X1) + src/<system>/NN-name/ features and confirm the committed index.html is current
 //   2. lint and play-test every feature's event packs
-//   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs)
+//   3. check that no feature event has an obviously best choice (tools/lint-choices.mjs), and the named stages (tools/lint-stages.mjs)
 //   4. run every browser test
 //   5. play the balance league and hold each path's numbers to their bands (tools/bench/balance.mjs, tools/bench/targets.mjs)
 //   6. (retired in v2 step 2 with the Far Lands: the Great Continent league)
@@ -32,6 +32,9 @@ for (const d of featureDirs().sort()) {
 // the checklist every new event must pass: no choice that is obviously best (tools/lint-choices.mjs)
 try { execFileSync(process.execPath, ['tools/lint-choices.mjs', '--all-features'], { cwd: root, stdio: 'pipe' }); console.log('choices ok (no obviously best choice in any feature event)'); }
 catch (e) { lintFailed++; console.error(`choices FAIL\n${String(e.stdout || '').slice(0, 4000)}`); }
+// the named stages (X2, D-056): the hot functions are only added to by A.addStage, and fewer names are defined twice
+try { execFileSync(process.execPath, ['tools/lint-stages.mjs'], { cwd: root, stdio: 'pipe' }); console.log('stages ok (tools/lint-stages.mjs)'); }
+catch (e) { lintFailed++; console.error(`stages FAIL\n${String(e.stdout || '').slice(0, 2000)}${String(e.stderr || '').slice(0, 4000)}`); }
 if (lintFailed) process.exitCode = 1;
 if (!process.argv.includes('--skip-tests')) { try { run(['tests/run.mjs', `--workers=${process.env.CI ? 4 : 1}`].concat(process.argv.filter(a => a.startsWith('--shard=')))); } catch { process.exitCode = 1; } }
 // balance: target numbers per path, held by a fixed-seed league (tools/bench/targets.mjs)

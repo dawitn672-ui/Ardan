@@ -103,12 +103,11 @@ for (const k of ['rollEvents', 'rollEventsN']) {
   };
 }
 // a new game takes the setting from its options (absent: the cut pool); an old save without it loads with the cut pool
-const newGame = A.newGame;
-A.newGame = function (o) {
+A.addStage('A.newGame', 'event-cut', newGame => function (o) {
   const r = newGame.apply(this, arguments);
   if (A.S) { A.S.settings = A.S.settings || {}; A.S.settings.classicEvents = !!(o && o.classicEvents); EC.sync(); }
   return r;
-};
+});
 // the setting, as an engine command so the journal records it and a replay makes the same rolls
 A.setClassicEvents = function (on) {
   if (!A.S) return { ok: false };

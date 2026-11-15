@@ -155,12 +155,12 @@
   for (const name of ['render', 'refreshTab', 'refresh', 'renderModal']) {
     const f = UI[name];
     if (typeof f !== 'function') continue;
-    UI[name] = function () {
+    A.addStage('UI.' + name, 'choice-stakes.draw', f => function () {
       const r = f.apply(this, arguments);
       if ((UI.REDRAW && UI.REDRAW.depth > 1)) return r;   // once per draw, by the outermost (round 2 A1)
       try { ST.decorate(); } catch (e) { console.error('stakes decorate', e); }
       return r;
-    };
+    });
   }
   // a reason registered for a disabled control joins 97's (LF.WHY, by data-a), ahead of what was there
   const why0 = ST.why;

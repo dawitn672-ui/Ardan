@@ -79,7 +79,7 @@
   };
   for (const name of ['eventChoose', 'eventAuto']) {
     const f = A[name]; if (typeof f !== 'function' || f.variety) continue;
-    A[name] = function () { seen(A.S.queue[0]); return f.apply(this, arguments); };
+    A.addStage('A.' + name, 'variety-guard', f => function () { seen(A.S.queue[0]); return f.apply(this, arguments); });
     A[name].variety = true;
   }
 })();

@@ -206,7 +206,7 @@
   };
   // the life remembers the line when the choice is made (pure for the screen; the same in a bot's life and a player's)
   const choose0 = A.eventChoose;
-  A.eventChoose = function () {
+  A.addStage('A.eventChoose', 'identity', choose0 => function () {
     try {
       const q = A.S.queue[0], pc = A.pc();
       if (q && q.type === 'event' && !q.result && pc) {
@@ -215,7 +215,7 @@
       }
     } catch (e) {}
     return choose0.apply(this, arguments);
-  };
+  });
   for (const k of Object.keys(choose0)) A.eventChoose[k] = choose0[k];
   ID.voiceHtml = vo => vo ? `<div class="idv-voice idv-${esc(vo.key)}${vo.thought ? ' idv-thought' : ''}" data-voice="${esc(vo.key)}"><span class="idv-who">${esc(vo.name)}</span><span class="idv-sr">: </span><span class="idv-line">${esc(vo.line)}</span></div>` : '';
 

@@ -75,11 +75,11 @@
   for (const name of ['render', 'refreshTab', 'refresh', 'renderModal']) {
     const f = UI[name];
     if (typeof f !== 'function') continue;
-    UI[name] = function () {
+    A.addStage('UI.' + name, 'first-life-fixes.reasons', f => function () {
       const r = f.apply(this, arguments);
       if ((UI.REDRAW && UI.REDRAW.depth > 1)) return r;   // once per draw, by the outermost (round 2 A1)
       try { LF.explainDisabled(); } catch (e) { console.error('disabled reasons', e); }
       return r;
-    };
+    });
   }
 })();

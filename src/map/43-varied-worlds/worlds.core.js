@@ -16,11 +16,10 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const W = A.WORLDS = { pending: false, BORDERS: [2, 4], FEUDS: 2, BREAKS: 3 };
 
-  const ng = A.newGame;
-  A.newGame = function (o) {
+  A.addStage('A.newGame', 'varied-worlds', ng => function (o) {
     W.pending = !!(o && o.world === 'varied');
     try { return ng.apply(this, arguments); } finally { W.pending = false; }
-  };
+  });
 
   // the realms that can take part: alive, not rebels, with a capital
   const realms = () => Object.values(A.S.realms).filter(r => r && r.alive && !r.isRebel && r.capitalProv != null);
