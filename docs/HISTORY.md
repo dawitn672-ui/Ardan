@@ -869,3 +869,19 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   `identity-probe` against the build before: 5004 events, 0 audience classes differ.
 - **Old saves:** keep every person's name and the prose of their log; the eight realms are renamed by id on load.
 - **Undo:** revert the branch's commits, newest first; `git show b87c908:src/world/99999-v2-names` has the hack.
+
+### H-052 · 2026-11-15 14:05 ET · CI 122 on C7: one game fix, tests on the new pools and on many worlds
+- **Game:** `ga_open` (27-gs) names "the great of the realm" when a gathering has no attendees (a raw `{who}` showed);
+  the place namer draws twice as the old syllable namer did, so a court's titles keep their stream (`84df6f4`,
+  `2918ba6`, `7eb4eb9`).
+- **War unchanged:** `temperMovesTheWar` and the rarer sieges come from C7's names drawing differently from the stream,
+  not from any war rule: with `A.NAMES.ok` off the pre-C7 numbers return exactly, and the pre-C7 build itself gives steady
+  a field share of 16%, 34% or 20% on three other twelve-world sets. The test pools four world sets (seeds 71-371); it
+  passes on both builds, no bar changed. `siegeInARealWar` reads 20 seeds.
+- **Tests on the new pools or one world:** `namingEveryCulture` (reads each culture's pool, accent and leans: all 24 keep
+  their rule), `fbEnlistSays`, `v2cPlaytest2Class`, `v2sPlaytest1`, `carRaised`, `lnWorkAndYear` (bodies that carry the
+  skill under C9's cap), `oaChains` (advances the stream; 24 tries), `nySmallMattersWait` (first seed nothing stops),
+  `aarSoldierLog` (16 soldiers, bar 4), `localEventsUseWords` (8 lives a culture; the voiced line is hashed from the
+  player's id), `riPushesFollowNeed` (6 worlds, 3 must show every part; greedy 90% against generous 3% in all six),
+  `v2wFightWaits` (30 lives; one fight that ended the day it was asked is allowed).
+
