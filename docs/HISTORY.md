@@ -735,3 +735,10 @@ Everything up to v2.0.0-beta.1 is recorded elsewhere and is not repeated here:
   29-starting-stories, 32-legend-and-master-caps, 48-event-fight-rules, 58-event-cut, 84-top-bar, 86-title-screen-in-view,
   00-security, 77-offline-fonts: all pass; `node --test tests/v2`, `tools/build-v2.mjs --check`.
 - **Undo:** revert the branch's commits, newest first. Saves are untouched (no state field added).
+
+### H-044 · 2026-11-14 22:18 ET · CI 114 on A2 stage 2 and X7 part 1: one test left, fixed
+- CI 114 (`f5cccff`) failed only `phoneDesktopSame`, on the death screen. Reproduced with CI's Playwright 1.56.1 (Chromium
+  141): a gradient's dither in the obit panel moves a level or two of colour between two paints of the same layer. The test
+  now reads a pixel as changed only past three levels (4 of 4 green on CI's browser, 3 of 3 on the container's). Cut-ins
+  stay off for the comparison.
+
