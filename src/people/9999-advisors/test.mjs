@@ -243,7 +243,9 @@ export default {
     const distinct = S('distinct') / r.length;
     // (v2 playtest 1, #10, 99999-v2-content: a once-a-life scene is no longer big on that alone, so the once-scenes'
     // share is reported but not held to 80%; counsel on the big choices still is)
-    const ok = share >= 0.8 && distinct >= 3;
+    // (X3 part 2, D-059: counsel comes only from someone who is there. A soldier far from his father's house hears no father; the
+    // bars were 80% and 3 advisors a life, from lives where everyone lived under one roof)
+    const ok = share >= 0.6 && distinct >= 2.5;
     return { ok, data: r, detail: `${r.length} lives: big choices with counsel ${S('adv')}/${S('big')} (${Math.round(share * 100)}%), once-scenes ${S('onceAdv')}/${S('once')}; heeded went well ${Math.round(heedGood * 100)}% (${S('kg')}/${S('k')}), ignored went well ${Math.round(ignGood * 100)}% (${S('igg')}/${S('ig')}); distinct advisors a life ${distinct.toFixed(1)} (${r.map(x => x.status + ' ' + x.distinct).join(', ')})` };
   },
 };

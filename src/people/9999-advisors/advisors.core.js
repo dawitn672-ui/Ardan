@@ -102,7 +102,9 @@
   // pure: who could sit in your ring now, best first ({ id, role, pri })
   ADV.candidates = function (pc) {
     const out = [], seen = new Set([pc.id]), a = age(pc);
-    const add = (p, role, pri) => { if (!p || !p.alive || seen.has(p.id) || p.id === pc.id || age(p) < 14) return; seen.add(p.id); out.push({ id: p.id, role, pri }); };
+    // X3 (E7, D-059): counsel comes from someone who is there: a wife across the realm, a brother in prison, a father you left at home
+    // are not in the room, so their seat goes to someone who is (A.X3.present, 99999-x3-honest-cards)
+    const add = (p, role, pri) => { if (!p || !p.alive || seen.has(p.id) || p.id === pc.id || age(p) < 14) return; if (A.X3 && A.X3.present && !A.X3.present(pc, p)) return; seen.add(p.id); out.push({ id: p.id, role, pri }); };
     const rr = pc.ruler && A.realm(pc.ruler);
     if (rr && rr.council) for (const seat of Object.keys(A.COUNCIL || {})) add(live(rr.council[seat]), seat, 90);
     // a councillor of another's realm hears the crown
