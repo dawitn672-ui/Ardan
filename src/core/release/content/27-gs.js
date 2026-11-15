@@ -51,7 +51,7 @@
       id: "ga_open",
       trigger: !0,
       title: (p,ctx)=>{const g=G(ctx);return g?A.cap(A.gathName(g)):"The gathering"},
-      setup: needG((p,ctx)=>{const g=G(ctx);if(!g){ctx.skip=1;return}ctx.aims=["ruler","envoy"].includes(g.pc.role)?A.gathAims(p,g):[],ctx.who=A.gathAttendees(g).map(A.realmShort).join(", "),ctx.role=A.ROLE_NAME[g.pc.role]}),
+      setup: needG((p,ctx)=>{const g=G(ctx);if(!g){ctx.skip=1;return}ctx.aims=["ruler","envoy"].includes(g.pc.role)?A.gathAims(p,g):[],ctx.who=A.gathAttendees(g).map(A.realmShort).join(", ")||"the great of the realm",ctx.role=A.ROLE_NAME[g.pc.role]}),
       // [X1 baked patch events/99999-v2-content V2C-TOURNEY-LANCE] ga_open gives every tournament entrant of the
       // "knight" role "Your horse is groomed and your lance is new", and the role also goes to any soldier of rank 2 or
       // more: an orc crossbowman with no lance to speak of was told of his lance and groomed horse (playtest 2, old

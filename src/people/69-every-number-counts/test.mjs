@@ -116,7 +116,7 @@ export default {
     const r = await pg.evaluate(() => {
       const L = A.LN;
       const cn = k => (A.BM && A.BM.canon ? A.BM.canon(k) : k);
-      const fresh = (o, k, v) => { A.newGame(Object.assign({ seed: 6903, race: 'human', sex: 'M', startAge: 25 }, o)); const pc = A.pc(); A.S.queue = []; pc.skills[cn(k)] = v; return pc; };
+      const fresh = (o, k, v, seed) => { A.newGame(Object.assign({ seed: seed || 6903, race: 'human', sex: 'M', startAge: 25 }, o)); const pc = A.pc(); A.S.queue = []; pc.skills[cn(k)] = v; return pc; };
       // a farmer's axe: 8 years of work
       const farm = v => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'axe', v); pc.job = { c: 'farm', r: 1, y: 3, perf: 50, merit: 0 }; let pay = 0; for (let y = 0; y < 8; y++) { pc.skills[cn('axe')] = v; pc.coin = 100; pc.job.r = 1; A.careerYear(pc); pay += pc.coin - 100; } return { perf: Math.round(pc.job.perf), pay }; };
       const f0 = farm(0), f60 = farm(60);
@@ -163,7 +163,9 @@ export default {
       const farm2 = [hold('farm', 'husbandry', 0), hold('farm', 'husbandry', 60)], shop = [hold('workshop', 'craft', 0), hold('workshop', 'craft', 60)];
       const roof = [hold('cottage', 'craft', 0), hold('cottage', 'craft', 60)], horse = [hold(null, 'husbandry', 0, 'palfrey'), hold(null, 'husbandry', 60, 'palfrey')];
       // the season's marches: 200 seasons of a soldier at athletics 0 / 60
-      const march = v => { const pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'athletics', v); pc.mil = { rank: 0, merit: 0 }; let sore = 0, noted = 0; for (let y = 0; y < 200; y++) { pc.skills.athletics = v; pc.health = 100; const r = L.march(pc); if (r < 0) sore++; if (r > 0) noted++; } return { sore, noted }; };
+      const march = v => { let pc; // a body that can carry the skill: the cap of a peasant's athletics differs by world (C7 moved the stream)
+        for (const sd of [6903, 6904, 6905, 6906, 6907, 6908]) { pc = fresh({ realm: 'POL-01', status: 'peasant' }, 'athletics', v, sd); if (v < 35 || A.skill(pc, 'athletics') >= 35) break; }
+        pc.mil = { rank: 0, merit: 0 }; let sore = 0, noted = 0; for (let y = 0; y < 200; y++) { pc.skills.athletics = v; pc.health = 100; const r = L.march(pc); if (r < 0) sore++; if (r > 0) noted++; } return { sore, noted }; };
       const m0 = march(0), m60 = march(60);
       return { f0, f60, w0: wake(0), w60: wake(60), b0, b60, s0, s60, h0, h60, c0, c60, x0, x60, farm2, shop, roof, horse, m0, m60 };
     });

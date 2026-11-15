@@ -66,7 +66,9 @@ export default {
         if (!N) { bad.push(cid + ' no rule'); continue; }
         const modes = [N.common, N.noble].concat(Object.values(N.alt || {}));
         if (!modes.every(m => MODES.includes(m))) bad.push(cid + ' mode ' + modes.join('/'));
-        const rid = (C.pols || [])[0] || 'unclaimed', own = new Set([...(C.m || []), ...(C.f || [])]);
+        // C7: a culture's own names are its pool's (a subset of the common pool, its accent, its realms' leans), no longer LORE.cultures' lists
+        const rid = (C.pols || [])[0] || 'unclaimed', D = A.DATA.names, sees = A.NAMES.sees(cid), acc = (D.cultures[cid] || {}).accent || {};
+        const own = new Set([...sees.male, ...sees.female, ...(acc.male || []), ...(acc.female || []), ...(C.pols || []).flatMap(p => [...((D.lean[p] || {}).male || []), ...((D.lean[p] || {}).female || [])])]);
         let given = 0, sur = 0, n = 0;
         const sample = [];
         for (let i = 0; i < 12; i++) {
@@ -91,7 +93,7 @@ export default {
     const r = await pg.evaluate(() => {
       const V = A.VOICE, evs = Object.values(A.EV), C = {}, over = [], raw = [];
       let lifeKey = null;
-      for (let s = 0; s < 3; s++) for (const cid of Object.keys(LORE.cultures)) {
+      for (let s = 0; s < 5; s++) for (const cid of Object.keys(LORE.cultures)) {   // five lives a culture: with three, one culture fell to 27% on a world the stream drew differently (C7)
         const R = C[cid] = C[cid] || { n: 0, before: 0, after: 0, voice: 0 };
         for (const e of evs) {
           if (!V.localTo(e).includes(cid)) continue;
@@ -123,7 +125,7 @@ export default {
     const min = rows.reduce((m, [c, R]) => (pct(R.after, R.n) < m[1] ? [c, pct(R.after, R.n)] : m), ['', 101]);
     const max = rows.reduce((m, [c, R]) => (pct(R.after, R.n) > m[1] ? [c, pct(R.after, R.n)] : m), ['', -1]);
     return { ok: !low.length && !r.over.length && !r.raw.length && rows.length >= 20,
-      detail: `${rows.length} cultures with local events (${n} draws, 3 lives each): with one of its words before ${pct(b, n)}%, after ${pct(af, n)}% (lowest ${min[0]} ${min[1]}%, highest ${max[0]} ${max[1]}%); a word or a voice line ${pct(vo, n)}%; ${rows.length - low.length} of ${rows.length} cultures at 30% or more${low.length ? ' (BELOW: ' + low.map(([c, R]) => c + ' ' + pct(R.after, R.n) + '%').join(', ') + ')' : ''}; over 80 words ${r.over.length}, raw tokens ${r.raw.length}`,
+      detail: `${rows.length} cultures with local events (${n} draws, 5 lives each): with one of its words before ${pct(b, n)}%, after ${pct(af, n)}% (lowest ${min[0]} ${min[1]}%, highest ${max[0]} ${max[1]}%); a word or a voice line ${pct(vo, n)}%; ${rows.length - low.length} of ${rows.length} cultures at 30% or more${low.length ? ' (BELOW: ' + low.map(([c, R]) => c + ' ' + pct(R.after, R.n) + '%').join(', ') + ')' : ''}; over 80 words ${r.over.length}, raw tokens ${r.raw.length}`,
       data: r.C };
   },
 

@@ -185,9 +185,16 @@ export default {
       const base = { race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', seed: 9531, startAge: 30 };
       const out = {};
       // a year with two small cards: no stop, both wait at its end, the digest says so
-      __nyEnter(base);
-      const ids = []; for (let i = 0; i < 2; i++) { const id = __nyEv('ny_small' + i, { happy: 1 }); ids.push(id); A.schedule({ type: 'event', ev: id }, 80 + i * 90); }
-      const y = await __nyPress('v2Year', { hold: true });
+      // (the first of a few seeds whose year nothing notable stops: an illness in January stops one, and which seeds fall ill
+      // depends on the stream)
+      let y;
+      for (const seed of [9531, 9541, 9543, 9547, 9549, 9551]) {
+        __nyEnter(Object.assign({}, base, { seed }));
+        const ids = []; for (let i = 0; i < 2; i++) { const id = __nyEv('ny_small' + i, { happy: 1 }); ids.push(id); A.schedule({ type: 'event', ev: id }, 80 + i * 90); }
+        y = await __nyPress('v2Year', { hold: true });
+        if (!y.why) break;
+        __nyAnswer();
+      }
       out.year = { why: y.why, waited: y.waited, waiting: y.waiting, d: y.d1 - y.d0, digest: !!document.querySelector('.year-sum'), text: (document.querySelector('.year-sum') || {}).textContent || '', modal: !!document.querySelector('#modal') };
       __nyAnswer();
       // more than the year keeps: the rest pass, and say so

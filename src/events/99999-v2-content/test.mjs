@@ -325,7 +325,7 @@ export default {
       pc.mil = { rank: 3, realm: pc.realm };
       A.S.gath = (A.S.gath || []).concat([{ id: 'v2ct_g', kind: 'tournament', host: pc.realm, pc: { role: 'knight' } }]);
       const open = () => String(A.EV.ga_open.text(pc, { gid: 'v2ct_g', who: 'x' }));
-      if (pc.skills) { pc.skills.lance = 0; }
+      if (pc.skills) { pc.skills.lance = 0; pc.skills.riding = 0; }   // the lance skill is merged into riding (49-body-mind): a world whose orc rides at 30 told a plain soldier of his lance
       out.soldier = open();
       pc.job = { c: 'knight', r: 1, y: A.S.year, perf: 50 };
       out.knight = open();

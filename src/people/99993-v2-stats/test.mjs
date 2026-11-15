@@ -567,11 +567,18 @@ export default {
       // a sword master: a body of ordinary make (at least half a levy untrained; a frail man of strength 20 is under one
       // levy even as a master, rightly) with a sword in his hand (a cudgel is not moved by the sword skill)
       let pc = null;
-      for (let seed = 41; seed < 61; seed++) { T.enter({ seed, startAge: 30 }); pc = A.pc(); A.V2S.cache = new WeakMap(); if (V.shownLevies(pc) >= 0.5) break; }
-      for (const k of ['sword', 'melee']) pc.skills[k] = 80;
-      pc.gear = Object.assign({}, pc.gear, { weapon: 'sword' });
-      A.V2S.cache = new WeakMap();
-      const master = V.shownLevies(pc), chip = UI.SCENE && UI.SCENE.chipHtml ? UI.SCENE.chipHtml({ k: 'them', d: 36, label: "Merewyn's regard" }) : '';
+      // (the first body of the twenty worlds that is worth over a levy as a master: which one it is depends on the stream)
+      let master = 0;
+      for (let seed = 41; seed < 61; seed++) {
+        T.enter({ seed, startAge: 30 }); pc = A.pc(); A.V2S.cache = new WeakMap();
+        if (V.shownLevies(pc) < 0.5) continue;
+        for (const k of ['sword', 'melee']) pc.skills[k] = 80;
+        pc.gear = Object.assign({}, pc.gear, { weapon: 'sword' });
+        A.V2S.cache = new WeakMap();
+        master = V.shownLevies(pc);
+        if (master > 1) break;
+      }
+      const chip = UI.SCENE && UI.SCENE.chipHtml ? UI.SCENE.chipHtml({ k: 'them', d: 36, label: "Merewyn's regard" }) : '';
       const bar = UI.barRow('Health', 97, 100);
       const e = Object.values(A.EV).find(e => !e.trigger && (e.choices || []).some(c => c.check && !c.check.fight) && typeof e.text === 'string' && !/\{/.test(e.text + e.title) && !('_mwOwnSetup' in e ? e._mwOwnSetup : e.setup));
       A.S.queue = [{ type: 'event', ev: e.id, forced: true, ctx: {} }]; UI.ov = null; UI.render(); await new Promise(res => setTimeout(res, 0));

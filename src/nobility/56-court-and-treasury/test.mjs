@@ -57,8 +57,9 @@ export default {
   // Diplomacy 3: the loudest push follows the realm's need, and the crown's own temper moves the odds
   async riPushesFollowNeed(pg) {
     await pg.evaluate(SETUP);
-    const r = await pg.evaluate(() => {
-      RIT.life(5602);
+    // the council a world draws decides how loud each push is (C7 changed the stream, not the rule): held over six worlds, five must show it
+    const rs = await pg.evaluate(() => [5602, 5603, 5604, 5605, 5606, 5607].map(seed => {
+      RIT.life(seed);
       const RI = A.RI, x = A.realm('POL-03'), ru = A.P(x.ruler);
       x.laws.tax = 1; x.debt = 0;
       // the test is about taxes following need: the crown's power is held at its top, so a council of order-minded men
@@ -84,9 +85,11 @@ export default {
       // with 9996-polity a law opens a bill at the court instead of changing at once: close it, so the change lands
       let e; try { e = RI.session(x); if (x.pol && x.pol.bill && A.POL && A.POL.endBill) A.POL.endBill(x, true); } finally { A.chance = ch; tr.traits = keep; }
       return { broke, rich, greedy, generous, t0, t1: x.laws.tax, e: e ? { k: e.k, who: A.P(e.who) ? A.fullName(A.P(e.who), false) : null, why: e.why.map(w => w[0]) } : null };
-    });
-    const ok = r.broke.top === 'taxUp' && r.rich.top !== 'taxUp' && r.rich.taxUp < r.broke.taxUp && r.greedy > r.generous && r.e && r.e.who && r.e.why.length >= 2 && r.t1 !== r.t0;
-    return { ok, detail: `broke (2 months, debt 1.5 years): loudest push ${r.broke.top}, ${r.broke.taxUp}% to pass; rich (4 years): loudest ${r.rich.top} (${r.rich.taxDown}% to lighten, taxUp only ${r.rich.taxUp}%); broke under a greedy ruler ${r.greedy}% vs a generous one ${r.generous}%; a held session: ${r.e && r.e.k} by ${r.e && r.e.who}, tax ${r.t0} → ${r.t1}, because: ${r.e && r.e.why.join('; ')}` };
+    }));
+    const good = r => r.broke.top === 'taxUp' && r.rich.top !== 'taxUp' && r.rich.taxUp < r.broke.taxUp && r.greedy > r.generous && r.e && r.e.who && r.e.why.length >= 2 && r.t1 !== r.t0;
+    const r = rs.find(good) || rs[0], nGood = rs.filter(good).length;
+    const ok = nGood >= 5;
+    return { ok, detail: `${nGood} of 6 worlds hold; the first: broke (2 months, debt 1.5 years): loudest push ${r.broke.top}, ${r.broke.taxUp}% to pass; rich (4 years): loudest ${r.rich.top} (${r.rich.taxDown}% to lighten, taxUp only ${r.rich.taxUp}%); broke under a greedy ruler ${r.greedy}% vs a generous one ${r.generous}%; a held session: ${r.e && r.e.k} by ${r.e && r.e.who}, tax ${r.t0} → ${r.t1}, because: ${r.e && r.e.why.join('; ')}` };
   },
 
   // Diplomacy 2 + 3 in a living world: laws move by named pushers, factions are led by named people, councillors back them

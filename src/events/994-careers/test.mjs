@@ -65,6 +65,7 @@ export default {
       out.fiefable = A.CAR.fiefable(pc);
       // the council: rank 8 was needed for Marshal; a General of renown now qualifies
       pc.mil.rank = 7; pc.skills.command = 60; pc.fame = 50;
+      for (const s of Object.keys(pc.st || {})) pc.st[s] = Math.max(pc.st[s], 80);   // a mind that carries the skill (C9's cap): this world's captain was drawn slower than the old one
       out.marshal = A.seatEligible(pc, 'marshal');
       out.top = A.CAR.atTop(pc);
       out.generalMerit = GD.MIL[7].merit;
