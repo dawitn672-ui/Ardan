@@ -410,7 +410,7 @@
       title: "The widow and the baron",
       trigger: !0,
       setup: (p,ctx)=>stranger(p,ctx,"a baron with a long memory",5),
-      text: "A widow brings you her case: {themFull} has moved his boundary stones onto her mill. She can pay you four suns. The baron, hearing you are asked, sends word that he can pay forty — to have you plead for him instead.",
+      text: "A widow brings you her case: {themFull} has moved {theirHis} boundary stones onto her mill. She can pay you four suns. The baron, hearing you are asked, sends word that he can pay forty — to have you plead for him instead.",
       choices: [
         {
           t: "Plead for the widow",
@@ -1020,7 +1020,7 @@
       title: "A lord wants a loan",
       trigger: !0,
       setup: (p,ctx)=>stranger(p,ctx,"a great lord short of silver",5),
-      text: "{themFull} needs two thousand suns for his daughter's wedding and his son's war-horse. He offers his word as security, and a seat at his table.",
+      text: "{themFull} needs two thousand suns for {theirHis} daughter's wedding and {theirHis} son's war-horse. {theyHe} offers {theirHis} word as security, and a seat at {theirHis} table.",
       choices: [
         {
           t: "Lend it, secured on his wool revenues",
@@ -1102,7 +1102,7 @@
       title: "A noble pupil",
       trigger: !0,
       setup: (p,ctx)=>stranger(p,ctx,"a duke's unruly son",5),
-      text: "You are hired to tutor {themFull}, a duke's son who has driven off three tutors already. He bit the last one.",
+      text: "You are hired to tutor {themFull}, a duke's son who has driven off three tutors already. {theyHe} bit the last one.",
       choices: [
         {
           t: "Win him with stories of war and history",
@@ -1899,7 +1899,7 @@
       title: "A knight short of silver",
       trigger: !0,
       setup: (p,ctx)=>stranger(p,ctx,"a knight short of silver",4),
-      text: "{themFull} needs eighty suns for a new horse before the tourney season. He offers a hundred and twenty back at Michaelmas — on his honor.",
+      text: "{themFull} needs eighty suns for a new horse before the tourney season. {theyHe} offers a hundred and twenty back at Michaelmas — on {theirHis} honor.",
       choices: [
         {
           t: "Lend it",
@@ -2242,7 +2242,7 @@
       title: "An old scholar",
       trigger: !0,
       setup: (p,ctx)=>stranger(p,ctx,"an old scholar"),
-      text: "{themFull}, an old scholar with a famous name and no money, offers to teach you for the price of his rent.",
+      text: "{themFull}, an old scholar with a famous name and no money, offers to teach you for the price of {theirHis} rent.",
       choices: [
         {
           t: "Pay his rent",

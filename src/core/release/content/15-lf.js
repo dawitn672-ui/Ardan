@@ -2020,7 +2020,7 @@
             t: "Take {themHim} to return it and confess",
             check: {s:"persuasion",s2:"etiquette",d:33},
             win: {
-              r: "The stallholder is gruff but touched. {them} sweeps his stall for a week. A lesson that sticks.",
+              r: "The stallholder is gruff but touched. {them} sweeps {theirHis} stall for a week. A lesson that sticks.",
               fx: {them:{op:4},honor:2},
             },
             lose: {
@@ -5459,7 +5459,7 @@
             t: "Steal a horse from the next clan to show them",
             check: {s:"stealth",s2:"riding",d:34},
             win: {
-              r: "A grey mare, at the dark of the moon. When {them} comes home, you are waiting with her.",
+              r: "A grey mare, at the dark of the moon. When {them} comes home, you are waiting with {themHim}.",
               fx: {fame:2,coin:20,skill:{stealth:1}},
             },
             lose: {

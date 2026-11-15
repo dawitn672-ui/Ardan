@@ -567,7 +567,7 @@
       id: "mch_son_returns", title: "The whaler's offer", w: 3, once: true,
       cond: (p, C) => C.flag(p, "mch_son_at_sea") && A.S.year - p.flags.mch_son_at_sea >= 3,
       setup: (p, ctx) => { const k = alive(p.flags.mch_son_sea_who); if (!k) { ctx.skip = 1; return; } ctx.pid = k.id; },
-      text: "{them} comes ashore brown and broad, with tar under his nails and a sailor's roll to his walk. The skipper says he climbs like a cat. Now he wants to sign on a whaler out of the northern ports for three years. The whalers pay well. They lose one boat in five.",
+      text: "{them} comes ashore brown and broad, with tar under {theirHis} nails and a sailor's roll to {theirHis} walk. The skipper says {theyHe} climbs like a cat. Now {theyHe} wants to sign on a whaler out of the northern ports for three years. The whalers pay well. They lose one boat in five.",
       choices: [
         { t: "Let him go north", r: "He sails in spring. His letters, when they come, smell of oil and smoke. He is a man in them before he is one at home.",
           fx: { them: { op: 15 }, happy: -4, wil: 1 } },

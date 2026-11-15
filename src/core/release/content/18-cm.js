@@ -5892,7 +5892,7 @@
         cool: 6,
         title: "A killer in spurs",
         setup: (p,ctx)=>{who(p,ctx,"a knight turned murderer")},
-        text: "A lord's daughter is dead, and the man who did it is a knight: {themFull}, with friends at court and a sword he knows how to use. No sheriff will touch {themHim}. Her father pays 300 suns, and asks you to bring {themHim} alive to stand trial, if you can.",
+        text: "A lord's daughter is dead, and the man who did it is a knight: {themFull}, with friends at court and a sword {theyHe} knows how to use. No sheriff will touch {themHim}. Her father pays 300 suns, and asks you to bring {themHim} alive to stand trial, if you can.",
         choices: [
           {
             t: "Take {themHim} alive",
