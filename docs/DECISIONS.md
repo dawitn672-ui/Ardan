@@ -882,3 +882,34 @@ add more, and a function did whatever the folder order added up to (P14).
 `UI.eventModal` 10, ...) are still wrappers; staging one is adding it to the manifest and converting its wrappers the same
 way, and the baseline then falls. Load order for everything else is still folder order (P14 is done for the seven only);
 features still find each other through optional globals.
+
+### D-057 · C6: the tree knows your kin, relationships know whom you have met; one resolver for a house; nine months (2026-11-15 ET; owner order 7; CRITIQUE F1-F10, P9)
+**Chosen** (design: `docs/design/households.md`; code `src/family/999991-households`):
+1. **Two stores.** The family tree (`parents`, `children`, `spouse`) keeps every relative the world knows of; `pc.rel` keeps
+   the people the player has met. 99994's three generations stay in the tree (its tests and the kin arcs read the tree), but
+   are no longer linked at birth. At birth the player knows the parents, the living siblings and a grandparent only under the
+   same roof (from the family's seed, at most two); a noble or royal child of a house adds a nurse, a maid and a guard knight,
+   and a tutor at six. Commoner at most 8, noble at most 12, no uncle, aunt, cousin or in-law. The release's linking of a
+   lesser house's members as "uncle" and "cousin" outside the graph (F4) is gone with it.
+2. **How you met** is on every new entry: `met: { y, at, by }`, written by `A.link` itself (the one place every link goes
+   through), from `A.MEET.as(why)`, the event being played, or the link's type. Old entries keep no `met` (gentle: the view
+   reads `since`).
+3. **No kin minted.** A kin helper takes a relative from the tree, meeting them then, or the card drops (its setup throws,
+   which the engine already treats as a skip). Release event functions edited for this (pack 15 `known` and three setups,
+   pack 11 `kinPid` and two claims, pack 8 `ct_bastard_claim`, 40-memory-peoples) keep their audience classes
+   (`identity-probe`: classes IDENTICAL; lives differ, as every C6 change moves the stream). A claimed cousin who is an
+   impostor or a stranger is an acquaintance, not a cousin. Kin met later come by a yearly family gathering (a log line,
+   never a card: owner order 17) and by scenes.
+4. **One resolver** `A.HOUSE.resolve(hid)` for a house's head and heir, read by the release's `A.kill` and `A.houseHead`,
+   99994's `F.inherit` and `F.headOf`; every write still goes through `A.setHead`, so the `house:` posts of `A.POSTS` stay
+   the one record (A2).
+5. **A parish of seeds.** Each home province has about twenty named commoners derived from the seed and the province; nothing
+   is stored until one is met (`A.S.parish`). A commoner's acquaintances at home come from it first.
+6. **Nine months.** `A.familyYear` no longer gives birth on New Year's day: it sets a conception day in the year and the birth
+   comes 270 days later (`A.S.pregs`). The release's draws for whether a child comes are unchanged; the day is drawn on the
+   family's own stream.
+**Considered:** pruning `pc.rel` after the family is made, instead of not linking (kept only for the release's own links
+in `A.newGame`, which a stage cannot reach without editing the release; the stage removes them with their back links);
+cards for a kin meeting (owner order 17 says talk waits); full people for the parish (P9: named people only pile up).
+**Not done:** the People page's Household block with faces, the tree drawn centred on you and the person card's new order
+(F8 to F10, interface work for B5's successors); "Make a friend" as "Spend time with" (F6) beyond the parish's faces.
