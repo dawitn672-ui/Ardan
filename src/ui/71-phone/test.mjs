@@ -161,7 +161,7 @@ export default {
       const [ia, ib] = await Promise.all([load(A), load(B)]); const c = document.createElement('canvas'); c.width = ia.width; c.height = ia.height; const x = c.getContext('2d');
       x.drawImage(ia, 0, 0); const da = x.getImageData(0, 0, c.width, c.height).data; x.clearRect(0, 0, c.width, c.height); x.drawImage(ib, 0, 0); const db = x.getImageData(0, 0, c.width, c.height).data;
       let n = 0, x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1;
-      for (let i = 0; i < da.length; i += 4) if (da[i] !== db[i] || da[i + 1] !== db[i + 1] || da[i + 2] !== db[i + 2]) { n++; const px = (i / 4) % c.width, py = (i / 4 / c.width) | 0; if (px < x0) x0 = px; if (py < y0) y0 = py; if (px > x1) x1 = px; if (py > y1) y1 = py; }
+      for (let i = 0; i < da.length; i += 4) if (Math.abs(da[i] - db[i]) > 3 || Math.abs(da[i + 1] - db[i + 1]) > 3 || Math.abs(da[i + 2] - db[i + 2]) > 3) {   /* a gradient's dither moves by a level or two between two paints of the same layer (CI's Chromium 141, the death screen's panel): not a change */ n++; const px = (i / 4) % c.width, py = (i / 4 / c.width) | 0; if (px < x0) x0 = px; if (py < y0) y0 = py; if (px > x1) x1 = px; if (py > y1) y1 = py; }
       if (!n) return { n, text: 'no pixel differs' };
       const el = document.elementFromPoint((x0 + x1) / 2, (y0 + y1) / 2);
       return { n, text: `${n} px in ${x0},${y0}-${x1},${y1}; at its centre ${el ? el.tagName.toLowerCase() + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\s+/).join('.') : '') + ' "' + (el.textContent || '').trim().slice(0, 40) + '"' : 'nothing'}` };
@@ -184,7 +184,8 @@ export default {
         // (CI runs 66 and 67: 13 px in a 3 x 24 strip at a Buy button, now and then): noted, not counted. B5: 60, not 40: the duel's
         // fighter portrait (8,60-228,164) differs by 46 px of anti-aliasing with the layout the same, since the rail moved to 232 px
         const px = ia === ib ? null : await where(bufA, lastBuf);
-        if (a.join() === b.join() && px && px.n <= 60) noise.push(`${name} ${px.text}`);
+        if (a.join() === b.join() && px && px.n === 0) {}   // the same within three levels of colour
+        else if (a.join() === b.join() && px && px.n <= 60) noise.push(`${name} ${px.text}`);
         else if (a.join() !== b.join() || ia !== ib) diff.push(`${name} (layout ${a.join() === b.join() ? 'same' : 'differs: ' + first(a, b)}, pixels ${ia === ib ? 'same' : 'differ: ' + px.text})`);
       }
       await p.evaluate(() => { document.getElementById('ph-css').disabled = false; UI.PHONE.off = false; });
