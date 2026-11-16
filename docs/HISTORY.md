@@ -1087,6 +1087,35 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
 - **Undo:** revert the five commits, newest first; to bring the ambitions or chapters back, move their folders from
   `archive/` into `src/events/` and restore their manifest stages.
 
+**Addendum (p3-ci, 2026-11-16): CI 134 / long run 4 after the merge (`018631d`).** Branch `p3-ci` from `018631d`; not pushed.
+Each failure, its cause and the fix:
+- **tbHelpFirstHour** (game text): P3's line replacing "What now lists the three things" made the help's first hour 96 words
+  (max 90); shortened (77). `4adddb8`.
+- **b5Budget** (game): P3's features move the dice, so the fixed ruler persona's realm is now at peace and a fifth great
+  decision (the tourney) opened: 294/244 words. A met cooldown or "Not at war" is shown on a decision card only while
+  unmet (`UI.DEC_QUIET`, 23-ui-e); costs and thresholds stay. `4adddb8`.
+- **coRoutineOnce** (test): the unit's monthly missions are cleared with the queue each month there, but moved the dice,
+  and the seed's one pay-day line fell out of sixteen years; the test stands the unit's work down (it measures the
+  company's own scenes). `3529385`.
+- **x3IllnessArc** (game): seed 918, re-rolled: frostbite took a fever-sick body from 4 to nothing and the mortal roll named
+  the fever with no scene. `A.mortalCheck` asks `A.X3.illEdge` first: an ill grown player who has not had the crisis is
+  held at the edge for `x3_ill_crisis` (once). 40 of 40 reach the turn. `1e3991c`.
+- **v2sDerive** (test): the re-rolled sailor strained his back at 20 (A.stat 34 at 18, 33 at 25, his body 31.9 -> 35.7);
+  growth is read from `pc.st.str`, which a wound does not lower. `ecc4f3a`.
+- **v2sNumbers** (test): "Infamy: feared" on Life came from What now's "Mind your infamy", a handed suggestion P3 fix 2
+  retired (it fails the same on `32aef7a`). A ruler's infamy is in words on the Realm tab's bar, its popover and the realm
+  card (all still checked); Life is held to carrying no such suggestion. `ecc4f3a`.
+- **x3PreviewReplay400** (game): `rl_f_priest`'s "Answer the call" (job clergy, piety +6) previewed piety up, but for a
+  faithless player (d-faith) the piety became pull before the job made him a priest. A choice that takes holy orders takes
+  the faith first (`VS.takeFaith`). Not caused by P3 (the same on the build before it); the re-rolled world sampled it. `9215bf3`.
+- **varietyGuard** (unresolved): one triple with the guard on against a bar of 0, on CI 133 (before P3) and 134. The test
+  now names the triple (seed, shape, the three scenes and how each came) `2db4eb7`; a local run (over 800 s) did not finish
+  under the shared machine's load.
+- **Not P3's:** `famineTriplesGrain` (shard 5, which did not run on CI 134: the runner's font install failed) fails on
+  `018631d` (failed harvest 1.11 against an ordinary 1.15, a bar of -0.03) but passes on P3 alone (`0669e29`: 1.14 against
+  1.11) and before it: a W1-1/W1-2 re-roll, left to its owner. The rest of shard 5 passes locally.
+- `sameWorld` and `rankMovesTheFight` are W1-2's.
+
 ### H-066 · 2026-11-16 · The old Ardan Codex reviewed (research only)
 - **Asked:** the owner uploaded an old, outdated Codex (the Far Lands, 1105) and asked what in it is useful.
 - **Docs:** `docs/research/codex-review.md` (what it is, what matches, contradicts or is gone, 12 useful items by work item,
