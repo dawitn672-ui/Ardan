@@ -145,7 +145,7 @@ UI.HINTS = [
   {
     id: "whatnow",
     where: "life",
-    text: "Not sure what to do? <b>What now</b> lists the three things most worth doing. One click does each.",
+    text: "Nothing is set for you: what you seek is yours to choose. The Path, your plan and the people you know are where a life is made.",
     done: () => UI.hintUsed.wn,
   },
   {
