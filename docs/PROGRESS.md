@@ -39,7 +39,6 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **C9** · Bodies that make sense: measured stat words, no body units, skill baselines, longer lives, honest odds, Swordsmanship · `cd2e54d` · 2026-11-13 21:17 ET
 - [x] **P2** · A clean Profile page (card, sheet, four tabs); the past in Records (D-041) · `c56f9d4` · 2026-11-13 19:21 ET
 - [x] **X7 part 1** · Phone speed, the first load: title world without the continent, the new life's continent built ahead in a worker, cheaper event-pack setup; `tools/bench/phone-load.mjs` (D-054, H-042)
-- [ ] **X7 part 2** · Phone speed, each press: the engine's month (A.wsDay and the war sim are half a press at year 0), with D12b/X5 (D-023)
 - [x] **W0** · Remove the war score and the army templates (order 34) (H-036)
 - [x] **X2** · Named stages: seven hot functions run named stages from a manifest (`src/core/01-stages`), `tools/lint-stages.mjs` holds them and the count of names defined twice (364 → 357), the muted diplomacy path held by `v2DipMutedPath` (D-056)
 - [x] **D10** · War screens only when deployed (H-036)
@@ -49,21 +48,31 @@ moment it is merged and CI is green, with the stamp and the commit; never delete
 - [x] **C7** · Names and cultures in the game: one common English pool, a lean per realm, people from the neighbour and trade partners, no twins, fiefs in their own people's language, four realm names fit their governments, the renaming hack deleted (D-058, `docs/design/names-and-cultures.md`)
 - [x] **Order 52** · Legendaries and arts renamed; ordinary arms as made things (45 forms); Sickle Moon (D-050) · `334f81e` · 2026-11-14 11:22 ET
 - [x] **C8c** · Dress, class and regalia: dress by station, people (four cuts), occasion and place; only a livery is shared; a soldier's bust; hoods for the road; a scene tag on every event and the print that follows it; outfits the player changes (D-060, `docs/design/demo-2d/c8c/`). **Blind reading 83 in 100 over six readings, 81 on the final sheet: the bar of 85 is not held (serf, peasant, merchant)**
-- [ ] **P3** · Order 54 playtest round: new life after a save; ambitions, chapters and handed goals retired (free will); reasoned consequences for crimes against rulers (no automatic forgiveness); first mission within months; a step completes after its cards are answered
-- [ ] **R1** · Nothing without reason (rule 18): every AI, noble, faction, commander and NPC decision carries a nameable reason from post, circumstance, personality and emotion; a lint and a run audit
-- [ ] **R2** · Every relationship needs a base (rule 19, order 55): access to a person by the gap in standing, their pride and personality, need and circumstance; knighthood, renown, mastery, fame, wealth and introductions shift it; NPC bonds alike
-- [ ] **W1** · No Marshal: General the highest rank, several Generals by army size, nobles' own commands under the king; old saves map the Marshal; conscription instead of levies (with D11). Stages (war.md §16): **W1-1** no Marshal, five ranks · **W1-2** minds (reasons and feelings; R1's core) · **W1-3** commands and the summons · **W1-4** no levies · **W1-5** surrender or defeat · **W1-6** the realm's peace (stability, factions, private wars, risings, coups)
 - [x] **D12a-2** · War design revised with the owner's ten answers (order 54): part two of `docs/design/war.md` (§9 to §16), two diagrams, sixteen stages (D-064, H-059) · branch `d12a-2` · 2026-11-15 21:35 ET
 - [x] **T1** · Faster testing: a quick tier on every push, the long bot-life tier nightly and before versions
-- [ ] **L2** · Legendaries: mythical names, character and aura; the bow redrawn to be truly legendary
-- [ ] **C8d** · Hair in depth; dress and appearance variety compounded (serf / peasant / merchant read right); looks matter in play where it fits
-- [ ] **D11+** · Military path by weapon, way of fighting and every useful aptitude; training tailored to each unit's make-up
-- [ ] **G0** · Growth non-linear: research and a standard (before G)
-- [ ] **Gaps** · Every known leftover: "the" before realm forms, lore people's names, tablets' phone shell, missions abroad for cards, U6/U10/U12/U17/U21, 200% text, mourning dress, NPC dress by occasion, jewellery, mounts, interiors (V19), cut-in tone (V11-12)
-- [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
 - [x] **D12a** · War design: theatre, field, press; sight by rank; one engine with a cause ledger; nine stages (`docs/design/war.md`) · `0378b9e` · 2026-11-14 05:43 ET · **10 owner decisions pending**
+
+### Open, in build order (re-sorted 2026-11-16 by what the rest stands on; owner: "start with the more important or more
+structurally necessary things")
+Why this order: first the game must work (P3); then the removals the rest is built on (W1-1: the
+Marshal; levies and the war score follow in W1); then the one way of deciding every figure uses (R1 core = W1-2), and access built
+on it (R2); the growth standard (G0) before training is built on it (D11, D11+); the map (D9) before war on it (D12b, which also
+brings X7 part 2's speed). Looks (C8d, L2) block nothing and run beside the rest when an agent is free; Gaps ride along with the
+item that touches them; balance (X4) and the state diet (X5) last, once the systems hold still. Re-sorted again whenever an order
+or a finding changes what stands on what.
+- [ ] **P3** · Order 54 playtest round: new life after a save; ambitions, chapters and handed goals retired (free will); reasoned consequences for crimes against rulers (no automatic forgiveness); first mission within months; a step completes after its cards are answered
+- [ ] **W1** · No Marshal: General the highest rank, several Generals by army size, nobles' own commands under the king; old saves map the Marshal; conscription instead of levies (with D11). Stages (war.md §16): **W1-1** no Marshal, five ranks · **W1-2** minds (reasons and feelings; R1's core) · **W1-3** commands and the summons · **W1-4** no levies · **W1-5** surrender or defeat · **W1-6** the realm's peace (stability, factions, private wars, risings, coups)
+- [ ] **R1** · Nothing without reason (rule 18): every AI, noble, faction, commander and NPC decision carries a nameable reason from post, circumstance, personality and emotion; a lint and a run audit
+- [ ] **R2** · Every relationship needs a base (rule 19, order 55): access to a person by the gap in standing, their pride and personality, need and circumstance; knighthood, renown, mastery, fame, wealth and introductions shift it; NPC bonds alike
+- [ ] **G0** · Growth non-linear: research and a standard (before G)
 - [ ] **D11** · Military branches (feudal armies, D-012). Stages (war.md §16, with D11+): **D11-1** the muster · **D11-2** units that differ, tailored training, duties · **D11-3** careers
+- [ ] **D11+** · Military path by weapon, way of fighting and every useful aptitude; training tailored to each unit's make-up
+- [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
 - [ ] **D12b** · War and command depth. Stages (war.md §16): **D12b-1** hosts on roads (X7 part 2's gate) · **D12b-2** one engine, the field by your eye · **D12b-3** reports and the people you know · **D12b-4** the theatre and the burn · **D12b-5** the press · **D12b-6** sieges and the verbs · **D12b-7** balance, retire, records
+- [ ] **X7 part 2** · Phone speed, each press: the engine's month (A.wsDay and the war sim are half a press at year 0), with D12b/X5 (D-023)
+- [ ] **C8d** · Hair in depth; dress and appearance variety compounded (serf / peasant / merchant read right); looks matter in play where it fits
+- [ ] **L2** · Legendaries: mythical names, character and aura; the bow redrawn to be truly legendary
+- [ ] **Gaps** · Every known leftover: "the" before realm forms, lore people's names, tablets' phone shell, missions abroad for cards, U6/U10/U12/U17/U21, 200% text, mourning dress, NPC dress by occasion, jewellery, mounts, interiors (V19), cut-in tone (V11-12)
 - [ ] **X4** · Balance pass
 - [ ] **X5** · State diet; stop committing index.html every round (D-018)
 
