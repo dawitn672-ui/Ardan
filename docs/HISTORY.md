@@ -1118,6 +1118,26 @@ Each failure, its cause and the fix:
   1.11) and before it: a W1-1/W1-2 re-roll, left to its owner. The rest of shard 5 passes locally.
 - `sameWorld` and `rankMovesTheFight` are W1-2's.
 
+**Addendum 2 (guard-famine, 2026-11-16): the three left on `bfb9082`.** Branch `guard-famine` from `bfb9082`; not pushed.
+- **varietyGuard** (game, `28fef6d`): the roll weighs a scene against the shapes seen and the queue, but v2-time spreads a
+  month's rolled scenes over its days and holds a fourth to the next month, so what surfaces in front of a scene is not
+  what the roll saw. `A.evSurfaceHold` (25-variety-guard), asked by v2-time's `A.headReady`, holds a rolled scene that
+  surfaces as the third of one shape in a row, by v2-time's own hold, at most twice (never a forced scene, a consequence,
+  a request, a gathering's, a dated promise). Seed 6 alone: 1 triple before, 0 after; the full test: guard on 0 triples,
+  same-shape pairs 1.1% (was 1.7%), views 907 (925). lfRepeats (prompts 10.8 a year against 13.4, bar 0.7) and lfDoors
+  pass.
+- **famineTriplesGrain** (test, `0704e5a`): not a famine that stopped answering. Behind closed roads grain is 3.84 times
+  its price; the four realms' grain demand and armies are what they were (POL-02: 610 a month, 67,000 men). The open
+  market around them moved with W1's re-rolled world: POL-02's granary ends the thirteen months read at about 2,500 in both
+  years where it fell to 540 and 218 before, so neither lean spring falls in the window and the open-road pair sits a
+  few points either side (1.11 against 1.15). The open-road pair is a sanity bar of 0.06 either side.
+- **menuStartsVaried** (test, `e044877`): not P3 fix 1 (the test never opens the menu or calls newLife). It set
+  `UI.screen = 'create'` straight after the content was ready, but the title's world is made a tick later, so on a fast
+  runner the creation screen's portraits were drawn with no world (A.S null), a state the player cannot reach (the game's
+  entries call `UI.ensureWorld` first). The test now enters the same way.
+- Checks: coherency quick (no contradiction, no check rose), balance (all bands), v2tMonthCap, v2tNextMonth, the next-year
+  tests, renderRng, saveRoundTrip, journalReplay, varietyShapes.
+
 ### H-066 · 2026-11-16 · The old Ardan Codex reviewed (research only)
 - **Asked:** the owner uploaded an old, outdated Codex (the Far Lands, 1105) and asked what in it is useful.
 - **Docs:** `docs/research/codex-review.md` (what it is, what matches, contradicts or is gone, 12 useful items by work item,
