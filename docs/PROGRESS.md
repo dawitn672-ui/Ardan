@@ -4,7 +4,7 @@ The checklist of every work item, in the order they are being done, split by maj
 moment it is merged and CI is green, with the stamp and the commit; never delete a line. Details live in
 `docs/HISTORY.md`; the plans and reasons in `docs/CRITIQUE.md` §2, `docs/V3_SPEC.md` and `docs/DECISIONS.md`.
 
-*Last updated 2026-11-13 07:21 ET*
+*Last updated 2026-11-16 03:30 ET*
 
 ## v2 · Round 2: the owner's complaint list (`docs/V2_SPEC.md`, `docs/CRITIQUE.md`)
 
@@ -68,14 +68,23 @@ or a finding changes what stands on what.
 - [x] **G0** · (amended by order 59, D-070: no timetable; concepts, grasp and breakthroughs, §3.16) Growth non-linear: research and a standard (before G): `docs/design/growth-standard.md` (today measured over nine bot lives; the practice curve, quality, teachers, age, trials, disuse, the body by age, a reason for every change; worked lives; tests and budget for G1/G2 and D11+), scripts and chart in `docs/design/growth/` (H-062) · branch `g0` · 2026-11-16
 - [ ] **D11** · Military branches (feudal armies, D-012). Stages (war.md §16, with D11+): **D11-1** the muster · **D11-2** units that differ, tailored training, duties · **D11-3** careers
 - [ ] **D11+** · Military path by weapon, way of fighting and every useful aptitude; training tailored to each unit's make-up
-- [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016)
+- [ ] **D9** · The inked, detailed map; war fronts that spread like a burn (D-016). *iPhone audit (I1, D-073 point 1): one tile cache for both map layers (today 150 + 140 tiles), one kept view per canvas on screen, freed when it closes; decide the map's pixel ratio*
 - [ ] **D12b** · War and command depth. Stages (war.md §16): **D12b-1** hosts on roads (X7 part 2's gate) · **D12b-2** one engine, the field by your eye · **D12b-3** reports and the people you know · **D12b-4** the theatre and the burn · **D12b-5** the press · **D12b-6** sieges and the verbs · **D12b-7** balance, retire, records
-- [ ] **X7 part 2** · Phone speed, each press: the engine's month (A.wsDay and the war sim are half a press at year 0), with D12b/X5 (D-023)
+- [ ] **X7 part 2** · Phone speed, each press: the engine's month (A.wsDay and the war sim are half a press at year 0), with D12b/X5 (D-023). *iPhone audit (I1, roadmap §7.7, §8 item 9): the map pan draws once per pointer move (`23-ui-c.js:1302`, `23-ui-d.js:1146`), not once a frame; `UI.gmDraw` allocates arrays, objects and closures per draw; load and Next month to the I1-1 budget*
 - [ ] **C8d** · ⏸ *Postponed until the owner's image-model key (order 60).* **Gate 1 first (order 57): manhwa profile cards in the owner's reference style, shown before building in;** *(gate 1 drawn and waiting for the owner, H-063, D-068: `docs/design/c8d-gate1.md`, `docs/design/demo-2d/c8d/sheet.png`; not in the game)* (order 56: every design, weapon and garment differs by nation, border and culture, small differences between neighbours to drastic ones between far peoples) Hair in depth; dress and appearance variety compounded (serf / peasant / merchant read right); looks matter in play where it fits
 - [ ] **L2** · ⏸ *Postponed until the owner's image-model key (order 60).* Legendaries: mythical names, character and aura; the bow redrawn to be truly legendary
-- [ ] **Gaps** · (the visual ones wait for the image-model key, order 60) Every known leftover: "the" before realm forms, lore people's names, tablets' phone shell, missions abroad for cards, U6/U10/U12/U17/U21, 200% text, mourning dress, NPC dress by occasion, jewellery, mounts, interiors (V19), cut-in tone (V11-12)
+- [ ] **Gaps** · (the visual ones wait for the image-model key, order 60) Every known leftover: "the" before realm forms, lore people's names, tablets' phone shell, missions abroad for cards, U6/U10/U12/U17/U21, 200% text, mourning dress, NPC dress by occasion, jewellery, mounts, interiors (V19), cut-in tone (V11-12). *iPhone audit (I1, roadmap §7.2, §7.6): 58 of 382 controls under 44 points at 375×667 (You 29, Profile 12, Path 6, Holdings 6: description words, chips, stat rows), with a test that holds it at 0; the 57 `:hover` rules inside `@media (hover:hover)`; the bar `width` and the `left` sweep as `transform`*
 - [ ] **X4** · Balance pass
-- [ ] **X5** · State diet; stop committing index.html every round (D-018)
+- [ ] **X5** · State diet; stop committing index.html every round (D-018). *iPhone audit (I1, `docs/IOS_ROADMAP.md` §7.7): the state is 1.78 MB at year 0 and 4.01 MB at year 50 (people ×2, realms ×2.7, `wrec` 135 KB, `aiLog` 88 KB): cap or compact what grows with years and hold the save size by a test (rule 21: no data that grows forever)*
+- [ ] **I1** · iPhone App Store route (order 62, rule 21, D-071 to D-073; `docs/IOS_ROADMAP.md`, `.claude/skills/ios-capacitor-release`). Built toward from today; the stages run when the game is ready for it
+  - [x] **I1-0** · The route researched from today's docs and written: the six facts re-checked, seven stages, the audit against the build rules, the skill (H-065) · branch `ios-route` · 2026-11-16
+  - [ ] **I1-1** · Performance: load and Next month inside the iPhone budget at 4 to 6x (title < 3 s, first Life < 6 s, Next month < 1 s); with X7 part 2, X5, D12b-1
+  - [ ] **I1-2** · iPhone readiness: `viewport-fit=cover`; no selection, callout or bounce; `pointercancel` on the four drags; 50 `vh` to `dvh`; one audio module (one AudioContext, first tap, suspended in the background, `audioSession`); `SAVES.backend` and `UI.store` switches, profile tab's 4 direct `localStorage` calls through `UI.store`, `UI.download`'s native branch (roadmap §8 items 1-3, 6-8)
+  - [ ] **I1-3** · `www/` build: the one-file page to `app/www/index.html`; the split build only if the iPhone misses the budget (D-072)
+  - [ ] **I1-4** · Capacitor shell in `app/` (made on Linux): `capacitor.config.ts`, SPM iOS project, iPhone only, portrait, iOS 17, Info.plist keys, privacy manifest, native audio session, plugins wired (owner: bundle id, name)
+  - [ ] **I1-5** · Codemagic signing and TestFlight: `codemagic.yaml`, first green upload, the first-build checklist on a real iPhone (owner: developer account, API key, app record, Codemagic account)
+  - [ ] **I1-6** · App Store listing, privacy ("Data Not Collected", a privacy policy page), age rating, screenshots, export compliance (owner answers; agents draft)
+  - [ ] **I1-7** · App Review
 
 ## v3 · The living world: economy, armoury, growth in depth (`docs/V3_SPEC.md`, owner orders 28-33)
 
