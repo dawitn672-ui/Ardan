@@ -769,7 +769,9 @@ A.stats = p => {
 };
 
 A.skill = function (p, k) {
-  let v = p.skills[k] || 0;
+  // S1b (D-072): a skill is a level; p.skills[k] mirrors the value it reads, and A.SK.reads adds the specialism's steps
+  // (a legacy key such as "xbow" reads its skill with that specialism) and rust (src/people/36-skills)
+  let v = A.SK && A.SK.reads ? A.SK.reads(p, k) : p.skills[k] || 0;
   // C9 (D-040): a skill past what its body or mind can carry is for show; it works at the level they hold up
   // (src/people/999997-bodies, A.skillCap). Guarded, so a build without the feature reads the raw skill.
   if (A.skillCap && v > 29) v = Math.min(v, A.skillCap(p, k));
@@ -801,30 +803,12 @@ A.train = function (p, s, amt) {
   return gain;
 };
 
-A.trainSkill = function (p, k, amt) {
+// S1b (D-072): the shim. Experience moves only through A.gainXp (src/people/36-skills): amt x 0.2 months of effort,
+// with the cause read from what is running. The older growth (a curve on the number, aptitude caps, the perk log) is
+// retired to archive/s1-proficiencies/.
+A.trainSkill = function (p, k, amt, cause) {
   if (!GD.SKILLS[k]) return 0;
-  if (p && A.S && p.id === A.S.pc) amt *= A._growMul;
-  const cur = p.skills[k] || 0,
-    int = A.stat(p, "int"),
-    apt = (p.apt && p.apt[k]) || 1,
-    learn = 1 + A.perkSum(p, "learn"),
-    cap = apt < 0.6 ? 60 : apt < 0.8 ? 80 : 100,
-    g =
-      amt *
-      apt *
-      learn *
-      (A.specMul ? A.specMul(p, k) : 1) *
-      (0.6 + int / 120) *
-      Math.max(apt >= 1.4 ? 0.1 : 0.05, Math.pow(Math.max(0, 1 - cur / (cap + 10)), 1.5)),
-    before = cur;
-  if (((p.skills[k] = A.clamp(cur + g, 0, cap)), p.id === (A.S && A.S.pc) && GD.PERKS[k]))
-    for (const [lv, name, desc] of GD.PERKS[k])
-      if (before < lv && p.skills[k] >= lv) A.log(`${GD.SKILLS[k]}: you unlock "${name}" — ${desc}.`, "big");
-  if (g > 0 && A.S) {
-    p.used = p.used || {};
-    p.used[k] = A.S.year;
-  }
-  return g;
+  return A.SK && A.SK.trainShim ? A.SK.trainShim(p, k, amt, cause) : 0;
 };
 
 A.skillEff = function (p, k) {
@@ -849,7 +833,8 @@ A.perkOf = function (p, k, key) {
 A.perkSum = function (p, key) {
   let t = 0;
   if (!p || !p.skills) return 0;
-  for (const k in p.skills) if (!(p.skills[k] < 40 || !GD.PERKS[k])) t += A.perkOf(p, k, key);
+  // knacks come from the crossing into Advanced (35; was 40)
+  for (const k in p.skills) if (!(p.skills[k] < 35 || !GD.PERKS[k])) t += A.perkOf(p, k, key);
   return t;
 };
 

@@ -1154,8 +1154,7 @@ A.C = {
   parentsAlive: p => p.parents.some(x => A.P(x) && A.P(x).alive),
   fame: p => p.fame,
   literate: p => p.literate,
-  prof: (p, k, min) => A.skill(p, k) >= (min ?? 40),
-  apt: (p, k) => !!(p.apt && p.apt[k] >= 1.2),
+  // S1b (D-072): C.prof and C.apt are retired; a skill's level is C.lvl and a talent C.talent (src/people/36-skills)
   gear: (p, slot, ...keys) => {
     const g = p.gear && p.gear[slot];
     return keys.length ? keys.includes(g) : !!g && g !== "fists" && g !== "none";

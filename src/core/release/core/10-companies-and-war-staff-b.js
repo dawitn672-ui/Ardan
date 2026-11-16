@@ -1129,8 +1129,9 @@ A.wsGeneralFor = function (rid) {
       A.isAdult(p2) &&
       !(A.POSTS && (A.POSTS.holds(p2.id, "seat").length || (A.POSTS.isSeniorGeneral && A.POSTS.isSeniorGeneral(p2.id))))
     ) {
-      p2.skills.command = Math.max(p2.skills.command || 0, A.ri(25, 65));
-      p2.skills.tactics = Math.max(p2.skills.tactics || 0, A.ri(20, 60));
+      // S1b: an appointment raises a level through A.SK, never by a write into the mirror
+      A.SK ? A.SK.raiseTo(p2, "command", A.ri(25, 65), "given a command") : (p2.skills.command = Math.max(p2.skills.command || 0, A.ri(25, 65)));
+      A.SK ? A.SK.raiseTo(p2, "tactics", A.ri(20, 60), "given a command") : (p2.skills.tactics = Math.max(p2.skills.tactics || 0, A.ri(20, 60)));
       return p2.id;
     }
   }

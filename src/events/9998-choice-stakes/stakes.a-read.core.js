@@ -267,7 +267,7 @@
     { rx: new RegExp(String.raw`^\(?${P}p\.coin(?:${P}\|\|${P}0${P}\))?${P}>=?${P}(?:(\d+(?:\.\d+)?(?:e\d+)?)|\(?${P}(?:ctx${P}&&${P})?ctx\.(\w+)(?:${P}\|\|${P}(\d+))?${P}\)?(?:${P}\+${P}(\d+))?)$`),
       make: m => ({ kind: 'coin', need: (pc, ctx) => { let n = m[1] != null ? +m[1] : ctx && typeof ctx[m[2]] === 'number' ? ctx[m[2]] : m[3] != null ? +m[3] : null; if (n == null || !isFinite(n)) return null; return n + (m[4] ? +m[4] : 0); } }) },
     { rx: /^(?:p\.literate|C\d?\.literate\(\s*p\s*\))$/, make: () => ({ kind: 'literate' }) },
-    { rx: /^C\d?\.prof\(\s*p\s*,\s*["'](\w+)["']\s*,\s*(\d+)\s*\)$/, make: m => ({ kind: 'prof', s: m[1], n: +m[2] }) },
+    { rx: /^C\d?\.lvl\(\s*p\s*,\s*["'](\w+)["']\s*,\s*(\d+)\s*\)$/, make: m => ({ kind: 'prof', s: m[1], n: +m[2] }) },
     { rx: /^C\d?\.gear\(\s*p\s*,\s*["'](ranged|weapon|armor|shield|mount)["'](?:\s*,\s*["'](\w+)["'])?\s*\)$|^!!p\.gear\.(ranged|weapon)$/, make: m => ({ kind: 'gear', slot: m[1] || m[3], sub: m[2] || null }) },
     { rx: /^C\d?\.mounted\(\s*p\s*\)$/, make: () => ({ kind: 'mounted' }) },
     { rx: /^C\d?\.jobRank\(\s*p\s*,\s*(\d+)\s*\)$/, make: m => ({ kind: 'rank', n: +m[1] }) },
@@ -333,7 +333,8 @@
     switch (a.kind) {
       case 'coin': { const n = a.need(pc, ctx); if (n == null) return null; return { ok: (pc.coin || 0) >= n, t: `${coin(n)} (you have ${coin(Math.max(0, pc.coin || 0))})`, n }; }
       case 'literate': return { ok: !!pc.literate, t: 'reading and writing' };
-      case 'prof': { if (!C.prof || !GD.SKILLS || !GD.SKILLS[a.s]) return null; const have = Math.round(A.skill ? A.skill(pc, a.s) : 0); return { ok: !!C.prof(pc, a.s, a.n), t: `${skillWord(a.s)} ${a.n} (you have ${have})` }; }
+      // S1b (D-072): a skill wanted is a level in words ("Swordsmanship at Advanced IV, you are Intermediate II")
+      case 'prof': { if (!C.lvl || !GD.SKILLS || !GD.SKILLS[a.s]) return null; const SK = A.SK, have = A.skill ? A.skill(pc, a.s) : 0, w = v => (SK ? SK.levelName(SK.lvOfValue(v)) : String(Math.round(v))), need = v => (SK ? SK.levelName(Math.min(SK.MAX_LV, SK.VALUES.findIndex(x => x >= v - 1e-9))) : String(v)); return { ok: !!C.lvl(pc, a.s, a.n), t: `${skillWord(a.s)} at ${need(a.n)} (you are ${w(have)})` }; }
       case 'gear': { if (!C.gear) return null; return { ok: !!C.gear(pc, a.slot, a.sub || undefined), t: GEAR_WORD[a.slot] || a.slot }; }
       case 'mounted': { if (!C.mounted) return null; return { ok: !!C.mounted(pc), t: 'a horse' }; }
       case 'rank': { if (!C.jobRank) return null; return { ok: !!C.jobRank(pc, a.n), t: `rank ${a.n} in your work` }; }

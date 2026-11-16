@@ -901,9 +901,9 @@ A.planMonth = function (pc) {
   P.q = S.q;
   P.qParts = S.parts;
   P.qTag = S.tag;
-  if (S.tag === "breakthrough" && A.chance(0.5))
+  if (S.tag === "fine day" && A.chance(0.5))
     A.log(
-      `${GD.MONTHS[A.monthOf(A.today()).m]}: a breakthrough in your ${isSkill ? GD.SKILLS[P.train].toLowerCase() : GD.TRAIN_STATS[P.train].toLowerCase()} training. Something you could not do last month, you do without thinking.`,
+      `${GD.MONTHS[A.monthOf(A.today()).m]}: a fine month of ${isSkill ? GD.SKILLS[P.train].toLowerCase() : GD.TRAIN_STATS[P.train].toLowerCase()} training. Everything goes right for once.`,
       "good",
     );
   if (isSkill) {
@@ -920,7 +920,9 @@ A.planDay = function (pc) {
   if (P.train && !pc.prison) {
     const mul = I.mul * (P.q || 1) * (young ? 0.75 : 1) * (pc.health < 30 ? 0.3 : 1);
     if (((A._growMul = 1), GD.SKILLS[P.train])) {
-      A.trainSkill(pc, P.train, 0.105 * mul);
+      // S1b (D-072): the daily drip of skill (0.105 a day, 380 slivers a year) is retired; the plan is one effort a
+      // month in A.SK.queueMonth (src/people/36-skills). The body's daily training stays.
+      if (!A.SK) A.trainSkill(pc, P.train, 0.105 * mul);
       const [s1, s2] = GD.SKILL_STAT[P.train] || ["int", "wil"];
       A.train(pc, s1, 0.006 * mul);
       A.train(pc, s2, 0.004 * mul);

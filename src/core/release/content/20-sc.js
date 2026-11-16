@@ -353,7 +353,7 @@
           },
           {
             t: "Take the hard way in, through the skylight (climber)",
-            req: (p,C)=>C.prof(p,"athletics",50)||C.prof(p,"stealth",55),
+            req: (p,C)=>C.lvl(p,"athletics",50)||C.lvl(p,"stealth",55),
             check: {s:"stealth",s2:"athletics",d:44},
             win: {
               r: "You hang by your fingertips over a sleeping man and lift the chest key off his belt. They will talk about this one in the cant.",
@@ -966,7 +966,7 @@
       },
       {
         id: "sc_thd_cant",
-        cond: (p,C)=>C.adult(p)&&C.coast(p)&&!C.flag(p,"sc_cant")&&(J(p,"thief","pirate","sailor")||C.prof(p,"stealth",45)),
+        cond: (p,C)=>C.adult(p)&&C.coast(p)&&!C.flag(p,"sc_cant")&&(J(p,"thief","pirate","sailor")||C.lvl(p,"stealth",45)),
         w: .9,
         once: !0,
         title: "The cant",
@@ -1670,7 +1670,7 @@
       },
       {
         id: "sc_spd_face",
-        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&(J(p,"spy","thief")||C.prof(p,"intrigue",55)),
+        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&(J(p,"spy","thief")||C.lvl(p,"intrigue",55)),
         w: 1,
         cool: 6,
         title: "The same face",
@@ -2363,7 +2363,7 @@
       },
       {
         id: "sc_knd_fall",
-        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&(C.job(p,"knight")||C.mounted(p)&&C.prof(p,"lance",35)),
+        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&(C.job(p,"knight")||C.mounted(p)&&C.lvl(p,"lance",35)),
         w: .8,
         cool: 8,
         title: "The quintain",
@@ -2888,7 +2888,7 @@
       },
       {
         id: "sc_ptd_knuckles",
-        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&(C.job(p,"pitfighter")||C.prof(p,"unarmed",55)),
+        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&(C.job(p,"pitfighter")||C.lvl(p,"unarmed",55)),
         w: 1,
         cool: 7,
         title: "Knuckles",
@@ -2941,7 +2941,7 @@
       },
       {
         id: "sc_ptd_oldchamp",
-        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&(C.job(p,"pitfighter")||C.prof(p,"unarmed",50)),
+        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&(C.job(p,"pitfighter")||C.lvl(p,"unarmed",50)),
         w: .8,
         cool: 12,
         setup: (p,ctx)=>{who(p,ctx,"acquaint","a former champion of the pits")},
@@ -2992,7 +2992,7 @@
       },
       {
         id: "sc_ptd_monk",
-        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&!C.flag(p,"sc_ptd_monk")&&(C.job(p,"pitfighter")||C.prof(p,"unarmed",50)),
+        cond: (p,C)=>C.adult(p)&&!C.prison(p)&&!C.flag(p,"sc_ptd_monk")&&(C.job(p,"pitfighter")||C.lvl(p,"unarmed",50)),
         w: .7,
         once: !0,
         setup: (p,ctx)=>{ctx.who=R(p,"POL-27")?"a monk of the Hall of Still Hands":R(p,...STEPPE)?"an old steppe wrestler with a broken ear":R(p,"POL-21")?"a climber from the Rope Hall":A.pick(["a wandering monk with a staff","an old soldier with one ear","a fisherwoman who wrestles sailors for coins"])},

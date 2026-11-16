@@ -255,7 +255,7 @@
           },
           {
             t: "Buy out a desperate stallholder at noon",
-            req: (p,C)=>C.prof(p,"trade",40)&&p.coin>=10,
+            req: (p,C)=>C.lvl(p,"trade",40)&&p.coin>=10,
             r: "A widow who must catch a cart home sells you her whole table for 10 suns. You sell it on by dusk for 25.",
             fx: {coin:15,rep:3,skill:{trade:2}},
           },
@@ -823,7 +823,7 @@
     A.defEvents([
       {
         id: "cm_merchant_ship_lost",
-        cond: (p,C)=>C.adult(p)&&(trader(p)&&(rk(p)>=2||p.coin>=300)||C.rich(p)&&!p.ruler&&!p.mil&&C.coast(p)&&C.prof(p,"trade",40)),
+        cond: (p,C)=>C.adult(p)&&(trader(p)&&(rk(p)>=2||p.coin>=300)||C.rich(p)&&!p.ruler&&!p.mil&&C.coast(p)&&C.lvl(p,"trade",40)),
         w: .8,
         cool: 8,
         title: "Lost with all hands",
@@ -1058,7 +1058,7 @@
           },
           {
             t: "Ask for a topman's berth",
-            req: (p,C)=>C.prof(p,"sea",35),
+            req: (p,C)=>C.lvl(p,"sea",35),
             r: "The mate watches you go up the shrouds and nods. Topman's pay.",
             fx: {coin:25,rep:3,skill:{athletics:2}},
           },
@@ -1130,7 +1130,7 @@
           {t:"Stay with the coasting trade",r:"Home every week. Poor every week.",fx:{coin:8}},
           {
             t: "Sign on as the master's second navigator",
-            req: (p,C)=>C.prof(p,"sea",50),
+            req: (p,C)=>C.lvl(p,"sea",50),
             check: {s:"sea",s2:"int",d:55},
             win: {
               r: "Off a strange coast, in fog, you bring her in by soundings and stars. The master tells everyone.",
@@ -2175,7 +2175,7 @@
           },
           {
             t: "Shoot their helmsman from the yard",
-            req: (p,C)=>C.prof(p,"xbow",40)||C.prof(p,"bow",40),
+            req: (p,C)=>C.lvl(p,"xbow",40)||C.lvl(p,"bow",40),
             r: "One shot. The prize falls off the wind, and the boarding is easy.",
             fx: {coin:30,rep:5,fame:1},
           },
@@ -3058,7 +3058,7 @@
           },
           {
             t: "Breed it on with your own best ears",
-            req: (p,C)=>C.prof(p,"husbandry",45),
+            req: (p,C)=>C.lvl(p,"husbandry",45),
             check: {s:"husbandry",s2:"int",d:60},
             win: {
               r: "Five years of choosing the best ears by hand. The wheat that comes of it is known three counties away by your name.",
@@ -3879,7 +3879,7 @@
           },
           {
             t: "Shoot from where you stand",
-            req: (p,C)=>C.prof(p,"bow",40)||C.prof(p,"xbow",40),
+            req: (p,C)=>C.lvl(p,"bow",40)||C.lvl(p,"xbow",40),
             check: {s:"bow",s2:"ins",d:55},
             win: {
               r: "Two arrows behind the shoulder, and {theBeast} drops a horse-length from the boy.",
@@ -3977,7 +3977,7 @@
           },
           {
             t: "Train a falcon yourself before you sell it",
-            req: (p,C)=>C.prof(p,"husbandry",40),
+            req: (p,C)=>C.lvl(p,"husbandry",40),
             r: "A winter of jesses, gloves and patience. The trained bird sells for the full 150.",
             fx: {coin:150,rep:6,skill:{husbandry:3}},
           },
@@ -4272,7 +4272,7 @@
           },
           {
             t: "Cut slits in birch bark to see through",
-            req: (p,C)=>C.prof(p,"survival",45),
+            req: (p,C)=>C.lvl(p,"survival",45),
             r: "An old trapper's trick. Through the narrow slits the glare is bearable. You walk home slowly but surely.",
             fx: {skill:{survival:2}},
           },
@@ -4587,7 +4587,7 @@
           },
           {
             t: "Ride in the lists on it yourself",
-            req: (p,C)=>C.prof(p,"lance",35),
+            req: (p,C)=>C.lvl(p,"lance",35),
             r: "You show {themHim} how it is done, at the next tourney, under a borrowed shield.",
             fx: {
               coin: 20,
@@ -4968,7 +4968,7 @@
           },
           {
             t: "Take the old herders' path round the shoulder",
-            req: (p,C)=>C.prof(p,"tracking",40),
+            req: (p,C)=>C.lvl(p,"tracking",40),
             r: "A way only the goats remember. Lower, longer, out of the wind. The merchant thinks you are a wizard.",
             fx: {coin:20,rep:5,skill:{tracking:2}},
           },
@@ -6203,7 +6203,7 @@
           },
           {
             t: "Ride through them",
-            req: (p,C)=>C.mounted(p)||C.prof(p,"riding",45),
+            req: (p,C)=>C.mounted(p)||C.lvl(p,"riding",45),
             check: {s:"riding",s2:"spd",d:50},
             win: {
               r: "You put your heels in and go straight at them. They scatter like hens.",

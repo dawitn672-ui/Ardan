@@ -135,8 +135,8 @@
       s += '<h4 class="pf-h2">Fighting styles</h4>';
       const st = PF.styles(p);
       s += st.length ? '<ul class="pf-list">' + st.map(x => li(x.main ? 'Main style' : 'Style', `${note('A way of fighting taught by a school or a house. Each rank unlocks techniques you can use in a duel.', esc(x.name), 'pf-w')} <span class="pf-m2">${esc(x.rankWord)}</span>`)).join('') + '</ul>' : empty('You follow no style yet. A master may teach one.');
-      s += '<h4 class="pf-h2">Proficiencies</h4>';
-      s += rows.length ? '<ul class="pf-skills">' + rows.map(r => `<li class="pf-sk">${trig(['skill', r.k], esc(r.name) + (r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''), 'pf-l')}${trig(['profTier', r.tier], esc(r.tier), 'pf-tier')}<span class="pf-prog" aria-hidden="true"><i style="width:${Math.round(r.frac * 100)}%"></i></span></li>`).join('') + '</ul>' : empty('No proficiencies yet. Practise something.');
+      s += '<h4 class="pf-h2">Skills</h4>';
+      s += rows.length ? '<ul class="pf-skills">' + rows.map(r => `<li class="pf-sk">${trig(['skill', r.k], esc(r.name) + (r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''), 'pf-l')}${trig(['skillWord', r.tier], esc(r.tier), 'pf-tier')}<span class="pf-prog" aria-hidden="true"><i style="transform:scaleX(${Math.round(r.frac * 1000) / 1000})"></i></span></li>`).join('') + '</ul>' : empty('Nothing learned yet. Try your hand at something.');
       return s;
     },
   });
@@ -250,12 +250,12 @@
     return true;
   };
   // on the page a skill is one control (the whole row opens its description); Records keeps the tier as its own
-  const skillRow = r => trig(['skill', r.k], `<span class="pf-l">${esc(r.name)}${r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''}</span><span class="pf-tier">${esc(r.tier)}</span><span class="pf-prog" aria-hidden="true"><i style="width:${Math.round(r.frac * 100)}%"></i></span>`, 'pf-sk', 'li');
+  const skillRow = r => trig(['skill', r.k], `<span class="pf-l">${esc(r.name)}${r.apt === 'apt' ? ' <span class="pf-apt" aria-label="quick to learn">★</span>' : r.apt === 'slow' ? ' <span class="pf-apt" aria-label="slow to learn">▽</span>' : ''}</span><span class="pf-tier">${esc(r.tier)}</span><span class="pf-prog" aria-hidden="true"><i style="transform:scaleX(${Math.round(r.frac * 1000) / 1000})"></i></span>`, 'pf-sk', 'li');
   PF.addPanel({ k: 'skills', label: 'Skills', body: p => {
     const arts = PF.styles(p).filter(x => x.rank > 0).slice(0, 2), rows = PF.skills(p, false).slice(0, 5);
     let s = '';
     if (arts.length) s += '<ul class="pf-list">' + arts.map(x => li(x.main ? 'Main style' : 'Style', `${note('A way of fighting taught by a school or a house. Each rank unlocks techniques you can use in a duel.', esc(x.name), 'pf-w')} <span class="pf-m2">${esc(x.rankWord)}</span>`)).join('') + '</ul>';
-    s += rows.length ? '<ul class="pf-skills">' + rows.map(skillRow).join('') + '</ul>' : empty(UI.scope && !UI.scope(p).sees('skills') ? 'A babe has learned nothing yet.' : 'Nothing practised yet. Practise something.');
+    s += rows.length ? '<ul class="pf-skills">' + rows.map(skillRow).join('') + '</ul>' : empty(UI.scope && !UI.scope(p).sees('skills') ? 'A babe has learned nothing yet.' : 'Nothing learned yet. Try your hand at something.');
     return s;
   } });
   PF.addPanel({ k: 'gear', label: 'Gear', body: p => {

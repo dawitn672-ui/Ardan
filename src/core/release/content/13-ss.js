@@ -261,7 +261,7 @@
           },
           {
             t: "Shoot his horse from under him",
-            req: (p,C)=>C.prof(p,"mounted",35)||C.prof(p,"bow",40),
+            req: (p,C)=>C.lvl(p,"mounted",35)||C.lvl(p,"bow",40),
             check: {s:"mounted",s2:"bow",d:44},
             win: {
               r: "One arrow at full gallop. He tumbles into the grass and you have him and the mare. The camp tells it for a month.",
@@ -554,7 +554,7 @@
           },
           {
             t: "Shoot from the dark, where they cannot see you",
-            req: (p,C)=>C.prof(p,"bow",35),
+            req: (p,C)=>C.lvl(p,"bow",35),
             check: {s:"bow",s2:"ins",d:46},
             win: {
               r: "Three shafts in the moonlight. Two hyenas down, and the rest gone by dawn. The orc herders stare at you.",
@@ -1211,7 +1211,7 @@
       {
         id: "ss_qd_horncup",
         title: "Does whale ivory sweat?",
-        cond: (p,C)=>early()&&C.realm(p,"POL-17")&&C.adult(p)&&(C.literate(p)||C.prof(p,"medicine",30)),
+        cond: (p,C)=>early()&&C.realm(p,"POL-17")&&C.adult(p)&&(C.literate(p)||C.lvl(p,"medicine",30)),
         w: .8,
         once: !0,
         text: 'A palace physician in a good robe finds you in the House of the First Cup and asks a strange question, very quietly: how would one test a cup of horn for poison, and does whale ivory sweat? The Sultan drinks only from a "unicorn horn" cup bought from Zanara.',
@@ -1332,7 +1332,7 @@
           },
           {
             t: "Work the crowd for purses",
-            req: (p,C)=>C.prof(p,"stealth",25)||C.poor(p),
+            req: (p,C)=>C.lvl(p,"stealth",25)||C.poor(p),
             check: {s:"stealth",s2:"spd",d:44},
             win: {
               r: "Copper rings, a silver kite, a scarab charm. Every eye is on the god.",
@@ -3305,7 +3305,7 @@
       {
         id: "ss_ks_auger",
         title: "A plugged hole",
-        cond: (p,C)=>early()&&C.realm(p,"POL-21")&&C.adult(p)&&(C.job(p,"carpenter","labor","sailor")||C.prof(p,"craft",25)),
+        cond: (p,C)=>early()&&C.realm(p,"POL-21")&&C.adult(p)&&(C.job(p,"carpenter","labor","sailor")||C.lvl(p,"craft",25)),
         w: 1,
         once: !0,
         text: "In Rehema the Shipwright's yards at Monuro the new ships promised to Ambrel are nearly done, though some say four hulls are green timber. Caulking below the waterline, you find an auger hole bored right through the planking and neatly plugged with a peg of soft wood. In a seaway that peg would pop out.",
@@ -3953,7 +3953,7 @@
       {
         id: "ss_ab_monundi",
         title: "The Horsemen of the Monundi",
-        cond: (p,C)=>C.realm(p,"POL-22")&&C.adult(p)&&!C.old(p)&&(C.mounted(p)||C.prof(p,"riding",30)||C.famKind(p,"horse","gentry","gentry_mil")),
+        cond: (p,C)=>C.realm(p,"POL-22")&&C.adult(p)&&!C.old(p)&&(C.mounted(p)||C.lvl(p,"riding",30)||C.famKind(p,"horse","gentry","gentry_mil")),
         w: .9,
         cool: 9,
         text: p=>`Riders of House Mandari are recruiting in the southern horse country for the Horsemen of the Monundi, six thousand cavalry who fought for Prince Kiros in the Twin War and still remember him. ${early()?"Gossip says the gold for new horses comes from Zanara.":"They pay well, and ask where your heart lies."}`,
@@ -4240,7 +4240,7 @@
       {
         id: "ss_sb_heat",
         title: "The heat chase",
-        cond: (p,C)=>C.realm(p,"POL-24")&&C.adult(p)&&!C.old(p)&&(C.soldier(p)||C.prof(p,"riding",25)),
+        cond: (p,C)=>C.realm(p,"POL-24")&&C.adult(p)&&!C.old(p)&&(C.soldier(p)||C.lvl(p,"riding",25)),
         w: .9,
         cool: 7,
         text: p=>`At the Camel School of Hazim, Nuri Hazimi drills the Emir's camel riders to fight at noon, when the heat is a weapon. Sabrani officers, salt-skinned, outlast anyone in the heat, as long as they have salt and water. ${A.C.blood(p,"saltskin")?"You have that blood. The heat feels like a warm bath.":"You do not have their blood. You have a water skin."}`,
@@ -4364,7 +4364,7 @@
           },
           {
             t: "Clerk for the brokers, weighing the gold",
-            req: (p,C)=>C.literate(p)||C.prof(p,"trade",25),
+            req: (p,C)=>C.literate(p)||C.lvl(p,"trade",25),
             check: {s:"trade",s2:"int",d:42},
             win: {
               r: "You notice the Zanari weights run a little light, one part in fifty. Faisal pays you a bonus to say nothing and keep noticing.",
@@ -5293,7 +5293,7 @@
       {
         id: "ss_rp_bladehall",
         title: "The Blade Hall",
-        cond: (p,C)=>C.realm(p,"POL-30")&&grown(p,C)&&!C.old(p)&&(C.prof(p,"sword",20)||C.soldier(p)||C.noble(p)||p.status==="gentry"),
+        cond: (p,C)=>C.realm(p,"POL-30")&&grown(p,C)&&!C.old(p)&&(C.lvl(p,"sword",20)||C.soldier(p)||C.noble(p)||p.status==="gentry"),
         w: 1,
         cool: 7,
         text: `At the Blade Hall of Chanari, Kavi Rane teaches sword fighting with crucible-steel blades, which are lighter and faster than any iron and will cut a careless student's own leg. He watches you swing once and sighs. "You fight like a man with a club," he says. "Steel wants a dancer."`,
@@ -5672,7 +5672,7 @@
           },
           {
             t: "Shoot from the stern",
-            req: (p,C)=>C.prof(p,"bow",30)||C.prof(p,"xbow",30),
+            req: (p,C)=>C.lvl(p,"bow",30)||C.lvl(p,"xbow",30),
             check: {s:"bow",s2:"xbow",d:44},
             win: {
               r: "Three shots, two hits, and their steersman down. The pirate boat wallows and falls behind.",
@@ -5727,7 +5727,7 @@
       {
         id: "ss_rp_journeymen",
         title: "Two quiet passengers",
-        cond: (p,C)=>early()&&C.realm(p,"POL-30")&&C.adult(p)&&(C.coast(p)||C.job(p,"sailor","fish","merchant")||C.prof(p,"sea",25)),
+        cond: (p,C)=>early()&&C.realm(p,"POL-30")&&C.adult(p)&&(C.coast(p)||C.job(p,"sailor","fish","merchant")||C.lvl(p,"sea",25)),
         w: .9,
         once: !0,
         text: "At Jaya's Landing a Keshi captain wants a river pilot to take two quiet passengers and a crate of rags upriver, no questions. The passengers are pale young men with paper-pulp in the creases of their hands. Qadir would kill to get them back. A paper mill on the Chanpur would make Ranpur rich.",
@@ -6026,7 +6026,7 @@
           },
           {
             t: "Shoot their steersman from the toll boat",
-            req: (p,C)=>C.prof(p,"xbow",30)||C.gear(p,"ranged","xbow"),
+            req: (p,C)=>C.lvl(p,"xbow",30)||C.gear(p,"ranged","xbow"),
             check: {s:"xbow",s2:"ins",d:44},
             win: {
               r: "One bolt and the big ship yaws into the wind. Her captain pays the toll with a face like thunder.",
@@ -6113,7 +6113,7 @@
       {
         id: "ss_br_crossbows",
         title: "Pay owed at Tessar",
-        cond: (p,C)=>early()&&C.realm(p,"POL-33")&&C.adult(p)&&!C.old(p)&&(C.soldier(p)||C.prof(p,"xbow",25)||C.gear(p,"ranged","xbow")),
+        cond: (p,C)=>early()&&C.realm(p,"POL-33")&&C.adult(p)&&!C.old(p)&&(C.soldier(p)||C.lvl(p,"xbow",25)||C.gear(p,"ranged","xbow")),
         w: 1,
         once: !0,
         text: "Eight hundred Reef Crossbows under Brann Hollow serve Queen Livia of Tessaria for all of 1105, and half their pay is owed. A letter reaches the Reef: Prince Andros, Livia's enemy, offers double. You have a brother in the Crossbows, and a boat leaving for Tessar tomorrow.",
@@ -6256,7 +6256,7 @@
       {
         id: "ss_br_strand",
         title: "Paid double",
-        cond: (p,C)=>C.realm(p,"POL-33")&&C.adult(p)&&(C.race(p,"dwarf")||C.job(p,"smith","carpenter")||C.prof(p,"craft",35)),
+        cond: (p,C)=>C.realm(p,"POL-33")&&C.adult(p)&&(C.race(p,"dwarf")||C.job(p,"smith","carpenter")||C.lvl(p,"craft",35)),
         w: 1,
         cool: 7,
         text: p=>`On the Caulkers' Strand, slips, rope walks and forges climb the harbor terraces. Dwarf smiths are paid double here, ${p.race==="dwarf"?"which suits you very well,":"which makes the human smiths sour,"} and Old Bett Tarhand of the Caulkers wants a hundred grappling hooks and new chain links before the Lion Fleet sails.`,
@@ -6467,7 +6467,7 @@
       {
         id: "ss_ks_gecko",
         title: "A second pair of hands",
-        cond: (p,C)=>early()&&C.realm(p,"POL-21")&&grown(p,C)&&!C.old(p)&&(C.prof(p,"athletics",30)||C.prof(p,"stealth",30)||C.flag(p,"ss_ks_rope")),
+        cond: (p,C)=>early()&&C.realm(p,"POL-21")&&grown(p,C)&&!C.old(p)&&(C.lvl(p,"athletics",30)||C.lvl(p,"stealth",30)||C.flag(p,"ss_ks_rope")),
         w: 1,
         once: !0,
         text: "Kito the Gecko, the best climbing thief in Kesh, needs a second pair of hands on a wet roof for one night. The house is an Ambrel merchant's, guarded by Ambrel marines, and what he wants inside is not gold but a paper: the pledge of the harbor dues of 1105.",
@@ -6574,7 +6574,7 @@
       {
         id: "ss_rp_tollbooks",
         title: "Two toll books",
-        cond: (p,C)=>C.realm(p,"POL-30")&&C.adult(p)&&(C.literate(p)||C.prof(p,"trade",30)||C.soldier(p)),
+        cond: (p,C)=>C.realm(p,"POL-30")&&C.adult(p)&&(C.literate(p)||C.lvl(p,"trade",30)||C.soldier(p)),
         w: .8,
         cool: 10,
         text: "At Tirpur, the road fort on the Nagora road, the Treaty of Tirpur gives Stonehold one part in twenty of the tolls. You are copying the toll accounts for the Warden's clerk, and you notice there are two books: one fat, one thin. The thin one is the one Stonehold sees.",

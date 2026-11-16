@@ -5,7 +5,7 @@
 // - Training: the mentor picker's "Melee (14)" and the council's "(52)" say the tier; the season's training log says
 //   how much each skill grew ("Survival & hunting, a good deal"), not "+2.4"; the profile's "best 59 at 19", a wound's
 //   "worth 42 to 41 (speed -7)" and "−7 speed, Athletics & climbing −10", the perks' "40, 65 and 85" and the decisions'
-//   "A proficiency at 50" and "Learning 55" are tiers and words; a staff candidate's "fit 66" is the tier of that fit.
+//   "Learning 55" is a level in words; a staff candidate's "fit 66" is the tier of that fit.
 // - The War Room's division stat grid (attack, defence, breakthrough, hit points, width, supply, armour, piercing,
 //   organization) compares the division with yours ("far above yours"), and says what its armour and piercing do to your
 //   men; speed stays in km. The order of battle's "mo 64", "xp 18" and "morale 64 (steady)" are the words.
@@ -328,10 +328,7 @@ VS.NUMRULES2 = [
   // 49-body-mind's wounds: "−7 speed, −3 stamina, Athletics & climbing −10"
   [/([+−-])(\d{1,2}) (strength|speed|stamina|combat instincts|instincts|intelligence|wits|willpower|will)\b/gi, (all, s, v, n) => statDelta(n, s, +v) || all],
   // (a skill's cost, "Athletics & climbing −10", is j-numbers' rule: "Athletics & climbing down a good deal")
-  // the proficiencies page: "Perks unlock at 40, 65 and 85"
-  [/Perks unlock at (\d{1,3}), (\d{1,3}) and (\d{1,3})/g, (all, a, b, c) => `Perks unlock at ${tierName(a)}, ${tierName(b)} and ${tierName(c)}`],
-  // the decisions: "A proficiency at 50 (best: Bows & throwing 67)", "Learning 55, or a diploma"
-  [/A proficiency at (\d{1,3}) \(best: ([^)]+?) (\d{1,3})\)/g, (all, a, n, b) => `A proficiency at ${tierName(a)} (best: ${n}, ${tierName(b)})`],
+  // the decisions: "Learning 55, or a diploma"
   [/\bLearning (\d{1,3})(, or a diploma)/g, (all, a, rest) => `Letters & learning at ${tierName(a)}${rest}`],
   // a staff candidate (Arms): "— fit 66 · Elite" and "fit for the post: 66"
   [/ — fit (\d{1,3}) · /g, (all, v) => ` — fit: ${tierName(v)} · `],

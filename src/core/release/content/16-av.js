@@ -14,8 +14,8 @@
       // the mercenary scenes stop at 55 (human years) and the road offers at 60. The guards are helpers, not
       // C.ruler/p.mil in the cond text, so A.evAudience classes the scenes as before.
       go = p=>A.C.adult(p)&&free(p)&&!p.ruler&&!(A.lfOld&&A.lfOld(p,60)),
-      crook = p=>J(p,"thief","pirate")||A.C.famKind(p,"outlaw")||!!p.flags.av_crew||A.C.prof(p,"stealth",45),
-      salt = p=>J(p,"sailor","pirate","fish")||A.C.famKind(p,"sea")||A.C.prof(p,"sea",35),
+      crook = p=>J(p,"thief","pirate")||A.C.famKind(p,"outlaw")||!!p.flags.av_crew||A.C.lvl(p,"stealth",45),
+      salt = p=>J(p,"sailor","pirate","fish")||A.C.famKind(p,"sea")||A.C.lvl(p,"sea",35),
       // [X1 baked patch events/97-first-life-fixes LF-TIER-GATES] Scenes written for a commoner or a private reached the
       // top of the ladder: a queen was told to "Flee to the woods" and "Turn him in for the bounty" (the home-front war
       // scenes), danced at Harvest Home to be married off by the village, and kept a scribe's duties ("it is only a
@@ -34,7 +34,7 @@
       // the mercenary scenes stop at 55 (human years) and the road offers at 60. The guards are helpers, not
       // C.ruler/p.mil in the cond text, so A.evAudience classes the scenes as before.
       mwar = p=>!p.ruler&&!(A.lfOld&&A.lfOld(p,55))&&(!!p.flags.av_sword||!!p.mil&&A.C.atWar(p)),
-      wild = p=>J(p,"hunter")||A.C.famKind(p,"hunt")||A.C.prof(p,"survival",40)||A.C.prof(p,"tracking",40),
+      wild = p=>J(p,"hunter")||A.C.famKind(p,"hunt")||A.C.lvl(p,"survival",40)||A.C.lvl(p,"tracking",40),
       desertish = p=>A.C.terr(p,"desert")||A.C.realm(p,"POL-17","POL-19","POL-24"),
       BN = {
         "CRE-01": "a Great Ash Dragon",
@@ -102,7 +102,7 @@
           },
           {
             t: "Loose an arrow at the leader first",
-            req: (p,C)=>C.gear(p,"ranged")&&C.prof(p,"bow",35),
+            req: (p,C)=>C.gear(p,"ranged")&&C.lvl(p,"bow",35),
             check: {s:"bow",s2:"ins",d:48},
             win: {
               r: "Your shaft takes the leader through the shoulder. The rest melt into the trees.",
@@ -158,7 +158,7 @@
           },
           {
             t: "Challenge him to fight for the toll",
-            req: (p,C)=>C.prof(p,"sword",35)||C.prof(p,"melee",40),
+            req: (p,C)=>C.lvl(p,"sword",35)||C.lvl(p,"melee",40),
             r: '"Gladly." He takes up his shield.',
             fx: {
               duel: {
@@ -678,7 +678,7 @@
       },
       {
         id: "av_courier",
-        cond: (p,C)=>go(p)&&(C.mounted(p)||C.prof(p,"riding",35)),
+        cond: (p,C)=>go(p)&&(C.mounted(p)||C.lvl(p,"riding",35)),
         w: 1,
         cool: 7,
         title: "The urgent letter",
@@ -700,7 +700,7 @@
           },
           {
             t: "Take the coin and lie about the letter",
-            req: (p,C)=>C.prof(p,"deception",35),
+            req: (p,C)=>C.lvl(p,"deception",35),
             check: {s:"deception",s2:"int",d:52},
             win: {
               r: "You give him a copy with the figures changed. He pays, believes it, and loses a fortune.",
@@ -764,7 +764,7 @@
           },
           {
             t: "Turn and meet the first one",
-            req: (p,C)=>C.prof(p,"mounted",35)||C.prof(p,"lance",30),
+            req: (p,C)=>C.lvl(p,"mounted",35)||C.lvl(p,"lance",30),
             r: "You wheel your horse and lower your point.",
             fx: {
               duel: {
@@ -807,7 +807,7 @@
       },
       {
         id: "av_caravan_guard",
-        cond: (p,C)=>go(p)&&(C.gear(p,"weapon")||C.prof(p,"xbow",30)),
+        cond: (p,C)=>go(p)&&(C.gear(p,"weapon")||C.lvl(p,"xbow",30)),
         w: 1.1,
         cool: 6,
         title: "Caravan guard",
@@ -937,7 +937,7 @@
           },
           {
             t: "Play their own crooked bones back at them",
-            req: (p,C)=>C.prof(p,"gambling",40)||C.prof(p,"deception",45),
+            req: (p,C)=>C.lvl(p,"gambling",40)||C.lvl(p,"deception",45),
             check: {s:"gambling",s2:"deception",d:48},
             win: {r:"You spot the weighted bone and swap in your own. A very profitable evening.",fx:{coin:25}},
             lose: {
@@ -1254,7 +1254,7 @@
       },
       {
         id: "av_steppe_horsethief",
-        cond: (p,C)=>go(p)&&C.prof(p,"riding",25)&&C.realm(p,"POL-12","POL-11","POL-34","POL-15"),
+        cond: (p,C)=>go(p)&&C.lvl(p,"riding",25)&&C.realm(p,"POL-12","POL-11","POL-34","POL-15"),
         w: .8,
         cool: 9,
         title: "Horse thieves on the grass",
@@ -1387,7 +1387,7 @@
           },
           {
             t: "Take the sword too",
-            req: (p,C)=>C.prof(p,"sword",20)||C.trait(p,"greedy"),
+            req: (p,C)=>C.lvl(p,"sword",20)||C.trait(p,"greedy"),
             r: "A bronze sword older than any kingdom. A scholar in town pays 80 suns for it, and the shepherds stop talking to you.",
             fx: {coin:80,piety:-5,honor:-1,happy:2},
           },
@@ -1418,7 +1418,7 @@
           },
           {
             t: "Read the oath",
-            req: (p,C)=>C.race(p,"dwarf")||C.prof(p,"learning",35),
+            req: (p,C)=>C.race(p,"dwarf")||C.lvl(p,"learning",35),
             r: 'It names the clan, the year and the reason: plague. "Let no hand open what grief has closed." You leave it shut.',
             fx: {piety:3,int:.5,wil:.5},
           },
@@ -1853,7 +1853,7 @@
           },
           {
             t: "Put a bolt through its wing as it lands",
-            req: (p,C)=>C.gear(p,"ranged")&&(C.prof(p,"xbow",40)||C.prof(p,"bow",45)),
+            req: (p,C)=>C.gear(p,"ranged")&&(C.lvl(p,"xbow",40)||C.lvl(p,"bow",45)),
             check: {s:"xbow",s2:"bow",d:58},
             win: {
               r: "The thin membrane tears. Grounded, it cannot take off fast from flat ground. Now it is just a very large, very angry animal.",
@@ -1956,7 +1956,7 @@
           },
           {
             t: "Bind its snout",
-            req: (p,C)=>C.prof(p,"survival",40)||C.prof(p,"unarmed",40),
+            req: (p,C)=>C.lvl(p,"survival",40)||C.lvl(p,"unarmed",40),
             check: {s:"unarmed",s2:"survival",d:55},
             win: {
               r: "A crocodile cannot open its jaws against pressure. You land on its back and loop the rope. Bound, it is harmless. The herders sing about it.",
@@ -2163,7 +2163,7 @@
           },
           {
             t: "Train one yourself",
-            req: (p,C)=>C.prof(p,"husbandry",30)||wild(p),
+            req: (p,C)=>C.lvl(p,"husbandry",30)||wild(p),
             check: {s:"husbandry",s2:"wil",d:50},
             win: {
               r: "A year of patience and gloves. Your falcon comes to your fist. A lord offers you 150 suns; you are not sure you can sell her.",
@@ -2379,7 +2379,7 @@
       },
       {
         id: "av_crime_recruit",
-        cond: (p,C)=>go(p)&&!J(p,"thief")&&!p.flags.av_crew&&(C.poor(p)||C.prof(p,"stealth",35)||C.famKind(p,"outlaw"))&&(C.town(p)||C.coast(p)),
+        cond: (p,C)=>go(p)&&!J(p,"thief")&&!p.flags.av_crew&&(C.poor(p)||C.lvl(p,"stealth",35)||C.famKind(p,"outlaw"))&&(C.town(p)||C.coast(p)),
         w: 1,
         cool: 10,
         title: "An offer in the alley",
@@ -2405,7 +2405,7 @@
       },
       {
         id: "av_crime_cutpurse",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(J(p,"thief")||p.flags.av_crew||C.prof(p,"stealth",40)),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(J(p,"thief")||p.flags.av_crew||C.lvl(p,"stealth",40)),
         w: 1.2,
         cool: 5,
         title: "Fair day",
@@ -2572,7 +2572,7 @@
       },
       {
         id: "av_crime_kesh_roofs",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(C.realm(p,"POL-21")||C.prof(p,"athletics",45))&&(crook(p)||C.realm(p,"POL-21")),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(C.realm(p,"POL-21")||C.lvl(p,"athletics",45))&&(crook(p)||C.realm(p,"POL-21")),
         w: 1,
         cool: 8,
         title: "The climbing thieves",
@@ -2713,7 +2713,7 @@
       },
       {
         id: "av_heist_start",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(J(p,"thief")||p.flags.av_crew||C.prof(p,"stealth",50))&&!C.ruler(p),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(J(p,"thief")||p.flags.av_crew||C.lvl(p,"stealth",50))&&!C.ruler(p),
         w: 1,
         cool: 10,
         title: "The big job",
@@ -3049,7 +3049,7 @@
       },
       {
         id: "av_crime_protection",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_boss||J(p,"thief")&&p.job.r>=2||crook(p)&&C.prof(p,"intimidation",35)),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_boss||J(p,"thief")&&p.job.r>=2||crook(p)&&C.lvl(p,"intimidation",35)),
         w: 1,
         cool: 6,
         title: "Collection day",
@@ -3278,7 +3278,7 @@
       },
       {
         id: "av_bounty_start",
-        cond: (p,C)=>go(p)&&!p.flags.av_bhunter&&(C.prof(p,"tracking",35)||C.prof(p,"xbow",40)||sword(p))&&!J(p,"thief"),
+        cond: (p,C)=>go(p)&&!p.flags.av_bhunter&&(C.lvl(p,"tracking",35)||C.lvl(p,"xbow",40)||sword(p))&&!J(p,"thief"),
         w: .9,
         cool: 10,
         title: "Wanted",
@@ -3312,7 +3312,7 @@
       },
       {
         id: "av_bounty_debtor",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_bhunter||C.prof(p,"tracking",50)||C.realm(p,"POL-16")&&C.prof(p,"tracking",30)),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_bhunter||C.lvl(p,"tracking",50)||C.realm(p,"POL-16")&&C.lvl(p,"tracking",30)),
         w: 1.1,
         cool: 6,
         title: "The fled debtor",
@@ -3342,7 +3342,7 @@
       },
       {
         id: "av_bounty_killer",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_bhunter||C.prof(p,"tracking",55))&&!C.old(p),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_bhunter||C.lvl(p,"tracking",55))&&!C.old(p),
         w: 1.2,
         cool: 6,
         title: "A hard bounty",
@@ -3382,7 +3382,7 @@
       },
       {
         id: "av_bounty_innocent",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_bhunter||C.prof(p,"tracking",50)),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_bhunter||C.lvl(p,"tracking",50)),
         w: 1,
         cool: 8,
         title: `"I didn't do it"`,
@@ -3508,7 +3508,7 @@
       },
       {
         id: "av_crime_horsethief",
-        cond: (p,C)=>C.adult(p)&&free(p)&&!C.mounted(p)&&(crook(p)||C.prof(p,"riding",40))&&!C.rich(p),
+        cond: (p,C)=>C.adult(p)&&free(p)&&!C.mounted(p)&&(crook(p)||C.lvl(p,"riding",40))&&!C.rich(p),
         w: .9,
         cool: 9,
         title: "A fine horse",
@@ -3556,7 +3556,7 @@
           },
           {
             t: "Lead them",
-            req: (p,C)=>C.prof(p,"command",25)||C.prof(p,"tactics",25),
+            req: (p,C)=>C.lvl(p,"command",25)||C.lvl(p,"tactics",25),
             check: {s:"tactics",s2:"command",d:48},
             win: {
               r: "Two parties, a feint at the upper fold, and the real raid at the lower. Twenty beasts and no blood.",
@@ -3714,7 +3714,7 @@
       },
       {
         id: "av_crime_old_crewmate",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_crew||p.flags.av_smuggler||p.flags.av_bounty||C.famKind(p,"outlaw")||C.prof(p,"stealth",50))&&!J(p,"thief"),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(p.flags.av_crew||p.flags.av_smuggler||p.flags.av_bounty||C.famKind(p,"outlaw")||C.lvl(p,"stealth",50))&&!J(p,"thief"),
         w: 1,
         cool: 10,
         title: "An old face",
@@ -3994,7 +3994,7 @@
           },
           {
             t: "Man the harpoons",
-            req: (p,C)=>C.prof(p,"throwing",40)||C.prof(p,"sea",55),
+            req: (p,C)=>C.lvl(p,"throwing",40)||C.lvl(p,"sea",55),
             check: {s:"throwing",s2:"str",d:60},
             win: {
               r: "Three irons in him, from three boats. He bleeds, he dives, he breaks the lines. Nobody kills Old Ironjaw. But nobody has hurt him like that, either.",
@@ -4315,7 +4315,7 @@
           },
           {
             t: "Throw first, fight second",
-            req: (p,C)=>C.gear(p,"ranged","javelins","throwaxes","knives")||C.prof(p,"throwing",40),
+            req: (p,C)=>C.gear(p,"ranged","javelins","throwaxes","knives")||C.lvl(p,"throwing",40),
             check: {s:"throwing",s2:"ins",d:48},
             win: {
               r: "Two of them go down before the ships touch. The rest break.",
@@ -4648,7 +4648,7 @@
       },
       {
         id: "av_sea_captaincy",
-        cond: (p,C)=>C.adult(p)&&free(p)&&C.coast(p)&&C.prof(p,"sea",55)&&!p.flags.av_capt,
+        cond: (p,C)=>C.adult(p)&&free(p)&&C.coast(p)&&C.lvl(p,"sea",55)&&!p.flags.av_capt,
         w: .7,
         cool: 15,
         title: "A deck of your own",
@@ -4870,7 +4870,7 @@
           },
           {
             t: "Sign as a crossbowman",
-            req: (p,C)=>C.prof(p,"xbow",30)||C.gear(p,"ranged","xbow"),
+            req: (p,C)=>C.lvl(p,"xbow",30)||C.gear(p,"ranged","xbow"),
             r: "Thirty-five suns a month, they say. A crossbow, a pavise and a place in the second line.",
             fx: {flag:"av_sword",coin:17,gear:{ranged:"xbow"},skill:{xbow:3}},
           },
@@ -5232,7 +5232,7 @@
       },
       {
         id: "av_merc_bodyguard",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(sword(p)||C.prof(p,"melee",45)||C.prof(p,"sword",45))&&!C.noble(p),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(sword(p)||C.lvl(p,"melee",45)||C.lvl(p,"sword",45))&&!C.noble(p),
         w: 1,
         cool: 9,
         title: "The bodyguard",
@@ -5792,7 +5792,7 @@
       },
       {
         id: "av_wild_rival_hunter",
-        cond: (p,C)=>C.adult(p)&&free(p)&&(J(p,"hunter")||C.famKind(p,"hunt")||C.prof(p,"bow",45)),
+        cond: (p,C)=>C.adult(p)&&free(p)&&(J(p,"hunter")||C.famKind(p,"hunt")||C.lvl(p,"bow",45)),
         w: .9,
         cool: 9,
         title: "Whose arrow?",
@@ -5924,7 +5924,7 @@
       },
       {
         id: "av_road_sellsword_offer",
-        cond: (p,C)=>go(p)&&(C.prof(p,"sword",45)||C.prof(p,"axe",45)||C.prof(p,"spear",45))&&!p.flags.av_sword&&!p.mil,
+        cond: (p,C)=>go(p)&&(C.lvl(p,"sword",45)||C.lvl(p,"axe",45)||C.lvl(p,"spear",45))&&!p.flags.av_sword&&!p.mil,
         w: .8,
         cool: 10,
         title: "A sword for hire",

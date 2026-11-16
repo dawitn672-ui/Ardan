@@ -1980,7 +1980,7 @@
         choices: [
           {
             t: "Teach {themHim} to fight properly",
-            req: p=>C.prof(p,"unarmed",25)||C.prof(p,"melee",25)||C.stat(p,"str")>=30,
+            req: p=>C.lvl(p,"unarmed",25)||C.lvl(p,"melee",25)||C.stat(p,"str")>=30,
             r: "Feet planted, thumb outside the fist, never the first blow. {them} listens to every word.",
             fx: (p,ctx)=>{const t=T(ctx);t&&(t.skills=t.skills||{},t.skills.unarmed=(t.skills.unarmed||0)+10),bump(p,t,12),A.trainSkill(p,"unarmed",1)},
           },
@@ -2541,7 +2541,7 @@
         choices: [
           {
             t: "Teach {themHim} how it is done",
-            req: p=>C.prof(p,"riding",25)||C.prof(p,"stealth",25),
+            req: p=>C.lvl(p,"riding",25)||C.lvl(p,"stealth",25),
             r: "Downwind, at the dark of the moon, never the stallion. {them} comes home at dawn with a grey mare and a grin like a split melon.",
             fx: (p,ctx)=>{const t=T(ctx);t&&!t.epithet&&(t.epithet=A.pick(["Grey-Mare","Night-Rider","Quickhand"])),bump(p,t,20),A.fame(p,1)},
           },
@@ -2962,7 +2962,7 @@
           },
           {
             t: "Bring your skill: you know how it is done",
-            req: p=>C.prof(p,"craft",30),
+            req: p=>C.lvl(p,"craft",30),
             check: {s:"craft",s2:"int",d:35},
             win: {
               r: "You set the roof-tree yourself, true as a plumb line. The whole lane talks about it. {them} will never forget.",
@@ -3144,7 +3144,7 @@
           },
           {
             t: "Bring him down with a throw or a shot",
-            req: p=>C.prof(p,"bow",40)||C.prof(p,"throwing",40)||C.prof(p,"xbow",40),
+            req: p=>C.lvl(p,"bow",40)||C.lvl(p,"throwing",40)||C.lvl(p,"xbow",40),
             check: {s:"bow",s2:"ins",d:43},
             win: {
               r: "One shot in the leg at sixty paces. The village tells the story for years.",
@@ -3690,7 +3690,7 @@
           },
           {
             t: "Cheat back",
-            req: p=>C.prof(p,"gambling",35)||C.prof(p,"deception",40),
+            req: p=>C.lvl(p,"gambling",35)||C.lvl(p,"deception",40),
             check: {s:"deception",s2:"spd",d:47},
             win: {
               r: "He cheats, you cheat better. He leaves angry and poorer and cannot complain.",
@@ -4073,7 +4073,7 @@
           },
           {
             t: "Set it yourself",
-            req: p=>C.prof(p,"medicine",35),
+            req: p=>C.lvl(p,"medicine",35),
             check: {s:"medicine",s2:"wil",d:40},
             win: {
               r: "Two neighbors to pull, you to guide. Teeth gritted. A clean set. Even the barber is impressed.",
@@ -4343,7 +4343,7 @@
           },
           {
             t: "Stare him down",
-            req: p=>C.prof(p,"intimidation",35)||C.stat(p,"str")>=50,
+            req: p=>C.lvl(p,"intimidation",35)||C.stat(p,"str")>=50,
             check: {s:"intimidation",s2:"str",d:40},
             win: {
               r: "He stops a yard away, looks at you properly, and finds somewhere else to be.",
@@ -4638,7 +4638,7 @@
           },
           {
             t: "Tell the true story behind the song",
-            req: p=>C.prof(p,"learning",30),
+            req: p=>C.lvl(p,"learning",30),
             check: {s:"learning",s2:"persuasion",d:43},
             win: {
               r: "The truth is stranger and better than the song. The room argues about it until dawn, and you eat free all week.",

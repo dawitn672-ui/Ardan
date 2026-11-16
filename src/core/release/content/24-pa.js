@@ -159,7 +159,7 @@
       },
       {
         id: "pa_knight_quest",
-        cond: (p,C)=>AM(p,C,"knight")&&C.prof(p,"riding",20),
+        cond: (p,C)=>AM(p,C,"knight")&&C.lvl(p,"riding",20),
         w: .9,
         cool: 6,
         title: "A quest worthy of the name",
@@ -369,7 +369,7 @@
       },
       {
         id: "pa_scholar_chair",
-        cond: (p,C)=>AM(p,C,"scholar")&&C.prof(p,"learning",50),
+        cond: (p,C)=>AM(p,C,"scholar")&&C.lvl(p,"learning",50),
         w: .8,
         cool: 8,
         title: "A chair at the academy",
@@ -412,7 +412,7 @@
       },
       {
         id: "pa_faith_corrupt_priest",
-        cond: (p,C)=>AM(p,C,"faith")&&C.prof(p,"faith",15),
+        cond: (p,C)=>AM(p,C,"faith")&&C.lvl(p,"faith",15),
         w: .9,
         cool: 8,
         title: "A corrupt priest",
