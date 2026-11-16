@@ -93,7 +93,7 @@
     return {
       hp, side, foes, foeAt, hostile, fac, dist, age, m: month(),
       op: h.op != null ? h.op : 50,
-      levy: c.levy != null ? c.levy : 1,
+      men: c.men != null ? c.men : 1,
       auth: r.laws && r.laws.authority != null ? r.laws.authority : 1,
       stab: r.stability != null ? r.stability : 50, legit: r.legit != null ? r.legit : 60,
       unrest: P ? P.unrest || 0 : 0,
@@ -114,7 +114,7 @@
     const king = r.ruler != null ? A.P(r.ruler) : null, kingId = king ? king.id : null;
     const rs = (kind, weight, label, source, pub) => ({ kind, weight: r2(weight), label, source: Object.assign({ h: h.id }, source || {}), pub: pub ? 1 : 0 });
     const g = (50 - F.op) / 25;   // his grievance with the crown (+), or his love for it (-)
-    const oath = rs('duty', .9 + .3 * (F.levy - 1), 'His oath to the crown', { t: 'oath', r: F.levy }, 1);
+    const oath = rs('duty', .9 + .3 * (F.men - 1), 'His oath to the crown', { t: 'oath', r: F.men }, 1);
     const grudge = (k, label) => rs('grudge', k * g, g > 0 ? label : 'He has little against the crown', { t: 'opinion', r: Math.round(F.op) }, 1);
     const fear = rs('fear', .4 * (F.auth - 1) + .5 * (F.stab - 50) / 50 + (F.hostage ? .6 : 0), F.hostage ? 'A son of his house is at court as surety' : F.auth >= 2 ? 'The crown\'s hand is heavy, and it punishes' : 'The crown is not feared', { t: 'authority', r: F.auth }, 1);
     const standing = rs('loyalty', (F.legit - 60) / 40, F.legit >= 60 ? 'The king\'s right is not in doubt' : 'The king sits on a doubtful right', { t: 'legit', r: Math.round(F.legit) }, 1);
@@ -479,7 +479,7 @@
         { id: 'leave', reasons: [rs('coin', .4, 'His oath binds him to serve', { t: 'oath' }, 1)] },
       ],
       lord: [
-        { id: 'stay', reasons: [rs('duty', .9 + .3 * ((h.contract && h.contract.levy != null ? h.contract.levy : 1) - 1), 'His oath', { t: 'oath' }, 1), CM.near(h).some(x => (A.warSide(w, r.id) === 'att' ? w.def : w.att).includes(x)) ? rs('claim', 1.4, 'The war is at his own border', { t: 'border' }, 1) : null, rs('loyalty', ((h.op || 50) - 50) / 30, 'Old loyalty to the crown', { t: 'opinion' }, 1)].filter(Boolean) },
+        { id: 'stay', reasons: [rs('duty', .9 + .3 * ((h.contract && h.contract.men != null ? h.contract.men : 1) - 1), 'His oath', { t: 'oath' }, 1), CM.near(h).some(x => (A.warSide(w, r.id) === 'att' ? w.def : w.att).includes(x)) ? rs('claim', 1.4, 'The war is at his own border', { t: 'border' }, 1) : null, rs('loyalty', ((h.op || 50) - 50) / 30, 'Old loyalty to the crown', { t: 'opinion' }, 1)].filter(Boolean) },
         { id: 'home', reasons: [rs('coin', .3 + .4 * (e.s || 1), `${e.s || 1} season${(e.s || 1) === 1 ? '' : 's'} at his own cost`, { t: 'cost', r: e.s || 1 }, 1), month() >= 7 && month() <= 9 ? rs('reckoning', .6, 'The harvest calls the men home', { t: 'season' }, 1) : null, rs('grudge', ((50 - (h.op || 50)) / 25) * .5, 'His grievance with the crown', { t: 'opinion' }, 1)].filter(Boolean) },
       ],
     };

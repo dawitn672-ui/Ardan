@@ -55,10 +55,10 @@
   {"type":"trade","name":"The Ship-Share Hall of Ithira","seat":"Ithira","note":"Merchants of the ship-houses learn mast and yew contracts, the grain run and the ship-shares, and argue each year whether humans may hold them."}
  ],
  "POL-08": [
-  {"type":"war","name":"The Ring's Winter Bench at Flintwall","seat":"Flintwall Tower","note":"Jarls' sons and hird captains learn the winter campaign: crossing ice in file five metres apart, striking a column in fog, and feeding a levy on stockfish when the harbors freeze."},
+  {"type":"war","name":"The Ring's Winter Bench at Flintwall","seat":"Flintwall Tower","note":"Jarls' sons and hird captains learn the winter campaign: crossing ice in file five metres apart, striking a column in fog, and feeding a muster on stockfish when the harbors freeze."},
   {"type":"sea","name":"The Ebb School of Coldhaven","seat":"Coldhaven","note":"Steersmen learn the fog, tides and stars of the Cold Coast, and how to bring a longship out and home on the night ebb with muffled oars."},
   {"type":"trade","name":"The Amber Hall of Coldhaven","seat":"Coldhaven","note":"The Coldhaven Amber and Fish Guild trains its sorters and factors to grade amber by the storm that brought it in and to sell it south through Kingsmere."},
-  {"type":"crafts","name":"The Shipwrights' Strand","seat":"Coldhaven","note":"Since Bjorn the Shipwright's Ship Levy of 856, the longships every district owes the king are built by men who learned the clinker strake and the oak keel on this strand."},
+  {"type":"crafts","name":"The Shipwrights' Strand","seat":"Coldhaven","note":"Since Bjorn the Shipwright's Ship Muster of 856, the longships every district owes the king are built by men who learned the clinker strake and the oak keel on this strand."},
   {"type":"letters","name":"The Law-Rock School of Saltbridge","seat":"Saltbridge","note":"Pupils learn the unwritten law of the Ring and the Thing by heart, as the Lawspeakers recite it, and lately argue whether it ought to stay unwritten."},
   {"type":"faith","name":"The Free Hall of Saltbridge","seat":"Saltbridge","note":"Hall-keepers whom their own villages have chosen learn the lays of the Seven Halls in the Free Hall form, with no emperor above them."}
  ],

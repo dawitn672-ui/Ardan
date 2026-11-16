@@ -111,8 +111,8 @@
     else if (a === 'late') e.arr = CM.now() + 45;
     const kOp = d => { if (live(ru) && ru.rel[pc.id]) ru.rel[pc.id].op = clamp(ru.rel[pc.id].op + d, -100, 100); };
     const men = ctx.menN || 0, foe = w ? (A.warSide(w, r.id) === 'att' ? w.def : w.att)[0] : null;
-    // a lord who rides with his men meets the enemy (the release's levy battle); an answer given as last time does not stop
-    const battle = n => { if (!ctx.quiet && w && foe && A.CHOICE_FN && A.CHOICE_FN.levyBattle && n > 0) A.CHOICE_FN.levyBattle({ war: w.id, enemy: foe, men: Math.max(40, Math.round(n)) }); };
+    // a lord who rides with his men meets the enemy (the release's muster battle); an answer given as last time does not stop
+    const battle = n => { if (!ctx.quiet && w && foe && A.CHOICE_FN && A.CHOICE_FN.summonsBattle && n > 0) A.CHOICE_FN.summonsBattle({ war: w.id, enemy: foe, men: Math.max(40, Math.round(n)) }); };
     if (a === 'full') { kOp(4); battle(men); }
     if (a === 'part') {
       battle(men / 2);

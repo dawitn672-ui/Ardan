@@ -169,11 +169,11 @@
     if (cap) return Math.max(Math.min(base, cap[1]), Math.min(cap[0], base));
     return war ? base : Math.min(base, 400);
   };
-  // one line a month per realm for its levies
-  A.levyLog = function (r, d, loc) {
-    const key = r.id + ':' + A.S.year + ':' + Math.floor(A.absDay() / 30), L = A.S.carLevy;
+  // one line a month per realm for its musters
+  A.musterLog = function (r, d, loc) {
+    const key = r.id + ':' + A.S.year + ':' + Math.floor(A.absDay() / 30), L = A.S.carMuster;
     if (L && L.k === key) { L.n++; return; }
-    A.S.carLevy = { k: key, n: 1 };
-    A.log(`${r.short} calls out its levies; the ${d.name} is the first to gather, at ${A.provName(loc)}.`, 'war');
+    A.S.carMuster = { k: key, n: 1 };
+    A.log(`${r.short} calls out its musters; the ${d.name} is the first to gather, at ${A.provName(loc)}.`, 'war');
   };
 })();

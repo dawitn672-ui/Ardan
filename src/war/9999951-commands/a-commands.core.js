@@ -26,7 +26,7 @@
   const rungIdx = code => { const R = GD.NOBLE_RUNGS || []; for (let i = 0; i < R.length; i++) if (R[i].code === code) return i; return -1; };
   CM.rungIdx = rungIdx;
   // a house's full strength at full call (GD.NOBLE_RUNGS' numbers, D-064 point 4)
-  CM.full = h => { const i = h ? rungIdx(h.rung) : -1; return i >= 0 ? (GD.NOBLE_RUNGS[i].levy || 0) : 0; };
+  CM.full = h => { const i = h ? rungIdx(h.rung) : -1; return i >= 0 ? (GD.NOBLE_RUNGS[i].men || 0) : 0; };
   CM.rungTitle = h => { const i = h ? rungIdx(h.rung) : -1; return i >= 0 ? GD.NOBLE_RUNGS[i].title : 'Lord'; };
 
   // ---------------------------------------------------------------- who holds of the crown

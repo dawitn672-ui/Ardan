@@ -1619,7 +1619,7 @@
           cool: 6,
           title: "A child goes to war",
           setup: (p,ctx)=>{setPid(p,ctx,A.pick(kidsOf(p,16,40)))},
-          text: "The war against {enemy} has reached {home}. Your {sd} {them} has taken the levy's coin, or volunteered, it hardly matters which. {them} leaves with the company at dawn.",
+          text: "The war against {enemy} has reached {home}. Your {sd} {them} has taken the recruiter's coin, or volunteered, it hardly matters which. {them} leaves with the company at dawn.",
           choices: [
             {
               t: "Buy {themHim} a good helmet and jack (25 suns)",
@@ -1631,7 +1631,7 @@
               t: "Beg {themHim} to hide in the hills",
               check: {s:"diplomacy",s2:"wil",d:50},
               win: {
-                r: "{them} goes into the hills until the levy has passed. A coward's name, maybe. But alive.",
+                r: "{them} goes into the hills until the muster has passed. A coward's name, maybe. But alive.",
                 fx: {them:{op:-5},honor:-4,happy:4},
               },
               lose: {

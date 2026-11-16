@@ -3773,7 +3773,7 @@
             fx: {styleXp:10,happy:-3,wil:.5},
           },
           {
-            t: "Help the master train the levies instead",
+            t: "Help the master train the conscripts instead",
             check: {s:"command",s2:"melee",d:48,bonus:p=>SB(p,.4)},
             win: {
               r: "A month of turning farm boys into something like soldiers. Some of them live because of you.",
@@ -4890,13 +4890,13 @@
         ],
       },
       {
-        id: "sc_wc_levies",
+        id: "sc_wc_conscripts",
         cond: (p,C)=>acad(p,C,"war")&&C.adult(p),
         w: 1,
         cool: 5,
         setup: (p,ctx)=>{scx(p,ctx)},
         title: "Real men, wooden swords",
-        text: "For the field exercise the college borrows a company of levies: two hundred farm boys who want to go home. You are given fifty of them and told to take a hill held by a rival student's fifty.",
+        text: "For the field exercise the college borrows a company of conscripts: two hundred farm boys who want to go home. You are given fifty of them and told to take a hill held by a rival student's fifty.",
         choices: [
           {
             t: "Lead from the front",

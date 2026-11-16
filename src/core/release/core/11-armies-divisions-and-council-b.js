@@ -410,21 +410,21 @@ const nobleYearNow = function (pc) {
     A.queue({
       type: "choice",
       title: "The summons",
-      text: `${ru ? A.rulerStyle(ru, r) : "Your liege"} calls the levies for ${w.name}. As ${A.nobleTitle(pc)} you owe ${A.fmt(R2.levy)} ${R2.levy === 1 ? "man (yourself)" : "men"} and your own sword.`,
+      text: `${ru ? A.rulerStyle(ru, r) : "Your liege"} calls the conscripts for ${w.name}. As ${A.nobleTitle(pc)} you owe ${A.fmt(R2.men)} ${R2.men === 1 ? "man (yourself)" : "men"} and your own sword.`,
       options: [
         {
-          t: "Answer the summons and lead your levy",
-          fn: "levyBattle",
+          t: "Answer the summons and lead your muster",
+          fn: "summonsBattle",
           arg: {
             war: w.id,
             enemy: en,
-            men: Math.max(40, R2.levy),
+            men: Math.max(40, R2.men),
           },
         },
         {
           t: "Pay scutage (shield-money) instead",
           fn: "scutage",
-          arg: R2.levy,
+          arg: R2.men,
         },
         {
           t: "Ignore the summons",

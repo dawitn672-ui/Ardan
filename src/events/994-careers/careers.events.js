@@ -90,7 +90,7 @@
       setup: (p, ctx) => { const ru = ruler(p, ctx); if (!ru || !p.noble) { ctx.skip = 1; return; } ctx.crownT = crownOf(p, ctx); ctx.place = A.provName ? A.provName(p.home) : 'your country'; },
       text: 'The lord of {place} dies without heirs, and his land comes back to the crown. {crownT} writes to you in a clerk\'s hand and signs it in its own: the manor, the mill and nine villages, if you will hold them for the crown and send their men when called.',
       choices: [
-        { t: 'Take the fief and its levies', r: 'You ride the bounds in the spring. Nine villages come out to see their new lord, and three of them have a lawsuit ready.',
+        { t: 'Take the fief and its men', r: 'You ride the bounds in the spring. Nine villages come out to see their new lord, and three of them have a lawsuit ready.',
           fx: (p, ctx) => { CAR().enfeoff(p); A.fame(p, 4); return ''; } },
         { t: 'Ask for a pension in silver instead', check: { s: 'persuasion', s2: 'int', d: 45 },
           win: { r: 'The crown would rather keep the land. You get two thousand suns a year for life, and no lawsuits.', fx: (p) => { p.coin += 2000; p.flags.cr_pension = A.S.year; return ''; } },

@@ -34,8 +34,8 @@
   };
   TT.maxOrgParts = function (d) {
     const s = A.divS(d), g = A.divGen(d), Dc = A.rdoc(A.realm(d.r)), t = A.tplOf(d), lv = A.xpLevel(d.exp);
-    const levy = Dc.levyOrg && t && t.bns.every(c => c === 'LV' || c === 'GA') ? Dc.levyOrg : 0;
-    const f = [[`Experience: ${esc(lv[1])} (0.75 + 0.3 × ${lv[2]})`, 0.75 + 0.25 * lv[2] * 1.2], ['The realm\'s doctrine' + (levy ? ', for levies' : ''), 1 + (Dc.org || 0) + levy]];
+    const cons = Dc.conscriptOrg && t && t.bns.every(c => c === 'LV' || c === 'GA') ? Dc.conscriptOrg : 0;
+    const f = [[`Experience: ${esc(lv[1])} (0.75 + 0.3 × ${lv[2]})`, 0.75 + 0.25 * lv[2] * 1.2], ['The realm\'s doctrine' + (cons ? ', for conscripts' : ''), 1 + (Dc.org || 0) + cons]];
     const base = TT.prodOf(s.org, f), cmd = g ? A.skill(g, 'command') / 12 : 0, o = d.elite && GD.ORDERS[d.elite];
     const ord = o ? 1.15 + (o.org || 0) + ((o.fx || {}).org || 0) : 1;
     return { start: s.org, f, base, cmd, g, ord, total: A.divMaxOrg(d) };
@@ -191,15 +191,15 @@
   G.host = function (rid) {
     const r = A.realm(rid || myR()); if (!r || !r.forces) return '';
     const all = r.forces.divs, men = all.reduce((x, d) => x + d.men, 0), full = all.reduce((x, d) => x + A.divS(d).men, 0);
-    return H('The host of ' + esc(r.short), `${fmt(men)} of ${fmt(full)}`) + R('Divisions', all.length) + R(L('manpower', r.id, 'Manpower pool'), fmt(r.levy)) +
+    return H('The host of ' + esc(r.short), `${fmt(men)} of ${fmt(full)}`) + R('Divisions', all.length) + R(L('manpower', r.id, 'Manpower pool'), fmt(r.roll)) +
       R('In training', r.forces.queue.length) + R('Army experience', Math.floor(r.forces.xp), 'tt-sub') +
       D('Army experience is earned in battle and drill.');
   };
   G.manpower = function (rid) {
     const r = A.realm(rid || myR()); if (!r) return '';
-    const cap = r.levyCap || Math.max(r.levy, 1), lv = A.LEVY && A.LEVY[(r.laws || {}).levy];
-    return H('Manpower', `${fmt(r.levy)} of ${fmt(cap)}`, esc(r.short)) + R('Next year', r.levy >= cap * 0.98 ? 'full' : '+' + fmt(Math.max(0, (cap - r.levy) * 0.2)) + ' (a fifth of the gap)') +
-      (lv ? R('Levy law: ' + esc(lv[0]), 'pool ×' + lv[1], 'tt-sub') : '') + D('What the land can give, at the levy law. Training a division takes its men at once; refits draw on it all the time.');
+    const cap = r.rollCap || Math.max(r.roll, 1), lv = A.CONSCRIPT_LAW && A.CONSCRIPT_LAW[(r.laws || {}).conscript];
+    return H('Manpower', `${fmt(r.roll)} of ${fmt(cap)}`, esc(r.short)) + R('Next year', r.roll >= cap * 0.98 ? 'full' : '+' + fmt(Math.max(0, (cap - r.roll) * 0.2)) + ' (a fifth of the gap)') +
+      (lv ? R('Conscription law: ' + esc(lv[0]), 'pool ×' + lv[1], 'tt-sub') : '') + D('What the land can give, at the conscription law. Training a division takes its men at once; refits draw on it all the time.');
   };
   G.training = function (arg) {
     const [rid, i] = String(arg).split('|'), r = A.realm(rid), q = r && r.forces && r.forces.queue[+i]; if (!q) return '';

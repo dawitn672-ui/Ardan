@@ -394,12 +394,12 @@ export default {
       };
       V2CT.life({ seed: 9501, status: 'peasant', startAge: 8 }, 20, look);
       V2CT.life({ seed: 9502, status: 'noble', startAge: 16 }, 18, look);
-      // staged: the drill's fresh levy and the song, and the old scholar for a man with no coin (two live choices)
+      // staged: the drill's fresh conscripts and the song, and the old scholar for a man with no coin (two live choices)
       T.enter({ seed: 9503, race: 'human', realm: 'POL-01', status: 'peasant', sex: 'M', startAge: 24 });
       const pc = A.pc(); pc.coin = 0;
       const stage = ev => { const q = { type: 'event', ev, ctx: {} }; A.S.queue.unshift(q); const v = A.eventView(q); const h = v.skip ? '' : UI.queueModal(q) || ''; A.S.queue.shift(); return { v, h }; };
-      const lev = stage('dr_new_levy'), song = stage('dr_song'), sch = stage('fl_st_master');
-      out.levy = [...lev.h.matchAll(/<button data-a="evChoose"[^>]*>([\s\S]*?)<\/button>/g)].map(m => V2CT.strip(m[1]));
+      const lev = stage('dr_new_conscripts'), song = stage('dr_song'), sch = stage('fl_st_master');
+      out.call = [...lev.h.matchAll(/<button data-a="evChoose"[^>]*>([\s\S]*?)<\/button>/g)].map(m => V2CT.strip(m[1]));
       out.song = [...song.h.matchAll(/<button data-a="evChoose"[^>]*>([\s\S]*?)<\/button>/g)].map(m => V2CT.strip(m[1]))[0] || '';
       out.scholarLive = sch.v.skip ? 0 : sch.v.choices.filter(x => x.i >= 0).length;
       // any scene left with one live choice is dropped
@@ -407,8 +407,8 @@ export default {
       out.loneSkipped = !!stage('v2ct_lone').v.skip;
       return out;
     });
-    const ok = r.scenes >= 200 && !r.bare.length && !r.lone.length && !r.vague.length && r.levy.length === 2 && r.levy.every(s => /the unit's/.test(s)) && /the unit's/.test(r.song) && r.scholarLive >= 2 && r.loneSkipped;
-    return { ok, detail: `${r.scenes} scenes, ${r.choices} choices: with nothing shown ${r.bare.length} ${r.bare[0] || ''}; one live choice ${r.lone.length} ${r.lone[0] || ''}; "their regard" without a name ${r.vague.length} ${r.vague[0] || ''}; fresh levy ${JSON.stringify(r.levy)}; "Let them sing": ${r.song}; the old scholar offers a man with no coin ${r.scholarLive} live choices; a scene left with one live choice is dropped ${r.loneSkipped}` };
+    const ok = r.scenes >= 200 && !r.bare.length && !r.lone.length && !r.vague.length && r.call.length === 2 && r.call.every(s => /the unit's/.test(s)) && /the unit's/.test(r.song) && r.scholarLive >= 2 && r.loneSkipped;
+    return { ok, detail: `${r.scenes} scenes, ${r.choices} choices: with nothing shown ${r.bare.length} ${r.bare[0] || ''}; one live choice ${r.lone.length} ${r.lone[0] || ''}; "their regard" without a name ${r.vague.length} ${r.vague[0] || ''}; fresh conscripts ${JSON.stringify(r.call)}; "Let them sing": ${r.song}; the old scholar offers a man with no coin ${r.scholarLive} live choices; a scene left with one live choice is dropped ${r.loneSkipped}` };
   },
 
   // the War Room: a commander sees the enemy as estimates, his own men never above full; diplomacy and the realm in words
@@ -446,7 +446,7 @@ export default {
       UI.worldView = 'dipl'; const pol = V2CT.strip(UI.worldTabPolitics(pc));
       out.lords = (/Restless lords (.{0,80})/.exec(pol) || [])[1] || '';
       A.makeRuler(pc, pc.realm, true);
-      out.quality = (/levy · ([a-z ]*?quality)/.exec(V2CT.strip(UI.realmTabBasic(pc))) || [])[1] || '';
+      out.quality = (/conscripts · ([a-z ]*?quality)/.exec(V2CT.strip(UI.realmTabBasic(pc))) || [])[1] || '';
       return out;
     });
     const ok = /^(some|about) /.test(r.foeMen) && !r.foeExact && /^(some|about) /.test(r.multi) && !r.multiExact && r.mine && !r.over && r.lords && !/\d/.test(r.lords) && r.quality && !/\d/.test(r.quality);

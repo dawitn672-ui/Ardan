@@ -243,7 +243,7 @@
     ['letter', /\b(a letter|letters? (?:comes?|arrives?)|sealed|courier|messenger|writes? to you)\b/i],
     ['death', /\b(dead|death|dies|died|funeral|grave|buried|burial|corpse|mourn)/i],
     ['sickness', /\b(fever|sick|illness|plague|physician|herbs?|cough|wound(?:ed)?)\b/i],
-    ['war', /\b(army|muster|battle|siege|soldiers?|camp|host|levy|war)\b/i],
+    ['war', /\b(army|muster|battle|siege|soldiers?|camp|host|conscripts?|war)\b/i],
     ['fight', /\b(sword|blade|duel|fight|knife|brawl|blows?)\b/i],
     ['beast', /\b(wolf|wolves|bear|boar|beast|hounds?)\b/i],
     ['weather', /\b(storm|snow|rain|flood|frost|winter)\b/i],

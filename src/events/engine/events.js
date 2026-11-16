@@ -59,7 +59,7 @@ export const EVENTS = [
   { id: 'hunt-boar', stage: [15, 50], weight: 2,
     text: (c) => c.me.estate === 'commoner' ? `A great boar is tearing up the village fields. The men gather spears.` : `A great boar has gored two dogs on the estate. The hunt gathers.`,
     choices: [
-      { label: 'Face it with a boar-spear', check: (c) => ({ capability: fightingWorth(c.me, 'spear', 'levy').worth, difficulty: 2.4 }),
+      { label: 'Face it with a boar-spear', check: (c) => ({ capability: fightingWorth(c.me, 'spear', 'conscript').worth, difficulty: 2.4 }),
         fx: (c, r) => { practise(c.me, 'spear', 20); if (r.success) recordDeed(c.me, { weight: r.deedWeight, witnesses: 'company', year: c.world.year, month: c.world.month, text: 'killing the great boar', field: 'arms' }); if (r.breakthrough) breakthrough(c.me, 'toughness', r.breakthrough, 'the boar hunt'); if (!r.success && r.tier !== 'narrow failure') c.me.body.wounds.push({ kind: 'leg', year: c.world.year }); return r.success ? (r.breakthrough ? 'It should have killed you. You held the spear anyway, and something in you changed.' : 'The spear takes it through the chest.') : 'It knocks you flat and tusks your thigh before the dogs drive it off.'; } },
       { label: 'Ride with the beaters', fx: (c) => { practise(c.me, 'riding', 15); return 'Others take the glory. You keep your skin.'; } }] },
   { id: 'apprentice', stage: [12, 18], weight: 1.5, once: true, need: (c) => c.me.estate === 'commoner',

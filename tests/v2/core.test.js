@@ -37,11 +37,11 @@ test('races differ: giant > orc > human; dwarf sturdier than elf', () => {
   assert.ok(T('dwarf') > T('elf'));
 });
 
-test('fighting worth calibration (in levies)', () => {
+test('fighting worth calibration (in conscripts)', () => {
   const rng = makeRng(4);
   const human = (tierHrs, cond, gear) => { const p = mk(rng, 'human', 'male', { avg: true, gear }); p.body.skills.sword = tierHrs; Object.assign(p.body.cond, cond); return fightingWorth(p, 'sword', gear).worth; };
-  const levy = human(30, { lift: 1.1 }, 'levy');
-  assert.ok(Math.abs(levy - 1) < 0.15, `levy ${levy}`);
+  const conscript = human(30, { lift: 1.1 }, 'conscript');
+  assert.ok(Math.abs(conscript - 1) < 0.15, `conscript ${conscript}`);
   const maa = human(800, { lift: 1.4, sprint: 1.1, reaction: 1.087, toughness: 1.2 }, 'mail');
   assert.ok(maa > 2 && maa < 3.2, `man-at-arms ${maa}`);
   const elite = human(12000, { lift: 4, sprint: 1.6, reaction: 1.4, toughness: 3 }, 'order');

@@ -92,7 +92,7 @@
         w: 1.3,
         setup: prep,
         title: "The first one",
-        text: ()=>`It happens fast. A ${A.pick(["levy man in a padded coat","boy with a hand-axe","bearded spearman","crossbowman who stood up too soon"])} comes at you out of the press, and your {weapon} goes in before you think. He sits down in the mud and looks surprised. Then he is dead, and you are someone who has killed a man.`,
+        text: ()=>`It happens fast. A ${A.pick(["conscript in a padded coat","boy with a hand-axe","bearded spearman","crossbowman who stood up too soon"])} comes at you out of the press, and your {weapon} goes in before you think. He sits down in the mud and looks surprised. Then he is dead, and you are someone who has killed a man.`,
         choices: [
           {
             t: "Look at his face. Remember it.",
@@ -3082,17 +3082,17 @@
         ],
       },
       {
-        id: "rk_cmd_levy_lord",
+        id: "rk_cmd_muster_lord",
         cond: (p,C)=>C.soldier(p)&&rk(p)>=5&&rk(p)<=6&&crown(p),
         setup: (p,ctx)=>{prep(p,ctx),ctx.ll=nm(p)},
         title: "A lord and his second",
-        text: 'A levy lord who raises a regiment from his own lands is a commander by right, whatever his skill. Lord {ll} has brought three thousand farm boys and his hunting hounds. The crown has made you his "second". He thinks a battle is a kind of hunt.',
+        text: 'A lord who raises a regiment from his own lands is a commander by right, whatever his skill. Lord {ll} has brought three thousand farm boys and his hunting hounds. The crown has made you his "second". He thinks a battle is a kind of hunt.',
         choices: [
           {
             t: "Run the regiment from behind him, politely",
             check: {s:"diplomacy",s2:"command",d:50},
             win: {
-              r: "Every order is his, and every order is yours. By autumn his levy is a regiment, and he believes he did it.",
+              r: "Every order is his, and every order is yours. By autumn his muster is a regiment, and he believes he did it.",
               fx: {merit:15,skill:{diplomacy:2,command:2},newRel:{type:"friend",op:35}},
             },
             lose: {
@@ -3178,7 +3178,7 @@
         cond: (p,C)=>gen(p,C)&&war(p),
         setup: (p,ctx)=>{prep(p,ctx),ctx.g1=nm(p),ctx.g2=nm(p)},
         title: "The council of war",
-        text: "The council of war meets in a farmhouse kitchen with the map spread on the table and the farmer's family sent to the barn. General {g1} wants to attack tomorrow while the {foe} army is still crossing the river. General {g2} wants to wait for the siege train and the second levy. Everyone turns to you.",
+        text: "The council of war meets in a farmhouse kitchen with the map spread on the table and the farmer's family sent to the barn. General {g1} wants to attack tomorrow while the {foe} army is still crossing the river. General {g2} wants to wait for the siege train and the second muster. Everyone turns to you.",
         choices: [
           {
             t: "Attack while they are astride the river",
@@ -3193,7 +3193,7 @@
             },
           },
           {
-            t: "Wait for the siege train and the levy",
+            t: "Wait for the siege train and the muster",
             r: "You wait. The enemy finishes crossing and digs in. The war will be longer, and you will have more men to fight it.",
             fx: {merit:10,skill:{logistics:2}},
           },

@@ -397,11 +397,11 @@
         ],
       },
       {
-        id: "dr_new_levy",
+        id: "dr_new_conscripts",
         trigger: !0,
         drill: ["any"],
         cool: 3,
-        title: "Fresh levy",
+        title: "Fresh conscripts",
         text: "Two hundred new men arrive from the villages to fill the gaps. Half of them have never held a spear. They stand in a field in their own clothes, staring at your veterans.",
         choices: [
           {

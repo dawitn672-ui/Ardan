@@ -9,7 +9,7 @@
 // State, all optional (a save without it fills at the next New Year):
 //   r.pol = { v, est: {k: {ap, mod, lead}}, off: [{id, k, at, pid, by, since, term, pay, g}], bill, elect, last,
 //             task: {seat: k}, laws2: {obl, just, comm, trade, faith}, law0: {...}, came, since, ru, lost: [y], tyr }
-//   h.contract = { tax, levy, rights: [], since }   (Low 0, Medium 1, High 2)
+//   h.contract = { tax, men, rights: [], since }   (Low 0, Medium 1, High 2)
 //   pc.pol = { promises: [], petition, sought }
 const POL = A.POL = A.POL || {};
 const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
@@ -68,7 +68,7 @@ GD.POL_LAWS = {
     ap: { nob: [2, 1, 0, -1, -3], cler: [0, 0, 0, 0, -1], burg: [2, 1, 0, -1, -3], comm: [3, 1, 0, -2, -3], army: [-2, -1, 0, 1, 1] } },
   auth: { n: 'Crown authority', ord: true, pos: ['Low', 'Limited', 'High', 'Absolute'],
     ap: { nob: [3, 1, -1, -3], cler: [0, 1, 0, -1], burg: [-1, 1, 1, -1], comm: [-1, 0, 1, 0], army: [-2, 0, 2, 2] } },
-  levy: { n: 'Levies', ord: true, pos: ['Light levies', 'Customary levies', 'Heavy levies'],
+  conscript: { n: 'Conscription', ord: true, pos: ['By the estates\' leave', 'The old custom', 'The crown\'s right'],
     ap: { nob: [1, 0, -1], cler: [0, 0, 0], burg: [1, 0, -1], comm: [2, 0, -2], army: [-2, 0, 2] } },
   succ: { n: 'Succession', ord: false, fixed: true, pos: ['Heredity', 'Elective', 'Council', 'Theocracy'],
     ap: { nob: [1, 2, -1, -2], cler: [0, -1, -1, 3], burg: [0, 0, 3, -1], comm: [0, 0, 1, 0], army: [1, 1, -1, -1] } },
@@ -91,7 +91,7 @@ POL.pos = function (r, g) {
   const L = r.laws || {};
   if (g === 'tax') return A.RI && A.RI.taxIdx ? A.RI.taxIdx(r) : 2;
   if (g === 'auth') return L.authority != null ? L.authority : 1;
-  if (g === 'levy') return L.levy != null ? L.levy : 1;
+  if (g === 'conscript') return L.conscript != null ? L.conscript : 1;
   if (g === 'succ') return SUCC_IX[r.gov] != null ? SUCC_IX[r.gov] : 0;
   const l2 = r.pol && r.pol.laws2;
   return l2 && l2[g] != null ? l2[g] : POL.start(r)[g];
@@ -99,7 +99,7 @@ POL.pos = function (r, g) {
 // the realm's custom in each law: what it had when the Polity first sat (56's r.riLaw0 for taxes and authority)
 POL.custom = function (r, g) {
   if (g === 'tax' || g === 'auth') { const R = A.RI; return R && R.trad ? R.trad(r, g === 'tax' ? 'tax' : 'authority') : g === 'tax' ? 2 : 1; }
-  if (g === 'levy') return 1;
+  if (g === 'conscript') return 1;
   if (g === 'succ') return POL.pos(r, 'succ');
   const l0 = r.pol && r.pol.law0;
   return l0 && l0[g] != null ? l0[g] : POL.start(r)[g];
@@ -166,7 +166,7 @@ const temples = r => (Array.isArray(r.riGreat) ? r.riGreat.length : 0) + Math.mi
 POL.unrest = r => clamp(60 - (r.stability != null ? r.stability : 50), 0, 60);
 POL.cloutRaw = function (r) {
   const p = r.pol || {}, pos = g => POL.pos(r, g);
-  const hs = A.realmHouses(r.id), all = hs.reduce((a, h) => a + A.houseStrength(h), 0), denom = all + (r.army || 0) * .25 + (r.levy || 0) * .05;
+  const hs = A.realmHouses(r.id), all = hs.reduce((a, h) => a + A.houseStrength(h), 0), denom = all + (r.army || 0) * .25 + (r.roll || 0) * .05;
   const houseShare = denom > 0 ? all / denom : .3, armyShare = denom > 0 ? (r.army || 0) * .25 / denom : .3;
   const nT = POL.towns(r.id).length, coast = POL.towns(r.id).filter(t => (A.S.prov[t] || {}).coast).length;
   const war = A.atWar(r.id).length > 0, revolt = A.S.wars && A.S.wars.some(w => w.cb === 'liberty' || w.cb === 'independence' ? (w.def || []).includes(r.id) : false);
@@ -502,13 +502,13 @@ POL.landed = h => !!h && !h.extinct && h.kind !== 'royal' && (h.great !== false 
 POL.contractOf = function (h, r) {
   if (h.contract && typeof h.contract === 'object') return h.contract;
   const o = r ? POL.pos(r, 'obl') : 1;
-  return { tax: o, levy: o, rights: [], since: null };
+  return { tax: o, men: o, rights: [], since: null };
 };
 POL.fillContracts = function (r) {
-  for (const h of A.realmHouses(r.id)) if (POL.landed(h) && !h.contract) h.contract = { tax: POL.pos(r, 'obl'), levy: POL.pos(r, 'obl'), rights: [], since: A.S.year };
+  for (const h of A.realmHouses(r.id)) if (POL.landed(h) && !h.contract) h.contract = { tax: POL.pos(r, 'obl'), men: POL.pos(r, 'obl'), rights: [], since: A.S.year };
 };
 POL.OBL_TAX = [.05, .10, .15];
-POL.OBL_LEVY = [.75, 1, 1.25];
+POL.OBL_MEN = [.75, 1, 1.25];
 // the crown changes one obligation of house h by d (+1/-1): [ok, why, cost]. A favour owed by the house head makes a
 // raise free (and is spent); otherwise it costs 15 with the house and 3 with every landed house, once a year.
 POL.oblCost = function (r, h, key, d, pc) {

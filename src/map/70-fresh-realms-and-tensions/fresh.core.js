@@ -11,7 +11,7 @@
 //                  GD.NAMING, and their own word for a council from 54-character-voices), a ruling house from the nobles seated
 //                  in its provinces (or a new one, or for a prince his own royal house), its parent's laws, faith and
 //                  culture, a realm bible (want, fear, place; customs inherited from the parent's bible, 47), a share
-//                  of the parent's army, levy, ships, treasury and income in proportion to the people it took, and a
+//                  of the parent's army, roll, ships, treasury and income in proportion to the people it took, and a
 //                  quarrel: the parent claims its provinces, keeps a line in its feud ledger (55-bonds), remembers the
 //                  land taken, and is either under a truce that runs out in 1 to 4 years or still at war;
 //   tensions       seeds 1 to 3 of five situations, each a state the engine runs:
@@ -265,17 +265,17 @@
     const used = new Set(live().map(x => x.color)), cols = (A.COLORS_EXTRA || []).filter(c => !used.has(c));
     const nr = A.createRealm({ id: nid, name: st.name, short: st.short, title: st.title, type: st.type, gov: st.gov || (/hereditary/.test(r.gov || '') ? 'hereditary' : r.gov === 'elective' ? 'elective' : 'hereditary'),
       law: r.law, race: r.race, cult: r.cult, faith: r.faith, color: cols.length ? A.pick(cols) : undefined,
-      army: Math.max(300, Math.round((r.army || 0) * share * 0.9)), levy: Math.max(800, Math.round((r.levy || 0) * share)), armyQ: r.armyQ,
+      army: Math.max(300, Math.round((r.army || 0) * share * 0.9)), roll: Math.max(800, Math.round((r.roll || 0) * share)), armyQ: r.armyQ,
       income: Math.max(1000, Math.round((r.baseIncome || r.income || 0) * share)), stability: clamp(Math.round((r.stability || 50) + A.ri(-10, 10)), 25, 80),
       legit: kind === 'prince' ? A.ri(35, 55) : A.ri(40, 65), treasury: Math.round((r.treasury || 0) * share), comp: r.comp, house: H.hid,
       capital: capP.name, capitalProv: capP.id });
     if (S.nextRealm == null || S.nextRealm < +nid.slice(4)) S.nextRealm = +nid.slice(4);
     nr.fresh = { kind, from: r.id, ago, y0: S.year, cult, provs: ids.slice(), war: false };
     FR.register({ realms: { [nid]: nr } });   // its culture and faith count from here on (its royal family is born next)
-    r.army = Math.max(500, Math.round((r.army || 0) - nr.army)); r.levy = Math.max(1000, Math.round((r.levy || 0) - nr.levy));
+    r.army = Math.max(500, Math.round((r.army || 0) - nr.army)); r.roll = Math.max(1000, Math.round((r.roll || 0) - nr.roll));
     r.treasury = Math.round((r.treasury || 0) - nr.treasury);
     nr.ships = Math.round((r.ships || 0) * share * (ids.some(id => P_(id).coast) ? 1 : 0)); r.ships = Math.max(0, (r.ships || 0) - nr.ships);
-    nr.army0 = nr.army; nr.levy0 = Math.max(nr.levy, nr.army * 3);
+    nr.army0 = nr.army; nr.roll0 = Math.max(nr.roll, nr.army * 3);
     nr.created = S.year - ago; nr.isNew = false; nr.parent = r.id; nr.coin = Object.assign({}, r.coin || { coin: 'sun', worth: 1 });
     nr.laws = Object.assign({}, r.laws || { tax: 1 }); if (st.gov && st.gov !== r.gov) delete nr.laws.authority;   // polInit sets it from the new government
     // the land, the people of it and their lords

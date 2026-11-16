@@ -187,7 +187,7 @@ A.warYear = function (w) {
   for (const r of w.att.concat(w.def).map(A.realm))
     if (r) {
       r.exhaustion = A.clamp(r.exhaustion + A.ri(6, 14), 0, 100);
-      r.treasury -= Math.round(r.army * 4 + r.levy * 0.5);
+      r.treasury -= Math.round(r.army * 4 + r.roll * 0.5);
     }
   A.checkPeace(w);
 };
@@ -199,7 +199,7 @@ A.applyLosses = function (rids, n) {
   for (const r of rs) {
     const share = Math.round((n * (r.army + 1)) / tot);
     r.army = Math.max(Math.round(r.army * 0.25), r.army - share);
-    r.levy = Math.max(0, r.levy - Math.round(share * 0.3));
+    r.roll = Math.max(0, r.roll - Math.round(share * 0.3));
   }
 };
 
@@ -523,7 +523,7 @@ A.successionWar = function (r, claimant) {
       faith: r.faith,
       color: A.pick(A.COLORS_EXTRA),
       army: Math.round(r.army * (A.riClaimShare ? A.riClaimShare(r, claimant) : A.rf(0.3, 0.6))),
-      levy: Math.round(r.levy * 0.4),
+      roll: Math.round(r.roll * 0.4),
       armyQ: r.armyQ,
       income: Math.round(r.income * 0.3),
       stability: 40,
@@ -537,7 +537,7 @@ A.successionWar = function (r, claimant) {
   nr.landless = false;
   if (isPC) nr.name = A.fullName(claimant, false) + "'s faction";
   r.army = Math.round(r.army * 0.65);
-  r.levy = Math.round(r.levy * 0.65);
+  r.roll = Math.round(r.roll * 0.65);
   const ps = A.realmProvs(r.id).filter(p => p.id !== r.capitalProv),
     take = A.shuffle(ps).slice(0, Math.max(1, Math.round(ps.length * A.rf(0.2, 0.4))));
   // [X1 baked patch core/09-engine-at-scale SCALE-LAND-WRITES] A.realmProvs and A.neighbors scanned every province
@@ -816,7 +816,7 @@ A.worldYear = function () {
       A.ageNpc(ru);
     }
     if (!r.playerRun) {
-      const upkeep = r.army * 3.2 + r.levy * 0.05;
+      const upkeep = r.army * 3.2 + r.roll * 0.05;
       // [X1 baked patch core/04-world-fixes WLD-AI-DEBT] AI realm debt never went down: only interest (8%) was charged,
       // nothing repaid the principal, and surplus gold above 3x income was deleted for +1 stability instead. Realms now
       // repay principal from cash above half a year's income, and the surplus rule pays debt before it burns anything.

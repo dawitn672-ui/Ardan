@@ -197,7 +197,7 @@
         ],
       },
       {
-        id: "ww_ald_levy",
+        id: "ww_ald_muster",
         title: "Five hearths, one man",
         cond: (p,C)=>R(p,"POL-01")&&grown(p,C)&&C.male(p)&&free(p)&&is(p,"peasant","artisan")&&!C.soldier(p),
         w: 1,
@@ -5471,7 +5471,7 @@
         cond: (p,C)=>R(p,"POL-31")&&C.adult(p)&&(is(p,"artisan","merchant","gentry")||p.coin>=40),
         w: 1,
         cool: 7,
-        text: `Both claimants levy forced loans on towns. A captain of the queen's hired companies has come with a list, a clerk and twenty men, and your name is on the list for 30 suns, "to be repaid from the Neck road tolls after the victory". Her hired men are owed 90,000 suns a month.`,
+        text: `Both claimants raise forced loans on towns. A captain of the queen's hired companies has come with a list, a clerk and twenty men, and your name is on the list for 30 suns, "to be repaid from the Neck road tolls after the victory". Her hired men are owed 90,000 suns a month.`,
         choices: [
           {
             t: "Pay and get a receipt",

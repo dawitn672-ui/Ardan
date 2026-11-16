@@ -1495,7 +1495,7 @@ A.neighbors = function (rid) {
 A.realmPower = function (r) {
   return !r || !r.alive
     ? 0
-    : (r.army + r.levy * 0.3) * r.armyQ * (0.65 + r.stability / 250) * (r.treasury < 0 ? 0.8 : 1);
+    : (r.army + r.roll * 0.3) * r.armyQ * (0.65 + r.stability / 250) * (r.treasury < 0 ? 0.8 : 1);
 };
 
 A.atWar = function (rid) {
@@ -1604,7 +1604,7 @@ A.createRealm = function (o) {
       stability: o.stability || 50,
       legit: o.legit || 40,
       army: o.army || 500,
-      levy: o.levy || 1500,
+      roll: o.roll || 1500,
       armyQ: o.armyQ || 0.8,
       comp: o.comp || null,
       exhaustion: 0,
@@ -1719,7 +1719,7 @@ A.initWorld = function () {
         stability: A.STAB[L.stability] || 50,
         legit: 70,
         army: L.army,
-        levy: L.levy,
+        roll: L.roll,
         armyQ:
           0.9 + (L.comp ? Math.min(0.25, ((L.comp.heavyHorse + L.comp.heavyFoot) / Math.max(1, L.army)) * 0.6) : 0),
         comp: L.comp,
@@ -1803,7 +1803,7 @@ A.initWorld = function () {
         faith: "REL-02",
         color: "#c98a6a",
         army: 13e3,
-        levy: 3e4,
+        roll: 3e4,
         armyQ: 0.95,
         income: 9e4,
         stability: 40,
@@ -1835,7 +1835,7 @@ A.initWorld = function () {
       A.makeRuler(andros, "POL-31A", true);
       andros.house = tess.house;
       tess.army = 18e3;
-      tess.levy = 4e4;
+      tess.roll = 4e4;
       for (const k in S.realms)
         if (k !== "POL-31A") {
           nr.rel[k] = S.realms[k].rel["POL-31"] || 0;

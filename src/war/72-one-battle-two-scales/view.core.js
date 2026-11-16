@@ -47,7 +47,7 @@
   };
   // one standard: the pole on its shadow, the cloth (square for foot, swallowtail for horse, a pennon for bows), the
   // house's charge, a slip with the men, a bar for the order
-  // the men on a standard's slip, as the levy reckons them: "~5.5k", not 5,412 (TS.told's estimate, shortened)
+  // the men on a standard's slip, as the muster reckons them: "~5.5k", not 5,412 (TS.told's estimate, shortened)
   const slip = d => { const t = String(TS.told(d.men, d.ours)), n = +t.replace(/[^\d]/g, ''); return !/\d/.test(t) ? t.replace(/^a /, '') : n >= 1000 ? (t === A.fmt(n) ? '' : '~') + f1(n / 1000) + 'k' : (t === A.fmt(n) ? '' : '~') + n; };
   function standard(d, x, foot, K) {
     const fw = 34 * K, fh = 19 * K, top = foot - 50 * K, px = x - fw / 2, col = safeCol(colourOf(d.r));
@@ -178,7 +178,7 @@
     const ours = fr.divs.filter(d => d.ours), mi = ours.findIndex(d => d.me), me = ours[mi];
     const nb = (i, side) => { const d = ours[i]; return d ? `on your ${side} the ${d.n} (${d.gone ? 'gone from the field' : 'order ' + pct(d.o) + (d.o < 0.3 ? ', giving way' : '')})` : null; };
     out.push(`Your side holds ${pct(fr.share)} of the order on the field${pv && pv.share != null && Math.abs(pv.share - fr.share) >= 0.01 ? `, ${fr.share > pv.share ? 'up' : 'down'} from ${pct(pv.share)}` : ''}.`);
-    if (me) out.push(`${m.ts.levy ? 'The levy stands with' : 'Yours is'} the ${me.n}: ${TS.told(me.men, true)} men, order ${pct(me.o)}${me.gone ? ', gone from the field' : ''}.`);
+    if (me) out.push(`${m.ts.muster ? 'The muster stands with' : 'Yours is'} the ${me.n}: ${TS.told(me.men, true)} men, order ${pct(me.o)}${me.gone ? ', gone from the field' : ''}.`);
     const sides = [nb(mi - 1, 'left'), nb(mi + 1, 'right')].filter(Boolean);
     if (sides.length) out.push(sides.join('; ').replace(/^o/, 'O') + '.');
     const th = fr.divs.filter(d => !d.ours && !d.gone), broke = fr.divs.filter(d => !d.ours && d.o < 0.3 && !d.gone);
@@ -258,7 +258,7 @@
     h += `<div class="stages">${m.stages.map((s, i) => `<i class="${i < m.stage ? 'done' : i === m.stage && !m.over ? 'now' : ''}"></i>`).join('')}</div>`;
     const last = m.log.slice(-2).filter(Boolean);
     h += `<div class="ts-book" role="group" aria-label="The battle at two scales">`;
-    h += `<section class="ts-leaf ts-squad" aria-label="The squad"><h3 class="ts-rub">${m.ts.levy ? 'Your neighbours in the levy' : 'Your section'}</h3>${TS.squadHtml(m)}`;
+    h += `<section class="ts-leaf ts-squad" aria-label="The squad"><h3 class="ts-rub">${m.ts.muster ? 'Your neighbours in the muster' : 'Your section'}</h3>${TS.squadHtml(m)}`;
     if (cur) h += `<h3 class="ts-sub">What you see and hear</h3><p class="ts-see">${esc(cur.text)}</p>`;
     if (last.length && !m.over) h += `<div class="ts-yest">${last.map(l => `<p class="${l.startsWith('»') ? 'ch' : ''}">${esc(l)}</p>`).join('')}</div>`;
     if (m.over) h += `<div class="ts-yest">${m.log.map(l => `<p class="${l.startsWith('»') ? 'ch' : ''}">${esc(l)}</p>`).join('')}</div>`;

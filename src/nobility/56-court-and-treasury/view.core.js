@@ -40,7 +40,7 @@ const aimTitle = p => { const a = RI.aims(p); if (!a) return ''; const w = a.wor
 UI.riCourtCard = function (r, pc) {
   if (!r || !RI.voices) return '';
   const L = RI.lawNow(r), mine = pc && pc.ruler === r.id;
-  let h = `<div class="card ri-court"><div class="row"><b>The court of ${esc(r.short)}</b><span class="right"></span><span class="tag">${esc(L.tax)} taxes · ${esc(L.auth)} authority · ${esc(L.levy)}</span></div>`;
+  let h = `<div class="card ri-court"><div class="row"><b>The court of ${esc(r.short)}</b><span class="right"></span><span class="tag">${esc(L.tax)} taxes · ${esc(L.auth)} authority · ${esc(L.conscript)}</span></div>`;
   // the council
   h += '<div class="group-h">The council</div><div class="tscroll"><table class="t small"><tr><th>Seat</th><th>Who</th><th>Wants</th><th>Fears</th></tr>';
   for (const seat of Object.keys(A.COUNCIL)) {

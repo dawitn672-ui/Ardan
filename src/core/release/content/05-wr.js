@@ -947,7 +947,7 @@
         cond: (p,C)=>camp(p)&&rank(p)>=1,
         setup: (p,ctx)=>{prep(p,ctx),ctx.np=A.ri(8,30)},
         title: "Prisoners",
-        text: 'You have charge of {np} {foe} prisoners: farm boys mostly, levy men in padded coats. The column has no food to spare for them. The captain says, "Deal with it."',
+        text: 'You have charge of {np} {foe} prisoners: farm boys mostly, conscripts in padded coats. The column has no food to spare for them. The captain says, "Deal with it."',
         choices: [
           {
             t: "Release them on oath not to fight again",
@@ -1884,11 +1884,11 @@
         ],
       },
       {
-        id: "wr_hf_levy",
+        id: "wr_hf_lot",
         cond: (p,C)=>homeFront(p,C)&&C.hasKids(p)&&C.age(p)>=34,
         setup: (p,ctx)=>{prepH(p,ctx);const kids=(p.children||[]).map(A.P).filter(k=>k&&k.alive&&A.isAdult(k));ctx.kid=kids.length?A.pick(kids).given:"your eldest"},
-        title: "The levy list",
-        text: "The levy: one fighter from so many hearths, and the reeve has written {kid}'s name on the list. The column leaves for the war in three days.",
+        title: "The muster list",
+        text: "The muster: one fighter from so many hearths, and the reeve has written {kid}'s name on the list. The column leaves for the war in three days.",
         choices: [
           {
             t: "Pay for a substitute (60 suns)",

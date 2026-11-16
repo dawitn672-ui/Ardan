@@ -7,7 +7,7 @@
 //        once per policy from the same state and random stream: fights won, paired fight by fight; the men beside you
 //        who die, per policy and per choice; whether you live
 // lives  bot lives (tools/bench/bot.mjs) on every path of tools/bench/targets.mjs, and a soldier path (a peasant who enlists at 18):
-//        how many lives meet at least one two-scales fight (in the army or in the levy), and how many per ten years
+//        how many lives meet at least one two-scales fight (in the army or in the muster), and how many per ten years
 //        of service
 import fs from 'node:fs';
 import path from 'node:path';
@@ -75,13 +75,13 @@ if (what.includes('lives')) {
         let L;
         try { L = B.life(o, pers, engaged, years); } finally { A.newGame = ng; A.wsPCFightStart = st; A.onMonth.length = om; }
         const pc = A.P(A.S.pc), S = L.samples || [];
-        return { ts: pc.tsN || 0, levy: pc.tsLevyN || 0, short: pc.tsShortN || 0, service: S.filter(s => s.mil >= 0).length, warMonths: W.warMonths, asked: W.asked, levyAsked: W.home, years: L.years, death: L.deathAge, arc: L.arc };
+        return { ts: pc.tsN || 0, muster: pc.tsMusterN || 0, short: pc.tsShortN || 0, service: S.filter(s => s.mil >= 0).length, warMonths: W.warMonths, asked: W.asked, musterAsked: W.home, years: L.years, death: L.deathAge, arc: L.arc };
       }, [o, pers, engaged, !!P.enlist, name === 'soldier' ? 40 : YEARS]));
       process.stderr.write(`${name} ${i}: ${JSON.stringify(rows[rows.length - 1])}\n`);
     }
-    const served = rows.filter(r => r.service > 0), yrs = served.reduce((a, r) => a + r.service, 0), tsArmy = rows.reduce((a, r) => a + r.ts - r.levy, 0);
-    out.lives[name] = { lives: rows.length, metAny: rows.filter(r => r.ts > 0).length, metLevy: rows.filter(r => r.levy > 0).length, served: served.length,
-      servedMet: served.filter(r => r.ts - r.levy > 0).length, scenes: rows.reduce((a, r) => a + r.ts, 0), shortScenes: rows.reduce((a, r) => a + r.short, 0), metFull: rows.filter(r => r.ts - r.short > 0).length, servedAtWar: served.filter(r => r.warMonths > 0).length, askedAny: rows.filter(r => r.asked > 0).length, askedMet: rows.filter(r => r.asked > 0 && r.ts - r.levy > 0).length, levyAsked: rows.filter(r => r.levyAsked > 0).length, perDecadeOfService: yrs ? +(10 * tsArmy / yrs).toFixed(1) : null, serviceYears: yrs, rows };
+    const served = rows.filter(r => r.service > 0), yrs = served.reduce((a, r) => a + r.service, 0), tsArmy = rows.reduce((a, r) => a + r.ts - r.muster, 0);
+    out.lives[name] = { lives: rows.length, metAny: rows.filter(r => r.ts > 0).length, metMuster: rows.filter(r => r.muster > 0).length, served: served.length,
+      servedMet: served.filter(r => r.ts - r.muster > 0).length, scenes: rows.reduce((a, r) => a + r.ts, 0), shortScenes: rows.reduce((a, r) => a + r.short, 0), metFull: rows.filter(r => r.ts - r.short > 0).length, servedAtWar: served.filter(r => r.warMonths > 0).length, askedAny: rows.filter(r => r.asked > 0).length, askedMet: rows.filter(r => r.asked > 0 && r.ts - r.muster > 0).length, musterAsked: rows.filter(r => r.musterAsked > 0).length, perDecadeOfService: yrs ? +(10 * tsArmy / yrs).toFixed(1) : null, serviceYears: yrs, rows };
     console.log(name, JSON.stringify(Object.assign({}, out.lives[name], { rows: undefined })));
   }
 }

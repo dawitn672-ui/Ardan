@@ -119,7 +119,7 @@ export function drawHat(S, Hd, hat, pass, ctx = {}) {
     let fr = ''; for (let i = 0; i < 12; i++) { const x = lerp(-w + 6, w - 6, i / 11), a = H(x, -22 + (x / w) ** 2 * 3); fr += `M${pt(a)}v${6 + (i % 2) * 2}`; } S.line(fr, cloth(hat.band || 'crimson').b, 1.3);
     const t = H(0, top - 7); plume(S, t[0], t[1], 2, 22, hat.plume || '#3a3a44', { spread: .5, w: 6 }); return; }
   if (k === 'spangen' || k === 'kettle') {
-    // the northern helm: four plates riveted to a frame, a bar down the nose; a kettle hat is the levy's, a brim and no bar
+    // the northern helm: four plates riveted to a frame, a bar down the nose; a kettle hat is the conscript's, a brim and no bar
     const m = met(hat.m || 'iron'), b2 = met(hat.frame || 'bronze');
     S.form(blob([H(-w - 2, -17), H(-w - 2, -30), H(-w * .72, top - 3), H(0, top - 10), H(w * .72, top - 3), H(w + 2, -30), H(w + 2, -17), H(w * .5, -19), H(0, -19), H(-w * .5, -19)], [.4, 1, 1, 1, 1, 1, .4, 1, 1, 1]), m, { sh: 1.8, in: s => { s.fill(blob([H(6, top - 12), H(w + 4, top), H(w + 4, -14), H(w * .5, -18), H(w * .55, -38)], .9), m.s, .8); glint(s, [H(-w + 6, -24), H(-w + 9, -40), H(-w * .4, top - 3)], 3, m);
       for (const x of [-w * .5, 0, w * .5]) s.band([H(x * .1, top - 9), H(x * .8, -38), H(x, -20)], 3.4, { b: b2.b, k: b2.k, s: b2.s }, 'dots', b2.hi, { step: 7, edge: false });

@@ -236,7 +236,7 @@ A.foundRealm = function (pc, provIds, men) {
     cult: pc.cult,
     faith: pc.faith,
     army: Math.round(men * 0.8),
-    levy: Math.round(p0.pop * 0.01),
+    roll: Math.round(p0.pop * 0.01),
     armyQ: pc.company ? pc.company.quality : 0.85,
     income: Math.round(p0.pop * 0.12 + 500),
     stability: 45,
@@ -507,7 +507,7 @@ A.newBattleForPC = function (pc, warId, enemy, company) {
     myRealm = pc.company.contract || pc.realm;
   } else if (pc.ruler) {
     const r = A.realm(pc.ruler);
-    mine = Math.round(Math.min(r.army * 0.45 + r.levy * 0.1, 6e4));
+    mine = Math.round(Math.min(r.army * 0.45 + r.roll * 0.1, 6e4));
     myRealm = pc.ruler;
   } else {
     const lead = GD.MIL[Math.min(pc.mil.rank, GD.MIL.length - 1)].leads;
@@ -516,7 +516,7 @@ A.newBattleForPC = function (pc, warId, enemy, company) {
   }
   const er = A.realm(enemy);
   theirs = Math.round(mine * A.rf(0.65, 1.45));
-  if (er && theirs > er.army + er.levy * 0.3) theirs = Math.max(200, Math.round(er.army + er.levy * 0.3));
+  if (er && theirs > er.army + er.roll * 0.3) theirs = Math.max(200, Math.round(er.army + er.roll * 0.3));
   mine = Math.max(150, mine);
   theirs = Math.max(120, theirs);
   const place =
@@ -1289,8 +1289,8 @@ A.startCampaign = function (warId) {
     theirSide = side === "att" ? w.def : w.att,
     r = A.realm(myRealm);
   let myMen;
-  if (pc.ruler) myMen = Math.round(Math.min(r.army * 0.7 + r.levy * 0.2, 9e4));
-  else myMen = Math.round(Math.min(GD.MIL[pc.mil.rank].leads * A.rf(0.6, 0.9), r ? r.army * 0.6 + r.levy * 0.1 : 2e4));
+  if (pc.ruler) myMen = Math.round(Math.min(r.army * 0.7 + r.roll * 0.2, 9e4));
+  else myMen = Math.round(Math.min(GD.MIL[pc.mil.rank].leads * A.rf(0.6, 0.9), r ? r.army * 0.6 + r.roll * 0.1 : 2e4));
   myMen = Math.max(1500, myMen);
   const startProv = A.frontProv(mySide, theirSide) || A.prov(r && r.capitalProv != null ? r.capitalProv : pc.home);
   C.armies.push(A.campArmy(C, myRealm, side, myMen, r ? r.armyQ : 0.9, startProv.id, true, pc.id));
@@ -1298,7 +1298,7 @@ A.startCampaign = function (warId) {
     const rr = A.realm(rid);
     if (!rr || !rr.alive) continue;
     const s = w.att.includes(rid) ? "att" : "def";
-    let men = Math.round(rr.army * 0.6 + rr.levy * 0.15);
+    let men = Math.round(rr.army * 0.6 + rr.roll * 0.15);
     if (rid === myRealm) men = Math.max(0, men - myMen);
     if (!(rid === (s === "att" ? w.leadA : w.leadD))) men = Math.round(men * 0.4);
     const n = men > 3e4 ? 2 : men > 2e3 ? 1 : 0;
@@ -2218,7 +2218,7 @@ GD.BN = {
       arms: 60,
     },
     cat: "foot",
-    role: "Levy: farmers with spears. Numbers, not quality.",
+    role: "Conscript foot: farmers with spears, taken by lot. Numbers, not quality.",
   },
 };
 
@@ -2355,13 +2355,13 @@ GD.RDOC = {
       soft: 0.06,
     },
   },
-  levy: {
+  nation: {
     name: "Nation in Arms",
     cost: 40,
-    desc: "Every hamlet sends men: manpower pool +20%, levy and garrison troops +15% organization.",
+    desc: "Every parish keeps its roll: the roll +20%, conscript and garrison troops +15% organization.",
     fx: {
       mp: 0.2,
-      levyOrg: 0.15,
+      conscriptOrg: 0.15,
     },
   },
   iron: {
@@ -2917,7 +2917,7 @@ A.divMaxOrg = function (d) {
   const s = A.divS(d),
     g = A.divGen(d),
     D = A.rdoc(A.realm(d.r)),
-    lv = D.levyOrg && A.tplOf(d) && A.tplOf(d).bns.every(c => c === "LV" || c === "GA") ? D.levyOrg : 0,
+    lv = D.conscriptOrg && A.tplOf(d) && A.tplOf(d).bns.every(c => c === "LV" || c === "GA") ? D.conscriptOrg : 0,
     v =
       s.org * (0.75 + 0.25 * A.xpLevel(d.exp)[2] * 1.2) * (1 + (D.org || 0) + lv) +
       (g ? A.skill(g, "command") / 12 : 0),
@@ -3011,13 +3011,13 @@ A.divRefill = function (d, r, frac) {
     F = r.forces;
   let got = 0;
   const gap = Math.max(0, s.men - d.men);
-  if (gap > 0 && r.levy > 0) {
-    const add = Math.min(gap, Math.ceil(gap * frac * (1 + (s.fx.reinf || 0))), Math.floor(r.levy));
+  if (gap > 0 && r.roll > 0) {
+    const add = Math.min(gap, Math.ceil(gap * frac * (1 + (s.fx.reinf || 0))), Math.floor(r.roll));
     if (add > 0) {
       const keep = 0.15 + (s.fx.keepExp || 0) * 0.5;
       d.exp = (d.exp * d.men + Math.min(d.exp, 10 + keep * d.exp) * add) / (d.men + add);
       d.men += add;
-      r.levy -= add;
+      r.roll -= add;
       got += add;
     }
   }
@@ -3088,7 +3088,7 @@ A.forcesReconcile = function (r) {
       left -= A.divLose(d, Math.min(k, left));
     }
   } else {
-    r.levy += delta;
+    r.roll += delta;
     for (const d of r.forces.divs) A.divReinforce(d, r, 0.5);
   }
   A.forcesSync(r);
@@ -3321,7 +3321,7 @@ A.indMonth = function (r) {
   }
   if (((I.mDone = (I.mDone || 0) + 1), !A.atWar(r.id).length))
     for (const d of r.forces.divs) A.divReinforce(d, r, 0.25);
-  if (A.atWar(r.id).length && !(A.myRealm && A.myRealm() === r && !r.forces.auto)) A.emergencyLevy(r);
+  if (A.atWar(r.id).length && !(A.myRealm && A.myRealm() === r && !r.forces.auto)) A.emergencyMuster(r);
   for (const d of r.forces.divs)
     if (d.train > 0) {
       d.train = Math.max(0, d.train - 30);
@@ -3445,7 +3445,7 @@ A.trainDiv = function (r, tid) {
     if (t && t.order)
       return {
         ok: false,
-        msg: `${t.name} cannot be raised from the levy: it chooses its own members.`,
+        msg: `${t.name} cannot be raised from the roll: it chooses its own members.`,
       };
   }
   const s = A.tplS(r.id, tid);
@@ -3459,10 +3459,10 @@ A.trainDiv = function (r, tid) {
       ok: false,
       msg: "The drill yards are full (8 divisions in training).",
     };
-  if (r.levy < s.men)
+  if (r.roll < s.men)
     return {
       ok: false,
-      msg: `Not enough manpower: need ${A.fmt(s.men)}, have ${A.fmt(r.levy)}.`,
+      msg: `Not enough manpower: need ${A.fmt(s.men)}, have ${A.fmt(r.roll)}.`,
     };
   const cost = Math.round(s.men * 4 + s.cost * 6);
   if (r.treasury < cost)
@@ -3470,7 +3470,7 @@ A.trainDiv = function (r, tid) {
       ok: false,
       msg: `Raising it costs ${A.coin(cost)}.`,
     };
-  r.levy -= s.men;
+  r.roll -= s.men;
   r.treasury -= cost;
   const days = Math.round(90 + s.n * 6 + (s.cats.horse + s.cats.beast) * 12);
   r.forces.queue.push({

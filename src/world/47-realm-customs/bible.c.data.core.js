@@ -146,7 +146,7 @@
         fx: { coin: -5, happy: -1 }, keepT: 'Pay both and keep both receipts', keep: 'You hand over the second sack. The two receipts go in a box under the bed, in case either crown wins.',
         defy: { t: 'Wave the queen\'s receipt at the prince\'s men', r: 'The sergeant tears it in half and takes the sack anyway, with a boot for the insult.', fx: { health: -4, wil: 1 } },
         log: 'Both crowns take their grain after harvest; you keep both receipts.' },
-      { id: 'tes_forced_loan', name: 'The forced loan', kind: 'levy', who: 'adult',
+      { id: 'tes_forced_loan', name: 'The forced loan', kind: 'call', who: 'adult',
         rule: 'In war, whichever claimant holds your town takes a forced loan from every house, to be repaid after victory.',
         text: 'War again, which in the Neck means more of the same. A captain arrives with a list of houses and an iron-bound chest. Every house lends the crown a sum, to be repaid after victory. He does not say whose crown, and nobody asks whose victory.',
         fx: { coin: -8 }, keepT: 'Lend the sum and take the paper', keep: 'He writes you a bond under a seal you do not know. It goes in the box with the receipts.',

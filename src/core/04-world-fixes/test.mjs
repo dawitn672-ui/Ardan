@@ -19,7 +19,7 @@ export default {
       while (A.absDay() < end) { keepBroke(); A.advance(Math.min(30, end - A.absDay())); A.S.queue.length = 0; const pc = A.pc(); if (!pc.alive) { pc.alive = true; pc.health = 80; } }
       return { men0, divs0, before, after: R.forces.divs.length, army: R.army, income: R.income, upkeep0, stats: A.WF.stats, atWar: A.atWar(id).length };
     });
-    const ok = r.before <= r.divs0 && r.after < r.divs0 && r.army * 3.2 <= r.income * 0.9 + 5000 && r.stats.disbanded > 0 && r.stats.levyHeld + r.stats.refillHeld > 0;
+    const ok = r.before <= r.divs0 && r.after < r.divs0 && r.army * 3.2 <= r.income * 0.9 + 5000 && r.stats.disbanded > 0 && r.stats.rollHeld + r.stats.refillHeld > 0;
     return { ok, detail: `divisions ${r.divs0} -> ${r.before} broke for 11 months -> ${r.after} after the New Year; men ${r.men0} -> ${r.army}; host pay ${Math.round(r.army * 3.2)} against income ${r.income}; ${JSON.stringify(r.stats)}` };
   },
 

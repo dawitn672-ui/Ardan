@@ -65,18 +65,18 @@ test('noble pyramid: preferred seats start the marches and duchies, and the draw
 });
 
 test('elite orders fight like forces tens of times their size', () => {
-  const run = (eliteN, levyN, seed) => {
+  const run = (eliteN, conscriptN, seed) => {
     const rng = makeRng(seed);
     const A = makeArmy('Order', 0, [makeUnit(1, 'Order knights', 'order', eliteN, 20, { terror: 0.4, morale: 0.95 })]);
-    const B = makeArmy('Levies', 1, [makeUnit(2, 'Levy', 'levy', levyN, 1.0)]);
+    const B = makeArmy('Conscripts', 1, [makeUnit(2, 'Conscripts', 'conscript', conscriptN, 1.0)]);
     const camp = { armies: [A, B], battle: startBattle({}, 'open') };
     while (!camp.battle.over) battlePhase(rng, camp, { armyTactic: ['advance', 'advance'] });
     return camp.battle.winner === 0;
   };
   let w3k = 0, w12k = 0;
   for (let i = 0; i < 40; i++) { w3k += run(250, 3000, i); w12k += run(250, 12000, 100 + i); }
-  assert.ok(w3k >= 30, `250 elites vs 3,000 levies won ${w3k}/40`);
-  assert.ok(w12k <= 30, `but 12,000 levies can drown them (${w12k}/40 elite wins)`);
+  assert.ok(w3k >= 30, `250 elites vs 3,000 conscripts won ${w3k}/40`);
+  assert.ok(w12k <= 30, `but 12,000 conscripts can drown them (${w12k}/40 elite wins)`);
 });
 
 test('player choices move battle results at every rank', () => {
@@ -86,8 +86,8 @@ test('player choices move battle results at every rank', () => {
     for (let i = 0; i < 160; i++) {
       for (const [choice, inc] of [[lo, () => wl++], [hi, () => wh++]]) {
         const rng = makeRng(`${rank}:${i}`);
-        const A = makeArmy('A', 0, [makeUnit(1, 'Levy', 'levy', 3000, 1), makeUnit(2, 'MaA', 'maa', 600, 2.5)]);
-        const B = makeArmy('B', 1, [makeUnit(3, 'Levy', 'levy', 3100, 1), makeUnit(4, 'MaA', 'maa', 620, 2.5)]);
+        const A = makeArmy('A', 0, [makeUnit(1, 'Conscripts', 'conscript', 3000, 1), makeUnit(2, 'MaA', 'maa', 600, 2.5)]);
+        const B = makeArmy('B', 1, [makeUnit(3, 'Conscripts', 'conscript', 3100, 1), makeUnit(4, 'MaA', 'maa', 620, 2.5)]);
         const camp = { armies: [A, B], battle: startBattle({}, 'open') };
         while (!camp.battle.over) battlePhase(rng, camp, { armyTactic: ['advance', 'advance'], player: { rank, choice, person: { worth: rank === 'soldier' ? 2.5 : 6, judgment: 105, will: 110 } } });
         if (camp.battle.winner === 0) inc();
@@ -100,7 +100,7 @@ test('player choices move battle results at every rank', () => {
 
 test('after-action report names causes; outsiders only get rumours', () => {
   const rng = makeRng(3);
-  const A = makeArmy('A', 0, [makeUnit(1, 'Levy', 'levy', 2000, 1)]), B = makeArmy('B', 1, [makeUnit(2, 'Levy', 'levy', 1500, 1)]);
+  const A = makeArmy('A', 0, [makeUnit(1, 'Conscripts', 'conscript', 2000, 1)]), B = makeArmy('B', 1, [makeUnit(2, 'Conscripts', 'conscript', 1500, 1)]);
   const camp = { armies: [A, B], battle: startBattle({}, 'ford') };
   while (!camp.battle.over) battlePhase(rng, camp, {});
   const r = afterAction(camp); assert.ok(r.causes.length >= 1 && r.headline);

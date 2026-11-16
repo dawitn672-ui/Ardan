@@ -39,7 +39,7 @@ POL.openFief = function (r, h) {
   if (!C.length) return null;
   const share = Math.round(A.houseStrength(h) / 2);
   pol.fief = { h: h.id, from: A.S.year, due: A.absDay() + 60, cands: C, back: {}, share };
-  h.levy = Math.max(1, Math.round(A.houseStrength(h) - share));
+  h.men = Math.max(1, Math.round(A.houseStrength(h) - share));
   if (pc && pc.alive && pc.realm === r.id && (pcOk || POL.fiefBackers(r).some(b => b.p.id === pc.id) || POL.inCouncil(pc, r)) && A.EV.po_fief_vote) A.queue({ type: 'event', ev: 'po_fief_vote', ctx: { rid: r.id, houseT: h.name, realmT: r.short, cand: pcOk ? 1 : 0 } });
   return pol.fief;
 };
@@ -63,7 +63,7 @@ POL.closeFief = function (r) {
     A.log(`The crown grants you the forfeit lands of ${from ? from.name : 'a traitor house'}.`, 'crown');
   } else {
     const hh = w.house && A.S.houses[w.house];
-    if (hh) { hh.levy = Math.round((+hh.levy || A.houseStrength(hh)) + F.share); hh.op = clamp((hh.op != null ? hh.op : 50) + 10, 0, 100); }
+    if (hh) { hh.men = Math.round((+hh.men || A.houseStrength(hh)) + F.share); hh.op = clamp((hh.op != null ? hh.op : 50) + 10, 0, 100); }
     if (pc && pc.alive && F.cands.includes(pc.id) && A.EV.po_passed_over) A.queue({ type: 'event', ev: 'po_passed_over', ctx: { pid: w.id, rid: r.id, houseT: from ? from.name : 'the traitor house' } });
   }
   POL.offLog(r, { k: 'fief', who: w.id, h: F.h, lead, t });

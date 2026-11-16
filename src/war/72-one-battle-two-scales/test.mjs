@@ -12,7 +12,7 @@ const require = createRequire(import.meta.url);
 
 // in the page: frozen fights, a helper that restores one and takes the line, and one that answers a scene
 // 99997-v2-war replaces the soldier's line and the captain's company with v2's battle (V2_SPEC step 8); this scene is
-// still the levy's, and these tests reach the soldier's and captain's way into it through A.V2W.classic
+// still the muster's, and these tests reach the soldier's and captain's way into it through A.V2W.classic
 const SETUP = () => {
   window.CFN = k => (A.V2W && A.V2W.classic && A.V2W.classic[k]) || A.CHOICE_FN[k];
   window.TSX = {
@@ -240,7 +240,7 @@ export default {
     return { ok: !!r.line && front && r.inBook && r.panels, detail: `log: "${r.line}"; in the Chronicle ${r.inBook}; 34's three panels follow ${r.panels} (next: ${r.order})` };
   },
 
-  // a commoner whose home is fought over is called to the levy, and stands with the garrison beside neighbours;
+  // a commoner whose home is fought over is called to the muster, and stands with the garrison beside neighbours;
   // a soldier in garrison is asked for a draft to a division that is fighting; a captain's tactical battle is
   // followed by the fight's later days and its end; a fight over on its first day still gets its short scene
   async twoScalesOtherLives(pg) {
@@ -248,22 +248,22 @@ export default {
     const r = await pg.evaluate(() => {
       const out = {};
       const fights = TSX.get(10);
-      // the levy
+      // the muster
       const f = fights.find(x => !x.weAtt) || fights[0];
       TSX.load(f);
       let pc = A.pc(); const pid = +String(f.key).slice(1), F = A.S.fights[pid];
       const def = A.divsAt(pid).filter(d => A.hostile(F.a, d.r)), att = F.aIds.map(A.divById).filter(Boolean);
-      pc.mil = null; pc.home = pid; pc.realm = def[0].r; A.S.tsLevy = null;
+      pc.mil = null; pc.home = pid; pc.realm = def[0].r; A.S.tsMuster = null;
       A.wsPCFightStart(F, att, def);
-      const ask = A.S.queue.find(q => q.type === 'choice' && /levy/i.test(q.title || ''));
+      const ask = A.S.queue.find(q => q.type === 'choice' && /muster/i.test(q.title || ''));
       out.ask = ask ? ask.title : null;
       if (ask) {
         A.S.queue = [ask]; A.choiceChoose(0);
         const q = A.S.queue.find(x => x.type === 'mission' && x.m.ts);
-        out.levy = !!(q && q.m.ts.levy && q.m.ts.men.length === 3);
+        out.muster = !!(q && q.m.ts.muster && q.m.ts.men.length === 3);
         const calls = [], ap = A.RANKFX.apply; A.RANKFX.apply = function (k, l, p) { calls.push(l); return ap.apply(this, arguments); };
         try { A.S.queue = [q]; A.missionChoose(0); if (A.S.queue[0] === q) A.missionChoose(0); } finally { A.RANKFX.apply = ap; }
-        out.levyLayer = calls.join(','); out.noMilAfter = A.pc().mil == null;
+        out.musterLayer = calls.join(','); out.noMilAfter = A.pc().mil == null;
       }
       // the draft
       TSX.load(fights[0]); pc = A.pc();
@@ -312,7 +312,7 @@ export default {
       out.short = sq >= 0 && A.S.queue[sq].m.ts.short === 1 && A.S.queue[sq].m.stages.join() === 'ts_break' && (rk < 0 || sq < rk);
       return out;
     });
-    const ok = !!r.ask && r.levy && /^levy(,levy)*$/.test(r.levyLayer || '') && r.noMilAfter && r.draft && r.captainParked >= 1 && /company/i.test(r.captainScene || '') && r.short && r.pulled && r.outKept && r.outPanels === true;
+    const ok = !!r.ask && r.muster && /^muster(,muster)*$/.test(r.musterLayer || '') && r.noMilAfter && r.draft && r.captainParked >= 1 && /company/i.test(r.captainScene || '') && r.short && r.pulled && r.outKept && r.outPanels === true;
     return { ok, detail: JSON.stringify(r).slice(0, 700) };
   },
 

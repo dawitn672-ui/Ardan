@@ -135,11 +135,11 @@
         cool: 6,
         title: "One against nine",
         setup: (p,ctx)=>{const o=myOrder(p);ctx.who=o?/^the Knights of /.test(o.name)?"a "+o.name.replace(/^the Knights/,"Knight"):"one of "+o.name:"the best blade in your regiment",ctx.n=A.ri(7,10)},
-        text: (p,ctx)=>`Across the field ${ctx.who} has lost his horse. ${ctx.n} levy spearmen close around him. He does not run. A fighter like that can take seven or eight men like these at once, if his wind holds. You could help.`,
+        text: (p,ctx)=>`Across the field ${ctx.who} has lost his horse. ${ctx.n} conscript spearmen close around him. He does not run. A fighter like that can take seven or eight men like these at once, if his wind holds. You could help.`,
         choices: [
           {
             t: "Run to his side",
-            group: {n:(p,c)=>c.n,tier:1,allies:1,allyTier:4,who:"levy spearmen"},
+            group: {n:(p,c)=>c.n,tier:1,allies:1,allyTier:4,who:"conscript spearmen"},
             win: {r:"Back to back, you finish it. Afterwards he asks your name.",fx:{fame:3,merit:20}},
             lose: {r:"He goes down under the spears, and you barely get away.",fx:{}},
           },

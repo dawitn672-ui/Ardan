@@ -1702,7 +1702,7 @@
         cond: (p,C)=>C.realm(p,"POL-18")&&C.adult(p)&&C.male(p)&&!C.old(p)&&!C.noble(p)&&free(p),
         w: 1,
         cool: 7,
-        text: "March, when the levy is raised: never in flood or harvest, only from March to July. The Reed School of Marira sends a man to the village looking for boys who can shoot. The Ibis Archers fight from reed beds and boats, and Hapu the Reed trains them himself.",
+        text: "March, when the muster is raised: never in flood or harvest, only from March to July. The Reed School of Marira sends a man to the village looking for boys who can shoot. The Ibis Archers fight from reed beds and boats, and Hapu the Reed trains them himself.",
         choices: [
           {
             t: "Shoot for him at fifty paces from a rocking boat",
@@ -1712,24 +1712,24 @@
               fx: {skill:{bow:4,sea:1},gear:{ranged:"compbow"},flag:"ss_tm_ibis"},
             },
             lose: {
-              r: "You fall in. The village laughs for a season. You go to the spear levy instead.",
+              r: "You fall in. The village laughs for a season. You go to the spear muster instead.",
               fx: {skill:{bow:1,spear:2}},
             },
           },
           {
-            t: "Go to the spear levy like your father",
+            t: "Go to the spear muster like your father",
             r: "Spear drill on the dykes until July. You learn to hold a line and to curse in three nomes' accents.",
             fx: {skill:{spear:3,shield:1},sta:.4},
           },
           {
-            t: "Hide in the reeds until the levy-men leave",
+            t: "Hide in the reeds until the muster-men leave",
             check: {s:"stealth",s2:"survival",d:38},
             win: {
-              r: "Mosquitoes, mud and silence for three days. The levy-men count you as sick.",
+              r: "Mosquitoes, mud and silence for three days. The muster-men count you as sick.",
               fx: {skill:{stealth:2},honor:-2},
             },
             lose: {
-              r: "The levy-men know every reed bed. They know this one. You go to the spear levy, last in line.",
+              r: "The muster-men know every reed bed. They know this one. You go to the spear muster, last in line.",
               fx: {skill:{spear:2},honor:-2},
             },
           },
@@ -3416,7 +3416,7 @@
         cond: (p,C)=>C.realm(p,"POL-21")&&C.adult(p)&&!C.old(p),
         w: .8,
         cool: 9,
-        text: ()=>`A landing party has come ashore below the cinnamon forests: ${A.pick(["raiders from an Ambrel ship gone rogue","Ranpuri pepper smugglers who burned a drying shed","pirates from the Monsoon Coast"])}. The hill levies of spice gardeners fight only in defense, and they fight from the trees. Your headman hands out bows.`,
+        text: ()=>`A landing party has come ashore below the cinnamon forests: ${A.pick(["raiders from an Ambrel ship gone rogue","Ranpuri pepper smugglers who burned a drying shed","pirates from the Monsoon Coast"])}. The hill conscripts of spice gardeners fight only in defense, and they fight from the trees. Your headman hands out bows.`,
         choices: [
           {
             t: "Shoot from the trees",
@@ -5579,12 +5579,12 @@
         ],
       },
       {
-        id: "ss_rp_levy",
+        id: "ss_rp_muster",
         title: "After the rice harvest",
         cond: (p,C)=>C.realm(p,"POL-30")&&C.adult(p)&&C.male(p)&&!C.old(p)&&!C.noble(p)&&free(p),
         w: 1,
         cool: 6,
-        text: "The levy is called after the rice harvest and never in the monsoon. This year the Warden of the Nagora March wants men for the road forts, and the Miners of Tirpur, who brought down a tower of the Dwarf's Gate in 1084, are looking for strong backs who are not afraid of the dark.",
+        text: "The muster is called after the rice harvest and never in the monsoon. This year the Warden of the Nagora March wants men for the road forts, and the Miners of Tirpur, who brought down a tower of the Dwarf's Gate in 1084, are looking for strong backs who are not afraid of the dark.",
         choices: [
           {
             t: "Join the Miners of Tirpur",

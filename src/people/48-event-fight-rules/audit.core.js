@@ -34,7 +34,7 @@ const RX = FL.RX = {
   blow: /\b(cut (?:him|her|them|it|you|down|your|his)|kill|kills|killed|slay|slain|dead|blood|bloody|blade|sword|knife|stab\w*|wound\w*|blow|blows|punch\w*|fist|fists|wrestl\w*|throat|bleed\w*|beaten|beat (?:him|them|you|her)|knock\w*|struck|strike|hack\w*|gut|spear|arrow|bolt|cudgel|club|bite|bit|claws?|maul\w*|gore\w*|tusks?|fangs?|jaws|teeth|horn|broken (?:nose|arm|ribs|jaw|leg)|cracked|smash\w*|throws? (?:you|him|her)|thrown|floored|the ground|lance|pike)\b/,
   army: /\b(army|armies|battle|battlefield|regiments?|shield ?wall|the line|front rank|cavalry|the charge|siege|breach|ramparts?|sortie|ladders|vanguard|rearguard|warband|war band|enemy (?:line|lines|horse|foot|spearmen|camp|riders)|first wave|next wave|pike block|the press)\b/,
   // service in a war, read from the label only: a season under arms is fought in a crowd
-  service: /\b(sign on|for a season|a season of|campaign|muster|serve the crown|levy|march|volunteer for|marines|wave|pikes)\b/,
+  service: /\b(sign on|for a season|a season of|campaign|muster|serve the crown|conscripts?|the call|march|volunteer for|marines|wave|pikes)\b/,
   allies: /\b((?:at|to) (?:his|her|their|\{\w+\}) (?:shoulder|side)|your men|your squad|your file|your company|your lance|your riders|your crew|the crew|your friends?|your companions?|your brothers?|your sons?|the hunters|hunters with you|with the hunters|the villagers|the village|the guards with you|beside (?:you|\{\w+\})|at your side|together|your band|your party|your mates|your shield-?mates|your comrades|your fellows|the others|your cousins|your kin|with two others|three friends|with (?:them|\{\w+\}|tarn|him)|join|the beaters|the barge master|the court|the party|in the party|herders?|shepherds)\b/,
   party: /\b(hunting party|hunt is called|the hunt|ivory party|a party of|beaters|hounds? (?:have|bay)|the court|the whole village|expedition)\b/,
   alone: /\b(alone|by yourself|on your own|single-handed|single combat|one spear|no one else)\b/,
@@ -43,7 +43,7 @@ const RX = FL.RX = {
   child: /(?<![!\w])C\.(?:child|teen)\(/,
 };
 
-// what a foe is worth: the crowd tiers of GD.CROWD (1 levy or tough, 2 regular, 3 veteran, 4 elite, 5 master)
+// what a foe is worth: the crowd tiers of GD.CROWD (1 muster or tough, 2 regular, 3 veteran, 4 elite, 5 master)
 FL.TIERW = [
   [5, /\b(legend(?:ary)? (?:blade|sword|fighter)|master(?:s)? (?:swordsm[ae]n|blades?|of the sword|duelists?|fighters?)|blademasters?|sword-?saints?)\b/],
   [4, /\b(knights?|elite|champions?|order (?:brothers?|knights?)|master-at-arms|paladins?|templars?|the best (?:blade|sword|fighter)|bear guard|quickened)\b/],

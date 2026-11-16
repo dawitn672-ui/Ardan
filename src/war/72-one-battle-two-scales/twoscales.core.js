@@ -20,10 +20,10 @@
 //    from 38-orders), so drawing it reads plain data.
 //  - when it ends, 34-squad-and-front-panels' three panels follow (queued if 34's own spacing would have skipped them), and the
 //    story log gets a line that names a comrade and the front together, which the Chronicle (22) keeps.
-//  - a commoner whose home province is fought over is called to the levy (the honest equivalent for a life outside
+//  - a commoner whose home province is fought over is called to the muster (the honest equivalent for a life outside
 //    the army): the same fight, with neighbours for a squad and a smaller layer on the front.
 //
-// Engine side: A.CHOICE_FN.wsLine and .tsLevy start it; A.missionView, A.missionChoose, A.stageOutcome, A.missionFinish
+// Engine side: A.CHOICE_FN.wsLine and .tsMuster start it; A.missionView, A.missionChoose, A.stageOutcome, A.missionFinish
 // and A.missionClose are wrapped for a mission that carries m.ts; A.fightEnd notes the end; A.onDay brings the scene
 // back each day of the fight. Between days the mission waits in A.S.tsq (it holds no clock: the war goes on).
 (function () {
@@ -36,19 +36,19 @@
     LINES: 2,         // days of the line between the clash and the end, at most
     HIT: 0.5,         // a man beside you is hit in the arrow storm this often
     BLEED: 0.4,       // a man hit by an arrow and left where he fell dies of it this often
-    LEVY_GAP: 300,    // days between calls to the levy at least
+    MUSTER_GAP: 300,    // days between calls to the muster at least
     MAXRUN: 14,       // days the scene's "go on" runs the clock, at most, before it hands back
   };
-  // a count as the levy (a soldier) knows it: an estimate, never to the man (V2_SPEC complaint 10; 99997-v2-war's
-  // W.levyCount). Without 99997 in the build, the count itself.
-  TS.told = (n, mine) => (A.V2W && typeof A.V2W.levyCount === 'function' ? A.V2W.levyCount(n, mine) : A.fmt(Math.round(n || 0)));
+  // a count as the muster (a soldier) knows it: an estimate, never to the man (V2_SPEC complaint 10; 99997-v2-war's
+  // W.musterCount). Without 99997 in the build, the count itself.
+  TS.told = (n, mine) => (A.V2W && typeof A.V2W.musterCount === 'function' ? A.V2W.musterCount(n, mine) : A.fmt(Math.round(n || 0)));
   TS.ORD = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth'];
   TS.dayWord = n => TS.ORD[n - 1] || A.ordinal(n);
   TS.NUM = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
-  // the levy is a smaller layer on the front than a soldier's section: the town's men beside a garrison
-  if (A.RANKFX && A.RANKFX.LAYERS && A.RANKFX.LAYERS.line && !A.RANKFX.LAYERS.levy) {
+  // the muster is a smaller layer on the front than a soldier's section: the town's men beside a garrison
+  if (A.RANKFX && A.RANKFX.LAYERS && A.RANKFX.LAYERS.line && !A.RANKFX.LAYERS.muster) {
     const L = A.RANKFX.LAYERS.line;
-    A.RANKFX.LAYERS.levy = { name: 'the levy', theirs: r2(L.theirs * 0.6), ours: r2(L.ours * 0.6), fall: r2(L.fall * 0.6) };
+    A.RANKFX.LAYERS.muster = { name: 'the muster', theirs: r2(L.theirs * 0.6), ours: r2(L.ours * 0.6), fall: r2(L.fall * 0.6) };
   }
   // an officer's days after his tactical battle (44's 'part' layer moved the fight already on the first day): a quarter
   // of it. At half, the officer's best against his worst read 22.7 points on 150 fights, over the plan's band of 10-20
@@ -62,10 +62,10 @@
   TS.near = m => (m.ts.men || []).map(A.P).filter(p => p && p.alive && m.ts.state[p.id] !== 'back');
   TS.liveFight = m => { const F = (A.S.fights || {})[m.ts.pid]; return F && F.key === m.ts.key && F.start === m.ts.start ? F : null; };
   TS.realmOf = pc => (pc.mil ? pc.mil.realm || pc.realm : pc.realm);
-  // a soldier's army and its general's plan (38-orders), or the levy's (the army of the division it stands with)
+  // a soldier's army and its general's plan (38-orders), or the muster's (the army of the division it stands with)
   TS.armyOf = function (m, pc) {
     const G = A.GENERALS;
-    if (G && pc.mil && !m.ts.levy) { const f = G.armyFor(pc); if (f && f.a) return f.a; }
+    if (G && pc.mil && !m.ts.muster) { const f = G.armyFor(pc); if (f && f.a) return f.a; }
     const d = A.divById(m.ts.div);
     return d && d.army ? A.army(d.army) : null;
   };
@@ -129,7 +129,7 @@
   // ---- the drill (60-unit-drill): the division's own record, or what an officer drilled into his share of it -----------
   TS.drill = function (m, pc, k) {
     const D = A.DRILL;
-    if (!D || m.ts.levy) return m.ts.levy ? 0.05 : 0.4;
+    if (!D || m.ts.muster) return m.ts.muster ? 0.05 : 0.4;
     const mine = D.mine ? D.mine(pc) : null;
     if (mine && typeof mine[k] === 'number') return mine[k];
     const d = A.divById(m.ts.div);
@@ -164,7 +164,7 @@
   TS.STAGE.ts_arrows = function (m, pc) {
     const near = TS.near(m), mate = near[0], hurt = A.P(m.ts.hurt), fr = m.ts.front || { divs: [] };
     const ours = fr.divs.filter(d => d.ours && !d.gone), mi = ours.findIndex(d => d.me), nb = ours[mi - 1] || ours[mi + 1];
-    const day = TS.dayWord((fr.day || 1) + 1), unit = m.ts.levy ? 'the levy behind the ' + m.ts.divName : 'the ' + m.ts.divName;
+    const day = TS.dayWord((fr.day || 1) + 1), unit = m.ts.muster ? 'the muster behind the ' + m.ts.divName : 'the ' + m.ts.divName;
     const went = fr.share >= 0.56 ? 'Yesterday went your way; their dead are still lying where the line was.' : fr.share <= 0.44 ? 'Yesterday went theirs. The line is a hundred paces back from where it stood.' : 'Yesterday settled nothing.';
     const text = `The ${day} day at ${m.place}. ${went} You stand in the third rank of ${unit}, ${mate ? mate.given + ' at your shoulder' : 'with strangers on both sides'}. ` +
       (nb ? `The ${nb.n} has its standard up beside yours; past it there is only dust. ` : '') +
@@ -179,7 +179,7 @@
     ch.push(pc.mil && pc.mil.rank >= 2
       ? { t: 'Take the section up into the front rank', tag: 'front', check: ['command', 'wil'], diff: 50, pf: FX.front.pf, risk: FX.front.risk, hurt: 0.6,
         win: 'You push them up into the gaps and the front rank closes. Someone behind you cheers, and stops.', lose: 'Half of them follow you. The other half do not, and the front rank is ragged.', hint: 'Moves the line most. The men beside you go where you go.' }
-      : { t: m.ts.levy ? "Follow the garrison sergeant into the front rank" : 'Follow the sergeant into the front rank', tag: 'front', check: ['wil', 'sta'], diff: 48, pf: FX.front.pf, risk: FX.front.risk, hurt: 0.6,
+      : { t: m.ts.muster ? "Follow the garrison sergeant into the front rank" : 'Follow the sergeant into the front rank', tag: 'front', check: ['wil', 'sta'], diff: 48, pf: FX.front.pf, risk: FX.front.risk, hurt: 0.6,
         win: 'You fill a dead man\'s place in the front rank. The line there stops wavering.', lose: 'You reach the front rank as it buckles, and are carried back with it.', hint: 'Moves the line most. The men beside you go where you go.' });
     return { text, choices: ch };
   };
@@ -198,7 +198,7 @@
       pc.mil && pc.mil.rank >= 2
         ? { t: 'Rally the section on the standard', tag: 'rally', check: ['command', 'wil'], diff: 48, pf: FX.rally.pf, risk: FX.rally.risk, hurt: 0.5,
           win: 'They come in on your voice and the standard. The section is a fist again.', lose: 'Nobody can hear you over the noise.', hint: 'Moves the line, and keeps the section together.' }
-        : { t: m.ts.levy ? 'Stay with the garrison sergeant' : 'Go where the sergeant goes', tag: 'sarge', check: ['wil', 'ins'], diff: 42, pf: FX.sarge.pf, risk: FX.sarge.risk, hurt: 0.45,
+        : { t: m.ts.muster ? 'Stay with the garrison sergeant' : 'Go where the sergeant goes', tag: 'sarge', check: ['wil', 'ins'], diff: 42, pf: FX.sarge.pf, risk: FX.sarge.risk, hurt: 0.45,
           win: 'He knows where the line is weak before it knows. You plug two holes behind him.', lose: 'You lose him in the press and fight where you stand.', hint: 'His judgement, not yours. Steady, and never the most.' },
       { t: 'Break and run for the rear', tag: 'break', check: ['spd', 'sta'], diff: 45, pf: FX.break.pf, risk: FX.break.risk, hurt: 0.7, honor: [-4, -4],
         win: 'You get clear. Behind you the place where you stood is empty, and men are pouring through it.', lose: 'You turn, and a man on a horse is already there.', hint: 'Takes your part of the line with you. The others are left in it.' },
@@ -244,7 +244,7 @@
       pc.mil && pc.mil.rank >= 2
         ? { t: 'Rest the section in turns behind the line', tag: 'rest', check: ['command', 'int'], diff: 44, pf: FX.rest.pf, risk: FX.rest.risk, hurt: 0.2,
           win: 'Half sleep while half stand. By noon they are worth twice what they were.', lose: 'The ones you send back do not come forward again.', hint: 'Keeps the men alive. Moves little.' }
-        : { t: m.ts.levy ? 'Stay with the garrison sergeant' : 'Go where the sergeant goes', tag: 'sarge', check: ['wil', 'ins'], diff: 42, pf: FX.sarge2.pf, risk: FX.sarge2.risk, hurt: 0.4,
+        : { t: m.ts.muster ? 'Stay with the garrison sergeant' : 'Go where the sergeant goes', tag: 'sarge', check: ['wil', 'ins'], diff: 42, pf: FX.sarge2.pf, risk: FX.sarge2.risk, hurt: 0.4,
           win: 'He puts you where it matters, and you stay there.', lose: 'He is carried off with a cut head, and you stand on your own.', hint: 'His judgement, not yours. Steady.' },
     ];
     return { text, choices: ch };
@@ -323,14 +323,14 @@
     m.stages = ['ts_arrows', 'ts_clash', 'ts_break'];
     const men = o.men.slice(0, 3);
     m.ts = { v: 1, key: F.key, pid: F.loc, start: F.start, day: F.days, weAtt: weAtt ? 1 : 0, realm: o.realm, div: o.div, divName: d ? d.name : 'line',
-      layer: o.levy ? 'levy' : o.officer ? 'company' : 'line', levy: o.levy ? 1 : 0, officer: o.officer ? 1 : 0, men, state: {}, fell: [], perf: 0, lines: 0, rounds: [], front: null, prev: null, hurt: null, end: null, parked: 0 };
+      layer: o.muster ? 'muster' : o.officer ? 'company' : 'line', muster: o.muster ? 1 : 0, officer: o.officer ? 1 : 0, men, state: {}, fell: [], perf: 0, lines: 0, rounds: [], front: null, prev: null, hurt: null, end: null, parked: 0 };
     for (const id of men) m.ts.state[id] = 'ok';
     m.ts.front = TS.snap(m, F);
     if (TS.liveFight(m) && TS.mineGone(m)) TS.pullOut(m);
     TS.prepare(m);
     pc.tsN = (pc.tsN || 0) + 1;
     if (!TS.liveFight(m)) pc.tsShortN = (pc.tsShortN || 0) + 1;
-    if (o.levy) pc.tsLevyN = (pc.tsLevyN || 0) + 1;
+    if (o.muster) pc.tsMusterN = (pc.tsMusterN || 0) + 1;
     return m;
   };
   // the scene's dice that the view must not draw: who is hit in the arrow storm
@@ -388,14 +388,14 @@
     };
   }
 
-  // ---- the levy: a fight in your home province, for a life outside the army ---------------------------------------
-  TS.levyOk = function (pc, F, att, def) {
+  // ---- the muster: a fight in your home province, for a life outside the army ---------------------------------------
+  TS.musterOk = function (pc, F, att, def) {
     if (!pc || !pc.alive || pc.mil || pc.company || pc.prison || pc.ruler || F.menA + F.menD < TS.MEN) return false;
     if (!A.C.adult(pc) || A.age(pc) > 60 || pc.health < 35 || (pc.flags && pc.flags.unfree === 'slave')) return false;
     if (F.loc !== pc.home || A.S.tsq) return false;
     const mine = def.filter(d => A.friendly(d.r, pc.realm) || d.r === pc.realm);
     if (!mine.length || !att.length) return false;
-    if (A.S.tsLevy && A.absDay() - A.S.tsLevy < TS.LEVY_GAP) return false;
+    if (A.S.tsMuster && A.absDay() - A.S.tsMuster < TS.MUSTER_GAP) return false;
     return true;
   };
   TS.neighbour = function (pc) {
@@ -406,7 +406,7 @@
     c.quirk = A.pick(['keeps bees', 'owes you a sack of barley', 'sings in the choir', 'has never been past the market town', 'brought his father\'s old spear', 'came straight from the forge']);
     return c;
   };
-  TS.levyMen = function (pc) {
+  TS.musterMen = function (pc) {
     const out = [];
     const rel = Object.entries(pc.rel || {}).map(([id, r]) => [A.P(id), r]).filter(([p]) => p && p.alive && p.id !== pc.id && p.home === pc.home && A.C.adult(p) && A.age(p) <= 60)
       .sort((a, b) => (b[1].op || 0) - (a[1].op || 0) || (a[0].id < b[0].id ? -1 : 1));
@@ -414,33 +414,33 @@
     while (out.length < 3) out.push(TS.neighbour(pc).id);
     return out;
   };
-  A.CHOICE_FN.tsLevy = function (arg) {
+  A.CHOICE_FN.tsMuster = function (arg) {
     try {
       const pc = A.pc(), F = arg && (A.S.fights || {})[arg.pid];
       if (pc && !F && !A.S.tsq && TS.ended(arg.key)) {
         const E = TS.ended(arg.key), d = E.F.dIds.map(A.divById).filter(x => x && (A.friendly(x.r, pc.realm) || x.r === pc.realm)).sort((a, b) => b.men - a.men)[0];
-        if (d) { TS.beginEnded(pc, E, { div: d.id, realm: d.r, enemy: E.F.a, men: TS.levyMen(pc), levy: true }); return; }
+        if (d) { TS.beginEnded(pc, E, { div: d.id, realm: d.r, enemy: E.F.a, men: TS.musterMen(pc), muster: true }); return; }
       }
       if (!pc || !F || F.key !== arg.key || A.S.tsq) { A.log('The fighting is over before you reach the walls.'); return; }
       const mine = F.dIds.map(A.divById).filter(d => d && d.loc === F.loc && (A.friendly(d.r, pc.realm) || d.r === pc.realm)).sort((a, b) => b.men - a.men)[0];
-      if (!mine) { A.log('The garrison has gone before the levy can join it.'); return; }
-      const m = TS.begin(pc, F, { div: mine.id, realm: mine.r, enemy: F.a, men: TS.levyMen(pc), levy: true });
+      if (!mine) { A.log('The garrison has gone before the muster can join it.'); return; }
+      const m = TS.begin(pc, F, { div: mine.id, realm: mine.r, enemy: F.a, men: TS.musterMen(pc), muster: true });
       A.queue({ type: 'mission', m });
-    } catch (e) { console.error('two scales levy', e); }
+    } catch (e) { console.error('two scales muster', e); }
   };
   const fightStart = A.wsPCFightStart;
   A.wsPCFightStart = function (F, att, def) {
     const r = fightStart.apply(this, arguments);
     try {
       const pc = A.pc();
-      if (TS.levyOk(pc, F, att, def)) {
-        A.S.tsLevy = A.absDay();
+      if (TS.musterOk(pc, F, att, def)) {
+        A.S.tsMuster = A.absDay();
         const P = A.S.prov[F.loc], d = def.filter(x => A.friendly(x.r, pc.realm) || x.r === pc.realm).sort((a, b) => b.men - a.men)[0];
-        A.queue({ type: 'choice', now: true, title: `The levy at ${P.name}`,
+        A.queue({ type: 'choice', now: true, title: `The muster at ${P.name}`,
           text: `${A.realmShort(F.a)} come over the fields at ${P.name}. The bell rings and keeps ringing: every grown soul who can hold a spear is called to stand with the ${d.name}, ${TS.told(F.menD, true)} against ${TS.told(F.menA, false)}.`,
-          options: [{ t: 'Take a spear and stand with the levy', fn: 'tsLevy', arg: { key: F.key, pid: F.loc } }, { t: 'Bar the door and keep your people close', fn: 'noop' }] });
+          options: [{ t: 'Take a spear and stand with the muster', fn: 'tsMuster', arg: { key: F.key, pid: F.loc } }, { t: 'Bar the door and keep your people close', fn: 'noop' }] });
       }
-    } catch (e) { console.error('two scales levy ask', e); }
+    } catch (e) { console.error('two scales muster ask', e); }
     return r;
   };
 
@@ -560,8 +560,8 @@
   TS.chronicle = function (m, pc) {
     const e = m.ts.end || {}, fell = (m.ts.fell || [])[0], near = TS.near(m)[0] || (m.ts.men || []).map(A.P).find(p => p && p.alive);
     const line = e.won === 1 ? (m.ts.weAtt ? 'and the line went forward' : 'and the line held') : e.out ? 'on the day your line was pulled back' : e.won === 0 ? 'on the day the line gave way' : 'and nobody could say who had the field';
-    const unit = m.ts.levy ? `the levy beside the ${m.ts.divName}` : `the ${m.ts.divName}`;
-    if (fell) return `At ${m.place}, on the ${TS.dayWord(fell.day)} day, ${fell.n} fell beside you in ${unit}, ${line}.` + ((m.ts.fell || []).length > 1 ? ` ${A.cap(TS.NUM[m.ts.fell.length - 1] || String(m.ts.fell.length - 1))} more of ${m.ts.levy ? 'your neighbours' : 'your section'} did not come back.` : '');
+    const unit = m.ts.muster ? `the muster beside the ${m.ts.divName}` : `the ${m.ts.divName}`;
+    if (fell) return `At ${m.place}, on the ${TS.dayWord(fell.day)} day, ${fell.n} fell beside you in ${unit}, ${line}.` + ((m.ts.fell || []).length > 1 ? ` ${A.cap(TS.NUM[m.ts.fell.length - 1] || String(m.ts.fell.length - 1))} more of ${m.ts.muster ? 'your neighbours' : 'your section'} did not come back.` : '');
     const days = e.day > 1 ? ' ' + (TS.NUM[e.day] || e.day) + ' days' : '';
     if (near) return `At ${m.place} you stood${days} in ${unit} with ${near.given} at your shoulder, ${line}.`;
     return `At ${m.place} you stood in ${unit}, ${line}.`;

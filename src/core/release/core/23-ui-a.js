@@ -1575,7 +1575,7 @@ UI.courtTabBasic = function (pc) {
     <button class="act" data-a="act" data-v="plot_throne" ${A.canAct("plot_throne")[0] ? "" : "disabled"}><div class="an">Plot for the throne</div><div class="ad">Treason, if it fails.</div></button></div>`;
   h += `<div class="group-h">The ladder (Part 12)</div><table class="t small"><tr><th>Rung</th><th>Holds</th></tr>${GD.NOBLE_RUNGS.slice()
     .reverse()
-    .map(x => `<tr><td>${x.title}</td><td>${A.fmt(x.income)} suns/yr, levy ${A.fmt(x.levy)}</td></tr>`)
+    .map(x => `<tr><td>${x.title}</td><td>${A.fmt(x.income)} suns/yr, men owed ${A.fmt(x.men)}</td></tr>`)
     .join("")}</table>`;
   return h;
 };

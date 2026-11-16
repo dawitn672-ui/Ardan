@@ -106,17 +106,17 @@ A.defEvents([
       { t: 'Buy it, whatever it costs', req: p => !swHas(p), r: p => (p.coin < 120 ? 'It costs a hundred and twenty, which is more than you have, so it costs everything you have and a promise besides. Kestrel comes home in a sack.' : swAt(p) === 'kin' ? "You pay {them}'s hundred, and twenty more for {theirHis} pride. Kestrel comes home in a sack." : 'It costs a hundred and twenty and a sleepless night. Kestrel comes home in a sack.'), fx: { coin: -120, happy: 4, arc: { mark: 'ao_sw_bid' } } },
       { t: 'Let the knight have it', req: p => !swHas(p), r: 'The knight buys it and rides south. Kestrel leaves {home} for the first time in a lifetime, and the song goes with it.', fx: { happy: -1, wil: 1, arc: { mark: 'ao_sw_letgo' } } },
     ] },
-  { id: 'ao_sword_5', title: 'The levy at the ford', trigger: true, cool: 1,
+  { id: 'ao_sword_5', title: 'The muster at the ford', trigger: true, cool: 1,
     cond: (p, C) => C.adult(p),
     text: p => (swHas(p)
-      ? `Raiders come over the hills, and the levy is called to the ford below {home}. Kestrel hangs on your wall.${M(p, 'ao_sw_refused') ? ' You refused three hundred for it.' : M(p, 'ao_sw_bid') ? ' It cost you a hundred and twenty to get it back.' : ''} A sword with a song draws eyes in a fight, and not only friendly ones.${M(p, 'ao_sw_truth') ? " The monk's page says the enemy's smiths made it. It is still sharp." : ''}`
-      : `Raiders come over the hills, and the levy is called to the ford below {home}. ${swAt(p) === 'knight' ? 'The knight who bought Kestrel rides at its head, with the hawk at his hip.' : 'Kestrel rides at its head, on a hip that is not yours.'}${M(p, 'ao_sw_sold') ? ' You sold it to him yourself.' : M(p, 'ao_sw_letgo') ? ' You let him have it.' : ''} The raiders will cross at the ford, if they cross.`),
+      ? `Raiders come over the hills, and the muster is called to the ford below {home}. Kestrel hangs on your wall.${M(p, 'ao_sw_refused') ? ' You refused three hundred for it.' : M(p, 'ao_sw_bid') ? ' It cost you a hundred and twenty to get it back.' : ''} A sword with a song draws eyes in a fight, and not only friendly ones.${M(p, 'ao_sw_truth') ? " The monk's page says the enemy's smiths made it. It is still sharp." : ''}`
+      : `Raiders come over the hills, and the muster is called to the ford below {home}. ${swAt(p) === 'knight' ? 'The knight who bought Kestrel rides at its head, with the hawk at his hip.' : 'Kestrel rides at its head, on a hip that is not yours.'}${M(p, 'ao_sw_sold') ? ' You sold it to him yourself.' : M(p, 'ao_sw_letgo') ? ' You let him have it.' : ''} The raiders will cross at the ford, if they cross.`),
     choices: [
       { t: 'Carry Kestrel in the line', req: p => swHas(p), check: { s: 'melee', s2: 'wil', d: 50 },
         win: { r: 'You hold your stretch of the bank. Afterwards men you do not know point at the hawk on your guard, and then at you.', fx: { fame: 4, honor: 2, arc: { mark: 'ao_sw_blooded' } } },
         lose: { r: "The line holds. Your arm does not: a raider's axe opens it from wrist to elbow, and Kestrel comes home cleaner than you do.", fx: { fame: 2, wound: 'scar_arm', arc: { mark: 'ao_sw_blooded' } } } },
       { t: 'Leave it on the wall and take a spear', req: p => swHas(p), r: 'You fight with a spear like everyone else and come home with everyone else. Kestrel is where you left it.', fx: { happy: 2, arc: { mark: 'ao_sw_wall' } } },
-      { t: 'Go with the levy, and watch the hawk', req: p => !swHas(p), check: { s: 'ins', s2: 'spd', d: 50 },
+      { t: 'Go with the muster, and watch the hawk', req: p => !swHas(p), check: { s: 'ins', s2: 'spd', d: 50 },
         win: { r: 'The knight goes down in the ford with an arrow in his throat. You reach Kestrel before his squire does, and say nothing about it after.', fx: { happy: 3, honor: -2, arc: { mark: 'ao_sw_mud' } } },
         lose: { r: 'The knight goes down in the ford. In the press you lose sight of the sword, and when the water clears it is gone.', fx: { health: -8, arc: { mark: 'ao_sw_gone' } } } },
       { t: 'Stay home this once', req: p => !swHas(p), r: 'You stay home. The raiders turn back at the ford, and the knight comes home a hero, with the sword.', fx: { happy: 1, wil: 1, arc: { mark: 'ao_sw_home' } } },

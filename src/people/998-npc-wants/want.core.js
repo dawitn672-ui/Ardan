@@ -61,7 +61,7 @@
     return { text: s, full: `${nameOf(t)} ${s}.`, src: 'nature' };
   };
   // the tier chip stays where fighting is the point: a soldier, or a rival or enemy of yours
-  const ARMED = /soldier|guard|sergeant|captain|archer|spear|knight|man-at-arms|mercenar|warden|levy/i;
+  const ARMED = /soldier|guard|sergeant|captain|archer|spear|knight|man-at-arms|mercenar|warden|muster/i;
   PW.keepTier = (pc, t) => !!(t && (t.mil || ARMED.test(t.occ || '') || (pc.rel && pc.rel[t.id] && FOES.has(pc.rel[t.id].type))));
   PW.chip = function (pc, t) {
     const w = PW.of(pc, t); if (!w) return '';

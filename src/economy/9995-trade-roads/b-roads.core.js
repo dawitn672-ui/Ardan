@@ -408,7 +408,7 @@
   };
   TR.ledgerYear = function (r) {
     const L = r && TR.LEDGER[baseId(r.id)]; if (!L || !(r.income > 0)) return { army: 0, notes: 0 };
-    const paid = (r.army || 0) * 3.2 + (r.levy || 0) * 0.05, want = r.income * 0.92 * (L.army || 0);
+    const paid = (r.army || 0) * 3.2 + (r.roll || 0) * 0.05, want = r.income * 0.92 * (L.army || 0);
     const army = Math.max(0, Math.round(want - paid));
     const notes = L.notes ? Math.max(0, Math.round((r.treasury || 0) * L.notes * (L.fall || 0))) : 0;
     return { army, notes };

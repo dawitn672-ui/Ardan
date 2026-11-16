@@ -405,13 +405,13 @@
     if (mine) {
       const inc = r.income * (0.6 + r.stability / 250) * (1 + council(r, 'treasurer', p) / 400);
       parts.push([`Income at ${L('realmStab', r.id, 'stability')} ${r0(r.stability)}, with the treasurer`, inc]);
-      parts.push(['Army and levy upkeep', -(r.army * 3.2 + r.levy * 0.05)]);
+      parts.push(['Army and roll upkeep', -(r.army * 3.2 + r.roll * 0.05)]);
       if (r.debt) parts.push(['Interest (9%)', -r.debt * 0.09]);
       parts.push([`Court (${L('lifestyle', '', 'living')} ×2)`, -A.LIFESTYLE[p.lifestyle || 'lavish'].cost * 2]);
       const bld = Object.values(r.bldUpkeep || {}).reduce((a, b) => a + b, 0); if (bld) parts.push(['Buildings', -bld]);
     } else {
       parts.push(['Income less waste', r.income * 0.92]);
-      parts.push(['Army and levy upkeep', -(r.army * 3.2 + r.levy * 0.05)]);
+      parts.push(['Army and roll upkeep', -(r.army * 3.2 + r.roll * 0.05)]);
       if (r.debt) parts.push(['Interest (8%)', -r.debt * 0.08]);
     }
     const net = parts.reduce((a, x) => a + Math.round(x[1]), 0);

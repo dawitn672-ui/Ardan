@@ -91,7 +91,7 @@
   // ---- names
   const PLURAL = { SP: 'Spears', PK: 'Pikes', HI: 'Foot', AX: 'Axes', LI: 'Light Foot', XB: 'Crossbows', LB: 'Longbows', AR: 'Bows', EA: 'Elven Bows',
     SL: 'Slings', HC: 'Lances', MC: 'Horse', LC: 'Light Horse', HA: 'Horse Archers', CM: 'Camel Riders', OR: 'Relay Riders', EL: 'Elephants', GI: 'Giants',
-    MR: 'Marines', GA: 'Garrison', LV: 'Levy', SC: 'Scouts', EN: 'Engineers' };
+    MR: 'Marines', GA: 'Garrison', LV: 'Conscript foot', SC: 'Scouts', EN: 'Engineers' };
   CO.troopWord = c => PLURAL[c] || (GD.TROOPS[c] ? GD.TROOPS[c].name.replace(/^.*—\s*/, '').replace(/^./, x => x.toUpperCase()) : c);
   const provName = h => { const P = A.S && A.S.prov && A.S.prov[h]; return P ? P.name : 'the Marches'; };
   CO.bnName = function (d, i) {
@@ -826,7 +826,7 @@
       const n = b.k[s];
       CO.WHY = 'turn';
       try { A.divLose(d, n); } finally { CO.WHY = null; }
-      const R = foe && A.realm(foe); if (R) R.levy = (R.levy || 0) + n;
+      const R = foe && A.realm(foe); if (R) R.roll = (R.roll || 0) + n;
       CO.stats.turned++;
       if (CO.mineBn(d, i) && pc && pc.alive) CO.queueEv('co_turncoat', { capn: c.name, pid: c.pid || null, coy: CO.coName(d, i, s, true), foe: foe ? A.realmShort(foe) : 'the other side' });
       else if (A.WC && A.WC.put) A.WC.put('turn', { p: d.loc, a: d.r, b: foe, n, x: CO.coName(d, i, s), w: CO.whoKey(d, i, s, c) });

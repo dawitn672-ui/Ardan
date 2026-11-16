@@ -940,7 +940,7 @@ GD.TIERS = [
     k: "t1",
     n: "Brawler",
     min: 40,
-    d: "A green levy, a street tough, a hunter with a knife. Dangerous to the untrained; two or three of them make one soldier.",
+    d: "A green conscript, a street tough, a hunter with a knife. Dangerous to the untrained; two or three of them make one soldier.",
   },
   {
     k: "t2",
@@ -1518,7 +1518,7 @@ A.STAFF = {
     skill: "command",
     s2: "siegecraft",
     lvl: 3,
-    eff: "Holds your castle and drills your levy.",
+    eff: "Holds your castle and drills your muster.",
   },
   factor: {
     label: "Factor",

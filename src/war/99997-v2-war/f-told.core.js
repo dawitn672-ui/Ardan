@@ -10,8 +10,8 @@
 //   - 64-npc-beliefs: a battle you were not part of is not one you "know" (NB.pcKnows), and the record's own line
 //     where you do know it (NB.recordLine: the belief cards, the Tales, the Chronicle, a scene putting you right)
 //     gives the counts as your rank would know them, not to the man.
-//   - 72-one-battle-two-scales' levy (its call to arms, the front's words, the standards, the day's tally) gives estimates: a
-//     levy is a soldier (TS.told, read there).
+//   - 72-one-battle-two-scales' muster (its call to arms, the front's words, the standards, the day's tally) gives estimates: a
+//     muster is a soldier (TS.told, read there).
 //   - The commander's battle (the release's battle modal, 9997-companies' panel, 60-unit-drill's tags): his own side
 //     exactly, the enemy's as an estimate, morale and drill in words, not 0-100.
 // Everything here is pure: the hearsay dice are v2's makeRng seeded from the game's seed and the entry, nothing is
@@ -145,8 +145,8 @@
     };
   }
 
-  // ---- 72-one-battle-two-scales' levy: a levy is a soldier (72 reads this when it is there) ------------------------------------
-  W.levyCount = (n, mine) => (Math.round(n || 0) <= 0 ? 'none' : W.told(n, W.rank() || 'soldier', mine));
+  // ---- 72-one-battle-two-scales' muster: a muster is a soldier (72 reads this when it is there) ------------------------------------
+  W.musterCount = (n, mine) => (Math.round(n || 0) <= 0 ? 'none' : W.told(n, W.rank() || 'soldier', mine));
 
   // ---- the commander's battle: his own side exactly, the enemy's an estimate, morale and drill in words -------------
   // rounds first, as the release's side line does (Math.round(A.avgMorale)), so a popover handed the unrounded average

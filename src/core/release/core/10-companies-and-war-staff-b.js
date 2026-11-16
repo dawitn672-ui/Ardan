@@ -1,21 +1,21 @@
 // The release's core, companies and war staff (part 2 of 2): Free companies, seizing land, battle ends, armies and the war staff's raising and mobilising.
 // Readable source of vendor/ardan-b593143.html with the patch layer baked in (X1, docs/DECISIONS.md D-028). Edit it here.
-// Defines: A.emergencyLevy, A.disbandDiv, A.TPL_XP, A.tplEdit, A.provLocalSupply, A.supplyNeighbours, A.supplyBase,
+// Defines: A.emergencyMuster, A.disbandDiv, A.TPL_XP, A.tplEdit, A.provLocalSupply, A.supplyNeighbours, A.supplyBase,
 // A.sameArr, A.supScratch, A.supplyMap, A.supplyRoute, A.supplyInfo, A.divSupUse, A.forcesYear, A.forcesAI,
 // A.cmdRole, A.lineSet, A.fxAct, A.setStance, A.WS, A.armyDivs, A.armyMen, A.armiesOf, A.army, A.armiesAt, A.divsAt,
 // A.hostile, A.friendly, A.relAll, A.relSig, A.relMemo, A.wsDist, A.wsPath, A.adjacent, A.ARMY_NAMES, A.wsNewArmy,
 // A.wsGeneralFor, A.armySync, A.wsRaise, A.wsMobilize, wsMobilizeNow.
 
-A.emergencyLevy = function (r) {
+A.emergencyMuster = function (r) {
   const F = r.forces,
     L0 = LORE.realms[r.id],
     base = ((L0 ? L0.army : r.army0 || r.army || 2e3) * (r.provPop || 1)) / (r.basePop || 1);
-  if (r.army >= base * 0.35 || r.levy < 1500) return;
+  if (r.army >= base * 0.35 || r.roll < 1500) return;
   let t = Object.values(F.tpl).find(x => x.kind === "garrison");
   if (!t) {
     const lv = A.wsTroopsFor(r.id).includes("LV") ? "LV" : "SP";
     t = A.tplAdd(r, {
-      name: "Levy Host",
+      name: "Conscript Host",
       bns: Array(6).fill(lv),
       sup: [],
       kind: "garrison",
@@ -26,7 +26,7 @@ A.emergencyLevy = function (r) {
     ps = A.realmProvs(r.id).filter(p => !p.occ),
     loc = r.capitalProv != null && !A.S.prov[r.capitalProv].occ ? r.capitalProv : (ps[0] || {}).id;
   if (loc == null) return;
-  const n = Math.min(3, Math.floor(r.levy / s.men));
+  const n = Math.min(3, Math.floor(r.roll / s.men));
   for (let i = 0; i < n; i++) {
     const d = A.newDiv(r, t.id, loc, {
       str: 1,
@@ -34,22 +34,22 @@ A.emergencyLevy = function (r) {
       eqf: 0,
       org: 0.7,
     });
-    r.levy -= d.men;
+    r.roll -= d.men;
     for (const k in s.eq) {
       const take = Math.min(s.eq[k], Math.floor(r.ind.stock[k] || 0));
       d.eq[k] = take;
       r.ind.stock[k] -= take;
     }
-    // [X1 baked patch events/994-careers CAR-LEVY-LOG] Calling out a realm's levies logged one line per division ("the
+    // [X1 baked patch events/994-careers CAR-MUSTER-LOG] Calling out a realm's musters logged one line per division ("the
     // 92nd ... gathers", "the 93rd ... gathers"), a dozen in one autumn. It now logs one line per realm a month, with
-    // the count (A.levyLog).
+    // the count (A.musterLog).
     const pc = A.pc();
     if (pc && (pc.realm === r.id || pc.ruler === r.id)) {
-      if (A.levyLog) A.levyLog(r, d, loc);
-      else A.log(`${r.short} calls out the levies: the ${d.name} gathers at ${A.provName(loc)}.`, "war");
+      if (A.musterLog) A.musterLog(r, d, loc);
+      else A.log(`${r.short} calls out its musters: the ${d.name} gathers at ${A.provName(loc)}.`, "war");
     }
   }
-  if (n) A.news(`${r.short} calls out its levies.`, "war");
+  if (n) A.news(`${r.short} calls out its musters.`, "war");
   A.forcesSync(r);
 };
 
@@ -61,7 +61,7 @@ A.disbandDiv = function (d) {
   }
   const r = A.realm(d.r);
   if (r) {
-    r.levy += Math.round(d.men * 0.8);
+    r.roll += Math.round(d.men * 0.8);
     A.divRemove(d);
     A.forcesSync(r);
   }
@@ -413,7 +413,7 @@ A.forcesYear = function (r) {
         y: A.S.year,
         out: I.out,
         army: r.army,
-        levy: r.levy,
+        roll: r.roll,
         divs: r.forces.divs.length,
       },
     ])
@@ -439,12 +439,12 @@ A.forcesYear = function (r) {
   if (law.needExh && !A.atWar(r.id).length) I.law = "war";
   if (law.war && !A.atWar(r.id).length && A.chance(0.5) && !(A.myRealm && A.myRealm() === r)) I.law = "partial";
   const L0 = LORE.realms[r.id],
-    lawMul = A.LEVY && r.laws && r.laws.levy != null ? A.LEVY[r.laws.levy][1] : 1,
+    lawMul = A.CONSCRIPT_LAW && r.laws && r.laws.conscript != null ? A.CONSCRIPT_LAW[r.laws.conscript][1] : 1,
     cap =
-      (((L0 ? L0.levy : r.levy0 || (r.levy0 = Math.max(r.levy, r.army * 3))) * (r.provPop || 1)) / (r.basePop || 1)) *
+      (((L0 ? L0.roll : r.roll0 || (r.roll0 = Math.max(r.roll, r.army * 3))) * (r.provPop || 1)) / (r.basePop || 1)) *
       lawMul;
-  r.levyCap = Math.round(cap * (1 + (A.rdoc(r).mp || 0)));
-  r.levy = Math.round(r.levy + (r.levyCap - r.levy) * (r.levy < r.levyCap ? 0.2 : 0.1));
+  r.rollCap = Math.round(cap * (1 + (A.rdoc(r).mp || 0)));
+  r.roll = Math.round(r.roll + (r.rollCap - r.roll) * (r.roll < r.rollCap ? 0.2 : 0.1));
   r.forces.xp = Math.min(200, r.forces.xp + 2 + r.forces.divs.length * 0.15);
   const pc = A.pc();
   if (((pc && pc.ruler === r.id && !r.forces.auto) || A.forcesAI(r), !A.atWar(r.id).length)) {
@@ -512,7 +512,7 @@ A.forcesAI = function (r) {
     for (let k = 0; k < 4 && r.army + F.queue.reduce((a, q) => a + q.men, 0) < base * 0.92; k++) {
       const tid = A.wpick(tids, t => F.tpl[t].share || 1),
         s = A.tplS(r.id, tid);
-      if (!(s && r.levy > s.men * 2 && r.treasury > s.men * 6) || !A.trainDiv(r, tid).ok) break;
+      if (!(s && r.roll > s.men * 2 && r.treasury > s.men * 6) || !A.trainDiv(r, tid).ok) break;
     }
   else if (r.army > base * 1.4 && F.divs.length > 1 && !war) {
     const d = F.divs.slice().sort((a, b) => a.men - b.men)[0];
@@ -537,7 +537,7 @@ A.forcesAI = function (r) {
     const sh = A.compShares(r.id),
       horse = sh.filter(([c]) => GD.BN[c] && GD.BN[c].cat === "horse").reduce((a, x) => a + x[1], 0),
       bow = sh.filter(([c]) => GD.BN[c] && GD.BN[c].cat === "missile").reduce((a, x) => a + x[1], 0);
-    F.doc = horse > 0.25 ? "shock" : bow > 0.3 ? "volley" : A.pick(["plan", "iron", "levy"]);
+    F.doc = horse > 0.25 ? "shock" : bow > 0.3 ? "volley" : A.pick(["plan", "iron", "nation"]);
     F.xp -= GD.RDOC[F.doc].cost;
   }
   if (F.xp > 40 && A.chance(0.12) && tids.length) {
@@ -726,7 +726,7 @@ A.fxAct = function (key, arg) {
     case "cancelTrain": {
       const q = r.forces.queue[arg];
       return q
-        ? ((r.levy += q.men),
+        ? ((r.roll += q.men),
           r.forces.queue.splice(arg, 1),
           {
             ok: true,

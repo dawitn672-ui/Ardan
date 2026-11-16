@@ -60,7 +60,7 @@ export default {
       out.warCards = /War score|Elsewhere/.test(tab); out.peaceLie = /is at peace/.test(tab); out.roomBtn = /warRoomView/.test(tab);
       UI.worldView = 'wars'; const wv = UI.TAB.world(pc); out.worldWars = A.S.wars.filter(w => wv.includes(w.name)).length;
       // three years: battle news of these wars never reaches the news; rumours do
-      // (counted only while he is outside every war: the levy or a draft may put him in one)
+      // (counted only while he is outside every war: the muster or a draft may put him in one)
       let battleNews = 0, rumours = 0, wrong = 0, outside = 0;
       const seen = new Set(), news0 = A.news;
       A.news = function (t, c) { const k = A.S.news.length; const r = news0.apply(this, arguments); if (c === 'battle' && A.S.news.length > k && !A.V2W.inWar()) { battleNews++; out.bn = String(t).slice(0, 120); } return r; };
@@ -195,9 +195,9 @@ export default {
     return { ok, detail: `${r.length} scenes: ${r.map(x => x.labels.join(' / ')).slice(0, 2).join(' || ')}` };
   },
 
-  // elite orders: 150-350 members each worth 14-26 levies, in v2's battle and in the division simulator (12-45 there: the
+  // elite orders: 150-350 members each worth 14-26 conscripts, in v2's battle and in the division simulator (12-45 there: the
   // simulator adds each order's own bonuses on top, such as the Last Door's +45% defence); 250 of them
-  // break 3,000 levies; joining takes three trials
+  // break 3,000 conscripts; joining takes three trials
   async v2wOrders(pg) {
     const r = await pg.evaluate(() => {
       T.enter({ seed: 7320, race: 'human', realm: 'POL-01', status: 'noble', sex: 'M', startAge: 24 });
@@ -205,7 +205,7 @@ export default {
       const VW = A.V2.war, rng = A.V2.rng.makeRng('v2w-orders');
       let w3 = 0;
       for (let i = 0; i < 20; i++) {
-        const camp = { armies: [VW.makeArmy('Order', 0, [VW.makeUnit(1, 'Knights', 'order', 250, A.V2W.orderWorth('iron_wolf'), { terror: A.V2W.orderTerror('iron_wolf'), morale: 0.95 })]), VW.makeArmy('Levy', 1, [VW.makeUnit(2, 'Levy', 'levy', 3000, 1)])], battle: VW.startBattle({}, 'open') };
+        const camp = { armies: [VW.makeArmy('Order', 0, [VW.makeUnit(1, 'Knights', 'order', 250, A.V2W.orderWorth('iron_wolf'), { terror: A.V2W.orderTerror('iron_wolf'), morale: 0.95 })]), VW.makeArmy('Conscripts', 1, [VW.makeUnit(2, 'Conscripts', 'conscript', 3000, 1)])], battle: VW.startBattle({}, 'open') };
         while (!camp.battle.over) VW.battlePhase(rng, camp, { armyTactic: ['advance', 'advance'] });
         w3 += camp.battle.winner === 0;
       }
@@ -215,8 +215,8 @@ export default {
       const t = A.V2W.trialFor(pc, id);
       return { list, w3, trials: t.results.length, labels: t.results.map(x => x.label) };
     });
-    const ok = r.list.length >= 5 && r.list.every(o => o.members >= 150 && o.members <= 350 && o.worth >= 14 && o.worth <= 26 && o.levies >= 10 * o.members && (o.sim == null || (o.sim >= 12 && o.sim <= 45))) && r.w3 >= 15 && r.trials === 3;
-    return { ok, detail: `${r.list.map(o => `${o.id} ${o.members} x ${o.worth} = ${o.levies} levies (sim ${o.sim})`).join(', ')}; 250 knights beat 3,000 levies ${r.w3}/20; trials: ${r.labels.join(', ')}` };
+    const ok = r.list.length >= 5 && r.list.every(o => o.members >= 150 && o.members <= 350 && o.worth >= 14 && o.worth <= 26 && o.conscripts >= 10 * o.members && (o.sim == null || (o.sim >= 12 && o.sim <= 45))) && r.w3 >= 15 && r.trials === 3;
+    return { ok, detail: `${r.list.map(o => `${o.id} ${o.members} x ${o.worth} = ${o.conscripts} conscripts (sim ${o.sim})`).join(', ')}; 250 knights beat 3,000 conscripts ${r.w3}/20; trials: ${r.labels.join(', ')}` };
   },
 
   // drawing the scene changes neither the state nor the random stream, and shows no percentage
@@ -288,7 +288,7 @@ export default {
   },
   // playtest round 1: leaving the field ends the step; the call to battle and the reckoning give numbers by rank; an
   // outsider's map has no other war's divisions or fights; World > Wars says your realm is at war without you; the
-  // captain's choices are rated against the unit he faces and differ; the orders' page reads 14-26 levies a member
+  // captain's choices are rated against the unit he faces and differ; the orders' page reads 14-26 conscripts a member
   async v2wRound1(pg) {
     await prep(pg);
     const r = await pg.evaluate(() => {
@@ -389,7 +389,7 @@ export default {
     const ok = r.knowsNb === null && r.knowsHome === true && /about [\d,]+ men in the field, about [\d,]+ dead/.test(r.line) && !/22,222|3,333/.test(r.line);
     return { ok, detail: `a neighbour's battle he had no part in: known ${r.knowsNb}; one at his door: known ${r.knowsHome}, the record "${r.line}"` };
   },
-  // playtest 2, finding 5 and playtest 1's 4: the levy is told estimates (its call, the front, the standards, the
+  // playtest 2, finding 5 and playtest 1's 4: the muster is told estimates (its call, the front, the standards, the
   // day's tally); the commander's battle has his own side exactly, the enemy's as an estimate, morale and drill in
   // words
   async v2wRankCounts(pg) {
@@ -397,15 +397,15 @@ export default {
     const r = await pg.evaluate(() => {
       const out = {};
       const exactIn = t => (String(t).replace(/(about|some) [\d,]+/g, '').match(/\b\d{1,3}(,\d{3})+\b/g) || []);
-      // the levy
+      // the muster
       const fs = VWX.get(6);
       for (const f of fs) {
         const { pc, F } = VWX.load(f, 0); const pid = +String(f.key).slice(1);
         const def = A.divsAt(pid).filter(d => A.hostile(F.a, d.r)), att = F.aIds.map(A.divById).filter(Boolean);
         if (!def.length) continue;
-        pc.mil = null; pc.home = pid; pc.realm = def[0].r; A.S.tsLevy = null;
+        pc.mil = null; pc.home = pid; pc.realm = def[0].r; A.S.tsMuster = null;
         A.wsPCFightStart(F, att, def);
-        const ask = A.S.queue.find(q => q.type === 'choice' && /levy/i.test(q.title || ''));
+        const ask = A.S.queue.find(q => q.type === 'choice' && /muster/i.test(q.title || ''));
         if (!ask) continue;
         out.ask = ask.text; out.askExact = exactIn(ask.text);
         A.S.queue = [ask]; A.choiceChoose(0);
@@ -486,7 +486,7 @@ export default {
     const ok = !!r.ask && /about [\d,]+ against about [\d,]+/.test(r.ask) && !r.askExact.length && !r.frontExact.length && !r.sceneExact.length && r.slips.length > 0 && r.slips.every(s => !/^\d{1,3}(\.\d)?k$|^\d{3,}$/.test(s) || /^~/.test(s)) &&
       /(about [\d,]+|a handful|none) of yours dead/i.test(r.log) && !/\b\d{1,3}(,\d{3})+\b/.test(r.log.replace(/(about|some) [\d,]+/gi, "")) && r.cmd && !L.enemyExact && L.ownExact && !L.morale && !L.drill && r.pure &&
       S.length === 3 && E.phase === 'end' && /bDead/.test(E.tips) && /bWing/.test(S[1].tips) && E.ownShown && S.every(x => !x.leaked.length && !x.morale.length && x.moAgree) && r.edgeWord && r.formsOk;
-    return { ok, detail: `levy call: "${(r.ask || '').slice(-60)}"; front: "${(r.front || '').slice(0, 160)}"; standards ${JSON.stringify((r.slips || []).slice(0, 6))}; tally "${r.log}"; ` +
+    return { ok, detail: `muster call: "${(r.ask || '').slice(-60)}"; front: "${(r.front || '').slice(0, 160)}"; standards ${JSON.stringify((r.slips || []).slice(0, 6))}; tally "${r.log}"; ` +
       `commander: enemy exact ${L.enemyExact}, own exact ${L.ownExact}, a morale number ${L.morale}, a drill number ${L.drill}; pure ${r.pure} ` +
       S.map(x => `; ${x.when} (${x.phase}; tips ${x.tips}): enemy exact ${JSON.stringify(x.leaked)} of ${JSON.stringify(x.theirs)}, own dead ${x.ownDead} shown ${x.ownShown}, morale numbers ${JSON.stringify(x.morale)}, popover morale ${x.moTips} agrees ${x.moAgree}`).join('') +
       `; edge word ${r.edgeWord}; the log's last line "${r.line}", shown "${E.shown}"; its other forms ${JSON.stringify(r.forms)}` };

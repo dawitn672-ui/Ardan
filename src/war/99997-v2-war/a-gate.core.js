@@ -36,9 +36,9 @@
     const rid = W.side(pc);
     return rid && A.atWar ? A.atWar(rid) : [];
   };
-  // a levy called out at home (72-one-battle-two-scales) stands in the fight while the scene runs
-  W.inLevy = () => !!(A.S && ((A.S.tsq && A.S.tsq.m && A.S.tsq.m.ts && A.S.tsq.m.ts.levy) || (A.S.queue || []).some(q => q && q.type === 'mission' && q.m && q.m.ts && q.m.ts.levy)));
-  W.inWar = function (pc) { return W.myWars(pc).length > 0 || W.inLevy(); };
+  // a muster called out at home (72-one-battle-two-scales) stands in the fight while the scene runs
+  W.inMuster = () => !!(A.S && ((A.S.tsq && A.S.tsq.m && A.S.tsq.m.ts && A.S.tsq.m.ts.muster) || (A.S.queue || []).some(q => q && q.type === 'mission' && q.m && q.m.ts && q.m.ts.muster)));
+  W.inWar = function (pc) { return W.myWars(pc).length > 0 || W.inMuster(); };
   // the War Room by post (D10, D-052; owner order 5, "war screens only when deployed, on a mission, or the situation
   // allows"). It was the room of anyone who served (a private in garrison, in peace, read the whole theatre). Now:
   //  - the crown keeps it in peace and war: the host is its to run (W1-1: there is no Marshal);
@@ -171,7 +171,7 @@
   W.newsOk = function (text) {
     if (W._F) return W.fightsIn(W._F.F.war);
     const wars = W.myWars();
-    if (!wars.length) return W.inLevy();
+    if (!wars.length) return W.inMuster();
     const names = new Set();
     for (const w of wars) for (const r of w.att.concat(w.def)) { const n = A.realmShort(r); if (n) names.add(n); }
     const t = String(text || '');
