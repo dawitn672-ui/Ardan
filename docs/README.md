@@ -18,6 +18,7 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [VERSIONS.md](VERSIONS.md) | Every version of the game, its commit, and how to play any of them |
 | [NAMES.md](NAMES.md) | Old names and new names from the naming pass, so old notes can be followed |
 | [IDEAS.md](IDEAS.md) | Ideas, cut features and things for later |
+| [IOS_ROADMAP.md](IOS_ROADMAP.md) | The end goal (order 62): the route to the iPhone App Store (Capacitor 8, Codemagic, TestFlight), the owner's facts re-checked, what only the owner can do, and the code audited against the build rules |
 
 ## v2 (`v2/`)
 
@@ -41,8 +42,10 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [design/characters.md](design/characters.md) | Character design: faces, bodies and dress (C8a) |
 | [design/c8d-gate1.md](design/c8d-gate1.md) | C8d gate 1, for the owner: profile cards in his manhwa reference style (orders 56 to 58, D-068): what is shown, the choices, order 58 checked against the sheet, the cost, how it would go in. Sheets and their generator: `design/demo-2d/c8d/` |
 | [design/war.md](design/war.md) | D12a, revised as D12a-2: war as a visual simulation (theatre, field, press); command without a Marshal, the lords' own armies, conscription, why wars start and end, reports, upheavals, the military path, the sixteen build stages (D-064) |
+| [design/r1-audit.md](design/r1-audit.md) | R1 (W1-2, D-069): the decisions now made through `A.WHY` and the bare-dice decisions left, with file, line and the reasons each should use (`tools/lint-reasons.mjs` counts them) |
 | [design/growth.md](design/growth.md) | G design: 17 stats, thousands of skills, hundreds of fighting styles, legendary arts |
 | [design/growth-standard.md](design/growth-standard.md) | G0: the growth standard (order 54, "growth is far too linear"): today's growth measured over nine bot lives, the research, and the rules G and D11+ build on (the practice curve, quality of effort, teachers, age, plateaus and trials, disuse, the body by age, a reason for every change); scripts and `curves.svg` in `design/growth/` |
+| [design/skills.md](design/skills.md) | S1a: skills with levels and experience (order 63, D-072): what is removed with the proficiencies, the 28 skills and their specialisms, 35 levels, experience, concepts, proof and breakthroughs, what moves growth with the life, checks and effects, the page, migration, and S1b's files, budgets, tests, lints and stages. Its model, data and chart are in `design/skills/` (`model.mjs`, `lives.mjs`, `chart.mjs`, `skills.json`, `lives.svg`) |
 | [design/economy-and-items.md](design/economy-and-items.md) | E1 and E2 design: markets that run themselves, hundreds of weapons, unique items |
 | [design/legendaries/legendaries.md](design/legendaries/legendaries.md) | Ten legendary arms, one from each of ten realms (orders 36 and 52): the page and its plates, how pieces, arts and forms are named, the redrawn bow; and `ordinary.png`, the game's ordinary arms before and after order 52 |
 | [design/reference/](design/reference/README.md) | The owner's reference pictures for character art (D-029) |
@@ -60,6 +63,7 @@ A name that is no longer here was renamed in the naming pass: look it up in [NAM
 | [research/player-complaints.md](research/player-complaints.md) | What players complain about in games like Ardan, and where Ardan stands |
 | [research/world-foundations.md](research/world-foundations.md) | Building an Asia-sized Ardan from the ground up |
 | [research/c7-name-data.md](research/c7-name-data.md) | Name data for the cultures (work item C7), with its data in `c7-name-data.json` |
+| [research/ios/](research/ios/) | The iPhone audit's probes: `tap-probe.mjs` (44-point targets at 375×667, Chromium or WebKit) and `webkit-boot.mjs` (the one-file page in WebKit: CSP, blob worker, a save) |
 | [research/d11-military-branches.md](research/d11-military-branches.md) | Military branches and battlefield strategy (work item D11), with its data in `d11-military-branches.json` |
 | [research/codex-review.md](research/codex-review.md) | Review of the old Ardan Codex (the Far Lands, 1105; kept as `research/ardan-codex-old.html`): what it holds, what is outdated, what is useful for R1, D11+, G, E1 (H-066) |
 | [research/codex/reasons-and-cracks.md](research/codex/reasons-and-cracks.md) | From the Codex: how great powers hold together and crack, a catalogue of reasons for war (for R1 and W1-6) |

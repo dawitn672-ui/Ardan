@@ -1306,6 +1306,56 @@ R14); hosts of contingents (D12b-1).
 flatter. This layer follows order 57 (the later order); D-029's layer is kept, not removed.
 **Cost:** see H-063. **Not decided here:** whether it goes into the game (the gate), and how the remaining peoples map to families.
 
+### D-069 · W1-2: minds; one way of deciding, where it lives, how the dice became decisions (2026-11-16; order 54, D-062; D-064 point 9)
+D-064 point 9 set the shape (`A.WHY.decide`, reasons with kind, weight and source, the temper, feelings with a cause and a
+heat, a seeded draw only between close options, a record). Chosen in building it:
+1. **The logic is a v2 engine module** (`src/people/engine/why.js`, `A.V2.why`), pure and unit-tested under `node --test`
+   (the owner's two lab kings are tests there); **the wiring is a readable feature** (`src/people/9999950-why`, `A.WHY`):
+   the persona, the person's feelings, `A.rand`, the log in `A.S.why`. *Why:* the lab tests need no browser and no world;
+   the game's state and dice stay in the game's layer; the engine module can serve the v2 kit too.
+2. **Weights are log-odds.** +1 makes an option e times likelier in a draw; a reason's weight is the log of the factor
+   the release's odds already used (its temper, the Generals' count, bad blood, a cause, rivals, the feud ledger, 68's plan
+   and moment, infamy, unsettled lands, a sworn pact). So a decision that hears the same reasons goes about as the old
+   roll went, and the reasons shown are the reasons used. *Why:* "calibrate, then add": the world's war count is held by
+   tests and the balance league.
+3. **The band is a parameter of the decision** (in log units): 1.5 by default, 3 for war (a crown's question of war is
+   the most uncertain; an option within a factor of about 20 of the best stays possible), 1.5 for faction choices, 0.3
+   for naming a General (merit nearly settles it). An option outside the band is never chosen; inside it, the draw is
+   weighted by e^score. *Why:* the owner's "chance among reasons, never instead of them" with the old pace kept.
+4. **The temper bends kinds of reason, not outcomes** (insult by pride, grudge by wrath and pride, reckoning and fear by
+   caution, coin by greed, duty, debt and loyalty by honour, kin by warmth, faith by zeal, ambition, want and claim by
+   ambition); its axes are 20's persona plus ambition from the traits. **Hotness** (wrath and pride against patience and
+   caution) sets how far a feeling's heat discounts the reckoning, at most 85%; a cold man's not at all.
+5. **The live war decision is v2 diplomacy's `DV.tryWar`.** Found in building: with v2 diplomacy on (the default), the
+   release's `A.aiWarCheck` is muted inside the monthly turn, and every war a crown starts comes from `DV.tryWar` after
+   v2's `monthTick` names a hostile month. Both now decide through `A.WHY`: `DV.tryWar` past its rest and weariness gates
+   (its nerve gate is now the reckoning: short of the edge his temper wants, the count weighs so heavily that only heat
+   carries a war), with v2's own seeded stream for the draw (`A.rand` untouched, as v2 diplomacy promised);
+   `A.aiWarCheck` as a yearly council for each crown (its month fixed by its id) and at once when a hot wrong calls it.
+   v2's `monthTick` naming a hostile month stays a roll (the occasion, not the decision): listed in the audit for W1-6.
+   The peace weight in `DV.tryWar` is `DV.WAR.p`'s old pace plus `A.WHY.T.peaceOcc` (0.2), set so wars per world held
+   within the seeds' spread (H-064).
+6. **Feelings are lit by the release's incidents** (an envoy shamed, a border fight, a raid, ships seized, a spy, a
+   murder, a defector, an elopement, preachers stoned) and by a lost war; one at heat 0.8 or more calls the wronged
+   crown's council at once (through `DV.tryWar` with him as the one who would declare). At most four a person; only
+   the people who carry them are cooled each month (`A.S.whyHot`, at most 400).
+7. **The record is bounded per kind** (150 in all; war 60, faction 50, appoint 20, other 20; rule 21; about 70 KB of a save at most) and kept on the
+   war (`w.why`) for as long as the war; a "wait" or "stay" is not recorded (nothing happened).
+8. **The player is told what his place lets him know:** a reason is public (an insult, bad blood, a cause, a rivalry, a
+   pact) or the council's (the count of spears, the ruler's temper, the cost); the news gives the public reasons to all
+   and the rest to the realm's ruler and councillors. No numbers.
+9. **A lint, a heuristic, with a baseline that may only fall** (`tools/lint-reasons.mjs`, `tests/reasons-baseline.json`):
+   a roll that decides a war, peace, faction, revolt, appointment, alliance, claim or succession, read from the names
+   of the functions around it and from what it guards. 72 before W1-2, 66 after. A reviewed exception is marked
+   `lint-reasons: ok (why)`.
+**Conflict recorded:** none with an order. With `docs/design/war.md` §11.4: it names the log "20's `S.aiLog`, widened";
+the records are their own bounded `A.S.why` instead (20's log is shown as before and receives a war's record reasons),
+because §15 and order 62 (rule 21) want nothing that grows without bound and `S.aiLog` entries have another shape.
+**Not decided here:** the seeded streams `seed:politics` / `seed:war` of D-064 (the war uses v2 diplomacy's stream;
+the rest `A.rand`); the remaining 66 (W1-3 to W1-6, `docs/design/r1-audit.md`). Whether more wars declared at under even
+strength (11 to 31 in three 40-year test worlds, H-064; above the ruler's nerve or for a feeling) is right: W1-5 and the
+balance stage (D12b-7) judge it.
+
 ### D-070 · Order 59: growth has no timetable; concepts, grasp, discipline and breakthroughs (2026-11-15 23:12 ET; amends D-067)
 The growth standard's fixed timetable (an ordinary talent at Master in about 27 years of full-time drill) is dropped.
 Passing a word needs its named **concepts grasped**; each person has a seeded, hidden **grasp** per concept (some come at
@@ -1315,4 +1365,102 @@ pride and despair; **breakthroughs** are sudden grasps tied to a named moment, l
 same training one man is Master in five years and another stuck for life. Every turn has its cause in the ledger (rule
 18). The curve R(level) stays as the pace between turns. `docs/design/growth-standard.md` §3.16 (and rule 2 of its
 summary). Builds in G1/G2 and D11+. (D-069 is left to W1-2.)
+
+### D-072 · S1a: proficiencies retired; skills with levels, experience, concepts and breakthroughs (owner order 63, 2026-11-15 23:21 ET; design 2026-11-16; builds on D-046, D-067, D-070)
+**Owner:** "im no longer a fan of the proficiencies system its very bland. systematically remove it and refine a system of
+skills with levels and expierience. dynamic growth mechanics". **Design:** `docs/design/skills.md`, model `docs/design/skills/`.
+1. **One quantity.** A skill has a **level** (0 to 35: the eight words of growth.md §2.2, Beginner to Legend, in five
+   steps each; Myth for the dead) and **experience** toward the next step. A check reads the level's value on today's
+   0-100 scale at growth.md's word edges; there is no number beneath it. `p.skills[k]` stays as a mirror of that value,
+   written only by the engine, so 349 readers and 5,695 checks keep working. *Why:* "nothing may survive as a hidden
+   number", and no card's shape changes.
+2. **28 broad skills with 99 specialisms**, the keys the player sees today; the ten keys folded earlier (dagger, xbow,
+   lance, siegecraft…) are specialisms, for NPCs too. No new skill until it has five readers (69's rule). A specialism
+   acts two steps higher inside it, one lower in a sibling, and costs ×0.85 outside it.
+3. **Experience is the growth standard's formula as a price:** ten for a month of plain drill; a step costs
+   `120 × (e^(b/21.6) − e^(a/21.6))`. The daily drip, the 0.3 a month, the use-and-practice weights, the 6% session
+   "breakthrough" and the two-year rust are removed; sources are efforts with a quality and a cause.
+4. **No word by experience alone** (D-070 built in): nine named concepts a skill (252, in data); a person's need for
+   each is a hash (ease by skill and by concept, talent, a chance of a lifelong blind spot); each worked month is a
+   chance of insight; experience at an edge is stored (at half without the concept) and lands as a leap; breakthroughs
+   are sudden grasps at named moments, an eighth as likely against a blind spot. The page shows concept states in
+   words (dark, dim, clearer, close, grasped), never a number.
+5. **Proof from Expert up** (confirms D-067 item 3 as the *name* of the crossing): a succeeded stretch at the next word.
+6. **Growth moves with the life:** discipline (unbroken months), a rival, a teacher who holds the concept, a new land,
+   wounds, age, rest, purpose, company, comfort, kin skills, hours shared, specialism, pride; each a factor written in
+   the ledger with the gain it changed.
+7. **Kept from growth.md:** the words, talent letters (per skill, shown, from `p.apt`, until G1), the body's baseline
+   (C9), disuse, knacks (the 114 perks, at the crossings into Advanced, Expert, Master), arts and their forms untouched
+   (rank words only). **Cut from S1** (G3, G4, E2): narrow skills by rule, marks, fusion, the failed first try, manuals.
+8. **Other people:** one number as now, the same rules in closed form once a year, concepts by hash; at most 24 active
+   people stepped monthly; a teacher shows only what he grasped.
+**Conflicts recorded, and the fix chosen.**
+- *The census.* D-043 item 1 (order 36) dropped the caps on Grandmasters and Legends ("no count limit"); D-067 item 3
+  said the census of ten and one "stands". **Chosen:** order 36 holds: the census is a **count** the world keeps and
+  shows, never a cap; rarity comes from what the top takes, and a long test bounds it (1 to 12 Grandmasters, 0 to 2
+  Legends alive over 200 years), tuned by the concepts' needs. For the owner to overrule.
+- *Levels outside combat.* D-043 item 6 kept the ranks for fighting and wanted other callings without a grade ladder;
+  order 63 (later) asks for "a system of skills with levels". **Chosen:** every skill has the eight words; D-043's ban
+  on step-like *career* ladders stands untouched. For the owner to overrule.
+- *Hidden numbers.* §3.16's grasp is hidden by design; order 63's removal must leave nothing the player cannot reason
+  about. **Chosen:** the need is never shown as a number and is never a stored stat; its state is always on the page
+  in words, and a Master's judgement names it.
+- *Check odds.* growth.md §2.8 wanted G2 to move no check's odds; levels in steps move some by up to 6.4 in 100
+  downward at migration (the remainder goes on the bar). Accepted for a level that is the only number.
+- *Event text is read as text:* renaming `C.prof` to `C.lvl` and `C.apt` to `C.talent` in the packs is done with
+  `tools/release/identity-probe.mjs` before and after.
+**Not decided here:** talent's hiding and budget (G1), languages as skills (G3), the image-model work (order 60).
+
+### D-071 · Order 62: the route to the App Store is Capacitor 8 (SPM), Codemagic, TestFlight; not Appflow, not EAS (2026-11-16 03:30 ET)
+**Chosen** (owner order 62, rule 21; research and sources in `docs/IOS_ROADMAP.md`, the how-to in
+`.claude/skills/ios-capacitor-release`): the one-file web game is wrapped in **Capacitor 8** (today 8.6.2, Node 22+,
+Xcode 26+, the iOS project made with **Swift Package Manager**, `ios/App/App.xcodeproj`, no CocoaPods); built, signed
+(Codemagic's automatic signing with the owner's App Store Connect API key) and uploaded by **Codemagic** on its cloud Mac
+from the GitHub repo, with a hand-started workflow in `codemagic.yaml`; tested through **TestFlight**; then App Review.
+**Not chosen:** Ionic Appflow (no new customers since 2025-02-11, access ends 2027-12-31); Expo EAS Build (made for Expo
+and React Native; nothing documented for Capacitor); a Mac of our own (the owner has none); CocoaPods (no longer
+Capacitor's default; one more tool on the build machine). **Why:** the only route that needs no Mac, keeps the game one
+web page, and uses each vendor's documented path. **The owner's six facts** were re-checked 2026-11-16: 1, 2 and 5
+confirmed (with additions: Capacitor 8.5 adopted UIScene for Xcode 27; saves are too big for Preferences); 3 confirmed for
+Appflow, a nuance for EAS; 4 confirmed for Safari from iOS 17, unverified inside WKWebView; 6 confirmed for 4.2, while
+offline, no selection, no zoom and no bounce are practice rather than guideline text (kept as rules). **Revisit:** when
+Capacitor 9 is stable (it needs Xcode 27 and iOS 16) and when Apple posts an Xcode 27 deadline.
+
+### D-075 · The iPhone build's shape (2026-11-16 03:30 ET; with D-071)
+1. **The shell lives in `app/`**, a Capacitor project of its own (`app/package.json`, `app/capacitor.config.ts`,
+   `app/ios/`, `app/www/` ignored by git). The game's `package.json`, CI and tests stay as they are; SPM's
+   `Package.swift` points at the plugins in `app/node_modules` by relative path. The iOS project is made and kept on Linux
+   (`npx cap add ios` works without a Mac, checked) and committed; Codemagic only syncs and builds.
+2. **`www/` is the one-file page first** (`node tools/build.mjs --out=app/www/index.html`), exactly what CI tests; a split
+   build (plain script files, `script-src 'self'`, the worker as a file) only if a TestFlight build misses the load
+   budget on a real iPhone. The blob worker's CSP question under `capacitor://localhost` is left to that build: the
+   worker already falls back to the main thread.
+3. **Saves go to `@capacitor/filesystem`** (one file a slot under `Directory.Library`, keeping the four-slot rotation),
+   **settings and small keys to `@capacitor/preferences`**; IndexedDB and localStorage stay the web build's. Saves are
+   300 to 840 KB gzipped and Preferences is for "lightweight data". One switch under `SAVES` and one under `UI.store`;
+   nothing else in the game knows. Export goes through Filesystem and the Share sheet.
+4. **iPhone only, portrait only** (`TARGETED_DEVICE_FAMILY = 1`, portrait in Info.plist): the phone layout is the one
+   built and tested; iPad would add its own screenshots, layouts and review. Revisit after the first release.
+5. **Deployment target iOS 17.0** (Capacitor allows 15): `navigator.audioSession` (fact 4) and `dvh` exist from 17 and 15.4,
+   and every iPhone that runs 17 has a screen of at least 375 points.
+6. **Audio session `playback` while sound or music is on** (in the page, and `.playback` with `.mixWithOthers` in the
+   shell): the player who turned sound on hears it with the silent switch on; with both off nothing is set. *Considered:*
+   `ambient` (mixes, but muted by the switch, which players read as broken sound).
+7. **Plugins are reached as `window.Capacitor.Plugins.<Name>`**, injected by the native side, always guarded, so the page
+   needs no bundler and the web build is unchanged.
+8. **Builds start by hand** on the free M2 machine (500 minutes a month); `xcode:` is pinned and moved on purpose.
+
+### D-076 · The build rules read against the code (2026-11-16 03:30 ET; order 62, rule 21)
+The audit (`docs/IOS_ROADMAP.md` §7) found these conflicts between the rules and the code; each fix is in the roadmap §8 and
+`docs/PROGRESS.md` I1:
+1. **"One canvas for the map and the war map"**: the game has nine canvases (title strip, world, full map, war room, battle,
+   camp, big map, atlas, help strip), one on screen at a time. Read as **one canvas per map on screen, sharing one tile
+   cache**, each freed when its screen closes (D9); not one DOM canvas for all screens.
+2. **"Nothing on keys"**: the 13 key handlers are shortcuts beside buttons and stay; a key-only path would break the rule.
+3. **The war map's right-click order stays**: a tap on the same place gives the same order.
+4. **`vh` to `dvh`** keeps a `vh` line before each `dvh` for old engines; with iOS 17 as the floor (D-075) it is only for
+   the web build.
+5. **The dead mouse-hover tooltip code** in the release (`UI.tipsInit`, replaced by 59-descriptions) goes to `archive/`
+   when I1-2 touches it, not before.
+6. **Text selection is turned off** everywhere but inputs; the chronicle's export keeps the text the player may want to copy.
 

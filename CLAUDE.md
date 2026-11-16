@@ -25,6 +25,12 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 > rebellions and factions follow a kingdom's stability, the king's relations with each noble, and their own ambitions,
 > desires and circumstances. Everything is intertwined. (The owner, order 54, for the rest of this game's making; D-062.)
 
+- **Decide through `A.WHY`** (W1-2, D-069). Any choice a king, lord, General, captain or NPC makes (war, a faction, an
+  appointment, a betrayal, a plot) goes through `A.WHY.decide(who, kind, options, ctx)`: each option with reasons
+  `{ kind, weight, source, label, pub }` (log-odds weights; the source names the record), bent by the decider's temper and
+  feelings, with a bounded record. No bare `A.chance(p)` for a structural choice: `tools/lint-reasons.mjs` counts them
+  and `tests/reasons-baseline.json` may only fall. See `src/people/9999950-why/README.md` and `docs/design/r1-audit.md`.
+
 - **Descriptions open on click, never on hover.** A button or an info icon opens a description; nothing pops up on
   hover. (Round 2 order B4, done: `src/ui/59-descriptions` opens on click, tap and Enter only, a `title=` of more than
   three words is lifted into a click-to-open note, an activity opens a sheet first, and `src/ui/99998-click-open/test.mjs`
@@ -46,6 +52,26 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
   in `docs/HISTORY.md`), never deleted.
 - If an order conflicts with how the code works, record the conflict and the fix chosen in `docs/DECISIONS.md`.
 
+## End goal: iPhone App Store
+
+Ardan ships as an iPhone app: the one-file page inside **Capacitor 8** (Swift Package Manager), built and signed on
+**Codemagic**'s cloud Mac from this repo, through **TestFlight** to App Review (order 62, rule 21, D-071, D-075, D-076). The
+route, the owner's facts re-checked, what only the owner can do and today's audit: `docs/IOS_ROADMAP.md`. The how-to for
+when the stage comes: `.claude/skills/ios-capacitor-release`. **The build rules bind all work from today:**
+
+- **Input:** Pointer Events only (`pointerdown/move/up/cancel`), never mouse-only events; nothing depends on hover,
+  right-click, double-click or the keyboard; tap targets at least 44×44 points.
+- **Layout:** from 375×667 to a Pro Max; room for `env(safe-area-inset-*)`; `dvh`, not `vh`.
+- **Assets:** relative paths only; no CDN, no web font from the net, no network call; everything works offline.
+- **Rendering:** HTML for menus and panels, updating only what changed; one canvas for the map and the war map, culled,
+  redrawn only on a change; animate only `transform` and `opacity`.
+- **Performance:** no data that grows forever, no new objects in a per-frame loop, look up by id with a `Map`; test with
+  the CPU slowed 4 to 6 times.
+- **Saves:** only through `SAVES` (small keys through `UI.store`), so the storage under it can become Capacitor's.
+- **Audio:** one `AudioContext`, unlocked on the first tap, paused in the background.
+- Source stays in `src/`, `data/`, `assets/`; no path assumes a folder layout (a later build writes `www/`).
+- When a change would make the iPhone version harder, say so and offer the version that keeps the route open.
+
 ## Layout
 
 | Path | What |
@@ -63,7 +89,7 @@ built on top of it: **features** that add code and events, the **v2 engine** (pl
 | `docs/` | `README.md` (an index of every doc), `NAMES.md` (old name -> new name), `HISTORY.md`, `DECISIONS.md`, `IDEAS.md`, `CRITIQUE.md`, `V2_SPEC.md`, `VERSIONS.md`; `v2/` (v2 status, lanes, playtests), `plan/`, `reviews/`, `benchmarks/`, `research/`, `design/`, `north-star/`, `art/` |
 | `archive/` | Retired features and code (`x1-patch-layer/`: the old patches.mjs files), each with a note on what it was and why it was replaced. Never built. |
 | `CHANGELOG.md` | Player-facing changes in plain words, one section per version |
-| `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop` (keep them true to the code) |
+| `.claude/skills/` | `life-sim-systems`, `realistic-continent-maps`, `game-ux-playtest-loop`, `ios-capacitor-release` (keep them true to the code) |
 
 **Systems** (`src/<system>/`): `core` (engine fixes, saves, time, scale, replay, mods, pacing), `map` (the continent,
 terrain, journeys, the map view), `world` (realms, cultures, names, lore, the world record, beliefs), `people` (the
@@ -90,6 +116,7 @@ node --test tests/v2/*.test.js                            # the engine's unit te
 node tools/lint-events.mjs --feature=my-feature --html=/tmp/me.html
 node tools/lint-choices.mjs --feature=my-feature --html=/tmp/me.html   # no obviously best choice
 node tools/lint-kin.mjs                                   # no event mints kin or names one it did not take from the tree (C6)
+node tools/lint-reasons.mjs [--list]                      # no new bare-dice decision in AI code (R1, W1-2): the count may only fall
 node tests/run.mjs /tmp/me.html --features=my-feature     # core suites + that feature's tests
 node tests/run.mjs --only=testA,testB --workers=4         # some tests by name
 node tests/run.mjs --tier=quick --shard=0/8 --plan        # T1: the tier split and each shard's estimated time, runs nothing

@@ -1078,3 +1078,99 @@ Branch `p3-playtest` from `v2-integration` at `2aaf1ba`; one commit a fix; not p
   chokepoint tables, realm secrets. Outdated: military templates, Marshal, levies (the war score is not in it).
 - **Game:** nothing. No code, data or test changed.
 - **Undo:** revert the branch `codex-review` commits.
+
+### H-067 · 2026-11-16 · S1a: the design for skills with levels and experience (order 63; nothing in the game)
+- **Asked** (order 63): retire the proficiencies everywhere; skills with levels and experience; growth that moves with
+  the life. Design only.
+- **Written:** `docs/design/skills.md`: the owner's page; §1 what is removed (data, engine, every place the player reads
+  it, tests), counted with `git grep` at `962791e` (5,695 checks, 4,989 skill grants in effects, 337 `A.trainSkill`
+  calls, 349 `A.skill` reads, 252 `C.prof`, 110 direct writes to `.skills`, 51 "proficien"); §2 the model (28 skills,
+  99 specialisms, 35 levels, the experience table, 252 concepts, grasp, proof, breakthroughs, talent, rust); §3 sources
+  and the fourteen things that move growth; §4-§5 checks and effects; §6 kept and cut; §7 the ledger; §8 the page at
+  375 × 667; §9 migration; §10 other people and the census; §11 ten choices for the owner; §12 for S1b (the engine
+  module, twelve file steps, data bounds, cost, eighteen tests, lints, six stages with done-when).
+- **Scripts** (`docs/design/skills/`, not game code): `gen-data.mjs` → `skills.json`; `model.mjs` (imports the growth
+  standard's `../growth/model.mjs`); `lives.mjs` → `lives.json` and the tables; `chart.mjs` → `lives.svg` (rendered in
+  Chromium, light and dark, and looked at). Twelve concept names come from `docs/research/codex/martial-concepts.md`.
+- **Measured in the model:** a prodigy (talent S, easy needs, a grandmaster's drill) is Master in 4 years; an ordinary
+  plodder in 27; a gifted, well-taught man with one blind concept ends at Expert V; of 400 people of talent C given
+  the same best training 343 reach Master in 8 to 49 years (middle 11) and 57 never.
+- **Game:** nothing. No code, data or test changed.
+- **Left open:** the owner's choices (§11; two are conflicts between earlier orders, recorded in D-072); S1b.
+- **Undo:** revert branch `s1a`'s commits (`docs/design/skills.md`, `docs/design/skills/`, and the lines added to
+  DECISIONS, HISTORY, PROGRESS and `docs/README.md`).
+
+### H-065 · 2026-11-16 03:30 ET · I1-0: the route to the iPhone App Store, researched and written (order 62; nothing in the game)
+*Numbered H-065: H-064 is another agent's.*
+- **Asked** (order 62, rule 21): re-check the owner's six facts from today's official docs; map the route (performance,
+  iPhone readiness, a `www/` build, Capacitor, Codemagic and TestFlight, the listing, review) with commands, config, the
+  owner's own steps and pitfalls; write the roadmap, a skill, a CLAUDE.md section with the build rules, and the decisions.
+- **Written:** `docs/IOS_ROADMAP.md` (verdicts on the six facts, what else is true now, seven stages with a sample
+  `capacitor.config.ts`, Info.plist keys, a privacy manifest and a `codemagic.yaml` for a Capacitor 8 SPM project; the
+  one-file page in WKWebView; the owner's steps and when; the audit against each build rule with file:line; 13 fixes,
+  sized and placed); `.claude/skills/ios-capacitor-release/SKILL.md`; CLAUDE.md "End goal: iPhone App Store" and the
+  skill in the Layout table; D-071 (the route), D-075 (eight choices: `app/`, one file first, Filesystem and Preferences,
+  iPhone and portrait only, iOS 17, the audio session, plugins without a bundler, builds by hand), D-076 (six readings of
+  the rules against the code); PROGRESS I1 with seven stages, and the audit's fixes folded into X5, X7 part 2, D9 and Gaps;
+  `docs/README.md`.
+- **Probes** (`docs/research/ios/`): `tap-probe.mjs` (Chromium and WebKit, 375×667: 58 of 382 controls under 44 points, none
+  on the title, the event card and seven pages; no sideways scroll) and `webkit-boot.mjs` (the one-file page booted in
+  Playwright's WebKit with its CSP, `'strict-dynamic'` and a blob worker; a save landed in IndexedDB, 345 KB). WebKit was
+  installed into the session's scratch folder with `playwright install webkit` and `install-deps webkit`.
+- **Run, not kept:** `npx cap add ios` with `@capacitor/cli` 8.6.2 in a scratch folder on Linux, which confirmed the SPM
+  layout (`ios/App/App.xcodeproj`, `CapApp-SPM/Package.swift`, no Podfile) and the template's defaults (iOS 15, iPhone and
+  iPad, landscape, a SceneDelegate).
+- **Sources:** capacitorjs.com, ionic.io, developer.apple.com, docs.codemagic.io and Codemagic's CLI docs, WebKit Bugzilla,
+  MDN, docs.expo.dev, the npm registry; listed in the roadmap §11. Three Apple pages would not render (privacy manifest,
+  encryption export, the HIG on audio): what rests on them is marked unverified.
+- **Game:** nothing. No game code, data, test or tool changed.
+- **Left open:** every stage after I1-0; the [U] items (audio session and blob worker inside WKWebView under
+  `capacitor://`, CSS bounce control, the first automated upload without a Mac) wait for the first TestFlight build.
+- **Undo:** revert branch `ios-route`'s commit.
+
+### H-064 · 2026-11-16 · W1-2: minds (R1's core)
+- **Asked:** `A.WHY.decide`, one way of deciding for every decider (D-064 point 9); the owner's two lab kings as tests;
+  the first structural decisions routed through it; a lint against bare dice with a baseline; reasons shown where the
+  player sees the outcome, by rank; under 1 ms a month; determinism kept.
+- **Engine:** `src/people/engine/why.js` (`A.V2.why`): `decide`, `weigh`, `odds`, `feel`, `cool`, `tell`, `hotness`,
+  the kinds and the feelings. Pure; `tests/v2/why.test.js` (8 tests).
+- **Game:** new `src/people/9999950-why` (`A.WHY`: minds from 20's persona plus ambition, feelings on people, the bounded
+  log `A.S.why`, `wrong` for the release's incidents and a lost war, `warReasons`, `warDecision`, `warOdds`,
+  `factionChoice`, `factionFormed`, `appointGeneral`, `tell`/`tellFor`). Routed: v2 diplomacy's `DV.tryWar` (the live war
+  path; its nerve gate and bare roll become the decision, v2's own stream draws), the release's `A.aiWarCheck` (a yearly
+  council per crown and a council called by a hot wrong), `A.factionsYear`'s join, stay and leave, 999990-posts'
+  `P.fillGenerals`. Shown: the war's news ("Because: ... Despite: ...", the council's count only to its ruler and
+  councillors), 20's rulers' log takes a war's record reasons, 9996's Factions card shows a faction's founding reasons.
+- **Found:** with v2 diplomacy on (the default) the release's `A.aiWarCheck` never runs in play (muted in the turn); every
+  AI war comes from `DV.tryWar`. Both paths are routed (D-069 point 5).
+- **Lint:** `tools/lint-reasons.mjs`, `tests/reasons-baseline.json`: 72 bare-dice decisions before, 66 after; run by
+  `tools/check.mjs`. `docs/design/r1-audit.md` lists the 66 with file, line and the reasons each should use.
+- **Calibration** (scratch `worldstats`, a noble life from 20, 40 years, AI wars started by a crown's decision; before ->
+  after): seed 1 12 -> 15, seed 2 21 -> 12 (one calibration earlier), seed 3 17 -> 24, so 50 -> 51; all wars 71 -> 70;
+  civil wars 14 -> 10; faction memberships begun 5,183 -> 5,044. Wars declared at under even strength (friends counted)
+  rose, 11 -> 31: above the ruler's nerve as before, and now also from feelings (a council a hot wrong calls) and
+  grudges; left for W1-5 and the balance stage (D12b-7) to judge, noted in D-069.
+- **Cost** (20 years, seed 7, in-page wall time): `A.WHY.decide` 0.36 ms a month on average (16.6 decisions a month,
+  most at the New Year's faction choices), feelings 0.2, the General's choice 0.04; all of W1-2's work with `DV.tryWar`'s
+  own previews about 0.9 ms a month against 146 ms of simulation. A choice costs 2 to 3 µs, a faction choice about
+  10 µs with its record. The record: about 450 bytes, at most 150 kept (about 70 KB of a save). `next-month-speed` on
+  `y50-noble` (24 presses, a loaded machine, worlds diverge): median 213 ms before, 255 after, quiet months 129 / 197,
+  noise-dominated (cards a month 0.71 / 0.92).
+- **Tests:** `node --test tests/v2/*.test.js` 97/97 (why 8/8); new browser tests `whyLabKings` (in a real realm: the proud king
+  10/10, the cold king 0/10, and 9/10 within four councils once the count turns), `whyRecordsKept`, `whyToldByRank`,
+  `whyFactionsAndGenerals`; with them 50 of the touched features' and the determinism tests on the merged build (renderRng,
+  replayWithRender, journalReplay, savesStillLoad, aiPersonality*, cs*, v2Dip*, bondsLedgerWeighs, bondsOldSave, posts*,
+  ri*, po*, w1*): 50 pass. `bondsFeudInherited` and `nbCourtWeighs` read the war's pull through `A.WHY.warOdds` now
+  (the roll they stubbed is gone) and pass; `v2DipWarPace` reads "reasons" where it read "chance". lint-stages,
+  lint-kin, lint-events (why), `build-v2 --check`, `--check-tiers` ok; lint-reasons 66 = baseline.
+  `coherency --quick` (8 lives, 12 years): no contradiction; `long-life-audit --seed=7 --years=30`: 0 errors, audit empty,
+  0 months with a broken post rule.
+  Long tier, touched: `aiPersonalityLongSim` (warlike to peaceful wars per trait-year 5.39), `csWorlds` (102 AI wars in 150
+  world-years, every one with a casus belli; in character 81.5%; 0.0197 wars a realm-year on, 0.0210 off),
+  `bondsFeudWorlds`, `w1NoMarshalWorld`, `csRevengeIsPatient`: all pass (csWorlds took 1,837 s with the machine at a load
+  of 13; 451 s on CI). Not run here: the full suite and the balance league (CI's long tier).
+- **Commits:** `113515b` (the engine and its tests), `fb259de` (A.WHY in the game, the routing), `577e6d6` (the lint),
+  `8c05e03` (merge of `v2-integration` be59d5c), `87c8f15` (odds, costs, caps), then the records and `index.html`.
+- **Undo:** revert the branch `w1-2`'s commits (base `2d7de66`, merged with `be59d5c`); the old war roll is
+  `git show 2d7de66:src/core/release/core/17-careers-and-event-engine-a.js` and the old `DV.tryWar` the same commit's
+  `src/diplomacy/99996-v2-diplomacy/diplomacy.core.js`.

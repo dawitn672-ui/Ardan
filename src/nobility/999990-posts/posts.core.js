@@ -713,7 +713,7 @@
     for (const r of realmsAlive()) {
       if (r.landless || (r.isRebel && !r.isNew) || !r.ruler || (pc && pc.ruler === r.id)) continue;
       const d = fixFirstHost(r);
-      if (d && !P.holder(P.divKey(d.id)) && !d.cmd) want.set(r.id, { r, d, best: null, v: -1 });
+      if (d && !P.holder(P.divKey(d.id)) && !d.cmd) want.set(r.id, { r, d, top: [] });
     }
     if (!want.size) return 0;
     for (const id in A.S.people) {
@@ -724,11 +724,23 @@
       if (P.held(p.id).some(k => { const c = P.cls(k); return c === 'SEAT' || c === 'OFFICE' || c === 'FIELD' || c === 'STAFF'; })) continue;
       if (!((p.milRank || 0) >= 6 || A.skill(p, 'command') >= 45)) continue;
       const v = A.skill(p, 'command') * 2 + (p.fame || 0) / 4 + ((p.milRank || 0) >= 6 ? 20 : 0);
-      if (v > w.v || (v === w.v && String(p.id) < String(w.best.id))) { w.best = p; w.v = v; }
+      // W1-2: the three best at hand go before the crown (best first; ties by id)
+      const top = w.top = w.top || [];
+      if (top.length < 3 || v > top[top.length - 1].v || (v === top[top.length - 1].v && String(p.id) < String(top[top.length - 1].p.id))) {
+        top.push({ p, v });
+        top.sort((a, b) => b.v - a.v || (String(a.p.id) < String(b.p.id) ? -1 : 1));
+        if (top.length > 3) top.length = 3;
+      }
     }
     let n = 0;
     for (const w of want.values()) {
-      let p = w.best;
+      // W1-2 (D-069): the crown chooses among them through A.WHY: merit nearly settles it, the king's temper and
+      // ties bend it (kin of his house; a wary king and a General the soldiers love), and the choice is recorded
+      let p = w.top && w.top.length ? w.top[0].p : null;
+      if (p && A.WHY && A.WHY.appointGeneral) {
+        const rec = A.WHY.appointGeneral(w.r, w.top), c = rec && w.top.find(x => String(x.p.id) === String(rec.chose));
+        if (c) p = c.p;
+      }
       if (!p && A.wsGeneralFor) p = A.P(A.wsGeneralFor(w.r.id));
       if (!live(p) || isPC(p.id) || P.can(P.divKey(w.d.id), p.id)) continue;
       if (P.place(P.divKey(w.d.id), p.id, { why: 'crown', by: w.r.ruler }).ok) {

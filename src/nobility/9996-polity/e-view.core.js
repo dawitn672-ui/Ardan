@@ -190,6 +190,7 @@ POL.factionsCard = function (r, pc) {
     return `<div class="po-fac"><div class="po-row po-small"><b>${esc(POL.facName(f))}</b><span class="po-num">${tt('poFac', f.id, pct(pw))}</span></div>
 <div class="po-meter" aria-label="${esc(pct(pw))} of the swords, against 40%"><i style="width:${Math.min(100, Math.round(pw * 100 / .6))}%"></i><s style="left:${Math.round(40 / .6)}%"></s></div>
 <div class="po-small muted">Demands ${esc(F.demand || '?')} at 40% and discontent 60. ${months == null ? 'Discontent does not grow.' : months === 0 ? 'Demands are due.' : `At this pace, in about ${months} month${months === 1 ? '' : 's'}.`}</div>
+${f.why ? `<div class="po-small muted">${esc(f.why)}</div>` : ''}
 <div class="po-small">Led by ${head ? who(head) : esc(lead ? lead.name : '?')}${mem ? `; ${mem}` : ''}.${can ? ` <button class="small ghost" data-a="poJoin" data-v="${esc(f.id)}">Join</button>` : ''}</div></div>`;
   }).join('');
   return card('factions', 'Factions', rows, '', `${fs.length}, ${esc(POL.facName(top[0]))} at ${Math.round(100 * top[1] / .4)}% of its demand`);

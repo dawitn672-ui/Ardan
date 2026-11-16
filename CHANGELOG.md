@@ -5,6 +5,17 @@ What changed for the player, in plain words, one section per version (newest fir
 
 ## Unreleased
 
+- **Kings and lords decide for reasons you can read.** A crown goes to war, a great house joins or leaves a faction, and
+  the king names his first host's General by weighing named reasons (an insult, bad blood, a cause, his Generals' count
+  of the enemy's spears, an old wrong, a debt, his temper), never by a roll of the dice alone. The news of a war now ends
+  with "Because: ... Despite: ...". You hear the reasons anyone could know; the council's own count of spears only if
+  you sit on that council or wear that crown.
+- **Rulers have feelings.** An envoy shamed, a raid, a murder or a lost war leaves a ruler with wounded pride, anger or
+  shame, which cools with time (slowly in a vengeful man). A proud, hot-headed king may declare a war his Generals told
+  him he would lose; a cold one keeps the wrong and strikes later, when the odds have turned.
+- **Factions say why.** A new faction carries its founder's reasons on the Factions card, and a faction raised in your
+  own realm is news.
+
 - **No Marshal; five ranks.** The army has five ranks on every screen: soldier, sergeant, captain, commander and General.
   General is the highest; there is no Marshal and no High General. A sergeant leads a section of about twelve, a captain
   a company of about two hundred, a commander a wing of several companies, and a General a host (a division on the war
